@@ -11,10 +11,6 @@
 #include "ash/webui/annotator/untrusted_annotator_page_handler_impl.h"
 #include "base/memory/raw_ptr.h"
 
-namespace views {
-class WebView;
-}  // namespace views
-
 // Implements the interface for the Annotator tool.
 class AnnotatorClientImpl : public ash::AnnotatorClient {
  public:
@@ -24,10 +20,6 @@ class AnnotatorClientImpl : public ash::AnnotatorClient {
   AnnotatorClientImpl(const AnnotatorClientImpl&) = delete;
   AnnotatorClientImpl& operator=(const AnnotatorClientImpl&) = delete;
   ~AnnotatorClientImpl() override;
-
-  // RecordingOverlayViewImpl calls this function to initialize the annotator
-  // tool.
-  static void InitForProjectorAnnotator(views::WebView* web_view);
 
   // ash::AnnotatorClient:
   void SetAnnotatorPageHandler(

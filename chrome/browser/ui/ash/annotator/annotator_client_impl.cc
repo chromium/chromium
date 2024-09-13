@@ -8,12 +8,9 @@
 #include "ash/public/cpp/annotator/annotator_tool.h"
 #include "ash/shell.h"
 #include "ash/webui/annotator/untrusted_annotator_page_handler_impl.h"
-#include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
 #include "chrome/browser/ui/ash/annotator/annotations_overlay_view_impl.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/user_manager/user_manager.h"
-#include "ui/views/controls/webview/webview.h"
-#include "url/gurl.h"
 
 AnnotatorClientImpl::AnnotatorClientImpl(
     ash::AnnotatorControllerBase* annotator_controller)
@@ -26,10 +23,6 @@ AnnotatorClientImpl::AnnotatorClientImpl()
 
 AnnotatorClientImpl::~AnnotatorClientImpl() {
   annotator_controller_->SetToolClient(nullptr);
-}
-
-void AnnotatorClientImpl::InitForProjectorAnnotator(views::WebView* web_view) {
-  web_view->LoadInitialURL(GURL(ash::kChromeUIUntrustedAnnotatorUrl));
 }
 
 void AnnotatorClientImpl::SetAnnotatorPageHandler(
