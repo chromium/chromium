@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/ui/settings/privacy/lockdown_mode/lockdown_mode_consumer.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest_mac.h"
@@ -24,12 +25,11 @@ class LockdownModeMediatorTest : public PlatformTest {
     prefs_ = std::make_unique<TestingPrefServiceSimple>();
     prefs_->registry()->RegisterBooleanPref(prefs::kBrowserLockdownModeEnabled,
                                             /*default_value=*/false);
-    prefs_->registry()->RegisterBooleanPref(prefs::kOSLockdownModeEnabled,
-                                            /*default_value=*/false);
   }
 
   web::WebTaskEnvironment task_env_;
   std::unique_ptr<TestingPrefServiceSimple> prefs_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
 };
 
 // Tests that the pref and the mediator are playing nicely together.

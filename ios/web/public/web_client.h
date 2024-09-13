@@ -183,8 +183,7 @@ class WebClient {
 
   // Sets OS lockdown mode preference value. By default, no preference value is
   // set.
-  virtual void SetOSLockdownModeEnabled(web::BrowserState* browser_state,
-                                        bool enabled);
+  virtual void SetOSLockdownModeEnabled(bool enabled);
 
   virtual bool IsInsecureFormWarningEnabled(
       web::BrowserState* browser_state) const;

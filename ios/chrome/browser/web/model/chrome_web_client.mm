@@ -540,12 +540,9 @@ bool ChromeWebClient::IsBrowserLockdownModeEnabled(
   return prefs->GetBoolean(prefs::kBrowserLockdownModeEnabled);
 }
 
-void ChromeWebClient::SetOSLockdownModeEnabled(web::BrowserState* browser_state,
-                                               bool enabled) {
-  ChromeBrowserState* chrome_browser_state =
-      ChromeBrowserState::FromBrowserState(browser_state);
-  PrefService* prefs = chrome_browser_state->GetPrefs();
-  prefs->SetBoolean(prefs::kOSLockdownModeEnabled, enabled);
+void ChromeWebClient::SetOSLockdownModeEnabled(bool enabled) {
+  GetApplicationContext()->GetLocalState()->SetBoolean(
+      prefs::kOSLockdownModeEnabled, enabled);
 }
 
 bool ChromeWebClient::IsInsecureFormWarningEnabled(

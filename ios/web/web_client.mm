@@ -116,8 +116,7 @@ bool WebClient::IsBrowserLockdownModeEnabled(web::BrowserState* browser_state) {
   return false;
 }
 
-void WebClient::SetOSLockdownModeEnabled(web::BrowserState* browser_state,
-                                         bool enabled) {}
+void WebClient::SetOSLockdownModeEnabled(bool enabled) {}
 
 bool WebClient::IsInsecureFormWarningEnabled(
     web::BrowserState* browser_state) const {

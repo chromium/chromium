@@ -692,6 +692,9 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
 
   // Deprecated 09/2024.
   registry->RegisterBooleanPref(kBrowsingDataMigrationHasBeenPossible, false);
+
+  // Register pref used to determine if OS Lockdown Mode is enabled.
+  registry->RegisterBooleanPref(prefs::kOSLockdownModeEnabled, false);
 }
 
 void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
@@ -853,7 +856,7 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
   // Register pref used to determine if Browser Lockdown Mode is enabled.
   registry->RegisterBooleanPref(prefs::kBrowserLockdownModeEnabled, false);
 
-  // Register pref used to determine if OS Lockdown Mode is enabled.
+  // Deprecated 09/2024.
   registry->RegisterBooleanPref(prefs::kOSLockdownModeEnabled, false);
 
   // Register pref used to detect addresses in web page
@@ -1259,6 +1262,10 @@ void MigrateObsoleteBrowserStatePrefs(const base::FilePath& state_path,
   // Added 09/2024.
   MigrateDictionaryPrefFromLocalStatePrefsToProfilePrefs(
       prefs::kIosPreRestoreAccountInfo, prefs);
+
+  // Added 09/2024.
+  MigrateBooleanPrefFromProfilePrefsToLocalStatePrefs(
+      prefs::kOSLockdownModeEnabled, prefs);
 }
 
 void MigrateObsoleteUserDefault() {

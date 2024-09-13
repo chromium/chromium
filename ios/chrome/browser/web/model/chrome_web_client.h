@@ -62,8 +62,7 @@ class ChromeWebClient : public web::WebClient {
   bool IsPointingToSameDocument(const GURL& url1,
                                 const GURL& url2) const override;
   bool IsBrowserLockdownModeEnabled(web::BrowserState* browser_state) override;
-  void SetOSLockdownModeEnabled(web::BrowserState* browser_state,
-                                bool enabled) override;
+  void SetOSLockdownModeEnabled(bool enabled) override;
   bool IsInsecureFormWarningEnabled(
       web::BrowserState* browser_state) const override;
 

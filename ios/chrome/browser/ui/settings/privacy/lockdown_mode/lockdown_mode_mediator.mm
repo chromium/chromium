@@ -7,6 +7,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/notreached.h"
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_backed_boolean.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/utils/observable_boolean.h"
@@ -45,8 +46,9 @@ namespace {}  // namespace
 
 - (void)setConsumer:(id<LockdownModeConsumer>)consumer {
   _consumer = consumer;
-  [_consumer setOSLockdownModeEnabled:self.userPrefService->GetBoolean(
-                                          prefs::kOSLockdownModeEnabled)];
+  BOOL enabled = GetApplicationContext()->GetLocalState()->GetBoolean(
+      prefs::kOSLockdownModeEnabled);
+  [_consumer setOSLockdownModeEnabled:enabled];
   [_consumer setBrowserLockdownModeEnabled:self.lockdownModePreference.value];
 }
 

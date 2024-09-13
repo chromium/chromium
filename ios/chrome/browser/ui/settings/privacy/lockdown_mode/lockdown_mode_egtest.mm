@@ -63,14 +63,16 @@ NSString* const kLockdownModeCellId = @"kLockdownModeCellId";
                    forUserPref:prefs::kBrowserLockdownModeEnabled];
   // Ensure that OS Lockdown Mode opt-in starts in its default (opted-out)
   // state.
-  [ChromeEarlGrey setBoolValue:NO forUserPref:prefs::kOSLockdownModeEnabled];
+  [ChromeEarlGrey setBoolValue:NO
+             forLocalStatePref:prefs::kOSLockdownModeEnabled];
 }
 
 - (void)tearDown {
   // Reset preferences back to default values.
   [ChromeEarlGrey setBoolValue:NO
                    forUserPref:prefs::kBrowserLockdownModeEnabled];
-  [ChromeEarlGrey setBoolValue:NO forUserPref:prefs::kOSLockdownModeEnabled];
+  [ChromeEarlGrey setBoolValue:NO
+             forLocalStatePref:prefs::kOSLockdownModeEnabled];
   [super tearDown];
 }
 
@@ -102,7 +104,8 @@ NSString* const kLockdownModeCellId = @"kLockdownModeCellId";
 - (void)testOSLockdownModeEnabled {
   [ChromeEarlGrey setBoolValue:NO
                    forUserPref:prefs::kBrowserLockdownModeEnabled];
-  [ChromeEarlGrey setBoolValue:YES forUserPref:prefs::kOSLockdownModeEnabled];
+  [ChromeEarlGrey setBoolValue:YES
+             forLocalStatePref:prefs::kOSLockdownModeEnabled];
   [self openLockdownModeSettings];
 
   // Check that lockdown mode row shows an "on" text label.
