@@ -8,10 +8,14 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/no_destructor.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/component_updater/translate_kit_language_pack_component_installer.h"
+#include "chrome/browser/on_device_translation/constants.h"
+#include "chrome/browser/on_device_translation/language_pack_util.h"
 #include "chrome/browser/on_device_translation/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/on_device_translation/public/cpp/features.h"
@@ -23,6 +27,9 @@
 #include "base/strings/utf_string_conversions.h"
 #endif  // BUILDFLAG(IS_WIN)
 
+using on_device_translation::kLanguagePackComponentConfigMap;
+using on_device_translation::LanguagePackKey;
+using on_device_translation::ToLanguageCode;
 using on_device_translation::mojom::OnDeviceTranslationLanguagePackage;
 using on_device_translation::mojom::OnDeviceTranslationLanguagePackagePtr;
 using on_device_translation::mojom::OnDeviceTranslationServiceConfig;
@@ -115,28 +122,46 @@ GetLanguagePackagesFromCommnandLineString(
   return packages;
 }
 
-std::vector<OnDeviceTranslationLanguagePackagePtr> GetLanguagePackages() {
-  std::vector<OnDeviceTranslationLanguagePackagePtr> packages;
+// Creates a config from the command line flag --translate-kit-packages.
+OnDeviceTranslationServiceConfigPtr CreateConfigFromCommandLine() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(kTranslateKitPackagePaths)) {
-    return GetLanguagePackagesFromCommnandLineString(
-        command_line->GetSwitchValueNative(kTranslateKitPackagePaths));
+  if (!command_line->HasSwitch(kTranslateKitPackagePaths)) {
+    return nullptr;
   }
-  // TODO(crbug.com/358030919): Check PrefService to get the path of the
-  // installed language packages.
-  return std::vector<OnDeviceTranslationLanguagePackagePtr>();
-}
-
-OnDeviceTranslationServiceConfigPtr CreateConfig() {
   OnDeviceTranslationServiceConfigPtr config =
       OnDeviceTranslationServiceConfig::New();
-  config->packages = GetLanguagePackages();
+  config->packages = GetLanguagePackagesFromCommnandLineString(
+      command_line->GetSwitchValueNative(kTranslateKitPackagePaths));
   return config;
+}
+
+// Returns the language packs that are installed.
+std::set<LanguagePackKey> GetInstalledLanguagePacks() {
+  std::set<LanguagePackKey> insalled_pack_keys;
+  for (const auto& it : kLanguagePackComponentConfigMap) {
+    if (!GetFilePathFromGlobalPrefs(it.second->config_path_pref).empty()) {
+      insalled_pack_keys.insert(it.first);
+    }
+  }
+  return insalled_pack_keys;
 }
 
 }  // namespace
 
-OnDeviceTranslationServiceController::OnDeviceTranslationServiceController() {
+OnDeviceTranslationServiceController::OnDeviceTranslationServiceController()
+    : config_from_command_line_(CreateConfigFromCommandLine()) {
+  // Initialize the pref change registrar.
+  pref_change_registrar_.Init(g_browser_process->local_state());
+  // Start listening to pref changes for language pack keys.
+  for (const auto& it : kLanguagePackComponentConfigMap) {
+    pref_change_registrar_.Add(
+        it.second->config_path_pref,
+        base::BindRepeating(
+            &OnDeviceTranslationServiceController::OnLanguagePackKeyPrefChanged,
+            base::Unretained(this)));
+  }
+  // Register all the installed language pack components.
+  RegisterInstalledLanguagePackComponent();
   auto receiver = service_remote_.BindNewPipeAndPassReceiver();
   service_remote_.reset_on_disconnect();
 
@@ -162,7 +187,7 @@ OnDeviceTranslationServiceController::OnDeviceTranslationServiceController() {
           .WithDisplayName(kOnDeviceTranslationServiceDisplayName)
           .WithExtraCommandLineSwitches(extra_switches)
           .Pass());
-  service_remote_->SetServiceConfig(CreateConfig());
+  service_remote_->SetServiceConfig(GetConfig());
 }
 
 OnDeviceTranslationServiceController::~OnDeviceTranslationServiceController() =
@@ -173,6 +198,9 @@ void OnDeviceTranslationServiceController::CreateTranslator(
     const std::string& target_lang,
     mojo::PendingReceiver<on_device_translation::mojom::Translator> receiver,
     base::OnceCallback<void(bool)> callback) {
+  MaybeTriggerLanguagePackInstall(source_lang, target_lang);
+  // TODO(crbug.com/358030919): Implement a logic to defer the CreateTranslator
+  // IPC call when a new language pack was installed.
   service_remote_->CreateTranslator(source_lang, target_lang,
                                     std::move(receiver), std::move(callback));
 }
@@ -181,7 +209,87 @@ void OnDeviceTranslationServiceController::CanTranslate(
     const std::string& source_lang,
     const std::string& target_lang,
     base::OnceCallback<void(bool)> callback) {
+  MaybeTriggerLanguagePackInstall(source_lang, target_lang);
+  // TODO(crbug.com/358030919): Implement a logic to defer the CanTranslate
+  // IPC call when a new language pack was installed.
   service_remote_->CanTranslate(source_lang, target_lang, std::move(callback));
+}
+
+// Get the config for the service.
+OnDeviceTranslationServiceConfigPtr
+OnDeviceTranslationServiceController::GetConfig() {
+  if (config_from_command_line_) {
+    return config_from_command_line_->Clone();
+  }
+
+  OnDeviceTranslationServiceConfigPtr config =
+      OnDeviceTranslationServiceConfig::New();
+  for (const auto& it : kLanguagePackComponentConfigMap) {
+    auto file_path = GetFilePathFromGlobalPrefs(it.second->config_path_pref);
+    if (!file_path.empty()) {
+      OnDeviceTranslationLanguagePackagePtr package =
+          OnDeviceTranslationLanguagePackage::New();
+      package->language1 = ToLanguageCode(it.second->language1);
+      package->language2 = ToLanguageCode(it.second->language2);
+      package->package_path = file_path;
+      config->packages.push_back(std::move(package));
+    }
+  }
+  return config;
+}
+
+// Register the installed language pack components.
+void OnDeviceTranslationServiceController::
+    RegisterInstalledLanguagePackComponent() {
+  for (const auto& language_pack : GetInstalledLanguagePacks()) {
+    RegisterLanguagePackComponent(language_pack);
+  }
+}
+
+// Maybe trigger the language pack install if the required language packs are
+// not installed.
+void OnDeviceTranslationServiceController::MaybeTriggerLanguagePackInstall(
+    const std::string& source_lang,
+    const std::string& target_lang) {
+  const auto required_packs =
+      on_device_translation::CalculateRequiredLanguagePacks(source_lang,
+                                                            target_lang);
+  if (required_packs.empty()) {
+    return;
+  }
+  const auto installed_packs = GetInstalledLanguagePacks();
+  std::vector<LanguagePackKey> differences;
+  base::ranges::set_difference(required_packs, installed_packs,
+                               std::back_inserter(differences));
+  if (differences.empty()) {
+    return;
+  }
+  std::vector<LanguagePackKey> to_be_installed;
+  base::ranges::set_difference(differences, registered_language_packs_,
+                               std::back_inserter(to_be_installed));
+  for (const auto& language_pack : to_be_installed) {
+    RegisterLanguagePackComponent(language_pack);
+  }
+}
+
+// Register the language pack component.
+void OnDeviceTranslationServiceController::RegisterLanguagePackComponent(
+    LanguagePackKey language_pack) {
+  CHECK(!registered_language_packs_.contains(language_pack));
+  registered_language_packs_.insert(language_pack);
+  component_updater::RegisterTranslateKitLanguagePackComponent(
+      g_browser_process->component_updater(), g_browser_process->local_state(),
+      language_pack, base::BindOnce([]() {
+        // TODO(crbug.com/358030919): Consider calling
+        // OnDemandUpdater::OnDemandUpdate() to trigger an update check.
+      }));
+}
+
+// Called when the language pack key pref is changed.
+void OnDeviceTranslationServiceController::OnLanguagePackKeyPrefChanged(
+    const std::string& pref_name) {
+  // Set the service config to the service.
+  service_remote_->SetServiceConfig(GetConfig());
 }
 
 // static

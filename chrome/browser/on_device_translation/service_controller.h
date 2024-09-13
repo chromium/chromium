@@ -6,9 +6,14 @@
 #define CHROME_BROWSER_ON_DEVICE_TRANSLATION_SERVICE_CONTROLLER_H_
 
 #include "base/no_destructor.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "components/services/on_device_translation/public/mojom/on_device_translation_service.mojom.h"
 #include "components/services/on_device_translation/public/mojom/translator.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
+
+namespace on_device_translation {
+enum class LanguagePackKey;
+}  // namespace on_device_translation
 
 // This class is the controller that launches the on-device translation service
 // and delegates the functionalities.
@@ -43,10 +48,30 @@ class OnDeviceTranslationServiceController {
   OnDeviceTranslationServiceController();
   ~OnDeviceTranslationServiceController();
 
+  // Returns the config for the service.
+  on_device_translation::mojom::OnDeviceTranslationServiceConfigPtr GetConfig();
+
+  // Registers the installed language pack components.
+  void RegisterInstalledLanguagePackComponent();
+  // Maybe triggers the language pack install if the required language packs are
+  // not installed.
+  void MaybeTriggerLanguagePackInstall(const std::string& source_lang,
+                                       const std::string& target_lang);
+  // Registers the language pack component.
+  void RegisterLanguagePackComponent(on_device_translation::LanguagePackKey);
+
+  // Called when the language pack key pref is changed.
+  void OnLanguagePackKeyPrefChanged(const std::string& pref_name);
+
   // TODO(crbug.com/335374928): implement the error handling for the translation
   // service crash.
   mojo::Remote<on_device_translation::mojom::OnDeviceTranslationService>
       service_remote_;
+  // Used to listen for changes on the pref values of language packs.
+  PrefChangeRegistrar pref_change_registrar_;
+  std::set<on_device_translation::LanguagePackKey> registered_language_packs_;
+  const on_device_translation::mojom::OnDeviceTranslationServiceConfigPtr
+      config_from_command_line_;
 };
 
 #endif  // CHROME_BROWSER_ON_DEVICE_TRANSLATION_SERVICE_CONTROLLER_H_
