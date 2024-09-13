@@ -24,6 +24,8 @@ namespace {
 // The space between the enterprise icon and the "Your browser is managed ..."
 // label.
 const CGFloat kEnterpriseIconSpacing = 4.0;
+// The vertical space between labels.
+const CGFloat kLabelVerticalSpacing = 2.0;
 
 // Returns a tinted version of the enterprise building icon.
 UIImage* GetEnterpriseIcon() {
@@ -149,7 +151,8 @@ UIImage* GetEnterpriseIcon() {
 
       [NSLayoutConstraint activateConstraints:@[
         [horizontalStack.topAnchor
-            constraintEqualToAnchor:subtitleLabel.bottomAnchor],
+            constraintEqualToAnchor:subtitleLabel.bottomAnchor
+                           constant:kLabelVerticalSpacing],
         [horizontalStack.centerXAnchor
             constraintEqualToAnchor:self.centerXAnchor],
 
@@ -184,7 +187,8 @@ UIImage* GetEnterpriseIcon() {
           constraintEqualToAnchor:self.trailingAnchor
                          constant:-kTableViewHorizontalSpacing],
 
-      [subtitleLabel.topAnchor constraintEqualToAnchor:titleLabel.bottomAnchor],
+      [subtitleLabel.topAnchor constraintEqualToAnchor:titleLabel.bottomAnchor
+                                              constant:kLabelVerticalSpacing],
       [subtitleLabel.leadingAnchor
           constraintEqualToAnchor:titleLabel.leadingAnchor],
       [subtitleLabel.trailingAnchor
