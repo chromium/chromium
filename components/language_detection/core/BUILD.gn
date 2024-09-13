@@ -25,6 +25,8 @@ component("language_detection") {
 
 static_library("core") {
   sources = [
+    "background_file.cc",
+    "background_file.h",
     "embedding_lookup.cc",
     "embedding_lookup.h",
     "language_detection_model.cc",
@@ -53,6 +55,7 @@ static_library("core") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "background_file_unittest.cc",
     "language_detection_model_unittest.cc",
     "ngram_hash_ops_utils_unittest.cc",
     "quantization_utils_unittest.cc",

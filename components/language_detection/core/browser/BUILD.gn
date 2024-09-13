@@ -12,6 +12,7 @@ static_library("language_detection_model_service") {
   deps = [
     "//base",
     "//components/keyed_service/core",
+    "//components/language_detection/core",
     "//components/optimization_guide/core",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//mojo/public/cpp/bindings",

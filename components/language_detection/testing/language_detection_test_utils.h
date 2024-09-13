@@ -10,6 +10,9 @@
 namespace language_detection {
 class LanguageDetectionModel;
 
+// Returns a `base::File` for the valid model file.
+base::File GetValidModelFile();
+
 // Loads a valid model file from disk for testing. Will cause an expect failure
 // if the model does not become available.
 std::unique_ptr<LanguageDetectionModel> GetValidLanguageModel();

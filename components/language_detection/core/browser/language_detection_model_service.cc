@@ -22,14 +22,6 @@ base::File LoadModelFile(const base::FilePath& model_file_path) {
                     base::File::FLAG_OPEN | base::File::FLAG_READ);
 }
 
-// Close the provided model file.
-void CloseModelFile(base::File model_file) {
-  if (!model_file.IsValid()) {
-    return;
-  }
-  model_file.Close();
-}
-
 void PostGetModelCallback(
     language_detection::LanguageDetectionModelService::GetModelCallback
         callback,
@@ -67,7 +59,8 @@ namespace language_detection {
 LanguageDetectionModelService::LanguageDetectionModelService(
     optimization_guide::OptimizationGuideModelProvider* opt_guide,
     const scoped_refptr<base::SequencedTaskRunner>& background_task_runner)
-    : opt_guide_(opt_guide), background_task_runner_(background_task_runner) {
+    : opt_guide_(opt_guide),
+      language_detection_model_file_(background_task_runner) {
   opt_guide_->AddObserverForOptimizationTargetModel(
       optimization_guide::proto::OPTIMIZATION_TARGET_LANGUAGE_DETECTION,
       /*model_metadata=*/std::nullopt, this);
@@ -76,9 +69,7 @@ LanguageDetectionModelService::LanguageDetectionModelService(
 LanguageDetectionModelService::~LanguageDetectionModelService() {
   opt_guide_->RemoveObserverForOptimizationTargetModel(
       optimization_guide::proto::OPTIMIZATION_TARGET_LANGUAGE_DETECTION, this);
-  // Clear any pending requests, no model file is acceptable as shutdown is
-  // happening.
-  NotifyModelUpdatesAndClear();
+  Shutdown();
 }
 
 void LanguageDetectionModelService::Shutdown() {
@@ -86,29 +77,19 @@ void LanguageDetectionModelService::Shutdown() {
   // guide is a BrowserContextKeyedService, it will be cleaned first so removing
   // the observer should not be performed.
   UnloadModelFile();
-  // Clear any pending requests, no model file is acceptable as shutdown is
-  // happening.
-  NotifyModelUpdatesAndClear();
 }
 
 void LanguageDetectionModelService::UnloadModelFile() {
-  if (language_detection_model_file_) {
-    // If the model file is already loaded, it should be closed on a
-    // background thread.
-    background_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&CloseModelFile,
-                                  std::move(*language_detection_model_file_)));
-  } else {
-    language_detection_model_file_ = base::File();
-  }
+  language_detection_model_file_.InvalidateFile();
+  OnModelFileChangedInternal();
 }
 
-void LanguageDetectionModelService::NotifyModelUpdatesAndClear() {
-  // We should always have a (possibly invalid) file by now.
-  CHECK(language_detection_model_file_);
+void LanguageDetectionModelService::OnModelFileChangedInternal() {
+  has_model_ever_been_set_ = true;
+
   for (auto& pending_request : pending_model_requests_) {
     PostGetModelCallback(std::move(pending_request),
-                         language_detection_model_file_->Duplicate());
+                         language_detection_model_file_.GetFile().Duplicate());
   }
   pending_model_requests_.clear();
 }
@@ -116,40 +97,37 @@ void LanguageDetectionModelService::NotifyModelUpdatesAndClear() {
 void LanguageDetectionModelService::OnModelUpdated(
     optimization_guide::proto::OptimizationTarget optimization_target,
     base::optional_ref<const optimization_guide::ModelInfo> model_info) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (optimization_target !=
       optimization_guide::proto::OPTIMIZATION_TARGET_LANGUAGE_DETECTION) {
     return;
   }
   if (!model_info.has_value()) {
+    // Start returning the invalid file as the model has been explicitly made
+    // unavailable.
     UnloadModelFile();
-    NotifyModelUpdatesAndClear();
     return;
   }
-  background_task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE, base::BindOnce(&LoadModelFile, model_info->GetModelFilePath()),
-      base::BindOnce(&LanguageDetectionModelService::OnModelFileLoaded,
+  language_detection_model_file_.ReplaceFile(
+      base::BindOnce(&LoadModelFile, model_info->GetModelFilePath()),
+      base::BindOnce(&LanguageDetectionModelService::ModelFileReplacedCallback,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void LanguageDetectionModelService::OnModelFileLoaded(base::File model_file) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+void LanguageDetectionModelService::ModelFileReplacedCallback() {
   ScopedModelLoadingResultRecorder result_recorder;
-  if (!model_file.IsValid()) {
+  if (!language_detection_model_file_.GetFile().IsValid()) {
     return;
   }
 
-  UnloadModelFile();
-  language_detection_model_file_ = std::move(model_file);
   result_recorder.set_was_loaded();
-  NotifyModelUpdatesAndClear();
+  OnModelFileChangedInternal();
 }
 
 void LanguageDetectionModelService::GetLanguageDetectionModelFile(
     GetModelCallback callback) {
-  if (language_detection_model_file_.has_value()) {
+  if (has_model_ever_been_set_) {
     PostGetModelCallback(std::move(callback),
-                         language_detection_model_file_->Duplicate());
+                         language_detection_model_file_.GetFile().Duplicate());
     return;
   } else if (pending_model_requests_.size() < kMaxPendingRequestsAllowed) {
     pending_model_requests_.emplace_back(std::move(callback));

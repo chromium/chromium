@@ -17,6 +17,7 @@
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/language_detection/core/background_file.h"
 #include "components/optimization_guide/core/optimization_target_model_observer.h"
 
 namespace optimization_guide {
@@ -46,9 +47,12 @@ class LanguageDetectionModelService
   ~LanguageDetectionModelService() override;
 
   // KeyedService implementation:
+  // Clear any pending requests and unload the model file as shutdown is
+  // happening.
   void Shutdown() override;
 
-  // optimization_guide::OptimizationTargetModelObserver implementation:
+  // optimization_guide::OptimizationTargetModelObserver implementation.
+  // Called when a new model file is available.
   void OnModelUpdated(
       optimization_guide::proto::OptimizationTarget optimization_target,
       base::optional_ref<const optimization_guide::ModelInfo> model_info)
@@ -62,13 +66,22 @@ class LanguageDetectionModelService
   void GetLanguageDetectionModelFile(GetModelCallback callback);
 
  private:
-  // Unloads the model in background task.
+  // Unloads the model in a background task. This does not set
+  // `has_model_ever_been_set_ = false`. After this any requests for the model
+  // file will immediately receive an invalid file, until an update with a valid
+  // file occurs.
   void UnloadModelFile();
 
-  // Notifies the model update to observers, and clears the observer list.
-  void NotifyModelUpdatesAndClear();
+  // Replaces the current model file with a new one. It is careful to open/close
+  // files as necessary on a background thread.
+  void UpdateModelFile(base::File model_file);
 
-  void OnModelFileLoaded(base::File model_file);
+  // Called after the model file changes. It records the fact that the model has
+  // been changed, notifies observers, and clears the observer list.
+  void OnModelFileChangedInternal();
+
+  // For use with `BackgroundFile::ReplaceFile`.
+  void ModelFileReplacedCallback();
 
   // Optimization Guide Service that provides model files for this service.
   // Optimization Guide Service is a BrowserContextKeyedServiceFactory and
@@ -78,16 +91,16 @@ class LanguageDetectionModelService
   // The file that contains the language detection model. Available when the
   // file path has been provided by the Optimization Guide and has been
   // successfully loaded.
-  std::optional<base::File> language_detection_model_file_;
+  BackgroundFile language_detection_model_file_;
+  // Records whether we have ever explicitly set the model file (including to an
+  // invalid value). Until this becomes true, requests for the file will be
+  // queued.
+  bool has_model_ever_been_set_ = false;
 
   // The set of callbacks associated with requests for the language detection
   // model. The callback notifies requesters than the model file is now
   // available and can be safely requested.
   std::vector<GetModelCallback> pending_model_requests_;
-
-  scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
-
-  SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<LanguageDetectionModelService> weak_ptr_factory_{this};
 };
