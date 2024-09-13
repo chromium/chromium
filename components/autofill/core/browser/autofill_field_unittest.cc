@@ -23,6 +23,17 @@ class AutofillFieldTest : public testing::Test {
   test::AutofillUnitTestEnvironment autofill_test_environment_;
 };
 
+TEST_F(AutofillFieldTest, ValueWasIdentifiedAsPotentiallySensitive) {
+  AutofillField field;
+
+  // Initially the value should not be identified as sensitive.
+  EXPECT_FALSE(field.value_identified_as_potentially_sensitive());
+
+  // We should be able to set the value and retrieve the state.
+  field.set_value_identified_as_potentially_sensitive(true);
+  EXPECT_TRUE(field.value_identified_as_potentially_sensitive());
+}
+
 // Tests that if both autocomplete attributes and server agree it's a phone
 // field, always use server predicted type. If they disagree with autocomplete
 // says it's a phone field, always use autocomplete attribute.

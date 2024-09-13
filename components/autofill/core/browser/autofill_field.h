@@ -225,6 +225,15 @@ class AutofillField : public FormFieldData {
     return initial_value_changed_;
   }
 
+  void set_value_identified_as_potentially_sensitive(
+      bool potentially_sensitive) {
+    value_identified_as_potentially_sensitive_ = potentially_sensitive;
+  }
+
+  bool value_identified_as_potentially_sensitive() const {
+    return value_identified_as_potentially_sensitive_;
+  }
+
   void set_credit_card_number_offset(size_t position) {
     credit_card_number_offset_ = position;
   }
@@ -418,6 +427,12 @@ class AutofillField : public FormFieldData {
   // pre-filled value.
   // Currently not implemented for <select> fields.
   std::optional<bool> initial_value_changed_;
+
+  // Indicates if the value contained in the field was identified to potentially
+  // contain sensitive data that should be handled with extra caution.
+  // Note that the 'false' state does not guarantee that the data is not
+  // sensitive, it just means that is wasn't identified as such yet.
+  bool value_identified_as_potentially_sensitive_ = false;
 
   // Used to hold the position of the first digit to be copied as a substring
   // from credit card number.
