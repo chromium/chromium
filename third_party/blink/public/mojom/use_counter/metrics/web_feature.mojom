@@ -4473,7 +4473,7 @@ enum WebFeature {
   kWebAuthentication_AttestationFormats = 5098,
   kCssDisplayPropertyMultipleValues = 5099,
   kDocumentPolicyExpectNoEmbeddedResources = 5100,
-
+  kSelectionIsCollapsedBehaviorChange = 5101,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

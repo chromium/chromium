@@ -10915,6 +10915,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5098" label="WebAuthentication_AttestationFormats"/>
   <int value="5099" label="CssDisplayPropertyMultipleValues"/>
   <int value="5100" label="DocumentPolicyExpectNoEmbeddedResources"/>
+  <int value="5101" label="SelectionIsCollapsedBehaviorChange"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
