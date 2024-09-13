@@ -22,7 +22,7 @@ BASE_FEATURE(kOidcAuthProfileManagement,
 
 BASE_FEATURE(kOidcAuthResponseInterception,
              "OidcAuthResponseInterception",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kOidcEnrollmentTimeout,
              "kOidcEnrollmentTimeout",

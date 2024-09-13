@@ -172,6 +172,10 @@ OidcAuthResponseCaptureNavigationThrottle::AttemptToTriggerInterception() {
     return PROCEED;
   }
 
+  if (navigation_handle()->GetRedirectChain().empty()) {
+    return PROCEED;
+  }
+
   auto url = navigation_handle()->GetURL();
   // Only try kicking off OIDC enrollment process if a valid enroll URL is seen.
   if (!IsEnrollmentUrl(url)) {
