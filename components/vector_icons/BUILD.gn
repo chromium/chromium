@@ -116,6 +116,8 @@ aggregate_vector_icons("components_vector_icons") {
     "info_outline.icon",
     "info_refresh.icon",
     "insert_drive_file_outline.icon",
+    "install_desktop.icon",
+    "install_desktop_off.icon",
     "keyboard.icon",
     "keyboard_lock.icon",
     "keyboard_lock_off.icon",

@@ -57,6 +57,7 @@ export enum ContentSettingsTypes {
   TOP_LEVEL_STORAGE_ACCESS = 'top-level-storage-access',
   USB_DEVICES = 'usb-devices',
   VR = 'vr',
+  WEB_APP_INSTALLATION = 'web-app-installation',
   WINDOW_MANAGEMENT = 'window-management',
   ZOOM_LEVELS = 'zoom-levels',
   WEB_PRINTING = 'web-printing',

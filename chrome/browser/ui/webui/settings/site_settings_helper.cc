@@ -620,6 +620,10 @@ std::vector<ContentSettingsType> GetVisiblePermissionCategories(
     }
 #endif
 
+    if (base::FeatureList::IsEnabled(blink::features::kWebAppInstallation)) {
+      base_types->push_back(ContentSettingsType::WEB_APP_INSTALLATION);
+    }
+
     initialized = true;
   }
 

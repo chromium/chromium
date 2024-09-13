@@ -576,6 +576,10 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       base::FeatureList::IsEnabled(features::kRegisterOsUpdateHandlerWin));
 #endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
+  html_source->AddBoolean(
+      "enableWebAppInstallation",
+      base::FeatureList::IsEnabled(blink::features::kWebAppInstallation));
+
   // AI
   optimization_guide::UserVisibleFeatureKey optimization_guide_features[4] = {
       optimization_guide::UserVisibleFeatureKey::kCompose,

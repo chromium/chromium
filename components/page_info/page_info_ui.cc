@@ -248,6 +248,9 @@ base::span<const PageInfoUI::PermissionUIInfo> GetContentSettingsUIInfo() {
       {ContentSettingsType::WINDOW_MANAGEMENT,
        IDS_SITE_SETTINGS_TYPE_WINDOW_MANAGEMENT,
        IDS_SITE_SETTINGS_TYPE_WINDOW_MANAGEMENT_MID_SENTENCE},
+      {ContentSettingsType::WEB_APP_INSTALLATION,
+       IDS_SITE_SETTINGS_TYPE_WEB_APP_INSTALLATION,
+       IDS_SITE_SETTINGS_TYPE_WEB_APP_INSTALLATION_MID_SENTENCE},
 #endif
   };
   return kPermissionUIInfo;
@@ -404,6 +407,9 @@ std::u16string GetPermissionAskStateString(ContentSettingsType type) {
       break;
     case ContentSettingsType::POINTER_LOCK:
       message_id = IDS_PAGE_INFO_STATE_TEXT_POINTER_LOCK_ASK;
+      break;
+    case ContentSettingsType::WEB_APP_INSTALLATION:
+      message_id = IDS_PAGE_INFO_STATE_TEXT_WEB_APP_INSTALLATION_ASK;
       break;
     default:
       NOTREACHED_IN_MIGRATION();

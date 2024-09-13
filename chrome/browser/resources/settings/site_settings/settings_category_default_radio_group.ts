@@ -167,6 +167,7 @@ export class SettingsCategoryDefaultRadioGroupElement extends
       case ContentSettingsTypes.USB_DEVICES:
       case ContentSettingsTypes.VR:
       case ContentSettingsTypes.WINDOW_MANAGEMENT:
+      case ContentSettingsTypes.WEB_APP_INSTALLATION:
       case ContentSettingsTypes.WEB_PRINTING:
         // "Ask" vs "Blocked".
         return ContentSetting.ASK;

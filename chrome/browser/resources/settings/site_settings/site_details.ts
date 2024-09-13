@@ -170,6 +170,11 @@ export class SiteDetailsElement extends SiteDetailsElementBase {
         value: () =>
             loadTimeData.getBoolean('enableKeyboardAndPointerLockPrompt'),
       },
+
+      enableWebAppInstallation_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('enableWebAppInstallation'),
+      },
     };
   }
 
@@ -186,6 +191,7 @@ export class SiteDetailsElement extends SiteDetailsElementBase {
   private enableAutomaticFullscreenContentSetting_: boolean;
   private enableHandTrackingContentSetting_: boolean;
   private capturedSurfaceControlEnabled_: boolean;
+  private enableWebAppInstallation_: boolean;
   private websiteUsageProxy_: WebsiteUsageBrowserProxy =
       WebsiteUsageBrowserProxyImpl.getInstance();
   private enableKeyboardAndPointerLockPrompt_: boolean;

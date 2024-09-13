@@ -349,6 +349,11 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
             loadTimeData.getBoolean('enableKeyboardAndPointerLockPrompt'),
       },
 
+      enableWebAppInstallation_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('enableWebAppInstallation'),
+      },
+
       isNotificationAllowed_: Boolean,
       isLocationAllowed_: Boolean,
       notificationPermissionsReviewHeader_: String,
@@ -382,6 +387,7 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
   private capturedSurfaceControlEnabled_: boolean;
   private enableComposeProactiveNudge_: boolean;
   private enableSafetyHub_: boolean;
+  private enableWebAppInstallation_: boolean;
   private focusConfig_: FocusConfig;
   private searchFilter_: string;
   private notificationPermissionsReviewHeader_: string;

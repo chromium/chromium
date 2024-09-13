@@ -145,6 +145,7 @@ ContentSettingsType kPermissionType[] = {
 #if !BUILDFLAG(IS_ANDROID)
     ContentSettingsType::KEYBOARD_LOCK,
     ContentSettingsType::POINTER_LOCK,
+    ContentSettingsType::WEB_APP_INSTALLATION,
 #endif  // !BUILDFLAG(IS_ANDROID)
 };
 
@@ -1336,6 +1337,13 @@ bool PageInfo::ShouldShowPermission(
   if (!PageInfo::IsPermissionFactoryDefault(info, is_incognito)) {
     return true;
   }
+
+#if !BUILDFLAG(IS_ANDROID)
+  if (info.type == ContentSettingsType::WEB_APP_INSTALLATION &&
+      base::FeatureList::IsEnabled(blink::features::kWebAppInstallation)) {
+    return true;
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   return false;
 }

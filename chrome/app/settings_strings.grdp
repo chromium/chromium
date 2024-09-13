@@ -3167,6 +3167,21 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_VR_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the virtual reality content setting.">
     Not allowed to use virtual reality devices or data
   </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_WEB_APP_INSTALLATION_DESCRIPTION" desc="Description of the web app installation content setting.">
+    Sites usually ask to install web apps to enhance your experience on the site
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_WEB_APP_INSTALLATION_ASK" desc="Label for the enabled option of the web app installation content setting.">
+    Sites can ask to install web apps on your device
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_WEB_APP_INSTALLATION_BLOCK" desc="Label for the disabled option of the web app installation content setting.">
+    Don't allow sites to install web apps on your device
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_WEB_APP_INSTALLATION_ALLOWED_EXCEPTIONS" desc="Label for the allowed exceptions site list of the web app installation content setting.">
+    Allowed to ask to install web apps on your device
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_WEB_APP_INSTALLATION_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the web app installation content setting.">
+    Not allowed to install web apps on your device
+  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_WEB_PRINTING_DESCRIPTION" desc="Description of the web printing content setting.">
     Sites can use advanced features from any printer accessible to your device without going through the standard Print prompt
   </message>

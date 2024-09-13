@@ -1488,4 +1488,30 @@
           </settings-subpage>
         </template>
       </template>
+      <template is="dom-if" if="[[enableWebAppInstallation_]]">
+        <template is="dom-if" route-path="/content/webApplications" no-search>
+          <settings-subpage page-title="$i18n{siteSettingsWebAppInstallation}"
+              search-label="$i18n{siteSettingsAllSitesSearch}"
+              search-term="{{searchFilter_}}">
+            <div class="content-settings-header secondary">
+              $i18n{siteSettingsWebAppInstallationDescription}
+            </div>
+            <settings-category-default-radio-group
+                category="[[contentSettingsTypesEnum_.WEB_APP_INSTALLATION]]"
+                allow-option-label="$i18n{siteSettingsWebAppInstallationAsk}"
+                allow-option-icon="settings:install-desktop"
+                block-option-label="$i18n{siteSettingsWebAppInstallationBlock}"
+                block-option-icon="settings:install-desktop-off">
+            </settings-category-default-radio-group>
+            <category-setting-exceptions
+                category="[[contentSettingsTypesEnum_.WEB_APP_INSTALLATION]]"
+                block-header=
+                    "$i18n{siteSettingsWebAppInstallationBlockedExceptions}"
+                allow-header=
+                    "$i18n{siteSettingsWebAppInstallationAllowedExceptions}"
+                search-filter="[[searchFilter_]]">
+            </category-setting-exceptions>
+          </settings-subpage>
+        </template>
+      </template>
     </settings-animated-pages>

@@ -85,6 +85,8 @@ export function getLocalizationStringForContentType(
       return 'siteSettingsStorageAccessMidSentence';
     case ContentSettingsTypes.USB_DEVICES:
       return 'siteSettingsUsbDevicesMidSentence';
+    case ContentSettingsTypes.WEB_APP_INSTALLATION:
+      return 'siteSettingsWebAppInstallationMidSentence';
     case ContentSettingsTypes.WEB_PRINTING:
       return 'siteSettingsWebPrintingMidSentence';
     case ContentSettingsTypes.VR:

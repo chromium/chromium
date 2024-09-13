@@ -411,6 +411,15 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       disabledLabel: 'siteSettingsVrBlocked',
     },
     {
+      route: routes.SITE_SETTINGS_WEB_APP_INSTALLATION,
+      id: Id.WEB_APP_INSTALLATION,
+      label: 'siteSettingsWebAppInstallation',
+      icon: 'settings:install-desktop',
+      enabledLabel: 'siteSettingsWebAppInstallationAsk',
+      disabledLabel: 'siteSettingsWebAppInstallationBlock',
+      shouldShow: () => loadTimeData.getBoolean('enableWebAppInstallation'),
+    },
+    {
       route: routes.SITE_SETTINGS_WEB_PRINTING,
       id: Id.WEB_PRINTING,
       label: 'siteSettingsWebPrinting',
@@ -537,7 +546,7 @@ export class SettingsSiteSettingsPageElement extends
               Id.KEYBOARD_LOCK,
               Id.POINTER_LOCK,
               Id.SMART_CARD_READERS,
-
+              Id.WEB_APP_INSTALLATION,
             ]),
             contentBasic: buildItemListFromIds([
               Id.COOKIES,

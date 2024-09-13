@@ -406,6 +406,11 @@ const ui::ImageModel PageInfoViewFactory::GetPermissionIcon(
       icon = show_blocked_badge ? &vector_icons::kTouchpadMouseOffIcon
                                 : &vector_icons::kTouchpadMouseIcon;
       break;
+    case ContentSettingsType::WEB_APP_INSTALLATION:
+      // TODO(crbug.com/333795265): provide dedicated icons.
+      icon = show_blocked_badge ? &vector_icons::kInstallDesktopOffIcon
+                                : &vector_icons::kInstallDesktopIcon;
+      break;
     default:
       break;
   }
