@@ -11,8 +11,7 @@
 #include "third_party/jni_zero/jni_zero_internal.h"
 
 extern const int64_t kJniZeroHashmoduleWhole = -7714383706413312501LL;
-extern const int64_t kJniZeroHashmodulePriority = -7714383706413312501LL;
-
+extern const int64_t kJniZeroHashmodulePriority = 0LL;
 // Forward declarations (methods).
 
 JNI_POSSIBLE_BOUNDARY_EXPORT jboolean Java_org_1jni_11zero_1SampleModule_1bar(
@@ -22,7 +21,6 @@ JNI_POSSIBLE_BOUNDARY_EXPORT jboolean Java_org_1jni_11zero_1SampleModule_1bar(
 JNI_POSSIBLE_BOUNDARY_EXPORT void Java_org_1jni_11zero_1SampleModule_1foo(
     JNIEnv* env,
     jclass jcaller);
-
 
 JNI_BOUNDARY_EXPORT jboolean Java_J_module_1N__1Z_1Z(
     JNIEnv* env,
@@ -46,7 +44,7 @@ static const JNINativeMethod kMethods_J_module_1N[] = {
 
 namespace {
 
-JNI_ZERO_COMPONENT_BUILD_EXPORT bool RegisterNative_J_module_1N(JNIEnv* env) {
+bool RegisterNative_J_module_1N(JNIEnv* env) {
   const int number_of_methods = std::size(kMethods_J_module_1N);
 
   jni_zero::ScopedJavaLocalRef<jclass> native_clazz =
@@ -68,7 +66,7 @@ JNI_ZERO_COMPONENT_BUILD_EXPORT bool RegisterNative_J_module_1N(JNIEnv* env) {
 
 // Registration function.
 
-namespace  {
+namespace {
 
 bool RegisterNatives(JNIEnv* env) {
   // Register natives in a proxy.
@@ -76,12 +74,9 @@ bool RegisterNatives(JNIEnv* env) {
     return false;
   }
 
-
   return true;
 }
 
-}  // namespace 
-
+}  // namespace
 
 #endif  // TEMP_DIR_HEADER_
-

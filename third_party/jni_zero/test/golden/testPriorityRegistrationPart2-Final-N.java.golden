@@ -8,11 +8,10 @@ package J;
 //     third_party/jni_zero/jni_registration_generator.py
 // Please do not change its content.
 
-public class module_N {
-    public static final long WHOLE_HASH = -7714383706413312501L;
+public class N {
+    public static final long WHOLE_HASH = 4128442159926458845L;
     public static final long PRIORITY_HASH = 0L;
 
 
-    public static native boolean _Z_Z(int switch_num, boolean boolean_param1);
-    public static native void _V(int switch_num);
+    public static native void _V_IO(int switch_num, int int_param1, Object object_param1);
 }
