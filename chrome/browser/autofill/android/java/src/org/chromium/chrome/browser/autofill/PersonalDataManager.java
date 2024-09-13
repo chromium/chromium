@@ -435,7 +435,8 @@ public class PersonalDataManager implements Destroyable {
 
         private String mNickname;
         private @IbanRecordType int mRecordType;
-        private String mValue;
+        // Value is empty for server IBAN.
+        @Nullable private String mValue;
 
         private Iban(
                 String guid,
@@ -449,7 +450,7 @@ public class PersonalDataManager implements Destroyable {
             mLabel = Objects.requireNonNull(label, "Label can't be null");
             mNickname = Objects.requireNonNull(nickname, "Nickname can't be null");
             mRecordType = recordType;
-            mValue = Objects.requireNonNull(value, "Iban value can't be null");
+            mValue = value;
         }
 
         // Creates an Iban instance that is not stored on a server nor locally,
@@ -604,7 +605,9 @@ public class PersonalDataManager implements Destroyable {
                         assert mInstrumentId != null
                                         && mInstrumentId != 0L
                                         && TextUtils.isEmpty(mGuid)
-                                : "Server IBANs must have a non-zero instrumentId and empty GUID.";
+                                        && TextUtils.isEmpty(mValue)
+                                : "Server IBANs must have a non-zero instrumentId, empty GUID and"
+                                        + " empty value.";
                         break;
                 }
                 return new Iban(mGuid, mInstrumentId, mLabel, mNickname, mRecordType, mValue);

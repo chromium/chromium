@@ -1257,10 +1257,10 @@ public class PersonalDataManagerTest {
         Iban.Builder ibanBuilder =
                 new Iban.Builder()
                         .setInstrumentId(123456L)
-                        .setLabel("")
+                        .setLabel("CH •••8009")
                         .setNickname("My IBAN")
                         .setRecordType(IbanRecordType.SERVER_IBAN)
-                        .setValue("FR76 3000 6000 0112 3456 7890 189");
+                        .setValue("");
 
         ibanBuilder.build();
     }
