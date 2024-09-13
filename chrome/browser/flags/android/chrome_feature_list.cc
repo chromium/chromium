@@ -873,6 +873,10 @@ BASE_FEATURE(kReadAloudTapToSeek,
              "ReadAloudTapToSeek",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kReadAloudServerExperiments,
+             "ReadAloudServerExperiments",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kReadAloudIPHMenuButtonHighlightCCT,
              "ReadAloudIPHMenuButtonHighlightCCT",
              base::FEATURE_DISABLED_BY_DEFAULT);
