@@ -110,17 +110,17 @@ promise_test(async t => {
   const lhsTensor = await context.createTensor({
     dataType: 'float32',
     dimensions: [1],
-    usage: MLTensorUsage.WRITE_TO,
+    usage: MLTensorUsage.WRITE,
   });
   const rhsTensor = await context.createTensor({
     dataType: 'float32',
     dimensions: [1],
-    usage: MLTensorUsage.WRITE_TO,
+    usage: MLTensorUsage.WRITE,
   });
   const outputTensor = await context.createTensor({
     dataType: 'float32',
     dimensions: [1],
-    usage: MLTensorUsage.READ_FROM,
+    usage: MLTensorUsage.READ,
   });
   // Initialize inputs
   const inputData = new Float32Array(1).fill(2.0);

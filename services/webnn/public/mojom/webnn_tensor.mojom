@@ -13,9 +13,9 @@ import "services/webnn/public/mojom/webnn_error.mojom";
 struct TensorUsage {
   bool web_gpu_interop;
   // This tensor can be used with readTensor().
-  bool read_from;
+  bool read;
   // This tensor can be used with writeTensor().
-  bool write_to;
+  bool write;
 };
 
 // Description of the WebNNTensor to create.

@@ -1017,7 +1017,7 @@ ScriptPromise<DOMArrayBuffer> MLContext::readTensor(
     return EmptyPromise();
   }
 
-  if (!src_tensor->Usage().Has(webnn::MLTensorUsageFlags::kReadFrom)) {
+  if (!src_tensor->Usage().Has(webnn::MLTensorUsageFlags::kRead)) {
     exception_state.ThrowTypeError(
         "The source buffer doesn't have read access.");
     return EmptyPromise();
@@ -1086,7 +1086,7 @@ void MLContext::WriteWebNNTensor(ScriptState* script_state,
     return;
   }
 
-  if (!dst_tensor->Usage().Has(webnn::MLTensorUsageFlags::kWriteTo)) {
+  if (!dst_tensor->Usage().Has(webnn::MLTensorUsageFlags::kWrite)) {
     exception_state.ThrowTypeError(
         "The destination buffer doesn't have write access.");
     return;

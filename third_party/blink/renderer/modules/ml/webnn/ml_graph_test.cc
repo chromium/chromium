@@ -808,8 +808,8 @@ MLTensor* CreateMLTensorForOperand(V8TestingScope& scope,
   auto* desc = MLTensorDescriptor::Create();
   desc->setDataType(operand->dataType());
   desc->setDimensions(operand->shape());
-  desc->setUsage(V8MLTensorUsage::Constant::kWriteTo |
-                 V8MLTensorUsage::Constant::kReadFrom);
+  desc->setUsage(V8MLTensorUsage::Constant::kWrite |
+                 V8MLTensorUsage::Constant::kRead);
 
   ScriptPromiseTester tester(
       scope.GetScriptState(),
@@ -1355,8 +1355,8 @@ TEST_F(MLGraphTest, WriteWebNNTensorTest) {
   auto* desc = MLTensorDescriptor::Create();
   desc->setDataType(V8MLOperandDataType::Enum::kUint8);
   desc->setDimensions(kTensorShape);
-  desc->setUsage(V8MLTensorUsage::Constant::kWriteTo |
-                 V8MLTensorUsage::Constant::kReadFrom);
+  desc->setUsage(V8MLTensorUsage::Constant::kWrite |
+                 V8MLTensorUsage::Constant::kRead);
 
   ScriptPromiseTester tensor_tester(
       script_state,
@@ -1449,7 +1449,7 @@ TEST_F(MLGraphTest, WriteWebNNTensorThenDestroyTest) {
   auto* desc = MLTensorDescriptor::Create();
   desc->setDataType(V8MLOperandDataType::Enum::kUint8);
   desc->setDimensions({2, 2});
-  desc->setUsage(V8MLTensorUsage::Constant::kWriteTo);
+  desc->setUsage(V8MLTensorUsage::Constant::kWrite);
 
   ScriptPromiseTester tensor_tester(
       script_state,
@@ -1492,7 +1492,7 @@ TEST_F(MLGraphTest, ReadWebNNTensorThenDestroyTest) {
   auto* desc = MLTensorDescriptor::Create();
   desc->setDataType(V8MLOperandDataType::Enum::kFloat32);
   desc->setDimensions({2, 2});
-  desc->setUsage(V8MLTensorUsage::Constant::kReadFrom);
+  desc->setUsage(V8MLTensorUsage::Constant::kRead);
 
   ScriptPromiseTester create_tensor_tester(
       script_state,

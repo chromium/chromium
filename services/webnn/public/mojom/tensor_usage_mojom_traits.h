@@ -17,12 +17,12 @@ struct StructTraits<webnn::mojom::TensorUsageDataView, webnn::MLTensorUsage> {
     return usage.Has(webnn::MLTensorUsageFlags::kWebGpuInterop);
   }
 
-  static bool write_to(const webnn::MLTensorUsage& usage) {
-    return usage.Has(webnn::MLTensorUsageFlags::kWriteTo);
+  static bool write(const webnn::MLTensorUsage& usage) {
+    return usage.Has(webnn::MLTensorUsageFlags::kWrite);
   }
 
-  static bool read_from(const webnn::MLTensorUsage& usage) {
-    return usage.Has(webnn::MLTensorUsageFlags::kReadFrom);
+  static bool read(const webnn::MLTensorUsage& usage) {
+    return usage.Has(webnn::MLTensorUsageFlags::kRead);
   }
 
   static bool Read(webnn::mojom::TensorUsageDataView data,
@@ -33,12 +33,12 @@ struct StructTraits<webnn::mojom::TensorUsageDataView, webnn::MLTensorUsage> {
       out->Put(webnn::MLTensorUsageFlags::kWebGpuInterop);
     }
 
-    if (data.read_from()) {
-      out->Put(webnn::MLTensorUsageFlags::kReadFrom);
+    if (data.read()) {
+      out->Put(webnn::MLTensorUsageFlags::kRead);
     }
 
-    if (data.write_to()) {
-      out->Put(webnn::MLTensorUsageFlags::kWriteTo);
+    if (data.write()) {
+      out->Put(webnn::MLTensorUsageFlags::kWrite);
     }
 
     return true;

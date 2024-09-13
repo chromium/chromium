@@ -135,7 +135,7 @@ promise_test(async t => {
   const tensor = await context.createTensor({
     dataType: 'float32',
     dimensions: [1],
-    usage: MLTensorUsage.READ_FROM,
+    usage: MLTensorUsage.READ,
   });
   context.destroy();
   promise_rejects_dom(t, 'InvalidStateError', context.readTensor(tensor));
@@ -146,7 +146,7 @@ promise_test(async t => {
   const tensor = await context.createTensor({
     dataType: 'float32',
     dimensions: [1],
-    usage: MLTensorUsage.READ_FROM,
+    usage: MLTensorUsage.READ,
   });
   let promise = context.readTensor(tensor);
   context.destroy();
@@ -161,7 +161,7 @@ promise_test(async t => {
   const tensor = await context.createTensor({
     dataType: 'float32',
     dimensions: [1],
-    usage: MLTensorUsage.WRITE_TO,
+    usage: MLTensorUsage.WRITE,
   });
   let arrayBuffer = new ArrayBuffer(4);
   context.destroy();

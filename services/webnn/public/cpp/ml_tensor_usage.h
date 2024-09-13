@@ -14,13 +14,13 @@ enum class MLTensorUsageFlags {
   kWebGpuInterop,
 
   // This tensor can be used with readTensor().
-  kReadFrom,
+  kRead,
 
   // This tensor can be used with writeTensor().
-  kWriteTo,
+  kWrite,
 
   kMinValue = kWebGpuInterop,
-  kMaxValue = kWriteTo,
+  kMaxValue = kWrite,
 };
 
 using MLTensorUsage = base::EnumSet<MLTensorUsageFlags,

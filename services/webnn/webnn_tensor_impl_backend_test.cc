@@ -310,8 +310,8 @@ TEST_F(WebNNTensorImplBackendTest, WriteTensorImplTest) {
           mojom::TensorInfo::New(
               *OperandDescriptor::Create(OperandDataType::kUint8,
                                          std::array<uint32_t, 2>{2, 2}),
-              MLTensorUsage{MLTensorUsageFlags::kWriteTo,
-                            MLTensorUsageFlags::kReadFrom}));
+              MLTensorUsage{MLTensorUsageFlags::kWrite,
+                            MLTensorUsageFlags::kRead}));
   if (tensor_result.has_value()) {
     webnn_tensor_remote = std::move(tensor_result.value().webnn_tensor_remote);
   }
@@ -354,7 +354,7 @@ TEST_F(WebNNTensorImplBackendTest, WriteTensorImplTooLargeTest) {
           mojom::TensorInfo::New(
               *OperandDescriptor::Create(OperandDataType::kUint8,
                                          std::array<uint32_t, 2>{2, 2}),
-              MLTensorUsage{MLTensorUsageFlags::kWriteTo}));
+              MLTensorUsage{MLTensorUsageFlags::kWrite}));
   if (tensor_result.has_value()) {
     webnn_tensor_remote = std::move(tensor_result.value().webnn_tensor_remote);
   }
