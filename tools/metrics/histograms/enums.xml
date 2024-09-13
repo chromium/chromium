@@ -20678,6 +20678,7 @@ from previous Chrome versions.
   <int value="215528151" label="NearbySharingWebRtc:enabled"/>
   <int value="217455219" label="SyncStandaloneTransport:enabled"/>
   <int value="217833978" label="GMSCoreEmoji:enabled"/>
+  <int value="218006518" label="ChromeboxUsbPassthroughLimit:disabled"/>
   <int value="218119644" label="PrivateNetworkAccessPermissionPrompt:enabled"/>
   <int value="218317796" label="CastStreamingVp9:enabled"/>
   <int value="218890378" label="ManualSaving:disabled"/>
@@ -22873,6 +22874,7 @@ from previous Chrome versions.
   <int value="1128840602" label="DisconnectWiFiOnEthernetConnected:disabled"/>
   <int value="1128874009" label="ScalableStatusArea:disabled"/>
   <int value="1129109601" label="EnableAIWriterAPI:disabled"/>
+  <int value="1129454787" label="ChromeboxUsbPassthroughLimit:enabled"/>
   <int value="1129542111" label="CastAllowAllIPs:disabled"/>
   <int value="1129888794" label="ash-touch-hud"/>
   <int value="1131627624" label="DefaultStyleSheetsEarlyInit:enabled"/>

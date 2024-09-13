@@ -1507,6 +1507,12 @@
     "expiry_milestone": 140
   },
   {
+    "name": "chromebox-usb-passthrough-limit",
+    "owners": [ "denniskempin@chromium.org", "drmasquatch@google.com", "clumptini@google.com" ],
+    // Never expires - this will always be useful for edge cases where passthrough is not behaving as expected.
+    "expiry_milestone": 150
+  },
+  {
     "name": "classify-url-on-process-response-event",
     "owners": [ "tju@chromium.org", "chrome-kids-eng@chromium.org" ],
     "expiry_milestone": 131
