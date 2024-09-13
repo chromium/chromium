@@ -96,7 +96,7 @@ inline bool PseudoElementData::HasPseudoElements() const {
          generated_scroll_marker_group_before_ ||
          generated_scroll_marker_group_after_ || generated_scroll_marker_ ||
          generated_scroll_next_button_ || generated_scroll_prev_button_ ||
-         !column_scroll_markers_->empty();
+         (column_scroll_markers_ && !column_scroll_markers_->empty());
 }
 
 inline void PseudoElementData::ClearPseudoElements() {
