@@ -23,8 +23,8 @@ const char kURL[] = "https://chromium.org";
 class WebUsageEnablerBrowserAgentTest : public PlatformTest {
  public:
   WebUsageEnablerBrowserAgentTest() {
-    browser_state_ = TestChromeBrowserState::Builder().Build();
-    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    profile_ = TestProfileIOS::Builder().Build();
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
     web_state_list_ = browser_->GetWebStateList();
     WebUsageEnablerBrowserAgent::CreateForBrowser(browser_.get());
     enabler_ = WebUsageEnablerBrowserAgent::FromBrowser(browser_.get());
@@ -38,7 +38,7 @@ class WebUsageEnablerBrowserAgentTest : public PlatformTest {
 
  protected:
   base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   raw_ptr<WebStateList> web_state_list_;
   raw_ptr<WebUsageEnablerBrowserAgent> enabler_;

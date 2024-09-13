@@ -10,7 +10,7 @@
 
 namespace {
 // Global whose address is used as a unique key to find the
-// SessionMetrics associated to a particular ChromeBrowserState.
+// SessionMetrics associated to a particular ProfileIOS.
 const int kSessionMetricsKey = 0;
 }  // namespace
 

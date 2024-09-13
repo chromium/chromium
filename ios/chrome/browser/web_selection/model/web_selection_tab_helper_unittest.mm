@@ -67,9 +67,9 @@ class WebSelectionTabHelperTest : public PlatformTest {
   WebSelectionTabHelperTest()
       : web_client_(std::make_unique<ChromeWebClient>()) {
     feature_list_.InitAndEnableFeature(kIOSEditMenuPartialTranslate);
-    browser_state_ = TestChromeBrowserState::Builder().Build();
+    profile_ = TestProfileIOS::Builder().Build();
 
-    web::WebState::CreateParams params(browser_state_.get());
+    web::WebState::CreateParams params(profile_.get());
     web_state_ = web::WebState::Create(params);
     WebSelectionTabHelper::CreateForWebState(web_state_.get());
     selection_observer_ =
@@ -96,7 +96,7 @@ class WebSelectionTabHelperTest : public PlatformTest {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   web::ScopedTestingWebClient web_client_;
   base::test::ScopedFeatureList feature_list_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<web::WebState> web_state_;
   std::unique_ptr<TestWebSelectionJavaScriptFeatureObserver>
       selection_observer_;
@@ -205,7 +205,7 @@ TEST_F(WebSelectionTabHelperTest, GetMultipleWebStateSelections) {
     // The tab helper is only created on iOS16+.
     return;
   }
-  web::WebState::CreateParams params(browser_state_.get());
+  web::WebState::CreateParams params(profile_.get());
   auto web_state2 = web::WebState::Create(params);
   WebSelectionTabHelper::CreateForWebState(web_state2.get());
   web::test::LoadHtml(kPage2HTML, web_state2.get());

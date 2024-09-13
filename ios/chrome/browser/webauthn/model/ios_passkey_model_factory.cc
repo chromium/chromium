@@ -51,17 +51,15 @@ IOSPasskeyModelFactory::~IOSPasskeyModelFactory() {}
 
 std::unique_ptr<KeyedService> IOSPasskeyModelFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
   auto sync_bridge = std::make_unique<webauthn::PasskeySyncBridge>(
-      DataTypeStoreServiceFactory::GetForBrowserState(browser_state)
-          ->GetStoreFactory());
+      DataTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory());
 
   std::unique_ptr<password_manager::PasskeyAffiliationSourceAdapter> adapter =
       std::make_unique<password_manager::PasskeyAffiliationSourceAdapter>(
           sync_bridge.get());
 
-  IOSChromeAffiliationServiceFactory::GetForBrowserState(browser_state)
+  IOSChromeAffiliationServiceFactory::GetForBrowserState(profile)
       ->RegisterSource(std::move(adapter));
   return sync_bridge;
 }
