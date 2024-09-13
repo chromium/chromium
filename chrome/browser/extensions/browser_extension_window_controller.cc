@@ -89,6 +89,15 @@ bool BrowserExtensionWindowController::HasEditableTabStrip() const {
   return browser_->window()->IsTabStripEditable();
 }
 
+int BrowserExtensionWindowController::GetTabCount() const {
+  return browser_->tab_strip_model()->count();
+}
+
+content::WebContents* BrowserExtensionWindowController::GetWebContentsAt(
+    int i) const {
+  return browser_->tab_strip_model()->GetWebContentsAt(i);
+}
+
 bool BrowserExtensionWindowController::IsVisibleToTabsAPIForExtension(
     const Extension* extension,
     bool allow_dev_tools_windows) const {

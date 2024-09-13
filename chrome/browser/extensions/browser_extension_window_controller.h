@@ -38,6 +38,8 @@ class BrowserExtensionWindowController : public WindowController {
   bool IsDeleteScheduled() const override;
   content::WebContents* GetActiveTab() const override;
   bool HasEditableTabStrip() const override;
+  int GetTabCount() const override;
+  content::WebContents* GetWebContentsAt(int i) const override;
   bool IsVisibleToTabsAPIForExtension(
       const Extension* extension,
       bool allow_dev_tools_windows) const override;

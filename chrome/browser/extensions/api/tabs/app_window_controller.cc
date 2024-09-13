@@ -70,6 +70,14 @@ bool AppWindowController::HasEditableTabStrip() const {
   return true;
 }
 
+int AppWindowController::GetTabCount() const {
+  return 1;  // Only one "tab" in an app window.
+}
+
+content::WebContents* AppWindowController::GetWebContentsAt(int i) const {
+  return i == 0 ? app_window_->web_contents() : nullptr;
+}
+
 bool AppWindowController::IsVisibleToTabsAPIForExtension(
     const Extension* extension,
     bool allow_dev_tools_windows) const {

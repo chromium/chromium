@@ -117,6 +117,13 @@ class WindowController {
   // the ExtensionTabUtil.
   virtual bool HasEditableTabStrip() const = 0;
 
+  // Returns the number of tabs in this window.
+  virtual int GetTabCount() const = 0;
+
+  // Returns the web contents at the given tab index, or null if it's off the
+  // end of the tab strip.
+  virtual content::WebContents* GetWebContentsAt(int i) const = 0;
+
   // Returns true if the window is visible to the tabs API, when used by the
   // given |extension|.
   // |allow_dev_tools_windows| indicates whether dev tools windows should be

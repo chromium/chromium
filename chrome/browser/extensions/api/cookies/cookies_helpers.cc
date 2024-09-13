@@ -218,11 +218,9 @@ void AppendMatchingCookiesFromCookieAccessResultListToVector(
   }
 }
 
-void AppendToTabIdList(Browser* browser, base::Value::List& tab_ids) {
-  DCHECK(browser);
-  TabStripModel* tab_strip = browser->tab_strip_model();
-  for (int i = 0; i < tab_strip->count(); ++i) {
-    tab_ids.Append(ExtensionTabUtil::GetTabId(tab_strip->GetWebContentsAt(i)));
+void AppendToTabIdList(WindowController* window, base::Value::List& tab_ids) {
+  for (int i = 0; i < window->GetTabCount(); ++i) {
+    tab_ids.Append(ExtensionTabUtil::GetTabId(window->GetWebContentsAt(i)));
   }
 }
 

@@ -355,10 +355,10 @@ namespace {
 
 aura::Window* GetCurrentWindow() {
   extensions::WindowController* controller = nullptr;
-  for (extensions::WindowController* iter :
-       extensions::WindowControllerList::GetInstance()->windows()) {
-    if (iter->window()->IsActive()) {
-      controller = iter;
+  for (extensions::WindowController* window :
+       *extensions::WindowControllerList::GetInstance()) {
+    if (window->window()->IsActive()) {
+      controller = window;
       break;
     }
   }
@@ -479,8 +479,7 @@ IN_PROC_BROWSER_TEST_F(WindowOpenApiTest,
   // Make sure no new windows get created (so only the one created by default
   // exists) since the call to chrome.windows.create fails on the javascript
   // side.
-  EXPECT_EQ(1u,
-            extensions::WindowControllerList::GetInstance()->windows().size());
+  EXPECT_EQ(1u, extensions::WindowControllerList::GetInstance()->size());
 }
 
 // Disabled on Lacros due to flaky. crbug.com/1254453
