@@ -65,6 +65,7 @@
 #include "third_party/blink/renderer/platform/graphics/color_space_gamut.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
+#include "ui/base/mojom/window_show_state.mojom-blink.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/rect_f.h"
 
@@ -472,21 +473,22 @@ static bool DisplayStateMediaFeatureEval(const MediaQueryExpValue& value,
     return false;
   }
 
-  ui::WindowShowState state = media_values.WindowShowState();
+  ui::mojom::blink::WindowShowState state = media_values.WindowShowState();
   MaybeRecordMediaFeatureValue(
       media_values, IdentifiableSurface::MediaFeatureName::kDisplayState,
       state);
 
   switch (value.Id()) {
     case CSSValueID::kFullscreen:
-      return state == ui::SHOW_STATE_FULLSCREEN;
+      return state == ui::mojom::blink::WindowShowState::kFullscreen;
     case CSSValueID::kMaximized:
-      return state == ui::SHOW_STATE_MAXIMIZED;
+      return state == ui::mojom::blink::WindowShowState::kMaximized;
     case CSSValueID::kMinimized:
-      return state == ui::SHOW_STATE_MINIMIZED;
+      return state == ui::mojom::blink::WindowShowState::kMinimized;
     case CSSValueID::kNormal:
-      return state == ui::SHOW_STATE_DEFAULT ||
-             state == ui::SHOW_STATE_INACTIVE || state == ui::SHOW_STATE_NORMAL;
+      return state == ui::mojom::blink::WindowShowState::kDefault ||
+             state == ui::mojom::blink::WindowShowState::kInactive ||
+             state == ui::mojom::blink::WindowShowState::kNormal;
     default:
       NOTREACHED();
   }

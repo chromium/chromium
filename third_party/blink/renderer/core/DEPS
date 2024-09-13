@@ -117,6 +117,8 @@ include_rules = [
     "+ui/base/pointer/pointer_device.h",
     "+ui/base/resource/resource_scale_factor.h",
     "+ui/base/ui_base_features.h",
+    "+ui/base/mojom/window_show_state.mojom-blink.h",
+    "+ui/base/mojom/window_show_state.mojom-blink-forward.h",
     "+ui/base/ui_base_types.h",
     "+ui/color",
     "+ui/display/screen_info.h",

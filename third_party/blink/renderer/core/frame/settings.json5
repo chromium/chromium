@@ -543,10 +543,10 @@
     // Only used by web tests.
     {
       name: "windowShowState",
-      initial: "ui::SHOW_STATE_DEFAULT",
+      initial: "ui::mojom::WindowShowState::kDefault",
       invalidate: ["MediaQuery"],
-      type: "ui::WindowShowState",
-      include_paths: ["ui/base/ui_base_types.h"],
+      type: "ui::mojom::WindowShowState",
+      include_paths: ["ui/base/mojom/window_show_state.mojom.h"],
     },
 
     // Only used by web tests.

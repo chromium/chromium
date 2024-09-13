@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
+#include "ui/base/mojom/window_show_state.mojom-blink.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/display_color_spaces.h"
 
@@ -562,7 +563,7 @@ TEST(MediaQueryEvaluatorTest, Cached) {
 
   // Default display-state values.
   {
-    data.window_show_state = ui::SHOW_STATE_DEFAULT;
+    data.window_show_state = ui::mojom::WindowShowState::kDefault;
     ScopedDesktopPWAsAdditionalWindowingControlsForTest scoped_feature(true);
     auto* media_values = MakeGarbageCollected<MediaValuesCached>(data);
     MediaQueryEvaluator* media_query_evaluator =
@@ -1667,7 +1668,7 @@ TEST_F(MediaQueryEvaluatorIdentifiabilityTest,
                 IdentifiableToken(
                     IdentifiableSurface::MediaFeatureName::kDisplayState)));
   EXPECT_EQ(entry.metrics.begin()->value,
-            IdentifiableToken(ui::SHOW_STATE_DEFAULT));
+            IdentifiableToken(ui::mojom::WindowShowState::kDefault));
 }
 
 TEST_F(MediaQueryEvaluatorIdentifiabilityTest,

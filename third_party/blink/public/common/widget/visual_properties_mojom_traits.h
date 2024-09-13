@@ -11,6 +11,7 @@
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/widget/visual_properties.h"
 #include "third_party/blink/public/mojom/widget/visual_properties.mojom-shared.h"
+#include "ui/base/mojom/window_show_state.mojom-forward.h"
 
 namespace mojo {
 
@@ -77,7 +78,7 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::VisualPropertiesDataView,
     return r.display_mode;
   }
 
-  static const ui::WindowShowState& window_show_state(
+  static const ui::mojom::WindowShowState& window_show_state(
       const blink::VisualProperties& r) {
     return r.window_show_state;
   }
