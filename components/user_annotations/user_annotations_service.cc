@@ -29,20 +29,9 @@ namespace user_annotations {
 
 namespace {
 
-void RunResultCallback(UserAnnotationsService::ImportFormCallback callback,
-                       UserAnnotationsEntries to_be_upserted_entries,
-                       UserAnnotationsExecutionResult result) {
-  base::UmaHistogramEnumeration("UserAnnotations.AddFormSubmissionResult",
-                                result);
-  // TODO(crbug.com/366142497): Bind to `prompt_acceptance_callback` and only
-  // import any form data if the binding method's parameter
-  // `prompt_was_accepted` equals `true`.
-  std::move(callback).Run(
-      /*to_be_upserted_entries=*/(result ==
-                                  UserAnnotationsExecutionResult::kSuccess)
-          ? std::move(to_be_upserted_entries)
-          : std::vector<optimization_guide::proto::UserAnnotationsEntry>(),
-      /*prompt_acceptance_callback=*/base::DoNothing());
+void RecordUserAnnotationsFormImportResult(
+    UserAnnotationsExecutionResult result) {
+  base::UmaHistogramEnumeration("UserAnnotations.FormImportResult", result);
 }
 
 void ProcessEntryRetrieval(
@@ -174,8 +163,8 @@ void UserAnnotationsService::OnModelExecuted(
     optimization_guide::OptimizationGuideModelExecutionResult result,
     std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry) {
   if (!result.has_value()) {
-    RunResultCallback(std::move(callback), /*to_be_upserted_entries=*/{},
-                      UserAnnotationsExecutionResult::kResponseError);
+    SendFormSubmissionResult(std::move(callback), /*to_be_upserted_entries=*/{},
+                             UserAnnotationsExecutionResult::kResponseError);
     return;
   }
 
@@ -183,37 +172,42 @@ void UserAnnotationsService::OnModelExecuted(
       maybe_response = optimization_guide::ParsedAnyMetadata<
           optimization_guide::proto::FormsAnnotationsResponse>(result.value());
   if (!maybe_response) {
-    RunResultCallback(std::move(callback), /*to_be_upserted_entries=*/{},
-                      UserAnnotationsExecutionResult::kResponseMalformed);
+    SendFormSubmissionResult(
+        std::move(callback), /*to_be_upserted_entries=*/{},
+        UserAnnotationsExecutionResult::kResponseMalformed);
     return;
   }
 
-  if (ShouldPersistUserAnnotations()) {
-    if (!user_annotations_database_) {
-      RunResultCallback(std::move(callback), /*to_be_upserted_entries=*/{},
-                        UserAnnotationsExecutionResult::kCryptNotInitialized);
-      return;
-    }
+  if (ShouldPersistUserAnnotations() && !user_annotations_database_) {
+    SendFormSubmissionResult(
+        std::move(callback), /*to_be_upserted_entries=*/{},
+        UserAnnotationsExecutionResult::kCryptNotInitialized);
+    return;
+  }
 
-    UserAnnotationsEntries entries_protos;
-    for (const auto& entry : maybe_response->added_entries()) {
-      optimization_guide::proto::UserAnnotationsEntry entry_proto;
-      entry_proto.set_key(entry.key());
-      entry_proto.set_value(entry.value());
-      entries_protos.push_back(std::move(entry_proto));
-    }
-    // A copy of `entries_protos` is required because the `WithArgs()` call
-    // below forwards `entries_protos` to the database sequence.
-    UserAnnotationsEntries entries_protos_copy = entries_protos;
-    // TODO(crbug.com/366140790): Only pass the diff from `entries_protos_copy`
-    // to the current state in the database, which is not necessarily
-    // `entries_protos_copy`.
+  SendFormSubmissionResult(
+      std::move(callback),
+      /*to_be_upserted_entries=*/
+      UserAnnotationsEntries(maybe_response->added_entries().begin(),
+                             maybe_response->added_entries().end()),
+      UserAnnotationsExecutionResult::kSuccess);
+}
+
+void UserAnnotationsService::OnImportFormConfirmation(
+    const UserAnnotationsEntries& entries,
+    bool prompt_was_accepted) {
+  if (!prompt_was_accepted) {
+    return;
+  }
+  if (ShouldPersistUserAnnotations()) {
+    DCHECK(user_annotations_database_);
+
+    // TODO: b/366278416 - The database should support inserting, updating,
+    // deleting the entries correctly. Currently, it only inserts the entries.
     user_annotations_database_
         .AsyncCall(&UserAnnotationsDatabase::UpdateEntries)
-        .WithArgs(entries_protos)
-        .Then(base::BindOnce(
-            RunResultCallback, std::move(callback),
-            /*to_be_upserted_entries=*/std::move(entries_protos_copy)));
+        .WithArgs(entries)
+        .Then(base::BindOnce(RecordUserAnnotationsFormImportResult));
     return;
   }
 
@@ -221,7 +215,7 @@ void UserAnnotationsService::OnModelExecuted(
     entries_.clear();
   }
 
-  for (const auto& entry : maybe_response->added_entries()) {
+  for (const auto& entry : entries) {
     EntryID entry_id = ++entry_id_counter_;
     optimization_guide::proto::UserAnnotationsEntry entry_proto;
     entry_proto.set_entry_id(entry_id);
@@ -230,13 +224,29 @@ void UserAnnotationsService::OnModelExecuted(
     entries_.push_back(
         {.entry_id = entry_id, .entry_proto = std::move(entry_proto)});
   }
-  RunResultCallback(
-      std::move(callback),
-      /*to_be_upserted_entries=*/
-      std::vector<optimization_guide::proto::UserAnnotationsEntry>(
-          maybe_response->added_entries().begin(),
-          maybe_response->added_entries().end()),
+  RecordUserAnnotationsFormImportResult(
       UserAnnotationsExecutionResult::kSuccess);
+}
+
+void UserAnnotationsService::SendFormSubmissionResult(
+    UserAnnotationsService::ImportFormCallback callback,
+    const UserAnnotationsEntries& to_be_upserted_entries,
+    UserAnnotationsExecutionResult result) {
+  base::UmaHistogramEnumeration("UserAnnotations.AddFormSubmissionResult",
+                                result);
+  if (result != UserAnnotationsExecutionResult::kSuccess) {
+    std::move(callback).Run(
+        /*to_be_upserted_entries=*/{},
+        /*prompt_acceptance_callback=*/base::DoNothing());
+    return;
+  }
+  // TODO(crbug.com/366142497): Bind to `prompt_acceptance_callback` and only
+  // import any form data if the binding method's parameter
+  // `prompt_was_accepted` equals `true`.
+  std::move(callback).Run(
+      to_be_upserted_entries,
+      base::BindOnce(&UserAnnotationsService::OnImportFormConfirmation,
+                     weak_ptr_factory_.GetWeakPtr(), to_be_upserted_entries));
 }
 
 void UserAnnotationsService::RemoveEntry(EntryID entry_id,

@@ -119,6 +119,18 @@ class UserAnnotationsService : public KeyedService {
                            os_crypt_async::Encryptor encryptor,
                            bool success);
 
+  // Sends the result of form submission.
+  void SendFormSubmissionResult(
+      UserAnnotationsService::ImportFormCallback callback,
+      const UserAnnotationsEntries& to_be_upserted_entries,
+      UserAnnotationsExecutionResult result);
+
+  // Called when decision has been made whether to import form entries.
+  // `prompt_was_accepted` is the user decision, and `entries` will be persisted
+  // to database when true.
+  void OnImportFormConfirmation(const UserAnnotationsEntries& entries,
+                                bool prompt_was_accepted);
+
   // An in-memory representation of the "database" of user annotation entries.
   // Used only when `ShouldPersistUserAnnotations()` is false.
   std::vector<Entry> entries_;

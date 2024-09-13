@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/files/scoped_temp_dir.h"
+#include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
@@ -75,6 +76,28 @@ class UserAnnotationsServiceTest : public testing::Test,
 
   bool ShouldPersistAnnotations() const { return GetParam(); }
 
+  UserAnnotationsEntries AddAndImportFormSubmission(
+      optimization_guide::proto::AXTreeUpdate ax_tree_update,
+      const autofill::FormData& form_data) {
+    UserAnnotationsEntries entries;
+    service()->AddFormSubmission(
+        ax_tree_update, form_data,
+        base::BindLambdaForTesting(
+            [&entries](
+                UserAnnotationsEntries upserted_entries,
+                base::OnceCallback<void(bool)> prompt_acceptance_callback) {
+              entries = upserted_entries;
+              std::move(prompt_acceptance_callback).Run(true);
+            }));
+    return entries;
+  }
+
+  UserAnnotationsEntries GetAllUserAnnotationsEntries() {
+    base::test::TestFuture<UserAnnotationsEntries> test_future;
+    service()->RetrieveAllEntries(test_future.GetCallback());
+    return test_future.Take();
+  }
+
   UserAnnotationsService* service() { return service_.get(); }
 
   optimization_guide::MockOptimizationGuideModelExecutor* model_executor() {
@@ -110,10 +133,7 @@ TEST_P(UserAnnotationsServiceTest, ShouldAddFormSubmissionForURL) {
 }
 
 TEST_P(UserAnnotationsServiceTest, RetrieveAllEntriesNoDB) {
-  base::test::TestFuture<UserAnnotationsEntries> test_future;
-  service()->RetrieveAllEntries(test_future.GetCallback());
-
-  auto entries = test_future.Take();
+  auto entries = GetAllUserAnnotationsEntries();
   EXPECT_TRUE(entries.empty());
 }
 
@@ -192,17 +212,11 @@ TEST_P(UserAnnotationsServiceTest, RetrieveAllEntriesWithInsert) {
         .WillOnce(base::test::RunOnceCallback<2>(
             test_request.forms_annotations_response, /*log_entry=*/nullptr));
 
-    base::MockCallback<UserAnnotationsService::ImportFormCallback>
-        import_form_callback;
-    EXPECT_CALL(import_form_callback, Run(Not(IsEmpty()), _));
+    EXPECT_FALSE(
+        AddAndImportFormSubmission(test_request.ax_tree, test_request.form_data)
+            .empty());
 
-    service()->AddFormSubmission(test_request.ax_tree, test_request.form_data,
-                                 import_form_callback.Get());
-
-    base::test::TestFuture<UserAnnotationsEntries> test_future;
-    service()->RetrieveAllEntries(test_future.GetCallback());
-
-    auto entries = test_future.Take();
+    auto entries = GetAllUserAnnotationsEntries();
     EXPECT_EQ(2u, entries.size());
 
     EXPECT_EQ(entries[0].key(), "label");
@@ -232,18 +246,11 @@ TEST_P(UserAnnotationsServiceTest, RetrieveAllEntriesWithInsert) {
 
     autofill::FormData empty_form_data;
     optimization_guide::proto::AXTreeUpdate ax_tree;
-    base::MockCallback<UserAnnotationsService::ImportFormCallback>
-        import_form_callback;
-    EXPECT_CALL(import_form_callback, Run(IsEmpty(), _));
 
-    service()->AddFormSubmission(ax_tree, empty_form_data,
-                                 import_form_callback.Get());
-
-    base::test::TestFuture<UserAnnotationsEntries> test_future;
-    service()->RetrieveAllEntries(test_future.GetCallback());
+    EXPECT_TRUE(AddAndImportFormSubmission(ax_tree, empty_form_data).empty());
 
     // Entries should still remain.
-    auto entries = test_future.Take();
+    auto entries = GetAllUserAnnotationsEntries();
     EXPECT_EQ(2u, entries.size());
 
     EXPECT_EQ(entries[0].key(), "label");
@@ -283,10 +290,8 @@ TEST_P(UserAnnotationsServiceTest, ExecuteFailed) {
   autofill::FormData form_data;
   form_data.set_fields({form_field_data, form_field_data2});
   optimization_guide::proto::AXTreeUpdate ax_tree;
-  base::MockCallback<UserAnnotationsService::ImportFormCallback>
-      import_form_callback;
-  EXPECT_CALL(import_form_callback, Run(IsEmpty(), _));
-  service()->AddFormSubmission(ax_tree, form_data, import_form_callback.Get());
+
+  EXPECT_TRUE(AddAndImportFormSubmission(ax_tree, form_data).empty());
 
   histogram_tester.ExpectUniqueSample(
       "UserAnnotations.AddFormSubmissionResult",
@@ -314,10 +319,7 @@ TEST_P(UserAnnotationsServiceTest, UnexpectedResponseType) {
   autofill::FormData form_data;
   form_data.set_fields({form_field_data, form_field_data2});
   optimization_guide::proto::AXTreeUpdate ax_tree;
-  base::MockCallback<UserAnnotationsService::ImportFormCallback>
-      import_form_callback;
-  EXPECT_CALL(import_form_callback, Run(IsEmpty(), _));
-  service()->AddFormSubmission(ax_tree, form_data, import_form_callback.Get());
+  EXPECT_TRUE(AddAndImportFormSubmission(ax_tree, form_data).empty());
 
   histogram_tester.ExpectUniqueSample(
       "UserAnnotations.AddFormSubmissionResult",
@@ -335,18 +337,12 @@ TEST_P(UserAnnotationsServiceTest, RemoveEntry) {
                  OptimizationGuideModelExecutionResultCallback>()))
       .WillOnce(base::test::RunOnceCallback<2>(
           test_request.forms_annotations_response, /*log_entry=*/nullptr));
-  base::MockCallback<UserAnnotationsService::ImportFormCallback>
-      import_form_callback;
-  EXPECT_CALL(import_form_callback, Run(Not(IsEmpty()), _));
 
-  service()->AddFormSubmission(test_request.ax_tree, test_request.form_data,
-                               import_form_callback.Get());
+  EXPECT_FALSE(
+      AddAndImportFormSubmission(test_request.ax_tree, test_request.form_data)
+          .empty());
 
-  base::test::TestFuture<
-      std::vector<optimization_guide::proto::UserAnnotationsEntry>>
-      test_future_retrieve;
-  service()->RetrieveAllEntries(test_future_retrieve.GetCallback());
-  auto entries = test_future_retrieve.Take();
+  auto entries = GetAllUserAnnotationsEntries();
   EXPECT_EQ(2u, entries.size());
 
   base::test::TestFuture<void> test_future_remove_entry;
@@ -354,9 +350,7 @@ TEST_P(UserAnnotationsServiceTest, RemoveEntry) {
                          test_future_remove_entry.GetCallback());
   EXPECT_TRUE(test_future_remove_entry.Wait());
   test_future_remove_entry.Clear();
-  service()->RetrieveAllEntries(test_future_retrieve.GetCallback());
-  EXPECT_TRUE(test_future_retrieve.Wait());
-  EXPECT_EQ(1u, test_future_retrieve.Take().size());
+  EXPECT_EQ(1u, GetAllUserAnnotationsEntries().size());
   histogram_tester.ExpectUniqueSample("UserAnnotations.RemoveEntry.Result",
                                       UserAnnotationsExecutionResult::kSuccess,
                                       1);
@@ -367,8 +361,7 @@ TEST_P(UserAnnotationsServiceTest, RemoveEntry) {
   histogram_tester.ExpectUniqueSample("UserAnnotations.RemoveEntry.Result",
                                       UserAnnotationsExecutionResult::kSuccess,
                                       2);
-  service()->RetrieveAllEntries(test_future_retrieve.GetCallback());
-  EXPECT_TRUE(test_future_retrieve.Take().empty());
+  EXPECT_TRUE(GetAllUserAnnotationsEntries().empty());
 }
 
 TEST_P(UserAnnotationsServiceTest, RemoveAllEntries) {
@@ -382,18 +375,12 @@ TEST_P(UserAnnotationsServiceTest, RemoveAllEntries) {
                  OptimizationGuideModelExecutionResultCallback>()))
       .WillOnce(base::test::RunOnceCallback<2>(
           test_request.forms_annotations_response, /*log_entry=*/nullptr));
-  base::MockCallback<UserAnnotationsService::ImportFormCallback>
-      import_form_callback;
-  EXPECT_CALL(import_form_callback, Run(Not(IsEmpty()), _));
 
-  service()->AddFormSubmission(test_request.ax_tree, test_request.form_data,
-                               import_form_callback.Get());
+  EXPECT_FALSE(
+      AddAndImportFormSubmission(test_request.ax_tree, test_request.form_data)
+          .empty());
 
-  base::test::TestFuture<
-      std::vector<optimization_guide::proto::UserAnnotationsEntry>>
-      test_future_retrieve;
-  service()->RetrieveAllEntries(test_future_retrieve.GetCallback());
-  EXPECT_EQ(2u, test_future_retrieve.Take().size());
+  EXPECT_EQ(2u, GetAllUserAnnotationsEntries().size());
 
   base::test::TestFuture<void> test_future_remove_entry;
   service()->RemoveAllEntries(test_future_remove_entry.GetCallback());
@@ -401,8 +388,30 @@ TEST_P(UserAnnotationsServiceTest, RemoveAllEntries) {
   histogram_tester.ExpectUniqueSample("UserAnnotations.RemoveAllEntries.Result",
                                       UserAnnotationsExecutionResult::kSuccess,
                                       1);
-  service()->RetrieveAllEntries(test_future_retrieve.GetCallback());
-  EXPECT_TRUE(test_future_retrieve.Take().empty());
+  EXPECT_TRUE(GetAllUserAnnotationsEntries().empty());
+}
+
+TEST_P(UserAnnotationsServiceTest, FormNotImported) {
+  base::HistogramTester histogram_tester;
+  auto test_request = CreateSampleFormsAnnotationsTestRequest();
+  EXPECT_CALL(
+      *model_executor(),
+      ExecuteModel(
+          optimization_guide::ModelBasedCapabilityKey::kFormsAnnotations, _,
+          An<optimization_guide::
+                 OptimizationGuideModelExecutionResultCallback>()))
+      .WillOnce(base::test::RunOnceCallback<2>(
+          test_request.forms_annotations_response, /*log_entry=*/nullptr));
+
+  service()->AddFormSubmission(
+      test_request.ax_tree, test_request.form_data,
+      base::BindLambdaForTesting(
+          [](UserAnnotationsEntries upserted_entries,
+             base::OnceCallback<void(bool)> prompt_acceptance_callback) {
+            std::move(prompt_acceptance_callback).Run(false);
+          }));
+
+  EXPECT_TRUE(GetAllUserAnnotationsEntries().empty());
 }
 
 INSTANTIATE_TEST_SUITE_P(All, UserAnnotationsServiceTest, ::testing::Bool());
@@ -437,17 +446,12 @@ TEST_P(UserAnnotationsServiceReplaceAnnotationsTest,
                    OptimizationGuideModelExecutionResultCallback>()))
         .WillOnce(base::test::RunOnceCallback<2>(
             test_request.forms_annotations_response, /*log_entry=*/nullptr));
-    base::MockCallback<UserAnnotationsService::ImportFormCallback>
-        import_form_callback;
-    EXPECT_CALL(import_form_callback, Run(Not(IsEmpty()), _));
 
-    service()->AddFormSubmission(test_request.ax_tree, test_request.form_data,
-                                 import_form_callback.Get());
+    EXPECT_FALSE(
+        AddAndImportFormSubmission(test_request.ax_tree, test_request.form_data)
+            .empty());
 
-    base::test::TestFuture<UserAnnotationsEntries> test_future;
-    service()->RetrieveAllEntries(test_future.GetCallback());
-
-    auto entries = test_future.Take();
+    auto entries = GetAllUserAnnotationsEntries();
     EXPECT_EQ(2u, entries.size());
 
     EXPECT_EQ(entries[0].key(), "label");
@@ -470,18 +474,11 @@ TEST_P(UserAnnotationsServiceReplaceAnnotationsTest,
         .WillOnce(base::test::RunOnceCallback<2>(any, /*log_entry=*/nullptr));
     autofill::FormData empty_form_data;
     optimization_guide::proto::AXTreeUpdate ax_tree;
-    base::MockCallback<UserAnnotationsService::ImportFormCallback>
-        import_form_callback;
-    EXPECT_CALL(import_form_callback, Run(IsEmpty(), _));
 
-    service()->AddFormSubmission(ax_tree, empty_form_data,
-                                 import_form_callback.Get());
-
-    base::test::TestFuture<UserAnnotationsEntries> test_future;
-    service()->RetrieveAllEntries(test_future.GetCallback());
+    EXPECT_TRUE(AddAndImportFormSubmission(ax_tree, empty_form_data).empty());
 
     // Entries should be cleared since there were no fields to replace with.
-    auto entries = test_future.Take();
+    auto entries = GetAllUserAnnotationsEntries();
     EXPECT_EQ(0u, entries.size());
   }
 }
