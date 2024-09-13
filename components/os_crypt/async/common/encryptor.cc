@@ -8,9 +8,9 @@
 #include <string>
 #include <vector>
 
+#include "base/check.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
-#include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/os_crypt/async/common/algorithm.mojom.h"
@@ -53,9 +53,7 @@ Encryptor::Key::Key(base::span<const uint8_t> key,
                                       CRYPTPROTECTMEMORY_SAME_PROCESS);
   }
 #endif
-  if (!algorithm_.has_value()) {
-    NOTREACHED();
-  }
+  CHECK(algorithm_.has_value());
 
   switch (*algorithm_) {
     case mojom::Algorithm::kAES256GCM:
@@ -109,9 +107,7 @@ Encryptor::~Encryptor() = default;
 
 std::vector<uint8_t> Encryptor::Key::Encrypt(
     base::span<const uint8_t> plaintext) const {
-  if (!algorithm_.has_value()) {
-    NOTREACHED();
-  }
+  CHECK(algorithm_.has_value());
 
   switch (*algorithm_) {
     case mojom::Algorithm::kAES256GCM: {
@@ -151,9 +147,7 @@ std::vector<uint8_t> Encryptor::Key::Encrypt(
 
 std::optional<std::vector<uint8_t>> Encryptor::Key::Decrypt(
     base::span<const uint8_t> ciphertext) const {
-  if (!algorithm_.has_value()) {
-    NOTREACHED();
-  }
+  CHECK(algorithm_.has_value());
   switch (*algorithm_) {
     case mojom::Algorithm::kAES256GCM: {
       if (ciphertext.size() < kNonceLength) {
