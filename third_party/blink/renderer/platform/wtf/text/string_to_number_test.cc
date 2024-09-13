@@ -4,27 +4,27 @@
 
 #include "third_party/blink/renderer/platform/wtf/text/string_to_number.h"
 
-#include "testing/gtest/include/gtest/gtest.h"
 #include <cstring>
+
+#include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace WTF {
 
 TEST(StringToNumberTest, CharactersToInt) {
-#define EXPECT_VALID(string, options, expectedValue)                    \
-  do {                                                                  \
-    bool ok;                                                            \
-    int value = CharactersToInt(reinterpret_cast<const LChar*>(string), \
-                                std::strlen(string), options, &ok);     \
-    EXPECT_TRUE(ok);                                                    \
-    EXPECT_EQ(value, expectedValue);                                    \
+#define EXPECT_VALID(string, options, expectedValue)                   \
+  do {                                                                 \
+    bool ok;                                                           \
+    int value = CharactersToInt(String(string).Span8(), options, &ok); \
+    EXPECT_TRUE(ok);                                                   \
+    EXPECT_EQ(value, expectedValue);                                   \
   } while (false)
 
-#define EXPECT_INVALID(string, options)                     \
-  do {                                                      \
-    bool ok;                                                \
-    CharactersToInt(reinterpret_cast<const LChar*>(string), \
-                    std::strlen(string), options, &ok);     \
-    EXPECT_FALSE(ok);                                       \
+#define EXPECT_INVALID(string, options)                    \
+  do {                                                     \
+    bool ok;                                               \
+    CharactersToInt(String(string).Span8(), options, &ok); \
+    EXPECT_FALSE(ok);                                      \
   } while (false)
 
   constexpr auto kStrict = NumberParsingOptions::Strict();
@@ -93,21 +93,19 @@ TEST(StringToNumberTest, CharactersToInt) {
 }
 
 TEST(StringToNumberTest, CharactersToUInt) {
-#define EXPECT_VALID(string, options, expectedValue)                          \
-  do {                                                                        \
-    bool ok;                                                                  \
-    unsigned value = CharactersToUInt(reinterpret_cast<const LChar*>(string), \
-                                      std::strlen(string), options, &ok);     \
-    EXPECT_TRUE(ok);                                                          \
-    EXPECT_EQ(value, expectedValue);                                          \
+#define EXPECT_VALID(string, options, expectedValue)                         \
+  do {                                                                       \
+    bool ok;                                                                 \
+    unsigned value = CharactersToUInt(String(string).Span8(), options, &ok); \
+    EXPECT_TRUE(ok);                                                         \
+    EXPECT_EQ(value, expectedValue);                                         \
   } while (false)
 
-#define EXPECT_INVALID(string, options)                      \
-  do {                                                       \
-    bool ok;                                                 \
-    CharactersToUInt(reinterpret_cast<const LChar*>(string), \
-                     std::strlen(string), options, &ok);     \
-    EXPECT_FALSE(ok);                                        \
+#define EXPECT_INVALID(string, options)                     \
+  do {                                                      \
+    bool ok;                                                \
+    CharactersToUInt(String(string).Span8(), options, &ok); \
+    EXPECT_FALSE(ok);                                       \
   } while (false)
 
   constexpr auto kStrict = NumberParsingOptions::Strict();
@@ -176,23 +174,21 @@ TEST(StringToNumberTest, CharactersToUInt) {
 }
 
 TEST(StringToNumberTest, HexCharactersToUInt) {
-#define EXPECT_VALID(string, expectedValue)                          \
-  do {                                                               \
-    bool ok;                                                         \
-    unsigned value = HexCharactersToUInt(                            \
-        reinterpret_cast<const LChar*>(string), std::strlen(string), \
-        NumberParsingOptions::Strict(), &ok);                        \
-    EXPECT_TRUE(ok);                                                 \
-    EXPECT_EQ(value, expectedValue);                                 \
+#define EXPECT_VALID(string, expectedValue)                                    \
+  do {                                                                         \
+    bool ok;                                                                   \
+    unsigned value = HexCharactersToUInt(String(string).Span8(),               \
+                                         NumberParsingOptions::Strict(), &ok); \
+    EXPECT_TRUE(ok);                                                           \
+    EXPECT_EQ(value, expectedValue);                                           \
   } while (false)
 
-#define EXPECT_INVALID(string)                                               \
-  do {                                                                       \
-    bool ok;                                                                 \
-    HexCharactersToUInt(reinterpret_cast<const LChar*>(string),              \
-                        std::strlen(string), NumberParsingOptions::Strict(), \
-                        &ok);                                                \
-    EXPECT_FALSE(ok);                                                        \
+#define EXPECT_INVALID(string)                                \
+  do {                                                        \
+    bool ok;                                                  \
+    HexCharactersToUInt(String(string).Span8(),               \
+                        NumberParsingOptions::Strict(), &ok); \
+    EXPECT_FALSE(ok);                                         \
   } while (false)
 
   EXPECT_VALID("1", 1u);
@@ -225,11 +221,10 @@ TEST(StringToNumberTest, HexCharactersToUInt) {
 #undef EXPECT_INVALID
 }
 
-NumberParsingResult ParseUInt(const char* str, unsigned* value) {
+NumberParsingResult ParseUInt(const String str, unsigned* value) {
   NumberParsingResult result;
   *value =
-      CharactersToUInt(reinterpret_cast<const LChar*>(str), std::strlen(str),
-                       NumberParsingOptions::Strict(), &result);
+      CharactersToUInt(str.Span8(), NumberParsingOptions::Strict(), &result);
   return result;
 }
 
@@ -243,18 +238,16 @@ TEST(StringToNumberTest, NumberParsingState) {
   EXPECT_EQ(NumberParsingResult::kSuccess, ParseUInt("10", &value));
 }
 
-void ParseDouble(const char* str, double expected_value) {
+void ParseDouble(const String& str, double expected_value) {
   bool ok;
-  double value = CharactersToDouble(reinterpret_cast<const LChar*>(str),
-                                    std::strlen(str), &ok);
+  double value = CharactersToDouble(str.Span8(), &ok);
   EXPECT_TRUE(ok) << "\"" << str << "\"";
   EXPECT_EQ(expected_value, value);
 }
 
-void FailToParseDouble(const char* str) {
+void FailToParseDouble(const String& str) {
   bool ok;
-  CharactersToDouble(reinterpret_cast<const LChar*>(str), std::strlen(str),
-                     &ok);
+  CharactersToDouble(str.Span8(), &ok);
   EXPECT_FALSE(ok) << "\"" << str << "\"";
 }
 
@@ -291,10 +284,9 @@ TEST(StringToNumberTest, CharactersToDouble) {
   FailToParseDouble("1e.3");
 }
 
-size_t ParseDouble(const char* str) {
+size_t ParseDouble(const String& str) {
   size_t parsed;
-  CharactersToDouble(reinterpret_cast<const LChar*>(str), std::strlen(str),
-                     parsed);
+  CharactersToDouble(str.Span8(), parsed);
   return parsed;
 }
 
@@ -313,17 +305,16 @@ TEST(StringToNumberTest, CharactersToDoubleParsedLength) {
   EXPECT_EQ(7u, ParseDouble("1.234e1"));
 }
 
-void ParseFloat(const char* str, float expected_value) {
+void ParseFloat(const String& str, float expected_value) {
   bool ok;
-  float value = CharactersToFloat(reinterpret_cast<const LChar*>(str),
-                                  std::strlen(str), &ok);
+  float value = CharactersToFloat(str.Span8(), &ok);
   EXPECT_TRUE(ok) << "\"" << str << "\"";
   EXPECT_EQ(expected_value, value);
 }
 
-void FailToParseFloat(const char* str) {
+void FailToParseFloat(const String& str) {
   bool ok;
-  CharactersToFloat(reinterpret_cast<const LChar*>(str), std::strlen(str), &ok);
+  CharactersToFloat(str.Span8(), &ok);
   EXPECT_FALSE(ok) << "\"" << str << "\"";
 }
 
@@ -362,10 +353,9 @@ TEST(StringToNumberTest, CharactersToFloat) {
   FailToParseFloat("1e.3");
 }
 
-size_t ParseFloat(const char* str) {
+size_t ParseFloat(const String& str) {
   size_t parsed;
-  CharactersToFloat(reinterpret_cast<const LChar*>(str), std::strlen(str),
-                    parsed);
+  CharactersToFloat(str.Span8(), parsed);
   return parsed;
 }
 

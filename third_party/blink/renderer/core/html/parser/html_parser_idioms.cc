@@ -207,7 +207,10 @@ bool ParseHTMLInteger(const String& input, int& value) {
     constexpr auto kOptions = WTF::NumberParsingOptions()
                                   .SetAcceptTrailingGarbage()
                                   .SetAcceptLeadingPlus();
-    int wtf_value = CharactersToInt(position, end - position, kOptions, &ok);
+    int wtf_value =
+        CharactersToInt(base::span<const CharacterType>(
+                            position, static_cast<size_t>(end - position)),
+                        kOptions, &ok);
     if (ok) {
       value = wtf_value;
     }
@@ -249,8 +252,8 @@ static WTF::NumberParsingResult ParseHTMLNonNegativeIntegerInternal(
                                       .SetAcceptTrailingGarbage()
                                       .SetAcceptLeadingPlus()
                                       .SetAcceptMinusZeroForUnsigned();
-        unsigned wtf_value =
-            CharactersToUInt(position, end - position, kOptions, &result);
+        unsigned wtf_value = CharactersToUInt(
+            {position, static_cast<size_t>(end - position)}, kOptions, &result);
         if (result == WTF::NumberParsingResult::kSuccess)
           value = wtf_value;
         return result;
@@ -323,9 +326,10 @@ Vector<double> ParseHTMLListOfFloatingPointNumbers(const String& input) {
       SkipUntil<CharacterType, IsSpaceOrDelimiter>(position, end);
 
       size_t parsed_length = 0;
-      double number =
-          CharactersToDouble(unparsed_number_start,
-                             position - unparsed_number_start, parsed_length);
+      double number = CharactersToDouble(
+          {unparsed_number_start,
+           static_cast<size_t>(position - unparsed_number_start)},
+          parsed_length);
       numbers.push_back(CheckDoubleValue(number, parsed_length != 0, 0));
 
       SkipWhile<CharacterType, IsSpaceOrDelimiter>(position, end);

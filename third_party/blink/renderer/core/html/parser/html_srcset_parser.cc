@@ -92,7 +92,8 @@ struct DescriptorToken {
       }
       ++position;
     }
-    return CharactersToInt(attribute + start, length_excluding_descriptor,
+    return CharactersToInt(base::span<const CharType>(
+                               attribute + start, length_excluding_descriptor),
                            WTF::NumberParsingOptions(), &is_valid);
   }
 

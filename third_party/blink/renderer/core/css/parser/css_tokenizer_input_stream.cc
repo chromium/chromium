@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer_input_stream.h"
 
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
+#include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_to_number.h"
 
 namespace blink {
@@ -34,13 +35,9 @@ double CSSTokenizerInputStream::GetDouble(unsigned start, unsigned end) const {
   bool is_result_ok = false;
   double result = 0.0;
   if (start < end) {
-    if (string_.Is8Bit()) {
-      result = CharactersToDouble(string_.Characters8() + offset_ + start,
-                                  end - start, &is_result_ok);
-    } else {
-      result = CharactersToDouble(string_.Characters16() + offset_ + start,
-                                  end - start, &is_result_ok);
-    }
+    result = WTF::VisitCharacters(
+        StringView(string_, offset_ + start, end - start),
+        [&](auto chars) { return CharactersToDouble(chars, &is_result_ok); });
   }
   // FIXME: It looks like callers ensure we have a valid number
   return is_result_ok ? result : 0.0;

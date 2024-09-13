@@ -86,8 +86,8 @@ size_t VTTScanner::ScanDigits(unsigned& number) {
     auto [number_data, rest] = buf.split_at(num_digits);
     // Consume the digits.
     buf = rest;
-    return CharactersToUInt(number_data.data(), num_digits,
-                            WTF::NumberParsingOptions(), &valid_number);
+    return CharactersToUInt(number_data, WTF::NumberParsingOptions(),
+                            &valid_number);
   });
 
   // Since we know that scanDigits only scanned valid (ASCII) digits (and
@@ -122,7 +122,7 @@ bool VTTScanner::ScanDouble(double& number) {
   bool valid_number;
   number = Invoke(
       [length_of_double, &valid_number](auto& buf) {
-        return CharactersToDouble(buf.data(), length_of_double, &valid_number);
+        return CharactersToDouble(buf.first(length_of_double), &valid_number);
       },
       start_state);
 

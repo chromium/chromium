@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_STRING_TO_NUMBER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_STRING_TO_NUMBER_H_
 
+#include "base/containers/span.h"
 #include "third_party/blink/renderer/platform/wtf/text/number_parsing_options.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_export.h"
@@ -24,12 +25,10 @@ enum class NumberParsingResult {
 };
 
 // string -> int.
-WTF_EXPORT int CharactersToInt(const LChar*,
-                               size_t,
+WTF_EXPORT int CharactersToInt(base::span<const LChar>,
                                NumberParsingOptions,
                                bool* ok);
-WTF_EXPORT int CharactersToInt(const UChar*,
-                               size_t,
+WTF_EXPORT int CharactersToInt(base::span<const UChar>,
                                NumberParsingOptions,
                                bool* ok);
 WTF_EXPORT int CharactersToInt(const StringView&,
@@ -37,59 +36,47 @@ WTF_EXPORT int CharactersToInt(const StringView&,
                                bool* ok);
 
 // string -> unsigned.
-WTF_EXPORT unsigned HexCharactersToUInt(const LChar*,
-                                        size_t,
+WTF_EXPORT unsigned HexCharactersToUInt(base::span<const LChar>,
                                         NumberParsingOptions,
                                         bool* ok);
-WTF_EXPORT unsigned HexCharactersToUInt(const UChar*,
-                                        size_t,
+WTF_EXPORT unsigned HexCharactersToUInt(base::span<const UChar>,
                                         NumberParsingOptions,
                                         bool* ok);
-WTF_EXPORT uint64_t HexCharactersToUInt64(const UChar*,
-                                          size_t,
+WTF_EXPORT uint64_t HexCharactersToUInt64(base::span<const UChar>,
                                           NumberParsingOptions,
                                           bool* ok);
-WTF_EXPORT uint64_t HexCharactersToUInt64(const LChar*,
-                                          size_t,
+WTF_EXPORT uint64_t HexCharactersToUInt64(base::span<const LChar>,
                                           NumberParsingOptions,
                                           bool* ok);
-WTF_EXPORT unsigned CharactersToUInt(const LChar*,
-                                     size_t,
+WTF_EXPORT unsigned CharactersToUInt(base::span<const LChar>,
                                      NumberParsingOptions,
                                      bool* ok);
-WTF_EXPORT unsigned CharactersToUInt(const UChar*,
-                                     size_t,
+WTF_EXPORT unsigned CharactersToUInt(base::span<const UChar>,
                                      NumberParsingOptions,
                                      bool* ok);
 
 // NumberParsingResult versions of CharactersToUInt. They can detect
 // overflow. |NumberParsingResult*| should not be nullptr;
-WTF_EXPORT unsigned CharactersToUInt(const LChar*,
-                                     size_t,
+WTF_EXPORT unsigned CharactersToUInt(base::span<const LChar>,
                                      NumberParsingOptions,
                                      NumberParsingResult*);
-WTF_EXPORT unsigned CharactersToUInt(const UChar*,
-                                     size_t,
+WTF_EXPORT unsigned CharactersToUInt(base::span<const UChar>,
                                      NumberParsingOptions,
                                      NumberParsingResult*);
 
 // string -> int64_t.
-WTF_EXPORT int64_t CharactersToInt64(const LChar*,
-                                     size_t,
+WTF_EXPORT int64_t CharactersToInt64(base::span<const LChar>,
                                      NumberParsingOptions,
                                      bool* ok);
-WTF_EXPORT int64_t CharactersToInt64(const UChar*,
-                                     size_t,
+WTF_EXPORT int64_t CharactersToInt64(base::span<const UChar>,
                                      NumberParsingOptions,
                                      bool* ok);
 
 // string -> uint64_t.
-WTF_EXPORT uint64_t CharactersToUInt64(const LChar*,
-                                       size_t,
+WTF_EXPORT uint64_t CharactersToUInt64(base::span<const LChar>,
                                        NumberParsingOptions,
                                        bool* ok);
-WTF_EXPORT uint64_t CharactersToUInt64(const UChar*,
-                                       size_t,
+WTF_EXPORT uint64_t CharactersToUInt64(base::span<const UChar>,
                                        NumberParsingOptions,
                                        bool* ok);
 
@@ -115,18 +102,16 @@ WTF_EXPORT uint64_t CharactersToUInt64(const UChar*,
 //
 // A small absolute numbers which a double can't represent is accepted, and
 // 0 is returned
-WTF_EXPORT double CharactersToDouble(const LChar*, size_t, bool* ok);
-WTF_EXPORT double CharactersToDouble(const UChar*, size_t, bool* ok);
+WTF_EXPORT double CharactersToDouble(base::span<const LChar>, bool* ok);
+WTF_EXPORT double CharactersToDouble(base::span<const UChar>, bool* ok);
 
 // |parsed_length| will have the length of characters which was parsed as a
 // double number. It will be 0 if the input string isn't a number. It will be
 // smaller than |length| if the input string contains trailing
 // whiespace/garbage.
-WTF_EXPORT double CharactersToDouble(const LChar*,
-                                     size_t length,
+WTF_EXPORT double CharactersToDouble(base::span<const LChar>,
                                      size_t& parsed_length);
-WTF_EXPORT double CharactersToDouble(const UChar*,
-                                     size_t length,
+WTF_EXPORT double CharactersToDouble(base::span<const UChar>,
                                      size_t& parsed_length);
 
 // string -> float.
@@ -146,18 +131,16 @@ WTF_EXPORT double CharactersToDouble(const UChar*,
 //
 // A small absolute numbers which a float can't represent is accepted, and
 // 0 is returned
-WTF_EXPORT float CharactersToFloat(const LChar*, size_t, bool* ok);
-WTF_EXPORT float CharactersToFloat(const UChar*, size_t, bool* ok);
+WTF_EXPORT float CharactersToFloat(base::span<const LChar>, bool* ok);
+WTF_EXPORT float CharactersToFloat(base::span<const UChar>, bool* ok);
 
 // |parsed_length| will have the length of characters which was parsed as a
 // flaot number. It will be 0 if the input string isn't a number. It will be
 // smaller than |length| if the input string contains trailing
 // whiespace/garbage.
-WTF_EXPORT float CharactersToFloat(const LChar*,
-                                   size_t length,
+WTF_EXPORT float CharactersToFloat(base::span<const LChar>,
                                    size_t& parsed_length);
-WTF_EXPORT float CharactersToFloat(const UChar*,
-                                   size_t length,
+WTF_EXPORT float CharactersToFloat(base::span<const UChar>,
                                    size_t& parsed_length);
 
 }  // namespace WTF

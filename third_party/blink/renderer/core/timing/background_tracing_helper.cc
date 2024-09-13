@@ -82,9 +82,8 @@ const char* ParseHash(const char* begin,
 
   // At this point we've successfully consumed a hash, so parse it.
   bool parsed = false;
-  hash = WTF::HexCharactersToUInt(reinterpret_cast<const unsigned char*>(begin),
-                                  cur - begin, WTF::NumberParsingOptions(),
-                                  &parsed);
+  hash = WTF::HexCharactersToUInt(StringView(begin, cur - begin).Span8(),
+                                  WTF::NumberParsingOptions(), &parsed);
   DCHECK(parsed);
 
   // If there's a terminator, advance past it.
@@ -300,9 +299,8 @@ void BackgroundTracingHelper::GetMarkHashAndSequenceNumber(
     // Parse the suffix.
     auto suffix = mark_name.substr(sequence_number_pos + 1);
     bool result = false;
-    int seq_num = WTF::CharactersToInt(
-        reinterpret_cast<const unsigned char*>(suffix.data()), suffix.size(),
-        WTF::NumberParsingOptions(), &result);
+    int seq_num = WTF::CharactersToInt(base::as_byte_span(suffix),
+                                       WTF::NumberParsingOptions(), &result);
     if (result) {
       // Cap the sequence number to an easily human-consumable size. It is fine
       // for this calculation to overflow.

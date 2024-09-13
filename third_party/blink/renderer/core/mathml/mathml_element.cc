@@ -65,8 +65,7 @@ bool ParseScriptLevel(const AtomicString& attributeValue,
     WTF::NumberParsingResult result;
     constexpr auto kOptions =
         WTF::NumberParsingOptions().SetAcceptMinusZeroForUnsigned();
-    scriptLevel =
-        CharactersToUInt(chars.data(), chars.size(), kOptions, &result);
+    scriptLevel = CharactersToUInt(chars, kOptions, &result);
     return result == WTF::NumberParsingResult::kSuccess;
   });
 }

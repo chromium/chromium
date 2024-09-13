@@ -52,6 +52,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/client_hints_preferences.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
+#include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_to_number.h"
 
 namespace blink {
@@ -171,13 +172,9 @@ float HTMLMetaElement::ParsePositiveNumber(Document* document,
                                            const String& value_string,
                                            bool* ok) {
   size_t parsed_length;
-  float value;
-  if (value_string.Is8Bit())
-    value = CharactersToFloat(value_string.Characters8(), value_string.length(),
-                              parsed_length);
-  else
-    value = CharactersToFloat(value_string.Characters16(),
-                              value_string.length(), parsed_length);
+  float value = WTF::VisitCharacters(value_string, [&](auto chars) {
+    return CharactersToFloat(chars, parsed_length);
+  });
   if (!parsed_length) {
     if (report_warnings)
       ReportViewportWarning(document, kUnrecognizedViewportArgumentValueError,
