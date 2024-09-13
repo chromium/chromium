@@ -7456,17 +7456,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ash.PrivacyIndicators.NumberOfRepeatedShows" units="shows"
-    expires_after="2025-02-01">
-  <owner>leandre@chromium.org</owner>
-  <owner>cros-status-area-eng@google.com</owner>
-  <summary>
-    Record the number of times that the privacy indicator repeatedly shows per
-    100ms. Emitted when the sequence of consecutive shows in the privacy
-    indicator has finished.
-  </summary>
-</histogram>
-
 <histogram name="Ash.PrivacyIndicators.NumberOfShowsPerSession" units="shows"
     expires_after="2025-02-01">
   <owner>leandre@chromium.org</owner>
