@@ -60,6 +60,8 @@ message ClientFeatures {
   // prompt was shown.
   optional Gesture gesture = 3;
 
+  // Similar to the above declared `Gesture` enum but is used only for on-device
+  // model.
   enum GestureEnum {
     GESTURE_V2 = 0;
     GESTURE_UNSPECIFIED_V2 = 1;
@@ -67,6 +69,8 @@ message ClientFeatures {
 
   optional GestureEnum gesture_enum = 4;
 
+  // Similar to the above declared `Platform` enum but is used only for
+  // on-device model.
   enum PlatformEnum {
     PLATFORM_MOBILE_V2 = 0;
     PLATFORM_DESKTOP_V2 = 1;
@@ -74,6 +78,15 @@ message ClientFeatures {
   }
 
   optional PlatformEnum platform_enum = 5;
+
+  // Message containing the experiment config for the client request.
+  message ExperimentConfig {
+    // Optional. If set, the experiment id used to generate the predictions.
+    optional int32 experiment_id = 1;
+  }
+
+  // Optional. The client experiment config.
+  optional ExperimentConfig experiment_config = 6;
 }
 
 // Features related to a specific permission type.

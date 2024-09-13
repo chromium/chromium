@@ -132,6 +132,10 @@ std::unique_ptr<GeneratePredictionsRequest> GetPredictionRequestProto(
     site_features->set_origin(entity.url.spec());
   }
 
+  ClientFeatures_ExperimentConfig* experiment_config =
+      client_features->mutable_experiment_config();
+  experiment_config->set_experiment_id(entity.experiment_id);
+
   return proto_request;
 }
 

@@ -243,6 +243,11 @@ PredictionBasedPermissionUiSelector::BuildPredictionRequestFeatures(
   }
 #endif
 
+  features.experiment_id = base::FeatureList::IsEnabled(
+                               permissions::features::kPermissionPredictionsV3)
+                               ? 1
+                               : 0;
+
   base::Time cutoff = base::Time::Now() - kPermissionActionCutoffAge;
 
   permissions::PermissionActionsHistory* action_history =
