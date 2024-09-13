@@ -579,13 +579,13 @@ std::unique_ptr<PopupRowView> CreateNewPlusAddressInlineSuggestion(
     base::WeakPtr<AutofillPopupController> controller,
     PopupRowView::AccessibilitySelectionDelegate& a11y_selection_delegate,
     PopupRowView::SelectionDelegate& selection_delegate,
-    int line_number) {
+    int line_number,
+    std::optional<user_education::DisplayNewBadge> show_new_badge) {
   auto view = std::make_unique<PopupRowContentView>();
 
-  // TODO(crbug.com/362445807): Consider also adding a new badge.
   const Suggestion& kSuggestion = controller->GetSuggestionAt(line_number);
   std::unique_ptr<views::Label> main_text_label =
-      CreateMainTextLabel(kSuggestion, /*show_new_badge=*/std::nullopt);
+      CreateMainTextLabel(kSuggestion, show_new_badge);
   FormatLabel(*main_text_label, kSuggestion.main_text,
               FillingProduct::kPlusAddresses,
               GetMaxPopupAddressProfileWidth(ShouldApplyNewPopupMaxWidth(
@@ -706,7 +706,8 @@ std::unique_ptr<PopupRowView> CreatePopupRowView(
     case SuggestionType::kCreateNewPlusAddressInline:
     case SuggestionType::kPlusAddressError: {
       return CreateNewPlusAddressInlineSuggestion(
-          controller, a11y_selection_delegate, selection_delegate, line_number);
+          controller, a11y_selection_delegate, selection_delegate, line_number,
+          show_new_badge);
     }
     default:
       return std::make_unique<PopupRowView>(

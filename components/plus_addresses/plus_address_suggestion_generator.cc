@@ -272,6 +272,12 @@ PlusAddressSuggestionGenerator::CreateNewPlusAddressInlineSuggestion() {
           allocator_->AllocatePlusAddressSynchronously(
               origin_, PlusAddressAllocator::AllocationMode::kNewPlusAddress)) {
     SetSuggestedPlusAddressForSuggestion(profile->plus_address, suggestion);
+    // Set IPH and new badge information only if allocation is synchronous.
+    // Otherwise, they will be showing only during the loading stage and then be
+    // hidden automatically.
+    suggestion.feature_for_new_badge = &features::kPlusAddressesEnabled;
+    suggestion.feature_for_iph =
+        &feature_engagement::kIPHPlusAddressCreateSuggestionFeature;
   } else {
     suggestion.payload = Suggestion::PlusAddressPayload();
     suggestion.is_loading = Suggestion::IsLoading(true);
@@ -282,8 +288,6 @@ PlusAddressSuggestionGenerator::CreateNewPlusAddressInlineSuggestion() {
           features::kPlusAddressUserOnboardingEnabled) ||
           setting_service_->GetHasAcceptedNotice(),
       primary_email_);
-  // TODO(crbug.com/362445807): Consider adding IPH and new badge for inline
-  // suggestions.
   return suggestion;
 }
 
