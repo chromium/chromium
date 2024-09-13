@@ -487,6 +487,7 @@ InteractiveBrowserTestApi::NavigateWebContents(
 InteractiveBrowserTestApi::StepBuilder
 InteractiveBrowserTestApi::FocusWebContents(
     ui::ElementIdentifier webcontents_id) {
+  RequireInteractiveTest();
   StepBuilder builder;
   builder.SetElementID(webcontents_id);
   builder.SetDescription("FocusWebContents()");

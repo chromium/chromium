@@ -51,6 +51,7 @@ InteractionSequence::StepBuilder InteractiveTestApi::PressButton(
 InteractionSequence::StepBuilder InteractiveTestApi::SelectMenuItem(
     ElementSpecifier menu_item,
     InputType input_type) {
+  RequireInteractiveTest();
   StepBuilder builder;
   builder.SetDescription("SelectMenuItem()");
   internal::SpecifyElement(builder, menu_item);
@@ -115,6 +116,13 @@ InteractionSequence::StepBuilder InteractiveTestApi::SelectDropdownItem(
     ElementSpecifier collection,
     size_t item,
     InputType input_type) {
+  // "Don't care" option directly sets the value; the other actually require
+  // popping out the dropdown menu and selecting an item which is not reliable
+  // in non-interactive tests.
+  if (input_type != InputType::kDontCare) {
+    RequireInteractiveTest();
+  }
+
   StepBuilder builder;
   builder.SetDescription(base::StringPrintf("SelectDropdownItem( %zu )", item));
   internal::SpecifyElement(builder, collection);
