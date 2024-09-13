@@ -51,6 +51,10 @@ class TabInterface {
   // //content layer should not use this method.
   static TabInterface* MaybeGetFromContents(content::WebContents* web_contents);
 
+  // Returns the TabInterface associated with the given `handle_id`, if one
+  // exists, otherwise it returns null.
+  static TabInterface* MaybeGetFromHandle(uint32_t handle_id);
+
   // When a tab is in the background, the WebContents may be discarded to save
   // memory. When a tab is in the foreground it is guaranteed to have a
   // WebContents.
