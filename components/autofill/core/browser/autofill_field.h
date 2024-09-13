@@ -234,6 +234,14 @@ class AutofillField : public FormFieldData {
     return value_identified_as_potentially_sensitive_;
   }
 
+  void set_field_is_eligible_for_prediction_improvements(
+      std::optional<bool> eligibily) {
+    field_is_eligible_for_prediction_improvements_ = eligibily;
+  }
+  std::optional<bool> field_is_eligible_for_prediction_improvements() const {
+    return field_is_eligible_for_prediction_improvements_;
+  }
+
   void set_credit_card_number_offset(size_t position) {
     credit_card_number_offset_ = position;
   }
@@ -433,6 +441,11 @@ class AutofillField : public FormFieldData {
   // Note that the 'false' state does not guarantee that the data is not
   // sensitive, it just means that is wasn't identified as such yet.
   bool value_identified_as_potentially_sensitive_ = false;
+
+  // Indicates if the field was determined to be eligable for prediction
+  // improvements. The `nullopt` state implies that the eligibility has not been
+  // determined yet.
+  std::optional<bool> field_is_eligible_for_prediction_improvements_;
 
   // Used to hold the position of the first digit to be copied as a substring
   // from credit card number.

@@ -34,6 +34,30 @@ TEST_F(AutofillFieldTest, ValueWasIdentifiedAsPotentiallySensitive) {
   EXPECT_TRUE(field.value_identified_as_potentially_sensitive());
 }
 
+TEST_F(AutofillFieldTest, FieldIsEligableForPredictionImprovementsFlag) {
+  AutofillField field;
+
+  // Initially the value should not be identified as sensitive.
+  EXPECT_FALSE(
+      field.field_is_eligible_for_prediction_improvements().has_value());
+
+  // Test that settings the value works.
+  field.set_field_is_eligible_for_prediction_improvements(true);
+  ASSERT_TRUE(
+      field.field_is_eligible_for_prediction_improvements().has_value());
+  EXPECT_TRUE(field.field_is_eligible_for_prediction_improvements().value());
+
+  field.set_field_is_eligible_for_prediction_improvements(false);
+  ASSERT_TRUE(
+      field.field_is_eligible_for_prediction_improvements().has_value());
+  EXPECT_FALSE(field.field_is_eligible_for_prediction_improvements().value());
+
+  // Verify that the state can also be reset.
+  field.set_field_is_eligible_for_prediction_improvements(std::nullopt);
+  EXPECT_FALSE(
+      field.field_is_eligible_for_prediction_improvements().has_value());
+}
+
 // Tests that if both autocomplete attributes and server agree it's a phone
 // field, always use server predicted type. If they disagree with autocomplete
 // says it's a phone field, always use autocomplete attribute.
