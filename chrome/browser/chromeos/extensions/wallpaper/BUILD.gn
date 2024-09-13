@@ -1,0 +1,47 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//extensions/buildflags/buildflags.gni")
+
+assert(enable_extensions)
+assert(is_chromeos)
+
+static_library("wallpaper") {
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  sources = [
+    "wallpaper_api.cc",
+    "wallpaper_api.h",
+  ]
+
+  public_deps = [
+    "//chrome/common/extensions/api",
+    "//components/account_id",
+    "//extensions/browser",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common:constants",
+    "//chrome/common/extensions",
+    "//chromeos/crosapi/mojom",
+    "//components/user_manager",
+    "//content/public/browser",
+    "//extensions/common",
+    "//net",
+    "//services/network/public/cpp",
+    "//services/network/public/cpp:cpp_base",
+    "//services/network/public/mojom",
+    "//services/network/public/mojom:url_loader_base",
+    "//url",
+  ]
+
+  if (is_chromeos_lacros) {
+    deps += [ "//chromeos/lacros" ]
+  }
+}

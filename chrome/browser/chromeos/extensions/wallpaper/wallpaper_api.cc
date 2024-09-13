@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/extensions/wallpaper_api.h"
+#include "chrome/browser/chromeos/extensions/wallpaper/wallpaper_api.h"
 
 #include <memory>
 #include <string>
@@ -166,11 +166,9 @@ base::LazyInstance<WallpaperFetcher>::DestructorAtExit g_wallpaper_fetcher =
 
 }  // namespace
 
-WallpaperSetWallpaperFunction::WallpaperSetWallpaperFunction() {
-}
+WallpaperSetWallpaperFunction::WallpaperSetWallpaperFunction() {}
 
-WallpaperSetWallpaperFunction::~WallpaperSetWallpaperFunction() {
-}
+WallpaperSetWallpaperFunction::~WallpaperSetWallpaperFunction() {}
 
 ExtensionFunction::ResponseAction WallpaperSetWallpaperFunction::Run() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -182,12 +180,14 @@ ExtensionFunction::ResponseAction WallpaperSetWallpaperFunction::Run() {
     return RespondLater();
   }
 
-  if (!params_->details.url)
+  if (!params_->details.url) {
     return RespondNow(Error("Either url or data field is required."));
+  }
 
   GURL wallpaper_url(*params_->details.url);
-  if (!wallpaper_url.is_valid())
+  if (!wallpaper_url.is_valid()) {
     return RespondNow(Error("URL is invalid."));
+  }
 
   g_wallpaper_fetcher.Get().FetchWallpaper(
       wallpaper_url,

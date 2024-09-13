@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_EXTENSIONS_WALLPAPER_API_H_
-#define CHROME_BROWSER_CHROMEOS_EXTENSIONS_WALLPAPER_API_H_
+#ifndef CHROME_BROWSER_CHROMEOS_EXTENSIONS_WALLPAPER_WALLPAPER_API_H_
+#define CHROME_BROWSER_CHROMEOS_EXTENSIONS_WALLPAPER_WALLPAPER_API_H_
 
 #include <optional>
 
@@ -22,8 +22,7 @@
 // system.
 class WallpaperSetWallpaperFunction : public ExtensionFunction {
  public:
-  DECLARE_EXTENSION_FUNCTION("wallpaper.setWallpaper",
-                             WALLPAPER_SETWALLPAPER)
+  DECLARE_EXTENSION_FUNCTION("wallpaper.setWallpaper", WALLPAPER_SETWALLPAPER)
 
   WallpaperSetWallpaperFunction();
 
@@ -50,4 +49,4 @@ class WallpaperSetWallpaperFunction : public ExtensionFunction {
   AccountId account_id_ = EmptyAccountId();
 };
 
-#endif  // CHROME_BROWSER_CHROMEOS_EXTENSIONS_WALLPAPER_API_H_
+#endif  // CHROME_BROWSER_CHROMEOS_EXTENSIONS_WALLPAPER_WALLPAPER_API_H_

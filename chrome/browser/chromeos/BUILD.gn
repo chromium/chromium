@@ -15,10 +15,6 @@ assert(use_ozone)
 
 source_set("chromeos") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
-  sources = [
-    "extensions/wallpaper_api.cc",
-    "extensions/wallpaper_api.h",
-  ]
 
   allow_circular_includes_from = [
     "//chrome/browser/apps/app_service",

@@ -123,6 +123,7 @@ function_registration("api_registration") {
       "//chrome/browser/chromeos/extensions/info_private",
       "//chrome/browser/chromeos/extensions/login_screen/login_screen_storage",
       "//chrome/browser/chromeos/extensions/system_log",
+      "//chrome/browser/chromeos/extensions/wallpaper",
     ]
   }
 

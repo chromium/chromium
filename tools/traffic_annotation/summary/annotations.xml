@@ -264,7 +264,7 @@ Refer to README.md for content description and update process.
  <item id="remote_command_screenshot" added_in_milestone="98" content_hash_code="07acca89" os_list="chromeos" file_path="chrome/browser/ash/policy/remote_commands/screenshot_delegate.cc" />
  <item id="remote_apps_image_downloader" added_in_milestone="98" content_hash_code="039bbcf1" os_list="chromeos" file_path="chrome/browser/ash/remote_apps/remote_apps_manager.cc" />
  <item id="smb_netbios_name_query" added_in_milestone="98" content_hash_code="03d9baa0" os_list="chromeos" file_path="chrome/browser/ash/smb_client/discovery/netbios_client.cc" />
- <item id="wallpaper_fetcher" added_in_milestone="98" content_hash_code="0419c2d5" os_list="chromeos" file_path="chrome/browser/chromeos/extensions/wallpaper_api.cc" />
+ <item id="wallpaper_fetcher" added_in_milestone="98" content_hash_code="0419c2d5" os_list="chromeos" file_path="chrome/browser/chromeos/extensions/wallpaper/wallpaper_api.cc" />
  <item id="network_traversal_ice_config_fetcher" added_in_milestone="98" content_hash_code="0065f89d" os_list="chromeos" file_path="chrome/browser/nearby_sharing/network_traversal_ice_config_fetcher.cc" />
  <item id="tachyon_ice_config_fetcher" added_in_milestone="98" content_hash_code="01e878b0" os_list="chromeos" file_path="chrome/browser/nearby_sharing/tachyon_ice_config_fetcher.cc" />
  <item id="launcher_item_suggest" added_in_milestone="98" content_hash_code="04a4041e" os_list="chromeos" file_path="chrome/browser/ash/file_suggest/item_suggest_cache.cc" />
