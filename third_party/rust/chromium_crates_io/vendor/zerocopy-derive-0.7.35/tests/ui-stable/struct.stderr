@@ -1,0 +1,137 @@
+error: unsupported on generic structs that are not repr(transparent) or repr(packed)
+  --> tests/ui-stable/struct.rs:55:10
+   |
+55 | #[derive(AsBytes)]
+   |          ^^^^^^^
+   |
+   = note: this error originates in the derive macro `AsBytes` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error: cannot derive Unaligned with repr(align(N > 1))
+  --> tests/ui-stable/struct.rs:80:11
+   |
+80 | #[repr(C, align(2))]
+   |           ^^^^^^^^
+
+error: cannot derive Unaligned with repr(align(N > 1))
+  --> tests/ui-stable/struct.rs:84:21
+   |
+84 | #[repr(transparent, align(2))]
+   |                     ^^^^^^^^
+
+error: cannot derive Unaligned with repr(align(N > 1))
+  --> tests/ui-stable/struct.rs:90:16
+   |
+90 | #[repr(packed, align(2))]
+   |                ^^^^^^^^
+
+error: cannot derive Unaligned with repr(align(N > 1))
+  --> tests/ui-stable/struct.rs:94:18
+   |
+94 | #[repr(align(1), align(2))]
+   |                  ^^^^^^^^
+
+error: cannot derive Unaligned with repr(align(N > 1))
+  --> tests/ui-stable/struct.rs:98:8
+   |
+98 | #[repr(align(2), align(4))]
+   |        ^^^^^^^^
+
+error[E0692]: transparent struct cannot have other repr hints
+  --> tests/ui-stable/struct.rs:84:8
+   |
+84 | #[repr(transparent, align(2))]
+   |        ^^^^^^^^^^^  ^^^^^^^^
+
+error[E0277]: the size for values of type `[u8]` cannot be known at compilation time
+  --> tests/ui-stable/struct.rs:31:10
+   |
+31 | #[derive(KnownLayout)]
+   |          ^^^^^^^^^^^ doesn't have a size known at compile-time
+   |
+   = help: within `KL00`, the trait `Sized` is not implemented for `[u8]`, which is required by `KL00: Sized`
+note: required because it appears within the type `KL00`
+  --> tests/ui-stable/struct.rs:32:8
+   |
+32 | struct KL00(u8, NotKnownLayoutDst);
+   |        ^^^^
+   = help: see issue #48214
+   = note: this error originates in the derive macro `KnownLayout` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0277]: the size for values of type `[u8]` cannot be known at compilation time
+  --> tests/ui-stable/struct.rs:36:10
+   |
+36 | #[derive(KnownLayout)]
+   |          ^^^^^^^^^^^ doesn't have a size known at compile-time
+   |
+   = help: within `KL02`, the trait `Sized` is not implemented for `[u8]`, which is required by `KL02: Sized`
+note: required because it appears within the type `KL02`
+  --> tests/ui-stable/struct.rs:37:8
+   |
+37 | struct KL02(u8, [u8]);
+   |        ^^^^
+   = help: see issue #48214
+   = note: this error originates in the derive macro `KnownLayout` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0277]: the trait bound `NotKnownLayoutDst: KnownLayout` is not satisfied
+  --> tests/ui-stable/struct.rs:41:10
+   |
+41 | #[derive(KnownLayout)]
+   |          ^^^^^^^^^^^ the trait `KnownLayout` is not implemented for `NotKnownLayoutDst`
+   |
+   = help: the following other types implement trait `KnownLayout`:
+             ()
+             *const T
+             *mut T
+             AU16
+             F32<O>
+             F64<O>
+             I128<O>
+             I16<O>
+           and $N others
+   = help: see issue #48214
+   = note: this error originates in the derive macro `KnownLayout` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0277]: the trait bound `NotKnownLayout: KnownLayout` is not satisfied
+  --> tests/ui-stable/struct.rs:47:10
+   |
+47 | #[derive(KnownLayout)]
+   |          ^^^^^^^^^^^ the trait `KnownLayout` is not implemented for `NotKnownLayout`
+   |
+   = help: the following other types implement trait `KnownLayout`:
+             ()
+             *const T
+             *mut T
+             AU16
+             F32<O>
+             F64<O>
+             I128<O>
+             I16<O>
+           and $N others
+   = help: see issue #48214
+   = note: this error originates in the derive macro `KnownLayout` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0277]: the trait bound `HasPadding<AsBytes2, true>: ShouldBe<false>` is not satisfied
+  --> tests/ui-stable/struct.rs:59:10
+   |
+59 | #[derive(AsBytes)]
+   |          ^^^^^^^ the trait `ShouldBe<false>` is not implemented for `HasPadding<AsBytes2, true>`
+   |
+   = help: the trait `ShouldBe<true>` is implemented for `HasPadding<AsBytes2, true>`
+   = help: see issue #48214
+   = note: this error originates in the derive macro `AsBytes` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0277]: the trait bound `HasPadding<AsBytes3, true>: ShouldBe<false>` is not satisfied
+  --> tests/ui-stable/struct.rs:66:10
+   |
+66 | #[derive(AsBytes)]
+   |          ^^^^^^^ the trait `ShouldBe<false>` is not implemented for `HasPadding<AsBytes3, true>`
+   |
+   = help: the trait `ShouldBe<true>` is implemented for `HasPadding<AsBytes3, true>`
+   = help: see issue #48214
+   = note: this error originates in the derive macro `AsBytes` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0587]: type has conflicting packed and align representation hints
+  --> tests/ui-stable/struct.rs:91:1
+   |
+91 | struct Unaligned3;
+   | ^^^^^^^^^^^^^^^^^

@@ -382,6 +382,12 @@ No impact on safety AFAICT - the delta only specifies a new attribute for
 https://github.com/Lokathor/bytemuck/issues/159
 """
 
+[[audits.byteorder]]
+who = "danakj <danakj@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+version = "1.5.0"
+notes = "Unsafe review in https://crrev.com/c/5838022"
+
 [[audits.bytes]]
 who = "agl@chromium.org"
 criteria = ["safe-to-run", "does-not-implement-crypto"]

@@ -71,6 +71,9 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 [policy."bytemuck_derive:1.7.1"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
+[policy."byteorder:1.5.0"]
+criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
+
 [policy."bytes:1.7.1"]
 criteria = ["crypto-safe", "safe-to-run"]
 
@@ -335,6 +338,12 @@ criteria = ["crypto-safe", "safe-to-run"]
 [policy."wycheproof:0.4.0"]
 criteria = ["crypto-safe", "safe-to-run"]
 
+[policy."zerocopy-derive:0.7.35"]
+criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
+
+[policy."zerocopy:0.7.35"]
+criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
+
 [[exemptions.cxx]]
 version = "1.0.128"
 criteria = ["safe-to-deploy", "crypto-safe", "ub-risk-2"]
@@ -440,4 +449,20 @@ Exemption updated to 2.0.72 when updating the crate in July 2024.
 Exemption updated to 2.0.74 when updating the crate in August 2024.
 Exemption updated to 2.0.76 when updating the crate in August 2024.
 Exemption updated to 2.0.77 when updating the crate in September 2024.
+"""
+
+[[exemptions.zerocopy]]
+version = "0.7.35"
+criteria = ["safe-to-deploy", "crypto-safe", "ub-risk-2"]
+notes = """
+Requires unsafe review audit. Authored in Google and audit should come from there as well.
+
+https://crbug.com/366411886
+"""
+
+[[exemptions.zerocopy-derive]]
+version = "0.7.35"
+criteria = ["safe-to-deploy", "crypto-safe", "ub-risk-2"]
+notes = """
+Requires unsafe review audit. Authored in Google and audit should come from there as well.
 """

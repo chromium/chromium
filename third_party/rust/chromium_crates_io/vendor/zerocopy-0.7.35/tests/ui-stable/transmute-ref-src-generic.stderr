@@ -1,0 +1,19 @@
+error[E0512]: cannot transmute between types of different sizes, or dependently-sized types
+  --> tests/ui-stable/transmute-ref-src-generic.rs:17:5
+   |
+17 |     transmute_ref!(t)
+   |     ^^^^^^^^^^^^^^^^^
+   |
+   = note: source type: `T` (this type does not have a fixed size)
+   = note: target type: `u8` (8 bits)
+   = note: this error originates in the macro `$crate::assert_size_eq` which comes from the expansion of the macro `transmute_ref` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0512]: cannot transmute between types of different sizes, or dependently-sized types
+  --> tests/ui-stable/transmute-ref-src-generic.rs:17:5
+   |
+17 |     transmute_ref!(t)
+   |     ^^^^^^^^^^^^^^^^^
+   |
+   = note: source type: `AlignOf<T>` (size can vary because of T)
+   = note: target type: `MaxAlignsOf<T, u8>` (size can vary because of T)
+   = note: this error originates in the macro `$crate::assert_align_gt_eq` which comes from the expansion of the macro `transmute_ref` (in Nightly builds, run with -Z macro-backtrace for more info)

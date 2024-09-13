@@ -84,3 +84,7 @@ features = ["full"]
 
 [dependencies.unicode-linebreak]
 version = "0.1"
+
+[dependencies.zerocopy]
+version = "0.7.35"
+features = ["derive", "simd"]
