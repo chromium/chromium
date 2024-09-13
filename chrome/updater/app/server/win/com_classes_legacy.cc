@@ -372,6 +372,11 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
     ap_ = base::WideToUTF8(ap);
     policy_same_version_update_ = policy_same_version_update;
 
+    if (!is_install_) {
+      VLOG(1) << __func__ << ": !is_install_, app not pre-registered";
+      return S_OK;
+    }
+
     // Holds the result of the IPC to register an app.
     struct RegisterAppResult
         : public base::RefCountedThreadSafe<RegisterAppResult> {
@@ -466,11 +471,6 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
   }
 
   HRESULT UpdateOrInstall() {
-    if (new_install_ && FAILED(IsCOMCallerAllowed())) {
-      VLOG(1) << __func__ << ": admin rights required for new installs";
-      return E_ACCESSDENIED;
-    }
-
     current_operation_ = CurrentOperation::kUpdatingOrInstalling;
     return is_install_ ? Install() : Update();
   }
