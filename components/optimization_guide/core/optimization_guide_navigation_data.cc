@@ -52,7 +52,11 @@ void OptimizationGuideNavigationData::RecordOptimizationGuideUKM() const {
   if (!registered_optimization_types_.empty()) {
     int64_t types_bitmask = 0;
     for (const auto& optimization_type : registered_optimization_types_) {
-      types_bitmask |= (int64_t{1} << static_cast<int>(optimization_type));
+      // Optimization types that are out of range cannot be represented in this
+      // bitmask.
+      if (0 <= optimization_type && optimization_type < 64) {
+        types_bitmask |= (int64_t{1} << static_cast<int>(optimization_type));
+      }
     }
     builder.SetRegisteredOptimizationTypes(types_bitmask);
     did_record_metric = true;
