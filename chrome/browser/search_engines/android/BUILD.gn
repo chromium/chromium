@@ -68,6 +68,9 @@ generate_jni("jni_headers") {
 
 android_resources("java_resources") {
   sources = [
+    "java/res/drawable-night/blocking_choice_confirmation_illustration.xml",
+    "java/res/drawable-night/blocking_choice_dialog_illustration.xml",
+    "java/res/drawable/blocking_choice_confirmation_illustration.xml",
     "java/res/drawable/blocking_choice_dialog_illustration.xml",
     "java/res/drawable/search_sogou.xml",
     "java/res/layout/blocking_choice_dialog.xml",

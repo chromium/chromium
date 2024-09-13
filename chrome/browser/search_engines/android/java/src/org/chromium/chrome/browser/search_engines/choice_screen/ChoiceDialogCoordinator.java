@@ -192,7 +192,7 @@ public class ChoiceDialogCoordinator implements ChoiceDialogMediator.Delegate {
                 }
                 case DialogType.CHOICE_CONFIRM -> {
                     illustration.setBackgroundResource(
-                            R.drawable.blocking_choice_dialog_illustration);
+                            R.drawable.blocking_choice_confirmation_illustration);
                     title.setText(R.string.blocking_choice_dialog_second_title);
                     message.setText(R.string.blocking_choice_dialog_second_message);
                     button.setText(mView.getContext().getString(R.string.done));

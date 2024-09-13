@@ -13,9 +13,11 @@ found in the LICENSE file.
 
     <ImageView
         android:id="@+id/illustration"
-        android:layout_width="match_parent"
-        android:layout_height="154dp"
-        android:layout_marginBottom="16dp"
+        android:layout_width="@dimen/blocking_dialog_illustration_width"
+        android:layout_height="@dimen/blocking_dialog_illustration_height"
+        android:layout_margin="16dp"
+        android:layout_gravity="center_horizontal"
+        android:scaleType="fitCenter"
         android:importantForAccessibility="no" />
 
     <TextView
@@ -39,9 +41,10 @@ found in the LICENSE file.
     <org.chromium.ui.widget.ButtonCompat
         android:id="@+id/choice_dialog_button"
         style="@style/FilledButton"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
         android:layout_marginBottom="16dp"
+        android:layout_gravity="end"
         android:gravity="center"/>
 </LinearLayout>

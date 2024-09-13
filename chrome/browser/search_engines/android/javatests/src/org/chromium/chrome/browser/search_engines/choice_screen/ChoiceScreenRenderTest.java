@@ -31,11 +31,15 @@ import org.mockito.quality.Strictness;
 import org.chromium.base.FeatureList;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
+import org.chromium.base.test.params.ParameterAnnotations;
+import org.chromium.base.test.params.ParameterAnnotations.ClassParameter;
+import org.chromium.base.test.params.ParameterSet;
+import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.search_engines.R;
-import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.search_engines.FakeSearchEngineCountryDelegate;
 import org.chromium.components.search_engines.SearchEngineChoiceService;
@@ -44,12 +48,19 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.BlankUiTestActivity;
+import org.chromium.ui.test.util.NightModeTestUtils;
+import org.chromium.ui.test.util.NightModeTestUtils.NightModeParams;
+
+import java.util.List;
 
 /** Render tests for {@link ChoiceDialogCoordinator} */
-@RunWith(ChromeJUnit4ClassRunner.class)
+@RunWith(ParameterizedRunner.class)
+@ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @Batch(Batch.PER_CLASS)
 @Features.EnableFeatures(SearchEnginesFeatures.CLAY_BLOCKING)
 public class ChoiceScreenRenderTest {
+    public @ClassParameter static List<ParameterSet> params = new NightModeParams().getParameters();
+
     public @Rule final ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_OMNIBOX)
@@ -63,6 +74,12 @@ public class ChoiceScreenRenderTest {
 
     private ModalDialogManager mDialogManager;
 
+    public ChoiceScreenRenderTest(boolean nightModeEnabled) {
+        // Sets a fake background color to make the screenshots easier to compare with bare eyes.
+        NightModeTestUtils.setUpNightModeForBlankUiTestActivity(nightModeEnabled);
+        mRenderTestRule.setNightModeEnabled(nightModeEnabled);
+    }
+
     @Before
     public void setUp() {
         FeatureList.setDisableNativeForTesting(true);
@@ -73,7 +90,7 @@ public class ChoiceScreenRenderTest {
                         SearchEngineChoiceService.setInstanceForTests(
                                 new SearchEngineChoiceService(
                                         new FakeSearchEngineCountryDelegate(
-                                                /* enableLogging= */ true))));
+                                                /* enableLogging= */ false))));
     }
 
     @Test
