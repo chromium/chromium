@@ -190,6 +190,7 @@ void LanguageDetectionModel::UpdateWithFile(base::File model_file) {
       LanguageDetectionModelState::kModelFileInvalid);
 
   if (!model_file.IsValid()) {
+    NotifyModelLoaded();
     return;
   }
 
@@ -220,6 +221,7 @@ void LanguageDetectionModel::UpdateWithFile(base::File model_file) {
     std::string file_content(model_file.GetLength(), '\0');
     if (!model_file.ReadAndCheck(0,
                                  base::as_writable_byte_span(file_content))) {
+      NotifyModelLoaded();
       return;
     }
     *options.mutable_base_options()
@@ -233,6 +235,7 @@ void LanguageDetectionModel::UpdateWithFile(base::File model_file) {
   if (!statusor_classifier.ok()) {
     LOCAL_HISTOGRAM_BOOLEAN("LanguageDetection.TFLiteModel.InvalidModelFile",
                             true);
+    NotifyModelLoaded();
     return;
   }
   base::UmaHistogramTimes("LanguageDetection.TFLiteModel.Create.Duration",
@@ -241,7 +244,9 @@ void LanguageDetectionModel::UpdateWithFile(base::File model_file) {
   recorder.set_state(LanguageDetectionModelState::kModelAvailable);
 
   lang_detection_model_ = std::move(*statusor_classifier);
+  NotifyModelLoaded();
 }
+
 #endif
 
 #if BUILDFLAG(IS_IOS)
@@ -280,7 +285,25 @@ void LanguageDetectionModel::SetModel(
   if (optional_model.has_value()) {
     lang_detection_model_ = std::move(optional_model).value();
   }
+  NotifyModelLoaded();
 }
 #endif
+
+void LanguageDetectionModel::AddOnModelLoadedCallback(
+    ModelLoadedCallback callback) {
+  if (loaded_ || model_loaded_callbacks_.size() >= kMaxPendingCallbacksCount) {
+    std::move(callback).Run(*this);
+  } else {
+    model_loaded_callbacks_.emplace_back(std::move(callback));
+  }
+}
+
+void LanguageDetectionModel::NotifyModelLoaded() {
+  for (auto&& callback_ : model_loaded_callbacks_) {
+    std::move(callback_).Run(*this);
+  }
+  loaded_ = true;
+  model_loaded_callbacks_.clear();
+}
 
 }  // namespace language_detection

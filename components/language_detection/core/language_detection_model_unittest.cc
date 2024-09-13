@@ -48,6 +48,13 @@ TEST_F(LanguageDetectionTest, ModelUnavailable) {
 TEST_F(LanguageDetectionTest, EmptyFileProvided) {
   LanguageDetectionModel language_detection_model;
 
+  bool callback_called = false;
+  language_detection_model.AddOnModelLoadedCallback(base::BindOnce(
+      [](bool* called, LanguageDetectionModel& model) {
+        EXPECT_FALSE(model.IsAvailable());
+        *called = true;
+      },
+      &callback_called));
 #if !BUILDFLAG(IS_IOS)
   language_detection_model.UpdateWithFile(base::File());
 #else
@@ -56,7 +63,7 @@ TEST_F(LanguageDetectionTest, EmptyFileProvided) {
                                                run_loop.QuitClosure());
   run_loop.Run();
 #endif
-
+  EXPECT_TRUE(callback_called);
   EXPECT_FALSE(language_detection_model.IsAvailable());
   histogram_tester_.ExpectUniqueSample(
       "LanguageDetection.TFLiteModel.LanguageDetectionModelState",
@@ -66,6 +73,13 @@ TEST_F(LanguageDetectionTest, EmptyFileProvided) {
 TEST_F(LanguageDetectionTest, UnsupportedModelFileProvided) {
   base::File file = CreateInvalidModelFile();
   LanguageDetectionModel language_detection_model;
+  bool callback_called = false;
+  language_detection_model.AddOnModelLoadedCallback(base::BindOnce(
+      [](bool* called, LanguageDetectionModel& model) {
+        EXPECT_FALSE(model.IsAvailable());
+        *called = true;
+      },
+      &callback_called));
 #if !BUILDFLAG(IS_IOS)
   language_detection_model.UpdateWithFile(std::move(file));
 #else
@@ -74,6 +88,7 @@ TEST_F(LanguageDetectionTest, UnsupportedModelFileProvided) {
                                                run_loop.QuitClosure());
   run_loop.Run();
 #endif
+  EXPECT_TRUE(callback_called);
   EXPECT_FALSE(language_detection_model.IsAvailable());
   histogram_tester_.ExpectUniqueSample(
       "LanguageDetection.TFLiteModel.LanguageDetectionModelState",
@@ -82,6 +97,27 @@ TEST_F(LanguageDetectionTest, UnsupportedModelFileProvided) {
       "LanguageDetection.TFLiteModel.InvalidModelFile", true, 1);
   histogram_tester_.ExpectTotalCount(
       "LanguageDetection.TFLiteModel.Create.Duration", 0);
+}
+
+TEST_F(LanguageDetectionTest, CallbackForValidFile) {
+  LanguageDetectionModel language_detection_model;
+  bool callback_called = false;
+  language_detection_model.AddOnModelLoadedCallback(base::BindOnce(
+      [](bool* called, LanguageDetectionModel& model) {
+        EXPECT_TRUE(model.IsAvailable());
+        *called = true;
+      },
+      &callback_called));
+#if !BUILDFLAG(IS_IOS)
+  language_detection_model.UpdateWithFile(GetValidModelFile());
+#else
+  base::RunLoop run_loop;
+  language_detection_model.UpdateWithFileAsync(GetValidModelFile(),
+                                               run_loop.QuitClosure());
+  run_loop.Run();
+#endif
+  EXPECT_TRUE(callback_called);
+  EXPECT_TRUE(language_detection_model.IsAvailable());
 }
 
 class LanguageDetectionValidTest : public LanguageDetectionTest {

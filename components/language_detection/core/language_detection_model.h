@@ -69,6 +69,8 @@ enum class LanguageDetectionModelState {
 // Each instance of this should only be used from a single thread.
 class LanguageDetectionModel {
  public:
+  using ModelLoadedCallback = base::OnceCallback<void(LanguageDetectionModel&)>;
+
   LanguageDetectionModel();
   ~LanguageDetectionModel();
 
@@ -98,9 +100,13 @@ class LanguageDetectionModel {
   // to determine the language of the page.
   bool IsAvailable() const;
 
+  void AddOnModelLoadedCallback(ModelLoadedCallback callback);
+
   std::string GetModelVersion() const;
 
  private:
+  void NotifyModelLoaded();
+
   // An owned NLClassifier.
   using OwnedNLClassifier =
       std::unique_ptr<tflite::task::text::nlclassifier::NLClassifier>;
@@ -120,6 +126,13 @@ class LanguageDetectionModel {
   // The number of threads to use for model inference. -1 tells TFLite to use
   // its internal default logic.
   const int num_threads_ = -1;
+
+  static constexpr int kMaxPendingCallbacksCount = 100;
+  // Pending callbacks for waiting the model to be available.
+  std::vector<ModelLoadedCallback> model_loaded_callbacks_;
+
+  // Records whether a file has been updated to the model.
+  bool loaded_ = false;
 
   // Used to load the data on a background sequence (see UpdateWithFileAsync).
   base::WeakPtrFactory<LanguageDetectionModel> weak_factory_{this};
