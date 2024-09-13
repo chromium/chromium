@@ -51,6 +51,7 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 
 import android.app.Activity;
 import android.content.Context;
+import android.text.TextUtils;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -384,8 +385,8 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
         assertThat(
                 cardSuggestionModel.get().get(FIRST_LINE_LABEL),
                 is(MASTERCARD_SUGGESTION.getSublabel()));
-        // If card benefits are not present, the second line in labels is not visible.
-        assertNull(cardSuggestionModel.get().get(SECOND_LINE_LABEL));
+        // If card benefits are not present, the second line in labels has empty value.
+        assertTrue(cardSuggestionModel.get().get(SECOND_LINE_LABEL).isEmpty());
 
         cardSuggestionModel = getCardSuggestionModel(itemList, VISA_SUGGESTION_WITH_CARD_BENEFITS);
         assertTrue(cardSuggestionModel.isPresent());
@@ -813,7 +814,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                                         && item.model
                                                 .get(FIRST_LINE_LABEL)
                                                 .equals(suggestion.getSublabel())
-                                        && (suggestion.getSecondarySublabel() == null
+                                        && (TextUtils.isEmpty(suggestion.getSecondarySublabel())
                                                 || item.model
                                                         .get(SECOND_LINE_LABEL)
                                                         .equals(suggestion.getSecondarySublabel())))

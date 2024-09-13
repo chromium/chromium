@@ -11,6 +11,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
@@ -32,6 +33,7 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.NETWORK_NAME;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.NON_TRANSFORMING_CREDIT_CARD_SUGGESTION_KEYS;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.ON_CREDIT_CARD_CLICK_ACTION;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.SECOND_LINE_LABEL;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.DISMISS_HANDLER;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.IbanProperties.IBAN_NICKNAME;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.IbanProperties.IBAN_VALUE;
@@ -677,7 +679,7 @@ public class TouchToFillPaymentMethodViewTest {
 
     @Test
     @MediumTest
-    public void testSecondLineLabelOfCreditCardSuggestion_HiddenWithoutCardBenefits() {
+    public void testSecondLineLabelOfCreditCardSuggestionAndTermsLabel_HiddenWithoutCardBenefits() {
         runOnUiThreadBlocking(
                 () -> {
                     mTouchToFillPaymentMethodModel
@@ -692,6 +694,8 @@ public class TouchToFillPaymentMethodViewTest {
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
         assertEquals(getSuggestionSecondLineLabelAt(0).getVisibility(), View.GONE);
+        // The benefit terms label is omitted when there are no card benefits.
+        assertNull(getCreditCardBenefitsTermsLabel());
     }
 
     @Test
@@ -979,15 +983,10 @@ public class TouchToFillPaymentMethodViewTest {
                         .with(MAIN_TEXT, suggestion.getLabel())
                         .with(MINOR_TEXT, suggestion.getSecondaryLabel())
                         .with(FIRST_LINE_LABEL, suggestion.getSublabel())
+                        .with(SECOND_LINE_LABEL, suggestion.getSecondarySublabel())
                         .with(ITEM_COLLECTION_INFO, collectionInfo)
                         .with(ON_CREDIT_CARD_CLICK_ACTION, actionCallback)
                         .with(APPLY_DEACTIVATED_STYLE, suggestion.applyDeactivatedStyle());
-        if (suggestion.getSecondarySublabel() != null) {
-            creditCardSuggestionModelBuilder.with(
-                    TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties
-                            .SECOND_LINE_LABEL,
-                    suggestion.getSecondarySublabel());
-        }
         if (!card.getBasicCardIssuerNetwork()
                 .equals(card.getCardNameForAutofillDisplay().toLowerCase())) {
             creditCardSuggestionModelBuilder.with(NETWORK_NAME, card.getBasicCardIssuerNetwork());

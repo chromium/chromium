@@ -25,6 +25,7 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.TermsLabelProperties.CARD_BENEFITS_TERMS_AVAILABLE;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.VISIBLE;
 
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -144,7 +145,7 @@ class TouchToFillPaymentMethodViewBinder {
         // If card benefits are displayed on the first line, the second line will show
         // primary label with the expiration date or the virtual card status.
         TextView primaryLabel = firstLineLabel;
-        if (model.get(SECOND_LINE_LABEL) != null) {
+        if (!TextUtils.isEmpty(model.get(SECOND_LINE_LABEL))) {
             secondLineLabel.setVisibility(View.VISIBLE);
             primaryLabel = secondLineLabel;
         }
