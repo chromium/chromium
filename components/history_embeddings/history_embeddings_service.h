@@ -384,9 +384,6 @@ class HistoryEmbeddingsService : public KeyedService,
   // This will be null if the feature flag is disabled.
   base::SequenceBound<Storage> storage_;
 
-  // Hashes for phrases of one or two words to be filtered.
-  std::unordered_set<uint32_t> filter_hashes_;
-
   // Callback called when `ProcessAndStorePassages` completes. Needed for tests
   // as the blink dependency doesn't have a 'wait for pending requests to
   // complete' mechanism.

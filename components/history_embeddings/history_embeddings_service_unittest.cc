@@ -9,6 +9,7 @@
 
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/test/bind.h"
@@ -22,6 +23,7 @@
 #include "components/history/core/test/history_service_test_util.h"
 #include "components/history_embeddings/answerer.h"
 #include "components/history_embeddings/history_embeddings_features.h"
+#include "components/history_embeddings/search_strings_update_listener.h"
 #include "components/history_embeddings/vector_database.h"
 #include "components/optimization_guide/core/test_model_info_builder.h"
 #include "components/optimization_guide/core/test_optimization_guide_decider.h"
@@ -37,7 +39,18 @@
 
 namespace history_embeddings {
 
+namespace {
+
 using optimization_guide::OptimizationGuideModelExecutor;
+
+base::FilePath GetTestFilePath(const std::string& file_name) {
+  base::FilePath test_data_dir;
+  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &test_data_dir);
+  return test_data_dir.AppendASCII("components/test/data/history_embeddings")
+      .AppendASCII(file_name);
+}
+
+}  // namespace
 
 class HistoryEmbeddingsServicePublic : public HistoryEmbeddingsService {
  public:
@@ -77,8 +90,7 @@ class HistoryEmbeddingsServiceTest : public testing::Test {
           {{"UseMlEmbedder", "false"},
            {"SearchPassageMinimumWordCount", "3"},
            {"UseMlAnswerer", "false"},
-           {"EnableAnswers", "true"},
-           {"FilterHashes", "3962775614,4220142007,430397466"}}},
+           {"EnableAnswers", "true"}}},
 #if BUILDFLAG(IS_CHROMEOS)
          {chromeos::features::kFeatureManagementHistoryEmbedding, {{}}}
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -107,6 +119,14 @@ class HistoryEmbeddingsServiceTest : public testing::Test {
         optimization_guide_decider_.get(),
         /*service_controller=*/nullptr, os_crypt_.get(),
         /*optimization_guide_model_executor=*/nullptr);
+
+    ASSERT_TRUE(listener()->filter_words_hashes().empty());
+    listener()->OnSearchStringsUpdate(
+        GetTestFilePath("fake_search_strings_file"));
+    task_environment_.RunUntilIdle();
+    ASSERT_EQ(
+        listener()->filter_words_hashes(),
+        std::unordered_set<uint32_t>({3962775614, 4220142007, 430397466}));
   }
 
   void TearDown() override {
@@ -114,6 +134,7 @@ class HistoryEmbeddingsServiceTest : public testing::Test {
       service_->storage_.SynchronouslyResetForTest();
       service_->Shutdown();
     }
+    listener()->ResetForTesting();
   }
 
   void OverrideVisibilityScoresForTesting(
@@ -169,6 +190,10 @@ class HistoryEmbeddingsServiceTest : public testing::Test {
 
   Answerer* GetAnswerer() { return service_->answerer_.get(); }
 
+  SearchStringsUpdateListener* listener() {
+    return SearchStringsUpdateListener::GetInstance();
+  }
+
  protected:
   void AddTestHistoryPage(const std::string& url) {
     history_service_->AddPage(GURL(url), base::Time::Now() - base::Days(4), 0,
@@ -179,8 +204,7 @@ class HistoryEmbeddingsServiceTest : public testing::Test {
 
   base::test::ScopedFeatureList feature_list_;
 
-  base::test::TaskEnvironment task_environment_{
-      base::test::SingleThreadTaskEnvironment::TimeSource::MOCK_TIME};
+  base::test::TaskEnvironment task_environment_;
 
   base::ScopedTempDir history_dir_;
   std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_;
@@ -436,7 +460,7 @@ TEST_F(HistoryEmbeddingsServiceTest, StaticHashVerificationTest) {
   EXPECT_EQ(history_embeddings::HashString("hello world"), 430397466u);
 }
 
-TEST_F(HistoryEmbeddingsServiceTest, FilterHashes) {
+TEST_F(HistoryEmbeddingsServiceTest, FilterWordsHashes) {
   AddTestHistoryPage("http://test1.com");
   OnPassagesEmbeddingsComputed(UrlPassages(1, 1, base::Time::Now()),
                                {"passage1", "passage2", "passage3", "passage4"},

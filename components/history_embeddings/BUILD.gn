@@ -27,6 +27,8 @@ static_library("history_embeddings") {
     "passages_util.h",
     "scheduling_embedder.cc",
     "scheduling_embedder.h",
+    "search_strings_update_listener.cc",
+    "search_strings_update_listener.h",
     "sql_database.cc",
     "sql_database.h",
     "vector_database.cc",
@@ -67,6 +69,7 @@ source_set("unit_tests") {
     "mock_history_embeddings_service.cc",
     "mock_history_embeddings_service.h",
     "passages_util_unittest.cc",
+    "search_strings_update_listener_unittest.cc",
     "sql_database_unittest.cc",
     "vector_database_unittest.cc",
   ]

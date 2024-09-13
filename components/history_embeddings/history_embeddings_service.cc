@@ -32,6 +32,7 @@
 #include "components/history_embeddings/mock_answerer.h"
 #include "components/history_embeddings/mock_embedder.h"
 #include "components/history_embeddings/scheduling_embedder.h"
+#include "components/history_embeddings/search_strings_update_listener.h"
 #include "components/history_embeddings/sql_database.h"
 #include "components/history_embeddings/vector_database.h"
 #include "components/optimization_guide/core/model_quality/feature_type_map.h"
@@ -273,14 +274,9 @@ HistoryEmbeddingsService::HistoryEmbeddingsService(
       history_service_->history_dir());
   history_service_observation_.Observe(history_service_);
 
-  std::string filter_hashes_param = kFilterHashes.Get();
-  for (std::string_view& hash_string : base::SplitStringPiece(
-           filter_hashes_param, ",", base::WhitespaceHandling::TRIM_WHITESPACE,
-           base::SplitResult::SPLIT_WANT_NONEMPTY)) {
-    uint32_t hash;
-    if (base::StringToUint(hash_string, &hash)) {
-      filter_hashes_.insert(hash);
-    }
+  if (!kFilterHashes.Get().empty()) {
+    SearchStringsUpdateListener::GetInstance()->SetFilterWordsHashes(
+        kFilterHashes.Get());
   }
 
   // Notify page content annotations service that we will need the content
@@ -344,6 +340,13 @@ bool HistoryEmbeddingsService::IsEligible(const GURL& url) {
   return eligible;
 }
 
+void HistoryEmbeddingsService::OnEmbedderMetadataReady(
+    EmbedderMetadata metadata) {
+  subscription_ = os_crypt_async_->GetInstance(
+      base::BindOnce(&HistoryEmbeddingsService::OnOsCryptAsyncReady,
+                     weak_ptr_factory_.GetWeakPtr(), metadata));
+}
+
 void HistoryEmbeddingsService::OnOsCryptAsyncReady(
     EmbedderMetadata metadata,
     os_crypt_async::Encryptor encryptor,
@@ -357,13 +360,6 @@ void HistoryEmbeddingsService::OnOsCryptAsyncReady(
         .Then(base::BindOnce(&HistoryEmbeddingsService::RebuildAbsentEmbeddings,
                              weak_ptr_factory_.GetWeakPtr()));
   }
-}
-
-void HistoryEmbeddingsService::OnEmbedderMetadataReady(
-    EmbedderMetadata metadata) {
-  subscription_ = os_crypt_async_->GetInstance(
-      base::BindOnce(&HistoryEmbeddingsService::OnOsCryptAsyncReady,
-                     weak_ptr_factory_.GetWeakPtr(), metadata));
 }
 
 void HistoryEmbeddingsService::RetrievePassages(
@@ -1068,9 +1064,11 @@ bool HistoryEmbeddingsService::QueryIsFiltered(
   // Erase any query terms that were trimmed to empty so they don't disrupt
   // the two term pairing logic below.
   std::erase(query_terms, "");
-  if (std::ranges::any_of(query_terms, [this](std::string_view query_term) {
+  const std::unordered_set<uint32_t>& filter_words_hashes =
+      SearchStringsUpdateListener::GetInstance()->filter_words_hashes();
+  if (std::ranges::any_of(query_terms, [&](std::string_view query_term) {
         uint32_t hash = HashString(query_term);
-        return filter_hashes_.contains(hash);
+        return filter_words_hashes.contains(hash);
       })) {
     RecordQueryFiltered(QueryFiltered::FILTERED_ONE_WORD_HASH_MATCH);
     return true;
@@ -1079,7 +1077,7 @@ bool HistoryEmbeddingsService::QueryIsFiltered(
     std::string two_terms =
         base::StrCat({query_terms[i - 1], " ", query_terms[i]});
     uint32_t hash = HashString(two_terms);
-    if (filter_hashes_.contains(hash)) {
+    if (filter_words_hashes.contains(hash)) {
       RecordQueryFiltered(QueryFiltered::FILTERED_TWO_WORD_HASH_MATCH);
       return true;
     }
