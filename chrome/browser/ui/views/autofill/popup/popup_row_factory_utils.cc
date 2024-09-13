@@ -206,7 +206,8 @@ bool ShouldApplyNewPopupMaxWidth(SuggestionType suggestion_type,
   const bool is_credit_card_unclassified_field_manual_fallback =
       !is_suggestion_acceptable &&
       filling_product == FillingProduct::kCreditCard;
-  return is_address_unclassified_field_manual_fallback ||
+  return filling_product == FillingProduct::kPlusAddresses ||
+         is_address_unclassified_field_manual_fallback ||
          is_credit_card_unclassified_field_manual_fallback ||
          base::FeatureList::IsEnabled(
              features::kAutofillGranularFillingAvailable);
