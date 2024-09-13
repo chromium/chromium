@@ -48,6 +48,12 @@
 // The user tapped on "Add account…".
 - (void)didTapAddAccount:(ShowSigninCommandCompletionCallback)callback;
 
+// Blocks the user from using Chromium.
+- (void)blockScene;
+
+// Stops the `blockScene`.
+- (void)unblockScene;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTHENTICATION_ACCOUNT_MENU_ACCOUNT_MENU_MEDIATOR_DELEGATE_H_

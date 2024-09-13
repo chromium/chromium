@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/policy/model/management_state.h"
 #import "ios/chrome/browser/policy/ui_bundled/management_util.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_service.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -41,6 +42,7 @@
 #import "ios/chrome/browser/ui/authentication/account_menu/account_menu_view_controller.h"
 #import "ios/chrome/browser/ui/authentication/authentication_flow.h"
 #import "ios/chrome/browser/ui/authentication/signout_action_sheet/signout_action_sheet_coordinator.h"
+#import "ios/chrome/browser/ui/scoped_ui_blocker/scoped_ui_blocker.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_accounts/accounts_coordinator.h"
 #import "ios/chrome/browser/ui/settings/settings_controller_protocol.h"
 #import "ios/chrome/browser/ui/settings/settings_root_view_controlling.h"
@@ -80,6 +82,9 @@
   // ApplicationCommands handler.
   id<ApplicationCommands> _applicationHandler;
   ChromeAccountManagerService* _accountManagerService;
+
+  // Block the UI when the identity removal or switch is in progress.
+  std::unique_ptr<ScopedUIBlocker> _UIBlocker;
 }
 
 - (void)dealloc {
@@ -310,6 +315,15 @@
   id<SnackbarCommands> snackbarCommandsHandler =
       HandlerForProtocol(dispatcher, SnackbarCommands);
   [snackbarCommandsHandler showSnackbarMessageOverBrowserToolbar:snackbarTitle];
+}
+
+- (void)blockScene {
+  SceneState* sceneState = self.browser->GetSceneState();
+  _UIBlocker = std::make_unique<ScopedUIBlocker>(sceneState);
+}
+
+- (void)unblockScene {
+  _UIBlocker.reset();
 }
 
 #pragma mark - SyncErrorSettingsCommandHandler

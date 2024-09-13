@@ -308,6 +308,7 @@ TEST_F(AccountMenuMediatorTest, TestAccountTapedSignoutFailed) {
                           onSignoutSuccess = value;
                           return true;
                         }]]);
+  OCMExpect([delegate_ blockScene]);
   [mediator_ accountTappedWithGaiaID:kSecondaryIdentity.gaiaID
                           targetRect:target];
   VerifyMock();
@@ -315,6 +316,7 @@ TEST_F(AccountMenuMediatorTest, TestAccountTapedSignoutFailed) {
   OCMExpect([consumer_ updateAccountListWithGaiaIDsToAdd:@[]
                                          gaiaIDsToRemove:@[]]);
   OCMExpect([consumer_ updatePrimaryAccount]);
+  OCMExpect([delegate_ unblockScene]);
   // Simulate a sign-out failure
   onSignoutSuccess(false);
 }
@@ -339,6 +341,7 @@ TEST_F(AccountMenuMediatorTest, TestAccountTapedSignInFailed) {
                           SignOut();
                           return true;
                         }]]);
+  OCMExpect([delegate_ blockScene]);
   [mediator_ accountTappedWithGaiaID:kSecondaryIdentity.gaiaID
                           targetRect:target];
   VerifyMock();
@@ -361,6 +364,7 @@ TEST_F(AccountMenuMediatorTest, TestAccountTapedSignInFailed) {
   OCMExpect([consumer_ updateAccountListWithGaiaIDsToAdd:@[]
                                          gaiaIDsToRemove:@[]]);
   OCMExpect([consumer_ updatePrimaryAccount]);
+  OCMExpect([delegate_ unblockScene]);
   onSigninSuccess(NO);
 
   // Checks the user is signed-back in.
@@ -385,6 +389,7 @@ TEST_F(AccountMenuMediatorTest, TestAccountTapedWithSuccesfulSwitch) {
                           onSignoutSuccess = value;
                           return true;
                         }]]);
+  OCMExpect([delegate_ blockScene]);
   [mediator_ accountTappedWithGaiaID:kSecondaryIdentity.gaiaID
                           targetRect:target];
   VerifyMock();
@@ -412,6 +417,7 @@ TEST_F(AccountMenuMediatorTest, TestAccountTapedWithSuccesfulSwitch) {
   OCMExpect(
       [delegate_ triggerAccountSwitchSnackbarWithIdentity:kSecondaryIdentity]);
   OCMExpect([delegate_ mediatorWantsToBeDismissed:mediator_]);
+  OCMExpect([delegate_ unblockScene]);
   onSigninSuccess(kSecondaryIdentity);
 }
 
@@ -467,10 +473,12 @@ TEST_F(AccountMenuMediatorTest, TestViewControllerWantsToBeClosed) {
                      callback = value;
                      return true;
                    }]]);
+  OCMExpect([delegate_ blockScene]);
   [mediator_ signOutFromTargetRect:rect
                           callback:^(BOOL success) {
                             closure.Run();
                           }];
+  OCMExpect([delegate_ unblockScene]);
   callback(YES);
   run_loop.Run();
 }

@@ -240,6 +240,7 @@
   }
   _blockUpdates = YES;
   _blockUserInteractions = YES;
+  [self.delegate blockScene];
   __weak __typeof(self) weakSelf = self;
   [self.delegate signOutFromTargetRect:targetRect
                               callback:^(BOOL success) {
@@ -253,6 +254,7 @@
   if (_blockUserInteractions) {
     return;
   }
+  [self.delegate blockScene];
   _blockUpdates = YES;
   _blockUserInteractions = YES;
   id<SystemIdentity> newIdentity = nil;
@@ -389,6 +391,7 @@
 // Callback for signout.
 - (void)signoutEndedWithSuccess:(BOOL)success
                        callback:(void (^)(BOOL))callback {
+  [self.delegate unblockScene];
   if (!success) {
     // User had not signed-out. Allow to interact with the UI.
     _blockUserInteractions = NO;
@@ -403,6 +406,7 @@
                      toIdentity:(id<SystemIdentity>)newIdentity {
   if (!signoutSuccess) {
     // User had not signed-out. Allow to interact with the UI.
+    [self.delegate unblockScene];
     _blockUserInteractions = NO;
     _accountSwitchInProgress.RunAndReset();
     [self restartUpdates];
@@ -422,6 +426,7 @@
                   fromIdentity:(id<SystemIdentity>)previousIdentity
                     toIdentity:(id<SystemIdentity>)newIdentity {
   _accountSwitchInProgress.RunAndReset();
+  [self.delegate unblockScene];
   if (success) {
     [_delegate triggerAccountSwitchSnackbarWithIdentity:newIdentity];
     [_delegate mediatorWantsToBeDismissed:self];
