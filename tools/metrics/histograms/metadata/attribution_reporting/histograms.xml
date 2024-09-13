@@ -1393,6 +1393,21 @@ chromium-metrics-reviews@google.com.
       variants="AttributionReportingAggregatableContextType"/>
 </histogram>
 
+<histogram
+    name="Conversions.{ContextType}HttpResponseOrNetErrorCodeAggregatableNull"
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-03-11">
+  <owner>linnan@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Error info for sending a null aggregatable report, recorded for each sent
+    null aggregatable report. The HTTP response code is recorded if there is no
+    net error code for the request, or the net error code indicates there was a
+    response code failure.
+  </summary>
+  <token key="ContextType"
+      variants="AttributionReportingAggregatableContextType"/>
+</histogram>
+
 <histogram name="Conversions.{ContextType}ReportRetrySucceedAggregatable"
     enum="BooleanSuccess" expires_after="2025-02-10">
   <owner>linnan@chromium.org</owner>
@@ -1411,9 +1426,22 @@ chromium-metrics-reviews@google.com.
   <owner>johnidel@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
-    Records the high level request status of an attribution report. Recorded for
+    Records the high-level request status of an attribution report. Recorded for
     every aggregatable attribution report sent. For attribution report that has
     been retried, every retry will be counted.
+  </summary>
+  <token key="ContextType"
+      variants="AttributionReportingAggregatableContextType"/>
+</histogram>
+
+<histogram name="Conversions.{ContextType}ReportStatusAggregatableNull"
+    enum="ConversionReportStatus" expires_after="2025-03-11">
+  <owner>linnan@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records the high-level request status of a null aggregatable report.
+    Recorded for every null aggregatable report sent. For null aggregatable
+    report that has been retried, every retry will be counted.
   </summary>
   <token key="ContextType"
       variants="AttributionReportingAggregatableContextType"/>

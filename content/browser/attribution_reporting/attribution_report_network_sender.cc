@@ -273,7 +273,18 @@ void AttributionReportNetworkSender::OnReportSent(
                                has_trigger_context_id, *retry_succeed);
             }
           },
-          [](const AttributionReport::NullAggregatableData&) {},
+          [&](const AttributionReport::NullAggregatableData& data) {
+            has_trigger_context_id =
+                data.common_data.aggregatable_trigger_config
+                    .trigger_context_id()
+                    .has_value();
+            NetworkHistogram("ReportStatusAggregatableNull",
+                             &base::UmaHistogramEnumeration, is_debug_report,
+                             has_trigger_context_id, status);
+            NetworkHistogram("HttpResponseOrNetErrorCodeAggregatableNull",
+                             &base::UmaHistogramSparse, is_debug_report,
+                             has_trigger_context_id, response_or_net_error);
+          },
       },
       report.data());
 
