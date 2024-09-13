@@ -466,6 +466,11 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
   }
 
   HRESULT UpdateOrInstall() {
+    if (new_install_ && FAILED(IsCOMCallerAllowed())) {
+      VLOG(1) << __func__ << ": admin rights required for new installs";
+      return E_ACCESSDENIED;
+    }
+
     current_operation_ = CurrentOperation::kUpdatingOrInstalling;
     return is_install_ ? Install() : Update();
   }
