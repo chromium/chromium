@@ -115,4 +115,8 @@ std::string_view GetAppGroupId(const GURL& url) {
   return (it == map.end()) ? std::string_view() : it->second;
 }
 
+std::string ToString(bool value) {
+  return value ? "true" : "false";
+}
+
 }  // namespace growth

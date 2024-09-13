@@ -163,8 +163,14 @@ void CampaignsManager::SetPrefs(PrefService* prefs) {
 
 void CampaignsManager::LoadCampaigns(base::OnceClosure load_callback,
                                      bool in_oobe) {
+  CAMPAIGNS_LOG(DEBUG) << "Start loading campaigns. `in_oobe`: "
+                       << ToString(in_oobe);
+
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(ash::switches::kGrowthCampaigns)) {
+    CAMPAIGNS_LOG(DEBUG)
+        << "Switch `kGrowthCampaigns` is set. Loading campaigns from "
+           "encoded campaigns string.";
     const auto& value =
         command_line->GetSwitchValueASCII(ash::switches::kGrowthCampaigns);
     std::string decoded_str;
@@ -188,15 +194,19 @@ const Campaign* CampaignsManager::GetCampaignBySlot(Slot slot) const {
       << "Getting campaign before campaigns finish loading";
   const auto match_start = base::TimeTicks::Now();
   auto* match_result = matcher_.GetCampaignBySlot(slot);
-  if (match_result) {
-    RecordGetCampaignBySlot(slot);
+  RecordCampaignMatchDuration(base::TimeTicks::Now() - match_start);
+  if (!match_result) {
+    CAMPAIGNS_LOG(DEBUG) << "No campaign is selected for slot "
+                         << static_cast<int>(slot);
+    return nullptr;
   }
 
-  RecordCampaignMatchDuration(base::TimeTicks::Now() - match_start);
+  CAMPAIGNS_LOG(DEBUG) << "Campaign: "
+                       << growth::GetCampaignId(match_result).value()
+                       << " is selected for slot " << static_cast<int>(slot);
+  RecordGetCampaignBySlot(slot);
   LogCampaignInSystemLog(match_result, slot);
-
   RegisterTrialForCampaign(match_result);
-
   return match_result;
 }
 
@@ -316,7 +326,9 @@ void CampaignsManager::OnCampaignsComponentLoaded(
     return;
   }
 
+  CAMPAIGNS_LOG(DEBUG) << "Getting device registered time.";
   if (const auto registered_time = GetRegisteredTimeForTesting()) {
+    CAMPAIGNS_LOG(DEBUG) << "Registered time for test is set.";
     OnOobeTimestampLoaded(std::move(load_callback), path,
                           registered_time.value());
     return;
@@ -342,6 +354,7 @@ void CampaignsManager::OnCampaignsLoaded(
   }
 
   // Load campaigns into `CampaignMatcher` for selecting campaigns.
+  CAMPAIGNS_LOG(DEBUG) << "Filter and set campaigns.";
   matcher_.FilterAndSetCampaigns(&campaigns_);
 
   campaigns_loaded_ = true;
@@ -354,8 +367,11 @@ void CampaignsManager::OnOobeTimestampLoaded(
     base::OnceClosure load_callback,
     const std::optional<const base::FilePath>& path,
     base::Time oobe_time) {
+  CAMPAIGNS_LOG(DEBUG) << "Device registered time is: "
+                       << oobe_time.InSecondsFSinceUnixEpoch();
   matcher_.SetOobeCompleteTime(oobe_time);
 
+  CAMPAIGNS_LOG(DEBUG) << "Initializing feature_engagement::Tracker.";
   if (tracker_initialized_for_test_) {
     OnTrackerInitialized(std::move(load_callback), path,
                          /*init_success=*/true);
@@ -378,6 +394,7 @@ void CampaignsManager::OnTrackerInitialized(
         CampaignsManagerError::kTrackerInitializationFail);
   }
 
+  CAMPAIGNS_LOG(DEBUG) << "Initialized feature_engagement::Tracker.";
   // Read the campaigns file from component mounted path.
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()}, base::BindOnce(&ReadCampaignsFile, *path),
@@ -412,6 +429,9 @@ std::optional<base::Time> CampaignsManager::GetRegisteredTimeForTesting() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(
           ash::switches::kGrowthCampaignsRegisteredTimeSecondsSinceUnixEpoch)) {
+    CAMPAIGNS_LOG(DEBUG)
+        << "Switch `kGrothCampaignsRegisteredTimeSecondsSinceUnixEpoch` is "
+           "set.";
     const auto& value = command_line->GetSwitchValueASCII(
         ash::switches::kGrowthCampaignsRegisteredTimeSecondsSinceUnixEpoch);
 

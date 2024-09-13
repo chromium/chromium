@@ -75,8 +75,12 @@ void CampaignsManagerClientImpl::LoadCampaignsComponent(
     growth::CampaignComponentLoadedCallback callback) {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(ash::switches::kGrowthCampaignsPath)) {
-    std::move(callback).Run(base::FilePath(command_line->GetSwitchValueASCII(
-        ash::switches::kGrowthCampaignsPath)));
+    const auto path =
+        command_line->GetSwitchValuePath(ash::switches::kGrowthCampaignsPath);
+    CAMPAIGNS_LOG(DEBUG) << "Switch `kGrowthCampaignsPath` is set. Load "
+                            "campaigns component from file "
+                         << path;
+    std::move(callback).Run(base::FilePath(path));
     return;
   }
 
@@ -181,6 +185,8 @@ growth::ActionMap CampaignsManagerClientImpl::GetCampaignsActions() {
 void CampaignsManagerClientImpl::RegisterSyntheticFieldTrial(
     const std::string& trial_name,
     const std::string& group_name) const {
+  CAMPAIGNS_LOG(DEBUG) << "Register synthetic field trial: trial_name: "
+                       << trial_name << " group_name: " << group_name;
   ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
       trial_name, group_name,
       variations::SyntheticTrialAnnotationMode::kCurrentLog);
@@ -197,6 +203,9 @@ void CampaignsManagerClientImpl::RecordEvent(const std::string& event_name,
     return;
   }
 
+  CAMPAIGNS_LOG(DEBUG) << "Record event: " << event_name
+                       << " Trigger Campaigns: "
+                       << growth::ToString(trigger_campaigns);
   tracker->NotifyEvent(AddEventPrefix(event_name));
 
   if (auto* session = CampaignsManagerSession::Get();
@@ -217,6 +226,9 @@ void CampaignsManagerClientImpl::ClearConfig(
     return;
   }
 
+  for (const auto& param : params) {
+    CAMPAIGNS_LOG(DEBUG) << "Clear config: " << param.second;
+  }
   UpdateConfig(params);
   tracker->ClearEventData(feature_engagement::kIPHGrowthFramework);
 }
@@ -298,6 +310,9 @@ void CampaignsManagerClientImpl::OnComponentDownloaded(
     component_updater::ComponentManagerAsh::Error error,
     const base::FilePath& path) {
   if (error != component_updater::ComponentManagerAsh::Error::NONE) {
+    // TODO - b/365582608: Add error metrics.
+    CAMPAIGNS_LOG(ERROR) << "Failed to download campaigns component. Error: "
+                         << static_cast<int>(error);
     std::move(loaded_callback).Run(std::nullopt);
     return;
   }

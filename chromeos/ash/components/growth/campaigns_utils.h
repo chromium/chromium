@@ -36,6 +36,9 @@ std::string_view GetAppGroupId(const std::string_view app_id);
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH_UTILS)
 std::string_view GetAppGroupId(const GURL& url);
 
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH_UTILS)
+std::string ToString(bool value);
+
 }  // namespace growth
 
 #endif  // CHROMEOS_ASH_COMPONENTS_GROWTH_CAMPAIGNS_UTILS_H_

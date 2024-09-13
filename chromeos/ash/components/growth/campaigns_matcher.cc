@@ -25,6 +25,7 @@
 #include "chromeos/ash/components/growth/campaigns_logger.h"
 #include "chromeos/ash/components/growth/campaigns_manager_client.h"
 #include "chromeos/ash/components/growth/campaigns_model.h"
+#include "chromeos/ash/components/growth/campaigns_utils.h"
 #include "chromeos/ash/components/growth/growth_metrics.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
@@ -116,6 +117,7 @@ bool MatchSchedulings(const std::vector<std::unique_ptr<TimeWindowTargeting>>&
     }
   }
 
+  CAMPAIGNS_LOG(DEBUG) << "Schedulings is NOT matched.";
   return false;
 }
 
@@ -128,7 +130,6 @@ bool MatchExperimentTags(const base::Value::List* experiment_tags,
 
   // TODO: b/344673533 - verify that valid experiment targeting should have
   // both feature and experiment tag. Ignore the campaign if it is not the case.
-
   if (!feature.has_value()) {
     // Campaign matched if there is no targeted feature config.
     return true;
@@ -137,11 +138,13 @@ bool MatchExperimentTags(const base::Value::List* experiment_tags,
   const auto* targeted_feature = feature.value();
   if (!targeted_feature) {
     // Campaign not matched if feaure config is invalid.
+    CAMPAIGNS_LOG(DEBUG) << "Feature config is invalid.";
     return false;
   }
 
   if (!experiment_tags || experiment_tags->empty()) {
     // Campaign matched if there is no experiment tag targeting.
+    CAMPAIGNS_LOG(DEBUG) << "No targeted experiment tag.";
     return true;
   }
 
@@ -150,12 +153,17 @@ bool MatchExperimentTags(const base::Value::List* experiment_tags,
 
   if (exp_tag.empty()) {
     // Campaign not match if no experiment tag exists.
+    CAMPAIGNS_LOG(DEBUG) << "No experiment tag exists.";
     return false;
   }
 
   // Campaign is matched if the tag from field trail param matches any of the
   // tag in the targeting criteria.
-  return base::Contains(*experiment_tags, exp_tag);
+  const bool exp_tag_matched = base::Contains(*experiment_tags, exp_tag);
+  if (!exp_tag_matched) {
+    CAMPAIGNS_LOG(DEBUG) << "ExperimentTags is NOT matched.";
+  }
+  return exp_tag_matched;
 }
 
 // Match if the target values and the user pref has any overlap entries.
@@ -273,6 +281,7 @@ bool MatchUserPrefs(const PrefService* pref_service,
       return false;
     }
     if (!MatchUserPrefCriteria(*pref_service, targeting.GetList())) {
+      CAMPAIGNS_LOG(DEBUG) << "UserPref is NOT matched.";
       return false;
     }
   }
@@ -401,17 +410,18 @@ bool CampaignsMatcher::IsCampaignMatched(const Campaign* campaign,
 
   const auto* targetings = GetTargetings(campaign);
 
-  const auto campaign_id = GetCampaignId(campaign);
-  if (!campaign_id) {
-    return false;
-  }
+  const auto campaign_id = GetCampaignId(campaign).value();
 
-  if (Matched(targetings, campaign_id.value(), GetCampaignGroupId(campaign),
-              is_prematch)) {
-    return true;
-  }
+  CAMPAIGNS_LOG(DEBUG) << "Evaluating campaign: " << campaign_id
+                       << ". In prematch: " << ToString(is_prematch);
 
-  return false;
+  const bool is_matched = Matched(targetings, campaign_id,
+                                  GetCampaignGroupId(campaign), is_prematch);
+
+  CAMPAIGNS_LOG(DEBUG) << "Campaign: " << campaign_id
+                       << " is matched: " << ToString(is_matched)
+                       << " In prematch: " << ToString(is_prematch);
+  return is_matched;
 }
 
 bool CampaignsMatcher::MatchDemoModeTier(
@@ -637,6 +647,8 @@ bool CampaignsMatcher::MatchTriggerTargeting(
       return true;
     }
   }
+
+  CAMPAIGNS_LOG(DEBUG) << "TriggerTargeting is NOT matched.";
   return false;
 }
 
@@ -660,6 +672,8 @@ bool CampaignsMatcher::MatchOpenedApp(
       return true;
     }
   }
+
+  CAMPAIGNS_LOG(DEBUG) << "OpenedApp is NOT matched.";
   return false;
 }
 
@@ -681,7 +695,13 @@ bool CampaignsMatcher::ReachCap(base::cstring_view campaign_type,
       "storage:3650",
       campaign_type.c_str(), id, event_type.c_str(), cap.value());
 
-  return !client_->WouldTriggerHelpUI(conditions_params);
+  const bool reach_cap = !client_->WouldTriggerHelpUI(conditions_params);
+  if (reach_cap) {
+    CAMPAIGNS_LOG(DEBUG) << "Events are NOT matched. Campaign: " << id
+                         << " reached cap for " << campaign_type << " "
+                         << event_type;
+  }
+  return reach_cap;
 }
 
 bool CampaignsMatcher::MatchActiveUrlRegexes(
@@ -707,6 +727,8 @@ bool CampaignsMatcher::MatchActiveUrlRegexes(
       return true;
     }
   }
+
+  CAMPAIGNS_LOG(DEBUG) << "ActiveUrlRegexes is NOT matched.";
   return false;
 }
 
@@ -773,6 +795,8 @@ bool CampaignsMatcher::MatchEvents(std::unique_ptr<EventsTargeting> config,
 
     if (!any_event_matched) {
       // Can return if no condition is met.
+      CAMPAIGNS_LOG(DEBUG)
+          << "Events are NOT matched. Not meet custom events conditions.";
       return false;
     }
   }
@@ -799,6 +823,7 @@ bool CampaignsMatcher::MatchMinorUser(
   if (!identity_manager) {
     // Identity manager is not available (e.g:guest mode). In that case,
     // a campaign with minor user targeting shouldn't be triggered.
+    CAMPAIGNS_LOG(ERROR) << "IdentityManager is null.";
     return false;
   }
   const AccountInfo account_info =
@@ -826,10 +851,27 @@ bool CampaignsMatcher::MatchSessionTargeting(
     return true;
   }
 
-  return MatchExperimentTags(targeting.GetExperimentTags(),
-                             targeting.GetFeature()) &&
-         MatchMinorUser(targeting.GetMinorUser()) &&
-         MatchOwner(targeting.GetIsOwner());
+  bool is_matched = false;
+  is_matched = MatchExperimentTags(targeting.GetExperimentTags(),
+                                   targeting.GetFeature());
+  if (!is_matched) {
+    CAMPAIGNS_LOG(DEBUG) << " ExperimentTags targeting is NOT matched.";
+    return false;
+  }
+
+  is_matched = MatchMinorUser(targeting.GetMinorUser());
+  if (!is_matched) {
+    CAMPAIGNS_LOG(DEBUG) << "Please check MinorUser targeting.";
+    return false;
+  }
+
+  is_matched = MatchOwner(targeting.GetIsOwner());
+  if (!is_matched) {
+    CAMPAIGNS_LOG(DEBUG) << "Owner targeting is NOT matched.";
+    return false;
+  }
+
+  return true;
 }
 
 bool CampaignsMatcher::MatchRuntimeTargeting(
@@ -841,12 +883,50 @@ bool CampaignsMatcher::MatchRuntimeTargeting(
     return true;
   }
 
-  return MatchTriggerTargeting(targeting.GetTriggers()) &&
-         MatchSchedulings(targeting.GetSchedulings()) &&
-         MatchOpenedApp(targeting.GetAppsOpened()) &&
-         MatchActiveUrlRegexes(targeting.GetActiveUrlRegexes()) &&
-         MatchEvents(targeting.GetEventsConfig(), campaign_id, group_id) &&
-         MatchUserPrefs(prefs_, targeting.GetUserPrefTargetings());
+  bool is_matched = false;
+  is_matched = MatchTriggerTargeting(targeting.GetTriggers());
+  if (!is_matched) {
+    CAMPAIGNS_LOG(DEBUG) << "Campaign: " << campaign_id
+                         << " Trigger targeting is NOT matched.";
+    return false;
+  }
+
+  is_matched = MatchSchedulings(targeting.GetSchedulings());
+  if (!is_matched) {
+    CAMPAIGNS_LOG(DEBUG) << "Campaign: " << campaign_id
+                         << " Schedulings targeting is NOT matched.";
+    return false;
+  }
+
+  is_matched = MatchOpenedApp(targeting.GetAppsOpened());
+  if (!is_matched) {
+    CAMPAIGNS_LOG(DEBUG) << "Campaign: " << campaign_id
+                         << " Trigger targeting is NOT matched.";
+    return false;
+  }
+
+  is_matched = MatchActiveUrlRegexes(targeting.GetActiveUrlRegexes());
+  if (!is_matched) {
+    CAMPAIGNS_LOG(DEBUG) << "Campaign: " << campaign_id
+                         << " ActiveUrlRegexes targeting is NOT matched.";
+    return false;
+  }
+
+  is_matched = MatchEvents(targeting.GetEventsConfig(), campaign_id, group_id);
+  if (!is_matched) {
+    CAMPAIGNS_LOG(DEBUG) << "Campaign: " << campaign_id
+                         << " Events targeting is NOT matched.";
+    return false;
+  }
+
+  is_matched = MatchUserPrefs(prefs_, targeting.GetUserPrefTargetings());
+  if (!is_matched) {
+    CAMPAIGNS_LOG(DEBUG) << "Campaign: " << campaign_id
+                         << " UserPrefs targeting is NOT matched.";
+    return false;
+  }
+
+  return true;
 }
 
 bool CampaignsMatcher::Matched(const Targeting* targeting,
@@ -865,9 +945,23 @@ bool CampaignsMatcher::Matched(const Targeting* targeting,
            MatchDeviceTargeting(DeviceTargeting(targeting));
   }
 
-  return MatchSessionTargeting(SessionTargeting(targeting)) &&
-         MatchRuntimeTargeting(RuntimeTargeting(targeting), campaign_id,
-                               group_id);
+  bool is_matched = false;
+  is_matched = MatchSessionTargeting(SessionTargeting(targeting));
+  if (!is_matched) {
+    CAMPAIGNS_LOG(DEBUG) << "Campaign: " << campaign_id
+                         << " Session targeting is NOT matched.";
+    return false;
+  }
+
+  is_matched =
+      MatchRuntimeTargeting(RuntimeTargeting(targeting), campaign_id, group_id);
+  if (!is_matched) {
+    CAMPAIGNS_LOG(DEBUG) << "Campaign: " << campaign_id
+                         << " Runtime targeting is NOT matched.";
+    return false;
+  }
+
+  return true;
 }
 
 bool CampaignsMatcher::Matched(const Targetings* targetings,
