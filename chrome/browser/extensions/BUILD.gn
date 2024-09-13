@@ -785,6 +785,7 @@ source_set("extensions") {
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/views/side_panel",
     "//chrome/browser/ui/views/toolbar",
+    "//chrome/browser/ui/window_sizer",
     "//chrome/browser/ui/zoom",
 
     # Only for allow_circular_includes_from

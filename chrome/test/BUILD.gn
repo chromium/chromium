@@ -2475,6 +2475,7 @@ if (!is_android) {
         "//chrome/browser/ash/printing/print_management",
         "//chrome/browser/ui/ash",
         "//chrome/browser/ui/ash:test_support",
+        "//chrome/browser/ui/window_sizer:browser_tests",
         "//remoting/host/chromeos:features",
       ]
     }
@@ -4766,7 +4767,6 @@ if (!is_android) {
         "../browser/ui/views/intent_picker_bubble_view_browsertest_chromeos.cc",
         "../browser/ui/views/tabs/tab_scrubber_chromeos_browsertest.cc",
         "../browser/ui/views/web_apps/web_app_ash_interactive_ui_test.cc",
-        "../browser/ui/window_sizer/window_sizer_chromeos_uitest.cc",
         "../browser/web_applications/app_service/web_app_publisher_helper_browsertest.cc",
         "../browser/web_applications/app_service/web_apps_browsertest.cc",
         "../browser/web_applications/app_service/web_apps_chromeos_browsertest.cc",
@@ -8053,9 +8053,6 @@ test("unit_tests") {
       "../browser/ui/webui/top_chrome/webui_contents_wrapper_unittest.cc",
       "../browser/ui/webui/web_dialog_web_contents_delegate_unittest.cc",
       "../browser/ui/webui/webui_allowlist_provider_unittest.cc",
-      "../browser/ui/window_sizer/window_sizer_common_unittest.cc",
-      "../browser/ui/window_sizer/window_sizer_common_unittest.h",
-      "../browser/ui/window_sizer/window_sizer_unittest.cc",
       "../browser/upgrade_detector/build_state_unittest.cc",
       "../browser/upgrade_detector/mock_build_state_observer.cc",
       "../browser/upgrade_detector/mock_build_state_observer.h",
@@ -8463,9 +8460,6 @@ test("unit_tests") {
       "../browser/profiles/gaia_info_update_service_unittest.cc",
       "../browser/ui/webui/settings/settings_manage_profile_handler_unittest.cc",
       "../browser/ui/webui/signin/profile_picker_handler_unittest.cc",
-
-      # Chrome OS uses window_sizer_chromeos_unittest.cc
-      "../browser/ui/window_sizer/window_sizer_unittest.cc",
     ]
     sources += [
       "../browser/browser_process_platform_part_ash_unittest.cc",
@@ -8562,7 +8556,6 @@ test("unit_tests") {
       "../browser/ui/views/mahi/mahi_menu_view_unittest.cc",
       "../browser/ui/webui/certificate_manager/client_cert_sources_ash_unittest.cc",
       "../browser/ui/webui/help/version_updater_chromeos_unittest.cc",
-      "../browser/ui/window_sizer/window_sizer_chromeos_unittest.cc",
       "../browser/upgrade_detector/installed_version_updater_chromeos_unittest.cc",
       "../browser/upgrade_detector/upgrade_detector_chromeos_unittest.cc",
       "../common/chrome_constants_ash_unittest.cc",

@@ -1,0 +1,126 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ui.gni")
+
+assert(!is_android && !is_fuchsia)
+
+source_set("window_sizer") {
+  sources = [ "window_sizer.h" ]
+
+  public_deps = [
+    "//base",
+    "//ui/base:types",
+    "//ui/gfx/geometry",
+  ]
+
+  if (is_chromeos) {
+    sources += [ "window_sizer_chromeos.h" ]
+  }
+}
+
+source_set("impl") {
+  sources = [ "window_sizer.cc" ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    ":window_sizer",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui:browser_list",
+    "//chrome/common:non_code_constants",
+    "//components/prefs",
+    "//ui/base",
+    "//ui/display",
+  ]
+
+  if (is_mac) {
+    sources += [ "window_sizer_mac.mm" ]
+  }
+
+  if (use_aura) {
+    sources += [ "window_sizer_aura.cc" ]
+
+    if (is_chromeos) {
+      sources += [ "window_sizer_chromeos.cc" ]
+      deps += [
+        "//build:chromeos_buildflags",
+        "//chrome/common:constants",
+        "//ui/aura",
+      ]
+    }
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "window_sizer_common_unittest.cc",
+    "window_sizer_common_unittest.h",
+    "window_sizer_unittest.cc",
+  ]
+
+  public_deps = [
+    "//chrome/browser/ui/window_sizer",
+    "//chrome/test:test_support",
+    "//ui/gfx/geometry",
+  ]
+  deps = [
+    "//base",
+    "//build:chromeos_buildflags",
+    "//chrome/browser/ui",
+    "//chrome/common:non_code_constants",
+    "//testing/gtest",
+    "//ui/display",
+  ]
+
+  if (use_aura) {
+    deps += [ "//ui/aura" ]
+  }
+
+  if (is_chromeos_ash) {
+    sources += [ "window_sizer_chromeos_unittest.cc" ]
+    deps += [
+      "//ash",
+      "//ash/public/cpp",
+      "//chrome/browser/ui/window_sizer",
+      "//chrome/test:test_support_unit",
+      "//content/test:test_support",
+      "//ui/aura:test_support",
+      "//ui/display:display_manager_test_api",
+      "//ui/display/manager",
+      "//ui/wm/public",
+    ]
+  }
+
+  if (is_win) {
+    deps += [ "//chrome/install_static:install_static_util" ]
+  }
+}
+
+if (is_chromeos_ash) {
+  source_set("browser_tests") {
+    testonly = true
+
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    sources = [ "window_sizer_chromeos_uitest.cc" ]
+
+    deps = [
+      "//ash",
+      "//ash:test_support",
+      "//base",
+      "//chrome/browser/ui",
+      "//chrome/browser/ui:browser_list",
+      "//chrome/test:test_support_ui",
+      "//components/keep_alive_registry",
+      "//content/test:test_support",
+      "//ui/compositor",
+      "//ui/events:test_support",
+      "//ui/views",
+      "//ui/wm",
+    ]
+  }
+}
