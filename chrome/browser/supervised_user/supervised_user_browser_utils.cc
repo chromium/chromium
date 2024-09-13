@@ -179,6 +179,8 @@ std::string CreateReauthenticationInterstitial(
   supervised_user::ChildAccountService* child_account_service =
       ChildAccountServiceFactory::GetForProfile(profile);
   GURL request_url = navigation_handle.GetURL();
+  bool is_main_frame = navigation_handle.GetNavigatingFrameType() ==
+                       content::FrameType::kPrimaryMainFrame;
   std::unique_ptr<SupervisedUserVerificationPage> blocking_page =
       std::make_unique<SupervisedUserVerificationPage>(
           web_contents, profile->GetProfileUserName(), request_url,
@@ -188,7 +190,7 @@ std::string CreateReauthenticationInterstitial(
               web_contents, profile->GetPrefs(),
               g_browser_process->GetApplicationLocale(),
               GURL(chrome::kChromeUINewTabURL), request_url),
-          has_second_custodian);
+          is_main_frame, has_second_custodian);
 
   std::string interstitial_html = blocking_page->GetHTMLContents();
   security_interstitials::SecurityInterstitialTabHelper::AssociateBlockingPage(

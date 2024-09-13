@@ -88,4 +88,12 @@
       <message name="IDS_SUPERVISED_USER_VERIFY_PAGE_PRIMARY_BUTTON" desc="This screen appears for a child user when they attempt to visit YouTube.com. In order to get the settings that parent chose for this site, the child first needs to enter their Google Account password because their credentials expired. This string is found on a button that will take the child to the next screen where they can enter their Google password. This text is short for the longer phrase 'Go to the next step'.">
         Next
       </message>
+      <!-- Supervised user verification subframe interstitial. TODO(b/355210476): replace with final versions -->
+      <message name="IDS_SUPERVISED_USER_VERIFY_PAGE_SUBFRAME_YOUTUBE_HEADING" desc="A message for the child user when they visit a site containing embedded YouTube videos. The child is signed in to their Google Account in Chrome, but their credentials have expired, so they need to sign in to get all the settings that their parent chose for them on YouTube." translateable="false">
+        Verify it's you to use YouTube with your parent's choices
+      </message>
+      <!-- Supervised user verification subframe interstitial. TODO(b/355210476): replace with final versions -->
+      <message name="IDS_SUPERVISED_USER_VERIFY_PAGE_SUBFRAME_BLOCKED_SITE_HEADING" desc="A message for the child user when the webpage they visit contains embedded sites that is not permitted by their parent. The child is signed in to their Google Account in Chrome, but their credentials have expired, so they need to sign in to get all the settings that their parent chose for them." translateable="false">
+        Verify it’s you to ask a parent if it's OK to visit this website
+      </message>
 </grit-part>

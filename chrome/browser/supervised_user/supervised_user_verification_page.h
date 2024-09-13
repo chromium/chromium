@@ -68,6 +68,7 @@ class SupervisedUserVerificationPage
       std::unique_ptr<
           security_interstitials::SecurityInterstitialControllerClient>
           controller_client,
+      bool is_main_frame = true,
       bool has_second_custodian = false);
 
   SupervisedUserVerificationPage(const SupervisedUserVerificationPage&) =
@@ -102,6 +103,7 @@ class SupervisedUserVerificationPage
   const VerificationPurpose verification_purpose_;
   raw_ptr<supervised_user::ChildAccountService> child_account_service_;
   ukm::SourceId source_id_;
+  bool is_main_frame_;
   bool has_second_custodian_;
 };
 

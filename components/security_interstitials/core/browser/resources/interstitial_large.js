@@ -78,6 +78,8 @@ function setupEvents() {
   const enterpriseBlock = interstitialType === 'ENTERPRISE_BLOCK';
   const enterpriseWarn = interstitialType === 'ENTERPRISE_WARN';
   const supervisedUserVerify = interstitialType === 'SUPERVISED_USER_VERIFY';
+  const supervisedUserVerifySubframe =
+      interstitialType === 'SUPERVISED_USER_VERIFY_SUBFRAME';
   const hidePrimaryButton = loadTimeData.getBoolean('hide_primary_button');
   const showRecurrentErrorParagraph =
       loadTimeData.getBoolean('show_recurrent_error_paragraph');
@@ -114,6 +116,8 @@ function setupEvents() {
     body.classList.add('enterprise-warn');
   } else if (supervisedUserVerify) {
     body.classList.add('supervised-user-verify');
+  } else if (supervisedUserVerifySubframe) {
+    body.classList.add('supervised-user-verify-subframe');
   } else {
     body.classList.add('safe-browsing');
     // Override the default theme color.
@@ -131,6 +135,7 @@ function setupEvents() {
       switch (interstitialType) {
         case 'CAPTIVE_PORTAL':
         case 'SUPERVISED_USER_VERIFY':
+        case 'SUPERVISED_USER_VERIFY_SUBFRAME':
           sendCommand(SecurityInterstitialCommandId.CMD_OPEN_LOGIN);
           break;
 
@@ -238,7 +243,8 @@ function setupEvents() {
 
   const detailsButton = document.querySelector('#details-button');
   if (captivePortal || billing || lookalike || insecureForm || httpsOnly ||
-      enterpriseWarn || enterpriseBlock || supervisedUserVerify) {
+      enterpriseWarn || enterpriseBlock || supervisedUserVerify ||
+      supervisedUserVerifySubframe) {
     // Captive portal, billing, lookalike pages, insecure form, enterprise warn,
     // enterprise block, and HTTPS only mode interstitials don't
     // have details buttons.

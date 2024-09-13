@@ -217,6 +217,23 @@ IN_PROC_BROWSER_TEST_F(InterstitialUITest,
       GURL("chrome://interstitials/supervised-user-verify-blocked-site"),
       "Site blocked", IDS_CHILD_BLOCK_INTERSTITIAL_MESSAGE_NOT_SIGNED_IN);
 }
+
+IN_PROC_BROWSER_TEST_F(InterstitialUITest,
+                       SupervisedUserVerificationSubframeInterstitial) {
+  TestInterstitial(
+      GURL("chrome://interstitials/supervised-user-verify-subframe"), "YouTube",
+      IDS_SUPERVISED_USER_VERIFY_PAGE_SUBFRAME_YOUTUBE_HEADING);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    InterstitialUITest,
+    SupervisedUserVerificationBlockedSiteSubframeInterstitial) {
+  TestInterstitial(
+      GURL("chrome://interstitials/"
+           "supervised-user-verify-blocked-site-subframe"),
+      "Site blocked",
+      IDS_SUPERVISED_USER_VERIFY_PAGE_SUBFRAME_BLOCKED_SITE_HEADING);
+}
 #endif
 
 // Tests that back button works after opening an interstitial from
