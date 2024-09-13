@@ -11,10 +11,10 @@ namespace leveldb {
 class DB;
 }  // namespace leveldb
 
-namespace content {
+namespace content::indexed_db {
 
 class IndexedDBCompactionTask
-    : public IndexedDBPreCloseTaskQueue::PreCloseTask {
+    : public BackingStorePreCloseTaskQueue::PreCloseTask {
  public:
   explicit IndexedDBCompactionTask(leveldb::DB* database);
   ~IndexedDBCompactionTask() override;
@@ -24,6 +24,6 @@ class IndexedDBCompactionTask
   bool RunRound() override;
 };
 
-}  // namespace content
+}  // namespace content::indexed_db
 
 #endif  // CONTENT_BROWSER_INDEXED_DB_INSTANCE_LEVELDB_COMPACTION_TASK_H_

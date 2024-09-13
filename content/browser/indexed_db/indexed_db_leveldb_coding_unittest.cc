@@ -24,8 +24,7 @@
 using blink::IndexedDBKey;
 using blink::IndexedDBKeyPath;
 
-namespace content {
-
+namespace content::indexed_db {
 namespace {
 
 static IndexedDBKey CreateArrayIDBKey() {
@@ -1107,5 +1106,4 @@ TEST(IndexedDBLevelDBCodingTest, EncodeVarIntVSEncodeByteTest) {
 }
 
 }  // namespace
-
-}  // namespace content
+}  // namespace content::indexed_db

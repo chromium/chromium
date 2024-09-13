@@ -49,11 +49,12 @@ class IndexedDBKeyRange;
 struct IndexedDBDatabaseMetadata;
 }  // namespace blink
 
-namespace content {
+namespace content::indexed_db {
+
 class AutoDidCommitTransaction;
-class IndexedDBBackingStoreTest;
-class IndexedDBBucketContext;
-class IndexedDBActiveBlobRegistry;
+class BackingStoreTest;
+class BucketContext;
+class ActiveBlobRegistry;
 class LevelDBWriteBatch;
 class TransactionalLevelDBDatabase;
 class TransactionalLevelDBFactory;
@@ -62,13 +63,13 @@ class TransactionalLevelDBTransaction;
 struct IndexedDBValue;
 
 namespace indexed_db_backing_store_unittest {
-FORWARD_DECLARE_TEST(IndexedDBBackingStoreTest, ReadCorruptionInfo);
+FORWARD_DECLARE_TEST(BackingStoreTest, ReadCorruptionInfo);
 }  // namespace indexed_db_backing_store_unittest
 
 // This class is not thread-safe.
 // All accessses to one instance must occur on the same sequence. Currently,
 // this must be the IndexedDB task runner's sequence.
-class CONTENT_EXPORT IndexedDBBackingStore {
+class CONTENT_EXPORT BackingStore {
  public:
   // This class is not thread-safe.
   // All accessses to one instance must occur on the same sequence.
@@ -115,7 +116,7 @@ class CONTENT_EXPORT IndexedDBBackingStore {
       BlobWriteCallback on_complete;
     };
 
-    Transaction(base::WeakPtr<IndexedDBBackingStore> backing_store,
+    Transaction(base::WeakPtr<BackingStore> backing_store,
                 blink::mojom::IDBTransactionDurability durability,
                 blink::mojom::IDBTransactionMode mode);
 
@@ -172,7 +173,7 @@ class CONTENT_EXPORT IndexedDBBackingStore {
     }
     blink::mojom::IDBTransactionMode mode() const { return mode_; }
 
-    IndexedDBBackingStore* backing_store() {
+    BackingStore* backing_store() {
       DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
       return backing_store_.get();
     }
@@ -199,11 +200,11 @@ class CONTENT_EXPORT IndexedDBBackingStore {
     void PartitionBlobsToRemove(BlobJournalType* dead_blobs,
                                 BlobJournalType* live_blobs) const;
 
-    // This does NOT mean that this class can outlive the IndexedDBBackingStore.
+    // This does NOT mean that this class can outlive the BackingStore.
     // This is only to protect against security issues before this class is
     // refactored away and this isn't necessary.
     // https://crbug.com/1012918
-    base::WeakPtr<IndexedDBBackingStore> backing_store_
+    base::WeakPtr<BackingStore> backing_store_
         GUARDED_BY_CONTEXT(sequence_checker_);
 
     scoped_refptr<TransactionalLevelDBTransaction> transaction_
@@ -376,20 +377,19 @@ class CONTENT_EXPORT IndexedDBBackingStore {
   static constexpr const base::TimeDelta kInitialJournalCleaningWindowTime =
       base::Seconds(2);
 
-  IndexedDBBackingStore(
-      Mode backing_store_mode,
-      const storage::BucketLocator& bucket_locator,
-      const base::FilePath& blob_path,
-      TransactionalLevelDBFactory& transactional_leveldb_factory,
-      std::unique_ptr<TransactionalLevelDBDatabase> db,
-      BlobFilesCleanedCallback blob_files_cleaned,
-      ReportOutstandingBlobsCallback report_outstanding_blobs,
-      scoped_refptr<base::SequencedTaskRunner> idb_task_runner);
+  BackingStore(Mode backing_store_mode,
+               const storage::BucketLocator& bucket_locator,
+               const base::FilePath& blob_path,
+               TransactionalLevelDBFactory& transactional_leveldb_factory,
+               std::unique_ptr<TransactionalLevelDBDatabase> db,
+               BlobFilesCleanedCallback blob_files_cleaned,
+               ReportOutstandingBlobsCallback report_outstanding_blobs,
+               scoped_refptr<base::SequencedTaskRunner> idb_task_runner);
 
-  IndexedDBBackingStore(const IndexedDBBackingStore&) = delete;
-  IndexedDBBackingStore& operator=(const IndexedDBBackingStore&) = delete;
+  BackingStore(const BackingStore&) = delete;
+  BackingStore& operator=(const BackingStore&) = delete;
 
-  virtual ~IndexedDBBackingStore();
+  virtual ~BackingStore();
 
   // Initializes the backing store. This must be called before doing any
   // operations or method calls on this object.
@@ -403,7 +403,7 @@ class CONTENT_EXPORT IndexedDBBackingStore {
   base::SequencedTaskRunner* idb_task_runner() const {
     return idb_task_runner_.get();
   }
-  IndexedDBActiveBlobRegistry* active_blob_registry() {
+  ActiveBlobRegistry* active_blob_registry() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return active_blob_registry_.get();
   }
@@ -564,7 +564,7 @@ class CONTENT_EXPORT IndexedDBBackingStore {
       blink::IndexedDBDatabaseMetadata* metadata,
       bool* found);
 
-  // Public for IndexedDBActiveBlobRegistry::MarkBlobInactive.
+  // Public for ActiveBlobRegistry::MarkBlobInactive.
   virtual void ReportBlobUnused(int64_t database_id, int64_t blob_number);
 
   base::FilePath GetBlobFileName(int64_t database_id, int64_t key) const;
@@ -634,7 +634,7 @@ class CONTENT_EXPORT IndexedDBBackingStore {
       blink::mojom::IDBTransactionDurability durability,
       blink::mojom::IDBTransactionMode mode);
 
-  base::WeakPtr<IndexedDBBackingStore> AsWeakPtr() {
+  base::WeakPtr<BackingStore> AsWeakPtr() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return weak_factory_.GetWeakPtr();
   }
@@ -643,9 +643,9 @@ class CONTENT_EXPORT IndexedDBBackingStore {
       blink::mojom::IDBTransactionDurability durability);
 
  protected:
-  friend class IndexedDBBucketContext;
+  friend class BucketContext;
 
-  void set_bucket_context(IndexedDBBucketContext* bucket_context) {
+  void set_bucket_context(BucketContext* bucket_context) {
     bucket_context_ = bucket_context;
   }
 
@@ -682,7 +682,7 @@ class CONTENT_EXPORT IndexedDBBackingStore {
   void CleanRecoveryJournalIgnoreReturn();
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(IndexedDBBackingStoreTestWithExternalObjects,
+  FRIEND_TEST_ALL_PREFIXES(BackingStoreTestWithExternalObjects,
                            ActiveBlobJournal);
 
   friend class AutoDidCommitTransaction;
@@ -718,7 +718,7 @@ class CONTENT_EXPORT IndexedDBBackingStore {
   void DidCommitTransaction();
 
   // Owns `this`. Should be initialized shortly after construction.
-  raw_ptr<IndexedDBBucketContext> bucket_context_ = nullptr;
+  raw_ptr<BucketContext> bucket_context_ = nullptr;
 
   const Mode backing_store_mode_;
   const storage::BucketLocator bucket_locator_;
@@ -758,7 +758,7 @@ class CONTENT_EXPORT IndexedDBBackingStore {
 
   // Whenever blobs are registered in active_blob_registry_,
   // indexed_db_factory_ will hold a reference to this backing store.
-  std::unique_ptr<IndexedDBActiveBlobRegistry> active_blob_registry_
+  std::unique_ptr<ActiveBlobRegistry> active_blob_registry_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Incremented whenever a transaction starts committing, decremented when
@@ -774,10 +774,10 @@ class CONTENT_EXPORT IndexedDBBackingStore {
   // Data members must be immutable or GUARDED_BY_CONTEXT(sequence_checker_).
   SEQUENCE_CHECKER(sequence_checker_);
 
-  base::WeakPtrFactory<IndexedDBBackingStore> weak_factory_
+  base::WeakPtrFactory<BackingStore> weak_factory_
       GUARDED_BY_CONTEXT(sequence_checker_){this};
 };
 
-}  // namespace content
+}  // namespace content::indexed_db
 
 #endif  // CONTENT_BROWSER_INDEXED_DB_INSTANCE_BACKING_STORE_H_

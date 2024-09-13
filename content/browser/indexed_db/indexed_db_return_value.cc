@@ -14,7 +14,7 @@
 
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
 
-namespace content {
+namespace content::indexed_db {
 
 // static
 blink::mojom::IDBReturnValuePtr IndexedDBReturnValue::ConvertReturnValue(
@@ -33,4 +33,4 @@ blink::mojom::IDBReturnValuePtr IndexedDBReturnValue::ConvertReturnValue(
   return mojo_value;
 }
 
-}  // namespace content
+}  // namespace content::indexed_db

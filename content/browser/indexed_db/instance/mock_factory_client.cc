@@ -14,26 +14,26 @@
 using blink::IndexedDBDatabaseMetadata;
 using blink::IndexedDBKey;
 
-namespace content {
+namespace content::indexed_db {
 
-MockIndexedDBFactoryClient::MockIndexedDBFactoryClient()
-    : IndexedDBFactoryClient(mojo::NullAssociatedRemote()) {}
-MockIndexedDBFactoryClient::MockIndexedDBFactoryClient(bool expect_connection)
-    : IndexedDBFactoryClient(mojo::NullAssociatedRemote()),
+MockFactoryClient::MockFactoryClient()
+    : FactoryClient(mojo::NullAssociatedRemote()) {}
+MockFactoryClient::MockFactoryClient(bool expect_connection)
+    : FactoryClient(mojo::NullAssociatedRemote()),
       expect_connection_(expect_connection) {}
 
-MockIndexedDBFactoryClient::~MockIndexedDBFactoryClient() {
+MockFactoryClient::~MockFactoryClient() {
   EXPECT_EQ(expect_connection_, !!connection_);
 }
 
-void MockIndexedDBFactoryClient::OnError(const IndexedDBDatabaseError& error) {
+void MockFactoryClient::OnError(const DatabaseError& error) {
   error_called_ = true;
 }
 
-void MockIndexedDBFactoryClient::OnDeleteSuccess(int64_t old_version) {}
+void MockFactoryClient::OnDeleteSuccess(int64_t old_version) {}
 
-void MockIndexedDBFactoryClient::OnOpenSuccess(
-    std::unique_ptr<IndexedDBConnection> connection,
+void MockFactoryClient::OnOpenSuccess(
+    std::unique_ptr<Connection> connection,
     const IndexedDBDatabaseMetadata& metadata) {
   if (!upgrade_called_) {
     connection_ = std::move(connection);
@@ -43,9 +43,9 @@ void MockIndexedDBFactoryClient::OnOpenSuccess(
   }
 }
 
-void MockIndexedDBFactoryClient::OnUpgradeNeeded(
+void MockFactoryClient::OnUpgradeNeeded(
     int64_t old_version,
-    std::unique_ptr<IndexedDBConnection> connection,
+    std::unique_ptr<Connection> connection,
     const IndexedDBDatabaseMetadata& metadata,
     const IndexedDBDataLossInfo& data_loss_info) {
   connection_ = std::move(connection);
@@ -55,22 +55,20 @@ void MockIndexedDBFactoryClient::OnUpgradeNeeded(
   }
 }
 
-void MockIndexedDBFactoryClient::CallOnUpgradeNeeded(
-    base::OnceClosure closure) {
+void MockFactoryClient::CallOnUpgradeNeeded(base::OnceClosure closure) {
   call_on_upgrade_needed_ = std::move(closure);
 }
-void MockIndexedDBFactoryClient::CallOnDBSuccess(base::OnceClosure closure) {
+void MockFactoryClient::CallOnDBSuccess(base::OnceClosure closure) {
   call_on_db_success_ = std::move(closure);
 }
-void MockIndexedDBFactoryClient::CallOnInfoSuccess(
-    base::RepeatingClosure closure) {
+void MockFactoryClient::CallOnInfoSuccess(base::RepeatingClosure closure) {
   call_on_info_success_ = std::move(closure);
 }
 
-ThunkFactoryClient::ThunkFactoryClient(IndexedDBFactoryClient& wrapped)
-    : MockIndexedDBFactoryClient(false), wrapped_(wrapped) {}
+ThunkFactoryClient::ThunkFactoryClient(FactoryClient& wrapped)
+    : MockFactoryClient(false), wrapped_(wrapped) {}
 
-void ThunkFactoryClient::OnError(const IndexedDBDatabaseError& error) {
+void ThunkFactoryClient::OnError(const DatabaseError& error) {
   wrapped_->OnError(error);
 }
 
@@ -80,7 +78,7 @@ void ThunkFactoryClient::OnBlocked(int64_t existing_version) {
 
 void ThunkFactoryClient::OnUpgradeNeeded(
     int64_t old_version,
-    std::unique_ptr<IndexedDBConnection> connection,
+    std::unique_ptr<Connection> connection,
     const blink::IndexedDBDatabaseMetadata& metadata,
     const IndexedDBDataLossInfo& data_loss_info) {
   wrapped_->OnUpgradeNeeded(old_version, std::move(connection), metadata,
@@ -88,7 +86,7 @@ void ThunkFactoryClient::OnUpgradeNeeded(
 }
 
 void ThunkFactoryClient::OnOpenSuccess(
-    std::unique_ptr<IndexedDBConnection> connection,
+    std::unique_ptr<Connection> connection,
     const blink::IndexedDBDatabaseMetadata& metadata) {
   wrapped_->OnOpenSuccess(std::move(connection), metadata);
 }
@@ -97,4 +95,4 @@ void ThunkFactoryClient::OnDeleteSuccess(int64_t old_version) {
   wrapped_->OnDeleteSuccess(old_version);
 }
 
-}  // namespace content
+}  // namespace content::indexed_db

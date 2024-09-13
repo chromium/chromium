@@ -20,7 +20,7 @@ struct ReadOptions;
 struct WriteOptions;
 }  // namespace leveldb
 
-namespace content {
+namespace content::indexed_db {
 
 // This base class is thread-compatible, and is designed to be constructed on
 // one thread, and then used & destroyed on another.
@@ -115,6 +115,6 @@ class RevertScopeTask : private LevelDBScopesTask {
   const int64_t scope_number_;
 };
 
-}  // namespace content
+}  // namespace content::indexed_db
 
 #endif  // COMPONENTS_SERVICES_STORAGE_INDEXED_DB_SCOPES_LEVELDB_SCOPES_TASKS_H_

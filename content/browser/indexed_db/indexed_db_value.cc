@@ -12,7 +12,7 @@
 #include "base/check.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
 
-namespace content {
+namespace content::indexed_db {
 
 // static
 blink::mojom::IDBValuePtr IndexedDBValue::ConvertAndEraseValue(
@@ -39,4 +39,4 @@ IndexedDBValue::~IndexedDBValue() = default;
 IndexedDBValue& IndexedDBValue::operator=(const IndexedDBValue& other) =
     default;
 
-}  // namespace content
+}  // namespace content::indexed_db

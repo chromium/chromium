@@ -13,7 +13,7 @@
 #include "base/containers/span.h"
 #include "third_party/leveldatabase/src/include/leveldb/slice.h"
 
-namespace content {
+namespace content::indexed_db {
 namespace leveldb_scopes {
 
 inline constexpr uint8_t kGlobalMetadataByte = 0x00;
@@ -104,6 +104,6 @@ class ScopesEncoder {
   std::string key_buffer_;
 };
 
-}  // namespace content
+}  // namespace content::indexed_db
 
 #endif  // COMPONENTS_SERVICES_STORAGE_INDEXED_DB_SCOPES_LEVELDB_SCOPES_CODING_H_

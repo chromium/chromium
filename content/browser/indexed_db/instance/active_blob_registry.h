@@ -16,7 +16,7 @@
 #include "base/sequence_checker.h"
 #include "content/common/content_export.h"
 
-namespace content {
+namespace content::indexed_db {
 
 // Keeps track of blobs that have been sent to clients as database responses,
 // and determines when Blob files can be deleted. The database entry that links
@@ -24,22 +24,21 @@ namespace content {
 // needs to stay alive while it is still active (i.e. referenced by a client).
 // This class must be used on a single sequence, and will call the given
 // callbacks back on the same sequence it is constructed on.
-class CONTENT_EXPORT IndexedDBActiveBlobRegistry {
+class CONTENT_EXPORT ActiveBlobRegistry {
  public:
   using ReportOutstandingBlobsCallback = base::RepeatingCallback<void(bool)>;
   using ReportUnusedBlobCallback =
       base::RepeatingCallback<void(int64_t /*database_id*/,
                                    int64_t /*blob_number*/)>;
 
-  explicit IndexedDBActiveBlobRegistry(
+  explicit ActiveBlobRegistry(
       ReportOutstandingBlobsCallback report_outstanding_blobs,
       ReportUnusedBlobCallback report_unused_blob);
 
-  IndexedDBActiveBlobRegistry(const IndexedDBActiveBlobRegistry&) = delete;
-  IndexedDBActiveBlobRegistry& operator=(const IndexedDBActiveBlobRegistry&) =
-      delete;
+  ActiveBlobRegistry(const ActiveBlobRegistry&) = delete;
+  ActiveBlobRegistry& operator=(const ActiveBlobRegistry&) = delete;
 
-  ~IndexedDBActiveBlobRegistry();
+  ~ActiveBlobRegistry();
 
   // Most methods of this class, and the closure returned by
   // GetMarkBlobActiveCallback, should only be called on the backing_store's
@@ -64,8 +63,8 @@ class CONTENT_EXPORT IndexedDBActiveBlobRegistry {
 
   // When called, the returned closure will mark the given blob entry as active
   // (i.e. referenced by the client). Calling this multiple times does nothing.
-  // This closure holds a raw pointer to the IndexedDBActiveBlobRegistry, and
-  // may not be called after it is deleted.
+  // This closure holds a raw pointer to the ActiveBlobRegistry, and may not be
+  // called after it is deleted.
   base::RepeatingClosure GetMarkBlobActiveCallback(int64_t database_id,
                                                    int64_t blob_number);
   // Call this to force the registry to drop its use counts, permitting the
@@ -94,9 +93,9 @@ class CONTENT_EXPORT IndexedDBActiveBlobRegistry {
   std::set<int64_t> deleted_dbs_;
   ReportOutstandingBlobsCallback report_outstanding_blobs_;
   ReportUnusedBlobCallback report_unused_blob_;
-  base::WeakPtrFactory<IndexedDBActiveBlobRegistry> weak_factory_{this};
+  base::WeakPtrFactory<ActiveBlobRegistry> weak_factory_{this};
 };
 
-}  // namespace content
+}  // namespace content::indexed_db
 
 #endif  // CONTENT_BROWSER_INDEXED_DB_INSTANCE_ACTIVE_BLOB_REGISTRY_H_

@@ -66,7 +66,7 @@ using blink::IndexedDBObjectStoreMetadata;
 using blink::StorageKey;
 using url::Origin;
 
-namespace content {
+namespace content::indexed_db {
 
 struct BlobWrite {
   BlobWrite() = default;
@@ -200,12 +200,11 @@ class MockFileSystemAccessContext
   mojo::ReceiverSet<::storage::mojom::FileSystemAccessContext> receivers_;
 };
 
-class IndexedDBBackingStoreTest : public testing::Test {
+class BackingStoreTest : public testing::Test {
  public:
-  IndexedDBBackingStoreTest() = default;
-  IndexedDBBackingStoreTest(const IndexedDBBackingStoreTest&) = delete;
-  IndexedDBBackingStoreTest& operator=(const IndexedDBBackingStoreTest&) =
-      delete;
+  BackingStoreTest() = default;
+  BackingStoreTest(const BackingStoreTest&) = delete;
+  BackingStoreTest& operator=(const BackingStoreTest&) = delete;
 
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
@@ -248,8 +247,8 @@ class IndexedDBBackingStoreTest : public testing::Test {
     file_system_access_context_->Clone(
         fsa_context.InitWithNewPipeAndPassReceiver());
 
-    bucket_context_ = std::make_unique<IndexedDBBucketContext>(
-        bucket_info, temp_dir_.GetPath(), IndexedDBBucketContext::Delegate(),
+    bucket_context_ = std::make_unique<BucketContext>(
+        bucket_info, temp_dir_.GetPath(), BucketContext::Delegate(),
         quota_manager_proxy_, base::SequencedTaskRunner::GetCurrentDefault(),
         std::move(blob_storage_context), std::move(fsa_context),
         base::DoNothing());
@@ -281,7 +280,7 @@ class IndexedDBBackingStoreTest : public testing::Test {
     }
   }
 
-  IndexedDBBackingStore* backing_store() { return backing_store_; }
+  BackingStore* backing_store() { return backing_store_; }
 
  protected:
   base::test::TaskEnvironment task_environment_;
@@ -292,8 +291,8 @@ class IndexedDBBackingStoreTest : public testing::Test {
   scoped_refptr<storage::MockQuotaManager> quota_manager_;
   scoped_refptr<storage::MockQuotaManagerProxy> quota_manager_proxy_;
 
-  std::unique_ptr<IndexedDBBucketContext> bucket_context_;
-  raw_ptr<IndexedDBBackingStore> backing_store_ = nullptr;
+  std::unique_ptr<BucketContext> bucket_context_;
+  raw_ptr<BackingStore> backing_store_ = nullptr;
   IndexedDBDataLossInfo data_loss_info_;
 
   // Sample keys and values that are consistent.
@@ -303,11 +302,11 @@ class IndexedDBBackingStoreTest : public testing::Test {
   IndexedDBValue value2_;
 };
 
-class IndexedDBBackingStoreTestForThirdPartyStoragePartitioning
+class BackingStoreTestForThirdPartyStoragePartitioning
     : public testing::WithParamInterface<bool>,
-      public IndexedDBBackingStoreTest {
+      public BackingStoreTest {
  public:
-  IndexedDBBackingStoreTestForThirdPartyStoragePartitioning() {
+  BackingStoreTestForThirdPartyStoragePartitioning() {
     scoped_feature_list_.InitWithFeatureState(
         net::features::kThirdPartyStoragePartitioning,
         IsThirdPartyStoragePartitioningEnabled());
@@ -321,7 +320,7 @@ class IndexedDBBackingStoreTestForThirdPartyStoragePartitioning
 
 INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
-    IndexedDBBackingStoreTestForThirdPartyStoragePartitioning,
+    BackingStoreTestForThirdPartyStoragePartitioning,
     testing::Bool());
 
 enum class ExternalObjectTestType {
@@ -330,16 +329,16 @@ enum class ExternalObjectTestType {
   kBlobsAndFileSystemAccessHandles
 };
 
-class IndexedDBBackingStoreTestWithExternalObjects
+class BackingStoreTestWithExternalObjects
     : public testing::WithParamInterface<ExternalObjectTestType>,
-      public IndexedDBBackingStoreTest {
+      public BackingStoreTest {
  public:
-  IndexedDBBackingStoreTestWithExternalObjects() = default;
+  BackingStoreTestWithExternalObjects() = default;
 
-  IndexedDBBackingStoreTestWithExternalObjects(
-      const IndexedDBBackingStoreTestWithExternalObjects&) = delete;
-  IndexedDBBackingStoreTestWithExternalObjects& operator=(
-      const IndexedDBBackingStoreTestWithExternalObjects&) = delete;
+  BackingStoreTestWithExternalObjects(
+      const BackingStoreTestWithExternalObjects&) = delete;
+  BackingStoreTestWithExternalObjects& operator=(
+      const BackingStoreTestWithExternalObjects&) = delete;
 
   virtual ExternalObjectTestType TestType() { return GetParam(); }
 
@@ -352,7 +351,7 @@ class IndexedDBBackingStoreTestWithExternalObjects
   }
 
   void SetUp() override {
-    IndexedDBBackingStoreTest::SetUp();
+    BackingStoreTest::SetUp();
 
     const int64_t kTime1 = 13255919133000000ll;
     const int64_t kTime2 = 13287455133000000ll;
@@ -625,14 +624,13 @@ class IndexedDBBackingStoreTestWithExternalObjects
 
 INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
-    IndexedDBBackingStoreTestWithExternalObjects,
+    BackingStoreTestWithExternalObjects,
     ::testing::Values(
         ExternalObjectTestType::kOnlyBlobs,
         ExternalObjectTestType::kOnlyFileSystemAccessHandles,
         ExternalObjectTestType::kBlobsAndFileSystemAccessHandles));
 
-class IndexedDBBackingStoreTestWithBlobs
-    : public IndexedDBBackingStoreTestWithExternalObjects {
+class BackingStoreTestWithBlobs : public BackingStoreTestWithExternalObjects {
  public:
   ExternalObjectTestType TestType() override {
     return ExternalObjectTestType::kOnlyBlobs;
@@ -664,17 +662,17 @@ BlobWriteCallback CreateBlobWriteCallback(
       succeeded, std::move(on_done));
 }
 
-TEST_F(IndexedDBBackingStoreTest, PutGetConsistency) {
+TEST_F(BackingStoreTest, PutGetConsistency) {
   base::RunLoop loop;
   const IndexedDBKey key = key1_;
   IndexedDBValue value = value1_;
   {
-    IndexedDBBackingStore::Transaction transaction1(
+    BackingStore::Transaction transaction1(
         backing_store()->AsWeakPtr(),
         blink::mojom::IDBTransactionDurability::Relaxed,
         blink::mojom::IDBTransactionMode::ReadWrite);
     transaction1.Begin(CreateDummyLock());
-    IndexedDBBackingStore::RecordIdentifier record;
+    BackingStore::RecordIdentifier record;
     leveldb::Status s =
         backing_store()->PutRecord(&transaction1, 1, 1, key, &value, &record);
     EXPECT_TRUE(s.ok());
@@ -686,7 +684,7 @@ TEST_F(IndexedDBBackingStoreTest, PutGetConsistency) {
   }
 
   {
-    IndexedDBBackingStore::Transaction transaction2(
+    BackingStore::Transaction transaction2(
         backing_store()->AsWeakPtr(),
         blink::mojom::IDBTransactionDurability::Relaxed,
         blink::mojom::IDBTransactionMode::ReadWrite);
@@ -704,15 +702,15 @@ TEST_F(IndexedDBBackingStoreTest, PutGetConsistency) {
   }
 }
 
-TEST_P(IndexedDBBackingStoreTestWithExternalObjects, PutGetConsistency) {
+TEST_P(BackingStoreTestWithExternalObjects, PutGetConsistency) {
   // Initiate transaction1 - writing blobs.
-  std::unique_ptr<IndexedDBBackingStore::Transaction> transaction1 =
-      std::make_unique<IndexedDBBackingStore::Transaction>(
+  std::unique_ptr<BackingStore::Transaction> transaction1 =
+      std::make_unique<BackingStore::Transaction>(
           backing_store()->AsWeakPtr(),
           blink::mojom::IDBTransactionDurability::Relaxed,
           blink::mojom::IDBTransactionMode::ReadWrite);
   transaction1->Begin(CreateDummyLock());
-  IndexedDBBackingStore::RecordIdentifier record;
+  BackingStore::RecordIdentifier record;
   EXPECT_TRUE(
       backing_store()
           ->PutRecord(transaction1.get(), 1, 1, key3_, &value3_, &record)
@@ -734,7 +732,7 @@ TEST_P(IndexedDBBackingStoreTestWithExternalObjects, PutGetConsistency) {
   EXPECT_TRUE(transaction1->CommitPhaseTwo().ok());
 
   // Initiate transaction2, reading blobs.
-  IndexedDBBackingStore::Transaction transaction2(
+  BackingStore::Transaction transaction2(
       backing_store()->AsWeakPtr(),
       blink::mojom::IDBTransactionDurability::Relaxed,
       blink::mojom::IDBTransactionMode::ReadWrite);
@@ -757,8 +755,8 @@ TEST_P(IndexedDBBackingStoreTestWithExternalObjects, PutGetConsistency) {
   EXPECT_TRUE(CheckBlobReadsMatchWrites(result_value.external_objects));
 
   // Initiate transaction3, deleting blobs.
-  std::unique_ptr<IndexedDBBackingStore::Transaction> transaction3 =
-      std::make_unique<IndexedDBBackingStore::Transaction>(
+  std::unique_ptr<BackingStore::Transaction> transaction3 =
+      std::make_unique<BackingStore::Transaction>(
           backing_store()->AsWeakPtr(),
           blink::mojom::IDBTransactionDurability::Relaxed,
           blink::mojom::IDBTransactionMode::ReadWrite);
@@ -788,7 +786,7 @@ TEST_P(IndexedDBBackingStoreTestWithExternalObjects, PutGetConsistency) {
 // http://crbug.com/1131151
 // Validate that recovery journal cleanup during a transaction does
 // not delete blobs that were just written.
-TEST_P(IndexedDBBackingStoreTestWithExternalObjects, BlobWriteCleanup) {
+TEST_P(BackingStoreTestWithExternalObjects, BlobWriteCleanup) {
   const std::vector<IndexedDBKey> keys = {
       IndexedDBKey(u"key0"), IndexedDBKey(u"key1"), IndexedDBKey(u"key2"),
       IndexedDBKey(u"key3")};
@@ -814,13 +812,13 @@ TEST_P(IndexedDBBackingStoreTestWithExternalObjects, BlobWriteCleanup) {
   // blobs.
   backing_store()->SetExecuteJournalCleaningOnNoTransactionsForTesting();
 
-  std::unique_ptr<IndexedDBBackingStore::Transaction> transaction1 =
-      std::make_unique<IndexedDBBackingStore::Transaction>(
+  std::unique_ptr<BackingStore::Transaction> transaction1 =
+      std::make_unique<BackingStore::Transaction>(
           backing_store()->AsWeakPtr(),
           blink::mojom::IDBTransactionDurability::Relaxed,
           blink::mojom::IDBTransactionMode::ReadWrite);
   transaction1->Begin(CreateDummyLock());
-  IndexedDBBackingStore::RecordIdentifier record;
+  BackingStore::RecordIdentifier record;
   for (size_t i = 0; i < values.size(); ++i) {
     EXPECT_TRUE(backing_store()
                     ->PutRecord(transaction1.get(), database_id,
@@ -847,7 +845,7 @@ TEST_P(IndexedDBBackingStoreTestWithExternalObjects, BlobWriteCleanup) {
   task_environment_.RunUntilIdle();
 }
 
-TEST_P(IndexedDBBackingStoreTestWithExternalObjects, DeleteRange) {
+TEST_P(BackingStoreTestWithExternalObjects, DeleteRange) {
   const std::vector<IndexedDBKey> keys = {
       IndexedDBKey(u"key0"), IndexedDBKey(u"key1"), IndexedDBKey(u"key2"),
       IndexedDBKey(u"key3")};
@@ -883,13 +881,13 @@ TEST_P(IndexedDBBackingStoreTestWithExternalObjects, DeleteRange) {
     ASSERT_GE(keys.size(), values.size());
 
     // Initiate transaction1 - write records.
-    std::unique_ptr<IndexedDBBackingStore::Transaction> transaction1 =
-        std::make_unique<IndexedDBBackingStore::Transaction>(
+    std::unique_ptr<BackingStore::Transaction> transaction1 =
+        std::make_unique<BackingStore::Transaction>(
             backing_store()->AsWeakPtr(),
             blink::mojom::IDBTransactionDurability::Relaxed,
             blink::mojom::IDBTransactionMode::ReadWrite);
     transaction1->Begin(CreateDummyLock());
-    IndexedDBBackingStore::RecordIdentifier record;
+    BackingStore::RecordIdentifier record;
     for (size_t j = 0; j < values.size(); ++j) {
       EXPECT_TRUE(backing_store()
                       ->PutRecord(transaction1.get(), database_id,
@@ -909,8 +907,8 @@ TEST_P(IndexedDBBackingStoreTestWithExternalObjects, DeleteRange) {
     EXPECT_TRUE(transaction1->CommitPhaseTwo().ok());
 
     // Initiate transaction 2 - delete range.
-    std::unique_ptr<IndexedDBBackingStore::Transaction> transaction2 =
-        std::make_unique<IndexedDBBackingStore::Transaction>(
+    std::unique_ptr<BackingStore::Transaction> transaction2 =
+        std::make_unique<BackingStore::Transaction>(
             backing_store()->AsWeakPtr(),
             blink::mojom::IDBTransactionDurability::Relaxed,
             blink::mojom::IDBTransactionMode::ReadWrite);
@@ -942,7 +940,7 @@ TEST_P(IndexedDBBackingStoreTestWithExternalObjects, DeleteRange) {
   }
 }
 
-TEST_P(IndexedDBBackingStoreTestWithExternalObjects, DeleteRangeEmptyRange) {
+TEST_P(BackingStoreTestWithExternalObjects, DeleteRangeEmptyRange) {
   const std::vector<IndexedDBKey> keys = {
       IndexedDBKey(u"key0"), IndexedDBKey(u"key1"), IndexedDBKey(u"key2"),
       IndexedDBKey(u"key3"), IndexedDBKey(u"key4"),
@@ -977,14 +975,14 @@ TEST_P(IndexedDBBackingStoreTestWithExternalObjects, DeleteRangeEmptyRange) {
     ASSERT_GE(keys.size(), values.size());
 
     // Initiate transaction1 - write records.
-    std::unique_ptr<IndexedDBBackingStore::Transaction> transaction1 =
-        std::make_unique<IndexedDBBackingStore::Transaction>(
+    std::unique_ptr<BackingStore::Transaction> transaction1 =
+        std::make_unique<BackingStore::Transaction>(
             backing_store()->AsWeakPtr(),
             blink::mojom::IDBTransactionDurability::Relaxed,
             blink::mojom::IDBTransactionMode::ReadWrite);
     transaction1->Begin(CreateDummyLock());
 
-    IndexedDBBackingStore::RecordIdentifier record;
+    BackingStore::RecordIdentifier record;
     for (size_t j = 0; j < values.size(); ++j) {
       EXPECT_TRUE(backing_store()
                       ->PutRecord(transaction1.get(), database_id,
@@ -1002,8 +1000,8 @@ TEST_P(IndexedDBBackingStoreTestWithExternalObjects, DeleteRangeEmptyRange) {
     EXPECT_TRUE(transaction1->CommitPhaseTwo().ok());
 
     // Initiate transaction 2 - delete range.
-    std::unique_ptr<IndexedDBBackingStore::Transaction> transaction2 =
-        std::make_unique<IndexedDBBackingStore::Transaction>(
+    std::unique_ptr<BackingStore::Transaction> transaction2 =
+        std::make_unique<BackingStore::Transaction>(
             backing_store()->AsWeakPtr(),
             blink::mojom::IDBTransactionDurability::Relaxed,
             blink::mojom::IDBTransactionMode::ReadWrite);
@@ -1034,16 +1032,16 @@ TEST_P(IndexedDBBackingStoreTestWithExternalObjects, DeleteRangeEmptyRange) {
   }
 }
 
-TEST_P(IndexedDBBackingStoreTestWithExternalObjects,
+TEST_P(BackingStoreTestWithExternalObjects,
        BlobJournalInterleavedTransactions) {
   // Initiate transaction1.
-  std::unique_ptr<IndexedDBBackingStore::Transaction> transaction1 =
-      std::make_unique<IndexedDBBackingStore::Transaction>(
+  std::unique_ptr<BackingStore::Transaction> transaction1 =
+      std::make_unique<BackingStore::Transaction>(
           backing_store()->AsWeakPtr(),
           blink::mojom::IDBTransactionDurability::Relaxed,
           blink::mojom::IDBTransactionMode::ReadWrite);
   transaction1->Begin(CreateDummyLock());
-  IndexedDBBackingStore::RecordIdentifier record1;
+  BackingStore::RecordIdentifier record1;
   EXPECT_TRUE(
       backing_store()
           ->PutRecord(transaction1.get(), 1, 1, key3_, &value3_, &record1)
@@ -1060,13 +1058,13 @@ TEST_P(IndexedDBBackingStoreTestWithExternalObjects,
   VerifyNumBlobsRemoved(0);
 
   // Initiate transaction2.
-  std::unique_ptr<IndexedDBBackingStore::Transaction> transaction2 =
-      std::make_unique<IndexedDBBackingStore::Transaction>(
+  std::unique_ptr<BackingStore::Transaction> transaction2 =
+      std::make_unique<BackingStore::Transaction>(
           backing_store()->AsWeakPtr(),
           blink::mojom::IDBTransactionDurability::Relaxed,
           blink::mojom::IDBTransactionMode::ReadWrite);
   transaction2->Begin(CreateDummyLock());
-  IndexedDBBackingStore::RecordIdentifier record2;
+  BackingStore::RecordIdentifier record2;
   EXPECT_TRUE(
       backing_store()
           ->PutRecord(transaction2.get(), 1, 1, key1_, &value1_, &record2)
@@ -1094,14 +1092,14 @@ TEST_P(IndexedDBBackingStoreTestWithExternalObjects,
   task_environment_.RunUntilIdle();
 }
 
-TEST_P(IndexedDBBackingStoreTestWithExternalObjects, ActiveBlobJournal) {
-  std::unique_ptr<IndexedDBBackingStore::Transaction> transaction1 =
-      std::make_unique<IndexedDBBackingStore::Transaction>(
+TEST_P(BackingStoreTestWithExternalObjects, ActiveBlobJournal) {
+  std::unique_ptr<BackingStore::Transaction> transaction1 =
+      std::make_unique<BackingStore::Transaction>(
           backing_store()->AsWeakPtr(),
           blink::mojom::IDBTransactionDurability::Relaxed,
           blink::mojom::IDBTransactionMode::ReadWrite);
   transaction1->Begin(CreateDummyLock());
-  IndexedDBBackingStore::RecordIdentifier record;
+  BackingStore::RecordIdentifier record;
   EXPECT_TRUE(
       backing_store()
           ->PutRecord(transaction1.get(), 1, 1, key3_, &value3_, &record)
@@ -1116,7 +1114,7 @@ TEST_P(IndexedDBBackingStoreTestWithExternalObjects, ActiveBlobJournal) {
   EXPECT_TRUE(CheckBlobWrites());
   EXPECT_TRUE(transaction1->CommitPhaseTwo().ok());
 
-  IndexedDBBackingStore::Transaction transaction2(
+  BackingStore::Transaction transaction2(
       backing_store()->AsWeakPtr(),
       blink::mojom::IDBTransactionDurability::Relaxed,
       blink::mojom::IDBTransactionMode::ReadWrite);
@@ -1142,8 +1140,8 @@ TEST_P(IndexedDBBackingStoreTestWithExternalObjects, ActiveBlobJournal) {
     }
   }
 
-  std::unique_ptr<IndexedDBBackingStore::Transaction> transaction3 =
-      std::make_unique<IndexedDBBackingStore::Transaction>(
+  std::unique_ptr<BackingStore::Transaction> transaction3 =
+      std::make_unique<BackingStore::Transaction>(
           backing_store()->AsWeakPtr(),
           blink::mojom::IDBTransactionDurability::Relaxed,
           blink::mojom::IDBTransactionMode::ReadWrite);
@@ -1174,7 +1172,7 @@ TEST_P(IndexedDBBackingStoreTestWithExternalObjects, ActiveBlobJournal) {
     EXPECT_EQ(
         3, backing_store()->NumAggregatedJournalCleaningRequestsForTesting());
 #endif
-    for (int i = 3; i < IndexedDBBackingStore::kMaxJournalCleanRequests; ++i) {
+    for (int i = 3; i < BackingStore::kMaxJournalCleanRequests; ++i) {
       backing_store()->StartJournalCleaningTimer();
     }
     CheckFirstNBlobsRemoved(3);
@@ -1193,7 +1191,7 @@ TEST_P(IndexedDBBackingStoreTestWithExternalObjects, ActiveBlobJournal) {
 
 // Make sure that using very high ( more than 32 bit ) values for
 // database_id and object_store_id still work.
-TEST_F(IndexedDBBackingStoreTest, HighIds) {
+TEST_F(BackingStoreTest, HighIds) {
   IndexedDBKey key1 = key1_;
   IndexedDBKey key2 = key2_;
   IndexedDBValue value1 = value1_;
@@ -1209,12 +1207,12 @@ TEST_F(IndexedDBBackingStoreTest, HighIds) {
   std::string index_key_raw;
   EncodeIDBKey(index_key, &index_key_raw);
   {
-    IndexedDBBackingStore::Transaction transaction1(
+    BackingStore::Transaction transaction1(
         backing_store()->AsWeakPtr(),
         blink::mojom::IDBTransactionDurability::Relaxed,
         blink::mojom::IDBTransactionMode::ReadWrite);
     transaction1.Begin(CreateDummyLock());
-    IndexedDBBackingStore::RecordIdentifier record;
+    BackingStore::RecordIdentifier record;
     leveldb::Status s = backing_store()->PutRecord(
         &transaction1, high_database_id, high_object_store_id, key1, &value1,
         &record);
@@ -1238,7 +1236,7 @@ TEST_F(IndexedDBBackingStoreTest, HighIds) {
   }
 
   {
-    IndexedDBBackingStore::Transaction transaction2(
+    BackingStore::Transaction transaction2(
         backing_store()->AsWeakPtr(),
         blink::mojom::IDBTransactionDurability::Relaxed,
         blink::mojom::IDBTransactionMode::ReadWrite);
@@ -1271,7 +1269,7 @@ TEST_F(IndexedDBBackingStoreTest, HighIds) {
 }
 
 // Make sure that other invalid ids do not crash.
-TEST_F(IndexedDBBackingStoreTest, InvalidIds) {
+TEST_F(BackingStoreTest, InvalidIds) {
   const IndexedDBKey key = key1_;
   IndexedDBValue value = value1_;
 
@@ -1283,13 +1281,13 @@ TEST_F(IndexedDBBackingStoreTest, InvalidIds) {
   const int64_t invalid_low_index_id = 19;
   IndexedDBValue result_value;
 
-  IndexedDBBackingStore::Transaction transaction1(
+  BackingStore::Transaction transaction1(
       backing_store()->AsWeakPtr(),
       blink::mojom::IDBTransactionDurability::Relaxed,
       blink::mojom::IDBTransactionMode::ReadWrite);
   transaction1.Begin(CreateDummyLock());
 
-  IndexedDBBackingStore::RecordIdentifier record;
+  BackingStore::RecordIdentifier record;
   leveldb::Status s = backing_store()->PutRecord(
       &transaction1, database_id, KeyPrefix::kInvalidId, key, &value, &record);
   EXPECT_FALSE(s.ok());
@@ -1339,7 +1337,7 @@ TEST_F(IndexedDBBackingStoreTest, InvalidIds) {
   EXPECT_FALSE(s.ok());
 }
 
-TEST_F(IndexedDBBackingStoreTest, CreateDatabase) {
+TEST_F(BackingStoreTest, CreateDatabase) {
   const std::u16string database_name(u"db1");
   int64_t database_id;
   const int64_t version = 9;
@@ -1364,7 +1362,7 @@ TEST_F(IndexedDBBackingStoreTest, CreateDatabase) {
     EXPECT_GT(database.id, 0);
     database_id = database.id;
 
-    IndexedDBBackingStore::Transaction transaction(
+    BackingStore::Transaction transaction(
         backing_store()->AsWeakPtr(),
         blink::mojom::IDBTransactionDurability::Relaxed,
         blink::mojom::IDBTransactionMode::ReadWrite);
@@ -1417,7 +1415,7 @@ TEST_F(IndexedDBBackingStoreTest, CreateDatabase) {
   }
 }
 
-TEST_F(IndexedDBBackingStoreTest, GetDatabaseNames) {
+TEST_F(BackingStoreTest, GetDatabaseNames) {
   const std::u16string db1_name(u"db1");
   const int64_t db1_version = 1LL;
 
@@ -1449,7 +1447,7 @@ TEST_F(IndexedDBBackingStoreTest, GetDatabaseNames) {
   EXPECT_EQ(db1_name, names[0]);
 }
 
-TEST_P(IndexedDBBackingStoreTestForThirdPartyStoragePartitioning,
+TEST_P(BackingStoreTestForThirdPartyStoragePartitioning,
        ReadCorruptionInfoForOpaqueStorageKey) {
   storage::BucketLocator bucket_locator;
   bucket_locator.storage_key =
@@ -1461,7 +1459,7 @@ TEST_P(IndexedDBBackingStoreTestForThirdPartyStoragePartitioning,
       indexed_db::ReadCorruptionInfo(base::FilePath(), bucket_locator).empty());
 }
 
-TEST_P(IndexedDBBackingStoreTestForThirdPartyStoragePartitioning,
+TEST_P(BackingStoreTestForThirdPartyStoragePartitioning,
        ReadCorruptionInfoForFirstPartyStorageKey) {
   storage::BucketLocator bucket_locator;
   const base::FilePath path_base = temp_dir_.GetPath();
@@ -1534,7 +1532,7 @@ TEST_P(IndexedDBBackingStoreTestForThirdPartyStoragePartitioning,
   EXPECT_EQ("foo", message);
 }
 
-TEST_P(IndexedDBBackingStoreTestForThirdPartyStoragePartitioning,
+TEST_P(BackingStoreTestForThirdPartyStoragePartitioning,
        ReadCorruptionInfoForThirdPartyStorageKey) {
   storage::BucketLocator bucket_locator;
   bucket_locator.storage_key = blink::StorageKey::Create(
@@ -1644,7 +1642,7 @@ std::string EncodeV3BlobInfos(
 
 }  // namespace
 
-TEST_F(IndexedDBBackingStoreTestWithBlobs, SchemaUpgradeV3ToV4) {
+TEST_F(BackingStoreTestWithBlobs, SchemaUpgradeV3ToV4) {
   int64_t database_id;
   const int64_t object_store_id = 99;
 
@@ -1664,7 +1662,7 @@ TEST_F(IndexedDBBackingStoreTestWithBlobs, SchemaUpgradeV3ToV4) {
     EXPECT_GT(database.id, 0);
     database_id = database.id;
 
-    IndexedDBBackingStore::Transaction transaction(
+    BackingStore::Transaction transaction(
         backing_store()->AsWeakPtr(),
         blink::mojom::IDBTransactionDurability::Relaxed,
         blink::mojom::IDBTransactionMode::ReadWrite);
@@ -1685,13 +1683,13 @@ TEST_F(IndexedDBBackingStoreTestWithBlobs, SchemaUpgradeV3ToV4) {
   task_environment_.RunUntilIdle();
 
   // Initiate transaction1 - writing blobs.
-  std::unique_ptr<IndexedDBBackingStore::Transaction> transaction1 =
-      std::make_unique<IndexedDBBackingStore::Transaction>(
+  std::unique_ptr<BackingStore::Transaction> transaction1 =
+      std::make_unique<BackingStore::Transaction>(
           backing_store()->AsWeakPtr(),
           blink::mojom::IDBTransactionDurability::Relaxed,
           blink::mojom::IDBTransactionMode::ReadWrite);
   transaction1->Begin(CreateDummyLock());
-  IndexedDBBackingStore::RecordIdentifier record;
+  BackingStore::RecordIdentifier record;
   EXPECT_TRUE(backing_store()
                   ->PutRecord(transaction1.get(), database_id, object_store_id,
                               key3_, &value3_, &record)
@@ -1765,7 +1763,7 @@ TEST_F(IndexedDBBackingStoreTestWithBlobs, SchemaUpgradeV3ToV4) {
   ASSERT_TRUE(data_loss_info_.status == blink::mojom::IDBDataLoss::None);
 
   // Initiate transaction2, reading blobs.
-  IndexedDBBackingStore::Transaction transaction2(
+  BackingStore::Transaction transaction2(
       backing_store()->AsWeakPtr(),
       blink::mojom::IDBTransactionDurability::Relaxed,
       blink::mojom::IDBTransactionMode::ReadWrite);
@@ -1786,7 +1784,7 @@ TEST_F(IndexedDBBackingStoreTestWithBlobs, SchemaUpgradeV3ToV4) {
   EXPECT_TRUE(CheckBlobInfoMatches(result_value.external_objects));
 }
 
-TEST_F(IndexedDBBackingStoreTestWithBlobs, SchemaUpgradeV4ToV5) {
+TEST_F(BackingStoreTestWithBlobs, SchemaUpgradeV4ToV5) {
   int64_t database_id;
   const int64_t object_store_id = 99;
 
@@ -1815,7 +1813,7 @@ TEST_F(IndexedDBBackingStoreTestWithBlobs, SchemaUpgradeV4ToV5) {
     EXPECT_GT(database.id, 0);
     database_id = database.id;
 
-    IndexedDBBackingStore::Transaction transaction(
+    BackingStore::Transaction transaction(
         backing_store()->AsWeakPtr(),
         blink::mojom::IDBTransactionDurability::Relaxed,
         blink::mojom::IDBTransactionMode::ReadWrite);
@@ -1836,13 +1834,13 @@ TEST_F(IndexedDBBackingStoreTestWithBlobs, SchemaUpgradeV4ToV5) {
   task_environment_.RunUntilIdle();
 
   // Initiate transaction - writing blobs.
-  std::unique_ptr<IndexedDBBackingStore::Transaction> transaction =
-      std::make_unique<IndexedDBBackingStore::Transaction>(
+  std::unique_ptr<BackingStore::Transaction> transaction =
+      std::make_unique<BackingStore::Transaction>(
           backing_store()->AsWeakPtr(),
           blink::mojom::IDBTransactionDurability::Relaxed,
           blink::mojom::IDBTransactionMode::ReadWrite);
   transaction->Begin(CreateDummyLock());
-  IndexedDBBackingStore::RecordIdentifier record;
+  BackingStore::RecordIdentifier record;
 
   IndexedDBKey key = IndexedDBKey(u"key");
   IndexedDBValue value = IndexedDBValue("value3", external_objects());
@@ -1916,7 +1914,7 @@ TEST_F(IndexedDBBackingStoreTestWithBlobs, SchemaUpgradeV4ToV5) {
 // This tests that external objects are deleted when ClearObjectStore is called.
 // See: http://crbug.com/488851
 // TODO(enne): we could use more comprehensive testing for ClearObjectStore.
-TEST_P(IndexedDBBackingStoreTestWithExternalObjects, ClearObjectStoreObjects) {
+TEST_P(BackingStoreTestWithExternalObjects, ClearObjectStoreObjects) {
   const std::vector<IndexedDBKey> keys = {
       IndexedDBKey(u"key0"), IndexedDBKey(u"key1"), IndexedDBKey(u"key2"),
       IndexedDBKey(u"key3")};
@@ -1943,13 +1941,13 @@ TEST_P(IndexedDBBackingStoreTestWithExternalObjects, ClearObjectStoreObjects) {
     ASSERT_GE(keys.size(), values.size());
 
     // Initiate transaction1 - write records.
-    std::unique_ptr<IndexedDBBackingStore::Transaction> transaction1 =
-        std::make_unique<IndexedDBBackingStore::Transaction>(
+    std::unique_ptr<BackingStore::Transaction> transaction1 =
+        std::make_unique<BackingStore::Transaction>(
             backing_store()->AsWeakPtr(),
             blink::mojom::IDBTransactionDurability::Relaxed,
             blink::mojom::IDBTransactionMode::ReadWrite);
     transaction1->Begin(CreateDummyLock());
-    IndexedDBBackingStore::RecordIdentifier record;
+    BackingStore::RecordIdentifier record;
     for (size_t j = 0; j < values.size(); ++j) {
       EXPECT_TRUE(backing_store()
                       ->PutRecord(transaction1.get(), database_id,
@@ -1971,8 +1969,8 @@ TEST_P(IndexedDBBackingStoreTestWithExternalObjects, ClearObjectStoreObjects) {
   }
 
   // Initiate transaction 2 - delete object store
-  std::unique_ptr<IndexedDBBackingStore::Transaction> transaction2 =
-      std::make_unique<IndexedDBBackingStore::Transaction>(
+  std::unique_ptr<BackingStore::Transaction> transaction2 =
+      std::make_unique<BackingStore::Transaction>(
           backing_store()->AsWeakPtr(),
           blink::mojom::IDBTransactionDurability::Relaxed,
           blink::mojom::IDBTransactionMode::ReadWrite);
@@ -2002,4 +2000,4 @@ TEST_P(IndexedDBBackingStoreTestWithExternalObjects, ClearObjectStoreObjects) {
   task_environment_.RunUntilIdle();
 }
 
-}  // namespace content
+}  // namespace content::indexed_db

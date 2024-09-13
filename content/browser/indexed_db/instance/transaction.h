@@ -30,17 +30,16 @@
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-forward.h"
 
-namespace content {
+namespace content::indexed_db {
 
-class IndexedDBCursor;
-class IndexedDBDatabaseCallbacks;
+class Cursor;
+class DatabaseCallbacks;
 
 // Corresponds to the IndexedDB API notion of transaction and has a 1:1
 // relationship with IDBTransaction in Blink.
-class CONTENT_EXPORT IndexedDBTransaction
-    : public blink::mojom::IDBTransaction {
+class CONTENT_EXPORT Transaction : public blink::mojom::IDBTransaction {
  public:
-  using Operation = base::OnceCallback<leveldb::Status(IndexedDBTransaction*)>;
+  using Operation = base::OnceCallback<leveldb::Status(Transaction*)>;
   using AbortOperation = base::OnceClosure;
 
   enum State {
@@ -53,14 +52,13 @@ class CONTENT_EXPORT IndexedDBTransaction
 
   static void DisableInactivityTimeoutForTesting();
 
-  IndexedDBTransaction(
-      int64_t id,
-      IndexedDBConnection* connection,
-      const std::set<int64_t>& object_store_ids,
-      blink::mojom::IDBTransactionMode mode,
-      IndexedDBBucketContextHandle bucket_context,
-      IndexedDBBackingStore::Transaction* backing_store_transaction);
-  ~IndexedDBTransaction() override;
+  Transaction(int64_t id,
+              Connection* connection,
+              const std::set<int64_t>& object_store_ids,
+              blink::mojom::IDBTransactionMode mode,
+              BucketContextHandle bucket_context,
+              BackingStore::Transaction* backing_store_transaction);
+  ~Transaction() override;
 
   void BindReceiver(
       mojo::PendingAssociatedReceiver<blink::mojom::IDBTransaction>
@@ -87,7 +85,7 @@ class CONTENT_EXPORT IndexedDBTransaction
   // transaction rolls back the LevelDBScopes, which (if LevelDBScopes is in
   // single-sequence mode) can fail. This returns the result of that rollback,
   // if applicable.
-  leveldb::Status Abort(const IndexedDBDatabaseError& error);
+  leveldb::Status Abort(const DatabaseError& error);
 
   // Called by the scopes lock manager when this transaction is unblocked.
   void Start();
@@ -106,7 +104,7 @@ class CONTENT_EXPORT IndexedDBTransaction
 
   // Returns the locks required for this transaction to start. NB: this is only
   // relevant to readonly and readwrite transactions. Lock requests for version
-  // change transactions are created by the `IndexedDBConnectionCoordinator`.
+  // change transactions are created by the `ConnectionCoordinator`.
   std::vector<PartitionedLockManager::PartitionedLockRequest>
   BuildLockRequests() const;
 
@@ -120,8 +118,8 @@ class CONTENT_EXPORT IndexedDBTransaction
   }
   void ScheduleTask(blink::mojom::IDBTaskType, Operation task);
   void ScheduleAbortTask(AbortOperation abort_task);
-  void RegisterOpenCursor(IndexedDBCursor* cursor);
-  void UnregisterOpenCursor(IndexedDBCursor* cursor);
+  void RegisterOpenCursor(Cursor* cursor);
+  void UnregisterOpenCursor(Cursor* cursor);
   void AddPreemptiveEvent() { pending_preemptive_events_++; }
   void DidCompletePreemptiveEvent() {
     pending_preemptive_events_--;
@@ -137,15 +135,13 @@ class CONTENT_EXPORT IndexedDBTransaction
   // `GetIdbInternalsMetadata` is changed in a significant way.
   void NotifyOfIdbInternalsRelevantChange();
 
-  IndexedDBBackingStore::Transaction* BackingStoreTransaction() {
+  BackingStore::Transaction* BackingStoreTransaction() {
     return backing_store_transaction_.get();
   }
   int64_t id() const { return id_; }
 
-  IndexedDBDatabaseCallbacks* callbacks() const {
-    return connection()->callbacks();
-  }
-  IndexedDBConnection* connection() const { return connection_.get(); }
+  DatabaseCallbacks* callbacks() const { return connection()->callbacks(); }
+  Connection* connection() const { return connection_.get(); }
   bool is_commit_pending() const { return is_commit_pending_; }
   int64_t num_errors_sent() const { return num_errors_sent_; }
   int64_t num_errors_handled() const { return num_errors_handled_; }
@@ -164,13 +160,9 @@ class CONTENT_EXPORT IndexedDBTransaction
 
   const Diagnostics& diagnostics() const { return diagnostics_; }
 
-  base::WeakPtr<IndexedDBTransaction> AsWeakPtr() {
-    return ptr_factory_.GetWeakPtr();
-  }
+  base::WeakPtr<Transaction> AsWeakPtr() { return ptr_factory_.GetWeakPtr(); }
 
-  IndexedDBBucketContext* bucket_context() {
-    return bucket_context_.bucket_context();
-  }
+  BucketContext* bucket_context() { return bucket_context_.bucket_context(); }
 
   const base::flat_set<PartitionedLockId> lock_ids() const { return lock_ids_; }
   PartitionedLockHolder* mutable_locks_receiver() { return &locks_receiver_; }
@@ -181,18 +173,18 @@ class CONTENT_EXPORT IndexedDBTransaction
 
  private:
   friend class IndexedDBClassFactory;
-  friend class IndexedDBConnection;
-  friend class base::RefCounted<IndexedDBTransaction>;
+  friend class Connection;
+  friend class base::RefCounted<Transaction>;
 
-  FRIEND_TEST_ALL_PREFIXES(IndexedDBTransactionTestMode, AbortPreemptive);
-  FRIEND_TEST_ALL_PREFIXES(IndexedDBTransactionTestMode, AbortTasks);
-  FRIEND_TEST_ALL_PREFIXES(IndexedDBTransactionTest, NoTimeoutReadOnly);
-  FRIEND_TEST_ALL_PREFIXES(IndexedDBTransactionTest, SchedulePreemptiveTask);
-  FRIEND_TEST_ALL_PREFIXES(IndexedDBTransactionTestMode, ScheduleNormalTask);
-  FRIEND_TEST_ALL_PREFIXES(IndexedDBTransactionTestMode, TaskFails);
-  FRIEND_TEST_ALL_PREFIXES(IndexedDBTransactionTest, Timeout);
-  FRIEND_TEST_ALL_PREFIXES(IndexedDBTransactionTest, TimeoutPreemptive);
-  FRIEND_TEST_ALL_PREFIXES(IndexedDBTransactionTest, TimeoutWithPriorities);
+  FRIEND_TEST_ALL_PREFIXES(TransactionTestMode, AbortPreemptive);
+  FRIEND_TEST_ALL_PREFIXES(TransactionTestMode, AbortTasks);
+  FRIEND_TEST_ALL_PREFIXES(TransactionTest, NoTimeoutReadOnly);
+  FRIEND_TEST_ALL_PREFIXES(TransactionTest, SchedulePreemptiveTask);
+  FRIEND_TEST_ALL_PREFIXES(TransactionTestMode, ScheduleNormalTask);
+  FRIEND_TEST_ALL_PREFIXES(TransactionTestMode, TaskFails);
+  FRIEND_TEST_ALL_PREFIXES(TransactionTest, Timeout);
+  FRIEND_TEST_ALL_PREFIXES(TransactionTest, TimeoutPreemptive);
+  FRIEND_TEST_ALL_PREFIXES(TransactionTest, TimeoutWithPriorities);
 
   // blink::mojom::IDBTransaction:
   void CreateObjectStore(int64_t object_store_id,
@@ -218,10 +210,10 @@ class CONTENT_EXPORT IndexedDBTransaction
 
   leveldb::Status DoPendingCommit();
 
-  // Helper for posting a task to call IndexedDBTransaction::CommitPhaseTwo when
+  // Helper for posting a task to call Transaction::CommitPhaseTwo when
   // we know the transaction had no requests and therefore the commit must
   // succeed.
-  static leveldb::Status CommitPhaseTwoProxy(IndexedDBTransaction* transaction);
+  static leveldb::Status CommitPhaseTwoProxy(Transaction* transaction);
 
   bool IsTaskQueueEmpty() const;
   bool HasPendingTasks() const;
@@ -249,10 +241,10 @@ class CONTENT_EXPORT IndexedDBTransaction
 
   // We are owned by the connection object, but during force closes sometimes
   // there are issues if there is a pending OpenRequest. So use a WeakPtr.
-  base::WeakPtr<IndexedDBConnection> connection_;
-  base::WeakPtr<IndexedDBDatabase> database_;
+  base::WeakPtr<Connection> connection_;
+  base::WeakPtr<Database> database_;
 
-  IndexedDBBucketContextHandle bucket_context_;
+  BucketContextHandle bucket_context_;
 
   base::CheckedNumeric<size_t> in_flight_memory_ = 0;
 
@@ -294,8 +286,7 @@ class CONTENT_EXPORT IndexedDBTransaction
   TaskQueue preemptive_task_queue_;
   TaskStack abort_task_stack_;
 
-  std::unique_ptr<IndexedDBBackingStore::Transaction>
-      backing_store_transaction_;
+  std::unique_ptr<BackingStore::Transaction> backing_store_transaction_;
   bool backing_store_transaction_begun_ = false;
 
   int pending_preemptive_events_ = 0;
@@ -325,7 +316,7 @@ class CONTENT_EXPORT IndexedDBTransaction
   // See crbug.com/1493696 for discussion of how this should be improved.
   int64_t preliminary_size_estimate_ = 0;
 
-  std::set<raw_ptr<IndexedDBCursor, SetExperimental>> open_cursors_;
+  std::set<raw_ptr<Cursor, SetExperimental>> open_cursors_;
 
   // This timer is started after requests have been processed. If no subsequent
   // requests are processed before the timer fires, assume the script is
@@ -344,9 +335,9 @@ class CONTENT_EXPORT IndexedDBTransaction
 
   mojo::AssociatedReceiver<blink::mojom::IDBTransaction> receiver_;
 
-  base::WeakPtrFactory<IndexedDBTransaction> ptr_factory_{this};
+  base::WeakPtrFactory<Transaction> ptr_factory_{this};
 };
 
-}  // namespace content
+}  // namespace content::indexed_db
 
 #endif  // CONTENT_BROWSER_INDEXED_DB_INSTANCE_TRANSACTION_H_

@@ -11,17 +11,17 @@
 #include "content/browser/indexed_db/indexed_db_leveldb_coding.h"
 #include "content/browser/indexed_db/instance/backing_store.h"
 
-namespace content {
+namespace content::indexed_db {
 
-IndexedDBActiveBlobRegistry::IndexedDBActiveBlobRegistry(
+ActiveBlobRegistry::ActiveBlobRegistry(
     ReportOutstandingBlobsCallback report_outstanding_blobs,
     ReportUnusedBlobCallback report_unused_blob)
     : report_outstanding_blobs_(std::move(report_outstanding_blobs)),
       report_unused_blob_(std::move(report_unused_blob)) {}
 
-IndexedDBActiveBlobRegistry::~IndexedDBActiveBlobRegistry() {}
+ActiveBlobRegistry::~ActiveBlobRegistry() {}
 
-bool IndexedDBActiveBlobRegistry::MarkDatabaseDeletedAndCheckIfReferenced(
+bool ActiveBlobRegistry::MarkDatabaseDeletedAndCheckIfReferenced(
     int64_t database_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(KeyPrefix::IsValidDatabaseId(database_id));
@@ -34,7 +34,7 @@ bool IndexedDBActiveBlobRegistry::MarkDatabaseDeletedAndCheckIfReferenced(
   return true;
 }
 
-bool IndexedDBActiveBlobRegistry::MarkBlobInfoDeletedAndCheckIfReferenced(
+bool ActiveBlobRegistry::MarkBlobInfoDeletedAndCheckIfReferenced(
     int64_t database_id,
     int64_t blob_number) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -55,25 +55,25 @@ bool IndexedDBActiveBlobRegistry::MarkBlobInfoDeletedAndCheckIfReferenced(
   return true;
 }
 
-base::RepeatingClosure IndexedDBActiveBlobRegistry::GetFinalReleaseCallback(
+base::RepeatingClosure ActiveBlobRegistry::GetFinalReleaseCallback(
     int64_t database_id,
     int64_t blob_number) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return base::BindRepeating(&IndexedDBActiveBlobRegistry::MarkBlobInactive,
+  return base::BindRepeating(&ActiveBlobRegistry::MarkBlobInactive,
                              weak_factory_.GetWeakPtr(), database_id,
                              blob_number);
 }
 
-base::RepeatingClosure IndexedDBActiveBlobRegistry::GetMarkBlobActiveCallback(
+base::RepeatingClosure ActiveBlobRegistry::GetMarkBlobActiveCallback(
     int64_t database_id,
     int64_t blob_number) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return base::BindRepeating(&IndexedDBActiveBlobRegistry::MarkBlobActive,
+  return base::BindRepeating(&ActiveBlobRegistry::MarkBlobActive,
                              weak_factory_.GetWeakPtr(), database_id,
                              blob_number);
 }
 
-void IndexedDBActiveBlobRegistry::ForceShutdown() {
+void ActiveBlobRegistry::ForceShutdown() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   weak_factory_.InvalidateWeakPtrs();
   blob_reference_tracker_.clear();
@@ -81,8 +81,8 @@ void IndexedDBActiveBlobRegistry::ForceShutdown() {
   report_unused_blob_.Reset();
 }
 
-void IndexedDBActiveBlobRegistry::MarkBlobActive(int64_t database_id,
-                                                 int64_t blob_number) {
+void ActiveBlobRegistry::MarkBlobActive(int64_t database_id,
+                                        int64_t blob_number) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(report_outstanding_blobs_);
   DCHECK(report_unused_blob_);
@@ -105,8 +105,8 @@ void IndexedDBActiveBlobRegistry::MarkBlobActive(int64_t database_id,
   }
 }
 
-void IndexedDBActiveBlobRegistry::MarkBlobInactive(int64_t database_id,
-                                                   int64_t blob_number) {
+void ActiveBlobRegistry::MarkBlobInactive(int64_t database_id,
+                                          int64_t blob_number) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(report_outstanding_blobs_);
   DCHECK(report_unused_blob_);
@@ -148,4 +148,4 @@ void IndexedDBActiveBlobRegistry::MarkBlobInactive(int64_t database_id,
   }
 }
 
-}  // namespace content
+}  // namespace content::indexed_db

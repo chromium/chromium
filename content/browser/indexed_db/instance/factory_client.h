@@ -29,35 +29,35 @@ namespace blink {
 struct IndexedDBDatabaseMetadata;
 }
 
-namespace content {
-class IndexedDBConnection;
+namespace content::indexed_db {
+class Connection;
 struct IndexedDBDataLossInfo;
 
 // This class wraps the remote (renderer-side) object for handling database open
 // or delete operations.
-class CONTENT_EXPORT IndexedDBFactoryClient {
+class CONTENT_EXPORT FactoryClient {
  public:
-  explicit IndexedDBFactoryClient(
+  explicit FactoryClient(
       mojo::PendingAssociatedRemote<blink::mojom::IDBFactoryClient>
           pending_client);
-  virtual ~IndexedDBFactoryClient();
+  virtual ~FactoryClient();
 
-  IndexedDBFactoryClient(const IndexedDBFactoryClient&) = delete;
-  IndexedDBFactoryClient& operator=(const IndexedDBFactoryClient&) = delete;
+  FactoryClient(const FactoryClient&) = delete;
+  FactoryClient& operator=(const FactoryClient&) = delete;
 
-  // IndexedDBFactory::Open / DeleteDatabase
-  virtual void OnError(const IndexedDBDatabaseError& error);
+  // Factory::Open / DeleteDatabase
+  virtual void OnError(const DatabaseError& error);
   virtual void OnBlocked(int64_t existing_version);
 
-  // IndexedDBFactory::Open
+  // Factory::Open
   virtual void OnUpgradeNeeded(int64_t old_version,
-                               std::unique_ptr<IndexedDBConnection> connection,
+                               std::unique_ptr<Connection> connection,
                                const blink::IndexedDBDatabaseMetadata& metadata,
                                const IndexedDBDataLossInfo& data_loss_info);
-  virtual void OnOpenSuccess(std::unique_ptr<IndexedDBConnection> connection,
+  virtual void OnOpenSuccess(std::unique_ptr<Connection> connection,
                              const blink::IndexedDBDatabaseMetadata& metadata);
 
-  // IndexedDBFactory::DeleteDatabase
+  // Factory::DeleteDatabase
   virtual void OnDeleteSuccess(int64_t old_version);
 
   void OnConnectionError();
@@ -86,6 +86,6 @@ class CONTENT_EXPORT IndexedDBFactoryClient {
   SEQUENCE_CHECKER(sequence_checker_);
 };
 
-}  // namespace content
+}  // namespace content::indexed_db
 
 #endif  // CONTENT_BROWSER_INDEXED_DB_INSTANCE_FACTORY_CLIENT_H_

@@ -28,21 +28,18 @@
 #include "third_party/leveldatabase/src/include/leveldb/filter_policy.h"
 #include "third_party/leveldatabase/src/include/leveldb/slice.h"
 
-using blink::IndexedDBDatabaseMetadata;
-using blink::IndexedDBIndexMetadata;
-using blink::IndexedDBKey;
-using blink::IndexedDBKeyPath;
-using blink::IndexedDBObjectStoreMetadata;
+namespace content::indexed_db {
 
-namespace content {
-class BrowserContext;
-
-namespace indexed_db_tombstone_sweeper_unittest {
 using ::testing::_;
 using ::testing::Eq;
 using ::testing::Return;
 using ::testing::StrictMock;
 using Status = ::leveldb::Status;
+using blink::IndexedDBDatabaseMetadata;
+using blink::IndexedDBIndexMetadata;
+using blink::IndexedDBKey;
+using blink::IndexedDBKeyPath;
+using blink::IndexedDBObjectStoreMetadata;
 
 constexpr int kRoundIterations = 11;
 constexpr int kMaxIterations = 100;
@@ -78,10 +75,10 @@ leveldb_env::Options GetLevelDBOptions() {
   return options;
 }
 
-class IndexedDBTombstoneSweeperTest : public testing::Test {
+class LevelDbTombstoneSweeperTest : public testing::Test {
  public:
-  IndexedDBTombstoneSweeperTest() = default;
-  ~IndexedDBTombstoneSweeperTest() override = default;
+  LevelDbTombstoneSweeperTest() = default;
+  ~LevelDbTombstoneSweeperTest() override = default;
 
   void PopulateMultiDBMetdata() {
     // db1
@@ -129,7 +126,7 @@ class IndexedDBTombstoneSweeperTest : public testing::Test {
   }
 
   void SetupMockDB() {
-    sweeper_ = std::make_unique<IndexedDBTombstoneSweeper>(
+    sweeper_ = std::make_unique<LevelDbTombstoneSweeper>(
         kRoundIterations, kMaxIterations, &mock_db_);
     sweeper_->SetStartSeedsForTesting(0, 0, 0);
   }
@@ -150,7 +147,7 @@ class IndexedDBTombstoneSweeperTest : public testing::Test {
     in_memory_db_ = DefaultTransactionalLevelDBFactory().CreateLevelDBDatabase(
         std::move(level_db_state), nullptr, nullptr,
         TransactionalLevelDBDatabase::kDefaultMaxOpenIteratorsPerDatabase);
-    sweeper_ = std::make_unique<IndexedDBTombstoneSweeper>(
+    sweeper_ = std::make_unique<LevelDbTombstoneSweeper>(
         kRoundIterations, kMaxIterations, in_memory_db_->db());
     sweeper_->SetStartSeedsForTesting(0, 0, 0);
   }
@@ -204,19 +201,19 @@ class IndexedDBTombstoneSweeperTest : public testing::Test {
 
   std::vector<IndexedDBDatabaseMetadata> metadata_;
 
-  std::unique_ptr<IndexedDBTombstoneSweeper> sweeper_;
+  std::unique_ptr<LevelDbTombstoneSweeper> sweeper_;
 
  private:
   base::test::TaskEnvironment task_environment_;
 };
 
-TEST_F(IndexedDBTombstoneSweeperTest, EmptyDB) {
+TEST_F(LevelDbTombstoneSweeperTest, EmptyDB) {
   SetupMockDB();
   sweeper_->SetMetadata(&metadata_);
   EXPECT_TRUE(sweeper_->RunRound());
 }
 
-TEST_F(IndexedDBTombstoneSweeperTest, NoTombstonesComplexDB) {
+TEST_F(LevelDbTombstoneSweeperTest, NoTombstonesComplexDB) {
   SetupMockDB();
   PopulateMultiDBMetdata();
   sweeper_->SetMetadata(&metadata_);
@@ -287,7 +284,7 @@ TEST_F(IndexedDBTombstoneSweeperTest, NoTombstonesComplexDB) {
   ASSERT_TRUE(sweeper_->RunRound());
 }
 
-TEST_F(IndexedDBTombstoneSweeperTest, AllTombstonesComplexDB) {
+TEST_F(LevelDbTombstoneSweeperTest, AllTombstonesComplexDB) {
   SetupMockDB();
   PopulateMultiDBMetdata();
   sweeper_->SetMetadata(&metadata_);
@@ -360,7 +357,7 @@ TEST_F(IndexedDBTombstoneSweeperTest, AllTombstonesComplexDB) {
   ASSERT_TRUE(sweeper_->RunRound());
 }
 
-TEST_F(IndexedDBTombstoneSweeperTest, SimpleRealDBNoTombstones) {
+TEST_F(LevelDbTombstoneSweeperTest, SimpleRealDBNoTombstones) {
   PopulateSingleIndexDBMetadata();
   SetupRealDB();
   sweeper_->SetMetadata(&metadata_);
@@ -387,7 +384,7 @@ TEST_F(IndexedDBTombstoneSweeperTest, SimpleRealDBNoTombstones) {
   EXPECT_TRUE(sweeper_->RunRound());
 }
 
-TEST_F(IndexedDBTombstoneSweeperTest, SimpleRealDBWithTombstones) {
+TEST_F(LevelDbTombstoneSweeperTest, SimpleRealDBWithTombstones) {
   PopulateSingleIndexDBMetadata();
   SetupRealDB();
   sweeper_->SetMetadata(&metadata_);
@@ -430,7 +427,7 @@ TEST_F(IndexedDBTombstoneSweeperTest, SimpleRealDBWithTombstones) {
   }
 }
 
-TEST_F(IndexedDBTombstoneSweeperTest, LevelDBError) {
+TEST_F(LevelDbTombstoneSweeperTest, LevelDBError) {
   SetupMockDB();
   PopulateMultiDBMetdata();
   sweeper_->SetMetadata(&metadata_);
@@ -482,5 +479,4 @@ TEST_F(IndexedDBTombstoneSweeperTest, LevelDBError) {
   ASSERT_TRUE(sweeper_->RunRound());
 }
 
-}  // namespace indexed_db_tombstone_sweeper_unittest
-}  // namespace content
+}  // namespace content::indexed_db

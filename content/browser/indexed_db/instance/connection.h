@@ -32,11 +32,11 @@ namespace blink {
 class IndexedDBKeyRange;
 }
 
-namespace content {
-class IndexedDBDatabaseCallbacks;
-class IndexedDBDatabaseError;
-class IndexedDBTransaction;
-class IndexedDBBucketContext;
+namespace content::indexed_db {
+class DatabaseCallbacks;
+class DatabaseError;
+class Transaction;
+class BucketContext;
 
 // This class maps to an IDB database *connection*:
 // https://www.w3.org/TR/IndexedDB/#database-connection
@@ -44,41 +44,37 @@ class IndexedDBBucketContext;
 // It has a 1:1 relationship with the Blink class IDBDatabase.
 //
 // It is created and operated on a bucket thread.
-class CONTENT_EXPORT IndexedDBConnection : public blink::mojom::IDBDatabase {
+class CONTENT_EXPORT Connection : public blink::mojom::IDBDatabase {
  public:
   // Transfers ownership of an existing `connection` instance to a self owned
-  // receiver. `IndexedDBConnection` instances begin life owned by a
+  // receiver. `Connection` instances begin life owned by a
   // `unique_ptr` in a pending state without any bound mojo remotes. IndexedDB
   // open database operations use this function to establish the connection
   // after the database is ready for use.
   static mojo::PendingAssociatedRemote<blink::mojom::IDBDatabase>
-  MakeSelfOwnedReceiverAndBindRemote(
-      std::unique_ptr<IndexedDBConnection> connection);
+  MakeSelfOwnedReceiverAndBindRemote(std::unique_ptr<Connection> connection);
 
-  IndexedDBConnection(IndexedDBBucketContext& bucket_context,
-                      base::WeakPtr<IndexedDBDatabase> database,
-                      base::RepeatingClosure on_version_change_ignored,
-                      base::OnceCallback<void(IndexedDBConnection*)> on_close,
-                      std::unique_ptr<IndexedDBDatabaseCallbacks> callbacks,
-                      mojo::Remote<storage::mojom::IndexedDBClientStateChecker>
-                          client_state_checker,
-                      base::UnguessableToken client_token,
-                      int scheduling_priority);
+  Connection(BucketContext& bucket_context,
+             base::WeakPtr<Database> database,
+             base::RepeatingClosure on_version_change_ignored,
+             base::OnceCallback<void(Connection*)> on_close,
+             std::unique_ptr<DatabaseCallbacks> callbacks,
+             mojo::Remote<storage::mojom::IndexedDBClientStateChecker>
+                 client_state_checker,
+             base::UnguessableToken client_token,
+             int scheduling_priority);
 
-  IndexedDBConnection(const IndexedDBConnection&) = delete;
-  IndexedDBConnection& operator=(const IndexedDBConnection&) = delete;
+  Connection(const Connection&) = delete;
+  Connection& operator=(const Connection&) = delete;
 
-  ~IndexedDBConnection() override;
+  ~Connection() override;
 
-  base::WeakPtr<IndexedDBConnection> GetWeakPtr() {
-    return weak_factory_.GetWeakPtr();
-  }
+  base::WeakPtr<Connection> GetWeakPtr() { return weak_factory_.GetWeakPtr(); }
 
-  base::WeakPtr<IndexedDBDatabase> database() const { return database_; }
-  IndexedDBDatabaseCallbacks* callbacks() const { return callbacks_.get(); }
+  base::WeakPtr<Database> database() const { return database_; }
+  DatabaseCallbacks* callbacks() const { return callbacks_.get(); }
   const base::UnguessableToken& client_token() const { return client_token_; }
-  const std::map<int64_t, std::unique_ptr<IndexedDBTransaction>>& transactions()
-      const {
+  const std::map<int64_t, std::unique_ptr<Transaction>>& transactions() const {
     return transactions_;
   }
 
@@ -93,10 +89,10 @@ class CONTENT_EXPORT IndexedDBConnection : public blink::mojom::IDBDatabase {
   bool is_shutting_down() const { return is_shutting_down_; }
   int32_t id() const { return id_; }
 
-  IndexedDBTransaction* CreateVersionChangeTransaction(
+  Transaction* CreateVersionChangeTransaction(
       int64_t id,
       const std::set<int64_t>& scope,
-      IndexedDBBackingStore::Transaction* backing_store_transaction);
+      BackingStore::Transaction* backing_store_transaction);
 
   // Checks if the client is in inactive state and disallow it from activation
   // if so. This is called when the client is not supposed to be inactive,
@@ -110,8 +106,8 @@ class CONTENT_EXPORT IndexedDBConnection : public blink::mojom::IDBDatabase {
   // TODO(dmurph): Change that so this doesn't need to ignore unknown ids.
   void RemoveTransaction(int64_t id);
 
-  void AbortTransactionAndTearDownOnError(IndexedDBTransaction* transaction,
-                                          const IndexedDBDatabaseError& error);
+  void AbortTransactionAndTearDownOnError(Transaction* transaction,
+                                          const DatabaseError& error);
   void CloseAndReportForceClose();
 
   int scheduling_priority() const { return scheduling_priority_; }
@@ -124,11 +120,10 @@ class CONTENT_EXPORT IndexedDBConnection : public blink::mojom::IDBDatabase {
                                     const PartitionedLockHolder& other);
 
  private:
-  friend class IndexedDBTransactionTest;
-  FRIEND_TEST_ALL_PREFIXES(IndexedDBDatabaseTest, ForcedClose);
-  FRIEND_TEST_ALL_PREFIXES(IndexedDBDatabaseTest, PendingDelete);
-  FRIEND_TEST_ALL_PREFIXES(IndexedDBTransactionTest,
-                           PostedStartTaskRunAfterAbort);
+  friend class TransactionTest;
+  FRIEND_TEST_ALL_PREFIXES(DatabaseTest, ForcedClose);
+  FRIEND_TEST_ALL_PREFIXES(DatabaseTest, PendingDelete);
+  FRIEND_TEST_ALL_PREFIXES(TransactionTest, PostedStartTaskRunAfterAbort);
 
   // blink::mojom::IDBDatabase implementation
   void RenameObjectStore(int64_t transaction_id,
@@ -210,7 +205,7 @@ class CONTENT_EXPORT IndexedDBConnection : public blink::mojom::IDBDatabase {
   // is no longer true.
   const storage::BucketInfo& GetBucketInfo();
   storage::BucketLocator GetBucketLocator();
-  IndexedDBTransaction* GetTransaction(int64_t id) const;
+  Transaction* GetTransaction(int64_t id) const;
 
   enum class CloseErrorHandling {
     // Returns from the function on the first encounter with an error.
@@ -221,35 +216,35 @@ class CONTENT_EXPORT IndexedDBConnection : public blink::mojom::IDBDatabase {
   };
 
   // The return value is `callbacks_`, passing ownership.
-  std::unique_ptr<IndexedDBDatabaseCallbacks> AbortTransactionsAndClose(
+  std::unique_ptr<DatabaseCallbacks> AbortTransactionsAndClose(
       CloseErrorHandling error_handling);
 
   // Returns the last error that occurred, if there is any.
   leveldb::Status AbortAllTransactionsAndIgnoreErrors(
-      const IndexedDBDatabaseError& error);
+      const DatabaseError& error);
 
-  leveldb::Status AbortAllTransactions(const IndexedDBDatabaseError& error);
+  leveldb::Status AbortAllTransactions(const DatabaseError& error);
 
-  IndexedDBBucketContext* bucket_context() {
+  BucketContext* bucket_context() {
     return bucket_context_handle_.bucket_context();
   }
 
   const int32_t id_;
 
   // Keeps the factory for this bucket alive.
-  IndexedDBBucketContextHandle bucket_context_handle_;
+  BucketContextHandle bucket_context_handle_;
 
-  base::WeakPtr<IndexedDBDatabase> database_;
+  base::WeakPtr<Database> database_;
   base::RepeatingClosure on_version_change_ignored_;
-  base::OnceCallback<void(IndexedDBConnection*)> on_close_;
+  base::OnceCallback<void(Connection*)> on_close_;
 
   // The connection owns transactions created on this connection. It's important
   // to preserve ordering.
-  std::map<int64_t, std::unique_ptr<IndexedDBTransaction>> transactions_;
+  std::map<int64_t, std::unique_ptr<Transaction>> transactions_;
 
   // The callbacks_ member is cleared when the connection is closed.
   // May be nullptr in unit tests.
-  std::unique_ptr<IndexedDBDatabaseCallbacks> callbacks_;
+  std::unique_ptr<DatabaseCallbacks> callbacks_;
 
   mojo::Remote<storage::mojom::IndexedDBClientStateChecker>
       client_state_checker_;
@@ -273,9 +268,9 @@ class CONTENT_EXPORT IndexedDBConnection : public blink::mojom::IDBDatabase {
 
   bool is_shutting_down_ = false;
 
-  base::WeakPtrFactory<IndexedDBConnection> weak_factory_{this};
+  base::WeakPtrFactory<Connection> weak_factory_{this};
 };
 
-}  // namespace content
+}  // namespace content::indexed_db
 
 #endif  // CONTENT_BROWSER_INDEXED_DB_INSTANCE_CONNECTION_H_

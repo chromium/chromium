@@ -2,7 +2,7 @@
 # specifically, task runners that draw from the threadpool).
 # IndexedDBContextImpl, on the other hand, runs on its own task runner.
 # All inter-thread interaction should be routed through the
-# IndexedDBBucketContext and its delegate.
+# BucketContext and its delegate.
 #
 # Other than IndexedDBContextImpl, most code in the parent directory is
 # sequence-agnostic.

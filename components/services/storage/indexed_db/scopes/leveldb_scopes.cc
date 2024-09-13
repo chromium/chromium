@@ -27,7 +27,7 @@
 #include "third_party/leveldatabase/src/include/leveldb/iterator.h"
 #include "third_party/leveldatabase/src/include/leveldb/slice.h"
 
-namespace content {
+namespace content::indexed_db {
 
 // Cleanup tasks generally run in the background since they're just internal
 // bookkeeping that shouldn't block other IDB operations. It has to block
@@ -304,4 +304,4 @@ void LevelDBScopes::OnCleanupTaskResult(base::OnceClosure on_complete,
   }
 }
 
-}  // namespace content
+}  // namespace content::indexed_db

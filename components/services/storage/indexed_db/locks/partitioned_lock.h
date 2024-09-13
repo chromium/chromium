@@ -10,7 +10,7 @@
 #include "base/functional/callback.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock_id.h"
 
-namespace content {
+namespace content::indexed_db {
 
 // Represents a granted lock by the PartitionedLockManager. When this object is
 // destroyed, the lock is released. Since default construction is supported,
@@ -67,6 +67,6 @@ bool operator!=(const PartitionedLock& x, const PartitionedLock& y);
 // Comparison operator to allow sorting for locking / unlocking order.
 bool operator<(const PartitionedLock& x, const PartitionedLock& y);
 
-}  // namespace content
+}  // namespace content::indexed_db
 
 #endif  // COMPONENTS_SERVICES_STORAGE_INDEXED_DB_LOCKS_PARTITIONED_LOCK_H_

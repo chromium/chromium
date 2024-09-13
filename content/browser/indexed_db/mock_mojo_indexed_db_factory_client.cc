@@ -4,14 +4,14 @@
 
 #include "content/browser/indexed_db/mock_mojo_indexed_db_factory_client.h"
 
-namespace content {
+namespace content::indexed_db {
 
-MockMojoIndexedDBFactoryClient::MockMojoIndexedDBFactoryClient() = default;
-MockMojoIndexedDBFactoryClient::~MockMojoIndexedDBFactoryClient() = default;
+MockMojoFactoryClient::MockMojoFactoryClient() = default;
+MockMojoFactoryClient::~MockMojoFactoryClient() = default;
 
 mojo::PendingAssociatedRemote<blink::mojom::IDBFactoryClient>
-MockMojoIndexedDBFactoryClient::CreateInterfacePtrAndBind() {
+MockMojoFactoryClient::CreateInterfacePtrAndBind() {
   return receiver_.BindNewEndpointAndPassRemote();
 }
 
-}  // namespace content
+}  // namespace content::indexed_db

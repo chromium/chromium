@@ -26,16 +26,16 @@ namespace leveldb {
 class DB;
 }
 
-namespace content {
+namespace content::indexed_db {
 
-// Holds a queue of PreCloseTask's to be run after an IndexedDBBackingStore no
-// longer has any connections.
+// Holds a queue of tasks to be run after a BackingStore no longer has any
+// connections.
 //
 // There is a special IndexedDBMetadata fetcher task that runs before all the
 // other tasks, and whose output is passed to each task before they start.
 //
-// Owned by IndexedDBBackingStore.
-class CONTENT_EXPORT IndexedDBPreCloseTaskQueue {
+// Owned by BackingStore.
+class CONTENT_EXPORT BackingStorePreCloseTaskQueue {
  public:
   // This function should fetch all database metadata for the origin. The
   // returned status signifies if the metadata was read successfully.
@@ -66,26 +66,25 @@ class CONTENT_EXPORT IndexedDBPreCloseTaskQueue {
     virtual bool RunRound() = 0;
 
    private:
-    friend class IndexedDBPreCloseTaskQueue;
+    friend class BackingStorePreCloseTaskQueue;
 
     bool set_metadata_was_called_ = false;
-    // Raw pointer is safe because `database_` is owned by the
-    // IndexedDBBucketContext.
+    // Raw pointer is safe because `database_` is owned by the BucketContext.
     const raw_ptr<leveldb::DB> database_;
   };
 
-  // |on_complete| must not contain a refptr to the IndexedDBBackingStore, as
-  // this would create a cycle.
-  IndexedDBPreCloseTaskQueue(std::list<std::unique_ptr<PreCloseTask>> tasks,
-                             base::OnceClosure on_complete,
-                             base::TimeDelta max_run_time,
-                             std::unique_ptr<base::OneShotTimer> timer);
+  // |on_complete| must not contain a refptr to the BackingStore, as this would
+  // create a cycle.
+  BackingStorePreCloseTaskQueue(std::list<std::unique_ptr<PreCloseTask>> tasks,
+                                base::OnceClosure on_complete,
+                                base::TimeDelta max_run_time,
+                                std::unique_ptr<base::OneShotTimer> timer);
 
-  IndexedDBPreCloseTaskQueue(const IndexedDBPreCloseTaskQueue&) = delete;
-  IndexedDBPreCloseTaskQueue& operator=(const IndexedDBPreCloseTaskQueue&) =
-      delete;
+  BackingStorePreCloseTaskQueue(const BackingStorePreCloseTaskQueue&) = delete;
+  BackingStorePreCloseTaskQueue& operator=(
+      const BackingStorePreCloseTaskQueue&) = delete;
 
-  ~IndexedDBPreCloseTaskQueue();
+  ~BackingStorePreCloseTaskQueue();
 
   bool started() const { return started_; }
 
@@ -124,9 +123,9 @@ class CONTENT_EXPORT IndexedDBPreCloseTaskQueue {
   std::unique_ptr<base::OneShotTimer> timeout_timer_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
-  base::WeakPtrFactory<IndexedDBPreCloseTaskQueue> ptr_factory_{this};
+  base::WeakPtrFactory<BackingStorePreCloseTaskQueue> ptr_factory_{this};
 };
 
-}  // namespace content
+}  // namespace content::indexed_db
 
 #endif  // CONTENT_BROWSER_INDEXED_DB_INSTANCE_BACKING_STORE_PRE_CLOSE_TASK_QUEUE_H_

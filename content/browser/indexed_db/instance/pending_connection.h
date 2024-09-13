@@ -15,32 +15,32 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-forward.h"
 
-namespace content {
+namespace content::indexed_db {
 
-class IndexedDBDatabaseCallbacks;
-class IndexedDBFactoryClient;
-class IndexedDBTransaction;
+class DatabaseCallbacks;
+class FactoryClient;
+class Transaction;
 
 // This struct holds data relevant to opening a new connection/database while
-// IndexedDBConnectionCoordinator manages queued operations.
-struct CONTENT_EXPORT IndexedDBPendingConnection {
-  IndexedDBPendingConnection(
-      std::unique_ptr<IndexedDBFactoryClient> factory_client,
-      std::unique_ptr<IndexedDBDatabaseCallbacks> database_callbacks,
+// ConnectionCoordinator manages queued operations.
+struct CONTENT_EXPORT PendingConnection {
+  PendingConnection(
+      std::unique_ptr<FactoryClient> factory_client,
+      std::unique_ptr<DatabaseCallbacks> database_callbacks,
       int64_t transaction_id,
       int64_t version,
       mojo::PendingAssociatedReceiver<blink::mojom::IDBTransaction>
           pending_mojo_receiver);
-  ~IndexedDBPendingConnection();
+  ~PendingConnection();
 
-  std::unique_ptr<IndexedDBFactoryClient> factory_client;
-  std::unique_ptr<IndexedDBDatabaseCallbacks> database_callbacks;
+  std::unique_ptr<FactoryClient> factory_client;
+  std::unique_ptr<DatabaseCallbacks> database_callbacks;
   int64_t transaction_id;
   int64_t version;
   int scheduling_priority = 0;
   IndexedDBDataLossInfo data_loss_info;
   // The versionchange operation, if any.
-  base::WeakPtr<IndexedDBTransaction> transaction;
+  base::WeakPtr<Transaction> transaction;
   mojo::PendingAssociatedReceiver<blink::mojom::IDBTransaction>
       pending_mojo_receiver;
   bool was_cold_open = false;
@@ -49,6 +49,6 @@ struct CONTENT_EXPORT IndexedDBPendingConnection {
   base::UnguessableToken client_token;
 };
 
-}  // namespace content
+}  // namespace content::indexed_db
 
 #endif  // CONTENT_BROWSER_INDEXED_DB_INSTANCE_PENDING_CONNECTION_H_

@@ -21,9 +21,9 @@
 
 using blink::IndexedDBDatabaseMetadata;
 
-namespace content {
+namespace content::indexed_db {
 
-using PreCloseTask = IndexedDBPreCloseTaskQueue::PreCloseTask;
+using PreCloseTask = BackingStorePreCloseTaskQueue::PreCloseTask;
 
 namespace {
 constexpr base::TimeDelta kTestMaxRunTime = base::Seconds(30);
@@ -65,23 +65,23 @@ leveldb::Status MetadataFetcher(
   return return_status;
 }
 
-class IndexedDBPreCloseTaskQueueTest : public testing::Test {
+class BackingStorePreCloseTaskQueueTest : public testing::Test {
  public:
-  IndexedDBPreCloseTaskQueueTest() {
+  BackingStorePreCloseTaskQueueTest() {
     metadata_.emplace_back(kDBName, kDBId, kDBVersion, kDBMaxObjectStoreId);
   }
-  ~IndexedDBPreCloseTaskQueueTest() override = default;
+  ~BackingStorePreCloseTaskQueueTest() override = default;
 
  protected:
   std::vector<IndexedDBDatabaseMetadata> metadata_;
   base::test::TaskEnvironment task_environment_;
 };
 
-TEST_F(IndexedDBPreCloseTaskQueueTest, NoTasks) {
+TEST_F(BackingStorePreCloseTaskQueueTest, NoTasks) {
   bool done_called = false;
   bool metadata_called = false;
 
-  IndexedDBPreCloseTaskQueue queue(
+  BackingStorePreCloseTaskQueue queue(
       std::list<std::unique_ptr<PreCloseTask>>(),
       base::BindOnce(&SetBoolValue, &done_called, true), kTestMaxRunTime,
       std::make_unique<base::MockOneShotTimer>());
@@ -95,7 +95,7 @@ TEST_F(IndexedDBPreCloseTaskQueueTest, NoTasks) {
   EXPECT_TRUE(queue.done());
 }
 
-TEST_F(IndexedDBPreCloseTaskQueueTest, TaskOneRound) {
+TEST_F(BackingStorePreCloseTaskQueueTest, TaskOneRound) {
   bool done_called = false;
   bool metadata_called = false;
 
@@ -107,7 +107,7 @@ TEST_F(IndexedDBPreCloseTaskQueueTest, TaskOneRound) {
 
   std::list<std::unique_ptr<PreCloseTask>> tasks;
   tasks.push_back(std::move(task));
-  IndexedDBPreCloseTaskQueue queue(
+  BackingStorePreCloseTaskQueue queue(
       std::move(tasks), base::BindOnce(&SetBoolValue, &done_called, true),
       kTestMaxRunTime, std::make_unique<base::MockOneShotTimer>());
 
@@ -125,7 +125,7 @@ TEST_F(IndexedDBPreCloseTaskQueueTest, TaskOneRound) {
   EXPECT_TRUE(queue.done());
 }
 
-TEST_F(IndexedDBPreCloseTaskQueueTest, TaskTwoRounds) {
+TEST_F(BackingStorePreCloseTaskQueueTest, TaskTwoRounds) {
   bool done_called = false;
   bool metadata_called = false;
 
@@ -137,7 +137,7 @@ TEST_F(IndexedDBPreCloseTaskQueueTest, TaskTwoRounds) {
 
   std::list<std::unique_ptr<PreCloseTask>> tasks;
   tasks.push_back(std::move(task));
-  IndexedDBPreCloseTaskQueue queue(
+  BackingStorePreCloseTaskQueue queue(
       std::move(tasks), base::BindOnce(&SetBoolValue, &done_called, true),
       kTestMaxRunTime, std::make_unique<base::MockOneShotTimer>());
 
@@ -168,7 +168,7 @@ TEST_F(IndexedDBPreCloseTaskQueueTest, TaskTwoRounds) {
   EXPECT_TRUE(queue.done());
 }
 
-TEST_F(IndexedDBPreCloseTaskQueueTest, TwoTasks) {
+TEST_F(BackingStorePreCloseTaskQueueTest, TwoTasks) {
   bool done_called = false;
   bool metadata_called = false;
 
@@ -183,7 +183,7 @@ TEST_F(IndexedDBPreCloseTaskQueueTest, TwoTasks) {
   std::list<std::unique_ptr<PreCloseTask>> tasks;
   tasks.push_back(std::move(task1));
   tasks.push_back(std::move(task2));
-  IndexedDBPreCloseTaskQueue queue(
+  BackingStorePreCloseTaskQueue queue(
       std::move(tasks), base::BindOnce(&SetBoolValue, &done_called, true),
       kTestMaxRunTime, std::make_unique<base::MockOneShotTimer>());
 
@@ -218,7 +218,7 @@ TEST_F(IndexedDBPreCloseTaskQueueTest, TwoTasks) {
   EXPECT_TRUE(queue.done());
 }
 
-TEST_F(IndexedDBPreCloseTaskQueueTest, StopForNewConnectionBeforeStart) {
+TEST_F(BackingStorePreCloseTaskQueueTest, StopForNewConnectionBeforeStart) {
   bool done_called = false;
   bool metadata_called = false;
 
@@ -228,7 +228,7 @@ TEST_F(IndexedDBPreCloseTaskQueueTest, StopForNewConnectionBeforeStart) {
   std::list<std::unique_ptr<PreCloseTask>> tasks;
   tasks.push_back(std::move(task1));
   tasks.push_back(std::move(task2));
-  IndexedDBPreCloseTaskQueue queue(
+  BackingStorePreCloseTaskQueue queue(
       std::move(tasks), base::BindOnce(&SetBoolValue, &done_called, true),
       kTestMaxRunTime, std::make_unique<base::MockOneShotTimer>());
 
@@ -245,7 +245,7 @@ TEST_F(IndexedDBPreCloseTaskQueueTest, StopForNewConnectionBeforeStart) {
   EXPECT_TRUE(queue.done());
 }
 
-TEST_F(IndexedDBPreCloseTaskQueueTest, StopForNewConnectionAfterRound) {
+TEST_F(BackingStorePreCloseTaskQueueTest, StopForNewConnectionAfterRound) {
   bool done_called = false;
   bool metadata_called = false;
 
@@ -257,7 +257,7 @@ TEST_F(IndexedDBPreCloseTaskQueueTest, StopForNewConnectionAfterRound) {
 
   std::list<std::unique_ptr<PreCloseTask>> tasks;
   tasks.push_back(std::move(task));
-  IndexedDBPreCloseTaskQueue queue(
+  BackingStorePreCloseTaskQueue queue(
       std::move(tasks), base::BindOnce(&SetBoolValue, &done_called, true),
       kTestMaxRunTime, std::make_unique<base::MockOneShotTimer>());
 
@@ -283,7 +283,8 @@ TEST_F(IndexedDBPreCloseTaskQueueTest, StopForNewConnectionAfterRound) {
   EXPECT_TRUE(queue.done());
 }
 
-TEST_F(IndexedDBPreCloseTaskQueueTest, StopForNewConnectionAfterTaskCompletes) {
+TEST_F(BackingStorePreCloseTaskQueueTest,
+       StopForNewConnectionAfterTaskCompletes) {
   bool done_called = false;
   bool metadata_called = false;
 
@@ -297,7 +298,7 @@ TEST_F(IndexedDBPreCloseTaskQueueTest, StopForNewConnectionAfterTaskCompletes) {
   std::list<std::unique_ptr<PreCloseTask>> tasks;
   tasks.push_back(std::move(task1));
   tasks.push_back(std::move(task2));
-  IndexedDBPreCloseTaskQueue queue(
+  BackingStorePreCloseTaskQueue queue(
       std::move(tasks), base::BindOnce(&SetBoolValue, &done_called, true),
       kTestMaxRunTime, std::make_unique<base::MockOneShotTimer>());
 
@@ -323,7 +324,7 @@ TEST_F(IndexedDBPreCloseTaskQueueTest, StopForNewConnectionAfterTaskCompletes) {
   EXPECT_TRUE(queue.done());
 }
 
-TEST_F(IndexedDBPreCloseTaskQueueTest, StopForTimout) {
+TEST_F(BackingStorePreCloseTaskQueueTest, StopForTimout) {
   bool done_called = false;
   bool metadata_called = false;
 
@@ -340,7 +341,7 @@ TEST_F(IndexedDBPreCloseTaskQueueTest, StopForTimout) {
   std::list<std::unique_ptr<PreCloseTask>> tasks;
   tasks.push_back(std::move(task1));
   tasks.push_back(std::move(task2));
-  IndexedDBPreCloseTaskQueue queue(
+  BackingStorePreCloseTaskQueue queue(
       std::move(tasks), base::BindOnce(&SetBoolValue, &done_called, true),
       kTestMaxRunTime, std::move(fake_timer));
 
@@ -368,7 +369,7 @@ TEST_F(IndexedDBPreCloseTaskQueueTest, StopForTimout) {
   EXPECT_TRUE(queue.done());
 }
 
-TEST_F(IndexedDBPreCloseTaskQueueTest, MetadataError) {
+TEST_F(BackingStorePreCloseTaskQueueTest, MetadataError) {
   bool done_called = false;
   bool metadata_called = false;
 
@@ -378,7 +379,7 @@ TEST_F(IndexedDBPreCloseTaskQueueTest, MetadataError) {
   std::list<std::unique_ptr<PreCloseTask>> tasks;
   tasks.push_back(std::move(task1));
   tasks.push_back(std::move(task2));
-  IndexedDBPreCloseTaskQueue queue(
+  BackingStorePreCloseTaskQueue queue(
       std::move(tasks), base::BindOnce(&SetBoolValue, &done_called, true),
       kTestMaxRunTime, std::make_unique<base::MockOneShotTimer>());
 
@@ -395,4 +396,4 @@ TEST_F(IndexedDBPreCloseTaskQueueTest, MetadataError) {
 
 }  // namespace
 
-}  // namespace content
+}  // namespace content::indexed_db

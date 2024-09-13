@@ -16,7 +16,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
-namespace content {
+namespace content::indexed_db {
 
 IndexedDBControlWrapper::IndexedDBControlWrapper(
     const base::FilePath& data_path,
@@ -86,4 +86,4 @@ void IndexedDBControlWrapper::OnSpecialStoragePolicyUpdated(
   GetIndexedDBControl().ApplyPolicyUpdates(std::move(policy_updates));
 }
 
-}  // namespace content
+}  // namespace content::indexed_db

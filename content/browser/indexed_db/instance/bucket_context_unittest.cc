@@ -21,19 +21,18 @@
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 
-namespace content {
+namespace content::indexed_db {
 
 using testing::SizeIs;
 using ITS = storage::mojom::IdbTransactionState;
 
-class IndexedDBBucketContextTest : public testing::Test {
+class BucketContextTest : public testing::Test {
  public:
-  IndexedDBBucketContextTest()
+  BucketContextTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
-  IndexedDBBucketContextTest(const IndexedDBBucketContextTest&) = delete;
-  IndexedDBBucketContextTest& operator=(const IndexedDBBucketContextTest&) =
-      delete;
+  BucketContextTest(const BucketContextTest&) = delete;
+  BucketContextTest& operator=(const BucketContextTest&) = delete;
 
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
@@ -52,8 +51,8 @@ class IndexedDBBucketContextTest : public testing::Test {
             blink::StorageKey::CreateFromStringForTesting(
                 "https://example.com")),
         blink::mojom::StorageType::kTemporary);
-    bucket_context_ = std::make_unique<IndexedDBBucketContext>(
-        bucket_info, base::FilePath(), IndexedDBBucketContext::Delegate(),
+    bucket_context_ = std::make_unique<BucketContext>(
+        bucket_info, base::FilePath(), BucketContext::Delegate(),
         quota_manager_proxy_,
         /*io_task_runner=*/base::SequencedTaskRunner::GetCurrentDefault(),
         /*blob_storage_context=*/mojo::NullRemote(),
@@ -73,10 +72,10 @@ class IndexedDBBucketContextTest : public testing::Test {
   scoped_refptr<storage::MockSpecialStoragePolicy> quota_policy_;
   scoped_refptr<storage::MockQuotaManager> quota_manager_;
   scoped_refptr<storage::MockQuotaManagerProxy> quota_manager_proxy_;
-  std::unique_ptr<IndexedDBBucketContext> bucket_context_;
+  std::unique_ptr<BucketContext> bucket_context_;
 };
 
-TEST_F(IndexedDBBucketContextTest, CanUseDiskSpaceQueuing) {
+TEST_F(BucketContextTest, CanUseDiskSpaceQueuing) {
   base::HistogramTester tester;
   // Request space 3 times consecutively. The requests should coalesce.
   SetQuotaLeft(100);
@@ -104,8 +103,8 @@ TEST_F(IndexedDBBucketContextTest, CanUseDiskSpaceQueuing) {
   tester.ExpectTotalCount("IndexedDB.QuotaCheckTime2.Success", 1);
 }
 
-TEST_F(IndexedDBBucketContextTest, CanUseDiskSpaceCaching) {
-  // Verify the limited authority that IndexedDBBucketContext has to approve
+TEST_F(BucketContextTest, CanUseDiskSpaceCaching) {
+  // Verify the limited authority that BucketContext has to approve
   // disk usage without checking the quota manager. First set the quota manager
   // to report a large amount of disk space, but request even more --- the usage
   // shouldn't be approved.
@@ -152,8 +151,8 @@ TEST_F(IndexedDBBucketContextTest, CanUseDiskSpaceCaching) {
   }
   // Wait for the cached value to expire. The next request should be approved,
   // but only after going to the QuotaManager again.
-  task_environment_.FastForwardBy(
-      IndexedDBBucketContext::kBucketSpaceCacheTimeLimit * 2);
+  task_environment_.FastForwardBy(BucketContext::kBucketSpaceCacheTimeLimit *
+                                  2);
   {
     base::test::TestFuture<bool> success_future;
     bucket_context_->CheckCanUseDiskSpace(kLargeSpace / 4,
@@ -163,7 +162,7 @@ TEST_F(IndexedDBBucketContextTest, CanUseDiskSpaceCaching) {
   }
 }
 
-TEST_F(IndexedDBBucketContextTest, CanUseDiskSpaceWarmUp) {
+TEST_F(BucketContextTest, CanUseDiskSpaceWarmUp) {
   constexpr const int64_t kLargeSpace = 120;
   SetQuotaLeft(kLargeSpace);
 
@@ -176,7 +175,7 @@ TEST_F(IndexedDBBucketContextTest, CanUseDiskSpaceWarmUp) {
   EXPECT_TRUE(success_future.Get());
 }
 
-TEST_F(IndexedDBBucketContextTest, BucketSpaceDecay) {
+TEST_F(BucketContextTest, BucketSpaceDecay) {
   constexpr const int64_t kLargeSpace = 120;
   SetQuotaLeft(kLargeSpace);
 
@@ -187,19 +186,19 @@ TEST_F(IndexedDBBucketContextTest, BucketSpaceDecay) {
   const int64_t can_allot = bucket_context_->GetBucketSpaceToAllot();
   EXPECT_LE(can_allot, 120);
 
-  task_environment_.FastForwardBy(
-      IndexedDBBucketContext::kBucketSpaceCacheTimeLimit / 2);
+  task_environment_.FastForwardBy(BucketContext::kBucketSpaceCacheTimeLimit /
+                                  2);
   const int64_t decayed_can_allot = bucket_context_->GetBucketSpaceToAllot();
   EXPECT_LT(decayed_can_allot, can_allot);
   EXPECT_GT(decayed_can_allot, 0);
 
-  task_environment_.FastForwardBy(
-      IndexedDBBucketContext::kBucketSpaceCacheTimeLimit / 2);
+  task_environment_.FastForwardBy(BucketContext::kBucketSpaceCacheTimeLimit /
+                                  2);
   EXPECT_EQ(bucket_context_->GetBucketSpaceToAllot(), 0);
 }
 
 // Verifies state history is calculated correctly based on snapshots.
-TEST_F(IndexedDBBucketContextTest, MetadataRecordingStateHistory) {
+TEST_F(BucketContextTest, MetadataRecordingStateHistory) {
   bucket_context_->StartMetadataRecording();
 
   // Helper function to make a idb internals metadata snapshot with a single
@@ -317,4 +316,4 @@ TEST_F(IndexedDBBucketContextTest, MetadataRecordingStateHistory) {
   EXPECT_EQ(tx->state_history[4]->duration, 0);
 }
 
-}  // namespace content
+}  // namespace content::indexed_db

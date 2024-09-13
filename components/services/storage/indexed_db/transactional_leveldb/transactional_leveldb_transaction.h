@@ -19,7 +19,7 @@
 #include "components/services/storage/indexed_db/scopes/leveldb_scope_deletion_mode.h"
 #include "third_party/leveldatabase/src/include/leveldb/status.h"
 
-namespace content {
+namespace content::indexed_db {
 class TransactionalLevelDBDatabase;
 class TransactionalLevelDBIterator;
 class LevelDBScope;
@@ -172,6 +172,6 @@ class LevelDBDirectTransaction {
   std::unique_ptr<LevelDBWriteBatch> write_batch_;
 };
 
-}  // namespace content
+}  // namespace content::indexed_db
 
 #endif  // COMPONENTS_SERVICES_STORAGE_INDEXED_DB_TRANSACTIONAL_LEVELDB_TRANSACTIONAL_LEVELDB_TRANSACTION_H_

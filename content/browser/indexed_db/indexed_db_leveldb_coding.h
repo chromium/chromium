@@ -19,9 +19,8 @@
 #include "third_party/blink/public/common/indexeddb/indexeddb_key.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_key_path.h"
 
-namespace content {
+namespace content::indexed_db {
 
-namespace indexed_db {
 // 0 - Initial version.
 // 1 - Adds UserIntVersion to DatabaseMetaData.
 // 2 - Adds DataVersion to to global metadata.
@@ -33,7 +32,6 @@ const constexpr int64_t kLatestKnownSchemaVersion = 5;
 // began in early 2020, so we currently continue to support schema that are as
 // old as 2014.
 const constexpr int64_t kEarliestSupportedSchemaVersion = 3;
-}  // namespace indexed_db
 
 CONTENT_EXPORT extern const unsigned char kMinimumIndexId;
 
@@ -431,7 +429,7 @@ class IndexFreeListKey {
 class ObjectStoreNamesKey {
  public:
   // TODO(jsbell): We never use this to look up object store ids,
-  // because a mapping is kept in the IndexedDBDatabase. Can the
+  // because a mapping is kept in the Database. Can the
   // mapping become unreliable?  Can we remove this?
   static bool Decode(std::string_view* slice, ObjectStoreNamesKey* result);
   CONTENT_EXPORT static std::string Encode(
@@ -602,6 +600,6 @@ class IndexDataKey {
   int64_t sequence_number_;
 };
 
-}  // namespace content
+}  // namespace content::indexed_db
 
 #endif  // CONTENT_BROWSER_INDEXED_DB_INDEXED_DB_LEVELDB_CODING_H_

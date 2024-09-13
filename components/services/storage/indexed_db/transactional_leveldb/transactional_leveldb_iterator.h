@@ -20,7 +20,7 @@ class Comparator;
 class Iterator;
 }  // namespace leveldb
 
-namespace content {
+namespace content::indexed_db {
 class TransactionalLevelDBDatabase;
 class TransactionalLevelDBTransaction;
 class LevelDBSnapshot;
@@ -109,6 +109,6 @@ class TransactionalLevelDBIterator {
   const raw_ptr<const leveldb::Comparator> comparator_;
 };
 
-}  // namespace content
+}  // namespace content::indexed_db
 
 #endif  // COMPONENTS_SERVICES_STORAGE_INDEXED_DB_TRANSACTIONAL_LEVELDB_TRANSACTIONAL_LEVELDB_ITERATOR_H_

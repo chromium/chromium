@@ -30,8 +30,8 @@
 #include "third_party/leveldatabase/leveldb_chrome.h"
 #include "third_party/leveldatabase/src/include/leveldb/comparator.h"
 
-namespace content {
-namespace leveldb_unittest {
+namespace content::indexed_db {
+namespace {
 
 static const size_t kDefaultMaxOpenIteratorsPerDatabase = 50;
 
@@ -165,5 +165,5 @@ TEST(LevelDB, Locking) {
   EXPECT_TRUE(status.ok());
 }
 
-}  // namespace leveldb_unittest
-}  // namespace content
+}  // namespace
+}  // namespace content::indexed_db

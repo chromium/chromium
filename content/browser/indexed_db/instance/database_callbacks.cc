@@ -12,9 +12,9 @@
 #include "content/browser/indexed_db/instance/transaction.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
-namespace content {
+namespace content::indexed_db {
 
-IndexedDBDatabaseCallbacks::IndexedDBDatabaseCallbacks(
+DatabaseCallbacks::DatabaseCallbacks(
     mojo::PendingAssociatedRemote<blink::mojom::IDBDatabaseCallbacks>
         callbacks_remote) {
   if (!callbacks_remote.is_valid()) {
@@ -23,9 +23,9 @@ IndexedDBDatabaseCallbacks::IndexedDBDatabaseCallbacks(
   callbacks_.Bind(std::move(callbacks_remote));
 }
 
-IndexedDBDatabaseCallbacks::~IndexedDBDatabaseCallbacks() {}
+DatabaseCallbacks::~DatabaseCallbacks() {}
 
-void IndexedDBDatabaseCallbacks::OnForcedClose() {
+void DatabaseCallbacks::OnForcedClose() {
   if (complete_) {
     return;
   }
@@ -36,8 +36,8 @@ void IndexedDBDatabaseCallbacks::OnForcedClose() {
   complete_ = true;
 }
 
-void IndexedDBDatabaseCallbacks::OnVersionChange(int64_t old_version,
-                                                 int64_t new_version) {
+void DatabaseCallbacks::OnVersionChange(int64_t old_version,
+                                        int64_t new_version) {
   if (complete_) {
     return;
   }
@@ -47,9 +47,8 @@ void IndexedDBDatabaseCallbacks::OnVersionChange(int64_t old_version,
   }
 }
 
-void IndexedDBDatabaseCallbacks::OnAbort(
-    const IndexedDBTransaction& transaction,
-    const IndexedDBDatabaseError& error) {
+void DatabaseCallbacks::OnAbort(const Transaction& transaction,
+                                const DatabaseError& error) {
   if (complete_) {
     return;
   }
@@ -59,8 +58,7 @@ void IndexedDBDatabaseCallbacks::OnAbort(
   }
 }
 
-void IndexedDBDatabaseCallbacks::OnComplete(
-    const IndexedDBTransaction& transaction) {
+void DatabaseCallbacks::OnComplete(const Transaction& transaction) {
   if (complete_) {
     return;
   }
@@ -70,4 +68,4 @@ void IndexedDBDatabaseCallbacks::OnComplete(
   }
 }
 
-}  // namespace content
+}  // namespace content::indexed_db

@@ -8,23 +8,23 @@
 #include "base/memory/weak_ptr.h"
 #include "content/common/content_export.h"
 
-namespace content {
-class IndexedDBBucketContext;
+namespace content::indexed_db {
 
-// This object tells the IndexedDBBucketContext that there is still something
-// using the backing store, and the IndexedDBBucketContext won't close it until
-// all handles are destroyed. "Something" means, for example, an
-// `IndexedDBConnection`.
-class CONTENT_EXPORT IndexedDBBucketContextHandle {
+class BucketContext;
+
+// This object tells the BucketContext that there is still something using the
+// backing store, and the BucketContext won't close it until all handles are
+// destroyed. "Something" means, for example, a `Connection`.
+class CONTENT_EXPORT BucketContextHandle {
  public:
-  IndexedDBBucketContextHandle();
-  explicit IndexedDBBucketContextHandle(IndexedDBBucketContext& bucket_context);
-  IndexedDBBucketContextHandle(IndexedDBBucketContextHandle&&);
-  IndexedDBBucketContextHandle& operator=(IndexedDBBucketContextHandle&&);
-  IndexedDBBucketContextHandle(const IndexedDBBucketContextHandle&);
-  IndexedDBBucketContextHandle operator=(const IndexedDBBucketContextHandle&);
+  BucketContextHandle();
+  explicit BucketContextHandle(BucketContext& bucket_context);
+  BucketContextHandle(BucketContextHandle&&);
+  BucketContextHandle& operator=(BucketContextHandle&&);
+  BucketContextHandle(const BucketContextHandle&);
+  BucketContextHandle operator=(const BucketContextHandle&);
 
-  ~IndexedDBBucketContextHandle();
+  ~BucketContextHandle();
 
   bool IsHeld() const;
 
@@ -32,21 +32,21 @@ class CONTENT_EXPORT IndexedDBBucketContextHandle {
 
   // Returns null if the factory was destroyed, which should only happen on
   // context destruction.
-  IndexedDBBucketContext* bucket_context() { return bucket_context_.get(); }
+  BucketContext* bucket_context() { return bucket_context_.get(); }
 
-  IndexedDBBucketContext* operator->() {
+  BucketContext* operator->() {
     CHECK(bucket_context_.get());
     return bucket_context_.get();
   }
-  const IndexedDBBucketContext* operator->() const {
+  const BucketContext* operator->() const {
     CHECK(bucket_context_.get());
     return bucket_context_.get();
   }
 
  private:
-  base::WeakPtr<IndexedDBBucketContext> bucket_context_;
+  base::WeakPtr<BucketContext> bucket_context_;
 };
 
-}  // namespace content
+}  // namespace content::indexed_db
 
 #endif  // CONTENT_BROWSER_INDEXED_DB_INSTANCE_BUCKET_CONTEXT_HANDLE_H_

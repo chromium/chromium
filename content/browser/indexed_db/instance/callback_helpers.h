@@ -18,13 +18,13 @@
 // and can't be placed in a definition file.  Please ensure any including file
 // is a definition file, itself, and never include this into a header file.
 
-namespace content {
+namespace content::indexed_db {
 namespace indexed_db_callback_helpers_internal {
 
 template <typename T>
 leveldb::Status InvokeOrSucceed(base::WeakPtr<T> ptr,
-                                IndexedDBTransaction::Operation operation,
-                                IndexedDBTransaction* transaction) {
+                                Transaction::Operation operation,
+                                Transaction* transaction) {
   if (ptr) {
     return std::move(operation).Run(transaction);
   }
@@ -32,19 +32,19 @@ leveldb::Status InvokeOrSucceed(base::WeakPtr<T> ptr,
 }
 
 template <typename R>
-R AbortCallback(base::WeakPtr<IndexedDBTransaction> transaction) {
+R AbortCallback(base::WeakPtr<Transaction> transaction) {
   if (transaction) {
     transaction->IncrementNumErrorsSent();
   }
-  IndexedDBDatabaseError error(blink::mojom::IDBException::kIgnorableAbortError,
-                               "Backend aborted error");
+  DatabaseError error(blink::mojom::IDBException::kIgnorableAbortError,
+                      "Backend aborted error");
   return R::Struct::NewErrorResult(
       blink::mojom::IDBError::New(error.code(), error.message()));
 }
 
 template <typename R>
 base::OnceCallback<R()> CreateAbortCallback(
-    base::WeakPtr<IndexedDBTransaction> transaction) {
+    base::WeakPtr<Transaction> transaction) {
   return base::BindOnce(&AbortCallback<R>, std::move(transaction));
 }
 
@@ -60,8 +60,7 @@ base::OnceCallback<R()> CreateAbortCallback(
 template <typename T, typename R>
 class CallbackAbortOnDestruct {
  public:
-  CallbackAbortOnDestruct(T callback,
-                          base::WeakPtr<IndexedDBTransaction> transaction)
+  CallbackAbortOnDestruct(T callback, base::WeakPtr<Transaction> transaction)
       : callback_(std::move(callback)),
         args_at_destroy_(CreateAbortCallback<R>(transaction)),
         called_(false) {}
@@ -95,9 +94,7 @@ class CallbackAbortOnDestruct {
 // function, the wrapping callback can exist with the same type signature as
 // the wrapped callback.
 template <typename T, typename R>
-T CreateCallbackAbortOnDestruct(
-    T cb,
-    base::WeakPtr<IndexedDBTransaction> transaction) {
+T CreateCallbackAbortOnDestruct(T cb, base::WeakPtr<Transaction> transaction) {
   return base::BindOnce(
       &indexed_db_callback_helpers_internal::CallbackAbortOnDestruct<T, R>::Run,
       std::make_unique<
@@ -108,9 +105,9 @@ T CreateCallbackAbortOnDestruct(
 // This allows us to bind a function with a return value to a weak ptr, and if
 // the weak pointer is invalidated then we just return a default (success).
 template <typename T, typename Functor, typename... Args>
-IndexedDBTransaction::Operation BindWeakOperation(Functor&& functor,
-                                                  base::WeakPtr<T> weak_ptr,
-                                                  Args&&... args) {
+Transaction::Operation BindWeakOperation(Functor&& functor,
+                                         base::WeakPtr<T> weak_ptr,
+                                         Args&&... args) {
   DCHECK(weak_ptr);
   T* ptr = weak_ptr.get();
   return base::BindOnce(
@@ -120,6 +117,6 @@ IndexedDBTransaction::Operation BindWeakOperation(Functor&& functor,
                      std::forward<Args>(args)...));
 }
 
-}  // namespace content
+}  // namespace content::indexed_db
 
 #endif  // CONTENT_BROWSER_INDEXED_DB_INSTANCE_CALLBACK_HELPERS_H_

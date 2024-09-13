@@ -9,13 +9,13 @@
 
 #include "content/browser/indexed_db/instance/backing_store.h"
 
-namespace content {
+namespace content::indexed_db {
 
-class FakeTransaction : public IndexedDBBackingStore::Transaction {
+class FakeTransaction : public BackingStore::Transaction {
  public:
   FakeTransaction(leveldb::Status phase_two_result,
                   blink::mojom::IDBTransactionMode mode,
-                  base::WeakPtr<IndexedDBBackingStore> backing_store);
+                  base::WeakPtr<BackingStore> backing_store);
   explicit FakeTransaction(leveldb::Status phase_two_result);
 
   FakeTransaction(const FakeTransaction&) = delete;
@@ -31,6 +31,6 @@ class FakeTransaction : public IndexedDBBackingStore::Transaction {
   leveldb::Status result_;
 };
 
-}  // namespace content
+}  // namespace content::indexed_db
 
 #endif  // CONTENT_BROWSER_INDEXED_DB_INSTANCE_FAKE_TRANSACTION_H_

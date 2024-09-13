@@ -50,7 +50,7 @@ struct BucketLocator;
 class QuotaClientCallbackWrapper;
 }  // namespace storage
 
-namespace content {
+namespace content::indexed_db {
 
 // This class manages all the active/open backing stores for IndexedDB, of which
 // there is at most one per bucket. It also serves as the central liaison to
@@ -157,12 +157,12 @@ class CONTENT_EXPORT IndexedDBContextImpl
   }
 
   const base::FilePath GetFirstPartyDataPathForTesting() const;
-  base::SequenceBound<IndexedDBBucketContext>* GetBucketContextForTesting(
+  base::SequenceBound<BucketContext>* GetBucketContextForTesting(
       const storage::BucketId& id);
 
  private:
   friend class IndexedDBTest;
-  friend class IndexedDBFactoryTest;
+  friend class FactoryTest;
   FRIEND_TEST_ALL_PREFIXES(IndexedDBTest, BasicFactoryCreationAndTearDown);
   FRIEND_TEST_ALL_PREFIXES(IndexedDBTest, TooLongOrigin);
 
@@ -239,7 +239,7 @@ class CONTENT_EXPORT IndexedDBContextImpl
       std::vector<storage::QuotaErrorOr<storage::BucketInfo>> bucket_infos);
 
   // Applies the given `callback` to all bucket contexts.
-  void ForEachBucketContext(IndexedDBBucketContext::InstanceClosure callback);
+  void ForEachBucketContext(BucketContext::InstanceClosure callback);
 
   // Calculates in-memory/incognito usage for usage reporting.
   void GetInMemorySize(storage::BucketId bucket_id,
@@ -359,16 +359,16 @@ class CONTENT_EXPORT IndexedDBContextImpl
   mojo::PendingReceiver<storage::mojom::MockFailureInjector>
       pending_failure_injector_;
 
-  std::map<storage::BucketId, base::SequenceBound<IndexedDBBucketContext>>
+  std::map<storage::BucketId, base::SequenceBound<BucketContext>>
       bucket_contexts_;
 
   // For the most part, every bucket gets its own SequencedTaskRunner. But each
   // "site", i.e. StorageKey's `top_level_site()`, has a cap on the number of
   // task runners its buckets will be allotted, which is equal to the number of
-  // cores on the device. When creating a new IndexedDBBucketContext, it will
-  // get a unique task runner that runs on the threadpool unless
-  // `active_bucket_count` is over the number of cores, in which case the task
-  // runner will be shared with other buckets.
+  // cores on the device. When creating a new BucketContext, it will get a
+  // unique task runner that runs on the threadpool unless `active_bucket_count`
+  // is over the number of cores, in which case the task runner will be shared
+  // with other buckets.
   struct TaskRunnerLimiter {
     TaskRunnerLimiter();
     ~TaskRunnerLimiter();
@@ -378,7 +378,7 @@ class CONTENT_EXPORT IndexedDBContextImpl
   };
   std::map<net::SchemefulSite, TaskRunnerLimiter> task_runner_limiters_;
 
-  IndexedDBBucketContext::InstanceClosure for_each_bucket_context_;
+  BucketContext::InstanceClosure for_each_bucket_context_;
 
   // When true, run backing stores (and bucket contexts) on `idb_task_runner_`
   // to simplify unit tests. This is set to true when the ctor param
@@ -398,6 +398,6 @@ class CONTENT_EXPORT IndexedDBContextImpl
   base::WeakPtrFactory<IndexedDBContextImpl> weak_factory_{this};
 };
 
-}  // namespace content
+}  // namespace content::indexed_db
 
 #endif  // CONTENT_BROWSER_INDEXED_DB_INDEXED_DB_CONTEXT_IMPL_H_

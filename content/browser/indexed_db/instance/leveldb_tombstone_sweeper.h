@@ -31,12 +31,8 @@ class DB;
 class Iterator;
 }  // namespace leveldb
 
-namespace content {
-class IndexedDBBackingStore;
-
-namespace indexed_db_tombstone_sweeper_unittest {
-class IndexedDBTombstoneSweeperTest;
-}
+namespace content::indexed_db {
+class BackingStore;
 
 // Facilitates iterating a whole container with an abnormal starting position.
 // If the starting position is not 0, then the iteration will wrap to the
@@ -64,23 +60,22 @@ class WrappingIterator {
 // occur when the indexed fields of rows are modified, and stay around if script
 // doesn't do a cursor iteration of the database.
 //
-// Owned by the IndexedDBBackingStore.
+// Owned by the BackingStore.
 //
 // TODO(dmurph) Describe this class in a README.md file.
 // See bit.ly/idb-tombstone-sweeper for more information.
-class CONTENT_EXPORT IndexedDBTombstoneSweeper
-    : public IndexedDBPreCloseTaskQueue::PreCloseTask {
+class CONTENT_EXPORT LevelDbTombstoneSweeper
+    : public BackingStorePreCloseTaskQueue::PreCloseTask {
  public:
   // The |database| must outlive this instance.
-  IndexedDBTombstoneSweeper(int round_iterations,
-                            int max_iterations,
-                            leveldb::DB* database);
+  LevelDbTombstoneSweeper(int round_iterations,
+                          int max_iterations,
+                          leveldb::DB* database);
 
-  IndexedDBTombstoneSweeper(const IndexedDBTombstoneSweeper&) = delete;
-  IndexedDBTombstoneSweeper& operator=(const IndexedDBTombstoneSweeper&) =
-      delete;
+  LevelDbTombstoneSweeper(const LevelDbTombstoneSweeper&) = delete;
+  LevelDbTombstoneSweeper& operator=(const LevelDbTombstoneSweeper&) = delete;
 
-  ~IndexedDBTombstoneSweeper() override;
+  ~LevelDbTombstoneSweeper() override;
 
   bool RequiresMetadata() const override;
 
@@ -90,13 +85,13 @@ class CONTENT_EXPORT IndexedDBTombstoneSweeper
   bool RunRound() override;
 
  private:
-  using DatabaseMetadataVector = std::vector<blink::IndexedDBDatabaseMetadata>;
+  using IndexedDBDatabaseMetadataVector =
+      std::vector<blink::IndexedDBDatabaseMetadata>;
   using ObjectStoreMetadataMap =
       std::map<int64_t, blink::IndexedDBObjectStoreMetadata>;
   using IndexMetadataMap = std::map<int64_t, blink::IndexedDBIndexMetadata>;
 
-  friend class indexed_db_tombstone_sweeper_unittest::
-      IndexedDBTombstoneSweeperTest;
+  friend class LevelDbTombstoneSweeperTest;
 
   enum class Status { SWEEPING, DONE_ERROR, DONE };
 
@@ -107,7 +102,8 @@ class CONTENT_EXPORT IndexedDBTombstoneSweeper
 
     // Stores the random starting database seed. Not bounded.
     size_t start_database_seed = 0;
-    std::optional<WrappingIterator<DatabaseMetadataVector>> database_it;
+    std::optional<WrappingIterator<IndexedDBDatabaseMetadataVector>>
+        database_it;
 
     // Stores the random starting object store seed. Not bounded.
     size_t start_object_store_seed = 0;
@@ -159,8 +155,9 @@ class CONTENT_EXPORT IndexedDBTombstoneSweeper
 
   SweepState sweep_state_;
 
-  base::WeakPtrFactory<IndexedDBTombstoneSweeper> ptr_factory_{this};
+  base::WeakPtrFactory<LevelDbTombstoneSweeper> ptr_factory_{this};
 };
 
-}  // namespace content
+}  // namespace content::indexed_db
+
 #endif  // CONTENT_BROWSER_INDEXED_DB_INSTANCE_LEVELDB_TOMBSTONE_SWEEPER_H_

@@ -29,23 +29,25 @@
 using blink::IndexedDBKeyPath;
 using leveldb::Status;
 
-namespace content {
-namespace indexed_db {
+namespace content::indexed_db {
+
 namespace {
+
 class LDBComparator : public leveldb::Comparator {
  public:
   LDBComparator() = default;
   ~LDBComparator() override = default;
   int Compare(const leveldb::Slice& a, const leveldb::Slice& b) const override {
-    return content::Compare(leveldb_env::MakeStringView(a),
-                            leveldb_env::MakeStringView(b),
-                            /*index_keys=*/false);
+    return ::content::indexed_db::Compare(leveldb_env::MakeStringView(a),
+                                          leveldb_env::MakeStringView(b),
+                                          /*index_keys=*/false);
   }
   const char* Name() const override { return "idb_cmp1"; }
   void FindShortestSeparator(std::string* start,
                              const leveldb::Slice& limit) const override {}
   void FindShortSuccessor(std::string* key) const override {}
 };
+
 }  // namespace
 
 base::FilePath ComputeCorruptionFileName(
@@ -578,5 +580,4 @@ const leveldb::Comparator* GetDefaultLevelDBComparator() {
   return ldb_comparator.get();
 }
 
-}  // namespace indexed_db
-}  // namespace content
+}  // namespace content::indexed_db

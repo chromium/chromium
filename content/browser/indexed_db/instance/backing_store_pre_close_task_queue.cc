@@ -14,22 +14,23 @@
 
 using blink::IndexedDBDatabaseMetadata;
 
-namespace content {
+namespace content::indexed_db {
 
-IndexedDBPreCloseTaskQueue::PreCloseTask::PreCloseTask(leveldb::DB* database)
+BackingStorePreCloseTaskQueue::PreCloseTask::PreCloseTask(leveldb::DB* database)
     : database_(database) {}
 
-IndexedDBPreCloseTaskQueue::PreCloseTask::~PreCloseTask() = default;
+BackingStorePreCloseTaskQueue::PreCloseTask::~PreCloseTask() = default;
 
-bool IndexedDBPreCloseTaskQueue::PreCloseTask::RequiresMetadata() const {
+bool BackingStorePreCloseTaskQueue::PreCloseTask::RequiresMetadata() const {
   return false;
 }
 
-void IndexedDBPreCloseTaskQueue::PreCloseTask::SetMetadata(
+void BackingStorePreCloseTaskQueue::PreCloseTask::SetMetadata(
     const std::vector<blink::IndexedDBDatabaseMetadata>* metadata) {}
 
-IndexedDBPreCloseTaskQueue::IndexedDBPreCloseTaskQueue(
-    std::list<std::unique_ptr<IndexedDBPreCloseTaskQueue::PreCloseTask>> tasks,
+BackingStorePreCloseTaskQueue::BackingStorePreCloseTaskQueue(
+    std::list<std::unique_ptr<BackingStorePreCloseTaskQueue::PreCloseTask>>
+        tasks,
     base::OnceClosure on_complete,
     base::TimeDelta max_run_time,
     std::unique_ptr<base::OneShotTimer> timer)
@@ -38,9 +39,10 @@ IndexedDBPreCloseTaskQueue::IndexedDBPreCloseTaskQueue(
       timeout_time_(max_run_time),
       timeout_timer_(std::move(timer)),
       task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {}
-IndexedDBPreCloseTaskQueue::~IndexedDBPreCloseTaskQueue() = default;
 
-void IndexedDBPreCloseTaskQueue::Stop() {
+BackingStorePreCloseTaskQueue::~BackingStorePreCloseTaskQueue() = default;
+
+void BackingStorePreCloseTaskQueue::Stop() {
   if (!started_ || done_) {
     return;
   }
@@ -51,7 +53,7 @@ void IndexedDBPreCloseTaskQueue::Stop() {
   OnComplete();
 }
 
-void IndexedDBPreCloseTaskQueue::Start(MetadataFetcher metadata_fetcher) {
+void BackingStorePreCloseTaskQueue::Start(MetadataFetcher metadata_fetcher) {
   DCHECK(!started_);
   started_ = true;
   if (tasks_.empty()) {
@@ -60,15 +62,15 @@ void IndexedDBPreCloseTaskQueue::Start(MetadataFetcher metadata_fetcher) {
   }
   timeout_timer_->Start(
       FROM_HERE, timeout_time_,
-      base::BindOnce(&IndexedDBPreCloseTaskQueue::StopForTimout,
+      base::BindOnce(&BackingStorePreCloseTaskQueue::StopForTimout,
                      ptr_factory_.GetWeakPtr()));
   metadata_fetcher_ = std::move(metadata_fetcher);
   task_runner_->PostTask(FROM_HERE,
-                         base::BindOnce(&IndexedDBPreCloseTaskQueue::RunLoop,
+                         base::BindOnce(&BackingStorePreCloseTaskQueue::RunLoop,
                                         ptr_factory_.GetWeakPtr()));
 }
 
-void IndexedDBPreCloseTaskQueue::OnComplete() {
+void BackingStorePreCloseTaskQueue::OnComplete() {
   DCHECK(started_);
   DCHECK(!done_);
   ptr_factory_.InvalidateWeakPtrs();
@@ -77,7 +79,7 @@ void IndexedDBPreCloseTaskQueue::OnComplete() {
   std::move(on_done_).Run();
 }
 
-void IndexedDBPreCloseTaskQueue::StopForTimout() {
+void BackingStorePreCloseTaskQueue::StopForTimout() {
   DCHECK(started_);
   if (done_) {
     return;
@@ -88,14 +90,14 @@ void IndexedDBPreCloseTaskQueue::StopForTimout() {
   OnComplete();
 }
 
-void IndexedDBPreCloseTaskQueue::StopForMetadataError(
+void BackingStorePreCloseTaskQueue::StopForMetadataError(
     const leveldb::Status& status) {
   if (done_) {
     return;
   }
 
   LOCAL_HISTOGRAM_ENUMERATION(
-      "WebCore.IndexedDB.IndexedDBPreCloseTaskList.MetadataError",
+      "WebCore.IndexedDB.BackingStorePreCloseTaskList.MetadataError",
       leveldb_env::GetLevelDBStatusUMAValue(status),
       leveldb_env::LEVELDB_STATUS_MAX);
   while (!tasks_.empty()) {
@@ -104,7 +106,7 @@ void IndexedDBPreCloseTaskQueue::StopForMetadataError(
   OnComplete();
 }
 
-void IndexedDBPreCloseTaskQueue::RunLoop() {
+void BackingStorePreCloseTaskQueue::RunLoop() {
   if (done_) {
     return;
   }
@@ -136,8 +138,8 @@ void IndexedDBPreCloseTaskQueue::RunLoop() {
     }
   }
   task_runner_->PostTask(FROM_HERE,
-                         base::BindOnce(&IndexedDBPreCloseTaskQueue::RunLoop,
+                         base::BindOnce(&BackingStorePreCloseTaskQueue::RunLoop,
                                         ptr_factory_.GetWeakPtr()));
 }
 
-}  // namespace content
+}  // namespace content::indexed_db

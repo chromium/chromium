@@ -15,7 +15,7 @@
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
-namespace content {
+namespace content::indexed_db {
 namespace {
 
 using leveldb::Status;
@@ -26,14 +26,12 @@ FakeTransaction::FakeTransaction(Status result)
     : FakeTransaction(result,
                       blink::mojom::IDBTransactionMode::ReadWrite,
                       nullptr) {}
-FakeTransaction::FakeTransaction(
-    Status result,
-    blink::mojom::IDBTransactionMode mode,
-    base::WeakPtr<IndexedDBBackingStore> backing_store)
-    : IndexedDBBackingStore::Transaction(
-          backing_store,
-          blink::mojom::IDBTransactionDurability::Relaxed,
-          mode),
+FakeTransaction::FakeTransaction(Status result,
+                                 blink::mojom::IDBTransactionMode mode,
+                                 base::WeakPtr<BackingStore> backing_store)
+    : BackingStore::Transaction(backing_store,
+                                blink::mojom::IDBTransactionDurability::Relaxed,
+                                mode),
       result_(result) {}
 void FakeTransaction::Begin(std::vector<PartitionedLock> locks) {
   if (backing_store()) {
@@ -53,4 +51,4 @@ uint64_t FakeTransaction::GetTransactionSize() {
 }
 void FakeTransaction::Rollback() {}
 
-}  // namespace content
+}  // namespace content::indexed_db

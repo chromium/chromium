@@ -17,39 +17,34 @@
 #include "content/common/content_export.h"
 #include "third_party/leveldatabase/src/include/leveldb/status.h"
 
-namespace content {
-class IndexedDBFactoryClient;
-class IndexedDBConnection;
-class IndexedDBDatabase;
-struct IndexedDBPendingConnection;
+namespace content::indexed_db {
+class FactoryClient;
+class Connection;
+class Database;
+struct PendingConnection;
 
-class CONTENT_EXPORT IndexedDBConnectionCoordinator {
+class CONTENT_EXPORT ConnectionCoordinator {
  public:
   static const int64_t kInvalidDatabaseId = 0;
   static const int64_t kMinimumIndexId = 30;
 
-  IndexedDBConnectionCoordinator(IndexedDBDatabase* db,
-                                 IndexedDBBucketContext& bucket_context);
+  ConnectionCoordinator(Database* db, BucketContext& bucket_context);
 
-  IndexedDBConnectionCoordinator(const IndexedDBConnectionCoordinator&) =
-      delete;
-  IndexedDBConnectionCoordinator& operator=(
-      const IndexedDBConnectionCoordinator&) = delete;
+  ConnectionCoordinator(const ConnectionCoordinator&) = delete;
+  ConnectionCoordinator& operator=(const ConnectionCoordinator&) = delete;
 
-  ~IndexedDBConnectionCoordinator();
+  ~ConnectionCoordinator();
 
-  void ScheduleOpenConnection(
-      std::unique_ptr<IndexedDBPendingConnection> connection);
+  void ScheduleOpenConnection(std::unique_ptr<PendingConnection> connection);
 
-  void ScheduleDeleteDatabase(
-      std::unique_ptr<IndexedDBFactoryClient> factory_client,
-      base::OnceClosure on_deletion_complete);
+  void ScheduleDeleteDatabase(std::unique_ptr<FactoryClient> factory_client,
+                              base::OnceClosure on_deletion_complete);
 
   // Call this method to prune any tasks that don't want to be run during
   // force close. Returns any error caused by rolling back changes.
   leveldb::Status PruneTasksForForceClose();
 
-  void OnConnectionClosed(IndexedDBConnection* connection);
+  void OnConnectionClosed(Connection* connection);
 
   void OnNoConnections();
 
@@ -89,26 +84,26 @@ class CONTENT_EXPORT IndexedDBConnectionCoordinator {
   // Number of open/delete calls that are waiting their turn.
   size_t PendingOpenDeleteCount() const;
 
-  base::WeakPtr<IndexedDBConnectionCoordinator> AsWeakPtr() {
+  base::WeakPtr<ConnectionCoordinator> AsWeakPtr() {
     return weak_factory_.GetWeakPtr();
   }
 
  private:
-  friend class IndexedDBDatabase;
+  friend class Database;
   class ConnectionRequest;
   class OpenRequest;
   class DeleteRequest;
 
-  raw_ptr<IndexedDBDatabase> db_;
+  raw_ptr<Database> db_;
 
-  raw_ref<IndexedDBBucketContext> bucket_context_;
+  raw_ref<BucketContext> bucket_context_;
 
   base::queue<std::unique_ptr<ConnectionRequest>> request_queue_;
 
   // `weak_factory_` is used for all callback uses.
-  base::WeakPtrFactory<IndexedDBConnectionCoordinator> weak_factory_{this};
+  base::WeakPtrFactory<ConnectionCoordinator> weak_factory_{this};
 };
 
-}  // namespace content
+}  // namespace content::indexed_db
 
 #endif  // CONTENT_BROWSER_INDEXED_DB_INSTANCE_CONNECTION_COORDINATOR_H_

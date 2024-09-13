@@ -19,7 +19,7 @@ using blink::IndexedDBIndexMetadata;
 using blink::IndexedDBKey;
 using blink::IndexedDBObjectStoreMetadata;
 
-namespace content {
+namespace content::indexed_db {
 
 IndexWriter::IndexWriter(const IndexedDBIndexMetadata& index_metadata)
     : index_metadata_(index_metadata) {}
@@ -30,15 +30,14 @@ IndexWriter::IndexWriter(const IndexedDBIndexMetadata& index_metadata,
 
 IndexWriter::~IndexWriter() {}
 
-bool IndexWriter::VerifyIndexKeys(
-    IndexedDBBackingStore* backing_store,
-    IndexedDBBackingStore::Transaction* transaction,
-    int64_t database_id,
-    int64_t object_store_id,
-    int64_t index_id,
-    bool* can_add_keys,
-    const IndexedDBKey& primary_key,
-    std::string* error_message) const {
+bool IndexWriter::VerifyIndexKeys(BackingStore* backing_store,
+                                  BackingStore::Transaction* transaction,
+                                  int64_t database_id,
+                                  int64_t object_store_id,
+                                  int64_t index_id,
+                                  bool* can_add_keys,
+                                  const IndexedDBKey& primary_key,
+                                  std::string* error_message) const {
   *can_add_keys = false;
   for (const auto& key : keys_) {
     bool ok = AddingKeyAllowed(backing_store, transaction, database_id,
@@ -62,9 +61,9 @@ bool IndexWriter::VerifyIndexKeys(
 }
 
 leveldb::Status IndexWriter::WriteIndexKeys(
-    const IndexedDBBackingStore::RecordIdentifier& record_identifier,
-    IndexedDBBackingStore* backing_store,
-    IndexedDBBackingStore::Transaction* transaction,
+    const BackingStore::RecordIdentifier& record_identifier,
+    BackingStore* backing_store,
+    BackingStore::Transaction* transaction,
     int64_t database_id,
     int64_t object_store_id) const {
   int64_t index_id = index_metadata_.id;
@@ -79,15 +78,14 @@ leveldb::Status IndexWriter::WriteIndexKeys(
   return leveldb::Status::OK();
 }
 
-bool IndexWriter::AddingKeyAllowed(
-    IndexedDBBackingStore* backing_store,
-    IndexedDBBackingStore::Transaction* transaction,
-    int64_t database_id,
-    int64_t object_store_id,
-    int64_t index_id,
-    const IndexedDBKey& index_key,
-    const IndexedDBKey& primary_key,
-    bool* allowed) const {
+bool IndexWriter::AddingKeyAllowed(BackingStore* backing_store,
+                                   BackingStore::Transaction* transaction,
+                                   int64_t database_id,
+                                   int64_t object_store_id,
+                                   int64_t index_id,
+                                   const IndexedDBKey& index_key,
+                                   const IndexedDBKey& primary_key,
+                                   bool* allowed) const {
   *allowed = false;
   if (!index_metadata_.unique) {
     *allowed = true;
@@ -109,8 +107,8 @@ bool IndexWriter::AddingKeyAllowed(
   return true;
 }
 
-bool MakeIndexWriters(IndexedDBTransaction* transaction,
-                      IndexedDBBackingStore* backing_store,
+bool MakeIndexWriters(Transaction* transaction,
+                      BackingStore* backing_store,
                       int64_t database_id,
                       const IndexedDBObjectStoreMetadata& object_store,
                       const IndexedDBKey& primary_key,  // makes a copy
@@ -170,4 +168,4 @@ bool MakeIndexWriters(IndexedDBTransaction* transaction,
   return true;
 }
 
-}  // namespace content
+}  // namespace content::indexed_db

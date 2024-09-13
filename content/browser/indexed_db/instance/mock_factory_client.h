@@ -19,32 +19,31 @@ namespace blink {
 struct IndexedDBDatabaseMetadata;
 }
 
-namespace content {
+namespace content::indexed_db {
 
-class MockIndexedDBFactoryClient : public IndexedDBFactoryClient {
+class MockFactoryClient : public FactoryClient {
  public:
-  MockIndexedDBFactoryClient();
-  explicit MockIndexedDBFactoryClient(bool expect_connection);
-  ~MockIndexedDBFactoryClient() override;
+  MockFactoryClient();
+  explicit MockFactoryClient(bool expect_connection);
+  ~MockFactoryClient() override;
 
-  MockIndexedDBFactoryClient(const MockIndexedDBFactoryClient&) = delete;
-  MockIndexedDBFactoryClient& operator=(const MockIndexedDBFactoryClient&) =
-      delete;
+  MockFactoryClient(const MockFactoryClient&) = delete;
+  MockFactoryClient& operator=(const MockFactoryClient&) = delete;
 
-  void OnError(const IndexedDBDatabaseError& error) override;
+  void OnError(const DatabaseError& error) override;
 
   void OnDeleteSuccess(int64_t old_version) override;
-  void OnOpenSuccess(std::unique_ptr<IndexedDBConnection> connection,
+  void OnOpenSuccess(std::unique_ptr<Connection> connection,
                      const blink::IndexedDBDatabaseMetadata& metadata) override;
-  IndexedDBConnection* connection() { return connection_.get(); }
+  Connection* connection() { return connection_.get(); }
 
-  std::unique_ptr<IndexedDBConnection> TakeConnection() {
+  std::unique_ptr<Connection> TakeConnection() {
     expect_connection_ = false;
     return std::move(connection_);
   }
 
   void OnUpgradeNeeded(int64_t old_version,
-                       std::unique_ptr<IndexedDBConnection> connection,
+                       std::unique_ptr<Connection> connection,
                        const blink::IndexedDBDatabaseMetadata& metadata,
                        const IndexedDBDataLossInfo& data_loss_info) override;
 
@@ -57,7 +56,7 @@ class MockIndexedDBFactoryClient : public IndexedDBFactoryClient {
   bool info_called() { return info_called_; }
 
  protected:
-  std::unique_ptr<IndexedDBConnection> connection_;
+  std::unique_ptr<Connection> connection_;
 
  private:
   bool expect_connection_ = true;
@@ -69,32 +68,31 @@ class MockIndexedDBFactoryClient : public IndexedDBFactoryClient {
   base::RepeatingClosure call_on_info_success_;
 };
 
-// This class wraps a `MockIndexedDBFactoryClient`, passing through all
-// `IndexedDBFactoryClient` methods. This allows a test to create an underlying
-// `MockIndexedDBFactoryClient` and pass ownership of a wrapper to the pending
-// connection.
-class ThunkFactoryClient : public MockIndexedDBFactoryClient {
+// This class wraps a `MockFactoryClient`, passing through all `FactoryClient`
+// methods. This allows a test to create an underlying `MockFactoryClient` and
+// pass ownership of a wrapper to the pending connection.
+class ThunkFactoryClient : public MockFactoryClient {
  public:
   // `wrapped` must outlast this.
-  explicit ThunkFactoryClient(IndexedDBFactoryClient& wrapped);
+  explicit ThunkFactoryClient(FactoryClient& wrapped);
   ~ThunkFactoryClient() override = default;
   ThunkFactoryClient(const ThunkFactoryClient&) = delete;
   ThunkFactoryClient& operator=(const ThunkFactoryClient&) = delete;
 
-  void OnError(const IndexedDBDatabaseError& error) override;
+  void OnError(const DatabaseError& error) override;
   void OnBlocked(int64_t existing_version) override;
   void OnUpgradeNeeded(int64_t old_version,
-                       std::unique_ptr<IndexedDBConnection> connection,
+                       std::unique_ptr<Connection> connection,
                        const blink::IndexedDBDatabaseMetadata& metadata,
                        const IndexedDBDataLossInfo& data_loss_info) override;
-  void OnOpenSuccess(std::unique_ptr<IndexedDBConnection> connection,
+  void OnOpenSuccess(std::unique_ptr<Connection> connection,
                      const blink::IndexedDBDatabaseMetadata& metadata) override;
   void OnDeleteSuccess(int64_t old_version) override;
 
  private:
-  const raw_ref<IndexedDBFactoryClient> wrapped_;
+  const raw_ref<FactoryClient> wrapped_;
 };
 
-}  // namespace content
+}  // namespace content::indexed_db
 
 #endif  // CONTENT_BROWSER_INDEXED_DB_INSTANCE_MOCK_FACTORY_CLIENT_H_

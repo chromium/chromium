@@ -46,18 +46,18 @@ namespace storage {
 class QuotaManagerProxy;
 }
 
-namespace content {
-class IndexedDBBackingStore;
-class IndexedDBBucketContextHandle;
-class IndexedDBDatabase;
-class IndexedDBDataItemReader;
-class IndexedDBPreCloseTaskQueue;
+namespace content::indexed_db {
 
-// IndexedDBBucketContext manages the per-bucket IndexedDB state, and other
-// important context like the backing store and lock manager.
+class BackingStore;
+class BackingStorePreCloseTaskQueue;
+class BucketContextHandle;
+class Database;
+class IndexedDBDataItemReader;
+
+// BucketContext manages the per-bucket IndexedDB state, and other important
+// context like the backing store and lock manager.
 //
-// IndexedDBBucketContext will keep its backing store around while any of these
-// is true:
+// BucketContext will keep its backing store around while any of these is true:
 // * There are handles referencing the bucket context,
 // * There are outstanding blob references to this database's blob files, or
 // * The bucket context is in-memory (i.e. an incognito profile).
@@ -67,18 +67,16 @@ class IndexedDBPreCloseTaskQueue;
 //
 // Each instance of this class is created and run on a unique thread pool
 // SequencedTaskRunner, i.e. the "bucket thread".
-class CONTENT_EXPORT IndexedDBBucketContext
+class CONTENT_EXPORT BucketContext
     : public blink::mojom::IDBFactory,
       public base::trace_event::MemoryDumpProvider {
  public:
-  using DBMap =
-      base::flat_map<std::u16string, std::unique_ptr<IndexedDBDatabase>>;
+  using DBMap = base::flat_map<std::u16string, std::unique_ptr<Database>>;
 
-  // Represents a method of `IndexedDBBucketContext` which is not yet bound to a
-  // particular instance of `IndexedDBBucketContext`. This is used for the
+  // Represents a method of `BucketContext` which is not yet bound to a
+  // particular instance of `BucketContext`. This is used for the
   // `for_each_bucket_context` delegate callback.
-  using InstanceClosure =
-      base::RepeatingCallback<void(IndexedDBBucketContext&)>;
+  using InstanceClosure = base::RepeatingCallback<void(BucketContext&)>;
 
   // Maximum time interval between runs of the IndexedDBSweeper. Sweeping only
   // occurs after backing store close.
@@ -109,9 +107,9 @@ class CONTENT_EXPORT IndexedDBBucketContext
       base::Seconds(30);
 
   enum class ClosingState {
-    // IndexedDBBucketContext isn't closing.
+    // BucketContext isn't closing.
     kNotClosing,
-    // IndexedDBBucketContext is pausing for kBackingStoreGracePeriodSeconds
+    // BucketContext is pausing for kBackingStoreGracePeriodSeconds
     // to allow new references to open before closing the backing store.
     kPreCloseGracePeriod,
     // The `pre_close_task_queue` is running any pre-close tasks.
@@ -119,9 +117,8 @@ class CONTENT_EXPORT IndexedDBBucketContext
     kClosed,
   };
 
-  // This structure defines the interface between `IndexedDBBucketContext` and
-  // the broader context that exists per Storage Partition (i.e.
-  // BrowserContext).
+  // This structure defines the interface between `BucketContext` and the
+  // broader context that exists per Storage Partition (i.e. BrowserContext).
   // TODO(crbug.com/40279485): for now these callbacks execute on the current
   // sequence, but in the future they should be bound to the main IDB sequence.
   struct CONTENT_EXPORT Delegate {
@@ -137,8 +134,8 @@ class CONTENT_EXPORT IndexedDBBucketContext
     // connections (receivers in `receivers_`).
     base::OnceCallback<void()> on_ready_for_destruction;
 
-    // Called when `IndexedDBBucketContext` can't handle an `AddReceiver()`
-    // call: specifically, if destruction has already been initiated by calling
+    // Called when `BucketContext` can't handle an `AddReceiver()` call:
+    // specifically, if destruction has already been initiated by calling
     // `on_ready_for_destruction`.
     base::RepeatingCallback<void(
         const storage::BucketClientInfo& /*client_info*/,
@@ -172,23 +169,22 @@ class CONTENT_EXPORT IndexedDBBucketContext
   // is null, `this` will generate a new initialization closure and return it to
   // the delegate via `for_each_bucket_context`. The delegate, i.e.
   // `IDBFactory`, will pass a null `InstanceClosure` to the first
-  // `IndexedDBBucketContext` it creates.
-  IndexedDBBucketContext(
-      storage::BucketInfo bucket_info,
-      const base::FilePath& data_path,
-      Delegate&& delegate,
-      scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
-      scoped_refptr<base::TaskRunner> io_task_runner,
-      mojo::PendingRemote<storage::mojom::BlobStorageContext>
-          blob_storage_context,
-      mojo::PendingRemote<storage::mojom::FileSystemAccessContext>
-          file_system_access_context,
-      InstanceClosure initialization_closure);
+  // `BucketContext` it creates.
+  BucketContext(storage::BucketInfo bucket_info,
+                const base::FilePath& data_path,
+                Delegate&& delegate,
+                scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
+                scoped_refptr<base::TaskRunner> io_task_runner,
+                mojo::PendingRemote<storage::mojom::BlobStorageContext>
+                    blob_storage_context,
+                mojo::PendingRemote<storage::mojom::FileSystemAccessContext>
+                    file_system_access_context,
+                InstanceClosure initialization_closure);
 
-  IndexedDBBucketContext(const IndexedDBBucketContext&) = delete;
-  IndexedDBBucketContext& operator=(const IndexedDBBucketContext&) = delete;
+  BucketContext(const BucketContext&) = delete;
+  BucketContext& operator=(const BucketContext&) = delete;
 
-  ~IndexedDBBucketContext() override;
+  ~BucketContext() override;
 
   void QueueRunTasks();
 
@@ -239,7 +235,7 @@ class CONTENT_EXPORT IndexedDBBucketContext
   storage::BucketLocator bucket_locator() {
     return bucket_info_.ToBucketLocator();
   }
-  IndexedDBBackingStore* backing_store() {
+  BackingStore* backing_store() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return backing_store_.get();
   }
@@ -255,7 +251,7 @@ class CONTENT_EXPORT IndexedDBBucketContext
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return *lock_manager_;
   }
-  IndexedDBPreCloseTaskQueue* pre_close_task_queue() const {
+  BackingStorePreCloseTaskQueue* pre_close_task_queue() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return pre_close_task_queue_.get();
   }
@@ -267,7 +263,7 @@ class CONTENT_EXPORT IndexedDBBucketContext
     return &close_timer_;
   }
 
-  base::WeakPtr<IndexedDBBucketContext> AsWeakPtr() {
+  base::WeakPtr<BucketContext> AsWeakPtr() {
     return weak_factory_.GetWeakPtr();
   }
 
@@ -315,7 +311,7 @@ class CONTENT_EXPORT IndexedDBBucketContext
 
   // This exists to facilitate unit tests. Since `this` is owned via a
   // `SequenceBound`, it's not possible to directly grab pointer to `this`.
-  IndexedDBBucketContext* GetReferenceForTesting();
+  BucketContext* GetReferenceForTesting();
 
   void CompactBackingStoreForTesting();
   void WriteToIndexedDBForTesting(const std::string& key,
@@ -324,33 +320,31 @@ class CONTENT_EXPORT IndexedDBBucketContext
       mojo::PendingReceiver<storage::mojom::MockFailureInjector> receiver);
 
   // Called when a fatal error has occurred that should result in tearing down
-  // the backing store. `IndexedDBBucketContext` *may* be synchronously
-  // destroyed after this is invoked. The string, if non-empty, is used as an
-  // error message.
+  // the backing store. `BucketContext` *may* be synchronously destroyed after
+  // this is invoked. The string, if non-empty, is used as an error message.
   void OnDatabaseError(leveldb::Status status, const std::string& message);
 
   // Called when the backing store has been corrupted.
-  void HandleBackingStoreCorruption(const IndexedDBDatabaseError& error);
+  void HandleBackingStoreCorruption(const DatabaseError& error);
 
   // base::trace_event::MemoryDumpProvider:
   bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
                     base::trace_event::ProcessMemoryDump* pmd) override;
 
  private:
-  friend IndexedDBBucketContextHandle;
-  friend class IndexedDBBackingStoreTest;
-  friend class IndexedDBDatabaseTest;
+  friend BucketContextHandle;
+  friend class BackingStoreTest;
+  friend class DatabaseTest;
   friend class IndexedDBTest;
-  friend class IndexedDBTransactionTest;
+  friend class TransactionTest;
 
   FRIEND_TEST_ALL_PREFIXES(IndexedDBTest, CompactionKillSwitchWorks);
   FRIEND_TEST_ALL_PREFIXES(IndexedDBTest, CompactionTaskTiming);
   FRIEND_TEST_ALL_PREFIXES(IndexedDBTest, TombstoneSweeperTiming);
   FRIEND_TEST_ALL_PREFIXES(IndexedDBTest, TooLongOrigin);
   FRIEND_TEST_ALL_PREFIXES(IndexedDBTest, BasicFactoryCreationAndTearDown);
-  FRIEND_TEST_ALL_PREFIXES(IndexedDBBucketContextTest, BucketSpaceDecay);
-  FRIEND_TEST_ALL_PREFIXES(IndexedDBBucketContextTest,
-                           MetadataRecordingStateHistory);
+  FRIEND_TEST_ALL_PREFIXES(BucketContextTest, BucketSpaceDecay);
+  FRIEND_TEST_ALL_PREFIXES(BucketContextTest, MetadataRecordingStateHistory);
 
   // The data structure that stores everything bound to the receiver. This will
   // be stored together with the receiver in the `mojo::ReceiverSet`.
@@ -376,10 +370,10 @@ class CONTENT_EXPORT IndexedDBBucketContext
   // See `for_each_bucket_context`.
   static void SetInternalState(base::Time earliest_global_sweep_time,
                                base::Time earliest_global_compaction_time,
-                               IndexedDBBucketContext& context);
+                               BucketContext& context);
 
-  IndexedDBDatabase* AddDatabase(const std::u16string& name,
-                                 std::unique_ptr<IndexedDBDatabase> database);
+  Database* AddDatabase(const std::u16string& name,
+                        std::unique_ptr<Database> database);
 
   void OnHandleCreated();
   void OnHandleDestruction();
@@ -421,18 +415,18 @@ class CONTENT_EXPORT IndexedDBBucketContext
   // Removes all readers for this file path.
   void RemoveBoundReaders(const base::FilePath& path);
 
-  std::tuple<std::unique_ptr<IndexedDBBackingStore>,
+  std::tuple<std::unique_ptr<BackingStore>,
              leveldb::Status,
              IndexedDBDataLossInfo,
              bool /* is_disk_full */>
-  OpenAndVerifyIndexedDBBackingStore(base::FilePath data_directory,
-                                     base::FilePath database_path,
-                                     base::FilePath blob_path,
-                                     PartitionedLockManager* lock_manager,
-                                     bool is_first_attempt,
-                                     bool create_if_missing);
+  OpenAndVerifyBackingStore(base::FilePath data_directory,
+                            base::FilePath database_path,
+                            base::FilePath blob_path,
+                            PartitionedLockManager* lock_manager,
+                            bool is_first_attempt,
+                            bool create_if_missing);
 
-  std::tuple<leveldb::Status, IndexedDBDatabaseError, IndexedDBDataLossInfo>
+  std::tuple<leveldb::Status, DatabaseError, IndexedDBDataLossInfo>
   InitBackingStoreIfNeeded(bool create_if_missing);
 
   // Destroys `backing_store_` and all associated state. If there are no
@@ -455,8 +449,7 @@ class CONTENT_EXPORT IndexedDBBucketContext
   const base::FilePath data_path_;
 
   // True if there are blobs referencing this backing store that are still
-  // alive. This is used as closing criteria for this object, see
-  // CanClose.
+  // alive. This is used as closing criteria for this object, see CanClose.
   bool has_blobs_outstanding_ = false;
   bool skip_closing_sequence_ = false;
 
@@ -469,16 +462,16 @@ class CONTENT_EXPORT IndexedDBBucketContext
   std::unique_ptr<PartitionedLockManager> lock_manager_;
   std::unique_ptr<TransactionalLevelDBFactory> transactional_leveldb_factory_;
   const leveldb_env::Options leveldb_options_;
-  std::unique_ptr<IndexedDBBackingStore> backing_store_;
+  std::unique_ptr<BackingStore> backing_store_;
   scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy_;
 
   // Databases in the backing store which are already loaded/represented by
-  // IndexedDBDatabase objects. The backing store may have other databases which
+  // Database objects. The backing store may have other databases which
   // have not yet been loaded.
   DBMap databases_;
-  // This is the refcount for the number of IndexedDBBucketContextHandle's
-  // given out for this bucket context using OpenReference. This is used as
-  // closing criteria for this object, see CanClose.
+  // This is the refcount for the number of BucketContextHandle's given out for
+  // this bucket context using OpenReference. This is used as closing criteria
+  // for this object, see CanClose.
   int64_t open_handles_ = 0;
 
   // A queue of callbacks representing `CheckCanUseDiskSpace()` requests.
@@ -509,7 +502,7 @@ class CONTENT_EXPORT IndexedDBBucketContext
                       base::ScopedClosureRunner /*release_callback*/>>
       file_reader_map_;
 
-  std::unique_ptr<IndexedDBPreCloseTaskQueue> pre_close_task_queue_;
+  std::unique_ptr<BackingStorePreCloseTaskQueue> pre_close_task_queue_;
 
   Delegate delegate_;
 
@@ -525,9 +518,9 @@ class CONTENT_EXPORT IndexedDBBucketContext
 
   mojo::ReceiverSet<blink::mojom::IDBFactory, ReceiverContext> receivers_;
 
-  base::WeakPtrFactory<IndexedDBBucketContext> weak_factory_{this};
+  base::WeakPtrFactory<BucketContext> weak_factory_{this};
 };
 
-}  // namespace content
+}  // namespace content::indexed_db
 
 #endif  // CONTENT_BROWSER_INDEXED_DB_INSTANCE_BUCKET_CONTEXT_H_

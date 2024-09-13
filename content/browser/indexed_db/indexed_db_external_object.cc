@@ -11,7 +11,7 @@
 #include "content/browser/indexed_db/indexed_db_leveldb_coding.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
 
-namespace content {
+namespace content::indexed_db {
 
 const int64_t IndexedDBExternalObject::kUnknownSize;
 
@@ -41,7 +41,7 @@ void IndexedDBExternalObject::ConvertToMojo(
       }
       case ObjectType::kFileSystemAccessHandle:
         // Contents of token will be filled in later by
-        // IndexedDBBucketContext::CreateAllExternalObjects.
+        // BucketContext::CreateAllExternalObjects.
         mojo_objects->push_back(
             blink::mojom::IDBExternalObject::NewFileSystemAccessToken(
                 mojo::NullRemote()));
@@ -165,4 +165,4 @@ void IndexedDBExternalObject::set_release_callback(
   release_callback_ = std::move(release_callback);
 }
 
-}  // namespace content
+}  // namespace content::indexed_db

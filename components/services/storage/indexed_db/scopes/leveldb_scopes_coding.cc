@@ -17,7 +17,7 @@
 #include "base/numerics/byte_conversions.h"
 #include "components/services/storage/indexed_db/scopes/varint_coding.h"
 
-namespace content {
+namespace content::indexed_db {
 namespace {
 
 void EncodeBigEndianFixed64(uint64_t number, std::string* output) {
@@ -214,4 +214,4 @@ leveldb::Slice ScopesEncoder::CleanupTaskKey(
   return leveldb::Slice(key_buffer_);
 }
 
-}  // namespace content
+}  // namespace content::indexed_db

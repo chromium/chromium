@@ -23,7 +23,7 @@ namespace download {
 class DownloadItem;
 }
 
-namespace content {
+namespace content::indexed_db {
 
 class IndexedDBInternalsUI;
 
@@ -87,6 +87,6 @@ class IndexedDBInternalsUI : public WebUIController,
   WEB_UI_CONTROLLER_TYPE_DECL();
 };
 
-}  // namespace content
+}  // namespace content::indexed_db
 
 #endif  // CONTENT_BROWSER_INDEXED_DB_INDEXED_DB_INTERNALS_UI_H_

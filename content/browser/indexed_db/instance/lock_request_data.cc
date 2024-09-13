@@ -4,16 +4,14 @@
 
 #include "content/browser/indexed_db/instance/lock_request_data.h"
 
-namespace content {
+namespace content::indexed_db {
 
-const void* const IndexedDBLockRequestData::kKey =
-    &IndexedDBLockRequestData::kKey;
+const void* const LockRequestData::kKey = &LockRequestData::kKey;
 
-IndexedDBLockRequestData::IndexedDBLockRequestData(
-    const base::UnguessableToken& client_token,
-    int scheduling_priority)
+LockRequestData::LockRequestData(const base::UnguessableToken& client_token,
+                                 int scheduling_priority)
     : client_token(client_token), scheduling_priority(scheduling_priority) {}
 
-IndexedDBLockRequestData::~IndexedDBLockRequestData() = default;
+LockRequestData::~LockRequestData() = default;
 
-}  // namespace content
+}  // namespace content::indexed_db

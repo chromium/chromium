@@ -13,8 +13,7 @@
 #include "storage/common/database/database_identifier.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
-namespace content {
-namespace indexed_db {
+namespace content::indexed_db {
 
 namespace {
 constexpr base::FilePath::CharType kBlobExtension[] =
@@ -119,5 +118,4 @@ bool IsPathTooLong(const base::FilePath& leveldb_dir) {
   return false;
 }
 
-}  // namespace indexed_db
-}  // namespace content
+}  // namespace content::indexed_db

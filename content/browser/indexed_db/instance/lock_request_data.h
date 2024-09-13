@@ -8,7 +8,7 @@
 #include "base/supports_user_data.h"
 #include "base/unguessable_token.h"
 
-namespace content {
+namespace content::indexed_db {
 
 // This struct holds data about the client that has requested a new connection
 // or transaction. It's a way to inject extra metadata into
@@ -16,17 +16,17 @@ namespace content {
 // TODO(estade): `PartitionedLockHolder` and related classes should live in
 // `//content/browser/indexed_db/instance`, in which case this extra struct can
 // be folded into `PartitionedLockHolder`.
-struct IndexedDBLockRequestData : public base::SupportsUserData::Data {
+struct LockRequestData : public base::SupportsUserData::Data {
   static const void* const kKey;
 
-  IndexedDBLockRequestData(const base::UnguessableToken& client_token,
-                           int scheduling_priority);
-  ~IndexedDBLockRequestData() override;
+  LockRequestData(const base::UnguessableToken& client_token,
+                  int scheduling_priority);
+  ~LockRequestData() override;
 
   base::UnguessableToken client_token;
   int scheduling_priority;
 };
 
-}  // namespace content
+}  // namespace content::indexed_db
 
 #endif  // CONTENT_BROWSER_INDEXED_DB_INSTANCE_LOCK_REQUEST_DATA_H_

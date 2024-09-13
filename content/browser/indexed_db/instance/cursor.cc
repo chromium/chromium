@@ -23,7 +23,7 @@
 
 using blink::IndexedDBKey;
 
-namespace content {
+namespace content::indexed_db {
 namespace {
 // This should never be script visible: the cursor should either be closed when
 // it hits the end of the range (and script throws an error before the call
@@ -31,43 +31,41 @@ namespace {
 // incoming request from the front end but the transaction has aborted on the
 // back end; in that case the tx will already have sent an abort to the request
 // so this would be ignored.
-IndexedDBDatabaseError CreateCursorClosedError() {
-  return IndexedDBDatabaseError(blink::mojom::IDBException::kUnknownError,
-                                "The cursor has been closed.");
+DatabaseError CreateCursorClosedError() {
+  return DatabaseError(blink::mojom::IDBException::kUnknownError,
+                       "The cursor has been closed.");
 }
 
-IndexedDBDatabaseError CreateError(
-    blink::mojom::IDBException code,
-    const char* message,
-    base::WeakPtr<IndexedDBTransaction> transaction) {
+DatabaseError CreateError(blink::mojom::IDBException code,
+                          const char* message,
+                          base::WeakPtr<Transaction> transaction) {
   if (transaction) {
     transaction->IncrementNumErrorsSent();
   }
-  return IndexedDBDatabaseError(code, message);
+  return DatabaseError(code, message);
 }
 
 }  // namespace
 
 // static
-IndexedDBCursor* IndexedDBCursor::CreateAndBind(
-    std::unique_ptr<IndexedDBBackingStore::Cursor> cursor,
+Cursor* Cursor::CreateAndBind(
+    std::unique_ptr<BackingStore::Cursor> cursor,
     indexed_db::CursorType cursor_type,
     blink::mojom::IDBTaskType task_type,
-    base::WeakPtr<IndexedDBTransaction> transaction,
+    base::WeakPtr<Transaction> transaction,
     mojo::PendingAssociatedRemote<blink::mojom::IDBCursor>& pending_remote) {
-  auto instance = base::WrapUnique(new IndexedDBCursor(
-      std::move(cursor), cursor_type, task_type, transaction));
-  IndexedDBCursor* instance_ptr = instance.get();
+  auto instance = base::WrapUnique(
+      new Cursor(std::move(cursor), cursor_type, task_type, transaction));
+  Cursor* instance_ptr = instance.get();
   mojo::MakeSelfOwnedAssociatedReceiver(
       std::move(instance), pending_remote.InitWithNewEndpointAndPassReceiver());
   return instance_ptr;
 }
 
-IndexedDBCursor::IndexedDBCursor(
-    std::unique_ptr<IndexedDBBackingStore::Cursor> cursor,
-    indexed_db::CursorType cursor_type,
-    blink::mojom::IDBTaskType task_type,
-    base::WeakPtr<IndexedDBTransaction> transaction)
+Cursor::Cursor(std::unique_ptr<BackingStore::Cursor> cursor,
+               indexed_db::CursorType cursor_type,
+               blink::mojom::IDBTaskType task_type,
+               base::WeakPtr<Transaction> transaction)
     : bucket_locator_(transaction->BackingStoreTransaction()
                           ->backing_store()
                           ->bucket_locator()),
@@ -75,24 +73,23 @@ IndexedDBCursor::IndexedDBCursor(
       cursor_type_(cursor_type),
       transaction_(std::move(transaction)),
       cursor_(std::move(cursor)) {
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("IndexedDB", "IndexedDBCursor::open", this);
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("IndexedDB", "Cursor::open", this);
 }
 
-IndexedDBCursor::~IndexedDBCursor() {
+Cursor::~Cursor() {
   // Call to make sure we complete our lifetime trace.
   Close();
 }
 
-void IndexedDBCursor::Advance(
-    uint32_t count,
-    blink::mojom::IDBCursor::AdvanceCallback callback) {
-  TRACE_EVENT0("IndexedDB", "IndexedDBCursor::Advance");
+void Cursor::Advance(uint32_t count,
+                     blink::mojom::IDBCursor::AdvanceCallback callback) {
+  TRACE_EVENT0("IndexedDB", "Cursor::Advance");
 
   if (!transaction_) {
     Close();
   }
   if (closed_) {
-    const IndexedDBDatabaseError error(CreateCursorClosedError());
+    const DatabaseError error(CreateCursorClosedError());
     std::move(callback).Run(blink::mojom::IDBCursorResult::NewErrorResult(
         blink::mojom::IDBError::New(error.code(), error.message())));
     return;
@@ -103,17 +100,17 @@ void IndexedDBCursor::Advance(
                                     blink::mojom::IDBCursorResultPtr>(
           std::move(callback), transaction_);
 
-  transaction_->ScheduleTask(task_type_, BindWeakOperation<IndexedDBCursor>(
-                                             &IndexedDBCursor::AdvanceOperation,
-                                             ptr_factory_.GetWeakPtr(), count,
-                                             std::move(aborting_callback)));
+  transaction_->ScheduleTask(
+      task_type_, BindWeakOperation<Cursor>(&Cursor::AdvanceOperation,
+                                            ptr_factory_.GetWeakPtr(), count,
+                                            std::move(aborting_callback)));
 }
 
-leveldb::Status IndexedDBCursor::AdvanceOperation(
+leveldb::Status Cursor::AdvanceOperation(
     uint32_t count,
     blink::mojom::IDBCursor::AdvanceCallback callback,
-    IndexedDBTransaction* /*transaction*/) {
-  TRACE_EVENT0("IndexedDB", "IndexedDBCursor::AdvanceOperation");
+    Transaction* /*transaction*/) {
+  TRACE_EVENT0("IndexedDB", "Cursor::AdvanceOperation");
   leveldb::Status s = leveldb::Status::OK();
   if (!cursor_ || !cursor_->Advance(count, &s)) {
     cursor_.reset();
@@ -155,16 +152,15 @@ leveldb::Status IndexedDBCursor::AdvanceOperation(
   return s;
 }
 
-void IndexedDBCursor::Continue(
-    const IndexedDBKey& key,
-    const IndexedDBKey& primary_key,
-    blink::mojom::IDBCursor::ContinueCallback callback) {
-  TRACE_EVENT0("IndexedDB", "IndexedDBCursor::Continue");
+void Cursor::Continue(const IndexedDBKey& key,
+                      const IndexedDBKey& primary_key,
+                      blink::mojom::IDBCursor::ContinueCallback callback) {
+  TRACE_EVENT0("IndexedDB", "Cursor::Continue");
   if (!transaction_) {
     Close();
   }
   if (closed_) {
-    const IndexedDBDatabaseError error(CreateCursorClosedError());
+    const DatabaseError error(CreateCursorClosedError());
     std::move(callback).Run(blink::mojom::IDBCursorResult::NewErrorResult(
         blink::mojom::IDBError::New(error.code(), error.message())));
     return;
@@ -177,8 +173,8 @@ void IndexedDBCursor::Continue(
 
   transaction_->ScheduleTask(
       task_type_,
-      BindWeakOperation<IndexedDBCursor>(
-          &IndexedDBCursor::ContinueOperation, ptr_factory_.GetWeakPtr(),
+      BindWeakOperation<Cursor>(
+          &Cursor::ContinueOperation, ptr_factory_.GetWeakPtr(),
           key.IsValid() ? std::make_unique<blink::IndexedDBKey>(key) : nullptr,
           primary_key.IsValid()
               ? std::make_unique<blink::IndexedDBKey>(primary_key)
@@ -186,15 +182,15 @@ void IndexedDBCursor::Continue(
           std::move(aborting_callback)));
 }
 
-leveldb::Status IndexedDBCursor::ContinueOperation(
+leveldb::Status Cursor::ContinueOperation(
     std::unique_ptr<IndexedDBKey> key,
     std::unique_ptr<IndexedDBKey> primary_key,
     blink::mojom::IDBCursor::ContinueCallback callback,
-    IndexedDBTransaction* /*transaction*/) {
-  TRACE_EVENT0("IndexedDB", "IndexedDBCursor::ContinueOperation");
+    Transaction* /*transaction*/) {
+  TRACE_EVENT0("IndexedDB", "Cursor::ContinueOperation");
   leveldb::Status s = leveldb::Status::OK();
   if (!cursor_ || !cursor_->Continue(key.get(), primary_key.get(),
-                                     IndexedDBBackingStore::Cursor::SEEK, &s)) {
+                                     BackingStore::Cursor::SEEK, &s)) {
     cursor_.reset();
     if (s.ok()) {
       // This happens if we reach the end of the iterator and can't continue.
@@ -204,9 +200,8 @@ leveldb::Status IndexedDBCursor::ContinueOperation(
 
     // |transaction_| must be valid for CreateError(), so we can't call
     // Close() until after calling CreateError().
-    IndexedDBDatabaseError error =
-        CreateError(blink::mojom::IDBException::kUnknownError,
-                    "Error continuing cursor.", transaction_);
+    DatabaseError error = CreateError(blink::mojom::IDBException::kUnknownError,
+                                      "Error continuing cursor.", transaction_);
     Close();
     std::move(callback).Run(blink::mojom::IDBCursorResult::NewErrorResult(
         blink::mojom::IDBError::New(error.code(), error.message())));
@@ -235,16 +230,15 @@ leveldb::Status IndexedDBCursor::ContinueOperation(
   return s;
 }
 
-void IndexedDBCursor::Prefetch(
-    int number_to_fetch,
-    blink::mojom::IDBCursor::PrefetchCallback callback) {
-  TRACE_EVENT0("IndexedDB", "IndexedDBCursor::Prefetch");
+void Cursor::Prefetch(int number_to_fetch,
+                      blink::mojom::IDBCursor::PrefetchCallback callback) {
+  TRACE_EVENT0("IndexedDB", "Cursor::Prefetch");
 
   if (!transaction_) {
     Close();
   }
   if (closed_) {
-    const IndexedDBDatabaseError error(CreateCursorClosedError());
+    const DatabaseError error(CreateCursorClosedError());
     std::move(callback).Run(blink::mojom::IDBCursorResult::NewErrorResult(
         blink::mojom::IDBError::New(error.code(), error.message())));
     return;
@@ -255,18 +249,18 @@ void IndexedDBCursor::Prefetch(
                                     blink::mojom::IDBCursorResultPtr>(
           std::move(callback), transaction_);
 
-  transaction_->ScheduleTask(task_type_,
-                             BindWeakOperation<IndexedDBCursor>(
-                                 &IndexedDBCursor::PrefetchIterationOperation,
-                                 ptr_factory_.GetWeakPtr(), number_to_fetch,
-                                 std::move(aborting_callback)));
+  transaction_->ScheduleTask(
+      task_type_,
+      BindWeakOperation<Cursor>(&Cursor::PrefetchIterationOperation,
+                                ptr_factory_.GetWeakPtr(), number_to_fetch,
+                                std::move(aborting_callback)));
 }
 
-leveldb::Status IndexedDBCursor::PrefetchIterationOperation(
+leveldb::Status Cursor::PrefetchIterationOperation(
     int number_to_fetch,
     blink::mojom::IDBCursor::PrefetchCallback callback,
-    IndexedDBTransaction* /*transaction*/) {
-  TRACE_EVENT0("IndexedDB", "IndexedDBCursor::PrefetchIterationOperation");
+    Transaction* /*transaction*/) {
+  TRACE_EVENT0("IndexedDB", "Cursor::PrefetchIterationOperation");
 
   leveldb::Status s = leveldb::Status::OK();
   std::vector<IndexedDBKey> found_keys;
@@ -290,7 +284,7 @@ leveldb::Status IndexedDBCursor::PrefetchIterationOperation(
       }
       // |transaction_| must be valid for CreateError(), so we can't call
       // Close() until after calling CreateError().
-      IndexedDBDatabaseError error =
+      DatabaseError error =
           CreateError(blink::mojom::IDBException::kUnknownError,
                       "Error continuing cursor.", transaction_);
       Close();
@@ -354,8 +348,8 @@ leveldb::Status IndexedDBCursor::PrefetchIterationOperation(
   return s;
 }
 
-void IndexedDBCursor::PrefetchReset(int used_prefetches) {
-  TRACE_EVENT0("IndexedDB", "IndexedDBCursor::PrefetchReset");
+void Cursor::PrefetchReset(int used_prefetches) {
+  TRACE_EVENT0("IndexedDB", "Cursor::PrefetchReset");
   cursor_.swap(saved_cursor_);
   saved_cursor_.reset();
 
@@ -373,12 +367,12 @@ void IndexedDBCursor::PrefetchReset(int used_prefetches) {
   }
 }
 
-void IndexedDBCursor::Close() {
+void Cursor::Close() {
   if (closed_) {
     return;
   }
-  TRACE_EVENT_NESTABLE_ASYNC_END0("IndexedDB", "IndexedDBCursor::open", this);
-  TRACE_EVENT0("IndexedDB", "IndexedDBCursor::Close");
+  TRACE_EVENT_NESTABLE_ASYNC_END0("IndexedDB", "Cursor::open", this);
+  TRACE_EVENT0("IndexedDB", "Cursor::Close");
   closed_ = true;
   cursor_.reset();
   saved_cursor_.reset();
@@ -388,4 +382,4 @@ void IndexedDBCursor::Close() {
   transaction_.reset();
 }
 
-}  // namespace content
+}  // namespace content::indexed_db

@@ -76,7 +76,9 @@ using storage::QuotaManager;
 using storage::mojom::FailClass;
 using storage::mojom::FailMethod;
 
-namespace content {
+namespace content::indexed_db {
+
+namespace {
 
 // This browser test is aimed towards exercising the IndexedDB bindings and
 // the actual implementation that lives in the browser side.
@@ -883,17 +885,15 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, DeleteBucketDataIncognito) {
 IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, DiskFullOnCommit) {
   // Ignore several preceding transactions:
   // * The test calls deleteDatabase() which opens the backing store:
-  //   #1: IndexedDBTransaction::Commit - initial "versionchange" transaction
+  //   #1: Transaction::Commit - initial "versionchange" transaction
   // * Once the connection is opened, the test runs:
-  //   #2: IndexedDBTransaction::Commit - the test's "readwrite" transaction)
+  //   #2: Transaction::Commit - the test's "readwrite" transaction)
   const int instance_num = 2;
   const int call_num = 1;
   FailOperation(FailClass::LEVELDB_TRANSACTION, FailMethod::COMMIT_DISK_FULL,
                 instance_num, call_num);
   SimpleTest(GetTestUrl("indexeddb", "disk_full_on_commit.html"));
 }
-
-namespace {
 
 std::unique_ptr<net::test_server::HttpResponse> ServePath(
     std::string request_path) {
@@ -910,7 +910,7 @@ std::unique_ptr<net::test_server::HttpResponse> ServePath(
 }
 
 #if !BUILDFLAG(IS_WIN)
-void CorruptIndexedDBDatabase(const base::FilePath& idb_data_path) {
+void CorruptDatabase(const base::FilePath& idb_data_path) {
   int num_files = 0;
   int num_errors = 0;
   const bool recursive = false;
@@ -988,7 +988,7 @@ std::unique_ptr<net::test_server::HttpResponse> CorruptDBRequestHandler(
           control_test->GetFilePathForTesting(
               bucket_locator,
               base::BindLambdaForTesting([&](const base::FilePath& path) {
-                CorruptIndexedDBDatabase(path);
+                CorruptDatabase(path);
                 loop.Quit();
               }));
         }));
@@ -1095,8 +1095,6 @@ std::unique_ptr<net::test_server::HttpResponse> StaticFileRequestHandler(
       request.relative_url.substr(std::string(s_indexeddb_test_prefix).size());
   return ServePath(request_path);
 }
-
-}  // namespace
 
 // See TODO in CorruptDBRequestHandler.  Windows does not support nested
 // message loops on the IO thread, so run this test on other platforms.
@@ -1369,4 +1367,5 @@ IN_PROC_BROWSER_TEST_P(IndexedDBIncognitoTest, BucketDurabilityOverride) {
 
 INSTANTIATE_TEST_SUITE_P(All, IndexedDBIncognitoTest, testing::Bool());
 
-}  // namespace content
+}  // namespace
+}  // namespace content::indexed_db

@@ -35,7 +35,8 @@ void RegisterContentWebUIConfigs() {
   auto& map = WebUIConfigMap::GetInstance();
   map.AddWebUIConfig(std::make_unique<AttributionInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<GpuInternalsUIConfig>());
-  map.AddWebUIConfig(std::make_unique<IndexedDBInternalsUIConfig>());
+  map.AddWebUIConfig(
+      std::make_unique<indexed_db::IndexedDBInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<MediaInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<HistogramsInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<NetworkErrorsListingUIConfig>());

@@ -29,7 +29,7 @@
 #include "base/android/build_info.h"
 #endif
 
-namespace content {
+namespace content::indexed_db {
 
 namespace {
 
@@ -172,8 +172,6 @@ IN_PROC_BROWSER_TEST_F(IndexedDBFeatureObserverBrowserTest,
         .WillOnce([&](GlobalRenderFrameHostId,
                       blink::mojom::ObservedFeatureType) { run_loop.Quit(); });
     EXPECT_TRUE(OpenConnectionA(rfh));
-    // Quit when OnFrameStartsHoldingIndexedDBConnections(rfh_id)
-    // is invoked.
     run_loop.Run();
   }
 
@@ -187,8 +185,6 @@ IN_PROC_BROWSER_TEST_F(IndexedDBFeatureObserverBrowserTest,
         .WillOnce([&](GlobalRenderFrameHostId,
                       blink::mojom::ObservedFeatureType) { run_loop.Quit(); });
     EXPECT_TRUE(ExecJs(rfh, "CloseConnection('A');"));
-    // Quit when OnFrameStopsHoldingIndexedDBConnections(rfh_id)
-    // is invoked.
     run_loop.Run();
   }
 }
@@ -220,8 +216,6 @@ IN_PROC_BROWSER_TEST_F(IndexedDBFeatureObserverBrowserTest,
         .WillOnce([&](GlobalRenderFrameHostId,
                       blink::mojom::ObservedFeatureType) { run_loop.Quit(); });
     EXPECT_TRUE(OpenConnectionA(rfh));
-    // Quit when OnFrameStartsHoldingIndexedDBConnections(rfh_id)
-    // is invoked.
     run_loop.Run();
   }
 
@@ -245,8 +239,6 @@ IN_PROC_BROWSER_TEST_F(IndexedDBFeatureObserverBrowserTest,
         .WillOnce([&](GlobalRenderFrameHostId,
                       blink::mojom::ObservedFeatureType) { run_loop.Quit(); });
     EXPECT_TRUE(ExecJs(rfh, "CloseConnection('A');"));
-    // Quit when OnFrameStopsHoldingIndexedDBConnections(rfh_id)
-    // is invoked.
     run_loop.Run();
   }
 }
@@ -279,8 +271,6 @@ IN_PROC_BROWSER_TEST_F(IndexedDBFeatureObserverBrowserTest, ObserverNavigate) {
         .WillOnce([&](GlobalRenderFrameHostId,
                       blink::mojom::ObservedFeatureType) { run_loop.Quit(); });
     EXPECT_TRUE(OpenConnectionA(rfh));
-    // Quit when OnFrameStartsHoldingIndexedDBConnections(rfh_id)
-    // is invoked.
     run_loop.Run();
   }
 
@@ -294,8 +284,6 @@ IN_PROC_BROWSER_TEST_F(IndexedDBFeatureObserverBrowserTest, ObserverNavigate) {
         .WillOnce([&](GlobalRenderFrameHostId,
                       blink::mojom::ObservedFeatureType) { run_loop.Quit(); });
     EXPECT_TRUE(NavigateToURL(shell(), GetTestURL("b.com")));
-    // Quit when OnFrameStopsHoldingIndexedDBConnections(rfh_id)
-    // is invoked.
     run_loop.Run();
   }
 }
@@ -372,4 +360,4 @@ IN_PROC_BROWSER_TEST_F(IndexedDBFeatureObserverBrowserTest,
   RunLoopWithTimeout();
 }
 
-}  // namespace content
+}  // namespace content::indexed_db

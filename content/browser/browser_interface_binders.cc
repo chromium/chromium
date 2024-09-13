@@ -1214,7 +1214,7 @@ void PopulateBinderMapWithContext(
   RegisterWebUIControllerInterfaceBinder<attribution_internals::mojom::Factory,
                                          AttributionInternalsUI>(map);
   RegisterWebUIControllerInterfaceBinder<storage::mojom::IdbInternalsHandler,
-                                         IndexedDBInternalsUI>(map);
+                                         indexed_db::IndexedDBInternalsUI>(map);
   RegisterWebUIControllerInterfaceBinder<::mojom::ProcessInternalsHandler,
                                          ProcessInternalsUI>(map);
   RegisterWebUIControllerInterfaceBinder<storage::mojom::QuotaInternalsHandler,

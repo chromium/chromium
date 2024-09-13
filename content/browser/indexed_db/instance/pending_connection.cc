@@ -9,11 +9,11 @@
 #include "content/browser/indexed_db/instance/database_callbacks.h"
 #include "content/browser/indexed_db/instance/factory_client.h"
 
-namespace content {
+namespace content::indexed_db {
 
-IndexedDBPendingConnection::IndexedDBPendingConnection(
-    std::unique_ptr<IndexedDBFactoryClient> factory_client,
-    std::unique_ptr<IndexedDBDatabaseCallbacks> database_callbacks,
+PendingConnection::PendingConnection(
+    std::unique_ptr<FactoryClient> factory_client,
+    std::unique_ptr<DatabaseCallbacks> database_callbacks,
     int64_t transaction_id,
     int64_t version,
     mojo::PendingAssociatedReceiver<blink::mojom::IDBTransaction>
@@ -24,6 +24,6 @@ IndexedDBPendingConnection::IndexedDBPendingConnection(
       version(version),
       pending_mojo_receiver(std::move(pending_mojo_receiver)) {}
 
-IndexedDBPendingConnection::~IndexedDBPendingConnection() {}
+PendingConnection::~PendingConnection() {}
 
-}  // namespace content
+}  // namespace content::indexed_db

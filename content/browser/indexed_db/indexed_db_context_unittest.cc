@@ -35,7 +35,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
-namespace content {
+namespace content::indexed_db {
+namespace {
 
 class IndexedDBContextTest : public testing::Test {
  public:
@@ -180,9 +181,8 @@ TEST_F(IndexedDBContextTest, GetDefaultBucketError) {
   // IDBFactory::Open
   base::RunLoop loop_2;
   auto mock_factory_client =
-      std::make_unique<testing::StrictMock<MockMojoIndexedDBFactoryClient>>();
-  auto database_callbacks =
-      std::make_unique<MockMojoIndexedDBDatabaseCallbacks>();
+      std::make_unique<testing::StrictMock<MockMojoFactoryClient>>();
+  auto database_callbacks = std::make_unique<MockMojoDatabaseCallbacks>();
   auto transaction_remote =
       mojo::AssociatedRemote<blink::mojom::IDBTransaction>();
   EXPECT_CALL(*mock_factory_client,
@@ -201,7 +201,7 @@ TEST_F(IndexedDBContextTest, GetDefaultBucketError) {
   // IDBFactory::DeleteDatabase
   base::RunLoop loop_3;
   mock_factory_client =
-      std::make_unique<testing::StrictMock<MockMojoIndexedDBFactoryClient>>();
+      std::make_unique<testing::StrictMock<MockMojoFactoryClient>>();
   EXPECT_CALL(*mock_factory_client,
               Error(blink::mojom::IDBException::kUnknownError,
                     std::u16string(u"Internal error.")))
@@ -227,4 +227,5 @@ TEST_F(IndexedDBContextTest, DontChokeOnBadLegacyFiles) {
   run_loop.Run();
 }
 
-}  // namespace content
+}  // namespace
+}  // namespace content::indexed_db

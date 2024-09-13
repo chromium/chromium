@@ -12,19 +12,17 @@
 #include "content/common/content_export.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-shared.h"
 
-namespace content {
+namespace content::indexed_db {
 
-class CONTENT_EXPORT IndexedDBDatabaseError {
+class CONTENT_EXPORT DatabaseError {
  public:
-  IndexedDBDatabaseError();
-  explicit IndexedDBDatabaseError(blink::mojom::IDBException code);
-  IndexedDBDatabaseError(blink::mojom::IDBException code,
-                         const std::string& message);
-  IndexedDBDatabaseError(blink::mojom::IDBException code,
-                         const std::u16string& message);
-  ~IndexedDBDatabaseError();
+  DatabaseError();
+  explicit DatabaseError(blink::mojom::IDBException code);
+  DatabaseError(blink::mojom::IDBException code, const std::string& message);
+  DatabaseError(blink::mojom::IDBException code, const std::u16string& message);
+  ~DatabaseError();
 
-  IndexedDBDatabaseError& operator=(const IndexedDBDatabaseError& rhs);
+  DatabaseError& operator=(const DatabaseError& rhs);
 
   blink::mojom::IDBException code() const { return code_; }
   const std::u16string& message() const { return message_; }
@@ -34,6 +32,6 @@ class CONTENT_EXPORT IndexedDBDatabaseError {
   std::u16string message_;
 };
 
-}  // namespace content
+}  // namespace content::indexed_db
 
 #endif  // CONTENT_BROWSER_INDEXED_DB_INDEXED_DB_DATABASE_ERROR_H_

@@ -26,7 +26,7 @@ namespace base {
 class TaskRunner;
 }
 
-namespace content {
+namespace content::indexed_db {
 namespace {
 
 TEST(IndexedDBIOErrorTest, CleanUpTest) {
@@ -41,15 +41,15 @@ TEST(IndexedDBIOErrorTest, CleanUpTest) {
 
   DefaultTransactionalLevelDBFactory factory;
   auto task_runner = base::SequencedTaskRunner::GetCurrentDefault();
-  auto backing_store = std::make_unique<IndexedDBBackingStore>(
-      IndexedDBBackingStore::Mode::kInMemory, bucket_locator, path, factory,
+  auto backing_store = std::make_unique<BackingStore>(
+      BackingStore::Mode::kInMemory, bucket_locator, path, factory,
       factory.CreateLevelDBDatabase(
           FakeLevelDBFactory::GetBrokenLevelDB(
               leveldb::Status::IOError("It's broken!"), path),
           nullptr, task_runner.get(),
           TransactionalLevelDBDatabase::kDefaultMaxOpenIteratorsPerDatabase),
-      IndexedDBBackingStore::BlobFilesCleanedCallback(),
-      IndexedDBBackingStore::ReportOutstandingBlobsCallback(), task_runner);
+      BackingStore::BlobFilesCleanedCallback(),
+      BackingStore::ReportOutstandingBlobsCallback(), task_runner);
   leveldb::Status s = backing_store->Initialize(false);
   EXPECT_FALSE(s.ok());
   ASSERT_TRUE(temp_directory.Delete());
@@ -77,14 +77,14 @@ TEST(IndexedDBNonRecoverableIOErrorTest, NuancedCleanupTest) {
                   base::File::FILE_ERROR_FAILED)};
   for (leveldb::Status error_status : errors) {
     DefaultTransactionalLevelDBFactory factory;
-    auto backing_store = std::make_unique<IndexedDBBackingStore>(
-        IndexedDBBackingStore::Mode::kInMemory, bucket_locator, path, factory,
+    auto backing_store = std::make_unique<BackingStore>(
+        BackingStore::Mode::kInMemory, bucket_locator, path, factory,
         factory.CreateLevelDBDatabase(
             FakeLevelDBFactory::GetBrokenLevelDB(error_status, path), nullptr,
             task_runner.get(),
             TransactionalLevelDBDatabase::kDefaultMaxOpenIteratorsPerDatabase),
-        IndexedDBBackingStore::BlobFilesCleanedCallback(),
-        IndexedDBBackingStore::ReportOutstandingBlobsCallback(), task_runner);
+        BackingStore::BlobFilesCleanedCallback(),
+        BackingStore::ReportOutstandingBlobsCallback(), task_runner);
     leveldb::Status s = backing_store->Initialize(false);
     ASSERT_TRUE(s.IsIOError());
   }
@@ -92,4 +92,4 @@ TEST(IndexedDBNonRecoverableIOErrorTest, NuancedCleanupTest) {
 }
 
 }  // namespace
-}  // namespace content
+}  // namespace content::indexed_db

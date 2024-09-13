@@ -12,7 +12,7 @@
 #include "content/browser/indexed_db/indexed_db_context_impl.h"
 #include "storage/browser/quota/storage_policy_observer.h"
 
-namespace content {
+namespace content::indexed_db {
 
 // This wrapper is created, destroyed, and operated on the UI thread in the
 // browser process. Its main purpose is to observe the `special_storage_policy`
@@ -58,6 +58,6 @@ class IndexedDBControlWrapper {
   SEQUENCE_CHECKER(sequence_checker_);
 };
 
-}  // namespace content
+}  // namespace content::indexed_db
 
 #endif  // CONTENT_BROWSER_INDEXED_DB_INDEXED_DB_CONTROL_WRAPPER_H_

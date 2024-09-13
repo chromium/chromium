@@ -23,7 +23,7 @@
 #include "third_party/leveldatabase/src/include/leveldb/options.h"
 #include "third_party/leveldatabase/src/include/leveldb/status.h"
 
-namespace content {
+namespace content::indexed_db {
 class LevelDBScope;
 class LevelDBState;
 class PartitionedLockManager;
@@ -105,6 +105,6 @@ class LevelDBScopes {
   base::WeakPtrFactory<LevelDBScopes> weak_factory_{this};
 };
 
-}  // namespace content
+}  // namespace content::indexed_db
 
 #endif  // COMPONENTS_SERVICES_STORAGE_INDEXED_DB_SCOPES_LEVELDB_SCOPES_H_

@@ -12,7 +12,7 @@ namespace storage {
 class FileStreamReader;
 }
 
-namespace content {
+namespace content::indexed_db {
 
 // A convenience function to read out data from a FileStreamReader
 // and write them into a data pipe. Must be called on an IO thread.
@@ -22,6 +22,6 @@ void MakeFileStreamAdapterAndRead(
     base::OnceCallback<void(int)> completion_callback,
     uint64_t read_length);
 
-}  // namespace content
+}  // namespace content::indexed_db
 
 #endif  // CONTENT_BROWSER_INDEXED_DB_FILE_STREAM_READER_TO_DATA_PIPE_H_

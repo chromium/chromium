@@ -7,10 +7,10 @@
 #include "base/trace_event/base_tracing.h"
 #include "third_party/leveldatabase/src/include/leveldb/db.h"
 
-namespace content {
+namespace content::indexed_db {
 
 IndexedDBCompactionTask::IndexedDBCompactionTask(leveldb::DB* database)
-    : IndexedDBPreCloseTaskQueue::PreCloseTask(database) {}
+    : BackingStorePreCloseTaskQueue::PreCloseTask(database) {}
 
 IndexedDBCompactionTask::~IndexedDBCompactionTask() = default;
 
@@ -24,4 +24,4 @@ bool IndexedDBCompactionTask::RunRound() {
   return true;
 }
 
-}  // namespace content
+}  // namespace content::indexed_db

@@ -12,34 +12,32 @@
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
 
-namespace content {
-class IndexedDBDatabaseError;
-class IndexedDBTransaction;
+namespace content::indexed_db {
+class DatabaseError;
+class Transaction;
 
 // This class serves as a thin wrapper around `IDBDatabaseCallbacks` and no-ops
 // any operations invoked after `OnForcedClose()`.
-class CONTENT_EXPORT IndexedDBDatabaseCallbacks {
+class CONTENT_EXPORT DatabaseCallbacks {
  public:
-  explicit IndexedDBDatabaseCallbacks(
+  explicit DatabaseCallbacks(
       mojo::PendingAssociatedRemote<blink::mojom::IDBDatabaseCallbacks>
           callbacks_remote);
-  ~IndexedDBDatabaseCallbacks();
+  ~DatabaseCallbacks();
 
-  IndexedDBDatabaseCallbacks(const IndexedDBDatabaseCallbacks&) = delete;
-  IndexedDBDatabaseCallbacks& operator=(const IndexedDBDatabaseCallbacks&) =
-      delete;
+  DatabaseCallbacks(const DatabaseCallbacks&) = delete;
+  DatabaseCallbacks& operator=(const DatabaseCallbacks&) = delete;
 
   void OnForcedClose();
   void OnVersionChange(int64_t old_version, int64_t new_version);
-  void OnAbort(const IndexedDBTransaction& transaction,
-               const IndexedDBDatabaseError& error);
-  void OnComplete(const IndexedDBTransaction& transaction);
+  void OnAbort(const Transaction& transaction, const DatabaseError& error);
+  void OnComplete(const Transaction& transaction);
 
  private:
   bool complete_ = false;
   mojo::AssociatedRemote<blink::mojom::IDBDatabaseCallbacks> callbacks_;
 };
 
-}  // namespace content
+}  // namespace content::indexed_db
 
 #endif  // CONTENT_BROWSER_INDEXED_DB_INSTANCE_DATABASE_CALLBACKS_H_

@@ -51,7 +51,7 @@ class FunctionTracer {
 
 }  // namespace
 
-namespace content {
+namespace content::indexed_db {
 
 class LevelDBTestDatabase : public TransactionalLevelDBDatabase {
  public:
@@ -277,7 +277,7 @@ class LevelDBTraceIterator : public TransactionalLevelDBIterator {
   mutable FunctionTracer value_tracer_;
 };
 
-class LevelDBTestIterator : public content::TransactionalLevelDBIterator {
+class LevelDBTestIterator : public TransactionalLevelDBIterator {
  public:
   LevelDBTestIterator(std::unique_ptr<leveldb::Iterator> iterator,
                       base::WeakPtr<TransactionalLevelDBDatabase> db,
@@ -415,4 +415,4 @@ void MockBrowserTestIndexedDBClassFactory::FailOperation(
   instance_count_.clear();
 }
 
-}  // namespace content
+}  // namespace content::indexed_db

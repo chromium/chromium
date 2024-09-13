@@ -24,9 +24,9 @@ using blink::IndexedDBDatabaseMetadata;
 using blink::IndexedDBKey;
 using std::swap;
 
-namespace content {
+namespace content::indexed_db {
 
-IndexedDBFactoryClient::IndexedDBFactoryClient(
+FactoryClient::FactoryClient(
     mojo::PendingAssociatedRemote<blink::mojom::IDBFactoryClient>
         pending_client)
     : data_loss_(blink::mojom::IDBDataLoss::None) {
@@ -34,15 +34,15 @@ IndexedDBFactoryClient::IndexedDBFactoryClient(
   if (pending_client.is_valid()) {
     remote_.Bind(std::move(pending_client));
     remote_.set_disconnect_handler(base::BindOnce(
-        &IndexedDBFactoryClient::OnConnectionError, base::Unretained(this)));
+        &FactoryClient::OnConnectionError, base::Unretained(this)));
   }
 }
 
-IndexedDBFactoryClient::~IndexedDBFactoryClient() {
+FactoryClient::~FactoryClient() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void IndexedDBFactoryClient::OnError(const IndexedDBDatabaseError& error) {
+void FactoryClient::OnError(const DatabaseError& error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!complete_);
 
@@ -53,7 +53,7 @@ void IndexedDBFactoryClient::OnError(const IndexedDBDatabaseError& error) {
   complete_ = true;
 }
 
-void IndexedDBFactoryClient::OnBlocked(int64_t existing_version) {
+void FactoryClient::OnBlocked(int64_t existing_version) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!complete_);
 
@@ -68,9 +68,9 @@ void IndexedDBFactoryClient::OnBlocked(int64_t existing_version) {
   }
 }
 
-void IndexedDBFactoryClient::OnUpgradeNeeded(
+void FactoryClient::OnUpgradeNeeded(
     int64_t old_version,
-    std::unique_ptr<IndexedDBConnection> connection,
+    std::unique_ptr<Connection> connection,
     const IndexedDBDatabaseMetadata& metadata,
     const IndexedDBDataLossInfo& data_loss_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -90,15 +90,13 @@ void IndexedDBFactoryClient::OnUpgradeNeeded(
   }
 
   mojo::PendingAssociatedRemote<blink::mojom::IDBDatabase> pending =
-      IndexedDBConnection::MakeSelfOwnedReceiverAndBindRemote(
-          std::move(connection));
+      Connection::MakeSelfOwnedReceiverAndBindRemote(std::move(connection));
   remote_->UpgradeNeeded(std::move(pending), old_version, data_loss_info.status,
                          data_loss_info.message, metadata);
 }
 
-void IndexedDBFactoryClient::OnOpenSuccess(
-    std::unique_ptr<IndexedDBConnection> connection,
-    const IndexedDBDatabaseMetadata& metadata) {
+void FactoryClient::OnOpenSuccess(std::unique_ptr<Connection> connection,
+                                  const IndexedDBDatabaseMetadata& metadata) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!complete_);
 
@@ -106,7 +104,7 @@ void IndexedDBFactoryClient::OnOpenSuccess(
 
   // Only create a new connection if one was not previously sent in
   // OnUpgradeNeeded.
-  std::unique_ptr<IndexedDBConnection> database_connection;
+  std::unique_ptr<Connection> database_connection;
   if (!connection_created_) {
     database_connection = std::move(connection);
   }
@@ -123,14 +121,14 @@ void IndexedDBFactoryClient::OnOpenSuccess(
 
   mojo::PendingAssociatedRemote<blink::mojom::IDBDatabase> pending_remote;
   if (database_connection) {
-    pending_remote = IndexedDBConnection::MakeSelfOwnedReceiverAndBindRemote(
+    pending_remote = Connection::MakeSelfOwnedReceiverAndBindRemote(
         std::move(database_connection));
   }
   remote_->OpenSuccess(std::move(pending_remote), metadata);
   complete_ = true;
 }
 
-void IndexedDBFactoryClient::OnDeleteSuccess(int64_t old_version) {
+void FactoryClient::OnDeleteSuccess(int64_t old_version) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!complete_);
 
@@ -141,11 +139,11 @@ void IndexedDBFactoryClient::OnDeleteSuccess(int64_t old_version) {
   complete_ = true;
 }
 
-void IndexedDBFactoryClient::OnConnectionError() {
+void FactoryClient::OnConnectionError() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Since the renderer-process `IDBFactory` is a self-owned receiver, a
   // disconnection should only occur if the renderer process is gone.
   remote_.reset();
 }
 
-}  // namespace content
+}  // namespace content::indexed_db

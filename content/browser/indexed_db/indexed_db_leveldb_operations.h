@@ -27,13 +27,12 @@ namespace storage {
 struct BucketLocator;
 }  // namespace storage
 
-namespace content {
+namespace content::indexed_db {
+
 class TransactionalLevelDBDatabase;
 class TransactionalLevelDBIterator;
 class TransactionalLevelDBTransaction;
 class LevelDBDirectTransaction;
-
-namespace indexed_db {
 
 base::FilePath ComputeCorruptionFileName(
     const storage::BucketLocator& bucket_locator);
@@ -213,7 +212,6 @@ template <typename Transaction>
 
 CONTENT_EXPORT const leveldb::Comparator* GetDefaultLevelDBComparator();
 
-}  // namespace indexed_db
-}  // namespace content
+}  // namespace content::indexed_db
 
 #endif  // CONTENT_BROWSER_INDEXED_DB_INDEXED_DB_LEVELDB_OPERATIONS_H_

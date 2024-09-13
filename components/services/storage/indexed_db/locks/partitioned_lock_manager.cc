@@ -22,7 +22,7 @@
 #include "components/services/storage/indexed_db/locks/partitioned_lock.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock_id.h"
 
-namespace content {
+namespace content::indexed_db {
 
 PartitionedLockHolder::PartitionedLockHolder() = default;
 
@@ -308,4 +308,4 @@ bool operator!=(const PartitionedLockManager::PartitionedLockRequest& x,
   return !(x == y);
 }
 
-}  // namespace content
+}  // namespace content::indexed_db
