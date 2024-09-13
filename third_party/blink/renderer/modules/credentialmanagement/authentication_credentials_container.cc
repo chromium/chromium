@@ -1276,11 +1276,12 @@ ScriptPromise<IDLNullable<Credential>> AuthenticationCredentialsContainer::get(
   // TODO(cbiesinger): Consider removing the hasIdentity() check after FedCM
   // ships. Before then, it is useful for RPs to pass both identity and
   // federated while transitioning from the older to the new API.
-  if (options->hasFederated() && !options->hasIdentity()) {
+  if (options->hasFederated() && options->federated()->hasProviders() &&
+      options->federated()->providers().size() > 0 && !options->hasIdentity()) {
     UseCounter::Count(
         context, WebFeature::kCredentialManagerGetLegacyFederatedCredential);
   }
-  if (!options->hasFederated() && options->hasPassword()) {
+  if (options->hasPassword() && options->password()) {
     UseCounter::Count(context,
                       WebFeature::kCredentialManagerGetPasswordCredential);
   }
