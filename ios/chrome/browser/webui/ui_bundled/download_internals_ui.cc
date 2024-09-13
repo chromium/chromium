@@ -59,10 +59,9 @@ class DownloadInternalsUIMessageHandler : public web::WebUIIOSMessageHandler,
             &DownloadInternalsUIMessageHandler::HandleStartDownload,
             weak_ptr_factory_.GetWeakPtr()));
 
-    ChromeBrowserState* browser_state =
-        ChromeBrowserState::FromWebUIIOS(web_ui());
+    ProfileIOS* profile = ProfileIOS::FromWebUIIOS(web_ui());
     download_service_ =
-        BackgroundDownloadServiceFactory::GetForBrowserState(browser_state);
+        BackgroundDownloadServiceFactory::GetForProfile(profile);
 
     // download_service_ will be null in incognito mode on iOS.
     if (download_service_)
@@ -172,8 +171,7 @@ DownloadInternalsUI::DownloadInternalsUI(web::WebUIIOS* web_ui,
       kDownloadInternalsResources, kDownloadInternalsResourcesSize));
   html_source->SetDefaultResource(
       IDR_DOWNLOAD_INTERNALS_DOWNLOAD_INTERNALS_HTML);
-  web::WebUIIOSDataSource::Add(ChromeBrowserState::FromWebUIIOS(web_ui),
-                               html_source);
+  web::WebUIIOSDataSource::Add(ProfileIOS::FromWebUIIOS(web_ui), html_source);
 }
 
 DownloadInternalsUI::~DownloadInternalsUI() = default;

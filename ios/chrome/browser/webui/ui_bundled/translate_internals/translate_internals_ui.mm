@@ -56,7 +56,7 @@ TranslateInternalsUI::TranslateInternalsUI(web::WebUIIOS* web_ui,
                                            const std::string& host)
     : web::WebUIIOSController(web_ui, host) {
   web_ui->AddMessageHandler(std::make_unique<IOSTranslateInternalsHandler>());
-  web::WebUIIOSDataSource::Add(ChromeBrowserState::FromWebUIIOS(web_ui),
+  web::WebUIIOSDataSource::Add(ProfileIOS::FromWebUIIOS(web_ui),
                                CreateTranslateInternalsHTMLSource());
 }
 

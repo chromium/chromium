@@ -67,8 +67,7 @@ LocalStateUI::LocalStateUI(web::WebUIIOS* web_ui, const std::string& host)
       web::WebUIIOSDataSource::Create(kChromeUILocalStateHost);
   html_source->SetDefaultResource(IDR_LOCAL_STATE_HTML);
   html_source->AddResourcePath("local_state.js", IDR_LOCAL_STATE_JS);
-  web::WebUIIOSDataSource::Add(ChromeBrowserState::FromWebUIIOS(web_ui),
-                               html_source);
+  web::WebUIIOSDataSource::Add(ProfileIOS::FromWebUIIOS(web_ui), html_source);
   web_ui->AddMessageHandler(std::make_unique<LocalStateUIHandler>());
 }
 

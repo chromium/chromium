@@ -23,8 +23,7 @@ namespace {
 // state.
 class PrefsInternalsSource : public web::URLDataSourceIOS {
  public:
-  explicit PrefsInternalsSource(ChromeBrowserState* browser_state)
-      : browser_state_(browser_state) {}
+  explicit PrefsInternalsSource(ProfileIOS* profile) : profile_(profile) {}
 
   PrefsInternalsSource(const PrefsInternalsSource&) = delete;
   PrefsInternalsSource& operator=(const PrefsInternalsSource&) = delete;
@@ -42,8 +41,8 @@ class PrefsInternalsSource : public web::URLDataSourceIOS {
       const std::string& path,
       web::URLDataSourceIOS::GotDataCallback callback) override {
     // TODO(crbug.com/40099982): Properly disable this webui provider for
-    // incognito browser states.
-    if (browser_state_->IsOffTheRecord()) {
+    // incognito profiles.
+    if (profile_->IsOffTheRecord()) {
       std::move(callback).Run(nullptr);
       return;
     }
@@ -51,12 +50,12 @@ class PrefsInternalsSource : public web::URLDataSourceIOS {
     DCHECK_CURRENTLY_ON(web::WebThread::UI);
 
     std::move(callback).Run(base::MakeRefCounted<base::RefCountedString>(
-        local_state_utils::GetPrefsAsJson(browser_state_->GetPrefs())
+        local_state_utils::GetPrefsAsJson(profile_->GetPrefs())
             .value_or(std::string())));
   }
 
  private:
-  raw_ptr<ChromeBrowserState> browser_state_;
+  raw_ptr<ProfileIOS> profile_;
 };
 
 }  // namespace
@@ -64,9 +63,8 @@ class PrefsInternalsSource : public web::URLDataSourceIOS {
 PrefsInternalsUI::PrefsInternalsUI(web::WebUIIOS* web_ui,
                                    const std::string& host)
     : web::WebUIIOSController(web_ui, host) {
-  ChromeBrowserState* browser_state = ChromeBrowserState::FromWebUIIOS(web_ui);
-  web::URLDataSourceIOS::Add(browser_state,
-                             new PrefsInternalsSource(browser_state));
+  ProfileIOS* profile = ProfileIOS::FromWebUIIOS(web_ui);
+  web::URLDataSourceIOS::Add(profile, new PrefsInternalsSource(profile));
 }
 
 PrefsInternalsUI::~PrefsInternalsUI() = default;

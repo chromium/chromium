@@ -102,10 +102,9 @@ class UserDefaultsInternalsSource : public web::URLDataSourceIOS {
 UserDefaultsInternalsUI::UserDefaultsInternalsUI(web::WebUIIOS* web_ui,
                                                  const std::string& host)
     : web::WebUIIOSController(web_ui, host) {
-  ChromeBrowserState* browser_state = ChromeBrowserState::FromWebUIIOS(web_ui);
+  ProfileIOS* profile = ProfileIOS::FromWebUIIOS(web_ui);
   web::URLDataSourceIOS::Add(
-      browser_state,
-      new UserDefaultsInternalsSource(browser_state->IsOffTheRecord()));
+      profile, new UserDefaultsInternalsSource(profile->IsOffTheRecord()));
 }
 
 UserDefaultsInternalsUI::~UserDefaultsInternalsUI() = default;

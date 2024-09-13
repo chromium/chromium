@@ -17,14 +17,14 @@ PasswordManagerInternalsUIIOS::PasswordManagerInternalsUIIOS(
     web::WebUIIOS* web_ui,
     const std::string& host)
     : web::WebUIIOSController(web_ui, host) {
-  ChromeBrowserState* browser_state = ChromeBrowserState::FromWebUIIOS(web_ui);
-  web::WebUIIOSDataSource::Add(browser_state,
+  ProfileIOS* profile = ProfileIOS::FromWebUIIOS(web_ui);
+  web::WebUIIOSDataSource::Add(profile,
                                autofill::CreateInternalsHTMLSource(
                                    kChromeUIPasswordManagerInternalsHost));
   web_ui->AddMessageHandler(std::make_unique<autofill::InternalsUIHandler>(
       "setup-password-manager-internals",
       base::BindRepeating(
-          &ios::PasswordManagerLogRouterFactory::GetForBrowserState)));
+          &ios::PasswordManagerLogRouterFactory::GetForProfile)));
 }
 
 PasswordManagerInternalsUIIOS::~PasswordManagerInternalsUIIOS() = default;
