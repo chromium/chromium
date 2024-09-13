@@ -901,8 +901,8 @@ Style notes:
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_NUDGE_ALERT" desc="The accessibility alert for the ending moment nudge.">
         <ph name="TITLE">$1<ex>Time's up. Great job!</ex></ph> You've just focused for <ph name="FOCUSED_TIME">$2<ex>24 minutes</ex></ph>. Open Quick settings to focus again.
       </message>
-      <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_BODY" desc="The message for the ending moment panel.">
-        You can add a little more time if you need it, or end your focus session
+      <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_BODY" desc="The message for the ending moment panel. [CHAR_LIMIT=64]">
+        You can add more time, or end your focus session
       </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_DIALOG" desc="The annoucement for the ending moment panel.">
         <ph name="TITLE">$1<ex>Time's up. Great job!</ex></ph> <ph name="BODY">$2<ex>Congratulations on another productive session!</ex></ph>
