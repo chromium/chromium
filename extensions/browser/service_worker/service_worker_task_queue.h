@@ -473,7 +473,7 @@ class ServiceWorkerTaskQueue
 
   // Whether the task queue (as a keyed service) has been informed that the
   // browser context is shutting down. Used for metrics purposes.
-  bool browser_context_shutting_down_;
+  bool browser_context_shutting_down_ = false;
 
   std::map<content::ServiceWorkerContext*, int> observing_worker_contexts_;
 
