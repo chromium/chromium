@@ -16,8 +16,6 @@ assert(use_ozone)
 source_set("chromeos") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
   sources = [
-    "extensions/device_local_account_external_policy_loader.cc",
-    "extensions/device_local_account_external_policy_loader.h",
     "extensions/info_private_api.cc",
     "extensions/info_private_api.h",
     "extensions/wallpaper_api.cc",

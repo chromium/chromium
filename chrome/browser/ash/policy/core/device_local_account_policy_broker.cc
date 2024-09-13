@@ -31,7 +31,7 @@
 #include "chrome/browser/ash/policy/invalidation/affiliated_cloud_policy_invalidator.h"
 #include "chrome/browser/ash/policy/invalidation/affiliated_invalidation_service_provider.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
-#include "chrome/browser/chromeos/extensions/device_local_account_external_policy_loader.h"
+#include "chrome/browser/chromeos/extensions/external_loader/device_local_account_external_policy_loader.h"
 #include "chrome/browser/extensions/external_loader.h"
 #include "chrome/browser/extensions/policy_handlers.h"
 #include "chrome/browser/policy/cloud/cloud_policy_invalidator.h"

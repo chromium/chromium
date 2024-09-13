@@ -1047,6 +1047,7 @@ source_set("extensions") {
     ]
     deps += [
       "//chrome/browser/chromeos/extensions/desk_api",
+      "//chrome/browser/chromeos/extensions/external_loader",
       "//chrome/browser/chromeos/extensions/login_screen/login/external_logout_request",
       "//chrome/browser/chromeos/extensions/login_screen/login_state",
       "//chrome/browser/chromeos/platform_keys",
@@ -1108,6 +1109,7 @@ source_set("extensions") {
       "//chrome/browser/chromeos/drivefs",
       "//chrome/browser/chromeos/extensions/contact_center_insights",
       "//chrome/browser/chromeos/extensions/desk_api",
+      "//chrome/browser/chromeos/extensions/external_loader",
       "//chrome/browser/chromeos/extensions/file_system_provider",
       "//chrome/browser/chromeos/extensions/login_screen/login/cleanup",
     ]

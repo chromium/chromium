@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_LACROS_APP_MODE_DEVICE_LOCAL_ACCOUNT_EXTENSION_INSTALLER_LACROS_H_
 #define CHROME_BROWSER_LACROS_APP_MODE_DEVICE_LOCAL_ACCOUNT_EXTENSION_INSTALLER_LACROS_H_
 
-#include "chrome/browser/chromeos/extensions/device_local_account_external_policy_loader.h"
+#include "chrome/browser/chromeos/extensions/external_loader/device_local_account_external_policy_loader.h"
 #include "chrome/browser/extensions/external_loader.h"
 #include "chromeos/crosapi/mojom/device_local_account_extension_service.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
