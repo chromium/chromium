@@ -756,6 +756,9 @@ void IdentityGetAuthTokenFunction::OnIdentityAPIShutdown() {
 #if BUILDFLAG(IS_CHROMEOS)
   device_oauth2_token_fetcher_.reset();
 #endif
+  if (gaia_remote_consent_flow_) {
+    gaia_remote_consent_flow_->Stop();
+  }
   token_key_account_access_token_fetcher_.reset();
   scoped_identity_manager_observation_.Reset();
   extensions::IdentityAPI::GetFactoryInstance()
@@ -763,8 +766,8 @@ void IdentityGetAuthTokenFunction::OnIdentityAPIShutdown() {
       ->mint_queue()
       ->RequestCancel(token_key_, this);
 
-  CompleteFunctionWithError(
-      IdentityGetAuthTokenError(IdentityGetAuthTokenError::State::kCanceled));
+  CompleteFunctionWithError(IdentityGetAuthTokenError(
+      IdentityGetAuthTokenError::State::kBrowserContextShutDown));
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

@@ -76,6 +76,13 @@ void GaiaRemoteConsentFlow::Start() {
   web_flow_started_ = true;
 }
 
+void GaiaRemoteConsentFlow::Stop() {
+  if (web_flow_) {
+    web_flow_->Stop();
+  }
+  profile_ = nullptr;
+}
+
 void GaiaRemoteConsentFlow::ReactToConsentResult(
     const std::string& consent_result) {
   bool consent_approved = false;

@@ -9,6 +9,8 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/keep_alive_registry/keep_alive_types.h"
+#include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
@@ -125,18 +127,23 @@ class GaiaRemoteConsentFlowParamBrowserTest : public InProcessBrowserTest {
     return primary_account_info;
   }
 
-  void LaunchAndWaitGaiaRemoteConsentFlow() {
+  void CreateGaiaRemoteConsentFlow(const GURL& url) {
     CoreAccountInfo account_info = CreateFakeAccountInfoAndSetAsPrimary();
     ExtensionTokenKey token_key("extension_id", account_info,
                                 std::set<std::string>());
     RemoteConsentResolutionData resolution_data;
-    resolution_data.url = fake_gaia_test_server()->GetURL("/title1.html");
+    resolution_data.url = url;
 
     flow_ = std::make_unique<GaiaRemoteConsentFlow>(&mock(), profile(),
                                                     token_key, resolution_data,
                                                     /*user_gesture=*/true);
+  }
 
-    content::TestNavigationObserver navigation_observer(resolution_data.url);
+  void LaunchAndWaitGaiaRemoteConsentFlow() {
+    GURL url = fake_gaia_test_server()->GetURL("/title1.html");
+    CreateGaiaRemoteConsentFlow(url);
+
+    content::TestNavigationObserver navigation_observer(url);
     navigation_observer.StartWatchingNewWebContents();
 
     flow_->Start();
@@ -207,6 +214,22 @@ IN_PROC_BROWSER_TEST_F(GaiaRemoteConsentFlowParamBrowserTest,
   EXPECT_CALL(mock(),
               OnGaiaRemoteConsentFlowApproved(approved_consent, kGaiaId));
   SimulateConsentResult(approved_consent);
+}
+
+IN_PROC_BROWSER_TEST_F(GaiaRemoteConsentFlowParamBrowserTest,
+                       SimulateProfileShutdownWhileLoading) {
+  // We want to interrupt the flow before `auth_url` gets loaded. To ensure that
+  // an URL doesn't load prematurely, use a default test URL that never returns
+  // a response.
+  CreateGaiaRemoteConsentFlow(fake_gaia_test_server()->GetURL("/hung"));
+  flow()->Start();
+  // Delegate shouldn't be called after the profile is destroyed.
+  EXPECT_CALL(mock(), OnGaiaRemoteConsentFlowFailed).Times(0);
+  auto keep_alive = std::make_unique<ScopedKeepAlive>(
+      KeepAliveOrigin::BROWSER, KeepAliveRestartOption::DISABLED);
+  CloseBrowserSynchronously(browser());
+  base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
+      FROM_HERE, std::move(keep_alive));
 }
 
 }  // namespace extensions

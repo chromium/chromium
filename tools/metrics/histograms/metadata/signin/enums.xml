@@ -369,9 +369,10 @@ chromium-metrics-reviews@google.com.
   <int value="24" label="kRemoteConsentPageLoadFailure"/>
   <int value="25" label="kSetAccountsInCookieFailure (deprecated 07/2023)"/>
   <int value="26" label="kInvalidConsentResult"/>
-  <int value="27" label="kCanceled"/>
+  <int value="27" label="kCanceled (deprecated 09/2024)"/>
   <int value="28" label="kInteractivityDenied"/>
   <int value="29" label="kCannotCreateWindow"/>
+  <int value="30" label="kBrowserContextShutDown"/>
 </enum>
 
 <enum name="IdentityConfirmationSnackbarDecision">
@@ -401,6 +402,7 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="kPageLoadTimedOut"/>
   <int value="7" label="kCannotCreateWindow"/>
   <int value="8" label="kInvalidURLScheme"/>
+  <int value="9" label="kBrowserContextShutDown"/>
 </enum>
 
 <enum name="OAuth2LoginAccountRevokedMigrationState">
