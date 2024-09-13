@@ -539,7 +539,9 @@ void HTMLMetaElement::ProcessViewportContentAttribute(
       TRACE_DISABLED_BY_DEFAULT("devtools.timeline"), "ParseMetaViewport",
       "data", [&](perfetto::TracedValue context) {
         auto dict = std::move(context).WriteDictionary();
-        dict.Add("frame", GetDocument().GetFrame()->GetFrameIdForTracing());
+        if (GetDocument().GetFrame()) {
+          dict.Add("frame", GetDocument().GetFrame()->GetFrameIdForTracing());
+        }
         dict.Add("node_id", GetDomNodeId());
         dict.Add("content", content);
       });
