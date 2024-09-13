@@ -338,6 +338,7 @@ source_set("unit_tests") {
     "//chrome/browser/ui/ash/clipboard:unit_tests",
     "//chrome/browser/ui/ash/desks:unit_tests",
     "//chrome/browser/ui/ash/device_scheduled_reboot:unit_tests",
+    "//chrome/browser/ui/ash/focus_mode:unit_tests",
     "//chrome/browser/ui/ash/glanceables:unit_tests",
     "//chrome/browser/ui/ash/global_media_controls:unit_tests",
     "//chrome/browser/ui/ash/holding_space:unit_tests",

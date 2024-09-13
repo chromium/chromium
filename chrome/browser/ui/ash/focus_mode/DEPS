@@ -16,4 +16,9 @@ include_rules = [
   "+chrome/browser/signin",
   "+chrome/browser/ui/ash/web_view",
   "+chrome/test",
+
+  "+chrome/browser/ash/attestation",
+  "+chrome/browser/ash/settings/stub_cros_settings_provider.h",
+  "+chrome/browser/ash/settings/scoped_testing_cros_settings.h",
+  "+third_party/boringssl/src/pki/pem.h",
 ]

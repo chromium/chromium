@@ -8,19 +8,48 @@ assert(is_chromeos_ash)
 
 static_library("focus_mode") {
   sources = [
+    "certificate_manager.cc",
+    "certificate_manager.h",
     "chrome_focus_mode_delegate.cc",
     "chrome_focus_mode_delegate.h",
   ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+  public_deps = [
+    "//chrome/browser:browser_public_dependencies",
+    "//chromeos/ash/components/dbus/constants",
+  ]
 
   deps = [
     "//ash",
     "//base",
+    "//chrome/browser/ash/attestation",
+    "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles",
-    "//chrome/browser/profiles:profile",
+    "//chromeos/ash/components/attestation",
+    "//chromeos/ash/components/cryptohome:public",
+    "//chromeos/ash/components/dbus/attestation",
+    "//chromeos/ash/components/dbus/attestation:attestation_proto",
+    "//chromeos/ash/components/dbus/cryptohome:attestation_proto",
+    "//chromeos/ash/components/settings",
     "//google_apis/common",
     "//net/traffic_annotation",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "certificate_manager_unittest.cc" ]
+
+  deps = [
+    ":focus_mode",
+    "//base/test:test_support",
+    "//chrome/browser/ash/settings",
+    "//chrome/browser/ash/settings:test_support",
+    "//chromeos/ash/components/attestation",
+    "//chromeos/ash/components/attestation:test_support",
+    "//chromeos/ash/components/dbus/attestation",
+    "//chromeos/ash/components/settings",
   ]
 }
 
