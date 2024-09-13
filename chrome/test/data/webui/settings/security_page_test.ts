@@ -228,6 +228,20 @@ suite('Main', function() {
     flush();
     assertEquals(lockedSubLabel, toggle.subLabel);
   });
+
+  // Tests that only the new Secure DNS toggle is shown when the new
+  // HTTPS-First Mode Settings flag is enabled.
+  // Regression test for crbug.com/365884462
+  // TODO(crbug.com/349860796): Remove when Balanced Mode is fully launched.
+  // <if expr="not is_chromeos">
+  test('SecureDnsToggleNotDuplicated', function() {
+    // Check that the setting under the new element ID visible.
+    assertTrue(isChildVisible(page, '#secureDnsSettingNew'));
+
+    // Check that the setting under the old element ID is not visible.
+    assertFalse(isChildVisible(page, '#secureDnsSettingOld'));
+  });
+  // </if>
 });
 
 suite('SecurityPageHappinessTrackingSurveys', function() {
@@ -464,6 +478,20 @@ suite('FlagsDisabled', function() {
     flush();
     assertEquals(lockedSubLabel, toggle.subLabel);
   });
+
+  // Tests that only the old Secure DNS toggle is shown when the new
+  // HTTPS-First Mode Settings flag is disabled.
+  // Regression test for crbug.com/365884462
+  // TODO(crbug.com/349860796): Remove when Balanced Mode is fully launched.
+  // <if expr="not is_chromeos">
+  test('SecureDnsToggleNotDuplicated', function() {
+    // Check that the setting under the new element ID is not visible.
+    assertFalse(isChildVisible(page, '#secureDnsSettingNew'));
+
+    // Check that the setting under the old element ID is visible.
+    assertTrue(isChildVisible(page, '#secureDnsSettingOld'));
+  });
+  // </if>
 
   // TODO(crbug.com/349439367): Remove the test once
   // kExtendedReportingRemovePrefDependency is fully launched.
