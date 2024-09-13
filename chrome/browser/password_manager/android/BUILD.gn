@@ -320,7 +320,6 @@ robolectric_binary("password_manager_junit_tests") {
     "//chrome/browser/loading_modal/android:java",
     "//chrome/browser/password_manager/android/access_loss:enums_java",
     "//chrome/browser/password_manager/android/access_loss:helper_java",
-    "//chrome/browser/password_manager/android/access_loss:java",
     "//chrome/browser/password_manager/android/pwd_migration:java",
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",

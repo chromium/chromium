@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.access_loss;
+package org.chromium.chrome.browser.password_manager;
 
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyBoolean;

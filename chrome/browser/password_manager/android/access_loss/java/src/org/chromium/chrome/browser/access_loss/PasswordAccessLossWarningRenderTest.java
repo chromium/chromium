@@ -36,7 +36,9 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.test.util.RenderTestRule.Component;
 
 import java.io.IOException;
@@ -74,7 +76,7 @@ public class PasswordAccessLossWarningRenderTest {
     @Mock private Profile mProfile;
 
     private BottomSheetController mBottomSheetController;
-    private PasswordAccessLossWarningBridge mBridge;
+    private PasswordAccessLossWarningHelper mHelper;
 
     public PasswordAccessLossWarningRenderTest(boolean nightModeEnabled, boolean useRtlLayout) {
         setRtlForTesting(useRtlLayout);
@@ -95,9 +97,13 @@ public class PasswordAccessLossWarningRenderTest {
                         .getBottomSheetController();
         runOnUiThreadBlocking(
                 () -> {
-                    mBridge =
-                            PasswordAccessLossWarningBridge.create(
-                                    mActivityTestRule.getActivity().getWindowAndroid(), mProfile);
+                    WindowAndroid windowAndroid =
+                            mActivityTestRule.getActivity().getWindowAndroid();
+                    mHelper =
+                            new PasswordAccessLossWarningHelper(
+                                    mActivityTestRule.getActivity(),
+                                    BottomSheetControllerProvider.from(windowAndroid),
+                                    mProfile);
                 });
     }
 
@@ -118,7 +124,7 @@ public class PasswordAccessLossWarningRenderTest {
     public void testShowsAccessLossWarningSheetWithNoGmsCore() throws IOException {
         runOnUiThreadBlocking(
                 () -> {
-                    mBridge.show(PasswordAccessLossWarningType.NO_GMS_CORE);
+                    mHelper.show(PasswordAccessLossWarningType.NO_GMS_CORE);
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 

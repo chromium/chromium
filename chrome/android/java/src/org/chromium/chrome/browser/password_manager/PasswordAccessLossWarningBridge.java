@@ -2,31 +2,31 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.access_loss;
+package org.chromium.chrome.browser.password_manager;
 
 import android.app.Activity;
-import android.content.Context;
 
 import androidx.annotation.Nullable;
 
 import org.jni_zero.CalledByNative;
 
+import org.chromium.chrome.browser.access_loss.PasswordAccessLossWarningHelper;
+import org.chromium.chrome.browser.access_loss.PasswordAccessLossWarningType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.ui.base.WindowAndroid;
 
+/**
+ * Glue code. Used by C++ to launch the password access loss warning bridge. Allows injecting helper
+ * from chrome_java.
+ */
 class PasswordAccessLossWarningBridge {
     PasswordAccessLossWarningHelper mHelper;
 
     public PasswordAccessLossWarningBridge(
-            Context context,
-            BottomSheetController bottomSheetController,
-            Profile profile,
-            Activity activity) {
-        mHelper =
-                new PasswordAccessLossWarningHelper(
-                        context, bottomSheetController, profile, activity);
+            Activity activity, BottomSheetController bottomSheetController, Profile profile) {
+        mHelper = new PasswordAccessLossWarningHelper(activity, bottomSheetController, profile);
     }
 
     @CalledByNative
@@ -37,16 +37,11 @@ class PasswordAccessLossWarningBridge {
         if (bottomSheetController == null) {
             return null;
         }
-        Context context = windowAndroid.getContext().get();
-        if (context == null) {
-            return null;
-        }
         Activity activity = windowAndroid.getActivity().get();
         if (activity == null) {
             return null;
         }
-        return new PasswordAccessLossWarningBridge(
-                context, bottomSheetController, profile, activity);
+        return new PasswordAccessLossWarningBridge(activity, bottomSheetController, profile);
     }
 
     @CalledByNative

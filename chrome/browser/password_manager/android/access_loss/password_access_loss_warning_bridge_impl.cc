@@ -7,7 +7,7 @@
 #include "base/android/build_info.h"
 #include "base/android/jni_android.h"
 #include "base/feature_list.h"
-#include "chrome/browser/password_manager/android/access_loss/jni_headers/PasswordAccessLossWarningBridge_jni.h"
+#include "chrome/android/chrome_jni_headers/PasswordAccessLossWarningBridge_jni.h"
 #include "chrome/browser/password_manager/android/password_manager_android_util.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "ui/android/window_android.h"

@@ -11,7 +11,6 @@ import static org.chromium.chrome.browser.bottom_sheet.SimpleNoticeSheetProperti
 import static org.chromium.chrome.browser.bottom_sheet.SimpleNoticeSheetProperties.SHEET_TITLE;
 
 import android.app.Activity;
-import android.content.Context;
 import android.text.SpannableString;
 import android.view.View;
 
@@ -38,15 +37,15 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 
-class PasswordAccessLossWarningHelper {
+/** Entry-point to the access loss warning UI surface. */
+public class PasswordAccessLossWarningHelper {
     private final BaseNotificationManagerProxy mNotificationManagerProxy;
 
     @VisibleForTesting protected static final String TAG = "access_loss_warning";
-
-    final Context mContext;
+    final Activity mActivity;
     final BottomSheetController mBottomSheetController;
     final Profile mProfile;
-    final Activity mActivity;
+
     // TODO(crbug.com/361286381): Extract the constants into a dedicated support article helper.
     static final String KEEP_APPS_AND_DEVICES_WORKING_WITH_GMS_CORE_SUPPORT_URL =
             "https://support.google.com/googleplay/?p=keep_apps_and_devices_working_with_gms";
@@ -55,12 +54,10 @@ class PasswordAccessLossWarningHelper {
 
     @VisibleForTesting
     PasswordAccessLossWarningHelper(
-            Context context,
+            Activity activity,
             BottomSheetController bottomSheetController,
             Profile profile,
-            Activity activity,
             BaseNotificationManagerProxy manager) {
-        mContext = context;
         mBottomSheetController = bottomSheetController;
         mProfile = profile;
         mActivity = activity;
@@ -68,21 +65,17 @@ class PasswordAccessLossWarningHelper {
     }
 
     public PasswordAccessLossWarningHelper(
-            Context context,
-            BottomSheetController bottomSheetController,
-            Profile profile,
-            Activity activity) {
+            Activity activity, BottomSheetController bottomSheetController, Profile profile) {
         this(
-                context,
+                activity,
                 bottomSheetController,
                 profile,
-                activity,
-                BaseNotificationManagerProxyFactory.create(context));
+                BaseNotificationManagerProxyFactory.create(activity));
     }
 
     public void show(@PasswordAccessLossWarningType int warningType) {
         SimpleNoticeSheetCoordinator coordinator =
-                new SimpleNoticeSheetCoordinator(mContext, mBottomSheetController);
+                new SimpleNoticeSheetCoordinator(mActivity, mBottomSheetController);
         PropertyModel model = getModelForWarningType(warningType);
         if (model == null) {
             return;
@@ -149,21 +142,21 @@ class PasswordAccessLossWarningHelper {
         return new PropertyModel.Builder(ALL_KEYS)
                 .with(
                         SHEET_TITLE,
-                        mContext.getString(R.string.pwd_access_loss_warning_no_gms_core_title))
+                        mActivity.getString(R.string.pwd_access_loss_warning_no_gms_core_title))
                 .with(
                         SHEET_TEXT,
                         getBottomSheetTextWithLink(
-                                mContext.getString(
+                                mActivity.getString(
                                         R.string.pwd_access_loss_warning_no_gms_core_text),
                                 this::openGooglePlaySupportedDevicesHelpPage))
                 .with(
                         BUTTON_TITLE,
-                        mContext.getString(
+                        mActivity.getString(
                                 R.string.pwd_access_loss_warning_no_gms_core_button_text))
                 .with(
                         BUTTON_ACTION,
                         () -> {
-                            PasswordExportLauncher.showMainSettingsAndStartExport(mContext);
+                            PasswordExportLauncher.showMainSettingsAndStartExport(mActivity);
                         })
                 .build();
     }
@@ -173,21 +166,21 @@ class PasswordAccessLossWarningHelper {
         return new PropertyModel.Builder(ALL_KEYS)
                 .with(
                         SHEET_TITLE,
-                        mContext.getString(R.string.pwd_access_loss_warning_update_gms_core_title))
+                        mActivity.getString(R.string.pwd_access_loss_warning_update_gms_core_title))
                 .with(
                         SHEET_TEXT,
                         getBottomSheetTextWithLink(
-                                mContext.getString(
+                                mActivity.getString(
                                         R.string.pwd_access_loss_warning_update_gms_core_text),
                                 this::openGmsCoreHelpPage))
                 .with(
                         BUTTON_TITLE,
-                        mContext.getString(
+                        mActivity.getString(
                                 R.string.pwd_access_loss_warning_update_gms_core_button_text))
                 .with(
                         BUTTON_ACTION,
                         () -> {
-                            GmsUpdateLauncher.launch(mContext);
+                            GmsUpdateLauncher.launch(mActivity);
                         })
                 .build();
     }
@@ -200,20 +193,21 @@ class PasswordAccessLossWarningHelper {
         return new PropertyModel.Builder(ALL_KEYS)
                 .with(
                         SHEET_TITLE,
-                        mContext.getString(R.string.pwd_access_loss_warning_manual_migration_title))
+                        mActivity.getString(
+                                R.string.pwd_access_loss_warning_manual_migration_title))
                 .with(
                         SHEET_TEXT,
                         SpannableString.valueOf(
-                                mContext.getString(
+                                mActivity.getString(
                                         R.string.pwd_access_loss_warning_manual_migration_text)))
                 .with(
                         BUTTON_TITLE,
-                        mContext.getString(
+                        mActivity.getString(
                                 R.string.pwd_access_loss_warning_manual_migration_button_text))
                 .with(
                         BUTTON_ACTION,
                         () -> {
-                            PasswordExportLauncher.showMainSettingsAndStartExport(mContext);
+                            PasswordExportLauncher.showMainSettingsAndStartExport(mActivity);
                         })
                 .build();
     }
@@ -222,7 +216,7 @@ class PasswordAccessLossWarningHelper {
         return SpanApplier.applySpans(
                 sheetText,
                 new SpanApplier.SpanInfo(
-                        "<link>", "</link>", new NoUnderlineClickableSpan(mContext, callback)));
+                        "<link>", "</link>", new NoUnderlineClickableSpan(mActivity, callback)));
     }
 
     private void openGooglePlaySupportedDevicesHelpPage(View view) {

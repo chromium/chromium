@@ -18,7 +18,6 @@ import static org.chromium.chrome.browser.bottom_sheet.SimpleNoticeSheetProperti
 
 import android.app.Activity;
 import android.app.Notification;
-import android.content.Context;
 
 import androidx.annotation.StringRes;
 
@@ -32,11 +31,11 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
+import org.robolectric.Robolectric;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowNotification;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -62,27 +61,22 @@ public class PasswordAccessLossWarningHelperTest {
     private PasswordAccessLossWarningHelper mHelper;
     private final ArgumentCaptor<BottomSheetObserver> mBottomSheetObserverCaptor =
             ArgumentCaptor.forClass(BottomSheetObserver.class);
-    private Context mContext;
+    private Activity mActivity;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private Profile mProfile;
-    @Mock private Activity mActivity;
     @Mock private AsyncNotificationManagerProxy mNotificationManagerProxy;
 
     @Before
     public void setUp() {
         MockitoAnnotations.openMocks(this);
-
-        mContext = ContextUtils.getApplicationContext();
+        mActivity = Robolectric.buildActivity(Activity.class).create().start().resume().get();
+        mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
 
         mHelper =
                 new PasswordAccessLossWarningHelper(
-                        mContext,
-                        mBottomSheetController,
-                        mProfile,
-                        mActivity,
-                        mNotificationManagerProxy);
+                        mActivity, mBottomSheetController, mProfile, mNotificationManagerProxy);
     }
 
     private void setUpBottomSheetController() {
@@ -91,13 +85,13 @@ public class PasswordAccessLossWarningHelperTest {
     }
 
     private String getStringWithoutLink(@StringRes int stringId) {
-        String sheetText = mContext.getString(stringId);
+        String sheetText = mActivity.getString(stringId);
         return SpanApplier.applySpans(
                         sheetText,
                         new SpanApplier.SpanInfo(
                                 "<link>",
                                 "</link>",
-                                new NoUnderlineClickableSpan(mContext, view -> {})))
+                                new NoUnderlineClickableSpan(mActivity, view -> {})))
                 .toString();
     }
 
@@ -115,13 +109,13 @@ public class PasswordAccessLossWarningHelperTest {
                 mHelper.getModelForWarningType(PasswordAccessLossWarningType.NO_GMS_CORE);
         assertEquals(
                 model.get(SHEET_TITLE),
-                mContext.getString(R.string.pwd_access_loss_warning_no_gms_core_title));
+                mActivity.getString(R.string.pwd_access_loss_warning_no_gms_core_title));
         assertEquals(
                 model.get(SHEET_TEXT).toString(),
                 getStringWithoutLink(R.string.pwd_access_loss_warning_no_gms_core_text));
         assertEquals(
                 model.get(BUTTON_TITLE),
-                mContext.getString(R.string.pwd_access_loss_warning_no_gms_core_button_text));
+                mActivity.getString(R.string.pwd_access_loss_warning_no_gms_core_button_text));
     }
 
     @Test
@@ -129,13 +123,13 @@ public class PasswordAccessLossWarningHelperTest {
         PropertyModel model = mHelper.getModelForWarningType(PasswordAccessLossWarningType.NO_UPM);
         assertEquals(
                 model.get(SHEET_TITLE),
-                mContext.getString(R.string.pwd_access_loss_warning_update_gms_core_title));
+                mActivity.getString(R.string.pwd_access_loss_warning_update_gms_core_title));
         assertEquals(
                 model.get(SHEET_TEXT).toString(),
                 getStringWithoutLink(R.string.pwd_access_loss_warning_update_gms_core_text));
         assertEquals(
                 model.get(BUTTON_TITLE),
-                mContext.getString(R.string.pwd_access_loss_warning_update_gms_core_button_text));
+                mActivity.getString(R.string.pwd_access_loss_warning_update_gms_core_button_text));
     }
 
     @Test
@@ -144,13 +138,13 @@ public class PasswordAccessLossWarningHelperTest {
                 mHelper.getModelForWarningType(PasswordAccessLossWarningType.ONLY_ACCOUNT_UPM);
         assertEquals(
                 model.get(SHEET_TITLE),
-                mContext.getString(R.string.pwd_access_loss_warning_update_gms_core_title));
+                mActivity.getString(R.string.pwd_access_loss_warning_update_gms_core_title));
         assertEquals(
                 model.get(SHEET_TEXT).toString(),
                 getStringWithoutLink(R.string.pwd_access_loss_warning_update_gms_core_text));
         assertEquals(
                 model.get(BUTTON_TITLE),
-                mContext.getString(R.string.pwd_access_loss_warning_update_gms_core_button_text));
+                mActivity.getString(R.string.pwd_access_loss_warning_update_gms_core_button_text));
     }
 
     @Test
@@ -160,14 +154,15 @@ public class PasswordAccessLossWarningHelperTest {
                         PasswordAccessLossWarningType.NEW_GMS_CORE_MIGRATION_FAILED);
         assertEquals(
                 model.get(SHEET_TITLE),
-                mContext.getString(R.string.pwd_access_loss_warning_manual_migration_title));
+                mActivity.getString(R.string.pwd_access_loss_warning_manual_migration_title));
         assertEquals(
                 model.get(SHEET_TEXT).toString(),
-                mContext.getString(R.string.pwd_access_loss_warning_manual_migration_text)
+                mActivity
+                        .getString(R.string.pwd_access_loss_warning_manual_migration_text)
                         .toString());
         assertEquals(
                 model.get(BUTTON_TITLE),
-                mContext.getString(R.string.pwd_access_loss_warning_manual_migration_button_text));
+                mActivity.getString(R.string.pwd_access_loss_warning_manual_migration_button_text));
     }
 
     @Test
@@ -198,7 +193,7 @@ public class PasswordAccessLossWarningHelperTest {
                 Shadows.shadowOf(captor.getValue().getNotification());
         assertFalse(shadowNotification.isWhenShown());
         assertEquals(
-                mContext.getString(R.string.pwd_access_loss_warning_no_gms_core_title),
+                mActivity.getString(R.string.pwd_access_loss_warning_no_gms_core_title),
                 shadowNotification.getContentTitle());
         assertEquals(
                 getStringWithoutLink(R.string.pwd_access_loss_warning_no_gms_core_text),
@@ -216,7 +211,7 @@ public class PasswordAccessLossWarningHelperTest {
                 Shadows.shadowOf(captor.getValue().getNotification());
         assertFalse(shadowNotification.isWhenShown());
         assertEquals(
-                mContext.getString(R.string.pwd_access_loss_warning_update_gms_core_title),
+                mActivity.getString(R.string.pwd_access_loss_warning_update_gms_core_title),
                 shadowNotification.getContentTitle());
         assertEquals(
                 getStringWithoutLink(R.string.pwd_access_loss_warning_update_gms_core_text),
@@ -234,7 +229,7 @@ public class PasswordAccessLossWarningHelperTest {
                 Shadows.shadowOf(captor.getValue().getNotification());
         assertFalse(shadowNotification.isWhenShown());
         assertEquals(
-                mContext.getString(R.string.pwd_access_loss_warning_update_gms_core_title),
+                mActivity.getString(R.string.pwd_access_loss_warning_update_gms_core_title),
                 shadowNotification.getContentTitle());
         assertEquals(
                 getStringWithoutLink(R.string.pwd_access_loss_warning_update_gms_core_text),
@@ -252,10 +247,10 @@ public class PasswordAccessLossWarningHelperTest {
                 Shadows.shadowOf(captor.getValue().getNotification());
         assertFalse(shadowNotification.isWhenShown());
         assertEquals(
-                mContext.getString(R.string.pwd_access_loss_warning_manual_migration_title),
+                mActivity.getString(R.string.pwd_access_loss_warning_manual_migration_title),
                 shadowNotification.getContentTitle());
         assertEquals(
-                mContext.getString(R.string.pwd_access_loss_warning_manual_migration_text),
+                mActivity.getString(R.string.pwd_access_loss_warning_manual_migration_text),
                 shadowNotification.getContentText());
     }
 }
