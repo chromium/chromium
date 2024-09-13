@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 #include "cc/layers/heads_up_display_layer.h"
-
 #include "cc/layers/layer.h"
 #include "cc/test/layer_tree_test.h"
 #include "cc/trees/layer_tree_host.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace cc {
 namespace {
@@ -86,6 +86,11 @@ class HeadsUpDisplaySizeWithFPS : public LayerTreeTest {
     settings->initial_debug_state.show_fps_counter = true;
   }
 
+  void SetupTree() override {
+    SetInitialRootBounds(gfx::Size(256, 256));
+    LayerTreeTest::SetupTree();
+  }
+
   void BeginTest() override { PostSetNeedsCommitToMainThread(); }
 
   void DidCommit() override {
@@ -105,7 +110,8 @@ class HeadsUpDisplaySizeWithFPSWithScaleFactor : public LayerTreeTest {
   }
 
   void SetupTree() override {
-    SetInitialDeviceScaleFactor(3.f);
+    SetInitialDeviceScaleFactor(3.0f);
+    SetInitialRootBounds(gfx::Size(256, 256));
     LayerTreeTest::SetupTree();
   }
 
