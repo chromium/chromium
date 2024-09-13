@@ -5,16 +5,17 @@
 #include "chrome/browser/ash/wallpaper_handlers/wallpaper_handlers_metric_utils.h"
 
 #include <string>
+#include <string_view>
 
 #include "base/metrics/histogram_functions.h"
-#include "base/strings/stringprintf.h"
+#include "base/strings/strcat.h"
 #include "chrome/browser/ash/wallpaper_handlers/sea_pen_fetcher.h"
 
 namespace wallpaper_handlers {
 namespace {
 
 // NOTE: These strings are persisted to metric logs.
-std::string ToHistogramBase(GooglePhotosApi api) {
+std::string_view ToHistogramBase(GooglePhotosApi api) {
   switch (api) {
     case GooglePhotosApi::kGetAlbum:
       return "Ash.Wallpaper.GooglePhotos.Api.GetAlbum";
@@ -34,13 +35,18 @@ std::string ToHistogramBase(GooglePhotosApi api) {
 // NOTE: These strings are persisted to metric logs and should match
 // SeaPenApiType variants in
 // //tools/metrics/histograms/metadata/ash/histograms.xml.
-std::string ToHistogramString(SeaPenApiType sea_pen_api_type) {
-  switch (sea_pen_api_type) {
-    case SeaPenApiType::kThumbnails:
-      return "Thumbnails";
-    case SeaPenApiType::kWallpaper:
-      return "Wallpaper";
-  }
+std::string ToHistogramString(
+    ash::personalization_app::mojom::SeaPenQuery::Tag query_tag,
+    SeaPenApiType sea_pen_api_type,
+    std::string_view histogram_name) {
+  const bool is_text_query =
+      query_tag ==
+      ash::personalization_app::mojom::SeaPenQuery::Tag::kTextQuery;
+  const std::string_view freeform = is_text_query ? "Freeform." : "";
+  const bool for_thumbnails = sea_pen_api_type == SeaPenApiType::kThumbnails;
+  const std::string api_type = for_thumbnails ? "Thumbnails." : "Wallpaper.";
+  return base::StrCat(
+      {"Ash.SeaPen.", freeform, "Api.", api_type, histogram_name});
 }
 
 }  // namespace
@@ -49,47 +55,30 @@ std::string ToHistogramString(SeaPenApiType sea_pen_api_type) {
 void RecordGooglePhotosApiResponseParsed(GooglePhotosApi api,
                                          base::TimeDelta response_time,
                                          std::optional<size_t> result_count) {
-  const std::string histogram_base = ToHistogramBase(api);
+  const std::string_view histogram_base = ToHistogramBase(api);
   const bool success = result_count.has_value();
-
-  // Record response time.
-  base::UmaHistogramTimes(
-      base::StringPrintf("%s.ResponseTime.%s", histogram_base.c_str(),
-                         success ? "Success" : "Failure"),
-      response_time);
-
-  // Record result.
-  base::UmaHistogramBoolean(
-      base::StringPrintf("%s.Result", histogram_base.c_str()), success);
-
-  // Record result count.
-  if (result_count.has_value()) {
+  base::UmaHistogramTimes(base::StrCat({histogram_base, ".ResponseTime.",
+                                        success ? "Success" : "Failure"}),
+                          response_time);
+  base::UmaHistogramBoolean(base::StrCat({histogram_base, ".Result"}), success);
+  if (success) {
     base::UmaHistogramCounts1000(
-        base::StringPrintf("%s.Result.Count", histogram_base.c_str()),
-        result_count.value());
+        base::StrCat({histogram_base, ".Result.Count"}), result_count.value());
   }
 }
 
 void RecordGooglePhotosApiRefreshCount(GooglePhotosApi api, int refresh_count) {
   // Record refresh count.
-  const std::string histogram_base = ToHistogramBase(api);
   base::UmaHistogramExactLinear(
-      base::StringPrintf("%s.RefreshCount", histogram_base.c_str()),
-      refresh_count, 11);
+      base::StrCat({ToHistogramBase(api), ".RefreshCount"}), refresh_count, 11);
 }
 
 void RecordSeaPenLatency(
     ash::personalization_app::mojom::SeaPenQuery::Tag query_tag,
-    const base::TimeDelta elapsed_time,
-    const SeaPenApiType sea_pen_api_type) {
+    base::TimeDelta elapsed_time,
+    SeaPenApiType sea_pen_api_type) {
   base::UmaHistogramCustomTimes(
-      base::StringPrintf(
-          query_tag ==
-                  ash::personalization_app::mojom::SeaPenQuery::Tag::kTextQuery
-              ? "Ash.SeaPen.Freeform.Api.%s.Latency"
-              : "Ash.SeaPen.Api.%s.Latency",
-          ToHistogramString(sea_pen_api_type).c_str()),
-      elapsed_time,
+      ToHistogramString(query_tag, sea_pen_api_type, "Latency"), elapsed_time,
       /*min=*/base::Seconds(1),
       /*max=*/SeaPenFetcher::kRequestTimeout,
       /*buckets=*/50);
@@ -97,15 +86,10 @@ void RecordSeaPenLatency(
 
 void RecordSeaPenMantaStatusCode(
     ash::personalization_app::mojom::SeaPenQuery::Tag query_tag,
-    const manta::MantaStatusCode status_code,
-    const SeaPenApiType sea_pen_api_type) {
+    manta::MantaStatusCode status_code,
+    SeaPenApiType sea_pen_api_type) {
   base::UmaHistogramEnumeration(
-      base::StringPrintf(
-          query_tag ==
-                  ash::personalization_app::mojom::SeaPenQuery::Tag::kTextQuery
-              ? "Ash.SeaPen.Freeform.Api.%s.MantaStatusCode"
-              : "Ash.SeaPen.Api.%s.MantaStatusCode",
-          ToHistogramString(sea_pen_api_type).c_str()),
+      ToHistogramString(query_tag, sea_pen_api_type, "MantaStatusCode"),
       status_code);
 }
 
@@ -114,43 +98,27 @@ void RecordSeaPenTimeout(
     bool hit_timeout,
     SeaPenApiType sea_pen_api_type) {
   base::UmaHistogramBoolean(
-      base::StringPrintf(
-          query_tag ==
-                  ash::personalization_app::mojom::SeaPenQuery::Tag::kTextQuery
-              ? "Ash.SeaPen.Freeform.Api.%s.Timeout"
-              : "Ash.SeaPen.Api.%s.Timeout",
-          ToHistogramString(sea_pen_api_type).c_str()),
-      hit_timeout);
+      ToHistogramString(query_tag, sea_pen_api_type, "Timeout"), hit_timeout);
 }
 
 void RecordSeaPenThumbnailsCount(
     ash::personalization_app::mojom::SeaPenQuery::Tag query_tag,
-    const size_t thumbnails_count) {
-  switch (query_tag) {
-    case ash::personalization_app::mojom::SeaPenQuery::Tag::kTextQuery:
-      base::UmaHistogramExactLinear(
-          "Ash.SeaPen.Freeform.Api.Thumbnails.Count",
-          std::min(thumbnails_count,
-                   SeaPenFetcher::kNumTextThumbnailsRequested),
-          SeaPenFetcher::kNumTextThumbnailsRequested + 1);
-      break;
-    case ash::personalization_app::mojom::SeaPenQuery::Tag::kTemplateQuery:
-      base::UmaHistogramExactLinear(
-          "Ash.SeaPen.Api.Thumbnails.Count",
-          std::min(thumbnails_count,
-                   SeaPenFetcher::kNumTemplateThumbnailsRequested),
-          SeaPenFetcher::kNumTemplateThumbnailsRequested + 1);
-      break;
-  }
+    size_t thumbnails_count) {
+  const size_t limit =
+      (query_tag ==
+       ash::personalization_app::mojom::SeaPenQuery::Tag::kTextQuery)
+          ? SeaPenFetcher::kNumTextThumbnailsRequested
+          : SeaPenFetcher::kNumTemplateThumbnailsRequested;
+  base::UmaHistogramExactLinear(
+      ToHistogramString(query_tag, SeaPenApiType::kThumbnails, "Count"),
+      std::min(thumbnails_count, limit), limit + 1);
 }
 
 void RecordSeaPenWallpaperHasImage(
     ash::personalization_app::mojom::SeaPenQuery::Tag query_tag,
     bool has_image) {
   base::UmaHistogramBoolean(
-      query_tag == ash::personalization_app::mojom::SeaPenQuery::Tag::kTextQuery
-          ? "Ash.SeaPen.Freeform.Api.Wallpaper.HasImage"
-          : "Ash.SeaPen.Api.Wallpaper.HasImage",
+      ToHistogramString(query_tag, SeaPenApiType::kWallpaper, "HasImage"),
       has_image);
 }
 
