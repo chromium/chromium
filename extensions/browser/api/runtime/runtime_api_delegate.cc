@@ -17,4 +17,9 @@ bool RuntimeAPIDelegate::OpenOptionsPage(
   return false;
 }
 
+int RuntimeAPIDelegate::GetDeveloperToolsWindowId(
+    content::WebContents* developer_tools_web_contents) {
+  return -1;
+}
+
 }  // namespace extensions

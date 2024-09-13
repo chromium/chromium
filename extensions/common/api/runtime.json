@@ -172,7 +172,8 @@
           {"name": "POPUP", "description": "Specifies the context type as an extension popup window"},
           {"name": "BACKGROUND", "description": "Specifies the context type as a service worker."},
           {"name": "OFFSCREEN_DOCUMENT", "description": "Specifies the context type as an offscreen document."},
-          {"name": "SIDE_PANEL", "description": "Specifies the context type as a side panel."}
+          {"name": "SIDE_PANEL", "description": "Specifies the context type as a side panel."},
+          {"name": "DEVELOPER_TOOLS", "description": "Specifies the context type as developer tools."}
         ]
       },
       {

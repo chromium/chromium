@@ -339,6 +339,12 @@ class RuntimeGetContextsFunction : public ExtensionFunction {
   // Returns a collection of all frame-based extension contexts for the
   // extension.
   std::vector<api::runtime::ExtensionContext> GetFrameContexts();
+
+  // Helper methods to return tab id, frame id and window id for a given
+  // context.
+  int GetTabId(content::WebContents& web_contents);
+  int GetFrameId(content::RenderFrameHost& host);
+  int GetWindowId(content::WebContents& web_contents);
 };
 
 }  // namespace extensions

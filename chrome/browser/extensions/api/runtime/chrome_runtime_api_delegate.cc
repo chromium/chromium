@@ -18,6 +18,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/updater/extension_updater.h"
@@ -27,13 +28,16 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "components/update_client/update_query_params.h"
+#include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/browser/view_type_utils.h"
 #include "extensions/browser/warning_service.h"
 #include "extensions/browser/warning_set.h"
 #include "extensions/common/api/runtime.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/manifest.h"
+#include "extensions/common/mojom/view_type.mojom.h"
 #include "net/base/backoff_entry.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -345,6 +349,27 @@ bool ChromeRuntimeAPIDelegate::OpenOptionsPage(
     content::BrowserContext* browser_context) {
   return extensions::ExtensionTabUtil::OpenOptionsPageFromAPI(extension,
                                                               browser_context);
+}
+
+int ChromeRuntimeAPIDelegate::GetDeveloperToolsWindowId(
+    content::WebContents* developer_tools_web_contents) {
+  // For developer tools contexts, first check the docked state. If the
+  // developer tools are docked, return the window ID of the inspected web
+  // contents. Otherwise, return the window ID of the developer tools window.
+  CHECK_EQ(extensions::GetViewType(developer_tools_web_contents),
+           extensions::mojom::ViewType::kDeveloperTools);
+  CHECK(DevToolsWindow::IsDevToolsWindow(developer_tools_web_contents));
+
+  DevToolsWindow* devtools_window =
+      DevToolsWindow::AsDevToolsWindow(developer_tools_web_contents);
+  content::WebContents* inspected_web_contents =
+      devtools_window->GetInspectedWebContents();
+  bool is_docked = inspected_web_contents->GetTopLevelNativeWindow() ==
+                   developer_tools_web_contents->GetTopLevelNativeWindow();
+
+  content::WebContents* web_contents_to_use =
+      is_docked ? inspected_web_contents : developer_tools_web_contents;
+  return extensions::ExtensionTabUtil::GetWindowIdOfTab(web_contents_to_use);
 }
 
 void ChromeRuntimeAPIDelegate::OnExtensionUpdateFound(

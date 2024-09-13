@@ -13,6 +13,7 @@ class GURL;
 
 namespace content {
 class BrowserContext;
+class WebContents;
 }
 
 namespace extensions {
@@ -70,6 +71,11 @@ class RuntimeAPIDelegate {
   // chrome.runtime.openOptionsPage function for the gritty details.
   virtual bool OpenOptionsPage(const Extension* extension,
                                content::BrowserContext* browser_context);
+
+  // Get the window ID for developer tools. This must be provided by the clients
+  // because they can choose to dock developer tools in a different window.
+  virtual int GetDeveloperToolsWindowId(
+      content::WebContents* developer_tools_web_contents);
 };
 
 }  // namespace extensions

@@ -24,6 +24,7 @@ class TimeTicks;
 
 namespace content {
 class BrowserContext;
+class WebContents;
 }  // namespace content
 
 namespace extensions {
@@ -58,6 +59,8 @@ class ChromeRuntimeAPIDelegate : public extensions::RuntimeAPIDelegate,
   bool RestartDevice(std::string* error_message) override;
   bool OpenOptionsPage(const extensions::Extension* extension,
                        content::BrowserContext* browser_context) override;
+  int GetDeveloperToolsWindowId(
+      content::WebContents* developer_tools_web_contents) override;
 
   // ExtensionRegistryObserver implementation.
   void OnExtensionInstalled(content::BrowserContext* browser_context,

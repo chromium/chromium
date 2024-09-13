@@ -767,8 +767,15 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  extensions::SetViewType(web_contents,
-                          extensions::mojom::ViewType::kTabContents);
+  // If the web contents already have a view type, don't overwrite it here. One
+  // case where this can happen is when the user opens undocked developer tools.
+  // For all developer tools web contents, the view type is set to
+  // `kDeveloperTools` by the `DevToolsWindow` before tab helpers are attached.
+  if (extensions::GetViewType(web_contents) ==
+      extensions::mojom::ViewType::kInvalid) {
+    extensions::SetViewType(web_contents,
+                            extensions::mojom::ViewType::kTabContents);
+  }
 
   extensions::TabHelper::CreateForWebContents(web_contents);
   extensions::NavigationExtensionEnabler::CreateForWebContents(web_contents);
