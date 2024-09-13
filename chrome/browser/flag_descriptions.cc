@@ -2133,6 +2133,14 @@ const char kUseNetworkFrameworkForLocalDiscoveryDescription[] =
     "discovery on Mac.";
 #endif
 
+#if BUILDFLAG(IS_WIN)
+const char kCastStreamingWinHardwareH264Name[] =
+    "Enable hardware H264 video encoding on for Cast Streaming on Windows";
+const char kCastStreamingWinHardwareH264Description[] =
+    "Offers the H264 video codec when negotiating Cast Streaming, and uses "
+    "hardware-accelerated H264 encoding if selected for the session";
+#endif
+
 const char kCastEnableStreamingWithHiDPIName[] =
     "HiDPI tab capture support for Cast Streaming";
 const char kCastEnableStreamingWithHiDPIDescription[] =

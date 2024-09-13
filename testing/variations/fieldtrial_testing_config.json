@@ -4034,6 +4034,21 @@
             ]
         }
     ],
+    "CastStreamingWinHardwareH264": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CastStreamingWinHardwareH264"
+                    ]
+                }
+            ]
+        }
+    ],
     "CatanCombinedHoldback23H2": [
         {
             "platforms": [

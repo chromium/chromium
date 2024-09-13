@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include "base/no_destructor.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "media/base/media_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -41,19 +42,23 @@ TEST(EncodingSupportTest, DenyListedHardwareEncoderNotOffered) {
 }
 
 TEST(EncodingSupportTest, EnablesH264HardwareEncoderProperly) {
-  static const bool is_enabled =
 #if BUILDFLAG(IS_MAC)
-      base::FeatureList::IsEnabled(kCastStreamingMacHardwareH264);
+  base::test::ScopedFeatureList feature(kCastStreamingMacHardwareH264);
+  EXPECT_TRUE(IsHardwareEnabled(VideoCodec::kH264, GetValidProfiles()));
 
-// The hardware encoder is broken on Windows.
+  feature.Reset();
+  feature.InitAndDisableFeature(kCastStreamingMacHardwareH264);
+  EXPECT_FALSE(IsHardwareEnabled(VideoCodec::kH264, GetValidProfiles()));
 #elif BUILDFLAG(IS_WIN)
-      false;
-#else
-      true;
-#endif
+  base::test::ScopedFeatureList feature(kCastStreamingWinHardwareH264);
+  EXPECT_TRUE(IsHardwareEnabled(VideoCodec::kH264, GetValidProfiles()));
 
-  EXPECT_EQ(is_enabled,
-            IsHardwareEnabled(VideoCodec::kH264, GetValidProfiles()));
+  feature.Reset();
+  feature.InitAndDisableFeature(kCastStreamingWinHardwareH264);
+  EXPECT_FALSE(IsHardwareEnabled(VideoCodec::kH264, GetValidProfiles()));
+#else
+  EXPECT_EQ(true, IsHardwareEnabled(VideoCodec::kH264, GetValidProfiles()));
+#endif
 }
 
 }  // namespace media::cast::encoding_support

@@ -1731,6 +1731,13 @@ BASE_FEATURE(kCastStreamingMacHardwareH264,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
+#if BUILDFLAG(IS_WIN)
+// Controls whether hardware H264 is default enabled on Windows.
+BASE_FEATURE(kCastStreamingWinHardwareH264,
+             "CastStreamingWinHardwareH264",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 #if BUILDFLAG(IS_FUCHSIA)
 // Enables use of Fuchsia's Mediacodec service for encoding.
 BASE_FEATURE(kFuchsiaMediacodecVideoEncoder,

@@ -1197,6 +1197,11 @@ extern const char kUseNetworkFrameworkForLocalDiscoveryName[];
 extern const char kUseNetworkFrameworkForLocalDiscoveryDescription[];
 #endif
 
+#if BUILDFLAG(IS_WIN)
+extern const char kCastStreamingWinHardwareH264Name[];
+extern const char kCastStreamingWinHardwareH264Description[];
+#endif
+
 extern const char kCastEnableStreamingWithHiDPIName[];
 extern const char kCastEnableStreamingWithHiDPIDescription[];
 
