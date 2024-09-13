@@ -23,6 +23,7 @@
 #include "components/os_crypt/async/browser/test_utils.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/signin/internal/identity_manager/fake_profile_oauth2_token_service_delegate.h"
+#include "components/signin/internal/identity_manager/mock_profile_oauth2_token_service_observer.h"
 #include "components/signin/internal/identity_manager/primary_account_manager.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
 #include "components/signin/public/base/account_consistency_method.h"
@@ -1140,6 +1141,40 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, OnAuthErrorChanged) {
   EXPECT_TRUE(token_service_observer.error_changed_);
 
   oauth2_service_delegate_->RemoveObserver(&token_service_observer);
+}
+
+TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
+       OnAuthErrorChangedAfterUpdatingCredentials) {
+  InitializeOAuth2ServiceDelegate(signin::AccountConsistencyMethod::kDisabled);
+  CoreAccountId account_id = CoreAccountId::FromGaiaId("gaia_id");
+  testing::StrictMock<signin::MockProfileOAuth2TokenServiceObserver> observer(
+      oauth2_service_delegate_.get());
+
+  {
+    testing::InSequence sequence;
+    // `OnAuthErrorChanged()` is called *before* `OnRefreshTokenAvailable()`
+    // after adding a new account on Desktop.
+    EXPECT_CALL(
+        observer,
+        OnAuthErrorChanged(account_id, GoogleServiceAuthError::AuthErrorNone(),
+                           testing::_));
+    EXPECT_CALL(observer, OnRefreshTokenAvailable(account_id));
+    EXPECT_CALL(observer, OnEndBatchChanges());
+    oauth2_service_delegate_->UpdateCredentials(account_id, "first_token");
+    testing::Mock::VerifyAndClearExpectations(&observer);
+  }
+
+  {
+    testing::InSequence sequence;
+    // `OnAuthErrorChanged()` is not called when a token is updated without
+    // changing its error state.
+    EXPECT_CALL(observer, OnAuthErrorChanged).Times(0);
+    EXPECT_CALL(observer, OnRefreshTokenAvailable(account_id));
+    EXPECT_CALL(observer, OnEndBatchChanges());
+
+    oauth2_service_delegate_->UpdateCredentials(account_id, "second_token");
+    testing::Mock::VerifyAndClearExpectations(&observer);
+  }
 }
 
 TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, GetAuthError) {

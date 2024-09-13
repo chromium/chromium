@@ -251,6 +251,8 @@ static_library("test_support") {
     "fake_profile_oauth2_token_service.h",
     "fake_profile_oauth2_token_service_delegate.cc",
     "fake_profile_oauth2_token_service_delegate.h",
+    "mock_profile_oauth2_token_service_observer.cc",
+    "mock_profile_oauth2_token_service_observer.h",
   ]
 
   if (is_chromeos_ash) {

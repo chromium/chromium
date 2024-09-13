@@ -22,6 +22,7 @@
 #include "base/threading/platform_thread.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/internal/identity_manager/fake_profile_oauth2_token_service_delegate.h"
+#include "components/signin/internal/identity_manager/mock_profile_oauth2_token_service_observer.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_observer.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "google_apis/gaia/core_account_id.h"
@@ -38,6 +39,8 @@
 #include "services/network/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+namespace {
 
 // A testing consumer that retries on error.
 class RetryingTestingOAuth2AccessTokenManagerConsumer
@@ -86,21 +89,6 @@ class MockOAuth2AccessTokenConsumer
                     const GoogleServiceAuthError& error));
 };
 
-class MockOAuth2TokenServiceObserver
-    : public ProfileOAuth2TokenServiceObserver {
- public:
-  MOCK_METHOD(void,
-              OnRefreshTokenRevoked,
-              (const CoreAccountId& account_id),
-              (override));
-  MOCK_METHOD(void,
-              OnAuthErrorChanged,
-              (const CoreAccountId&,
-               const GoogleServiceAuthError&,
-               signin_metrics::SourceForRefreshTokenOperation source),
-              (override));
-};
-
 // This class fakes the behaviour of a MutableProfileOAuth2TokenServiceDelegate
 // used on Desktop.
 class FakeProfileOAuth2TokenServiceDelegateDesktop
@@ -132,6 +120,8 @@ class FakeProfileOAuth2TokenServiceDelegateDesktop
   }
 };
 
+}  // namespace
+
 class ProfileOAuth2TokenServiceTest : public testing::Test {
  public:
   void SetUp() override {
@@ -160,10 +150,7 @@ class ProfileOAuth2TokenServiceTest : public testing::Test {
   }
 
  protected:
-  base::test::SingleThreadTaskEnvironment task_environment_{
-      base::test::SingleThreadTaskEnvironment::MainThreadType::
-          IO};  // net:: stuff needs IO
-                // message loop.
+  base::test::SingleThreadTaskEnvironment task_environment_;
 
   TestingPrefServiceSimple prefs_;
   std::unique_ptr<ProfileOAuth2TokenService> oauth2_service_;
@@ -432,33 +419,65 @@ TEST_F(ProfileOAuth2TokenServiceTest,
   EXPECT_EQ(1, consumer_.number_of_errors_);
 }
 
+TEST_F(ProfileOAuth2TokenServiceTest, NotificationOrderOnRefreshTokenAdded) {
+  std::unique_ptr<
+      testing::StrictMock<signin::MockProfileOAuth2TokenServiceObserver>>
+      observers[5];
+  for (auto& observer : observers) {
+    observer = std::make_unique<
+        testing::StrictMock<signin::MockProfileOAuth2TokenServiceObserver>>(
+        oauth2_service_.get());
+  }
+
+  // `OnAuthErrorChanged()` is not called after adding a new account in tests.
+  testing::InSequence sequence;
+  // First, all observers will receive `OnRefreshTokenAvailable()` notification.
+  for (auto& observer : observers) {
+    EXPECT_CALL(*observer, OnRefreshTokenAvailable(account_id_));
+  }
+  // Then, `OnEndBatchChanges()` is called.
+  for (auto& observer : observers) {
+    EXPECT_CALL(*observer, OnEndBatchChanges());
+  }
+
+  oauth2_service_->GetDelegate()->UpdateCredentials(account_id_,
+                                                    "first refreshToken");
+}
+
 TEST_F(ProfileOAuth2TokenServiceTest, NotificationOrderOnRefreshTokenRevoked) {
   oauth2_service_->GetDelegate()->UpdateCredentials(account_id_,
                                                     "first refreshToken");
   // `OnAuthErrorChanged()` shouldn't be called if the refresh token is revoked.
-  testing::StrictMock<MockOAuth2TokenServiceObserver> observers[5];
+  std::unique_ptr<
+      testing::StrictMock<signin::MockProfileOAuth2TokenServiceObserver>>
+      observers[5];
   for (auto& observer : observers) {
-    oauth2_service_->AddObserver(&observer);
+    observer = std::make_unique<
+        testing::StrictMock<signin::MockProfileOAuth2TokenServiceObserver>>(
+        oauth2_service_.get());
   }
 
   MockOAuth2AccessTokenConsumer consumer;
   std::unique_ptr<OAuth2AccessTokenManager::Request> request(
       oauth2_service_->StartRequest(account_id_, {"s1", "s2"}, &consumer));
   testing::InSequence sequence;
+  // First, all observers will receive `OnRefreshTokenAvailable()` notification.
   for (auto& observer : observers) {
-    EXPECT_CALL(observer, OnRefreshTokenRevoked(account_id_));
+    EXPECT_CALL(*observer, OnRefreshTokenRevoked(account_id_));
   }
+  // Then, all ongoing requests get cancelled.
   EXPECT_CALL(
       consumer,
       OnGetTokenFailure(
           ::testing::_,
           GoogleServiceAuthError(GoogleServiceAuthError::USER_NOT_SIGNED_UP)))
       .Times(1);
+  // Finally, `OnEndBatchChanges()` is called.
+  for (auto& observer : observers) {
+    EXPECT_CALL(*observer, OnEndBatchChanges());
+  }
 
   oauth2_service_->RevokeCredentials(account_id_);
-  for (auto& observer : observers) {
-    oauth2_service_->RemoveObserver(&observer);
-  }
 }
 
 TEST_F(ProfileOAuth2TokenServiceTest,
@@ -601,11 +620,7 @@ TEST_F(ProfileOAuth2TokenServiceTest, InvalidateTokensForMultiloginDesktop) {
   auto delegate =
       std::make_unique<FakeProfileOAuth2TokenServiceDelegateDesktop>();
   ProfileOAuth2TokenService token_service(&prefs_, std::move(delegate));
-  MockOAuth2TokenServiceObserver observer;
-  base::ScopedObservation<ProfileOAuth2TokenService,
-                          ProfileOAuth2TokenServiceObserver>
-      token_service_observation{&observer};
-  token_service_observation.Observe(&token_service);
+  signin::MockProfileOAuth2TokenServiceObserver observer(&token_service);
   EXPECT_CALL(observer,
               OnAuthErrorChanged(
                   account_id_,
@@ -632,11 +647,7 @@ TEST_F(ProfileOAuth2TokenServiceTest, InvalidateTokensForMultiloginDesktop) {
 }
 
 TEST_F(ProfileOAuth2TokenServiceTest, InvalidateTokensForMultiloginMobile) {
-  MockOAuth2TokenServiceObserver observer;
-  base::ScopedObservation<ProfileOAuth2TokenService,
-                          ProfileOAuth2TokenServiceObserver>
-      token_service_observation{&observer};
-  token_service_observation.Observe(oauth2_service_.get());
+  signin::MockProfileOAuth2TokenServiceObserver observer(oauth2_service_.get());
   EXPECT_CALL(
       observer,
       OnAuthErrorChanged(account_id_,
@@ -797,11 +808,7 @@ TEST_F(ProfileOAuth2TokenServiceTest, FixAccountErrorIfPossible) {
       oauth2_service_.get(), account_id_);
   delegate_ptr_->set_fix_request_if_possible(std::move(callback));
 
-  MockOAuth2TokenServiceObserver observer;
-  base::ScopedObservation<ProfileOAuth2TokenService,
-                          ProfileOAuth2TokenServiceObserver>
-      token_service_observation{&observer};
-  token_service_observation.Observe(oauth2_service_.get());
+  signin::MockProfileOAuth2TokenServiceObserver observer(oauth2_service_.get());
   EXPECT_CALL(observer,
               OnAuthErrorChanged(account_id_,
                                  GoogleServiceAuthError::FromServiceError(""),

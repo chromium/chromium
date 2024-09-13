@@ -9,6 +9,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/scoped_observation.h"
 #include "components/signin/internal/identity_manager/account_tracker_service.h"
+#include "components/signin/internal/identity_manager/mock_profile_oauth2_token_service_observer.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_observer.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
@@ -36,13 +37,6 @@ class OAuth2TokenServiceDelegateAndroidForTest
   MOCK_METHOD1(SetAccounts, void(const std::vector<CoreAccountId>&));
 };
 
-class TestObserver : public ProfileOAuth2TokenServiceObserver {
- public:
-  MOCK_METHOD1(OnRefreshTokenAvailable, void(const CoreAccountId&));
-  MOCK_METHOD1(OnRefreshTokenRevoked, void(const CoreAccountId&));
-  MOCK_METHOD0(OnRefreshTokensLoaded, void());
-};
-
 MATCHER(CoreAccountInfoEq,
         /* std::tuple<const AccountInfo&, const AccountInfo&> arg, */
         "") {
@@ -66,7 +60,12 @@ class OAuth2TokenServiceDelegateAndroidTest : public testing::Test {
     delegate_ = std::make_unique<OAuth2TokenServiceDelegateAndroidForTest>(
         &account_tracker_service_);
     delegate_->SetOnRefreshTokenRevokedNotified(base::DoNothing());
-    token_service_observation_.Observe(delegate_.get());
+    observer_ = std::make_unique<
+        testing::StrictMock<MockProfileOAuth2TokenServiceObserver>>(
+        delegate_.get());
+    // Ignore uniteresting calls to `OnEndBatchChanges()`, the tests don't
+    // verify them.
+    EXPECT_CALL(*observer_, OnEndBatchChanges).Times(testing::AnyNumber());
     CreateAndSeedAccounts();
   }
 
@@ -110,10 +109,7 @@ class OAuth2TokenServiceDelegateAndroidTest : public testing::Test {
   AccountTrackerService account_tracker_service_;
   sync_preferences::TestingPrefServiceSyncable pref_service_;
   std::unique_ptr<OAuth2TokenServiceDelegateAndroidForTest> delegate_;
-  StrictMock<TestObserver> observer_;
-  base::ScopedObservation<ProfileOAuth2TokenServiceDelegate,
-                          ProfileOAuth2TokenServiceObserver>
-      token_service_observation_{&observer_};
+  std::unique_ptr<StrictMock<MockProfileOAuth2TokenServiceObserver>> observer_;
 
   AccountInfo account1_;
   AccountInfo account2_;
@@ -146,7 +142,7 @@ TEST_F(OAuth2TokenServiceDelegateAndroidTest,
               SetAccounts(std::vector<CoreAccountId>({account1_.account_id})))
       .InSequence(seq)
       .WillOnce(Return());
-  EXPECT_CALL(observer_, OnRefreshTokenAvailable(account1_.account_id))
+  EXPECT_CALL(*observer_, OnRefreshTokenAvailable(account1_.account_id))
       .InSequence(seq)
       .WillOnce(Return());
 
@@ -179,10 +175,10 @@ TEST_F(OAuth2TokenServiceDelegateAndroidTest,
       .InSequence(seq)
       .WillOnce(Return());
   // OnRefreshTokenAvailable fired, signed in account should go first.
-  EXPECT_CALL(observer_, OnRefreshTokenAvailable(account2_.account_id))
+  EXPECT_CALL(*observer_, OnRefreshTokenAvailable(account2_.account_id))
       .InSequence(seq)
       .WillOnce(Return());
-  EXPECT_CALL(observer_, OnRefreshTokenAvailable(account1_.account_id))
+  EXPECT_CALL(*observer_, OnRefreshTokenAvailable(account1_.account_id))
       .InSequence(seq)
       .WillOnce(Return());
 
@@ -220,7 +216,7 @@ TEST_F(OAuth2TokenServiceDelegateAndroidTest,
       .InSequence(seq)
       .WillOnce(Return());
   // Stored account from |GetAccounts| must fire a revoked event
-  EXPECT_CALL(observer_, OnRefreshTokenRevoked(account1_.account_id))
+  EXPECT_CALL(*observer_, OnRefreshTokenRevoked(account1_.account_id))
       .InSequence(seq)
       .WillOnce(Return());
 
@@ -238,7 +234,7 @@ TEST_F(OAuth2TokenServiceDelegateAndroidTest,
               SetAccounts(std::vector<CoreAccountId>({account1_.account_id})))
       .InSequence(seq)
       .WillOnce(Return());
-  EXPECT_CALL(observer_, OnRefreshTokenAvailable(account1_.account_id))
+  EXPECT_CALL(*observer_, OnRefreshTokenAvailable(account1_.account_id))
       .InSequence(seq)
       .WillOnce(Return());
 
@@ -256,7 +252,7 @@ TEST_F(OAuth2TokenServiceDelegateAndroidTest,
               SetAccounts(std::vector<CoreAccountId>({account1_.account_id})))
       .InSequence(seq)
       .WillOnce(Return());
-  EXPECT_CALL(observer_, OnRefreshTokenAvailable(account1_.account_id))
+  EXPECT_CALL(*observer_, OnRefreshTokenAvailable(account1_.account_id))
       .InSequence(seq)
       .WillOnce(Return());
 
@@ -275,10 +271,10 @@ TEST_F(OAuth2TokenServiceDelegateAndroidTest,
       .InSequence(seq)
       .WillOnce(Return());
   // Previously stored account is removed, new account is available
-  EXPECT_CALL(observer_, OnRefreshTokenAvailable(account1_.account_id))
+  EXPECT_CALL(*observer_, OnRefreshTokenAvailable(account1_.account_id))
       .InSequence(seq)
       .WillOnce(Return());
-  EXPECT_CALL(observer_, OnRefreshTokenRevoked(account2_.account_id))
+  EXPECT_CALL(*observer_, OnRefreshTokenRevoked(account2_.account_id))
       .InSequence(seq)
       .WillOnce(Return());
 
@@ -295,7 +291,7 @@ TEST_F(OAuth2TokenServiceDelegateAndroidTest,
   EXPECT_CALL(*delegate_, SetAccounts(kEmptyVector))
       .InSequence(seq)
       .WillOnce(Return());
-  EXPECT_CALL(observer_, OnRefreshTokenRevoked(account1_.account_id))
+  EXPECT_CALL(*observer_, OnRefreshTokenRevoked(account1_.account_id))
       .InSequence(seq)
       .WillOnce(Return());
 
@@ -325,7 +321,7 @@ TEST_F(OAuth2TokenServiceDelegateAndroidTest,
   EXPECT_CALL(*delegate_, SetAccounts(kEmptyVector))
       .InSequence(seq)
       .WillOnce(Return());
-  EXPECT_CALL(observer_, OnRefreshTokenRevoked(account1_.account_id))
+  EXPECT_CALL(*observer_, OnRefreshTokenRevoked(account1_.account_id))
       .InSequence(seq)
       .WillOnce(Return());
 
@@ -344,10 +340,10 @@ TEST_F(OAuth2TokenServiceDelegateAndroidTest,
       .InSequence(seq)
       .WillOnce(Return());
   // OnRefreshTokenAvailable fired, signed in account should go first.
-  EXPECT_CALL(observer_, OnRefreshTokenAvailable(account2_.account_id))
+  EXPECT_CALL(*observer_, OnRefreshTokenAvailable(account2_.account_id))
       .InSequence(seq)
       .WillOnce(Return());
-  EXPECT_CALL(observer_, OnRefreshTokenAvailable(account1_.account_id))
+  EXPECT_CALL(*observer_, OnRefreshTokenAvailable(account1_.account_id))
       .InSequence(seq)
       .WillOnce(Return());
 
@@ -366,10 +362,10 @@ TEST_F(OAuth2TokenServiceDelegateAndroidTest,
       .InSequence(seq)
       .WillOnce(Return());
   // OnRefreshTokenAvailable fired, signed in account should go first.
-  EXPECT_CALL(observer_, OnRefreshTokenAvailable(account1_.account_id))
+  EXPECT_CALL(*observer_, OnRefreshTokenAvailable(account1_.account_id))
       .InSequence(seq)
       .WillOnce(Return());
-  EXPECT_CALL(observer_, OnRefreshTokenAvailable(account2_.account_id))
+  EXPECT_CALL(*observer_, OnRefreshTokenAvailable(account2_.account_id))
       .InSequence(seq)
       .WillOnce(Return());
   delegate_->UpdateAccountList(account1_.account_id, {account2_.account_id},
@@ -387,10 +383,10 @@ TEST_F(OAuth2TokenServiceDelegateAndroidTest,
       .InSequence(seq)
       .WillOnce(Return());
   // OnRefreshTokenAvailable fired, signed in account should go first.
-  EXPECT_CALL(observer_, OnRefreshTokenAvailable(account1_.account_id))
+  EXPECT_CALL(*observer_, OnRefreshTokenAvailable(account1_.account_id))
       .InSequence(seq)
       .WillOnce(Return());
-  EXPECT_CALL(observer_, OnRefreshTokenRevoked(account2_.account_id))
+  EXPECT_CALL(*observer_, OnRefreshTokenRevoked(account2_.account_id))
       .InSequence(seq)
       .WillOnce(Return());
 
@@ -400,6 +396,36 @@ TEST_F(OAuth2TokenServiceDelegateAndroidTest,
     EXPECT_THAT(
         std::vector<AccountInfo>({account1_, account2_}),
         Pointwise(CoreAccountInfoEq(), account_tracker_service_.GetAccounts()));
+}
+
+TEST_F(OAuth2TokenServiceDelegateAndroidTest,
+       OnAuthErrorChangedAfterUpdatingCredentials) {
+  // Reset default test expectations.
+  testing::Mock::VerifyAndClearExpectations(observer_.get());
+
+  {
+    InSequence in_sequence;
+    // `OnAuthErrorChanged()` is not called after adding a new account on
+    // Android.
+    EXPECT_CALL(*observer_, OnAuthErrorChanged).Times(0);
+    EXPECT_CALL(*observer_, OnRefreshTokenAvailable(account1_.account_id));
+    EXPECT_CALL(*observer_, OnEndBatchChanges());
+    delegate_->UpdateAccountList(account1_.account_id, {},
+                                 {account1_.account_id});
+    testing::Mock::VerifyAndClearExpectations(observer_.get());
+  }
+
+  {
+    InSequence in_sequence;
+    // `OnAuthErrorChanged()` is not called when a token is updated without
+    // changing its error state.
+    EXPECT_CALL(*observer_, OnAuthErrorChanged).Times(0);
+    EXPECT_CALL(*observer_, OnRefreshTokenAvailable(account1_.account_id));
+    EXPECT_CALL(*observer_, OnEndBatchChanges());
+    delegate_->UpdateAccountList(account1_.account_id, {account1_.account_id},
+                                 {account1_.account_id});
+    testing::Mock::VerifyAndClearExpectations(observer_.get());
+  }
 }
 
 }  // namespace signin

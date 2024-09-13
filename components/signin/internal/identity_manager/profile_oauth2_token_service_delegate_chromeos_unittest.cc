@@ -27,6 +27,7 @@
 #include "components/account_manager_core/chromeos/account_manager_mojo_service.h"
 #include "components/account_manager_core/mock_account_manager_facade.h"
 #include "components/signin/internal/identity_manager/account_tracker_service.h"
+#include "components/signin/internal/identity_manager/mock_profile_oauth2_token_service_observer.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_observer.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/test_signin_client.h"
@@ -140,10 +141,10 @@ class TestOAuth2TokenServiceObserver
       signin_metrics::SourceForRefreshTokenOperation source) override {
     last_err_account_id_ = account_id;
     last_err_ = auth_error;
-    on_auth_error_changed_calls++;
+    on_auth_error_changed_calls_++;
   }
 
-  int on_auth_error_changed_calls = 0;
+  int on_auth_error_changed_calls_ = 0;
 
   CoreAccountId last_err_account_id_;
   GoogleServiceAuthError last_err_;
@@ -163,36 +164,6 @@ class TestOAuth2TokenServiceObserver
       token_service_observation_{this};
 };
 
-class MockProfileOAuth2TokenServiceObserver
-    : public ProfileOAuth2TokenServiceObserver {
- public:
-  explicit MockProfileOAuth2TokenServiceObserver(
-      ProfileOAuth2TokenServiceDelegate* delegate)
-      : delegate_(delegate) {
-    token_service_observation_.Observe(delegate);
-  }
-
-  MockProfileOAuth2TokenServiceObserver(
-      const MockProfileOAuth2TokenServiceObserver&) = delete;
-  MockProfileOAuth2TokenServiceObserver& operator=(
-      const MockProfileOAuth2TokenServiceObserver&) = delete;
-
-  MOCK_METHOD(void, OnRefreshTokensLoaded, (), (override));
-  MOCK_METHOD(void,
-              OnRefreshTokenAvailable,
-              (const CoreAccountId&),
-              (override));
-  MOCK_METHOD(void, OnRefreshTokenRevoked, (const CoreAccountId&), (override));
-
- private:
-  const raw_ptr<ProfileOAuth2TokenServiceDelegate> delegate_;
-  base::ScopedObservation<ProfileOAuth2TokenServiceDelegate,
-                          ProfileOAuth2TokenServiceObserver>
-      token_service_observation_{this};
-};
-
-}  // namespace
-
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 class MockTestSigninClient : public testing::StrictMock<TestSigninClient> {
  public:
@@ -202,6 +173,8 @@ class MockTestSigninClient : public testing::StrictMock<TestSigninClient> {
   MOCK_METHOD(void, RemoveAllAccounts, (), (override));
 };
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+}  // namespace
 
 class ProfileOAuth2TokenServiceDelegateChromeOSTest : public testing::Test {
  public:
@@ -302,7 +275,7 @@ class ProfileOAuth2TokenServiceDelegateChromeOSTest : public testing::Test {
   void LoadCredentialsAndWaitForCompletion(
       const CoreAccountId& primary_account_id,
       bool is_syncing) {
-    MockProfileOAuth2TokenServiceObserver observer(delegate_.get());
+    signin::MockProfileOAuth2TokenServiceObserver observer(delegate_.get());
     base::RunLoop run_loop;
     EXPECT_CALL(observer, OnRefreshTokensLoaded())
         .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
@@ -319,7 +292,7 @@ class ProfileOAuth2TokenServiceDelegateChromeOSTest : public testing::Test {
     // `ProfileOAuth2TokenServiceDelegateChromeOS` asynchronously obtains error
     // statuses for Gaia accounts, so we have to wait for a notification from
     // the delegate itself here.
-    MockProfileOAuth2TokenServiceObserver observer(delegate_.get());
+    signin::MockProfileOAuth2TokenServiceObserver observer(delegate_.get());
     base::RunLoop run_loop;
     EXPECT_CALL(observer, OnRefreshTokenAvailable(testing::_))
         .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
@@ -330,7 +303,7 @@ class ProfileOAuth2TokenServiceDelegateChromeOSTest : public testing::Test {
   void RemoveAccountAndWaitForCompletion(
       const ::account_manager::AccountKey& account_key) {
     ASSERT_EQ(account_key.account_type(), account_manager::AccountType::kGaia);
-    MockProfileOAuth2TokenServiceObserver observer(delegate_.get());
+    signin::MockProfileOAuth2TokenServiceObserver observer(delegate_.get());
     base::RunLoop run_loop;
     EXPECT_CALL(observer, OnRefreshTokenRevoked(testing::_))
         .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
@@ -533,6 +506,40 @@ TEST_F(ProfileOAuth2TokenServiceDelegateChromeOSTest,
 }
 
 TEST_F(ProfileOAuth2TokenServiceDelegateChromeOSTest,
+       OnAuthErrorChangedAfterUpdatingCredentials) {
+  testing::StrictMock<signin::MockProfileOAuth2TokenServiceObserver> observer(
+      delegate_.get());
+
+  {
+    testing::InSequence in_sequence;
+    base::RunLoop upsert_run_loop;
+    EXPECT_CALL(observer, OnRefreshTokenAvailable)
+        .WillOnce(base::test::RunClosure(upsert_run_loop.QuitClosure()));
+    EXPECT_CALL(observer, OnEndBatchChanges);
+    // `OnAuthErrorChanged()` is called *after* `OnRefreshTokenAvailable()`
+    // *and* `OnEndBatchChanges()` after adding a new account on ChromeOS.
+    EXPECT_CALL(observer, OnAuthErrorChanged);
+    account_manager_.UpsertAccount(gaia_account_key(), kUserEmail, kGaiaToken);
+    upsert_run_loop.Run();
+    testing::Mock::VerifyAndClearExpectations(&observer);
+  }
+
+  {
+    testing::InSequence in_sequence;
+    base::RunLoop update_run_loop;
+    EXPECT_CALL(observer, OnRefreshTokenAvailable)
+        .WillOnce(base::test::RunClosure(update_run_loop.QuitClosure()));
+    EXPECT_CALL(observer, OnEndBatchChanges);
+    // `OnAuthErrorChanged()` is also called when a token is updated without
+    // changing its error state.
+    EXPECT_CALL(observer, OnAuthErrorChanged);
+    account_manager_.UpdateToken(gaia_account_key(), "new-gaia-token");
+    update_run_loop.Run();
+    testing::Mock::VerifyAndClearExpectations(&observer);
+  }
+}
+
+TEST_F(ProfileOAuth2TokenServiceDelegateChromeOSTest,
        ObserversAreNotNotifiedIfErrorDidntChange) {
   UpsertAccountAndWaitForCompletion(gaia_account_key(), kUserEmail, kGaiaToken);
   TestOAuth2TokenServiceObserver observer(delegate_.get());
@@ -540,10 +547,10 @@ TEST_F(ProfileOAuth2TokenServiceDelegateChromeOSTest,
       GoogleServiceAuthError(GoogleServiceAuthError::State::SERVICE_ERROR);
 
   delegate_->UpdateAuthError(account_info_.account_id, error);
-  EXPECT_EQ(1, observer.on_auth_error_changed_calls);
+  EXPECT_EQ(1, observer.on_auth_error_changed_calls_);
   EXPECT_EQ(error, delegate_->GetAuthError(account_info_.account_id));
   delegate_->UpdateAuthError(account_info_.account_id, error);
-  EXPECT_EQ(1, observer.on_auth_error_changed_calls);
+  EXPECT_EQ(1, observer.on_auth_error_changed_calls_);
 }
 
 TEST_F(ProfileOAuth2TokenServiceDelegateChromeOSTest,
@@ -553,13 +560,13 @@ TEST_F(ProfileOAuth2TokenServiceDelegateChromeOSTest,
   delegate_->UpdateAuthError(
       account_info_.account_id,
       GoogleServiceAuthError(GoogleServiceAuthError::State::SERVICE_ERROR));
-  EXPECT_EQ(1, observer.on_auth_error_changed_calls);
+  EXPECT_EQ(1, observer.on_auth_error_changed_calls_);
 
   delegate_->UpdateAuthError(
       account_info_.account_id,
       GoogleServiceAuthError(
           GoogleServiceAuthError::State::INVALID_GAIA_CREDENTIALS));
-  EXPECT_EQ(2, observer.on_auth_error_changed_calls);
+  EXPECT_EQ(2, observer.on_auth_error_changed_calls_);
 }
 
 TEST_F(ProfileOAuth2TokenServiceDelegateChromeOSTest,
@@ -828,7 +835,7 @@ TEST_F(ProfileOAuth2TokenServiceDelegateChromeOSTest,
 TEST_F(ProfileOAuth2TokenServiceDelegateChromeOSTest,
        AccountRemovedRightAfterAccountUpserted) {
   // Use StrictMock to verify that no observer methods are invoked.
-  testing::StrictMock<MockProfileOAuth2TokenServiceObserver> observer(
+  testing::StrictMock<signin::MockProfileOAuth2TokenServiceObserver> observer(
       delegate_.get());
 
   // `UpsertAccount` will asynchronously send a notification through
@@ -851,7 +858,7 @@ TEST_F(ProfileOAuth2TokenServiceDelegateChromeOSTest,
   EXPECT_EQ(1UL, delegate_->GetAccounts().size());
 
   base::RunLoop run_loop;
-  MockProfileOAuth2TokenServiceObserver observer(delegate_.get());
+  signin::MockProfileOAuth2TokenServiceObserver observer(delegate_.get());
 
   // Since this account already existed, `RemoveAccount` should trigger
   // `OnRefreshTokenRevoked` call to observers.
