@@ -13,6 +13,7 @@
 #include "base/types/expected.h"
 #include "google_apis/common/api_error_codes.h"
 #include "google_apis/common/request_sender.h"
+#include "google_apis/youtube_music/youtube_music_api_request_types.h"
 #include "google_apis/youtube_music/youtube_music_api_response_types.h"
 
 namespace ash::youtube_music {
@@ -94,6 +95,11 @@ class ASH_EXPORT YouTubeMusicClient {
       base::expected<
           std::unique_ptr<google_apis::youtube_music::ReportPlaybackResult>,
           google_apis::ApiErrorCode> result);
+
+  void OnRequestSigned(
+      google_apis::RequestSender* request_sender,
+      std::unique_ptr<google_apis::youtube_music::SignedRequest> signed_request,
+      const std::vector<std::string>& headers);
 
   // Callback passed in at initialization time for creating request sender.
   CreateRequestSenderCallback create_request_sender_callback_;
