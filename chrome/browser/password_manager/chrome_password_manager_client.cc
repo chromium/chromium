@@ -213,9 +213,11 @@ void MaybeShowAccessLossWarning(
     return;
   }
   PasswordAccessLossWarningBridgeImpl bridge;
-  if (bridge.ShouldShowAccessLossNoticeSheet(prefs)) {
+  if (bridge.ShouldShowAccessLossNoticeSheet(prefs,
+                                             /*called_at_startup=*/true)) {
     bridge.MaybeShowAccessLossNoticeSheet(
-        prefs, web_contents->GetTopLevelNativeWindow(), profile);
+        prefs, web_contents->GetTopLevelNativeWindow(), profile,
+        /*called_at_startup=*/true);
   }
 }
 

@@ -301,10 +301,10 @@ void AutofillKeyboardAccessoryControllerImpl::AcceptSuggestion(int index) {
           std::make_unique<PasswordAccessLossWarningBridgeImpl>();
     }
     if (profile && access_loss_warning_bridge_->ShouldShowAccessLossNoticeSheet(
-                       profile->GetPrefs())) {
+                       profile->GetPrefs(), /*called_at_startup=*/false)) {
       access_loss_warning_bridge_->MaybeShowAccessLossNoticeSheet(
           profile->GetPrefs(), web_contents_->GetTopLevelNativeWindow(),
-          profile);
+          profile, /*called_at_startup=*/false);
     }
   }
   if (base::FeatureList::IsEnabled(

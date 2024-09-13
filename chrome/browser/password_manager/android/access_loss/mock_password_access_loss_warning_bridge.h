@@ -20,11 +20,11 @@ class MockPasswordAccessLossWarningBridge
 
   MOCK_METHOD(bool,
               ShouldShowAccessLossNoticeSheet,
-              (PrefService*),
+              (PrefService*, bool),
               (override));
   MOCK_METHOD(void,
               MaybeShowAccessLossNoticeSheet,
-              (PrefService*, const gfx::NativeWindow, Profile*),
+              (PrefService*, const gfx::NativeWindow, Profile*, bool),
               (override));
 };
 

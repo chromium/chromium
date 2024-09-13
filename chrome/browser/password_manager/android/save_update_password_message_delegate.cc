@@ -81,9 +81,11 @@ void TryToShowAccessLossWarning(content::WebContents* web_contents,
     Profile* profile =
         Profile::FromBrowserContext(web_contents->GetBrowserContext());
     PrefService* prefs = profile->GetPrefs();
-    if (profile && bridge->ShouldShowAccessLossNoticeSheet(prefs)) {
+    if (profile && bridge->ShouldShowAccessLossNoticeSheet(
+                       prefs, /*called_at_startup=*/false)) {
       bridge->MaybeShowAccessLossNoticeSheet(
-          prefs, web_contents->GetTopLevelNativeWindow(), profile);
+          prefs, web_contents->GetTopLevelNativeWindow(), profile,
+          /*called_at_startup=*/false);
     }
   }
 }

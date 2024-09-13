@@ -872,10 +872,10 @@ void PasswordAccessoryControllerImpl::FillSelection(
     Profile* profile =
         Profile::FromBrowserContext(GetWebContents().GetBrowserContext());
     if (profile && access_loss_warning_bridge_->ShouldShowAccessLossNoticeSheet(
-                       profile->GetPrefs())) {
+                       profile->GetPrefs(), /*called_at_startup=*/false)) {
       access_loss_warning_bridge_->MaybeShowAccessLossNoticeSheet(
           profile->GetPrefs(), GetWebContents().GetTopLevelNativeWindow(),
-          profile);
+          profile, /*called_at_startup=*/false);
     }
   }
 }

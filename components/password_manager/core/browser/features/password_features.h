@@ -119,6 +119,13 @@ BASE_DECLARE_FEATURE(kTriggerPasswordResyncAfterDeletingUndecryptablePasswords);
 BASE_DECLARE_FEATURE(
     kUnifiedPasswordManagerLocalPasswordsAndroidAccessLossWarning);
 
+// Whether to ignore the timeouts in between password access loss warning
+// prompts. Used for manual testing.
+// This param will be removed when the feature fully launches.
+inline constexpr base::FeatureParam<bool> kIgnoreAccessLossWarningTimeout = {
+    &kUnifiedPasswordManagerLocalPasswordsAndroidAccessLossWarning,
+    "ignore_access_loss_warning_timeout", false};
+
 // Enables clearing the login database for the users who already migrated their
 // credentials to GMS Core.
 BASE_DECLARE_FEATURE(kClearLoginDatabaseForAllMigratedUPMUsers);

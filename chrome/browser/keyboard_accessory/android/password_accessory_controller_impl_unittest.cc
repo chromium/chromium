@@ -1832,10 +1832,13 @@ TEST_F(PasswordAccessoryControllerTest,
                                            .SetSelectable(true)
                                            .Build();
   EXPECT_CALL(*mock_access_loss_warning_bridge_,
-              ShouldShowAccessLossNoticeSheet(profile()->GetPrefs()))
+              ShouldShowAccessLossNoticeSheet(profile()->GetPrefs(),
+                                              /*called_at_startup=*/false))
       .WillRepeatedly(testing::Return(true));
-  EXPECT_CALL(*mock_access_loss_warning_bridge_,
-              MaybeShowAccessLossNoticeSheet);
+  EXPECT_CALL(
+      *mock_access_loss_warning_bridge_,
+      MaybeShowAccessLossNoticeSheet(profile()->GetPrefs(), _, profile(),
+                                     /*called_at_startup=*/false));
   controller()->OnFillingTriggered(autofill::FieldGlobalId(), selected_field);
 }
 
@@ -1874,7 +1877,8 @@ TEST_F(PasswordAccessoryControllerTest,
                                            .SetSelectable(true)
                                            .Build();
   EXPECT_CALL(*mock_access_loss_warning_bridge_,
-              ShouldShowAccessLossNoticeSheet(profile()->GetPrefs()))
+              ShouldShowAccessLossNoticeSheet(profile()->GetPrefs(),
+                                              /*called_at_startup=*/false))
       .WillRepeatedly(testing::Return(true));
   EXPECT_CALL(*mock_access_loss_warning_bridge_, MaybeShowAccessLossNoticeSheet)
       .Times(0);

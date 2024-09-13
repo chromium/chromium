@@ -651,11 +651,13 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
                  /*update_password=*/false);
   EXPECT_NE(nullptr, GetMessageWrapper());
   EXPECT_CALL(*mock_access_loss_warning_bridge(),
-              ShouldShowAccessLossNoticeSheet(profile()->GetPrefs()))
+              ShouldShowAccessLossNoticeSheet(profile()->GetPrefs(),
+                                              /*called_at_startup=*/false))
       .WillRepeatedly(testing::Return(true));
   EXPECT_CALL(
       *mock_access_loss_warning_bridge(),
-      MaybeShowAccessLossNoticeSheet(profile()->GetPrefs(), _, profile()));
+      MaybeShowAccessLossNoticeSheet(profile()->GetPrefs(), _, profile(),
+                                     /*called_at_startup=*/false));
   TriggerActionClick();
   EXPECT_EQ(nullptr, GetMessageWrapper());
 }
@@ -762,11 +764,13 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
   TriggerDialogAcceptedCallback(/*username=*/kUsername,
                                 /*password=*/kPassword);
   EXPECT_CALL(*mock_access_loss_warning_bridge(),
-              ShouldShowAccessLossNoticeSheet(profile()->GetPrefs()))
+              ShouldShowAccessLossNoticeSheet(profile()->GetPrefs(),
+                                              /*called_at_startup=*/false))
       .WillRepeatedly(testing::Return(true));
   EXPECT_CALL(
       *mock_access_loss_warning_bridge(),
-      MaybeShowAccessLossNoticeSheet(profile()->GetPrefs(), _, profile()));
+      MaybeShowAccessLossNoticeSheet(profile()->GetPrefs(), _, profile(),
+                                     /*called_at_startup=*/false));
   TriggerDialogDismissedCallback(/*dialog_accepted=*/true);
 }
 
@@ -802,11 +806,11 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
                  /*update_password=*/false);
   EXPECT_NE(nullptr, GetMessageWrapper());
   EXPECT_CALL(*mock_access_loss_warning_bridge(),
-              ShouldShowAccessLossNoticeSheet(profile()->GetPrefs()))
+              ShouldShowAccessLossNoticeSheet(profile()->GetPrefs(),
+                                              /*called_at_startup=*/false))
       .WillRepeatedly(testing::Return(true));
-  EXPECT_CALL(
-      *mock_access_loss_warning_bridge(),
-      MaybeShowAccessLossNoticeSheet(profile()->GetPrefs(), _, profile()))
+  EXPECT_CALL(*mock_access_loss_warning_bridge(),
+              MaybeShowAccessLossNoticeSheet)
       .Times(0);
   DismissMessage(messages::DismissReason::GESTURE);
   EXPECT_EQ(nullptr, GetMessageWrapper());
@@ -853,11 +857,13 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
                  /*update_password=*/true);
   EXPECT_NE(nullptr, GetMessageWrapper());
   EXPECT_CALL(*mock_access_loss_warning_bridge(),
-              ShouldShowAccessLossNoticeSheet(profile()->GetPrefs()))
+              ShouldShowAccessLossNoticeSheet(profile()->GetPrefs(),
+                                              /*called_at_startup=*/false))
       .WillRepeatedly(testing::Return(true));
   EXPECT_CALL(
       *mock_access_loss_warning_bridge(),
-      MaybeShowAccessLossNoticeSheet(profile()->GetPrefs(), _, profile()));
+      MaybeShowAccessLossNoticeSheet(profile()->GetPrefs(), _, profile(),
+                                     /*called_at_startup=*/false));
   TriggerActionClick();
   EXPECT_EQ(nullptr, GetMessageWrapper());
 }
@@ -959,11 +965,11 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
                  /*update_password=*/true);
   EXPECT_NE(nullptr, GetMessageWrapper());
   EXPECT_CALL(*mock_access_loss_warning_bridge(),
-              ShouldShowAccessLossNoticeSheet(profile()->GetPrefs()))
+              ShouldShowAccessLossNoticeSheet(profile()->GetPrefs(),
+                                              /*called_at_startup=*/false))
       .WillRepeatedly(testing::Return(true));
-  EXPECT_CALL(
-      *mock_access_loss_warning_bridge(),
-      MaybeShowAccessLossNoticeSheet(profile()->GetPrefs(), _, profile()))
+  EXPECT_CALL(*mock_access_loss_warning_bridge(),
+              MaybeShowAccessLossNoticeSheet)
       .Times(0);
   DismissMessage(messages::DismissReason::GESTURE);
   EXPECT_EQ(nullptr, GetMessageWrapper());
@@ -1015,19 +1021,20 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
           Eq(kUsername), Eq(kPassword), Eq(kAccountEmail)));
   EnqueueMessage(std::move(form_manager), /*user_signed_in=*/true,
                  /*update_password=*/true);
-  EXPECT_CALL(
-      *mock_access_loss_warning_bridge(),
-      MaybeShowAccessLossNoticeSheet(profile()->GetPrefs(), _, profile()))
+  EXPECT_CALL(*mock_access_loss_warning_bridge(),
+              ShouldShowAccessLossNoticeSheet(profile()->GetPrefs(),
+                                              /*called_at_startup=*/false))
+      .WillRepeatedly(testing::Return(true));
+  EXPECT_CALL(*mock_access_loss_warning_bridge(),
+              MaybeShowAccessLossNoticeSheet)
       .Times(0);
   TriggerActionClick();
   TriggerDialogAcceptedCallback(/*username=*/kUsername,
                                 /*password=*/kPassword);
-  EXPECT_CALL(*mock_access_loss_warning_bridge(),
-              ShouldShowAccessLossNoticeSheet(profile()->GetPrefs()))
-      .WillRepeatedly(testing::Return(true));
   EXPECT_CALL(
       *mock_access_loss_warning_bridge(),
-      MaybeShowAccessLossNoticeSheet(profile()->GetPrefs(), _, profile()));
+      MaybeShowAccessLossNoticeSheet(profile()->GetPrefs(), _, profile(),
+                                     /*called_at_startup=*/false));
   TriggerDialogDismissedCallback(/*dialog_accepted=*/true);
 }
 
@@ -1141,16 +1148,17 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
   EnqueueMessage(std::move(form_manager), /*user_signed_in=*/true,
                  /*update_password=*/true);
   EXPECT_CALL(*mock_access_loss_warning_bridge(),
-              ShouldShowAccessLossNoticeSheet(profile()->GetPrefs()))
+              ShouldShowAccessLossNoticeSheet(profile()->GetPrefs(),
+                                              /*called_at_startup=*/false))
       .WillRepeatedly(testing::Return(true));
-  EXPECT_CALL(
-      *mock_access_loss_warning_bridge(),
-      MaybeShowAccessLossNoticeSheet(profile()->GetPrefs(), _, profile()))
+  EXPECT_CALL(*mock_access_loss_warning_bridge(),
+              MaybeShowAccessLossNoticeSheet)
       .Times(0);
   TriggerActionClick();
   EXPECT_CALL(
       *mock_access_loss_warning_bridge(),
-      MaybeShowAccessLossNoticeSheet(profile()->GetPrefs(), _, profile()));
+      MaybeShowAccessLossNoticeSheet(profile()->GetPrefs(), _, profile(),
+                                     /*called_at_startup=*/false));
   TriggerDialogDismissedCallback(/*dialog_accepted=*/false);
 }
 
@@ -1230,11 +1238,11 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
                  /*update_password=*/false);
   EXPECT_NE(nullptr, GetMessageWrapper());
   EXPECT_CALL(*mock_access_loss_warning_bridge(),
-              ShouldShowAccessLossNoticeSheet(profile()->GetPrefs()))
+              ShouldShowAccessLossNoticeSheet(profile()->GetPrefs(),
+                                              /*called_at_startup=*/false))
       .WillRepeatedly(testing::Return(true));
-  EXPECT_CALL(
-      *mock_access_loss_warning_bridge(),
-      MaybeShowAccessLossNoticeSheet(profile()->GetPrefs(), _, profile()))
+  EXPECT_CALL(*mock_access_loss_warning_bridge(),
+              MaybeShowAccessLossNoticeSheet)
       .Times(0);
   DismissMessage(messages::DismissReason::TIMER);
   EXPECT_EQ(nullptr, GetMessageWrapper());
@@ -1275,11 +1283,11 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
                  /*update_password=*/true);
   EXPECT_NE(nullptr, GetMessageWrapper());
   EXPECT_CALL(*mock_access_loss_warning_bridge(),
-              ShouldShowAccessLossNoticeSheet(profile()->GetPrefs()))
+              ShouldShowAccessLossNoticeSheet(profile()->GetPrefs(),
+                                              /*called_at_startup=*/false))
       .WillRepeatedly(testing::Return(true));
-  EXPECT_CALL(
-      *mock_access_loss_warning_bridge(),
-      MaybeShowAccessLossNoticeSheet(profile()->GetPrefs(), _, profile()))
+  EXPECT_CALL(*mock_access_loss_warning_bridge(),
+              MaybeShowAccessLossNoticeSheet)
       .Times(0);
   DismissMessage(messages::DismissReason::TIMER);
   EXPECT_EQ(nullptr, GetMessageWrapper());
@@ -1447,11 +1455,11 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
                  /*update_password=*/false);
   EXPECT_NE(nullptr, GetMessageWrapper());
   EXPECT_CALL(*mock_access_loss_warning_bridge(),
-              ShouldShowAccessLossNoticeSheet(profile()->GetPrefs()))
+              ShouldShowAccessLossNoticeSheet(profile()->GetPrefs(),
+                                              /*called_at_startup=*/false))
       .WillRepeatedly(testing::Return(true));
-  EXPECT_CALL(
-      *mock_access_loss_warning_bridge(),
-      MaybeShowAccessLossNoticeSheet(profile()->GetPrefs(), _, profile()))
+  EXPECT_CALL(*mock_access_loss_warning_bridge(),
+              MaybeShowAccessLossNoticeSheet)
       .Times(0);
   EXPECT_CALL(*form_manager_pointer, Blocklist());
   TriggerNeverSaveMenuItem();

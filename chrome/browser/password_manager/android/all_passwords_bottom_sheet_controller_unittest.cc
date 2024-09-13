@@ -476,11 +476,13 @@ TEST_F(AllPasswordsBottomSheetControllerTest,
           kUnifiedPasswordManagerLocalPasswordsAndroidAccessLossWarning);
   createAllPasswordsController(FocusedFieldType::kFillableUsernameField);
   EXPECT_CALL(*mock_access_loss_warning_bridge(),
-              ShouldShowAccessLossNoticeSheet(profile()->GetPrefs()))
+              ShouldShowAccessLossNoticeSheet(profile()->GetPrefs(),
+                                              /*called_at_startup=*/false))
       .WillRepeatedly(testing::Return(true));
   EXPECT_CALL(
       *mock_access_loss_warning_bridge(),
-      MaybeShowAccessLossNoticeSheet(profile()->GetPrefs(), _, profile()));
+      MaybeShowAccessLossNoticeSheet(profile()->GetPrefs(), _, profile(),
+                                     /*called_at_startup=*/false));
   all_passwords_controller()->OnCredentialSelected(
       kUsername1, kPassword, RequestsToFillPassword(false));
 }
@@ -502,11 +504,13 @@ TEST_F(AllPasswordsBottomSheetControllerTest,
           kUnifiedPasswordManagerLocalPasswordsAndroidAccessLossWarning);
   createAllPasswordsController(FocusedFieldType::kFillablePasswordField);
   EXPECT_CALL(*mock_access_loss_warning_bridge(),
-              ShouldShowAccessLossNoticeSheet(profile()->GetPrefs()))
+              ShouldShowAccessLossNoticeSheet(profile()->GetPrefs(),
+                                              /*called_at_startup=*/false))
       .WillRepeatedly(testing::Return(true));
   EXPECT_CALL(
       *mock_access_loss_warning_bridge(),
-      MaybeShowAccessLossNoticeSheet(profile()->GetPrefs(), _, profile()));
+      MaybeShowAccessLossNoticeSheet(profile()->GetPrefs(), _, profile(),
+                                     /*called_at_startup=*/false));
   all_passwords_controller()->OnCredentialSelected(
       kUsername1, kPassword, RequestsToFillPassword(true));
 }
@@ -523,11 +527,13 @@ TEST_F(AllPasswordsBottomSheetControllerTest,
           kUnifiedPasswordManagerLocalPasswordsAndroidAccessLossWarning);
   createAllPasswordsController(FocusedFieldType::kFillablePasswordField);
   EXPECT_CALL(*mock_access_loss_warning_bridge(),
-              ShouldShowAccessLossNoticeSheet(profile()->GetPrefs()))
+              ShouldShowAccessLossNoticeSheet(profile()->GetPrefs(),
+                                              /*called_at_startup=*/false))
       .WillRepeatedly(testing::Return(true));
   EXPECT_CALL(
       *mock_access_loss_warning_bridge(),
-      MaybeShowAccessLossNoticeSheet(profile()->GetPrefs(), _, profile()));
+      MaybeShowAccessLossNoticeSheet(profile()->GetPrefs(), _, profile(),
+                                     /*called_at_startup=*/false));
   all_passwords_controller()->OnCredentialSelected(
       kUsername1, kPassword, RequestsToFillPassword(true));
 }
@@ -540,11 +546,11 @@ TEST_F(AllPasswordsBottomSheetControllerTest,
           kUnifiedPasswordManagerLocalPasswordsAndroidAccessLossWarning);
   createAllPasswordsController(FocusedFieldType::kFillableUsernameField);
   EXPECT_CALL(*mock_access_loss_warning_bridge(),
-              ShouldShowAccessLossNoticeSheet(profile()->GetPrefs()))
+              ShouldShowAccessLossNoticeSheet(profile()->GetPrefs(),
+                                              /*called_at_startup=*/false))
       .WillRepeatedly(testing::Return(true));
-  EXPECT_CALL(
-      *mock_access_loss_warning_bridge(),
-      MaybeShowAccessLossNoticeSheet(profile()->GetPrefs(), _, profile()))
+  EXPECT_CALL(*mock_access_loss_warning_bridge(),
+              MaybeShowAccessLossNoticeSheet)
       .Times(0);
   all_passwords_controller()->OnCredentialSelected(
       kUsername1, kPassword, RequestsToFillPassword(false));

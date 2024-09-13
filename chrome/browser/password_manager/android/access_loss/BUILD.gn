@@ -175,5 +175,6 @@ source_set("unit_tests") {
     "//components/password_manager/core/common:common",
     "//components/prefs:prefs",
     "//components/prefs:test_support",
+    "//content/test:test_support",
   ]
 }

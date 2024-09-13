@@ -381,11 +381,13 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
   // Calls are accepted immediately.
   EXPECT_CALL(manager().external_delegate(), DidAcceptSuggestion);
   EXPECT_CALL(*client().access_loss_warning_bridge(),
-              ShouldShowAccessLossNoticeSheet(profile()->GetPrefs()))
+              ShouldShowAccessLossNoticeSheet(profile()->GetPrefs(),
+                                              /*called_at_startup=*/false))
       .WillRepeatedly(Return(true));
   EXPECT_CALL(
       *client().access_loss_warning_bridge(),
-      MaybeShowAccessLossNoticeSheet(profile()->GetPrefs(), _, profile()));
+      MaybeShowAccessLossNoticeSheet(profile()->GetPrefs(), _, profile(),
+                                     /*called_at_startup=*/false));
   task_environment()->FastForwardBy(base::Milliseconds(500));
   client().popup_controller(manager()).AcceptSuggestion(0);
 }
@@ -400,11 +402,13 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
   // Calls are accepted immediately.
   EXPECT_CALL(manager().external_delegate(), DidAcceptSuggestion);
   EXPECT_CALL(*client().access_loss_warning_bridge(),
-              ShouldShowAccessLossNoticeSheet(profile()->GetPrefs()))
+              ShouldShowAccessLossNoticeSheet(profile()->GetPrefs(),
+                                              /*called_at_startup=*/false))
       .WillRepeatedly(Return(true));
   EXPECT_CALL(
       *client().access_loss_warning_bridge(),
-      MaybeShowAccessLossNoticeSheet(profile()->GetPrefs(), _, profile()));
+      MaybeShowAccessLossNoticeSheet(profile()->GetPrefs(), _, profile(),
+                                     /*called_at_startup=*/false));
   task_environment()->FastForwardBy(base::Milliseconds(500));
   client().popup_controller(manager()).AcceptSuggestion(0);
 }
@@ -420,11 +424,11 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
   // Calls are accepted immediately.
   EXPECT_CALL(manager().external_delegate(), DidAcceptSuggestion);
   EXPECT_CALL(*client().access_loss_warning_bridge(),
-              ShouldShowAccessLossNoticeSheet(profile()->GetPrefs()))
+              ShouldShowAccessLossNoticeSheet(profile()->GetPrefs(),
+                                              /*called_at_startup=*/false))
       .WillRepeatedly(Return(true));
-  EXPECT_CALL(
-      *client().access_loss_warning_bridge(),
-      MaybeShowAccessLossNoticeSheet(profile()->GetPrefs(), _, profile()))
+  EXPECT_CALL(*client().access_loss_warning_bridge(),
+              MaybeShowAccessLossNoticeSheet)
       .Times(0);
   task_environment()->FastForwardBy(base::Milliseconds(500));
   client().popup_controller(manager()).AcceptSuggestion(0);
@@ -440,11 +444,11 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
   // Calls are accepted immediately.
   EXPECT_CALL(manager().external_delegate(), DidAcceptSuggestion);
   EXPECT_CALL(*client().access_loss_warning_bridge(),
-              ShouldShowAccessLossNoticeSheet(profile()->GetPrefs()))
+              ShouldShowAccessLossNoticeSheet(profile()->GetPrefs(),
+                                              /*called_at_startup=*/false))
       .WillRepeatedly(Return(true));
-  EXPECT_CALL(
-      *client().access_loss_warning_bridge(),
-      MaybeShowAccessLossNoticeSheet(profile()->GetPrefs(), _, profile()))
+  EXPECT_CALL(*client().access_loss_warning_bridge(),
+              MaybeShowAccessLossNoticeSheet)
       .Times(0);
   task_environment()->FastForwardBy(base::Milliseconds(500));
   client().popup_controller(manager()).AcceptSuggestion(0);

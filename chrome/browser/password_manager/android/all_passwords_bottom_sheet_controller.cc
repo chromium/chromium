@@ -253,8 +253,9 @@ void AllPasswordsBottomSheetController::TryToShowAccessLossWarningSheet() {
   Profile* profile =
       Profile::FromBrowserContext(web_contents_->GetBrowserContext());
   if (profile && access_loss_warning_bridge_->ShouldShowAccessLossNoticeSheet(
-                     profile->GetPrefs())) {
+                     profile->GetPrefs(), /*called_at_startup=*/false)) {
     access_loss_warning_bridge_->MaybeShowAccessLossNoticeSheet(
-        profile->GetPrefs(), web_contents_->GetTopLevelNativeWindow(), profile);
+        profile->GetPrefs(), web_contents_->GetTopLevelNativeWindow(), profile,
+        /*called_at_startup=*/false);
   }
 }

@@ -317,12 +317,15 @@ void TouchToFillControllerAutofillDelegate::FillCredential(
   filler_->UpdateTriggerSubmission(
       ShouldTriggerSubmission() &&
       !local_password_migration::ShouldShowWarning(profile) &&
-      !access_loss_warning_bridge_->ShouldShowAccessLossNoticeSheet(prefs));
+      !access_loss_warning_bridge_->ShouldShowAccessLossNoticeSheet(
+          prefs, /*called_at_startup=*/false));
   filler_->FillUsernameAndPassword(credential.username(),
                                    credential.password());
-  if (access_loss_warning_bridge_->ShouldShowAccessLossNoticeSheet(prefs)) {
+  if (access_loss_warning_bridge_->ShouldShowAccessLossNoticeSheet(
+          prefs, /*called_at_startup=*/false)) {
     access_loss_warning_bridge_->MaybeShowAccessLossNoticeSheet(
-        prefs, web_contents_->GetTopLevelNativeWindow(), profile);
+        prefs, web_contents_->GetTopLevelNativeWindow(), profile,
+        /*called_at_startup=*/false);
   } else {
     // TODO: crbug.com/340437382 - Deprecate the migration warning sheet.
     ShowPasswordMigrationWarningIfNeeded();
