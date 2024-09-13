@@ -6698,7 +6698,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="OSCrypt.Posix.NoEncryptionPrefixFound" enum="BooleanAllowed"
+<histogram name="OSCrypt.Posix.NoEncryptionPrefixFound" enum="Boolean"
     expires_after="2025-08-15">
   <owner>wfh@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
