@@ -668,7 +668,8 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                                                     .maybeLaunchPrivacySandboxDialog(
                                                             mActivity,
                                                             currentModelProfile,
-                                                            SurfaceType.AGACCT);
+                                                            SurfaceType.AGACCT,
+                                                            mWindowAndroid);
                                 }
                             }
                             if (!didShowPrompt) {

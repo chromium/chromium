@@ -863,7 +863,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
         if (!shouldSuppressPSDialog) {
             return PrivacySandboxDialogController.maybeLaunchPrivacySandboxDialog(
-                    mActivity, profile, SurfaceType.BR_APP);
+                    mActivity, profile, SurfaceType.BR_APP, mWindowAndroid);
         }
 
         return false;

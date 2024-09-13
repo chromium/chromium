@@ -194,4 +194,20 @@ found in the LICENSE file.
 
         </LinearLayout>
     </org.chromium.components.browser_ui.widget.BoundedLinearLayout>
+
+   <org.chromium.components.browser_ui.widget.BoundedLinearLayout
+        android:id="@+id/privacy_policy_view"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <FrameLayout
+            android:id="@+id/privacy_policy_content"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+        </FrameLayout>
+    </org.chromium.components.browser_ui.widget.BoundedLinearLayout>
 </LinearLayout>

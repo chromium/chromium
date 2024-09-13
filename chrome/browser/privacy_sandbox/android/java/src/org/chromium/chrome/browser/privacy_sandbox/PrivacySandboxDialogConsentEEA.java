@@ -10,11 +10,18 @@ import android.os.Handler;
 import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 
+import org.chromium.chrome.browser.content.WebContentsFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.widget.ChromeDialog;
+import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.thinwebview.ThinWebView;
+import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.widget.ButtonCompat;
@@ -41,6 +48,12 @@ public class PrivacySandboxDialogConsentEEA extends ChromeDialog
     private ScrollView mScrollView;
     private TextViewWithLeading mLearnMoreText;
     private int mSurfaceType;
+    private LinearLayout mPrivacyPolicyView;
+    private FrameLayout mPrivacyPolicyContent;
+    private ThinWebView mThinWebView;
+    private WebContents mWebContents;
+    private final Profile mProfile;
+    private final ActivityWindowAndroid mActivityWindowAndroid;
 
     private boolean mAreAnimationsDisabled;
 
@@ -48,11 +61,15 @@ public class PrivacySandboxDialogConsentEEA extends ChromeDialog
             Context context,
             PrivacySandboxBridge privacySandboxBridge,
             boolean disableAnimations,
-            @SurfaceType int surfaceType) {
+            @SurfaceType int surfaceType,
+            Profile profile,
+            ActivityWindowAndroid activityWindowAndroid) {
         super(context, R.style.ThemeOverlay_BrowserUI_Fullscreen);
         mPrivacySandboxBridge = privacySandboxBridge;
         mAreAnimationsDisabled = disableAnimations;
         mSurfaceType = surfaceType;
+        mProfile = profile;
+        mActivityWindowAndroid = activityWindowAndroid;
         mContentView =
                 LayoutInflater.from(context).inflate(R.layout.privacy_sandbox_consent_eea, null);
         setContentView(mContentView);
@@ -67,6 +84,8 @@ public class PrivacySandboxDialogConsentEEA extends ChromeDialog
 
         mProgressBarContainer = mContentView.findViewById(R.id.progress_bar_container);
         mConsentViewContainer = mContentView.findViewById(R.id.privacy_sandbox_consent_eea_view);
+        mPrivacyPolicyView = mContentView.findViewById(R.id.privacy_policy_view);
+        mPrivacyPolicyContent = mContentView.findViewById(R.id.privacy_policy_content);
 
         // Controls for the expanding section.
         mDropdownElement = mContentView.findViewById(R.id.dropdown_element);
@@ -179,6 +198,19 @@ public class PrivacySandboxDialogConsentEEA extends ChromeDialog
                                             new NoUnderlineClickableSpan(
                                                     getContext(), this::onPrivacyPolicyClicked))));
                     mLearnMoreText.setMovementMethod(LinkMovementMethod.getInstance());
+                    if (mThinWebView == null
+                            || mWebContents == null
+                            || mWebContents.isDestroyed()) {
+                        mWebContents = WebContentsFactory.createWebContents(mProfile, true, false);
+                        // TODO(crbug.com/366010532): Add in functionality to add language code to
+                        // the url
+                        mThinWebView =
+                                PrivacySandboxDialogController.createThinWebView(
+                                        mWebContents,
+                                        mProfile,
+                                        mActivityWindowAndroid,
+                                        UrlConstants.GOOGLE_EMBEDDED_PRIVACY_POLICY);
+                    }
                 }
             }
 
@@ -209,8 +241,34 @@ public class PrivacySandboxDialogConsentEEA extends ChromeDialog
         }
     }
 
+    /**
+     * Handles clicks on the Privacy Policy link. If a ThinWebView is available, loads and displays
+     * the privacy policy within it, replacing the consent view.
+     *
+     * @param view The View that was clicked (typically the TextView containing the link).
+     */
     private void onPrivacyPolicyClicked(View view) {
-        // TODO: Open ThinWebView
+        mPrivacyPolicyContent.removeAllViews();
+        // TODO(crbug.com/365582305): Measure the time it takes from the user clicking on the link
+        // to the page actually loading.
+        if (mThinWebView != null && mThinWebView.getView() != null) {
+            mConsentViewContainer.setVisibility(View.GONE);
+            mPrivacyPolicyContent.addView(mThinWebView.getView());
+            mPrivacyPolicyView.setVisibility(View.VISIBLE);
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        // Clean up the ThinWebView and WebContents when the dialog is stopped
+        if (mThinWebView != null) {
+            mWebContents.destroy();
+            mWebContents = null;
+            mThinWebView.destroy();
+            mThinWebView = null;
+        }
     }
 
     private void dismissAndMaybeShowNotice() {
