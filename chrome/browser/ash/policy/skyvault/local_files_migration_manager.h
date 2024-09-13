@@ -160,9 +160,11 @@ class LocalFilesMigrationManagerFactory : public ProfileKeyedServiceFactory {
   static LocalFilesMigrationManagerFactory* GetInstance();
 
   // Gets the LocalFilesMigrationManager instance associated with the given
-  // BrowserContext.
+  // BrowserContext. If `create` is true, an instance is created if it doesn't
+  // exist.
   static LocalFilesMigrationManager* GetForBrowserContext(
-      content::BrowserContext* context);
+      content::BrowserContext* context,
+      bool create = true);
 
  private:
   friend base::NoDestructor<LocalFilesMigrationManagerFactory>;

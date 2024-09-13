@@ -338,9 +338,10 @@ LocalFilesMigrationManagerFactory::GetInstance() {
 
 LocalFilesMigrationManager*
 LocalFilesMigrationManagerFactory::GetForBrowserContext(
-    content::BrowserContext* context) {
+    content::BrowserContext* context,
+    bool create) {
   return static_cast<LocalFilesMigrationManager*>(
-      GetInstance()->GetServiceForBrowserContext(context, /*create=*/true));
+      GetInstance()->GetServiceForBrowserContext(context, create));
 }
 
 LocalFilesMigrationManagerFactory::LocalFilesMigrationManagerFactory()

@@ -430,7 +430,7 @@ void VolumeManager::Shutdown() {
     if (policy::local_user_files::
             LocalFilesMigrationManager* migration_manager =
                 policy::local_user_files::LocalFilesMigrationManagerFactory::
-                    GetForBrowserContext(profile_)) {
+                    GetForBrowserContext(profile_, /*create=*/false)) {
       migration_manager->RemoveObserver(this);
     }
   }
