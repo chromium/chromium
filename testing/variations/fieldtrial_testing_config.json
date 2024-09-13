@@ -25741,10 +25741,10 @@
             ]
         }
     ],
-    "WebGPUUseTintIR_V2": [
+    "WebGPUUseTintIR": [
         {
             "platforms": [
-                "chromeos"
+                "mac"
             ],
             "experiments": [
                 {
