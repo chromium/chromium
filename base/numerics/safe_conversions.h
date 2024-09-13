@@ -298,7 +298,10 @@ class StrictNumeric {
   }
 
  private:
-  const T value_;
+  template <typename>
+  friend class StrictNumeric;
+
+  T value_;
 };
 
 // Convenience wrapper returns a StrictNumeric from the provided arithmetic

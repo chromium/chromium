@@ -1968,6 +1968,27 @@ TEST(SafeNumerics, WrappingMath) {
   TestWrappingMathUnsigned<uint64_t>();
 }
 
+TEST(SafeNumerics, StrictNumeric_SupportsAssignment) {
+  StrictNumeric<uint16_t> val(uint16_t{5});
+  EXPECT_EQ(static_cast<uint16_t>(val), 5u);
+
+  // Same underlying type.
+  val = uint16_t{6};
+  EXPECT_EQ(static_cast<uint16_t>(val), 6u);
+
+  // Different but strictly convertible type.
+  val = uint8_t{7};
+  EXPECT_EQ(static_cast<uint16_t>(val), 7u);
+
+  // Same type.
+  val = StrictNumeric<uint16_t>(uint16_t{8});
+  EXPECT_EQ(static_cast<uint16_t>(val), 8u);
+
+  // Different but strictly convertible type.
+  val = StrictNumeric<uint8_t>(uint8_t{9});
+  EXPECT_EQ(static_cast<uint16_t>(val), 9u);
+}
+
 #if defined(__clang__)
 #pragma clang diagnostic pop  // -Winteger-overflow
 #endif
