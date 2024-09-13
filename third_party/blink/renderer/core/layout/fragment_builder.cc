@@ -153,8 +153,12 @@ void FragmentBuilder::PropagateSnapAreas(const PhysicalFragment& child) {
     return 0;
   };
   if (child.IsSnapArea()) {
-    auto* snap_area = To<LayoutBox>(child.GetMutableLayoutObject());
-    EnsureSnapAreas().insert(get_insertion_pos(snap_area), snap_area);
+    // Insert a new snap area *once* per node, when at the last fragment
+    // (i.e. when there's no outgoing break token).
+    if (!To<PhysicalBoxFragment>(child).GetBreakToken()) {
+      auto* snap_area = To<LayoutBox>(child.GetMutableLayoutObject());
+      EnsureSnapAreas().insert(get_insertion_pos(snap_area), snap_area);
+    }
   }
 
   if (const auto* child_snap_areas = child.PropagatedSnapAreas()) {
