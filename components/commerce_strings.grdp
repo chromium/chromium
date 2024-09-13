@@ -684,10 +684,20 @@
   <message name="IDS_COMPARE_DISCLOSURE_DATA_ITEM" desc="The text for the Compare disclosure item that states who might see the data.">
     Data may be seen by trained reviewers to improve this feature
   </message>
-  <message name="IDS_COMPARE_DISCLOSURE_ACCEPT" desc="The text for the accept button on the Compare first-run experience disclosure.">
-    Let's go
-  </message>
-  <message name="IDS_COMPARE_DISCLOSURE_DECLINE" desc="The text for the decline button on the Compare first-run experience disclosure.">
-    No thanks
-  </message>
+  <if expr="use_titlecase">
+    <message name="IDS_COMPARE_DISCLOSURE_ACCEPT" desc="The text for the accept button on the Compare first-run experience disclosure.">
+      Let's Go
+    </message>
+    <message name="IDS_COMPARE_DISCLOSURE_DECLINE" desc="The text for the decline button on the Compare first-run experience disclosure.">
+      No Thanks
+    </message>
+  </if> <!-- use_titlecase -->
+  <if expr="not use_titlecase">
+    <message name="IDS_COMPARE_DISCLOSURE_ACCEPT" desc="The text for the accept button on the Compare first-run experience disclosure.">
+      Let's go
+    </message>
+    <message name="IDS_COMPARE_DISCLOSURE_DECLINE" desc="The text for the decline button on the Compare first-run experience disclosure.">
+      No thanks
+    </message>
+  </if> <!-- not use_titlecase -->
 </grit-part>
