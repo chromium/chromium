@@ -880,6 +880,7 @@ crbug.com/1081978 [ angle-opengl intel-0x9bc5 linux passthrough ] conformance2/t
 ## Linux NVIDIA ##
 
 crbug.com/1115314 [ linux nvidia-0x2184 angle-opengl passthrough ] deqp/functional/gles3/fbocompleteness.html [ Failure ]
+crbug.com/366284863 [ linux nvidia-0x2184 angle-opengl passthrough ] deqp/functional/gles3/shaderoperator/sequence.html [ RetryOnFailure ]
 
 ## Linux AMD RX 5500 XT ##
 
