@@ -19,6 +19,10 @@ constexpr base::FilePath::CharType
     kTranslateKitBinaryInstallationRelativeDir[] =
         FILE_PATH_LITERAL("TranslateKit/lib");
 
+constexpr base::FilePath::CharType
+    kTranslateKitLanguagePackInstallationRelativeDir[] =
+        FILE_PATH_LITERAL("TranslateKit/models");
+
 const base::FilePath GetTranslateKitRootDirectory() {
   base::FilePath components_dir;
   base::PathService::Get(component_updater::DIR_COMPONENT_USER,

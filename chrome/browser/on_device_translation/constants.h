@@ -20,6 +20,11 @@ extern const base::FilePath::CharType
 extern const base::FilePath::CharType
     kTranslateKitBinaryInstallationRelativeDir[];
 
+// The installation location of the TranslateKit langaage package component
+// relative to the User Data directory.
+extern const base::FilePath::CharType
+    kTranslateKitLanguagePackInstallationRelativeDir[];
+
 // Returns the absolute path of the TranslateKit root directory.
 const base::FilePath GetTranslateKitRootDirectory();
 
