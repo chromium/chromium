@@ -389,26 +389,6 @@ export const COMMAND_DATA: Record<Command, DataEntry> = {
   },
   [Command.MOVE_TO_START_OF_LINE]: {category: CommandCategory.NO_CATEGORY},
   [Command.MOVE_TO_END_OF_LINE]: {category: CommandCategory.NO_CATEGORY},
-  [Command.NATIVE_NEXT_CHARACTER]: {
-    category: CommandCategory.NO_CATEGORY,
-    sequence: {cvoxModifier: false, keys: {keyCode: [KeyCode.RIGHT]}},
-  },
-  [Command.NATIVE_NEXT_WORD]: {
-    category: CommandCategory.NO_CATEGORY,
-    sequence: {
-      cvoxModifier: false,
-      keys: {keyCode: [KeyCode.RIGHT], ctrlKey: [true]},
-    },
-  },
-  [Command.NATIVE_PREVIOUS_CHARACTER]: {
-    category: CommandCategory.NO_CATEGORY,
-    sequence: {cvoxModifier: false, keys: {keyCode: [KeyCode.LEFT]}},
-  },
-  [Command.NATIVE_PREVIOUS_WORD]: {
-    category: CommandCategory.NO_CATEGORY,
-    sequence:
-        {cvoxModifier: false, keys: {keyCode: [KeyCode.LEFT], ctrlKey: [true]}},
-  },
   [Command.NEXT_ARTICLE]: {category: CommandCategory.NO_CATEGORY},
   [Command.NEXT_AT_GRANULARITY]: {
     category: CommandCategory.NAVIGATION,
@@ -1038,6 +1018,29 @@ export const COMMAND_DATA: Record<Command, DataEntry> = {
     msgId: 'view_graphic_as_braille',
     sequence:
         {cvoxModifier: true, keys: {keyCode: [KeyCode.G], altKey: [true]}},
+  },
+
+  // Keep these commands last since they potentially conflict with above
+  // commands when sticky mode is enabled.
+  [Command.NATIVE_NEXT_CHARACTER]: {
+    category: CommandCategory.NO_CATEGORY,
+    sequence: {cvoxModifier: false, keys: {keyCode: [KeyCode.RIGHT]}},
+  },
+  [Command.NATIVE_NEXT_WORD]: {
+    category: CommandCategory.NO_CATEGORY,
+    sequence: {
+      cvoxModifier: false,
+      keys: {keyCode: [KeyCode.RIGHT], ctrlKey: [true]},
+    },
+  },
+  [Command.NATIVE_PREVIOUS_CHARACTER]: {
+    category: CommandCategory.NO_CATEGORY,
+    sequence: {cvoxModifier: false, keys: {keyCode: [KeyCode.LEFT]}},
+  },
+  [Command.NATIVE_PREVIOUS_WORD]: {
+    category: CommandCategory.NO_CATEGORY,
+    sequence:
+        {cvoxModifier: false, keys: {keyCode: [KeyCode.LEFT], ctrlKey: [true]}},
   },
 };
 }
