@@ -479,15 +479,15 @@ void CorsURLLoaderFactory::CreateLoaderAndStart(
 
   if (timer.has_value()) {
     UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-        "NetworkService.CorsURLLoaderFactory.CreateLoaderAndStart.Duration",
-        timer->Elapsed(), base::Microseconds(1), base::Microseconds(5000), 100);
+        "NetworkService.CorsURLLoaderFactory.CreateLoaderAndStart2.Duration",
+        timer->Elapsed(), base::Microseconds(1), base::Milliseconds(16), 100);
   }
   if (thread_timer.has_value()) {
     UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-        "NetworkService.CorsURLLoaderFactory.CreateLoaderAndStart."
+        "NetworkService.CorsURLLoaderFactory.CreateLoaderAndStart2."
         "ThreadDuration",
-        thread_timer->Elapsed(), base::Microseconds(1),
-        base::Milliseconds(5000), 100);
+        thread_timer->Elapsed(), base::Microseconds(1), base::Milliseconds(16),
+        100);
   }
 }
 
