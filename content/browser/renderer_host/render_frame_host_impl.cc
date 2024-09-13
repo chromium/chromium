@@ -4593,6 +4593,15 @@ net::IsolationInfo RenderFrameHostImpl::ComputeIsolationInfoInternal(
 
   net::SiteForCookies candidate_site_for_cookies(top_frame_site);
 
+  // If this frame is in a partitioned popin and we aren't in a fenced-frame, we
+  // must set site_for_cookies relative to the popin opener in order for the
+  // renderer to properly conduct checks.
+  // See https://explainers-by-googlers.github.io/partitioned-popins/
+  if (delegate_->IsPartitionedPopin() && !IsNestedWithinFencedFrame()) {
+    candidate_site_for_cookies =
+        delegate_->PartitionedPopinOpener()->ComputeSiteForCookies();
+  }
+
   // Walk up the frame tree to check SiteForCookies.
   //
   // If |request_type| is kOther, then IsolationInfo is being computed
