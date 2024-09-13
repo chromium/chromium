@@ -37,6 +37,12 @@ message FormsAnnotationsRequest {
 }
 
 message FormsAnnotationsResponse {
-  // The user annotations entries to update the database with.
-  repeated UserAnnotationsEntry entries = 1;
+// The user annotations entries that were newly added to the database.
+  repeated UserAnnotationsEntry added_entries = 1;
+
+  // The user annotations entry IDs that were not changed.
+  repeated int64 unchanged_entry_ids = 2;
+
+  // The user annotations entry IDs that were deleted.
+  repeated int64 deleted_entry_ids = 3;
 }

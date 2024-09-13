@@ -127,11 +127,11 @@ struct FormsAnnotationsTestRequest {
 FormsAnnotationsTestRequest CreateSampleFormsAnnotationsTestRequest() {
   optimization_guide::proto::FormsAnnotationsResponse response;
   optimization_guide::proto::UserAnnotationsEntry* entry1 =
-      response.add_entries();
+      response.add_added_entries();
   entry1->set_key("label");
   entry1->set_value("whatever");
   optimization_guide::proto::UserAnnotationsEntry* entry2 =
-      response.add_entries();
+      response.add_added_entries();
   entry2->set_key("nolabel");
   entry2->set_value("value");
   optimization_guide::proto::Any forms_annotations_response;

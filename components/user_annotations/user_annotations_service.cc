@@ -196,7 +196,7 @@ void UserAnnotationsService::OnModelExecuted(
     }
 
     UserAnnotationsEntries entries_protos;
-    for (const auto& entry : maybe_response->entries()) {
+    for (const auto& entry : maybe_response->added_entries()) {
       optimization_guide::proto::UserAnnotationsEntry entry_proto;
       entry_proto.set_key(entry.key());
       entry_proto.set_value(entry.value());
@@ -221,7 +221,7 @@ void UserAnnotationsService::OnModelExecuted(
     entries_.clear();
   }
 
-  for (const auto& entry : maybe_response->entries()) {
+  for (const auto& entry : maybe_response->added_entries()) {
     EntryID entry_id = ++entry_id_counter_;
     optimization_guide::proto::UserAnnotationsEntry entry_proto;
     entry_proto.set_entry_id(entry_id);
@@ -234,7 +234,8 @@ void UserAnnotationsService::OnModelExecuted(
       std::move(callback),
       /*to_be_upserted_entries=*/
       std::vector<optimization_guide::proto::UserAnnotationsEntry>(
-          maybe_response->entries().begin(), maybe_response->entries().end()),
+          maybe_response->added_entries().begin(),
+          maybe_response->added_entries().end()),
       UserAnnotationsExecutionResult::kSuccess);
 }
 
