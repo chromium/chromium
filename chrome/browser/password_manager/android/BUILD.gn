@@ -126,6 +126,8 @@ android_library("java") {
     "//base:base_java",
     "//build/android:build_java",
     "//chrome/browser/device_reauth/android:java",
+    "//chrome/browser/feedback/android:factory_java",
+    "//chrome/browser/feedback/android:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/lifetime/android:java",
     "//chrome/browser/loading_modal/android:java",
@@ -242,6 +244,7 @@ generate_jni("jni_headers") {
 
 android_library("utils_java") {
   sources = [
+    "java/src/org/chromium/chrome/browser/password_manager/CustomTabIntentHelper.java",
     "java/src/org/chromium/chrome/browser/password_manager/GmsUpdateLauncher.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordExportLauncher.java",
   ]
@@ -299,6 +302,7 @@ robolectric_binary("password_manager_junit_tests") {
     ":settings_interface_java",
     ":test_support_java",
     ":unified_password_manager_proto_java",
+    ":utils_java",
     "$google_play_services_package:google_play_services_base_java",
     "$google_play_services_package:google_play_services_basement_java",
     "access_loss:junit",
@@ -310,6 +314,8 @@ robolectric_binary("password_manager_junit_tests") {
     "//base:base_java_test_support",
     "//base:base_java_test_support_uncommon",
     "//base:base_junit_test_support",
+    "//chrome/browser/feedback/android:delegate_public_impl_java",
+    "//chrome/browser/feedback/android:internal_java",
     "//chrome/browser/flags:java",
     "//chrome/browser/loading_modal/android:java",
     "//chrome/browser/password_manager/android/access_loss:enums_java",

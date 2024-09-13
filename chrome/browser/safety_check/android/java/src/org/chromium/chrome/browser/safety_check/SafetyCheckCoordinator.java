@@ -13,6 +13,7 @@ import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.Observer;
 
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.chrome.browser.password_manager.CustomTabIntentHelper;
 import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
 import org.chromium.chrome.browser.password_manager.PasswordStoreBridge;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -51,6 +52,8 @@ public class SafetyCheckCoordinator implements DefaultLifecycleObserver, SafetyC
      * @param passwordStoreBridge Provides access to stored passwords.
      * @param passwordManagerHelper An instance of {@link PasswordManagerHelper} that provides
      *     access to password management capabilities.
+     * @param customTabIntentHelper Provides an intent to open a p-link help center article in a
+     *     custom tab.
      */
     public static void create(
             SafetyCheckSettingsFragment settingsFragment,
@@ -63,7 +66,8 @@ public class SafetyCheckCoordinator implements DefaultLifecycleObserver, SafetyC
             @Nullable SyncService syncService,
             PrefService prefService,
             PasswordStoreBridge passwordStoreBridge,
-            PasswordManagerHelper passwordManagerHelper) {
+            PasswordManagerHelper passwordManagerHelper,
+            CustomTabIntentHelper customTabIntentHelper) {
         new SafetyCheckCoordinator(
                 settingsFragment,
                 profile,
@@ -75,7 +79,8 @@ public class SafetyCheckCoordinator implements DefaultLifecycleObserver, SafetyC
                 syncService,
                 prefService,
                 passwordStoreBridge,
-                passwordManagerHelper);
+                passwordManagerHelper,
+                customTabIntentHelper);
     }
 
     private SafetyCheckCoordinator(
@@ -89,7 +94,8 @@ public class SafetyCheckCoordinator implements DefaultLifecycleObserver, SafetyC
             @Nullable SyncService syncService,
             PrefService prefService,
             PasswordStoreBridge passwordStoreBridge,
-            PasswordManagerHelper passwordManagerHelper) {
+            PasswordManagerHelper passwordManagerHelper,
+            CustomTabIntentHelper customTabIntentHelper) {
         mSettingsFragment = settingsFragment;
         mUpdatesClient = updatesClient;
         mSyncService = syncService;
@@ -136,7 +142,8 @@ public class SafetyCheckCoordinator implements DefaultLifecycleObserver, SafetyC
                                                     prefService,
                                                     passwordStoreBridge,
                                                     passwordManagerHelper,
-                                                    modalDialogManagerSupplier);
+                                                    modalDialogManagerSupplier,
+                                                    customTabIntentHelper);
                                 }
                             }
                         });

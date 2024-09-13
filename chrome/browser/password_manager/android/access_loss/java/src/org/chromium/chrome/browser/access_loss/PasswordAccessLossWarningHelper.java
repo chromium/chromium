@@ -47,10 +47,11 @@ class PasswordAccessLossWarningHelper {
     final BottomSheetController mBottomSheetController;
     final Profile mProfile;
     final Activity mActivity;
+    // TODO(crbug.com/361286381): Extract the constants into a dedicated support article helper.
     static final String KEEP_APPS_AND_DEVICES_WORKING_WITH_GMS_CORE_SUPPORT_URL =
-            "https://support.google.com/googleplay/answer/9037938";
+            "https://support.google.com/googleplay/?p=keep_apps_and_devices_working_with_gms";
     static final String GOOGLE_PLAY_SUPPORTED_DEVICES_SUPPORT_URL =
-            "https://support.google.com/googleplay/answer/1727131";
+            "https://support.google.com/googleplay/?p=google_play_supported_devices";
 
     @VisibleForTesting
     PasswordAccessLossWarningHelper(

@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.access_loss;
 
 import static org.chromium.chrome.browser.access_loss.PasswordAccessLossDialogSettingsProperties.DETAILS;
+import static org.chromium.chrome.browser.access_loss.PasswordAccessLossDialogSettingsProperties.HELP_BUTTON_CALLBACK;
 import static org.chromium.chrome.browser.access_loss.PasswordAccessLossDialogSettingsProperties.HELP_BUTTON_VISIBILITY;
 import static org.chromium.chrome.browser.access_loss.PasswordAccessLossDialogSettingsProperties.TITLE;
 
@@ -16,10 +17,10 @@ import android.view.View;
 import androidx.annotation.NonNull;
 
 import org.chromium.base.Callback;
-import org.chromium.ui.modaldialog.DialogDismissalCause;
+import org.chromium.base.ContextUtils;
+import org.chromium.chrome.browser.password_manager.CustomTabIntentHelper;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
-import org.chromium.ui.modaldialog.ModalDialogProperties.ButtonType;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -30,25 +31,30 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
  * migration to GMS Core failed. The user is then proposed to either update GMS Core (if it's a
  * valid option) or to run the passwords export flow.
  */
-public class PasswordAccessLossDialogSettingsCoordinator
-        implements ModalDialogProperties.Controller {
+public class PasswordAccessLossDialogSettingsCoordinator {
     private Context mContext;
     private ModalDialogManager mModalDialogManager;
-    private @PasswordAccessLossWarningType int mWarningType;
-    private Callback<Context> mLaunchGmsUpdate;
-    private Runnable mLaunchExportFlow;
+    private PasswordAccessLossDialogSettingsMediator mMediator;
 
     public void showPasswordAccessLossDialog(
             Context context,
             @NonNull ModalDialogManager modalDialogManager,
             @PasswordAccessLossWarningType int warningType,
             Callback<Context> launchGmsUpdate,
-            Runnable launchExportFlow) {
+            Runnable launchExportFlow,
+            CustomTabIntentHelper customTabIntentHelper) {
+        assert warningType != PasswordAccessLossWarningType.NONE
+                : "Only show the access loss dialog if there is a reason to warn about.";
         mContext = context;
         mModalDialogManager = modalDialogManager;
-        mWarningType = warningType;
-        mLaunchGmsUpdate = launchGmsUpdate;
-        mLaunchExportFlow = launchExportFlow;
+        mMediator =
+                new PasswordAccessLossDialogSettingsMediator(
+                        ContextUtils.activityFromContext(context),
+                        modalDialogManager,
+                        warningType,
+                        launchGmsUpdate,
+                        launchExportFlow,
+                        customTabIntentHelper);
         View dialogCustomView = createAndBindDialogCustomView(warningType);
         mModalDialogManager.showDialog(
                 createDialogModel(context, warningType, dialogCustomView),
@@ -65,6 +71,7 @@ public class PasswordAccessLossDialogSettingsCoordinator
                         .with(TITLE, resources.getString(getTitle(warningType)))
                         .with(DETAILS, resources.getString(getDescription(warningType)))
                         .with(HELP_BUTTON_VISIBILITY, getHelpButtonVisible(warningType))
+                        .with(HELP_BUTTON_CALLBACK, mMediator::onHelpButtonClicked)
                         .build();
         PropertyModelChangeProcessor.create(
                 model, dialogCustomView, PasswordAccessLossDialogSettingsViewBinder::bind);
@@ -75,7 +82,7 @@ public class PasswordAccessLossDialogSettingsCoordinator
             Context context, @PasswordAccessLossWarningType int warningType, View customView) {
         Resources resources = context.getResources();
         return new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
-                .with(ModalDialogProperties.CONTROLLER, this)
+                .with(ModalDialogProperties.CONTROLLER, mMediator)
                 .with(ModalDialogProperties.CUSTOM_VIEW, customView)
                 .with(
                         ModalDialogProperties.POSITIVE_BUTTON_TEXT,
@@ -183,37 +190,4 @@ public class PasswordAccessLossDialogSettingsCoordinator
         assert false : "Value of PasswordAccessLossWarningType is not known";
         return false;
     }
-
-    private void runPositiveButtonCallback() {
-        switch (mWarningType) {
-            case PasswordAccessLossWarningType.NO_GMS_CORE:
-            case PasswordAccessLossWarningType.NEW_GMS_CORE_MIGRATION_FAILED:
-                mLaunchExportFlow.run();
-                break;
-            case PasswordAccessLossWarningType.NO_UPM:
-            case PasswordAccessLossWarningType.ONLY_ACCOUNT_UPM:
-                mLaunchGmsUpdate.onResult(mContext);
-                break;
-            case PasswordAccessLossWarningType.NONE:
-                assert false
-                        : "Illegal value `PasswordAccessLossWarningType.NONE` when trying to show"
-                                + " password access loss warning";
-                break;
-        }
-    }
-
-    @Override
-    public void onClick(PropertyModel model, int buttonType) {
-        if (buttonType == ButtonType.POSITIVE) {
-            runPositiveButtonCallback();
-        }
-        mModalDialogManager.dismissDialog(
-                model,
-                buttonType == ButtonType.POSITIVE
-                        ? DialogDismissalCause.POSITIVE_BUTTON_CLICKED
-                        : DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
-    }
-
-    @Override
-    public void onDismiss(PropertyModel model, int dismissalCause) {}
 }

@@ -146,15 +146,23 @@ public class PasswordManagerHelper {
      * Services.
      *
      * @param context used to show the UI to manage passwords.
+     * @param referrer indicates where the request to show the password settings UI comes from.
+     * @param modalDialogManagerSupplier provides a {@link ModalDialogManager}. Used to show error
+     *     modal dialogs or a loading dialog if opening the UI takes too long.
      * @param managePasskeys indicates whether passkey management is needed, which when true will
      *     attempt to launch the credential manager even without syncing enabled.
+     * @param account the account for which to open the UI. An empty or null account signals that
+     *     the UI should be opened for the local storage.
+     * @param customTabIntentHelper provides an intent to open a custom tab displaying a help center
+     *     article.
      */
     public void showPasswordSettings(
             Context context,
             @ManagePasswordsReferrer int referrer,
             Supplier<ModalDialogManager> modalDialogManagerSupplier,
             boolean managePasskeys,
-            @Nullable String account) {
+            @Nullable String account,
+            CustomTabIntentHelper customTabIntentHelper) {
         RecordHistogram.recordEnumeratedHistogram(
                 "PasswordManager.ManagePasswordsReferrer",
                 referrer,
@@ -176,7 +184,8 @@ public class PasswordManagerHelper {
                             modalDialogManagerSupplier.get(),
                             warningType,
                             GmsUpdateLauncher::launch,
-                            startExportFlow);
+                            startExportFlow,
+                            customTabIntentHelper);
             return;
         }
 
