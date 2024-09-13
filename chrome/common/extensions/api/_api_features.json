@@ -643,7 +643,7 @@
       "webui_untrusted"
     ],
     "matches": [
-      "chrome-untrusted://lens/*"
+      "chrome-untrusted://lens-overlay/*"
     ]
   }],
   "login": [{

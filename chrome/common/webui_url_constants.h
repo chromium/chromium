@@ -335,9 +335,14 @@ inline constexpr char kChromeUIHistoryClustersSidePanelHost[] =
 inline constexpr char kChromeUIHistoryClustersSidePanelURL[] =
     "chrome://history-clusters-side-panel.top-chrome/";
 inline constexpr char kChromeUILensHost[] = "lens";
-inline constexpr char kChromeUILensUntrustedSidePanelURL[] =
+inline constexpr char kChromeUILensSidePanelHost[] = "lens";
+inline constexpr char kChromeUILensUntrustedSidePanelAPIURL[] =
     "chrome-untrusted://lens/side_panel/side_panel.html";
-inline constexpr char kChromeUILensUntrustedURL[] = "chrome-untrusted://lens/";
+inline constexpr char kChromeUILensUntrustedSidePanelURL[] =
+    "chrome-untrusted://lens/";
+inline constexpr char kChromeUILensOverlayHost[] = "lens-overlay";
+inline constexpr char kChromeUILensOverlayUntrustedURL[] =
+    "chrome-untrusted://lens-overlay/";
 inline constexpr char kChromeUINearbyInternalsHost[] = "nearby-internals";
 inline constexpr char kChromeUINearbyInternalsURL[] =
     "chrome://nearby-internals";

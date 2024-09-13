@@ -711,7 +711,7 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
-  if (url.host_piece() == chrome::kChromeUILensHost) {
+  if (url.host_piece() == chrome::kChromeUILensOverlayHost) {
     return &NewWebUI<LensUI>;
   }
 #endif

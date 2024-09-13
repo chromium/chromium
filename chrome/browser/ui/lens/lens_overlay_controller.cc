@@ -1631,8 +1631,7 @@ std::unique_ptr<views::View> LensOverlayController::CreateViewForOverlay() {
   web_view->GetWebContents()->SetDelegate(this);
 
   // Load the untrusted WebUI into the web view.
-  GURL url(chrome::kChromeUILensUntrustedURL);
-  web_view->LoadInitialURL(url);
+  web_view->LoadInitialURL(GURL(chrome::kChromeUILensOverlayUntrustedURL));
 
   overlay_web_view_ = host_view->AddChildView(std::move(web_view));
   return host_view;

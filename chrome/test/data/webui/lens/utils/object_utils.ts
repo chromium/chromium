@@ -3,11 +3,11 @@
 // found in the LICENSE file.
 
 import type {RectF} from '//resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
-import type {CenterRotatedBox} from 'chrome-untrusted://lens/geometry.mojom-webui.js';
-import {CenterRotatedBox_CoordinateType} from 'chrome-untrusted://lens/geometry.mojom-webui.js';
-import type {OverlayObject} from 'chrome-untrusted://lens/overlay_object.mojom-webui.js';
-import type {Polygon} from 'chrome-untrusted://lens/polygon.mojom-webui.js';
-import {Polygon_CoordinateType, Polygon_VertexOrdering} from 'chrome-untrusted://lens/polygon.mojom-webui.js';
+import type {CenterRotatedBox} from 'chrome-untrusted://lens-overlay/geometry.mojom-webui.js';
+import {CenterRotatedBox_CoordinateType} from 'chrome-untrusted://lens-overlay/geometry.mojom-webui.js';
+import type {OverlayObject} from 'chrome-untrusted://lens-overlay/overlay_object.mojom-webui.js';
+import type {Polygon} from 'chrome-untrusted://lens-overlay/polygon.mojom-webui.js';
+import {Polygon_CoordinateType, Polygon_VertexOrdering} from 'chrome-untrusted://lens-overlay/polygon.mojom-webui.js';
 import {assertEquals, assertLT, assertNotEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 export function assertWithinThreshold(value1: number, value2: number): void {

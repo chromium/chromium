@@ -383,7 +383,7 @@
       "chrome-untrusted://boca-app/*",
       "chrome-untrusted://compose/*",
       "chrome-untrusted://help-app/*",
-      "chrome-untrusted://lens/*",
+      "chrome-untrusted://lens-overlay/*",
       "chrome-untrusted://media-app/*",
       "chrome-untrusted://mako/*",
       "chrome-untrusted://projector/*",
