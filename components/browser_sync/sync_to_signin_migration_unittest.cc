@@ -79,9 +79,14 @@ class SyncToSigninMigrationTestBase {
     }
   }
 
+  void FastForwardBy(base::TimeDelta delta) {
+    task_environment_.FastForwardBy(delta);
+  }
+
  private:
   base::test::ScopedFeatureList features_;
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
  protected:
   TestingPrefServiceSimple pref_service_;
@@ -255,28 +260,90 @@ TEST_P(SyncToSigninMigrationTest, SyncDisabledByPolicy) {
           .empty());
 }
 
-TEST_P(SyncToSigninMigrationTest, SyncPaused) {
+TEST_P(SyncToSigninMigrationTest, SyncPaused_MinDelayNotPassed) {
   // Sync-the-feature is enabled, but in the "paused" state due to a persistent
   // auth error.
+  sync_service_.SetPersistentAuthError();
+  RecordStateToPrefs();
+  ASSERT_EQ(sync_service_.GetTransportState(),
+            syncer::SyncService::TransportState::PAUSED);
+  ASSERT_TRUE(sync_service_.HasSyncConsent());
+  ASSERT_TRUE(sync_service_.GetActiveDataTypes().empty());
+  ASSERT_TRUE(
+      pref_service_.GetDict(syncer::prefs::internal::kSelectedTypesPerAccount)
+          .empty());
+  const std::string gaia_id = sync_service_.GetAccountInfo().gaia;
+  const std::string email = sync_service_.GetAccountInfo().email;
+
+  // Attempt to migrate.
+  MaybeMigrateSyncingUserToSignedIn(fake_profile_dir_.GetPath(),
+                                    &pref_service_);
+
+  // Note that TestSyncService doesn't consume the prefs, so verify the prefs
+  // directly here.
+  if (IsForceMigrationEnabled()) {
+    // Enabling the forced migration flag causes the min delay requirement to be
+    // ignored, immediately moving the user to the signed-in state.
+    EXPECT_EQ(pref_service_.GetString(prefs::kGoogleServicesAccountId),
+              gaia_id);
+    EXPECT_FALSE(
+        pref_service_.GetBoolean(prefs::kGoogleServicesConsentedToSync));
+    EXPECT_EQ(pref_service_.GetString(
+                  prefs::kGoogleServicesSyncingGaiaIdMigratedToSignedIn),
+              gaia_id);
+    EXPECT_EQ(pref_service_.GetString(
+                  prefs::kGoogleServicesSyncingUsernameMigratedToSignedIn),
+              email);
+    EXPECT_FALSE(
+        pref_service_.GetDict(syncer::prefs::internal::kSelectedTypesPerAccount)
+            .empty());
+  } else {
+    // The migration should not run yet, giving the user some time to resolve
+    // the error (switches::kMinDelayToMigrateSyncPaused).
+    EXPECT_EQ(pref_service_.GetString(prefs::kGoogleServicesAccountId),
+              gaia_id);
+    EXPECT_TRUE(
+        pref_service_.GetBoolean(prefs::kGoogleServicesConsentedToSync));
+    EXPECT_EQ(pref_service_.GetString(
+                  prefs::kGoogleServicesSyncingGaiaIdMigratedToSignedIn),
+              std::string());
+    EXPECT_EQ(pref_service_.GetString(
+                  prefs::kGoogleServicesSyncingUsernameMigratedToSignedIn),
+              std::string());
+    EXPECT_TRUE(
+        pref_service_.GetDict(syncer::prefs::internal::kSelectedTypesPerAccount)
+            .empty());
+  }
+}
+
+TEST_P(SyncToSigninMigrationTest, SyncPaused_MinDelayPassed) {
+  if (IsForceMigrationEnabled()) {
+    // When the forced migration flag is enabled, there is no waiting for the
+    // error to be resolved. The migration runs on the first attempt and that's
+    // covered in SyncPaused_MinDelayNotPassed.
+    return;
+  }
+
+  // Sync-the-feature is enabled but transport is "paused" due to a persistent
+  // auth error. Simulate a first migration attempt that does nothing (see
+  // SyncPaused_MinDelayNotPassed test).
   sync_service_.SetPersistentAuthError();
   ASSERT_EQ(sync_service_.GetTransportState(),
             syncer::SyncService::TransportState::PAUSED);
   ASSERT_TRUE(sync_service_.HasSyncConsent());
   ASSERT_TRUE(sync_service_.GetActiveDataTypes().empty());
-
-  const std::string gaia_id = sync_service_.GetAccountInfo().gaia;
-  const std::string email = sync_service_.GetAccountInfo().email;
-
-  // Save the above state to prefs.
-  RecordStateToPrefs();
-
-  // Before the migration, there are no per-account selected types.
   ASSERT_TRUE(
       pref_service_.GetDict(syncer::prefs::internal::kSelectedTypesPerAccount)
           .empty());
+  const std::string gaia_id = sync_service_.GetAccountInfo().gaia;
+  const std::string email = sync_service_.GetAccountInfo().email;
+  RecordStateToPrefs();
+  MaybeMigrateSyncingUserToSignedIn(fake_profile_dir_.GetPath(),
+                                    &pref_service_);
+  ASSERT_TRUE(sync_service_.HasSyncConsent());
 
-  // Run the migration. This should change the user to be non-syncing (even
-  // though Sync wasn't actually active).
+  // Now, enough time has passed and the migration is attempted again.
+  FastForwardBy(switches::kMinDelayToMigrateSyncPaused.Get());
   MaybeMigrateSyncingUserToSignedIn(fake_profile_dir_.GetPath(),
                                     &pref_service_);
 
@@ -293,9 +360,53 @@ TEST_P(SyncToSigninMigrationTest, SyncPaused) {
   EXPECT_EQ(pref_service_.GetString(
                 prefs::kGoogleServicesSyncingUsernameMigratedToSignedIn),
             email);
-
   // There should be per-account selected types now. The details of this are
   // covered in SyncPrefs unit tests.
+  EXPECT_FALSE(
+      pref_service_.GetDict(syncer::prefs::internal::kSelectedTypesPerAccount)
+          .empty());
+}
+
+TEST_P(SyncToSigninMigrationTest, SyncPaused_AuthErrorResolved) {
+  if (IsForceMigrationEnabled()) {
+    // When the forced migration flag is enabled, there is no waiting for the
+    // error to be resolved. The migration runs on the first attempt and that's
+    // covered in SyncPaused_MinDelayNotPassed.
+    return;
+  }
+
+  // Sync-the-feature is enabled but transport is "paused" due to a persistent
+  // auth error. Simulate a first migration attempt that does nothing (see
+  // SyncPaused_MinDelayNotPassed test).
+  sync_service_.SetPersistentAuthError();
+  ASSERT_EQ(sync_service_.GetTransportState(),
+            syncer::SyncService::TransportState::PAUSED);
+  ASSERT_TRUE(sync_service_.HasSyncConsent());
+  ASSERT_TRUE(sync_service_.GetActiveDataTypes().empty());
+  ASSERT_TRUE(
+      pref_service_.GetDict(syncer::prefs::internal::kSelectedTypesPerAccount)
+          .empty());
+  const std::string gaia_id = sync_service_.GetAccountInfo().gaia;
+  const std::string email = sync_service_.GetAccountInfo().email;
+  RecordStateToPrefs();
+  MaybeMigrateSyncingUserToSignedIn(fake_profile_dir_.GetPath(),
+                                    &pref_service_);
+
+  // Attempt the migration again with the auth error resolved.
+  sync_service_.ClearAuthError();
+  RecordStateToPrefs();
+  MaybeMigrateSyncingUserToSignedIn(fake_profile_dir_.GetPath(),
+                                    &pref_service_);
+
+  // The migration should have run.
+  EXPECT_EQ(pref_service_.GetString(prefs::kGoogleServicesAccountId), gaia_id);
+  EXPECT_FALSE(pref_service_.GetBoolean(prefs::kGoogleServicesConsentedToSync));
+  EXPECT_EQ(pref_service_.GetString(
+                prefs::kGoogleServicesSyncingGaiaIdMigratedToSignedIn),
+            gaia_id);
+  EXPECT_EQ(pref_service_.GetString(
+                prefs::kGoogleServicesSyncingUsernameMigratedToSignedIn),
+            email);
   EXPECT_FALSE(
       pref_service_.GetDict(syncer::prefs::internal::kSelectedTypesPerAccount)
           .empty());
@@ -381,7 +492,7 @@ INSTANTIATE_TEST_SUITE_P(,
 // Fixture for tests covering migration metrics. The test param determines
 // whether the migration feature flag and possibly also the force-migration
 // feature flag are enabled.
-enum FeatureState {
+enum class FeatureState {
   kMigrationDisabled,
   kMigrationEnabled,
   kMigrationForced,
@@ -667,23 +778,115 @@ TEST_P(SyncToSigninMigrationMetricsTest, SyncTransport) {
       "Sync.SyncToSigninMigrationDecision.Migration.READING_LIST", 0);
 }
 
-TEST_P(SyncToSigninMigrationMetricsTest, SyncPaused) {
+TEST_P(SyncToSigninMigrationMetricsTest, SyncPaused_MinDelayNotPassed) {
   sync_service_.SetPersistentAuthError();
   ASSERT_EQ(sync_service_.GetTransportState(),
             syncer::SyncService::TransportState::PAUSED);
   ASSERT_TRUE(sync_service_.HasSyncConsent());
   ASSERT_TRUE(sync_service_.GetActiveDataTypes().empty());
-
-  // Save the above state to prefs.
   RecordStateToPrefs();
-
   base::HistogramTester histograms;
 
   MaybeMigrateSyncingUserToSignedIn(fake_profile_dir_.GetPath(),
                                     &pref_service_);
 
-  // In the Sync-paused state, the overall migration should run, except if the
-  // feature flag is disabled.
+  std::string infix = GetTypeDecisionHistogramInfix();
+  if (IsForceMigrationEnabled()) {
+    // Enabling the forced migration flag causes the min delay requirement to be
+    // ignored, immediately moving the user to the signed-in state. Individual
+    // data types were not active and so should not be migrated.
+    histograms.ExpectUniqueSample(
+        "Sync.SyncToSigninMigrationDecision",
+        /*SyncToSigninMigrationDecision::kMigrateForced*/ 8, 1);
+    histograms.ExpectTotalCount("Sync.SyncToSigninMigrationTime", 1);
+    histograms.ExpectUniqueSample(
+        "Sync.SyncToSigninMigrationDecision." + infix + ".BOOKMARK",
+        /*SyncToSigninMigrationDataTypeDecision::kDontMigrateTypeNotActive*/ 2,
+        1);
+#if BUILDFLAG(IS_ANDROID)
+    // PASSWORDS is migrated by other layers on Android.
+    histograms.ExpectTotalCount(
+        "Sync.SyncToSigninMigrationDecision." + infix + ".PASSWORD", 0);
+#else
+    histograms.ExpectUniqueSample(
+        "Sync.SyncToSigninMigrationDecision." + infix + ".PASSWORD",
+        /*SyncToSigninMigrationDataTypeDecision::kDontMigrateTypeNotActive*/ 2,
+        1);
+#endif  // BUILDFLAG(IS_ANDROID)
+    histograms.ExpectUniqueSample(
+        "Sync.SyncToSigninMigrationDecision." + infix + ".READING_LIST",
+        /*SyncToSigninMigrationDataTypeDecision::kDontMigrateTypeNotActive*/ 2,
+        1);
+  } else if (IsMigrationEnabled()) {
+    // The migration should not run because not enough time passed since the
+    // auth error was detected. There's still a chance the user will resolve it.
+    histograms.ExpectUniqueSample(
+        "Sync.SyncToSigninMigrationDecision",
+        /*SyncToSigninMigrationDecision::kDontMigrateAuthError*/ 9, 1);
+    histograms.ExpectTotalCount("Sync.SyncToSigninMigrationTime", 0);
+    histograms.ExpectTotalCount(
+        "Sync.SyncToSigninMigrationDecision." + infix + ".BOOKMARK", 0);
+    histograms.ExpectTotalCount(
+        "Sync.SyncToSigninMigrationDecision." + infix + ".PASSWORD", 0);
+    histograms.ExpectTotalCount(
+        "Sync.SyncToSigninMigrationDecision." + infix + ".READING_LIST", 0);
+  } else {
+    // The migration should not run because the flag is disabled. The per type
+    // metrics are still recorded for historical reasons.
+    histograms.ExpectUniqueSample(
+        "Sync.SyncToSigninMigrationDecision",
+        /*SyncToSigninMigrationDecision::kDontMigrateFlagDisabled*/ 5, 1);
+    histograms.ExpectTotalCount("Sync.SyncToSigninMigrationTime", 0);
+    histograms.ExpectUniqueSample(
+        "Sync.SyncToSigninMigrationDecision." + infix + ".BOOKMARK",
+        /*SyncToSigninMigrationDataTypeDecision::kDontMigrateTypeNotActive*/ 2,
+        1);
+#if BUILDFLAG(IS_ANDROID)
+    // PASSWORDS is migrated by other layers on Android.
+    histograms.ExpectTotalCount(
+        "Sync.SyncToSigninMigrationDecision." + infix + ".PASSWORD", 0);
+#else
+    histograms.ExpectUniqueSample(
+        "Sync.SyncToSigninMigrationDecision." + infix + ".PASSWORD",
+        /*SyncToSigninMigrationDataTypeDecision::kDontMigrateTypeNotActive*/ 2,
+        1);
+#endif  // BUILDFLAG(IS_ANDROID)
+    histograms.ExpectUniqueSample(
+        "Sync.SyncToSigninMigrationDecision." + infix + ".READING_LIST",
+        /*SyncToSigninMigrationDataTypeDecision::kDontMigrateTypeNotActive*/ 2,
+        1);
+  }
+}
+
+TEST_P(SyncToSigninMigrationMetricsTest, SyncPaused_MinDelayPassed) {
+  if (GetParam() != FeatureState::kMigrationEnabled) {
+    // For kMigrationForced, the duration of the auth error is irrelevant,
+    // the migration succeeds on the first attempt and that's covered in
+    // SyncPaused_MinDelayNotPassed.
+    // For kMigrationDisabled, waiting won't change anything, the second attempt
+    // would fail just like the first one, as in SyncPaused_MinDelayNotPassed.
+    return;
+  }
+
+  // Simulate a first migration attempt while sync-the-feature is enabled but
+  // transport is "paused" due to a persistent auth error. The first attempt
+  // does nothing (see SyncPaused_MinDelayNotPassed test).
+  sync_service_.SetPersistentAuthError();
+  ASSERT_EQ(sync_service_.GetTransportState(),
+            syncer::SyncService::TransportState::PAUSED);
+  ASSERT_TRUE(sync_service_.HasSyncConsent());
+  ASSERT_TRUE(sync_service_.GetActiveDataTypes().empty());
+  RecordStateToPrefs();
+  MaybeMigrateSyncingUserToSignedIn(fake_profile_dir_.GetPath(),
+                                    &pref_service_);
+  base::HistogramTester histograms;
+
+  // Now, enough time has passed and the migration is attempted again.
+  FastForwardBy(switches::kMinDelayToMigrateSyncPaused.Get());
+  MaybeMigrateSyncingUserToSignedIn(fake_profile_dir_.GetPath(),
+                                    &pref_service_);
+
+  // The overall migration should run, except if the feature flag is disabled.
   int expected_decision =
       IsMigrationEnabled()
           ? /*SyncToSigninMigrationDecision::kMigrate*/ 0
@@ -719,6 +922,58 @@ TEST_P(SyncToSigninMigrationMetricsTest, SyncPaused) {
       "Sync.SyncToSigninMigrationDecision." + infix + ".READING_LIST",
       /*SyncToSigninMigrationDataTypeDecision::kDontMigrateTypeNotActive*/ 2,
       1);
+}
+
+TEST_P(SyncToSigninMigrationMetricsTest, SyncPaused_AuthErrorResolved) {
+  if (GetParam() != FeatureState::kMigrationEnabled) {
+    // For kMigrationForced, the duration of the auth error is irrelevant,
+    // the migration succeeds on the first attempt and that's covered in
+    // SyncPaused_MinDelayNotPassed.
+    // For kMigrationDisabled, waiting won't change anything, the second attempt
+    // would fail just like the first one, as in SyncPaused_MinDelayNotPassed.
+    return;
+  }
+
+  // Sync-the-feature is enabled but transport is "paused" due to a persistent
+  // auth error. Simulate a first migration attempt that does nothing (see
+  // SyncPaused_MinDelayNotPassed test). After that, the error is resolved.
+  sync_service_.SetPersistentAuthError();
+  ASSERT_EQ(sync_service_.GetTransportState(),
+            syncer::SyncService::TransportState::PAUSED);
+  ASSERT_TRUE(sync_service_.HasSyncConsent());
+  ASSERT_TRUE(sync_service_.GetActiveDataTypes().empty());
+  RecordStateToPrefs();
+  MaybeMigrateSyncingUserToSignedIn(fake_profile_dir_.GetPath(),
+                                    &pref_service_);
+  sync_service_.ClearAuthError();
+  RecordStateToPrefs();
+  base::HistogramTester histograms;
+
+  // Attempt the migration again with the auth error resolved.
+  MaybeMigrateSyncingUserToSignedIn(fake_profile_dir_.GetPath(),
+                                    &pref_service_);
+
+  // The migration should run.
+  std::string infix = GetTypeDecisionHistogramInfix();
+  histograms.ExpectUniqueSample("Sync.SyncToSigninMigrationDecision",
+                                /*SyncToSigninMigrationDecision::kMigrate*/ 0,
+                                1);
+  histograms.ExpectTotalCount("Sync.SyncToSigninMigrationTime", 1);
+  histograms.ExpectUniqueSample(
+      "Sync.SyncToSigninMigrationDecision." + infix + ".BOOKMARK",
+      /*SyncToSigninMigrationDataTypeDecision::kMigrate*/ 0, 1);
+#if BUILDFLAG(IS_ANDROID)
+  // PASSWORDS is migrated by other layers on Android.
+  histograms.ExpectTotalCount(
+      "Sync.SyncToSigninMigrationDecision." + infix + ".PASSWORD", 0);
+#else
+  histograms.ExpectUniqueSample(
+      "Sync.SyncToSigninMigrationDecision." + infix + ".PASSWORD",
+      /*SyncToSigninMigrationDataTypeDecision::kMigrate*/ 0, 1);
+#endif  // BUILDFLAG(IS_ANDROID)
+  histograms.ExpectUniqueSample(
+      "Sync.SyncToSigninMigrationDecision." + infix + ".READING_LIST",
+      /*SyncToSigninMigrationDataTypeDecision::kMigrate*/ 0, 1);
 }
 
 TEST_P(SyncToSigninMigrationMetricsTest, SyncInitializing) {

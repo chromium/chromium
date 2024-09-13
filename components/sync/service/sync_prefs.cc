@@ -205,6 +205,9 @@ void SyncPrefs::RegisterProfilePrefs(PrefRegistrySimple* registry) {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   registry->RegisterBooleanPref(kAutofillPerAccountPrefMigrationDone, false);
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  registry->RegisterTimePref(
+      prefs::internal::kFirstTimeTriedToMigrateSyncFeaturePausedToSignin,
+      base::Time());
 
   SyncFeatureStatusForMigrationsRecorder::RegisterProfilePrefs(registry);
 

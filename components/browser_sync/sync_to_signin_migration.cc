@@ -43,9 +43,27 @@ enum class SyncToSigninMigrationDecision {
   kUndoMigration = 6,
   kUndoNotNecessary = 7,
   kMigrateForced = 8,
-  kMaxValue = kMigrateForced
+  kDontMigrateAuthError = 9,
+  kMaxValue = kDontMigrateAuthError
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:SyncToSigninMigrationDecisionOverall)
+
+// See docs of the kFirstTimeTriedToMigrateSyncFeaturePausedToSignin pref.
+void SetFirstTimeTriedToMigrateSyncPaused(PrefService* pref_service) {
+  const char* pref_name = syncer::prefs::internal::
+      kFirstTimeTriedToMigrateSyncFeaturePausedToSignin;
+  if (!base::FeatureList::IsEnabled(switches::kMigrateSyncingUserToSignedIn)) {
+    pref_service->ClearPref(pref_name);
+    return;
+  }
+
+  if (pref_service->FindPreference(pref_name)->IsDefaultValue() &&
+      syncer::SyncFeatureStatusForMigrationsRecorder::
+              GetSyncFeatureStatusForSyncToSigninMigration(pref_service) ==
+          syncer::SyncFeatureStatusForSyncToSigninMigration::kPaused) {
+    pref_service->SetTime(pref_name, base::Time::Now());
+  }
+}
 
 SyncToSigninMigrationDecision GetSyncToSigninMigrationDecision(
     const PrefService* pref_service) {
@@ -80,10 +98,28 @@ SyncToSigninMigrationDecision GetSyncToSigninMigrationDecision(
   bool forced = false;
   switch (status) {
     case syncer::SyncFeatureStatusForSyncToSigninMigration::kDisabled:
-    case syncer::SyncFeatureStatusForSyncToSigninMigration::kPaused:
     case syncer::SyncFeatureStatusForSyncToSigninMigration::kActive:
       // In all these cases, the status is known, and migration can go ahead.
       break;
+    case syncer::SyncFeatureStatusForSyncToSigninMigration::kPaused: {
+      if (base::FeatureList::IsEnabled(
+              switches::kForceMigrateSyncingUserToSignedIn)) {
+        forced = true;
+        break;
+      }
+      base::Time first_attempt_time = pref_service->GetTime(
+          syncer::prefs::internal::
+              kFirstTimeTriedToMigrateSyncFeaturePausedToSignin);
+      if (!first_attempt_time.is_null() &&
+          base::Time::Now() <
+              first_attempt_time +
+                  switches::kMinDelayToMigrateSyncPaused.Get()) {
+        return SyncToSigninMigrationDecision::kDontMigrateAuthError;
+      }
+      // The auth error hasn't been resolved within the allotted time. Go ahead
+      // with the migration.
+      break;
+    }
     case syncer::SyncFeatureStatusForSyncToSigninMigration::kInitializing:
       // In the previous browser run, Sync didn't finish initializing. Defer
       // migration, unless force-migration is enabled.
@@ -159,6 +195,10 @@ void UndoSyncToSigninMigration(PrefService* pref_service) {
       pref_service->GetString(
           prefs::kGoogleServicesSyncingUsernameMigratedToSignedIn));
 
+  pref_service->ClearPref(
+      syncer::prefs::internal::
+          kFirstTimeTriedToMigrateSyncFeaturePausedToSignin);
+
   // Clear the "migrated user" prefs, so the "undo" logic doesn't run again.
   pref_service->ClearPref(
       prefs::kGoogleServicesSyncingGaiaIdMigratedToSignedIn);
@@ -227,6 +267,9 @@ void MaybeMigrateSyncingUserToSignedIn(const base::FilePath& profile_path,
   // Global migration decision and metrics.
   // ======================================
 
+  // Influences GetSyncToSigninMigrationDecision(), so call it first.
+  SetFirstTimeTriedToMigrateSyncPaused(pref_service);
+
   const SyncToSigninMigrationDecision decision =
       GetSyncToSigninMigrationDecision(pref_service);
   base::UmaHistogramEnumeration("Sync.SyncToSigninMigrationDecision", decision);
@@ -240,6 +283,7 @@ void MaybeMigrateSyncingUserToSignedIn(const base::FilePath& profile_path,
     case SyncToSigninMigrationDecision::kDontMigrateNotSyncing:
     case SyncToSigninMigrationDecision::kDontMigrateSyncStatusUndefined:
     case SyncToSigninMigrationDecision::kDontMigrateSyncStatusInitializing:
+    case SyncToSigninMigrationDecision::kDontMigrateAuthError:
     case SyncToSigninMigrationDecision::kUndoNotNecessary:
       // No migration, and no point in recording per-type metrics - we're done.
       return;

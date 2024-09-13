@@ -138,6 +138,15 @@ inline constexpr char kMigrateReadingListFromLocalToAccount[] =
 inline constexpr char kSyncToSigninMigrationState[] =
     "sync.sync_to_signin_migration_state";
 
+// Set only if the kMigrateSyncingUserToSignedIn flag is enabled, reset if the
+// flag is disabled.
+// If the user has sync-the-feature enabled but TransportState::PAUSED, this
+// records the first time MaybeMigrateSyncingUserToSignedIn() is called.
+// This is not written for users who are in TransportState::PAUSED with
+// sync-the-feature disabled.
+inline constexpr char kFirstTimeTriedToMigrateSyncFeaturePausedToSignin[] =
+    "sync.first_time_tried_to_migrate_sync_feature_paused_to_signin";
+
 }  // namespace internal
 }  // namespace syncer::prefs
 
