@@ -190,7 +190,12 @@ export class RecordingInfoDialog extends ReactiveLitElement {
   }
 
   override render(): RenderResult {
-    return html`<cra-dialog ${ref(this.dialog)}>
+    // Sets aria-label explicitly since the default aria-labelledby takes the
+    // whole headline, which includes the "close" button.
+    return html`<cra-dialog
+      ${ref(this.dialog)}
+      aria-label=${i18n.recordInfoDialogHeader}
+    >
       <div slot="headline">
         ${i18n.recordInfoDialogHeader}
         <cra-icon-button

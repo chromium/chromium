@@ -6,7 +6,7 @@ import {MdDialog} from 'chrome://resources/mwc/@material/web/dialog/dialog.js';
 import {
   DialogAnimation,
 } from 'chrome://resources/mwc/@material/web/dialog/internal/animations.js';
-import {css} from 'chrome://resources/mwc/lit/index.js';
+import {css, PropertyValues} from 'chrome://resources/mwc/lit/index.js';
 
 /**
  * A dialog with ChromeOS specific style.
@@ -125,6 +125,18 @@ export class CraDialog extends MdDialog {
         ],
       ],
     });
+  }
+
+  override updated(changedProperties: PropertyValues<this>): void {
+    super.updated(changedProperties);
+
+    if (this.ariaLabel !== null) {
+      // If aria-label is explicitly set, remove the aria-labelledby since that
+      // takes precedence over aria-label.
+      // TODO: b/338544996 - File a bug to md-dialog for this.
+      const dialog = this.shadowRoot?.querySelector('dialog') ?? null;
+      dialog?.removeAttribute('aria-labelledby');
+    }
   }
 }
 
