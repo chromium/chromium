@@ -359,8 +359,11 @@ dependencies = [
 
 [[package]]
 name = "ppv-lite86"
-version = "0.2.17"
+version = "0.2.20"
 source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "zerocopy",
+]
 
 [[package]]
 name = "proc-macro2"

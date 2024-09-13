@@ -2,6 +2,7 @@
 
 use crate::types::*;
 use core::arch::x86_64::{__m128i, __m256i};
+use zerocopy::{AsBytes, FromBytes, FromZeroes};
 
 mod sse2;
 
@@ -106,7 +107,8 @@ pub type AVX2 = Avx2Machine<NoNI>;
 /// Converting into and out of this type should be essentially free, although it may be more
 /// aligned than a particular impl requires.
 #[allow(non_camel_case_types)]
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, FromBytes, AsBytes, FromZeroes)]
+#[repr(C)]
 pub union vec128_storage {
     u32x4: [u32; 4],
     u64x2: [u64; 2],

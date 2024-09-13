@@ -4,8 +4,10 @@ use crate::types::*;
 use crate::{vec128_storage, vec256_storage, vec512_storage};
 use core::marker::PhantomData;
 use core::ops::*;
+use zerocopy::{AsBytes, FromBytes, FromZeroes};
 
-#[derive(Copy, Clone, Default)]
+#[derive(Copy, Clone, Default, FromBytes, AsBytes, FromZeroes)]
+#[repr(transparent)]
 #[allow(non_camel_case_types)]
 pub struct x2<W, G>(pub [W; 2], PhantomData<G>);
 impl<W, G> x2<W, G> {
@@ -220,7 +222,8 @@ impl<W: Copy + LaneWords4, G: Copy> LaneWords4 for x2<W, G> {
     }
 }
 
-#[derive(Copy, Clone, Default)]
+#[derive(Copy, Clone, Default, FromBytes, AsBytes, FromZeroes)]
+#[repr(transparent)]
 #[allow(non_camel_case_types)]
 pub struct x4<W>(pub [W; 4]);
 impl<W> x4<W> {
