@@ -144,6 +144,7 @@ const CGFloat kProgressBarFull = 1.0f;
   _omniboxContainer.backgroundColor =
       [UIColor colorNamed:kSecondaryBackgroundColor];
   _omniboxContainer.layer.cornerRadius = kOmniboxContainerCornerRadius;
+  _omniboxContainer.clipsToBounds = YES;
   [_omniboxContainer
       setContentHuggingPriority:UILayoutPriorityDefaultLow
                         forAxis:UILayoutConstraintAxisHorizontal];
@@ -194,7 +195,7 @@ const CGFloat kProgressBarFull = 1.0f;
   // Progress bar.
   _progressBar.translatesAutoresizingMaskIntoConstraints = NO;
   _progressBar.hidden = YES;
-  [self.view addSubview:_progressBar];
+  [_omniboxContainer addSubview:_progressBar];
 
   NSLayoutConstraint* omniboxLeadingConstraint =
       [_omniboxContainer.leadingAnchor
@@ -219,12 +220,12 @@ const CGFloat kProgressBarFull = 1.0f;
                        constant:kWebContainerTopPadding],
     [_omniboxPopupContainer.topAnchor
         constraintEqualToAnchor:_horizontalStackView.bottomAnchor],
-    [_progressBar.topAnchor
-        constraintEqualToAnchor:_webViewContainer.topAnchor],
     [_progressBar.leadingAnchor
-        constraintEqualToAnchor:_webViewContainer.leadingAnchor],
+        constraintEqualToAnchor:_omniboxContainer.leadingAnchor],
     [_progressBar.trailingAnchor
-        constraintEqualToAnchor:_webViewContainer.trailingAnchor],
+        constraintEqualToAnchor:_omniboxContainer.trailingAnchor],
+    [_progressBar.bottomAnchor
+        constraintEqualToAnchor:_omniboxContainer.bottomAnchor],
     [_progressBar.heightAnchor constraintEqualToConstant:kProgressBarHeight],
   ]];
   AddSameConstraintsToSides(
