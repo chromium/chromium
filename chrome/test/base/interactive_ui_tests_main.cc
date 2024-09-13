@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/test/base/chrome_test_launcher.h"
-
 #include <memory>
 
 #include "base/command_line.h"
@@ -11,10 +9,12 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ssl/https_upgrades_navigation_throttle.h"
+#include "chrome/test/base/chrome_test_launcher.h"
 #include "chrome/test/base/chrome_test_suite.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "gpu/ipc/service/image_transport_surface.h"
+#include "ui/base/interaction/interactive_test_internal.h"
 #include "ui/base/test/ui_controls.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -61,6 +61,10 @@ class InteractiveUITestSuite : public ChromeTestSuite {
 #else
     ui_controls::EnableUIControls();
 #endif
+    // Allow interactive Kombucha test verbs in interactive UI tests.
+    ui::test::internal::InteractiveTestPrivate::
+        set_interactive_test_verbs_allowed(
+            base::PassKey<InteractiveUITestSuite>());
 
     // TODO(crbug.com/40263135) Investigate why https upgrade causes
     // interactive_ui_tests to run longer.

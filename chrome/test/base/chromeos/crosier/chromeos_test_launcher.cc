@@ -7,6 +7,7 @@
 #include <string_view>
 
 #include "base/test/task_environment.h"
+#include "base/types/pass_key.h"
 #include "chrome/app/chrome_crash_reporter_client.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/common/profiler/chrome_thread_profiler_client.h"
@@ -17,6 +18,7 @@
 #include "content/public/test/network_service_test_helper.h"
 #include "mojo/public/cpp/bindings/service_factory.h"
 #include "services/test/echo/echo_service.h"
+#include "ui/base/interaction/interactive_test_internal.h"
 
 namespace {
 
@@ -63,6 +65,12 @@ ChromeOSTestLauncherDelegate::ChromeOSTestLauncherDelegate(
     ChromeOSTestSuiteRunner* runner)
     : runner_(runner) {
   CHECK(runner);
+
+  // Enable interactive testing verbs in Kombucha. OS integration tests in
+  // ChromeOS should be safe to do e.g. mouse input and window activation.
+  ui::test::internal::InteractiveTestPrivate::
+      set_interactive_test_verbs_allowed(
+          base::PassKey<ChromeOSTestLauncherDelegate>());
 }
 
 ChromeOSTestLauncherDelegate::~ChromeOSTestLauncherDelegate() = default;

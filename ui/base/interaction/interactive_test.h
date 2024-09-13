@@ -533,6 +533,14 @@ class InteractiveTestApi {
   // Equivalent to calling FormatDescription(format) on every step in `steps`.
   static void AddDescription(MultiStep& steps, std::string_view format);
 
+  // Call this from any test verb which requires an environment suitable for
+  // interactive testing. Typically, this means the test must be in an
+  // environment where it can control mouse input, window activation, etc.
+  //
+  // Will crash a test which uses an inappropriate verb, with a description of
+  // why the verb was disallowed.
+  void RequireInteractiveTest();
+
  private:
   // Implementation for RunTestSequenceInContext().
   bool RunTestSequenceImpl(ElementContext context,
