@@ -261,10 +261,21 @@
     "dependencies": ["manifest:commands"],
     "contexts": ["privileged_extension"]
   },
-  "contentSettings": {
+  "contentSettings": [{
     "dependencies": ["permission:contentSettings"],
-    "contexts": ["privileged_extension"]
-  },
+    "contexts": [
+      "privileged_extension"
+    ],
+    "default_parent": true
+  },{
+    "channel": "stable",
+    "contexts": [
+      "webui_untrusted"
+    ],
+    "matches": [
+      "chrome-untrusted://boca-app/*"
+    ]
+  }],
   "contentSettings.clipboard": {
     "feature_flag": "ApiContentSettingsClipboard"
   },
