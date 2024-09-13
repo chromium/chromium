@@ -27,6 +27,7 @@
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
 #include "components/omnibox/browser/fake_autocomplete_provider_client.h"
+#include "components/omnibox/browser/omnibox_triggered_feature_service.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
 #include "components/search_engines/template_url.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -142,6 +143,11 @@ class HistoryEmbeddingsProviderTest : public testing::Test,
 };
 
 TEST_F(HistoryEmbeddingsProviderTest, Start) {
+  OmniboxTriggeredFeatureService* trigger_service =
+      client_->GetOmniboxTriggeredFeatureService();
+  OmniboxTriggeredFeatureService::Feature trigger_feature =
+      metrics::OmniboxEventProto_Feature_HISTORY_EMBEDDINGS_FEATURE;
+
   AutocompleteInput short_input = CreateAutocompleteInput(u"query");
   AutocompleteInput long_input = CreateAutocompleteInput(u"query query query");
 
@@ -152,6 +158,7 @@ TEST_F(HistoryEmbeddingsProviderTest, Start) {
               Search(testing::_, testing::_, testing::_, testing::_))
       .Times(0);
   history_embeddings_provider_->Start(long_input, false);
+  EXPECT_FALSE(trigger_service->GetFeatureTriggeredInSession(trigger_feature));
 
   // Short queries should be blocked.
   base::test::ScopedFeatureList enabled_feature;
@@ -170,6 +177,8 @@ TEST_F(HistoryEmbeddingsProviderTest, Start) {
               Search(testing::_, testing::_, testing::_, testing::_))
       .Times(0);
   history_embeddings_provider_->Start(short_input, false);
+  EXPECT_FALSE(trigger_service->GetFeatureTriggeredInSession(trigger_feature));
+  trigger_service->ResetSession();
 
   // Long queries should pass.
   EXPECT_CALL(
@@ -177,6 +186,7 @@ TEST_F(HistoryEmbeddingsProviderTest, Start) {
       Search("query query query", std::optional<base::Time>{}, 3u, testing::_))
       .Times(1);
   history_embeddings_provider_->Start(long_input, false);
+  EXPECT_TRUE(trigger_service->GetFeatureTriggeredInSession(trigger_feature));
 }
 
 TEST_F(HistoryEmbeddingsProviderTest, Start_MultipleSequentialSearches) {

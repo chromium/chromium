@@ -17,6 +17,7 @@
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/keyword_provider.h"
+#include "components/omnibox/browser/omnibox_triggered_feature_service.h"
 
 namespace {
 constexpr int kMaxScore = 1000;
@@ -57,6 +58,8 @@ void HistoryEmbeddingsProvider::Start(const AutocompleteInput& input,
   CHECK(service);
   last_search_input_ = adjusted_input.text();
   done_ = false;
+  client()->GetOmniboxTriggeredFeatureService()->FeatureTriggered(
+      metrics::OmniboxEventProto_Feature_HISTORY_EMBEDDINGS_FEATURE);
   service->Search(
       base::UTF16ToUTF8(adjusted_input.text()), {}, provider_max_matches_,
       base::BindRepeating(&HistoryEmbeddingsProvider::OnReceivedSearchResult,
