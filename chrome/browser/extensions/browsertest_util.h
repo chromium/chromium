@@ -39,6 +39,9 @@ Browser* LaunchAppBrowser(Profile* profile, const Extension* app);
 // Adds a tab to |browser| and returns the newly added WebContents.
 content::WebContents* AddTab(Browser* browser, const GURL& url);
 
+// Returns the number of WindowControllers with the Profile `profile`.
+size_t GetWindowControllerCountInProfile(Profile* profile);
+
 // Returns whether the given `web_contents` has the associated
 // `changed_title`. If the web contents has neither `changed_title`
 // nor `original_title `, adds a failure to the test (for an unexpected
