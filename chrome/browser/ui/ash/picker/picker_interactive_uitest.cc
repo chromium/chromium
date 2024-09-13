@@ -447,7 +447,7 @@ IN_PROC_BROWSER_TEST_F(PickerInteractiveUiTest, SearchLocalFileCategory) {
       PressButton(kFileCategoryResultName),
       WaitForShow(ash::kPickerSearchResultsImageItemElementId),
       // Search for a file and insert it.
-      EnterText(ash::kPickerSearchFieldTextfieldElementId, u"test"),
+      EnterText(ash::kPickerSearchFieldTextfieldElementId, u"t"),
       WaitForShow(ash::kPickerSearchResultsListItemElementId),
       NameDescendantViewByProperty(
           ash::kPickerSearchResultsPageElementId, kFileResultName,
