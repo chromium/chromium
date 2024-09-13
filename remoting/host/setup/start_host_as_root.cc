@@ -85,8 +85,8 @@ int StartHostAsRoot(int argc, char** argv) {
       user_name = std::string(parts->first);
     }
   } else if (command_line.HasSwitch("cloud-user")) {
-    auto parts = base::SplitStringOnce(
-        command_line.GetSwitchValueASCII("cloud-user"), '@');
+    std::string arg_value = command_line.GetSwitchValueASCII("cloud-user");
+    auto parts = base::SplitStringOnce(arg_value, '@');
     if (parts) {
       user_name = std::string(parts->first);
     } else {
