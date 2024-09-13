@@ -16,6 +16,7 @@ import '../components/recording-file-list.js';
 import '../components/recording-info-dialog.js';
 import '../components/recording-title.js';
 import '../components/secondary-button.js';
+import '../components/spoken-message.js';
 import '../components/summarization-view.js';
 import '../components/transcription-view.js';
 
@@ -58,8 +59,10 @@ import {
   assertExists,
   assertInstanceof,
 } from '../core/utils/assert.js';
+import {AsyncJobQueue} from '../core/utils/async_job_queue.js';
 import {formatDuration} from '../core/utils/datetime.js';
 import {InteriorMutableArray} from '../core/utils/interior_mutable_array.js';
+import {sleep} from '../core/utils/utils.js';
 
 /**
  * Mapping from playback speed to icon names.
@@ -418,6 +421,10 @@ export class PlaybackPage extends ReactiveLitElement {
 
   private readonly showTranscription = signal(false);
 
+  private readonly spokenAudioTime = signal<number|null>(null);
+
+  private readonly spokenTimeQueue = new AsyncJobQueue('keepLatest');
+
   // TODO(pihsun): ScopedEffect without the async part?
   private autoOpenTranscription: Dispose|null = null;
 
@@ -485,7 +492,7 @@ export class PlaybackPage extends ReactiveLitElement {
     // seeked audio and the real timing of the word being spoken.
     // Investigate if it's from audio playing inaccuracy or from inherit
     // soda event timestamp inaccuracy.
-    this.audioPlayer.currentTime.value = ev.detail.startMs / 1000;
+    this.updateAudioTime(ev.detail.startMs / 1000);
   }
 
   private onPlayPauseClick() {
@@ -566,12 +573,29 @@ export class PlaybackPage extends ReactiveLitElement {
     this.audioPlayer.currentTime.value = target.value;
   }
 
+  /**
+   * Update the audio time and make the screen reader read the updated time.
+   *
+   * @param updatedTime Updated audio player time.
+   */
+  private updateAudioTime(updatedTime: number) {
+    this.audioPlayer.currentTime.value = updatedTime;
+
+    // The spoken feedback can still be spoken by screen reader even though it's
+    // not focusable, so remove the time status as soon as possible.
+    this.spokenTimeQueue.push(async () => {
+      this.spokenAudioTime.value = updatedTime;
+      await sleep(100);
+      this.spokenAudioTime.value = null;
+    });
+  }
+
   private onForward10Secs() {
-    this.audioPlayer.currentTime.value += 10;
+    this.updateAudioTime(this.audioPlayer.currentTime.value + 10);
   }
 
   private onRewind10Secs() {
-    this.audioPlayer.currentTime.value -= 10;
+    this.updateAudioTime(this.audioPlayer.currentTime.value - 10);
   }
 
   private onDeleteClick() {
@@ -676,6 +700,18 @@ export class PlaybackPage extends ReactiveLitElement {
     `;
   }
 
+  private renderTimeSpokenStatus() {
+    const spokenTime = this.spokenAudioTime.value;
+
+    if (spokenTime === null) {
+      return nothing;
+    }
+
+    return html`<spoken-message aria-live="polite" role="status">
+        ${formatDuration({seconds: spokenTime}, 1)}
+      </spoken-message>`;
+  }
+
   private renderAudioTimeline() {
     if (this.recordingMetadata.value === null) {
       return nothing;
@@ -706,6 +742,7 @@ export class PlaybackPage extends ReactiveLitElement {
         <span>${currentTimeString}</span>
         <span>${totalTimeString}</span>
       </div>
+      ${this.renderTimeSpokenStatus()}
     </div>`;
   }
 
