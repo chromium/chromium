@@ -510,8 +510,6 @@ component("velocity_tracker") {
     "velocity_tracker/bitset_32.h",
     "velocity_tracker/motion_event.cc",
     "velocity_tracker/motion_event.h",
-    "velocity_tracker/motion_event_buffer.cc",
-    "velocity_tracker/motion_event_buffer.h",
     "velocity_tracker/motion_event_generic.cc",
     "velocity_tracker/motion_event_generic.h",
     "velocity_tracker/velocity_tracker.cc",
@@ -659,7 +657,6 @@ if (use_blink) {
       "scoped_target_handler_unittest.cc",
       "test/scoped_event_waiter_unittest.cc",
       "velocity_tracker/bitset_32_unittest.cc",
-      "velocity_tracker/motion_event_buffer_unittest.cc",
       "velocity_tracker/motion_event_generic_unittest.cc",
       "velocity_tracker/velocity_tracker_unittest.cc",
     ]
