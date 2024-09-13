@@ -61,6 +61,7 @@
 #include "storage/browser/file_system/external_mount_points.h"
 #include "storage/common/file_system/file_system_types.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/cros_system_api/dbus/fusebox/dbus-constants.h"
 #include "ui/base/clipboard/custom_data_helper.h"
 #include "ui/base/clipboard/file_info.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
@@ -84,6 +85,7 @@ constexpr char kCrostiniMapLinuxFiles[] = "LinuxFiles";
 constexpr char kCrostiniMapMyDrive[] = "MyDrive";
 constexpr char kCrostiniMapPlayFiles[] = "PlayFiles";
 constexpr char kCrostiniMapSmbFs[] = "SMB";
+constexpr char kCrostiniMapFusebox[] = "Fusebox";
 constexpr char kCrostiniMapTeamDrives[] = "SharedDrives";
 constexpr char kCrostiniMapSharedWithMe[] = "SharedWithMe";
 constexpr char kCrostiniMapShortcutsSharedWithMe[] = "ShortcutsSharedWithMe";
@@ -611,6 +613,14 @@ bool ConvertFileSystemURLToPathInsideVM(
     // mount ID.
     *inside = vm_mount.Append(kCrostiniMapSmbFs);
     *inside = inside->Append(id);
+  } else if (file_system_url.type() == storage::kFileSystemTypeFuseBox) {
+    // `inside` should be of the form <vm_mount>/Fusebox/<subdir>/foo/bar.
+    // Since <subdir> is not available in either `id` or `path`, we look up
+    // `file_system_url.path()` (the raw VFS path), which is of the form
+    // /media/fuse/fusebox/<subdir>/foo/bar.
+    *inside = vm_mount.Append(kCrostiniMapFusebox);
+    return base::FilePath(kFuseBoxMediaPath)
+        .AppendRelativePath(file_system_url.path(), inside);
   } else {
     return false;
   }
@@ -624,6 +634,20 @@ bool ConvertFileSystemURLToPathInsideCrostini(
   return ConvertFileSystemURLToPathInsideVM(
       profile, file_system_url, crostini::ContainerChromeOSBaseDirectory(),
       /*map_crostini_home=*/true, inside);
+}
+
+bool ConvertFuseboxMonikerPathToPathInsideVM(const base::FilePath& path,
+                                             const base::FilePath& vm_mount,
+                                             base::FilePath* inside) {
+  base::FilePath relative_path;
+  if (!base::FilePath(fusebox::kMonikerFilenamePrefixWithTrailingSlash)
+           .AppendRelativePath(path, &relative_path)) {
+    return false;
+  }
+  *inside = vm_mount.Append(kCrostiniMapFusebox)
+                .Append(fusebox::kMonikerSubdir)
+                .Append(relative_path);
+  return true;
 }
 
 bool ConvertPathInsideVMToFileSystemURL(
@@ -722,6 +746,23 @@ bool ConvertPathInsideVMToFileSystemURL(
     mount_name = components[0];
     path.clear();
     FilePath(mount_name).AppendRelativePath(relative_path, &path);
+  } else if (FilePath(kCrostiniMapFusebox)
+                 .AppendRelativePath(path, &relative_path)) {
+    // For Fusebox files, `mount_name` is the first component of the virtual
+    // path, and `path` is the remaining part of the virtual path.
+    const FilePath absolute_path =
+        FilePath(kFuseBoxMediaPath).Append(relative_path);
+    FilePath virtual_path;
+    if (!mount_points->GetVirtualPath(absolute_path, &virtual_path)) {
+      return false;
+    }
+    const std::vector<FilePath::StringType> components =
+        virtual_path.GetComponents();
+    if (components.size() < 1) {
+      return false;
+    }
+    mount_name = components[0];
+    SetRelativePath(FilePath(mount_name), virtual_path, &path);
   } else {
     return false;
   }
