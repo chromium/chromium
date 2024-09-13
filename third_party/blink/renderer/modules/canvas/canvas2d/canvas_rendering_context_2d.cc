@@ -42,6 +42,7 @@
 #include "base/compiler_specific.h"
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "base/trace_event/common/trace_event_common.h"
@@ -88,6 +89,7 @@
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_2d_layer_bridge.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
 #include "third_party/blink/renderer/platform/graphics/memory_managed_paint_canvas.h"  // IWYU pragma: keep (https://github.com/clangd/clangd/issues/2044)
@@ -269,8 +271,7 @@ void CanvasRenderingContext2D::TryRestoreContextEvent(TimerBase* timer) {
 
   // If RealLostContext, it means the context was not lost due to surface
   // failure but rather due to a an eviction, which means image buffer exists.
-  if (context_lost_mode_ == kRealLostContext && IsPaintable() &&
-      canvas()->GetCanvas2DLayerBridge()->Restore()) {
+  if (context_lost_mode_ == kRealLostContext && IsPaintable() && Restore()) {
     try_restore_context_event_timer_.Stop();
     DispatchContextRestoredEvent(nullptr);
     return;
@@ -287,6 +288,41 @@ void CanvasRenderingContext2D::TryRestoreContextEvent(TimerBase* timer) {
     if (CanCreateCanvas2dResourceProvider())
       DispatchContextRestoredEvent(nullptr);
   }
+}
+
+bool CanvasRenderingContext2D::Restore() {
+  CanvasRenderingContextHost* host = Host();
+  CHECK(host);
+  CHECK(host->context_lost());
+  if (host->GetRasterMode() == RasterMode::kCPU) {
+    return false;
+  }
+  DCHECK(!host->ResourceProvider());
+
+  host->ClearLayerTexture();
+
+  base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper =
+      SharedGpuContext::ContextProviderWrapper();
+
+  if (!context_provider_wrapper->ContextProvider()->IsContextLost()) {
+    CanvasResourceProvider* resource_provider =
+        host->GetOrCreateCanvasResourceProviderImpl(RasterModeHint::kPreferGPU);
+
+    // The current paradigm does not support switching from accelerated to
+    // non-accelerated, which would be tricky due to changes to the layer tree,
+    // which can only happen at specific times during the document lifecycle.
+    // Therefore, we can only accept the restored surface if it is accelerated.
+    if (resource_provider && host->GetRasterMode() == RasterMode::kCPU) {
+      host->ReplaceResourceProvider(nullptr);
+      // FIXME: draw sad canvas picture into new buffer crbug.com/243842
+    } else {
+      host->set_context_lost(false);
+    }
+  }
+
+  host->UpdateMemoryUsage();
+
+  return host->ResourceProvider();
 }
 
 void CanvasRenderingContext2D::WillDrawImage(CanvasImageSource* source) const {

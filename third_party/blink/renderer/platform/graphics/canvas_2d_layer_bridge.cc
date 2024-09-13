@@ -331,42 +331,6 @@ bool Canvas2DLayerBridge::WritePixels(const SkImageInfo& orig_info,
                                                          row_bytes, x, y);
 }
 
-bool Canvas2DLayerBridge::Restore() {
-  CHECK(resource_host_);
-  CHECK(resource_host_->context_lost());
-  if (resource_host_->GetRasterMode() == RasterMode::kCPU) {
-    return false;
-  }
-  DCHECK(!resource_host_->ResourceProvider());
-
-  resource_host_->ClearLayerTexture();
-
-  base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper =
-      SharedGpuContext::ContextProviderWrapper();
-
-  if (!context_provider_wrapper->ContextProvider()->IsContextLost()) {
-    CanvasResourceProvider* resource_provider =
-        resource_host_->GetOrCreateCanvasResourceProviderImpl(
-            RasterModeHint::kPreferGPU);
-
-    // The current paradigm does not support switching from accelerated to
-    // non-accelerated, which would be tricky due to changes to the layer tree,
-    // which can only happen at specific times during the document lifecycle.
-    // Therefore, we can only accept the restored surface if it is accelerated.
-    if (resource_provider &&
-        resource_host_->GetRasterMode() == RasterMode::kCPU) {
-      resource_host_->ReplaceResourceProvider(nullptr);
-      // FIXME: draw sad canvas picture into new buffer crbug.com/243842
-    } else {
-      resource_host_->set_context_lost(false);
-    }
-  }
-
-  resource_host_->UpdateMemoryUsage();
-
-  return resource_host_->ResourceProvider();
-}
-
 void Canvas2DLayerBridge::FinalizeFrame(FlushReason reason) {
   TRACE_EVENT0("blink", "Canvas2DLayerBridge::FinalizeFrame");
   CHECK(resource_host_);

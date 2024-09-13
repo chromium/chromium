@@ -263,6 +263,8 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   FRIEND_TEST_ALL_PREFIXES(CanvasRenderingContext2DTest,
                            PrepareMailboxWhenContextIsLostWithFailedRestore);
 
+  bool Restore();
+
   void PruneLocalFontCache(size_t target_size);
 
   void ScrollPathIntoViewInternal(const Path&);

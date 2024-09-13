@@ -56,7 +56,6 @@ class PLATFORM_EXPORT Canvas2DLayerBridge {
 
   void FinalizeFrame(FlushReason);
   void PageVisibilityChanged();
-  bool Restore();
 
   bool WritePixels(const SkImageInfo&,
                    const void* pixels,
