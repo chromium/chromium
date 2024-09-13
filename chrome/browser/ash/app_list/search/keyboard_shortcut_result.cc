@@ -94,6 +94,8 @@ std::optional<int> GetStringIdForIconCode(IconCode icon_code) {
       return IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_LAUNCH_APPLICATION1;
     case ash::SearchResultTextItem::kKeyboardShortcutMediaFastForward:
       return IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_MEDIA_FAST_FORWARD;
+    case ash::SearchResultTextItem::kKeyboardShortcutMediaLaunchMail:
+      return IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_LAUNCH_MAIL;
     case ash::SearchResultTextItem::kKeyboardShortcutMediaPause:
       return IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_MEDIA_PAUSE;
     case ash::SearchResultTextItem::kKeyboardShortcutMediaPlay:
@@ -202,6 +204,8 @@ std::optional<IconCode> KeyboardShortcutResult::GetIconCodeFromKeyboardCode(
       return ash::Shell::Get()->keyboard_capability()->UseRefreshedIcons()
                  ? IconCode::kKeyboardShortcutMediaLaunchApp1Refresh
                  : IconCode::kKeyboardShortcutMediaLaunchApp1;
+    case (KeyboardCode::VKEY_MEDIA_LAUNCH_MAIL):
+      return IconCode::kKeyboardShortcutMediaLaunchMail;
     case (KeyboardCode::VKEY_MEDIA_NEXT_TRACK):
       return IconCode::kKeyboardShortcutMediaTrackNext;
     case (KeyboardCode::VKEY_MEDIA_PREV_TRACK):
@@ -316,6 +320,7 @@ KeyboardShortcutResult::GetIconCodeByKeyString(std::u16string_view key_string) {
        {u"LaunchApplication2", IconCode::kKeyboardShortcutCalculator},
        {u"LaunchAssistant", IconCode::kKeyboardShortcutAssistant},
        {u"MediaFastForward", IconCode::kKeyboardShortcutMediaFastForward},
+       {u"MediaLaunchMail", IconCode::kKeyboardShortcutMediaLaunchMail},
        {u"MediaPause", IconCode::kKeyboardShortcutMediaPause},
        {u"MediaPlay", IconCode::kKeyboardShortcutMediaPlay},
        {u"MediaPlayPause", IconCode::kKeyboardShortcutMediaPlayPause},

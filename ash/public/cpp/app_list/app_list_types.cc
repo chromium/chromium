@@ -455,6 +455,8 @@ const gfx::VectorIcon* SearchResultTextItem::GetIconFromCode() const {
 #endif
     case kKeyboardShortcutMediaFastForward:
       return &kKsMediaFastForwardIcon;
+    case kKeyboardShortcutMediaLaunchMail:
+      return &kKsMediaLaunchMailIcon;
     case kKeyboardShortcutMediaPause:
       return &kKsMediaPauseIcon;
     case kKeyboardShortcutMediaPlay:

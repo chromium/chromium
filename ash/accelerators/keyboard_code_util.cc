@@ -112,6 +112,8 @@ const gfx::VectorIcon* GetVectorIconForKeyboardCode(ui::KeyboardCode key_code) {
 #else
       return &ash::kKsvOverviewIcon;
 #endif
+    case ui::VKEY_MEDIA_LAUNCH_MAIL:
+      return &ash::kKsMediaLaunchMailIcon;
     case ui::VKEY_BRIGHTNESS_DOWN:
       return &ash::kKsvBrightnessDownIcon;
     case ui::VKEY_BRIGHTNESS_UP:

@@ -198,6 +198,7 @@ aggregate_vector_icons("ash_vector_icons") {
     "ks_keyboard_brightness_up.icon",
     "ks_launcher.icon",
     "ks_media_fast_forward.icon",
+    "ks_media_launch_mail.icon",
     "ks_media_pause.icon",
     "ks_media_play.icon",
     "ks_media_play_pause.icon",
