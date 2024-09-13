@@ -45,6 +45,8 @@ namespace translate {
 
 namespace {
 
+constexpr int kDismissalDurationSeconds = 10;
+
 // Default implementation of the TranslateMessage::Bridge interface, which just
 // calls the appropriate Java methods in each case.
 class BridgeImpl : public TranslateMessage::Bridge {
@@ -109,14 +111,6 @@ class BridgeImpl : public TranslateMessage::Bridge {
 
 BridgeImpl::~BridgeImpl() = default;
 
-// Returns the auto-dismiss timer duration in seconds for the translate message,
-// which defaults to 10s and can be overridden by a Feature param.
-int GetDismissalDurationSeconds() {
-  constexpr base::FeatureParam<int> kDismissalDuration(
-      &kTranslateMessageUI, "dismissal_duration_sec", 10);
-  return kDismissalDuration.Get();
-}
-
 base::android::ScopedJavaLocalRef<jstring> GetDefaultMessageDescription(
     JNIEnv* env,
     const std::u16string& source_language_display_name,
@@ -128,13 +122,6 @@ base::android::ScopedJavaLocalRef<jstring> GetDefaultMessageDescription(
 }
 
 }  // namespace
-
-// Features
-BASE_FEATURE(kTranslateMessageUI,
-             "TranslateMessageUI",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-// Params
-const char kTranslateMessageUISnackbarParam[] = "use_snackbar";
 
 TranslateMessage::Bridge::~Bridge() = default;
 
@@ -184,7 +171,7 @@ void TranslateMessage::ShowTranslateStep(TranslateStep step,
 
   if (state_ == State::kDismissed) {
     if (!bridge_->CreateTranslateMessage(env, web_contents_, this,
-                                         GetDismissalDurationSeconds())) {
+                                         kDismissalDurationSeconds)) {
       // The |bridge_| failed to create the Java TranslateMessage, such as when
       // the activity is being destroyed, so there is no message to show.
       return;

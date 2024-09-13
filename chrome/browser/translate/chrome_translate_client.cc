@@ -222,11 +222,7 @@ bool ChromeTranslateClient::ShowTranslateUI(
 // and iOS (in ios/chrome/browser/translate/chrome_ios_translate_client.mm).
 #if BUILDFLAG(IS_ANDROID)
   DCHECK(!TranslateService::IsTranslateBubbleEnabled());
-
-  if (base::FeatureList::IsEnabled(translate::kTranslateMessageUI)) {
     // Message UI.
-
-    // Get the TranslationType from associated manager's language state.
     translate::TranslationType translate_type =
         GetLanguageState().translation_type();
     // Use the automatic translation Snackbar if the current translation is an
@@ -245,8 +241,7 @@ bool ChromeTranslateClient::ShowTranslateUI(
         auto_translate_snackbar_controller_->ShowSnackbar(target_language);
       }
     } else {
-      // Snackbar disabled or not an automatic translation. If not an automatic
-      // translation, use TranslateMessage.
+      // Not an automatic translation. Use TranslateMessage instead.
       if (!translate_message_) {
         translate_message_ = std::make_unique<translate::TranslateMessage>(
             web_contents(), translate_manager_->GetWeakPtr(),
@@ -255,7 +250,6 @@ bool ChromeTranslateClient::ShowTranslateUI(
       translate_message_->ShowTranslateStep(step, source_language,
                                             target_language);
     }
-  }
   translate_manager_->GetActiveTranslateMetricsLogger()->LogUIChange(true);
 #else
   DCHECK(TranslateService::IsTranslateBubbleEnabled());

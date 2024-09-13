@@ -28,9 +28,6 @@ class TranslateManager;
 class TranslateUIDelegate;
 class TranslateUILanguagesManager;
 
-BASE_DECLARE_FEATURE(kTranslateMessageUI);
-extern const char kTranslateMessageUISnackbarParam[];
-
 class TranslateMessage {
  public:
   TranslateMessage(content::WebContents* web_contents,
