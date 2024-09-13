@@ -200,7 +200,7 @@ void ManagePasswordsState::OnPasswordAutofilled(
     base::span<const PasswordForm> password_forms,
     url::Origin origin,
     base::span<const PasswordForm> federated_matches) {
-  DCHECK(!password_forms.empty() || !federated_matches.empty());
+  CHECK(!password_forms.empty() || !federated_matches.empty());
   auto local_credentials_forms = DeepCopyNonPSLVector(password_forms);
   AppendDeepCopyVector(federated_matches, &local_credentials_forms);
 

@@ -444,8 +444,10 @@ void ManagePasswordsUIController::OnShowMoveToAccountBubble(
 
 void ManagePasswordsUIController::OnBiometricAuthenticationForFilling(
     PrefService* prefs) {
-  // Existing dialog shouldn't be closed.
-  if (dialog_controller_) {
+  // Existing dialog shouldn't be closed and if the state is inactive do not
+  // transition or show bubble.
+  if (dialog_controller_ ||
+      GetState() == password_manager::ui::INACTIVE_STATE) {
     return;
   }
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
