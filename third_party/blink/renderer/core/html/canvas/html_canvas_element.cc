@@ -267,7 +267,6 @@ void HTMLCanvasElement::Dispose() {
   }
 
   if (canvas2d_bridge_) {
-    canvas2d_bridge_->SetCanvasResourceHost(nullptr);
     canvas2d_bridge_ = nullptr;
   }
 
@@ -1832,10 +1831,6 @@ void HTMLCanvasElement::ReplaceExisting2dLayerBridge(
     if (!image)
       return;
     old_layer_bridge = std::move(canvas2d_bridge_);
-    // Removing connection between old_layer_bridge and CanvasResourceHost;
-    // otherwise, the CanvasResourceHost checks for the old one before
-    // assigning the new canvas layer bridge.
-    old_layer_bridge->SetCanvasResourceHost(nullptr);
   }
   std::unique_ptr<MemoryManagedPaintRecorder> recorder =
       old_provider->ReleaseRecorder();
