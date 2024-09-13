@@ -9,7 +9,6 @@
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
-#include "base/notreached.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/user_activity/user_activity_detector.h"
@@ -70,9 +69,7 @@ void PolicyRecommendationRestorer::Restore(bool allow_delay,
                                            const std::string& pref_name) {
   const PrefService::Preference* pref =
       pref_change_registrar_->prefs()->FindPreference(pref_name);
-  if (!pref) {
-    NOTREACHED();
-  }
+  CHECK(pref);
 
   if (!pref->GetRecommendedValue() || !pref->HasUserSetting())
     return;
