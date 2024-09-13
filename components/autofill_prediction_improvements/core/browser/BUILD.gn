@@ -6,6 +6,7 @@ import("//mojo/public/tools/bindings/mojom.gni")
 
 static_library("browser") {
   sources = [
+    "autofill_prediction_improvements_annotation_prompt_strike_database.h",
     "autofill_prediction_improvements_client.h",
     "autofill_prediction_improvements_features.cc",
     "autofill_prediction_improvements_features.h",
