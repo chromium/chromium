@@ -33,6 +33,10 @@ export enum ModelResponseError {
   UNSUPPORTED_TRANSCRIPTION_IS_TOO_SHORT =
     'UNSUPPORTED_TRANSCRIPTION_IS_TOO_SHORT',
 
+  // The transcription word count is more than the maximum length.
+  UNSUPPORTED_TRANSCRIPTION_IS_TOO_LONG =
+    'UNSUPPORTED_TRANSCRIPTION_IS_TOO_LONG',
+
   // Filtered by T&S on the request or response string.
   UNSAFE = 'UNSAFE',
 }

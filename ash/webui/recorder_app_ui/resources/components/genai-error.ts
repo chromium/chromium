@@ -13,7 +13,10 @@ import {
 } from 'chrome://resources/mwc/lit/index.js';
 
 import {i18n} from '../core/i18n.js';
-import {MIN_WORD_LENGTH} from '../core/on_device_model/ai_feature_constants.js';
+import {
+  MAX_WORD_LENGTH,
+  MIN_WORD_LENGTH,
+} from '../core/on_device_model/ai_feature_constants.js';
 import {ModelResponseError} from '../core/on_device_model/types.js';
 import {ReactiveLitElement} from '../core/reactive/lit.js';
 import {assertExhaustive, assertExists} from '../core/utils/assert.js';
@@ -60,6 +63,12 @@ export class GenaiError extends ReactiveLitElement {
       case ModelResponseError.UNSUPPORTED_TRANSCRIPTION_IS_TOO_SHORT: {
         imageName = 'genai_error_general';
         message = i18n.genAiErrorTranscriptionTooShortLabel(MIN_WORD_LENGTH);
+        break;
+      }
+
+      case ModelResponseError.UNSUPPORTED_TRANSCRIPTION_IS_TOO_LONG: {
+        imageName = 'genai_error_general';
+        message = i18n.genAiErrorTranscriptionTooLongLabel(MAX_WORD_LENGTH);
         break;
       }
 

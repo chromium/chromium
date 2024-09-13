@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {
+  MAX_WORD_LENGTH,
   MIN_WORD_LENGTH,
 } from '../../core/on_device_model/ai_feature_constants.js';
 import {
@@ -18,7 +19,7 @@ import {
   assertExists,
   assertNotReached,
 } from '../../core/utils/assert.js';
-import {getWordCount, shorten} from '../../core/utils/utils.js';
+import {getWordCount} from '../../core/utils/utils.js';
 
 import {
   FormatFeature,
@@ -34,14 +35,6 @@ import {
   SessionRemote,
   StreamingResponderCallbackRouter,
 } from './types.js';
-
-// The input token limit is 2048 and 3 words roughly equals to 4
-// tokens. Having a conservative limit here and leaving some room for the
-// template.
-// TODO: b/336477498 - Get the token limit from server and accurately count the
-// token size with the same tokenizer.
-// TODO(shik): Make this configurable.
-const MAX_CONTENT_WORDS = Math.floor(((2048 - 100) / 4) * 3);
 
 function parseResponse(res: string): string {
   // Note this is NOT an underscore: ▁(U+2581)
@@ -164,7 +157,6 @@ abstract class OnDeviceModel<T> implements Model<T> {
 
 export class SummaryModel extends OnDeviceModel<string> {
   override async execute(content: string): Promise<ModelResponse<string>> {
-    content = shorten(content, MAX_CONTENT_WORDS);
     const resp = await this.formatAndExecute(
       FormatFeature.kAudioSummary,
       SafetyFeature.kAudioSummaryRequest,
@@ -184,7 +176,6 @@ export class SummaryModel extends OnDeviceModel<string> {
 
 export class TitleSuggestionModel extends OnDeviceModel<string[]> {
   override async execute(content: string): Promise<ModelResponse<string[]>> {
-    content = shorten(content, MAX_CONTENT_WORDS);
     const resp = await this.formatAndExecute(
       FormatFeature.kAudioTitle,
       SafetyFeature.kAudioTitleRequest,
@@ -277,12 +268,21 @@ abstract class ModelLoader<T> extends ModelLoaderBase<T> {
   }
 
   override async loadAndExecute(content: string): Promise<ModelResponse<T>> {
-    if (getWordCount(content) < MIN_WORD_LENGTH) {
+    const wordCount = getWordCount(content);
+    if (wordCount < MIN_WORD_LENGTH) {
       return {
         kind: 'error',
         error: ModelResponseError.UNSUPPORTED_TRANSCRIPTION_IS_TOO_SHORT,
       };
     }
+
+    if (wordCount > MAX_WORD_LENGTH) {
+      return {
+        kind: 'error',
+        error: ModelResponseError.UNSUPPORTED_TRANSCRIPTION_IS_TOO_LONG,
+      };
+    }
+
     const model = await this.load();
     if (model === null) {
       // TODO(pihsun): Specific error type / message for model loading error.

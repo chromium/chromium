@@ -168,6 +168,7 @@ const withArgsStringNames = {
   // Usage example:
   // Add `fooBar: withArgs<[number, string]>(),` here,
   // then `i18n.fooBar(1, '2')` works.
+  genAiErrorTranscriptionTooLongLabel: withArgs<[number]>(),
   genAiErrorTranscriptionTooShortLabel: withArgs<[number]>(),
   recordingItemOptionsButtonAriaLabel: withArgs<[string]>(),
   recordingItemPauseButtonAriaLabel: withArgs<[string]>(),

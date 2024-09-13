@@ -53,6 +53,9 @@
   <message desc="Error message for trust and safety related error for title suggestion generative AI feature." name="IDS_RECORDER_GEN_AI_ERROR_TITLE_SUGGESTION_TRUST_AND_SAFETY_LABEL">
     Can’t create recording names for this content
   </message>
+  <message desc="Error message for too-long transcript length in generative AI features." name="IDS_RECORDER_GEN_AI_ERROR_TRANSCRIPTION_TOO_LONG_LABEL">
+    For now, a transcript longer than <ph name="MAX_WORD_LENGTH">$1<ex>1461</ex></ph> words is not supported
+  </message>
   <message desc="Error message for too-short transcript length in generative AI features." name="IDS_RECORDER_GEN_AI_ERROR_TRANSCRIPTION_TOO_SHORT_LABEL">
     For now, a transcript fewer than <ph name="MIN_WORD_LENGTH">$1<ex>150</ex></ph> words is not supported
   </message>
