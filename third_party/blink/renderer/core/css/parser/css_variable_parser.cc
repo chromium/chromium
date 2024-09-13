@@ -178,10 +178,10 @@ static bool ConsumeAttributeReference(CSSParserTokenStream& stream,
   CSSParserTokenStream::BlockGuard guard(stream);
   stream.ConsumeWhitespace();
   // Parse <attr-name>.
-  auto token = stream.ConsumeIncludingWhitespace();
-  if (token.GetType() != kIdentToken) {
+  if (stream.Peek().GetType() != kIdentToken) {
     return false;
   }
+  stream.ConsumeIncludingWhitespace();  // kIdentToken
   if (stream.AtEnd()) {
     // attr = attr(<attr-name>) is allowed, so return true.
     return true;
@@ -189,7 +189,7 @@ static bool ConsumeAttributeReference(CSSParserTokenStream& stream,
 
   if (stream.Peek().GetType() == kIdentToken) {
     // Parse <attr-type>.
-    token = stream.ConsumeIncludingWhitespace();
+    CSSParserToken token = stream.ConsumeIncludingWhitespace();
     if (!CSSAttrType::Parse(token.Value()).IsValid()) {
       return false;
     }

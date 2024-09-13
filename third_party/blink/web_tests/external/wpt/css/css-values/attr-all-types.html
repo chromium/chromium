@@ -164,4 +164,6 @@
     test_invalid_attr('height', 'attr(data-foo fr)', '10');
     test_invalid_attr('transition-duration', 'attr(data-foo ms)', '10px');
     test_invalid_attr('transition-duration', 'attr(data-foo ms)', '10px foo');
+
+    test_invalid_attr('width', 'attr(())', '10px');
 </script>
