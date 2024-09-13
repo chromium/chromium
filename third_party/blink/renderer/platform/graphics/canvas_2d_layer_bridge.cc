@@ -230,10 +230,9 @@ CanvasResourceProvider* Canvas2DLayerBridge::GetOrCreateResourceProvider() {
   hibernation_handler_.Clear();
   DCHECK(!IsHibernating());
 
-  if (resource_host_) {
-    // shouldBeDirectComposited() may have changed.
-    resource_host_->SetNeedsCompositingUpdate();
-  }
+  // shouldBeDirectComposited() may have changed.
+  resource_host_->SetNeedsCompositingUpdate();
+
   return resource_provider;
 }
 
