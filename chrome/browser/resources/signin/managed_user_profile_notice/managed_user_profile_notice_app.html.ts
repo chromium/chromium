@@ -51,12 +51,19 @@ ${this.useUpdatedUi_ ? html`
           <img class="error-icon" alt="">
         </managed-user-profile-notice-state>
       ` : ''}
+      ${this.showUserDataHandling_ ? html`
+        <managed-user-profile-notice-data-handling id="user-data-handling"
+            title="$i18n{separateBrowsingDataTitle}"
+            .selected-data-handling="${this.selectedDataHandling_}"
+            @selected-data-handling-changed="${this.onDataHandlingChanged_}">
+        </managed-user-profile-notice-data-handling>
+      ` : ''}
     </div>
   </div>
   <div class="action-container tangible-sync-style">
     <cr-button id="proceed-button" class="action-button"
         @click="${this.onProceed_}" ?autofocus="${this.isModalDialog_}"
-        ?disabled="${this.disableProceedButton_}"
+        ?disabled="${!this.allowProceedButton_()}"
         ?hidden="${this.showProcessing_}">
       ${this.proceedLabel_}
     </cr-button>

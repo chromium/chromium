@@ -9,6 +9,11 @@
 
 import {sendWithPromise} from 'chrome://resources/js/cr.js';
 
+export enum BrowsingDataHandling {
+  MERGE = 'merge',
+  SEPARATE = 'separate',
+}
+
 export enum State {
   DISCLOSURE = 0,
   PROCESSING = 1,
@@ -16,6 +21,7 @@ export enum State {
   TIMEOUT = 3,
   ERROR = 4,
   VALUE_PROPOSITION = 5,
+  USER_DATA_HANDLING = 6,
 }
 
 // Managed user profile info sent from C++.

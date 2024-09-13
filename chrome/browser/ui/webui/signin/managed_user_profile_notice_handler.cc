@@ -249,6 +249,16 @@ void ManagedUserProfileNoticeHandler::HandleProceed(
     return;
   }
 
+#if !BUILDFLAG(IS_CHROMEOS)
+  if (show_link_data_option_ &&
+      state == ManagedUserProfileNoticeHandler::State::kDisclosure &&
+      IsJavascriptAllowed() && UseMultiscreen()) {
+    FireWebUIListener(
+        "on-state-changed",
+        ManagedUserProfileNoticeHandler::State::kUserDataHandling);
+    return;
+  }
+#endif
   if (process_user_choice_with_confirmation_callback_ &&
       state == ManagedUserProfileNoticeHandler::State::kDisclosure &&
       IsJavascriptAllowed()) {

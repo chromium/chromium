@@ -194,6 +194,9 @@ import {TestManagedUserProfileNoticeBrowserProxy} from './test_managed_user_prof
           isChildVisible(app, '#disclosure'),
           'Value proposition State: #disclosure');
       assertFalse(
+          isChildVisible(app, '#user-data-handling'),
+          'Disclosure State: #user-data-handling');
+      assertFalse(
           isChildVisible(app, '#processing'),
           'Value proposition State: #processing');
       assertFalse(
@@ -219,6 +222,9 @@ import {TestManagedUserProfileNoticeBrowserProxy} from './test_managed_user_prof
       assertTrue(
           isChildVisible(app, '#disclosure'), 'Disclosure State: #disclosure');
       assertFalse(
+          isChildVisible(app, '#user-data-handling'),
+          'Disclosure State: #user-data-handling');
+      assertFalse(
           isChildVisible(app, '#processing'), 'Disclosure State: #processing');
       assertFalse(isChildVisible(app, '#error'), 'Disclosure State: #error');
       assertFalse(
@@ -235,12 +241,47 @@ import {TestManagedUserProfileNoticeBrowserProxy} from './test_managed_user_prof
           app.i18n('continueLabel'), proceedButton.textContent!.trim(),
           'Disclosure State: Proceed label');
 
+      webUIListenerCallback('on-state-changed', State.USER_DATA_HANDLING);
+      await microtasksFinished();
+      assertFalse(
+          isChildVisible(app, '#value-prop'),
+          'User Data Handling State: #value-prop');
+      assertFalse(
+          isChildVisible(app, '#disclosure'),
+          'User Data Handling State: #disclosure');
+      assertTrue(
+          isChildVisible(app, '#user-data-handling'),
+          'User Data Handling State: #user-data-handling');
+      assertFalse(
+          isChildVisible(app, '#processing'),
+          'User Data Handling State: #processing');
+      assertFalse(
+          isChildVisible(app, '#error'), 'User Data Handling State: #error');
+      assertFalse(
+          isChildVisible(app, '#timeout'),
+          'User Data Handling State: #timeout');
+      assertFalse(
+          isChildVisible(app, '#success'),
+          'User Data Handling State: #success');
+      assertTrue(
+          isChildVisible(app, '#proceed-button'),
+          'User Data Handling State: #proceed-button');
+      assertTrue(
+          isChildVisible(app, '#cancel-button'),
+          'User Data Handling State: #cancel-button');
+      assertEquals(
+          app.i18n('confirmLabel'), proceedButton.textContent!.trim(),
+          'User Data Handling State: Proceed label');
+
       webUIListenerCallback('on-state-changed', State.PROCESSING);
       await microtasksFinished();
       assertFalse(
           isChildVisible(app, '#value-prop'), 'Processing State: #value-prop');
       assertFalse(
           isChildVisible(app, '#disclosure'), 'Processing State: #disclosure');
+      assertFalse(
+          isChildVisible(app, '#user-data-handling'),
+          'Disclosure State: #user-data-handling');
       assertTrue(
           isChildVisible(app, '#processing'), 'Processing State: #processing');
       assertFalse(isChildVisible(app, '#error'), 'Processing State: #error');
@@ -262,6 +303,9 @@ import {TestManagedUserProfileNoticeBrowserProxy} from './test_managed_user_prof
       assertFalse(
           isChildVisible(app, '#disclosure'), 'Error State: #disclosure');
       assertFalse(
+          isChildVisible(app, '#user-data-handling'),
+          'Disclosure State: #user-data-handling');
+      assertFalse(
           isChildVisible(app, '#processing'), 'Error State: #processing');
       assertTrue(isChildVisible(app, '#error'), 'Error State: #error');
       assertFalse(isChildVisible(app, '#timeout'), 'Error State: #timeout');
@@ -281,6 +325,9 @@ import {TestManagedUserProfileNoticeBrowserProxy} from './test_managed_user_prof
           isChildVisible(app, '#value-prop'), 'Timeout State: #value-prop');
       assertFalse(
           isChildVisible(app, '#disclosure'), 'Timeout State: #disclosure');
+      assertFalse(
+          isChildVisible(app, '#user-data-handling'),
+          'Disclosure State: #user-data-handling');
       assertFalse(
           isChildVisible(app, '#processing'), 'Timeout State: #processing');
       assertFalse(isChildVisible(app, '#error'), 'Timeout State: #error');
@@ -302,6 +349,9 @@ import {TestManagedUserProfileNoticeBrowserProxy} from './test_managed_user_prof
           isChildVisible(app, '#value-prop'), 'Success State: #value-prop');
       assertFalse(
           isChildVisible(app, '#disclosure'), 'Success State: #disclosure');
+      assertFalse(
+          isChildVisible(app, '#user-data-handling'),
+          'Disclosure State: #user-data-handling');
       assertFalse(
           isChildVisible(app, '#processing'), 'Success State: #processing');
       assertFalse(isChildVisible(app, '#error'), 'Success State: #error');

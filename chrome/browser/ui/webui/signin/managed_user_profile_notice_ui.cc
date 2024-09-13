@@ -62,6 +62,12 @@ ManagedUserProfileNoticeUI::ManagedUserProfileNoticeUI(content::WebUI* web_ui)
        IDR_SIGNIN_MANAGED_USER_PROFILE_NOTICE_MANAGED_USER_PROFILE_NOTICE_STATE_CSS_JS},
       {"managed_user_profile_notice_value_prop.css.js",
        IDR_SIGNIN_MANAGED_USER_PROFILE_NOTICE_MANAGED_USER_PROFILE_NOTICE_VALUE_PROP_CSS_JS},
+      {"managed_user_profile_notice_data_handling.css.js",
+       IDR_SIGNIN_MANAGED_USER_PROFILE_NOTICE_MANAGED_USER_PROFILE_NOTICE_DATA_HANDLING_CSS_JS},
+      {"managed_user_profile_notice_data_handling.html.js",
+       IDR_SIGNIN_MANAGED_USER_PROFILE_NOTICE_MANAGED_USER_PROFILE_NOTICE_DATA_HANDLING_HTML_JS},
+      {"managed_user_profile_notice_data_handling.js",
+       IDR_SIGNIN_MANAGED_USER_PROFILE_NOTICE_MANAGED_USER_PROFILE_NOTICE_DATA_HANDLING_JS},
       {"managed_user_profile_notice_value_prop.html.js",
        IDR_SIGNIN_MANAGED_USER_PROFILE_NOTICE_MANAGED_USER_PROFILE_NOTICE_VALUE_PROP_HTML_JS},
       {"managed_user_profile_notice_value_prop.js",
@@ -72,6 +78,8 @@ ManagedUserProfileNoticeUI::ManagedUserProfileNoticeUI(content::WebUI* web_ui)
        IDR_SIGNIN_MANAGED_USER_PROFILE_NOTICE_MANAGED_USER_PROFILE_NOTICE_STATE_JS},
       {"managed_user_profile_notice_browser_proxy.js",
        IDR_SIGNIN_MANAGED_USER_PROFILE_NOTICE_MANAGED_USER_PROFILE_NOTICE_BROWSER_PROXY_JS},
+      {"images/data_handling.svg",
+       IDR_SIGNIN_MANAGED_USER_PROFILE_NOTICE_IMAGES_DATA_HANDLING_SVG},
       {"images/enrollment_success.svg",
        IDR_SIGNIN_MANAGED_USER_PROFILE_NOTICE_IMAGES_ENROLLMENT_SUCCESS_SVG},
       {"images/enrollment_failure.svg",
@@ -150,11 +158,25 @@ ManagedUserProfileNoticeUI::ManagedUserProfileNoticeUI(content::WebUI* web_ui)
                              IDS_ENTERPRISE_OIDC_WELCOME_ERROR_TITLE);
   source->AddLocalizedString("errorSubtitle",
                              IDS_ENTERPRISE_OIDC_WELCOME_ERROR_SUBTITLE);
+  source->AddLocalizedString("separateBrowsingDataTitle",
+                             IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_TITLE);
   source->AddLocalizedString(
       "signinIntoChrome",
       IDS_AVATAR_BUTTON_INTERCEPT_BUBBLE_CHROME_SIGNIN_TEXT);
   source->AddLocalizedString("valuePropSubtitle",
                              IDS_ENTERPRISE_VALUE_PROPOSITION_SUBTITLE);
+
+  source->AddLocalizedString(
+      "separateBrowsingDataChoiceTitle",
+      IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_DATA_CHOICE);
+  source->AddLocalizedString(
+      "separateBrowsingDataChoiceDetails",
+      IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_DATA_CHOICE_DETAILS);
+  source->AddLocalizedString("mergeBrowsingDataChoiceTitle",
+                             IDS_ENTERPRISE_WELCOME_MERGE_BROWSING_DATA_CHOICE);
+  source->AddLocalizedString(
+      "mergeBrowsingDataChoiceDetails",
+      IDS_ENTERPRISE_WELCOME_MERGE_BROWSING_DATA_CHOICE_DETAILS);
 
   source->AddBoolean("useUpdatedUi",
                      base::FeatureList::IsEnabled(

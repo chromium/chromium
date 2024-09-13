@@ -8,6 +8,7 @@ import './strings.m.js';
 import './managed_user_profile_notice_disclosure.js';
 import './managed_user_profile_notice_value_prop.js';
 import './managed_user_profile_notice_state.js';
+import './managed_user_profile_notice_data_handling.js';
 import '//resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
@@ -19,7 +20,7 @@ import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {getCss} from './managed_user_profile_notice_app.css.js';
 import {getHtml} from './managed_user_profile_notice_app.html.js';
 import type {ManagedUserProfileInfo, ManagedUserProfileNoticeBrowserProxy} from './managed_user_profile_notice_browser_proxy.js';
-import {ManagedUserProfileNoticeBrowserProxyImpl, State} from './managed_user_profile_notice_browser_proxy.js';
+import {BrowsingDataHandling, ManagedUserProfileNoticeBrowserProxyImpl, State} from './managed_user_profile_notice_browser_proxy.js';
 
 document.addEventListener('DOMContentLoaded', () => {
   const managedUserProfileNoticeBrowserProxyImpl =
@@ -95,10 +96,14 @@ export class ManagedUserProfileNoticeAppElement extends
       showTimeout_: {type: Boolean},
       showError_: {type: Boolean},
 
+      showUserDataHandling_: {type: Boolean},
+
       useUpdatedUi_: {
         type: Boolean,
         reflect: true,
       },
+
+      selectedDataHandling_: {type: String},
     };
   }
 
@@ -123,6 +128,8 @@ export class ManagedUserProfileNoticeAppElement extends
   protected showTimeout_: boolean = false;
   protected showError_: boolean = false;
   protected useUpdatedUi_: boolean = loadTimeData.getBoolean('useUpdatedUi');
+  protected showUserDataHandling_: boolean = false;
+  protected selectedDataHandling_: BrowsingDataHandling;
   private managedUserProfileNoticeBrowserProxy_:
       ManagedUserProfileNoticeBrowserProxy =
           ManagedUserProfileNoticeBrowserProxyImpl.getInstance();
@@ -160,8 +167,9 @@ export class ManagedUserProfileNoticeAppElement extends
   /** Called when the proceed button is clicked. */
   protected onProceed_() {
     this.disableProceedButton_ = true;
+    const linkData = this.selectedDataHandling_ === BrowsingDataHandling.MERGE;
     this.managedUserProfileNoticeBrowserProxy_.proceed(
-        /*currentState=*/ this.currentState_, /*linkData=*/ false);
+        /*currentState=*/ this.currentState_, linkData);
   }
 
   /** Called when the cancel button is clicked. */
@@ -178,6 +186,9 @@ export class ManagedUserProfileNoticeAppElement extends
     this.title_ = info.title;
     this.subtitle_ = info.subtitle;
     this.enterpriseInfo_ = info.enterpriseInfo;
+    this.selectedDataHandling_ = info.checkLinkDataCheckboxByDefault ?
+        BrowsingDataHandling.MERGE :
+        BrowsingDataHandling.SEPARATE;
   }
 
   private updateCurrentState_(state: State) {
@@ -188,7 +199,7 @@ export class ManagedUserProfileNoticeAppElement extends
     this.showSuccess_ = state === State.SUCCESS;
     this.showTimeout_ = state === State.TIMEOUT;
     this.showError_ = state === State.ERROR;
-
+    this.showUserDataHandling_ = state === State.USER_DATA_HANDLING;
     this.disableProceedButton_ = false;
     if (this.showError_ || this.showSuccess_ || this.showTimeout_) {
       this.shadowRoot!.querySelector<HTMLButtonElement>(
@@ -197,7 +208,8 @@ export class ManagedUserProfileNoticeAppElement extends
   }
 
   protected allowCancel_() {
-    return this.showDisclosure_ || this.showValueProposition_;
+    return this.showDisclosure_ || this.showValueProposition_ ||
+        this.showUserDataHandling_;
   }
 
   private computeCancelLabel_() {
@@ -207,6 +219,11 @@ export class ManagedUserProfileNoticeAppElement extends
         this.i18n('cancelLabel');
   }
 
+  protected allowProceedButton_() {
+    return !this.disableProceedButton_ &&
+        (!this.showUserDataHandling_ || !!this.selectedDataHandling_);
+  }
+
   private computeProceedLabel_() {
     switch (this.currentState_) {
       case State.VALUE_PROPOSITION:
@@ -214,11 +231,17 @@ export class ManagedUserProfileNoticeAppElement extends
       case State.DISCLOSURE:
       case State.PROCESSING:
         return this.i18n('continueLabel');
+      case State.USER_DATA_HANDLING:
       case State.TIMEOUT:
       case State.SUCCESS:
       case State.ERROR:
         return this.i18n('confirmLabel');
     }
+  }
+
+  protected onDataHandlingChanged_(
+      e: CustomEvent<{value: BrowsingDataHandling}>) {
+    this.selectedDataHandling_ = e.detail.value;
   }
 }
 
