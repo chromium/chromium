@@ -43,6 +43,8 @@ namespace ash {
 
 namespace {
 
+constexpr size_t kMaxAttemptToDownloadThumbnail = 3;
+
 // Arrays for histogram records.
 constexpr focus_mode_histogram_names::FocusModePlaylistChosen
     soundscapes_chosen[] = {
@@ -93,16 +95,25 @@ constexpr net::NetworkTrafficAnnotationTag kFocusModeSoundsThumbnailTag =
         })");
 
 // Invoked upon completion of the `thumbnail` download. `thumbnail` can be a
-// null image if the download attempt from the url failed.
+// null image if the download attempt from the url failed. A simple retry will
+// be applied until `attempt_counter` reaches the maximum.
 void OnOneThumbnailDownloaded(
     base::OnceCallback<void(
         std::unique_ptr<FocusModeSoundsController::Playlist>)> barrier_callback,
-    std::string id,
-    std::string title,
+    const FocusModeSoundsDelegate::Playlist& playlist,
+    const size_t attempt_counter,
     const gfx::ImageSkia& thumbnail) {
+  if (thumbnail.isNull() && attempt_counter < kMaxAttemptToDownloadThumbnail) {
+    FocusModeSoundsController::DownloadTrackThumbnail(
+        playlist.thumbnail_url,
+        base::BindOnce(&OnOneThumbnailDownloaded, std::move(barrier_callback),
+                       playlist, attempt_counter + 1));
+    return;
+  }
+
   std::move(barrier_callback)
-      .Run(std::make_unique<FocusModeSoundsController::Playlist>(id, title,
-                                                                 thumbnail));
+      .Run(std::make_unique<FocusModeSoundsController::Playlist>(
+          playlist.id, playlist.title, thumbnail));
 }
 
 // Re-order `playlists` according to the order of `data`.
@@ -161,8 +172,8 @@ void DispatchRequests(
   for (const auto& item : data) {
     FocusModeSoundsController::DownloadTrackThumbnail(
         item.thumbnail_url,
-        base::BindOnce(&OnOneThumbnailDownloaded, barrier_callback, item.id,
-                       item.title));
+        base::BindOnce(&OnOneThumbnailDownloaded, barrier_callback, item,
+                       /*attempt_counter=*/1));
   }
 }
 
