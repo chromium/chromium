@@ -213,6 +213,7 @@ if (!is_a_target_toolchain || toolchain_for_rust_host_build_tools) {
   is_ubsan_no_recover = false
   is_ubsan_security = false
   is_ubsan_vptr = false
+  is_ubsan_any = false
   msan_track_origins = 0
   sanitizer_coverage_flags = ""
   use_afl = false
