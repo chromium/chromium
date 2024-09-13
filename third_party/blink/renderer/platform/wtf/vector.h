@@ -987,6 +987,10 @@ class UncheckedIterator {
   constexpr UncheckedIterator() = default;
   explicit UncheckedIterator(T* cur) : current_(cur) {}
   UncheckedIterator(const UncheckedIterator& other) = default;
+  // Allow implicit conversion from a base::CheckedContiguousIterator<T>.
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  UncheckedIterator(const base::CheckedContiguousIterator<T>& other)
+      : current_(base::to_address(other)) {}
   ~UncheckedIterator() = default;
 
   UncheckedIterator& operator=(const UncheckedIterator& other) = default;
@@ -1316,6 +1320,11 @@ class Vector : private VectorBuffer<T, INLINE_CAPACITY, Allocator> {
   const T* data() const { return Base::Buffer(); }
 
   // Iterators and reverse iterators. They are invalidated on a reallocation.
+  //
+  // If you get a compiler warning about code adding or subtracting values
+  // from the iterators returned by these functions, you can either use the
+  // standard library or base::span::subspan to avoid the addition or
+  // subtraction, or use CheckedBegin() and CheckedEnd().
   iterator begin() { return iterator(data()); }
   iterator end() { return iterator(DataEnd()); }
   const_iterator begin() const { return const_iterator(data()); }
@@ -1328,6 +1337,25 @@ class Vector : private VectorBuffer<T, INLINE_CAPACITY, Allocator> {
   }
   const_reverse_iterator rend() const {
     return const_reverse_iterator(begin());
+  }
+
+  // Checked iterators.
+  // These iterators have runtime CHECK()s for incorrect operations. So
+  // they are safer and slower than begin() and end().
+
+  base::CheckedContiguousIterator<T> CheckedBegin() {
+    return base::CheckedContiguousIterator<T>(data(), DataEnd());
+  }
+  base::CheckedContiguousIterator<T> CheckedEnd() {
+    auto* e = DataEnd();
+    return base::CheckedContiguousIterator<T>(data(), e, e);
+  }
+  base::CheckedContiguousIterator<const T> CheckedBegin() const {
+    return base::CheckedContiguousIterator<const T>(data(), DataEnd());
+  }
+  base::CheckedContiguousIterator<const T> CheckedEnd() const {
+    auto* e = DataEnd();
+    return base::CheckedContiguousIterator<const T>(data(), e, e);
   }
 
   // Quick access to the first and the last element. It is invalid to call
