@@ -59,10 +59,11 @@ CSSValueList* ConsumeFontFaceUnicodeRange(CSSParserTokenStream& stream) {
   CSSValueList* values = CSSValueList::CreateCommaSeparated();
 
   do {
-    const CSSParserToken& token = stream.ConsumeIncludingWhitespace();
+    CSSParserToken token = stream.Peek();
     if (token.GetType() != kUnicodeRangeToken) {
       return nullptr;
     }
+    stream.ConsumeIncludingWhitespace();  // kUnicodeRangeToken
 
     UChar32 start = token.UnicodeRangeStart();
     UChar32 end = token.UnicodeRangeEnd();
