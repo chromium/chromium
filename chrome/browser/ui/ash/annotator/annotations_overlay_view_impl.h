@@ -10,7 +10,9 @@
 #include "base/memory/weak_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
-class Profile;
+namespace content {
+class BrowserContext;
+}  // namespace content
 
 namespace views {
 class WebView;
@@ -23,7 +25,7 @@ class AnnotationsOverlayViewImpl : public ash::AnnotationsOverlayView {
   METADATA_HEADER(AnnotationsOverlayViewImpl, ash::AnnotationsOverlayView)
 
  public:
-  explicit AnnotationsOverlayViewImpl(Profile* profile);
+  explicit AnnotationsOverlayViewImpl(content::BrowserContext* profile);
   AnnotationsOverlayViewImpl(const AnnotationsOverlayViewImpl&) = delete;
   AnnotationsOverlayViewImpl& operator=(const AnnotationsOverlayViewImpl&) =
       delete;

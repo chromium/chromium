@@ -9,15 +9,16 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/annotator/annotator_client_impl.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/controls/webview/web_contents_set_background_color.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/fill_layout.h"
 
-AnnotationsOverlayViewImpl::AnnotationsOverlayViewImpl(Profile* profile)
-    : web_view_(AddChildView(std::make_unique<views::WebView>(profile))) {
+AnnotationsOverlayViewImpl::AnnotationsOverlayViewImpl(
+    content::BrowserContext* browser_context)
+    : web_view_(
+          AddChildView(std::make_unique<views::WebView>(browser_context))) {
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
   // Use a transparent background for the web contents.
