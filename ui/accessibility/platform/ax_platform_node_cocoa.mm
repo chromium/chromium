@@ -784,9 +784,6 @@ void CollectAncestorRoles(
   int anchorStartOffset = 0;
   std::map<ui::AXNodeID, std::set<ax::mojom::Role>> ancestor_roles;
 
-  // https://crbug.com/40889544
-  NSUInteger leafTextIndex = 0;
-
   [attributedString beginEditing];
   for (const AXRange& leafTextRange : *axRange) {
     DCHECK(!leafTextRange.IsNull());
@@ -831,53 +828,6 @@ void CollectAncestorRoles(
     DCHECK_LE(static_cast<unsigned long>(anchorStartOffset + leafTextLength),
               attributedString.length);
     NSRange leafRange = NSMakeRange(anchorStartOffset, leafTextLength);
-
-    // https://crbug.com/40889544
-    // Capture info about the suspected cause of
-    // "NSRangeException: NSMutableRLEArray objectAtIndex:effectiveRange:: Out
-    // of bounds", which is thrown if the range provided to
-    // addAttribute:value:range: is out of bounds. This cl will be reverted
-    // once we finish collecting info.
-    leafTextIndex++;
-    if (NSMaxRange(leafRange) > attributedString.length) {
-      // Capture:
-      //   * Current leaf text index and total number of leaves
-      //   * Current leaf text's range
-      //   * The attributed string's length
-      //   * The length of concatenated leaf text while passing
-      //     kUIAExposeCharacterForTextContent and
-      //     kSuppressCharacter for embedded object behavior
-      NSUInteger attributedStringLength = attributedString.length;
-      NSUInteger numberOfLeaves = 0;
-      NSUInteger lengthFromGetTextUIAExposeChar = 0;
-      NSUInteger lengthFromGetTextSuppressChar = 0;
-      for (const AXRange& nextRange : *axRange) {
-        numberOfLeaves++;
-        lengthFromGetTextUIAExposeChar +=
-            nextRange
-                .GetText(
-                    ui::AXTextConcatenationBehavior::kWithoutParagraphBreaks,
-                    ui::AXEmbeddedObjectBehavior::
-                        kUIAExposeCharacterForTextContent)
-                .length();
-        lengthFromGetTextSuppressChar +=
-            nextRange
-                .GetText(
-                    ui::AXTextConcatenationBehavior::kWithoutParagraphBreaks,
-                    ui::AXEmbeddedObjectBehavior::kSuppressCharacter)
-                .length();
-      }
-
-      NSString* info = [NSString
-          stringWithFormat:@"%lu of %lu %lu,%lu %lu %lu %lu", leafTextIndex,
-                           numberOfLeaves, leafRange.location, leafRange.length,
-                           attributedStringLength,
-                           lengthFromGetTextUIAExposeChar,
-                           lengthFromGetTextSuppressChar];
-      SCOPED_CRASH_KEY_STRING256("AXPlatformNodeCocoa", "addTextAnnotations",
-                                 base::SysNSStringToUTF8(info));
-      base::debug::DumpWithoutCrashing();
-    }
 
     CollectAncestorRoles(*anchor, ancestor_roles);
 
