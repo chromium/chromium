@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = TypeError: window.popinContextTypesSupported is not a function
+[NOTRUN] Verify Partitioned Popins have access to the proper cookie/storage partitions - Main site opens same-site popin.
+[NOTRUN] Verify Partitioned Popins have access to the proper cookie/storage partitions - Main site opens cross-site popin.
+[NOTRUN] Verify Partitioned Popins have access to the proper cookie/storage partitions - Same-site frame opens same-site popin.
+[NOTRUN] Verify Partitioned Popins have access to the proper cookie/storage partitions - Cross-site frame opens main-host popin.
+[NOTRUN] Verify Partitioned Popins have access to the proper cookie/storage partitions - Cross-site frame opens alternative-host popin.
+[NOTRUN] Verify Partitioned Popins have access to the proper cookie/storage partitions - Same-site frame with cross-site ancestor opens main-host popin.
+[NOTRUN] Verify Partitioned Popins have access to the proper cookie/storage partitions - Main site opens same-site popin with same-site frame.
+[NOTRUN] Verify Partitioned Popins have access to the proper cookie/storage partitions - Main site opens same-site popin with cross-site frame.
+[NOTRUN] Verify Partitioned Popins have access to the proper cookie/storage partitions - Main site opens cross-site popin with main-host frame.
+[NOTRUN] Verify Partitioned Popins have access to the proper cookie/storage partitions - Cross-site frame opens main-host popin with cross-site frame.
+[NOTRUN] Verify Partitioned Popins have access to the proper cookie/storage partitions - Cross-site frame opens alternative-host popin with main-host frame.
+Harness: the test ran to completion.
+
