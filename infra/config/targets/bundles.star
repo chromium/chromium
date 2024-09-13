@@ -75,7 +75,7 @@ targets.bundle(
         ),
         "android_browsertests": targets.mixin(
             swarming = targets.swarming(
-                shards = 2,
+                shards = 5,
             ),
         ),
     },
