@@ -52,7 +52,8 @@ class DesktopAndroidKioskDelegate : public KioskDelegate {
 
 DesktopAndroidExtensionsBrowserClient::DesktopAndroidExtensionsBrowserClient()
     : extension_cache_(std::make_unique<NullExtensionCache>()),
-      kiosk_delegate_(std::make_unique<DesktopAndroidKioskDelegate>()) {
+      kiosk_delegate_(std::make_unique<DesktopAndroidKioskDelegate>()),
+      api_client_(std::make_unique<ExtensionsAPIClient>()) {
   AddAPIProvider(std::make_unique<CoreExtensionsBrowserAPIProvider>());
 }
 

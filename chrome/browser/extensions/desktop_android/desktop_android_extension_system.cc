@@ -16,11 +16,14 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/api/app_runtime/app_runtime_api.h"
+#include "extensions/browser/api/declarative_net_request/install_index_helper.h"
+#include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_prefs_factory.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_factory.h"
 #include "extensions/browser/extension_system_provider.h"
+#include "extensions/browser/install_flag.h"
 #include "extensions/browser/null_app_sorting.h"
 #include "extensions/browser/quota_service.h"
 #include "extensions/browser/service_worker_manager.h"
@@ -127,9 +130,29 @@ ExtensionSystemProvider* DesktopAndroidExtensionSystem::GetFactory() {
 
 void DesktopAndroidExtensionSystem::Shutdown() {}
 
-void DesktopAndroidExtensionSystem::AddExtension(
-    scoped_refptr<const Extension> extension) {
+bool DesktopAndroidExtensionSystem::AddExtension(
+    scoped_refptr<Extension> extension,
+    std::string& error) {
+  // This code is normally handled as part of the UnpackedInstaller, which is
+  // not (yet) included in desktop android builds.
+  base::expected<base::Value::Dict, std::string> index_result =
+      declarative_net_request::InstallIndexHelper::
+          IndexAndPersistRulesOnInstall(*extension);
+  if (!index_result.has_value()) {
+    error = std::move(index_result.error());
+    return false;
+  }
+
+  // This is normally handled by ExtensionService, and should likely be moved
+  // to ExtensionRegistrar.
+  ExtensionPrefs::Get(browser_context_)
+      ->OnExtensionInstalled(extension.get(), Extension::ENABLED,
+                             syncer::StringOrdinal(),
+                             kInstallFlagInstallImmediately, std::string(),
+                             std::move(index_result.value()));
+
   registrar_->AddExtension(std::move(extension));
+  return true;
 }
 
 void DesktopAndroidExtensionSystem::InitForRegularProfile(

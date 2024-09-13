@@ -14,6 +14,8 @@
 
 namespace extensions {
 
+class ExtensionsAPIClient;
+
 ////////////////////////////////////////////////////////////////////////////////
 // S  T  O  P
 // ALL THIS CODE WILL BE DELETED.
@@ -155,6 +157,7 @@ class DesktopAndroidExtensionsBrowserClient : public ExtensionsBrowserClient {
  private:
   std::unique_ptr<ExtensionCache> extension_cache_;
   std::unique_ptr<KioskDelegate> kiosk_delegate_;
+  std::unique_ptr<ExtensionsAPIClient> api_client_;
 };
 
 }  // namespace extensions

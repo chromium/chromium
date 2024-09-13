@@ -6,6 +6,9 @@
 
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "extensions/browser/api/declarative_net_request/rules_monitor_service.h"
+#include "extensions/browser/api/web_request/web_request_api.h"
+#include "extensions/browser/api/web_request/web_request_proxying_url_loader_factory.h"
 #include "extensions/buildflags/buildflags.h"
 
 // The following are not supported in the experimental desktop-android build.
@@ -23,7 +26,6 @@
 #include "extensions/browser/api/bluetooth_socket/bluetooth_socket_event_dispatcher.h"
 #include "extensions/browser/api/content_settings/content_settings_service.h"
 #include "extensions/browser/api/declarative/rules_registry_service.h"
-#include "extensions/browser/api/declarative_net_request/rules_monitor_service.h"
 #include "extensions/browser/api/feedback_private/feedback_private_api.h"
 #include "extensions/browser/api/hid/hid_connection_resource.h"
 #include "extensions/browser/api/hid/hid_device_manager.h"
@@ -48,8 +50,6 @@
 #include "extensions/browser/api/system_info/system_info_api.h"
 #include "extensions/browser/api/usb/usb_device_manager.h"
 #include "extensions/browser/api/usb/usb_device_resource.h"
-#include "extensions/browser/api/web_request/web_request_api.h"
-#include "extensions/browser/api/web_request/web_request_proxying_url_loader_factory.h"
 #include "extensions/browser/api/web_request/web_request_proxying_websocket.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
@@ -68,6 +68,10 @@
 namespace extensions {
 
 void EnsureApiBrowserContextKeyedServiceFactoriesBuilt() {
+  declarative_net_request::RulesMonitorService::GetFactoryInstance();
+  WebRequestAPI::GetFactoryInstance();
+  WebRequestProxyingURLLoaderFactory::EnsureAssociatedFactoryBuilt();
+
 // The following are not supported in the experimental desktop-android build.
 // TODO(https://crbug.com/356905053): Enable these APIs on desktop-android.
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -101,7 +105,6 @@ void EnsureApiBrowserContextKeyedServiceFactoriesBuilt() {
   ClipboardAPI::GetFactoryInstance();
 #endif
   ContentSettingsService::GetFactoryInstance();
-  declarative_net_request::RulesMonitorService::GetFactoryInstance();
   FeedbackPrivateAPI::GetFactoryInstance();
   HidDeviceManager::GetFactoryInstance();
   IdleManagerFactory::GetInstance();
@@ -129,10 +132,8 @@ void EnsureApiBrowserContextKeyedServiceFactoriesBuilt() {
 #if BUILDFLAG(IS_CHROMEOS)
   WebcamPrivateAPI::GetFactoryInstance();
 #endif
-  WebRequestAPI::GetFactoryInstance();
-  WebRequestProxyingURLLoaderFactory::EnsureAssociatedFactoryBuilt();
   WebRequestProxyingWebSocket::EnsureAssociatedFactoryBuilt();
-#endif
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 }
 
 }  // namespace extensions

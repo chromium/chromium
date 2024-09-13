@@ -28,7 +28,10 @@ group("api_implementations") {
   # The group of APIs included in both normal desktop builds and the
   # experimental desktop-android build.
   # TODO(https://crbug.com/356905053): Continue moving more APIs here.
-  public_deps = [ "//extensions/browser/api/test" ]
+  public_deps = [
+    "//extensions/browser/api/declarative_net_request",
+    "//extensions/browser/api/test",
+  ]
 
   # APIs that are currently not supported on desktop-android.
   if (enable_extensions) {
@@ -43,7 +46,6 @@ group("api_implementations") {
       "//extensions/browser/api/bluetooth",
       "//extensions/browser/api/bluetooth_low_energy",
       "//extensions/browser/api/bluetooth_socket",
-      "//extensions/browser/api/declarative_net_request",
       "//extensions/browser/api/dns",
       "//extensions/browser/api/feedback_private",
       "//extensions/browser/api/file_handlers",

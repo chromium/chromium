@@ -24,9 +24,7 @@
 #include "components/sync/model/string_ordinal.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "extensions/browser/api/declarative_net_request/file_backed_ruleset_source.h"
 #include "extensions/browser/api/declarative_net_request/install_index_helper.h"
-#include "extensions/browser/api/declarative_net_request/ruleset_source.h"
 #include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
@@ -286,30 +284,16 @@ bool UnpackedInstaller::LoadExtension(mojom::ManifestLocation location,
 bool UnpackedInstaller::IndexAndPersistRulesIfNeeded(std::string* error) {
   DCHECK(extension());
 
-  // Index all static rulesets and therefore parse all static rules at
-  // installation time for unpacked extensions. Throw an error for invalid rules
-  // where possible so that the extension developer is immediately notified.
-  auto ruleset_filter = declarative_net_request::FileBackedRulesetSource::
-      RulesetFilter::kIncludeAll;
-  auto parse_flags =
-      declarative_net_request::RulesetSource::kRaiseErrorOnInvalidRules |
-      declarative_net_request::RulesetSource::kRaiseWarningOnLargeRegexRules;
+  base::expected<base::Value::Dict, std::string> index_result =
+      declarative_net_request::InstallIndexHelper::
+          IndexAndPersistRulesOnInstall(*extension_);
 
-  // TODO(crbug.com/40538050): IndexStaticRulesetsUnsafe will read and parse
-  // JSON synchronously. Change this so that we don't need to parse JSON in the
-  // browser process.
-  RulesetParseResult result =
-      declarative_net_request::InstallIndexHelper::IndexStaticRulesetsUnsafe(
-          *extension(), ruleset_filter, parse_flags);
-  if (result.error) {
-    *error = std::move(*result.error);
+  if (!index_result.has_value()) {
+    *error = std::move(index_result.error());
     return false;
   }
 
-  ruleset_install_prefs_ = std::move(result.ruleset_install_prefs);
-  if (!result.warnings.empty())
-    extension_->AddInstallWarnings(std::move(result.warnings));
-
+  ruleset_install_prefs_ = std::move(index_result.value());
   return true;
 }
 

@@ -9,6 +9,8 @@
 #include "chrome/test/base/chrome_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "extensions/browser/api/declarative_net_request/rules_monitor_service.h"
+#include "extensions/browser/api/declarative_net_request/test_utils.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/extension.h"
@@ -48,7 +50,7 @@ class DesktopAndroidExtensionsBrowserTest : public AndroidBrowserTest {
     base::ScopedAllowBlockingForTesting allow_blocking;
 
     std::string load_error;
-    scoped_refptr<const Extension> extension = file_util::LoadExtension(
+    scoped_refptr<Extension> extension = file_util::LoadExtension(
         file_path, mojom::ManifestLocation::kUnpacked, 0, &load_error);
     if (!extension) {
       ADD_FAILURE() << "Failed to parse extension: " << load_error;
@@ -60,7 +62,10 @@ class DesktopAndroidExtensionsBrowserTest : public AndroidBrowserTest {
 
     auto* android_system = static_cast<DesktopAndroidExtensionSystem*>(
         ExtensionSystem::Get(browser_context));
-    android_system->AddExtension(extension);
+    std::string error;
+    if (!android_system->AddExtension(extension, error)) {
+      ADD_FAILURE() << "Failed to add extension: " << error;
+    }
 
     ExtensionRegistry* registry = ExtensionRegistry::Get(browser_context);
     if (!registry->enabled_extensions().Contains(extension->id())) {
@@ -181,6 +186,69 @@ IN_PROC_BROWSER_TEST_F(DesktopAndroidExtensionsBrowserTest,
       LoadExtensionFromDirectory(test_dir.UnpackedPath());
   ASSERT_TRUE(extension);
   ASSERT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
+}
+
+// Tests the declarative net request API in extension service workers.
+IN_PROC_BROWSER_TEST_F(DesktopAndroidExtensionsBrowserTest,
+                       DeclarativeNetRequestSupport) {
+  // Load a simple extension that redirects from example.com -> google.com.
+  static constexpr char kManifest[] =
+      R"({
+           "name": "My Test Extension",
+           "manifest_version": 3,
+           "version": "0.1",
+           "declarative_net_request": {
+             "rule_resources": [{
+               "id": "ruleset",
+               "enabled": true,
+               "path": "rules.json"
+             }]
+           },
+           "permissions": ["declarativeNetRequest"],
+           "host_permissions": ["*://example.com/*"]
+         })";
+
+  // One rule, which is a redirect from example.com to
+  // http://google.com:<portid>/title2.html.
+  static constexpr char kRulesJson[] =
+      R"([{
+           "id": 1,
+           "priority": 1,
+           "action": {
+             "type": "redirect",
+             "redirect": { "url": "http://google.com:%d/title2.html" }
+           },
+           "condition": {
+             "urlFilter": "example.com",
+             "resourceTypes": ["main_frame"]
+           }
+         }])";
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(
+      FILE_PATH_LITERAL("rules.json"),
+      base::StringPrintf(kRulesJson, embedded_test_server()->port()));
+
+  declarative_net_request::RulesetManagerObserver ruleset_manager_observer(
+      declarative_net_request::RulesMonitorService::Get(GetBrowserContext())
+          ->ruleset_manager());
+
+  const Extension* extension =
+      LoadExtensionFromDirectory(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  ruleset_manager_observer.WaitForExtensionsWithRulesetsCount(1);
+
+  GURL url = embedded_test_server()->GetURL("example.com", "/title1.html");
+  GURL expected_url =
+      embedded_test_server()->GetURL("google.com", "/title2.html");
+
+  EXPECT_TRUE(
+      content::NavigateToURL(GetActiveWebContents(), url, expected_url));
+  EXPECT_EQ(expected_url, GetActiveWebContents()->GetLastCommittedURL());
+  EXPECT_EQ("This page has a title.",
+            content::EvalJs(GetActiveWebContents(), "document.body.innerText"));
 }
 
 }  // namespace extensions

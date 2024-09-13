@@ -500,6 +500,7 @@ source_set("browser_sources") {
   deps = [
     "//base",
     "//base:i18n",
+    "//build:android_buildflags",
     "//build:chromeos_buildflags",
     "//components/back_forward_cache",
     "//components/content_settings/core/browser",
