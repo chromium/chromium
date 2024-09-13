@@ -139,7 +139,8 @@ gfx::Rect GetTooSmallToFitCameraRegion() {
 
 class CaptureModeCameraTest : public AshTestBase {
  public:
-  CaptureModeCameraTest() = default;
+  CaptureModeCameraTest()
+      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
   CaptureModeCameraTest(const CaptureModeCameraTest&) = delete;
   CaptureModeCameraTest& operator=(const CaptureModeCameraTest&) = delete;
   ~CaptureModeCameraTest() override = default;
@@ -4785,6 +4786,9 @@ TEST_F(CaptureModeCameraTest, CameraPrivacyIndicators) {
   EXPECT_FALSE(camera_controller->camera_preview_widget());
   // The widget closes its window asynchronously, run a loop to finish that.
   base::RunLoop().RunUntilIdle();
+  // Fast forward by the minimum duration the privacy indicator should be held.
+  task_environment()->FastForwardBy(
+      PrivacyIndicatorsController::kPrivacyIndicatorsMinimumHoldDuration);
   EXPECT_FALSE(IsCameraIndicatorIconVisible());
   EXPECT_FALSE(IsMicrophoneIndicatorIconVisible());
   EXPECT_FALSE(message_center->FindNotificationById(
@@ -4839,6 +4843,9 @@ TEST_F(CaptureModeCameraTest, DuringRecordingPrivacyIndicators) {
   capture_controller->EndVideoRecording(
       EndRecordingReason::kStopRecordingButton);
   WaitForCaptureFileToBeSaved();
+  // Fast forward by the minimum duration the privacy indicator should be held.
+  task_environment()->FastForwardBy(
+      PrivacyIndicatorsController::kPrivacyIndicatorsMinimumHoldDuration);
   EXPECT_FALSE(IsCameraIndicatorIconVisible());
   EXPECT_FALSE(IsMicrophoneIndicatorIconVisible());
   EXPECT_FALSE(message_center->FindNotificationById(
