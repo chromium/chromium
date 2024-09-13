@@ -13,17 +13,31 @@
 #include "base/scoped_clear_last_error.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
 namespace base {
 
-std::string StringPrintf(const char* format, ...) {
+// `ENABLE_IF_ATTR()` is part of the function signature, so at least that
+// annotation, with a matching condition to the declaration, must be present, or
+// this would be considered a distinct overload (and other components will get
+// an unresolved symbol). The message need not match; anything put there will
+// only affect calls that see this definition instead of just the declaration,
+// i.e. calls within this file (i.e. none).
+std::string StringPrintf(const char* format, ...) ENABLE_IF_ATTR(!!format, "") {
   va_list ap;
   va_start(ap, format);
-  std::string result;
-  StringAppendV(&result, format, ap);
-  va_end(ap);
-  return result;
+  absl::Cleanup end_list = [&] { va_end(ap); };
+  return StringPrintV(format, ap);
 }
+
+#if HAS_ATTRIBUTE(enable_if)
+std::string StringPrintfNonConstexpr(const char* format, ...) {
+  va_list ap;
+  va_start(ap, format);
+  absl::Cleanup end_list = [&] { va_end(ap); };
+  return StringPrintV(format, ap);
+}
+#endif
 
 std::string StringPrintV(const char* format, va_list ap) {
   std::string result;
