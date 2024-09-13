@@ -50,14 +50,16 @@ void UrlCheckerDelegateImpl::StartDisplayingBlockingPageHelper(
   // Send do-not-proceed signal if the WebState has been destroyed.
   web::WebState* web_state = resource.weak_web_state.get();
   if (!web_state) {
-    RunUnsafeResourceCallback(resource, /*proceed=*/false,
-                              /*showed_interstitial=*/false);
+    resource.DispatchCallback(FROM_HERE, /*proceed=*/false,
+                              /*showed_interstitial=*/false,
+                              /*has_post_commit_interstitial_skipped=*/false);
     return;
   }
 
   if (client_ && client_->ShouldBlockUnsafeResource(resource)) {
-    RunUnsafeResourceCallback(resource, /*proceed=*/false,
-                              /*showed_interstitial=*/false);
+    resource.DispatchCallback(FROM_HERE, /*proceed=*/false,
+                              /*showed_interstitial=*/false,
+                              /*has_post_commit_interstitial_skipped=*/false);
     return;
   }
 
@@ -70,8 +72,10 @@ void UrlCheckerDelegateImpl::StartDisplayingBlockingPageHelper(
       SafeBrowsingUrlAllowList::FromWebState(web_state);
   if (allow_list->AreUnsafeNavigationsAllowed(url, &allowed_threats)) {
     if (base::Contains(allowed_threats, threat_type)) {
-      RunUnsafeResourceCallback(resource, /*proceed=*/true,
-                                /*showed_interstitial=*/false);
+      resource.DispatchCallback(FROM_HERE, /*proceed=*/true,
+                                /*showed_interstitial=*/false,
+                                /*has_post_commit_interstitial_skipped=*/false);
+
       return;
     }
   }
@@ -82,8 +86,9 @@ void UrlCheckerDelegateImpl::StartDisplayingBlockingPageHelper(
 
   // Send the do-not-proceed signal to cancel the navigation.  This will cause
   // the error page to be displayed using the stored UnsafeResource copy.
-  RunUnsafeResourceCallback(resource, /*proceed=*/false,
-                            /*showed_interstitial=*/true);
+  resource.DispatchCallback(FROM_HERE, /*proceed=*/false,
+                            /*showed_interstitial=*/true,
+                            /*has_post_commit_interstitial_skipped=*/false);
 }
 
 void UrlCheckerDelegateImpl::
