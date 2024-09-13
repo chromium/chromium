@@ -56,6 +56,7 @@ source_set("browser") {
   visibility = [
     ":content_sms_parser_fuzzer",
     ":for_content_tests",  # See top of //content/BUILD.gn for why.
+    ":partitioned_popins_policy_fuzzer",
     "//content/app:*",
     "//content/public/browser:browser_sources",
     "//content/test/fuzzer:ad_auction_headers_util_fuzzer",
@@ -1860,6 +1861,8 @@ source_set("browser") {
     "renderer_host/page_lifecycle_state_manager.h",
     "renderer_host/partitioned_popins/partitioned_popins_navigation_throttle.cc",
     "renderer_host/partitioned_popins/partitioned_popins_navigation_throttle.h",
+    "renderer_host/partitioned_popins/partitioned_popins_policy.cc",
+    "renderer_host/partitioned_popins/partitioned_popins_policy.h",
     "renderer_host/policy_container_host.cc",
     "renderer_host/policy_container_host.h",
     "renderer_host/private_network_access_util.cc",
@@ -3618,4 +3621,14 @@ fuzzer_test("clear_site_data_handler_fuzzer") {
   sources = [ "browsing_data/clear_site_data_handler_fuzzer.cc" ]
   deps = [ "//content/test:test_support" ]
   seed_corpus = "//content/test/data/fuzzer_corpus/clear_site_data/"
+}
+
+fuzzer_test("partitioned_popins_policy_fuzzer") {
+  sources =
+      [ "renderer_host/partitioned_popins/partitioned_popins_policy_fuzzer.cc" ]
+  deps = [
+    ":browser",
+    "//content/public/browser:browser_sources",
+  ]
+  seed_corpus = "//content/test/data/fuzzer_corpus/partitioned_popin_policy/"
 }
