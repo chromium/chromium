@@ -39,6 +39,7 @@ config("config") {
 
 # These are defined as vars so they can be shared with different targets below.
 ios_web_view_public_headers = [
+  "public/cwv_omnibox_input.h",
   "public/cwv_autofill_controller.h",
   "public/cwv_autofill_controller_delegate.h",
   "public/cwv_autofill_data_manager.h",
@@ -162,6 +163,7 @@ ios_web_view_sources = [
   "internal/cwv_navigation_response_internal.h",
   "internal/cwv_navigation_type.mm",
   "internal/cwv_navigation_type_internal.h",
+  "internal/cwv_omnibox_input.mm",
   "internal/cwv_preferences.mm",
   "internal/cwv_preferences_internal.h",
   "internal/cwv_preview_element_info.mm",
@@ -335,6 +337,7 @@ ios_web_view_deps = [
   "//components/lookalikes/core",
   "//components/metrics:library_support",
   "//components/metrics/demographics",
+  "//components/omnibox/browser:location_bar",
   "//components/os_crypt/async/browser",
   "//components/password_manager/core/browser",
   "//components/password_manager/core/browser/affiliation:affiliation_fetching",
@@ -500,6 +503,7 @@ test("ios_web_view_unittests") {
     "internal/cwv_flags_unittest.mm",
     "internal/cwv_html_element_unittest.mm",
     "internal/cwv_lookalike_url_handler_unittest.mm",
+    "internal/cwv_omnibox_input_unittest.mm",
     "internal/cwv_preferences_unittest.mm",
     "internal/cwv_preview_element_info_unittest.mm",
     "internal/cwv_ssl_error_handler_unittest.mm",
