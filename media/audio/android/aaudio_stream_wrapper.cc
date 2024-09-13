@@ -264,7 +264,8 @@ bool AAudioStreamWrapper::Open() {
   AAudioStreamBuilder_setErrorCallback(builder, OnStreamErrorCallback,
                                        destruction_helper_.get());
 
-  result = AAudioStreamBuilder_openStream(builder, &aaudio_stream_);
+  result = AAudioStreamBuilder_openStream(builder,
+                                          &aaudio_stream_.AsEphemeralRawAddr());
 
   AAudioStreamBuilder_delete(builder);
 
