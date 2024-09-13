@@ -402,7 +402,8 @@ public class NativePageFactory {
                 activity,
                 url,
                 pdfInfo,
-                activity.getString(R.string.pdf_transient_tab_title));
+                activity.getString(R.string.pdf_transient_tab_title),
+                tab.getId());
     }
 
     /** Simple implementation of NativePageHost backed by a {@link Tab} */

@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -26,6 +27,7 @@ public class PdfCoordinator {
     private static boolean sSkipLoadPdfForTesting;
     private final View mView;
     private final FragmentManager mFragmentManager;
+    private String mTabId;
 
     /** A unique id to identity the FragmentContainerView in the current PdfPage. */
     private final int mFragmentContainerViewId;
@@ -49,8 +51,10 @@ public class PdfCoordinator {
      * @param profile The current Profile.
      * @param activity The current Activity.
      * @param filepath The pdf filepath.
+     * @param tabId The id of the tab.
      */
-    public PdfCoordinator(Profile profile, Activity activity, String filepath) {
+    public PdfCoordinator(Profile profile, Activity activity, String filepath, int tabId) {
+        mTabId = String.valueOf(tabId);
         mView = LayoutInflater.from(activity).inflate(R.layout.pdf_page, null);
         mView.setBackgroundColor(
                 ChromeColors.getPrimaryBackgroundColor(activity, profile.isOffTheRecord()));
@@ -68,6 +72,11 @@ public class PdfCoordinator {
         mFragmentContainerViewId = View.generateViewId();
         fragmentContainerView.setId(mFragmentContainerViewId);
         mFragmentManager = ((FragmentActivity) activity).getSupportFragmentManager();
+        // TODO(b/360717802): Reuse fragment from savedInstance.
+        Fragment fragment = mFragmentManager.findFragmentByTag(mTabId);
+        if (fragment != null) {
+            mFragmentManager.beginTransaction().remove(fragment).commitAllowingStateLoss();
+        }
         // Create PdfViewerFragment to start showing the loading spinner.
         mChromePdfViewerFragment = new ChromePdfViewerFragment();
         loadPdfFile(filepath);
@@ -167,7 +176,7 @@ public class PdfCoordinator {
                     // Committing the fragment
                     // TODO(b/360717802): Reuse fragment from savedInstance.
                     FragmentTransaction transaction = mFragmentManager.beginTransaction();
-                    transaction.add(mFragmentContainerViewId, mChromePdfViewerFragment);
+                    transaction.add(mFragmentContainerViewId, mChromePdfViewerFragment, mTabId);
                     transaction.commitAllowingStateLoss();
                     mFragmentManager.executePendingTransactions();
                     PdfUtils.recordPdfLoad();

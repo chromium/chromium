@@ -49,6 +49,7 @@ public class PdfPageUnitTest {
     private String mPdfPageUrl;
 
     private static final String DEFAULT_TAB_TITLE = "Loading PDF…";
+    private static final int TAB_ID = 123;
     private static final String CONTENT_URL = "content://media/external/downloads/1000000022";
     private static final String FILE_URL = "file:///media/external/downloads/sample.pdf";
     private static final String PDF_LINK = "https://www.foo.com/testfiles/pdf/sample.pdf";
@@ -90,7 +91,8 @@ public class PdfPageUnitTest {
                         mActivity,
                         encodedUrl,
                         mPdfInfo,
-                        DEFAULT_TAB_TITLE);
+                        DEFAULT_TAB_TITLE,
+                        TAB_ID);
         Assert.assertNotNull(pdfPage);
         Assert.assertEquals(
                 "Pdf page host should match.", UrlConstants.PDF_HOST, pdfPage.getHost());
@@ -119,7 +121,8 @@ public class PdfPageUnitTest {
                         mActivity,
                         encodedUrl,
                         mPdfInfo,
-                        DEFAULT_TAB_TITLE);
+                        DEFAULT_TAB_TITLE,
+                        TAB_ID);
         Assert.assertNotNull(pdfPage);
         Assert.assertEquals("Pdf page title should match.", FILE_NAME, pdfPage.getTitle());
         Assert.assertEquals(
@@ -148,7 +151,8 @@ public class PdfPageUnitTest {
                         mActivity,
                         mPdfPageUrl,
                         mPdfInfo,
-                        DEFAULT_TAB_TITLE);
+                        DEFAULT_TAB_TITLE,
+                        TAB_ID);
         Assert.assertNotNull(pdfPage);
         Assert.assertFalse(
                 "Pdf should not be loaded when the download is not completed.",
