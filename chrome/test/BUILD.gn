@@ -8430,25 +8430,29 @@ test("unit_tests") {
       "../browser/supervised_user/chromeos/mock_large_icon_service.h",
       "../browser/supervised_user/chromeos/supervised_user_favicon_request_handler_unittest.cc",
       "../browser/supervised_user/chromeos/supervised_user_web_content_handler_impl_unittest.cc",
+      "../browser/ui/views/frame/immersive_mode_controller_chromeos_unittest.cc",
       "../browser/ui/webui/certificate_provisioning_ui_handler_unittest.cc",
       "../browser/usb/usb_pinned_notification_unittest.cc",
     ]
 
     deps += [
       "//chrome/browser/chromeos/reporting",
+      "//chrome/browser/ui/chromeos:test_support",
       "//chrome/browser/ui/chromeos/read_write_cards",
       "//chromeos/components/disks:prefs",
       "//chromeos/dbus/power",
       "//chromeos/dbus/regmon",
+      "//chromeos/ui/frame:test_support",
       "//components/arc/common",
       "//components/arc/common:arc_intent_helper_constants",
       "//components/arc/common:arc_test_support",
       "//ui/chromeos",
 
-      # Unit tests from subdirectories.
+      # Unit tests from other build files.
       "//chrome/browser/chromeos:unit_tests",
       "//chrome/browser/smart_card:unit_tests",
       "//chrome/common/extensions:unit_tests",
+      "//components/sharing_message:unit_tests",
     ]
   }
 
