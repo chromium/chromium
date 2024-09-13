@@ -30,6 +30,7 @@
 #include "components/find_in_page/find_types.h"
 #include "components/lens/lens_features.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -40,9 +41,11 @@
 #include "third_party/blink/public/common/switches.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/event_modifiers.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/interaction/view_focus_observer.h"
@@ -348,6 +351,47 @@ IN_PROC_BROWSER_TEST_F(FindBarViewsUiTest, NavigationByKeyEvent) {
       SendKeyPress(ui::VKEY_RETURN, false, false),
       CheckHasFocus(FindBarView::kNextButtonElementId),
       StopObservingState(kFindResultState));
+}
+
+IN_PROC_BROWSER_TEST_F(LegacyFindInPageTest, AccessibleName) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  // Make sure Chrome is in the foreground, otherwise sending input
+  // won't do anything and the test will hang.
+  ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
+  // First we navigate to any page.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL(kSimplePage)));
+  // Show the Find bar.
+  browser()->GetFindBarController()->Show();
+
+  FindBarView* find_bar_view = GetFindBarView();
+  gfx::Rect clip_rect;
+  int number_of_matches = 0;
+  int active_match_ordinal = 5;
+  std::unique_ptr<find_in_page::FindNotificationDetails> details =
+      std::make_unique<find_in_page::FindNotificationDetails>(
+          /*request_id= */ 1, number_of_matches, clip_rect,
+          active_match_ordinal, /*final_update= */ true);
+
+  find_bar_view->UpdateForResult(*details, u"test_string");
+  ui::AXNodeData data;
+  find_bar_view->GetFindBarMatchCountLabelViewAccessibilityForTesting()
+      .GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            l10n_util::GetStringUTF16(IDS_ACCESSIBLE_FIND_IN_PAGE_NO_RESULTS));
+
+  number_of_matches = 3;
+  details = std::make_unique<find_in_page::FindNotificationDetails>(
+      /*request_id= */ 1, number_of_matches, clip_rect, active_match_ordinal,
+      /*final_update= */ true);
+  find_bar_view->UpdateForResult(*details, u"test_string");
+  data = ui::AXNodeData();
+  find_bar_view->GetFindBarMatchCountLabelViewAccessibilityForTesting()
+      .GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            l10n_util::GetStringFUTF16(IDS_ACCESSIBLE_FIND_IN_PAGE_COUNT,
+                                       base::FormatNumber(active_match_ordinal),
+                                       base::FormatNumber(number_of_matches)));
 }
 
 IN_PROC_BROWSER_TEST_F(LegacyFindInPageTest, ButtonsDoNotAlterFocus) {

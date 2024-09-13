@@ -82,6 +82,7 @@ class FindBarMatchCountLabel : public views::Label {
  public:
   FindBarMatchCountLabel() {
     GetViewAccessibility().SetRole(ax::mojom::Role::kStatus);
+    UpdateAccessibleName();
   }
 
   FindBarMatchCountLabel(const FindBarMatchCountLabel&) = delete;
@@ -99,15 +100,15 @@ class FindBarMatchCountLabel : public views::Label {
     return size;
   }
 
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
-    Label::GetAccessibleNodeData(node_data);
+  void UpdateAccessibleName() {
     if (!last_result_) {
-      node_data->SetNameExplicitlyEmpty();
+      GetViewAccessibility().SetName(
+          std::string(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
     } else if (last_result_->number_of_matches() < 1) {
-      node_data->SetNameChecked(
+      GetViewAccessibility().SetName(
           l10n_util::GetStringUTF16(IDS_ACCESSIBLE_FIND_IN_PAGE_NO_RESULTS));
     } else {
-      node_data->SetNameChecked(l10n_util::GetStringFUTF16(
+      GetViewAccessibility().SetName(l10n_util::GetStringFUTF16(
           IDS_ACCESSIBLE_FIND_IN_PAGE_COUNT,
           base::FormatNumber(last_result_->active_match_ordinal()),
           base::FormatNumber(last_result_->number_of_matches())));
@@ -125,6 +126,7 @@ class FindBarMatchCountLabel : public views::Label {
         IDS_FIND_IN_PAGE_COUNT,
         base::FormatNumber(last_result_->active_match_ordinal()),
         base::FormatNumber(last_result_->number_of_matches())));
+    UpdateAccessibleName();
 
     if (last_result_->final_update()) {
       ui::AXNodeData node_data;
@@ -146,6 +148,7 @@ class FindBarMatchCountLabel : public views::Label {
   void ClearResult() {
     last_result_.reset();
     SetText(std::u16string());
+    UpdateAccessibleName();
   }
 
  private:
@@ -452,6 +455,11 @@ bool FindBarView::OnMousePressed(const ui::MouseEvent& event) {
     return false;
   find_text_->RequestFocus();
   return true;
+}
+
+const views::ViewAccessibility&
+FindBarView::GetFindBarMatchCountLabelViewAccessibilityForTesting() {
+  return match_count_text_->GetViewAccessibility();
 }
 
 gfx::Size FindBarView::CalculatePreferredSize(
