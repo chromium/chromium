@@ -6,7 +6,7 @@
 // browser.
 
 [platforms=("chromeos", "lacros"),
-  implemented_in="chrome/browser/chromeos/extensions/accessibility_service_private.h"]
+  implemented_in="chrome/browser/chromeos/extensions/accessibility_service_private/accessibility_service_private.h"]
 
 namespace accessibilityServicePrivate {
   callback VoidCallback = void();

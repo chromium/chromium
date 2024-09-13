@@ -5937,6 +5937,7 @@ static_library("browser") {
       "//chrome/browser/apps:icon_standardizer",
       "//chrome/browser/apps/app_service/app_icon",
       "//chrome/browser/chromeos/drivefs",
+      "//chrome/browser/chromeos/extensions/accessibility_service_private",
       "//chrome/browser/chromeos/extensions/vpn_provider",
       "//chrome/browser/chromeos/extensions/web_file_handlers",
       "//chrome/browser/chromeos/extensions/wm",
@@ -5978,6 +5979,7 @@ static_library("browser") {
 
     allow_circular_includes_from += [
       "//chrome/browser/chromeos/tablet_mode",
+      "//chrome/browser/chromeos/extensions/accessibility_service_private",
       "//chrome/browser/lacros/account_manager:impl",
     ]
 

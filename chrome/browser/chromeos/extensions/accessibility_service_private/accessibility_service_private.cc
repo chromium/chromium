@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/extensions/accessibility_service_private.h"
+#include "chrome/browser/chromeos/extensions/accessibility_service_private/accessibility_service_private.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/lacros/embedded_a11y_manager_lacros.h"
