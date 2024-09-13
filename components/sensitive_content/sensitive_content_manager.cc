@@ -10,6 +10,9 @@
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/password_form_classification.h"
+#include "components/password_manager/content/browser/password_form_classification_util.h"
+#include "components/sensitive_content/features.h"
 #include "components/sensitive_content/sensitive_content_client.h"
 #include "content/public/browser/web_contents.h"
 
@@ -81,7 +84,22 @@ void SensitiveContentManager::OnFieldTypesDetermined(AutofillManager& manager,
   if (const autofill::FormStructure* form =
           manager.FindCachedFormById(form_id)) {
     for (const std::unique_ptr<AutofillField>& field : form->fields()) {
-      if (IsSensitiveAutofillType(field->Type().GetStorableType())) {
+      const bool field_is_sensitive =
+          IsSensitiveAutofillType(field->Type().GetStorableType());
+      // The feature param check is done first because reparsing by password
+      // manager (calling `ClassifyAsPasswordForm`) can take long. Moreover,
+      // this feature param exists only to check whether reparsing has a
+      // negative performance impact or not. Otherwise, it is known that
+      // reparsing by password manager is more accurate for password forms.
+      const bool field_is_sensitive_after_password_manager_reparsing =
+          features::kSensitiveContentUsePwmHeuristicsParam.Get() &&
+          password_manager::ClassifyAsPasswordForm(manager, form_id,
+                                                   field->global_id())
+                  .type !=
+              autofill::PasswordFormClassification::Type::kNoPasswordForm;
+
+      if (field_is_sensitive ||
+          field_is_sensitive_after_password_manager_reparsing) {
         sensitive_fields_.insert(field->global_id());
       } else {
         sensitive_fields_.erase(field->global_id());

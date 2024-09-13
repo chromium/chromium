@@ -8,6 +8,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "components/autofill/content/browser/autofill_test_utils.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/content_autofill_driver_test_api.h"
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
@@ -23,6 +24,7 @@
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "components/sensitive_content/features.h"
 #include "components/sensitive_content/sensitive_content_client.h"
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -33,9 +35,11 @@ namespace sensitive_content {
 namespace {
 
 using autofill::AutofillManager;
+using autofill::AutofillManagerEvent;
 using autofill::AutofillQueryResponse;
 using autofill::FormData;
 using autofill::FormFieldData;
+using autofill::TestAutofillManagerWaiter;
 using ::testing::InSequence;
 using ::testing::MockFunction;
 using LifecycleState = autofill::AutofillDriver::LifecycleState;
@@ -162,8 +166,8 @@ TEST_F(SensitiveContentManagerTest, AddAndRemoveSensitiveAndNotSensitiveForms) {
     EXPECT_CALL(sensitive_content_client(), SetContentSensitivity).Times(0);
   }
 
-  autofill::TestAutofillManagerWaiter waiter(
-      autofill_manager(), {autofill::AutofillManagerEvent::kFormsSeen});
+  TestAutofillManagerWaiter waiter(autofill_manager(),
+                                   {AutofillManagerEvent::kFormsSeen});
   autofill_manager().OnFormsSeen(/*updated_forms=*/{not_sensitive_form},
                                  /*removed_forms=*/{});
   ASSERT_TRUE(waiter.Wait());
@@ -218,8 +222,8 @@ TEST_F(SensitiveContentManagerTest, AutofillManagerStateChanged) {
   test_api(*autofill_driver())
       .SetLifecycleStateAndNotifyObservers(LifecycleState::kActive);
 
-  autofill::TestAutofillManagerWaiter waiter(
-      autofill_manager(), {autofill::AutofillManagerEvent::kFormsSeen});
+  TestAutofillManagerWaiter waiter(autofill_manager(),
+                                   {AutofillManagerEvent::kFormsSeen});
   autofill_manager().OnFormsSeen(/*updated_forms=*/{not_sensitive_form},
                                  /*removed_forms=*/{});
   ASSERT_TRUE(waiter.Wait());
@@ -296,8 +300,8 @@ TEST_F(SensitiveContentManagerTest, SensitiveTimeMetricRecorded) {
   FormData sensitive_form = CreateSensitiveFormData();
   base::HistogramTester histogram_tester;
 
-  autofill::TestAutofillManagerWaiter waiter(
-      autofill_manager(), {autofill::AutofillManagerEvent::kFormsSeen});
+  TestAutofillManagerWaiter waiter(autofill_manager(),
+                                   {AutofillManagerEvent::kFormsSeen});
   autofill_manager().OnFormsSeen(
       /*updated_forms=*/{sensitive_form},
       /*removed_forms=*/{});
@@ -313,6 +317,50 @@ TEST_F(SensitiveContentManagerTest, SensitiveTimeMetricRecorded) {
   histogram_tester.ExpectUniqueTimeSample(histogram_sensitive_time,
                                           base::Milliseconds(100), 1);
 }
+
+class SensitiveContentManagerPwmHeuristicsTest
+    : public SensitiveContentManagerTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  bool UsePwmHeuristics() const { return GetParam(); }
+};
+
+TEST_P(SensitiveContentManagerPwmHeuristicsTest, UsePwmHeuristics) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  FormData form = autofill::test::CreateFormDataForRenderFrameHost(
+      *main_rfh(),
+      {autofill::test::CreateTestFormField(
+           "Username", "username", "", autofill::FormControlType::kInputText),
+       autofill::test::CreateTestFormField(
+           "Password", "password", "",
+           autofill::FormControlType::kInputPassword)});
+  NavigateAndCommit(GURL("https://test.com"));
+
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kSensitiveContent,
+      {{features::kSensitiveContentUsePwmHeuristicsParam.name,
+        UsePwmHeuristics() ? "true" : "false"}});
+
+  if (UsePwmHeuristics()) {
+    // With the feature param enabled, the form will be reparsed by password
+    // manager, and considered sensitive.
+    EXPECT_CALL(sensitive_content_client(),
+                SetContentSensitivity(/*content_is_sensitive=*/true));
+  } else {
+    // With the feature param disabled, the form will not be reparsed by
+    // password manager, and not considered sensitive.
+    EXPECT_CALL(sensitive_content_client(), SetContentSensitivity).Times(0);
+  }
+  TestAutofillManagerWaiter waiter(autofill_manager(),
+                                   {AutofillManagerEvent::kFormsSeen});
+  autofill_driver()->renderer_events().FormsSeen(/*updated_forms=*/{form},
+                                                 /*removed_forms=*/{});
+  ASSERT_TRUE(waiter.Wait(/*num_expected_relevant_events=*/1));
+}
+
+INSTANTIATE_TEST_SUITE_P(SensitiveContentManagerTest,
+                         SensitiveContentManagerPwmHeuristicsTest,
+                         ::testing::Bool());
 
 }  // namespace
 }  // namespace sensitive_content

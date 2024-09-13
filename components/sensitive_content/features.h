@@ -7,11 +7,15 @@
 
 #include "base/component_export.h"
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 
 namespace sensitive_content::features {
 
 COMPONENT_EXPORT(SENSITIVE_CONTENT_FEATURES)
 BASE_DECLARE_FEATURE(kSensitiveContent);
+
+COMPONENT_EXPORT(SENSITIVE_CONTENT_FEATURES)
+extern const base::FeatureParam<bool> kSensitiveContentUsePwmHeuristicsParam;
 
 }  // namespace sensitive_content::features
 

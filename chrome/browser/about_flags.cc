@@ -4134,7 +4134,15 @@ const FeatureEntry::FeatureParam kClayBlockingWithFakeBackend[] = {
 const FeatureEntry::FeatureVariation kClayBlockingVariations[] = {
     {"(with fake backend)", kClayBlockingWithFakeBackend,
      std::size(kClayBlockingWithFakeBackend), nullptr}};
-#endif
+
+const FeatureEntry::FeatureParam kSensitiveContentUsePwmHeuristics[] = {
+    {"sensitive_content_use_pwm_heuristics", "true"}};
+
+const FeatureEntry::FeatureVariation kSensitiveContentVariations[] = {
+    {"with password manager heuristics", kSensitiveContentUsePwmHeuristics,
+     std::size(kSensitiveContentUsePwmHeuristics), nullptr},
+};
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // Feature variations for kSubframeProcessReuseThresholds.
 const FeatureEntry::FeatureParam kSubframeProcessReuseMemoryThreshold512MB{
@@ -11863,7 +11871,10 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"sensitive-content", flag_descriptions::kSensitiveContentName,
      flag_descriptions::kSensitiveContentDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(sensitive_content::features::kSensitiveContent)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         sensitive_content::features::kSensitiveContent,
+         kSensitiveContentVariations,
+         "SensitiveContent")},
 #endif  // BUILDFLAG(IS_ANDROID)
 
     {"safe-browsing-ripple-effect",
