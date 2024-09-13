@@ -914,7 +914,8 @@ StyleContentAlignmentData FlexibleBoxAlgorithm::ResolvedJustifyContent(
       } else if ((position == ContentPosition::kLeft &&
                   style.IsFlippedBlocksWritingMode()) ||
                  (position == ContentPosition::kRight &&
-                  style.IsFlippedLinesWritingMode())) {
+                  style.GetWritingDirection().BlockEnd() ==
+                      PhysicalDirection::kRight)) {
         position = ContentPosition::kEnd;
       } else {
         position = ContentPosition::kStart;
