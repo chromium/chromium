@@ -11,6 +11,7 @@
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
+#include "components/enterprise/buildflags/buildflags.h"
 #include "components/enterprise/data_controls/core/browser/conditions/and_condition.h"
 #include "components/enterprise/data_controls/core/browser/conditions/attributes_condition.h"
 #include "components/enterprise/data_controls/core/browser/conditions/not_condition.h"
@@ -556,7 +557,9 @@ bool Rule::AddUnsupportedRestrictionErrors(
       kSupportedRestrictions = {
           {Restriction::kClipboard,
            {Level::kNotSet, Level::kReport, Level::kWarn, Level::kBlock}},
+#if BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
           {Restriction::kScreenshot, {Level::kNotSet, Level::kBlock}},
+#endif  // BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
       };
 
   bool valid = true;

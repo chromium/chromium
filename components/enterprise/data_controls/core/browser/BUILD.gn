@@ -47,6 +47,7 @@ source_set("browser") {
   deps = [
     ":features",
     "//base",
+    "//components/enterprise/buildflags",
     "//components/keyed_service/core",
     "//components/policy/core/browser",
     "//components/policy/core/common:common_constants",
