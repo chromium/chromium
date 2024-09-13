@@ -5,18 +5,27 @@
 #include "chrome/browser/ui/ash/focus_mode/chrome_focus_mode_delegate.h"
 
 #include "ash/shell.h"
+#include "ash/system/focus_mode/sounds/youtube_music/request_signer.h"
 #include "ash/system/focus_mode/sounds/youtube_music/youtube_music_client.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ui/ash/focus_mode/signature_builder.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/common/auth_service.h"
 #include "google_apis/common/request_sender.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
 namespace {
+
+// Amount of time between now and certificate expiration which will trigger a
+// refresh. Certificates are generally issued with lifetimes of about 1 year so
+// this won't trigger too often but will refresh a certificate well in advance
+// of it expiring.
+constexpr base::TimeDelta kCertificateBuffer = base::Hours(36);
 
 // This will be used as a callback that is passed to the client to generate
 // `google_apis::RequestSender`. The request sender class implements the
@@ -54,18 +63,36 @@ std::unique_ptr<google_apis::RequestSender> CreateRequestSenderForClient(
 class RequestSignerImpl : public ash::RequestSigner {
  public:
   explicit RequestSignerImpl(const AccountId& account_id)
-      : account_id_(account_id) {}
+      : account_id_(account_id) {
+    certificate_manager_ =
+        CertificateManager::Create(account_id, kCertificateBuffer);
+    signature_builder_ =
+        std::make_unique<SignatureBuilder>(certificate_manager_.get());
+  }
   ~RequestSignerImpl() override = default;
 
   bool GenerateHeaders(base::span<const uint8_t> data,
-                       ash::RequestSigner::HeadersCallback callback) override {
-    // TODO(skau): Actually sign `data`.
-    std::move(callback).Run({});
-    return false;
+                       HeadersCallback callback) override {
+    signature_builder_->SetPayload(
+        std::vector<uint8_t>(data.begin(), data.end()));
+    signature_builder_->SetBrand("ChromeOS");
+    signature_builder_->SetModel("Chromebook");
+    // TODO(skau): Replace these values with real values.
+    signature_builder_->SetSoftwareVersion("130.0.0.0");
+    signature_builder_->SetDeviceId("ThisIsSupposedToBeAGUID");
+
+    if (!signature_builder_->BuildHeaders(std::move(callback))) {
+      LOG(WARNING) << "Unable to start request signing";
+      return false;
+    }
+    return true;
   }
 
  private:
   const AccountId account_id_;
+
+  std::unique_ptr<CertificateManager> certificate_manager_;
+  std::unique_ptr<SignatureBuilder> signature_builder_;
 };
 
 }  // namespace

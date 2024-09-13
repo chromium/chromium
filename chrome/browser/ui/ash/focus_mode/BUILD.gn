@@ -12,6 +12,8 @@ static_library("focus_mode") {
     "certificate_manager.h",
     "chrome_focus_mode_delegate.cc",
     "chrome_focus_mode_delegate.h",
+    "signature_builder.cc",
+    "signature_builder.h",
   ]
 
   public_deps = [
