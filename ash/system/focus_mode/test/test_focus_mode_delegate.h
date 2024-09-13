@@ -18,7 +18,8 @@ class TestFocusModeDelegate : public FocusModeDelegate {
 
   // FocusModeDelegate:
   std::unique_ptr<youtube_music::YouTubeMusicClient> CreateYouTubeMusicClient(
-      const AccountId& account_id) override;
+      const AccountId& account_id,
+      const std::string& device_id) override;
   bool IsMinorUser() override;
 };
 

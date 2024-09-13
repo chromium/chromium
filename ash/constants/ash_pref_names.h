@@ -2253,6 +2253,9 @@ inline constexpr char kFocusModeSelectedTask[] = "ash.focus_mode.selected_task";
 // A dictionary pref containing the set of sound section settings for the user.
 // This is synced for all user devices.
 inline constexpr char kFocusModeSoundSection[] = "ash.focus_mode.sound_section";
+// An identifier for focus mode clients that is stable across reboot for use
+// with the YMC API.
+inline constexpr char kFocusModeDeviceId[] = "ash.focus_mode.device_id";
 // An string enum pref containing the enabled sound types.
 inline constexpr char kFocusModeSoundsEnabled[] =
     "ash.focus_mode.sounds_enabled";

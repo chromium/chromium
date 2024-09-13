@@ -201,6 +201,9 @@ void FocusModeController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
       prefs::kFocusModeSoundSection,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
 
+  // Pref is device-local and should never be synced.
+  registry->RegisterStringPref(prefs::kFocusModeDeviceId, "");
+
   // Pref only set via policy.
   registry->RegisterStringPref(prefs::kFocusModeSoundsEnabled,
                                focus_mode_util::kFocusModeSoundsEnabled);

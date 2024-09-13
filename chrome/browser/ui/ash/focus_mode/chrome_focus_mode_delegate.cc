@@ -10,6 +10,7 @@
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/task/thread_pool.h"
+#include "base/version_info/version_info.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -62,8 +63,9 @@ std::unique_ptr<google_apis::RequestSender> CreateRequestSenderForClient(
 
 class RequestSignerImpl : public ash::RequestSigner {
  public:
-  explicit RequestSignerImpl(const AccountId& account_id)
-      : account_id_(account_id) {
+  explicit RequestSignerImpl(const AccountId& account_id,
+                             const std::string& device_id)
+      : account_id_(account_id), device_id_(device_id) {
     certificate_manager_ =
         CertificateManager::Create(account_id, kCertificateBuffer);
     signature_builder_ =
@@ -77,9 +79,8 @@ class RequestSignerImpl : public ash::RequestSigner {
         std::vector<uint8_t>(data.begin(), data.end()));
     signature_builder_->SetBrand("ChromeOS");
     signature_builder_->SetModel("Chromebook");
-    // TODO(skau): Replace these values with real values.
-    signature_builder_->SetSoftwareVersion("130.0.0.0");
-    signature_builder_->SetDeviceId("ThisIsSupposedToBeAGUID");
+    signature_builder_->SetSoftwareVersion(version_info::GetVersionNumber());
+    signature_builder_->SetDeviceId(device_id_);
 
     if (!signature_builder_->BuildHeaders(std::move(callback))) {
       LOG(WARNING) << "Unable to start request signing";
@@ -90,6 +91,7 @@ class RequestSignerImpl : public ash::RequestSigner {
 
  private:
   const AccountId account_id_;
+  const std::string device_id_;
 
   std::unique_ptr<CertificateManager> certificate_manager_;
   std::unique_ptr<SignatureBuilder> signature_builder_;
@@ -102,10 +104,12 @@ ChromeFocusModeDelegate::ChromeFocusModeDelegate() = default;
 ChromeFocusModeDelegate::~ChromeFocusModeDelegate() = default;
 
 std::unique_ptr<ash::youtube_music::YouTubeMusicClient>
-ChromeFocusModeDelegate::CreateYouTubeMusicClient(const AccountId& account_id) {
+ChromeFocusModeDelegate::CreateYouTubeMusicClient(
+    const AccountId& account_id,
+    const std::string& device_id) {
   return std::make_unique<ash::youtube_music::YouTubeMusicClient>(
       base::BindRepeating(&CreateRequestSenderForClient),
-      std::make_unique<RequestSignerImpl>(account_id));
+      std::make_unique<RequestSignerImpl>(account_id, device_id));
 }
 
 bool ChromeFocusModeDelegate::IsMinorUser() {

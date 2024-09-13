@@ -25,7 +25,8 @@ class ASH_EXPORT FocusModeDelegate {
 
   // Virtual function that is implemented in chrome to create the client.
   virtual std::unique_ptr<youtube_music::YouTubeMusicClient>
-  CreateYouTubeMusicClient(const AccountId& account_id) = 0;
+  CreateYouTubeMusicClient(const AccountId& account_id,
+                           const std::string& device_id) = 0;
 
   // True if the active user is considered a minor (e.g. under the age of 18)
   // using the manta service account capability as the signal.

@@ -16,7 +16,8 @@ class ChromeFocusModeDelegate : public ash::FocusModeDelegate {
 
   // ash::FocusModeDelegate
   std::unique_ptr<ash::youtube_music::YouTubeMusicClient>
-  CreateYouTubeMusicClient(const AccountId& account_id) override;
+  CreateYouTubeMusicClient(const AccountId& account_id,
+                           const std::string& device_id) override;
   bool IsMinorUser() override;
 };
 
