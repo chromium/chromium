@@ -889,7 +889,8 @@ class LocalDeviceGtestRun(local_device_test_run.LocalDeviceTestRun):
       logging.info(l)
 
     # Parse the output.
-    # TODO(jbudorick): Transition test scripts away from parsing stdout.
+    # TODO(crbug.com/366267015): Transition test scripts away from parsing
+    # stdout.
     if self._test_instance.enable_xml_result_parsing:
       results = gtest_test_instance.ParseGTestXML(gtest_xml)
     elif self._test_instance.isolated_script_test_output:
