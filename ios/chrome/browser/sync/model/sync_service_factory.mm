@@ -83,7 +83,7 @@ syncer::DataTypeController::TypeVector CreateControllers(
     ChromeBrowserState* browser_state,
     syncer::SyncService* sync_service) {
   scoped_refptr<autofill::AutofillWebDataService> profile_web_data_service =
-      ios::WebDataServiceFactory::GetAutofillWebDataForBrowserState(
+      ios::WebDataServiceFactory::GetAutofillWebDataForProfile(
           browser_state, ServiceAccessType::IMPLICIT_ACCESS);
 
   browser_sync::CommonControllerBuilder builder;
@@ -134,7 +134,7 @@ syncer::DataTypeController::TypeVector CreateControllers(
           browser_state, ServiceAccessType::IMPLICIT_ACCESS));
   builder.SetPlusAddressServices(
       PlusAddressSettingServiceFactory::GetForProfile(browser_state),
-      ios::WebDataServiceFactory::GetPlusAddressWebDataForBrowserState(
+      ios::WebDataServiceFactory::GetPlusAddressWebDataForProfile(
           browser_state, ServiceAccessType::IMPLICIT_ACCESS));
   builder.SetPowerBookmarkService(
       PowerBookmarkServiceFactory::GetForBrowserState(browser_state));

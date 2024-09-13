@@ -610,7 +610,7 @@ void BrowsingDataRemoverImpl::RemoveImpl(base::Time delete_begin,
   if (IsRemoveDataMaskSet(mask, BrowsingDataRemoveMask::REMOVE_FORM_DATA)) {
     base::RecordAction(base::UserMetricsAction("ClearBrowsingData_Autofill"));
     scoped_refptr<autofill::AutofillWebDataService> web_data_service =
-        ios::WebDataServiceFactory::GetAutofillWebDataForBrowserState(
+        ios::WebDataServiceFactory::GetAutofillWebDataForProfile(
             browser_state_, ServiceAccessType::EXPLICIT_ACCESS);
 
     if (web_data_service.get()) {

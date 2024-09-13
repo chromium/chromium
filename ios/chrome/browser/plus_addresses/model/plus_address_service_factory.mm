@@ -91,7 +91,7 @@ PlusAddressServiceFactory::BuildServiceInstanceFor(
           PlusAddressSettingServiceFactory::GetForProfile(profile),
           std::make_unique<plus_addresses::PlusAddressHttpClientImpl>(
               identity_manager, profile->GetSharedURLLoaderFactory()),
-          ios::WebDataServiceFactory::GetPlusAddressWebDataForBrowserState(
+          ios::WebDataServiceFactory::GetPlusAddressWebDataForProfile(
               profile, ServiceAccessType::EXPLICIT_ACCESS),
           affiliation_service, std::move(feature_check));
 

@@ -47,7 +47,7 @@ std::unique_ptr<KeyedService> BuildTemplateURLService(
       CHECK_DEREF(ios::SearchEngineChoiceServiceFactory::GetForBrowserState(
           browser_state)),
       std::make_unique<ios::UIThreadSearchTermsData>(),
-      ios::WebDataServiceFactory::GetKeywordWebDataForBrowserState(
+      ios::WebDataServiceFactory::GetKeywordWebDataForProfile(
           browser_state, ServiceAccessType::EXPLICIT_ACCESS),
       std::make_unique<ios::TemplateURLServiceClientImpl>(
           ios::HistoryServiceFactory::GetForBrowserState(

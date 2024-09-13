@@ -780,7 +780,7 @@ TEST_F(AutofillControllerTest, KeyValueImport) {
   web::test::ExecuteJavaScript(@"document.forms[0].greeting.value = 'Hello'",
                                web_state());
   scoped_refptr<AutofillWebDataService> web_data_service =
-      ios::WebDataServiceFactory::GetAutofillWebDataForBrowserState(
+      ios::WebDataServiceFactory::GetAutofillWebDataForProfile(
           profile_.get(), ServiceAccessType::EXPLICIT_ACCESS);
   TestConsumer consumer;
   const int limit = 1;
@@ -812,7 +812,7 @@ TEST_F(AutofillControllerTest, KeyValueImport) {
 
 void AutofillControllerTest::SetUpKeyValueData() {
   scoped_refptr<AutofillWebDataService> web_data_service =
-      ios::WebDataServiceFactory::GetAutofillWebDataForBrowserState(
+      ios::WebDataServiceFactory::GetAutofillWebDataForProfile(
           profile_.get(), ServiceAccessType::EXPLICIT_ACCESS);
   // Load value into database.
   std::vector<FormFieldData> values;

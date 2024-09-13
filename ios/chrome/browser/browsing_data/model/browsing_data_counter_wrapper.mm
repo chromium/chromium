@@ -65,7 +65,7 @@ CreateCounterForBrowserStateAndPref(ChromeBrowserState* browser_state,
   if (pref_name == browsing_data::prefs::kDeleteFormData) {
     return std::make_unique<browsing_data::AutofillCounter>(
         autofill::PersonalDataManagerFactory::GetForBrowserState(browser_state),
-        ios::WebDataServiceFactory::GetAutofillWebDataForBrowserState(
+        ios::WebDataServiceFactory::GetAutofillWebDataForProfile(
             browser_state, ServiceAccessType::EXPLICIT_ACCESS),
         SyncServiceFactory::GetForBrowserState(browser_state));
   }
