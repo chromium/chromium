@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "net/base/load_timing_info.h"
@@ -218,6 +219,8 @@ class HttpStreamPool::Group {
   std::list<IdleStreamSocket> idle_stream_sockets_;
 
   std::unique_ptr<AttemptManager> attempt_manager_;
+
+  base::WeakPtrFactory<Group> weak_ptr_factory_{this};
 };
 
 }  // namespace net

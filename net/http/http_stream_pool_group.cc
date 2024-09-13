@@ -170,8 +170,8 @@ std::unique_ptr<HttpStreamPoolHandle> HttpStreamPool::Group::CreateHandle(
   ++handed_out_stream_count_;
   pool_->IncrementTotalHandedOutStreamCount();
 
-  auto handle = std::make_unique<HttpStreamPoolHandle>(this, std::move(socket),
-                                                       generation_);
+  auto handle = std::make_unique<HttpStreamPoolHandle>(
+      weak_ptr_factory_.GetWeakPtr(), std::move(socket), generation_);
   handle->set_connect_timing(connect_timing);
   handle->set_reuse_type(reuse_type);
   return handle;
