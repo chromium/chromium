@@ -5083,6 +5083,13 @@
      ]
     },
     "css-values": {
+     "attr-crash.html": [
+      "012dad91cf8f9e93fb93e07ff69a7f08b9e26b31",
+      [
+       null,
+       {}
+      ]
+     ],
      "calc-complex-sign-function-crash.html": [
       "d890c8cdd1add0d86de555d3f8eaf380101fff72",
       [
@@ -167140,6 +167147,19 @@
        {}
       ]
      ],
+     "scrollbar-gutter-scroll-into-view.html": [
+      "a619d1aa3e42a703021e254be2bbfd4d6a06d283",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/scrollbar-gutter-scroll-into-view-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "scrollbar-gutter-vertical-lr-002.html": [
       "598cfdf3664f6ba14df20b73b3383ceb091fe12c",
       [
@@ -178062,19 +178082,6 @@
        [
         [
          "/css/css-scrollbars/scrollbar-color-scheme-dynamic-4-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "scrollbar-gutter-scroll-into-view.html": [
-      "a619d1aa3e42a703021e254be2bbfd4d6a06d283",
-      [
-       null,
-       [
-        [
-         "/css/css-scrollbars/scrollbar-gutter-scroll-into-view-ref.html",
          "=="
         ]
        ],
@@ -242937,12 +242944,12 @@
        ]
       ],
       "nested-exit.tentative.html": [
-       "4612a88a13021f51b28e6d276de6f4d9ef5582a1",
+       "dd1d65622808a096731e557be292075967fe142d",
        [
-        "css/css-view-transitions/nested/nested-exit.tentative.html?vtmode=crossdoc",
+        null,
         [
          [
-          "/css/css-view-transitions/nested/nested-ref-100.html?vtmode=crossdoc",
+          "/css/css-view-transitions/nested/nested-ref-100.html",
           "=="
          ]
         ],
@@ -300868,55 +300875,55 @@
       []
      ],
      "successes.js": [
-      "e1c1665b511030533d1a01e92a741c11045d670a",
+      "a9a168e1adbf72ecdd2108f100a59ec8d0f39207",
       []
      ],
      "successes_AES-CBC.https.any-expected.txt": [
-      "9ee9e1f6f4829a87e9f2b59db17096d418a14ee4",
+      "23a0f70d72a378a0259e64225fa08ff16187be93",
       []
      ],
      "successes_AES-CBC.https.any.worker-expected.txt": [
-      "9ee9e1f6f4829a87e9f2b59db17096d418a14ee4",
+      "23a0f70d72a378a0259e64225fa08ff16187be93",
       []
      ],
      "successes_AES-CTR.https.any-expected.txt": [
-      "49f0359bc035bbbd71813f46df8fa0c218cd6344",
+      "e00fb7c5532a64794f37df8133194be46b4b9121",
       []
      ],
      "successes_AES-CTR.https.any.worker-expected.txt": [
-      "49f0359bc035bbbd71813f46df8fa0c218cd6344",
+      "e00fb7c5532a64794f37df8133194be46b4b9121",
       []
      ],
      "successes_AES-GCM.https.any-expected.txt": [
-      "8cc06fb5fda1798d93e9120582cc09a903626103",
+      "f3550fcc2bce4933898f05206eb3ba8fa1ad1704",
       []
      ],
      "successes_AES-GCM.https.any.worker-expected.txt": [
-      "8cc06fb5fda1798d93e9120582cc09a903626103",
+      "f3550fcc2bce4933898f05206eb3ba8fa1ad1704",
       []
      ],
      "successes_AES-KW.https.any-expected.txt": [
-      "ab1f03a1af65812fed245b04708c07aa549e4981",
+      "74b757b8e50c2418f328be60c8bea7dea8862100",
       []
      ],
      "successes_AES-KW.https.any.worker-expected.txt": [
-      "ab1f03a1af65812fed245b04708c07aa549e4981",
+      "74b757b8e50c2418f328be60c8bea7dea8862100",
       []
      ],
      "successes_Ed448.https.any-expected.txt": [
-      "7dfb798f5917e6168094236cd6d95e169235e780",
+      "8268ad2ed7ab2ad28af5e3abe56c3ff91a28bb7a",
       []
      ],
      "successes_Ed448.https.any.worker-expected.txt": [
-      "7dfb798f5917e6168094236cd6d95e169235e780",
+      "8268ad2ed7ab2ad28af5e3abe56c3ff91a28bb7a",
       []
      ],
      "successes_X448.https.any-expected.txt": [
-      "6836c64c3bcc86a5ee6baab417e15d1cafdce978",
+      "f51f7f38c4f1a27567fc68f1aab9beeccf499588",
       []
      ],
      "successes_X448.https.any.worker-expected.txt": [
-      "6836c64c3bcc86a5ee6baab417e15d1cafdce978",
+      "f51f7f38c4f1a27567fc68f1aab9beeccf499588",
       []
      ]
     },
@@ -337745,6 +337752,10 @@
       "e6510a081353db996c4ead14ad6a167b90d48297",
       []
      ],
+     "scrollbar-gutter-scroll-into-view-ref.html": [
+      "72cadd8eab58601e7500359de14eee579613e82b",
+      []
+     ],
      "scrollbar-gutter-vertical-lr-002-ref.html": [
       "cb7c647da43c842e68c9ca8e9ca24cd9708324dd",
       []
@@ -341231,10 +341242,6 @@
      ],
      "scrollbar-color-scheme-dynamic-4-ref.html": [
       "045619823547041d72b8b6349ac67945c7540bb6",
-      []
-     ],
-     "scrollbar-gutter-scroll-into-view-ref.html": [
-      "72cadd8eab58601e7500359de14eee579613e82b",
       []
      ],
      "scrollbar-width-paint-001-mis-ref.html": [
@@ -353226,7 +353233,7 @@
         []
        ],
        "compute-test.js": [
-        "b08b58287b0e8eb480e34f12ad38336009d55397",
+        "4867c689f367f62456f91cdf09a4fed819d1580c",
         []
        ]
       }
@@ -487187,7 +487194,7 @@
       ]
      },
      "attr-all-types.html": [
-      "9418ed0865d1d04b638ea9c6011355295410c955",
+      "47b686a9fc856d441f2470ce9275a89e8435f838",
       [
        null,
        {}

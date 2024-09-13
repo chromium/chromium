@@ -7335,6 +7335,7 @@ crbug.com/356931190 [ Mac15-arm64 ] fast/webgl/webgl-texture-binding-preserved.h
 crbug.com/356931190 [ Mac15-arm64 ] fast/webgl/webgl-viewport-parameters-preserved.html [ Timeout ]
 
 # Mac15/arm64 - Timeout on webrtc
+crbug.com/356930166 [ Mac14 ] external/wpt/content-security-policy/webrtc/webrtc-allowed-default-src-none.html [ Timeout ]
 crbug.com/356930166 [ Mac15 ] external/wpt/content-security-policy/webrtc/webrtc-allowed-default-src-none.html [ Timeout ]
 crbug.com/356930166 [ Mac15 ] external/wpt/content-security-policy/webrtc/webrtc-allowed-explicit.html [ Timeout ]
 crbug.com/356930166 [ Mac15 ] external/wpt/content-security-policy/webrtc/webrtc-allowed-nopolicy.html [ Timeout ]
