@@ -87,7 +87,6 @@ const char kAbandonReasonAppBackgrounded[] = "AppBackgrounded";
 
 const char kSuffixWasBackgrounded[] = ".WasBackgrounded";
 const char kSuffixWasHidden[] = ".WasHidden";
-const char kSuffixResponseFromCache[] = ".ResponseFromCache";
 
 const char kMilestoneNavigationStart[] = "NavigationStart";
 const char kMilestoneLoaderStart[] = "LoaderStart";
@@ -241,11 +240,7 @@ std::string AbandonedPageLoadMetricsObserver::GetHistogramPrefix() const {
 
 std::vector<std::string>
 AbandonedPageLoadMetricsObserver::GetAdditionalSuffixes() const {
-  std::vector<std::string> suffixes = {""};
-  if (was_cached_) {
-    suffixes.push_back(internal::kSuffixResponseFromCache);
-  }
-  return suffixes;
+  return {""};
 }
 
 const base::flat_map<std::string,

@@ -13,7 +13,7 @@
 
 namespace internal {
 
-const char kSuffixRTTUnknown[] = ".RTTUnkown";
+const char kSuffixResponseFromCache[] = ".ResponseFromCache";
 const char kSuffixRTTBelow200[] = ".RTTBelow200";
 const char kSuffixRTT200to450[] = ".RTT200To450";
 const char kSuffixRTTAbove450[] = ".RTTAbove450";
@@ -22,9 +22,6 @@ const char kSuffixRTTAbove450[] = ".RTTAbove450";
 
 const char* ChromeGWSAbandonedPageLoadMetricsObserver::GetSuffixForRTT(
     std::optional<base::TimeDelta> rtt) {
-  if (!rtt.has_value()) {
-    return internal::kSuffixRTTUnknown;
-  }
   if (rtt.value().InMilliseconds() < 200) {
     return internal::kSuffixRTTBelow200;
   }
@@ -52,10 +49,16 @@ ChromeGWSAbandonedPageLoadMetricsObserver::GetAdditionalSuffixes() const {
   std::vector<std::string> suffixes_with_rtt;
   for (std::string& base_suffix : base_suffixes) {
     suffixes_with_rtt.push_back(base_suffix);
-    suffixes_with_rtt.push_back(
-        base_suffix +
-        GetSuffixForRTT(
-            g_browser_process->network_quality_tracker()->GetHttpRTT()));
+    if (IsResponseFromCache()) {
+      suffixes_with_rtt.push_back(base_suffix +
+                                  internal::kSuffixResponseFromCache);
+    } else {
+      std::optional<base::TimeDelta> rtt =
+          g_browser_process->network_quality_tracker()->GetHttpRTT();
+      if (rtt.has_value()) {
+        suffixes_with_rtt.push_back(base_suffix + GetSuffixForRTT(rtt));
+      }
+    }
   }
   return suffixes_with_rtt;
 }

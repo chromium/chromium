@@ -14,7 +14,6 @@ namespace internal {
 extern const char kAbandonedPageLoadMetricsHistogramPrefix[];
 extern const char kSuffixWasBackgrounded[];
 extern const char kSuffixWasHidden[];
-extern const char kSuffixResponseFromCache[];
 extern const char kRendererProcessCreatedBeforeNavHistogramName[];
 extern const char kRendererProcessInitHistogramName[];
 
@@ -160,6 +159,7 @@ class AbandonedPageLoadMetricsObserver
 
  protected:
   virtual std::vector<std::string> GetAdditionalSuffixes() const;
+  bool IsResponseFromCache() const { return was_cached_; }
 
  private:
   using LoadingMilestone = std::pair<NavigationMilestone, base::TimeDelta>;
