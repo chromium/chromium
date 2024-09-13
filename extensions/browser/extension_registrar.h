@@ -171,6 +171,7 @@ class ExtensionRegistrar : public ProcessManagerObserver {
   // root scope.
   void UnregisterServiceWorkerWithRootScope(const Extension* extension);
   void NotifyServiceWorkerUnregistered(const ExtensionId& extension_id,
+                                       bool worker_previously_registered,
                                        blink::ServiceWorkerStatusCode status);
 
   // Given an extension that was disabled for reloading, completes the reload

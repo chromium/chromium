@@ -291,6 +291,19 @@ class ServiceWorkerTaskQueue
   void OnStopped(int64_t version_id,
                  const content::ServiceWorkerRunningInfo& worker_info) override;
 
+  // Worker unregistrations can fail in expected and unexpected ways, this
+  // determines if the unregistration can be accepted as successful from the
+  // extension's perspective. When there was a record of worker registration
+  // prior to unregistering, `worker_previously_registered` should be set to
+  // true. Used in metrics.
+  bool IsWorkerUnregistrationSuccess(blink::ServiceWorkerStatusCode status_code,
+                                     bool worker_previously_registered);
+  // Whether this class is aware of a worker being registered. Note: This does
+  // not verify that the registration exists in the service worker layer, so it
+  // may not be 100% accurate (if there are bugs in registration tracking logic
+  // in this class). Used in metrics.
+  bool IsWorkerRegistered(const ExtensionId extension_id);
+
   class TestObserver {
    public:
     TestObserver();
@@ -393,6 +406,11 @@ class ServiceWorkerTaskQueue
       const base::UnguessableToken& activation_token,
       bool worker_previously_registered,
       blink::ServiceWorkerStatusCode status);
+
+  // Worker registrations can fail in expected and unexpected ways, this
+  // determines if the registration can be accepted as successful from the
+  // extension's perspective.
+  bool IsWorkerRegistrationSuccess(blink::ServiceWorkerStatusCode status);
 
   void DidStartWorkerForScope(const SequencedContextId& context_id,
                               base::Time start_time,
