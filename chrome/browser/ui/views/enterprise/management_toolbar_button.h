@@ -35,6 +35,8 @@ class ManagementToolbarButton : public ToolbarButton {
   void UpdateIcon() override;
   void Layout(PassKey) override;
   bool ShouldPaintBorder() const override;
+  std::optional<SkColor> GetHighlightTextColor() const override;
+  std::optional<SkColor> GetHighlightBorderColor() const override;
 
  private:
   void ButtonPressed();

@@ -304,7 +304,7 @@ void ManagedMenuView::BuildView() {
                          /*bottom_marging*/ kContentGap);
     auto browser_manager = chrome::GetDeviceManagerIdentity();
     browser_management_label_ =
-        browser_manager
+        browser_manager && !browser_manager->empty()
             ? l10n_util::GetStringFUTF16(
                   IDS_MANAGEMENT_DIALOG_BROWSER_MANAGED_BY,
                   base::UTF8ToUTF16(*browser_manager))

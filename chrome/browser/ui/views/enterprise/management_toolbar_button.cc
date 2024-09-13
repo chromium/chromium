@@ -28,6 +28,7 @@
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -209,9 +210,30 @@ bool ManagementToolbarButton::ShouldPaintBorder() const {
   return false;
 }
 
+std::optional<SkColor> ManagementToolbarButton::GetHighlightTextColor() const {
+  const auto* const color_provider = GetColorProvider();
+  CHECK(color_provider);
+  return color_provider->GetColor(kColorAvatarButtonHighlightNormalForeground);
+}
+
+std::optional<SkColor> ManagementToolbarButton::GetHighlightBorderColor()
+    const {
+  const auto* const color_provider = GetColorProvider();
+  CHECK(color_provider);
+  return color_provider->GetColor(kColorToolbarButtonBorder);
+}
+
 void ManagementToolbarButton::UpdateText() {
+  if (const auto* const color_provider = GetColorProvider();
+      color_provider && IsLabelPresentAndVisible()) {
+    SetHighlight(/*highlight_text=*/management_label_,
+                 /*highlight_color=*/color_provider->GetColor(
+                     ui::kColorSysTonalContainer));
+  } else {
+    SetHighlight(/*highlight_text=*/management_label_,
+                 /*highlight_color=*/std::nullopt);
+  }
   SetTooltipText(l10n_util::GetStringUTF16(IDS_MANAGED));
-  SetHighlight(/*text=*/management_label_, /*color=*/std::nullopt);
   UpdateLayoutInsets();
 
   // TODO(crbug.com/40689215): this is a hack because toolbar buttons don't
