@@ -133,7 +133,34 @@ bool GLContext::MakeCurrent(GLSurface* surface) {
     LOG(ERROR) << "Failed to make current since context is marked as lost";
     return false;
   }
-  return MakeCurrentImpl(surface);
+  if (!MakeCurrentImpl(surface)) {
+    return false;
+  }
+
+#if BUILDFLAG(IS_ANDROID)
+  // Record the maximum GLES version supported for metrics if not using ANGLE
+  // (we don't record this for ANGLE currently because ANGLE reports the exact
+  // version recorded by the client, which is always <= 3.0 for Chrome).
+  static bool recorded_max_gles_version_if_feasible = false;
+  if (!recorded_max_gles_version_if_feasible) {
+    const GLVersionInfo* version_info = GetVersionInfo();
+    DCHECK(version_info);
+    if (!version_info->is_angle) {
+      MaximumGLESVersion max_gles_version = MaximumGLESVersion::kGLES2_0;
+      if (current_gl_->Version->IsAtLeastGLES(3, 2)) {
+        max_gles_version = MaximumGLESVersion::kGLES3_2;
+      } else if (current_gl_->Version->IsAtLeastGLES(3, 1)) {
+        max_gles_version = MaximumGLESVersion::kGLES3_1;
+      } else if (current_gl_->Version->IsAtLeastGLES(3, 0)) {
+        max_gles_version = MaximumGLESVersion::kGLES3_0;
+      }
+      base::UmaHistogramEnumeration("GPU.MaximumGLESVersion", max_gles_version);
+    }
+    recorded_max_gles_version_if_feasible = true;
+  }
+#endif
+
+  return true;
 }
 
 bool GLContext::MakeCurrentDefault() {
@@ -209,27 +236,6 @@ CurrentGL* GLContext::GetCurrentGL() {
     current_gl_->Driver = driver_gl_.get();
     current_gl_->Api = gl_api_wrapper_->api();
     current_gl_->Version = version_info_.get();
-
-#if BUILDFLAG(IS_ANDROID)
-    // Record the maximum GLES version supported for metrics if not using ANGLE
-    // (we don't record this for ANGLE currently because ANGLE reports the exact
-    // version recorded by the client, which is always <= 3.0 for Chrome).
-    static bool recorded_max_gles_version_if_feasible = false;
-    if (!recorded_max_gles_version_if_feasible &&
-        GetGLImplementation() == kGLImplementationEGLGLES2 &&
-        current_gl_->Version) {
-      MaximumGLESVersion max_gles_version = MaximumGLESVersion::kGLES2_0;
-      if (current_gl_->Version->IsAtLeastGLES(3, 2)) {
-        max_gles_version = MaximumGLESVersion::kGLES3_2;
-      } else if (current_gl_->Version->IsAtLeastGLES(3, 1)) {
-        max_gles_version = MaximumGLESVersion::kGLES3_1;
-      } else if (current_gl_->Version->IsAtLeastGLES(3, 0)) {
-        max_gles_version = MaximumGLESVersion::kGLES3_0;
-      }
-      base::UmaHistogramEnumeration("GPU.MaximumGLESVersion", max_gles_version);
-    }
-    recorded_max_gles_version_if_feasible = true;
-#endif
 
     static_bindings_initialized_ = true;
   }
