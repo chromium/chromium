@@ -1976,6 +1976,16 @@ action("gn2bp_check") {
   sources = [
     "$_gn_path",
     "//components/cronet/gn2bp/gen_android_bp.py",
+    "//components/cronet/gn2bp/gen_desc_json.sh",
+    "//components/cronet/gn2bp/gn_utils.py",
+    "//components/cronet/gn2bp/update_results.sh",
+    "//components/cronet/license/constants.py",
+    "//components/cronet/license/create_android_metadata_license.py",
+    "//components/cronet/license/license_type.py",
+    "//components/cronet/license/license_utils.py",
+    "//components/cronet/license/mapper.py",
+    "//components/cronet/license/metadata.py",
+    "//components/cronet/license/metadata_dictionary.py",
     "//tools/mb/mb.py",
   ]
   outputs = [ "$target_gen_dir/$target_name.stamp" ]

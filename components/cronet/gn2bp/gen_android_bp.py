@@ -33,9 +33,17 @@ import os
 import re
 import sys
 import copy
+
+from typing import Dict, List, Optional
 from pathlib import Path
 
 import gn_utils
+
+PARENT_ROOT = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), os.pardir))
+
+sys.path.insert(0, os.path.join(PARENT_ROOT, "license"))
+import license_utils
 
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -71,21 +79,45 @@ CRONET_API_MODULE_NAME = "cronet_aml_api_java"
 # All module names are prefixed with this string to avoid collisions.
 module_prefix = 'cronet_aml_'
 
-REMOVE_GEN_JNI_JARJAR_RULES_FILE = "android/tools/remove-gen-jni-jarjar-rules.txt"
+REMOVE_GEN_JNI_JARJAR_RULES_FILE = ":remove_gen_jni_jarjar_rules"
 # Shared libraries which are directly translated to Android system equivalents.
 shared_library_allowlist = [
     'android',
     'log',
 ]
 
+# A dictionary that adds extra content to a specific Android.bp according to the
+# provided path.
+# The path defined must be relative to the root-repo.
+BLUEPRINTS_EXTRAS = {"": ["build = [\"Android.extras.bp\"]"]}
+
+# A dictionary that specifies the relocation of modules from one blueprint to
+# another.
+# The default format is (relative_path_A -> relative_path_B), this means
+# that all targets which should live in relative_path_A/Android.bp will live
+# inside relative_path_B/Android.bp.
+BLUEPRINTS_MAPPING = {
+    # An Android.bp already exists inside boringssl, creating another one will
+    # lead to conflicts, add all of the boringssl generated targets to the
+    # top-level Android.bp as they are only used for tests.
+    "third_party/boringssl": "",
+    # Moving is undergoing, see crbug/40273848
+    "buildtools/third_party/libc++": "third_party/libc++",
+    # Moving is undergoing, see crbug/40273848
+    "buildtools/third_party/libc++abi": "third_party/libc++abi",
+}
+
 # Include directories that will be removed from all targets.
-local_include_dirs_denylist = [
-    'third_party/zlib/',
+include_dirs_denylist = [
+    'external/cronet/third_party/zlib/',
 ]
 
 # Name of the module which settings such as compiler flags for all other
 # modules.
-defaults_module = module_prefix + 'defaults'
+cc_defaults_module = module_prefix + 'cc_defaults'
+
+# Name of the java default module for non-test java modules defined in Android.extras.bp
+java_framework_defaults_module = 'cronet_aml_java_framework_defaults'
 
 # Location of the project in the Android source tree.
 tree_path = 'external/cronet'
@@ -135,10 +167,8 @@ ldflag_allowlist = [
     "-Wl,--icf=all",
 ]
 
-
 def get_linker_script_ldflag(script_path):
     return f'-Wl,--script,{tree_path}/{script_path}'
-
 
 # Additional arguments to apply to Android.bp rules.
 additional_args = {
@@ -191,11 +221,6 @@ additional_args = {
         # This is necessary because net-tests-utils compiles against private SDK.
         ('sdk_version', ""),
     ],
-    'cronet_aml_testing_android_native_test_native_test_java__testing': [
-        ('srcs', {
-            'testing/android/native_test/java/src/org/chromium/native_test/SignalMaskInfo.java',
-        }),
-    ],
     'cronet_aml_components_cronet_android_cronet__testing': [
         ('target', ('android_riscv64', {
             'stem': "libmainlinecronet_riscv64"
@@ -210,8 +235,9 @@ additional_args = {
 // raises the conflict. Once we start shipping Cronet for RISCV64,
 // this can be removed."""),
     ],
-    'cronet_aml_third_party_netty_tcnative_netty_tcnative_so__testing':
-    [('cflags', {"-Wno-error=pointer-bool-conversion"})],
+    'cronet_aml_third_party_netty_tcnative_netty_tcnative_so__testing': [
+        ('cflags', {"-Wno-error=pointer-bool-conversion"})
+    ],
     'cronet_aml_third_party_apache_portable_runtime_apr__testing': [
         ('cflags', {
             "-Wno-incompatible-pointer-types-discards-qualifiers",
@@ -266,10 +292,8 @@ additional_args = {
     # end export_include_dir.
 }
 
-
 def always_disable(module, arch):
     return None
-
 
 def enable_zlib(module, arch):
     # Requires crrev/c/4109079
@@ -277,7 +301,6 @@ def enable_zlib(module, arch):
         module.shared_libs.add('libz')
     else:
         module.target[arch].shared_libs.add('libz')
-
 
 def enable_boringssl(module, arch):
     # Do not add boringssl targets to cc_genrules. This happens, because protobuf targets are
@@ -293,59 +316,45 @@ def enable_boringssl(module, arch):
     shared_libs.add('//external/cronet/third_party/boringssl:libssl')
     shared_libs.add('//external/cronet/third_party/boringssl:libpki')
 
-
 def add_androidx_experimental_java_deps(module, arch):
     module.libs.add("androidx.annotation_annotation-experimental")
-
 
 def add_androidx_annotation_java_deps(module, arch):
     module.libs.add("androidx.annotation_annotation")
 
-
 def add_protobuf_lite_runtime_java_deps(module, arch):
     module.static_libs.add("libprotobuf-java-lite")
-
 
 def add_androidx_core_java_deps(module, arch):
     module.libs.add("androidx.core_core")
 
-
 def add_jsr305_java_deps(module, arch):
     module.libs.add("jsr305")
-
 
 def add_errorprone_annotation_java_deps(module, arch):
     module.libs.add("error_prone_annotations")
 
-
 def add_androidx_collection_java_deps(module, arch):
     module.libs.add("androidx.collection_collection")
-
 
 def add_junit_java_deps(module, arch):
     module.static_libs.add("junit")
 
-
 def add_truth_java_deps(module, arch):
     module.static_libs.add("truth")
-
 
 def add_hamcrest_java_deps(module, arch):
     module.static_libs.add("hamcrest-library")
     module.static_libs.add("hamcrest")
 
-
 def add_mockito_java_deps(module, arch):
     module.static_libs.add("mockito")
-
 
 def add_guava_java_deps(module, arch):
     module.static_libs.add("guava")
 
-
 def add_androidx_junit_java_deps(module, arch):
     module.static_libs.add("androidx.test.ext.junit")
-
 
 def add_androidx_test_runner_java_deps(module, arch):
     module.static_libs.add("androidx.test.runner")
@@ -353,51 +362,40 @@ def add_androidx_test_runner_java_deps(module, arch):
 def add_androidx_test_rules_java_deps(module, arch):
     module.static_libs.add("androidx.test.rules")
 
-
 def add_android_test_base_java_deps(module, arch):
     module.libs.add("android.test.base")
 
-
 def add_accessibility_test_framework_java_deps(module, arch):
-    module.static_libs.add("accessibility-test-framework")
-
+    # BaseActivityTestRule.java depends on this but BaseActivityTestRule.java is not used in aosp.
+    pass
 
 def add_espresso_java_deps(module, arch):
     module.static_libs.add("androidx.test.espresso.contrib")
 
-
 def add_android_test_mock_java_deps(module, arch):
-    module.libs.add("android.test.mock")
-
+    module.libs.add("android.test.mock.stubs")
 
 def add_androidx_multidex_java_deps(module, arch):
     # Androidx-multidex is disabled on unbundled branches.
     pass
 
-
 def add_androidx_test_monitor_java_deps(module, arch):
     module.libs.add("androidx.test.monitor")
-
 
 def add_androidx_ui_automator_java_deps(module, arch):
     module.static_libs.add("androidx.test.uiautomator_uiautomator")
 
-
 def add_androidx_test_annotation_java_deps(module, arch):
     module.static_libs.add("androidx.test.rules")
-
 
 def add_androidx_test_core_java_deps(module, arch):
     module.static_libs.add("androidx.test.core")
 
-
 def add_androidx_activity_activity(module, arch):
     module.static_libs.add("androidx.activity_activity")
 
-
 def add_androidx_fragment_fragment(module, arch):
     module.static_libs.add("androidx.fragment_fragment")
-
 
 # Android equivalents for third-party libraries that the upstream project
 # depends on. This will be applied to normal and testing targets.
@@ -405,6 +403,14 @@ _builtin_deps = {
     '//buildtools/third_party/libunwind:libunwind':
     always_disable,
     '//net/data/ssl/chrome_root_store:gen_root_store_inc':
+    always_disable,
+    '//third_party/zstd:headers':
+    always_disable,
+    '//testing/buildbot/filters:base_unittests_filters':
+    always_disable,
+    '//testing/buildbot/filters:net_unittests_filters':
+    always_disable,
+    '//third_party/boringssl/src/third_party/fiat:fiat_license':
     always_disable,
     '//net/tools/root_store_tool:root_store_tool':
     always_disable,
@@ -502,7 +508,6 @@ root_modules_visibility = {
 # End of configuration.
 # ----------------------------------------------------------------------------
 
-
 def write_blueprint_key_value(output, name, value, sort=True):
     """Writes a Blueprint key-value pair to the output"""
 
@@ -554,7 +559,7 @@ class Module(object):
             self.cflags = set()
             self.stl = None
             self.cppflags = set()
-            self.local_include_dirs = set()
+            self.include_dirs = set()
             self.generated_headers = set()
             self.export_generated_headers = set()
             self.ldflags = set()
@@ -573,7 +578,7 @@ class Module(object):
             self._output_field(nested_out, 'cflags')
             self._output_field(nested_out, 'stl')
             self._output_field(nested_out, 'cppflags')
-            self._output_field(nested_out, 'local_include_dirs')
+            self._output_field(nested_out, 'include_dirs')
             self._output_field(nested_out, 'generated_headers')
             self._output_field(nested_out, 'export_generated_headers')
             self._output_field(nested_out, 'ldflags')
@@ -665,6 +670,11 @@ class Module(object):
         self.gn_type = None
         self.jarjar_rules = ""
         self.jars = set()
+        self.build_file_path = None
+        self.include_build_directory = None
+        self.allow_rebasing = False
+        self.license_kinds = set()
+        self.license_text = set()
 
     def to_string(self, output):
         if self.comment:
@@ -721,6 +731,9 @@ class Module(object):
         self._output_field(output, 'visibility')
         self._output_field(output, 'jarjar_rules')
         self._output_field(output, 'jars')
+        self._output_field(output, 'include_build_directory')
+        self._output_field(output, 'license_text')
+        self._output_field(output, "license_kinds")
         if self.rtti:
             self._output_field(output, 'rtti')
 
@@ -788,6 +801,8 @@ class Blueprint(object):
 
     def __init__(self):
         self.modules = {}
+        self._package_module = None
+        self._license_module = None
 
     def add_module(self, module):
         """Adds a new module to the blueprint, replacing any existing module
@@ -798,14 +813,29 @@ class Blueprint(object):
         """
         self.modules[module.name] = module
 
-    def to_string(self, output):
+    def set_package_module(self, module):
+        self._package_module = module
+
+    def set_license_module(self, module):
+        self._license_module = module
+
+    def get_license_module(self):
+        return self._license_module
+
+    def to_string(self):
+        ret = []
+        if self._package_module:
+            self._package_module.to_string(ret)
+        if self._license_module:
+            self._license_module.to_string(ret)
         for m in sorted(self.modules.values(), key=lambda m: m.name):
             if m.type != "cc_library_static" or m.has_input_files():
                 # Don't print cc_library_static with empty srcs. These attributes are already
                 # propagated up the tree. Printing them messes the presubmits because
                 # every module is compiled while those targets are not reachable in
                 # a normal compilation path.
-                m.to_string(output)
+                m.to_string(ret)
+        return ret
 
 
 def label_to_module_name(label):
@@ -849,7 +879,7 @@ def create_proto_modules(blueprint, gn, target):
 
     protoc_module_name = get_protoc_module_name(gn)
     tools = {protoc_module_name}
-    cpp_out_dir = '$(genDir)/%s/%s/' % (tree_path, target.proto_in_dir)
+    cpp_out_dir = '$(genDir)/%s/' % (target.proto_in_dir)
     target_module_name = label_to_module_name(target.name)
 
     # In GN builds the proto path is always relative to the output directory
@@ -908,11 +938,6 @@ def create_proto_modules(blueprint, gn, target):
     blueprint.add_module(header_module)
     header_module.srcs = set(source_module.srcs)
 
-    # TODO(primiano): at some point we should remove this. This was introduced
-    # by aosp/1108421 when adding "protos/" to .proto include paths, in order to
-    # avoid doing multi-repo changes and allow old clients in the android tree
-    # to still do the old #include "perfetto/..." rather than
-    # #include "protos/perfetto/...".
     header_module.export_include_dirs = {'.', 'protos'}
     # Since the .cc file and .h get created by a different gerule target, they
     # are not put in the same intermediate path, so local includes do not work
@@ -939,12 +964,10 @@ def create_proto_modules(blueprint, gn, target):
     header_module.tools = tools
 
     for sfx in suffixes:
-        source_module.out.update(
-            '%s/%s' % (tree_path, src.replace('.proto', '.%s.cc' % sfx))
-            for src in source_module.srcs)
-        header_module.out.update(
-            '%s/%s' % (tree_path, src.replace('.proto', '.%s.h' % sfx))
-            for src in header_module.srcs)
+        source_module.out.update('%s' % src.replace('.proto', '.%s.cc' % sfx)
+                                 for src in source_module.srcs)
+        header_module.out.update('%s' % src.replace('.proto', '.%s.h' % sfx)
+                                 for src in header_module.srcs)
     # This has proto files that will be used for reference resolution
     # but not compiled into cpp files. These additional sources has no output.
     proto_data_sources = sorted([
@@ -953,6 +976,12 @@ def create_proto_modules(blueprint, gn, target):
     ])
     source_module.srcs.update(proto_data_sources)
     header_module.srcs.update(proto_data_sources)
+
+    # Allow rebasing proto genrules according to their proper path.
+    source_module.allow_rebasing = True
+    header_module.allow_rebasing = True
+    header_module.build_file_path = target.build_file_path
+    source_module.build_file_path = target.build_file_path
     return source_module
 
 
@@ -1228,14 +1257,12 @@ class WriteBuildDateHeaderSanitizer(BaseActionSanitizer):
         self._set_arg_at(1, '`date +%s`')
         super()._sanitize_args()
 
-
 class WriteBuildFlagHeaderSanitizer(BaseActionSanitizer):
 
     def _sanitize_args(self):
         self._set_value_arg('--gen-dir', '.')
         self._set_value_arg('--output', '$(out)')
         super()._sanitize_args()
-
 
 class GnRunBinarySanitizer(BaseActionSanitizer):
 
@@ -1278,7 +1305,6 @@ class GnRunBinarySanitizer(BaseActionSanitizer):
         # Remove the script and use the binary right away
         return self.get_pre_cmd() + NEWLINE.join(self.target.args)
 
-
 class JniGeneratorSanitizer(BaseActionSanitizer):
 
     def __init__(self, target, arch, is_test_target):
@@ -1310,6 +1336,8 @@ class JniGeneratorSanitizer(BaseActionSanitizer):
         self._update_value_arg('--output-dir', self._sanitize_filepath)
         self._update_value_arg('--extra-include', self._sanitize_filepath,
                                False)
+        self._update_value_arg('--placeholder-srcjar-path',
+                               self._sanitize_filepath, False)
         self._update_list_arg('--input-file', self._sanitize_filepath)
         self._update_list_arg('--input-file',
                               self._add_location_tag_to_filepath)
@@ -1322,11 +1350,15 @@ class JniGeneratorSanitizer(BaseActionSanitizer):
         super()._sanitize_args()
 
     def get_outputs(self):
-        # fix target.output directory to match #include statements.
-        return {
-            re.sub('^jni_headers/', '', out)
-            for out in super().get_outputs()
-        }
+        outputs = set()
+        for out in super().get_outputs():
+            # placeholder.srcjar contains empty placeholder classes used to compile generated java files
+            # without any other deps. This is not used in aosp.
+            if out.endswith("_placeholder.srcjar"):
+                continue
+            # fix target.output directory to match #include statements.
+            outputs.add(re.sub('^jni_headers/', '', out))
+        return outputs
 
     def get_tool_files(self):
         tool_files = super().get_tool_files()
@@ -1342,6 +1374,13 @@ class JniGeneratorSanitizer(BaseActionSanitizer):
             file
             for file in tool_files if not file.endswith('bin/javap')
         }
+
+        # TODO: Remove once https://chromium-review.googlesource.com/c/chromium/src/+/5370266 has made
+        #       its way to AOSP
+        # Files not specified in anywhere but jni_generator.py imports this file
+        tool_files.add('third_party/jni_zero/codegen/header_common.py')
+        tool_files.add('third_party/jni_zero/codegen/placeholder_java_type.py')
+
         return tool_files
 
     def get_tools(self):
@@ -1375,7 +1414,6 @@ class JavaJniGeneratorSanitizer(JniGeneratorSanitizer):
         name = super().get_name() + "__java"
         return name
 
-
 class JniRegistrationGeneratorSanitizer(BaseActionSanitizer):
 
     def __init__(self, target, arch, is_test_target):
@@ -1398,15 +1436,22 @@ class JniRegistrationGeneratorSanitizer(BaseActionSanitizer):
         ]
 
     def get_outputs(self):
-        return {
-            re.sub('^jni_headers/', '', out)
-            for out in super().get_outputs()
-        }
+        outputs = set()
+        for out in super().get_outputs():
+            # placeholder.srcjar contains empty placeholder classes used to compile generated java files
+            # without any other deps. This is not used in aosp.
+            if out.endswith("_placeholder.srcjar"):
+                continue
+            # fix target.output directory to match #include statements.
+            outputs.add(re.sub('^jni_headers/', '', out))
+        return outputs
 
     def _sanitize_args(self):
         self._update_value_arg('--depfile', self._sanitize_filepath)
         self._update_value_arg('--srcjar-path', self._sanitize_filepath)
         self._update_value_arg('--header-path', self._sanitize_filepath)
+        self._update_value_arg('--placeholder-srcjar-path',
+                               self._sanitize_filepath, False)
         self._delete_value_arg('--depfile', False)
         self._set_value_arg('--java-sources-file', '$(genDir)/java.sources')
         if not self.is_test_target:
@@ -1429,6 +1474,14 @@ class JniRegistrationGeneratorSanitizer(BaseActionSanitizer):
 
         return self.get_pre_cmd() + NEWLINE.join(commands)
 
+    def get_tool_files(self):
+        tool_files = super().get_tool_files()
+        # TODO: Remove once https://chromium-review.googlesource.com/c/chromium/src/+/5370266 has made
+        #       its way to AOSP
+        # Files not specified in anywhere but jni_generator.py imports this file
+        tool_files.add('third_party/jni_zero/codegen/header_common.py')
+        tool_files.add('third_party/jni_zero/codegen/placeholder_java_type.py')
+        return tool_files
 
 class JavaJniRegistrationGeneratorSanitizer(JniRegistrationGeneratorSanitizer):
 
@@ -1444,7 +1497,6 @@ class JavaJniRegistrationGeneratorSanitizer(JniRegistrationGeneratorSanitizer):
     def get_deps(self):
         return {}
 
-
 class VersionSanitizer(BaseActionSanitizer):
 
     def _sanitize_args(self):
@@ -1452,17 +1504,17 @@ class VersionSanitizer(BaseActionSanitizer):
         # args for the version.py contain file path without leading --arg key. So apply sanitize
         # function for all the args.
         self._update_all_args(self._sanitize_filepath_with_location_tag)
-        for (i, arg) in enumerate(self.target.args):
-            if arg == '-e':
-                self.target.args[i + 1] = "'%s'" % self.target.args[i + 1]
+        self._update_list_arg('-e', self._sanitize_eval)
         super()._sanitize_args()
+
+    def _sanitize_eval(self, eval_arg):
+        return "'%s'" % eval_arg.replace("\'", "\\\"")
 
     def get_tool_files(self):
         tool_files = super().get_tool_files()
         # android_chrome_version.py is not specified in anywhere but version.py imports this file
         tool_files.add('build/util/android_chrome_version.py')
         return tool_files
-
 
 class JavaCppEnumSanitizer(BaseActionSanitizer):
 
@@ -1471,14 +1523,12 @@ class JavaCppEnumSanitizer(BaseActionSanitizer):
         self._set_value_arg('--srcjar', '$(out)')
         super()._sanitize_args()
 
-
 class MakeDafsaSanitizer(BaseActionSanitizer):
 
     def is_header_generated(self):
         # This script generates .cc files but they are #included by other sources
         # (e.g. registry_controlled_domain.cc)
         return True
-
 
 class JavaCppFeatureSanitizer(BaseActionSanitizer):
 
@@ -1487,14 +1537,12 @@ class JavaCppFeatureSanitizer(BaseActionSanitizer):
         self._set_value_arg('--srcjar', '$(out)')
         super()._sanitize_args()
 
-
 class JavaCppStringSanitizer(BaseActionSanitizer):
 
     def _sanitize_args(self):
         self._update_all_args(self._sanitize_filepath_with_location_tag)
         self._set_value_arg('--srcjar', '$(out)')
         super()._sanitize_args()
-
 
 class WriteNativeLibrariesJavaSanitizer(BaseActionSanitizer):
 
@@ -1588,7 +1636,6 @@ def get_action_sanitizer(gn, target, type, arch, is_test_target):
         raise Exception('Unsupported action %s from %s' %
                         (target.script, target.name))
 
-
 def create_action_foreach_modules(blueprint, gn, target, is_test_target):
     """ The following assumes that rebase_path exists in the args.
   The args of an action_foreach contains hints about which output files are generated
@@ -1656,7 +1703,6 @@ def create_action_module_internal(gn,
 
     return module
 
-
 def get_cmd_condition(arch):
     '''
   :param arch: archtecture name e.g. android_x86_64, android_arm64
@@ -1670,11 +1716,12 @@ def get_cmd_condition(arch):
         return "( $$CC_ARCH == 'arm' && $$CC_OS == 'android' )"
     elif arch == "android_arm64":
         return "( $$CC_ARCH == 'arm64' && $$CC_OS == 'android' )"
+    elif arch == "android_riscv64":
+        return "( $$CC_ARCH == 'riscv64' && $$CC_OS == 'android' )"
     elif arch == "host":
         return "$$CC_OS != 'android'"
     else:
         raise Exception(f'Unknown architecture type {arch}')
-
 
 def merge_cmd(modules, genrule_type):
     '''
@@ -1699,7 +1746,6 @@ def merge_cmd(modules, genrule_type):
         merged_cmd.append('fi;')
     return NEWLINE.join(merged_cmd)
 
-
 def merge_modules(modules, genrule_type):
     '''
   :param modules: dictionary whose key is arch name and value is module
@@ -1720,7 +1766,6 @@ def merge_modules(modules, genrule_type):
 
     merged_module.cmd = merge_cmd(modules, genrule_type)
     return merged_module
-
 
 def create_action_module(blueprint, gn, target, genrule_type, is_test_target):
     '''
@@ -1758,13 +1803,11 @@ def _get_cflags(cflags, defines):
     cflags |= set("-D%s" % define.replace("\"", "\\\"") for define in defines)
     return cflags
 
-
 def _set_linker_script(module, libs):
     for lib in libs:
         if lib.endswith(".lds"):
             module.ldflags.add(
                 get_linker_script_ldflag(gn_utils.label_to_path(lib)))
-
 
 def set_module_flags(module, module_type, cflags, defines, ldflags, libs):
     module.cflags.update(_get_cflags(cflags, defines))
@@ -1781,25 +1824,27 @@ def set_module_flags(module, module_type, cflags, defines, ldflags, libs):
         if '-fexceptions' in flag:
             module.cppflags.add('-fexceptions')
 
-
 def set_module_include_dirs(module, cflags, include_dirs):
     for flag in cflags:
         if '-isystem' in flag:
-            module.local_include_dirs.add(flag[len('-isystem../../'):])
+            module.include_dirs.add(
+                f"external/cronet/{flag[len('-isystem../../'):]}")
 
-    # Adding local_include_dirs is necessary due to source_sets / filegroups
+    # Adding include_dirs is necessary due to source_sets / filegroups
     # which do not properly propagate include directories.
     # Filter any directory inside //out as a) this directory does not exist for
     # aosp / soong builds and b) the include directory should already be
     # configured via library dependency.
-    module.local_include_dirs.update([
-        gn_utils.label_to_path(d) for d in include_dirs
+    # Note: include_dirs is used instead of local_include_dirs as an Android.bp
+    # can't access other directories outside of its current directory. This
+    # is worked around by using include_dirs.
+    module.include_dirs.update([
+        f"external/cronet/{gn_utils.label_to_path(d)}" for d in include_dirs
         if not d.startswith('//out')
     ])
     # Remove prohibited include directories
-    module.local_include_dirs = [
-        d for d in module.local_include_dirs
-        if d not in local_include_dirs_denylist
+    module.include_dirs = [
+        d for d in module.include_dirs if d not in include_dirs_denylist
     ]
 
 
@@ -1879,7 +1924,10 @@ def create_modules_from_target(blueprint, gn, gn_target_name,
                 module.jarjar_rules = REMOVE_GEN_JNI_JARJAR_RULES_FILE
         module.min_sdk_version = 30
         module.apex_available = [tethering_apex]
-        module.sdk_version = target.sdk_version
+        if is_test_target:
+            module.sdk_version = target.sdk_version
+        else:
+            module.defaults.add(java_framework_defaults_module)
     else:
         raise Exception('Unknown target %s (%s)' % (target.name, target.type))
 
@@ -1920,6 +1968,10 @@ def create_modules_from_target(blueprint, gn, gn_target_name,
     module.host_supported = target.host_supported()
     module.device_supported = target.device_supported()
     module.gn_type = target.type
+    module.build_file_path = target.build_file_path
+    # Chromium does not use visibility at all, in order to avoid visibility issues
+    # in AOSP. Make every module visible to any module in external/cronet.
+    module.visibility = {"//external/cronet:__subpackages__"}
 
     if module.is_genrule():
         module.apex_available.add(tethering_apex)
@@ -1931,12 +1983,11 @@ def create_modules_from_target(blueprint, gn, gn_target_name,
             # identified by third_party/android_sdk/public/platforms/android-34/framework.aidl.
             module.aidl["include_dirs"] = {"frameworks/base/core/java/"}
             module.aidl["local_include_dirs"] = target.local_aidl_includes
-        module.sdk_version = target.sdk_version
 
     if module.is_compiled() and not module.type.startswith("java"):
         # Don't try to inject library/source dependencies into genrules or
         # filegroups because they are not compiled in the traditional sense.
-        module.defaults = [defaults_module]
+        module.defaults = [cc_defaults_module]
         for lib in target.libs:
             # Generally library names should be mangled as 'libXXX', unless they
             # are HAL libraries (e.g., android.hardware.health@2.0) or AIDL c++ / NDK
@@ -2040,7 +2091,6 @@ def create_modules_from_target(blueprint, gn, gn_target_name,
             # A module depending on a module with system_current sdk version should also compile against
             # the system sdk. This is because a module's SDK API surface should be >= its deps SDK API surface.
             # And system_current has a larger API surface than current or module_current.
-            # We currently only have system_current, current or no sdk_versions in the generated bp file.
             if dep_module.sdk_version == 'system_current':
                 module.sdk_version = 'system_current'
             if module.type not in ["cc_library_static"]:
@@ -2079,12 +2129,8 @@ def turn_off_allocator_shim_for_musl(module):
         module.target['glibc'].srcs.add(allocation_shim)
 
 
-def create_blueprint_for_targets(gn, targets, test_targets):
-    """Generate a blueprint for a list of GN targets."""
-    blueprint = Blueprint()
-
-    # Default settings used by all modules.
-    defaults = Module('cc_defaults', defaults_module, '//gn:default_deps')
+def create_cc_defaults_module():
+    defaults = Module('cc_defaults', cc_defaults_module, '//gn:default_deps')
     defaults.cflags = [
         '-DGOOGLE_PROTOBUF_NO_RTTI',
         '-DBORINGSSL_SHARED_LIBRARY',
@@ -2100,9 +2146,14 @@ def create_blueprint_for_targets(gn, targets, test_targets):
         '-Wno-unreachable-code-loop-increment',  # needed for icui18n
         '-fPIC',
         '-Wno-c++11-narrowing',
+        # Needed for address_space_randomization.h on riscv
+        # Can be removed after 125.0.6375.0 is imported
+        '-Wno-invalid-constexpr',
         # b/330508686 disable coverage profiling for files or function in this list.
         '-fprofile-list=external/cronet/exclude_coverage.list',
     ]
+    defaults.build_file_path = ""
+    defaults.include_build_directory = False
     defaults.c_std = 'gnu11'
     # Chromium builds do not add a dependency for headers found inside the
     # sysroot, so they are added globally via defaults.
@@ -2122,7 +2173,15 @@ def create_blueprint_for_targets(gn, targets, test_targets):
     defaults.cpp_std = 'c++17'
     defaults.min_sdk_version = 29
     defaults.apex_available.add(tethering_apex)
-    blueprint.add_module(defaults)
+    return defaults
+
+
+def create_blueprint_for_targets(gn, targets, test_targets):
+    """Generate a blueprint for a list of GN targets."""
+    blueprint = Blueprint()
+
+    # Default settings used by all modules.
+    blueprint.add_module(create_cc_defaults_module())
 
     for target in targets:
         module = create_modules_from_target(blueprint,
@@ -2168,13 +2227,208 @@ def create_blueprint_for_targets(gn, targets, test_targets):
     return blueprint
 
 
-def create_package_module(blueprint):
-    package = Module("package", "", "PACKAGE")
-    package.comment = "The actual license can be found in Android.extras.bp"
-    package.default_applicable_licenses.add(CRONET_LICENSE_NAME)
-    package.default_visibility.append(package_default_visibility)
-    blueprint.add_module(package)
+def _rebase_files(filepaths, parent_prefix):
+    """
+  Rebase a list of filepaths according to the provided path. This assumes
+  that the |filepaths| are subdirectories of the |parent|.
+  If the assumption is violated then None is returned.
 
+  Note: filepath can be references to other modules (eg: ":module"), those
+  are added as-is without any translation.
+
+  :param filepaths: Collection of strings representing filepaths.
+  :param parent_prefix: Path for which the srcs will be rebased relative to.
+  :returns The rebased filepaths or None.
+  """
+    if not parent_prefix:
+        return filepaths
+
+    rebased_srcs = set()
+    for src in filepaths:
+        if src.startswith(":"):
+            # This is a reference to another Android.bp module, add as-is.
+            rebased_srcs.add(src)
+            continue
+
+        if not src.startswith(parent_prefix):
+            # This module depends on a source file that is not in its subpackage.
+            return None
+        # Remove the BUILD file path to make it relative.
+        rebased_srcs.add(src[len(parent_prefix) + 1:])
+    return rebased_srcs
+
+
+def _rebase_module(module: Module) -> Optional[Module]:
+    """
+  Rebases the module specified on top of the module's build file path.
+  If the rebase operation has failed, None is returned to indicate that the
+  module should stay as a top-level module.
+
+  Currently, there is no support for rebasing genrules and libraries that
+  breaks the package boundaries.
+
+  :returns A new module based on the provided one but rebased or None.
+  """
+
+    module_copy = copy.deepcopy(module)
+    module_copy.srcs = _rebase_files(module_copy.srcs,
+                                     module_copy.build_file_path)
+    module_copy.jars = _rebase_files(module_copy.jars,
+                                     module_copy.build_file_path)
+    # Rebase srcs and arch-variant srcs.
+    if module_copy.srcs is None:
+        return None
+
+    for (arch_name, arch) in module_copy.target.items():
+        module_copy.target[arch_name].srcs = (_rebase_files(
+            module_copy.target[arch_name].srcs, module_copy.build_file_path))
+        if module_copy.target[arch_name].srcs is None:
+            return None
+
+    return module_copy
+
+
+def _path_to_name(path: str) -> str:
+    return "external_cronet_%s_license" % (path.replace("/", "_").lower())
+
+
+def _maybe_create_license_module(path: str) -> Optional[Module]:
+    """
+  Creates a module license if a README.chromium exists in the path provided
+  otherwise just returns None.
+
+  :param path: Path to check for README.chromium
+  :return: Module or None.
+  """
+    readme_chromium_file = Path(os.path.join(path, "README.chromium"))
+    if (not readme_chromium_file.exists()
+            or license_utils.is_ignored_readme_chromium(
+                str(readme_chromium_file))):
+        return None
+
+    license_module = Module("license", _path_to_name(path),
+                            "License-Artificial")
+    license_module.visibility = {":__subpackages__"}
+    # Assume that a LICENSE file always exist as we run the
+    # create_android_metadata_license.py script each time we run GN2BP.
+    license_module.license_text = {"LICENSE"}
+    metadata = license_utils.parse_chromium_readme_file(
+        str(readme_chromium_file))
+    for license in metadata.get_licenses():
+        license_module.license_kinds.add(
+            license_utils.get_license_bp_name(license))
+    return license_module
+
+
+def _get_longest_matching_blueprint(
+        current_blueprint_path: str,
+        all_blueprints: Dict[str, Blueprint]) -> Optional[Blueprint]:
+    longest_path_matching = None
+    for (blueprint_path, search_blueprint) in all_blueprints.items():
+        if (search_blueprint.get_license_module()
+                and current_blueprint_path.startswith(blueprint_path)
+                and (longest_path_matching is None
+                     or len(blueprint_path) > len(longest_path_matching))):
+            longest_path_matching = blueprint_path
+
+    if longest_path_matching:
+        return all_blueprints[longest_path_matching]
+    return None
+
+
+def finalize_package_modules(blueprints: Dict[str, Blueprint]):
+    """
+  Adds a package module to every blueprint passed in |blueprints|. A package
+  module is just a reference to a license module, the approach here is that
+  the package module will point to the nearest ancestor's license module, the
+  nearest ancestor could be in the same Android.bp.
+
+  :param blueprints: Dictionary of (path, blueprint) to be populated with
+  """
+
+    for (current_path, blueprint) in blueprints.items():
+        if current_path == "":
+            # Don't add a package module for the top-level Android.bp, this is handled
+            # manually in Android.extras.bp.
+            continue
+
+        package_module = Module("package", None, "Package-Artificial")
+        if blueprint.get_license_module():
+            package_module.default_applicable_licenses.add(
+                blueprint.get_license_module().name)
+        else:  # Search for closest ancestor with a license module
+            ancestor_blueprint = _get_longest_matching_blueprint(
+                current_path, blueprints)
+            if ancestor_blueprint:
+                # We found an ancestor, make a reference to its license module
+                package_module.default_applicable_licenses.add(
+                    ancestor_blueprint.get_license_module().name)
+            else:
+                # No ancestor with a license found, this is most likely a non-third
+                # license, just point at Chromium's license in Android.extras.bp.
+                package_module.default_applicable_licenses.add(
+                    "external_cronet_license")
+
+        blueprint.set_package_module(package_module)
+
+
+def create_license_modules(blueprint_paths: List[str]) -> Dict[str, Module]:
+    """
+  Creates license module (if possible) for each blueprint passed, a license
+  module will be created if a README.chromium exists in the same directory as
+  the blueprint.
+
+  :param blueprints: List of paths for all possible blueprints.
+  :return: Dictionary of (path, license_module).
+  """
+    license_modules = {}
+    for path in blueprint_paths:
+        license_module = _maybe_create_license_module(path)
+        if license_module:
+            license_modules[path] = license_module
+    return license_modules
+
+
+def _break_down_blueprint(top_level_blueprint: Blueprint):
+    """
+  This breaks down the top-level blueprint into smaller blueprints in
+  different directory. The goal here is to break down the huge Android.bp
+  into smaller ones for compliance with SBOM. At the moment, not all targets
+  can be easily rebased to a different directory as GN does not respect
+  package boundaries.
+
+  :returns A dictionary of path -> Blueprint, the path is relative to repository
+  root.
+  """
+    blueprints = {"": Blueprint()}
+    for (module_name, module) in top_level_blueprint.modules.items():
+        if module.type in [
+                "package", "genrule", "cc_genrule", "java_genrule", "cc_object"
+        ] and not module.allow_rebasing:
+            # Exclude the genrules from the rebasing as there is no support for them.
+            # cc_object is created only for the sake of genrules as an intermediate
+            # target.
+            blueprints[""].add_module(module)
+            continue
+
+        if module.build_file_path is None:
+            # Raise an exception if the module does not specify a BUILD file path.
+            raise Exception(
+                f"Found module {module_name} without a build file path.")
+
+        if module.build_file_path in BLUEPRINTS_MAPPING:
+            module.build_file_path = BLUEPRINTS_MAPPING[module.build_file_path]
+
+        rebased_module = _rebase_module(module)
+        if rebased_module:
+            if not module.build_file_path in blueprints.keys():
+                blueprints[module.build_file_path] = Blueprint()
+            blueprints[module.build_file_path].add_module(rebased_module)
+        else:
+            # Append to the top-level blueprint.
+            blueprints[""].add_module(module)
+
+    return blueprints
 
 def main():
     parser = argparse.ArgumentParser(
@@ -2186,6 +2440,9 @@ def main():
         + 'You can specify multiple --desc options for different target_cpu',
         required=True,
         action='append')
+    parser.add_argument('--repo_root',
+                        required=True,
+                        help='Path to the root of the repistory')
     parser.add_argument(
         '--extras',
         help='Extra targets to include at the end of the Blueprint file',
@@ -2221,13 +2478,19 @@ def main():
             gn.parse_gn_desc(desc, target)
         for test_target in DEFAULT_TESTS:
             gn.parse_gn_desc(desc, test_target, is_test_target=True)
-    blueprint = create_blueprint_for_targets(gn, targets, DEFAULT_TESTS)
+    top_level_blueprint = create_blueprint_for_targets(gn, targets,
+                                                       DEFAULT_TESTS)
     project_root = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
     tool_name = os.path.relpath(os.path.abspath(__file__), project_root)
 
-    create_package_module(blueprint)
-    output = [
-        """// Copyright (C) 2022 The Android Open Source Project
+    final_blueprints = _break_down_blueprint(top_level_blueprint)
+    license_modules = create_license_modules(final_blueprints)
+    for (path, module) in license_modules.items():
+        final_blueprints[path].set_license_module(module)
+
+    finalize_package_modules(final_blueprints)
+
+    header = """// Copyright (C) 2022 The Android Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -2242,24 +2505,14 @@ def main():
 // limitations under the License.
 //
 // This file is automatically generated by %s. Do not edit.
-
-build = ["Android.extras.bp"]
 """ % (tool_name)
-    ]
-    blueprint.to_string(output)
-    if os.path.exists(args.extras):
-        with open(args.extras, 'r') as r:
-            for line in r:
-                output.append(line.rstrip("\n\r"))
 
-    out_files = []
-
-    # Generate the Android.bp file.
-    out_files.append(args.output + '.swp')
-    with open(out_files[-1], 'w') as f:
-        f.write('\n'.join(output))
-        # Text files should have a trailing EOL.
-        f.write('\n')
+    for (path, blueprint) in final_blueprints.items():
+        android_bp_file = Path(os.path.join(args.repo_root, path,
+                                            "Android.bp"))
+        android_bp_file.write_text(
+            "\n".join([header] + BLUEPRINTS_EXTRAS.get(path, []) +
+                      blueprint.to_string()))
 
     return 0
 
