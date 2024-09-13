@@ -424,7 +424,7 @@ void FocusModeTray::OnFocusModeChanged(bool in_focus_session) {
     UpdateBubbleViews(session_snapshot_.value());
   } else if (session_snapshot_->state == FocusModeSession::State::kEnding) {
     bounce_in_animation_finished_ = false;
-    BounceInAnimation();
+    BounceInAnimation(/*scale_animation=*/false);
   }
 }
 

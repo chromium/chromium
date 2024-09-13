@@ -873,7 +873,7 @@ void TrayBackgroundView::StopPulseAnimation() {
   RemoveRippleLayer();
 }
 
-void TrayBackgroundView::BounceInAnimation() {
+void TrayBackgroundView::BounceInAnimation(bool scale_animation) {
   gfx::Vector2dF bounce_up_location;
   gfx::Vector2dF bounce_down_location;
 
@@ -894,8 +894,8 @@ void TrayBackgroundView::BounceInAnimation() {
   }
 
   gfx::Transform initial_scale;
-  initial_scale.Scale3d(kAnimationBounceScaleFactor,
-                        kAnimationBounceScaleFactor, 1);
+  const float scale_factor = scale_animation ? kAnimationBounceScaleFactor : 1;
+  initial_scale.Scale3d(scale_factor, scale_factor, 1);
 
   const gfx::Transform initial_state = gfx::TransformAboutPivot(
       gfx::RectF(GetLocalBounds()).CenterPoint(), initial_scale);
