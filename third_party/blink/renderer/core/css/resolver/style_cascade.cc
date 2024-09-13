@@ -201,6 +201,7 @@ bool IsInterpolation(CascadePriority priority) {
 
 // https://drafts.csswg.org/css-values-5/#attr-substitution-value
 std::optional<CSSParserToken> GetAttrSubstitutionValue(
+    CSSParserTokenStream& stream,
     const String& attribute_value,
     const CSSAttrType& attribute_type,
     const CSSParserContext& context) {
@@ -219,8 +220,6 @@ std::optional<CSSParserToken> GetAttrSubstitutionValue(
   if (attribute_type.category == CSSAttrType::Category::kString) {
     return CSSParserToken(kStringToken, attribute_value);
   }
-
-  CSSParserTokenStream stream(attribute_value);
 
   std::optional<CSSSyntaxDefinition> syntax_definition =
       attribute_type.ConvertToCSSSyntaxDefinition();
@@ -1710,8 +1709,9 @@ bool StyleCascade::ResolveAttrInto(CSSParserTokenStream& stream,
   const String& attribute_value =
       state_.GetElement().getAttribute(attribute_name);
 
-  std::optional<CSSParserToken> substitution_value =
-      GetAttrSubstitutionValue(attribute_value, attribute_type, context);
+  CSSParserTokenStream attribute_value_stream(attribute_value);
+  std::optional<CSSParserToken> substitution_value = GetAttrSubstitutionValue(
+      attribute_value_stream, attribute_value, attribute_type, context);
 
   // Validate fallback value.
   if (ConsumeComma(stream)) {
