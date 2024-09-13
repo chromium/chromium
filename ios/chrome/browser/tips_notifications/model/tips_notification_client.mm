@@ -203,7 +203,10 @@ void TipsNotificationClient::CheckAndMaybeRequestNotification(
     base::OnceClosure closure) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   permitted_ = IsPermitted();
+
   if (interacted_type_.has_value()) {
+    GetApplicationContext()->GetLocalState()->ClearPref(
+        kTipsNotificationsDismissCount);
     HandleNotificationInteraction(interacted_type_.value());
   }
 
@@ -228,6 +231,7 @@ void TipsNotificationClient::RegisterLocalStatePrefs(
   registry->RegisterIntegerPref(kTipsNotificationsLastTriggered, -1);
   registry->RegisterTimePref(kTipsNotificationsLastRequestedTime, base::Time());
   registry->RegisterIntegerPref(kTipsNotificationsUserType, 0);
+  registry->RegisterIntegerPref(kTipsNotificationsDismissCount, 0);
 }
 
 void TipsNotificationClient::GetPendingRequest(
@@ -260,7 +264,7 @@ void TipsNotificationClient::OnPendingRequestFound(
 void TipsNotificationClient::MaybeRequestNotification(
     base::OnceClosure completion) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!permitted_) {
+  if (!permitted_ || DismissLimitReached()) {
     std::move(completion).Run();
     return;
   }
@@ -271,18 +275,9 @@ void TipsNotificationClient::MaybeRequestNotification(
 
   // The types of notifications that could be sent will be evaluated in the
   // order they appear in this array.
-  static const TipsNotificationType kTypes[] = {
-      TipsNotificationType::kSetUpListContinuation,
-      TipsNotificationType::kWhatsNew,
-      TipsNotificationType::kLens,
-      TipsNotificationType::kOmniboxPosition,
-      TipsNotificationType::kEnhancedSafeBrowsing,
-      TipsNotificationType::kDefaultBrowser,
-      TipsNotificationType::kDocking,
-      TipsNotificationType::kSignin,
-  };
+  std::vector<TipsNotificationType> types = TipsNotificationsTypesOrder();
 
-  for (TipsNotificationType type : kTypes) {
+  for (TipsNotificationType type : types) {
     int bit = 1 << int(type);
     if (sent_bitfield & bit) {
       // This type of notification has already been sent.
@@ -629,6 +624,9 @@ void TipsNotificationClient::OnGetDeliveredNotifications(
   }
   // No notification was found, so it must have been dismissed.
   PrefService* local_state = GetApplicationContext()->GetLocalState();
+  int dismiss_count =
+      local_state->GetInteger(kTipsNotificationsDismissCount) + 1;
+  local_state->SetInteger(kTipsNotificationsDismissCount, dismiss_count);
   TipsNotificationType type = static_cast<TipsNotificationType>(
       local_state->GetInteger(kTipsNotificationsLastTriggered));
   base::UmaHistogramEnumeration("IOS.Notifications.Tips.Dismissed", type);
@@ -644,6 +642,17 @@ bool TipsNotificationClient::IsPermitted() {
   return local_state->GetDict(prefs::kAppLevelPushNotificationPermissions)
       .FindBool(kTipsNotificationKey)
       .value_or(false);
+}
+
+bool TipsNotificationClient::DismissLimitReached() {
+  int dismiss_limit = TipsNotificationsDismissLimit();
+  if (!dismiss_limit) {
+    return false;
+  }
+
+  int dismiss_count = GetApplicationContext()->GetLocalState()->GetInteger(
+      kTipsNotificationsDismissCount);
+  return dismiss_count >= dismiss_limit;
 }
 
 void TipsNotificationClient::OnPermittedPrefChanged(const std::string& name) {

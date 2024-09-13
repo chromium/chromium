@@ -431,6 +431,7 @@ TEST_F(TipsNotificationClientTest, OmniboxPositionRequest) {
 
   WriteFirstRunSentinel();
   SetSentNotifications({TipsNotificationType::kSetUpListContinuation,
+                        TipsNotificationType::kLens,
                         TipsNotificationType::kWhatsNew});
   StubGetPendingRequests(nil);
   ExpectNotificationRequest(TipsNotificationType::kOmniboxPosition);

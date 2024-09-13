@@ -8,6 +8,7 @@
 #import <UserNotifications/UserNotifications.h>
 
 #import <optional>
+#import <vector>
 
 namespace base {
 class TimeDelta;
@@ -33,6 +34,9 @@ extern const char kTipsNotificationsLastRequestedTime[];
 
 // Pref that stores the user's classification.
 extern const char kTipsNotificationsUserType[];
+
+// Pref that stores how many Tips notifications have been dismissed in a row.
+extern const char kTipsNotificationsDismissCount[];
 
 // The type of Tips Notification, for an individual notification.
 // Always keep this enum in sync with
@@ -96,5 +100,13 @@ UNNotificationTrigger* TipsNotificationTrigger(
 // Returns a bitfield indicating which types of notifications should be
 // enabled. Bits are assigned based on the enum `TipsNotificationType`.
 int TipsNotificationsEnabledBitfield();
+
+// Returns an ordered array containing the types of Tips Notifications to send.
+std::vector<TipsNotificationType> TipsNotificationsTypesOrder();
+
+// Returns the dismiss limit. If the user dismisses this number of Tips
+// notifications in a row, no more Tips notifications will be sent. Zero
+// indicates there should be no limit.
+int TipsNotificationsDismissLimit();
 
 #endif  // IOS_CHROME_BROWSER_TIPS_NOTIFICATIONS_MODEL_UTILS_H_

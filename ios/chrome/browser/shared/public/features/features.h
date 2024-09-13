@@ -699,6 +699,16 @@ extern const char kIOSTipsNotificationsLessEngagedTriggerTimeParam[];
 // enabled. Bits are assigned based on the enum `TipsNotificationType`.
 extern const char kIOSTipsNotificationsEnabledParam[];
 
+// Feature param containing an integer that chooses from a few options for
+// the order that the notifications would be sent in.
+extern const char kIOSTipsNotificationsOrderParam[];
+
+// Feature param containing an integer that configures the
+// `TipsNotificationClient` to stop requesting notifications if the user
+// dismisses this number of notifications in a row. Setting this to zero will
+// disable this limit.
+extern const char kIOSTipsNotificationsDismissLimitParam[];
+
 // Helper for whether Tips Notifications are enabled.
 bool IsIOSTipsNotificationsEnabled();
 

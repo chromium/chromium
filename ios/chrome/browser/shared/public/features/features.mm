@@ -863,6 +863,9 @@ const char kIOSTipsNotificationsActiveSeekerTriggerTimeParam[] =
 const char kIOSTipsNotificationsLessEngagedTriggerTimeParam[] =
     "less_engaged_trigger_time";
 const char kIOSTipsNotificationsEnabledParam[] = "enabled";
+const char kIOSTipsNotificationsOrderParam[] = "tips_notifications_order";
+const char kIOSTipsNotificationsDismissLimitParam[] =
+    "tips_notifications_dismiss_limit";
 
 bool IsIOSTipsNotificationsEnabled() {
   return base::FeatureList::IsEnabled(kIOSTipsNotifications);

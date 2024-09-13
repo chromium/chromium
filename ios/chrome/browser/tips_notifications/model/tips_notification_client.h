@@ -130,6 +130,9 @@ class TipsNotificationClient : public PushNotificationClient {
   // Returns true if Tips notifications are permitted.
   bool IsPermitted();
 
+  // Returns true if the Dismiss Limit has been reached.
+  bool DismissLimitReached();
+
   // Called when the pref that stores whether Tips notifications are permitted
   // changes.
   void OnPermittedPrefChanged(const std::string& name);
