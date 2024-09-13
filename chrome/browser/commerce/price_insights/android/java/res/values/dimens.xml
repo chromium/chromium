@@ -7,6 +7,7 @@ found in the LICENSE file.
 
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Price insights bottom sheet dimensions. -->
+    <dimen name="price_insights_surface_elevation">@dimen/default_elevation_1</dimen>
     <dimen name="price_insights_general_padding">16dp</dimen>
     <dimen name="price_insights_background_radius">16dp</dimen>
     <dimen name="price_insights_content_background_radius">24dp</dimen>
