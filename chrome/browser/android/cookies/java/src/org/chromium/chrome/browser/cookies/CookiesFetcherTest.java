@@ -177,7 +177,7 @@ public class CookiesFetcherTest {
     }
 
     private void assertCookieFileExists(CookiesFetcher fetcher, boolean exists) {
-        String fileName = fetcher.fetchFileName();
+        String fileName = fetcher.fetchAbsoluteFilePath();
 
         File cookieFile = new File(fileName);
         Assert.assertEquals(exists, cookieFile.exists());
@@ -226,7 +226,7 @@ public class CookiesFetcherTest {
         Mockito.when(mProfile1.isInitialProfile()).thenReturn(true);
         CookiesFetcher fetcher = new CookiesFetcher(mProfileProvider, mCipherFactory);
 
-        File cookieFile = new File(fetcher.fetchFileName());
+        File cookieFile = new File(fetcher.fetchAbsoluteFilePath());
         try (PrintWriter writer = new PrintWriter(cookieFile)) {
             writer.println("Hey, I\"m a cookie!");
         }

@@ -463,6 +463,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/customtabs/CustomTabBottomBarView.java",
   "java/src/org/chromium/chrome/browser/customtabs/CustomTabColorProviderImpl.java",
   "java/src/org/chromium/chrome/browser/customtabs/CustomTabCompositorContentInitializer.java",
+  "java/src/org/chromium/chrome/browser/customtabs/CustomTabCookiesFetcher.java",
   "java/src/org/chromium/chrome/browser/customtabs/CustomTabDelegateFactory.java",
   "java/src/org/chromium/chrome/browser/customtabs/CustomTabDownloadObserver.java",
   "java/src/org/chromium/chrome/browser/customtabs/CustomTabFeatureOverridesManager.java",

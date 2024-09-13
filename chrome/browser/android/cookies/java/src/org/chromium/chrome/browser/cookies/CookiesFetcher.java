@@ -45,7 +45,7 @@ import javax.crypto.CipherOutputStream;
  * if the app is killed e.g. while in the background.
  */
 public class CookiesFetcher implements Destroyable {
-    /** The default file name for the encrypted cookies storage. */
+    /** The default file name for the encrypted cookies storage for the primary OTR profile. */
     private static final String DEFAULT_COOKIE_FILE_NAME = "COOKIES.DAT";
 
     /** Used for logging. */
@@ -74,8 +74,6 @@ public class CookiesFetcher implements Destroyable {
                     public void onProfileDestroyed(Profile profile) {
                         if (profile.isOffTheRecord()
                                 && mProfileProvider.getOffTheRecordProfile(false) == profile) {
-                            assert profile.isPrimaryOTRProfile()
-                                    : "Only primary OTR profiles support serialized Cookies";
                             scheduleDeleteCookies();
                         }
                     }
@@ -94,14 +92,19 @@ public class CookiesFetcher implements Destroyable {
 
     /** Return the cookie file path for the appropriate Profile. */
     @VisibleForTesting
-    String fetchFileName() {
+    String fetchAbsoluteFilePath() {
         ThreadUtils.assertOnBackgroundThread();
         File directory = new File(mCookieDirPath);
         if (!directory.exists() && !directory.mkdir()) {
             Log.e(TAG, "Failed to create cookie directory");
             return null;
         }
-        return new File(mCookieDirPath, DEFAULT_COOKIE_FILE_NAME).getAbsolutePath();
+        return new File(mCookieDirPath, fetchFileName()).getAbsolutePath();
+    }
+
+    /** Return the cookie file name for the appropriate Profile. */
+    protected String fetchFileName() {
+        return DEFAULT_COOKIE_FILE_NAME;
     }
 
     /**
@@ -116,7 +119,8 @@ public class CookiesFetcher implements Destroyable {
                 .getAbsolutePath();
     }
 
-    private boolean isLegacyFileApplicable() {
+    /** Return whether the legacy cookie file is applicable for the associated Profile. */
+    protected boolean isLegacyFileApplicable() {
         ThreadUtils.assertOnUiThread();
         return mProfileProvider.getOriginalProfile().isInitialProfile();
     }
@@ -128,8 +132,6 @@ public class CookiesFetcher implements Destroyable {
             return;
         }
         Profile offTheRecordProfile = mProfileProvider.getOffTheRecordProfile(false);
-        assert offTheRecordProfile.isPrimaryOTRProfile()
-                : "Only primary OTR profiles support serialized Cookies";
         CookiesFetcherJni.get().persistCookies(offTheRecordProfile, this);
     }
 
@@ -145,11 +147,9 @@ public class CookiesFetcher implements Destroyable {
             return;
         }
         Profile offTheRecordProfile = mProfileProvider.getOffTheRecordProfile(false);
-        assert offTheRecordProfile.isPrimaryOTRProfile()
-                : "Only primary OTR profiles support serialized Cookies";
         new AsyncTask<List<CanonicalCookie>>() {
             private File getCookieFile() {
-                String fileName = fetchFileName();
+                String fileName = fetchAbsoluteFilePath();
                 if (fileName == null) {
                     Log.e(TAG, "Failed to load cookie file, skipping restore.");
                     return null;
@@ -223,13 +223,13 @@ public class CookiesFetcher implements Destroyable {
     }
 
     /** Delete the cookies file. Called when we detect that all incognito tabs have been closed. */
-    private void scheduleDeleteCookies() {
+    protected void scheduleDeleteCookies() {
         ThreadUtils.assertOnUiThread();
         boolean isLegacyFileApplicable = isLegacyFileApplicable();
         new BackgroundOnlyAsyncTask<Void>() {
             @Override
             protected Void doInBackground() {
-                String fileName = fetchFileName();
+                String fileName = fetchAbsoluteFilePath();
                 if (fileName != null) {
                     deleteCookeFileInBackground(fileName);
                 }
@@ -298,7 +298,7 @@ public class CookiesFetcher implements Destroyable {
         new BackgroundOnlyAsyncTask<Void>() {
             @Override
             protected Void doInBackground() {
-                String fileName = fetchFileName();
+                String fileName = fetchAbsoluteFilePath();
                 if (fileName == null) {
                     Log.e(TAG, "Unable to save OTR cookies because file is null");
                     return null;
