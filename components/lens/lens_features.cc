@@ -59,6 +59,10 @@ BASE_FEATURE(kLensOverlayImageContextMenuActions,
              "LensOverlayImageContextMenuActions",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kLensOverlayContextualSearchbox,
+             "LensOverlayContextualSearchbox",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 const base::FeatureParam<int> kLensOverlayMinRamMb{&kLensOverlay, "min_ram_mb",
                                                    /*default=value=*/-1};
 const base::FeatureParam<std::string> kActivityUrl{
@@ -639,6 +643,10 @@ bool IsLensOverlaySaveAsImageEnabled() {
 
 int GetLensOverlayImageContextMenuActionsTextReceivedTimeout() {
   return kLensOverlayImageContextMenuActionsTextReceivedTimeout.Get();
+}
+
+bool IsLensOverlayContextualSearchboxEnabled() {
+  return base::FeatureList::IsEnabled(kLensOverlayContextualSearchbox);
 }
 
 }  // namespace lens::features

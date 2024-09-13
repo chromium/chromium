@@ -124,7 +124,7 @@ void LensSidePanelUntrustedUI::BindInterface(
       web_ui()->GetWebContents(),
       /*metrics_reporter=*/nullptr, /*lens_searchbox_client=*/controller,
       /*omnibox_controller=*/nullptr);
-  controller->SetSearchboxHandler(std::move(handler));
+  controller->SetSidePanelSearchboxHandler(std::move(handler));
 }
 
 void LensSidePanelUntrustedUI::BindInterface(

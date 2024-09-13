@@ -45,6 +45,11 @@ class LensOverlayUntrustedUI : public UntrustedTopChromeWebUIController,
   void BindInterface(
       mojo::PendingReceiver<lens::mojom::LensPageHandlerFactory> receiver);
 
+  // Instantiates the implementor of the searchbox::mojom::PageHandler mojo
+  // interface passing the pending receiver that will be internally bound.
+  void BindInterface(
+      mojo::PendingReceiver<searchbox::mojom::PageHandler> receiver);
+
   // Instantiates the implementor of the
   // color_change_listener::mojom::PageHandler mojo interface passing the
   // pending receiver that will be internally bound.

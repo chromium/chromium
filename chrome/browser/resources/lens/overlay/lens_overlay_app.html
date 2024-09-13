@@ -1,4 +1,9 @@
-<style>
+<style include="searchbox-shared-style">
+  :host {
+    --cr-searchbox-height: 48px;
+    --cr-searchbox-shadow: 0 1px 6px 0 var(--color-searchbox-shadow);
+  }
+
   .app-container {
     height: 100%;
     width: 100%;
@@ -34,6 +39,10 @@
     inset-inline-end: 28px;
   }
 
+  :host([is-lens-overlay-contextual-searchbox-enabled]) #optionsButtonContainer {
+    inset-block-start: 36px;
+  }
+
   :host([close-button-hidden]) #optionsButtonContainer {
     inset-inline-end: 22px;
   }
@@ -59,7 +68,8 @@
     --cr-icon-image: url("icon_clear.svg");
   }
 
-  :host([close-button-hidden]) #closeButton {
+  :host([close-button-hidden]) #closeButton,
+  :host([search-box-hidden]) #searchboxContainer {
     display: none;
   }
 
@@ -166,6 +176,18 @@
   initial-gradient {
     pointer-events: none;
   }
+
+  #searchboxContainer {
+    --color-searchbox-results-background: #ffffffff;
+    position: absolute;
+    inset-block-start: 36px;
+    inset-inline-end: 140px;
+    width: 300px;
+  }
+
+  :host([dark-mode]) #searchboxContainer {
+    --color-searchbox-results-background: #3c3c3cff;
+  }
 </style>
 <div class="app-container"
     on-initial-flash-animation-end="onInitialFlashAnimationEnd"
@@ -203,6 +225,11 @@
       on-pointerleave="handlePointerLeaveSelectionOverlay">
   </lens-selection-overlay>
   <initial-gradient id="initialGradient"></initial-gradient>
+  <template is="dom-if" if="[[isLensOverlayContextualSearchboxEnabled]]">
+    <div id="searchboxContainer">
+      <cr-searchbox id="searchbox"></cr-searchbox>
+    </div>
+  </template>
   <template is="dom-if" if="[[isTranslateButtonVisible]]">
     <div id="translateButtonContainer" class="button-container">
       <translate-button></translate-button>

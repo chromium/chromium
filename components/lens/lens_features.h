@@ -55,6 +55,10 @@ BASE_DECLARE_FEATURE(kLensOverlay);
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kLensOverlayTranslateButton);
 
+// Enables the Lens overlay searchbox.
+COMPONENT_EXPORT(LENS_FEATURES)
+BASE_DECLARE_FEATURE(kLensOverlayContextualSearchbox);
+
 // The base URL for Lens.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern const base::FeatureParam<std::string> kHomepageURLForLens;
@@ -528,6 +532,10 @@ extern bool IsLensOverlaySaveAsImageEnabled();
 // context menu, in milliseconds.
 COMPONENT_EXPORT(LENS_FEATURES)
 int GetLensOverlayImageContextMenuActionsTextReceivedTimeout();
+
+// Whether to show the contextual searchbox in the Lens Overlay.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool IsLensOverlayContextualSearchboxEnabled();
 
 }  // namespace lens::features
 

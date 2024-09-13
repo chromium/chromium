@@ -91,7 +91,7 @@ class LensOverlayTest : public LensWebUIBrowserTest {
 
     // Clean up (the searchbox handler will leave a dangling pointer if not
     // explicitly destroyed).
-    controller->ResetSearchboxHandler();
+    controller->ResetSidePanelSearchboxHandler();
   }
 
   void RunSidePanelTest(const std::string& file, const std::string& trigger) {

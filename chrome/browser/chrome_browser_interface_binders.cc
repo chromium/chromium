@@ -1974,7 +1974,8 @@ void PopulateChromeWebUIFrameInterfaceBrokers(
   if (lens::features::IsLensOverlayEnabled()) {
     registry.ForWebUI<lens::LensOverlayUntrustedUI>()
         .Add<lens::mojom::LensPageHandlerFactory>()
-        .Add<color_change_listener::mojom::PageHandler>();
+        .Add<color_change_listener::mojom::PageHandler>()
+        .Add<searchbox::mojom::PageHandler>();
   }
   if (lens::features::IsLensOverlaySearchBubbleEnabled()) {
     registry.ForWebUI<lens::SearchBubbleUI>()

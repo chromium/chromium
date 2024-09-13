@@ -132,7 +132,7 @@ void LensOverlaySidePanelCoordinator::WebViewClosing() {
   // This is called from the destructor of the WebView. Synchronously clear all
   // state associated with the WebView.
   if (side_panel_web_view_) {
-    lens_overlay_controller_->ResetSearchboxHandler();
+    lens_overlay_controller_->ResetSidePanelSearchboxHandler();
     lens_overlay_controller_->RemoveGlueForWebView(side_panel_web_view_);
     side_panel_web_view_ = nullptr;
   }

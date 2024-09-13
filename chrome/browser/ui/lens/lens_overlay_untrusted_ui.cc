@@ -153,6 +153,13 @@ LensOverlayUntrustedUI::LensOverlayUntrustedUI(content::WebUI* web_ui)
       "textReceivedTimeout",
       lens::features::
           GetLensOverlayImageContextMenuActionsTextReceivedTimeout());
+  html_source->AddBoolean(
+      "darkMode",
+      lens::LensOverlayShouldUseDarkMode(
+          ThemeServiceFactory::GetForProfile(Profile::FromWebUI(web_ui))));
+  html_source->AddBoolean(
+      "enableOverlayContextualSearchbox",
+      lens::features::IsLensOverlayContextualSearchboxEnabled());
 
   // Controller doesn't exist in unsupported context but WebUI should still
   // load.
@@ -217,6 +224,25 @@ void LensOverlayUntrustedUI::BindInterface(
     mojo::PendingReceiver<lens::mojom::LensPageHandlerFactory> receiver) {
   lens_page_factory_receiver_.reset();
   lens_page_factory_receiver_.Bind(std::move(receiver));
+}
+
+void LensOverlayUntrustedUI::BindInterface(
+    mojo::PendingReceiver<searchbox::mojom::PageHandler> receiver) {
+  LensOverlayController* controller =
+      LensOverlayController::GetController(web_ui());
+  // TODO(crbug.com/360724768): This should not need to be null-checked and
+  // exists here as a temporary solution to handle situations where lens may be
+  // loaded in an unsupported context (e.g. browser tab). Remove this once work
+  // to restrict WebUI loading to relevant contexts has landed.
+  if (!controller) {
+    return;
+  }
+  auto handler = std::make_unique<RealboxHandler>(
+      std::move(receiver), Profile::FromWebUI(web_ui()),
+      web_ui()->GetWebContents(),
+      /*metrics_reporter=*/nullptr, /*lens_searchbox_client=*/controller,
+      /*omnibox_controller=*/nullptr);
+  controller->SetContextualSearchboxHandler(std::move(handler));
 }
 
 void LensOverlayUntrustedUI::BindInterface(

@@ -6,8 +6,10 @@ import './cursor_tooltip.js';
 import './initial_gradient.js';
 import './selection_overlay.js';
 import './translate_button.js';
+import '/lens/shared/searchbox_shared_style.css.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/icons.html.js';
+import '//resources/cr_components/searchbox/searchbox.js';
 
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import type {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js';
@@ -71,6 +73,10 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
         type: Boolean,
         reflectToAttribute: true,
       },
+      searchBoxHidden: {
+        type: Boolean,
+        reflectToAttribute: true,
+      },
       isClosing: {
         type: Boolean,
         reflectToAttribute: true,
@@ -90,9 +96,20 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
             'isTextLayerHighlightingText, isPointerDown)',
         reflectToAttribute: true,
       },
+      isLensOverlayContextualSearchboxEnabled: {
+        type: Boolean,
+        value: loadTimeData.getBoolean('enableOverlayContextualSearchbox'),
+        reflectToAttribute: true,
+        readOnly: true,
+      },
       theme: {
         type: Object,
         value: getFallbackTheme,
+      },
+      darkMode: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('darkMode'),
+        reflectToAttribute: true,
       },
       toastMessage: String,
     };
@@ -104,6 +121,8 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
   private initialFlashAnimationHasEnded: boolean = false;
   // Whether the close button should be hidden.
   private closeButtonHidden: boolean = false;
+  // Whether the search box should be hidden.
+  private searchBoxHidden: boolean = false;
   // Whether the overlay is being shut down.
   private isClosing: boolean = false;
   // Whether more options menu should be shown.
@@ -278,6 +297,7 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
   private handleSelectionOverlayClicked() {
     this.$.cursorTooltip.setPauseTooltipChanges(true);
     this.isPointerDown = true;
+    this.searchBoxHidden = true;
   }
 
   private handlePointerReleased() {

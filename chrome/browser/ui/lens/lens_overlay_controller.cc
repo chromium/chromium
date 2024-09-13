@@ -551,18 +551,25 @@ void LensOverlayController::BindSidePanel(
       pending_side_panel_should_show_error_page_);
 }
 
-void LensOverlayController::SetSearchboxHandler(
+void LensOverlayController::SetSidePanelSearchboxHandler(
     std::unique_ptr<RealboxHandler> handler) {
-  searchbox_handler_ = std::move(handler);
+  side_panel_searchbox_handler_ = std::move(handler);
 }
 
 void LensOverlayController::SetContextualSearchboxHandler(
     std::unique_ptr<RealboxHandler> handler) {
-  search_bubble_controller_->SetContextualSearchboxHandler(std::move(handler));
+  if (lens::features::IsLensOverlaySearchBubbleEnabled()) {
+    search_bubble_controller_->SetContextualSearchboxHandler(
+        std::move(handler));
+  } else {
+    // If the search bubble doesn't exist the, searchbox is in the overlay, and
+    // therefore the handler is owned by this LensOverlayController class
+    overlay_searchbox_handler_ = std::move(handler);
+  }
 }
 
-void LensOverlayController::ResetSearchboxHandler() {
-  searchbox_handler_.reset();
+void LensOverlayController::ResetSidePanelSearchboxHandler() {
+  side_panel_searchbox_handler_.reset();
 }
 
 uint64_t LensOverlayController::GetInvocationTimeSinceEpoch() {
@@ -653,8 +660,9 @@ void LensOverlayController::LoadURLInResultsFrame(const GURL& url) {
 }
 
 void LensOverlayController::SetSearchboxInputText(const std::string& text) {
-  if (searchbox_handler_ && searchbox_handler_->IsRemoteBound()) {
-    searchbox_handler_->SetInputText(text);
+  if (side_panel_searchbox_handler_ &&
+      side_panel_searchbox_handler_->IsRemoteBound()) {
+    side_panel_searchbox_handler_->SetInputText(text);
   } else {
     // If the side panel was not bound at the time of request, we store the
     // query as pending to send it to the searchbox on bind.
@@ -1471,7 +1479,7 @@ void LensOverlayController::CloseUIPart2(
   }
 
   permission_bubble_controller_.reset();
-  searchbox_handler_.reset();
+  side_panel_searchbox_handler_.reset();
   results_side_panel_coordinator_.reset();
 
   side_panel_state_observer_.Reset();
@@ -1508,6 +1516,7 @@ void LensOverlayController::CloseUIPart2(
   pending_region_.reset();
   fullscreen_observation_.Reset();
   lens_overlay_blur_layer_delegate_.reset();
+  overlay_searchbox_handler_.reset();
 
   if (overlay_view_) {
     // Remove and delete the overlay view and web view. Not doing so will result
@@ -1725,10 +1734,9 @@ SessionID LensOverlayController::GetTabId() const {
 metrics::OmniboxEventProto::PageClassification
 LensOverlayController::GetPageClassification() const {
   // There are two cases where we are assuming to be in a contextual flow:
-  // 1) We are in the zero state with the CSB showing
+  // 1) We are in the zero state with the overlay CSB showing.
   // 2) A user has made a contextual query and the live page is now showing.
-  if (state_ == State::kLivePageAndResults ||
-      search_bubble_controller_->IsSearchBubbleVisible()) {
+  if (state_ == State::kLivePageAndResults || state_ == State::kOverlay) {
     return metrics::OmniboxEventProto::CONTEXTUAL_SEARCHBOX;
   }
   return selected_region_thumbnail_uri_.empty()
@@ -1794,19 +1802,21 @@ void LensOverlayController::OnSuggestionAccepted(
 }
 
 void LensOverlayController::OnPageBound() {
-  // If the side panel closes before the remote gets bound, searchbox_handler_
-  // could become unset. Verify it is set before sending to the side panel.
-  if (!searchbox_handler_ || !searchbox_handler_->IsRemoteBound()) {
+  // If the side panel closes before the remote gets bound,
+  // side_panel_searchbox_handler_ could become unset. Verify it is set before
+  // sending to the side panel.
+  if (!side_panel_searchbox_handler_ ||
+      !side_panel_searchbox_handler_->IsRemoteBound()) {
     return;
   }
 
   // Send any pending inputs for the searchbox.
   if (pending_text_query_.has_value()) {
-    searchbox_handler_->SetInputText(*pending_text_query_);
+    side_panel_searchbox_handler_->SetInputText(*pending_text_query_);
     pending_text_query_.reset();
   }
   if (pending_thumbnail_uri_.has_value()) {
-    searchbox_handler_->SetThumbnail(*pending_thumbnail_uri_);
+    side_panel_searchbox_handler_->SetThumbnail(*pending_thumbnail_uri_);
     pending_thumbnail_uri_.reset();
   }
 }
@@ -2199,10 +2209,7 @@ void LensOverlayController::IssueSearchBoxRequest(
 
   // If we are in the zero state, this request must have come from CSB. In that
   // case, hide the overlay to allow live page to show through.
-  // IsLensOverlaySearchBubbleEnabled is a sanity check to not break anything
-  // and wil be removed once we move away from State::kLivePageAndResults.
-  if (state_ == State::kOverlay &&
-      lens::features::IsLensOverlaySearchBubbleEnabled()) {
+  if (state_ == State::kOverlay) {
     BackgroundUI();
   }
 
@@ -2252,8 +2259,9 @@ void LensOverlayController::HandleThumbnailCreated(
 
 void LensOverlayController::SetSearchboxThumbnail(
     const std::string& thumbnail_uri) {
-  if (searchbox_handler_ && searchbox_handler_->IsRemoteBound()) {
-    searchbox_handler_->SetThumbnail(thumbnail_uri);
+  if (side_panel_searchbox_handler_ &&
+      side_panel_searchbox_handler_->IsRemoteBound()) {
+    side_panel_searchbox_handler_->SetThumbnail(thumbnail_uri);
   } else {
     // If the side panel was not bound at the time of request, we store the
     // thumbnail as pending to send it to the searchbox on bind.

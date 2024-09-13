@@ -217,7 +217,7 @@ class LensOverlayController : public LensSearchboxClient,
   // searchbox WebUI. This is called by the WebUIController when the WebUI is
   // executing javascript and has bound the handler. Takes ownership of
   // `handler`.
-  void SetSearchboxHandler(std::unique_ptr<RealboxHandler> handler);
+  void SetSidePanelSearchboxHandler(std::unique_ptr<RealboxHandler> handler);
 
   // Passes ownership of the realbox handler to the search bubble controller.
   // This is called by the WebUIController when the WebUI is executing
@@ -227,7 +227,7 @@ class LensOverlayController : public LensSearchboxClient,
   // This method is used to release the owned `SearchboxHandler`. It should be
   // called before the embedding web contents is destroyed since it contains a
   // reference to that web contents.
-  void ResetSearchboxHandler();
+  void ResetSidePanelSearchboxHandler();
 
   // Internal state machine. States are mutually exclusive. Exposed for testing.
   enum class State {
@@ -1002,7 +1002,16 @@ class LensOverlayController : public LensSearchboxClient,
   // that:
   //      1) searchbox_handler_ exists and
   //      2) searchbox_handler_->IsRemoteBound() is true.
-  std::unique_ptr<RealboxHandler> searchbox_handler_;
+  std::unique_ptr<RealboxHandler> side_panel_searchbox_handler_;
+
+  // Handler for the contextual searchbox in the overlay . The handler is
+  // null if the WebUI containing the searchbox has not been initialized yet.
+  // In addition, the handler may be initialized, but the remote not yet set
+  // because the WebUI calls SetPage() once it is ready to receive data from
+  // C++. Therefore, we must always check that:
+  //      1) contextual_searchbox_handler_ exists and
+  //      2) contextual_searchbox_handler_->IsRemoteBound() is true.
+  std::unique_ptr<RealboxHandler> overlay_searchbox_handler_;
 
   // General side panel coordinator responsible for all side panel interactions.
   // Separate from the results_side_panel_coordinator because this controls
