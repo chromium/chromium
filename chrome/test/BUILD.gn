@@ -10962,6 +10962,7 @@ if (!is_android && !is_chromeos_device) {
       sources += [
         "../browser/ui/views/default_link_capturing_interactive_uitest.cc",
         "../browser/ui/views/media_preview/permission_prompt_preview_browsertest.cc",
+        "../browser/ui/views/web_apps/navigation_capturing_interactive_uitest.cc",
       ]
     }
 

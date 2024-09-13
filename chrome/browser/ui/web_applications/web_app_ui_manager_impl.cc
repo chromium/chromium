@@ -570,7 +570,7 @@ void WebAppUiManagerImpl::MaybeCreateEnableSupportedLinksInfobar(
 }
 
 void WebAppUiManagerImpl::MaybeShowIPHPromoForAppsLaunchedViaLinkCapturing(
-    content::WebContents* web_contents,
+    Browser* browser,
     Profile* profile,
     const std::string& app_id) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
@@ -582,7 +582,7 @@ void WebAppUiManagerImpl::MaybeShowIPHPromoForAppsLaunchedViaLinkCapturing(
   }
 
   const Browser* app_browser =
-      AppBrowserController::FindForWebApp(*profile, app_id);
+      browser ? browser : AppBrowserController::FindForWebApp(*profile, app_id);
   if (!app_browser) {
     return;
   }

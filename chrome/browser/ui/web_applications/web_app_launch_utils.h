@@ -11,6 +11,7 @@
 #include <optional>
 #include <string>
 
+#include "base/memory/stack_allocated.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
@@ -44,6 +45,17 @@ enum class LaunchedAppType {
   kMaxValue = kCrafted,
 };
 
+// Returns information useful for the browser to show UI affordances, provided a
+// web app handles the navigation.
+struct AppNavigationResult {
+  Browser* browser = nullptr;
+  int tab_index = -1;
+  bool enqueue_launch_params = false;
+  bool show_iph = false;
+
+  STACK_ALLOCATED();
+};
+
 std::optional<webapps::AppId> GetWebAppForActiveTab(const Browser* browser);
 
 // Clears navigation history prior to user entering app scope.
@@ -73,6 +85,13 @@ std::unique_ptr<AppBrowserController> MaybeCreateAppBrowserController(
     Browser* browser);
 
 void MaybeAddPinnedHomeTab(Browser* browser, const std::string& app_id);
+
+// Shows the navigation capturing IPH if the situation warrants it (e.g. the
+// WebAppProvider is available, guardrail metrics are not suppressing it and
+// the IPH is permitted to show).
+void MaybeShowNavigationCaptureIph(webapps::AppId app_id,
+                                   Profile* profile,
+                                   Browser* browser);
 
 // This creates appropriate CreateParams for creating a PWA window or PWA popup
 // window.
@@ -112,16 +131,16 @@ void LaunchWebApp(apps::AppLaunchParams params,
                   WithAppResources& app_resources,
                   LaunchWebAppDebugValueCallback callback);
 
-// Returns a Browser, tab index, and a bool indicating whether web application
-// launch params should be enqueued later, after WebContents creation. See
-// https://wicg.github.io/web-app-launch/#launchqueue-interface. May create a
-// browser instance, an app window or a new tab as needed.
+// Returns whether the navigation should be handled by a web app. If so, returns
+// an optional AppNavigationResult with the details pertinent to how to handle
+// it. See https://wicg.github.io/web-app-launch/#launchqueue-interface. This
+// function may create a browser instance, an app window or a new tab as needed.
 //
 // A value of std::nullopt means that the web app system cannot handle the
 // navigation, and as such, would allow the "normal" workflow to identify a
 // browser to perform navigation in to proceed. See Navigate() for more
 // information.
-std::optional<std::tuple<Browser*, int, bool>> MaybeHandleAppNavigation(
+std::optional<AppNavigationResult> MaybeHandleAppNavigation(
     const NavigateParams& navigate_params);
 
 // Will enqueue the given url in the launch params for this web contents. Does

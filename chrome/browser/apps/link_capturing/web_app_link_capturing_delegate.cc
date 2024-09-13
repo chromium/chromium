@@ -44,7 +44,7 @@ void LaunchAppAndMaybeTriggerIPH(base::WeakPtr<Profile> profile,
                   WebAppProvider::GetForWebApps(profile.get());
               provider->ui_manager()
                   .MaybeShowIPHPromoForAppsLaunchedViaLinkCapturing(
-                      web_contents.get(), profile.get(), app_id);
+                      /*browser=*/nullptr, profile.get(), app_id);
             }
 
             std::move(callback).Run();

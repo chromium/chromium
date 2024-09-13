@@ -730,14 +730,13 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
   // TODO(crbug.com/364657540): Revisit integration with web_application system
   // later if needed.
   int singleton_index;
-  bool enqueue_launch_params = false;
-  std::optional<std::tuple<Browser*, int, bool>> app_navigation_result;
+  std::optional<web_app::AppNavigationResult> app_navigation_result;
 #if !BUILDFLAG(IS_ANDROID)
   app_navigation_result = web_app::MaybeHandleAppNavigation(*params);
 #endif  // !BUILDFLAG(IS_ANDROID)
   if (app_navigation_result.has_value()) {
-    std::tie(params->browser, singleton_index, enqueue_launch_params) =
-        app_navigation_result.value();
+    params->browser = app_navigation_result->browser;
+    singleton_index = app_navigation_result->tab_index;
   } else {
     std::tie(params->browser, singleton_index) =
         GetBrowserAndTabForDisposition(*params);
@@ -888,7 +887,8 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
 #if !BUILDFLAG(IS_ANDROID)
   // At this point, |contents_to_navigate_or_insert| is guaranteed to exist and
   // be non-NULL, so launch params can be enqueued in the correct web contents.
-  if (enqueue_launch_params) {
+  if (app_navigation_result.has_value() &&
+      app_navigation_result->enqueue_launch_params) {
     CHECK(contents_to_navigate_or_insert);
     CHECK(params->browser);
     CHECK(web_app::AppBrowserController::IsWebApp(params->browser));
@@ -994,6 +994,12 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
         params->source_contents->Close();
       }
     }
+  }
+
+  if (params->browser && params->browser->app_controller() &&
+      app_navigation_result.has_value()) {
+    params->browser->app_controller()->DidStartNavigation(
+        app_navigation_result.value(), *params);
   }
 
   params->navigated_or_inserted_contents = contents_to_navigate_or_insert;

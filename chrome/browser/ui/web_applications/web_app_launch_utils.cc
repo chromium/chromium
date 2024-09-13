@@ -522,6 +522,19 @@ void MaybeAddPinnedHomeTab(Browser* browser, const std::string& app_id) {
   }
 }
 
+void MaybeShowNavigationCaptureIph(webapps::AppId app_id,
+                                   Profile* profile,
+                                   Browser* browser) {
+  // Prevent ChromeOS from reaching this function in tests.
+#if !BUILDFLAG(IS_CHROMEOS)
+  web_app::WebAppProvider* provider =
+      web_app::WebAppProvider::GetForWebApps(profile);
+  CHECK(provider);
+  provider->ui_manager().MaybeShowIPHPromoForAppsLaunchedViaLinkCapturing(
+      browser, profile, app_id);
+#endif
+}
+
 Browser::CreateParams CreateParamsForApp(const webapps::AppId& app_id,
                                          bool is_popup,
                                          bool trusted_source,
@@ -843,7 +856,7 @@ void LaunchWebApp(apps::AppLaunchParams params,
                      container, base::Value(std::move(debug_value))));
 }
 
-std::optional<std::tuple<Browser*, int, bool>> MaybeHandleAppNavigation(
+std::optional<AppNavigationResult> MaybeHandleAppNavigation(
     const NavigateParams& params) {
   Profile* profile = params.initiating_profile;
   if (params.open_pwa_window_if_possible) {
@@ -858,8 +871,9 @@ std::optional<std::tuple<Browser*, int, bool>> MaybeHandleAppNavigation(
       // This isn't a supported way to launch isolated apps, so we can cancel
       // the navigation, but if we want to support it in the future we'll need
       // to block until `WebAppRegistrar` is loaded.
-      return std::tuple(/*browser=*/nullptr, -1,
-                        /*enqueue_launch_params=*/false);
+      return {AppNavigationResult{/*browser=*/nullptr, -1,
+                                  /*enqueue_launch_params=*/false,
+                                  /*show_iph=*/false}};
     }
     if (app_id) {
       // Reuse the existing browser for in-app same window navigations.
@@ -868,8 +882,9 @@ std::optional<std::tuple<Browser*, int, bool>> MaybeHandleAppNavigation(
           web_app::AppBrowserController::IsForWebApp(params.browser, *app_id);
       if (navigating_same_app) {
         if (params.disposition == WindowOpenDisposition::CURRENT_TAB) {
-          return std::tuple(params.browser, -1,
-                            /*enqueue_launch_params=*/false);
+          return {AppNavigationResult{params.browser, -1,
+                                      /*enqueue_launch_params=*/false,
+                                      /*show_iph=*/false}};
         }
 
         // If the browser window does not yet have any tabs, and we are
@@ -880,8 +895,9 @@ std::optional<std::tuple<Browser*, int, bool>> MaybeHandleAppNavigation(
         bool browser_has_no_tabs =
             params.browser && params.browser->tab_strip_model()->empty();
         if (navigating_new_tab && browser_has_no_tabs) {
-          return std::tuple(params.browser, -1,
-                            /*enqueue_launch_params=*/false);
+          return {AppNavigationResult{params.browser, -1,
+                                      /*enqueue_launch_params=*/false,
+                                      /*show_iph=*/false}};
         }
       }
 
@@ -905,7 +921,9 @@ std::optional<std::tuple<Browser*, int, bool>> MaybeHandleAppNavigation(
                 params.window_features.bounds, profile, params.user_gesture);
         browser_params.initial_origin_specified = GetOriginSpecified(params);
         Browser* browser = Browser::Create(browser_params);
-        return std::tuple(browser, -1, /*enqueue_launch_params=*/false);
+        return {AppNavigationResult{browser, -1,
+                                    /*enqueue_launch_params=*/false,
+                                    /*show_iph=*/false}};
       }
     }
   }
@@ -947,7 +965,9 @@ std::optional<std::tuple<Browser*, int, bool>> MaybeHandleAppNavigation(
       Browser* app_window = CreateWebAppWindowFromNavigationParams(
           *current_browser_app_id, params,
           params.disposition == WindowOpenDisposition::NEW_POPUP);
-      return std::tuple(app_window, -1, /*enqueue_launch_params=*/false);
+      return {AppNavigationResult{app_window, -1,
+                                  /*enqueue_launch_params=*/false,
+                                  /*show_iph=*/false}};
     }
     return std::nullopt;
   }
@@ -961,7 +981,9 @@ std::optional<std::tuple<Browser*, int, bool>> MaybeHandleAppNavigation(
           OpensInStandaloneExperience(*controlling_app_id)) {
         Browser* app_window =
             CreateWebAppWindowFromNavigationParams(*controlling_app_id, params);
-        return std::tuple(app_window, -1, /*enqueue_launch_params=*/true);
+        return {AppNavigationResult{app_window, -1,
+                                    /*enqueue_launch_params=*/true,
+                                    /*show_iph=*/true}};
       }
 
       const webapps::AppId& current_app_id = *current_browser_app_id;
@@ -974,11 +996,15 @@ std::optional<std::tuple<Browser*, int, bool>> MaybeHandleAppNavigation(
         if (!params.browser->app_controller()->ShouldHideNewTabButton()) {
           // Apps that support tabbed mode can open a new tab in the current app
           // browser itself.
-          return std::tuple(params.browser, -1, /*enqueue_launch_params=*/true);
+          return {AppNavigationResult{params.browser, -1,
+                                      /*enqueue_launch_params=*/true,
+                                      /*show_iph=*/true}};
         }
           Browser* app_window =
               CreateWebAppWindowFromNavigationParams(current_app_id, params);
-          return std::tuple(app_window, -1, /*enqueue_launch_params=*/true);
+          return {AppNavigationResult{app_window, -1,
+                                      /*enqueue_launch_params=*/true,
+                                      /*show_iph=*/true}};
       }
     }
     return std::nullopt;
@@ -1029,8 +1055,9 @@ std::optional<std::tuple<Browser*, int, bool>> MaybeHandleAppNavigation(
         // call as no navigation happens, and `Navigate()` early exits.
         MaybeEnqueueLaunchParams(contents, app_id, params.url,
                                  /*wait_for_navigation_to_complete=*/false);
-        return std::tuple(/*browser=*/nullptr, -1,
-                          /*enqueue_launch_params=*/false);
+        return {AppNavigationResult{/*browser= */ nullptr, -1,
+                                    /*enqueue_launch_params=*/false,
+                                    /*show_iph=*/true}};
       }
 
       // Fallback to creating a new instance.
@@ -1040,9 +1067,10 @@ std::optional<std::tuple<Browser*, int, bool>> MaybeHandleAppNavigation(
     // Navigate existing.
     if (client_mode == LaunchHandler::ClientMode::kNavigateExisting) {
       if (existing_browser_and_tab) {
-        return std::tuple(existing_browser_and_tab->first,
-                          existing_browser_and_tab->second,
-                          /*enqueue_launch_params=*/true);
+        return {AppNavigationResult{existing_browser_and_tab->first,
+                                    existing_browser_and_tab->second,
+                                    /*enqueue_launch_params=*/true,
+                                    /*show_iph=*/true}};
       }
       client_mode = LaunchHandler::ClientMode::kNavigateNew;
     }
@@ -1061,7 +1089,12 @@ std::optional<std::tuple<Browser*, int, bool>> MaybeHandleAppNavigation(
     } else {
       app_window = CreateWebAppWindowFromNavigationParams(app_id, params);
     }
-    return std::tuple(app_window, -1, /*enqueue_launch_params=*/true);
+    // TODO(crbug.com/359224477): In all but one case we set `show_iph` to the
+    // same value as `enqueue_launch_params`. Maybe there is an opportunity to
+    // simplify this once the WebAppLaunchProcess logic has been fixed.
+    return {AppNavigationResult{app_window, -1,
+                                /*enqueue_launch_params=*/true,
+                                /*show_iph=*/true}};
   }
   return std::nullopt;
 }

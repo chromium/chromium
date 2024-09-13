@@ -162,7 +162,7 @@ class WebAppUiManagerImpl : public BrowserListObserver,
       const std::string& launch_name) override;
 
   void MaybeShowIPHPromoForAppsLaunchedViaLinkCapturing(
-      content::WebContents* web_contents,
+      Browser* browser,
       Profile* profile,
       const std::string& app_id) override;
 

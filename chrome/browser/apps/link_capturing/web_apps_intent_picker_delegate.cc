@@ -217,7 +217,7 @@ void WebAppsIntentPickerDelegate::LaunchApp(content::WebContents* web_contents,
       provider_->ui_manager().MaybeCreateEnableSupportedLinksInfobar(
           web_contents, launch_name);
       provider_->ui_manager().MaybeShowIPHPromoForAppsLaunchedViaLinkCapturing(
-          web_contents, &profile_.get(), launch_name);
+          /*browser=*/nullptr, &profile_.get(), launch_name);
     }
   } else if (entry_type == apps::PickerEntryType::kMacOs) {
 #if BUILDFLAG(IS_MAC)
