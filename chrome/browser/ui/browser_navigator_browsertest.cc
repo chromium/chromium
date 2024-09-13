@@ -2331,8 +2331,6 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, PopinHttpNavigation) {
 
   // Open popin and verify it's visible.
   content::WebContentsAddedObserver new_tab_observer;
-  content::TestNavigationObserver nav_observer(nullptr);
-  nav_observer.StartWatchingNewWebContents();
   EXPECT_TRUE(content::ExecJs(
       tab_web_contents,
       "window.open('" + secure_url.spec() + "', '_blank', 'popin')"));
@@ -2343,10 +2341,11 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, PopinHttpNavigation) {
   EXPECT_TRUE(popin_browser_window->IsVisible());
 
   // Navigating to HTTP page fails.
-  nav_observer.Wait();
+  content::TestNavigationObserver nav_observer(popin_web_contents);
   EXPECT_TRUE(content::ExecJs(
       popin_web_contents, "window.location = '" + insecure_url.spec() + "';"));
-  EXPECT_EQ(secure_url.spec(),
+  nav_observer.Wait();
+  EXPECT_EQ("chrome-error://chromewebdata/",
             content::EvalJs(popin_web_contents, "window.location.href")
                 .ExtractString());
 }
@@ -2392,8 +2391,6 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, PopinHttpRedirectNavigation) {
 
   // Open popin and verify it's visible.
   content::WebContentsAddedObserver new_tab_observer;
-  content::TestNavigationObserver nav_observer(nullptr);
-  nav_observer.StartWatchingNewWebContents();
   EXPECT_TRUE(content::ExecJs(
       tab_web_contents,
       "window.open('" + secure_url.spec() + "', '_blank', 'popin')"));
@@ -2404,11 +2401,12 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, PopinHttpRedirectNavigation) {
   EXPECT_TRUE(popin_browser_window->IsVisible());
 
   // Navigating to HTTPS page that redirects to HTTP which fails.
-  nav_observer.Wait();
+  content::TestNavigationObserver nav_observer(popin_web_contents);
   EXPECT_TRUE(content::ExecJs(popin_web_contents,
                               "window.location = '" + secure_url.spec() +
                                   "?redirect=" + insecure_url.spec() + "';"));
-  EXPECT_EQ(secure_url.spec(),
+  nav_observer.Wait();
+  EXPECT_EQ("chrome-error://chromewebdata/",
             content::EvalJs(popin_web_contents, "window.location.href")
                 .ExtractString());
 }
