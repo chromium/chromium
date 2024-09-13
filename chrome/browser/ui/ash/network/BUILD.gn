@@ -127,7 +127,6 @@ source_set("browser_tests") {
     ":network",
     "//base/test:test_support",
     "//chrome/browser",
-    "//chrome/browser/chromeos",
     "//chrome/browser/chromeos/network",
     "//chrome/browser/ui",
     "//chrome/common",

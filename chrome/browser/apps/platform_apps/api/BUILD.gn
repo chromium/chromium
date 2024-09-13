@@ -121,6 +121,5 @@ source_set("api") {
   visibility += [
     ":api_registration",
     "//chrome/browser/ash",
-    "//chrome/browser/chromeos",
   ]
 }

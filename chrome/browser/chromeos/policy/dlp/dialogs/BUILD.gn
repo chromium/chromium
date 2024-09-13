@@ -19,7 +19,6 @@ static_library("dialogs") {
   deps = [
     "//base",
     "//build:chromeos_buildflags",
-    "//chrome/browser/chromeos/policy/dlp",
     "//components/strings:components_strings",
     "//components/vector_icons",
     "//ui/aura",
@@ -36,8 +35,6 @@ static_library("dialogs") {
   if (is_chromeos_ash) {
     deps += [ "//ash/public/cpp" ]
   }
-
-  allow_circular_includes_from = [ "//chrome/browser/chromeos/policy/dlp" ]
 }
 
 static_library("test_support") {

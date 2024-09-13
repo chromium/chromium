@@ -1206,7 +1206,6 @@ source_set("unit_tests") {
     "//chrome/browser/ash/usb",
     "//chrome/browser/ash/wallpaper_handlers",
     "//chrome/browser/ash/wallpaper_handlers:test_support",
-    "//chrome/browser/chromeos",
     "//chrome/browser/chromeos/drivefs",
     "//chrome/browser/chromeos/launcher_search:search_util",
     "//chrome/browser/enterprise/connectors/test:test_support",

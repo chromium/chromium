@@ -84,7 +84,6 @@ source_set("browser_tests") {
     "//chrome/browser/ash/platform_keys",
     "//chrome/browser/ash/platform_keys/key_permissions",
     "//chrome/browser/ash/policy/affiliation:test_support",
-    "//chrome/browser/chromeos",
     "//chrome/browser/chromeos/platform_keys",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",

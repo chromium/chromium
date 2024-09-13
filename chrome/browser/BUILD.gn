@@ -6082,13 +6082,13 @@ static_library("browser") {
       "webshare/chromeos/sharesheet_client.cc",
       "webshare/chromeos/sharesheet_client.h",
     ]
+
     deps += [
       "//ash/webui/projector_app/public/cpp",
       "//ash/webui/settings/public/constants",
       "//chrome/browser/apps/app_service/app_install:implementation",
       "//chrome/browser/apps/app_service/app_install:navigation_throttle",
       "//chrome/browser/apps/browser_instance",
-      "//chrome/browser/chromeos",
       "//chrome/browser/chromeos/app_mode",
       "//chrome/browser/chromeos/arc",
       "//chrome/browser/chromeos/cros_apps",
@@ -6128,6 +6128,7 @@ static_library("browser") {
       "//chromeos/components/disks:prefs",
       "//chromeos/components/kiosk",
       "//chromeos/components/magic_boost/public/cpp:cpp",
+      "//chromeos/components/mahi/public/cpp",
       "//chromeos/components/mgs",
       "//chromeos/components/onc:onc",
       "//chromeos/components/quick_answers/public/cpp:prefs",
@@ -6169,7 +6170,6 @@ static_library("browser") {
     # "browser_public_dependencies".
     allow_circular_includes_from += [
       "//chrome/browser/apps/browser_instance",
-      "//chrome/browser/chromeos",
       "//chrome/browser/chromeos/app_mode",
       "//chrome/browser/chromeos/arc",
       "//chrome/browser/chromeos/drivefs",

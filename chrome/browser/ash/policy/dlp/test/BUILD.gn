@@ -29,7 +29,6 @@ static_library("test_support") {
     "//chrome/browser/ash/fileapi",
     "//chrome/browser/ash/policy/dlp",
     "//chrome/browser/ash/policy/dlp/dialogs",
-    "//chrome/browser/chromeos",
     "//chrome/browser/chromeos/policy/dlp",
     "//chrome/browser/chromeos/policy/dlp/dialogs",
     "//chrome/browser/chromeos/policy/dlp/test:test_support",

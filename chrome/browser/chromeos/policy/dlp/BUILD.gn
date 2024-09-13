@@ -81,6 +81,7 @@ static_library("dlp") {
     "//build:chromeos_buildflags",
     "//chrome/app:generated_resources",
     "//chrome/browser:browser_process",
+    "//chrome/browser/chromeos/policy/dlp/dialogs",
     "//chrome/browser/favicon",
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
@@ -128,6 +129,9 @@ static_library("dlp") {
     "//ui/views",
     "//url",
   ]
+
+  allow_circular_includes_from =
+      [ "//chrome/browser/chromeos/policy/dlp/dialogs" ]
 
   if (is_chromeos_ash) {
     deps += [

@@ -192,7 +192,6 @@ static_library("secure_channel") {
     "//chrome/browser/ash",
     "//chrome/browser/ash/eche_app",
     "//chrome/browser/ash/secure_channel",
-    "//chrome/browser/chromeos",
     "//chromeos/ash/services/secure_channel/public/cpp/client:unit_tests",
   ]
 }

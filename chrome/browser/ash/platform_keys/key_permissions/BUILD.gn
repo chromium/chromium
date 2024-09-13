@@ -65,7 +65,6 @@ static_library("test_support") {
   deps = [
     ":key_permissions",
     "//base",
-    "//chrome/browser/chromeos",
     "//chrome/browser/chromeos/platform_keys",
     "//components/keyed_service/core",
     "//content/public/browser",
@@ -87,7 +86,6 @@ source_set("browser_tests") {
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/platform_keys",
     "//chrome/browser/ash/platform_keys:test_support",
-    "//chrome/browser/chromeos",
     "//chrome/browser/chromeos/platform_keys",
     "//chrome/browser/profiles:profile",
     "//chrome/common",
@@ -117,7 +115,6 @@ source_set("unit_tests") {
     "//chrome/browser/ash/app_list/arc:test_support",
     "//chrome/browser/ash/platform_keys",
     "//chrome/browser/ash/platform_keys:test_support",
-    "//chrome/browser/chromeos",
     "//chrome/browser/chromeos/platform_keys",
     "//chrome/test:test_support",
     "//components/policy/core/common",

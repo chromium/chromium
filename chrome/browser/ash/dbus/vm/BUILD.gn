@@ -43,7 +43,6 @@ static_library("vm") {
     "//chrome/browser/ash/plugin_vm",
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/profiles",
-    "//chrome/browser/chromeos",
     "//chrome/browser/chromeos/policy/dlp",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/views/select_file_dialog_extension",

@@ -19,7 +19,6 @@ source_set("magic_boost") {
   deps = [
     ":magic_boost_constants",
     "//base",
-    "//chrome/browser/chromeos",
     "//chrome/browser/resources:component_extension_resources",
     "//chrome/browser/ui/chromeos/read_write_cards",
     "//chrome/browser/ui/views/editor_menu:utils",

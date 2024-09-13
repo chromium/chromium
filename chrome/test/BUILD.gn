@@ -886,11 +886,11 @@ static_library("test_support") {
     deps += [
       "base/chromeos/crosier:proto",
       "//base/test:proto_test_support",
-      "//chrome/browser/chromeos",
       "//chrome/browser/chromeos/policy/dlp",
       "//chrome/browser/ui/chromeos",
       "//chromeos/components/mgs",
       "//chromeos/dbus/constants",
+      "//chromeos/dbus/power",
     ]
     public_deps += [ "//chromeos/constants" ]
   }
@@ -3537,7 +3537,6 @@ if (!is_android) {
 
     if (is_chromeos) {
       deps += [
-        "//chrome/browser/chromeos",
         "//chrome/browser/chromeos/cros_apps:all_browser_tests",
         "//chrome/browser/chromeos/video_conference",
         "//chrome/browser/ui/chromeos",
@@ -5577,7 +5576,6 @@ if (is_chromeos_lacros) {
       "//chrome/browser/apps/link_capturing:app_service_browser_tests",
       "//chrome/browser/apps/link_capturing:features",
       "//chrome/browser/apps/link_capturing:test_support",
-      "//chrome/browser/chromeos",
       "//chrome/browser/chromeos:lacros_chrome_browsertests",
       "//chrome/browser/chromeos/app_mode",
       "//chrome/browser/chromeos/enterprise/cloud_storage",
@@ -8437,7 +8435,6 @@ test("unit_tests") {
     ]
 
     deps += [
-      "//chrome/browser/chromeos",
       "//chrome/browser/chromeos/reporting",
       "//chrome/browser/smart_card:unit_tests",
       "//chrome/browser/ui/chromeos/read_write_cards",
@@ -8663,7 +8660,6 @@ test("unit_tests") {
       "//chrome/browser/ash/system_web_apps/apps/media_app",
       "//chrome/browser/ash/system_web_apps/test_support",
       "//chrome/browser/ash/wallpaper_handlers:test_support",
-      "//chrome/browser/chromeos",
       "//chrome/browser/chromeos/launcher_search:search_util",
       "//chrome/browser/enterprise/connectors/device_trust/attestation/ash",
       "//chrome/browser/metrics/structured:features",
@@ -11557,7 +11553,6 @@ if (!is_android && !is_chromeos_device) {
     if (is_chromeos) {
       deps += [
         ":print_preview_test_support",
-        "//chrome/browser/chromeos",
         "//chrome/browser/chromeos:interactive_ui_tests",
         "//chrome/browser/smart_card:interactive_ui_tests",
         "//chrome/browser/ui/chromeos:test_support",

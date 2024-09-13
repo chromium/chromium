@@ -3064,7 +3064,6 @@ static_library("ui") {
     # Any circular includes must depend on the target "//chrome/browser:browser_public_dependencies".
     allow_circular_includes_from += [
       "//chrome/browser/apps/browser_instance",
-      "//chrome/browser/chromeos",
       "//chrome/browser/chromeos/app_mode",
       "//chrome/browser/chromeos/arc",
       "//chrome/browser/chromeos/extensions/login_screen/login/cleanup",
@@ -3122,7 +3121,6 @@ static_library("ui") {
       "//ash/webui/settings/public/constants:mojom",
       "//chrome/app:generated_resources",
       "//chrome/browser/apps/browser_instance",
-      "//chrome/browser/chromeos",
       "//chrome/browser/chromeos/app_mode",
       "//chrome/browser/chromeos/arc",
       "//chrome/browser/chromeos/container_app",
@@ -3151,6 +3149,7 @@ static_library("ui") {
       "//chromeos/version",
       "//components/account_manager_core:account_manager_core",
       "//components/enterprise/data_controls/core/browser",
+      "//components/enterprise/data_controls/core/browser:dlp_policy_event_proto",
       "//components/metrics/structured:structured_events",
       "//ui/chromeos/styles:cros_styles_views",
       "//ui/chromeos/styles:cros_tokens_color_mappings",
