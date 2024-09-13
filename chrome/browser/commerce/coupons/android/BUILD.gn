@@ -1,0 +1,48 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+android_library("java") {
+  sources = [ "java/src/org/chromium/chrome/browser/commerce/coupons/DiscountsButtonController.java" ]
+  deps = [
+    ":java_resources",
+    "//base:supplier_java",
+    "//chrome/browser/commerce/android:java",
+    "//chrome/browser/tab:java",
+    "//chrome/browser/ui/android/toolbar:java",
+    "//chrome/browser/user_education:java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
+    "//ui/android:ui_java",
+  ]
+
+  resources_package = "org.chromium.chrome.browser.commerce.coupons"
+}
+
+android_resources("java_resources") {
+  deps = [
+    "//chrome/android:chrome_app_java_resources",
+    "//components/strings:components_strings_grd",
+  ]
+}
+
+robolectric_library("junit") {
+  testonly = true
+  resources_package = "org.chromium.chrome.browser.commerce.coupons"
+
+  sources = [ "junit/src/org/chromium/chrome/browser/commerce/coupons/DiscountsButtonControllerTest.java" ]
+
+  deps = [
+    ":java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//base:supplier_java",
+    "//chrome/browser/commerce/android:java",
+    "//chrome/browser/tab:java",
+    "//third_party/junit:junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_no_recycler_view_java",
+  ]
+}

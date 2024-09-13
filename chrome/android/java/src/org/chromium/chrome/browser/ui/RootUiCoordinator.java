@@ -53,6 +53,7 @@ import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.commerce.CommerceBottomSheetContentController;
 import org.chromium.chrome.browser.commerce.CommerceBottomSheetContentCoordinator;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
+import org.chromium.chrome.browser.commerce.coupons.DiscountsButtonController;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelManager;
@@ -1519,6 +1520,17 @@ public class RootUiCoordinator
                             mModalDialogManagerSupplier.get(),
                             mActivityTabProvider,
                             PageInfoSharingControllerImpl.getInstance());
+
+            if (ChromeFeatureList.sEnableDiscountInfoApi.isEnabled()) {
+                DiscountsButtonController discountsButtonController =
+                        new DiscountsButtonController(
+                                mActivity,
+                                mActivityTabProvider,
+                                mModalDialogManagerSupplier.get(),
+                                this::getCommerceBottomSheetContentController);
+                adaptiveToolbarButtonController.addButtonVariant(
+                        AdaptiveToolbarButtonVariant.DISCOUNTS, discountsButtonController);
+            }
 
             adaptiveToolbarButtonController.addButtonVariant(
                     AdaptiveToolbarButtonVariant.NEW_TAB, newTabButtonController);
