@@ -4157,7 +4157,7 @@ deps = {
 
   'src/chrome/browser/platform_experience/win': {
       'url': Var('chrome_git') + '/chrome/browser/platform_experience/win.git' + '@' +
-        'f6cd59190f0464d23f270686841db654fd2a899e',
+        '7b509f7d67224a7305725b3de19fc18976dc319a',
       'condition': 'checkout_src_internal',
   },
 
