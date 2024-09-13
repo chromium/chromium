@@ -38,7 +38,7 @@ inline constexpr char kCompanionAppExecutableName[] = "enterprise_companion";
 #endif
 
 // Uninstall switch for the enterprise companion app.
-inline constexpr char kUninstallCompanionAppSwtich[] = "uninstall";
+inline constexpr char kUninstallCompanionAppSwitch[] = "uninstall";
 
 // A suffix appended to the updater executable name before any file extension.
 extern const char kExecutableSuffix[];

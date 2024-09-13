@@ -1627,7 +1627,7 @@ void UninstallEnterpriseCompanionApp() {
 
   base::CommandLine command_line(
       install_dir->AppendASCII(kCompanionAppExecutableName));
-  command_line.AppendSwitch(kUninstallCompanionAppSwtich);
+  command_line.AppendSwitch(kUninstallCompanionAppSwitch);
   base::Process uninstall_process = base::LaunchProcess(command_line, {});
   if (!uninstall_process.IsValid()) {
     VLOG(1) << "Failed to launch enterprise companion app for uninstall, "

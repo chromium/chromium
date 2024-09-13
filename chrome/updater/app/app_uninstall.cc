@@ -108,7 +108,7 @@ namespace {
     VLOG(1) << __func__ << ": Companion app not found, skip the uninstall.";
     return kErrorOk;
   }
-  command_line.AppendSwitch(kUninstallCompanionAppSwtich);
+  command_line.AppendSwitch(kUninstallCompanionAppSwitch);
   int exit_code = -1;
   std::string output;
   if (!base::GetAppOutputWithExitCode(command_line, &output, &exit_code)) {
