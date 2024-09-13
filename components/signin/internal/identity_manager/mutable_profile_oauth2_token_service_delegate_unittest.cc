@@ -10,12 +10,14 @@
 #include <utility>
 #include <vector>
 
+#include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -48,6 +50,7 @@
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/test/test_network_connection_tracker.h"
+#include "sql/statement.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -59,6 +62,7 @@
 using TokenWithBindingKey = TokenServiceTable::TokenWithBindingKey;
 
 namespace {
+constexpr char kTestTokenDatabase[] = "TestTokenDatabase";
 constexpr char kNoBindingChallenge[] = "";
 }
 
@@ -85,6 +89,7 @@ class MutableProfileOAuth2TokenServiceDelegateTest
         revoke_all_tokens_on_load_(RevokeAllTokensOnLoad::kNo) {}
 
   void SetUp() override {
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     AccountTrackerService::RegisterPrefs(pref_service_.registry());
     PrimaryAccountManager::RegisterProfilePrefs(pref_service_.registry());
     client_ = std::make_unique<TestSigninClient>(&pref_service_);
@@ -95,18 +100,25 @@ class MutableProfileOAuth2TokenServiceDelegateTest
   }
 
   void TearDown() override {
-    token_web_data_->ShutdownDatabase();
-    base::RunLoop().RunUntilIdle();
+    UnloadTokenDatabase();
     if (oauth2_service_delegate_) {
       test_service_observation_.Reset();
       oauth2_service_delegate_->Shutdown();
     }
   }
 
+  void UnloadTokenDatabase() {
+    if (token_web_data_) {
+      token_web_data_->ShutdownDatabase();
+      token_web_data_.reset();
+    }
+    base::RunLoop().RunUntilIdle();
+  }
+
   void LoadTokenDatabase() {
-    base::FilePath path(WebDatabase::kInMemoryPath);
     scoped_refptr<WebDatabaseService> web_database = new WebDatabaseService(
-        path, base::SingleThreadTaskRunner::GetCurrentDefault(),
+        temp_dir_.GetPath().AppendASCII(kTestTokenDatabase),
+        base::SingleThreadTaskRunner::GetCurrentDefault(),
         base::SingleThreadTaskRunner::GetCurrentDefault());
     web_database->AddTable(std::make_unique<TokenServiceTable>());
     web_database->LoadDatabase(os_crypt_.get());
@@ -278,6 +290,7 @@ class MutableProfileOAuth2TokenServiceDelegateTest
   TestingOAuth2AccessTokenManagerConsumer consumer_;
   sync_preferences::TestingPrefServiceSyncable pref_service_;
   AccountTrackerService account_tracker_service_;
+  base::ScopedTempDir temp_dir_;
   std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_;
   scoped_refptr<TokenWebData> token_web_data_;
   std::unique_ptr<WDResult<TokenResult>> token_web_data_result_;
@@ -1441,6 +1454,155 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, ExtractCredentials) {
   EXPECT_FALSE(oauth2_service_delegate_->RefreshTokenIsAvailable(account_id));
   EXPECT_TRUE(other_delegate->RefreshTokenIsAvailable(account_id));
   EXPECT_EQ("token", other_delegate->GetRefreshToken(account_id));
+}
+
+TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, TokenReencryption) {
+  const CoreAccountId primary_account =
+      CoreAccountId::FromGaiaId("primaryaccount");
+
+  // Initial clean-up, since SetUp initializes a database. Make sure that's
+  // closed so this test has full control over feature configuration.
+  UnloadTokenDatabase();
+
+  // This closure sets up the environment for the test, and also creates a
+  // cleanup at the end of the scope of the test.
+  auto SetUpTestAndReturnScopedCleanup =
+      [this](bool new_encryption_enabled, bool expect_reencrypt,
+             const std::string_view key_prefix,
+             base::HistogramBase::Count expected_writes)
+      -> base::ScopedClosureRunner {
+    auto histograms = std::make_unique<base::HistogramTester>();
+    auto features = std::make_unique<base::test::ScopedFeatureList>();
+    features->InitWithFeatureState(features::kUseNewEncryptionKeyForWebData,
+                                   new_encryption_enabled);
+
+    LoadTokenDatabase();
+    InitializeOAuth2ServiceDelegate(
+        signin::AccountConsistencyMethod::kDisabled);
+
+    return base::ScopedClosureRunner(base::BindLambdaForTesting(
+        [this, key_prefix, expect_reencrypt, expected_writes,
+         histograms = std::move(histograms), feature = std::move(features)]() {
+          UnloadTokenDatabase();
+          {
+            // The APIs available via WebData always return plaintext data so
+            // the only way to verify the ciphertext is to inspect the database
+            // manually. This is safe to do here because the database has been
+            // unloaded above.
+            sql::Database db;
+            ASSERT_TRUE(
+                db.Open(temp_dir_.GetPath().AppendASCII(kTestTokenDatabase)));
+            sql::Statement s(db.GetUniqueStatement(
+                "SELECT encrypted_token FROM token_service"));
+            ASSERT_TRUE(s.Step());
+            std::string encrypted_data;
+            ASSERT_TRUE(s.ColumnBlobAsString(0, &encrypted_data));
+            EXPECT_TRUE(base::StartsWith(encrypted_data, key_prefix,
+                                         base::CompareCase::SENSITIVE));
+            // Should only be one row, the "invalid-token" should be deleted by
+            // the time the database is unloaded, and never re-encrypted.
+            ASSERT_FALSE(s.Step());
+          }
+          test_service_observation_.Reset();
+          oauth2_service_delegate_->Shutdown();
+          histograms->ExpectUniqueSample("Signin.ReencryptTokensInDb",
+                                         expect_reencrypt, 1u);
+          histograms->ExpectUniqueSample("Signin.TokenTable.SetTokenResult",
+                                         /*kSuccess*/ 0, expected_writes);
+        }));
+  };
+
+  {
+    // Expect two writes. They are both from the calls to `AddAuthTokenManually`
+    // to set up the database.
+    auto cleanup = SetUpTestAndReturnScopedCleanup(
+        /*new_encryption_enabled=*/false, /*expect_reencrypt=*/false,
+        os_crypt_async::kOsCryptSyncCompatibleTestKeyPrefix,
+        /*expected_writes=*/2);
+
+    // Verify DB is clean.
+    ASSERT_TRUE(oauth2_service_delegate_->GetAccounts().empty());
+    AddAuthTokenManually("AccountId-" + primary_account.ToString(),
+                         "refresh_token");
+    // Add an invalid token. This will be removed during
+    // LoadAllCredentialsIntoMemory.
+    AddAuthTokenManually("invalid-token", "foo");
+
+    ResetObserverCounts();
+    oauth2_service_delegate_->LoadCredentials(primary_account,
+                                              /*is_syncing=*/false);
+    WaitForRefreshTokensLoaded();
+
+    EXPECT_EQ(1, tokens_loaded_count_);
+    EXPECT_EQ(1, token_available_count_);
+    EXPECT_TRUE(
+        oauth2_service_delegate_->RefreshTokenIsAvailable(primary_account));
+  }
+  // In the second part of the test, load the same database, but with new
+  // encryption enabled. This should migrate the data to the new key.
+  {
+    // Expect two writes. First one is from `AddAuthTokenManually` for the
+    // invalid token, and the second is from the re-encryption of the valid
+    // token. Two writes only indicates that the invalid token was not
+    // re-encrypted to the database, as expected.
+    auto cleanup = SetUpTestAndReturnScopedCleanup(
+        /*new_encryption_enabled=*/true, /*expect_reencrypt=*/true,
+        os_crypt_async::kDefaultTestKeyPrefix, /*expected_writes=*/2);
+
+    // Add another invalid token. This will be not re-encrypted, and removed
+    // during LoadAllCredentialsIntoMemory.
+    AddAuthTokenManually("invalid-token", "foo");
+
+    ResetObserverCounts();
+    oauth2_service_delegate_->LoadCredentials(primary_account,
+                                              /*is_syncing=*/false);
+    WaitForRefreshTokensLoaded();
+
+    EXPECT_EQ(1, tokens_loaded_count_);
+    EXPECT_EQ(1, token_available_count_);
+    EXPECT_TRUE(
+        oauth2_service_delegate_->RefreshTokenIsAvailable(primary_account));
+  }
+  // In the third part of the test, load the same database again, but with the
+  // new encryption still enabled. Since the data has already been migrated to
+  // the new key, it won't be migrated again.
+  {
+    // Expect no writes. The tokens have already been migrated to the new key so
+    // no writes are needed.
+    auto cleanup = SetUpTestAndReturnScopedCleanup(
+        /*new_encryption_enabled=*/true, /*expect_reencrypt=*/false,
+        os_crypt_async::kDefaultTestKeyPrefix, /*expected_writes=*/0);
+
+    ResetObserverCounts();
+    oauth2_service_delegate_->LoadCredentials(primary_account,
+                                              /*is_syncing=*/false);
+    WaitForRefreshTokensLoaded();
+
+    EXPECT_EQ(1, tokens_loaded_count_);
+    EXPECT_EQ(1, token_available_count_);
+    EXPECT_TRUE(
+        oauth2_service_delegate_->RefreshTokenIsAvailable(primary_account));
+  }
+  // Verify also that if the feature state is rolled back, then the encryption
+  // goes back to as it was before.
+  {
+    // One write is expected here. The single token is migrated back to the old
+    // key.
+    auto cleanup = SetUpTestAndReturnScopedCleanup(
+        /*new_encryption_enabled=*/false, /*expect_reencrypt=*/true,
+        os_crypt_async::kOsCryptSyncCompatibleTestKeyPrefix,
+        /*expected_writes=*/1);
+
+    ResetObserverCounts();
+    oauth2_service_delegate_->LoadCredentials(primary_account,
+                                              /*is_syncing=*/false);
+    WaitForRefreshTokensLoaded();
+
+    EXPECT_EQ(1, tokens_loaded_count_);
+    EXPECT_EQ(1, token_available_count_);
+    EXPECT_TRUE(
+        oauth2_service_delegate_->RefreshTokenIsAvailable(primary_account));
+  }
 }
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)

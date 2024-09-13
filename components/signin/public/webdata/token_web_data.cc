@@ -52,8 +52,8 @@ class TokenWebDataBackend
 
   std::unique_ptr<WDTypedResult> GetAllTokens(WebDatabase* db) {
     TokenResult result;
-    result.db_result =
-        TokenServiceTable::FromWebDatabase(db)->GetAllTokens(&result.tokens);
+    result.db_result = TokenServiceTable::FromWebDatabase(db)->GetAllTokens(
+        &result.tokens, result.should_reencrypt);
     return std::make_unique<WDResult<TokenResult>>(TOKEN_RESULT, result);
   }
 

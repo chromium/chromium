@@ -102,6 +102,16 @@ signin::LoadCredentialsState LoadCredentialsStateFromTokenResult(
       LOAD_CREDENTIALS_FINISHED_WITH_UNKNOWN_ERRORS;
 }
 
+// This feature controls whether or not token data is re-encrypted when OSCrypt
+// indicates that it should be. This is intended as an emergency 'off-switch' in
+// case any unexpected issues are encountered in the key migration.
+// TODO(crbug.com/366375488): Remove once migration is proven to work reliably.
+namespace features {
+BASE_FEATURE(kEnableReEncryptOfTokenData,
+             "EnableReEncryptOfTokenData",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+}  // namespace features
+
 }  // namespace
 
 // This class sends a request to GAIA to revoke the given refresh token from
@@ -420,7 +430,8 @@ void MutableProfileOAuth2TokenServiceDelegate::OnWebDataServiceRequestDone(
     DCHECK(result->GetType() == TOKEN_RESULT);
     const WDResult<TokenResult>* token_result =
         static_cast<const WDResult<TokenResult>*>(result.get());
-    LoadAllCredentialsIntoMemory(token_result->GetValue().tokens);
+    LoadAllCredentialsIntoMemory(token_result->GetValue().tokens,
+                                 token_result->GetValue().should_reencrypt);
     set_load_credentials_state(LoadCredentialsStateFromTokenResult(
         token_result->GetValue().db_result));
   } else {
@@ -465,10 +476,11 @@ void MutableProfileOAuth2TokenServiceDelegate::OnWebDataServiceRequestDone(
 
 void MutableProfileOAuth2TokenServiceDelegate::LoadAllCredentialsIntoMemory(
     const std::map<std::string, TokenServiceTable::TokenWithBindingKey>&
-        db_tokens) {
+        db_tokens,
+    bool should_reencrypt) {
   VLOG(1) << "MutablePO2TS::LoadAllCredentialsIntoMemory; " << db_tokens.size()
-          << " redential(s).";
-
+          << " credential(s).";
+  bool did_reencrypt = false;
   ScopedBatchChange batch(this);
   for (const auto& [prefixed_account_id, token_with_key] : db_tokens) {
     std::string refresh_token = token_with_key.token;
@@ -524,7 +536,7 @@ void MutableProfileOAuth2TokenServiceDelegate::LoadAllCredentialsIntoMemory(
         PersistCredentials(account_id, refresh_token
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
                            ,
-                           /*wrapped_binding_key=*/std::vector<uint8_t>()
+                           wrapped_binding_key
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
         );
       } else {
@@ -538,6 +550,18 @@ void MutableProfileOAuth2TokenServiceDelegate::LoadAllCredentialsIntoMemory(
         LoadTokenFromDBStatus::NUM_LOAD_TOKEN_FROM_DB_STATUS);
 
     if (load_account) {
+      if (!revoke_token && should_reencrypt) {
+        if (base::FeatureList::IsEnabled(
+                features::kEnableReEncryptOfTokenData)) {
+          did_reencrypt = true;
+          PersistCredentials(account_id, refresh_token
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+                             ,
+                             wrapped_binding_key
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+          );
+        }
+      }
       RecordAccountAvailabilityStartup(account_id, refresh_token);
 
       UpdateCredentialsInMemory(account_id, refresh_token
@@ -553,6 +577,7 @@ void MutableProfileOAuth2TokenServiceDelegate::LoadAllCredentialsIntoMemory(
       FireRefreshTokenRevoked(account_id);
     }
   }
+  base::UmaHistogramBoolean("Signin.ReencryptTokensInDb", did_reencrypt);
 }
 
 void MutableProfileOAuth2TokenServiceDelegate::UpdateCredentialsInternal(

@@ -11,6 +11,11 @@
 
 namespace os_crypt_async {
 
+// These key prefixes can be used, if necessary, by tests to verify that the
+// data encrypted with OSCrypt Async matches the correct key expected.
+inline constexpr char kDefaultTestKeyPrefix[] = "k1";
+inline constexpr char kOsCryptSyncCompatibleTestKeyPrefix[] = "k2";
+
 // Obtain a test OSCryptAsync. This OSCryptAsync will vend test Encryptors that
 // perform encryption/decryption using a random test key. In unit tests without
 // a full task environment, `is_sync_for_unittests` can be set to true.

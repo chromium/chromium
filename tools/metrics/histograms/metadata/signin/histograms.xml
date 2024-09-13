@@ -1928,6 +1928,18 @@ should be kept to monitor/debug signin Multilogin issues-->
   </token>
 </histogram>
 
+<histogram name="Signin.ReencryptTokensInDb" enum="Boolean"
+    expires_after="2025-01-31">
+  <owner>wfh@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    True if one or more database operations were enqueued to migrate one or more
+    tokens in the token table to a new key because OSCrypt Async has indicated
+    that a re-encrypt of any of the tokens is required. This is recorded each
+    time any tokens have been successfully loaded into memory from the database.
+  </summary>
+</histogram>
+
 <histogram name="Signin.RefreshTokenRevoked.Source"
     enum="SourceForRefreshTokenOperation" expires_after="never">
 <!-- expires-never:  This histogram reports the source for token revocation
@@ -2553,6 +2565,16 @@ should be kept for as long as we store refresh tokens in an SQLite DB. -->
   <owner>msarda@chromium.org</owner>
   <summary>
     Counts the results of loading a refresh token from the token database.
+  </summary>
+</histogram>
+
+<histogram name="Signin.TokenTable.SetTokenResult"
+    enum="SigninTokenTableWriteTokenToDBResult" expires_after="2025-01-31">
+  <owner>wfh@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Reports the status of a token write to the SQLite DB. This is reported each
+    time a token is written to the SQLite DB.
   </summary>
 </histogram>
 
