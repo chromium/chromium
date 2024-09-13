@@ -218,6 +218,11 @@
   [self.commandsHandler destroyLensUI:YES];
 }
 
+- (void)lensOverlay:(id<ChromeLensOverlay>)lensOverlay
+    suggestSignalsAvailableOnResult:(id<ChromeLensOverlayResult>)result {
+  // TODO(crbug.com/366156296): Implement.
+}
+
 #pragma mark - Private
 
 /// Adds the URL navigation to the `historyStack`.

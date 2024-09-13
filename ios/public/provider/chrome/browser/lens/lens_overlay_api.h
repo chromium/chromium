@@ -26,6 +26,10 @@
 // The user tapped on the close button in the Lens overlay.
 - (void)lensOverlayDidTapOnCloseButton:(id<ChromeLensOverlay>)lensOverlay;
 
+// The lens overlay has suggest signals available for the given result.
+- (void)lensOverlay:(id<ChromeLensOverlay>)lensOverlay
+    suggestSignalsAvailableOnResult:(id<ChromeLensOverlayResult>)result;
+
 @end
 
 // Defines the interface for interacting with a Chrome Lens Overlay.
