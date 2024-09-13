@@ -351,6 +351,11 @@ void PlusAddressService::ReservePlusAddress(
     const url::Origin& origin,
     PlusAddressRequestCallback on_completed) {
   if (!IsEnabled()) {
+    // TODO(crbug.com/366206137): Differentiate better between reasons why the
+    // service is not enabled.
+    std::move(on_completed)
+        .Run(base::unexpected(PlusAddressRequestError(
+            PlusAddressRequestErrorType::kUserSignedOut)));
     return;
   }
   plus_address_allocator_->AllocatePlusAddress(
@@ -363,6 +368,11 @@ void PlusAddressService::RefreshPlusAddress(
     const url::Origin& origin,
     PlusAddressRequestCallback on_completed) {
   if (!IsEnabled()) {
+    // TODO(crbug.com/366206137): Differentiate better between reasons why the
+    // service is not enabled.
+    std::move(on_completed)
+        .Run(base::unexpected(PlusAddressRequestError(
+            PlusAddressRequestErrorType::kUserSignedOut)));
     return;
   }
   plus_address_allocator_->AllocatePlusAddress(
@@ -380,6 +390,11 @@ void PlusAddressService::ConfirmPlusAddress(
     const PlusAddress& plus_address,
     PlusAddressRequestCallback on_completed) {
   if (!IsEnabled()) {
+    // TODO(crbug.com/366206137): Differentiate better between reasons why the
+    // service is not enabled.
+    std::move(on_completed)
+        .Run(base::unexpected(PlusAddressRequestError(
+            PlusAddressRequestErrorType::kUserSignedOut)));
     return;
   }
   // Check the local mapping before attempting to confirm plus_address.

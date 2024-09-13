@@ -307,14 +307,16 @@ TEST_F(PlusAddressServiceTest, ShouldShowManualFallbackNoServer) {
 }
 
 TEST_F(PlusAddressServiceTest, NoAccountPlusAddressCreation) {
-  base::MockOnceCallback<void(const PlusProfileOrError&)> reserve_callback;
-  base::MockOnceCallback<void(const PlusProfileOrError&)> confirm_callback;
-  // Ensure that the lambdas aren't called since there is no signed-in account.
-  EXPECT_CALL(reserve_callback, Run).Times(0);
-  EXPECT_CALL(confirm_callback, Run).Times(0);
-  service().ReservePlusAddress(kNoSubdomainOrigin, reserve_callback.Get());
+  base::test::TestFuture<const PlusProfileOrError&> future;
+  service().ReservePlusAddress(kNoSubdomainOrigin, future.GetCallback());
+  EXPECT_THAT(future.Get(), base::test::ErrorIs(PlusAddressRequestError(
+                                PlusAddressRequestErrorType::kUserSignedOut)));
+
+  future.Clear();
   service().ConfirmPlusAddress(kNoSubdomainOrigin, PlusAddress(kPlusAddress),
-                               confirm_callback.Get());
+                               future.GetCallback());
+  EXPECT_THAT(future.Get(), base::test::ErrorIs(PlusAddressRequestError(
+                                PlusAddressRequestErrorType::kUserSignedOut)));
 }
 
 TEST_F(PlusAddressServiceTest, AbortPlusAddressCreation) {
@@ -323,14 +325,16 @@ TEST_F(PlusAddressServiceTest, AbortPlusAddressCreation) {
                                       {signin::ConsentLevel::kSignin});
   InitService();
 
-  base::MockOnceCallback<void(const PlusProfileOrError&)> reserve_callback;
-  base::MockOnceCallback<void(const PlusProfileOrError&)> confirm_callback;
-  // Ensure that the lambdas aren't called since there is no signed-in account.
-  EXPECT_CALL(reserve_callback, Run).Times(0);
-  EXPECT_CALL(confirm_callback, Run).Times(0);
-  service().ReservePlusAddress(kNoSubdomainOrigin, reserve_callback.Get());
+  base::test::TestFuture<const PlusProfileOrError&> future;
+  service().ReservePlusAddress(kNoSubdomainOrigin, future.GetCallback());
+  EXPECT_THAT(future.Get(), base::test::ErrorIs(PlusAddressRequestError(
+                                PlusAddressRequestErrorType::kUserSignedOut)));
+
+  future.Clear();
   service().ConfirmPlusAddress(kNoSubdomainOrigin, PlusAddress(kPlusAddress),
-                               confirm_callback.Get());
+                               future.GetCallback());
+  EXPECT_THAT(future.Get(), base::test::ErrorIs(PlusAddressRequestError(
+                                PlusAddressRequestErrorType::kUserSignedOut)));
 }
 
 // Tests that GetPlusProfiles returns all cached plus profiles.
