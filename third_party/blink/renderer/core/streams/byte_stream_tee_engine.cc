@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/streams/byte_stream_tee_engine.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
@@ -229,13 +224,11 @@ class ByteStreamTeeEngine::ByteTeeReadRequest final : public ReadRequest {
                                    exception_context);
 
     // 3. Let chunk1 and chunk2 be chunk.
-    NotShared<DOMUint8Array> chunk[2];
     NotShared<DOMUint8Array> buffer_view =
         NativeValueTraits<NotShared<DOMUint8Array>>::NativeValue(
             script_state->GetIsolate(), value.Get(script_state->GetIsolate()),
             exception_state);
-    chunk[0] = buffer_view;
-    chunk[1] = buffer_view;
+    std::array<NotShared<DOMUint8Array>, 2> chunk = {buffer_view, buffer_view};
 
     // 4. If canceled1 is false and canceled2 is false,
     if (!engine_->canceled_[0] && !engine_->canceled_[1]) {
