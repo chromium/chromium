@@ -263,6 +263,8 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="2" label="Failed (missing product details)"/>
 </enum>
 
+<!-- LINT.IfChange(AdaptiveToolbarButtonVariant) -->
+
 <enum name="AdaptiveToolbarButtonVariant">
   <int value="0" label="Unknown"/>
   <int value="1" label="None"/>
@@ -277,7 +279,11 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="10" label="Read Aloud"/>
   <int value="11" label="Test Button"/>
   <int value="12" label="Price Insights"/>
+  <int value="13" label="Page summary"/>
+  <int value="14" label="Discounts"/>
 </enum>
+
+<!-- LINT.ThenChange(/chrome/browser/ui/android/toolbar/adaptive_toolbar_enums.h:AdaptiveToolbarButtonVariant) -->
 
 <enum name="AdaptiveToolbarSegmentSwitch">
   <int value="0" label="Unknown"/>

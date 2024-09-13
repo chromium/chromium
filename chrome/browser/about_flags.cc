@@ -4044,9 +4044,23 @@ const FeatureEntry::FeatureVariation
 
 const FeatureEntry::FeatureParam kDiscountOnShoppyPage[] = {
     {commerce::kDiscountOnShoppyPageParam, "true"}};
+
+#if !BUILDFLAG(IS_ANDROID)
 const FeatureEntry::FeatureVariation kDiscountsVariations[] = {
     {"Discount on Shoppy page", kDiscountOnShoppyPage,
      std::size(kDiscountOnShoppyPage), nullptr}};
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_ANDROID)
+const FeatureEntry::FeatureParam kDiscountIconOnAndroidUseAlternateColor[] = {
+    {commerce::kDiscountOnShoppyPageParam, "true"},
+    {"action_chip_with_different_color", "true"}};
+const FeatureEntry::FeatureVariation kDiscountsVariationsOnAndroid[] = {
+    {"Discount on Shoppy page", kDiscountOnShoppyPage,
+     std::size(kDiscountOnShoppyPage), nullptr},
+    {"action chip different color", kDiscountIconOnAndroidUseAlternateColor,
+     std::size(kDiscountIconOnAndroidUseAlternateColor), nullptr}};
+#endif  // BUILDFLAG(IS_ANDROID)
 
 const FeatureEntry::FeatureParam
     kSecurePaymentConfirmationNetworkAndIssuerIcons_Inline[] = {
@@ -11842,12 +11856,23 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOutlineSilhouetteIconDescription,
      kOsMac | kOsWin | kOsLinux, FEATURE_VALUE_TYPE(kOutlineSilhouetteIcon)},
 
+#if BUILDFLAG(IS_ANDROID)
     {"discount-on-navigation",
      commerce::flag_descriptions::kDiscountOnNavigationName,
-     commerce::flag_descriptions::kDiscountOnNavigationDescription, kOsAll,
+     commerce::flag_descriptions::kDiscountOnNavigationDescription, kOsAndroid,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(commerce::kEnableDiscountInfoApi,
+                                    kDiscountsVariationsOnAndroid,
+                                    "DisocuntOnNavigation")},
+#endif  // BUILDFLAG(IS_ANDROID)
+
+#if !BUILDFLAG(IS_ANDROID)
+    {"discount-on-navigation",
+     commerce::flag_descriptions::kDiscountOnNavigationName,
+     commerce::flag_descriptions::kDiscountOnNavigationDescription, kOsDesktop,
      FEATURE_WITH_PARAMS_VALUE_TYPE(commerce::kEnableDiscountInfoApi,
                                     kDiscountsVariations,
                                     "DisocuntOnNavigation")},
+#endif  //! BUILDFLAG(IS_ANDROID)
 
     {"devtools-privacy-ui", flag_descriptions::kDevToolsPrivacyUIName,
      flag_descriptions::kDevToolsPrivacyUIDescription, kOsAll,
