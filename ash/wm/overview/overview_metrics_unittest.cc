@@ -39,15 +39,16 @@ class OverviewMetricsTest : public AshTestBase {
     WaitForOverviewExitAnimation();
   }
 
-  void WaitForMetricsRecording() {
-    task_environment()->FastForwardBy(kOverviewEnterExitPresentationMaxLatency *
-                                      2);
+  void WaitForDeskBarPresentationTimeMetricsRecording() {
+    constexpr base::TimeDelta kLegacyPresentationTimeMaxLatency =
+        base::Seconds(2);
+    task_environment()->FastForwardBy(kLegacyPresentationTimeMaxLatency * 2);
   }
 
   void EnterAndExitOverview() {
     EnterOverview();
     ExitOverview();
-    WaitForMetricsRecording();
+    WaitForDeskBarPresentationTimeMetricsRecording();
   }
 
   base::HistogramTester histogram_tester_;
@@ -79,7 +80,7 @@ TEST_F(OverviewMetricsTest, GetPresentationTimeMetricNameWithDeskBar) {
   ASSERT_TRUE(ui::WaitForNextFrameToBePresented(
       Shell::Get()->GetPrimaryRootWindow()->GetHost()->compositor()));
   ExitOverview();
-  WaitForMetricsRecording();
+  WaitForDeskBarPresentationTimeMetricsRecording();
 
   histogram_tester_.ExpectTotalCount(
       "Ash.Overview.Enter.PresentationTime.WithDeskBarAndNumWindows1", 0);

@@ -6529,18 +6529,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ash.Overview.Enter.PresentationTime" units="ms"
-    expires_after="2025-07-15">
-  <owner>sammiequon@chromium.org</owner>
-  <owner>zxdan@chromium.org</owner>
-  <owner>chromeos-wm-corexp@google.com</owner>
-  <summary>
-    Records the presentation time, which is the time in milliseconds it takes
-    from when the overview enter event was received and successfully processed
-    to when the next frame is shown to the user.
-  </summary>
-</histogram>
-
 <histogram
     name="Ash.Overview.Enter.PresentationTime.WithDeskBarAndNumWindows{NumWindows}"
     units="ms" expires_after="2025-02-14">
@@ -6558,7 +6546,20 @@ chromium-metrics-reviews@google.com.
   <token key="NumWindows" variants="NumWindows"/>
 </histogram>
 
-<histogram name="Ash.Overview.Enter.PresentationTime.{OverviewStartReason}"
+<histogram name="Ash.Overview.Enter.PresentationTime2" units="ms"
+    expires_after="2025-07-15">
+  <owner>sammiequon@chromium.org</owner>
+  <owner>zxdan@chromium.org</owner>
+  <owner>esum@google.com</owner>
+  <owner>chromeos-wm-corexp@google.com</owner>
+  <summary>
+    Records the presentation time, which is the time in milliseconds it takes
+    from when the overview enter event was received and successfully processed
+    to when the next frame is shown to the user.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Overview.Enter.PresentationTime2.{OverviewStartReason}"
     units="ms" expires_after="2025-07-15">
   <owner>esum@google.com</owner>
   <owner>cros-sw-perf@google.com</owner>
@@ -6572,18 +6573,6 @@ chromium-metrics-reviews@google.com.
     different profile and performance characteristics.
   </summary>
   <token key="OverviewStartReason" variants="OverviewStartReason"/>
-</histogram>
-
-<histogram name="Ash.Overview.Exit.PresentationTime" units="ms"
-    expires_after="2025-07-15">
-  <owner>sammiequon@chromium.org</owner>
-  <owner>zxdan@chromium.org</owner>
-  <owner>chromeos-wm-corexp@google.com</owner>
-  <summary>
-    Records the presentation time, which is the time in milliseconds it takes
-    from when the overview exit event was received and successfully processed to
-    when the next frame is shown to the user.
-  </summary>
 </histogram>
 
 <histogram
@@ -6601,6 +6590,19 @@ chromium-metrics-reviews@google.com.
     do not meet these criteria are not recorded.
   </summary>
   <token key="NumWindows" variants="NumWindows"/>
+</histogram>
+
+<histogram name="Ash.Overview.Exit.PresentationTime2" units="ms"
+    expires_after="2025-07-15">
+  <owner>sammiequon@chromium.org</owner>
+  <owner>zxdan@chromium.org</owner>
+  <owner>esum@google.com</owner>
+  <owner>chromeos-wm-corexp@google.com</owner>
+  <summary>
+    Records the presentation time, which is the time in milliseconds it takes
+    from when the overview exit event was received and successfully processed to
+    when the next frame is shown to the user.
+  </summary>
 </histogram>
 
 <histogram name="Ash.Overview.Items" units="units" expires_after="2025-07-15">

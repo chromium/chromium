@@ -10,6 +10,7 @@
 #include "ash/ash_export.h"
 #include "ash/wm/overview/overview_types.h"
 #include "base/time/time.h"
+#include "ui/compositor/presentation_time_recorder.h"
 
 namespace ui {
 class PresentationTimeRecorder;
@@ -75,17 +76,14 @@ enum class OverviewEndAction {
 void RecordOverviewEndAction(OverviewEndAction type);
 
 inline constexpr char kEnterOverviewPresentationHistogram[] =
-    "Ash.Overview.Enter.PresentationTime";
+    "Ash.Overview.Enter.PresentationTime2";
 inline constexpr char kExitOverviewPresentationHistogram[] =
-    "Ash.Overview.Exit.PresentationTime";
+    "Ash.Overview.Exit.PresentationTime2";
 inline constexpr char kOverviewDelayedDeskBarPresentationHistogram[] =
     "Ash.Overview.DelayedDeskBar.PresentationTime";
 
-// For metrics purposes. Largest presentation timestamp possible for the first
-// frame when entering and exiting overview. Any values higher than this go
-// in the overflow bucket.
-inline constexpr base::TimeDelta kOverviewEnterExitPresentationMaxLatency =
-    base::Seconds(2);
+const ui::PresentationTimeRecorder::BucketParams&
+GetOverviewPresentationTimeBucketParams();
 
 // Records a metric name of the format"
 // "Ash.Overview.[Enter|Exit].PresentationTime.WithDeskBarAndNumWindows[N]"
@@ -93,6 +91,9 @@ inline constexpr base::TimeDelta kOverviewEnterExitPresentationMaxLatency =
 // Where N is the number of windows currently open across all desks. If N is
 // greater than 10, the suffix becomes "MoreThan10". Metrics currently show that
 // most users will have less than 10 open.
+//
+// TODO(http://b/294094124): Remove after bug is marked fixed. This metric is
+// temporary and only to debug the experiment.
 ASH_EXPORT void SchedulePresentationTimeMetricsWithDeskBar(
     std::unique_ptr<ui::PresentationTimeRecorder> enter_recorder,
     std::unique_ptr<ui::PresentationTimeRecorder> exit_recorder,

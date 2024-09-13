@@ -55,8 +55,7 @@ void OverviewSessionMetricsRecorder::OnOverviewSessionInitializing() {
   enter_presentation_time_recorder_ = CreatePresentationTimeHistogramRecorder(
       Shell::GetPrimaryRootWindow()->layer()->GetCompositor(),
       kEnterOverviewPresentationHistogram, "",
-      ui::PresentationTimeRecorder::BucketParams::CreateWithMaximum(
-          kOverviewEnterExitPresentationMaxLatency),
+      GetOverviewPresentationTimeBucketParams(),
       /*emit_trace_event=*/true);
   enter_presentation_time_recorder_->RequestNext();
 
@@ -89,8 +88,7 @@ void OverviewSessionMetricsRecorder::OnOverviewSessionEnding() {
       CreatePresentationTimeHistogramRecorder(
           Shell::GetPrimaryRootWindow()->layer()->GetCompositor(),
           kExitOverviewPresentationHistogram, "",
-          ui::PresentationTimeRecorder::BucketParams::CreateWithMaximum(
-              kOverviewEnterExitPresentationMaxLatency),
+          GetOverviewPresentationTimeBucketParams(),
           /*emit_trace_event=*/true);
   exit_presentation_time_recorder->RequestNext();
 
