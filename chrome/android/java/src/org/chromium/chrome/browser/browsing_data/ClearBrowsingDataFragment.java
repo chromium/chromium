@@ -496,7 +496,7 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
             RecordHistogram.recordBooleanHistogram(DIALOG_HISTOGRAM, true);
         } else {
             dismissProgressDialog();
-            getActivity().finish();
+            getActivity().onBackPressed();
             RecordHistogram.recordBooleanHistogram(DIALOG_HISTOGRAM, false);
         }
     }
