@@ -196,7 +196,8 @@ HoverButton::HoverButton(PressedCallback callback,
       .SetMainAxisAlignment(views::LayoutAlignment::kCenter);
   label_wrapper->SetProperty(
       views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+      views::FlexSpecification(views::LayoutOrientation::kHorizontal,
+                               views::MinimumFlexSizeRule::kScaleToZero,
                                views::MaximumFlexSizeRule::kUnbounded, true));
   label_wrapper->SetCanProcessEventsWithinSubtree(false);
   label_wrapper->SetProperty(
