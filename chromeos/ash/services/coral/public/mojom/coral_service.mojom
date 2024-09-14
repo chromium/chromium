@@ -1,0 +1,169 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// This file is synced from
+// https://crsrc.org/o/src/platform2/odml/mojom/coral_service.mojom.
+// Any future changes should be made there, and synced to this file manually.
+
+// See go/coral-odml-dd.
+module coral.mojom;
+
+import "url/mojom/url.mojom";
+
+// Represents metadata of a Chrome tab entity.
+[Stable]
+struct Tab {
+  // This is the exact title string of a tab shown on UI.
+  string title;
+  // This will be purely viewed as a string for the Coral service. It will not
+  // be parsed as a URL structure or used for navigation.
+  url.mojom.Url url;
+};
+
+// Represents metadata of an ARC app entity.
+[Stable]
+struct App {
+  // This is the exact title string of an ARC app shown on UI.
+  string title;
+  // App id, like Chrome extension ids, are just a sequence of random
+  // characters that uniquely identifies the app/Chrome extension. The client
+  // uses this id to refer to the actual app.
+  string id;
+};
+
+// Entity types that the coral service supports. For each of the entity type
+// coral service has a way of formatting them into embedding prompts.
+[Stable, Extensible]
+union Entity {
+  // For backward compatibility. In mojom, when deserializing variants of an
+  // extensible union that are introduced in newer versions than the version
+  // remote is on, they'll be mapped to the variant marked [Default] with
+  // nullified value. In service-side logic, we'd like to treat those variants
+  // as unknown and unsupported instead of being disguised as a valid entity
+  // type (like Tab). So we introduce this default unknown variant.
+  [Default]
+  bool unknown;
+  Tab tab;
+  App app;
+};
+
+// Identifier that uniquely identifies an entity of each type. In CoralResponse,
+// to return the groupings we don't need to include all original metadata, but
+// just this identifier, to the client.
+[Stable, Extensible]
+union EntityKey {
+  // For backward compatibility. In mojom, when deserializing variants of an
+  // extensible union that are introduced in newer versions than the version
+  // remote is on, they'll be mapped to the variant marked [Default] with
+  // nullified value. In service-side logic, we'd like to treat those variants
+  // as unknown and unsupported instead of being disguised as a valid entity
+  // type (like Tab). So we introduce this default unknown variant.
+  [Default]
+  bool unknown;
+  // URL field of Tab struct.
+  url.mojom.Url tab_url;
+  // Id field of App struct.
+  string app_id;
+};
+
+// Configurable options of the embedding engine.
+[Stable]
+struct EmbeddingOptions {};
+
+// Configurable options of the clustering engine.
+// TODO(b/358531135): Decide the cluster algorithm we want to use and add
+// the algorithm options.
+[Stable]
+struct ClusteringOptions {
+  // 0 means min items in cluster is 0, which effectively means there is no
+  // limit.
+  uint32 min_items_in_cluster;
+  // 0 is a special value meaning there is no limitation of max items in a
+  // cluster.
+  uint32 max_items_in_cluster;
+  // Max number of clusters to return from the clustering engine. 0 is a
+  // special value meaning there is no limitation of max number of clusters.
+  uint32 max_clusters;
+};
+
+// Configurable options of the title generation engine.
+[Stable]
+struct TitleGenerationOptions {
+  // Max characters allowed in the generated title. 0 is a special value
+  // meaning there is no limitation of maximum number of characters.
+  uint32 max_characters;
+  // Target language of the generated title using ISO 639-2 language code
+  // definition. If not set, EN is assumed.
+  string? language_code;
+};
+
+[Stable, Extensible]
+enum CoralError {
+  // TODO(b/358531135): Add more error types and avoid using kUnknownError.
+  [Default] kUnknownError,
+  [MinVersion=1] kLoadModelFailed,
+  [MinVersion=2] kInvalidArgs,
+  [MinVersion=2] kModelExecutionFailed,
+  [MinVersion=3] kClusteringError,
+};
+
+[Stable]
+struct Group {
+  string title;
+  // This is sorted by descending rank of importance.
+  array<EntityKey> entities;
+};
+
+[Stable]
+struct GroupRequest {
+  array<Entity> entities;
+  EmbeddingOptions embedding_options;
+  ClusteringOptions clustering_options;
+  TitleGenerationOptions title_generation_options;
+};
+
+[Stable]
+struct GroupResponse {
+  // This is sorted by descending rank of importance.
+  array<Group> groups;
+};
+
+[Stable]
+union GroupResult {
+  // Meaning that the request failed.
+  CoralError error;
+  // Meaning that the request succeeded.
+  GroupResponse response;
+};
+
+[Stable]
+struct CacheEmbeddingsRequest {
+  array<Entity> entities;
+  EmbeddingOptions embedding_options;
+};
+
+// Does not yet contain any fields.
+[Stable]
+struct CacheEmbeddingsResponse {};
+
+[Stable]
+union CacheEmbeddingsResult {
+  // Meaning that the request failed.
+  CoralError error;
+  // Meaning that the request succeeded.
+  CacheEmbeddingsResponse response;
+};
+
+// The ChromeOS odml daemon implements this service interface, utilizing the on
+// device models for backend logic. Ash Chrome is the client, implementing
+// UI features using this coral service.
+[Stable]
+interface CoralService {
+  // Group the request entities into suitable groups with titles.
+  Group@0(GroupRequest request) => (GroupResult result);
+
+  // Generate and cache the embeddings for the request entities.
+  CacheEmbeddings@1(CacheEmbeddingsRequest request)
+      => (CacheEmbeddingsResult result);
+};

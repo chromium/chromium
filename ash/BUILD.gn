@@ -3382,6 +3382,7 @@ component("ash") {
     "//chromeos/ash/services/assistant/public/mojom",
     "//chromeos/ash/services/bluetooth_config/public/cpp",
     "//chromeos/ash/services/bluetooth_config/public/mojom",
+    "//chromeos/ash/services/coral/public/mojom",
     "//chromeos/ash/services/federated/public/cpp",
     "//chromeos/ash/services/federated/public/mojom",
     "//chromeos/ash/services/hotspot_config/public/cpp",
