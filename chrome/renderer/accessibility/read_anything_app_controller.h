@@ -44,6 +44,7 @@ class MojoUkmRecorder;
 }  // namespace ukm
 
 class AXTreeDistiller;
+class DependencyParserModel;
 class ReadAnythingAppControllerTest;
 class ReadAnythingAppControllerScreen2xDataCollectionModeTest;
 
@@ -360,6 +361,12 @@ class ReadAnythingAppController
   // Helpers for logging UmaHistograms based on times recorded in WebUI.
   void IncrementMetricCount(const std::string& metric);
   void LogSpeechEventCounts();
+
+  // Returns the dependency parser model for this renderer process.
+  DependencyParserModel& GetDependencyParserModel();
+  // Called when a new dependency parser model file has been loaded and is
+  // available.
+  void UpdateDependencyParserModel(base::File model_file);
 
   std::unique_ptr<AXTreeDistiller> distiller_;
   mojo::Remote<read_anything::mojom::UntrustedPageHandlerFactory>

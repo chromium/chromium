@@ -20,6 +20,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/common/accessibility/read_anything_constants.h"
 #include "chrome/renderer/accessibility/ax_tree_distiller.h"
+#include "chrome/renderer/accessibility/phrase_segmentation/dependency_parser_model.h"
 #include "chrome/renderer/accessibility/read_aloud_traversal_utils.h"
 #include "chrome/renderer/accessibility/read_anything_node_utils.h"
 #include "components/language/core/common/locale_util.h"
@@ -1466,6 +1467,16 @@ void ReadAnythingAppController::OnConnected() {
       page_handler_.BindNewPipeAndPassReceiver());
   render_frame()->GetBrowserInterfaceBroker().GetInterface(
       std::move(page_handler_factory_receiver));
+
+  // Get the dependency parser model used by phrase-based highlighting.
+  DependencyParserModel& dependency_parser_model = GetDependencyParserModel();
+  if (dependency_parser_model.IsAvailable()) {
+    return;
+  }
+
+  page_handler_->GetDependencyParserModel(
+      base::BindOnce(&ReadAnythingAppController::UpdateDependencyParserModel,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ReadAnythingAppController::OnCopy() const {
@@ -1849,4 +1860,15 @@ void ReadAnythingAppController::OnScrolledToBottom() {
 bool ReadAnythingAppController::IsDocsLoadMoreButtonVisible() const {
   return (features::IsReadAnythingDocsLoadMoreButtonEnabled() &&
           IsGoogleDocs());
+}
+
+DependencyParserModel& ReadAnythingAppController::GetDependencyParserModel() {
+  static base::NoDestructor<DependencyParserModel> instance;
+  return *instance;
+}
+
+void ReadAnythingAppController::UpdateDependencyParserModel(
+    base::File model_file) {
+  DependencyParserModel& dependency_parser_model = GetDependencyParserModel();
+  dependency_parser_model.UpdateWithFile(std::move(model_file));
 }

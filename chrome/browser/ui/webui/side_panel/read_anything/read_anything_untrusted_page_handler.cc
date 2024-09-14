@@ -15,6 +15,8 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/values.h"
+#include "chrome/browser/accessibility/phrase_segmentation/dependency_parser_model_loader.h"
+#include "chrome/browser/accessibility/phrase_segmentation/dependency_parser_model_loader_factory.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/language/language_model_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -405,6 +407,33 @@ void ReadAnythingUntrustedPageHandler::TreeRemoved(ui::AXTreeID ax_tree_id) {
 ///////////////////////////////////////////////////////////////////////////////
 // read_anything::mojom::UntrustedPageHandler:
 ///////////////////////////////////////////////////////////////////////////////
+
+void ReadAnythingUntrustedPageHandler::GetDependencyParserModel(
+    GetDependencyParserModelCallback callback) {
+  DependencyParserModelLoader* loader =
+      DependencyParserModelLoaderFactory::GetForProfile(profile_);
+  if (!loader) {
+    std::move(callback).Run(base::File());
+    return;
+  }
+
+  // If the model file is unavailable, request the dependency parser loader to
+  // notify this instance when it becomes available. The two-step process is to
+  // ensure that the model file and callback lifetimes are carefully managed, so
+  // they are not freed without being handled on the appropriate thread,
+  // particularly for the model file.
+  // TODO(b/339037155): Investigate the feasibility of moving this logic into
+  // the dependency parser model loader.
+  if (!loader->IsModelAvailable()) {
+    loader->NotifyOnModelFileAvailable(
+        base::BindOnce(&ReadAnythingUntrustedPageHandler::
+                           OnDependencyParserModelFileAvailabilityChanged,
+                       weak_factory_.GetWeakPtr(), std::move(callback)));
+    return;
+  }
+
+  OnDependencyParserModelFileAvailabilityChanged(std::move(callback), true);
+}
 
 void ReadAnythingUntrustedPageHandler::GetVoicePackInfo(
     const std::string& language,
@@ -815,6 +844,20 @@ void ReadAnythingUntrustedPageHandler::LogTextStyle() {
           prefs->GetInteger(prefs::kAccessibilityReadAnythingLetterSpacing));
   base::UmaHistogramEnumeration(string_constants::kLetterSpacingHistogramName,
                                 letter_spacing);
+}
+
+void ReadAnythingUntrustedPageHandler::
+    OnDependencyParserModelFileAvailabilityChanged(
+        GetDependencyParserModelCallback callback,
+        bool is_available) {
+  if (!is_available) {
+    std::move(callback).Run(base::File());
+    return;
+  }
+
+  DependencyParserModelLoader* loader =
+      DependencyParserModelLoaderFactory::GetForProfile(profile_);
+  std::move(callback).Run(loader->GetDependencyParserModelFile());
 }
 
 // ash::SessionObserver

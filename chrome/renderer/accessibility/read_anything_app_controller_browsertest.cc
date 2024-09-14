@@ -8,10 +8,15 @@
 #include <string>
 #include <vector>
 
+#include "base/base_paths.h"
+#include "base/files/file_path.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
+#include "base/path_service.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/common/accessibility/read_anything_constants.h"
 #include "chrome/renderer/accessibility/ax_tree_distiller.h"
+#include "chrome/renderer/accessibility/phrase_segmentation/dependency_parser_model.h"
 #include "chrome/renderer/accessibility/read_anything_test_utils.h"
 #include "chrome/test/base/chrome_render_view_test.h"
 #include "content/public/renderer/render_frame.h"
@@ -24,6 +29,36 @@
 #include "ui/accessibility/ax_serializable_tree.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
+
+namespace {
+
+base::File GetInvalidModelFile() {
+  base::ScopedTempDir temp_dir;
+  EXPECT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath file_path =
+      temp_dir.GetPath().AppendASCII("model_file.tflite");
+  base::File file(file_path, (base::File::FLAG_CREATE | base::File::FLAG_READ |
+                              base::File::FLAG_WRITE |
+                              base::File::FLAG_CAN_DELETE_ON_CLOSE));
+  EXPECT_TRUE(UNSAFE_TODO(file.WriteAtCurrentPos("12345", 5)));
+  return file;
+}
+
+base::File GetValidModelFile() {
+  base::FilePath source_root_dir;
+  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &source_root_dir);
+  base::FilePath model_file_path = source_root_dir.AppendASCII("chrome")
+                                       .AppendASCII("test")
+                                       .AppendASCII("data")
+                                       .AppendASCII("accessibility")
+                                       .AppendASCII("phrase_segmentation")
+                                       .AppendASCII("model.tflite");
+  base::File file(model_file_path,
+                  (base::File::FLAG_OPEN | base::File::FLAG_READ));
+  return file;
+}
+
+}  // namespace
 
 class MockAXTreeDistiller : public AXTreeDistiller {
  public:
@@ -42,6 +77,10 @@ class MockReadAnythingUntrustedPageHandler
  public:
   MockReadAnythingUntrustedPageHandler() = default;
 
+  MOCK_METHOD(void,
+              GetDependencyParserModel,
+              (GetDependencyParserModelCallback mojo_callback),
+              (override));
   MOCK_METHOD(void,
               GetVoicePackInfo,
               (const std::string& language,
@@ -586,6 +625,14 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
 
   ui::AXNodeData GetNodeData(ui::AXNodeID ax_node_id) {
     return controller_->model_.GetAXNode(ax_node_id)->data();
+  }
+
+  DependencyParserModel& GetDependencyParserModel() {
+    return controller_->GetDependencyParserModel();
+  }
+
+  void UpdateDependencyParserModel(base::File model_file) {
+    controller_->UpdateDependencyParserModel(std::move(model_file));
   }
 
   ui::AXTreeID tree_id_;
@@ -4511,6 +4558,28 @@ TEST_F(
       IsEmpty());
   EXPECT_THAT(GetHighlightForCurrentSegmentIndex(535, true), IsEmpty());
   EXPECT_THAT(GetHighlightForCurrentSegmentIndex(-10, true), IsEmpty());
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       GetDependencyParserModel_UnavailableWithoutModelFile) {
+  DependencyParserModel& model = GetDependencyParserModel();
+  EXPECT_FALSE(model.IsAvailable());
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       GetDependencyParserModel_AvailableWithValidModelFile) {
+  UpdateDependencyParserModel(GetValidModelFile());
+  DependencyParserModel& model = GetDependencyParserModel();
+
+  EXPECT_TRUE(model.IsAvailable());
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       GetDependencyParserModel_UnavailableWithInvalidModelFile) {
+  UpdateDependencyParserModel(GetInvalidModelFile());
+  DependencyParserModel& model = GetDependencyParserModel();
+
+  EXPECT_FALSE(model.IsAvailable());
 }
 
 class ReadAnythingAppControllerScreen2xDataCollectionModeTest
