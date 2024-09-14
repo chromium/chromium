@@ -76,6 +76,7 @@ class HistoryEmbeddingsServicePublic : public HistoryEmbeddingsService {
 
   using HistoryEmbeddingsService::OnPassagesEmbeddingsComputed;
   using HistoryEmbeddingsService::OnSearchCompleted;
+  using HistoryEmbeddingsService::QueryIsFiltered;
 
   using HistoryEmbeddingsService::answerer_;
   using HistoryEmbeddingsService::embedder_metadata_;
@@ -568,6 +569,18 @@ TEST_F(HistoryEmbeddingsServiceTest, AnswerMocked) {
   EXPECT_EQ(result.status, ComputeAnswerStatus::SUCCESS);
   EXPECT_EQ(result.query, "test query");
   EXPECT_EQ(result.answer.text(), "This is the answer to query 'test query'.");
+}
+
+TEST_F(HistoryEmbeddingsServiceTest, StopWordsExcludedFromQueryTerms) {
+  SearchParams search_params;
+  bool filtered = service_->QueryIsFiltered(
+      "the stop and words, the, and, and, and and.", search_params);
+  EXPECT_EQ(filtered, false);
+  EXPECT_EQ(search_params.query_terms.size(), 2u);
+  // Hash for "the" is 2374167618; hash for "and" is 754760635. These are stop
+  // words in `fake_search_strings_file` test proto.
+  EXPECT_EQ(search_params.query_terms,
+            std::vector<std::string>({"stop", "words"}));
 }
 
 }  // namespace history_embeddings

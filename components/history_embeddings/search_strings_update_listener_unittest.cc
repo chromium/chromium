@@ -34,6 +34,11 @@ class SearchStringsUpdateListenerTest : public testing::Test {
     ASSERT_EQ(listener()->filter_words_hashes(), filter_words_hashes);
   }
 
+  void VerifyStopWordsHashes(std::unordered_set<uint32_t> stop_words_hashes) {
+    task_environment()->RunUntilIdle();
+    ASSERT_EQ(listener()->stop_words_hashes(), stop_words_hashes);
+  }
+
   base::test::TaskEnvironment* task_environment() { return &task_environment_; }
 
   SearchStringsUpdateListener* listener() {
@@ -44,23 +49,31 @@ class SearchStringsUpdateListenerTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
 };
 
-// Tests that filter hashes are loaded from disk and are not reset by bad,
-// empty, or nonexisting files.
-TEST_F(SearchStringsUpdateListenerTest, UpdateFilterWordsHashes) {
+// Tests that filter hashes and stop word hashes are loaded from disk and are
+// not reset by bad, empty, or nonexisting files.
+TEST_F(SearchStringsUpdateListenerTest, UpdateHashes) {
   listener()->OnSearchStringsUpdate(
       GetTestFilePath("fake_search_strings_file"));
+
+  // Hashes for "special", "something something", "hello world".
   VerifyFilterWordsHashes({3962775614, 4220142007, 430397466});
+
+  // Hashes for "the", "and".
+  VerifyStopWordsHashes({2374167618, 754760635});
 
   listener()->OnSearchStringsUpdate(GetTestFilePath("bad_search_strings_file"));
   VerifyFilterWordsHashes({3962775614, 4220142007, 430397466});
+  VerifyStopWordsHashes({2374167618, 754760635});
 
   listener()->OnSearchStringsUpdate(
       GetTestFilePath("emtpy_search_strings_file"));
   VerifyFilterWordsHashes({3962775614, 4220142007, 430397466});
+  VerifyStopWordsHashes({2374167618, 754760635});
 
   listener()->OnSearchStringsUpdate(
       GetTestFilePath("foobar_search_strings_file"));
   VerifyFilterWordsHashes({3962775614, 4220142007, 430397466});
+  VerifyStopWordsHashes({2374167618, 754760635});
 }
 
 }  // namespace history_embeddings

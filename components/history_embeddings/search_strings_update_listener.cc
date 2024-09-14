@@ -56,7 +56,7 @@ void SearchStringsUpdateListener::OnSearchStringsUpdate(
 
 void SearchStringsUpdateListener::SetFilterWordsHashes(
     const std::string_view filter_words_hashes) {
-  for (std::string_view& hash_string : base::SplitStringPiece(
+  for (std::string_view hash_string : base::SplitStringPiece(
            filter_words_hashes, ",", base::WhitespaceHandling::TRIM_WHITESPACE,
            base::SplitResult::SPLIT_WANT_NONEMPTY)) {
     uint32_t hash;
@@ -64,6 +64,11 @@ void SearchStringsUpdateListener::SetFilterWordsHashes(
       filter_words_hashes_.insert(hash);
     }
   }
+}
+
+void SearchStringsUpdateListener::ResetForTesting() {
+  filter_words_hashes_.clear();
+  stop_words_hashes_.clear();
 }
 
 void SearchStringsUpdateListener::SetSearchStrings(
@@ -77,6 +82,14 @@ void SearchStringsUpdateListener::SetSearchStrings(
     uint32_t hash;
     if (base::StringToUint(hash_string, &hash)) {
       filter_words_hashes_.insert(hash);
+    }
+  }
+
+  stop_words_hashes_.clear();
+  for (std::string_view hash_string : strings->stop_words()) {
+    uint32_t hash;
+    if (base::StringToUint(hash_string, &hash)) {
+      stop_words_hashes_.insert(hash);
     }
   }
 }

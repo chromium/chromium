@@ -12,8 +12,11 @@ option java_package = "org.chromium.components.optimization_guide.features.proto
 option java_outer_classname = "HistorySearchStringsProto";
 
 // Holds the strings for the History Embeddings Search feature.
-// Next ID: 2
+// Next ID: 3
 message HistorySearchStrings {
   // Hashes of one or two word phrases to be filtered.
   repeated string filter_words = 1;
+
+  // Hashes of stop words to be removed from query terms before text search.
+  repeated string stop_words = 2;
 }

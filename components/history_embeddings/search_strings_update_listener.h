@@ -34,11 +34,17 @@ class SearchStringsUpdateListener {
   // Populates `filter_words_hashes_` from the comma-separated input string.
   // TODO(b/365559465): Remove this function once ComponentInstaller is set up.
   void SetFilterWordsHashes(const std::string_view filter_words_hashes);
+
   const std::unordered_set<uint32_t>& filter_words_hashes() {
     return filter_words_hashes_;
   }
 
-  void ResetForTesting() { filter_words_hashes_.clear(); }
+  const std::unordered_set<uint32_t>& stop_words_hashes() {
+    return stop_words_hashes_;
+  }
+
+  // Clear all hashes.
+  void ResetForTesting();
 
  private:
   friend class base::NoDestructor<SearchStringsUpdateListener>;
@@ -51,6 +57,9 @@ class SearchStringsUpdateListener {
 
   // Hashes for phrases of one or two words to be filtered.
   std::unordered_set<uint32_t> filter_words_hashes_;
+
+  // Hashes for stop words to be removed from query terms before text search.
+  std::unordered_set<uint32_t> stop_words_hashes_;
 
   base::WeakPtrFactory<SearchStringsUpdateListener> weak_ptr_factory_{this};
 };

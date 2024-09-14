@@ -1084,9 +1084,12 @@ bool HistoryEmbeddingsService::QueryIsFiltered(
   }
   RecordQueryFiltered(QueryFiltered::NOT_FILTERED);
   size_t min_term_length = kWordMatchMinTermLength.Get();
-  for (std::string_view view : query_terms) {
-    if (query_terms.size() >= min_term_length) {
-      search_params.query_terms.emplace_back(view);
+  const std::unordered_set<uint32_t>& stop_words_hashes =
+      SearchStringsUpdateListener::GetInstance()->stop_words_hashes();
+  for (std::string_view term : query_terms) {
+    if (query_terms.size() >= min_term_length &&
+        !stop_words_hashes.contains(HashString(term))) {
+      search_params.query_terms.emplace_back(term);
     }
   }
   return false;
