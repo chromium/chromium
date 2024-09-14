@@ -54,6 +54,10 @@ struct StructTraits<webnn::mojom::DataTypeLimitsDataView,
       const webnn::DataTypeLimits& data_type_limits) {
     return data_type_limits.conv_transpose2d_input;
   }
+  static webnn::SupportedDataTypes cumulative_sum_input(
+      const webnn::DataTypeLimits& data_type_limits) {
+    return data_type_limits.cumulative_sum_input;
+  }
   static webnn::SupportedDataTypes dequantize_linear_input(
       const webnn::DataTypeLimits& data_type_limits) {
     return data_type_limits.dequantize_linear_input;
@@ -398,6 +402,7 @@ struct StructTraits<webnn::mojom::DataTypeLimitsDataView,
            data.ReadConcatInputs(&out->concat_inputs) &&
            data.ReadConv2dInput(&out->conv2d_input) &&
            data.ReadConvTranspose2dInput(&out->conv_transpose2d_input) &&
+           data.ReadCumulativeSumInput(&out->cumulative_sum_input) &&
            data.ReadDequantizeLinearInput(&out->dequantize_linear_input) &&
            data.ReadDequantizeLinearScale(&out->dequantize_linear_scale) &&
            data.ReadAddInput(&out->add_input) &&

@@ -76,6 +76,8 @@ std::string OpTagToString(mojom::Operation::Tag tag) {
       return ops::kConcat;
     case mojom::Operation::Tag::kConv2d:
       return ops::kConv2d;
+    case mojom::Operation::Tag::kCumulativeSum:
+      return ops::kCumulativeSum;
     case mojom::Operation::Tag::kDequantizeLinear:
       return ops::kDequantizeLinear;
     case mojom::Operation::Tag::kElementWiseBinary:

@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_clamp_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_conv_2d_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_conv_transpose_2d_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_cumulative_sum_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_elu_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_gather_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_gemm_options.h"
@@ -752,6 +753,24 @@ std::optional<String> SerializeConv2dOperation(
   }
 
   return std::nullopt;
+}
+
+OperationPtr CreateCumulativeSumOperation(
+    const OperandToIdMap& operand_to_id_map,
+    const MLOperator* cumulative_sum) {
+  const auto* cumulative_sum_operator =
+      static_cast<const MLCumulativeSumOperator*>(cumulative_sum);
+  const auto* options =
+      static_cast<const MLCumulativeSumOptions*>(cumulative_sum->Options());
+
+  auto cumulative_sum_mojo = blink_mojom::CumulativeSum::New(
+      GetOperatorInputId(cumulative_sum, operand_to_id_map),
+      GetOperatorOutputId(cumulative_sum, operand_to_id_map),
+      cumulative_sum_operator->Axis(), options->exclusive(),
+      options->reversed(), options->label());
+
+  return blink_mojom::Operation::NewCumulativeSum(
+      std::move(cumulative_sum_mojo));
 }
 
 OperationPtr CreateDequantizeLinearOperation(
@@ -1725,6 +1744,10 @@ std::optional<String> SerializeMojoOperation(
       }
       break;
     }
+    case blink_mojom::Operation::Tag::kCumulativeSum:
+      graph_info->operations.push_back(
+          CreateCumulativeSumOperation(operand_to_id_map, op));
+      break;
     case blink_mojom::Operation::Tag::kDequantizeLinear:
       graph_info->operations.push_back(
           CreateDequantizeLinearOperation(operand_to_id_map, op));

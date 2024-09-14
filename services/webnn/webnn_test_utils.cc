@@ -189,6 +189,25 @@ void GraphInfoBuilder::BuildConcat(std::vector<uint64_t> input_operand_ids,
       mojom::Operation::NewConcat(std::move(concat)));
 }
 
+void GraphInfoBuilder::BuildCumulativeSum(uint64_t input_operand_id,
+                                          uint64_t output_operand_id,
+                                          uint32_t axis,
+                                          std::optional<bool> exclusive,
+                                          std::optional<bool> reversed) {
+  mojom::CumulativeSumPtr cumulative_sum = mojom::CumulativeSum::New();
+  cumulative_sum->input_operand_id = input_operand_id;
+  cumulative_sum->output_operand_id = output_operand_id;
+  cumulative_sum->axis = axis;
+  if (exclusive.has_value()) {
+    cumulative_sum->exclusive = exclusive.value();
+  }
+  if (reversed.has_value()) {
+    cumulative_sum->reversed = reversed.value();
+  }
+  graph_info_->operations.push_back(
+      mojom::Operation::NewCumulativeSum(std::move(cumulative_sum)));
+}
+
 void GraphInfoBuilder::BuildDequantizeLinear(uint64_t input_operand_id,
                                              uint64_t scale_operand_id,
                                              uint64_t zero_point_operand_id,
@@ -515,6 +534,7 @@ ContextProperties GetContextPropertiesForTesting() {
        /*conv2d_input=*/DataTypeConstraint::kFloat16To32,
        /*conv_transpose2d_input=*/
        DataTypeConstraint::kFloat16To32,
+       /*cumulative_sum_input=*/DataTypeConstraint::kFloat16To32,
        /*dequantize_linear_input=*/SupportedDataTypes::All(),
        /*dequantize_linear_scale=*/SupportedDataTypes::All(),
        /*add_input=*/SupportedDataTypes::All(),

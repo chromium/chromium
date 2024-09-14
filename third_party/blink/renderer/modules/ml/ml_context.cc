@@ -307,6 +307,14 @@ const MLOpSupportLimits* MLContext::opSupportLimits(ScriptState* script_state) {
       data_type_limits.conv_transpose2d_input));
   op_support_limits->setConvTranspose2d(conv_transpose2d);
 
+  MLSingleInputSupportLimits* cumulative_sum =
+      MLSingleInputSupportLimits::Create();
+  cumulative_sum->setInput(
+      SupportedDataTypesToSupportLimits(data_type_limits.cumulative_sum_input));
+  cumulative_sum->setOutput(
+      SupportedDataTypesToSupportLimits(data_type_limits.cumulative_sum_input));
+  op_support_limits->setCumulativeSum(cumulative_sum);
+
   MLQuantizeDequantizeLinearSupportLimits* dequantize_linear =
       MLQuantizeDequantizeLinearSupportLimits::Create();
   dequantize_linear->setInput(SupportedDataTypesToSupportLimits(

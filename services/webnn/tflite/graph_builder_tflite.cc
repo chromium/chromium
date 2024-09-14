@@ -345,6 +345,8 @@ ContextProperties GraphBuilderTflite::GetContextProperties() {
        /*concat_inputs=*/SupportedDataTypes::All(),
        /*conv2d_input=*/kFloat32,
        /*conv_transpose2d_input=*/kFloat32,
+       // CumulativeSum is not implemented.
+       /*cumulative_sum_input=*/{},
        // DequantizeLinear is not implemented.
        /*dequantize_linear_input=*/{},
        /*dequantize_linear_scale=*/{},
@@ -661,6 +663,7 @@ base::expected<void, std::string> GraphBuilderTflite::SerializeOperation(
     case mojom::Operation::Tag::kWhere:
       operator_offset = SerializeWhere(*op.get_where());
       break;
+    case mojom::Operation::Tag::kCumulativeSum:
     case mojom::Operation::Tag::kGatherElements:
     case mojom::Operation::Tag::kScatterNd:
       return base::unexpected(NotSupportedOperatorError(op));

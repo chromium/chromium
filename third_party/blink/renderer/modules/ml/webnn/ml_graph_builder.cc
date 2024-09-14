@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_clamp_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_conv_2d_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_conv_transpose_2d_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_cumulative_sum_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_elu_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_gather_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_gemm_options.h"
@@ -1272,6 +1273,30 @@ MLOperand* MLGraphBuilder::convTranspose2d(
   MLOperand* output = MLOperand::CreateOutput(
       this, std::move(output_descriptor), convTranspose2d);
   convTranspose2d->Connect(std::move(inputs), {output});
+  return output;
+}
+
+MLOperand* MLGraphBuilder::cumulativeSum(const MLOperand* input,
+                                         const uint32_t axis,
+                                         const MLCumulativeSumOptions* options,
+                                         ExceptionState& exception_state) {
+  THROW_AND_RETURN_IF_ERROR(ValidateGraphBuilderState(), nullptr);
+  THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInput(input), nullptr);
+
+  ASSIGN_OR_THROW_AND_RETURN_IF_ERROR(
+      webnn::OperandDescriptor output_descriptor,
+      webnn::ValidateCumulativeSumAndInferOutput(ml_context_->GetProperties(),
+                                                 input->Descriptor(), axis,
+                                                 options->label().Utf8()));
+
+  // Create cumulativeSum operator and its output operand. Connect the
+  // cumulativeSum operator to its input and output operands.
+  auto* cumulativeSum =
+      MakeGarbageCollected<MLCumulativeSumOperator>(this, axis, options);
+  MLOperand* output = MLOperand::CreateOutput(
+      this, std::move(output_descriptor), cumulativeSum);
+  cumulativeSum->Connect({input}, {output});
+
   return output;
 }
 

@@ -108,6 +108,9 @@ ContextProperties ContextImplDml::GetProperties(
        /*conv2d_input=*/DataTypeConstraint::kFloat16To32,
        /*conv_transpose2d_input=*/DataTypeConstraint::kFloat16To32,
 
+       // CumulativeSum is not implemented.
+       /*cumulative_sum_input=*/{},
+
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_dequantize_linear_operator_desc#tensor-support
        /*dequantize_linear_input=*/kInts8To32,
        /*dequantize_linear_scale=*/DataTypeConstraint::kFloat32,

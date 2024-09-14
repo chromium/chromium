@@ -23,6 +23,7 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
                  SupportedDataTypes concat_inputs,
                  SupportedDataTypes conv2d_input,
                  SupportedDataTypes conv_transpose2d_input,
+                 SupportedDataTypes cumulative_sum_input,
                  SupportedDataTypes dequantize_linear_input,
                  SupportedDataTypes dequantize_linear_scale,
                  SupportedDataTypes add_input,
@@ -127,6 +128,7 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
   SupportedDataTypes concat_inputs;
   SupportedDataTypes conv2d_input;
   SupportedDataTypes conv_transpose2d_input;
+  SupportedDataTypes cumulative_sum_input;
   SupportedDataTypes dequantize_linear_input;
   SupportedDataTypes dequantize_linear_scale;
   SupportedDataTypes add_input;
@@ -224,6 +226,7 @@ inline bool operator==(const DataTypeLimits& lhs, const DataTypeLimits& rhs) {
          lhs.concat_inputs == rhs.concat_inputs &&
          lhs.conv2d_input == rhs.conv2d_input &&
          lhs.conv_transpose2d_input == rhs.conv_transpose2d_input &&
+         lhs.cumulative_sum_input == rhs.cumulative_sum_input &&
          lhs.dequantize_linear_input == rhs.dequantize_linear_input &&
          lhs.dequantize_linear_scale == rhs.dequantize_linear_scale &&
          lhs.add_input == rhs.add_input &&

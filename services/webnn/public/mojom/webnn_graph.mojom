@@ -202,6 +202,30 @@ struct Conv2d {
   string label;
 };
 
+// Represents the cumulativeSum operation that accumulates a sum along the
+// given axis.
+struct CumulativeSum {
+  // The id of input operand is used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  uint64 input_operand_id;
+  // The id of output operand is used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  uint64 output_operand_id;
+
+  // The axis used to sum along.
+  uint32 axis;
+  // If true, performs the exclusive sum such that the i-th output element would
+  // be the sum of the first (i-1) elements, where an input of [1,2,3] yields
+  // [0,1,3]. Otherwise, performs the inclusive sum such that the i-th output
+  // element would be the sum of the first i elements, where an input of [1,2,3]
+  // yields [1,3,6].
+  bool exclusive = false;
+  // Indicates whether to reverse the summation direction.
+  bool reversed = false;
+  // User defined label from MLOperatorOptions.
+  string label;
+};
+
 // Represents an elementwise operator to scale a low precision integer
 // (typically uint8 with a zero-point bias) to floating point:
 //   output = (input - zeroPoint) * scale.
@@ -1220,6 +1244,7 @@ union Operation {
   Clamp clamp;
   Concat concat;
   Conv2d conv2d;
+  CumulativeSum cumulative_sum;
   DequantizeLinear dequantize_linear;
   ElementWiseBinary element_wise_binary;
   Elu elu;

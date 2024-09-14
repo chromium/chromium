@@ -800,6 +800,12 @@ void RetrieveOperationConnectivity(
       output_ids = {conv2d->output_operand_id};
       break;
     }
+    case Operation::Tag::kCumulativeSum: {
+      const auto& cumulative_sum = operation->get_cumulative_sum();
+      input_ids = {cumulative_sum->input_operand_id};
+      output_ids = {cumulative_sum->output_operand_id};
+      break;
+    }
     case Operation::Tag::kDequantizeLinear: {
       const auto& dequantize_linear = operation->get_dequantize_linear();
       input_ids = {dequantize_linear->input_operand_id,

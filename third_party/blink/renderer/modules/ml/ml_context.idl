@@ -54,6 +54,11 @@ dictionary MLConv2dSupportLimits {
   MLSupportLimits output;
 };
 
+dictionary MLCumulativeSumSupportLimits {
+  MLSupportLimits input;
+  MLSupportLimits output;
+};
+
 dictionary MLGatherSupportLimits {
   MLSupportLimits input;
   MLSupportLimits indices;
@@ -169,6 +174,7 @@ dictionary MLOpSupportLimits {
   MLConcatSupportLimits concat;
   MLConv2dSupportLimits conv2d;
   MLConv2dSupportLimits convTranspose2d;
+  MLSingleInputSupportLimits cumulativeSum;
   MLQuantizeDequantizeLinearSupportLimits dequantizeLinear;
 
   // Element-wise binary ops.

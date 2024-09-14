@@ -127,6 +127,12 @@ class GraphInfoBuilder final {
         mojom::Operation::NewConv2d(std::move(conv2d)));
   }
 
+  void BuildCumulativeSum(uint64_t input_operand_id,
+                          uint64_t output_operand_id,
+                          uint32_t axis,
+                          std::optional<bool> exclusive,
+                          std::optional<bool> reversed);
+
   void BuildDequantizeLinear(uint64_t input_operand_id,
                              uint64_t scale_operand_id,
                              uint64_t zero_point_operand_id,

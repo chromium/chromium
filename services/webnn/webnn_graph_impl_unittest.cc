@@ -1540,6 +1540,105 @@ TEST_F(WebNNGraphImplTest, ConvTranspose2dTest) {
   }
 }
 
+struct CumulativeSumTester {
+  OperandInfo input;
+  uint32_t axis;
+  std::optional<bool> exclusive;
+  std::optional<bool> reversed;
+  OperandInfo output;
+  bool expected;
+
+  void Test() {
+    auto context_properties = GetContextPropertiesForTesting();
+
+    // Build the graph with mojo type.
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id =
+        builder.BuildInput("input", input.dimensions, input.type);
+    uint64_t output_operand_id =
+        builder.BuildOutput("output", output.dimensions, output.type);
+    builder.BuildCumulativeSum(input_operand_id, output_operand_id, axis,
+                               exclusive, reversed);
+    EXPECT_EQ(WebNNGraphBuilderImpl::IsValidForTesting(context_properties,
+                                                       builder.GetGraphInfo()),
+              expected);
+  }
+};
+
+TEST_F(WebNNGraphImplTest, CumulativeSumTeste) {
+  {
+    // Test cumulativeSum operator with default exclusive and reversed values.
+    CumulativeSumTester{
+        .input = {.type = OperandDataType::kFloat32, .dimensions = {3, 4}},
+        .axis = 0,
+        .output = {.type = OperandDataType::kFloat32, .dimensions = {3, 4}},
+        .expected = true}
+        .Test();
+  }
+  {
+    // Test cumulativeSum operator with exclusive and reversed.
+    CumulativeSumTester{.input = {.type = OperandDataType::kFloat32,
+                                  .dimensions = {1, 2, 3, 4}},
+                        .axis = 0,
+                        .exclusive = true,
+                        .reversed = true,
+                        .output = {.type = OperandDataType::kFloat32,
+                                   .dimensions = {1, 2, 3, 4}},
+                        .expected = true}
+        .Test();
+  }
+  {
+    // Test cumulativeSum operator with axis=2.
+    CumulativeSumTester{
+        .input = {.type = OperandDataType::kFloat32, .dimensions = {2, 3, 4}},
+        .axis = 2,
+        .output = {.type = OperandDataType::kFloat32, .dimensions = {2, 3, 4}},
+        .expected = true}
+        .Test();
+  }
+  {
+    // Test the invalid graph when the input is a scalar.
+    CumulativeSumTester{
+        .input = {.type = OperandDataType::kFloat32, .dimensions = {}},
+        .axis = 0,
+        .output = {.type = OperandDataType::kFloat16, .dimensions = {}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph with an invalid axis.
+    CumulativeSumTester{
+        .input = {.type = OperandDataType::kFloat32, .dimensions = {2, 3, 4}},
+        .axis = 3,
+        .output = {.type = OperandDataType::kFloat16, .dimensions = {2, 3, 4}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph when output type doesn't match input type.
+    CumulativeSumTester{
+        .input = {.type = OperandDataType::kFloat32, .dimensions = {2, 3, 4}},
+        .axis = 2,
+        .output = {.type = OperandDataType::kFloat16, .dimensions = {2, 3, 4}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph for input operand == output operand.
+    auto context_properties = GetContextPropertiesForTesting();
+    GraphInfoBuilder builder;
+    uint32_t axis = 0;
+    bool exclusive = false;
+    bool reversed = false;
+    uint64_t input_operand_id =
+        builder.BuildInput("input", {1, 1, 3, 3}, OperandDataType::kFloat32);
+    builder.BuildCumulativeSum(input_operand_id, input_operand_id, axis,
+                               exclusive, reversed);
+    EXPECT_FALSE(WebNNGraphBuilderImpl::IsValidForTesting(
+        context_properties, builder.GetGraphInfo()));
+  }
+}
+
 struct DequantizeLinearTester {
   OperandInfo input;
   OperandInfo scale;

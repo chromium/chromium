@@ -771,6 +771,36 @@ bool ValidateConv2d(const ContextProperties& context_properties,
   return true;
 }
 
+bool ValidateCumulativeSum(const ContextProperties& context_properties,
+                           const IdToOperandMap& id_to_operand_map,
+                           const mojom::CumulativeSum& cumulative_sum,
+                           base::flat_set<uint64_t>& processed_operands) {
+  if (!processed_operands.contains(cumulative_sum.input_operand_id)) {
+    return false;
+  }
+  auto* input =
+      GetMojoOperand(id_to_operand_map, cumulative_sum.input_operand_id);
+  auto* output =
+      GetMojoOperand(id_to_operand_map, cumulative_sum.output_operand_id);
+
+  if (!input || !output || output == input) {
+    // The cumulative_sum operator is invalid.
+    return false;
+  }
+
+  auto validated_output = ValidateCumulativeSumAndInferOutput(
+      context_properties, input->descriptor, cumulative_sum.axis,
+      cumulative_sum.label);
+  if (!validated_output.has_value()) {
+    return false;
+  }
+  if (validated_output != output->descriptor) {
+    return false;
+  }
+
+  return true;
+}
+
 bool ValidateDequantizeLinear(const ContextProperties& context_properties,
                               const IdToOperandMap& id_to_operand_map,
                               const mojom::DequantizeLinear& dequantize_linear,
@@ -2176,6 +2206,10 @@ bool ValidateOperation(const ContextProperties& context_properties,
     case mojom::Operation::Tag::kConv2d:
       return ValidateConv2d(context_properties, id_to_operand_map,
                             *operation.get_conv2d(), processed_operands);
+    case mojom::Operation::Tag::kCumulativeSum:
+      return ValidateCumulativeSum(context_properties, id_to_operand_map,
+                                   *operation.get_cumulative_sum(),
+                                   processed_operands);
     case mojom::Operation::Tag::kDequantizeLinear:
       return ValidateDequantizeLinear(context_properties, id_to_operand_map,
                                       *operation.get_dequantize_linear(),

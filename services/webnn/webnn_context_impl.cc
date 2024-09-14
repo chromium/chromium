@@ -163,6 +163,8 @@ ContextProperties WebNNContextImpl::IntersectWithBaseProperties(
       DataTypeConstraint::kFloat16To32);
   backend_context_properties.data_type_limits.cos_input.RetainAll(
       DataTypeConstraint::kFloat16To32);
+  backend_context_properties.data_type_limits.cumulative_sum_input.RetainAll(
+      DataTypeConstraint::kFloat16To32Ints32To64);
   backend_context_properties.data_type_limits.dequantize_linear_input.RetainAll(
       DataTypeConstraint::kInts8);
   backend_context_properties.data_type_limits.dequantize_linear_scale.RetainAll(

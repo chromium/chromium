@@ -443,6 +443,16 @@ base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
                                  const OperandDescriptor& filter,
                                  const Conv2dAttributes& attributes);
 
+// Validate and infer output information of cumulativeSum operator defined in
+// WebIDL here https://www.w3.org/TR/webnn/#api-mlgraphbuilder-cumulativesum
+base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
+    WEBNN_PUBLIC_CPP)
+    ValidateCumulativeSumAndInferOutput(
+        const ContextProperties& context_properties,
+        const OperandDescriptor& input,
+        const uint32_t axis,
+        std::string_view label);
+
 // Validate and infer output information of 2-D transposed convolution operator
 // defined in WebIDL here
 // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-convtranspose2d

@@ -19,6 +19,7 @@ inline constexpr char kArgMin[] = "argMin";
 inline constexpr char kBatchNormalization[] = "batchNormalization";
 inline constexpr char kClamp[] = "clamp";
 inline constexpr char kConcat[] = "concat";
+inline constexpr char kCumulativeSum[] = "cumulativeSum";
 inline constexpr char kDequantizeLinear[] = "dequantizeLinear";
 inline constexpr char kElu[] = "elu";
 inline constexpr char kExpand[] = "expand";

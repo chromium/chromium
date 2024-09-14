@@ -52,6 +52,7 @@ struct DataTypeLimits {
   SupportedDataTypes concat_inputs;
   SupportedDataTypes conv2d_input;
   SupportedDataTypes conv_transpose2d_input;
+  SupportedDataTypes cumulative_sum_input;
 
   // DequantizeLinear.
   SupportedDataTypes dequantize_linear_input;

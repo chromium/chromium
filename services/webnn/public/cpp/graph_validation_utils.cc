@@ -856,6 +856,36 @@ ValidateConvTranspose2dAndInferOutput(
                                                   output_info);
 }
 
+base::expected<OperandDescriptor, std::string>
+ValidateCumulativeSumAndInferOutput(const ContextProperties& context_properties,
+                                    const OperandDescriptor& input,
+                                    const uint32_t axis,
+                                    std::string_view label) {
+  if (input.Rank() == 0) {
+    return base::unexpected(
+        ErrorWithLabel(label, "The input should not be a scalar."));
+  }
+
+  if (input.Rank() <= axis) {
+    return base::unexpected(ErrorWithLabel(
+        label, base::StringPrintf("The axis (%u) must be in the range [0, N-1] "
+                                  "where N (%u) is the rank of input "
+                                  "tensor.",
+                                  axis, input.Rank())));
+  }
+
+  if (!context_properties.data_type_limits.cumulative_sum_input.Has(
+          input.data_type())) {
+    return base::unexpected(ErrorWithLabel(
+        label, NotSupportedInputArgumentTypeError(
+                   input.data_type(),
+                   context_properties.data_type_limits.cumulative_sum_input)));
+  }
+
+  // The data type and shape of input determine the output.
+  return OperandDescriptor::Create(input.data_type(), input.shape());
+}
+
 // This helper method is intended to validate scale and zero_point
 // operands of quantizeLinear and dequantizeLinear against the input
 // operand.

@@ -7,6 +7,7 @@
 #include "services/webnn/public/mojom/webnn_graph.mojom-blink.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_arg_min_max_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_cumulative_sum_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_gru_cell_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_gru_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_lstm_cell_options.h"
@@ -77,6 +78,9 @@ String MLOperator::OperatorKindToString(
           return "convTranspose2d";
       }
     }
+    case webnn::mojom::blink::Operation::Tag::kCumulativeSum:
+      CHECK(absl::holds_alternative<absl::monostate>(sub_kind));
+      return "cumulativeSum";
     case webnn::mojom::blink::Operation::Tag::kDequantizeLinear:
       CHECK(absl::holds_alternative<absl::monostate>(sub_kind));
       return "dequantizeLinear";
@@ -327,6 +331,17 @@ MLConcatOperator::~MLConcatOperator() = default;
 uint32_t MLConcatOperator::Axis() const {
   return axis_;
 }
+
+MLCumulativeSumOperator::MLCumulativeSumOperator(
+    MLGraphBuilder* builder,
+    const uint32_t axis,
+    const MLCumulativeSumOptions* options)
+    : MLOperator(builder,
+                 webnn::mojom::blink::Operation::Tag::kCumulativeSum,
+                 options),
+      axis_(axis) {}
+
+MLCumulativeSumOperator::~MLCumulativeSumOperator() = default;
 
 MLLstmOperator::MLLstmOperator(MLGraphBuilder* builder,
                                uint32_t steps,

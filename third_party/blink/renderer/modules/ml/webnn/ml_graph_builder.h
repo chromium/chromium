@@ -30,6 +30,7 @@ class MLContext;
 class MLClampOptions;
 class MLConv2dOptions;
 class MLConvTranspose2dOptions;
+class MLCumulativeSumOptions;
 class MLEluOptions;
 class MLGatherOptions;
 class MLGemmOptions;
@@ -127,6 +128,11 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
                              const MLOperand* filter,
                              const MLConvTranspose2dOptions* options,
                              ExceptionState& exception_state);
+
+  MLOperand* cumulativeSum(const MLOperand* input,
+                           const uint32_t axis,
+                           const MLCumulativeSumOptions* options,
+                           ExceptionState& exception_state);
 
   // Element-wise binary operations
   MLOperand* add(const MLOperand* a,

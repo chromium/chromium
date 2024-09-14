@@ -17,6 +17,7 @@
 namespace blink {
 
 class MLArgMinMaxOptions;
+class MLCumulativeSumOptions;
 class MLGraphBuilder;
 class MLOperand;
 class MLOperatorOptions;
@@ -135,6 +136,23 @@ class MODULES_EXPORT MLConcatOperator : public MLOperator {
 
  private:
   uint32_t axis_;
+};
+
+class MODULES_EXPORT MLCumulativeSumOperator : public MLOperator {
+ public:
+  MLCumulativeSumOperator(MLGraphBuilder* builder,
+                          const uint32_t axis,
+                          const MLCumulativeSumOptions* options);
+
+  MLCumulativeSumOperator(const MLCumulativeSumOperator&) = delete;
+  MLCumulativeSumOperator& operator=(const MLCumulativeSumOperator&) = delete;
+
+  ~MLCumulativeSumOperator() override;
+
+  uint32_t Axis() const { return axis_; }
+
+ private:
+  const uint32_t axis_;
 };
 
 class MODULES_EXPORT MLLstmOperator : public MLOperator {
