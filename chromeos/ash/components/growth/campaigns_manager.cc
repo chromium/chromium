@@ -8,6 +8,7 @@
 #include <string_view>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "base/base64.h"
@@ -150,6 +151,13 @@ CampaignsManager::~CampaignsManager() {
 
 void CampaignsManager::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
+
+  if (campaigns_loaded_) {
+    // Do not notify the observer immediately in case blocking.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(&CampaignsManager::NotifyCampaignsLoaded,
+                                  weak_factory_.GetWeakPtr()));
+  }
 }
 
 void CampaignsManager::RemoveObserver(Observer* observer) {
@@ -309,6 +317,16 @@ void CampaignsManager::ClearEvent(std::string_view event) {
 
 void CampaignsManager::RecordEvent(const std::string& event,
                                    bool trigger_campaigns) {
+  // TODO: b/366053058 - Implementing the logic to wait for `campaigns_loaded_`.
+  if (!campaigns_loaded_) {
+    return;
+  }
+
+  if (trigger_campaigns &&
+      !ash::features::IsGrowthCampaignsTriggerByRecordEventEnabled()) {
+    return;
+  }
+
   client_->RecordEvent(event, trigger_campaigns);
 }
 

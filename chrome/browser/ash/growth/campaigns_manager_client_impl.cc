@@ -209,8 +209,7 @@ void CampaignsManagerClientImpl::RecordEvent(const std::string& event_name,
   tracker->NotifyEvent(AddEventPrefix(event_name));
 
   if (auto* session = CampaignsManagerSession::Get();
-      ash::features::IsGrowthCampaignsTriggerByRecordEventEnabled() &&
-      trigger_campaigns && session) {
+      session && trigger_campaigns) {
     session->MaybeTriggerCampaignsOnEvent(event_name);
   }
 }
