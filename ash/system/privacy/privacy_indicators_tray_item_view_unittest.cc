@@ -650,6 +650,46 @@ TEST_F(PrivacyIndicatorsTrayItemViewTest, MultipleAppsAccess) {
   EXPECT_FALSE(privacy_indicators_view()->GetVisible());
 }
 
+TEST_F(PrivacyIndicatorsTrayItemViewTest,
+       HidingDelayTimerEnabledWithMultipleAppsAccess) {
+  EXPECT_FALSE(privacy_indicators_view()->GetVisible());
+
+  UpdateCameraAndMicrophoneUsage(
+      /*is_camera_used=*/true,
+      /*is_microphone_used=*/false);
+  // Fast forward by the minimum duration the privacy indicator should be held.
+  task_environment()->FastForwardBy(
+      ash::PrivacyIndicatorsController::kPrivacyIndicatorsMinimumHoldDuration);
+  EXPECT_TRUE(privacy_indicators_view()->GetVisible());
+  EXPECT_TRUE(camera_icon()->GetVisible());
+  EXPECT_FALSE(microphone_icon()->GetVisible());
+
+  // When a new app accessing cam, we will show the icons according to the
+  // access state of that particular app.
+  UpdateCameraAndMicrophoneUsage(
+      /*is_camera_used=*/true,
+      /*is_microphone_used=*/true, /*app_id=*/"app_id2");
+  EXPECT_TRUE(privacy_indicators_view()->GetVisible());
+  EXPECT_TRUE(camera_icon()->GetVisible());
+  EXPECT_TRUE(microphone_icon()->GetVisible());
+
+  // Indicator should still show app 2 after removing app 2 not app 1.
+  UpdateCameraAndMicrophoneUsage(
+      /*is_camera_used=*/false,
+      /*is_microphone_used=*/false, /*app_id=*/"app_id2");
+  EXPECT_TRUE(privacy_indicators_view()->GetVisible());
+  EXPECT_TRUE(camera_icon()->GetVisible());
+  EXPECT_TRUE(microphone_icon()->GetVisible());
+
+  // When the app retries, the visibility remains the same.
+  UpdateCameraAndMicrophoneUsage(
+      /*is_camera_used=*/true,
+      /*is_microphone_used=*/true, /*app_id=*/"app_id2");
+  EXPECT_TRUE(privacy_indicators_view()->GetVisible());
+  EXPECT_TRUE(camera_icon()->GetVisible());
+  EXPECT_TRUE(microphone_icon()->GetVisible());
+}
+
 TEST_F(PrivacyIndicatorsTrayItemViewTest, RecordShowTypeMetrics) {
   auto check_histogram_record = [](bool is_camera_used, bool is_microphone_used,
                                    bool is_screen_sharing,

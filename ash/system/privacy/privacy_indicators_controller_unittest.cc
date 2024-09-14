@@ -687,6 +687,71 @@ TEST_P(PrivacyIndicatorsControllerTest, MicrophoneDisabledWithMultipleApps) {
       notification_id2));
 }
 
+TEST_P(PrivacyIndicatorsControllerTest,
+       HidingDelayTimerMinimumEnabledWithOneApp) {
+  auto* controller = PrivacyIndicatorsController::Get();
+
+  std::string app_id = "test_app_id";
+  scoped_refptr<TestDelegate> delegate = base::MakeRefCounted<TestDelegate>();
+  controller->UpdatePrivacyIndicators(app_id, u"test_app_name",
+                                      /*is_camera_used=*/true,
+                                      /*is_microphone_used=*/false, delegate,
+                                      PrivacyIndicatorsSource::kApps);
+
+  std::string notification_id1 = GetPrivacyIndicatorsNotificationId(app_id);
+  ASSERT_TRUE(message_center::MessageCenter::Get()->FindNotificationById(
+      notification_id1));
+
+  controller->UpdatePrivacyIndicators(app_id, u"test_app_name",
+                                      /*is_camera_used=*/false,
+                                      /*is_microphone_used=*/false, delegate,
+                                      PrivacyIndicatorsSource::kApps);
+  EXPECT_TRUE(message_center::MessageCenter::Get()->FindNotificationById(
+      notification_id1));
+  EXPECT_TRUE(GetPrimaryDisplayPrivacyIndicatorsView()->GetVisible());
+
+  // Fast forward by the minimum duration the privacy indicator should be held.
+  task_environment()->FastForwardBy(
+      PrivacyIndicatorsController::kPrivacyIndicatorsMinimumHoldDuration);
+  EXPECT_FALSE(message_center::MessageCenter::Get()->FindNotificationById(
+      notification_id1));
+  EXPECT_FALSE(GetPrimaryDisplayPrivacyIndicatorsView()->GetVisible());
+}
+
+TEST_P(PrivacyIndicatorsControllerTest, HidingDelayTimerHoldEnabledWithOneApp) {
+  auto* controller = PrivacyIndicatorsController::Get();
+
+  std::string app_id = "test_app_id";
+  scoped_refptr<TestDelegate> delegate = base::MakeRefCounted<TestDelegate>();
+  controller->UpdatePrivacyIndicators(app_id, u"test_app_name",
+                                      /*is_camera_used=*/true,
+                                      /*is_microphone_used=*/false, delegate,
+                                      PrivacyIndicatorsSource::kApps);
+  // Fast forward by the minimum duration the privacy indicator should be held.
+  task_environment()->FastForwardBy(
+      PrivacyIndicatorsController::kPrivacyIndicatorsMinimumHoldDuration);
+
+  std::string notification_id1 = GetPrivacyIndicatorsNotificationId(app_id);
+  ASSERT_TRUE(message_center::MessageCenter::Get()->FindNotificationById(
+      notification_id1));
+
+  controller->UpdatePrivacyIndicators(app_id, u"test_app_name",
+                                      /*is_camera_used=*/false,
+                                      /*is_microphone_used=*/false, delegate,
+                                      PrivacyIndicatorsSource::kApps);
+  EXPECT_TRUE(message_center::MessageCenter::Get()->FindNotificationById(
+      notification_id1));
+  EXPECT_TRUE(GetPrimaryDisplayPrivacyIndicatorsView()->GetVisible());
+
+  // Fast forward by the after use duration the privacy indicator should be
+  // held.
+  task_environment()->FastForwardBy(
+      PrivacyIndicatorsController::kPrivacyIndicatorsHoldAfterUseDuration);
+  EXPECT_FALSE(message_center::MessageCenter::Get()->FindNotificationById(
+      notification_id1));
+  EXPECT_FALSE(GetPrimaryDisplayPrivacyIndicatorsView()->GetVisible());
+}
+
 // Tests to make sure that privacy indicators are updated accordingly in locked
 // screen.
 TEST_P(PrivacyIndicatorsControllerTest, UpdateUsageStageInLockScreen) {
