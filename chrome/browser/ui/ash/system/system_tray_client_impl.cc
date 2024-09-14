@@ -887,8 +887,16 @@ void SystemTrayClientImpl::ShowYouTubeMusicPremiumPage() {
   }
 
   // Launch web app.
-  proxy->LaunchAppWithUrl(web_app::kYoutubeMusicAppId, ui::EF_NONE,
-                          official_url, apps::LaunchSource::kFromFocusMode);
+  proxy->LaunchAppWithUrl(
+      web_app::kYoutubeMusicAppId, ui::EF_NONE, official_url,
+      apps::LaunchSource::kFromFocusMode, /*window_info=*/nullptr,
+      base::BindOnce(
+          [](const GURL& url, apps::LaunchResult&& result) {
+            if (result.state != apps::LaunchResult::State::kSuccess) {
+              OpenInBrowser(url);
+            }
+          },
+          official_url));
 }
 
 void SystemTrayClientImpl::ShowEolInfoPage() {
