@@ -394,6 +394,7 @@ aggregate_vector_icons("ash_vector_icons") {
     "quick_settings_managed.icon",
     "quick_settings_nearby_share_off.icon",
     "quick_settings_nearby_share_on.icon",
+    "quick_settings_quick_share_your_devices.icon",
     "quick_settings_right_arrow.icon",
     "radio_button_unchecked.icon",
     "remove_outline.icon",
