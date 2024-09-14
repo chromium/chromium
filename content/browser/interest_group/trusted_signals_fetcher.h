@@ -14,6 +14,8 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
 #include "base/values.h"
@@ -51,12 +53,14 @@ class CONTENT_EXPORT TrustedSignalsFetcher {
       "message/ad-auction-trusted-signals-response";
 
   // All the data needed to request a particular bidding signals partition.
-  //
-  // TODO(https://crbug.com/333445540): Consider making some of these fields
-  // pointers to reduce copies. Since tests use this class to store arguments,
-  // would need to rework that as well.
   struct CONTENT_EXPORT BiddingPartition {
-    BiddingPartition();
+    // Pointer arguments must remain valid until the BiddingPartition is
+    // destroyed.
+    BiddingPartition(int partition_id,
+                     const std::set<std::string>* interest_group_names,
+                     const std::set<std::string>* keys,
+                     const std::string* hostname,
+                     const base::Value::Dict* additional_params);
     BiddingPartition(BiddingPartition&&);
 
     ~BiddingPartition();
@@ -65,23 +69,25 @@ class CONTENT_EXPORT TrustedSignalsFetcher {
 
     int partition_id;
 
-    std::set<std::string> interest_group_names;
-    std::set<std::string> keys;
-    std::string hostname;
+    base::raw_ref<const std::set<std::string>> interest_group_names;
+    base::raw_ref<const std::set<std::string>> keys;
+    base::raw_ref<const std::string> hostname;
 
     // At the moment, valid keys are "experimentGroupId", "slotSize", and
     // "allSlotsRequestedSizes". We could take them separately, but seems better
     // to take one field rather than several?
-    base::Value::Dict additional_params;
+    base::raw_ref<const base::Value::Dict> additional_params;
   };
 
   // All the data needed to request a particular scoring signals partition.
-  //
-  // TODO(https://crbug.com/333445540): Consider making some of these fields
-  // pointers to reduce copies. Since tests use this class to store arguments,
-  // would need to rework that as well.
   struct CONTENT_EXPORT ScoringPartition {
-    ScoringPartition();
+    // Pointer arguments must remain valid until the ScoringPartition is
+    // destroyed.
+    ScoringPartition(int partition_id,
+                     const GURL* render_url,
+                     const std::set<GURL>* component_render_urls,
+                     const std::string* hostname,
+                     const base::Value::Dict* additional_params);
     ScoringPartition(ScoringPartition&&);
 
     ~ScoringPartition();
@@ -92,15 +98,15 @@ class CONTENT_EXPORT TrustedSignalsFetcher {
 
     // Currently, TrustedSignalsCacheImpl puts the values from each bid in its
     // own partition, so there will always be only one `render_url`.
-    GURL render_url;
+    base::raw_ref<const GURL> render_url;
 
-    std::set<GURL> component_render_urls;
-    std::string hostname;
+    base::raw_ref<const std::set<GURL>> component_render_urls;
+    base::raw_ref<const std::string> hostname;
 
     // At the moment, valid keys are "experimentGroupId", "slotSize", and
     // "allSlotsRequestedSizes". We could take them separately, but seems better
     // to take one field rather than several?
-    base::Value::Dict additional_params;
+    base::raw_ref<const base::Value::Dict> additional_params;
   };
 
   // While buying and scoring signals partitions need different structs when

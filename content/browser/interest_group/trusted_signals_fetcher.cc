@@ -129,8 +129,8 @@ cbor::Value::MapValue BuildMapForBiddingPartition(
   // Hostname isn't in `additional_params` since it's used by the caller to
   // partition fetches.
   metadata.try_emplace(cbor::Value("hostname"),
-                       cbor::Value(bidding_partition.hostname));
-  for (const auto param : bidding_partition.additional_params) {
+                       cbor::Value(*bidding_partition.hostname));
+  for (const auto param : *bidding_partition.additional_params) {
     // TODO(crbug.com/333445540): Consider switching to taking
     // `additional_params` as a cbor::Value, for greater flexibility. The
     // `slotSizes` parameter, in particular, might be best represented as an
@@ -147,8 +147,8 @@ cbor::Value::MapValue BuildMapForBiddingPartition(
 
   cbor::Value::ArrayValue arguments;
   arguments.emplace_back(MakeArgument("interestGroupNames",
-                                      bidding_partition.interest_group_names));
-  arguments.emplace_back(MakeArgument("keys", bidding_partition.keys));
+                                      *bidding_partition.interest_group_names));
+  arguments.emplace_back(MakeArgument("keys", *bidding_partition.keys));
   partition_cbor_map.try_emplace(cbor::Value("arguments"),
                                  cbor::Value(std::move(arguments)));
 
@@ -212,7 +212,17 @@ std::string BuildBiddingSignalsRequestBody(
 
 }  // namespace
 
-TrustedSignalsFetcher::BiddingPartition::BiddingPartition() = default;
+TrustedSignalsFetcher::BiddingPartition::BiddingPartition(
+    int partition_id,
+    const std::set<std::string>* interest_group_names,
+    const std::set<std::string>* keys,
+    const std::string* hostname,
+    const base::Value::Dict* additional_params)
+    : partition_id(partition_id),
+      interest_group_names(*interest_group_names),
+      keys(*keys),
+      hostname(*hostname),
+      additional_params(*additional_params) {}
 
 TrustedSignalsFetcher::BiddingPartition::BiddingPartition(BiddingPartition&&) =
     default;
@@ -223,7 +233,17 @@ TrustedSignalsFetcher::BiddingPartition&
 TrustedSignalsFetcher::BiddingPartition::operator=(BiddingPartition&&) =
     default;
 
-TrustedSignalsFetcher::ScoringPartition::ScoringPartition() = default;
+TrustedSignalsFetcher::ScoringPartition::ScoringPartition(
+    int partition_id,
+    const GURL* render_url,
+    const std::set<GURL>* component_render_urls,
+    const std::string* hostname,
+    const base::Value::Dict* additional_params)
+    : partition_id(partition_id),
+      render_url(*render_url),
+      component_render_urls(*component_render_urls),
+      hostname(*hostname),
+      additional_params(*additional_params) {}
 
 TrustedSignalsFetcher::ScoringPartition::ScoringPartition(ScoringPartition&&) =
     default;

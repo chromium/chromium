@@ -170,11 +170,9 @@ class TrustedSignalsFetcherTest : public testing::Test {
   std::map<int, std::vector<TrustedSignalsFetcher::BiddingPartition>>
   CreateBasicBiddingSignalsRequest() {
     std::vector<TrustedSignalsFetcher::BiddingPartition> bidding_partitions;
-    bidding_partitions.emplace_back();
-    bidding_partitions[0].partition_id = 0;
-    bidding_partitions[0].hostname = "host.test";
-    bidding_partitions[0].interest_group_names = {"group1"};
-    bidding_partitions[0].keys = {"key1"};
+    bidding_partitions.emplace_back(
+        /*partition_id=*/0, &kDefaultInterestGroupNames, &kDefaultKeys,
+        &kDefaultHostname, &kDefaultAdditionalParams);
 
     std::map<int, std::vector<TrustedSignalsFetcher::BiddingPartition>>
         bidding_signals_request;
@@ -371,6 +369,14 @@ class TrustedSignalsFetcherTest : public testing::Test {
   const std::string kTrustedBiddingSignalsPath = "/bidder-signals";
   const std::string kTrustedSignalsHost = "a.test";
 
+  // Default values used by CreateBasicBiddingSignalsRequest(). They need to be
+  // fields of the test fixture to keep them alive, since the returned
+  // BiddingPartition holds onto non-owning raw pointers.
+  const std::set<std::string> kDefaultInterestGroupNames{"group1"};
+  const std::set<std::string> kDefaultKeys{"key1"};
+  const std::string kDefaultHostname{"host.test"};
+  const base::Value::Dict kDefaultAdditionalParams;
+
   // Values returned for requests to the test server for
   // `kTrustedBiddingSignalsPath`.
   std::string response_mime_type_{TrustedSignalsFetcher::kResponseMediaType};
@@ -502,7 +508,8 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsHasNoCookies) {
 
 TEST_F(TrustedSignalsFetcherTest, BiddingSignalsNoKeys) {
   auto bidding_signals_request = CreateBasicBiddingSignalsRequest();
-  bidding_signals_request[0][0].keys.clear();
+  const std::set<std::string> kNoKeys;
+  bidding_signals_request[0][0].keys = kNoKeys;
 
   // Request body as a JSON string. Will be converted to CBOR and have a framing
   // header and padding added before beign compared to actual body.
@@ -542,7 +549,8 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsOneKey) {
 
 TEST_F(TrustedSignalsFetcherTest, BiddingSignalsMultipleKeys) {
   auto bidding_signals_request = CreateBasicBiddingSignalsRequest();
-  bidding_signals_request[0][0].keys = {"key1", "key2", "key3"};
+  const std::set<std::string> kKeys = {"key1", "key2", "key3"};
+  bidding_signals_request[0][0].keys = kKeys;
 
   // Request body as a JSON string. Will be converted to CBOR and have a framing
   // header and padding added before beign compared to actual body.
@@ -575,8 +583,9 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsMultipleKeys) {
 
 TEST_F(TrustedSignalsFetcherTest, BiddingSignalsMultipleInterestGroups) {
   auto bidding_signals_request = CreateBasicBiddingSignalsRequest();
-  bidding_signals_request[0][0].interest_group_names = {"group1", "group2",
-                                                        "group3"};
+  const std::set<std::string> kInterestGroupNames = {"group1", "group2",
+                                                     "group3"};
+  bidding_signals_request[0][0].interest_group_names = kInterestGroupNames;
 
   // Request body as a JSON string. Will be converted to CBOR and have a framing
   // header and padding added before beign compared to actual body.
@@ -609,7 +618,9 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsMultipleInterestGroups) {
 
 TEST_F(TrustedSignalsFetcherTest, BiddingSignalsOneAdditionalParam) {
   auto bidding_signals_request = CreateBasicBiddingSignalsRequest();
-  bidding_signals_request[0][0].additional_params.Set("foo", "bar");
+  base::Value::Dict additional_params;
+  additional_params.Set("foo", base::Value("bar"));
+  bidding_signals_request[0][0].additional_params = additional_params;
 
   // Request body as a JSON string. Will be converted to CBOR and have a framing
   // header and padding added before beign compared to actual body.
@@ -642,9 +653,11 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsOneAdditionalParam) {
 
 TEST_F(TrustedSignalsFetcherTest, BiddingSignalsMultipleAdditionalParams) {
   auto bidding_signals_request = CreateBasicBiddingSignalsRequest();
-  bidding_signals_request[0][0].additional_params.Set("foo", "bar");
-  bidding_signals_request[0][0].additional_params.Set("Foo", "bAr");
-  bidding_signals_request[0][0].additional_params.Set("oof", "rab");
+  base::Value::Dict additional_params;
+  additional_params.Set("foo", "bar");
+  additional_params.Set("Foo", "bAr");
+  additional_params.Set("oof", "rab");
+  bidding_signals_request[0][0].additional_params = additional_params;
 
   // Request body as a JSON string. Will be converted to CBOR and have a framing
   // header and padding added before beign compared to actual body.
@@ -684,11 +697,9 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsMultipleAdditionalParams) {
 // the index 0.
 TEST_F(TrustedSignalsFetcherTest, BiddingSignalsNoZeroIndices) {
   std::vector<TrustedSignalsFetcher::BiddingPartition> bidding_partitions;
-  bidding_partitions.emplace_back();
-  bidding_partitions[0].partition_id = 7;
-  bidding_partitions[0].hostname = "host.test";
-  bidding_partitions[0].interest_group_names = {"group7"};
-  bidding_partitions[0].keys = {"key1"};
+  bidding_partitions.emplace_back(/*partition_id=*/7,
+                                  &kDefaultInterestGroupNames, &kDefaultKeys,
+                                  &kDefaultHostname, &kDefaultAdditionalParams);
   std::map<int, std::vector<TrustedSignalsFetcher::BiddingPartition>>
       bidding_signals_request;
   bidding_signals_request.emplace(3, std::move(bidding_partitions));
@@ -706,7 +717,7 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsNoZeroIndices) {
                "arguments": [
                  {
                    "tags": [ "interestGroupNames" ],
-                   "data": [ "group7" ]
+                   "data": [ "group1" ]
                  },
                  {
                    "tags": [ "keys" ],
@@ -763,7 +774,8 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsRequestPadding) {
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(test_case.interest_group_name_length);
     std::string name = std::string(test_case.interest_group_name_length, 'a');
-    bidding_signals_request[0][0].interest_group_names = {name};
+    std::set<std::string> interest_group_names = {name};
+    bidding_signals_request[0][0].interest_group_names = interest_group_names;
     ValidateDefaultFetchResult(
         RequestBiddingSignalsAndWaitForResult(bidding_signals_request));
     EXPECT_EQ(GetEncryptedRequestBodyLength(),
@@ -1315,19 +1327,22 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsMultiplePartitions) {
   auto bidding_signals_request = CreateBasicBiddingSignalsRequest();
   auto* bidding_partitions = &bidding_signals_request[0];
 
-  auto* bidding_partition2 = &bidding_partitions->emplace_back();
-  bidding_partition2->partition_id = 1;
-  bidding_partition2->hostname = "host2.test";
-  bidding_partition2->interest_group_names = {"group2"};
-  bidding_partition2->keys = {"key2"};
-  bidding_partition2->additional_params.Set("foo", "bar");
+  const std::set<std::string> kInterestGroupNames2{"group2"};
+  const std::set<std::string> kKeys2{"key2"};
+  const std::string kHostname2{"host2.test"};
+  base::Value::Dict additional_params2;
+  additional_params2.Set("foo", "bar");
+  bidding_partitions->emplace_back(/*partition_id=*/1, &kInterestGroupNames2,
+                                   &kKeys2, &kHostname2, &additional_params2);
 
-  auto* bidding_partition3 = &bidding_partitions->emplace_back();
-  bidding_partition3->partition_id = 2;
-  bidding_partition3->hostname = "host3.test";
-  bidding_partition3->interest_group_names = {"group1", "group2", "group3"};
-  bidding_partition3->keys = {"key1", "key2", "key3"};
-  bidding_partition3->additional_params.Set("foo2", "bar2");
+  const std::set<std::string> kInterestGroupNames3{"group1", "group2",
+                                                   "group3"};
+  const std::set<std::string> kKeys3{"key1", "key2", "key3"};
+  const std::string kHostname3{"host3.test"};
+  base::Value::Dict additional_params3;
+  additional_params3.Set("foo2", "bar2");
+  bidding_partitions->emplace_back(/*partition_id=*/2, &kInterestGroupNames3,
+                                   &kKeys3, &kHostname3, &additional_params3);
 
   // Request body as a JSON string. Will be converted to CBOR and have a framing
   // header and padding added before beign compared to actual body.
@@ -1418,22 +1433,25 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsDuplicateCompressionGroups) {
 TEST_F(TrustedSignalsFetcherTest, BiddingSignalsMultipleCompressionGroups) {
   auto bidding_signals_request = CreateBasicBiddingSignalsRequest();
 
+  const std::set<std::string> kInterestGroupNames2{"group2"};
+  const std::set<std::string> kKeys2{"key2"};
+  const std::string kHostname2{"host2.test"};
+  base::Value::Dict additional_params2;
+  additional_params2.Set("foo", "bar");
   std::vector<TrustedSignalsFetcher::BiddingPartition> bidding_partitions2;
-  auto* bidding_partition2 = &bidding_partitions2.emplace_back();
-  bidding_partition2->partition_id = 0;
-  bidding_partition2->hostname = "host2.test";
-  bidding_partition2->interest_group_names = {"group2"};
-  bidding_partition2->keys = {"key2"};
-  bidding_partition2->additional_params.Set("foo", "bar");
+  bidding_partitions2.emplace_back(/*partition_id=*/0, &kInterestGroupNames2,
+                                   &kKeys2, &kHostname2, &additional_params2);
   bidding_signals_request.emplace(1, std::move(bidding_partitions2));
 
+  const std::set<std::string> kInterestGroupNames3{"group1", "group2",
+                                                   "group3"};
+  const std::set<std::string> kKeys3{"key1", "key2", "key3"};
+  const std::string kHostname3{"host3.test"};
+  base::Value::Dict additional_params3;
+  additional_params3.Set("foo2", "bar2");
   std::vector<TrustedSignalsFetcher::BiddingPartition> bidding_partitions3;
-  auto* bidding_partition3 = &bidding_partitions3.emplace_back();
-  bidding_partition3->partition_id = 0;
-  bidding_partition3->hostname = "host3.test";
-  bidding_partition3->interest_group_names = {"group1", "group2", "group3"};
-  bidding_partition3->keys = {"key1", "key2", "key3"};
-  bidding_partition3->additional_params.Set("foo2", "bar2");
+  bidding_partitions3.emplace_back(/*partition_id=*/0, &kInterestGroupNames3,
+                                   &kKeys3, &kHostname3, &additional_params3);
   bidding_signals_request.emplace(2, std::move(bidding_partitions3));
 
   // Request body as a JSON string. Will be converted to CBOR and have a framing
@@ -1534,22 +1552,25 @@ TEST_F(TrustedSignalsFetcherTest,
        BiddingSignalsMultipleCompressionGroupsFailsWhenOneBad) {
   auto bidding_signals_request = CreateBasicBiddingSignalsRequest();
 
+  const std::set<std::string> kInterestGroupNames2{"group2"};
+  const std::set<std::string> kKeys2{"key2"};
+  const std::string kHostname2{"host2.test"};
+  base::Value::Dict additional_params2;
+  additional_params2.Set("foo", "bar");
   std::vector<TrustedSignalsFetcher::BiddingPartition> bidding_partitions2;
-  auto* bidding_partition2 = &bidding_partitions2.emplace_back();
-  bidding_partition2->partition_id = 0;
-  bidding_partition2->hostname = "host2.test";
-  bidding_partition2->interest_group_names = {"group2"};
-  bidding_partition2->keys = {"key2"};
-  bidding_partition2->additional_params.Set("foo", "bar");
+  bidding_partitions2.emplace_back(/*partition_id=*/0, &kInterestGroupNames2,
+                                   &kKeys2, &kHostname2, &additional_params2);
   bidding_signals_request.emplace(1, std::move(bidding_partitions2));
 
+  const std::set<std::string> kInterestGroupNames3{"group1", "group2",
+                                                   "group3"};
+  const std::set<std::string> kKeys3{"key1", "key2", "key3"};
+  const std::string kHostname3{"host3.test"};
+  base::Value::Dict additional_params3;
+  additional_params3.Set("foo2", "bar2");
   std::vector<TrustedSignalsFetcher::BiddingPartition> bidding_partitions3;
-  auto* bidding_partition3 = &bidding_partitions3.emplace_back();
-  bidding_partition3->partition_id = 0;
-  bidding_partition3->hostname = "host3.test";
-  bidding_partition3->interest_group_names = {"group1", "group2", "group3"};
-  bidding_partition3->keys = {"key1", "key2", "key3"};
-  bidding_partition3->additional_params.Set("foo2", "bar2");
+  bidding_partitions3.emplace_back(/*partition_id=*/0, &kInterestGroupNames3,
+                                   &kKeys3, &kHostname3, &additional_params3);
   bidding_signals_request.emplace(2, std::move(bidding_partitions3));
 
   // Request body as a JSON string. Will be converted to CBOR and have a framing

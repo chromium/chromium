@@ -967,17 +967,13 @@ void TrustedSignalsCacheImpl::StartBiddingSignalsFetch(
          compression_group->compression_group_data->bidding_cache_entries()) {
       auto* cache_entry = &cache_entry_it.second->second;
       auto* cache_key = &cache_entry_it.second->first;
-      bidding_partitions.emplace_back();
-      auto* bidding_partition = &bidding_partitions.back();
-
-      bidding_partition->partition_id = cache_entry->partition_id;
-      bidding_partition->interest_group_names =
-          cache_entry->interest_group_names;
-      bidding_partition->keys = cache_entry->keys;
-      bidding_partition->hostname =
-          cache_key->fetch_key.main_frame_origin.host();
-      bidding_partition->additional_params =
-          cache_key->additional_params.Clone();
+      // Passing int all these pointers is safe, since `bidding_partitions` will
+      // be destroyed at the end of this function, and FetchBiddingSignals()
+      // will not retain pointers to them.
+      bidding_partitions.emplace_back(
+          cache_entry->partition_id, &cache_entry->interest_group_names,
+          &cache_entry->keys, &cache_key->fetch_key.main_frame_origin.host(),
+          &cache_key->additional_params);
     }
   }
   fetch->fetcher->FetchBiddingSignals(
@@ -1010,17 +1006,14 @@ void TrustedSignalsCacheImpl::StartScoringSignalsFetch(
          compression_group->compression_group_data->scoring_cache_entries()) {
       auto* cache_entry = &cache_entry_it.second->second;
       auto* cache_key = &cache_entry_it.second->first;
-      scoring_partitions.emplace_back();
-      auto* scoring_partition = &scoring_partitions.back();
-
-      scoring_partition->partition_id = cache_entry->partition_id;
-      scoring_partition->render_url = cache_key->render_url;
-      scoring_partition->component_render_urls =
-          cache_key->component_render_urls;
-      scoring_partition->hostname =
-          cache_key->fetch_key.main_frame_origin.host();
-      scoring_partition->additional_params =
-          cache_key->additional_params.Clone();
+      // Passing int all these pointers is safe, since `scoring_partitions` will
+      // be destroyed at the end of this function, and FetchBiddingSignals()
+      // will not retain pointers to them.
+      scoring_partitions.emplace_back(
+          cache_entry->partition_id, &cache_key->render_url,
+          &cache_key->component_render_urls,
+          &cache_key->fetch_key.main_frame_origin.host(),
+          &cache_key->additional_params);
     }
   }
   fetch->fetcher->FetchScoringSignals(
