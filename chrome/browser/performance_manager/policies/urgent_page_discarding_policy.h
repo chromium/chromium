@@ -44,6 +44,7 @@ class UrgentPageDiscardingPolicy : public GraphOwned,
 #if BUILDFLAG(IS_CHROMEOS)
   // Called when the reclaim target is ready.
   void OnReclaimTarget(
+      base::TimeTicks on_memory_pressure_at,
       std::optional<memory_pressure::ReclaimTarget> reclaim_target_kb);
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 

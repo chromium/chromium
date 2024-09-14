@@ -124,6 +124,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Discarding.DiscardLatency" units="ms"
+    expires_after="2025-02-02">
+  <owner>kalutes@chromium.org</owner>
+  <owner>kawasin@chromium.org</owner>
+  <owner>vovoy@chromium.org</owner>
+  <summary>
+    Reported for ChromeOS only. The latency since Chrome start handling a
+    discard request and until the first tab discarding from the request
+    completes. This is recorded when discarding tabs for the request completes
+    in success.
+  </summary>
+</histogram>
+
 <histogram name="Discarding.DiscardsDrivenByStaleSignal" units="tabs"
     expires_after="2025-02-02">
   <owner>kalutes@chromium.org</owner>
@@ -156,6 +169,19 @@ chromium-metrics-reviews@google.com.
   <owner>chrisha@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>The resident set of the oldest urgent discarding candidate.</summary>
+</histogram>
+
+<histogram name="Discarding.ReclaimArrivalLatency" units="ms"
+    expires_after="2025-02-02">
+  <owner>kalutes@chromium.org</owner>
+  <owner>kawasin@chromium.org</owner>
+  <owner>vovoy@chromium.org</owner>
+  <summary>
+    Reported for ChromeOS only. The latency since a critical memory pressure
+    signal is sent from resourced and until Chrome start handling the discard
+    request. This is recorded when discarding tabs for the request completes in
+    success.
+  </summary>
 </histogram>
 
 <histogram name="Discarding.ReclaimTargetAge" units="ms"

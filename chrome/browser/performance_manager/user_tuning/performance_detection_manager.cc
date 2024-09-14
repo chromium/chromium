@@ -104,7 +104,10 @@ void PerformanceDetectionManager::DiscardTabs(
             CHECK(helper);
             helper->ImmediatelyDiscardMultiplePages(
                 eligible_nodes, ::mojom::LifecycleUnitDiscardReason::SUGGESTED,
-                std::move(post_discard_cb));
+                base::BindOnce([](std::optional<base::TimeTicks>
+                                      first_discarded_at) {
+                  return first_discarded_at.has_value();
+                }).Then(std::move(post_discard_cb)));
           },
           std::move(tabs),
           std::move(callback).Then(

@@ -449,7 +449,9 @@ TEST_F(PageDiscardingHelperTest, DiscardMultiplePagesNoCandidate) {
   PageDiscardingHelper::GetFromGraph(graph())->DiscardMultiplePages(
       memory_pressure::ReclaimTarget(/*reclaim_target_kb*/ 1024),
       /*discard_protected_tabs*/ false,
-      base::BindOnce([](bool success) { EXPECT_FALSE(success); }),
+      base::BindOnce([](std::optional<base::TimeTicks> first_discarded_at) {
+        EXPECT_FALSE(first_discarded_at.has_value());
+      }),
       DiscardReason::URGENT);
   ::testing::Mock::VerifyAndClearExpectations(discarder());
 }
@@ -464,7 +466,9 @@ TEST_F(PageDiscardingHelperTest, DiscardMultiplePagesDiscardProtected) {
   PageDiscardingHelper::GetFromGraph(graph())->DiscardMultiplePages(
       memory_pressure::ReclaimTarget(/*reclaim_target_kb*/ 1024),
       /*discard_protected_tabs*/ true,
-      base::BindOnce([](bool success) { EXPECT_TRUE(success); }),
+      base::BindOnce([](std::optional<base::TimeTicks> first_discarded_at) {
+        EXPECT_TRUE(first_discarded_at.has_value());
+      }),
       DiscardReason::URGENT);
   ::testing::Mock::VerifyAndClearExpectations(discarder());
 }
@@ -490,7 +494,9 @@ TEST_F(PageDiscardingHelperTest, DiscardMultiplePagesTwoCandidates) {
   PageDiscardingHelper::GetFromGraph(graph())->DiscardMultiplePages(
       memory_pressure::ReclaimTarget(/*reclaim_target_kb*/ 2048),
       /*discard_protected_tabs*/ true,
-      base::BindOnce([](bool success) { EXPECT_TRUE(success); }),
+      base::BindOnce([](std::optional<base::TimeTicks> first_discarded_at) {
+        EXPECT_TRUE(first_discarded_at.has_value());
+      }),
       DiscardReason::URGENT);
   ::testing::Mock::VerifyAndClearExpectations(discarder());
 }
@@ -518,7 +524,9 @@ TEST_F(PageDiscardingHelperTest, DiscardMultiplePagesTwoCandidatesProtected) {
   PageDiscardingHelper::GetFromGraph(graph())->DiscardMultiplePages(
       memory_pressure::ReclaimTarget(/*reclaim_target_kb*/ 1000000),
       /*discard_protected_tabs*/ false,
-      base::BindOnce([](bool success) { EXPECT_TRUE(success); }),
+      base::BindOnce([](std::optional<base::TimeTicks> first_discarded_at) {
+        EXPECT_TRUE(first_discarded_at.has_value());
+      }),
       DiscardReason::URGENT);
   ::testing::Mock::VerifyAndClearExpectations(discarder());
 }
@@ -560,7 +568,9 @@ TEST_F(PageDiscardingHelperTest, DiscardMultiplePagesThreeCandidates) {
   PageDiscardingHelper::GetFromGraph(graph())->DiscardMultiplePages(
       memory_pressure::ReclaimTarget(/*reclaim_target_kb*/ 1500),
       /*discard_protected_tabs*/ true,
-      base::BindOnce([](bool success) { EXPECT_TRUE(success); }),
+      base::BindOnce([](std::optional<base::TimeTicks> first_discarded_at) {
+        EXPECT_TRUE(first_discarded_at.has_value());
+      }),
       DiscardReason::URGENT);
   ::testing::Mock::VerifyAndClearExpectations(discarder());
   histogram_tester()->ExpectBucketCount("Discarding.DiscardCandidatesCount", 3,
@@ -608,7 +618,9 @@ TEST_F(PageDiscardingHelperTest,
   PageDiscardingHelper::GetFromGraph(graph())->DiscardMultiplePages(
       memory_pressure::ReclaimTarget(/*reclaim_target_kb*/ 1500),
       /*discard_protected_tabs*/ true,
-      base::BindOnce([](bool success) { EXPECT_TRUE(success); }),
+      base::BindOnce([](std::optional<base::TimeTicks> first_discarded_at) {
+        EXPECT_TRUE(first_discarded_at.has_value());
+      }),
       DiscardReason::URGENT);
   ::testing::Mock::VerifyAndClearExpectations(discarder());
 }
@@ -634,7 +646,9 @@ TEST_F(PageDiscardingHelperTest, DiscardMultiplePagesNoDiscardable) {
   PageDiscardingHelper::GetFromGraph(graph())->DiscardMultiplePages(
       memory_pressure::ReclaimTarget(/*reclaim_target_kb*/ 10240),
       /*discard_protected_tabs*/ true,
-      base::BindOnce([](bool success) { EXPECT_FALSE(success); }),
+      base::BindOnce([](std::optional<base::TimeTicks> first_discarded_at) {
+        EXPECT_FALSE(first_discarded_at.has_value());
+      }),
       DiscardReason::URGENT);
   ::testing::Mock::VerifyAndClearExpectations(discarder());
 }
@@ -644,7 +658,9 @@ TEST_F(PageDiscardingHelperTest, DiscardMultiplePagesNoDiscardable) {
 TEST_F(PageDiscardingHelperTest, DiscardAPageNoCandidate) {
   page_node()->SetIsVisible(true);
   PageDiscardingHelper::GetFromGraph(graph())->DiscardAPage(
-      base::BindOnce([](bool success) { EXPECT_FALSE(success); }),
+      base::BindOnce([](std::optional<base::TimeTicks> first_discarded_at) {
+        EXPECT_FALSE(first_discarded_at.has_value());
+      }),
       DiscardReason::URGENT);
   ::testing::Mock::VerifyAndClearExpectations(discarder());
 }
@@ -653,7 +669,9 @@ TEST_F(PageDiscardingHelperTest, DiscardAPageSingleCandidate) {
   EXPECT_CALL(*discarder(), DiscardPageNodeImpl(page_node()))
       .WillOnce(Return(true));
   PageDiscardingHelper::GetFromGraph(graph())->DiscardAPage(
-      base::BindOnce([](bool success) { EXPECT_TRUE(success); }),
+      base::BindOnce([](std::optional<base::TimeTicks> first_discarded_at) {
+        EXPECT_TRUE(first_discarded_at.has_value());
+      }),
       DiscardReason::URGENT);
   ::testing::Mock::VerifyAndClearExpectations(discarder());
   histogram_tester()->ExpectBucketCount("Discarding.DiscardCandidatesCount", 1,
@@ -664,7 +682,9 @@ TEST_F(PageDiscardingHelperTest, DiscardAPageSingleCandidateFails) {
   EXPECT_CALL(*discarder(), DiscardPageNodeImpl(page_node()))
       .WillOnce(Return(false));
   PageDiscardingHelper::GetFromGraph(graph())->DiscardAPage(
-      base::BindOnce([](bool success) { EXPECT_FALSE(success); }),
+      base::BindOnce([](std::optional<base::TimeTicks> first_discarded_at) {
+        EXPECT_FALSE(first_discarded_at.has_value());
+      }),
       DiscardReason::URGENT);
   ::testing::Mock::VerifyAndClearExpectations(discarder());
   // There should be 2 discard attempts, during the first one an attempt will be
@@ -700,7 +720,9 @@ TEST_F(PageDiscardingHelperTest, DiscardAPageTwoCandidates) {
       .WillOnce(Return(true));
 
   PageDiscardingHelper::GetFromGraph(graph())->DiscardAPage(
-      base::BindOnce([](bool success) { EXPECT_TRUE(success); }),
+      base::BindOnce([](std::optional<base::TimeTicks> first_discarded_at) {
+        EXPECT_TRUE(first_discarded_at.has_value());
+      }),
       DiscardReason::URGENT);
   ::testing::Mock::VerifyAndClearExpectations(discarder());
 
@@ -728,7 +750,9 @@ TEST_F(PageDiscardingHelperTest, DiscardAPageTwoCandidatesFirstFails) {
       .WillOnce(Return(true));
 
   PageDiscardingHelper::GetFromGraph(graph())->DiscardAPage(
-      base::BindOnce([](bool success) { EXPECT_TRUE(success); }),
+      base::BindOnce([](std::optional<base::TimeTicks> first_discarded_at) {
+        EXPECT_TRUE(first_discarded_at.has_value());
+      }),
       DiscardReason::URGENT);
   ::testing::Mock::VerifyAndClearExpectations(discarder());
 }
@@ -753,7 +777,9 @@ TEST_F(PageDiscardingHelperTest, DiscardAPageTwoCandidatesMultipleFrames) {
       .WillOnce(Return(true));
 
   PageDiscardingHelper::GetFromGraph(graph())->DiscardAPage(
-      base::BindOnce([](bool success) { EXPECT_TRUE(success); }),
+      base::BindOnce([](std::optional<base::TimeTicks> first_discarded_at) {
+        EXPECT_TRUE(first_discarded_at.has_value());
+      }),
       DiscardReason::URGENT);
   ::testing::Mock::VerifyAndClearExpectations(discarder());
 }
@@ -780,7 +806,9 @@ TEST_F(PageDiscardingHelperTest, DiscardAPageTwoCandidatesNoRSSData) {
       .WillOnce(Return(true));
 
   PageDiscardingHelper::GetFromGraph(graph())->DiscardAPage(
-      base::BindOnce([](bool success) { EXPECT_TRUE(success); }),
+      base::BindOnce([](std::optional<base::TimeTicks> first_discarded_at) {
+        EXPECT_TRUE(first_discarded_at.has_value());
+      }),
       DiscardReason::URGENT);
   ::testing::Mock::VerifyAndClearExpectations(discarder());
 }
@@ -811,7 +839,9 @@ TEST_F(PageDiscardingHelperTest, DiscardMultiplePagesTwoCandidatesNoRSSData) {
   PageDiscardingHelper::GetFromGraph(graph())->DiscardMultiplePages(
       /*reclaim_target*/ std::nullopt,
       /*discard_protected_tabs*/ true,
-      base::BindOnce([](bool success) { EXPECT_TRUE(success); }),
+      base::BindOnce([](std::optional<base::TimeTicks> first_discarded_at) {
+        EXPECT_TRUE(first_discarded_at.has_value());
+      }),
       DiscardReason::URGENT);
   ::testing::Mock::VerifyAndClearExpectations(discarder());
 }
@@ -843,7 +873,9 @@ TEST_F(PageDiscardingHelperTest, DiscardingProtectedTabReported) {
   PageDiscardingHelper::GetFromGraph(graph())->DiscardMultiplePages(
       memory_pressure::ReclaimTarget(/*reclaim_target_kb*/ 1),
       /*discard_protected_tabs*/ true,
-      base::BindOnce([](bool success) { EXPECT_TRUE(success); }),
+      base::BindOnce([](std::optional<base::TimeTicks> first_discarded_at) {
+        EXPECT_TRUE(first_discarded_at.has_value());
+      }),
       DiscardReason::URGENT);
   ::testing::Mock::VerifyAndClearExpectations(discarder());
 
@@ -864,7 +896,9 @@ TEST_F(PageDiscardingHelperTest, DiscardingUnprotectedTabReported) {
   PageDiscardingHelper::GetFromGraph(graph())->DiscardMultiplePages(
       memory_pressure::ReclaimTarget(/*reclaim_target_kb*/ 1),
       /*discard_protected_tabs*/ true,
-      base::BindOnce([](bool success) { EXPECT_TRUE(success); }),
+      base::BindOnce([](std::optional<base::TimeTicks> first_discarded_at) {
+        EXPECT_TRUE(first_discarded_at.has_value());
+      }),
       DiscardReason::URGENT);
   ::testing::Mock::VerifyAndClearExpectations(discarder());
 
@@ -885,7 +919,9 @@ TEST_F(PageDiscardingHelperTest, DiscardingFocusedTabReported) {
   PageDiscardingHelper::GetFromGraph(graph())->DiscardMultiplePages(
       memory_pressure::ReclaimTarget(/*reclaim_target_kb*/ 1),
       /*discard_protected_tabs*/ true,
-      base::BindOnce([](bool success) { EXPECT_TRUE(success); }),
+      base::BindOnce([](std::optional<base::TimeTicks> first_discarded_at) {
+        EXPECT_TRUE(first_discarded_at.has_value());
+      }),
       DiscardReason::URGENT);
   ::testing::Mock::VerifyAndClearExpectations(discarder());
 
@@ -905,7 +941,9 @@ TEST_F(PageDiscardingHelperTest, DiscardingUnfocusedTabReported) {
   PageDiscardingHelper::GetFromGraph(graph())->DiscardMultiplePages(
       memory_pressure::ReclaimTarget(/*reclaim_target_kb*/ 1),
       /*discard_protected_tabs*/ true,
-      base::BindOnce([](bool success) { EXPECT_TRUE(success); }),
+      base::BindOnce([](std::optional<base::TimeTicks> first_discarded_at) {
+        EXPECT_TRUE(first_discarded_at.has_value());
+      }),
       DiscardReason::URGENT);
   ::testing::Mock::VerifyAndClearExpectations(discarder());
 
