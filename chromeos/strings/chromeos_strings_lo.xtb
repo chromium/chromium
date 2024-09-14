@@ -255,6 +255,7 @@
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2148716181193084225">ມື້​ນີ້</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> ຮູບ</translation>
+<translation id="2154460308960858308">ລຶບລ້າງການຊອກຫາ</translation>
 <translation id="2156072344042480449">prompt 2 ລາຍການຫຼ້າສຸດຂອງທ່ານ. ທ່ານສາມາດໃຊ້ prompt ເຫຼົ່ານີ້ໄດ້ໃນລະຫວ່າງທີ່ທ່ານຢູ່ໃນໜ້ານີ້ເທົ່ານັ້ນ.</translation>
 <translation id="2157660087437850958">ຕົວເລືອກອີໂມຈິ</translation>
 <translation id="2157959690810728433">ເຂົ້າຄິວແລ້ວ</translation>
@@ -501,6 +502,7 @@
 <translation id="3557205324756024651">ຂໍ້ມູນປະຈຳຕົວໃນເຄື່ອງ (ບໍ່ບັງຄັບ)</translation>
 <translation id="3565064564551103223">IP ທີ່ອະນຸຍາດ</translation>
 <translation id="3569407787324516067">ພາບພັກໜ້າຈໍ</translation>
+<translation id="3571184524500629183">ປິດການຊອກຫາ</translation>
 <translation id="3577473026931028326">ມີບາງຢ່າງຜິດພາດເກີດຂຶ້ນ. ກະລຸນາລອງໃໝ່.</translation>
 <translation id="357889014807611375">Wi-Fi ທີ່ວັດແທກການໃຊ້ອິນເຕີເນັດ</translation>
 <translation id="3583278742022654445">ຄວາມແຮງສັນຍານອ່ອນ. ໃຫ້ລອງຍ້າຍໄປໃກ້ແຫຼ່ງສັນຍານ Wi-Fi ຫຼາຍຂຶ້ນ.</translation>
@@ -950,6 +952,7 @@
 <translation id="5860033963881614850">ປິດ</translation>
 <translation id="5860491529813859533">ເປີດ</translation>
 <translation id="5876385649737594562">ເປີດໃຊ້ເພື່ອເລືອກຕົວເລືອກ</translation>
+<translation id="5877503382465267833">ຢຸດ <ph name="RECORDING_NAME" /> ຊົ່ວຄາວ</translation>
 <translation id="588258955323874662">ເຕັມໜ້າຈໍ</translation>
 <translation id="5893975327266416093">ແຕະປຸ່ມຢູ່ແປ້ນພິມເພື່ອກຳນົດການດຳເນີນການ</translation>
 <translation id="5895138241574237353">ເລີ່ມຕົ້ນໃໝ່</translation>
@@ -1167,6 +1170,7 @@
 <translation id="6910312834584889076">ຝາເຄື່ອງສະແກນເປີດຢູ່. ກະລຸນາປິດຝາແລ້ວລອງໃໝ່.</translation>
 <translation id="6910845598686542904">ປະມວນຜົນຮູບແບບສຽງທີ່ກວດພົບໃນສຽງທີ່ບັນທຶກໄວ້</translation>
 <translation id="6911383237894364323">ບໍ່ສາມາດເຊື່ອມຕໍ່ກັບເຊີບເວີມີເດຍໄດ້</translation>
+<translation id="6927968682840110570">ຊື່ການບັນທຶກ</translation>
 <translation id="6930242544192836755">ໄລ​ຍະ​ເວ​ລາ</translation>
 <translation id="6930597342185648547">ກ່ຽວກັບພາບພື້ນຫຼັງ</translation>
 <translation id="6939667434404433010">ຊອກຫາຊື່ການບັນທຶກ</translation>
@@ -1280,6 +1284,7 @@
 <translation id="7378170410161264436">ຕົວບັນທຶກສາມາດສ້າງການຖອດຖ່າຍຂໍ້ຄວາມສຳລັບການບັນທຶກທີ່ມີສຽງເວົ້າໄດ້.
 ດາວໂຫຼດໂມເດວການຖອດຖ່າຍຂໍ້ຄວາມ (ສູງສຸດ 100MB) ເພື່ອຮັບການຖອດຖ່າຍຂໍ້ຄວາມເຫຼົ່ານີ້.</translation>
 <translation id="7384004438856720753">ພະລາດຊະວັງ</translation>
+<translation id="7388345524791662148">ຕົວເລືອກເພີ່ມເຕີມສຳລັບ <ph name="RECORDING_NAME" /></translation>
 <translation id="7388959671917308825">ແຜ່ນສຳຜັດໃນຕົວ</translation>
 <translation id="7397270852490618635">ປິດຮູບແບບສີສັນແຈ້ງ</translation>
 <translation id="7401543881546089382">ລຶບ​ທາງລັດ</translation>
@@ -1301,6 +1306,7 @@
 <translation id="7513770521371759388">ລຸ່ມສຸດ</translation>
 <translation id="7514365320538308">ດາວ​ໂຫລດ</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7519481256236810334">ຫຼິ້ນ <ph name="RECORDING_NAME" /></translation>
 <translation id="7525067979554623046">ສ້າງຂຶ້ນ</translation>
 <translation id="7528507600602050979">ເນື້ອຫາຊ່ວຍເຫຼືອບໍ່ມີໃຫ້</translation>
 <translation id="7535791657097741517">ເປີດໃຊ້ຮູບແບບສີສັນແຈ້ງ</translation>
@@ -1377,6 +1383,7 @@
 <translation id="7897043345768902965">ທາງຍ່າງ</translation>
 <translation id="7902285181767404769">ປິດສຽງການແຈ້ງເຕືອນໃນລະຫວ່າງທີ່ບັນທຶກ</translation>
 <translation id="7903695460270716054">ເລືອກໜ້າປົກ ແລະ ຮູບທີ່ຄັດສັນມາ</translation>
+<translation id="7912005977894000746">ກັບຄືນໄປຫາໜ້າຫຼັກ</translation>
 <translation id="7915220255123750251">ຈັດການການຕັ້ງຄ່າ APN ຂອງເຄືອຂ່າຍ. APN ສ້າງການເຊື່ອມຕໍ່ລະຫວ່າງເຄືອຂ່າຍມືຖື ແລະ ອິນເຕີເນັດ.</translation>
 <translation id="7936303884198020182">ບໍ່ພົບເຊີບເວີຊື່</translation>
 <translation id="7942349550061667556">ສີ​ແດງ</translation>

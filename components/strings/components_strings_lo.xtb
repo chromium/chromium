@@ -1015,6 +1015,7 @@
 <translation id="2882949212241984732">ພົບທົບສີ່ຕອນ</translation>
 <translation id="2891963978019740012">ໂປຣແກຣມຊອກຫາຂອງທ່ານໃນ Chrome</translation>
 <translation id="2893773853358652045">ມ້ວນທີສີ່</translation>
+<translation id="2894137550885451583">ນີ້ແມ່ນລາຄາ <ph name="CURRENCY" /> ສຳລັບຜະລິດຕະພັນ <ph name="PRODUCT" /></translation>
 <translation id="2900528713135656174">ສ້າງເຫດການ</translation>
 <translation id="2902312830803030883">ການດຳເນີນການເພີ່ມເຕີມ</translation>
 <translation id="2903493209154104877">ທີ່​ຢູ່</translation>
@@ -1612,6 +1613,7 @@
 <translation id="3949601375789751990">ປະຫວັດການທ່ອງເວັບຂອງທ່ານປາກົດຢູ່ບ່ອນນີ້</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">ບໍ່ມີວິທີການຈ່າຍເງິນທີ່ບັນທຶກໄວ້</translation>
+<translation id="3950560191811267370">ປິດຊີດລຸ່ມສຸດຂອງການຄ້າແລ້ວ</translation>
 <translation id="3950574001630941635">ຣີສະຕາດການສອນການນຳໃຊ້</translation>
 <translation id="3950820424414687140">ລົງຊື່ເຂົ້າ​ໃຊ້</translation>
 <translation id="3953505489397572035">ລາຄານີ້ແມ່ນປົກກະຕິ</translation>
@@ -2353,6 +2355,7 @@
 <translation id="5331585574693522196">ຕັ້ງເປັນຄ່າເລີ່ມຕົ້ນ</translation>
 <translation id="5332219387342487447">ວິທີການຈັດສົ່ງ</translation>
 <translation id="5332769172018416402">ສົ່ງຄຳຮ້ອງຂໍໃນຂໍ້ຄວາມ</translation>
+<translation id="533323551986281710">ຊີດລຸ່ມສຸດຂອງການຄ້າເປີດແບບເຕັມໜ້າ</translation>
 <translation id="5334013548165032829">ບັນທຶກລະບົບລະອຽດ</translation>
 <translation id="5334145288572353250">ບັນທຶກທີ່ຢູ່ບໍ?</translation>
 <translation id="5340250774223869109">ແອັບພລິເຄຊັນຖືກບລັອກໄວ້</translation>
@@ -2535,6 +2538,7 @@
 <translation id="5675650730144413517">ໜ້ານີ້ໃຊ້ບໍ່ໄດ້</translation>
 <translation id="5675809467256309336">ດົນຕີແດນຊ໌ ແລະ ອີເລັກໂທຣນິກ</translation>
 <translation id="5675959228867414813">ສະແດງຕາມວັນທີ</translation>
+<translation id="567604591393105935">ຊີດລຸ່ມສຸດຂອງການຄ້າເປີດແບບເຄິ່ງໜ້າ</translation>
 <translation id="5677928146339483299">ບລັອກແລ້ວ</translation>
 <translation id="5678007133659493065">ຟອຍລ໌</translation>
 <translation id="5680642791693447368">ໜັງເລິກລັບ, ສືບສວນ ແລະ ລະທຶກຂວັນ</translation>
@@ -3441,6 +3445,7 @@
 <translation id="7374733840632556089">ບັນຫານີ້ເກີດຂຶ້ນເນື່ອງຈາກໃບຮັບຮອງທີ່ທ່ານ ຫຼື ຄົນອື່ນຕິດຕັ້ງໃນອຸປະກອນຂອງທ່ານ. ເປັນທີ່ຮູ້ກັນວ່າໃບຮັບຮອງນີ້ຖືກໃຊ້ເພື່ອຕິດຕາມ ແລະ ສະກັດກັ້ນເຄືອຂ່າຍ ແລະ Chrome ບໍ່ເຊື່ອຖືໃບຮັບຮອງນີ້. ເຖິງແມ່ນວ່າຈະມີບາງກໍລະນີທີ່ການຕິດຕາມອາດຈະຖືກກົດໝາຍ ເຊັ່ນ: ໃນເຄືອຂ່າຍຂອງໂຮງຮຽນ ຫຼື ບໍລິສັດ, ແຕ່ Chrome ກໍຍັງຕ້ອງການໃຫ້ແນ່ໃຈວ່າທ່ານຮັບຮູ້ວ່າມີການຕິດຕາມເບິ່ງ ເຖິງແມ່ນວ່າທ່ານບໍ່ສາມາດຢຸດມັນໄດ້ກໍຕາມ. ການຕິດຕາມອາດຈະເກີດຂຶ້ນໃນໂປຣແກຣມທ່ອງເວັບ ຫຼື ແອັບພລິເຄຊັນໃດໆກໍຕາມທີ່ເຂົ້າເຖິງເວັບໄຊໄດ້.</translation>
 <translation id="7375532151824574023">{NUM_COOKIES,plural, =0{ບໍ່ມີເວັບໄຊທີ່ອະນຸຍາດ}=1{ອະນຸຍາດ 1 ເວັບໄຊ}other{ອະນຸຍາດ # ເວັບໄຊ}}</translation>
 <translation id="7375818412732305729">ແນບໄຟລ໌ແລ້ວ</translation>
+<translation id="7376031331622621328">ຊີດລຸ່ມສຸດຂອງການຄ້າ</translation>
 <translation id="7377249249140280793"><ph name="RELATIVE_DATE" /> - <ph name="FULL_DATE" /></translation>
 <translation id="7377314930809374926">ອຸດສາຫະກໍາການບໍລິການ</translation>
 <translation id="7378594059915113390">ການຄວບຄຸມສື່</translation>
