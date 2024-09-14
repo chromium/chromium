@@ -1637,11 +1637,13 @@ void WebMediaPlayerImpl::AddMediaTrack(const media::MediaTrack& track) {
 
 void WebMediaPlayerImpl::GetUrlData(
     const GURL& gurl,
+    bool ignore_cache,
     base::OnceCallback<void(scoped_refptr<UrlData>)> cb) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
   auto url_data = url_index_->GetByUrl(
       gurl, static_cast<UrlData::CorsMode>(cors_mode_),
-      is_cache_disabled_ ? UrlData::kCacheDisabled : UrlData::kNormal);
+      (is_cache_disabled_ || ignore_cache) ? UrlData::kCacheDisabled
+                                           : UrlData::kNormal);
   std::move(cb).Run(std::move(url_data));
 }
 

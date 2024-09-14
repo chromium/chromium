@@ -454,6 +454,7 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
 
 #if BUILDFLAG(ENABLE_HLS_DEMUXER)
   void GetUrlData(const GURL& gurl,
+                  bool ignore_cache,
                   base::OnceCallback<void(scoped_refptr<UrlData>)> cb);
   base::SequenceBound<media::HlsDataSourceProvider> GetHlsDataSourceProvider()
       override;

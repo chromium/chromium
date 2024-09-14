@@ -25,8 +25,10 @@ class BufferedDataSourceHostImpl;
 class PLATFORM_EXPORT MultiBufferDataSourceFactory
     : public media::HlsDataSourceProviderImpl::DataSourceFactory {
  public:
-  using UrlDataCb = base::RepeatingCallback<
-      void(const GURL& url, base::OnceCallback<void(scoped_refptr<UrlData>)>)>;
+  using UrlDataCb = base::RepeatingCallback<void(
+      const GURL& url,
+      bool ignore_cache,
+      base::OnceCallback<void(scoped_refptr<UrlData>)>)>;
 
   ~MultiBufferDataSourceFactory() override;
   MultiBufferDataSourceFactory(
@@ -35,7 +37,7 @@ class PLATFORM_EXPORT MultiBufferDataSourceFactory
       scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
       const base::TickClock* tick_clock);
 
-  void CreateDataSource(GURL uri, DataSourceCb cb) override;
+  void CreateDataSource(GURL uri, bool ignore_cache, DataSourceCb cb) override;
 
  private:
   void OnUrlData(DataSourceCb cb,

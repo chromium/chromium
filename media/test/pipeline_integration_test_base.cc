@@ -71,7 +71,7 @@ class TestDataSourceFactory
     : public HlsDataSourceProviderImpl::DataSourceFactory {
  public:
   ~TestDataSourceFactory() override = default;
-  void CreateDataSource(GURL uri, DataSourceCb callback) override {
+  void CreateDataSource(GURL uri, bool, DataSourceCb callback) override {
     auto file_data_source = std::make_unique<FileDataSource>();
     base::FilePath file_path(uri.GetContent());
     CHECK(file_data_source->Initialize(file_path))
