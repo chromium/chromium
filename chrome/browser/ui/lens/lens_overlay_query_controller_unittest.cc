@@ -270,7 +270,7 @@ TEST_F(LensOverlayQueryControllerTest, FetchInitialQuery_ReturnsResponse) {
       bitmap, std::make_optional<GURL>(kTestPageUrl),
       std::make_optional<std::string>(kTestPageTitle),
       std::vector<lens::mojom::CenterRotatedBoxPtr>(),
-      /*pdf_bytes=*/{}, 0);
+      /*underlying_content_bytes=*/{}, /*underlying_content_type=*/"", 0);
 
   task_environment_.RunUntilIdle();
   query_controller.EndQuery();
@@ -332,7 +332,7 @@ TEST_F(LensOverlayQueryControllerTest,
       bitmap, std::make_optional<GURL>(kTestPageUrl),
       std::make_optional<std::string>(kTestPageTitle),
       std::vector<lens::mojom::CenterRotatedBoxPtr>(),
-      /*pdf_bytes=*/{}, 0);
+      /*underlying_content_bytes=*/{}, /*underlying_content_type=*/"", 0);
   task_environment_.RunUntilIdle();
 
   auto region = lens::mojom::CenterRotatedBox::New();
@@ -425,7 +425,7 @@ TEST_F(LensOverlayQueryControllerTest,
       viewport_bitmap, std::make_optional<GURL>(kTestPageUrl),
       std::make_optional<std::string>(kTestPageTitle),
       std::vector<lens::mojom::CenterRotatedBoxPtr>(),
-      /*pdf_bytes=*/{}, 0);
+      /*underlying_content_bytes=*/{}, /*underlying_content_type=*/"", 0);
   task_environment_.RunUntilIdle();
 
   SkBitmap region_bitmap = CreateNonEmptyBitmap(100, 100);
@@ -528,7 +528,7 @@ TEST_F(LensOverlayQueryControllerTest,
       bitmap, std::make_optional<GURL>(kTestPageUrl),
       std::make_optional<std::string>(kTestPageTitle),
       std::vector<lens::mojom::CenterRotatedBoxPtr>(),
-      /*pdf_bytes=*/{}, 0);
+      /*underlying_content_bytes=*/{}, /*underlying_content_type=*/"", 0);
   task_environment_.RunUntilIdle();
 
   auto region = lens::mojom::CenterRotatedBox::New();
@@ -623,7 +623,7 @@ TEST_F(LensOverlayQueryControllerTest,
       bitmap, std::make_optional<GURL>(kTestPageUrl),
       std::make_optional<std::string>(kTestPageTitle),
       std::vector<lens::mojom::CenterRotatedBoxPtr>(),
-      /*pdf_bytes=*/{}, 0);
+      /*underlying_content_bytes=*/{}, /*underlying_content_type=*/"", 0);
   task_environment_.RunUntilIdle();
 
   query_controller.SendTextOnlyQuery("", TextOnlyQueryType::kLensTextSelection,
@@ -652,7 +652,7 @@ TEST_F(LensOverlayQueryControllerTest,
 }
 
 TEST_F(LensOverlayQueryControllerTest,
-       FetchTextOnlyInteractionWithPdf_ReturnsResponse) {
+       FetchTextOnlyInteractionWithContentBytes_ReturnsResponse) {
   base::test::TestFuture<std::vector<lens::mojom::OverlayObjectPtr>,
                          lens::mojom::TextPtr, bool>
       full_image_response_future;
@@ -676,11 +676,12 @@ TEST_F(LensOverlayQueryControllerTest,
       kTestSuggestSignals);
   SkBitmap bitmap = CreateNonEmptyBitmap(100, 100);
   std::map<std::string, std::string> additional_search_query_params;
-  std::vector<uint8_t> fake_pdf_bytes({1, 2, 3, 4});
+  std::vector<uint8_t> fake_content_bytes({1, 2, 3, 4});
   query_controller.StartQueryFlow(
       bitmap, std::make_optional<GURL>(kTestPageUrl),
       std::make_optional<std::string>(kTestPageTitle),
-      std::vector<lens::mojom::CenterRotatedBoxPtr>(), fake_pdf_bytes, 0);
+      std::vector<lens::mojom::CenterRotatedBoxPtr>(), fake_content_bytes,
+      "application/pdf", 0);
   task_environment_.RunUntilIdle();
   query_controller.SendTextOnlyQuery(kTestQueryText,
                                      TextOnlyQueryType::kLensTextSelection,
@@ -765,7 +766,7 @@ TEST_F(LensOverlayQueryControllerTest,
       bitmap, std::make_optional<GURL>(kTestPageUrl),
       std::make_optional<std::string>(kTestPageTitle),
       std::vector<lens::mojom::CenterRotatedBoxPtr>(),
-      /*pdf_bytes=*/{}, 0);
+      /*underlying_content_bytes=*/{}, /*underlying_content_type=*/"", /**/ 0);
   task_environment_.RunUntilIdle();
 
   ASSERT_TRUE(full_image_response_future.IsReady());
@@ -823,7 +824,7 @@ TEST_F(LensOverlayQueryControllerTest,
       bitmap, std::make_optional<GURL>(kTestPageUrl),
       std::make_optional<std::string>(kTestPageTitle),
       std::vector<lens::mojom::CenterRotatedBoxPtr>(),
-      /*pdf_bytes=*/{}, 0);
+      /*underlying_content_bytes=*/{}, /*underlying_content_type=*/"", 0);
   task_environment_.RunUntilIdle();
 
   ASSERT_TRUE(full_image_response_future.IsReady());
@@ -874,7 +875,7 @@ TEST_F(LensOverlayQueryControllerTest,
       bitmap, std::make_optional<GURL>(kTestPageUrl),
       std::make_optional<std::string>(kTestPageTitle),
       std::vector<lens::mojom::CenterRotatedBoxPtr>(),
-      /*pdf_bytes=*/{}, 0);
+      /*underlying_content_bytes=*/{}, /*underlying_content_type=*/"", 0);
   ASSERT_TRUE(full_image_response_future.Wait());
 
   // Check initial fetch objects request id is correct.

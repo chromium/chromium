@@ -1936,6 +1936,7 @@ static_library("ui") {
       "//chrome/browser/companion/core",
       "//chrome/browser/companion/text_finder",
       "//chrome/browser/companion/visual_query",
+      "//chrome/browser/content_extraction",
       "//chrome/browser/enterprise/watermark:watermark_view_lib",
       "//chrome/browser/feedback:feedback_enum",
       "//chrome/browser/headless:command_processor",

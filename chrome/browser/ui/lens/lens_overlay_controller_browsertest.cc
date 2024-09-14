@@ -106,6 +106,7 @@ constexpr char kDocumentWithNamedElementWithFragment[] =
 constexpr char kDocumentWithImage[] = "/test_visual.html";
 constexpr char kDocumentWithDynamicColor[] = "/lens/dynamic_color.html";
 constexpr char kPdfDocument[] = "/pdf/test.pdf";
+constexpr char kDocumentWithNonAsciiCharacters[] = "/non-ascii.html";
 
 using State = LensOverlayController::State;
 using LensOverlayInvocationSource = lens::LensOverlayInvocationSource;
@@ -332,7 +333,8 @@ class LensOverlayQueryControllerFake : public lens::LensOverlayQueryController {
       std::optional<GURL> page_url,
       std::optional<std::string> page_title,
       std::vector<lens::mojom::CenterRotatedBoxPtr> significant_region_boxes,
-      base::span<const uint8_t> pdf_bytes,
+      base::span<const uint8_t> underlying_content_bytes,
+      const std::string& underlying_content_type,
       float ui_scale_factor) override {
     // Send response for full image callback / HandleStartQueryResponse.
     std::vector<lens::mojom::OverlayObjectPtr> test_objects;
@@ -351,7 +353,8 @@ class LensOverlayQueryControllerFake : public lens::LensOverlayQueryController {
         FROM_HERE,
         base::BindOnce(interaction_data_callback_, interaction_response));
 
-    last_sent_pdf_bytes_ = pdf_bytes;
+    last_sent_underlying_content_bytes_ = underlying_content_bytes;
+    last_sent_underlying_content_type_ = underlying_content_type;
   }
 
   void SendTaskCompletionGen204IfEnabled(
@@ -420,7 +423,8 @@ class LensOverlayQueryControllerFake : public lens::LensOverlayQueryController {
     last_queried_region_.reset();
     last_queried_text_.clear();
     last_queried_region_bytes_ = std::nullopt;
-    last_sent_pdf_bytes_ = base::span<const uint8_t>();
+    last_sent_underlying_content_bytes_ = base::span<const uint8_t>();
+    last_sent_underlying_content_type_ = "";
   }
 
   bool full_image_request_should_return_error_ = false;
@@ -428,7 +432,8 @@ class LensOverlayQueryControllerFake : public lens::LensOverlayQueryController {
   lens::LensOverlaySelectionType last_lens_selection_type_;
   lens::mojom::CenterRotatedBoxPtr last_queried_region_;
   std::optional<SkBitmap> last_queried_region_bytes_;
-  base::span<const uint8_t> last_sent_pdf_bytes_;
+  base::span<const uint8_t> last_sent_underlying_content_bytes_;
+  std::string last_sent_underlying_content_type_;
   std::optional<lens::mojom::UserAction> last_user_action_;
 };
 
@@ -584,6 +589,7 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
         lens::features::kLensOverlay,
         {
             {"search-bubble", "true"},
+            {"use-inner-text-as-context", "true"},
             {"results-search-url", kResultsSearchBaseUrl},
             {"use-dynamic-theme", "true"},
             {"use-dynamic-theme-min-population-pct", "0.002"},
@@ -3788,7 +3794,8 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFTest,
   // Verify PDF bytes were excluded from the query.
   auto* fake_query_controller = static_cast<LensOverlayQueryControllerFake*>(
       controller->get_lens_overlay_query_controller_for_testing());
-  ASSERT_TRUE(fake_query_controller->last_sent_pdf_bytes_.empty());
+  ASSERT_TRUE(
+      fake_query_controller->last_sent_underlying_content_bytes_.empty());
 }
 
 // This test is wrapped in this BUILDFLAG block because the fallback region
@@ -3867,7 +3874,10 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
   // Verify PDF bytes were included in the query.
   auto* fake_query_controller = static_cast<LensOverlayQueryControllerFake*>(
       controller->get_lens_overlay_query_controller_for_testing());
-  ASSERT_FALSE(fake_query_controller->last_sent_pdf_bytes_.empty());
+  ASSERT_FALSE(
+      fake_query_controller->last_sent_underlying_content_bytes_.empty());
+  ASSERT_EQ("application/pdf",
+            fake_query_controller->last_sent_underlying_content_type_);
 }
 
 // TODO(crbug.com/40268279): Stop testing both modes after OOPIF PDF viewer
@@ -4156,18 +4166,54 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_EQ(0u, entries.size());
 }
 
-class LensOverlayControllerSearchBubbleDisabled
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
+                       InnerTextBytesInRequest) {
+  WaitForPaint(kDocumentWithNonAsciiCharacters);
+
+  // State should start in off.
+  auto* controller = browser()
+                         ->tab_strip_model()
+                         ->GetActiveTab()
+                         ->tab_features()
+                         ->lens_overlay_controller();
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // Open the overlay.
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_EQ(controller->state(), State::kScreenshot);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+
+  // Verify inner text was incluced as bytes in the the query.
+  auto* fake_query_controller = static_cast<LensOverlayQueryControllerFake*>(
+      controller->get_lens_overlay_query_controller_for_testing());
+  ASSERT_FALSE(
+      fake_query_controller->last_sent_underlying_content_bytes_.empty());
+  ASSERT_EQ("text/plain",
+            fake_query_controller->last_sent_underlying_content_type_);
+
+  // Verify the bytes are actually what we expect them to be.
+  auto last_sent_underlying_content_bytes =
+      fake_query_controller->last_sent_underlying_content_bytes_;
+  ASSERT_EQ("The below are non-ascii characters.\n\nこんにちは thêrē 🐶 ©",
+            std::string(last_sent_underlying_content_bytes.begin(),
+                        last_sent_underlying_content_bytes.end()));
+}
+
+class LensOverlayControllerContextualFeaturesDisabledTest
     : public LensOverlayControllerBrowserTest {
  protected:
   void SetupFeatureList() override {
     feature_list_.InitAndEnableFeatureWithParameters(
-        lens::features::kLensOverlay, {
-                                          {"search-bubble", "false"},
-                                      });
+        lens::features::kLensOverlay,
+        {
+            {"search-bubble", "false"},
+            {"use-inner-text-as-context", "false"},
+        });
   }
 };
 
-IN_PROC_BROWSER_TEST_F(LensOverlayControllerSearchBubbleDisabled,
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerContextualFeaturesDisabledTest,
                        PreselectionToastShows) {
   WaitForPaint();
 
@@ -4192,7 +4238,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerSearchBubbleDisabled,
 }
 
 // TODO(crbug.com/360161233): This test is flaky.
-IN_PROC_BROWSER_TEST_F(LensOverlayControllerSearchBubbleDisabled,
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerContextualFeaturesDisabledTest,
                        DISABLED_PreselectionToastDisappearsOnSelection) {
   WaitForPaint();
 
@@ -4236,7 +4282,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerSearchBubbleDisabled,
 }
 
 // TODO(crbug.com/351958199): Flaky on all platforms.
-IN_PROC_BROWSER_TEST_F(LensOverlayControllerSearchBubbleDisabled,
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerContextualFeaturesDisabledTest,
                        DISABLED_PreselectionToastOmniboxFocusState) {
   WaitForPaint();
 
@@ -4284,6 +4330,33 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerSearchBubbleDisabled,
   }));
 }
 
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerContextualFeaturesDisabledTest,
+                       NoUnderlyingContentBytesInRequest) {
+  WaitForPaint();
+
+  // State should start in off.
+  auto* controller = browser()
+                         ->tab_strip_model()
+                         ->GetActiveTab()
+                         ->tab_features()
+                         ->lens_overlay_controller();
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // Open the overlay.
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_EQ(controller->state(), State::kScreenshot);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+
+  // Verify no bytes were excluded from the query.
+  auto* fake_query_controller = static_cast<LensOverlayQueryControllerFake*>(
+      controller->get_lens_overlay_query_controller_for_testing());
+  ASSERT_TRUE(
+      fake_query_controller->last_sent_underlying_content_bytes_.empty());
+  ASSERT_TRUE(
+      fake_query_controller->last_sent_underlying_content_type_.empty());
+}
+
 class LensOverlayControllerOverlaySearchbox
     : public LensOverlayControllerBrowserTest {
  protected:
@@ -4328,5 +4401,4 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerOverlaySearchbox,
   EXPECT_EQ(controller->GetPageClassificationForTesting(),
             metrics::OmniboxEventProto::CONTEXTUAL_SEARCHBOX);
 }
-
 }  // namespace

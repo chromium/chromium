@@ -9,6 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
+#include "chrome/browser/content_extraction/inner_text.h"
 #include "chrome/browser/lens/core/mojom/geometry.mojom.h"
 #include "chrome/browser/lens/core/mojom/lens.mojom.h"
 #include "chrome/browser/lens/core/mojom/overlay_object.mojom.h"
@@ -557,9 +558,13 @@ class LensOverlayController : public LensSearchboxClient,
     // The page title, if it is allowed to be shared.
     std::optional<std::string> page_title_;
 
-    // The bytes of the PDF the user is viewing, if the user is looking at a PDF
-    // and the bytes are able to be retrieved.
-    std::vector<uint8_t> pdf_bytes_;
+    // The bytes of the content the user is viewing, if the bytes are able to be
+    // retrieved.
+    std::vector<uint8_t> page_content_bytes_;
+
+    // The mime type of page_content_bytes_. Empty if
+    // page_content_bytes_is empty.
+    std::string page_content_type_;
 
     // Bounding boxes for significant regions identified in the screenshot.
     std::vector<lens::mojom::CenterRotatedBoxPtr> significant_region_boxes_;
@@ -639,6 +644,10 @@ class LensOverlayController : public LensSearchboxClient,
   // Receives the PDF bytes from the IPC call to the PDF renderer and stores
   // them in initialization data.
   void OnPdfBytesReceived(const std::vector<uint8_t>& bytes);
+
+  // Callback for when the inner text is retrieved from the underlying page.
+  void OnInnerTextReceived(
+      std::unique_ptr<content_extraction::InnerTextResult> result);
 
   // Adds bounding boxes to the initialization data.
   void AddBoundingBoxesToInitializationData(

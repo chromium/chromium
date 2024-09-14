@@ -96,7 +96,8 @@ class LensOverlayQueryControllerFake : public lens::LensOverlayQueryController {
       std::optional<GURL> page_url,
       std::optional<std::string> page_title,
       std::vector<lens::mojom::CenterRotatedBoxPtr> significant_region_boxes,
-      base::span<const uint8_t> pdf_bytes,
+      base::span<const uint8_t> underlying_content_bytes,
+      const std::string& underlying_content_type,
       float ui_scale_factor) override {
     // Send response for full image callback / HandleStartQueryResponse.
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(

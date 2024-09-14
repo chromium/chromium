@@ -80,6 +80,7 @@ source_set("lens") {
     "//chrome/app/vector_icons",
     "//chrome/browser:browser_process",
     "//chrome/browser:primitives",
+    "//chrome/browser/content_extraction",
     "//chrome/browser/feedback",
     "//chrome/browser/media/webrtc",
     "//chrome/browser/profiles",

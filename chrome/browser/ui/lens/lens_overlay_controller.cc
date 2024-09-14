@@ -8,6 +8,7 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
@@ -100,6 +101,9 @@ constexpr base::TimeDelta kFadeoutAnimationTimeout = base::Milliseconds(300);
 
 // The url query param key for the search query.
 inline constexpr char kTextQueryParameterKey[] = "q";
+
+inline constexpr char kPdfMimeType[] = "application/pdf";
+inline constexpr char kPlainTextMimeType[] = "text/plain";
 
 // Allows lookup of a LensOverlayController from a WebContents associated with a
 // tab.
@@ -1308,13 +1312,34 @@ void LensOverlayController::ContinueCreateInitializationData(
   }
 #endif  // BUILDFLAG(ENABLE_PDF)
 
+  // Try and fetch the innerText if enabled.
+  auto* render_frame_host = tab_->GetContents()->GetPrimaryMainFrame();
+  if (lens::features::UseInnerTextAsContext() && render_frame_host) {
+    content_extraction::GetInnerText(
+        *render_frame_host, /*node_id=*/std::nullopt,
+        base::BindOnce(&LensOverlayController::OnInnerTextReceived,
+                       weak_factory_.GetWeakPtr()));
+    return;
+  }
+
   // Initialize since there are no PDF bytes to wait on.
   InitializeOverlay();
 }
 
 void LensOverlayController::OnPdfBytesReceived(
     const std::vector<uint8_t>& bytes) {
-  initialization_data_->pdf_bytes_ = bytes;
+  initialization_data_->page_content_bytes_ = bytes;
+  initialization_data_->page_content_type_ = kPdfMimeType;
+  InitializeOverlay();
+}
+
+void LensOverlayController::OnInnerTextReceived(
+    std::unique_ptr<content_extraction::InnerTextResult> result) {
+  if (result) {
+    initialization_data_->page_content_bytes_ = std::vector<uint8_t>(
+        result->inner_text.begin(), result->inner_text.end());
+    initialization_data_->page_content_type_ = kPlainTextMimeType;
+  }
   InitializeOverlay();
 }
 
@@ -1578,7 +1603,8 @@ void LensOverlayController::InitializeOverlay() {
         initialization_data_->current_screenshot_,
         initialization_data_->page_url_, initialization_data_->page_title_,
         std::move(initialization_data_->significant_region_boxes_),
-        initialization_data_->pdf_bytes_,
+        initialization_data_->page_content_bytes_,
+        initialization_data_->page_content_type_,
         device_scale_factor * page_scale_factor);
   }
   // TODO(b/352622136): We should not start the lens request until the overlay

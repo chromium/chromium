@@ -80,7 +80,8 @@ class LensOverlayQueryController {
       std::optional<GURL> page_url,
       std::optional<std::string> page_title,
       std::vector<lens::mojom::CenterRotatedBoxPtr> significant_region_boxes,
-      base::span<const uint8_t> pdf_bytes,
+      base::span<const uint8_t> underlying_content_bytes,
+      const std::string& underlying_content_type,
       float ui_scale_factor);
 
   // Clears the state and resets stored values.
@@ -370,9 +371,14 @@ class LensOverlayQueryController {
 
   const raw_ptr<Profile> profile_;
 
-  // PDF bytes the user is viewing. Owned by LensOverlayController. Will be
-  // empty if no PDF bytes to the underlying page exists.
-  base::span<const uint8_t> pdf_bytes_;
+  // The bytes of the content the user is viewing. Owned by
+  // LensOverlayController. Will be empty if no bytes to the underlying page
+  // could be provided.
+  base::span<const uint8_t> underlying_content_bytes_;
+
+  // The mime type of underlying_content_bytes. Will be empty if
+  // underlying_content_bytes_ is empty.
+  std::string underlying_content_type_;
 
   // The request counter, used to make sure requests are not sent out of
   // order.
