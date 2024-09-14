@@ -38,6 +38,7 @@ suite('HistoryAppTest', function() {
     loadTimeData.overrideValues({
       historyEmbeddingsSearchMinimumWordCount: 2,
       enableHistoryEmbeddings: true,
+      maybeShowEmbeddingsIph: false,
     });
 
     browserService = new TestBrowserService();
@@ -341,6 +342,15 @@ suite('HistoryAppTest', function() {
   });
 
   test('RegistersAndMaybeShowsPromo', async () => {
+    assertEquals(
+        0, embeddingsHandler.getCallCount('maybeShowFeaturePromo'),
+        'promo is disabled in setup');
+
+    // Recreate the app with the promo enabled.
+    loadTimeData.overrideValues({maybeShowEmbeddingsIph: true});
+    element = document.createElement('history-app');
+    document.body.appendChild(element);
+    await flushTasks();
     assertDeepEquals(
         element.getSortedAnchorStatusesForTesting(),
         [
@@ -348,6 +358,9 @@ suite('HistoryAppTest', function() {
         ],
     );
     await embeddingsHandler.whenCalled('maybeShowFeaturePromo');
+    assertEquals(
+        1, embeddingsHandler.getCallCount('maybeShowFeaturePromo'),
+        'promo is disabled in setup');
   });
 
   test('ProductSpecsIncrementsToolbar', async () => {

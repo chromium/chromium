@@ -368,7 +368,7 @@ export class HistoryAppElement extends HistoryAppElementBase {
     this.addEventListener('history-view-changed', this.historyViewChanged_);
     this.addEventListener('unselect-all', this.unselectAll);
 
-    if (loadTimeData.getBoolean('enableHistoryEmbeddings')) {
+    if (loadTimeData.getBoolean('maybeShowEmbeddingsIph')) {
       this.registerHelpBubble(
           'kHistorySearchInputElementId', this.$.toolbar.searchField);
       // TODO(crbug.com/40075330): There might be a race condition if the call

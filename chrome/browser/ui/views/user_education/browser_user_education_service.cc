@@ -1049,14 +1049,26 @@ void MaybeRegisterChromeFeaturePromos(
                        "opened in a PWA.")));
 
   registry.RegisterFeature(std::move(
-      FeaturePromoSpecification::CreateForToastPromo(
+      FeaturePromoSpecification::CreateForCustomAction(
           feature_engagement::kIPHHistorySearchFeature,
-          kHistorySearchInputElementId, IDS_HISTORY_EMBEDDINGS_IPH_LABEL,
-          IDS_HISTORY_EMBEDDINGS_IPH_LABEL_SCREENREADER,
-          FeaturePromoSpecification::AcceleratorInfo(IDC_FIND))
+          kHistorySearchInputElementId, IDS_HISTORY_EMBEDDINGS_IPH_BODY,
+          IDS_HISTORY_EMBEDDINGS_IPH_ACTION,
+          base::BindRepeating(
+              [](ui::ElementContext ctx,
+                 user_education::FeaturePromoHandle promo_handle) {
+                auto* const browser =
+                    chrome::FindBrowserWithUiElementContext(ctx);
+                if (!browser) {
+                  return;
+                }
+                chrome::ShowSettingsSubPage(browser,
+                                            chrome::kHistorySearchSubpage);
+              }))
+          .SetCustomActionIsDefault(true)
+          .SetCustomActionDismissText(IDS_NO_THANKS)
           .SetBubbleArrow(HelpBubbleArrow::kTopLeft)
           .SetInAnyContext(true)
-          .SetMetadata(127, "johntlee@chromium.org",
+          .SetMetadata(130, "johntlee@chromium.org",
                        "Triggered after user lands on chrome://history.")));
 
   // kIPHToolbarManagementButtonFeature
