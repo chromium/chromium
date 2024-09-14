@@ -173,70 +173,83 @@ std::unique_ptr<views::View> PageInfoViewFactory::CreateCookiesPageView() {
 std::unique_ptr<views::View> PageInfoViewFactory::CreateSubpageHeader(
     std::u16string title,
     std::u16string subtitle) {
-  ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
-  views::FlexSpecification stretch_specification =
-      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
-                               views::MaximumFlexSizeRule::kUnbounded,
-                               /*adjust_height_for_width =*/true)
-          .WithWeight(1);
-  auto wrapper = std::make_unique<views::View>();
-  wrapper->SetLayoutManager(std::make_unique<views::FlexLayout>())
-      ->SetOrientation(views::LayoutOrientation::kVertical);
+  views::Builder<views::FlexLayoutView> label_wrapper;
+  label_wrapper.AddChild(views::Builder<views::Label>(
+                             std::make_unique<views::Label>(
+                                 title, views::style::CONTEXT_DIALOG_TITLE,
+                                 views::style::STYLE_SECONDARY))
+                             .SetTextStyle(views::style::STYLE_HEADLINE_4)
+                             .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+                             .SetID(VIEW_ID_PAGE_INFO_SUBPAGE_TITLE));
 
+  if (!subtitle.empty()) {
+    label_wrapper.AddChild(
+        views::Builder<views::Label>(
+            std::make_unique<views::Label>(
+                subtitle, views::style::CONTEXT_LABEL,
+                views::style::STYLE_SECONDARY,
+                gfx::DirectionalityMode::DIRECTIONALITY_AS_URL))
+            .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+            .SetAllowCharacterBreak(true)
+            .SetMultiLine(true));
+  }
+
+  ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
+  const int icon_label_spacing = layout_provider->GetDistanceMetric(
+      views::DISTANCE_RELATED_LABEL_HORIZONTAL);
   const int side_margin =
       layout_provider->GetInsetsMetric(views::INSETS_DIALOG).left();
   const int bottom_margin =
       layout_provider->GetDistanceMetric(DISTANCE_CONTENT_LIST_VERTICAL_MULTI);
 
-  auto* header = wrapper->AddChildView(std::make_unique<views::View>());
-  header->SetLayoutManager(std::make_unique<views::FlexLayout>())
-      ->SetCrossAxisAlignment(views::LayoutAlignment::kStart)
-      .SetInteriorMargin(
-          gfx::Insets::TLBR(0, side_margin, bottom_margin, side_margin));
-  header->SetProperty(views::kFlexBehaviorKey, stretch_specification);
-  wrapper->AddChildView(CreateSeparator());
-
-  auto back_button = views::CreateVectorImageButtonWithNativeTheme(
-      base::BindRepeating(&PageInfoNavigationHandler::OpenMainPage,
-                          base::Unretained(navigation_handler_),
-                          base::DoNothing()),
-      vector_icons::kArrowBackChromeRefreshIcon, GetIconSize());
-  views::InstallCircleHighlightPathGenerator(back_button.get());
-  back_button->SetID(VIEW_ID_PAGE_INFO_BACK_BUTTON);
-  back_button->SetTooltipText(l10n_util::GetStringUTF16(IDS_ACCNAME_BACK));
-  back_button->SetProperty(views::kInternalPaddingKey,
-                           back_button->GetInsets());
-  header->AddChildView(std::move(back_button));
-  auto* label_wrapper = header->AddChildView(CreateLabelWrapper());
-  auto* title_label = label_wrapper->AddChildView(
-      std::make_unique<views::Label>(title, views::style::CONTEXT_DIALOG_TITLE,
-                                     views::style::STYLE_SECONDARY));
-  title_label->SetTextStyle(views::style::STYLE_HEADLINE_4);
-  title_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  title_label->SetID(VIEW_ID_PAGE_INFO_SUBPAGE_TITLE);
-
-  if (!subtitle.empty()) {
-    auto* subtitle_label =
-        label_wrapper->AddChildView(std::make_unique<views::Label>(
-            subtitle, views::style::CONTEXT_LABEL,
-            views::style::STYLE_SECONDARY,
-            gfx::DirectionalityMode::DIRECTIONALITY_AS_URL));
-    subtitle_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    subtitle_label->SetAllowCharacterBreak(true);
-    subtitle_label->SetMultiLine(true);
-    subtitle_label->SetProperty(views::kFlexBehaviorKey, stretch_specification);
-  }
-
-  auto close_button = views::BubbleFrameView::CreateCloseButton(
-      base::BindRepeating(&PageInfoNavigationHandler::CloseBubble,
-                          base::Unretained(navigation_handler_)));
-  close_button->SetID(VIEW_ID_PAGE_INFO_CLOSE_BUTTON);
-  close_button->SetVisible(true);
-  close_button->SetProperty(views::kInternalPaddingKey,
-                            close_button->GetInsets());
-  header->AddChildView(std::move(close_button));
-
-  return wrapper;
+  return views::Builder<views::FlexLayoutView>()
+      .SetOrientation(views::LayoutOrientation::kVertical)
+      .AddChildren(
+          views::Builder<views::FlexLayoutView>()
+              .SetCrossAxisAlignment(views::LayoutAlignment::kStart)
+              .SetInteriorMargin(
+                  gfx::Insets::TLBR(0, side_margin, bottom_margin, side_margin))
+              .AddChildren(
+                  views::Builder<views::ImageButton>(
+                      views::CreateVectorImageButtonWithNativeTheme(
+                          base::BindRepeating(
+                              &PageInfoNavigationHandler::OpenMainPage,
+                              base::Unretained(navigation_handler_),
+                              base::DoNothing()),
+                          vector_icons::kArrowBackChromeRefreshIcon,
+                          GetIconSize()))
+                      .SetID(VIEW_ID_PAGE_INFO_BACK_BUTTON)
+                      .SetTooltipText(
+                          l10n_util::GetStringUTF16(IDS_ACCNAME_BACK))
+                      .CustomConfigure(
+                          base::BindOnce([](views::ImageButton* button) {
+                            views::InstallCircleHighlightPathGenerator(button);
+                            button->SetProperty(views::kInternalPaddingKey,
+                                                button->GetInsets());
+                          })),
+                  std::move(label_wrapper)
+                      .SetOrientation(views::LayoutOrientation::kVertical)
+                      .SetProperty(views::kMarginsKey,
+                                   gfx::Insets::VH(0, icon_label_spacing))
+                      .SetProperty(views::kFlexBehaviorKey,
+                                   views::FlexSpecification(
+                                       views::LayoutOrientation::kHorizontal,
+                                       views::MinimumFlexSizeRule::kScaleToZero,
+                                       views::MaximumFlexSizeRule::kUnbounded)
+                                       .WithWeight(1)),
+                  views::Builder<views::View>(
+                      views::BubbleFrameView::CreateCloseButton(
+                          base::BindRepeating(
+                              &PageInfoNavigationHandler::CloseBubble,
+                              base::Unretained(navigation_handler_))))
+                      .SetID(VIEW_ID_PAGE_INFO_CLOSE_BUTTON)
+                      .SetVisible(true)
+                      .CustomConfigure(base::BindOnce([](views::View* view) {
+                        view->SetProperty(views::kInternalPaddingKey,
+                                          view->GetInsets());
+                      }))),
+          views::Builder<views::View>(CreateSeparator()))
+      .Build();
 }
 
 // static
