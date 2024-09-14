@@ -38,14 +38,16 @@
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
-#import "ios/chrome/browser/url_loading/model/fake_url_loading_browser_agent.h"
-#import "ios/chrome/browser/url_loading/model/url_loading_notifier_browser_agent.h"
+#import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
 
 namespace {
 
@@ -191,8 +193,6 @@ class CommercePushNotificationClientTest : public PlatformTest {
     background_browser_ = std::make_unique<TestBrowser>(
         chrome_browser_state_.get(), scene_state_background_);
     browser_list_->AddBrowser(browser_.get());
-    UrlLoadingNotifierBrowserAgent::CreateForBrowser(browser_.get());
-    FakeUrlLoadingBrowserAgent::InjectForBrowser(browser_.get());
     bookmark_model_ = ios::BookmarkModelFactory::GetForBrowserState(
         chrome_browser_state_.get());
     bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model_);
@@ -205,6 +205,10 @@ class CommercePushNotificationClientTest : public PlatformTest {
     shopping_service_ = static_cast<commerce::MockShoppingService*>(
         commerce::ShoppingServiceFactory::GetForBrowserState(
             chrome_browser_state_.get()));
+    application_handler_ = OCMProtocolMock(@protocol(ApplicationCommands));
+    [browser_->GetCommandDispatcher()
+        startDispatchingToTarget:application_handler_
+                     forProtocol:@protocol(ApplicationCommands)];
   }
 
   CommercePushNotificationClient* GetCommercePushNotificationClient() {
@@ -250,6 +254,7 @@ class CommercePushNotificationClientTest : public PlatformTest {
   raw_ptr<commerce::MockShoppingService> shopping_service_;
   SceneState* scene_state_foreground_;
   SceneState* scene_state_background_;
+  id<ApplicationCommands> application_handler_;
   AppState* app_state_;
 };
 
@@ -336,10 +341,10 @@ TEST_F(CommercePushNotificationClientTest, TestNotificationInteraction) {
                                 base::DoNothing());
 
   // Check PriceDropNotification Destination URL loaded.
-  FakeUrlLoadingBrowserAgent* url_loader =
-      FakeUrlLoadingBrowserAgent::FromUrlLoadingBrowserAgent(
-          UrlLoadingBrowserAgent::FromBrowser(GetBrowser()));
-  EXPECT_EQ(kHintKey, url_loader->last_params.web_params.url);
+  OCMExpect([application_handler_
+      openURLInNewTab:[OCMArg checkWithBlock:^(OpenNewTabCommand* command) {
+        return kHintKey == command.URL;
+      }]]);
 }
 
 TEST_F(CommercePushNotificationClientTest, TestActionableNotifications) {
@@ -425,10 +430,10 @@ TEST_F(CommercePushNotificationClientTest, TestBrowserInitialization) {
   EXPECT_EQ(0u, GetUrlsDelayedForLoading().size());
 
   // Check PriceDropNotification Destination URL loaded.
-  FakeUrlLoadingBrowserAgent* url_loader =
-      FakeUrlLoadingBrowserAgent::FromUrlLoadingBrowserAgent(
-          UrlLoadingBrowserAgent::FromBrowser(GetBrowser()));
-  EXPECT_EQ(kHintKey, url_loader->last_params.web_params.url);
+  OCMExpect([application_handler_
+      openURLInNewTab:[OCMArg checkWithBlock:^(OpenNewTabCommand* command) {
+        return kHintKey == command.URL;
+      }]]);
 }
 
 TEST_F(CommercePushNotificationClientTest,

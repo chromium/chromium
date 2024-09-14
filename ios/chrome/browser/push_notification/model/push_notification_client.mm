@@ -102,8 +102,9 @@ void PushNotificationClient::LoadUrlInNewTab(const GURL& url) {
 
 void PushNotificationClient::LoadUrlInNewTab(const GURL& url,
                                              Browser* browser) {
-  UrlLoadParams params = UrlLoadParams::InNewTab(url);
-  UrlLoadingBrowserAgent::FromBrowser(browser)->Load(params);
+  id<ApplicationCommands> handler =
+      static_cast<id<ApplicationCommands>>(browser->GetCommandDispatcher());
+  [handler openURLInNewTab:[OpenNewTabCommand commandWithURLFromChrome:url]];
 }
 
 void PushNotificationClient::LoadFeedbackWithPayloadAndClientId(
