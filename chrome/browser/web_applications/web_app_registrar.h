@@ -180,13 +180,6 @@ class WebAppRegistrar {
   // have completed. It will return false after uninstallation has completed.
   bool IsUninstalling(const webapps::AppId& app_id) const;
 
-  // Returns whether the app with |app_id| is currently fully locally installed.
-  // ie. app is not grey in chrome://apps UI surface and may have OS integration
-  // like shortcuts. |IsLocallyInstalled| apps is a subset of |IsInstalled|
-  // apps. On Chrome OS all apps are always locally installed.
-  // TODO(crbug.com/340952100): Remove & replace callers with `IsInstallState`.
-  bool IsLocallyInstalled(const webapps::AppId& app_id) const;
-
   // Returns true if the app was actively installed, meaning the app has
   // involved some form of user or administrator action to either install it or
   // configure it to behave like an app.
@@ -441,13 +434,6 @@ class WebAppRegistrar {
   // Returns whether the app is a shortcut app (as opposed to a PWA).
   // TODO(crbug.com/341316725): Remove shortcut apps.
   bool IsShortcutApp(const webapps::AppId& app_id) const;
-
-  // Returns true if the app with the specified |start_url| is currently fully
-  // locally installed. The provided |start_url| must exactly match the launch
-  // URL for the app; this method does not consult the app scope or match URLs
-  // that fall within the scope.
-  // TODO(crbug.com/340952100): Remove & replace callers with `IsInstallState`.
-  bool IsLocallyInstalled(const GURL& start_url) const;
 
   // Returns whether the app is pending successful navigation in order to
   // complete installation via the ExternallyManagedAppManager.
