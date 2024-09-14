@@ -24,7 +24,6 @@
 #include "ash/system/model/system_tray_model.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
-#include "build/branding_buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -33,10 +32,6 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/view_class_properties.h"
-
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#include "chromeos/ash/resources/internal/grit/ash_internal_scaled_resources.h"
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 namespace ash {
 
@@ -62,14 +57,6 @@ constexpr gfx::Insets kErrorMessageButtonInsets =
     gfx::Insets::TLBR(8, 10, 8, 16);
 constexpr gfx::Insets kErrorMessageLabelInsets = gfx::Insets::TLBR(8, 16, 8, 0);
 
-std::optional<int> GetYouTubeMusicIconResourceId() {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  return IDR_YOUTUBE_MUSIC_ICON;
-#else
-  return std::nullopt;
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-}
-
 std::unique_ptr<views::BoxLayoutView> CreateNonPremiumView() {
   auto box_view = std::make_unique<views::BoxLayoutView>();
   box_view->SetOrientation(views::BoxLayout::Orientation::kVertical);
@@ -89,7 +76,7 @@ std::unique_ptr<views::BoxLayoutView> CreateNonPremiumView() {
       TypographyToken::kCrosBody2));
   label->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
 
-  auto* learn_more_button = box_view->AddChildView(std::make_unique<PillButton>(
+  auto* button = box_view->AddChildView(std::make_unique<PillButton>(
       views::Button::PressedCallback(base::BindRepeating([]() {
         Shell::Get()
             ->system_tray_model()
@@ -98,21 +85,9 @@ std::unique_ptr<views::BoxLayoutView> CreateNonPremiumView() {
       })),
       l10n_util::GetStringUTF16(
           IDS_ASH_STATUS_TRAY_FOCUS_MODE_SOUNDS_LEARN_MORE_BUTTON),
-      PillButton::Type::kDefaultElevatedWithIconLeading));
-
-  // Add the YouTube Music icon for the `learn_more_button` if it's chrome
-  // branded.
-  const auto& resource_id = GetYouTubeMusicIconResourceId();
-  if (resource_id.has_value()) {
-    const gfx::ImageSkia* image =
-        ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-            resource_id.value());
-
-    CHECK(image);
-    learn_more_button->SetImageModel(views::Button::ButtonState::STATE_NORMAL,
-                                     ui::ImageModel::FromImageSkia(*image));
-  }
-
+      PillButton::Type::kSecondaryWithoutIcon));
+  button->SetBackgroundColorId(cros_tokens::kCrosSysHighlightShape);
+  button->SetButtonTextColorId(cros_tokens::kCrosSysSystemOnPrimaryContainer);
   return box_view;
 }
 
