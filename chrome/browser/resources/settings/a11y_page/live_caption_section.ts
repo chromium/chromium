@@ -28,7 +28,12 @@ import {getTemplate} from './live_caption_section.html.js';
 
 // clang-format off
 // <if expr="not is_chromeos">
-import '../controls/settings_dropdown_menu.js';
+import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
+
+import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import type {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
+
 import './live_translate_section.js';
 import '../languages_page/add_languages_dialog.js';
 
@@ -38,9 +43,6 @@ import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {ListPropertyUpdateMixin} from 'chrome://resources/cr_elements/list_property_update_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
-
-import type {DropdownMenuOptionList} from '../controls/settings_dropdown_menu.js';
-
 import type {DomRepeatEvent} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // </if>
 // clang-format on
@@ -53,6 +55,12 @@ const SettingsLiveCaptionElementBase =
 // <if expr="not is_chromeos">
 const SettingsLiveCaptionElementBase = WebUiListenerMixin(
     ListPropertyUpdateMixin(PrefsMixin(I18nMixin(PolymerElement))));
+
+export interface SettingsLiveCaptionElement {
+  $: {
+    menu: CrLazyRenderElement<CrActionMenuElement>,
+  };
+}
 // </if>
 
 export class SettingsLiveCaptionElement extends SettingsLiveCaptionElementBase {
@@ -110,7 +118,6 @@ export class SettingsLiveCaptionElement extends SettingsLiveCaptionElementBase {
       installedLanguagePacks_: {
         type: Array,
         value: () => [],
-        observer: 'updateLanguageOptions_',
       },
 
       availableLanguagePacks_: {
@@ -118,10 +125,10 @@ export class SettingsLiveCaptionElement extends SettingsLiveCaptionElementBase {
         value: () => [],
       },
 
-      languageOptions_: {
-        type: Array,
-        value: () => [],
-      },
+      /**
+       * The language to display the details for.
+       */
+      detailLanguage_: Object,
 
       showAddLanguagesDialog_: Boolean,
       // </if>
@@ -134,7 +141,7 @@ export class SettingsLiveCaptionElement extends SettingsLiveCaptionElementBase {
   private enableLiveTranslate_: boolean;
   private installedLanguagePacks_: LiveCaptionLanguageList;
   private availableLanguagePacks_: LiveCaptionLanguageList;
-  private languageOptions_: DropdownMenuOptionList;
+  private detailLanguage_?: LiveCaptionLanguage;
   private showAddLanguagesDialog_: boolean;
   // </if>
   private browserProxy_: CaptionsBrowserProxy =
@@ -216,10 +223,36 @@ export class SettingsLiveCaptionElement extends SettingsLiveCaptionElementBase {
     focusWithoutInk(toFocus);
   }
 
-  private onRemoveLanguageClick_(e: DomRepeatEvent<LiveCaptionLanguage>) {
+  private onDotsClick_(e: DomRepeatEvent<LiveCaptionLanguage>) {
+    this.detailLanguage_ = Object.assign({}, e.model.item);
+    this.$.menu.get().showAt(e.target as HTMLElement);
+  }
+
+  private isDefaultLanguage_(languageCode: string): boolean {
+    if (this.prefs === undefined) {
+      return false;
+    }
+
+    return languageCode ===
+        this.prefs.accessibility.captions.live_caption_language.value;
+  }
+
+  private onMakeDefaultClick_() {
+    this.$.menu.get().close();
+    this.setPrefValue(
+        'accessibility.captions.live_caption_language',
+        this.detailLanguage_!.code);
+  }
+
+  private onRemoveLanguageClick_() {
+    if (!this.detailLanguage_) {
+      return;
+    }
+
+    this.$.menu.get().close();
     this.installedLanguagePacks_ = this.installedLanguagePacks_.filter(
-        languagePack => languagePack.code !== e.model.item.code);
-    this.browserProxy_.removeLanguagePack(e.model.item.code);
+        languagePack => languagePack.code !== this.detailLanguage_!.code);
+    this.browserProxy_.removeLanguagePack(this.detailLanguage_!.code);
 
     if (this.installedLanguagePacks_.length === 0) {
       this.setPrefValue('accessibility.captions.live_caption_enabled', false);
@@ -254,16 +287,6 @@ export class SettingsLiveCaptionElement extends SettingsLiveCaptionElementBase {
         `installedLanguagePacks_`, item => item.code,
         this.installedLanguagePacks_.concat(newLanguagePacks));
     this.browserProxy_.installLanguagePacks(languageCodes);
-
-    // Explicitly call the function to update the language options because
-    // updating the list does not trigger the observer function.
-    this.updateLanguageOptions_();
-  }
-
-  private updateLanguageOptions_() {
-    this.languageOptions_ = this.installedLanguagePacks_.map(languagePack => {
-      return {value: languagePack.code, name: languagePack.displayName};
-    });
   }
 
   private filterAvailableLanguagePacks_(
