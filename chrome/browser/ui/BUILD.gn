@@ -66,16 +66,6 @@ static_library("ui") {
     "crypto_module_password_dialog.h",
     "cryptuiapi_shim.h",
     "enterprise_startup_dialog.h",
-    "file_system_access/file_system_access_dangerous_file_dialog.cc",
-    "file_system_access/file_system_access_dangerous_file_dialog.h",
-    "file_system_access/file_system_access_dialogs.cc",
-    "file_system_access/file_system_access_dialogs.h",
-    "file_system_access/file_system_access_permission_dialog.cc",
-    "file_system_access/file_system_access_permission_dialog.h",
-    "file_system_access/file_system_access_restricted_directory_dialog.cc",
-    "file_system_access/file_system_access_restricted_directory_dialog.h",
-    "file_system_access/file_system_access_ui_helpers.cc",
-    "file_system_access/file_system_access_ui_helpers.h",
     "hats/hats_service.cc",
     "hats/hats_service.h",
     "hats/hats_service_factory.cc",
@@ -451,6 +441,8 @@ static_library("ui") {
     "//chrome/browser/ui/bluetooth:impl",
     "//chrome/browser/ui/cookie_controls",
     "//chrome/browser/ui/digital_credentials",
+    "//chrome/browser/ui/file_system_access",
+    "//chrome/browser/ui/file_system_access:impl",
     "//chrome/browser/ui/find_bar",
     "//chrome/browser/ui/find_bar:impl",
     "//chrome/browser/ui/omnibox",
@@ -762,6 +754,9 @@ static_library("ui") {
     "//chrome/browser/profiles:profile_attributes_impl",
     "//chrome/browser/profiles:profile_util_impl",
     "//chrome/browser/signin:impl",
+
+    # TODO(crbug.com/): It includes //c/b/ui/browser_dialogs.h and //c/b/ui/url_identity.h
+    "//chrome/browser/ui/file_system_access:impl",
   ]
 
   if (enable_vr && is_win) {

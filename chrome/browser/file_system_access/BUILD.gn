@@ -47,6 +47,7 @@ source_set("impl") {
     "//chrome/browser:browser_process",
     "//chrome/browser/safe_browsing",
     "//chrome/browser/ui",
+    "//chrome/browser/ui/file_system_access",
     "//components/content_settings/core/browser",
     "//components/pdf/common:util",
   ]

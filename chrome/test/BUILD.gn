@@ -4460,9 +4460,6 @@ if (!is_android) {
     }
     if (toolkit_views) {
       sources += [
-        "../browser/ui/file_system_access/file_system_access_dangerous_file_dialog_browsertest.cc",
-        "../browser/ui/file_system_access/file_system_access_permission_dialog_browsertest.cc",
-        "../browser/ui/file_system_access/file_system_access_restricted_directory_dialog_browsertest.cc",
         "../browser/ui/global_error/global_error_browsertest.cc",
         "../browser/ui/global_error/global_error_service_browsertest.cc",
         "../browser/ui/media_router/presentation_receiver_window_controller_browsertest.cc",
@@ -4660,6 +4657,8 @@ if (!is_android) {
         "//chrome/browser/ui/commerce",
         "//chrome/browser/ui/commerce:browser_tests",
         "//chrome/browser/ui/commerce:test_support",
+        "//chrome/browser/ui/file_system_access",
+        "//chrome/browser/ui/file_system_access:browser_tests",
         "//chrome/browser/ui/find_bar",
         "//chrome/browser/ui/lens",
         "//chrome/browser/ui/lens:browser_tests",
@@ -6362,10 +6361,6 @@ test("unit_tests") {
     "../browser/translate/translate_service_unittest.cc",
     "../browser/trusted_vault/trusted_vault_encryption_keys_tab_helper_unittest.cc",
     "../browser/ui/chrome_select_file_policy_unittest.cc",
-    "../browser/ui/file_system_access/file_system_access_dangerous_file_dialog_unittest.cc",
-    "../browser/ui/file_system_access/file_system_access_permission_dialog_unittest.cc",
-    "../browser/ui/file_system_access/file_system_access_restricted_directory_dialog_unittest.cc",
-    "../browser/ui/file_system_access/file_system_access_ui_helpers_unittest.cc",
     "../browser/ui/login/login_handler_unittest.cc",
     "../browser/ui/page_info/page_info_unittest.cc",
     "../browser/ui/passwords/manage_passwords_state_unittest.cc",
@@ -6692,6 +6687,7 @@ test("unit_tests") {
     "//chrome/browser/ui/autofill/payments:unit_tests",
     "//chrome/browser/ui/blocked_content:unit_tests",
     "//chrome/browser/ui/color:color_headers",
+    "//chrome/browser/ui/file_system_access:unit_tests",
     "//chrome/browser/ui/find_bar:unit_tests",
     "//chrome/browser/ui/webui",
     "//chrome/browser/updates/announcement_notification:unit_tests",
