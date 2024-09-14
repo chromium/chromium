@@ -26,6 +26,8 @@
 #include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringize_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_executor.h"
@@ -322,6 +324,12 @@ class HostProcess : public ConfigWatcher::Delegate,
 
   // Called on the UI thread to start monitoring the configuration file.
   void StartWatchingConfigChanges();
+
+  // Indicates whether |user_email| is allowed to access this machine based on
+  // |host_owner_| and the client domain policies that are set.
+  // Provided as a Callback to Me2MeHostAuthenticatorFactory and is called for
+  // every connection attempt.
+  bool CheckAccessPermission(std::string_view user_email);
 
   // Called on the network thread to set the host's Authenticator factory.
   void CreateAuthenticatorFactory();
@@ -779,6 +787,35 @@ void HostProcess::SigTermHandler(int signal_number) {
 }
 #endif  // BUILDFLAG(IS_POSIX)
 
+bool HostProcess::CheckAccessPermission(std::string_view user_email) {
+  auto email_parts = base::SplitStringOnce(user_email, '@');
+  if (!email_parts) {
+    LOG(ERROR) << "Unexpected email address format: " << user_email;
+    return false;
+  }
+  if (!base::EqualsCaseInsensitiveASCII(host_owner_, user_email)) {
+    LOG(ERROR) << user_email << " does not have access to this machine as it "
+               << "does not match the host owner: " << host_owner_;
+    return false;
+  }
+
+  // If a client domain policy has been set, then verify that remote user's
+  // domain is included in the list.
+  if (!client_domain_list_.empty()) {
+    auto [hostname, domain] = *email_parts;
+    for (const std::string& required_domain : client_domain_list_) {
+      if (base::EqualsCaseInsensitiveASCII(domain, required_domain)) {
+        return true;
+      }
+    }
+    LOG(ERROR) << user_email << " has a domain which is not in the client "
+               << "domain allowlist.";
+    return false;
+  }
+
+  return true;
+}
+
 void HostProcess::CreateAuthenticatorFactory() {
   DCHECK(context_->network_task_runner()->BelongsToCurrentThread());
 
@@ -848,7 +885,8 @@ void HostProcess::CreateAuthenticatorFactory() {
   }
   std::unique_ptr<protocol::AuthenticatorFactory> factory =
       std::make_unique<protocol::Me2MeHostAuthenticatorFactory>(
-          host_owner_, client_domain_list_, std::move(auth_config));
+          base::BindRepeating(&HostProcess::CheckAccessPermission, this),
+          std::move(auth_config));
 
 #if BUILDFLAG(IS_POSIX)
   // On Linux and Mac, perform a PAM authorization step after authentication.
