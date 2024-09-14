@@ -484,6 +484,7 @@ void BiddingAndAuctionResponse::TryParseForDebuggingOnlyReports(
         if (!report_dict) {
           continue;
         }
+        output.debugging_only_report_origins.emplace(ad_tech_origin);
         TryParseSingleDebugReport(ad_tech_origin, *report_dict, output);
       }
     }
@@ -495,11 +496,8 @@ void BiddingAndAuctionResponse::TryParseSingleDebugReport(
     const url::Origin& ad_tech_origin,
     const base::Value::Dict& report_dict,
     BiddingAndAuctionResponse& output) {
-  std::optional<bool> maybe_is_win_report = report_dict.FindBool("isWinReport");
-  bool is_win_report = maybe_is_win_report.has_value() && *maybe_is_win_report;
   std::optional<bool> maybe_component_win =
       report_dict.FindBool("componentWin");
-
   const std::string* maybe_url_str = report_dict.FindString("url");
   if (maybe_url_str) {
     GURL reporting_url(*maybe_url_str);
@@ -511,22 +509,30 @@ void BiddingAndAuctionResponse::TryParseSingleDebugReport(
       output.server_filtered_debugging_only_reports[ad_tech_origin]
           .emplace_back(reporting_url);
     } else {
-      output
-          .component_winner_debugging_only_reports[std::make_pair(
-              ad_tech_origin, is_win_report)]
-          .emplace_back(reporting_url);
+      std::optional<bool> maybe_is_win_report =
+          report_dict.FindBool("isWinReport");
+      bool is_win_report =
+          maybe_is_win_report.has_value() && *maybe_is_win_report;
+      std::optional<bool> maybe_seller_report =
+          report_dict.FindBool("isSellerReport");
+      bool is_seller_report =
+          maybe_seller_report.has_value() && *maybe_seller_report;
+      output.component_win_debugging_only_reports[DebugReportKey(
+          is_seller_report, is_win_report)] = reporting_url;
     }
   } else {
     // "url" field is allowed to be not set in debugReports, for cases like
     // forDebuggingOnly APIs were called but server side sampling filtered them
     // out. There's still an entry for this in debugReports to tell Chrome to
     // set cooldown for the ad tech origin.
-    // Insert an entry to corresponding maps for `ad_tech_origin`.
+    // Component auction winner's reports need to be filtered on client side, so
+    // their urls will always be set if corresponding forDebuggingOnly API is
+    // called. Insert an entry to corresponding maps for `ad_tech_origin`.
     if (!maybe_component_win.has_value() || !*maybe_component_win) {
-      output.server_filtered_debugging_only_reports[ad_tech_origin];
-    } else {
-      output.component_winner_debugging_only_reports[std::make_pair(
-          ad_tech_origin, is_win_report)];
+      if (!output.server_filtered_debugging_only_reports.contains(
+              ad_tech_origin)) {
+        output.server_filtered_debugging_only_reports[ad_tech_origin] = {};
+      }
     }
   }
 }

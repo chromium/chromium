@@ -298,6 +298,14 @@ class CONTENT_EXPORT InterestGroupAuction
     std::optional<GURL> top_level_seller_debug_win_report_url;
     std::optional<GURL> top_level_seller_debug_loss_report_url;
 
+    // True if the bid is created from parsing B&A server response.
+    bool is_from_server_response = false;
+
+    // forDebuggingOnly reports that have been filtered (also sampled) by the
+    // B&A server.
+    std::map<url::Origin, std::vector<GURL>>
+        server_filtered_debugging_only_reports;
+
     // Requests made to Private aggregation API in generateBid() and scoreAd().
     // Keyed by reporting origin of the associated requests, i.e., buyer origin
     // for generateBid() and seller origin for scoreAd(), an enum that
@@ -310,9 +318,11 @@ class CONTENT_EXPORT InterestGroupAuction
     // non-k-anonymous enforced bid when k-anonymity enforcement is active.
     PrivateAggregationRequests non_kanon_private_aggregation_requests;
 
+    // Private aggregation requests from B&A response that have been filtered by
+    // B&A server. These can be simply be forwarded without further filtering on
+    // Chrome side.
     std::map<PrivateAggregationKey, PrivateAggregationRequests>
         server_filtered_pagg_requests_reserved;
-
     std::map<std::string, PrivateAggregationRequests>
         server_filtered_pagg_requests_non_reserved;
 
@@ -1220,6 +1230,12 @@ class CONTENT_EXPORT InterestGroupAuction
       BiddingAndAuctionResponse response,
       std::optional<SingleStorageInterestGroup> maybe_group);
 
+  void MaybeLoadDebugReportLockoutAndCooldowns();
+
+  void OnLoadDebugReportLockoutAndCooldownsComplete(
+      std::optional<DebugReportLockoutAndCooldowns>
+          debug_report_lockout_and_cooldowns);
+
   void CreateBidFromServerResponse();
 
   // Completion callback for AdAuctionPageData::ParseAndFindAdAuctionSignals().
@@ -1334,6 +1350,9 @@ class CONTENT_EXPORT InterestGroupAuction
   enum class PhaseState { kBefore, kDuring, kAfter };
   PhaseState bidding_and_scoring_phase_state_ = PhaseState::kBefore;
 
+  // True if creating bid from server response has started.
+  bool started_creating_bid_from_response_ = false;
+
   // Number of things that are pending that are needed to score everything.
   // This includes bidders that are still attempting to generate bids ---
   // both BuyerHelpers and component auctions. BuyerHelpers may generate
@@ -1358,9 +1377,14 @@ class CONTENT_EXPORT InterestGroupAuction
   bool any_bid_made_ = false;
 
   // Lockout and cooldowns for sending forDebuggingOnly reports. It's read from
-  // DB when the auction started.
+  // DB when the auction started for local auctions, or after B&A server
+  // response is parsed for server auctions.
   std::optional<DebugReportLockoutAndCooldowns>
       debug_report_lockout_and_cooldowns_;
+
+  // True if lockout and cooldowns are loaded for the server auction, to avoid
+  // reading it more than once.
+  bool server_auction_debug_report_lockout_loaded_ = false;
 
   // New lockout and cooldowns for sending forDebuggingOnly reports. It's
   // generated from this auction and updated during collecting debug reports.
