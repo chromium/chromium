@@ -15071,6 +15071,8 @@ from previous Chrome versions.
   <int value="-2108866112" label="FeedHeaderStickToTop:enabled"/>
   <int value="-2108836417" label="ArcvmSwapoutKeyboardShortcut:enabled"/>
   <int value="-2108564200" label="AutofillUpstream:disabled"/>
+  <int value="-2108042410"
+      label="enable-segmentation-internals-survey:disabled"/>
   <int value="-2107751597" label="CertVerificationNetworkTime:disabled"/>
   <int value="-2106960993" label="HarfBuzzPDFSubsetter:disabled"/>
   <int value="-2106763275" label="ArcRtVcpuQuadCore:enabled"/>
@@ -15278,6 +15280,8 @@ from previous Chrome versions.
   <int value="-2032292269" label="ImprovedIncognitoScreenshot:enabled"/>
   <int value="-2032013236"
       label="AutofillEnforceDelaysInStrikeDatabase:disabled"/>
+  <int value="-2031366201"
+      label="enable-segmentation-internals-survey:enabled"/>
   <int value="-2030972455"
       label="AutofillSuggestServerCardInsteadOfLocalCard:enabled"/>
   <int value="-2030255112" label="Bruschetta:disabled"/>
@@ -23241,6 +23245,7 @@ from previous Chrome versions.
   <int value="1276257375" label="UseIDNA2008NonTransitional:disabled"/>
   <int value="1277167761" label="EnableTouchscreensInDiagnosticsApp:enabled"/>
   <int value="1277386636" label="QueryInOmnibox:disabled"/>
+  <int value="1278193003" label="SegmentationSurveyPage:disabled"/>
   <int value="1278244152" label="AutofillFillMerchantPromoCodeFields:enabled"/>
   <int value="1278299178" label="PermissionPredictionsV3:enabled"/>
   <int value="1278508900"
@@ -24834,6 +24839,7 @@ from previous Chrome versions.
   <int value="1910562940" label="SharedHighlightingRefinedBlocklist:disabled"/>
   <int value="1911002680" label="TFLiteLanguageDetectionEnabled:enabled"/>
   <int value="1911558169" label="AppToAppLinkCapturingWorkspaceApps:enabled"/>
+  <int value="1911617153" label="SegmentationSurveyPage:enabled"/>
   <int value="1911623289" label="OmniboxFocusTriggersSRPZeroSuggest:disabled"/>
   <int value="1913263516" label="OculusVR:enabled"/>
   <int value="1913298816" label="OverlayScrollbar:enabled"/>

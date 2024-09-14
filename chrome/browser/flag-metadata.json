@@ -3970,6 +3970,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "enable-segmentation-internals-survey",
+    "owners": ["ssid@chromium.org", "chrome-segmentation-team@google.com" ],
+    "expiry_milestone": 132
+  },
+  {
     "name": "enable-segmentation-platform-android-home-module-ranker-v2",
     "owners": ["ritikagup@google.com",  "hanxi@chromium.org", "clank-start@chromium.org" ],
     "expiry_milestone": 140

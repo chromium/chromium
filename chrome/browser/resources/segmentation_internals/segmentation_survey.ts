@@ -9,17 +9,28 @@ function getProxy(): SegmentationInternalsBrowserProxy {
   return SegmentationInternalsBrowserProxy.getInstance();
 }
 
-function isURLSafe(urlStr: string|undefined): boolean {
-  if (urlStr === undefined) {
-    return false;
+// Checks the given URL for expected pattern, and allowed list of param.
+function getSafeURL(untrustedURL: URL|undefined): URL|undefined {
+  if (untrustedURL === undefined) {
+    return undefined;
   }
-  const allowedList = ['https://www.google.com/search?q=chrome'];
-  for (let i = 0; i < allowedList.length; ++i) {
-    if (urlStr === allowedList[i]) {
-      return true;
+  const allowedList = [
+    'https://www.google.com/search',
+    'https://surveys.qualtrics.com/jfe/form/SV_cNMWDhaegCrsrsy',
+  ];
+  const allowedParams = ['ID', 'SG', 'Q_CHL', 'Q_DL', '_g_', 'QRID', 'CR', 'q'];
+  const withoutParams: string = untrustedURL.origin + untrustedURL.pathname;
+  if (!allowedList.includes(withoutParams)) {
+    return undefined;
+  }
+
+  const trustedURL = new URL(withoutParams);
+  untrustedURL.searchParams.forEach((value, key) => {
+    if (allowedParams.includes(key)) {
+      trustedURL.searchParams.append(key, value);
     }
-  }
-  return false;
+  });
+  return trustedURL;
 }
 
 function openSurvey(result: string|undefined) {
@@ -27,14 +38,13 @@ function openSurvey(result: string|undefined) {
     const untrustedParam =
         new URL(window.location.href).searchParams.get('url');
     if (untrustedParam) {
-      const untruedtURL = new URL(decodeURIComponent(untrustedParam));
-      const untrustedURLStr = untruedtURL ? untruedtURL.toString() : undefined;
-      if (isURLSafe(untrustedURLStr)) {
-        let safeURL: string = untrustedURLStr!;
+      const untrustedURL = new URL(decodeURIComponent(untrustedParam));
+      const trustedURL = getSafeURL(untrustedURL);
+      if (trustedURL) {
         if (result) {
-          safeURL = safeURL! + '&option=' + encodeURIComponent(result);
+          trustedURL.searchParams.append('CR', encodeURIComponent(result));
         }
-        window.location.href = safeURL;
+        window.location.href = trustedURL.toString();
         return true;
       }
     }

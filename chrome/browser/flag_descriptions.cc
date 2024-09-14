@@ -3466,6 +3466,11 @@ const char kSecurePaymentConfirmationNetworkAndIssuerIconsDescription[] =
     "Allow the passing in and display of card network and issuer icons for the "
     "Secure Payment Confirmation Web API.";
 
+const char kSegmentationSurveyPageName[] =
+    "Segmentation survey internals page and model";
+const char kSegmentationSurveyPageDescription[] =
+    "Enable internals page for survey and fetching model";
+
 const char kSidePanelJourneysFlagId[] = "side-panel-journeys";
 const char kSidePanelJourneysName[] = "Side panel journeys";
 const char kSidePanelJourneysDescription[] =

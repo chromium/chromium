@@ -6,6 +6,7 @@
 #define COMPONENTS_SEGMENTATION_PLATFORM_PUBLIC_FEATURES_H_
 
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 
 namespace segmentation_platform::features {
 
@@ -117,6 +118,9 @@ extern const char kPriceTrackingPromoForceOverride[];
 
 // Feature flag for enabling the Emphemeral Card ranker.
 BASE_DECLARE_FEATURE(kSegmentationPlatformEphemeralCardRanker);
+
+BASE_DECLARE_FEATURE(kSegmentationSurveyPage);
+extern const base::FeatureParam<bool> kSegmentationSurveyInternalsPage;
 
 }  // namespace segmentation_platform::features
 

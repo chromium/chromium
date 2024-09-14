@@ -1989,6 +1989,9 @@ extern const char kSecurePaymentConfirmationDebugDescription[];
 extern const char kSecurePaymentConfirmationNetworkAndIssuerIconsName[];
 extern const char kSecurePaymentConfirmationNetworkAndIssuerIconsDescription[];
 
+extern const char kSegmentationSurveyPageName[];
+extern const char kSegmentationSurveyPageDescription[];
+
 extern const char kSidePanelJourneysFlagId[];
 extern const char kSidePanelJourneysName[];
 extern const char kSidePanelJourneysDescription[];

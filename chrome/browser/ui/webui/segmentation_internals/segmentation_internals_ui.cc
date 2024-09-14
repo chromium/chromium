@@ -18,14 +18,9 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/segmentation_internals_resources.h"
 #include "chrome/grit/segmentation_internals_resources_map.h"
+#include "components/segmentation_platform/public/features.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
-
-namespace {
-BASE_FEATURE(kSegmentationSurveyPage,
-             "SegmentationSurveyPage",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-}
 
 SegmentationInternalsUI::SegmentationInternalsUI(content::WebUI* web_ui)
     : MojoWebUIController(web_ui, /*enable_chrome_send=*/true) {
@@ -34,13 +29,17 @@ SegmentationInternalsUI::SegmentationInternalsUI(content::WebUI* web_ui)
       web_ui->GetWebContents()->GetBrowserContext(),
       chrome::kChromeUISegmentationInternalsHost);
   std::string path = web_ui->GetWebContents()->GetURL().path();
-  if (base::FeatureList::IsEnabled(kSegmentationSurveyPage) &&
-      path.starts_with("/survey")) {
-    webui::SetupWebUIDataSource(
-        source,
-        base::make_span(kSegmentationInternalsResources,
-                        kSegmentationInternalsResourcesSize),
-        IDR_SEGMENTATION_INTERNALS_SEGMENTATION_SURVEY_HTML);
+  if (path.starts_with("/survey")) {
+    if (base::FeatureList::IsEnabled(
+            segmentation_platform::features::kSegmentationSurveyPage) &&
+        segmentation_platform::features::kSegmentationSurveyInternalsPage
+            .Get()) {
+      webui::SetupWebUIDataSource(
+          source,
+          base::make_span(kSegmentationInternalsResources,
+                          kSegmentationInternalsResourcesSize),
+          IDR_SEGMENTATION_INTERNALS_SEGMENTATION_SURVEY_HTML);
+    }
   } else {
     webui::SetupWebUIDataSource(
         source,
