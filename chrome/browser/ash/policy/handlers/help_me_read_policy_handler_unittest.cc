@@ -52,15 +52,17 @@ TEST_F(HelpMeReadPolicyHandlerTest, InvalidPolicy) {
   handler_.ApplyPolicySettings(policy_, &prefs_);
   EXPECT_THAT(&prefs_, PrefNotSet(ash::prefs::kHmrEnabled));
   EXPECT_THAT(&prefs_, PrefNotSet(ash::prefs::kHmrFeedbackAllowed));
+  EXPECT_THAT(&prefs_, PrefNotSet(ash::prefs::kMagicBoostEnabled));
 }
 
 class HelpMeReadPolicyHandlerTestP
     : public HelpMeReadPolicyHandlerTest,
-      public testing::WithParamInterface<std::tuple<int, bool, bool>> {
+      public testing::WithParamInterface<std::tuple<int, bool, bool, bool>> {
  protected:
   int policy_value() const { return std::get<0>(GetParam()); }
   bool hmr_enabled() const { return std::get<1>(GetParam()); }
   bool hmr_feedback_allowed() const { return std::get<2>(GetParam()); }
+  bool magic_boost_enabled() const { return std::get<3>(GetParam()); }
 };
 
 TEST_P(HelpMeReadPolicyHandlerTestP, ValidPolicy) {
@@ -73,13 +75,15 @@ TEST_P(HelpMeReadPolicyHandlerTestP, ValidPolicy) {
   EXPECT_THAT(&prefs_, PrefHasValue(ash::prefs::kHmrEnabled, hmr_enabled()));
   EXPECT_THAT(&prefs_, PrefHasValue(ash::prefs::kHmrFeedbackAllowed,
                                     hmr_feedback_allowed()));
+  EXPECT_THAT(&prefs_, PrefHasValue(ash::prefs::kMagicBoostEnabled,
+                                    magic_boost_enabled()));
 }
 
 INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
     HelpMeReadPolicyHandlerTestP,
-    testing::Values(std::make_tuple(0, true, true),
-                    std::make_tuple(1, true, false),
-                    std::make_tuple(2, false, false)));
+    testing::Values(std::make_tuple(0, true, true, true),
+                    std::make_tuple(1, true, false, true),
+                    std::make_tuple(2, false, false, true)));
 
 }  // namespace policy
