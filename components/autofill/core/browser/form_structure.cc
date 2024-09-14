@@ -523,26 +523,10 @@ void FormStructure::RetrieveFromCache(const FormStructure& cached_form,
 
     field->set_server_predictions(cached_field->server_predictions());
 
-    // TODO(crbug.com/40871691): The following is the statement which we want
-    // to have here once features::kAutofillDontPreserveAutofillState is
-    // launched:
-    // ---
-    // We don't preserve the `is_autofilled` state from the cache, because
-    // form parsing and form import both start in the renderer and the renderer
-    // shares it's most recent status of whether the fields are currently
-    // in autofilled state. Any modifications by JavaScript or the user
-    // may take a field out of the autofilled state and get propagated to the
-    // AutofillManager via OnTextFieldDidChangeImpl anyways.
-    // ---
-    // For now we gate this behavioral change by a feature flag to ensure that
-    // it does not cause a regression.
-    if (!base::FeatureList::IsEnabled(
-            features::kAutofillDontPreserveAutofillState)) {
-      // Preserve state whether the field was autofilled before.
-      if (reason == RetrieveFromCacheReason::kFormParsing)
-        field->set_is_autofilled(cached_field->is_autofilled());
+    // Preserve state whether the field was autofilled before.
+    if (reason == RetrieveFromCacheReason::kFormParsing) {
+      field->set_is_autofilled(cached_field->is_autofilled());
     }
-
     field->set_autofill_source_profile_guid(
         cached_field->autofill_source_profile_guid());
     field->set_autofilled_type(cached_field->autofilled_type());

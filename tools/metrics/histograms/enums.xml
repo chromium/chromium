@@ -20821,7 +20821,6 @@ from previous Chrome versions.
   <int value="275314794" label="DeprecateUnload:disabled"/>
   <int value="275616740" label="ForceInitialSyncWhenDecryptionFails:disabled"/>
   <int value="275690549" label="AppManagementAppDetails:enabled"/>
-  <int value="276022140" label="AutofillDontPreserveAutofillState:enabled"/>
   <int value="277327534"
       label="AndroidTabDeclutterArchiveAllButActiveTab:enabled"/>
   <int value="277483398" label="ClipboardHistory:disabled"/>
@@ -21341,7 +21340,6 @@ from previous Chrome versions.
   <int value="480481070" label="FilesInlineSyncStatus:disabled"/>
   <int value="480544447" label="NonValidatingReloadOnRefreshContentV2:enabled"/>
   <int value="480677983" label="WebXRARDOMOverlay:disabled"/>
-  <int value="480733741" label="AutofillDontPreserveAutofillState:disabled"/>
   <int value="481506759" label="ServiceWorkerScriptStreaming:enabled"/>
   <int value="482232604" label="PercentBasedScrolling:enabled"/>
   <int value="482429100"

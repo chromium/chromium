@@ -82,16 +82,6 @@ BASE_FEATURE(kAutofillDontPrefixMatchCreditCardNumbersOrCvcs,
              "AutofillDontPrefixMatchCreditCardNumbersOrCvcs",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// FormStructure::RetrieveFromCache used to preserve an AutofillField's
-// is_autofilled from the cache of previously parsed forms. This makes little
-// sense because the renderer sends us the autofill state and has the most
-// recent information. Dropping the old behavior should not make any difference
-// but to be sure, this is gated by a finch experiment.
-// TODO(crbug.com/40871691) Cleanup when launched.
-BASE_FEATURE(kAutofillDontPreserveAutofillState,
-             "AutofillDontPreserveAutofillState",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Kill switch for Autofill filling.
 BASE_FEATURE(kAutofillDisableFilling,
              "AutofillDisableFilling",

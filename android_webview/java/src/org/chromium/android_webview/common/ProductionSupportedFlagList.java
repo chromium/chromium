@@ -259,9 +259,6 @@ public final class ProductionSupportedFlagList {
                 AutofillFeatures.AUTOFILL_DETECT_REMOVED_FORM_CONTROLS,
                 "Enables Autofill to detect if form controls are removed from the DOM"),
         Flag.baseFeature(
-                AutofillFeatures.AUTOFILL_DONT_PRESERVE_AUTOFILL_STATE,
-                "Retrieves is_autofilled state from blink instead of the cache"),
-        Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_PAGE_LANGUAGE_DETECTION,
                 "Enables Autofill to retrieve the page language for form parsing."),
         Flag.baseFeature(
