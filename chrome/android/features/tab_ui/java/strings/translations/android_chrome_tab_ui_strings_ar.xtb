@@ -39,7 +39,7 @@
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{تم إنشاء المجموعة قبل ساعة واحدة (<ph name="NUM_HOURS_ONE" />)}zero{تم إنشاء المجموعة قبل <ph name="NUM_HOURS_MANY" /> ساعة}two{تم إنشاء المجموعة قبل ساعتَين (<ph name="NUM_HOURS_MANY" />)}few{تم إنشاء المجموعة قبل <ph name="NUM_HOURS_MANY" /> ساعات}many{تم إنشاء المجموعة قبل <ph name="NUM_HOURS_MANY" /> ساعة}other{تم إنشاء المجموعة قبل <ph name="NUM_HOURS_MANY" /> ساعة}}</translation>
 <translation id="2801787514987684416">هل تريد عرض معلومات المتجر؟</translation>
 <translation id="2928243913527329289">‏Google | لمحة عن هذا المتجر</translation>
-<translation id="2977480621796371840">الإزالة من مجموعة</translation>
+<translation id="2977480621796371840">الإزالة من المجموعة</translation>
 <translation id="3008554597174452548">التوقف عن تتبُّع سعر المنتج</translation>
 <translation id="3026391124054406831">أنشِئ مجموعات لتنظيم علامات التبويب.</translation>
 <translation id="3052964831964880138">انخفاض في سعر <ph name="PRODUCT_NAME" /> بقيمة <ph name="PRICE_DROP" /></translation>

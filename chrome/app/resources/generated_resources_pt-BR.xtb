@@ -5027,7 +5027,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="4605026046465576953">Não é possível abrir este app porque você não tem permissão para executar Apps Isolados da Web</translation>
 <translation id="4606551464649945562">Não permitir que os sites criem um mapa 3D do ambiente a sua volta ou acompanhem a posição da câmera</translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Excluir grupo de guias?}one{Excluir grupo de guias?}other{Excluir grupos de guias?}}</translation>
-<translation id="4608500690299898628">&amp;Buscar...</translation>
+<translation id="4608500690299898628">&amp;Localizar...</translation>
 <translation id="4610162781778310380">O plug-in <ph name="PLUGIN_NAME" /> encontrou um erro</translation>
 <translation id="4610637590575890427">Você quis ir a <ph name="SITE" />?</translation>
 <translation id="4611114513649582138">Conexão de dados disponível</translation>
@@ -10362,7 +10362,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8529925957403338845">Falha na conexão de Tethering instantâneo</translation>
 <translation id="8531367864749403520">Selecione "Ocultar grupo" para remover o grupo da sua barra de guias</translation>
 <translation id="8531701051932785007">O Navegação segura com proteção reforçada está desativado</translation>
-<translation id="8533670235862049797">O Navegação segura está ativado</translation>
+<translation id="8533670235862049797">A Navegação segura está ativada</translation>
 <translation id="853377257670044988">{GROUP_COUNT,plural, =1{As guias vão continuar abertas neste dispositivo, mas o grupo será excluído de todos os dispositivos conectados à conta <ph name="EMAIL" />}one{As guias vão continuar abertas neste dispositivo, mas o grupo será excluído de todos os dispositivos conectados à conta <ph name="EMAIL" />}other{As guias vão continuar abertas neste dispositivo, mas os grupos serão excluídos de todos os dispositivos conectados à conta <ph name="EMAIL" />}}</translation>
 <translation id="8535005006684281994">URL da renovação do certificado do Netscape</translation>
 <translation id="8536810348276651776">Desconecta você da maioria dos sites. Sua Conta do Google vai continuar conectada para que as configurações do Family Link para o Chrome sejam aplicadas.</translation>

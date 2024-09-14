@@ -1849,7 +1849,7 @@
 <translation id="7654916369822103315">Резолуцијата на „<ph name="DISPLAY_NAME" />“ се промени во резолуција од <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz). Поради ограничувањата за брзината на пренос на портите, вашиот екран не поддржува резолуција од <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Без потврдување, претходните поставки ќе се вратат за <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="7658239707568436148">Откажи</translation>
 <translation id="7659861092419699379">Работната површина и прозорците се затворени</translation>
-<translation id="7660160718439869192">Вашиот уред <ph name="NAME" /> ќе се појави на уредите поврзани со <ph name="EMAIL" />.</translation>
+<translation id="7660160718439869192">Вашиот уред <ph name="NAME" /> ќе се појавува на уредите поврзани со <ph name="EMAIL" /></translation>
 <translation id="7662283695561029522">Допрете за конфигурирање</translation>
 <translation id="7670953955701272011">Отворете го датумов во „Календарот на Google“</translation>
 <translation id="7671610481353807627">Апликациите се подредени по боја</translation>

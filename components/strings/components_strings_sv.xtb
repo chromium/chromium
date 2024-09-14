@@ -1277,7 +1277,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3399952811970034796">Leveransadress</translation>
 <translation id="3402261774528610252">TLS 1.0 eller TLS 1.1 användes för anslutningen när den här webbplatsen lästes in. De versionerna har fasats ut och kommer att inaktiveras i framtiden. Efter inaktiveringen kan användarna inte längre läsa in den här webbplatsen. TLS 1.2 eller senare behöver aktiveras på servern.</translation>
 <translation id="3405664148539009465">Anpassa teckensnitt</translation>
-<translation id="3407789382767355356">inloggning hos tredje part</translation>
+<translation id="3407789382767355356">tredjepartsinloggning</translation>
 <translation id="3409896703495473338">Hantera säkerhetsinställningar</translation>
 <translation id="3414275587143250384">Distribuerade system och molnteknik</translation>
 <translation id="3414952576877147120">Storlek:</translation>
@@ -1526,7 +1526,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823402221513322552">Webbläsaren hanteras av <ph name="BROWSER_DOMAIN" /> och profilen hanteras av <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="382518646247711829">Om du använder en proxyserver ...</translation>
-<translation id="3826050100957962900">Inloggning hos tredje part</translation>
+<translation id="3826050100957962900">Tredjepartsinloggning</translation>
 <translation id="3827112369919217609">Absolut</translation>
 <translation id="3828924085048779000">Lösenfrasen får inte vara tom.</translation>
 <translation id="3830139096297532361">Denna PDF är inte tillgänglig. Det gick inte att ladda ned textextraktionsfilerna. Försök igen senare.</translation>

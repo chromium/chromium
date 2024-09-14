@@ -39,7 +39,7 @@
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{Dibuat <ph name="NUM_HOURS_ONE" /> jam lalu}other{Dibuat <ph name="NUM_HOURS_MANY" /> jam lalu}}</translation>
 <translation id="2801787514987684416">Lihat info toko?</translation>
 <translation id="2928243913527329289">Google | Tentang toko ini</translation>
-<translation id="2977480621796371840">Keluarkan dari grup</translation>
+<translation id="2977480621796371840">Hapus dari grup</translation>
 <translation id="3008554597174452548">Hentikan pemantauan produk</translation>
 <translation id="3026391124054406831">Buat grup untuk mengatur tab Anda.</translation>
 <translation id="3052964831964880138">Diskon <ph name="PRICE_DROP" /> untuk <ph name="PRODUCT_NAME" /></translation>

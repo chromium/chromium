@@ -1031,7 +1031,7 @@ Huenda ruhusa ambazo tayari umezipa programu zikatumika kwenye akaunti hii. Unaw
 <translation id="171826447717908393">Programu za wavuti zilizotengwa (beta)</translation>
 <translation id="1718835860248848330">Saa iliyopita</translation>
 <translation id="1719312230114180055">Kumbuka: Huenda alama ya kidole chako ikawa si salama sana ikilinganishwa na nenosiri thabiti au PIN.</translation>
-<translation id="1720244237656138008">Mbinu ya uchoraji inayotumia mwangaza hafifu</translation>
+<translation id="1720244237656138008">Uchoraji wa mwanga hafifu</translation>
 <translation id="1720318856472900922">Uthibitishaji wa Seva ya TLS WWW</translation>
 <translation id="172123215662733643">Tafuta picha ukitumia <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="1722460139690167654"><ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> yako inadhibitiwa<ph name="END_LINK" /> na <ph name="ENROLLMENT_DOMAIN" /></translation>
@@ -6527,7 +6527,7 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="572328651809341494">Vichupo vya hivi punde</translation>
 <translation id="5723508132121499792">Hakuna programu ya maandharinyuma inayoendesha</translation>
 <translation id="5723967018671998714">Vidakuzi vya washirika wengine vimezuiwa katika Hali Fiche</translation>
-<translation id="5725112283692663422">Tuma maoni kuhusu kuunda mandhari kwa kutumia AI</translation>
+<translation id="5725112283692663422">Tuma maoni kuhusu kutumia AI kubuni mandhari</translation>
 <translation id="5727728807527375859">Viendelezi, programu, na mandhari vinaweza kudhuru kompyuta yako. Je, una hakika unataka kuendelea?</translation>
 <translation id="5728072125198221967">Huduma za Google zilizounganishwa</translation>
 <translation id="5728290366864286776">Kiendelezi hiki kinaweza kusoma na kubadilisha maelezo yaliyo kwenye tovuti au kinaweza kutumika katika hali ya chinichini</translation>
@@ -7042,7 +7042,7 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="610487644502954950">Kidirisha cha pembeni kimebanduliwa</translation>
 <translation id="6104929924898022309">Tumia kitufe cha utafutaji kubadilisha vitendo vya vitufe vya utendaji</translation>
 <translation id="6106167152849320869">Pia, ukichagua kutuma data ya uchunguzi na matumizi katika hatua iliyotangulia, data hii itakusanywa kwa ajili ya programu ulizosakinisha.</translation>
-<translation id="6108952804512516814">Kutayarisha kwa kutumia AI</translation>
+<translation id="6108952804512516814">Buni ukitumia AI</translation>
 <translation id="6111718295497931251">Ondoa idhini ya kufikia Hifadhi ya Google</translation>
 <translation id="6111972606040028426">Washa programu ya Mratibu wa Google</translation>
 <translation id="6112727384379533756">Weka tiketi</translation>
@@ -9278,7 +9278,7 @@ Bonyeza swichi au kitufe ulichokabidhi ili uondoe kitendo ulichokabidhi.</transl
 <translation id="7770612696274572992">Picha imenakiliwa kutoka kwenye kifaa kingine</translation>
 <translation id="7770827449915784217">Programu dhibiti imesasishwa</translation>
 <translation id="7771452384635174008">Mpangilio</translation>
-<translation id="7771955436058544691">Eneo tambarare lenye chumvi</translation>
+<translation id="7771955436058544691">Tambarare ya chumvi</translation>
 <translation id="7772032839648071052">Thibitisha kaulisiri</translation>
 <translation id="7772127298218883077">Kuhusu <ph name="PRODUCT_NAME" /></translation>
 <translation id="7773726648746946405">Hifadhi ya kipindi</translation>
@@ -9741,7 +9741,7 @@ Weka faili yako ya funguo mahali salama. Utaihitaji kuunda matoleo mapya ya kien
 <translation id="8090234456044969073">Soma orodha ya tovuti zako unazotembelea mara nyingi</translation>
 <translation id="8090513782447872344">Unaweza kurudi hapa wakati wowote ili uangalie tena</translation>
 <translation id="8090579562279016251">Hupunguza utendaji lakini hufanya V8 kustahimili mashambulizi zaidi</translation>
-<translation id="8090686009202681725">Kuunda mandhari kwa kutumia AI</translation>
+<translation id="8090686009202681725">Tumia AI kubuni mandhari</translation>
 <translation id="8091655032047076676">Majaribio</translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> haifanyi kazi</translation>
 <translation id="8094536695728193970">Aprikoti</translation>

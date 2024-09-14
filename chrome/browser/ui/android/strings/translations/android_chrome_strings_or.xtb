@@ -87,7 +87,7 @@
 <translation id="1373696734384179344">ଚୟନ କରାଯାଇଥିବା ବିଷୟବସ୍ତୁ ଡାଉନ୍‌ଲୋଡ୍ କରିବା ପାଇଁ ପର୍ଯ୍ୟାପ୍ତ ମେମୋରୀ ନାହିଁ।</translation>
 <translation id="1376578503827013741">ଗଣନା ହେଉଛି…</translation>
 <translation id="1382912999714108023">ଆପଣଙ୍କ ବର୍ତ୍ତମାନର ସୂଚନା ଦେଖାଯାଉନାହିଁ କି? ଏହାକୁ ଅପଡେଟ୍ କରିବା ପାଇଁ ଦୟାକରି ଆପଣଙ୍କ ବ୍ୟାଙ୍କ ସହ ଯୋଗାଯୋଗ କରନ୍ତୁ।</translation>
-<translation id="1383876407941801731">Search</translation>
+<translation id="1383876407941801731">ସର୍ଚ୍ଚ</translation>
 <translation id="1384704387250346179">Google Lens ସହ ଛବି ଅନୁବାଦ <ph name="BEGIN_NEW" />ନୂଆ<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382"><ph name="LAST_UPDATED" /> ଦିନ ପୂର୍ବେ ସକ୍ରିୟ ଥିଲା</translation>
 <translation id="1390418506739274310">Chromeରେ ଲିଙ୍କ ଖୋଲୁଥିବା ଅନ୍ୟ ଆପ୍ସରୁ ଇତିହାସ ଆପଣ ଦେଖିପାରନ୍ତି। ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ବ୍ରାଉଜିଂ ଇତିହାସର ଅନ୍ୟ ପ୍ରକାରଗୁଡ଼ିକ <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />ରେ ଥାଇପାରେ।</translation>
@@ -1576,7 +1576,7 @@
 <translation id="8255617931166444521">କେବଳ ସେମାନଙ୍କ ନିଜ ସାଇଟରେ, ଆପଣଙ୍କ ବ୍ରାଉଜିଂ କାର୍ଯ୍ୟକଳାପକୁ ଦେଖିବା ପାଇଁ ସାଇଟଗୁଡ଼ିକ କେବଳ ଆପଣଙ୍କ କୁକୀଗୁଡ଼ିକୁ ବ୍ୟବହାର କରିପାରିବ</translation>
 <translation id="8259179246279078674">ପ୍ରିଲୋଡ କରାଯାଇଥିବା ପୃଷ୍ଠାଗୁଡ଼ିକୁ ଏନକ୍ରିପ୍ଟ କରାଯାଇଥିବା ଯୋଗୁଁ Google ପ୍ରିଲୋଡ କରାଯାଇଥିବା ପୃଷ୍ଠାର ବିଷୟବସ୍ତୁ ବିଷୟରେ କିଛି ଜାଣିବ ନାହିଁ। କେଉଁ ସାଇଟଗୁଡ଼ିକୁ ବ୍ୟକ୍ତିଗତ ଭାବେ ପ୍ରିଲୋଡ କରାଯାଇଛି, ତାହା Google ସର୍ଭରଗୁଡ଼ିକ ଜାଣିବ। ଏହି ସୂଚନା କେବଳ ପୃଷ୍ଠାଗୁଡ଼ିକୁ ପ୍ରିଲୋଡ କରିବା ପାଇଁ ବ୍ୟବହୃତ ହୁଏ ଏବଂ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟର ଅନ୍ୟ ସୂଚନା ସହ ଲିଙ୍କ କରାଯାଏ ନାହିଁ।</translation>
 <translation id="8260126382462817229">ପୁଣି ସାଇନ୍ ଇନ୍ କରିବାକୁ ଚେଷ୍ଟା କରନ୍ତୁ</translation>
-<translation id="8261506727792406068">ବିଲୋପ</translation>
+<translation id="8261506727792406068">ଡିଲିଟ</translation>
 <translation id="82619448491672958">ଅନ୍ୟ ଟାବଗୁଡ଼ିକୁ ଦେଖନ୍ତୁ</translation>
 <translation id="8265018477030547118">କେବଳ ଏହି ଡିଭାଇସରେ</translation>
 <translation id="8266753737658117282"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ମାଧ୍ୟମରେ` ଜାରି ରଖନ୍ତୁ</translation>

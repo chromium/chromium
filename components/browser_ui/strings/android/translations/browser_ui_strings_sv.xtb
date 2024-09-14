@@ -120,7 +120,7 @@
 <translation id="2979365474350987274">Tredjepartscookies är begränsade</translation>
 <translation id="3008272652534848354">Återställ behörigheter</translation>
 <translation id="301521992641321250">Blockerades automatiskt</translation>
-<translation id="3069226013421428034">Tillåt inloggning hos tredje part på en viss webbplats.</translation>
+<translation id="3069226013421428034">Tillåt tredjepartsinloggning på en viss webbplats.</translation>
 <translation id="310297983047869047">Föregående bild</translation>
 <translation id="3109724472072898302">Komprimerat</translation>
 <translation id="3114012059975132928">Videospelare</translation>
@@ -166,7 +166,7 @@
 <translation id="3803367742635802571">Webbplatser du besöker kan sluta fungera som avsett</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" />. <ph name="TYPE_2" />.</translation>
 <translation id="381841723434055211">Telefonnummer</translation>
-<translation id="3826050100957962900">Inloggning hos tredje part</translation>
+<translation id="3826050100957962900">Tredjepartsinloggning</translation>
 <translation id="3835233591525155343">Enhetsanvändning</translation>
 <translation id="3843916486309149084">Cookies blockeras i Chrome igen i dag</translation>
 <translation id="385051799172605136">Föregående</translation>
@@ -330,7 +330,7 @@
 <translation id="6304434827459067558"><ph name="SITE" /> har blockerats från att använda dina uppgifter på</translation>
 <translation id="6320088164292336938">Vibration</translation>
 <translation id="6344622098450209924">Spårningsskydd</translation>
-<translation id="6367753977865761591">Blockera inloggning hos tredje part på en viss webbplats.</translation>
+<translation id="6367753977865761591">Blockera tredjepartsinloggning på en viss webbplats.</translation>
 <translation id="6398765197997659313">Avsluta helskärmsläge</translation>
 <translation id="640163077447496506">Löper ut i dag</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
