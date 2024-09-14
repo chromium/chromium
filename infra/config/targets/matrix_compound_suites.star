@@ -178,8 +178,8 @@ targets.legacy_matrix_compound_suite(
 targets.legacy_matrix_compound_suite(
     name = "android_15_emulator_fyi_gtests",
     basic_suites = {
-        "android_specific_chromium_gtests": None,  # Already includes gl_gtests.
-        "chromium_gtests": None,
+        "android_browsertests_fyi": None,
+        "android_content_browsertests_fyi": None,
         "webview_trichrome_64_cts_tests_suite": targets.legacy_matrix_config(
             variants = [
                 "WEBVIEW_TRICHROME_FULL_CTS_TESTS",
@@ -193,6 +193,8 @@ targets.legacy_matrix_compound_suite(
 targets.legacy_matrix_compound_suite(
     name = "android_15_emulator_gtests",
     basic_suites = {
+        "android_specific_chromium_gtests": None,  # Already includes gl_gtests.
+        "chromium_gtests": None,
         "android_emulator_specific_chrome_public_tests": None,
         "android_trichrome_smoke_tests": None,
         "android_smoke_tests": None,

@@ -137,6 +137,17 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
+    name = "android_browsertests_fyi",
+    tests = {
+        "android_browsertests": targets.legacy_test_config(
+            swarming = targets.swarming(
+                shards = 4,
+            ),
+        ),
+    },
+)
+
+targets.legacy_basic_suite(
     name = "android_specific_chromium_gtests",
     tests = {
         "android_browsertests": targets.legacy_test_config(
@@ -942,6 +953,17 @@ targets.legacy_basic_suite(
                 dimensions = {
                     "cores": "2",
                 },
+            ),
+        ),
+    },
+)
+
+targets.legacy_basic_suite(
+    name = "android_content_browsertests_fyi",
+    tests = {
+        "content_browsertests": targets.legacy_test_config(
+            android_swarming = targets.swarming(
+                shards = 15,
             ),
         ),
     },
