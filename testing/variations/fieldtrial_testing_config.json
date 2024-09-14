@@ -17367,6 +17367,8 @@
                         "PlusAddressBlocklistEnabled",
                         "PlusAddressFallbackFromContextMenu",
                         "PlusAddressOfferCreationOnSingleUsernameForms",
+                        "PlusAddressPreallocation",
+                        "PlusAddressUserOnboardingEnabled",
                         "PlusAddressesEnabled"
                     ]
                 }
