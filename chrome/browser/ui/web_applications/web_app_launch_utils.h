@@ -145,10 +145,17 @@ std::optional<AppNavigationResult> MaybeHandleAppNavigation(
 
 // Will enqueue the given url in the launch params for this web contents. Does
 // not check if the url is within scope of the app.
-void MaybeEnqueueLaunchParams(content::WebContents* contents,
-                              const webapps::AppId& app_id,
-                              const GURL& url,
-                              bool wait_for_navigation_to_complete);
+void EnqueueLaunchParams(content::WebContents* contents,
+                         const webapps::AppId& app_id,
+                         const GURL& url,
+                         bool wait_for_navigation_to_complete);
+
+// Handle navigation-related tasks for the app, like enqueuing launch params
+// and showing a navigation capturing IPH bubble, after the appropriate
+// app-scoped WebContents has been identified and prepared for navigation.
+void OnWebAppNavigationAfterWebContentsCreation(
+    const web_app::AppNavigationResult& app_navigation_result,
+    const NavigateParams& params);
 
 }  // namespace web_app
 

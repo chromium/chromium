@@ -28,7 +28,6 @@
 class Browser;
 class BrowserThemePack;
 class CustomThemeSupplier;
-struct NavigateParams;
 class TabMenuModelFactory;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -47,7 +46,6 @@ class ImageModel;
 
 namespace web_app {
 
-struct AppNavigationResult;
 class WebAppBrowserController;
 
 // Returns true if |app_url| and |page_url| are the same origin. To avoid
@@ -281,10 +279,6 @@ class AppBrowserController : public ui::ColorProviderKey::InitializerSupplier,
   // button to appear in the toolbar & the user can use it to navigate back to
   // that location.
   void MaybeSetInitialUrlOnReparentTab();
-
-  void DidStartNavigation(
-      const web_app::AppNavigationResult& app_navigation_result,
-      const NavigateParams& params);
 
  protected:
   AppBrowserController(Browser* browser,

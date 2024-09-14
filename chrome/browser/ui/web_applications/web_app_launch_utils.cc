@@ -1053,8 +1053,8 @@ std::optional<AppNavigationResult> MaybeHandleAppNavigation(
 
         // Enqueue launch params instantly instead of using the `Navigate()`
         // call as no navigation happens, and `Navigate()` early exits.
-        MaybeEnqueueLaunchParams(contents, app_id, params.url,
-                                 /*wait_for_navigation_to_complete=*/false);
+        EnqueueLaunchParams(contents, app_id, params.url,
+                            /*wait_for_navigation_to_complete=*/false);
         return {AppNavigationResult{/*browser= */ nullptr, -1,
                                     /*enqueue_launch_params=*/false,
                                     /*show_iph=*/true}};
@@ -1099,16 +1099,50 @@ std::optional<AppNavigationResult> MaybeHandleAppNavigation(
   return std::nullopt;
 }
 
-void MaybeEnqueueLaunchParams(content::WebContents* contents,
-                              const webapps::AppId& app_id,
-                              const GURL& url,
-                              bool wait_for_navigation_to_complete) {
+void EnqueueLaunchParams(content::WebContents* contents,
+                         const webapps::AppId& app_id,
+                         const GURL& url,
+                         bool wait_for_navigation_to_complete) {
+  CHECK(contents);
   WebAppLaunchParams launch_params;
   launch_params.started_new_navigation = wait_for_navigation_to_complete;
   launch_params.app_id = app_id;
   launch_params.target_url = url;
   WebAppTabHelper::FromWebContents(contents)->EnsureLaunchQueue().Enqueue(
       std::move(launch_params));
+}
+
+void OnWebAppNavigationAfterWebContentsCreation(
+    const web_app::AppNavigationResult& app_navigation_result,
+    const NavigateParams& params) {
+  // Exit early if the browser or the controller for the browser does not exist.
+  if (!params.browser || !params.browser->app_controller()) {
+    return;
+  }
+
+  // `open_pwa_window_if_possible` can be set outside of navigation capturing
+  // flow for web apps and shouldn't be used to trigger the IPH.
+  if (params.open_pwa_window_if_possible) {
+    return;
+  }
+
+  const webapps::AppId& app_id = params.browser->app_controller()->app_id();
+
+  // Enqueue launch params if needed.
+  if (app_navigation_result.enqueue_launch_params) {
+    EnqueueLaunchParams(params.navigated_or_inserted_contents, app_id,
+                        params.url,
+                        /*wait_for_navigation_to_complete=*/true);
+  }
+
+  // TODO(crbug.com/359224477): Once WebAppLaunchProcess logic has been fixed,
+  // revisit whether the show_iph bool is needed.
+  if (!app_navigation_result.show_iph) {
+    return;
+  }
+
+  MaybeShowNavigationCaptureIph(app_id, params.initiating_profile,
+                                params.browser);
 }
 
 }  // namespace web_app

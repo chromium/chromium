@@ -19,13 +19,11 @@
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window_state.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/tabs/tab_menu_model_factory.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chrome_features.h"
@@ -124,29 +122,6 @@ Browser* AppBrowserController::FindForWebApp(const Profile& profile,
     return browser;
   }
   return nullptr;
-}
-
-void AppBrowserController::DidStartNavigation(
-    const web_app::AppNavigationResult& app_navigation_result,
-    const NavigateParams& params) {
-  // TODO(crbug.com/359224477): Once WebAppLaunchProcess logic has been fixed,
-  // revisit whether the show_iph bool is needed.
-  if (!app_navigation_result.show_iph) {
-    return;
-  }
-
-  // `open_pwa_window_if_possible` can be set outside of navigation capturing
-  // flow for web apps and shouldn't be used to trigger the IPH.
-  if (params.open_pwa_window_if_possible) {
-    return;
-  }
-
-  if (!IsWebApp(params.browser)) {
-    return;
-  }
-
-  web_app::MaybeShowNavigationCaptureIph(app_id(), params.initiating_profile,
-                                         params.browser);
 }
 
 // static

@@ -884,21 +884,6 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
     // other than add it to the appropriate tabstrip.
   }
 
-#if !BUILDFLAG(IS_ANDROID)
-  // At this point, |contents_to_navigate_or_insert| is guaranteed to exist and
-  // be non-NULL, so launch params can be enqueued in the correct web contents.
-  if (app_navigation_result.has_value() &&
-      app_navigation_result->enqueue_launch_params) {
-    CHECK(contents_to_navigate_or_insert);
-    CHECK(params->browser);
-    CHECK(web_app::AppBrowserController::IsWebApp(params->browser));
-    web_app::MaybeEnqueueLaunchParams(
-        contents_to_navigate_or_insert,
-        params->browser->app_controller()->app_id(), params->url,
-        /*wait_for_navigation_to_complete=*/true);
-  }
-#endif  // !BUILDFLAG(IS_ANDROID)
-
   // If the user navigated from the omnibox, and the selected tab is going to
   // lose focus, then make sure the focus for the source tab goes away from the
   // omnibox.
@@ -996,13 +981,17 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
     }
   }
 
-  if (params->browser && params->browser->app_controller() &&
-      app_navigation_result.has_value()) {
-    params->browser->app_controller()->DidStartNavigation(
+  params->navigated_or_inserted_contents = contents_to_navigate_or_insert;
+
+// At this point, the `params->navigated_or_inserted_contents` is guaranteed to
+// be non null, so perform tasks if the navigation has been captured by a web
+// app, like enqueueing launch params.
+#if !BUILDFLAG(IS_ANDROID)
+  if (app_navigation_result.has_value()) {
+    web_app::OnWebAppNavigationAfterWebContentsCreation(
         app_navigation_result.value(), *params);
   }
-
-  params->navigated_or_inserted_contents = contents_to_navigate_or_insert;
+#endif  // !BUILDFLAG(IS_ANDROID)
   return navigation_handle;
 }
 
