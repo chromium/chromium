@@ -11,7 +11,6 @@
 <translation id="1035980983510608210">બધી ટૅબ બંધ કરવાથી પિન કરેલી ટૅબ પણ બંધ થઈ જશે.</translation>
 <translation id="1036017604683756002">UPS</translation>
 <translation id="1036348656032585052">બંધ કરો</translation>
-<translation id="10379132160269599">ટૅબ ગ્રિડ બતાવો</translation>
 <translation id="1041322626941363065">જો ડેટા ઉલ્લંઘનમાં પાસવર્ડ જાહેર થાય તો તમને ચેતવણી આપવામાં આવે છે</translation>
 <translation id="1044891598689252897">સાઇટ સામાન્ય રીતે કાર્ય કરશે</translation>
 <translation id="104491362976654916">ઑફલાઇન પેજ</translation>
@@ -31,6 +30,7 @@
 <translation id="1118569444314402022">આપનું ફરી સ્વાગત છે, <ph name="USER_NAME" /></translation>
 <translation id="1121850836842642159">ફોટા અને છબીઓ</translation>
 <translation id="1125564390852150847">નવું ટૅબ બનાવો.</translation>
+<translation id="1126696498560056882">આ ડિવાઇસ પરના એકાઉન્ટ મેનેજ કરો</translation>
 <translation id="1126809382673880764">જોખમકારક વેબસાઇટ, ડાઉનલોડ અને એક્સ્ટેન્શન સામે તમારું રક્ષણ કરતું નથી. Gmail અને Search જેવી Googleની અન્ય સેવાઓમાં, જ્યાં ઉપલબ્ધ હોય, ત્યાં તમને હજી પણ Safe Browsing સંરક્ષણ મળશે.</translation>
 <translation id="1142371195993008685"><ph name="FEATURE_NAME" /> માટેના નોટિફિકેશન બંધ કરો</translation>
 <translation id="1147031633655575115"><ph name="USER" /> તરીકે સાઇન ઇન થયા</translation>
@@ -1010,7 +1010,6 @@
 <translation id="594324569139756587">ત્રીજા પક્ષની કુકીને બ્લૉક કરો</translation>
 <translation id="5944869793365969636">QR કોડ સ્કૅન કરો</translation>
 <translation id="5948291296578561264">આ તમને તમારી ફોટો લાઇબ્રેરીમાં ફોટો સાચવવા દે છે.</translation>
-<translation id="5953383789663007162">એકાઉન્ટની સૂચિમાં ફેરફાર કરો</translation>
 <translation id="5954322191260787920">બુકમાર્કમાં ફેરફાર કરો</translation>
 <translation id="5956112131836209882">ટૅબનું ગ્રૂપ ટૅબ. <ph name="NUMBER_OF_TABS_IN_GROUP" />માંથી <ph name="TAB_INDEX_IN_GROUP" />.</translation>
 <translation id="595769230373966252"><ph name="SEARCH_PROVIDER" /> વડે શોધો</translation>
@@ -1604,6 +1603,7 @@
 <translation id="8637431369725868556">જોખમી સાઇટથી સુરક્ષા મેળવો.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{ચેડાં કરાયેલો કોઈ પાસવર્ડ નથી}=1{ચેડાં કરાયેલો {COUNT} પાસવર્ડ}one{ચેડાં કરાયેલો {COUNT} પાસવર્ડ}other{ચેડાં કરાયેલા {COUNT} પાસવર્ડ}}</translation>
 <translation id="8640575194957831802">છેલ્લે ખોલેલું</translation>
+<translation id="8647280737650867362">કિંમતને ટ્રૅક કરવાનું બંધ કરી શક્યા નથી.</translation>
 <translation id="8654802032646794042">રદ કરો</translation>
 <translation id="8660600697590740984">કૉપિ કરેલી Lens માટેની છબી</translation>
 <translation id="866266761389616183">અરેરે, કંઈક ભૂલ થઈ!</translation>

@@ -712,6 +712,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2265356434276802347">Dit beleid mag niet meer dan <ph name="MAX_ITEMS_LIMIT" /> uitgelichte items bevatten.</translation>
 <translation id="2267047181501709434">Je identiteit verifiëren…</translation>
 <translation id="2268044343513325586">Verfijnen</translation>
+<translation id="2268966938956566076">Upload over <ph name="MINUTES" /> min</translation>
 <translation id="2270484714375784793">Telefoonnummer</translation>
 <translation id="2276057643614339130">Afdrukbasis</translation>
 <translation id="2277103315734023688">Vooruit zoeken</translation>
@@ -1110,6 +1111,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="3062655045399308513">Browsegegevens verwijderen…</translation>
 <translation id="306573536155379004">Game gestart.</translation>
 <translation id="3067505415088964188">Prijs is laag</translation>
+<translation id="3068118691172921711">Je bestandsupload naar <ph name="CLOUD_PROVIDER" /> begint over 1 minuut</translation>
 <translation id="3076865167425975822">Besturingssystemen</translation>
 <translation id="3080254622891793721">Afbeelding</translation>
 <translation id="3082007635241601060">Laat Google je winkelwagens gebruiken om gepersonaliseerde kortingen te vinden als deze beschikbaar zijn</translation>
@@ -1121,6 +1123,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="3099619114405539473">Beschikbare camera's gebruiken (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="3102312643185441063">Spaarrekening</translation>
 <translation id="3103188521861412364">Aandelen en obligaties</translation>
+<translation id="3103535543639438037">Vergelijkbare producten naast elkaar vergelijken</translation>
 <translation id="3105172416063519923">Item-ID:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />Controleer de configuratie voor beveiligde DNS<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Middelste lade</translation>
@@ -1295,6 +1298,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3407789382767355356">externe login</translation>
 <translation id="340924996148642843">Vergelijken is op dit moment niet beschikbaar.</translation>
 <translation id="3409896703495473338">Beveiligingsinstellingen beheren</translation>
+<translation id="3411091017011773343">Upload over <ph name="HOURS" /> uur</translation>
 <translation id="3414275587143250384">Gedistribueerde systemen en cloudcomputing</translation>
 <translation id="3414952576877147120">Grootte:</translation>
 <translation id="341513675006332771">Knop Chrome Dino-game spelen. Activeer deze om de Dino Run-game in Chrome te spelen.</translation>
@@ -1887,7 +1891,6 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="4451135742916150903">Kan vragen of deze site verbinding mag maken met HID-apparaten</translation>
 <translation id="4451684391620232683">Tekst die de gebruiker te zien krijgt:</translation>
 <translation id="4452328064229197696">Het wachtwoord dat je net hebt gebruikt, is gevonden bij een gegevenslek. Google Wachtwoordmanager raadt je aan je opgeslagen wachtwoorden te checken om je accounts te beveiligen.</translation>
-<translation id="4452957520362597816">Vragen om web-apps te installeren</translation>
 <translation id="4456937135469235202">Avontuurlijke reizen</translation>
 <translation id="4464826014807964867">Websites met gegevens van je organisatie</translation>
 <translation id="4466576951214254884">Studieleningen en studiefinanciering</translation>
@@ -1959,6 +1962,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="4628678854894591460">Vakantieaanbiedingen</translation>
 <translation id="4628948037717959914">Foto</translation>
 <translation id="4629370161347991046">A4x6</translation>
+<translation id="462989688138616749">Je bestandsupload naar <ph name="CLOUD_PROVIDER" /> begint over <ph name="HOURS" /> uur</translation>
 <translation id="4631649115723685955">Cashback gekoppeld</translation>
 <translation id="4631881646528206880">Inschrijving via virtuele kaart</translation>
 <translation id="4635278307999235413">Gegevens naar de Beheerdersconsole sturen</translation>
@@ -2079,6 +2083,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="484988093836683706">Apparaatontgrendeling gebruiken</translation>
 <translation id="4850886885716139402">Weergave</translation>
 <translation id="4854853140771946034">Snel een nieuwe notitie in Google Keep maken</translation>
+<translation id="4855395119669662878">Je beheerder begint om <ph name="DATE_TIME" /> met het uploaden van je bestanden naar <ph name="CLOUD_PROVIDER" />. Houd je apparaat verbonden totdat de bestandsupload is afgerond. Tijdens het uploaden kun je alleen lokale bestanden lezen.</translation>
 <translation id="485902285759009870">Code verifiëren...</translation>
 <translation id="4860260582253463350">Als je wilt doorgaan naar YouTube, moeten we zeker weten dat jij het bent. Je krijgt de instellingen die je ouder of voogd heeft ingesteld in Family Link.</translation>
 <translation id="4864406669374375262">Versietekenreeks gekopieerd naar klembord</translation>
@@ -2134,6 +2139,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="4933468175699107356">Klik met de rechtermuisknop om opgeslagen informatie (zoals je naam of adres) automatisch in te vullen op een formulier</translation>
 <translation id="4934780484581617878">Vensterbeheer</translation>
 <translation id="4936134414789135531">De ingevoegde <ph name="VALUE_NAME" /> kan niet worden gevonden.</translation>
+<translation id="4936573216809994970">Je bestandsupload naar <ph name="CLOUD_PROVIDER" /> begint over 1 uur</translation>
 <translation id="4936675324097895694">Financieel</translation>
 <translation id="4943620199112228840">Je microfoons gebruiken</translation>
 <translation id="4943872375798546930">Geen resultaten</translation>
@@ -2307,6 +2313,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5269225904387178860">Vier perforaties onder</translation>
 <translation id="5271381225185906340"><ph name="DATA_CONTROLS_ATTRIBUTE" /> is geen ondersteunde voorwaarde voor <ph name="DATA_CONTROLS_RESTRICTION" /></translation>
 <translation id="5273658854610202413">Waarschuwing: Dit beleid is niet samengevoegd zoals gespecificeerd in het beleid PolicyListMultipleSourceMergeList, omdat het geen onderdeel is van het woordenboekbeleid dat kan worden samengevoegd.</translation>
+<translation id="5278778426231952189">Nu uploaden</translation>
 <translation id="5279286380302340275">Downloads beheren</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">Documenteigenschappen</translation>
@@ -3809,6 +3816,7 @@ Aanvullende informatie:
 <translation id="8030729864112325446">Beroeps- en vervolgonderwijs</translation>
 <translation id="8032546467100845887">Transparantie</translation>
 <translation id="8035152190676905274">Pen</translation>
+<translation id="8035264638816032066">De tabbladtitels en URL's van pagina's die je aan de tabel toevoegt, worden naar Google gestuurd</translation>
 <translation id="8037117624646282037">Wie het apparaat recent heeft gebruikt</translation>
 <translation id="8037357227543935929">Vragen (standaard)</translation>
 <translation id="803771048473350947">Archief</translation>
@@ -4002,6 +4010,7 @@ Aanvullende informatie:
 <translation id="8381674639488873545">Deze kosten kunnen eenmalig of terugkerend zijn en zijn mogelijk niet duidelijk aangegeven. <ph name="BEGIN_LINK" />Toch bekijken<ph name="END_LINK" /></translation>
 <translation id="8382097126743287270">Automatisch volledig scherm</translation>
 <translation id="838307841291975086">Stationcars</translation>
+<translation id="8388286357548915205">Gebruiken voor alle gasten</translation>
 <translation id="8389532092404711541">Normaal <ph name="LOW_PRICE" /></translation>
 <translation id="8389940864052787379">Aangepaste en bijzondere voertuigen</translation>
 <translation id="8390725133630534698">Delen van <ph name="ORIGIN_NAME" /> naar <ph name="VM_NAME" /> is geblokkeerd op basis van beheerdersbeleid</translation>
@@ -4108,6 +4117,7 @@ Aanvullende informatie:
 <translation id="8564466070529550495">Virtuele kaart is nu niet beschikbaar, probeer het later opnieuw.</translation>
 <translation id="8564985650692024650">Chromium raadt je aan het wachtwoord voor <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> opnieuw in te stellen als je het voor andere sites hebt hergebruikt.</translation>
 <translation id="8570895683659698018">Hobby's en vrijetijdsbesteding</translation>
+<translation id="8572792595597115856">Geldig tot <ph name="DATE" /></translation>
 <translation id="8574841453995331336">Koelkasten en diepvriezers</translation>
 <translation id="8577192028579836704">Alle opties zijn meestal <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">Virtuele kaart niet beschikbaar</translation>
@@ -4129,6 +4139,7 @@ Aanvullende informatie:
 <translation id="8617269623452051934">je apparaatgebruik</translation>
 <translation id="861775596732816396">Grootte 4</translation>
 <translation id="8620276786115098679">Envelop Kaku 7</translation>
+<translation id="8622864575115813231">Contact opnemen met je financiële instelling…</translation>
 <translation id="8623885649813806493">Geen overeenkomende wachtwoorden. Alle opgeslagen wachtwoorden bekijken.</translation>
 <translation id="8624354461147303341">Kortingen zoeken</translation>
 <translation id="8634957317623797170">54 x 86 mm</translation>
@@ -4427,6 +4438,7 @@ Aanvullende informatie:
 <translation id="9192361865877479444">Metaal (mat)</translation>
 <translation id="9192947025498305328">Natuurlijke cosmetica</translation>
 <translation id="9199905725844810519">Afdrukken is geblokkeerd</translation>
+<translation id="9204089334327209740">Nadat de upload is afgerond, kun je je bestanden aanpassen in <ph name="CLOUD_PROVIDER" />. Lokale opslag, inclusief bestanden in de prullenbak, wordt automatisch verwijderd.</translation>
 <translation id="9205078245616868884">Je gegevens zijn versleuteld met je wachtwoordzin voor synchronisatie. Geef deze op om de synchronisatie te starten.</translation>
 <translation id="920643408853370361">Reisverzekeringen</translation>
 <translation id="9207861905230894330">Kan artikel niet toevoegen.</translation>
@@ -4447,6 +4459,7 @@ Aanvullende informatie:
 <translation id="937804173274050966"><ph name="BEGIN_BOLD" />Welke gegevens worden gebruikt:<ph name="END_BOLD" /> Je advertentieonderwerpen zijn gebaseerd op je recente browsegeschiedenis. Dit is een lijst met sites die je via Chrome op dit apparaat hebt bezocht.</translation>
 <translation id="937885410143139026">Gegevens die naar de Beheerdersconsole zijn gestuurd</translation>
 <translation id="939736085109172342">Nieuwe map</translation>
+<translation id="940524522703752213">Je bestandsupload naar <ph name="CLOUD_PROVIDER" /> begint over <ph name="MINUTES" /> minuten</translation>
 <translation id="944540589955480312">Wachtwoorden en toegangssleutels gebruiken die zijn opgeslagen in je Google-account</translation>
 <translation id="945646848072568856">Chrome voorkomt dat sites cookies van derden gebruiken om je te volgen terwijl je browst.</translation>
 <translation id="945855313015696284">Controleer de informatie hieronder en verwijder alle ongeldige passen</translation>

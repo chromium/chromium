@@ -712,6 +712,7 @@
 <translation id="2265356434276802347">ଏହି ନୀତିରେ <ph name="MAX_ITEMS_LIMIT" />ରୁ ଅଧିକ ଫିଚର କରାଯାଇଥିବା ଏଣ୍ଟ୍ରି ରହିବା ଉଚିତ ନୁହେଁ।</translation>
 <translation id="2267047181501709434">ଆପଣଙ୍କ ପରିଚୟ ଯାଞ୍ଚ କରାଯାଉଛି...</translation>
 <translation id="2268044343513325586">ମାର୍ଜିତ କରନ୍ତୁ</translation>
+<translation id="2268966938956566076"><ph name="MINUTES" /> ମିନିଟରେ ଅପଲୋଡ କରନ୍ତୁ</translation>
 <translation id="2270484714375784793">ଫୋନ୍ ନମ୍ଵର</translation>
 <translation id="2276057643614339130">ପ୍ରିଣ୍ଟ ବେସ୍</translation>
 <translation id="2277103315734023688">ଆଗକୁ ବଢ଼ାନ୍ତୁ</translation>
@@ -1110,6 +1111,7 @@
 <translation id="3062655045399308513">ବ୍ରାଉଜିଂ ଡାଟାକୁ ଡିଲିଟ କରନ୍ତୁ...</translation>
 <translation id="306573536155379004">ଗେମ୍ ଆରମ୍ଭ ହୋଇଛି।</translation>
 <translation id="3067505415088964188">ମୂଲ୍ୟ କମ ଅଟେ</translation>
+<translation id="3068118691172921711"><ph name="CLOUD_PROVIDER" />ରେ ଆପଣଙ୍କ ଫାଇଲର ଅପଲୋଡ 1 ମିନିଟରେ ଆରମ୍ଭ ହେବ</translation>
 <translation id="3076865167425975822">ଅପରେଟିଂ ସିଷ୍ଟମଗୁଡ଼ିକ</translation>
 <translation id="3080254622891793721">ଗ୍ରାଫିକ୍</translation>
 <translation id="3082007635241601060">ପର୍ସନାଲାଇଜ କରାଯାଇଥିବା ରିହାତିଗୁଡ଼ିକ ଉପଲବ୍ଧ ହେଲେ ତାହା ଖୋଜିବା ପାଇଁ Googleକୁ ଆପଣଙ୍କ କାର୍ଟଗୁଡ଼ିକୁ ବ୍ୟବହାର କରିବାକୁ ଦିଅନ୍ତୁ</translation>
@@ -1121,6 +1123,7 @@
 <translation id="3099619114405539473">ଉପଲବ୍ଧ ଥିବା (<ph name="CAMERAS_COUNT" />) କେମେରା ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="3102312643185441063">ସେଭିଂସ</translation>
 <translation id="3103188521861412364">ଷ୍ଟକ ଏବଂ ବଣ୍ଡଗୁଡ଼ିକ</translation>
+<translation id="3103535543639438037">ସମାନ ପ୍ରଡକ୍ଟଗୁଡ଼ିକୁ ପାଖାପାଖି ତୁଳନା କରନ୍ତୁ</translation>
 <translation id="3105172416063519923">ଆସେଟ୍ ID:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />ସୁରକ୍ଷିତ DNS କନଫିଗରେସନ୍ ଯାଞ୍ଚ କରାଯାଉଛି<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">ମଧ୍ୟମ ଟ୍ରେ</translation>
@@ -1296,6 +1299,7 @@
 <translation id="3407789382767355356">ତୃତୀୟ-ପକ୍ଷ ସାଇନ-ଇନ</translation>
 <translation id="340924996148642843">ବର୍ତ୍ତମାନ ତୁଳନା କରିବା ଉପଲବ୍ଧ ନାହିଁ</translation>
 <translation id="3409896703495473338">ସୁରକ୍ଷା ସେଟିଂସକୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
+<translation id="3411091017011773343"><ph name="HOURS" /> ଘଣ୍ଟାରେ ଅପଲୋଡ କରନ୍ତୁ</translation>
 <translation id="3414275587143250384">ଡିଷ୍ଟ୍ରିବ୍ୟୁଟେଡ ଏବଂ କ୍ଲାଉଡ କମ୍ପ୍ୟୁଟିଂ</translation>
 <translation id="3414952576877147120">ଆକାର:</translation>
 <translation id="341513675006332771">'Chrome Dino ଗେମ ଖେଳନ୍ତୁ' ବଟନ, Chromeରେ Dino Run ଗେମ ଖେଳିବା ପାଇଁ ଏହାକୁ ସକ୍ରିୟ କରନ୍ତୁ</translation>
@@ -1890,7 +1894,6 @@
 <translation id="4451135742916150903">HID ଡିଭାଇସଗୁଡ଼ିକ ସହ ସଂଯୋଗ କରିବାକୁ ସାଇଟ୍ ପଚାରିପାରେ</translation>
 <translation id="4451684391620232683">ୟୁଜରଙ୍କୁ ପ୍ରେଜେଣ୍ଟ କରାଯାଇଥିବା ଟେକ୍ସଟ:</translation>
 <translation id="4452328064229197696">ଆପଣ ଏବେ ବ୍ୟବହାର କରିଥିବା ପାସୱାର୍ଡ ଏକ ଡାଟା ଉଲ୍ଲଙ୍ଘନରେ ମିଳିଛି। ଆପଣଙ୍କ ଆକାଉଣ୍ଟଗୁଡ଼ିକୁ ସୁରକ୍ଷିତ ରଖିବା ପାଇଁ, Google ପାସୱାର୍ଡ ମ୍ୟାନେଜର ଆପଣଙ୍କ ଦ୍ୱାରା ସେଭ କରାଯାଇଥିବା ପାସୱାର୍ଡଗୁଡ଼ିକର ଯାଞ୍ଚ କରିବାକୁ ସୁପାରିଶ କରେ।</translation>
-<translation id="4452957520362597816">ୱେବ ଆପ୍ସ ଇନଷ୍ଟଲ କରିବାକୁ ପଚାରନ୍ତୁ</translation>
 <translation id="4456937135469235202">ଆଡଭେଞ୍ଚର ଟ୍ରାଭେଲ</translation>
 <translation id="4464826014807964867">ଆପଣଙ୍କ ସଂସ୍ଥା ଦ୍ୱାରା ପ୍ରଦାନ କରାଯାଇଥିବା ସୂଚନା ଥିବା ୱେବସାଇଟଗୁଡ଼ିକ</translation>
 <translation id="4466576951214254884">ଛାତ୍ର/ଛାତ୍ରୀ ଋଣ ଏବଂ କଲେଜ ଫାଇନାନ୍ସିଂ</translation>
@@ -1962,6 +1965,7 @@
 <translation id="4628678854894591460">ଛୁଟି ଅଫର</translation>
 <translation id="4628948037717959914">ଫଟୋ</translation>
 <translation id="4629370161347991046">A4x6</translation>
+<translation id="462989688138616749"><ph name="CLOUD_PROVIDER" />ରେ ଆପଣଙ୍କ ଫାଇଲର ଅପଲୋଡ <ph name="HOURS" /> ଘଣ୍ଟାରେ ଆରମ୍ଭ ହେବ</translation>
 <translation id="4631649115723685955">କ୍ୟାସବ୍ୟାକ୍ ଲିଙ୍କ୍ କରାଯାଇଛି</translation>
 <translation id="4631881646528206880">ଭର୍ଚୁଆଲ କାର୍ଡ ପଞ୍ଜିକରଣ</translation>
 <translation id="4635278307999235413">ଆଡମିନ କନସୋଲକୁ ଡାଟା ପଠାଯାଉଛି</translation>
@@ -2082,6 +2086,7 @@
 <translation id="484988093836683706">ଡିଭାଇସ ଅନଲକ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="4850886885716139402">ଦେଖନ୍ତୁ</translation>
 <translation id="4854853140771946034">Google Keepରେ ଶୀଘ୍ର ଏକ ନୂଆ ନୋଟ୍ ତିଆରି କରନ୍ତୁ</translation>
+<translation id="4855395119669662878">ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟର <ph name="DATE_TIME" />ରେ ଆପଣଙ୍କ ଫାଇଲଗୁଡ଼ିକୁ <ph name="CLOUD_PROVIDER" />ରେ ଅପଲୋଡ କରିବା ଆରମ୍ଭ କରିବେ। ଆପଣଙ୍କ ଫାଇଲର ଅପଲୋଡ ସମ୍ପୂର୍ଣ୍ଣ ନହେବା ପର୍ଯ୍ଯନ୍ତ ଆପଣଙ୍କ ଡିଭାଇସକୁ କନେକ୍ଟ କରି ରଖନ୍ତୁ। ଅପଲୋଡ ପ୍ରକ୍ରିୟା ସମୟରେ, ଆପଣ କେବଳ ସ୍ଥାନୀୟ ଫାଇଲଗୁଡ଼ିକୁ ପଢ଼ିବା ପାଇଁ ସକ୍ଷମ ହେବେ।</translation>
 <translation id="485902285759009870">କୋଡ ଯାଞ୍ଚ କରାଯାଉଛି...</translation>
 <translation id="4860260582253463350">YouTubeରେ ଜାରି ରଖିବାକୁ ଏହା ତୁମେ ଅଟ ବୋଲି ଆମକୁ ସୁନିଶ୍ଚିତ କରିବା ଆବଶ୍ୟକ। ତୁମେ Family Linkରେ ତୁମ ବାପାମା କିମ୍ବା ଅଭିଭାବକ ସେଟ ଅପ କରିଥିବା ସେଟିଂସ ପାଇବ।</translation>
 <translation id="4864406669374375262">କ୍ଲିପବୋର୍ଡକୁ ଭର୍ସନ ଷ୍ଟ୍ରିଂ କପି କରାଯାଇଛି</translation>
@@ -2137,6 +2142,7 @@
 <translation id="4933468175699107356">ଯେ କୌଣସି ଫର୍ମରେ ଆପଣଙ୍କ ନାମ କିମ୍ବା ଠିକଣା ପରି ସେଭ ହୋଇଥିବା ସୂଚନାକୁ ଅଟୋଫିଲ କରିବା ପାଇଁ ଡାହାଣ କ୍ଲିକ କରନ୍ତୁ</translation>
 <translation id="4934780484581617878">ୱିଣ୍ଡୋ ପରିଚାଳନା</translation>
 <translation id="4936134414789135531">ଇନସାର୍ଟ କରାଯାଇଥିବା <ph name="VALUE_NAME" /> ମିଳିଲା ନାହିଁ।</translation>
+<translation id="4936573216809994970"><ph name="CLOUD_PROVIDER" />ରେ ଆପଣଙ୍କ ଫାଇଲର ଅପଲୋଡ 1 ଘଣ୍ଟାରେ ଆରମ୍ଭ ହେବ</translation>
 <translation id="4936675324097895694">ଫାଇନାନ୍ସ</translation>
 <translation id="4943620199112228840">ଆପଣଙ୍କ ମାଇକ୍ରୋଫୋନ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="4943872375798546930">କୌଣସି ଫଳାଫଳ ନାହିଁ</translation>
@@ -2310,6 +2316,7 @@
 <translation id="5269225904387178860">ତଳ ପଟରେ ଚାରୋଟି ପଞ୍ଚ୍</translation>
 <translation id="5271381225185906340">"<ph name="DATA_CONTROLS_RESTRICTION" />" ପାଇଁ "<ph name="DATA_CONTROLS_ATTRIBUTE" />" ଏକ ସମର୍ଥିତ ସର୍ତ୍ତ ନୁହେଁ</translation>
 <translation id="5273658854610202413">ଚେତାବନୀ: ଏହି ନୀତିକୁ ନିର୍ଦ୍ଦିଷ୍ଟ କରାଯାଇଥିବା PolicyDictionaryMultipleSourceMergeList ନୀତିରେ ମିଶାଯାଇ ନଥିଲା କାରଣ ଏହା ଏକ ଅଭିଧାନ ନୀତିରେ ମିଶ୍ରଣ କରାଯିବାର ଅଂଶ ନୁହେଁ।</translation>
+<translation id="5278778426231952189">ବର୍ତ୍ତମାନ ଅପଲୋଡ କରନ୍ତୁ</translation>
 <translation id="5279286380302340275">ଡାଉନଲୋଡଗୁଡ଼ିକୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">ଡକ୍ୟୁମେଣ୍ଟର ପ୍ରପର୍ଟିଗୁଡ଼ିକ</translation>
@@ -3811,6 +3818,7 @@
 <translation id="8030729864112325446">ଧନ୍ଦାମୂଳକ ଏବଂ ନିରନ୍ତର ଶିକ୍ଷା</translation>
 <translation id="8032546467100845887">ଟ୍ରାନ୍ସପରେନ୍ସି</translation>
 <translation id="8035152190676905274">ପେନ୍</translation>
+<translation id="8035264638816032066">ଟେବୁଲରେ ଆପଣ ଯୋଗ କରିଥିବା ଟାବ ଟାଇଟେଲ ଏବଂ ପୃଷ୍ଠାଗୁଡ଼ିକର URL Googleକୁ ପଠାଯାଏ</translation>
 <translation id="8037117624646282037">ନିକଟରେ ଯିଏ ଡିଭାଇସ୍ ବ୍ୟବହାର କରିଛନ୍ତି</translation>
 <translation id="8037357227543935929">ପଚାରନ୍ତୁ (ଡିଫଲ୍ଟ)</translation>
 <translation id="803771048473350947">ଫାଇଲ୍</translation>
@@ -3928,7 +3936,7 @@
 <translation id="8257387598443225809">ଏହି ଆପକୁ ମୋବାଇଲ ପାଇଁ ଡିଜାଇନ୍ କରାଯାଇଛି</translation>
 <translation id="8259239120149678929">ଟିଭି ଡକ୍ୟୁମେଣ୍ଟାରୀ ଏବଂ ନନଫିକ୍ସନ</translation>
 <translation id="825929999321470778">ସେଭ୍ ଥିବା ସମସ୍ତ ପାସ୍‌ୱର୍ଡ ଦେଖାନ୍ତୁ</translation>
-<translation id="8261506727792406068">ବିଲୋପ</translation>
+<translation id="8261506727792406068">ଡିଲିଟ</translation>
 <translation id="8262952874573525464">ତଳ ପଟରେ ଏଜ୍ ଷ୍ଟିଚ୍</translation>
 <translation id="8263001937536038617">ଫଟୋ ଏବଂ ଭିଡିଓ ସେବା</translation>
 <translation id="8265992338205884890">ଦେଖାଯାଉଥିବା ଡାଟା</translation>
@@ -4004,6 +4012,7 @@
 <translation id="8381674639488873545">ଏହି ଶୁଳ୍କଗୁଡ଼ିକ ଗୋଟିଏ ଥର କିମ୍ବା ବାରମ୍ବାର ଲାଗୁ ହୋ‍ଇପାରେ ଏବଂ ସ୍ପଷ୍ଟ ହୋ‍ଇନପାରେ। <ph name="BEGIN_LINK" />ଯେକୌଣସି ଉପାୟରେ ଦେଖାନ୍ତୁ<ph name="END_LINK" /></translation>
 <translation id="8382097126743287270">ସ୍ୱତଃ ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନ</translation>
 <translation id="838307841291975086">ଷ୍ଟେସନ ୱାଗନଗୁଡ଼ିକ</translation>
+<translation id="8388286357548915205">ସମସ୍ତ ଅତିଥିଙ୍କ ପାଇଁ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="8389532092404711541">ସାଧାରଣତଃ <ph name="LOW_PRICE" /></translation>
 <translation id="8389940864052787379">କଷ୍ଟମ ଏବଂ ପରଫରମାନ୍ସ ଗାଡ଼ିଗୁଡ଼ିକ</translation>
 <translation id="8390725133630534698">ଆଡମିନିଷ୍ଟ୍ରେଟର୍ ନୀତି ଦ୍ୱାରା <ph name="ORIGIN_NAME" />ରୁ <ph name="VM_NAME" />କୁ ସେୟାର୍ କରିବା ବ୍ଲକ୍ କରାଯାଇଛି</translation>
@@ -4110,6 +4119,7 @@
 <translation id="8564466070529550495">ଭର୍ଚୁଆଲ କାର୍ଡ ବର୍ତ୍ତମାନ ଉପଲବ୍ଧ ନାହିଁ, ଦୟାକରି ପରେ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="8564985650692024650">ଆପଣ ଯଦି ଆପଣଙ୍କର <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> ପାସ୍‌ୱାର୍ଡକୁ ଅନ୍ୟ ସାଇଟ୍‌ଗୁଡ଼ିକରେ ପୁନଃ ବ୍ୟବହାର କରିଛନ୍ତି, ତେବେ Chromium ଆପଣଙ୍କୁ ଏହି ପାସ୍‌ୱାର୍ଡକୁ ରିସେଟ୍ କରିବା ପାଇଁ ସୁପାରିଶ କରୁଛି।</translation>
 <translation id="8570895683659698018">ହବି ଓ ଲିଜର</translation>
+<translation id="8572792595597115856"><ph name="DATE" /> ପର୍ଯ୍ୟନ୍ତ ବୈଧ ଅଟେ</translation>
 <translation id="8574841453995331336">ରେଫ୍ରିଜିରେଟର ଏବଂ ଫ୍ରିଜର</translation>
 <translation id="8577192028579836704">ସମସ୍ତ ବିକଳ୍ପ ସାଧାରଣତଃ <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">ଭର୍ଚୁଆଲ୍ କାର୍ଡ ଉପଲବ୍ଧ ନାହିଁ</translation>
@@ -4131,6 +4141,7 @@
 <translation id="8617269623452051934">ଆପଣଙ୍କ ଡିଭାଇସର ବ୍ୟବହାର</translation>
 <translation id="861775596732816396">ଆକାର 4</translation>
 <translation id="8620276786115098679">ଏନଭେଲପ କାକୁ 7</translation>
+<translation id="8622864575115813231">ଆପଣଙ୍କ ଆର୍ଥିକ ସଂସ୍ଥା ସହ କଣ୍ଟାକ୍ଟ କରାଯାଉଛି...</translation>
 <translation id="8623885649813806493">କୌଣସି ମେଳ ହେଉଥିବା ପାସୱାର୍ଡ ନାହିଁ। ସେଭ୍ କରାଯାଇଥିବା ସମସ୍ତ ପାସୱାର୍ଡ ଦେଖାନ୍ତୁ।</translation>
 <translation id="8624354461147303341">ରିହାତି ପାଆନ୍ତୁ</translation>
 <translation id="8634957317623797170">54 x 86 ମିମି</translation>
@@ -4429,6 +4440,7 @@
 <translation id="9192361865877479444">ମେଟାଲ (ମେଟ)</translation>
 <translation id="9192947025498305328">କ୍ଲିନ ବିୟୁଟି</translation>
 <translation id="9199905725844810519">ପ୍ରିଣ୍ଟିଂକୁ ବ୍ଲକ୍ କରାଯାଇଛି</translation>
+<translation id="9204089334327209740">ଅପଲୋଡ ସମ୍ପୂର୍ଣ୍ଣ ହେବା ପରେ ଆପଣ <ph name="CLOUD_PROVIDER" />ରେ ଆପଣଙ୍କ ଫାଇଲଗୁଡ଼ିକୁ ପରିବର୍ତ୍ତନ କରିପାରିବେ। ଟ୍ରାସରେ ଥିବା ଯେ କୌଣସି ଫାଇଲ ସମେତ ସ୍ଥାନୀୟ ଷ୍ଟୋରେଜକୁ ସ୍ୱତଃ କାଢ଼ି ଦିଆଯିବ।</translation>
 <translation id="9205078245616868884">ଆପଣଙ୍କର ଡାଟା ଆପଣଙ୍କ ପାସ୍‌ଫ୍ରେଜ୍ ମାଧ୍ୟମରେ ଏନ୍‌କ୍ରିପ୍ଟ କରାଯାଇଛି। ସିଙ୍କ୍ ଆରମ୍ଭ କରିବାକୁ ଏହା ଲେଖନ୍ତୁ।</translation>
 <translation id="920643408853370361">ଟ୍ରାଭେଲ ବୀମା</translation>
 <translation id="9207861905230894330">ନିବନ୍ଧ ଯୋଗ କରିହେଲା ନାହିଁ।</translation>
@@ -4449,6 +4461,7 @@
 <translation id="937804173274050966"><ph name="BEGIN_BOLD" />କେଉଁ ଡାଟା ବ୍ୟବହାର କରାଯାଏ:<ph name="END_BOLD" /> ଆପଣଙ୍କ ବିଜ୍ଞାପନ ବିଷୟଗୁଡ଼ିକ, ଏହି ଡିଭାଇସରେ Chrome ବ୍ୟବହାର କରି ଆପଣ ଭିଜିଟ କରିଥିବା ସାଇଟଗୁଡ଼ିକର ଏକ ତାଲିକା, ଆପଣଙ୍କ ବର୍ତ୍ତମାନର ବ୍ରାଉଜିଂ ଇତିହାସ ଉପରେ ଆଧାରିତ ଅଟେ।</translation>
 <translation id="937885410143139026">ଆଡମିନ କନସୋଲକୁ ଡାଟା ପଠାଯାଇଛି</translation>
 <translation id="939736085109172342">ନୂତନ ଫୋଲ୍ଡର</translation>
+<translation id="940524522703752213"><ph name="CLOUD_PROVIDER" />ରେ ଆପଣଙ୍କ ଫାଇଲର ଅପଲୋଡ <ph name="MINUTES" /> ମିନିଟରେ ଆରମ୍ଭ ହେବ</translation>
 <translation id="944540589955480312">ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ସେଭ କରାଯାଇଥିବା ପାସୱାର୍ଡ ଏବଂ ପାସକୀ'ଗୁଡ଼ିକୁ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="945646848072568856">ଆପଣ ବ୍ରାଉଜ କରିବା ସମୟରେ ଆପଣଙ୍କୁ ଟ୍ରାକ କରିବା ପାଇଁ Chrome ସାଇଟଗୁଡ଼ିକୁ ତୃତୀୟ-ପକ୍ଷ କୁକୀଗୁଡ଼ିକୁ ବ୍ୟବହାର କରିବାଠାରୁ ବ୍ଲକ କରେ।</translation>
 <translation id="945855313015696284">ନିମ୍ନରେ ଦିଆଯାଇଥିବା ସୂଚନାକୁ ଯାଞ୍ଚ କରନ୍ତୁ ଏବଂ କୌଣସି ଅବୈଧ କାର୍ଡକୁ ଡିଲିଟ୍ କରନ୍ତୁ</translation>

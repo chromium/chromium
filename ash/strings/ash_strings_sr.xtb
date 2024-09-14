@@ -42,6 +42,7 @@
 <translation id="1148499908455722006">Отвара дијалог са информацијама за корисника <ph name="USER_NAME" /></translation>
 <translation id="1150989369772528668">Календар</translation>
 <translation id="1153356358378277386">Упарени уређаји</translation>
+<translation id="1153918444040990015">Повезивање са Фокус звуковима није успело</translation>
 <translation id="1155734730463845512">Актуелни ниво батерије <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1157514002898505378">Генеративна вештачка интелигенција је експериментална и садржај може да буде нетачан, обмањујући или увредљив. Обратите се администратору да бисте пријавили проблем. <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="1160215328209699296">укључено и у употреби</translation>
@@ -118,7 +119,6 @@
 <translation id="1346748346194534595">Удесно</translation>
 <translation id="1350494136075914725">У току · Пребаци на картицу</translation>
 <translation id="1351937230027495976">Скупи мени</translation>
-<translation id="1352537790882153971">Звук микрофона можете да надгледате помоћу жичаних слушалица. Затворите окно да бисте зауставили.</translation>
 <translation id="1360220746312242196">При претраживању странице иди на претходно подударање за претрагу</translation>
 <translation id="1360788414852622716">Профил се онемогућава. То може да потраје неколико минута.</translation>
 <translation id="1364382257761975320">Да бисте откључали Chromebook, користите отисак прста</translation>
@@ -176,6 +176,7 @@
 <translation id="1550523713251050646">Кликните за више опција</translation>
 <translation id="1555130319947370107">Плава</translation>
 <translation id="1557622599341396706">Прикажи назив радне површине</translation>
+<translation id="1567138500090284106">Дугме тастера миша</translation>
 <translation id="1569384531973824928">Ово омогућава приступ свим апликацијама и веб-сајтовима који имају дозволе за камеру и микрофон. Можда ћете морати да освежите веб-страницу или рестартујете апликацију.</translation>
 <translation id="1571697193564730395">Укључите/искључите режим Не узнемиравај. <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">Умањите приказ када је лупа укључена</translation>
@@ -243,6 +244,7 @@
 <translation id="1787955149152357925">Искључено</translation>
 <translation id="1796561540704213354">Веб-сајтови, укључујући странице које сте посетили и отворили</translation>
 <translation id="179842970735685253">Google услови коришћења услуге</translation>
+<translation id="1805407494113167797">Пуштање Фокус звукова није успело</translation>
 <translation id="181103072419391116">Јачина сигнала <ph name="SIGNAL_STRENGTH" />, управља администратор</translation>
 <translation id="1816896987747843206">Ово омогућава приступ камери за све апликације и веб-сајтове са дозволом за камеру</translation>
 <translation id="1823873187264960516">Етернет: <ph name="ADDRESS" /></translation>
@@ -397,7 +399,6 @@
 <translation id="2426051945783024481">Оквир камере је аутоматски центриран</translation>
 <translation id="2427507373259914951">Леви клик</translation>
 <translation id="2429753432712299108">Bluetooth уређај „<ph name="DEVICE_NAME" />“ жели дозволу за упаривање. Пре него што му је дате, уверите се да је ова шифра приказана на том уређају: <ph name="PASSKEY" /></translation>
-<translation id="2430444791038754658">Готово је. Не стајете!</translation>
 <translation id="2435457462613246316">Прикажи лозинку</translation>
 <translation id="2437771564543046790">Слаба батерија. Уштеда батерије је укључена</translation>
 <translation id="243878895369688216">Отварано јуче</translation>
@@ -777,7 +778,6 @@
 <translation id="3706423975342040244">Забава</translation>
 <translation id="3707093869106077605">Функције <ph name="UNAVAILABLE_DLC_ONE" /> и <ph name="UNAVAILABLE_DLC_TWO" /> нису доступне</translation>
 <translation id="3708186454126126312">Претходно повезани</translation>
-<translation id="3711282657843423160">Готово. Само тако!</translation>
 <translation id="3712143870407382523">Одаберите прозор за ову страну</translation>
 <translation id="371370241367527062">Предњи микрофон</translation>
 <translation id="3713734891607377840">Отвори када буде завршено</translation>
@@ -847,7 +847,6 @@
 <translation id="397105322502079400">Израчунавање...</translation>
 <translation id="397726367135689299">Пуњење батерије је можда непоуздано.</translation>
 <translation id="3977512764614765090">Батерија је на <ph name="PERCENTAGE" />% и пуни се.</translation>
-<translation id="397808938113646171">Време је истекло. Сјајно.</translation>
 <translation id="3982013579989864579">Желите да промените аудио излаз?</translation>
 <translation id="3984536049089846927">Следећа страница</translation>
 <translation id="3986082989454912832">Одговори</translation>
@@ -1004,7 +1003,6 @@
 <translation id="4477751544736611934">То може да доведе до трошкова за пренос података.
 1 уређај је повезан.</translation>
 <translation id="4477892968187500306">Овај уређај може да садржи апликације које Google није верификовао.</translation>
-<translation id="4479130137987693286">Можете да додате још мало времена ако вам треба или да завршите сесију фокуса</translation>
 <translation id="4479639480957787382">Етернет</translation>
 <translation id="4481530544597605423">Уређаји чије је упаривање опозвано</translation>
 <translation id="4485506555414638855">Одбаците подешавање прегледа недавних слика, медија, обавештења и апликација на телефону</translation>
@@ -1057,7 +1055,6 @@
 
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox је омогућен</translation>
-<translation id="4665182893355091947">Готово. Свака част!</translation>
 <translation id="4666911709726371538">Још апликација</translation>
 <translation id="4667099493359681081">Преузима се фајл <ph name="FILENAME" /></translation>
 <translation id="4672539464599646374">Уштеда батерије је укључена</translation>
@@ -1784,7 +1781,6 @@
 <translation id="7064351585062927183">Следећег/следеће: <ph name="DAY_OF_WEEK" /></translation>
 <translation id="7066646422045619941">Ову мрежу је онемогућио администратор.</translation>
 <translation id="7067196344162293536">Аутоматски ротирај</translation>
-<translation id="7067569040620564762">Готово је. Крај!</translation>
 <translation id="7068360136237591149">Отвори датотеке</translation>
 <translation id="7076293881109082629">Пријављивање</translation>
 <translation id="7076878155205969899">Искључи звук</translation>
@@ -1819,7 +1815,6 @@
 <translation id="7189412385142492784">Колико далеко је Венера</translation>
 <translation id="7198435252016571249">Камера је уклопљена у доњи десни угао. Неусаглашеност са површином система.</translation>
 <translation id="7219573373513695352">Ниједан уређај није повезан</translation>
-<translation id="7226347284543965442">Готово је. Успели сте!</translation>
 <translation id="7229029500464092426">Искоришћена меморија <ph name="AVAILABLE_MEMORY" /> | Укупно <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7244725679040769470">Преостало је <ph name="PERCENTAGE" /> % батерије.
 Прикључите уређај на напајање.</translation>
@@ -2175,7 +2170,6 @@
 <translation id="8443879455002739353">„Копирајте“</translation>
 <translation id="8444246603146515890">Радна површина <ph name="DESK_TITILE" /> је активирана</translation>
 <translation id="8446884382197647889">Сазнајте више</translation>
-<translation id="8452090802952003258">Слушајте звук микрофона</translation>
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
 <translation id="8462305545768648477">Затворите Изаберите за говор</translation>
 <translation id="8468806060683421065">рок: <ph name="DUE_DATE_AND_TIME" /></translation>
@@ -2237,7 +2231,6 @@
 <translation id="8683506306463609433">Праћење учинка је активно</translation>
 <translation id="8703634754197148428">Започните снимање. Када снимање почне, користите Alt + Shift + L да бисте се кретали до полице и пронашли дугме за заустављање снимања</translation>
 <translation id="8704155109538237473">Фокусирај прозор слике у слици</translation>
-<translation id="8708657523363087260">Укључите или искључите бочни звук</translation>
 <translation id="870917907284186124">Укључите или искључите диктирање (унос гласом)</translation>
 <translation id="8711169534266271368">Опције контролне табле игре</translation>
 <translation id="8712637175834984815">Важи</translation>
@@ -2295,6 +2288,7 @@
 <translation id="8876661425082386199">Проверите везу</translation>
 <translation id="8877788021141246043">Подеси подсетник</translation>
 <translation id="8878886163241303700">Проширени екран</translation>
+<translation id="8885424115080869847">Повезивање са YouTube Music-ом није успело</translation>
 <translation id="888982883502837004">Доступна су ажурирања фирмвера за уређај. Кликните да бисте их прегледали и ажурирали.</translation>
 <translation id="8896630965521842259">Шаблон <ph name="DESK_TEMPLATE_NAME" /> ће бити трајно избрисан</translation>
 <translation id="889790758758811533">Преостало је још <ph name="PERCENTAGE" />% батерије (око <ph name="TIME_LEFT" />). Повежите уређај на напајање.</translation>

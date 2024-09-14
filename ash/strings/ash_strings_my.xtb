@@ -118,7 +118,6 @@
 <translation id="1346748346194534595">ညာ</translation>
 <translation id="1350494136075914725">လုပ်ဆောင်နေသည် · တဘ်သို့ပြောင်းရန်</translation>
 <translation id="1351937230027495976">မီနူးကို လျှော့ပြရန်</translation>
-<translation id="1352537790882153971">ကြိုးပါသောနားကြပ်မှ သင့်မိုက်ခရိုဖုန်းအသံကို စောင့်ကြည့်နိုင်သည်။ ရပ်ရန် အကန့်ကိုပိတ်ပါ။</translation>
 <translation id="1360220746312242196">စာမျက်နှာရှာသောအခါ ရှာဖွေမှုအတွက် ယခင်ကိုက်ညီမှုသို့ သွားရန်</translation>
 <translation id="1360788414852622716">ပရိုဖိုင်ကို ပိတ်နေသည်။ မိနစ်အနည်းငယ် ကြာနိုင်ပါသည်။</translation>
 <translation id="1364382257761975320">သင့် Chromebook ကို လော့ခ်ဖွင့်ရန် သင့်လက်ဗွေကို အသုံးပြုပါ</translation>
@@ -397,7 +396,6 @@
 <translation id="2426051945783024481">ကင်မရာဘောင်ကို အလယ်တွင် အလိုအလျောက်ထားလိုက်သည်</translation>
 <translation id="2427507373259914951">ဘယ်ဘက်ခလုတ်ကို နှိပ်ရန်</translation>
 <translation id="2429753432712299108">"<ph name="DEVICE_NAME" />" ဘလူးတုရှ် စက်ပစ္စည်းသည် တွဲရန်ခွင့်ပြုချက် လိုသည်။ လက်မခံမှီ၊ ဤလျှို့ဝှက်ကီးသည် ၎င်း၏မျက်နှာပြင်ပေါ်တွင် ပေါ်မပေါ် ကျေးဇူးပြု၍ အတည်ပြုပါ: <ph name="PASSKEY" /></translation>
-<translation id="2430444791038754658">အချိန်ပြည့်ပါပြီ။ လုပ်ဆောင်ချက် ကောင်းမွန်ပါသည်။</translation>
 <translation id="2435457462613246316">စကားဝှက်ကို ပြပါ</translation>
 <translation id="2437771564543046790">ဘက်ထရီ အားနည်းနေသည်။ ဘက်ထရီ အားထိန်း ဖွင့်ထားသည်</translation>
 <translation id="243878895369688216">မနေ့က ဖွင့်ထားသည်</translation>
@@ -777,7 +775,6 @@
 <translation id="3706423975342040244">ဖျော်ဖြေရေး</translation>
 <translation id="3707093869106077605"><ph name="UNAVAILABLE_DLC_ONE" /> နှင့် <ph name="UNAVAILABLE_DLC_TWO" /> မရနိုင်ပါ။</translation>
 <translation id="3708186454126126312">ယခင် ချိတ်ဆက်ထားသည်များ</translation>
-<translation id="3711282657843423160">အားလုံးပြီးပြီ။ ဆက်ထိန်းထားပါ။</translation>
 <translation id="3712143870407382523">ဤဆလိုက်အတွက် ဝင်းဒိုးရွေးရန်</translation>
 <translation id="371370241367527062">အရှေ့မိုက်ခရိုဖုန်း</translation>
 <translation id="3713734891607377840">ပြီးသွားပါက ဖွင့်မည်</translation>
@@ -847,7 +844,6 @@
 <translation id="397105322502079400">တွက်ချက်နေ...</translation>
 <translation id="397726367135689299">ဘက်ထရီ အားသွင်းခြင်းသည် စိတ်ချရမှုမရှိနိုင်ပါ။</translation>
 <translation id="3977512764614765090">ဘက်ထရီသည် <ph name="PERCENTAGE" />% ရှိပြီး အားသွင်းနေပါသည်။</translation>
-<translation id="397808938113646171">အချိန်ပြည့်ပါပြီ။ တော်ပါပေသည်။</translation>
 <translation id="3982013579989864579">အသံထွက်မည့် ကိရိယာ ပြောင်းမလား။</translation>
 <translation id="3984536049089846927">နောက်စာမျက်နှာ</translation>
 <translation id="3986082989454912832">ဖြေဆိုရန်</translation>
@@ -1003,7 +999,6 @@
 <translation id="4477751544736611934">ဒေတာခ ပေးရနိုင်သည်။
 စက် ၁ ခု ချိတ်ဆက်ထားသည်။</translation>
 <translation id="4477892968187500306">ဤစက်တွင် Google က အတည်ပြုမထားသော အက်ပ်များ ပါဝင်နိုင်သည်။</translation>
-<translation id="4479130137987693286">လိုအပ်ပါက နောက်ထပ်အချိန်အနည်းငယ် ထည့်နိုင်သည် (သို့) သင်၏အထူးပြသမှုစက်ရှင်ကို အဆုံးသတ်နိုင်သည်</translation>
 <translation id="4479639480957787382">အီတာနက်</translation>
 <translation id="4481530544597605423">ချိတ်ဆက်မှု ဖြုတ်ထားသည့် စက်ပစ္စည်းများ</translation>
 <translation id="4485506555414638855">သင့်ဖုန်းရှိ မကြာသေးမီက ဓာတ်ပုံ၊ မီဒီယာ၊ အကြောင်းကြားချက်နှင့် အက်ပ်များ ကြည့်ရှုမှုအတွက် စနစ်ထည့်သွင်းခြင်းကို ပယ်ရန်</translation>
@@ -1056,7 +1051,6 @@
 
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox ကို ဖွင့်ထားပါသည်</translation>
-<translation id="4665182893355091947">အားလုံးပြီးပြီ။ တော်ပါပေတယ်။</translation>
 <translation id="4666911709726371538">အက်ပ်များ ပိုပြပါ</translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> ကို ဒေါင်းလုဒ်လုပ်နေသည်</translation>
 <translation id="4672539464599646374">‘ဘက်ထရီ အားထိန်း’ ဖွင့်ထားသည်</translation>
@@ -1782,7 +1776,6 @@
 <translation id="7064351585062927183">လာမည့် <ph name="DAY_OF_WEEK" /></translation>
 <translation id="7066646422045619941">ဤကွန်ယက်ကို သင့်စီမံခန့်ခွဲသူမှ ပိတ်ခဲ့သည်။</translation>
 <translation id="7067196344162293536">အလိုအလျောက် လှည့်ရန်</translation>
-<translation id="7067569040620564762">အချိန်ပြည့်ပါပြီ။ ပြီးပါပြီ။</translation>
 <translation id="7068360136237591149">ဖိုင်များ ဖွင့်ပါ</translation>
 <translation id="7076293881109082629">အကောင့်ထံဝင်ရောက်နေသည်</translation>
 <translation id="7076878155205969899">အသံတိတ်ပါ</translation>
@@ -1817,7 +1810,6 @@
 <translation id="7189412385142492784">သောကြာဂြိုဟ်က ဘယ်လောက်ဝေးလဲ</translation>
 <translation id="7198435252016571249">ကင်မရာကို အောက်ညာဘက်ထောင့်သို့ ကပ်ထားသည်။ စနစ်မျက်နှာပြင်နှင့် ငြိနေသည်။</translation>
 <translation id="7219573373513695352">စက်ပစ္စည်းများ ချိတ်ဆက်မထားပါ</translation>
-<translation id="7226347284543965442">အချိန်ပြည့်ပါပြီ။ အောင်မြင်သွားပါပြီ။</translation>
 <translation id="7229029500464092426">မှတ်ဉာဏ် <ph name="AVAILABLE_MEMORY" /> | စုစုပေါင်း <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7244725679040769470">ဘက်ထရီ <ph name="PERCENTAGE" />% ကျန်သည်။ စက်ကို အားသွင်းပါ။</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />။ အပ်ဒိတ် အသုံးပြုနိုင်ရန်အတွက် ဤ Chromebook ကို ပြန်လည်စတင်ရန် လိုအပ်သည်။ ၎င်းက ၁ မိနစ်အထိ ကြာနိုင်သည်။</translation>
@@ -2172,7 +2164,6 @@
 <translation id="8443879455002739353">“မိတ္တူကူးရန်”</translation>
 <translation id="8444246603146515890">မြင်ကွင်း <ph name="DESK_TITILE" /> စတင်ထားသည်</translation>
 <translation id="8446884382197647889">ပိုမို လေ့လာရန်</translation>
-<translation id="8452090802952003258">သင့်မိုက်အသံကို နားထောင်ခြင်း</translation>
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
 <translation id="8462305545768648477">'စကားပြော ရွေးရန်' ကို ပိတ်ရန်</translation>
 <translation id="8468806060683421065"><ph name="DUE_DATE_AND_TIME" /> တွင် ပြီးစီးရမည်</translation>
@@ -2234,7 +2225,6 @@
 <translation id="8683506306463609433">စွမ်းဆောင်ရည် မှတ်တမ်းတင်ခြင်းကို လက်ရှိဖွင့်ထားသည်</translation>
 <translation id="8703634754197148428">စတင် ရိုက်ကူးပါ။ ရိုက်ကူးမှုစတင်သောအခါ Alt + Shift + L သုံး၍ စင်သို့သွားပြီး ရိုက်ကူးမှုရပ်ရန်ခလုတ်ကို ရှာပါ</translation>
 <translation id="8704155109538237473">နှစ်ခုထပ်၍ ကြည့်သော ဝင်းဒိုးကို အထူးပြရန်</translation>
-<translation id="8708657523363087260">Sidetone ပြောင်းရန်</translation>
 <translation id="870917907284186124">နှုတ်တိုက်ချပေးခြင်း (သင့်အသံဖြင့် စာရိုက်ခြင်း) ဖွင့်/ပိတ်ရန်</translation>
 <translation id="8711169534266271368">ဂိမ်း ဒက်ရှ်ဘုတ် ရွေးစရာများ</translation>
 <translation id="8712637175834984815">ရပါပြီ!</translation>

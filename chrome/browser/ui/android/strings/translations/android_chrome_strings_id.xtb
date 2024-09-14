@@ -350,6 +350,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="2653659639078652383">Kirim</translation>
 <translation id="2656405586795711023">Aplikasi web</translation>
 <translation id="2664252182805397291">Lihat situs</translation>
+<translation id="2666092431469916601">Atas</translation>
 <translation id="2669454659051515572">Siapa pun yang menggunakan perangkat ini dapat melihat file yang didownload</translation>
 <translation id="2702516483241149200">Baru: bagikan link yang mengarah ke teks ini</translation>
 <translation id="2705073298859543115">Buat ringkasan</translation>
@@ -451,6 +452,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="3072980200212375806"><ph name="APP_NAME" /> akan dibuka di Chrome. Dengan melanjutkan, Anda menyetujui <ph name="BEGIN_LINK1" />Persyaratan Layanan Google<ph name="END_LINK1" /> serta <ph name="BEGIN_LINK2" />Persyaratan Layanan Tambahan Google Chrome dan ChromeOS<ph name="END_LINK2" />. <ph name="BEGIN_LINK3" />Kebijakan Privasi<ph name="END_LINK3" /> juga akan berlaku.</translation>
 <translation id="3080525922482950719">Anda dapat menyimpan halaman untuk dibaca nanti atau saat offline</translation>
 <translation id="3087218211037573995">Beberapa sandi yang hanya disimpan di perangkat ini akan segera berhenti berfungsi. Anda dapat memindahkan sandi ini ke Pengelola Sandi Google.</translation>
+<translation id="3087734570205094154">Bawah</translation>
 <translation id="3091010850649238832">Tampilkan konten papan klip</translation>
 <translation id="3098745985164956033">Beberapa gambar dikirim ke Google guna menyempurnakan deskripsi untuk Anda</translation>
 <translation id="3114507951000454849">Baca berita hari ini <ph name="NEWS_ICON" /></translation>
@@ -688,7 +690,6 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="4355272626458588338">Anda dapat kembali ke halaman penting dengan menambahkan bookmark</translation>
 <translation id="4357206670025518404">+<ph name="COUNT_NUMBER" /></translation>
 <translation id="4359809482106103048">Sekilas tentang keamanan</translation>
-<translation id="4363222835916186793">Notifikasi untuk produk ini telah dinonaktifkan</translation>
 <translation id="4378154925671717803">Ponsel</translation>
 <translation id="4380055775103003110">Jika masalah ini terus terjadi, Anda dapat mencoba cara lain untuk melanjutkan di <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="4384468725000734951">Menggunakan Sogou untuk penelusuran</translation>
@@ -749,6 +750,7 @@ Akun Google Anda mungkin memiliki bentuk histori penjelajahan lain seperti penel
 <translation id="4624065194742029982">Mode Samaran Chrome</translation>
 <translation id="4634124774493850572">Gunakan sandi</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 sandi telah dibobol}other{# sandi telah dibobol}}</translation>
+<translation id="4642472735733036929">Pemantauan harga dihentikan</translation>
 <translation id="4645146721047390964">Selama dalam mode Samaran, situs tidak dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berbagai situs, misalnya untuk mempersonalisasi iklan. Fitur di beberapa situs mungkin tidak berfungsi.</translation>
 <translation id="4650364565596261010">Default sistem</translation>
 <translation id="465657074423018424">Safe Browsing melindungi Anda dari situs yang menipu. Jika dinonaktifkan, Anda harus lebih berhati-hati saat menjelajah, terutama sebelum memasukkan sandi.</translation>
@@ -1092,6 +1094,7 @@ Akun Google Anda mungkin memiliki bentuk histori penjelajahan lain seperti penel
 <translation id="6210748933810148297">Bukan <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Melihat pratinjau halaman ini</translation>
 <translation id="6221633008163990886">Buka kunci untuk mengekspor sandi</translation>
+<translation id="6225572914528673855">Kolom URL</translation>
 <translation id="6232535412751077445">Jika “Jangan Lacak” diaktifkan, permintaan akan disertakan bersama traffic penjelajahan Anda. Dampaknya tergantung pada apakah situs web menanggapi permintaan itu, dan bagaimana permintaan itu diinterpretasikan.
 
 Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangkan iklan yang tidak berdasarkan pada data kunjungan Anda ke situs web lainnya. Banyak situs web masih akan mengumpulkan dan menggunakan data penjelajahan Anda — misalnya, untuk meningkatkan keamanan, menyediakan konten, iklan, dan saran, serta untuk membuat statistik pelaporan.</translation>

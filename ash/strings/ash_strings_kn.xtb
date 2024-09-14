@@ -42,6 +42,7 @@
 <translation id="1148499908455722006"><ph name="USER_NAME" /> ಗೆ ಸಂಬಂಧಿಸಿದ ಮಾಹಿತಿ ಡೈಲಾಗ್ ಅನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="1150989369772528668">ಕ್ಯಾಲೆಂಡರ್</translation>
 <translation id="1153356358378277386">ಜೋಡಿ ಮಾಡಲಾದ ಸಾಧನಗಳು</translation>
+<translation id="1153918444040990015">ಫೋಕಸ್ ಸೌಂಡ್‌ಗಳಿಗೆ ಕನೆಕ್ಟ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ</translation>
 <translation id="1155734730463845512">ಪ್ರಸ್ತುತ ಬ್ಯಾಟರಿ ಮಟ್ಟ <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1157514002898505378">ಜನರೇಟಿವ್‌ AI ಪ್ರಾಯೋಗಿಕವಾಗಿದ್ದು, ಅದರ ಕಂಟೆಂಟ್ ನಿಖರವಾಗಿಲ್ಲದಿರಬಹುದು, ದಾರಿತಪ್ಪಿಸುವಂತಿರಬಹುದು ಅಥವಾ ಆಕ್ಷೇಪಾರ್ಹವಾಗಿರಬಹುದು. ಸಮಸ್ಯೆಯನ್ನು ವರದಿ ಮಾಡಲು ನಿಮ್ಮ ನಿರ್ವಾಹಕರನ್ನು ಸಂಪರ್ಕಿಸಿ. <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="1160215328209699296">ಆನ್ ಆಗಿದೆ ಮತ್ತು ಬಳಕೆಯಲ್ಲಿದೆ</translation>
@@ -118,7 +119,6 @@
 <translation id="1346748346194534595">ಬಲಕ್ಕೆ</translation>
 <translation id="1350494136075914725">ಚಾಲ್ತಿಯಲ್ಲಿರುವುದು · ಟ್ಯಾಬ್‌ಗೆ ಬದಲಿಸಿ</translation>
 <translation id="1351937230027495976">ಮೆನುವನ್ನು ಕುಗ್ಗಿಸಿ</translation>
-<translation id="1352537790882153971">ವೈರ್‌ ಸಂಪರ್ಕ ಹೊಂದಿದ್ದ ಹೆಡ್‌ಫೋನ್‌ಗಳಿಂದ ನಿಮ್ಮ ಮೈಕ್ರೊಫೋನ್ ಧ್ವನಿಯನ್ನು ನೀವು ಮಾನಿಟರ್ ಮಾಡಬಹುದು. ನಿಲ್ಲಿಸಲು ಪ್ಯಾನೆಲ್‌ ಅನ್ನು ಮುಚ್ಚಿ.</translation>
 <translation id="1360220746312242196">ಪುಟವೊಂದನ್ನು ಹುಡುಕುವಾಗ, ಹುಡುಕಾಟಕ್ಕಾಗಿ ಹಿಂದಿನ ಹೊಂದಾಣಿಕೆಗೆ ಹೋಗಿ</translation>
 <translation id="1360788414852622716">ಪ್ರೊಫೈಲ್ ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗುತ್ತಿದೆ. ಇದಕ್ಕೆ ಕೆಲವು ನಿಮಿಷಗಳ ಕಾಲಾವಕಾಶ ಬೇಕಾಗಬಹುದು.</translation>
 <translation id="1364382257761975320">ನಿಮ್ಮ Chromebook ಅನ್‌ಲಾಕ್ ಮಾಡಲು, ನಿಮ್ಮ ಫಿಂಗರ್‌ಪ್ರಿಂಟ್ ಬಳಸಿ</translation>
@@ -176,6 +176,7 @@
 <translation id="1550523713251050646">ಇನ್ನಷ್ಟು ಆಯ್ಕೆಗಳಿಗೆ ಕ್ಲಿಕ್ ಮಾಡಿ</translation>
 <translation id="1555130319947370107">ನೀಲಿ</translation>
 <translation id="1557622599341396706">ಡೆಸ್ಕ್ ಹೆಸರನ್ನು ತೋರಿಸಿ</translation>
+<translation id="1567138500090284106">ಮೌಸ್ ಕೀಗಳ ಬಟನ್</translation>
 <translation id="1569384531973824928">ಇದು ಕ್ಯಾಮರಾ ಮತ್ತು ಮೈಕ್ರೊಫೋನ್ ಅನುಮತಿಗಳನ್ನು ಹೊಂದಿರುವ ಎಲ್ಲಾ ಆ್ಯಪ್‌ಗಳು ಮತ್ತು ವೆಬ್‌ಸೈಟ್‌ಗಳಿಗೆ ಆ್ಯಕ್ಸೆಸ್ ನೀಡುತ್ತದೆ. ನೀವು ವೆಬ್ ಪುಟವನ್ನು ರಿಫ್ರೆಶ್ ಮಾಡಬೇಕಾಗಬಹುದು ಅಥವಾ ಆ್ಯಪ್ ಅನ್ನು ಮರುಪ್ರಾರಂಭಿಸಬೇಕಾಗಬಹುದು.</translation>
 <translation id="1571697193564730395">ಅಡಚಣೆ ಮಾಡಬೇಡಿ ಸ್ಥಿತಿಯನ್ನು ಟಾಗಲ್ ಮಾಡಿ. <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">ಮ್ಯಾಗ್ನಿಫೈಯರ್ ಆನ್ ಆಗಿರುವಾಗ ಝೂಮ್ ಔಟ್ ಮಾಡಿ</translation>
@@ -243,6 +244,7 @@
 <translation id="1787955149152357925">ಆಫ್</translation>
 <translation id="1796561540704213354">ನೀವು ಭೇಟಿ ನೀಡಿದ ಪುಟಗಳನ್ನು ಒಳಗೊಂಡಂತೆ ವೆಬ್‌ಸೈಟ್‌ಗಳು ಮತ್ತು ಪುಟಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="179842970735685253">Google ನ ಸೇವಾ ನಿಯಮಗಳು</translation>
+<translation id="1805407494113167797">ಫೋಕಸ್ ಸೌಂಡ್‌ಗಳನ್ನು ಪ್ಲೇ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ</translation>
 <translation id="181103072419391116">ಸಿಗ್ನಲ್ ಸಾಮರ್ಥ್ಯ <ph name="SIGNAL_STRENGTH" />, ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ನಿರ್ವಹಿಸಿದ್ದಾರೆ</translation>
 <translation id="1816896987747843206">ಕ್ಯಾಮರಾವನ್ನು ಬಳಸಲು ಅನುಮತಿ ಹೊಂದಿರುವ ಎಲ್ಲಾ ಆ್ಯಪ್‌ಗಳು ಮತ್ತು ವೆಬ್‌ಸೈಟ್‌ಗಳಿಗೆ ಇದು ಕ್ಯಾಮರಾಗೆ ಆ್ಯಕ್ಸೆಸ್ ನೀಡುತ್ತದೆ</translation>
 <translation id="1823873187264960516">ಇಥರ್ನೆಟ್: <ph name="ADDRESS" /></translation>
@@ -397,7 +399,6 @@
 <translation id="2426051945783024481">ಕ್ಯಾಮರಾ ಫ್ರೇಮ್ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಕೇಂದ್ರೀಕೃತವಾಗಿದೆ</translation>
 <translation id="2427507373259914951">ಎಡ-ಕ್ಲಿಕ್</translation>
 <translation id="2429753432712299108">ಬ್ಲೂಟೂತ್‌‌ ಸಾಧನವು "<ph name="DEVICE_NAME" />" ಜೋಡಣೆಗಾಗಿ ಅನುಮತಿಯನ್ನು ಬಯಸುತ್ತದೆ. ಸಮ್ಮತಿಸುವುದಕ್ಕೂ ಮೊದಲು, ದಯವಿಟ್ಟು ಆ ಸಾಧನದಲ್ಲಿ ಈ ಪಾಸ್‌ಕೀಲಿಯನ್ನು ತೋರಿಸಲಾಗಿದೆಯೇ ಎಂಬುದನ್ನು ಖಾತರಿಪಡಿಸಿಕೊಳ್ಳಿ: <ph name="PASSKEY" /></translation>
-<translation id="2430444791038754658">ಸಮಯ ಆಗಿದೆ. ಮುಂದುವರಿಸಿ!</translation>
 <translation id="2435457462613246316">ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ತೋರಿಸಿ</translation>
 <translation id="2437771564543046790">ಬ್ಯಾಟರಿ ಕಡಿಮೆಯಿದೆ. ಬ್ಯಾಟರಿ ಸೇವರ್ ಆನ್ ಆಗಿದೆ</translation>
 <translation id="243878895369688216">ನಿನ್ನೆ ತೆರೆಯಲಾಗಿದೆ</translation>
@@ -777,7 +778,6 @@
 <translation id="3706423975342040244">ಮನರಂಜನೆ</translation>
 <translation id="3707093869106077605"><ph name="UNAVAILABLE_DLC_ONE" /> ಮತ್ತು <ph name="UNAVAILABLE_DLC_TWO" /> ಫೀಚರ್ ಲಭ್ಯವಿಲ್ಲ.</translation>
 <translation id="3708186454126126312">ಮುಂಚೆ ಕನೆಕ್ಟ್ ಮಾಡಿದವು</translation>
-<translation id="3711282657843423160">ಮುಗಿದಿದೆ. ಮುಂದುವರಿಸಿ!</translation>
 <translation id="3712143870407382523">ಈ ಬದಿಗಾಗಿ ವಿಂಡೋ ಒಂದನ್ನು ಆರಿಸಿ</translation>
 <translation id="371370241367527062">ಮುಂಭಾಗದ ಮೈಕ್ರೊಫೋನ್</translation>
 <translation id="3713734891607377840">ಪೂರ್ಣವಾದಾಗ ತೆರೆಯಿರಿ</translation>
@@ -847,7 +847,6 @@
 <translation id="397105322502079400">ಎಣಿಸಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="397726367135689299">ಬ್ಯಾಟರಿ ಚಾರ್ಜಿಂಗ್ ವಿಶ್ವಾಸಾರ್ಹವಾಗಿಲ್ಲ.</translation>
 <translation id="3977512764614765090">ಬ್ಯಾಟರಿ <ph name="PERCENTAGE" />% ಇದೆ ಮತ್ತು ಚಾರ್ಜ್ ಆಗುತ್ತಿದೆ.</translation>
-<translation id="397808938113646171">ಸಮಯ ಮುಗಿದಿದೆ. ಭೇಷ್!</translation>
 <translation id="3982013579989864579">ಆಡಿಯೋ ಔಟ್‌ಪುಟ್ ಬದಲಿಸಬೇಕೆ?</translation>
 <translation id="3984536049089846927">ಮುಂದಿನ ಪುಟ</translation>
 <translation id="3986082989454912832">ಉತ್ತರ</translation>
@@ -1003,7 +1002,6 @@
 <translation id="4477751544736611934">ಇದರಿಂದ ಡೇಟಾ ವೆಚ್ಚವನ್ನು ತೆರಬೇಕಾಗಬಹುದು.
 1 ಸಾಧನ ಕನೆಕ್ಟ್ ಆಗಿದೆ.</translation>
 <translation id="4477892968187500306">Google ನಿಂದ ದೃಢೀಕರಿಸದ ಆ್ಯಪ್‌ಗಳನ್ನು ಈ ಸಾಧನವು ಒಳಗೊಂಡಿರಬಹುದು.</translation>
-<translation id="4479130137987693286">ನಿಮಗೆ ಅಗತ್ಯವಿದ್ದರೆ ನೀವು ಸ್ವಲ್ಪ ಹೆಚ್ಚು ಸಮಯವನ್ನು ಸೇರಿಸಬಹುದು ಅಥವಾ ನಿಮ್ಮ ಫೋಕಸ್ ಸೆಶನ್ ಅನ್ನು ಕೊನೆಗೊಳಿಸಬಹುದು</translation>
 <translation id="4479639480957787382">ಈಥರ್ನೆಟ್</translation>
 <translation id="4481530544597605423">ಜೋಡಿಯಾಗಿರದ ಸಾಧನಗಳು</translation>
 <translation id="4485506555414638855">ನಿಮ್ಮ ಫೋನ್‌ನ ಇತ್ತೀಚಿನ ಫೋಟೋಗಳು, ಮಾಧ್ಯಮ, ಅಧಿಸೂಚನೆಗಳು ಮತ್ತು ಆ್ಯಪ್‌ಗಳನ್ನು ವೀಕ್ಷಿಸುವುದಕ್ಕಾಗಿ ಸೆಟಪ್ ಮಾಡುವುದನ್ನು ವಜಾಗೊಳಿಸಿ</translation>
@@ -1056,7 +1054,6 @@
 
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</translation>
-<translation id="4665182893355091947">ಮುಗಿದಿದೆ. ಮುಂದುವರಿಸಿ!</translation>
 <translation id="4666911709726371538">ಇನ್ನಷ್ಟು ಆ್ಯಪ್‌ಗಳು</translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> ಅನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="4672539464599646374">ಬ್ಯಾಟರಿ ಸೇವರ್ ಅನ್ನು ಆನ್ ಮಾಡಲಾಗಿದೆ</translation>
@@ -1360,6 +1357,7 @@
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಪರಿಶೀಲಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="5632485077360054581">ಹೇಗೆಂದು ನನಗೆ ತೋರಿಸಿ</translation>
+<translation id="5633826232582408011">ನೀವು ಬರೆಯಲು ಸಹಾಯ ಪಡೆಯಿರಿ ಮತ್ತು ಓದಲು ನನಗೆ ಸಹಾಯ ಮಾಡಿಯನ್ನು ಆನ್ ಮಾಡಿದಾಗ, ಬರವಣಿಗೆಯ ಸಲಹೆಗಳನ್ನು ರಚಿಸಲು, ಸಾರಾಂಶಗಳನ್ನು ರಚಿಸಲು, ಪ್ರಶ್ನೆಗಳಿಗೆ ಉತ್ತರಿಸಲು ಮತ್ತು ಉತ್ಪನ್ನವನ್ನು ಸುಧಾರಿಸಲು ಇನ್‌ಪುಟ್ ಪಠ್ಯ, ಡಾಕ್ಯುಮೆಂಟ್ ಕಂಟೆಂಟ್‌ ಮತ್ತು ವೆಬ್ ಪುಟದ URL ಅನ್ನು Google AI ಸರ್ವರ್‌ಗಳಿಗೆ ಕಳುಹಿಸುವುದು <ph name="LINK_TO_SERVICE_TERMS" /> ಗೆ ಒಳಪಟ್ಟಿರುತ್ತದೆ. ವೈಯಕ್ತಿಕ, ಸೂಕ್ಷ್ಮ ಅಥವಾ ಗೌಪ್ಯವಾದ ಯಾವುದೇ ಮಾಹಿತಿಯನ್ನೂ ಸೇರಿಸಬೇಡಿ.</translation>
 <translation id="5648021990716966815">ಮೈಕ್ ಜ್ಯಾಕ್</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" />, ನಿಮ್ಮ ಗಮನವನ್ನು ವಿನಂತಿಸುತ್ತದೆ.</translation>
 <translation id="5662075790140998213">ಡೆಸ್ಕ್ 10</translation>
@@ -1782,7 +1780,6 @@
 <translation id="7064351585062927183">ಮುಂಬರುವ <ph name="DAY_OF_WEEK" /></translation>
 <translation id="7066646422045619941">ಈ ನೆಟ್‌ವರ್ಕ್ ಅನ್ನು ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿದ್ದಾರೆ.</translation>
 <translation id="7067196344162293536">ಸ್ವಯಂ ತಿರುಗಿಸು</translation>
-<translation id="7067569040620564762">ಸಮಯ ಆಗಿದೆ. ಮುಗಿದಿದೆ!</translation>
 <translation id="7068360136237591149">ಫೈಲ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="7076293881109082629">ಸೈನ್ ಇನ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="7076878155205969899">ಧ್ವನಿಯನ್ನು ಮ್ಯೂಟ್ ಮಾಡಿ</translation>
@@ -1817,7 +1814,6 @@
 <translation id="7189412385142492784">ಶುಕ್ರ ಗ್ರಹ ಎಷ್ಟು ದೂರದಲ್ಲಿದೆ</translation>
 <translation id="7198435252016571249">ಕ್ಯಾಮರಾವನ್ನು ಕೆಳಗಿನ ಬಲ ಮೂಲೆಯಲ್ಲಿ ಸ್ನ್ಯಾಪ್ ಮಾಡಲಾಗಿದೆ. ಸಿಸ್ಟಮ್ ಮೇಲ್ಮೈ ಜೊತೆಗೆ ಸಂಘರ್ಷ.</translation>
 <translation id="7219573373513695352">ಯಾವುದೇ ಸಾಧನಗಳನ್ನು ಕನೆಕ್ಟ್ ಮಾಡಿಲ್ಲ</translation>
-<translation id="7226347284543965442">ಸಮಯ ಆಗಿದೆ. ಮಾಡಿದ್ದೀರಿ!</translation>
 <translation id="7229029500464092426">ಬಳಸಲಾದ ಮೆಮೊರಿ <ph name="AVAILABLE_MEMORY" /> | <ph name="TOTAL_MEMORY" /> ಒಟ್ಟು ಮೆಮೊರಿ</translation>
 <translation id="7244725679040769470">ಬ್ಯಾಟರಿ ಮಟ್ಟ <ph name="PERCENTAGE" />% ರಷ್ಟಿದೆ. ನಿಮ್ಮ ಸಾಧನವನ್ನು ಚಾರ್ಜ್ ಮಾಡಿ.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. ಅಪ್‌ಡೇಟ್ ಅನ್ವಯಿಸಲು, ಈ Chromebook ಅನ್ನು ಮರುಪ್ರಾರಂಭಿಸುವ ಅಗತ್ಯವಿದೆ. ಇದು 1 ನಿಮಿಷದವರೆಗೆ ಸಮಯ ತೆಗೆದುಕೊಳ್ಳಬಹುದು.</translation>
@@ -2172,7 +2168,6 @@
 <translation id="8443879455002739353">"ನಕಲಿಸಿ"</translation>
 <translation id="8444246603146515890"><ph name="DESK_TITILE" /> ಡೆಸ್ಕ್ ಅನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="8446884382197647889">ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</translation>
-<translation id="8452090802952003258">ನಿಮ್ಮ ಮೈಕ್ ಸೌಂಡ್‌ ಅನ್ನು ಆಲಿಸಿ</translation>
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
 <translation id="8462305545768648477">ಆಯ್ಕೆಮಾಡಿ ಮತ್ತು ಆಲಿಸಿ ಅನ್ನು ಮುಚ್ಚಿರಿ</translation>
 <translation id="8468806060683421065">ಕೊನೆಯ ದಿನಾಂಕ <ph name="DUE_DATE_AND_TIME" /></translation>
@@ -2234,7 +2229,6 @@
 <translation id="8683506306463609433">ಕಾರ್ಯಕ್ಷಮತೆಯ ಟ್ರೇಸಿಂಗ್ ಸಕ್ರಿಯವಾಗಿದೆ</translation>
 <translation id="8703634754197148428">ರೆಕಾರ್ಡಿಂಗ್ ಪ್ರಾರಂಭಿಸಿ. ರೆಕಾರ್ಡಿಂಗ್ ಪ್ರಾರಂಭವಾದ ನಂತರ ಶೆಲ್ಫ್‌ಗೆ ನ್ಯಾವಿಗೇಟ್ ಮಾಡಲು ಮತ್ತು ರೆಕಾರ್ಡಿಂಗ್ ನಿಲ್ಲಿಸಿ ಬಟನ್ ಅನ್ನು ಹುಡುಕಲು Alt + Shift + L ಅನ್ನು ಒತ್ತಿ</translation>
 <translation id="8704155109538237473">ಚಿತ್ರದಲ್ಲಿ ಚಿತ್ರದ ವಿಂಡೋವನ್ನು ಫೋಕಸ್ ಮಾಡಿ</translation>
-<translation id="8708657523363087260">ಸೈಡ್ಟೋನ್ ಅನ್ನು ಟಾಗಲ್ ಮಾಡಿ</translation>
 <translation id="870917907284186124">ಉಕ್ತಲೇಖನವನ್ನು ಆನ್/ಆಫ್ ಮಾಡಿ (ನಿಮ್ಮ ಧ್ವನಿಯ ಮೂಲಕ ಟೈಪ್ ಮಾಡಿ)</translation>
 <translation id="8711169534266271368">ಗೇಮ್ ಡ್ಯಾಶ್‌ಬೋರ್ಡ್ ಆಯ್ಕೆಗಳು</translation>
 <translation id="8712637175834984815">ಅರ್ಥವಾಯಿತು</translation>
@@ -2292,6 +2286,7 @@
 <translation id="8876661425082386199">ನಿಮ್ಮ ಕನೆಕ್ಷನ್ ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="8877788021141246043">ಜ್ಞಾಪನೆಯನ್ನು ಹೊಂದಿಸಿ</translation>
 <translation id="8878886163241303700">ಪರದೆಯನ್ನು ವಿಸ್ತರಿಸಲಾಗುತ್ತಿದೆ</translation>
+<translation id="8885424115080869847">YouTube Music ಗೆ ಕನೆಕ್ಟ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ</translation>
 <translation id="888982883502837004">ನಿಮ್ಮ ಸಾಧನಕ್ಕೆ ಫರ್ಮ್‌ವೇರ್ ಅಪ್‌ಡೇಟ್‌ಗಳು ಲಭ್ಯವಿವೆ. ಪರಿಶೀಲಿಸಲು ಮತ್ತು ಅಪ್‌ಡೇಟ್‌ ಮಾಡಲು ಕ್ಲಿಕ್ ಮಾಡಿ.</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> ಅನ್ನು ಶಾಶ್ವತವಾಗಿ ಅಳಿಸಲಾಗುತ್ತದೆ</translation>
 <translation id="889790758758811533">ಬ್ಯಾಟರಿ ಮಟ್ಟ <ph name="PERCENTAGE" />% ರಷ್ಟಿದೆ (ಸುಮಾರು <ph name="TIME_LEFT" /> ಬಾಳಿಕೆ ಬರಬಹುದು). ನಿಮ್ಮ ಸಾಧನವನ್ನು ಚಾರ್ಜ್ ಮಾಡಿ.</translation>

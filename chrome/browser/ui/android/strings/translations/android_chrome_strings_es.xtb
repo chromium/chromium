@@ -350,6 +350,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="2653659639078652383">Enviar</translation>
 <translation id="2656405586795711023">Aplicaciones web</translation>
 <translation id="2664252182805397291">Ver sitios</translation>
+<translation id="2666092431469916601">Superior</translation>
 <translation id="2669454659051515572">Cualquier persona que use este dispositivo puede ver los archivos descargados</translation>
 <translation id="2702516483241149200">Nuevo: Comparte un enlace que vaya directamente a este texto</translation>
 <translation id="2705073298859543115">Crear resumen</translation>
@@ -451,6 +452,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="3072980200212375806"><ph name="APP_NAME" /> se abrirá en Chrome. Al continuar, aceptas los <ph name="BEGIN_LINK1" />Términos del Servicio de Google<ph name="END_LINK1" /> y los <ph name="BEGIN_LINK2" />Términos del Servicio Adicionales de Google Chrome y ChromeOS<ph name="END_LINK2" />. También se aplica la <ph name="BEGIN_LINK3" />Política de Privacidad<ph name="END_LINK3" />.</translation>
 <translation id="3080525922482950719">Puedes guardar páginas para leerlas más tarde o sin conexión</translation>
 <translation id="3087218211037573995">Algunas contraseñas guardadas solo en este dispositivo dejarán de funcionar pronto, pero puedes moverlas al Gestor de contraseñas de Google.</translation>
+<translation id="3087734570205094154">Inferior</translation>
 <translation id="3091010850649238832">Muestra el contenido del portapapeles</translation>
 <translation id="3098745985164956033">Algunas imágenes se envían a Google para mejorar las descripciones que recibes</translation>
 <translation id="3114507951000454849">Lee las noticias de hoy <ph name="NEWS_ICON" /></translation>
@@ -688,7 +690,6 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="4355272626458588338">Puedes volver a una página que consideres importante añadiendo un marcador</translation>
 <translation id="4357206670025518404"><ph name="COUNT_NUMBER" />+</translation>
 <translation id="4359809482106103048">Seguridad de un vistazo</translation>
-<translation id="4363222835916186793">Se han desactivado las alertas de este producto</translation>
 <translation id="4378154925671717803">Teléfono</translation>
 <translation id="4380055775103003110">Si el problema persiste, puedes probar otras formas de continuar en <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="4384468725000734951">Sogou se ha establecido como motor de búsqueda predeterminado</translation>
@@ -749,6 +750,7 @@ Es posible que tu cuenta de Google tenga otros tipos de historial de navegación
 <translation id="4624065194742029982">Chrome en Incógnito</translation>
 <translation id="4634124774493850572">Utilizar contraseña</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 contraseña vulnerada}other{# contraseñas vulneradas}}</translation>
+<translation id="4642472735733036929">Seguimiento de precios detenido</translation>
 <translation id="4645146721047390964">En modo Incógnito, los sitios no pueden usar las cookies para ver tu actividad de navegación en otros sitios con el objetivo de, por ejemplo, personalizar los anuncios. Es posible que las funciones de algunos sitios no funcionen correctamente.</translation>
 <translation id="4650364565596261010">Predeterminado del sistema</translation>
 <translation id="465657074423018424">Navegación segura te protege frente a sitios web engañosos. Si desactivas esta función, debes extremar la precaución al navegar, en especial, antes de escribir contraseñas.</translation>
@@ -1092,6 +1094,7 @@ Es posible que tu cuenta de Google tenga otros tipos de historial de navegación
 <translation id="6210748933810148297">¿No eres <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Mostrando vista previa de esta página</translation>
 <translation id="6221633008163990886">Desbloquea el dispositivo para exportar las contraseñas</translation>
+<translation id="6225572914528673855">Barra de direcciones</translation>
 <translation id="6232535412751077445">Al habilitar la opción No hacer seguimiento, se incluirá una solicitud con el tráfico de navegación. El efecto dependerá de si algún sitio web responde a la solicitud y de cómo se interpreta.
 
 Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anuncios no basados en otros sitios web que hayas visitado. Muchos sitios web seguirán recopilando y utilizando tus datos de navegación (por ejemplo, para mejorar la seguridad, para proporcionar contenido, anuncios y recomendaciones, o para generar estadísticas de informes).</translation>

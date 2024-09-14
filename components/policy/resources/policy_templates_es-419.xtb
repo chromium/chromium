@@ -6498,9 +6498,6 @@ Si la inhabilitas o no la estableces, no se habilitarán los widgets de consulta
 <translation id="5776485039795852974">Preguntar siempre que un sitio quiera mostrar notificaciones de escritorio.</translation>
 <translation id="5783009211970309878">Imprimir encabezados y pies de página</translation>
 <translation id="5790763087505467169">Reducir la cantidad de notificaciones de inicio automático de la sesión de invitado administrada</translation>
-<translation id="5793378951267871906">Si habilitas la política, <ph name="PRODUCT_OS_NAME" /> guardará automáticamente las credenciales de Wi-Fi activo del kiosco a nivel del dispositivo. Esto significa que cualquier otro usuario o aplicación de kiosco puede usar el Wi-Fi activo.
-Si no estableces esta política o la inhabilitas, las credenciales de Wi-Fi activo del kiosco se almacenarán a nivel del kiosco. Por lo tanto, el Wi-Fi configurado en una aplicación de kiosco solo se puede usar en esa misma aplicación de kiosco.
-No se recomienda esta política y se debe usar cuando no haya otras opciones disponibles.</translation>
 <translation id="5800329278018669527">Inhabilitar el mensaje de configuración de red cuando no haya conexión</translation>
 <translation id="5802931736499687181">Inhabilitar la canalización de informes encriptados</translation>
 <translation id="5803715507113569033">Esta política permite a los administradores configurar la activación de <ph name="MICROSOFT_ONE_DRIVE_NAME" />.
@@ -9621,13 +9618,6 @@ también es seguro.</translation>
 <translation id="8028814157747157754">Habilitar el proveedor de búsqueda predeterminado y permitir que los usuarios modifiquen la lista de proveedores de búsqueda</translation>
 <translation id="8029201909194194377">Duración máxima de la sesión que se permite para las conexiones de acceso remoto</translation>
 <translation id="8031651557770840616">No permitir Generative AI Wallpaper</translation>
-<translation id="8033450879690820321">Esta política ofrece una inhabilitación temporal para el nuevo comportamiento de los desplazadores enfocables del teclado.
-
-Si habilitas esta política o no la estableces, los desplazadores sin elementos secundarios enfocables se enfocarán con el teclado de forma predeterminada. Además, los desplazadores se pueden enfocar con clics y de forma programática según la configuración predeterminada.
-
-Si la inhabilitas, no se podrán enfocar los desplazadores de forma predeterminada.
-
-Esta política es una solución temporal y se quitará en la versión M135.</translation>
 <translation id="8035570672225663428">Habilitar el modelo de carga adaptable para detener el proceso de carga y así extender la duración de la batería</translation>
 <translation id="8036284429246268475">Si habilitas la política, los usuarios podrán hacer que <ph name="PRODUCT_NAME" /> revise si los nombres de usuario y contraseñas ingresados estuvieron en una filtración.
 

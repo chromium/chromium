@@ -350,6 +350,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="2653659639078652383">Pošlji</translation>
 <translation id="2656405586795711023">Spletni programi</translation>
 <translation id="2664252182805397291">Prikaži spletna mesta</translation>
+<translation id="2666092431469916601">Na vrh</translation>
 <translation id="2669454659051515572">Prenesene datoteke lahko vidijo vsi, ki uporabljajo to napravo.</translation>
 <translation id="2702516483241149200">Novo: Delite povezavo, ki se pomakne do tega besedila.</translation>
 <translation id="2705073298859543115">Ustvari povzetek</translation>
@@ -451,6 +452,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="3072980200212375806">Aplikacija <ph name="APP_NAME" /> se bo odprla v Chromu. Če nadaljujete, se strinjate z <ph name="BEGIN_LINK1" />Googlovimi pogoji storitve<ph name="END_LINK1" /> in <ph name="BEGIN_LINK2" />dodatnimi pogoji storitve za Google Chrome in Chrome OS<ph name="END_LINK2" />. Uporablja se tudi <ph name="BEGIN_LINK3" />pravilnik o zasebnosti<ph name="END_LINK3" />.</translation>
 <translation id="3080525922482950719">Strani lahko shranite, če želite brati pozneje ali brez povezave</translation>
 <translation id="3087218211037573995">Nekatera gesla, shranjena samo v tej napravi, bodo kmalu nehala delovati. Ta gesla lahko premaknete v Googlovega upravitelja gesel.</translation>
+<translation id="3087734570205094154">Na dno</translation>
 <translation id="3091010850649238832">Prikaz vsebine odložišča</translation>
 <translation id="3098745985164956033">Nekatere slike so poslane Googlu zaradi izboljšanja opisov.</translation>
 <translation id="3114507951000454849">Preberite današnje novice <ph name="NEWS_ICON" /></translation>
@@ -688,7 +690,6 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="4355272626458588338">Na stran, ki vam je pomembna, se lahko vrnete tako, da jo dodate med zaznamke</translation>
 <translation id="4357206670025518404">+<ph name="COUNT_NUMBER" /></translation>
 <translation id="4359809482106103048">Hitri pregled varnosti</translation>
-<translation id="4363222835916186793">Opozorila za ta izdelek so bila izklopljena.</translation>
 <translation id="4378154925671717803">Telefon</translation>
 <translation id="4380055775103003110">Če se težava ponavlja, lahko na <ph name="SITE_ETLD_PLUS_ONE" /> poskusite nadaljevati na druge načine.</translation>
 <translation id="4384468725000734951">Uporaba iskalnika Sogou za iskanje</translation>
@@ -749,6 +750,7 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="4624065194742029982">Anonimni način v Chromu</translation>
 <translation id="4634124774493850572">Uporabi geslo</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 ogroženo geslo}one{# ogroženo geslo}two{# ogroženi gesli}few{# ogrožena gesla}other{# ogroženih gesel}}</translation>
+<translation id="4642472735733036929">Sledenje cenam je ustavljeno</translation>
 <translation id="4645146721047390964">Ko uporabljate anonimni način, spletna mesta ne morejo uporabljati piškotkov za ogled dejavnosti brskanja na različnih spletnih mestih, na primer za osebno prilagajanje oglasov. Funkcije na nekaterih spletnih mestih morda ne bodo delovale.</translation>
 <translation id="4650364565596261010">Sistemsko privzeto</translation>
 <translation id="465657074423018424">Varno brskanje vas ščiti pred zavajajočimi spletnimi mesti. Če ga izklopite, bodite zelo previdni pri brskanju, zlasti pred vnašanjem gesel.</translation>
@@ -1092,6 +1094,7 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="6210748933810148297">Niste <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Predogled te strani</translation>
 <translation id="6221633008163990886">Odklenite, če želite izvoziti gesla</translation>
+<translation id="6225572914528673855">Naslovna vrstica</translation>
 <translation id="6232535412751077445">Če omogočite možnost »Ne sledi«, bo zahteva vključena v vaš promet brskanja. Učinek je odvisen od odziva spletnega mesta na zahtevo in od tega, kako si zahtevo razlaga.
 
 Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažejo oglase, ki ne temeljijo na drugih spletnih mestih, ki ste jih obiskali. Veliko spletnih mest bo še vedno zbiralo in uporabljalo vaše podatke o brskanju, na primer za izboljšanje varnosti, zagotavljanje vsebine, oglasov in priporočil ter za pridobivanje statističnih podatkov za poročanje.</translation>

@@ -6238,9 +6238,6 @@ Wenn diese Richtlinie deaktiviert oder nicht konfiguriert ist, sind Glanceables 
 <translation id="5776485039795852974">Nachfragen, wenn eine Website Desktop-Benachrichtigungen anzeigen will</translation>
 <translation id="5783009211970309878">Kopf- und Fußzeilen drucken</translation>
 <translation id="5790763087505467169">Benachrichtigungen zum automatischen Start bei verwalteten Gastsitzungen reduzieren</translation>
-<translation id="5793378951267871906">Wenn die Richtlinie aktiviert ist, werden die Anmeldedaten für das aktive WLAN des Kiosks automatisch auf Geräteebene in <ph name="PRODUCT_OS_NAME" /> gespeichert: Das aktive WLAN kann von anderen Kiosk-Apps oder Nutzern auf dem Gerät verwendet werden.
-Wenn die Richtlinie nicht konfiguriert oder deaktiviert ist, werden die Anmeldedaten für das aktive WLAN des Kiosks auf Kiosk-Ebene gespeichert: Das in einer Kiosk-App konfigurierte WLAN kann nur in dieser App verwendet werden.
-Diese Richtlinie wird nicht empfohlen. Sie muss verwendet werden, wenn keine anderen Optionen verfügbar sind.</translation>
 <translation id="5800329278018669527">Eingabeaufforderung zur Netzwerkkonfiguration im Offlinemodus deaktivieren</translation>
 <translation id="5802931736499687181">Verschlüsselte Pipeline für die Berichterstellung deaktivieren</translation>
 <translation id="5803715507113569033">Mit dieser Richtlinie können Administratoren die Bereitstellung von <ph name="MICROSOFT_ONE_DRIVE_NAME" /> konfigurieren.
@@ -9211,13 +9208,6 @@ Wenn man <ph name="LACROS_SELECTION_USER_CHOICE_VALUE" /> oder <ph name="LACROS_
 <translation id="8028814157747157754">Den Standardsuchanbieter aktivieren und zulassen, dass Nutzer die Liste der Suchanbieter ändern</translation>
 <translation id="8029201909194194377">Maximal zulässige Sitzungsdauer für Verbindungen per Remote-Zugriff</translation>
 <translation id="8031651557770840616">Hintergrund basierend auf generativer KI nicht zulassen</translation>
-<translation id="8033450879690820321">Diese Richtlinie bietet die Möglichkeit, das neue Verhalten „Mit der Tastatur fokussierbare Scroller“ vorübergehend zu deaktivieren.
-
-Wenn diese Richtlinie aktiviert oder nicht konfiguriert ist, können Scroller ohne untergeordnete fokussierbare Elemente standardmäßig mit der Tastatur fokussiert werden. Darüber hinaus sind Scroller standardmäßig per Klick fokussierbar und programmatisch fokussierbar.
-
-Wenn diese Richtlinie deaktiviert ist, können Scroller standardmäßig nicht fokussiert werden.
-
-Diese Richtlinie ist eine vorübergehende Problemumgehung und wird in M135 entfernt.</translation>
 <translation id="8035570672225663428">Adaptives Lademodell aktivieren, um den Ladevorgang anzuhalten und die Akkulaufzeit zu verlängern</translation>
 <translation id="8036284429246268475">Wenn die Richtlinie aktiviert ist, können Nutzer von <ph name="PRODUCT_NAME" /> prüfen lassen, ob die eingegebenen Nutzernamen und Passwörter Teil eines Datenlecks sind.
 

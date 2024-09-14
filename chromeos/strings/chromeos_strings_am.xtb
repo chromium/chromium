@@ -153,6 +153,7 @@
 <translation id="1672499492233627739">የድር ካሜራ ቪዲዮ ምግብ</translation>
 <translation id="1676557873873341166">ቪዲዮን በመቅረጽ ላይ</translation>
 <translation id="1684279041537802716">የአጽንዖት ቀለም</translation>
+<translation id="1697278726914783200">ቅረጽ</translation>
 <translation id="1703835215927279855">ደብዳቤ</translation>
 <translation id="1706391837335750954">የዲኤንኤስ መፍትሔ ሰጪ አለ</translation>
 <translation id="1708602061922134366">የGoogle ሰማያዊ</translation>
@@ -703,6 +704,7 @@
 <translation id="458794348635939462">ለሁሉም አስተናጋጆች መፍትሔ መስጠት አልተሳካም</translation>
 <translation id="4593212453765072419">የተኪ ማረጋገጥ ያስፈልጋል</translation>
 <translation id="4594021849294327751">ጽሁፍ ግልባጭ ፍጠር</translation>
+<translation id="4602266091140407479">ማይክሮፎን</translation>
 <translation id="4607282946861182308">የዚህን ምስል መፍጠር አልተቻለም። ሌላ ጥያቄ ይሞክሩ።</translation>
 <translation id="4609350030397390689">የቁልፍ ሰሌዳ ብሩህነት መቀነሻ</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />፣ <ph name="PRINTER_NAME" />፣ <ph name="CREATION_TIME" />፣ <ph name="PRINTED_PAGE_NUMBER" /> ከ<ph name="TOTAL_PAGE_NUMBER" /> ዉስጥ የሕትመት ሥራን ለመሰረዝ እባክዎ ያስገቡ።</translation>
@@ -1011,6 +1013,7 @@
 <translation id="6184793017104303157">ቢ4</translation>
 <translation id="6188737759358894319"><ph name="DATE" /> ላይ የተፈጠረ</translation>
 <translation id="6189418609903030344">የባትሪ አቅም ከአጠቃቀም ጋር እየቀነሰ ይሄዳል</translation>
+<translation id="6189987971574353264">አጫውት</translation>
 <translation id="6191293864534840972">የተበላሹ የስም አገልጋዮች</translation>
 <translation id="6196607555925437199">እንደገና ፍጠር</translation>
 <translation id="6205145102504628069">የደመና ፍሰት</translation>
@@ -1642,8 +1645,6 @@
 <translation id="951780398843003443">ጽሁፍ ግልባጩ እያንዳንዱ ተናጋር ምን እና መቼ እንደተናገረ እንዲያንጸባርቅ በቅጂው ላይ ድምፆችን ያነጻጽሩ</translation>
 <translation id="952992212772159698">አልገበረም</translation>
 <translation id="95718197892796296">ሸክላ</translation>
-<translation id="959792926760890141">የደህንነት ዳግም አስጀምር የChrome አሳሽ ቅጥያዎችን ያጠፋል እና የአውታረ መረብ እና ሌሎች ቅንብሮችን ወደ ደህንነታቸው የተጠበቀ ነባሪዎች ዳግም ያስጀምራቸዋል።
-          የእርስዎ ነባሪ የፍለጋ ፕሮግራም ዳግም ይጀመራል ነገር ግን የእርስዎ ትሮች፣ ፋይሎች፣ ኩኪዎች እና ታሪክ አይለወጡም።</translation>
 <translation id="960719561871045870">የከዋኝ ኮድ</translation>
 <translation id="965918541715156800">ቢጫ እና ቲል</translation>
 <translation id="966787709310836684">ምናሌ</translation>

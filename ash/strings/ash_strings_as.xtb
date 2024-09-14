@@ -42,6 +42,7 @@
 <translation id="1148499908455722006"><ph name="USER_NAME" />ৰ বাবে তথ্যৰ ডায়ল’গ খোলক</translation>
 <translation id="1150989369772528668">কেলেণ্ডাৰ</translation>
 <translation id="1153356358378277386">যোৰা লগোৱা ডিভাইচ</translation>
+<translation id="1153918444040990015">Focus ধ্বনিৰ সৈতে সংযোগ কৰিব পৰা নগ’ল</translation>
 <translation id="1155734730463845512">বৰ্তমানৰ বেটাৰীৰ স্তৰ <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1157514002898505378">Generative AI সম্পৰীক্ষামূলক আৰু সমল ভুল, বিভ্ৰান্তিকৰ বা আপত্তিজনক হ’ব পাৰে। কোনো সমস্যাৰ বিষয়ে অভিযোগ দিবলৈ আপোনাৰ প্ৰশাসকৰ সৈতে যোগাযোগ কৰক। <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="1160215328209699296">অন হৈ আৰু ব্যৱহাৰ কৰি থকা হৈছে</translation>
@@ -118,7 +119,6 @@
 <translation id="1346748346194534595">সোঁ</translation>
 <translation id="1350494136075914725">বৰ্তমান চলি আছে · টেবটোলৈ যাওক</translation>
 <translation id="1351937230027495976">মেনু সংকোচন কৰক</translation>
-<translation id="1352537790882153971">আপুনি নিজৰ তাঁৰযুক্ত হেডফ’নৰ পৰা নিজৰ মাইক্ৰ’ফ’নৰ ধ্বনি নিৰীক্ষণ কৰিব পাৰে। বন্ধ কৰিবলৈ পেনেল বন্ধ কৰক।</translation>
 <translation id="1360220746312242196">এটা পৃষ্ঠা সন্ধান কৰাৰ সময়ত সন্ধানৰ বাবে মিল থকা পূৰ্বৱৰ্তীটোলৈ যাওক</translation>
 <translation id="1360788414852622716">প্ৰ’ফাইল অক্ষম কৰি থকা হৈছে। এই কামত কেইমিনিটমান সময় লাগিব পাৰে।</translation>
 <translation id="1364382257761975320">আপোনাৰ Chromebook আনলক কৰিবলৈ, নিজৰ ফিংগাৰপ্ৰিণ্ট ব্যৱহাৰ কৰক</translation>
@@ -176,6 +176,7 @@
 <translation id="1550523713251050646">অধিক বিকল্পৰ বাবে ক্লিক কৰক</translation>
 <translation id="1555130319947370107">নীলা</translation>
 <translation id="1557622599341396706">ডেস্কৰ নাম দেখুৱাওক</translation>
+<translation id="1567138500090284106">মাউছৰ কীৰ বুটাম</translation>
 <translation id="1569384531973824928">এইটোৱে কেমেৰা আৰু মাইক্ৰ’ফ’নৰ অনুমতি থকা আটাইবোৰ এপ্‌ আৰু ৱেবছাইটৰ বাবে এক্সেছৰ অনুমতি দিয়ে। আপুনি ৱেবপৃষ্ঠাখন ৰিফ্ৰেশ্ব কৰিব লাগিব পাৰে বা এপ্‌টো পুনৰাৰম্ভ কৰিব লাগিব পাৰে।</translation>
 <translation id="1571697193564730395">অসুবিধা নিদিব ট’গল কৰক। <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">বিৱৰ্ধক অন কৰা থাকিলে জুম আউট কৰক</translation>
@@ -243,6 +244,7 @@
 <translation id="1787955149152357925">অফ আছে</translation>
 <translation id="1796561540704213354">আপুনি চোৱা আৰু খোলা পৃষ্ঠাসমূহকে ধৰি ৱেবছাইটসমূহ</translation>
 <translation id="179842970735685253">Googleৰ সেৱাৰ চৰ্তাৱলী</translation>
+<translation id="1805407494113167797">Focus ধ্বনি প্লে’ কৰিব পৰা নগ’ল</translation>
 <translation id="181103072419391116">ছিগনেলৰ ক্ষমতা <ph name="SIGNAL_STRENGTH" />, আপোনাৰ প্ৰশাসকে পৰিচালনা কৰে</translation>
 <translation id="1816896987747843206">এইটোৱে কেমেৰাৰ অনুমতি থকা আটাইবোৰ এপ্‌ আৰু ৱেবছাইটৰ বাবে কেমেৰা এক্সেছ কৰাৰ অনুমতি দিয়ে</translation>
 <translation id="1823873187264960516">ইথাৰনেট: <ph name="ADDRESS" /></translation>
@@ -397,7 +399,6 @@
 <translation id="2426051945783024481">কেমেৰা ফ্ৰে’ম স্বয়ংক্ৰিয়ভাৱে সোঁমাজত ৰখা হ’ল</translation>
 <translation id="2427507373259914951">বাওঁফালে ক্লিক কৰা কার্য</translation>
 <translation id="2429753432712299108">ব্লুটুথ ডিভাইচ "<ph name="DEVICE_NAME" />"এ পেয়াৰ কৰিবলৈ অনুমতি বিচাৰে। গ্ৰহণ কৰাৰ আগতে অনুগ্ৰহ কৰি এই পাছকীটো যে সেই ডিভাইচটোত দেখুওৱা হৈছে সেইয়া নিশ্চিত কৰক: <ph name="PASSKEY" /></translation>
-<translation id="2430444791038754658">সময় শেষ। সুন্দৰ কাম!</translation>
 <translation id="2435457462613246316">পাছৱৰ্ড দেখুৱাওক</translation>
 <translation id="2437771564543046790">বেটাৰী কমিছে। বেটাৰী সঞ্চয়কাৰী অন কৰা আছে</translation>
 <translation id="243878895369688216">কালি খুলিছিল</translation>
@@ -777,7 +778,6 @@
 <translation id="3706423975342040244">মনোৰঞ্জন</translation>
 <translation id="3707093869106077605"><ph name="UNAVAILABLE_DLC_ONE" /> আৰু <ph name="UNAVAILABLE_DLC_TWO" /> উপলব্ধ নহয়।</translation>
 <translation id="3708186454126126312">আগতে সংযোগ কৰা</translation>
-<translation id="3711282657843423160">সকলো হৈ গ’ল। কৰি থাকক!</translation>
 <translation id="3712143870407382523">এই ফালটোৰ বাবে এখন ৱিণ্ড’ বাছনি কৰক</translation>
 <translation id="371370241367527062">সন্মুখৰ মাইক্ৰ’ফ’ন</translation>
 <translation id="3713734891607377840">সম্পূৰ্ণ হোৱাৰ পাছত খোলক</translation>
@@ -847,7 +847,6 @@
 <translation id="397105322502079400">গণনা কৰি থকা হৈছে…</translation>
 <translation id="397726367135689299">বেটাৰীৰ চাৰ্জিং অবিশ্বস্ত হ’ব পাৰে।</translation>
 <translation id="3977512764614765090">বেটাৰীত <ph name="PERCENTAGE" />% চাৰ্জ আছে আৰু চাৰ্জ হৈ আছে।</translation>
-<translation id="397808938113646171">সময় শেষ হ’ল। বঢ়িয়া!</translation>
 <translation id="3982013579989864579">অডিঅ’ আউটপুট সলনি কৰিবনে?</translation>
 <translation id="3984536049089846927">পৰৱৰ্তী পৃষ্ঠা</translation>
 <translation id="3986082989454912832">উত্তৰ দিয়ক</translation>
@@ -1003,7 +1002,6 @@
 <translation id="4477751544736611934">এইটোৱে ডেটাৰ মাচুল প্ৰযোজ্য কৰিব পাৰে।
 ১ টা ডিভাইচ সংযুক্ত হৈ আছে।</translation>
 <translation id="4477892968187500306">এই ডিভাইচটোত Googleএ সত্যাপন নকৰা এপ্‌সমূহ থাকিব পাৰে।</translation>
-<translation id="4479130137987693286">আপোনাক প্ৰয়োজন হ’লে আপুনি অলপ বেছি সময় যোগ দিব পাৰে বা আপোনাৰ ফ’কাছ ছেশ্বন শেষ কৰিব পাৰে</translation>
 <translation id="4479639480957787382">ইথাৰনেট</translation>
 <translation id="4481530544597605423">যোৰা বিচ্ছিন্ন কৰা ডিভাইচসমূহ</translation>
 <translation id="4485506555414638855">আপোনাৰ ফ’নৰ শেহতীয়া ফট’, মিডিয়া, জাননী আৰু এপ্‌সমূহ চোৱাৰ সুবিধা ছেট আপ কৰাটো বাতিল কৰক</translation>
@@ -1056,7 +1054,6 @@
 
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox সক্ষম কৰা হ’ল</translation>
-<translation id="4665182893355091947">সকলো হৈ গ’ল। বঢ়িয়া!</translation>
 <translation id="4666911709726371538">অধিক এপ্‌</translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> ডাউনল’ড কৰি থকা হৈছে</translation>
 <translation id="4672539464599646374">বেটাৰী সঞ্চয়কাৰী অন কৰা হৈছে</translation>
@@ -1782,7 +1779,6 @@
 <translation id="7064351585062927183">অহা <ph name="DAY_OF_WEEK" /></translation>
 <translation id="7066646422045619941">এই নেটৱৰ্কটো আপোনাৰ প্ৰশাসকে অক্ষম কৰি থৈছে।</translation>
 <translation id="7067196344162293536">স্বয়ং-ঘূৰ্ণন</translation>
-<translation id="7067569040620564762">সময় শেষ। হ’লত টিপক!</translation>
 <translation id="7068360136237591149">ফাইলসমূহ খোলক</translation>
 <translation id="7076293881109082629">ছাইন ইন কৰি থকা হৈছে</translation>
 <translation id="7076878155205969899">ধ্বনি মিউট কৰক</translation>
@@ -1817,7 +1813,6 @@
 <translation id="7189412385142492784">শুক্ৰ গ্ৰহলৈ কিমান দূৰ</translation>
 <translation id="7198435252016571249">কেমেৰা তলৰ সোঁফালৰ কোণলৈ স্নেপ কৰা হৈছে। ছিষ্টেম ছাৰ্ফেচৰ সৈতে সংঘাত।</translation>
 <translation id="7219573373513695352">কোনো ডিভাইচ সংযোগ কৰা হোৱা নাই</translation>
-<translation id="7226347284543965442">সময় শেষ। আপুনি কৰিলে!</translation>
 <translation id="7229029500464092426">ব্যৱহৃত মেম’ৰী <ph name="AVAILABLE_MEMORY" /> | মুঠ মেম’ৰী <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7244725679040769470">বেটাৰীৰ চাৰ্জ <ph name="PERCENTAGE" />% বাকী আছে। আপোনাৰ ডিভাইচটো পাৱাৰৰ সৈতে সংযোগ কৰক।</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />। কোনো আপডে’ট প্ৰয়োগ কৰিবলৈ এই Chromebookটো ৰিষ্টাৰ্ট কৰাৰ আৱশ্যক। এইটোৱে ১ মিনিট পৰ্যন্ত সময় লগাব পাৰে।</translation>
@@ -2172,7 +2167,6 @@
 <translation id="8443879455002739353">"প্ৰতিলিপি কৰক"</translation>
 <translation id="8444246603146515890"><ph name="DESK_TITILE" /> ডেস্ক সক্রিয় কৰা হৈছে</translation>
 <translation id="8446884382197647889">অধিক জানক</translation>
-<translation id="8452090802952003258">আপোনাৰ মাইকৰ ধ্বনি শুনক</translation>
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
 <translation id="8462305545768648477">কথা ক’বলৈ বাছনি কৰক সুবিধাটো বন্ধ কৰক</translation>
 <translation id="8468806060683421065">কাৰ্য সমাপ্তিৰ শেষ তাৰিখ হৈছে <ph name="DUE_DATE_AND_TIME" /></translation>
@@ -2234,7 +2228,6 @@
 <translation id="8683506306463609433">কার্যদক্ষতা ট্ৰে’চ কৰাটো সক্ৰিয় অৱস্থাত আছে</translation>
 <translation id="8703634754197148428">ৰেকৰ্ডিং আৰম্ভ কৰক। ৰেকৰ্ডিং আৰম্ভ হোৱাৰ পাছত, শ্বেল্‌ফটোলৈ যাবলৈ অল্‌ট + শ্বিফ্ট + এল ব্যৱহাৰ কৰক আৰু ৰেকৰ্ডিং বন্ধ কৰাৰ বুটামটো বিচাৰক</translation>
 <translation id="8704155109538237473">picture-in-picture ৱিণ্ড’খনত ফ’কাছ কৰক</translation>
-<translation id="8708657523363087260">ছাইডট’ন ট’গল কৰক</translation>
 <translation id="870917907284186124">শ্ৰুতলিপিৰ সুবিধাটো অন/অফ কৰক (আপোনাৰ ভইচৰ জৰিয়তে টাইপ কৰক)</translation>
 <translation id="8711169534266271368">গে’ম ডেশ্বব’ৰ্ডৰ বিকল্পসমূহ</translation>
 <translation id="8712637175834984815">বুজি পালোঁ</translation>
@@ -2292,6 +2285,7 @@
 <translation id="8876661425082386199">আপোনাৰ ইণ্টাৰনেট সংযোগ পৰীক্ষা কৰক</translation>
 <translation id="8877788021141246043">ৰিমাইণ্ডাৰ ছেট কৰক</translation>
 <translation id="8878886163241303700">বিস্তাৰিত স্ক্ৰীন</translation>
+<translation id="8885424115080869847">YouTube Musicৰ সৈতে সংযোগ কৰিব পৰা নগ’ল</translation>
 <translation id="888982883502837004">আপোনাৰ ডিভাইচটোৰ বাবে ফাৰ্মৱেৰ আপডে’ট উপলব্ধ। পৰ্যালোচনা আৰু আপডে’ট কৰিবলৈ ক্লিক কৰক।</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> স্থায়ীভাৱে মচা হ’ব</translation>
 <translation id="889790758758811533">বেটাৰীৰ চাৰ্জ <ph name="PERCENTAGE" />% বাকী আছে (প্ৰায় <ph name="TIME_LEFT" /> বাকী আছে)। আপোনাৰ ডিভাইচটো পাৱাৰৰ সৈতে সংযোগ কৰক।</translation>

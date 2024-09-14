@@ -11,7 +11,6 @@
 <translation id="1035980983510608210">Fitxa guztiak ixten badituzu, fitxa ainguratuak ere itxiko dira.</translation>
 <translation id="1036017604683756002">UPS</translation>
 <translation id="1036348656032585052">Desaktibatu</translation>
-<translation id="10379132160269599">Erakutsi fitxen sareta</translation>
 <translation id="1041322626941363065">Abisatu pasahitzak datuen isilpekotasunaren urratze batean ikusgai badaude</translation>
 <translation id="1044891598689252897">Webguneek ohiko moduan funtzionatuko dute</translation>
 <translation id="104491362976654916">Konexiorik gabeko orria</translation>
@@ -31,6 +30,7 @@
 <translation id="1118569444314402022">Ongi etorri berriro, <ph name="USER_NAME" /></translation>
 <translation id="1121850836842642159">Argazkiak eta irudiak</translation>
 <translation id="1125564390852150847">Sortu beste fitxa bat.</translation>
+<translation id="1126696498560056882">Kudeatu gailuko kontuak</translation>
 <translation id="1126809382673880764">Ez zaitu babesten webgune, deskarga eta luzapen kaltegarrien aurka. Erabilgarri dagoenean, arakatze seguruaren babesa jasotzen jarraituko duzu Google-ren beste zerbitzu batzuetan (Gmail-en eta Bilaketa zerbitzuan, esaterako).</translation>
 <translation id="1142371195993008685">Desaktibatu <ph name="FEATURE_NAME" /> eginbidearen jakinarazpenak</translation>
 <translation id="1147031633655575115"><ph name="USER" /> gisa hasi duzu saioa</translation>
@@ -171,6 +171,7 @@
 <translation id="1820195936249950412">Hasi saioa balio duen kontu batekin</translation>
 <translation id="1820259098641718022">Gehitu da Irakurketa-zerrendan</translation>
 <translation id="1822994441903263130">FEDEX</translation>
+<translation id="1824490729233982311">Alertak beste gailuetako fitxak jasotzen dituzunean.</translation>
 <translation id="1827529786398596735">Eduki sakatuta orri nagusia</translation>
 <translation id="1829244130665387512">Bilatu orrian</translation>
 <translation id="1832848789136765277">Sinkronizatutako datuak edonoiz atzitu ahal izango dituzula ziurtatzeko, egiaztatu zeu zarela</translation>
@@ -1009,7 +1010,6 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="594324569139756587">Blokeatu hirugarrenen cookieak</translation>
 <translation id="5944869793365969636">Eskaneatu QR kodea</translation>
 <translation id="5948291296578561264">Honekin, argazkien liburutegian gorde ahalko dituzu argazkiak.</translation>
-<translation id="5953383789663007162">Editatu kontuen zerrenda</translation>
 <translation id="5954322191260787920">Editatu laster-marka</translation>
 <translation id="5956112131836209882">Fitxa taldeko fitxa. <ph name="NUMBER_OF_TABS_IN_GROUP" /> fitxatatik <ph name="TAB_INDEX_IN_GROUP" />garrena.</translation>
 <translation id="595769230373966252">Bilatu honen bidez: <ph name="SEARCH_PROVIDER" /></translation>

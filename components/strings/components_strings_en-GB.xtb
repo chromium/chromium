@@ -712,6 +712,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2265356434276802347">This policy should not have more than <ph name="MAX_ITEMS_LIMIT" /> featured entries.</translation>
 <translation id="2267047181501709434">Verifying your identity...</translation>
 <translation id="2268044343513325586">Refine</translation>
+<translation id="2268966938956566076">Upload in <ph name="MINUTES" /> min</translation>
 <translation id="2270484714375784793">Phone number</translation>
 <translation id="2276057643614339130">Print base</translation>
 <translation id="2277103315734023688">Seek forwards</translation>
@@ -1014,6 +1015,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2882949212241984732">Double-gate fold</translation>
 <translation id="2891963978019740012">Your search engine in Chrome</translation>
 <translation id="2893773853358652045">Fourth roll</translation>
+<translation id="2894137550885451583">These are <ph name="CURRENCY" /> prices for product <ph name="PRODUCT" /></translation>
 <translation id="2900528713135656174">Create event</translation>
 <translation id="2902312830803030883">More actions</translation>
 <translation id="2903493209154104877">Addresses</translation>
@@ -1110,6 +1112,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3062655045399308513">Delete browsing data</translation>
 <translation id="306573536155379004">Game started.</translation>
 <translation id="3067505415088964188">Price is low</translation>
+<translation id="3068118691172921711">Your file upload to <ph name="CLOUD_PROVIDER" /> will begin in one minute</translation>
 <translation id="3076865167425975822">Operating systems</translation>
 <translation id="3080254622891793721">Graphic</translation>
 <translation id="3082007635241601060">Let Google use your baskets to find personalised discounts when available</translation>
@@ -1121,6 +1124,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3099619114405539473">Use available cameras (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="3102312643185441063">Savings</translation>
 <translation id="3103188521861412364">Stocks and bonds</translation>
+<translation id="3103535543639438037">Compare similar products side by side</translation>
 <translation id="3105172416063519923">Asset ID:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />Checking the secure DNS configuration<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Middle tray</translation>
@@ -1298,6 +1302,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3407789382767355356">third-party sign-in</translation>
 <translation id="340924996148642843">Compare isn't available at the moment</translation>
 <translation id="3409896703495473338">Manage security settings</translation>
+<translation id="3411091017011773343">Upload in <ph name="HOURS" /> hr</translation>
 <translation id="3414275587143250384">Distributed and cloud computing</translation>
 <translation id="3414952576877147120">Size:</translation>
 <translation id="341513675006332771">Play Chrome Dino game button, activate to play the dino run game in Chrome</translation>
@@ -1608,6 +1613,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3949601375789751990">Your browsing history appears here</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">No saved payment methods</translation>
+<translation id="3950560191811267370">Commerce bottom sheet closed</translation>
 <translation id="3950574001630941635">Restart tutorial</translation>
 <translation id="3950820424414687140">Sign in</translation>
 <translation id="3953505489397572035">This price is typical</translation>
@@ -1893,7 +1899,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4451135742916150903">Can ask to connect to HID devices</translation>
 <translation id="4451684391620232683">Text presented to user:</translation>
 <translation id="4452328064229197696">The password that you just used was found in a data breach. To secure your accounts, Google Password Manager recommends checking your saved passwords.</translation>
-<translation id="4452957520362597816">Ask to install web apps</translation>
 <translation id="4456937135469235202">Adventure travel</translation>
 <translation id="4464826014807964867">Websites with info from your organisation</translation>
 <translation id="4466576951214254884">Student loans and college financing</translation>
@@ -1965,6 +1970,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4628678854894591460">Holiday Offers</translation>
 <translation id="4628948037717959914">Photo</translation>
 <translation id="4629370161347991046">A4 x 6</translation>
+<translation id="462989688138616749">Your file upload to <ph name="CLOUD_PROVIDER" /> will begin in <ph name="HOURS" /> hours</translation>
 <translation id="4631649115723685955">Cashback linked</translation>
 <translation id="4631881646528206880">Virtual card enrollment</translation>
 <translation id="4635278307999235413">Sending data to Admin console</translation>
@@ -2085,6 +2091,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="484988093836683706">Use device unlock</translation>
 <translation id="4850886885716139402">View</translation>
 <translation id="4854853140771946034">Create a new note in Google Keep quickly</translation>
+<translation id="4855395119669662878">Your administrator will start uploading your files to <ph name="CLOUD_PROVIDER" /> at <ph name="DATE_TIME" />. Keep your device connected until your file upload is complete. During the upload, you will only be able to read local files.</translation>
 <translation id="485902285759009870">Verifying code…</translation>
 <translation id="4860260582253463350">To continue to YouTube, we need to make sure that it's you. You'll get the settings that your parent or guardian set up in Family Link.</translation>
 <translation id="4864406669374375262">Copied version string to clipboard</translation>
@@ -2140,6 +2147,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4933468175699107356">Right-click to autofill saved info, such as your name or address, on any form</translation>
 <translation id="4934780484581617878">Window management</translation>
 <translation id="4936134414789135531">The inserted <ph name="VALUE_NAME" /> couldn't be found.</translation>
+<translation id="4936573216809994970">Your file upload to <ph name="CLOUD_PROVIDER" /> will begin in one hour</translation>
 <translation id="4936675324097895694">Finance</translation>
 <translation id="4943620199112228840">Use your microphones</translation>
 <translation id="4943872375798546930">No results</translation>
@@ -2313,6 +2321,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5269225904387178860">Quad punch bottom</translation>
 <translation id="5271381225185906340">'<ph name="DATA_CONTROLS_ATTRIBUTE" />' is not a supported condition for '<ph name="DATA_CONTROLS_RESTRICTION" />'</translation>
 <translation id="5273658854610202413">Warning: This policy was not merged as specified in PolicyDictionaryMultipleSourceMergeList policy because it is not part of the dictionary policies that can be merged.</translation>
+<translation id="5278778426231952189">Upload now</translation>
 <translation id="5279286380302340275">Manage downloads</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">Document properties</translation>
@@ -2346,6 +2355,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5331585574693522196">Set as default</translation>
 <translation id="5332219387342487447">Delivery method</translation>
 <translation id="5332769172018416402">Ask in a message</translation>
+<translation id="533323551986281710">Commerce bottom sheet opened at full height</translation>
 <translation id="5334013548165032829">Detailed system logs</translation>
 <translation id="5334145288572353250">Save Address?</translation>
 <translation id="5340250774223869109">Application is blocked</translation>
@@ -2528,6 +2538,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5675650730144413517">This page isn’t working</translation>
 <translation id="5675809467256309336">Dance and electronic music</translation>
 <translation id="5675959228867414813">Show by date</translation>
+<translation id="567604591393105935">Commerce bottom sheet opened at half height</translation>
 <translation id="5677928146339483299">Blocked</translation>
 <translation id="5678007133659493065">Foil</translation>
 <translation id="5680642791693447368">Thriller, crime and mystery films</translation>
@@ -3435,6 +3446,7 @@ Additional details:
 <translation id="7374733840632556089">This problem happens because of a certificate that you or someone else installed on your device. The certificate is known to be used to monitor and intercept networks, and is not trusted by Chrome. While some legitimate cases for monitoring do exist, like on a school or company network, Chrome wants to make sure that you're aware it's happening, even if you can't stop it. Monitoring may happen in any browser or application that accesses the web.</translation>
 <translation id="7375532151824574023">{NUM_COOKIES,plural, =0{No sites allowed}=1{1 site allowed}other{# sites allowed}}</translation>
 <translation id="7375818412732305729">File is attached</translation>
+<translation id="7376031331622621328">Commerce bottom sheet</translation>
 <translation id="7377249249140280793"><ph name="RELATIVE_DATE" /> - <ph name="FULL_DATE" /></translation>
 <translation id="7377314930809374926">Hospitality industry</translation>
 <translation id="7378594059915113390">Media controls</translation>
@@ -3816,6 +3828,7 @@ Additional details:
 <translation id="8030729864112325446">Vocational and continuing education</translation>
 <translation id="8032546467100845887">Transparency</translation>
 <translation id="8035152190676905274">Pen</translation>
+<translation id="8035264638816032066">The tab titles and URLs of pages that you add to the table are sent to Google</translation>
 <translation id="8037117624646282037">Who has used the device recently</translation>
 <translation id="8037357227543935929">Ask (default)</translation>
 <translation id="803771048473350947">File</translation>
@@ -4009,6 +4022,7 @@ Additional details:
 <translation id="8381674639488873545">These charges could be one-time or recurring and may not be obvious. <ph name="BEGIN_LINK" />Show anyway<ph name="END_LINK" /></translation>
 <translation id="8382097126743287270">Automatic full screen</translation>
 <translation id="838307841291975086">Estate cars</translation>
+<translation id="8388286357548915205">Use for all guests</translation>
 <translation id="8389532092404711541">Typically <ph name="LOW_PRICE" /></translation>
 <translation id="8389940864052787379">Custom and performance vehicles</translation>
 <translation id="8390725133630534698">Sharing from <ph name="ORIGIN_NAME" /> to <ph name="VM_NAME" /> has been blocked by administrator policy</translation>
@@ -4115,6 +4129,7 @@ Additional details:
 <translation id="8564466070529550495">Virtual card is not available at the moment, please try again later</translation>
 <translation id="8564985650692024650">Chromium recommends resetting your <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> password if you reused it on other sites.</translation>
 <translation id="8570895683659698018">Hobbies and leisure</translation>
+<translation id="8572792595597115856">Valid until <ph name="DATE" /></translation>
 <translation id="8574841453995331336">Refrigerators and Freezers</translation>
 <translation id="8577192028579836704">All options typically <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">Virtual card not available</translation>
@@ -4136,6 +4151,7 @@ Additional details:
 <translation id="8617269623452051934">your device use</translation>
 <translation id="861775596732816396">Size 4</translation>
 <translation id="8620276786115098679">Envelope Kaku 7</translation>
+<translation id="8622864575115813231">Contacting your financial institution…</translation>
 <translation id="8623885649813806493">No matching passwords. Show all saved passwords.</translation>
 <translation id="8624354461147303341">Get discounts</translation>
 <translation id="8634957317623797170">54 mm x 86 mm</translation>
@@ -4435,6 +4451,7 @@ Additional details:
 <translation id="9192361865877479444">Metal (matte)</translation>
 <translation id="9192947025498305328">Clean beauty</translation>
 <translation id="9199905725844810519">Printing is blocked</translation>
+<translation id="9204089334327209740">Once the upload is complete, you can modify your files in <ph name="CLOUD_PROVIDER" />. Local storage, including any files in Trash, will be automatically removed.</translation>
 <translation id="9205078245616868884">Your data is encrypted with your sync passphrase. Enter it to start sync.</translation>
 <translation id="920643408853370361">Travel insurance</translation>
 <translation id="9207861905230894330">Failed to add article.</translation>
@@ -4455,6 +4472,7 @@ Additional details:
 <translation id="937804173274050966"><ph name="BEGIN_BOLD" />What data is used:<ph name="END_BOLD" /> Your ad topics are based on your recent browsing history – a list of sites that you’ve visited using Chrome on this device.</translation>
 <translation id="937885410143139026">Data sent to Admin console</translation>
 <translation id="939736085109172342">New folder</translation>
+<translation id="940524522703752213">Your file upload to <ph name="CLOUD_PROVIDER" /> will begin in <ph name="MINUTES" /> minutes</translation>
 <translation id="944540589955480312">Use passwords and passkeys saved in your Google Account</translation>
 <translation id="945646848072568856">Chrome blocks sites from using third-party cookies to track you as you browse.</translation>
 <translation id="945855313015696284">Check the info below and delete any invalid cards</translation>

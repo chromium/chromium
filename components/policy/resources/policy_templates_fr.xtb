@@ -404,6 +404,7 @@ Cette règle remplace la règle <ph name="DEFAULT_WINDOW_PLACEMENT_SETTING_POLIC
       Les formats d'URL ne peuvent pas entrer en conflit avec ceux de la règle <ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" />. Aucune règle ne prévaut si un format d'URL est répertorié dans les deux règles.
 
       Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides, veuillez consulter la page https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. La valeur <ph name="WILDCARD_VALUE" /> n'est pas acceptée pour cette règle.</translation>
+<translation id="1309259005392595570">Désactiver l'accord de clé post-quantique pour TLS</translation>
 <translation id="1309465583050255779">Si la règle <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> est activée, la règle <ph name="DEFAULT_SEARCH_PROVIDER_NAME_POLICY_NAME" /> vous permet de spécifier le nom du moteur de recherche par défaut.
 
       Si la règle <ph name="DEFAULT_SEARCH_PROVIDER_NAME_POLICY_NAME" /> n'est pas configurée, le nom d'hôte indiqué par l'URL de recherche est utilisé.</translation>
@@ -4098,6 +4099,7 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
 <translation id="4140646780789794190">Désactiver le partage des données de diagnostic avec Plugin VM</translation>
 <translation id="4144417751555442768">IA générative</translation>
 <translation id="4145383150978634398">Rendre le mode Bureau unifié accessible à l'utilisateur</translation>
+<translation id="4146319954420095470">(Avertissement : Cette dépendance sera bientôt supprimée, veuillez commencer à utiliser la règle <ph name="GLS_POLICY_NAME" /> à la place). Si cette règle est définie sur <ph name="BLOCK_GEOLOCATION_SETTING" />, les services système <ph name="PRODUCT_OS_NAME" /> et les applications Android ne peuvent pas accéder aux informations de localisation. Si vous attribuez toute autre valeur pour cette règle, ou que vous ne la définissez pas, l'utilisateur doit donner son accord lorsqu'une application Android veut accéder aux informations de localisation.</translation>
 <translation id="4147818922357566987">Activer uniquement les variantes concernant les correctifs critiques</translation>
 <translation id="4150201353443180367">Écran</translation>
 <translation id="4154221011709068799">Interdire les appareils de stockage externe</translation>
@@ -4867,6 +4869,7 @@ Elle fait correspondre un ID d'extension ou une URL de mise à jour uniquement a
 Pour les instances <ph name="MS_WIN_NAME" />, les applis et extensions non issues du Chrome Web Store ne peuvent être installées d'office que si l'instance est associée à un domaine <ph name="MS_AD_NAME" />, à <ph name="MS_AAD_NAME" /> ou bénéficie de la <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
 
 Pour les instances <ph name="MAC_OS_NAME" />, les applis et extensions non issues du Chrome Web Store ne peuvent être installées d'office que si l'instance est gérée via MDM, associée à un domaine via MCX ou bénéficie de la <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
+<translation id="4737832614429402441">Utiliser la valeur par défaut pour l'accord de clé post-quantique activé pour TLS</translation>
 <translation id="4739596156184678950">Autoriser l'enregistrement de fichiers directement dans <ph name="GOOGLE_DRIVE_NAME" /></translation>
 <translation id="4742973303930120836">Limiter le mode d'impression d'images de fond</translation>
 <translation id="4745232963710538589">Activer l'extension des insights pour transmettre des statistiques d'utilisation</translation>
@@ -6256,9 +6259,6 @@ Si elle est désactivée ou n'est pas configurée, les Glanceables ne sont pas a
 <translation id="5776485039795852974">Demander confirmation chaque fois qu'un site veut afficher des notifications sur le bureau</translation>
 <translation id="5783009211970309878">Imprimer les en-têtes et les pieds de page</translation>
 <translation id="5790763087505467169">Réduire les notifications de lancement automatique des sessions Invité gérées</translation>
-<translation id="5793378951267871906">Si cette règle est activée, <ph name="PRODUCT_OS_NAME" /> enregistre automatiquement les identifiants Wi-Fi kiosque actifs au niveau de l'appareil : le Wi-Fi actif peut être utilisé par les autres applis kiosque ou utilisateurs sur l'appareil.
-Si cette règle n'est pas configurée ou qu'elle est désactivée, les identifiants Wi-Fi kiosque actifs sont stockés au niveau du kiosque : le Wi-Fi configuré dans une appli kiosque ne peut être utilisé que dans cette même appli kiosque.
-Cette règle n'est pas recommandée et doit être utilisée lorsqu'aucune autre option n'est disponible.</translation>
 <translation id="5800329278018669527">Désactiver l'invite de configuration réseau lorsque l'utilisateur n'est pas connecté</translation>
 <translation id="5802931736499687181">Désactiver le pipeline de rapports chiffrés</translation>
 <translation id="5803715507113569033">Cette règle permet aux administrateurs de configurer l'installation de <ph name="MICROSOFT_ONE_DRIVE_NAME" />.
@@ -6658,6 +6658,21 @@ Cette règle n'aura aucune incidence si la règle <ph name="SCREENSAVER_LOCK_SCR
 Si cette règle n'est pas configurée ou si la liste ne contient aucune référence d'image valide, l'économiseur d'écran ne s'affiche pas pour l'écran de verrouillage, quelle que soit la valeur définie dans la règle <ph name="SCREENSAVER_LOCK_SCREEN_ENABLED_POLICY_NAME" />.</translation>
 <translation id="6135398260575578389">La navigation sécurisée est active et en mode de protection renforcée. Ce mode offre une meilleure sécurité, mais nécessite de partager plus d'informations de navigation avec Google.</translation>
 <translation id="6135552820180449830">Crosh (disponible depuis la version 99)</translation>
+<translation id="6136179371737299503">Cette règle au niveau de l'appareil définit si <ph name="PRODUCT_OS_NAME" /> proposera ou non un algorithme d'accord de clé post-quantique, dans TLS. Dans les versions futures, l'algorithme sera ML-KEM, une norme post-quantique du NIST. Initialement, l'algorithme était Kyber, une version antérieure de la norme. Cela permet aux serveurs compatibles de protéger le trafic utilisateur contre les déchiffrement ultérieurs par des ordinateurs quantiques.
+
+Si cette règle est activée, <ph name="PRODUCT_OS_NAME" /> proposera un accord de clé post-quantique dans les connexions TLS. Dans ce cas, le trafic utilisateur est protégé contre les ordinateurs quantiques lorsqu'il communique avec des serveurs compatibles.
+
+Si cette règle est désactivée, <ph name="PRODUCT_OS_NAME" /> ne proposera pas d'accord de clé post-quantique dans les connexions TLS. Dans ce cas, le trafic utilisateur ne sera pas protégé contre les ordinateurs quantiques.
+
+Si cette règle n'est pas configurée, <ph name="PRODUCT_OS_NAME" /> suivra le processus de déploiement par défaut pour proposer un accord de clé post-quantique.
+
+La proposition de Kyber est rétrocompatible. Les serveurs TLS et le middleware de mise en réseau existants devraient ignorer la nouvelle option et continuer à sélectionner les options précédentes.
+
+Toutefois, les appareils qui n'implémentent pas correctement TLS peuvent dysfonctionner lorsqu'ils reçoivent la nouvelle option. Par exemple, ils peuvent se déconnecter en réponse à des options non reconnues ou à des messages plus volumineux qui en résultent. Ces appareils ne sont pas prêts pour le post-quantique et interfèrent avec la transition post-quantique d'une entreprise. Le cas échéant, les administrateurs doivent contacter le fournisseur pour obtenir une solution.
+
+Cette règle est une mesure temporaire qui sera supprimée après la version 141 de <ph name="PRODUCT_OS_NAME" />. Elle peut être activée pour vous permettre de tester des problèmes, ou désactivée pendant la résolution des problèmes.
+
+Cette règle prévaut sur la règle PostQuantumKeyAgreementEnabled si les deux sont configurées.</translation>
 <translation id="6138636318340561140">Vérifier en temps réel l'état de la navigation sécurisée pour les URL</translation>
 <translation id="6141402445226505817">Toujours utiliser une détection de fuseau horaire standard</translation>
 <translation id="6141944295566709543">Autoriser les utilisateurs à lire des médias lorsque l'appareil est verrouillé</translation>
@@ -9223,13 +9238,6 @@ Nous vous recommandons d'utiliser "<ph name="LACROS_SELECTION_USER_CHOICE_VALUE"
 <translation id="8028814157747157754">Activer le moteur de recherche par défaut et autoriser les utilisateurs à modifier la liste des moteurs de recherche</translation>
 <translation id="8029201909194194377">Durée maximale des sessions autorisée pour les connexions d'accès à distance</translation>
 <translation id="8031651557770840616">Ne pas autoriser le fond d'écran par IA générative</translation>
-<translation id="8033450879690820321">Cette règle permet de désactiver temporairement le nouveau comportement des barres de défilement sélectionnables au clavier.
-
-Si cette règle est activée ou n'est pas configurée, les barres de défilement sans enfants sélectionnables peuvent être sélectionnés par défaut au clavier. En outre, les barres de défilement sont sélectionnables par clic et de manière programmatique par défaut.
-
-Lorsque cette règle est désactivée, les barres de défilement ne sont pas sélectionnables par défaut.
-
-Cette règle est une solution temporaire et sera supprimée dans M135.</translation>
 <translation id="8035570672225663428">Activez le modèle de recharge adaptative pour suspendre le processus de charge et allonger la durée de vie de la batterie.</translation>
 <translation id="8036284429246268475">Si cette règle est activée, les utilisateurs peuvent faire en sorte que <ph name="PRODUCT_NAME" /> contrôle si les noms d'utilisateur et les mots de passe saisis ont fait l'objet d'une fuite.
 
@@ -10022,6 +10030,19 @@ Si vous désactivez les optimisations JavaScript (en définissant la valeur de c
 Pour les formats d'URL spécifiques, cette règle peut être remplacée par les règles <ph name="JAVA_SCRIPT_OPTIMIZER_ALLOWED_FOR_SITES_POLICY_NAME" /> et <ph name="JAVA_SCRIPT_OPTIMIZER_BLOCKED_FOR_SITES_POLICY_NAME" />.
 
 Si cette règle n'est pas configurée, les optimisations JavaScript sont activées.</translation>
+<translation id="8670585636650044874">Cette règle définit si <ph name="PRODUCT_NAME" /> proposera ou non un algorithme d'accord de clé post-quantique dans TLS. Dans les versions futures, l'algorithme sera ML-KEM, une norme post-quantique du NIST. Initialement, l'algorithme était Kyber, une version antérieure de la norme. Cela permet aux serveurs compatibles de protéger le trafic utilisateur contre les déchiffrement ultérieurs par des ordinateurs quantiques.
+
+Si cette règle est activée, <ph name="PRODUCT_NAME" /> proposera un accord de clé post-quantique dans les connexions TLS. Dans ce cas, le trafic utilisateur est protégé contre les ordinateurs quantiques lorsqu'il communique avec des serveurs compatibles.
+
+Si cette règle est désactivée, <ph name="PRODUCT_NAME" /> ne proposera pas d'accord de clé post-quantique dans les connexions TLS. Dans ce cas, le trafic utilisateur ne sera pas protégé contre les ordinateurs quantiques.
+
+Si cette règle n'est pas configurée, <ph name="PRODUCT_NAME" /> suivra le processus de déploiement par défaut pour proposer un accord de clé post-quantique.
+
+La proposition d'un accord de clé post-quantique est rétrocompatible. Les serveurs TLS et le middleware de mise en réseau existants devraient ignorer la nouvelle option et continuer à sélectionner les options précédentes.
+
+Toutefois, les appareils qui n'implémentent pas correctement TLS peuvent dysfonctionner lorsqu'ils reçoivent la nouvelle option. Par exemple, ils peuvent se déconnecter en réponse à des options non reconnues ou à des messages plus volumineux qui en résultent. Ces appareils ne sont pas prêts pour le post-quantique et interfèrent avec la transition post-quantique d'une entreprise. Le cas échéant, les administrateurs doivent contacter le fournisseur pour obtenir une solution.
+
+Cette règle est une mesure temporaire qui sera supprimée après la version 141 de <ph name="PRODUCT_NAME" />. Elle peut être activée pour vous permettre de tester des problèmes, ou désactivée pendant la résolution des problèmes.</translation>
 <translation id="8671119576957984818">Activer le hub de partage du bureau</translation>
 <translation id="8671193325113134911">Activer la vérification stricte du type MIME pour les scripts de nœuds de calcul</translation>
 <translation id="8671303329680827168">Cette règle est obsolète (veuillez utiliser la règle <ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME" /> à la place).</translation>

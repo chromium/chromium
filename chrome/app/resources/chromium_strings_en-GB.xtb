@@ -227,6 +227,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="4434353761996769206">Installer error: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438870983368648614"><ph name="MANAGER" /> manages Chromium</translation>
 <translation id="4447409407328223819">About Chrome for testing</translation>
+<translation id="4470974262661801543">To use and save Chromium data in your Google Account, enter your passphrase</translation>
 <translation id="4493028449971051158">Startup error: Please run the installer as administrator.</translation>
 <translation id="4501471624619070934">Installation failed because access is restricted in this country.</translation>
 <translation id="4510853178268397146">This extension hasn't published privacy practices, such as how it collects and uses data. Chromium recommends that you remove it.</translation>

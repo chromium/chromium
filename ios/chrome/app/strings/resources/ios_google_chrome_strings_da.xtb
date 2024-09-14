@@ -96,6 +96,7 @@ Prøv at vente et par minutter, før du logger ud. Hvis du logger ud nu, slettes
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{Dette sker, når Chrome ikke bruges i {THRESHOLD} minut}one{Dette sker, når Chrome ikke bruges i {THRESHOLD} minut}other{Dette sker, når Chrome ikke bruges i {THRESHOLD} minutter}}</translation>
 <translation id="3367797402528056312">Afslut konfigurationen af Chrome</translation>
 <translation id="3371064404604898522">Angiv Chrome som standardbrowser</translation>
+<translation id="3399930248910934354">Åbn indstillingerne for Chrome</translation>
 <translation id="3472587960215700950">Chrome bruger Google Maps til at give dig rutevejledninger og lokale oplysninger om registrerede adresser.</translation>
 <translation id="3503014945441706099">Få også Udvidet beskyttet browsing til denne Chrome-profil</translation>
 <translation id="3522659714780527202">Aktivér synkronisering for at se dine faner på alle de enheder, hvor du bruger Chrome</translation>

@@ -350,6 +350,7 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="2653659639078652383">Pateikti</translation>
 <translation id="2656405586795711023">Žiniatinklio programos</translation>
 <translation id="2664252182805397291">Žr. svetaines</translation>
+<translation id="2666092431469916601">Į viršų</translation>
 <translation id="2669454659051515572">Visi šį įrenginį naudojantys asmenys gali peržiūrėti atsisiųstus failus</translation>
 <translation id="2702516483241149200">Naujiena: bendrinkite nuorodą, kuria galima slinkti į šį tekstą</translation>
 <translation id="2705073298859543115">Suvestinės kūrimas</translation>
@@ -451,6 +452,7 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="3072980200212375806">„<ph name="APP_NAME" />“ bus atidaryta naršyklėje „Chrome“. Tęsdami sutinkate su <ph name="BEGIN_LINK1" />„Google“ paslaugų teikimo sąlygomis<ph name="END_LINK1" /> ir <ph name="BEGIN_LINK2" />„Google Chrome“ bei „Chrome“ OS papildomomis paslaugų teikimo sąlygomis<ph name="END_LINK2" />. Taip pat taikoma <ph name="BEGIN_LINK3" />privatumo politika<ph name="END_LINK3" />.</translation>
 <translation id="3080525922482950719">Išsaugoję puslapius galėsite skaityti juos vėliau arba neprisijungę</translation>
 <translation id="3087218211037573995">Kai kurie tik šiame įrenginyje išsaugoti slaptažodžiai netrukus nebeveiks. Šiuos slaptažodžius galite perkelti į „Google“ slaptažodžių tvarkyklę.</translation>
+<translation id="3087734570205094154">Apačia</translation>
 <translation id="3091010850649238832">Rodyti iškarpinės turinį</translation>
 <translation id="3098745985164956033">Vaizdai siunčiami „Google“ norint patobulinti jums teikiamus aprašus</translation>
 <translation id="3114507951000454849">Skaitykite šiandienos naujienas <ph name="NEWS_ICON" /></translation>
@@ -688,7 +690,6 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="4355272626458588338">Galite grįžti į jums svarbų puslapį pridėję žymę</translation>
 <translation id="4357206670025518404">+ <ph name="COUNT_NUMBER" /></translation>
 <translation id="4359809482106103048">Saugumo apžvalga</translation>
-<translation id="4363222835916186793">Šio produkto įspėjimai išjungti</translation>
 <translation id="4378154925671717803">Telefonas</translation>
 <translation id="4380055775103003110">Jei ši problema išlieka, galite išbandyti kitus būdus, kaip tęsti veiklą <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="4384468725000734951">Atliekant paiešką naudojama „Sogou“</translation>
@@ -749,6 +750,7 @@ Adresu <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> gali 
 <translation id="4624065194742029982">„Chrome“ inkognito režimas</translation>
 <translation id="4634124774493850572">Naudoti slaptažodį</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 pažeistas slaptažodis}one{# pažeistas slaptažodis}few{# pažeisti slaptažodžiai}many{# pažeisto slaptažodžio}other{# pažeistų slaptažodžių}}</translation>
+<translation id="4642472735733036929">Kainų stebėjimas sustabdytas</translation>
 <translation id="4645146721047390964">Kai įjungtas inkognito režimas, svetainės negali naudoti slapukų, siekdamos sužinoti apie naršymo veiklą skirtingose svetainėse, pavyzdžiui, kad galėtų suasmeninti skelbimus. Funkcijos gali neveikti tam tikrose svetainėse.</translation>
 <translation id="4650364565596261010">Sistemos numatytasis nustatymas</translation>
 <translation id="465657074423018424">Saugaus naršymo funkcija apsaugo jus nuo apgaulingų svetainių. Jei ją išjungsite, būkite itin atsargūs naršydami, ypač prieš įvesdami slaptažodžius.</translation>
@@ -1092,6 +1094,7 @@ Adresu <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> gali 
 <translation id="6210748933810148297">Ne <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Peržiūrimas šis puslapis</translation>
 <translation id="6221633008163990886">Atrakinkite, kad galėtumėte eksportuoti slaptažodžius</translation>
+<translation id="6225572914528673855">Adreso juosta</translation>
 <translation id="6232535412751077445">Įgalinus funkciją „Nestebėti“, užklausa bus įtraukta į naršymo srautą. Poveikis priklauso nuo to, ar svetainė atsako į užklausą ir kaip užklausa interpretuojama.
 
 Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos jums skelbimus, nepagrįstus kitomis svetainėmis, kuriose lankėtės. Daugelis svetainių vis tiek rinks ir naudos jūsų naršymo duomenis, kad, pvz., patobulintų saugą, teiktų turinį, skelbimus bei rekomendacijas ir sugeneruotų ataskaitų teikimo statistiką.</translation>

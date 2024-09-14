@@ -1897,7 +1897,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4451135742916150903">Websitet kan anmode om tilladelse til at oprette forbindelse til HID-enheder</translation>
 <translation id="4451684391620232683">Tekst, der vises til brugeren:</translation>
 <translation id="4452328064229197696">Den adgangskode, du lige har brugt, er blevet lækket i forbindelse med et brud på datasikkerheden. For at beskytte dine konti anbefaler Google Adgangs­kode­admin­istrator, at du tjekker dine gemte adgangskoder.</translation>
-<translation id="4452957520362597816">Anmode om at installere webapps</translation>
 <translation id="4456937135469235202">Oplevelsesrejser</translation>
 <translation id="4464826014807964867">Websites med oplysninger fra din organisation</translation>
 <translation id="4466576951214254884">Studielån og finansiering af uddannelse</translation>
@@ -4018,6 +4017,7 @@ Yderligere oplysninger:
 <translation id="8381674639488873545">Disse opkrævninger kan være enkeltstående eller gentagne og fremgår muligvis ikke tydeligt. <ph name="BEGIN_LINK" />Vis alligevel<ph name="END_LINK" /></translation>
 <translation id="8382097126743287270">Automatisk fuld skærm</translation>
 <translation id="838307841291975086">Stationcars</translation>
+<translation id="8388286357548915205">Brug for alle gæster</translation>
 <translation id="8389532092404711541">Normalt <ph name="LOW_PRICE" /></translation>
 <translation id="8389940864052787379">Ombyggede biler og sportsvogne</translation>
 <translation id="8390725133630534698">Administratorpolitikken tillader ikke, at du deler fra <ph name="ORIGIN_NAME" /> til <ph name="VM_NAME" /></translation>

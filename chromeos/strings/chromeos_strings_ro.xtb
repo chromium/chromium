@@ -145,6 +145,7 @@
 <translation id="1651925268237749928">Ai selectat un album comun. Alte persoane pot să adauge sau să schimbe fotografii. Imaginea de fundal poate folosi fotografii care nu se află momentan în acest album.</translation>
 <translation id="1661512400125589646">Întrerupe</translation>
 <translation id="1661865805917886535">Unele informații despre cont și sistem pot fi trimise la Google. Folosim aceste informații pentru a rezolva problemele tehnice și pentru a îmbunătăți serviciile, în conformitate cu Politica de confidențialitate (<ph name="PRIVACYPOLICYURL" />) și Termenii și condițiile (<ph name="TERMSOFSERVICEURL" />). Pentru a solicita modificări ale conținutului, accesează Ajutor juridic (<ph name="LEGALHELPPAGEURL" />).</translation>
+<translation id="1662699081856352167">Rezumatul a fost generat</translation>
 <translation id="1662989795263954667">Oprită – Cerneală epuizată</translation>
 <translation id="1664796644829245314">Previzualizează <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">Rețea VPN încorporată</translation>
@@ -254,6 +255,7 @@
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2148716181193084225">Astăzi</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> fotografii</translation>
+<translation id="2154460308960858308">Șterge căutarea</translation>
 <translation id="2156072344042480449">Cele mai recente două solicitări ale tale. Poți să folosești aceste solicitări numai din această pagină.</translation>
 <translation id="2157660087437850958">selector de emoji</translation>
 <translation id="2157959690810728433">ÎN COADĂ</translation>
@@ -500,6 +502,7 @@
 <translation id="3557205324756024651">Identitate locală (opțională)</translation>
 <translation id="3565064564551103223">Adrese IP permise</translation>
 <translation id="3569407787324516067">Screensaver</translation>
+<translation id="3571184524500629183">Închide căutarea</translation>
 <translation id="3577473026931028326">A apărut o eroare. Încearcă din nou.</translation>
 <translation id="357889014807611375">Wi-Fi contorizat</translation>
 <translation id="3583278742022654445">Semnal slab. Apropie-te de sursa semnalului Wi-Fi.</translation>
@@ -539,6 +542,7 @@
 <translation id="3780740315729837296">Atribuie o tastă de pe tastatură</translation>
 <translation id="3784455785234192852">Blochează</translation>
 <translation id="3785643128701396311">grafică pixelată</translation>
+<translation id="3799381533888781854">DEZACTIVATĂ – Această setare este gestionată de administrator.</translation>
 <translation id="380097101658023925">comenzi pentru rgb</translation>
 <translation id="38114475217616659">Șterge tot istoricul</translation>
 <translation id="3820172043799983114">PIN nevalid.</translation>
@@ -742,6 +746,7 @@
 <translation id="4809927044794281115">Temă luminoasă</translation>
 <translation id="4813136279048157860">Imaginile mele</translation>
 <translation id="4813345808229079766">Conexiune</translation>
+<translation id="4824527342590024245">Momentan, nu este acceptată o transcriere cu mai puțin de <ph name="MIN_WORD_LENGTH" /> cuvinte</translation>
 <translation id="4830894019733815633">canion</translation>
 <translation id="4832079907277790330">Selectează dosarul în aplicația Fișiere...</translation>
 <translation id="4835901797422965222">Nu există rețele active</translation>
@@ -770,6 +775,7 @@
 <translation id="4921665434385737356">S-a încărcat cu <ph name="RATE" /> în <ph name="NUM_SECONDS" /> secunde.</translation>
 <translation id="4930320165497208503">Pentru a configura sau a actualiza o conexiune, accesează <ph name="BEGIN_LINK" />Setările<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Data</translation>
+<translation id="4946927805998996217">Se generează rezumatul</translation>
 <translation id="4950314376641394653">Firmware-ul <ph name="DEVICE_NAME" /> a fost actualizat la versiunea <ph name="VERSION" /></translation>
 <translation id="4950893758552030541">tunel printre copaci</translation>
 <translation id="4965661459364092269">Resetarea de siguranță s-a finalizat</translation>
@@ -830,6 +836,7 @@
 <translation id="5229104491259541281">Convertește <ph name="QUERY" /></translation>
 <translation id="5229344016299762883">Ieși din ecranul complet</translation>
 <translation id="5234764350956374838">Închide</translation>
+<translation id="5236119614998611749">Nu s-a putut genera rezumatul</translation>
 <translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{Administratorul a configurat <ph name="APP_NAME" /> să pornească automat de fiecare dată când te conectezi.}=2{Administratorul a configurat <ph name="APP_NAME" /> și încă o aplicație să pornească automat de fiecare dată când te conectezi.}few{Administratorul a configurat <ph name="APP_NAME" /> și încă # aplicații să pornească automat de fiecare dată când te conectezi.}other{Administratorul a configurat <ph name="APP_NAME" /> și încă # de aplicații să pornească automat de fiecare dată când te conectezi.}}</translation>
 <translation id="5248419081947706722">albastru</translation>
 <translation id="5252456968953390977">Roaming</translation>
@@ -945,6 +952,7 @@
 <translation id="5860033963881614850">Dezactivat</translation>
 <translation id="5860491529813859533">Activează</translation>
 <translation id="5876385649737594562">Activează modul pentru a selecta opțiuni</translation>
+<translation id="5877503382465267833">Întrerupe <ph name="RECORDING_NAME" /></translation>
 <translation id="588258955323874662">Ecran complet</translation>
 <translation id="5893975327266416093">Atinge o tastă de pe tastatură pentru a atribui</translation>
 <translation id="5895138241574237353">Reîncepe</translation>
@@ -1162,6 +1170,7 @@
 <translation id="6910312834584889076">Capacul scanerului este deschis. Închide capacul și încearcă din nou.</translation>
 <translation id="6910845598686542904">Creează modele ale vocilor detectate în înregistrare</translation>
 <translation id="6911383237894364323">Nu se poate conecta la serverele media</translation>
+<translation id="6927968682840110570">Numele înregistrării</translation>
 <translation id="6930242544192836755">Durată</translation>
 <translation id="6930597342185648547">Despre fundal</translation>
 <translation id="6939667434404433010">Caută numele înregistrării</translation>
@@ -1274,6 +1283,7 @@
 <translation id="7378170410161264436">Recorder poate să creeze transcrieri pentru înregistrări cu vorbire.
 Descarcă modelul de transcriere (până la 100 MB) pentru a obține aceste transcrieri.</translation>
 <translation id="7384004438856720753">palat</translation>
+<translation id="7388345524791662148">Mai multe opțiuni pentru <ph name="RECORDING_NAME" /></translation>
 <translation id="7388959671917308825">Touchpad încorporat</translation>
 <translation id="7397270852490618635">Dezactivează tema luminoasă</translation>
 <translation id="7401543881546089382">Ștergeți comanda rapidă</translation>
@@ -1295,6 +1305,7 @@ Descarcă modelul de transcriere (până la 100 MB) pentru a obține aceste tran
 <translation id="7513770521371759388">jos</translation>
 <translation id="7514365320538308">Descarcă</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7519481256236810334">Redă <ph name="RECORDING_NAME" /></translation>
 <translation id="7525067979554623046">Creați</translation>
 <translation id="7528507600602050979">Conținutul de ajutor nu este disponibil</translation>
 <translation id="7535791657097741517">Activează tema luminoasă</translation>
@@ -1371,6 +1382,7 @@ Descarcă modelul de transcriere (până la 100 MB) pentru a obține aceste tran
 <translation id="7897043345768902965">trotuar</translation>
 <translation id="7902285181767404769">Dezactivează sunetul notificărilor în timpul înregistrării</translation>
 <translation id="7903695460270716054">Alege imagini recomandate</translation>
+<translation id="7912005977894000746">Înapoi la pagina principală</translation>
 <translation id="7915220255123750251">Gestionează setările APN ale rețelei. APN-urile stabilesc o conexiune între o rețea de date mobile și internet.</translation>
 <translation id="7936303884198020182">Nu s-au găsit servere de nume</translation>
 <translation id="7942349550061667556">Roșu</translation>
@@ -1645,8 +1657,6 @@ Descarcă modelul de transcriere (până la 100 MB) pentru a obține aceste tran
 <translation id="951780398843003443">Compară vocile în înregistrare, astfel încât transcrierea să reflecte ce a spus fiecare vorbitor și când</translation>
 <translation id="952992212772159698">Neactivat</translation>
 <translation id="95718197892796296">argilă</translation>
-<translation id="959792926760890141">Resetarea de siguranță dezactivează extensiile browserului Chrome și resetează rețeaua și alte setări la valorile prestabilite sigure.
-          Motorul de căutare prestabilit va fi resetat, dar filele, fișierele, cookie-urile și istoricul nu vor fi modificate.</translation>
 <translation id="960719561871045870">Cod operator</translation>
 <translation id="965918541715156800">galben și verde-albăstrui</translation>
 <translation id="966787709310836684">meniu</translation>

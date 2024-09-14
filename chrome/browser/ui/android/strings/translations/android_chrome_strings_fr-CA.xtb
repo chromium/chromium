@@ -350,6 +350,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="2653659639078652383">Envoyer</translation>
 <translation id="2656405586795711023">Applications Web</translation>
 <translation id="2664252182805397291">Afficher les sites</translation>
+<translation id="2666092431469916601">Haut</translation>
 <translation id="2669454659051515572">Toute personne utilisant cet appareil peut voir les fichiers téléchargés</translation>
 <translation id="2702516483241149200">Nouveauté : communiquez un lien qui fait défiler l'écran jusqu'à ce texte</translation>
 <translation id="2705073298859543115">Créer un résumé</translation>
@@ -451,6 +452,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="3072980200212375806"><ph name="APP_NAME" /> s'ouvrira dans Chrome. En continuant, vous acceptez les <ph name="BEGIN_LINK1" />conditions d'utilisation de Google<ph name="END_LINK1" /> et les <ph name="BEGIN_LINK2" />conditions d'utilisation supplémentaires de Google Chrome et de Chrome OS<ph name="END_LINK2" />. La <ph name="BEGIN_LINK3" />politique de confidentialité<ph name="END_LINK3" /> s'applique également.</translation>
 <translation id="3080525922482950719">Vous pouvez enregistrer des pages afin de les lire plus tard ou hors ligne</translation>
 <translation id="3087218211037573995">Certains mots de passe enregistrés uniquement sur cet appareil cesseront bientôt de fonctionner. Vous pouvez transférer ces mots de passe vers le gestionnaire de mots de passe Google.</translation>
+<translation id="3087734570205094154">Bas</translation>
 <translation id="3091010850649238832">Afficher le contenu du presse-papier</translation>
 <translation id="3098745985164956033">Certaines images sont envoyées à Google afin d'améliorer les descriptions pour vous</translation>
 <translation id="3114507951000454849">Actualités du jour <ph name="NEWS_ICON" /></translation>
@@ -688,7 +690,6 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="4355272626458588338">Vous pouvez revenir à une page importante pour vous en ajoutant un favori</translation>
 <translation id="4357206670025518404">+<ph name="COUNT_NUMBER" /></translation>
 <translation id="4359809482106103048">Aperçu de la sécurité</translation>
-<translation id="4363222835916186793">Les alertes pour ce produit ont été désactivées</translation>
 <translation id="4378154925671717803">Numéro de téléphone</translation>
 <translation id="4380055775103003110">Si ce problème persiste, vous pouvez essayer d'autres solutions pour continuer sur <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="4384468725000734951">Sogou est utilisé pour la recherche</translation>
@@ -749,6 +750,7 @@ D'autres formes d'historique de navigation, telles que les recherches et l'activ
 <translation id="4624065194742029982">Navigation privée de Chrome</translation>
 <translation id="4634124774493850572">Utiliser le mot de passe</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 mot de passe compromis}one{# mot de passe compromis}other{# mots de passe compromis}}</translation>
+<translation id="4642472735733036929">Suivi des prix arrêté</translation>
 <translation id="4645146721047390964">Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utiliser vos témoins pour voir votre activité de navigation sur différents sites (par exemple, pour personnaliser les annonces). Les fonctionnalités sur certains sites peuvent ne pas fonctionner.</translation>
 <translation id="4650364565596261010">Paramètres par défaut</translation>
 <translation id="465657074423018424">La navigation sécurisée vous protège contre les sites Web trompeurs. Si vous la désactivez, faites bien attention durant la navigation, surtout lorsque vous entrez des mots de passe.</translation>
@@ -1092,6 +1094,7 @@ D'autres formes d'historique de navigation, telles que les recherches et l'activ
 <translation id="6210748933810148297">Pas <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Affichage de l'aperçu de cette page</translation>
 <translation id="6221633008163990886">Déverrouillez pour exporter vos mots de passe</translation>
+<translation id="6225572914528673855">Barre d'adresse</translation>
 <translation id="6232535412751077445">Si vous activez la fonction « Ne pas faire le suivi », une demande sera incluse dans le trafic lié à votre navigation. Les résultats obtenus dépendent de la réponse du site (s'il répond ou non) et de la manière dont il interprète la demande.
 
 Par exemple, certains sites Web peuvent répondre à cette demande en diffusant des annonces qui ne sont pas déterminées en fonction des autres sites Web que vous avez consultés. Toutefois, nombre d'entre eux recueillent et utilisent vos données de navigation afin, par exemple, d'améliorer la sécurité du contenu, les annonces et des recommandations, ou encore pour générer des rapports statistiques.</translation>

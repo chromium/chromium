@@ -153,6 +153,7 @@
 <translation id="1672499492233627739">網路攝影機視訊畫面</translation>
 <translation id="1676557873873341166">正在錄影</translation>
 <translation id="1684279041537802716">強調色</translation>
+<translation id="1697278726914783200">錄製</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS 解析器存在</translation>
 <translation id="1708602061922134366">Google 藍</translation>
@@ -703,6 +704,7 @@
 <translation id="458794348635939462">無法解析所有主機</translation>
 <translation id="4593212453765072419">需要 Proxy 驗證</translation>
 <translation id="4594021849294327751">建立轉錄稿</translation>
+<translation id="4602266091140407479">麥克風</translation>
 <translation id="4607282946861182308">無法製作這類圖片，請試試其他提示。</translation>
 <translation id="4609350030397390689">鍵盤亮度調低</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />，<ph name="PRINTER_NAME" />，<ph name="CREATION_TIME" />，已列印 <ph name="PRINTED_PAGE_NUMBER" /> 頁 (共 <ph name="TOTAL_PAGE_NUMBER" /> 頁)。按下 Enter 鍵即可取消列印工作。</translation>
@@ -1011,6 +1013,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6188737759358894319">建立時間：<ph name="DATE" /></translation>
 <translation id="6189418609903030344">電池電量會隨使用時間而減少</translation>
+<translation id="6189987971574353264">播放</translation>
 <translation id="6191293864534840972">名稱伺服器格式錯誤</translation>
 <translation id="6196607555925437199">重新建立</translation>
 <translation id="6205145102504628069">雲朵動態</translation>
@@ -1642,8 +1645,6 @@
 <translation id="951780398843003443">比較整段錄音中的語音，並在轉錄稿中標出每位講者所說的內容和說話時間</translation>
 <translation id="952992212772159698">未啟用</translation>
 <translation id="95718197892796296">黏土</translation>
-<translation id="959792926760890141">「安全重設」會關閉 Chrome 瀏覽器擴充功能，並將網路和其他設定重設為安全預設值。
-          這項功能會重設預設搜尋引擎，但不會變更分頁、檔案、Cookie 和歷史記錄。</translation>
 <translation id="960719561871045870">電信業者代碼</translation>
 <translation id="965918541715156800">黃色和藍綠色</translation>
 <translation id="966787709310836684">選單</translation>

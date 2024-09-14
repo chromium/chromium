@@ -712,6 +712,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2265356434276802347">Essa política não pode ter mais que <ph name="MAX_ITEMS_LIMIT" /> entradas em destaque.</translation>
 <translation id="2267047181501709434">Verificando sua identidade…</translation>
 <translation id="2268044343513325586">Refinar</translation>
+<translation id="2268966938956566076">Fazer upload em <ph name="MINUTES" />min</translation>
 <translation id="2270484714375784793">Número do telefone</translation>
 <translation id="2276057643614339130">Base da impressão</translation>
 <translation id="2277103315734023688">Avançar</translation>
@@ -1110,6 +1111,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3062655045399308513">Excluir dados de navegação…</translation>
 <translation id="306573536155379004">Jogo iniciado.</translation>
 <translation id="3067505415088964188">Preço baixo</translation>
+<translation id="3068118691172921711">O upload do arquivo para o <ph name="CLOUD_PROVIDER" /> vai começar em 1 minuto</translation>
 <translation id="3076865167425975822">Sistemas operacionais</translation>
 <translation id="3080254622891793721">Gráfico</translation>
 <translation id="3082007635241601060">Autorize que o Google use seus carrinhos para encontrar descontos personalizados, quando disponíveis</translation>
@@ -1121,6 +1123,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3099619114405539473">Usar as câmeras disponíveis (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="3102312643185441063">Poupança</translation>
 <translation id="3103188521861412364">Ações e títulos</translation>
+<translation id="3103535543639438037">Comparar produtos semelhantes lado a lado</translation>
 <translation id="3105172416063519923">Código do recurso:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />verificar a configuração de DNS seguro<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Bandeja do meio</translation>
@@ -1298,6 +1301,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3407789382767355356">login de terceiros</translation>
 <translation id="340924996148642843">A comparação não está disponível no momento</translation>
 <translation id="3409896703495473338">Gerenciar configurações de segurança</translation>
+<translation id="3411091017011773343">Fazer upload em <ph name="HOURS" />h</translation>
 <translation id="3414275587143250384">Computação em nuvem e distribuída</translation>
 <translation id="3414952576877147120">Tamanho:</translation>
 <translation id="341513675006332771">Botão "Iniciar o jogo do Dinossauro do Chrome". Ative para jogar no Chrome.</translation>
@@ -1893,7 +1897,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4451135742916150903">Pode pedir para se conectar a dispositivos HID</translation>
 <translation id="4451684391620232683">Texto apresentado ao usuário:</translation>
 <translation id="4452328064229197696">A senha que você usou foi encontrada em uma violação de dados. Para proteger suas contas, o Gerenciador de senhas do Google recomenda que você revise suas senhas salvas.</translation>
-<translation id="4452957520362597816">Pedir para instalar apps da Web</translation>
 <translation id="4456937135469235202">Viagens de aventura</translation>
 <translation id="4464826014807964867">Sites com informações da sua organização</translation>
 <translation id="4466576951214254884">Empréstimos estudantis e financiamento universitário</translation>
@@ -1965,6 +1968,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4628678854894591460">Ofertas de férias</translation>
 <translation id="4628948037717959914">Foto</translation>
 <translation id="4629370161347991046">A4x6</translation>
+<translation id="462989688138616749">O upload do arquivo para o <ph name="CLOUD_PROVIDER" /> vai começar em <ph name="HOURS" /> horas</translation>
 <translation id="4631649115723685955">Reembolso vinculado</translation>
 <translation id="4631881646528206880">Registro de cartão virtual</translation>
 <translation id="4635278307999235413">Enviando dados ao Admin Console</translation>
@@ -2085,6 +2089,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="484988093836683706">Usar o desbloqueio do dispositivo</translation>
 <translation id="4850886885716139402">Ver</translation>
 <translation id="4854853140771946034">Criar rapidamente uma nova nota no Google Keep</translation>
+<translation id="4855395119669662878">O administrador vai começar a fazer upload dos seus arquivos para o <ph name="CLOUD_PROVIDER" /> em <ph name="DATE_TIME" />. Mantenha o dispositivo conectado até que o upload do arquivo seja concluído. Durante o upload, só será possível ler arquivos locais.</translation>
 <translation id="485902285759009870">Confirmando código...</translation>
 <translation id="4860260582253463350">Para continuar no YouTube, precisamos confirmar sua identidade. Vamos usar as configurações que seu familiar ou responsável definiu no Family Link.</translation>
 <translation id="4864406669374375262">String da versão copiada para a área de transferência</translation>
@@ -2140,6 +2145,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4933468175699107356">Clique com o botão direito do mouse para preencher automaticamente as informações salvas, como seu nome ou endereço, em qualquer formulário</translation>
 <translation id="4934780484581617878">Gerenciamento de janelas</translation>
 <translation id="4936134414789135531">Não foi possível localizar o valor de <ph name="VALUE_NAME" /> inserido.</translation>
+<translation id="4936573216809994970">O upload do arquivo para o <ph name="CLOUD_PROVIDER" /> vai começar em 1 hora</translation>
 <translation id="4936675324097895694">Finanças</translation>
 <translation id="4943620199112228840">Usar os microfones</translation>
 <translation id="4943872375798546930">Nenhum resultado</translation>
@@ -2313,6 +2319,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5269225904387178860">Perfuração quádrupla na parte inferior</translation>
 <translation id="5271381225185906340">"<ph name="DATA_CONTROLS_ATTRIBUTE" />" não é uma condição com suporte a "<ph name="DATA_CONTROLS_RESTRICTION" />"</translation>
 <translation id="5273658854610202413">Aviso: esta política não foi mesclada conforme especificado na PolicyDictionaryMultipleSourceMergeList porque ela não faz parte das políticas de dicionário que podem ser mescladas.</translation>
+<translation id="5278778426231952189">Fazer upload agora</translation>
 <translation id="5279286380302340275">Gerenciar downloads</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">Propriedades do documento</translation>
@@ -3816,6 +3823,7 @@ Mais detalhes:
 <translation id="8030729864112325446">Ensino técnico</translation>
 <translation id="8032546467100845887">Transparência</translation>
 <translation id="8035152190676905274">Caneta</translation>
+<translation id="8035264638816032066">Os títulos das guias e URLs das páginas que você adiciona à tabela são enviados ao Google</translation>
 <translation id="8037117624646282037">Quem usou o dispositivo recentemente</translation>
 <translation id="8037357227543935929">Perguntar (padrão)</translation>
 <translation id="803771048473350947">Arquivo</translation>
@@ -4009,6 +4017,7 @@ Mais detalhes:
 <translation id="8381674639488873545">Essas cobranças podem ser únicas ou recorrentes e talvez não sejam óbvias. <ph name="BEGIN_LINK" />Mostrar mesmo assim<ph name="END_LINK" /></translation>
 <translation id="8382097126743287270">Tela cheia automática</translation>
 <translation id="838307841291975086">Peruas</translation>
+<translation id="8388286357548915205">Usar para todos os visitantes</translation>
 <translation id="8389532092404711541">Normalmente: <ph name="LOW_PRICE" /></translation>
 <translation id="8389940864052787379">Veículos personalizados e de alta performance</translation>
 <translation id="8390725133630534698">A política do administrador bloqueou a opção de compartilhar conteúdo de <ph name="ORIGIN_NAME" /> para <ph name="VM_NAME" /></translation>
@@ -4115,6 +4124,7 @@ Mais detalhes:
 <translation id="8564466070529550495">O cartão virtual não está disponível no momento. Tente de novo mais tarde.</translation>
 <translation id="8564985650692024650">O Chromium recomenda redefinir sua senha de <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> se você a reutilizou em outros sites.</translation>
 <translation id="8570895683659698018">Hobbies e lazer</translation>
+<translation id="8572792595597115856">Válido até <ph name="DATE" /></translation>
 <translation id="8574841453995331336">Geladeiras e freezers</translation>
 <translation id="8577192028579836704">Todas as opções normalmente <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">Cartão virtual indisponível</translation>
@@ -4137,6 +4147,7 @@ Mais detalhes:
 <translation id="8617269623452051934">uso do seu dispositivo</translation>
 <translation id="861775596732816396">Tamanho 4</translation>
 <translation id="8620276786115098679">Envelope Kaku 7</translation>
+<translation id="8622864575115813231">Entrando em contato com sua instituição financeira…</translation>
 <translation id="8623885649813806493">Não achamos uma senha. Mostrar todas as senhas salvas.</translation>
 <translation id="8624354461147303341">Ver descontos</translation>
 <translation id="8634957317623797170">54 x 86 mm</translation>
@@ -4437,6 +4448,7 @@ incomuns e incorretas. Isso pode acontecer quando um invasor está fingindo ser 
 <translation id="9192361865877479444">Metal (fosco)</translation>
 <translation id="9192947025498305328">Beleza consciente</translation>
 <translation id="9199905725844810519">A impressão foi bloqueada</translation>
+<translation id="9204089334327209740">Depois que o upload for concluído, você poderá modificar seus arquivos no <ph name="CLOUD_PROVIDER" />. O armazenamento local, incluindo os arquivos na lixeira, será removido automaticamente.</translation>
 <translation id="9205078245616868884">Seus dados são criptografados com sua senha longa de sincronização. Informe-a para começar a sincronização.</translation>
 <translation id="920643408853370361">Seguro de viagem</translation>
 <translation id="9207861905230894330">Falha ao adicionar artigo.</translation>
@@ -4457,6 +4469,7 @@ incomuns e incorretas. Isso pode acontecer quando um invasor está fingindo ser 
 <translation id="937804173274050966"><ph name="BEGIN_BOLD" />Quais dados são usados<ph name="END_BOLD" />: seus temas de anúncios se baseiam no histórico de navegação recente, uma lista de sites que você visitou usando o Chrome neste dispositivo.</translation>
 <translation id="937885410143139026">Dados enviados ao Admin Console</translation>
 <translation id="939736085109172342">Nova pasta</translation>
+<translation id="940524522703752213">O upload do arquivo para o <ph name="CLOUD_PROVIDER" /> vai começar em <ph name="MINUTES" /> minutos</translation>
 <translation id="944540589955480312">Usar senhas e chaves de acesso salvas na sua Conta do Google</translation>
 <translation id="945646848072568856">O Chrome impede que os sites usem cookies de terceiros para rastrear você durante a navegação.</translation>
 <translation id="945855313015696284">Verifique as informações abaixo e exclua todos os cartões inválidos</translation>

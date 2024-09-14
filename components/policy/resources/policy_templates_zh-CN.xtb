@@ -402,6 +402,7 @@ First-Party Set 中的所有网站都必须是采用 HTTPS 协议的可注册网
       网址格式不能与 <ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" /> 冲突。如果某个网址与这两项政策都相符，系统将不会优先应用任一项政策。
 
       如需详细了解有效的<ph name="URL_LABEL" />格式，请访问 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。<ph name="WILDCARD_VALUE" /> 不是此政策可接受的值。</translation>
+<translation id="1309259005392595570">对 TLS 停用后量子密钥协议</translation>
 <translation id="1309465583050255779">如果 <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> 已开启，您便可通过设置 <ph name="DEFAULT_SEARCH_PROVIDER_NAME_POLICY_NAME" /> 来指定默认搜索服务提供商的名称。
 
       如果您不设置 <ph name="DEFAULT_SEARCH_PROVIDER_NAME_POLICY_NAME" />，系统将使用由搜索网址指定的主机名。</translation>
@@ -4840,6 +4841,7 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 只有当 <ph name="MS_WIN_NAME" /> 实例已加入 <ph name="MS_AD_NAME" /> 网域、已加入 <ph name="MS_AAD_NAME" /> 或已注册 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />时，才能在该实例上强制安装并非来自 Chrome 应用商店的应用和扩展程序。
 
 只有当 <ph name="MAC_OS_NAME" /> 实例是通过 MDM 进行管理、已通过 MCX 加入网域或已注册 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />时，才能在该实例上强制安装并非来自 Chrome 应用商店的应用和扩展程序。</translation>
+<translation id="4737832614429402441">对 TLS 使用后量子密钥协议的默认值</translation>
 <translation id="4739596156184678950">允许直接将文件保存到 <ph name="GOOGLE_DRIVE_NAME" /></translation>
 <translation id="4742973303930120836">限制背景图片打印模式</translation>
 <translation id="4745232963710538589">启用数据洞见扩展程序以报告使用情况指标</translation>
@@ -6237,9 +6239,6 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 <translation id="5776485039795852974">每次网站尝试显示桌面通知时都询问</translation>
 <translation id="5783009211970309878">打印页眉和页脚</translation>
 <translation id="5790763087505467169">减少受管理访客会话的自动启动通知</translation>
-<translation id="5793378951267871906">如果此政策已启用，<ph name="PRODUCT_OS_NAME" /> 会自动在设备级别保存有效的自助服务终端 Wi-Fi 凭据：设备上的任何其他自助服务终端应用或用户都可以使用该有效 Wi-Fi。
-如果此政策未设置或已停用，自助服务终端的有效 Wi-Fi 凭据将存储在自助服务终端级别：在自助服务终端应用中配置的 Wi-Fi 只能在该自助服务终端应用中使用。
-不建议使用此政策，只有在没有其他可用选项时才应使用此政策。</translation>
 <translation id="5800329278018669527">处于离线状态时不弹出网络配置提示</translation>
 <translation id="5802931736499687181">停用加密报告管道</translation>
 <translation id="5803715507113569033">此政策让管理员能够配置 <ph name="MICROSOFT_ONE_DRIVE_NAME" /> 的装载方式。
@@ -6639,6 +6638,21 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 如果此政策未设置，或者列表不含任何有效的图片引用，那么无论 <ph name="SCREENSAVER_LOCK_SCREEN_ENABLED_POLICY_NAME" /> 政策中设置了什么值，系统都不会为锁定屏幕显示屏保。</translation>
 <translation id="6135398260575578389">“安全浏览”功能会处于开启状态且会在增强模式下运行。此模式可提高安全性，但需与 Google 分享更多浏览信息。</translation>
 <translation id="6135552820180449830">crosh（自 99 版起受支持）</translation>
+<translation id="6136179371737299503">此设备级政策用于配置 <ph name="PRODUCT_OS_NAME" /> 是否在 TLS 中提供后量子密钥协议算法。在未来版本中，该算法将采用 NIST 后量子标准 ML-KEM。最初的算法为 Kyber，这是该标准的早期草案迭代版本。这让支持该算法的服务器能够保护用户流量，防止以后被量子计算机解密。
+
+如果此政策已启用，<ph name="PRODUCT_OS_NAME" /> 将在 TLS 连接中提供后量子密钥协议。系统将在与兼容的服务器通信时保护用户流量免遭量子计算机解密。
+
+如果此政策已停用，<ph name="PRODUCT_OS_NAME" /> 将不会在 TLS 连接中提供后量子密钥协议。系统将无法防止量子计算机对用户流量进行解密。
+
+如果此政策未设置，<ph name="PRODUCT_OS_NAME" /> 将会按照默认发布流程提供后量子密钥协议。
+
+提供 Kyber 可实现向后兼容。现有的 TLS 服务器和网络中间件预计会忽略这个新选项，并继续选择以前的选项。
+
+但是，在提供新选项后，未正确实现 TLS 的设备可能会发生故障。例如，当遇到无法识别的选项或产生较长的消息时，这些设备可能会断开连接。这些设备尚不支持后量子密钥协议，会妨碍企业改用该算法。如果遇到这种情况，管理员应联系供应商以寻求解决方案。
+
+此政策只是一项暂时性措施，会在 <ph name="PRODUCT_OS_NAME" /> 141 版之后的某个时间移除。您可启用此政策以测试是否存在问题，并在解决问题期间停用此政策。
+
+如果同时设置了此政策和 PostQuantumKeyAgreementEnabled 政策，则此政策的优先级更高。</translation>
 <translation id="6138636318340561140">实时查看网址的安全浏览状态</translation>
 <translation id="6141402445226505817">一律使用粗略式时区检测方式</translation>
 <translation id="6141944295566709543">允许用户在设备锁定时播放媒体</translation>
@@ -9192,13 +9206,6 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="8028814157747157754">启用默认搜索服务提供商并允许用户修改搜索服务提供商列表</translation>
 <translation id="8029201909194194377">远程访问连接可达到的会话时长上限</translation>
 <translation id="8031651557770840616">不允许使用生成式 AI 壁纸</translation>
-<translation id="8033450879690820321">此政策针对新的键盘可聚焦滚动条行为提供了一项临时的选择停用机制。
-
-如果此政策已启用或未设置，默认情况下，没有可聚焦子项的滚动条可通过键盘聚焦。此外，默认情况下，滚动条可点击聚焦和程序化地聚焦。
-
-如果已停用此政策，默认情况下，滚动条不可聚焦。
-
-此政策是一种临时的变通方案，将在 M135 中移除。</translation>
 <translation id="8035570672225663428">启用“自适应充电”模式以暂缓充电进程，进而延长电池寿命</translation>
 <translation id="8036284429246268475">如果此政策已启用，用户便可让 <ph name="PRODUCT_NAME" /> 检查所输入的用户名和密码是否已泄露。
 
@@ -9985,6 +9992,19 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 您可以使用 <ph name="JAVA_SCRIPT_OPTIMIZER_ALLOWED_FOR_SITES_POLICY_NAME" /> 和 <ph name="JAVA_SCRIPT_OPTIMIZER_BLOCKED_FOR_SITES_POLICY_NAME" /> 政策为特定网址格式覆盖此政策。
 
 如果您未设置此政策，系统会启用 JavaScript 优化功能。</translation>
+<translation id="8670585636650044874">此政策用于配置 <ph name="PRODUCT_NAME" /> 是否在 TLS 中提供后量子密钥协议算法。在未来版本中，该算法将采用 NIST 后量子标准 ML-KEM。最初的算法为 Kyber，这是该标准的早期草案迭代版本。这让支持该算法的服务器能够保护用户流量，防止以后被量子计算机解密。
+
+如果此政策已启用，<ph name="PRODUCT_NAME" /> 将在 TLS 连接中提供后量子密钥协议。系统将在与兼容的服务器通信时保护用户流量免遭量子计算机解密。
+
+如果此政策已停用，<ph name="PRODUCT_NAME" /> 将不会在 TLS 连接中提供后量子密钥协议。系统将无法防止量子计算机对用户流量进行解密。
+
+如果此政策未设置，<ph name="PRODUCT_NAME" /> 将会按照默认发布流程提供后量子密钥协议。
+
+提供后量子密钥协议可实现向后兼容。现有的 TLS 服务器和网络中间件预计会忽略这个新选项，并继续选择以前的选项。
+
+但是，在提供新选项后，未正确实现 TLS 的设备可能会发生故障。例如，当遇到无法识别的选项或产生较长的消息时，这些设备可能会断开连接。这些设备尚不支持后量子密钥协议，会妨碍企业改用该算法。如果遇到这种情况，管理员应联系供应商以寻求解决方案。
+
+此政策只是一项暂时性措施，会在 <ph name="PRODUCT_NAME" /> 141 版之后的某个时间移除。您可启用此政策以测试是否存在问题，并在解决问题期间停用此政策。</translation>
 <translation id="8671119576957984818">启用桌面分享中心</translation>
 <translation id="8671193325113134911">为工作器脚本启用严格的 MIME 类型检查</translation>
 <translation id="8671303329680827168">此政策已被弃用，请改用“<ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME" />”政策。</translation>

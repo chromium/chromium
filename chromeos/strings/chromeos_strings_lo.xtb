@@ -145,6 +145,7 @@
 <translation id="1651925268237749928">ທ່ານໄດ້ເລືອກອະລະບ້ຳແບ່ງປັນ. ຄົນອື່ນໆສາມາດເພີ່ມ ຫຼື ປ່ຽນຮູບພາບໄດ້. ຮູບພື້ນຫຼັງຂອງທ່ານອາດໃຊ້ຮູບພາບທີ່ບໍ່ໄດ້ຢູ່ໃນອະລະບ້ຳນີ້ໃນປັດຈຸບັນ.</translation>
 <translation id="1661512400125589646">ຢຸດຊົ່ວຄາວ</translation>
 <translation id="1661865805917886535">ອາດມີການສົ່ງຂໍ້ມູນບັນຊີ ແລະ ຂໍ້ມູນລະບົບບາງຢ່າງໄປຫາ Google. ພວກເຮົາໃຊ້ຂໍ້ມູນນີ້ເພື່ອຊ່ວຍແກ້ໄຂບັນຫາດ້ານເທັກນິກ ແລະ ປັບປຸງບໍລິການຂອງພວກເຮົາໃຫ້ດີຂຶ້ນ, ໂດຍເປັນໄປຕາມນະໂຍບາຍຄວາມເປັນສ່ວນຕົວ (<ph name="PRIVACYPOLICYURL" />) ແລະ ຂໍ້ກຳນົດບໍລິການຂອງພວກເຮົາ (<ph name="TERMSOFSERVICEURL" />). ເພື່ອສົ່ງຄຳຮ້ອງຂໍປ່ຽນແປງເນື້ອຫາ, ໃຫ້ເຂົ້າໄປການຊ່ວຍເຫຼືອທາງກົດໝາຍ (<ph name="LEGALHELPPAGEURL" />).</translation>
+<translation id="1662699081856352167">ສ້າງຂໍ້ມູນສະຫຼຸບສຳເລັດແລ້ວ</translation>
 <translation id="1662989795263954667">ຢຸດພິມ, ນໍ້າໝຶກໝົດ</translation>
 <translation id="1664796644829245314">ສະແດງຕົວຢ່າງ <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">VPN ໃນຕົວ</translation>
@@ -539,6 +540,7 @@
 <translation id="3780740315729837296">ກຳນົດປຸ່ມແປ້ນພິມ</translation>
 <translation id="3784455785234192852">ລັອກ</translation>
 <translation id="3785643128701396311">ສິນລະປະພິກເຊວ</translation>
+<translation id="3799381533888781854">ປິດ - ການຕັ້ງຄ່ານີ້ໄດ້ຮັບການຈັດການໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ.</translation>
 <translation id="380097101658023925">ການຄວບຄຸມ RGB</translation>
 <translation id="38114475217616659">ລຶບລ້າງປະຫວັດທັງໝົດ</translation>
 <translation id="3820172043799983114">PIN ບໍ່ຖືກຕ້ອງ.</translation>
@@ -742,6 +744,7 @@
 <translation id="4809927044794281115">ຮູບແບບສີສັນແຈ້ງ</translation>
 <translation id="4813136279048157860">ຮູບພາບຂອງຂ້ອຍ</translation>
 <translation id="4813345808229079766">ການ​ເຊື່ອມ​ຕໍ່</translation>
+<translation id="4824527342590024245">ຕອນນີ້ລະບົບຍັງບໍ່ຮອງຮັບການຖອດຂໍ້ຄວາມຈາກສຽງທີ່ມີຈຳນວນຄຳໜ້ອຍກວ່າ <ph name="MIN_WORD_LENGTH" /> ຄຳ</translation>
 <translation id="4830894019733815633">ແຄນຢອນ</translation>
 <translation id="4832079907277790330">ເລືອກໂຟນເດີໃນແອັບ Files...</translation>
 <translation id="4835901797422965222">ບໍ່ມີເຄືອຂ່າຍທີ່ເປີດນຳໃຊ້ຢູ່</translation>
@@ -770,6 +773,7 @@
 <translation id="4921665434385737356">ສາກ <ph name="RATE" /> ໃນ <ph name="NUM_SECONDS" /> ວິນາທີ.</translation>
 <translation id="4930320165497208503">ເພື່ອຕັ້ງຄ່າ ຫຼື ອັບເດດການເຊື່ອມຕໍ່, ໃຫ້ເຂົ້າໄປຫາ <ph name="BEGIN_LINK" />ການຕັ້ງຄ່າ<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">ວັນ​ທີ</translation>
+<translation id="4946927805998996217">ກຳລັງສ້າງຂໍ້ມູນສະຫຼຸບ</translation>
 <translation id="4950314376641394653">ອັບເດດເຟີມແວ <ph name="DEVICE_NAME" /> ເປັນເວີຊັນ <ph name="VERSION" /> ແລ້ວ</translation>
 <translation id="4950893758552030541">ອຸໂມງຕົ້ນໄມ້</translation>
 <translation id="4965661459364092269">ຣີເຊັດຄວາມປອດໄພສຳເລັດແລ້ວ</translation>
@@ -830,6 +834,7 @@
 <translation id="5229104491259541281">ປ່ຽນແປງ "<ph name="QUERY" />"</translation>
 <translation id="5229344016299762883">ອອກຈາກໂໝດເຕັມໜ້າຈໍ</translation>
 <translation id="5234764350956374838">ປ່ອຍໄປ</translation>
+<translation id="5236119614998611749">ສ້າງຂໍ້ມູນສະຫຼຸບບໍ່ສຳເລັດ</translation>
 <translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານໄດ້ຕັ້ງ "<ph name="APP_NAME" />" ໃຫ້ເລີ່ມຕົ້ນໂດຍອັດຕະໂນມັດທຸກເທື່ອທີ່ທ່ານເຂົ້າສູ່ລະບົບ.}=2{ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານໄດ້ຕັ້ງ "<ph name="APP_NAME" />" ແລະ ອີກ 1 ແອັບໃຫ້ເລີ່ມຕົ້ນໂດຍອັດຕະໂນມັດທຸກເທື່ອທີ່ທ່ານເຂົ້າສູ່ລະບົບ.}other{ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານໄດ້ຕັ້ງ "<ph name="APP_NAME" />" ແລະ ອີກ # ແອັບໃຫ້ເລີ່ມຕົ້ນໂດຍອັດຕະໂນມັດທຸກເທື່ອທີ່ທ່ານເຂົ້າສູ່ລະບົບ.}}</translation>
 <translation id="5248419081947706722">ຟ້າ</translation>
 <translation id="5252456968953390977">ໂຣມມິງ</translation>
@@ -1646,8 +1651,6 @@
 <translation id="951780398843003443">ປຽບທຽບສຽງໃນສຽງທີ່ບັນທຶກໄວ້ຕັ້ງແຕ່ຕົ້ນຈົນຈົບເພື່ອໃຫ້ຂໍ້ຄວາມຖອດສຽງສະແດງຂໍ້ຄວາມຂອງຜູ້ເວົ້າແຕ່ລະຄົນ ແລະ ເວລາທີ່ເວົ້າ</translation>
 <translation id="952992212772159698">ບໍ່ໄດ້ເປີດໃຊ້ງານ</translation>
 <translation id="95718197892796296">ນ້ຳຕານອົມສົ້ມ</translation>
-<translation id="959792926760890141">ການຣີເຊັດຄວາມປອດໄພຈະປິດສ່ວນຂະຫຍາຍໂປຣແກຣມທ່ອງເວັບ Chrome ພ້ອມທັງຣີເຊັດເຄືອຂ່າຍ ແລະ ການຕັ້ງຄ່າອື່ນໆໃຫ້ເປັນຄ່າເລີ່ມຕົ້ນທີ່ປອດໄພ.
-          ລະບົບຈະຣີເຊັດໂປຣແກຣມຊອກຫາເລີ່ມຕົ້ນຂອງທ່ານ, ແຕ່ຈະບໍ່ປ່ຽນແປງແຖບ, ໄຟລ໌, ຄຸກກີ້ ແລະ ປະຫວັດຂອງທ່ານ.</translation>
 <translation id="960719561871045870">ລະຫັດຜູ້ໃຫ້ບໍລິການ</translation>
 <translation id="965918541715156800">ສີເຫຼືອງ ແລະ ສີຂຽວຫົວເປັດ</translation>
 <translation id="966787709310836684">ເມນູ</translation>

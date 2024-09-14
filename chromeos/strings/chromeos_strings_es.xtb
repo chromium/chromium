@@ -153,6 +153,7 @@
 <translation id="1672499492233627739">Feed de vídeo de la cámara web</translation>
 <translation id="1676557873873341166">Grabando vídeo</translation>
 <translation id="1684279041537802716">Color para destacar</translation>
+<translation id="1697278726914783200">Grabar</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Resolución de DNS presente</translation>
 <translation id="1708602061922134366">Azul Google</translation>
@@ -264,6 +265,7 @@
 <translation id="2180197493692062006">Algo ha fallado. Prueba a abrir de nuevo la aplicación.</translation>
 <translation id="2189104374785738357">Editar detalles de APN</translation>
 <translation id="2195732836444333448">Al máximo de su capacidad. Vuelve pronto.</translation>
+<translation id="2197185031095816179">Restablecer los valores seguros puede ayudarte a quitar ventanas emergentes no deseadas, corregir problemas de red y solucionar otros problemas inesperados.</translation>
 <translation id="2201758491318984023">bicicleta</translation>
 <translation id="2203272733515928691">aguas termales</translation>
 <translation id="2203642483788377106">acantilado</translation>
@@ -542,6 +544,7 @@
 <translation id="3820172043799983114">PIN no válido.</translation>
 <translation id="382043424867370667">Fondo de pantalla del atardecer</translation>
 <translation id="3824259034819781947">Adjuntar archivos</translation>
+<translation id="3836587210832263413">Activa únicamente extensiones que sean de confianza</translation>
 <translation id="3838338534323494292">Contraseña nueva</translation>
 <translation id="3845880861638660475">Pulsa <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" /> para cerrar el cuadro de diálogo.</translation>
 <translation id="3848280697030027394">oscurecimiento de teclado</translation>
@@ -632,6 +635,7 @@
 <translation id="4251839292699800785">Oficina elegante</translation>
 <translation id="4258281355379922695">Latencia de HTTP</translation>
 <translation id="4266143281602681663">lana hilada</translation>
+<translation id="4269815121975886860">Preferencias de inicio</translation>
 <translation id="4271957103967917607">Ver en pantalla completa</translation>
 <translation id="4275663329226226506">Multimedia</translation>
 <translation id="4278766082079064416">Se está usando la combinación de teclas para "<ph name="CONFLICT_ACCEL_NAME" />". Cámbiala o quítala para que no interfieran entre sí.</translation>
@@ -700,6 +704,7 @@
 <translation id="458794348635939462">No se han podido resolver todos los hosts</translation>
 <translation id="4593212453765072419">Se requiere autenticación de proxy</translation>
 <translation id="4594021849294327751">Crear transcripción</translation>
+<translation id="4602266091140407479">Micrófono</translation>
 <translation id="4607282946861182308">No se pueden crear imágenes de esto. Prueba con otra petición.</translation>
 <translation id="4609350030397390689">Reducir el brillo del teclado</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> de <ph name="TOTAL_PAGE_NUMBER" />. Pulsa Intro para cancelar el trabajo de impresión.</translation>
@@ -767,6 +772,7 @@
 <translation id="4932733599132424254">Fecha</translation>
 <translation id="4950314376641394653">El firmware de <ph name="DEVICE_NAME" /> se ha actualizado a la versión <ph name="VERSION" /></translation>
 <translation id="4950893758552030541">túnel de árboles</translation>
+<translation id="4965661459364092269">Se ha completado el restablecimiento seguro</translation>
 <translation id="4965703485264574128">Para obtener un resultado aproximado, multiplica el valor de <ph name="CATEGORY_TEXT" /> por <ph name="CONVERSION_RATE" /></translation>
 <translation id="4969079779290789265">Dividir</translation>
 <translation id="4972592110715526173">cambio de modo</translation>
@@ -829,6 +835,7 @@
 <translation id="5252456968953390977">Roaming</translation>
 <translation id="5254600740122644523">Una estantería <ph name="SIMPLE_STYLE" /> en una habitación <ph name="SIMPLE_TONE" /></translation>
 <translation id="5257811368506016604">Habilitar modo de color claro</translation>
+<translation id="5261479807286543505">Ajustes de inicio</translation>
 <translation id="5264277876637023664">Realizar prueba de CPU</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="527501763019887383">El APN está inhabilitado.</translation>
@@ -1006,6 +1013,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6188737759358894319">Fecha de creación: <ph name="DATE" /></translation>
 <translation id="6189418609903030344">La capacidad de la batería disminuye con el uso</translation>
+<translation id="6189987971574353264">Reproducir</translation>
 <translation id="6191293864534840972">Los servidores de nombres presentan errores de formato</translation>
 <translation id="6196607555925437199">Volver a crear</translation>
 <translation id="6205145102504628069">Movimiento de las nubes</translation>
@@ -1141,6 +1149,7 @@
 <translation id="680983167891198932">Clave</translation>
 <translation id="6816797338148849397">Hay disponible información relacionada con tu selección. Utiliza la flecha hacia arriba para consultarla.</translation>
 <translation id="6831043979455480757">Traducir</translation>
+<translation id="6846843854964504403">Restablecimiento seguro</translation>
 <translation id="6853312040151791195">Velocidad de descarga</translation>
 <translation id="6862416241246624313">Comentarios enviados</translation>
 <translation id="6866732840889595464">Margarita</translation>
@@ -1325,6 +1334,7 @@ Descarga el modelo de transcripción (hasta 100 MB) para obtener estas transcrip
 <translation id="7746357909584236306">editable</translation>
 <translation id="7747039790905080783">Clave precompartida</translation>
 <translation id="7752963721013053477">Del amanecer a la noche (exclusivo)</translation>
+<translation id="7760571082554155847">Configuración de la página de inicio</translation>
 <translation id="7762130827864645708">Tu contraseña se ha cambiado correctamente. A partir de ahora, usa la nueva contraseña.</translation>
 <translation id="7763470514545477072">Coincidencia de sufijo de dominio</translation>
 <translation id="7769672763586021400">ID de modelo</translation>
@@ -1366,6 +1376,7 @@ Descarga el modelo de transcripción (hasta 100 MB) para obtener estas transcrip
 <translation id="7942349550061667556">Rojo</translation>
 <translation id="7943235353293548836">Intervalo keepalive persistente</translation>
 <translation id="7943516765291457328">Activa el Bluetooth para buscar puntos de acceso cercanos</translation>
+<translation id="7944482598620888754">Contenido del sitio</translation>
 <translation id="7944562637040950644">activar o desactivar retroiluminación del teclado</translation>
 <translation id="7953669802889559161">Métodos de introducción de texto</translation>
 <translation id="7955587717700691983">Teclado Bluetooth</translation>
@@ -1402,6 +1413,7 @@ Descarga el modelo de transcripción (hasta 100 MB) para obtener estas transcrip
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Confirmar</translation>
 <translation id="8132480444149501833">Solicitar contadores de tráfico</translation>
+<translation id="8135609423982943441">Se ha restablecido tu Chromebook a los valores predeterminados seguros. Puedes cambiar estos ajustes en cualquier momento desde Configuración.</translation>
 <translation id="8138405288920084977">LTE Advanced</translation>
 <translation id="8143951647992294073">Seleccionar <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8151185429379586178">Herramientas para desarrolladores</translation>
@@ -1432,6 +1444,7 @@ Descarga el modelo de transcripción (hasta 100 MB) para obtener estas transcrip
 <translation id="8291967909914612644">País del proveedor inicial</translation>
 <translation id="8294431847097064396">Origen</translation>
 <translation id="8302368968391049045">Cortafuegos de HTTPS</translation>
+<translation id="8308787307410010965">Configuración de contenido del sitio</translation>
 <translation id="8312330582793120272">reproducir contenido multimedia</translation>
 <translation id="8318753676953949627">Sin imágenes</translation>
 <translation id="8320910311642849813">bosque</translation>

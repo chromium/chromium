@@ -104,6 +104,7 @@
 <translation id="5400836586163650660">ಬೂದು</translation>
 <translation id="5490235265819901748">ಟ್ಯಾಬ್ ಗುಂಪನ್ನು ವಿಸ್ತೃತಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="5494920125229734069">ಎಲ್ಲವನ್ನೂ ಆಯ್ಕೆ ಮಾಡಿ</translation>
+<translation id="5549653163690032080">ಹಂಚಿಕೊಳ್ಳಲಾದ ಟ್ಯಾಬ್ ಗುಂಪು <ph name="TITLE_OF_GROUP" /> ಗಾಗಿ ಟ್ಯಾಬ್ ಗುಂಪಿನ ಕ್ರಿಯೆಯ ಮೆನುವನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ಟ್ಯಾಬ್, <ph name="COLOR_NAME" /> ಬಣ್ಣದ ಜೊತೆಗೆ ಟ್ಯಾಬ್ ಗುಂಪನ್ನು ಮುಚ್ಚಿರಿ.}one{<ph name="TABS_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳು, <ph name="COLOR_NAME" /> ಬಣ್ಣದ ಜೊತೆಗೆ ಟ್ಯಾಬ್ ಗುಂಪನ್ನು ಮುಚ್ಚಿರಿ.}other{<ph name="TABS_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳು, <ph name="COLOR_NAME" /> ಬಣ್ಣದ ಜೊತೆಗೆ ಟ್ಯಾಬ್ ಗುಂಪನ್ನು ಮುಚ್ಚಿರಿ.}}</translation>
 <translation id="5556417849629758491">ಸ್ಟೋರ್ ಮಾಹಿತಿ ವೀಕ್ಷಿಸಿ, ಆಯ್ಕೆಯು ಸ್ಕ್ರೀನ್ ಮೇಲ್ಭಾಗದಲ್ಲಿ ಲಭ್ಯವಿದೆ</translation>
 <translation id="5627941783489838464">ಯಾವುದೇ ಟ್ಯಾಬ್ ಅಪ್‌ಡೇಟ್‌ಗಳಿಲ್ಲ</translation>
@@ -135,6 +136,7 @@
 <translation id="6694634756612002311">ಹಂಚಿಕೊಳ್ಳುವಿಕೆಯನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="6744956528665271406">ಗುಂಪಿನ ಬಣ್ಣವನ್ನು ಎಡಿಟ್ ಮಾಡಿ</translation>
 <translation id="6856809498882026482">ಬಹು ಆಯ್ಕೆ ಮೋಡ್ ಅನ್ನು ಮರೆಮಾಡಿ</translation>
+<translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ಟ್ಯಾಬ್ ಅನ್ನು ಹೊಂದಿರುವ, <ph name="COLOR_NAME" /> ಬಣ್ಣದ ಹಂಚಿಕೊಳ್ಳಲಾದ <ph name="TITLE_OF_GROUP" /> ಟ್ಯಾಬ್ ಗುಂಪನ್ನು ವಿಸ್ತರಿಸಿ.}one{<ph name="TABS_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳನ್ನು ಹೊಂದಿರುವ, <ph name="COLOR_NAME" /> ಬಣ್ಣದ ಹಂಚಿಕೊಳ್ಳಲಾದ <ph name="TITLE_OF_GROUP" /> ಟ್ಯಾಬ್ ಗುಂಪನ್ನು ವಿಸ್ತರಿಸಿ.}other{<ph name="TABS_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳನ್ನು ಹೊಂದಿರುವ, <ph name="COLOR_NAME" /> ಬಣ್ಣದ ಹಂಚಿಕೊಳ್ಳಲಾದ <ph name="TITLE_OF_GROUP" /> ಟ್ಯಾಬ್ ಗುಂಪನ್ನು ವಿಸ್ತರಿಸಿ.}}</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{ಟ್ಯಾಬ್ ಅನ್ನು ಹಂಚಿಕೊಳ್ಳಿ}one{ಟ್ಯಾಬ್‌ಗಳನ್ನು ಹಂಚಿಕೊಳ್ಳಿ}other{ಟ್ಯಾಬ್‌ಗಳನ್ನು ಹಂಚಿಕೊಳ್ಳಿ}}</translation>
 <translation id="7129458170538955174">ಈ ಸ್ಟೋರ್‌ನ ಕುರಿತಾದ ಮಾಹಿತಿಯನ್ನು ಅರ್ಧ ಎತ್ತರದಲ್ಲಿ ತೆರೆಯಲಾಗಿದೆ</translation>
 <translation id="7200189319044305940">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ಟ್ಯಾಬ್ ಜೊತೆಗೆ <ph name="TITLE_OF_GROUP" /> ಗುಂಪನ್ನು ಮುಚ್ಚಿರಿ.}one{<ph name="TABS_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳ ಜೊತೆಗೆ <ph name="TITLE_OF_GROUP" /> ಗುಂಪನ್ನು ಮುಚ್ಚಿರಿ.}other{<ph name="TABS_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳ ಜೊತೆಗೆ <ph name="TITLE_OF_GROUP" /> ಗುಂಪನ್ನು ಮುಚ್ಚಿರಿ.}}</translation>
@@ -170,6 +172,7 @@
 <translation id="8205266828577616993">ಟ್ಯಾಬ್ ಅನ್ನು ಮೇಲಕ್ಕೆ ಸರಿಸಿ</translation>
 <translation id="8261506727792406068">ಅಳಿಸಿ</translation>
 <translation id="8338427544764842461">ನಿಮ್ಮ ಟ್ಯಾಬ್ ಗುಂಪುಗಳನ್ನು ಇಲ್ಲಿ ಸೇವ್ ಮಾಡಲಾಗಿದೆ ಮತ್ತು ನಿಮ್ಮ ಎಲ್ಲಾ ಸೈನ್‌ ಇನ್‌ ಮಾಡಿರುವ ಸಾಧನಗಳಲ್ಲಿ ಅಪ್‌ಡೇಟ್ ಆಗುತ್ತವೆ</translation>
+<translation id="8344020191144794051">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ಟ್ಯಾಬ್ ಹೊಂದಿರುವ, <ph name="COLOR_NAME" /> ಬಣ್ಣದ ಜೊತೆಗೆ ಹಂಚಿಕೊಳ್ಳಲಾದ ಟ್ಯಾಬ್ ಗುಂಪನ್ನು ವಿಸ್ತರಿಸಿ.}one{<ph name="TABS_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳನ್ನು ಹೊಂದಿರುವ, <ph name="COLOR_NAME" /> ಬಣ್ಣದ ಜೊತೆಗೆ ಹಂಚಿಕೊಳ್ಳಲಾದ ಟ್ಯಾಬ್ ಗುಂಪನ್ನು ವಿಸ್ತರಿಸಿ.}other{<ph name="TABS_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳನ್ನು ಹೊಂದಿರುವ, <ph name="COLOR_NAME" /> ಬಣ್ಣದ ಜೊತೆಗೆ ಹಂಚಿಕೊಳ್ಳಲಾದ ಟ್ಯಾಬ್ ಗುಂಪನ್ನು ವಿಸ್ತರಿಸಿ.}}</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{ಆಯ್ಕೆಮಾಡಿದ <ph name="TABS_COUNT_ONE" /> ಟ್ಯಾಬ್ ಅನ್ನು ಮುಚ್ಚಿರಿ}one{ಆಯ್ಕೆಮಾಡಿದ <ph name="TABS_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಿರಿ}other{ಆಯ್ಕೆಮಾಡಿದ <ph name="TABS_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಿರಿ}}</translation>
 <translation id="8398929769197326728">ಹೊಸ ಫೋಲ್ಡರ್‌ - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>

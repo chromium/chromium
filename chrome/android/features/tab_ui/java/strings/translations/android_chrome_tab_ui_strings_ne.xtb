@@ -104,6 +104,7 @@
 <translation id="5400836586163650660">खरानी रङ्ग</translation>
 <translation id="5490235265819901748">ट्याब समूह विस्तृत गरियो</translation>
 <translation id="5494920125229734069">सबै चयन गर्नुहोस्</translation>
+<translation id="5549653163690032080"><ph name="TITLE_OF_GROUP" /> नामक साझा ट्याब समूहको एक्सन मेनु खोल्नुहोस्</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ट्याब भएको <ph name="COLOR_NAME" /> रङको ट्याब समूह बन्द गर्नुहोस्।}other{<ph name="TABS_COUNT_MANY" /> वटा ट्याब भएको <ph name="COLOR_NAME" /> रङको ट्याब समूह बन्द गर्नुहोस्।}}</translation>
 <translation id="5556417849629758491">स्क्रिनको सिरानको नजिक रहेको 'स्टोरसम्बन्धी जानकारी हेर्नुहोस्' नामक विकल्प</translation>
 <translation id="5627941783489838464">ट्याबसम्बन्धी कुनै पनि नयाँ जानकारी छैन</translation>
@@ -135,6 +136,7 @@
 <translation id="6694634756612002311">सेयर गर्ने सुविधा व्यवस्थापन गर्नुहोस्</translation>
 <translation id="6744956528665271406">ग्रुप कलर सम्पादन गर्नुहोस्</translation>
 <translation id="6856809498882026482">एकभन्दा बढी ट्याब चयन गर्ने मोड लुकाउनुहोस्</translation>
+<translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ट्याब भएको <ph name="COLOR_NAME" /> रङको <ph name="TITLE_OF_GROUP" /> नामक साझा ट्याब समूह एक्स्पान्ड गर्नुहोस्।}other{<ph name="TABS_COUNT_MANY" /> वटा ट्याब भएको <ph name="COLOR_NAME" /> रङको <ph name="TITLE_OF_GROUP" /> नामक साझा ट्याब समूह एक्स्पान्ड गर्नुहोस्।}}</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{ट्याब सेयर गर्नुहोस्}other{ट्याबहरू सेयर गर्नुहोस्}}</translation>
 <translation id="7129458170538955174">यो स्टोरसम्बन्धी जानकारी स्क्रिनको आधा भाग ओगट्ने गरी खोलिएको छ</translation>
 <translation id="7200189319044305940">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ट्याब भएको <ph name="TITLE_OF_GROUP" /> को समूह बन्द गर्नुहोस्।}other{<ph name="TABS_COUNT_MANY" /> वटा ट्याब भएको <ph name="TITLE_OF_GROUP" /> को समूह बन्द गर्नुहोस्।}}</translation>
@@ -170,6 +172,7 @@
 <translation id="8205266828577616993">ट्याब माथि सार्नुहोस्</translation>
 <translation id="8261506727792406068">मेट्नुहोस्</translation>
 <translation id="8338427544764842461">तपाईंका ट्याब समूहहरू यहाँ सेभ गरिएका छन् र तपाईंले साइन इन गरेका सबै डिभाइसमा ती समूह अपडेट हुन्छन्</translation>
+<translation id="8344020191144794051">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ट्याब भएको <ph name="COLOR_NAME" /> रङको साझा ट्याब समूह एक्स्पान्ड गर्नुहोस्।}other{<ph name="TABS_COUNT_MANY" /> वटा ट्याब भएको <ph name="COLOR_NAME" /> रङको साझा ट्याब समूह एक्स्पान्ड गर्नुहोस्।}}</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{चयन गरिएको <ph name="TABS_COUNT_ONE" /> ट्याब बन्द गर्नुहोस्}other{चयन गरिएका <ph name="TABS_COUNT_MANY" /> ट्याबहरू बन्द गर्नुहोस्}}</translation>
 <translation id="8398929769197326728">नयाँ फोल्डर - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">सेटिङहरू</translation>

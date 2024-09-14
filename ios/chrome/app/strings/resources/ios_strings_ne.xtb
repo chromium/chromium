@@ -11,7 +11,6 @@
 <translation id="1035980983510608210">तपाईंले सबै ट्याबहरू बन्द गर्नुभयो भने पिन गरिएका ट्याबहरू पनि बन्द हुने छन्।</translation>
 <translation id="1036017604683756002">UPS</translation>
 <translation id="1036348656032585052">अफ गर्नुहोस्</translation>
-<translation id="10379132160269599">ट्याबको ग्रिड देखाउनुहोस्</translation>
 <translation id="1041322626941363065">डेटा चोरीको घटनामा पासवर्डको खुलासा हुँदा मलाई चेतावनी दिइयोस्</translation>
 <translation id="1044891598689252897">साइटहरू सामान्य रूपमा चल्ने छन्</translation>
 <translation id="104491362976654916">अफलाइन पेज</translation>
@@ -31,6 +30,7 @@
 <translation id="1118569444314402022">फेरि स्वागत छ, <ph name="USER_NAME" /></translation>
 <translation id="1121850836842642159">फोटोहरू</translation>
 <translation id="1125564390852150847">नयाँ ट्याब सिर्जना गर्नुहोस्।</translation>
+<translation id="1126696498560056882">यो डिभाइसका खाताहरू व्यवस्थापन गर्नुहोस्</translation>
 <translation id="1126809382673880764">तपाईंलाई जोखिमपूर्ण वेबसाइट, डाउनलोड वा एक्स्टेन्सनहरूविरुद्ध सुरक्षा प्रदान गर्दैन। उपलब्ध भएसम्म तपाईं अझै पनि Gmail र खोज जस्ता Google का अन्य सेवाहरूमा सुरक्षित ब्राउजिङको सुरक्षा प्राप्त गर्नु हुने छ।</translation>
 <translation id="1142371195993008685"><ph name="FEATURE_NAME" /> सम्बन्धी नोटिफिकेसन प्राप्त गर्ने सुविधा अफ गर्नुहोस्</translation>
 <translation id="1147031633655575115">तपाईंले <ph name="USER" /> का नामबाट साइन इन गर्नुभएको छ</translation>
@@ -1010,7 +1010,6 @@
 <translation id="594324569139756587">तेस्रो पक्षीय कुकीहरू ब्लक गर्नुहोस्</translation>
 <translation id="5944869793365969636">QR कोड स्क्यान गर्नुहोस्</translation>
 <translation id="5948291296578561264">यो एपले तपाईंलाई आफ्नो तस्बिरको लाइब्रेरीमा तस्बिरहरू सुरक्षित गर्न दिन्छ।</translation>
-<translation id="5953383789663007162">खाताको सूची परिवर्तन गर्नुहोस्</translation>
 <translation id="5954322191260787920">बुकमार्क सम्पादन गर्नुहोस्</translation>
 <translation id="5956112131836209882">ट्याब समूहको ट्याब। <ph name="NUMBER_OF_TABS_IN_GROUP" /> मध्ये <ph name="TAB_INDEX_IN_GROUP" />।</translation>
 <translation id="595769230373966252"><ph name="SEARCH_PROVIDER" /> मार्फत खोज्नुहोस्</translation>
@@ -1604,6 +1603,7 @@
 <translation id="8637431369725868556">खतरनाक साइटहरूबाट सुरक्षित रहनुहोस्।</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{कुनै पनि पासवर्ड ह्याक वा चोरी भएको छैन}=1{{COUNT} वटा पासवर्ड ह्याक वा चोरी भएको छ}other{{COUNT} वटा पासवर्ड ह्याक वा चोरी भएका छन्}}</translation>
 <translation id="8640575194957831802">पछिल्लो पटक खोलिएको</translation>
+<translation id="8647280737650867362">मूल्य ट्र्याक गर्ने कार्य रद्द गर्न सकिएन।</translation>
 <translation id="8654802032646794042">रद्द गर्नुहोस्</translation>
 <translation id="8660600697590740984">कपी गरिएको लेन्स इमेज</translation>
 <translation id="866266761389616183">हत्तेरिका!</translation>

@@ -1894,7 +1894,6 @@
 <translation id="4451135742916150903">HID పరికరాలకు కనెక్ట్ చేయడానికి సైట్ అనుమతి అడగవచ్చు</translation>
 <translation id="4451684391620232683">యూజర్‌కు ప్రెజెంట్ చేయబడిన టెక్స్ట్:</translation>
 <translation id="4452328064229197696">మీరు ఇప్పుడే ఉపయోగించిన పాస్‌వర్డ్, డేటా ఉల్లంఘనలో కనగొనబడింది. మీ ఖాతాలను సురక్షితం చేయడానికి, మీరు సేవ్ చేసిన పాస్‌వర్డ్‌లను చెక్ చేయమని Google Password Manager సిఫార్సు చేస్తోంది.</translation>
-<translation id="4452957520362597816">వెబ్ యాప్‌లను ఇన్‌స్టాల్ చేయమని అడగండి</translation>
 <translation id="4456937135469235202">సాహసోపేత ప్రయాణం</translation>
 <translation id="4464826014807964867">మీ సంస్థకు సంబంధించిన సమాచారం ఉన్న వెబ్‌సైట్‌లు</translation>
 <translation id="4466576951214254884">విద్యార్థి లోన్‌లు &amp; కాలేజ్ ఫైనాన్సింగ్</translation>
@@ -2097,7 +2096,7 @@
 <translation id="4873616204573862158">కళ్లజోళ్లు</translation>
 <translation id="4873807733347502026">మీ మౌస్‌ను లాక్ చేసి ఉపయోగించండి</translation>
 <translation id="4876188919622883022">సరళీకృత వీక్షణ</translation>
-<translation id="4876305945144899064">వినియోగదారు పేరు లేదు</translation>
+<translation id="4876305945144899064">యూజర్‌నేమ్ లేదు</translation>
 <translation id="4876327226315760474">దీనర్థం, సైట్ ఫీచర్‌లు ఆశించినట్టుగా పని చేయాలి, కానీ మీకు బ్రౌజింగ్ రక్షణ తక్కువగా ఉండవచ్చు.</translation>
 <translation id="4877047577339061095">ఇంటిలో స్టోరేజ్ &amp; షెల్ఫ్‌లు</translation>
 <translation id="4877083676943085827">{COUNT,plural, =0{ఏవీ లేవు}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, <ph name="AND_MORE" />}}</translation>
@@ -2553,7 +2552,7 @@
 <translation id="5700761515355162635">థర్డ్-పార్టీ కుక్కీలు అనుమతించబడతాయి</translation>
 <translation id="5701381305118179107">మధ్యకు</translation>
 <translation id="5707154300732650394">మీ సెర్చ్‌ను కొనసాగించండి</translation>
-<translation id="57094364128775171">బలమైన పాస్‌వర్డ్‌ను సూచించండి…</translation>
+<translation id="57094364128775171">శక్తివంతమైన పాస్‌వర్డ్‌ సూచన</translation>
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="571510845185711675">పశువైద్య నిపుణులు</translation>
 <translation id="5715150588940290235">సేవ్ అయ్యి ఉన్న సెక్యూరిటీ కోడ్‌లను తొలగించాలా?</translation>

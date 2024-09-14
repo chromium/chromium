@@ -153,6 +153,7 @@
 <translation id="1672499492233627739">Flux vidéo de la caméra Web</translation>
 <translation id="1676557873873341166">Capture de vidéo en cours…</translation>
 <translation id="1684279041537802716">Couleur de l'accent</translation>
+<translation id="1697278726914783200">Enregistrer</translation>
 <translation id="1703835215927279855">Lettre</translation>
 <translation id="1706391837335750954">Présence du résolveur DNS</translation>
 <translation id="1708602061922134366">Bleu Google</translation>
@@ -703,6 +704,7 @@
 <translation id="458794348635939462">Impossible de résoudre tous les hôtes</translation>
 <translation id="4593212453765072419">Authentification requise du mandataire</translation>
 <translation id="4594021849294327751">Créer une transcription</translation>
+<translation id="4602266091140407479">Micro</translation>
 <translation id="4607282946861182308">Impossible de créer des images de cette requête. Essayez une autre requête.</translation>
 <translation id="4609350030397390689">Diminuer la luminosité du clavier</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> sur <ph name="TOTAL_PAGE_NUMBER" />. Appuyez sur Entrée pour annuler la tâche d'impression.</translation>
@@ -1011,6 +1013,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6188737759358894319">Créé le <ph name="DATE" /></translation>
 <translation id="6189418609903030344">La capacité des piles décline avec l'usage</translation>
+<translation id="6189987971574353264">Lire</translation>
 <translation id="6191293864534840972">Le format des serveurs de nom est incorrect</translation>
 <translation id="6196607555925437199">Recréer</translation>
 <translation id="6205145102504628069">Cloud Flow</translation>
@@ -1642,8 +1645,6 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="951780398843003443">Comparer les voix tout au long de l'enregistrement afin que la transcription reflète ce que chaque locuteur a dit et à quel moment</translation>
 <translation id="952992212772159698">Désactivé</translation>
 <translation id="95718197892796296">argile</translation>
-<translation id="959792926760890141">La réinitialisation de sécurité désactive les extensions du navigateur Chrome et réinitialise les paramètres réseau et d'autres paramètres à Sécurisé par défaut.
-          Votre moteur de recherche par défaut sera réinitialisé, mais vos onglets, vos fichiers, vos témoins et votre historique ne seront pas modifiés.</translation>
 <translation id="960719561871045870">Code de l'opérateur</translation>
 <translation id="965918541715156800">jaune et sarcelle</translation>
 <translation id="966787709310836684">menu</translation>

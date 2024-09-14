@@ -265,6 +265,7 @@
 <translation id="2180197493692062006">Hiba történt. Próbálja meg újra megnyitni az alkalmazást.</translation>
 <translation id="2189104374785738357">APN-adatok szerkesztése</translation>
 <translation id="2195732836444333448">Jelenleg nincs szabad kapacitás. Nézzen vissza kicsit később.</translation>
+<translation id="2197185031095816179">A biztonsági visszaállítás segíthet a nem kívánt előugró ablakok eltávolításában, a hálózati problémák elhárításában és más váratlan problémák kezelésében.</translation>
 <translation id="2201758491318984023">kerékpár</translation>
 <translation id="2203272733515928691">melegvizes forrás</translation>
 <translation id="2203642483788377106">szirt</translation>
@@ -543,6 +544,7 @@
 <translation id="3820172043799983114">Érvénytelen PIN-kód.</translation>
 <translation id="382043424867370667">Naplemente háttérkép</translation>
 <translation id="3824259034819781947">Fájlok csatolása</translation>
+<translation id="3836587210832263413">Csak a megbízható bővítményeket kapcsolja be</translation>
 <translation id="3838338534323494292">Új jelszó</translation>
 <translation id="3845880861638660475">A párbeszédpanel bezárásához nyomja le az <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" /> billentyűkombinációt.</translation>
 <translation id="3848280697030027394">billentyűzet sötétítése</translation>
@@ -633,6 +635,7 @@
 <translation id="4251839292699800785">Stílusos iroda</translation>
 <translation id="4258281355379922695">HTTP várakozási idő</translation>
 <translation id="4266143281602681663">fonal</translation>
+<translation id="4269815121975886860">Indítási preferenciák</translation>
 <translation id="4271957103967917607">Teljes képernyős nézet</translation>
 <translation id="4275663329226226506">Média</translation>
 <translation id="4278766082079064416">A billentyűparancs már használatban van a következőhöz: „<ph name="CONFLICT_ACCEL_NAME" />”. Szerkessze vagy távolítsa el a probléma megoldásához.</translation>
@@ -769,6 +772,7 @@
 <translation id="4932733599132424254">Dátum</translation>
 <translation id="4950314376641394653">A(z) <ph name="DEVICE_NAME" /> firmware-e frissült a(z) <ph name="VERSION" /> verzióra</translation>
 <translation id="4950893758552030541">faalagút</translation>
+<translation id="4965661459364092269">A biztonsági visszaállítás befejeződött</translation>
 <translation id="4965703485264574128">Hozzávetőleges eredményért szorozza meg a(z) <ph name="CATEGORY_TEXT" /> értékét ennyivel: <ph name="CONVERSION_RATE" /></translation>
 <translation id="4969079779290789265">Felosztás</translation>
 <translation id="4972592110715526173">mód váltása</translation>
@@ -831,6 +835,7 @@
 <translation id="5252456968953390977">Roaming</translation>
 <translation id="5254600740122644523"><ph name="SIMPLE_STYLE" /> könyvespolc egy <ph name="SIMPLE_TONE" /> szobában</translation>
 <translation id="5257811368506016604">Világos szín mód engedélyezése</translation>
+<translation id="5261479807286543505">Indítási beállítások</translation>
 <translation id="5264277876637023664">CPU-teszt futtatása</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="527501763019887383">Az APN le van tiltva.</translation>
@@ -1144,6 +1149,7 @@
 <translation id="680983167891198932">Kulcs</translation>
 <translation id="6816797338148849397">Rendelkezésre áll információ a kiválasztott elemmel kapcsolatban. A felfelé nyíllal érheti el.</translation>
 <translation id="6831043979455480757">Fordítás</translation>
+<translation id="6846843854964504403">Biztonsági visszaállítás</translation>
 <translation id="6853312040151791195">Lemerítési sebesség</translation>
 <translation id="6862416241246624313">Visszajelzés elküldve</translation>
 <translation id="6866732840889595464">százszorszép</translation>
@@ -1328,6 +1334,7 @@ Ha szeretné használni az átiratokat, töltse le az átírási modellt (legfel
 <translation id="7746357909584236306">szerkeszthető</translation>
 <translation id="7747039790905080783">Előre megosztott kulcs</translation>
 <translation id="7752963721013053477">Hajnaltól sötétedésig – exkluzív</translation>
+<translation id="7760571082554155847">Kezdőlap beállításai</translation>
 <translation id="7762130827864645708">A jelszómódosítás sikeres volt. Mostantól használja az új jelszót.</translation>
 <translation id="7763470514545477072">Domainvégződés – egyezés</translation>
 <translation id="7769672763586021400">Modellazonosító</translation>
@@ -1369,6 +1376,7 @@ Ha szeretné használni az átiratokat, töltse le az átírási modellt (legfel
 <translation id="7942349550061667556">Piros</translation>
 <translation id="7943235353293548836">Folyamatos keepalive-időintervallum</translation>
 <translation id="7943516765291457328">Kapcsolja be a Bluetootht a közeli hotspotok kereséséhez</translation>
+<translation id="7944482598620888754">Webhelytartalmak</translation>
 <translation id="7944562637040950644">billentyűzet háttérvilágításának be- vagy kikapcsolása</translation>
 <translation id="7953669802889559161">Beviteli módszerek</translation>
 <translation id="7955587717700691983">Bluetooth-billentyűzet</translation>
@@ -1405,6 +1413,7 @@ Ha szeretné használni az átiratokat, töltse le az átírási modellt (legfel
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Megerősítés</translation>
 <translation id="8132480444149501833">Forgalomszámlálók kérése</translation>
+<translation id="8135609423982943441">A Chromebook vissza lett állítva a biztonságos alapértelmezett beállításokra. Ezeket bármikor módosíthatja a Beállításokban.</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> kiválasztása</translation>
 <translation id="8151185429379586178">Fejlesztői eszközök</translation>
@@ -1435,6 +1444,7 @@ Ha szeretné használni az átiratokat, töltse le az átírási modellt (legfel
 <translation id="8291967909914612644">Otthoni szolgáltató országa</translation>
 <translation id="8294431847097064396">Forrás</translation>
 <translation id="8302368968391049045">HTTPS-tűzfal</translation>
+<translation id="8308787307410010965">Webhelytartalmak beállításai</translation>
 <translation id="8312330582793120272">médiafájl lejátszása</translation>
 <translation id="8318753676953949627">Nincsenek képek</translation>
 <translation id="8320910311642849813">erdő</translation>

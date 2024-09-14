@@ -416,6 +416,7 @@ Nilai 2 = Menonaktifkan fitur.</translation>
       Pola URL tidak boleh bertentangan dengan <ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" />. Tidak ada kebijakan yang diprioritaskan jika URL cocok dengan keduanya.
 
       Untuk informasi selengkapnya tentang pola <ph name="URL_LABEL" /> yang valid, lihat https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> bukanlah nilai yang diterima untuk kebijakan ini.</translation>
+<translation id="1309259005392595570">Nonaktifkan perjanjian kunci pasca-kuantum untuk TLS</translation>
 <translation id="1309465583050255779">Jika <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> aktif, menyetel <ph name="DEFAULT_SEARCH_PROVIDER_NAME_POLICY_NAME" /> akan menentukan nama penyedia penelusuran default.
 
       Jika <ph name="DEFAULT_SEARCH_PROVIDER_NAME_POLICY_NAME" /> tidak disetel, hostname yang ditentukan oleh URL penelusuran akan digunakan.</translation>
@@ -5083,6 +5084,7 @@ Kebijakan ini hanya memetakan ID ekstensi atau URL update ke setelan khususnya. 
 Di instance <ph name="MS_WIN_NAME" />, aplikasi dan ekstensi yang bukan dari Chrome Web Store hanya dapat diinstal otomatis jika instance dihubungkan ke domain <ph name="MS_AD_NAME" />, dihubungkan ke <ph name="MS_AAD_NAME" />, atau didaftarkan di <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
 
 Di instance <ph name="MAC_OS_NAME" />, aplikasi dan ekstensi yang bukan dari Chrome Web Store hanya dapat diinstal otomatis jika instance dikelola melalui MDM, dihubungkan ke domain melalui MCX, atau didaftarkan di <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
+<translation id="4737832614429402441">Gunakan Nilai Default untuk perjanjian kunci pasca-kuantum untuk TLS</translation>
 <translation id="4739596156184678950">Mengizinkan penyimpanan file secara langsung ke <ph name="GOOGLE_DRIVE_NAME" /></translation>
 <translation id="4742973303930120836">Membatasi mode pencetakan grafis latar belakang</translation>
 <translation id="4745232963710538589">Mengaktifkan ekstensi insight untuk melaporkan metrik penggunaan</translation>
@@ -6509,9 +6511,6 @@ Jika kebijakan ini disetel ke nonaktif atau tidak disetel, widget Sekilas Info t
 <translation id="5776485039795852974">Tanyakan setiap kali situs ingin menampilkan pemberitahuan desktop</translation>
 <translation id="5783009211970309878">Cetak Header dan Footer</translation>
 <translation id="5790763087505467169">Mengurangi Notifikasi otomatis untuk sesi tamu terkelola</translation>
-<translation id="5793378951267871906">Jika kebijakan ini disetel ke Aktif, <ph name="PRODUCT_OS_NAME" /> akan otomatis menyimpan kredensial Wi-Fi kios yang aktif di tingkat perangkat: Wi-Fi yang aktif dapat digunakan oleh aplikasi kios atau pengguna lain di perangkat.
-Jika kebijakan ini tidak disetel atau disetel ke Nonaktif, kredensial WiFi aktif kios akan disimpan di tingkat kios: WiFi yang dikonfigurasi di aplikasi kios hanya dapat digunakan di aplikasi kios yang sama.
-Kebijakan ini tidak disarankan dan harus digunakan jika tidak ada opsi lain yang tersedia.</translation>
 <translation id="5800329278018669527">Nonaktifkan perintah konfigurasi jaringan saat offline</translation>
 <translation id="5802931736499687181">Nonaktifkan Pipeline Pelaporan Terenkripsi</translation>
 <translation id="5803715507113569033">Kebijakan ini memungkinkan admin mengonfigurasi pemasangan <ph name="MICROSOFT_ONE_DRIVE_NAME" />.
@@ -6927,6 +6926,21 @@ Kebijakan ini tidak akan berpengaruh jika kebijakan <ph name="SCREENSAVER_LOCK_S
 Jika kebijakan ini tidak disetel atau daftar tidak berisi referensi gambar yang valid, screensaver untuk layar kunci tidak akan ditampilkan, terlepas dari nilai yang disetel dalam kebijakan <ph name="SCREENSAVER_LOCK_SCREEN_ENABLED_POLICY_NAME" />.</translation>
 <translation id="6135398260575578389">Safe Browsing aktif dalam mode yang disempurnakan. Mode ini memberikan keamanan yang lebih baik, tetapi perlu membagikan lebih banyak informasi penjelajahan kepada Google.</translation>
 <translation id="6135552820180449830">Crosh (didukung sejak versi 99)</translation>
+<translation id="6136179371737299503">Kebijakan tingkat perangkat ini mengonfigurasi apakah <ph name="PRODUCT_OS_NAME" /> akan menawarkan algoritma perjanjian kunci pasca-kuantum di TLS. Pada versi mendatang, algoritma ini akan menjadi ML-KEM, suatu standar pasca-kuantum NIST. Awalnya, algoritma ini adalah Kyber, iterasi draf awal dari standar. Hal ini memungkinkan server pendukung melindungi traffic pengguna agar tidak didekripsi oleh komputer kuantum pada lain waktu.
+
+Jika kebijakan ini disetel ke Aktif, <ph name="PRODUCT_OS_NAME" /> akan menawarkan perjanjian kunci pasca-kuantum di koneksi TLS. Traffic pengguna akan dilindungi dari komputer kuantum saat berkomunikasi dengan server yang kompatibel.
+
+Jika kebijakan ini disetel ke Nonaktif, <ph name="PRODUCT_OS_NAME" /> tidak akan menawarkan perjanjian kunci pasca-kuantum di koneksi TLS. Traffic pengguna tidak akan dilindungi dari komputer kuantum.
+
+Jika kebijakan ini tidak disetel, <ph name="PRODUCT_OS_NAME" /> akan mengikuti proses peluncuran default untuk menawarkan perjanjian kunci pasca-kuantum.
+
+Penawaran Kyber kompatibel dengan versi lama. Server TLS dan middleware jaringan yang ada diharapkan untuk mengabaikan opsi baru ini dan tetap memilih opsi sebelumnya.
+
+Namun, perangkat yang tidak menerapkan TLS dengan tepat mungkin berhenti berfungsi saat ditawarkan opsi baru ini. Misalnya, perangkat mungkin berhenti dihubungkan sebagai respons terhadap opsi yang tidak dikenal atau pesan yang dihasilkan dalam jumlah lebih besar. Perangkat tersebut belum siap digunakan untuk pasca-kuantum dan akan mengganggu transisi pasca-kuantum perusahaan. Jika skenario tersebut ditemukan, administrator harus menghubungi vendor untuk memperbaikinya.
+
+Kebijakan ini adalah tindakan sementara dan akan dihapus setelah <ph name="PRODUCT_OS_NAME" /> versi 141. Fitur ini mungkin disetel ke Aktif untuk memungkinkan Anda menguji masalah, dan dapat disetel ke Nonaktif saat masalah sedang diselesaikan.
+
+Jika kebijakan ini dan kebijakan PostQuantumKeyAgreementEnabled disetel, kebijakan ini akan diprioritaskan.</translation>
 <translation id="6138636318340561140">Memeriksa status Safe Browsing pada URL secara real-time</translation>
 <translation id="6141402445226505817">Selalu gunakan deteksi zona waktu kasar</translation>
 <translation id="6141944295566709543">Izinkan pengguna memutar media saat perangkat dikunci</translation>
@@ -9612,13 +9626,6 @@ juga aman.</translation>
 <translation id="8028814157747157754">Aktifkan penyedia penelusuran default dan izinkan pengguna mengubah daftar penyedia penelusuran</translation>
 <translation id="8029201909194194377">Durasi sesi maksimum yang diizinkan untuk koneksi akses jarak jauh</translation>
 <translation id="8031651557770840616">Tidak mengizinkan Wallpaper AI Generatif</translation>
-<translation id="8033450879690820321">Kebijakan ini menyediakan pilihan penonaktifan sementara untuk perilaku scroller baru yang dapat difokuskan keyboard.
-
-Jika kebijakan ini disetel ke Aktif atau tidak disetel, scroller tanpa turunan yang dapat difokuskan secara default dapat difokuskan oleh keyboard. Selain itu, scroller dapat difokuskan dengan klik dan dapat difokuskan secara terprogram secara default.
-
-Jika kebijakan ini disetel ke Nonaktif, scroller tidak akan dapat difokuskan secara default.
-
-Kebijakan ini adalah solusi sementara, dan akan dihapus di M135.</translation>
 <translation id="8035570672225663428">Aktifkan model pengisian daya adaptif untuk menunda proses pengisian daya guna memperpanjang masa pakai baterai</translation>
 <translation id="8036284429246268475">Jika kebijakan disetel ke Aktif, pengguna dapat membuat <ph name="PRODUCT_NAME" /> memeriksa apakah nama pengguna dan sandi yang dimasukkan adalah bagian dari kebocoran.
 
@@ -10434,6 +10441,19 @@ web dengan lebih lambat.
 Kebijakan ini dapat diganti untuk pola URL tertentu menggunakan kebijakan <ph name="JAVA_SCRIPT_OPTIMIZER_ALLOWED_FOR_SITES_POLICY_NAME" /> dan <ph name="JAVA_SCRIPT_OPTIMIZER_BLOCKED_FOR_SITES_POLICY_NAME" />.
 
 Jika kebijakan ini tidak disetel, pengoptimalan JavaScript akan diaktifkan.</translation>
+<translation id="8670585636650044874">Kebijakan ini mengonfigurasi apakah <ph name="PRODUCT_NAME" /> akan menawarkan algoritma perjanjian kunci pasca-kuantum di TLS. Pada versi mendatang, algoritma ini akan menjadi ML-KEM, suatu standar pasca-kuantum NIST. Awalnya, algoritma ini adalah Kyber, iterasi draf awal dari standar. Hal ini memungkinkan server pendukung melindungi traffic pengguna agar tidak didekripsi oleh komputer kuantum pada lain waktu.
+
+Jika kebijakan ini disetel ke Aktif, <ph name="PRODUCT_NAME" /> akan menawarkan perjanjian kunci pasca-kuantum di koneksi TLS. Traffic pengguna akan dilindungi dari komputer kuantum saat berkomunikasi dengan server yang kompatibel.
+
+Jika kebijakan ini disetel ke Nonaktif, <ph name="PRODUCT_NAME" /> tidak akan menawarkan perjanjian kunci pasca-kuantum di koneksi TLS. Traffic pengguna tidak akan dilindungi dari komputer kuantum.
+
+Jika kebijakan ini tidak disetel, <ph name="PRODUCT_NAME" /> akan mengikuti proses peluncuran default untuk menawarkan perjanjian kunci pasca-kuantum.
+
+Penawaran perjanjian kunci pasca-kuantum kompatibel dengan versi lama. Server TLS dan middleware jaringan yang ada diharapkan untuk mengabaikan opsi baru ini dan tetap memilih opsi sebelumnya.
+
+Namun, perangkat yang tidak menerapkan TLS dengan tepat mungkin berhenti berfungsi saat ditawarkan opsi baru ini. Misalnya, perangkat mungkin berhenti dihubungkan sebagai respons terhadap opsi yang tidak dikenal atau pesan yang dihasilkan dalam jumlah lebih besar. Perangkat tersebut belum siap digunakan untuk pasca-kuantum dan akan mengganggu transisi pasca-kuantum perusahaan. Jika skenario tersebut ditemukan, administrator harus menghubungi vendor untuk memperbaikinya.
+
+Kebijakan ini adalah tindakan sementara dan akan dihapus setelah <ph name="PRODUCT_NAME" /> versi 141. Fitur ini mungkin disetel ke Aktif untuk memungkinkan Anda menguji masalah, dan dapat disetel ke Nonaktif saat masalah sedang diselesaikan.</translation>
 <translation id="8671119576957984818">Aktifkan hub berbagi desktop</translation>
 <translation id="8671193325113134911">Mengaktifkan pemeriksaan jenis MIME yang ketat untuk skrip pekerja</translation>
 <translation id="8671303329680827168">Kebijakan ini tidak digunakan lagi. Sebagai gantinya, gunakan kebijakan '<ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME" />'.</translation>

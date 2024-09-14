@@ -11,7 +11,6 @@
 <translation id="1035980983510608210">എല്ലാ ടാബുകളും അടച്ചാൽ പിൻ ചെയ്‌ത ടാബുകളും അടയും.</translation>
 <translation id="1036017604683756002">UPS</translation>
 <translation id="1036348656032585052">ഓഫാക്കുക</translation>
-<translation id="10379132160269599">ടാബ് ഗ്രിഡ് കാണിക്കുക</translation>
 <translation id="1041322626941363065">പാസ്‌വേഡുകൾ, ഡാറ്റാ ലംഘനത്തിന്റെ ഭാഗമായി വെളിപ്പെട്ടാൽ നിങ്ങൾക്ക് മുന്നറിയിപ്പ് നൽകുന്നു</translation>
 <translation id="1044891598689252897">സൈറ്റുകൾ സാധാരണ രീതിയിൽ പ്രവർത്തിക്കും</translation>
 <translation id="104491362976654916">പേജ് ഓഫ്‌ലൈനാണ്</translation>
@@ -31,6 +30,7 @@
 <translation id="1118569444314402022">വീണ്ടും സ്വാഗതം, <ph name="USER_NAME" /></translation>
 <translation id="1121850836842642159">ഫോട്ടോകളും ചിത്രങ്ങളും</translation>
 <translation id="1125564390852150847">പുതിയ ടാബ് സൃഷ്‌ടിക്കുക.</translation>
+<translation id="1126696498560056882">ഈ ഉപകരണത്തിലെ അക്കൗണ്ടുകൾ മാനേജ് ചെയ്യുക</translation>
 <translation id="1126809382673880764">അപകടകരമായ വെബ്‌സൈറ്റുകൾ ഡൗൺലോഡുകൾ, വിപുലീകരണങ്ങൾ എന്നിവയിൽ നിന്ന് നിങ്ങളെ പരിരക്ഷിക്കില്ല. Gmail, Search പോലുള്ള മറ്റ് Google സേവനങ്ങളിൽ ഉള്ള സുരക്ഷിത ബ്രൗസിംഗ് പരിരക്ഷ നിങ്ങൾക്ക് തുടർന്നും ലഭിക്കും.</translation>
 <translation id="1142371195993008685"><ph name="FEATURE_NAME" /> എന്നതിനായുള്ള അറിയിപ്പുകൾ ഓഫാക്കുക</translation>
 <translation id="1147031633655575115"><ph name="USER" /> ആയി സൈൻ ഇൻ ചെയ്‌തിരിക്കുന്നു</translation>
@@ -1010,7 +1010,6 @@
 <translation id="594324569139756587">മൂന്നാം കക്ഷി കുക്കികൾ ബ്ലോക്ക് ചെയ്യുക</translation>
 <translation id="5944869793365969636">QR കോഡ് സ്‌കാൻ ചെയ്യുക</translation>
 <translation id="5948291296578561264">നിങ്ങളുടെ ഫോട്ടോ ലൈബ്രറിയിലേക്ക് ഫോട്ടോകൾ സംരക്ഷിക്കാൻ അനുവദിക്കുന്നു.</translation>
-<translation id="5953383789663007162">അക്കൗണ്ട് ലിസ്റ്റ് എഡിറ്റ് ചെയ്യുക</translation>
 <translation id="5954322191260787920">ബുക്ക്‌മാർക്ക് എഡിറ്റ് ചെയ്യുക</translation>
 <translation id="5956112131836209882">ടാബ് ഗ്രൂപ്പ് ടാബ്. <ph name="NUMBER_OF_TABS_IN_GROUP" />-ൽ <ph name="TAB_INDEX_IN_GROUP" />-ാമത്തേത്.</translation>
 <translation id="595769230373966252"><ph name="SEARCH_PROVIDER" /> ഉപയോഗിച്ച് തിരയുക</translation>
@@ -1604,6 +1603,7 @@
 <translation id="8637431369725868556">അപകടകരമായ സൈറ്റുകളിൽ നിന്ന് പരിരക്ഷ നേടുക.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{അപഹരിക്കപ്പെട്ട പാസ്‌വേഡുകൾ ഒന്നുമില്ല}=1{അപഹരിക്കപ്പെട്ട {COUNT} പാസ്‌വേഡ്}other{അപഹരിക്കപ്പെട്ട {COUNT} പാസ്‌വേഡുകൾ}}</translation>
 <translation id="8640575194957831802">അവസാനം തുറന്നത്</translation>
+<translation id="8647280737650867362">നിരക്ക് ട്രാക്ക് ചെയ്യുന്നത് അൺസബ്‌സ്ക്രൈബ് ചെയ്യാനാകുന്നില്ല.</translation>
 <translation id="8654802032646794042">റദ്ദാക്കുക</translation>
 <translation id="8660600697590740984">പകർത്തിയ Lens ചിത്രം</translation>
 <translation id="866266761389616183">ക്ഷമിക്കണം!</translation>

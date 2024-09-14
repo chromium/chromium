@@ -350,6 +350,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="2653659639078652383">Skicka</translation>
 <translation id="2656405586795711023">Webbappar</translation>
 <translation id="2664252182805397291">Visa webbplatser</translation>
+<translation id="2666092431469916601">Överst</translation>
 <translation id="2669454659051515572">Alla som använder enheten kan se nedladdade filer</translation>
 <translation id="2702516483241149200">Nyhet: dela en länk som scrollar fram till den här texten</translation>
 <translation id="2705073298859543115">Skapa översikt</translation>
@@ -451,6 +452,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="3072980200212375806"><ph name="APP_NAME" /> öppnas i Chrome. Genom att fortsätta godkänner du <ph name="BEGIN_LINK1" />Googles användarvillkor<ph name="END_LINK1" /> och <ph name="BEGIN_LINK2" />de ytterligare användarvillkoren för Google Chrome och ChromeOS<ph name="END_LINK2" />. <ph name="BEGIN_LINK3" />Integritetspolicyn<ph name="END_LINK3" /> gäller också.</translation>
 <translation id="3080525922482950719">Du kan spara sidor som du vill läsa senare eller offline</translation>
 <translation id="3087218211037573995">Vissa lösenord som endast har sparats på den här enheten slutar snart att fungera. Du kan flytta lösenorden till Google Lösenordshantering.</translation>
+<translation id="3087734570205094154">Nederst</translation>
 <translation id="3091010850649238832">Visa innehållet i Urklipp</translation>
 <translation id="3098745985164956033">Vissa bilder skickas till Google så att du får bättre beskrivningar</translation>
 <translation id="3114507951000454849">Läs dagens nyheter <ph name="NEWS_ICON" /></translation>
@@ -488,6 +490,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="3282568296779691940">Logga in i Chrome</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> flik}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> flikar}}</translation>
 <translation id="3293181007446299124">Webbhistoriken förblir privat på enheten och rapporter skickas med en fördröjning för att skydda din identitet</translation>
+<translation id="3302615849591357577">Återställ flikgruppen <ph name="TITLE_OF_GROUP" /> med färgen <ph name="COLOR_NAME" /> som en ny flikgrupp i bakgrunden.</translation>
 <translation id="3303414029551471755">Vill du ladda ned innehållet?</translation>
 <translation id="3303855915957856445">Inga sökresultat hittades</translation>
 <translation id="3305130791745726624">Skicka till enheter</translation>
@@ -688,7 +691,6 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="4355272626458588338">Du kan återgå till en sida som är viktig för dig genom att lägga till ett bokmärke</translation>
 <translation id="4357206670025518404">+<ph name="COUNT_NUMBER" /></translation>
 <translation id="4359809482106103048">Säkerhetsöversikt</translation>
-<translation id="4363222835916186793">Aviseringar för den här produkten har inaktiverats</translation>
 <translation id="4378154925671717803">Mobil</translation>
 <translation id="4380055775103003110">Om problemet kvarstår kan du testa andra sätt att fortsätta på <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="4384468725000734951">Du söker med Sogou</translation>
@@ -749,6 +751,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="4624065194742029982">Inkognitoläget i Chrome</translation>
 <translation id="4634124774493850572">Använd lösenordet</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 utsatt lösenord}other{# utsatta lösenord}}</translation>
+<translation id="4642472735733036929">Prisbevakning har avslutats</translation>
 <translation id="4645146721047390964">I inkognitoläget får inte webbplatser se din webbaktivitet på olika webbplatser med hjälp av cookies, för att till exempel anpassa annonser. Funktioner på vissa webbplatser kan sluta fungera.</translation>
 <translation id="4650364565596261010">Systemets standardinställning</translation>
 <translation id="465657074423018424">Säker webbsökning skyddar mot bedrägliga webbplatser. Var extra försiktig när du surfar om du inaktiverar det, särskilt när du ska ange lösenord.</translation>
@@ -800,6 +803,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="4834007576107377210">Visa sökmotorns anvisningar för att radera sökhistoriken om tillämpligt</translation>
 <translation id="4834250788637067901">Betalningsmetoder, erbjudanden och adresser med Google Pay</translation>
 <translation id="4835385943915508971">Chrome har inte tillgång till den begärda resursen.</translation>
+<translation id="483742037940503070">{TAB_COUNT,plural, =1{Återställ flikgruppen med <ph name="TAB_COUNT_ONE" /> flik med färgen <ph name="COLOR_NAME" /> som en ny flikgrupp i bakgrunden.}other{Återställ flikgruppen med <ph name="TAB_COUNT_MANY" /> flikar med färgen <ph name="COLOR_NAME" /> som en ny flikgrupp i bakgrunden.}}</translation>
 <translation id="4837753911714442426">Öppna utskriftsalternativ</translation>
 <translation id="4842092870884894799">Visar popupfönster för lösenordsgenerering</translation>
 <translation id="4844633725025837809">Öka säkerheten genom att kryptera lösenord på enheten innan de sparas i Google Lösenordshantering.</translation>
@@ -1091,6 +1095,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="6210748933810148297">Inte <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Förhandsgranskar sidan</translation>
 <translation id="6221633008163990886">Lås upp om du vill exportera dina lösenord</translation>
+<translation id="6225572914528673855">Adressfält</translation>
 <translation id="6232535412751077445">Om du aktiverar Do Not Track inkluderas en begäran i din surftrafik. Eventuella effekter beror på om webbplatsen svarar på begäran och hur begäran tolkas.
 
 Vissa webbplatser kan till exempel svara på begäran genom att visa annonser som inte baseras på andra webbplatser du har besökt. Många webbplatser samlar ändå in och använder din webbinformation – till exempel för att förbättra säkerheten, tillhandahålla innehåll, annonser och rekommendationer samt generera rapportstatistik.</translation>
@@ -1184,6 +1189,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="6593061639179217415">Datoranpassad webbplats</translation>
 <translation id="6594347733515723558">Sortera, visa alternativ</translation>
 <translation id="6595046016124923392">Bilder skickas till Google så att du får bättre beskrivningar.</translation>
+<translation id="6595634543029443878">{TAB_COUNT,plural, =1{Återställ flikgruppen med <ph name="TAB_COUNT_ONE" /> flik som en ny flikgrupp i bakgrunden.}other{Återställ flikgruppen med <ph name="TAB_COUNT_MANY" /> flikar som en ny flikgrupp i bakgrunden.}}</translation>
 <translation id="6604931690954120417">När du är inloggad i Chrome lagras lösenord du sparar i ditt Google-konto. <ph name="BEGIN_LINK" />Öppna inställningarna<ph name="END_LINK" /> om du vill inaktivera detta.</translation>
 <translation id="661266467055912436">Förbättrar säkerheten för dig och alla andra på webben.</translation>
 <translation id="6621391692573306628">Om du vill skicka den här fliken till en annan enhet loggar du in i Chrome på båda enheterna</translation>
@@ -1208,6 +1214,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="6674571176963658787">Ange din lösenfras för att starta synkroniseringen</translation>
 <translation id="6676927815633975364">Logga in på den här webbplatsen och i Chrome</translation>
 <translation id="6684809838922667136">Gör Chrome bättre</translation>
+<translation id="6704048624334633734">Exportera och radera lösenorden</translation>
 <translation id="670498945988402717">Genomsöktes i går</translation>
 <translation id="6710213216561001401">Föregående</translation>
 <translation id="671481426037969117">Timern för <ph name="FQDN" /> har löpt ut. Den börjar om igen i morgon.</translation>
@@ -1669,6 +1676,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="864544049772947936">Hantera fönster (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="8664215986015753476">Använd Chrome på ditt sätt</translation>
 <translation id="8664979001105139458">Filnamnet finns redan</translation>
+<translation id="8669290537472770919">{FILE_COUNT,plural, =1{Har blockerats av organisationen}other{# har blockerats av organisationen}}</translation>
 <translation id="8672883760227492369">Vissa lösenord på den här enheten slutar snart att fungera. Du kan flytta lösenorden till Google Lösenordshantering.</translation>
 <translation id="8676276370198826499">Registrera dig för <ph name="SITE_ETLD_PLUS_ONE" /> med <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8676789164135894283">Verifieringar för inloggning</translation>

@@ -52,6 +52,7 @@
 <translation id="1204296502688602597">DNS-ի հապաղում</translation>
 <translation id="1207734034680156868">Առաջարկները հիմնված են նկարագրության վրա</translation>
 <translation id="121090498480012229">նվագարկել/դադարեցնել մեդիաֆայլը</translation>
+<translation id="1216675364136048456">Փակել</translation>
 <translation id="1223498995510244364">Ամփոփել</translation>
 <translation id="123124571410524056">Հնարավոր է, որ ցանցային պորտալ կա</translation>
 <translation id="1232610416724362657">ջրվեժ</translation>
@@ -128,6 +129,7 @@
 <translation id="1588438908519853928">Սովորական</translation>
 <translation id="1591562245178063882">Այս ամիս</translation>
 <translation id="1593528591614229756">Ընտրեք միայն ձեր բջջային օպերատորի կամ ադմինիստրատորի կողմից տրամադրված APN-ները։ APN ընտրելու արդյունքում բոլոր հատուկ APN-ները կանջատվեն։ Անվավեր APN-ները կարող են խաթարել ձեր բջջային կապը։ <ph name="LINK_BEGIN" />Իմանալ ավելին<ph name="LINK_END" /></translation>
+<translation id="1604959087182679653">Թաքցնել տեքստը</translation>
 <translation id="160633243685262989">Պատկերի նախադիտում</translation>
 <translation id="1611649489706141841">փոխանցել</translation>
 <translation id="1615335640928990664">Տվյալների օգտագործում <ph name="FRIENDLY_DATE" />-ից ի վեր</translation>
@@ -141,6 +143,7 @@
 <translation id="1643449475550628585">Փոխել պաստառն ամեն օր</translation>
 <translation id="1644574205037202324">Պատմություն</translation>
 <translation id="1651925268237749928">Դուք ընտրել եք ընդհանուր ալբոմ։ Այլ մարդիկ կարող են ավելացնել լուսանկարներ կամ փոփոխել դրանք։ Որպես պաստառ կարելի է օգտագործել լուսանկարներ, որոնք ներկայումս այս ալբոմում չեն։</translation>
+<translation id="1661512400125589646">Դադարեցնել</translation>
 <translation id="1661865805917886535">Հաշվի և համակարգի որոշ տվյալներ կարող են ուղարկվել Google-ին։ Այս տեղեկությունները կօգտագործվեն տեխնիկական խնդիրները լուծելու և մեր ծառայությունների որակը բարելավելու նպատակով՝ Գաղտնիության քաղաքականության (<ph name="PRIVACYPOLICYURL" />) և Օգտագործման պայմանների (<ph name="TERMSOFSERVICEURL" />) համաձայն։ Բովանդակության փոփոխություն պահանջելու համար անցեք Իրավական հարցերով օգնության էջ (<ph name="LEGALHELPPAGEURL" />)։</translation>
 <translation id="1662989795263954667">Դադարեցվել է – Թանաք չկա</translation>
 <translation id="1664796644829245314">Նախադիտում (<ph name="PREVIEW_OBJECT" />)</translation>
@@ -150,6 +153,7 @@
 <translation id="1672499492233627739">Վեբ տեսախցիկի տեսահոսք</translation>
 <translation id="1676557873873341166">Տեսագրում</translation>
 <translation id="1684279041537802716">Ակցենտի գույն</translation>
+<translation id="1697278726914783200">Ձայնագրել</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS լուծիչը առկա է</translation>
 <translation id="1708602061922134366">Google-ի կապույտ</translation>
@@ -172,6 +176,7 @@
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1762483337755424125">Տեքստային տարբերակ</translation>
 <translation id="1765169783255151332">Արագ անցեք մեկ ստեղնից մյուսը</translation>
 <translation id="1768959921651994223">Իսկորոշման տեսակը</translation>
 <translation id="1776228893584526149">Պաստառի երանգ</translation>
@@ -216,6 +221,7 @@
 <translation id="1954818433534793392">շենք</translation>
 <translation id="1962550982027027473">Պահանջվում է կանխադրված APN</translation>
 <translation id="1967860190218310525">Ստեղծել նոր APN</translation>
+<translation id="1967917622327567355">Ցույց տալ տեքստը</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977973007732255293">ավանդական</translation>
 <translation id="1977994649430373166">Google պրոֆիլի լուսանկար</translation>
@@ -248,6 +254,7 @@
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2148716181193084225">Այսօր</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> լուսանկար</translation>
+<translation id="2154460308960858308">Մաքրել որոնման դաշտը</translation>
 <translation id="2156072344042480449">Ձեր վերջին 2 հարցումները։ Դուք կարող եք օգտագործել այս հարցումները միայն այն ժամանակ, երբ այս էջում եք։</translation>
 <translation id="2157660087437850958">զմայլիկների ընտրիչ</translation>
 <translation id="2157959690810728433">ՀԵՐԹԱԳՐՎԱԾ Է</translation>
@@ -259,6 +266,7 @@
 <translation id="2180197493692062006">Սխալ առաջացավ։ Փորձեք նորից բացել հավելվածը։</translation>
 <translation id="2189104374785738357">APN-ի տվյալների փոփոխում</translation>
 <translation id="2195732836444333448">Սերվերում չկան բավականաչափ ռեսուրսներ։ Վերադարձեք քիչ անց։</translation>
+<translation id="2197185031095816179">Անվտանգ կարգավորումների վերականգնումը կօգնի հեռացնել անցանկալի ելնող պատուհանները, շտկել ցանցային խնդիրները և լուծել այլ անսպասելի խնդիրներ։</translation>
 <translation id="2201758491318984023">հեծանիվ</translation>
 <translation id="2203272733515928691">հանքային տաք աղբյուր</translation>
 <translation id="2203642483788377106">քարափ</translation>
@@ -493,6 +501,7 @@
 <translation id="3557205324756024651">Տեղային իսկորոշում (պարտադիր չէ)</translation>
 <translation id="3565064564551103223">Թույլատրված IP-ներ</translation>
 <translation id="3569407787324516067">Էկրանապահ</translation>
+<translation id="3571184524500629183">Փակել որոնումը</translation>
 <translation id="3577473026931028326">Սխալ առաջացավ։ Նորից փորձեք։</translation>
 <translation id="357889014807611375">սահմանափակ Wi-Fi</translation>
 <translation id="3583278742022654445">Ազդանշանը թույլ է։ Փորձեք սարքը մոտեցնել Wi-Fi ազդանշանի աղբյուրին։</translation>
@@ -537,6 +546,7 @@
 <translation id="3820172043799983114">PIN-ը սխալ է</translation>
 <translation id="382043424867370667">«Մայրամուտ» պաստառ</translation>
 <translation id="3824259034819781947">Կցել ֆայլեր</translation>
+<translation id="3836587210832263413">Միայն միացրեք ընդլայնումները, որոնց վստահում եք</translation>
 <translation id="3838338534323494292">Նոր գաղտնաբառը</translation>
 <translation id="3845880861638660475">Սեղմեք <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" />՝ երկխոսության պատուհանը փակելու համար։</translation>
 <translation id="3848280697030027394">նվազեցնել ստեղնաշարի լույսը</translation>
@@ -597,6 +607,7 @@
 <translation id="4111761024568264522">USB հպահարթակ</translation>
 <translation id="4113067922640381334">Այժմ ձեզ հասանելի են նոր <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />պաստառներ<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>
 <translation id="4117637339509843559">Մուգ ռեժիմ</translation>
+<translation id="4126551873361000548">10 վայրկյան հետ գնալ</translation>
 <translation id="4130035430755296270">Մկնիկի նշորդը շարունակեք պահել վրան՝ դասավորության այլ տարբերակներ տեսնելու համար</translation>
 <translation id="4130750466177569591">Համաձայն եմ</translation>
 <translation id="4131410914670010031">Սև ու սպիտակ</translation>
@@ -626,6 +637,7 @@
 <translation id="4251839292699800785">Ոճային գրասենյակ</translation>
 <translation id="4258281355379922695">HTTP-ի հապաղում</translation>
 <translation id="4266143281602681663">կծիկ</translation>
+<translation id="4269815121975886860">Մեկնարկի նախընտրանքներ</translation>
 <translation id="4271957103967917607">Լիաէկրան ռեժիմ</translation>
 <translation id="4275663329226226506">Տեսախցիկ և խոսափող</translation>
 <translation id="4278766082079064416">Դյուրանցումն օգտագործվում է «<ph name="CONFLICT_ACCEL_NAME" />» գործողության համար։ Փոփոխեք կամ հեռացրեք՝ հակասությունը լուծելու համար։</translation>
@@ -677,6 +689,7 @@
 <translation id="4507392511610824664">ավելացնել պայծառությունը</translation>
 <translation id="4511264077854731334">Պորտալ</translation>
 <translation id="4513946894732546136">Հետադարձ կապ</translation>
+<translation id="4516323842122524821">Ձայնի ուժգնություն</translation>
 <translation id="4521826082652183069">Համընկնում սուբյեկտի այլընտրանքային անվան հետ</translation>
 <translation id="4522570452068850558">Մանրամասներ</translation>
 <translation id="4536864596629708641">IP-ի կազմաձևում</translation>
@@ -693,6 +706,7 @@
 <translation id="458794348635939462">Չհաջողվեց կապ հաստատել բոլոր խնամորդների հետ</translation>
 <translation id="4593212453765072419">Պահանջվում է պրոքսի սերվերի նույնականացում</translation>
 <translation id="4594021849294327751">Ստեղծել գրադարձում</translation>
+<translation id="4602266091140407479">Խոսափող</translation>
 <translation id="4607282946861182308">Այս հարցումով հնարավոր չէ պատկեր ստեղծել։ Փորձեք այլ հարցում կատարել։</translation>
 <translation id="4609350030397390689">Ստեղնաշարի պայծառության նվազեցում</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />/<ph name="TOTAL_PAGE_NUMBER" />։ Հպեք Enter՝ տպումը չեղարկելու համար։</translation>
@@ -760,6 +774,7 @@
 <translation id="4932733599132424254">Ամսաթիվ</translation>
 <translation id="4950314376641394653"><ph name="DEVICE_NAME" /> սարքի ներկառուցված ծրագիրը թարմացվել է <ph name="VERSION" /> տարբերակով</translation>
 <translation id="4950893758552030541">ծառերի թունել</translation>
+<translation id="4965661459364092269">Անվտանգ կարգավորումները վերականգնված են</translation>
 <translation id="4965703485264574128">Մոտավոր արդյունք ստանալու համար «<ph name="CATEGORY_TEXT" />» արժեքը բազմապատկեք <ph name="CONVERSION_RATE" />-ով</translation>
 <translation id="4969079779290789265">Տրոհել</translation>
 <translation id="4972592110715526173">փոխել ռեժիմը</translation>
@@ -780,6 +795,7 @@
 <translation id="5049856988445523908">SIM քարտը կողպված է (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Խմբի անունը</translation>
 <translation id="5051044138948155788">Սա միակ էջն է։ Դուք կվերահղվեք սկանավորման մեկնարկի էջ։</translation>
+<translation id="5053233795640754917">Դադարեցնել</translation>
 <translation id="5078711626843651677">Ձայների մոդելները ժամանակավորապես պահվում են սարքում, մինչև ավարտվի խոսողների պիտակումը։ Սա ցանկացած պահի կարող եք անջատել Կարգավորումներում։</translation>
 <translation id="5078983345702708852">ֆուտուրիստական</translation>
 <translation id="5087864757604726239">հետ</translation>
@@ -787,6 +803,7 @@
 <translation id="5089810972385038852">Նահանգ</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
 <translation id="5095761549884461003">Թարմացումը շարունակելու համար ձեր <ph name="DEVICE_NAME" /> սարքից անջատեք USB մալուխը և նորից միացրեք այն</translation>
+<translation id="5095864667399748231">Միացնել կամ անջատել ձայնը</translation>
 <translation id="5099354524039520280">վերև</translation>
 <translation id="5107243100836678918">Առանց «<ph name="META_KEY" />» ստեղնի դյուրանցումը կարող է հակասել որոշ հավելվածների դյուրանցումներին։ Կրկին սեղմեք այս դյուրանցումը՝ դրա օգտագործումը շարունակելու համար, կամ սեղմեք նոր դյուրանցում՝ օգտագործելով «<ph name="KEY" />» ստեղնը։ <ph name="LINK_BEGIN" />Իմանալ ավելին<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">Հոմանիշներ՝</translation>
@@ -820,6 +837,7 @@
 <translation id="5252456968953390977">Ռոումինգ</translation>
 <translation id="5254600740122644523"><ph name="SIMPLE_STYLE" /> գրադարակ <ph name="SIMPLE_TONE" /> սենյակում</translation>
 <translation id="5257811368506016604">Միացնել բաց գույների ռեժիմը</translation>
+<translation id="5261479807286543505">Մեկնարկի կարգավորումներ</translation>
 <translation id="5264277876637023664">Փորձարկել CPU-ն</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="527501763019887383">APN-ն անջատված է։</translation>
@@ -929,9 +947,11 @@
 <translation id="5860033963881614850">Անջատ.</translation>
 <translation id="5860491529813859533">Միացնել</translation>
 <translation id="5876385649737594562">Միացրեք՝ պարամետրեր ընտրելու համար</translation>
+<translation id="5877503382465267833">Դադարեցնել նվագարկումը՝<ph name="RECORDING_NAME" /></translation>
 <translation id="588258955323874662">Լիաէկրան</translation>
 <translation id="5893975327266416093">Հպեք ստեղնի՝ նշանակելու համար</translation>
 <translation id="5895138241574237353">Վերագործարկել</translation>
+<translation id="5896602941605730551">Նվագարկել</translation>
 <translation id="5901630391730855834">Դեղին</translation>
 <translation id="5903200662178656908">Սարքը ստեղնաշարի և մկնիկի համադրություն է։</translation>
 <translation id="5904994456462260490">Ավելացրեք նոր APN</translation>
@@ -996,6 +1016,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6188737759358894319">Ստեղծվել է՝ <ph name="DATE" /></translation>
 <translation id="6189418609903030344">Օգտագործման ընթացքում մարտկոցի հզորությունը նվազում է</translation>
+<translation id="6189987971574353264">Նվագարկել</translation>
 <translation id="6191293864534840972">Սխալ DNS սերվերներ</translation>
 <translation id="6196607555925437199">Նորից ստեղծել</translation>
 <translation id="6205145102504628069">Ամպերի հոսք</translation>
@@ -1131,6 +1152,7 @@
 <translation id="680983167891198932">Բանալի</translation>
 <translation id="6816797338148849397">Ձեր ընտրության վերաբերյալ հասանելի են տեղեկություններ։ Դրանք բացելու համար օգտագործեք վեր սլաքը։</translation>
 <translation id="6831043979455480757">Թարգմանել</translation>
+<translation id="6846843854964504403">Անվտանգ կարգավորումների վերականգնում</translation>
 <translation id="6853312040151791195">Լիցքաթափման արագությունը</translation>
 <translation id="6862416241246624313">Կարծիքն ուղարկվեց</translation>
 <translation id="6866732840889595464">մարգարտածաղիկ</translation>
@@ -1143,6 +1165,7 @@
 <translation id="6910312834584889076">Սկաների կափարիչը բաց է։ Փակեք այն և նորից փորձեք։</translation>
 <translation id="6910845598686542904">Ստեղծել ձայնագրության մեջ հայտնաբերված ձայների մոդելները</translation>
 <translation id="6911383237894364323">Չհաջողվեց միանալ մեդիա սերվերներին</translation>
+<translation id="6927968682840110570">Ձայնագրության անվանումը</translation>
 <translation id="6930242544192836755">Տևողություն</translation>
 <translation id="6930597342185648547">Ֆոնի մասին</translation>
 <translation id="6939667434404433010">Որոնեք ձայնագրության անվանումը</translation>
@@ -1255,6 +1278,7 @@
 <translation id="7378170410161264436">Ձայնագրիչը կարող է գրադարձումներ ստեղծել խոսք պարունակող ձայնագրությունների համար։
 Այս գրադարձումների համար ներբեռնեք գրադարձման մոդելը (մինչև 100 ՄԲ)։</translation>
 <translation id="7384004438856720753">պալատ</translation>
+<translation id="7388345524791662148">Լրացուցիչ ընտրանքներ «<ph name="RECORDING_NAME" />» ձայնագրության համար</translation>
 <translation id="7388959671917308825">Ներկառուցված հպահարթակ</translation>
 <translation id="7397270852490618635">Անջատել բաց թեման</translation>
 <translation id="7401543881546089382">Ջնջել դյուրանցումը</translation>
@@ -1276,6 +1300,7 @@
 <translation id="7513770521371759388">ներքև</translation>
 <translation id="7514365320538308">Ներբեռնել</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7519481256236810334">Նվագարկել՝ <ph name="RECORDING_NAME" /></translation>
 <translation id="7525067979554623046">Ստեղծել</translation>
 <translation id="7528507600602050979">Տեղեկատվական բովանդակությունը հասանելի չէ</translation>
 <translation id="7535791657097741517">Միացնել բաց թեման</translation>
@@ -1315,9 +1340,11 @@
 <translation id="7746357909584236306">հնարավոր է փոփոխել</translation>
 <translation id="7747039790905080783">Ընդհանուր բանալի</translation>
 <translation id="7752963721013053477">Լուսաբացից մայրամուտ. բացառիկ</translation>
+<translation id="7760571082554155847">Գլխավոր էջի կարգավորումներ</translation>
 <translation id="7762130827864645708">Ձեր գաղտնաբառը հաջողությամբ փոխվեց։ Այս պահից սկսած օգտագործեք նոր գաղտնաբառը։</translation>
 <translation id="7763470514545477072">Համընկնում տիրույթի վերջածանցի հետ</translation>
 <translation id="7769672763586021400">Մոդելի ID-ն</translation>
+<translation id="7774759755755950354">Հետ</translation>
 <translation id="7778717409420828014">Մեր թիմը կդիտարկի ձեր կարծիքը։ Այն կօգնի մեզ բարելավել Chromebook-ի աշխատանքը։ Հաղորդումների մեծ քանակի պատճառով մենք չենք կարողանա պատասխան ուղարկել։</translation>
 <translation id="7781829728241885113">Երեկ</translation>
 <translation id="7784116172884276937">DNS սերվերներ կարգավորված չեն</translation>
@@ -1350,11 +1377,13 @@
 <translation id="7897043345768902965">ճեմուղի</translation>
 <translation id="7902285181767404769">Անջատել ծանուցումները ձայնագրության ժամանակ</translation>
 <translation id="7903695460270716054">Ընտրել առաջարկվող պաստառներ և պատկերներ</translation>
+<translation id="7912005977894000746">Վերադառնալ հիմնական էջ</translation>
 <translation id="7915220255123750251">Կառավարեք ցանցի APN կարգավորումները։ APN-ները կապ են հաստատում բջջային ցանցի և համացանցի միջև։</translation>
 <translation id="7936303884198020182">DNS սերվերներ չեն գտնվել</translation>
 <translation id="7942349550061667556">Կարմիր</translation>
 <translation id="7943235353293548836">Keep-alive միացումների ստատիկ ինտերվալ</translation>
 <translation id="7943516765291457328">Միացրեք Bluetooth-ը՝ մոտակա թեժ կետեր գտնելու համար</translation>
+<translation id="7944482598620888754">Կայքի բովանդակություն</translation>
 <translation id="7944562637040950644">միացնել/անջատել ստեղնաշարի հետնալույսը</translation>
 <translation id="7953669802889559161">Ներածման մեթոդներ</translation>
 <translation id="7955587717700691983">Bluetooth ստեղնաշար</translation>
@@ -1391,6 +1420,7 @@
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Հաստատել</translation>
 <translation id="8132480444149501833">Հայցել թրաֆիկի հաշվիչներ</translation>
+<translation id="8135609423982943441">Ձեր Chromebook-ում վերականգնվեցին ապահով կանխադրված կարգավորումները։ Դուք ցանկացած ժամանակ կարգավորումներում կարող եք ճշգրտել այս փոփոխությունները։</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Ընտրել «<ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" />» տարբերակը</translation>
 <translation id="8151185429379586178">Ծրագրավորողի գործիքներ</translation>
@@ -1408,6 +1438,7 @@
 <translation id="8227119283605456246">Կցել ֆայլ</translation>
 <translation id="8227488649450500937">Փորձեք այս հարցումներից մեկը կամ դիտեք <ph name="BEGIN_LINK_PROMPTING_GUIDE" />ուղեցույցը<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="8230672074305416752">Չհաջողվեց փինգ ուղարկել կանխադրված ցանցի անցախուցին</translation>
+<translation id="8236972776513018241">Տեքստային տարբերակ</translation>
 <translation id="8238771987802558562">Ընտրեք APN</translation>
 <translation id="8246209727385807362">Անհայտ օպերատոր</translation>
 <translation id="8250926778281121244">ժանգագույն</translation>
@@ -1420,6 +1451,7 @@
 <translation id="8291967909914612644">Տան ծառայությունների մատակարարի երկիրը</translation>
 <translation id="8294431847097064396">Աղբյուր</translation>
 <translation id="8302368968391049045">HTTPS հրապատ</translation>
+<translation id="8308787307410010965">Կայքի բովանդակության կարգավորումներ</translation>
 <translation id="8312330582793120272">նվագարկել մեդիաֆայլը</translation>
 <translation id="8318753676953949627">Պատկերներ չկան</translation>
 <translation id="8320910311642849813">անտառ</translation>
@@ -1510,6 +1542,7 @@
 <translation id="8775713578693478175">Մոդեմի APN</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Այս ցանցը կարող է մուտքի էջ ունենալ</translation>
+<translation id="8797082062139985406">Ստեղծել անվանում Google AI-ի միջոցով</translation>
 <translation id="8798099450830957504">Կանխադրված</translation>
 <translation id="8798441408945964110">Մատակարարի անունը</translation>
 <translation id="8808828119384186784">Chrome-ի կարգավորումներ</translation>
@@ -1530,6 +1563,7 @@
 <translation id="8864415976656252616">Առաջարկվող բովանդակություն չկա։ Դիտեք հիմնական տեղեկատվական բովանդակությունը։</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Սարքը պլանշետ է։</translation>
+<translation id="8878117140814294155">Միացնել կամ անջատել խոսափողը</translation>
 <translation id="8881098542468797602">Փորձարկումը հաջողվեց</translation>
 <translation id="8882789155418924367">բվեր</translation>
 <translation id="8892443466059986410">Չեղարկել դյուրանցման փոփոխումը</translation>

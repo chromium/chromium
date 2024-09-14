@@ -104,6 +104,7 @@
 <translation id="5400836586163650660">ধূসর</translation>
 <translation id="5490235265819901748">ট্যাব গ্রুপ বড় করে দেখানো হয়েছে</translation>
 <translation id="5494920125229734069">সকল বেছে নিন</translation>
+<translation id="5549653163690032080">শেয়ার করা ট্যাব গ্রুপ <ph name="TITLE_OF_GROUP" />-এর জন্য ট্যাব গ্রুপ অ্যাকশন মেনু খুলুন</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" />টি ট্যাব, <ph name="COLOR_NAME" /> কালার সহ, ট্যাব গ্রুপ বন্ধ করুন।}one{<ph name="TABS_COUNT_MANY" />টি ট্যাব, <ph name="COLOR_NAME" /> কালার সহ, ট্যাব গ্রুপ বন্ধ করুন।}other{<ph name="TABS_COUNT_MANY" />টি ট্যাব, <ph name="COLOR_NAME" /> কালার সহ, ট্যাব গ্রুপ বন্ধ করুন।}}</translation>
 <translation id="5556417849629758491">স্টোর সংক্রান্ত তথ্য দেখুন, স্ক্রিনের সবচেয়ে উপরের অংশে এই বিকল্প উপলভ্য আছে</translation>
 <translation id="5627941783489838464">কোনও ট্যাব সম্পর্কিত আপডেট নেই</translation>
@@ -135,6 +136,7 @@
 <translation id="6694634756612002311">শেয়ার করা ম্যানেজ করুন</translation>
 <translation id="6744956528665271406">গ্রুপের রঙ এডিট করুন</translation>
 <translation id="6856809498882026482">একাধিক ট্যাব একসাথে বেছে নেওয়ার মোড লুকান</translation>
+<translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" />টি ট্যাব, <ph name="COLOR_NAME" /> কালার সহ, শেয়ার করা <ph name="TITLE_OF_GROUP" /> ট্যাব গ্রুপ বড় করুন।}one{<ph name="TABS_COUNT_MANY" />টি ট্যাব, <ph name="COLOR_NAME" /> কালার সহ, শেয়ার করা <ph name="TITLE_OF_GROUP" /> ট্যাব গ্রুপ বড় করুন।}other{<ph name="TABS_COUNT_MANY" />টি ট্যাব, <ph name="COLOR_NAME" /> কালার সহ, শেয়ার করা <ph name="TITLE_OF_GROUP" /> ট্যাব গ্রুপ বড় করুন।}}</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{ট্যাব শেয়ার করুন}one{ট্যাব শেয়ার করুন}other{ট্যাব শেয়ার করুন}}</translation>
 <translation id="7129458170538955174">অর্ধেক খোলা স্টোরের বিষয়ে তথ্য</translation>
 <translation id="7200189319044305940">{NUMBER_OF_TABS,plural, =1{<ph name="TITLE_OF_GROUP" /> ট্যাব গ্রুপ বন্ধ করুন যেটিতে <ph name="TABS_COUNT_ONE" />টি ট্যাব আছে।}one{<ph name="TITLE_OF_GROUP" /> ট্যাব গ্রুপ বন্ধ করুন যেটিতে <ph name="TABS_COUNT_MANY" />টি ট্যাব আছে।}other{<ph name="TITLE_OF_GROUP" /> ট্যাব গ্রুপ বন্ধ করুন যেটিতে <ph name="TABS_COUNT_MANY" />টি ট্যাব আছে।}}</translation>
@@ -170,6 +172,7 @@
 <translation id="8205266828577616993">ট্যাব উপরে সরান</translation>
 <translation id="8261506727792406068">মুছুন</translation>
 <translation id="8338427544764842461">আপনার ট্যাব গ্রুপ এখানে সেভ করা হয়েছে এবং আপনার সবকটি সাইন-ইন করা ডিভাইসে আপডেট হয়ে যায়</translation>
+<translation id="8344020191144794051">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" />টি ট্যাব, <ph name="COLOR_NAME" /> কালার সহ, শেয়ার করা ট্যাব গ্রুপ বড় করুন।}one{<ph name="TABS_COUNT_MANY" />টি ট্যাব, <ph name="COLOR_NAME" /> কালার সহ, শেয়ার করা ট্যাব গ্রুপ বড় করুন।}other{<ph name="TABS_COUNT_MANY" />টি ট্যাব, <ph name="COLOR_NAME" /> কালার সহ, শেয়ার করা ট্যাব গ্রুপ বড় করুন।}}</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{বেছে নেওয়া ট্যাবের মধ্যে <ph name="TABS_COUNT_ONE" />টি ট্যাব বন্ধ আছে}one{বেছে নেওয়া ট্যাবের মধ্যে <ph name="TABS_COUNT_MANY" />টি ট্যাব বন্ধ আছে}other{বেছে নেওয়া ট্যাবের মধ্যে <ph name="TABS_COUNT_MANY" />টি ট্যাব বন্ধ আছে}}</translation>
 <translation id="8398929769197326728">নতুন ফোল্ডার - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">সেটিংস</translation>

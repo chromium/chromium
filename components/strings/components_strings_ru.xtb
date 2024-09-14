@@ -712,6 +712,7 @@
 <translation id="2265356434276802347">Число рекомендуемых записей для этого правила должно быть не больше <ph name="MAX_ITEMS_LIMIT" />.</translation>
 <translation id="2267047181501709434">Проверка данных…</translation>
 <translation id="2268044343513325586">Уточнить</translation>
+<translation id="2268966938956566076">Загрузить через <ph name="MINUTES" /> мин.</translation>
 <translation id="2270484714375784793">Номер телефона</translation>
 <translation id="2276057643614339130">Печатная основа</translation>
 <translation id="2277103315734023688">Перемотать вперед</translation>
@@ -1111,6 +1112,7 @@
 <translation id="3062655045399308513">Удалить данные о работе в браузере…</translation>
 <translation id="306573536155379004">Игра началась.</translation>
 <translation id="3067505415088964188">Низкие цены</translation>
+<translation id="3068118691172921711">Загрузка файлов в сервис <ph name="CLOUD_PROVIDER" /> начнется через 1 минуту</translation>
 <translation id="3076865167425975822">Операционные системы</translation>
 <translation id="3080254622891793721">Изображения</translation>
 <translation id="3082007635241601060">Разрешите компании Google использовать корзины, чтобы находить для вас персонализированные скидки.</translation>
@@ -1122,6 +1124,7 @@
 <translation id="3099619114405539473">Использование доступных камер (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="3102312643185441063">Сберегательный счет</translation>
 <translation id="3103188521861412364">Акции и облигации</translation>
+<translation id="3103535543639438037">Сравните похожие продукты</translation>
 <translation id="3105172416063519923">Идентификатор объекта:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />Проверить настройки безопасного DNS-сервера<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Средний лоток</translation>
@@ -1298,6 +1301,7 @@
 <translation id="3407789382767355356">вход через сторонние сервисы</translation>
 <translation id="340924996148642843">Функция сравнения сейчас недоступна</translation>
 <translation id="3409896703495473338">Открыть настройки безопасности</translation>
+<translation id="3411091017011773343">Загрузить через <ph name="HOURS" /> ч.</translation>
 <translation id="3414275587143250384">Распределенные и облачные вычисления</translation>
 <translation id="3414952576877147120">Размер:</translation>
 <translation id="341513675006332771">Кнопка "Запустить игру Chrome Dino". Нажмите ее, чтобы сыграть в Chrome Dino.</translation>
@@ -1894,7 +1898,6 @@
 <translation id="4451135742916150903">Разрешено отправлять запрос на подключение к HID-устройствам</translation>
 <translation id="4451684391620232683">Показанный пользователю текст:</translation>
 <translation id="4452328064229197696">Пароль, который вы только что использовали, был раскрыт в результате утечки данных. Чтобы защитить свои аккаунты, проверьте сохраненные пароли в Google Менеджере паролей.</translation>
-<translation id="4452957520362597816">Установка веб-приложений</translation>
 <translation id="4456937135469235202">Приключенческие туры</translation>
 <translation id="4464826014807964867">Веб-сайты со сведениями от вашей организации</translation>
 <translation id="4466576951214254884">Студенческие кредиты и займы на образование</translation>
@@ -1966,6 +1969,7 @@
 <translation id="4628678854894591460">Туристические предложения</translation>
 <translation id="4628948037717959914">Фото</translation>
 <translation id="4629370161347991046">A4x6</translation>
+<translation id="462989688138616749">Загрузка файлов в сервис <ph name="CLOUD_PROVIDER" /> начнется через <ph name="HOURS" /> ч.</translation>
 <translation id="4631649115723685955">С кешбэком</translation>
 <translation id="4631881646528206880">Создание виртуальной карты</translation>
 <translation id="4635278307999235413">Данные передаются в консоль администратора</translation>
@@ -2086,6 +2090,7 @@
 <translation id="484988093836683706">Использовать разблокировку устройства</translation>
 <translation id="4850886885716139402">Смотреть</translation>
 <translation id="4854853140771946034">Быстро создать заметку в Google Keep</translation>
+<translation id="4855395119669662878">Администратор начнет загрузку файлов в сервис <ph name="CLOUD_PROVIDER" /> в <ph name="DATE_TIME" />. Не отключайте устройство, пока загрузка не завершится. Во время нее вы можете только читать локальные файлы.</translation>
 <translation id="485902285759009870">Проверка кода…</translation>
 <translation id="4860260582253463350">Прежде чем перейти на YouTube, подтверди, что это действительно ты. Будут выбраны параметры, заданные твоим родителем или законным представителем в Family Link.</translation>
 <translation id="4864406669374375262">Версия скопирована в буфер обмена</translation>
@@ -2141,6 +2146,7 @@
 <translation id="4933468175699107356">Нажмите правой кнопкой мыши, чтобы автоматически подставить в форму сохраненную информацию, например имя или адрес</translation>
 <translation id="4934780484581617878">Управление окнами</translation>
 <translation id="4936134414789135531">Введенное значение "<ph name="VALUE_NAME" />" не найдено.</translation>
+<translation id="4936573216809994970">Загрузка файлов в сервис <ph name="CLOUD_PROVIDER" /> начнется через 1 час</translation>
 <translation id="4936675324097895694">Финансы</translation>
 <translation id="4943620199112228840">Использование микрофонов.</translation>
 <translation id="4943872375798546930">Нет результатов</translation>
@@ -2314,6 +2320,7 @@
 <translation id="5269225904387178860">Четыре отверстия снизу</translation>
 <translation id="5271381225185906340">условие "<ph name="DATA_CONTROLS_ATTRIBUTE" />" не поддерживается для "<ph name="DATA_CONTROLS_RESTRICTION" />".</translation>
 <translation id="5273658854610202413">Внимание! Это правило не объединено в соответствии с правилом PolicyDictionaryMultipleSourceMergeList, так как оно не относится к словарю.</translation>
+<translation id="5278778426231952189">Загрузить сейчас</translation>
 <translation id="5279286380302340275">Открыть список скачанных файлов</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">Свойства документа</translation>
@@ -3820,6 +3827,7 @@
 <translation id="8030729864112325446">Дополнительное образование и профессиональная подготовка</translation>
 <translation id="8032546467100845887">Прозрачность</translation>
 <translation id="8035152190676905274">Ручка</translation>
+<translation id="8035264638816032066">Заголовки вкладок и URL страниц, которые вы добавляете в таблицу, отправляются в Google.</translation>
 <translation id="8037117624646282037">Кто недавно работал с устройством.</translation>
 <translation id="8037357227543935929">Спрашивать (по умолчанию)</translation>
 <translation id="803771048473350947">Файл</translation>
@@ -4120,6 +4128,7 @@
 <translation id="8564466070529550495">Виртуальная карта недоступна. Повторите попытку позже.</translation>
 <translation id="8564985650692024650">Chromium рекомендует сбросить пароль, используемый в подразделении <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />, если вы указывали его на других сайтах.</translation>
 <translation id="8570895683659698018">Хобби и отдых</translation>
+<translation id="8572792595597115856">Действует до <ph name="DATE" /></translation>
 <translation id="8574841453995331336">Холодильники и морозильные камеры</translation>
 <translation id="8577192028579836704">Средняя цена: <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">Виртуальная карта недоступна</translation>
@@ -4141,6 +4150,7 @@
 <translation id="8617269623452051934">использование устройства</translation>
 <translation id="861775596732816396">Размер: 4</translation>
 <translation id="8620276786115098679">Конверт Kaku 7</translation>
+<translation id="8622864575115813231">Устанавливаем связь с вашим финансовым учреждением…</translation>
 <translation id="8623885649813806493">Нет подходящих паролей. Показать все сохраненные пароли.</translation>
 <translation id="8624354461147303341">Разрешить</translation>
 <translation id="8634957317623797170">54 x 86 мм</translation>
@@ -4440,6 +4450,7 @@
 <translation id="9192361865877479444">Металл (матовый)</translation>
 <translation id="9192947025498305328">Экологически чистая косметика</translation>
 <translation id="9199905725844810519">Печать заблокирована</translation>
+<translation id="9204089334327209740">Когда загрузка завершится, вы сможете изменять свои файлы в сервисе <ph name="CLOUD_PROVIDER" />. Данные в локальном хранилище, в том числе в корзине, будут автоматически удалены.</translation>
 <translation id="9205078245616868884">Данные зашифрованы с помощью кодовой фразы. Введите ее, чтобы начать синхронизацию.</translation>
 <translation id="920643408853370361">Туристическое страхование</translation>
 <translation id="9207861905230894330">Не удалось добавить статью</translation>
@@ -4460,6 +4471,7 @@
 <translation id="937804173274050966"><ph name="BEGIN_BOLD" />Какие данные используются.<ph name="END_BOLD" /> Темы рекламы подбираются на основе истории браузера – списка сайтов, которые вы открывали в Chrome на этом устройстве.</translation>
 <translation id="937885410143139026">Данные переданы в консоль администратора</translation>
 <translation id="939736085109172342">Новая папка</translation>
+<translation id="940524522703752213">Загрузка файлов в сервис <ph name="CLOUD_PROVIDER" /> начнется через <ph name="MINUTES" /> мин.</translation>
 <translation id="944540589955480312">Использовать пароли и ключи доступа, сохраненные в аккаунте Google</translation>
 <translation id="945646848072568856">Chrome запрещает сайтам использовать сторонние файлы cookie для отслеживания ваших действий в интернете.</translation>
 <translation id="945855313015696284">Проверьте данные и удалите недействительные карты.</translation>

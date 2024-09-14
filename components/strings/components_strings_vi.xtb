@@ -1015,6 +1015,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2882949212241984732">Gấp 2 cửa</translation>
 <translation id="2891963978019740012">Công cụ tìm kiếm của bạn trong Chrome</translation>
 <translation id="2893773853358652045">Cuộn thứ tư</translation>
+<translation id="2894137550885451583">Đây là giá hiển thị bằng <ph name="CURRENCY" /> cho sản phẩm <ph name="PRODUCT" /></translation>
 <translation id="2900528713135656174">Tạo sự kiện</translation>
 <translation id="2902312830803030883">Thao tác khác</translation>
 <translation id="2903493209154104877">Địa chỉ</translation>
@@ -1612,6 +1613,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3949601375789751990">Lịch sử duyệt web của bạn xuất hiện ở đây</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">Bạn chưa lưu phương thức thanh toán nào</translation>
+<translation id="3950560191811267370">Đã đóng bảng thương mại ở dưới cùng</translation>
 <translation id="3950574001630941635">Mở lại hướng dẫn từ đầu</translation>
 <translation id="3950820424414687140">Đăng nhập</translation>
 <translation id="3953505489397572035">Đây là mức giá thông thường</translation>
@@ -1897,7 +1899,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4451135742916150903">Trang web có thể yêu cầu kết nối với thiết bị HID</translation>
 <translation id="4451684391620232683">Nội dung người dùng nhìn thấy:</translation>
 <translation id="4452328064229197696">Mật khẩu bạn vừa sử dụng đã bị lộ trong một sự cố rò rỉ dữ liệu. Để bảo mật tài khoản của bạn, Trình quản lý mật khẩu của Google khuyên bạn nên kiểm tra các mật khẩu đã lưu.</translation>
-<translation id="4452957520362597816">Yêu cầu cài đặt ứng dụng web</translation>
 <translation id="4456937135469235202">Du lịch mạo hiểm</translation>
 <translation id="4464826014807964867">Các trang web có thông tin của tổ chức bạn</translation>
 <translation id="4466576951214254884">Khoản vay cho sinh viên và cấp vốn học đại học</translation>
@@ -2354,6 +2355,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5331585574693522196">Đặt làm mặc định</translation>
 <translation id="5332219387342487447">Phương thức giao hàng</translation>
 <translation id="5332769172018416402">Nhắn tin để hỏi</translation>
+<translation id="533323551986281710">Bảng thương mại ở dưới cùng đã mở trên toàn màn hình</translation>
 <translation id="5334013548165032829">Nhật ký hệ thống chi tiết</translation>
 <translation id="5334145288572353250">Lưu địa chỉ?</translation>
 <translation id="5340250774223869109">Đã chặn ứng dụng</translation>
@@ -2536,6 +2538,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5675650730144413517">Trang này hiện không hoạt động</translation>
 <translation id="5675809467256309336">Nhạc vũ trường và nhạc điện tử</translation>
 <translation id="5675959228867414813">Hiển thị theo ngày</translation>
+<translation id="567604591393105935">Bảng thương mại ở dưới cùng đã mở ở nửa dưới của màn hình</translation>
 <translation id="5677928146339483299">Bị chặn</translation>
 <translation id="5678007133659493065">Nhũ</translation>
 <translation id="5680642791693447368">Phim kinh dị, hình sự và bí ẩn</translation>
@@ -3443,6 +3446,7 @@ Thông tin chi tiết bổ sung:
 <translation id="7374733840632556089">Sự cố này xảy ra do một chứng chỉ mà bạn hoặc ai đó đã cài đặt trên thiết bị của bạn. Chrome không tin cậy chứng chỉ này vì chứng chỉ được xác định là dùng để chặn và giám sát mạng. Mặc dù có một số trường hợp trong đó hoạt động giám sát là hợp pháp, chẳng hạn như mạng của trường học hay công ty, nhưng Chrome muốn đảm bảo rằng bạn biết điều này, ngay cả khi bạn không thể ngăn chặn. Hoạt động giám sát có thể diễn ra trong bất kỳ trình duyệt hoặc ứng dụng nào có quyền truy cập vào web.</translation>
 <translation id="7375532151824574023">{NUM_COOKIES,plural, =0{Không cho phép trang web nào}=1{Đã cho phép 1 trang web}other{Đã cho phép # trang web}}</translation>
 <translation id="7375818412732305729">Đính kèm tệp</translation>
+<translation id="7376031331622621328">Bảng thương mại ở dưới cùng</translation>
 <translation id="7377249249140280793"><ph name="RELATIVE_DATE" /> - <ph name="FULL_DATE" /></translation>
 <translation id="7377314930809374926">Ngành du lịch – khách sạn – nhà hàng</translation>
 <translation id="7378594059915113390">Các chức năng điều khiển nội dung đa phương tiện</translation>
@@ -4018,6 +4022,7 @@ Thông tin chi tiết bổ sung:
 <translation id="8381674639488873545">Những khoản phí này có thể là khoản thu một lần hoặc định kỳ và có thể không rõ ràng. <ph name="BEGIN_LINK" />Vẫn hiển thị<ph name="END_LINK" /></translation>
 <translation id="8382097126743287270">Tự động mở toàn màn hình</translation>
 <translation id="838307841291975086">Xe ô tô khoang dài</translation>
+<translation id="8388286357548915205">Sử dụng cho tất cả các khách</translation>
 <translation id="8389532092404711541">Giá thông thường: <ph name="LOW_PRICE" /></translation>
 <translation id="8389940864052787379">Xe độ và xe có hiệu suất cao</translation>
 <translation id="8390725133630534698">Chính sách của quản trị viên đã chặn thao tác chia sẻ từ <ph name="ORIGIN_NAME" /> với <ph name="VM_NAME" /></translation>

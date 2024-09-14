@@ -4164,6 +4164,7 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
 <translation id="4140646780789794190">Disattiva la condivisione dei dati diagnostici con PluginVm</translation>
 <translation id="4144417751555442768">IA generativa</translation>
 <translation id="4145383150978634398">Rendi la modalità Desktop unificato disponibile per l'utente</translation>
+<translation id="4146319954420095470">(Avviso! A breve questa dipendenza verrà eliminata, inizia a usare invece il criterio <ph name="GLS_POLICY_NAME" />. Se questo criterio viene impostato su <ph name="BLOCK_GEOLOCATION_SETTING" />, i servizi di sistema <ph name="PRODUCT_OS_NAME" /> e le app per Android non possono accedere ai dati sulla posizione. Se imposti il criterio su qualsiasi altro valore o se lo lasci non selezionato, all'utente verrà chiesto il consenso quando un'app Android richiede l'accesso ai dati sulla posizione.</translation>
 <translation id="4147818922357566987">Attiva solo le varianti relative alle correzioni critiche</translation>
 <translation id="4150201353443180367">Display</translation>
 <translation id="4154221011709068799">Non consentire dispositivi di archiviazione esterni</translation>
@@ -6176,6 +6177,29 @@ Se viene configurato per il kiosk <ph name="PRODUCT_OS_NAME" />, questo criterio
 <translation id="5622590774455244290">Le app per Android potrebbero decidere volontariamente se rispettare o meno questo elenco. Non è possibile imporre il rispetto dell'elenco.</translation>
 <translation id="5622924058222112599">Viene attivata la procedura di lancio predefinita di CECPQ2</translation>
 <translation id="5623304306796942802">Mostra richiesta in caso di più certificati corrispondenti</translation>
+<translation id="5624334866248253262">Consente di configurare un elenco di regole di controllo dati per prevenire le fughe di dati.
+
+      Ciascuna regola prevede quanto segue:
+      - Campi delle condizioni per attivarla. Una regola viene attivata soltanto se un'azione dell'utente corrisponde a tutti i campi compilati nei relativi campi <ph name="DATA_CONTROLS_SOURCES" />, <ph name="DATA_CONTROLS_DESTINATIONS" />, <ph name="DATA_CONTROLS_AND" />, <ph name="DATA_CONTROLS_OR" /> e <ph name="DATA_CONTROLS_NOT" />. Per quanto riguarda i campi secondari dell'elenco, deve corrispondere soltanto una voce; ad esempio, deve corrispondere un solo pattern URL per attivare la regola.
+      - Un elenco di limitazioni da applicare. A seconda della limitazione, potrebbero essere disponibili solo le condizioni <ph name="DATA_CONTROLS_SOURCES" /> o <ph name="DATA_CONTROLS_DESTINATIONS" />.
+
+      È possibile aggiungere regole per:
+      - Controllare i dati degli appunti condivisi tra le origini e le destinazioni.
+      - Controllare il blocco degli screenshot in base alle schede di origine.
+
+      Se il criterio <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" /> viene impostato su True, le regole attivate vengono segnalate all'amministratore.
+      Il livello di limitazione può essere impostato su BLOCK, WARN o REPORT.
+      - Se il livello di limitazione è impostato su BLOCK, l'azione non sarà consentita.
+      - Se il livello di limitazione è impostato su WARN, l'utente verrà avvisato e potrà scegliere se continuare o annullare l'azione.
+      - Se il livello di limitazione è impostato su REPORT, l'azione dell'utente non verrà interrotta, ma verrà inviata una segnalazione se il criterio <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" /> è attivo.
+
+      Note:
+      - I pattern URL devono avere il formato indicato all'indirizzo https://support.google.com/chrome/a?p=url_blocklist_filter_format.
+      - Per conoscere le regole per la prevenzione delle fughe di dati specifiche di <ph name="PRODUCT_OS_NAME" />, vedi anche il criterio <ph name="DATA_LEAK_PREVENTION_RULES_LIST" />.
+
+      Se il criterio non viene configurato, non verranno applicate limitazioni.
+
+      Questo criterio è disponibile solo per gli utenti a cui è stata assegnata una licenza Chrome Enterprise Premium.</translation>
 <translation id="5625771176514429288">Sarà consentita l'esecuzione delle app di Chrome su queste piattaforme</translation>
 <translation id="5630352020869108293">Ripristina l'ultima sessione</translation>
 <translation id="5633871703004128675">Attiva la funzione di accessibilità di evidenziazione del cursore di testo</translation>
@@ -6339,9 +6363,6 @@ Se questo criterio viene disattivato o se non viene configurato, i Glanceables n
 <translation id="5776485039795852974">Chiedi ogni volta che un sito desidera mostrare le notifiche desktop</translation>
 <translation id="5783009211970309878">Stampa intestazioni e piè di pagina</translation>
 <translation id="5790763087505467169">Riduci notifiche sull'avvio automatico della sessione Ospite gestita</translation>
-<translation id="5793378951267871906">Se il criterio viene attivato, <ph name="PRODUCT_OS_NAME" /> salverà automaticamente le credenziali Wi-Fi attive del kiosk a livello di dispositivo: il Wi-Fi attivo può essere utilizzato da qualsiasi altra app kiosk o qualsiasi altro relativo utente sul dispositivo.
-Se questo criterio non viene configurato o se viene disattivato, le credenziali Wi-Fi attive del kiosk vengono memorizzate a livello di kiosk: il Wi-Fi configurato in un'app kiosk può essere utilizzato solo all'interno di quell'app.
-Questo criterio non è consigliato e deve essere utilizzato quando non sono disponibili altre opzioni.</translation>
 <translation id="5800329278018669527">Disattiva la richiesta di configurazione di rete in modalità offline</translation>
 <translation id="5802931736499687181">Disabilita la Pipeline di reporting criptato</translation>
 <translation id="5803715507113569033">Questo criterio consente agli amministratori di configurare il montaggio di <ph name="MICROSOFT_ONE_DRIVE_NAME" />.
@@ -9372,13 +9393,6 @@ In questo tipo di scenari non è garantita la corretta migrazione dei dati.
 <translation id="8028814157747157754">Attiva il provider di ricerca predefinito e consenti agli utenti di modificare l'elenco dei provider di ricerca</translation>
 <translation id="8029201909194194377">Durata massima della sessione consentita per le connessioni di accesso remoto</translation>
 <translation id="8031651557770840616">Non consentire Sfondo AI generativa</translation>
-<translation id="8033450879690820321">Questo criterio consente di disattivare temporaneamente il nuovo comportamento delle barre di scorrimento attivabili da tastiera.
-
-Se viene attivato o se non viene configurato, le barre di scorrimento senza elementi secondari attivabili sono attivabili con la tastiera per impostazione predefinita. Inoltre, le barre di scorrimento sono attivabili con un clic e tramite programmazione per impostazione predefinita.
-
-Se questo criterio viene disattivato, le barre di scorrimento non saranno attivabili per impostazione predefinita.
-
-Questo criterio è una soluzione alternativa temporanea e verrà rimosso nella versione M135.</translation>
 <translation id="8035570672225663428">Consenti al modello di ricarica adattiva di sospendere la procedura di ricarica per prolungare la durata della batteria</translation>
 <translation id="8036284429246268475">Se il criterio viene attivato, gli utenti possono impostare <ph name="PRODUCT_NAME" /> in modo che controlli se nomi utente e password inseriti sono stati resi noti nell'ambito di una fuga di dati.
 

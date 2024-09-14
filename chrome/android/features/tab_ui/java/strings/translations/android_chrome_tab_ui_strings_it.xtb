@@ -104,6 +104,7 @@
 <translation id="5400836586163650660">Grigio</translation>
 <translation id="5490235265819901748">Gruppo di schede espanso</translation>
 <translation id="5494920125229734069">Seleziona tutto</translation>
+<translation id="5549653163690032080">Apri il menu Azioni del gruppo di schede condiviso <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Chiudi il gruppo di schede con <ph name="TABS_COUNT_ONE" /> scheda, colore <ph name="COLOR_NAME" />.}other{Chiudi il gruppo di schede con <ph name="TABS_COUNT_MANY" /> schede, colore <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">Visualizza informazioni sul negozio, opzione disponibile nella parte superiore dello schermo</translation>
 <translation id="5627941783489838464">Nessun aggiornamento della scheda</translation>
@@ -135,6 +136,7 @@
 <translation id="6694634756612002311">Gestisci condivisione</translation>
 <translation id="6744956528665271406">Modifica il colore del gruppo</translation>
 <translation id="6856809498882026482">Nascondi modalità di selezione multipla</translation>
+<translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{Espandi il gruppo di schede condiviso <ph name="TITLE_OF_GROUP" /> con <ph name="TABS_COUNT_ONE" /> scheda, colore <ph name="COLOR_NAME" />.}other{Espandi il gruppo di schede condiviso <ph name="TITLE_OF_GROUP" /> con <ph name="TABS_COUNT_MANY" /> schede, colore <ph name="COLOR_NAME" />.}}</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Condividi scheda}other{Condividi schede}}</translation>
 <translation id="7129458170538955174">Informazioni su questo negozio aperte nella parte inferiore dello schermo</translation>
 <translation id="7200189319044305940">{NUMBER_OF_TABS,plural, =1{Chiudi il gruppo <ph name="TITLE_OF_GROUP" /> con <ph name="TABS_COUNT_ONE" /> scheda.}other{Chiudi il gruppo <ph name="TITLE_OF_GROUP" /> con <ph name="TABS_COUNT_MANY" /> schede.}}</translation>
@@ -170,6 +172,7 @@
 <translation id="8205266828577616993">Sposta scheda in alto</translation>
 <translation id="8261506727792406068">Elimina</translation>
 <translation id="8338427544764842461">I tuoi gruppi di schede vengono salvati qui e vengono aggiornati su tutti i dispositivi su cui è stato eseguito l'accesso</translation>
+<translation id="8344020191144794051">{NUMBER_OF_TABS,plural, =1{Espandi il gruppo di schede condiviso con <ph name="TABS_COUNT_ONE" /> scheda, colore <ph name="COLOR_NAME" />.}other{Espandi il gruppo di schede condiviso con <ph name="TABS_COUNT_MANY" /> schede, colore <ph name="COLOR_NAME" />.}}</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Chiudi <ph name="TABS_COUNT_ONE" /> scheda selezionata}other{Chiudi <ph name="TABS_COUNT_MANY" /> schede selezionate}}</translation>
 <translation id="8398929769197326728">Nuova cartella - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">Impostazioni</translation>

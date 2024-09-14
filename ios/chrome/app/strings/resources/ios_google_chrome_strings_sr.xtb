@@ -96,6 +96,7 @@
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{То се дешава када се Chrome не користи {THRESHOLD} минут}one{То се дешава када се Chrome не користи {THRESHOLD} минут}few{То се дешава када се Chrome не користи {THRESHOLD} минута}other{То се дешава када се Chrome не користи {THRESHOLD} минута}}</translation>
 <translation id="3367797402528056312">Довршите подешавање Chrome-а</translation>
 <translation id="3371064404604898522">Подеси Chrome као подразумевани прегледач</translation>
+<translation id="3399930248910934354">Отвори подешавања Chrome-а</translation>
 <translation id="3472587960215700950">Chrome користи Google мапе да би вам пружао путању и локалне информације о откривеним адресама.</translation>
 <translation id="3503014945441706099">Набавите побољшано безбедно прегледање и за овај Chrome профил</translation>
 <translation id="3522659714780527202">Да бисте видели картице на било којем уређају на ком користите Chrome, укључите синхронизацију</translation>

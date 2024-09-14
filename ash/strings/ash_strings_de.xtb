@@ -118,7 +118,6 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="1346748346194534595">Rechts</translation>
 <translation id="1350494136075914725">Läuft · Zum Tab wechseln</translation>
 <translation id="1351937230027495976">Menü minimieren</translation>
-<translation id="1352537790882153971">Du kannst den Mikrofonton über kabelgebundene Kopfhörer anhören. Schließe das Feld, um den Vorgang zu beenden.</translation>
 <translation id="1360220746312242196">Bei der Suche auf einer Seite zur vorherigen Übereinstimmung für die Suche gehen</translation>
 <translation id="1360788414852622716">Das Profil wird deaktiviert. Das kann einige Minuten dauern.</translation>
 <translation id="1364382257761975320">Zum Entsperren des Chromebooks Fingerabdruck verwenden</translation>
@@ -396,7 +395,6 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="2426051945783024481">Bildausschnitt automatisch zentriert</translation>
 <translation id="2427507373259914951">Linksklick</translation>
 <translation id="2429753432712299108">Das Bluetooth-Gerät „<ph name="DEVICE_NAME" />“ bittet um Erlaubnis für Kopplung. Bevor du akzeptierst, überprüfe, ob folgender Zugangscode auf dem Gerät angezeigt wird: <ph name="PASSKEY" />.</translation>
-<translation id="2430444791038754658">Die Zeit ist um! Super!</translation>
 <translation id="2435457462613246316">Passwort anzeigen</translation>
 <translation id="2437771564543046790">Niedriger Akkustand. Energiesparmodus ist aktiviert.</translation>
 <translation id="243878895369688216">Gestern geöffnet</translation>
@@ -775,7 +773,6 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="3706423975342040244">Unterhaltung</translation>
 <translation id="3707093869106077605"><ph name="UNAVAILABLE_DLC_ONE" /> und <ph name="UNAVAILABLE_DLC_TWO" /> sind nicht verfügbar.</translation>
 <translation id="3708186454126126312">Zuletzt verbundene Geräte</translation>
-<translation id="3711282657843423160">Erledigt. Weiter so!</translation>
 <translation id="3712143870407382523">Wähle ein Fenster für diese Seite</translation>
 <translation id="371370241367527062">Mikrofon auf der Vorderseite</translation>
 <translation id="3713734891607377840">Nach dem Herunterladen öffnen</translation>
@@ -845,7 +842,6 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="397105322502079400">Wird berechnet...</translation>
 <translation id="397726367135689299">Das Aufladen des Akkus kann unzuverlässig ablaufen.</translation>
 <translation id="3977512764614765090">Der Akkustand ist <ph name="PERCENTAGE" /> %. Der Akku wird aufgeladen.</translation>
-<translation id="397808938113646171">Die Zeit ist abgelaufen. Gut gemacht!</translation>
 <translation id="3982013579989864579">Audioausgabe wechseln?</translation>
 <translation id="3984536049089846927">Nächste Seite</translation>
 <translation id="3986082989454912832">Annehmen</translation>
@@ -1000,7 +996,6 @@ Einige Funktionen sind eingeschränkt, um die Akkulaufzeit zu verlängern.</tran
 <translation id="4477751544736611934">Dadurch können Datennutzungskosten anfallen.
 1 Gerät verbunden.</translation>
 <translation id="4477892968187500306">Auf diesem Gerät befinden sich möglicherweise Apps, die nicht von Google geprüft wurden.</translation>
-<translation id="4479130137987693286">Du kannst bei Bedarf die Zeit verlängern oder den Konzentrationsmodus beenden</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Entkoppelte Geräte</translation>
 <translation id="4485506555414638855">Anzeige der letzten Fotos, Medien, Benachrichtigungen und Apps auf deinem Smartphone nicht einrichten</translation>
@@ -1053,7 +1048,6 @@ Einige Funktionen sind eingeschränkt, um die Akkulaufzeit zu verlängern.</tran
 
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox aktiviert</translation>
-<translation id="4665182893355091947">Erledigt. Sehr gut!</translation>
 <translation id="4666911709726371538">Weitere Apps</translation>
 <translation id="4667099493359681081">„<ph name="FILENAME" />“ wird heruntergeladen</translation>
 <translation id="4672539464599646374">Energiesparmodus aktiviert</translation>
@@ -1779,7 +1773,6 @@ Neuinstallation</translation>
 <translation id="7064351585062927183">Dieser <ph name="DAY_OF_WEEK" /></translation>
 <translation id="7066646422045619941">Dieses Netzwerk wurde von deinem Administrator deaktiviert.</translation>
 <translation id="7067196344162293536">Automatisch drehen</translation>
-<translation id="7067569040620564762">Die Zeit ist um! Fertig!</translation>
 <translation id="7068360136237591149">Dateien öffnen</translation>
 <translation id="7076293881109082629">Anmeldung</translation>
 <translation id="7076878155205969899">Ton stummschalten</translation>
@@ -1814,7 +1807,6 @@ Neuinstallation</translation>
 <translation id="7189412385142492784">Wie weit ist die Venus entfernt?</translation>
 <translation id="7198435252016571249">Kamera ist an der unteren rechten Ecke angepinnt. Konflikt mit der Systemoberfläche.</translation>
 <translation id="7219573373513695352">Keine verbundenen Geräte</translation>
-<translation id="7226347284543965442">Die Zeit ist um! Geschafft!</translation>
 <translation id="7229029500464092426">Arbeitsspeicher <ph name="AVAILABLE_MEMORY" /> | <ph name="TOTAL_MEMORY" /> insgesamt</translation>
 <translation id="7244725679040769470">Der Akkustand beträgt noch <ph name="PERCENTAGE" /> %. Schließ dein Gerät an eine Steckdose an.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Dieses Chromebook muss zur Installation eines Updates neu gestartet werden. Dies kann bis zu einer Minute dauern.</translation>
@@ -2168,7 +2160,6 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="8443879455002739353">„Kopieren“</translation>
 <translation id="8444246603146515890">Desktop <ph name="DESK_TITILE" /> aktiviert</translation>
 <translation id="8446884382197647889">Weitere Informationen</translation>
-<translation id="8452090802952003258">Mikrofonton anhören</translation>
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
 <translation id="8462305545768648477">Vorlesen schließen</translation>
 <translation id="8468806060683421065">Fällig: <ph name="DUE_DATE_AND_TIME" /></translation>
@@ -2230,7 +2221,6 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="8683506306463609433">Leistungsverfolgung ist aktiv</translation>
 <translation id="8703634754197148428">Aufnahme starten. Wenn die Aufnahme gestartet ist, kannst du Alt + Umschalttaste + L verwenden, um zur Ablage zu gehen – dort findest du die Schaltfläche zum Beenden der Aufnahme.</translation>
 <translation id="8704155109538237473">Fokus auf das Bild-im-Bild-Fenster verschieben</translation>
-<translation id="8708657523363087260">Sidetone umschalten</translation>
 <translation id="870917907284186124">Spracheingabe aktivieren/deaktivieren</translation>
 <translation id="8711169534266271368">Optionen für das Dashboard für Spiele</translation>
 <translation id="8712637175834984815">Ok</translation>

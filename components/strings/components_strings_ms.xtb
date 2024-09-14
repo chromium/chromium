@@ -1015,6 +1015,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2882949212241984732">Lipatan dua pintu</translation>
 <translation id="2891963978019740012">Enjin Carian anda dalam Chrome</translation>
 <translation id="2893773853358652045">Gulungan Keempat</translation>
+<translation id="2894137550885451583">Yang berikut ialah harga <ph name="CURRENCY" /> untuk produk <ph name="PRODUCT" /></translation>
 <translation id="2900528713135656174">Buat acara</translation>
 <translation id="2902312830803030883">Lagi tindakan</translation>
 <translation id="2903493209154104877">Alamat</translation>
@@ -1613,6 +1614,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3949601375789751990">Sejarah penyemakan imbas anda dipaparkan di sini</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">Tiada kaedah pembayaran yang disimpan</translation>
+<translation id="3950560191811267370">Helaian bawah Commerce ditutup</translation>
 <translation id="3950574001630941635">Mulakan Semula Tutorial</translation>
 <translation id="3950820424414687140">Log masuk</translation>
 <translation id="3953505489397572035">Harga ini ialah harga biasa</translation>
@@ -1898,7 +1900,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="4451135742916150903">Boleh meminta untuk menyambung kepada peranti HID</translation>
 <translation id="4451684391620232683">Teks yang disajikan kepada pengguna:</translation>
 <translation id="4452328064229197696">Kata laluan yang baru sahaja anda gunakan telah ditemukan dalam pelanggaran data. Untuk melindungi akaun anda, Pengurus Kata Laluan Google mengesyorkan agar anda menyemak kata laluan yang disimpan.</translation>
-<translation id="4452957520362597816">Minta kebenaran untuk memasang apl web</translation>
 <translation id="4456937135469235202">Perjalanan Pengembaraan</translation>
 <translation id="4464826014807964867">Laman web yang mempunyai maklumat daripada organisasi anda</translation>
 <translation id="4466576951214254884">Pinjaman Pelajar &amp; Pembiayaan Kolej</translation>
@@ -2355,6 +2356,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="5331585574693522196">Tetapkan sebagai Lalai</translation>
 <translation id="5332219387342487447">Kaedah Penghantaran</translation>
 <translation id="5332769172018416402">Tanya dalam mesej</translation>
+<translation id="533323551986281710">Helaian bawah Commerce dibuka pada ketinggian penuh</translation>
 <translation id="5334013548165032829">Log sistem terperinci</translation>
 <translation id="5334145288572353250">Simpan Alamat?</translation>
 <translation id="5340250774223869109">Aplikasi disekat</translation>
@@ -2537,6 +2539,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="5675650730144413517">Halaman ini tidak berfungsi</translation>
 <translation id="5675809467256309336">Muzik Tarian &amp; Elektronik</translation>
 <translation id="5675959228867414813">Paparkan mengikut tarikh</translation>
+<translation id="567604591393105935">Helaian bawah Commerce dibuka pada ketinggian separuh</translation>
 <translation id="5677928146339483299">Disekat</translation>
 <translation id="5678007133659493065">Kerajang</translation>
 <translation id="5680642791693447368">Filem Ngeri, Jenayah &amp; Misteri</translation>
@@ -3444,6 +3447,7 @@ Butiran tambahan:
 <translation id="7374733840632556089">Masalah ini berlaku disebabkan oleh sijil yang anda pasang atau dipasang oleh orang lain pada peranti anda. Sijil itu diketahui digunakan untuk memantau dan memintas rangkaian, dan tidak dipercayai oleh Chrome. Walaupun terdapat sebab yang munasabah untuk melakukan pemantauan, seperti pada rangkaian institusi pengajian atau syarikat, Chrome ingin memastikan anda menyedari pemantauan berlaku, walaupun anda tidak dapat menghentikan pemantauan itu. Pemantauan boleh berlaku pada mana-mana penyemak imbas atau aplikasi yang mengakses web.</translation>
 <translation id="7375532151824574023">{NUM_COOKIES,plural, =0{Tiada laman dibenarkan}=1{1 laman dibenarkan}other{# laman dibenarkan}}</translation>
 <translation id="7375818412732305729">Fail dilampirkan</translation>
+<translation id="7376031331622621328">Helaian bawah Commerce</translation>
 <translation id="7377249249140280793"><ph name="RELATIVE_DATE" /> - <ph name="FULL_DATE" /></translation>
 <translation id="7377314930809374926">Industri Hospitaliti</translation>
 <translation id="7378594059915113390">Kawalan Media</translation>

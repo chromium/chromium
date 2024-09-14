@@ -118,7 +118,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1346748346194534595">W prawo</translation>
 <translation id="1350494136075914725">Trwa · Przełącz na kartę</translation>
 <translation id="1351937230027495976">Zwiń menu</translation>
-<translation id="1352537790882153971">Możesz monitorować dźwięk z mikrofonu na słuchawkach przewodowych. Aby zatrzymać, zamknij panel.</translation>
 <translation id="1360220746312242196">Podczas wyszukiwania na stronie przejdź do poprzedniego elementu pasującego do zapytania</translation>
 <translation id="1360788414852622716">Wyłączam profil. Może to potrwać kilka minut.</translation>
 <translation id="1364382257761975320">Aby odblokować Chromebooka, użyj odcisku palca</translation>
@@ -397,7 +396,6 @@ Podłączone urządzenia: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2426051945783024481">Kadr kamery jest automatycznie wyśrodkowany</translation>
 <translation id="2427507373259914951">Kliknięcie lewym przyciskiem</translation>
 <translation id="2429753432712299108">Urządzenie Bluetooth „<ph name="DEVICE_NAME" />” chce się sparować. Zanim to zaakceptujesz, sprawdź, czy na tym urządzeniu wyświetla się klucz dostępu: <ph name="PASSKEY" /></translation>
-<translation id="2430444791038754658">Brawo. Rozkręcasz się!</translation>
 <translation id="2435457462613246316">Pokaż hasło</translation>
 <translation id="2437771564543046790">Słaba bateria. Oszczędzanie baterii jest włączone</translation>
 <translation id="243878895369688216">Otwierane wczoraj</translation>
@@ -777,7 +775,6 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="3706423975342040244">Rozrywka</translation>
 <translation id="3707093869106077605"><ph name="UNAVAILABLE_DLC_ONE" /> i <ph name="UNAVAILABLE_DLC_TWO" /> są niedostępne.</translation>
 <translation id="3708186454126126312">Wcześniej połączone</translation>
-<translation id="3711282657843423160">Zrobione. Tak trzymaj!</translation>
 <translation id="3712143870407382523">Wybierz okno dla tej strony</translation>
 <translation id="371370241367527062">Przedni mikrofon</translation>
 <translation id="3713734891607377840">Otwórz po pobraniu</translation>
@@ -847,7 +844,6 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="397105322502079400">Obliczanie...</translation>
 <translation id="397726367135689299">Ładowanie baterii może przebiegać nieprawidłowo.</translation>
 <translation id="3977512764614765090">Naładowanie baterii: <ph name="PERCENTAGE" />%. Trwa ładowanie.</translation>
-<translation id="397808938113646171">Czas minął. Brawo!</translation>
 <translation id="3982013579989864579">Przełączyć wyjście audio?</translation>
 <translation id="3984536049089846927">Następna strona</translation>
 <translation id="3986082989454912832">Odpowiedz</translation>
@@ -1003,7 +999,6 @@ W celu wydłużenia czasu pracy na baterii niektóre funkcje zostały ograniczo
 <translation id="4477751544736611934">Może to spowodować koszty związane z przesyłaniem danych.
 Połączono 1 urządzenie.</translation>
 <translation id="4477892968187500306">Na tym urządzeniu mogą być zainstalowane aplikacje niezweryfikowane przez Google.</translation>
-<translation id="4479130137987693286">W razie potrzeby możesz dodać trochę więcej czasu albo zakończyć sesję skupienia</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Niesparowane urządzenia</translation>
 <translation id="4485506555414638855">Zamknij konfigurację wyświetlania najnowszych zdjęć, plików multimedialnych, powiadomień i aplikacji z telefonu</translation>
@@ -1056,7 +1051,6 @@ Połączono 1 urządzenie.</translation>
 
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">Włączono ChromeVox</translation>
-<translation id="4665182893355091947">Zrobione. Doskonale!</translation>
 <translation id="4666911709726371538">Więcej aplikacji</translation>
 <translation id="4667099493359681081">Pobieram <ph name="FILENAME" /></translation>
 <translation id="4672539464599646374">Oszczędzanie baterii jest włączone</translation>
@@ -1782,7 +1776,6 @@ Brak połączonych urządzeń.</translation>
 <translation id="7064351585062927183">Najbliższy(-a) <ph name="DAY_OF_WEEK" /></translation>
 <translation id="7066646422045619941">Ta sieć została wyłączona przez administratora.</translation>
 <translation id="7067196344162293536">Obracanie automatyczne</translation>
-<translation id="7067569040620564762">Czas minął. Brawo.</translation>
 <translation id="7068360136237591149">Otwórz pliki</translation>
 <translation id="7076293881109082629">Loguję</translation>
 <translation id="7076878155205969899">Wycisz dźwięk</translation>
@@ -1817,7 +1810,6 @@ Brak połączonych urządzeń.</translation>
 <translation id="7189412385142492784">Jak daleko jest Wenus</translation>
 <translation id="7198435252016571249">Podgląd z kamery został przyciągnięty do prawego dolnego rogu. Konflikt z obszarem systemowym.</translation>
 <translation id="7219573373513695352">Brak podłączonych urządzeń</translation>
-<translation id="7226347284543965442">Czas minął. Udało się!</translation>
 <translation id="7229029500464092426">Pamięć: <ph name="AVAILABLE_MEMORY" /> | Łącznie: <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7244725679040769470">Bateria: pozostało <ph name="PERCENTAGE" />%. Podłącz urządzenie do zasilania.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Konieczne jest ponowne uruchomienie tego Chromebooka, by zainstalować aktualizację. Może to potrwać około minuty.</translation>
@@ -2172,7 +2164,6 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="8443879455002739353">„Kopiuj”</translation>
 <translation id="8444246603146515890">Aktywowano biurko <ph name="DESK_TITILE" /></translation>
 <translation id="8446884382197647889">Więcej informacji</translation>
-<translation id="8452090802952003258">Słuchaj dźwięku z mikrofonu</translation>
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
 <translation id="8462305545768648477">Zamknij funkcję Przeczytaj na głos</translation>
 <translation id="8468806060683421065">termin: <ph name="DUE_DATE_AND_TIME" /></translation>
@@ -2234,7 +2225,6 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="8683506306463609433">Śledzenie wydajności jest aktywne</translation>
 <translation id="8703634754197148428">Rozpocznij nagrywanie. Po rozpoczęciu nagrywania możesz za pomocą Alt + Shift + L przejść na półkę, na której znajdziesz przycisk zatrzymujący nagrywanie.</translation>
 <translation id="8704155109538237473">Zaznacz okno z obrazem w obrazie</translation>
-<translation id="8708657523363087260">Przełącz samosłyszalność</translation>
 <translation id="870917907284186124">Włącz/wyłącz dyktowanie (pisanie głosowe)</translation>
 <translation id="8711169534266271368">Opcje panelu gier</translation>
 <translation id="8712637175834984815">OK</translation>

@@ -118,7 +118,6 @@
 <translation id="1346748346194534595">ขวา</translation>
 <translation id="1350494136075914725">ดำเนินอยู่ · เปลี่ยนเป็นแท็บ</translation>
 <translation id="1351937230027495976">ยุบเมนู</translation>
-<translation id="1352537790882153971">คุณตรวจสอบเสียงไมโครโฟนจากหูฟังแบบมีสายได้ ปิดแผงเพื่อหยุด</translation>
 <translation id="1360220746312242196">เมื่อค้นหาในหน้า ให้ไปยังรายการก่อนหน้าที่ตรงกับการค้นหา</translation>
 <translation id="1360788414852622716">กำลังปิดใช้โปรไฟล์ การดำเนินการนี้อาจใช้เวลาสักครู่</translation>
 <translation id="1364382257761975320">ใช้ลายนิ้วมือเพื่อปลดล็อก Chromebook</translation>
@@ -397,7 +396,6 @@
 <translation id="2426051945783024481">เฟรมกล้องจะอยู่ตรงกลางโดยอัตโนมัติ</translation>
 <translation id="2427507373259914951">คลิกซ้าย</translation>
 <translation id="2429753432712299108">อุปกรณ์บลูทูธ "<ph name="DEVICE_NAME" />" ต้องการสิทธิ์ในการจับคู่ ก่อนที่จะยอมรับ โปรดยืนยันว่ารหัสผ่านนี้ปรากฏบนอุปกรณ์นั้น: <ph name="PASSKEY" /></translation>
-<translation id="2430444791038754658">หมดเวลา ไปได้สวยเลย</translation>
 <translation id="2435457462613246316">แสดงรหัสผ่าน</translation>
 <translation id="2437771564543046790">แบตเตอรี่เหลือน้อย เปิดโหมดประหยัดแบตเตอรี่อยู่</translation>
 <translation id="243878895369688216">เปิดเมื่อวานนี้</translation>
@@ -773,7 +771,6 @@
 <translation id="3706423975342040244">ความบันเทิง</translation>
 <translation id="3707093869106077605"><ph name="UNAVAILABLE_DLC_ONE" /> และ <ph name="UNAVAILABLE_DLC_TWO" /> ไม่พร้อมใช้งาน</translation>
 <translation id="3708186454126126312">อุปกรณ์ที่เคยเชื่อมต่อ</translation>
-<translation id="3711282657843423160">เสร็จแล้ว เยี่ยมมาก!</translation>
 <translation id="3712143870407382523">เลือกหน้าต่างสำหรับด้านนี้</translation>
 <translation id="371370241367527062">ไมโครโฟนด้านหน้า</translation>
 <translation id="3713734891607377840">เปิดเมื่อดาวน์โหลดเสร็จ</translation>
@@ -843,7 +840,6 @@
 <translation id="397105322502079400">กำลังคำนวณ...</translation>
 <translation id="397726367135689299">การชาร์จแบตเตอรี่อาจไม่ทำงานอย่างที่ควร</translation>
 <translation id="3977512764614765090">แบตเตอรี่เหลือ <ph name="PERCENTAGE" />% และกำลังชาร์จ</translation>
-<translation id="397808938113646171">หมดเวลา เก่งมาก</translation>
 <translation id="3982013579989864579">เปลี่ยนเอาต์พุตเสียงไหม</translation>
 <translation id="3984536049089846927">หน้าถัดไป</translation>
 <translation id="3986082989454912832">ตอบ</translation>
@@ -998,7 +994,6 @@
 <translation id="4477751544736611934">ซึ่งอาจมีค่าบริการอินเทอร์เน็ต
 มีอุปกรณ์ที่เชื่อมต่ออยู่ 1 เครื่อง</translation>
 <translation id="4477892968187500306">อุปกรณ์นี้อาจมีแอปที่ยังไม่ได้รับการยืนยันจาก Google</translation>
-<translation id="4479130137987693286">คุณเพิ่มเวลาอีกเล็กน้อยได้หากต้องการหรือจะสิ้นสุดเซสชันโฟกัสก็ได้</translation>
 <translation id="4479639480957787382">อีเทอร์เน็ต</translation>
 <translation id="4481530544597605423">อุปกรณ์ที่ไม่ได้จับคู่</translation>
 <translation id="4485506555414638855">ปิดการตั้งค่าการดูรูปภาพ สื่อ การแจ้งเตือน และแอปล่าสุดของโทรศัพท์</translation>
@@ -1051,7 +1046,6 @@
 
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">เปิดใช้ ChromeVox แล้ว</translation>
-<translation id="4665182893355091947">เสร็จแล้ว เยี่ยมเลย!</translation>
 <translation id="4666911709726371538">แสดงแอปเพิ่มเติม</translation>
 <translation id="4667099493359681081">กำลังดาวน์โหลด <ph name="FILENAME" /></translation>
 <translation id="4672539464599646374">เปิดโหมดประหยัดแบตเตอรี่แล้ว</translation>
@@ -1777,7 +1771,6 @@
 <translation id="7064351585062927183"><ph name="DAY_OF_WEEK" />ที่จะถึงนี้</translation>
 <translation id="7066646422045619941">ผู้ดูแลระบบปิดใช้เครือข่ายนี้</translation>
 <translation id="7067196344162293536">หมุนอัตโนมัติ</translation>
-<translation id="7067569040620564762">หมดเวลา เสร็จแล้ว!</translation>
 <translation id="7068360136237591149">เปิดไฟล์</translation>
 <translation id="7076293881109082629">กำลังลงชื่อเข้าใช้</translation>
 <translation id="7076878155205969899">ปิดเสียง</translation>
@@ -1812,7 +1805,6 @@
 <translation id="7189412385142492784">ดาวศุกร์อยู่ไกลแค่ไหน</translation>
 <translation id="7198435252016571249">จัดกล้องพอดีกับมุมขวาล่างแล้ว เนื่องจากขัดแย้งกับแพลตฟอร์มของระบบ</translation>
 <translation id="7219573373513695352">ไม่ได้เชื่อมต่ออุปกรณ์</translation>
-<translation id="7226347284543965442">หมดเวลา คุณทำได้!</translation>
 <translation id="7229029500464092426">ใช้หน่วยความจำแล้ว <ph name="AVAILABLE_MEMORY" /> | รวมทั้งหมด <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7244725679040769470">แบตเตอรี่เหลืออยู่ <ph name="PERCENTAGE" />% โปรดเชื่อมต่ออุปกรณ์กับแหล่งจ่ายไฟ</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" /> Chromebook นี้ต้องรีสตาร์ทเพื่อใช้การอัปเดต ซึ่งอาจใช้เวลาถึง 1 นาที</translation>
@@ -2167,7 +2159,6 @@
 <translation id="8443879455002739353">"คัดลอก"</translation>
 <translation id="8444246603146515890">เปิดใช้งานเดสก์ <ph name="DESK_TITILE" /> แล้ว</translation>
 <translation id="8446884382197647889">ดูข้อมูลเพิ่มเติม</translation>
-<translation id="8452090802952003258">ฟังเสียงจากไมค์</translation>
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
 <translation id="8462305545768648477">ปิดฟีเจอร์เลือกเพื่อให้อ่าน</translation>
 <translation id="8468806060683421065">ครบกำหนด <ph name="DUE_DATE_AND_TIME" /></translation>
@@ -2229,7 +2220,6 @@
 <translation id="8683506306463609433">ใช้งานการติดตามประสิทธิภาพอยู่</translation>
 <translation id="8703634754197148428">เริ่มบันทึก เมื่อการบันทึกเริ่มต้น ให้ใช้ Alt + Shift + L เพื่อไปที่แถบและหาปุ่มหยุดบันทึก</translation>
 <translation id="8704155109538237473">โฟกัสหน้าต่างการแสดงภาพซ้อนภาพ</translation>
-<translation id="8708657523363087260">เปิด/ปิดเสียงสะท้อน</translation>
 <translation id="870917907284186124">เปิด/ปิดการพิมพ์ตามคำบอก (พิมพ์ด้วยเสียง)</translation>
 <translation id="8711169534266271368">ตัวเลือกแดชบอร์ดเกม</translation>
 <translation id="8712637175834984815">รับทราบ</translation>

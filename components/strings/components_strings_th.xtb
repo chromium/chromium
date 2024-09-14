@@ -712,6 +712,7 @@
 <translation id="2265356434276802347">นโยบายนี้ต้องมีข้อมูลแนะนำไม่เกิน <ph name="MAX_ITEMS_LIMIT" /> รายการ</translation>
 <translation id="2267047181501709434">กำลังยืนยันตัวตนของคุณ...</translation>
 <translation id="2268044343513325586">ปรับแต่ง</translation>
+<translation id="2268966938956566076">อัปโหลดในอีก <ph name="MINUTES" /> นาที</translation>
 <translation id="2270484714375784793">หมายเลขโทรศัพท์</translation>
 <translation id="2276057643614339130">ฐานการพิมพ์</translation>
 <translation id="2277103315734023688">ไปข้างหน้า</translation>
@@ -1110,6 +1111,7 @@
 <translation id="3062655045399308513">ลบข้อมูลการท่องเว็บ...</translation>
 <translation id="306573536155379004">เกมเริ่มแล้ว</translation>
 <translation id="3067505415088964188">ราคาต่ำ</translation>
+<translation id="3068118691172921711">การอัปโหลดไฟล์ไปยัง <ph name="CLOUD_PROVIDER" /> จะเริ่มในอีก 1 นาที</translation>
 <translation id="3076865167425975822">ระบบปฏิบัติการ</translation>
 <translation id="3080254622891793721">กราฟิก</translation>
 <translation id="3082007635241601060">ให้ Google ใช้รถเข็นเพื่อค้นหาส่วนลดที่เหมาะกับคุณ (เมื่อมี)</translation>
@@ -1121,6 +1123,7 @@
 <translation id="3099619114405539473">ใช้กล้องที่พร้อมใช้งาน (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="3102312643185441063">ออมทรัพย์</translation>
 <translation id="3103188521861412364">หุ้นและพันธบัตร</translation>
+<translation id="3103535543639438037">เปรียบเทียบผลิตภัณฑ์ที่คล้ายกันโดยแสดงอยู่ข้างกัน</translation>
 <translation id="3105172416063519923">รหัสสินทรัพย์:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />ตรวจสอบการกำหนดค่า DNS ที่ปลอดภัย<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">ถาดกลาง</translation>
@@ -1298,6 +1301,7 @@
 <translation id="3407789382767355356">การลงชื่อเข้าใช้ของบุคคลที่สาม</translation>
 <translation id="340924996148642843">การเปรียบเทียบไม่พร้อมใช้งานในขณะนี้</translation>
 <translation id="3409896703495473338">จัดการการตั้งค่าความปลอดภัย</translation>
+<translation id="3411091017011773343">อัปโหลดในอีก <ph name="HOURS" /> ชม.</translation>
 <translation id="3414275587143250384">การประมวลผลแบบกระจายและแบบคลาวด์</translation>
 <translation id="3414952576877147120">ขนาด:</translation>
 <translation id="341513675006332771">ปุ่มเล่นเกมไดโนเสาร์ Chrome เปิดใช้งานเพื่อเล่นเกมไดโนเสาร์วิ่งใน Chrome</translation>
@@ -1892,7 +1896,6 @@
 <translation id="4451135742916150903">สามารถขอเชื่อมต่อกับอุปกรณ์ HID ได้</translation>
 <translation id="4451684391620232683">ข้อความที่แสดงต่อผู้ใช้:</translation>
 <translation id="4452328064229197696">ระบบพบว่ารหัสผ่านที่คุณเพิ่งใช้มีการรั่วไหลในการละเมิดข้อมูลครั้งหนึ่ง เพื่อรักษาความปลอดภัยของบัญชี เครื่องมือจัดการรหัสผ่านบน Google แนะนำให้ตรวจสอบรหัสผ่านที่บันทึกไว้</translation>
-<translation id="4452957520362597816">ขอติดตั้งเว็บแอป</translation>
 <translation id="4456937135469235202">การท่องเที่ยวแบบผจญภัย</translation>
 <translation id="4464826014807964867">เว็บไซต์ที่มีข้อมูลจากองค์กรของคุณ</translation>
 <translation id="4466576951214254884">สินเชื่อเพื่อการศึกษา</translation>
@@ -1964,6 +1967,7 @@
 <translation id="4628678854894591460">ข้อเสนอสำหรับวันหยุดพักผ่อน</translation>
 <translation id="4628948037717959914">รูปภาพ</translation>
 <translation id="4629370161347991046">A4x6</translation>
+<translation id="462989688138616749">การอัปโหลดไฟล์ไปยัง <ph name="CLOUD_PROVIDER" /> จะเริ่มในอีก <ph name="HOURS" /> ชั่วโมง</translation>
 <translation id="4631649115723685955">บริการคืนเงินที่ลิงก์อยู่</translation>
 <translation id="4631881646528206880">การลงทะเบียนบัตรเสมือน</translation>
 <translation id="4635278307999235413">กำลังส่งข้อมูลไปยังคอนโซลผู้ดูแลระบบ</translation>
@@ -2084,6 +2088,7 @@
 <translation id="484988093836683706">ใช้การปลดล็อกอุปกรณ์</translation>
 <translation id="4850886885716139402">ดู</translation>
 <translation id="4854853140771946034">สร้างโน้ตใหม่ใน Google Keep อย่างรวดเร็ว</translation>
+<translation id="4855395119669662878">ผู้ดูแลระบบจะเริ่มอัปโหลดไฟล์ของคุณไปยัง <ph name="CLOUD_PROVIDER" /> ในวันที่ <ph name="DATE_TIME" /> โปรดเชื่อมต่ออุปกรณ์ไว้จนกว่าการอัปโหลดไฟล์จะเสร็จสมบูรณ์ ในระหว่างการอัปโหลด คุณจะสามารถอ่านไฟล์ในเครื่องได้เท่านั้น</translation>
 <translation id="485902285759009870">กำลังยืนยันรหัส...</translation>
 <translation id="4860260582253463350">เราต้องตรวจสอบว่าเป็นคุณจริงๆ เพื่อดำเนินการต่อบน YouTube คุณจะได้รับการตั้งค่าที่พ่อแม่หรือผู้ปกครองตั้งไว้ใน Family Link</translation>
 <translation id="4864406669374375262">คัดลอกสตริงเวอร์ชันไปยังคลิปบอร์ดแล้ว</translation>
@@ -2139,6 +2144,7 @@
 <translation id="4933468175699107356">คลิกขวาเพื่อป้อนข้อมูลที่บันทึกไว้โดยอัตโนมัติอย่างเช่นชื่อหรือที่อยู่ในแบบฟอร์มใดก็ได้</translation>
 <translation id="4934780484581617878">การจัดการหน้าต่าง</translation>
 <translation id="4936134414789135531">ไม่พบ <ph name="VALUE_NAME" /> ที่แทรกไว้</translation>
+<translation id="4936573216809994970">การอัปโหลดไฟล์ไปยัง <ph name="CLOUD_PROVIDER" /> จะเริ่มในอีก 1 ชั่วโมง</translation>
 <translation id="4936675324097895694">การเงิน</translation>
 <translation id="4943620199112228840">ใช้ไมโครโฟน</translation>
 <translation id="4943872375798546930">ไม่มีผลการค้นหา</translation>
@@ -2312,6 +2318,7 @@
 <translation id="5269225904387178860">เจาะรูด้านล่าง 4 รู</translation>
 <translation id="5271381225185906340">"<ph name="DATA_CONTROLS_ATTRIBUTE" />" ไม่ใช่เงื่อนไขที่รองรับสำหรับ "<ph name="DATA_CONTROLS_RESTRICTION" />"</translation>
 <translation id="5273658854610202413">คำเตือน: ระบบไม่ได้รวมนโยบายนี้ตามที่ระบุในนโยบาย PolicyDictionaryMultipleSourceMergeList เพราะไม่ใช่ส่วนหนึ่งของนโยบายพจนานุกรมที่รวมได้</translation>
+<translation id="5278778426231952189">อัปโหลดเลย</translation>
 <translation id="5279286380302340275">จัดการการดาวน์โหลด</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">คุณสมบัติของเอกสาร</translation>
@@ -3815,6 +3822,7 @@
 <translation id="8030729864112325446">อาชีวะและการศึกษาต่อเนื่อง</translation>
 <translation id="8032546467100845887">โปร่งใส</translation>
 <translation id="8035152190676905274">ปากกา</translation>
+<translation id="8035264638816032066">ระบบจะส่งชื่อแท็บและ URL ของหน้าที่คุณเพิ่มในตารางไปยัง Google</translation>
 <translation id="8037117624646282037">ผู้ที่ใช้อุปกรณ์เมื่อเร็วๆ นี้</translation>
 <translation id="8037357227543935929">ขอ (ค่าเริ่มต้น)</translation>
 <translation id="803771048473350947">ไฟล์</translation>
@@ -4115,6 +4123,7 @@
 <translation id="8564466070529550495">บัตรเสมือน (Virtual Card) ไม่พร้อมใช้งานในขณะนี้ โปรดลองอีกครั้งในภายหลัง</translation>
 <translation id="8564985650692024650">Chromium ขอแนะนำให้รีเซ็ตรหัสผ่าน <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> หากคุณใช้รหัสผ่านนี้ซ้ำในเว็บไซต์อื่น</translation>
 <translation id="8570895683659698018">งานอดิเรกและงานยามว่าง</translation>
+<translation id="8572792595597115856">ใช้ได้ถึงวันที่ <ph name="DATE" /></translation>
 <translation id="8574841453995331336">ตู้เย็นและตู้แช่แข็ง</translation>
 <translation id="8577192028579836704">ราคาปกติของตัวเลือกทั้งหมดอยู่ที่ <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">บัตรเสมือนไม่พร้อมใช้งาน</translation>
@@ -4137,6 +4146,7 @@
 <translation id="8617269623452051934">การใช้งานอุปกรณ์ของคุณ</translation>
 <translation id="861775596732816396">ขนาด 4</translation>
 <translation id="8620276786115098679">Envelope Kaku 7</translation>
+<translation id="8622864575115813231">กำลังติดต่อสถาบันการเงินของคุณ...</translation>
 <translation id="8623885649813806493">ไม่มีรหัสผ่านที่ตรงกัน แสดงรหัสผ่านที่บันทึกไว้ทั้งหมด</translation>
 <translation id="8624354461147303341">รับส่วนลด</translation>
 <translation id="8634957317623797170">54 x 86 มม.</translation>
@@ -4435,6 +4445,7 @@
 <translation id="9192361865877479444">โลหะ (ด้าน)</translation>
 <translation id="9192947025498305328">ผลิตภัณฑ์เสริมความงามจากธรรมชาติ</translation>
 <translation id="9199905725844810519">การพิมพ์ถูกบล็อก</translation>
+<translation id="9204089334327209740">เมื่ออัปโหลดเสร็จสมบูรณ์แล้ว คุณจะแก้ไขไฟล์ใน <ph name="CLOUD_PROVIDER" /> ได้ ระบบจะนำพื้นที่เก็บข้อมูลในเครื่อง รวมถึงไฟล์ในถังขยะออกโดยอัตโนมัติ</translation>
 <translation id="9205078245616868884">ข้อมูลของคุณมีการเข้ารหัสด้วยรหัสผ่านการซิงค์ โปรดป้อนรหัสผ่านเพื่อเริ่มซิงค์</translation>
 <translation id="920643408853370361">ประกันภัยการเดินทาง</translation>
 <translation id="9207861905230894330">การเพิ่มบทความล้มเหลว</translation>
@@ -4455,6 +4466,7 @@
 <translation id="937804173274050966"><ph name="BEGIN_BOLD" />ข้อมูลที่ใช้:<ph name="END_BOLD" /> หัวข้อโฆษณาจะอิงตามประวัติการท่องเว็บล่าสุด ซึ่งเป็นรายการเว็บไซต์ที่คุณเคยเข้าชมโดยใช้ Chrome ในอุปกรณ์นี้</translation>
 <translation id="937885410143139026">ข้อมูลที่ส่งไปยังคอนโซลผู้ดูแลระบบ</translation>
 <translation id="939736085109172342">โฟลเดอร์ใหม่</translation>
+<translation id="940524522703752213">การอัปโหลดไฟล์ไปยัง <ph name="CLOUD_PROVIDER" /> จะเริ่มในอีก <ph name="MINUTES" /> นาที</translation>
 <translation id="944540589955480312">ใช้รหัสผ่านและพาสคีย์ที่บันทึกไว้ในบัญชี Google</translation>
 <translation id="945646848072568856">Chrome บล็อกเว็บไซต์ไม่ให้ใช้คุกกี้ของบุคคลที่สามเพื่อติดตามคุณในขณะที่ท่องเว็บ</translation>
 <translation id="945855313015696284">ตรวจสอบข้อมูลด้านล่างและลบบัตรที่ไม่ถูกต้อง</translation>

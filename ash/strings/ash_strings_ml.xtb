@@ -118,7 +118,6 @@
 <translation id="1346748346194534595">ശരി</translation>
 <translation id="1350494136075914725">നടന്നുകൊണ്ടിരിക്കുന്നു · ടാബിലേക്ക് മാറുക</translation>
 <translation id="1351937230027495976">മെനു ചുരുക്കുക</translation>
-<translation id="1352537790882153971">നിങ്ങൾക്ക് വയേർഡ് ഹെഡ്‌ഫോണുകൾ വഴിയുള്ള മൈക്രോഫോൺ ശബ്‌ദം നിരീക്ഷിക്കാം. നിർത്താൻ പാനൽ അടയ്ക്കുക.</translation>
 <translation id="1360220746312242196">പേജ് തിരയുമ്പോൾ, തിരയുന്നതിന് മുമ്പത്തെ പൊരുത്തത്തിലേക്ക് പോകുക</translation>
 <translation id="1360788414852622716">പ്രൊഫൈൽ പ്രവർത്തനരഹിതമാക്കുന്നു. ഇതിന് കുറച്ച് സമയമെടുത്തേക്കാം.</translation>
 <translation id="1364382257761975320">Chromebook അൺലോക്ക് ചെയ്യാൻ നിങ്ങളുടെ ഫിംഗർപ്രിന്റ് ഉപയോഗിക്കുക</translation>
@@ -397,7 +396,6 @@
 <translation id="2426051945783024481">ക്യാമറാ ഫ്രെയിം സ്വയമേവ മധ്യഭാഗത്തേക്ക് കേന്ദ്രീകരിച്ചു</translation>
 <translation id="2427507373259914951">ഇടത് ക്ലിക്ക്</translation>
 <translation id="2429753432712299108">"<ph name="DEVICE_NAME" />" എന്ന Bluetooth ഉപകരണം ജോടിയാക്കുന്നതിനുള്ള അനുമതി ആവശ്യപ്പെടുന്നു. അനുമതി നൽകുന്നതിനുമുമ്പ്, ആ ഉപകരണത്തിൽ ഈ പാസ്‌കീ കാണിച്ചിരിക്കുന്നുവെന്ന് സ്ഥിരീകരിക്കുക: <ph name="PASSKEY" /></translation>
-<translation id="2430444791038754658">സമയം കഴിഞ്ഞു. ജയം നേടൂ!</translation>
 <translation id="2435457462613246316">പാസ്‌വേഡ് കാണിക്കുക</translation>
 <translation id="2437771564543046790">ബാറ്ററി ചാർജ് കുറവാണ്. ബാറ്ററി സേവർ ഓണാണ്</translation>
 <translation id="243878895369688216">ഇന്നലെ തുറന്നത്</translation>
@@ -777,7 +775,6 @@
 <translation id="3706423975342040244">വിനോദം</translation>
 <translation id="3707093869106077605"><ph name="UNAVAILABLE_DLC_ONE" />, <ph name="UNAVAILABLE_DLC_TWO" /> എന്നിവ ലഭ്യമല്ല.</translation>
 <translation id="3708186454126126312">മുമ്പ് കണക്റ്റ് ചെയ്തവ</translation>
-<translation id="3711282657843423160">എല്ലാം ചെയ്തു. തുടരൂ!</translation>
 <translation id="3712143870407382523">ഈ വശത്തിനായി വിൻഡോ തിരഞ്ഞെടുക്കുക</translation>
 <translation id="371370241367527062">മുൻവശത്തുള്ള മൈക്രോഫോൺ</translation>
 <translation id="3713734891607377840">പൂർത്തിയാകുമ്പോൾ തുറക്കുക</translation>
@@ -847,7 +844,6 @@
 <translation id="397105322502079400">കണക്കാക്കുന്നു...</translation>
 <translation id="397726367135689299">ബാറ്ററി ശരിയായി ചാർജ് ആകുന്നുണ്ടാകില്ല.</translation>
 <translation id="3977512764614765090">ബാറ്ററി <ph name="PERCENTAGE" />% ഉണ്ട്, ചാർജ് ചെയ്യുകയുമാണ്.</translation>
-<translation id="397808938113646171">സമയം കഴിഞ്ഞു. കൊള്ളാം!</translation>
 <translation id="3982013579989864579">ഓഡിയോ ഔട്ട്പുട്ട് മാറണോ?</translation>
 <translation id="3984536049089846927">അടുത്ത പേജ്</translation>
 <translation id="3986082989454912832">കോൾ സ്വീകരിക്കുക</translation>
@@ -1003,7 +999,6 @@
 <translation id="4477751544736611934">ഇതിന് ഡാറ്റാ നിരക്കുകൾ ഈടാക്കിയേക്കാം.
 ഒരു ഉപകരണം കണക്‌റ്റ് ചെയ്‌തിരിക്കുന്നു.</translation>
 <translation id="4477892968187500306">Google പരിശോധിച്ചുറപ്പിച്ചിട്ടില്ലാത്ത ആപ്പുകൾ ഈ ഉപകരണത്തിൽ അടങ്ങിയിരിക്കാം.</translation>
-<translation id="4479130137987693286">നിങ്ങൾക്ക് ആവശ്യമെങ്കിൽ കുറച്ച് സമയം കൂടി ചേർക്കാം അല്ലെങ്കിൽ നിങ്ങളുടെ ഫോക്കസ് സെഷൻ അവസാനിപ്പിക്കാം</translation>
 <translation id="4479639480957787382">എതെര്‍‌നെറ്റ്</translation>
 <translation id="4481530544597605423">ജോടി മാറ്റിയ ഉപകരണങ്ങൾ</translation>
 <translation id="4485506555414638855">നിങ്ങളുടെ ഫോണിലെ പുതിയ ഫോട്ടോകളും മീഡിയയും അറിയിപ്പുകളും ആപ്പുകളും കാണുന്നത് സജ്ജീകരിക്കുന്നത് ഡിസ്‌മിസ് ചെയ്യുക</translation>
@@ -1056,7 +1051,6 @@
 
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox പ്രവർത്തനക്ഷമമാക്കി</translation>
-<translation id="4665182893355091947">എല്ലാം ചെയ്തു. ഇനിയുമുണ്ട്!</translation>
 <translation id="4666911709726371538">കൂടുതൽ ആപ്പുകൾ</translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> ഡൗൺലോഡ് ചെയ്യുന്നു</translation>
 <translation id="4672539464599646374">ബാറ്ററി സേവർ ഓണാക്കി</translation>
@@ -1360,6 +1354,7 @@
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">നിങ്ങളുടെ പാസ്‌വേഡ് പരിശോധിച്ചുറപ്പിക്കാനായില്ല. വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="5632485077360054581">എങ്ങനെയെന്ന് എന്നെ കാണിക്കുക</translation>
+<translation id="5633826232582408011">നിങ്ങൾ എന്നെ എഴുതാൻ സഹായിക്കൂ, എന്നെ വായിക്കാൻ സഹായിക്കൂ എന്നിവ ഓണാക്കുമ്പോൾ, എഴുത്ത് നിർദ്ദേശങ്ങളും സംഗ്രഹങ്ങളും ജനറേറ്റ് ചെയ്യാനും ചോദ്യങ്ങൾക്ക് ഉത്തരം നൽകാനും ഉൽപ്പന്നങ്ങൾ മെച്ചപ്പെടുത്താനും, <ph name="LINK_TO_SERVICE_TERMS" />-ക്ക് വിധേയമായി, ഇൻപുട്ട് ടെക്സ്റ്റും ഡോക്യുമെന്റിലെ ഉള്ളടക്കവും വെബ് പേജ് URL-ഉം Google AI സെർവറുകളിലേക്ക് അയയ്ക്കുന്നു. വ്യക്തിപരമോ സൂക്ഷ്‌മമായി കൈകാര്യം ചെയ്യേണ്ടതോ രസഹ്യാത്മകമോ ആയ കാര്യങ്ങളൊന്നും ഉൾപ്പെടുത്തരുത്.</translation>
 <translation id="5648021990716966815">Mic jack</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> നിങ്ങളുടെ ശ്രദ്ധ അഭ്യർത്ഥിക്കുന്നു.</translation>
 <translation id="5662075790140998213">ഡെസ്‌ക് 10</translation>
@@ -1782,7 +1777,6 @@
 <translation id="7064351585062927183">വരുന്ന <ph name="DAY_OF_WEEK" /></translation>
 <translation id="7066646422045619941">നിങ്ങളുടെ അഡ്‌മിൻ ഈ നെറ്റ്‌വർക്ക് പ്രവർത്തനരഹിതമാക്കി.</translation>
 <translation id="7067196344162293536">സ്വയമേവ തിരിക്കുക</translation>
-<translation id="7067569040620564762">സമയം കഴിഞ്ഞു. ചെയ്തു!</translation>
 <translation id="7068360136237591149">ഫയലുകൾ തുറക്കുക</translation>
 <translation id="7076293881109082629">സൈൻ ഇൻ ചെയ്യുന്നു</translation>
 <translation id="7076878155205969899">ശബ്‌ദം മ്യൂട്ട് ചെയ്യുക</translation>
@@ -1817,7 +1811,6 @@
 <translation id="7189412385142492784">ശുക്രനിലേക്ക് എത്ര ദൂരമുണ്ട്</translation>
 <translation id="7198435252016571249">താഴെ വലത് കോണിലേക്ക് ക്യാമറ സ്‌നാപ്പ് ചെയ്തു. സിസ്റ്റം സർഫേസിനെ ഓവർലാപ്പ് ചെയ്യുന്നു.</translation>
 <translation id="7219573373513695352">ഉപകരണങ്ങളൊന്നും ബന്ധിപ്പിച്ചിട്ടില്ല</translation>
-<translation id="7226347284543965442">സമയം കഴിഞ്ഞു. ചെയ്തു!</translation>
 <translation id="7229029500464092426">മെമ്മറി <ph name="AVAILABLE_MEMORY" /> | <ph name="TOTAL_MEMORY" /> ആകെ</translation>
 <translation id="7244725679040769470"><ph name="PERCENTAGE" />% ബാറ്ററി ചാർജ് ശേഷിക്കുന്നു.
 നിങ്ങളുടെ ഉപകരണം പവറിലേക്ക് കണക്റ്റ് ചെയ്യുക.</translation>
@@ -2173,7 +2166,6 @@
 <translation id="8443879455002739353">"പകർത്തുക"</translation>
 <translation id="8444246603146515890">ഡെസ്‌ക് <ph name="DESK_TITILE" /> സജീവമാക്കി</translation>
 <translation id="8446884382197647889">കൂടുതലറിയുക</translation>
-<translation id="8452090802952003258">മൈക്കിലൂടെയുള്ള ശബ്‌ദം കേൾക്കൂ</translation>
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
 <translation id="8462305545768648477">വായിച്ചുകേൾക്കാൻ തിരഞ്ഞെടുക്കുക അടയ്ക്കുക</translation>
 <translation id="8468806060683421065">അവസാന തീയതി <ph name="DUE_DATE_AND_TIME" /></translation>
@@ -2235,7 +2227,6 @@
 <translation id="8683506306463609433">പ്രകടനം പിന്തുടരൽ സജീവം</translation>
 <translation id="8703634754197148428">റെക്കോർഡിംഗ് ആരംഭിക്കൂ. റെക്കോർഡിംഗ് ആരംഭിച്ചുകഴിഞ്ഞാൽ, ഷെൽഫിലേക്ക് പോയി റെക്കോർഡിംഗ് നിർത്തുക ബട്ടൺ കണ്ടെത്താൻ Alt + Shift + L ഉപയോഗിക്കുക</translation>
 <translation id="8704155109538237473">ചിത്രത്തിനുള്ളിൽ ചിത്രം വിൻഡോ ഫോക്കസ് ചെയ്യുക</translation>
-<translation id="8708657523363087260">സൈഡ്ടോൺ ടോഗിൾ ചെയ്യുക</translation>
 <translation id="870917907284186124">കേട്ടെഴുത്ത് ഓണാക്കുകയോ ഓഫാക്കുകയോ ചെയ്യുക (നിങ്ങളുടെ ശബ്ദം ഉപയോഗിച്ച് ടൈപ്പ് ചെയ്യുക)</translation>
 <translation id="8711169534266271368">ഗെയിം ഡാഷ്ബോർഡ് ഓപ്ഷനുകൾ</translation>
 <translation id="8712637175834984815">മനസ്സിലായി</translation>

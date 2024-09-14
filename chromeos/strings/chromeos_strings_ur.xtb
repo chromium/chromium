@@ -265,6 +265,7 @@
 <translation id="2180197493692062006">کچھ غلط ہوگیا۔ ایپ کو دوبار کھولنے کی کوشش کریں۔</translation>
 <translation id="2189104374785738357">‏APN کی تفصیلات میں ترمیم کریں</translation>
 <translation id="2195732836444333448">فی الحال گنجائش نہیں ہے۔ بعد میں واپس آئیں۔</translation>
+<translation id="2197185031095816179">سیفٹی ری سیٹ سے ناپسندیدہ پاپ اپس کو ہٹانے، نیٹ ورک کے مسائل کو ٹھیک کرنے اور دیگر غیر متوقع مسائل کو حل کرنے میں مدد مل سکتی ہے۔</translation>
 <translation id="2201758491318984023">سائیکل</translation>
 <translation id="2203272733515928691">گرم چشمہ</translation>
 <translation id="2203642483788377106">چٹان</translation>
@@ -543,6 +544,7 @@
 <translation id="3820172043799983114">‏غلط PIN۔</translation>
 <translation id="382043424867370667">سن سیٹ وال پیپر</translation>
 <translation id="3824259034819781947">فائلز منسلک کریں</translation>
+<translation id="3836587210832263413">صرف ان ایکسٹینشنز کو آن کریں جن پر آپ بھروسہ کرتے ہیں</translation>
 <translation id="3838338534323494292">نیا پاس ورڈ</translation>
 <translation id="3845880861638660475">‏ڈائیلاگ کو بند کرنے کے لیے <ph name="ALT_SHORTCUT_START" />alt<ph name="ALT_SHORTCUT_END" /> + ‏<ph name="ESC_SHORTCUT_START" />esc<ph name="ESC_SHORTCUT_END" /> دبائیں۔</translation>
 <translation id="3848280697030027394">کی بورڈ کو گہرا بنانا</translation>
@@ -633,6 +635,7 @@
 <translation id="4251839292699800785">اسٹائلش آفس</translation>
 <translation id="4258281355379922695">‏HTTPS کی درخواستوں میں تاخیر</translation>
 <translation id="4266143281602681663">دھاگا</translation>
+<translation id="4269815121975886860">ابتدائی ترجیحات</translation>
 <translation id="4271957103967917607">فُل اسکرین میں دیکھیں</translation>
 <translation id="4275663329226226506">میڈیا</translation>
 <translation id="4278766082079064416">"<ph name="CONFLICT_ACCEL_NAME" />" کے لیے شارٹ کٹ استعمال کیا جا رہا ہے۔ تنازعہ حل کرنے کے لیے اس میں ترمیم کریں یا ہٹائیں۔</translation>
@@ -769,6 +772,7 @@
 <translation id="4932733599132424254">تاریخ</translation>
 <translation id="4950314376641394653">فرم ویئر <ph name="DEVICE_NAME" /> کو ورژن <ph name="VERSION" /> میں اپ ڈیٹ کر دیا گیا ہے</translation>
 <translation id="4950893758552030541">درخت کے ٹنل</translation>
+<translation id="4965661459364092269">سیفٹی ری سیٹ مکمل ہو گیا ہے</translation>
 <translation id="4965703485264574128">ایک تخمینی نتیجے کے لیے، <ph name="CATEGORY_TEXT" /> قدر کو <ph name="CONVERSION_RATE" /> سے ضرب دیں</translation>
 <translation id="4969079779290789265">اسپلٹ</translation>
 <translation id="4972592110715526173">وضع میں تبدیلی</translation>
@@ -831,6 +835,7 @@
 <translation id="5252456968953390977">رومنگ</translation>
 <translation id="5254600740122644523"><ph name="SIMPLE_TONE" /> کمرے میں ایک <ph name="SIMPLE_STYLE" /> بُک شیلف</translation>
 <translation id="5257811368506016604">ہلکے رنگ کے موڈ کو فعال کریں</translation>
+<translation id="5261479807286543505">اسٹارٹ اپ کی ترتیبات</translation>
 <translation id="5264277876637023664">‏CPU ٹیسٹ چلائیں</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="527501763019887383">‏APN غیر فعال کر دیا گیا ہے۔</translation>
@@ -1144,6 +1149,7 @@
 <translation id="680983167891198932">کلید</translation>
 <translation id="6816797338148849397">آپ کے انتخاب سے متعلقہ معلومات دستیاب ہے۔ رسائی حاصل کرنے کے لئے اوپر تیر کے نشان کی کلید کا استعمال کریں۔</translation>
 <translation id="6831043979455480757">ترجمہ کریں</translation>
+<translation id="6846843854964504403">سیفٹی ری سیٹ</translation>
 <translation id="6853312040151791195">ڈسچارج ہونے کی شرح</translation>
 <translation id="6862416241246624313">تاثرات جمع ہو گئے</translation>
 <translation id="6866732840889595464">ڈیزی</translation>
@@ -1328,6 +1334,7 @@
 <translation id="7746357909584236306">قابل ترمیم</translation>
 <translation id="7747039790905080783">پہلے سے اشتراک کردہ کلید</translation>
 <translation id="7752963721013053477">ڈان ٹو ڈارک - خصوصی</translation>
+<translation id="7760571082554155847">ہوم پیج کی ترتیبات</translation>
 <translation id="7762130827864645708">آپ کا پاس ورڈ کامیابی سے تبدیل کر دیا گیا۔ براہ کرم اب سے نیا پاس ورڈ استعمال کریں۔</translation>
 <translation id="7763470514545477072">ڈومین لاحقہ کا مماثل</translation>
 <translation id="7769672763586021400">‏ماڈل ID</translation>
@@ -1369,6 +1376,7 @@
 <translation id="7942349550061667556">سرخ</translation>
 <translation id="7943235353293548836">‏مسلسل keepalive وقفہ</translation>
 <translation id="7943516765291457328">قریبی ہاٹ اسپاٹس اسکین کرنے کے لیے بلوٹوتھ کو آن کریں</translation>
+<translation id="7944482598620888754">سائٹ کا مواد</translation>
 <translation id="7944562637040950644">کی بورڈ بیک لائٹ کو ٹوگل کریں</translation>
 <translation id="7953669802889559161">ان پٹس</translation>
 <translation id="7955587717700691983">بلوٹوتھ کی بورڈ</translation>
@@ -1405,6 +1413,7 @@
 <translation id="8129620843620772246">C °<ph name="TEMPERATURE_C" /></translation>
 <translation id="8131740175452115882">تصدیق کریں</translation>
 <translation id="8132480444149501833">ٹریفک کاؤنٹرز کی درخواست کریں</translation>
+<translation id="8135609423982943441">‏آپ کے Chromebook کو محفوظ ڈیفالٹس پر ری سیٹ کر دیا گیا۔ آپ ترتیبات میں کسی بھی وقت ان تبدیلیوں کو ایڈجسٹ کر سکتے ہیں۔</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> منتخب کریں</translation>
 <translation id="8151185429379586178">ڈویلپر ٹولز</translation>
@@ -1435,6 +1444,7 @@
 <translation id="8291967909914612644">گھر فراہم کرنے والے کا ملک</translation>
 <translation id="8294431847097064396">ماخذ</translation>
 <translation id="8302368968391049045">‏HTTPS فائروال</translation>
+<translation id="8308787307410010965">سائٹ کے مواد کی ترتیبات</translation>
 <translation id="8312330582793120272">میڈیا چلائیں</translation>
 <translation id="8318753676953949627">کوئی تصویر نہیں ہے</translation>
 <translation id="8320910311642849813">جنگل</translation>

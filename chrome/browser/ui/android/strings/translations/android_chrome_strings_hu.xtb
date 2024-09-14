@@ -350,6 +350,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="2653659639078652383">Küldés</translation>
 <translation id="2656405586795711023">Webalkalmazások</translation>
 <translation id="2664252182805397291">Webhelyek megtekintése</translation>
+<translation id="2666092431469916601">Felülre</translation>
 <translation id="2669454659051515572">A letöltött fájlokat bárki láthatja, aki az eszközt használja</translation>
 <translation id="2702516483241149200">Új: az ehhez a szöveghez gördülő linket oszthat meg</translation>
 <translation id="2705073298859543115">Összefoglaló létrehozása</translation>
@@ -451,6 +452,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="3072980200212375806">A(z) <ph name="APP_NAME" /> a Chrome-ban fog megnyílni. A továbblépéssel Ön elfogadja a <ph name="BEGIN_LINK1" />Google Általános Szerződési Feltételeket<ph name="END_LINK1" />, valamint <ph name="BEGIN_LINK2" />A Google Chrome és a ChromeOS Kiegészítő Általános Szerződési Feltételeit<ph name="END_LINK2" />. Az <ph name="BEGIN_LINK3" />adatvédelmi irányelvek<ph name="END_LINK3" /> is érvényben vannak.</translation>
 <translation id="3080525922482950719">Mentheti az oldalakat későbbi olvasásra, vagy ha offline állapotban van</translation>
 <translation id="3087218211037573995">Egyes, csak erre az eszközre mentett jelszavak hamarosan nem fognak működni. Ezeket a jelszavakat áthelyezheti a Google Jelszókezelőbe.</translation>
+<translation id="3087734570205094154">Alja</translation>
 <translation id="3091010850649238832">Vágólap tartalmának mutatása</translation>
 <translation id="3098745985164956033">A leírások pontosítása érdekében a böngésző egyes képeket elküld a Google-nak</translation>
 <translation id="3114507951000454849">Olvassa el a mai híreket <ph name="NEWS_ICON" /></translation>
@@ -688,7 +690,6 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="4355272626458588338">A fontos oldalakra könyvjelző felvételével térhet vissza a későbbiekben</translation>
 <translation id="4357206670025518404">+<ph name="COUNT_NUMBER" /></translation>
 <translation id="4359809482106103048">Biztonsági áttekintés</translation>
-<translation id="4363222835916186793">A termékhez tartozó értesítések ki vannak kapcsolva</translation>
 <translation id="4378154925671717803">Telefon</translation>
 <translation id="4380055775103003110">Ha a probléma továbbra is fennáll, más módon is próbálkozhat a(z) <ph name="SITE_ETLD_PLUS_ONE" /> webhelyen való folytatással.</translation>
 <translation id="4384468725000734951">A Sogou használata a kereséshez</translation>
@@ -749,6 +750,7 @@ Előfordulhat, hogy Google-fiókjában (a <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="4624065194742029982">Chrome inkognitó mód</translation>
 <translation id="4634124774493850572">Jelszó használata</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 jelszó, amelyhez illetéktelenül hozzáfértek}other{# jelszó, amelyhez illetéktelenül hozzáfértek}}</translation>
+<translation id="4642472735733036929">Árkövetés leállítva</translation>
 <translation id="4645146721047390964">Inkognitó módban a webhelyek nem használhatják fel az Ön cookie-jait arra, hogy lássák a különböző webhelyeken végzett böngészési tevékenységeit például annak érdekében, hogy a hirdetéseket személyre szabják. Előfordulhat, hogy bizonyos webhelyek funkciói nem működnek majd megfelelően.</translation>
 <translation id="4650364565596261010">Alapértelmezett</translation>
 <translation id="465657074423018424">A Biztonságos Böngészés védelmet nyújt a megtévesztő webhelyekkel szemben. Ha kikapcsolja, legyen kivételesen óvatos böngészéskor – különösen a jelszavak megadása előtt.</translation>
@@ -1092,6 +1094,7 @@ Előfordulhat, hogy Google-fiókjában (a <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="6210748933810148297">Nem <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Az oldal előnézete</translation>
 <translation id="6221633008163990886">A zárolás feloldásával exportálhatja a jelszavait</translation>
+<translation id="6225572914528673855">Címsáv</translation>
 <translation id="6232535412751077445">A „Nincs nyomon követés” engedélyezése azt jelenti, hogy a böngészési forgalommal együtt kérelmet is küld a rendszer. Ennek hatása attól függ, hogy a webhely reagál-e a kérelemre, és hogyan értelmezi azt.
 
 Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jelenítenek meg, amelyek nem a már felkeresett egyéb webhelyeken alapulnak. Számos webhely ilyenkor is gyűjti és felhasználja a böngészési adatokat (például a biztonság növelése, továbbá tartalom, hirdetések és ajánlatok biztosítása, valamint jelentésekhez használt statisztika előállítása céljából).</translation>

@@ -118,7 +118,6 @@
 <translation id="1346748346194534595">Оңға</translation>
 <translation id="1350494136075914725">Ашылған · Қойындыға ауысу</translation>
 <translation id="1351937230027495976">Мәзірді жию</translation>
-<translation id="1352537790882153971">Микрофон дыбысын сымды құлақаспаппен тыңдап, бақылауға болады. Тоқтату үшін панельді жабыңыз.</translation>
 <translation id="1360220746312242196">Беттегі іздеу сұрауына сай келетін алдыңғы нәтижеге өту</translation>
 <translation id="1360788414852622716">Профиль өшіріліп жатыр. Бұл бірнеше минутқа созылуы мүмкін.</translation>
 <translation id="1364382257761975320">Chromebook құлпын ашу үшін саусақ ізін пайдаланыңыз.</translation>
@@ -374,6 +373,7 @@
 <translation id="2359808026110333948">Жалғастыру</translation>
 <translation id="2360398059912971776">батарея</translation>
 <translation id="2361210043495191221">Wi-Fi функциясын қосу/өшіру. <ph name="STATE" />.</translation>
+<translation id="2364710166605611987">Көрініс әсерлері</translation>
 <translation id="236574664504281623"><ph name="SESSION_NAME" /> жіберген.</translation>
 <translation id="2367186422933365202">Chromebook құрылғысына кіру мүмкін емес.</translation>
 <translation id="2367972762794486313">Қолданбаларды көрсету</translation>
@@ -396,7 +396,6 @@
 <translation id="2426051945783024481">Камерамен кадрлау автоматты түрде ортасына тураланды.</translation>
 <translation id="2427507373259914951">Тінтуірдің сол жақ түймесін басу</translation>
 <translation id="2429753432712299108">"<ph name="DEVICE_NAME" />" Bluetooth құрылғысы жұптау рұқсатын сұрайды. Қабылдаудан бұрын бұл кіру кілті аталмыш құрылғыда көрсетілетінін растаңыз: <ph name="PASSKEY" /></translation>
-<translation id="2430444791038754658">Уақыт бітті. Алдасыз!</translation>
 <translation id="2435457462613246316">Құпия сөзді көрсету</translation>
 <translation id="2437771564543046790">Батарея заряды аз. Батареяны үнемдеу режимі қосылды</translation>
 <translation id="243878895369688216">Кеше ашылды.</translation>
@@ -734,6 +733,7 @@
 <translation id="3600061223661453002">Өшіру</translation>
 <translation id="3604801046548457007"><ph name="DESK_TITILE" /> үстелі жасалды.</translation>
 <translation id="3606978283550408104">Брайль дисплейі қосылды.</translation>
+<translation id="3612634595000403645">Көрініс әсерлерінің параметрлері</translation>
 <translation id="3615926715408477684">Мобильдік интернетті қоссаңыз, Bluetooth та қосылады.</translation>
 <translation id="3616113530831147358">Аудио</translation>
 <translation id="3616883743181209306">Мәзір экранның жоғарғы оң жақ бұрышына жылжытылды.</translation>
@@ -775,7 +775,6 @@
 <translation id="3706423975342040244">Ойын-сауық</translation>
 <translation id="3707093869106077605"><ph name="UNAVAILABLE_DLC_ONE" /> және <ph name="UNAVAILABLE_DLC_TWO" /> қолжетімді емес.</translation>
 <translation id="3708186454126126312">Бұған дейін жалғанғандар</translation>
-<translation id="3711282657843423160">Дайын. Алға!</translation>
 <translation id="3712143870407382523">Экранның осы жағына қоятын терезені таңдау</translation>
 <translation id="371370241367527062">Алдыңғы микрофон</translation>
 <translation id="3713734891607377840">Жүктеп алынған соң ашу</translation>
@@ -845,7 +844,6 @@
 <translation id="397105322502079400">Есептелуде…</translation>
 <translation id="397726367135689299">Батарея дұрыс зарядталмауы мүмкін.</translation>
 <translation id="3977512764614765090">Батарея қуаты – <ph name="PERCENTAGE" />%. Зарядталып жатыр.</translation>
-<translation id="397808938113646171">Уақыт бітті. Жарайсыз!</translation>
 <translation id="3982013579989864579">Аудио шығысын ауыстыру қажет пе?</translation>
 <translation id="3984536049089846927">Келесі бет</translation>
 <translation id="3986082989454912832">Жауап беру</translation>
@@ -894,6 +892,7 @@
 <translation id="4146671046252289537">Келесі сөздің соңына жылжыту</translation>
 <translation id="4146833061457621061">Музыка ойнату</translation>
 <translation id="4150201353443180367">Дисплей</translation>
+<translation id="4151054805501931758">Портреттік селфиді жақсарту</translation>
 <translation id="4156293514828496577">Батарея заряды — <ph name="PERCENTAGE" />% (шамамен <ph name="TIME_LEFT" /> қалды).
 Батарея жұмысын ұзарту үшін кейбір функцияларға шектеу қойылды.</translation>
 <translation id="4160919062868802509">Бірнеше аудио дереккөзі анықталды</translation>
@@ -1000,7 +999,6 @@
 <translation id="4477751544736611934">Тариф ақысы алынуы мүмкін.
 1 құрылғы жалғанды.</translation>
 <translation id="4477892968187500306">Құрылғыда Google растамаған қолданбалар болуы мүмкін.</translation>
-<translation id="4479130137987693286">Қажет болса, көбірек уақыт қосуға немесе зейін қою сеансын аяқтауға болады.</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Жұпталмаған құрылғылар</translation>
 <translation id="4485506555414638855">Телефондағы соңғы фотосуреттерді, медиафайлдарды, хабарландыруларды және қолданбаларды көру мүмкіндігін реттеуден бас тарту</translation>
@@ -1053,7 +1051,6 @@
 
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox қосылды</translation>
-<translation id="4665182893355091947">Дайын. Керемет!</translation>
 <translation id="4666911709726371538">Басқа қолданбалар</translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> жүктеп алынуда</translation>
 <translation id="4672539464599646374">Батареяны үнемдеу режимі қосылды.</translation>
@@ -1779,7 +1776,6 @@
 <translation id="7064351585062927183">Осы алдағы <ph name="DAY_OF_WEEK" /></translation>
 <translation id="7066646422045619941">Бұл желіні әкімшіңіз өшірген.</translation>
 <translation id="7067196344162293536">Автоматты бұру</translation>
-<translation id="7067569040620564762">Уақыт бітті. Дайын!</translation>
 <translation id="7068360136237591149">Файлдарды ашу</translation>
 <translation id="7076293881109082629">Кіру</translation>
 <translation id="7076878155205969899">Дыбысын өшіру</translation>
@@ -1814,7 +1810,6 @@
 <translation id="7189412385142492784">Шолпан қаншалықты алыс орналасқан?</translation>
 <translation id="7198435252016571249">Камера төменгі оң жақ бұрышқа ауыстырылды. Жүйе платформасына қатысты қарама-қайшылық туындады.</translation>
 <translation id="7219573373513695352">Ешқандай құрылғы қосылмаған.</translation>
-<translation id="7226347284543965442">Уақыт бітті. Жарайсыз!</translation>
 <translation id="7229029500464092426">Қолжетімді жад: <ph name="AVAILABLE_MEMORY" /> | Жалпы жад: <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7244725679040769470">Батарея заряды — <ph name="PERCENTAGE" />%. Құрылғыны қуат көзіне қосыңыз.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Жаңартылған нұсқаны қолдану үшін бұл Chromebook-ті қайта қосу қажет. Оған 1 минуттай кетуі мүмкін.</translation>
@@ -1971,6 +1966,7 @@
 <translation id="7768784765476638775">Select to Speak</translation>
 <translation id="7769299611924763557">GIF файлыңыз жақын арада дайын болады.</translation>
 <translation id="7773536009433685931">Оның орнына Wi-Fi функциясын қосу</translation>
+<translation id="77747521138552256">PIN коды тым көп рет қате терілді. <ph name="TIME_LEFT" /> күтіп, PIN кодын қайта теріп көріңіз немесе аккаунтқа дереу кіру үшін құпия сөзді енгізіңіз.</translation>
 <translation id="7780094051999721182">таңбашалар</translation>
 <translation id="7780159184141939021">Экранды бұру</translation>
 <translation id="7781829728241885113">Кеше</translation>
@@ -2168,7 +2164,6 @@
 <translation id="8443879455002739353">"Көшіру"</translation>
 <translation id="8444246603146515890"><ph name="DESK_TITILE" /> үстелі іске қосылды.</translation>
 <translation id="8446884382197647889">Толығырақ</translation>
-<translation id="8452090802952003258">Микрофон дыбысын тыңдаңыз</translation>
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
 <translation id="8462305545768648477">Select-to-Speak функциясын жабу</translation>
 <translation id="8468806060683421065">мерзімі: <ph name="DUE_DATE_AND_TIME" /></translation>
@@ -2230,7 +2225,6 @@
 <translation id="8683506306463609433">Жұмыс өнімділігін қадағалау функциясы іске қосылды</translation>
 <translation id="8703634754197148428">Жазуды бастаңыз. Бейне жазу басталған кезде, Alt + Shift + L пернелер тіркесімін басып, сөреге өтіңіз, онда жазуды тоқтатуға арналған түймені таба аласыз</translation>
 <translation id="8704155109538237473">"Суреттегі сурет" режимі терезесін ерекшелеу</translation>
-<translation id="8708657523363087260">Өз дауысын тыңдау функциясын қосу/өшіру</translation>
 <translation id="870917907284186124">Мәтінді дауыспен енгізу функциясын қосу/өшіру</translation>
 <translation id="8711169534266271368">Ойын тақтасының опциялары</translation>
 <translation id="8712637175834984815">Түсінікті</translation>

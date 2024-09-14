@@ -4094,6 +4094,7 @@ Als dit beleid is ingesteld op False, gebruikt <ph name="PRODUCT_NAME" /> geen s
 <translation id="4140646780789794190">Delen van diagnostische gegevens met PluginVm uitzetten</translation>
 <translation id="4144417751555442768">Generatieve AI</translation>
 <translation id="4145383150978634398">Samengestelde desktopmodus beschikbaar maken voor de gebruiker</translation>
+<translation id="4146319954420095470">(Waarschuwing! Deze afhankelijkheid wordt binnenkort beëindigd. Gebruik in plaats daarvan <ph name="GLS_POLICY_NAME" />.) Als dit beleid is ingesteld op <ph name="BLOCK_GEOLOCATION_SETTING" />, hebben systeemservices van <ph name="PRODUCT_OS_NAME" /> en Android-apps geen toegang tot locatiegegevens. Als je dit beleid instelt op een andere waarde of niet instelt, wordt de gebruiker gevraagd om toestemming te geven als een Android-app toegang wil tot locatiegegevens.</translation>
 <translation id="4147818922357566987">Varianten alleen aanzetten voor essentiële oplossingen</translation>
 <translation id="4150201353443180367">Weergave</translation>
 <translation id="4154221011709068799">Externe opslagapparaten niet toestaan</translation>
@@ -6228,9 +6229,6 @@ Als je dit beleid niet toepast of niet instelt, staat Glanceables niet aan in <p
 <translation id="5776485039795852974">Altijd goedkeuring vragen wanneer een site bureaubladmeldingen wil tonen</translation>
 <translation id="5783009211970309878">Kop- en voetteksten afdrukken</translation>
 <translation id="5790763087505467169">Minder meldingen voor automatisch starten van beheerde gastsessies</translation>
-<translation id="5793378951267871906">Als je het beleid toepast, slaat <ph name="PRODUCT_OS_NAME" /> de actieve wifi-inloggegevens van de kiosk automatisch op apparaatniveau op. De actieve wifi kan worden gebruikt door andere kiosk-apps of gebruikers op het apparaat.
-Als je dit beleid niet instelt of niet toepast, worden de actieve wifi-inloggegevens van de kiosk opgeslagen op kioskniveau. Wifi die is ingesteld in een kiosk-app kan alleen worden gebruikt in diezelfde kiosk-app.
-Dit beleid wordt niet aanbevolen en moet worden gebruikt als er geen andere opties beschikbaar zijn.</translation>
 <translation id="5800329278018669527">Prompt voor netwerkconfiguratie uitzetten als je offline bent</translation>
 <translation id="5802931736499687181">De Encrypted Reporting Pipeline uitzetten</translation>
 <translation id="5803715507113569033">Met dit beleid kunnen beheerders de activering van <ph name="MICROSOFT_ONE_DRIVE_NAME" /> instellen.
@@ -9204,13 +9202,6 @@ Het gebruik van <ph name="LACROS_SELECTION_USER_CHOICE_VALUE" /> of <ph name="LA
 <translation id="8028814157747157754">De standaard zoekprovider aanzetten en toestaan dat gebruikers de lijst met zoekproviders wijzigen</translation>
 <translation id="8029201909194194377">Maximale toegestane sessieduur voor verbindingen voor externe toegang</translation>
 <translation id="8031651557770840616">Generatieve AI-achtergrond niet toestaan</translation>
-<translation id="8033450879690820321">Dit beleid biedt een tijdelijke afmelding voor het nieuwe gedrag van focusbare scrollers voor het toetsenbord.
-
-Als je dit beleid aanzet of niet instelt, kunnen scrollers zonder onderliggende focusbare items standaard worden gefocust met het toetsenbord. Daarnaast zijn scrollers standaard klik-focusbaar en programmatic focusbaar.
-
-Als je dit beleid niet toepast, zijn scrollers niet standaard focusbaar.
-
-Dit beleid is een tijdelijke oplossing en wordt verwijderd in M135.</translation>
 <translation id="8035570672225663428">Het model voor aangepast opladen aanzetten om het oplaadproces te onderbreken om de batterijduur te verlengen</translation>
 <translation id="8036284429246268475">Als je het beleid toepast, kunnen gebruikers <ph name="PRODUCT_NAME" /> laten checken of ingevoerde gebruikersnamen en wachtwoorden deel uitmaken van een gegevenslek.
 

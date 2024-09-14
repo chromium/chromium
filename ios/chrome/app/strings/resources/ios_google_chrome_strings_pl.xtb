@@ -96,6 +96,7 @@ Odczekaj kilka minut, zanim się wylogujesz. Jeśli wylogujesz się teraz, te da
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{Dzieje się tak, gdy nie korzystasz z Chrome przez {THRESHOLD} minutę}few{Dzieje się tak, gdy nie korzystasz z Chrome przez {THRESHOLD} minuty}many{Dzieje się tak, gdy nie korzystasz z Chrome przez {THRESHOLD} minut}other{Dzieje się tak, gdy nie korzystasz z Chrome przez {THRESHOLD} minuty}}</translation>
 <translation id="3367797402528056312">Dokończ konfigurowanie Chrome</translation>
 <translation id="3371064404604898522">Ustaw Chrome jako przeglądarkę domyślną</translation>
+<translation id="3399930248910934354">Otwórz ustawienia Chrome</translation>
 <translation id="3472587960215700950">Chrome używa Map Google, aby podawać wskazówki dojazdu i informacje lokalne o wykrytych adresach.</translation>
 <translation id="3503014945441706099">Włącz też Ulepszone Bezpieczne przeglądanie na tym profilu Chrome</translation>
 <translation id="3522659714780527202">Aby widzieć swoje karty zawsze, kiedy korzystasz z Chrome, włącz synchronizację</translation>

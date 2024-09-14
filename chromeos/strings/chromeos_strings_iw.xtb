@@ -153,6 +153,7 @@
 <translation id="1672499492233627739">פיד הווידאו של מצלמת האינטרנט</translation>
 <translation id="1676557873873341166">מתבצעת הקלטת וידאו</translation>
 <translation id="1684279041537802716">צבע משני</translation>
+<translation id="1697278726914783200">הקלטה</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">‏מקודד DNS נוכח</translation>
 <translation id="1708602061922134366">‏כחול Google</translation>
@@ -705,6 +706,7 @@
 <translation id="458794348635939462">לא ניתן היה להתאים את הנתונים של כל המארחים</translation>
 <translation id="4593212453765072419">‏יש צורך באימות שרת ה-proxy</translation>
 <translation id="4594021849294327751">יצירת תמליל</translation>
+<translation id="4602266091140407479">מיקרופון</translation>
 <translation id="4607282946861182308">לא ניתן ליצור תמונות של מה שביקשת. אפשר לנסות הנחיה אחרת.</translation>
 <translation id="4609350030397390689">הפחתת הבהירות של המקלדת</translation>
 <translation id="4627232916386272576">‏<ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> מתוך <ph name="TOTAL_PAGE_NUMBER" />. ניתן להקיש על Enter כדי לבטל את משימת ההדפסה.</translation>
@@ -1014,6 +1016,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6188737759358894319">נוצר בתאריך <ph name="DATE" /></translation>
 <translation id="6189418609903030344">קיבולת הסוללה יורדת ככל שמשתמשים בה</translation>
+<translation id="6189987971574353264">הפעלה</translation>
 <translation id="6191293864534840972">שרתי שמות שגויים</translation>
 <translation id="6196607555925437199">יצירה מחדש</translation>
 <translation id="6205145102504628069">זרימה בענן</translation>
@@ -1649,8 +1652,6 @@
 <translation id="951780398843003443">להשוות בין הקולות במשך ההקלטה כך שהתמליל ישקף את מה שכל אחד הדוברים אמר ומתי</translation>
 <translation id="952992212772159698">לא פעיל</translation>
 <translation id="95718197892796296">חימר</translation>
-<translation id="959792926760890141">‏איפוס הגדרות האבטחה משבית את התוספים של דפדפן Chrome ומאפס את הרשת והגדרות אחרות לברירות מחדל בטוחות.
-          מנוע החיפוש שמשמש כברירת מחדל יתאפס, אבל הכרטיסיות, הקבצים, קובצי ה-Cookie וההיסטוריה לא ישתנו.</translation>
 <translation id="960719561871045870">קוד ספק</translation>
 <translation id="965918541715156800">צהוב וכחול-ירקרק</translation>
 <translation id="966787709310836684">תפריט</translation>

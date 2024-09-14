@@ -350,6 +350,7 @@
 <translation id="2653659639078652383">ส่ง</translation>
 <translation id="2656405586795711023">เว็บแอป</translation>
 <translation id="2664252182805397291">ดูเว็บไซต์</translation>
+<translation id="2666092431469916601">ด้านบน</translation>
 <translation id="2669454659051515572">ใครก็ตามที่ใช้อุปกรณ์นี้จะเห็นไฟล์ที่ดาวน์โหลด</translation>
 <translation id="2702516483241149200">ใหม่: แชร์ลิงก์ที่เลื่อนมายังข้อความนี้</translation>
 <translation id="2705073298859543115">สร้างสรุป</translation>
@@ -451,6 +452,7 @@
 <translation id="3072980200212375806"><ph name="APP_NAME" /> จะเปิดใน Chrome การดำเนินการต่อหมายความว่า คุณยอมรับ<ph name="BEGIN_LINK1" />ข้อกำหนดในการให้บริการของ Google<ph name="END_LINK1" /> และ<ph name="BEGIN_LINK2" />ข้อกำหนดในการให้บริการเพิ่มเติมของ Google Chrome และ Chrome OS<ph name="END_LINK2" /> <ph name="BEGIN_LINK3" />นโยบายความเป็นส่วนตัว<ph name="END_LINK3" />จะมีผลด้วย</translation>
 <translation id="3080525922482950719">คุณบันทึกหน้าเว็บไว้อ่านภายหลังหรืออ่านขณะออฟไลน์ได้</translation>
 <translation id="3087218211037573995">รหัสผ่านบางรายการที่บันทึกไว้ในอุปกรณ์เครื่องนี้เท่านั้นที่จะหยุดทำงานเร็วๆ นี้ คุณย้ายรหัสผ่านดังกล่าวไปยังเครื่องมือจัดการรหัสผ่านบน Google ได้</translation>
+<translation id="3087734570205094154">ด้านล่าง</translation>
 <translation id="3091010850649238832">แสดงเนื้อหาในคลิปบอร์ด</translation>
 <translation id="3098745985164956033">ระบบจะส่งรูปภาพบางส่วนไปยัง Google เพื่อปรับปรุงคำอธิบายสำหรับคุณ</translation>
 <translation id="3114507951000454849">อ่านข่าววันนี้ <ph name="NEWS_ICON" /></translation>
@@ -688,7 +690,6 @@
 <translation id="4355272626458588338">คุณกลับไปยังหน้าที่สำคัญสำหรับคุณได้ด้วยการเพิ่มบุ๊กมาร์ก</translation>
 <translation id="4357206670025518404">+<ph name="COUNT_NUMBER" /></translation>
 <translation id="4359809482106103048">ข้อมูลโดยย่อด้านความปลอดภัย</translation>
-<translation id="4363222835916186793">ปิดการแจ้งเตือนสำหรับผลิตภัณฑ์นี้แล้ว</translation>
 <translation id="4378154925671717803">โทรศัพท์</translation>
 <translation id="4380055775103003110">หากปัญหานี้ยังเกิดขึ้นอยู่ คุณสามารถลองดำเนินการต่อใน <ph name="SITE_ETLD_PLUS_ONE" /> ด้วยวิธีอื่นๆ ได้</translation>
 <translation id="4384468725000734951">กำลังใช้ Sogou ในการค้นหา</translation>
@@ -749,6 +750,7 @@
 <translation id="4624065194742029982">โหมดไม่ระบุตัวตนของ Chrome</translation>
 <translation id="4634124774493850572">ใช้รหัสผ่าน</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{มีรหัสผ่านที่ถูกละเมิด 1 รายการ}other{มีรหัสผ่านที่ถูกละเมิด # รายการ}}</translation>
+<translation id="4642472735733036929">หยุดติดตามราคาแล้ว</translation>
 <translation id="4645146721047390964">ขณะอยู่ในโหมดไม่ระบุตัวตน เว็บไซต์จะไม่สามารถใช้คุกกี้เพื่อดูกิจกรรมการท่องเว็บของคุณในเว็บไซต์ต่างๆ เช่น เพื่อปรับโฆษณาตามโปรไฟล์ของคุณ ฟีเจอร์ในเว็บไซต์บางแห่งอาจใช้งานไม่ได้</translation>
 <translation id="4650364565596261010">ค่าเริ่มต้นของระบบ</translation>
 <translation id="465657074423018424">Google Safe Browsing ปกป้องคุณจากเว็บไซต์ที่หลอกลวง หากคุณปิดใช้ ให้ระวังเป็นพิเศษขณะท่องเว็บ โดยเฉพาะก่อนที่จะป้อนรหัสผ่าน</translation>
@@ -1092,6 +1094,7 @@
 <translation id="6210748933810148297"><ph name="EMAIL" /> ไม่ใช่บัญชีที่ฉันจะใช้</translation>
 <translation id="6211386937064921208">แสดงตัวอย่างหน้าเว็บนี้</translation>
 <translation id="6221633008163990886">ปลดล็อกเพื่อส่งออกรหัสผ่าน</translation>
+<translation id="6225572914528673855">แถบที่อยู่</translation>
 <translation id="6232535412751077445">การเปิดใช้ "ไม่ติดตาม" หมายความว่าจะมีการรวมคำขอหนึ่งไว้กับการเข้าชมของคุณ ผลกระทบทั้งหมดขึ้นอยู่กับว่าเว็บไซต์ตอบสนองต่อคำขอนั้นไหม และวิธีตีความคำขอ
 
 ตัวอย่างเช่น บางเว็บไซต์อาจตอบสนองต่อคำขอนี้โดยแสดงให้คุณเห็นโฆษณาที่ไม่ได้อิงอยู่กับเว็บไซต์อื่นๆ ที่คุณเข้าชม เว็บไซต์จำนวนมากจะยังคงรวบรวมและใช้ข้อมูลการท่องเว็บของคุณเพื่อปรับปรุงความปลอดภัย เพื่อแสดงเนื้อหา โฆษณา และคำแนะนำ และเพื่อสร้างสถิติในการรายงาน เป็นต้น</translation>
@@ -1210,6 +1213,7 @@
 <translation id="6674571176963658787">หากต้องการเริ่มต้นการซิงค์ ให้ป้อนรหัสผ่านของคุณ</translation>
 <translation id="6676927815633975364">ลงชื่อเข้าใช้เว็บไซต์นี้และ Chrome</translation>
 <translation id="6684809838922667136">ปรับปรุง Chrome ให้ดีขึ้น</translation>
+<translation id="6700279777779583398">บันทึกตัวเลือกแล้ว</translation>
 <translation id="6704048624334633734">ส่งออกและลบรหัสผ่าน</translation>
 <translation id="670498945988402717">ตรวจสอบเมื่อวาน</translation>
 <translation id="6710213216561001401">ก่อนหน้า</translation>
@@ -1423,6 +1427,7 @@
 <translation id="752731652852882757">บล็อกขณะใช้โหมดไม่ระบุตัวตน</translation>
 <translation id="7554643625247105821">ตรวจสอบเวอร์ชัน Chrome ไม่ได้</translation>
 <translation id="7557508262441527045">ออกจากระบบแล้ว</translation>
+<translation id="7573665567024262965">เลือกแอปเริ่มต้น</translation>
 <translation id="7577900504646297215">จัดการความสนใจ</translation>
 <translation id="757855969265046257">{FILES,plural, =1{ดาวน์โหลดแล้ว <ph name="FILES_DOWNLOADED_ONE" /> ไฟล์}other{ดาวน์โหลดแล้ว <ph name="FILES_DOWNLOADED_MANY" /> ไฟล์}}</translation>
 <translation id="7581273696622423628">ตอบแบบสำรวจ</translation>
@@ -1465,6 +1470,7 @@
 <translation id="7764225426217299476">เพิ่มที่อยู่</translation>
 <translation id="7772032839648071052">ยืนยันข้อความรหัสผ่าน</translation>
 <translation id="7772375229873196092">ปิด <ph name="APP_NAME" /></translation>
+<translation id="7774125747223422443">คุณต้องเลือกเบราว์เซอร์และเครื่องมือค้นหาตามกฎหมายในภูมิภาคของคุณ</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 และอีก <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> วิธี}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 และอีก <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> วิธี}}</translation>
 <translation id="777637629667389858">เมื่อลงชื่อเข้าใช้ ฟีเจอร์จะปกป้องคุณในบริการต่างๆ ของ Google</translation>
 <translation id="7778840695157240389">กลับมาดูเรื่องราวใหม่ๆ ภายหลัง</translation>
@@ -1733,6 +1739,7 @@
 <translation id="8982113230057126145">ปุ่ม "ไม่ชอบ" จะส่งความคิดเห็นว่าคุณไม่ชอบสรุปนี้</translation>
 <translation id="8992769679401294069">ข้อมูลของคุณมีการเข้ารหัสด้วยรหัสผ่าน ป้อนรหัสผ่านเพื่อใช้และบันทึกข้อมูล Chrome ในบัญชี Google</translation>
 <translation id="8993760627012879038">เปิดแท็บใหม่ในโหมดไม่ระบุตัวตน</translation>
+<translation id="8995521496079646922">ระบบจะใช้แอปที่คุณเลือกเป็นค่าเริ่มต้น หากยังไม่มีแอปในอุปกรณ์นี้ ระบบจะดาวน์โหลดแอปนั้นในไม่ช้า</translation>
 <translation id="8996847606757455498">เลือกผู้ให้บริการอื่น</translation>
 <translation id="8998289560386111590">ใช้ไม่ได้ในอุปกรณ์ของคุณ</translation>
 <translation id="8998837250940831980">ย่อแท็บไม่ได้ โปรดลองอีกครั้งในภายหลัง</translation>

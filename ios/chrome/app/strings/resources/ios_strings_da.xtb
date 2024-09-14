@@ -11,7 +11,6 @@
 <translation id="1035980983510608210">Hvis du lukker alle faner, lukkes de fastgjorte faner også.</translation>
 <translation id="1036017604683756002">UPS</translation>
 <translation id="1036348656032585052">Deaktiver</translation>
-<translation id="10379132160269599">Vis fanegitter</translation>
 <translation id="1041322626941363065">Få en underretning, hvis adgangskoder afsløres i forbindelse med et brud på datasikkerheden</translation>
 <translation id="1044891598689252897">Websites fungerer som normalt</translation>
 <translation id="104491362976654916">Offlineside</translation>
@@ -31,6 +30,7 @@
 <translation id="1118569444314402022">Velkommen tilbage, <ph name="USER_NAME" /></translation>
 <translation id="1121850836842642159">Billeder</translation>
 <translation id="1125564390852150847">Opret ny fane.</translation>
+<translation id="1126696498560056882">Administrer konti på denne enhed</translation>
 <translation id="1126809382673880764">Beskytter dig ikke mod skadelige websites, downloads og udvidelser. Du er stadig beskyttet med Beskyttet browsing i andre Google-tjenester som f.eks. Gmail og Søgning, hvor dette er tilgængeligt.</translation>
 <translation id="1142371195993008685">Deaktiver notifikationer for <ph name="FEATURE_NAME" /></translation>
 <translation id="1147031633655575115">Logget ind som <ph name="USER" /></translation>
@@ -171,6 +171,7 @@
 <translation id="1820195936249950412">Log ind med en gyldig konto</translation>
 <translation id="1820259098641718022">Føjet til læseliste</translation>
 <translation id="1822994441903263130">FEDEX</translation>
+<translation id="1824490729233982311">Underretninger, når du modtager faner fra dine andre enheder.</translation>
 <translation id="1827529786398596735">Hold fingeren på startskærmen</translation>
 <translation id="1829244130665387512">Find på siden</translation>
 <translation id="1832848789136765277">Verificer din identitet for at sikre, at du altid har adgang til dine synkroniserede data</translation>
@@ -1009,7 +1010,6 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="594324569139756587">Bloker cookies fra tredjeparter</translation>
 <translation id="5944869793365969636">Scan QR-kode</translation>
 <translation id="5948291296578561264">Dermed kan du gemme billeder i din billederamling.</translation>
-<translation id="5953383789663007162">Rediger kontoliste</translation>
 <translation id="5954322191260787920">Rediger bogmærke</translation>
 <translation id="5956112131836209882">Fanen Fanegruppe. <ph name="TAB_INDEX_IN_GROUP" /> af <ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
 <translation id="595769230373966252">Søg med <ph name="SEARCH_PROVIDER" /></translation>

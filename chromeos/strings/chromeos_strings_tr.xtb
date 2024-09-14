@@ -52,6 +52,7 @@
 <translation id="1204296502688602597">DNS Gecikmesi</translation>
 <translation id="1207734034680156868">Öneriler açıklamanıza dayalı olarak sunulur</translation>
 <translation id="121090498480012229">medyayı oynat veya duraklat</translation>
+<translation id="1216675364136048456">Kapat</translation>
 <translation id="1223498995510244364">Özetle</translation>
 <translation id="123124571410524056">Portal olabilir</translation>
 <translation id="1232610416724362657">şelale</translation>
@@ -128,6 +129,7 @@
 <translation id="1588438908519853928">Normal</translation>
 <translation id="1591562245178063882">Bu ay</translation>
 <translation id="1593528591614229756">Mobil sağlayıcınız veya yöneticiniz tarafından sağlanan APN'leri seçtiğinizden emin olun. Bir APN'yi seçtiğinizde tüm özel APN'ler devre dışı bırakılır. Geçersiz APN'ler, mobil bağlantınızın kesilmesine neden olabilir. <ph name="LINK_BEGIN" />Daha fazla bilgi edinin<ph name="LINK_END" />.</translation>
+<translation id="1604959087182679653">Transkripti gizle</translation>
 <translation id="160633243685262989">Resmi Önizle</translation>
 <translation id="1611649489706141841">ileri</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> sonrası veri kullanımı</translation>
@@ -141,6 +143,7 @@
 <translation id="1643449475550628585">Duvar kağıdı resmini günlük olarak değiştir</translation>
 <translation id="1644574205037202324">Geçmiş</translation>
 <translation id="1651925268237749928">Paylaşılan bir albüm seçtiniz. Diğer kullanıcılar fotoğraf ekleyebilir veya değiştirebilir. Duvar kağıdınızda şu anda bu albümde olmayan fotoğraflar kullanılabilir.</translation>
+<translation id="1661512400125589646">Duraklat</translation>
 <translation id="1661865805917886535">Bazı hesap ve sistem bilgileri Google'a gönderilebilir. Bu bilgileri, Gizlilik Politikamıza (<ph name="PRIVACYPOLICYURL" />) ve Hizmet Şartlarımıza (<ph name="TERMSOFSERVICEURL" />) uygun şekilde teknik sorunları gidermek ve size daha iyi hizmet sunmak için kullanırız. İçerik değişikliği talep etmek için Yasal Yardım sayfasına (<ph name="LEGALHELPPAGEURL" />) gidin.</translation>
 <translation id="1662989795263954667">Durduruldu - Mürekkep bitti</translation>
 <translation id="1664796644829245314"><ph name="PREVIEW_OBJECT" /> adlı takvimi önizle</translation>
@@ -150,6 +153,7 @@
 <translation id="1672499492233627739">Web kamerası video feed'i</translation>
 <translation id="1676557873873341166">Video çekiliyor</translation>
 <translation id="1684279041537802716">Vurgu rengi</translation>
+<translation id="1697278726914783200">Kaydet</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS Çözümleyici Varlığı</translation>
 <translation id="1708602061922134366">Google mavisi</translation>
@@ -172,6 +176,7 @@
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1762483337755424125">Transkript</translation>
 <translation id="1765169783255151332">Tuşlar arasında hızlıca geçiş yapın</translation>
 <translation id="1768959921651994223">Kimlik doğrulama türü</translation>
 <translation id="1776228893584526149">Duvar kağıdı tonu</translation>
@@ -216,6 +221,7 @@
 <translation id="1954818433534793392">bina</translation>
 <translation id="1962550982027027473">Varsayılan bir APN gerekli</translation>
 <translation id="1967860190218310525">Yeni APN oluştur</translation>
+<translation id="1967917622327567355">Transkripti göster</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977973007732255293">geleneksel</translation>
 <translation id="1977994649430373166">Google profil fotoğrafı</translation>
@@ -259,6 +265,7 @@
 <translation id="2180197493692062006">Bir sorun oldu. Uygulamayı yeniden açmayı deneyin.</translation>
 <translation id="2189104374785738357">APN ayrıntılarını düzenleyin</translation>
 <translation id="2195732836444333448">Şu anda kapasite dolu. Daha sonra tekrar gelin.</translation>
+<translation id="2197185031095816179">Güvenlik ayarları sıfırlama, istenmeyen pop-up'ları kaldırmaya, ağ sorunlarını düzeltmeye ve diğer beklenmeyen sorunları gidermeye yardımcı olabilir.</translation>
 <translation id="2201758491318984023">bisiklet</translation>
 <translation id="2203272733515928691">kaplıca</translation>
 <translation id="2203642483788377106">uçurum</translation>
@@ -537,6 +544,7 @@
 <translation id="3820172043799983114">Geçersiz PIN.</translation>
 <translation id="382043424867370667">Gün batımı duvar kağıdı</translation>
 <translation id="3824259034819781947">Dosya ekle</translation>
+<translation id="3836587210832263413">Yalnızca güvendiğiniz uzantıları etkinleştirin.</translation>
 <translation id="3838338534323494292">Yeni şifre</translation>
 <translation id="3845880861638660475">İletişim kutusunu kapatmak için <ph name="ALT_SHORTCUT_START" />alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />esc<ph name="ESC_SHORTCUT_END" /> tuşlarına basın.</translation>
 <translation id="3848280697030027394">klavyeyi koyulaştır</translation>
@@ -597,6 +605,7 @@
 <translation id="4111761024568264522">USB dokunmatik alan</translation>
 <translation id="4113067922640381334">Artık yeni <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />duvar kağıtlarına<ph name="END_LINK_WALLPAPER_SUBPAGE" /> erişebilirsiniz</translation>
 <translation id="4117637339509843559">Koyu mod</translation>
+<translation id="4126551873361000548">10 saniye geri</translation>
 <translation id="4130035430755296270">Fareyle üzerine gelmeye devam ederek düzenle ilgili daha fazla seçenek görün</translation>
 <translation id="4130750466177569591">Kabul ediyorum</translation>
 <translation id="4131410914670010031">Siyah beyaz</translation>
@@ -626,6 +635,7 @@
 <translation id="4251839292699800785">Şık ofis</translation>
 <translation id="4258281355379922695">HTTP Gecikmesi</translation>
 <translation id="4266143281602681663">yumak</translation>
+<translation id="4269815121975886860">Başlangıç tercihleri</translation>
 <translation id="4271957103967917607">Tam Ekran görüntüle</translation>
 <translation id="4275663329226226506">Medya</translation>
 <translation id="4278766082079064416">Kısayol, "<ph name="CONFLICT_ACCEL_NAME" />" için kullanılıyor. Çakışmayı gidermek için kısayolu düzenleyin veya kaldırın.</translation>
@@ -677,6 +687,7 @@
 <translation id="4507392511610824664">parlaklığı artır</translation>
 <translation id="4511264077854731334">Portal</translation>
 <translation id="4513946894732546136">Geri Bildirim</translation>
+<translation id="4516323842122524821">Ses</translation>
 <translation id="4521826082652183069">Alternatif konu adı eşleşmesi</translation>
 <translation id="4522570452068850558">Ayrıntılar</translation>
 <translation id="4536864596629708641">IP Yapılandırması</translation>
@@ -693,6 +704,7 @@
 <translation id="458794348635939462">Tüm ana makineler çözümlenemedi</translation>
 <translation id="4593212453765072419">Proxy kimlik doğrulaması gerekli</translation>
 <translation id="4594021849294327751">Transkript oluştur</translation>
+<translation id="4602266091140407479">Mikrofon</translation>
 <translation id="4607282946861182308">Bu istemle ilgili resim üretilemiyor. Başka bir istem deneyin.</translation>
 <translation id="4609350030397390689">Klavye parlaklığını azalt</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />/<ph name="TOTAL_PAGE_NUMBER" /> Yazdırma işini iptal etmek için enter tuşuna basın.</translation>
@@ -760,6 +772,7 @@
 <translation id="4932733599132424254">Tarih</translation>
 <translation id="4950314376641394653"><ph name="DEVICE_NAME" /> donanım yazılımı <ph name="VERSION" /> sürümüne güncellendi</translation>
 <translation id="4950893758552030541">ağaçtan tünel</translation>
+<translation id="4965661459364092269">Güvenlik ayarları sıfırlama işlemi tamamlandı</translation>
 <translation id="4965703485264574128">Yaklaşık sonuç için <ph name="CATEGORY_TEXT" /> değerini <ph name="CONVERSION_RATE" /> ile çarp</translation>
 <translation id="4969079779290789265">Böl</translation>
 <translation id="4972592110715526173">mod değiştir</translation>
@@ -780,6 +793,7 @@
 <translation id="5049856988445523908">SIM Kilitlendi (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Grup adı</translation>
 <translation id="5051044138948155788">Bundan başka sayfa yok. Bu işlem sizi tarama başlangıç ekranına götürür.</translation>
+<translation id="5053233795640754917">Duraklat</translation>
 <translation id="5078711626843651677">Ses modelleri, konuşmacı etiketleme işlemi tamamlanana kadar geçici olarak cihaz üzerinde saklanır. Bu özelliği dilediğiniz zaman Ayarlar'dan kapatabilirsiniz.</translation>
 <translation id="5078983345702708852">fütüristik</translation>
 <translation id="5087864757604726239">geri</translation>
@@ -787,6 +801,7 @@
 <translation id="5089810972385038852">Eyalet</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
 <translation id="5095761549884461003">Güncelleme işlemine devam etmek için <ph name="DEVICE_NAME" /> USB kablosunu çıkarıp tekrar takın</translation>
+<translation id="5095864667399748231">Sesi aç/kapat</translation>
 <translation id="5099354524039520280">yukarı</translation>
 <translation id="5107243100836678918"><ph name="META_KEY" /> tuşu olmayan kısayol bazı uygulamaların kısayoluyla çakışabilir. Kullanmaya devam etmek için bu kısayola tekrar basın veya <ph name="KEY" /> tuşunu kullanarak yeni bir kısayola basın. <ph name="LINK_BEGIN" />Daha fazla bilgi<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">Benzer:</translation>
@@ -820,6 +835,7 @@
 <translation id="5252456968953390977">Dolaşım</translation>
 <translation id="5254600740122644523"><ph name="SIMPLE_TONE" /> odadaki <ph name="SIMPLE_STYLE" /> kitaplık</translation>
 <translation id="5257811368506016604">Açık renk modunu etkinleştir</translation>
+<translation id="5261479807286543505">Başlangıç ayarları</translation>
 <translation id="5264277876637023664">CPU testini çalıştır</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="527501763019887383">APN devre dışı.</translation>
@@ -932,6 +948,7 @@
 <translation id="588258955323874662">Tam ekran</translation>
 <translation id="5893975327266416093">Atamak istediğiniz klavye tuşuna dokunun</translation>
 <translation id="5895138241574237353">Yeniden başlat</translation>
+<translation id="5896602941605730551">Çal</translation>
 <translation id="5901630391730855834">Sarı</translation>
 <translation id="5903200662178656908">Bu cihaz bir klavye ile fare kombinasyonudur.</translation>
 <translation id="5904994456462260490">Yeni bir APN ekleyin</translation>
@@ -996,6 +1013,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6188737759358894319">Oluşturulma tarihi: <ph name="DATE" /></translation>
 <translation id="6189418609903030344">Pil kapasitesi kullanıldıkça azalır</translation>
+<translation id="6189987971574353264">Çal</translation>
 <translation id="6191293864534840972">Alan adı sunucuları geçersiz</translation>
 <translation id="6196607555925437199">Yeniden oluştur</translation>
 <translation id="6205145102504628069">Bulut Akışı</translation>
@@ -1131,6 +1149,7 @@
 <translation id="680983167891198932">Anahtar</translation>
 <translation id="6816797338148849397">Seçiminizle ilgili bilgi mevcut. Erişmek için yukarı ok tuşunu kullanın.</translation>
 <translation id="6831043979455480757">Çevir</translation>
+<translation id="6846843854964504403">Güvenlik ayarları sıfırlama</translation>
 <translation id="6853312040151791195">Şarjın boşalma hızı</translation>
 <translation id="6862416241246624313">Geri bildirim gönderildi</translation>
 <translation id="6866732840889595464">papatya</translation>
@@ -1315,9 +1334,11 @@ Bu transkriptleri almak için metne dönüştürme modelini (100 MB'a kadar) ind
 <translation id="7746357909584236306">düzenlenebilir</translation>
 <translation id="7747039790905080783">Önceden paylaşılan anahtar</translation>
 <translation id="7752963721013053477">Şafaktan geceye - özel</translation>
+<translation id="7760571082554155847">Ana sayfa ayarları</translation>
 <translation id="7762130827864645708">Şifre değişikliğiniz başarıyla tamamlandı. Lütfen bundan sonra yeni şifreyi kullanın.</translation>
 <translation id="7763470514545477072">Alan adı son eki eşleşmesi</translation>
 <translation id="7769672763586021400">Model kimliği</translation>
+<translation id="7774759755755950354">Geri</translation>
 <translation id="7778717409420828014">Geri bildiriminiz ekibimiz tarafından incelenecek ve Chromebook deneyimini iyileştirmemize yardımcı olacaktır. Çok sayıda rapor aldığımız için yanıt gönderemiyoruz.</translation>
 <translation id="7781829728241885113">Dün</translation>
 <translation id="7784116172884276937">DNS sunucusu ayarlanmamış</translation>
@@ -1355,6 +1376,7 @@ Bu transkriptleri almak için metne dönüştürme modelini (100 MB'a kadar) ind
 <translation id="7942349550061667556">Kırmızı</translation>
 <translation id="7943235353293548836">Kalıcı keepalive Aralığı</translation>
 <translation id="7943516765291457328">Yakındaki hotspot'ları taramak için Bluetooth'u açın</translation>
+<translation id="7944482598620888754">Site içeriği</translation>
 <translation id="7944562637040950644">klavye arka ışığını aç/kapat</translation>
 <translation id="7953669802889559161">Girişler</translation>
 <translation id="7955587717700691983">Bluetooth klavye</translation>
@@ -1391,6 +1413,7 @@ Bu transkriptleri almak için metne dönüştürme modelini (100 MB'a kadar) ind
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">Onayla</translation>
 <translation id="8132480444149501833">Trafik Sayaçlarını İste</translation>
+<translation id="8135609423982943441">Chromebook'unuz güvenli varsayılan ayarlara sıfırlandı. Bu değişiklikleri dilediğiniz zaman Ayarlar'dan düzenleyebilirsiniz.</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Seç: <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8151185429379586178">Geliştirici araçları</translation>
@@ -1408,6 +1431,7 @@ Bu transkriptleri almak için metne dönüştürme modelini (100 MB'a kadar) ind
 <translation id="8227119283605456246">Dosya ekle</translation>
 <translation id="8227488649450500937">Bu istemlerden birini deneyin veya <ph name="BEGIN_LINK_PROMPTING_GUIDE" />istem kılavuzuna<ph name="END_LINK_PROMPTING_GUIDE" /> göz atın</translation>
 <translation id="8230672074305416752">Varsayılan ağ geçidi pinglenemedi</translation>
+<translation id="8236972776513018241">Transkript</translation>
 <translation id="8238771987802558562">Bir APN seçin</translation>
 <translation id="8246209727385807362">Bilinmeyen operatör</translation>
 <translation id="8250926778281121244">pas rengi</translation>
@@ -1420,6 +1444,7 @@ Bu transkriptleri almak için metne dönüştürme modelini (100 MB'a kadar) ind
 <translation id="8291967909914612644">Ev sağlayıcısının ülkesi</translation>
 <translation id="8294431847097064396">Kaynak</translation>
 <translation id="8302368968391049045">HTTPS Güvenlik Duvarı</translation>
+<translation id="8308787307410010965">Site içeriği ayarları</translation>
 <translation id="8312330582793120272">medyayı oynat</translation>
 <translation id="8318753676953949627">Resim Yok</translation>
 <translation id="8320910311642849813">orman</translation>
@@ -1510,6 +1535,7 @@ Bu transkriptleri almak için metne dönüştürme modelini (100 MB'a kadar) ind
 <translation id="8775713578693478175">Modem APN'si</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Bu ağda giriş portalı olabilir</translation>
+<translation id="8797082062139985406">Google Yapay Zeka'yı kullanarak ad oluşturun</translation>
 <translation id="8798099450830957504">Varsayılan</translation>
 <translation id="8798441408945964110">Sağlayıcı adı</translation>
 <translation id="8808828119384186784">Chrome Ayarları</translation>
@@ -1530,6 +1556,7 @@ Bu transkriptleri almak için metne dönüştürme modelini (100 MB'a kadar) ind
 <translation id="8864415976656252616">Önerilen içerik yok. En çok görüntülenen yardım içeriğine bakın.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Cihazın türü tablet.</translation>
+<translation id="8878117140814294155">Mikrofonun sesini aç/kapat</translation>
 <translation id="8881098542468797602">Test başarılı oldu</translation>
 <translation id="8882789155418924367">baykuşlar</translation>
 <translation id="8892443466059986410">Kısayolu düzenlemeyi iptal et</translation>

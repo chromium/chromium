@@ -75,6 +75,7 @@
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - Dihantar daripada <ph name="DEVICE_NAME" /></translation>
 <translation id="1320912611264252795">Folder aliran penyimpanan penanda halaman dibuka pada ketinggian penuh</translation>
 <translation id="1327257854815634930">Sejarah navigasi dibuka</translation>
+<translation id="1328235593824723509"><ph name="TAB_TITLE" />, tab baharu atau yang telah dikemaskinikan</translation>
 <translation id="1331212799747679585">Chrome tidak dapat dikemas kini. Lagi pilihan</translation>
 <translation id="1332501820983677155">Pintasan ciri Google Chrome</translation>
 <translation id="1333491156693005331">Telah disemak baru-baru ini</translation>
@@ -350,6 +351,7 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="2653659639078652383">Serah</translation>
 <translation id="2656405586795711023">Apl web</translation>
 <translation id="2664252182805397291">Lihat laman</translation>
+<translation id="2666092431469916601">Atas</translation>
 <translation id="2669454659051515572">Sesiapa sahaja yang menggunakan peranti ini dapat melihat fail yang dimuat turun</translation>
 <translation id="2702516483241149200">Baharu: kongsi pautan yang menatal ke teks ini</translation>
 <translation id="2705073298859543115">Buat ringkasan</translation>
@@ -451,6 +453,7 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="3072980200212375806"><ph name="APP_NAME" /> akan dibuka dalam Chrome. Dengan meneruskan penggunaan, anda bersetuju menerima <ph name="BEGIN_LINK1" />Syarat Perkhidmatan Google<ph name="END_LINK1" /> dan <ph name="BEGIN_LINK2" />Syarat Perkhidmatan Tambahan Google Chrome dan Chrome OS<ph name="END_LINK2" />. <ph name="BEGIN_LINK3" />Dasar Privasi<ph name="END_LINK3" /> juga dikenakan.</translation>
 <translation id="3080525922482950719">Anda boleh menyimpan halaman untuk dibaca kemudian atau secara luar talian</translation>
 <translation id="3087218211037573995">Sesetengah kata laluan yang disimpan hanya pada peranti ini akan berhenti berfungsi tidak lama lagi. Anda boleh mengalihkan kata laluan kepada Google Password Manager.</translation>
+<translation id="3087734570205094154">Bawah</translation>
 <translation id="3091010850649238832">Paparkan kandungan papan keratan</translation>
 <translation id="3098745985164956033">Sesetengah imej dihantar kepada Google untuk meningkatkan perihalan untuk anda</translation>
 <translation id="3114507951000454849">Baca berita hari ini <ph name="NEWS_ICON" /></translation>
@@ -688,7 +691,6 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="4355272626458588338">Anda boleh kembali pada halaman yang penting bagi anda dengan menambah penanda halaman</translation>
 <translation id="4357206670025518404">+<ph name="COUNT_NUMBER" /></translation>
 <translation id="4359809482106103048">Sekilas pandang tentang keselamatan</translation>
-<translation id="4363222835916186793">Makluman untuk produk ini telah dimatikan</translation>
 <translation id="4378154925671717803">Telefon</translation>
 <translation id="4380055775103003110">Jika masalah ini tetap berlaku, anda boleh mencuba cara lain untuk meneruskan pada <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="4384468725000734951">Menggunakan Sogou untuk carian</translation>
@@ -749,6 +751,7 @@ Google Account anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain
 <translation id="4624065194742029982">Inkognito Chrome</translation>
 <translation id="4634124774493850572">Gunakan kata laluan</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 kata laluan yang terjejas}other{# kata laluan yang terjejas}}</translation>
+<translation id="4642472735733036929">Penjejakan harga dihentikan</translation>
 <translation id="4645146721047390964">Semasa dalam mod Inkognito, laman tidak boleh menggunakan kuki anda untuk melihat aktiviti penyemakan imbas anda merentas beberapa laman yang berlainan, contohnya, untuk memeribadikan iklan. Ciri pada sesetengah laman mungkin rosak.</translation>
 <translation id="4650364565596261010">Lalai sistem</translation>
 <translation id="465657074423018424">Penyemakan Imbas Selamat melindungi anda daripada laman web yang bersifat penipuan. Jika anda mematikan ciri ini, berhati-hati semasa menyemak imbas, terutamanya sebelum memasukkan kata laluan.</translation>
@@ -1092,6 +1095,7 @@ Google Account anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain
 <translation id="6210748933810148297">Bukan <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Memaparkan pratonton halaman ini</translation>
 <translation id="6221633008163990886">Buka kunci untuk mengeksport kata laluan anda</translation>
+<translation id="6225572914528673855">Bar alamat</translation>
 <translation id="6232535412751077445">Tindakan mendayakan "Jangan Kesan" bermaksud permintaan akan disertakan dengan trafik penyemakan imbas anda. Sebarang kesan bergantung pada sama ada laman web memberi respons kepada permintaan dan cara permintaan ditafsirkan.
 
 Sebagai contoh, sesetengah laman web mungkin memberi respons kepada permintaan ini dengan memaparkan iklan yang tidak berdasarkan laman web lain yang anda lawati. Pelbagai laman web masih akan mengumpul dan menggunakan data penyemakan imbas anda — contohnya, untuk meningkatkan keselamatan, untuk menyediakan kandungan, iklan dan cadangan serta untuk menjana statistik pelaporan.</translation>
@@ -1210,6 +1214,7 @@ Sebagai contoh, sesetengah laman web mungkin memberi respons kepada permintaan i
 <translation id="6674571176963658787">Untuk memulakan penyegerakan, masukkan ungkapan laluan anda</translation>
 <translation id="6676927815633975364">Log masuk ke laman ini dan Chrome</translation>
 <translation id="6684809838922667136">Jadikan Chrome lebih baik</translation>
+<translation id="6700279777779583398">Pilihan disimpan</translation>
 <translation id="6704048624334633734">Eksport dan padamkan kata laluan</translation>
 <translation id="670498945988402717">Disemak semalam</translation>
 <translation id="6710213216561001401">Sebelumnya</translation>
@@ -1423,6 +1428,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chrome dalam ak
 <translation id="752731652852882757">Sekat semasa menggunakan Inkognito</translation>
 <translation id="7554643625247105821">Tidak dapat menyemak versi Chrome</translation>
 <translation id="7557508262441527045">Dilog keluar</translation>
+<translation id="7573665567024262965">Pilih apl lalai anda</translation>
 <translation id="7577900504646297215">Urus minat</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> fail dimuat turun}other{<ph name="FILES_DOWNLOADED_MANY" /> fail dimuat turun}}</translation>
 <translation id="7581273696622423628">Sertai tinjauan</translation>
@@ -1465,6 +1471,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chrome dalam ak
 <translation id="7764225426217299476">Tambahkan alamat</translation>
 <translation id="7772032839648071052">Sahkan frasa laluan</translation>
 <translation id="7772375229873196092">Tutup <ph name="APP_NAME" /></translation>
+<translation id="7774125747223422443">Berdasarkan undang-undang di rantau anda, anda perlu memilih penyemak imbas dan enjin carian anda</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 dan <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> lagi}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 dan <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> lagi}}</translation>
 <translation id="777637629667389858">Apabila anda log masuk, melindungi anda merentas perkhidmatan Google.</translation>
 <translation id="7778840695157240389">Semak kembali nanti untuk mendapatkan cerita baharu</translation>
@@ -1589,6 +1596,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chrome dalam ak
 <translation id="8265018477030547118">Hanya pada peranti ini</translation>
 <translation id="8266753737658117282">Teruskan dengan <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8266862848225348053">Lokasi muat turun</translation>
+<translation id="8279945625179116733">Dilindungi oleh <ph name="APP_NAME" /></translation>
 <translation id="8281886186245836920">Langkau</translation>
 <translation id="8282297628636750033">Gunakan tema gelap pada laman</translation>
 <translation id="8282950411412455249">Akses tetapan keselamatan</translation>
@@ -1733,6 +1741,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chrome dalam ak
 <translation id="8982113230057126145">Isyarat tidak menyukai menyerahkan maklum balas yang menunjukkan bahawa anda tidak menyukai ringkasan ini</translation>
 <translation id="8992769679401294069">Data anda telah disulitkan dengan ungkapan laluan anda. Masukkan ungkapan laluan tersebut untuk menggunakan dan menyimpan data Chrome dalam Google Account anda.</translation>
 <translation id="8993760627012879038">Buka tetingkap baharu dalam mod Inkognito</translation>
+<translation id="8995521496079646922">Apl yang anda pilih akan digunakan sebagai lalai. Jika apl belum dipasang pada peranti ini, apl tersebut akan dimuat turun sebentar lagi.</translation>
 <translation id="8996847606757455498">Pilih penyedia lain</translation>
 <translation id="8998289560386111590">Tidak tersedia pada peranti anda</translation>
 <translation id="8998837250940831980">Tidak dapat meminimumkan tab. Cuba sebentar lagi.</translation>

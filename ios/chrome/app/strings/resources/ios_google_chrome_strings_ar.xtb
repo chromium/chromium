@@ -76,6 +76,7 @@
 <translation id="3282568296779691940">‏تسجيل الدخول إلى Chrome</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{‏يحدث هذا الإجراء في حال عدم استخدام Chrome لمدة دقيقة واحدة ({THRESHOLD}).}zero{‏يحدث هذا الإجراء في حال عدم استخدام Chrome لمدة {THRESHOLD} دقيقة.}two{‏يحدث هذا الإجراء في حال عدم استخدام Chrome لمدة دقيقتَين ({THRESHOLD}).}few{‏يحدث هذا الإجراء في حال عدم استخدام Chrome لمدة {THRESHOLD} دقائق.}many{‏يحدث هذا الإجراء في حال عدم استخدام Chrome لمدة {THRESHOLD} دقيقة.}other{‏يحدث هذا الإجراء في حال عدم استخدام Chrome لمدة {THRESHOLD} دقيقة.}}</translation>
 <translation id="3371064404604898522">‏ضبط Chrome كمتصفِّح تلقائي</translation>
+<translation id="3399930248910934354">‏افتَح إعدادات Chrome.</translation>
 <translation id="3472587960215700950">‏يستخدم Chrome "خرائط Google" لإعلامك بالاتجاهات مع معلومات محلية عن العناوين المكتشفة.</translation>
 <translation id="3503014945441706099">‏يمكنك الاستفادة من ميزة "الحماية المحسّنة للتصفّح الآمن" لهذا الملف الشخصي على Chrome أيضًا.</translation>
 <translation id="3522659714780527202">‏للاطّلاع على علامات التبويب من أي جهاز تستخدم فيه Chrome، فعِّل المزامنة.</translation>

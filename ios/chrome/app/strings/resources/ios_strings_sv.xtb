@@ -11,7 +11,6 @@
 <translation id="1035980983510608210">Om du stänger alla flikar stängs även fästa flikar.</translation>
 <translation id="1036017604683756002">UPS</translation>
 <translation id="1036348656032585052">Inaktivera</translation>
-<translation id="10379132160269599">Visa rutnätet med flikar</translation>
 <translation id="1041322626941363065">En varning visas om lösenord har läckt ut vid ett dataintrång</translation>
 <translation id="1044891598689252897">Webbplatser fungerar som de ska</translation>
 <translation id="104491362976654916">Offlinesida</translation>
@@ -31,6 +30,7 @@
 <translation id="1118569444314402022">Välkommen tillbaka, <ph name="USER_NAME" /></translation>
 <translation id="1121850836842642159">Foton och bilder</translation>
 <translation id="1125564390852150847">Skapa en ny flik.</translation>
+<translation id="1126696498560056882">Hantera konton på den här enheten</translation>
 <translation id="1126809382673880764">Skyddar inte mot farliga webbplatser, nedladdningar och tillägg. Där funktionen är tillgänglig får du fortfarande skydd med Säker webbsökning i andra tjänster från Google, till exempel Gmail och Sök.</translation>
 <translation id="1142371195993008685">Inaktivera aviseringar för <ph name="FEATURE_NAME" /></translation>
 <translation id="1147031633655575115">Inloggad som <ph name="USER" /></translation>
@@ -171,6 +171,7 @@
 <translation id="1820195936249950412">Logga in med ett giltigt konto</translation>
 <translation id="1820259098641718022">Har lagts till i läslistan</translation>
 <translation id="1822994441903263130">FEDEX</translation>
+<translation id="1824490729233982311">Aviseringar när du tar emot flikar från dina andra enheter.</translation>
 <translation id="1827529786398596735">Tryck länge på startskärmen</translation>
 <translation id="1829244130665387512">Hitta på sida</translation>
 <translation id="1832848789136765277">Verifiera din identitet så att du alltid får åtkomst till din synkroniserade data</translation>
@@ -1009,7 +1010,6 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="594324569139756587">Blockera tredjepartscookies</translation>
 <translation id="5944869793365969636">Skanna QR-kod</translation>
 <translation id="5948291296578561264">Gör så att du kan spara foton i fotobiblioteket.</translation>
-<translation id="5953383789663007162">Redigera kontolista</translation>
 <translation id="5954322191260787920">Redigera bokmärke</translation>
 <translation id="5956112131836209882">Flik i flikgrupp. <ph name="TAB_INDEX_IN_GROUP" /> av <ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
 <translation id="595769230373966252">Sök med <ph name="SEARCH_PROVIDER" /></translation>

@@ -713,6 +713,7 @@
 <translation id="2265356434276802347">ဤမူဝါဒတွင် အထူးအသားပေး ထည့်သွင်းမှု <ph name="MAX_ITEMS_LIMIT" /> ခုထက်မပိုရပါ။</translation>
 <translation id="2267047181501709434">သင့်အထောက်အထားကို အတည်ပြုနေသည်...</translation>
 <translation id="2268044343513325586">ပြန်မွမ်းမံ</translation>
+<translation id="2268966938956566076"><ph name="MINUTES" /> မိနစ်အတွင်း အပ်လုဒ်လုပ်ရန်</translation>
 <translation id="2270484714375784793">ဖုန်း နံပါတ်</translation>
 <translation id="2276057643614339130">ပုံနှိပ်စက်အောက်ခြေ</translation>
 <translation id="2277103315734023688">အရှေ့သို့ ရစ်ရန်</translation>
@@ -1115,6 +1116,7 @@
 <translation id="3062655045399308513">ဖွင့်ကြည့်ထားသည့်မှတ်တမ်းဒေတာ ဖျက်ရန်…</translation>
 <translation id="306573536155379004">ဂိမ်းစတင်ပါပြီ။</translation>
 <translation id="3067505415088964188">ဈေးနှုန်း နိမ့်သည်</translation>
+<translation id="3068118691172921711"><ph name="CLOUD_PROVIDER" /> သို့ သင့်ဖိုင်အပ်လုဒ်လုပ်ခြင်းသည် ၁ မိနစ်အတွင်း စတင်ပါမည်</translation>
 <translation id="3076865167425975822">လည်ပတ်သည့်စနစ်</translation>
 <translation id="3080254622891793721">ဂရပ်ဖစ်</translation>
 <translation id="3082007635241601060">ရနိုင်သည့်အခါ ပုဂ္ဂိုလ်ရေးသီးသန့် လျှော့ဈေးများရှာရန် Google ကို သင်၏ဈေးခြင်းတောင်းများ သုံးခွင့်ပြုနိုင်သည်</translation>
@@ -1126,6 +1128,7 @@
 <translation id="3099619114405539473">ရနိုင်သော ကင်မရာ (<ph name="CAMERAS_COUNT" />) ခုကို သုံးရန်</translation>
 <translation id="3102312643185441063">စုငွေ</translation>
 <translation id="3103188521861412364">စတော့၊ ငွေချေးစာချုပ်</translation>
+<translation id="3103535543639438037">အလားတူကုန်ပစ္စည်းများကို ဘေးချင်းယှဉ်၍ နှိုင်းယှဉ်ခြင်း</translation>
 <translation id="3105172416063519923">ပိုင်ဆိုင်မှုပြ ID-</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />လုံခြုံသည့် DNS စီစဉ်သတ်မှတ်ချက်ကို စစ်ဆေးနေသည်<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">အလယ်ဗန်း</translation>
@@ -1300,6 +1303,7 @@
 <translation id="3407789382767355356">ပြင်ပအဖွဲ့အစည်းသို့ လက်မှတ်ထိုးဝင်ခြင်း</translation>
 <translation id="340924996148642843">နှိုင်းယှဉ်ခြင်းကို လောလောဆယ် အသုံးမပြုနိုင်ပါ</translation>
 <translation id="3409896703495473338">လုံခြုံရေးဆက်တင်များ စီမံရန်</translation>
+<translation id="3411091017011773343"><ph name="HOURS" /> နာရီအတွင်း အပ်လုဒ်လုပ်ရန်</translation>
 <translation id="3414275587143250384">ဖြန့်ဖြူးထားမှု၊ Cloud သုံးဝန်ဆောင်မှု</translation>
 <translation id="3414952576877147120">အရွယ်အစား:</translation>
 <translation id="341513675006332771">Chrome တွင် Dino Run ဂိမ်းကစားရန်အတွက် ‘Chrome Dino ဂိမ်းကစားရန်’ ခလုတ်ကို နှိပ်နိုင်သည်</translation>
@@ -1894,7 +1898,6 @@
 <translation id="4451135742916150903">HID ကိရိယာများနှင့် ချိတ်ဆက်ရန် ခွင့်တောင်းနိုင်သည်</translation>
 <translation id="4451684391620232683">အသုံးပြုသူကိုပြသည့် စာသား</translation>
 <translation id="4452328064229197696">သင်သုံးလိုက်သောစကားဝှက်ကို ဒေတာကျိုးပေါက်မှုတွင် တွေ့ရှိထားသည်။ သင့်အကောင့်များကို လုံခြုံစေရန် ‘Google စကားဝှက်မန်နေဂျာ’ က သင်သိမ်းထားသော စကားဝှက်များကို စစ်ဆေးရန် အကြံပြုပါသည်။</translation>
-<translation id="4452957520362597816">ဝဘ်အက်ပ်များကို ထည့်သွင်းရန် တောင်းဆိုပါ</translation>
 <translation id="4456937135469235202">စွန့်စား၍ ခရီးသွားခြင်း</translation>
 <translation id="4464826014807964867">သင့်အဖွဲ့အစည်းမှ အချက်အလက်ပါဝင်သော ဝဘ်ဆိုက်များ</translation>
 <translation id="4466576951214254884">ကျောင်းသားချေးငွေ၊ ကောလိပ်အတွက်ငွေထောက်ပံ့ခြင်း</translation>
@@ -1966,6 +1969,7 @@
 <translation id="4628678854894591460">အပန်းဖြေရက် ကမ်းလှမ်းချက်</translation>
 <translation id="4628948037717959914">ဓာတ်ပုံ</translation>
 <translation id="4629370161347991046">A4x6</translation>
+<translation id="462989688138616749"><ph name="CLOUD_PROVIDER" /> သို့ သင့်ဖိုင်အပ်လုဒ်လုပ်ခြင်းသည် <ph name="HOURS" /> နာရီအတွင်း စတင်ပါမည်</translation>
 <translation id="4631649115723685955">ငွေပြန်ပေးခြင်းကို လင့်ခ်ချိတ်ထားသည်</translation>
 <translation id="4631881646528206880">ပကတိအသွင်ကတ် စာရင်းသွင်းခြင်း</translation>
 <translation id="4635278307999235413">စီမံခန့်ခွဲသူကွန်ဆိုးလ်သို့ ဒေတာပို့နေသည်</translation>
@@ -2086,6 +2090,7 @@
 <translation id="484988093836683706">စက်လော့ခ်ဖွင့်ခြင်း သုံးရန်</translation>
 <translation id="4850886885716139402">မြင်ကွင်း</translation>
 <translation id="4854853140771946034">Google Keep တွင် မှတ်စုအသစ် အမြန်ပြုလုပ်ရန်</translation>
+<translation id="4855395119669662878"><ph name="DATE_TIME" /> တွင် သင်၏ကြီးကြပ်သူသည် သင့်ဖိုင်များကို <ph name="CLOUD_PROVIDER" /> သို့ စတင်အပ်လုဒ်လုပ်ပါမည်။ သင်၏ ဖိုင်ကို အပ်လုဒ်လုပ်ပြီးသည်အထိ စက်ကို ချိတ်ဆက်ထားပါ။ အပ်လုဒ်လုပ်နေစဉ် စက်တွင်းဖိုင်များကိုသာ ဖတ်နိုင်ပါမည်။</translation>
 <translation id="485902285759009870">ကုဒ်ကို စိစစ်နေသည်...</translation>
 <translation id="4860260582253463350">YouTube သို့ ရှေ့ဆက်ရန် သင်ဖြစ်ကြောင်း အတည်ပြုရပါမည်။ Family Link တွင် သင့်မိဘ (သို့) အုပ်ထိန်းသူက သတ်မှတ်ပေးထားသော ဆက်တင်များကို ရရှိပါမည်။</translation>
 <translation id="4864406669374375262">ဗားရှင်းအက္ခရာတွဲကို ကလစ်ဘုတ်သို့ ကူးယူပြီးပြီ</translation>
@@ -2141,6 +2146,7 @@
 <translation id="4933468175699107356">မည်သည့်ဖောင်တွင်မဆို သင့်အမည် (သို့) လိပ်စာကဲ့သို့ သိမ်းထားသော အချက်အလက် အော်တိုဖြည့်ရန် ညာဘက်ခလုတ်ကို နှိပ်ပါ</translation>
 <translation id="4934780484581617878">ဝင်းဒိုး စီမံရန်</translation>
 <translation id="4936134414789135531">ထည့်သွင်းထားသော <ph name="VALUE_NAME" /> ကို ရှာမတွေ့ပါ။</translation>
+<translation id="4936573216809994970"><ph name="CLOUD_PROVIDER" /> သို့ သင့်ဖိုင်အပ်လုဒ်လုပ်ခြင်းသည် ၁ နာရီအတွင်း စတင်ပါမည်</translation>
 <translation id="4936675324097895694">ငွေကြေးဆိုင်ရာ</translation>
 <translation id="4943620199112228840">သင့်မိုက်ခရိုဖုန်းများ သုံးရန်</translation>
 <translation id="4943872375798546930">ရလဒ်မရှိပါ</translation>
@@ -2314,6 +2320,7 @@
 <translation id="5269225904387178860">အောက်ခြေတွင် လေးချက်ဖောက်ရန်</translation>
 <translation id="5271381225185906340">“<ph name="DATA_CONTROLS_ATTRIBUTE" />” သည် “<ph name="DATA_CONTROLS_RESTRICTION" />” အတွက် ပံ့ပိုးထားသော အခြေအနေမဟုတ်ပါ</translation>
 <translation id="5273658854610202413">သတိပေးချက်− ဤမူဝါဒသည် ပေါင်းစည်းနိုင်သည့် အဘိဓာန် မူဝါဒများတွင် မပါဝင်သောကြောင့် PolicyDictionaryMultipleSourceMergeList မူဝါဒတွင် သတ်မှတ်ထားသည့်အတိုင်း ၎င်းကို ပေါင်းစည်းမထားပါ။</translation>
+<translation id="5278778426231952189">ယခုအပ်လုဒ်လုပ်ရန်</translation>
 <translation id="5279286380302340275">ဒေါင်းလုဒ်များစီမံရန်</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">မှတ်တမ်း သတ်မှတ်ချက်များ</translation>
@@ -3817,6 +3824,7 @@
 <translation id="8030729864112325446">အသက်မွေးမှု၊ စဉ်ဆက်မပြတ်ပညာရေး</translation>
 <translation id="8032546467100845887">အလင်းပေါက်</translation>
 <translation id="8035152190676905274">ဘောပင်</translation>
+<translation id="8035264638816032066">ဇယားတွင် သင်ထည့်သော တဘ်ခေါင်းစဉ်များ၊ စာမျက်နှာများ၏ URL များကို Google သို့ ပို့သည်</translation>
 <translation id="8037117624646282037">ဤစက်ပစ္စည်းကို လတ်တလော အသုံးပြုထားသူများ</translation>
 <translation id="8037357227543935929">မေးရန် (မူရင်း)</translation>
 <translation id="803771048473350947">ဖိုင်</translation>
@@ -4117,6 +4125,7 @@
 <translation id="8564466070529550495">ပကတိအသွင်ကတ်ကို ယခုမရနိုင်ပါ။ နောက်မှ ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="8564985650692024650">အခြားဝဘ်ဆိုက်များတွင် သင်၏ <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> စကားဝှက်ကို ပြန်သုံးထားပါက ၎င်းကို ပြင်ဆင်သတ်မှတ်ရန် Chromium က အကြံပြုပါသည်။</translation>
 <translation id="8570895683659698018">ဝါသနာ၊ အပန်းဖြေမှု</translation>
+<translation id="8572792595597115856"><ph name="DATE" /> အထိ အကျုံးဝင်သည်</translation>
 <translation id="8574841453995331336">ရေခဲသေတ္တာနှင့် ရေခဲခံအခန်း</translation>
 <translation id="8577192028579836704">ပုံမှန်အားဖြင့် ရွေးစရာအားလုံးသည် <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">ပကတိအသွင်ကတ် မရနိုင်ပါ</translation>
@@ -4138,6 +4147,7 @@
 <translation id="8617269623452051934">သင်၏ ကိရိယာအသုံးပြုမှု</translation>
 <translation id="861775596732816396">အရွယ်အစား ၄</translation>
 <translation id="8620276786115098679">Kaku 7 စာအိတ်</translation>
+<translation id="8622864575115813231">သင်၏ ငွေကြေး အဖွဲ့အစည်းကို ဆက်သွယ်နေသည်…</translation>
 <translation id="8623885649813806493">စကားဝှက်များ မတူညီပါ။ သိမ်းထားသော စကားဝှက်အားလုံးကို ပြပါ။</translation>
 <translation id="8624354461147303341">လျှော့ဈေးများ ရယူရန်</translation>
 <translation id="8634957317623797170">၅၄ x ၈၆ မီလီမီတာ</translation>
@@ -4437,6 +4447,7 @@
 <translation id="9192361865877479444">သတ္တု (မှိုင်းပျပျ)</translation>
 <translation id="9192947025498305328">သဘာဝ အလှကုန်</translation>
 <translation id="9199905725844810519">ပုံနှိပ်ထုတ်ယူခြင်းကို ပိတ်ထားသည်</translation>
+<translation id="9204089334327209740">အပ်လုဒ်လုပ်ပြီးပါက <ph name="CLOUD_PROVIDER" /> တွင် သင့်ဖိုင်များကို ပြင်နိုင်သည်။ အမှိုက်ပုံးထဲရှိ ဖိုင်အားလုံး အပါအဝင် စက်တွင်း သိုလှောင်ခန်းကို အလိုအလျောက် ဖယ်ရှားပါမည်။</translation>
 <translation id="9205078245616868884">သင့်ဒေတာများကို သင်စင့်ခ်ပြုလုပ်ထားသည့် စကားဝှက်ဖြင့် အသွင်ဝှက်ထားပါသည်။ စင့်ခ်ပြုလုပ်ခြင်းစတင်ရန် ၎င်းကိုထည့်ပါ။</translation>
 <translation id="920643408853370361">ခရီးသွားအာမခံ</translation>
 <translation id="9207861905230894330">ဆောင်းပါး ပေါင်းထည့်ခြင်း မအောင်မြင်ပါ။</translation>
@@ -4457,6 +4468,7 @@
 <translation id="937804173274050966"><ph name="BEGIN_BOLD" />အသုံးပြုသည့် ဒေတာ-<ph name="END_BOLD" /> သင်၏ ကြော်ငြာအကြောင်းအရာများကို မကြာသေးမီက ကြည့်ရှုမှုမှတ်တမ်းအပေါ် အခြေခံထားသည်။ ၎င်းသည် ဤစက်တွင် Chrome ဖြင့် သင်ဝင်ကြည့်သည့်ဝဘ်ဆိုက်များ၏ စာရင်းဖြစ်သည်။</translation>
 <translation id="937885410143139026">စီမံခန့်ခွဲသူကွန်ဆိုးလ်သို့ ဒေတာ ပို့ထားသည်</translation>
 <translation id="939736085109172342">ဖိုင်တွဲအသစ်</translation>
+<translation id="940524522703752213"><ph name="CLOUD_PROVIDER" /> သို့ သင့်ဖိုင်အပ်လုဒ်လုပ်ခြင်းသည် <ph name="MINUTES" /> မိနစ်အတွင်း စတင်ပါမည်</translation>
 <translation id="944540589955480312">သင့် Google Account တွင် သိမ်းထားသော စကားဝှက်နှင့် လျှို့ဝှက်ကီးများ သုံးရန်</translation>
 <translation id="945646848072568856">Chrome သည် သင်ဘရောက်စ်လုပ်သည်နှင့်အမျှ သင့်အားခြေရာခံရန် ဝဘ်ဆိုက်များသုံးသည့် ပြင်ပကုမ္ပဏီ၏ကွတ်ကီးများကို ပိတ်ထားသည်။</translation>
 <translation id="945855313015696284">အောက်ပါအချက်အလက်များကို စစ်ဆေးပြီး မမှန်ကန်သည့် ကတ်များကို ဖျက်ပါ</translation>

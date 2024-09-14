@@ -350,6 +350,7 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="2653659639078652383">Esita</translation>
 <translation id="2656405586795711023">Veebirakendused</translation>
 <translation id="2664252182805397291">Kuva saidid</translation>
+<translation id="2666092431469916601">Üles</translation>
 <translation id="2669454659051515572">Kõik inimesed, kes seda seadet kasutavad, näevad allalaaditud faile</translation>
 <translation id="2702516483241149200">Uus: jagage linki, millega keritakse selle teksti juurde</translation>
 <translation id="2705073298859543115">Kokkuvõtte loomine</translation>
@@ -451,6 +452,7 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="3072980200212375806"><ph name="APP_NAME" /> avaneb Chrome'is. Jätkates nõustute <ph name="BEGIN_LINK1" />Google'i teenusetingimustega<ph name="END_LINK1" /> ning <ph name="BEGIN_LINK2" />Google Chrome'i ja Chrome OS-i lisateenusetingimustega<ph name="END_LINK2" />. Kehtivad ka <ph name="BEGIN_LINK3" />privaatsuseeskirjad<ph name="END_LINK3" />.</translation>
 <translation id="3080525922482950719">Saate lehed salvestada, et neid hiljem või võrguühenduseta lugeda</translation>
 <translation id="3087218211037573995">Mõned ainult sellesse seadmesse salvestatud paroolid peagi enam ei tööta. Saate need paroolid teisaldada Google'i paroolihaldurisse.</translation>
+<translation id="3087734570205094154">Alaserv</translation>
 <translation id="3091010850649238832">Kuva lõikelaua sisu</translation>
 <translation id="3098745985164956033">Mõned pildid saadetakse kirjelduste täiendamiseks Google'ile</translation>
 <translation id="3114507951000454849">Lugege tänaseid uudiseid <ph name="NEWS_ICON" /></translation>
@@ -688,7 +690,6 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="4355272626458588338">Saate enda jaoks olulisele lehele naasta, lisades järjehoidja</translation>
 <translation id="4357206670025518404">+<ph name="COUNT_NUMBER" /></translation>
 <translation id="4359809482106103048">Ohutuse ülevaade</translation>
-<translation id="4363222835916186793">Selle toote teavitused on välja lülitatud</translation>
 <translation id="4378154925671717803">Telefon</translation>
 <translation id="4380055775103003110">Kui probleem jääb korduma, võite proovida teisi viise, kuidas saidil <ph name="SITE_ETLD_PLUS_ONE" /> jätkata.</translation>
 <translation id="4384468725000734951">Otsimiseks kasutatakse teenust Sogou</translation>
@@ -749,6 +750,7 @@ Veebisaidil <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 
 <translation id="4624065194742029982">Chrome'i inkognito režiim</translation>
 <translation id="4634124774493850572">Kasuta parooli</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 parool on ohus}other{# parooli on ohus}}</translation>
+<translation id="4642472735733036929">Hinna jälgimine on peatatud</translation>
 <translation id="4645146721047390964">Inkognito režiimis ei saa saidid eri saitidel küpsisefailide kaudu teie sirvimistegevusi jälgida, näiteks selleks, et reklaame isikupärastada. Mõne saidi funktsioonid ei pruugi töötada.</translation>
 <translation id="4650364565596261010">Süsteemi vaikeseade</translation>
 <translation id="465657074423018424">Google'i ohutu sirvimine kaitseb teid petlike veebisaitide eest. Kui selle välja lülitate, olge sirvimisel väga ettevaatlik (eriti siis, kui sisestate paroole).</translation>
@@ -1092,6 +1094,7 @@ Veebisaidil <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 
 <translation id="6210748933810148297">Kas pole <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Selle lehe eelvaade</translation>
 <translation id="6221633008163990886">Paroolide eksportimiseks avage seade</translation>
+<translation id="6225572914528673855">Aadressiriba</translation>
 <translation id="6232535412751077445">Kui lubate funktsiooni „Ära jälgi”, kaasatakse see taotlus teie sirvimisliiklusesse. Mõju oleneb sellest, kas veebisait reageerib taotlusele ja kuidas seda tõlgendatakse.
 
 Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teile reklaame, mis ei põhine muudel külastatud veebisaitidel. Paljud veebisaidid koguvad ning kasutavad endiselt teie sirvimisandmeid, näiteks turvalisuse parandamiseks, sisu, reklaamide ja soovituste pakkumiseks ning aruandlusstatistika loomiseks.</translation>

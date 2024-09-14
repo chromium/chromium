@@ -96,6 +96,7 @@ Prova d'esperar uns quants minuts abans de tancar la sessió. Si tanques la sess
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{Es produeix quan Chrome no s'utilitza durant {THRESHOLD} minut}other{Es produeix quan Chrome no s'utilitza durant {THRESHOLD} minuts}}</translation>
 <translation id="3367797402528056312">Acaba de configurar Chrome</translation>
 <translation id="3371064404604898522">Estableix Chrome com a navegador predeterminat</translation>
+<translation id="3399930248910934354">Obre la configuració de Chrome</translation>
 <translation id="3472587960215700950">Chrome utilitza Google Maps per oferir-te indicacions i informació local sobre les adreces detectades.</translation>
 <translation id="3503014945441706099">Obtén també Navegació segura millorada per a aquest perfil de Chrome</translation>
 <translation id="3522659714780527202">Per veure les pestanyes des de tots els llocs on facis servir Chrome, activa la sincronització</translation>

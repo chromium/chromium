@@ -350,6 +350,7 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="2653659639078652383">Iesniegt</translation>
 <translation id="2656405586795711023">Tīmekļa lietotnes</translation>
 <translation id="2664252182805397291">Skatīt vietnes</translation>
+<translation id="2666092431469916601">Augša</translation>
 <translation id="2669454659051515572">Lejupielādētie faili ir redzami visiem šīs ierīces lietotājiem.</translation>
 <translation id="2702516483241149200">Jaunums: varat kopīgot saiti uz šo tekstu</translation>
 <translation id="2705073298859543115">Izveidot kopsavilkumu</translation>
@@ -451,6 +452,7 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="3072980200212375806">Lietotne <ph name="APP_NAME" /> tiks atvērta pārlūkā Chrome. Turpinot jūs piekrītat <ph name="BEGIN_LINK1" />Google pakalpojumu sniegšanas noteikumiem<ph name="END_LINK1" />, kā arī <ph name="BEGIN_LINK2" />Google Chrome un Chrome OS pakalpojumu sniegšanas papildu noteikumiem<ph name="END_LINK2" />. Ir spēkā arī <ph name="BEGIN_LINK3" />konfidencialitātes politika<ph name="END_LINK3" />.</translation>
 <translation id="3080525922482950719">Varat saglabāt lapas lasīšanai vēlāk vai bezsaistē.</translation>
 <translation id="3087218211037573995">Drīz tiks pārtraukta dažu tikai šajā ierīcē saglabāto paroļu darbība. Varat pārvietot šīs paroles uz Google paroļu pārvaldnieku.</translation>
+<translation id="3087734570205094154">Apakšā</translation>
 <translation id="3091010850649238832">Rādīt starpliktuves saturu</translation>
 <translation id="3098745985164956033">Daži attēli tiek sūtīti uz Google serveriem, lai uzlabotu aprakstus</translation>
 <translation id="3114507951000454849">Lasiet šodienas ziņas <ph name="NEWS_ICON" /></translation>
@@ -488,6 +490,7 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="3282568296779691940">Pierakstīties pārlūkā Chrome</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> cilne}zero{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> cilnes}one{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> cilne}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> cilnes}}</translation>
 <translation id="3293181007446299124">Pārlūkošanas vēsture tiek privāti glabāta jūsu ierīcē, un pārskati tiek nosūtīti ar kavēšanos, lai aizsargātu jūsu identitāti</translation>
+<translation id="3302615849591357577">Atjaunot ciļņu grupu <ph name="TITLE_OF_GROUP" /> (krāsa: <ph name="COLOR_NAME" />) kā jaunu fona ciļņu grupu.</translation>
 <translation id="3303414029551471755">Vai turpināt ar satura lejupielādi?</translation>
 <translation id="3303855915957856445">Netika atrasts neviens meklēšanas rezultāts.</translation>
 <translation id="3305130791745726624">Sūtīt uz ierīcēm</translation>
@@ -687,7 +690,6 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="4355272626458588338">Varat pievienot grāmatzīmi, lai vēlāk atgrieztos svarīgā lapā</translation>
 <translation id="4357206670025518404">+<ph name="COUNT_NUMBER" /></translation>
 <translation id="4359809482106103048">Drošības informācija īsumā</translation>
-<translation id="4363222835916186793">Paziņojumi par šo produktu ir izslēgti.</translation>
 <translation id="4378154925671717803">Tālrunis</translation>
 <translation id="4380055775103003110">Ja šī problēma atkārtojas, varat izmēģināt citus veidus, kā turpināt darbu vietnē <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="4384468725000734951">Tiek izmantota meklētājprogramma Sogou</translation>
@@ -748,6 +750,7 @@ Jūsu Google kontam vietnē <ph name="BEGIN_LINK" />myactivity.google.com<ph nam
 <translation id="4624065194742029982">Chrome inkognito režīms</translation>
 <translation id="4634124774493850572">Izmantot paroli</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 uzlauzta parole}zero{# uzlauztu paroļu}one{# uzlauzta parole}other{# uzlauztas paroles}}</translation>
+<translation id="4642472735733036929">Cenu izsekošana ir apturēta.</translation>
 <translation id="4645146721047390964">Inkognito režīmā vietnes nedrīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbības dažādās vietnēs, piemēram, reklāmu personalizēšanai. Noteiktās vietnēs funkcijas var nedarboties.</translation>
 <translation id="4650364565596261010">Sistēmas noklusējums</translation>
 <translation id="465657074423018424">Drošas pārlūkošanas režīmā jūs tiekat aizsargāts pret maldinošām tīmekļa vietnēm. Ja izslēgsiet šo režīmu, pārlūkošanas laikā ievērojiet īpašu piesardzību, it sevišķi tad, kad grasāties ievadīt paroli.</translation>
@@ -799,6 +802,7 @@ Jūsu Google kontam vietnē <ph name="BEGIN_LINK" />myactivity.google.com<ph nam
 <translation id="4834007576107377210">Skatiet savas meklētājprogrammas norādījumus par meklēšanas vēstures dzēšanu, ja tādi ir pieejami.</translation>
 <translation id="4834250788637067901">Maksājumu veidi, piedāvājumi un adreses no pakalpojuma Google Pay</translation>
 <translation id="4835385943915508971">Chrome nevar piekļūt pieprasītajam resursam.</translation>
+<translation id="483742037940503070">{TAB_COUNT,plural, =1{Atjaunot ciļņu grupu ar <ph name="TAB_COUNT_ONE" /> cilni (krāsa: <ph name="COLOR_NAME" />) kā jaunu fona ciļņu grupu.}zero{Atjaunot ciļņu grupu ar <ph name="TAB_COUNT_MANY" /> cilnēm (krāsa: <ph name="COLOR_NAME" />) kā jaunu fona ciļņu grupu.}one{Atjaunot ciļņu grupu ar <ph name="TAB_COUNT_MANY" /> cilni (krāsa: <ph name="COLOR_NAME" />) kā jaunu fona ciļņu grupu.}other{Atjaunot ciļņu grupu ar <ph name="TAB_COUNT_MANY" /> cilnēm (krāsa: <ph name="COLOR_NAME" />) kā jaunu fona ciļņu grupu.}}</translation>
 <translation id="4837753911714442426">Atvērt iespējas, lai izdrukātu lapu</translation>
 <translation id="4842092870884894799">Tiek rādīts paroles ģenerēšanas uznirstošais logs</translation>
 <translation id="4844633725025837809">Lai gādātu par papildu drošību, šifrējiet paroles savā ierīcē, pirms tās tiek saglabātas Google paroļu pārvaldniekā.</translation>
@@ -1090,6 +1094,7 @@ Jūsu Google kontam vietnē <ph name="BEGIN_LINK" />myactivity.google.com<ph nam
 <translation id="6210748933810148297"><ph name="EMAIL" /> nav mana e-pasta adrese</translation>
 <translation id="6211386937064921208">Notiek šīs lapas priekšskatīšana</translation>
 <translation id="6221633008163990886">Atbloķējiet, lai eksportētu paroles.</translation>
+<translation id="6225572914528673855">Adreses josla</translation>
 <translation id="6232535412751077445">Iespējojot funkciju “Nesekot”, jūsu pārlūkošanas datplūsmā tiks iekļauts pieprasījums. Rezultāts būs atkarīgs no tā, vai vietne nodrošinās atbildi uz pieprasījumu un kā pieprasījums tiks interpretēts.
 
 Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums reklāmas, kuru pamatā nav citas jūsu apmeklētās vietnes. Tomēr daudzas vietnes vāks un izmantos jūsu pārlūkošanas datus, piemēram, lai uzlabotu drošību, nodrošinātu saturu, reklāmas un ieteikumus un ģenerētu pārskatu statistiku.</translation>
@@ -1183,6 +1188,7 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="6593061639179217415">Vietne datoriem</translation>
 <translation id="6594347733515723558">Kārtošana un skatīšana</translation>
 <translation id="6595046016124923392">Attēli tiek sūtīti uz Google serveriem, lai uzlabotu aprakstus.</translation>
+<translation id="6595634543029443878">{TAB_COUNT,plural, =1{Atjaunot ciļņu grupu ar <ph name="TAB_COUNT_ONE" /> cilni kā jaunu fona ciļņu grupu.}zero{Atjaunot ciļņu grupu ar <ph name="TAB_COUNT_MANY" /> cilnēm kā jaunu fona ciļņu grupu.}one{Atjaunot ciļņu grupu ar <ph name="TAB_COUNT_MANY" /> cilni kā jaunu fona ciļņu grupu.}other{Atjaunot ciļņu grupu ar <ph name="TAB_COUNT_MANY" /> cilnēm kā jaunu fona ciļņu grupu.}}</translation>
 <translation id="6604931690954120417">Ja esat pierakstījies pārlūkā Chrome, jūsu saglabātās paroles tiek glabātas jūsu Google kontā. Lai šo iestatījumu izslēgtu, <ph name="BEGIN_LINK" />pārejiet uz iestatījumiem<ph name="END_LINK" />.</translation>
 <translation id="661266467055912436">Šis režīms efektīvāk aizsargā gan jūs, gan visus citus tīmekļa lietotājus.</translation>
 <translation id="6621391692573306628">Lai nosūtītu šo cilni uz citu ierīci, abās ierīcēs pierakstieties pārlūkā Chrome</translation>
@@ -1207,6 +1213,7 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="6674571176963658787">Lai sāktu sinhronizāciju, ievadiet savu ieejas frāzi</translation>
 <translation id="6676927815633975364">Pierakstieties šajā vietnē un pārlūkā Chrome.</translation>
 <translation id="6684809838922667136">Uzlabojiet Chrome</translation>
+<translation id="6704048624334633734">Paroļu eksportēšana un dzēšana</translation>
 <translation id="670498945988402717">Pārbaudīts: vakar</translation>
 <translation id="6710213216561001401">Iepriekšējais</translation>
 <translation id="671481426037969117">Jūsu lietotnes <ph name="FQDN" /> taimera laiks ir beidzies. Tas atkal sāksies rīt.</translation>
@@ -1668,6 +1675,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />izdzēsiet Chrome datus s
 <translation id="864544049772947936">Pārvaldīt logus (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="8664215986015753476">Pielāgojiet pārlūku Chrome savām vajadzībām</translation>
 <translation id="8664979001105139458">Faila nosaukums jau pastāv</translation>
+<translation id="8669290537472770919">{FILE_COUNT,plural, =1{Lejupielādi bloķēja organizācija}zero{# lejupielādes bloķēja organizācija}one{# lejupielādi bloķēja organizācija}other{# lejupielādes bloķēja organizācija}}</translation>
 <translation id="8672883760227492369">Drīz tiks pārtraukta dažu paroļu darbība šajā ierīcē. Varat pārvietot šīs paroles uz Google paroļu pārvaldnieku.</translation>
 <translation id="8676276370198826499">Reģistrējieties vietnē <ph name="SITE_ETLD_PLUS_ONE" />, izmantojot <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> kontu</translation>
 <translation id="8676789164135894283">Pierakstīšanās verifikācija</translation>

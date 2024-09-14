@@ -712,6 +712,7 @@
 <translation id="2265356434276802347">Това правило не трябва да съдържа повече от <ph name="MAX_ITEMS_LIMIT" /> представени записа.</translation>
 <translation id="2267047181501709434">Самоличността ви се потвърждава...</translation>
 <translation id="2268044343513325586">Прецизиране</translation>
+<translation id="2268966938956566076">Качване след <ph name="MINUTES" /> мин</translation>
 <translation id="2270484714375784793">Телефонен номер</translation>
 <translation id="2276057643614339130">Основа за печат</translation>
 <translation id="2277103315734023688">Придвижване напред</translation>
@@ -1110,6 +1111,7 @@
 <translation id="3062655045399308513">Изтр. на данните за сърф.</translation>
 <translation id="306573536155379004">Играта е стартирана.</translation>
 <translation id="3067505415088964188">Цената е ниска</translation>
+<translation id="3068118691172921711">Качването на файловете ви в(ъв) <ph name="CLOUD_PROVIDER" /> ще започне след 1 минута</translation>
 <translation id="3076865167425975822">Операционни системи</translation>
 <translation id="3080254622891793721">Графика</translation>
 <translation id="3082007635241601060">Позволете на Google да използва кошниците ви, за да намира персонализирани отстъпки, когато са налични</translation>
@@ -1121,6 +1123,7 @@
 <translation id="3099619114405539473">Използване на наличните камери (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="3102312643185441063">Депозит</translation>
 <translation id="3103188521861412364">Акции и облигации</translation>
+<translation id="3103535543639438037">Успоредно сравняване на подобни продукти</translation>
 <translation id="3105172416063519923">ID на актива:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />Проверете конфигурацията за защитения DNS<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Средна тава</translation>
@@ -1298,6 +1301,7 @@
 <translation id="3407789382767355356">подкани за вход от трети страни</translation>
 <translation id="340924996148642843">В момента функцията за сравняване не е налице</translation>
 <translation id="3409896703495473338">Управление на настройките за сигурност</translation>
+<translation id="3411091017011773343">Качване след <ph name="HOURS" /> ч</translation>
 <translation id="3414275587143250384">Разпределени изчисления и изчисления в облака</translation>
 <translation id="3414952576877147120">Размер:</translation>
 <translation id="341513675006332771">Бутон за стартиране на играта с динозавъра в Chrome. Активирайте, за да играете</translation>
@@ -1893,7 +1897,6 @@
 <translation id="4451135742916150903">Може да поиска разрешение да се свързва с HID устройства</translation>
 <translation id="4451684391620232683">Показан на потребителя текст:</translation>
 <translation id="4452328064229197696">Паролата, която току-що използвахте, е разкрита при нарушение на сигурността на данните. За да защитите профилите си, мениджърът на паролите в Google ви препоръчва да проверите запазените си пароли.</translation>
-<translation id="4452957520362597816">Извеждане на запитване за инсталиране на уеб приложения</translation>
 <translation id="4456937135469235202">Приключенски пътешествия</translation>
 <translation id="4464826014807964867">Уебсайтове, които разполагат с информация от организацията ви</translation>
 <translation id="4466576951214254884">Студентски заеми и финансиране на обучение в колежи</translation>
@@ -1965,6 +1968,7 @@
 <translation id="4628678854894591460">Ваканционни оферти</translation>
 <translation id="4628948037717959914">Снимка</translation>
 <translation id="4629370161347991046">A4 x 6</translation>
+<translation id="462989688138616749">Качването на файловете ви в(ъв) <ph name="CLOUD_PROVIDER" /> ще започне след <ph name="HOURS" /> часа</translation>
 <translation id="4631649115723685955">Опцията за връщане на пари при покупка е свързана</translation>
 <translation id="4631881646528206880">Регистриране на виртуална карта</translation>
 <translation id="4635278307999235413">Данните се изпращат до конзолата за администратори</translation>
@@ -2085,6 +2089,7 @@
 <translation id="484988093836683706">Използване на отключването на устройството</translation>
 <translation id="4850886885716139402">Изглед</translation>
 <translation id="4854853140771946034">Бързо създаване на бележка в Google Keep</translation>
+<translation id="4855395119669662878">Администраторът ще започне да качва файловете ви в(ъв) <ph name="CLOUD_PROVIDER" /> на <ph name="DATE_TIME" />. Не прекратявайте връзката на устройството си, докато качването на файловете не завърши. По време процеса ще можете да четете само локалните файлове.</translation>
 <translation id="485902285759009870">Кодът се потвърждава...</translation>
 <translation id="4860260582253463350">За да продължите към YouTube, трябва да се уверим, че това сте вие. Ще получите настройките, зададени във Family Link от родителя или настойника ви.</translation>
 <translation id="4864406669374375262">Низът на версията е копиран в буферната памет</translation>
@@ -2140,6 +2145,7 @@
 <translation id="4933468175699107356">Кликнете с десния бутон на мишката за автоматично попълване на запазената информация, като например името или адреса ви, в който и да е формуляр</translation>
 <translation id="4934780484581617878">Управление на прозорците</translation>
 <translation id="4936134414789135531">Вмъкнатият елемент <ph name="VALUE_NAME" /> не бе намерен.</translation>
+<translation id="4936573216809994970">Качването на файловете ви в(ъв) <ph name="CLOUD_PROVIDER" /> ще започне след 1 час</translation>
 <translation id="4936675324097895694">Финанси</translation>
 <translation id="4943620199112228840">Използване на микрофоните ви</translation>
 <translation id="4943872375798546930">Няма резултати</translation>
@@ -2313,6 +2319,7 @@
 <translation id="5269225904387178860">Четворно перфориране в долната част</translation>
 <translation id="5271381225185906340"><ph name="DATA_CONTROLS_ATTRIBUTE" /> не е поддържано условие за <ph name="DATA_CONTROLS_RESTRICTION" /></translation>
 <translation id="5273658854610202413">Предупреждение: Това правило не бе обединено според посоченото в правилото PolicyDictionaryMultipleSourceMergeList, тъй като не е част от правилата речници с възможност за обединяване.</translation>
+<translation id="5278778426231952189">Качване сега</translation>
 <translation id="5279286380302340275">Управление на изтеглянията</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">Свойства на документа</translation>
@@ -3816,6 +3823,7 @@
 <translation id="8030729864112325446">Професионално обучение и допълнителна квалификация</translation>
 <translation id="8032546467100845887">Прозрачен носител</translation>
 <translation id="8035152190676905274">Писалка</translation>
+<translation id="8035264638816032066">Заглавията на разделите и URL адресите на страниците, които добавяте към таблицата, се изпращат до Google</translation>
 <translation id="8037117624646282037">Кой е използвал устройството наскоро</translation>
 <translation id="8037357227543935929">Извеждане на запитване (по подразбиране)</translation>
 <translation id="803771048473350947">Файл</translation>
@@ -4116,6 +4124,7 @@
 <translation id="8564466070529550495">В момента няма достъп до виртуалната карта. Опитайте отново по-късно.</translation>
 <translation id="8564985650692024650">Chromium препоръчва да зададете повторно паролата си за <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />, ако сте я използвали и на други сайтове.</translation>
 <translation id="8570895683659698018">Хоби и свободно време</translation>
+<translation id="8572792595597115856">Важи до <ph name="DATE" /></translation>
 <translation id="8574841453995331336">Хладилници и фризери</translation>
 <translation id="8577192028579836704">Всички опции обикновено са с цена <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">Няма достъп до виртуалната карта</translation>
@@ -4137,6 +4146,7 @@
 <translation id="8617269623452051934">използването на устройството ви</translation>
 <translation id="861775596732816396">Размер 4</translation>
 <translation id="8620276786115098679">Плик Kaku 7</translation>
+<translation id="8622864575115813231">Установява се връзка с финансовата ви институция...</translation>
 <translation id="8623885649813806493">Няма съответстващи пароли. Показване на всички запазени пароли.</translation>
 <translation id="8624354461147303341">Получаване на отстъпки</translation>
 <translation id="8634957317623797170">54 x 86 мм</translation>
@@ -4436,6 +4446,7 @@
 <translation id="9192361865877479444">Метал (матиран)</translation>
 <translation id="9192947025498305328">Чисти продукти за красота</translation>
 <translation id="9199905725844810519">Отпечатването е блокирано</translation>
+<translation id="9204089334327209740">След като качването завърши, можете да променяте файловете си в(ъв) <ph name="CLOUD_PROVIDER" />. Данните в локалното хранилище, включително файловете в кошчето, ще бъдат премахнати автоматично.</translation>
 <translation id="9205078245616868884">Данните ви са шифровани с пропуска ви за синхронизиране. Въведете го, за да стартирате синхронизирането.</translation>
 <translation id="920643408853370361">Застраховка при пътуване</translation>
 <translation id="9207861905230894330">Добавянето на статията не бе успешно.</translation>
@@ -4456,6 +4467,7 @@
 <translation id="937804173274050966"><ph name="BEGIN_BOLD" />Какви данни се използват<ph name="END_BOLD" />: Рекламните ви теми са въз основа на скорошната ви история на сърфиране – списък на сайтовете, които сте посетили чрез Chrome на това устройство.</translation>
 <translation id="937885410143139026">Данните са изпратени до конзолата за администратори</translation>
 <translation id="939736085109172342">Нова папка</translation>
+<translation id="940524522703752213">Качването на файловете ви в(ъв) <ph name="CLOUD_PROVIDER" /> ще започне след <ph name="MINUTES" /> минути</translation>
 <translation id="944540589955480312">Използване на паролите и ключовете за достъп, запазени в профила ви в Google</translation>
 <translation id="945646848072568856">Chrome блокира използването на „бисквитки“ на трети страни от сайтовете с цел проследяването ви, докато сърфирате.</translation>
 <translation id="945855313015696284">Проверете информацията по-долу и изтрийте невалидните карти</translation>

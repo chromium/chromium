@@ -1,20 +1,29 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="pt-BR">
+<translation id="1000436330784933699">Você pode abrir o Lens aqui.</translation>
+<translation id="1042296835509784301">Abre o Gerenciador de senhas no Chromium.</translation>
 <translation id="1047130070405668746">Selecione o Chromium</translation>
 <translation id="1091252999271033193">Isso significa que o Chromium vai solicitar sempre o site para dispositivo móvel.</translation>
 <translation id="1115463765356382667">Para aproveitar o Chromium ao máximo, siga as sugestões abaixo.</translation>
+<translation id="1140315115515116765">Use o Chromium por padrão para receber informações de preço com facilidade</translation>
 <translation id="1185134272377778587">Sobre o Chromium</translation>
 <translation id="1257458525759135959">Para salvar imagens, toque em "Configurações" e permita que o Chromium adicione às suas fotos</translation>
+<translation id="1260702988262336471">Abra o menu do Chromium</translation>
 <translation id="12739128458173458">Para enviar esta guia a outro dispositivo, faça login no Chromium nos dois aparelhos.</translation>
 <translation id="1361748954329991663">O Chromium está desatualizado. Se nenhuma atualização está disponível na <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, é possível que seu dispositivo não seja compatível com novas versões do Chromium.</translation>
 <translation id="1423007117030725713">Inicie uma pesquisa em uma nova guia do Chromium.</translation>
 <translation id="1431818719585918472">Permita que o Chromium bloqueie suas guias anônimas.</translation>
 <translation id="146407871188825689">Usar o Chromium no iPad por padrão</translation>
+<translation id="1471084500615228555">Excluir dados de navegação no Chromium</translation>
 <translation id="1472013873724362412">Sua conta não funciona com o Chromium. Entre em contato com o administrador do domínio ou use uma Conta do Google normal para fazer login.</translation>
+<translation id="1501302548410882220">Usar o Chromium em qualquer lugar</translation>
 <translation id="1503199973012840174">O Chromium está desatualizado. Atualize para se proteger.</translation>
+<translation id="1515748263297244785">Usar o Chromium para iPad por padrão</translation>
 <translation id="1531155317299575425">Mostra solicitações para fazer login no Chromium.</translation>
+<translation id="1553657876656159572">Um feed personalizado para você. Inclui notícias, esportes e clima.</translation>
 <translation id="1561849081734670621">Desative o modo de Bloqueio total no Chromium para desativá-lo no seu iPhone.</translation>
+<translation id="1569258826720962327">Usar as ações do Chromium no iOS</translation>
 <translation id="159029779861043703">O Chromium protege seus dados sensíveis com o Face ID.</translation>
 <translation id="1591119736686995611">Abre a grade de guias do Chromium.</translation>
 <translation id="16001233025397167">A Confirmação de segurança protege você contra violações de dados, sites perigosos e muito mais. Receba alertas sobre problemas de privacidade ou segurança que o Chromium detectar.</translation>
@@ -32,8 +41,10 @@
 <translation id="2006345422933397527">Não foi possível verificar se há atualizações. Verifique sua conexão de Internet.</translation>
 <translation id="2042889939382983733">Abrir histórico do Chromium</translation>
 <translation id="2052320862053429062">O Chromium verifica periodicamente se as suas senhas estão em listas que foram publicadas on-line. Quando isso é feito, as senhas e os nomes de usuário são criptografados para que não possam ser lidos por ninguém, nem o Google.</translation>
+<translation id="2059365270911640413">Terminar a configuração do Chromium</translation>
 <translation id="2147210759439165826">Fique por dentro do conteúdo e das dicas úteis do Chromium.</translation>
 <translation id="2168108852149185974">Alguns complementos causam falhas no Chromium. Desinstale-os:</translation>
+<translation id="2168593389981132306">Melhorar o Chromium</translation>
 <translation id="2178608107313874732">O Chromium não pode usar a câmera agora</translation>
 <translation id="2195025571279539885">Quer que na próxima vez o Chromium ofereça a tradução de páginas em <ph name="LANGUAGE_NAME" /> deste site?</translation>
 <translation id="22313767259766852">Este endereço está salvo no Chromium. Para usá-lo nos produtos do Google, salve-o na sua conta, <ph name="USER_EMAIL" />.</translation>
@@ -43,11 +54,16 @@
 <translation id="2326738825692478496">Alguns dos seus dados do Chromium ainda não foram salvos na sua Conta do Google.
 
 Aguarde alguns minutos antes de sair. Se você sair agora, esses dados serão excluídos.</translation>
+<translation id="2337722506862731008">Compartilhar com o Chromium</translation>
+<translation id="2340423701577464731">Adicionar item da Lista de leitura ao Chromium</translation>
 <translation id="2374627437126809292">O Chromium usa o Google Maps para fornecer rotas e informações locais sobre endereços detectados.</translation>
 <translation id="2386292341327187942">Na caixa "Widgets da Pesquisa", digite "Chromium"</translation>
 <translation id="2426113998523353159">Sua organização exige que você faça login para usar o Chromium.</translation>
 <translation id="2450140762465183767">Agora você pode usar o Chromium sempre que toca em links em mensagens, documentos e outros apps.</translation>
+<translation id="2459183986985456602">Abre minha guia mais recente no Chromium.</translation>
+<translation id="2476409803017965813">Você pode atualizar suas escolhas quando quiser nas configurações do Chromium.</translation>
 <translation id="2478931088402984578">Selecione o <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" />.</translation>
+<translation id="2512597191798760956">Toque no ícone do Chromium, pressione e clique em "Editar tela inicial"</translation>
 <translation id="2517624234762908348">Sincronizar seus dados do Chromium</translation>
 <translation id="2592940277904433508">Continuar usando o Chromium</translation>
 <translation id="2607609479243848905">Se você esquecer a senha longa ou quiser mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chromium na sua conta<ph name="END_LINK" />.</translation>
@@ -59,14 +75,18 @@ Aguarde alguns minutos antes de sair. Se você sair agora, esses dados serão ex
 <translation id="28276745681323897">Você pode <ph name="BEGIN_LINK" />gerenciar quais dados do Chromium são salvos<ph name="END_LINK" /> na sua Conta do Google.
 
 Para conferir mais configurações que usam dados para melhorar sua experiência no Chromium, acesse os <ph name="BEGIN_LINK" />Serviços do Google<ph name="END_LINK" />.</translation>
+<translation id="2832168932648876507">Pesquise com a voz no Chromium.</translation>
 <translation id="2843571538056574338">Usar o preenchimento automático do Chromium</translation>
 <translation id="2918709798697875261">Sua organização exige que a conta permaneça desconectada do Chromium.</translation>
+<translation id="2930158679684712936">Dicas do Chromium</translation>
 <translation id="2942241131342758843">Use o Chromium como padrão para abrir links, pesquisar em widgets e preencher senhas automaticamente em outros apps</translation>
 <translation id="2977470724722393594">O Chromium está atualizado</translation>
 <translation id="3044857325852340337">Dados do Chromium excluídos</translation>
+<translation id="3054480780637153380">Abra as configurações do Chromium no iOS, toque em "App de navegador padrão" e selecione o Chromium.</translation>
 <translation id="3078941082359356771">{COUNT,plural, =1{O Chromium pode ajudar você a rastrear o pacote na página "Nova guia".}one{O Chromium pode ajudar você a rastrear o pacote na página "Nova guia".}other{O Chromium pode ajudar você a rastrear os pacotes na página "Nova guia".}}</translation>
 <translation id="3102849287235003384">Para sair da sua Conta do Google em todos os sites, <ph name="BEGIN_LINK" />saia do Chromium<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">Definir o Chromium como o navegador padrão?</translation>
+<translation id="3242612358525156339">Nas configurações do dispositivo, abra "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" e selecione "Chromium"</translation>
 <translation id="328933489847748230">{count,plural, =1{Mostrando agora 1 janela do Chromium}one{Mostrando agora {count} janela do Chromium}other{Mostrando agora {count} janelas do Chromium}}</translation>
 <translation id="3344973607274501920">Não foi possível verificar suas senhas com o Chromium. Verifique sua conexão de Internet.</translation>
 <translation id="3366305173356742781">Dados do Chromium na sua conta</translation>
@@ -76,10 +96,15 @@ Aguarde alguns minutos antes de trocar de conta. Se você mudar de conta agora, 
 <translation id="3472200483164753384">Indisponível no Chromium Canary</translation>
 <translation id="347967311580159871">Para conferir mais configurações que usam dados para melhorar sua experiência no Chromium, acesse os <ph name="BEGIN_LINK" />Serviços do Google<ph name="END_LINK" />.</translation>
 <translation id="3512168799938877162">Sua senha não foi compartilhada. Verifique sua conexão com a Internet e confira se você fez login no Chromium. Em seguida, tente de novo.</translation>
+<translation id="3529798650269984835">Ative a opção "Bloquear guias anônimas ao fechar o Chromium".</translation>
 <translation id="3567399274263440288">Para aproveitar o Chromium ao máximo, faça login na sua Conta do Google.</translation>
+<translation id="3581385059720151202">Pesquisar recursos visuais no Chromium</translation>
+<translation id="3594315078412605236">Gerenciar formas de pagamento no Chromium</translation>
+<translation id="3634039384458740619">Abrir configurações do Chromium</translation>
 <translation id="3639997914391704523">O Chromium pode verificar suas senhas quando você faz login com sua Conta do Google.</translation>
 <translation id="372658070733623520">Confirme sua identidade para usar e salvar dados do Chromium na sua Conta do Google.</translation>
 <translation id="3728124580182886854">Vincule o Chromium e outros Serviços do Google para personalização e outras finalidades</translation>
+<translation id="377649297473651452">Visualização aberta do preenchimento automático do Chromium</translation>
 <translation id="3780779443901618967">Avisa você sobre sites perigosos, mesmo aqueles que o Google não conhecia, analisando mais dados de sites do que a proteção padrão. Você pode ignorar os avisos do Chromium.</translation>
 <translation id="3805899903892079518">O Chromium não têm acesso às suas fotos ou seus vídeos. Permita o acesso em "Configurações do iOS" &gt; "Privacidade" &gt; "Fotos".</translation>
 <translation id="3827545470516145620">Você está usando a proteção padrão neste dispositivo</translation>
@@ -89,6 +114,8 @@ Aguarde alguns minutos antes de trocar de conta. Se você mudar de conta agora, 
 <translation id="3983291422281996849">Defina o Chromium como seu navegador padrão para monitorar preços com facilidade e receber informações sobre eles para coisas que você quer comprar.</translation>
 <translation id="4005283307739974863">Abre e realiza a Confirmação de segurança no Chromium.</translation>
 <translation id="4043291146360695975">As senhas são salvas no Gerenciador de senhas somente neste dispositivo.</translation>
+<translation id="4066426933127344530">Usar o Chromium por padrão</translation>
+<translation id="4087314024407094071">Abre as configurações no Chromium.</translation>
 <translation id="4099085513035183040">Indisponível no Chromium Beta</translation>
 <translation id="4106512142782407609">Login feito como <ph name="EMAIL" />.
 
@@ -97,22 +124,27 @@ Seus dados são criptografados com a senha longa. Digite-a para usar e salvar os
 <translation id="4195557071150719219">Conferir guias recentes do Chromium</translation>
 <translation id="420541179527342563">Desative o modo de Bloqueio total no Chromium para desativá-lo no seu iPad.</translation>
 <translation id="4272892696084633551">Ajude a melhorar os recursos e o desempenho do Chromium</translation>
+<translation id="4302397443352897529">Configurações do Chromium</translation>
 <translation id="4408912345039114853">Realizar a Confirmação de segurança do Chromium</translation>
 <translation id="4432744876818348753">Faça login para aproveitar o Chromium ao máximo.</translation>
 <translation id="4445228361214254027">Sua organização desativou a capacidade de usar e salvar dados do Chromium na Conta do Google. Novos favoritos, senhas e outros itens serão salvos apenas neste dispositivo.</translation>
 <translation id="4498832288620833153">Adiciona os URLs inseridos à sua Lista de leitura no Chromium.</translation>
 <translation id="452436063477828504">Garanta que você sempre possa usar os dados do Chromium na sua Conta do Google</translation>
+<translation id="4527452566931097835">Definir o Chromium como padrão?</translation>
 <translation id="4555020257205549924">Quando este recurso está ativado, o Chromium oferece a tradução de páginas escritas em outros idiomas usando o Google Tradutor. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="4572441104543926904">A criptografia por senha longa não inclui formas de pagamento e endereços.
 
 Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chromium na sua conta<ph name="END_LINK" />.</translation>
+<translation id="4578500311756617174">Dica do Chromium: usar o Chromium por padrão</translation>
 <translation id="458786853569524949">Agora você pode usar o Chromium sempre que toca em links em e-mails, documentos e outros apps.</translation>
 <translation id="4633738821577273991">Use também o recurso Navegação segura com proteção reforçada neste perfil do Chromium</translation>
 <translation id="4654936625574199632">Para ajudar a melhorar o app, o Chromium envia dados de uso e de falhas ao Google. <ph name="BEGIN_LINK" />Gerenciar<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Ativar o leitor do Chromium</translation>
+<translation id="4685611756167369067">Abrir uma guia anônima no Chromium</translation>
 <translation id="4736424910885271643">Sua conta é gerenciada por <ph name="HOSTED_DOMAIN" />. Por isso, seus dados do Chromium serão apagados deste dispositivo</translation>
 <translation id="4790638144988730920">Continue usando os dados do Chromium na sua Conta do Google.</translation>
 <translation id="4828317641996116749">Não foi possível verificar todas as senhas com o Chromium. Tente novamente mais tarde.</translation>
+<translation id="4856138222358683580">Ações do Chromium</translation>
 <translation id="4904452304169763785">Mostra alertas sobre problemas de privacidade ou segurança detectados pelo Chromium.</translation>
 <translation id="4962295957157529683">Termine o que você estava fazendo na outra janela aberta no Chromium.</translation>
 <translation id="4985291216379576555">Off-line. Não é possível verificar se há atualizações</translation>
@@ -122,20 +154,29 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="5044871537677053278">O Chromium detecta endereços e usa o Google Maps para mostrar rotas e informações locais.</translation>
 <translation id="5048795749726991615">Para acessar com facilidade suas senhas salvas em outros apps, use o preenchimento automático no Chromium</translation>
 <translation id="5053429694249468757">Excluindo dados do Chromium…</translation>
+<translation id="5071749685031362629">Chromium para iOS</translation>
 <translation id="5124429847818367226">Agora você pode usar o Chromium sempre que navegar ou tocar em links em mensagens, documentos e outros apps.</translation>
 <translation id="5131565040785979529">Sua organização, <ph name="DOMAIN" />, gerencia a conta em que você fez login e como o Chromium é usado.</translation>
 <translation id="5224391634244552924">Nenhuma senha salva. O Chromium poderá verificar suas senhas quando elas forem salvas.</translation>
+<translation id="5259423875997548710">Pesquise recursos visuais no Chromium.</translation>
 <translation id="5308226104666789935">Não é possível verificar se há atualizações</translation>
 <translation id="5311557153294205270">Adiciona os URLs inseridos aos seus favoritos no Chromium.</translation>
 <translation id="538767207339317086">Permitir login no Chromium</translation>
+<translation id="5389058611415066188">Proteção com o Chromium</translation>
+<translation id="5415273218238091735">Dica do Chromium</translation>
 <translation id="5427571867875391349">Definir o Chromium como seu navegador padrão</translation>
 <translation id="5434562575369834882">Abrir na navegação anônima do Chromium</translation>
 <translation id="5453478652154926037">O Chromium não pode verificar suas senhas.</translation>
+<translation id="5479292367402350143">Para tornar o Chromium seu navegador padrão:
+1. Abra as Configurações.
+2. Toque em App do navegador padrão.
+3. Selecione o Chromium.</translation>
 <translation id="5521125884468363740">Para acessar suas guias em qualquer lugar onde você usar o Chromium, faça login e ative a sincronização</translation>
 <translation id="5522297504975449419">Você vai perder o acesso a alguns recursos do Chromium.</translation>
 <translation id="5534584691915394889">Eventos serão criados no Calendário da Apple com o conteúdo do Chromium e do Google Lens.</translation>
 <translation id="5571094606370987472">Abre as guias recentes do Chromium.</translation>
 <translation id="5603085937604338780">chromium</translation>
+<translation id="5664395081284292058">Abrir minha guia mais recente no Chromium</translation>
 <translation id="5688047395118852662">Este card mostra sugestões para você aproveitar o Chromium ao máximo.</translation>
 <translation id="5700709190537129682">Não é possível verificar suas senhas com o Chromium</translation>
 <translation id="584550191241316896">Conectado ao Chromium</translation>
@@ -148,6 +189,7 @@ Considerações:
   • Se o Chromium falha, detalhes sobre o problema podem incluir algumas informações pessoais.
 
   • Se você sincroniza o histórico com sua Conta do Google, as métricas também podem incluir informações sobre os URLs que você acessa.<ph name="END_INDENT" /></translation>
+<translation id="5932787118589620366">Exclua dados de navegação no Chromium.</translation>
 <translation id="593808800391107017">Mostra alertas sobre problemas de privacidade ou segurança que o Chromium detectar automaticamente.</translation>
 <translation id="5945387852661427312">Você está fazendo login com uma conta gerenciada por <ph name="DOMAIN" /> e dando ao administrador dela o controle sobre seus dados do Chromium, os quais ficarão permanentemente vinculados a essa conta. Se você sair do Chromium, seus dados serão excluídos deste dispositivo, mas permanecerão armazenados na sua Conta do Google.</translation>
 <translation id="5951593919357934226">Aproveite o Chromium ao máximo.</translation>
@@ -155,6 +197,7 @@ Considerações:
 <translation id="6104024151682120539">Abrir no Chromium</translation>
 <translation id="61109258320235597">Digite sua senha longa para usar e salvar dados do Chromium na sua Conta do Google.</translation>
 <translation id="6132149203299792222">Faça login com sua Conta do Google para sincronizar suas senhas, favoritos e muito mais.</translation>
+<translation id="6148377327556085395">Adicionar favoritos ao Chromium</translation>
 <translation id="6154098560469640583">Use o Chromium sempre que abrir links em mensagens, documentos e outros apps.</translation>
 <translation id="6170619162539716595">Permita que o Chromium use o Google Maps para fornecer rotas e informações locais sobre os endereços detectados.</translation>
 <translation id="6197255575340902638">Se você ocultar "<ph name="MODULE_NAME" />", o Chromium não vai mais rastrear automaticamente seus pacotes futuros e vai excluir todos os dados de rastreamento anteriores.</translation>
@@ -165,10 +208,17 @@ Considerações:
 <translation id="6337530241089703714">Você quer apagar ou manter os dados do Chromium neste dispositivo?</translation>
 <translation id="6424492062988593837">O Chromium ficou ainda melhor! Uma nova versão está disponível.</translation>
 <translation id="6433172051771630690">Dicas para aproveitar o Chromium ao máximo.</translation>
+<translation id="65045991564554105">Visualizar favoritos do Chromium</translation>
+<translation id="6538713818758208754">Abre a página de configurações de formas de pagamento no Chromium.</translation>
+<translation id="6540186279384079894">Abrir nova guia no Chromium</translation>
 <translation id="6563921047760808519">Saiba mais sobre <ph name="BEGIN_LINK" />como o Chromium mantém a privacidade dos seus dados<ph name="END_LINK" /></translation>
+<translation id="6574750762636192517">Gerenciar senhas no Chromium</translation>
+<translation id="6590232959690355435">Abre a página de histórico do Chromium.</translation>
+<translation id="6674470628873622334">Abre uma nova guia anônima do Chromium.</translation>
 <translation id="6752854822223394465">Sua organização está configurando o Chromium…</translation>
 <translation id="6794054469102824109">Abre o jogo do dinossauro do Chromium.</translation>
 <translation id="6820823224820483452">Não foi possível verificar todas as senhas com o Chromium. Tente novamente amanhã.</translation>
+<translation id="6852419005633611413">Acesse o Chromium com mais rapidez no Dock da tela inicial</translation>
 <translation id="6852799557929001644">Acesse suas senhas do Chromium e muito mais em outros apps neste dispositivo.</translation>
 <translation id="6887138405044152640">Para enviar esta guia a outro dispositivo, faça login no Chromium no outro aparelho.</translation>
 <translation id="6911341667534646387">Continue usando os dados do Chromium na sua Conta do Google</translation>
@@ -176,12 +226,14 @@ Considerações:
 <translation id="7018284295775193585">Não é possível atualizar o Chromium</translation>
 <translation id="7055269218854630176">Sua organização, <ph name="DOMAIN" />, gerencia a conta em que você faz login e a forma como o Chromium pode ser usado. Seu administrador pode configurar ou restringir determinados recursos.</translation>
 <translation id="7099326575020694068">O Chromium não pode usar a câmera no modo Visualização dividida</translation>
+<translation id="7129379408282555630">Aproveite a tecnologia do Chromium Shopping</translation>
 <translation id="7165402419892018581">Escolha o Chromium para o preenchimento automático</translation>
 <translation id="7175400662502680481">Sua senha foi exposta em uma violação de dados. O Gerenciador de senhas recomenda que ela seja mudada agora mesmo.</translation>
 <translation id="7185731475720473450">Formas de pagamento e endereços não serão criptografados. O histórico de navegação do Chromium não será sincronizado.
 
 Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senha longa não é enviada ao Google nem armazenada por ele. Se você esquecer a senha longa ou quiser mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chromium na sua conta<ph name="END_LINK" />.</translation>
 <translation id="7192111075364461693">As notificações do Chromium estão desativadas nas configurações do dispositivo no momento.</translation>
+<translation id="7219205286115692265">Acesse o Chromium com mais rapidez no Dock da tela inicial do iPad.</translation>
 <translation id="7222001353246886083">Pesquisar ${searchphrase} no Chromium</translation>
 <translation id="7228180817326917122">Dica do Chromium: escolha a posição da barra de endereço</translation>
 <translation id="725427773388857052">O Chromium pode ajudar a proteger você de violações de dados, sites perigosos e muito mais.</translation>
@@ -191,21 +243,31 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="7357211569052832586">Os dados selecionados foram removidos do Chromium e dos dispositivos sincronizados. É possível que sua Conta do Google tenha outras formas de histórico de navegação, como pesquisas e atividades de outros serviços do Google em history.google.com.</translation>
 <translation id="7395825497086981028">A senha será salva no Gerenciador de senhas da conta <ph name="EMAIL" />.</translation>
 <translation id="7531461704633548377">Do Chromium</translation>
+<translation id="7554983317097061001">Dica do Chromium: mova o Chromium para o Dock</translation>
+<translation id="7576863740961052505">Gerenciar configurações do Chromium</translation>
 <translation id="7674213385180944843">Abra Ajustes &gt; Privacidade &gt; Câmera &gt; Chromium e ative a câmera.</translation>
 <translation id="7733418656985455268">Dica do Chromium: pesquise com o Lens</translation>
 <translation id="7747820849741499258">Pesquisar no Chromium</translation>
+<translation id="7762622637388462191">Bloqueie o modo de navegação anônima ao sair do Chromium ou mudar para outro app.</translation>
 <translation id="7763454117143368771">Use o Chromium como navegador padrão para se proteger contra sites perigosos e garantir a segurança das suas senhas</translation>
+<translation id="7784950022329154821">Bloquear guias anônimas ao fechar o Chromium</translation>
 <translation id="78025249032851484">Sua versão do Chromium está desatualizada.</translation>
 <translation id="7859018312476869945">Quando você digita na barra de endereço ou na caixa de pesquisa, o Chromium envia o conteúdo digitado ao mecanismo de pesquisa padrão para melhorar as sugestões. Essa opção fica desativada na navegação anônima.</translation>
+<translation id="7859432380288435856">O Chromium vai detectar números de rastreamento de pacotes nos sites que você visitar e mostrar atualizações na página "Nova guia". Seus dados serão compartilhados com o Google para fornecer este recurso e melhorar o Shopping para todos.</translation>
 <translation id="7890287942691234100">Começar a usar o leitor do Chromium</translation>
 <translation id="7905064834449738336">Quando você usa uma senha, o Chromium avisa se ela foi publicada on-line. Quando isso é feito, as senhas e os nomes de usuário são criptografados para que não possam ser lidos por ninguém, nem mesmo o Google.</translation>
 <translation id="7928628054454574139">Abrir o Chromium sempre que você tocar nos links em outros apps</translation>
 <translation id="7934404985878918282">Verificar Lista de leitura do Chromium</translation>
+<translation id="7951793218148208717">Abre uma nova guia no Chromium.</translation>
 <translation id="7980860476903281594">O Chromium compartilha sua localização com os sites aos quais você concede permissão.</translation>
 <translation id="7994322153108931467">Para receber dicas úteis sobre o Chromium, ative as notificações nos ajustes do iOS.</translation>
+<translation id="7997159823054171568">Definir o Chromium como o navegador padrão</translation>
 <translation id="800195749539500647">Aproveite o Chromium ao máximo</translation>
+<translation id="800380310260616129">Baixe o Chromium neste link.</translation>
 <translation id="8013573822802650211">Para acessar suas guias em qualquer lugar onde você usar o Chromium, faça login em todos os seus dispositivos</translation>
+<translation id="8014091604604659473">A conta foi desconectada do Chromium</translation>
 <translation id="8104697640054703121">Aproveite a segurança mais avançada do Chromium em sites perigosos</translation>
+<translation id="8119542592987737574">Acesse o Chromium com mais rapidez no Dock da tela inicial do iPhone.</translation>
 <translation id="8164086860209325020">Acesse as Configurações do Chromium</translation>
 <translation id="8197822717502700527">Você já pode aproveitar tudo o que o Chromium tem a oferecer no seu dispositivo.</translation>
 <translation id="8240981428553046115">Não foi possível verificar se há atualizações. Tente novamente mais tarde.</translation>
@@ -216,6 +278,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{Isso acontece quando o Chromium não é usado por {THRESHOLD} minuto. Os dados salvos apenas neste dispositivo enquanto sua conta estava conectada serão excluídos. Isso pode incluir histórico e senhas.}one{Isso acontece quando o Chromium não é usado por {THRESHOLD} minuto. Os dados salvos apenas neste dispositivo enquanto sua conta estava conectada serão excluídos. Isso pode incluir histórico e senhas.}other{Isso acontece quando o Chromium não é usado por {THRESHOLD} minutos. Os dados salvos apenas neste dispositivo enquanto sua conta estava conectada serão excluídos. Isso pode incluir histórico e senhas.}}</translation>
 <translation id="858114650497379505">Você pode usar as senhas armazenadas no Gerenciador de senhas em outros apps do iPhone.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Autores do Chromium. Todos os direitos reservados.</translation>
+<translation id="8602103377623855616">Página do Chromium</translation>
 <translation id="865600487977764604">Protege você no Chromium e pode ser usado para melhorar a segurança em outros apps do Google quando sua conta está conectada.</translation>
 <translation id="8663480472502753423">Manter o Chromium atualizado</translation>
 <translation id="8685813584220679697">Faça login neste site e no Chromium.</translation>
@@ -223,13 +286,16 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="8754966941001340678">O Chromium recomenda a proteção reforçada</translation>
 <translation id="8759037115129007407">O membro da sua família não pode receber senhas no momento. Peça para essa pessoa atualizar o Chromium e sincronizar as senhas. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="8776843108004031667">A conta e os dados não salvos serão removidos do Chromium.</translation>
+<translation id="8805148242934787134">Definir o Chromium como o navegador padrão</translation>
 <translation id="8826789549860004832">Continue a configuração do navegador para aproveitar o Chromium ao máximo.</translation>
 <translation id="88376265765385899">Abre os favoritos do Chromium.</translation>
 <translation id="8860548555286245440">Abrir URLs na navegação anônima do Chromium</translation>
 <translation id="8866191443434488382">O Chromium vai detectar números de rastreamento nos sites que você visitar e mostrar atualizações de pacotes na página "Nova guia". O número de rastreamento do pacote e o nome do site serão enviados ao Chromium para fornecer esse recurso e melhorar os recursos de compras para todos. É possível atualizar essa opção a qualquer momento nas <ph name="BEGIN_LINK" />Configurações de rastreamento de pacote<ph name="END_LINK" />.</translation>
+<translation id="8880024619507699923">Sua organização exige que você faça login para usar o Chromium. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="894437814105052438">Quando você se desconecta, o Chromium não sincroniza nenhum dado novo com sua Conta do Google. Os dados sincronizados anteriormente permanecem na conta.</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{Isso acontece quando o Chromium não é usado por {THRESHOLD} minuto}one{Isso acontece quando o Chromium não é usado por {THRESHOLD} minuto}other{Isso acontece quando o Chromium não é usado por {THRESHOLD} minutos}}</translation>
 <translation id="8963279154877372067">Permitir notificações do Chromium para receber alertas de redução no preço</translation>
+<translation id="8975812008711371178">Pesquise com a voz no Chromium.</translation>
 <translation id="900560297598578021">Login feito como <ph name="EMAIL" />.
 
 Seus dados foram criptografados com a senha longa em <ph name="TIME" />. Digite-a para usar e salvar os dados do Chromium na sua Conta do Google.</translation>

@@ -6279,9 +6279,6 @@ Si esta política se inhabilita o no se define, no se habilitarán los widgets G
 <translation id="5776485039795852974">Preguntar siempre que un sitio quiera mostrar notificaciones de escritorio</translation>
 <translation id="5783009211970309878">Imprimir encabezados y pies de página</translation>
 <translation id="5790763087505467169">Reducir las notificaciones de inicio automático de las sesiones de invitado administradas</translation>
-<translation id="5793378951267871906">Si se habilita esta política, <ph name="PRODUCT_OS_NAME" /> guardará automáticamente las credenciales de la red Wi-Fi activa del kiosco a nivel de dispositivo, por lo que cualquier otra aplicación de kiosko o usuario del dispositivo podrá usar la red Wi-Fi activa.
-Si esta política no se define o se inhabilita, las credenciales de la red Wi-Fi activa del kiosco se almacenarán a nivel de kiosco, por lo que la red Wi-Fi configurada en una aplicación de kiosco solo se podrá usar en esa misma aplicación.
-No se recomienda usar esta política y solo debe usarse cuando no haya otras opciones disponibles.</translation>
 <translation id="5800329278018669527">Inhabilitar el mensaje de configuración de red si no hay conexión</translation>
 <translation id="5802931736499687181">Inhabilitar el flujo de procesamiento de informes cifrados</translation>
 <translation id="5803715507113569033">Esta política permite a los administradores configurar el montaje de <ph name="MICROSOFT_ONE_DRIVE_NAME" />.
@@ -9285,13 +9282,6 @@ Usar <ph name="LACROS_SELECTION_USER_CHOICE_VALUE" /> o <ph name="LACROS_SELECTI
 <translation id="8028814157747157754">Habilitar el proveedor de búsqueda predeterminado y permitir a los usuarios modificar la lista de proveedores de búsqueda</translation>
 <translation id="8029201909194194377">Duración máxima permitida de la sesión para conexiones de acceso remoto</translation>
 <translation id="8031651557770840616">No permitir fondos de pantalla creados con IA generativa</translation>
-<translation id="8033450879690820321">Esta política proporciona un mecanismo temporal para inhabilitar el nuevo comportamiento de enfoque de los controles de desplazamientos con teclado.
-
-Si esta política se habilita o no se define, los controles de desplazamiento sin elementos secundarios enfocables se podrán enfocar mediante el teclado de forma predeterminada. Además, los controles de desplazamiento se pueden enfocar tanto al hacer clic como mediante programación de forma predeterminada.
-
-Si esta política se inhabilita, los controles de desplazamiento no se podrán enfocar de forma predeterminada.
-
-Esta política es una solución temporal y se eliminará en la versión M135.</translation>
 <translation id="8035570672225663428">Habilitar el modelo de Carga inteligente para suspender el proceso de carga y prolongar la duración de la batería</translation>
 <translation id="8036284429246268475">Si se habilita esta política, los usuarios podrán hacer que <ph name="PRODUCT_NAME" /> compruebe si los nombres de usuario y las contraseñas introducidos forman parte de alguna filtración de datos.
 

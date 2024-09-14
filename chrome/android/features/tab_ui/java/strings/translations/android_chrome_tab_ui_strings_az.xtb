@@ -104,6 +104,7 @@
 <translation id="5400836586163650660">Boz</translation>
 <translation id="5490235265819901748">Tab qrupu genişləndirildi</translation>
 <translation id="5494920125229734069">Hamısını seçin</translation>
+<translation id="5549653163690032080">Paylaşılan <ph name="TITLE_OF_GROUP" /> tab qrupu üçün tab qrupunun əməliyyat menyusunu açın</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> tabdan ibarət tab qrupunu bağlayın, rəng <ph name="COLOR_NAME" />.}other{<ph name="TABS_COUNT_MANY" /> tabdan ibarət tab qrupunu bağlayın, rəng <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">Mağaza məlumatlarına baxın, seçim ekranın yuxarı hissəsində əlçatandır</translation>
 <translation id="5627941783489838464">Tab yeniləməsi yoxdur</translation>
@@ -135,6 +136,7 @@
 <translation id="6694634756612002311">Paylaşımı idarə edin</translation>
 <translation id="6744956528665271406">Qrup rəngini redaktə edin</translation>
 <translation id="6856809498882026482">Çoxsaylı seçim rejimini gizlədin</translation>
+<translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> tabdan ibarət paylaşılan <ph name="TITLE_OF_GROUP" /> tab qrupunu genişləndirin. Rəng: <ph name="COLOR_NAME" />.}other{<ph name="TABS_COUNT_MANY" /> tabdan ibarət paylaşılan <ph name="TITLE_OF_GROUP" /> tab qrupunu genişləndirin. Rəng: <ph name="COLOR_NAME" />.}}</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Tabı paylaşın}other{Tabları paylaşın}}</translation>
 <translation id="7129458170538955174">Bu mağaza haqqında məlumatlar yarım hündürlükdə açılıb</translation>
 <translation id="7200189319044305940">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> tab olan <ph name="TITLE_OF_GROUP" /> qrupunu bağlayın.}other{<ph name="TABS_COUNT_MANY" /> tab olan <ph name="TITLE_OF_GROUP" /> qrupunu bağlayın.}}</translation>
@@ -170,6 +172,7 @@
 <translation id="8205266828577616993">Tabı yuxarıya daşıyın</translation>
 <translation id="8261506727792406068">Silin</translation>
 <translation id="8338427544764842461">Tab qruplarınız burada yaddaşda saxlanılır və bütün giriş edilmiş cihazlarınızda yenilənir</translation>
+<translation id="8344020191144794051">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> tabdan ibarət paylaşılan tab qrupunu genişləndirin. Rəng: <ph name="COLOR_NAME" />.}other{<ph name="TABS_COUNT_MANY" /> tabdan ibarət paylaşılan tab qrupunu genişləndirin. Rəng: <ph name="COLOR_NAME" />.}}</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Seçilmiş <ph name="TABS_COUNT_ONE" /> tabeli bağlayın}other{Seçilmiş <ph name="TABS_COUNT_MANY" /> tabeli bağlayın}}</translation>
 <translation id="8398929769197326728">Yeni Qovluq - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">Ayarlar</translation>

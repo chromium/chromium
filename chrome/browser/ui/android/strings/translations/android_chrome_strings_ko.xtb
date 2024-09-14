@@ -350,6 +350,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="2653659639078652383">제출</translation>
 <translation id="2656405586795711023">웹 앱</translation>
 <translation id="2664252182805397291">사이트 보기</translation>
+<translation id="2666092431469916601">맨 위</translation>
 <translation id="2669454659051515572">이 기기를 사용하는 누구나 다운로드된 파일을 볼 수 있습니다.</translation>
 <translation id="2702516483241149200">신규: 이 텍스트로 스크롤하는 링크 공유하기</translation>
 <translation id="2705073298859543115">요약 만들기</translation>
@@ -451,6 +452,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="3072980200212375806"><ph name="APP_NAME" /> 앱이 Chrome에서 열립니다. 계속하면 <ph name="BEGIN_LINK1" />Google 서비스 약관<ph name="END_LINK1" /> 및 <ph name="BEGIN_LINK2" />Chrome 및 ChromeOS 추가 서비스 약관<ph name="END_LINK2" />에 동의하는 것으로 간주됩니다. <ph name="BEGIN_LINK3" />개인정보처리방침<ph name="END_LINK3" />도 적용됩니다.</translation>
 <translation id="3080525922482950719">페이지를 저장하여 나중에 읽거나 오프라인 상태에서 읽을 수 있습니다.</translation>
 <translation id="3087218211037573995">이 기기에만 저장된 일부 비밀번호가 곧 작동하지 않게 됩니다. 이러한 비밀번호를 Google 비밀번호 관리자로 이동할 수 있습니다.</translation>
+<translation id="3087734570205094154">맨 아래</translation>
 <translation id="3091010850649238832">클립보드 내용 표시</translation>
 <translation id="3098745985164956033">설명을 개선하기 위해 일부 이미지가 Google에 전송됨</translation>
 <translation id="3114507951000454849">오늘의 뉴스 읽기 <ph name="NEWS_ICON" /></translation>
@@ -688,7 +690,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="4355272626458588338">중요한 페이지를 북마크에 추가하여 다시 돌아갈 수 있습니다.</translation>
 <translation id="4357206670025518404">+<ph name="COUNT_NUMBER" /></translation>
 <translation id="4359809482106103048">안전 정보 한눈에 보기</translation>
-<translation id="4363222835916186793">제품 관련 알림이 사용 중지되었습니다.</translation>
 <translation id="4378154925671717803">전화기</translation>
 <translation id="4380055775103003110">이 문제가 계속 발생하는 경우 다른 방법으로 <ph name="SITE_ETLD_PLUS_ONE" />에서 진행해 볼 수 있습니다.</translation>
 <translation id="4384468725000734951">검색할 때 Sogou 사용</translation>
@@ -749,6 +750,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="4624065194742029982">Chrome 시크릿 모드</translation>
 <translation id="4634124774493850572">비밀번호 사용</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{유출된 비밀번호 1개}other{유출된 비밀번호 #개}}</translation>
+<translation id="4642472735733036929">가격 추적이 중지됨</translation>
 <translation id="4645146721047390964">시크릿 모드에 있는 동안 사이트에서는 광고를 맞춤설정하는 등의 목적으로 다양한 사이트에서 쿠키를 사용하여 사용자의 탐색 활동을 확인할 수 없습니다. 일부 사이트에서는 기능이 작동하지 않을 수 있습니다.</translation>
 <translation id="4650364565596261010">시스템 기본값</translation>
 <translation id="465657074423018424">세이프 브라우징은 사기성 웹사이트로부터 사용자를 보호합니다. 이 기능을 사용 중지하는 경우 인터넷을 탐색할 때, 특히 비밀번호를 입력할 때 주의하시기 바랍니다.</translation>
@@ -1092,6 +1094,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="6210748933810148297"><ph name="EMAIL" />이(가) 아닌가요?</translation>
 <translation id="6211386937064921208">페이지 미리보기입니다.</translation>
 <translation id="6221633008163990886">비밀번호를 내보내려면 잠금 해제하세요</translation>
+<translation id="6225572914528673855">주소 표시줄</translation>
 <translation id="6232535412751077445">‘추적 안함’을 사용하도록 설정하면 요청이 사용자의 인터넷 사용 트래픽에 포함됩니다. 웹사이트가 요청에 응답하는지 여부와 요청이 해석되는 방법에 따라 결과가 결정됩니다.
 
 예를 들어 어떤 웹사이트는 사용자가 방문한 다른 웹사이트를 기반으로 하지 않는 광고를 표시하여 이 요청에 응답할 수 있습니다. 그러나 대부분의 웹사이트에서는 보안을 개선하거나 웹사이트에 콘텐츠, 광고, 권장사항 등을 제공하거나 보고서 통계를 생성하기 위해 사용자의 인터넷 사용 기록을 계속 수집하고 사용합니다.</translation>

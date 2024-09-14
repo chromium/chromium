@@ -350,6 +350,7 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="2653659639078652383">Lähetä</translation>
 <translation id="2656405586795711023">Verkkosovellukset</translation>
 <translation id="2664252182805397291">Näytä sivustot</translation>
+<translation id="2666092431469916601">Yleisin</translation>
 <translation id="2669454659051515572">Kaikki tämän laitteen käyttäjät voivat nähdä ladatut tiedostot</translation>
 <translation id="2702516483241149200">Uutta: jaa linkki, joka vie tähän tekstiin</translation>
 <translation id="2705073298859543115">Luo yhteenveto</translation>
@@ -451,6 +452,7 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="3072980200212375806"><ph name="APP_NAME" /> avautuu Chromessa. Jatkamalla hyväksyt <ph name="BEGIN_LINK1" />Googlen käyttöehdot<ph name="END_LINK1" /> ja <ph name="BEGIN_LINK2" />Google Chromen ja Chrome-käyttöjärjestelmän lisäkäyttöehdot<ph name="END_LINK2" />. Myös <ph name="BEGIN_LINK3" />tietosuojakäytäntöä<ph name="END_LINK3" /> sovelletaan.</translation>
 <translation id="3080525922482950719">Voit tallentaa sivuja myöhempää tai offline-tilassa lukemista varten</translation>
 <translation id="3087218211037573995">Jotkin vain tälle laitteelle tallennetut salasanat lakkaavat pian toimimasta. Voit siirtää nämä salasanat Google Salasanoihin.</translation>
+<translation id="3087734570205094154">Alaosassa</translation>
 <translation id="3091010850649238832">Näytä leikepöydän sisältö</translation>
 <translation id="3098745985164956033">Jotkin kuvat lähetetään Googlelle, jotta näkemiäsi kuvauksia voidaan parantaa</translation>
 <translation id="3114507951000454849">Lue päivän uutiset <ph name="NEWS_ICON" /></translation>
@@ -688,7 +690,6 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="4355272626458588338">Voit palata sinulle tärkeälle sivulle lisäämällä sen kirjanmerkiksi</translation>
 <translation id="4357206670025518404">+<ph name="COUNT_NUMBER" /></translation>
 <translation id="4359809482106103048">Turvallisuus nopeasti</translation>
-<translation id="4363222835916186793">Tämän tuotteen ilmoitukset on laitettu pois päältä</translation>
 <translation id="4378154925671717803">Puhelin</translation>
 <translation id="4380055775103003110">Jos ongelma jatkuu, voit kokeilla muita tapoja jatkaa tämän käyttöä: <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="4384468725000734951">Hakukoneena käytetään Sogouta.</translation>
@@ -749,6 +750,7 @@ Google-tililläsi voi olla muita selaushistoriatietoja, kuten hakuja ja toiminta
 <translation id="4624065194742029982">Chromen incognito-tila</translation>
 <translation id="4634124774493850572">Käytä salasanaa</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 vaarantunut salasana}other{# vaarantunutta salasanaa}}</translation>
+<translation id="4642472735733036929">Hinnan seuranta lopetettu</translation>
 <translation id="4645146721047390964">Kun olet incognito-tilassa, sivustot eivät näe selaustoimintaasi eri sivustoilla evästeiden kautta esim. personoidakseen mainoksia. Joidenkin sivustojen ominaisuudet saattavat lakata toimimasta.</translation>
 <translation id="4650364565596261010">Järjestelmän oletusarvo</translation>
 <translation id="465657074423018424">Selaussuoja suojaa sinua harhaanjohtavilta sivustoilta. Jos laitat sen pois päältä, ole erityisen varovainen selatessasi, etenkin ennen salasanojen lisäämistä.</translation>
@@ -1092,6 +1094,7 @@ Google-tililläsi voi olla muita selaushistoriatietoja, kuten hakuja ja toiminta
 <translation id="6210748933810148297">Etkö ole <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Tätä sivua esikatsellaan</translation>
 <translation id="6221633008163990886">Avaa lukitus viedäksesi salasanoja.</translation>
+<translation id="6225572914528673855">Osoitepalkki</translation>
 <translation id="6232535412751077445">Do Not Track -toiminnon käyttöönotto tarkoittaa sitä, että selausliikenteeseesi sisällytetään pyyntö. Sen vaikutus riippuu siitä, vastaako verkkosivusto pyyntöön ja miten pyyntöä tulkitaan.
 
 Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämällä sinulle mainoksia, jotka eivät perustu muihin vierailemiisi verkkosivustoihin. Monet sivustot keräävät ja käyttävät silti edelleen selaustietojasi – esimerkiksi turvallisuuden parantamiseen, sisällön, mainosten ja suositusten tarjoamiseen sekä raportointitilastojen luomiseen.</translation>

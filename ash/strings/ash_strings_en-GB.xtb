@@ -118,7 +118,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="1346748346194534595">Right</translation>
 <translation id="1350494136075914725">Ongoing · Switch to tab</translation>
 <translation id="1351937230027495976">Collapse menu</translation>
-<translation id="1352537790882153971">You can monitor your microphone sound from wired headphones. Close panel to stop.</translation>
 <translation id="1360220746312242196">When searching a page, go to previous match for search</translation>
 <translation id="1360788414852622716">Disabling profile. This may take a few minutes.</translation>
 <translation id="1364382257761975320">To unlock your Chromebook, use your fingerprint</translation>
@@ -374,6 +373,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2359808026110333948">Continue</translation>
 <translation id="2360398059912971776">battery</translation>
 <translation id="2361210043495191221">Toggle Wi-Fi <ph name="STATE" />.</translation>
+<translation id="2364710166605611987">Appearance effects</translation>
 <translation id="236574664504281623">Sent from <ph name="SESSION_NAME" /></translation>
 <translation id="2367186422933365202">Can't sign in to your Chromebook</translation>
 <translation id="2367972762794486313">Show apps</translation>
@@ -396,7 +396,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="2426051945783024481">Camera frame automatically centred</translation>
 <translation id="2427507373259914951">Left click</translation>
 <translation id="2429753432712299108">Bluetooth device "<ph name="DEVICE_NAME" />" would like permission to pair. Before accepting, please confirm that this passkey is shown on that device: <ph name="PASSKEY" /></translation>
-<translation id="2430444791038754658">Time's up. You're on a roll!</translation>
 <translation id="2435457462613246316">Show password</translation>
 <translation id="2437771564543046790">Low battery. Battery Saver is on</translation>
 <translation id="243878895369688216">Opened yesterday</translation>
@@ -734,6 +733,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="3600061223661453002">Off</translation>
 <translation id="3604801046548457007">Desk <ph name="DESK_TITILE" /> created</translation>
 <translation id="3606978283550408104">Braille display connected.</translation>
+<translation id="3612634595000403645">Appearance effects preferences</translation>
 <translation id="3615926715408477684">Enabling mobile data will enable Bluetooth</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3616883743181209306">Menu moved to the top-right corner of the screen.</translation>
@@ -775,7 +775,6 @@ Connect your device to power.</translation>
 <translation id="3706423975342040244">Entertainment</translation>
 <translation id="3707093869106077605"><ph name="UNAVAILABLE_DLC_ONE" /> and <ph name="UNAVAILABLE_DLC_TWO" /> are not available.</translation>
 <translation id="3708186454126126312">Previously connected</translation>
-<translation id="3711282657843423160">All done. Keep it up!</translation>
 <translation id="3712143870407382523">Choose a window for this side</translation>
 <translation id="371370241367527062">Front microphone</translation>
 <translation id="3713734891607377840">Open when complete</translation>
@@ -845,7 +844,6 @@ Connect your device to power.</translation>
 <translation id="397105322502079400">Calculating...</translation>
 <translation id="397726367135689299">Battery charging may be unreliable.</translation>
 <translation id="3977512764614765090">Battery at <ph name="PERCENTAGE" />% and charging.</translation>
-<translation id="397808938113646171">Time's up. Great work!</translation>
 <translation id="3982013579989864579">Switch audio output?</translation>
 <translation id="3984536049089846927">Next page</translation>
 <translation id="3986082989454912832">Answer</translation>
@@ -894,6 +892,7 @@ Connect your device to power.</translation>
 <translation id="4146671046252289537">Move to end of next word</translation>
 <translation id="4146833061457621061">Play music</translation>
 <translation id="4150201353443180367">Display</translation>
+<translation id="4151054805501931758">Portrait touch-up</translation>
 <translation id="4156293514828496577"><ph name="PERCENTAGE" />% battery left (about <ph name="TIME_LEFT" />).
 Some features are limited to increase battery life.</translation>
 <translation id="4160919062868802509">Multiple audio sources detected</translation>
@@ -1000,7 +999,6 @@ Some features are limited to increase battery life.</translation>
 <translation id="4477751544736611934">This may incur data cost.
 One device connected.</translation>
 <translation id="4477892968187500306">This device may contain apps that haven't been verified by Google.</translation>
-<translation id="4479130137987693286">You can add a little more time if you need it, or end your focus session</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Unpaired devices</translation>
 <translation id="4485506555414638855">Dismiss setting up viewing your phone's recent photos, media, notifications and apps</translation>
@@ -1053,7 +1051,6 @@ One device connected.</translation>
 
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox enabled</translation>
-<translation id="4665182893355091947">All done. Well done!</translation>
 <translation id="4666911709726371538">More apps</translation>
 <translation id="4667099493359681081">Downloading <ph name="FILENAME" /></translation>
 <translation id="4672539464599646374">Battery Saver turned on</translation>
@@ -1357,6 +1354,7 @@ No devices connected.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Your password couldn't be verified. Try again.</translation>
 <translation id="5632485077360054581">Show me how</translation>
+<translation id="5633826232582408011">When you turn on Help me write and Help me read, the input text, document content and web page URL are sent to Google AI servers to generate writing suggestions, generate summaries, answer questions and improve the product, subject to <ph name="LINK_TO_SERVICE_TERMS" />. Don't include anything personal, sensitive or confidential.</translation>
 <translation id="5648021990716966815">Mic jack</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> requests your attention.</translation>
 <translation id="5662075790140998213">Desk 10</translation>
@@ -1779,7 +1777,6 @@ New install</translation>
 <translation id="7064351585062927183">This coming <ph name="DAY_OF_WEEK" /></translation>
 <translation id="7066646422045619941">This network is disabled by your administrator.</translation>
 <translation id="7067196344162293536">Auto rotate</translation>
-<translation id="7067569040620564762">Time's up. Done and done!</translation>
 <translation id="7068360136237591149">Open files</translation>
 <translation id="7076293881109082629">Signing in</translation>
 <translation id="7076878155205969899">Mute sound</translation>
@@ -1814,7 +1811,6 @@ New install</translation>
 <translation id="7189412385142492784">How far is Venus</translation>
 <translation id="7198435252016571249">Camera snapped to the bottom-right corner. Conflict with system surface.</translation>
 <translation id="7219573373513695352">No devices connected</translation>
-<translation id="7226347284543965442">Time's up. You did it!</translation>
 <translation id="7229029500464092426">Memory <ph name="AVAILABLE_MEMORY" /> | <ph name="TOTAL_MEMORY" /> total</translation>
 <translation id="7244725679040769470"><ph name="PERCENTAGE" />% battery left. Connect your device to power.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. This Chromebook needs to restart to apply an update. This can take up to one minute.</translation>
@@ -1971,6 +1967,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="7768784765476638775">Select to Speak</translation>
 <translation id="7769299611924763557">Your GIF will be ready shortly</translation>
 <translation id="7773536009433685931">Turn on Wi-Fi instead</translation>
+<translation id="77747521138552256">Too many PIN attempts. Wait <ph name="TIME_LEFT" /> and try PIN again, or enter password to sign in immediately.</translation>
 <translation id="7780094051999721182">shortcuts</translation>
 <translation id="7780159184141939021">Rotate screen</translation>
 <translation id="7781829728241885113">Yesterday</translation>
@@ -2168,7 +2165,6 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="8443879455002739353">'Copy'</translation>
 <translation id="8444246603146515890">Desk <ph name="DESK_TITILE" /> activated</translation>
 <translation id="8446884382197647889">Learn More</translation>
-<translation id="8452090802952003258">Listen to your mic sound</translation>
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
 <translation id="8462305545768648477">Close Select to Speak</translation>
 <translation id="8468806060683421065">due <ph name="DUE_DATE_AND_TIME" /></translation>
@@ -2230,7 +2226,6 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="8683506306463609433">Performance tracing active</translation>
 <translation id="8703634754197148428">Start recording. Once recording has started use Alt + Shift + L to navigate to the shelf and find the stop recording button</translation>
 <translation id="8704155109538237473">Focus on the picture-in-picture window</translation>
-<translation id="8708657523363087260">Toggle sidetone</translation>
 <translation id="870917907284186124">Turn on/off dictation (type with your voice)</translation>
 <translation id="8711169534266271368">Game Dashboard options</translation>
 <translation id="8712637175834984815">Got it</translation>

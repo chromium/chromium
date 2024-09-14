@@ -11,7 +11,6 @@
 <translation id="1035980983510608210">Затварањем свих картица затварате и закачене картице.</translation>
 <translation id="1036017604683756002">UPS</translation>
 <translation id="1036348656032585052">Искључи</translation>
-<translation id="10379132160269599">Прикажите координатну мрежу картице</translation>
 <translation id="1041322626941363065">Упозори ме ако су лозинке откривене при повреди података</translation>
 <translation id="1044891598689252897">Сајтови ће нормално радити</translation>
 <translation id="104491362976654916">Офлајн страница</translation>
@@ -31,6 +30,7 @@
 <translation id="1118569444314402022">Добро дошли назад, <ph name="USER_NAME" /></translation>
 <translation id="1121850836842642159">Слике</translation>
 <translation id="1125564390852150847">Направи нову картицу.</translation>
+<translation id="1126696498560056882">Управљајте налозима на овом уређају</translation>
 <translation id="1126809382673880764">Не штити вас од опасних веб-сајтова, преузимања и додатака. У другим Google услугама, као што су Gmail и Претрага, и даље ћете имати заштиту помоћу Безбедног прегледања када је доступна.</translation>
 <translation id="1142371195993008685">Искључи обавештења за: <ph name="FEATURE_NAME" /></translation>
 <translation id="1147031633655575115">Пријављени сте као <ph name="USER" /></translation>
@@ -1010,7 +1010,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="594324569139756587">Колачићи треће стране се блокирају</translation>
 <translation id="5944869793365969636">Скенирајте QR кôд</translation>
 <translation id="5948291296578561264">Ово вам омогућава да чувате слике у фототеци.</translation>
-<translation id="5953383789663007162">Измени листу налога</translation>
 <translation id="5954322191260787920">Измени обележивач</translation>
 <translation id="5956112131836209882">Картица групе картица. <ph name="TAB_INDEX_IN_GROUP" /> од <ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
 <translation id="595769230373966252">Претражите помоћу: <ph name="SEARCH_PROVIDER" /></translation>
@@ -1604,6 +1603,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8637431369725868556">Заштитите се од опасних сајтова.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Нема угрожених лозинки}=1{{COUNT} угрожена лозинка}one{{COUNT} угрожена лозинка}few{{COUNT} угрожене лозинке}other{{COUNT} угрожених лозинки}}</translation>
 <translation id="8640575194957831802">Последњи пут отворено</translation>
+<translation id="8647280737650867362">Отказивање праћења цене није успело.</translation>
 <translation id="8654802032646794042">Откажи</translation>
 <translation id="8660600697590740984">Слика коју је копирао Објектив</translation>
 <translation id="866266761389616183">О, не!</translation>

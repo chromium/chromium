@@ -1015,6 +1015,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2882949212241984732">Piegatura a doppia finestra</translation>
 <translation id="2891963978019740012">Il tuo motore di ricerca in Chrome</translation>
 <translation id="2893773853358652045">Quarto rullo</translation>
+<translation id="2894137550885451583">Questi sono i prezzi in <ph name="CURRENCY" /> per il prodotto <ph name="PRODUCT" /></translation>
 <translation id="2900528713135656174">Crea evento</translation>
 <translation id="2902312830803030883">Altre azioni</translation>
 <translation id="2903493209154104877">Indirizzi</translation>
@@ -1609,6 +1610,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3949601375789751990">La cronologia di navigazione viene mostrata qui</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">Nessun metodo di pagamento salvato</translation>
+<translation id="3950560191811267370">Riquadro inferiore di informazioni sul prodotto chiuso</translation>
 <translation id="3950574001630941635">Riavvia tutorial</translation>
 <translation id="3950820424414687140">Accedi</translation>
 <translation id="3953505489397572035">Questo prezzo rientra nella fascia di prezzo tipica</translation>
@@ -1894,7 +1896,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4451135742916150903">Può chiedere di connettersi ai dispositivi HID</translation>
 <translation id="4451684391620232683">Testo presentato all'utente:</translation>
 <translation id="4452328064229197696">La password appena usata è stata compromessa nell'ambito di una violazione dei dati. Per proteggere i tuoi account, Gestore delle password di Google consiglia di controllare le password salvate.</translation>
-<translation id="4452957520362597816">Chiedere di installare app web</translation>
 <translation id="4456937135469235202">Viaggi avventura</translation>
 <translation id="4464826014807964867">Siti web con informazioni della tua organizzazione</translation>
 <translation id="4466576951214254884">Prestiti per studenti e finanziamenti per lo studio</translation>
@@ -2351,6 +2352,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5331585574693522196">Imposta come predefinito</translation>
 <translation id="5332219387342487447">Modalità di spedizione</translation>
 <translation id="5332769172018416402">Chiedi in un messaggio</translation>
+<translation id="533323551986281710">Riquadro inferiore di informazioni sul prodotto aperto a schermo intero</translation>
 <translation id="5334013548165032829">Log di sistema dettagliati</translation>
 <translation id="5334145288572353250">Vuoi salvare l'indirizzo?</translation>
 <translation id="5340250774223869109">L'applicazione è bloccata</translation>
@@ -2533,6 +2535,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5675650730144413517">La pagina non funziona</translation>
 <translation id="5675809467256309336">Musica dance ed elettronica</translation>
 <translation id="5675959228867414813">Mostra per data</translation>
+<translation id="567604591393105935">Riquadro inferiore di informazioni sul prodotto aperto nella parte inferiore dello schermo</translation>
 <translation id="5677928146339483299">Autorizzazione bloccata</translation>
 <translation id="5678007133659493065">Alluminio</translation>
 <translation id="5680642791693447368">Film gialli, polizieschi e del mistero</translation>
@@ -3439,6 +3442,7 @@ Ulteriori dettagli:
 <translation id="7374733840632556089">Questo problema si verifica a causa di un certificato installato sul dispositivo da te o da un'altra persona. È noto che il certificato viene usato per monitorare e intercettare le reti e non è considerato attendibile da Chrome. Esistono alcuni casi leciti per il monitoraggio, ad esempio su una rete scolastica o aziendale, ma Chrome vuole assicurarsi che tu sappia che viene effettuato, anche se non puoi interromperlo. Il monitoraggio potrebbe essere effettuato in qualsiasi browser o applicazione che accede al Web.</translation>
 <translation id="7375532151824574023">{NUM_COOKIES,plural, =0{Nessun sito autorizzato}=1{1 sito autorizzato}other{# siti autorizzati}}</translation>
 <translation id="7375818412732305729">Viene allegato un file</translation>
+<translation id="7376031331622621328">Riquadro inferiore di informazioni sul prodotto</translation>
 <translation id="7377249249140280793"><ph name="RELATIVE_DATE" /> - <ph name="FULL_DATE" /></translation>
 <translation id="7377314930809374926">Settore alberghiero</translation>
 <translation id="7378594059915113390">Controlli multimediali</translation>
@@ -4014,6 +4018,7 @@ Ulteriori dettagli:
 <translation id="8381674639488873545">L'addebito potrebbe essere singolo oppure ricorrente e potrebbe non essere evidente. <ph name="BEGIN_LINK" />Mostra comunque<ph name="END_LINK" /></translation>
 <translation id="8382097126743287270">Schermo intero automatico</translation>
 <translation id="838307841291975086">Station wagon</translation>
+<translation id="8388286357548915205">Utilizza per tutti gli ospiti</translation>
 <translation id="8389532092404711541">In genere <ph name="LOW_PRICE" /></translation>
 <translation id="8389940864052787379">Veicoli ad alte prestazioni e personalizzati</translation>
 <translation id="8390725133630534698">La possibilità di condivisione da <ph name="ORIGIN_NAME" /> a <ph name="VM_NAME" /> è stata bloccata da un criterio dell'amministratore</translation>

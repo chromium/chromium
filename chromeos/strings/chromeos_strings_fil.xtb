@@ -153,6 +153,7 @@
 <translation id="1672499492233627739">Video feed ng webcam</translation>
 <translation id="1676557873873341166">Pagkuha ng video</translation>
 <translation id="1684279041537802716">Kulay ng accent</translation>
+<translation id="1697278726914783200">I-record</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">May DNS Resolver</translation>
 <translation id="1708602061922134366">Google blue</translation>
@@ -703,6 +704,7 @@
 <translation id="458794348635939462">Hindi nalutas ang lahat ng host</translation>
 <translation id="4593212453765072419">Kinakailangan ang pagpapatunay ng proxy</translation>
 <translation id="4594021849294327751">Gumawa ng transcript</translation>
+<translation id="4602266091140407479">Mic</translation>
 <translation id="4607282946861182308">Hindi makagawa ng mga larawan nito. Sumubok ng ibang prompt.</translation>
 <translation id="4609350030397390689">Babaan ang liwanag ng keyboard</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> sa <ph name="TOTAL_PAGE_NUMBER" />. Pindutin ang enter para kanselahin ang pag-print.</translation>
@@ -1011,6 +1013,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6188737759358894319">Ginawa noong <ph name="DATE" /></translation>
 <translation id="6189418609903030344">Nababawasan ang kapasidad ng baterya sa paggamit</translation>
+<translation id="6189987971574353264">I-play</translation>
 <translation id="6191293864534840972">Mali ang format ng mga name server</translation>
 <translation id="6196607555925437199">Gawin ulit</translation>
 <translation id="6205145102504628069">Cloud Flow</translation>
@@ -1642,8 +1645,6 @@ I-download ang modelo ng transcription (hanggang 100MB) para makuha ang mga tran
 <translation id="951780398843003443">Paghambingin ang mga boses sa buong recording para maipakita ng transcript kung ano ang sinabi ng bawat speaker at kung kailan</translation>
 <translation id="952992212772159698">Hindi na-activate</translation>
 <translation id="95718197892796296">clay</translation>
-<translation id="959792926760890141">Sa pangkaligtasang pag-reset, io-off ang mga extension ng Chrome browser at ire-reset ang network at iba pang setting sa mga ligtas na default.
-          Ire-reset ang iyong default na search engine, pero hindi mababago ang mga tab, mga file, cookies, at history mo.</translation>
 <translation id="960719561871045870">Operator code</translation>
 <translation id="965918541715156800">dilaw at teal</translation>
 <translation id="966787709310836684">menu</translation>

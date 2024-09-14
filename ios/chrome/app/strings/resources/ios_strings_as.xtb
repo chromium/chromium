@@ -11,7 +11,6 @@
 <translation id="1035980983510608210">আটাইবোৰ টেব বন্ধ কৰিলে পিন কৰি থোৱা টেবসমূহো বন্ধ হ’ব।</translation>
 <translation id="1036017604683756002">UPS</translation>
 <translation id="1036348656032585052">অফ কৰক</translation>
-<translation id="10379132160269599">টেব গ্ৰীড দেখুৱাওক</translation>
 <translation id="1041322626941363065">ডেটা উলংঘনৰ ফলত পাছৱৰ্ড ফাদিল হ’লে আপোনাক সকীয়নি দিয়ে</translation>
 <translation id="1044891598689252897">ছাইটসমূহে স্বাভাৱিকভাৱে কাম কৰিব</translation>
 <translation id="104491362976654916">অফলাইন পৃষ্ঠা</translation>
@@ -31,6 +30,7 @@
 <translation id="1118569444314402022">পুনৰ স্বাগতম, <ph name="USER_NAME" /></translation>
 <translation id="1121850836842642159">ফট’ আৰু প্ৰতিচ্ছবি</translation>
 <translation id="1125564390852150847">নতুন টেব সৃষ্টি কৰক।</translation>
+<translation id="1126696498560056882">এই ডিভাইচটোত একাউণ্টসমূহ পৰিচালনা কৰক</translation>
 <translation id="1126809382673880764">আপোনাক বিপজ্জনক ৱেবছাইট, ডাউনল’ড অথবা এক্সটেনশ্বনসমূহৰ পৰা সুৰক্ষা প্ৰদান নকৰে। Gmail আৰু Searchৰ দৰে অন্য Google সেৱাসমূহ, য’ত সুৰক্ষিত ব্ৰাউজিঙৰ সুবিধাটো উপলব্ধ, সেইবিলাকত আপুনি তথাপি এই সুবিধাটো পাব।</translation>
 <translation id="1142371195993008685"><ph name="FEATURE_NAME" />ৰ বাবে জাননী অফ কৰক</translation>
 <translation id="1147031633655575115"><ph name="USER" /> হিচাপে ছাইন ইন কৰিছে</translation>
@@ -1010,7 +1010,6 @@
 <translation id="594324569139756587">তৃতীয় পক্ষক অৱৰোধ কৰক</translation>
 <translation id="5944869793365969636">কিউআৰ ক’ড স্কেন কৰক</translation>
 <translation id="5948291296578561264">ইয়াৰ জৰিয়তে আপুনি ফট’ লাইব্ৰেৰীত ফট’ ছেভ কৰিব পাৰে।</translation>
-<translation id="5953383789663007162">একাউণ্টৰ সূচী সম্পাদনা কৰক</translation>
 <translation id="5954322191260787920">বুকমাৰ্ক সম্পাদনা কৰক</translation>
 <translation id="5956112131836209882">টেবৰ গোটৰ টেব। <ph name="NUMBER_OF_TABS_IN_GROUP" /> টাৰ ভিতৰত <ph name="TAB_INDEX_IN_GROUP" /> নম্বৰটো।</translation>
 <translation id="595769230373966252"><ph name="SEARCH_PROVIDER" />ৰ জৰিয়তে সন্ধান কৰক</translation>
@@ -1604,6 +1603,7 @@
 <translation id="8637431369725868556">বিপজ্জনক ৱেবছাইটৰ পৰা সুৰক্ষা লাভ কৰক।</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{কোনো হেক কৰা পাছৱৰ্ড নাই}=1{{COUNT} টা হেক কৰা পাছৱৰ্ড}one{{COUNT} টা হেক কৰা পাছৱৰ্ড}other{{COUNT} টা হেক কৰা পাছৱৰ্ড}}</translation>
 <translation id="8640575194957831802">অন্তিমবাৰ খোলাৰ সময়</translation>
+<translation id="8647280737650867362">দাম ট্ৰেক কৰাটো বাতিল কৰিব পৰা নগ’ল।</translation>
 <translation id="8654802032646794042">বাতিল কৰক</translation>
 <translation id="8660600697590740984">Lensৰে প্ৰতিলিপি কৰা প্ৰতিচ্ছবি</translation>
 <translation id="866266761389616183">আমি দুঃখিত!</translation>

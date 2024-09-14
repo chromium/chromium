@@ -11,7 +11,6 @@
 <translation id="1035980983510608210">سبھی ٹیبز کو بند کرنے سے پن کردہ ٹیبز بھی بند ہو جائیں گے۔</translation>
 <translation id="1036017604683756002">UPS</translation>
 <translation id="1036348656032585052">آف کریں</translation>
-<translation id="10379132160269599">ٹیب گرڈ دکھائیں</translation>
 <translation id="1041322626941363065">اگر پاس ورڈز ڈیٹا کی خلاف ورزی میں افشاء ہوتے ہیں تو وارننگ حاصل کریں</translation>
 <translation id="1044891598689252897">سائٹس حسب معمول کام کریں گی</translation>
 <translation id="104491362976654916">آف لائن صفحہ</translation>
@@ -31,6 +30,7 @@
 <translation id="1118569444314402022">واپسی پر خوش آمدید، <ph name="USER_NAME" /></translation>
 <translation id="1121850836842642159">فوٹوز اور تصاویر</translation>
 <translation id="1125564390852150847">نیا ٹیب بنائیں۔</translation>
+<translation id="1126696498560056882">اس آلے پر اکاؤنٹس کا نظم کریں</translation>
 <translation id="1126809382673880764">‏خطرناک ویب سائٹس، ڈاؤن لوڈز اور ایکسٹینشنز سے آپ کی حفاظت نہیں کرتی ہے۔ آپ کو اب بھی Gmail اور تلاش جیسی Google کی دیگر سروسز میں جہاں بھی دستیاب ہوگا محفوظ براؤزنگ کا تحفظ ملے گا۔</translation>
 <translation id="1142371195993008685"><ph name="FEATURE_NAME" /> کیلئے اطلاعات آف کریں</translation>
 <translation id="1147031633655575115"><ph name="USER" /> کے بطور سائن ان ہیں</translation>
@@ -1010,7 +1010,6 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="594324569139756587">فریق ثالث مسدود کریں</translation>
 <translation id="5944869793365969636">‏QR کوڈ اسکین کریں</translation>
 <translation id="5948291296578561264">یہ آپ کو اپنی تصویری لائبریری میں تصاویر محفوظ کرنے دیتا ہے۔</translation>
-<translation id="5953383789663007162">اکاؤنٹ کی فہرست میں ترمیم کریں</translation>
 <translation id="5954322191260787920">بک مارک میں ترمیم کریں</translation>
 <translation id="5956112131836209882">ٹیب گروپ کا ٹیب۔ <ph name="NUMBER_OF_TABS_IN_GROUP" /> میں سے <ph name="TAB_INDEX_IN_GROUP" />۔</translation>
 <translation id="595769230373966252"><ph name="SEARCH_PROVIDER" /> کے ساتھ تلاش کریں</translation>

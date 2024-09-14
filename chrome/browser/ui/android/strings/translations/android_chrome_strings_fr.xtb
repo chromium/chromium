@@ -350,6 +350,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="2653659639078652383">Envoyer</translation>
 <translation id="2656405586795711023">Applications Web</translation>
 <translation id="2664252182805397291">Afficher les sites</translation>
+<translation id="2666092431469916601">En haut</translation>
 <translation id="2669454659051515572">Toute personne utilisant cet appareil peut voir les fichiers téléchargés</translation>
 <translation id="2702516483241149200">Nouveau : partagez un lien vers ce texte</translation>
 <translation id="2705073298859543115">Créer un résumé</translation>
@@ -451,6 +452,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="3072980200212375806"><ph name="APP_NAME" /> va s'ouvrir dans Chrome. En continuant, vous acceptez les <ph name="BEGIN_LINK1" />Conditions d'utilisation de Google<ph name="END_LINK1" /> et les <ph name="BEGIN_LINK2" />Conditions d'utilisation supplémentaires de Google Chrome et Chrome OS<ph name="END_LINK2" />. Les <ph name="BEGIN_LINK3" />Règles de confidentialité<ph name="END_LINK3" /> s'appliquent également.</translation>
 <translation id="3080525922482950719">Vous pouvez enregistrer des pages pour les consulter plus tard ou hors connexion</translation>
 <translation id="3087218211037573995">Certains mots de passe enregistrés uniquement sur cet appareil ne fonctionneront bientôt plus. Vous pouvez les déplacer vers le Gestionnaire de mots de passe de Google.</translation>
+<translation id="3087734570205094154">En bas</translation>
 <translation id="3091010850649238832">Afficher le contenu du presse-papiers</translation>
 <translation id="3098745985164956033">Les images sont envoyées à Google afin de vous proposer de meilleures descriptions</translation>
 <translation id="3114507951000454849">Lisez les actualités du jour <ph name="NEWS_ICON" /></translation>
@@ -488,6 +490,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="3282568296779691940">Connectez-vous à Chrome</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> onglet}one{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> onglet}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> onglets}}</translation>
 <translation id="3293181007446299124">Votre historique de navigation reste privé sur votre appareil, et les rapports sont transmis avec un certain retard pour protéger votre identité</translation>
+<translation id="3302615849591357577">Restaurer le groupe d'onglets "<ph name="TITLE_OF_GROUP" />" (couleur : <ph name="COLOR_NAME" />) en tant que nouveau groupe d'onglets en arrière-plan.</translation>
 <translation id="3303414029551471755">Poursuivre et télécharger le contenu ?</translation>
 <translation id="3303855915957856445">Aucun résultat de recherche n'a été trouvé.</translation>
 <translation id="3305130791745726624">Envoyer sur des appareils</translation>
@@ -687,7 +690,6 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="4355272626458588338">Ajoutez les pages qui vous intéressent à vos favoris pour pouvoir y revenir facilement</translation>
 <translation id="4357206670025518404">+ <ph name="COUNT_NUMBER" /></translation>
 <translation id="4359809482106103048">Votre sécurité en un coup d'œil</translation>
-<translation id="4363222835916186793">Les alertes pour ce produit ont été désactivées</translation>
 <translation id="4378154925671717803">Téléphone</translation>
 <translation id="4380055775103003110">Si le problème persiste, vous pouvez essayer d'autres méthodes afin de poursuivre sur <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="4384468725000734951">Utilisation de Sogou pour les recherches</translation>
@@ -748,6 +750,7 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="4624065194742029982">Navigation privée dans Chrome</translation>
 <translation id="4634124774493850572">Utiliser le mot de passe</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 mot de passe compromis}one{# mot de passe compromis}other{# mots de passe compromis}}</translation>
+<translation id="4642472735733036929">Suivi des prix interrompu</translation>
 <translation id="4645146721047390964">Lorsque vous êtes en navigation privée, les sites ne peuvent pas utiliser vos cookies pour voir votre activité de navigation sur différents sites (par exemple, pour personnaliser les annonces). Les fonctionnalités de certains sites peuvent être bloquées.</translation>
 <translation id="4650364565596261010">Paramètre par défaut du système</translation>
 <translation id="465657074423018424">La navigation sécurisée vous protège contre les sites Web trompeurs. Si vous la désactivez, faites preuve d'une grande vigilance en ligne, surtout lorsque vous saisissez des mots de passe.</translation>
@@ -799,6 +802,7 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="4834007576107377210">Lisez les instructions du moteur de recherche pour supprimer l'historique de vos recherches, si besoin</translation>
 <translation id="4834250788637067901">Modes de paiement, offres et adresses utilisant Google Pay</translation>
 <translation id="4835385943915508971">Chrome n'a pas accès à la ressource demandée.</translation>
+<translation id="483742037940503070">{TAB_COUNT,plural, =1{Restaurer le groupe d'onglets de <ph name="TAB_COUNT_ONE" /> onglet (couleur : <ph name="COLOR_NAME" />) en tant que nouveau groupe d'onglets en arrière-plan.}one{Restaurer le groupe d'onglets de <ph name="TAB_COUNT_MANY" /> onglet (couleur : <ph name="COLOR_NAME" />) en tant que nouveau groupe d'onglets en arrière-plan.}other{Restaurer le groupe d'onglets de <ph name="TAB_COUNT_MANY" /> onglets (couleur : <ph name="COLOR_NAME" />) en tant que nouveau groupe d'onglets en arrière-plan.}}</translation>
 <translation id="4837753911714442426">Afficher les options d'impression de la page</translation>
 <translation id="4842092870884894799">Affichage de la fenêtre contextuelle de génération de mot de passe</translation>
 <translation id="4844633725025837809">Pour renforcer la sécurité, chiffrez les mots de passe sur votre appareil avant qu'ils soient enregistrés dans le Gestionnaire de mots de passe de Google</translation>
@@ -1090,6 +1094,7 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="6210748933810148297"><ph name="EMAIL" /> n'est pas votre adresse e-mail ?</translation>
 <translation id="6211386937064921208">Aperçu de cette page</translation>
 <translation id="6221633008163990886">Déverrouiller pour exporter vos mots de passe</translation>
+<translation id="6225572914528673855">Barre d'adresse</translation>
 <translation id="6232535412751077445">Si vous interdisez le suivi, une demande sera incluse dans le trafic lié à votre navigation. Les résultats obtenus dépendent de la réponse du site (s'il répond ou non) et de la manière dont il interprète la demande.
 
 Par exemple, certains sites Web peuvent répondre à cette demande en diffusant des annonces qui ne sont pas déterminées en fonction des autres sites Web que vous avez consultés. Toutefois, nombre d'entre eux recueillent et utilisent vos données de navigation afin, par exemple, d'améliorer la sécurité ou d'afficher du contenu, des services, des annonces et des recommandations, ou encore pour générer des rapports statistiques.</translation>
@@ -1183,6 +1188,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6593061639179217415">Version pour ordinateur</translation>
 <translation id="6594347733515723558">Options tri et affichage</translation>
 <translation id="6595046016124923392">Les images sont envoyées à Google afin de vous proposer de meilleures descriptions.</translation>
+<translation id="6595634543029443878">{TAB_COUNT,plural, =1{Restaurer le groupe d'onglets de <ph name="TAB_COUNT_ONE" /> onglet en tant que nouveau groupe d'onglets en arrière-plan.}one{Restaurer le groupe d'onglets de <ph name="TAB_COUNT_MANY" /> onglet en tant que nouveau groupe d'onglets en arrière-plan.}other{Restaurer le groupe d'onglets de <ph name="TAB_COUNT_MANY" /> onglets en tant que nouveau groupe d'onglets en arrière-plan.}}</translation>
 <translation id="6604931690954120417">Lorsque vous êtes connecté à Chrome, les mots de passe que vous enregistrez le sont dans votre compte Google. Pour désactiver cette option, <ph name="BEGIN_LINK" />accédez aux paramètres<ph name="END_LINK" />.</translation>
 <translation id="661266467055912436">Il renforce votre sécurité et celle de tous les utilisateurs sur le Web.</translation>
 <translation id="6621391692573306628">Pour envoyer cet onglet sur un autre appareil, connectez-vous à Chrome sur cet autre appareil et celui-ci</translation>
@@ -1207,6 +1213,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6674571176963658787">Pour lancer la synchronisation, saisissez votre phrase secrète</translation>
 <translation id="6676927815633975364">Connectez-vous à ce site et à Chrome</translation>
 <translation id="6684809838922667136">Améliorer Chrome</translation>
+<translation id="6704048624334633734">Exporter et supprimer les mots de passe</translation>
 <translation id="670498945988402717">Vérification effectuée hier</translation>
 <translation id="6710213216561001401">Précédent</translation>
 <translation id="671481426037969117">Votre minuteur <ph name="FQDN" /> a expiré. Il redémarrera demain.</translation>
@@ -1668,6 +1675,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="864544049772947936">Gérer les fenêtres (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="8664215986015753476">Utilisez Chrome comme vous le souhaitez</translation>
 <translation id="8664979001105139458">Nom de fichier déjà attribué</translation>
+<translation id="8669290537472770919">{FILE_COUNT,plural, =1{Bloqué par votre organisation}one{# a été bloqué par votre organisation}other{# ont été bloqués par votre organisation}}</translation>
 <translation id="8672883760227492369">Certains mots de passe sur cet appareil ne fonctionneront bientôt plus. Vous pouvez les déplacer vers le Gestionnaire de mots de passe de Google.</translation>
 <translation id="8676276370198826499">Inscrivez-vous à <ph name="SITE_ETLD_PLUS_ONE" /> avec <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8676789164135894283">Validations de connexion</translation>

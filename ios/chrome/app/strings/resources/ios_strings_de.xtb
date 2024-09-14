@@ -11,7 +11,6 @@
 <translation id="1035980983510608210">Wenn du alle Tabs schließt, werden auch angepinnte Tabs geschlossen.</translation>
 <translation id="1036017604683756002">UPS</translation>
 <translation id="1036348656032585052">Deaktivieren</translation>
-<translation id="10379132160269599">Tabraster anzeigen</translation>
 <translation id="1041322626941363065">Warnen, wenn Passwörter durch eine Datenpanne preisgegeben wurden</translation>
 <translation id="1044891598689252897">Websites funktionieren normal</translation>
 <translation id="104491362976654916">Offlineseite</translation>
@@ -31,6 +30,7 @@
 <translation id="1118569444314402022">Willkommen zurück, <ph name="USER_NAME" /></translation>
 <translation id="1121850836842642159">Fotos &amp; Bilder</translation>
 <translation id="1125564390852150847">Neuen Tab erstellen.</translation>
+<translation id="1126696498560056882">Konten auf diesem Gerät verwalten</translation>
 <translation id="1126809382673880764">Du wirst nicht vor schädlichen Websites, Downloads und Erweiterungen geschützt. Sofern verfügbar, bist du in anderen Google-Diensten, wie Gmail und der Google Suche, durch Safe Browsing geschützt.</translation>
 <translation id="1142371195993008685">Benachrichtigungen für „<ph name="FEATURE_NAME" />“ deaktivieren</translation>
 <translation id="1147031633655575115">Angemeldet als <ph name="USER" /></translation>
@@ -1009,7 +1009,6 @@ Handoff muss auch im Abschnitt "Allgemein" deiner Einstellungen aktiviert sein u
 <translation id="594324569139756587">Drittanbieter-Cookies blockieren</translation>
 <translation id="5944869793365969636">QR-Code scannen</translation>
 <translation id="5948291296578561264">Dadurch kannst du Fotos in der Fotogalerie speichern.</translation>
-<translation id="5953383789663007162">Kontoliste bearbeiten</translation>
 <translation id="5954322191260787920">Lesezeichen bearbeiten</translation>
 <translation id="5956112131836209882">Tabgruppen-Tab. <ph name="TAB_INDEX_IN_GROUP" /> von <ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
 <translation id="595769230373966252">Mit <ph name="SEARCH_PROVIDER" /> suchen</translation>

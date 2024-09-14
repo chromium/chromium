@@ -11,7 +11,6 @@
 <translation id="1035980983510608210">Zamknięcie wszystkich kart spowoduje też zamknięcie przypiętych kart.</translation>
 <translation id="1036017604683756002">UPS</translation>
 <translation id="1036348656032585052">Wyłącz</translation>
-<translation id="10379132160269599">Pokaż siatkę kart</translation>
 <translation id="1041322626941363065">Ostrzegaj, jeśli wskutek naruszenia bezpieczeństwa danych doszło do ujawnienia haseł</translation>
 <translation id="1044891598689252897">Strony będą działać normalnie</translation>
 <translation id="104491362976654916">Strona offline</translation>
@@ -31,6 +30,7 @@
 <translation id="1118569444314402022">Witamy z powrotem, <ph name="USER_NAME" /></translation>
 <translation id="1121850836842642159">Zdjęcia i obrazy</translation>
 <translation id="1125564390852150847">Utwórz nową kartę.</translation>
+<translation id="1126696498560056882">Zarządzaj kontami na tym urządzeniu</translation>
 <translation id="1126809382673880764">Nie chroni przed niebezpiecznymi stronami, pobieranymi plikami ani rozszerzeniami. Funkcja Bezpieczne przeglądanie nadal będzie chronić Cię w innych usługach Google, w których jest dostępna (takich jak Gmail i wyszukiwarka).</translation>
 <translation id="1142371195993008685">Wyłącz powiadomienia funkcji <ph name="FEATURE_NAME" /></translation>
 <translation id="1147031633655575115">Używasz konta <ph name="USER" /></translation>
@@ -1010,7 +1010,6 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="594324569139756587">Blokuj pliki cookie innych firm</translation>
 <translation id="5944869793365969636">Zeskanuj kod QR</translation>
 <translation id="5948291296578561264">Umożliwia zapisywanie zdjęć w ich bibliotece.</translation>
-<translation id="5953383789663007162">Edytuj listę kont</translation>
 <translation id="5954322191260787920">Edytuj zakładkę</translation>
 <translation id="5956112131836209882">Karta grupy kart. <ph name="TAB_INDEX_IN_GROUP" /> z <ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
 <translation id="595769230373966252">Szukaj w <ph name="SEARCH_PROVIDER" /></translation>
@@ -1604,6 +1603,7 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="8637431369725868556">Uzyskaj ochronę przed niebezpiecznymi stronami.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Brak przejętych haseł}=1{{COUNT} przejęte hasło}few{{COUNT} przejęte hasła}many{{COUNT} przejętych haseł}other{{COUNT} przejętego hasła}}</translation>
 <translation id="8640575194957831802">Ostatnio otwarto</translation>
+<translation id="8647280737650867362">Nie udało się zatrzymać śledzenia ceny.</translation>
 <translation id="8654802032646794042">Anuluj</translation>
 <translation id="8660600697590740984">Wyszukaj skopiowany obraz za pomocą Obiektywu</translation>
 <translation id="866266761389616183">Kurza twarz!</translation>

@@ -16,7 +16,6 @@
 <translation id="1006873397406093306">हे एक्सटेंशन साइटवरील तुमचा डेटा वाचेल आणि बदलेल. एक्सटेंशन कोणत्या साइट फॉलो करते हे तुम्ही नियंत्रित करू शकता.</translation>
 <translation id="1007057452468855774">Google Play Store सुरू करा</translation>
 <translation id="1008186147501209563">बुकमार्क एक्सपोर्ट करा</translation>
-<translation id="1008209036711323236">त्यामुळे <ph name="BEGIN_LINK" />यूकेची कॉम्पिटिशन ॲंड मार्केट्स ऑथोरिटी (CMA)<ph name="END_LINK" /> च्या स्पर्धेशी संबंधित सर्व उर्वरित समस्यांचे आम्ही निराकरण केल्यानंतर Chrome हे “तृतीय पक्ष” कुकीचा वापर बंद करण्याचा विचार करत आहे.</translation>
 <translation id="1008261151167010035"><ph name="BRAND" /> हे तुम्ही कसे साइन इन केले ते लक्षात ठेवते आणि शक्य असेल तेव्हा आपोआप साइन इन करते. बंद असताना, तुम्हाला प्रत्येक वेळी कंफर्मेशनसाठी विचारले जाईल.</translation>
 <translation id="1008544602823861396">यावर तुमची माहिती वापरण्यापासून ब्लॉक केले आहे</translation>
 <translation id="1008557486741366299">सध्या नाही</translation>
@@ -149,7 +148,6 @@
 <translation id="1093457606523402488">दृश्यमान नेटवर्क:</translation>
 <translation id="1093645050124056515">ctrl + alt + down arrow</translation>
 <translation id="1094219634413363886">व्यवस्थापित केलेल्या या डिव्हाइसवर रेकॉर्डिंग सुरू झाल्यास तुम्हाला सूचना दिसेल</translation>
-<translation id="1095557482034465422">साइट परवानग्यांचे पुनरावलोकन <ph name="BEGIN_LINK_PERMISSIONS" /><ph name="PERMISSIONS" /><ph name="END_LINK_PERMISSIONS" /> येथे करा</translation>
 <translation id="1095761715416917775">तुम्हाला तुमचा सिंक डेटा नेहमी अ‍ॅक्सेस करता येईल याची खात्री करा</translation>
 <translation id="1095879482467973146">वेबवरील Google Password Manager</translation>
 <translation id="109647177154844434">Parallels Desktop अनइंस्टॉल केल्याने तुमची Windows इमेज हटवली जाईल. यामध्ये त्याच्या अ‍ॅप्लिकेशन, सेटिंग्ज आणि डेटाचा समावेश आहे. तुम्हाला नक्की सुरू ठेवायचे आहे का?</translation>
@@ -283,6 +281,7 @@
 <ph name="DOMAIN" /> ला तुम्ही तुमचे स्मार्ट कार्ड घालून ठेवणे आवश्यक आहे.}}</translation>
 <translation id="119330003005586565">तुम्ही वाचलेली पेज</translation>
 <translation id="1193927020065025187">ही साइट कदाचित तुम्हाला फसवून अनाहूत सूचनांना अनुमती द्यायला लावण्याचा प्रयत्न करत आहे</translation>
+<translation id="11947597112837849">ईमेल अ‍ॅड्रेस</translation>
 <translation id="1195210374336998651">अ‍ॅप सेटिंग्जवर जा</translation>
 <translation id="1195447618553298278">अज्ञात एरर.</translation>
 <translation id="1195558154361252544">तुम्ही अनुमती दिलेली साइट वगळता सर्व साइटसाठी सूचना आपोआप ब्लॉक केल्या आहेत</translation>
@@ -498,6 +497,7 @@
 <translation id="1355088139103479645">सर्व डेटा हटवायचा का?</translation>
 <translation id="1356376170199999104">अनुमती दिली आहे – <ph name="PERMISSION_DETAILS" />. प्रत्यक्ष स्विच वापरून मायक्रोफोन सुरू करा.</translation>
 <translation id="1356959069439783953">इनॅक्टिव्ह टॅबना नवीन लुक मिळतो</translation>
+<translation id="1357766361161708728">न वापरलेले टॅब बंद करायचे आहेत का?</translation>
 <translation id="1358741672408003399">शुद्धलेखन आणि व्याकरण</translation>
 <translation id="1359923111303110318">तुमचे डिव्हाइस Smart Lock वापरून अनलॉक केले जाऊ शकते. अनलॉक करण्यासाठी एंटर प्रेस करा.</translation>
 <translation id="1361164813881551742">व्यक्तिचलितपणे जोडा</translation>
@@ -685,6 +685,7 @@
 <translation id="1486486872607808064">डिव्हाइसवरील कॅमेरा वापरून हा QR कोड स्कॅन करा, जेथे तुम्हाला <ph name="APP_NAME" /> साठी पासकी तयार करायची आहे</translation>
 <translation id="1486616492435615702">मसुदा तयार करा किंवा सद्य काम सुधारित करा.</translation>
 <translation id="1487335504823219454">सुरू - कस्टम सेटिंग्ज</translation>
+<translation id="1487905215557235729">तुमची संस्था तुमच्या कार्य प्रोफाइलमधील ब्राउझिंग डेटा पाहू आणि व्यवस्थापित करू शकते, जसे की तुमचे बुकमार्क, इतिहास व पासवर्ड.</translation>
 <translation id="1493892686965953381">यासाठी प्रतीक्षा करत आहे <ph name="LOAD_STATE_PARAMETER" />...</translation>
 <translation id="1494349716233667318">तुमच्या डिव्हाइसवर इंस्टॉल केलेले फाँट वापरण्यासाठी साइट विचारू शकतात</translation>
 <translation id="1494429729245089920">"<ph name="VM_NAME" />" व्हर्च्युअल मशीन अस्तित्वात आहे, पण ते वैध <ph name="APP_NAME" /> व्हर्च्युअल मशीन असल्याचे दिसत नाही. कृपया तुमच्या अ‍ॅडमिनिस्ट्रेटरशी संपर्क साधा.</translation>
@@ -911,7 +912,6 @@
     <ph name="BEGIN_PARAGRAPH2" />तुम्ही सेटिंग्ज मध्ये ही सेवा बंद करू शकता.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="1637224376458524414">आपल्या iPhone वर हा बुकमार्क मिळवा</translation>
 <translation id="1637765355341780467">तुमचे प्रोफाइल उघडताना काहीतरी चूक झाली. काही वैशिष्ट्ये अनुपलब्ध असू शकतात.</translation>
-<translation id="1637830036924985819">कधीकधी साइट त्यांना सुरुवातीला उद्देशित नसलेल्या पद्धतीने कुकी वापरतात</translation>
 <translation id="1639239467298939599">लोड करत आहे</translation>
 <translation id="1640235262200048077"><ph name="IME_NAME" /> सध्या Linux ॲप्समध्ये काम करत नाही</translation>
 <translation id="1640283014264083726">PKCS #1 RSA एंक्रिप्शनसह MD4</translation>
@@ -1039,7 +1039,6 @@
 <translation id="1720318856472900922">TLS WWW सर्व्हर ऑथेंटिकेशन</translation>
 <translation id="172123215662733643"><ph name="VISUAL_SEARCH_PROVIDER" /> सह इमेज शोधा</translation>
 <translation id="1722460139690167654"><ph name="ENROLLMENT_DOMAIN" />ने तुमचे <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> व्यवस्थापित केले आहे <ph name="END_LINK" /></translation>
-<translation id="1723166841621737307">डेटा हा Chrome ला तुमच्यासाठी आणखी चांगल्या पद्धतीने काम करण्याकरिता कसा मदत करतो?</translation>
 <translation id="1723824996674794290">&amp;नवीन विंडो</translation>
 <translation id="1724801751621173132">इनपुट मोड</translation>
 <translation id="1725562816265788801">टॅब स्क्रोल करणे</translation>
@@ -1066,7 +1065,6 @@
 <translation id="1743970419083351269">डाउनलोड बार बंद करा</translation>
 <translation id="1744108098763830590">बॅकग्राउंड पेज</translation>
 <translation id="1745732479023874451">संपर्क व्यवस्थापित करा</translation>
-<translation id="1746797507422124818">तुम्ही ब्राउझ करता तसा तुमचा डेटा</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}other{या वेब अ‍ॅपमध्ये # फाइल उघडून संपादित करायच्या आहेत का?}}</translation>
 <translation id="1748329107062243374"><ph name="WEBSITE" /> मध्ये साइन इन करण्यासाठी <ph name="DEVICE_NAME" /> वरील पासकी वापरा</translation>
 <translation id="1748563609363301860">तुम्ही हा पासवर्ड तुमच्या Google खाते मध्ये किंवा फक्त या डिव्हाइसवर सेव्ह करू शकता</translation>
@@ -1210,9 +1208,11 @@
 <translation id="1838374766361614909">शोध साफ करा</translation>
 <translation id="1839021455997460752">तुमचा ईमेल अ‍ॅड्रेस</translation>
 <translation id="1839540115464516994"><ph name="LOCATION" /> मध्ये दाखवा</translation>
+<translation id="184050083485873615">पुनरावलोकन करा आणि ठरवा</translation>
 <translation id="1841616161104323629">डिव्हाइस रेकॉर्ड उपलब्ध नाही.</translation>
 <translation id="1841705068325380214"><ph name="EXTENSION_NAME" /> बंद केला आहे</translation>
 <translation id="184183613002882946">नाही, एकच स्विच वापरा</translation>
+<translation id="1842681835432895345">हा डिस्प्ले मिरर मोडमध्ये वगळा</translation>
 <translation id="184273675144259287">तुमची Linux अ‍ॅप्स आणि फाइल मागील बॅकअपसह बदला</translation>
 <translation id="1842766183094193446">तुम्हाला खरंच डेमो मोड सुरू करायचा आहे का?</translation>
 <translation id="1843048149176045210">डाउनलोड लिंक कॉपी करा</translation>
@@ -1415,6 +1415,7 @@
 <translation id="197989455406964291">KDC एंक्रिप्शन प्रकाराला सपोर्ट करत नाही</translation>
 <translation id="1980168597243156">अंतराळ केंद्र</translation>
 <translation id="1981434377190976112">सर्व वेबसाइटवरील तुमचा सर्व डेटा वाचू शकते</translation>
+<translation id="1983074053702805575">{count,plural, =1{{field_1}}=2{{field_1} आणि {field_2}}other{{field_1}, {field_2} आणि {field_3}}}</translation>
 <translation id="1984417487208496350">संरक्षण नाही (शिफारस केली जात नाही)</translation>
 <translation id="1986836014090708999">प्रगत स्थान सेटिंग्ज</translation>
 <translation id="1987317783729300807">खाती</translation>
@@ -1585,6 +1586,7 @@
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> लपवले आहे</translation>
 <translation id="2108204112555497972"><ph name="NUM_DAYS_HOURS_MINUTES" /> पूर्वी तपासलेले</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{फोन नंबर}other{# फोन नंबर}}</translation>
+<translation id="2109384632594340939">प्रोफाइल फोटो</translation>
 <translation id="2110941575868943054">ब्लूटूथ डिव्हाइस शोधण्याची अनुमती आहे</translation>
 <translation id="211144231511833662">प्रकार साफ करा</translation>
 <translation id="2111670510994270194">उजवीकडील नवीन टॅब</translation>
@@ -1720,6 +1722,7 @@
 <translation id="2204168219363024184">Google Password Manager वापरून ही पासकी सेव्ह करण्यासाठी, हे तुम्हीच असल्याची पडताळणी करा</translation>
 <translation id="2204387456724731099">ही निवड भाषांतरित करता आली नाही</translation>
 <translation id="2207116775853792104">हे एक्स्टेंशन ठेवा</translation>
+<translation id="2209841631181508629">पुढे सुरू ठेवण्यासाठी, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> तुमचे <ph name="FIELDS_STRING" /> या साइटसोबत शेअर करेल. या साइटच्या <ph name="BEGIN_LINK" />सेवा अटी<ph name="END_LINK" /> पहा.</translation>
 <translation id="2210462644007531147">इंस्टॉलेशन पूर्ण करता आले नाही</translation>
 <translation id="2211043920024403606">प्रोफाइल माहिती</translation>
 <translation id="2211245494465528624">सिंकचे पर्याय व्यवस्थापित करा</translation>
@@ -2072,12 +2075,6 @@
 <translation id="2444874983932528148">तुम्ही जिथे सोडले होते तिथून सहज सुरुवात करा</translation>
 <translation id="2445081178310039857">एक्स्टेंशन मूळ डिरेक्टरी आवश्यक आहे.</translation>
 <translation id="2445484935443597917">नवीन प्रोफाइल तयार करा</translation>
-<translation id="2445702184865563439">ही माहिती उपयुक्त ठरू शकते. उदाहरणार्थ, वेगवेगळ्या परिस्थितीत पेज किती लवकर लोड होतात हे समजून घेऊन Chrome सुधारणा करण्यात मदत करू शकते. आणि तुमच्या सेटिंग्जच्या आधारावर, ते पुढील गोष्ट करू शकते:
-      &lt;ul&gt;
-        &lt;li&gt;तुम्हाला आणखी जलद ब्राउझ करण्यात मदत करणे. उदाहरणार्थ, तुमचे भूतकाळातील Google शोध Chrome ला तुम्हाला तुमच्या भविष्यातील शोधांसाठी पूर्वानुमाने असलेले प्रॉम्प्ट देण्यात मदत करू शकतात.&lt;/li&gt;
-        &lt;li&gt;साइटना तुमच्या डिव्हाइससाठी तुमचा अनुभव ऑप्टिमाइझ करण्याची अनुमती द्या. उदाहरणार्थ, एखादी साइट तुमच्या मोबाइल फोनसाठी तिचा आशय सुव्यवस्थित करू शकते आणि प्राधान्य असलेली तुमची भाषा यासारखी तुमची प्राधान्ये लक्षात ठेवू शकते. &lt;/li&gt;
-        &lt;li&gt;Google च्या समावेशासह जाहिरातदारांना अधिक सुसंबद्ध जाहिराती दाखवण्यात मदत करा.&lt;/li&gt;
-      &lt;/ul&gt;</translation>
 <translation id="2445726032315793326">आंशिक मॅग्निफायर</translation>
 <translation id="244641233057214044">तुमच्या शोधाशी संबंधित</translation>
 <translation id="2447587550790814052">तुम्ही आता Chromebook (बीटा) साठी Steam वापरू शकता</translation>
@@ -2205,6 +2202,7 @@
 <translation id="2526590354069164005">डेस्कटॉप</translation>
 <translation id="2526619973349913024">अपडेटासाठी तपासा</translation>
 <translation id="2527167509808613699">कोणत्याही प्रकारचे कनेक्शन</translation>
+<translation id="2529459639389641691">{NUM_TABS,plural, =0{न वापरलेले कोणतेही टॅब नाहीत}=1{न वापरलेला १ टॅब बंद करा}other{न वापरलेले # टॅब बंद करा}}</translation>
 <translation id="2529887123641260401">तुमची सेटिंग्ज तुम्ही कधीही बदलू शकता किंवा स्विच अ‍ॅक्सेस सेटिंग्जमधून सेटअप मार्गदर्शक पुन्हा उघडू शकता.</translation>
 <translation id="2530166226437958497">ट्रबलशूटिंग</translation>
 <translation id="2531530485656743109"><ph name="BEGIN_PARAGRAPH1" />काहीतरी चूक झाली आणि <ph name="DEVICE_OS" /> इंस्टॉल करता आले नाही.<ph name="END_PARAGRAPH1" />
@@ -2609,7 +2607,6 @@
 <translation id="2814489978934728345">हे पेज लोड करणे थांबवा</translation>
 <translation id="2815693974042551705">बुकमार्क फोल्डर</translation>
 <translation id="2816319641769218778">तुमच्या Google खाते मध्ये पासवर्ड सेव्ह करण्यासाठी सिंक सुरू करा.</translation>
-<translation id="2816628817680324566">या साइटला तुमची सिक्युरिटी की ओळखण्याची अनुमती द्यायची का?</translation>
 <translation id="2817435998497102771">तुमचा वॉलपेपर आणि स्टाइल सेट करा</translation>
 <translation id="2817861546829549432">'Do Not Track' सक्षम करणे याचा अर्थ आपल्‍या ब्राउझिंग रहदारीसह एक विनंती समाविष्‍ट केली जाईल हा आहे. वेबसाइट विनंतीस प्रतिसाद देते किंवा नाही आणि विनंतीचा निष्‍कर्ष कसा काढला जातो कोणताही प्रभाव यावर अवलंबून असतो. उदाहरणार्थ, काही वेबसाइट तुम्ही भेट दिलेल्‍या इतर वेबसाइटवर आधारित नसलेल्‍या जाहिराती आपल्‍याला दर्शवून या विनंतीस प्रतिसाद देऊ शकतात. अनेक वेबसाइट अद्यापही तुमचा ब्राउझिंग डेटा संकलित करून त्‍याचा वापर करतील - उदाहरणार्थ सुरक्षितता सुधारणे, आशय प्रदान करणे, त्‍यांच्‍या वेबसाइटवर जाहिराती आणि शिफारशी आणि अहवाल आकडेवारी व्‍युत्‍पन्न करणे.</translation>
 <translation id="2818476747334107629">प्रिंटर तपशील</translation>
@@ -3012,11 +3009,6 @@
 <translation id="3113970906450647715">बटण अनपिन केले आहे</translation>
 <translation id="3115147772012638511">कॅशेसाठी प्रतीक्षा करत आहे...</translation>
 <translation id="3115580024857770654">सर्व कोलॅप्‍स करा</translation>
-<translation id="3115728370128632723">वेबने तुमच्यासाठी सर्वोत्तम काम करणे याचा अर्थ आहे:
-      &lt;ul&gt;
-        &lt;li&gt;तुम्ही ब्राउझ करत असताना तुम्हाला सुरक्षित ठेवणे, आणि&lt;/li&gt;
-         &lt;li&gt;वेब सुरक्षित, मुक्त, जलद आणि विनामूल्य ठेवणाऱ्या भरभराटीच्या व्यवस्थेला सपोर्ट करणे&lt;/li&gt;
-      &lt;/ul&gt;</translation>
 <translation id="3115743155098198207">Google खाते ची भाषा व्यवस्थापित करा</translation>
 <translation id="3117362587799608430">डॉक पूर्ण कंपॅटिबल नाहीये</translation>
 <translation id="3117791853215125017">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> ला <ph name="ATTACHMENTS" /> पाठवता आला नाही}other{<ph name="DEVICE_NAME" /> ला <ph name="ATTACHMENTS" /> पाठवता आले नाहीत}}</translation>
@@ -3426,7 +3418,6 @@
 <translation id="3435738964857648380">सुरक्षितता</translation>
 <translation id="343578350365773421">कागद संपले</translation>
 <translation id="3435896845095436175">सुरू करा</translation>
-<translation id="3436545938885366107">कल्पना करा, की तुम्ही तुमच्या सकाळच्या कॉफीसाठी भेट देता असा तुमचा आवडता कॅफे आहे. कदाचित तुम्ही इतके वारंवार येणारे ग्राहक आहात, की दुकानाचा मालक तुम्हाला नावाने ओळखतो आणि तुम्ही दारातून आत शिरत असतानाच तुमची ऑर्डर, कमी साखर असलेली डबल एस्प्रेसो तुम्हाला देऊ शकतो.</translation>
 <translation id="3438633801274389918">निन्जा</translation>
 <translation id="3439153939049640737">तुमचा मायक्रोफोन ॲक्सेस करण्यासाठी <ph name="HOST" /> ला नेहमी परवानगी  द्या</translation>
 <translation id="3439970425423980614">पूर्वावलोकनात पीडीएफ उघडत आहे</translation>
@@ -3497,6 +3488,7 @@
 <translation id="3484869148456018791">नवीन सर्टिफिकेट मिळवा</translation>
 <translation id="3487007233252413104">अनामित कार्य</translation>
 <translation id="3487649228420469005">स्कॅन पूर्ण झाले आहे</translation>
+<translation id="3488199663160411179">नाव</translation>
 <translation id="3490695139702884919">डाउनलोड करत आहे... <ph name="PERCENT" />%</translation>
 <translation id="3491669675709357988">तुमच्‍या लहान मुलाचे खाते Family Link पालक नियंत्रणांसाठी सेट केलेले नाही. सेटअप पूर्ण केल्‍यानंतर तुम्‍ही पालक नियंत्रणे जोडू शकता. तुम्‍हाला Explore ॲपमध्ये पालक नियंत्रणांविषयी माहिती मिळेल.</translation>
 <translation id="3491678231052507920">तुम्हाला VR सेशन एंटर करू देण्यासाठी साइट सामान्यपणे तुमची आभासी वास्तविकता डिव्हाइस आणि डेटा वापरतात</translation>
@@ -3811,6 +3803,7 @@
 <translation id="3708295717182051206">सबटायटल</translation>
 <translation id="3708684582558000260">बंद केलेल्या साइटना डेटा पाठवण्याची किंवा मिळवण्याची प्रक्रिया पूर्ण करण्याची अनुमती देऊ नका</translation>
 <translation id="3709244229496787112">डाउनलोड पूर्ण होण्यापूर्वी ब्राउझर बंद करण्यात आला.</translation>
+<translation id="3710501561113687889">पुढे सुरू ठेवण्यासाठी, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> तुमचे <ph name="FIELDS_STRING" /> या साइटसोबत शेअर करेल.</translation>
 <translation id="3711931198657368127">पेस्ट करा आणि <ph name="URL" /> वर जा</translation>
 <translation id="3711945201266135623">प्रिंट सर्व्हरवरील <ph name="NUM_PRINTERS" /> प्रिंटर आढळले</translation>
 <translation id="3712050472459130149">खाते अपडेट आवश्‍यक आहे</translation>
@@ -4228,7 +4221,6 @@
 <translation id="3983769721878416534">क्लिक करण्यापूर्वी विलंब करा</translation>
 <translation id="3984135167056005094">ईमेल अ‍ॅड्रेसचा समावेश करू नका</translation>
 <translation id="3984159763196946143">डेमो मोड सुरू करता आला नाही</translation>
-<translation id="3984431586879874039">या साइटला तुमची सिक्युरिटी की पाहण्याची अनुमती द्यायची आहे का?</translation>
 <translation id="3984536049089846927">पुढील पेज</translation>
 <translation id="398477389655464998">हायलाइट करण्यासाठी लिंक कॉपी करा</translation>
 <translation id="3984862166739904574">क्विक आन्सर्सची व्याख्या</translation>
@@ -4397,7 +4389,6 @@
 <translation id="4106054677122819586">चला, तुमचे टॅब संगतवार लावू या</translation>
 <translation id="4107048419833779140">स्टोरेज डिव्हाइस ओळखा आणि बाहेर काढून टाका</translation>
 <translation id="4107522742068568249">सुरक्षितता तपासणी वर जा</translation>
-<translation id="4108692279517313721">तुम्हाला सर्व असुरक्षित साइटसाठी चेतावणी देते</translation>
 <translation id="4109135793348361820"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) वर विंडो हलवा</translation>
 <translation id="4110485659976215879">चेतावणी रिस्टोअर करा</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (ऑफलाइन)</translation>
@@ -4881,7 +4872,6 @@
 <translation id="4481448477173043917">तुमचे <ph name="DEVICE_TYPE" /> अनपेक्षितपणे रीस्टार्ट झाले</translation>
 <translation id="4481467543947557978">सेवा कर्मचारी</translation>
 <translation id="4482990632723642375">अलीकडे बंद केलेला टॅब</translation>
-<translation id="4485245862007675842">Chrome हे तुमच्यासाठी वेबशी संबंधित काम आणखी चांगले करते</translation>
 <translation id="4486333480498805415">स्थान अचूकता</translation>
 <translation id="4487489714832036847">पारंपरिक सॉफ्टवेअरऐवजी Chromebook अ‍ॅप्स वापरतात. उत्पादनक्षमता, मनोरंजन आणि बर्‍याच गोष्टींसाठी अ‍ॅप्स मिळवा.</translation>
 <translation id="4488257340342212116">कॅमेरा वापरण्याची अनुमती आहे</translation>
@@ -5754,7 +5744,6 @@
 <translation id="5130080518784460891">इटेन</translation>
 <translation id="5130675701626084557">प्रोफाइल डाउनलोड करता आली नाही. कृपया नंतर पुन्हा प्रयत्न करा किंवा मदतीसाठी वाहकाशी संपर्क साधा.</translation>
 <translation id="5131591206283983824">टचपॅड टॅप ड्रॅगिंग</translation>
-<translation id="5132130020119156609">साइट परवानग्यांनुसार, कुकी हा साइटना तुमच्या ऑनलाइन अ‍ॅक्टिव्हिटीविषयी माहिती स्टोअर करू देण्याचा एक मार्ग आहे.</translation>
 <translation id="5135533361271311778">बुकमार्क आयटम तयार करणे शक्य नाही.</translation>
 <translation id="513555878193063507">नवीन APN जोडा</translation>
 <translation id="5136343472380336530">दोन्‍ही डिव्‍हाइस अनलॉक असल्‍याची, एकमेकांच्‍या जवळ धरल्‍याची आणि त्‍यांचे ब्लूटूथ सुरू असल्‍याची खात्री करा. <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
@@ -5798,17 +5787,10 @@
 <translation id="5160857336552977725">आपल्या <ph name="DEVICE_TYPE" /> वर साइन इन करा</translation>
 <translation id="5161251470972801814"><ph name="VENDOR_NAME" /> कडील USB डिव्हाइस</translation>
 <translation id="5161442190864186925">मीटिंग मध्ये सामील व्हा</translation>
-<translation id="5161827038979306924">तुमचा Chrome मधील ब्राउझिंग इतिहास आणि तुमचा शोध इतिहास यात काय फरक आहे?</translation>
 <translation id="5162905305237671850"><ph name="DEVICE_TYPE" /> ला ब्लॉक केले आहे</translation>
 <translation id="5163910114647549394">टॅब टॅबस्ट्रिपच्या शेवटी हलवला आहे</translation>
 <translation id="5164530241085602114"><ph name="SITE" /> साठी सूचनांना अनुमती नाही</translation>
 <translation id="516747639689914043">हायपरटेक्स्ट ट्रान्सपोर्ट प्रोटोकॉल (HTTP)</translation>
-<translation id="5170299781084543513">तुम्हाला एक्सप्लोर करायची असलेली साइट सापडली, की एखादी साइट ठरावीक वैशिष्ट्ये वापरू शकते की नाही हे तुम्ही (साइट परवानग्या वापरून) ठरवता, उदाहरणार्थ:
-      &lt;ul&gt;
-        &lt;li&gt;तुमच्या डिव्हाइसचा कॅमेरा, स्थान आणि मायक्रोफोन वापरणे&lt;/li&gt;
-        &lt;li&gt;तुमच्या डिव्हाइसवर डेटा स्टोअर करणे&lt;/li&gt;
-        &lt;li&gt;नोटिफिकेशनसारखी साइट वैशिष्ट्ये पुरवणे&lt;/li&gt;
-      &lt;/ul&gt;</translation>
 <translation id="5170568018924773124">फोल्डरमध्ये दर्शवा</translation>
 <translation id="5171045022955879922">URL शोधा किंवा टाइप करा</translation>
 <translation id="5171343362375269016">स्वॅप केलेली मेमरी</translation>
@@ -6047,7 +6029,6 @@
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (उजवे)</translation>
 <translation id="534449933710420173">निनावी फोल्डर</translation>
 <translation id="5345916423802287046">तुम्ही साइन इन केल्यानंतर अ‍ॅप सुरू करा</translation>
-<translation id="5347920333985823270">Chrome हे विनामूल्य वेबला सपोर्ट करते</translation>
 <translation id="5350116201946341974">विचित्र</translation>
 <translation id="5350293332385664455">Google Assistant बंद करा</translation>
 <translation id="535123479159372765">दुसर्‍या डिव्हाइसवरून कॉपी केलेला मजकूर</translation>
@@ -6136,6 +6117,7 @@
 <translation id="5414566801737831689">तुम्ही भेट देता त्या वेबसाइटची चिन्हे वाचा</translation>
 <translation id="5414836363063783498">सत्यापित करत आहे...</translation>
 <translation id="5415328625985164836">हा बीटा प्रोग्राम आहे. तुम्ही आता तुमच्या Chromebook वर काही गेम खेळण्यासाठी Steam वापरू शकता.</translation>
+<translation id="5415497281076257439">वाक्य</translation>
 <translation id="5417312524372586921">ब्राउझर थीम</translation>
 <translation id="541737483547792035">स्‍क्रीन मॅग्निफाय करा</translation>
 <translation id="541822678830750798">ही साइट वाचण्याची आणि तिच्यामध्ये बदल करण्याची विनंती करत आहे</translation>
@@ -6255,7 +6237,6 @@
 <translation id="5493792505296048976">स्क्रीन सुरू</translation>
 <translation id="5494016731375030300">अलीकडे बंद केलेले टॅब</translation>
 <translation id="5494362494988149300">&amp;पूर्ण झाल्यानंतर उघडा</translation>
-<translation id="5494843939447324326">Chrome तुम्हाला निवडू देते</translation>
 <translation id="5494920125229734069">सर्व निवडा</translation>
 <translation id="5495466433285976480">तुम्हाला पुढील रीस्टार्टनंतर हे सर्व स्थानिक वापरकर्ते, फाइल, डेटा आणि अन्य सेटिंग्ज काढेल. सर्व वापरकर्त्यांना पुन्हा साइन इन करण्याची आवश्यकता असेल.</translation>
 <translation id="5495597166260341369">डिस्प्ले सुरू ठेवा</translation>
@@ -6293,12 +6274,6 @@
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5521078259930077036">तुम्ही अपेक्षा करत होता हे तेच होमपेज आहे?</translation>
 <translation id="5522156646677899028">या विस्‍तारामध्‍ये एक गंभीर सुरक्षा भेद्यता आहे.</translation>
-<translation id="5522378895674097188">पुढील गोष्टी असल्यास, तुम्ही तुमचा शोध इतिहास आणि सेटिंग्ज यांचे <ph name="BEGIN_LINK" />माझी अ‍ॅक्टिव्हिटी<ph name="END_LINK" /> मध्ये पुनरावलोकन करू शकता:
-      &lt;ul&gt;
-        &lt;li&gt;तुम्ही Google Search वापरता&lt;/li&gt;
-        &lt;li&gt;तुम्ही तुमच्या Google खात्यामध्ये साइन इन केले आहे&lt;/li&gt;
-        &lt;li&gt;तुमची वेब आणि अ‍ॅप अ‍ॅक्टिव्हिटी सुरू केलेली आहे&lt;/li&gt;
-      &lt;/ul&gt;</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{तुमच्या अ‍ॅडमिनिस्ट्रेटरने एक्स्टेंशन इंस्टॉल केले आहे}other{तुमच्या अ‍ॅडमिनिस्ट्रेटरने # एक्स्टेंशन इंस्टॉल केली आहेत}}</translation>
 <translation id="5523532775593636291">तुम्ही जोडलेल्या साइट नेहमी अ‍ॅक्टिव्ह राहतील आणि त्यांच्याकडून मेमरी मोकळी केली जाणार नाही</translation>
 <translation id="5523558474028191231">नावामध्ये अक्षरे, अंक व विशेष वर्ण आणि <ph name="MAX_CHARACTER_COUNT" /> किंवा त्याहून कमी वर्ण वापरू शकता</translation>
@@ -6317,12 +6292,6 @@
 <translation id="5542132724887566711">प्रोफाइल</translation>
 <translation id="5542750926112347543"><ph name="DOMAIN" /> वरील कुकीज ब्‍लॉक केल्‍या आहेत</translation>
 <translation id="5542949973455282971"><ph name="CARRIER_NAME" /> शी कनेक्ट करत आहे</translation>
-<translation id="5543901591855628053">बऱ्याच ऑनलाइन व्यवसायांसाठी जाहिराती महत्त्वाच्या असतात. त्या ऑनलाइन आशय विनामूल्य ठेवण्यात मदत करतात, ज्यामुळे कोणीही आशय ॲक्सेस करू शकते याची खात्री करण्यात मदत होते. Chrome हे तुमच्या गोपनीयतेचे संरक्षण करताना साइटने तुम्हाला पर्सनलाइझ केलेल्या जाहिराती दाखवू देण्यासाठी मार्ग विकसित करते.  छान, जाहिरातीमुळे वेबवरील प्रत्येकाला फायदा होतो, कारण तुम्ही जाहिरात पाहता, तेव्हा पुढील गोष्टी होऊ शकतात:
-      &lt;ul&gt;
-        &lt;li&gt;तुम्हाला काहीतरी नवीन किंवा मनोरंजक आढळू शकते&lt;/li&gt;
-        &lt;li&gt;जाहिरातदारांना नवीन ग्राहक मिळू शकतो&lt;/li&gt;
-        &lt;li&gt;तुम्ही भेट देता ती साइट जाहिरात होस्ट करून आणखी कमाई करू शकते&lt;/li&gt;
-      &lt;/ul&gt;</translation>
 <translation id="5543983818738093899">स्थिती तपासत आहे...</translation>
 <translation id="5544482392629385159"><ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" /> पैकी <ph name="DEVICE_INDEX" /> डिव्हाइस</translation>
 <translation id="554517701842997186">रेंडरर</translation>
@@ -6458,7 +6427,6 @@
 <translation id="5638170200695981015">मर्यादित दृश्य आणि संपादनाशी संबंधित पर्याय वापरण्यासाठी "मूळ संपादकामध्ये उघडा" निवडा.</translation>
 <translation id="563821631542362636">साइटना डेटा सेव्ह करण्याची अनुमती द्या</translation>
 <translation id="5638309510554459422">विस्तार आणि थीम <ph name="BEGIN_LINK" />Chrome वेब स्टोअर<ph name="END_LINK" /> मध्ये शोधा</translation>
-<translation id="5638653188468353257">तुम्हाला सार्वजनिक साइट आणि खाजगी साइट या दोन्हींसाठी चेतावणी देते, जसे की तुमच्या कंपनीचे इंट्रानेट</translation>
 <translation id="5639549361331209298">हे पेज रीलोड करा, अधिक पर्याय पहाण्यासाठी होल्ड करा</translation>
 <translation id="5640133431808313291">सिक्युरिटी की व्यवस्थापित करा</translation>
 <translation id="5640159004008030285">हा पासवर्ड फक्त या डिव्हाइसवर सेव्ह केला आहे. इतर डिव्हाइसवर वापरण्यासाठी, <ph name="BEGIN_LINK" />तो तुमच्या Google खाते मध्ये सेव्ह करणे<ph name="END_LINK" /> हे करा.</translation>
@@ -6513,6 +6481,7 @@
 <translation id="5680050361008726776">"<ph name="ESIM_PROFILE_NAME" />" काढून टाकायची आहे का?</translation>
 <translation id="5681586175480958839">फाइल आधीच उघडली जात आहे</translation>
 <translation id="5682010570533120226">तुम्ही नुकताच Chrome मधील डेटा हटवला आहे. Chrome मध्ये सुधारणा करण्यासाठी आम्हाला तुमच्या अनुभवाबद्दल ऐकायला आवडेल.</translation>
+<translation id="5682660502190512219">सूचनांसाठी तपासा</translation>
 <translation id="5684181005476681636">वाय-फायचे तपशील</translation>
 <translation id="5684661240348539843">मालमत्ता अभिज्ञापक</translation>
 <translation id="5684950556880280580">तुमचा पासवर्ड अपडेट केला गेला आहे</translation>
@@ -6596,6 +6565,7 @@
 <translation id="5750288053043553775">0</translation>
 <translation id="5751345516399502412">टेदरिंगची सज्जता तपासा</translation>
 <translation id="5753570386948603678">इतिहासामधून हटवा</translation>
+<translation id="5753652925946671505">हे टॅब <ph name="COUNT" /> किंवा त्याहून अधिक दिवसांपासून वापरले गेले नाहीत.</translation>
 <translation id="5756163054456765343">म&amp;दत केंद्र</translation>
 <translation id="5757187557809630523">पुढील ट्रॅक</translation>
 <translation id="5758631781033351321">तुमची वाचन सूची तुम्हाला येथे सापडेल</translation>
@@ -6648,7 +6618,6 @@
 <translation id="5793339252089865437">तुम्ही तुमच्या मोबाइल नेटवर्कवरून अपडेट डाउनलोड केल्यास, याचा परिणाम म्हणून अतिरिक्त शुल्क आकारले जाऊ शकते.</translation>
 <translation id="5793420564274426163">पेअर करण्याशी संबंधित कन्फर्मेशन</translation>
 <translation id="5794034487966529952">डेस्क <ph name="DESK_TITLE" /> वर <ph name="NUM_BROWSERS" /> ब्राउझर विंडो सुरू आहेत</translation>
-<translation id="5794086402489402632">ब्राउझिंग आणि शोध इतिहास कसा वेगवेगळा आहे?</translation>
 <translation id="5794414402486823030">नेहमी सिस्टम दर्शकासह उघडा</translation>
 <translation id="5794700615121138172">Linux ने शेअर केलेले फोल्डर</translation>
 <translation id="5794786537412027208">सर्व Chrome Apps मधून बाहेर पडा</translation>
@@ -6733,6 +6702,7 @@
 <translation id="5854066326260337683">LBS सध्या बंद आहे. तुम्ही <ph name="BEGIN_LINK" />{BrowserSwitcherEnabled}<ph name="END_LINK" /> धोरण सेट करून LBS सुरू करू शकता.</translation>
 <translation id="5854912040170951372">तुकडा</translation>
 <translation id="5855267860608268405">ज्ञात वाय-फाय नेटवर्क</translation>
+<translation id="5855375823365231964">या प्रोफाइलविषयी</translation>
 <translation id="5855643921295613558">०.६ सेकंद</translation>
 <translation id="5856721540245522153">डीबगिंग वैशिष्ट्ये सुरू करा</translation>
 <translation id="5857090052475505287">नवीन फोल्डर</translation>
@@ -6922,7 +6892,6 @@
 <translation id="5984222099446776634">अलीकडे भेट दिलेले</translation>
 <translation id="5985458664595100876">चुकीचा URL फॉरमॅट. सपोर्ट केले जाणारे फॉरमॅट \\server\share आणि smb://server/share आहेत.</translation>
 <translation id="598810097218913399">असाइनमेंट काढून टाका</translation>
-<translation id="5989629029899728491">कुकी व्यतिरिक्त आणखी बरेच काही</translation>
 <translation id="5990266201903445068">फक्त वाय-फाय</translation>
 <translation id="5990386583461751448">भाषांतर केले</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{तुमचे वेब ब्राउझिंग सुरू राहावे याची खात्री करण्यासाठी, तुमच्या ॲडमिनिस्ट्रेटरला हे ॲप्लिकेशन काढून टाकण्यास सांगा.}other{तुमचे वेब ब्राउझिंग सुरू राहावे याची खात्री करण्यासाठी, तुमच्या ॲडमिनिस्ट्रेटरला हे ॲप्लिकेशन काढून टाकण्यास सांगा.}}</translation>
@@ -6948,6 +6917,7 @@
 I feel - विटांची इमारत</translation>
 <translation id="6006392003290068688"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> काढून टाकल्या</translation>
 <translation id="6006484371116297560">क्लासिक</translation>
+<translation id="6007053304250788613">फक्त एक डिस्प्ले मिरर मोडमध्ये वगळला जाऊ शकतो</translation>
 <translation id="6007240208646052708">तुमच्या भाषेमध्ये व्हॉइस शोध उपलब्ध नाही.</translation>
 <translation id="6010651352520077187">सुरू असताना, Google Translate हे तुमच्या आवडीच्या भाषेत साइटचे भाषांतर करण्याची सुविधा देईल. हे आपोआप साइटचे भाषांतरदेखील करू शकते.</translation>
 <translation id="6011193465932186973">फिंगरप्रिंट</translation>
@@ -7404,7 +7374,6 @@ I feel - विटांची इमारत</translation>
 <translation id="6344576354370880196">सेव्ह केलेले प्रिंटर</translation>
 <translation id="6344608411615208519">तुमचा <ph name="BEGIN_LINK" />ब्राउझर व्यवस्थापित केला जातो<ph name="END_LINK" /> तुमच्या पालकांद्वारे</translation>
 <translation id="6344622098450209924">ट्रॅकिंग संरक्षण</translation>
-<translation id="6344868544424352658">तुमचा Chrome ब्राउझिंग इतिहास म्हणजे तुम्ही ठरावीक कालावधीत Chrome मध्ये भेट दिलेल्या सर्व साइट.</translation>
 <translation id="6345418402353744910">प्रॉक्सी <ph name="PROXY" /> साठी तुमचे वापरकर्ता नाव आणि पासवर्ड आवश्यक आहे जेणेकरून, ॲडमिन तुमचे नेटवर्क कॉन्फिगर करू शकेल</translation>
 <translation id="6345566021391290381"><ph name="WEBSITE_NAME" /> साठी तुमच्यासोबत पासवर्ड शेअर केले आहेत. तुम्ही ते साइन-इन फॉर्ममध्ये वापरू शकता.</translation>
 <translation id="6345878117466430440">वाचलेले अशी खूण करा</translation>
@@ -7836,7 +7805,6 @@ I feel - विटांची इमारत</translation>
 <translation id="6673898378497337661">कीबोर्डचा ब्राइटनेस वाढवा</translation>
 <translation id="6674571176963658787">सिंक सुरू करण्यासाठी तुमचा पासफ्रेझ एंटर करा</translation>
 <translation id="6675665718701918026">निर्देशित करणारे डिव्हाइस कनेक्‍ट केले</translation>
-<translation id="6676021247432396306">तुम्ही वेब ब्राउझ करता, तेव्हा तुम्ही डेटा जनरेट करता - उदाहरणार्थ, तुम्ही शोधत असलेले शब्द, तुम्ही भेट देता त्या साइट आणि तुम्ही वापरता तो ब्राउझर व डिव्हाइस.</translation>
 <translation id="6676212663108450937">तुमच्या व्हॉइसला प्रशिक्षित करत असताना कृपया हेडफोन वापरणे विचारात घ्या</translation>
 <translation id="6676291960742508499">तुमचे टॅब, पेजची शीर्षके आणि URLs Google ला पाठवल्या जातात</translation>
 <translation id="667752334740867460">वाय-फायची माहिती मिळवत आहे...</translation>
@@ -8013,6 +7981,7 @@ I feel - विटांची इमारत</translation>
 <translation id="6802031077390104172"><ph name="USAGE" /> (<ph name="OID" />)</translation>
 <translation id="6803766346203101854">या साइटला तुमच्या डिव्हाइसवर डेटा सेव्ह करण्याची अनुमती आहे.</translation>
 <translation id="680488281839478944">VM "<ph name="DEFAULT_VM_NAME" />" अस्तित्वात आहे</translation>
+<translation id="6805236548654699520">तुमची सेटिंग्ज सुरक्षितता डीफॉल्टवर रिस्टोअर करून नको असलेली पॉप-अप काढून टाका, नेटवर्कसंबंधित समस्यांचे निराकरण करा आणि आणखी बरेच काही करा.</translation>
 <translation id="6805478749741295868">हे AI चे प्रायोगिक वैशिष्ट्य आहे आणि ते नेहमीच बरोबर असेल असे नाही.</translation>
 <translation id="6805647936811177813">कृपया <ph name="HOST_NAME" /> वरून क्लायंट प्रमाणपत्र इंपोर्ट करण्यासाठी <ph name="TOKEN_NAME" /> वर साइन इन करा.</translation>
 <translation id="680572642341004180"><ph name="SHORT_PRODUCT_OS_NAME" /> वरील RLZ ट्रॅकिंग सुरू करा.</translation>
@@ -8096,6 +8065,7 @@ I feel - विटांची इमारत</translation>
 <translation id="6845038076637626672">वाढवलेले उघडा</translation>
 <translation id="6845231585063669905">A ते Z</translation>
 <translation id="6846178040388691741">"<ph name="EXTENSION_NAME" />" ला <ph name="PRINTER_NAME" /> सह <ph name="FILE_NAME" /> प्रिंट करायचे आहे.</translation>
+<translation id="6846843854964504403">सुरक्षितता रीसेट</translation>
 <translation id="6847125920277401289">पुढे सुरू ठेवण्यासाठी जागा मोकळी करा</translation>
 <translation id="6848388270925200958">सध्या तुमच्याकडे काही कार्डे आहेत जी फक्त या डिव्हाइसवर वापरली जाऊ शकतात</translation>
 <translation id="6848716236260083778">फिंगरप्रिंट सेट करण्यासाठी, तुमच्या लहान मुलाला फिंगरप्रिंट सेन्सरला स्पर्श करू द्या. तुमच्या लहान मुलाचा फिंगरप्रिंट डेटा सुरक्षितपणे स्टोअर केला आहे आणि तो या <ph name="DEVICE_TYPE" /> मध्येच राहील.</translation>
@@ -8517,7 +8487,6 @@ I feel - विटांची इमारत</translation>
 <translation id="7169122689956315694">डिव्‍हाइस जवळपास असतात, तेव्हा सूचना सुरू करा</translation>
 <translation id="7170236477717446850">प्रोफाइल फोटो</translation>
 <translation id="7171000599584840888">प्रोफाइल जोडा…</translation>
-<translation id="7171245766710039393">तुमच्या ब्राउझिंग इतिहासाचे पुनरावलोकन करण्यासाठी आणि तो व्यवस्थापित करण्यासाठी <ph name="BEGIN_LINK_HISTORY" /><ph name="HISTORY" /><ph name="END_LINK_HISTORY" /> ला भेट द्या. <ph name="BEGIN_LINK_HELPCENTER" />Chrome मधील तुमचा ब्राउझिंग डेटा आणि तो कसा व्यवस्थापित करावा<ph name="END_LINK_HELPCENTER" /> याविषयी अधिक जाणून घ्या.</translation>
 <translation id="7171259390164035663">नोंदणी करू नका</translation>
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{नवीन गटामध्ये टॅब जोडा}other{नवीन गटामध्ये टॅब जोडा}}</translation>
 <translation id="7173114856073700355">सेटिंग्ज उघडा</translation>
@@ -8552,7 +8521,6 @@ I feel - विटांची इमारत</translation>
 <translation id="7196272782924897510">दुसऱ्या डिव्हाइसवरून पासकी वापरायची आहे का?</translation>
 <translation id="7197190419934240522">प्रत्येक वेळी ब्राउझ करताना Google Search आणि Google स्मार्ट मिळवा</translation>
 <translation id="719791532916917144">कीबोर्ड शॉर्टकट</translation>
-<translation id="7197958763276896180">Chrome हे तृतीय पक्ष कुकीच्या पलीकडे का हलत आहे?</translation>
 <translation id="7198503619164954386">तुमच्याकडे एंटरप्राइझमध्ये नोंदणी केलेले डिव्हाइस असणे आवश्यक आहे</translation>
 <translation id="7199158086730159431">म&amp;दत मिळवा</translation>
 <translation id="7199452998289813782"><ph name="DEVICE_NAME" /> वर कास्ट करणे थांबवा</translation>
@@ -8619,7 +8587,6 @@ I feel - विटांची इमारत</translation>
 <translation id="7250616558727237648">तुम्ही ज्या डिव्हाइससह शेअर करत आहात त्याने प्रतिसाद दिला नाही. कृपया पुन्हा प्रयत्न करा.</translation>
 <translation id="725109152065019550">क्षमस्व, तुमच्या ॲडमिनिस्ट्रेटरने तुमच्या खात्यावरील बाह्य स्टोरेज अक्षम केले आहे.</translation>
 <translation id="7251635775446614726">तुमच्या अ‍ॅडमिनिस्ट्रेटरनुसार: "<ph name="CUSTOM_MESSAGE" />"</translation>
-<translation id="7251979364707973467"><ph name="WEBSITE" /> ने तुमची सिक्युरिटी की जारी केली आहे आणि तिला त्या सिक्युरिटी कीचा आयडी नंबर जाणून घ्यायचा आहे. तुम्ही नेमकी कोणती सिक्युरिटी की वापरत आहात ते साइटला कळेल.</translation>
 <translation id="7252023374029588426">सूचनांसह ट्यूटोरियल बबलची सिरीझ प्रदर्शित केली जाईल.
           बबलवर फोकस करण्यासाठी |<ph name="ACCELERATOR" />| प्रेस करा, त्यानंतर तो ज्या घटकाकडे निर्देश करत आहे त्यावर फोकस करण्याकरिता ते पुन्हा प्रेस करा.</translation>
 <translation id="7253521419891527137">&amp;अधिक जाणून घ्या</translation>
@@ -8971,7 +8938,6 @@ I feel - विटांची इमारत</translation>
 <translation id="7497981768003291373">तुमच्याकडे नुकतेच कॅप्चर केलेले कोणतेही WebRTC मजकूर लॉग नाहीत.</translation>
 <translation id="7501957181231305652">किंवा</translation>
 <translation id="7502220299952823578">"या साइट नेहमी अ‍ॅक्टिव्ह ठेवा" सूचीमध्ये जोडा</translation>
-<translation id="7502394262247226635">तुम्ही Chrome च्या ॲड्रेस बारमध्ये एखादी गोष्ट शोधता, तेव्हा तुमचे डीफॉल्ट शोध इंजीन तुमची विनंती प्राप्त करते आणि सुसंबद्ध परिणाम दाखवून प्रतिसाद देते. तुमच्या शोध इतिहासामध्ये तुम्ही ठरावीक कालावधीत शोधलेल्या गोष्टींचा समावेश होतो.</translation>
 <translation id="7502528909759062987"><ph name="DEVICE_NAME" /> वर टॅब कास्ट करणे थांबवा</translation>
 <translation id="7502804472671406749">शेअर केलेले टॅब स्क्रोल आणि झूम केले जाऊ शकतात</translation>
 <translation id="7503191893372251637">Netscape सर्टिफिकेट प्रकार</translation>
@@ -9259,7 +9225,6 @@ I feel - विटांची इमारत</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7707108266051544351">या साइटला मोशन सेन्सर वापरण्यापासून ब्लॉक केले आहे.</translation>
 <translation id="7707922173985738739">मोबाइल डेटा वापरा</translation>
-<translation id="7708143783728142771">कुकी वेबवर समान पातळीवरील प्राधान्य कस्टमायझेशन करू देतात. तुम्ही साइटला भेट देता, तेव्हा साइट तुमची साइट प्राधान्ये लक्षात ठेवण्यासाठी तुमच्या डिव्हाइसच्या ब्राउझर स्टोरेजमध्ये कुकी सेव्ह करू शकते, जसे की तुम्ही बोलता ती भाषा किंवा तुम्हाला शॉपिंग कार्टमध्ये सेव्ह करायचे असलेले आयटम. नंतर, तुम्ही त्याच ब्राउझरचा वापर करून साइटला पुन्हा भेट दिल्यास, ती साइट तिने सेट केलेली कुकी वाचू शकते आणि तुम्ही जेथे सोडले होते तेथून सुरू करू शकता. या प्रकारच्या कुकीला बऱ्याचदा प्रथम पक्ष कुकी म्हणून संबोधले जाते, कारण त्या तुम्ही भेट दिलेल्या साइटद्वारे सेट केल्या जातात.</translation>
 <translation id="770831926727930011">तुमचा स्थानिक डेटा तुमच्या जुन्या पासवर्डने संरक्षित केलेला आहे. स्थानिक डेटा रिकव्‍हर करण्यासाठी तुमचा जुना पासवर्ड एंटर करा.</translation>
 <translation id="7709152031285164251">अयशस्वी - <ph name="INTERRUPT_REASON" /></translation>
 <translation id="7710568461918838723">कास्ट करा...</translation>
@@ -10055,12 +10020,6 @@ I feel - विटांची इमारत</translation>
 <translation id="826905130698769948">चुकीचे क्लायंट सर्टिफिकेट</translation>
 <translation id="8270320981823560179">ड्राइव्ह</translation>
 <translation id="82706708334564640">अलीकडील डाउनलोड इतिहास</translation>
-<translation id="8270946420566049889">तुम्ही तुम्हाला हवे तसे Chrome कस्टमाइझ करू शकता:
-      &lt;ul&gt;
-        &lt;li&gt;&lt;em&gt;Google चे सर्वोत्तम&lt;/em&gt;, ज्यांना वापरायचे आहे त्यांच्यासाठी. उदाहरणार्थ, तुम्ही Chrome चे डीफॉल्ट शोध इंजीन म्हणून Google Search निवडू शकता आणि तुमचे सर्व पासवर्ड कोणत्याही डिव्हाइसवर मिळवण्यासाठी Google Password Manager वापरू शकता. &lt;/li&gt;
-        &lt;li&gt;&lt;em&gt;अर्थपूर्ण निवड&lt;/em&gt;: तुम्हाला अर्थपूर्ण निर्णय घेण्यात मदत व्हावी, यासाठी Chrome हे तुम्हाला सेटिंग्जसह निवड आणि नियंत्रण व माहिती देऊ करते.&lt;/li&gt;
-        &lt;li&gt;&lt;em&gt;एक्स्टेंशन&lt;/em&gt;: तुम्ही <ph name="BEGIN_LINK" />Chrome वेब स्टोअर<ph name="END_LINK" /> मधील १,००,००० हून अधिक एक्स्टेंशनसह Chrome ची कार्यक्षमता वाढवू शकता.&lt;/li&gt;
-      &lt;/ul&gt;</translation>
 <translation id="827097179112817503">होम बटण दर्शवा</translation>
 <translation id="8271268254812352141">तुम्ही मजकुरावर राइट क्लिक करता किंवा त्यावर स्पर्श करून तो धरून ठेवता तेव्हा, व्याख्या, भाषांतरे अथवा युनिट रूपांतरे मिळवा. <ph name="LINK_BEGIN" />वेबसाइटच्या भाषा<ph name="LINK_END" /> मध्ये भाषांतराच्या भाषा कस्टमाइझ करा.</translation>
 <translation id="8271379370373330993">पालकांनो, पुढील काही पायऱ्या तुमच्यासाठी आहेत. खाते सेट करून झाल्यानंतर तुम्ही लहान मुलाकडे <ph name="DEVICE_TYPE" /> परत सोपवू शकता.</translation>
@@ -10299,6 +10258,7 @@ I feel - विटांची इमारत</translation>
 <translation id="8440630305826533614">Linux ॲप्स</translation>
 <translation id="844063558976952706">नेहमी या साइटवर</translation>
 <translation id="8441313165929432954">टेदरिंग सुरू/बंद करा</translation>
+<translation id="8443542808381875261">न वापरलेले टॅब बंद करा</translation>
 <translation id="8443986842926457191">URL मध्ये २०४८ पेक्षा जास्त वर्ण आहेत</translation>
 <translation id="8445281870900174108">हा टॅब तुमचा कॅमेरा वापरत आहे</translation>
 <translation id="8446884382197647889">अधिक जाणून घ्या</translation>
@@ -10374,7 +10334,6 @@ I feel - विटांची इमारत</translation>
 <translation id="8494147475618188843">Android सेटिंग्ज</translation>
 <translation id="849488240089599592">अलीकडील डाउनलोड वर परत जा</translation>
 <translation id="8496717697661868878">हे प्लगइन रन करा</translation>
-<translation id="8497136774043290050">तृतीय पक्ष कुकी म्हणजे काय? तुम्ही भेट देता ती साइट इतर साइट किंवा सेवांवरील आशय एंबेड करू शकते, उदाहरणार्थ इमेज, जाहिराती, सोशल मीडिया आशय आणि मजकूर. या इतर साइटपैकी कोणतीही साइट तुमच्याबद्दल माहिती सेव्ह करण्यासाठी कुकी वापरते, तेव्हा आम्ही तिला तृतीय पक्ष कुकी म्हणतो. तुम्ही जाहिरात नेटवर्कसारख्या एकाच स्रोतातील आशय एंबेड करणाऱ्या अनेक साइटना भेट दिल्यास, तृतीय पक्ष कुकी जाहिरातींसाठी आणि तुम्ही ब्राउझ करत असताना तुमचा माग ठेवण्यासाठी वापरल्या जाऊ शकतात.</translation>
 <translation id="8497219075884839166">Windows सुविधा</translation>
 <translation id="8498214519255567734">तुमच्या स्क्रीनकडे पाहणे किंवा मंद उजेडात वाचणे सोपे करते</translation>
 <translation id="8499083585497694743">मायक्रोफोन अनम्यूट करा</translation>
@@ -10693,7 +10652,6 @@ I feel - विटांची इमारत</translation>
 <translation id="8725178340343806893">मनपसंत/बुकमार्क</translation>
 <translation id="87254326763805752">पासकी कन्फर्म करा</translation>
 <translation id="8726206820263995930">सर्व्हरवरून धोरण सेटिंग्ज आणताना एरर: <ph name="CLIENT_ERROR" />.</translation>
-<translation id="8727043961453758442">Chrome चा पुरेपूर वापर करा</translation>
 <translation id="8727333994464775697">तुम्हाला या पेजवर दिसत असलेले कस्टमाइझ करा</translation>
 <translation id="8727751378406387165"><ph name="BEGIN_LINK1" />ऑटोफिल मेटाडेटा<ph name="END_LINK1" /> पाठवा
           <ph name="LINE_BREAK" />
@@ -10767,6 +10725,7 @@ I feel - विटांची इमारत</translation>
 <ph name="DOMAIN" /> ला तुम्ही तुमचे स्मार्ट कार्ड घालून ठेवणे आवश्यक आहे.}other{तुमचे <ph name="DEVICE_TYPE" /> # सेकंदांमध्ये आपोआप लॉक होईल.
 <ph name="DOMAIN" /> ला तुम्ही तुमचे स्मार्ट कार्ड घालून ठेवणे आवश्यक आहे.}}</translation>
 <translation id="8776294611668764629">ही फाइल सुरक्षा तपासणी करण्यासाठी खूपच मोठी असल्याने, तुमच्या संस्थेने ती ब्लॉक केली. तुम्ही कमाल ५०MB च्या फाइल उघडू शकता.</translation>
+<translation id="8776420827344913317">ही प्रोफाइल तुमच्या संस्थेद्वारे व्यवस्थापित केलेली आहे, जी काही विशिष्ट प्रकारची माहिती पाहू शकते</translation>
 <translation id="8777509665768981163">तुमच्या टॅबलेटवर बटणे जोडा किंवा शोधा</translation>
 <translation id="8777628254805677039">रूट पासवर्ड</translation>
 <translation id="877985182522063539">A4</translation>
@@ -10783,7 +10742,6 @@ I feel - विटांची इमारत</translation>
 <translation id="8786824282808281903">तुमचे लहान मूल हा आयकन पाहते तेव्हा, ओळखीसाठी किंवा खरेदीला मंजुरी देण्यासाठी फिंगरप्रिंट वापरले जाऊ शकते.</translation>
 <translation id="8787752878731558379">तुम्ही तृतीय पक्ष कुकीना अनुमती का दिली हे सांगून Chrome मध्ये सुधारणा करण्यात आम्हाला मदत करा</translation>
 <translation id="8788008845761123079"><ph name="SELECTED_ACTION" /> साठी जेश्चर निवडा</translation>
-<translation id="8789898473175677810">क्रॉस-साइट ट्रॅकिंग कमी करण्यासाठी आणि तृतीय पक्ष कुकीचा वापर कमी करण्याकरिता केले जाणारे <ph name="LINK_BEGIN" />सहयोगी प्रयत्न<ph name="LINK_END" /> यांचा Chrome एक भाग आहे. पण आम्ही हे जबाबदारीने करण्याचा प्रयत्न करत आहोत, कारण बऱ्याच साइट डिझाइन केल्याप्रमाणे काम करण्यासाठी तृतीय पक्ष कुकीवर अवलंबून असतात. उदाहरणार्थ, अनेक साइट साइन इन करणे सोपे करण्यासाठी एंबेड केलेले चॅट आणि टिप्पणीसंबंधित सिस्टीमला सपोर्ट करण्यासाठी आणि पेमेंट सेवांसाठी तृतीय पक्ष कुकी वापरतात. आणि जाहिरातदार जाहिराती अधिक चांगल्या प्रकारे पर्सनलाइझ करण्यासाठी तृतीय पक्ष कुकी वापरतात. हे महत्त्वाचे आहे कारण खर्चासाठी पेमेंट करण्याकरिता आणि त्यांचा ऑनलाइन आशय निःशुल्क ठेवण्यासाठी साइट बऱ्याचदा जाहिरातींवर अवलंबून असतात.</translation>
 <translation id="8791157330927639737">अपडेट करण्याबद्दल अधिक जाणून घ्या</translation>
 <translation id="8791534160414513928">तुमच्या ब्राउझिंग ट्रॅफिकसह "Do Not Track" विनंती पाठवा</translation>
 <translation id="8793390639824829328">शेअर केलेले टॅब स्क्रोल आणि झूम करण्यासाठी साइट या वैशिष्ट्याचा वापर करतात</translation>
@@ -10860,7 +10818,6 @@ I feel - विटांची इमारत</translation>
 <translation id="8846132060409673887">या कॉंप्युटरची उत्पादक आणि मॉडेल माहिती वाचा</translation>
 <translation id="8846163936679269230">eSIM प्रोफाइल रीसेट करा</translation>
 <translation id="8846239054091760429">मोनो ऑडिओ, स्टार्टअप, लाइव्ह कॅप्शन आणि बरेच काही</translation>
-<translation id="8847459600640933659">जाहिरात कमाई Google ची बहुतांश विनामूल्य उत्पादने आणि सेवांनादेखील सपोर्ट करते, जसे की Chrome, Gmail, Maps व YouTube.</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">लपवलेली</translation>
 <translation id="8849219423513870962"><ph name="PROFILE_NAME" /> हे नाव असलेली eSIM प्रोफाइल काढून टाकणे रद्द करा</translation>
@@ -10981,7 +10938,6 @@ I feel - विटांची इमारत</translation>
 <translation id="8931693637927865341">अ‍ॅस्टेरॉइड</translation>
 <translation id="8931713990831679796">हे प्रिंटर कनेक्ट केलेले आणि वापरण्यासाठी तयार आहेत. आणखी सहज अ‍ॅक्सेससाठी तुमच्या प्रोफाइलमध्ये सेव्ह करा.</translation>
 <translation id="8932654652795262306">इंस्टंट टेदरिंगचे तपशील</translation>
-<translation id="8933314208895863334">साइटना तुम्हाला उपयुक्त वैशिष्ट्ये देऊ करण्याची अनुमती देऊन, कुकी तुमचा ऑनलाइन अनुभव समृद्ध करू शकतात</translation>
 <translation id="8933709832356869375">इंस्टॉल केलेले १ अ‍ॅप काढून टाकले जाईल</translation>
 <translation id="8933960630081805351">फाइंडर मध्ये &amp;दर्शवा</translation>
 <translation id="8934585454328207858">{NUM_EXTENSION,plural, =1{<ph name="EXTENSION1" /> हे USB डिव्हाइस अ‍ॅक्सेस करत आहे}=2{एक्स्टेंशन डिव्हाइस अ‍ॅक्सेस करत आहेत: <ph name="EXTENSION1" />, <ph name="EXTENSION2" />}other{एक्स्टेंशन डिव्हाइस अ‍ॅक्सेस करत आहेत: <ph name="EXTENSION1" />, <ph name="EXTENSION2" /> + आणखी {3}}}</translation>
@@ -11005,7 +10961,6 @@ I feel - विटांची इमारत</translation>
 <translation id="8946359700442089734">या <ph name="IDS_SHORT_PRODUCT_NAME" /> डिव्हाइसवर डीबगिंग वैशिष्ट्ये पूर्णपणे सक्षम केलेली नव्हती.</translation>
 <translation id="8946954897220903437">अ‍ॅड्रेस बारमधील सर्व विनंत्या कोलॅप्स करा</translation>
 <translation id="894763922177556086">चांगला</translation>
-<translation id="8948939328578167195"><ph name="WEBSITE" /> ला तुमच्या सिक्युरिटी की ची निर्मिती आणि मॉडेल पहायचा आहे</translation>
 <translation id="8949304443659090542">Chrome ब्राउझर सिंक व्यवस्थापित करा</translation>
 <translation id="895054485242522631">साइट मोशन सेन्सर वापरू शकतात</translation>
 <translation id="8951256747718668828">एररमुळे रिस्टोअर करणे पूर्ण करता आले नाही</translation>
@@ -11284,6 +11239,7 @@ I feel - विटांची इमारत</translation>
 <translation id="9128870381267983090">नेटवर्कशी कनेक्ट करा</translation>
 <translation id="9129562557082598582">सर्व <ph name="CERT_GROUP" /> एक्सपोर्ट करा</translation>
 <translation id="9130015405878219958">चुकीचे मोड एंटर केले.</translation>
+<translation id="9130135798965366513">पुढे सुरू ठेवण्यासाठी, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> तुमचे <ph name="FIELDS_STRING" /> या साइटसोबत शेअर करेल. या साइटचे <ph name="BEGIN_LINK1" />गोपनीयता धोरण<ph name="END_LINK1" /> आणि <ph name="BEGIN_LINK2" />सेवा अटी<ph name="END_LINK2" /> पहा.</translation>
 <translation id="9130208109420587135"><ph name="NAME" /> गटाचे नाव संपादित करा</translation>
 <translation id="9130364135697530260">या साइटवर एंबेड केलेल्या आशयाने तुमच्याविषयी सेव्ह केलेली माहिती ते वापरू शकत नाही</translation>
 <translation id="9131209053278896908">ब्लॉक केलेल्या साइट येथे दिसतात</translation>
@@ -11348,6 +11304,7 @@ I feel - विटांची इमारत</translation>
 <translation id="917350715406657904">तुमच्या पालकाने <ph name="APP_NAME" /> साठी सेट केलेली वेळ मर्यादा तुम्ही गाठली आहे. तुम्ही ते उद्या <ph name="TIME_LIMIT" /> साठी वापरू शकता.</translation>
 <translation id="9174401638287877180">वापर आणि निदान डेटा पाठवा. Google ला निदान आणि डिव्हाइस आणि अ‍ॅप वापर डेटा आपोआप पाठवून तुमच्या मुलाच्या Android अनुभवात सुधारणा करण्यात मदत करा. हे तुमच्या मुलाला ओळखण्यासाठी वापरले जाणार नाही आणि सिस्टम व अ‍ॅप स्थिरता तसेच इतर सुधारणांमध्ये मदत करेल. काही एकत्रित डेटा Google अ‍ॅप्स आणि Android डेव्हलपर यांसारख्या भागीदारांनादेखील मदत करेल. तुमच्या मुलासाठी अतिरिक्त वेब आणि अ‍ॅप अ‍ॅक्टिव्हिटी सेटिंग सुरू केलेले असल्यास, हा डेटा त्यांच्या Google खात्यामध्ये स्टोअर केला जाऊ शकतो.</translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> - ब्लूटूथ डिव्हाइस कनेक्ट केले</translation>
+<translation id="9177859716483578738">पुढे सुरू ठेवण्यासाठी, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> तुमचे <ph name="FIELDS_STRING" /> या साइटसोबत शेअर करेल. या साइटचे <ph name="BEGIN_LINK" />गोपनीयता धोरण<ph name="END_LINK" /> पहा.</translation>
 <translation id="9178061802301856367">साइन इन डेटा हटवा</translation>
 <translation id="9179243438030184085">तुमच्‍या पासवर्डची कॉपी तुमच्‍या कुटुंब गटामधील एखाद्या व्यक्तीसोबत शेअर करण्‍यासाठी, कार्डच्‍या तळाशी असलेले शेअर करा हे बटण वापरा</translation>
 <translation id="9179524979050048593">साइन इन स्क्रीन वापरकर्ता नाव</translation>

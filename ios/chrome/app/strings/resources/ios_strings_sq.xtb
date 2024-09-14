@@ -11,7 +11,6 @@
 <translation id="1035980983510608210">Mbyllja e të gjitha skedave do të mbyllë edhe skedat e gozhduara.</translation>
 <translation id="1036017604683756002">UPS</translation>
 <translation id="1036348656032585052">Çaktivizo</translation>
-<translation id="10379132160269599">Shfaq rrjetën e skedave</translation>
 <translation id="1041322626941363065">Të të paralajmërojë nëse fjalëkalimet janë ekspozuar në një nxjerrje të paautorizuar të të dhënave</translation>
 <translation id="1044891598689252897">Sajtet do të punojnë normalisht</translation>
 <translation id="104491362976654916">Faqe offline</translation>
@@ -31,6 +30,7 @@
 <translation id="1118569444314402022">Mirë se u ktheve, <ph name="USER_NAME" /></translation>
 <translation id="1121850836842642159">Fotografitë dhe imazhet</translation>
 <translation id="1125564390852150847">Krijo një skedë të re</translation>
+<translation id="1126696498560056882">Menaxho llogaritë në këtë pajisje</translation>
 <translation id="1126809382673880764">Nuk të mbron kundër faqeve të internetit, shkarkimeve dhe shtesave të rrezikshme. Do të vazhdosh të marrësh mbrojtje për "Shfletimin e sigurt", aty ku ofrohet, në shërbimet e tjera të Google, si Gmail dhe "Kërko".</translation>
 <translation id="1142371195993008685">Çaktivizo njoftimet për "<ph name="FEATURE_NAME" />"</translation>
 <translation id="1147031633655575115">Identifikuar si <ph name="USER" /></translation>
@@ -1010,7 +1010,6 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="594324569139756587">Blloko kukit e palëve të treta</translation>
 <translation id="5944869793365969636">Skano kodin QR</translation>
 <translation id="5948291296578561264">Kjo të lejon të ruash fotografi në bibliotekën tënde të fotografive.</translation>
-<translation id="5953383789663007162">Modifiko listën e llogarive</translation>
 <translation id="5954322191260787920">Modifiko faqeshënuesin</translation>
 <translation id="5956112131836209882">Skeda e grupit të skedave. <ph name="TAB_INDEX_IN_GROUP" /> nga <ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
 <translation id="595769230373966252">Kërko me <ph name="SEARCH_PROVIDER" /></translation>

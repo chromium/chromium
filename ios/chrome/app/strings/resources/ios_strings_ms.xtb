@@ -11,7 +11,6 @@
 <translation id="1035980983510608210">Penutupan semua tab akan menutup tab tersemat juga.</translation>
 <translation id="1036017604683756002">UPS</translation>
 <translation id="1036348656032585052">Matikan</translation>
-<translation id="10379132160269599">Tunjukkan grid tab</translation>
 <translation id="1041322626941363065">Berikan amaran kepada anda jika kata laluan Terdedah dalam Pelanggaran data</translation>
 <translation id="1044891598689252897">Tapak akan berfungsi seperti biasa</translation>
 <translation id="104491362976654916">Halaman luar talian</translation>
@@ -31,6 +30,7 @@
 <translation id="1118569444314402022">Selamat kembali, <ph name="USER_NAME" /></translation>
 <translation id="1121850836842642159">Foto &amp; Imej</translation>
 <translation id="1125564390852150847">Buat tab baharu.</translation>
+<translation id="1126696498560056882">Urus akaun pada peranti ini</translation>
 <translation id="1126809382673880764">Tidak melindungi anda daripada laman web, muat turun dan sambungan yang berbahaya. Anda akan mendapat perlindungan Penyemakan Imbas Selamat, jika tersedia, dalam perkhidmatan Google yang lain, seperti Gmail dan Carian.</translation>
 <translation id="1142371195993008685">Matikan pemberitahuan untuk <ph name="FEATURE_NAME" /></translation>
 <translation id="1147031633655575115">Dilog masuk sebagai <ph name="USER" /></translation>
@@ -1010,7 +1010,6 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="594324569139756587">Sekat pihak ketiga</translation>
 <translation id="5944869793365969636">Imbas kod QR</translation>
 <translation id="5948291296578561264">Tindakan ini membolehkan anda menyimpan foto pada pustaka foto anda.</translation>
-<translation id="5953383789663007162">Edit senarai akaun</translation>
 <translation id="5954322191260787920">Edit penanda halaman</translation>
 <translation id="5956112131836209882">Tab kumpulan tab. <ph name="TAB_INDEX_IN_GROUP" /> daripada <ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
 <translation id="595769230373966252">Cari dengan <ph name="SEARCH_PROVIDER" /></translation>
@@ -1604,6 +1603,7 @@ Tapak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda merent
 <translation id="8637431369725868556">Dapatkan perlindungan daripada laman berbahaya.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Tiada kata laluan yang terjejas}=1{{COUNT} kata laluan yang terjejas}other{{COUNT} kata laluan yang terjejas}}</translation>
 <translation id="8640575194957831802">Terakhir dibuka</translation>
+<translation id="8647280737650867362">Tidak dapat menyahjejaki harga.</translation>
 <translation id="8654802032646794042">Batal</translation>
 <translation id="8660600697590740984">Imej yang disalin Lens</translation>
 <translation id="866266761389616183">Oh, tidak!</translation>

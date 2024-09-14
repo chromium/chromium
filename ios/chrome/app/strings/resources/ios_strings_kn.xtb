@@ -11,7 +11,6 @@
 <translation id="1035980983510608210">ಎಲ್ಲಾ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚುವುದರಿಂದ ಪಿನ್ ಮಾಡಿದ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಸಹ ಮುಚ್ಚಲಾಗುತ್ತದೆ.</translation>
 <translation id="1036017604683756002">UPS</translation>
 <translation id="1036348656032585052">ಆಫ್ ಮಾಡಿ</translation>
-<translation id="10379132160269599">ಟ್ಯಾಬ್‌ ಗ್ರಿಡ್‌ ಅನ್ನು ತೋರಿಸಿ</translation>
 <translation id="1041322626941363065">ಡೇಟಾ ಉಲ್ಲಂಘನೆಯಿಂದಾಗಿ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಬಹಿರಂಗಪಡಿಸಿದರೆ ನಿಮಗೆ ಎಚ್ಚರಿಕೆ ನೀಡಲಾಗುತ್ತದೆ</translation>
 <translation id="1044891598689252897">ಸೈಟ್‌ಗಳು ಸಾಮಾನ್ಯವಾಗಿ ಕೆಲಸ ಮಾಡುತ್ತವೆ</translation>
 <translation id="104491362976654916">ಆಫ್‌ಲೈನ್‌ ಪುಟ</translation>
@@ -31,6 +30,7 @@
 <translation id="1118569444314402022">ಮರಳಿ ಸುಸ್ವಾಗತ, <ph name="USER_NAME" /></translation>
 <translation id="1121850836842642159">ಫೋಟೋಗಳು ಮತ್ತು ಚಿತ್ರಗಳು</translation>
 <translation id="1125564390852150847">ಹೊಸ ಟ್ಯಾಬ್ ರಚಿಸಿ.</translation>
+<translation id="1126696498560056882">ಈ ಸಾಧನದಲ್ಲಿ ಖಾತೆಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="1126809382673880764">ಅಪಾಯಕಾರಿ ವೆಬ್‌ಸೈಟ್‌ಗಳು, ಡೌನ್‌ಲೋಡ್‌ಗಳು ಮತ್ತು ವಿಸ್ತರಣೆಗಳ ವಿರುದ್ಧ ನಿಮಗೆ ರಕ್ಷಣೆ ನೀಡುವುದಿಲ್ಲ. Gmail ಮತ್ತು Search ನಂತಹ ಲಭ್ಯವಿರುವ ಇತರ Google ಸೇವೆಗಳಲ್ಲಿ, ನೀವು ಈಗಲೂ ಸುರಕ್ಷಿತ ಬ್ರೌಸಿಂಗ್ ರಕ್ಷಣೆಯನ್ನು ಪಡೆಯುತ್ತೀರಿ.</translation>
 <translation id="1142371195993008685"><ph name="FEATURE_NAME" /> ಗೆ ನೋಟಿಫಿಕೇಶನ್‌ಗಳನ್ನು ಆಫ್‌ ಮಾಡಿ</translation>
 <translation id="1147031633655575115"><ph name="USER" /> ಎಂಬ ಹೆಸರಿನಲ್ಲಿ ಸೈನ್ ಇನ್ ಮಾಡಲಾಗಿದೆ</translation>
@@ -1010,7 +1010,6 @@
 <translation id="594324569139756587">ಥರ್ಡ್ ಪಾರ್ಟಿಯನ್ನು ನಿರ್ಬಂಧಿಸಿ</translation>
 <translation id="5944869793365969636">QR ಕೋಡ್ ಸ್ಕ್ಯಾನ್ ಮಾಡಿ</translation>
 <translation id="5948291296578561264">ನಿಮ್ಮ ಫೋಟೋ ಲೈಬ್ರರಿಗೆ ಫೋಟೋಗಳನ್ನು ಉಳಿಸಲು ಇದು ನಿಮ್ಮನ್ನು ಅನುಮತಿಸುತ್ತದೆ.</translation>
-<translation id="5953383789663007162">ಖಾತೆಯ ಪಟ್ಟಿಯನ್ನು ಎಡಿಟ್‌ ಮಾಡಿ</translation>
 <translation id="5954322191260787920">ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳನ್ನು ಎಡಿಟ್‌ ಮಾಡಿ</translation>
 <translation id="5956112131836209882">ಟ್ಯಾಬ್ ಗುಂಪು ಟ್ಯಾಬ್. <ph name="NUMBER_OF_TABS_IN_GROUP" /> ರಲ್ಲಿ <ph name="TAB_INDEX_IN_GROUP" />.</translation>
 <translation id="595769230373966252"><ph name="SEARCH_PROVIDER" /> ಮೂಲಕ ಹುಡುಕಿ</translation>
@@ -1604,6 +1603,7 @@
 <translation id="8637431369725868556">ಅಪಾಯಕಾರಿ ಸೈಟ್‌ಗಳಿಂದ ರಕ್ಷಣೆ ಪಡೆಯಿರಿ.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{ಅಪಾಯಕ್ಕೀಡಾಗಬಹುದಾದ ಯಾವುದೇ ಪಾಸ್‌ವರ್ಡ್‌ಗಳಿಲ್ಲ}=1{{COUNT} ಪಾಸ್‌ವರ್ಡ್ ಅಪಾಯಕ್ಕೀಡಾಗಿದೆ}one{{COUNT} ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಅಪಾಯಕ್ಕೀಡಾಗಿವೆ}other{{COUNT} ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಅಪಾಯಕ್ಕೀಡಾಗಿವೆ}}</translation>
 <translation id="8640575194957831802">ಕೊನೆಯದಾಗಿ ತೆರೆದಿರುವುದು</translation>
+<translation id="8647280737650867362">ಬೆಲೆಯನ್ನು ಅನ್‌ಟ್ರ್ಯಾಕ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ.</translation>
 <translation id="8654802032646794042">ರದ್ದುಮಾಡಿ</translation>
 <translation id="8660600697590740984">ನೀವು ಕಾಪಿ ಮಾಡಿದ Lens ಚಿತ್ರ</translation>
 <translation id="866266761389616183">ಓಹ್ ಸ್ನ್ಯಾಪ್!</translation>

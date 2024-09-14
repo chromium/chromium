@@ -11,7 +11,6 @@
 <translation id="1035980983510608210">Bütün tabları bağladıqda sancılmış tablar da bağlanacaq.</translation>
 <translation id="1036017604683756002">UPS</translation>
 <translation id="1036348656032585052">Deaktiv edin</translation>
-<translation id="10379132160269599">Tab cədvəlini göstərin</translation>
 <translation id="1041322626941363065">Verilənlərin pozulması zamanı parolların ələ keçirilib-keçirilmədiyi bildirilir</translation>
 <translation id="1044891598689252897">Saytlar normal qaydada işləyəcək</translation>
 <translation id="104491362976654916">Oflayn səhifə</translation>
@@ -31,6 +30,7 @@
 <translation id="1118569444314402022">Təkrar xoş gəldiniz, <ph name="USER_NAME" /></translation>
 <translation id="1121850836842642159">Foto və Şəkillər</translation>
 <translation id="1125564390852150847">Yeni panel yaradın.</translation>
+<translation id="1126696498560056882">Bu cihazdakı hesabları idarə edin</translation>
 <translation id="1126809382673880764">Sizi təhlükəli veb sayt, endirmə və artırmalardan qorumur. Hələ də Gmail və Axtarış kimi digər Google xidmətlərində mümkün olduğu qədər Təhlükəsiz Baxış qoruması əldə edəcəksiniz.</translation>
 <translation id="1142371195993008685"><ph name="FEATURE_NAME" /> üçün bildirişləri deaktiv edin</translation>
 <translation id="1147031633655575115"><ph name="USER" /> olaraq giriş edilib</translation>
@@ -1010,7 +1010,6 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="594324569139756587">Üçüncü tərəfi bloklayın</translation>
 <translation id="5944869793365969636">QR kodunu skan edin</translation>
 <translation id="5948291296578561264">Bu fotoları foto kitabxanada saxlamağa icazə verir.</translation>
-<translation id="5953383789663007162">Hesab siyahısını redaktə edin</translation>
 <translation id="5954322191260787920">Əlfəcinə düzəliş edin</translation>
 <translation id="5956112131836209882">Tab qrupu tabı. <ph name="TAB_INDEX_IN_GROUP" />/<ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
 <translation id="595769230373966252"><ph name="SEARCH_PROVIDER" /> ilə axtarın</translation>
@@ -1604,6 +1603,7 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukilərd
 <translation id="8637431369725868556">Təhlükəli saytlardan qorunun.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Oğurlanmış parol yoxdur}=1{{COUNT} oğurlanmış parol}other{{COUNT} oğurlanmış parol}}</translation>
 <translation id="8640575194957831802">Son açılan</translation>
+<translation id="8647280737650867362">Qiymət izlənmədi.</translation>
 <translation id="8654802032646794042">Ləğv edin</translation>
 <translation id="8660600697590740984">Linza ilə kopiyalanan şəkil</translation>
 <translation id="866266761389616183">Eh, alınmadı!</translation>

@@ -11,7 +11,6 @@
 <translation id="1035980983510608210">Zavretím všetkých kariet zavriete aj pripnuté karty.</translation>
 <translation id="1036017604683756002">UPS</translation>
 <translation id="1036348656032585052">Vypnúť</translation>
-<translation id="10379132160269599">Zobraziť mriežku kariet</translation>
 <translation id="1041322626941363065">Upozorňovať pri prezradení hesiel v rámci porušenia ochrany údajov</translation>
 <translation id="1044891598689252897">Weby budú fungovať normálne</translation>
 <translation id="104491362976654916">Offline stránka</translation>
@@ -31,6 +30,7 @@
 <translation id="1118569444314402022">Vitajte späť, <ph name="USER_NAME" /></translation>
 <translation id="1121850836842642159">Fotky a obrázky</translation>
 <translation id="1125564390852150847">Vytvoriť novú kartu.</translation>
+<translation id="1126696498560056882">Spravovať účty v tomto zariadení</translation>
 <translation id="1126809382673880764">Nechráni vás pred nebezpečnými webmi, stiahnutými súbormi ani rozšíreniami. Ochrana Bezpečného prehliadania vám bude poskytovaná v náležitých prípadoch v ďalších službách Googlu, ako sú napríklad Gmail alebo Vyhľadávanie.</translation>
 <translation id="1142371195993008685">Vypnúť upozornenia funkcie <ph name="FEATURE_NAME" /></translation>
 <translation id="1147031633655575115">Prihlásený účet: <ph name="USER" /></translation>
@@ -1010,7 +1010,6 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="594324569139756587">Blokovanie tretích strán</translation>
 <translation id="5944869793365969636">Skenovanie QR kódu</translation>
 <translation id="5948291296578561264">Umožňuje ukladať fotky do knižnice fotiek.</translation>
-<translation id="5953383789663007162">Upraviť zoznam účtov</translation>
 <translation id="5954322191260787920">Upraviť záložku</translation>
 <translation id="5956112131836209882">Karta skupiny kariet. <ph name="TAB_INDEX_IN_GROUP" /> z <ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
 <translation id="595769230373966252">Hľadať prostredníctvom poskytovateľa <ph name="SEARCH_PROVIDER" /></translation>
@@ -1604,6 +1603,7 @@ Na základe súborov cookie si môžu zobraziť vašu históriu prehliadania v 
 <translation id="8637431369725868556">Získajte ochranu pred nebezpečnými webmi.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Žiadne odhalené heslá}=1{{COUNT} odhalené heslo}few{{COUNT} odhalené heslá}many{{COUNT} compromised passwords}other{{COUNT} odhalených hesiel}}</translation>
 <translation id="8640575194957831802">naposledy otvorené</translation>
+<translation id="8647280737650867362">Cenu sa nepodarilo prestať sledovať.</translation>
 <translation id="8654802032646794042">Zrušiť</translation>
 <translation id="8660600697590740984">Funkcia Lens skopírovala obrázok</translation>
 <translation id="866266761389616183">Ojoj, chyba!</translation>

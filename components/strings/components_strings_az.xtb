@@ -1015,6 +1015,7 @@
 <translation id="2882949212241984732">Cüt qatlayın</translation>
 <translation id="2891963978019740012">Chrome-da axtarış mexanizmi</translation>
 <translation id="2893773853358652045">Dördüncü Rulon</translation>
+<translation id="2894137550885451583">Bunlar <ph name="PRODUCT" /> məhsulu üçün <ph name="CURRENCY" /> qiymətləridir</translation>
 <translation id="2900528713135656174">Tədbir yaradın</translation>
 <translation id="2902312830803030883">Daha çox əməliyyatlar</translation>
 <translation id="2903493209154104877">Ünvanlar</translation>
@@ -1608,6 +1609,7 @@
 <translation id="3949601375789751990">Axtarış tarixçəsi burada görünür</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">Yadda saxlanmış ödəniş metodu yoxdur</translation>
+<translation id="3950560191811267370">Ticarət üzrə aşağıdakı vərəq bağlandı</translation>
 <translation id="3950574001630941635">Dərsliyi yenidən başladın</translation>
 <translation id="3950820424414687140">Giriş</translation>
 <translation id="3953505489397572035">Bu qiymət tipikdir</translation>
@@ -1893,7 +1895,6 @@
 <translation id="4451135742916150903">Saytlar HID cihazlarına qoşulmaq üçün icazə istəyə bilər</translation>
 <translation id="4451684391620232683">İstifadəçiyə təqdim olunan mətn:</translation>
 <translation id="4452328064229197696">İndicə istifadə etdiyiniz parol bir data pozuntusunda tapılıb. Hesablarınızı qorumaq üçün Google Parol Meneceri yadda saxladığınız parolları yoxlamağı tövsiyə edir.</translation>
-<translation id="4452957520362597816">Veb-tətbiqlər quraşdırmaq üçün soruşun</translation>
 <translation id="4456937135469235202">Macəra səyahəti</translation>
 <translation id="4464826014807964867">Təşkilatınızın məlumatları olan veb saytlar</translation>
 <translation id="4466576951214254884">Tələbə Kreditləri və Kollec Maliyyələşdirməsi</translation>
@@ -2350,6 +2351,7 @@
 <translation id="5331585574693522196">Defolt olaraq ayarlansın</translation>
 <translation id="5332219387342487447">Göndəriş Üsulu</translation>
 <translation id="5332769172018416402">Mesaj ilə soruşun</translation>
+<translation id="533323551986281710">Ticarət üzrə aşağıdakı vərəq tam hündürlükdə açıldı</translation>
 <translation id="5334013548165032829">Ətraflı sistem qeydləri</translation>
 <translation id="5334145288572353250">Ünvan saxlanılsın?</translation>
 <translation id="5340250774223869109">Tətbiq bloklanıb</translation>
@@ -2532,6 +2534,7 @@
 <translation id="5675650730144413517">Bu səhifə işləmir</translation>
 <translation id="5675809467256309336">Rəqs və Elektronik Musiqi</translation>
 <translation id="5675959228867414813">Tarix üzrə göstərin</translation>
+<translation id="567604591393105935">Ticarət üzrə aşağıdakı vərəq yarı hündürlükdə açıldı</translation>
 <translation id="5677928146339483299">Bloklananlar</translation>
 <translation id="5678007133659493065">Folqa</translation>
 <translation id="5680642791693447368">Triller, cinayət və sirr filmləri</translation>
@@ -3438,6 +3441,7 @@
 <translation id="7374733840632556089">Bu xətanın səbəbi cihazınızda siz və ya başqası tərəfindən quraşdırılmış sertifikatdır. Sertifikat şəbəkələrə nəzarət etmək və onları bloklamaq üçün istifadə olunur və Chrome ona etibar etmir. Məktəb və ya şirkət şəbəkəsi kimi bəzi hallarda qanuni nəzarətə icazə verilsə də, Chrome qarşısını ala bilməsəniz də, bunun baş verdiyini bilmənizi istəyir. Nəzarət vebə girişi olan istənilən brauzer və ya tətbiqdə baş verə bilər.</translation>
 <translation id="7375532151824574023">{NUM_COOKIES,plural, =0{Saytlara icazə verilmir}=1{1 sayta icazə verilir}other{# sayta icazə verilir}}</translation>
 <translation id="7375818412732305729">Fayl qoşulub</translation>
+<translation id="7376031331622621328">Ticarət üzrə aşağıdakı vərəq</translation>
 <translation id="7377249249140280793"><ph name="RELATIVE_DATE" /> - <ph name="FULL_DATE" /></translation>
 <translation id="7377314930809374926">Qonaqlama Sənayesi</translation>
 <translation id="7378594059915113390">Media Nəzarətləri</translation>

@@ -712,6 +712,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2265356434276802347">Dette regelen skal ikke ha mer enn <ph name="MAX_ITEMS_LIMIT" /> fremhevede oppføringer.</translation>
 <translation id="2267047181501709434">Bekrefter identiteten din …</translation>
 <translation id="2268044343513325586">Finstem</translation>
+<translation id="2268966938956566076">Last opp om <ph name="MINUTES" /> min</translation>
 <translation id="2270484714375784793">Telefonnummer</translation>
 <translation id="2276057643614339130">Utskriftsgrunnlag</translation>
 <translation id="2277103315734023688">Spol fremover</translation>
@@ -1110,6 +1111,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3062655045399308513">Slett nettlesingsdata…</translation>
 <translation id="306573536155379004">Spillet er startet.</translation>
 <translation id="3067505415088964188">Prisen er lav</translation>
+<translation id="3068118691172921711">Opplastingen av filen din til <ph name="CLOUD_PROVIDER" /> starter om 1 minutt</translation>
 <translation id="3076865167425975822">Operativsystemer</translation>
 <translation id="3080254622891793721">Grafikk</translation>
 <translation id="3082007635241601060">La Google bruke handlevognene dine for å finne personlig tilpassede rabatter hvis tilgjengelig</translation>
@@ -1121,6 +1123,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3099619114405539473">Bruk tilgjengelige kameraer (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="3102312643185441063">Sparekonto</translation>
 <translation id="3103188521861412364">Aksjer og obligasjoner</translation>
+<translation id="3103535543639438037">Sammenlign lignende produkter side om side</translation>
 <translation id="3105172416063519923">Ressurs-ID:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />å sjekke konfigurasjonen av sikker DNS<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Midtre skuff</translation>
@@ -1298,6 +1301,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3407789382767355356">tredjepartspålogging</translation>
 <translation id="340924996148642843">Sammenligning er ikke tilgjengelig akkurat nå</translation>
 <translation id="3409896703495473338">Administrer sikkerhetsinnstillinger</translation>
+<translation id="3411091017011773343">Last opp om <ph name="HOURS" /> t</translation>
 <translation id="3414275587143250384">Distribuert databehandling og databehandling i nettskyen</translation>
 <translation id="3414952576877147120">Størrelse:</translation>
 <translation id="341513675006332771">Knappen «Spill Chrome Dino-spillet» – aktiver for å spille Dino Run-spillet i Chrome</translation>
@@ -1893,7 +1897,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4451135742916150903">Kan be om å få koble til HID-enheter</translation>
 <translation id="4451684391620232683">Tekst som presenteres for brukeren:</translation>
 <translation id="4452328064229197696">Passordet du nettopp brukte, er funnet i et databrudd. For å sikre kontoene dine anbefaler Google Passordlagring at du sjekker de lagrede passordene dine.</translation>
-<translation id="4452957520362597816">spørre om å få installere nettapper</translation>
 <translation id="4456937135469235202">Opplevelsesreiser</translation>
 <translation id="4464826014807964867">Nettsteder med informasjon fra organisasjonen din</translation>
 <translation id="4466576951214254884">Studielån og universitetsfinansiering</translation>
@@ -1965,6 +1968,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4628678854894591460">Ferietilbud</translation>
 <translation id="4628948037717959914">Bilde</translation>
 <translation id="4629370161347991046">A4x6</translation>
+<translation id="462989688138616749">Filene dine begynner å lastes opp til <ph name="CLOUD_PROVIDER" /> om <ph name="HOURS" /> timer</translation>
 <translation id="4631649115723685955">Penger tilbake er tilknyttet</translation>
 <translation id="4631881646528206880">Registrering med virtuelt kort</translation>
 <translation id="4635278307999235413">Sender data til administrasjonskonsollen</translation>
@@ -2085,6 +2089,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="484988093836683706">Bruk enhetsopplåsing</translation>
 <translation id="4850886885716139402">Visning</translation>
 <translation id="4854853140771946034">Opprett et nytt notat i Google Keep raskt</translation>
+<translation id="4855395119669662878">Administratoren din begynner å laste opp filene dine til <ph name="CLOUD_PROVIDER" /> <ph name="DATE_TIME" />. Hold enheten tilkoblet frem til filene er lastet opp. Under opplastingen kan du bare lese lokale filer.</translation>
 <translation id="485902285759009870">Bekrefter koden …</translation>
 <translation id="4860260582253463350">Før du kan gå videre til YouTube, må vi være sikre på at det er deg. Du får innstillingene som forelderen eller den foresatte har konfigurert i Family Link.</translation>
 <translation id="4864406669374375262">Versjonsstrengen er kopiert til utklippstavlen</translation>
@@ -2140,6 +2145,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4933468175699107356">Høyreklikk for å autofylle lagret informasjon, som navn eller adresse, i et hvilket som helst skjema</translation>
 <translation id="4934780484581617878">Vindusadministrering</translation>
 <translation id="4936134414789135531">Fant ikke angitt <ph name="VALUE_NAME" />.</translation>
+<translation id="4936573216809994970">Filene dine begynner å lastes opp til <ph name="CLOUD_PROVIDER" /> om 1 time</translation>
 <translation id="4936675324097895694">Finans</translation>
 <translation id="4943620199112228840">Bruk mikrofonene dine</translation>
 <translation id="4943872375798546930">Ingen resultater</translation>
@@ -2313,6 +2319,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5269225904387178860">Fire hull bunn</translation>
 <translation id="5271381225185906340">«<ph name="DATA_CONTROLS_ATTRIBUTE" />» er ikke en støttet betingelse for «<ph name="DATA_CONTROLS_RESTRICTION" />»</translation>
 <translation id="5273658854610202413">Advarsel: Denne regelen ble ikke sammenslått som angitt i PolicyDictionaryMultipleSourceMergeList-regelen fordi den ikke er en del av ordlistereglene som kan slås sammen.</translation>
+<translation id="5278778426231952189">Last opp nå</translation>
 <translation id="5279286380302340275">Administrer nedlastinger</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">Dokumentegenskaper</translation>
@@ -3815,6 +3822,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="8030729864112325446">Yrkesopplæring og videreutdanning</translation>
 <translation id="8032546467100845887">Gjennomsiktighet</translation>
 <translation id="8035152190676905274">Penn</translation>
+<translation id="8035264638816032066">Fanetitlene og nettadressene for sidene du legger til i tabellen, sendes til Google</translation>
 <translation id="8037117624646282037">Personer som har brukt enheten i det siste</translation>
 <translation id="8037357227543935929">Spør (standard)</translation>
 <translation id="803771048473350947">Fil</translation>
@@ -4008,6 +4016,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="8381674639488873545">Disse belastningene kan skje én gang eller være gjentakende, og det er ikke sikkert de er åpenbare. <ph name="BEGIN_LINK" />Vis likevel<ph name="END_LINK" /></translation>
 <translation id="8382097126743287270">Automatisk fullskjerm</translation>
 <translation id="838307841291975086">Stasjonsvogner</translation>
+<translation id="8388286357548915205">Bruk for alle gjester</translation>
 <translation id="8389532092404711541">Vanligvis <ph name="LOW_PRICE" /></translation>
 <translation id="8389940864052787379">Spesialbygde kjøretøy og sportskjøretøy</translation>
 <translation id="8390725133630534698">Deling fra <ph name="ORIGIN_NAME" /> til <ph name="VM_NAME" /> er blokkert av en administratorregel</translation>
@@ -4114,6 +4123,7 @@ Mer informasjon:
 <translation id="8564466070529550495">Virtuelt kort er ikke tilgjengelig akkurat nå. Prøv igjen senere.</translation>
 <translation id="8564985650692024650">Chromium anbefaler at du tilbakestiller passordet ditt for <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> hvis du også har brukt det på andre nettsteder.</translation>
 <translation id="8570895683659698018">Hobby og fritid</translation>
+<translation id="8572792595597115856">Gyldig til <ph name="DATE" /></translation>
 <translation id="8574841453995331336">Kjøleskap og frysere</translation>
 <translation id="8577192028579836704">Alle alternativer koster vanligvis <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">Virtuelt kort er ikke tilgjengelig</translation>
@@ -4135,6 +4145,7 @@ Mer informasjon:
 <translation id="8617269623452051934">enhetsbruken din</translation>
 <translation id="861775596732816396">Størrelse 4</translation>
 <translation id="8620276786115098679">Kaku 7-konvolutt</translation>
+<translation id="8622864575115813231">Kontakter finansinstitusjonen din …</translation>
 <translation id="8623885649813806493">Ingen samsvarende passord. Vis alle lagrede passord.</translation>
 <translation id="8624354461147303341">Få rabatter</translation>
 <translation id="8634957317623797170">54 x 86 mm</translation>
@@ -4434,6 +4445,7 @@ Mer informasjon:
 <translation id="9192361865877479444">Metall (matt)</translation>
 <translation id="9192947025498305328">Ren skjønnhet</translation>
 <translation id="9199905725844810519">Utskrift er blokkert</translation>
+<translation id="9204089334327209740">Når opplastingen er fullført, kan du endre filene dine i <ph name="CLOUD_PROVIDER" />. Lokal lagring, inkludert eventuelle filer i papirkurven, fjernes automatisk.</translation>
 <translation id="9205078245616868884">Dataene dine er kryptert med passordfrasen din for synkronisering. Skriv den inn for å starte synkroniseringen.</translation>
 <translation id="920643408853370361">Reiseforsikring</translation>
 <translation id="9207861905230894330">Kunne ikke legge til artikkelen.</translation>
@@ -4454,6 +4466,7 @@ Mer informasjon:
 <translation id="937804173274050966"><ph name="BEGIN_BOLD" />Disse dataene brukes:<ph name="END_BOLD" /> Annonseemnene dine er basert på den nylige nettleserloggen din, som er en liste over nettsteder du har besøkt med Chrome på denne enheten.</translation>
 <translation id="937885410143139026">Data sendt til administrasjonskonsollen</translation>
 <translation id="939736085109172342">Ny mappe</translation>
+<translation id="940524522703752213">Filene dine begynner å lastes opp til <ph name="CLOUD_PROVIDER" /> om <ph name="MINUTES" /> minutter</translation>
 <translation id="944540589955480312">Bruk passord og passnøkler som er lagret i Google-kontoen din</translation>
 <translation id="945646848072568856">Chrome blokkerer nettsteder fra å bruke informasjonskapsler fra tredjeparter til å spore deg når du surfer.</translation>
 <translation id="945855313015696284">Gå gjennom informasjonen nedenfor, og slett eventuelle ugyldige kort</translation>

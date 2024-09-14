@@ -350,6 +350,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="2653659639078652383">Enviar</translation>
 <translation id="2656405586795711023">Aplicacións web</translation>
 <translation id="2664252182805397291">Ver sitios</translation>
+<translation id="2666092431469916601">Parte superior</translation>
 <translation id="2669454659051515572">Calquera que use este dispositivo pode ver os ficheiros descargados</translation>
 <translation id="2702516483241149200">Novidade: Comparte unha ligazón que leve directamente a este texto</translation>
 <translation id="2705073298859543115">Crear resumo</translation>
@@ -451,6 +452,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="3072980200212375806"><ph name="APP_NAME" /> abrirase en Chrome. Ao continuar, aceptas as <ph name="BEGIN_LINK1" />Condicións de servizo de Google<ph name="END_LINK1" />, así como as <ph name="BEGIN_LINK2" />Condicións de servizo adicionais de Google Chrome e Chrome OS<ph name="END_LINK2" />. Tamén é aplicable a <ph name="BEGIN_LINK3" />Política de privacidade<ph name="END_LINK3" />.</translation>
 <translation id="3080525922482950719">Podes gardar páxinas para lelas máis tarde ou sen conexión</translation>
 <translation id="3087218211037573995">Algúns contrasinais gardados só neste dispositivo deixarán de funcionar en breve. Podes movelos ao xestor de contrasinais de Google.</translation>
+<translation id="3087734570205094154">Parte inferior</translation>
 <translation id="3091010850649238832">Mostrar contido do portapapeis</translation>
 <translation id="3098745985164956033">Algunhas imaxes envíanse a Google coa finalidade de mellorar as descricións para ti</translation>
 <translation id="3114507951000454849">Le as noticias do día <ph name="NEWS_ICON" /></translation>
@@ -688,7 +690,6 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="4355272626458588338">Engade un marcador ás páxinas que consideres importantes para volver acceder a elas</translation>
 <translation id="4357206670025518404">+<ph name="COUNT_NUMBER" /></translation>
 <translation id="4359809482106103048">Resumo de seguranza</translation>
-<translation id="4363222835916186793">Desactiváronse as alertas para este produto</translation>
 <translation id="4378154925671717803">Teléfono</translation>
 <translation id="4380055775103003110">Se o problema persiste, podes probar outras maneiras de continuar en <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="4384468725000734951">Uso de Sogou para a busca</translation>
@@ -749,6 +750,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="4624065194742029982">Modo de incógnito de Chrome</translation>
 <translation id="4634124774493850572">Usar contrasinal</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 contrasinal vulnerado}other{# contrasinais vulnerados}}</translation>
+<translation id="4642472735733036929">Detívose o seguimento de prezos</translation>
 <translation id="4645146721047390964">Cando usas o modo de incógnito, os sitios non poden utilizar cookies para ver a túa actividade de navegación noutros sitios co fin de, por exemplo, personalizar os anuncios. É posible que se bloqueen as funcións dalgúns sitios.</translation>
 <translation id="4650364565596261010">Opción predeterminada do sistema</translation>
 <translation id="465657074423018424">A función Navegación segura protéxete contra os sitios web enganosos. Se a desactivas, ten moito coidado ao navegar, sobre todo antes de escribir contrasinais.</translation>
@@ -1092,6 +1094,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="6210748933810148297">Non es <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Mostrando unha vista previa desta páxina</translation>
 <translation id="6221633008163990886">Desbloquea a pantalla para exportar os teus contrasinais</translation>
+<translation id="6225572914528673855">Barra de enderezos</translation>
 <translation id="6232535412751077445">Se activas a opción Do Not Track, incluirase unha solicitude no teu tráfico de navegación. O efecto producido depende de se o sitio web responde á solicitude e da interpretación desta.
 
 Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche anuncios que non estean baseados noutros sitios web que visitases. Moitos sitios web seguirán recompilando e utilizando os teus datos de navegación para, por exemplo, mellorar a seguranza, fornecer contido, anuncios e recomendacións e para crear estatísticas de informes.</translation>

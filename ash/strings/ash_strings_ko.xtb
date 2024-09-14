@@ -118,7 +118,6 @@
 <translation id="1346748346194534595">오른쪽</translation>
 <translation id="1350494136075914725">진행 중 · 탭으로 전환</translation>
 <translation id="1351937230027495976">메뉴 접기</translation>
-<translation id="1352537790882153971">유선 헤드폰으로 마이크 소리를 모니터링할 수 있습니다. 중지하려면 패널을 닫으세요.</translation>
 <translation id="1360220746312242196">페이지를 검색할 때 이전 일치 항목으로 이동</translation>
 <translation id="1360788414852622716">프로필을 사용 중지하는 중입니다. 몇 분 정도 소요될 수 있습니다</translation>
 <translation id="1364382257761975320">Chromebook을 잠금 해제하려면 지문을 사용하세요.</translation>
@@ -397,7 +396,6 @@
 <translation id="2426051945783024481">카메라 프레임이 자동으로 중앙에 위치함</translation>
 <translation id="2427507373259914951">왼쪽 클릭</translation>
 <translation id="2429753432712299108">블루투스 기기 '<ph name="DEVICE_NAME" />'에서 페어링 허가를 요청합니다. 허가하기 전에 다음 패스키가 기기에 표시되는지 확인하세요. <ph name="PASSKEY" /></translation>
-<translation id="2430444791038754658">시간이 다 되었습니다. 잘하고 계십니다</translation>
 <translation id="2435457462613246316">비밀번호 표시</translation>
 <translation id="2437771564543046790">배터리가 부족합니다. 절전 모드가 사용 설정되었습니다</translation>
 <translation id="243878895369688216">어제 열림</translation>
@@ -777,7 +775,6 @@
 <translation id="3706423975342040244">엔터테인먼트</translation>
 <translation id="3707093869106077605"><ph name="UNAVAILABLE_DLC_ONE" /> 및 <ph name="UNAVAILABLE_DLC_TWO" /> 기능을 사용할 수 없습니다.</translation>
 <translation id="3708186454126126312">이전에 연결된 기기</translation>
-<translation id="3711282657843423160">끝났습니다. 잘하고 계십니다</translation>
 <translation id="3712143870407382523">이쪽 창을 선택하세요</translation>
 <translation id="371370241367527062">전면 마이크</translation>
 <translation id="3713734891607377840">완료되면 열기</translation>
@@ -847,7 +844,6 @@
 <translation id="397105322502079400">계산 중...</translation>
 <translation id="397726367135689299">배터리 충전 상태가 불안정한 것 같습니다.</translation>
 <translation id="3977512764614765090">배터리가 <ph name="PERCENTAGE" />%이며 현재 충전 중입니다.</translation>
-<translation id="397808938113646171">시간이 다 되었습니다. 훌륭합니다.</translation>
 <translation id="3982013579989864579">오디오 출력을 전환할까요?</translation>
 <translation id="3984536049089846927">다음 페이지</translation>
 <translation id="3986082989454912832">답변</translation>
@@ -1003,7 +999,6 @@
 <translation id="4477751544736611934">데이터 요금이 발생할 수 있습니다.
 기기 1대가 연결되었습니다.</translation>
 <translation id="4477892968187500306">이 기기에는 Google에서 확인하지 않은 앱이 설치되어 있을 수 있습니다.</translation>
-<translation id="4479130137987693286">필요한 경우 시간을 조금 더 추가할 수 있습니다. 또는 집중 모드 세션을 종료하세요.</translation>
 <translation id="4479639480957787382">이더넷</translation>
 <translation id="4481530544597605423">페어링 해제된 기기</translation>
 <translation id="4485506555414638855">휴대전화의 최근 사진, 미디어, 알림, 앱 보기 설정 닫기</translation>
@@ -1056,7 +1051,6 @@
 
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox가 사용 설정됨</translation>
-<translation id="4665182893355091947">끝났습니다. 잘하셨습니다</translation>
 <translation id="4666911709726371538">앱 더보기</translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> 파일을 다운로드하는 중입니다</translation>
 <translation id="4672539464599646374">절전 모드 사용 설정됨</translation>
@@ -1782,7 +1776,6 @@
 <translation id="7064351585062927183">다가오는 <ph name="DAY_OF_WEEK" /></translation>
 <translation id="7066646422045619941">관리자가 사용 중지한 네트워크입니다.</translation>
 <translation id="7067196344162293536">자동 회전</translation>
-<translation id="7067569040620564762">시간이 다 되었습니다. 훌륭합니다</translation>
 <translation id="7068360136237591149">파일을 열어 줘</translation>
 <translation id="7076293881109082629">로그인</translation>
 <translation id="7076878155205969899">음소거</translation>
@@ -1817,7 +1810,6 @@
 <translation id="7189412385142492784">금성까지의 거리</translation>
 <translation id="7198435252016571249">카메라 미리보기가 오른쪽 하단으로 맞춰졌습니다. 시스템 표시 경로와 충돌합니다.</translation>
 <translation id="7219573373513695352">연결된 기기 없음</translation>
-<translation id="7226347284543965442">시간이 다 되었습니다. 아주 좋습니다</translation>
 <translation id="7229029500464092426">총 메모리 <ph name="TOTAL_MEMORY" /> 중 <ph name="AVAILABLE_MEMORY" /> 사용</translation>
 <translation id="7244725679040769470">배터리가 <ph name="PERCENTAGE" />% 남았습니다. 기기를 전원에 연결하세요.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. 업데이트를 적용하려면 Chromebook을 다시 시작해야 합니다. 여기에는 최대 1분이 걸릴 수 있습니다.</translation>
@@ -2172,7 +2164,6 @@
 <translation id="8443879455002739353">'복사'</translation>
 <translation id="8444246603146515890"><ph name="DESK_TITILE" /> 데스크가 활성화되었습니다.</translation>
 <translation id="8446884382197647889">자세히 알아보기</translation>
-<translation id="8452090802952003258">마이크 소리 듣기</translation>
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
 <translation id="8462305545768648477">텍스트 읽어주기 닫기</translation>
 <translation id="8468806060683421065">마감일: <ph name="DUE_DATE_AND_TIME" /></translation>
@@ -2234,7 +2225,6 @@
 <translation id="8683506306463609433">성능 추적 활성화</translation>
 <translation id="8703634754197148428">녹화 시작 녹화가 시작된 후에는 Alt + Shift + L을 눌러 앱 표시줄로 이동하여 녹화 중지 버튼을 찾으세요.</translation>
 <translation id="8704155109538237473">PIP 모드 창에 포커스</translation>
-<translation id="8708657523363087260">사이드톤 전환</translation>
 <translation id="870917907284186124">음성기록 사용/사용 중지(음성으로 입력)</translation>
 <translation id="8711169534266271368">게임 대시보드 옵션</translation>
 <translation id="8712637175834984815">확인</translation>

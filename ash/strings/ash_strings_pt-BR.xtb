@@ -118,7 +118,6 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1346748346194534595">À direita</translation>
 <translation id="1350494136075914725">Em andamento · Mudar para a guia</translation>
 <translation id="1351937230027495976">Recolher menu</translation>
-<translation id="1352537790882153971">Você pode monitorar o som do microfone usando fones de ouvido com fio. Feche o painel para interromper o recurso.</translation>
 <translation id="1360220746312242196">Acessar o resultado anterior ao pesquisar em uma página</translation>
 <translation id="1360788414852622716">Desativando perfil. Pode levar alguns minutos..</translation>
 <translation id="1364382257761975320">Para desbloquear o Chromebook, use sua impressão digital</translation>
@@ -374,6 +373,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2360398059912971776">bateria</translation>
 <translation id="2361210043495191221">Alternar o Wi-Fi. <ph name="STATE" />.</translation>
+<translation id="2364710166605611987">Efeitos de aparência</translation>
 <translation id="236574664504281623">Enviado por <ph name="SESSION_NAME" /></translation>
 <translation id="2367186422933365202">Não foi possível fazer login no Chromebook</translation>
 <translation id="2367972762794486313">Mostrar aplicativos</translation>
@@ -396,7 +396,6 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="2426051945783024481">Enquadramento da câmera centralizado automaticamente</translation>
 <translation id="2427507373259914951">Clicar com o botão esquerdo</translation>
 <translation id="2429753432712299108">O dispositivo Bluetooth "<ph name="DEVICE_NAME" />" deseja permissão para realizar o pareamento. Antes de aceitar, verifique se esta senha aparece no dispositivo: <ph name="PASSKEY" /></translation>
-<translation id="2430444791038754658">O tempo acabou! Muito bem</translation>
 <translation id="2435457462613246316">Mostrar senha</translation>
 <translation id="2437771564543046790">Pouca bateria. A Economia de bateria está ativada</translation>
 <translation id="243878895369688216">Aberto ontem</translation>
@@ -734,6 +733,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="3600061223661453002">Apagar</translation>
 <translation id="3604801046548457007">Espaço de trabalho <ph name="DESK_TITILE" /> criado</translation>
 <translation id="3606978283550408104">Display em braille conectado.</translation>
+<translation id="3612634595000403645">Preferências de efeitos de aparência</translation>
 <translation id="3615926715408477684">A ativação dos dados móveis também ativará o Bluetooth</translation>
 <translation id="3616113530831147358">Áudio</translation>
 <translation id="3616883743181209306">O menu foi movido para o canto superior direito da tela.</translation>
@@ -775,7 +775,6 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="3706423975342040244">Entretenimento</translation>
 <translation id="3707093869106077605">Os recursos "<ph name="UNAVAILABLE_DLC_ONE" />" e "<ph name="UNAVAILABLE_DLC_TWO" />" não estão disponíveis.</translation>
 <translation id="3708186454126126312">Conectados anteriormente</translation>
-<translation id="3711282657843423160">Pronto! Continue assim!</translation>
 <translation id="3712143870407382523">Escolha uma janela para este lado</translation>
 <translation id="371370241367527062">Microfone frontal</translation>
 <translation id="3713734891607377840">Abrir quando o download for concluído</translation>
@@ -845,7 +844,6 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="397105322502079400">Calculando...</translation>
 <translation id="397726367135689299">O carregamento da bateria pode não ser confiável.</translation>
 <translation id="3977512764614765090">Bateria em <ph name="PERCENTAGE" />% e carregando.</translation>
-<translation id="397808938113646171">O tempo acabou. Muito bem!</translation>
 <translation id="3982013579989864579">Trocar a saída de áudio?</translation>
 <translation id="3984536049089846927">Próxima página</translation>
 <translation id="3986082989454912832">Atender</translation>
@@ -894,6 +892,7 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="4146671046252289537">Ir para o final da próxima palavra</translation>
 <translation id="4146833061457621061">Ouvir música</translation>
 <translation id="4150201353443180367">Exibição</translation>
+<translation id="4151054805501931758">Retoque de retrato</translation>
 <translation id="4156293514828496577"><ph name="PERCENTAGE" />% de bateria (cerca de <ph name="TIME_LEFT" />).
 Alguns recursos estão limitados para aumentar a duração da bateria.</translation>
 <translation id="4160919062868802509">Várias fontes de áudio detectadas</translation>
@@ -1000,7 +999,6 @@ Alguns recursos estão limitados para aumentar a duração da bateria.</translat
 <translation id="4477751544736611934">Isso pode gerar custos de dados.
 1 dispositivo conectado.</translation>
 <translation id="4477892968187500306">O dispositivo pode conter apps que não foram verificados pelo Google.</translation>
-<translation id="4479130137987693286">Você pode adicionar mais tempo se precisar ou encerrar sua sessão de foco.</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Dispositivos não pareados</translation>
 <translation id="4485506555414638855">Dispensar configuração de visualização de fotos, mídia, notificações e apps recentes do smartphone</translation>
@@ -1053,7 +1051,6 @@ Alguns recursos estão limitados para aumentar a duração da bateria.</translat
 
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox ativado</translation>
-<translation id="4665182893355091947">Pronto! Parabéns!</translation>
 <translation id="4666911709726371538">Mais apps</translation>
 <translation id="4667099493359681081">Fazendo o download do arquivo <ph name="FILENAME" /></translation>
 <translation id="4672539464599646374">Economia de bateria ativada</translation>
@@ -1779,7 +1776,6 @@ Nova instalação</translation>
 <translation id="7064351585062927183"><ph name="DAY_OF_WEEK" /> que vem</translation>
 <translation id="7066646422045619941">Esta rede foi desativada pelo seu administrador.</translation>
 <translation id="7067196344162293536">Rotação automática</translation>
-<translation id="7067569040620564762">Pronto! O tempo acabou</translation>
 <translation id="7068360136237591149">Abrir arquivos</translation>
 <translation id="7076293881109082629">Como fazer login</translation>
 <translation id="7076878155205969899">Desativar som</translation>
@@ -1814,7 +1810,6 @@ Nova instalação</translation>
 <translation id="7189412385142492784">Qual é a distância até Vênus?</translation>
 <translation id="7198435252016571249">Câmera alinhada ao canto direito de baixo. Conflito com a superfície do sistema.</translation>
 <translation id="7219573373513695352">Nenhum dispositivo conectado</translation>
-<translation id="7226347284543965442">É isso! O tempo acabou</translation>
 <translation id="7229029500464092426">Memória usada: <ph name="AVAILABLE_MEMORY" /> | Total: <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7244725679040769470">Tempo restante: cerca de <ph name="PERCENTAGE" /> (%). Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Este Chromebook precisa ser reiniciado para que uma atualização seja aplicada. Isso pode demorar até um minuto.</translation>
@@ -1971,6 +1966,7 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="7768784765476638775">Selecionar para ouvir</translation>
 <translation id="7769299611924763557">Seu GIF estará pronto em breve</translation>
 <translation id="7773536009433685931">Ativar o Wi-Fi</translation>
+<translation id="77747521138552256">Excesso de tentativas de PIN. Aguarde <ph name="TIME_LEFT" /> e tente usar o PIN de novo ou digite a senha para fazer login imediatamente.</translation>
 <translation id="7780094051999721182">atalhos</translation>
 <translation id="7780159184141939021">Girar tela</translation>
 <translation id="7781829728241885113">Ontem</translation>
@@ -2168,7 +2164,6 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="8443879455002739353">"Copiar"</translation>
 <translation id="8444246603146515890">Espaço de trabalho <ph name="DESK_TITILE" /> ativado</translation>
 <translation id="8446884382197647889">Saiba mais</translation>
-<translation id="8452090802952003258">Ouça o som do seu microfone</translation>
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
 <translation id="8462305545768648477">Fechar o Selecionar para ouvir</translation>
 <translation id="8468806060683421065">prazo: <ph name="DUE_DATE_AND_TIME" /></translation>
@@ -2230,7 +2225,6 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="8683506306463609433">Acompanhamento de desempenho ativo</translation>
 <translation id="8703634754197148428">Iniciar gravação. Depois que a gravação for iniciada, pressione Alt + Shift + L para ir até a estante e localizar o botão para "Parar de gravar"</translation>
 <translation id="8704155109538237473">Focar na janela picture-in-picture</translation>
-<translation id="8708657523363087260">Ativar/desativar ruído ambiente</translation>
 <translation id="870917907284186124">Ativar/desativar o ditado (digitação usando a voz)</translation>
 <translation id="8711169534266271368">Opções do Painel de jogo</translation>
 <translation id="8712637175834984815">Entendi</translation>

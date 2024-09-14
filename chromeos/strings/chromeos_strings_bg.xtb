@@ -153,6 +153,7 @@
 <translation id="1672499492233627739">Видеокартина от уебкамерата</translation>
 <translation id="1676557873873341166">Заснема се видеоклип</translation>
 <translation id="1684279041537802716">Цвят на акцентирането</translation>
+<translation id="1697278726914783200">Записване</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Налице е DNS резолвер</translation>
 <translation id="1708602061922134366">Синьо от логото на Google</translation>
@@ -703,6 +704,7 @@
 <translation id="458794348635939462">Името на нито един хост не бе преобразувано</translation>
 <translation id="4593212453765072419">Изисква се удостоверяване в прокси сървъра</translation>
 <translation id="4594021849294327751">Създаване на препис</translation>
+<translation id="4602266091140407479">Микрофон</translation>
 <translation id="4607282946861182308">Не могат да се създадат изображения на това. Опитайте с друга подкана.</translation>
 <translation id="4609350030397390689">Намаляване на яркостта на клавиатурата</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> от <ph name="TOTAL_PAGE_NUMBER" />. Натиснете Enter, за да откажете заданието за отпечатване</translation>
@@ -1011,6 +1013,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6188737759358894319">Създадено на <ph name="DATE" /></translation>
 <translation id="6189418609903030344">Капацитетът на батерията намалява с течение на използването ѝ</translation>
+<translation id="6189987971574353264">Пускане</translation>
 <translation id="6191293864534840972">Неправилно образувани сървъри за имена</translation>
 <translation id="6196607555925437199">Повторно създаване</translation>
 <translation id="6205145102504628069">Облаци</translation>
@@ -1642,8 +1645,6 @@
 <translation id="951780398843003443">сравняване на гласовете в записа, така че преписът да отразява какво е казал всеки от говорещите и кога.</translation>
 <translation id="952992212772159698">Не е активиран</translation>
 <translation id="95718197892796296">глина</translation>
-<translation id="959792926760890141">Повторното задаване на безопасността изключва разширенията за браузъра Chrome и ще възстанови безопасните стандартни настройки за мрежата и други настройки.
-          Основната ви търсеща машина ще бъде нулирана, но разделите, файловете, „бисквитките“ и историята няма да се променят.</translation>
 <translation id="960719561871045870">Код на оператора</translation>
 <translation id="965918541715156800">жълто и тъмно синьо-зелено</translation>
 <translation id="966787709310836684">меню</translation>

@@ -11,7 +11,6 @@
 <translation id="1035980983510608210">Az összes lap bezárásával a rögzített lapok is bezáródnak.</translation>
 <translation id="1036017604683756002">UPS</translation>
 <translation id="1036348656032585052">Kikapcsolás</translation>
-<translation id="10379132160269599">Laprács megjelenítése</translation>
 <translation id="1041322626941363065">Figyelmeztetés, ha jelszavai adatvédelmi incidens során nyilvánosságra kerülnek</translation>
 <translation id="1044891598689252897">A webhelyek a megszokott módon fognak működni</translation>
 <translation id="104491362976654916">Offline oldal</translation>
@@ -31,6 +30,7 @@
 <translation id="1118569444314402022">Üdvözöljük ismét, kedves <ph name="USER_NAME" />!</translation>
 <translation id="1121850836842642159">Fotók és képek</translation>
 <translation id="1125564390852150847">Új lap létrehozása.</translation>
+<translation id="1126696498560056882">Fiókok kezelése ezen az eszközön</translation>
 <translation id="1126809382673880764">Nem védi meg Önt a veszélyes webhelyek, letöltések vagy bővítmények ellen. Ahol lehetséges (más Google-szolgáltatásokban, például a Gmailben és a Keresőben) továbbra is megkapja a Biztonságos Böngészés által nyújtott védelmet.</translation>
 <translation id="1142371195993008685">A következő értesítéseinek kikapcsolása: <ph name="FEATURE_NAME" /></translation>
 <translation id="1147031633655575115">Bejelentkezve mint <ph name="USER" /></translation>
@@ -1010,7 +1010,6 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="594324569139756587">Harmadik féltől származó cookie-k letiltása</translation>
 <translation id="5944869793365969636">QR-kód beolvasása</translation>
 <translation id="5948291296578561264">Segítségével fotókat menthet a fotótárba.</translation>
-<translation id="5953383789663007162">Fióklista szerkesztése</translation>
 <translation id="5954322191260787920">Könyvjelző szerkesztése</translation>
 <translation id="5956112131836209882">Lapcsoportba tartozó lap. <ph name="NUMBER_OF_TABS_IN_GROUP" />/<ph name="TAB_INDEX_IN_GROUP" />.</translation>
 <translation id="595769230373966252">Keresőmotor: <ph name="SEARCH_PROVIDER" /></translation>

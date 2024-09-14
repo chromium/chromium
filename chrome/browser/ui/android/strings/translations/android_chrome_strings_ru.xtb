@@ -351,6 +351,7 @@
 <translation id="2653659639078652383">Отправить</translation>
 <translation id="2656405586795711023">Веб-приложения</translation>
 <translation id="2664252182805397291">Посмотреть сайты</translation>
+<translation id="2666092431469916601">Сверху</translation>
 <translation id="2669454659051515572">Скачанные файлы будут доступны всем пользователям этого устройства.</translation>
 <translation id="2702516483241149200">Теперь можно поделиться ссылкой, которая прокручивает страницу до этого текста.</translation>
 <translation id="2705073298859543115">Создать сводку</translation>
@@ -452,6 +453,7 @@
 <translation id="3072980200212375806">Приложение "<ph name="APP_NAME" />" откроется в Chrome. Продолжая, вы принимаете <ph name="BEGIN_LINK1" />Условия использования Google<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />Дополнительные условия использования Chrome и Chrome OS<ph name="END_LINK2" />. Также действует <ph name="BEGIN_LINK3" />Политика конфиденциальности<ph name="END_LINK3" />.</translation>
 <translation id="3080525922482950719">Сохраняйте страницы, чтобы продолжить чтение позже или в офлайн-режиме.</translation>
 <translation id="3087218211037573995">Некоторые пароли, сохраненные только на этом устройстве, скоро перестанут работать. Вы можете перенести их в Google Менеджер паролей.</translation>
+<translation id="3087734570205094154">Снизу</translation>
 <translation id="3091010850649238832">Показать содержимое буфера обмена</translation>
 <translation id="3098745985164956033">Передавать некоторые изображения в Google, чтобы улучшить их описание</translation>
 <translation id="3114507951000454849">Будьте в курсе новостей <ph name="NEWS_ICON" /></translation>
@@ -689,7 +691,6 @@
 <translation id="4355272626458588338">Добавьте страницу с важными сведениями в закладки, и вам не придется ее долго искать.</translation>
 <translation id="4357206670025518404">+<ph name="COUNT_NUMBER" /></translation>
 <translation id="4359809482106103048">Общие сведения о безопасности</translation>
-<translation id="4363222835916186793">Оповещения об этом товаре отключены.</translation>
 <translation id="4378154925671717803">Телефон</translation>
 <translation id="4380055775103003110">Если проблема не решится, попробуйте другие способы авторизации, чтобы продолжить работу на <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="4384468725000734951">Sogou используется как поисковая система по умолчанию</translation>
@@ -750,6 +751,7 @@
 <translation id="4624065194742029982">Режим инкогнито в Chrome</translation>
 <translation id="4634124774493850572">Использовать пароль</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 раскрытый пароль.}one{# раскрытый пароль.}few{# раскрытых пароля.}many{# раскрытых паролей.}other{# раскрытого пароля.}}</translation>
+<translation id="4642472735733036929">Отслеживание цен приостановлено.</translation>
 <translation id="4645146721047390964">Когда вы в режиме инкогнито, сайты не могут использовать файлы cookie, чтобы получать информацию о ваших действиях на других сайтах, например для персонализации рекламы. Функции некоторых сайтов могут перестать работать.</translation>
 <translation id="4650364565596261010">По умолчанию</translation>
 <translation id="465657074423018424">Функция "Безопасный просмотр" защищает вас от вводящих в заблуждение сайтов. После ее отключения будьте особенно осторожны, посещая сайты, прежде всего когда вводите пароли.</translation>
@@ -1093,6 +1095,7 @@
 <translation id="6210748933810148297"><ph name="EMAIL" /> не ваш аккаунт?</translation>
 <translation id="6211386937064921208">Включен режим предпросмотра.</translation>
 <translation id="6221633008163990886">Чтобы экспортировать пароли, разблокируйте экран</translation>
+<translation id="6225572914528673855">Адресная строка</translation>
 <translation id="6232535412751077445">Если вы запретите отслеживание, в запросы браузера будет включена специальная команда. Сайты могут интерпретировать ее и отвечать на нее по-разному.
 
 Например, некоторые сайты перестанут показывать рекламу, подобранную на основе посещенных вами страниц. Другие сайты продолжат собирать и использовать данные о работе в браузере (например, для повышения уровня безопасности, предоставления контента, демонстрации рекламы и рекомендаций или формирования статистических отчетов).</translation>
@@ -1211,6 +1214,7 @@
 <translation id="6674571176963658787">Чтобы начать синхронизацию, введите кодовую фразу.</translation>
 <translation id="6676927815633975364">Вы выполните вход на этом сайте и в Chrome</translation>
 <translation id="6684809838922667136">Сделайте браузер Chrome лучше</translation>
+<translation id="6700279777779583398">Предпочтения сохранены</translation>
 <translation id="6704048624334633734">Экспорт и удаление паролей</translation>
 <translation id="670498945988402717">Проверено вчера.</translation>
 <translation id="6710213216561001401">Назад</translation>
@@ -1424,6 +1428,7 @@
 <translation id="752731652852882757">Блокировать в режиме инкогнито</translation>
 <translation id="7554643625247105821">Не удалось проверить версию Chrome</translation>
 <translation id="7557508262441527045">Выполнен выход.</translation>
+<translation id="7573665567024262965">Выберите приложения по умолчанию</translation>
 <translation id="7577900504646297215">Управление интересами</translation>
 <translation id="757855969265046257">{FILES,plural, =1{Скачан <ph name="FILES_DOWNLOADED_ONE" /> файл}one{Скачан <ph name="FILES_DOWNLOADED_MANY" /> файл}few{Скачано <ph name="FILES_DOWNLOADED_MANY" /> файла}many{Скачано <ph name="FILES_DOWNLOADED_MANY" /> файлов}other{Скачано <ph name="FILES_DOWNLOADED_MANY" /> файла}}</translation>
 <translation id="7581273696622423628">Пройти опрос</translation>
@@ -1466,6 +1471,7 @@
 <translation id="7764225426217299476">Добавить адрес</translation>
 <translation id="7772032839648071052">Подтвердите кодовую фразу</translation>
 <translation id="7772375229873196092">Закрыть вкладку "<ph name="APP_NAME" />"</translation>
+<translation id="7774125747223422443">В соответствии с законами вашей страны вам необходимо выбрать браузер и поисковую систему по умолчанию.</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> способ оплаты}one{<ph name="PAYMENT_METHOD_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> способ оплаты}few{<ph name="PAYMENT_METHOD_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> способа оплаты}many{<ph name="PAYMENT_METHOD_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> способов оплаты}other{<ph name="PAYMENT_METHOD_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> способа оплаты}}</translation>
 <translation id="777637629667389858">Если вы вошли в аккаунт, защищает вас во всех сервисах Google.</translation>
 <translation id="7778840695157240389">Новый контент появится позже.</translation>
@@ -1735,6 +1741,7 @@
 <translation id="8982113230057126145">Поставить сводке отметку "Не нравится"</translation>
 <translation id="8992769679401294069">Ваши данные зашифрованы кодовой фразой. Введите ее, чтобы пользоваться данными Chrome и сохранять их в аккаунте Google.</translation>
 <translation id="8993760627012879038">Открыть новое окно в режиме инкогнито</translation>
+<translation id="8995521496079646922">Выбранные вами приложения будут использоваться по умолчанию. Если приложение ещё не установлено, оно будет скачано на это устройство.</translation>
 <translation id="8996847606757455498">Выбрать другого поставщика</translation>
 <translation id="8998289560386111590">Недоступно на вашем устройстве.</translation>
 <translation id="8998837250940831980">Не удалось свернуть вкладку. Повторите попытку позже.</translation>

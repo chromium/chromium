@@ -712,6 +712,7 @@
 <translation id="2265356434276802347">המדיניות הזו יכולה לכלול עד <ph name="MAX_ITEMS_LIMIT" /> רשומות נבחרות.</translation>
 <translation id="2267047181501709434">מתבצע אימות של הזהות שלך...</translation>
 <translation id="2268044343513325586">צמצום</translation>
+<translation id="2268966938956566076">העלאה בעוד <ph name="MINUTES" /> דק'</translation>
 <translation id="2270484714375784793">מספר טלפון</translation>
 <translation id="2276057643614339130">בסיס הדפסה</translation>
 <translation id="2277103315734023688">הרצה קדימה</translation>
@@ -1111,6 +1112,7 @@
 <translation id="3062655045399308513">מחיקת נתוני הגלישה מתבצעת…</translation>
 <translation id="306573536155379004">המשחק התחיל.</translation>
 <translation id="3067505415088964188">המחיר נמוך</translation>
+<translation id="3068118691172921711">העלאת הקבצים אל <ph name="CLOUD_PROVIDER" /> תתחיל בעוד דקה</translation>
 <translation id="3076865167425975822">מערכות הפעלה</translation>
 <translation id="3080254622891793721">גרפיקה</translation>
 <translation id="3082007635241601060">‏רוצה ש-Google תשתמש בעגלות הקניות כדי למצוא הנחות זמינות בהתאמה אישית?</translation>
@@ -1122,6 +1124,7 @@
 <translation id="3099619114405539473">שימוש במצלמות הזמינות (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="3102312643185441063">חיסכון</translation>
 <translation id="3103188521861412364">מניות ואג"ח</translation>
+<translation id="3103535543639438037">השוואה של מוצרים דומים זה לצד זה</translation>
 <translation id="3105172416063519923">מזהה נכס:</translation>
 <translation id="3107591622054137333">‏<ph name="BEGIN_LINK" />לבדוק את תצורת ה-DNS המאובטח.<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">המגש האמצעי</translation>
@@ -1299,6 +1302,7 @@
 <translation id="3407789382767355356">כניסה של צד שלישי</translation>
 <translation id="340924996148642843">אין גישה להשוואה כרגע.</translation>
 <translation id="3409896703495473338">ניהול הגדרות האבטחה</translation>
+<translation id="3411091017011773343">העלאה בעוד <ph name="HOURS" /> שע'</translation>
 <translation id="3414275587143250384">מחשוב מבוזר ומחשוב ענן</translation>
 <translation id="3414952576877147120">גודל:</translation>
 <translation id="341513675006332771">‏הלחצן להפעלת המשחק Chrome Dino, מפעילים אותו כדי לשחק במשחק Dino Run ב-Chrome</translation>
@@ -1895,7 +1899,6 @@
 <translation id="4451135742916150903">‏האתר יכול לבקש הרשאה להתחבר למכשירי HID</translation>
 <translation id="4451684391620232683">הטקסט המוצג למשתמש:</translation>
 <translation id="4452328064229197696">‏הסיסמה שבה השתמשת עכשיו אותרה בפרצה באבטחת מידע. כדי להגן על החשבונות שלך, לפי מנהל הסיסמאות של Google, מומלץ לבדוק את הסיסמאות השמורות שלך.</translation>
-<translation id="4452957520362597816">בקשה להתקנת אפליקציות אינטרנט</translation>
 <translation id="4456937135469235202">טיולי הרפתקאות</translation>
 <translation id="4464826014807964867">אתרים שקיבלו פרטים מהארגון שלך</translation>
 <translation id="4466576951214254884">הלוואות לסטודנטים ומימון השכלה גבוהה</translation>
@@ -1967,6 +1970,7 @@
 <translation id="4628678854894591460">הצעות לחופשה</translation>
 <translation id="4628948037717959914">תמונה</translation>
 <translation id="4629370161347991046">A4x6</translation>
+<translation id="462989688138616749">העלאת הקובץ אל <ph name="CLOUD_PROVIDER" /> תתחיל בעוד <ph name="HOURS" /> שעות</translation>
 <translation id="4631649115723685955">הקאשבק מקושר</translation>
 <translation id="4631881646528206880">רישום כרטיס וירטואלי</translation>
 <translation id="4635278307999235413">‏נשלחים נתונים אל מסוף Admin</translation>
@@ -2091,6 +2095,7 @@ Del</translation>
 <translation id="484988093836683706">שימוש בביטול נעילת המכשיר</translation>
 <translation id="4850886885716139402">הצגה</translation>
 <translation id="4854853140771946034">‏יצירת הערה חדשה ב-Google Keep במהירות</translation>
+<translation id="4855395119669662878">האדמין יתחיל להעלות את הקבצים שלך אל <ph name="CLOUD_PROVIDER" /> ב-<ph name="DATE_TIME" />. צריך להשאיר את המכשיר מחובר עד שההעלאה של הקובץ תסתיים. במהלך ההעלאה, תהיה לך אפשרות לקרוא רק קבצים מקומיים.</translation>
 <translation id="485902285759009870">הקוד בתהליך אימות…</translation>
 <translation id="4860260582253463350">‏כדי להמשיך אל YouTube, אנחנו צריכים לאמת את זהותך. ב-Family Link אפשר לראות את ההגדרות שההורים או האפוטרופוסים הגדירו.</translation>
 <translation id="4864406669374375262">מחרוזת הגרסה הועתקה ללוח</translation>
@@ -2146,6 +2151,7 @@ Del</translation>
 <translation id="4933468175699107356">אפשר ללחוץ לחיצה ימנית כדי למלא באופן אוטומטי את המידע ששמרת, כמו השם או הכתובת שלך, בכל טופס</translation>
 <translation id="4934780484581617878">ניהול החלונות</translation>
 <translation id="4936134414789135531">הערך <ph name="VALUE_NAME" /> שהוזן לא נמצא.</translation>
+<translation id="4936573216809994970">העלאת הקובץ אל <ph name="CLOUD_PROVIDER" /> תתחיל בעוד שעה</translation>
 <translation id="4936675324097895694">פיננסים</translation>
 <translation id="4943620199112228840">שימוש במיקרופונים</translation>
 <translation id="4943872375798546930">אין תוצאות</translation>
@@ -2319,6 +2325,7 @@ Del</translation>
 <translation id="5269225904387178860">4 ניקובים בחלק התחתון</translation>
 <translation id="5271381225185906340">התנאי '<ph name="DATA_CONTROLS_ATTRIBUTE" />' לא נתמך עבור '<ph name="DATA_CONTROLS_RESTRICTION" />'</translation>
 <translation id="5273658854610202413">‏אזהרה: המדיניות הזו לא עברה מיזוג בהתאם למדיניות PolicyDictionaryMultipleSourceMergeList, מאחר שהיא לא חלק מכללי מדיניות המילון שניתן למזג.</translation>
+<translation id="5278778426231952189">העלאה עכשיו</translation>
 <translation id="5279286380302340275">ניהול ההורדות</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">מאפייני המסמך</translation>
@@ -3826,6 +3833,7 @@ Del</translation>
 <translation id="8030729864112325446">חינוך מקצועי ולימודי המשך</translation>
 <translation id="8032546467100845887">Transparency</translation>
 <translation id="8035152190676905274">עט</translation>
+<translation id="8035264638816032066">‏שמות הכרטיסיות וכתובות ה-URL של הדפים שנוספים לטבלה נשלחים אל Google</translation>
 <translation id="8037117624646282037">מי השתמש במכשיר לאחרונה</translation>
 <translation id="8037357227543935929">לשאול (ברירת מחדל)</translation>
 <translation id="803771048473350947">קובץ</translation>
@@ -4126,6 +4134,7 @@ Del</translation>
 <translation id="8564466070529550495">הכרטיס הווירטואלי לא זמין כרגע. אפשר לנסות שוב מאוחר יותר.</translation>
 <translation id="8564985650692024650">‏אם הזנת את הסיסמה של <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> באתרים אחרים, ההמלצה של Chromium היא לאפס אותה.</translation>
 <translation id="8570895683659698018">תחביבים ופנאי</translation>
+<translation id="8572792595597115856">בתוקף עד <ph name="DATE" /></translation>
 <translation id="8574841453995331336">מקררים ומקפיאים</translation>
 <translation id="8577192028579836704">כל האפשרויות: בדרך כלל <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">הכרטיס הווירטואלי לא זמין</translation>
@@ -4147,6 +4156,7 @@ Del</translation>
 <translation id="8617269623452051934">השימוש שלך במכשיר</translation>
 <translation id="861775596732816396">גודל 4</translation>
 <translation id="8620276786115098679">‏מעטפה – Kaku 7</translation>
+<translation id="8622864575115813231">המערכת יוצרת קשר עם המוסד הפיננסי שלך…</translation>
 <translation id="8623885649813806493">אין סיסמאות תואמות. יש להציג את כל הסיסמאות השמורות.</translation>
 <translation id="8624354461147303341">לקבלת הנחות</translation>
 <translation id="8634957317623797170">‏54x86 מ"מ</translation>
@@ -4446,6 +4456,7 @@ Del</translation>
 <translation id="9192361865877479444">Metal (Matte)</translation>
 <translation id="9192947025498305328">קוסמטיקה ידידותית לסביבה</translation>
 <translation id="9199905725844810519">ההדפסה חסומה</translation>
+<translation id="9204089334327209740">אחרי שההעלאה תסתיים, אפשר יהיה לשנות את הקבצים ב-<ph name="CLOUD_PROVIDER" />. הקבצים באחסון המקומי, כולל הקבצים באשפה, יוסרו באופן אוטומטי.</translation>
 <translation id="9205078245616868884">הנתונים שלך מוצפנים באמצעות ביטוי הסיסמה לסנכרון. יש להזין אותו כדי להתחיל בסנכרון.</translation>
 <translation id="920643408853370361">ביטוח נסיעות</translation>
 <translation id="9207861905230894330">הוספת הפריט נכשלה.</translation>
@@ -4466,6 +4477,7 @@ Del</translation>
 <translation id="937804173274050966">‏<ph name="BEGIN_BOLD" />באילו נתונים נעשה שימוש:<ph name="END_BOLD" /> נושאי המודעות מבוססים על היסטוריית הגלישה שלך מהזמן האחרון – רשימה של האתרים שבהם ביקרת באמצעות Chrome במכשיר הזה.</translation>
 <translation id="937885410143139026">‏הנתונים נשלחו אל מסוף Admin</translation>
 <translation id="939736085109172342">תיקייה חדשה</translation>
+<translation id="940524522703752213">העלאת הקובץ אל <ph name="CLOUD_PROVIDER" /> תתחיל בעוד <ph name="MINUTES" /> דקות</translation>
 <translation id="944540589955480312">‏שימוש בסיסמאות ובמפתחות הגישה שנשמרו בחשבון Google</translation>
 <translation id="945646848072568856">‏Chrome מונע מאתרים לעשות שימוש בקובצי Cookie של צד שלישי כדי לעקוב אחריך במהלך הגלישה.</translation>
 <translation id="945855313015696284">יש לבדוק את המידע שבהמשך ולמחוק כרטיסים עם שגיאות</translation>

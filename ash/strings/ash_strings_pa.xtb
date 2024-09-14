@@ -42,6 +42,7 @@
 <translation id="1148499908455722006"><ph name="USER_NAME" /> ਲਈ ਜਾਣਕਾਰੀ ਵਿੰਡੋ ਖੋਲ੍ਹੋ</translation>
 <translation id="1150989369772528668">Calendar</translation>
 <translation id="1153356358378277386">ਜੋੜਾਬੱਧ ਕੀਤੀਆਂ ਡੀਵਾਈਸਾਂ</translation>
+<translation id="1153918444040990015">ਫੋਕਸ ਧੁਨੀਆਂ ਨਾਲ ਕਨੈਕਟ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ</translation>
 <translation id="1155734730463845512">ਮੌਜੂਦਾ ਬੈਟਰੀ ਪੱਧਰ <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1157514002898505378">ਜਨਰੇਟਿਵ AI ਪ੍ਰਯੋਗਮਈ ਹੈ ਅਤੇ ਸਮੱਗਰੀ ਗਲਤ, ਗੁੰਮਰਾਹਕੁੰਨ ਜਾਂ ਅਪਮਾਨਜਨਕ ਹੋ ਸਕਦੀ ਹੈ। ਸਮੱਸਿਆ ਦੀ ਰਿਪੋਰਟ ਕਰਨ ਲਈ ਆਪਣੇ ਪ੍ਰਸ਼ਾਸਕ ਨੂੰ ਸੰਪਰਕ ਕਰੋ। <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="1160215328209699296">ਚਾਲੂ ਅਤੇ ਵਰਤੋਂ ਵਿੱਚ ਹੈ</translation>
@@ -118,7 +119,6 @@
 <translation id="1346748346194534595">ਸੱਜਾ</translation>
 <translation id="1350494136075914725">ਕਾਲ ਜਾਰੀ ਹੈ · ਟੈਬ 'ਤੇ ਸਵਿੱਚ ਕਰੋ</translation>
 <translation id="1351937230027495976">ਮੀਨੂ ਸਮੇਟੋ</translation>
-<translation id="1352537790882153971">ਤੁਸੀਂ ਤਾਰ ਵਾਲੇ ਹੈੱਡਫ਼ੋਨਾਂ ਤੋਂ ਆਪਣੇ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਦੀ ਧੁਨੀ 'ਤੇ ਨਿਗਰਾਨੀ ਰੱਖ ਸਕਦੇ ਹੋ। ਰੋਕਣ ਲਈ ਪੈਨਲ ਨੂੰ ਬੰਦ ਕਰੋ।</translation>
 <translation id="1360220746312242196">ਕਿਸੇ ਪੰਨੇ ਨੂੰ ਖੋਜਣ ਵੇਲੇ, ਖੋਜ ਲਈ ਪਿਛਲੇ ਮਿਲਾਨ 'ਤੇ ਜਾਓ</translation>
 <translation id="1360788414852622716">ਪ੍ਰੋਫਾਈਲ ਬੰਦ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ। ਇਸ ਵਿੱਚ ਕੁਝ ਮਿੰਟ ਲੱਗ ਸਕਦੇ ਹਨ।</translation>
 <translation id="1364382257761975320">ਆਪਣੀ Chromebook ਨੂੰ ਅਣਲਾਕ ਕਰਨ ਲਈ ਆਪਣੇ ਫਿੰਗਰਪ੍ਰਿੰਟ ਦੀ ਵਰਤੋਂ ਕਰੋ</translation>
@@ -176,6 +176,7 @@
 <translation id="1550523713251050646">ਹੋਰ ਵਿਕਲਪਾਂ ਲਈ ਕਲਿੱਕ ਕਰੋ</translation>
 <translation id="1555130319947370107">ਨੀਲਾ</translation>
 <translation id="1557622599341396706">ਡੈਸਕ ਦਾ ਨਾਮ ਦਿਖਾਓ</translation>
+<translation id="1567138500090284106">ਮਾਊਸ ਕੁੰਜੀਆਂ ਬਟਨ</translation>
 <translation id="1569384531973824928">ਇਸ ਨਾਲ ਉਨ੍ਹਾਂ ਸਾਰੀਆਂ ਐਪਾਂ ਅਤੇ ਵੈੱਬਸਾਈਟਾਂ ਨੂੰ ਪਹੁੰਚ ਦਿੱਤੀ ਜਾਂਦੀ ਹੈ, ਜਿਨ੍ਹਾਂ ਕੋਲ ਕੈਮਰਾ ਅਤੇ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਇਜਾਜ਼ਤਾਂ ਹਨ। ਤੁਹਾਨੂੰ ਵੈੱਬ ਪੰਨੇ ਨੂੰ ਰਿਫ੍ਰੈਸ਼ ਕਰਨ ਜਾਂ ਐਪ ਨੂੰ ਮੁੜ-ਸ਼ੁਰੂ ਕਰਨ ਦੀ ਲੋੜ ਪੈ ਸਕਦੀ ਹੈ।</translation>
 <translation id="1571697193564730395">'ਪਰੇਸ਼ਾਨ ਨਾ ਕਰੋ' ਵਿਸ਼ੇਸ਼ਤਾ ਨੂੰ ਟੌਗਲ ਕਰੋ। <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">ਵੱਡਦਰਸ਼ੀ ਦੇ ਚਾਲੂ ਹੋਣ 'ਤੇ ਜ਼ੂਮ ਘਟਾਓ</translation>
@@ -243,6 +244,7 @@
 <translation id="1787955149152357925">ਬੰਦ ਹੈ</translation>
 <translation id="1796561540704213354">ਵੈੱਬਸਾਈਟਾਂ ਦੀ ਸ਼੍ਰੇਣੀ ਵਿੱਚ ਤੁਹਾਡੇ ਵੱਲੋਂ ਦੇਖੇ ਗਏ ਪੰਨੇ ਅਤੇ ਖੋਲ੍ਹੇ ਗਏ ਪੰਨੇ ਦਿਖਾਏ ਜਾਂਦੇ ਹਨ</translation>
 <translation id="179842970735685253">Google ਦੇ ਸੇਵਾ ਦੇ ਨਿਯਮ</translation>
+<translation id="1805407494113167797">ਫੋਕਸ ਧੁਨੀਆਂ ਨੂੰ ਚਲਾਇਆ ਨਹੀਂ ਜਾ ਸਕਿਆ</translation>
 <translation id="181103072419391116">ਸਿਗਨਲ ਦੀ ਤੀਬਰਤਾ <ph name="SIGNAL_STRENGTH" />, ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਵੱਲੋਂ ਪ੍ਰਬੰਧਿਤ ਕੀਤਾ ਜਾਂਦਾ ਹੈ</translation>
 <translation id="1816896987747843206">ਇਸ ਨਾਲ ਉਨ੍ਹਾਂ ਸਾਰੀਆਂ ਐਪਾਂ ਅਤੇ ਵੈੱਬਸਾਈਟਾਂ ਨੂੰ ਕੈਮਰੇ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਦਿੱਤੀ ਜਾਂਦੀ ਹੈ, ਜਿਨ੍ਹਾਂ ਕੋਲ ਕੈਮਰਾ ਇਜਾਜ਼ਤ ਹੈ</translation>
 <translation id="1823873187264960516">ਈਥਰਨੈੱਟ: <ph name="ADDRESS" /></translation>
@@ -374,6 +376,7 @@
 <translation id="2359808026110333948">ਜਾਰੀ ਰੱਖੋ</translation>
 <translation id="2360398059912971776">ਬੈਟਰੀ</translation>
 <translation id="2361210043495191221">ਵਾਈ-ਫਾਈ ਨੂੰ ਟੌਗਲ ਕਰੋ। <ph name="STATE" />.</translation>
+<translation id="2364710166605611987">ਦਿੱਖ ਪ੍ਰਭਾਵ</translation>
 <translation id="236574664504281623"><ph name="SESSION_NAME" /> ਤੋਂ ਭੇਜਿਆ ਗਿਆ</translation>
 <translation id="2367186422933365202">ਤੁਹਾਡੀ Chromebook ਵਿੱਚ ਸਾਈਨ-ਇਨ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</translation>
 <translation id="2367972762794486313">ਐਪਸ ਦਿਖਾਓ</translation>
@@ -396,7 +399,6 @@
 <translation id="2426051945783024481">ਕੈਮਰਾ ਫ੍ਰੇਮ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਕੇਂਦਰਿਤ ਹੁੰਦਾ ਹੈ</translation>
 <translation id="2427507373259914951">ਖੱਬਾ ਕਲਿੱਕ ਕਰੋ</translation>
 <translation id="2429753432712299108">ਬਲੂਟੁੱਥ ਡਿਵਾਈਸ "<ph name="DEVICE_NAME" />" ਜੋੜਾਬੱਧ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਚਾਹੁੰਦੀ ਹੈ। ਸਵੀਕਾਰ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ, ਕਿਰਪਾ ਕਰਕੇ ਪੁਸ਼ਟੀ ਕਰੋ ਕਿ ਇਹ ਪਾਸਕੁੰਜੀ ਉਸ ਡੀਵਾਈਸ 'ਤੇ ਦਿਖਾਈ ਜਾਂਦੀ ਹੈ: <ph name="PASSKEY" /></translation>
-<translation id="2430444791038754658">ਸਮਾਂ ਹੋ ਗਿਆ। ਸਫਲ ਹੋਏ!</translation>
 <translation id="2435457462613246316">ਪਾਸਵਰਡ ਵੇਖੋ</translation>
 <translation id="2437771564543046790">ਬੈਟਰੀ ਘੱਟ ਹੈ। ਬੈਟਰੀ ਸੇਵਰ ਚਾਲੂ ਹੈ</translation>
 <translation id="243878895369688216">ਬੀਤੇ ਕੱਲ੍ਹ ਖੋਲ੍ਹੀ ਗਈ</translation>
@@ -734,6 +736,7 @@
 <translation id="3600061223661453002">ਬੰਦ ਕਰੋ</translation>
 <translation id="3604801046548457007">ਡੈਸਕ <ph name="DESK_TITILE" /> ਬਣਾਇਆ ਗਿਆ</translation>
 <translation id="3606978283550408104">ਬ੍ਰੇਲ ਡਿਸਪਲੇ ਕਨੈਕਟ ਕੀਤਾ।</translation>
+<translation id="3612634595000403645">ਦਿੱਖ ਪ੍ਰਭਾਵ ਤਰਜੀਹਾਂ</translation>
 <translation id="3615926715408477684">ਮੋਬਾਈਲ ਡਾਟਾ ਚਾਲੂ ਕਰਨ ਨਾਲ ਬਲੂਟੁੱਥ ਵੀ ਚਾਲੂ ਹੋ ਜਾਵੇਗਾ</translation>
 <translation id="3616113530831147358">ਆਡੀਓ</translation>
 <translation id="3616883743181209306">ਮੀਨੂ ਨੂੰ ਸਕ੍ਰੀਨ ਦੇ ਉੱਪਰਲੇ ਸੱਜੇ ਕੋਨੇ ਵਿੱਚ ਲਿਜਾਇਆ ਗਿਆ।</translation>
@@ -775,7 +778,6 @@
 <translation id="3706423975342040244">ਮਨੋਰੰਜਨ</translation>
 <translation id="3707093869106077605"><ph name="UNAVAILABLE_DLC_ONE" /> ਅਤੇ <ph name="UNAVAILABLE_DLC_TWO" /> ਮੌਜੂਦ ਨਹੀਂ ਹਨ।</translation>
 <translation id="3708186454126126312">ਪਹਿਲਾਂ ਤੋਂ ਕਨੈਕਟ ਕੀਤੇ</translation>
-<translation id="3711282657843423160">ਸਭ ਹੋ ਗਿਆ। ਜਾਰੀ ਰੱਖੋ!</translation>
 <translation id="3712143870407382523">ਇਸ ਪਾਸੇ ਲਈ ਵਿੰਡੋ ਨੂੰ ਚੁਣੋ</translation>
 <translation id="371370241367527062">ਮੂਹਰਲਾ ਮਾਈਕ੍ਰੋਫ਼ੋਨ</translation>
 <translation id="3713734891607377840">ਪੂਰਾ ਹੋਣ 'ਤੇ ਖੁੱਲ੍ਹੇ</translation>
@@ -845,7 +847,6 @@
 <translation id="397105322502079400">ਅਨੁਮਾਨ ਲਗਾ ਰਿਹਾ ਹੈ...</translation>
 <translation id="397726367135689299">ਸ਼ਾਇਦ ਬੈਟਰੀ ਚਾਰਜਿੰਗ ਭਰੋਸੇਯੋਗ ਨਾ ਹੋਵੇ।</translation>
 <translation id="3977512764614765090">ਬੈਟਰੀ <ph name="PERCENTAGE" />% ਹੈ ਅਤੇ ਚਾਰਜ ਹੋ ਰਹੀ ਹੈ।</translation>
-<translation id="397808938113646171">ਸਮਾਂ ਸਮਾਪਤ ਹੋਇਆ। ਬਹੁਤ ਵਧੀਆ!</translation>
 <translation id="3982013579989864579">ਕੀ ਆਡੀਓ ਆਊਟਪੁੱਟ ਨੂੰ ਸਵਿੱਚ ਕਰਨਾ ਹੈ?</translation>
 <translation id="3984536049089846927">ਅਗਲਾ ਪੰਨਾ</translation>
 <translation id="3986082989454912832">ਜਵਾਬ ਦਿਓ</translation>
@@ -894,6 +895,7 @@
 <translation id="4146671046252289537">ਅਗਲੇ ਸ਼ਬਦ ਦੇ ਅਖੀਰ 'ਤੇ ਜਾਓ</translation>
 <translation id="4146833061457621061">ਸੰਗੀਤ ਚਲਾਓ</translation>
 <translation id="4150201353443180367">ਡਿਸਪਲੇ</translation>
+<translation id="4151054805501931758">ਪੋਰਟਰੇਟ ਟੱਚ-ਅੱਪ</translation>
 <translation id="4156293514828496577"><ph name="PERCENTAGE" />% ਬੈਟਰੀ ਬਾਕੀ ਬਚੀ ਹੈ (ਲਗਭਗ <ph name="TIME_LEFT" />)।
 ਕੁਝ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਬੈਟਰੀ ਲਾਈਫ਼ ਵਧਾਉਣ ਲਈ ਸੀਮਤ ਹਨ।</translation>
 <translation id="4160919062868802509">ਇੱਕ ਤੋਂ ਵੱਧ ਆਡੀਓ ਸਰੋਤਾਂ ਦਾ ਪਤਾ ਲੱਗਿਆ</translation>
@@ -1000,7 +1002,6 @@
 <translation id="4477751544736611934">ਇਸ ਨਾਲ ਡਾਟਾ ਖਰਚ ਹੋ ਸਕਦਾ ਹੈ।
 1 ਡੀਵਾਈਸ ਕਨੈਕਟ ਕੀਤਾ ਗਿਆ।</translation>
 <translation id="4477892968187500306">ਇਸ ਡੀਵਾਈਸ ਵਿੱਚ ਸ਼ਾਇਦ ਅਜਿਹੀਆਂ ਐਪਾਂ ਹੋਣ ਜਿਨ੍ਹਾਂ ਦੀ ਪੁਸ਼ਟੀ Google ਨੇ ਨਹੀਂ ਕੀਤੀ ਹੈ।</translation>
-<translation id="4479130137987693286">ਲੋੜ ਪੈਣ 'ਤੇ ਤੁਸੀਂ ਥੋੜ੍ਹਾ ਹੋਰ ਸਮਾਂ ਸ਼ਾਮਲ ਕਰ ਸਕਦੇ ਹੋ ਜਾਂ ਆਪਣਾ ਫੋਕਸ ਸੈਸ਼ਨ ਸਮਾਪਤ ਕਰ ਸਕਦੇ ਹੋ</translation>
 <translation id="4479639480957787382">ਈਥਰਨੈਟ</translation>
 <translation id="4481530544597605423">ਅਣ-ਜੋੜਾਬੱਧ ਕੀਤੀਆਂ ਡੀਵਾਈਸਾਂ</translation>
 <translation id="4485506555414638855">ਆਪਣੇ ਫ਼ੋਨ ਦੀਆਂ ਹਾਲੀਆ ਫ਼ੋਟੋਆਂ, ਮੀਡੀਆ, ਸੂਚਨਾਵਾਂ ਅਤੇ ਐਪਾਂ ਨੂੰ ਦੇਖਣ ਦਾ ਸੈੱਟਅੱਪ ਕਰਨਾ ਖਾਰਜ ਕਰੋ</translation>
@@ -1053,7 +1054,6 @@
 
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox ਯੋਗ ਬਣਾਇਆ ਗਿਆ ਹੈ</translation>
-<translation id="4665182893355091947">ਸਭ ਹੋ ਗਿਆ। ਬਹੁਤ ਵਧੀਆ!</translation>
 <translation id="4666911709726371538">ਹੋਰ ਐਪਾਂ</translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> ਨੂੰ ਡਾਊਨਲੋਡ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="4672539464599646374">ਬੈਟਰੀ ਸੇਵਰ ਚਾਲੂ ਹੈ</translation>
@@ -1358,6 +1358,7 @@
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">ਤੁਹਾਡੇ ਪਾਸਵਰਡ ਦੀ ਪੁਸ਼ਟੀ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕੀ। ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="5632485077360054581">ਮੈਨੂੰ ਤਰੀਕਾ ਦਿਖਾਓ</translation>
+<translation id="5633826232582408011">ਜਦੋਂ ਤੁਸੀਂ 'ਲਿਖਣ ਵਿੱਚ ਮੇਰੀ ਮਦਦ ਕਰੋ' ਅਤੇ 'ਪੜ੍ਹਨ ਵਿੱਚ ਮੇਰੀ ਮਦਦ ਕਰੋ' ਵਿਸ਼ੇਸ਼ਤਾ ਨੂੰ ਚਾਲੂ ਕਰਦੇ ਹੋ, ਤਾਂ ਇਨਪੁੱਟ ਲਿਖਤ, ਦਸਤਾਵੇਜ਼ ਸਮੱਗਰੀ ਅਤੇ ਵੈੱਬ ਪੰਨਾ URL ਨੂੰ Google AI ਸਰਵਰਾਂ ਨੂੰ ਭੇਜਿਆ ਜਾਂਦਾ ਹੈ, ਤਾਂ ਜੋ ਲਿਖਣ ਸੰਬੰਧੀ ਸੁਝਾਅ, ਸਾਰਾਂਸ਼ ਤਿਆਰ ਕੀਤੇ ਜਾ ਸਕਣ, ਸਵਾਲਾਂ ਦੇ ਜਵਾਬ ਦਿੱਤੇ ਜਾ ਸਕਣ ਅਤੇ ਉਤਪਾਦ ਨੂੰ ਬਿਹਤਰ ਬਣਾਇਆ ਜਾ ਸਕੇ, ਜੋ <ph name="LINK_TO_SERVICE_TERMS" /> ਦੇ ਅਧੀਨ ਹੈ। ਕੋਈ ਵੀ ਨਿੱਜੀ, ਸੰਵੇਦਨਸ਼ੀਲ ਜਾਂ ਗੁਪਤ ਜਾਣਕਾਰੀ ਸ਼ਾਮਲ ਨਾ ਕਰੋ।</translation>
 <translation id="5648021990716966815">ਮਾਈਕ ਜੈਕ</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> ਨੂੰ ਤੁਹਾਡੇ ਧਿਆਨ ਦੀ ਲੋੜ ਹੈ।</translation>
 <translation id="5662075790140998213">ਡੈਸਕ 10</translation>
@@ -1780,7 +1781,6 @@
 <translation id="7064351585062927183">ਇਸ <ph name="DAY_OF_WEEK" /></translation>
 <translation id="7066646422045619941">ਇਹ ਨੈੱਟਵਰਕ ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਵੱਲੋਂ ਅਯੋਗ ਬਣਾਇਆ ਗਿਆ ਹੈ।</translation>
 <translation id="7067196344162293536">ਸਵੈ ਘੁੰਮਾਓ</translation>
-<translation id="7067569040620564762">ਸਮਾਂ ਹੋ ਗਿਆ। ਹੋ ਗਿਆ!</translation>
 <translation id="7068360136237591149">ਫ਼ਾਈਲਾਂ ਖੋਲ੍ਹੋ</translation>
 <translation id="7076293881109082629">ਸਾਈਨ ਇਨ ਕਰ ਰਿਹਾ ਹੈ</translation>
 <translation id="7076878155205969899">ਧੁਨੀ ਮਿਊਟ ਕਰੋ</translation>
@@ -1815,7 +1815,6 @@
 <translation id="7189412385142492784">ਸ਼ੁੱਕਰ ਗ੍ਰਹਿ ਕਿੰਨੀ ਦੂਰ ਹੈ</translation>
 <translation id="7198435252016571249">ਕੈਮਰੇ ਨੂੰ ਹੇਠਲੇ ਸੱਜੇ ਕੋਨੇ 'ਤੇ ਵਿਵਸਥਿਤ ਕੀਤਾ ਗਿਆ। ਸਿਸਟਮ ਸਰਫ਼ੇਸ ਨਾਲ ਓਵਰਲੈਪ ਕਰਦਾ ਹੈ।</translation>
 <translation id="7219573373513695352">ਕੋਈ ਡੀਵਾਈਸ ਕਨੈਕਟ ਨਹੀਂ</translation>
-<translation id="7226347284543965442">ਸਮਾਂ ਹੋ ਗਿਆ। ਕਰ ਦਿੱਤਾ!</translation>
 <translation id="7229029500464092426">ਮੈਮੋਰੀ <ph name="AVAILABLE_MEMORY" /> | <ph name="TOTAL_MEMORY" /> ਕੁੱਲ</translation>
 <translation id="7244725679040769470"><ph name="PERCENTAGE" />% ਬੈਟਰੀ ਬਾਕੀ ਬਚੀ ਹੈ। ਆਪਣੇ ਡੀਵਾਈਸ ਨੂੰ ਪਾਵਰ ਸਰੋਤ ਨਾਲ ਕਨੈਕਟ ਕਰੋ।</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />। ਇਸ Chromebook ਨੂੰ ਅੱਪਡੇਟ ਲਾਗੂ ਕਰਨ ਲਈ ਮੁੜ-ਸ਼ੁਰੂ ਹੋਣ ਦੀ ਲੋੜ ਹੈ। ਇਸ ਵਿੱਚ 1 ਮਿੰਟ ਲੱਗ ਸਕਦਾ ਹੈ।</translation>
@@ -1972,6 +1971,7 @@
 <translation id="7768784765476638775">ਚੁਣੋ ਅਤੇ ਸੁਣੋ</translation>
 <translation id="7769299611924763557">ਤੁਹਾਡੇ GIF ਨੂੰ ਜਲਦ ਹੀ ਤਿਆਰ ਕੀਤਾ ਜਾਵੇਗਾ</translation>
 <translation id="7773536009433685931">ਇਸਦੀ ਬਜਾਏ WiFi ਚਾਲੂ ਕਰੋ</translation>
+<translation id="77747521138552256">ਪਿੰਨ ਦਾਖਲ ਕਰਨ ਦੀਆਂ ਬਹੁਤ ਸਾਰੀਆਂ ਕੋਸ਼ਿਸ਼ਾਂ ਕੀਤੀਆਂ ਗਈਆਂ। <ph name="TIME_LEFT" /> ਇੰਤਜ਼ਾਰ ਕਰੋ ਅਤੇ ਦੁਬਾਰਾ ਪਿੰਨ ਅਜ਼ਮਾਓ ਜਾਂ ਸਾਈਨ-ਇਨ ਕਰਨ ਲਈ ਤੁਰੰਤ ਪਾਸਵਰਡ ਦਾਖਲ ਕਰੋ।</translation>
 <translation id="7780094051999721182">ਸ਼ਾਰਟਕੱਟ</translation>
 <translation id="7780159184141939021">ਸਕ੍ਰੀਨ ਘੁਮਾਓ</translation>
 <translation id="7781829728241885113">ਕੱਲ੍ਹ</translation>
@@ -2169,7 +2169,6 @@
 <translation id="8443879455002739353">"ਕਾਪੀ ਕਰੋ"</translation>
 <translation id="8444246603146515890">ਡੈਸਕ <ph name="DESK_TITILE" /> ਕਿਰਿਆਸ਼ੀਲ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="8446884382197647889">ਹੋਰ ਜਾਣੋ</translation>
-<translation id="8452090802952003258">ਆਪਣੇ ਮਾਈਕ ਦੀ ਧੁਨੀ ਸੁਣੋ</translation>
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
 <translation id="8462305545768648477">'ਚੁਣੋ ਅਤੇ ਸੁਣੋ' ਨੂੰ ਬੰਦ ਕਰੋ</translation>
 <translation id="8468806060683421065">ਨਿਯਤ ਤਾਰੀਖ <ph name="DUE_DATE_AND_TIME" /> ਹੈ</translation>
@@ -2231,7 +2230,6 @@
 <translation id="8683506306463609433">ਪ੍ਰਦਰਸ਼ਨ ਟ੍ਰੇਸਿੰਗ ਕਿਰਿਆਸ਼ੀਲ ਹੈ</translation>
 <translation id="8703634754197148428">ਰਿਕਾਰਡਿੰਗ ਸ਼ੁੁਰੂ ਕਰੋ। ਇੱਕ ਵਾਰ ਰਿਕਾਰਡਿੰਗ ਸ਼ੁਰੂ ਹੋਣ ਤੋਂ ਬਾਅਦ, ਸ਼ੈਲਫ 'ਤੇ ਜਾਣ ਲਈ ਅਤੇ 'ਰਿਕਾਰਡਿੰਗ ਬੰਦ ਕਰੋ' ਬਟਨ ਲੱਭਣ ਲਈ Alt + Shift + L ਦੀ ਵਰਤੋਂ ਕਰੋ</translation>
 <translation id="8704155109538237473">ਤਸਵੀਰ-ਵਿੱਚ-ਤਸਵੀਰ ਵਿੰਡੋ 'ਤੇ ਫੋਕਸ ਕਰੋ</translation>
-<translation id="8708657523363087260">ਸਾਈਡ ਟੋਨ ਨੂੰ ਟੌਗਲ ਕਰੋ</translation>
 <translation id="870917907284186124">ਡਿਕਟੇਸ਼ਨ ਨੂੰ ਚਾਲੂ/ਬੰਦ ਕਰੋ (ਆਪਣੀ ਅਵਾਜ਼ ਨਾਲ ਟਾਈਪ ਕਰੋ)</translation>
 <translation id="8711169534266271368">ਗੇਮ ਡੈਸ਼ਬੋਰਡ ਦੇ ਵਿਕਲਪ</translation>
 <translation id="8712637175834984815">ਸਮਝ ਲਿਆ</translation>
@@ -2289,6 +2287,7 @@
 <translation id="8876661425082386199">ਆਪਣੇ ਕਨੈਕਸ਼ਨ ਦੀ ਜਾਂਚ ਕਰੋ</translation>
 <translation id="8877788021141246043">ਕੋਈ ਯਾਦ-ਸੂਚਨਾ ਸੈੱਟ ਕਰੋ</translation>
 <translation id="8878886163241303700">ਸਕ੍ਰੀਨ ਦਾ ਵਿਸਤਾਰ ਕਰ ਰਿਹਾ ਹੈ</translation>
+<translation id="8885424115080869847">YouTube Music ਨਾਲ ਕਨੈਕਟ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ</translation>
 <translation id="888982883502837004">ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਲਈ ਫ਼ਰਮਵੇਅਰ ਅੱਪਡੇਟ ਉਪਲਬਧ ਹਨ। ਸਮੀਖਿਆ ਕਰਨ ਅਤੇ ਅੱਪਡੇਟ ਕਰਨ ਲਈ ਕਲਿੱਕ ਕਰੋ।</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> ਨੂੰ ਪੱਕੇ ਤੌਰ 'ਤੇ ਮਿਟਾਇਆ ਜਾਵੇਗਾ</translation>
 <translation id="889790758758811533"><ph name="PERCENTAGE" />% ਬੈਟਰੀ ਬਾਕੀ ਬਚੀ ਹੈ (ਲਗਭਗ <ph name="TIME_LEFT" />)। ਆਪਣੇ ਡੀਵਾਈਸ ਨੂੰ ਪਾਵਰ ਸਰੋਤ ਨਾਲ ਕਨੈਕਟ ਕਰੋ।</translation>

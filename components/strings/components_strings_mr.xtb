@@ -712,6 +712,7 @@
 <translation id="2265356434276802347">या धोरणामध्ये <ph name="MAX_ITEMS_LIMIT" /> पेक्षा जास्त वैशिष्ट्यीकृत नोंदी असू शकत नाहीत.</translation>
 <translation id="2267047181501709434">तुमची ओळख पडताळत आहे...</translation>
 <translation id="2268044343513325586">सुधारित करा</translation>
+<translation id="2268966938956566076"><ph name="MINUTES" /> मिनिटांनी अपलोड करा</translation>
 <translation id="2270484714375784793">फोन नंबर</translation>
 <translation id="2276057643614339130">प्रिंट बेस</translation>
 <translation id="2277103315734023688">पुढे जा</translation>
@@ -1110,6 +1111,7 @@
 <translation id="3062655045399308513">ब्राउझिंग डेटा हटवा...</translation>
 <translation id="306573536155379004">गेमला सुरुवात झाली.</translation>
 <translation id="3067505415088964188">किंमत कमी आहे</translation>
+<translation id="3068118691172921711">तुमचा <ph name="CLOUD_PROVIDER" /> मधील फाइल अपलोड १ मिनिटाने सुरू होईल</translation>
 <translation id="3076865167425975822">ऑपरेटिंग सिस्टीम</translation>
 <translation id="3080254622891793721">ग्राफिक</translation>
 <translation id="3082007635241601060">उपलब्ध असतील, तेव्हा पर्सनलाइझ केलेल्या सवलती शोधण्यासाठी Google ला तुमची कार्ट वापरू द्या</translation>
@@ -1121,6 +1123,7 @@
 <translation id="3099619114405539473">उपलब्ध कॅमेरा वापरा (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="3102312643185441063">बचत</translation>
 <translation id="3103188521861412364">स्टॉक आणि बाँड</translation>
+<translation id="3103535543639438037">समान उत्पादनांची बाजूबाजूला तुलना करा</translation>
 <translation id="3105172416063519923">मालमत्ता आयडी:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />सुरक्षित DNS कॉन्फिगरेशन तपासत आहे<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">मधला ट्रे</translation>
@@ -1298,6 +1301,7 @@
 <translation id="3407789382767355356">तृतीय पक्ष साइन इन</translation>
 <translation id="340924996148642843">तुलना करणे सध्या उपलब्ध नाही</translation>
 <translation id="3409896703495473338">सुरक्षा सेटिंग्ज व्यवस्थापित करा</translation>
+<translation id="3411091017011773343"><ph name="HOURS" /> तासांनी अपलोड करा</translation>
 <translation id="3414275587143250384">डिस्ट्रिब्यूटेड आणि क्लाउड कॉंप्युटिंग</translation>
 <translation id="3414952576877147120">आकार:</translation>
 <translation id="341513675006332771">Chrome Dino गेम खेळा बटण, Chrome मध्ये Dino Run गेम खेळण्यासाठी ॲक्टिव्हेट करा</translation>
@@ -1892,7 +1896,6 @@
 <translation id="4451135742916150903">HID डिव्हाइसशी कनेक्ट करण्याची विनंती करू शकते</translation>
 <translation id="4451684391620232683">वापरकर्त्याला प्रेझेंट केलेला मजकूर:</translation>
 <translation id="4452328064229197696">तुम्ही नुकताच वापरलेला पासवर्ड डेटा भंगामध्ये आढळला होता. तुमची खाती सुरक्षित करण्यासाठ, Google पासवर्ड व्यवस्थापक तुमचे सेव्ह केलेले पासवर्ड तपासण्याची शिफारस करतो.</translation>
-<translation id="4452957520362597816">वेब अ‍ॅप्स इंस्टॉल करण्याची विनंती करा</translation>
 <translation id="4456937135469235202">साहसी प्रवास</translation>
 <translation id="4464826014807964867">तुमच्या संस्थेची माहिती असलेल्या वेबसाइट</translation>
 <translation id="4466576951214254884">शैक्षणिक कर्ज आणि शैक्षणिक अर्थसाहाय्य</translation>
@@ -1964,6 +1967,7 @@
 <translation id="4628678854894591460">सुट्ट्यांच्या ऑफर</translation>
 <translation id="4628948037717959914">फोटो</translation>
 <translation id="4629370161347991046">A4x6</translation>
+<translation id="462989688138616749">तुमचा <ph name="CLOUD_PROVIDER" /> मधील फाइल अपलोड <ph name="HOURS" /> तासांनी सुरू होईल</translation>
 <translation id="4631649115723685955">कॅशबॅक लिंक केला</translation>
 <translation id="4631881646528206880">व्हर्च्युअल कार्डची नोंदणी</translation>
 <translation id="4635278307999235413">डेटा ॲडमिन कन्सोलवर पाठवत आहे</translation>
@@ -2084,6 +2088,7 @@
 <translation id="484988093836683706">डिव्हाइस अनलॉक वापरा</translation>
 <translation id="4850886885716139402">पहा</translation>
 <translation id="4854853140771946034">Google Keep मध्ये नवीन टीप झटपट तयार करा</translation>
+<translation id="4855395119669662878">तुमचा ॲडमिनिस्ट्रेटर तुमच्या फाइल <ph name="CLOUD_PROVIDER" /> मध्ये अपलोड करण्यास <ph name="DATE_TIME" /> रोजी सुरुवात करेल. तुमचा फाइल अपलोड पूर्ण होईपर्यंत तुमचे डिव्हाइस कनेक्ट केलेले ठेवा. अपलोडदरम्यान, तुम्ही फक्त स्थानिक फाइल रीड करू शकाल.</translation>
 <translation id="485902285759009870">कोडची पडताळणी करत आहे...</translation>
 <translation id="4860260582253463350">YouTube वर पुढे सुरू ठेवण्यासाठी, आम्हाला हे तुम्हीच असल्याची खात्री करायची आहे. तुमच्या आई-वडिलांनी किंवा पालकांनी Family Link मध्ये सेट केलेली सेटिंग्ज तुम्हाला मिळतील.</translation>
 <translation id="4864406669374375262">आवृत्तीची स्ट्रिंग क्लिपबोर्डवर कॉपी केली</translation>
@@ -2139,6 +2144,7 @@
 <translation id="4933468175699107356">कोणत्याही फॉर्मवर, तुमचे नाव किंवा पत्ता यांसारखी सेव्ह केलेली माहिती ऑटोफिल करण्यासाठी राइट क्लिक करा</translation>
 <translation id="4934780484581617878">विंडो व्यवस्थापन</translation>
 <translation id="4936134414789135531">घातलेले <ph name="VALUE_NAME" /> आढळले नाही.</translation>
+<translation id="4936573216809994970">तुमचा <ph name="CLOUD_PROVIDER" /> मधील फाइल अपलोड १ तासाने सुरू होईल</translation>
 <translation id="4936675324097895694">वित्तविषयक</translation>
 <translation id="4943620199112228840">तुमचे मायक्रोफोन वापरा</translation>
 <translation id="4943872375798546930">परिणाम नाहीत</translation>
@@ -2312,6 +2318,7 @@
 <translation id="5269225904387178860">क्वाड पंच बॉटम</translation>
 <translation id="5271381225185906340">"<ph name="DATA_CONTROLS_ATTRIBUTE" />" हा "<ph name="DATA_CONTROLS_RESTRICTION" />" साठीचा सपोर्ट असलेला नियम नाही</translation>
 <translation id="5273658854610202413">चेतावणी: PolicyListMultipleSourceMergeList मध्ये नमूद केल्याप्रमाणे हे धोरण विलीन केले नाही कारण ते शब्दकोश धोरणांचा भाग नाही जो विलीन केला जाऊ शकतो.</translation>
+<translation id="5278778426231952189">आता अपलोड करा</translation>
 <translation id="5279286380302340275">डाउनलोड व्यवस्थापित करा</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">दस्तऐवज गुणधर्म</translation>
@@ -3816,6 +3823,7 @@
 <translation id="8030729864112325446">व्‍यावसायिक आणि प्रौढ शिक्षण</translation>
 <translation id="8032546467100845887">ट्रान्स्परसी</translation>
 <translation id="8035152190676905274">पेन</translation>
+<translation id="8035264638816032066">तुम्ही सारणीमध्ये जोडलेली टॅबची शीर्षके आणि पेजच्या URLs या गोष्टी Google ला पाठवल्या जातात</translation>
 <translation id="8037117624646282037">डिव्हाइस अलीकडे कोणी वापरले</translation>
 <translation id="8037357227543935929">विचारा (डीफॉल्ट)</translation>
 <translation id="803771048473350947">फाइल</translation>
@@ -4009,6 +4017,7 @@
 <translation id="8381674639488873545">हे शुल्क एका वेळचे किंवा आवर्ती असू शकते आणि ते उघड नसणे शक्य आहे. <ph name="BEGIN_LINK" />तरीही दाखवा<ph name="END_LINK" /></translation>
 <translation id="8382097126743287270">ऑटोमॅटिक फुल स्क्रीन</translation>
 <translation id="838307841291975086">स्टेशन वॅगन</translation>
+<translation id="8388286357548915205">सर्व अतिथींसाठी वापरा</translation>
 <translation id="8389532092404711541">सामान्यपणे <ph name="LOW_PRICE" /></translation>
 <translation id="8389940864052787379">कस्टम आणि परफॉर्मन्स वाहने</translation>
 <translation id="8390725133630534698">अ‍ॅडमिनिस्ट्रेटर धोरणाद्वारे <ph name="ORIGIN_NAME" /> वरून <ph name="VM_NAME" /> वर शेअर करणे ब्लॉक केले आहे</translation>
@@ -4115,6 +4124,7 @@
 <translation id="8564466070529550495">सध्या व्हर्च्युअल कार्ड उपलब्ध नाही, कृपया नंतर पुन्हा प्रयत्न करा.</translation>
 <translation id="8564985650692024650">जर तुम्ही तुमच्या <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> पासवर्डचा इतर साइटवर पुन्हा वापर केला असेल तर Chromium तुम्हाला तो रीसेट करण्याची शिफारस करतो.</translation>
 <translation id="8570895683659698018">छंद आणि मोकळा वेळ</translation>
+<translation id="8572792595597115856"><ph name="DATE" /> पर्यंत वैध आहे</translation>
 <translation id="8574841453995331336">रेफ्रिजरेटर आणि फ्रीजर</translation>
 <translation id="8577192028579836704">सर्व पर्याय सामान्यपणे <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">व्हर्च्युअल कार्ड उपलब्ध नाही</translation>
@@ -4136,6 +4146,7 @@
 <translation id="8617269623452051934">तुमच्या डिव्हाइसचा वापर</translation>
 <translation id="861775596732816396">आकार ४</translation>
 <translation id="8620276786115098679">एन्व्हलप काकू ७</translation>
+<translation id="8622864575115813231">तुमच्या आर्थिक संस्थेशी संपर्क साधत आहे...</translation>
 <translation id="8623885649813806493">जुळणारे कोणतेही पासवर्ड नाहीत. सेव्ह केलेले सर्व पासवर्ड दाखवा.</translation>
 <translation id="8624354461147303341">सवलती मिळवा</translation>
 <translation id="8634957317623797170">५४ x ८६ मिमी</translation>
@@ -4435,6 +4446,7 @@
 <translation id="9192361865877479444">मेटल (मॅट)</translation>
 <translation id="9192947025498305328">आरोग्याला अनुकूल अशा सौंदर्याबाबत आशय</translation>
 <translation id="9199905725844810519">प्रिंट करणे ब्लॉक केले</translation>
+<translation id="9204089334327209740">अपलोड पूर्ण झाल्यावर, तुम्ही <ph name="CLOUD_PROVIDER" /> मध्ये तुमच्या फाइलमध्ये फेरबदल करू शकता. ट्रॅश मधील कोणत्याही फाइलसह स्थानिक स्टोरेज आपोआप काढून टाकले जाईल.</translation>
 <translation id="9205078245616868884">तुमचा डेटा तुमच्या सिंक सांकेतिक पासफ्रेझासह एंक्रिप्ट केलेला केला जातो. सिंक सुरू करण्यासाठी तो एंटर करा.</translation>
 <translation id="920643408853370361">प्रवास विमा</translation>
 <translation id="9207861905230894330">लेख जोडण्यात अयशस्वी.</translation>
@@ -4455,6 +4467,7 @@
 <translation id="937804173274050966"><ph name="BEGIN_BOLD" />कोणता डेटा वापरला जातो:<ph name="END_BOLD" /> तुमचे जाहिरातीचे विषय हे तुमचा अलीकडील ब्राउझिंग इतिहास, म्हणजेच तुम्ही या डिव्हाइसवर Chrome वापरून भेट दिलेल्या साइटच्या सूचीवर आधारित असतात.</translation>
 <translation id="937885410143139026">डेटा ॲडमिन कन्सोलला पाठवला</translation>
 <translation id="939736085109172342">नवीन फोल्‍डर</translation>
+<translation id="940524522703752213">तुमचा <ph name="CLOUD_PROVIDER" /> मधील फाइल अपलोड <ph name="MINUTES" /> मिनिटांनी सुरू होईल</translation>
 <translation id="944540589955480312">तुमच्या Google खाते मध्ये सेव्ह केलेले पासवर्ड आणि पासकी वापरा</translation>
 <translation id="945646848072568856">तुम्ही ब्राउझ करत असताना तुम्हाला ट्रॅक करण्यासाठी Chrome साइटला तृतीय पक्ष कुकी वापरण्यापासून ब्लॉक करते.</translation>
 <translation id="945855313015696284">खालील माहिती तपासा आणि कोणतीही चुकीची कार्डे हटवा</translation>

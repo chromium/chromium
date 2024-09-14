@@ -351,6 +351,7 @@
 <translation id="2653659639078652383">שליחה</translation>
 <translation id="2656405586795711023">אפליקציות אינטרנט</translation>
 <translation id="2664252182805397291">הצגת אתרים</translation>
+<translation id="2666092431469916601">למעלה</translation>
 <translation id="2669454659051515572">כל מי שמשתמש במכשיר הזה יכול לראות את הקבצים שהורדו</translation>
 <translation id="2702516483241149200">חדש: ניתן לשתף קישור שגולל לטקסט הזה</translation>
 <translation id="2705073298859543115">יצירת סיכום</translation>
@@ -452,6 +453,7 @@
 <translation id="3072980200212375806">‏האפליקציה <ph name="APP_NAME" /> תיפתח ב-Chrome. המשך הפעולה מבטא הסכמה <ph name="BEGIN_LINK1" />לתנאים ולהגבלות של Google<ph name="END_LINK1" /> ו<ph name="BEGIN_LINK2" />לתנאים ולהגבלות הנוספים של Google Chrome ו-ChromeOS<ph name="END_LINK2" />. גם <ph name="BEGIN_LINK3" />מדיניות הפרטיות<ph name="END_LINK3" /> חלה.</translation>
 <translation id="3080525922482950719">ניתן לשמור דפים לקריאה במועד מאוחר יותר או במצב אופליין</translation>
 <translation id="3087218211037573995">‏חלק מהסיסמאות ששמורות רק במכשיר הזה יפסיקו לפעול בקרוב. אפשר להעביר את הסיסמאות האלה למנהל הסיסמאות של Google.</translation>
+<translation id="3087734570205094154">תחתית</translation>
 <translation id="3091010850649238832">הצגת התוכן שבלוח</translation>
 <translation id="3098745985164956033">‏חלק מהתמונות נשלחות אל Google כדי לשפר עבורך את התיאורים</translation>
 <translation id="3114507951000454849">קראת חדשות היום? <ph name="NEWS_ICON" /></translation>
@@ -689,7 +691,6 @@
 <translation id="4355272626458588338">כדי שיהיה קל לחזור לדפים שחשובים לך, אפשר להוסיף אותם לסימניות</translation>
 <translation id="4357206670025518404">+<ph name="COUNT_NUMBER" /></translation>
 <translation id="4359809482106103048">סיכום אמצעי הבטיחות</translation>
-<translation id="4363222835916186793">ההתראות לגבי המוצר הזה הושבתו</translation>
 <translation id="4378154925671717803">טלפון</translation>
 <translation id="4380055775103003110">אם הבעיה נמשכת, אפשר לנסות להמשיך בדרכים אחרות ב-<ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="4384468725000734951">‏שימוש ב-Sogou לחיפוש</translation>
@@ -750,6 +751,7 @@
 <translation id="4624065194742029982">‏מצב פרטי ב-Chrome</translation>
 <translation id="4634124774493850572">שימוש בסיסמה</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{סיסמה אחת שנחשפה}one{# סיסמאות שנחשפו}two{# סיסמאות שנחשפו}other{# סיסמאות שנחשפו}}</translation>
+<translation id="4642472735733036929">המעקב אחר מחירים הופסק</translation>
 <translation id="4645146721047390964">‏במצב פרטי, אתרים לא יכולים להשתמש בקובצי ה-cookie כדי לקבל מידע על פעילות הגלישה שלך באתרים שונים, למשל לצורך התאמה אישית של מודעות. יכול להיות שתכונות באתרים מסוימים לא יפעלו כמו שצריך.</translation>
 <translation id="4650364565596261010">ברירת מחדל של המערכת</translation>
 <translation id="465657074423018424">גלישה בטוחה מגינה עליך מפני אתרי מרמה. אם משביתים את הגלישה הבטוחה, חשוב להיזהר מאוד כשגולשים באתרים לא מוכרים, במיוחד לפני שמזינים סיסמאות.</translation>
@@ -1093,6 +1095,7 @@
 <translation id="6210748933810148297">אינך <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">מוצגת תצוגה מקדימה של הדף</translation>
 <translation id="6221633008163990886">יש לבטל את הנעילה כדי לייצא סיסמאות</translation>
+<translation id="6225572914528673855">סרגל הכתובות</translation>
 <translation id="6232535412751077445">‏אם תופעל התכונה 'לא לעקוב (DNT), בקשה זו תיכלל בתנועת הגלישה שלך. השפעת הבקשה תלויה באופן הפעולה של כל אתר – אם הוא מגיב לבקשה או לא, וכיצד הוא מפרש אותה.
 
 לדוגמה, ייתכן שבתגובה לבקשה, אתרים מסוימים יציגו מודעות שאינן מבוססות על אתרים אחרים שבהם ביקרת. אתרים רבים ימשיכו לאסוף את נתוני הגלישה שלך ולהשתמש בהם, למשל כדי לשפר את האבטחה, כדי לספק תוכן, מודעות והמלצות וכדי ליצור נתונים סטטיסטיים לדיווח.</translation>

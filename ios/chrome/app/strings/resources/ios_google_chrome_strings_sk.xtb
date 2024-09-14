@@ -96,6 +96,7 @@ Pred odhlásením skúste počkať niekoľko minút. Ak sa odhlásite teraz, tie
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{Dochádza k tomu, keď Chrome nepoužívate {THRESHOLD} minútu}few{Dochádza k tomu, keď Chrome nepoužívate {THRESHOLD} minúty}many{Dochádza k tomu, keď Chrome nepoužívate {THRESHOLD} minúty}other{Dochádza k tomu, keď Chrome nepoužívate {THRESHOLD} minút}}</translation>
 <translation id="3367797402528056312">Dokončite nastavovanie Chromu</translation>
 <translation id="3371064404604898522">Nastaviť Chrome ako predvolený prehliadač</translation>
+<translation id="3399930248910934354">Otvoriť nastavenia Chromu</translation>
 <translation id="3472587960215700950">Chrome vám pomocou Máp Google poskytuje trasy a miestne informácie o rozpoznaných adresách.</translation>
 <translation id="3503014945441706099">Získajte Zlepšené bezpečné prehliadanie aj pre tento profil Chromu</translation>
 <translation id="3522659714780527202">Ak chcete vidieť svoje karty vo všetkých zariadeniach, v ktorých používate Chrome, zapnite synchronizáciu</translation>

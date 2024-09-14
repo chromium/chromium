@@ -153,6 +153,7 @@
 <translation id="1672499492233627739">Feed video webcam</translation>
 <translation id="1676557873873341166">Merekam video</translation>
 <translation id="1684279041537802716">Warna aksen</translation>
+<translation id="1697278726914783200">Rekam</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Keberadaan DNS Resolver</translation>
 <translation id="1708602061922134366">Warna biru Google</translation>
@@ -703,6 +704,7 @@
 <translation id="458794348635939462">Gagal me-resolve semua host</translation>
 <translation id="4593212453765072419">Autentikasi Proxy dibutuhkan</translation>
 <translation id="4594021849294327751">Buat transkrip</translation>
+<translation id="4602266091140407479">Mikrofon</translation>
 <translation id="4607282946861182308">Tidak dapat membuat gambar ini. Coba perintah lain.</translation>
 <translation id="4609350030397390689">Kurangi kecerahan keyboard</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> dari <ph name="TOTAL_PAGE_NUMBER" />. Tekan enter untuk membatalkan tugas pencetakan.</translation>
@@ -1011,6 +1013,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6188737759358894319">Dibuat pada <ph name="DATE" /></translation>
 <translation id="6189418609903030344">Kapasitas baterai menurun seiring penggunaan</translation>
+<translation id="6189987971574353264">Putar</translation>
 <translation id="6191293864534840972">Format server nama salah</translation>
 <translation id="6196607555925437199">Buat ulang</translation>
 <translation id="6205145102504628069">Aliran Awan</translation>
@@ -1642,8 +1645,6 @@ Download model transkripsi (hingga 100 MB) untuk mendapatkan transkripsi ini.</t
 <translation id="951780398843003443">Membandingkan suara di sepanjang rekaman sehingga transkrip dapat menunjukkan ucapan setiap pembicara beserta waktunya</translation>
 <translation id="952992212772159698">Tidak diaktifkan</translation>
 <translation id="95718197892796296">tanah liat</translation>
-<translation id="959792926760890141">Reset keamanan akan menonaktifkan ekstensi browser Chrome dan mereset jaringan serta setelan lainnya ke setelan default yang aman.
-          Mesin telusur default akan direset, tetapi tab, file, cookie, dan histori Anda tidak akan diubah.</translation>
 <translation id="960719561871045870">Kode operator</translation>
 <translation id="965918541715156800">kuning dan hijau kebiruan</translation>
 <translation id="966787709310836684">menu</translation>

@@ -1897,7 +1897,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="4451135742916150903">Får begära tillstånd att ansluta till HID-enheter</translation>
 <translation id="4451684391620232683">Text som visas för användaren:</translation>
 <translation id="4452328064229197696">Lösenordet som du precis använde har läckt ut vid ett dataintrång. Du bör se över dina sparade lösenord för att skydda dina konton.</translation>
-<translation id="4452957520362597816">Fråga om att installera webbappar</translation>
 <translation id="4456937135469235202">Äventyrsresor</translation>
 <translation id="4464826014807964867">Webbplatser med information från organisationen</translation>
 <translation id="4466576951214254884">Studielån och stipendier</translation>
@@ -4018,6 +4017,7 @@ Mer information.
 <translation id="8381674639488873545">Debiteringen kan göras en gång eller återkommande och det behöver inte framgå tydligt att detta händer. <ph name="BEGIN_LINK" />Visa ändå<ph name="END_LINK" /></translation>
 <translation id="8382097126743287270">Automatisk helskärm</translation>
 <translation id="838307841291975086">Kombi</translation>
+<translation id="8388286357548915205">Använd för alla gäster</translation>
 <translation id="8389532092404711541">Brukar kosta <ph name="LOW_PRICE" /></translation>
 <translation id="8389940864052787379">Specialutrustade bilar och sportbilar</translation>
 <translation id="8390725133630534698">Möjligheten att dela från <ph name="ORIGIN_NAME" /> till <ph name="VM_NAME" /> har blockerats av administratörspolicyn</translation>

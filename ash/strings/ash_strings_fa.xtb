@@ -118,7 +118,6 @@
 <translation id="1346748346194534595">راست</translation>
 <translation id="1350494136075914725">درحال انجام · رفتن به برگه</translation>
 <translation id="1351937230027495976">کوچک کردن منو</translation>
-<translation id="1352537790882153971">می‌توانید صدای میکروفونتان را ازطریق هدفون سیمی بررسی کنید. برای متوقف کردن بررسی، پانل را ببندید.</translation>
 <translation id="1360220746312242196">رفتن به مورد منطبق قبلی در جستجو هنگام جستجوی صفحه</translation>
 <translation id="1360788414852622716">درحال غیرفعال کردن نمایه. ممکن است چند دقیقه طول بکشد.</translation>
 <translation id="1364382257761975320">‏برای باز کردن قفل Chromebook، از اثر انگشتتان استفاده کنید</translation>
@@ -397,7 +396,6 @@
 <translation id="2426051945783024481">قاب دوربین به‌طور خودکار در مرکز قرار گرفت</translation>
 <translation id="2427507373259914951">کلیک چپ</translation>
 <translation id="2429753432712299108">دستگاه بلوتوث «<ph name="DEVICE_NAME" />» برای مرتبط‌سازی به مجوز نیاز دارد. قبل از پذیرش، لطفاً تأیید کنید که این گذرکلید در آن دستگاه نشان داده می‌شود: <ph name="PASSKEY" /></translation>
-<translation id="2430444791038754658">وقت تمام. روی شانس هستید!</translation>
 <translation id="2435457462613246316">نمایش گذرواژه</translation>
 <translation id="2437771564543046790">باتری ضعیف است. «بهینه‌سازی باتری» روشن است</translation>
 <translation id="243878895369688216">دیروز باز شده است</translation>
@@ -777,7 +775,6 @@
 <translation id="3706423975342040244">سرگرمی</translation>
 <translation id="3707093869106077605">‫<ph name="UNAVAILABLE_DLC_ONE" /> و <ph name="UNAVAILABLE_DLC_TWO" /> دردسترس نیستند</translation>
 <translation id="3708186454126126312">قبلاً متصل‌شده</translation>
-<translation id="3711282657843423160">تمام! کارتان عالی است!</translation>
 <translation id="3712143870407382523">پنجره‌ای برای این سمت انتخاب کنید</translation>
 <translation id="371370241367527062">میکروفون جلو</translation>
 <translation id="3713734891607377840">بعداز تکمیل بارگیری باز می‌شود</translation>
@@ -847,7 +844,6 @@
 <translation id="397105322502079400">در حال محاسبه…</translation>
 <translation id="397726367135689299">شارژ باتری ممکن است نامطمئن باشد.</translation>
 <translation id="3977512764614765090">شارژ باتری <ph name="PERCENTAGE" />٪ است و باتری درحال شارژ است.</translation>
-<translation id="397808938113646171">وقت تمام است. آفرین!</translation>
 <translation id="3982013579989864579">خروجی صوتی تغییر کند؟</translation>
 <translation id="3984536049089846927">صفحه بعدی</translation>
 <translation id="3986082989454912832">پاسخ</translation>
@@ -1003,7 +999,6 @@
 <translation id="4477751544736611934">ممکن است هزینه داده دربر داشته باشد.
 ‫۱ دستگاه متصل است.</translation>
 <translation id="4477892968187500306">‏ممکن است این دستگاه حاوی برنامه‌هایی باشد که Google آن‌ها را تأیید نکرده است.</translation>
-<translation id="4479130137987693286">درصورت نیاز می‌توانید کمی زمان بیشتر اضافه کنید یا جلسه تمرکز را پایان دهید</translation>
 <translation id="4479639480957787382">اترنت</translation>
 <translation id="4481530544597605423">دستگاه‌های لغو ارتباط‌شده</translation>
 <translation id="4485506555414638855">بستن راه‌اندازی مشاهده عکس‌ها، رسانه‌ها، اعلان‌ها، و برنامه‌های جدید تلفن</translation>
@@ -1056,7 +1051,6 @@
 
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">‏ChromeVox فعال شد</translation>
-<translation id="4665182893355091947">تمام! آفرین!</translation>
 <translation id="4666911709726371538">برنامه‌های بیشتر</translation>
 <translation id="4667099493359681081">درحال بارگیری <ph name="FILENAME" /></translation>
 <translation id="4672539464599646374">«بهینه‌سازی باتری» روشن شد</translation>
@@ -1782,7 +1776,6 @@
 <translation id="7064351585062927183"><ph name="DAY_OF_WEEK" /> پیشِ رو</translation>
 <translation id="7066646422045619941">این شبکه توسط سرپرست شما غیرفعال شده است.</translation>
 <translation id="7067196344162293536">چرخش خودکار</translation>
-<translation id="7067569040620564762">وقت تمام. بهتر از این نمی‌شود!</translation>
 <translation id="7068360136237591149">‏Open files (فایل‌ها را باز کن)</translation>
 <translation id="7076293881109082629">در حال ورود به سیستم</translation>
 <translation id="7076878155205969899">بی‌صدا کردن</translation>
@@ -1817,7 +1810,6 @@
 <translation id="7189412385142492784">‏How far is Venus (فاصله سیاره ناهید از ما چقدر است)</translation>
 <translation id="7198435252016571249">دوربین به گوشه پایین سمت راست چسبید. تداخلی با سطح سیستم روی داد.</translation>
 <translation id="7219573373513695352">دستگاهی متصل نیست</translation>
-<translation id="7226347284543965442">وقت تمام. موفق شدید!</translation>
 <translation id="7229029500464092426">حافظه <ph name="AVAILABLE_MEMORY" /> | مجموع <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7244725679040769470">‫<ph name="PERCENTAGE" />٪ از شارژ باتری باقی مانده است. دستگاه را به برق وصل کنید.</translation>
 <translation id="7246071203293827765">‏<ph name="UPDATE_TEXT" />. این Chromebook برای اعمال به‌روزرسانی باید بازراه‌اندازی شود. این کار ممکن است تا ۱ دقیقه طول بکشد.</translation>
@@ -2172,7 +2164,6 @@
 <translation id="8443879455002739353">«کپی کردن»</translation>
 <translation id="8444246603146515890">میز <ph name="DESK_TITILE" /> فعال شد</translation>
 <translation id="8446884382197647889">بیشتر بدانید</translation>
-<translation id="8452090802952003258">گوش دادن به صدای میکروفون</translation>
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + ر</translation>
 <translation id="8462305545768648477">بستن «انتخاب برای شنیدن»</translation>
 <translation id="8468806060683421065">تاریخ سررسید: <ph name="DUE_DATE_AND_TIME" /></translation>
@@ -2234,7 +2225,6 @@
 <translation id="8683506306463609433">ردیابی عملکرد فعال است</translation>
 <translation id="8703634754197148428">شروع ضبط. هروقت ضبط شروع شد، بااستفاده از کلیدهای «دگرساز + تبدیل + م» به قفسه پیمایش کنید و دکمه متوقف کردن ضبط را پیدا کنید</translation>
 <translation id="8704155109538237473">تمرکز کردن روی پنجرۀ تصویر در تصویر</translation>
-<translation id="8708657523363087260">روشن/ خاموش کردن صدای جانبی</translation>
 <translation id="870917907284186124">روشن/ خاموش کردن دیکته (تایپ با صدا)</translation>
 <translation id="8711169534266271368">گزینه‌های «داشبورد بازی‌ها»</translation>
 <translation id="8712637175834984815">متوجه شدم</translation>

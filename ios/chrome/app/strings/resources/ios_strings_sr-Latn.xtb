@@ -11,7 +11,6 @@
 <translation id="1035980983510608210">Zatvaranjem svih kartica zatvarate i zakačene kartice.</translation>
 <translation id="1036017604683756002">UPS</translation>
 <translation id="1036348656032585052">Isključi</translation>
-<translation id="10379132160269599">Prikažite koordinatnu mrežu kartice</translation>
 <translation id="1041322626941363065">Upozori me ako su lozinke otkrivene pri povredi podataka</translation>
 <translation id="1044891598689252897">Sajtovi će normalno raditi</translation>
 <translation id="104491362976654916">Oflajn stranica</translation>
@@ -31,6 +30,7 @@
 <translation id="1118569444314402022">Dobro došli nazad, <ph name="USER_NAME" /></translation>
 <translation id="1121850836842642159">Slike</translation>
 <translation id="1125564390852150847">Napravi novu karticu.</translation>
+<translation id="1126696498560056882">Upravljajte nalozima na ovom uređaju</translation>
 <translation id="1126809382673880764">Ne štiti vas od opasnih veb-sajtova, preuzimanja i dodataka. U drugim Google uslugama, kao što su Gmail i Pretraga, i dalje ćete imati zaštitu pomoću Bezbednog pregledanja kada je dostupna.</translation>
 <translation id="1142371195993008685">Isključi obaveštenja za: <ph name="FEATURE_NAME" /></translation>
 <translation id="1147031633655575115">Prijavljeni ste kao <ph name="USER" /></translation>
@@ -1010,7 +1010,6 @@ Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Pode
 <translation id="594324569139756587">Kolačići treće strane se blokiraju</translation>
 <translation id="5944869793365969636">Skenirajte QR kôd</translation>
 <translation id="5948291296578561264">Ovo vam omogućava da čuvate slike u fototeci.</translation>
-<translation id="5953383789663007162">Izmeni listu naloga</translation>
 <translation id="5954322191260787920">Izmeni obeleživač</translation>
 <translation id="5956112131836209882">Kartica grupe kartica. <ph name="TAB_INDEX_IN_GROUP" /> od <ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
 <translation id="595769230373966252">Pretražite pomoću: <ph name="SEARCH_PROVIDER" /></translation>
@@ -1604,6 +1603,7 @@ Sajtovi mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja na
 <translation id="8637431369725868556">Zaštitite se od opasnih sajtova.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Nema ugroženih lozinki}=1{{COUNT} ugrožena lozinka}one{{COUNT} ugrožena lozinka}few{{COUNT} ugrožene lozinke}other{{COUNT} ugroženih lozinki}}</translation>
 <translation id="8640575194957831802">Poslednji put otvoreno</translation>
+<translation id="8647280737650867362">Otkazivanje praćenja cene nije uspelo.</translation>
 <translation id="8654802032646794042">Otkaži</translation>
 <translation id="8660600697590740984">Slika koju je kopirao Objektiv</translation>
 <translation id="866266761389616183">O, ne!</translation>

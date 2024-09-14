@@ -11,7 +11,6 @@
 <translation id="1035980983510608210">Se chiudi tutte le schede, verranno chiuse anche le schede bloccate.</translation>
 <translation id="1036017604683756002">UPS</translation>
 <translation id="1036348656032585052">Disattiva</translation>
-<translation id="10379132160269599">Mostra griglia schede</translation>
 <translation id="1041322626941363065">Ricevi un avviso se le password vengono esposte a causa di una violazione dei dati</translation>
 <translation id="1044891598689252897">I siti funzioneranno normalmente</translation>
 <translation id="104491362976654916">Pagina offline</translation>
@@ -31,6 +30,7 @@
 <translation id="1118569444314402022">Ti diamo il bentornato <ph name="USER_NAME" /></translation>
 <translation id="1121850836842642159">Foto e immagini</translation>
 <translation id="1125564390852150847">Crea una nuova scheda.</translation>
+<translation id="1126696498560056882">Gestisci gli account su questo dispositivo</translation>
 <translation id="1126809382673880764">Non ti protegge da estensioni, download e siti web pericolosi. La protezione di Navigazione sicura, se disponibile, sarà ancora attiva in altri servizi Google, come Gmail e Ricerca.</translation>
 <translation id="1142371195993008685">Disattiva notifiche per <ph name="FEATURE_NAME" /></translation>
 <translation id="1147031633655575115">Accesso eseguito come <ph name="USER" /></translation>
@@ -171,6 +171,7 @@
 <translation id="1820195936249950412">Accedi con un account valido</translation>
 <translation id="1820259098641718022">Aggiunta all'elenco di lettura</translation>
 <translation id="1822994441903263130">FedEx</translation>
+<translation id="1824490729233982311">Avvisi quando ricevi schede da altri dispositivi.</translation>
 <translation id="1827529786398596735">Tocca e tieni premuta la schermata Home</translation>
 <translation id="1829244130665387512">Trova nella pagina</translation>
 <translation id="1832848789136765277">Per assicurarti di poter accedere ai tuoi dati di sincronizzazione in qualsiasi momento, verifica la tua identità</translation>
@@ -310,7 +311,7 @@ I siti non possono utilizzare i cookie per conoscere la tua attività di navigaz
 <translation id="2461070143328828326">Impostazioni password</translation>
 <translation id="2462736546165239215">Qui puoi trovare tutta la tua cronologia di navigazione.</translation>
 <translation id="2468132863574325555">Drive</translation>
-<translation id="2468444275314013497">Il tuo browser sembra protetto</translation>
+<translation id="2468444275314013497">Il tuo browser è protetto</translation>
 <translation id="2473876017985765807">Hai già salvato una password per <ph name="WEBSITE" /></translation>
 <translation id="2479148705183875116">Vai a Impostazioni</translation>
 <translation id="2482878487686419369">Notifiche</translation>
@@ -1009,7 +1010,6 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="594324569139756587">Blocca terze parti</translation>
 <translation id="5944869793365969636">Scansiona codice QR</translation>
 <translation id="5948291296578561264">In questo modo puoi salvare le foto nella raccolta di foto.</translation>
-<translation id="5953383789663007162">Modifica l'elenco degli account</translation>
 <translation id="5954322191260787920">Modifica preferito</translation>
 <translation id="5956112131836209882">Scheda Gruppo di schede. <ph name="TAB_INDEX_IN_GROUP" /> di <ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
 <translation id="595769230373966252">Cerca con <ph name="SEARCH_PROVIDER" /></translation>
@@ -1603,6 +1603,7 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="8637431369725868556">Ricevi protezione da siti pericolosi.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Nessuna password compromessa}=1{{COUNT} password compromessa}other{{COUNT} password compromesse}}</translation>
 <translation id="8640575194957831802">Ultimi aperti</translation>
+<translation id="8647280737650867362">Impossibile interrompere il monitoraggio del prezzo.</translation>
 <translation id="8654802032646794042">Annulla</translation>
 <translation id="8660600697590740984">Immagine copiata da Lens</translation>
 <translation id="866266761389616183">Uffa!</translation>

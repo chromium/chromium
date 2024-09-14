@@ -260,6 +260,7 @@
 <translation id="2180197493692062006">Es gab ein Problem. Versuche, die App wieder zu öffnen.</translation>
 <translation id="2189104374785738357">APN-Details bearbeiten</translation>
 <translation id="2195732836444333448">Das Tool ist derzeit ausgelastet. Versuche es später noch einmal.</translation>
+<translation id="2197185031095816179">Mit einem Sicherheits-Reset kannst du unerwünschte Pop‑ups entfernen und unerwartete Probleme beheben, z. B. Netzwerkprobleme.</translation>
 <translation id="2201758491318984023">Fahrrad</translation>
 <translation id="2203272733515928691">Thermalquelle</translation>
 <translation id="2203642483788377106">Klippe</translation>
@@ -538,6 +539,7 @@
 <translation id="3820172043799983114">Ungültige PIN.</translation>
 <translation id="382043424867370667">Sonnenuntergang-Hintergrund</translation>
 <translation id="3824259034819781947">Dateien anhängen</translation>
+<translation id="3836587210832263413">Aktiviere nur Erweiterungen, denen du vertraust</translation>
 <translation id="3838338534323494292">Neues Passwort</translation>
 <translation id="3845880861638660475">Drücke die Tastenkombination <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" />, um das Dialogfeld zu schließen.</translation>
 <translation id="3848280697030027394">Tastatur abdunkeln</translation>
@@ -627,6 +629,7 @@
 <translation id="4251839292699800785">Elegantes Büro</translation>
 <translation id="4258281355379922695">HTTP-Latenz</translation>
 <translation id="4266143281602681663">Garn</translation>
+<translation id="4269815121975886860">Starteinstellungen</translation>
 <translation id="4271957103967917607">Vollbildmodus aufrufen</translation>
 <translation id="4275663329226226506">Medien</translation>
 <translation id="4278766082079064416">Für „<ph name="CONFLICT_ACCEL_NAME" />“ wird eine Tastenkombination verwendet. Bearbeite oder entferne sie, um den Konflikt zu beheben.</translation>
@@ -762,6 +765,7 @@
 <translation id="4932733599132424254">Datum</translation>
 <translation id="4950314376641394653">Firmware deines Geräts (<ph name="DEVICE_NAME" />) wurde auf Version <ph name="VERSION" /> aktualisiert</translation>
 <translation id="4950893758552030541">Allee</translation>
+<translation id="4965661459364092269">Sicherheits-Reset abgeschlossen</translation>
 <translation id="4965703485264574128"><ph name="CATEGORY_TEXT" /> mit <ph name="CONVERSION_RATE" /> multiplizieren, um ein ungefähres Ergebnis zu erhalten</translation>
 <translation id="4969079779290789265">Aufteilen</translation>
 <translation id="4972592110715526173">Modusänderung</translation>
@@ -822,6 +826,7 @@
 <translation id="5252456968953390977">Roaming</translation>
 <translation id="5254600740122644523">Bücherregal (<ph name="SIMPLE_STYLE" />) in einem Raum (<ph name="SIMPLE_TONE" />)</translation>
 <translation id="5257811368506016604">Hellen Farbmodus aktivieren</translation>
+<translation id="5261479807286543505">Starteinstellungen</translation>
 <translation id="5264277876637023664">CPU-Test ausführen</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="527501763019887383">APN ist deaktiviert.</translation>
@@ -1134,6 +1139,7 @@
 <translation id="680983167891198932">Schlüssel</translation>
 <translation id="6816797338148849397">Informationen in Bezug auf deine Auswahl sind verfügbar. Verwende für Zugriff den Aufwärtspfeil.</translation>
 <translation id="6831043979455480757">Übersetzen</translation>
+<translation id="6846843854964504403">Sicherheits-Reset</translation>
 <translation id="6853312040151791195">Entladestrom</translation>
 <translation id="6862416241246624313">Feedback gesendet</translation>
 <translation id="6866732840889595464">Gänseblümchen</translation>
@@ -1318,6 +1324,7 @@ Wenn du das möchtest, lade das Transkriptmodell (bis zu 100 MB) herunter.</tra
 <translation id="7746357909584236306">bearbeitbar</translation>
 <translation id="7747039790905080783">Vorinstallierter Schlüssel</translation>
 <translation id="7752963721013053477">Sonnenauf- bis -untergang – exklusiv</translation>
+<translation id="7760571082554155847">Startseiten-Einstellungen</translation>
 <translation id="7762130827864645708">Du hast dein Passwort geändert. Bitte verwende ab jetzt das neue Passwort.</translation>
 <translation id="7763470514545477072">Domain-Suffix stimmt überein</translation>
 <translation id="7769672763586021400">Modell-ID</translation>
@@ -1358,6 +1365,7 @@ Wenn du das möchtest, lade das Transkriptmodell (bis zu 100 MB) herunter.</tra
 <translation id="7942349550061667556">Rot</translation>
 <translation id="7943235353293548836">Persistentes Keepalive-Intervall</translation>
 <translation id="7943516765291457328">Bluetooth aktivieren, um nach Hotspots in der Nähe zu suchen</translation>
+<translation id="7944482598620888754">Websitecontent</translation>
 <translation id="7944562637040950644">Tastaturbeleuchtung ein- oder ausschalten</translation>
 <translation id="7953669802889559161">Eingaben</translation>
 <translation id="7955587717700691983">Bluetooth-Tastatur</translation>
@@ -1394,6 +1402,7 @@ Wenn du das möchtest, lade das Transkriptmodell (bis zu 100 MB) herunter.</tra
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">Bestätigen</translation>
 <translation id="8132480444149501833">Traffic-Zähler anfordern</translation>
+<translation id="8135609423982943441">Dein Chromebook wurde auf die sicheren Standardeinstellungen zurückgesetzt. Du kannst diese Änderungen jederzeit in den Einstellungen anpassen.</translation>
 <translation id="8138405288920084977">LTE-Advanced</translation>
 <translation id="8143951647992294073">"<ph name="TOPIC_SOURCE" /> – <ph name="TOPIC_SOURCE_DESC" />" auswählen</translation>
 <translation id="8151185429379586178">Entwicklertools</translation>
@@ -1423,6 +1432,7 @@ Wenn du das möchtest, lade das Transkriptmodell (bis zu 100 MB) herunter.</tra
 <translation id="8291967909914612644">Land des Homepageanbieters</translation>
 <translation id="8294431847097064396">Quelle</translation>
 <translation id="8302368968391049045">HTTPS-Firewall</translation>
+<translation id="8308787307410010965">Einstellungen für Websiteinhalte</translation>
 <translation id="8312330582793120272">Medien abspielen</translation>
 <translation id="8318753676953949627">Keine Bilder vorhanden</translation>
 <translation id="8320910311642849813">Wald</translation>

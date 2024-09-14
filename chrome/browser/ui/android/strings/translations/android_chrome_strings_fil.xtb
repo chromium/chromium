@@ -350,6 +350,7 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="2653659639078652383">Isumite</translation>
 <translation id="2656405586795711023">Mga web app</translation>
 <translation id="2664252182805397291">Tingnan ang mga site</translation>
+<translation id="2666092431469916601">Tuktok</translation>
 <translation id="2669454659051515572">Makikita ng sinumang gumagamit ng device na ito ang mga na-download na file</translation>
 <translation id="2702516483241149200">Bago: magbahagi ng link na nagso-scroll papunta sa text na ito</translation>
 <translation id="2705073298859543115">Gumawa ng buod</translation>
@@ -451,6 +452,7 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="3072980200212375806">Bubukas ang <ph name="APP_NAME" /> sa Chrome. Sa pamamagitan ng pagpapatuloy, sumasang-ayon ka sa <ph name="BEGIN_LINK1" />Mga Tuntunin ng Serbisyo ng Google<ph name="END_LINK1" />, at sa <ph name="BEGIN_LINK2" />Mga Karagdagang Tuntunin ng Serbisyo ng Google Chrome at ChromeOS<ph name="END_LINK2" />. Nalalapat din ang <ph name="BEGIN_LINK3" />Patakaran sa Privacy<ph name="END_LINK3" />.</translation>
 <translation id="3080525922482950719">Puwede kang mag-save ng mga page para basahin sa ibang pagkakataon o nang offline</translation>
 <translation id="3087218211037573995">Malapit nang hindi gumana ang ilang password na naka-save lang sa device na ito. Puwede mong ilipat sa Google Password Manager ang mga password na ito.</translation>
+<translation id="3087734570205094154">Sa ilalim</translation>
 <translation id="3091010850649238832">Ipakita ang mga content ng clipboard</translation>
 <translation id="3098745985164956033">Ipinapadala sa Google ang ilang larawan para mapahusay ang mga paglalarawan para sa iyo</translation>
 <translation id="3114507951000454849">Basahin ang balita ngayong araw <ph name="NEWS_ICON" /></translation>
@@ -688,7 +690,6 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="4355272626458588338">Mababalikan mo ang isang page na mahalaga sa iyo sa pamamagitan ng pagdaragdag ng bookmark</translation>
 <translation id="4357206670025518404">+<ph name="COUNT_NUMBER" /></translation>
 <translation id="4359809482106103048">Kaligtasan sa isang sulyap</translation>
-<translation id="4363222835916186793">Na-off ang mga alerto para sa produktong ito</translation>
 <translation id="4378154925671717803">Telepono</translation>
 <translation id="4380055775103003110">Kung patuloy na nangyayari ang isyung ito, puwede kang sumubok ng iba pang paraan para magpatuloy sa <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="4384468725000734951">Ginagamit ang Sogou para sa paghahanap</translation>
@@ -749,6 +750,7 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="4624065194742029982">Incognito sa Chrome</translation>
 <translation id="4634124774493850572">Gamitin ang password</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 nakompromisong password}one{# nakompromisong password}other{# na nakompromisong password}}</translation>
+<translation id="4642472735733036929">Ihininto ang pagsubaybay sa presyo</translation>
 <translation id="4645146721047390964">Habang nasa Incognito, hindi magagamit ng mga site ang cookies mo para tingnan ang iyong aktibidad sa pag-browse sa iba't ibang site, halimbawa, para mag-personalize ng mga ad. Posibleng masira ang mga feature sa ilang site.</translation>
 <translation id="4650364565596261010">Default ng system</translation>
 <translation id="465657074423018424">Pinoprotektahan ka ng Ligtas na Pag-browse laban sa mga mapanlinlang na website. Kung io-off mo ito, maging mas maingat kapag nagba-browse, lalo na kapag maglalagay ng mga password.</translation>
@@ -1092,6 +1094,7 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="6210748933810148297">Hindi si <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Pini-preview ang page na ito</translation>
 <translation id="6221633008163990886">I-unlock upang i-export ang iyong mga password</translation>
+<translation id="6225572914528673855">Address bar</translation>
 <translation id="6232535412751077445">Kapag na-enable mo ang “Huwag Subaybayan,” magsasama ng isang kahilingan sa trapiko ng iyong pagba-browse. Ang anumang magiging epekto ay dedepende sa pagtugon at pagbibigay-kahulugan ng website sa nabanggit na kahilingan.
 
 Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan ng pagpapakita sa iyo ng mga ad na hindi ibinatay sa iba pang nabisita mo nang website. Kokolektahin at gagamitin pa rin ng maraming website ang iyong data sa pag-browse - halimbawa, para mapahusay ang seguridad, makapagpakita ng content, mga ad, at rekomendasyon, at makabuo ng mga istatistika sa pag-uulat.</translation>

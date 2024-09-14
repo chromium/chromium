@@ -145,6 +145,7 @@
 <translation id="1651925268237749928">ನೀವು ಹಂಚಿಕೊಂಡ ಆಲ್ಬಮ್ ಆಯ್ಕೆಮಾಡಿದ್ದೀರಿ. ಇತರ ಜನರು ಫೋಟೋಗಳನ್ನು ಸೇರಿಸಬಹುದು ಅಥವಾ ಬದಲಾಯಿಸಬಹುದು. ನಿಮ್ಮ ವಾಲ್‌ಪೇಪರ್ ಪ್ರಸ್ತುತ ಈ ಆಲ್ಬಮ್‌ನಲ್ಲಿ ಇಲ್ಲದಿರುವ ಫೋಟೋಗಳನ್ನು ಬಳಸಬಹುದು.</translation>
 <translation id="1661512400125589646">ವಿರಾಮಗೊಳಿಸಿ</translation>
 <translation id="1661865805917886535">ಕೆಲವು ಖಾತೆ ಮತ್ತು ಸಿಸ್ಟಂ ಮಾಹಿತಿಯನ್ನು Google ಗೆ ಕಳುಹಿಸಲಾಗುತ್ತದೆ. ತಾಂತ್ರಿಕ ಸಮಸ್ಯೆಗಳನ್ನು ಪರಿಹರಿಸಲು ಮತ್ತು ನಮ್ಮ ಸೇವೆಗಳನ್ನು ಸುಧಾರಿಸಲು ಸಹಾಯ ಮಾಡಲು ನಾವು ಈ ಮಾಹಿತಿಯನ್ನು ಬಳಸುತ್ತೇವೆ, ಇದು ನಮ್ಮ ಗೌಪ್ಯತೆ ನೀತಿ (<ph name="PRIVACYPOLICYURL" />) ಮತ್ತು ಸೇವಾ ನಿಯಮಗಳಿಗೆ (<ph name="TERMSOFSERVICEURL" />) ಒಳಪಟ್ಟಿರುತ್ತದೆ. ಕಂಟೆಂಟ್‌ ಬದಲಾವಣೆಗಳಿಗೆ ವಿನಂತಿಸುವುದಕ್ಕಾಗಿ, ಕಾನೂನುಬದ್ಧ ಸಹಾಯ ಪುಟಕ್ಕೆ (<ph name="LEGALHELPPAGEURL" />) ಹೋಗಿ.</translation>
+<translation id="1662699081856352167">ಸಾರಾಂಶವನ್ನು ಯಶಸ್ವಿಯಾಗಿ ರಚಿಸಲಾಗಿದೆ</translation>
 <translation id="1662989795263954667">ನಿಲ್ಲಿಸಲಾಗಿದೆ - ಇಂಕ್ ಖಾಲಿಯಾಗಿದೆ</translation>
 <translation id="1664796644829245314"><ph name="PREVIEW_OBJECT" /> ಅನ್ನು ಪೂರ್ವವೀಕ್ಷಿಸಿ</translation>
 <translation id="1668469839109562275">ಬಿಲ್ಟ್-ಇನ್ VPN</translation>
@@ -254,6 +255,7 @@
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2148716181193084225">ಇಂದು</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> ಫೋಟೋಗಳು</translation>
+<translation id="2154460308960858308">ಹುಡುಕಾಟವನ್ನು ತೆರವುಗೊಳಿಸಿ</translation>
 <translation id="2156072344042480449">ನಿಮ್ಮ 2 ಇತ್ತೀಚಿನ ಪ್ರಾಂಪ್ಟ್‌ಗಳು. ನೀವು ಈ ಪುಟದಲ್ಲಿರುವಾಗ ಮಾತ್ರ ಈ ಪ್ರಾಂಪ್ಟ್‌ಗಳನ್ನು ನೀವು ಬಳಸಬಹುದು.</translation>
 <translation id="2157660087437850958">ಎಮೋಜಿ ಪಿಕರ್‌</translation>
 <translation id="2157959690810728433">ಸರದಿಯಲ್ಲಿರಿಸಲಾಗಿದೆ</translation>
@@ -500,6 +502,7 @@
 <translation id="3557205324756024651">ಸ್ಥಳೀಯ ಗುರುತು (ಐಚ್ಛಿಕ)</translation>
 <translation id="3565064564551103223">ಅನುಮತಿಸಲಾದ IP ಗಳು</translation>
 <translation id="3569407787324516067">ಸ್ಕ್ರೀನ್ ಸೇವರ್</translation>
+<translation id="3571184524500629183">ಹುಡುಕಾಟವನ್ನು ಮುಚ್ಚಿರಿ</translation>
 <translation id="3577473026931028326">ಏನೋ ತಪ್ಪಾಗಿದೆ. ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="357889014807611375">ಮಾಪನ ಮಾಡಿದ ವೈ-ಫೈ</translation>
 <translation id="3583278742022654445">ಸಿಗ್ನಲ್ ಸಾಮರ್ಥ್ಯ ದುರ್ಬಲವಾಗಿದೆ. ವೈ-ಫೈ ಸಿಗ್ನಲ್ ಮೂಲದ ಸಮೀಪಕ್ಕೆ ಹೋಗಲು ಪ್ರಯತ್ನಿಸಿ.</translation>
@@ -539,6 +542,7 @@
 <translation id="3780740315729837296">ಕೀಬೋರ್ಡ್ ಕೀ ಒಂದನ್ನು ನಿಯೋಜಿಸಿ</translation>
 <translation id="3784455785234192852">ಲಾಕ್ ಮಾಡಿ</translation>
 <translation id="3785643128701396311">ಪಿಕ್ಸೆಲ್ ಕಲೆ</translation>
+<translation id="3799381533888781854">OFF - ಈ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ನಿರ್ವಹಿಸುತ್ತಾರೆ.</translation>
 <translation id="380097101658023925">rgb ಕಂಟ್ರೋಲ್‌ಗಳು</translation>
 <translation id="38114475217616659">ಎಲ್ಲಾ ಇತಿಹಾಸ ತೆರವುಗೊಳಿಸಿ</translation>
 <translation id="3820172043799983114">ಅಮಾನ್ಯ ಪಿನ್.</translation>
@@ -742,6 +746,7 @@
 <translation id="4809927044794281115">ಲೈಟ್ ಥೀಮ್‌</translation>
 <translation id="4813136279048157860">ನನ್ನ ಚಿತ್ರಗಳು</translation>
 <translation id="4813345808229079766">ಸಂಪರ್ಕ</translation>
+<translation id="4824527342590024245">ಸದ್ಯಕ್ಕೆ, <ph name="MIN_WORD_LENGTH" /> ಕ್ಕಿಂತ ಕಡಿಮೆ ಪದಗಳನ್ನು ಟ್ರಾನ್ಸ್‌ಕ್ರಿಪ್ಟ್ ಮಾಡುವುದು ಬೆಂಬಲಿತವಾಗಿಲ್ಲ</translation>
 <translation id="4830894019733815633">ಕಡಿದಾದ ಕಣಿವೆ</translation>
 <translation id="4832079907277790330">Files ಆ್ಯಪ್‌ನಲ್ಲಿ ಫೋಲ್ಡರ್ ಅನ್ನು ಆಯ್ಕೆ ಮಾಡಿ...</translation>
 <translation id="4835901797422965222">ಯಾವುದೇ ಸಕ್ರಿಯ ನೆಟ್‌ವರ್ಕ್‌ಗಳಿಲ್ಲ</translation>
@@ -770,6 +775,7 @@
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> ಸೆಕೆಂಡ್‌ಗಳಲ್ಲಿ <ph name="RATE" /> ಶುಲ್ಕವನ್ನು ವಿಧಿಸಲಾಗಿದೆ.</translation>
 <translation id="4930320165497208503">ಕನೆಕ್ಷನ್ ಸೆಟಪ್ ಮಾಡಲು ಅಥವಾ ಅಪ್‌ಡೇಟ್ ಮಾಡಲು, <ph name="BEGIN_LINK" />ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ<ph name="END_LINK" /> ಹೋಗಿ.</translation>
 <translation id="4932733599132424254">ದಿನಾಂಕ</translation>
+<translation id="4946927805998996217">ಸಾರಾಂಶವನ್ನು ಜನರೇಟ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="4950314376641394653">ಫರ್ಮ್‌‌ವೇರ್‌‌ <ph name="DEVICE_NAME" /> ಅನ್ನು <ph name="VERSION" /> ಆವೃತ್ತಿಗೆ ಅಪ್‌ಡೇಟ್‌ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="4950893758552030541">ಟ್ರೀ ಟನಲ್</translation>
 <translation id="4965661459364092269">ಸುರಕ್ಷತಾ ರೀಸೆಟ್ ಮಾಡುವಿಕೆಯನ್ನು ಪೂರ್ಣಗೊಳಿಸಲಾಗಿದೆ</translation>
@@ -830,6 +836,7 @@
 <translation id="5229104491259541281">"<ph name="QUERY" />" ಅನ್ನು ಪರಿವರ್ತಿಸಿ</translation>
 <translation id="5229344016299762883">ಫುಲ್‌ಸ್ಕ್ರೀನ್‌ನಿಂದ ನಿರ್ಗಮಿಸಿ</translation>
 <translation id="5234764350956374838">ವಜಾಗೊಳಿಸಿ</translation>
+<translation id="5236119614998611749">ಸಾರಾಂಶವನ್ನು ರಚಿಸಲು ವಿಫಲವಾಗಿದೆ</translation>
 <translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{ನೀವು ಪ್ರತಿ ಬಾರಿ ಲಾಗ್ ಇನ್ ಮಾಡಿದಾಗಲೂ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಪ್ರಾರಂಭಿಸಲು ನಿರ್ವಾಹಕರು "<ph name="APP_NAME" />" ಆ್ಯಪ್ ಅನ್ನು ಸೆಟಪ್ ಮಾಡಿದ್ದಾರೆ.}=2{ನೀವು ಪ್ರತಿ ಬಾರಿ ಲಾಗ್ ಇನ್ ಮಾಡಿದಾಗಲೂ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಪ್ರಾರಂಭಿಸಲು ನಿರ್ವಾಹಕರು "<ph name="APP_NAME" />" ಮತ್ತು 1 ಇತರ ಆ್ಯಪ್ ಅನ್ನು ಸೆಟಪ್ ಮಾಡಿದ್ದಾರೆ.}one{ನೀವು ಪ್ರತಿ ಬಾರಿ ಲಾಗ್ ಇನ್ ಮಾಡಿದಾಗಲೂ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಪ್ರಾರಂಭಿಸಲು ನಿರ್ವಾಹಕರು "<ph name="APP_NAME" />" ಮತ್ತು # ಇತರ ಆ್ಯಪ್‌ಗಳನ್ನು ಸೆಟಪ್ ಮಾಡಿದ್ದಾರೆ.}other{ನೀವು ಪ್ರತಿ ಬಾರಿ ಲಾಗ್ ಇನ್ ಮಾಡಿದಾಗಲೂ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಪ್ರಾರಂಭಿಸಲು ನಿರ್ವಾಹಕರು "<ph name="APP_NAME" />" ಮತ್ತು # ಇತರ ಆ್ಯಪ್‌ಗಳನ್ನು ಸೆಟಪ್ ಮಾಡಿದ್ದಾರೆ.}}</translation>
 <translation id="5248419081947706722">ನೀಲಿ</translation>
 <translation id="5252456968953390977">ರೋಮಿಂಗ್</translation>
@@ -945,6 +952,7 @@
 <translation id="5860033963881614850">ಆಫ್</translation>
 <translation id="5860491529813859533">ಆನ್ ಮಾಡಿ</translation>
 <translation id="5876385649737594562">ಆಯ್ಕೆಗಳನ್ನು ಆರಿಸಲು ಆನ್ ಮಾಡಿ</translation>
+<translation id="5877503382465267833"><ph name="RECORDING_NAME" /> ಅನ್ನು ವಿರಾಮಗೊಳಿಸಿ</translation>
 <translation id="588258955323874662">ಪೂರ್ಣಪರದೆ</translation>
 <translation id="5893975327266416093">ನಿಯೋಜಿಸಲು ಕೀಬೋರ್ಡ್ ಕೀ ಮೇಲೆ ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
 <translation id="5895138241574237353">ಮರುಪ್ರಾರಂಭಿಸಿ</translation>
@@ -1162,6 +1170,7 @@
 <translation id="6910312834584889076">ಸ್ಕ್ಯಾನರ್‌ನ ಕವರ್ ತೆರೆದಿದೆ. ಕವರ್ ಅನ್ನು ಮುಚ್ಚಿನ ಹಾಗೂ ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="6910845598686542904">ರೆಕಾರ್ಡಿಂಗ್‌ನಲ್ಲಿ ಪತ್ತೆಯಾದ ಧ್ವನಿಗಳ ಮಾಡಲ್‌ಗಳನ್ನು ಪ್ರಕ್ರಿಯೆಗೊಳಿಸಲು</translation>
 <translation id="6911383237894364323">ಮಾಧ್ಯಮದ ಸರ್ವರ್‌ಗಳಿಗೆ ಕನೆಕ್ಟ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ</translation>
+<translation id="6927968682840110570">ರೆಕಾರ್ಡಿಂಗ್ ಹೆಸರು</translation>
 <translation id="6930242544192836755">ಅವಧಿ</translation>
 <translation id="6930597342185648547">ಹಿನ್ನೆಲೆ ಬಗ್ಗೆ</translation>
 <translation id="6939667434404433010">ರೆಕಾರ್ಡಿಂಗ್ ಹೆಸರನ್ನು ಹುಡುಕಿ</translation>
@@ -1274,6 +1283,7 @@
 <translation id="7378170410161264436">ಧ್ವನಿಯನ್ನು ಹೊಂದಿರುವ ರೆಕಾರ್ಡಿಂಗ್‌ಗಳಿಗಾಗಿ ಟ್ರಾನ್ಸ್‌ಕ್ರಿಪ್ಶನ್‌ಗಳನ್ನು ರೆಕಾರ್ಡರ್ ರಚಿಸಬಹುದು.
 ಈ ಟ್ರಾನ್ಸ್‌ಕ್ರಿಪ್ಶನ್‌ಗಳನ್ನು ಪಡೆಯಲು ಟ್ರಾನ್ಸ್‌ಕ್ರಿಪ್ಶನ್ ಮಾಡೆಲ್‌ ಅನ್ನು (100MB ವರೆಗೆ) ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ.</translation>
 <translation id="7384004438856720753">ಅರಮನೆ</translation>
+<translation id="7388345524791662148"><ph name="RECORDING_NAME" /> ಗೆ ಇನ್ನಷ್ಟು ಆಯ್ಕೆಗಳು</translation>
 <translation id="7388959671917308825">ಬಿಲ್ಟ್-ಇನ್ ಟಚ್‌ಪ್ಯಾಡ್</translation>
 <translation id="7397270852490618635">ಲೈಟ್ ಥೀಮ್‌ ಆಫ್ ಮಾಡಿ</translation>
 <translation id="7401543881546089382">ಶಾರ್ಟ್‌ಕಟ್ ಅಳಿಸಿ</translation>
@@ -1295,6 +1305,7 @@
 <translation id="7513770521371759388">ಕೆಳಗೆ</translation>
 <translation id="7514365320538308">ಡೌನ್‌ಲೋಡ್</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7519481256236810334"><ph name="RECORDING_NAME" /> ಪ್ಲೇ ಮಾಡಿ</translation>
 <translation id="7525067979554623046">ರಚಿಸಿ</translation>
 <translation id="7528507600602050979">ಸಹಾಯ ಕಂಟೆಂಟ್‌ ಲಭ್ಯವಿಲ್ಲ</translation>
 <translation id="7535791657097741517">ಲೈಟ್ ಥೀಮ್‌ ಆನ್ ಮಾಡಿ</translation>
@@ -1371,6 +1382,7 @@
 <translation id="7897043345768902965">ವಾಕ್‌ವೇ</translation>
 <translation id="7902285181767404769">ರೆಕಾರ್ಡಿಂಗ್ ಮಾಡುವಾಗ ನೋಟಿಫಿಕೇಶನ್‌ಗಳನ್ನು ನಿಶ್ಯಬ್ದಗೊಳಿಸಿ</translation>
 <translation id="7903695460270716054">ಕ್ಯುರೇಟೆಡ್ ಕಲಾಕೃತಿ ಮತ್ತು ಚಿತ್ರಗಳನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
+<translation id="7912005977894000746">ಮುಖ್ಯ ಪುಟಕ್ಕೆ ಹಿಂತಿರುಗಿ</translation>
 <translation id="7915220255123750251">ನೆಟ್‌ವರ್ಕ್ APN ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಿ. APN ಗಳು ಸೆಲ್ಯುಲಾರ್ ನೆಟ್‌ವರ್ಕ್ ಹಾಗೂ ಇಂಟರ್ನೆಟ್ ನಡುವೆ ಕನೆಕ್ಷನ್ ಅನ್ನು ಸ್ಥಾಪಿಸುತ್ತವೆ.</translation>
 <translation id="7936303884198020182">ಹೆಸರು ಇಲ್ಲದ ಸರ್ವರ್‌ಗಳು ಕಂಡುಬಂದಿವೆ.</translation>
 <translation id="7942349550061667556">ಕೆಂಪು</translation>
@@ -1645,8 +1657,6 @@
 <translation id="951780398843003443">ಇಡೀ ರೆಕಾರ್ಡಿಂಗ್‌ನಲ್ಲಿರುವ ಧ್ವನಿಗಳನ್ನು ಹೋಲಿಕೆ ಮಾಡಿ, ಇದರಿಂದ ಪ್ರತಿಯೊಬ್ಬ ಸ್ಪೀಕರ್ ಏನು ಮತ್ತು ಯಾವಾಗ ಹೇಳಿದರು ಎಂಬುದನ್ನು ಟ್ರಾನ್ಸ್‌ಕ್ರಿಪ್ಟ್ ತೋರಿಸುತ್ತದೆ</translation>
 <translation id="952992212772159698">ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿಲ್ಲ</translation>
 <translation id="95718197892796296">ಜೇಡಿ ಮಣ್ಣು</translation>
-<translation id="959792926760890141">ಸುರಕ್ಷತಾ ರೀಸೆಟ್ Chrome ಬ್ರೌಸರ್ ಎಕ್ಸ್‌ಟೆನ್ಶನ್‌ಗಳನ್ನು ಆಫ್ ಮಾಡುತ್ತದೆ ಮತ್ತು ಸುರಕ್ಷಿತ ಡೀಫಾಲ್ಟ್‌ಗಳಿಗೆ ನೆಟ್‌ವರ್ಕ್ ಮತ್ತು ಇತರ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ರೀಸೆಟ್ ಮಾಡುತ್ತದೆ.
-          ನಿಮ್ಮ ಡೀಫಾಲ್ಟ್ ಸರ್ಚ್ ಎಂಜಿನ್ ಅನ್ನು ರೀಸೆಟ್ ಮಾಡಲಾಗುತ್ತದೆ, ಆದರೆ ನಿಮ್ಮ ಟ್ಯಾಬ್‌ಗಳು, ಫೈಲ್‌ಗಳು, ಕುಕೀಗಳು ಮತ್ತು ಇತಿಹಾಸವನ್ನು ಬದಲಾಯಿಸುವುದಿಲ್ಲ.</translation>
 <translation id="960719561871045870">ಆಪರೇಟರ್ ಕೋಡ್</translation>
 <translation id="965918541715156800">ಹಳದಿ ಮತ್ತು ಟೀಲ್</translation>
 <translation id="966787709310836684">ಮೆನು</translation>

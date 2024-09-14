@@ -153,6 +153,7 @@
 <translation id="1672499492233627739">Feed de video de la cámara web</translation>
 <translation id="1676557873873341166">Grabando un video</translation>
 <translation id="1684279041537802716">Color de los elementos destacados</translation>
+<translation id="1697278726914783200">Grabar</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Agente de resolución de DNS disponible</translation>
 <translation id="1708602061922134366">Azul Google</translation>
@@ -703,6 +704,7 @@
 <translation id="458794348635939462">no se pudieron resolver todos los hosts</translation>
 <translation id="4593212453765072419">Se requiere autenticación proxy.</translation>
 <translation id="4594021849294327751">Crear transcripción</translation>
+<translation id="4602266091140407479">Micrófono</translation>
 <translation id="4607282946861182308">No se pueden crear imágenes con esta instrucción. Prueba otra.</translation>
 <translation id="4609350030397390689">Disminuir el brillo del teclado</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> de un total de <ph name="TOTAL_PAGE_NUMBER" />. Presiona Intro para cancelar el trabajo de impresión.</translation>
@@ -1011,6 +1013,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6188737759358894319">Se creó el <ph name="DATE" /></translation>
 <translation id="6189418609903030344">La capacidad de la batería se reduce con el uso</translation>
+<translation id="6189987971574353264">Reproducir</translation>
 <translation id="6191293864534840972">el formato de los servidores de nombres es incorrecto</translation>
 <translation id="6196607555925437199">Volver a crear</translation>
 <translation id="6205145102504628069">Flujo de nubes</translation>
@@ -1642,8 +1645,6 @@ Descarga el modelo de transcripción (hasta 100 MB) para obtener estas transcri
 <translation id="951780398843003443">Compara las voces a lo largo de la grabación para que la transcripción refleje qué dijo cada interlocutor y cuándo lo dijo</translation>
 <translation id="952992212772159698">No activado</translation>
 <translation id="95718197892796296">arcilla</translation>
-<translation id="959792926760890141">El restablecimiento de seguridad desactiva las extensiones del navegador Chrome y restablece la configuración de red y otros parámetros a los valores predeterminados seguros.
-          Se restablecerá tu motor de búsqueda predeterminado, pero no se modificarán las pestañas, los archivos, las cookies ni el historial.</translation>
 <translation id="960719561871045870">Código del operador</translation>
 <translation id="965918541715156800">amarillo y verde azulado</translation>
 <translation id="966787709310836684">menú</translation>

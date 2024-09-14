@@ -96,6 +96,7 @@ Arhoswch ychydig funudau cyn allgofnodi. Os byddwch yn allgofnodi nawr, bydd y d
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{Mae hyn yn digwydd pan nad yw Chrome yn cael ei ddefnyddio am {THRESHOLD} funud}zero{Mae hyn yn digwydd pan nad yw Chrome yn cael ei ddefnyddio am {THRESHOLD} munud}two{Mae hyn yn digwydd pan nad yw Chrome yn cael ei ddefnyddio am {THRESHOLD} funud}few{Mae hyn yn digwydd pan nad yw Chrome yn cael ei ddefnyddio am {THRESHOLD} munud}many{Mae hyn yn digwydd pan nad yw Chrome yn cael ei ddefnyddio am {THRESHOLD} munud}other{Mae hyn yn digwydd pan nad yw Chrome yn cael ei ddefnyddio am {THRESHOLD} munud}}</translation>
 <translation id="3367797402528056312">Gorffen gosod Chrome</translation>
 <translation id="3371064404604898522">Gosod Chrome fel porwr diofyn</translation>
+<translation id="3399930248910934354">Agorwch Osodiadau Chrome</translation>
 <translation id="3472587960215700950">Mae Chrome yn defnyddio Google Maps i roi cyfarwyddiadau a gwybodaeth leol i chi ar gyfeiriadau a ganfuwyd.</translation>
 <translation id="3503014945441706099">Cael Gwell Pori'n Ddiogel ar gyfer y proffil Chrome hwn hefyd</translation>
 <translation id="3522659714780527202">I weld eich tabiau o ble bynnag rydych yn defnyddio Chrome, trowch gysoni ymlaen</translation>

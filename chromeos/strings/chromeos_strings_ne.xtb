@@ -145,6 +145,7 @@
 <translation id="1651925268237749928">तपाईंले साझा एल्बम चयन गर्नुभएको छ। अन्य मान्छेहरू फोटो हाल्न वा बदल्न सक्छन्। तपाईंको वालपेपरले अहिले यो एल्बममा नभएका फोटोहरू प्रयोग गर्न सक्छ।</translation>
 <translation id="1661512400125589646">पज गर्नुहोस्</translation>
 <translation id="1661865805917886535">खाता तथा सिस्टमसम्बन्धी केही जानकारी Google मा पठाइन सक्छ। हामी यो जानकारी प्राविधिक समस्याहरू समाधान गर्ने र हाम्रा सेवाहरूको गुणस्तर सुधार गर्ने प्रयोजनका लागि हाम्रो गोपनीयता नीति (<ph name="PRIVACYPOLICYURL" />) तथा सेवाका सर्तहरू (<ph name="TERMSOFSERVICEURL" />) बमोजिम प्रयोग गर्छौँ। सामग्री संशोधन गर्ने अनुरोध गर्न कानुनी सहायता (<ph name="LEGALHELPPAGEURL" />) मा जानुहोस्।</translation>
+<translation id="1662699081856352167">सारांश बनाइयो</translation>
 <translation id="1662989795263954667">रोकियो - प्रिन्टरको मसी सकियो</translation>
 <translation id="1664796644829245314"><ph name="PREVIEW_OBJECT" /> प्रिभ्यू गर्नुहोस्</translation>
 <translation id="1668469839109562275">अन्तर्निर्मित VPN</translation>
@@ -265,6 +266,7 @@
 <translation id="2180197493692062006">कुनै समस्या आयो। यो एप फेरि खोली हेर्नुहोस्।</translation>
 <translation id="2189104374785738357">APN सम्बन्धी विवरणहरू परिवर्तन गर्नुहोस्</translation>
 <translation id="2195732836444333448">अहिले तपाईंलाई मद्दत गर्न सक्दैनौँ। चाँडै फर्केर आउनुहोस्।</translation>
+<translation id="2197185031095816179">सुरक्षाका निम्ति सेटिङ रिसेट गरियो भने अनावश्यक पप-अप हटाउन, नेटवर्कसम्बन्धी समस्या र अन्य अनपेक्षित समस्याहरू समाधान गर्न सहयोग पुग्न सक्छ।</translation>
 <translation id="2201758491318984023">साइकल</translation>
 <translation id="2203272733515928691">हट स्प्रिङ</translation>
 <translation id="2203642483788377106">भीर</translation>
@@ -538,11 +540,13 @@
 <translation id="3780740315729837296">किबोर्डको की असाइन गर्नुहोस्</translation>
 <translation id="3784455785234192852">लक गर्नुहोस्</translation>
 <translation id="3785643128701396311">पिक्सेल आर्ट</translation>
+<translation id="3799381533888781854">अफ छ - तपाईंका एड्मिन यो सेटिङ व्यवस्थापन गर्नुहुन्छ।</translation>
 <translation id="380097101658023925">rgb कन्ट्रोलहरू</translation>
 <translation id="38114475217616659">सबै इतिहास मेटाउनुहोस्</translation>
 <translation id="3820172043799983114">अमान्य PIN।</translation>
 <translation id="382043424867370667">सनसेट वालपेपर</translation>
 <translation id="3824259034819781947">फाइलहरू एट्याच गर्नुहोस्</translation>
+<translation id="3836587210832263413">आफूलाई विश्वास लाग्ने एक्स्टेन्सनहरू मात्र अन गर्नुहोस्</translation>
 <translation id="3838338534323494292">नयाँ पासवर्ड</translation>
 <translation id="3845880861638660475">डायलग बन्द गर्न <ph name="ALT_SHORTCUT_START" />alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />esc<ph name="ESC_SHORTCUT_END" /> थिच्नुहोस्।</translation>
 <translation id="3848280697030027394">किबोर्डको ब्याकलाइटको चमक अझ अँध्यारो बनाउनुहोस्</translation>
@@ -633,6 +637,7 @@
 <translation id="4251839292699800785">स्टाइलिस अफिस</translation>
 <translation id="4258281355379922695">HTTP विलम्बता</translation>
 <translation id="4266143281602681663">धागोको डल्लो</translation>
+<translation id="4269815121975886860">स्टार्टअपसम्बन्धी प्राथमिकताहरू</translation>
 <translation id="4271957103967917607">फुल स्क्रिनमा हेर्नुहोस्</translation>
 <translation id="4275663329226226506">मिडिया</translation>
 <translation id="4278766082079064416">यो सर्टकट "<ph name="CONFLICT_ACCEL_NAME" />" का निम्ति प्रयोग भइरहेको छ। बाझिएको सर्टकटको समस्या समाधान गर्न सर्टकट बदल्नुहोस् वा हटाउनुहोस्।</translation>
@@ -739,6 +744,7 @@
 <translation id="4809927044794281115">उज्यालो थिम</translation>
 <translation id="4813136279048157860">मेरा फोटो</translation>
 <translation id="4813345808229079766">जडान</translation>
+<translation id="4824527342590024245">हाल <ph name="MIN_WORD_LENGTH" /> भन्दा कम शब्द भएको ट्रान्स्क्रिप्ट बनाउन सकिँदैन</translation>
 <translation id="4830894019733815633">घाटी</translation>
 <translation id="4832079907277790330">Files एप खोलेर कुनै फोल्डर चयन गर्नु...</translation>
 <translation id="4835901797422965222">कुनै पनि सक्रिय नेटवर्क छैन</translation>
@@ -767,8 +773,10 @@
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> सेकेन्डमा <ph name="RATE" /> चार्ज भयो।</translation>
 <translation id="4930320165497208503">तपाईं नयाँ कनेक्सन सेटअप गर्न वा सेटअप गरिएको कनेक्सनसम्बन्धी सेटिङ बदल्न चाहनुहुन्छ भने <ph name="BEGIN_LINK" />सेटिङ<ph name="END_LINK" />मा जानुहोस्।</translation>
 <translation id="4932733599132424254">मिति</translation>
+<translation id="4946927805998996217">सारांश बनाइँदै छ</translation>
 <translation id="4950314376641394653"><ph name="DEVICE_NAME" /> को फर्मवेयर अपडेट गरी संस्करण <ph name="VERSION" /> इन्स्टल गरिएको छ</translation>
 <translation id="4950893758552030541">ट्री टनेल</translation>
+<translation id="4965661459364092269">सुरक्षाका निम्ति सेटिङ रिसेट गर्ने प्रक्रिया पूरा भएको छ</translation>
 <translation id="4965703485264574128">अनुमानित परिणाम प्राप्त गर्न <ph name="CONVERSION_RATE" /> ले <ph name="CATEGORY_TEXT" /> लाई गुणन गर्नुहोस्</translation>
 <translation id="4969079779290789265">स्प्लिट स्क्रिन</translation>
 <translation id="4972592110715526173">"मोड बदल्नुहोस्" जनाउने आइकन</translation>
@@ -826,11 +834,13 @@
 <translation id="5229104491259541281">"<ph name="QUERY" />" रूपान्तरण गर्नुहोस्</translation>
 <translation id="5229344016299762883">फुल स्क्रिनबाट बाहिरिनुहोस्</translation>
 <translation id="5234764350956374838">खारेज गर्नुहोस्</translation>
+<translation id="5236119614998611749">सारांश बनाउन सकिएन</translation>
 <translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{तपाईंका एड्मिनले तपाईंले हरेक पटक लग इन गर्दा "<ph name="APP_NAME" />" स्वतः खुल्ने गरी सेट अप गर्नुभएको छ।}=2{तपाईंका एड्मिनले तपाईंले हरेक पटक लग इन गर्दा "<ph name="APP_NAME" />" र अर्को एउटा एप स्वतः खुल्ने गरी सेट अप गर्नुभएको छ।}other{तपाईंका एड्मिनले तपाईंले हरेक पटक लग इन गर्दा "<ph name="APP_NAME" />" र अन्य # वटा एप स्वतः खुल्ने गरी सेट अप गर्नुभएको छ।}}</translation>
 <translation id="5248419081947706722">निलो</translation>
 <translation id="5252456968953390977">रोमिङ</translation>
 <translation id="5254600740122644523"><ph name="SIMPLE_TONE" /> कोठामा <ph name="SIMPLE_STYLE" /> को बुकसेल्फ</translation>
 <translation id="5257811368506016604">उज्यालो रङ मोड अन गर्नुहोस्</translation>
+<translation id="5261479807286543505">स्टार्टअपसम्बन्धी सेटिङ</translation>
 <translation id="5264277876637023664">CPU सम्बन्धी परीक्षण गर्नुहोस्</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="527501763019887383">APN अफ गरिएको छ।</translation>
@@ -1144,6 +1154,7 @@
 <translation id="680983167891198932">की</translation>
 <translation id="6816797338148849397">तपाईंले चयन गर्नुभएको पाठसँग सम्बन्धित जानकारी उपलब्ध छ। उक्त जानकारी प्राप्त गर्न अप एरो की प्रयोग गर्नुहोस्।</translation>
 <translation id="6831043979455480757">अनुवाद गर्नुहोस्</translation>
+<translation id="6846843854964504403">सुरक्षाका निम्ति सेटिङ रिसेट गर्ने प्रक्रिया</translation>
 <translation id="6853312040151791195">डिस्चार्ज हुने दर</translation>
 <translation id="6862416241246624313">प्रतिक्रिया पेस गरियो</translation>
 <translation id="6866732840889595464">डेजी</translation>
@@ -1328,6 +1339,7 @@
 <translation id="7746357909584236306">सम्पादन गर्न मिल्छ</translation>
 <translation id="7747039790905080783">अग्रिम रूपमा सेयर गरिएको की</translation>
 <translation id="7752963721013053477">डन टु डार्क - विशेष</translation>
+<translation id="7760571082554155847">होमपेजसम्बन्धी सेटिङ</translation>
 <translation id="7762130827864645708">तपाईंको पासवर्ड परिवर्तन गरिएको छ। कृपया अबदेखि नयाँ पासवर्ड प्रयोग गर्नुहोस्।</translation>
 <translation id="7763470514545477072">डोमेन सफिक्ससँग मिल्दोजुल्दो</translation>
 <translation id="7769672763586021400">मोडेलको ID</translation>
@@ -1369,6 +1381,7 @@
 <translation id="7942349550061667556">रातो</translation>
 <translation id="7943235353293548836">पर्सिस्टेन्ट किपअलाइभ इन्टर्भल</translation>
 <translation id="7943516765291457328">नजिकैका हटस्पटहरू स्क्यान गर्न ब्लुटुथ अन गर्नुहोस्</translation>
+<translation id="7944482598620888754">साइटको सामग्री</translation>
 <translation id="7944562637040950644">"किबोर्ड ब्याकलाइट टगल गर्नुहोस्" जनाउने आइकन</translation>
 <translation id="7953669802889559161">इनपुटहरू</translation>
 <translation id="7955587717700691983">ब्लुटुथ भएको किबोर्ड</translation>
@@ -1405,6 +1418,7 @@
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° से.</translation>
 <translation id="8131740175452115882">निश्चित</translation>
 <translation id="8132480444149501833">ट्राफिक काउन्टरसम्बन्धी जानकारी माग्दै अनुरोध पठाउनुहोस्</translation>
+<translation id="8135609423982943441">तपाईंको Chromebook रिसेट गरी सुरक्षित डिफल्ट सेटिङ बनाइएको छ। तपाईं जुनसुकै बेला सेटिङमा गई यी परिवर्तनहरू मिलाउन सक्नुहुन्छ।</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> चयन गर्नुहोस्</translation>
 <translation id="8151185429379586178">विकासकर्ता उपकरणहरू</translation>
@@ -1435,6 +1449,7 @@
 <translation id="8291967909914612644">गृह प्रदायकको देश</translation>
 <translation id="8294431847097064396">स्रोत</translation>
 <translation id="8302368968391049045">HTTPS फायरवाल</translation>
+<translation id="8308787307410010965">साइटको सामग्रीसम्बन्धी सेटिङ</translation>
 <translation id="8312330582793120272">"मिडिया प्ले गर्नुहोस्" जनाउने आइकन</translation>
 <translation id="8318753676953949627">कुनै पनि फोटो छैन</translation>
 <translation id="8320910311642849813">जङ्गल</translation>

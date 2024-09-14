@@ -1015,6 +1015,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2882949212241984732">Plegat en finestra doble</translation>
 <translation id="2891963978019740012">El teu motor de cerca a Chrome</translation>
 <translation id="2893773853358652045">Quart corró</translation>
+<translation id="2894137550885451583">Aquests són els preus en <ph name="CURRENCY" /> per al producte <ph name="PRODUCT" /></translation>
 <translation id="2900528713135656174">Crea un esdeveniment</translation>
 <translation id="2902312830803030883">Més accions</translation>
 <translation id="2903493209154104877">Adreces</translation>
@@ -1612,6 +1613,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3949601375789751990">Aquí es mostra l'historial de navegació</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">No hi ha cap forma de pagament desada</translation>
+<translation id="3950560191811267370">Full inferior de comerç tancat</translation>
 <translation id="3950574001630941635">Reinicia el tutorial</translation>
 <translation id="3950820424414687140">Inicia la sessió</translation>
 <translation id="3953505489397572035">Aquest preu és habitual</translation>
@@ -1897,7 +1899,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4451135742916150903">Pot demanar permís per connectar-se a dispositius HID</translation>
 <translation id="4451684391620232683">Text mostrat a l'usuari:</translation>
 <translation id="4452328064229197696">La contrasenya que acabes d'utilitzar s'ha trobat en una violació de les dades. Per protegir els teus comptes, el gestor de contrasenyes de Google recomana que comprovis les contrasenyes desades.</translation>
-<translation id="4452957520362597816">Demanar la instal·lació d'aplicacions web</translation>
 <translation id="4456937135469235202">Viatges d'aventura</translation>
 <translation id="4464826014807964867">Llocs web amb informació sobre la teva organització</translation>
 <translation id="4466576951214254884">Crèdits d'estudi i finançament universitari</translation>
@@ -2354,6 +2355,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5331585574693522196">Defineix com a predeterminat</translation>
 <translation id="5332219387342487447">Mètode d'enviament</translation>
 <translation id="5332769172018416402">Demana-ho en un missatge</translation>
+<translation id="533323551986281710">Full inferior de comerç obert a alçada completa</translation>
 <translation id="5334013548165032829">Registres detallats del sistema</translation>
 <translation id="5334145288572353250">Vols desar l'adreça?</translation>
 <translation id="5340250774223869109">L'aplicació està bloquejada</translation>
@@ -2536,6 +2538,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5675650730144413517">Aquesta pàgina no funciona</translation>
 <translation id="5675809467256309336">Música dance i electrònica</translation>
 <translation id="5675959228867414813">Mostra per data</translation>
+<translation id="567604591393105935">Full inferior de comerç obert a mitja alçada</translation>
 <translation id="5677928146339483299">Bloquejat</translation>
 <translation id="5678007133659493065">Làmina de degoteig</translation>
 <translation id="5680642791693447368">Pel·lícules de crims, de misteri i thrillers</translation>
@@ -3443,6 +3446,7 @@ Detalls addicionals:
 <translation id="7374733840632556089">Aquest problema es produeix a causa d'un certificat que tu o una altra persona heu instal·lat al dispositiu. Se sap que aquest certificat s'utilitza per supervisar i interceptar xarxes, i Chrome no hi confia. Tot i que hi ha casos en què és legítim dur a terme una supervisió, per exemple, en el cas d'una empresa o d'un centre educatiu, Chrome vol assegurar-se que estiguis al cas d'aquesta situació, encara que no la puguis evitar. La supervisió es pot produir en qualsevol navegador o aplicació que accedeixi al web.</translation>
 <translation id="7375532151824574023">{NUM_COOKIES,plural, =0{No es permet cap lloc web}=1{Es permet 1 lloc web}other{Es permeten # llocs web}}</translation>
 <translation id="7375818412732305729">S'adjunta un fitxer</translation>
+<translation id="7376031331622621328">Full inferior de comerç</translation>
 <translation id="7377249249140280793"><ph name="RELATIVE_DATE" /> - <ph name="FULL_DATE" /></translation>
 <translation id="7377314930809374926">Sector de l'hostaleria</translation>
 <translation id="7378594059915113390">Controls multimèdia</translation>
@@ -4018,6 +4022,7 @@ Detalls addicionals:
 <translation id="8381674639488873545">Aquests càrrecs poden ser únics o recurrents i és possible que no s'indiquin d'una manera evident. <ph name="BEGIN_LINK" />Mostra igualment<ph name="END_LINK" /></translation>
 <translation id="8382097126743287270">Pantalla completa automàtica</translation>
 <translation id="838307841291975086">Vehicles familiars</translation>
+<translation id="8388286357548915205">Utilitza per a tots els convidats</translation>
 <translation id="8389532092404711541">Preu habitual: <ph name="LOW_PRICE" /></translation>
 <translation id="8389940864052787379">Vehicles personalitzats i d'alt rendiment</translation>
 <translation id="8390725133630534698">La política de l'administrador no permet compartir contingut de <ph name="ORIGIN_NAME" /> a <ph name="VM_NAME" /></translation>

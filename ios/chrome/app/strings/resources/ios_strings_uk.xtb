@@ -11,7 +11,6 @@
 <translation id="1035980983510608210">Буде закрито всі вкладки, зокрема закріплені.</translation>
 <translation id="1036017604683756002">UPS</translation>
 <translation id="1036348656032585052">Вимкнути</translation>
-<translation id="10379132160269599">Показати сітку вкладок</translation>
 <translation id="1041322626941363065">Попереджати, якщо паролі розкрито через порушення безпеки даних</translation>
 <translation id="1044891598689252897">Сайти працюватимуть у звичному режимі</translation>
 <translation id="104491362976654916">Офлайн-сторінка</translation>
@@ -31,6 +30,7 @@
 <translation id="1118569444314402022">З поверненням, <ph name="USER_NAME" /></translation>
 <translation id="1121850836842642159">Фотографії і зображення</translation>
 <translation id="1125564390852150847">Створити вкладку.</translation>
+<translation id="1126696498560056882">Керувати обліковими записами на цьому пристрої</translation>
 <translation id="1126809382673880764">Не захищає від небезпечних веб-сайтів, завантажень і розширень. Безпечний перегляд усе ще працюватиме в інших сервісах Google (у яких він доступний), як-от Gmail і Пошук.</translation>
 <translation id="1142371195993008685">Вимкнути сповіщення функції "<ph name="FEATURE_NAME" />"</translation>
 <translation id="1147031633655575115">Ви ввійшли як <ph name="USER" /></translation>
@@ -1010,7 +1010,6 @@
 <translation id="594324569139756587">Блокувати сторонні файли cookie</translation>
 <translation id="5944869793365969636">Сканувати QR-код</translation>
 <translation id="5948291296578561264">Ви зможете зберігати знімки в бібліотеці фотографій.</translation>
-<translation id="5953383789663007162">Редагувати список облікових записів</translation>
 <translation id="5954322191260787920">Редагувати закладку</translation>
 <translation id="5956112131836209882">Група вкладок "Вкладка". <ph name="TAB_INDEX_IN_GROUP" /> з <ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
 <translation id="595769230373966252">Пошук через сервіс <ph name="SEARCH_PROVIDER" /></translation>

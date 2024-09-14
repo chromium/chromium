@@ -118,7 +118,6 @@
 <translation id="1346748346194534595">右</translation>
 <translation id="1350494136075914725">進行中 · タブに切り替え</translation>
 <translation id="1351937230027495976">メニューを折りたたむ</translation>
-<translation id="1352537790882153971">有線ヘッドフォンからマイクの音をモニタリングできます。パネルを閉じるとモニタリングが停止します。</translation>
 <translation id="1360220746312242196">ページ検索時に前の一致箇所に移動する</translation>
 <translation id="1360788414852622716">プロファイルを無効にしています。この処理には数分かかることがあります。</translation>
 <translation id="1364382257761975320">Chromebook のロックを解除するには、指紋認証を使用します</translation>
@@ -397,7 +396,6 @@
 <translation id="2426051945783024481">カメラのフレームの中央にくるよう自動的に調整されます</translation>
 <translation id="2427507373259914951">左クリック</translation>
 <translation id="2429753432712299108">Bluetooth デバイス「<ph name="DEVICE_NAME" />」がペア設定の権限をリクエストしています。許可するにあたっては、このデバイスで次のパスキーが表示されることを確認してください: <ph name="PASSKEY" /></translation>
-<translation id="2430444791038754658">時間です。絶好調ですね！</translation>
 <translation id="2435457462613246316">パスワードを表示</translation>
 <translation id="2437771564543046790">バッテリー残量が低下しています。バッテリー セーバーがオンになっています</translation>
 <translation id="243878895369688216">昨日開いたファイル</translation>
@@ -777,7 +775,6 @@
 <translation id="3706423975342040244">エンターテイメント</translation>
 <translation id="3707093869106077605"><ph name="UNAVAILABLE_DLC_ONE" /> と <ph name="UNAVAILABLE_DLC_TWO" /> は使用できません。</translation>
 <translation id="3708186454126126312">以前に接続したデバイス</translation>
-<translation id="3711282657843423160">予定時刻です。その調子で頑張りましょう。</translation>
 <translation id="3712143870407382523">こちら側のウィンドウを選択</translation>
 <translation id="371370241367527062">前方のマイク</translation>
 <translation id="3713734891607377840">完了したら開く</translation>
@@ -847,7 +844,6 @@
 <translation id="397105322502079400">計算しています...</translation>
 <translation id="397726367135689299">バッテリーの充電が不安定になっている可能性があります</translation>
 <translation id="3977512764614765090">電池残量は <ph name="PERCENTAGE" />% です（現在充電中）。</translation>
-<translation id="397808938113646171">時間です。正解です。</translation>
 <translation id="3982013579989864579">オーディオ出力を切り替えますか？</translation>
 <translation id="3984536049089846927">次のページ</translation>
 <translation id="3986082989454912832">応答</translation>
@@ -1003,7 +999,6 @@
 <translation id="4477751544736611934">データ料金が発生する場合があります。
 1 台のデバイスが接続されています。</translation>
 <translation id="4477892968187500306">このデバイスには Google が確認していないアプリがインストールされている可能性があります。</translation>
-<translation id="4479130137987693286">必要な場合は時間を延長し、そうでなければフォーカス モード セッションを終了します</translation>
 <translation id="4479639480957787382">イーサネット</translation>
 <translation id="4481530544597605423">ペア設定されていないデバイス</translation>
 <translation id="4485506555414638855">スマートフォンの最近の写真、メディア、通知、アプリの表示の設定を行わない</translation>
@@ -1056,7 +1051,6 @@
 
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox を有効にしました</translation>
-<translation id="4665182893355091947">予定時刻です。よく頑張りました！</translation>
 <translation id="4666911709726371538">表示するアプリを増やす</translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> をダウンロードしています</translation>
 <translation id="4672539464599646374">バッテリー セーバーがオンになりました</translation>
@@ -1360,6 +1354,7 @@
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">パスワードを確認できませんでした。もう一度お試しください。</translation>
 <translation id="5632485077360054581">手順を見る</translation>
+<translation id="5633826232582408011">文書作成サポートと文書読解サポートをオンにすると、入力したテキスト、ドキュメントの内容、ウェブページの URL が Google AI サーバーに送信され、<ph name="LINK_TO_SERVICE_TERMS" /> に沿って、文章作成の提案や要約の生成、質問への回答、サービスの改善に使用されます。個人情報や機密情報は含めないでください。</translation>
 <translation id="5648021990716966815">マイク差込口</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> から通知が届いています。</translation>
 <translation id="5662075790140998213">デスク 10</translation>
@@ -1782,7 +1777,6 @@
 <translation id="7064351585062927183">次の　<ph name="DAY_OF_WEEK" /></translation>
 <translation id="7066646422045619941">このネットワークは管理者によって無効にされています。</translation>
 <translation id="7067196344162293536">自動回転</translation>
-<translation id="7067569040620564762">時間です。作業は進みましたか？</translation>
 <translation id="7068360136237591149">ファイルを開いて</translation>
 <translation id="7076293881109082629">ログイン中</translation>
 <translation id="7076878155205969899">音声をミュートする</translation>
@@ -1817,7 +1811,6 @@
 <translation id="7189412385142492784">金星までの距離は</translation>
 <translation id="7198435252016571249">カメラは右下にスナップされています。システムのサーフェスと競合しています。</translation>
 <translation id="7219573373513695352">接続されているデバイスはありません</translation>
-<translation id="7226347284543965442">時間です。お疲れさまでした！</translation>
 <translation id="7229029500464092426">メモリ <ph name="AVAILABLE_MEMORY" /> | 合計 <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7244725679040769470">バッテリー残量が <ph name="PERCENTAGE" />% です。デバイスを電源に接続してください。</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />。アップデートを適用するには、Chromebook を再起動する必要があります。再起動には最長で 1 分ほどかかります。</translation>
@@ -2173,7 +2166,6 @@
 <translation id="8443879455002739353">「コピー」</translation>
 <translation id="8444246603146515890">デスク <ph name="DESK_TITILE" /> が有効になりました</translation>
 <translation id="8446884382197647889">詳細</translation>
-<translation id="8452090802952003258">マイクの音を聞く</translation>
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" />+V</translation>
 <translation id="8462305545768648477">「選択して読み上げ」を閉じる</translation>
 <translation id="8468806060683421065">期限 <ph name="DUE_DATE_AND_TIME" /></translation>
@@ -2235,7 +2227,6 @@
 <translation id="8683506306463609433">パフォーマンス追跡機能が有効</translation>
 <translation id="8703634754197148428">録画を開始します。録画を開始した後、シェルフにある [録画を停止] ボタンに移動するには、Alt+Shift+L キーを使用してください</translation>
 <translation id="8704155109538237473">ピクチャー イン ピクチャー ウィンドウにフォーカスする</translation>
-<translation id="8708657523363087260">サイドトーンを切り替える</translation>
 <translation id="870917907284186124">音声入力をオンまたはオフにします</translation>
 <translation id="8711169534266271368">ゲーム ダッシュボードのオプション</translation>
 <translation id="8712637175834984815">理解した</translation>

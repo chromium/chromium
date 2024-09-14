@@ -16,7 +16,6 @@
 <translation id="1006873397406093306">התוסף הזה יכול לקרוא ולשנות את הנתונים שלך באתרים. אפשר לקבוע לאילו אתרים התוסף יכול לגשת.</translation>
 <translation id="1007057452468855774">‏הפעלה של חנות Google Play</translation>
 <translation id="1008186147501209563">ייצוא סימניות</translation>
-<translation id="1008209036711323236">‏זו הסיבה שהצוות של Chrome מתכנן להפסיק את השימוש בקובצי Cookie של צד שלישי אחרי שנטפל בכל שאר הבעיות שקשורות לתחרות שהועלו על ידי <ph name="BEGIN_LINK" />רשות התחרות והשווקים (Competition and Markets Authority) בבריטניה<ph name="END_LINK" />.</translation>
 <translation id="1008261151167010035">דרך הכניסה לחשבון נשמרת ב<ph name="BRAND" />, והכניסה מתבצעת באופן אוטומטי מתי שאפשר. כשהאפשרות הזו מושבתת, מוצגת בקשה לאישור בכל פעם.</translation>
 <translation id="1008544602823861396">חסימת השימוש במידע שלך ב-</translation>
 <translation id="1008557486741366299">לא עכשיו</translation>
@@ -149,7 +148,6 @@
 <translation id="1093457606523402488">רשתות גלויות:</translation>
 <translation id="1093645050124056515">‏Ctrl +‏ Alt + חץ למטה</translation>
 <translation id="1094219634413363886">תופיע התראה אם תתחיל הקלטה במכשיר המנוהל הזה</translation>
-<translation id="1095557482034465422">אפשר לעיין בהרשאות האתר בכתובת <ph name="BEGIN_LINK_PERMISSIONS" /><ph name="PERMISSIONS" /><ph name="END_LINK_PERMISSIONS" /></translation>
 <translation id="1095761715416917775">כדאי לוודא שניתן לגשת לנתונים המסונכרנים בכל רגע</translation>
 <translation id="1095879482467973146">‏מנהל הסיסמאות של Google באינטרנט</translation>
 <translation id="109647177154844434">‏הסרת ההתקנה של Parallels Desktop תמחק את קובץ האימג' של Windows. המחיקה כוללת את כל האפליקציות, ההגדרות והנתונים. להמשיך?</translation>
@@ -913,7 +911,6 @@
     <ph name="BEGIN_PARAGRAPH2" />אפשר להשבית את השירות הזה ב'הגדרות'.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="1637224376458524414">‏שליחה של סימנייה זו למכשיר ה-iPhone</translation>
 <translation id="1637765355341780467">אירעה שגיאה בפתיחת הפרופיל שלך. ייתכן שחלק מהתכונות לא יהיו זמינות.</translation>
-<translation id="1637830036924985819">‏לפעמים אתרים משתמשים בקובצי Cookie בדרכים שלא התכוונת אליהן</translation>
 <translation id="1639239467298939599">בטעינה</translation>
 <translation id="1640235262200048077">‏עורך שיטות הקלט (IME) <ph name="IME_NAME" /> עדיין לא עובד באפליקציות Linux</translation>
 <translation id="1640283014264083726">‏PKCS #1 MD4 עם הצפנת RSA</translation>
@@ -1041,7 +1038,6 @@
 <translation id="1720318856472900922">‏אימות שרת TLS WWW</translation>
 <translation id="172123215662733643">חיפוש תמונות דרך <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="1722460139690167654">מכשיר <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> שלך מנוהל<ph name="END_LINK" /> על ידי <ph name="ENROLLMENT_DOMAIN" /></translation>
-<translation id="1723166841621737307">‏איך נתונים עוזרים ל-Chrome לעבוד טוב יותר בשבילך?</translation>
 <translation id="1723824996674794290">&amp;חלון חדש</translation>
 <translation id="1724801751621173132">שיטת הקלט</translation>
 <translation id="1725562816265788801">גלילה בין כרטיסיות</translation>
@@ -1068,7 +1064,6 @@
 <translation id="1743970419083351269">סגירת סרגל ההורדות</translation>
 <translation id="1744108098763830590">דף רקע</translation>
 <translation id="1745732479023874451">ניהול אנשי קשר</translation>
-<translation id="1746797507422124818">הנתונים שלך בזמן הגלישה</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}one{לפתוח ולערוך # קבצים באפליקציית האינטרנט הזו?}two{לפתוח ולערוך # קבצים באפליקציית האינטרנט הזו?}other{לפתוח ולערוך # קבצים באפליקציית האינטרנט הזו?}}</translation>
 <translation id="1748329107062243374">שימוש במפתח גישה מ-<ph name="DEVICE_NAME" /> כדי להיכנס אל <ph name="WEBSITE" /></translation>
 <translation id="1748563609363301860">‏אפשר לשמור את הסיסמה הזו בחשבון Google או רק במכשיר</translation>
@@ -2079,12 +2074,6 @@
 <translation id="2444874983932528148">קל להמשיך מהנקודה שבה הפסקת</translation>
 <translation id="2445081178310039857">ספריית הבסיס של ההרחבה נחוצה.</translation>
 <translation id="2445484935443597917">יצירת פרופיל חדש</translation>
-<translation id="2445702184865563439">‏המידע הזה יכול להיות שימושי. לדוגמה, המידע הזה יכול לעזור ל-Chrome להבין את מהירות הטעינה של דפים בתנאים שונים. על סמך ההגדרות שלך, Chrome יכול גם:
-      &lt;ul&gt;
-        &lt;li&gt;לעזור לך לגלוש מהר יותר. לדוגמה, חיפושים שביצעת ב-Google יכולים לעזור ל-Chrome להציג לך חיזויים לחיפושים עתידיים.&lt;/li&gt;
-        &lt;li&gt;לאפשר לאתרים לבצע אופטימיזציה של החוויה במכשיר. למשל, אתר יכול להתאים את התוכן שלו לטלפון הנייד שלך ולזכור את ההעדפות שלך, כמו השפה שבחרת. &lt;/li&gt;
-        &lt;li&gt;לעזור למפרסמים, כולל Google, להציג מודעות רלוונטיות יותר.&lt;/li&gt;
-      &lt;/ul&gt;</translation>
 <translation id="2445726032315793326">זכוכית מגדלת חלקית</translation>
 <translation id="244641233057214044">קשור לחיפוש שלך</translation>
 <translation id="2447587550790814052">‏עכשיו אפשר להשתמש ב-Steam ל-Chromebook (בטא)</translation>
@@ -2617,7 +2606,6 @@
 <translation id="2814489978934728345">הפסקת טעינת הדף</translation>
 <translation id="2815693974042551705">הוספת התיקייה לסימניות</translation>
 <translation id="2816319641769218778">‏כדי לשמור סיסמאות בחשבון Google, יש להפעיל את הסנכרון.</translation>
-<translation id="2816628817680324566">האם לאפשר לאתר הזה לזהות את מפתח האבטחה שלך?</translation>
 <translation id="2817435998497102771">הגדרה של הטפט והסגנון שלך</translation>
 <translation id="2817861546829549432">הפעלת התכונה 'ללא מעקב' תגרום להכללת בקשה בתנועת הגלישה שלך. ההשפעה שלה תלויה בנכונות של אתר להגיב לבקשה, ובאופן שבו הבקשה תפורש. לדוגמה, אתרים מסוימים עשויים להגיב לבקשה זו על ידי הצגת מודעות שאינן מבוססות על אתרים אחרים שבהם ביקרת. אתרי אינטרנט רבים עדיין יאספו את נתוני הגלישה שלך וישתמשו בהם - למשל, כדי לשפר את האבטחה, לספק תוכן, שירותים, מודעות והמלצות באתרי האינטרנט שלהם ולהפיק סטטיסטיקת דיווח.</translation>
 <translation id="2818476747334107629">פרטי מדפסת</translation>
@@ -3020,11 +3008,6 @@
 <translation id="3113970906450647715">הצמדת הלחצן בוטלה</translation>
 <translation id="3115147772012638511">בהמתנה למטמון...</translation>
 <translation id="3115580024857770654">כיווץ הכול</translation>
-<translation id="3115728370128632723">‏כדי לשפר את חוויית השימוש שלך באינטרנט, אנחנו:
-      &lt;ul&gt;
-        &lt;li&gt;שומרים על הבטיחות שלך בזמן הגלישה&lt;/li&gt;
-        &lt;li&gt;תומכים בסביבה עסקית משגשגת שמאפשרת גלישה בטוחה, פתוחה, מהירה וחינמית באינטרנט&lt;/li&gt;
-      &lt;/ul&gt;</translation>
 <translation id="3115743155098198207">‏ניהול השפה בחשבון Google</translation>
 <translation id="3117362587799608430">אביזר העגינה אינו תואם באופן מלא</translation>
 <translation id="3117791853215125017">{COUNT,plural, =1{לא ניתן היה לשלוח <ph name="ATTACHMENTS" /> אל <ph name="DEVICE_NAME" />}one{לא ניתן היה לשלוח <ph name="ATTACHMENTS" /> אל <ph name="DEVICE_NAME" />}two{לא ניתן היה לשלוח <ph name="ATTACHMENTS" /> אל <ph name="DEVICE_NAME" />}other{לא ניתן היה לשלוח <ph name="ATTACHMENTS" /> אל <ph name="DEVICE_NAME" />}}</translation>
@@ -3434,7 +3417,6 @@
 <translation id="3435738964857648380">אבטחה</translation>
 <translation id="343578350365773421">אין נייר</translation>
 <translation id="3435896845095436175">הפעלה</translation>
-<translation id="3436545938885366107">נניח שיש לך בית קפה אהוב לקפה של הבוקר. אולי הביקורים שלך בקפה כל כך תכופים עד שבעלי בית הקפה מכירים את השם שלך ומציעים לך אספרסו כפול עם סוכר אחד ברגע שנכנסת.</translation>
 <translation id="3438633801274389918">נינג'ה</translation>
 <translation id="3439153939049640737">לאפשר תמיד ל-<ph name="HOST" /> לגשת למיקרופון שלך</translation>
 <translation id="3439970425423980614">‏פתיחת PDF בתצוגה מקדימה</translation>
@@ -4238,7 +4220,6 @@
 <translation id="3983769721878416534">השהייה לפני לחיצה</translation>
 <translation id="3984135167056005094">אין לכלול כתובת אימייל</translation>
 <translation id="3984159763196946143">לא ניתן היה להתחיל מצב הדגמה</translation>
-<translation id="3984431586879874039">האם לאפשר לאתר לראות את מפתח האבטחה שלך?</translation>
 <translation id="3984536049089846927">לדף הבא</translation>
 <translation id="398477389655464998">העתקת קישור לטקסט המודגש</translation>
 <translation id="3984862166739904574">הגדרה של תשובות מהירות</translation>
@@ -4409,7 +4390,6 @@
 <translation id="4106054677122819586">שנארגן את הכרטיסיות שלך?</translation>
 <translation id="4107048419833779140">לזהות ולהוציא התקני אחסון</translation>
 <translation id="4107522742068568249">לבדיקת האבטחה</translation>
-<translation id="4108692279517313721">מקבלים אזהרה לגבי כל האתרים הלא מאובטחים</translation>
 <translation id="4109135793348361820">העברת חלון אל <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">שחזור האזהרה</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (אופליין)</translation>
@@ -4894,7 +4874,6 @@
 <translation id="4481448477173043917">בוצעה הפעלה מחדש של ה-<ph name="DEVICE_TYPE" /> באופן בלתי צפוי</translation>
 <translation id="4481467543947557978">‏קובץ שירות (service worker)</translation>
 <translation id="4482990632723642375">כרטיסייה שנסגרה לאחרונה</translation>
-<translation id="4485245862007675842">‏‫Chrome משפר את העבודה שלך באינטרנט</translation>
 <translation id="4486333480498805415">קביעת מיקום יותר מדויקת</translation>
 <translation id="4487489714832036847">‏במכשירי Chromebook משתמשים באפליקציות במקום בתוכנות רגילות. ניתן להוריד אפליקציות לפרודוקטיביות, לבידור ועוד.</translation>
 <translation id="4488257340342212116">מורשים להשתמש במצלמה</translation>
@@ -5767,7 +5746,6 @@
 <translation id="5130080518784460891">Eten</translation>
 <translation id="5130675701626084557">לא ניתן היה להוריד את הפרופיל. יש לנסות שוב מאוחר יותר או לפנות לספק לקבלת עזרה.</translation>
 <translation id="5131591206283983824">הקשה וגרירה בלוח מגע</translation>
-<translation id="5132130020119156609">‏בהתאם להרשאות האתר, קובצי Cookie הם אחת הדרכים שבהן אתרים יכולים לאחסן מידע על הפעילות שלך באינטרנט.</translation>
 <translation id="5135533361271311778">לא ניתן ליצור פריט סימנייה.</translation>
 <translation id="513555878193063507">‏הוספה של APN חדש</translation>
 <translation id="5136343472380336530">‏יש לוודא ששני המכשירים אינם נעולים, שהם קרובים זה לזה ושבשניהם מופעל Bluetooth. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
@@ -5811,17 +5789,10 @@
 <translation id="5160857336552977725">יש להיכנס אל ה-<ph name="DEVICE_TYPE" /></translation>
 <translation id="5161251470972801814">‏התקני USB של <ph name="VENDOR_NAME" /></translation>
 <translation id="5161442190864186925">הצטרפות לפגישה</translation>
-<translation id="5161827038979306924">‏מה ההבדל בין היסטוריית הגלישה שלך ב-Chrome להיסטוריית החיפושים שלך?</translation>
 <translation id="5162905305237671850"><ph name="DEVICE_TYPE" /> נחסם</translation>
 <translation id="5163910114647549394">הכרטיסייה הועברה לסוף שורת הכרטיסיות</translation>
 <translation id="5164530241085602114">לאתר <ph name="SITE" /> אין הרשאה לשלוח התראות</translation>
 <translation id="516747639689914043">Hypertext Transport Protocol (HTTP)</translation>
-<translation id="5170299781084543513">‏אם מצאת אתר שהיית רוצה לבקר בו, ניתן להחליט (באמצעות הרשאות האתר) אם לאפשר לאתר להשתמש בתכונות מסוימות. לדוגמה:
-      &lt;ul&gt;
-        &lt;li&gt;להשתמש במצלמה, במיקום ובמיקרופון של המכשיר&lt;/li&gt;
-        &lt;li&gt;לאחסן נתונים במכשיר&lt;/li&gt;
-        &lt;li&gt;לספק תכונות לאתרים, כמו התראות&lt;/li&gt;
-      &lt;/ul&gt;</translation>
 <translation id="5170568018924773124">הצגה בתיקייה</translation>
 <translation id="5171045022955879922">טקסט או כתובת אתר לחיפוש</translation>
 <translation id="5171343362375269016">זיכרון מוחלף</translation>
@@ -6060,7 +6031,6 @@
 <translation id="5344128444027639014">%<ph name="BATTERY_PERCENTAGE" /> (ימין)</translation>
 <translation id="534449933710420173">תיקייה ללא שם</translation>
 <translation id="5345916423802287046">הפעלת האפליקציה בזמן הכניסה</translation>
-<translation id="5347920333985823270">‏‫Chrome תומך בגישה חופשית לאינטרנט</translation>
 <translation id="5350116201946341974">משעשע</translation>
 <translation id="5350293332385664455">‏כיבוי של Google Assistant</translation>
 <translation id="535123479159372765">הטקסט הועתק ממכשיר אחר</translation>
@@ -6269,7 +6239,6 @@
 <translation id="5493792505296048976">מסך מופעל</translation>
 <translation id="5494016731375030300">כרטיסיות שנסגרו לאחרונה</translation>
 <translation id="5494362494988149300">פתיחה &amp;בסיום</translation>
-<translation id="5494843939447324326">‏יותר אפשרויות בחירה עם Chrome</translation>
 <translation id="5494920125229734069">בחירת הכול</translation>
 <translation id="5495466433285976480">פעולה זו תסיר את כל המשתמשים, הקבצים והנתונים המקומיים והגדרות מקומיות אחרות לאחר ביצוע של הפעלה מחדש בפעם הבאה. כל המשתמשים יצטרכו להיכנס שוב.</translation>
 <translation id="5495597166260341369">אין לכבות את הצג</translation>
@@ -6307,12 +6276,6 @@
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5521078259930077036">האם זהו דף הבית שציפית לראות?</translation>
 <translation id="5522156646677899028">התוסף הזה מכיל נקודת תורפה חמורה באבטחה.</translation>
-<translation id="5522378895674097188">‏יש לך אפשרות לבדוק את היסטוריית החיפושים ואת ההגדרות שלך בדף <ph name="BEGIN_LINK" />הפעילות שלי<ph name="END_LINK" />, אם:
-      &lt;ul&gt;
-        &lt;li&gt;השתמשת בחיפוש Google‏&lt;/li&gt;
-        &lt;li&gt;התחברת לחשבון שלך ב-Google‏&lt;/li&gt;
-        &lt;li&gt;הפעלת את ההגדרה 'פעילות באינטרנט ובאפליקציות'&lt;/li&gt;
-      &lt;/ul&gt;</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{מנהל המערכת שלך התקין תוסף}one{מנהל המערכת שלך התקין # תוספים}two{מנהל המערכת שלך התקין # תוספים}other{מנהל המערכת שלך התקין # תוספים}}</translation>
 <translation id="5523532775593636291">אתרים שמוסיפים לרשימה תמיד נשארים פעילים ושמורים בזיכרון</translation>
 <translation id="5523558474028191231">שם יכול לכלול אותיות, ספרות ותווים מיוחדים, והוא חייב להיות באורך של <ph name="MAX_CHARACTER_COUNT" /> תווים או פחות</translation>
@@ -6331,12 +6294,6 @@
 <translation id="5542132724887566711">פרופיל</translation>
 <translation id="5542750926112347543">‏קובצי Cookie מ-<ph name="DOMAIN" /> חסומים</translation>
 <translation id="5542949973455282971">מתבצע חיבור אל <ph name="CARRIER_NAME" /></translation>
-<translation id="5543901591855628053">‏מודעות הן רכיב חיוני בעסקים רבים באינטרנט. הן מאפשרות לעסקים להציג תוכן בחינם באינטרנט, וכך להבטיח שהתוכן יהיה זמין לכולם. הצוות של Chrome מפתח דרכים שיאפשרו לאתרים להציג לך מודעות בהתאמה אישית ועדיין להגן על הפרטיות שלך.  כשהפעולה הזאת מתבצעת היטב, הפרסום יכול להועיל לכולם באינטרנט, כי כשמוצגת לך מודעה:
-      &lt;ul&gt;
-        &lt;li&gt;יש לך אפשרות לגלות דברים חדשים ומעניינים&lt;/li&gt;
-        &lt;li&gt;המפרסם עשוי למצוא לקוח חדש&lt;/li&gt;
-        &lt;li&gt;האתר שנכנסת אליו מרוויח כסף מהצגת המודעה&lt;/li&gt;
-      &lt;/ul&gt;</translation>
 <translation id="5543983818738093899">הסטטוס בבדיקה...</translation>
 <translation id="5544482392629385159">מכשיר <ph name="DEVICE_INDEX" /> מתוך <ph name="DEVICE_COUNT" />, ‏<ph name="DEVICE_NAME" /></translation>
 <translation id="554517701842997186">תהליך עיבוד</translation>
@@ -6472,7 +6429,6 @@
 <translation id="5638170200695981015">כדי להשתמש באפשרויות מוגבלות לתצוגה ולעריכה, צריך לבחור באפשרות 'פתיחה בכלי לעריכה בסיסית'.</translation>
 <translation id="563821631542362636">מתן הרשאה לאתר לשמירת נתונים</translation>
 <translation id="5638309510554459422">‏תוספים ועיצובים זמינים ב<ph name="BEGIN_LINK" />חנות האינטרנט של Chrome<ph name="END_LINK" /></translation>
-<translation id="5638653188468353257">מקבלים אזהרה לגבי אתרים ציבוריים ואתרים פרטיים, כמו האינטראנט של החברה</translation>
 <translation id="5639549361331209298">יש לטעון מחדש את הדף, אפשר ללחוץ לחיצה ארוכה כדי להציג אפשרויות נוספות</translation>
 <translation id="5640133431808313291">ניהול מפתחות אבטחה</translation>
 <translation id="5640159004008030285">‏הסיסמה הזו שמורה רק במכשיר הזה. כדי להשתמש בה במכשירים אחרים, עליך <ph name="BEGIN_LINK" />לשמור אותה בחשבון Google<ph name="END_LINK" />.</translation>
@@ -6663,7 +6619,6 @@
 <translation id="5793339252089865437">אם הורדת העדכון מתבצעת ברשת סלולרית, ייתכן שהיא תהיה כרוכה בתשלום על חריגה.</translation>
 <translation id="5793420564274426163">אישור ההתאמה</translation>
 <translation id="5794034487966529952">בשולחן העבודה הווירטואלי <ph name="DESK_TITLE" /> יש <ph name="NUM_BROWSERS" /> חלונות פתוחים של הדפדפן</translation>
-<translation id="5794086402489402632">מה ההבדל בין היסטוריית הגלישה להיסטוריית החיפושים?</translation>
 <translation id="5794414402486823030">תמיד לפתוח באמצעות מציג המערכת</translation>
 <translation id="5794700615121138172">‏תיקיות משותפות של Linux</translation>
 <translation id="5794786537412027208">‏יציאה מכל אפליקציות Chrome</translation>
@@ -6937,7 +6892,6 @@
 <translation id="5984222099446776634">ביקרת לאחרונה</translation>
 <translation id="5985458664595100876">‏פורמט כתובת האתר לא חוקי. הפורמטים הנתמכים הם ‎\\server\share ו-smb://server/share.</translation>
 <translation id="598810097218913399">הסרת ההקצאה</translation>
-<translation id="5989629029899728491">‏לא רק קובצי cookie</translation>
 <translation id="5990266201903445068">‏Wi-Fi בלבד</translation>
 <translation id="5990386583461751448">מתורגם</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{כדי שאפשר יהיה להמשיך לגלוש באינטרנט, צריך לבקש ממנהל המערכת להסיר את האפליקציה הזו.}one{כדי שאפשר יהיה להמשיך לגלוש באינטרנט, צריך לבקש ממנהל המערכת להסיר את האפליקציות האלה.}two{כדי שאפשר יהיה להמשיך לגלוש באינטרנט, צריך לבקש ממנהל המערכת להסיר את האפליקציות האלה.}other{כדי שאפשר יהיה להמשיך לגלוש באינטרנט, צריך לבקש ממנהל המערכת להסיר את האפליקציות האלה.}}</translation>
@@ -7418,7 +7372,6 @@
 <translation id="6344576354370880196">מדפסות שמורות</translation>
 <translation id="6344608411615208519"><ph name="BEGIN_LINK" />הדפדפן מנוהל<ph name="END_LINK" /> על ידי ההורה שלך</translation>
 <translation id="6344622098450209924">חסימת מעקב</translation>
-<translation id="6344868544424352658">‏היסטוריית הגלישה ב-Chrome כוללת את כל האתרים שנכנסת אליהם ב-Chrome בתקופה מסוימת.</translation>
 <translation id="6345418402353744910">‏עליך להזין את שם המשתמש והסיסמה שלך כדי שמנהל מערכת יוכל להגדיר את הרשת שלך בשרת ה-proxy <ph name="PROXY" /></translation>
 <translation id="6345566021391290381">שותפו איתך סיסמאות לאתר <ph name="WEBSITE_NAME" />. אפשר להשתמש בהן בטופס הכניסה.</translation>
 <translation id="6345878117466430440">סימון כפריט שנקרא</translation>
@@ -7854,7 +7807,6 @@
 <translation id="6673898378497337661">הגברת הבהירות של המקלדת</translation>
 <translation id="6674571176963658787">כדי להתחיל לסנכרן צריך להזין את ביטוי הסיסמה</translation>
 <translation id="6675665718701918026">התקן הצבעה מחובר</translation>
-<translation id="6676021247432396306">כשגולשים באינטרנט נוצרים נתונים – למשל, המילים שמחפשים, האתרים שנכנסים אליהם, הדפדפן והמכשיר שבו משתמשים.</translation>
 <translation id="6676212663108450937">מומלץ להשתמש באוזניות תוך כדי אימון הקול שלך</translation>
 <translation id="6676291960742508499">‏הכרטיסיות, כותרות הדפים וכתובות ה-URL שלך נשלחות אל Google</translation>
 <translation id="667752334740867460">‏מתקבלים פרטי Wi-Fi…</translation>
@@ -8537,7 +8489,6 @@
 <translation id="7169122689956315694">הפעלת ההתראה כשמזוהים מכשירים בקרבת מקום</translation>
 <translation id="7170236477717446850">תמונת פרופיל</translation>
 <translation id="7171000599584840888">הוספת פרופיל...</translation>
-<translation id="7171245766710039393">‏כדי לבדוק ולנהל את היסטוריית הגלישה, אפשר להיכנס אל <ph name="BEGIN_LINK_HISTORY" /><ph name="HISTORY" /><ph name="END_LINK_HISTORY" />. <ph name="BEGIN_LINK_HELPCENTER" />מידע נוסף על נתוני הגלישה ב-Chrome ואיך מנהלים אותם<ph name="END_LINK_HELPCENTER" /></translation>
 <translation id="7171259390164035663">אני לא רוצה להירשם</translation>
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{הוספת כרטיסייה לקבוצה חדשה}one{הוספת כרטיסיות לקבוצה חדשה}two{הוספת כרטיסיות לקבוצה חדשה}other{הוספת כרטיסיות לקבוצה חדשה}}</translation>
 <translation id="7173114856073700355">פתיחת ההגדרות</translation>
@@ -8572,7 +8523,6 @@
 <translation id="7196272782924897510">להשתמש במפתח גישה ממכשיר אחר?</translation>
 <translation id="7197190419934240522">‏חיפוש Google וכל היכולות של Google עומדים לרשותך בכל גלישה</translation>
 <translation id="719791532916917144">מקש קיצור</translation>
-<translation id="7197958763276896180">‏למה Chrome עובר מקובצי Cookie של צד שלישי?</translation>
 <translation id="7198503619164954386">עליך להשתמש במכשיר הרשום בארגון</translation>
 <translation id="7199158086730159431">קבלת עזרה</translation>
 <translation id="7199452998289813782">השהיית ההעברה אל <ph name="DEVICE_NAME" /></translation>
@@ -8639,7 +8589,6 @@
 <translation id="7250616558727237648">המכשיר שעמו מתבצע השיתוף לא הגיב. אפשר לנסות שוב.</translation>
 <translation id="725109152065019550">מצטערים, מנהל המערכת השבית את האחסון החיצוני בחשבונך.</translation>
 <translation id="7251635775446614726">הודעה ממנהל המערכת: "<ph name="CUSTOM_MESSAGE" />"</translation>
-<translation id="7251979364707973467">האתר <ph name="WEBSITE" /> הנפיק את מפתח האבטחה שלך ומבקש לדעת את מספר המזהה שלו. האתר יוכל לדעת בדיוק איזה מפתח אבטחה משמש אותך.</translation>
 <translation id="7252023374029588426">תוצג סדרה של בועות הדרכה עם הוראות.
           מקישים על |<ph name="ACCELERATOR" />| כדי להתמקד בבועה, ומקישים שוב כדי להתמקד ברכיב שאליו היא מפנה.</translation>
 <translation id="7253521419891527137">&amp;למידע נוסף</translation>
@@ -8991,7 +8940,6 @@
 <translation id="7497981768003291373">‏אין לך יומני טקסט של WebRTC שתועדו לאחרונה.</translation>
 <translation id="7501957181231305652">או</translation>
 <translation id="7502220299952823578">הוספה לרשימה 'יש להשאיר תמיד את האתרים האלה פעילים'</translation>
-<translation id="7502394262247226635">‏אם חיפשת משהו בסרגל הכתובות של Chrome, מנוע החיפוש שהגדרת כברירת מחדל מקבל את הבקשה שלך ומציג לך תוצאות רלוונטיות. היסטוריית החיפושים שלך כוללת פריטים שחיפשת במשך תקופה מסוימת.</translation>
 <translation id="7502528909759062987">השהיה של העברת הכרטיסייה אל <ph name="DEVICE_NAME" /></translation>
 <translation id="7502804472671406749">ניתן לגלול ולשנות את מרחק התצוגה בכרטיסיות המשותפות</translation>
 <translation id="7503191893372251637">‏סוג אישור Netscape</translation>
@@ -9279,7 +9227,6 @@
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7707108266051544351">גישת האתר הזה אל חיישני התנועה נחסמה.</translation>
 <translation id="7707922173985738739">שימוש בחבילת הגלישה</translation>
-<translation id="7708143783728142771">‏באותו אופן, קובצי Cookie מאפשרים להתאים אישית את ההעדפות שלך באינטרנט. אם נכנסת לאתר מסוים, האתר יכול לשמור קובץ Cookie באחסון הדפדפן של המכשיר כדי לזכור את ההעדפות שלך לגבי האתר, למשל השפה שלך או הפריטים ששמרת בעגלת הקניות. לאחר מכן, בביקור נוסף באתר באמצעות אותו דפדפן, האתר יוכל לקרוא את קובץ ה-Cookie שהוא הגדיר ותהיה לך אפשרות להתחיל מהמקום שבו הפסקת. קובצי ה-Cookie האלה מכונים לעיתים קרובות 'קובצי Cookie מהדומיין הנוכחי', כי הם מוגדרים על ידי האתר שבו ביקרת.</translation>
 <translation id="770831926727930011">הנתונים המקומיים מוגנים באמצעות הסיסמה הישנה שלך. עליך להזין את הסיסמה הישנה כדי לשחזר את הנתונים המקומיים.</translation>
 <translation id="7709152031285164251">נכשל - <ph name="INTERRUPT_REASON" /></translation>
 <translation id="7710568461918838723">&amp;העברה...</translation>
@@ -10078,12 +10025,6 @@
 <translation id="826905130698769948">אישור לקוח לא חוקי</translation>
 <translation id="8270320981823560179">Drive</translation>
 <translation id="82706708334564640">היסטוריית ההורדות מהתקופה האחרונה</translation>
-<translation id="8270946420566049889">‏יש לך אפשרות להתאים אישית את Chrome בכל דרך:
-      &lt;ul&gt;
-        &lt;li&gt;&lt;em&gt;המיטב של Google‏&lt;/em&gt;, אם זה מתאים לך. לדוגמה, אפשר להגדיר את מנוע החיפוש של Google כברירת מחדל ב-Chrome ולהשתמש במנהל הסיסמאות של Google כדי לנהל את כל הסיסמאות בכל מכשיר. &lt;/li&gt;
-        &lt;li&gt;&lt;em&gt;בחירה משמעותית&lt;/em&gt;: ב-Chrome אפשר לבחור את ההגדרות ולשלוט בהן, כולל מידע שיעזור לך לקבל החלטות חשובות.&lt;/li&gt;
-        &lt;li&gt;&lt;em&gt;תוספים&lt;/em&gt;: ניתן להרחיב את הפונקציונליות של Chrome עם יותר מ-100,000 תוספים ב<ph name="BEGIN_LINK" />חנות האינטרנט של Chrome<ph name="END_LINK" />.‏&lt;/li&gt;
-      &lt;/ul&gt;</translation>
 <translation id="827097179112817503">הצגת לחצן 'דף הבית'</translation>
 <translation id="8271268254812352141">בלחיצה ימנית או בלחיצה ארוכה על טקסט, יוצגו הגדרות, תרגומים או המרת יחידות. ב<ph name="LINK_BEGIN" />שפות לאתרים<ph name="LINK_END" /> אפשר להתאים אישית את השפות לתרגום.</translation>
 <translation id="8271379370373330993">עכשיו יש כמה שלבים שהורים צריכים להשלים. אפשר יהיה להחזיר את ה-<ph name="DEVICE_TYPE" /> לילד/ה לאחר הגדרת החשבון.</translation>
@@ -10322,6 +10263,7 @@
 <translation id="8440630305826533614">‏אפליקציות Linux</translation>
 <translation id="844063558976952706">תמיד באתר זה</translation>
 <translation id="8441313165929432954">‏הפעלה/השבתה של שיתוף אינטרנט (tethering)</translation>
+<translation id="8443542808381875261">סגירת כרטיסיות שלא בשימוש</translation>
 <translation id="8443986842926457191">‏כתובת ה-URL מכילה יותר מ-2048 תווים</translation>
 <translation id="8445281870900174108">הכרטיסייה הזו ניגשת למצלמה שלך</translation>
 <translation id="8446884382197647889">למידע נוסף</translation>
@@ -10397,7 +10339,6 @@
 <translation id="8494147475618188843">‏הגדרות Android</translation>
 <translation id="849488240089599592">חזרה להורדות האחרונות</translation>
 <translation id="8496717697661868878">הרצת פלאגין זה</translation>
-<translation id="8497136774043290050">‏מהם קובצי Cookie של צד שלישי? לאתרים שנכנסת אליהם יש אפשרות להטמיע תוכן מאתרים או משירותים אחרים, כמו תמונות, מודעות, תוכן של רשתות חברתיות וטקסט. כשהאתרים האחרים האלה משתמשים בקובצי Cookie כדי לשמור מידע לגביך, אנחנו קוראים להם 'קובצי Cookie של צד שלישי'. אם נכנסת לכמה אתרים שמטמיעים תוכן מאותו מקור, למשל רשת מודעות, קובצי ה-Cookie של צד שלישי יכולים לשמש למטרות פרסום ולמעקב אחריך במהלך הגלישה.</translation>
 <translation id="8497219075884839166">‏תוכניות שירות של Windows</translation>
 <translation id="8498214519255567734">מקל עליך להביט במסך או לקרוא באור מעומעם</translation>
 <translation id="8499083585497694743">ביטול של השתקת המיקרופון</translation>
@@ -10716,7 +10657,6 @@
 <translation id="8725178340343806893">מועדפים/סימניות</translation>
 <translation id="87254326763805752">אישור של מפתח הגישה</translation>
 <translation id="8726206820263995930">אירעה שגיאה בעת הבאת הגדרות מדיניות מהשרת: <ph name="CLIENT_ERROR" />.</translation>
-<translation id="8727043961453758442">‏נהנים מהמיטב של Chrome</translation>
 <translation id="8727333994464775697">אפשר להתאים אישית את התוכן שמוצג בדף הזה</translation>
 <translation id="8727751378406387165">שליחת <ph name="BEGIN_LINK1" />מטא-נתונים של מילוי אוטומטי<ph name="END_LINK1" />
           <ph name="LINE_BREAK" />
@@ -10809,7 +10749,6 @@
 <translation id="8786824282808281903">כשהסמל הזה יוצג לילד או לילדה, ניתן יהיה להשתמש בטביעת אצבע לצורך זיהוי או כדי לאשר רכישות.</translation>
 <translation id="8787752878731558379">‏רוצה לעזור לנו לשפר את Chrome? יש לך אפשרות לספר לנו למה אישרת שימוש בקובצי cookie של צד שלישי</translation>
 <translation id="8788008845761123079">בחירת תנועה בשביל <ph name="SELECTED_ACTION" /></translation>
-<translation id="8789898473175677810">‏הצוות של Chrome הוא חלק מ<ph name="LINK_BEGIN" />מאמץ משותף<ph name="LINK_END" /> לצמצום המעקב באתרים שונים ולהפסקת השימוש בקובצי Cookie של צד שלישי. עם זאת, אנחנו מנסים לעשות את זה בצורה אחראית, כי הרבה אתרים מסתמכים על קובצי Cookie של צד שלישי כדי לפעול בצורה תקינה. לדוגמה, אתרים רבים משתמשים בקובצי Cookie של צד שלישי כדי לפשט את הכניסה לחשבון, לתמוך במערכות מוטמעות של צ'אט ותגובות ולספק שירותי תשלום. בנוסף, מפרסמים משתמשים לעיתים קרובות בקובצי Cookie של צד שלישי כדי להתאים אישית מודעות בצורה טובה יותר. זה חשוב כי אתרים מסתמכים לעיתים קרובות על מודעות כדי לשלם על ההוצאות שלהם ולהשאיר את התוכן שלהם אונליין זמין בחינם.</translation>
 <translation id="8791157330927639737">מידע נוסף על עדכון</translation>
 <translation id="8791534160414513928">‏שליחת בקשת 'Do Not Track' יחד עם תנועת הגלישה שלך</translation>
 <translation id="8793390639824829328">אתרים משתמשים בתכונה הזו כדי לגלול בכרטיסיות המשותפות ולשנות את מרחק התצוגה שלהן</translation>
@@ -10885,7 +10824,6 @@
 <translation id="8846132060409673887">קריאת היצרן והדגם של המחשב הזה</translation>
 <translation id="8846163936679269230">‏איפוס הפרופילים של ה-eSIM</translation>
 <translation id="8846239054091760429">אודיו במונו, הפעלה, כתוביות מיידיות ועוד</translation>
-<translation id="8847459600640933659">‏ההכנסות מפרסום תומכות גם במגוון מוצרים ושירותים ש-Google מציעה בחינם, כמו Chrome,‏ Gmail, מפות Google ו-YouTube.</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">מוסתר</translation>
 <translation id="8849219423513870962">‏ביטול ההסרה של פרופיל ה-eSIM שנקרא <ph name="PROFILE_NAME" /></translation>
@@ -11006,7 +10944,6 @@
 <translation id="8931693637927865341">אסטרואיד</translation>
 <translation id="8931713990831679796">המדפסות האלה מחוברות ומוכנות לשימוש. כדאי לשמור אותן בפרופיל כדי לגשת אליהן בקלות.</translation>
 <translation id="8932654652795262306">הפרטים של שיתוף האינטרנט המיידי בין מכשירים</translation>
-<translation id="8933314208895863334">‏קובצי Cookie יכולים להעשיר את חוויית הגלישה באינטרנט ולאפשר לאתרים להציע לך תכונות שימושיות</translation>
 <translation id="8933709832356869375">אפליקציה אחת שהותקנה תוסר</translation>
 <translation id="8933960630081805351">‏ה&amp;צגה ב-Finder</translation>
 <translation id="8934585454328207858">{NUM_EXTENSION,plural, =1{‏התוסף <ph name="EXTENSION1" /> ניגש להתקני USB}=2{התוספים שניגשים להתקנים: <ph name="EXTENSION1" />, <ph name="EXTENSION2" />}one{התוספים שניגשים להתקנים: <ph name="EXTENSION1" />, <ph name="EXTENSION2" /> ועוד {3}}other{התוספים שניגשים להתקנים: <ph name="EXTENSION1" />, <ph name="EXTENSION2" /> ועוד {3}}}</translation>
@@ -11030,7 +10967,6 @@
 <translation id="8946359700442089734">תכונות לניפוי באגים לא הופעלו באופן מלא במכשיר <ph name="IDS_SHORT_PRODUCT_NAME" /> זה.</translation>
 <translation id="8946954897220903437">כיווץ כל הבקשות בסרגל הכתובות</translation>
 <translation id="894763922177556086">איכות טובה</translation>
-<translation id="8948939328578167195">האתר <ph name="WEBSITE" /> מבקש לקבל את פרטי היצרן והדגם של מפתח האבטחה שלך</translation>
 <translation id="8949304443659090542">‏ניהול הסנכרון בדפדפן Chrome</translation>
 <translation id="895054485242522631">אתרים יכולים להשתמש בחיישני תנועה</translation>
 <translation id="8951256747718668828">אירעה שגיאה ולא ניתן להשלים את השחזור</translation>

@@ -75,6 +75,7 @@
 <translation id="1303507811548703290"><ph name="DOMAIN" /> – Sent from <ph name="DEVICE_NAME" /></translation>
 <translation id="1320912611264252795">Bookmark save flow folders opened at full height</translation>
 <translation id="1327257854815634930">Navigation history is opened</translation>
+<translation id="1328235593824723509"><ph name="TAB_TITLE" />, new or updated tab</translation>
 <translation id="1331212799747679585">Chrome can’t update. More options</translation>
 <translation id="1332501820983677155">Google Chrome feature shortcuts</translation>
 <translation id="1333491156693005331">Checked recently</translation>
@@ -350,6 +351,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="2653659639078652383">Submit</translation>
 <translation id="2656405586795711023">Web apps</translation>
 <translation id="2664252182805397291">View sites</translation>
+<translation id="2666092431469916601">Top</translation>
 <translation id="2669454659051515572">Anyone using this device can see downloaded files</translation>
 <translation id="2702516483241149200">New: Share a link that scrolls to this text</translation>
 <translation id="2705073298859543115">Create summary</translation>
@@ -451,6 +453,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="3072980200212375806"><ph name="APP_NAME" /> will open in Chrome. By continuing, you agree to the <ph name="BEGIN_LINK1" />Google Terms of Service<ph name="END_LINK1" />, and the <ph name="BEGIN_LINK2" />Google Chrome and Chrome OS additional Terms of Service<ph name="END_LINK2" />. The <ph name="BEGIN_LINK3" />Privacy Policy<ph name="END_LINK3" /> also applies.</translation>
 <translation id="3080525922482950719">You can save pages to read later or offline</translation>
 <translation id="3087218211037573995">Some passwords saved only on this device will stop working soon. You can move these passwords to Google Password Manager.</translation>
+<translation id="3087734570205094154">Bottom</translation>
 <translation id="3091010850649238832">Show clipboard contents</translation>
 <translation id="3098745985164956033">Some images are sent to Google to improve descriptions for you</translation>
 <translation id="3114507951000454849">Read today's news <ph name="NEWS_ICON" /></translation>
@@ -488,6 +491,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="3282568296779691940">Sign in to Chrome</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> tab}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> tabs}}</translation>
 <translation id="3293181007446299124">Your browsing history is kept private on your device and reports are sent with a delay to protect your identity</translation>
+<translation id="3302615849591357577">Restore tab group <ph name="TITLE_OF_GROUP" />, colour <ph name="COLOR_NAME" />, as a new background tab group.</translation>
 <translation id="3303414029551471755">Proceed to download the content?</translation>
 <translation id="3303855915957856445">No search results found</translation>
 <translation id="3305130791745726624">Send to devices</translation>
@@ -687,7 +691,6 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="4355272626458588338">You can get back to a page that's important to you by adding a bookmark</translation>
 <translation id="4357206670025518404">+<ph name="COUNT_NUMBER" /></translation>
 <translation id="4359809482106103048">Safety at a glance</translation>
-<translation id="4363222835916186793">Alerts for this product have been turned off</translation>
 <translation id="4378154925671717803">Phone</translation>
 <translation id="4380055775103003110">If this issue keeps happening, you can try other ways to continue on <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="4384468725000734951">Using Sogou for search</translation>
@@ -748,6 +751,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="4624065194742029982">Chrome Incognito</translation>
 <translation id="4634124774493850572">Use password</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 compromised password}other{# compromised passwords}}</translation>
+<translation id="4642472735733036929">Price tracking stopped</translation>
 <translation id="4645146721047390964">While in Incognito, sites can’t use your cookies to see your browsing activity across different sites, for example, to personalise ads. Features on some sites may break.</translation>
 <translation id="4650364565596261010">System default</translation>
 <translation id="465657074423018424">Safe Browsing protects you against deceptive websites. If you turn it off, be extra careful when browsing, especially before entering passwords.</translation>
@@ -799,6 +803,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="4834007576107377210">See your search engine’s instructions for deleting your search history, if applicable</translation>
 <translation id="4834250788637067901">Payment methods, offers and addresses using Google Pay</translation>
 <translation id="4835385943915508971">Chrome does not have access to the requested resource.</translation>
+<translation id="483742037940503070">{TAB_COUNT,plural, =1{Restore tab group of <ph name="TAB_COUNT_ONE" /> tab, colour <ph name="COLOR_NAME" />, as a new background tab group.}other{Restore tab group of <ph name="TAB_COUNT_MANY" /> tabs, colour <ph name="COLOR_NAME" />, as a new background tab group.}}</translation>
 <translation id="4837753911714442426">Open options to print page</translation>
 <translation id="4842092870884894799">Showing password generation pop-up</translation>
 <translation id="4844633725025837809">For added safety, encrypt passwords on your device before they‘re saved to Google Password Manager</translation>
@@ -1090,6 +1095,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="6210748933810148297">Not <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Previewing this page</translation>
 <translation id="6221633008163990886">Unlock to export your passwords</translation>
+<translation id="6225572914528673855">Address bar</translation>
 <translation id="6232535412751077445">Enabling ‘Do Not Track’ means that a request will be included with your browsing traffic. Any effect depends on whether a website responds to the request and how the request is interpreted.
 
 For example, some websites may respond to this request by showing you ads that aren’t based on other websites that you’ve visited. Many websites will still collect and use your browsing data – for example to improve security, to provide content, ads and recommendations and to generate reporting statistics.</translation>
@@ -1183,6 +1189,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6593061639179217415">Desktop site</translation>
 <translation id="6594347733515723558">Sort and view options</translation>
 <translation id="6595046016124923392">Images are sent to Google to improve descriptions for you.</translation>
+<translation id="6595634543029443878">{TAB_COUNT,plural, =1{Restore tab group of <ph name="TAB_COUNT_ONE" /> tab as a new background tab group.}other{Restore tab group of <ph name="TAB_COUNT_MANY" /> tabs as a new background tab group.}}</translation>
 <translation id="6604931690954120417">When you're signed in to Chrome, passwords that you save will go in your Google Account. To turn this off, <ph name="BEGIN_LINK" />go to settings<ph name="END_LINK" />.</translation>
 <translation id="661266467055912436">Improves security for you and everyone on the web.</translation>
 <translation id="6621391692573306628">To send this tab to another device, sign in to Chrome on both devices</translation>
@@ -1207,6 +1214,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6674571176963658787">To start sync, enter your passphrase</translation>
 <translation id="6676927815633975364">Sign in to this site and Chrome</translation>
 <translation id="6684809838922667136">Make Chrome better</translation>
+<translation id="6704048624334633734">Export and delete the passwords</translation>
 <translation id="670498945988402717">Checked yesterday</translation>
 <translation id="6710213216561001401">Previous</translation>
 <translation id="671481426037969117">Your <ph name="FQDN" /> timer ran out. It will start again tomorrow.</translation>
@@ -1585,6 +1593,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="8265018477030547118">Only on this device</translation>
 <translation id="8266753737658117282">Continue with <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8266862848225348053">Download location</translation>
+<translation id="8279945625179116733">Secured by <ph name="APP_NAME" /></translation>
 <translation id="8281886186245836920">Skip</translation>
 <translation id="8282297628636750033">Apply Dark theme to sites, when possible</translation>
 <translation id="8282950411412455249">Go to security settings</translation>
@@ -1668,6 +1677,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="864544049772947936">Manage windows (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="8664215986015753476">Use Chrome your way</translation>
 <translation id="8664979001105139458">File name already exists</translation>
+<translation id="8669290537472770919">{FILE_COUNT,plural, =1{Blocked by your organisation}other{# were blocked by your organisation}}</translation>
 <translation id="8672883760227492369">Some passwords on this device will stop working soon. You can move these passwords to Google Password Manager.</translation>
 <translation id="8676276370198826499">Sign up to <ph name="SITE_ETLD_PLUS_ONE" /> with <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8676789164135894283">Sign-in verifications</translation>

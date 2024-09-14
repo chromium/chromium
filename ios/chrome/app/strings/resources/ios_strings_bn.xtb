@@ -11,7 +11,6 @@
 <translation id="1035980983510608210">সমস্ত ট্যাব বন্ধ করে দিলে পিন করা ট্যাবও বন্ধ হয়ে যাবে।</translation>
 <translation id="1036017604683756002">ইউপিএস</translation>
 <translation id="1036348656032585052">বন্ধ করুন</translation>
-<translation id="10379132160269599">ট্যাব গ্রিড দেখুন</translation>
 <translation id="1041322626941363065">ডেটা নিরাপত্তা লঙ্ঘনের ফলে আপনার পাসওয়ার্ড সর্বজনীনভাবে প্রকাশিত হলে এটি আপনাকে জানায়</translation>
 <translation id="1044891598689252897">সাইট স্বাভাবিকভাবেই কাজ করবে</translation>
 <translation id="104491362976654916">অফলাইন পৃষ্ঠা</translation>
@@ -31,6 +30,7 @@
 <translation id="1118569444314402022">আপনাকে আবার স্বাগত জানাই, <ph name="USER_NAME" /></translation>
 <translation id="1121850836842642159">ফটো ও ছবি</translation>
 <translation id="1125564390852150847">নতুন ট্যাব তৈরি করুন।</translation>
+<translation id="1126696498560056882">এই ডিভাইসে থাকা অ্যাকাউন্ট ম্যানেজ করুন</translation>
 <translation id="1126809382673880764">এই মোডে আপনার ডিভাইসের ক্ষতি করতে পারে এমন ওয়েবসাইট, ডাউনলোড অথবা এক্সটেনশন থেকে কোনও সুরক্ষা পাওয়া সম্ভব হয় না। তবে Gmail এবং Search-এর মতো অন্যান্য Google পরিষেবায়, যেখানে উপলভ্য সেখানে আপনি এখনও 'Safe Browsing'-এর সুরক্ষা পাবেন।</translation>
 <translation id="1142371195993008685"><ph name="FEATURE_NAME" /> সংক্রান্ত বিজ্ঞপ্তি বন্ধ করুন</translation>
 <translation id="1147031633655575115"><ph name="USER" /> হিসেবে সাইন-ইন করেছেন</translation>
@@ -171,6 +171,7 @@
 <translation id="1820195936249950412">সঠিক অ্যাকাউন্ট ব্যবহার করে সাইন-ইন করুন</translation>
 <translation id="1820259098641718022">পড়ার তালিকায় যোগ করা হয়েছে</translation>
 <translation id="1822994441903263130">FEDEX</translation>
+<translation id="1824490729233982311">আপনার অন্যান্য ডিভাইস থেকে আপনি ট্যাব পাওয়ার সময় আপনাকে যে সতর্কতা মেসেজ পাঠানো হয়।</translation>
 <translation id="1827529786398596735">'হোম স্ক্রিন' টাচ করে ধরে থাকুন</translation>
 <translation id="1829244130665387512">পৃষ্ঠাতে খুঁজুন</translation>
 <translation id="1832848789136765277">আপনার সিঙ্ক করা ডেটা সবসময় যাতে অ্যাক্সেস করতে পারেন তা নিশ্চিত করতে, নিজের পরিচয় যাচাই করুন</translation>
@@ -1010,7 +1011,6 @@
 <translation id="594324569139756587">থার্ড-পার্টি কুকি ব্লক করুন</translation>
 <translation id="5944869793365969636">QR কোড স্ক্যান করুন</translation>
 <translation id="5948291296578561264">এর ফলে আপনি ফটো লাইব্রেরিতে ফটো সেভ করতে পারবেন।</translation>
-<translation id="5953383789663007162">অ্যাকাউন্টের তালিকা এডিট করুন</translation>
 <translation id="5954322191260787920">বুকমার্ক এডিট করুন</translation>
 <translation id="5956112131836209882">ট্যাব গ্রুপের ট্যাব। <ph name="NUMBER_OF_TABS_IN_GROUP" />টির মধ্যে <ph name="TAB_INDEX_IN_GROUP" /> নম্বর।</translation>
 <translation id="595769230373966252"><ph name="SEARCH_PROVIDER" /> ব্যবহার করে সার্চ করুন</translation>
@@ -1604,6 +1604,7 @@
 <translation id="8637431369725868556">বিপজ্জনক সাইট থেকে সুরক্ষা পান।</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{কোনও পাসওয়ার্ড চুরি হয়নি}=1{{COUNT}টি চুরি হয়ে যাওয়া পাসওয়ার্ড}one{চুরি হয়ে যাওয়া {COUNT}টি পাসওয়ার্ড}other{চুরি হয়ে যাওয়া {COUNT}টি পাসওয়ার্ড}}</translation>
 <translation id="8640575194957831802">শেষ যখন খোলা হয়েছে</translation>
+<translation id="8647280737650867362">দাম ট্র্যাক করা বন্ধ হয়নি।</translation>
 <translation id="8654802032646794042">বাতিল করুন</translation>
 <translation id="8660600697590740984">আপনার কপি করা Lens-এর ছবি</translation>
 <translation id="866266761389616183">সমস্যা হয়েছে!</translation>

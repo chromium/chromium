@@ -118,7 +118,6 @@
 <translation id="1346748346194534595">வலது</translation>
 <translation id="1350494136075914725">நடைபெறுகிறது · பக்கத்திற்குச் செல்</translation>
 <translation id="1351937230027495976">மெனுவைச் சுருக்கு</translation>
-<translation id="1352537790882153971">வயர் ஹெட்ஃபோன்களைப் பயன்படுத்தி உங்கள் மைக்ரோஃபோனின் ஒலியைக் கண்காணிக்கலாம். நிறுத்த, பேனலை மூடுங்கள்.</translation>
 <translation id="1360220746312242196">ஒரு பக்கத்தைத் தேடும்போது தேடலுக்கான முந்தைய பொருத்தத்திற்குச் செல்</translation>
 <translation id="1360788414852622716">சுயவிவரத்தை முடக்குகிறது. இதற்குச் சில நிமிடங்கள் ஆகலாம்.</translation>
 <translation id="1364382257761975320">Chromebookகை அன்லாக் செய்ய, உங்கள் கைரேகையைப் பயன்படுத்தவும்</translation>
@@ -374,6 +373,7 @@
 <translation id="2359808026110333948">தொடர்க</translation>
 <translation id="2360398059912971776">பேட்டரி</translation>
 <translation id="2361210043495191221">வைஃபையை இயக்கு/முடக்கு. <ph name="STATE" />.</translation>
+<translation id="2364710166605611987">தோற்றத்திற்கான எஃபெக்ட்டுகள்</translation>
 <translation id="236574664504281623"><ph name="SESSION_NAME" /> இல் இருந்து அனுப்பப்பட்டது</translation>
 <translation id="2367186422933365202">Chromebookகில் உள்நுழைய முடியவில்லை</translation>
 <translation id="2367972762794486313">பயன்பாடுகளைக் காட்டு</translation>
@@ -396,7 +396,6 @@
 <translation id="2426051945783024481">கேமரா ஃபிரேம் திரையில் தானாக மையப்படுத்தப்பட்டது</translation>
 <translation id="2427507373259914951">இடது கிளிக் செய்யும்</translation>
 <translation id="2429753432712299108">புளூடூத் சாதனம் "<ph name="DEVICE_NAME" />", இணைப்பதற்கான அனுமதியை விரும்புகிறது. ஏற்றுக்கொள்வதற்கு முன்னர், இந்தக் கடவுச்சொல் அந்தச் சாதனத்தில் காண்பிக்கப்பட்டது என்பதை உறுதிப்படுத்தவும்: <ph name="PASSKEY" /></translation>
-<translation id="2430444791038754658">முடிந்தது. அற்புதம்!</translation>
 <translation id="2435457462613246316">கடவுச்சொல்லைக் காண்பி</translation>
 <translation id="2437771564543046790">பேட்டரி குறைவாக உள்ளது. பேட்டரி சேமிப்பு இயக்கப்பட்டுள்ளது.</translation>
 <translation id="243878895369688216">நேற்று திறக்கப்பட்டது</translation>
@@ -734,6 +733,7 @@
 <translation id="3600061223661453002">முடக்கு</translation>
 <translation id="3604801046548457007">டெஸ்க் <ph name="DESK_TITILE" /> உருவாக்கப்பட்டது</translation>
 <translation id="3606978283550408104">பிரெய்ல் திரை இணைக்கப்பட்டது.</translation>
+<translation id="3612634595000403645">தோற்றத்திற்கான விருப்பத்தேர்வுகள்</translation>
 <translation id="3615926715408477684">மொபைல் டேட்டாவை இயக்கினால் புளூடூத் இயக்கப்படும்</translation>
 <translation id="3616113530831147358">ஆடியோ</translation>
 <translation id="3616883743181209306">திரையின் மேல் வலது மூலைக்கு மெனு நகர்த்தப்பட்டது.</translation>
@@ -775,7 +775,6 @@
 <translation id="3706423975342040244">பொழுதுபோக்கு</translation>
 <translation id="3707093869106077605"><ph name="UNAVAILABLE_DLC_ONE" /> மற்றும் <ph name="UNAVAILABLE_DLC_TWO" />ஐப் பதிவிறக்க முடியவில்லை.</translation>
 <translation id="3708186454126126312">ஏற்கெனவே இணைத்தவை</translation>
-<translation id="3711282657843423160">முடிந்தது. சபாஷ்!</translation>
 <translation id="3712143870407382523">இந்தப் பக்கத்திற்கான சாளரத்தைத் தேர்வுசெய்யவும்</translation>
 <translation id="371370241367527062">முன்பக்க மைக்ரோஃபோன்</translation>
 <translation id="3713734891607377840">பதிவிறக்கியதும் திற</translation>
@@ -845,7 +844,6 @@
 <translation id="397105322502079400">கணக்கிடுகிறது...</translation>
 <translation id="397726367135689299">பேட்டரி சார்ஜிங் நம்பகமற்றதாக இருக்கலாம்.</translation>
 <translation id="3977512764614765090">பேட்டரி <ph name="PERCENTAGE" />% நிரம்பியுள்ளது, தொடர்ந்து சார்ஜ் ஆகிறது.</translation>
-<translation id="397808938113646171">நேரம் முடிந்தது. அருமை!</translation>
 <translation id="3982013579989864579">ஆடியோ அவுட்புட்டை மாற்றவா?</translation>
 <translation id="3984536049089846927">அடுத்த பக்கம்</translation>
 <translation id="3986082989454912832">பதிலளி</translation>
@@ -894,6 +892,7 @@
 <translation id="4146671046252289537">அடுத்த சொல்லின் முடிவிற்கு நகர்த்து</translation>
 <translation id="4146833061457621061">இசையை இயக்கு</translation>
 <translation id="4150201353443180367">திரை</translation>
+<translation id="4151054805501931758">போர்ட்ரெய்ட் டச்-அப்</translation>
 <translation id="4156293514828496577"><ph name="PERCENTAGE" />% பேட்டரி மீதமுள்ளது (<ph name="TIME_LEFT" /> நிமிடங்கள் நீடிக்கும்).
 பேட்டரி ஆயுளை அதிகரிக்க சில அம்சங்கள் கட்டுப்படுத்தப்படும்.</translation>
 <translation id="4160919062868802509">பல ஆடியோ சாதனங்கள் கண்டறியப்பட்டுள்ளன</translation>
@@ -1000,7 +999,6 @@
 <translation id="4477751544736611934">இதற்கு டேட்டா கட்டணம் விதிக்கப்படலாம்.
 ஒரு சாதனம் இணைக்கப்பட்டுள்ளது.</translation>
 <translation id="4477892968187500306">Googleளால் சரிபார்க்கப்படாத ஆப்ஸ் இந்தச் சாதனத்தில் இருக்கக்கூடும்.</translation>
-<translation id="4479130137987693286">தேவைப்பட்டால் கூடுதல் நேரத்தைச் சேர்க்கலாம் அல்லது ஃபோகஸ் நேரத்தை முடிக்கலாம்</translation>
 <translation id="4479639480957787382">ஈத்தர்நெட்</translation>
 <translation id="4481530544597605423">இணைக்காத சாதனங்கள்</translation>
 <translation id="4485506555414638855">மொபைலில் உள்ள சமீபத்திய படங்கள், மீடியா, அறிவிப்புகள், ஆப்ஸ் ஆகியவற்றைப் பார்க்கும்படி அமைப்பதை நிராகரிக்கும்</translation>
@@ -1053,7 +1051,6 @@
 
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox இயக்கப்பட்டது</translation>
-<translation id="4665182893355091947">முடிந்தது. சூப்பர்!</translation>
 <translation id="4666911709726371538">மேலும் ஆப்ஸ்</translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> ஃபைலைப் பதிவிறக்குகிறது</translation>
 <translation id="4672539464599646374">பேட்டரி சேமிப்பு இயக்கப்பட்டுள்ளது</translation>
@@ -1779,7 +1776,6 @@
 <translation id="7064351585062927183">வரவிருக்கும் <ph name="DAY_OF_WEEK" /></translation>
 <translation id="7066646422045619941">இந்த நெட்வொர்க் உங்கள் நிர்வாகியால் முடக்கப்பட்டுள்ளது.</translation>
 <translation id="7067196344162293536">தானியங்கு சுழற்றல்</translation>
-<translation id="7067569040620564762">முடிந்தது. அவ்வளவே!</translation>
 <translation id="7068360136237591149">ஃபைல்களைத் திற</translation>
 <translation id="7076293881109082629">உள்நுழைகிறீர்கள்</translation>
 <translation id="7076878155205969899">ஒலியை முடக்கும்</translation>
@@ -1814,7 +1810,6 @@
 <translation id="7189412385142492784">வெள்ளி கிரகம் எவ்வளவு தொலைவில் உள்ளது?</translation>
 <translation id="7198435252016571249">கேமரா மாதிரிக்காட்சி கீழ் வலது மூலையில் பொருத்தப்பட்டது. ஏனெனில் சிஸ்டத்தின் காட்சியை இது மறைக்கும்.</translation>
 <translation id="7219573373513695352">எந்தச் சாதனமும் இணைக்கப்படவில்லை</translation>
-<translation id="7226347284543965442">முடிந்தது. வெற்றி!</translation>
 <translation id="7229029500464092426">நினைவக உபயோகம்: <ph name="AVAILABLE_MEMORY" /> | மொத்த நினைவகம்: <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7244725679040769470"><ph name="PERCENTAGE" />% பேட்டரி மீதமுள்ளது. சாதனத்தைச் சார்ஜ் செய்யவும்.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. புதுப்பிப்பைப் பயன்படுத்த இந்த Chromebookகை மீண்டும் தொடங்க வேண்டும். இதற்கு 1 நிமிடம் வரை ஆகலாம்.</translation>
@@ -1971,6 +1966,7 @@
 <translation id="7768784765476638775">பேசும் திரை</translation>
 <translation id="7769299611924763557">உங்கள் GIF விரைவில் தயாராகிவிடும்</translation>
 <translation id="7773536009433685931">அதற்குப் பதிலாக வைஃபையை இயக்கு</translation>
+<translation id="77747521138552256">பின்னை (PIN) பலமுறை தவறாக வழங்கியுள்ளீர்கள். <ph name="TIME_LEFT" /> கழித்து பின்னை மீண்டும் வழங்கவும் அல்லது உடனே உள்நுழைய கடவுச்சொல்லை வழங்கவும்.</translation>
 <translation id="7780094051999721182">ஷார்ட்கட்கள்</translation>
 <translation id="7780159184141939021">திரைச் சுழற்சி</translation>
 <translation id="7781829728241885113">நேற்று</translation>
@@ -2168,7 +2164,6 @@
 <translation id="8443879455002739353">“நகலெடுக்கும்”</translation>
 <translation id="8444246603146515890">டெஸ்க் <ph name="DESK_TITILE" /> இயக்கப்பட்டது</translation>
 <translation id="8446884382197647889">மேலும் அறிக</translation>
-<translation id="8452090802952003258">உங்கள் மைக்கின் ஒலியைக் கேளுங்கள்</translation>
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
 <translation id="8462305545768648477">பேசும் திரையை மூடுக</translation>
 <translation id="8468806060683421065">கடைசித் தேதி: <ph name="DUE_DATE_AND_TIME" /></translation>
@@ -2230,7 +2225,6 @@
 <translation id="8683506306463609433">செயல்திறன் டிரேஸிங் இயக்கத்தில்</translation>
 <translation id="8703634754197148428">ரெக்கார்டு செய்யத் தொடங்கும். ரெக்கார்டிங் தொடங்கியதும் Alt + Shift + L விசைகளை ஒன்றாக அழுத்தி ஷெல்ஃபிற்குச் செல்லலாம். அதில் 'ரெக்கார்டிங்கை நிறுத்து' பட்டன் இருக்கும்</translation>
 <translation id="8704155109538237473">பிக்ச்சர்-இன்-பிக்ச்சர் சாளரத்திற்குச் செல்</translation>
-<translation id="8708657523363087260">சைடு டோனை இயக்கும் அல்லது முடக்கும்</translation>
 <translation id="870917907284186124">சொல்வதை எழுதும் வசதியை (குரல் மூலம் எழுதுதல்) இயக்கு/முடக்கு</translation>
 <translation id="8711169534266271368">கேம் டாஷ்போர்டு விருப்பங்கள்</translation>
 <translation id="8712637175834984815">புரிந்தது</translation>

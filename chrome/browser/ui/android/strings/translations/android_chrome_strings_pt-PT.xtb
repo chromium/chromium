@@ -351,6 +351,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="2653659639078652383">Enviar</translation>
 <translation id="2656405586795711023">Apps para a Web</translation>
 <translation id="2664252182805397291">Ver sites</translation>
+<translation id="2666092431469916601">Parte superior</translation>
 <translation id="2669454659051515572">Qualquer pessoa que use este dispositivo pode ver os ficheiros transferidos</translation>
 <translation id="2702516483241149200">Novo: partilhe um link que se desloca para este texto</translation>
 <translation id="2705073298859543115">Criar resumo</translation>
@@ -452,6 +453,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="3072980200212375806">A app <ph name="APP_NAME" /> vai abrir no Chrome. Ao continuar, aceita os <ph name="BEGIN_LINK1" />Termos de Utilização da Google<ph name="END_LINK1" /> e os <ph name="BEGIN_LINK2" />Termos de Utilização Adicionais do Google Chrome e ChromeOS<ph name="END_LINK2" />. A <ph name="BEGIN_LINK3" />Política de Privacidade<ph name="END_LINK3" /> também se aplica.</translation>
 <translation id="3080525922482950719">Pode guardar páginas para ler mais tarde ou offline.</translation>
 <translation id="3087218211037573995">Algumas palavras-passe guardadas apenas neste dispositivo vão deixar de funcionar em breve. Pode mover estas palavras-passe para o Gestor de Palavras-passe da Google.</translation>
+<translation id="3087734570205094154">Parte inferior</translation>
 <translation id="3091010850649238832">Mostrar conteúdos de Copiar e colar</translation>
 <translation id="3098745985164956033">Algumas imagens são enviadas para a Google para melhorar as descrições.</translation>
 <translation id="3114507951000454849">Leia as notícias de hoje <ph name="NEWS_ICON" /></translation>
@@ -689,7 +691,6 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="4355272626458588338">Pode regressar a uma página importante para si ao adicionar um marcador</translation>
 <translation id="4357206670025518404">+<ph name="COUNT_NUMBER" /></translation>
 <translation id="4359809482106103048">Resumo de segurança</translation>
-<translation id="4363222835916186793">Os alertas para este produto foram desativados</translation>
 <translation id="4378154925671717803">Telemóvel</translation>
 <translation id="4380055775103003110">Se este problema continuar a acontecer, pode experimentar outras formas de continuar em <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="4384468725000734951">A utilizar o Sogou para pesquisa</translation>
@@ -750,6 +751,7 @@ A sua Conta Google pode ter outras formas do histórico de navegação, como pes
 <translation id="4624065194742029982">Navegação anónima do Chrome</translation>
 <translation id="4634124774493850572">Usar palavra-passe</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 palavra-passe comprometida.}other{# palavras-passe comprometidas.}}</translation>
+<translation id="4642472735733036929">Acompanhamento de preços parado</translation>
 <translation id="4645146721047390964">Quando estiver na Navegação anónima, os sites não podem usar cookies para ver a sua atividade de navegação em diferentes sites, por exemplo, para personalizar anúncios. As funcionalidades em alguns sites podem falhar.</translation>
 <translation id="4650364565596261010">Predefinição do sistema</translation>
 <translation id="465657074423018424">A Navegação segura protege contra Websites fraudulentos. Se a desativar, tenha um cuidado adicional ao navegar, especialmente antes de introduzir palavras-passe.</translation>
@@ -1093,6 +1095,7 @@ A sua Conta Google pode ter outras formas do histórico de navegação, como pes
 <translation id="6210748933810148297"><ph name="EMAIL" /> não é o seu email?</translation>
 <translation id="6211386937064921208">A pré-visualizar esta página…</translation>
 <translation id="6221633008163990886">Desbloqueie para exportar as palavras-passe.</translation>
+<translation id="6225572914528673855">Barra de endereço</translation>
 <translation id="6232535412751077445">A ativação da funcionalidade "Não Monitorizar" significa que é incluído um pedido no seu tráfego de navegação. Qualquer efeito depende de um Website responder ou não ao pedido e do modo como o pedido é interpretado.
 
 Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios que não são baseados noutros Sites que tenha visitado. Ainda assim, muitos Sites continuam a recolher e a utilizar os seus dados de navegação para, por exemplo, melhorar a segurança, fornecer conteúdo, anúncios e recomendações, e gerar estatísticas de relatórios.</translation>
@@ -1211,6 +1214,7 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="6674571176963658787">Para iniciar a sincronização, introduza a sua frase de acesso</translation>
 <translation id="6676927815633975364">Inicie sessão neste site e no Chrome</translation>
 <translation id="6684809838922667136">Melhore o Chrome</translation>
+<translation id="6700279777779583398">Escolhas guardadas</translation>
 <translation id="6704048624334633734">Exporte e elimine as palavras-passe</translation>
 <translation id="670498945988402717">Última verificação ontem</translation>
 <translation id="6710213216561001401">Anterior</translation>
@@ -1424,6 +1428,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />elimine os dados do Chrom
 <translation id="752731652852882757">Bloquear durante a utilização da Navegação anónima</translation>
 <translation id="7554643625247105821">Não é possível verificar a versão do Chrome</translation>
 <translation id="7557508262441527045">Sessão terminada</translation>
+<translation id="7573665567024262965">Escolha as suas apps predefinidas</translation>
 <translation id="7577900504646297215">Gerir interesses</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> ficheiro transferido}other{<ph name="FILES_DOWNLOADED_MANY" /> ficheiros transferidos}}</translation>
 <translation id="7581273696622423628">Participar no inquérito</translation>
@@ -1466,6 +1471,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />elimine os dados do Chrom
 <translation id="7764225426217299476">Adicionar endereço</translation>
 <translation id="7772032839648071052">Confirmar frase de acesso</translation>
 <translation id="7772375229873196092">Fechar <ph name="APP_NAME" /></translation>
+<translation id="7774125747223422443">Com base numa lei na sua região, tem de escolher o seu navegador e motor de pesquisa</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 e mais <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 e mais <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="777637629667389858">Quando tem sessão iniciada, obtém proteção nos serviços Google.</translation>
 <translation id="7778840695157240389">Volte mais tarde para obter notícias novas.</translation>
@@ -1735,6 +1741,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />elimine os dados do Chrom
 <translation id="8982113230057126145">A opção Não gosto envia feedback de que não gosta deste resumo</translation>
 <translation id="8992769679401294069">Os seus dados estão encriptados com a sua frase de acesso. Introduza-a para usar e guardar os dados do Chrome na sua Conta Google.</translation>
 <translation id="8993760627012879038">Abrir novo separador no modo de navegação anónima</translation>
+<translation id="8995521496079646922">As apps que escolheu vão ser usadas por predefinição. Se uma app ainda não estiver neste dispositivo, vai ser transferida em breve.</translation>
 <translation id="8996847606757455498">Escolher outro fornecedor</translation>
 <translation id="8998289560386111590">Não disponível no seu dispositivo</translation>
 <translation id="8998837250940831980">Não foi possível minimizar o separador. Tente mais tarde.</translation>

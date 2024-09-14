@@ -96,6 +96,7 @@ Testa att vänta några minuter innan du loggar ut. Om du loggar ut nu raderas d
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{Detta händer när Chrome inte har använts på {THRESHOLD} minut}other{Detta händer när Chrome inte används på {THRESHOLD} minuter}}</translation>
 <translation id="3367797402528056312">Slutför inställningen av Chrome</translation>
 <translation id="3371064404604898522">Ställ in Chrome som standardwebbläsare</translation>
+<translation id="3399930248910934354">Öppna inställningarna för Chrome</translation>
 <translation id="3472587960215700950">Google Maps används i Chrome för att ge dig vägbeskrivningar och lokal information om identifierade adresser.</translation>
 <translation id="3503014945441706099">Få Förbättrad säker webbsökning även för den här Chromium-profilen</translation>
 <translation id="3522659714780527202">Aktivera synkronisering om du vill ha samma flikar tillgängliga på alla enheter där du använder Chrome</translation>

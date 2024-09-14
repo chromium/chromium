@@ -350,6 +350,7 @@
 <translation id="2653659639078652383">提交</translation>
 <translation id="2656405586795711023">網絡應用程式</translation>
 <translation id="2664252182805397291">檢視網站</translation>
+<translation id="2666092431469916601">返回頁首</translation>
 <translation id="2669454659051515572">此裝置的所有使用者都能看到已下載的檔案</translation>
 <translation id="2702516483241149200">新功能：分享捲動至此段文字的連結</translation>
 <translation id="2705073298859543115">建立摘要</translation>
@@ -451,6 +452,7 @@
 <translation id="3072980200212375806">「<ph name="APP_NAME" />」將在 Chrome 中開啟。繼續即表示您同意《<ph name="BEGIN_LINK1" />Google 服務條款<ph name="END_LINK1" />》以及 <ph name="BEGIN_LINK2" />Google Chrome 和 Chrome OS 的《附加服務條款》<ph name="END_LINK2" />。須同時受《<ph name="BEGIN_LINK3" />私隱權政策<ph name="END_LINK3" />》約束。</translation>
 <translation id="3080525922482950719">您可儲存網頁，以便稍後或離線閱讀</translation>
 <translation id="3087218211037573995">部分只儲存在此裝置的密碼即將停止運作。你可將這些密碼移至「Google 密碼管理工具」。</translation>
+<translation id="3087734570205094154">下方</translation>
 <translation id="3091010850649238832">顯示剪貼簿內容</translation>
 <translation id="3098745985164956033">部分圖片會傳送至 Google，以便為您提供更完善的說明</translation>
 <translation id="3114507951000454849">閱讀今天的新聞 <ph name="NEWS_ICON" /></translation>
@@ -688,7 +690,6 @@
 <translation id="4355272626458588338">您可新增書籤，以便快速返回您認為重要的網頁</translation>
 <translation id="4357206670025518404">+<ph name="COUNT_NUMBER" /></translation>
 <translation id="4359809482106103048">安全資訊一覽</translation>
-<translation id="4363222835916186793">此產品的通知已關閉</translation>
 <translation id="4378154925671717803">電話號碼</translation>
 <translation id="4380055775103003110">如果此問題持續發生，你可嘗試在「<ph name="SITE_ETLD_PLUS_ONE" />」上透過其他方法繼續操作。</translation>
 <translation id="4384468725000734951">使用「搜狗」搜尋內容</translation>
@@ -749,6 +750,7 @@
 <translation id="4624065194742029982">Chrome 無痕模式</translation>
 <translation id="4634124774493850572">使用密碼</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 個密碼被盜用}other{# 個密碼被盜用}}</translation>
+<translation id="4642472735733036929">已停止追蹤價格</translation>
 <translation id="4645146721047390964">在無痕模式中，網站不能使用 Cookie 查看您在各網站的瀏覽活動，例如放送個人化廣告。有些網站的功能可能無法正常運作。</translation>
 <translation id="4650364565596261010">系統預設</translation>
 <translation id="465657074423018424">「安全瀏覽」功能可保護您免受欺詐網站的威脅。如果您停用此功能，在瀏覽及輸入密碼時請提高警覺。</translation>
@@ -1092,6 +1094,7 @@
 <translation id="6210748933810148297">不是 <ph name="EMAIL" /> 嗎？</translation>
 <translation id="6211386937064921208">正在預覽此網頁</translation>
 <translation id="6221633008163990886">解鎖即可匯出您的密碼</translation>
+<translation id="6225572914528673855">網址列</translation>
 <translation id="6232535412751077445">啟用「不追蹤」即表示您的瀏覽流量將包含一個要求，其效用視乎網站會否回應要求，以及如何解讀要求。
 
 舉例來說，部分網站可能會在顯示廣告時，選擇不根據您所瀏覽的網站記錄來顯示廣告。許多網站仍會收集您的瀏覽資料，並將這些資料用於下列目的：提高網站安全性、在網站上提供相關的內容、廣告和推薦項目，以及產生報告統計資料。</translation>

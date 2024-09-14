@@ -11,7 +11,6 @@
 <translation id="1035980983510608210">ການປິດແຖບທັງໝົດຈະເປັນການປິດແຖບທີ່ປັກໝຸດແລ້ວນຳເຊັ່ນກັນ.</translation>
 <translation id="1036017604683756002">UPS</translation>
 <translation id="1036348656032585052">ປິດ</translation>
-<translation id="10379132160269599">ສະແດງຕາຕະລາງຂອງແຖບ</translation>
 <translation id="1041322626941363065">ເຕືອນທ່ານໃນກໍລະນີທີ່ລະຫັດຜ່ານຮົ່ວໄຫຼຈາກການລະເມີດຂໍ້ມູນ</translation>
 <translation id="1044891598689252897">ເວັບໄຊຈະເຮັດວຽກໄດ້ປົກກະຕິ</translation>
 <translation id="104491362976654916">ໜ້າແບບອອບລາຍ</translation>
@@ -31,6 +30,7 @@
 <translation id="1118569444314402022">ຍິນດີຕ້ອນຮັບກັບມາ, <ph name="USER_NAME" /></translation>
 <translation id="1121850836842642159">ຮູບພາບ ແລະ ຮູບ</translation>
 <translation id="1125564390852150847">ສ້າງ​ແຖບ​ໃໝ່.</translation>
+<translation id="1126696498560056882">ຈັດການບັນຊີໃນອຸປະກອນນີ້</translation>
 <translation id="1126809382673880764">ບໍ່ປົກປ້ອງທ່ານຈາກເວັບໄຊ, ການດາວໂຫຼດ ແລະ ສ່ວນຂະຫຍາຍທີ່ເປັນອັນຕະລາຍ. ທ່ານຈະຍັງໄດ້ຮັບການປົກປ້ອງຈາກ Safe Browsing ຢູ່ບ່ອນທີ່ໃຊ້ໄດ້, ຢູ່ໃນການບໍລິການອື່ນຂອງ Google ເຊັ່ນ: Gmail ແລະ ຊອກຫາ.</translation>
 <translation id="1142371195993008685">ປິດການແຈ້ງເຕືອນສຳລັບ <ph name="FEATURE_NAME" /></translation>
 <translation id="1147031633655575115">ເຂົ້າສູ່ລະບົບເປັນ <ph name="USER" /></translation>
@@ -1010,7 +1010,6 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="594324569139756587">ບລັອກພາກສ່ວນທີສາມ</translation>
 <translation id="5944869793365969636">ສະແກນລະຫັດ QR</translation>
 <translation id="5948291296578561264">ນີ້ອະນຸຍາດໃຫ້ທ່ານບັນທຶກຮູບຖ່າຍໄວ້ໃນຫ້ອງສະໝຸດຮູບ.</translation>
-<translation id="5953383789663007162">ແກ້ໄຂລາຍຊື່ບັນຊີ</translation>
 <translation id="5954322191260787920">ແກ້ໄຂບຸກມາກ</translation>
 <translation id="5956112131836209882">ແຖບຂອງກຸ່ມແຖບ. <ph name="TAB_INDEX_IN_GROUP" /> ຈາກທັງໝົດ <ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
 <translation id="595769230373966252">ຊອກຫາດ້ວຍ <ph name="SEARCH_PROVIDER" /></translation>
@@ -1604,6 +1603,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="8637431369725868556">ຮັບການປົກປ້ອງຈາກເວັບໄຊທີ່ເປັນອັນຕະລາຍ.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{ບໍ່ມີລະຫັດຜ່ານທີ່ຖືກລະເມີດ}=1{ມີລະຫັດຜ່ານທີ່ຖືກລະເມີດ {COUNT} ລາຍການ}other{ມີລະຫັດຜ່ານທີ່ຖືກລະເມີດ {COUNT} ລາຍການ}}</translation>
 <translation id="8640575194957831802">ເປີດຫຼ້າສຸດ</translation>
+<translation id="8647280737650867362">ບໍ່ສາມາດຍົກເລີກການຕິດຕາມລາຄາໄດ້.</translation>
 <translation id="8654802032646794042">ຍົກເລີກ</translation>
 <translation id="8660600697590740984">ຮູບທີ່ສຳເນົາດ້ວຍ Lens</translation>
 <translation id="866266761389616183">ອ່າ, ຊວຍແທ້!</translation>

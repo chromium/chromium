@@ -712,6 +712,7 @@
 <translation id="2265356434276802347">このポリシーで指定できるおすすめのエントリは <ph name="MAX_ITEMS_LIMIT" /> 件までです。</translation>
 <translation id="2267047181501709434">本人確認を行っています...</translation>
 <translation id="2268044343513325586">絞り込み</translation>
+<translation id="2268966938956566076"><ph name="MINUTES" /> 分後にアップロード</translation>
 <translation id="2270484714375784793">電話番号</translation>
 <translation id="2276057643614339130">印刷ベース</translation>
 <translation id="2277103315734023688">前方に移動</translation>
@@ -1014,6 +1015,7 @@
 <translation id="2882949212241984732">両観音折り</translation>
 <translation id="2891963978019740012">Chrome で使用する検索エンジン</translation>
 <translation id="2893773853358652045">ロール 4</translation>
+<translation id="2894137550885451583">商品 <ph name="PRODUCT" /> の <ph name="CURRENCY" /> の価格です</translation>
 <translation id="2900528713135656174">予定を作成</translation>
 <translation id="2902312830803030883">その他の操作</translation>
 <translation id="2903493209154104877">住所</translation>
@@ -1110,6 +1112,7 @@
 <translation id="3062655045399308513">閲覧履歴データを削除...</translation>
 <translation id="306573536155379004">ゲームを開始しました。</translation>
 <translation id="3067505415088964188">低価格</translation>
+<translation id="3068118691172921711"><ph name="CLOUD_PROVIDER" /> へのファイルのアップロードは 1 分後に開始されます</translation>
 <translation id="3076865167425975822">オペレーティング システム</translation>
 <translation id="3080254622891793721">グラフィック</translation>
 <translation id="3082007635241601060">カートに入れたアイテムの割引情報の検索を Google に許可する</translation>
@@ -1121,6 +1124,7 @@
 <translation id="3099619114405539473">利用可能なカメラの使用（<ph name="CAMERAS_COUNT" />）</translation>
 <translation id="3102312643185441063">普通預金</translation>
 <translation id="3103188521861412364">株式、債券</translation>
+<translation id="3103535543639438037">類似の商品を並べて比較</translation>
 <translation id="3105172416063519923">アセット ID:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />セキュア DNS の設定を確認する<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">中央トレイ</translation>
@@ -1298,6 +1302,7 @@
 <translation id="3407789382767355356">サードパーティのログイン</translation>
 <translation id="340924996148642843">比較機能は現在使用できません</translation>
 <translation id="3409896703495473338">セキュリティ設定を管理</translation>
+<translation id="3411091017011773343"><ph name="HOURS" /> 時間後にアップロード</translation>
 <translation id="3414275587143250384">分散コンピューティング、クラウド コンピューティング</translation>
 <translation id="3414952576877147120">サイズ:</translation>
 <translation id="341513675006332771">[Chrome Dino ゲームをプレイ] ボタンです。実行すると、Chrome で Dino Run ゲームをプレイできます</translation>
@@ -1608,6 +1613,7 @@
 <translation id="3949601375789751990">閲覧履歴がここに表示されます</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" />（<ph name="DEVICE_ID" />）</translation>
 <translation id="3949870428812919180">保存済みのお支払い方法がありません</translation>
+<translation id="3950560191811267370">コマースのボトムシートが閉じられています</translation>
 <translation id="3950574001630941635">チュートリアルをもう一度開始</translation>
 <translation id="3950820424414687140">ログイン</translation>
 <translation id="3953505489397572035">この価格は標準です</translation>
@@ -1893,7 +1899,6 @@
 <translation id="4451135742916150903">HID デバイスへの接続を要求できる</translation>
 <translation id="4451684391620232683">ユーザーに表示されるテキスト:</translation>
 <translation id="4452328064229197696">たった今使用したパスワードがデータ侵害で検出されました。Google パスワード マネージャーでは、アカウントを保護するために保存したパスワードを確認することをおすすめします。</translation>
-<translation id="4452957520362597816">ウェブアプリのインストール</translation>
 <translation id="4456937135469235202">冒険旅行</translation>
 <translation id="4464826014807964867">組織の情報を使用しているウェブサイト</translation>
 <translation id="4466576951214254884">学生ローン、大学ローン</translation>
@@ -1965,6 +1970,7 @@
 <translation id="4628678854894591460">ツアー旅行</translation>
 <translation id="4628948037717959914">写真</translation>
 <translation id="4629370161347991046">A4x6</translation>
+<translation id="462989688138616749"><ph name="CLOUD_PROVIDER" /> へのファイルのアップロードは <ph name="HOURS" /> 時間後に開始されます</translation>
 <translation id="4631649115723685955">キャッシュバックをリンクしました</translation>
 <translation id="4631881646528206880">仮想カードの登録</translation>
 <translation id="4635278307999235413">管理コンソールにデータを送信しています</translation>
@@ -2085,6 +2091,7 @@
 <translation id="484988093836683706">デバイスのロック解除を使用</translation>
 <translation id="4850886885716139402">表示</translation>
 <translation id="4854853140771946034">Google Keep で新しいメモをすばやく作成します</translation>
+<translation id="4855395119669662878">管理者は <ph name="DATE_TIME" /> に <ph name="CLOUD_PROVIDER" /> へのファイルのアップロードを開始します。ファイルのアップロードが完了するまでデバイスを接続したままにしてください。アップロード中は、ローカル ファイルの読み取りのみが可能です。</translation>
 <translation id="485902285759009870">コードを確認しています...</translation>
 <translation id="4860260582253463350">YouTube にアクセスするには本人確認が必要です。保護者の方がファミリー リンクで設定した内容が反映されます。</translation>
 <translation id="4864406669374375262">バージョン文字列をクリップボードにコピーしました</translation>
@@ -2140,6 +2147,7 @@
 <translation id="4933468175699107356">フォームを右クリックすると、名前や住所などの保存済みの情報が自動入力されます</translation>
 <translation id="4934780484581617878">ウィンドウ管理</translation>
 <translation id="4936134414789135531">挿入された <ph name="VALUE_NAME" /> が見つかりませんでした。</translation>
+<translation id="4936573216809994970"><ph name="CLOUD_PROVIDER" /> へのファイルのアップロードは 1 時間後に開始されます</translation>
 <translation id="4936675324097895694">金融</translation>
 <translation id="4943620199112228840">マイクの使用</translation>
 <translation id="4943872375798546930">結果はありません</translation>
@@ -2313,6 +2321,7 @@
 <translation id="5269225904387178860">4 穴パンチ（下）</translation>
 <translation id="5271381225185906340">「<ph name="DATA_CONTROLS_ATTRIBUTE" />」は「<ph name="DATA_CONTROLS_RESTRICTION" />」のサポートされている条件ではありません</translation>
 <translation id="5273658854610202413">警告: このポリシーは統合可能な辞書ポリシーに含まれていないため、PolicyDictionaryMultipleSourceMergeList ポリシーで指定されているとおりには統合されませんでした。</translation>
+<translation id="5278778426231952189">今すぐアップロード</translation>
 <translation id="5279286380302340275">ダウンロードを管理</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">ドキュメント プロパティ</translation>
@@ -2346,6 +2355,7 @@
 <translation id="5331585574693522196">デフォルトに設定</translation>
 <translation id="5332219387342487447">配送方法</translation>
 <translation id="5332769172018416402">リクエストを送信</translation>
+<translation id="533323551986281710">コマースのボトムシートが画面全体に表示されています</translation>
 <translation id="5334013548165032829">詳細なシステムログ</translation>
 <translation id="5334145288572353250">住所を保存しますか？</translation>
 <translation id="5340250774223869109">アプリケーションがブロックされました</translation>
@@ -2528,6 +2538,7 @@
 <translation id="5675650730144413517">このページは動作していません</translation>
 <translation id="5675809467256309336">ダンス音楽、エレクトロニック ミュージック</translation>
 <translation id="5675959228867414813">日付別に表示</translation>
+<translation id="567604591393105935">コマースのボトムシートが画面の下半分に表示されています</translation>
 <translation id="5677928146339483299">ブロック</translation>
 <translation id="5678007133659493065">ホイル</translation>
 <translation id="5680642791693447368">スリラー、犯罪、ミステリー映画</translation>
@@ -3435,6 +3446,7 @@
 <translation id="7374733840632556089">この問題は、あなたまたは他のユーザーがデバイスにインストールした証明書が原因で発生します。該当の証明書は、ネットワークの監視と傍受に使われることが確認されており、Chrome では信頼されていません。学校や会社のネットワークなどで合法的に監視されているケースもありますが、ユーザーが監視を止められないとしても監視の事実を把握できるように、Chrome ではこのメッセージを表示しています。監視の対象は、ブラウザ、またはウェブにアクセスするアプリケーションです。</translation>
 <translation id="7375532151824574023">{NUM_COOKIES,plural, =0{許可されているサイトはありません}=1{1 件のサイトが許可されています}other{# 件のサイトが許可されています}}</translation>
 <translation id="7375818412732305729">ファイルが添付された</translation>
+<translation id="7376031331622621328">コマースのボトムシート</translation>
 <translation id="7377249249140280793"><ph name="RELATIVE_DATE" /> - <ph name="FULL_DATE" /></translation>
 <translation id="7377314930809374926">サービス業</translation>
 <translation id="7378594059915113390">メディアの操作</translation>
@@ -3817,6 +3829,7 @@
 <translation id="8030729864112325446">職業訓練、生涯学習</translation>
 <translation id="8032546467100845887">透明</translation>
 <translation id="8035152190676905274">ペン</translation>
+<translation id="8035264638816032066">表に追加したタブのタイトルとページの URL は Google に送信されます</translation>
 <translation id="8037117624646282037">最近デバイスを使用したユーザー</translation>
 <translation id="8037357227543935929">確認（デフォルト）</translation>
 <translation id="803771048473350947">ファイル</translation>
@@ -4117,6 +4130,7 @@
 <translation id="8564466070529550495">仮想カードは現在ご利用いただけません。しばらくしてからもう一度お試しください。</translation>
 <translation id="8564985650692024650"><ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> パスワードを他のサイトで再使用した場合、Chromium ではパスワードの再設定を促すメッセージが表示されます。</translation>
 <translation id="8570895683659698018">趣味、レジャー</translation>
+<translation id="8572792595597115856">有効期限: <ph name="DATE" /></translation>
 <translation id="8574841453995331336">冷蔵庫、冷凍庫</translation>
 <translation id="8577192028579836704">すべてのオプションでの一般的な価格: <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">仮想カードを使用できません</translation>
@@ -4139,6 +4153,7 @@
 <translation id="8617269623452051934">デバイスのアクティブ状態</translation>
 <translation id="861775596732816396">サイズ 4</translation>
 <translation id="8620276786115098679">角形 7 号封筒</translation>
+<translation id="8622864575115813231">金融機関に問い合わせています...</translation>
 <translation id="8623885649813806493">一致するパスワードがありません。保存したパスワードをすべて表示します。</translation>
 <translation id="8624354461147303341">割引情報を取得</translation>
 <translation id="8634957317623797170">54x86 mm</translation>
@@ -4437,6 +4452,7 @@
 <translation id="9192361865877479444">金属（非光沢）</translation>
 <translation id="9192947025498305328">クリーン ビューティー</translation>
 <translation id="9199905725844810519">印刷はブロックされています</translation>
+<translation id="9204089334327209740">アップロードが完了したら、<ph name="CLOUD_PROVIDER" /> でファイルを変更できます。ゴミ箱内のファイルを含め、ローカル ストレージは自動的に削除されます。</translation>
 <translation id="9205078245616868884">データは同期パスフレーズで暗号化されます。同期を開始するには、同期パスフレーズを入力してください。</translation>
 <translation id="920643408853370361">旅行保険</translation>
 <translation id="9207861905230894330">記事を追加できませんでした。</translation>
@@ -4457,6 +4473,7 @@
 <translation id="937804173274050966"><ph name="BEGIN_BOLD" />使用されるデータ:<ph name="END_BOLD" /> 該当のデバイスで Chrome を使用して訪れたウェブサイトにおけるアクティビティ。</translation>
 <translation id="937885410143139026">データを管理コンソールに送信しました</translation>
 <translation id="939736085109172342">新しいフォルダ</translation>
+<translation id="940524522703752213"><ph name="CLOUD_PROVIDER" /> へのファイルのアップロードは <ph name="MINUTES" /> 分後に開始されます</translation>
 <translation id="944540589955480312">Google アカウントに保存したパスワードとパスキーを使用</translation>
 <translation id="945646848072568856">Chrome では、サードパーティ Cookie の使用を制限し、ブラウジング中のユーザーをトラッキングできないようにしています。</translation>
 <translation id="945855313015696284">下記の情報を確認し、無効なカードがあれば削除してください</translation>

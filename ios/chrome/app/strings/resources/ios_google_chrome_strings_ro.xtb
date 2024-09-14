@@ -96,6 +96,7 @@ Așteaptă câteva minute înainte să te deconectezi. Dacă te deconectezi acum
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{Acest lucru se întâmplă când Chrome nu este folosit timp de {THRESHOLD} minut}few{Acest lucru se întâmplă când Chrome nu este folosit timp de {THRESHOLD} minute}other{Acest lucru se întâmplă când Chrome nu este folosit timp de {THRESHOLD} de minute}}</translation>
 <translation id="3367797402528056312">Finalizează configurarea Chrome</translation>
 <translation id="3371064404604898522">Setează Chrome ca browser prestabilit</translation>
+<translation id="3399930248910934354">Deschide setările Chrome</translation>
 <translation id="3472587960215700950">Chrome folosește Google Maps pentru a-ți oferi indicații de orientare și informații locale despre adresele detectate.</translation>
 <translation id="3503014945441706099">Obține și Navigare sigură îmbunătățită pentru acest profil Chrome</translation>
 <translation id="3522659714780527202">Activează sincronizarea ca să vezi toate filele tale deschise în Chrome</translation>

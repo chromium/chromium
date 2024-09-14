@@ -11,7 +11,6 @@
 <translation id="1035980983510608210">Uždarius visus skirtukus, taip pat bus uždaryti prisegti skirtukai.</translation>
 <translation id="1036017604683756002">UPS</translation>
 <translation id="1036348656032585052">Išjungti</translation>
-<translation id="10379132160269599">Rodyti skirtuko tinklelį</translation>
 <translation id="1041322626941363065">Įspėti, jei slaptažodžiai buvo atskleisti įvykus duomenų saugos pažeidimui</translation>
 <translation id="1044891598689252897">Svetainės veiks įprastai</translation>
 <translation id="104491362976654916">Neprisijungus pasiekiamas puslapis</translation>
@@ -31,6 +30,7 @@
 <translation id="1118569444314402022">Sveiki sugrįžę, <ph name="USER_NAME" />!</translation>
 <translation id="1121850836842642159">Nuotraukos ir vaizdai</translation>
 <translation id="1125564390852150847">Kurti naują skirtuką.</translation>
+<translation id="1126696498560056882">Tvarkyti paskyras šiame įrenginyje</translation>
 <translation id="1126809382673880764">Neapsaugo jūsų nuo pavojingų svetainių, atsisiuntimų ir plėtinių. Kai yra galimybė, vis tiek gausite saugaus naršymo pranešimus kitose „Google“ paslaugose, pvz., „Gmail“ ir paieškoje.</translation>
 <translation id="1142371195993008685">Išjungti pranešimus apie „<ph name="FEATURE_NAME" />“</translation>
 <translation id="1147031633655575115">Prisijungta kaip <ph name="USER" /></translation>
@@ -1010,7 +1010,6 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="594324569139756587">Blokuoti trečiosios šalies slapukus</translation>
 <translation id="5944869793365969636">QR kodo nuskaitymas</translation>
 <translation id="5948291296578561264">Taip galėsite išsaugoti nuotraukas nuotraukų bibliotekoje.</translation>
-<translation id="5953383789663007162">Redaguoti paskyrų sąrašą</translation>
 <translation id="5954322191260787920">Redaguoti žymę</translation>
 <translation id="5956112131836209882">Skirtukų grupės skirtukas. <ph name="TAB_INDEX_IN_GROUP" /> iš <ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
 <translation id="595769230373966252">Ieškoti naudojant „<ph name="SEARCH_PROVIDER" />“</translation>

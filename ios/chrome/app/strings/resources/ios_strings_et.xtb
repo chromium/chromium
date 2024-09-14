@@ -11,7 +11,6 @@
 <translation id="1035980983510608210">Kui sulete kõik vahelehed, suletakse ja kinnitatud vahelehed.</translation>
 <translation id="1036017604683756002">UPS</translation>
 <translation id="1036348656032585052">Lülita välja</translation>
-<translation id="10379132160269599">Kuva vahelehtede ruudustik</translation>
 <translation id="1041322626941363065">Hoiata mind, kui paroolid andmetega seotud rikkumise käigus avalikustatakse</translation>
 <translation id="1044891598689252897">Saidid töötavad tavapärasel moel</translation>
 <translation id="104491362976654916">Võrguühenduseta leht</translation>
@@ -31,6 +30,7 @@
 <translation id="1118569444314402022">Tere tulemast tagasi, <ph name="USER_NAME" />!</translation>
 <translation id="1121850836842642159">Fotod ja kujutised</translation>
 <translation id="1125564390852150847">Loo uus vaheleht.</translation>
+<translation id="1126696498560056882">Kontode haldamine selles seadmes</translation>
 <translation id="1126809382673880764">Ei kaitse teid ohtlike veebisaitide, allalaadimiste ega laienduste eest. Google'i ohutu sirvimine kaitseb teid siiski muudes Google'i teenustes, kus see saadaval on (nt Gmail ja Otsing).</translation>
 <translation id="1142371195993008685">Lülita teenuse <ph name="FEATURE_NAME" /> märguanded välja</translation>
 <translation id="1147031633655575115">Sisse logitud kasutajana <ph name="USER" /></translation>
@@ -1010,7 +1010,6 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="594324569139756587">Kolmanda osapoole küpsisefailide blokeerimine</translation>
 <translation id="5944869793365969636">QR-koodi skannimine</translation>
 <translation id="5948291296578561264">See võimaldab teil salvestada fotod fotokogusse.</translation>
-<translation id="5953383789663007162">Kontode loendi muutmine</translation>
 <translation id="5954322191260787920">Muuda järjehoidjat</translation>
 <translation id="5956112131836209882">Vahelehegrupi vaheleht. <ph name="TAB_INDEX_IN_GROUP" />/<ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
 <translation id="595769230373966252">Otsing teenusepakkujaga <ph name="SEARCH_PROVIDER" /></translation>

@@ -93,6 +93,7 @@
 <translation id="2498359688066513246">সহায়তা ও প্রতিবার্তা</translation>
 <translation id="2501278716633472235">ফিরে যান</translation>
 <translation id="2546283357679194313">কুকিজ ও সাইট ডেটা</translation>
+<translation id="2550150772722917524">ট্যাব গ্রুপ সবকিছু সাজিয়ে-গুছিয়ে রাখে</translation>
 <translation id="2570922361219980984">এই ডিভাইসেও লোকেশন অ্যাক্সেস বন্ধ আছে। চালু করতে <ph name="BEGIN_LINK" />Android সেটিংসে<ph name="END_LINK" /> যান।</translation>
 <translation id="257931822824936280">প্রসারিত - সঙ্কুচিত করতে ক্লিক করুন৷</translation>
 <translation id="2586657967955657006">ক্লিপবোর্ড</translation>
@@ -167,6 +168,7 @@
 <translation id="3744111561329211289">পটভূমি সিঙ্ক</translation>
 <translation id="3763247130972274048">১০ সেকেন্ড আগে পরে স্কিপ করতে বাঁদিকে অথবা ডানদিকে ডবল ট্যাপ করুন</translation>
 <translation id="3779154269823594982">পাসওয়ার্ড পরিবর্তন করুন</translation>
+<translation id="3788473868867338588">আপনি এই ধরনের পৃষ্ঠাগুলিকে গ্রুপ করতে পারবেন এবং আপনার গ্রুপ সব ডিভাইস জুড়ে সেভ ও আপডেট করে</translation>
 <translation id="3797520601150691162">কোনও নির্দিষ্ট সাইটের জন্য ডার্ক থিম প্রয়োগ করবেন না</translation>
 <translation id="3803367742635802571">যেমনভাবে ডিজাইন করা হয়েছে আপনার ভিজিট করা সাইট তেমনভাবে কাজ করা বন্ধ করতে পারে</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" />। <ph name="TYPE_2" />।</translation>
@@ -244,6 +246,7 @@
 <translation id="5014182796621173645">আপনি <ph name="RECENCY" /> আগে দেখেছেন</translation>
 <translation id="5039804452771397117">অনুমতি দিন</translation>
 <translation id="5048398596102334565">সাইটকে মোশন সেন্সর অ্যাক্সেস করার অনুমতি দিন (সাজেস্ট করা হয়)</translation>
+<translation id="5048841907079026162">আপনার ব্রাউজ করা ডেটা ম্যানেজ করুন</translation>
 <translation id="5050380848339752099">এই সাইট ছদ্মবেশী মোডের বাইরে একটি অ্যাপের সাথে তথ্য শেয়ার করতে চলেছে।</translation>
 <translation id="5063480226653192405">ব্যবহার</translation>
 <translation id="5091013926750941408">মোবাইল সাইট</translation>
@@ -422,6 +425,7 @@
 <translation id="7561196759112975576">সবসময়</translation>
 <translation id="757524316907819857">সুরক্ষিত কন্টেন্ট চালানো থেকে সাইটকে ব্লক করুন</translation>
 <translation id="7594634374516752650">ব্লুটুথ ডিভাইসের সাথে কানেক্ট করা হয়েছে</translation>
+<translation id="7617547684249261169">আপনি কিছু বা সব ইতিহাস, কুকি ও সাইট ডেটা এবং আরও অনেক কিছু মুছে ফেলতে পারবেন</translation>
 <translation id="7649070708921625228">সহায়তা</translation>
 <translation id="7658239707568436148">বাতিল</translation>
 <translation id="7667547420449112975">দি ওয়ান্ডারফুল উইজার্ড অফ ওজ</translation>

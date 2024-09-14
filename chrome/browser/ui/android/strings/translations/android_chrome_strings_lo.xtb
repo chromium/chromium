@@ -350,6 +350,7 @@
 <translation id="2653659639078652383">ສົ່ງ</translation>
 <translation id="2656405586795711023">ເວັບແອັບ</translation>
 <translation id="2664252182805397291">ເບິ່ງເວັບໄຊ</translation>
+<translation id="2666092431469916601">ດ້ານເທິງ</translation>
 <translation id="2669454659051515572">ໃຜກໍຕາມທີ່ໃຊ້ອຸປະກອນນີ້ຈະສາມາດເບິ່ງເຫັນໄຟລ໌ທີ່ດາວໂຫຼດແລ້ວໄດ້</translation>
 <translation id="2702516483241149200">ໃໝ່: ແບ່ງປັນລິ້ງທີ່ເລື່ອນຫາຂໍ້ຄວາມນີ້</translation>
 <translation id="2705073298859543115">ສ້າງຂໍ້ມູນສະຫຼຸບ</translation>
@@ -451,6 +452,7 @@
 <translation id="3072980200212375806"><ph name="APP_NAME" /> ຈະເປີດໃນ Chrome. ໂດຍການສືບຕໍ່, ແມ່ນຖືວ່າທ່ານຍອມຮັບ <ph name="BEGIN_LINK1" />ຂໍ້ກຳນົດບໍລິການ Google<ph name="END_LINK1" /> ແລະ <ph name="BEGIN_LINK2" />ຂໍ້ກຳນົດບໍລິການເພີ່ມເຕີມ Google Chrome ແລະ ChromeOS<ph name="END_LINK2" />. ຈະນຳໃຊ້ <ph name="BEGIN_LINK3" />ນະໂຍບາຍຄວາມເປັນສ່ວນຕົວ<ph name="END_LINK3" /> ນຳ.</translation>
 <translation id="3080525922482950719">ທ່ານສາມາດບັນທຶກໜ້າຕ່າງໆໄວ້ອ່ານໃນພາຍຫຼັງ ຫຼື ແບບອອບລາຍໄດ້</translation>
 <translation id="3087218211037573995">ລະຫັດຜ່ານບາງລາຍການທີ່ບັນທຶກໄວ້ໃນອຸປະກອນນີ້ເທົ່ານັ້ນທີ່ຈະຢຸດເຮັດວຽກໃນໄວໆນີ້. ທ່ານສາມາດຍ້າຍລະຫັດຜ່ານເຫຼົ່ານີ້ໄປໃສ່ຕົວຈັດການລະຫັດຜ່ານ Google ໄດ້.</translation>
+<translation id="3087734570205094154">ດ້ານລຸ່ມ</translation>
 <translation id="3091010850649238832">ສະແດງເນື້ອຫາຄລິບບອດ</translation>
 <translation id="3098745985164956033">ລະບົບຈະສົ່ງບາງຮູບໃຫ້ Google ເພື່ອປັບປຸງຄຳອະທິບາຍສຳລັບທ່ານ.</translation>
 <translation id="3114507951000454849">ອ່ານຂ່າວຂອງມື້ນີ້ <ph name="NEWS_ICON" /></translation>
@@ -688,7 +690,6 @@
 <translation id="4355272626458588338">ທ່ານສາມາດກັບໄປຫາໜ້າທີ່ສຳຄັນຕໍ່ກັບທ່ານໂດຍການເພີ່ມບຸກມາກໄດ້</translation>
 <translation id="4357206670025518404">+<ph name="COUNT_NUMBER" /></translation>
 <translation id="4359809482106103048">ຂໍ້ມູນໂດຍຫຍໍ້ດ້ານຄວາມປອດໄພ</translation>
-<translation id="4363222835916186793">ການແຈ້ງເຕືອນສຳລັບສິນຄ້ານີ້ໄດ້ຖືກປິດໄວ້ແລ້ວ</translation>
 <translation id="4378154925671717803">ໂທລະ​ສັບ</translation>
 <translation id="4380055775103003110">ຫາກບັນຫານີ້ຍັງເກີດຂຶ້ນຢູ່, ທ່ານສາມາດລອງດຳເນີນການຕໍ່ໃນ <ph name="SITE_ETLD_PLUS_ONE" /> ດ້ວຍວິທີອື່ນໆໄດ້.</translation>
 <translation id="4384468725000734951">ກຳລັງໃຊ້ Sogou ສຳລັບການຊອກຫາ</translation>
@@ -749,6 +750,7 @@
 <translation id="4624065194742029982">ໂໝດບໍ່ເປີດເຜີຍຕົວຕົນໃນ Chrome</translation>
 <translation id="4634124774493850572">ໃຊ້ລະຫັດຜ່ານ</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{ມີລະຫັດຜ່ານທີ່ຖືກລະເມີດ 1 ລາຍການ}other{ມີລະຫັດຜ່ານທີ່ຖືກລະເມີດ # ລາຍການ}}</translation>
+<translation id="4642472735733036929">ຢຸດການຕິດຕາມລາຄາແລ້ວ</translation>
 <translation id="4645146721047390964">ເມື່ອຢູ່ໃນໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ, ເວັບໄຊຈະບໍ່ສາມາດໃຊ້ຄຸກກີ້ຂອງທ່ານເພື່ອເບິ່ງການເຄື່ອນໄຫວການທ່ອງເວັບຂອງທ່ານໃນເວັບໄຊຕ່າງໆໄດ້, ຕົວຢ່າງ: ເພື່ອປັບແຕ່ງໂຄສະນາໃຫ້ເປັນແບບສ່ວນຕົວ. ຄຸນສົມບັດໃນບາງເວັບໄຊອາດໃຊ້ບໍ່ໄດ້.</translation>
 <translation id="4650364565596261010">ຄ່າເລີ່ມຕົ້ນຂອງລະບົບ</translation>
 <translation id="465657074423018424">Safe Browsing ປົກປ້ອງທ່ານຈາກເວັບໄຊຫຼອກລວງ. ຖ້າທ່ານປິດມັນໄວ້, ກະລຸນາລະມັດລະວັງເພີ່ມເຕີມໃນເວລາທ່ອງເວັບ ໂດຍສະເພາະກ່ອນທີ່ຈະປ້ອນລະຫັດຜ່ານ.</translation>
@@ -1092,6 +1094,7 @@
 <translation id="6210748933810148297">ບໍ່ແມ່ນ <ph name="EMAIL" /> ບໍ?</translation>
 <translation id="6211386937064921208">ກຳລັງສະແດງໜ້ານີ້</translation>
 <translation id="6221633008163990886">ປົດລັອກເພື່ອສົ່ງອອກລະຫັດຜ່ານຂອງທ່ານ</translation>
+<translation id="6225572914528673855">ແຖບທີ່ຢູ່</translation>
 <translation id="6232535412751077445">ການເປີດໃຊ້ “ຢ່າຕິດຕາມ” ໝາຍຄວາມວ່າ ຄຳຮ້ອງຂໍຈະຖືກເອົາຮວມເຂົ້າກັບການຮັບສົ່ງຂໍ້ມູນການທ່ອງເວັບຂອງທ່ານ. ຜົນຕາມມາແມ່ນຂຶ້ນກັບວ່າເວັບໄຊຕອບສະໜອງຕໍ່ກັບຄຳຮ້ອງຂໍນັ້ນແນວໃດ ແລະຄຳຮ້ອງຂໍນັ້ນຖືກຕີຄວາມໝາຍແນວໃດ.
 
 ຕົວຢ່າງ, ບາງເວັບໄຊອາດຕອບສະໜອງຕໍ່ກັບຄຳຮ້ອງຂໍນີ້ ໂດຍການສະແດງໃຫ້ທ່ານເຫັນໂຄສະນາທີ່ບໍ່ອີງໃສ່ເວັບໄຊອື່ນທີ່ທ່ານເຂົ້າເບິ່ງ. ຫຼາຍໆເວັບໄຊຈະຍັງບັນທຶກ ແລະໃຊ້ຂໍ້ມູນການທ່ອງເວັບຂອງທ່ານ — ຕົວຢ່າງ ເຊັ່ນ: ເພື່ອປັບປຸງຄວາມປອດໄພ, ເພື່ອສະໜອງເນື້ອຫາ, ໂຄສະນາ ແລະຄຳແນະນໍາຕ່າງໆ ແລະເພື່ອສ້າງສະຖິຕິການລາຍງານ.</translation>
@@ -1210,6 +1213,7 @@
 <translation id="6674571176963658787">ເພື່ອເລີ່ມຊິ້ງຂໍ້ມູນ, ໃຫ້ໃສ່ລະຫັດຜ່ານຂອງທ່ານ</translation>
 <translation id="6676927815633975364">ເຂົ້າສູ່ລະບົບຫາເວັບໄຊທ໌ນີ້ ແລະ Chrome</translation>
 <translation id="6684809838922667136">ເຮັດໃຫ້ Chrome ດີຂຶ້ນ</translation>
+<translation id="6700279777779583398">ບັນທຶກຕົວເລືອກແລ້ວ</translation>
 <translation id="6704048624334633734">ການສົ່ງອອກ ແລະ ລຶບລະຫັດຜ່ານ</translation>
 <translation id="670498945988402717">ກວດແລ້ວມື້ວານນີ້</translation>
 <translation id="6710213216561001401">ຜ່ານມາ</translation>
@@ -1423,6 +1427,7 @@
 <translation id="752731652852882757">ບລັອກໃນເວລາໃຊ້ໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ</translation>
 <translation id="7554643625247105821">ບໍ່ສາມາດກວດສອບເວີຊັນຂອງ Chrome ໄດ້</translation>
 <translation id="7557508262441527045">ອອກຈາກລະບົບແລ້ວ</translation>
+<translation id="7573665567024262965">ເລືອກແອັບເລີ່ມຕົ້ນຂອງທ່ານ</translation>
 <translation id="7577900504646297215">ຈັດການຄວາມສົນໃຈ</translation>
 <translation id="757855969265046257">{FILES,plural, =1{ດາວໂຫຼດ <ph name="FILES_DOWNLOADED_ONE" /> ໄຟລ໌ແລ້ວ}other{ດາວໂຫຼດ <ph name="FILES_DOWNLOADED_MANY" /> ໄຟລ໌ແລ້ວ}}</translation>
 <translation id="7581273696622423628">ເຮັດແບບສຳຫຼວດ</translation>
@@ -1465,6 +1470,7 @@
 <translation id="7764225426217299476">ເພີ່ມ​ທີ່​ຢູ່</translation>
 <translation id="7772032839648071052">ຢືນ​ຢັນວະລີຜ່ານ</translation>
 <translation id="7772375229873196092">ປິດ <ph name="APP_NAME" /></translation>
+<translation id="7774125747223422443">ອີງຕາມກົດໝາຍໃນພາກພື້ນຂອງທ່ານ, ທ່ານຈະຕ້ອງເລືອກໂປຣແກຣມທ່ອງເວັບ ແລະ ໂປຣແກຣມຊອກຫາຂອງທ່ານ</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 ແລະ ອີກ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ວິທີການຈ່າຍເງິນ}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 ແລະ ອີກ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ວິທີການຈ່າຍເງິນ}}</translation>
 <translation id="777637629667389858">ປົກປ້ອງທ່ານໃນທົ່ວບໍລິການ Google ເມື່ອທ່ານເຂົ້າສູ່ລະບົບ.</translation>
 <translation id="7778840695157240389">ກວດເບິ່ງເລື່ອງລາວໃໝ່ໃນພາຍຫຼັງ</translation>
@@ -1733,6 +1739,7 @@
 <translation id="8982113230057126145">ປຸ່ມບໍ່ມັກຈະສົ່ງຄຳຕິຊົມວ່າທ່ານບໍ່ຖືກໃຈຂໍ້ມູນສະຫຼຸບນີ້</translation>
 <translation id="8992769679401294069">ຂໍ້ມູນຂອງທ່ານໄດ້ຖືກເຂົ້າລະຫັດໄວ້ດ້ວຍລະຫັດຜ່ານຂອງທ່ານ. ລະບຸລະຫັດຜ່ານເພື່ອໃຊ້ ແລະ ບັນທຶກຂໍ້ມູນ Chrome ໃນບັນຊີ Google ຂອງທ່ານ.</translation>
 <translation id="8993760627012879038">ເປີດແຖບໃໝ່ໃນໂໝດ Incognito</translation>
+<translation id="8995521496079646922">ລະບົບຈະໃຊ້ແອັບທີ່ທ່ານເລືອກເປັນຄ່າເລີ່ມຕົ້ນ. ຫາກຍັງບໍ່ມີແອັບໃນອຸປະກອນນີ້, ລະບົບຈະດາວໂຫຼດແອັບດັ່ງກ່າວໃນໄວໆນີ້.</translation>
 <translation id="8996847606757455498">ເລືອກຜູ້ໃຫ້ບໍລິການອື່ນ</translation>
 <translation id="8998289560386111590">ບໍ່ມີໃຫ້ໃນອຸປະກອນຂອງທ່ານ</translation>
 <translation id="8998837250940831980">ຫຍໍ້ແຖບບໍ່ໄດ້. ລອງໃໝ່ພາຍຫຼັງ.</translation>

@@ -52,6 +52,7 @@
 <translation id="1204296502688602597">DNS-latens</translation>
 <translation id="1207734034680156868">Förslag baseras på din beskrivning</translation>
 <translation id="121090498480012229">spela upp eller pausa media</translation>
+<translation id="1216675364136048456">Stäng</translation>
 <translation id="1223498995510244364">Sammanfatta</translation>
 <translation id="123124571410524056">Misstänkt portal</translation>
 <translation id="1232610416724362657">ett vattenfall</translation>
@@ -128,6 +129,7 @@
 <translation id="1588438908519853928">Normal</translation>
 <translation id="1591562245178063882">Den här månaden</translation>
 <translation id="1593528591614229756">Välj endast APN:er som tillhandahålls av mobiloperatören eller administratören. När du väljer en APN inaktiveras eventuella anpassade APN:er. Ogiltiga APN:er kan störa mobilanslutningen. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
+<translation id="1604959087182679653">Dölj transkription</translation>
 <translation id="160633243685262989">Förhandsgranska bild</translation>
 <translation id="1611649489706141841">framåt</translation>
 <translation id="1615335640928990664">Dataanvändning sedan <ph name="FRIENDLY_DATE" /></translation>
@@ -141,6 +143,7 @@
 <translation id="1643449475550628585">Byt bakgrundsbild varje dag</translation>
 <translation id="1644574205037202324">Historik</translation>
 <translation id="1651925268237749928">Du har valt ett delat album. Andra personer kan lägga till eller ändra foton. Foton som för närvarande inte finns i det här albumet kan användas för bakgrunden.</translation>
+<translation id="1661512400125589646">Pausa</translation>
 <translation id="1661865805917886535">Vissa konto- och systemuppgifter kan skickas till Google. Med dessa uppgifter kan vi åtgärda tekniska problem och förbättra våra tjänster i enlighet med vår integritetspolicy (<ph name="PRIVACYPOLICYURL" />) och våra användarvillkor (<ph name="TERMSOFSERVICEURL" />). Om du vill begära innehållsändringar besöker du den juridiska hjälpen (<ph name="LEGALHELPPAGEURL" />).</translation>
 <translation id="1662989795263954667">Har stoppats – slut på bläck</translation>
 <translation id="1664796644829245314">Förhandsgranska <ph name="PREVIEW_OBJECT" /></translation>
@@ -173,6 +176,7 @@
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1762483337755424125">Transkription</translation>
 <translation id="1765169783255151332">Byt snabbt tangenter</translation>
 <translation id="1768959921651994223">Autentiseringstyp</translation>
 <translation id="1776228893584526149">Bakgrundston</translation>
@@ -217,6 +221,7 @@
 <translation id="1954818433534793392">byggnad</translation>
 <translation id="1962550982027027473">Ett standard-APN krävs</translation>
 <translation id="1967860190218310525">Skapa nytt APN</translation>
+<translation id="1967917622327567355">Visa transkription</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977973007732255293">traditionellt</translation>
 <translation id="1977994649430373166">Profilbild på Google</translation>
@@ -600,6 +605,7 @@
 <translation id="4111761024568264522">USB-styrplatta</translation>
 <translation id="4113067922640381334">Du har nu tillgång till nya <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />bakgrunder<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>
 <translation id="4117637339509843559">Mörkt läge</translation>
+<translation id="4126551873361000548">Spola bakåt 10 sekunder</translation>
 <translation id="4130035430755296270">Håll muspekaren över för fler layoutalternativ</translation>
 <translation id="4130750466177569591">Jag godkänner</translation>
 <translation id="4131410914670010031">Svartvitt</translation>
@@ -681,6 +687,7 @@
 <translation id="4507392511610824664">öka ljusstyrkan</translation>
 <translation id="4511264077854731334">Portal</translation>
 <translation id="4513946894732546136">Feedback</translation>
+<translation id="4516323842122524821">Volym</translation>
 <translation id="4521826082652183069">Matchning av ämnets andra namn</translation>
 <translation id="4522570452068850558">Detaljer</translation>
 <translation id="4536864596629708641">IP-konfiguration</translation>
@@ -786,6 +793,7 @@
 <translation id="5049856988445523908">SIM-kortet är låst (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Gruppnamn</translation>
 <translation id="5051044138948155788">Det här är den enda sidan. Du kommer till startskärmen för att skanna.</translation>
+<translation id="5053233795640754917">Pausa</translation>
 <translation id="5078711626843651677">Röstmodeller lagras tillfälligt på enheten tills alla talaretiketter har satts. Du kan inaktivera detta när som helst i inställningarna.</translation>
 <translation id="5078983345702708852">futuristiskt</translation>
 <translation id="5087864757604726239">tillbaka</translation>
@@ -793,6 +801,7 @@
 <translation id="5089810972385038852">Stat</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
 <translation id="5095761549884461003">Koppla bort USB-kabeln från <ph name="DEVICE_NAME" /> och anslut den sedan igen för att fortsätta uppdateringsprocessen</translation>
+<translation id="5095864667399748231">Slå på eller av ljudet</translation>
 <translation id="5099354524039520280">upp</translation>
 <translation id="5107243100836678918">Ett kortkommando utan <ph name="META_KEY" />tangenten kan hamna i konflikt med ett kortkommando för en viss app. Tryck på kortkommandot igen om du vill fortsätta använda det, eller tryck på ett nytt kortkommando med <ph name="KEY" />tangenten. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">Liknande:</translation>
@@ -939,6 +948,7 @@
 <translation id="588258955323874662">Helskärm</translation>
 <translation id="5893975327266416093">Tilldela genom att trycka på en tangent</translation>
 <translation id="5895138241574237353">Starta om</translation>
+<translation id="5896602941605730551">Spela upp</translation>
 <translation id="5901630391730855834">Gul</translation>
 <translation id="5903200662178656908">Detta är en kombinationsenhet med tangentbord och mus.</translation>
 <translation id="5904994456462260490">Lägg till en ny APN</translation>
@@ -1328,6 +1338,7 @@ Ladda ned transkriptionsmodellen (upp till 100 MB) för att få transkriptioner
 <translation id="7762130827864645708">Lösenordet har bytts. Använd det nya lösenordet i fortsättningen.</translation>
 <translation id="7763470514545477072">Matchning av domänsuffix</translation>
 <translation id="7769672763586021400">Modell-id</translation>
+<translation id="7774759755755950354">Tillbaka</translation>
 <translation id="7778717409420828014">Din feedback hjälper oss att förbättra Chromebook-upplevelsen och granskas av vårt team. Vi får många rapporter och därför kan vi inte svara på dem.</translation>
 <translation id="7781829728241885113">Igår</translation>
 <translation id="7784116172884276937">Inga DNS-servrar har konfigurerats</translation>
@@ -1420,6 +1431,7 @@ Ladda ned transkriptionsmodellen (upp till 100 MB) för att få transkriptioner
 <translation id="8227119283605456246">Bifoga fil</translation>
 <translation id="8227488649450500937">Testa någon av dessa promptar eller läs <ph name="BEGIN_LINK_PROMPTING_GUIDE" />promptguiden<ph name="END_LINK_PROMPTING_GUIDE" />.</translation>
 <translation id="8230672074305416752">Det gick inte att pinga standardnätverkets gateway</translation>
+<translation id="8236972776513018241">Transkription</translation>
 <translation id="8238771987802558562">Välj ett APN</translation>
 <translation id="8246209727385807362">Okänd operatör</translation>
 <translation id="8250926778281121244">rostfärgad</translation>
@@ -1523,6 +1535,7 @@ Ladda ned transkriptionsmodellen (upp till 100 MB) för att få transkriptioner
 <translation id="8775713578693478175">Modem-APN</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Nätverket kan ha en infångstportal</translation>
+<translation id="8797082062139985406">Skapa ett namn med Google AI</translation>
 <translation id="8798099450830957504">Standard</translation>
 <translation id="8798441408945964110">Leverantörens namn</translation>
 <translation id="8808828119384186784">Inställningar för Chrome</translation>
@@ -1543,6 +1556,7 @@ Ladda ned transkriptionsmodellen (upp till 100 MB) för att få transkriptioner
 <translation id="8864415976656252616">Inga innehållsförslag. Visa populärt hjälpinnehåll.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Enheten är en surfplatta.</translation>
+<translation id="8878117140814294155">Slå på eller av ljudet för mikrofonen</translation>
 <translation id="8881098542468797602">Testet lyckades</translation>
 <translation id="8882789155418924367">ugglor</translation>
 <translation id="8892443466059986410">Avbryt redigering av kortkommando</translation>
@@ -1631,8 +1645,6 @@ Ladda ned transkriptionsmodellen (upp till 100 MB) för att få transkriptioner
 <translation id="951780398843003443">Jämför röster i hela inspelningen så att transkriptionen återspeglar vad varje talare sa och när</translation>
 <translation id="952992212772159698">Inte aktiverat</translation>
 <translation id="95718197892796296">lera</translation>
-<translation id="959792926760890141">Säkerhetsåterställning inaktiverar tillägg i webbläsaren Chrome och återställer nätverk och andra inställningar till säkra standardinställningar.
-          Din standardsökmotor återställs, men dina flikar, filer, cookies och historik ändras inte.</translation>
 <translation id="960719561871045870">Operatörskod</translation>
 <translation id="965918541715156800">gult och blågrönt</translation>
 <translation id="966787709310836684">meny</translation>

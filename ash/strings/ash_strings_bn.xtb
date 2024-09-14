@@ -118,7 +118,6 @@
 <translation id="1346748346194534595">ডানে</translation>
 <translation id="1350494136075914725">চালু রয়েছে · ট্যাবে পাল্টান</translation>
 <translation id="1351937230027495976">মেনুটি আড়াল করুন</translation>
-<translation id="1352537790882153971">আপনি তারযুক্ত হেডফোন থেকে নিজের মাইক্রোফোনের সাউন্ড মনিটর করতে পারবেন। থামাতে প্যানেল বন্ধ করুন।</translation>
 <translation id="1360220746312242196">একটি পৃষ্ঠা সার্চ করার সময়, সার্চের জন্য আগের ম্যাচে যান</translation>
 <translation id="1360788414852622716">প্রোফাইল বন্ধ করা হচ্ছে। এর জন্য কয়েক মিনিট সময় লাগতে পারে।</translation>
 <translation id="1364382257761975320">Chromebook আনলক করতে, আপনার ফিঙ্গারপ্রিন্ট ব্যবহার করুন</translation>
@@ -374,6 +373,7 @@
 <translation id="2359808026110333948">চালিয়ে যান</translation>
 <translation id="2360398059912971776">ব্যাটারি</translation>
 <translation id="2361210043495191221">ওয়াই-ফাই টগল করুন। <ph name="STATE" />।</translation>
+<translation id="2364710166605611987">অ্যাপিয়ারেন্স এফেক্ট</translation>
 <translation id="236574664504281623"><ph name="SESSION_NAME" /> থেকে পাঠানো হয়েছে</translation>
 <translation id="2367186422933365202">Chromebook-এ সাইন-ইন করা যায়নি</translation>
 <translation id="2367972762794486313">অ্যাপ্লিকেশানগুলি দেখান</translation>
@@ -396,7 +396,6 @@
 <translation id="2426051945783024481">ক্যামেরা ফ্রেম অটোমেটিক কেন্দ্রে আছে</translation>
 <translation id="2427507373259914951">বাঁদিকের বোতামে ক্লিক করুন</translation>
 <translation id="2429753432712299108">ব্লুটুথ ডিভাইস "<ph name="DEVICE_NAME" />" যুক্ত করার অনুমতি চাইছে। স্বীকার করার আগে, এই পাস কীটি ডিভাইসে প্রদর্শিত হয়েছে কিনা নিশ্চিত করুন: <ph name="PASSKEY" /></translation>
-<translation id="2430444791038754658">সময় শেষ। শাবাস!</translation>
 <translation id="2435457462613246316">পাসওয়ার্ড দেখান</translation>
 <translation id="2437771564543046790">ব্যাটারির চার্জ কম আছে। 'ব্যাটারি সেভার' চালু করা হয়েছে</translation>
 <translation id="243878895369688216">গতকাল খোলা হয়েছে</translation>
@@ -734,6 +733,7 @@
 <translation id="3600061223661453002">বন্ধ আছে</translation>
 <translation id="3604801046548457007">ডেস্ক <ph name="DESK_TITILE" /> তৈরি করা হয়েছে</translation>
 <translation id="3606978283550408104">ব্রেইল প্রদর্শন সংযুক্ত হয়েছে৷</translation>
+<translation id="3612634595000403645">অ্যাপিয়ারেন্স এফেক্ট সংক্রান্ত পছন্দ</translation>
 <translation id="3615926715408477684">মোবাইল ডেটা চালু করা হলে ব্লুটুথও চালু হয়ে যাবে</translation>
 <translation id="3616113530831147358">অডিও</translation>
 <translation id="3616883743181209306">স্ক্রিনের উপরে ডানদিকের কোণায় মেনু সরে গেছে।</translation>
@@ -775,7 +775,6 @@
 <translation id="3706423975342040244">বিনোদন</translation>
 <translation id="3707093869106077605"><ph name="UNAVAILABLE_DLC_ONE" /> এবং <ph name="UNAVAILABLE_DLC_TWO" /> উপলভ্য নেই।</translation>
 <translation id="3708186454126126312">আগে কানেক্ট করা ছিল</translation>
-<translation id="3711282657843423160">সব হয়ে গেছে! চালিয়ে যান!</translation>
 <translation id="3712143870407382523">এই দিকে কোন উইন্ডো দেখা যাবে বেছে নিন</translation>
 <translation id="371370241367527062">সামনের মাইক্রোফোন</translation>
 <translation id="3713734891607377840">সম্পূর্ণ হলে খুলুন</translation>
@@ -845,7 +844,6 @@
 <translation id="397105322502079400">গণনা করা হচ্ছে...</translation>
 <translation id="397726367135689299">ব্যাটারি চার্জ করার জায়গাটি নির্ভরযোগ্য নাও হতে পারে।</translation>
 <translation id="3977512764614765090">ব্যাটারি <ph name="PERCENTAGE" /> শতাংশ চার্জ করা হয়েছে এবং এখনও চার্জ করা চলছে।</translation>
-<translation id="397808938113646171">সময় শেষ। অসাধারণ!</translation>
 <translation id="3982013579989864579">অডিও আউটপুট পরিবর্তন করতে চান?</translation>
 <translation id="3984536049089846927">পরের পৃষ্ঠা</translation>
 <translation id="3986082989454912832">উত্তর</translation>
@@ -894,6 +892,7 @@
 <translation id="4146671046252289537">পরবর্তী শব্দের শেষ অবধি সরান</translation>
 <translation id="4146833061457621061">মিউজিক চালান</translation>
 <translation id="4150201353443180367">প্রদর্শন</translation>
+<translation id="4151054805501931758">পোর্ট্রেট টাচ-আপ</translation>
 <translation id="4156293514828496577"><ph name="PERCENTAGE" />% ব্য়াটারির চার্জ আছে (প্রায় <ph name="TIME_LEFT" />)।
 ব্যাটারির আয়ু বাড়াতে কিছু ফিচার সীমিত করা হয়েছে।</translation>
 <translation id="4160919062868802509">একাধিক অডিও সোর্স শনাক্ত করা হয়েছে</translation>
@@ -1000,7 +999,6 @@
 <translation id="4477751544736611934">এর ফলে ডেটার চার্জ প্রযোজ্য হতে পারে।
 ১টি ডিভাইস কানেক্ট করা হয়েছে।</translation>
 <translation id="4477892968187500306">Google যাচাই করেনি এমন অ্যাপও এই ডিভাইসে থাকে পারে।</translation>
-<translation id="4479130137987693286">প্রয়োজন হলে আপনি আরও অল্প কিছুক্ষণ সময় যোগ করতে পারবেন অথবা আপনার ফোকাস সিজন শেষ করতে পারবেন</translation>
 <translation id="4479639480957787382">ইথারনেট</translation>
 <translation id="4481530544597605423">বিযুক্ত করা ডিভাইসগুলি</translation>
 <translation id="4485506555414638855">আপনার ফোনের সাম্প্রতিক ফটো, মিডিয়া ও বিজ্ঞপ্তি দেখা সংক্রান্ত সেট-আপের পদ্ধতি বাতিল করুন</translation>
@@ -1053,7 +1051,6 @@
 
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox সক্ষম করা আছে</translation>
-<translation id="4665182893355091947">সব হয়ে গেছে! শাবাস!</translation>
 <translation id="4666911709726371538">আরও অ্যাপ</translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> ডাউনলোড করা হচ্ছে</translation>
 <translation id="4672539464599646374">'ব্যাটারি সেভার' ফিচার চালু করা হয়েছে</translation>
@@ -1357,6 +1354,7 @@
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">আপনার পাসওয়ার্ড যাচাই করা যায়নি। আবার চেষ্টা করুন।</translation>
 <translation id="5632485077360054581">কীভাবে করতে হবে তা দেখান</translation>
+<translation id="5633826232582408011">আপনি 'আমাকে লিখতে সাহায্য করো' ও 'আমাকে পড়তে সাহায্য করো' ফিচার চালু করলে, ইনপুট টেক্সট, ডকুমেন্টের কন্টেন্ট ও ওয়েব পৃষ্ঠার URL Google AI-এর সার্ভারে পাঠানো হয়, যা <ph name="LINK_TO_SERVICE_TERMS" /> অনুযায়ী লেখার সাজেশন দেখাতে, সারাংশ তৈরি করতে, প্রশ্নের উত্তর দিতে ও প্রোডাক্টের উন্নতি করতে ব্যবহার করা হবে। ব্যক্তিগত, সংবেদনশীল, বা গোপনীয় তথ্য অন্তর্ভুক্ত করবেন না।</translation>
 <translation id="5648021990716966815">মাইক জ্যাক</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> আপনার মনোযোগ আকর্ষণ করতে চাইছে।</translation>
 <translation id="5662075790140998213">ডেস্ক ১০</translation>
@@ -1779,7 +1777,6 @@
 <translation id="7064351585062927183">আগামী <ph name="DAY_OF_WEEK" /></translation>
 <translation id="7066646422045619941">এই নেটওয়ার্কটি আপনার প্রশাসকের দ্বারা অক্ষম করা হয়েছে৷</translation>
 <translation id="7067196344162293536">স্বতঃ ঘূর্ণন</translation>
-<translation id="7067569040620564762">সময় শেষ। হয়ে গেছে!</translation>
 <translation id="7068360136237591149">ফাইল খুলুন</translation>
 <translation id="7076293881109082629">প্রবেশ করুন হচ্ছে</translation>
 <translation id="7076878155205969899">সাউন্ড মিউট করুন</translation>
@@ -1814,7 +1811,6 @@
 <translation id="7189412385142492784">পৃথিবী থেকে শুক্র গ্রহের দুরত্ব কত</translation>
 <translation id="7198435252016571249">ক্যামেরাটি নিচে ডানদিকের কোণে স্ন্যাপ করা হয়েছে। সিস্টেমের সারফেসে ছবির কিছুটা ঢাকা পড়ছে।</translation>
 <translation id="7219573373513695352">কোনও ডিভাইস কানেক্ট করা নেই</translation>
-<translation id="7226347284543965442">সময় শেষ। আপনি পেরেছেন!</translation>
 <translation id="7229029500464092426"><ph name="AVAILABLE_MEMORY" /> মেমরি | মোট <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7244725679040769470"><ph name="PERCENTAGE" />% ব্যাটারির চার্জ রয়েছে।
 ডিভাইসটি চার্জে বসান।</translation>
@@ -1972,6 +1968,7 @@
 <translation id="7768784765476638775">বাছুন ও শুনুন</translation>
 <translation id="7769299611924763557">আপনার GIF শীঘ্রই তৈরি হয়ে যাবে</translation>
 <translation id="7773536009433685931">পরিবর্তে ওয়াই-ফাই চালু করুন</translation>
+<translation id="77747521138552256">অনেকবার ভুল পিন লিখেছেন। <ph name="TIME_LEFT" /> অপেক্ষা করুন এবং আবার পিন লিখুন অথবা অবিলম্বে সাইন-ইন করতে পাসওয়ার্ড লিখুন।</translation>
 <translation id="7780094051999721182">শর্টকাট</translation>
 <translation id="7780159184141939021">স্ক্রিন ঘোরান</translation>
 <translation id="7781829728241885113">গতকাল</translation>
@@ -2169,7 +2166,6 @@
 <translation id="8443879455002739353">"কপি করুন"</translation>
 <translation id="8444246603146515890">ডেস্ক <ph name="DESK_TITILE" /> অ্যাক্টিভেট করা হয়েছে</translation>
 <translation id="8446884382197647889">আরও জানুন</translation>
-<translation id="8452090802952003258">আপনার মাইক্রোফোনের সাউন্ড শুনুন</translation>
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
 <translation id="8462305545768648477">'বাছুন ও শুনুন' ফিচারটি বন্ধ করুন</translation>
 <translation id="8468806060683421065"><ph name="DUE_DATE_AND_TIME" /> তারিখের মধ্যে জমা দিতে হবে</translation>
@@ -2231,7 +2227,6 @@
 <translation id="8683506306463609433">পারফরম্যান্স ট্রেস করার বিকল্প চালু আছে</translation>
 <translation id="8703634754197148428">রেকর্ডিং শুরু করুন। রেকর্ডিং শুরু হলে, Alt, Shift ও L কী একসাথে প্রেস করে শেল্ফে যান এবং রেকর্ডিং বন্ধ করার বোতাম খুঁজুন</translation>
 <translation id="8704155109538237473">'ছবির-মধ্যে-ছবি' উইন্ডোতে ফোকাস করুন</translation>
-<translation id="8708657523363087260">সাইডটোন টগল করুন</translation>
 <translation id="870917907284186124">ডিকটেশন চালু/বন্ধ করুন (আপনার ভয়েস দিয়ে টাইপ করুন)</translation>
 <translation id="8711169534266271368">গেম ড্যাশবোর্ডের বিকল্প</translation>
 <translation id="8712637175834984815">বুঝেছি</translation>

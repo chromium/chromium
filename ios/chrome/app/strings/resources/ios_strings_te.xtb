@@ -11,7 +11,6 @@
 <translation id="1035980983510608210">అన్ని ట్యాబ్‌లను మూసివేయడం వలన పిన్ చేసిన ట్యాబ్‌లు కూడా మూసివేయబడతాయి.</translation>
 <translation id="1036017604683756002">UPS</translation>
 <translation id="1036348656032585052">ఆఫ్ చేయి</translation>
-<translation id="10379132160269599">ట్యాబ్ గ్రిడ్‌ను చూపించండి</translation>
 <translation id="1041322626941363065">మీరు ఉపయోగించే పాస్‌వర్డ్‌లు, ఏదైనా డేటా ఉల్లంఘనలో బహిర్గతమైతే మిమ్మల్ని హెచ్చరిస్తుంది</translation>
 <translation id="1044891598689252897">సైట్‌లు సాధారణ రీతిలో పని చేస్తాయి</translation>
 <translation id="104491362976654916">ఆఫ్‌లైన్ పేజీ</translation>
@@ -31,6 +30,7 @@
 <translation id="1118569444314402022">తిరిగి స్వాగతం, <ph name="USER_NAME" /></translation>
 <translation id="1121850836842642159">ఫోటోలు, ఇమేజ్‌లు</translation>
 <translation id="1125564390852150847">కొత్త ట్యాబ్‌ను క్రియేట్ చేయండి.</translation>
+<translation id="1126696498560056882">ఈ పరికరంలోని ఖాతాలను మేనేజ్ చేయండి</translation>
 <translation id="1126809382673880764">ప్రమాదకరమైన వెబ్‌సైట్‌లు, డౌన్‌లోడ్‌లు మరియు ఎక్స్‌టెన్షన్‌ల నుండి మిమ్మల్ని రక్షించదు. Gmail, Search వంటి ఇతర Google సర్వీస్‌లలో, సురక్షిత బ్రౌజింగ్ అందుబాటులో ఉన్న చోట మీరు ఇప్పటికీ రక్షణను పొందుతారు.</translation>
 <translation id="1142371195993008685"><ph name="FEATURE_NAME" /> కోసం నోటిఫికేషన్‌లను ఆఫ్ చేయండి</translation>
 <translation id="1147031633655575115"><ph name="USER" />గా సైన్ ఇన్ చేశారు</translation>
@@ -783,7 +783,7 @@
 <translation id="4870911314065352661">అన్ని ట్యాబ్‌లను మూసివేయాలా?</translation>
 <translation id="4871719318659334896">గ్రూప్‌ను మూసివేయండి</translation>
 <translation id="4872664437015695612">డౌన్‌లోడ్‌లలో తెరవండి</translation>
-<translation id="4876305945144899064">వినియోగదారు పేరు లేదు</translation>
+<translation id="4876305945144899064">యూజర్‌నేమ్ లేదు</translation>
 <translation id="4877597489778380935">నాకు తర్వాత గుర్తు చేయండి</translation>
 <translation id="4881695831933465202">తెరువు</translation>
 <translation id="4889521386764567563">ప్రస్తుత ప్రొఫైల్</translation>
@@ -959,7 +959,7 @@
 <translation id="5702108177581350218">మీ యూజర్‌నేమ్, పాస్‌వర్డ్ కాపీని మీరు షేర్ చేసినప్పుడు, మీ ఫ్యామిలీ మెంబర్ వాటిని Google Password Managerను ఉపయోగించి పూరించగలరు.</translation>
 <translation id="5704908597376970822">సైన్ ఇన్ చేయడం సాధ్యపడలేదు.</translation>
 <translation id="5709005673595820640">{count,plural, =1{మీ సెక్యూరిటీని ప్రమాదంలో ఉంచే {count} వేరే చోట వాడిన పాస్‌వర్డ్‌లు మీ వద్ద ఉన్నాయి. సురక్షితంగా ఉండటానికి ఇప్పుడే దాన్ని పరిష్కరించండి.}other{మీ సెక్యూరిటీని ప్రమాదంలో ఉంచే {count} వేరే చోట వాడిన పాస్‌వర్డ్‌లు మీ వద్ద ఉన్నాయి. సురక్షితంగా ఉండటానికి ఇప్పుడే వాటిని పరిష్కరించండి.}}</translation>
-<translation id="57094364128775171">బలమైన పాస్‌వర్డ్‌ను సూచించండి…</translation>
+<translation id="57094364128775171">శక్తివంతమైన పాస్‌వర్డ్‌ సూచన</translation>
 <translation id="5716230673298034837">అన్నీ అనుమతించండి</translation>
 <translation id="5718049162805123412">మీరు ఇప్పుడు వీటిని మార్చాలి</translation>
 <translation id="572328651809341494">ఇటీవలి ట్యాబ్‌లు</translation>
@@ -1010,7 +1010,6 @@
 <translation id="594324569139756587">థర్డ్-పార్టీని బ్లాక్ చేయండి</translation>
 <translation id="5944869793365969636">QR కోడ్‌ను స్కాన్ చేయండి</translation>
 <translation id="5948291296578561264">ఇది మీ ఫోటో లైబ్రరీకి ఫోటోలను సేవ్ చేయడానికి మీకు వీలు కల్పిస్తుంది.</translation>
-<translation id="5953383789663007162">ఖాతా లిస్ట్‌ను ఎడిట్ చేయండి</translation>
 <translation id="5954322191260787920">బుక్‌మార్క్‌ను ఎడిట్ చేయండి</translation>
 <translation id="5956112131836209882">ట్యాబ్ గ్రూప్ ట్యాబ్. <ph name="NUMBER_OF_TABS_IN_GROUP" />లో <ph name="TAB_INDEX_IN_GROUP" />.</translation>
 <translation id="595769230373966252"><ph name="SEARCH_PROVIDER" />తో సెర్చ్ చేస్తోంది</translation>
@@ -1604,6 +1603,7 @@
 <translation id="8637431369725868556">ప్రమాదకరమైన సైట్‌ల నుండి రక్షణ పొందండి.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{చోరీకి గురైన పాస్‌వర్డ్‌లు ఏవీ లేవు}=1{{COUNT} చోరీకి గురైన పాస్‌వర్డ్}other{{COUNT} చోరీకి గురైన పాస్‌వర్డ్‌లు}}</translation>
 <translation id="8640575194957831802">చివరిగా తెరిచినది</translation>
+<translation id="8647280737650867362">ధరను అన్‌ట్రాక్ చేయడం సాధ్యపడలేదు.</translation>
 <translation id="8654802032646794042">రద్దు చేయండి</translation>
 <translation id="8660600697590740984">Lens ఇమేజ్‌ను కాపీ చేసింది</translation>
 <translation id="866266761389616183">అయ్యో!</translation>

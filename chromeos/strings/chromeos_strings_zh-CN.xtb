@@ -153,6 +153,7 @@
 <translation id="1672499492233627739">摄像头视频画面</translation>
 <translation id="1676557873873341166">正在录制视频</translation>
 <translation id="1684279041537802716">强调色</translation>
+<translation id="1697278726914783200">录制</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">存在 DNS 解析器</translation>
 <translation id="1708602061922134366">Google 蓝色</translation>
@@ -705,6 +706,7 @@
 <translation id="458794348635939462">未能解析所有主机</translation>
 <translation id="4593212453765072419">需要验证代理身份</translation>
 <translation id="4594021849294327751">创建转写文本</translation>
+<translation id="4602266091140407479">麦克风</translation>
 <translation id="4607282946861182308">无法创建这样的图片。请试试其他提示。</translation>
 <translation id="4609350030397390689">调低键盘亮度</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />，<ph name="PRINTER_NAME" />，<ph name="CREATION_TIME" />，已打印 <ph name="PRINTED_PAGE_NUMBER" /> 页，共 <ph name="TOTAL_PAGE_NUMBER" /> 页。按 Enter 键即可取消这项打印任务。</translation>
@@ -1014,6 +1016,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6188737759358894319">创建日期：<ph name="DATE" /></translation>
 <translation id="6189418609903030344">电池容量会随使用时长的增加而减少</translation>
+<translation id="6189987971574353264">播放</translation>
 <translation id="6191293864534840972">域名服务器格式不正确</translation>
 <translation id="6196607555925437199">重新创建</translation>
 <translation id="6205145102504628069">云朵的动态变化</translation>
@@ -1649,8 +1652,6 @@
 <translation id="951780398843003443">对整个录音中的各种语音进行比较，以便在转写内容中体现出每位讲者的说话内容和说话时间</translation>
 <translation id="952992212772159698">未激活</translation>
 <translation id="95718197892796296">黏土</translation>
-<translation id="959792926760890141">安全重置会关闭 Chrome 浏览器扩展程序，并将网络和其他设置重置为安全的默认设置。
-          默认搜索引擎将会重置，但标签页、文件、Cookie 和历史记录不会更改。</translation>
 <translation id="960719561871045870">运营商代码</translation>
 <translation id="965918541715156800">黄色和蓝绿色</translation>
 <translation id="966787709310836684">菜单</translation>

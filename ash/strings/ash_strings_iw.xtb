@@ -118,7 +118,6 @@
 <translation id="1346748346194534595">ימינה</translation>
 <translation id="1350494136075914725">בתהליך · מעבר לכרטיסייה</translation>
 <translation id="1351937230027495976">כיווץ התפריט</translation>
-<translation id="1352537790882153971">אפשר לבדוק את הצליל של המיקרופון דרך האוזניות החוטיות. כדי להפסיק את הפעולה, צריך לסגור את החלונית.</translation>
 <translation id="1360220746312242196">מעבר להתאמה הקודמת לחיפוש במהלך חיפוש בדף</translation>
 <translation id="1360788414852622716">מתבצעת השבתה של הפרופיל. הפעולה עשויה להימשך מספר דקות.</translation>
 <translation id="1364382257761975320">‏כדי לבטל את נעילת ה-Chromebook, עליך להשתמש בטביעת האצבע שלך</translation>
@@ -397,7 +396,6 @@
 <translation id="2426051945783024481">פריים המצלמה מורכז באופן אוטומטי</translation>
 <translation id="2427507373259914951">לחיצה שמאלית</translation>
 <translation id="2429753432712299108">‏מכשיר ה-Bluetooth ‏"<ph name="DEVICE_NAME" />" מבקש הרשאה לבצע התאמה. לפני מתן אישור, יש לוודא שמפתח הסיסמה הבא מוצג במכשיר הזה: <ph name="PASSKEY" /></translation>
-<translation id="2430444791038754658">נגמר הזמן. שיחקת אותה!</translation>
 <translation id="2435457462613246316">הצגת סיסמה</translation>
 <translation id="2437771564543046790">הסוללה חלשה. התכונה 'חיסכון בסוללה' מופעלת</translation>
 <translation id="243878895369688216">נפתח אתמול</translation>
@@ -777,7 +775,6 @@
 <translation id="3706423975342040244">תרבות ובידור</translation>
 <translation id="3707093869106077605">התכונות '<ph name="UNAVAILABLE_DLC_ONE" />' ו-'<ph name="UNAVAILABLE_DLC_TWO" />' לא זמינות.</translation>
 <translation id="3708186454126126312">מכשירים שחוברו בעבר</translation>
-<translation id="3711282657843423160">זהו, סיימת. כל הכבוד!</translation>
 <translation id="3712143870407382523">בחירת חלון לצד הזה</translation>
 <translation id="371370241367527062">מיקרופון קדמי</translation>
 <translation id="3713734891607377840">פתיחה לאחר השלמת ההורדה</translation>
@@ -847,7 +844,6 @@
 <translation id="397105322502079400">מתבצע חישוב...</translation>
 <translation id="397726367135689299">יכול להיות שטעינת הסוללה מבוצעת בצורה לא מהימנה.</translation>
 <translation id="3977512764614765090">‏שיעור הטעינה של הסוללה הוא ‎<ph name="PERCENTAGE" />%‎ והטעינה נמשכת.</translation>
-<translation id="397808938113646171">נגמר הזמן. עבודה טובה!</translation>
 <translation id="3982013579989864579">לשנות את מקור האודיו?</translation>
 <translation id="3984536049089846927">לדף הבא</translation>
 <translation id="3986082989454912832">מענה</translation>
@@ -1003,7 +999,6 @@
 <translation id="4477751544736611934">עשויים לחול חיובים על שימוש בחבילת הגלישה.
 מכשיר אחד מחובר.</translation>
 <translation id="4477892968187500306">‏המכשיר הזה עשוי להכיל אפליקציות שלא אומתו על-ידי Google.</translation>
-<translation id="4479130137987693286">יש לך אפשרות להוסיף קצת זמן אם נדרש לך, או לסיים את הפעילות במצב הריכוז</translation>
 <translation id="4479639480957787382">אתרנט</translation>
 <translation id="4481530544597605423">מכשירים לא מותאמים</translation>
 <translation id="4485506555414638855">ביטול ההגדרה של הצגת התמונות, המדיה, ההתראות והאפליקציות שבטלפון מהזמן האחרון</translation>
@@ -1056,7 +1051,6 @@
 
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">‏ChromeVox הופעל</translation>
-<translation id="4665182893355091947">זהו, סיימת. כל הכבוד!</translation>
 <translation id="4666911709726371538">עוד אפליקציות</translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> בהורדה</translation>
 <translation id="4672539464599646374">התכונה 'חיסכון בסוללה' הופעלה</translation>
@@ -1783,7 +1777,6 @@
 <translation id="7064351585062927183">יום <ph name="DAY_OF_WEEK" /> הקרוב</translation>
 <translation id="7066646422045619941">מנהל המערכת השבית את הרשת הזו.</translation>
 <translation id="7067196344162293536">סיבוב אוטומטי</translation>
-<translation id="7067569040620564762">נגמר הזמן. סיימת!</translation>
 <translation id="7068360136237591149">פתיחת קבצים</translation>
 <translation id="7076293881109082629">כניסה</translation>
 <translation id="7076878155205969899">השתקת צלילים</translation>
@@ -1818,7 +1811,6 @@
 <translation id="7189412385142492784">מה המרחק בין כדור הארץ לנוגה</translation>
 <translation id="7198435252016571249">המצלמה מוצמדת לפינה השמאלית התחתונה. התנגשות עם תצוגת המערכת.</translation>
 <translation id="7219573373513695352">אין מכשירים מחוברים</translation>
-<translation id="7226347284543965442">נגמר הזמן. הצלחת!</translation>
 <translation id="7229029500464092426">זיכרון פנוי: <ph name="AVAILABLE_MEMORY" /> | סה"כ: <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7244725679040769470">רמת הטעינה שנותרה בסוללה: %<ph name="PERCENTAGE" />. צריך לחבר את המכשיר למקור חשמל.</translation>
 <translation id="7246071203293827765">‏<ph name="UPDATE_TEXT" />. יש להפעיל את ה-Chromebook מחדש כדי להחיל עדכון. התהליך עשוי להימשך עד דקה אחת.</translation>
@@ -2175,7 +2167,6 @@
 <translation id="8443879455002739353">"העתקה"</translation>
 <translation id="8444246603146515890">שולחן העבודה <ph name="DESK_TITILE" /> הופעל</translation>
 <translation id="8446884382197647889">למידע נוסף</translation>
-<translation id="8452090802952003258">האזנה לצליל של המיקרופון</translation>
 <translation id="8456543082656546101">‏<ph name="SHORTCUT_KEY_NAME" /> + ‏V</translation>
 <translation id="8462305545768648477">סגירת הקראה</translation>
 <translation id="8468806060683421065">מועד ההגשה: <ph name="DUE_DATE_AND_TIME" /></translation>
@@ -2237,7 +2228,6 @@
 <translation id="8683506306463609433">מעקב הביצועים פעיל</translation>
 <translation id="8703634754197148428">‏יש להתחיל בהקלטה. לאחר התחלת ההקלטה, יש להקיש על Alt ‏+ Shift ‏+ L כדי לעבור למדף ולמצוא את הלחצן להפסקת ההקלטה</translation>
 <translation id="8704155109538237473">התמקדות בחלון תמונה בתוך תמונה</translation>
-<translation id="8708657523363087260">החלפת מצב קול חוזר</translation>
 <translation id="870917907284186124">הפעלה/השבתה של הכתבה (הקלדה קולית)</translation>
 <translation id="8711169534266271368">אפשרויות במרכז בקרת המשחקים</translation>
 <translation id="8712637175834984815">הבנתי</translation>

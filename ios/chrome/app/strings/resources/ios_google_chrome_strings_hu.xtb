@@ -96,6 +96,7 @@ A kijelentkezés előtt várjon néhány percet. Ha most jelentkezik ki, akkor e
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{Erre akkor kerül sor, ha a Chrome {THRESHOLD} percig nincs használatban.}other{Erre akkor kerül sor, ha a Chrome {THRESHOLD} percig nincs használatban.}}</translation>
 <translation id="3367797402528056312">Fejezze be a Chrome beállítását</translation>
 <translation id="3371064404604898522">A Chrome beállítása alapértelmezett böngészőként</translation>
+<translation id="3399930248910934354">Chrome-beállítások megnyitása</translation>
 <translation id="3472587960215700950">A Chrome a Google Térkép segítségével útvonalterveket és helyi információkat jeleníthessen meg az észlelt címekkel kapcsolatban.</translation>
 <translation id="3503014945441706099">A Biztonságos Böngészés fokozott védelemmel funkciót kapja e Chrome-profilhoz is</translation>
 <translation id="3522659714780527202">Kapcsolja be a szinkronizálást, hogy bárhol hozzáférhessen a lapjaihoz, ahol a Chrome-ot használja.</translation>

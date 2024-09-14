@@ -11,7 +11,6 @@
 <translation id="1035980983510608210">Se fechar todos os separadores, os separadores fixos também são fechados.</translation>
 <translation id="1036017604683756002">UPS</translation>
 <translation id="1036348656032585052">Desativar</translation>
-<translation id="10379132160269599">Mostrar grelha de separadores</translation>
 <translation id="1041322626941363065">Enviar-lhe um aviso se as palavras-passe forem expostas numa violação de dados</translation>
 <translation id="1044891598689252897">Os sites funcionam normalmente.</translation>
 <translation id="104491362976654916">Página offline</translation>
@@ -31,6 +30,7 @@
 <translation id="1118569444314402022">Damos-lhe as boas-vindas de volta, <ph name="USER_NAME" /></translation>
 <translation id="1121850836842642159">Fotos e imagens</translation>
 <translation id="1125564390852150847">Criar novo separador</translation>
+<translation id="1126696498560056882">Gerir contas neste dispositivo</translation>
 <translation id="1126809382673880764">Não protege contra transferências, extensões ou Websites perigosos. Continuará a obter a proteção da Navegação segura, quando disponível, noutros Serviços Google, como o Gmail e a Pesquisa.</translation>
 <translation id="1142371195993008685">Desativar as notificações para <ph name="FEATURE_NAME" /></translation>
 <translation id="1147031633655575115">Sessão iniciada como <ph name="USER" /></translation>
@@ -1010,7 +1010,6 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="594324569139756587">Bloquear terceiros</translation>
 <translation id="5944869793365969636">Leia o código QR</translation>
 <translation id="5948291296578561264">Isto permite-lhe guardar fotos na sua biblioteca de fotos.</translation>
-<translation id="5953383789663007162">Editar lista de contas</translation>
 <translation id="5954322191260787920">Editar marcador</translation>
 <translation id="5956112131836209882">Separador do grupo de separadores. <ph name="TAB_INDEX_IN_GROUP" /> de <ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
 <translation id="595769230373966252">Pesquisar com o <ph name="SEARCH_PROVIDER" /></translation>
@@ -1604,6 +1603,7 @@ Os sites podem utilizar cookies para ver a sua atividade de navegação em difer
 <translation id="8637431369725868556">Proteja-se contra sites perigosos.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Nenhuma palavra-passe comprometida}=1{{COUNT} palavra-passe comprometida}other{{COUNT} palavras-passe comprometidas}}</translation>
 <translation id="8640575194957831802">Último acesso</translation>
+<translation id="8647280737650867362">Não foi possível deixar de acompanhar o preço.</translation>
 <translation id="8654802032646794042">Cancelar</translation>
 <translation id="8660600697590740984">Imagem copiada do Lens</translation>
 <translation id="866266761389616183">Ah, bolas!</translation>

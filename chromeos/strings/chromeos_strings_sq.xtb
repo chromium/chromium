@@ -265,6 +265,7 @@
 <translation id="2180197493692062006">Ndodhi një gabim. Provo të rihapësh aplikacionin.</translation>
 <translation id="2189104374785738357">Modifiko detajet e APN-së</translation>
 <translation id="2195732836444333448">Në maksimumin e kapacitetin për momentin. Kthehu përsëri së shpejti.</translation>
+<translation id="2197185031095816179">Rivendosja e sigurisë mund të ndihmojë për të hequr dritaret kërcyese të padëshiruara, për të rregulluar problemet e rrjetit dhe për të zgjidhur problemet e tjera të papritura.</translation>
 <translation id="2201758491318984023">biçikletë</translation>
 <translation id="2203272733515928691">ujëra termale</translation>
 <translation id="2203642483788377106">shkëmb</translation>
@@ -543,6 +544,7 @@
 <translation id="3820172043799983114">Kodi PIN i pavlefshëm</translation>
 <translation id="382043424867370667">Imazhi i sfondit për perëndimin e diellit</translation>
 <translation id="3824259034819781947">Bashkëngjit skedarët</translation>
+<translation id="3836587210832263413">Aktivizo vetëm shtesat që u beson</translation>
 <translation id="3838338534323494292">Fjalëkalimi i ri</translation>
 <translation id="3845880861638660475">Shtyp <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" /> për ta mbyllur dialogun.</translation>
 <translation id="3848280697030027394">errëso tastierën</translation>
@@ -633,6 +635,7 @@
 <translation id="4251839292699800785">Zyra me stil</translation>
 <translation id="4258281355379922695">Vonesa e HTTP-së</translation>
 <translation id="4266143281602681663">fill</translation>
+<translation id="4269815121975886860">Preferencat për nisjen</translation>
 <translation id="4271957103967917607">Shiko në ekranin e plotë</translation>
 <translation id="4275663329226226506">Media</translation>
 <translation id="4278766082079064416">Shkurtorja po përdoret për "<ph name="CONFLICT_ACCEL_NAME" />". Modifikoje ose hiqe për ta zgjidhur konfliktin.</translation>
@@ -769,6 +772,7 @@
 <translation id="4932733599132424254">Data</translation>
 <translation id="4950314376641394653">Firmueri <ph name="DEVICE_NAME" /> është përditësuar në versionin <ph name="VERSION" /></translation>
 <translation id="4950893758552030541">tunel pemësh</translation>
+<translation id="4965661459364092269">Rivendosja e sigurisë është përfunduar</translation>
 <translation id="4965703485264574128">Për rezultatin e përafërt, shumëzo vlerën <ph name="CATEGORY_TEXT" /> me <ph name="CONVERSION_RATE" /></translation>
 <translation id="4969079779290789265">I ndarë</translation>
 <translation id="4972592110715526173">ndryshimi i modalitetit</translation>
@@ -831,6 +835,7 @@
 <translation id="5252456968953390977">Në roaming</translation>
 <translation id="5254600740122644523">Një raft librash (<ph name="SIMPLE_STYLE" />) në një dhomë (<ph name="SIMPLE_TONE" />)</translation>
 <translation id="5257811368506016604">Aktivizo modalitetin e ngjyrave të çelura</translation>
+<translation id="5261479807286543505">Cilësimet e nisjes</translation>
 <translation id="5264277876637023664">Ekzekuto testin e njësisë CPU</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="527501763019887383">APN-ja është çaktivizuar.</translation>
@@ -1144,6 +1149,7 @@
 <translation id="680983167891198932">Çelësi</translation>
 <translation id="6816797338148849397">Ka informacion në lidhje me zgjedhjen tënde. Përdor tastin "Shigjeta lart" për ta hapur.</translation>
 <translation id="6831043979455480757">Përkthe</translation>
+<translation id="6846843854964504403">Rivendosja e sigurisë</translation>
 <translation id="6853312040151791195">Shpejtësia e shkarkimit</translation>
 <translation id="6862416241246624313">Komentet u dërguan</translation>
 <translation id="6866732840889595464">luledele</translation>
@@ -1328,6 +1334,7 @@ Shkarko modelin e transkriptimit (deri në 100 MB) për të marrë këto transk
 <translation id="7746357909584236306">i modifikueshëm</translation>
 <translation id="7747039790905080783">Çelës i ndarë paraprakisht</translation>
 <translation id="7752963721013053477">Nga agimi në muzg - ekskluzive</translation>
+<translation id="7760571082554155847">Cilësimet e faqes kryesore</translation>
 <translation id="7762130827864645708">Ndryshimi i fjalëkalimit tënd u krye me sukses. Përdor fjalëkalimin e ri këtej e tutje.</translation>
 <translation id="7763470514545477072">Përputhje e prapashtesës së domenit</translation>
 <translation id="7769672763586021400">ID-ja e modelit</translation>
@@ -1369,6 +1376,7 @@ Shkarko modelin e transkriptimit (deri në 100 MB) për të marrë këto transk
 <translation id="7942349550061667556">E kuqe</translation>
 <translation id="7943235353293548836">Intervali i procesit të vazhdueshëm të mbajtjes aktive</translation>
 <translation id="7943516765291457328">Aktivizo Bluetooth-in për të skanuar për zona të qasjes për internet në afërsi</translation>
+<translation id="7944482598620888754">Përmbajtja e sajtit</translation>
 <translation id="7944562637040950644">aktivizo/çaktivizo dritën e sfondit të tastierës</translation>
 <translation id="7953669802889559161">Hyrjet</translation>
 <translation id="7955587717700691983">Tastierë me Bluetooth</translation>
@@ -1405,6 +1413,7 @@ Shkarko modelin e transkriptimit (deri në 100 MB) për të marrë këto transk
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">Konfirmo</translation>
 <translation id="8132480444149501833">Kërko matësit e trafikut</translation>
+<translation id="8135609423982943441">Pajisja jote Chromebook u rivendos te parazgjedhjet e sigurta. Mund t'i rregullosh këto ndryshime në çdo kohë te "Cilësimet".</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Zgjidh "<ph name="TOPIC_SOURCE_DESC" />" nga "<ph name="TOPIC_SOURCE" />"</translation>
 <translation id="8151185429379586178">Mjetet e zhvilluesit</translation>
@@ -1435,6 +1444,7 @@ Shkarko modelin e transkriptimit (deri në 100 MB) për të marrë këto transk
 <translation id="8291967909914612644">Shteti i ofruesit të rrjetit bazë</translation>
 <translation id="8294431847097064396">Burimi</translation>
 <translation id="8302368968391049045">Mur mbrojtës HTTPS</translation>
+<translation id="8308787307410010965">Cilësimet e përmbajtjes së sajtit</translation>
 <translation id="8312330582793120272">luaj median</translation>
 <translation id="8318753676953949627">Nuk ka imazhe</translation>
 <translation id="8320910311642849813">pyll</translation>

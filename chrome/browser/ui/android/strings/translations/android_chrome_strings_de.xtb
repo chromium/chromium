@@ -350,6 +350,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="2653659639078652383">Senden</translation>
 <translation id="2656405586795711023">Web-Apps</translation>
 <translation id="2664252182805397291">Websites anzeigen</translation>
+<translation id="2666092431469916601">Oben</translation>
 <translation id="2669454659051515572">Alle Personen, die dieses Gerät nutzen, können heruntergeladene Dateien sehen</translation>
 <translation id="2702516483241149200">Neu: Link teilen, der direkt zu diesem Text führt</translation>
 <translation id="2705073298859543115">Zusammenfassung erstellen</translation>
@@ -451,6 +452,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="3072980200212375806"><ph name="APP_NAME" /> wird in Chrome geöffnet. Wenn du fortfährst, stimmst du den <ph name="BEGIN_LINK1" />Google-Nutzungsbedingungen<ph name="END_LINK1" /> und den <ph name="BEGIN_LINK2" />zusätzlichen Nutzungsbedingungen für Google Chrome und Chrome OS<ph name="END_LINK2" /> zu. Außerdem gilt die <ph name="BEGIN_LINK3" />Datenschutzerklärung<ph name="END_LINK3" />.</translation>
 <translation id="3080525922482950719">Du kannst Seiten speichern, um sie später oder offline zu lesen</translation>
 <translation id="3087218211037573995">Einige Passwörter, die nur auf diesem Gerät gespeichert sind, funktionieren bald nicht mehr. Du kannst diese Passwörter in den Google Passwortmanager verschieben.</translation>
+<translation id="3087734570205094154">Unten</translation>
 <translation id="3091010850649238832">Inhalte der Zwischenablage anzeigen</translation>
 <translation id="3098745985164956033">Einige Bilder werden an Google gesendet, um die Beschreibungen zu verbessern</translation>
 <translation id="3114507951000454849">Nachrichten von heute lesen <ph name="NEWS_ICON" /></translation>
@@ -687,7 +689,6 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="4355272626458588338">Du kannst Lesezeichen setzen, damit du zu Seiten zurückfindest, die für dich interessant sind</translation>
 <translation id="4357206670025518404">+ <ph name="COUNT_NUMBER" /></translation>
 <translation id="4359809482106103048">Sicherheit auf einen Blick</translation>
-<translation id="4363222835916186793">Benachrichtigungen zu diesem Produkt wurden deaktiviert</translation>
 <translation id="4378154925671717803">Telefon</translation>
 <translation id="4380055775103003110">Wenn das Problem weiterhin auftritt, kannst du andere Möglichkeiten zum Fortfahren auf <ph name="SITE_ETLD_PLUS_ONE" /> ausprobieren.</translation>
 <translation id="4384468725000734951">Suche erfolgt mit Sogou</translation>
@@ -748,6 +749,7 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="4624065194742029982">Der Inkognitomodus von Chrome</translation>
 <translation id="4634124774493850572">Passwort verwenden</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 kompromittiertes Passwort}other{# kompromittierte Passwörter}}</translation>
+<translation id="4642472735733036929">Preis-Tracking gestoppt</translation>
 <translation id="4645146721047390964">Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden, um deine Browseraktivitäten auf anderen Websites zu sehen und beispielsweise zur Personalisierung von Werbung zu nutzen. Einige Websites funktionieren dann möglicherweise nicht mehr richtig.</translation>
 <translation id="4650364565596261010">Systemstandard</translation>
 <translation id="465657074423018424">Safe Browsing schützt dich vor betrügerischen Websites. Wenn du Safe Browsing deaktivierst, solltest du besonders vorsichtig sein, wenn du im Internet surfst, besonders wenn du Passwörter eingibst.</translation>
@@ -1090,6 +1092,7 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="6210748933810148297"><ph name="EMAIL" /> ist nicht deine E-Mail-Adresse?</translation>
 <translation id="6211386937064921208">Vorschau für diese Seite</translation>
 <translation id="6221633008163990886">Zum Exportieren deiner Passwörter entsperren</translation>
+<translation id="6225572914528673855">Adressleiste</translation>
 <translation id="6232535412751077445">Wenn du das Kästchen „Do Not Track“ anklickst, wird mit deinen Browserzugriffen eine Anforderung gesendet. Wie sich diese Anforderung auswirkt, hängt davon ab, ob eine Website darauf reagiert und wie die Anforderung interpretiert wird.
 
 Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht darauf basiert, welche Websites du zuvor besucht hast. Viele Websites erfassen weiterhin deine Browserdaten und verwenden sie, um beispielsweise die Sicherheit zu verbessern oder Inhalte, Werbeanzeigen und Empfehlungen bereitzustellen und Statistiken für Berichte zu erstellen.</translation>

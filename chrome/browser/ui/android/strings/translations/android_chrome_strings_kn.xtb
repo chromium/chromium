@@ -75,6 +75,7 @@
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - <ph name="DEVICE_NAME" /> ಸಾಧನದಿಂದ ಕಳುಹಿಸಲಾಗಿದೆ</translation>
 <translation id="1320912611264252795">ಬುಕ್‌ಮಾರ್ಕ್ ಸೇವ್ ಮಾಡಿ ಫ್ಲೋ ಫೋಲ್ಡರ್‌ಗಳನ್ನು ಪೂರ್ಣ ಎತ್ತರದಲ್ಲಿ ತೆರೆಯಲಾಗಿದೆ</translation>
 <translation id="1327257854815634930">ನ್ಯಾವಿಗೇಶನ್ ಇತಿಹಾಸ ತೆರೆದಿದೆ</translation>
+<translation id="1328235593824723509"><ph name="TAB_TITLE" />, ಹೊಸ ಅಥವಾ ಅಪ್‌ಡೇಟ್‌ ಮಾಡಿದ ಟ್ಯಾಬ್</translation>
 <translation id="1331212799747679585">Chrome ಅಪ್‌ಡೇಟ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ. ಇನ್ನಷ್ಟು ಆಯ್ಕೆಗಳು</translation>
 <translation id="1332501820983677155">Google Chrome ಫೀಚರ್ ಶಾರ್ಟ್‌ಕಟ್‌ಗಳು</translation>
 <translation id="1333491156693005331">ಇತ್ತೀಚೆಗೆ ಪರಿಶೀಲಿಸಲಾಗಿದೆ</translation>
@@ -350,6 +351,7 @@
 <translation id="2653659639078652383">ಸಲ್ಲಿಸಿ</translation>
 <translation id="2656405586795711023">ವೆಬ್‌ ಆ್ಯಪ್‌ಗಳು</translation>
 <translation id="2664252182805397291">ಸೈಟ್‌ಗಳನ್ನು ವೀಕ್ಷಿಸಿ</translation>
+<translation id="2666092431469916601">ಮೇಲೆ</translation>
 <translation id="2669454659051515572">ಈ ಸಾಧನವನ್ನು ಬಳಸುವ ಯಾರಾದರೂ ಡೌನ್‌ಲೋಡ್ ಮಾಡಿರುವ ಫೈಲ್‌ಗಳನ್ನು ನೋಡಬಹುದು</translation>
 <translation id="2702516483241149200">ಹೊಸ ಫೀಚರ್: ಈ ಪಠ್ಯಕ್ಕೆ ಸ್ಕ್ರಾಲ್ ಆಗುವ ಲಿಂಕ್ ಅನ್ನು ಹಂಚಿಕೊಳ್ಳಿ</translation>
 <translation id="2705073298859543115">ಸಾರಾಂಶವನ್ನು ರಚಿಸಿ</translation>
@@ -451,6 +453,7 @@
 <translation id="3072980200212375806"><ph name="APP_NAME" />, Chrome ನಲ್ಲಿ ತೆರೆಯುತ್ತದೆ. ಮುಂದುವರಿಯುವ ಮೂಲಕ, ನೀವು <ph name="BEGIN_LINK1" />Google ಸೇವಾ ನಿಯಮಗಳು<ph name="END_LINK1" />, ಹಾಗೂ <ph name="BEGIN_LINK2" />Google Chrome ಮತ್ತು ChromeOS ಹೆಚ್ಚುವರಿ ಸೇವಾ ನಿಯಮಗಳಿಗೆ<ph name="END_LINK2" /> ಸಮ್ಮತಿಸುತ್ತೀರಿ. <ph name="BEGIN_LINK3" />ಗೌಪ್ಯತೆ ನೀತಿ<ph name="END_LINK3" /> ಸಹ ಅನ್ವಯಿಸುತ್ತದೆ.</translation>
 <translation id="3080525922482950719">ನೀವು ಪುಟಗಳನ್ನು ನಂತರ ಅಥವಾ ಆಫ್‌ಲೈನ್‌ನಲ್ಲಿ ಓದಲು ಉಳಿಸಬಹುದು</translation>
 <translation id="3087218211037573995">ಈ ಸಾಧನದಲ್ಲಿ ಮಾತ್ರ ಸೇವ್ ಮಾಡಿದ ಕೆಲವು ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಶೀಘ್ರದಲ್ಲೇ ಕಾರ್ಯನಿರ್ವಹಿಸುವುದನ್ನು ನಿಲ್ಲಿಸುತ್ತವೆ. ನೀವು ಈ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು Google Password Manager ಗೆ ಸರಿಸಬಹುದು.</translation>
+<translation id="3087734570205094154">ಕೆಳಗೆ</translation>
 <translation id="3091010850649238832">ಕ್ಲಿಪ್‌ಬೋರ್ಡ್ ವಿಷಯಗಳನ್ನು ತೋರಿಸಿ</translation>
 <translation id="3098745985164956033">ನಿಮಗಾಗಿ ವಿವರಣೆಗಳನ್ನು ಸುಧಾರಿಸಲು, ಕೆಲವು ಚಿತ್ರಗಳನ್ನು Google ಗೆ ಕಳುಹಿಸಲಾಗಿದೆ</translation>
 <translation id="3114507951000454849">ಇಂದಿನ ಸುದ್ದಿಗಳನ್ನು ಓದಿ <ph name="NEWS_ICON" /></translation>
@@ -688,7 +691,6 @@
 <translation id="4355272626458588338">ಬುಕ್‌ಮಾರ್ಕ್ ಒಂದನ್ನು ಸೇರಿಸುವ ಮೂಲಕ ನಿಮಗೆ ಮುಖ್ಯವಾದ ಪುಟಕ್ಕೆ ನೀವು ಹಿಂತಿರುಗಬಹುದಾಗಿದೆ</translation>
 <translation id="4357206670025518404">+<ph name="COUNT_NUMBER" /></translation>
 <translation id="4359809482106103048">ಸುರಕ್ಷತೆ ಕುರಿತು ಇಣುಕು ನೋಟ</translation>
-<translation id="4363222835916186793">ಈ ಉತ್ಪನ್ನದ ಕುರಿತ ಅಲರ್ಟ್‌ಗಳನ್ನು ಆಫ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="4378154925671717803">ಫೋನ್</translation>
 <translation id="4380055775103003110">ಈ ಸಮಸ್ಯೆ ಮುಂದುವರಿದರೆ, ನೀವು <ph name="SITE_ETLD_PLUS_ONE" /> ನಲ್ಲಿ ಮುಂದುವರಿಯಲು ಇತರ ಮಾರ್ಗಗಳನ್ನು ಪ್ರಯತ್ನಿಸಬಹುದು.</translation>
 <translation id="4384468725000734951">ಹುಡುಕಲು Sogou ಬಳಸಲಾಗುತ್ತಿದೆ</translation>
@@ -748,6 +750,7 @@
 <translation id="4624065194742029982">Chrome ಅಜ್ಞಾತ ಮೋಡ್</translation>
 <translation id="4634124774493850572">ಪಾಸ್‌ವರ್ಡ್ ಬಳಸಿ</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 ಪಾಸ್‌ವರ್ಡ್ ಅಪಾಯಕ್ಕೀಡಾಗಿದೆ}one{# ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಅಪಾಯಕ್ಕೀಡಾಗಿವೆ}other{# ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಅಪಾಯಕ್ಕೀಡಾಗಿವೆ}}</translation>
+<translation id="4642472735733036929">ಬೆಲೆ ಟ್ರ್ಯಾಕಿಂಗ್ ನಿಂತುಹೋಗಿದೆ</translation>
 <translation id="4645146721047390964">ಅಜ್ಞಾತ ಮೋಡ್‌ನಲ್ಲಿ ಇರುವಾಗ, ವಿವಿಧ ಸೈಟ್‌ಗಳಾದ್ಯಂತ ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್ ಚಟುವಟಿಕೆಯನ್ನು ನೋಡಲು, ಉದಾಹರಣೆಗೆ, ಆ್ಯಡ್‌ಗಳನ್ನು ವೈಯಕ್ತೀಕರಿಸುವುದಕ್ಕಾಗಿ ನಿಮ್ಮ ಕುಕೀಗಳನ್ನು ಬಳಸಲು ಸೈಟ್‌ಗಳಿಗೆ ಸಾಧ್ಯವಾಗುವುದಿಲ್ಲ. ಸೈಟ್‌ಗಳಲ್ಲಿನ ಕೆಲವು ಫೀಚರ್‌ಗಳು ಕಾರ್ಯನಿರ್ವಹಿಸುವುದನ್ನು ನಿಲ್ಲಿಸಬಹುದು.</translation>
 <translation id="4650364565596261010">ಸಿಸ್ಟಂ ಡಿಫಾಲ್ಟ್</translation>
 <translation id="465657074423018424">ಮೋಸಗೊಳಿಸುವ ವೆಬ್‌ಸೈಟ್‌ಗಳಿಂದ ನಿಮ್ಮನ್ನು ಸುರಕ್ಷಿತ ಬ್ರೌಸಿಂಗ್‌ ರಕ್ಷಿಸುತ್ತದೆ. ಇದನ್ನು ನೀವು ಆಫ್ ಮಾಡಿದರೆ, ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ನಮೂದಿಸುವ ಮೊದಲು, ಬ್ರೌಸ್ ಮಾಡುವಾಗ ಹೆಚ್ಚುವರಿ ಜಾಗರೂಕರಾಗಿರಿ.</translation>
@@ -1091,6 +1094,7 @@
 <translation id="6210748933810148297"><ph name="EMAIL" /> ಅಲ್ಲವೇ?</translation>
 <translation id="6211386937064921208">ಈ ಪುಟವನ್ನು ಪೂರ್ವವೀಕ್ಷಣೆ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="6221633008163990886">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ರಫ್ತುಮಾಡಲು ಅನ್‌ಲಾಕ್ ಮಾಡಿ</translation>
+<translation id="6225572914528673855">ವಿಳಾಸ ಪಟ್ಟಿ</translation>
 <translation id="6232535412751077445">‘ಟ್ರ್ಯಾಕ್ ಮಾಡಬೇಡಿ’ ಸಕ್ರಿಯಗೊಳಿಸುವುದು ಎಂದರೆ, ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್ ಟ್ರಾಫಿಕ್ ಜೊತೆ ವಿನಂತಿಯನ್ನು ಸೇರಿಸಿಕೊಳ್ಳಲಾಗುತ್ತದೆ ಎಂದಾಗಿದೆ. ವಿನಂತಿಗೆ ವೆಬ್‌ಸೈಟ್‌ ಸ್ಪಂದಿಸುತ್ತದೆಯೇ ಹಾಗೂ ವಿನಂತಿಯನ್ನು ಹೇಗೆ ಅರ್ಥೈಸಿಕೊಳ್ಳುತ್ತದೆ ಎಂಬುದರ ಮೇಲೆ ಯಾವುದೇ ಪರಿಣಾಮ ಅವಲಂಬಿಸಿರುತ್ತದೆ.
 
 ಉದಾಹರಣೆಗೆ, ಕೆಲವು ವೆಬ್‌ಸೈಟ್‌ಗಳು, ನೀವು ಭೇಟಿ ನೀಡಿದ ಇತರ ವೆಬ್‌ಸೈಟ್‌ಗಳನ್ನು ಆಧರಿಸಿಲ್ಲದ ಜಾಹೀರಾತುಗಳನ್ನು ನಿಮಗೆ ತೋರಿಸುವ ಮೂಲಕ ಈ ವಿನಂತಿಗೆ ಸ್ಪಂದಿಸಬಹುದು. ಹೆಚ್ಚಿನ ವೆಬ್‌ಸೈಟ್‌ಗಳು ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್‌ ಡೇಟಾವನ್ನು ಈಗಲೂ ಸಂಗ್ರಹಿಸುತ್ತವೆ ಹಾಗೂ ಅವುಗಳನ್ನು ಬಳಸಿಕೊಳ್ಳುತ್ತವೆ. ಉದಾಹರಣೆಗೆ, ಭದ್ರತೆಯನ್ನು ಸುಧಾರಿಸಲು, ವಿಷಯ, ಜಾಹೀರಾತುಗಳು ಮತ್ತು ಶಿಫಾರಸುಗಳನ್ನು ಒದಗಿಸಲು ಮತ್ತು ವರದಿಯ ಅಂಕಿಅಂಶಗಳನ್ನು ರಚಿಸಲು.</translation>
@@ -1209,6 +1213,7 @@
 <translation id="6674571176963658787">ಸಿಂಕ್ ಪ್ರಾರಂಭಿಸಲು, ನಿಮ್ಮ ಪಾಸ್‌ಫ್ರೇಸ್ ಅನ್ನು ನಮೂದಿಸಿ</translation>
 <translation id="6676927815633975364">ಈ ಸೈಟ್‌ಗೆ ಮತ್ತು Chrome ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="6684809838922667136">Chrome ಅನ್ನು ಉತ್ತಮವಾಗಿಸಿ</translation>
+<translation id="6700279777779583398">ಆಯ್ಕೆಗಳನ್ನು ಸೇವ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="6704048624334633734">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಎಕ್ಸ್‌ಪೋರ್ಟ್ ಮಾಡಿ ಮತ್ತು ಅಳಿಸಿ</translation>
 <translation id="670498945988402717">ನಿನ್ನೆ ಪರಿಶೀಲಿಸಲಾಗಿದೆ</translation>
 <translation id="6710213216561001401">ಹಿಂದಿನದು</translation>
@@ -1422,6 +1427,7 @@
 <translation id="752731652852882757">ಅಜ್ಞಾತ ಮೋಡ್ ಬಳಸುವಾಗ ನಿರ್ಬಂಧಿಸಿ</translation>
 <translation id="7554643625247105821">Chrome ಆವೃತ್ತಿಯನ್ನು ಪರಿಶೀಲಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="7557508262441527045">ಸೈನ್ ಔಟ್ ಮಾಡಿ</translation>
+<translation id="7573665567024262965">ನಿಮ್ಮ ಡೀಫಾಲ್ಟ್ ಆ್ಯಪ್‌ಗಳನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="7577900504646297215">ಆಸಕ್ತಿಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> ಫೈಲ್ ಡೌನ್‌ಲೋಡ್‌ ಮಾಡಲಾಗಿದೆ}one{<ph name="FILES_DOWNLOADED_MANY" /> ಫೈಲ್‌ಗಳನ್ನು ಡೌನ್‌ಲೋಡ್‌ ಮಾಡಲಾಗಿದೆ}other{<ph name="FILES_DOWNLOADED_MANY" /> ಫೈಲ್‌ಗಳನ್ನು ಡೌನ್‌ಲೋಡ್‌ ಮಾಡಲಾಗಿದೆ}}</translation>
 <translation id="7581273696622423628">ಸಮೀಕ್ಷೆಯನ್ನು ಕೈಗೊಳ್ಳಿ</translation>
@@ -1464,6 +1470,7 @@
 <translation id="7764225426217299476">ವಿಳಾಸ ಸೇರಿಸಿ</translation>
 <translation id="7772032839648071052">ಪಾಸ್‌ಫ್ರೇಸ್ ಅನ್ನು ದೃಢೀಕರಿಸಿ</translation>
 <translation id="7772375229873196092"><ph name="APP_NAME" /> ಅನ್ನು ಮುಚ್ಚಿ</translation>
+<translation id="7774125747223422443">ನಿಮ್ಮ ಪ್ರದೇಶದಲ್ಲಿನ ಕಾನೂನನ್ನು ಆಧರಿಸಿ, ನಿಮ್ಮ ಬ್ರೌಸರ್ ಮತ್ತು ಸರ್ಚ್ ಎಂಜಿನ್ ಅನ್ನು ನೀವು ಆರಿಸಬೇಕಾಗುತ್ತದೆ</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 ಮತ್ತು ಇನ್ನೂ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}one{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 ಮತ್ತು ಇನ್ನೂ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 ಮತ್ತು ಇನ್ನೂ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="777637629667389858">ನಿಮ್ಮ ಸೈನ್ ಇನ್ ಮಾಡಿದಾಗ, ಈ ಆಯ್ಕೆಯು Google ಸೇವೆಗಳಲ್ಲಿ ನಿಮ್ಮನ್ನು ರಕ್ಷಿಸುತ್ತದೆ.</translation>
 <translation id="7778840695157240389">ಹೊಸ ಸುದ್ದಿಗಳಿಗಾಗಿ ನಂತರ ಪುನಃ ಪರಿಶೀಲಿಸಿ</translation>
@@ -1588,6 +1595,7 @@
 <translation id="8265018477030547118">ಈ ಸಾಧನದಲ್ಲಿ ಮಾತ್ರ</translation>
 <translation id="8266753737658117282"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ಜೊತೆ ಮುಂದುವರಿಸಿ</translation>
 <translation id="8266862848225348053">ಡೌನ್‌ಲೋಡ್ ಸ್ಥಳ</translation>
+<translation id="8279945625179116733"><ph name="APP_NAME" /> ನಿಂದ ಸಂರಕ್ಷಿಸಲಾಗಿದೆ</translation>
 <translation id="8281886186245836920">ಸ್ಕಿಪ್‌ ಮಾಡಿ</translation>
 <translation id="8282297628636750033">ಸೈಟ್‌ಗೆ ಡಾರ್ಕ್ ಥೀಮ್ ಅನ್ವಯಿಸಿ</translation>
 <translation id="8282950411412455249">ಭದ್ರತೆ ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ ಹೋಗಿ</translation>
@@ -1732,6 +1740,7 @@
 <translation id="8982113230057126145">ನೀವು ಈ ಸಾರಾಂಶವನ್ನು ಇಷ್ಟಪಡುವುದಿಲ್ಲ ಎಂಬ ಫೀಡ್‌ಬ್ಯಾಕ್ ಅನ್ನು ಥಂಬ್ಸ್ ಡೌನ್ ಸಲ್ಲಿಸುತ್ತದೆ</translation>
 <translation id="8992769679401294069">ನಿಮ್ಮ ಪಾಸ್‌ಫ್ರೇಸ್ ಮೂಲಕ ನಿಮ್ಮ ಡೇಟಾವನ್ನು ಎನ್‌ಕ್ರಿಪ್ಟ್ ಮಾಡಲಾಗಿದೆ. ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ Chrome ಡೇಟಾವನ್ನು ಬಳಸಲು ಮತ್ತು ಸೇವ್‌ ಮಾಡಲು, ನಿಮ್ಮ ಪಾಸ್‌ಫ್ರೇಸ್ ಅನ್ನು ನಮೂದಿಸಿ.</translation>
 <translation id="8993760627012879038">ಅದೃಶ್ಯ ಮೋಡ್‌ನಲ್ಲಿ ಹೊಸ ವಿಂಡೋ ತೆರೆಯಿರಿ</translation>
+<translation id="8995521496079646922">ನೀವು ಆಯ್ಕೆಮಾಡಿದ ಆ್ಯಪ್‌ಗಳನ್ನು ಡೀಫಾಲ್ಟ್ ಆಗಿ ಬಳಸಲಾಗುತ್ತದೆ. ಆ್ಯಪ್ ಈಗಾಗಲೇ ಈ ಸಾಧನದಲ್ಲಿ ಇಲ್ಲದಿದ್ದರೆ, ಅದನ್ನು ಶೀಘ್ರದಲ್ಲೇ ಡೌನ್‌ಲೋಡ್ ಮಾಡಲಾಗುತ್ತದೆ.</translation>
 <translation id="8996847606757455498">ಬೇರೆ ಪೂರೈಕೆದಾರರನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="8998289560386111590">ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಲಭ್ಯವಿಲ್ಲ</translation>
 <translation id="8998837250940831980">ಟ್ಯಾಬ್ ಅನ್ನು ಮಿನಿಮೈಸ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ನಂತರ ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>

@@ -1016,6 +1016,7 @@
 <translation id="2882949212241984732">ডবল-গেট ফোল্ড</translation>
 <translation id="2891963978019740012">Chrome-এ আপনার সার্চ ইঞ্জিন</translation>
 <translation id="2893773853358652045">Fourth Roll</translation>
+<translation id="2894137550885451583"><ph name="PRODUCT" /> প্রোডাক্টের প্রাইস <ph name="CURRENCY" />-এ দেখানো হয়েছে</translation>
 <translation id="2900528713135656174">ইভেন্ট তৈরি করুন</translation>
 <translation id="2902312830803030883">আরও অ্যাকশন</translation>
 <translation id="2903493209154104877">ঠিকানা</translation>
@@ -1613,6 +1614,7 @@
 <translation id="3949601375789751990">আপনার ব্রাউজিং এর ইতিহাস এখানে দেখা যায়</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">কোনও পেমেন্টের পদ্ধতি সেভ করা নেই</translation>
+<translation id="3950560191811267370">স্ক্রিনের নিচে অ্যাটাচ করা কমার্স শিট বন্ধ করা হয়েছে</translation>
 <translation id="3950574001630941635">আবার টিউটোরিয়াল শুরু করুন</translation>
 <translation id="3950820424414687140">সাইন-ইন করুন</translation>
 <translation id="3953505489397572035">এটিই সাধারণ দাম</translation>
@@ -1898,7 +1900,6 @@
 <translation id="4451135742916150903">HID ডিভাইসের সাথে কানেক্ট করার অনুমতি চাইতে পারে</translation>
 <translation id="4451684391620232683">ব্যবহারকারীর কাছে টেক্সট উপস্থাপিত:</translation>
 <translation id="4452328064229197696">আপনি এইমাত্র যে পাসওয়ার্ড ব্যবহার করলেন, সেটি হ্যাক হওয়া কোনও ডেটাবেসে পাওয়া গেছে। আপনার অ্যাকাউন্ট সুরক্ষিত করতে, Google পাসওয়ার্ড ম্যানেজার আপনার সেভ করা পাসওয়ার্ড চেক করার সাজেশন দিচ্ছে।</translation>
-<translation id="4452957520362597816">ওয়েব অ্যাপ ইনস্টল করার জন্য অনুমতি নিন</translation>
 <translation id="4456937135469235202">রোমাঞ্চকর ভ্রমণ</translation>
 <translation id="4464826014807964867">এমন ওয়েবসাইট যার ব্যাপারে আপনার সংস্থার কাছ থেকে তথ্য পাওয়া গেছে</translation>
 <translation id="4466576951214254884">স্টুডেন্ট লোন এবং কলেজ ফাইন্যান্সিং</translation>
@@ -2355,6 +2356,7 @@
 <translation id="5331585574693522196">ডিফল্ট হিসেবে সেট করুন</translation>
 <translation id="5332219387342487447">শিপিংয়ের মাধ্যম</translation>
 <translation id="5332769172018416402">মেসেজ করে অ্যাক্সেসের জন্য অনুরোধ করুন</translation>
+<translation id="533323551986281710">স্ক্রিনের নিচে অ্যাটাচ করা কমার্স শিট সম্পূর্ণ স্ক্রিন জুড়ে খুলেছে</translation>
 <translation id="5334013548165032829">বিস্তারিত সিস্টেম লগ</translation>
 <translation id="5334145288572353250">ঠিকানা সেভ করবেন?</translation>
 <translation id="5340250774223869109">অ্যাপ্লিকেশনটি ব্লক করা আছে</translation>
@@ -2537,6 +2539,7 @@
 <translation id="5675650730144413517">এই পৃষ্ঠাটি কাজ করছে না</translation>
 <translation id="5675809467256309336">নাচ ও ইলেক্ট্রনিক মিউজিক</translation>
 <translation id="5675959228867414813">তারিখ অনুযায়ী দেখুন</translation>
+<translation id="567604591393105935">স্ক্রিনের নিচে অ্যাটাচ করা কমার্স শিট অর্ধেক স্ক্রিন জুড়ে খুলেছে</translation>
 <translation id="5677928146339483299">অবরুদ্ধ</translation>
 <translation id="5678007133659493065">ফয়েল</translation>
 <translation id="5680642791693447368">থ্রিলার, ক্রাইম ও রহস্যমূলক সিনেমা</translation>
@@ -3443,6 +3446,7 @@
 <translation id="7374733840632556089">আপনার ডিভাইসে আপনি বা অন্য কেউ একটি সার্টিফিকেট ইনস্টল করায় এই সমস্যা দেখা দিচ্ছে। এই সার্টিফিকেট ব্যবহার করে নেটওয়ার্ক ইন্টারসেপ্ট এবং মনিটর করা হয়, তবে Chrome এটিকে বিশ্বস্ত বলে মনে করে না। কোনও স্কুলের বা কোম্পানি নেটওয়ার্কের মতো কিছু নেটওয়ার্ক মনিটর করার প্রয়োজন হলেও, Chrome দেখে নেয় যে, আপনি যদি এটি বন্ধ করতে নাও পারেন, কী ঘটছে সেই সম্পর্কে যেন জানতে পারেন। ওয়েবে অ্যাক্সেস আছে, এমন যেকোনও ব্রাউজার বা অ্যাপের উপর নজর রাখা হতে পারে।</translation>
 <translation id="7375532151824574023">{NUM_COOKIES,plural, =0{কোনও সাইটের অনুমতি নেই}=1{১টি সাইটের অনুমতি আছে}one{#টি সাইটের অনুমতি আছে}other{#টি সাইটের অনুমতি আছে}}</translation>
 <translation id="7375818412732305729">ফাইল অ্যাটাচ করা হয়েছে</translation>
+<translation id="7376031331622621328">স্ক্রিনের নিচে অ্যাটাচ করা কমার্স শিট</translation>
 <translation id="7377249249140280793"><ph name="RELATIVE_DATE" /> - <ph name="FULL_DATE" /></translation>
 <translation id="7377314930809374926">হসপিটালিটি শিল্প</translation>
 <translation id="7378594059915113390">মিডিয়ার নিয়ন্ত্রণ</translation>
@@ -4018,6 +4022,7 @@
 <translation id="8381674639488873545">এই চার্জ এককালীন হতে পারে বা তার পুনরাবৃত্তি হতে পারে এবং তা স্পষ্ট করে বোঝা নাও যেতে পারে। <ph name="BEGIN_LINK" />তবুও দেখান<ph name="END_LINK" /></translation>
 <translation id="8382097126743287270">অটোমেটিক ফুল-স্ক্রিন</translation>
 <translation id="838307841291975086">স্টেশন ওয়াগন</translation>
+<translation id="8388286357548915205">সব গেস্টের জন্য ব্যবহার করুন</translation>
 <translation id="8389532092404711541">সাধারণত <ph name="LOW_PRICE" /></translation>
 <translation id="8389940864052787379">কাস্টম ও দ্রুতগামী যানবাহন</translation>
 <translation id="8390725133630534698"><ph name="ORIGIN_NAME" /> থেকে <ph name="VM_NAME" />-এ শেয়ার করা অ্যাডমিনিস্ট্রেটর পলিসির মাধ্যমে ব্লক করা হয়েছে</translation>

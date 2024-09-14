@@ -712,6 +712,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2265356434276802347">Cette règle ne peut pas contenir plus de <ph name="MAX_ITEMS_LIMIT" /> entrées mises en avant.</translation>
 <translation id="2267047181501709434">Vérification de votre identité…</translation>
 <translation id="2268044343513325586">Affiner</translation>
+<translation id="2268966938956566076">Importer dans <ph name="MINUTES" /> min</translation>
 <translation id="2270484714375784793">N° de téléphone</translation>
 <translation id="2276057643614339130">Base d'impression</translation>
 <translation id="2277103315734023688">Avance rapide</translation>
@@ -1110,6 +1111,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3062655045399308513">Supprimer les données de navigation...</translation>
 <translation id="306573536155379004">Le jeu a commencé.</translation>
 <translation id="3067505415088964188">Prix bas</translation>
+<translation id="3068118691172921711">L'importation de vos fichiers dans <ph name="CLOUD_PROVIDER" /> commencera dans 1 minute</translation>
 <translation id="3076865167425975822">Systèmes d'exploitation</translation>
 <translation id="3080254622891793721">Image</translation>
 <translation id="3082007635241601060">Autoriser Google à utiliser vos paniers pour trouver des remises personnalisées, si disponibles</translation>
@@ -1121,6 +1123,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3099619114405539473">Utiliser les caméras disponibles (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="3102312643185441063">Épargne</translation>
 <translation id="3103188521861412364">Actions et obligations</translation>
+<translation id="3103535543639438037">Comparer côte à côte des produits similaires</translation>
 <translation id="3105172416063519923">ID d'élément : </translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />Vérifiez la configuration du DNS sécurisé<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Bac intermédiaire</translation>
@@ -1298,6 +1301,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3407789382767355356">connexion tierce</translation>
 <translation id="340924996148642843">La comparaison n'est pas disponible pour le moment</translation>
 <translation id="3409896703495473338">Gérer les paramètres de sécurité</translation>
+<translation id="3411091017011773343">Importer dans <ph name="HOURS" /> h</translation>
 <translation id="3414275587143250384">Calcul distribué et cloud computing</translation>
 <translation id="3414952576877147120">Taille :</translation>
 <translation id="341513675006332771">Bouton "Jouer au jeu Chrome Dino" à activer pour y jouer dans Chrome</translation>
@@ -1893,7 +1897,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="4451135742916150903">Peut demander à se connecter à des périphériques HID</translation>
 <translation id="4451684391620232683">Texte présenté à l'utilisateur :</translation>
 <translation id="4452328064229197696">Le mot de passe que vous venez d'utiliser a été détecté lors d'une violation de données. Pour sécuriser vos comptes, le Gestionnaire de mots de passe Google vous recommande de vérifier vos mots de passe enregistrés.</translation>
-<translation id="4452957520362597816">Demander d'installer des applis Web</translation>
 <translation id="4456937135469235202">Voyages d'aventure</translation>
 <translation id="4464826014807964867">Sites Web avec des infos fournies par votre organisation</translation>
 <translation id="4466576951214254884">Prêts étudiants et financement des études</translation>
@@ -1965,6 +1968,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="4628678854894591460">Séjours touristiques</translation>
 <translation id="4628948037717959914">Photo</translation>
 <translation id="4629370161347991046">A4x6</translation>
+<translation id="462989688138616749">L'importation de vos fichiers dans <ph name="CLOUD_PROVIDER" /> commencera dans <ph name="HOURS" /> heures</translation>
 <translation id="4631649115723685955">Avec cashback</translation>
 <translation id="4631881646528206880">Enregistrement par carte virtuelle</translation>
 <translation id="4635278307999235413">Envoi des données à la console d'administration</translation>
@@ -2085,6 +2089,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="484988093836683706">Utiliser le déverrouillage de l'appareil</translation>
 <translation id="4850886885716139402">Afficher</translation>
 <translation id="4854853140771946034">Créez rapidement une note dans Google Keep</translation>
+<translation id="4855395119669662878">Votre administrateur commencera à importer vos fichiers dans <ph name="CLOUD_PROVIDER" /> le <ph name="DATE_TIME" />. Laissez votre appareil connecté jusqu'à la fin de l'importation. Pendant l'importation, vous ne pourrez lire que les fichiers locaux.</translation>
 <translation id="485902285759009870">Validation du code…</translation>
 <translation id="4860260582253463350">Pour que tu puisses continuer sur YouTube, nous devons valider ton identité. Tes paramètres sont ceux que ton parent ou représentant légal a configurés dans Family Link.</translation>
 <translation id="4864406669374375262">Chaîne de version copiée dans le presse-papiers</translation>
@@ -2140,6 +2145,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="4933468175699107356">Effectuez un clic droit pour saisir automatiquement les informations enregistrées, comme votre nom ou votre adresse, dans n'importe quel formulaire</translation>
 <translation id="4934780484581617878">Gestion des fenêtres</translation>
 <translation id="4936134414789135531">La <ph name="VALUE_NAME" /> insérée est introuvable.</translation>
+<translation id="4936573216809994970">L'importation de vos fichiers dans <ph name="CLOUD_PROVIDER" /> commencera dans 1 heure</translation>
 <translation id="4936675324097895694">Finance</translation>
 <translation id="4943620199112228840">Utiliser vos micros</translation>
 <translation id="4943872375798546930">Aucun résultat</translation>
@@ -2313,6 +2319,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="5269225904387178860">Quadruple perforation en bas</translation>
 <translation id="5271381225185906340">La condition "<ph name="DATA_CONTROLS_ATTRIBUTE" />" n'est pas acceptée pour "<ph name="DATA_CONTROLS_RESTRICTION" />"</translation>
 <translation id="5273658854610202413">Avertissement : Cette règle n'a pas été fusionnée comme indiqué dans la règle PolicyDictionaryMultipleSourceMergeList, car elle ne fait pas partie des règles de dictionnaire fusionnables.</translation>
+<translation id="5278778426231952189">Importer maintenant</translation>
 <translation id="5279286380302340275">Gérer les téléchargements</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">Propriétés du document</translation>
@@ -3817,6 +3824,7 @@ Informations supplémentaires :
 <translation id="8030729864112325446">Formation professionnelle et continue</translation>
 <translation id="8032546467100845887">Transparence</translation>
 <translation id="8035152190676905274">Stylo</translation>
+<translation id="8035264638816032066">Les titres des onglets et les URL des pages que vous ajoutez au tableau sont envoyés à Google</translation>
 <translation id="8037117624646282037">Utilisateurs récents de l'appareil</translation>
 <translation id="8037357227543935929">Demander (par défaut)</translation>
 <translation id="803771048473350947">Fichier</translation>
@@ -4010,6 +4018,7 @@ Informations supplémentaires :
 <translation id="8381674639488873545">Il peut s'agir de frais uniques ou récurrents qui ne sont pas toujours clairement signalés. <ph name="BEGIN_LINK" />Je souhaite accéder malgré tout à ce site<ph name="END_LINK" />.</translation>
 <translation id="8382097126743287270">Plein écran automatique</translation>
 <translation id="838307841291975086">Breaks</translation>
+<translation id="8388286357548915205">Utiliser pour tous les invités</translation>
 <translation id="8389532092404711541">Prix habituel : <ph name="LOW_PRICE" /></translation>
 <translation id="8389940864052787379">Véhicules puissants et personnalisés</translation>
 <translation id="8390725133630534698">Le règlement de l'administrateur bloque le partage de <ph name="ORIGIN_NAME" /> vers <ph name="VM_NAME" /></translation>
@@ -4116,6 +4125,7 @@ Informations supplémentaires :
 <translation id="8564466070529550495">La carte virtuelle n'est pas disponible pour le moment. Veuillez réessayer plus tard.</translation>
 <translation id="8564985650692024650">L'équipe Chromium vous recommande de réinitialiser votre mot de passe <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> si vous l'avez réutilisé sur d'autres sites.</translation>
 <translation id="8570895683659698018">Hobbies et loisirs</translation>
+<translation id="8572792595597115856">Valable jusqu'au <ph name="DATE" /></translation>
 <translation id="8574841453995331336">Réfrigérateurs et congélateurs</translation>
 <translation id="8577192028579836704">Prix habituel pour toutes les options : <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">Carte virtuelle non disponible</translation>
@@ -4137,6 +4147,7 @@ Informations supplémentaires :
 <translation id="8617269623452051934">si vous utilisez cet appareil</translation>
 <translation id="861775596732816396">Taille 4</translation>
 <translation id="8620276786115098679">Enveloppe Kaku 7</translation>
+<translation id="8622864575115813231">Nous contactons votre établissement financier...</translation>
 <translation id="8623885649813806493">Aucun mot de passe enregistré. Afficher tous les mots de passe enregistrés.</translation>
 <translation id="8624354461147303341">Obtenir des remises</translation>
 <translation id="8634957317623797170">54 x 86 mm</translation>
@@ -4435,6 +4446,7 @@ Informations supplémentaires :
 <translation id="9192361865877479444">Métal (mat)</translation>
 <translation id="9192947025498305328">Beauté éthique</translation>
 <translation id="9199905725844810519">Impression bloquée</translation>
+<translation id="9204089334327209740">Une fois l'importation terminée, vous pourrez modifier vos fichiers dans <ph name="CLOUD_PROVIDER" />. L'espace de stockage local, y compris les fichiers dans la corbeille, sera automatiquement supprimé.</translation>
 <translation id="9205078245616868884">Vos données sont chiffrées avec votre phrase secrète de synchronisation. Saisissez-la pour lancer la synchronisation.</translation>
 <translation id="920643408853370361">Assurance voyage</translation>
 <translation id="9207861905230894330">Échec de l'ajout de l'article.</translation>
@@ -4455,6 +4467,7 @@ Informations supplémentaires :
 <translation id="937804173274050966"><ph name="BEGIN_BOLD" />Quelles sont les données utilisées<ph name="END_BOLD" /> : Vos thèmes d'annonces sont basés sur votre historique de navigation récent, qui liste les sites auxquels vous avez accédé dans Chrome sur cet appareil.</translation>
 <translation id="937885410143139026">Données envoyées à la console d'administration</translation>
 <translation id="939736085109172342">Nouveau dossier</translation>
+<translation id="940524522703752213">L'importation de vos fichiers dans <ph name="CLOUD_PROVIDER" /> commencera dans <ph name="MINUTES" /> minutes</translation>
 <translation id="944540589955480312">Utiliser les mots de passe et clés d'accès enregistrés dans votre compte Google</translation>
 <translation id="945646848072568856">Chrome empêche les sites d'utiliser des cookies tiers pour suivre votre activité lorsque vous naviguez.</translation>
 <translation id="945855313015696284">Vérifiez les informations ci-dessous et supprimez les cartes non valides</translation>

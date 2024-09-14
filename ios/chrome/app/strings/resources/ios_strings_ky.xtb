@@ -11,7 +11,6 @@
 <translation id="1035980983510608210">Бардык өтмөктөр жабылса, кадалган өтмөктөр да жабылат.</translation>
 <translation id="1036017604683756002">UPS</translation>
 <translation id="1036348656032585052">Өчүрүү</translation>
-<translation id="10379132160269599">Таблицанын торчосун көрсөтүү</translation>
 <translation id="1041322626941363065">Сырсөзүңүздү кимдир-бирөө билип алса, эскертүү жөнөтүлсүн</translation>
 <translation id="1044891598689252897">Сайттар кадимкидей иштейт</translation>
 <translation id="104491362976654916">Офлайн барак</translation>
@@ -31,6 +30,7 @@
 <translation id="1118569444314402022">Кайтып келишиңиз менен, <ph name="USER_NAME" /></translation>
 <translation id="1121850836842642159">Фото жана сүрөттөр</translation>
 <translation id="1125564390852150847">Жаңы өтмөк түзүү.</translation>
+<translation id="1126696498560056882">Ушул түзмөктөгү аккаунттарды тескөө</translation>
 <translation id="1126809382673880764">Кооптуу вебсайттардан, жүктөлүп алынган файлдардан жана кеңейтүүлөрдөн коргобойт. Gmail жана Издөө сыяктуу Google'дун башка кызматтарында мүмкүн болгондо Коопсуз серептөө иштетилет.</translation>
 <translation id="1142371195993008685"><ph name="FEATURE_NAME" /> каналындагы жаңылыктар тууралуу эскертмелерди өчүрүү</translation>
 <translation id="1147031633655575115"><ph name="USER" /> катары кирдиңиз</translation>
@@ -1010,7 +1010,6 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="594324569139756587">Үчүнчү тараптын cookie файлдары бөгөттөлгөн</translation>
 <translation id="5944869793365969636">QR кодду скандоо</translation>
 <translation id="5948291296578561264">Ушуну менен сүрөттөрдү галереяңызга сактоого мүмкүндүк берилет.</translation>
-<translation id="5953383789663007162">Аккаунттардын тизмесин түзөтүү</translation>
 <translation id="5954322191260787920">Кыстарманы түзөтүү</translation>
 <translation id="5956112131836209882">Өтмөктөр тобу өтмөгү. <ph name="NUMBER_OF_TABS_IN_GROUP" /> ичинен <ph name="TAB_INDEX_IN_GROUP" />.</translation>
 <translation id="595769230373966252"><ph name="SEARCH_PROVIDER" /> менен издөө</translation>

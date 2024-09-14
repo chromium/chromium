@@ -104,6 +104,7 @@
 <translation id="5400836586163650660">ગ્રે</translation>
 <translation id="5490235265819901748">ટૅબ ગ્રૂપ મોટું કરો</translation>
 <translation id="5494920125229734069">બધા પસંદ કરો</translation>
+<translation id="5549653163690032080">ટૅબના ગ્રૂપ <ph name="TITLE_OF_GROUP" /> માટે ટૅબના ગ્રૂપનું ક્રિયા મેનૂ ખોલો</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{<ph name="COLOR_NAME" /> રંગનું <ph name="TABS_COUNT_ONE" /> ટૅબ ધરાવતા ટૅબના ગ્રૂપને બંધ કરો.}one{<ph name="COLOR_NAME" /> રંગનું <ph name="TABS_COUNT_MANY" /> ટૅબ ધરાવતા ટૅબના ગ્રૂપને બંધ કરો.}other{<ph name="COLOR_NAME" /> રંગના <ph name="TABS_COUNT_MANY" /> ટૅબ ધરાવતા ટૅબના ગ્રૂપને બંધ કરો.}}</translation>
 <translation id="5556417849629758491">સ્ટોરની માહિતી જુઓ, વિકલ્પ સ્ક્રીનની ટોચની નજીક ઉપલબ્ધ છે</translation>
 <translation id="5627941783489838464">ટૅબ સંબંધી કોઈ અપડેટ નથી</translation>
@@ -135,6 +136,7 @@
 <translation id="6694634756612002311">શેરિંગ સુવિધા મેનેજ કરો</translation>
 <translation id="6744956528665271406">ગ્રૂપના રંગમાં ફેરફાર કરો</translation>
 <translation id="6856809498882026482">એક કરતાં વધુ પસંદગી કરવાનો મોડ છુપાવો</translation>
+<translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ટૅબ ધરાવતા, <ph name="COLOR_NAME" /> રંગના, શેર કરેલા <ph name="TITLE_OF_GROUP" /> ટૅબના ગ્રૂપને મોટું કરો.}one{<ph name="TABS_COUNT_MANY" /> ટૅબ ધરાવતા, <ph name="COLOR_NAME" /> રંગના, શેર કરેલા <ph name="TITLE_OF_GROUP" /> ટૅબના ગ્રૂપને મોટું કરો.}other{<ph name="TABS_COUNT_MANY" /> ટૅબ ધરાવતા, <ph name="COLOR_NAME" /> રંગના, શેર કરેલા <ph name="TITLE_OF_GROUP" /> ટૅબના ગ્રૂપને મોટું કરો.}}</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{ટૅબ શેર કરો}one{ટૅબ શેર કરો}other{ટૅબ શેર કરો}}</translation>
 <translation id="7129458170538955174">આ સ્ટોર વિશેની માહિતી અડધી સ્ક્રીન પર ખુલી છે</translation>
 <translation id="7200189319044305940">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ટૅબ ધરાવતા <ph name="TITLE_OF_GROUP" /> ગ્રૂપ બંધ કરો.}one{<ph name="TABS_COUNT_MANY" /> ટૅબ ધરાવતા <ph name="TITLE_OF_GROUP" /> ગ્રૂપ બંધ કરો.}other{<ph name="TABS_COUNT_MANY" /> ટૅબ ધરાવતા <ph name="TITLE_OF_GROUP" /> ગ્રૂપ બંધ કરો.}}</translation>
@@ -170,6 +172,7 @@
 <translation id="8205266828577616993">ટૅબ ઉપર ખસેડો</translation>
 <translation id="8261506727792406068">ડિલીટ કરો</translation>
 <translation id="8338427544764842461">તમારા ટૅબના ગ્રૂપ અહીં સાચવવામાં આવે છે અને તમારા સાઇન ઇન કરેલા બધા ડિવાઇસ પર અપડેટ કરવામાં આવે છે</translation>
+<translation id="8344020191144794051">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ટૅબ ધરાવતા, <ph name="COLOR_NAME" /> રંગના ટૅબના ગ્રૂપને મોટું કરો.}one{<ph name="TABS_COUNT_MANY" /> ટૅબ ધરાવતા, <ph name="COLOR_NAME" /> રંગના ટૅબના ગ્રૂપને મોટું કરો.}other{<ph name="TABS_COUNT_MANY" /> ટૅબ ધરાવતા, <ph name="COLOR_NAME" /> રંગના ટૅબના ગ્રૂપને મોટું કરો.}}</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{પસંદ કરેલા <ph name="TABS_COUNT_ONE" /> ટૅબને બંધ કરો}one{પસંદ કરેલા <ph name="TABS_COUNT_MANY" /> ટૅબને બંધ કરો}other{પસંદ કરેલા <ph name="TABS_COUNT_MANY" /> ટૅબને બંધ કરો}}</translation>
 <translation id="8398929769197326728">નવું ફોલ્ડર - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">સેટિંગ</translation>

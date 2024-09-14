@@ -350,6 +350,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="2653659639078652383">Dërgoje</translation>
 <translation id="2656405586795711023">Aplikacionet e uebit</translation>
 <translation id="2664252182805397291">Shiko sajtet</translation>
+<translation id="2666092431469916601">I sipërm</translation>
 <translation id="2669454659051515572">Çdo person që e përdor këtë pajisje mund t'i shikojë skedarët e shkarkuar</translation>
 <translation id="2702516483241149200">E re: Ndaj një lidhje që të drejton te ky tekst</translation>
 <translation id="2705073298859543115">Krijo përmbledhjen</translation>
@@ -451,6 +452,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="3072980200212375806"><ph name="APP_NAME" /> do të hapet në Chrome. Duke vazhduar, ti pranon <ph name="BEGIN_LINK1" />"Kushtet e shërbimit" të Google<ph name="END_LINK1" /> dhe <ph name="BEGIN_LINK2" />"Kushtet shtesë të shërbimit" të Google Chrome dhe të ChromeOS<ph name="END_LINK2" />. Zbatohet gjithashtu <ph name="BEGIN_LINK3" />Politika e privatësisë<ph name="END_LINK3" />.</translation>
 <translation id="3080525922482950719">Mund t'i ruash faqet për t'i lexuar më vonë ose offline</translation>
 <translation id="3087218211037573995">Disa fjalëkalime të ruajtura vetëm në këtë pajisje nuk do të funksionojnë më së shpejti. Mund t'i zhvendosësh këto fjalëkalime te "Menaxheri i fjalëkalimeve i Google".</translation>
+<translation id="3087734570205094154">Në fund</translation>
 <translation id="3091010850649238832">Shfaq përmbajtjet e kujtesës së fragmenteve</translation>
 <translation id="3098745985164956033">Disa imazhet i dërgohen Google për të përmirësuar përshkrimet për ty</translation>
 <translation id="3114507951000454849">Lexo lajmet e sotme <ph name="NEWS_ICON" /></translation>
@@ -688,7 +690,6 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="4355272626458588338">Mund të kthehesh te një faqe që është e rëndësishme për ty duke shtuar një faqeshënues</translation>
 <translation id="4357206670025518404">+<ph name="COUNT_NUMBER" /></translation>
 <translation id="4359809482106103048">Siguria shkurtimisht</translation>
-<translation id="4363222835916186793">Sinjalizimet për këtë produkt janë çaktivizuar</translation>
 <translation id="4378154925671717803">Telefoni</translation>
 <translation id="4380055775103003110">Nëse ky problem vazhdon të ndodhë, mund të provosh mënyra të tjera për të vazhduar në <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="4384468725000734951">Po përdor Sogou për kërkimin</translation>
@@ -749,6 +750,7 @@ Llogaria jote e Google mund të ketë forma të tjera të historikut të shfleti
 <translation id="4624065194742029982">Modaliteti "i fshehtë" i Chrome</translation>
 <translation id="4634124774493850572">Përdor fjalëkalimin</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 fjalëkalim i komprometuar}other{# fjalëkalime të komprometuara}}</translation>
+<translation id="4642472735733036929">Monitorimi i çmimeve ndaloi</translation>
 <translation id="4645146721047390964">Në modalitetin "e fshehtë", sajtet nuk mund t'i përdorin kukit e tua për të parë aktivitetin e shfletimit nëpër sajte të ndryshme, p.sh. për të personalizuar reklamat. Veçoritë në disa sajte mund të ndalojnë së funksionuari.</translation>
 <translation id="4650364565596261010">Parazgjedhja e sistemit</translation>
 <translation id="465657074423018424">"Shfletimi i sigurt" të mbron kundër sajteve mashtruese. Nëse e çaktivizon, ki shumë kujdes kur shfleton, sidomos përpara se të futësh fjalëkalime.</translation>
@@ -1092,6 +1094,7 @@ Llogaria jote e Google mund të ketë forma të tjera të historikut të shfleti
 <translation id="6210748933810148297">Nuk je <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Po shikon paraprakisht këtë faqe</translation>
 <translation id="6221633008163990886">Shkyç për të eksportuar fjalëkalimet e tua</translation>
+<translation id="6225572914528673855">Shiriti i adresave</translation>
 <translation id="6232535412751077445">Aktivizimi i veçorisë "Mos gjurmo" do të thotë se në trafikun e shfletimit do të përfshihet një kërkesë. Çdo efekt varet nëse një uebsajt i përgjigjet kërkesës dhe se si interpretohet kërkesa.
 
 Për shembull, disa uebsajte mund t'i përgjigjen kësaj kërkese duke të treguar reklama që nuk bazohen në uebsajtet e tjera që ke vizituar. Shumë uebsajte do të mbledhin dhe do të përdorin përsëri të dhënat e tua të shfletimit - për shembull, për të përmirësuar sigurinë, për të ofruar përmbajtje, reklama dhe rekomandime, si dhe për të krijuar statistika raportimi.</translation>

@@ -712,6 +712,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2265356434276802347">Käytännössä voi olla korkeintaan <ph name="MAX_ITEMS_LIMIT" /> suositeltua hakupalvelua.</translation>
 <translation id="2267047181501709434">Henkilöllisyyttäsi vahvistetaan…</translation>
 <translation id="2268044343513325586">Tarkenna</translation>
+<translation id="2268966938956566076">Lataa <ph name="MINUTES" /> minuutin kuluttua</translation>
 <translation id="2270484714375784793">Puhelinnumero</translation>
 <translation id="2276057643614339130">Tulostusalusta</translation>
 <translation id="2277103315734023688">Kelaa eteenpäin</translation>
@@ -1110,6 +1111,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="3062655045399308513">Poista selausdata…</translation>
 <translation id="306573536155379004">Peli aloitettu</translation>
 <translation id="3067505415088964188">Hinta on alhainen</translation>
+<translation id="3068118691172921711">Tiedostojen lataus (<ph name="CLOUD_PROVIDER" />) alkaa minuutin kuluttua</translation>
 <translation id="3076865167425975822">Käyttöjärjestelmät</translation>
 <translation id="3080254622891793721">Graafinen</translation>
 <translation id="3082007635241601060">Salli Googlelle pääsy ostoskoreihisi, jotta se voi löytää sinulle personoituja alennuksia</translation>
@@ -1121,6 +1123,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="3099619114405539473">Käyttää käytettävissä olevia kameroita (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="3102312643185441063">Säästötili</translation>
 <translation id="3103188521861412364">Osakkeet ja joukkolainat</translation>
+<translation id="3103535543639438037">Vertaa samankaltaisia tuotteita rinnakkain</translation>
 <translation id="3105172416063519923">Laitteen tunnus:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />Tarkista suojatun DNS:n määritykset<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Keskilokero</translation>
@@ -1299,6 +1302,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="3407789382767355356">kolmannen osapuolen sisäänkirjautuminen</translation>
 <translation id="340924996148642843">Vertailu ei ole juuri nyt käytettävissä.</translation>
 <translation id="3409896703495473338">Muuta tietoturva-asetuksia</translation>
+<translation id="3411091017011773343">Lataa <ph name="HOURS" /> tunnin kuluttua</translation>
 <translation id="3414275587143250384">Jaettu tietojenkäsittely ja pilvipalvelut</translation>
 <translation id="3414952576877147120">Koko:</translation>
 <translation id="341513675006332771">Pelaa Chromen Dino peliä ‑painike, aktivoi pelataksesi Dino Run ‑peliä Chromessa</translation>
@@ -1894,7 +1898,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="4451135742916150903">Saa pyytää lupaa yhdistää HID-laitteisiin</translation>
 <translation id="4451684391620232683">Käyttäjälle näkyvä teksti:</translation>
 <translation id="4452328064229197696">Juuri käyttämäsi salasana löytyi tietosuojaloukkauksesta. Tiliesi suojaamiseksi Googlen Salasanojen ylläpito suosittelee, että tarkistat tallennetut salasanasi.</translation>
-<translation id="4452957520362597816">Pyytää lupaa asentaa verkkosovelluksia</translation>
 <translation id="4456937135469235202">Seikkailumatkat</translation>
 <translation id="4464826014807964867">Verkkosivustot, joilla on tietoa organisaatiostasi</translation>
 <translation id="4466576951214254884">Opintolaina ja opintojen rahoittaminen</translation>
@@ -1966,6 +1969,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="4628678854894591460">Pakettimatkat</translation>
 <translation id="4628948037717959914">Kuva</translation>
 <translation id="4629370161347991046">A4 x 6</translation>
+<translation id="462989688138616749">Tiedostojen lataus (<ph name="CLOUD_PROVIDER" />) alkaa <ph name="HOURS" /> tunnin kuluttua</translation>
 <translation id="4631649115723685955">Hyvitystarjous linkitetty</translation>
 <translation id="4631881646528206880">Virtuaalikortin rekisteröinti</translation>
 <translation id="4635278307999235413">Dataa lähetetään hallintakonsoliin</translation>
@@ -2086,6 +2090,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="484988093836683706">Käytä laitteen lukituksen avaustapaa</translation>
 <translation id="4850886885716139402">Näytä</translation>
 <translation id="4854853140771946034">Luo uusi muistiinpano nopeasti Google Keepissa</translation>
+<translation id="4855395119669662878"><ph name="DATE_TIME" /> järjestelmänvalvojasi aloittaa tiedostojen lataamisen tänne: <ph name="CLOUD_PROVIDER" />. Pidä laite yhteydessä, kunnes tiedostojen lataus on valmis. Latauksen aikana voit vain lukea paikallisia tiedostoja.</translation>
 <translation id="485902285759009870">Vahvistetaan koodia…</translation>
 <translation id="4860260582253463350">Meidän on vahvistettava henkilöllisyytesi, jotta voit jatkaa YouTubeen. Saat käyttöösi asetukset, jotka vanhempasi tai huoltajasi on määrittänyt Family Linkissä.</translation>
 <translation id="4864406669374375262">Versiomerkkijono kopioitu leikepöydälle</translation>
@@ -2141,6 +2146,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="4933468175699107356">Täytä automaattisesti tallennetut tiedot (esim. nimesi ja osoitteesi) mihin tahansa lomakkeeseen kakkospainikkeella</translation>
 <translation id="4934780484581617878">Ikkunoiden hallinnointi</translation>
 <translation id="4936134414789135531">Lisättyä arvoa (<ph name="VALUE_NAME" />) ei löytynyt.</translation>
+<translation id="4936573216809994970">Tiedostojen lataus (<ph name="CLOUD_PROVIDER" />) alkaa tunnin kuluttua</translation>
 <translation id="4936675324097895694">Talous</translation>
 <translation id="4943620199112228840">Käyttää mikrofoniasi</translation>
 <translation id="4943872375798546930">Ei tuloksia</translation>
@@ -2314,6 +2320,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="5269225904387178860">Neljä reikää alareunassa</translation>
 <translation id="5271381225185906340">"<ph name="DATA_CONTROLS_ATTRIBUTE" />" ei ole tuettu ehto tälle: "<ph name="DATA_CONTROLS_RESTRICTION" />"</translation>
 <translation id="5273658854610202413">Varoitus: tätä käytäntöä ei yhdistetty PolicyDictionaryMultipleSourceMergeList-käytännössä kuvatulla tavalla, sillä se ei kuulu yhdistettävissä oleviin sanakirjakäytäntöihin.</translation>
+<translation id="5278778426231952189">Lataa nyt</translation>
 <translation id="5279286380302340275">Tarkista lataukset</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">Asiakirjan ominaisuudet</translation>
@@ -3817,6 +3824,7 @@ Lisätietoja:
 <translation id="8030729864112325446">Ammatti‑ ja jatkokoulutus</translation>
 <translation id="8032546467100845887">Läpinäkyvyys</translation>
 <translation id="8035152190676905274">Kynä</translation>
+<translation id="8035264638816032066">Taulukkoon lisäämiesi sivujen välilehtien nimet ja URL-osoitteet lähetetään Googlelle</translation>
 <translation id="8037117624646282037">Kuka on käyttänyt laitetta äskettäin</translation>
 <translation id="8037357227543935929">Kysy (oletus)</translation>
 <translation id="803771048473350947">Tiedosto</translation>
@@ -4117,6 +4125,7 @@ Lisätietoja:
 <translation id="8564466070529550495">Virtuaalinen kortti ei ole juuri nyt käytettävissä, yritä myöhemmin uudelleen.</translation>
 <translation id="8564985650692024650">Chromium suosittelee organisaation <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> salasanasi vaihtamista, jos olet käyttänyt sitä myös muilla sivustoilla.</translation>
 <translation id="8570895683659698018">Harrastukset ja vapaa-aika</translation>
+<translation id="8572792595597115856">Voimassa <ph name="DATE" /> asti</translation>
 <translation id="8574841453995331336">Jääkaapit ja pakastimet</translation>
 <translation id="8577192028579836704">Kaikki vaihtoehdot yleensä <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">Virtuaalinen kortti ei käytettävissä</translation>
@@ -4139,6 +4148,7 @@ Lisätietoja:
 <translation id="8617269623452051934">laitteesi käyttö</translation>
 <translation id="861775596732816396">Koko 4</translation>
 <translation id="8620276786115098679">Kirjekuori Kaku 7</translation>
+<translation id="8622864575115813231">Otetaan yhteyttä rahoituslaitokseen…</translation>
 <translation id="8623885649813806493">Ei salasanaosumia. Näytä kaikki tallennetut salasanat.</translation>
 <translation id="8624354461147303341">Hyödynnä alennukset</translation>
 <translation id="8634957317623797170">54 x 86 mm</translation>
@@ -4438,6 +4448,7 @@ Lisätietoja:
 <translation id="9192361865877479444">Metalli (matta)</translation>
 <translation id="9192947025498305328">Puhdasta kauneutta</translation>
 <translation id="9199905725844810519">Tulostus on estetty</translation>
+<translation id="9204089334327209740">Kun lataus on valmis, voit muokata tiedostoja täällä: <ph name="CLOUD_PROVIDER" />. Paikallisen tallennustilan sisältö, myös roskakorissa olevat tiedostot, poistetaan automaattisesti.</translation>
 <translation id="9205078245616868884">Tietosi on salattu synkronoinnin tunnuslauseesi avulla. Aloita synkronointi antamalla tunnuslause.</translation>
 <translation id="920643408853370361">Matkavakuutukset</translation>
 <translation id="9207861905230894330">Artikkelin lisääminen epäonnistui.</translation>
@@ -4458,6 +4469,7 @@ Lisätietoja:
 <translation id="937804173274050966"><ph name="BEGIN_BOLD" />Mitä dataa käytetään:<ph name="END_BOLD" /> Mainosaiheet perustuvat viimeaikaiseen selaushistoriaasi, luetteloon sivustoista, joilla olet käynyt Chromella tällä laitteella.</translation>
 <translation id="937885410143139026">Data lähetetty hallintakonsoliin</translation>
 <translation id="939736085109172342">Uusi kansio</translation>
+<translation id="940524522703752213">Tiedostojen lataus (<ph name="CLOUD_PROVIDER" />) alkaa <ph name="MINUTES" /> minuutin kuluttua</translation>
 <translation id="944540589955480312">Käytä Google-tilillesi tallennettuja salasanoja ja avainkoodeja</translation>
 <translation id="945646848072568856">Chrome estää sivustoja seuraamasta sinua kolmansien osapuolten evästeiden avulla selaamisen aikana.</translation>
 <translation id="945855313015696284">Tarkista tiedot alta ja poista virheelliset kortit.</translation>

@@ -1015,6 +1015,7 @@
 <translation id="2882949212241984732">Îndoire tip fereastră dublă</translation>
 <translation id="2891963978019740012">Motorul tău de căutare în Chrome</translation>
 <translation id="2893773853358652045">A patra rolă</translation>
+<translation id="2894137550885451583">Acestea sunt prețurile în <ph name="CURRENCY" /> pentru produsul <ph name="PRODUCT" /></translation>
 <translation id="2900528713135656174">Creează un eveniment</translation>
 <translation id="2902312830803030883">Mai multe acțiuni</translation>
 <translation id="2903493209154104877">Adrese</translation>
@@ -1612,6 +1613,7 @@
 <translation id="3949601375789751990">Istoricul de navigare apare aici</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">Nicio metodă de plată salvată</translation>
+<translation id="3950560191811267370">Foaia din partea de jos pentru comerț închisă</translation>
 <translation id="3950574001630941635">Repornește tutorialul</translation>
 <translation id="3950820424414687140">Conectează-te</translation>
 <translation id="3953505489397572035">Acest preț este standard</translation>
@@ -1897,7 +1899,6 @@
 <translation id="4451135742916150903">Poate solicita permisiunea de a se conecta la dispozitive HID</translation>
 <translation id="4451684391620232683">Text prezentat utilizatorului:</translation>
 <translation id="4452328064229197696">Parola pe care tocmai ai folosit-o a fost găsită într-o încălcare a securității datelor. Pentru a-ți proteja conturile, Managerul de parole Google îți recomandă să verifici parolele salvate.</translation>
-<translation id="4452957520362597816">Solicită instalarea aplicațiilor web</translation>
 <translation id="4456937135469235202">Călătorii de aventuri</translation>
 <translation id="4464826014807964867">Site-uri cu informații de la organizația ta</translation>
 <translation id="4466576951214254884">Credite pentru studenți și finanțare pentru studii universitare</translation>
@@ -2354,6 +2355,7 @@
 <translation id="5331585574693522196">Setează ca prestabilit</translation>
 <translation id="5332219387342487447">Metoda de expediere</translation>
 <translation id="5332769172018416402">Solicită într-un mesaj</translation>
+<translation id="533323551986281710">Foaia din partea de jos pentru comerț deschisă la înălțimea completă</translation>
 <translation id="5334013548165032829">Jurnale de sistem detaliate</translation>
 <translation id="5334145288572353250">Salvezi adresa?</translation>
 <translation id="5340250774223869109">Aplicația a fost blocată</translation>
@@ -2536,6 +2538,7 @@
 <translation id="5675650730144413517">Pagina nu funcționează</translation>
 <translation id="5675809467256309336">Muzică dance și electronică</translation>
 <translation id="5675959228867414813">Afișează în funcție de dată</translation>
+<translation id="567604591393105935">Foaia din partea de jos pentru comerț deschisă la jumătate din înălțime</translation>
 <translation id="5677928146339483299">Blocat</translation>
 <translation id="5678007133659493065">Folie</translation>
 <translation id="5680642791693447368">Thrillere, filme polițiste și de mister</translation>
@@ -3443,6 +3446,7 @@ Detalii suplimentare:
 <translation id="7374733840632556089">Această problemă apare din cauza unui certificat pe care tu sau altcineva l-ați instalat pe dispozitiv. Certificatul este folosit pentru a monitoriza și a intercepta rețelele, nefiind autorizat de Chrome. Deși există cazuri legitime pentru monitorizare, de exemplu, într-o rețea de la școală sau de la serviciu, Chrome vrea să se asigure că știi ce se întâmplă, chiar dacă nu poți opri acest lucru. Monitorizarea se poate face în orice browser sau aplicație care intră pe web.</translation>
 <translation id="7375532151824574023">{NUM_COOKIES,plural, =0{Niciun site permis}=1{Un site permis}few{# site-uri permise}other{# de site-uri permise}}</translation>
 <translation id="7375818412732305729">Fișierul este atașat</translation>
+<translation id="7376031331622621328">Foaia din partea de jos pentru comerț</translation>
 <translation id="7377249249140280793"><ph name="RELATIVE_DATE" /> - <ph name="FULL_DATE" /></translation>
 <translation id="7377314930809374926">Industria ospitalității</translation>
 <translation id="7378594059915113390">Comenzi media</translation>

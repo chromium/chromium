@@ -153,6 +153,7 @@
 <translation id="1672499492233627739">ဝဘ်ကမ်ဗီဒီယို ဖိဒ်</translation>
 <translation id="1676557873873341166">ဗီဒီယိုရိုက်နေသည်</translation>
 <translation id="1684279041537802716">အားဖြည့် အရောင်</translation>
+<translation id="1697278726914783200">မှတ်တမ်းတင်ရန်</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS Resolver ရှိသည်</translation>
 <translation id="1708602061922134366">Google ပြာ</translation>
@@ -703,6 +704,7 @@
 <translation id="458794348635939462">ဆာဗာပင်ရင်းအားလုံးကို ဖြေရှင်း၍မရပါ</translation>
 <translation id="4593212453765072419">ပရောက်စီ အထောက်အထားစိစစ်ရန် လိုအပ်သည်</translation>
 <translation id="4594021849294327751">စာသားမှတ်တမ်း ပြုလုပ်ရန်</translation>
+<translation id="4602266091140407479">မိုက်</translation>
 <translation id="4607282946861182308">၎င်း၏ပုံများ ပြုလုပ်၍မရပါ။ အခြားတိုက်တွန်းချက်ဖြင့် စမ်းကြည့်ပါ။</translation>
 <translation id="4609350030397390689">ကီးဘုတ်တောက်ပမှု လျှော့ရန်</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />၊ <ph name="PRINTER_NAME" />၊ <ph name="CREATION_TIME" />၊ စာမျက်နှာ <ph name="TOTAL_PAGE_NUMBER" /> မျက်နှာအနက် <ph name="PRINTED_PAGE_NUMBER" /> မျက်နှာ။ ပရင့်ထုတ်ရန်ဖိုင် ပယ်ဖျက်ရန် enter နှိပ်ပါ။</translation>
@@ -1011,6 +1013,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6188737759358894319"><ph name="DATE" /> တွင် ပြုလုပ်ထားသည်</translation>
 <translation id="6189418609903030344">အသုံးပြုသည်နှင့်အမျှ ဘက်ထရီပမာဏ လျော့ကျသွားသည်</translation>
+<translation id="6189987971574353264">ဖွင့်ရန်</translation>
 <translation id="6191293864534840972">ပုံပျက်နေသော အမည်ဆာဗာများ</translation>
 <translation id="6196607555925437199">ပြန်ပြုလုပ်ရန်</translation>
 <translation id="6205145102504628069">တိမ် လွင့်မျောမှု</translation>
@@ -1642,8 +1645,6 @@
 <translation id="951780398843003443">ပြောသူ ပြောသည့်အရာနှင့် ပြောချိန်ကို စာသားမှတ်တမ်းတွင် ဖော်ပြနိုင်ရန် အသံဖိုင်တစ်လျှောက် အသံများကို နှိုင်းယှဉ်သည်</translation>
 <translation id="952992212772159698">ဖွင့်မသုံးရသေး</translation>
 <translation id="95718197892796296">ရွှံ့စေး</translation>
-<translation id="959792926760890141">လုံခြုံမှု ပြင်ဆင်သတ်မှတ်ခြင်းက Chrome ဘရောင်ဇာနောက်ဆက်တွဲများကို ပိတ်ပြီး ကွန်ရက်နှင့် အခြားဆက်တင်များကို မူလသိမ်းထားသည်များသို့ ပြင်ဆင်သတ်မှတ်သည်။
-          သင့်မူရင်းရှာဖွေရေးအင်ဂျင်ကို ပြင်ဆင်သတ်မှတ်မည်ဖြစ်သော်လည်း သင်၏ တဘ်၊ ဖိုင်၊ ကွတ်ကီးနှင့် မှတ်တမ်းတို့ကို ပြောင်းမည်မဟုတ်ပါ။</translation>
 <translation id="960719561871045870">မိုဘိုင်းဝန်ဆောင်မှုဌာန ကုဒ်</translation>
 <translation id="965918541715156800">အဝါနှင့် စိမ်းပြာရင့်</translation>
 <translation id="966787709310836684">မီနူး</translation>

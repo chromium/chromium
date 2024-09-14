@@ -11,7 +11,6 @@
 <translation id="1035980983510608210">Dacă închizi toate filele, se vor închide și filele fixate.</translation>
 <translation id="1036017604683756002">UPS</translation>
 <translation id="1036348656032585052">Dezactivează</translation>
-<translation id="10379132160269599">Afișează grila de file</translation>
 <translation id="1041322626941363065">Avertizează-mă dacă parolele au fost expuse în urma încălcării securității datelor</translation>
 <translation id="1044891598689252897">Site-urile vor funcționa normal</translation>
 <translation id="104491362976654916">Pagină offline</translation>
@@ -31,6 +30,7 @@
 <translation id="1118569444314402022">Bine ai revenit, <ph name="USER_NAME" /></translation>
 <translation id="1121850836842642159">Fotografii și imagini</translation>
 <translation id="1125564390852150847">Creează o filă nouă.</translation>
+<translation id="1126696498560056882">Gestionează conturile de pe acest dispozitiv</translation>
 <translation id="1126809382673880764">Nu te protejează împotriva site-urilor, descărcărilor și extensiilor periculoase. Te vei bucura în continuare de protecția oferită de Navigarea sigură, dacă este disponibilă, în alte servicii Google, cum ar fi Gmail și Căutarea.</translation>
 <translation id="1142371195993008685">Dezactivează notificările pentru <ph name="FEATURE_NAME" /></translation>
 <translation id="1147031633655575115">Te-ai conectat ca <ph name="USER" /></translation>
@@ -1010,7 +1010,6 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="594324569139756587">Blochează cookie-urile terță parte</translation>
 <translation id="5944869793365969636">Scanează codul QR</translation>
 <translation id="5948291296578561264">Astfel, poți să salvezi fotografiile în fototecă.</translation>
-<translation id="5953383789663007162">Editează lista de conturi</translation>
 <translation id="5954322191260787920">Modifică marcajul</translation>
 <translation id="5956112131836209882">Fila Grup de file. <ph name="TAB_INDEX_IN_GROUP" /> din <ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
 <translation id="595769230373966252">Caută cu <ph name="SEARCH_PROVIDER" /></translation>
@@ -1604,6 +1603,7 @@ Site-urile pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe
 <translation id="8637431369725868556">Protejează-te împotriva site-urilor periculoase.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Nicio parolă compromisă}=1{{COUNT} parolă compromisă}few{{COUNT} parole compromise}other{{COUNT} de parole compromise}}</translation>
 <translation id="8640575194957831802">Data ultimei deschideri</translation>
+<translation id="8647280737650867362">Nu s-a putut anula urmărirea prețului.</translation>
 <translation id="8654802032646794042">Anulează</translation>
 <translation id="8660600697590740984">Imaginea copiată din Lens</translation>
 <translation id="866266761389616183">Of, nu mai merge!</translation>

@@ -1015,6 +1015,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="2882949212241984732">Dvojitá obojstranná fazóna</translation>
 <translation id="2891963978019740012">Váš vyhľadávač v Chrome</translation>
 <translation id="2893773853358652045">Štvrtý kotúč</translation>
+<translation id="2894137550885451583">Toto sú ceny v mene <ph name="CURRENCY" /> za výrobok <ph name="PRODUCT" /></translation>
 <translation id="2900528713135656174">Vytvorte udalosť</translation>
 <translation id="2902312830803030883">Ďalšie akcie</translation>
 <translation id="2903493209154104877">Adresy</translation>
@@ -1608,6 +1609,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="3949601375789751990">Tu sa zobrazí vaša história prehliadania</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">Žiadne uložené spôsoby platby</translation>
+<translation id="3950560191811267370">Dolný hárok obchodu je zavretý</translation>
 <translation id="3950574001630941635">Reštartovať návod</translation>
 <translation id="3950820424414687140">Prihlásiť sa</translation>
 <translation id="3953505489397572035">Táto cena je bežná</translation>
@@ -1893,7 +1895,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="4451135742916150903">Môže žiadať o povolenie pripájať sa k zariadeniam HID</translation>
 <translation id="4451684391620232683">Text prezentovaný používateľovi:</translation>
 <translation id="4452328064229197696">Heslo, ktoré ste práve použili, bolo nájdené v zozname hesiel odhalených pri porušení ochrany údajov. Ak chcete svoje účty zabezpečiť, správca hesiel od Googlu odporúča skontrolovať uložené heslá.</translation>
-<translation id="4452957520362597816">Žiadať o inštaláciu webových aplikácií</translation>
 <translation id="4456937135469235202">Dobrodružné cesty</translation>
 <translation id="4464826014807964867">Weby s informáciami od vašej organizácie</translation>
 <translation id="4466576951214254884">Študentské pôžičky a financovanie vyššieho vzdelania</translation>
@@ -2350,6 +2351,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="5331585574693522196">Nastaviť ako predvolený</translation>
 <translation id="5332219387342487447">Spôsob dodania</translation>
 <translation id="5332769172018416402">Požiadať správou</translation>
+<translation id="533323551986281710">Dolný hárok obchodu je otvorený na celú výšku</translation>
 <translation id="5334013548165032829">Podrobné denníky systému</translation>
 <translation id="5334145288572353250">Chcete adresu uložiť?</translation>
 <translation id="5340250774223869109">Aplikácia je blokovaná</translation>
@@ -2532,6 +2534,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="5675650730144413517">Táto stránka nefunguje</translation>
 <translation id="5675809467256309336">Tanečná a elektronická hudba</translation>
 <translation id="5675959228867414813">Zobrazovať podľa dátumu</translation>
+<translation id="567604591393105935">Dolný hárok obchodu je otvorený na polovičnú výšku</translation>
 <translation id="5677928146339483299">Blokované</translation>
 <translation id="5678007133659493065">Fólia</translation>
 <translation id="5680642791693447368">Trilery, kriminálky a mysteriózne filmy</translation>
@@ -3438,6 +3441,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="7374733840632556089">Tento problém je spôsobený certifikátom, ktorý bol v zariadení nainštalovaný vami alebo niekým iným. O tomto certifikáte je známe, že sa pomocou neho sledujú a narúšajú siete. Chrome mu nedôveruje. Niekedy existujú legitímne prípady sledovania, napríklad v školskej alebo firemnej sieti. Chrome sa však chce uistiť, či viete, že k tomu dochádza (aj keď to nemôžete zastaviť). Sledovanie môže prebiehať v ktoromkoľvek prehliadači alebo aplikácii s prístupom na internet.</translation>
 <translation id="7375532151824574023">{NUM_COOKIES,plural, =0{Nie sú povolené žiadne weby}=1{1 povolený web}few{# povolené weby}many{# sites allowed}other{# povolených webov}}</translation>
 <translation id="7375818412732305729">Priloženie súboru</translation>
+<translation id="7376031331622621328">Dolný hárok obchodu</translation>
 <translation id="7377249249140280793"><ph name="RELATIVE_DATE" /> – <ph name="FULL_DATE" /></translation>
 <translation id="7377314930809374926">Pohostinský priemysel</translation>
 <translation id="7378594059915113390">Ovládanie médií</translation>

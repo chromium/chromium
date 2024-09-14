@@ -118,7 +118,6 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="1346748346194534595">Eskuinera</translation>
 <translation id="1350494136075914725">Abian · Aldatu fitxara</translation>
 <translation id="1351937230027495976">Tolestu menua</translation>
-<translation id="1352537790882153971">Entzungailu kabledunak darabiltzazunean, zeure mikrofonoaren soinua entzun dezakezu. Geldiarazteko, itxi panela.</translation>
 <translation id="1360220746312242196">Orri batean bilaketa bat egitean, joan bilaketaren aurreko emaitzara</translation>
 <translation id="1360788414852622716">Profila desgaitzen. Agian minutu batzuk beharko dira.</translation>
 <translation id="1364382257761975320">Chromebook-a desblokeatzeko, erabili hatz-marka</translation>
@@ -374,6 +373,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="2359808026110333948">Egin aurrera</translation>
 <translation id="2360398059912971776">bateria</translation>
 <translation id="2361210043495191221">Aktibatu/Desaktibatu wifia. <ph name="STATE" />.</translation>
+<translation id="2364710166605611987">Itxuraren efektuak</translation>
 <translation id="236574664504281623"><ph name="SESSION_NAME" /> gailutik bidalita</translation>
 <translation id="2367186422933365202">Ezin da hasi saioa Chromebook-ean</translation>
 <translation id="2367972762794486313">Erakutsi aplikazioak</translation>
@@ -396,7 +396,6 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="2426051945783024481">Erdiratu da automatikoki kamerako markoa</translation>
 <translation id="2427507373259914951">Egin klik ezkerreko botoiarekin</translation>
 <translation id="2429753432712299108">Bluetooth bidezko "<ph name="DEVICE_NAME" />" gailuak parekatzeko baimena nahi du. Onartu aurretik, berretsi gailu horretan pasakode hau agertzen dela: <ph name="PASSKEY" /></translation>
-<translation id="2430444791038754658">Agortu da denbora. Primeran ari zara!</translation>
 <translation id="2435457462613246316">Erakutsi pasahitza</translation>
 <translation id="2437771564543046790">Bateria agortzen ari da. Bateria-aurreztailea aktibatuta dago.</translation>
 <translation id="243878895369688216">Atzo ireki zen</translation>
@@ -734,6 +733,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="3600061223661453002">Desaktibatu</translation>
 <translation id="3604801046548457007"><ph name="DESK_TITILE" /> lan-eremua sortu da</translation>
 <translation id="3606978283550408104">Braille-pantaila konektatu da.</translation>
+<translation id="3612634595000403645">Itxuraren efektuen hobespenak</translation>
 <translation id="3615926715408477684">Datu-konexioa aktibatzen baduzu, Bluetootha ere aktibatuko da</translation>
 <translation id="3616113530831147358">Audioa</translation>
 <translation id="3616883743181209306">Pantailaren goiko eskuineko izkinara eraman da menua.</translation>
@@ -775,7 +775,6 @@ Konektatu gailua korrontera.</translation>
 <translation id="3706423975342040244">Aisia</translation>
 <translation id="3707093869106077605"><ph name="UNAVAILABLE_DLC_ONE" /> eta <ph name="UNAVAILABLE_DLC_TWO" /> ez daude erabilgarri.</translation>
 <translation id="3708186454126126312">Aurretik konektatutakoak</translation>
-<translation id="3711282657843423160">Amaitu duzu. Eutsi hor!</translation>
 <translation id="3712143870407382523">Aukeratu alde honetarako leiho bat</translation>
 <translation id="371370241367527062">Aurreko mikrofonoa</translation>
 <translation id="3713734891607377840">Deskarga amaitzen denean irekiko da</translation>
@@ -846,7 +845,6 @@ Aurrera egiteko, erabiltzaile guztiek saioa amaitu behar dute.</translation>
 <translation id="397105322502079400">Kalkulatzen…</translation>
 <translation id="397726367135689299">Baliteke bateriaren kargari buruzko informazioa fidagarria ez izatea.</translation>
 <translation id="3977512764614765090">% <ph name="PERCENTAGE" /> geratzen zaio bateriari, eta kargatzen ari da.</translation>
-<translation id="397808938113646171">Agortu da denbora. Bikain aritu zara!</translation>
 <translation id="3982013579989864579">Audio-irteera aldatu nahi duzu?</translation>
 <translation id="3984536049089846927">Hurrengo orria</translation>
 <translation id="3986082989454912832">Erantzun</translation>
@@ -895,6 +893,7 @@ Aurrera egiteko, erabiltzaile guztiek saioa amaitu behar dute.</translation>
 <translation id="4146671046252289537">Joan hurrengo hitzaren amaierara</translation>
 <translation id="4146833061457621061">Erreproduzitu musika</translation>
 <translation id="4150201353443180367">Bistaratzea</translation>
+<translation id="4151054805501931758">Erretratu-ukituak</translation>
 <translation id="4156293514828496577">Bateriari % <ph name="PERCENTAGE" /> geratzen zaio (<ph name="TIME_LEFT" /> inguru).
 Bateriaren iraupena luzatzeko, eginbide batzuk mugatu dira.</translation>
 <translation id="4160919062868802509">Audio-sarrera bat baino gehiago hauteman dira</translation>
@@ -1001,7 +1000,6 @@ Bateriaren iraupena luzatzeko, eginbide batzuk mugatu dira.</translation>
 <translation id="4477751544736611934">Baliteke datu-konexioari dagozkion kostuak ordaindu behar izatea.
 Gailu bat dago konektatuta.</translation>
 <translation id="4477892968187500306">Baliteke Google-k egiaztatu ez dituen aplikazioak egotea gailuan.</translation>
-<translation id="4479130137987693286">Behar baduzu, denbora pixka bat gehi dezakezu, edo kontzentratzeko saioa amaitu</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Desparekatutako gailuak</translation>
 <translation id="4485506555414638855">Baztertu telefonoko azkenaldiko argazkiak, multimedia-elementuak, jakinarazpenak eta aplikazioak ikusteko aukera konfiguratzeko prozesua</translation>
@@ -1054,7 +1052,6 @@ Gailu bat dago konektatuta.</translation>
 
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">Gaitu da ChromeVox</translation>
-<translation id="4665182893355091947">Amaitu duzu. Primeran!</translation>
 <translation id="4666911709726371538">Aplikazio gehiago</translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> deskargatzen</translation>
 <translation id="4672539464599646374">Aktibatu da Bateria-aurreztailea</translation>
@@ -1780,7 +1777,6 @@ Berriki instalatu da</translation>
 <translation id="7064351585062927183">Hurrengo <ph name="DAY_OF_WEEK" /></translation>
 <translation id="7066646422045619941">Administratzaileak desgaitu du sare hau.</translation>
 <translation id="7067196344162293536">Biratu automatikoki</translation>
-<translation id="7067569040620564762">Agortu da denbora. Dena eginda!</translation>
 <translation id="7068360136237591149">Ireki fitxategiak</translation>
 <translation id="7076293881109082629">Saioa hasten</translation>
 <translation id="7076878155205969899">Desaktibatu audioa</translation>
@@ -1815,7 +1811,6 @@ Berriki instalatu da</translation>
 <translation id="7189412385142492784">Zer distantziatara dago Artizarra</translation>
 <translation id="7198435252016571249">Atxiki egin da kamera beheko eskuinaldeko izkinan, sistemaren beste gainazal batean gainjartzen zelako.</translation>
 <translation id="7219573373513695352">Ez dago gailurik konektatuta</translation>
-<translation id="7226347284543965442">Agortu da denbora. Lortu duzu!</translation>
 <translation id="7229029500464092426">Memoria: <ph name="AVAILABLE_MEMORY" /> | <ph name="TOTAL_MEMORY" /> guztira</translation>
 <translation id="7244725679040769470">Bateriari % <ph name="PERCENTAGE" /> geratzen zaio. Konektatu gailua korrontera.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Chromebook hau berrabiarazi egin behar da eguneratzea aplikatzeko. Baliteke minutu bat behar izatea.</translation>
@@ -1972,6 +1967,7 @@ Itzaltzeko, eduki sakatuta berriro gailuaren etengailua.</translation>
 <translation id="7768784765476638775">Hautatu ozen irakurtzeko</translation>
 <translation id="7769299611924763557">GIFa laster egongo da prest</translation>
 <translation id="7773536009433685931">Horren ordez, aktibatu wifia</translation>
+<translation id="77747521138552256">PINa idazteko saiakera gehiegi egin dituzu. Itxaron <ph name="TIME_LEFT" /> eta idatzi PINa berriro. Bestela, idatzi pasahitza saioa berehala hasteko.</translation>
 <translation id="7780094051999721182">lasterbideak</translation>
 <translation id="7780159184141939021">Biratu pantaila</translation>
 <translation id="7781829728241885113">Atzo</translation>
@@ -2169,7 +2165,6 @@ Itzaltzeko, eduki sakatuta berriro gailuaren etengailua.</translation>
 <translation id="8443879455002739353">"Kopiatu"</translation>
 <translation id="8444246603146515890"><ph name="DESK_TITILE" /> lan-eremua aktibatu da</translation>
 <translation id="8446884382197647889">Lortu informazio gehiago</translation>
-<translation id="8452090802952003258">Entzun zeure mikrofonoaren soinua</translation>
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
 <translation id="8462305545768648477">Itxi Hautatu ozen irakurtzeko</translation>
 <translation id="8468806060683421065">epemuga: <ph name="DUE_DATE_AND_TIME" /></translation>
@@ -2231,7 +2226,6 @@ Itzaltzeko, eduki sakatuta berriro gailuaren etengailua.</translation>
 <translation id="8683506306463609433">Aktibo dago funtzionamenduaren jarraipena egiteko aukera</translation>
 <translation id="8703634754197148428">Hasi grabatzen. Grabatzen hasi ondoren, sakatu Alt + Maius + L apalera joateko; bertan ikusiko duzu grabaketa gelditzeko botoia.</translation>
 <translation id="8704155109538237473">Fokuratu pantaila txiki gainjarria</translation>
-<translation id="8708657523363087260">Gaitu/Desgaitu zeure mikrofonoa entzuteko aukera</translation>
 <translation id="870917907284186124">Aktibatu/Desaktibatu diktaketa (ahotsaren bidez idaztea)</translation>
 <translation id="8711169534266271368">Joko-panelaren aukerak</translation>
 <translation id="8712637175834984815">Ados</translation>

@@ -118,7 +118,6 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="1346748346194534595">V desno</translation>
 <translation id="1350494136075914725">Poteka · Preklop na zavihek</translation>
 <translation id="1351937230027495976">Strni meni</translation>
-<translation id="1352537790882153971">Zvok mikrofona lahko nadzirate prek žičnih slušalk. Zaprite podokno, če želite ustaviti.</translation>
 <translation id="1360220746312242196">Preklop na prejšnje ujemanje za iskanje pri iskanju na strani</translation>
 <translation id="1360788414852622716">Onemogočanje profila. To lahko traja nekaj minut.</translation>
 <translation id="1364382257761975320">Če želite odkleniti Chromebook, uporabite prstni odtis.</translation>
@@ -397,7 +396,6 @@ Povezanih je toliko naprav: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2426051945783024481">Okvir fotoaparata je samodejno na sredini.</translation>
 <translation id="2427507373259914951">Levi klik</translation>
 <translation id="2429753432712299108">Naprava Bluetooth »<ph name="DEVICE_NAME" />« želi dovoljenje za seznanjanje. Preden sprejmete, se prepričajte, da je na napravi prikazano to geslo: <ph name="PASSKEY" /></translation>
-<translation id="2430444791038754658">Čas je potekel. Odlično vam gre!</translation>
 <translation id="2435457462613246316">Pokaži geslo</translation>
 <translation id="2437771564543046790">Baterija je skoraj izpraznjena. Varčevanje z energijo baterije je vklopljeno.</translation>
 <translation id="243878895369688216">Odprto včeraj</translation>
@@ -777,7 +775,6 @@ Priklopite napravo v vir napajanja.</translation>
 <translation id="3706423975342040244">Razvedrilo</translation>
 <translation id="3707093869106077605"><ph name="UNAVAILABLE_DLC_ONE" /> in <ph name="UNAVAILABLE_DLC_TWO" /> nista na voljo.</translation>
 <translation id="3708186454126126312">Predhodno povezane naprave</translation>
-<translation id="3711282657843423160">Končano. Kar tako naprej!</translation>
 <translation id="3712143870407382523">Izberite okno za to stran</translation>
 <translation id="371370241367527062">Sprednji mikrofon</translation>
 <translation id="3713734891607377840">Odpri ob dokončanju</translation>
@@ -847,7 +844,6 @@ Priklopite napravo v vir napajanja.</translation>
 <translation id="397105322502079400">Izračunavanje …</translation>
 <translation id="397726367135689299">Polnjenje baterije je morda nezanesljivo.</translation>
 <translation id="3977512764614765090">Akumulator je <ph name="PERCENTAGE" />-% napolnjen in se polni.</translation>
-<translation id="397808938113646171">Čas je potekel. Odlično!</translation>
 <translation id="3982013579989864579">Želite preklopiti zvočni izhod?</translation>
 <translation id="3984536049089846927">Naslednja stran</translation>
 <translation id="3986082989454912832">Odgovor</translation>
@@ -1003,7 +999,6 @@ Nekatere funkcije so omejene za podaljšanje časa delovanja baterije.</translat
 <translation id="4477751544736611934">To lahko povzroči stroške prenosa podatkov.
 1 naprava je povezana.</translation>
 <translation id="4477892968187500306">Ta naprava morda vsebuje aplikacije, ki jih ni preveril Google.</translation>
-<translation id="4479130137987693286">Po potrebi lahko dodate še malo časa ali končate sejo osredotočenosti</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Naprave, za katere je bila preklicana seznanitev</translation>
 <translation id="4485506555414638855">Opustitev nastavitve ogleda nedavnih fotografij, predstavnosti, obvestil in aplikacij telefona</translation>
@@ -1056,7 +1051,6 @@ Nekatere funkcije so omejene za podaljšanje časa delovanja baterije.</translat
 
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">Omogočen je ChromeVox</translation>
-<translation id="4665182893355091947">Končano. Bravo!</translation>
 <translation id="4666911709726371538">Več aplikacij</translation>
 <translation id="4667099493359681081">Prenašanje datoteke <ph name="FILENAME" /></translation>
 <translation id="4672539464599646374">Varčevanje z energijo baterije je vklopljeno</translation>
@@ -1782,7 +1776,6 @@ Nova namestitev</translation>
 <translation id="7064351585062927183">Prihodnji/-a <ph name="DAY_OF_WEEK" /></translation>
 <translation id="7066646422045619941">To omrežje je onemogočil skrbnik.</translation>
 <translation id="7067196344162293536">Samodejno sukanje</translation>
-<translation id="7067569040620564762">Čas je potekel. Končano!</translation>
 <translation id="7068360136237591149">Odpri datoteke</translation>
 <translation id="7076293881109082629">Prijava</translation>
 <translation id="7076878155205969899">Izklop zvoka</translation>
@@ -1817,7 +1810,6 @@ Nova namestitev</translation>
 <translation id="7189412385142492784">Kako daleč je Venera</translation>
 <translation id="7198435252016571249">Fotoaparat je pripet v spodnji desni kot. To je v navzkrižju s sistemskim okoljem.</translation>
 <translation id="7219573373513695352">Nobena naprava ni povezana</translation>
-<translation id="7226347284543965442">Čas je potekel. Uspelo vam je!</translation>
 <translation id="7229029500464092426">Pomnilnik <ph name="AVAILABLE_MEMORY" /> | <ph name="TOTAL_MEMORY" /> (skupno)</translation>
 <translation id="7244725679040769470">Še približno <ph name="PERCENTAGE" /> % baterije. Priklopite napravo v vir napajanja.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Ta Chromebook je treba znova zagnati, če želite uveljaviti posodobitev. Traja lahko največ eno minuto.</translation>
@@ -2172,7 +2164,6 @@ Nova namestitev</translation>
 <translation id="8443879455002739353">»Kopiranje«</translation>
 <translation id="8444246603146515890">Namizje <ph name="DESK_TITILE" /> je bilo aktivirano</translation>
 <translation id="8446884382197647889">Več o tem</translation>
-<translation id="8452090802952003258">Poslušajte zvok mikrofona</translation>
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
 <translation id="8462305545768648477">Zapri »Izberite in poslušajte«</translation>
 <translation id="8468806060683421065">rok oddaje: <ph name="DUE_DATE_AND_TIME" /></translation>
@@ -2234,7 +2225,6 @@ Nova namestitev</translation>
 <translation id="8683506306463609433">Sledenje učinkovitosti delovanja je aktivno</translation>
 <translation id="8703634754197148428">Začetek snemanja. Ko se snemanje začne, pritisnite Alt + Shift + L, da se pomaknete na polico, in poiščite gumb za ustavitev snemanja.</translation>
 <translation id="8704155109538237473">Izbira okna s sliko v sliki</translation>
-<translation id="8708657523363087260">Preklop poslušanja lastnega govora</translation>
 <translation id="870917907284186124">Vklop/izklop nareka (vnašanje z glasom)</translation>
 <translation id="8711169534266271368">Možnosti nadzorne plošče igre</translation>
 <translation id="8712637175834984815">Razumem</translation>

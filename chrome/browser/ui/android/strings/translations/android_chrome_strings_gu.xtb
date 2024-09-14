@@ -350,6 +350,7 @@
 <translation id="2653659639078652383">સબમિટ કરો</translation>
 <translation id="2656405586795711023">વેબ ઍપ</translation>
 <translation id="2664252182805397291">સાઇટ જુઓ</translation>
+<translation id="2666092431469916601">ઉપર</translation>
 <translation id="2669454659051515572">આ ડિવાઇસનો ઉપયોગ કરનારી કોઈપણ વ્યક્તિ ડાઉનલોડ કરેલી ફાઇલો જોઈ શકે છે</translation>
 <translation id="2702516483241149200">નવું: આ ટેક્સ્ટ પર સ્ક્રોલ કરતી હોય એવી કોઈ લિંક શેર કરો</translation>
 <translation id="2705073298859543115">સારાંશ બનાવો</translation>
@@ -451,6 +452,7 @@
 <translation id="3072980200212375806"><ph name="APP_NAME" /> Chromeમાં ખુલશે. આગળ વધીને, તમે <ph name="BEGIN_LINK1" />Googleની સેવાની શરતો<ph name="END_LINK1" /> અને <ph name="BEGIN_LINK2" />Google Chrome તથા ChromeOSની વધારાની સેવાની શરતો<ph name="END_LINK2" /> સાથે સંમત થાઓ છો. <ph name="BEGIN_LINK3" />પ્રાઇવસી પૉલિસી<ph name="END_LINK3" /> પણ લાગુ થાય છે.</translation>
 <translation id="3080525922482950719">તમે પછીથી અથવા ઑફલાઇન વાંચવા માટે પેજ સાચવી શકો છો</translation>
 <translation id="3087218211037573995">ફક્ત આ ડિવાઇસ પર સાચવેલા કેટલાક પાસવર્ડ ટૂંક સમયમાં કામ કરવાનું બંધ કરશે. તમે આ પાસવર્ડને Google Password Managerમાં ખસેડી શકો છો.</translation>
+<translation id="3087734570205094154">તળિયું</translation>
 <translation id="3091010850649238832">ક્લિપબોર્ડ પરના કન્ટેન્ટ બતાવો</translation>
 <translation id="3098745985164956033">તમારા માટે વર્ણનોને બહેતર બનાવવા માટે કેટલીક છબીઓ Googleને મોકલવામાં આવે છે</translation>
 <translation id="3114507951000454849">આજના સમાચાર વાંચો <ph name="NEWS_ICON" /></translation>
@@ -688,7 +690,6 @@
 <translation id="4355272626458588338">તમે કોઈ બુકમાર્ક ઉમેરીને તમારા માટે મહત્ત્વપૂર્ણ હોય એવા પેજ પર પાછા જઈ શકો છો</translation>
 <translation id="4357206670025518404">+<ph name="COUNT_NUMBER" /></translation>
 <translation id="4359809482106103048">સલામતી, એક નજરમાં</translation>
-<translation id="4363222835916186793">આ પ્રોડક્ટ માટેના અલર્ટ બંધ કરવામાં આવ્યા છે</translation>
 <translation id="4378154925671717803">ફોન</translation>
 <translation id="4380055775103003110">જો આ સમસ્યા આવવાનું ચાલુ રહે, તો તમે <ph name="SITE_ETLD_PLUS_ONE" /> પર ચાલુ રાખવા માટે અન્ય રીતો અજમાવી શકો છો.</translation>
 <translation id="4384468725000734951">શોધ માટે Sogouનો ઉપયોગ કરી રહ્યાં છીએ</translation>
@@ -749,6 +750,7 @@
 <translation id="4624065194742029982">Chrome છૂપો મોડ</translation>
 <translation id="4634124774493850572">પાસવર્ડનો ઉપયોગ કરો</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{ચેડાં કરાયેલો 1 પાસવર્ડ}one{ચેડાં કરાયેલો # પાસવર્ડ}other{ચેડાં કરાયેલા # પાસવર્ડ}}</translation>
+<translation id="4642472735733036929">કિંમત ટ્રૅક કરવાનું બંધ કર્યું</translation>
 <translation id="4645146721047390964">જ્યારે છૂપા મોડમાં હો, ત્યારે અલગ-અલગ સાઇટ પરની તમારી બ્રાઉઝિંગ પ્રવૃત્તિ જોવા માટે સાઇટ તમારી કુકીનો ઉપયોગ કરી શકશે નહીં, ઉદાહરણ તરીકે, જાહેરાતોને મનગમતી બનાવવા માટે. અમુક સાઇટ પરની સુવિધાઓમાં કદાચ ખલેલ પડી શકે છે.</translation>
 <translation id="4650364565596261010">સિસ્ટમ ડિફૉલ્ટ</translation>
 <translation id="465657074423018424">Safe Browsing તમારું છેતરામણી વેબસાઇટથી રક્ષણ કરે છે. જો તમે તેને બંધ કરો, તો બ્રાઉઝ કરતી વખતે વધુ સાવધાન રહેજો, ખાસ કરીને પાસવર્ડ દાખલ કરતા પહેલાં.</translation>
@@ -1092,6 +1094,7 @@
 <translation id="6210748933810148297"><ph name="EMAIL" /> નથી?</translation>
 <translation id="6211386937064921208">આ પેજનો પ્રીવ્યૂ કરી રહ્યાં છીએ</translation>
 <translation id="6221633008163990886">તમારા બધા પાસવર્ડને નિકાસ કરવા માટે અનલૉક કરો</translation>
+<translation id="6225572914528673855">ઍડ્રેસ બાર</translation>
 <translation id="6232535412751077445">'ટ્રૅક કરશો નહીં’ ને સક્ષમ કરવાનો અર્થ છે કે તમારા બ્રાઉઝિંગ ટ્રાફિકમાં વિનંતી શામેલ કરવામાં આવશે. કોઈ વેબસાઇટ, વિનંતી પર પ્રતિસાદ કરે છે કે નહીં અને વિનંતીનું અર્થઘટન કેવી રીતે કર્યું તેના પર કોઈ પણ અસર આધારિત હોય છે.
 
 ઉદાહરણ તરીકે, કેટલીક વેબસાઇટ, તમે મુલાકાત લીધેલી બીજા વેબસાઇટ પર આધારિત ન હોય તેવી જાહેરાતો તમને બતાવીને આ વિનંતી પર પ્રતિસાદ આપી શકે છે. ઘણી વેબસાઇટ હજી પણ તમારા બ્રાઉઝિંગ ડેટાને ભેગો કરશે અને ઉપયોગ કરશે — ઉદાહરણ તરીકે સુરક્ષાને બહેતર બનાવવા, કન્ટેન્ટ, જાહેરાતો અને ભલામણો આપવા અને રિપોર્ટિંગ આંકડા જનરેટ કરવા માટે.</translation>
@@ -1210,6 +1213,7 @@
 <translation id="6674571176963658787">સિંક કરવાનું શરૂ કરવા માટે, તમારો પાસફ્રેઝ દાખલ કરો</translation>
 <translation id="6676927815633975364">આ સાઇટ અને Chromeમાં સાઇન ઇન કરો</translation>
 <translation id="6684809838922667136">Chromeને બહેતર બનાવો</translation>
+<translation id="6700279777779583398">પસંદગીઓ સાચવી</translation>
 <translation id="6704048624334633734">પાસવર્ડની નિકાસ કરો અને તેને ડિલીટ કરો</translation>
 <translation id="670498945988402717">ગઈકાલે ચેક કર્યું</translation>
 <translation id="6710213216561001401">પાછલી</translation>
@@ -1423,6 +1427,7 @@
 <translation id="752731652852882757">છૂપા મોડનો ઉપયોગ કરતી વખતે બ્લૉક કરો</translation>
 <translation id="7554643625247105821">Chromeનું વર્ઝન ચેક કરી શકાતું નથી</translation>
 <translation id="7557508262441527045">સાઇન આઉટ કર્યું</translation>
+<translation id="7573665567024262965">તમારી ડિફૉલ્ટ ઍપ પસંદ કરો</translation>
 <translation id="7577900504646297215">રુચિઓ મેનેજ કરો</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> ફાઇલ ડાઉનલોડ કરી}one{<ph name="FILES_DOWNLOADED_MANY" /> ફાઇલ ડાઉનલોડ કરી}other{<ph name="FILES_DOWNLOADED_MANY" /> ફાઇલ ડાઉનલોડ કરી}}</translation>
 <translation id="7581273696622423628">સર્વેક્ષણમાં ભાગ લો</translation>
@@ -1465,6 +1470,7 @@
 <translation id="7764225426217299476">સરનામું ઉમેરો</translation>
 <translation id="7772032839648071052">પાસફ્રેઝની પુષ્ટિ કરો</translation>
 <translation id="7772375229873196092"><ph name="APP_NAME" />ને બંધ કરો</translation>
+<translation id="7774125747223422443">તમારા પ્રદેશના કાયદાના આધારે, તમારે તમારું બ્રાઉઝર અને શોધ એન્જિન પસંદ કરવા જરૂરી છે</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 અને વધુ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}one{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 અને વધુ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 અને વધુ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="777637629667389858">તમે સાઇન ઇન હો ત્યારે, તમને સમગ્ર Google સેવાઓમાં સંરક્ષિત કરે છે.</translation>
 <translation id="7778840695157240389">નવી સ્ટોરી માટે થોડા સમય પછી ફરી ચેક કરો</translation>
@@ -1733,6 +1739,7 @@
 <translation id="8982113230057126145">આ સારાંશ તમને નાપસંદ હોવાનો પ્રતિસાદ થમ્બ્સ ડાઉન દ્વારા સબમિટ કરવામાં આવે છે</translation>
 <translation id="8992769679401294069">તમારો ડેટા તમારા પાસફ્રેઝ વડે એન્ક્રિપ્ટ કરવામાં આવ્યો છે. તમારા Google એકાઉન્ટમાં Chrome ડેટાનો ઉપયોગ કરવા અને તેને સાચવવા માટે, તમારો પાસફ્રેઝ દાખલ કરો.</translation>
 <translation id="8993760627012879038">છુપા મોડમાં એક નવું ટૅબ ખોલો</translation>
+<translation id="8995521496079646922">તમે પસંદ કરેલી ઍપ ડિફૉલ્ટ તરીકે ઉપયોગમાં લેવાશે. જો ઍપ પહેલેથી આ ડિવાઇસ પર ન હોય, તો તે ટૂંક સમયમાં ડાઉનલોડ કરવામાં આવશે.</translation>
 <translation id="8996847606757455498">કોઈ અન્ય પ્રદાતા પસંદ કરો</translation>
 <translation id="8998289560386111590">તમારા ડિવાઇસ પર ઉપલબ્ધ નથી</translation>
 <translation id="8998837250940831980">ટૅબ નાનું કરી શક્યા નથી. થોડા સમય પછી ફરી પ્રયાસ કરો.</translation>

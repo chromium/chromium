@@ -118,7 +118,6 @@
 <translation id="1346748346194534595">కుడి</translation>
 <translation id="1350494136075914725">జరుగుతున్నది · ట్యాబ్‌కు మారండి</translation>
 <translation id="1351937230027495976">మెనూను కుదించు</translation>
-<translation id="1352537790882153971">మీరు వైర్ ఉన్న హెడ్‌ఫోన్‌ల నుండి మీ మైక్రోఫోన్ సౌండ్‌ను పర్యవేక్షించవచ్చు. ఆపడానికి ప్యానెల్‌ను మూసివేయండి.</translation>
 <translation id="1360220746312242196">ఒక పేజీని సెర్చ్ చేస్తున్నప్పుడు, మునుపటి మ్యాచ్‌కు వెళ్లండి</translation>
 <translation id="1360788414852622716">ప్రొఫైల్ డిజేబుల్ అవుతోంది. దీనికి కొన్ని నిమిషాలు పట్టవచ్చు.</translation>
 <translation id="1364382257761975320">మీ Chromebookను అన్‌లాక్ చేయడానికి, మీ వేలిముద్రను ఉపయోగించండి</translation>
@@ -397,7 +396,6 @@
 <translation id="2426051945783024481">కెమెరా ఫ్రేమ్ ఆటోమేటిక్‌గా మధ్యలో ఉంటుంది</translation>
 <translation id="2427507373259914951">ఎడమ క్లిక్</translation>
 <translation id="2429753432712299108">బ్లూటూత్ పరికరం "<ph name="DEVICE_NAME" />" జత కావడానికి అనుమతి కోరుతోంది. ఆమోదించడానికి ముందు, దయచేసి ఆ పరికరంలో ఈ పాస్‌కీ చూపబడుతోందని నిర్ధారించుకోండి: <ph name="PASSKEY" /></translation>
-<translation id="2430444791038754658">టైమ్ అప్. కొనసాగండి!</translation>
 <translation id="2435457462613246316">పాస్‌వర్డ్‌ను చూపించు</translation>
 <translation id="2437771564543046790">బ్యాటరీ తక్కువగా ఉంది. బ్యాటరీ సేవర్ ఆన్‌లో ఉంది</translation>
 <translation id="243878895369688216">నిన్న తెరిచారు</translation>
@@ -777,7 +775,6 @@
 <translation id="3706423975342040244">వినోదం</translation>
 <translation id="3707093869106077605"><ph name="UNAVAILABLE_DLC_ONE" />, <ph name="UNAVAILABLE_DLC_TWO" /> అందుబాటులో లేవు.</translation>
 <translation id="3708186454126126312">ఇంతకు మునుపు కనెక్ట్ చేయబడినవి</translation>
-<translation id="3711282657843423160">పూర్తయింది. కొనసాగండి!</translation>
 <translation id="3712143870407382523">ఈ వైపు ఏ విండో కనిపించాలో ఎంచుకోండి</translation>
 <translation id="371370241367527062">ముందువైపు మైక్రోఫోన్</translation>
 <translation id="3713734891607377840">పూర్తయినప్పుడు తెరవండి</translation>
@@ -848,7 +845,6 @@
 <translation id="397105322502079400">గణిస్తోంది...</translation>
 <translation id="397726367135689299">బ్యాటరీ ఛార్జింగ్ అస్థిరంగా ఉండవచ్చు.</translation>
 <translation id="3977512764614765090">బ్యాటరీ <ph name="PERCENTAGE" />% ఉంది. ఛార్జ్ అవుతోంది.</translation>
-<translation id="397808938113646171">సమయం ముగిసింది. గొప్పగా చేశారు!</translation>
 <translation id="3982013579989864579">ఆడియో అవుట్‌పుట్‌ను మార్చాలా?</translation>
 <translation id="3984536049089846927">తర్వాతి పేజీ</translation>
 <translation id="3986082989454912832">సమాధానం ఇవ్వండి</translation>
@@ -1004,7 +1000,6 @@
 <translation id="4477751544736611934">దీనికి డేటా ఖర్చు అవ్వచ్చు.
 1 పరికరం కనెక్ట్ అయింది.</translation>
 <translation id="4477892968187500306">ఈ పరికరంలో Google ధృవీకరించని యాప్‌లు ఉండవచ్చు.</translation>
-<translation id="4479130137987693286">మీకు అవసరమైతే మీరు మరికొంత సమయాన్ని జోడించవచ్చు లేదా మీ ఫోకస్ సెషన్‌ను ముగించవచ్చు</translation>
 <translation id="4479639480957787382">ఈథర్నెట్</translation>
 <translation id="4481530544597605423">జతను తీసివేసిన పరికరాలు</translation>
 <translation id="4485506555414638855">మీ ఫోన్‌లోని తాజా ఫోటోలను, మీడియాను, నోటిఫికేషన్‌లను, యాప్‌లను చూసే సదుపాయాన్ని సెటప్ చేయడాన్ని విస్మరించండి</translation>
@@ -1057,7 +1052,6 @@
 
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox ప్రారంభించబడింది</translation>
-<translation id="4665182893355091947">పూర్తయింది. కొనసాగండి!</translation>
 <translation id="4666911709726371538">మరిన్ని యాప్‌లు</translation>
 <translation id="4667099493359681081"><ph name="FILENAME" />ను డౌన్‌లోడ్ చేస్తోంది</translation>
 <translation id="4672539464599646374">బ్యాటరీ సేవర్ ఆన్ చేయబడింది</translation>
@@ -1784,7 +1778,6 @@
 <translation id="7064351585062927183">వచ్చే <ph name="DAY_OF_WEEK" /></translation>
 <translation id="7066646422045619941">ఈ నెట్‌వర్క్‌ను మీ నిర్వాహ‌కుడు నిలిపివేశారు.</translation>
 <translation id="7067196344162293536">ఆటోమేటిక్‌గా తిప్పు</translation>
-<translation id="7067569040620564762">టైమ్ అప్. పూర్తయింది!</translation>
 <translation id="7068360136237591149">ఫైళ్లు తెరువు</translation>
 <translation id="7076293881109082629">సైన్ ఇన్ చేస్తోంది</translation>
 <translation id="7076878155205969899">ధ్వనిని మ్యూట్ చేస్తుంది</translation>
@@ -1819,7 +1812,6 @@
 <translation id="7189412385142492784">శుక్రుడు ఎంత దూరంలో ఉన్నాడు</translation>
 <translation id="7198435252016571249">కెమెరా దిగువ కుడి మూలకు స్నాప్ చేయబడింది. సిస్టమ్ ప్లాట్‌ఫామ్‌కు విరుద్ధంగా.</translation>
 <translation id="7219573373513695352">పరికరాలు ఏవీ కనెక్ట్ కాలేదు</translation>
-<translation id="7226347284543965442">టైమ్ అప్. మీరు చేశారు!</translation>
 <translation id="7229029500464092426">మెమరీ <ph name="AVAILABLE_MEMORY" /> | మొత్తం <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7244725679040769470"><ph name="PERCENTAGE" />% బ్యాటరీ మిగిలి ఉంది. మీ పరికరాన్ని పవర్‌కు కనెక్ట్ చేయండి.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. ఒక అప్‌డేట్‌ను వర్తింపజేయడానికి ఈ Chromebookను రీస్టార్ట్ చేయాలి. దీనికి 1 నిమిషం వరకు పట్టవచ్చు.</translation>
@@ -2174,7 +2166,6 @@
 <translation id="8443879455002739353">"కాపీ"</translation>
 <translation id="8444246603146515890">డెస్క్ <ph name="DESK_TITILE" /> యాక్టివేట్ చేయబడింది</translation>
 <translation id="8446884382197647889">మరింత తెలుసుకోండి</translation>
-<translation id="8452090802952003258">మీ మైక్ సౌండ్‌ని వినండి</translation>
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
 <translation id="8462305545768648477">'వినడానికి ఎంచుకోండి'ను మూసివేయండి</translation>
 <translation id="8468806060683421065">గడువు తేదీ <ph name="DUE_DATE_AND_TIME" /></translation>
@@ -2236,7 +2227,6 @@
 <translation id="8683506306463609433">పనితీరు స్థితిగతి కనుగొనడం యాక్టివ్‌గా ఉంది</translation>
 <translation id="8703634754197148428">రికార్డింగ్‌ను ప్రారంభించండి. ఒకసారి రికార్డింగ్ ప్రారంభమయిన తర్వాత, Alt + Shift + Lను ఉపయోగించి, షెల్ఫ్‌కు నావిగేట్ అయి, రికార్డింగ్‌ను ఆపివేసే బటన్‌ను కనుగొనండి</translation>
 <translation id="8704155109538237473">పిక్చర్-ఇన్-పిక్చర్ విండోపై ఫోకస్ చేయండి</translation>
-<translation id="8708657523363087260">సైడ్‌టోన్‌ను టోగుల్ చేయండి</translation>
 <translation id="870917907284186124">డిక్టేషన్‌ను ఆన్/ఆఫ్ చేయండి (మీ వాయిస్‌తో టైప్ చేయండి)</translation>
 <translation id="8711169534266271368">గేమ్ డ్యాష్‌బోర్డ్ ఆప్షన్‌లు</translation>
 <translation id="8712637175834984815">అర్థమైంది</translation>

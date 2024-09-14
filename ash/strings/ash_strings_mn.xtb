@@ -118,7 +118,6 @@
 <translation id="1346748346194534595">Баруун</translation>
 <translation id="1350494136075914725">Үргэлжилж байна · Таб руу сэлгэх</translation>
 <translation id="1351937230027495976">Цэсийг буулгах</translation>
-<translation id="1352537790882153971">Та утастай чихэвчээр микрофоныхоо дууг хянах боломжтой. Зогсоохын тулд түр зуурын самбарыг хаана уу.</translation>
 <translation id="1360220746312242196">Хуудаснаас хайж байхдаа хайлтын өмнөх тохирол руу очих</translation>
 <translation id="1360788414852622716">Профайлыг идэвхгүй болгож байна. Үүнд хэдэн минут шаардлагатай байж магадгүй.</translation>
 <translation id="1364382257761975320">Chromebook-нхээ түгжээг тайлахын тулд хурууны хээгээ ашиглана уу</translation>
@@ -374,6 +373,7 @@
 <translation id="2359808026110333948">Цааш</translation>
 <translation id="2360398059912971776">батарей</translation>
 <translation id="2361210043495191221">Wi-Fi-г асаана уу/унтраана уу. <ph name="STATE" />.</translation>
+<translation id="2364710166605611987">Харагдах байдлын эффектүүд</translation>
 <translation id="236574664504281623"><ph name="SESSION_NAME" />-с илгээсэн</translation>
 <translation id="2367186422933365202">Таны Chromebook-д нэвтрэх боломжгүй</translation>
 <translation id="2367972762794486313">Аппликейшнүүдийг харуулах</translation>
@@ -396,7 +396,6 @@
 <translation id="2426051945783024481">Камерын хүрээг автоматаар голлуулсан</translation>
 <translation id="2427507373259914951">Зүүн талыг товших</translation>
 <translation id="2429753432712299108">"<ph name="DEVICE_NAME" />" Bluetooth төхөөрөмж нь холбогдох зөвшөөрөл хүсч байна. Хүлээж авахаасаа өмнө <ph name="PASSKEY" /> дамжуулах түлхүүр үг нь энэ төхөөрөмж дээр гарч ирсэн байгаа эсэхийг шалгана уу.</translation>
-<translation id="2430444791038754658">Цаг дууслаа. Мундаг!</translation>
 <translation id="2435457462613246316">Нууц үг харуулах</translation>
 <translation id="2437771564543046790">Батарей бага байна. Батарей хэмнэгч асаалттай байна</translation>
 <translation id="243878895369688216">Өчигдөр нээсэн</translation>
@@ -734,6 +733,7 @@
 <translation id="3600061223661453002">Унтраах</translation>
 <translation id="3604801046548457007"><ph name="DESK_TITILE" /> дэлгэц үүсгэлээ</translation>
 <translation id="3606978283550408104">Брайль дэлгэц холбогдсон.</translation>
+<translation id="3612634595000403645">Харагдах байдлын эффектүүдийн сонголт</translation>
 <translation id="3615926715408477684">Мобайл датаг идэвхжүүлснээр Bluetooth-г мөн идэвхжүүлнэ</translation>
 <translation id="3616113530831147358">Аудио</translation>
 <translation id="3616883743181209306">Цэсийг дэлгэцийн баруун дээд булан руу зөөсөн.</translation>
@@ -775,7 +775,6 @@
 <translation id="3706423975342040244">Энтертайнмент</translation>
 <translation id="3707093869106077605"><ph name="UNAVAILABLE_DLC_ONE" /> болон <ph name="UNAVAILABLE_DLC_TWO" /> боломжгүй байна.</translation>
 <translation id="3708186454126126312">Өмнө нь холбогдсон</translation>
-<translation id="3711282657843423160">Дууслаа. Эрчээ бүү алд</translation>
 <translation id="3712143870407382523">Энэ талд цонх сонгоно уу</translation>
 <translation id="371370241367527062">Урд талын микрофон</translation>
 <translation id="3713734891607377840">Дуусах үед нээх</translation>
@@ -846,7 +845,6 @@
 <translation id="397105322502079400">Тооцоолж байна ...</translation>
 <translation id="397726367135689299">Батарейн цэнэглэлт найдваргүй байж болзошгүй.</translation>
 <translation id="3977512764614765090">Батарей <ph name="PERCENTAGE" />%-тай байгаа бөгөөд цэнэглэж байна.</translation>
-<translation id="397808938113646171">Цаг дууслаа. Сайн байна!</translation>
 <translation id="3982013579989864579">Аудио гаралтыг сэлгэх үү?</translation>
 <translation id="3984536049089846927">Дараагийн хуудас</translation>
 <translation id="3986082989454912832">Хариулах</translation>
@@ -895,6 +893,7 @@
 <translation id="4146671046252289537">Дараагийн үгний төгсгөл рүү очих</translation>
 <translation id="4146833061457621061">Хөгжим тоглуулах</translation>
 <translation id="4150201353443180367">Дэлгэц</translation>
+<translation id="4151054805501931758">Хөрөг засвар</translation>
 <translation id="4156293514828496577"><ph name="PERCENTAGE" />% батарей үлдсэн (ойролцоогоор <ph name="TIME_LEFT" />).
 Зарим онцлогийг батарейн ажиллах хугацааг ихэсгэхээр хязгаарласан.</translation>
 <translation id="4160919062868802509">Олон аудио эх сурвалж илэрлээ</translation>
@@ -1001,7 +1000,6 @@
 <translation id="4477751544736611934">Энэ нь дата ашиглалтын зардал гаргаж магадгүй.
 1 төхөөрөмж холбогдсон.</translation>
 <translation id="4477892968187500306">Энэ төхөөрөмж нь Google-н баталгаажуулаагүй аппыг агуулж болзошгүй.</translation>
-<translation id="4479130137987693286">Хэрэв танд хугацаа хэрэгтэй бол бага зэрэг нэмэлт хугацаа нэмэх эсвэл төвлөрөх харилцан үйлдлээ дуусгах боломжтой</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Хослоогүй төхөөрөмж</translation>
 <translation id="4485506555414638855">Утасныхаа саяхны зураг, медиа, мэдэгдэл болон аппуудыг харахыг тохируулахыг үл хэрэгсэх</translation>
@@ -1054,7 +1052,6 @@
 
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox-г идэвхжүүлсэн</translation>
-<translation id="4665182893355091947">Дууслаа. Сайн байна!</translation>
 <translation id="4666911709726371538">Бусад апп</translation>
 <translation id="4667099493359681081"><ph name="FILENAME" />-г татаж байна</translation>
 <translation id="4672539464599646374">Батарей хэмнэгчийг асаасан</translation>
@@ -1780,7 +1777,6 @@
 <translation id="7064351585062927183">Энэ ирэх <ph name="DAY_OF_WEEK" /></translation>
 <translation id="7066646422045619941">Таны админ энэ сүлжээг идэвхгүй болгосон.</translation>
 <translation id="7067196344162293536">Автоматаар эргүүлэх</translation>
-<translation id="7067569040620564762">Цаг дууслаа. Болсон!</translation>
 <translation id="7068360136237591149">Файл нээх</translation>
 <translation id="7076293881109082629">Нэвтэрч байна</translation>
 <translation id="7076878155205969899">Дууны дууг хаах</translation>
@@ -1815,7 +1811,6 @@
 <translation id="7189412385142492784">Сугар гараг хэр хол вэ?</translation>
 <translation id="7198435252016571249">Камерыг баруун доод булан руу зэрэгцүүлсэн. Системийн гадаргуутай зөрчилдсөн.</translation>
 <translation id="7219573373513695352">Ямар ч төхөөрөмж холбогдоогүй</translation>
-<translation id="7226347284543965442">Цаг дууслаа. Чадлаа!</translation>
 <translation id="7229029500464092426">Нийт <ph name="TOTAL_MEMORY" />-н санах ойгоос <ph name="AVAILABLE_MEMORY" /></translation>
 <translation id="7244725679040769470"><ph name="PERCENTAGE" />% батарей үлдсэн. Төхөөрөмжөө тэжээлд залгана уу.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Энэ Chromebook-д шинэчлэлтийг хэрэгжүүлэхийн тулд үүнийг дахин эхлүүлэх шаардлагатай. Үүнд 1 минут хүртэл хугацаа шаардагдаж болно.</translation>
@@ -1972,6 +1967,7 @@
 <translation id="7768784765476638775">Ярихаар-сонгох</translation>
 <translation id="7769299611924763557">Таны GIF удахгүй бэлэн болно</translation>
 <translation id="7773536009433685931">Оронд нь Wi-Fi-г асаах</translation>
+<translation id="77747521138552256">ПИН-г оруулахаар хэт олон удаа оролдсон. <ph name="TIME_LEFT" /> хүлээгээд, ПИН-г дахин оруулж үзэх эсвэл тэр даруй нэвтрэхийн тулд нууц үгийг оруулна уу.</translation>
 <translation id="7780094051999721182">товчлолууд</translation>
 <translation id="7780159184141939021">Дэлгэцийг эргүүлсэн</translation>
 <translation id="7781829728241885113">Өчигдөр</translation>
@@ -2170,7 +2166,6 @@
 <translation id="8443879455002739353">"Хуулах"</translation>
 <translation id="8444246603146515890"><ph name="DESK_TITILE" /> дэлгэцийг идэвхжүүлсэн байна</translation>
 <translation id="8446884382197647889">Дэлгэрэнгүй мэдээлэл</translation>
-<translation id="8452090802952003258">Микрофоныхоо дууг сонсоно уу</translation>
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
 <translation id="8462305545768648477">Ярихаар сонгох онцлогийг хаах</translation>
 <translation id="8468806060683421065">хугацаа нь <ph name="DUE_DATE_AND_TIME" />-д дуусна</translation>
@@ -2232,7 +2227,6 @@
 <translation id="8683506306463609433">Гүйцэтгэлийн хяналт идэвхтэй байна</translation>
 <translation id="8703634754197148428">Бичиж эхэлнэ үү. Бичиж эхэлсэн үед Alt + Shift + L-г ашиглан тавиур луу шилжиж, бичлэгийг зогсоох товчлуурыг олно уу</translation>
 <translation id="8704155109538237473">Дэлгэц доторх дэлгэцийн цонхыг сонгох</translation>
-<translation id="8708657523363087260">Өөрийн дууг хянахыг асаах/унтраах</translation>
 <translation id="870917907284186124">Дуу хоолойгоор бичихийг асаах/унтраах (дуу хоолойгоороо бичих)</translation>
 <translation id="8711169534266271368">Тоглоомын хяналтын самбарын сонголтууд</translation>
 <translation id="8712637175834984815">Ойлголоо</translation>

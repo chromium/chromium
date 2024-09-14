@@ -11,7 +11,6 @@
 <translation id="1035980983510608210">Bydd cau pob tab yn cau tabiau sydd wedi'u pinio hefyd.</translation>
 <translation id="1036017604683756002">UPS</translation>
 <translation id="1036348656032585052">Diffodd</translation>
-<translation id="10379132160269599">Dangos y grid tabiau</translation>
 <translation id="1041322626941363065">Yn eich rhybuddio os yw cyfrineiriau'n cael eu Datgelu mewn Tor data</translation>
 <translation id="1044891598689252897">Bydd gwefannau'n gweithio fel arfer</translation>
 <translation id="104491362976654916">Tudalen All-lein</translation>
@@ -31,6 +30,7 @@
 <translation id="1118569444314402022">Croeso'n ôl, <ph name="USER_NAME" /></translation>
 <translation id="1121850836842642159">Lluniau a Delweddau</translation>
 <translation id="1125564390852150847">Creu tab newydd.</translation>
+<translation id="1126696498560056882">Rheoli cyfrifon ar y ddyfais hon</translation>
 <translation id="1126809382673880764">Nid yw'n eich amddiffyn rhag gwefannau peryglus, lawrlwythiadau nac estyniadau. Byddwch yn dal i gael amddiffyniad Pori'n Ddiogel, lle mae ar gael, mewn gwasanaethau Google eraill, megis Gmail a Search.</translation>
 <translation id="1142371195993008685">Diffodd hysbysiadau ar gyfer <ph name="FEATURE_NAME" /></translation>
 <translation id="1147031633655575115">Wedi mewngofnodi fel <ph name="USER" /></translation>
@@ -171,6 +171,7 @@
 <translation id="1820195936249950412">Mewngofnodi gyda chyfrif dilys</translation>
 <translation id="1820259098641718022">Ychwanegwyd at y Rhestr Ddarllen</translation>
 <translation id="1822994441903263130">FEDEX</translation>
+<translation id="1824490729233982311">Rhybuddion pan fyddwch yn derbyn tabiau o'ch dyfeisiau eraill.</translation>
 <translation id="1827529786398596735">Pwyswch a daliwch y sgrîn hafan</translation>
 <translation id="1829244130665387512">Chwilio'r dudalen</translation>
 <translation id="1832848789136765277">I wneud yn siŵr eich bod bob amser yn gallu cael mynediad at eich data cysoni, cadarnhewch mai chi sydd yno</translation>
@@ -1009,7 +1010,6 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="594324569139756587">Rhwystro trydydd parti</translation>
 <translation id="5944869793365969636">Sganio Cod QR</translation>
 <translation id="5948291296578561264">Mae hyn yn eich galluogi i gadw lluniau i'ch llyfrgell luniau.</translation>
-<translation id="5953383789663007162">Golygu rhestr cyfrifon</translation>
 <translation id="5954322191260787920">Golygu nod tudalen</translation>
 <translation id="5956112131836209882">Tab grŵp tabiau. <ph name="TAB_INDEX_IN_GROUP" /> o <ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
 <translation id="595769230373966252">Chwilio gyda <ph name="SEARCH_PROVIDER" /></translation>

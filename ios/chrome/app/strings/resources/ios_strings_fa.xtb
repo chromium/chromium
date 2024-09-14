@@ -11,7 +11,6 @@
 <translation id="1035980983510608210">با بستن همه برگه‌ها، برگه‌های سنجاق‌شده نیز بسته خواهند شد.</translation>
 <translation id="1036017604683756002">UPS</translation>
 <translation id="1036348656032585052">خاموش کردن</translation>
-<translation id="10379132160269599">نشان دادن شبکه برگه</translation>
 <translation id="1041322626941363065">اگر گذرواژه‌ها دراثر سرقت اطلاعات شبکه لو رفته باشند، به شما اطلاع داده شود</translation>
 <translation id="1044891598689252897">عملکرد سایت‌ها عادی خواهد بود</translation>
 <translation id="104491362976654916">صفحه آفلاین</translation>
@@ -31,6 +30,7 @@
 <translation id="1118569444314402022"><ph name="USER_NAME" />، دوباره خوش آمدید</translation>
 <translation id="1121850836842642159">عکس و تصویر</translation>
 <translation id="1125564390852150847">ایجاد برگه جدید</translation>
+<translation id="1126696498560056882">مدیریت حساب‌ها در این دستگاه</translation>
 <translation id="1126809382673880764">‏دربرابر وب‌سایت‌ها، بارگیری‌ها، و افزونه‌های خطرناک از شما محافظت نمی‌کند. درصورت موجود بودن، همچنان ویژگی حفاظتی «مرور ایمن» را در سرویس‌های دیگر Google مثل Gmail و «جستجو» دریافت می‌کنید.</translation>
 <translation id="1142371195993008685">خاموش کردن اعلان‌های «<ph name="FEATURE_NAME" />»</translation>
 <translation id="1147031633655575115">با <ph name="USER" /> به سیستم وارد شده‌اید</translation>
@@ -1010,7 +1010,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="594324569139756587">مسدود کردن طرف سوم</translation>
 <translation id="5944869793365969636">اسکن رمزینه پاسخ‌سریع</translation>
 <translation id="5948291296578561264">با این کار می‌توانید عکس‌ها را در کتابخانه عکستان ذخیره کنید.</translation>
-<translation id="5953383789663007162">ویرایش فهرست حساب</translation>
 <translation id="5954322191260787920">ویرایش نشانک</translation>
 <translation id="5956112131836209882">برگه گروه برگه. ‫<ph name="TAB_INDEX_IN_GROUP" /> از <ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
 <translation id="595769230373966252">جستجو با <ph name="SEARCH_PROVIDER" /></translation>

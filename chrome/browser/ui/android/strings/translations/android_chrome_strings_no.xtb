@@ -350,6 +350,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="2653659639078652383">Send inn</translation>
 <translation id="2656405586795711023">Nettprogrammer</translation>
 <translation id="2664252182805397291">Se nettsteder</translation>
+<translation id="2666092431469916601">Topp</translation>
 <translation id="2669454659051515572">Alle som bruker denne enheten, kan se nedlastede filer</translation>
 <translation id="2702516483241149200">Ny: del en link som ruller til denne teksten</translation>
 <translation id="2705073298859543115">Opprett et sammendrag</translation>
@@ -451,6 +452,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="3072980200212375806"><ph name="APP_NAME" /> åpnes i Chrome. Ved å fortsette samtykker du i <ph name="BEGIN_LINK1" />Googles vilkår for bruk<ph name="END_LINK1" /> og <ph name="BEGIN_LINK2" />tilleggsvilkårene for bruk av Google Chrome og ChromeOS<ph name="END_LINK2" />. <ph name="BEGIN_LINK3" />Personvernreglene<ph name="END_LINK3" /> gjelder også.</translation>
 <translation id="3080525922482950719">Du kan lagre sider for å lese dem senere eller uten nett</translation>
 <translation id="3087218211037573995">Noen passord som bare er lagret på denne enheten, slutter snart å fungere. Du kan flytte disse passordene til Google Passordlagring.</translation>
+<translation id="3087734570205094154">Bunn</translation>
 <translation id="3091010850649238832">Vis innholdet på utklippstavlen</translation>
 <translation id="3098745985164956033">Noen bilder blir sendt til Google for å gjøre beskrivelsene bedre</translation>
 <translation id="3114507951000454849">Les dagens nyheter <ph name="NEWS_ICON" /></translation>
@@ -488,6 +490,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="3282568296779691940">Logg på Chrome</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> fane}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> faner}}</translation>
 <translation id="3293181007446299124">Nettleserloggen din holdes privat på enheten din, og rapporter sendes med en forsinkelse for å beskytte identiteten din</translation>
+<translation id="3302615849591357577">Gjenopprett fanegruppen <ph name="TITLE_OF_GROUP" />, med fargen <ph name="COLOR_NAME" />, som en ny bakgrunnsfanegruppe.</translation>
 <translation id="3303414029551471755">Vil du gå videre med å laste ned innholdet?</translation>
 <translation id="3303855915957856445">Søket ga ingen treff</translation>
 <translation id="3305130791745726624">Send til enheter</translation>
@@ -687,7 +690,6 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="4355272626458588338">Du kan komme tilbake til sider som er viktige for deg, ved å legge til bokmerker</translation>
 <translation id="4357206670025518404">+<ph name="COUNT_NUMBER" /></translation>
 <translation id="4359809482106103048">Kort fortalt om sikkerhet</translation>
-<translation id="4363222835916186793">Varsler for dette produktet er slått av</translation>
 <translation id="4378154925671717803">Telefon</translation>
 <translation id="4380055775103003110">Hvis problemet vedvarer, kan du prøve å fortsette på <ph name="SITE_ETLD_PLUS_ONE" /> på andre måter.</translation>
 <translation id="4384468725000734951">Bruker Sogou til å søke</translation>
@@ -748,6 +750,7 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="4624065194742029982">Chrome Inkognito</translation>
 <translation id="4634124774493850572">Bruk passord</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 passord er utsatt for sikkerhetsbrudd}other{# passord er utsatt for sikkerhetsbrudd}}</translation>
+<translation id="4642472735733036929">Prissporing er stoppet</translation>
 <translation id="4645146721047390964">Når du bruker Inkognito, kan ikke nettsteder bruke informasjonskapsler til å se nettleseraktiviteten din på andre nettsteder, for eksempel for å vise deg personlig tilpassede annonser. Det kan hende at funksjoner på enkelte nettsteder slutter å fungere.</translation>
 <translation id="4650364565596261010">Systemstandard</translation>
 <translation id="465657074423018424">Safe Browsing beskytter deg mot villedende nettsteder. Hvis du slår det av, må du være ekstra forsiktig når du surfer, spesielt før du skriver inn passord.</translation>
@@ -799,6 +802,7 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="4834007576107377210">Se eventuelt instruksjonene fra søkemotoren din om hvordan du sletter søkeloggen din</translation>
 <translation id="4834250788637067901">Betalingsmåter, tilbud og adresser som bruker Google Pay</translation>
 <translation id="4835385943915508971">Chrome har ikke tilgang til den forespurte ressursen.</translation>
+<translation id="483742037940503070">{TAB_COUNT,plural, =1{Gjenopprett fanegruppen med <ph name="TAB_COUNT_ONE" /> fane og fargen <ph name="COLOR_NAME" /> som en ny bakgrunnsfanegruppe.}other{Gjenopprett fanegruppen med <ph name="TAB_COUNT_MANY" /> faner og fargen <ph name="COLOR_NAME" /> som en ny bakgrunnsfanegruppe.}}</translation>
 <translation id="4837753911714442426">Åpne alternativene for å skrive ut siden</translation>
 <translation id="4842092870884894799">Viser forgrunnsvinduet for passordgenerering</translation>
 <translation id="4844633725025837809">For ekstra trygghet kan du kryptere passord på enheten før de lagres i Google Passordlagring</translation>
@@ -1090,6 +1094,7 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="6210748933810148297">Ikke <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Forhåndsviser denne siden</translation>
 <translation id="6221633008163990886">Lås opp for å eksportere passordene dine</translation>
+<translation id="6225572914528673855">Adressefelt</translation>
 <translation id="6232535412751077445">Hvis du slår på «Deaktivering av sporing», blir det sendt en forespørsel sammen med nettrafikken din. Hvilke virkninger dette eventuelt får, avhenger av om det aktuelle nettstedet svarer på forespørselen eller ikke, samt hvordan forespørselen tolkes.
 
 Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg annonser som ikke er basert på andre nettsteder du har besøkt. Mange nettsteder samler likevel inn og bruker nettlesingsdataene dine – for eksempel for å forbedre sikkerheten, for å levere innhold, annonser og anbefalinger og for å generere rapporteringsstatistikk.</translation>
@@ -1183,6 +1188,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="6593061639179217415">Side for datamaskiner</translation>
 <translation id="6594347733515723558">Alt. sort. og visning</translation>
 <translation id="6595046016124923392">Bildene blir sendt til Google for å gjøre beskrivelsene bedre.</translation>
+<translation id="6595634543029443878">{TAB_COUNT,plural, =1{Gjenopprett fanegruppen med <ph name="TAB_COUNT_ONE" /> fane som en ny bakgrunnsfanegruppe.}other{Gjenopprett fanegruppen med <ph name="TAB_COUNT_MANY" /> faner som en ny bakgrunnsfanegruppe.}}</translation>
 <translation id="6604931690954120417">Passord du lagrer når du er logget på Chrome, lagres i Google-kontoen din. For å slå dette av, <ph name="BEGIN_LINK" />gå til innstillingene<ph name="END_LINK" />.</translation>
 <translation id="661266467055912436">Øker sikkerheten for deg og alle andre på nettet.</translation>
 <translation id="6621391692573306628">For å sende denne fanen til en annen enhet, logg på Chrome på begge enhetene</translation>
@@ -1207,6 +1213,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="6674571176963658787">For å starte synkroniseringen, skriv inn passordfrasen din</translation>
 <translation id="6676927815633975364">Logg på dette nettstedet og Chrome</translation>
 <translation id="6684809838922667136">Gjør Chrome bedre</translation>
+<translation id="6704048624334633734">Eksporter og slett passordene</translation>
 <translation id="670498945988402717">Sjekket i går</translation>
 <translation id="6710213216561001401">Forrige</translation>
 <translation id="671481426037969117">Tidtakeren for <ph name="FQDN" /> gikk ut. Den starter igjen i morgen.</translation>
@@ -1668,6 +1675,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="864544049772947936">Administrer vinduer (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="8664215986015753476">Bruk Chrome på din måte</translation>
 <translation id="8664979001105139458">Filnavnet finnes allerede</translation>
+<translation id="8669290537472770919">{FILE_COUNT,plural, =1{Blokkert av organisasjonen din}other{# ble blokkert av organisasjonen din}}</translation>
 <translation id="8672883760227492369">Noen passord på denne enheten slutter snart å fungere. Du kan flytte disse passordene til Google Passordlagring.</translation>
 <translation id="8676276370198826499">Registrer deg for <ph name="SITE_ETLD_PLUS_ONE" /> med <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8676789164135894283">Påloggingsbekreftelser</translation>

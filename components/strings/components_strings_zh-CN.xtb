@@ -712,6 +712,7 @@
 <translation id="2265356434276802347">此政策最多只能包含 <ph name="MAX_ITEMS_LIMIT" /> 个精选条目。</translation>
 <translation id="2267047181501709434">正在验证您的身份…</translation>
 <translation id="2268044343513325586">优化</translation>
+<translation id="2268966938956566076"><ph name="MINUTES" /> 分钟后上传</translation>
 <translation id="2270484714375784793">电话号码</translation>
 <translation id="2276057643614339130">打印基底</translation>
 <translation id="2277103315734023688">快进</translation>
@@ -1111,6 +1112,7 @@
 <translation id="3062655045399308513">删除浏览数据…</translation>
 <translation id="306573536155379004">游戏已开始。</translation>
 <translation id="3067505415088964188">价格低</translation>
+<translation id="3068118691172921711">系统将在 1 分钟后开始将文件上传到<ph name="CLOUD_PROVIDER" /></translation>
 <translation id="3076865167425975822">操作系统</translation>
 <translation id="3080254622891793721">图形</translation>
 <translation id="3082007635241601060">允许 Google 根据您购物车中的商品查找合乎您个人需求的折扣信息（如有）</translation>
@@ -1122,6 +1124,7 @@
 <translation id="3099619114405539473">使用可用的摄像头（<ph name="CAMERAS_COUNT" /> 个）</translation>
 <translation id="3102312643185441063">储蓄</translation>
 <translation id="3103188521861412364">股票与债券</translation>
+<translation id="3103535543639438037">并排比较类似商品</translation>
 <translation id="3105172416063519923">资产 ID：</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />检查安全 DNS 配置<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">中间纸匣</translation>
@@ -1297,6 +1300,7 @@
 <translation id="3407789382767355356">第三方登录</translation>
 <translation id="340924996148642843">目前无法使用比较功能</translation>
 <translation id="3409896703495473338">管理安全设置</translation>
+<translation id="3411091017011773343"><ph name="HOURS" /> 小时后上传</translation>
 <translation id="3414275587143250384">分布式计算与云计算</translation>
 <translation id="3414952576877147120">大小：</translation>
 <translation id="341513675006332771">“玩 Chrome 恐龙游戏”按钮，激活它即可在 Chrome 中玩《Dino Run》游戏</translation>
@@ -1891,7 +1895,6 @@
 <translation id="4451135742916150903">可以询问能否连接到 HID 设备</translation>
 <translation id="4451684391620232683">向用户显示的文本：</translation>
 <translation id="4452328064229197696">您刚才使用的密码遭遇了数据泄露。为确保您的账号安全，Google 密码管理工具建议您检查已保存的所有密码。</translation>
-<translation id="4452957520362597816">请求安装 Web 应用</translation>
 <translation id="4456937135469235202">探险旅行</translation>
 <translation id="4464826014807964867">包含来自贵组织的信息的网站</translation>
 <translation id="4466576951214254884">学生贷款与大学助学金</translation>
@@ -1963,6 +1966,7 @@
 <translation id="4628678854894591460">度假服务</translation>
 <translation id="4628948037717959914">照片</translation>
 <translation id="4629370161347991046">A4x6</translation>
+<translation id="462989688138616749">系统将在 <ph name="HOURS" /> 小时后开始将文件上传到<ph name="CLOUD_PROVIDER" /></translation>
 <translation id="4631649115723685955">已关联返现</translation>
 <translation id="4631881646528206880">虚拟卡注册</translation>
 <translation id="4635278307999235413">正在将数据发送到管理控制台</translation>
@@ -2083,6 +2087,7 @@
 <translation id="484988093836683706">使用设备解锁</translation>
 <translation id="4850886885716139402">查看</translation>
 <translation id="4854853140771946034">在 Google Keep 中快速创建新记事</translation>
+<translation id="4855395119669662878">您的管理员将于 <ph name="DATE_TIME" />开始将文件上传到<ph name="CLOUD_PROVIDER" />。在文件上传完成之前，请让设备保持连接状态。在上传期间，您将只能读取本地文件。</translation>
 <translation id="485902285759009870">正在核对动态密码…</translation>
 <translation id="4860260582253463350">若要继续访问 YouTube，我们需要确认你的身份。系统将会沿用家长或监护人在 Family Link 中的设置。</translation>
 <translation id="4864406669374375262">已将版本字符串复制到剪贴板</translation>
@@ -2138,6 +2143,7 @@
 <translation id="4933468175699107356">右键点击即可在任何表单中自动填充已保存的信息，例如姓名或地址</translation>
 <translation id="4934780484581617878">窗口管理</translation>
 <translation id="4936134414789135531">找不到插入的<ph name="VALUE_NAME" />。</translation>
+<translation id="4936573216809994970">系统将在 1 小时后开始将文件上传到<ph name="CLOUD_PROVIDER" /></translation>
 <translation id="4936675324097895694">金融</translation>
 <translation id="4943620199112228840">使用麦克风</translation>
 <translation id="4943872375798546930">找不到结果</translation>
@@ -2311,6 +2317,7 @@
 <translation id="5269225904387178860">四孔（底部）</translation>
 <translation id="5271381225185906340">“<ph name="DATA_CONTROLS_ATTRIBUTE" />”不是“<ph name="DATA_CONTROLS_RESTRICTION" />”支持的条件</translation>
 <translation id="5273658854610202413">警告：系统未按照 PolicyDictionaryMultipleSourceMergeList 政策中指定的方式合并此政策，因为此政策不是可合并的字典政策的一部分。</translation>
+<translation id="5278778426231952189">立即上传</translation>
 <translation id="5279286380302340275">管理下载内容</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">文档属性</translation>
@@ -3816,6 +3823,7 @@
 <translation id="8030729864112325446">职业教育与继续教育</translation>
 <translation id="8032546467100845887">透明</translation>
 <translation id="8035152190676905274">钢笔</translation>
+<translation id="8035264638816032066">系统会将您添加到表格中的标签页标题和网页网址发送给 Google</translation>
 <translation id="8037117624646282037">最近使用过这部设备的用户</translation>
 <translation id="8037357227543935929">询问（默认）</translation>
 <translation id="803771048473350947">文件</translation>
@@ -4116,6 +4124,7 @@
 <translation id="8564466070529550495">暂时无法使用虚拟卡，请稍后再试。</translation>
 <translation id="8564985650692024650">如果您在其他网站上重复使用了您的 <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> 密码，Chromium 建议您重置该密码。</translation>
 <translation id="8570895683659698018">爱好与休闲</translation>
+<translation id="8572792595597115856">有效期至 <ph name="DATE" /></translation>
 <translation id="8574841453995331336">冰箱和冷柜</translation>
 <translation id="8577192028579836704">所有选项的一般价格为 <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">无法使用虚拟卡</translation>
@@ -4138,6 +4147,7 @@
 <translation id="8617269623452051934">您的设备使用情况</translation>
 <translation id="861775596732816396">大小：4</translation>
 <translation id="8620276786115098679">Kaku 7 信封</translation>
+<translation id="8622864575115813231">正在联系金融机构…</translation>
 <translation id="8623885649813806493">没有匹配的密码。显示所有已保存的密码。</translation>
 <translation id="8624354461147303341">获取折扣信息</translation>
 <translation id="8634957317623797170">54 x 86 毫米</translation>
@@ -4436,6 +4446,7 @@
 <translation id="9192361865877479444">金属（哑光）</translation>
 <translation id="9192947025498305328">洁净美容</translation>
 <translation id="9199905725844810519">打印功能已被禁用</translation>
+<translation id="9204089334327209740">上传完成后，您可以在<ph name="CLOUD_PROVIDER" />中修改文件。本地存储空间（包括回收站中的所有文件）将被自动移除。</translation>
 <translation id="9205078245616868884">您的数据已使用您的同步密码加密。输入该密码即可开始同步。</translation>
 <translation id="920643408853370361">旅行保险</translation>
 <translation id="9207861905230894330">无法添加文章。</translation>
@@ -4456,6 +4467,7 @@
 <translation id="937804173274050966"><ph name="BEGIN_BOLD" />会使用哪些数据<ph name="END_BOLD" />：为确定您的广告主题，系统会使用您近期的浏览记录，即您在此设备上使用 Chrome 访问过的网站的列表。</translation>
 <translation id="937885410143139026">数据已发送到管理控制台</translation>
 <translation id="939736085109172342">新建文件夹</translation>
+<translation id="940524522703752213">系统将在 <ph name="MINUTES" /> 分钟后开始将文件上传到<ph name="CLOUD_PROVIDER" /></translation>
 <translation id="944540589955480312">使用保存在您 Google 账号中的密码和通行密钥</translation>
 <translation id="945646848072568856">Chrome 会阻止网站使用第三方 Cookie 跟踪您在浏览时的活动。</translation>
 <translation id="945855313015696284">请查看下面的信息，并删除所有无效卡片</translation>

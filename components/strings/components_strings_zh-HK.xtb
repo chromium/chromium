@@ -712,6 +712,7 @@
 <translation id="2265356434276802347">此政策只能包含最多 <ph name="MAX_ITEMS_LIMIT" /> 個精選項目。</translation>
 <translation id="2267047181501709434">正在驗證您的身分…</translation>
 <translation id="2268044343513325586">修正搜尋</translation>
+<translation id="2268966938956566076"><ph name="MINUTES" /> 分鐘後上傳</translation>
 <translation id="2270484714375784793">電話號碼</translation>
 <translation id="2276057643614339130">列印底座</translation>
 <translation id="2277103315734023688">向前快轉</translation>
@@ -1110,6 +1111,7 @@
 <translation id="3062655045399308513">刪除瀏覽資料…</translation>
 <translation id="306573536155379004">啟動咗遊戲。</translation>
 <translation id="3067505415088964188">價格偏低</translation>
+<translation id="3068118691172921711">1 分鐘後開始將檔案上傳至 <ph name="CLOUD_PROVIDER" /></translation>
 <translation id="3076865167425975822">作業系統</translation>
 <translation id="3080254622891793721">圖片</translation>
 <translation id="3082007635241601060">允許 Google 使用您的購物車資訊，尋找可用的個人化折扣</translation>
@@ -1121,6 +1123,7 @@
 <translation id="3099619114405539473">使用可存取的攝錄機 (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="3102312643185441063">儲蓄戶口</translation>
 <translation id="3103188521861412364">股票和債券</translation>
+<translation id="3103535543639438037">並排比較類似產品</translation>
 <translation id="3105172416063519923">資產識別碼：</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />檢查安全 DNS 設定<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">中匣</translation>
@@ -1298,6 +1301,7 @@
 <translation id="3407789382767355356">第三方登入</translation>
 <translation id="340924996148642843">目前無法使用比較功能</translation>
 <translation id="3409896703495473338">管理安全性設定</translation>
+<translation id="3411091017011773343"><ph name="HOURS" /> 小時後上傳</translation>
 <translation id="3414275587143250384">分散式和雲端運算</translation>
 <translation id="3414952576877147120">大小：</translation>
 <translation id="341513675006332771">玩 Chrome Dino 遊戲按鈕，啟動之後就可以喺 Chrome 玩恐龍遊戲</translation>
@@ -1892,7 +1896,6 @@
 <translation id="4451135742916150903">可要求連接 HID 裝置</translation>
 <translation id="4451684391620232683">向使用者顯示的文字：</translation>
 <translation id="4452328064229197696">系統發現您剛才使用的密碼因資料外洩而被洩露。為確保帳戶安全，Google 密碼管理工具建議您檢查已儲存的密碼。</translation>
-<translation id="4452957520362597816">要求安裝網絡應用程式</translation>
 <translation id="4456937135469235202">探險旅遊</translation>
 <translation id="4464826014807964867">有來自您機構資料的網站</translation>
 <translation id="4466576951214254884">學生貸款和大專貸款</translation>
@@ -1964,6 +1967,7 @@
 <translation id="4628678854894591460">度假優惠</translation>
 <translation id="4628948037717959914">相片</translation>
 <translation id="4629370161347991046">A4x6</translation>
+<translation id="462989688138616749"><ph name="HOURS" /> 小時後開始將檔案上傳至 <ph name="CLOUD_PROVIDER" /></translation>
 <translation id="4631649115723685955">已連結現金回贈</translation>
 <translation id="4631881646528206880">虛擬卡註冊</translation>
 <translation id="4635278307999235413">傳送緊資料去管理控制台</translation>
@@ -2084,6 +2088,7 @@
 <translation id="484988093836683706">使用裝置解鎖功能</translation>
 <translation id="4850886885716139402">檢視</translation>
 <translation id="4854853140771946034">在 Google Keep 中快速建立新筆記</translation>
+<translation id="4855395119669662878">系統管理員會在 <ph name="DATE_TIME" /> 開始將你的檔案上傳至 <ph name="CLOUD_PROVIDER" />。檔案上傳作業完成前，請勿中斷裝置連線。上傳期間，你只能讀取本機檔案。</translation>
 <translation id="485902285759009870">正在確認驗證碼…</translation>
 <translation id="4860260582253463350">前往 YouTube 之前，我們需要先確認你的身分。系統將會套用家長或監護人在 Family Link 所作的設定。</translation>
 <translation id="4864406669374375262">複製咗版本字串去剪貼簿</translation>
@@ -2139,6 +2144,7 @@
 <translation id="4933468175699107356">㩒一下右鍵就可以喺任何表格自動填入儲存咗嘅資料，例如名或者地址</translation>
 <translation id="4934780484581617878">視窗管理</translation>
 <translation id="4936134414789135531">找不到已插入的<ph name="VALUE_NAME" />。</translation>
+<translation id="4936573216809994970">1 小時後開始將檔案上傳至 <ph name="CLOUD_PROVIDER" /></translation>
 <translation id="4936675324097895694">金融</translation>
 <translation id="4943620199112228840">使用麥克風</translation>
 <translation id="4943872375798546930">搵唔到結果</translation>
@@ -2312,6 +2318,7 @@
 <translation id="5269225904387178860">四孔 (底部)</translation>
 <translation id="5271381225185906340">「<ph name="DATA_CONTROLS_ATTRIBUTE" />」不是「<ph name="DATA_CONTROLS_RESTRICTION" />」可支援的條件</translation>
 <translation id="5273658854610202413">警告：此政策並非可合併的字典政策，因此未有按PolicyDictionaryMultipleSourceMergeList 政策中指定的方式合併。</translation>
+<translation id="5278778426231952189">立即上傳</translation>
 <translation id="5279286380302340275">管理下載檔案</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">文件屬性</translation>
@@ -3815,6 +3822,7 @@
 <translation id="8030729864112325446">職業和持續進修教育</translation>
 <translation id="8032546467100845887">透明</translation>
 <translation id="8035152190676905274">筆</translation>
+<translation id="8035264638816032066">系統會將新增到表格的分頁標題和網頁網址傳送給 Google</translation>
 <translation id="8037117624646282037">最近使用過裝置的使用者</translation>
 <translation id="8037357227543935929">要求 (預設)</translation>
 <translation id="803771048473350947">檔案</translation>
@@ -4115,6 +4123,7 @@
 <translation id="8564466070529550495">目前無法使用虛擬卡，請稍後再試。</translation>
 <translation id="8564985650692024650">如果您已在其他網站上重用 <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> 密碼，Chromium 建議您重設密碼。</translation>
 <translation id="8570895683659698018">興趣及休閒</translation>
+<translation id="8572792595597115856">有效期限：<ph name="DATE" /></translation>
 <translation id="8574841453995331336">雪櫃和冰箱</translation>
 <translation id="8577192028579836704">所有選項一般為 <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">虛擬卡無法使用</translation>
@@ -4136,6 +4145,7 @@
 <translation id="8617269623452051934">您的裝置使用狀態</translation>
 <translation id="861775596732816396">粗幼：4</translation>
 <translation id="8620276786115098679">Kaku 7 信封</translation>
+<translation id="8622864575115813231">正在與金融機構聯絡...</translation>
 <translation id="8623885649813806493">沒有相符的密碼。顯示所有已儲存的密碼。</translation>
 <translation id="8624354461147303341">取得折扣</translation>
 <translation id="8634957317623797170">54 x 86 毫米</translation>
@@ -4434,6 +4444,7 @@
 <translation id="9192361865877479444">金屬 (啞面)</translation>
 <translation id="9192947025498305328">潔淨美容</translation>
 <translation id="9199905725844810519">已封鎖列印功能</translation>
+<translation id="9204089334327209740">上傳作業完成後，你可以在 <ph name="CLOUD_PROVIDER" /> 中修改檔案。系統會自動移除本機儲存空間 (包括垃圾桶中的所有檔案)。</translation>
 <translation id="9205078245616868884">您已使用同步密碼短語加密資料，請輸入密碼短語開始同步資料。</translation>
 <translation id="920643408853370361">旅遊保險</translation>
 <translation id="9207861905230894330">無法新增文章。</translation>
@@ -4454,6 +4465,7 @@
 <translation id="937804173274050966"><ph name="BEGIN_BOLD" />系統會使用什麼資料：<ph name="END_BOLD" />系統會根據您最近的瀏覽記錄 (即在此裝置上使用 Chrome 瀏覽的網站清單) 顯示廣告主題。</translation>
 <translation id="937885410143139026">將資料傳送咗去管理控制台</translation>
 <translation id="939736085109172342">新增資料夾</translation>
+<translation id="940524522703752213"><ph name="MINUTES" /> 分鐘後開始將檔案上傳至 <ph name="CLOUD_PROVIDER" /></translation>
 <translation id="944540589955480312">使用 Google 帳戶中儲存的密碼和密鑰</translation>
 <translation id="945646848072568856">Chrome 會禁止網站使用第三方 Cookie 追蹤瀏覽網站的使用者。</translation>
 <translation id="945855313015696284">請查看以下資料，並刪除無效的付款卡。</translation>

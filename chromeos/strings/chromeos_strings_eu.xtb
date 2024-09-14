@@ -52,6 +52,7 @@
 <translation id="1204296502688602597">DNSaren latentzia</translation>
 <translation id="1207734034680156868">Azalpenean daude oinarrituta iradokizunak</translation>
 <translation id="121090498480012229">erreproduzitu edo pausatu multimedia-edukia</translation>
+<translation id="1216675364136048456">Itxi</translation>
 <translation id="1223498995510244364">Egin laburpena</translation>
 <translation id="123124571410524056">Atari bat dagoela dirudi</translation>
 <translation id="1232610416724362657">Ur-jauzi</translation>
@@ -128,6 +129,7 @@
 <translation id="1588438908519853928">Arrunta</translation>
 <translation id="1591562245178063882">Oraingo hilabetea</translation>
 <translation id="1593528591614229756">Ziurtatu zure operadoreak edo administratzaileak eskaintzen dituen APNak hautatzen dituzula. APN bat hautatzean APN pertsonalizatuak desgaituko dira. Baliteke balio ez duten APNek mugikorreko konexioan eragitea. <ph name="LINK_BEGIN" />Lortu informazio gehiago<ph name="LINK_END" /></translation>
+<translation id="1604959087182679653">Ezkutatu transkripzioa</translation>
 <translation id="160633243685262989">Aurrebista-irudia</translation>
 <translation id="1611649489706141841">aurrera</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> ezkeroko datu-erabilera</translation>
@@ -141,6 +143,7 @@
 <translation id="1643449475550628585">Aldatu egunero horma-paperaren irudia</translation>
 <translation id="1644574205037202324">Historia</translation>
 <translation id="1651925268237749928">Album partekatu bat hautatu duzu. Beste pertsona batzuek argazkiak gehitu eta alda ditzakete. Baliteke une honetan albumean ez dauden argazkiak erabiltzea horma-paper gisa.</translation>
+<translation id="1661512400125589646">Pausatu</translation>
 <translation id="1661865805917886535">Baliteke kontuari eta sistemari buruzko zenbait datu bidaltzea Google-ri. Arazo teknikoak konpontzeko eta gure zerbitzuak hobetzeko erabiltzen dugu informazio hori, gure Pribatutasun-gidalerroei (<ph name="PRIVACYPOLICYURL" />) eta Zerbitzu-baldintzei (<ph name="TERMSOFSERVICEURL" />) jarraikiz. Edukian aldaketak eskatzeko, joan legezko laguntzari buruzko orrira (<ph name="LEGALHELPPAGEURL" />).</translation>
 <translation id="1662989795263954667">Geldituta: ez dago tintarik</translation>
 <translation id="1664796644829245314">Aurreikusi <ph name="PREVIEW_OBJECT" /></translation>
@@ -173,6 +176,7 @@
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1762483337755424125">Transkripzioa</translation>
 <translation id="1765169783255151332">Aldatu teklaz bizkor</translation>
 <translation id="1768959921651994223">Autentifikazio mota</translation>
 <translation id="1776228893584526149">Horma-paperaren tonua</translation>
@@ -217,6 +221,7 @@
 <translation id="1954818433534793392">Eraikina</translation>
 <translation id="1962550982027027473">APN lehenetsi bat behar da</translation>
 <translation id="1967860190218310525">Sortu APN bat</translation>
+<translation id="1967917622327567355">Erakutsi transkripzioa</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977973007732255293">tradizional</translation>
 <translation id="1977994649430373166">Google-ko profileko argazkia</translation>
@@ -260,6 +265,7 @@
 <translation id="2180197493692062006">Arazo bat izan da. Ireki berriro aplikazioa.</translation>
 <translation id="2189104374785738357">Editatu APNaren xehetasunak</translation>
 <translation id="2195732836444333448">Zerbitzua lanpetuta dago. Itzuli hemendik gutxira.</translation>
+<translation id="2197185031095816179">Nahi ez dituzun leiho gainerakorrak kentzeko, sarearen arazoak konpontzeko eta ustekabeko beste arazo batzuei aurre egiteko balio du segurtasun-egiaztapenak.</translation>
 <translation id="2201758491318984023">Bizikleta</translation>
 <translation id="2203272733515928691">Ur termaleko iturburu</translation>
 <translation id="2203642483788377106">Labar</translation>
@@ -538,6 +544,7 @@
 <translation id="3820172043799983114">PIN kodeak ez du balio.</translation>
 <translation id="382043424867370667">Ilunabarra erakusten duen horma-papera</translation>
 <translation id="3824259034819781947">Erantsi fitxategiak</translation>
+<translation id="3836587210832263413">Aktibatu luzapen fidagarriak soilik</translation>
 <translation id="3838338534323494292">Pasahitz berria</translation>
 <translation id="3845880861638660475">Leihoa ixteko, sakatu <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />Ihes<ph name="ESC_SHORTCUT_END" />.</translation>
 <translation id="3848280697030027394">teklatua iluntzea</translation>
@@ -598,6 +605,7 @@
 <translation id="4111761024568264522">USB bidezko ukipen-panela</translation>
 <translation id="4113067922640381334">Orain, <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />horma-paper<ph name="END_LINK_WALLPAPER_SUBPAGE" /> berriak erabil ditzakezu</translation>
 <translation id="4117637339509843559">Modu iluna</translation>
+<translation id="4126551873361000548">Atzeratu 10 segundo</translation>
 <translation id="4130035430755296270">Diseinu-aukera gehiago ikusteko, jarraitu gainetik pasatzen</translation>
 <translation id="4130750466177569591">Ados nago</translation>
 <translation id="4131410914670010031">Zuri-beltzez</translation>
@@ -627,6 +635,7 @@
 <translation id="4251839292699800785">Bulego dotorea</translation>
 <translation id="4258281355379922695">HTTP eskaeren latentzia</translation>
 <translation id="4266143281602681663">harila</translation>
+<translation id="4269815121975886860">Abiaraztearen hobespenak</translation>
 <translation id="4271957103967917607">Ikusi pantaila osoan</translation>
 <translation id="4275663329226226506">Multimedia-edukia</translation>
 <translation id="4278766082079064416">"<ph name="CONFLICT_ACCEL_NAME" />" funtziorako erabiltzen da lasterbidea. Gatazka konpontzeko, editatu edo ken ezazu.</translation>
@@ -678,6 +687,7 @@
 <translation id="4507392511610824664">handitu distira</translation>
 <translation id="4511264077854731334">Ataria</translation>
 <translation id="4513946894732546136">Iritzia</translation>
+<translation id="4516323842122524821">Bolumena</translation>
 <translation id="4521826082652183069">Gaiaren ordezko izenaren bat-etortzea</translation>
 <translation id="4522570452068850558">Xehetasunak</translation>
 <translation id="4536864596629708641">IParen konfigurazioa</translation>
@@ -762,6 +772,7 @@
 <translation id="4932733599132424254">Data</translation>
 <translation id="4950314376641394653"><ph name="DEVICE_NAME" /> gailuaren firmwarea <ph name="VERSION" /> bertsiora eguneratu da</translation>
 <translation id="4950893758552030541">zuhaitz-tunela</translation>
+<translation id="4965661459364092269">Amaitu da segurtasun-egiaztapena</translation>
 <translation id="4965703485264574128">Gutxi gorabeherako emaitza bat lortzeko, biderkatu <ph name="CATEGORY_TEXT" /> balioa <ph name="CONVERSION_RATE" /> faktorearekin</translation>
 <translation id="4969079779290789265">Zatitu</translation>
 <translation id="4972592110715526173">modu-aldaketa</translation>
@@ -782,6 +793,7 @@
 <translation id="5049856988445523908">SIMa blokeatuta dago (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Taldearen izena</translation>
 <translation id="5051044138948155788">Orri bakarra da hau. Eskaneatzeko prozesuaren hasierako orrira joango zara.</translation>
+<translation id="5053233795640754917">Pausatu</translation>
 <translation id="5078711626843651677">Ahots-ereduak aldi baterako gordeko dira gailuan, hizlari-etiketak esleitzen amaitu arte. Aukera hori desaktibatzeko, joan ezarpenetara.</translation>
 <translation id="5078983345702708852">futurista</translation>
 <translation id="5087864757604726239">atzera</translation>
@@ -789,6 +801,7 @@
 <translation id="5089810972385038852">Estatua</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
 <translation id="5095761549884461003">Eguneratzen jarraitzeko, deskonektatu USB kablea <ph name="DEVICE_NAME" /> gailutik eta konekta ezazu berriro</translation>
+<translation id="5095864667399748231">Aktibatu/Desaktibatu audioa</translation>
 <translation id="5099354524039520280">gora</translation>
 <translation id="5107243100836678918">Baliteke <ph name="META_KEY" /> teklarik gabeko lasterbideak gatazkan egotea aplikazioren baten lasterbidearekin. Lasterbide hau erabiltzen jarraitzeko, saka ezazu berriro; bestela, sakatu beste lasterbide bat <ph name="KEY" /> tekla erabilita. <ph name="LINK_BEGIN" />Lortu informazio gehiago<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">Antzekoak:</translation>
@@ -822,6 +835,7 @@
 <translation id="5252456968953390977">Ibiltaritza</translation>
 <translation id="5254600740122644523">Apal <ph name="SIMPLE_STYLE" /> bat, gela <ph name="SIMPLE_TONE" /> batean</translation>
 <translation id="5257811368506016604">Gaitu kolore argiaren modua</translation>
+<translation id="5261479807286543505">Abiaraztearen ezarpenak</translation>
 <translation id="5264277876637023664">Egin PUZaren proba</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" /> (<ph name="CREATION_TIME" />), <ph name="ERROR_STATUS" /></translation>
 <translation id="527501763019887383">APNa desgaituta dago.</translation>
@@ -934,6 +948,7 @@
 <translation id="588258955323874662">Pantaila osoa</translation>
 <translation id="5893975327266416093">Esleitzeko, sakatu teklatuko tekla bat</translation>
 <translation id="5895138241574237353">Berrabiarazi</translation>
+<translation id="5896602941605730551">Erreproduzitu</translation>
 <translation id="5901630391730855834">Horia</translation>
 <translation id="5903200662178656908">Gailua teklatu baten eta sagu baten konbinazio bat da.</translation>
 <translation id="5904994456462260490">Gehitu beste APN bat</translation>
@@ -1134,6 +1149,7 @@
 <translation id="680983167891198932">Gakoa</translation>
 <translation id="6816797338148849397">Eskuragarri dago zure hautapenari buruzko informazioa. Erabili gora egiteko gezi-tekla informazioa atzitzeko.</translation>
 <translation id="6831043979455480757">Itzuli</translation>
+<translation id="6846843854964504403">Segurtasun-berrezartzea</translation>
 <translation id="6853312040151791195">Bateriaren deskargatze-abiadura</translation>
 <translation id="6862416241246624313">Bidali dira oharrak</translation>
 <translation id="6866732840889595464">Bitxilore</translation>
@@ -1318,9 +1334,11 @@ Transkripzio horiek lortzeko, deskargatu transkripzio-eredua (gehienez ere 100 
 <translation id="7746357909584236306">editagarria</translation>
 <translation id="7747039790905080783">Aurrez partekatutako gakoa</translation>
 <translation id="7752963721013053477">Egunsentitik ilunabarrera: esklusiboa</translation>
+<translation id="7760571082554155847">Orri nagusiaren ezarpenak</translation>
 <translation id="7762130827864645708">Aldatu da pasahitza. Aurrerantzean, erabili pasahitz berria.</translation>
 <translation id="7763470514545477072">Domeinuko atzizkiaren bat-etortzea</translation>
 <translation id="7769672763586021400">Modelo-identifikatzailea</translation>
+<translation id="7774759755755950354">Atzera</translation>
 <translation id="7778717409420828014">Iritziek Chromebook-a hobetzen laguntzen digute. Gure taldeak berrikusiko du esan diguzuna. Txosten asko jasotzen ditugunez, ezingo dizugu erantzunik bidali.</translation>
 <translation id="7781829728241885113">Atzo</translation>
 <translation id="7784116172884276937">Ez dago DNS zerbitzaririk konfiguratuta</translation>
@@ -1358,6 +1376,7 @@ Transkripzio horiek lortzeko, deskargatu transkripzio-eredua (gehienez ere 100 
 <translation id="7942349550061667556">Gorria</translation>
 <translation id="7943235353293548836">Aktibo mantenarazteko mezu etengabearen denbora tartea</translation>
 <translation id="7943516765291457328">Aktibatu Bluetootha inguruan erabilgarri dauden wifi-guneak hautemateko</translation>
+<translation id="7944482598620888754">Webguneen edukia</translation>
 <translation id="7944562637040950644">aktibatu edo desaktibatu teklatuaren argiztapena</translation>
 <translation id="7953669802889559161">Idazketa-metodoak</translation>
 <translation id="7955587717700691983">Bluetooth bidezko teklatua</translation>
@@ -1394,6 +1413,7 @@ Transkripzio horiek lortzeko, deskargatu transkripzio-eredua (gehienez ere 100 
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Berretsi</translation>
 <translation id="8132480444149501833">Eskatu trafiko-kontagailuak</translation>
+<translation id="8135609423982943441">Balio lehenetsi seguruak berrezarri dira Chromebook-ean. Aldaketa horiek doitzeko, joan ezarpenetara.</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Hautatu <ph name="TOPIC_SOURCE" /> zerbitzuko <ph name="TOPIC_SOURCE_DESC" /> aukera</translation>
 <translation id="8151185429379586178">Garatzaileentzako tresnak</translation>
@@ -1411,6 +1431,7 @@ Transkripzio horiek lortzeko, deskargatu transkripzio-eredua (gehienez ere 100 
 <translation id="8227119283605456246">Erantsi fitxategia</translation>
 <translation id="8227488649450500937">Probatu eskaera-mezu hauetako bat edo ikusi <ph name="BEGIN_LINK_PROMPTING_GUIDE" />eskaera-mezuak idazteko gida<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="8230672074305416752">Ezin izan da egin ping sarerako atebide lehenetsian</translation>
+<translation id="8236972776513018241">Transkripzioa</translation>
 <translation id="8238771987802558562">Aukeratu APN bat</translation>
 <translation id="8246209727385807362">Operadore ezezaguna</translation>
 <translation id="8250926778281121244">herdoil-koloreko</translation>
@@ -1423,6 +1444,7 @@ Transkripzio horiek lortzeko, deskargatu transkripzio-eredua (gehienez ere 100 
 <translation id="8291967909914612644">Hasierako hornitzailearen herrialdea</translation>
 <translation id="8294431847097064396">Iturburua</translation>
 <translation id="8302368968391049045">HTTPSrako suebakia</translation>
+<translation id="8308787307410010965">Webguneen edukiaren ezarpenak</translation>
 <translation id="8312330582793120272">erreproduzitu multimedia-edukia</translation>
 <translation id="8318753676953949627">Ez dago irudirik</translation>
 <translation id="8320910311642849813">Baso</translation>
@@ -1513,6 +1535,7 @@ Transkripzio horiek lortzeko, deskargatu transkripzio-eredua (gehienez ere 100 
 <translation id="8775713578693478175">Modemaren APNa</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Baliteke sareak sare-zerbitzuaren atari bat edukitzea</translation>
+<translation id="8797082062139985406">Sortu izena Google-ren AA erabilita</translation>
 <translation id="8798099450830957504">Lehenetsia</translation>
 <translation id="8798441408945964110">Hornitzailearen izena</translation>
 <translation id="8808828119384186784">Chrome-ren ezarpenak</translation>
@@ -1533,6 +1556,7 @@ Transkripzio horiek lortzeko, deskargatu transkripzio-eredua (gehienez ere 100 
 <translation id="8864415976656252616">Ez dago iradokitako edukirik. Ikusi laguntza-eduki nagusia.</translation>
 <translation id="8868741746785112895">GUIDa</translation>
 <translation id="8876270629542503161">Gailua tableta bat da.</translation>
+<translation id="8878117140814294155">Aktibatu edo desaktibatu mikrofonoaren audioa</translation>
 <translation id="8881098542468797602">Gainditu da proba</translation>
 <translation id="8882789155418924367">hontzak</translation>
 <translation id="8892443466059986410">Utzi lasterbideak editatzeari</translation>

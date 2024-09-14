@@ -118,7 +118,6 @@
 <translation id="1346748346194534595">دائیں</translation>
 <translation id="1350494136075914725">جاری · ٹیب پر سوئچ کریں</translation>
 <translation id="1351937230027495976">مینیو کو سکیڑیں</translation>
-<translation id="1352537790882153971">آپ تار والے ہیڈ فونز سے اپنے مائیکروفون کی آواز کی نگرانی کر سکتے ہیں۔ رکنے کے لیے پینل بند کریں۔</translation>
 <translation id="1360220746312242196">صفحہ تلاش کرتے وقت، تلاش کے لیے پچھلی مماثلت پر جائیں</translation>
 <translation id="1360788414852622716">پروفائل کو غیر فعال کیا جا رہا ہے۔ اس میں چند منٹ لگ سکتے ہیں۔</translation>
 <translation id="1364382257761975320">‏اپنے Chromebook کو غیر مقفل کرنے کے لیے، اپنے فنگر پرنٹ کا استعمال کریں</translation>
@@ -397,7 +396,6 @@
 <translation id="2426051945783024481">کیمرے کا فریم خودکار طور پر بیچ میں کر دیا گیا ہے</translation>
 <translation id="2427507373259914951">بائیں طرف کلک کریں</translation>
 <translation id="2429753432712299108">بلوٹوتھ آلہ "<ph name="DEVICE_NAME" />" کو جوڑا بنانے کی اجازت درکار ہوگی۔ قبول کرنے سے پہلے، براہ کرم توثیق کریں کہ یہ پاس کلید اس آلہ پر دکھائی دے رہی ہے: <ph name="PASSKEY" /></translation>
-<translation id="2430444791038754658">وقت ختم ہو گیا۔ آپ مسلسل کامیابی حاصل کر رہے ہیں!</translation>
 <translation id="2435457462613246316">پاس ورڈ دکھائیں</translation>
 <translation id="2437771564543046790">بیٹری کم ہے۔ بیٹری سیور آن ہے</translation>
 <translation id="243878895369688216">گزشتہ کل کھولا گیا</translation>
@@ -777,7 +775,6 @@
 <translation id="3706423975342040244">تفریح</translation>
 <translation id="3707093869106077605"><ph name="UNAVAILABLE_DLC_ONE" /> اور <ph name="UNAVAILABLE_DLC_TWO" /> دستیاب نہیں ہیں۔</translation>
 <translation id="3708186454126126312">پہلے سے منسلک کردہ</translation>
-<translation id="3711282657843423160">سب ہو گیا۔ اسے برقرار رکھیں!</translation>
 <translation id="3712143870407382523">اس سائیڈ کے لیے ایک ونڈو کا انتخاب کریں</translation>
 <translation id="371370241367527062">سامنے کا مائیکروفون</translation>
 <translation id="3713734891607377840">مکمل ہونے پر کھولیں</translation>
@@ -847,7 +844,6 @@
 <translation id="397105322502079400">حساب لگایا جا رہا ہے…</translation>
 <translation id="397726367135689299">بیٹری کی چارجنگ ناقابل اعتبار ہو سکتی ہے۔</translation>
 <translation id="3977512764614765090">‏بیٹری ‎<ph name="PERCENTAGE" />%‎ ہے اور چارج ہو رہی ہے۔</translation>
-<translation id="397808938113646171">وقت ختم ہو گیا۔ بہترین!</translation>
 <translation id="3982013579989864579">آڈیو آؤٹ پٹ سوئچ کریں؟</translation>
 <translation id="3984536049089846927">اگلا صفحہ</translation>
 <translation id="3986082989454912832">جواب</translation>
@@ -1003,7 +999,6 @@
 <translation id="4477751544736611934">اس کے نتیجے میں ڈیٹا چارجز لگ سکتے ہیں۔
 1 آلہ منسلک ہو گیا۔</translation>
 <translation id="4477892968187500306">‏یہ آلہ ایسی ایپس پر مشتمل ہو سکتا ہے جو Google کے ذریعے تصدیق شدہ نہیں ہیں۔</translation>
-<translation id="4479130137987693286">اگر آپ کو ضرورت ہو تو آپ تھوڑا اور وقت شامل کر سکتے ہیں، یا اپنا فوکس سیشن ختم کر سکتے ہیں</translation>
 <translation id="4479639480957787382">ایتھرنیٹ</translation>
 <translation id="4481530544597605423">جوڑا ختم کیے ہوئے آلات</translation>
 <translation id="4485506555414638855">اپنے فون کی حالیہ تصاویر، میڈیا، اطلاعات اور ایپس دیکھنے کے سیٹ اپ کو برخاست کریں</translation>
@@ -1056,7 +1051,6 @@
 
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">‏ChromeVox فعال ہے</translation>
-<translation id="4665182893355091947">سب ہو گیا۔ بہت خوب!</translation>
 <translation id="4666911709726371538">مزید ایپس</translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> ڈاؤن لوڈ ہو رہی ہے</translation>
 <translation id="4672539464599646374">بیٹری سیور کو آن کیا گیا</translation>
@@ -1781,7 +1775,6 @@
 <translation id="7064351585062927183">اس آئندہ <ph name="DAY_OF_WEEK" /> کو</translation>
 <translation id="7066646422045619941">اس نیٹ ورک کو آپ کے منتظم نے غیر فعال کیا ہے۔</translation>
 <translation id="7067196344162293536">خود کار طور پر گھمائیں</translation>
-<translation id="7067569040620564762">وقت ختم ہو گیا۔ ہو گیا!</translation>
 <translation id="7068360136237591149">فائلیں کھولیں</translation>
 <translation id="7076293881109082629">سائن ان کیا جا رہا ہے</translation>
 <translation id="7076878155205969899">آواز خاموش کریں</translation>
@@ -1816,7 +1809,6 @@
 <translation id="7189412385142492784">‏Venus کتنا دور ہے</translation>
 <translation id="7198435252016571249">کیمرا نیچے دائیں کونے میں اسنیپ کیا گیا ہے۔ سسٹم کی سطح سے متصادم ہے۔</translation>
 <translation id="7219573373513695352">کوئی آلات منسلک نہیں</translation>
-<translation id="7226347284543965442">وقت ختم ہو گیا۔ آپ نے کر دکھایا!</translation>
 <translation id="7229029500464092426"><ph name="AVAILABLE_MEMORY" /> میموری | کل <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7244725679040769470"><ph name="PERCENTAGE" />% بیٹری باقی ہے۔ اپنے آلے کو پاور سے منسلک کریں۔</translation>
 <translation id="7246071203293827765">‏<ph name="UPDATE_TEXT" />۔ اپ ڈیٹ کو لاگو کرنے کے لیے Chromebook کو ری سٹارٹ کرنے کی ضرورت ہے۔ اس میں 1 منٹ تک لگ سکتا ہے۔</translation>
@@ -2171,7 +2163,6 @@
 <translation id="8443879455002739353">"کاپی کریں"</translation>
 <translation id="8444246603146515890"><ph name="DESK_TITILE" /> ڈیسک فعال کر دیا گیا</translation>
 <translation id="8446884382197647889">مزید جانیں</translation>
-<translation id="8452090802952003258">اپنے مائیک کی آواز سنیں</translation>
 <translation id="8456543082656546101">‏V + <ph name="SHORTCUT_KEY_NAME" />‏</translation>
 <translation id="8462305545768648477">سننے کیلئے منتخب کریں کو بند کریں</translation>
 <translation id="8468806060683421065"><ph name="DUE_DATE_AND_TIME" /> آخری تاریخ ہے</translation>
@@ -2233,7 +2224,6 @@
 <translation id="8683506306463609433">کارکردگی کا پتا لگانا فعال ہے</translation>
 <translation id="8703634754197148428">‏ریکارڈنگ شروع کریں۔ ریکارڈنگ شروع ہونے کے بعد، شیلف پر نیویگیٹ کرنے کیلئے Alt + Shift + L استعمال کریں اور 'ریکارڈنگ بند کریں' بٹن تلاش کریں</translation>
 <translation id="8704155109538237473">تصویر میں تصویر ونڈو پر فوکس کریں</translation>
-<translation id="8708657523363087260">سائیڈ ٹون کو ٹوگل کریں</translation>
 <translation id="870917907284186124">ڈکٹیشن کو آن/آف کریں (اپنی آواز سے ٹائپ کریں)</translation>
 <translation id="8711169534266271368">گیم ڈیش بورڈ کے اختیارات</translation>
 <translation id="8712637175834984815">سمجھ آ گئی</translation>
