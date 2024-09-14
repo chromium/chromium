@@ -33,7 +33,7 @@ const int kIndicatorSpace = 2;
 const int kIndicatorWidth = 2;
 const int kIndicatorTotalWidth =
     kIndicatorLines * kIndicatorWidth + (kIndicatorLines - 1) * kIndicatorSpace;
-const float kIndicatorLengths[] = {0.3, 0.8, 0.5, 0.75};
+const float kIndicatorLengths[] = {0.4, 0.9, 0.6, 0.85};
 
 // Powers above kLogEwmaMax will be restricted to this value.
 const float kLogEwmaMax = std::log(0.02);
@@ -43,7 +43,7 @@ const float kLogEwmaDiff = kLogEwmaMax - kLogEwmaMin;
 
 constexpr int kMaxStep = 8;
 constexpr float phaseLengths[] = {1.0, 1.1, 1.3, 1.1, 1.0, 0.9, 0.7, 0.9};
-constexpr auto kMicIndicatorInsets = gfx::Insets::TLBR(16, 16, 16, 16);
+constexpr auto kMicIndicatorInsets = gfx::Insets::TLBR(10, 10, 10, 10);
 
 float ScalePower(float power) {
   // Adjust the power on a logarithmic scale, allowing for more noticeable
@@ -67,7 +67,7 @@ MicIndicator::MicIndicator() {
 
   power_ = VideoConferenceTrayController::Get()->GetEwmaPower();
   step_ = 0;
-  color_ = cros_tokens::kCrosSysDisabledOpaque;
+  color_ = cros_tokens::kCrosSysOnSurface;
 
   timer_ = std::make_unique<base::RepeatingTimer>();
   timer_->Start(FROM_HERE, base::Milliseconds(30),
@@ -86,8 +86,8 @@ void MicIndicator::UpdateProgress() {
   if (step_ == 0) {
     bool sidetone_enabled =
         VideoConferenceTrayController::Get()->GetSidetoneEnabled();
-    color_ = sidetone_enabled ? cros_tokens::kCrosSysPrimary
-                              : cros_tokens::kCrosSysDisabledOpaque;
+    color_ = sidetone_enabled ? cros_tokens::kCrosSysSystemOnPrimaryContainer
+                              : cros_tokens::kCrosSysOnSurface;
     power_ = VideoConferenceTrayController::Get()->GetEwmaPower();
   }
   SchedulePaint();
