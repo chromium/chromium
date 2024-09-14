@@ -8,17 +8,17 @@
 #include <ostream>
 
 #include "base/component_export.h"
+#include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/base/ui_base_types.h"
 
 namespace chromeos {
 
-// A superset of ui::WindowShowState. Ash has more states than the general
-// ui::WindowShowState enum. These need to be communicated back to Chrome.
-// The separate enum is defined here because we don't want to leak these type to
-// ui/base until they're stable and we know for sure that they'll persist over
-// time.
-// Note this should be kept in sync with `WindowStateType` enum in
-// tools/metrics/histograms/enums.xml.
+// A superset of ui::mojom::WindowShowState. Ash has more states than the
+// general ui::mojom::WindowShowState enum. These need to be communicated back
+// to Chrome. The separate enum is defined here because we don't want to leak
+// these type to ui/base until they're stable and we know for sure that they'll
+// persist over time. Note this should be kept in sync with `WindowStateType`
+// enum in tools/metrics/histograms/enums.xml.
 enum class WindowStateType {
   // States which correspond to ui.mojom.ShowState.
   kDefault,
@@ -52,13 +52,13 @@ enum class WindowStateType {
 COMPONENT_EXPORT(CHROMEOS_UI_BASE)
 std::ostream& operator<<(std::ostream& stream, WindowStateType state);
 
-// Utility functions to convert WindowStateType <-> ui::WindowShowState.
+// Utility functions to convert WindowStateType <-> ui::mojom::WindowShowState.
 // Note: LEFT/RIGHT MAXIMIZED, AUTO_POSITIONED types will be lost when
-// converting to ui::WindowShowState.
+// converting to ui::mojom::WindowShowState.
 COMPONENT_EXPORT(CHROMEOS_UI_BASE)
-WindowStateType ToWindowStateType(ui::WindowShowState state);
+WindowStateType ToWindowStateType(ui::mojom::WindowShowState state);
 COMPONENT_EXPORT(CHROMEOS_UI_BASE)
-ui::WindowShowState ToWindowShowState(WindowStateType type);
+ui::mojom::WindowShowState ToWindowShowState(WindowStateType type);
 
 // Returns true if |type| is PINNED or TRUSTED_PINNED.
 COMPONENT_EXPORT(CHROMEOS_UI_BASE)

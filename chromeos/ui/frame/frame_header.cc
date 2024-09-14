@@ -14,6 +14,7 @@
 #include "ui/base/class_property.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_observer.h"
@@ -279,9 +280,10 @@ void FrameHeader::SetPaintAsActive(bool paint_as_active) {
   UpdateFrameColors();
 }
 
-void FrameHeader::OnShowStateChanged(ui::WindowShowState show_state) {
-  if (show_state == ui::SHOW_STATE_MINIMIZED)
+void FrameHeader::OnShowStateChanged(ui::mojom::WindowShowState show_state) {
+  if (show_state == ui::mojom::WindowShowState::kMinimized) {
     return;
+  }
 
   LayoutHeaderInternal();
 }
