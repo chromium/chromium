@@ -10,12 +10,14 @@ import org.chromium.ui.dragdrop.DropDataAndroid;
 /** */
 public class ChromeDropDataAndroid extends DropDataAndroid {
     public final Tab tab;
+    public final boolean isTabInGroup;
     public final boolean allowTabDragToCreateInstance;
 
     /** Not generated from java */
     ChromeDropDataAndroid(Builder builder) {
         super(null, null, null, null, null);
         tab = builder.mTab;
+        isTabInGroup = builder.mIsTabInGroup;
         allowTabDragToCreateInstance = builder.mAllowTabDragToCreateInstance;
     }
 
@@ -39,6 +41,7 @@ public class ChromeDropDataAndroid extends DropDataAndroid {
     /** Builder for @{@link ChromeDropDataAndroid} instance. */
     public static class Builder {
         private Tab mTab;
+        private boolean mIsTabInGroup;
         private boolean mAllowTabDragToCreateInstance;
 
         /**
@@ -47,6 +50,15 @@ public class ChromeDropDataAndroid extends DropDataAndroid {
          */
         public Builder withTab(Tab tab) {
             mTab = tab;
+            return this;
+        }
+
+        /**
+         * @param isTabInGroup Whether the dragged tab is in a tab group.
+         * @return {@link ChromeDropDataAndroid.Builder} instance.
+         */
+        public Builder withTabInGroup(boolean isTabInGroup) {
+            mIsTabInGroup = isTabInGroup;
             return this;
         }
 

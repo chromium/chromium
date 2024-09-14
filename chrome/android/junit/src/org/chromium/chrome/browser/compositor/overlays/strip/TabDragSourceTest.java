@@ -62,6 +62,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.LayerTitleCache;
@@ -79,7 +80,9 @@ import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.dragdrop.DragAndDropDelegate;
 import org.chromium.ui.dragdrop.DragDropGlobalState;
@@ -125,6 +128,8 @@ public class TabDragSourceTest {
     @Mock private StripLayoutHelper mDestStripLayoutHelper;
     @Mock private MultiInstanceManager mSourceMultiInstanceManager;
     @Mock private MultiInstanceManager mDestMultiInstanceManager;
+    @Mock private TabGroupModelFilter mTabGroupModelFilter;
+    @Mock private TabModelFilterProvider mTabModelFilterProvider;
     private TabDragSource mSourceInstance;
     private TabDragSource mDestInstance;
 
@@ -137,6 +142,7 @@ public class TabDragSourceTest {
     private final Context mContext = ContextUtils.getApplicationContext();
     private boolean mTabStripVisible;
     private SharedPreferencesManager mSharedPreferencesManager;
+    private UserActionTester mUserActionTest;
 
     /** Resets the environment before each test. */
     @Before
@@ -171,6 +177,8 @@ public class TabDragSourceTest {
         when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel);
 
         when(mTabStripHeightSupplier.get()).thenReturn(mTabStripHeight);
+        when(mTabModelSelector.getTabModelFilterProvider()).thenReturn(mTabModelFilterProvider);
+        when(mTabModelFilterProvider.getCurrentTabModelFilter()).thenReturn(mTabGroupModelFilter);
 
         mSourceInstance =
                 new TabDragSource(
@@ -203,6 +211,7 @@ public class TabDragSourceTest {
         when(mSourceMultiInstanceManager.closeChromeWindowIfEmpty(anyInt())).thenReturn(false);
 
         mSharedPreferencesManager = ChromeSharedPreferences.getInstance();
+        mUserActionTest = new UserActionTester();
     }
 
     @After
@@ -609,6 +618,34 @@ public class TabDragSourceTest {
     @EnableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
     @Test
     public void test_onDrag_dropOutsideToolbarContainer_dragAsWindow() {
+        // Verify tab is successfully dropped as a window.
+        verifyDropOutsideToolbarContainerAsWindow();
+
+        // Verify the user action `TabRemovedFromGroup` is not recorded.
+        assertEquals(
+                "TabRemovedFromGroup should not be recorded as the tab being dragged is not in a"
+                        + " tab group",
+                0,
+                mUserActionTest.getActionCount("MobileToolbarReorderTab.TabRemovedFromGroup"));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
+    public void test_dragAsWindow_recordTabRemovedFromGroup() {
+        // The tab being dragged is in a tab group.
+        when(mTabGroupModelFilter.isTabInTabGroup(mTabBeingDragged)).thenReturn(true);
+
+        // Verify tab is successfully dropped as a window.
+        verifyDropOutsideToolbarContainerAsWindow();
+
+        // Verify the user action`TabRemovedFromGroup` is recorded.
+        assertEquals(
+                "TabRemovedFromGroup should be recorded",
+                1,
+                mUserActionTest.getActionCount("MobileToolbarReorderTab.TabRemovedFromGroup"));
+    }
+
+    private void verifyDropOutsideToolbarContainerAsWindow() {
         new DragEventInvoker().dragExit(mSourceInstance).verifyShadowVisibility(true).end(false);
 
         // Verify appropriate events are generated.
@@ -930,6 +967,33 @@ public class TabDragSourceTest {
 
     @Test
     public void testHistogram_nonLastTabDroppedInStripDoesNotCloseWindow_source() {
+        // Verify histograms.
+        testNonLastTabDroppedInStripHistogram();
+
+        // Verify the user action`TabRemovedFromGroup` is not recorded.
+        assertEquals(
+                "TabRemovedFromGroup should not be recorded as the tab being dragged is not in a"
+                        + " tab group",
+                0,
+                mUserActionTest.getActionCount("MobileToolbarReorderTab.TabRemovedFromGroup"));
+    }
+
+    @Test
+    public void testNonLastTabDroppedInStrip_RecordTabRemovedFromGroup() {
+        // The tab being dragged is in a tab group.
+        when(mTabGroupModelFilter.isTabInTabGroup(mTabBeingDragged)).thenReturn(true);
+
+        // Verify histograms.
+        testNonLastTabDroppedInStripHistogram();
+
+        // Verify the user action`TabRemovedFromGroup` is recorded.
+        assertEquals(
+                "TabRemovedFromGroup should be recorded",
+                1,
+                mUserActionTest.getActionCount("MobileToolbarReorderTab.TabRemovedFromGroup"));
+    }
+
+    private void testNonLastTabDroppedInStripHistogram() {
         HistogramWatcher histogramExpectation =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Android.DragDrop.Tab.SourceWindowClosed", false);
