@@ -148,6 +148,11 @@ class ShortcutsBackend : public RefcountedKeyedService,
   // Finishes initialization on UI thread, notifies all observers.
   void InitCompleted();
 
+  // Computes and records various metrics for the database. Should only be
+  // called once and only upon successful Init and before deleting old
+  // shortcuts.
+  void ComputeDatabaseMetrics();
+
   // Adds the Shortcut to the database.
   bool AddShortcut(const ShortcutsDatabase::Shortcut& shortcut);
 

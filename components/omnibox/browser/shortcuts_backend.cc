@@ -447,6 +447,11 @@ void ShortcutsBackend::OnHistoryDeletions(
       shortcut_ids.push_back(guid_pair.first);
     }
   }
+
+  UMA_HISTOGRAM_COUNTS_100(
+      "ShortcutsProvider.OldEntryDeletions.OnHistoryDeletions",
+      shortcut_ids.size());
+
   DeleteShortcutsWithIDs(shortcut_ids);
 }
 
@@ -459,24 +464,12 @@ void ShortcutsBackend::InitInternal() {
 
   temp_shortcuts_map_ = std::make_unique<ShortcutMap>();
   temp_guid_map_ = std::make_unique<GuidMap>();
-  const base::Time now(base::Time::Now());
-  int num_old_shortcuts = 0;
   for (ShortcutsDatabase::GuidToShortcutMap::const_iterator it(
            shortcuts.begin());
        it != shortcuts.end(); ++it) {
     (*temp_guid_map_)[it->first] = temp_shortcuts_map_->insert(
         std::make_pair(base::i18n::ToLower(it->second.text), it->second));
-    if (now - it->second.last_access_time >
-        base::Days(history::HistoryBackend::kExpireDaysThreshold)) {
-      num_old_shortcuts++;
-    }
   }
-
-  // Record database statistics.
-  UMA_HISTOGRAM_COUNTS_10000("ShortcutsProvider.DatabaseSize",
-                             temp_shortcuts_map_->size());
-  UMA_HISTOGRAM_COUNTS_10000("ShortcutsProvider.DatabaseSize.OldEntries",
-                             num_old_shortcuts);
 
   main_runner_->PostTask(
       FROM_HERE, base::BindOnce(&ShortcutsBackend::InitCompleted, this));
@@ -492,6 +485,8 @@ void ShortcutsBackend::InitCompleted() {
   for (ShortcutsBackendObserver& observer : observer_list_)
     observer.OnShortcutsLoaded();
 
+  ComputeDatabaseMetrics();
+
   if (base::FeatureList::IsEnabled(omnibox::kOmniboxDeleteOldShortcuts)) {
     main_runner_->PostDelayedTask(
         FROM_HERE,
@@ -500,6 +495,28 @@ void ShortcutsBackend::InitCompleted() {
             weak_factory_.GetWeakPtr()),
         base::Minutes(kInitialExpirationDelayMinutes));
   }
+}
+
+void ShortcutsBackend::ComputeDatabaseMetrics() {
+  int num_shortcuts = shortcuts_map_.size();
+  UMA_HISTOGRAM_COUNTS_10000("ShortcutsProvider.DatabaseSize", num_shortcuts);
+
+  int num_old_shortcuts = 0;
+  const base::Time now(base::Time::Now());
+  for (const auto& shortcut_pair : shortcuts_map_) {
+    if (now - shortcut_pair.second.last_access_time >
+        base::Days(history::HistoryBackend::kExpireDaysThreshold)) {
+      num_old_shortcuts++;
+    }
+  }
+  UMA_HISTOGRAM_COUNTS_10000("ShortcutsProvider.DatabaseSize.OldEntries",
+                             num_old_shortcuts);
+
+  int tenth_percent_old_shortcuts =
+      static_cast<int>((num_old_shortcuts * 1000.0 / num_shortcuts));
+  UMA_HISTOGRAM_EXACT_LINEAR(
+      "ShortcutsProvider.DatabaseSize.OldEntriesPercentage",
+      tenth_percent_old_shortcuts, 1001);
 }
 
 bool ShortcutsBackend::AddShortcut(
@@ -607,7 +624,7 @@ bool ShortcutsBackend::DeleteOldShortcuts() {
       shortcut_ids.push_back(guid_pair.first);
     }
   }
-  UMA_HISTOGRAM_COUNTS_10000("ShortcutsProvider.OldEntryDeletions",
+  UMA_HISTOGRAM_COUNTS_10000("ShortcutsProvider.OldEntryDeletions.OnInit",
                              shortcut_ids.size());
   return DeleteShortcutsWithIDs(shortcut_ids);
 }
