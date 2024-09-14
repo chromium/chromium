@@ -14,6 +14,7 @@
 #include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/frame/frame_utils.h"
 #include "ui/aura/client/aura_constants.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 
 namespace ash {
 
@@ -224,11 +225,11 @@ bool ResizeShadowController::ShouldShowShadowForWindow(
     aura::Window* window) const {
   // Hide the shadow if it's a maximized/fullscreen/minimized window or the
   // overview mode is active.
-  ui::WindowShowState show_state =
+  ui::mojom::WindowShowState show_state =
       window->GetProperty(aura::client::kShowStateKey);
-  return show_state != ui::SHOW_STATE_FULLSCREEN &&
-         show_state != ui::SHOW_STATE_MAXIMIZED &&
-         show_state != ui::SHOW_STATE_MINIMIZED &&
+  return show_state != ui::mojom::WindowShowState::kFullscreen &&
+         show_state != ui::mojom::WindowShowState::kMaximized &&
+         show_state != ui::mojom::WindowShowState::kMinimized &&
          !Shell::Get()->overview_controller()->InOverviewSession();
 }
 

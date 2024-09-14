@@ -105,6 +105,7 @@
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
@@ -1198,7 +1199,7 @@ TEST_F(CaptureModeTest,
   // moving a fullscreen window triggers the shelf to occur, which changes
   // display metrics.
   recorded_window->SetProperty(aura::client::kShowStateKey,
-                               ui::SHOW_STATE_FULLSCREEN);
+                               ui::mojom::WindowShowState::kFullscreen);
 
   auto* session = controller->capture_mode_session();
 

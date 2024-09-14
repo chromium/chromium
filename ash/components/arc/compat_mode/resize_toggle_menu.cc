@@ -24,6 +24,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
@@ -193,10 +194,12 @@ ResizeToggleMenu::ResizeToggleMenu(
       pref_delegate_(pref_delegate) {
   aura::Window* const window = widget->GetNativeWindow();
   // Don't show the menu in maximized or fullscreen.
-  const ui::WindowShowState state =
+  const ui::mojom::WindowShowState state =
       window->GetProperty(aura::client::kShowStateKey);
-  if (state == ui::SHOW_STATE_FULLSCREEN || state == ui::SHOW_STATE_MAXIMIZED)
+  if (state == ui::mojom::WindowShowState::kFullscreen ||
+      state == ui::mojom::WindowShowState::kMaximized) {
     return;
+  }
 
   window_observation_.Observe(window);
 
@@ -246,10 +249,12 @@ void ResizeToggleMenu::OnWindowPropertyChanged(aura::Window* window,
                                                intptr_t old) {
   DCHECK(window_observation_.IsObservingSource(window));
   if (key == aura::client::kShowStateKey) {
-    const ui::WindowShowState state =
+    const ui::mojom::WindowShowState state =
         window->GetProperty(aura::client::kShowStateKey);
-    if (state == ui::SHOW_STATE_FULLSCREEN || state == ui::SHOW_STATE_MAXIMIZED)
+    if (state == ui::mojom::WindowShowState::kFullscreen ||
+        state == ui::mojom::WindowShowState::kMaximized) {
       CloseBubble();
+    }
   } else if (key == ash::kArcResizeLockTypeKey) {
     UpdateSelectedButton();
   }

@@ -25,6 +25,7 @@
 #include "ui/aura/test/test_window_delegate.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/display/display_layout.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/test/display_manager_test_api.h"
@@ -141,7 +142,7 @@ class ImmersiveFullscreenControllerTest : public AshTestBase {
     widget_->Init(std::move(params));
     widget_->Show();
 
-    SetWindowShowState(ui::SHOW_STATE_FULLSCREEN);
+    SetWindowShowState(ui::mojom::WindowShowState::kFullscreen);
     gfx::Size window_size = widget_->GetWindowBoundsInScreen().size();
     content_view_ = new views::NativeViewHost();
     content_view_->SetBounds(0, 0, window_size.width(), window_size.height());
@@ -193,7 +194,7 @@ class ImmersiveFullscreenControllerTest : public AshTestBase {
     }
   }
 
-  void SetWindowShowState(ui::WindowShowState show_state) {
+  void SetWindowShowState(ui::mojom::WindowShowState show_state) {
     window()->SetProperty(aura::client::kShowStateKey, show_state);
   }
 
@@ -250,7 +251,7 @@ class ImmersiveFullscreenControllerTest : public AshTestBase {
 // Test the initial state and that the delegate gets notified of the
 // top-of-window views getting hidden and revealed.
 TEST_F(ImmersiveFullscreenControllerTest, Delegate) {
-  SetWindowShowState(ui::SHOW_STATE_MAXIMIZED);
+  SetWindowShowState(ui::mojom::WindowShowState::kMaximized);
 
   // Initial state.
   EXPECT_FALSE(controller()->IsEnabled());
@@ -280,7 +281,7 @@ TEST_F(ImmersiveFullscreenControllerTest, Delegate) {
 
 // GetRevealedLock() specific tests.
 TEST_F(ImmersiveFullscreenControllerTest, RevealedLock) {
-  SetWindowShowState(ui::SHOW_STATE_MAXIMIZED);
+  SetWindowShowState(ui::mojom::WindowShowState::kMaximized);
 
   std::unique_ptr<ImmersiveRevealedLock> lock1;
   std::unique_ptr<ImmersiveRevealedLock> lock2;
@@ -682,7 +683,7 @@ TEST_F(ImmersiveFullscreenControllerTest, WindowsInTabletMode) {
   // Top-of-window views will not be revealed for full-screened window in tablet
   // mode either.
   EnableTabletMode(true);
-  SetWindowShowState(ui::SHOW_STATE_FULLSCREEN);
+  SetWindowShowState(ui::mojom::WindowShowState::kFullscreen);
   AttemptReveal(MODALITY_GESTURE_SCROLL);
   EXPECT_FALSE(controller()->IsRevealed());
 
@@ -795,7 +796,7 @@ TEST_F(ImmersiveFullscreenControllerTest, EventsDoNotLeakToWindowUnderneath) {
 // Check that the window state gets properly marked for immersive fullscreen.
 TEST_F(ImmersiveFullscreenControllerTest, WindowStateImmersiveFullscreen) {
   WindowState* window_state = WindowState::Get(window());
-  SetWindowShowState(ui::SHOW_STATE_NORMAL);
+  SetWindowShowState(ui::mojom::WindowShowState::kNormal);
 
   EXPECT_FALSE(window_state->IsInImmersiveFullscreen());
   SetEnabled(true);
@@ -1050,12 +1051,12 @@ TEST_F(ImmersiveFullscreenControllerTest, Shelf) {
   Shelf* shelf = GetPrimaryShelf();
 
   // Shelf is visible by default.
-  SetWindowShowState(ui::SHOW_STATE_NORMAL);
+  SetWindowShowState(ui::mojom::WindowShowState::kNormal);
   ASSERT_FALSE(controller()->IsEnabled());
   ASSERT_EQ(SHELF_VISIBLE, shelf->GetVisibilityState());
 
   // Entering immersive fullscreen sets the shelf to auto hide.
-  SetWindowShowState(ui::SHOW_STATE_FULLSCREEN);
+  SetWindowShowState(ui::mojom::WindowShowState::kFullscreen);
   SetEnabled(true);
   EXPECT_EQ(SHELF_AUTO_HIDE, shelf->GetVisibilityState());
   EXPECT_EQ(SHELF_AUTO_HIDE_HIDDEN, shelf->GetAutoHideState());
@@ -1078,7 +1079,7 @@ TEST_F(ImmersiveFullscreenControllerTest, Shelf) {
 
   // Disabling immersive fullscreen puts it back.
   SetEnabled(false);
-  SetWindowShowState(ui::SHOW_STATE_NORMAL);
+  SetWindowShowState(ui::mojom::WindowShowState::kNormal);
   ASSERT_FALSE(controller()->IsEnabled());
   EXPECT_EQ(SHELF_VISIBLE, shelf->GetVisibilityState());
 
@@ -1087,13 +1088,13 @@ TEST_F(ImmersiveFullscreenControllerTest, Shelf) {
   EXPECT_EQ(SHELF_AUTO_HIDE, shelf->GetVisibilityState());
 
   // Entering immersive fullscreen keeps auto-hide.
-  SetWindowShowState(ui::SHOW_STATE_FULLSCREEN);
+  SetWindowShowState(ui::mojom::WindowShowState::kFullscreen);
   SetEnabled(true);
   EXPECT_EQ(SHELF_AUTO_HIDE, shelf->GetVisibilityState());
 
   // Disabling immersive fullscreen maintains the user's auto-hide selection.
   SetEnabled(false);
-  SetWindowShowState(ui::SHOW_STATE_NORMAL);
+  SetWindowShowState(ui::mojom::WindowShowState::kNormal);
   EXPECT_EQ(SHELF_AUTO_HIDE, shelf->GetVisibilityState());
 }
 

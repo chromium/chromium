@@ -10,6 +10,7 @@
 #include "ash/wm/window_util.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -52,7 +53,7 @@ TEST_F(FullscreenWindowFinderTest, NonFullscreen) {
 // Test that a regular fullscreen window is found by GetWindowForFullscreenMode.
 TEST_F(FullscreenWindowFinderTest, RegularFullscreen) {
   test_window_->SetProperty(aura::client::kShowStateKey,
-                            ui::SHOW_STATE_FULLSCREEN);
+                            ui::mojom::WindowShowState::kFullscreen);
   EXPECT_TRUE(FullscreenWindowExists());
 }
 

@@ -19,6 +19,7 @@
 #include "base/memory/raw_ptr.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/screen.h"
 #include "ui/views/widget/widget.h"
@@ -138,7 +139,7 @@ TEST_F(LockLayoutManagerTest, MaximizedFullscreenWindowBoundsAreEqualToScreen) {
   views::Widget::InitParams widget_params(
       views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
-  widget_params.show_state = ui::SHOW_STATE_MAXIMIZED;
+  widget_params.show_state = ui::mojom::WindowShowState::kMaximized;
   const gfx::Rect bounds = gfx::Rect(10, 10, 300, 300);
   widget_params.bounds = bounds;
   // Maximized TYPE_WINDOW_FRAMELESS windows needs a delegate defined otherwise
@@ -146,7 +147,7 @@ TEST_F(LockLayoutManagerTest, MaximizedFullscreenWindowBoundsAreEqualToScreen) {
   std::unique_ptr<aura::Window> maximized_window(
       CreateTestLoginWindow(std::move(widget_params), true /* use_delegate */));
 
-  widget_params.show_state = ui::SHOW_STATE_FULLSCREEN;
+  widget_params.show_state = ui::mojom::WindowShowState::kFullscreen;
   widget_params.delegate = nullptr;
   std::unique_ptr<aura::Window> fullscreen_window(CreateTestLoginWindow(
       std::move(widget_params), false /* use_delegate */));
@@ -197,7 +198,7 @@ TEST_F(LockLayoutManagerTest, AccessibilityPanel) {
   views::Widget::InitParams widget_params(
       views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
-  widget_params.show_state = ui::SHOW_STATE_FULLSCREEN;
+  widget_params.show_state = ui::mojom::WindowShowState::kFullscreen;
   std::unique_ptr<aura::Window> window(CreateTestLoginWindow(
       std::move(widget_params), false /* use_delegate */));
 
@@ -228,7 +229,7 @@ TEST_F(LockLayoutManagerTest, KeyboardBounds) {
   views::Widget::InitParams widget_params(
       views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
-  widget_params.show_state = ui::SHOW_STATE_FULLSCREEN;
+  widget_params.show_state = ui::mojom::WindowShowState::kFullscreen;
   std::unique_ptr<aura::Window> window(CreateTestLoginWindow(
       std::move(widget_params), false /* use_delegate */));
 
@@ -299,7 +300,7 @@ TEST_F(LockLayoutManagerTest, MultipleMonitors) {
   views::Widget::InitParams widget_params(
       views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
-  widget_params.show_state = ui::SHOW_STATE_FULLSCREEN;
+  widget_params.show_state = ui::mojom::WindowShowState::kFullscreen;
   std::unique_ptr<aura::Window> window(CreateTestLoginWindow(
       std::move(widget_params), false /* use_delegate */));
   window->SetProperty(aura::client::kResizeBehaviorKey,
@@ -314,7 +315,8 @@ TEST_F(LockLayoutManagerTest, MultipleMonitors) {
 
   // Maximize the window with as the restore bounds is inside 2nd display but
   // lock container windows are always on primary display.
-  window->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_FULLSCREEN);
+  window->SetProperty(aura::client::kShowStateKey,
+                      ui::mojom::WindowShowState::kFullscreen);
   EXPECT_EQ(root_windows[0], window->GetRootWindow());
   EXPECT_EQ("0,0 300x400", window->GetBoundsInScreen().ToString());
 
@@ -323,7 +325,8 @@ TEST_F(LockLayoutManagerTest, MultipleMonitors) {
   EXPECT_EQ("0,0 300x400", window->GetBoundsInScreen().ToString());
 
   window_state->SetRestoreBoundsInScreen(gfx::Rect(280, 0, 30, 40));
-  window->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_FULLSCREEN);
+  window->SetProperty(aura::client::kShowStateKey,
+                      ui::mojom::WindowShowState::kFullscreen);
   EXPECT_EQ(root_windows[0], window->GetRootWindow());
   EXPECT_EQ("0,0 300x400", window->GetBoundsInScreen().ToString());
 
@@ -359,7 +362,7 @@ TEST_F(LockLayoutManagerTest, AccessibilityPanelWithMultipleMonitors) {
   views::Widget::InitParams widget_params(
       views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
-  widget_params.show_state = ui::SHOW_STATE_FULLSCREEN;
+  widget_params.show_state = ui::mojom::WindowShowState::kFullscreen;
   std::unique_ptr<aura::Window> window(CreateTestLoginWindow(
       std::move(widget_params), false /* use_delegate */));
   window->SetProperty(aura::client::kResizeBehaviorKey,

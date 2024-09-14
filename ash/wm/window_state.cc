@@ -54,6 +54,7 @@
 #include "ui/aura/window.h"
 #include "ui/aura/window_delegate.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
@@ -191,21 +192,22 @@ class BoundsSetter : public aura::LayoutManager {
   }
 };
 
-WMEventType WMEventTypeFromShowState(ui::WindowShowState requested_show_state) {
+WMEventType WMEventTypeFromShowState(
+    ui::mojom::WindowShowState requested_show_state) {
   switch (requested_show_state) {
-    case ui::SHOW_STATE_DEFAULT:
-    case ui::SHOW_STATE_NORMAL:
+    case ui::mojom::WindowShowState::kDefault:
+    case ui::mojom::WindowShowState::kNormal:
       return WM_EVENT_NORMAL;
-    case ui::SHOW_STATE_MINIMIZED:
+    case ui::mojom::WindowShowState::kMinimized:
       return WM_EVENT_MINIMIZE;
-    case ui::SHOW_STATE_MAXIMIZED:
+    case ui::mojom::WindowShowState::kMaximized:
       return WM_EVENT_MAXIMIZE;
-    case ui::SHOW_STATE_FULLSCREEN:
+    case ui::mojom::WindowShowState::kFullscreen:
       return WM_EVENT_FULLSCREEN;
-    case ui::SHOW_STATE_INACTIVE:
+    case ui::mojom::WindowShowState::kInactive:
       return WM_EVENT_SHOW_INACTIVE;
 
-    case ui::SHOW_STATE_END:
+    case ui::mojom::WindowShowState::kEnd:
       NOTREACHED() << "No WMEvent defined for the show state:"
                    << requested_show_state;
   }
@@ -485,11 +487,11 @@ bool WindowState::HasRestoreBounds() const {
 }
 
 void WindowState::Maximize() {
-  wm::SetWindowState(window_, ui::SHOW_STATE_MAXIMIZED);
+  wm::SetWindowState(window_, ui::mojom::WindowShowState::kMaximized);
 }
 
 void WindowState::Minimize() {
-  wm::SetWindowState(window_, ui::SHOW_STATE_MINIMIZED);
+  wm::SetWindowState(window_, ui::mojom::WindowShowState::kMinimized);
 }
 
 void WindowState::Unminimize() {
@@ -880,7 +882,7 @@ ui::ZOrderLevel WindowState::GetZOrdering() const {
   return window_->GetProperty(aura::client::kZOrderingKey);
 }
 
-ui::WindowShowState WindowState::GetShowState() const {
+ui::mojom::WindowShowState WindowState::GetShowState() const {
   return window_->GetProperty(aura::client::kShowStateKey);
 }
 
@@ -932,7 +934,7 @@ void WindowState::AdjustSnappedBoundsForDisplayWorkspaceChange(
 }
 
 void WindowState::UpdateWindowPropertiesFromStateType() {
-  ui::WindowShowState new_window_state =
+  ui::mojom::WindowShowState new_window_state =
       ToWindowShowState(current_state_->GetType());
   if (new_window_state != GetShowState()) {
     base::AutoReset<bool> resetter(&ignore_property_change_, true);

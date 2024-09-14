@@ -15,6 +15,7 @@
 #include "base/test/bind.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/aura_constants.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -108,8 +109,9 @@ TEST_F(ResizeUtilTest, TestResizeLockToPhone) {
   widget()->Maximize();
 
   // Fake a restore state to make sure resizing always results in normal state.
-  widget()->GetNativeWindow()->SetProperty(aura::client::kRestoreShowStateKey,
-                                           ui::SHOW_STATE_MAXIMIZED);
+  widget()->GetNativeWindow()->SetProperty(
+      aura::client::kRestoreShowStateKey,
+      ui::mojom::WindowShowState::kMaximized);
 
   // Test the widget is resized.
   ScopedWindowPropertyObserver observer(
@@ -141,8 +143,9 @@ TEST_F(ResizeUtilTest, TestResizeLockToTablet) {
   widget()->Maximize();
 
   // Fake a restore state to make sure resizing always results in normal state.
-  widget()->GetNativeWindow()->SetProperty(aura::client::kRestoreShowStateKey,
-                                           ui::SHOW_STATE_MAXIMIZED);
+  widget()->GetNativeWindow()->SetProperty(
+      aura::client::kRestoreShowStateKey,
+      ui::mojom::WindowShowState::kMaximized);
 
   // Test the widget is resized.
   ScopedWindowPropertyObserver observer(
