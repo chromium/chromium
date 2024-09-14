@@ -31,10 +31,10 @@ promise_test(async () => {
     mlContext.createTensor({
       dataType: 'float32',
       dimensions: [4],
-      usage: MLTensorUsage.WRITE_TO | MLTensorUsage.READ_FROM
+      usage: MLTensorUsage.WRITE | MLTensorUsage.READ
     }),
     mlContext.createTensor(
-        {dataType: 'float32', dimensions: [4], usage: MLTensorUsage.READ_FROM}),
+        {dataType: 'float32', dimensions: [4], usage: MLTensorUsage.READ}),
     builder.build({'output': outputOperand})
   ]);
 
@@ -66,10 +66,10 @@ promise_test(async () => {
     mlContext.createTensor({
       dataType: 'float32',
       dimensions: [4],
-      usage: MLTensorUsage.WRITE_TO | MLTensorUsage.READ_FROM
+      usage: MLTensorUsage.WRITE | MLTensorUsage.READ
     }),
     mlContext.createTensor(
-        {dataType: 'float32', dimensions: [4], usage: MLTensorUsage.READ_FROM}),
+        {dataType: 'float32', dimensions: [4], usage: MLTensorUsage.READ}),
     builder.build({'output': outputOperand})
   ]);
 
