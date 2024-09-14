@@ -1785,7 +1785,8 @@ void HostProcess::StartHost() {
           this, signal_strategy_.get());
 
   ftl_echo_message_listener_ = std::make_unique<FtlEchoMessageListener>(
-      host_owner_, signal_strategy_.get());
+      base::BindRepeating(&HostProcess::CheckAccessPermission, this),
+      signal_strategy_.get());
 
   // Set up reporting the host status notifications.
 #if defined(REMOTING_MULTI_PROCESS)
