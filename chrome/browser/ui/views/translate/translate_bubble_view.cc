@@ -665,7 +665,8 @@ std::unique_ptr<views::View> TranslateBubbleView::CreateView() {
                                views::MaximumFlexSizeRule::kPreferred));
   padding_view->SetProperty(
       views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+      views::FlexSpecification(views::LayoutOrientation::kHorizontal,
+                               views::MinimumFlexSizeRule::kScaleToZero,
                                views::MaximumFlexSizeRule::kUnbounded)
           .WithOrder(2));
   options_menu->SetProperty(views::kElementIdentifierKey, kOptionsMenuButton);
