@@ -330,9 +330,9 @@ Entretanto, os padrões de correspondência de origem para esta política não p
           Um endpoint de rede será mais particular que outro se:
           1) o endereço IP dele for localhost e o do outro não for;
           2) o endereço IP dele for particular e o do outro for público.
-          No futuro, dependendo da evolução das especificações, esta política poderá ser aplicada a todas as solicitações de origem cruzada direcionadas ao localhost ou IPs particulares.
+          No futuro, dependendo da evolução das especificações, esta política poderá ser aplicada a todas as solicitações entre origens direcionadas ao localhost ou IPs particulares.
 
-          Quando a política for definida como verdadeira, os sites terão permissão para fazer solicitações para qualquer endpoint de rede, sujeito a outras verificações de origem cruzada.</translation>
+          Quando a política for definida como verdadeira, os sites terão permissão para fazer solicitações para qualquer endpoint de rede, sujeito a outras verificações entre origens.</translation>
 <translation id="1240559668501539326">Define os metadados usados pelo instalador para VMs da Bruschetta em dispositivos <ph name="PRODUCT_OS_NAME" /> antes da
 instalação.</translation>
 <translation id="1240722269871366886">Esta política permite que o <ph name="PRODUCT_OS_NAME" /> sugira emojis quando os usuários digitam com o teclado virtual ou físico.
@@ -2873,7 +2873,7 @@ Esse comportamento é igual ao da <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EX
 <translation id="3083259245974004342">Proteção por senha</translation>
 <translation id="308356121098374167">O WebSQL em contextos não seguros vai estar disponível.</translation>
 <translation id="3086995894968271156">Configura a política Cast Receiver no <ph name="PRODUCT_NAME" />.</translation>
-<translation id="3087346703976541109">Especifica se o SharedArrayBuffers pode ser usado em um contexto não isolado de origem cruzada</translation>
+<translation id="3087346703976541109">Especifica se o SharedArrayBuffers pode ser usado em um contexto não isolado entre origens</translation>
 <translation id="3088557424854005813">Atestado</translation>
 <translation id="3090283903269516279">Desativar o modelo de carregamento adaptável no <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="3091832372132789233">Carregar a bateria de dispositivos que ficam a maior parte do tempo conectados a uma fonte de energia externa.</translation>
@@ -7924,11 +7924,11 @@ Para o <ph name="PRODUCT_OS_NAME" />, ela sempre é eficaz.</translation>
       Observação: esta política também afeta extensões e apps de instalação forçada que usam <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />.</translation>
 <translation id="6731757988219967594">Filtrar sites de nível superior (exceto iframes incorporados) com conteúdo adulto</translation>
 <translation id="6733851879899284032">
-      Especifica se os objetos SharedArrayBuffers podem ser usados em um contexto sem isolamento de origem cruzada. Da versão 91 (25/05/2021) em diante, o <ph name="PRODUCT_NAME" /> vai exigir o isolamento de origem cruzada ao usar os SharedArrayBuffers do <ph name="PRODUCT_NAME" /> por motivos de compatibilidade na Web. Veja mais detalhes em: https://developer.chrome.com/blog/enabling-shared-array-buffer/ (link em inglês).
+      Especifica se os objetos SharedArrayBuffers podem ser usados em um contexto sem isolamento entre origens. Da versão 91 (25/05/2021) em diante, o <ph name="PRODUCT_NAME" /> vai exigir o isolamento entre origens ao usar os SharedArrayBuffers do <ph name="PRODUCT_NAME" /> por motivos de compatibilidade na Web. Veja mais detalhes em: https://developer.chrome.com/blog/enabling-shared-array-buffer/ (link em inglês).
 
       Se a política for ativada, os sites poderão usar os SharedArrayBuffers sem restrições.
 
-      Se ela for desativada ou deixada sem definição, os sites só poderão usar os SharedArrayBuffers em isolamento de origem cruzada.</translation>
+      Se ela for desativada ou deixada sem definição, os sites só poderão usar os SharedArrayBuffers em isolamento entre origens.</translation>
 <translation id="6734397897213913438">Sempre permitir a leitura em voz alta</translation>
 <translation id="6735701345096330595">Forçar a ativação da correção ortográfica de idiomas</translation>
 <translation id="6736283207617136584">Ativar relatórios sobre o status de atualização do SO do dispositivo</translation>
@@ -8015,7 +8015,7 @@ Até o Chrome 114, esta política exigia que a <ph name="SYNC_DISABLED_POLICY_NA
 Se a política for ativada ou deixada sem definição, o usuário poderá usar o menu de contexto para salvar imagens no <ph name="GOOGLE_PHOTOS_PRODUCT_NAME" />. Se ela for desativada, a opção no menu de contexto não estará disponível.
 Esta política não impede que os usuários salvem imagens no <ph name="GOOGLE_PHOTOS_PRODUCT_NAME" /> de outras formas.</translation>
 <translation id="6823711520976094072">Definir como menos de 1 MB ou deixar sem definição significa que o <ph name="PRODUCT_OS_NAME" /> usará o tamanho padrão de 256 MB no cache de apps e extensões para instalações feitas por vários usuários em um mesmo dispositivo, evitando a necessidade de um novo download para cada usuário.</translation>
-<translation id="6828729771894228555">Permite definir uma lista de padrões de URL que especificam as origens de nível superior (o URL na barra de endereço da guia) que bloqueiam o particionamento de armazenamento de terceiros (do iframe de origem cruzada).
+<translation id="6828729771894228555">Permite definir uma lista de padrões de URL que especificam as origens de nível superior (o URL na barra de endereço da guia) que bloqueiam o particionamento de armazenamento de terceiros (do iframe entre origens).
           Se esta política for deixada sem definição ou se uma origem de nível superior não for correspondente, o valor de <ph name="DEFAULT_THIRD_PARTY_STORAGE_PARTITIONING_SETTING_POLICY_NAME" /> será usado.
           Para informações detalhadas sobre padrões válidos, consulte https://chromeenterprise.google/intl/pt_br/policies/url-patterns/.
           Os padrões listados aqui são tratados como origens, não URLs. Assim, recomendamos que você não especifique um caminho.
@@ -9426,7 +9426,7 @@ Esta política não terá efeito quando a <ph name="SCREENSAVER_LOCK_SCREEN_ENAB
 <translation id="7925224837072026018">Se a política for definida, as extensões ou os apps Android terão acesso a chaves corporativas. Apenas chaves geradas usando a API chrome.enterprise.platformKeys em uma conta gerenciada são designadas para uso corporativo. O usuário não poderá conceder ou revogar o acesso de extensões ou apps Android a chaves corporativas.
 
       Por padrão, uma extensão ou um app Android não pode usar uma chave designada como corporativa. Isso é equivalente a definir allowCorporateKeyUsage como "Falsa" para a política. Uma extensão ou um app Android só poderá usar chaves de plataforma marcadas como corporativas para assinar dados arbitrários se allowCorporateKeyUsage for definida como "Verdadeira" para eles. Conceda essa permissão apenas se você confiar que a extensão ou o app Android protegerá a chave contra o acesso de invasores.</translation>
-<translation id="7930383470029339167">O ThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes é um recurso do Chrome projetado para deixar os iframes de origem cruzada de mesmo processo e vários processos mais consistentes no comportamento de renderização. Para saber mais detalhes sobre a limitação de mesmo e vários processos, consulte https://chromestatus.com/feature/5175574929080320 (link em inglês).
+<translation id="7930383470029339167">O ThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes é um recurso do Chrome projetado para deixar os iframes entre origens de mesmo processo e vários processos mais consistentes no comportamento de renderização. Para saber mais detalhes sobre a limitação de mesmo e vários processos, consulte https://chromestatus.com/feature/5175574929080320 (link em inglês).
 
 Esta política corporativa permite que os administradores controlem se os usuários podem ou não ativar outras limitações. Quando a política está desativada, ela impede a limitação. Quando está ativada ou é deixada sem definição, o usuário pode escolher usar a limitação ou ela pode ser ativada pelas variações do Chrome.</translation>
 <translation id="793188693675675950">Desativar a importação da página inicial na primeira execução</translation>
@@ -9899,7 +9899,7 @@ Mais informações sobre tecnologias legadas podem ser encontradas em https://ch
 <translation id="8275103737670730746">Permitir que APIs de seletores de arquivos ou diretórios sejam chamadas sem o gesto anterior do usuário</translation>
 <translation id="8278133379873210419">Suprimir caixas de diálogo de JavaScript acionadas por subframes de origem diferentes</translation>
 <translation id="8284028944941138279">Economia de memória equilibrada.</translation>
-<translation id="8284296539558710573">Prompts de autenticação HTTP de origem cruzada</translation>
+<translation id="8284296539558710573">Prompts de autenticação HTTP entre origens</translation>
 <translation id="8284527236880877730">Se <ph name="POWER_SMART_DIM_ENABLED_POLICY_NAME" /> for definida como "Desativada", a definição de <ph name="PRESENTATION_SCREEN_DIM_DELAY_SCALE_POLICY_NAME" /> especificará a porcentagem para o cálculo do intervalo de escurecimento da tela quando o dispositivo estiver no modo de apresentação. Quando o intervalo de escurecimento for calculado, os intervalos de desligamento, bloqueio e inatividade da tela serão ajustados para manter as mesmas distâncias do intervalo de escurecimento da tela de acordo com a configuração original.
 
       Se a política não for definida, um fator de cálculo padrão será usado.
@@ -11155,7 +11155,7 @@ A política não terá efeito se a <ph name="METRICS_REPORTING_ENABLED_POLICY_NA
 
       Se ela não for definida ou for definida como "<ph name="ASSISTANT_ONBOARDING_MODE_DEFAULT" />", o modo usado para a experiência de integração será o padrão.
       Se ela for definida como "<ph name="ASSISTANT_ONBOARDING_MODE_EDUCATION" />", o modo usado será o EDU.</translation>
-<translation id="9191821120522935133">Permite ativar a limitação de iframes de origem cruzada não visíveis</translation>
+<translation id="9191821120522935133">Permite ativar a limitação de iframes entre origens não visíveis</translation>
 <translation id="9192220384862917760">Ativar cortinas do host de acesso remoto</translation>
 <translation id="9195766455191826480">Não informar status de segurança</translation>
 <translation id="9197238499850071076">Especifica se o dispositivo precisa ser revertido para a versão definida por <ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY_NAME" /> se ele já estiver executando uma versão mais recente.

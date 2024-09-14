@@ -45,7 +45,7 @@
 <translation id="1248276223555153952">Menaxho llogaritë në këtë pajisje...</translation>
 <translation id="1254117744268754948">Zgjidh dosjen</translation>
 <translation id="1254424942107648268">Gjej të mëparshmin</translation>
-<translation id="1258491128795710625">Më të rejat</translation>
+<translation id="1258491128795710625">Ç'të reja ka</translation>
 <translation id="1264156759663453185">Teksti i zgjedhur është shumë i madh për përkthim të pjesshëm.</translation>
 <translation id="1264974993859112054">Sport</translation>
 <translation id="1265739287306757398">Mëso se si</translation>
@@ -105,7 +105,7 @@
 <translation id="152234381334907219">Nuk u ruajt asnjëherë</translation>
 <translation id="1523341279170789507">Lejo të gjitha kukit</translation>
 <translation id="1524563461097350801">Jo, faleminderit</translation>
-<translation id="1539173178539798367">Fshihe fshirjen e të dhënave të shfletimit</translation>
+<translation id="1539173178539798367">Fshih "Fshi të dhënat e shfletimit"</translation>
 <translation id="1540800554400757039">Adresa 1</translation>
 <translation id="1545749641540134597">Skano kodin QR</translation>
 <translation id="1552525382687785070">Sinkronizimi është çaktivizuar nga administratori</translation>
@@ -669,7 +669,7 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="4281844954008187215">Kushtet e shërbimit</translation>
 <translation id="4282944936010261425">Nuk ka asnjë problem sigurie për ta rregulluar.</translation>
 <translation id="4286718549648564014">Adresa u zhvendos te llogaria <ph name="USER_EMAIL" /></translation>
-<translation id="428768789042547925">Më të rejat</translation>
+<translation id="428768789042547925">Ç'të reja ka</translation>
 <translation id="429074084062258019">{count,plural, =1{Shto një skedë te grupi}other{Shto skeda te grupi}}</translation>
 <translation id="4293080268407233932">Kërko</translation>
 <translation id="4302248187517737842">Nuk ka emër përdoruesi ••••••••</translation>

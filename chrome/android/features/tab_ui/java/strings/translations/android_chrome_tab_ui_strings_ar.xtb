@@ -45,7 +45,7 @@
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{تم إغلاق علامة تبويب واحدة (<ph name="ONE_CLOSED" />)}zero{تم إغلاق <ph name="MANY_CLOSED" /> علامة تبويب}two{تم إغلاق علامتَي تبويب (<ph name="MANY_CLOSED" />)}few{تم إغلاق <ph name="MANY_CLOSED" /> علامات تبويب}many{تم إغلاق <ph name="MANY_CLOSED" /> علامة تبويب}other{تم إغلاق <ph name="MANY_CLOSED" /> علامة تبويب}}</translation>
 <translation id="2894757982205307093">علامة تبويب جديدة في مجموعة</translation>
 <translation id="2928243913527329289">‏Google | لمحة عن هذا المتجر</translation>
-<translation id="2977480621796371840">الإزالة من مجموعة</translation>
+<translation id="2977480621796371840">الإزالة من المجموعة</translation>
 <translation id="29919168204617356">سيتم تلقائيًا إغلاق علامات التبويب غير النشطة. ويمكنك العثور عليها في أي وقت ضمن "السجلّ".</translation>
 <translation id="3008554597174452548">التوقف عن تتبُّع سعر المنتج</translation>
 <translation id="3026391124054406831">أنشِئ مجموعات لتنظيم علامات التبويب.</translation>

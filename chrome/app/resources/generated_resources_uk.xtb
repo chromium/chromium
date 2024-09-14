@@ -9927,7 +9927,7 @@
 <translation id="8163708146810922598">найдавніші</translation>
 <translation id="8165997195302308593">Переадресація порту в Crostini</translation>
 <translation id="816704878106051517">{COUNT,plural, =1{номер телефону}one{# номер телефону}few{# номери телефонів}many{# номерів телефонів}other{# номера телефону}}</translation>
-<translation id="8168435359814927499">Вміст</translation>
+<translation id="8168435359814927499">Контент</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Додати вкладку в список читання}one{Додати вкладки в список читання}few{Додати вкладки в список читання}many{Додати вкладки в список читання}other{Додати вкладки в список читання}}</translation>
 <translation id="8174047975335711832">Інформація про пристрій</translation>
 <translation id="8176332201990304395">Рожево-білий</translation>
@@ -10210,7 +10210,7 @@
 <translation id="8373652277231415614">Спільні каталоги Crostini</translation>
 <translation id="8374243500935816406">Заборонити сайтам керувати вікнами на всіх ваших екранах</translation>
 <translation id="8376137163494131156">Надішліть відгук про Google Cast.</translation>
-<translation id="8376384591331888629">Зокрема файли cookie третіх сторін на цьому сайті</translation>
+<translation id="8376384591331888629">Зокрема сторонні файли cookie на цьому сайті</translation>
 <translation id="8376451933628734023">Якщо цей веб-додаток намагається видати себе за інший, видаліть його.</translation>
 <translation id="8376532149031784008">Оновлення <ph name="DOMAIN" />…</translation>
 <translation id="8376610503048439696">Розширення, установлені адміністратором, усе одно зможуть переглядати й змінювати дані на цьому сайті</translation>
