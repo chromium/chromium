@@ -171,6 +171,9 @@
           },
           "ash.vc_background_ui.gen_ai_vc_background_enterprise_policy_settings": {
             "value": 0
+          },
+          "settings.managed.help_me_read": {
+            "value": 0
           }
         }
       },
@@ -200,6 +203,9 @@
           },
           "ash.vc_background_ui.gen_ai_vc_background_enterprise_policy_settings": {
             "value": 1
+          },
+          "settings.managed.help_me_read": {
+            "value": 1
           }
         }
       },
@@ -213,7 +219,8 @@
           "HistorySearchSettings": 2,
           "TabCompareSettings": 2,
           "GenAIWallpaperSettings": 2,
-          "GenAIVcBackgroundSettings": 2
+          "GenAIVcBackgroundSettings": 2,
+          "HelpMeReadSettings": 2
         },
         "prefs": {
           "optimization_guide.model_execution.compose_enterprise_policy_allowed": {
@@ -238,6 +245,9 @@
             "value": 2
           },
           "ash.vc_background_ui.gen_ai_vc_background_enterprise_policy_settings": {
+            "value": 2
+          },
+          "settings.managed.help_me_read": {
             "value": 2
           }
         }

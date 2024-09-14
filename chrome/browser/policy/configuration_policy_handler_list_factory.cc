@@ -3214,6 +3214,8 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
                                        ash::prefs::kGenAIWallpaperSettings);
   gen_ai_default_policies.emplace_back(key::kGenAIVcBackgroundSettings,
                                        ash::prefs::kGenAIVcBackgroundSettings);
+  gen_ai_default_policies.emplace_back(key::kHelpMeReadSettings,
+                                       ash::prefs::kHmrManagedSettings);
 #endif  // BUILDFLAG(IS_CHROMEOS)
   handlers->AddHandler(std::make_unique<GenAiDefaultSettingsPolicyHandler>(
       std::move(gen_ai_default_policies)));
