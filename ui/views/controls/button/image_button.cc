@@ -4,6 +4,7 @@
 
 #include "ui/views/controls/button/image_button.h"
 
+#include <string>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -330,6 +331,7 @@ void ToggleImageButton::SetToggled(bool toggled) {
   UpdateAccessibleCheckedState();
   OnPropertyChanged(&toggled_, kPropertyEffectsPaint);
   UpdateAccessibleRoleIfNeeded();
+  UpdateAccessibleName();
 }
 
 void ToggleImageButton::SetToggledImage(ButtonState image_state,
@@ -365,6 +367,7 @@ void ToggleImageButton::SetToggledTooltipText(const std::u16string& tooltip) {
   if (tooltip == toggled_tooltip_text_)
     return;
   toggled_tooltip_text_ = tooltip;
+  UpdateAccessibleName();
   OnPropertyChanged(&toggled_tooltip_text_, kPropertyEffectsNone);
 }
 
@@ -376,6 +379,7 @@ void ToggleImageButton::SetToggledAccessibleName(const std::u16string& name) {
   if (name == toggled_accessible_name_)
     return;
   toggled_accessible_name_ = name;
+  UpdateAccessibleName();
   OnPropertyChanged(&toggled_accessible_name_, kPropertyEffectsNone);
 }
 
@@ -420,15 +424,15 @@ std::u16string ToggleImageButton::GetTooltipText(const gfx::Point& p) const {
              : toggled_tooltip_text_;
 }
 
-void ToggleImageButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  ImageButton::GetAccessibleNodeData(node_data);
-  if (!toggled_)
-    return;
-
-  if (!toggled_accessible_name_.empty()) {
-    node_data->SetName(toggled_accessible_name_);
-  } else if (!toggled_tooltip_text_.empty()) {
-    node_data->SetName(toggled_tooltip_text_);
+void ToggleImageButton::UpdateAccessibleName() {
+  if (toggled_) {
+    if (!toggled_accessible_name_.empty()) {
+      GetViewAccessibility().SetName(toggled_accessible_name_);
+    } else if (!toggled_tooltip_text_.empty()) {
+      GetViewAccessibility().SetName(toggled_tooltip_text_);
+    }
+  } else {
+    GetViewAccessibility().SetName(Button::GetTooltipText());
   }
 }
 
