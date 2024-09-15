@@ -1831,7 +1831,7 @@ LayoutResult::EStatus BlockLayoutAlgorithm::HandleNewFormattingContext(
 
   // Update line-clamp data, and abort if needed
   if (!line_clamp_data_.UpdateAfterLayout(
-          layout_result, container_builder_.BfcBlockOffset(),
+          layout_result, *container_builder_.BfcBlockOffset(),
           *previous_inflow_position, Padding().block_end)) {
     return LayoutResult::kNeedsLineClampRelayout;
   }
@@ -2507,10 +2507,14 @@ LayoutResult::EStatus BlockLayoutAlgorithm::FinishInflow(
   }
 
   // Update |line_clamp_data_| from the LayoutResult, and abort if needed.
-  if (!line_clamp_data_.UpdateAfterLayout(
-          layout_result, container_builder_.BfcBlockOffset(),
-          *previous_inflow_position, Padding().block_end)) {
-    return LayoutResult::kNeedsLineClampRelayout;
+  // If the BFC block offset hasn't been resolved, the child we just laid out
+  // must be empty (no lines and zero block size), so we can skip the update.
+  if (auto bfc_block_offset = container_builder_.BfcBlockOffset()) {
+    if (!line_clamp_data_.UpdateAfterLayout(layout_result, *bfc_block_offset,
+                                            *previous_inflow_position,
+                                            Padding().block_end)) {
+      return LayoutResult::kNeedsLineClampRelayout;
+    }
   }
 
   if (should_text_box_trim_start_ || should_text_box_trim_end_) [[unlikely]] {
