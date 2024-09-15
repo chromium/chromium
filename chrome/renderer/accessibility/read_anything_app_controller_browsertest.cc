@@ -628,7 +628,7 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
   }
 
   DependencyParserModel& GetDependencyParserModel() {
-    return controller_->GetDependencyParserModel();
+    return controller_->GetDependencyParserModelForTesting();
   }
 
   void UpdateDependencyParserModel(base::File model_file) {
@@ -4484,7 +4484,7 @@ TEST_F(ReadAnythingAppControllerTest,
 
 TEST_F(
     ReadAnythingAppControllerTest,
-    GetHighlightForCurrentSegmentIndex_PhrasesEnabled_SentenceSpansMultipleNodes_ReturnsCorrectNodes) {
+    GetHighlightForCurrentSegmentIndex_PhrasesEnabled_NoModel_SentenceSpansMultipleNodes_ReturnsCorrectNodes) {
   scoped_feature_list_.InitWithFeatures(
       {features::kReadAnythingReadAloud,
        features::kReadAnythingReadAloudAutomaticWordHighlighting,
@@ -4502,6 +4502,7 @@ TEST_F(
   ui::AXNodeData static_text3 = test::TextNode(/* id= */ 4, sentence3);
 
   InitializeWithAndProcessNodes({static_text1, static_text2, static_text3});
+  PreprocessTextForSpeech();
 
   std::vector<ui::AXNodeID> node_ids = GetCurrentText();
   EXPECT_EQ((int)node_ids.size(), 3);
@@ -4556,6 +4557,79 @@ TEST_F(
           sentence1.length() + sentence2.length() + sentence3.length() + 1,
           true),
       IsEmpty());
+  EXPECT_THAT(GetHighlightForCurrentSegmentIndex(535, true), IsEmpty());
+  EXPECT_THAT(GetHighlightForCurrentSegmentIndex(-10, true), IsEmpty());
+}
+
+TEST_F(
+    ReadAnythingAppControllerTest,
+    GetHighlightForCurrentSegmentIndex_PhrasesEnabled_ValidModel_SentenceSpansMultipleNodes_ReturnsCorrectNodes) {
+  scoped_feature_list_.InitWithFeatures(
+      {features::kReadAnythingReadAloud,
+       features::kReadAnythingReadAloudAutomaticWordHighlighting,
+       features::kReadAnythingReadAloudPhraseHighlighting},
+      {});
+
+  UpdateDependencyParserModel(GetValidModelFile());
+  DependencyParserModel& model = GetDependencyParserModel();
+
+  EXPECT_TRUE(model.IsAvailable());
+
+  EXPECT_TRUE(IsPhraseHighlightingEnabled());
+
+  // Text indices:             0123456789012345678901234567890
+  std::u16string sentence1 = u"Never feel heavy or ";
+  std::u16string sentence2 = u"earthbound, no ";
+  std::u16string sentence3 = u"worries or doubts interfere.";
+
+  // Expected phrases:
+  // Never feel heavy or earthbound, /no worries or doubts interfere.
+  // Expected phrase breaks: 0, 32
+
+  ui::AXNodeData static_text1 = test::TextNode(/* id= */ 2, sentence1);
+  ui::AXNodeData static_text2 = test::TextNode(/* id= */ 3, sentence2);
+  ui::AXNodeData static_text3 = test::TextNode(/* id= */ 4, sentence3);
+
+  InitializeWithAndProcessNodes({static_text1, static_text2, static_text3});
+  PreprocessTextForSpeech();
+
+  std::vector<ui::AXNodeID> node_ids = GetCurrentText();
+  EXPECT_EQ((int)node_ids.size(), 3);
+
+  // First character (N) => first phrase
+  EXPECT_THAT(GetHighlightForCurrentSegmentIndex(0, true),
+              ElementsAre(TextSegmentMatcher(static_text1.id, 0, 20),
+                          TextSegmentMatcher(static_text2.id, 0, 12)));
+
+  // 20th character (e of earthbound) => first phrase
+  EXPECT_THAT(GetHighlightForCurrentSegmentIndex(20, true),
+              ElementsAre(TextSegmentMatcher(static_text1.id, 0, 20),
+                          TextSegmentMatcher(static_text2.id, 0, 12)));
+
+  // 31st character (space before "no") => first phrase
+  EXPECT_THAT(GetHighlightForCurrentSegmentIndex(31, true),
+              ElementsAre(TextSegmentMatcher(static_text1.id, 0, 20),
+                          TextSegmentMatcher(static_text2.id, 0, 12)));
+
+  // 32nd character (n of no) => second phrase
+  EXPECT_THAT(GetHighlightForCurrentSegmentIndex(32, true),
+              ElementsAre(TextSegmentMatcher(static_text2.id, 12, 15),
+                          TextSegmentMatcher(static_text3.id, 0, 28)));
+
+  // 35th character (w of worries) => second phrase
+  EXPECT_THAT(GetHighlightForCurrentSegmentIndex(35, true),
+              ElementsAre(TextSegmentMatcher(static_text2.id, 12, 15),
+                          TextSegmentMatcher(static_text3.id, 0, 28)));
+
+  // 62nd character (final .) => second phrase
+  EXPECT_THAT(GetHighlightForCurrentSegmentIndex(62, true),
+              ElementsAre(TextSegmentMatcher(static_text2.id, 12, 15),
+                          TextSegmentMatcher(static_text3.id, 0, 28)));
+
+  // 63rd character (past the end of the sentence) => empty
+  EXPECT_THAT(GetHighlightForCurrentSegmentIndex(63, true), IsEmpty());
+
+  // Invalid indices.
   EXPECT_THAT(GetHighlightForCurrentSegmentIndex(535, true), IsEmpty());
   EXPECT_THAT(GetHighlightForCurrentSegmentIndex(-10, true), IsEmpty());
 }

@@ -362,6 +362,12 @@ SkBitmap CorrectColorOfBitMap(SkBitmap& originalBitmap) {
   return converted;
 }
 
+// Returns the dependency parser model for this renderer process.
+DependencyParserModel& GetDependencyParserModel() {
+  static base::NoDestructor<DependencyParserModel> instance;
+  return *instance;
+}
+
 }  // namespace
 
 // static
@@ -1691,6 +1697,10 @@ void ReadAnythingAppController::PreprocessTextForSpeech() {
                                                : &model_.selection_node_ids();
   read_aloud_model_.PreprocessTextForSpeech(model_.is_pdf(), model_.IsDocs(),
                                             node_ids);
+  if (features::IsReadAnythingReadAloudPhraseHighlightingEnabled()) {
+    DependencyParserModel& model = GetDependencyParserModel();
+    read_aloud_model_.PreprocessPhrasesForText(model);
+  }
 }
 
 void ReadAnythingAppController::MovePositionToNextGranularity() {
@@ -1862,13 +1872,13 @@ bool ReadAnythingAppController::IsDocsLoadMoreButtonVisible() const {
           IsGoogleDocs());
 }
 
-DependencyParserModel& ReadAnythingAppController::GetDependencyParserModel() {
-  static base::NoDestructor<DependencyParserModel> instance;
-  return *instance;
-}
-
 void ReadAnythingAppController::UpdateDependencyParserModel(
     base::File model_file) {
   DependencyParserModel& dependency_parser_model = GetDependencyParserModel();
   dependency_parser_model.UpdateWithFile(std::move(model_file));
+}
+
+DependencyParserModel&
+ReadAnythingAppController::GetDependencyParserModelForTesting() {
+  return GetDependencyParserModel();
 }

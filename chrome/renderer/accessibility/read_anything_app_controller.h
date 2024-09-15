@@ -362,11 +362,11 @@ class ReadAnythingAppController
   void IncrementMetricCount(const std::string& metric);
   void LogSpeechEventCounts();
 
-  // Returns the dependency parser model for this renderer process.
-  DependencyParserModel& GetDependencyParserModel();
   // Called when a new dependency parser model file has been loaded and is
   // available.
   void UpdateDependencyParserModel(base::File model_file);
+
+  DependencyParserModel& GetDependencyParserModelForTesting();
 
   std::unique_ptr<AXTreeDistiller> distiller_;
   mojo::Remote<read_anything::mojom::UntrustedPageHandlerFactory>

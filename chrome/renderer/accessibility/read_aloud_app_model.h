@@ -9,6 +9,7 @@
 #include "base/values.h"
 #include "chrome/common/accessibility/read_anything.mojom.h"
 #include "chrome/common/accessibility/read_anything_constants.h"
+#include "chrome/renderer/accessibility/phrase_segmentation/dependency_parser_model.h"
 #include "chrome/renderer/accessibility/read_aloud_traversal_utils.h"
 #include "ui/accessibility/ax_node_position.h"
 
@@ -85,6 +86,8 @@ class ReadAloudAppModel {
   void PreprocessTextForSpeech(bool is_pdf,
                                bool is_docs,
                                const std::set<ui::AXNodeID>* current_nodes);
+
+  void PreprocessPhrasesForText(DependencyParserModel& dependency_parser_model);
 
   // Increments the processed_granularity_index_, updating ReadAloud's state of
   // the current granularity to refer to the next granularity. The current
@@ -237,6 +240,10 @@ class ReadAloudAppModel {
   //      sentence, this will return false because "You need to not stare."
   //      still needs to be read.
   bool NoValidTextRemainingInCurrentNode(bool is_pdf, bool is_docs) const;
+
+  // Segment the given granularity into phrases with the given model.
+  void CalculatePhrases(DependencyParserModel& dependency_parser_model,
+                        a11y::ReadAloudCurrentGranularity& granularity);
 
   // Whether Read Aloud speech is currently playing or not.
   bool speech_playing_ = false;
