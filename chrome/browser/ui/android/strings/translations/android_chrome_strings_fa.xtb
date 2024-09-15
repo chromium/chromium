@@ -1213,6 +1213,7 @@
 <translation id="6674571176963658787">برای شروع همگام‌سازی، گذرعبارت را وارد کنید</translation>
 <translation id="6676927815633975364">‏به سیستم این سایت و Chrome وارد شوید</translation>
 <translation id="6684809838922667136">‏بهتر کردن Chrome</translation>
+<translation id="6700279777779583398">انتخاب‌ها ذخیره شد</translation>
 <translation id="6704048624334633734">صادر و حذف کردن گذرواژه‌ها</translation>
 <translation id="670498945988402717">آخرین بررسی: دیروز</translation>
 <translation id="6710213216561001401">قبلی</translation>
@@ -1426,6 +1427,7 @@
 <translation id="752731652852882757">هنگام استفاده از «حالت ناشناس» مسدود شود</translation>
 <translation id="7554643625247105821">‏بررسی نسخه Chrome امکان‌پذیر نیست</translation>
 <translation id="7557508262441527045">از سیستم خارج شدید</translation>
+<translation id="7573665567024262965">برنامه‌های پیش‌فرض را انتخاب کنید</translation>
 <translation id="7577900504646297215">مدیریت علایق</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> فایل بارگیری شد}one{<ph name="FILES_DOWNLOADED_MANY" /> فایل بارگیری شد}other{<ph name="FILES_DOWNLOADED_MANY" /> فایل بارگیری شد}}</translation>
 <translation id="7581273696622423628">در نظرسنجی شرکت کنید</translation>
@@ -1468,6 +1470,7 @@
 <translation id="7764225426217299476">افزودن آدرس</translation>
 <translation id="7772032839648071052">تأیید گذرعبارت</translation>
 <translation id="7772375229873196092">بستن <ph name="APP_NAME" /></translation>
+<translation id="7774125747223422443">طبق قانونی در منطقه شما، باید مرورگر و موتور جستجویتان را انتخاب کنید</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{‏<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 و <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> روش پرداخت دیگر}one{‏<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 و <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> روش پرداخت دیگر}other{‏<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 و <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> روش پرداخت دیگر}}</translation>
 <translation id="777637629667389858">‏وقتی به سیستم وارد شده باشید، در سراسر سرویس‌های Google از شما محافظت می‌کند.</translation>
 <translation id="7778840695157240389">برای خواندن داستان‌های جدید، بعداً دوباره سربزنید</translation>
@@ -1736,6 +1739,7 @@
 <translation id="8982113230057126145">«رأی مخالف» بازخوردی با این معنا ارسال می‌کند که شما این خلاصه را نمی‌پسندید</translation>
 <translation id="8992769679401294069">‏داده‌هایتان بااستفاده از گذرعبارت شما رمزگذاری شده است. برای ذخیره کردن داده‌های Chrome در «حساب Google» خود و استفاده از آن‌ها، این گذرعبارت را وارد کنید.</translation>
 <translation id="8993760627012879038">باز کردن برگه جدیدی در حالت ناشناس</translation>
+<translation id="8995521496079646922">به‌طور پیش‌فرض از برنامه‌هایی که انتخاب کردید استفاده خواهد شد. اگر برنامه‌ای ازقبل در این دستگاه نباشد، به‌زودی بارگیری خواهد شد.</translation>
 <translation id="8996847606757455498">انتخاب ارائه‌دهنده دیگر</translation>
 <translation id="8998289560386111590">در دستگاهتان دردسترس نیست</translation>
 <translation id="8998837250940831980">برگه کوچک نشد. بعداً دوباره امتحان کنید.</translation>

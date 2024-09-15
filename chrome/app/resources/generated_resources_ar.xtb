@@ -501,6 +501,7 @@
 <translation id="1355088139103479645">هل تريد حذف كلّ البيانات؟</translation>
 <translation id="1356376170199999104">تم منح إذن الوصول إلى الميكروفون: <ph name="PERMISSION_DETAILS" />. شغِّل الميكروفون باستخدام الزر اليدوي.</translation>
 <translation id="1356959069439783953">مظهر جديد لعلامات التبويب غير النشطة</translation>
+<translation id="1357766361161708728">هل تريد إغلاق علامات التبويب غير المستخدَمة؟</translation>
 <translation id="1358741672408003399">التدقيق الإملائي والتدقيق النحوي</translation>
 <translation id="1359923111303110318">‏يمكن فتح قفل جهازك باستخدام Smart Lock. عليك الضغط على Enter لفتح القفل.</translation>
 <translation id="1361164813881551742">الإضافة يدويًا</translation>
@@ -6557,6 +6558,7 @@
 <translation id="5750288053043553775">0</translation>
 <translation id="5751345516399502412">التحقّق من جاهزية التوصيل</translation>
 <translation id="5753570386948603678">الحذف من السجلّ</translation>
+<translation id="5753652925946671505">لم يتم استخدام علامات التبويب هذه لمدة <ph name="COUNT" /> يوم أو أكثر.</translation>
 <translation id="5756163054456765343">مركز المساعدة</translation>
 <translation id="5757187557809630523">المقطع الصوتي التالي</translation>
 <translation id="5758631781033351321">ستظهر لك "قائمة القراءة" هنا</translation>

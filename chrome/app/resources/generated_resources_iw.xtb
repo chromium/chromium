@@ -499,6 +499,7 @@
 <translation id="1355088139103479645">למחוק את כל הנתונים?</translation>
 <translation id="1356376170199999104">יש הרשאה – <ph name="PERMISSION_DETAILS" />. צריך להפעיל את המיקרופון באמצעות מתג פיזי.</translation>
 <translation id="1356959069439783953">עיצוב חדש לכרטיסיות לא פעילות</translation>
+<translation id="1357766361161708728">לסגור כרטיסיות שלא בשימוש?</translation>
 <translation id="1358741672408003399">איות ודקדוק</translation>
 <translation id="1359923111303110318">‏אפשר לבטל את נעילת המכשיר באמצעות Smart Lock. יש להקיש על Enter כדי לבטל את הנעילה.</translation>
 <translation id="1361164813881551742">הוספה ידנית</translation>
@@ -6567,6 +6568,7 @@
 <translation id="5750288053043553775">0</translation>
 <translation id="5751345516399502412">‏בדיקת המוּכנוּת לשיתוף אינטרנט (tethering)</translation>
 <translation id="5753570386948603678">מחיקה מההיסטוריה</translation>
+<translation id="5753652925946671505">לא נעשה שימוש בכרטיסיות האלה במשך <ph name="COUNT" /> ימים או יותר.</translation>
 <translation id="5756163054456765343">מרכז עזרה</translation>
 <translation id="5757187557809630523">הטראק הבא</translation>
 <translation id="5758631781033351321">רשימת הקריאה זמינה כאן</translation>
