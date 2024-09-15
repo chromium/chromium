@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/views/autofill/popup/popup_row_content_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "components/autofill/core/browser/ui/suggestion_button_action.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -46,14 +47,15 @@ std::unique_ptr<PopupRowContentView> CreateFeedbackContentView(
     base::RepeatingClosure learn_more_clicked) {
   auto feedback_container = std::make_unique<PopupRowContentView>();
 
-  const std::u16string text = u"Prediction improvements. $1.";
-  const std::u16string learn_more_link_text = u"Learn more";
-  std::vector<size_t> replacement_offsets;
   views::StyledLabel::RangeStyleInfo style_info =
       views::StyledLabel::RangeStyleInfo::CreateForLink(
           std::move(learn_more_clicked));
-  const std::u16string formatted_text = l10n_util::FormatString(
-      text, /*replacements=*/{learn_more_link_text}, &replacement_offsets);
+  std::vector<size_t> replacement_offsets;
+  const std::u16string learn_more_link_text = l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_FEEDBACK_ROW_LEARN_MORE);
+  const std::u16string formatted_text = l10n_util::GetStringFUTF16(
+      IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_FEEDBACK_ROW_TITLE,
+      /*replacements=*/{learn_more_link_text}, &replacement_offsets);
 
   feedback_container->SetFlexForView(
       feedback_container->AddChildView(

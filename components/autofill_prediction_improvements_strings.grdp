@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<grit-part>
+  <!-- Save prompt -->
+  <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_SAVE_DIALOG_TITLE" desc="Text displayed on the top of the save improved predictions dialog." translateable="false">
+    Save info to improved predictions
+  </message>
+  <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_SAVE_DIALOG_NO_THANKS_BUTTON" desc="Text displayed on the decline/cancel button of the save dialog" translateable="false">
+    No thanks
+  </message>
+  <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_SAVE_DIALOG_SAVE_BUTTON" desc="Text displayed on the accept/save button of the save dialog" translateable="false">
+    Save
+  </message>
+
+  <!-- General -->
+  <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_FEEDBACK_ROW_LEARN_MORE" desc="Text displayed on prediction improvements feedback suggestion." translateable="false">
+    Learn more
+  </message>
+  <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_FEEDBACK_ROW_TITLE" desc="Text displayed on prediction improvements feedback suggestion." translateable="false">
+    Prediction improvements feedback, <ph name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_FEEDBACK_ROW_LEARN_MORE">$1<ex>Learn more</ex></ph>.
+  </message>
+</grit-part>

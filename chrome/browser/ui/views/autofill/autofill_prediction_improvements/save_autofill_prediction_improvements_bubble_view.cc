@@ -8,6 +8,8 @@
 #include "chrome/browser/ui/views/accessibility/theme_tracking_non_accessible_image_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/theme_resources.h"
+#include "components/strings/grit/components_strings.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/rect.h"
@@ -102,9 +104,14 @@ SaveAutofillPredictionImprovementsBubbleView::
         prediction_improvement.key, prediction_improvement.value));
   }
 
-  // TODO(crbug.com/362227379): Add this string to a string.grpd file.
-  DialogDelegate::SetButtonLabel(ui::mojom::DialogButton::kCancel,
-                                 u"No Thanks");
+  DialogDelegate::SetButtonLabel(
+      ui::mojom::DialogButton::kCancel,
+      l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_SAVE_DIALOG_NO_THANKS_BUTTON));
+  DialogDelegate::SetButtonLabel(
+      ui::mojom::DialogButton::kOk,
+      l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_SAVE_DIALOG_SAVE_BUTTON));
   SetAcceptCallback(base::BindOnce(
       &SaveAutofillPredictionImprovementsBubbleView::OnDialogAccepted,
       base::Unretained(this)));
@@ -148,7 +155,8 @@ void SaveAutofillPredictionImprovementsBubbleView::AddedToWidget() {
   header_container->AddChildView(std::move(image));
   header_container->AddChildView(
       views::Builder<views::Label>()
-          .SetText(u"Save info to autofill")
+          .SetText(l10n_util::GetStringUTF16(
+              IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_SAVE_DIALOG_TITLE))
           .SetTextStyle(views::style::STYLE_HEADLINE_4_BOLD)
           .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
           .Build());
