@@ -301,9 +301,9 @@ bool HasVisualElementAssets(const base::FilePath& base_path,
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 void LaunchOSUpdateHandlerIfNeeded(const InstallerState& installer_state,
                                    const std::wstring& installed_version) {
-  auto os_update_handler_cmd = GetOsUpdateHandlerCommand(
-      installer_state.target_path(), installed_version,
-      *base::CommandLine::ForCurrentProcess());
+  auto os_update_handler_cmd =
+      GetOsUpdateHandlerCommand(installer_state, installed_version,
+                                *base::CommandLine::ForCurrentProcess());
   if (!os_update_handler_cmd.has_value()) {
     return;
   }
@@ -350,7 +350,7 @@ bool CreateVisualElementsManifest(const base::FilePath& src_path,
 // Returns a CommandLine to run if os_update_handler.exe should be run,
 // i.e. a Windows update has been detected; null otherwise.
 std::optional<base::CommandLine> GetOsUpdateHandlerCommand(
-    const base::FilePath& target_path,
+    const InstallerState& installer_state,
     const std::wstring& installed_version,
     const base::CommandLine& command_line) {
   const auto args = command_line.GetArgs();
@@ -359,11 +359,16 @@ std::optional<base::CommandLine> GetOsUpdateHandlerCommand(
   }
   // Use the Windows version update string set by Omaha on the command line
   // as the version update string to pass to os_update_handler.exe.
-  base::CommandLine os_update_handler_cmd(
-      target_path.Append(installed_version).Append(kOsUpdateHandlerExe));
+  base::CommandLine os_update_handler_cmd(installer_state.target_path()
+                                              .Append(installed_version)
+                                              .Append(kOsUpdateHandlerExe));
   InstallUtil::AppendModeAndChannelSwitches(&os_update_handler_cmd);
   // args[0] has the form "<prev_windows_version>-<new_windows_version>".
   os_update_handler_cmd.AppendArgNative(args[0]);
+
+  if (installer_state.system_install()) {
+    os_update_handler_cmd.AppendSwitch(installer::switches::kSystemLevel);
+  }
   return os_update_handler_cmd;
 }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
