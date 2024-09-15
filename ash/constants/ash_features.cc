@@ -3262,7 +3262,7 @@ BASE_FEATURE(kVcSegmentationModel,
 
 // Enables or disables Studio Look and VC settings for ChromeOS video
 // conferencing.
-BASE_FEATURE(kVcStudioLook, "VcStudioLook", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kVcStudioLook, "VcStudioLook", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables or disables mic indicator inside VC tray title header
 BASE_FEATURE(kVcTrayMicIndicator,
