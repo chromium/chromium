@@ -257,4 +257,11 @@ BASE_FEATURE(kWebViewWebauthn,
              "WebViewWebauthn",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// This enables RenderDocument in WebView. Note that this will only take effect
+// iff both this feature flag and the content/public kRenderDocument flag is
+// enabled.
+BASE_FEATURE(kWebViewRenderDocument,
+             "WebViewRenderDocument",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace android_webview::features

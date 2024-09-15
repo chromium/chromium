@@ -849,6 +849,9 @@ bool AwContentBrowserClient::ShouldOverrideUrlLoading(
 
 bool AwContentBrowserClient::ShouldAllowSameSiteRenderFrameHostChange(
     const content::RenderFrameHost& rfh) {
+  if (!base::FeatureList::IsEnabled(features::kWebViewRenderDocument)) {
+    return false;
+  }
   content::RenderFrameHost* rfh_ptr =
       const_cast<content::RenderFrameHost*>(&rfh);
   content::WebContents* web_contents =
