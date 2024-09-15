@@ -222,7 +222,7 @@ class CORE_EXPORT LocalFrameClientImpl final : public LocalFrameClient {
 
   void NotifyUserActivation() override;
 
-  void AbortClientNavigation() override;
+  void AbortClientNavigation(bool for_new_navigation) override;
 
   WebSpellCheckPanelHostClient* SpellCheckPanelHostClient() const override;
 

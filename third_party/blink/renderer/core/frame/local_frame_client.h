@@ -342,7 +342,7 @@ class CORE_EXPORT LocalFrameClient : public FrameClient {
 
   virtual void NotifyUserActivation() {}
 
-  virtual void AbortClientNavigation() {}
+  virtual void AbortClientNavigation(bool for_new_navigation) {}
 
   virtual WebSpellCheckPanelHostClient* SpellCheckPanelHostClient() const = 0;
 

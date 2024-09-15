@@ -179,6 +179,7 @@ chromium-metrics-reviews@google.com.
   <int value="11" label="kNewHistoryNavigation"/>
   <int value="12" label="kNewOtherNavigationBrowserInitiated"/>
   <int value="13" label="kNewOtherNavigationRendererInitiated"/>
+  <int value="14" label="kNewDuplicateNavigation"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/page_load_metrics/browser/observers/abandoned_page_load_metrics_observer.h:AbandonReason) -->

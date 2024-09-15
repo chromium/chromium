@@ -7085,15 +7085,6 @@ void NavigationRequest::RendererRequestedNavigationCancellationForTesting() {
 void NavigationRequest::OnNavigationClientDisconnected(
     uint32_t reason,
     const std::string& description) {
-  if (reason == mojom::NavigationClient::kResetForSwap) {
-    // If the RenderFrame that initiated this navigation request is swapped out
-    // (disconnecting its NavigationClient for this request), do not treat it as
-    // a cancellation. Otherwise, if a previous navigation before `this` is slow
-    // to commit, it would unexpectedly cancel `this` subsequent attempt to
-    // navigate elsewhere.
-    return;
-  }
-
   // Renderer-initiated navigation cancellations can only happen before the
   // navigation gets into the READY_TO_COMMIT state, because
   // RendererCancellationThrottle will prevent renderer-initiated navigations
@@ -7108,16 +7099,44 @@ void NavigationRequest::OnNavigationClientDisconnected(
   // anymore. Fix tests that expect this behavior.
   // 2. The target renderer had crashed, so the speculative RenderFrame is not
   // live anymore, because the navigation can't commit in a crashed renderer.
-  NavigationDiscardReason discard_reason =
-      (HasRenderFrameHost() && !GetRenderFrameHost()->IsRenderFrameLive())
-          ? NavigationDiscardReason::kRenderProcessGone
-          : (reason == mojom::NavigationClient::kResetForAbort
-                 ? NavigationDiscardReason::kExplicitCancellation
-                 : NavigationDiscardReason::kInternalCancellation);
+  std::optional<NavigationDiscardReason> discard_reason;
+  if (HasRenderFrameHost() && !GetRenderFrameHost()->IsRenderFrameLive()) {
+    discard_reason = NavigationDiscardReason::kRenderProcessGone;
+  } else {
+    switch (static_cast<mojom::NavigationClientDisconnectReason>(reason)) {
+      case mojom::NavigationClientDisconnectReason::kResetForSwap:
+        // If the RenderFrame that initiated this navigation request is swapped
+        // out (disconnecting its NavigationClient for this request), do not
+        // treat it as a cancellation. Otherwise, if a previous navigation
+        // before `this` is slow to commit, it would unexpectedly cancel `this`
+        // subsequent attempt to navigate elsewhere.
+        return;
+      case mojom::NavigationClientDisconnectReason::kNoExplicitReason:
+        discard_reason = NavigationDiscardReason::kInternalCancellation;
+        break;
+      case mojom::NavigationClientDisconnectReason::kResetForAbort:
+        discard_reason = NavigationDiscardReason::kExplicitCancellation;
+        break;
+      case mojom::NavigationClientDisconnectReason::kResetForNewNavigation:
+        discard_reason =
+            NavigationDiscardReason::kNewOtherNavigationRendererInitiated;
+        break;
+      case mojom::NavigationClientDisconnectReason::
+          kResetForDuplicateNavigation:
+        discard_reason = NavigationDiscardReason::kNewDuplicateNavigation;
+        break;
+    }
+    if (!discard_reason.has_value()) {
+      // TODO(https://crbug.com/366060351): An invalid value was used. Kill
+      // either the requesting or committing client's process.
+      return;
+    }
+  }
+
   if (!IsWaitingToCommit()) {
     // The cancellation happens before READY_TO_COMMIT.
     frame_tree_node_->navigator().CancelNavigation(frame_tree_node_,
-                                                   discard_reason);
+                                                   discard_reason.value());
   } else if (GetRenderFrameHost() ==
                  frame_tree_node_->render_manager()->current_frame_host() ||
              !GetRenderFrameHost()->IsRenderFrameLive()) {
@@ -7125,10 +7144,11 @@ void NavigationRequest::OnNavigationClientDisconnected(
     // `render_frame_host_` owns `this`. Cache any needed state in stack
     // variables to avoid a use-after-free.
     FrameTreeNode* frame_tree_node = frame_tree_node_;
-    GetRenderFrameHost()->NavigationRequestCancelled(this, discard_reason);
+    GetRenderFrameHost()->NavigationRequestCancelled(this,
+                                                     discard_reason.value());
     // Ensure that the speculative RFH, if any, is also cleaned up.
     frame_tree_node->render_manager()->DiscardSpeculativeRFHIfUnused(
-        discard_reason);
+        discard_reason.value());
   }
 
   // Do not add code after this, NavigationRequest might have been destroyed.

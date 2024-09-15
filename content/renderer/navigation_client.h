@@ -87,6 +87,8 @@ class NavigationClient : mojom::NavigationClient {
 
   void ResetWithoutCancelling();
 
+  void ResetForNewNavigation(bool is_duplicate_navigation);
+
   void ResetForAbort();
 
   bool HasBeginNavigationParams() const { return !!begin_params_; }

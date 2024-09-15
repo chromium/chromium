@@ -573,7 +573,8 @@ void FrameTreeNode::TakeNavigationRequest(
     }
     ResetNavigationRequestButKeepState(
         navigation_request->GetTypeForNavigationDiscardReason());
-  } else if (navigation_request_) {
+  } else if (navigation_request_ &&
+             !navigation_request_->GetNavigationDiscardReason().has_value()) {
     navigation_request_->set_navigation_discard_reason(
         navigation_request->GetTypeForNavigationDiscardReason());
   }
@@ -633,8 +634,9 @@ void FrameTreeNode::ResetNavigationRequestButKeepState(
   // accidentally complete a navigation that should be reset.
   CancelRestartingBackForwardCacheNavigation();
   devtools_instrumentation::OnResetNavigationRequest(navigation_request_.get());
-
-  navigation_request_->set_navigation_discard_reason(reason);
+  if (!navigation_request_->GetNavigationDiscardReason().has_value()) {
+    navigation_request_->set_navigation_discard_reason(reason);
+  }
   navigation_request_.reset();
 }
 

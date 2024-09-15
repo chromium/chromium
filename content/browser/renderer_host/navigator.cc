@@ -834,11 +834,15 @@ void Navigator::Navigate(std::unique_ptr<NavigationRequest> request,
     is_duplicate_navigation = true;
   }
   base::UmaHistogramBoolean("Navigation.IsDuplicate", is_duplicate_navigation);
-  if (is_duplicate_navigation &&
-      base::FeatureList::IsEnabled(features::kIgnoreDuplicateNavs)) {
-    request->set_navigation_discard_reason(
-        NavigationDiscardReason::kNeverStarted);
-    return;
+  if (is_duplicate_navigation) {
+    if (base::FeatureList::IsEnabled(features::kIgnoreDuplicateNavs)) {
+      request->set_navigation_discard_reason(
+          NavigationDiscardReason::kNeverStarted);
+      return;
+    } else {
+      ongoing_navigation_request->set_navigation_discard_reason(
+          NavigationDiscardReason::kNewDuplicateNavigation);
+    }
   }
 
   metrics_data_ = std::make_unique<NavigationMetricsData>(

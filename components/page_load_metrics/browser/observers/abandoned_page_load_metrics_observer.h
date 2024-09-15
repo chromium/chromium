@@ -82,7 +82,8 @@ class AbandonedPageLoadMetricsObserver
     kNewHistoryNavigation = 11,
     kNewOtherNavigationBrowserInitiated = 12,
     kNewOtherNavigationRendererInitiated = 13,
-    kMaxValue = kNewOtherNavigationRendererInitiated,
+    kNewDuplicateNavigation = 14,
+    kMaxValue = kNewDuplicateNavigation,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/page/enums.xml:NavigationAbandonReasonEnum)
 

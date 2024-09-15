@@ -44,6 +44,8 @@ AbandonReason DiscardReasonToAbandonReason(
       return AbandonReason::kNeverStarted;
     case content::NavigationDiscardReason::kFailedSecurityCheck:
       return AbandonReason::kFailedSecurityCheck;
+    case content::NavigationDiscardReason::kNewDuplicateNavigation:
+      return AbandonReason::kNewDuplicateNavigation;
       // Other cases like kCommittedNavigation and kRenderFrameHostDestruction
       // should be obsolete, so just use "other" as the reason.
     case content::NavigationDiscardReason::kCommittedNavigation:
@@ -74,6 +76,7 @@ const char kAbandonReasonNewOtherNavigationBrowserInitiated[] =
     "NewOtherNavigationBrowserInitiated";
 const char kAbandonReasonNewOtherNavigationRendererInitiated[] =
     "NewOtherNavigationRendererInitiated";
+const char kAbandonReasonNewDuplicateNavigation[] = "NewDuplicateNavigation";
 const char kAbandonReasonFrameRemoved[] = "FrameRemoved";
 const char kAbandonReasonExplicitCancellation[] = "ExplicitCancellation";
 const char kAbandonReasonInternalCancellation[] = "InternalCancellation";
@@ -137,6 +140,8 @@ std::string AbandonedPageLoadMetricsObserver::AbandonReasonToString(
       return internal::kAbandonReasonNewOtherNavigationBrowserInitiated;
     case AbandonReason::kNewOtherNavigationRendererInitiated:
       return internal::kAbandonReasonNewOtherNavigationRendererInitiated;
+    case AbandonReason::kNewDuplicateNavigation:
+      return internal::kAbandonReasonNewDuplicateNavigation;
     case AbandonReason::kFrameRemoved:
       return internal::kAbandonReasonFrameRemoved;
     case AbandonReason::kExplicitCancellation:

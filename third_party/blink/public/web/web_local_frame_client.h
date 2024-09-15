@@ -504,7 +504,10 @@ class BLINK_EXPORT WebLocalFrameClient {
 
   // PlzNavigate
   // Called to abort a navigation that is being handled by the browser process.
-  virtual void AbortClientNavigation() {}
+  // `for_new_navigation` is true iff the abort is the result of beginning a
+  // new navigation, since a document should only have one navigation in-flight
+  // at a time.
+  virtual void AbortClientNavigation(bool for_new_navigation) {}
 
   // InstalledApp API ----------------------------------------------------
 

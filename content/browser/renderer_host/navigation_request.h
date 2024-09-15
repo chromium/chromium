@@ -1359,6 +1359,9 @@ class CONTENT_EXPORT NavigationRequest
     navigation_discard_reason_ = navigation_discard_reason;
   }
 
+  // Returns the type of this navigation (e.g. history, browser-initiated, etc)
+  // to set as a discard reason on another navigation that is being discarded
+  // because this navigation is taking its place in the FrameTreeNode.
   NavigationDiscardReason GetTypeForNavigationDiscardReason();
 
   void set_force_no_https_upgrade() { force_no_https_upgrade_ = true; }

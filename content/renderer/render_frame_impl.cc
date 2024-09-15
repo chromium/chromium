@@ -2192,7 +2192,11 @@ void RenderFrameImpl::BindNavigationClient(
 void RenderFrameImpl::BindNavigationClientWithParams(
     mojo::PendingAssociatedReceiver<mojom::NavigationClient> receiver,
     blink::mojom::BeginNavigationParamsPtr begin_params,
-    blink::mojom::CommonNavigationParamsPtr common_params) {
+    blink::mojom::CommonNavigationParamsPtr common_params,
+    bool is_duplicate_navigation) {
+  if (navigation_client_impl_) {
+    navigation_client_impl_->ResetForNewNavigation(is_duplicate_navigation);
+  }
   navigation_client_impl_ = std::make_unique<NavigationClient>(
       this, std::move(begin_params), std::move(common_params));
   navigation_client_impl_->Bind(std::move(receiver));
@@ -4467,7 +4471,7 @@ base::UnguessableToken RenderFrameImpl::GetDevToolsFrameToken() {
   return devtools_frame_token_;
 }
 
-void RenderFrameImpl::AbortClientNavigation() {
+void RenderFrameImpl::AbortClientNavigation(bool for_new_navigation) {
   CHECK(in_frame_tree_);
   is_requesting_navigation_ = false;
   if (mhtml_body_loader_client_) {
@@ -4479,7 +4483,12 @@ void RenderFrameImpl::AbortClientNavigation() {
   // Note: This might not actually cancel the navigation if the navigation is
   // already in the process of committing to a different RenderFrame.
 
-  navigation_client_impl_->ResetForAbort();
+  if (for_new_navigation) {
+    navigation_client_impl_->ResetForNewNavigation(
+        /*is_duplicate_navigation=*/false);
+  } else {
+    navigation_client_impl_->ResetForAbort();
+  }
   navigation_client_impl_.reset();
 }
 
@@ -6306,7 +6315,7 @@ void RenderFrameImpl::BeginNavigationInternal(
       navigation_client_remote;
   BindNavigationClientWithParams(
       navigation_client_remote.InitWithNewEndpointAndPassReceiver(),
-      begin_params.Clone(), common_params.Clone());
+      begin_params.Clone(), common_params.Clone(), is_duplicate_navigation);
   mojo::PendingReceiver<mojom::NavigationRendererCancellationListener>
       renderer_cancellation_listener_receiver;
   navigation_client_impl_->SetUpRendererInitiatedNavigation(

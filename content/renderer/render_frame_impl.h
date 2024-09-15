@@ -606,7 +606,7 @@ class CONTENT_EXPORT RenderFrameImpl
   void NotifyCurrentHistoryItemChanged() override;
   void DidUpdateCurrentHistoryItem() override;
   base::UnguessableToken GetDevToolsFrameToken() override;
-  void AbortClientNavigation() override;
+  void AbortClientNavigation(bool for_new_navigation) override;
   void DidChangeSelection(bool is_empty_selection,
                           blink::SyncCondition force_sync) override;
   void FocusedElementChanged(const blink::WebElement& element) override;
@@ -754,7 +754,8 @@ class CONTENT_EXPORT RenderFrameImpl
   void BindNavigationClientWithParams(
       mojo::PendingAssociatedReceiver<mojom::NavigationClient> receiver,
       blink::mojom::BeginNavigationParamsPtr begin_params,
-      blink::mojom::CommonNavigationParamsPtr common_params);
+      blink::mojom::CommonNavigationParamsPtr common_params,
+      bool is_duplicate_navigation);
 
   // Virtual so that a TestRenderFrame can mock out the interface.
   virtual mojom::FrameHost* GetFrameHost();

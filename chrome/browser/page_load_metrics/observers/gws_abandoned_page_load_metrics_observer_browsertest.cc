@@ -1213,4 +1213,134 @@ IN_PROC_BROWSER_TEST_F(GWSAbandonedPageLoadMetricsObserverBrowserTest,
   ExpectTotalCountForAllNavigationMilestones(/*include_redirect=*/false, 1);
 }
 
+IN_PROC_BROWSER_TEST_F(GWSAbandonedPageLoadMetricsObserverBrowserTest,
+                       DuplicateNavigation_BrowserInitiated) {
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), url_non_srp()));
+
+  // 1. Start browser-initiated navigation to `url_srp()`
+  content::TestNavigationManager nav_manager(web_contents(), url_srp());
+  web_contents()->GetController().LoadURL(
+      url_srp(), content::Referrer(), ui::PAGE_TRANSITION_LINK, std::string());
+  // Pause the navigation at request start.
+  EXPECT_TRUE(nav_manager.WaitForRequestStart());
+
+  // 2. Navigate again, also to `url_srp()`.
+  web_contents()->GetController().LoadURL(
+      url_srp(), content::Referrer(), ui::PAGE_TRANSITION_LINK, std::string());
+  // Wait for the first navigation to finish.
+  EXPECT_TRUE(nav_manager.WaitForNavigationFinished());
+  // Ensure that the first_navigation didn't commit.
+  EXPECT_FALSE(nav_manager.was_committed());
+
+  EXPECT_TRUE(content::WaitForLoadStop(web_contents()));
+  EXPECT_EQ(url_srp(),
+            web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL());
+
+  // Expect that the first navigation didn't get to LoaderStart.
+  histogram_tester().ExpectTotalCount(
+      GetMilestoneHistogramName(NavigationMilestone::kNavigationStart), 2);
+  histogram_tester().ExpectTotalCount(
+      GetMilestoneHistogramName(NavigationMilestone::kLoaderStart), 1);
+
+  // Check that the abandonment reason is set correctly.
+  EXPECT_THAT(histogram_tester().GetTotalCountsForPrefix(
+                  GetAbandonReasonAtMilestoneHistogramName(
+                      NavigationMilestone::kNavigationStart)),
+              testing::UnorderedElementsAreArray(
+                  ExpandHistograms({GetAbandonReasonAtMilestoneHistogramName(
+                      NavigationMilestone::kNavigationStart)})));
+  histogram_tester().ExpectUniqueSample(
+      GetAbandonReasonAtMilestoneHistogramName(
+          NavigationMilestone::kNavigationStart),
+      AbandonReason::kNewDuplicateNavigation, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(GWSAbandonedPageLoadMetricsObserverBrowserTest,
+                       DuplicateNavigation_RendererInitiated) {
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), url_non_srp()));
+
+  // 1. Start renderer-initiated navigation to `url_srp()`
+  content::TestNavigationManager nav_manager(web_contents(), url_srp());
+  EXPECT_TRUE(ExecJs(web_contents(),
+                     content::JsReplace("location.href = $1;", url_srp())));
+  // Pause the navigation at request start.
+  EXPECT_TRUE(nav_manager.WaitForRequestStart());
+
+  // 2. Navigate again, also to `url_srp()`.
+  EXPECT_TRUE(ExecJs(web_contents(),
+                     content::JsReplace("location.href = $1;", url_srp())));
+  // Wait for the first navigation to finish.
+  EXPECT_TRUE(nav_manager.WaitForNavigationFinished());
+  // Ensure that the first_navigation didn't commit.
+  EXPECT_FALSE(nav_manager.was_committed());
+
+  EXPECT_TRUE(content::WaitForLoadStop(web_contents()));
+  EXPECT_EQ(url_srp(),
+            web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL());
+
+  // Expect that the first navigation didn't get to LoaderStart.
+  histogram_tester().ExpectTotalCount(
+      GetMilestoneHistogramName(NavigationMilestone::kNavigationStart), 2);
+  histogram_tester().ExpectTotalCount(
+      GetMilestoneHistogramName(NavigationMilestone::kLoaderStart), 1);
+
+  // Check that the abandonment reason is set correctly.
+  EXPECT_THAT(histogram_tester().GetTotalCountsForPrefix(
+                  GetAbandonReasonAtMilestoneHistogramName(
+                      NavigationMilestone::kNavigationStart)),
+              testing::UnorderedElementsAreArray(
+                  ExpandHistograms({GetAbandonReasonAtMilestoneHistogramName(
+                      NavigationMilestone::kNavigationStart)})));
+  histogram_tester().ExpectUniqueSample(
+      GetAbandonReasonAtMilestoneHistogramName(
+          NavigationMilestone::kNavigationStart),
+      AbandonReason::kNewDuplicateNavigation, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(GWSAbandonedPageLoadMetricsObserverBrowserTest,
+                       MultipleDifferentRendererInitiatedNavigations) {
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), url_non_srp()));
+
+  // 1. Start renderer-initiated navigation to `url_srp_redirect()`
+  content::TestNavigationManager nav_manager(web_contents(),
+                                             url_srp_redirect());
+  EXPECT_TRUE(ExecJs(web_contents(), content::JsReplace("location.href = $1;",
+                                                        url_srp_redirect())));
+  // Pause the navigation at request start.
+  EXPECT_TRUE(nav_manager.WaitForRequestStart());
+
+  // 2. Navigate again but to `url_srp()`.
+  EXPECT_TRUE(ExecJs(web_contents(),
+                     content::JsReplace("location.href = $1;", url_srp())));
+  // Run script to ensure that the second link click is already processed.
+  EXPECT_TRUE(ExecJs(web_contents(), "console.log('Success');"));
+
+  // Wait for the first navigation to finish.
+  EXPECT_TRUE(nav_manager.WaitForNavigationFinished());
+  // Ensure that the first_navigationdidn't commit.
+  EXPECT_FALSE(nav_manager.was_committed());
+
+  EXPECT_TRUE(content::WaitForLoadStop(web_contents()));
+  EXPECT_EQ(url_srp(),
+            web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL());
+
+  // Expect that the first navigation didn't get to LoaderStart.
+  histogram_tester().ExpectTotalCount(
+      GetMilestoneHistogramName(NavigationMilestone::kNavigationStart), 2);
+  histogram_tester().ExpectTotalCount(
+      GetMilestoneHistogramName(NavigationMilestone::kLoaderStart), 1);
+
+  // Check that the abandonment reason is setcorrectly.
+  EXPECT_THAT(histogram_tester().GetTotalCountsForPrefix(
+                  GetAbandonReasonAtMilestoneHistogramName(
+                      NavigationMilestone::kNavigationStart)),
+              testing::UnorderedElementsAreArray(
+                  ExpandHistograms({GetAbandonReasonAtMilestoneHistogramName(
+                      NavigationMilestone::kNavigationStart)})));
+  histogram_tester().ExpectUniqueSample(
+      GetAbandonReasonAtMilestoneHistogramName(
+          NavigationMilestone::kNavigationStart),
+      AbandonReason::kNewOtherNavigationRendererInitiated, 1);
+}
+
 // TODO(https://crbug.com/347706997): Test backgrounded case.
