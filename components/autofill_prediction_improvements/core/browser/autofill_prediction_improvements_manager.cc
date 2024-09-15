@@ -208,11 +208,19 @@ AutofillPredictionImprovementsManager::CreateTriggerSuggestion(
     suggestions.emplace_back(autofill::SuggestionType::kSeparator);
   }
   // TODO(crbug.com/361434879): Add hardcoded string to an appropriate grd file.
-  autofill::Suggestion suggestion(
+  autofill::Suggestion retrieve_suggestion(
       u"Autocomplete",
       autofill::SuggestionType::kRetrievePredictionImprovements);
-  suggestion.icon = autofill::Suggestion::Icon::kSettings;
-  suggestions.emplace_back(suggestion);
+  retrieve_suggestion.icon = autofill::Suggestion::Icon::kSettings;
+  suggestions.emplace_back(retrieve_suggestion);
+
+  autofill::Suggestion details_suggestion(
+      autofill::SuggestionType::kPredictionImprovementsDetails);
+  details_suggestion.is_acceptable = false;
+  details_suggestion.voice_over =
+      u"Details about prediction improvements enter to learn more";
+  suggestions.emplace_back(details_suggestion);
+
   return suggestions;
 }
 

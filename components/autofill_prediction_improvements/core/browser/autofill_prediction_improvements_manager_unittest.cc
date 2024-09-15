@@ -252,7 +252,7 @@ TEST_F(AutofillPredictionImprovementsManagerTest,
 }
 
 // Tests that `address_suggestions` only contains the
-// `kRetrievePredictionImprovements` suggestion if it was empty before calling
+// triggering improved predictions suggestions if it was empty before calling
 // `MaybeUpdateSuggestions()`.
 TEST_F(AutofillPredictionImprovementsManagerTest,
        MaybeUpdateSuggestionsOnEmptyAddressSuggestionsAddsTriggerSuggestion) {
@@ -262,11 +262,12 @@ TEST_F(AutofillPredictionImprovementsManagerTest,
       address_suggestions, field, /*should_add_trigger_suggestion=*/true));
   EXPECT_THAT(
       address_suggestions,
-      ElementsAre(HasType(SuggestionType::kRetrievePredictionImprovements)));
+      ElementsAre(HasType(SuggestionType::kRetrievePredictionImprovements),
+                  HasType(SuggestionType::kPredictionImprovementsDetails)));
 }
 
 // Tests that `address_suggestions` contains the
-// `kRetrievePredictionImprovements` suggestion (incl. a separator) if
+// triggering improved prediction suggestions (incl. a separator) if
 // `address_suggestions` contained entries before calling
 // `MaybeUpdateSuggestions()`. The pre-existing entries contained a
 // `kUndoOrClear` suggestion which is the case for autofilled fields.
@@ -286,13 +287,14 @@ TEST_F(
       ElementsAre(HasType(SuggestionType::kAddressEntry),
                   HasType(SuggestionType::kSeparator),
                   HasType(SuggestionType::kRetrievePredictionImprovements),
+                  HasType(SuggestionType::kPredictionImprovementsDetails),
                   HasType(SuggestionType::kSeparator),
                   HasType(SuggestionType::kUndoOrClear),
                   HasType(SuggestionType::kManageAddress)));
 }
 
 // Tests that `address_suggestions` contains the
-// `kRetrievePredictionImprovements` suggestion (incl. a separator) if
+// improved prediction suggestions (incl. a separator) if
 // `address_suggestions` contained entries before calling
 // `MaybeUpdateSuggestions()`. The pre-existing entries did not contain a
 // `kUndoOrClear` suggestion which is the case for fields that aren't
@@ -311,6 +313,7 @@ TEST_F(AutofillPredictionImprovementsManagerTest,
       ElementsAre(HasType(SuggestionType::kAddressEntry),
                   HasType(SuggestionType::kSeparator),
                   HasType(SuggestionType::kRetrievePredictionImprovements),
+                  HasType(SuggestionType::kPredictionImprovementsDetails),
                   HasType(SuggestionType::kSeparator),
                   HasType(SuggestionType::kManageAddress)));
 }
