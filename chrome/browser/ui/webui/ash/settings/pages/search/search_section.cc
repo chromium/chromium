@@ -15,6 +15,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/assistant/assistant_util.h"
+#include "chrome/browser/ash/input_method/editor_mediator_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/assistant_optin/assistant_optin_utils.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/search/google_assistant_handler.h"
@@ -56,6 +57,20 @@ namespace {
 bool IsQuickAnswersSupported() {
   return QuickAnswersState::IsEligibleAs(
       QuickAnswersState::FeatureType::kQuickAnswers);
+}
+
+bool IsMagicBoostNoticeBannerVisible(Profile* profile) {
+  chromeos::MagicBoostState* magic_boost_state =
+      chromeos::MagicBoostState::Get();
+  ash::input_method::EditorMediator* editor_mediator =
+      ash::input_method::EditorMediatorFactory::GetForProfile(profile);
+  bool hmr_needs_notice_banner = magic_boost_state->IsMagicBoostAvailable() &&
+                                 magic_boost_state->CanShowNoticeBannerForHMR();
+  bool hmw_needs_notice_banner = editor_mediator &&
+                                 editor_mediator->IsAllowedForUse() &&
+                                 editor_mediator->CanShowNoticeBanner();
+
+  return hmr_needs_notice_banner || hmw_needs_notice_banner;
 }
 
 const std::vector<SearchConcept>& GetSearchPageSearchConcepts(
@@ -347,6 +362,11 @@ void SearchSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   webui::LocalizedString kLocalizedStrings[] = {
       {"enableMagicBoost", IDS_OS_SETTINGS_ENABLE_MAGIC_BOOST},
       {"enableMagicBoostDesc", IDS_OS_SETTINGS_ENABLE_MAGIC_BOOST_DESCRIPTION},
+      {"magicBoostReviewTermsBannerDescription",
+       IDS_OS_SETTINGS_MAGIC_BOOST_REVIEW_TERMS_BANNER_DESCRIPTION},
+      {"magicBoostReviewTermsButtonLabel",
+       IDS_OS_SETTINGS_MAGIC_BOOST_REVIEW_TERMS_BUTTON_LABEL},
+      {"enableMagicBoostDesc", IDS_OS_SETTINGS_ENABLE_MAGIC_BOOST_DESCRIPTION},
       {"enableHelpMeRead", IDS_OS_SETTINGS_ENABLE_HELP_ME_READ},
       {"enableHelpMeReadDesc", IDS_OS_SETTINGS_ENABLE_HELP_ME_READ_DESCRIPTION},
       {"enableHelpMeWrite", IDS_OS_SETTINGS_ENABLE_HELP_ME_WRITE},
@@ -376,6 +396,9 @@ void SearchSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddBoolean(
       "isMagicBoostFeatureEnabled",
       chromeos::MagicBoostState::Get()->IsMagicBoostAvailable());
+
+  html_source->AddBoolean("isMagicBoostNoticeBannerVisible",
+                          IsMagicBoostNoticeBannerVisible(profile()));
 
   const bool is_assistant_allowed = IsAssistantAllowed();
   html_source->AddBoolean("isAssistantAllowed", is_assistant_allowed);

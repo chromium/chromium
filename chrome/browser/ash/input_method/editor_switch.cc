@@ -332,6 +332,17 @@ bool EditorSwitch::IsFeedbackEnabled() const {
   return profile_->GetPrefs()->GetBoolean(prefs::kOrcaFeedbackEnabled);
 }
 
+bool EditorSwitch::CanShowNoticeBanner() const {
+  auto* pref = profile_->GetPrefs();
+  // Only show the notice when:
+  //  1. Editor is forced ON by the admin, and
+  //  2. The consent status is currently disabled.
+  return pref->IsManagedPreference(prefs::kOrcaEnabled) &&
+         pref->GetBoolean(prefs::kOrcaEnabled) &&
+         GetConsentStatusFromInteger(pref->GetInteger(
+             prefs::kOrcaConsentStatus)) == ConsentStatus::kDeclined;
+}
+
 EditorOpportunityMode EditorSwitch::GetEditorOpportunityMode() const {
   if (!IsAllowedForUse()) {
     return EditorOpportunityMode::kNotAllowedForUse;

@@ -349,6 +349,10 @@ bool EditorMediator::IsAllowedForUse() {
   return editor_switch_->IsAllowedForUse();
 }
 
+bool EditorMediator::CanShowNoticeBanner() const {
+  return editor_switch_->CanShowNoticeBanner();
+}
+
 EditorMode EditorMediator::GetEditorMode() const {
   if (editor_mode_override_for_testing_.has_value()) {
     return *editor_mode_override_for_testing_;

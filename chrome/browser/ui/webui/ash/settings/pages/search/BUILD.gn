@@ -29,6 +29,7 @@ static_library("search") {
     "//chrome/app:generated_resources",
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ash/assistant",
+    "//chrome/browser/ash/input_method",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/ui/webui/ash/assistant_optin",
