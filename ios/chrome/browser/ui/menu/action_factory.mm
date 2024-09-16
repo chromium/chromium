@@ -74,7 +74,7 @@
                                       type:MenuActionType::ShowFullURL
                                      block:block];
   action.accessibilityLabel =
-      l10n_util::GetNSString(IDS_IOS_SHARE_FULL_URL_BUTTON_ACCESSIBILITY_LABEL);
+      l10n_util::GetNSString(IDS_IOS_SHOW_FULL_URL_BUTTON_ACCESSIBILITY_LABEL);
   action.attributes = UIMenuElementAttributesKeepsMenuPresented;
   action.subtitle = ios::provider::StyledContextMenuStringForString(URLString);
   return action;

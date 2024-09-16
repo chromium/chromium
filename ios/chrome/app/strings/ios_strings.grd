@@ -4945,8 +4945,8 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_SHARE_BUTTON_LABEL" desc="Label of a button which will initiate a share flow. [iOS only]">
         Share…
       </message>
-      <message name="IDS_IOS_SHARE_FULL_URL_BUTTON_ACCESSIBILITY_LABEL" desc="Accessibility Label of a button which will initiate the popup message with the full URL in the web context menu. [iOS only]">
-        Share full URL
+      <message name="IDS_IOS_SHOW_FULL_URL_BUTTON_ACCESSIBILITY_LABEL" desc="Accessibility Label of a button which will initiate the popup message with the full URL in the web context menu. [iOS only]">
+        Show full URL
       </message>
       <message name="IDS_IOS_CLOSE_ALERT_BUTTON_LABEL" desc="Label of a button which will close the popup message with the full URL in the web context menu. [iOS only]">
         Close
