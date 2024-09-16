@@ -38,6 +38,8 @@ class ASH_EXPORT PinStatusView : public views::View {
 
     const std::u16string& GetCurrentText() const;
 
+    raw_ptr<views::Label> GetTextLabel() const;
+
     raw_ptr<PinStatusView> GetView();
 
    private:

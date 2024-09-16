@@ -27,6 +27,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/view.h"
@@ -68,6 +69,10 @@ PinStatusView::TestApi::~TestApi() = default;
 
 const std::u16string& PinStatusView::TestApi::GetCurrentText() const {
   return view_->GetCurrentText();
+}
+
+raw_ptr<views::Label> PinStatusView::TestApi::GetTextLabel() const {
+  return view_->text_label_;
 }
 
 raw_ptr<PinStatusView> PinStatusView::TestApi::GetView() {
@@ -129,13 +134,21 @@ void PinStatusView::SetPinStatus(
 
   pin_status_ = std::move(pin_status);
 
-  SetText(BuildPinStatusMessage(pin_status_.get()));
+  const std::u16string status_message =
+      BuildPinStatusMessage(pin_status_.get());
+  SetText(status_message);
+  text_label_->GetViewAccessibility().SetName(status_message);
+
   if (pin_status_ == nullptr) {
     return;
   }
   if (!pin_status_->IsLockedFactor()) {
     return;
   }
+
+  text_label_->NotifyAccessibilityEvent(ax::mojom::Event::kAlert,
+                                        /*send_native_event=*/true);
+
   if (pin_status_->AvailableAt().is_max()) {
     return;
   }

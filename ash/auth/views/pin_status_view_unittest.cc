@@ -20,6 +20,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -45,21 +46,26 @@ class PinStatusUnitTest : public AshTestBase {
 
     pin_status_view_ =
         widget_->SetContentsView(std::make_unique<PinStatusView>());
+    test_api_ = std::make_unique<PinStatusView::TestApi>(pin_status_view_);
   }
 
   void TearDown() override {
+    test_api_.reset();
     pin_status_view_ = nullptr;
     widget_.reset();
     AshTestBase::TearDown();
   }
 
   std::unique_ptr<views::Widget> widget_;
+  std::unique_ptr<PinStatusView::TestApi> test_api_;
   raw_ptr<PinStatusView> pin_status_view_;
 };
 
 // Testing PinStatus with nullptr.
 TEST_F(PinStatusUnitTest, NullPinStatus) {
   pin_status_view_->SetPinStatus(nullptr);
+  EXPECT_EQ(pin_status_view_->GetCurrentText(),
+            test_api_->GetTextLabel()->GetViewAccessibility().GetCachedName());
   EXPECT_FALSE(pin_status_view_->GetVisible());
 }
 
@@ -73,6 +79,8 @@ TEST_F(PinStatusUnitTest, MaxPinStatus) {
       std::make_unique<cryptohome::PinStatus>(pin_status));
 
   EXPECT_EQ(pin_status_view_->GetCurrentText(), status_message);
+  EXPECT_EQ(pin_status_view_->GetCurrentText(),
+            test_api_->GetTextLabel()->GetViewAccessibility().GetCachedName());
   EXPECT_TRUE(pin_status_view_->GetVisible());
 }
 
@@ -87,6 +95,8 @@ TEST_F(PinStatusUnitTest, ShortDelayPinStatus) {
       std::make_unique<cryptohome::PinStatus>(pin_status));
 
   EXPECT_EQ(pin_status_view_->GetCurrentText(), status_message);
+  EXPECT_EQ(pin_status_view_->GetCurrentText(),
+            test_api_->GetTextLabel()->GetViewAccessibility().GetCachedName());
   EXPECT_TRUE(pin_status_view_->GetVisible());
 
   task_environment()->FastForwardBy(base::Seconds(5));
