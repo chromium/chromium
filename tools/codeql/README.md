@@ -178,6 +178,19 @@ build the Chromium database.
 The AST viewer seems to be broken at the moment.  There's no workaround for this
 right now.
 
+## Automation
+
+The file targets_to_index.py in this directory determines which targets should
+be indexed into CodeQL databases in automation.
+
+To add a target, append it to the list of `full_targets` in that file.
+
+The file queries_to_run.json in this directory determines which CodeQL queries
+should be run against which CodeQL databases in automation.
+
+To add a query, add the query's filename to the list corresponding to the
+database you would like to run that query against.
+
 ## Other Resources
 
 * [CodeQL for C and C++](https://codeql.github.com/docs/codeql-language-guides/codeql-for-cpp/)
