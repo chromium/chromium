@@ -5423,7 +5423,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Autofill.SharedStorageServerCardDataSetResult"
     enum="AutofillSharedStorageServerCardDataSetResult"
     expires_after="2025-02-16">
-  <owner>nburris@google.com</owner>
+  <owner>npnavarro@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Records the shared storage Set operation result that is returned from the
