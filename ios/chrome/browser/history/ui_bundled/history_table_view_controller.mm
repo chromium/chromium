@@ -509,6 +509,9 @@ const CGFloat kButtonHorizontalPadding = 30.0;
 // Deletes selected items from browser history and removes them from the
 // tableView.
 - (void)deleteSelectedItemsFromHistory {
+  browsing_data::RecordDeleteBrowsingDataAction(
+      browsing_data::DeleteBrowsingDataAction::kHistoryPageEntries);
+
   if (!self.browser)
     return;
 
