@@ -8,6 +8,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
+#include "base/task/current_thread.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -24,6 +25,7 @@
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
+#include "chrome/browser/web_applications/visited_manifest_manager.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/webapps/installable/ml_promotion_browsertest_base.h"
@@ -237,6 +239,18 @@ class MLPromotionBrowserTest : public MLPromotionBrowserTestBase {
   GURL GetUrlWithSwNoFetchHandler() {
     return https_server()->GetURL(
         "/banners/no_sw_fetch_handler_test_page.html");
+  }
+
+  GURL GetUrlOuterApp() {
+    return https_server()->GetURL("/web_apps/nesting/index.html");
+  }
+
+  GURL GetUrlInnerCraftedApp() {
+    return https_server()->GetURL("/web_apps/nesting/nested/index.html");
+  }
+
+  GURL GetUrlInnerDiyApp() {
+    return https_server()->GetURL("/web_apps/nesting/nested/diy.html");
   }
 
   MLInstallabilityPromoter* ml_promoter() {
@@ -765,6 +779,87 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowserTest,
   // Refreshing the page should exit the pipeline early, and should not crash.
   web_app::NavigateViaLinkClickToURLAndWait(browser(), GetInstallableAppURL());
   task_runner_->RunPendingTasks();
+}
+
+class MLPromotionBrowserTestNestedPromptBlocking
+    : public MLPromotionBrowserTest {
+ public:
+  MLPromotionBrowserTestNestedPromptBlocking() = default;
+
+  base::test::ScopedFeatureList enable_feature_{
+      web_app::kBlockMlPromotionInNestedPagesNoManifest};
+};
+
+IN_PROC_BROWSER_TEST_F(MLPromotionBrowserTestNestedPromptBlocking,
+                       NoPromptForNestedDiy) {
+  NavigateAndAwaitMetricsCollectionPending(GetUrlOuterApp());
+
+  // Wait for the full ml pipeline to run. The reporting of the manifest from
+  // the AppBannerManager to the VisitedManifestManager should happen by the
+  // time this finishes.
+  ExpectClasificationCallReturnResult(
+      /*site_url=*/GetUrlOuterApp(),
+      /*manifest_id=*/GetUrlOuterApp(),
+      MLInstallabilityPromoter::kDontShowLabel, TrainingRequestId(1ll),
+      web_contents());
+  task_runner_->RunPendingTasks();
+  ExpectTrainingResult(TrainingRequestId(1ll),
+                       MlInstallResponse::kReporterDestroyed);
+
+  // Navigate now to the DIY app (no manifest) to ensure that it is blocked.
+  NavigateAndAwaitMetricsCollectionPending(GetUrlInnerDiyApp());
+
+  task_runner_->RunPendingTasks();
+  base::test::RunUntil(
+      [this]() { return ml_promoter()->IsCompleteForTesting(); });
+}
+
+IN_PROC_BROWSER_TEST_F(MLPromotionBrowserTestNestedPromptBlocking,
+                       PromptForNestedCraftedApp) {
+  NavigateAndAwaitMetricsCollectionPending(GetUrlOuterApp());
+
+  // Wait for the full ml pipeline to run. The reporting of the manifest from
+  // the AppBannerManager to the VisitedManifestManager should happen by the
+  // time this finishes.
+  ExpectClasificationCallReturnResult(
+      /*site_url=*/GetUrlOuterApp(),
+      /*manifest_id=*/GetUrlOuterApp(),
+      MLInstallabilityPromoter::kDontShowLabel, TrainingRequestId(1ll),
+      web_contents());
+  task_runner_->RunPendingTasks();
+  ExpectTrainingResult(TrainingRequestId(1ll),
+                       MlInstallResponse::kReporterDestroyed);
+
+  // Navigate now to the crafted app to ensure that it is not blocked, and test
+  // installation.
+  NavigateAndAwaitMetricsCollectionPending(GetUrlInnerCraftedApp());
+
+  ExpectClasificationCallReturnResult(
+      /*site_url=*/GetUrlInnerCraftedApp(),
+      /*manifest_id=*/GetUrlInnerCraftedApp(),
+      MLInstallabilityPromoter::kShowInstallPromptLabel, TrainingRequestId(2ll),
+      web_contents());
+
+  std::string bubble_name_to_use =
+      base::FeatureList::IsEnabled(::features::kWebAppUniversalInstall)
+          ? "WebAppSimpleInstallDialog"
+          : "PWAConfirmationBubbleView";
+  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
+                                       bubble_name_to_use);
+  task_runner_->RunPendingTasks();
+  ExpectTrainingResult(TrainingRequestId(2ll), MlInstallResponse::kAccepted);
+
+  views::Widget* widget = waiter.WaitIfNeededAndGet();
+  views::test::WidgetDestroyedWaiter destroyed(widget);
+  views::test::AcceptDialog(widget);
+  destroyed.Wait();
+
+  provider().command_manager().AwaitAllCommandsCompleteForTesting();
+
+  ASSERT_FALSE(provider().registrar_unsafe().is_empty());
+  webapps::AppId app_id = provider().registrar_unsafe().GetAppIds()[0];
+  EXPECT_EQ(GetUrlInnerCraftedApp(),
+            provider().registrar_unsafe().GetAppStartUrl(app_id));
 }
 
 // TODO(b/285361272): Add tests for cache storage sizes.

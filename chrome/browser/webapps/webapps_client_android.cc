@@ -93,6 +93,16 @@ bool WebappsClientAndroid::IsAppFullyInstalledForSiteUrl(
     const GURL& site_url) const {
   return false;
 }
+bool WebappsClientAndroid::IsUrlControlledBySeenManifest(
+    content::BrowserContext* browsing_context,
+    const GURL& site_url) const {
+  return false;
+}
+
+void WebappsClientAndroid::OnManifestSeen(
+    content::BrowserContext* browsing_context,
+    const blink::mojom::Manifest& manifest) const {}
+
 void WebappsClientAndroid::SaveInstallationDismissedForMl(
     content::BrowserContext* browsing_context,
     const GURL& manifest_id) const {
