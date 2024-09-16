@@ -940,18 +940,9 @@ AXObjectInclusion AXNodeObject::ShouldIncludeBasedOnSemantics(
     // If we have an element with inline
     // block specified, we should include. There are some roles where we
     // shouldn't include even if inline block, or we'll get test failures.
-    //
-    // We also only want to include in the tree if the inline block element has
-    // siblings.
-    // Otherwise we will include nodes that we don't need for anything.
-    // Consider a structure where we have a subtree of 12 layers, where each
-    // layer has an inline-block node with a single child that points to the
-    // next layer. All nodes have a single child, meaning that this child has no
-    // siblings.
     if (!IsExemptFromInlineBlockCheck(native_role_) && GetLayoutObject() &&
         GetLayoutObject()->IsInline() &&
-        GetLayoutObject()->IsAtomicInlineLevel() &&
-        node->parentNode()->childElementCount() > 1) {
+        GetLayoutObject()->IsAtomicInlineLevel()) {
       return kIncludeObject;
     }
   }
