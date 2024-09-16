@@ -265,7 +265,7 @@ static_library("common_lib") {
 
   deps = [
     "//build:chromeos_buildflags",
-    "//components/crash/core/app:switches",
+    "//components/crash/core/app",
     "//components/google/core/common",
     "//components/heap_profiling/in_process",
     "//components/heap_profiling/in_process:mojom",

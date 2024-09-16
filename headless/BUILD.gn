@@ -441,6 +441,7 @@ component("headless_non_renderer") {
 
   if (is_component_build) {
     deps += [
+      "//components/crash/core/common",
       "//components/security_state/content",
       "//gin",
       "//third_party/blink/public:blink",
@@ -474,10 +475,7 @@ component("headless_non_renderer") {
   }
 
   if (is_win) {
-    deps += [
-      "//components/crash/core/app:crash_export_thunks",
-      "//sandbox",
-    ]
+    deps += [ "//sandbox" ]
   }
 
   if (is_linux || is_chromeos) {
@@ -569,6 +567,10 @@ test("headless_unittests") {
     "//testing/gtest",
     "//ui/gfx:test_support",
   ]
+
+  if (is_win) {
+    deps += [ "//components/crash/core/app:crash_export_thunks" ]
+  }
 
   if (enable_printing) {
     deps += [
@@ -838,6 +840,10 @@ static_library("headless_shell_lib") {
     public_deps += [ ":headless_non_renderer" ]
   }
 
+  if (!is_fuchsia) {
+    deps += [ "//components/crash/content/browser" ]
+  }
+
   if (enable_printing) {
     deps += [
       "//components/printing/browser",
@@ -874,7 +880,7 @@ static_library("headless_shell_lib") {
   }
 
   if (is_win || (is_posix && !is_mac)) {
-    deps += [ "//components/crash/core/app:switches" ]
+    deps += [ "//components/crash/core/app" ]
   }
 
   configs += [

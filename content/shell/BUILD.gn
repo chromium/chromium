@@ -376,7 +376,6 @@ static_library("content_shell_lib") {
     deps += [
       "//components/crash/content/browser",
       "//components/crash/core/app",
-      "//components/crash/core/app:test_support",
     ]
   }
 
