@@ -101,50 +101,78 @@ JNI_POSSIBLE_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleNonProxy_nativeSetRec
 // Method declarations.
 
 static const JNINativeMethod kMethods_org_jni_1zero_SampleNonProxy[] = {
-    { "nativeAddBookmark", "(ILjava/lang/String;Ljava/lang/String;ZJ)J",
-        reinterpret_cast<void*>(Java_org_jni_1zero_SampleNonProxy_nativeAddBookmark) },
-    { "nativeAddBookmarkFromAPI",
+    {
+        nativeAddBookmark",
+        "(ILjava/lang/String;Ljava/lang/String;ZJ)J",
+        reinterpret_cast<void*>(Java_org_jni_1zero_SampleNonProxy_nativeAddBookmark)
+    }, {
+        nativeAddBookmarkFromAPI",
         "(ILjava/lang/String;Ljava/lang/Long;Ljava/lang/Boolean;Ljava/lang/Long;[BLjava/lang/String;Ljava/lang/Integer;)J",
-        reinterpret_cast<void*>(Java_org_jni_1zero_SampleNonProxy_nativeAddBookmarkFromAPI) },
-    { "nativeCreateHistoricalTabFromState", "([BI)V",
+        reinterpret_cast<void*>(Java_org_jni_1zero_SampleNonProxy_nativeAddBookmarkFromAPI)
+    }, {
+        nativeCreateHistoricalTabFromState",
+        "([BI)V",
         reinterpret_cast<void*>(Java_org_jni_1zero_SampleNonProxy_nativeCreateHistoricalTabFromState)
-        },
-    { "nativeDestroy", "(I)V",
-        reinterpret_cast<void*>(Java_org_jni_1zero_SampleNonProxy_nativeDestroy) },
-    { "nativeFindAll", "(Ljava/lang/String;)I",
-        reinterpret_cast<void*>(Java_org_jni_1zero_SampleNonProxy_nativeFindAll) },
-    { "nativeGetAutofillProfileGUIDs", "()[Ljava/lang/String;",
-        reinterpret_cast<void*>(Java_org_jni_1zero_SampleNonProxy_nativeGetAutofillProfileGUIDs) },
-    { "nativeGetDomainAndRegistry", "(Ljava/lang/String;)Ljava/lang/String;",
-        reinterpret_cast<void*>(Java_org_jni_1zero_SampleNonProxy_nativeGetDomainAndRegistry) },
-    { "nativeGetInnerClass", "()Lorg/jni_zero/SampleNonProxy$OnFrameAvailableListener;",
-        reinterpret_cast<void*>(Java_org_jni_1zero_SampleNonProxy_nativeGetInnerClass) },
-    { "nativeGetStateAsByteArray", "(Landroid/view/View;)[B",
-        reinterpret_cast<void*>(Java_org_jni_1zero_SampleNonProxy_nativeGetStateAsByteArray) },
-    { "nativeGotOrientation", "(IDDD)V",
-        reinterpret_cast<void*>(Java_org_jni_1zero_SampleNonProxy_nativeGotOrientation) },
-    { "nativeInit", "()I", reinterpret_cast<void*>(Java_org_jni_1zero_SampleNonProxy_nativeInit) },
-    { "nativeInit", "()I", reinterpret_cast<void*>(Java_org_jni_1zero_SampleNonProxy_nativeInit) },
-    { "nativeMessWithJavaException", "(Ljava/lang/Throwable;)Ljava/lang/Throwable;",
-        reinterpret_cast<void*>(Java_org_jni_1zero_SampleNonProxy_nativeMessWithJavaException) },
-    { "nativeQueryBitmap",
+    }, {
+        nativeDestroy",
+        "(I)V",
+        reinterpret_cast<void*>(Java_org_jni_1zero_SampleNonProxy_nativeDestroy)
+    }, {
+        nativeFindAll",
+        "(Ljava/lang/String;)I",
+        reinterpret_cast<void*>(Java_org_jni_1zero_SampleNonProxy_nativeFindAll)
+    }, {
+        nativeGetAutofillProfileGUIDs",
+        "()[Ljava/lang/String;",
+        reinterpret_cast<void*>(Java_org_jni_1zero_SampleNonProxy_nativeGetAutofillProfileGUIDs)
+    }, {
+        nativeGetDomainAndRegistry",
+        "(Ljava/lang/String;)Ljava/lang/String;",
+        reinterpret_cast<void*>(Java_org_jni_1zero_SampleNonProxy_nativeGetDomainAndRegistry)
+    }, {
+        nativeGetInnerClass",
+        "()Lorg/jni_zero/SampleNonProxy$OnFrameAvailableListener;",
+        reinterpret_cast<void*>(Java_org_jni_1zero_SampleNonProxy_nativeGetInnerClass)
+    }, {
+        nativeGetStateAsByteArray",
+        "(Landroid/view/View;)[B",
+        reinterpret_cast<void*>(Java_org_jni_1zero_SampleNonProxy_nativeGetStateAsByteArray)
+    }, {
+        nativeGotOrientation",
+        "(IDDD)V",
+        reinterpret_cast<void*>(Java_org_jni_1zero_SampleNonProxy_nativeGotOrientation)
+    }, {
+        nativeInit",
+        "()I",
+        reinterpret_cast<void*>(Java_org_jni_1zero_SampleNonProxy_nativeInit)
+    }, {
+        nativeInit",
+        "()I",
+        reinterpret_cast<void*>(Java_org_jni_1zero_SampleNonProxy_nativeInit)
+    }, {
+        nativeMessWithJavaException",
+        "(Ljava/lang/Throwable;)Ljava/lang/Throwable;",
+        reinterpret_cast<void*>(Java_org_jni_1zero_SampleNonProxy_nativeMessWithJavaException)
+    }, {
+        nativeQueryBitmap",
         "(I[Ljava/lang/String;Ljava/lang/String;[Ljava/lang/String;Ljava/lang/String;)Landroid/graphics/Bitmap;",
-        reinterpret_cast<void*>(Java_org_jni_1zero_SampleNonProxy_nativeQueryBitmap) },
-    { "nativeSetRecognitionResults", "(I[Ljava/lang/String;)V",
-        reinterpret_cast<void*>(Java_org_jni_1zero_SampleNonProxy_nativeSetRecognitionResults) },
+        reinterpret_cast<void*>(Java_org_jni_1zero_SampleNonProxy_nativeQueryBitmap)
+    }, {
+        nativeSetRecognitionResults",
+        "(I[Ljava/lang/String;)V",
+        reinterpret_cast<void*>(Java_org_jni_1zero_SampleNonProxy_nativeSetRecognitionResults)
+    }, 
 };
-
 
 JNI_ZERO_COMPONENT_BUILD_EXPORT bool RegisterNative_org_jni_1zero_SampleNonProxy(JNIEnv* env) {
   const int kMethods_org_jni_1zero_SampleNonProxySize =
       std::size(kMethods_org_jni_1zero_SampleNonProxy);
+  jclass clazz = org_jni_1zero_SampleNonProxy_clazz(env);
   if (env->RegisterNatives(
-      org_jni_1zero_SampleNonProxy_clazz(env),
+      clazz,
       kMethods_org_jni_1zero_SampleNonProxy,
       kMethods_org_jni_1zero_SampleNonProxySize) < 0) {
-    jni_zero::internal::HandleRegistrationError(env,
-        org_jni_1zero_SampleNonProxy_clazz(env),
-        __FILE__);
+    jni_zero::internal::HandleRegistrationError(env, clazz, __FILE__);
     return false;
   }
 

@@ -75,7 +75,6 @@ def _jni_function_name(called_by_native):
 
 def _single_method(sb, cbn):
   java_class = cbn.java_class
-  escaped_name = common.escape_class_name(java_class.full_name_with_slashes)
   reciever_arg_is_class = cbn.static or cbn.is_constructor
   if cbn.is_constructor:
     return_type = cbn.java_class.as_type()

@@ -7,6 +7,7 @@ from typing import Dict
 from typing import Optional
 from typing import Tuple
 
+import common
 import java_lang_classes
 
 _CPP_TYPE_BY_JAVA_TYPE = {
@@ -124,6 +125,9 @@ class JavaClass:
     # Empty resolver used to shorted java.lang classes.
     type_resolver = type_resolver or _EMPTY_TYPE_RESOLVER
     return type_resolver.contextualize(self)
+
+  def to_cpp(self):
+    return common.escape_class_name(self.full_name_with_slashes)
 
   def as_type(self):
     return JavaType(java_class=self)

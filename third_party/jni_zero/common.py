@@ -73,15 +73,18 @@ class StringBuilder:
 
   @contextlib.contextmanager
   def namespace(self, namespace_name):
+    if namespace_name is None:
+      yield
+      return
     value = f' {namespace_name}' if namespace_name else ''
     self(f'namespace{value} {{\n\n')
     yield
     self(f'\n}}  // namespace{value}\n')
 
   @contextlib.contextmanager
-  def block(self, after=None):
+  def block(self, *, indent=2, after=None):
     self(' {\n')
-    with self.indent(2):
+    with self.indent(indent):
       yield
     if after:
       self('}')

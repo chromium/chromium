@@ -32,12 +32,9 @@ _THIS_DIR = os.path.dirname(__file__)
 _SWITCH_NUM_TO_BE_INERSERTED_LATER_TOKEN = "<INSERT HERE>"
 
 MERGEABLE_KEYS = [
-    'JNI_NATIVE_METHOD',
-    'JNI_NATIVE_METHOD_ARRAY',
     'PROXY_NATIVE_SIGNATURES',
     'FORWARDING_PROXY_METHODS',
     'PROXY_NATIVE_METHOD_ARRAY',
-    'REGISTER_NATIVES',
 ]
 
 
@@ -127,14 +124,6 @@ def _Generate(options, native_sources, java_sources, priority_java_sources):
 
   stubs = _GenerateStubsAndAssert(options, jni_objs_by_path, native_sources_set,
                                   java_sources_set)
-  dicts = []
-  for jni_obj in present_jni_objs:
-    dicts.append(DictionaryGenerator(jni_obj, options).Generate())
-
-  combined_dict = {}
-  for key in MERGEABLE_KEYS:
-    combined_dict[key] = ''.join(d.get(key, '') for d in dicts)
-
   short_gen_jni_class = proxy.get_gen_jni_class(
       short=True,
       name_prefix=options.module_name,
@@ -149,6 +138,15 @@ def _Generate(options, native_sources, java_sources, priority_java_sources):
     gen_jni_class = short_gen_jni_class
   else:
     gen_jni_class = full_gen_jni_class
+
+  dicts = []
+  for jni_obj in present_jni_objs:
+    dicts.append(_CreateMuxingDict(jni_obj, options, gen_jni_class))
+
+  combined_dict = {}
+  for key in MERGEABLE_KEYS:
+    combined_dict[key] = ''.join(d.get(key, '') for d in dicts)
+
   # PROXY_NATIVE_SIGNATURES and PROXY_NATIVE_METHOD_ARRAY will have
   # duplicates for JNI multiplexing since all native methods with similar
   # signatures map to the same proxy. Similarly, there may be multiple switch
@@ -351,8 +349,7 @@ ${CASES}
   forwarding_function_definitons = []
   for signature, cases in sorted(signature_to_cpp_calls.items()):
     param_strings, _ = _GetMultiplexingParamsList(signature.param_types)
-    java_class_name = common.escape_class_name(
-        short_gen_jni_class.full_name_with_slashes)
+    java_class_name = short_gen_jni_class.to_cpp()
     java_function_name = common.escape_class_name(
         _GetMultiplexProxyName(signature))
     proxy_function_name = f'{java_class_name}_{java_function_name}'
@@ -458,13 +455,12 @@ extern const int64_t kJniZeroHash{module_name}Whole = {whole_hash}LL;
 extern const int64_t kJniZeroHash{module_name}Priority = {priority_hash}LL;
 """)
 
-  java_classes_with_natives = set()
-  for jni_obj in jni_objs:
-    java_classes_with_natives.update(n.java_class
-                                     for n in jni_obj.non_proxy_natives)
-  java_classes_with_natives = sorted(java_classes_with_natives)
+  non_proxy_natives_java_classes = [
+      o.java_class for o in jni_objs if o.non_proxy_natives
+  ]
+  non_proxy_natives_java_classes.sort()
 
-  sb(header_common.class_accessors(java_classes_with_natives, module_name))
+  sb(header_common.class_accessors(non_proxy_natives_java_classes, module_name))
 
   sb('// Forward declarations (methods).\n\n')
   for jni_obj in jni_objs:
@@ -476,31 +472,28 @@ extern const int64_t kJniZeroHash{module_name}Priority = {priority_hash}LL;
     sb.line(registration_dict['FORWARDING_CALLS'])
 
   if options.manual_jni_registration:
-    has_gen_jni = bool(registration_dict['PROXY_NATIVE_METHOD_ARRAY'])
-    registration_function_name = _GetRegistrationFunctionName(
-        gen_jni_class.full_name_with_slashes)
-
+    # Helper methods use presence of gen_jni_class to denote presense of proxy
+    # methods.
+    if not registration_dict['PROXY_NATIVE_METHOD_ARRAY']:
+      gen_jni_class = None
     sb('// Method declarations.\n\n')
-    sb(registration_dict['JNI_NATIVE_METHOD_ARRAY'])
-    if has_gen_jni:
+
+    for jni_obj in jni_objs:
+      if not jni_obj.non_proxy_natives:
+        continue
+      register_natives.non_proxy_kmethod_array(sb, jni_obj)
+
+    if gen_jni_class:
       register_natives.gen_jni_register_natives_helper(
-          sb, registration_function_name, gen_jni_class,
-          registration_dict['PROXY_NATIVE_METHOD_ARRAY'])
+          sb, gen_jni_class, registration_dict['PROXY_NATIVE_METHOD_ARRAY'])
     sb('\n')
-    sb(registration_dict['JNI_NATIVE_METHOD'])
+    for jni_obj in jni_objs:
+      if jni_obj.non_proxy_natives:
+        register_natives.per_file_register_function(sb, jni_obj)
+
     sb('\n')
-    sb('// Registration function.\n\n')
-    with sb.namespace(options.namespace or ''):
-      sb('bool RegisterNatives(JNIEnv* env)')
-      with sb.block():
-        if has_gen_jni:
-          sb(f"""// Register natives in a proxy.
-if (!{registration_function_name}(env)) {{
-  return false;
-}}
-""")
-        sb.line(registration_dict['REGISTER_NATIVES'])
-        sb('return true;\n')
+    register_natives.main_register_function(sb, jni_objs, options.namespace,
+                                            gen_jni_class)
   sb(epilogue)
   return sb.to_string()
 
@@ -523,11 +516,6 @@ def _GetMultiplexingParamsList(param_types, java_types=False):
   return params_with_type, param_names
 
 
-def _GetRegistrationFunctionName(fully_qualified_class):
-  """Returns the register name with a given class."""
-  return 'RegisterNative_' + common.escape_class_name(fully_qualified_class)
-
-
 def _CreateMultiplexedSignature(proxy_signature):
   """Inserts an int parameter as the first parameter."""
   switch_param = java_types.JavaParam(java_types.INT, '_method_idx')
@@ -536,209 +524,73 @@ def _CreateMultiplexedSignature(proxy_signature):
       java_types.JavaParamList((switch_param, ) + proxy_signature.param_list))
 
 
-class DictionaryGenerator(object):
-  """Generates an inline header file for JNI registration."""
-  def __init__(self, jni_obj, options):
-    self.options = options
-    self.content_namespace = jni_obj.jni_namespace
-    self.proxy_natives = jni_obj.proxy_natives
-    self.non_proxy_natives = jni_obj.non_proxy_natives
-    self.fully_qualified_class = jni_obj.java_class.full_name_with_slashes
-    self.registration_dict = {}
-    self.jni_obj = jni_obj
-    self.gen_jni_class = proxy.get_gen_jni_class(
-        short=options.use_proxy_hash or options.enable_jni_multiplexing,
-        name_prefix=options.module_name,
-        package_prefix=options.package_prefix,
-        package_prefix_filter=options.package_prefix_filter)
+def _GetProxyKMethodArrayEntry(jni_obj, native, gen_jni_class, *,
+                               enable_jni_multiplexing, use_proxy_hash):
+  jni_descriptor = native.proxy_signature.to_descriptor()
+  stub_name = jni_obj.GetStubName(native)
 
-  def Generate(self):
-    # GEN_JNI is handled separately.
-    java_classes_with_natives = sorted(
-        set(n.java_class for n in self.jni_obj.non_proxy_natives))
+  # Literal name of the native method in the class that contains the actual
+  # native declaration.
+  if enable_jni_multiplexing:
+    class_name = gen_jni_class.to_cpp()
+    sorted_signature = native.proxy_signature.with_params_reordered()
+    name = _GetMultiplexProxyName(sorted_signature)
+    stub_name = f'Java_{class_name}_' + common.escape_class_name(name)
+    multipliexed_signature = _CreateMultiplexedSignature(sorted_signature)
+    jni_descriptor = multipliexed_signature.to_descriptor()
+  elif use_proxy_hash:
+    name = native.hashed_proxy_name
+  else:
+    name = native.proxy_name
 
-    self._AddJNINativeMethodsArrays(java_classes_with_natives)
-    self._AddProxyNativeMethodKStrings()
-    self._AddRegisterNativesCalls()
-    self._AddRegisterNativesFunctions(java_classes_with_natives)
+  return (f'    {{ "{name}", "{jni_descriptor}", ' +
+          f'reinterpret_cast<void*>({stub_name}) }},')
 
-    self.registration_dict['PROXY_NATIVE_SIGNATURES'] = (''.join(
-        _MakeProxySignature(self.options, native)
-        for native in self.proxy_natives))
 
-    if self.options.enable_jni_multiplexing:
-      self._GetMuxingCalls()
+def _GetMuxingCalls(jni_obj):
+  # Switch cases are grouped together by the same proxy signatures.
+  template = string.Template('return ${STUB_NAME}(env, jcaller${PARAMS});')
 
-    if self.options.use_proxy_hash or self.options.enable_jni_multiplexing:
-      self.registration_dict['FORWARDING_PROXY_METHODS'] = ('\n'.join(
-          _MakeForwardingProxy(self.options, self.gen_jni_class, native)
-          for native in self.proxy_natives))
-
-    return self.registration_dict
-
-  def _SetDictValue(self, key, value):
-    self.registration_dict[key] = jni_generator.WrapOutput(value)
-
-  def _AddRegisterNativesCalls(self):
-    """Add the body of the RegisterNativesImpl method to the dictionary."""
-
-    # Only register if there is at least 1 non-proxy native
-    if len(self.non_proxy_natives) == 0:
-      return ''
-
-    register_name = _GetRegistrationFunctionName(self.fully_qualified_class)
-    self._SetDictValue('REGISTER_NATIVES', f"""\
-if (!{register_name}(env))
-  return false;
-""")
-
-  def _AddJNINativeMethodsArrays(self, java_classes_with_natives):
-    """Returns the implementation of the array of native methods."""
-    template = string.Template("""\
-static const JNINativeMethod kMethods_${JAVA_CLASS}[] = {
-${KMETHODS}
-};
-
-""")
-    open_namespace = ''
-    close_namespace = ''
-    if self.content_namespace:
-      parts = self.content_namespace.split('::')
-      all_namespaces = ['namespace %s {' % ns for ns in parts]
-      open_namespace = '\n'.join(all_namespaces) + '\n'
-      all_namespaces = ['}  // namespace %s' % ns for ns in parts]
-      all_namespaces.reverse()
-      close_namespace = '\n'.join(all_namespaces) + '\n\n'
-
-    body = self._SubstituteNativeMethods(java_classes_with_natives, template)
-    if body:
-      self._SetDictValue('JNI_NATIVE_METHOD_ARRAY', ''.join(
-          (open_namespace, body, close_namespace)))
-
-  def _GetKMethodsString(self, clazz):
-    if clazz != self.jni_obj.java_class.name:
-      return ''
-    ret = [self._GetKMethodArrayEntry(n) for n in self.non_proxy_natives]
-    return '\n'.join(ret)
-
-  def _GetKMethodArrayEntry(self, native):
-    template = string.Template('    { "${NAME}", "${JNI_DESCRIPTOR}", ' +
-                               'reinterpret_cast<void*>(${STUB_NAME}) },')
-
-    name = 'native' + native.cpp_name
-    jni_descriptor = native.proxy_signature.to_descriptor()
-    stub_name = self.jni_obj.GetStubName(native)
-
-    if native.is_proxy:
-      # Literal name of the native method in the class that contains the actual
-      # native declaration.
-      if self.options.enable_jni_multiplexing:
-        class_name = common.escape_class_name(
-            self.gen_jni_class.full_name_with_slashes)
-        sorted_signature = native.proxy_signature.with_params_reordered()
-        name = _GetMultiplexProxyName(sorted_signature)
-        stub_name = f'Java_{class_name}_' + common.escape_class_name(name)
-        multipliexed_signature = _CreateMultiplexedSignature(sorted_signature)
-        jni_descriptor = multipliexed_signature.to_descriptor()
-      elif self.options.use_proxy_hash:
-        name = native.hashed_proxy_name
-      else:
-        name = native.proxy_name
+  signature_to_cpp_calls = collections.defaultdict(list)
+  for native in jni_obj.proxy_natives:
+    _, param_names = _GetMultiplexingParamsList(native.proxy_param_types)
+    param_string = ', '.join(param_names[1:])
+    if param_string:
+      param_string = ', ' + param_string
     values = {
-        'NAME': name,
-        'JNI_DESCRIPTOR': jni_descriptor,
-        'STUB_NAME': stub_name
+        # We are forced to call the generated stub instead of the impl because
+        # the impl is not guaranteed to have a globally unique name.
+        'STUB_NAME': jni_obj.GetStubName(native),
+        'PARAMS': param_string,
     }
-    return template.substitute(values)
+    signature = native.proxy_signature.with_params_reordered()
+    signature_to_cpp_calls[signature].append(template.substitute(values))
+  return signature_to_cpp_calls
 
-  def _AddProxyNativeMethodKStrings(self):
-    """Returns KMethodString for wrapped native methods in all_classes """
 
-    proxy_k_strings = ('\n'.join(
-        self._GetKMethodArrayEntry(p) for p in self.proxy_natives))
+def _CreateMuxingDict(jni_obj, options, gen_jni_class):
+  ret = {}
+  ret['PROXY_NATIVE_METHOD_ARRAY'] = jni_generator.WrapOutput('\n'.join(
+      _GetProxyKMethodArrayEntry(
+          jni_obj,
+          p,
+          gen_jni_class,
+          enable_jni_multiplexing=options.enable_jni_multiplexing,
+          use_proxy_hash=options.use_proxy_hash)
+      for p in jni_obj.proxy_natives))
 
-    self._SetDictValue('PROXY_NATIVE_METHOD_ARRAY', proxy_k_strings)
+  ret['PROXY_NATIVE_SIGNATURES'] = (''.join(
+      _MakeProxySignature(options, native) for native in jni_obj.proxy_natives))
 
-  def _SubstituteNativeMethods(self, java_classes, template):
-    """Substitutes NAMESPACE, JAVA_CLASS and KMETHODS in the provided
-    template."""
-    ret = []
+  if options.enable_jni_multiplexing:
+    ret['SIGNATURE_TO_CPP_CALLS'] = _GetMuxingCalls(jni_obj)
 
-    for java_class in java_classes:
-      clazz = java_class.name
-      full_clazz = java_class.full_name_with_slashes
+  if options.use_proxy_hash or options.enable_jni_multiplexing:
+    ret['FORWARDING_PROXY_METHODS'] = ('\n'.join(
+        _MakeForwardingProxy(options, gen_jni_class, native)
+        for native in jni_obj.proxy_natives))
 
-      kmethods = self._GetKMethodsString(clazz)
-      namespace_str = ''
-      if self.content_namespace:
-        namespace_str = self.content_namespace + '::'
-      if kmethods:
-        values = {
-            'NAMESPACE':
-            namespace_str,
-            'JAVA_CLASS':
-            common.escape_class_name(full_clazz),
-            'JAVA_CLASS_ACCESSOR':
-            header_common.class_accessor_expression(java_class),
-            'KMETHODS':
-            kmethods
-        }
-        ret += [template.substitute(values)]
-    return '\n'.join(ret)
-
-  def _AddRegisterNativesFunctions(self, java_classes_with_natives):
-    """Returns the code for RegisterNatives."""
-    if not java_classes_with_natives:
-      return
-    natives = self._GetRegisterNativesImplString(java_classes_with_natives)
-    register_name = _GetRegistrationFunctionName(self.fully_qualified_class)
-    self._SetDictValue(
-        'JNI_NATIVE_METHOD', f"""\
-JNI_ZERO_COMPONENT_BUILD_EXPORT bool {register_name}(JNIEnv* env) {{
-{natives}\
-  return true;
-}}
-
-""")
-
-  def _GetRegisterNativesImplString(self, java_classes_with_natives):
-    """Returns the shared implementation for RegisterNatives."""
-    template = string.Template("""\
-  const int kMethods_${JAVA_CLASS}Size =
-      std::size(${NAMESPACE}kMethods_${JAVA_CLASS});
-  if (env->RegisterNatives(
-      ${JAVA_CLASS_ACCESSOR},
-      ${NAMESPACE}kMethods_${JAVA_CLASS},
-      kMethods_${JAVA_CLASS}Size) < 0) {
-    jni_zero::internal::HandleRegistrationError(env,
-        ${JAVA_CLASS_ACCESSOR},
-        __FILE__);
-    return false;
-  }
-
-""")
-    return self._SubstituteNativeMethods(java_classes_with_natives, template)
-
-  def _GetMuxingCalls(self):
-    # Switch cases are grouped together by the same proxy signatures.
-    template = string.Template('return ${STUB_NAME}(env, jcaller${PARAMS});')
-
-    signature_to_cpp_calls = collections.defaultdict(list)
-    for native in self.proxy_natives:
-      _, param_names = _GetMultiplexingParamsList(native.proxy_param_types)
-      param_string = ', '.join(param_names[1:])
-      if param_string:
-        param_string = ', ' + param_string
-      values = {
-          # We are forced to call the generated stub instead of the impl because
-          # the impl is not guaranteed to have a globally unique name.
-          'STUB_NAME': self.jni_obj.GetStubName(native),
-          'PARAMS': param_string,
-      }
-      signature = native.proxy_signature.with_params_reordered()
-      signature_to_cpp_calls[signature].append(template.substitute(values))
-
-    self.registration_dict['SIGNATURE_TO_CPP_CALLS'] = signature_to_cpp_calls
+  return ret
 
 
 _MULTIPLEXED_CHAR_BY_TYPE = {
