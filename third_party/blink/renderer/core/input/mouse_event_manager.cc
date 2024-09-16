@@ -139,7 +139,6 @@ void MouseEventManager::Clear() {
   mouse_press_node_ = nullptr;
   mouse_down_may_start_autoscroll_ = false;
   mouse_down_may_start_drag_ = false;
-  captures_dragging_ = false;
   mouse_pressed_ = false;
   click_count_ = 0;
   click_element_ = nullptr;
@@ -612,7 +611,6 @@ void MouseEventManager::HandleMouseReleaseEventUpdateStates() {
 void MouseEventManager::HandleMousePressEventUpdateStates(
     const WebMouseEvent& mouse_event) {
   mouse_pressed_ = true;
-  captures_dragging_ = true;
   SetLastKnownMousePosition(mouse_event);
   mouse_down_may_start_drag_ = false;
   mouse_down_may_start_autoscroll_ = false;
@@ -1161,7 +1159,6 @@ void MouseEventManager::ClearDragHeuristicState() {
   // Used to prevent mouseMoveEvent from initiating a drag before
   // the mouse is pressed again.
   mouse_pressed_ = false;
-  captures_dragging_ = false;
   mouse_down_may_start_drag_ = false;
   mouse_down_may_start_autoscroll_ = false;
 }
@@ -1186,14 +1183,6 @@ bool MouseEventManager::MousePressed() {
 
 void MouseEventManager::ReleaseMousePress() {
   mouse_pressed_ = false;
-}
-
-bool MouseEventManager::CapturesDragging() const {
-  return captures_dragging_;
-}
-
-void MouseEventManager::SetCapturesDragging(bool captures_dragging) {
-  captures_dragging_ = captures_dragging;
 }
 
 Node* MouseEventManager::MousePressNode() {

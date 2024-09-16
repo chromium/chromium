@@ -130,9 +130,6 @@ class CORE_EXPORT MouseEventManager final
   bool MousePressed();
   void ReleaseMousePress();
 
-  bool CapturesDragging() const;
-  void SetCapturesDragging(bool);
-
   void SetMouseDownMayStartAutoscroll() {
     mouse_down_may_start_autoscroll_ = true;
   }
@@ -217,7 +214,6 @@ class CORE_EXPORT MouseEventManager final
 
   unsigned mouse_down_may_start_autoscroll_ : 1;
   unsigned svg_pan_ : 1;
-  unsigned captures_dragging_ : 1;
   unsigned mouse_down_may_start_drag_ : 1;
 
   Member<Node> mouse_press_node_;

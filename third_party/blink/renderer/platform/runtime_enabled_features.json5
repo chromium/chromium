@@ -2748,12 +2748,6 @@
       base_feature: "none",
       is_protected_feature: true,
     },
-    // crbug.com/269917: Make mouse event targets agnostic to mousedown event
-    // cancellation when the pointer is dragged out of an iframe.
-    {
-      name: "MouseDragFromIframeOnCancelledMouseDown",
-      status: "stable",
-    },
     // crbug.com/40078978: Allow mouse-drag text selection even when mousemove
     // event is cancelled.
     {

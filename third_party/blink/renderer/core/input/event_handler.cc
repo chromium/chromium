@@ -876,22 +876,7 @@ WebInputEventResult EventHandler::HandleMousePressEvent(
   LocalFrame* subframe = event_handling_util::GetTargetSubframe(mev);
   if (subframe) {
     WebInputEventResult result = PassMousePressEventToSubframe(mev, subframe);
-    // Start capturing future events for this frame.  We only do this if we
-    // didn't clear the m_mousePressed flag, which may happen if an AppKit
-    // EmbeddedContentView entered a modal event loop.  The capturing should be
-    // done only when the result indicates it has been handled. See
-    // crbug.com/269917
-    //
-    // TODO(mustaq): The only user of `MouseEventManager::captures_dragging_` is
-    // the following `if` condition.  After shipping the feature
-    // MouseDragFromIframeOnCancelledMouseDown, remove `captures_dragging_` plus
-    // the old comment block above.
-    mouse_event_manager_->SetCapturesDragging(
-        subframe->GetEventHandler().mouse_event_manager_->CapturesDragging());
-    if (mouse_event_manager_->MousePressed() &&
-        (RuntimeEnabledFeatures::
-             MouseDragFromIframeOnCancelledMouseDownEnabled() ||
-         mouse_event_manager_->CapturesDragging())) {
+    if (mouse_event_manager_->MousePressed()) {
       capturing_mouse_events_element_ = mev.InnerElement();
       capturing_subframe_element_ = mev.InnerElement();
     }
@@ -985,13 +970,10 @@ WebInputEventResult EventHandler::HandleMousePressEvent(
   }
 
   if (event_result == WebInputEventResult::kNotHandled || mev.GetScrollbar()) {
-    mouse_event_manager_->SetCapturesDragging(true);
     // Outermost main frames don't implicitly capture mouse input on MouseDown,
     // all subframes do (regardless of whether local or remote or fenced).
     if (frame_->IsAttached() && !frame_->IsOutermostMainFrame())
       CaptureMouseEventsToWidget(true);
-  } else {
-    mouse_event_manager_->SetCapturesDragging(false);
   }
 
   if (PassMousePressEventToScrollbar(mev))
