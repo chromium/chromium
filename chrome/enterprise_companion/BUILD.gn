@@ -343,8 +343,6 @@ static_library("constants_prod") {
 }
 
 static_library("constants_test") {
-  testonly = true
-
   public = [ "global_constants.h" ]
   sources = [ "global_constants.cc" ]
   deps = [
@@ -376,7 +374,6 @@ executable("enterprise_companion") {
 # Enterprise Companion application used by integration tests. Constants can be
 # overridden via global_constants.h.
 executable("enterprise_companion_test") {
-  testonly = true
   sources = [ "main.cc" ]
   deps = [
     ":base",
