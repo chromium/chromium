@@ -777,6 +777,8 @@ class GPMPasskeysAuthenticatorDialogTest : public AuthenticatorDialogTest {
     } else if (name == "touchid") {
       transport_availability.request_type =
           device::FidoRequestType::kMakeCredential;
+      transport_availability.attestation_conveyance_preference =
+          device::AttestationConveyancePreference::kNone;
       transport_availability.make_credential_attachment =
           device::AuthenticatorAttachment::kAny;
       controller_->SetCurrentStepForTesting(
