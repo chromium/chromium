@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/eventsource/event_source_parser.h"
 
 #include "third_party/blink/renderer/core/event_type_names.h"
@@ -26,20 +21,20 @@ EventSourceParser::EventSourceParser(const AtomicString& last_event_id,
       client_(client),
       codec_(NewTextCodec(UTF8Encoding())) {}
 
-void EventSourceParser::AddBytes(const char* bytes, uint32_t size) {
+void EventSourceParser::AddBytes(base::span<const char> bytes) {
   // A line consists of |m_line| followed by
   // |bytes[start..(next line break)]|.
-  uint32_t start = 0;
+  size_t start = 0;
   const unsigned char kBOM[] = {0xef, 0xbb, 0xbf};
-  for (uint32_t i = 0; i < size && !is_stopped_; ++i) {
+  for (size_t i = 0; i < bytes.size() && !is_stopped_; ++i) {
     // As kBOM contains neither CR nor LF, we can think BOM and the line
     // break separately.
     if (is_recognizing_bom_ && line_.size() + (i - start) == std::size(kBOM)) {
       Vector<char> line = line_;
-      line.Append(&bytes[start], i - start);
+      line.AppendSpan(bytes.subspan(start, i - start));
       DCHECK_EQ(line.size(), std::size(kBOM));
       is_recognizing_bom_ = false;
-      if (memcmp(line.data(), kBOM, sizeof(kBOM)) == 0) {
+      if (base::as_byte_span(line) == base::span(kBOM)) {
         start = i;
         line_.clear();
         continue;
@@ -53,7 +48,7 @@ void EventSourceParser::AddBytes(const char* bytes, uint32_t size) {
     }
     is_recognizing_crlf_ = false;
     if (bytes[i] == '\r' || bytes[i] == '\n') {
-      line_.Append(&bytes[start], i - start);
+      line_.AppendSpan(bytes.subspan(start, i - start));
       ParseLine();
       line_.clear();
       start = i + 1;
@@ -63,7 +58,7 @@ void EventSourceParser::AddBytes(const char* bytes, uint32_t size) {
   }
   if (is_stopped_)
     return;
-  line_.Append(&bytes[start], size - start);
+  line_.AppendSpan(bytes.subspan(start));
 }
 
 void EventSourceParser::ParseLine() {
@@ -72,7 +67,7 @@ void EventSourceParser::ParseLine() {
     // We dispatch an event when seeing an empty line.
     if (!data_.empty()) {
       DCHECK_EQ(data_[data_.size() - 1], '\n');
-      String data = FromUTF8(data_.data(), data_.size() - 1);
+      String data = FromUTF8(base::span(data_).first(data_.size() - 1u));
       client_->OnMessageEvent(
           event_type_.empty() ? event_type_names::kMessage : event_type_, data,
           last_event_id_);
@@ -92,38 +87,31 @@ void EventSourceParser::ParseLine() {
       ++field_value_start;
     }
   }
-  wtf_size_t field_value_size = line_.size() - field_value_start;
-  String field_name = FromUTF8(line_.data(), field_name_end);
+  String field_name = FromUTF8(base::span(line_).first(field_name_end));
+  auto field_value = base::span(line_).subspan(field_value_start);
   if (field_name == "event") {
-    event_type_ = AtomicString(
-        FromUTF8(line_.data() + field_value_start, field_value_size));
+    event_type_ = AtomicString(FromUTF8(field_value));
     return;
   }
   if (field_name == "data") {
-    data_.AppendSpan(
-        base::span(line_).subspan(field_value_start, field_value_size));
+    data_.AppendSpan(field_value);
     data_.push_back('\n');
     return;
   }
   if (field_name == "id") {
-    if (!memchr(line_.data() + field_value_start, '\0', field_value_size)) {
-      id_ = AtomicString(
-          FromUTF8(line_.data() + field_value_start, field_value_size));
+    if (base::ranges::find(field_value, '\0') == field_value.end()) {
+      id_ = AtomicString(FromUTF8(field_value));
     }
     return;
   }
   if (field_name == "retry") {
-    bool has_only_digits = true;
-    for (wtf_size_t i = field_value_start; i < line_.size() && has_only_digits;
-         ++i)
-      has_only_digits = IsASCIIDigit(line_[i]);
-    if (field_value_start == line_.size()) {
+    const bool has_only_digits =
+        base::ranges::all_of(field_value, IsASCIIDigit<char>);
+    if (field_value.empty()) {
       client_->OnReconnectionTimeSet(EventSource::kDefaultReconnectDelay);
     } else if (has_only_digits) {
       bool ok;
-      auto reconnection_time =
-          FromUTF8(line_.data() + field_value_start, field_value_size)
-              .ToUInt64Strict(&ok);
+      auto reconnection_time = FromUTF8(field_value).ToUInt64Strict(&ok);
       if (ok)
         client_->OnReconnectionTimeSet(reconnection_time);
     }
@@ -132,8 +120,9 @@ void EventSourceParser::ParseLine() {
   // Unrecognized field name. Ignore!
 }
 
-String EventSourceParser::FromUTF8(const char* bytes, uint32_t size) {
-  return codec_->Decode(bytes, size, WTF::FlushBehavior::kDataEOF);
+String EventSourceParser::FromUTF8(base::span<const char> bytes) {
+  return codec_->Decode(bytes.data(), bytes.size(),
+                        WTF::FlushBehavior::kDataEOF);
 }
 
 void EventSourceParser::Trace(Visitor* visitor) const {
