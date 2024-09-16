@@ -132,8 +132,159 @@ const char kAPIKeysDevelopersHowToURL[] =
     "https://www.chromium.org/developers/how-tos/api-keys";
 
 // This is used as a lazy instance to determine keys once and cache them.
-class APIKeyCacheHelper {
+class APIKeyCache {
  public:
+  APIKeyCache() {
+    std::unique_ptr<base::Environment> environment(base::Environment::Create());
+    base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+    GaiaConfig* gaia_config = GaiaConfig::GetInstance();
+
+    std::string api_key_from_feature =
+        ::google_apis::GetAPIKeyOverrideViaFeature();
+    api_key_ = CalculateKeyValue(GOOGLE_API_KEY,
+                                 STRINGIZE_NO_EXPANSION(GOOGLE_API_KEY),
+                                 api_key_from_feature, nullptr, std::string(),
+                                 environment.get(), command_line, gaia_config);
+    ::google_apis::LogAPIKeysMatchHistogram(api_key_from_feature == api_key_);
+
+// A special non-stable key is at the moment defined only for Android Chrome.
+#if BUILDFLAG(IS_ANDROID)
+    api_key_non_stable_ = CalculateKeyValue(
+        GOOGLE_API_KEY_ANDROID_NON_STABLE,
+        STRINGIZE_NO_EXPANSION(GOOGLE_API_KEY_ANDROID_NON_STABLE),
+        std::string(), nullptr, std::string(), environment.get(), command_line,
+        gaia_config);
+#else
+    api_key_non_stable_ = api_key_;
+#endif
+
+    api_key_remoting_ = CalculateKeyValue(
+        GOOGLE_API_KEY_REMOTING,
+        STRINGIZE_NO_EXPANSION(GOOGLE_API_KEY_REMOTING), std::string(), nullptr,
+        std::string(), environment.get(), command_line, gaia_config);
+
+    api_key_soda_ = CalculateKeyValue(
+        GOOGLE_API_KEY_SODA, STRINGIZE_NO_EXPANSION(GOOGLE_API_KEY_SODA),
+        std::string(), nullptr, std::string(), environment.get(), command_line,
+        gaia_config);
+#if !BUILDFLAG(IS_ANDROID)
+    api_key_hats_ = CalculateKeyValue(
+        GOOGLE_API_KEY_HATS, STRINGIZE_NO_EXPANSION(GOOGLE_API_KEY_HATS),
+        std::string(), nullptr, std::string(), environment.get(), command_line,
+        gaia_config);
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    api_key_sharing_ = CalculateKeyValue(
+        GOOGLE_API_KEY_SHARING, STRINGIZE_NO_EXPANSION(GOOGLE_API_KEY_SHARING),
+        std::string(), nullptr, std::string(), environment.get(), command_line,
+        gaia_config);
+
+    api_key_read_aloud_ = CalculateKeyValue(
+        GOOGLE_API_KEY_READ_ALOUD,
+        STRINGIZE_NO_EXPANSION(GOOGLE_API_KEY_READ_ALOUD), std::string(),
+        nullptr, std::string(), environment.get(), command_line, gaia_config);
+
+    api_key_fresnel_ = CalculateKeyValue(
+        GOOGLE_API_KEY_FRESNEL, STRINGIZE_NO_EXPANSION(GOOGLE_API_KEY_FRESNEL),
+        std::string(), nullptr, std::string(), environment.get(), command_line,
+        gaia_config);
+#endif
+
+    metrics_key_ = CalculateKeyValue(
+        GOOGLE_METRICS_SIGNING_KEY,
+        STRINGIZE_NO_EXPANSION(GOOGLE_METRICS_SIGNING_KEY), std::string(),
+        nullptr, std::string(), environment.get(), command_line, gaia_config);
+
+    std::string default_client_id = CalculateKeyValue(
+        GOOGLE_DEFAULT_CLIENT_ID,
+        STRINGIZE_NO_EXPANSION(GOOGLE_DEFAULT_CLIENT_ID), std::string(),
+        nullptr, std::string(), environment.get(), command_line, gaia_config);
+    std::string default_client_secret = CalculateKeyValue(
+        GOOGLE_DEFAULT_CLIENT_SECRET,
+        STRINGIZE_NO_EXPANSION(GOOGLE_DEFAULT_CLIENT_SECRET), std::string(),
+        nullptr, std::string(), environment.get(), command_line, gaia_config);
+
+    // We currently only allow overriding the baked-in values for the
+    // default OAuth2 client ID and secret using a command-line
+    // argument and gaia config, since that is useful to enable testing against
+    // staging servers, and since that was what was possible and
+    // likely practiced by the QA team before this implementation was
+    // written.
+    client_ids_[CLIENT_MAIN] = CalculateKeyValue(
+        GOOGLE_CLIENT_ID_MAIN, STRINGIZE_NO_EXPANSION(GOOGLE_CLIENT_ID_MAIN),
+        std::string(), ::switches::kOAuth2ClientID, default_client_id,
+        environment.get(), command_line, gaia_config);
+    client_secrets_[CLIENT_MAIN] = CalculateKeyValue(
+        GOOGLE_CLIENT_SECRET_MAIN,
+        STRINGIZE_NO_EXPANSION(GOOGLE_CLIENT_SECRET_MAIN), std::string(),
+        ::switches::kOAuth2ClientSecret, default_client_secret,
+        environment.get(), command_line, gaia_config);
+
+    client_ids_[CLIENT_REMOTING] =
+        CalculateKeyValue(GOOGLE_CLIENT_ID_REMOTING,
+                          STRINGIZE_NO_EXPANSION(GOOGLE_CLIENT_ID_REMOTING),
+                          std::string(), nullptr, default_client_id,
+                          environment.get(), command_line, gaia_config);
+    client_secrets_[CLIENT_REMOTING] =
+        CalculateKeyValue(GOOGLE_CLIENT_SECRET_REMOTING,
+                          STRINGIZE_NO_EXPANSION(GOOGLE_CLIENT_SECRET_REMOTING),
+                          std::string(), nullptr, default_client_secret,
+                          environment.get(), command_line, gaia_config);
+
+    client_ids_[CLIENT_REMOTING_HOST] = CalculateKeyValue(
+        GOOGLE_CLIENT_ID_REMOTING_HOST,
+        STRINGIZE_NO_EXPANSION(GOOGLE_CLIENT_ID_REMOTING_HOST), std::string(),
+        nullptr, default_client_id, environment.get(), command_line,
+        gaia_config);
+    client_secrets_[CLIENT_REMOTING_HOST] = CalculateKeyValue(
+        GOOGLE_CLIENT_SECRET_REMOTING_HOST,
+        STRINGIZE_NO_EXPANSION(GOOGLE_CLIENT_SECRET_REMOTING_HOST),
+        std::string(), nullptr, default_client_secret, environment.get(),
+        command_line, gaia_config);
+  }
+
+  const std::string& api_key() const { return api_key_; }
+#if BUILDFLAG(SUPPORT_EXTERNAL_GOOGLE_API_KEY)
+  void set_api_key(const std::string& api_key) { api_key_ = api_key; }
+#endif
+  const std::string& api_key_non_stable() const { return api_key_non_stable_; }
+  const std::string& api_key_remoting() const { return api_key_remoting_; }
+  const std::string& api_key_soda() const { return api_key_soda_; }
+#if !BUILDFLAG(IS_ANDROID)
+  const std::string& api_key_hats() const { return api_key_hats_; }
+#endif
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  const std::string& api_key_sharing() const { return api_key_sharing_; }
+  const std::string& api_key_read_aloud() const { return api_key_read_aloud_; }
+  const std::string& api_key_fresnel() const { return api_key_fresnel_; }
+#endif
+
+  const std::string& metrics_key() const { return metrics_key_; }
+
+  const std::string& GetClientID(OAuth2Client client) const {
+    DCHECK_LT(client, CLIENT_NUM_ITEMS);
+    return client_ids_[client];
+  }
+
+#if BUILDFLAG(IS_IOS)
+  void SetClientID(OAuth2Client client, const std::string& client_id) {
+    client_ids_[client] = client_id;
+  }
+#endif
+
+  const std::string& GetClientSecret(OAuth2Client client) const {
+    DCHECK_LT(client, CLIENT_NUM_ITEMS);
+    return client_secrets_[client];
+  }
+
+#if BUILDFLAG(IS_IOS)
+  void SetClientSecret(OAuth2Client client, const std::string& client_secret) {
+    client_secrets_[client] = client_secret;
+  }
+#endif
+
+ private:
   // Gets a value for a key.  In priority order, this will be the value
   // provided via:
   // 1. Command-line switch
@@ -216,121 +367,9 @@ class APIKeyCacheHelper {
 
     return key_value;
   }
-};
 
-class MetricsKeyCache {
- public:
-  MetricsKeyCache() {
-    std::unique_ptr<base::Environment> environment(base::Environment::Create());
-    base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-    GaiaConfig* gaia_config = GaiaConfig::GetInstance();
-    metrics_key_ = APIKeyCacheHelper::CalculateKeyValue(
-        GOOGLE_METRICS_SIGNING_KEY,
-        STRINGIZE_NO_EXPANSION(GOOGLE_METRICS_SIGNING_KEY), std::string(),
-        nullptr, std::string(), environment.get(), command_line, gaia_config);
-  }
-  ~MetricsKeyCache() = default;
-
-  const std::string& metrics_key() const { return metrics_key_; }
-
- private:
-  std::string metrics_key_;
-};
-
-class MainApiKeyCache {
- public:
-  MainApiKeyCache() {
-    std::unique_ptr<base::Environment> environment(base::Environment::Create());
-    base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-    GaiaConfig* gaia_config = GaiaConfig::GetInstance();
-
-    std::string api_key_from_feature =
-        ::google_apis::GetAPIKeyOverrideViaFeature();
-    api_key_ = APIKeyCacheHelper::CalculateKeyValue(
-        GOOGLE_API_KEY, STRINGIZE_NO_EXPANSION(GOOGLE_API_KEY),
-        api_key_from_feature, nullptr, std::string(), environment.get(),
-        command_line, gaia_config);
-    ::google_apis::LogAPIKeysMatchHistogram(api_key_from_feature == api_key_);
-
-// A special non-stable key is at the moment defined only for Android Chrome.
-#if BUILDFLAG(IS_ANDROID)
-    api_key_non_stable_ = APIKeyCacheHelper::CalculateKeyValue(
-        GOOGLE_API_KEY_ANDROID_NON_STABLE,
-        STRINGIZE_NO_EXPANSION(GOOGLE_API_KEY_ANDROID_NON_STABLE),
-        std::string(), nullptr, std::string(), environment.get(), command_line,
-        gaia_config);
-#else
-    api_key_non_stable_ = api_key_;
-#endif
-  }
-
-  ~MainApiKeyCache() = default;
-
-  const std::string& api_key() const { return api_key_; }
-#if BUILDFLAG(SUPPORT_EXTERNAL_GOOGLE_API_KEY)
-  void set_api_key(const std::string& api_key) { api_key_ = api_key; }
-#endif
-  const std::string& api_key_non_stable() const { return api_key_non_stable_; }
-
- private:
   std::string api_key_;
   std::string api_key_non_stable_;
-};
-
-class PerFeatureApiKeysCache {
- public:
-  PerFeatureApiKeysCache() {
-    std::unique_ptr<base::Environment> environment(base::Environment::Create());
-    base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-    GaiaConfig* gaia_config = GaiaConfig::GetInstance();
-
-    api_key_remoting_ = APIKeyCacheHelper::CalculateKeyValue(
-        GOOGLE_API_KEY_REMOTING,
-        STRINGIZE_NO_EXPANSION(GOOGLE_API_KEY_REMOTING), std::string(), nullptr,
-        std::string(), environment.get(), command_line, gaia_config);
-
-    api_key_soda_ = APIKeyCacheHelper::CalculateKeyValue(
-        GOOGLE_API_KEY_SODA, STRINGIZE_NO_EXPANSION(GOOGLE_API_KEY_SODA),
-        std::string(), nullptr, std::string(), environment.get(), command_line,
-        gaia_config);
-#if !BUILDFLAG(IS_ANDROID)
-    api_key_hats_ = APIKeyCacheHelper::CalculateKeyValue(
-        GOOGLE_API_KEY_HATS, STRINGIZE_NO_EXPANSION(GOOGLE_API_KEY_HATS),
-        std::string(), nullptr, std::string(), environment.get(), command_line,
-        gaia_config);
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    api_key_sharing_ = APIKeyCacheHelper::CalculateKeyValue(
-        GOOGLE_API_KEY_SHARING, STRINGIZE_NO_EXPANSION(GOOGLE_API_KEY_SHARING),
-        std::string(), nullptr, std::string(), environment.get(), command_line,
-        gaia_config);
-
-    api_key_read_aloud_ = APIKeyCacheHelper::CalculateKeyValue(
-        GOOGLE_API_KEY_READ_ALOUD,
-        STRINGIZE_NO_EXPANSION(GOOGLE_API_KEY_READ_ALOUD), std::string(),
-        nullptr, std::string(), environment.get(), command_line, gaia_config);
-
-    api_key_fresnel_ = APIKeyCacheHelper::CalculateKeyValue(
-        GOOGLE_API_KEY_FRESNEL, STRINGIZE_NO_EXPANSION(GOOGLE_API_KEY_FRESNEL),
-        std::string(), nullptr, std::string(), environment.get(), command_line,
-        gaia_config);
-#endif
-  }
-  ~PerFeatureApiKeysCache() = default;
-
-  const std::string& api_key_remoting() const { return api_key_remoting_; }
-  const std::string& api_key_soda() const { return api_key_soda_; }
-#if !BUILDFLAG(IS_ANDROID)
-  const std::string& api_key_hats() const { return api_key_hats_; }
-#endif
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  const std::string& api_key_sharing() const { return api_key_sharing_; }
-  const std::string& api_key_read_aloud() const { return api_key_read_aloud_; }
-  const std::string& api_key_fresnel() const { return api_key_fresnel_; }
-#endif
-
- private:
   std::string api_key_remoting_;
   std::string api_key_soda_;
 #if !BUILDFLAG(IS_ANDROID)
@@ -341,100 +380,14 @@ class PerFeatureApiKeysCache {
   std::string api_key_read_aloud_;
   std::string api_key_fresnel_;
 #endif
-};
 
-class OAuthClientInfoCache {
- public:
-  OAuthClientInfoCache() {
-    std::unique_ptr<base::Environment> environment(base::Environment::Create());
-    base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-    GaiaConfig* gaia_config = GaiaConfig::GetInstance();
-
-    std::string default_client_id = APIKeyCacheHelper::CalculateKeyValue(
-        GOOGLE_DEFAULT_CLIENT_ID,
-        STRINGIZE_NO_EXPANSION(GOOGLE_DEFAULT_CLIENT_ID), std::string(),
-        nullptr, std::string(), environment.get(), command_line, gaia_config);
-    std::string default_client_secret = APIKeyCacheHelper::CalculateKeyValue(
-        GOOGLE_DEFAULT_CLIENT_SECRET,
-        STRINGIZE_NO_EXPANSION(GOOGLE_DEFAULT_CLIENT_SECRET), std::string(),
-        nullptr, std::string(), environment.get(), command_line, gaia_config);
-
-    // We currently only allow overriding the baked-in values for the
-    // default OAuth2 client ID and secret using a command-line
-    // argument and gaia config, since that is useful to enable testing against
-    // staging servers, and since that was what was possible and
-    // likely practiced by the QA team before this implementation was
-    // written.
-    client_ids_[CLIENT_MAIN] = APIKeyCacheHelper::CalculateKeyValue(
-        GOOGLE_CLIENT_ID_MAIN, STRINGIZE_NO_EXPANSION(GOOGLE_CLIENT_ID_MAIN),
-        std::string(), ::switches::kOAuth2ClientID, default_client_id,
-        environment.get(), command_line, gaia_config);
-    client_secrets_[CLIENT_MAIN] = APIKeyCacheHelper::CalculateKeyValue(
-        GOOGLE_CLIENT_SECRET_MAIN,
-        STRINGIZE_NO_EXPANSION(GOOGLE_CLIENT_SECRET_MAIN), std::string(),
-        ::switches::kOAuth2ClientSecret, default_client_secret,
-        environment.get(), command_line, gaia_config);
-
-    client_ids_[CLIENT_REMOTING] = APIKeyCacheHelper::CalculateKeyValue(
-        GOOGLE_CLIENT_ID_REMOTING,
-        STRINGIZE_NO_EXPANSION(GOOGLE_CLIENT_ID_REMOTING), std::string(),
-        nullptr, default_client_id, environment.get(), command_line,
-        gaia_config);
-    client_secrets_[CLIENT_REMOTING] = APIKeyCacheHelper::CalculateKeyValue(
-        GOOGLE_CLIENT_SECRET_REMOTING,
-        STRINGIZE_NO_EXPANSION(GOOGLE_CLIENT_SECRET_REMOTING), std::string(),
-        nullptr, default_client_secret, environment.get(), command_line,
-        gaia_config);
-
-    client_ids_[CLIENT_REMOTING_HOST] = APIKeyCacheHelper::CalculateKeyValue(
-        GOOGLE_CLIENT_ID_REMOTING_HOST,
-        STRINGIZE_NO_EXPANSION(GOOGLE_CLIENT_ID_REMOTING_HOST), std::string(),
-        nullptr, default_client_id, environment.get(), command_line,
-        gaia_config);
-    client_secrets_[CLIENT_REMOTING_HOST] =
-        APIKeyCacheHelper::CalculateKeyValue(
-            GOOGLE_CLIENT_SECRET_REMOTING_HOST,
-            STRINGIZE_NO_EXPANSION(GOOGLE_CLIENT_SECRET_REMOTING_HOST),
-            std::string(), nullptr, default_client_secret, environment.get(),
-            command_line, gaia_config);
-  }
-  ~OAuthClientInfoCache() = default;
-
-  const std::string& GetClientID(OAuth2Client client) const {
-    DCHECK_LT(client, CLIENT_NUM_ITEMS);
-    return client_ids_[client];
-  }
-
-#if BUILDFLAG(IS_IOS)
-  void SetClientID(OAuth2Client client, const std::string& client_id) {
-    client_ids_[client] = client_id;
-  }
-#endif
-
-  const std::string& GetClientSecret(OAuth2Client client) const {
-    DCHECK_LT(client, CLIENT_NUM_ITEMS);
-    return client_secrets_[client];
-  }
-
-#if BUILDFLAG(IS_IOS)
-  void SetClientSecret(OAuth2Client client, const std::string& client_secret) {
-    client_secrets_[client] = client_secret;
-  }
-#endif
-
- private:
+  std::string metrics_key_;
   std::string client_ids_[CLIENT_NUM_ITEMS];
   std::string client_secrets_[CLIENT_NUM_ITEMS];
 };
 
-static base::LazyInstance<MetricsKeyCache>::DestructorAtExit
-    g_metrics_key_cache = LAZY_INSTANCE_INITIALIZER;
-static base::LazyInstance<MainApiKeyCache>::DestructorAtExit
-    g_main_api_key_cache = LAZY_INSTANCE_INITIALIZER;
-static base::LazyInstance<OAuthClientInfoCache>::DestructorAtExit
-    g_oauth_client_info_cache = LAZY_INSTANCE_INITIALIZER;
-static base::LazyInstance<PerFeatureApiKeysCache>::DestructorAtExit
-    g_per_feature_api_key_cache = LAZY_INSTANCE_INITIALIZER;
+static base::LazyInstance<APIKeyCache>::DestructorAtExit g_api_key_cache =
+    LAZY_INSTANCE_INITIALIZER;
 
 bool HasAPIKeyConfigured() {
   return GetAPIKey() != DUMMY_API_TOKEN;
@@ -443,38 +396,38 @@ bool HasAPIKeyConfigured() {
 const std::string& GetAPIKey(::version_info::Channel channel) {
   return channel == ::version_info::Channel::STABLE
              ? GetAPIKey()
-             : g_main_api_key_cache.Get().api_key_non_stable();
+             : g_api_key_cache.Get().api_key_non_stable();
 }
 
 const std::string& GetAPIKey() {
-  return g_main_api_key_cache.Get().api_key();
+  return g_api_key_cache.Get().api_key();
 }
 
 const std::string& GetRemotingAPIKey() {
-  return g_per_feature_api_key_cache.Get().api_key_remoting();
+  return g_api_key_cache.Get().api_key_remoting();
 }
 
 const std::string& GetSodaAPIKey() {
-  return g_per_feature_api_key_cache.Get().api_key_soda();
+  return g_api_key_cache.Get().api_key_soda();
 }
 
 #if !BUILDFLAG(IS_ANDROID)
 const std::string& GetHatsAPIKey() {
-  return g_per_feature_api_key_cache.Get().api_key_hats();
+  return g_api_key_cache.Get().api_key_hats();
 }
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 const std::string& GetSharingAPIKey() {
-  return g_per_feature_api_key_cache.Get().api_key_sharing();
+  return g_api_key_cache.Get().api_key_sharing();
 }
 
 const std::string& GetReadAloudAPIKey() {
-  return g_per_feature_api_key_cache.Get().api_key_read_aloud();
+  return g_api_key_cache.Get().api_key_read_aloud();
 }
 
 const std::string& GetFresnelAPIKey() {
-  return g_per_feature_api_key_cache.Get().api_key_fresnel();
+  return g_api_key_cache.Get().api_key_fresnel();
 }
 #endif
 
@@ -483,13 +436,13 @@ void SetAPIKey(const std::string& api_key) {
   // Overriding the API key must be made before its first usage. This check is
   // more permissive as it allows multiple calls to set the API with the same
   // value.
-  CHECK(!g_main_api_key_cache.IsCreated(), base::NotFatalUntil::M133);
-  g_main_api_key_cache.Get().set_api_key(api_key);
+  CHECK(!g_api_key_cache.IsCreated(), base::NotFatalUntil::M133);
+  g_api_key_cache.Get().set_api_key(api_key);
 }
 #endif
 
 const std::string& GetMetricsKey() {
-  return g_metrics_key_cache.Get().metrics_key();
+  return g_api_key_cache.Get().metrics_key();
 }
 
 bool HasOAuthClientConfigured() {
@@ -505,21 +458,21 @@ bool HasOAuthClientConfigured() {
 }
 
 const std::string& GetOAuth2ClientID(OAuth2Client client) {
-  return g_oauth_client_info_cache.Get().GetClientID(client);
+  return g_api_key_cache.Get().GetClientID(client);
 }
 
 const std::string& GetOAuth2ClientSecret(OAuth2Client client) {
-  return g_oauth_client_info_cache.Get().GetClientSecret(client);
+  return g_api_key_cache.Get().GetClientSecret(client);
 }
 
 #if BUILDFLAG(IS_IOS)
 void SetOAuth2ClientID(OAuth2Client client, const std::string& client_id) {
-  g_oauth_client_info_cache.Get().SetClientID(client, client_id);
+  g_api_key_cache.Get().SetClientID(client, client_id);
 }
 
 void SetOAuth2ClientSecret(OAuth2Client client,
                            const std::string& client_secret) {
-  g_oauth_client_info_cache.Get().SetClientSecret(client, client_secret);
+  g_api_key_cache.Get().SetClientSecret(client, client_secret);
 }
 #endif
 
