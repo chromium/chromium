@@ -245,13 +245,42 @@ TEST_F(MaskedDomainListManagerBaseTest, AllowListIsNotPopulatedByDefault) {
   EXPECT_FALSE(allow_list.IsPopulated());
 }
 
-TEST_F(MaskedDomainListManagerBaseTest, AllowlistIsPopulatedWhenMDLUsed) {
+TEST_F(MaskedDomainListManagerBaseTest,
+       AllowlistIsPopulated_MdlHasResourceOwners) {
   MaskedDomainListManager allow_list(
       network::mojom::IpProtectionProxyBypassPolicy::kNone);
   MaskedDomainList mdl;
   auto* resource_owner = mdl.add_resource_owners();
   resource_owner->set_owner_name("foo");
   resource_owner->add_owned_resources()->set_domain("example.com");
+  allow_list.UpdateMaskedDomainList(
+      mdl,
+      /*exclusion_list=*/std::vector<std::string>());
+
+  EXPECT_TRUE(allow_list.IsPopulated());
+}
+
+TEST_F(MaskedDomainListManagerBaseTest, AllowlistIsPopulated_MdlHasPslRules) {
+  MaskedDomainListManager allow_list(
+      network::mojom::IpProtectionProxyBypassPolicy::kNone);
+  MaskedDomainList mdl;
+  mdl.add_public_suffix_list_rules()->set_private_domain("example.com");
+  allow_list.UpdateMaskedDomainList(
+      mdl,
+      /*exclusion_list=*/std::vector<std::string>());
+
+  EXPECT_TRUE(allow_list.IsPopulated());
+}
+
+TEST_F(MaskedDomainListManagerBaseTest,
+       AllowlistIsPopulated_MdlHasResourceOwnersAndPslRules) {
+  MaskedDomainListManager allow_list(
+      network::mojom::IpProtectionProxyBypassPolicy::kNone);
+  MaskedDomainList mdl;
+  auto* resource_owner = mdl.add_resource_owners();
+  resource_owner->set_owner_name("foo");
+  resource_owner->add_owned_resources()->set_domain("example.com");
+  mdl.add_public_suffix_list_rules()->set_private_domain("example.com");
   allow_list.UpdateMaskedDomainList(
       mdl,
       /*exclusion_list=*/std::vector<std::string>());

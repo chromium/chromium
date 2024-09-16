@@ -82,7 +82,8 @@ bool MaskedDomainListManager::IsEnabled() const {
 }
 
 bool MaskedDomainListManager::IsPopulated() const {
-  return url_matcher_with_bypass_.IsPopulated();
+  return url_matcher_with_bypass_.IsPopulated() ||
+         !public_suffix_list_matcher_.rules().empty();
 }
 
 size_t MaskedDomainListManager::EstimateMemoryUsage() const {
@@ -264,8 +265,8 @@ void MaskedDomainListManager::UpdateMaskedDomainList(
         break;
       }
     }
-    AddPublicSuffixListRules(psl_private_domains);
   }
+  AddPublicSuffixListRules(psl_private_domains);
   ip_protection::Telemetry().MdlEstimatedMemoryUsage(EstimateMemoryUsage());
 }
 
