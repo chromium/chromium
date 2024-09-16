@@ -32,6 +32,7 @@
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
+#import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -465,6 +466,16 @@ const CGFloat kMenuSymbolSize = 18;
   } else {
     [self destroyLensUI:YES];
   }
+}
+
+- (void)didPressLearnMore {
+  OpenNewTabCommand* command = [OpenNewTabCommand
+      commandWithURLFromChrome:GURL(kLearnMoreLensURL)
+                   inIncognito:self.browser->GetBrowserState()
+                                   ->IsOffTheRecord()];
+
+  [HandlerForProtocol(self.browser->GetCommandDispatcher(), ApplicationCommands)
+      openURLInNewTab:command];
 }
 
 #pragma mark - LensOverlayBottomSheetPresentationDelegate

@@ -40,10 +40,14 @@ NSString* const kLensUserEducationDarkMode = @"lens_usered_darkmode";
                       didFinishWithTermsAccepted:YES];
       }];
   UIButton* denyButton =
-      [self denyTermsButtonWithActionHandler:^(UIAction* action) {
-        [weakSelf.delegate consentViewController:weakSelf
-                      didFinishWithTermsAccepted:NO];
-      }];
+      [self plainButtonWithTitle:
+                l10n_util::GetNSString(
+                    IDS_IOS_LENS_OVERLAY_CONSENT_DENY_TERMS_BUTTON_TITLE)
+                   actionHandler:^(UIAction* action) {
+                     [weakSelf.delegate consentViewController:weakSelf
+                                   didFinishWithTermsAccepted:NO];
+                   }];
+
   UIStackView* termsButtonsVerticalStack = [[UIStackView alloc]
       initWithArrangedSubviews:@[ acceptButton, denyButton ]];
   termsButtonsVerticalStack.axis = UILayoutConstraintAxisVertical;
@@ -69,12 +73,21 @@ NSString* const kLensUserEducationDarkMode = @"lens_usered_darkmode";
   bodyLabel.textColor =
       [UIColor colorNamed:kLensOverlayConsentDialogDescriptionColor];
 
-  UIStackView* labelsVerticalStack =
-      [[UIStackView alloc] initWithArrangedSubviews:@[ titleLabel, bodyLabel ]];
-  labelsVerticalStack.axis = UILayoutConstraintAxisVertical;
-  labelsVerticalStack.alignment = UIStackViewAlignmentFill;
-  labelsVerticalStack.translatesAutoresizingMaskIntoConstraints = NO;
-  labelsVerticalStack.spacing = 8;
+  // Learn more link.
+  UIButton* learnMoreLink =
+      [self plainButtonWithTitle:l10n_util::GetNSString(
+                                     IDS_IOS_LENS_OVERLAY_CONSENT_LEARN_MORE)
+                   actionHandler:^(UIAction* action) {
+                     [weakSelf.delegate didPressLearnMore];
+                   }];
+
+  UIStackView* consentDescriptionVerticalStack = [[UIStackView alloc]
+      initWithArrangedSubviews:@[ titleLabel, bodyLabel, learnMoreLink ]];
+  consentDescriptionVerticalStack.axis = UILayoutConstraintAxisVertical;
+  consentDescriptionVerticalStack.alignment = UIStackViewAlignmentFill;
+  consentDescriptionVerticalStack.translatesAutoresizingMaskIntoConstraints =
+      NO;
+  consentDescriptionVerticalStack.spacing = 8;
 
   // Lottie animation.
   _animationViewWrapper =
@@ -89,8 +102,8 @@ NSString* const kLensUserEducationDarkMode = @"lens_usered_darkmode";
 
   // The consent dialog vertical stack.
   UIStackView* verticalStack = [[UIStackView alloc] initWithArrangedSubviews:@[
-    _animationViewWrapper.animationView, labelsVerticalStack, acceptButton,
-    denyButton
+    _animationViewWrapper.animationView, consentDescriptionVerticalStack,
+    termsButtonsVerticalStack
   ]];
   verticalStack.axis = UILayoutConstraintAxisVertical;
   verticalStack.alignment = UIStackViewAlignmentFill;
@@ -136,11 +149,11 @@ NSString* const kLensUserEducationDarkMode = @"lens_usered_darkmode";
   return button;
 }
 
-- (UIButton*)denyTermsButtonWithActionHandler:(UIActionHandler)handler {
+- (UIButton*)plainButtonWithTitle:(NSString*)title
+                    actionHandler:(UIActionHandler)handler {
   UIButtonConfiguration* buttonConfiguration =
       [UIButtonConfiguration plainButtonConfiguration];
-  buttonConfiguration.title = l10n_util::GetNSString(
-      IDS_IOS_LENS_OVERLAY_CONSENT_DENY_TERMS_BUTTON_TITLE);
+  buttonConfiguration.title = title;
 
   UIButton* button =
       [UIButton buttonWithConfiguration:buttonConfiguration
