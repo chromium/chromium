@@ -318,8 +318,10 @@ class GFX_EXPORT RenderTextHarfBuzz : public RenderText {
 
   // Creates and applies a BreakList based on the resolved fonts of each run in
   // |run_list|. This has the side-effect of isolating missing glyphs into their
-  // own run, maximizing fallback opportunities.
-  void BuildResolvedTypefaceBreakList(internal::TextRunList* run_list);
+  // own run, maximizing fallback opportunities. Returns a bool indicating
+  // whether the internal missing glyph BreakList was modified, indicating that
+  // reshaping is necessary.
+  bool BuildResolvedTypefaceBreakList(internal::TextRunList* run_list);
 
   // Itemize |text| into runs in |out_run_list|, shape the runs, and populate
   // |out_run_list|'s visual <-> logical maps.
