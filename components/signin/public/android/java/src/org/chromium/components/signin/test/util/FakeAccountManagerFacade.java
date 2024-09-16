@@ -9,8 +9,10 @@ import android.accounts.AccountManager;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.Button;
 
 import androidx.annotation.AnyThread;
+import androidx.annotation.IdRes;
 import androidx.annotation.MainThread;
 import androidx.annotation.Nullable;
 
@@ -57,27 +59,31 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
      */
     private static final String CHILD_ACCOUNT_NAME_PREFIX = "child.";
 
-    /** AddAccountActivityStub intent arguments to set account name and result */
-    private static final String ADDED_ACCOUNT_NAME = "AddedAccountName";
-
-    private static final String ADD_ACCOUNT_RESULT = "AddAccountResult";
-
-    private static final String ADDED_ACCOUNT_MINOR_MODE_RESTRICTION_ENABLED =
-            "AddedAccountMinorModeRestrictionEnabled";
-
     /** An {@link Activity} stub to test add account flow. */
     public static final class AddAccountActivityStub extends Activity {
+        public static final @IdRes int OK_BUTTON_ID = R.id.ok_button;
+        public static final @IdRes int CANCEL_BUTTON_ID = R.id.cancel_button;
+
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
+
+            setContentView(R.layout.test_add_account_layout);
+            Button okButton = findViewById(OK_BUTTON_ID);
+            okButton.setOnClickListener(v -> addAccount());
+            Button cancelButton = findViewById(CANCEL_BUTTON_ID);
+            cancelButton.setOnClickListener(v -> cancel());
+        }
+
+        private void addAccount() {
             Intent data = new Intent();
-            int result = getIntent().getIntExtra(ADD_ACCOUNT_RESULT, RESULT_CANCELED);
-            String addedAccountName = getIntent().getStringExtra(ADDED_ACCOUNT_NAME);
-            boolean minorModeEnabled =
-                    getIntent()
-                            .getBooleanExtra(ADDED_ACCOUNT_MINOR_MODE_RESTRICTION_ENABLED, false);
+            FakeAccountManagerFacade accountManagerFacade =
+                    (FakeAccountManagerFacade) AccountManagerFacadeProvider.getInstance();
+            String addedAccountName = accountManagerFacade.mNameOfAccountToAdd;
+            boolean minorModeEnabled = accountManagerFacade.mIsMinorModeEnabledForAccountToAdd;
+
             data.putExtra(AccountManager.KEY_ACCOUNT_NAME, addedAccountName);
-            if (result != RESULT_CANCELED && addedAccountName != null) {
+            if (addedAccountName != null) {
                 ((FakeAccountManagerFacade) AccountManagerFacadeProvider.getInstance())
                         .addAccount(
                                 new AccountInfo.Builder(
@@ -89,7 +95,18 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
                                                         .build())
                                         .build());
             }
-            setResult(result, data);
+            accountManagerFacade.mNameOfAccountToAdd = null;
+            accountManagerFacade.mIsMinorModeEnabledForAccountToAdd = false;
+            setResult(RESULT_OK, data);
+            finish();
+        }
+
+        private void cancel() {
+            FakeAccountManagerFacade accountManagerFacade =
+                    (FakeAccountManagerFacade) AccountManagerFacadeProvider.getInstance();
+            accountManagerFacade.mNameOfAccountToAdd = null;
+            accountManagerFacade.mIsMinorModeEnabledForAccountToAdd = false;
+            setResult(RESULT_CANCELED, null);
             finish();
         }
     }
@@ -104,7 +121,14 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
     /** Can be used to block {@link #getCoreAccountInfos()} ()} result. */
     private @Nullable Promise<List<CoreAccountInfo>> mBlockedGetCoreAccountInfosPromise;
 
-    private @Nullable Intent mAddAccountIntent;
+    private Intent mAddAccountIntent =
+            new Intent(ContextUtils.getApplicationContext(), AddAccountActivityStub.class);
+
+    /** Name of the account that will be added by AddAccountActivityStub. */
+    private String mNameOfAccountToAdd;
+
+    /** Whether the minor mode is enabled for the account added by AddAccountActivityStub. */
+    private boolean mIsMinorModeEnabledForAccountToAdd;
 
     /** Creates an object of FakeAccountManagerFacade. */
     public FakeAccountManagerFacade() {}
@@ -182,7 +206,6 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
     @Override
     public void createAddAccountIntent(Callback<Intent> callback) {
         callback.onResult(mAddAccountIntent);
-        mAddAccountIntent = null;
     }
 
     @Override
@@ -331,22 +354,24 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
     }
 
     /**
-     * Sets the result for the next add account flow.
+     * Initializes the next add account flow with a given account to add.
      *
-     * @param result The activity result to return when the intent is launched
-     * @param newAccountName The account name to return when the intent is launched
+     * @param newAccountName The account name to return when the add account flow finishes.
      * @param isMinorModeEnabled The account is subjected to minor mode restrictions
      */
-    public void setResultForNextAddAccountFlow(
-            int result, @Nullable String newAccountName, boolean isMinorModeEnabled) {
+    public void setUpNextAddAccountFlow(
+            @Nullable String newAccountName, boolean isMinorModeEnabled) {
         // TODO(crbug.com/343872217) Update method to use AccountInfo
-        assert mAddAccountIntent == null : "mAddAccountIntent is already set";
-        mAddAccountIntent =
-                new Intent(ContextUtils.getApplicationContext(), AddAccountActivityStub.class);
-        mAddAccountIntent.putExtra(ADD_ACCOUNT_RESULT, result);
-        mAddAccountIntent.putExtra(ADDED_ACCOUNT_NAME, newAccountName);
-        mAddAccountIntent.putExtra(
-                ADDED_ACCOUNT_MINOR_MODE_RESTRICTION_ENABLED, isMinorModeEnabled);
+        mNameOfAccountToAdd = newAccountName;
+        mIsMinorModeEnabledForAccountToAdd = isMinorModeEnabled;
+    }
+
+    /**
+     * Makes the add account intent creation fail: createAddAccountIntent() will provide a null
+     * intent when it's called.
+     */
+    public void forceAddAccountIntentCreationFailure() {
+        mAddAccountIntent = null;
     }
 
     private List<CoreAccountInfo> getCoreAccountInfosInternal() {

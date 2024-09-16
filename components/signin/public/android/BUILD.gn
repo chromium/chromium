@@ -150,7 +150,10 @@ android_resources("java_resources") {
 
 android_resources("signin_test_resources") {
   testonly = true
-  sources = [ "javatests/res/drawable/test_profile_picture.xml" ]
+  sources = [
+    "javatests/res/drawable/test_profile_picture.xml",
+    "javatests/res/layout/test_add_account_layout.xml",
+  ]
 }
 
 android_library("unit_device_javatests") {

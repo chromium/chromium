@@ -944,11 +944,11 @@ public class AccountPickerBottomSheetTest {
                                 AccountConsistencyPromoAction.ADD_ACCOUNT_COMPLETED,
                                 AccountConsistencyPromoAction.SIGNED_IN_WITH_ADDED_ACCOUNT)
                         .build();
-        mAccountManagerTestRule.setResultForNextAddAccountFlow(
-                Activity.RESULT_OK, NEW_ACCOUNT_EMAIL);
         buildAndShowCollapsedThenExpandedBottomSheet();
 
         onVisibleView(withText(R.string.signin_add_account_to_device)).perform(click());
+        mAccountManagerTestRule.setUpNextAddAccountFlow(NEW_ACCOUNT_EMAIL);
+        onViewWaiting(AccountManagerTestRule.ADD_ACCOUNT_BUTTON_MATCHER).perform(click());
 
         onViewFullyShownInParent(withText(NEW_ACCOUNT_EMAIL), R.id.account_picker_state_collapsed)
                 .check(matches(isDisplayed()));
@@ -970,11 +970,11 @@ public class AccountPickerBottomSheetTest {
                                 AccountConsistencyPromoAction.ADD_ACCOUNT_COMPLETED,
                                 AccountConsistencyPromoAction.SIGNED_IN_WITH_ADDED_ACCOUNT)
                         .build();
-        mAccountManagerTestRule.setResultForNextAddAccountFlow(
-                Activity.RESULT_OK, NEW_ACCOUNT_EMAIL);
         buildAndShowBottomSheet(AccountPickerLaunchMode.CHOOSE_ACCOUNT);
 
         onVisibleView(withText(R.string.signin_add_account_to_device)).perform(click());
+        mAccountManagerTestRule.setUpNextAddAccountFlow(NEW_ACCOUNT_EMAIL);
+        onViewWaiting(AccountManagerTestRule.ADD_ACCOUNT_BUTTON_MATCHER).perform(click());
 
         onViewFullyShownInParent(withText(NEW_ACCOUNT_EMAIL), R.id.account_picker_state_collapsed)
                 .check(matches(isDisplayed()));
@@ -1193,11 +1193,11 @@ public class AccountPickerBottomSheetTest {
                                 AccountConsistencyPromoAction.ADD_ACCOUNT_STARTED,
                                 AccountConsistencyPromoAction.ADD_ACCOUNT_COMPLETED)
                         .build();
-        mAccountManagerTestRule.setResultForNextAddAccountFlow(
-                Activity.RESULT_OK, NEW_ACCOUNT_EMAIL);
         buildAndShowCollapsedThenExpandedBottomSheet();
 
         onVisibleView(withText(R.string.signin_add_account_to_device)).perform(click());
+        mAccountManagerTestRule.setUpNextAddAccountFlow(NEW_ACCOUNT_EMAIL);
+        onViewWaiting(AccountManagerTestRule.ADD_ACCOUNT_BUTTON_MATCHER).perform(click());
 
         // TODO(crbug.com/40277716): This is a no-op, replace with ViewUtils.waitForVisibleView().
         ViewUtils.isEventuallyVisible(withText(NEW_ACCOUNT_EMAIL));
@@ -1218,11 +1218,11 @@ public class AccountPickerBottomSheetTest {
                                 AccountConsistencyPromoAction.ADD_ACCOUNT_COMPLETED,
                                 AccountConsistencyPromoAction.SIGNED_IN_WITH_ADDED_ACCOUNT)
                         .build();
-        mAccountManagerTestRule.setResultForNextAddAccountFlow(
-                Activity.RESULT_OK, NEW_ACCOUNT_EMAIL);
         buildAndShowCollapsedThenExpandedBottomSheet();
 
         onVisibleView(withText(R.string.signin_add_account_to_device)).perform(click());
+        mAccountManagerTestRule.setUpNextAddAccountFlow(NEW_ACCOUNT_EMAIL);
+        onViewWaiting(AccountManagerTestRule.ADD_ACCOUNT_BUTTON_MATCHER).perform(click());
 
         completeDeviceLockIfOnAutomotive();
 
@@ -1248,11 +1248,11 @@ public class AccountPickerBottomSheetTest {
                                 AccountConsistencyPromoAction.ADD_ACCOUNT_COMPLETED,
                                 AccountConsistencyPromoAction.SIGNED_IN_WITH_ADDED_ACCOUNT)
                         .build();
-        mAccountManagerTestRule.setResultForNextAddAccountFlow(
-                Activity.RESULT_OK, NEW_ACCOUNT_EMAIL);
         buildAndShowBottomSheet(AccountPickerLaunchMode.CHOOSE_ACCOUNT);
 
         onVisibleView(withText(R.string.signin_add_account_to_device)).perform(click());
+        mAccountManagerTestRule.setUpNextAddAccountFlow(NEW_ACCOUNT_EMAIL);
+        onViewWaiting(AccountManagerTestRule.ADD_ACCOUNT_BUTTON_MATCHER).perform(click());
 
         completeDeviceLockIfOnAutomotive();
 
@@ -1445,12 +1445,12 @@ public class AccountPickerBottomSheetTest {
         // ensure that the account disappears before sign-in by removing the account before
         // resolving the device lock.
         mAutoTestRule.setIsAutomotive(true);
-        mAccountManagerTestRule.setResultForNextAddAccountFlow(
-                Activity.RESULT_OK, NEW_ACCOUNT_EMAIL);
         buildAndShowCollapsedThenExpandedBottomSheet();
 
         // Start sign-in and remove the account before completing the device lock.
         onVisibleView(withText(R.string.signin_add_account_to_device)).perform(click());
+        mAccountManagerTestRule.setUpNextAddAccountFlow(NEW_ACCOUNT_EMAIL);
+        onViewWaiting(AccountManagerTestRule.ADD_ACCOUNT_BUTTON_MATCHER).perform(click());
         mAccountManagerTestRule.removeAccount(
                 mAccountManagerTestRule.toCoreAccountInfo(NEW_ACCOUNT_EMAIL).getId());
         completeDeviceLockIfOnAutomotive();
@@ -1468,12 +1468,12 @@ public class AccountPickerBottomSheetTest {
     public void
             testSigninWithAddedAccount_removeAccountAfterManagementNotice_replaceSyncBySigninEnabled() {
         mIsAccountManaged = true;
-        mAccountManagerTestRule.setResultForNextAddAccountFlow(
-                Activity.RESULT_OK, NEW_ACCOUNT_EMAIL);
         buildAndShowCollapsedThenExpandedBottomSheet();
 
         // Start sign-in and remove the account before validating the management notice.
         onVisibleView(withText(R.string.signin_add_account_to_device)).perform(click());
+        mAccountManagerTestRule.setUpNextAddAccountFlow(NEW_ACCOUNT_EMAIL);
+        onViewWaiting(AccountManagerTestRule.ADD_ACCOUNT_BUTTON_MATCHER).perform(click());
         waitForView(
                 (ViewGroup) mCoordinator.getBottomSheetViewForTesting(),
                 withId(R.id.account_picker_confirm_management_description));

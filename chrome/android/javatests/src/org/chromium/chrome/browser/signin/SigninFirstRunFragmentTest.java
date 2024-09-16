@@ -31,8 +31,8 @@ import static org.mockito.Mockito.when;
 
 import static org.chromium.ui.test.util.MockitoHelper.doCallback;
 import static org.chromium.ui.test.util.MockitoHelper.doRunnable;
+import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
-import android.app.Activity;
 import android.content.res.Configuration;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -1124,13 +1124,14 @@ public class SigninFirstRunFragmentTest {
     @MediumTest
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     public void testFragmentWhenAddingAnotherAccount() {
-        mSigninTestRule.setResultForNextAddAccountFlow(Activity.RESULT_OK, TEST_EMAIL2);
         mSigninTestRule.addAccount(TEST_EMAIL1, FULL_NAME1, GIVEN_NAME1, null);
         launchActivityWithFragment();
         checkFragmentWithSelectedAccount(TEST_EMAIL1, FULL_NAME1, GIVEN_NAME1);
 
         onView(withText(TEST_EMAIL1)).perform(click());
         onView(withText(R.string.signin_add_account_to_device)).perform(click());
+        mSigninTestRule.setUpNextAddAccountFlow(TEST_EMAIL2);
+        onViewWaiting(AccountManagerTestRule.ADD_ACCOUNT_BUTTON_MATCHER).perform(click());
 
         checkFragmentWithSelectedAccount(TEST_EMAIL2, /* fullName= */ null, /* givenName= */ null);
         verify(mFirstRunPageDelegateMock)
@@ -1141,10 +1142,11 @@ public class SigninFirstRunFragmentTest {
     @MediumTest
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     public void testFragmentWhenAddingDefaultAccount() {
-        mSigninTestRule.setResultForNextAddAccountFlow(Activity.RESULT_OK, TEST_EMAIL1);
         launchActivityWithFragment();
 
         onView(withText(R.string.signin_add_account_to_device)).perform(click());
+        mSigninTestRule.setUpNextAddAccountFlow(TEST_EMAIL1);
+        onViewWaiting(AccountManagerTestRule.ADD_ACCOUNT_BUTTON_MATCHER).perform(click());
 
         checkFragmentWithSelectedAccount(TEST_EMAIL1, /* fullName= */ null, /* givenName= */ null);
         verify(mFirstRunPageDelegateMock)
@@ -1167,9 +1169,10 @@ public class SigninFirstRunFragmentTest {
         // The added account from add account flow later on will not be available.
         try (var ignored =
                 mSigninTestRule.blockGetCoreAccountInfosUpdate(/* populateCache= */ true)) {
-            mSigninTestRule.setResultForNextAddAccountFlow(Activity.RESULT_OK, TEST_EMAIL1);
             launchActivityWithFragment();
             onView(withText(R.string.signin_add_account_to_device)).perform(click());
+            mSigninTestRule.setUpNextAddAccountFlow(TEST_EMAIL1);
+            onViewWaiting(AccountManagerTestRule.ADD_ACCOUNT_BUTTON_MATCHER).perform(click());
             checkFragmentWithSelectedAccount(
                     TEST_EMAIL1, /* fullName= */ null, /* givenName= */ null);
 
