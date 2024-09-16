@@ -374,9 +374,11 @@ public class ExternalNavigationHandler {
 
     /**
      * Result types for checking if we should override URL loading.
-     * NOTE: this enum is used in UMA, do not reorder values. Changes should be append only.
+     *
+     * <p>NOTE: this enum is used in UMA, do not reorder values. Changes should be append only.
      * Values should be numerated from 0 and can't have gaps.
-     * NOTE: NUM_ENTRIES must be added inside the IntDef{} to work around crbug.com/1300585. It
+     *
+     * <p>NOTE: NUM_ENTRIES must be added inside the IntDef{} to work around crbug.com/1300585. It
      * should be removed from the IntDef{} if an alternate solution for that bug is found.
      */
     @IntDef({
@@ -384,6 +386,7 @@ public class ExternalNavigationHandler {
         OverrideUrlLoadingResultType.OVERRIDE_WITH_NAVIGATE_TAB,
         OverrideUrlLoadingResultType.OVERRIDE_WITH_ASYNC_ACTION,
         OverrideUrlLoadingResultType.NO_OVERRIDE,
+        OverrideUrlLoadingResultType.OVERRIDE_CLOSING_AFTER_AUTH,
         OverrideUrlLoadingResultType.NUM_ENTRIES
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -398,7 +401,9 @@ public class ExternalNavigationHandler {
         /* We shouldn't override the URL loading. */
         int NO_OVERRIDE = 3;
 
-        int NUM_ENTRIES = 4;
+        int OVERRIDE_CLOSING_AFTER_AUTH = 4;
+
+        int NUM_ENTRIES = 5;
     }
 
     /** Types of async action that can be taken for a navigation. */
@@ -506,6 +511,11 @@ public class ExternalNavigationHandler {
         public static OverrideUrlLoadingResult forExternalFallbackUrl() {
             return new OverrideUrlLoadingResult(
                     OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT, true);
+        }
+
+        public static OverrideUrlLoadingResult forClosingAfterAuth() {
+            return new OverrideUrlLoadingResult(
+                    OverrideUrlLoadingResultType.OVERRIDE_CLOSING_AFTER_AUTH);
         }
     }
 
@@ -1638,9 +1648,8 @@ public class ExternalNavigationHandler {
         }
 
         if (shouldReturnAsResult) {
-            // TODO(b/353586171): Consider adding a new override type.
             mDelegate.returnAsActivityResult(intentTargetUrl);
-            return OverrideUrlLoadingResult.forNoOverride();
+            return OverrideUrlLoadingResult.forClosingAfterAuth();
         }
 
         if (mDelegate.shouldDisableAllExternalIntents()) {

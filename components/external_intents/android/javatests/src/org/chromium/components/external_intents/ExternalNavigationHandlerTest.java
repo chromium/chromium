@@ -427,25 +427,7 @@ public class ExternalNavigationHandlerTest {
 
         mDelegate.setShouldReturnAsActivityResult(true);
         checkUrl("tel:012345678", redirectHandlerForLinkClick())
-                .expecting(OverrideUrlLoadingResultType.NO_OVERRIDE, IGNORE);
-    }
-
-    @Test
-    @SmallTest
-    public void testShouldReturnAsActivityResult_preserveOtherResultTypes() {
-        checkUrl(YOUTUBE_URL, redirectHandlerForLinkClick())
-                .expecting(OverrideUrlLoadingResultType.NO_OVERRIDE, IGNORE);
-        assertOverrideUrlToNavigateToTab();
-
-        mDelegate.setShouldDisableAllExternalIntents(true);
-        checkUrl(YOUTUBE_URL, redirectHandlerForLinkClick())
-                .expecting(OverrideUrlLoadingResultType.NO_OVERRIDE, IGNORE);
-        assertOverrideUrlToNavigateToTab();
-
-        mDelegate.setShouldReturnAsActivityResult(true);
-        checkUrl(YOUTUBE_URL, redirectHandlerForLinkClick())
-                .expecting(OverrideUrlLoadingResultType.NO_OVERRIDE, IGNORE);
-        assertOverrideUrlToNavigateToTab();
+                .expecting(OverrideUrlLoadingResultType.OVERRIDE_CLOSING_AFTER_AUTH, IGNORE);
     }
 
     @Test

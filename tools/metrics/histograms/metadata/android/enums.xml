@@ -1132,6 +1132,7 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Created external intent with tab clobbering"/>
   <int value="2" label="Created async dialog for confirming external intent"/>
   <int value="3" label="Navigation not intercepted"/>
+  <int value="4" label="Tab closed after successful authentication"/>
 </enum>
 
 <enum name="NavigationInterceptScheme">

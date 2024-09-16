@@ -213,6 +213,7 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
                 clobberMainFrame(result.getTargetUrl(), result.getExternalNavigationParams());
                 return true;
             case OverrideUrlLoadingResultType.OVERRIDE_WITH_ASYNC_ACTION:
+            case OverrideUrlLoadingResultType.OVERRIDE_CLOSING_AFTER_AUTH:
                 return true;
             case OverrideUrlLoadingResultType.NO_OVERRIDE:
             default:

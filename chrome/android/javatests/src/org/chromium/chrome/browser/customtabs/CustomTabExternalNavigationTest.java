@@ -166,7 +166,8 @@ public class CustomTabExternalNavigationTest {
 
         // AuthTab does not launch an external intent for a custom scheme URL, but passes
         // the result back to the calling app and closes itself.
-        Assert.assertEquals(OverrideUrlLoadingResultType.NO_OVERRIDE, result.getResultType());
+        Assert.assertEquals(
+                OverrideUrlLoadingResultType.OVERRIDE_CLOSING_AFTER_AUTH, result.getResultType());
         Assert.assertTrue(mCustomTabActivityTestRule.getActivity().isFinishing());
     }
 
