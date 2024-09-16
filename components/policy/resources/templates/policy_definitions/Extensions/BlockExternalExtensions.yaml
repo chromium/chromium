@@ -7,7 +7,8 @@ desc: |-
 
   Setting this policy to Disabled or leaving it unset allows external extensions to be installed.
 
-  External extensions and their installation are documented at https://developer.chrome.com/apps/external_extensions.
+  External extensions and their installation are documented at https://developer.chrome.com/docs/extensions/how-to/distribute/install-extensions.
+
 example_value: true
 features:
   dynamic_refresh: false
