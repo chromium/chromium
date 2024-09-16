@@ -6,7 +6,6 @@
  * @fileoverview Reports viewport details to the app.
  */
 
-import {catchAndReportErrors} from '//ios/web/public/js_messaging/resources/error_reporting.js';
 import { getFrameId } from '//ios/web/public/js_messaging/resources/frame_id.js';
 import { sendWebKitMessage } from '//ios/web/public/js_messaging/resources/utils.js'
 
@@ -14,17 +13,15 @@ import { sendWebKitMessage } from '//ios/web/public/js_messaging/resources/utils
  * Reads the viewport configuration and reports it back to the browser.
  */
 function reportViewportConfiguration() {
-  catchAndReportErrors(function() {
-    let viewportMeta = window.document.querySelector('meta[name = "viewport"]');
-    if (viewportMeta) {
-      let coverValue =
-          viewportMeta.getAttribute('content')?.includes('viewport-fit=cover');
-      sendWebKitMessage('FullscreenViewportHandler', {
-        'frame_id': getFrameId(),
-        'cover': coverValue,
-      });
-    }
-  });
+  let viewportMeta = window.document.querySelector('meta[name = "viewport"]');
+  if (viewportMeta) {
+    let coverValue =
+        viewportMeta.getAttribute('content')?.includes('viewport-fit=cover');
+    sendWebKitMessage('FullscreenViewportHandler', {
+      'frame_id': getFrameId(),
+      'cover': coverValue,
+    });
+  }
 }
 
 window.addEventListener('load', reportViewportConfiguration);

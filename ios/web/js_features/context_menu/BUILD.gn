@@ -39,7 +39,6 @@ optimize_ts("context_menu_all_frames_ts") {
 
   deps = [
     ":compile_surrounding_text_ts",
-    "//ios/web/public/js_messaging:error_reporting",
     "//ios/web/public/js_messaging:gcrweb",
     "//ios/web/public/js_messaging:util_scripts",
   ]
@@ -50,10 +49,7 @@ optimize_ts("context_menu_main_frame_ts") {
 
   sources = [ "resources/main_frame_context_menu.ts" ]
 
-  deps = [
-    "//ios/web/public/js_messaging:error_reporting",
-    "//ios/web/public/js_messaging:gcrweb",
-  ]
+  deps = [ "//ios/web/public/js_messaging:gcrweb" ]
 }
 
 source_set("unittests") {

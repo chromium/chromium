@@ -7,7 +7,6 @@
  */
 
 import {getSurroundingText} from '//ios/web/js_features/context_menu/resources/surrounding_text.js';
-import {catchAndReportErrors} from '//ios/web/public/js_messaging/resources/error_reporting.js';
 import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.js'
 
@@ -212,31 +211,28 @@ function getResponseForTextElement(
  */
 function findElementAtPointInPageCoordinates(
     requestId: string, x: number, y: number) {
-  catchAndReportErrors(function() {
-    const hitCoordinates = spiralCoordinates(x, y);
-    const processedElements = new Set<Element>();
-    for (let coordinates of hitCoordinates) {
-      const coordinateDetails =
-          new WindowCoordinates(coordinates.x, coordinates.y);
-      const useViewPortCoordinates =
-          elementFromPointIsUsingViewPortCoordinates();
-      const coordinateX = useViewPortCoordinates ? coordinateDetails.viewPortX :
-                                                   coordinateDetails.x;
-      const coordinateY = useViewPortCoordinates ? coordinateDetails.viewPortY :
-                                                   coordinateDetails.y;
-      const elementWasFound = findElementAtPoint(
-          requestId, window.document, processedElements, coordinateX,
-          coordinateY, x, y);
+  const hitCoordinates = spiralCoordinates(x, y);
+  const processedElements = new Set<Element>();
+  for (let coordinates of hitCoordinates) {
+    const coordinateDetails =
+        new WindowCoordinates(coordinates.x, coordinates.y);
+    const useViewPortCoordinates = elementFromPointIsUsingViewPortCoordinates();
+    const coordinateX = useViewPortCoordinates ? coordinateDetails.viewPortX :
+                                                 coordinateDetails.x;
+    const coordinateY = useViewPortCoordinates ? coordinateDetails.viewPortY :
+                                                 coordinateDetails.y;
+    const elementWasFound = findElementAtPoint(
+        requestId, window.document, processedElements, coordinateX, coordinateY,
+        x, y);
 
-      // Exit early if an element was found.
-      if (elementWasFound) {
-        return;
-      }
+    // Exit early if an element was found.
+    if (elementWasFound) {
+      return;
     }
+  }
 
-    // If no element was found, send an empty response.
-    sendFindElementAtPointResponse(requestId, /*response=*/ {});
-  });
+  // If no element was found, send an empty response.
+  sendFindElementAtPointResponse(requestId, /*response=*/ {});
 }
 
 /**
@@ -632,18 +628,16 @@ function extractUrlFromBackgroundImageString(backgroundImageString: string):
  * Processes context menu messages received by the window.
  */
 window.addEventListener('message', function(message) {
-  catchAndReportErrors(function() {
-    const payload = message.data;
-    if (!payload || typeof payload !== 'object') {
-      return;
-    }
-    if (payload.hasOwnProperty('type') &&
-        payload.type === 'org.chromium.contextMenuMessage') {
-      findElementAtPointInPageCoordinates(
-          payload.requestId, payload.x + window.pageXOffset,
-          payload.y + window.pageYOffset);
-    }
-  });
+  const payload = message.data;
+  if (!payload || typeof payload !== 'object') {
+    return;
+  }
+  if (payload.hasOwnProperty('type') &&
+      payload.type === 'org.chromium.contextMenuMessage') {
+    findElementAtPointInPageCoordinates(
+        payload.requestId, payload.x + window.pageXOffset,
+        payload.y + window.pageYOffset);
+  }
 });
 
 // Call contextMenuAllFrames on gCrWeb directly to prevent code duplication
