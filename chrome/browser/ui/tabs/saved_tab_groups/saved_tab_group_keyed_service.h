@@ -93,8 +93,6 @@ class SavedTabGroupKeyedService : public KeyedService,
 
   // Saves a restored group. This can be called prior to the saved tab
   // group model is loaded. These groups are saved when the model is loaded.
-  // This method will also connect an opened tab group to the saved group if the
-  // local id is provided via `group`.
   void SaveRestoredGroup(SavedTabGroup group);
 
   void UpdateAttributions(

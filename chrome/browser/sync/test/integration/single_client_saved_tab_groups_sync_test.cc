@@ -32,10 +32,8 @@ sync_pb::SavedTabGroupSpecifics CreateSavedTabGroupSpecific(base::Uuid guid,
                                                             int position) {
   sync_pb::SavedTabGroupSpecifics pb_specific;
   pb_specific.set_guid(guid.AsLowercaseString());
-  pb_specific.set_creation_time_windows_epoch_micros(
-      base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
-  pb_specific.set_update_time_windows_epoch_micros(
-      base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
+  pb_specific.set_creation_time_windows_epoch_micros(10);
+  pb_specific.set_update_time_windows_epoch_micros(10);
   sync_pb::SavedTabGroup* pb_group = pb_specific.mutable_group();
   pb_group->set_color(sync_pb::SavedTabGroup::SAVED_TAB_GROUP_COLOR_GREY);
   pb_group->set_title("Test");

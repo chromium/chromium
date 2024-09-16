@@ -188,14 +188,13 @@ void SavedTabGroupKeyedService::SaveRestoredGroup(SavedTabGroup group) {
   if (model()->is_loaded()) {
     CHECK(!model()->Contains(group.saved_guid()))
         << "This group is somehow saved already when it shouldn't be.";
-    const std::optional<LocalTabGroupID> local_id = group.local_group_id();
+
+    const LocalTabGroupID local_id = group.local_group_id().value();
     const base::Uuid sync_id = group.saved_guid();
     model_->Add(std::move(group));
-    if (local_id.has_value()) {
-      ConnectLocalTabGroup(local_id.value(), sync_id);
-    }
+    ConnectLocalTabGroup(local_id, sync_id);
   } else {
-    restored_groups_to_save_on_load_.emplace_back(std::move(group));
+    restored_groups_to_save_on_load_.emplace_back(group);
   }
 }
 
