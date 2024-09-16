@@ -466,7 +466,8 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
           avatarImage:self.dataSource.primaryAccountAvatar
                  name:self.dataSource.primaryAccountUserFullName
                 email:self.dataSource.primaryAccountEmail
-      managementState:self.dataSource.managementState];
+      managementState:self.dataSource.managementState
+      useLargeMargins:NO];
   self.tableView.tableHeaderView = identityAccountItem;
   [self.tableView reloadData];
 }

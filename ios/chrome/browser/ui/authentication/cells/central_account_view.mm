@@ -58,7 +58,8 @@ UIImage* GetEnterpriseIcon() {
                   avatarImage:(UIImage*)avatarImage
                          name:(NSString*)name
                         email:(NSString*)email
-              managementState:(ManagementState)managementState {
+              managementState:(ManagementState)managementState
+              useLargeMargins:(BOOL)useLargeMargins {
   self = [super initWithFrame:frame];
   if (self) {
     CHECK(avatarImage);
@@ -158,12 +159,18 @@ UIImage* GetEnterpriseIcon() {
 
         [self.bottomAnchor
             constraintEqualToAnchor:horizontalStack.bottomAnchor
-                           constant:2 * kTableViewLargeVerticalSpacing],
+                           constant:(useLargeMargins
+                                         ? 2 * kTableViewLargeVerticalSpacing
+                                         : kTableViewLargeVerticalSpacing +
+                                               kTableViewVerticalSpacing)],
       ]];
     } else {
       [self.bottomAnchor
           constraintEqualToAnchor:subtitleLabel.bottomAnchor
-                         constant:2 * kTableViewLargeVerticalSpacing]
+                         constant:(useLargeMargins
+                                       ? 2 * kTableViewLargeVerticalSpacing
+                                       : kTableViewLargeVerticalSpacing +
+                                             kTableViewVerticalSpacing)]
           .active = YES;
     }
 
@@ -171,7 +178,9 @@ UIImage* GetEnterpriseIcon() {
       [imageView.centerXAnchor constraintEqualToAnchor:self.centerXAnchor],
       [imageView.topAnchor
           constraintEqualToAnchor:self.topAnchor
-                         constant:kTableViewLargeVerticalSpacing],
+                         constant:(useLargeMargins
+                                       ? kTableViewLargeVerticalSpacing
+                                       : kTableViewVerticalSpacing)],
       [imageView.widthAnchor
           constraintEqualToConstant:GetSizeForIdentityAvatarSize(
                                         IdentityAvatarSize::Large)
