@@ -5,6 +5,7 @@
 #import <UIKit/UIKit.h>
 
 #import "base/strings/sys_string_conversions.h"
+#import "base/test/ios/wait_util.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_earl_grey.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
@@ -12,6 +13,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/test_constants.h"
+#import "ios/chrome/browser/start_surface/ui_bundled/start_surface_features.h"
 #import "ios/chrome/browser/ui/authentication/account_menu/account_menu_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
@@ -26,6 +28,7 @@
 #import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
+#import "net/test/embedded_test_server/embedded_test_server.h"
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
@@ -85,6 +88,16 @@ id<GREYMatcher> snackbarMessageMatcher(FakeSystemIdentity* identity) {
             (testFrequencyLimitation_IdentityConfirmationToast)] ||
       [self isRunningTest:@selector
             (testRecentSignin_IdentityConfirmationToast)]) {
+    config.relaunch_policy = ForceRelaunchByCleanShutdown;
+    config.additional_args.push_back(
+        "--enable-features=" + std::string(kStartSurface.name) + "<" +
+        std::string(kStartSurface.name));
+    config.additional_args.push_back(
+        "--force-fieldtrials=" + std::string(kStartSurface.name) + "/Test");
+    config.additional_args.push_back(
+        "--force-fieldtrial-params=" + std::string(kStartSurface.name) +
+        ".Test:" + std::string(kReturnToStartSurfaceInactiveDurationInSeconds) +
+        "/" + "0");
     config.features_enabled.push_back(kIdentityConfirmationSnackbar);
   }
 
@@ -101,6 +114,17 @@ id<GREYMatcher> snackbarMessageMatcher(FakeSystemIdentity* identity) {
 - (void)tearDown {
   [ChromeEarlGrey signOutAndClearIdentities];
   [super tearDown];
+}
+
+// Prepaes the NTP start surface.
+- (void)prepareStartSurface {
+  [[self class] closeAllTabs];
+  [ChromeEarlGrey openNewTab];
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+  const GURL destinationUrl = self.testServer->GetURL("/pony.html");
+  [ChromeEarlGrey loadURL:destinationUrl];
+  [ChromeEarlGrey
+      waitForWebStateContainingText:"Anyone know any good pony jokes?"];
 }
 
 // Update the identity snackbar params based on its last count, to allow
@@ -427,6 +451,7 @@ id<GREYMatcher> snackbarMessageMatcher(FakeSystemIdentity* identity) {
 // Verifies identity confirmation snackbar shows on startup with multiple
 // identities on device after 1 day.
 - (void)testMultipleIdentities_IdentityConfirmationToast {
+  [self prepareStartSurface];
   // Add multiple identities and sign in with one of them.
   [SigninEarlGrey signinWithFakeIdentity:kPrimaryIdentity];
   [SigninEarlGrey addFakeIdentity:kSecondaryIdentity];
@@ -443,6 +468,7 @@ id<GREYMatcher> snackbarMessageMatcher(FakeSystemIdentity* identity) {
 // Verifies no identity confirmation snackbar shows on startup with only one
 // identity on device.
 - (void)testSingleIdentity_IdentityConfirmationToast {
+  [self prepareStartSurface];
   // Add multiple identities and sign in with one of them.
   [SigninEarlGrey signinWithFakeIdentity:kPrimaryIdentity];
   [self prepareSnackbarParamsForNextDisplayWithLastCount:0];
@@ -456,6 +482,7 @@ id<GREYMatcher> snackbarMessageMatcher(FakeSystemIdentity* identity) {
 // Verifies no identity confirmation snackbar shows on startup when there is an
 // identity on the device but the user is signed-out.
 - (void)testNoIdentity_IdentityConfirmationToast {
+  [self prepareStartSurface];
   [SigninEarlGrey signinWithFakeIdentity:kPrimaryIdentity];
 
   // Keep the identity on device but sign-out.
@@ -470,6 +497,7 @@ id<GREYMatcher> snackbarMessageMatcher(FakeSystemIdentity* identity) {
 // Verifies identity confirmation snackbar on startup does not show after a
 // recent sign-in.
 - (void)testRecentSignin_IdentityConfirmationToast {
+  [self prepareStartSurface];
   // Add multiple identities and sign in with one of them.
   [SigninEarlGrey signinWithFakeIdentity:kPrimaryIdentity];
   [SigninEarlGrey addFakeIdentity:kSecondaryIdentity];
@@ -482,6 +510,7 @@ id<GREYMatcher> snackbarMessageMatcher(FakeSystemIdentity* identity) {
 // Verifies identity confirmation snackbar shows on startup with multiple
 // identities on device with frequency limitations.
 - (void)testFrequencyLimitation_IdentityConfirmationToast {
+  [self prepareStartSurface];
   // Add multiple identities and sign in with one of them.
   [SigninEarlGrey signinWithFakeIdentity:kPrimaryIdentity];
   [SigninEarlGrey addFakeIdentity:kSecondaryIdentity];
@@ -527,6 +556,32 @@ id<GREYMatcher> snackbarMessageMatcher(FakeSystemIdentity* identity) {
   // Background then foreground the app again, the snackbar does not show after
   // third display.
   [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
+  [self assertSnackbarNotShown];
+}
+
+// Verifies identity confirmation snackbar does not show if NTP start surface
+// not shown.
+- (void)testNoStartSurfaceNoSnackbar_IdentityConfirmationToast {
+  // Skip prepareStartSurface.
+
+  // Add multiple identities and sign in with one of them.
+  [SigninEarlGrey signinWithFakeIdentity:kPrimaryIdentity];
+  [SigninEarlGrey addFakeIdentity:kSecondaryIdentity];
+  [self prepareSnackbarParamsForNextDisplayWithLastCount:0];
+
+  // Background then foreground the app.
+  [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
+
+  [self assertSnackbarNotShown];
+}
+
+// Verifies identity confirmation snackbar does not show in incognito.
+- (void)testNoSnackbarShownIncognito_IdentityConfirmationToast {
+  [ChromeEarlGrey openNewIncognitoTab];
+
+  // Background then foreground the app.
+  [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
+
   [self assertSnackbarNotShown];
 }
 

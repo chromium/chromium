@@ -10,6 +10,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
+#import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
@@ -19,6 +20,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -45,6 +47,15 @@
   if (self.appState.initStage != InitStageFinal) {
     return;
   }
+  id<BrowserProvider> presentingInterface =
+      self.appState.foregroundActiveScene.browserProviderInterface
+          .currentBrowserProvider;
+  if (presentingInterface !=
+      self.appState.foregroundActiveScene.browserProviderInterface
+          .mainBrowserProvider) {
+    return;
+  }
+  Browser* browser = presentingInterface.browser;
 
   [super sceneState:sceneState transitionedToActivationLevel:level];
   switch (level) {
@@ -57,7 +68,7 @@
 
     case SceneActivationLevelForegroundActive:
       if (!_foregroundActiveEventAlreadyHandled) {
-        [self maybeShowIdentityConfirmationSnackbarWithSceneState:sceneState];
+        [self maybeShowIdentityConfirmationSnackbarWithBrowser:browser];
         _foregroundActiveEventAlreadyHandled = YES;
       }
       break;
@@ -73,12 +84,21 @@
     return;
   }
 
+  id<BrowserProvider> presentingInterface =
+      self.appState.foregroundActiveScene.browserProviderInterface
+          .currentBrowserProvider;
+  if (presentingInterface !=
+      self.appState.foregroundActiveScene.browserProviderInterface
+          .mainBrowserProvider) {
+    return;
+  }
+  Browser* browser = presentingInterface.browser;
+
   [super appState:appState didTransitionFromInitStage:previousInitStage];
   if (!_foregroundActiveEventAlreadyHandled) {
     // In case of having a foregroundActiveScene before reaching an
     // InitStageFinal, this will be the fallback to show the snackbar.
-    [self maybeShowIdentityConfirmationSnackbarWithSceneState:
-              appState.foregroundActiveScene];
+    [self maybeShowIdentityConfirmationSnackbarWithBrowser:browser];
     _foregroundActiveEventAlreadyHandled = YES;
   }
 }
@@ -101,10 +121,7 @@ enum class IdentityConfirmationSnackbarDecision {
 // LINT.ThenChange(/tools/metrics/histograms/metadata/signin/enums.xml)
 
 - (IdentityConfirmationSnackbarDecision)
-    shouldShowIdentityConfirmationSnackbarWithSceneState:
-        (SceneState*)sceneState {
-  Browser* browser =
-      sceneState.browserProviderInterface.mainBrowserProvider.browser;
+    shouldShowIdentityConfirmationSnackbarWithBrowser:(Browser*)browser {
   AuthenticationService* authenticationService =
       AuthenticationServiceFactory::GetForBrowserState(
           browser->GetBrowserState());
@@ -122,8 +139,9 @@ enum class IdentityConfirmationSnackbarDecision {
     return IdentityConfirmationSnackbarDecision::kDontShowSingleAccount;
   }
 
-  // TODO(crbug.com/336720134): Detect the kDontShowNotOnStartPage case.
-  // TODO(crbug.com/356425783): Also record it in metrics.
+  if (![self isStartSurfaceWithBrowser:browser]) {
+    return IdentityConfirmationSnackbarDecision::kDontShowNotOnStartPage;
+  }
 
   PrefService* prefService = browser->GetBrowserState()->GetPrefs();
 
@@ -172,10 +190,9 @@ enum class IdentityConfirmationSnackbarDecision {
   return IdentityConfirmationSnackbarDecision::kShouldShow;
 }
 
-- (void)maybeShowIdentityConfirmationSnackbarWithSceneState:
-    (SceneState*)sceneState {
+- (void)maybeShowIdentityConfirmationSnackbarWithBrowser:(Browser*)browser {
   IdentityConfirmationSnackbarDecision decision =
-      [self shouldShowIdentityConfirmationSnackbarWithSceneState:sceneState];
+      [self shouldShowIdentityConfirmationSnackbarWithBrowser:browser];
 
   base::UmaHistogramEnumeration("Signin.IdentityConfirmationSnackbarDecision",
                                 decision);
@@ -184,8 +201,6 @@ enum class IdentityConfirmationSnackbarDecision {
     return;
   }
 
-  Browser* browser =
-      sceneState.browserProviderInterface.mainBrowserProvider.browser;
   AuthenticationService* authenticationService =
       AuthenticationServiceFactory::GetForBrowserState(
           browser->GetBrowserState());
@@ -202,6 +217,17 @@ enum class IdentityConfirmationSnackbarDecision {
   id<SnackbarCommands> snackbarCommandsHandler =
       HandlerForProtocol(dispatcher, SnackbarCommands);
   [snackbarCommandsHandler showSnackbarMessage:snackbarTitle bottomOffset:0];
+}
+
+- (BOOL)isStartSurfaceWithBrowser:(Browser*)browser {
+  web::WebState* webState = browser->GetWebStateList()->GetActiveWebState();
+  // The web state is nil if the NTP is in another tab. In this case, it is
+  // never a start surface.
+  if (!webState) {
+    return NO;
+  }
+  NewTabPageTabHelper* NTPHelper = NewTabPageTabHelper::FromWebState(webState);
+  return NTPHelper && NTPHelper->ShouldShowStartSurface();
 }
 
 @end

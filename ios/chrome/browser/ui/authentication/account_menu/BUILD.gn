@@ -150,12 +150,14 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/signin/model:fake_system_identity",
     "//ios/chrome/browser/signin/model:test_constants",
+    "//ios/chrome/browser/start_surface/ui_bundled:feature_flags",
     "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
     "//ios/chrome/browser/ui/settings/google_services:constants",
     "//ios/chrome/browser/ui/settings/google_services/manage_accounts:constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/chrome/test/earl_grey:switches",
     "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//net:test_support",
     "//ui/base:base",
   ]
   frameworks = [ "UIKit.framework" ]
