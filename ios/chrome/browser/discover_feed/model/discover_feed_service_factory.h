@@ -15,9 +15,13 @@ class DiscoverFeedService;
 // ChromeBrowserState.
 class DiscoverFeedServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
+  // TODO(crbug.com/358299863): Remove when fully migrated.
   static DiscoverFeedService* GetForBrowserState(
       ChromeBrowserState* browser_state,
       bool create = true);
+
+  static DiscoverFeedService* GetForProfile(ProfileIOS* profile,
+                                            bool create = true);
 
   static DiscoverFeedServiceFactory* GetInstance();
 

@@ -35,10 +35,10 @@
 }
 
 - (void)start {
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  ProfileIOS* profile = self.browser->GetProfile();
 
   feature_engagement::Tracker* engagementTracker =
-      feature_engagement::TrackerFactory::GetForBrowserState(browserState);
+      feature_engagement::TrackerFactory::GetForProfile(profile);
   OverlayPresenter* webContentPresenter = OverlayPresenter::FromBrowser(
       self.browser, OverlayModality::kWebContentArea);
   OverlayPresenter* infobarBannerPresenter = OverlayPresenter::FromBrowser(
@@ -83,13 +83,12 @@
 #pragma mark - HelpCommands
 
 - (void)presentInProductHelpWithType:(InProductHelpType)type {
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  ProfileIOS* profile = self.browser->GetProfile();
   raw_ptr<segmentation_platform::DeviceSwitcherResultDispatcher>
       deviceSwitcherResultDispatcher = nullptr;
-  if (!browserState->IsOffTheRecord()) {
-    deviceSwitcherResultDispatcher =
-        segmentation_platform::SegmentationPlatformServiceFactory::
-            GetDispatcherForProfile(browserState);
+  if (!profile->IsOffTheRecord()) {
+    deviceSwitcherResultDispatcher = segmentation_platform::
+        SegmentationPlatformServiceFactory::GetDispatcherForProfile(profile);
   }
   CommandDispatcher* commandDispatcher = self.browser->GetCommandDispatcher();
   id<PopupMenuCommands> popupMenuHandler =
@@ -104,19 +103,17 @@
       break;
     }
     case InProductHelpType::kFollowWhileBrowsing: {
-      [_presenter
-          presentFollowWhileBrowsingTipBubbleAndLogWithRecorder:
-              DiscoverFeedServiceFactory::GetForBrowserState(browserState)
-                  ->GetFeedMetricsRecorder()
-                                               popupMenuHandler:
-                                                   popupMenuHandler];
+      [_presenter presentFollowWhileBrowsingTipBubbleAndLogWithRecorder:
+                      DiscoverFeedServiceFactory::GetForProfile(profile)
+                          ->GetFeedMetricsRecorder()
+                                                       popupMenuHandler:
+                                                           popupMenuHandler];
       break;
     }
     case InProductHelpType::kDefaultSiteView: {
       [_presenter
           presentDefaultSiteViewTipBubbleWithSettingsMap:
-              ios::HostContentSettingsMapFactory::GetForBrowserState(
-                  browserState)
+              ios::HostContentSettingsMapFactory::GetForProfile(profile)
                                         popupMenuHandler:popupMenuHandler];
       break;
     }

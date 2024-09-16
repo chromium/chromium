@@ -1080,7 +1080,7 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
   // Capture `weakSelf` instead of the feature engagement tracker object
   // because `weakSelf` will safely become `nil` if it is deallocated, whereas
   // the feature engagement tracker will remain pointing to invalid memory if
-  // its owner (the ChromeBrowserState) is deallocated.
+  // its owner (the ProfileIOS) is deallocated.
   __weak BubblePresenter* weakSelf = self;
   CallbackWithIPHDismissalReasonType dismissalCallbackWithSnoozeAction =
       ^(IPHDismissalReasonType IPHDismissalReasonType,
