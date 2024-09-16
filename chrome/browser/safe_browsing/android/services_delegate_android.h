@@ -16,7 +16,8 @@ class AndroidTelemetryService;
 // ServicesDelegate::Create().
 class ServicesDelegateAndroid : public ServicesDelegate {
  public:
-  explicit ServicesDelegateAndroid(SafeBrowsingService* safe_browsing_service);
+  explicit ServicesDelegateAndroid(
+      SafeBrowsingServiceImpl* safe_browsing_service);
 
   ServicesDelegateAndroid(const ServicesDelegateAndroid&) = delete;
   ServicesDelegateAndroid& operator=(const ServicesDelegateAndroid&) = delete;
