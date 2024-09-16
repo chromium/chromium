@@ -6,6 +6,7 @@ include_rules = [
   "+content/public/browser",
   "+crypto",
   "+device/fido",
+  "+net/base",
   "+mojo/public/cpp/bindings",
   "+services/device/public/java/src/org/chromium/device/DeviceFeatureList.java",
   "+services/device/public/java/src/org/chromium/device/DeviceFeatureMap.java",

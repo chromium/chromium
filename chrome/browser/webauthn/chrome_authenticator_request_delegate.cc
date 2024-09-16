@@ -79,6 +79,7 @@
 #include "components/sync_device_info/device_info_tracker.h"
 #include "components/trusted_vault/frontend_trusted_vault_connection.h"
 #include "components/user_prefs/user_prefs.h"
+#include "components/webauthn/core/browser/passkey_change_quota_tracker.h"
 #include "components/webauthn/core/browser/passkey_model.h"
 #include "content/public/browser/authenticator_request_client_delegate.h"
 #include "content/public/browser/browser_context.h"
@@ -642,7 +643,6 @@ void ChromeWebAuthenticationDelegate::DeletePasskey(
   webauthn::PasskeyModel* passkey_store =
       PasskeyModelFactory::GetInstance()->GetForProfile(
           Profile::FromBrowserContext(web_contents->GetBrowserContext()));
-
   std::string credential_id(passkey_credential_id.begin(),
                             passkey_credential_id.end());
   std::optional<sync_pb::WebauthnCredentialSpecifics> credential_specifics =
@@ -688,10 +688,18 @@ void ChromeWebAuthenticationDelegate::DeleteUnacceptedPasskeys(
 
 void ChromeWebAuthenticationDelegate::UpdateUserPasskeys(
     content::WebContents* web_contents,
+    const url::Origin& origin,
     const std::string& relying_party_id,
     std::vector<uint8_t>& user_id,
     const std::string& name,
     const std::string& display_name) {
+  webauthn::PasskeyChangeQuotaTracker* quota_tracker =
+      webauthn::PasskeyChangeQuotaTracker::GetInstance();
+  if (!quota_tracker->CanMakeChange(origin)) {
+    FIDO_LOG(ERROR) << "Dropping update request from " << origin
+                    << ": quota exceeded.";
+    return;
+  }
   webauthn::PasskeyModel* passkey_store =
       PasskeyModelFactory::GetInstance()->GetForProfile(
           Profile::FromBrowserContext(web_contents->GetBrowserContext()));
@@ -709,6 +717,8 @@ void ChromeWebAuthenticationDelegate::UpdateUserPasskeys(
     }
   }
   if (is_passkey_updated) {
+    FIDO_LOG(EVENT) << "Updating passkey user details for " << origin;
+    quota_tracker->TrackChange(origin);
     PasswordsClientUIDelegate* manage_passwords_ui_controller =
         PasswordsClientUIDelegateFromWebContents(web_contents);
     if (manage_passwords_ui_controller) {

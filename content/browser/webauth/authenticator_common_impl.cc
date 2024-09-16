@@ -33,6 +33,7 @@
 #include "content/browser/webauth/virtual_authenticator_manager_impl.h"
 #include "content/browser/webauth/virtual_fido_discovery_factory.h"
 #include "content/browser/webauth/webauth_request_security_checker.h"
+#include "content/public/browser/authenticator_request_client_delegate.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/render_frame_host.h"
@@ -1906,7 +1907,8 @@ void AuthenticatorCommonImpl::ContinueReportAfterRpIdCheck(
         options->current_user_details->display_name);
     GetWebAuthenticationDelegate()->UpdateUserPasskeys(
         WebContents::FromRenderFrameHost(render_frame_host),
-        req_state_->relying_party_id, options->current_user_details->user_id,
+        req_state_->caller_origin, req_state_->relying_party_id,
+        options->current_user_details->user_id,
         options->current_user_details->name,
         options->current_user_details->display_name);
   } else if (options->unknown_credential_id) {

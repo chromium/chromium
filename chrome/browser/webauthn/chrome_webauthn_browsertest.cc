@@ -43,6 +43,7 @@
 #include "components/password_manager/core/common/password_manager_ui.h"
 #include "components/sync/base/features.h"
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
+#include "components/webauthn/core/browser/passkey_change_quota_tracker.h"
 #include "components/webauthn/core/browser/test_passkey_model.h"
 #include "content/public/browser/authenticator_request_client_delegate.h"
 #include "content/public/browser/render_frame_host.h"
@@ -714,8 +715,50 @@ IN_PROC_BROWSER_TEST_F(WebAuthnGpmPasskeyTest,
             password_manager::ui::PASSKEY_UPDATED_CONFIRMATION_STATE);
 }
 
+IN_PROC_BROWSER_TEST_F(WebAuthnGpmPasskeyTest, SignalCurrentUserDetailsQuota) {
+  constexpr char kRequest[] = R"(
+    PublicKeyCredential.signalCurrentUserDetails({
+      rpId: "www.example.com",
+      userId: "AQIDBA",
+      name: "$1",
+      displayName: "Pepito The Cat",
+    }).then(c => 'webauthn: OK', e => 'error ' + e);
+    )";
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server_.GetURL("www.example.com", "/title1.html")));
+
+  // Set up GPM Passkey.
+  auto* passkey_model = static_cast<webauthn::TestPasskeyModel*>(
+      PasskeyModelFactory::GetForProfile(browser()->profile()));
+  passkey_model->AddNewPasskeyForTesting(CreateWebAuthnCredentialSpecifics(
+      kCredentialID, kUserId1, kUsername1, kDisplayName1));
+
+  // Call the signal methods enough that we run into the quota.
+  for (int i = 0; i < webauthn::PasskeyChangeQuotaTracker::kMaxTokensPerRP;
+       ++i) {
+    EXPECT_EQ(
+        "webauthn: OK",
+        content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                        base::ReplaceStringPlaceholders(
+                            kRequest, {base::NumberToString(i)}, nullptr)));
+  }
+
+  // This request should be silently dropped now.
+  EXPECT_EQ(
+      "webauthn: OK",
+      content::EvalJs(
+          browser()->tab_strip_model()->GetActiveWebContents(),
+          base::ReplaceStringPlaceholders(kRequest, {kUsername1}, nullptr)));
+
+  // Check that the name hasn't been updated.
+  auto passkey = passkey_model->GetPasskeyByCredentialId(
+      "www.example.com",
+      std::string(reinterpret_cast<const char*>(kCredentialID), 16));
+  EXPECT_NE(passkey->user_name(), kUsername1);
+}
+
 IN_PROC_BROWSER_TEST_F(WebAuthnGpmPasskeyTest,
-                       ReportCurrentUserDetailsWithNoChanges) {
+                       SignalCurrentUserDetailsWithNoChanges) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_server_.GetURL("www.example.com", "/title1.html")));
 

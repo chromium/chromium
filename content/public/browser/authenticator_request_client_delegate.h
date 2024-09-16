@@ -153,6 +153,7 @@ class CONTENT_EXPORT WebAuthenticationDelegate {
   // UpdateUserPasskeys updates the name and display name of a passkey for the
   // given relying party ID and user ID.
   virtual void UpdateUserPasskeys(content::WebContents* web_contents,
+                                  const url::Origin& origin,
                                   const std::string& relying_party_id,
                                   std::vector<uint8_t>& user_id,
                                   const std::string& name,

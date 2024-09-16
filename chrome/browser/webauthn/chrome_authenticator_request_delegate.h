@@ -107,6 +107,7 @@ class ChromeWebAuthenticationDelegate final
                                 const std::vector<std::vector<uint8_t>>&
                                     all_accepted_credentials_ids) override;
   void UpdateUserPasskeys(content::WebContents* web_contents,
+                          const url::Origin& origin,
                           const std::string& relying_party_id,
                           std::vector<uint8_t>& user_id,
                           const std::string& name,

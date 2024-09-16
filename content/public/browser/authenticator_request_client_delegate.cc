@@ -113,6 +113,7 @@ void WebAuthenticationDelegate::DeleteUnacceptedPasskeys(
 
 void WebAuthenticationDelegate::UpdateUserPasskeys(
     content::WebContents* web_contents,
+    const url::Origin& origin,
     const std::string& relying_party_id,
     std::vector<uint8_t>& user_id,
     const std::string& name,
