@@ -30,7 +30,7 @@ constexpr size_t kMaxRecords = 1800u;
 
 void LogAverageOverdrawCountUMA(float overdraw) {
   constexpr char kAverageOverdrawHistogramName[] =
-      "Compositing.Display.Draw.AverageOverdraw";
+      "Compositing.Display.Draw.AverageOverdraw2";
   // For optimal histogram bucketing, convert floating-point values into
   // integers while preserving the desired level of decimal precision.
   constexpr int kConversionFactor = 100'000;
