@@ -20,6 +20,7 @@ import type {CrLazyRenderElement} from '//resources/cr_elements/cr_lazy_render/c
 import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
 import {assert} from '//resources/js/assert.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
+import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {Time} from '//resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {DomRepeatEvent} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -90,6 +91,11 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
         value: true,
         computed: 'computeIsEmpty_(loading_, searchResult_.items.length)',
         notify: true,
+      },
+      enableAnswers_: {
+        type: Boolean,
+        reflectToAttribute: true,
+        value: () => loadTimeData.getBoolean('enableHistoryEmbeddingsAnswers'),
       },
     };
   }
