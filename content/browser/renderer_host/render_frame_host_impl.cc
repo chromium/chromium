@@ -8851,20 +8851,23 @@ void RenderFrameHostImpl::CreateNewWindow(
   // See https://explainers-by-googlers.github.io/partitioned-popins/
   if (params->features && params->features->is_partitioned_popin) {
     if (!base::FeatureList::IsEnabled(blink::features::kPartitionedPopins)) {
-      mojo::ReportBadMessage("Partitioned popins not permitted.");
+      frame_host_associated_receiver_.ReportBadMessage(
+          "Partitioned popins not permitted.");
       return;
     }
     if (delegate()->IsPartitionedPopin()) {
-      mojo::ReportBadMessage("Partitioned popins cannot open their own popin.");
+      frame_host_associated_receiver_.ReportBadMessage(
+          "Partitioned popins cannot open their own popin.");
       return;
     }
     if (!GetLastCommittedURL().SchemeIs(url::kHttpsScheme)) {
-      mojo::ReportBadMessage(
+      frame_host_associated_receiver_.ReportBadMessage(
           "Partitioned popins must be opened from https URLs.");
       return;
     }
     if (!params->target_url.SchemeIs(url::kHttpsScheme)) {
-      mojo::ReportBadMessage("Partitioned popins can only open https URLs.");
+      frame_host_associated_receiver_.ReportBadMessage(
+          "Partitioned popins can only open https URLs.");
       return;
     }
     if (delegate()->OpenedPartitionedPopin()) {

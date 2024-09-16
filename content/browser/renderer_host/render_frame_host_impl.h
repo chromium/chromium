@@ -3185,6 +3185,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   friend class WebContentsSplitCacheBrowserTest;
   friend class RenderFrameHostManagerUnloadBrowserTest;
   friend class NavigationBrowserTest;
+  friend class FrameHostInterceptorForPopins;
 
   FRIEND_TEST_ALL_PREFIXES(NavigatorTest, TwoNavigationsRacingCommit);
   FRIEND_TEST_ALL_PREFIXES(RenderFrameHostImplBeforeUnloadBrowserTest,

@@ -50,6 +50,9 @@
 #include "content/browser/web_contents/web_contents_view.h"
 #include "content/common/content_navigation_policy.h"
 #include "content/common/features.h"
+#include "content/common/frame.mojom-forward.h"
+#include "content/common/frame.mojom-shared.h"
+#include "content/common/frame.mojom-test-utils.h"
 #include "content/common/frame_messages.mojom.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/cors_origin_pattern_setter.h"
@@ -8009,6 +8012,128 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   EXPECT_TRUE(navigation_manager.WaitForNavigationFinished());
   EXPECT_FALSE(navigation_manager.was_committed());
   EXPECT_FALSE(root->render_manager()->speculative_frame_host());
+}
+
+// Intercept calls to RenderFramHostImpl's CreateNewWindow mojo method to
+// overwrite the target url.
+class FrameHostInterceptorForPopins
+    : public mojom::FrameHostInterceptorForTesting {
+ public:
+  explicit FrameHostInterceptorForPopins(RenderFrameHostImpl* render_frame_host,
+                                         const GURL& target_url)
+      : swapped_impl_(render_frame_host->frame_host_receiver_for_testing(),
+                      this),
+        target_url_(target_url) {}
+
+  ~FrameHostInterceptorForPopins() override = default;
+
+  FrameHostInterceptorForPopins(const FrameHostInterceptorForPopins&) = delete;
+  FrameHostInterceptorForPopins& operator=(
+      const FrameHostInterceptorForPopins&) = delete;
+
+  mojom::FrameHost* GetForwardingInterface() override {
+    return swapped_impl_.old_impl();
+  }
+
+  void CreateNewWindow(mojom::CreateNewWindowParamsPtr params,
+                       CreateNewWindowCallback callback) override {
+    params->target_url = target_url_;
+    static_cast<RenderFrameHostImpl*>(GetForwardingInterface())
+        ->CreateNewWindow(std::move(params), std::move(callback));
+  }
+
+ private:
+  mojo::test::ScopedSwapImplForTesting<mojom::FrameHost> swapped_impl_;
+  GURL target_url_;
+};
+
+class RenderFrameHostImplPartitionedPopinBrowserTest
+    : public RenderFrameHostImplBrowserTest {
+ public:
+  RenderFrameHostImplPartitionedPopinBrowserTest() {
+    feature_list_.InitAndEnableFeature(blink::features::kPartitionedPopins);
+  }
+  ~RenderFrameHostImplPartitionedPopinBrowserTest() override = default;
+
+ private:
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+    embedded_https_test_server().SetSSLConfig(
+        net::EmbeddedTestServer::CERT_TEST_NAMES);
+    net::test_server::RegisterDefaultHandlers(&embedded_https_test_server());
+    ASSERT_TRUE(embedded_https_test_server().Start());
+  }
+
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplPartitionedPopinBrowserTest,
+                       CreateNewWindow_FailsWithEmptyTargetUrl) {
+  FrameHostInterceptorForPopins interceptor(
+      static_cast<content::RenderFrameHostImpl*>(
+          web_contents()->GetPrimaryMainFrame()),
+      GURL());
+  GURL url(embedded_https_test_server().GetURL("a.test", "/empty.html"));
+  ASSERT_TRUE(NavigateToURL(web_contents(), url));
+  ASSERT_EQ(ListValueOf("partitioned"),
+            EvalJs(web_contents(), "window.popinContextTypesSupported()"));
+  content::RenderProcessHostBadMojoMessageWaiter crash_observer(
+      web_contents()->GetPrimaryMainFrame()->GetProcess());
+  // ExecJs will sometimes finish before the renderer gets killed, so we must
+  // ignore the result.
+  std::ignore = ExecJs(web_contents(),
+                       "window.open('" + url.spec() + "', '_blank', 'popin');");
+  EXPECT_EQ(
+      "Received bad user message: "
+      "Partitioned popins can only open https URLs.",
+      crash_observer.Wait());
+  // The test passes if the renderer crashes but not the browser.
+}
+
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplPartitionedPopinBrowserTest,
+                       CreateNewWindow_FailsWithAboutBlankTargetUrl) {
+  FrameHostInterceptorForPopins interceptor(
+      static_cast<content::RenderFrameHostImpl*>(
+          web_contents()->GetPrimaryMainFrame()),
+      GURL("about:blank"));
+  GURL url(embedded_https_test_server().GetURL("a.test", "/empty.html"));
+  ASSERT_TRUE(NavigateToURL(web_contents(), url));
+  ASSERT_EQ(ListValueOf("partitioned"),
+            EvalJs(web_contents(), "window.popinContextTypesSupported()"));
+  content::RenderProcessHostBadMojoMessageWaiter crash_observer(
+      web_contents()->GetPrimaryMainFrame()->GetProcess());
+  // ExecJs will sometimes finish before the renderer gets killed, so we must
+  // ignore the result.
+  std::ignore = ExecJs(web_contents(),
+                       "window.open('" + url.spec() + "', '_blank', 'popin');");
+  EXPECT_EQ(
+      "Received bad user message: "
+      "Partitioned popins can only open https URLs.",
+      crash_observer.Wait());
+  // The test passes if the renderer crashes but not the browser.
+}
+
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplPartitionedPopinBrowserTest,
+                       CreateNewWindow_FailsWithHttpTargetUrl) {
+  FrameHostInterceptorForPopins interceptor(
+      static_cast<content::RenderFrameHostImpl*>(
+          web_contents()->GetPrimaryMainFrame()),
+      GURL("http://a.test"));
+  GURL url(embedded_https_test_server().GetURL("a.test", "/empty.html"));
+  ASSERT_TRUE(NavigateToURL(web_contents(), url));
+  ASSERT_EQ(ListValueOf("partitioned"),
+            EvalJs(web_contents(), "window.popinContextTypesSupported()"));
+  content::RenderProcessHostBadMojoMessageWaiter crash_observer(
+      web_contents()->GetPrimaryMainFrame()->GetProcess());
+  // ExecJs will sometimes finish before the renderer gets killed, so we must
+  // ignore the result.
+  std::ignore = ExecJs(web_contents(),
+                       "window.open('" + url.spec() + "', '_blank', 'popin');");
+  EXPECT_EQ(
+      "Received bad user message: "
+      "Partitioned popins can only open https URLs.",
+      crash_observer.Wait());
+  // The test passes if the renderer crashes but not the browser.
 }
 
 class RenderFrameHostImplBrowserTestWithBFCache
