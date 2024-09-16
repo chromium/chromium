@@ -1050,6 +1050,9 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 AwFeatures.WEBVIEW_WEBAUTHN,
                 "Enable WebAuthn setWebAuthenticationSupport / getWebAuthenticationSupport APIs."),
+        Flag.baseFeature(
+                CcFeatures.THROTTLE_FRAME_RATE_ON_MANY_DID_NOT_PRODUCE_FRAME,
+                "Reduce frame rate when pixels aren't updated for many frames"),
 
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
