@@ -147,6 +147,7 @@
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_scene_agent.h"
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_util.h"
 #import "ios/chrome/browser/tab_insertion/model/tab_insertion_browser_agent.h"
+#import "ios/chrome/browser/ui/authentication/signin/account_switch/account_switch_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
 #import "ios/chrome/browser/ui/authentication/signin_notification_infobar_delegate.h"
@@ -1908,6 +1909,27 @@ using UserFeedbackDataCallback =
       break;
   }
   [self startSigninCoordinatorWithCompletion:command.callback];
+}
+
+- (void)
+    switchAccountWithBaseViewController:(UIViewController*)baseViewController
+                            newIdentity:(id<SystemIdentity>)newIdentity
+                                   rect:(CGRect)rect
+                         rectAnchorView:(UIView*)rectAnchorView
+        viewWillBeDismissedAfterSignout:(BOOL)viewWillBeDismissedAfterSignout
+                       signInCompletion:(ShowSigninCommandCompletionCallback)
+                                            signInCompletion {
+  UIViewController* mainViewController = viewWillBeDismissedAfterSignout
+                                             ? self.mainInterface.viewController
+                                             : baseViewController;
+  self.signinCoordinator = [[AccountSwitchCoordinator alloc]
+      initWithBaseViewController:baseViewController
+                         browser:self.mainInterface.browser
+                     newIdentity:newIdentity
+              mainViewController:mainViewController
+                            rect:rect
+                  rectAnchorView:rectAnchorView];
+  [self startSigninCoordinatorWithCompletion:signInCompletion];
 }
 
 - (void)

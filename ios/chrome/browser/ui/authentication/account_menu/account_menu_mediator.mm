@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/ui/authentication/account_menu/account_menu_mediator_delegate.h"
 #import "ios/chrome/browser/ui/authentication/account_menu/account_menu_view_controller.h"
 #import "ios/chrome/browser/ui/authentication/cells/table_view_account_item.h"
+#import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
 
 @interface AccountMenuMediator () <ChromeAccountManagerServiceObserver,
@@ -53,8 +54,6 @@
   // Whether the account menu operations requires the user interacitons to be
   // ignored.
   BOOL _blockUserInteractions;
-  // This object is set iff an account switch is in progress.
-  base::ScopedClosureRunner _accountSwitchInProgress;
 
   // The list of identities to display and their index in the table view’s
   // identities section
@@ -104,7 +103,6 @@
 }
 
 - (void)disconnect {
-  _accountSwitchInProgress.RunAndReset();
   _blockUpdates = YES;
   _accountManagerService = nullptr;
   _accountManagerServiceObserver.reset();
@@ -254,7 +252,6 @@
   if (_blockUserInteractions) {
     return;
   }
-  [self.delegate blockScene];
   _blockUpdates = YES;
   _blockUserInteractions = YES;
   id<SystemIdentity> newIdentity = nil;
@@ -265,17 +262,23 @@
     }
   }
   CHECK(newIdentity);
-  _accountSwitchInProgress =
-      _authenticationService->DeclareAccountSwitchInProgress();
+
+  BOOL viewWillBeDismissedAfterSignout =
+      _authenticationService->HasPrimaryIdentityManaged(
+          signin::ConsentLevel::kSignin);
+
   __weak __typeof(self) weakSelf = self;
-  id<SystemIdentity> fromIdentity = _primaryIdentity;
-  [self.delegate triggerSignoutWithTargetRect:targetRect
-                                   completion:^(BOOL success) {
-                                     [weakSelf
-                                         signoutEndedWithSuccess:success
-                                                    fromIdentity:fromIdentity
-                                                      toIdentity:newIdentity];
-                                   }];
+  [self.delegate
+      triggerAccountSwitchWithTargetRect:targetRect
+                             newIdentity:newIdentity
+         viewWillBeDismissedAfterSignout:viewWillBeDismissedAfterSignout
+                        signInCompletion:^(SigninCoordinatorResult result,
+                                           SigninCompletionInfo* info) {
+                          BOOL success = result ==
+                                         SigninCoordinatorResult::
+                                             SigninCoordinatorResultSuccess;
+                          [weakSelf signinEndedWithSuccess:success];
+                        }];
 }
 
 - (void)didTapErrorButton {
@@ -400,41 +403,12 @@
   callback(success);
 }
 
-// Callback for the first part of the switch, which is a sign-out.
-- (void)signoutEndedWithSuccess:(BOOL)signoutSuccess
-                   fromIdentity:(id<SystemIdentity>)previousIdentity
-                     toIdentity:(id<SystemIdentity>)newIdentity {
-  if (!signoutSuccess) {
-    // User had not signed-out. Allow to interact with the UI.
-    [self.delegate unblockScene];
-    _blockUserInteractions = NO;
-    _accountSwitchInProgress.RunAndReset();
-    [self restartUpdates];
-    return;
-  }
-  __weak __typeof(self) weakSelf = self;
-  [self.delegate
-      triggerSigninWithSystemIdentity:newIdentity
-                           completion:^(BOOL signInSuccess) {
-                             [weakSelf signinEndedWithSuccess:signInSuccess
-                                                 fromIdentity:previousIdentity
-                                                   toIdentity:newIdentity];
-                           }];
-}
-
-- (void)signinEndedWithSuccess:(BOOL)success
-                  fromIdentity:(id<SystemIdentity>)previousIdentity
-                    toIdentity:(id<SystemIdentity>)newIdentity {
-  _accountSwitchInProgress.RunAndReset();
-  [self.delegate unblockScene];
+- (void)signinEndedWithSuccess:(BOOL)success {
   if (success) {
-    [_delegate triggerAccountSwitchSnackbarWithIdentity:newIdentity];
     [_delegate mediatorWantsToBeDismissed:self];
-  } else if (_accountManagerService->IsValidIdentity(previousIdentity)) {
-    // Sign-in failed, we sign the user back in their previous account.
-    _authenticationService->SignIn(
-        previousIdentity,
-        signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_MENU_FAILED_SWITCH);
+  } else if (_authenticationService->GetPrimaryIdentity(
+                 signin::ConsentLevel::kSignin)) {
+    // Sign in to the new identity failed, and the user was signed back.
     [self restartUpdates];
     _blockUserInteractions = NO;
   } else {

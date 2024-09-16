@@ -151,6 +151,7 @@ source_set("scene") {
     "//ios/chrome/browser/ui/authentication",
     "//ios/chrome/browser/ui/authentication/enterprise:enterprise_utils",
     "//ios/chrome/browser/ui/authentication/signin",
+    "//ios/chrome/browser/ui/authentication/signin/account_switch",
     "//ios/chrome/browser/ui/lens:lens_entrypoint",
     "//ios/chrome/browser/ui/main",
     "//ios/chrome/browser/ui/main:default_browser_scene_agent",

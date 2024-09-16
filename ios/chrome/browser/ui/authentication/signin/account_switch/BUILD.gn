@@ -1,0 +1,28 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chrome_build.gni")
+
+source_set("account_switch") {
+  sources = [
+    "account_switch_coordinator.h",
+    "account_switch_coordinator.mm",
+  ]
+  deps = [
+    "//ios/chrome/browser/policy/model",
+    "//ios/chrome/browser/policy/ui_bundled:management_util",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/ui/util:snackbar_util",
+    "//ios/chrome/browser/shared/ui/util/identity_snackbar",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:system_identity_manager",
+    "//ios/chrome/browser/ui/authentication:authentication",
+    "//ios/chrome/browser/ui/authentication/signin:signin_protected",
+    "//ios/chrome/browser/ui/authentication/signout_action_sheet",
+    "//ios/third_party/material_components_ios",
+  ]
+  public_deps =
+      [ "//ios/chrome/browser/ui/authentication/signin:signin_headers" ]
+}

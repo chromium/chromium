@@ -26,6 +26,8 @@
 #import "ios/chrome/browser/ui/authentication/account_menu/account_menu_mediator_delegate.h"
 #import "ios/chrome/browser/ui/authentication/account_menu/account_menu_view_controller.h"
 #import "ios/chrome/browser/ui/authentication/cells/table_view_account_item.h"
+#import "ios/chrome/browser/ui/authentication/signin/signin_completion_info.h"
+#import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest_mac.h"
@@ -291,134 +293,62 @@ TEST_F(AccountMenuMediatorTest, TestError) {
 #pragma mark - AccountMenuMutator
 
 // Tests the result of accountTappedWithGaiaID:targetRect:
-// when sign-out fail.
-TEST_F(AccountMenuMediatorTest, TestAccountTapedSignoutFailed) {
-  // Given that the method  `triggerSignoutWithTargetRect:completion` create a
-  // callback in a callback, this tests has three parts.  One part by callback,
-  // and one part for the initial part of the run.
-
-  // Testing the part before the callback.
-  // This variable will contain the callback that should be executed once
-  // sign-out ends.
-  __block void (^onSignoutSuccess)(BOOL) = nil;
-  auto target = CGRect();
-  OCMExpect([delegate_
-      triggerSignoutWithTargetRect:target
-                        completion:[OCMArg checkWithBlock:^BOOL(id value) {
-                          onSignoutSuccess = value;
-                          return true;
-                        }]]);
-  OCMExpect([delegate_ blockScene]);
-  [mediator_ accountTappedWithGaiaID:kSecondaryIdentity.gaiaID
-                          targetRect:target];
-  VerifyMock();
-
-  OCMExpect([consumer_ updateAccountListWithGaiaIDsToAdd:@[]
-                                         gaiaIDsToRemove:@[]]);
-  OCMExpect([consumer_ updatePrimaryAccount]);
-  OCMExpect([delegate_ unblockScene]);
-  // Simulate a sign-out failure
-  onSignoutSuccess(false);
-}
-
-// Tests the result of accountTappedWithGaiaID:targetRect:
 // when sign-in fail.
-TEST_F(AccountMenuMediatorTest, TestAccountTapedSignInFailed) {
-  // Given that the method  `triggerSignoutWithTargetRect:completion` create a
-  // callback in a callback, this tests has three parts.  One part by callback,
-  // and one part for the initial part of the run.
-
-  // Testing the part before the callback.
-  // This variable will contain the callback that should be executed once
-  // sign-out ends.
-  __block void (^onSignoutSuccess)(BOOL) = nil;
+TEST_F(AccountMenuMediatorTest, TestAccountTapedFailed) {
+  __block ShowSigninCommandCompletionCallback onSigninSuccess = nil;
   auto target = CGRect();
   OCMExpect([delegate_
-      triggerSignoutWithTargetRect:target
-                        completion:[OCMArg checkWithBlock:^BOOL(id value) {
-                          onSignoutSuccess = value;
-                          // Actually sign-out, in order to test next step.
-                          SignOut();
-                          return true;
-                        }]]);
-  OCMExpect([delegate_ blockScene]);
+      triggerAccountSwitchWithTargetRect:target
+                             newIdentity:kSecondaryIdentity
+         viewWillBeDismissedAfterSignout:NO
+                        signInCompletion:[OCMArg
+                                             checkWithBlock:^BOOL(id value) {
+                                               onSigninSuccess = value;
+                                               return true;
+                                             }]]);
   [mediator_ accountTappedWithGaiaID:kSecondaryIdentity.gaiaID
                           targetRect:target];
   VerifyMock();
 
-  // Simulate a sign-out success.
-  // This variable will contain the callback that should be executed once
-  // sign-in ended.
-  __block void (^onSigninSuccess)(bool) = nil;
-  OCMExpect([delegate_
-      triggerSigninWithSystemIdentity:kSecondaryIdentity
-                           completion:[OCMArg checkWithBlock:^BOOL(id value) {
-                             onSigninSuccess = value;
-                             return true;
-                           }]]);
-  onSignoutSuccess(true);
-
-  // Testing the sign-in callback.
-  // The delegate should not receive any message. The mediator directly sign the
-  // user back in the previous account.
   OCMExpect([consumer_ updateAccountListWithGaiaIDsToAdd:@[]
                                          gaiaIDsToRemove:@[]]);
   OCMExpect([consumer_ updatePrimaryAccount]);
-  OCMExpect([delegate_ unblockScene]);
-  onSigninSuccess(NO);
+  SigninCompletionInfo* signinCompletionInfo =
+      [SigninCompletionInfo signinCompletionInfoWithIdentity:nil];
+  onSigninSuccess(SigninCoordinatorResultCanceledByUser, signinCompletionInfo);
 
   // Checks the user is signed-back in.
   ASSERT_EQ(kPrimaryIdentity, authentication_service_->GetPrimaryIdentity(
                                   signin::ConsentLevel::kSignin));
 }
+
 // Tests the result of accountTappedWithGaiaID:targetRect:
 // when switch is succesful.
 TEST_F(AccountMenuMediatorTest, TestAccountTapedWithSuccesfulSwitch) {
-  // Given that the method  `triggerSignoutWithTargetRect:completion` create a
-  // callback in a callback, this tests has three parts.  One part by callback,
-  // and one part for the initial part of the run.
-
-  // Testing the part before the callback.
-  // This variable will contain the callback that should be executed once
-  // sign-out ends.
-  __block void (^onSignoutSuccess)(BOOL) = nil;
+  __block ShowSigninCommandCompletionCallback onSigninSuccess = nil;
   auto target = CGRect();
   OCMExpect([delegate_
-      triggerSignoutWithTargetRect:target
-                        completion:[OCMArg checkWithBlock:^BOOL(id value) {
-                          onSignoutSuccess = value;
-                          return true;
-                        }]]);
-  OCMExpect([delegate_ blockScene]);
+      triggerAccountSwitchWithTargetRect:target
+                             newIdentity:kSecondaryIdentity
+         viewWillBeDismissedAfterSignout:NO
+                        signInCompletion:[OCMArg
+                                             checkWithBlock:^BOOL(id value) {
+                                               // Actually sign-out, in order to
+                                               // test next step.
+                                               SignOut();
+                                               onSigninSuccess = value;
+                                               return true;
+                                             }]]);
   [mediator_ accountTappedWithGaiaID:kSecondaryIdentity.gaiaID
                           targetRect:target];
   VerifyMock();
 
-  // Simulate a sign-out success.
-  // This variable will contain the callback that should be executed once
-  // sign-in ends.
-  __block void (^onSigninSuccess)(bool) = nil;
-  {
-    base::RunLoop run_loop;
-    base::RepeatingClosure closure = run_loop.QuitClosure();
-    OCMExpect([delegate_
-        triggerSigninWithSystemIdentity:kSecondaryIdentity
-                             completion:[OCMArg checkWithBlock:^BOOL(id value) {
-                               onSigninSuccess = value;
-                               closure.Run();
-                               return true;
-                             }]]);
-    onSignoutSuccess(true);
-    run_loop.Run();
-  }
-  VerifyMock();
-
   // Testing the sign-in callback.
-  OCMExpect(
-      [delegate_ triggerAccountSwitchSnackbarWithIdentity:kSecondaryIdentity]);
   OCMExpect([delegate_ mediatorWantsToBeDismissed:mediator_]);
-  OCMExpect([delegate_ unblockScene]);
-  onSigninSuccess(kSecondaryIdentity);
+
+  SigninCompletionInfo* signinCompletionInfo = [SigninCompletionInfo
+      signinCompletionInfoWithIdentity:kSecondaryIdentity];
+  onSigninSuccess(SigninCoordinatorResultSuccess, signinCompletionInfo);
 }
 
 // Tests the result of didTapErrorButton when a passphrase is required.

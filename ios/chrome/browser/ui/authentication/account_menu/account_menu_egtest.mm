@@ -39,8 +39,11 @@ FakeSystemIdentity* const kPrimaryIdentity = [FakeSystemIdentity fakeIdentity1];
 FakeSystemIdentity* const kSecondaryIdentity =
     [FakeSystemIdentity fakeIdentity2];
 
-FakeSystemIdentity* const kManagedIdentity =
+FakeSystemIdentity* const kManagedIdentity1 =
     [FakeSystemIdentity fakeManagedIdentity];
+
+FakeSystemIdentity* const kManagedIdentity2 =
+    [FakeSystemIdentity identityWithEmail:@"foo2@google.com"];
 
 // Matcher for the account menu.
 id<GREYMatcher> accountMenuMatcher() {
@@ -331,16 +334,16 @@ id<GREYMatcher> snackbarMessageMatcher(FakeSystemIdentity* identity) {
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                           kAccountMenuSecondaryAccountButtonId)]
       performAction:grey_tap()];
+
+  [self assertSnackbarShown:kSecondaryIdentity];
   [SigninEarlGrey verifySignedInWithFakeIdentity:kSecondaryIdentity];
   [self assertAccountMenuIsNotShown];
-  [self assertSnackbarShown:kSecondaryIdentity];
 }
 
 // Tests that tapping on an account button causes the managed account to sign
 // out with a sign-out confirmation dialog.
-// TODO(crbug.com/365110901): Fails consistently, fix and reenable.
-- (void)DISABLED_testSwitchFromManagedAccount {
-  [SigninEarlGrey signinWithFakeIdentity:kManagedIdentity];
+- (void)testSwitchFromManagedAccount {
+  [SigninEarlGrey signinWithFakeIdentity:kManagedIdentity1];
   [ChromeEarlGreyUI waitForAppToIdle];
   [SigninEarlGrey addFakeIdentity:kPrimaryIdentity];
   [self selectIdentityDisc];
@@ -357,9 +360,64 @@ id<GREYMatcher> snackbarMessageMatcher(FakeSystemIdentity* identity) {
                      grey_sufficientlyVisible(), nil)]
       performAction:grey_tap()];
 
-  [SigninEarlGrey verifySignedOut];
-  // TODO(crbug.com/362908429): Check account switch completed not only a
-  // sign-out.
+  [self assertSnackbarShown:kPrimaryIdentity];
+  [SigninEarlGrey verifySignedInWithFakeIdentity:kPrimaryIdentity];
+  [self assertAccountMenuIsNotShown];
+}
+
+// Tests that tapping on a managed account button causes the primary account
+// to be changed and the account menu view to be closed after showing managed
+// account sign-in dialog.
+- (void)testSwitchToManagedAccount {
+  [SigninEarlGrey signinWithFakeIdentity:kPrimaryIdentity];
+  [SigninEarlGrey addFakeIdentity:kManagedIdentity1];
+  [self selectIdentityDisc];
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kAccountMenuSecondaryAccountButtonId)]
+      performAction:grey_tap()];
+
+  // Tap on Continue button to acknowledge signing in with a managed account.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_allOf(
+              grey_text(l10n_util::GetNSString(
+                  IDS_IOS_MANAGED_SIGNIN_WITH_USER_POLICY_CONTINUE_BUTTON_LABEL)),
+              grey_interactable(), nil)] performAction:grey_tap()];
+
+  [self assertSnackbarShown:kManagedIdentity1];
+  [SigninEarlGrey verifySignedInWithFakeIdentity:kManagedIdentity1];
+  [self assertAccountMenuIsNotShown];
+}
+
+- (void)testSwitchFromManagedAccountToManagedAccount {
+  [SigninEarlGrey signinWithFakeIdentity:kManagedIdentity1];
+  [ChromeEarlGreyUI waitForAppToIdle];
+  [SigninEarlGrey addFakeIdentity:kManagedIdentity2];
+  [self selectIdentityDisc];
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kAccountMenuSecondaryAccountButtonId)]
+      performAction:grey_tap()];
+
+  // Confirm "Delete and Switch" when alert dialog that data will be cleared is
+  // shown.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_allOf(chrome_test_util::AlertAction(l10n_util::GetNSString(
+                         IDS_IOS_DATA_NOT_UPLOADED_SWITCH_DIALOG_BUTTON)),
+                     grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
+
+  // Tap on Continue button to acknowledge signing in with a managed account.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_allOf(
+              grey_text(l10n_util::GetNSString(
+                  IDS_IOS_MANAGED_SIGNIN_WITH_USER_POLICY_CONTINUE_BUTTON_LABEL)),
+              grey_interactable(), nil)] performAction:grey_tap()];
+
+  [self assertSnackbarShown:kManagedIdentity2];
+  [self assertAccountMenuIsNotShown];
+  [SigninEarlGrey verifySignedInWithFakeIdentity:kManagedIdentity2];
 }
 
 #pragma mark - Test snackbar

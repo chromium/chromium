@@ -262,59 +262,24 @@
   [self.delegate acountMenuCoordinatorShouldStop:self];
 }
 
-- (void)triggerSignoutWithTargetRect:(CGRect)targetRect
-                          completion:(void (^)(BOOL success))completion {
+- (void)triggerAccountSwitchWithTargetRect:(CGRect)targetRect
+                               newIdentity:(id<SystemIdentity>)newIdentity
+           viewWillBeDismissedAfterSignout:(BOOL)viewWillBeDismissedAfterSignout
+                          signInCompletion:(ShowSigninCommandCompletionCallback)
+                                               signInCompletion {
   CHECK(
       _authenticationService->HasPrimaryIdentity(signin::ConsentLevel::kSignin),
       base::NotFatalUntil::M130)
       << "There must be a signed-in account to view the menu and be able to "
          "switch accounts.";
 
-  _signoutActionSheetCoordinator = [[SignoutActionSheetCoordinator alloc]
-      initWithBaseViewController:_navigationController
-                         browser:self.browser
-                            rect:targetRect
-                            view:_viewController.view
-                      withSource:signin_metrics::ProfileSignout::
-                                     kChangeAccountInAccountMenu];
-  _signoutActionSheetCoordinator.accountSwitch = YES;
-
-  __weak __typeof(self) weakSelf = self;
-  _signoutActionSheetCoordinator.completion = ^(BOOL signoutSuccess) {
-    [weakSelf stopSignoutActionSheetCoordinator];
-    completion(signoutSuccess);
-  };
-  [_signoutActionSheetCoordinator start];
-}
-
-- (void)triggerSigninWithSystemIdentity:(id<SystemIdentity>)identity
-                             completion:(void (^)(BOOL success))completion {
-  AuthenticationFlow* authenticationFlow = [[AuthenticationFlow alloc]
-               initWithBrowser:self.browser
-                      identity:identity
-                   accessPoint:signin_metrics::AccessPoint::
-                                   ACCESS_POINT_ACCOUNT_MENU
-             postSignInActions:PostSignInActionSet({PostSignInAction::kNone})
-      presentingViewController:_navigationController];
-
-  [authenticationFlow startSignInWithCompletion:completion];
-}
-
-- (void)triggerAccountSwitchSnackbarWithIdentity:
-    (id<SystemIdentity>)systemIdentity {
-  UIImage* avatar = _accountManagerService->GetIdentityAvatarWithIdentity(
-      systemIdentity, IdentityAvatarSize::Regular);
-  ManagementState managementState = GetManagementState(
-      _identityManager, _authenticationService, _prefService);
-  MDCSnackbarMessage* snackbarTitle = [[IdentitySnackbarMessage alloc]
-      initWithName:systemIdentity.userGivenName
-             email:systemIdentity.userEmail
-            avatar:avatar
-           managed:managementState.is_profile_managed()];
-  CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
-  id<SnackbarCommands> snackbarCommandsHandler =
-      HandlerForProtocol(dispatcher, SnackbarCommands);
-  [snackbarCommandsHandler showSnackbarMessageOverBrowserToolbar:snackbarTitle];
+  [_applicationHandler
+      switchAccountWithBaseViewController:_navigationController
+                              newIdentity:newIdentity
+                                     rect:targetRect
+                           rectAnchorView:_viewController.view
+          viewWillBeDismissedAfterSignout:viewWillBeDismissedAfterSignout
+                         signInCompletion:signInCompletion];
 }
 
 - (void)blockScene {
