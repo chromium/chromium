@@ -176,7 +176,9 @@ void RedirectHeuristicTabHelper::CreateAllRedirectHeuristicGrants(
   std::map<std::string, std::pair<GURL, bool>>
       sites_to_url_and_current_interaction =
           detector_->CommittedRedirectContext().GetRedirectHeuristicURLs(
-              first_party_url, sites_with_aba_flow);
+              first_party_url, sites_with_aba_flow,
+              tpcd::experiment::kTpcdRedirectHeuristicRequireCurrentInteraction
+                  .Get());
 
   for (const auto& kv : sites_to_url_and_current_interaction) {
     auto [url, is_current_interaction] = kv.second;

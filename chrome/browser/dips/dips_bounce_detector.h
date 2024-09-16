@@ -156,7 +156,8 @@ class DIPSRedirectContext {
   // only sites in `allowed_sites` should be included.
   std::map<std::string, std::pair<GURL, bool>> GetRedirectHeuristicURLs(
       const GURL& first_party_url,
-      std::optional<std::set<std::string>> allowed_sites) const;
+      base::optional_ref<std::set<std::string>> allowed_sites,
+      bool require_current_interaction) const;
 
  private:
   void AppendClientRedirect(DIPSRedirectInfoPtr client_redirect);

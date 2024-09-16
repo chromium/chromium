@@ -32,7 +32,6 @@
 #include "chrome/browser/dips/dips_storage.h"
 #include "chrome/browser/dips/dips_utils.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/tpcd/experiment/tpcd_experiment_features.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/cookie_access_details.h"
@@ -284,7 +283,8 @@ std::set<std::string> DIPSRedirectContext::AllSitesWithUserActivation() const {
 std::map<std::string, std::pair<GURL, bool>>
 DIPSRedirectContext::GetRedirectHeuristicURLs(
     const GURL& first_party_url,
-    std::optional<std::set<std::string>> allowed_sites) const {
+    base::optional_ref<std::set<std::string>> allowed_sites,
+    bool require_current_interaction) const {
   std::map<std::string, std::pair<GURL, bool>>
       sites_to_url_and_current_interaction;
 
@@ -307,8 +307,7 @@ DIPSRedirectContext::GetRedirectHeuristicURLs(
     }
 
     // Check for a current interaction, if the flag requires it.
-    if (tpcd::experiment::kTpcdRedirectHeuristicRequireCurrentInteraction
-            .Get() &&
+    if (require_current_interaction &&
         !sites_with_user_activation.contains(site)) {
       continue;
     }
