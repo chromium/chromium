@@ -98,11 +98,6 @@ void PlatformSensorChromeOS::OnSampleUpdated(
       reading.als.value = GetScaledValue(sample.at(channel_indices_[0]));
       break;
 
-    case mojom::SensorType::PROXIMITY:
-      DCHECK_EQ(channel_indices_.size(), 2u);
-      reading.proximity.value = GetScaledValue(sample.at(channel_indices_[0]));
-      break;
-
     case mojom::SensorType::ACCELEROMETER:
     case mojom::SensorType::GRAVITY:
       DCHECK_EQ(channel_indices_.size(), 4u);

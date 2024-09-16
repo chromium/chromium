@@ -400,10 +400,8 @@ double RoundGyroscopeValue(double value) {
 // Tests that PlatformSensorManager returns null sensor when sensor
 // is not implemented.
 TEST_F(PlatformSensorAndProviderTestWin, SensorIsNotImplemented) {
-  EXPECT_CALL(*(sensor_manager_.Get()),
-              GetSensorsByType(SENSOR_TYPE_PRESSURE, _))
-      .Times(0);
-  EXPECT_FALSE(CreateSensor(SensorType::PRESSURE));
+  EXPECT_CALL(*(sensor_manager_.Get()), GetSensorsByType(_, _)).Times(0);
+  EXPECT_FALSE(CreateSensor(SensorType::RELATIVE_ORIENTATION_EULER_ANGLES));
 }
 
 // Tests that PlatformSensorManager returns null sensor when sensor

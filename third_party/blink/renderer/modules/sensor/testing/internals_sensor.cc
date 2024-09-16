@@ -47,8 +47,6 @@ device::mojom::blink::SensorType ToMojoSensorType(
       return device::mojom::blink::SensorType::LINEAR_ACCELERATION;
     case V8VirtualSensorType::Enum::kMagnetometer:
       return device::mojom::blink::SensorType::MAGNETOMETER;
-    case V8VirtualSensorType::Enum::kProximity:
-      return device::mojom::blink::SensorType::PROXIMITY;
     case V8VirtualSensorType::Enum::kRelativeOrientation:
       return device::mojom::blink::SensorType::RELATIVE_ORIENTATION_QUATERNION;
   }
@@ -120,7 +118,6 @@ ToMojoRawReading(V8VirtualSensorType::Enum type,
     case V8VirtualSensorType::Enum::kGyroscope:
     case V8VirtualSensorType::Enum::kLinearAcceleration:
     case V8VirtualSensorType::Enum::kMagnetometer:
-    case V8VirtualSensorType::Enum::kProximity:
       if (!reading->hasX() || !reading->hasY() || !reading->hasZ()) {
         return base::unexpected("Invalid xyz reading format");
       }

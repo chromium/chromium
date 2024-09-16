@@ -249,8 +249,6 @@ Response ConvertSensorReading(device::mojom::SensorType type,
       break;
     }
     case device::mojom::SensorType::ABSOLUTE_ORIENTATION_EULER_ANGLES:
-    case device::mojom::SensorType::PRESSURE:
-    case device::mojom::SensorType::PROXIMITY:
     case device::mojom::SensorType::RELATIVE_ORIENTATION_EULER_ANGLES:
       return Response::InvalidParams("Unsupported sensor type");
   }

@@ -44,8 +44,6 @@ SensorTypeToPermissionsPolicyFeatures(SensorType type) {
     case SensorType::RELATIVE_ORIENTATION_QUATERNION:
       return {blink::mojom::PermissionsPolicyFeature::kAccelerometer,
               blink::mojom::PermissionsPolicyFeature::kGyroscope};
-    default:
-      NOTREACHED() << "Unknown sensor type " << type;
   }
 }
 

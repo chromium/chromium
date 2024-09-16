@@ -150,10 +150,6 @@ void RoundSensorReading(SensorReading* reading, mojom::SensorType sensor_type) {
     case mojom::SensorType::MAGNETOMETER:
       RoundMagnetometerReading(&reading->magn);
       break;
-
-    case mojom::SensorType::PRESSURE:
-    case mojom::SensorType::PROXIMITY:
-      break;
   }
 }
 

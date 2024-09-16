@@ -292,47 +292,6 @@ TEST_F(PlatformSensorAndProviderTest, DoNotStoreReadingsWhenInactive) {
   AddNewReadingAndExpectReadingChangedEvent(client.get(), reading);
 }
 
-// No rounding of values. Any change in values reported in significance test.
-TEST_F(PlatformSensorAndProviderTest, SensorValueValidityCheckPressure) {
-  const double kTestValue = 10.0;  // Made up test value.
-  scoped_refptr<FakePlatformSensor> fake_sensor =
-      CreateSensorSync(SensorType::PRESSURE);
-
-  auto client =
-      std::make_unique<NiceMock<MockPlatformSensorClient>>(fake_sensor);
-  EXPECT_TRUE(fake_sensor->StartListening(client.get(),
-                                          PlatformSensorConfiguration(10)));
-
-  // Test cases:
-  // 1. Initial value is set to 10.
-  // 2. As new reading is exactly same as old new reading event is not
-  //    triggered.
-  // 3. New value set and reading event is triggered as new value is
-  //    significantly different compared to old.
-  const struct {
-    const double pressure_value;
-    const bool expect_reading_changed_event;
-  } kTestSteps[] = {
-      {kTestValue, true},
-      {kTestValue, false},
-      {kTestValue + kEpsilon, true},
-  };
-
-  for (const auto& test_case : kTestSteps) {
-    SensorReading reading;
-    reading.raw.timestamp = 1.0;
-    reading.pressure.value = test_case.pressure_value;
-
-    if (test_case.expect_reading_changed_event)
-      AddNewReadingAndExpectReadingChangedEvent(client.get(), reading);
-    else
-      AddNewReadingAndExpectNoReadingChangedEvent(client.get(), reading);
-
-    fake_sensor->GetLatestReading(&reading);
-    EXPECT_DOUBLE_EQ(reading.pressure.value, test_case.pressure_value);
-  }
-}
-
 // Rounding to nearest 0.1 (see kAccelerometerRoundingMultiple). New reading
 // event is triggered if rounded values differs from previous rounded value.
 TEST_F(PlatformSensorAndProviderTest, SensorValueValidityCheckAccelerometer) {
@@ -427,36 +386,6 @@ TEST_F(PlatformSensorAndProviderTest, IsSignificantlyDifferentAmbientLight) {
                     initial_reading, new_reading, SensorType::AMBIENT_LIGHT),
                 test_case.expectation);
   }
-}
-
-TEST_F(PlatformSensorAndProviderTest, IsSignificantlyDifferentPressure) {
-  // Test for standard sensor with single value.
-  scoped_refptr<FakePlatformSensor> fake_sensor =
-      CreateSensorSync(SensorType::PRESSURE);
-
-  auto client =
-      std::make_unique<NiceMock<MockPlatformSensorClient>>(fake_sensor);
-  EXPECT_TRUE(fake_sensor->StartListening(client.get(),
-                                          PlatformSensorConfiguration(10)));
-
-  const double kTestValue = 100.0;  // Made up test value.
-  SensorReading last_reading;
-  SensorReading new_reading;
-
-  // No difference in values does not count as a significant change.
-  last_reading.pressure.value = kTestValue;
-  EXPECT_FALSE(fake_sensor->IsSignificantlyDifferent(last_reading, last_reading,
-                                                     SensorType::PRESSURE));
-
-  // Check that different values are reported as significantly different.
-  new_reading.pressure.value = last_reading.pressure.value + kEpsilon;
-  EXPECT_TRUE(fake_sensor->IsSignificantlyDifferent(last_reading, new_reading,
-                                                    SensorType::PRESSURE));
-
-  // Check that different values are reported as significantly different.
-  new_reading.pressure.value = last_reading.pressure.value - kEpsilon;
-  EXPECT_TRUE(fake_sensor->IsSignificantlyDifferent(last_reading, new_reading,
-                                                    SensorType::PRESSURE));
 }
 
 TEST_F(PlatformSensorAndProviderTest, IsSignificantlyDifferentMagnetometer) {
