@@ -55,7 +55,7 @@ source_set("impl") {
     deps += [ "//components/safe_browsing/content/common:file_type_policies" ]
   }
 
-  if (!is_android) {
+  if (!is_android || is_desktop_android) {
     deps += [ "//extensions/browser" ]
   }
 
