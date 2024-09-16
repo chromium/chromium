@@ -361,6 +361,8 @@ enum {
   kAccessibilityFlashNotificationsColor = 100299,
   kPinnedChromeLabsMigrationComplete = 100300,
   kAccessibilityFaceGazeGesturesToKeyCombos = 100301,
+  kFocusModeYTMDisplayOAuthConsent = 100302,
+  kFocusModeYTMDisplayFreeTrial = 100303,
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -748,6 +750,14 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
       sync_preferences::MergeBehavior::kNone}},
     {ash::prefs::kFocusModeSoundSection,
      {syncable_prefs_ids::kFocusModeSoundSection, syncer::OS_PREFERENCES,
+      sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kNone}},
+    {ash::prefs::kFocusModeYTMDisplayOAuthConsent,
+     {syncable_prefs_ids::kFocusModeYTMDisplayOAuthConsent,
+      syncer::OS_PREFERENCES, sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kNone}},
+    {ash::prefs::kFocusModeYTMDisplayFreeTrial,
+     {syncable_prefs_ids::kFocusModeYTMDisplayFreeTrial, syncer::OS_PREFERENCES,
       sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
     {ash::prefs::kKeyboardDefaultChromeOSSettings,

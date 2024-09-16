@@ -882,6 +882,10 @@ inline constexpr char16_t kDeviceExtendedUpdatesLearnMoreURL[] =
 // The URL for the YoutTube Music Premium signup page.
 inline constexpr char kYoutubeMusicPremiumURL[] =
     "https://music.youtube.com/music_premium";
+
+// The URL for the Chromebook Perks page for YouTube.
+inline constexpr char kChromebookPerksYouTubePage[] =
+    "https://www.google.com/chromebook/perks/?id=youtube.2020";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_MAC)

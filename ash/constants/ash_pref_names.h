@@ -2259,6 +2259,14 @@ inline constexpr char kFocusModeDeviceId[] = "ash.focus_mode.device_id";
 // An string enum pref containing the enabled sound types.
 inline constexpr char kFocusModeSoundsEnabled[] =
     "ash.focus_mode.sounds_enabled";
+// A boolean pref of whether the focus panel shows the OAuth consent screen for
+// YouTube Music.
+inline constexpr char kFocusModeYTMDisplayOAuthConsent[] =
+    "ash.focus_mode.youtube_music.oauth";
+// A boolean pref of whether the focus panel shows the view to let the user know
+// a 3 months free trial for YouTube Music.
+inline constexpr char kFocusModeYTMDisplayFreeTrial[] =
+    "ash.focus_mode.youtube_music.free_trial";
 
 // An integer pref that holds enum value of current demo mode configuration.
 // Values are defined by DemoSession::DemoModeConfig enum.

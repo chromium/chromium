@@ -74,6 +74,10 @@ void SoundSectionView::ShowAlternateView(bool show_alternate_view) {
 void SoundSectionView::SetAlternateView(
     std::unique_ptr<views::BoxLayoutView> alternate_view) {
   CHECK(alternate_view);
+  if (alternate_view_.get()) {
+    RemoveChildViewT(std::exchange(alternate_view_, nullptr));
+  }
+
   alternate_view_ = AddChildView(std::move(alternate_view));
 }
 

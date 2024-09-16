@@ -94,25 +94,6 @@ IN_PROC_BROWSER_TEST_F(FocusModePolicyTest, FocusModeSounds_Enabled) {
               testing::Pair(testing::NotNull(), testing::NotNull()));
 }
 
-// Tests that even though we enabled both Sounscape type and YouTube Music type
-// of playlists; however, if the user is a minor user, YouTube Music will be
-// unavailable.
-IN_PROC_BROWSER_TEST_F(FocusModePolicyTest,
-                       FocusModeSounds_Enabled_ForMinorUser) {
-  FocusModeController::Get()
-      ->focus_mode_sounds_controller()
-      ->SetIsMinorUserForTesting(true);
-  SetPolicyValue("enabled");
-  auto* quick_settings = OpenQuickSettings();
-  ClickOnFocusTile(quick_settings);
-  FocusModeSoundsView* sounds_view = GetSoundsView(quick_settings);
-  EXPECT_THAT(sounds_view->GetVisible(), testing::Eq(true));
-  EXPECT_THAT(sounds_view->soundscape_views(),
-              testing::Pair(testing::IsNull(), testing::NotNull()));
-  EXPECT_THAT(sounds_view->youtube_music_views(),
-              testing::Pair(testing::IsNull(), testing::IsNull()));
-}
-
 IN_PROC_BROWSER_TEST_F(FocusModePolicyTest, FocusModeSounds_FocusSoundsOnly) {
   SetPolicyValue("focus-sounds");
   auto* quick_settings = OpenQuickSettings();

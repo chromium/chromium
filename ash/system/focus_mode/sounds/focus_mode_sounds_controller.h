@@ -162,6 +162,11 @@ class ASH_EXPORT FocusModeSoundsController
   void ReportYouTubeMusicPlayback(
       const youtube_music::PlaybackData& playback_data);
 
+  bool ShouldDisplayYouTubeMusicOAuth() const;
+  void SavePrefForDisplayYouTubeMusicOAuth();
+  bool ShouldDisplayYouTubeMusicFreeTrial() const;
+  void SavePrefForDisplayYouTubeMusicFreeTrial();
+
   void set_soundscape_playlists_for_testing(
       std::vector<std::unique_ptr<Playlist>> soundscape_playlists) {
     soundscape_playlists_.swap(soundscape_playlists);
@@ -182,6 +187,7 @@ class ASH_EXPORT FocusModeSoundsController
     simulate_playback_for_testing_ = true;
   }
 
+  bool IsMinorUser();
   void SetIsMinorUserForTesting(bool is_minor_user);
 
  private:

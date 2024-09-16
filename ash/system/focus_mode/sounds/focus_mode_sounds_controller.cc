@@ -607,6 +607,52 @@ void FocusModeSoundsController::ReportYouTubeMusicPlayback(
   youtube_music_delegate_->ReportPlayback(playback_data);
 }
 
+bool FocusModeSoundsController::ShouldDisplayYouTubeMusicOAuth() const {
+  if (PrefService* active_user_prefs =
+          Shell::Get()->session_controller()->GetActivePrefService()) {
+    return active_user_prefs->GetBoolean(
+        prefs::kFocusModeYTMDisplayOAuthConsent);
+  }
+  CHECK_IS_TEST();
+  return true;
+}
+
+void FocusModeSoundsController::SavePrefForDisplayYouTubeMusicOAuth() {
+  if (PrefService* active_user_prefs =
+          Shell::Get()->session_controller()->GetActivePrefService()) {
+    active_user_prefs->SetBoolean(prefs::kFocusModeYTMDisplayOAuthConsent,
+                                  false);
+  }
+}
+
+bool FocusModeSoundsController::ShouldDisplayYouTubeMusicFreeTrial() const {
+  if (PrefService* active_user_prefs =
+          Shell::Get()->session_controller()->GetActivePrefService()) {
+    return active_user_prefs->GetBoolean(prefs::kFocusModeYTMDisplayFreeTrial);
+  }
+  CHECK_IS_TEST();
+  return true;
+}
+
+void FocusModeSoundsController::SavePrefForDisplayYouTubeMusicFreeTrial() {
+  if (PrefService* active_user_prefs =
+          Shell::Get()->session_controller()->GetActivePrefService()) {
+    active_user_prefs->SetBoolean(prefs::kFocusModeYTMDisplayFreeTrial, false);
+  }
+}
+
+bool FocusModeSoundsController::IsMinorUser() {
+  // `ChromeFocusModeDelegate::IsMinorUser` doesn't work in browsertest, since
+  // it always returns true. `can_use_manta_service()` is
+  // `signin::Tribool::kUnknown`.
+  if (is_minor_user_for_testing_.has_value()) {
+    CHECK_IS_TEST();
+    return is_minor_user_for_testing_.value();
+  }
+
+  return FocusModeController::Get()->delegate()->IsMinorUser();
+}
+
 void FocusModeSoundsController::SetIsMinorUserForTesting(bool is_minor_user) {
   CHECK_IS_TEST();
   is_minor_user_for_testing_ = is_minor_user;
@@ -712,17 +758,12 @@ void FocusModeSoundsController::OnPrefChanged() {
       Shell::Get()->session_controller()->GetActivePrefService();
   enabled_sound_sections_ = ReadSoundSectionPolicy(active_user_prefs);
 
-  // `ChromeFocusModeDelegate::IsMinorUser` doesn't work in browsertest, since
-  // it always returns true. `can_use_manta_service()` is
-  // `signin::Tribool::kUnknown`.
-  const bool is_minor_user =
-      is_minor_user_for_testing_.has_value()
-          ? is_minor_user_for_testing_.value()
-          : FocusModeController::Get()->delegate()->IsMinorUser();
+  // TODO: If we want to block the whole YTM section, we should make changes
+  // here. And remove the calls to `FocusModeSoundsController::IsMinorUser()` in
+  // `FocusModeSoundsView`.
 
-  // Hide the YTM sound section if the flag isn't enabled or if the user is
-  // considered a minor user.
-  if (!features::IsFocusModeYTMEnabled() || is_minor_user) {
+  // Hide the YTM sound section if the flag isn't enabled.
+  if (!features::IsFocusModeYTMEnabled()) {
     enabled_sound_sections_.erase(focus_mode_util::SoundType::kYouTubeMusic);
   }
 }

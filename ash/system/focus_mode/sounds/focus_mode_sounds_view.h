@@ -66,9 +66,14 @@ class ASH_EXPORT FocusModeSoundsView
   void CreateHeader(const base::flat_set<focus_mode_util::SoundType>& sections,
                     bool is_network_connected);
 
-  // Creates `soundscape_container_` and `youtube_music_container_`.
+  // Creates `soundscape_container_` and `youtube_music_container_` and may
+  // download playlists.
   void CreatesSoundSectionViews(
       const base::flat_set<focus_mode_util::SoundType>& sections);
+
+  // Called when the Get started button in the YouTube Music OAuth consent view
+  // was pressed.
+  void OnOAuthGetStartedButtonPressed();
 
   // Toggles YouTube Music alternate view. It's used to update the UIs for
   // non-premium account.

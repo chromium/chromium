@@ -201,6 +201,14 @@ void FocusModeController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
       prefs::kFocusModeSoundSection,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
 
+  // Prefs for YouTube Music.
+  registry->RegisterBooleanPref(
+      prefs::kFocusModeYTMDisplayOAuthConsent, /*default_value=*/true,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+  registry->RegisterBooleanPref(
+      prefs::kFocusModeYTMDisplayFreeTrial, /*default_value=*/true,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+
   // Pref is device-local and should never be synced.
   registry->RegisterStringPref(prefs::kFocusModeDeviceId, "");
 
