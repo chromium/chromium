@@ -19,7 +19,10 @@ namespace ios {
 
 class BookmarkModelFactory : public BrowserStateKeyedServiceFactory {
  public:
+  // TODO(crbug.com/358299863): Remove when fully migrated.
   static bookmarks::BookmarkModel* GetForBrowserState(ProfileIOS* profile);
+
+  static bookmarks::BookmarkModel* GetForProfile(ProfileIOS* profile);
   static bookmarks::BookmarkModel* GetForProfileIfExists(ProfileIOS* profile);
 
   static BookmarkModelFactory* GetInstance();

@@ -306,7 +306,7 @@ void ChromeOmniboxClientIOS::DidFinishNavigation(
   scoped_observations_.RemoveObservation(web_state);
 
   scoped_refptr<ShortcutsBackend> shortcuts_backend =
-      ios::ShortcutsBackendFactory::GetInstance()->GetForBrowserState(
+      ios::ShortcutsBackendFactory::GetInstance()->GetForProfile(
           browser_state_);
 
   // Add the shortcut if the navigation from the omnibox was successful.

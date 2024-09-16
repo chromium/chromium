@@ -266,6 +266,11 @@ SyncServiceFactory::TestingFactory SyncServiceFactory::GetDefaultFactory() {
 // static
 syncer::SyncService* SyncServiceFactory::GetForBrowserState(
     ProfileIOS* profile) {
+  return GetForProfile(profile);
+}
+
+// static
+syncer::SyncService* SyncServiceFactory::GetForProfile(ProfileIOS* profile) {
   if (!syncer::IsSyncAllowedByFlag()) {
     return nullptr;
   }

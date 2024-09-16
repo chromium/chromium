@@ -18,8 +18,7 @@ namespace ios {
 class ShortcutsBackendFactory
     : public RefcountedBrowserStateKeyedServiceFactory {
  public:
-  static scoped_refptr<ShortcutsBackend> GetForBrowserState(
-      ProfileIOS* profile);
+  static scoped_refptr<ShortcutsBackend> GetForProfile(ProfileIOS* profile);
   static scoped_refptr<ShortcutsBackend> GetForProfileIfExists(
       ProfileIOS* profile);
   static ShortcutsBackendFactory* GetInstance();

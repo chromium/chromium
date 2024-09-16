@@ -24,9 +24,9 @@ namespace {
 scoped_refptr<ShortcutsBackend> CreateShortcutsBackend(ProfileIOS* profile,
                                                        bool suppress_db) {
   scoped_refptr<ShortcutsBackend> shortcuts_backend(new ShortcutsBackend(
-      ios::TemplateURLServiceFactory::GetForBrowserState(profile),
+      ios::TemplateURLServiceFactory::GetForProfile(profile),
       std::make_unique<ios::UIThreadSearchTermsData>(),
-      ios::HistoryServiceFactory::GetForBrowserState(
+      ios::HistoryServiceFactory::GetForProfile(
           profile, ServiceAccessType::EXPLICIT_ACCESS),
       profile->GetStatePath().Append(kShortcutsDatabaseName), suppress_db));
   return shortcuts_backend->Init() ? shortcuts_backend : nullptr;
@@ -41,7 +41,7 @@ scoped_refptr<RefcountedKeyedService> BuildShortcutsBackend(
 }  // namespace
 
 // static
-scoped_refptr<ShortcutsBackend> ShortcutsBackendFactory::GetForBrowserState(
+scoped_refptr<ShortcutsBackend> ShortcutsBackendFactory::GetForProfile(
     ProfileIOS* profile) {
   return base::WrapRefCounted(static_cast<ShortcutsBackend*>(
       GetInstance()->GetServiceForBrowserState(profile, true).get()));

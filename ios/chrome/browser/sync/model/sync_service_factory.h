@@ -20,7 +20,10 @@ class SyncService;
 // ProfileIOS.
 class SyncServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
+  // TODO(crbug.com/358299863): Remove when fully migrated.
   static syncer::SyncService* GetForBrowserState(ProfileIOS* profile);
+
+  static syncer::SyncService* GetForProfile(ProfileIOS* profile);
 
   static syncer::SyncService* GetForProfileIfExists(ProfileIOS* profile);
 

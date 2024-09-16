@@ -89,7 +89,7 @@ const base::FilePath& GetTestDataDir() {
 
 + (void)setUpFakeSuggestionsService:(NSString*)filename {
   RemoteSuggestionsService* remoteSuggestionsService =
-      RemoteSuggestionsServiceFactory::GetForBrowserState(
+      RemoteSuggestionsServiceFactory::GetForProfile(
           chrome_test_util::GetOriginalBrowserState(), YES);
 
   TemplateURLService* templateURLService =
@@ -104,7 +104,7 @@ const base::FilePath& GetTestDataDir() {
 
 + (void)tearDownFakeSuggestionsService {
   RemoteSuggestionsService* remoteSuggestionsService =
-      RemoteSuggestionsServiceFactory::GetForBrowserState(
+      RemoteSuggestionsServiceFactory::GetForProfile(
           chrome_test_util::GetOriginalBrowserState(), YES);
 
   network::mojom::URLLoaderFactory* urlLoaderFactory =

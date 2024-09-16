@@ -89,29 +89,26 @@
 - (void)start {
   std::unique_ptr<image_fetcher::ImageDataFetcher> imageFetcher =
       std::make_unique<image_fetcher::ImageDataFetcher>(
-          self.browser->GetBrowserState()->GetSharedURLLoaderFactory());
+          self.browser->GetProfile()->GetSharedURLLoaderFactory());
 
-  BOOL isIncognito = self.browser->GetBrowserState()->IsOffTheRecord();
+  BOOL isIncognito = self.browser->GetProfile()->IsOffTheRecord();
 
   RemoteSuggestionsService* remoteSuggestionsService =
-      RemoteSuggestionsServiceFactory::GetForBrowserState(
-          self.browser->GetBrowserState(), /*create_if_necessary=*/true);
+      RemoteSuggestionsServiceFactory::GetForProfile(
+          self.browser->GetProfile(), /*create_if_necessary=*/true);
 
   self.mediator = [[OmniboxPopupMediator alloc]
                initWithFetcher:std::move(imageFetcher)
-                 faviconLoader:IOSChromeFaviconLoaderFactory::
-                                   GetForBrowserState(
-                                       self.browser->GetBrowserState())
+                 faviconLoader:IOSChromeFaviconLoaderFactory::GetForProfile(
+                                   self.browser->GetProfile())
         autocompleteController:self.autocompleteController
       remoteSuggestionsService:remoteSuggestionsService
                       delegate:_popupView.get()
                        tracker:feature_engagement::TrackerFactory::
-                                   GetForBrowserState(
-                                       self.browser->GetBrowserState())];
+                                   GetForProfile(self.browser->GetProfile())];
 
   TemplateURLService* templateURLService =
-      ios::TemplateURLServiceFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
+      ios::TemplateURLServiceFactory::GetForProfile(self.browser->GetProfile());
   self.mediator.defaultSearchEngineIsGoogle =
       templateURLService && templateURLService->GetDefaultSearchProvider() &&
       templateURLService->GetDefaultSearchProvider()->GetEngineType(
@@ -128,10 +125,10 @@
   self.popupViewController.dataSource = self.mediator;
   self.popupViewController.incognito = isIncognito;
   favicon::LargeIconService* largeIconService =
-      IOSChromeLargeIconServiceFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
-  LargeIconCache* cache = IOSChromeLargeIconCacheFactory::GetForBrowserState(
-      self.browser->GetBrowserState());
+      IOSChromeLargeIconServiceFactory::GetForProfile(
+          self.browser->GetProfile());
+  LargeIconCache* cache =
+      IOSChromeLargeIconCacheFactory::GetForProfile(self.browser->GetProfile());
   self.popupViewController.largeIconService = largeIconService;
   self.popupViewController.largeIconCache = cache;
   self.popupViewController.carouselMenuProvider = self.mediator;
@@ -144,7 +141,7 @@
   self.popupViewController.acceptReturnDelegate = self.acceptReturnDelegate;
   self.mediator.carouselItemConsumer = self.popupViewController;
   self.mediator.allowIncognitoActions =
-      !IsIncognitoModeDisabled(self.browser->GetBrowserState()->GetPrefs());
+      !IsIncognitoModeDisabled(self.browser->GetProfile()->GetPrefs());
 
   CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
   OmniboxPedalAnnotator* annotator = [[OmniboxPedalAnnotator alloc] init];
@@ -204,8 +201,7 @@
 #pragma mark - OmniboxPopupMediatorProtocolProvider
 
 - (scoped_refptr<history::TopSites>)topSites {
-  return ios::TopSitesFactory::GetForBrowserState(
-      self.browser->GetBrowserState());
+  return ios::TopSitesFactory::GetForProfile(self.browser->GetProfile());
 }
 
 - (id<SnackbarCommands>)snackbarCommandsHandler {

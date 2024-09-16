@@ -22,9 +22,13 @@ namespace ios {
 // ProfileIOS.
 class HistoryServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
+  // TODO(crbug.com/358299863): Remove when fully migrated.
   static history::HistoryService* GetForBrowserState(
       ProfileIOS* profile,
       ServiceAccessType access_type);
+
+  static history::HistoryService* GetForProfile(ProfileIOS* profile,
+                                                ServiceAccessType access_type);
   static history::HistoryService* GetForProfileIfExists(
       ProfileIOS* profile,
       ServiceAccessType access_type);

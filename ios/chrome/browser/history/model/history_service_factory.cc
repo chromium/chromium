@@ -49,6 +49,13 @@ std::unique_ptr<KeyedService> BuildHistoryService(web::BrowserState* context) {
 history::HistoryService* HistoryServiceFactory::GetForBrowserState(
     ProfileIOS* profile,
     ServiceAccessType access_type) {
+  return GetForProfile(profile, access_type);
+}
+
+// static
+history::HistoryService* HistoryServiceFactory::GetForProfile(
+    ProfileIOS* profile,
+    ServiceAccessType access_type) {
   // If saving history is disabled, only allow explicit access.
   if (access_type != ServiceAccessType::EXPLICIT_ACCESS &&
       profile->GetPrefs()->GetBoolean(prefs::kSavingBrowserHistoryDisabled)) {

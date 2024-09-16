@@ -28,7 +28,7 @@ class ComponentUpdateService;
 // AutocompleteProviderClient interface.
 class AutocompleteProviderClientImpl : public AutocompleteProviderClient {
  public:
-  explicit AutocompleteProviderClientImpl(ChromeBrowserState* browser_state);
+  explicit AutocompleteProviderClientImpl(ProfileIOS* profile);
 
   AutocompleteProviderClientImpl(const AutocompleteProviderClientImpl&) =
       delete;
@@ -103,7 +103,7 @@ class AutocompleteProviderClientImpl : public AutocompleteProviderClient {
   void PromptPageTranslation() override {}
 
  private:
-  raw_ptr<ChromeBrowserState> browser_state_;
+  raw_ptr<ProfileIOS> profile_;
   AutocompleteSchemeClassifierImpl scheme_classifier_;
   std::unique_ptr<unified_consent::UrlKeyedDataCollectionConsentHelper>
       url_consent_helper_;

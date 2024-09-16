@@ -12,12 +12,11 @@
 class RemoteSuggestionsService;
 
 // Singleton that owns all RemoteSuggestionsServices and associates them with
-// ChromeBrowserState.
+// ProfileIOS.
 class RemoteSuggestionsServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
-  static RemoteSuggestionsService* GetForBrowserState(
-      ChromeBrowserState* browser_state,
-      bool create_if_necessary);
+  static RemoteSuggestionsService* GetForProfile(ProfileIOS* profile,
+                                                 bool create_if_necessary);
   static RemoteSuggestionsServiceFactory* GetInstance();
 
  private:
