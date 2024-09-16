@@ -499,9 +499,11 @@
         android:screenOrientation="landscape"
         android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen"
         android:windowSoftInputMode="adjustResize">
-      <intent-filter>  # DIFF-ANCHOR: 48f4c2ef
+      <intent-filter>  # DIFF-ANCHOR: a5330430
+        <action android:name="android.intent.action.MAIN"/>
         <category android:name="android.intent.category.XR"/>
-      </intent-filter>  # DIFF-ANCHOR: 48f4c2ef
+        <category android:name="org.khronos.openxr.intent.category.IMMERSIVE_HMD"/>
+      </intent-filter>  # DIFF-ANCHOR: a5330430
       <property android:name="android.window.PROPERTY_ACTIVITY_STARTS_IN_IMMERSIVE_XR" android:value="true"/>
     </activity>  # DIFF-ANCHOR: 5d3091ca
     <activity-alias  # DIFF-ANCHOR: 9da0e5b6

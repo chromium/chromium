@@ -1199,7 +1199,9 @@ by a child template that "extends" this file.
             <property android:name="android.window.PROPERTY_ACTIVITY_STARTS_IN_IMMERSIVE_XR"
                 android:value="true" />
             <intent-filter>
+              <action android:name="android.intent.action.MAIN" />
               <category android:name="android.intent.category.XR" />
+              <category android:name="org.khronos.openxr.intent.category.IMMERSIVE_HMD" />
             </intent-filter>
           </activity>
         {% endif %}
