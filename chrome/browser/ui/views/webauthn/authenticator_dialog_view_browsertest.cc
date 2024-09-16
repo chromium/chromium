@@ -94,6 +94,19 @@ class TestSheetView : public AuthenticatorRequestSheetView {
 
 }  // namespace
 
+class StepTransitionObserver
+    : public AuthenticatorRequestDialogModel::Observer {
+ public:
+  StepTransitionObserver() = default;
+  int step_transition_count() { return step_transition_count_; }
+
+  // AuthenticatorRequestDialogModel::Observer:
+  void OnStepTransition() override { step_transition_count_++; }
+
+ private:
+  int step_transition_count_ = 0;
+};
+
 class AuthenticatorDialogViewTest : public DialogBrowserTest {
  public:
   // DialogBrowserTest:
@@ -103,7 +116,11 @@ class AuthenticatorDialogViewTest : public DialogBrowserTest {
     dialog_model_->relying_party_id = "example.com";
     content::WebContents* const web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
+    // Set the step to a view that is capable of displaying a dialog:
     dialog_model_->SetStep(AuthenticatorRequestDialogModel::Step::kTimedOut);
+
+    StepTransitionObserver step_transition_observer;
+    dialog_model_->AddObserver(&step_transition_observer);
     AuthenticatorRequestDialogView* dialog =
         test::AuthenticatorRequestDialogViewTestApi::CreateDialogView(
             web_contents, dialog_model_.get());
@@ -111,6 +128,7 @@ class AuthenticatorDialogViewTest : public DialogBrowserTest {
       test::AuthenticatorRequestDialogViewTestApi::ShowWithSheet(
           dialog,
           std::make_unique<TestSheetView>(std::make_unique<TestSheetModel>()));
+      EXPECT_EQ(step_transition_observer.step_transition_count(), 0);
     } else if (name == "manage_devices") {
       // Add a paired phone. That should be sufficient for the "Manage
       // devices" button to be shown.
@@ -124,7 +142,9 @@ class AuthenticatorDialogViewTest : public DialogBrowserTest {
       EXPECT_TRUE(test::AuthenticatorRequestDialogViewTestApi::GetSheet(dialog)
                       ->model()
                       ->IsManageDevicesButtonVisible());
+      EXPECT_EQ(step_transition_observer.step_transition_count(), 1);
     }
+    dialog_model_->RemoveObserver(&step_transition_observer);
   }
 
   scoped_refptr<AuthenticatorRequestDialogModel> dialog_model_;
