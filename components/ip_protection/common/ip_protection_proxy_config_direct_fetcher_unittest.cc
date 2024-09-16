@@ -84,9 +84,7 @@ class IpProtectionProxyConfigDirectFetcherRetrieverTest : public testing::Test {
   void SetUp() override {
     retriever_ =
         std::make_unique<IpProtectionProxyConfigDirectFetcher::Retriever>(
-            base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-                &test_url_loader_factory_),
-            "test_service_type",
+            test_url_loader_factory_.GetSafeWeakWrapper(), "test_service_type",
             base::BindRepeating(
                 &IpProtectionProxyConfigDirectFetcherRetrieverTest::
                     AuthenticateCallback,

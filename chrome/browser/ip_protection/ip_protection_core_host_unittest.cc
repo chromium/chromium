@@ -105,10 +105,8 @@ class IpProtectionCoreHostTest : public testing::Test {
     core_host_ = std::make_unique<IpProtectionCoreHost>(
         IdentityManager(), tracking_protection_settings_.get(), prefs(),
         /*profile=*/nullptr);
-    core_host_->SetUpForTesting(
-        base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-            &test_url_loader_factory_),
-        std::move(bsa));
+    core_host_->SetUpForTesting(test_url_loader_factory_.GetSafeWeakWrapper(),
+                                std::move(bsa));
 
     token_server_get_proxy_config_url_ = GURL(base::StrCat(
         {net::features::kIpPrivacyTokenServer.Get(),

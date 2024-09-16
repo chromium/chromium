@@ -198,8 +198,7 @@ TEST_F(IpProtectionConfigHttpTest,
   // FeatureParams get used.
   std::unique_ptr<IpProtectionConfigHttp> http_fetcher =
       std::make_unique<IpProtectionConfigHttp>(
-          base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-              &test_url_loader_factory_));
+          test_url_loader_factory_.GetSafeWeakWrapper());
 
   auto request_type = quiche::BlindSignMessageRequestType::kGetInitialData;
   std::string authorization_header = "token";
