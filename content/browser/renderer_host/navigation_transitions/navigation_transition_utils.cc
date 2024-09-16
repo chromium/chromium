@@ -75,6 +75,10 @@ bool SupportsETC1NonPowerOfTwo(const NavigationRequest& navigation_request) {
   auto* rfh = navigation_request.frame_tree_node()->current_frame_host();
   auto* rwhv = rfh->GetView();
   auto* window_android = rwhv->GetNativeView()->GetWindowAndroid();
+  if (!window_android) {
+    // Can happen on x86 Android bots.
+    return false;
+  }
   auto* compositor = window_android->GetCompositor();
   return static_cast<CompositorImpl*>(compositor)->SupportsETC1NonPowerOfTwo();
 #else
@@ -351,6 +355,8 @@ bool NavigationTransitionUtils::
       // If we're navigating away from a crashed frame, it's not possible to
       // get a screenshot and fallback UI should be used instead.
       InvokeTestCallbackForNoScreenshot(navigation_request);
+      entry->navigation_transition_data().set_cache_hit_or_miss_reason(
+          CacheHitOrMissReason::kNavigateAwayFromCrashedPage);
       return false;
     case NavigationRequest::EarlyRenderFrameHostSwapType::kInitialFrame:
       // TODO(khushalsagar): Confirm whether this is needed for Chrome's NTP
@@ -359,6 +365,19 @@ bool NavigationTransitionUtils::
       break;
     case NavigationRequest::EarlyRenderFrameHostSwapType::kNavigationTransition:
       NOTREACHED();
+  }
+
+  RenderFrameHostImpl* current_rfh =
+      navigation_request.frame_tree_node()->current_frame_host();
+  RenderWidgetHostView* rwhv = current_rfh->GetView();
+  if (!rwhv) {
+    // The current frame is crashed but early swap didn't happen for this
+    // navigation.
+    CHECK(!current_rfh->IsRenderFrameLive());
+    InvokeTestCallbackForNoScreenshot(navigation_request);
+    entry->navigation_transition_data().set_cache_hit_or_miss_reason(
+        CacheHitOrMissReason::kNavigateAwayFromCrashedPageNoEarlySwap);
+    return false;
   }
 
   int request_sequence = navigation_controller.GetLastCommittedEntry()
@@ -389,10 +408,6 @@ bool NavigationTransitionUtils::
   // meaning we will capture at full-size, unless specified by tests.
   const gfx::Size output_size = g_output_size_for_test;
 
-  RenderFrameHostImpl* current_rfh =
-      navigation_request.frame_tree_node()->current_frame_host();
-  RenderWidgetHostView* rwhv = current_rfh->GetView();
-  CHECK(rwhv);
   // Make sure the browser is actively embedding a surface.
   CHECK(rwhv->IsSurfaceAvailableForCopy());
 
