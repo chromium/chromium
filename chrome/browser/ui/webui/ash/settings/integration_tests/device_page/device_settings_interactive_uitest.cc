@@ -373,7 +373,12 @@ IN_PROC_BROWSER_TEST_F(DeviceSettingsInteractiveUiTest, AddNewMouse) {
       WaitForElementTextContains(webcontents_id_, kMouseNameQuery, "mouse"));
 }
 
-IN_PROC_BROWSER_TEST_F(DeviceSettingsInteractiveUiTest, SixPackKeys) {
+#if BUILDFLAG(IS_CHROMEOS_ASH) && defined(MEMORY_SANITIZER)
+#define MAYBE_SixPackKeys DISABLED_SixPackKeys
+#else
+#define MAYBE_SixPackKeys SixPackKeys
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) && defined(MEMORY_SANITIZER)
+IN_PROC_BROWSER_TEST_F(DeviceSettingsInteractiveUiTest, MAYBE_SixPackKeys) {
   const DeepQuery kDeleteDropdownQuery{
       "os-settings-ui",      "os-settings-main",
       "main-page-container", "settings-device-page",
@@ -574,8 +579,13 @@ IN_PROC_BROWSER_TEST_F(DeviceSettingsInteractiveUiTest, AddNewTouchpad) {
                                  "Built-in Touchpad"));
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH) && defined(MEMORY_SANITIZER)
+#define MAYBE_KeyboardModifierRemapping DISABLED_KeyboardModifierRemapping
+#else
+#define MAYBE_KeyboardModifierRemapping KeyboardModifierRemapping
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) && defined(MEMORY_SANITIZER)
 IN_PROC_BROWSER_TEST_F(DeviceSettingsInteractiveUiTest,
-                       KeyboardModifierRemapping) {
+                       MAYBE_KeyboardModifierRemapping) {
   const DeepQuery kCtrlDropdownQuery{
       "os-settings-ui",       "os-settings-main", "main-page-container",
       "settings-device-page", "#remap-keys",      "#ctrlKey",
