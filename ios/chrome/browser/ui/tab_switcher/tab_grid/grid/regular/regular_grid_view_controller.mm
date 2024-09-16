@@ -6,6 +6,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/functional/bind.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/task/sequenced_task_runner.h"
 #import "components/tab_groups/tab_group_id.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
@@ -114,6 +115,7 @@ NSArray<UIView*>* GetTabGroupViewsToAnimateClosure(
                                    groupsWithTabsToClose
                   allInactiveTabs:(BOOL)animateAllInactiveTabs
                 completionHandler:(ProceduralBlock)completionHandler {
+  base::Time startTime = base::Time::Now();
   NSMutableArray<UIView*>* gridCells = [[NSMutableArray alloc] init];
 
   for (NSIndexPath* path in self.collectionView.indexPathsForVisibleItems) {
@@ -121,20 +123,31 @@ NSArray<UIView*>* GetTabGroupViewsToAnimateClosure(
         [self.diffableDataSource itemIdentifierForIndexPath:path];
     UICollectionViewCell* collectionViewCell =
         [self.collectionView cellForItemAtIndexPath:path];
-    if (item.type == GridItemType::kTab &&
-        tabsToClose.contains(item.tabSwitcherItem.identifier)) {
-      [gridCells addObject:collectionViewCell];
-    } else if (item.type == GridItemType::kGroup &&
-               groupsWithTabsToClose.contains(
-                   item.tabGroupItem.tabGroup->tab_group_id())) {
-      [gridCells addObjectsFromArray:
-                     GetTabGroupViewsToAnimateClosure(
-                         ObjCCastStrict<GroupGridCell>(collectionViewCell),
-                         groupsWithTabsToClose[item.tabGroupItem.tabGroup
-                                                   ->tab_group_id()])];
-    } else if (item.type == GridItemType::kInactiveTabsButton &&
-               animateAllInactiveTabs) {
-      [gridCells addObject:collectionViewCell];
+
+    switch (item.type) {
+      case GridItemType::kTab:
+        if (tabsToClose.contains(item.tabSwitcherItem.identifier)) {
+          [gridCells addObject:collectionViewCell];
+        }
+        break;
+      case GridItemType::kGroup:
+        if (groupsWithTabsToClose.contains(
+                item.tabGroupItem.tabGroup->tab_group_id())) {
+          [gridCells addObjectsFromArray:
+                         GetTabGroupViewsToAnimateClosure(
+                             ObjCCastStrict<GroupGridCell>(collectionViewCell),
+                             groupsWithTabsToClose[item.tabGroupItem.tabGroup
+                                                       ->tab_group_id()])];
+        }
+        break;
+      case GridItemType::kInactiveTabsButton:
+        if (animateAllInactiveTabs) {
+          [gridCells addObject:collectionViewCell];
+        }
+        break;
+      case GridItemType::kSuggestedActions:
+        // No-op.
+        break;
     }
   }
 
@@ -145,6 +158,11 @@ NSArray<UIView*>* GetTabGroupViewsToAnimateClosure(
   [_tabsClosureAnimation animateWithCompletion:^{
     [weakSelf onTabsClosureAnimationEndWithCompletion:completionHandler];
   }];
+
+  base::TimeDelta delta = base::Time::Now() - startTime;
+  base::UmaHistogramMicrosecondsTimes(
+      "Privacy.DeleteBrowsingData.Duration.TabsClosureAnimationStartDelay",
+      delta);
 }
 
 #pragma mark - Parent's functions

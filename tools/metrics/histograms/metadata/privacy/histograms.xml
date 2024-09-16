@@ -338,6 +338,18 @@ reviewer.
   </summary>
 </histogram>
 
+<histogram
+    name="Privacy.DeleteBrowsingData.Duration.TabsClosureAnimationStartDelay"
+    units="microseconds" expires_after="2025-03-09">
+  <owner>fsenra@chromium.org</owner>
+  <owner>msramek@chromium.org</owner>
+  <component>1456716</component>
+  <summary>
+    The microseconds that passed between the tabs closure animation being
+    triggered by Delete Browsing Data and the animation starting, iOS only.
+  </summary>
+</histogram>
+
 <histogram name="Privacy.DIPS.BounceCategory{DIPSRedirectType}{DIPSCookieMode}"
     enum="DIPSRedirectCategory" expires_after="2025-01-12">
   <owner>rtarpine@chromium.org</owner>
