@@ -1451,13 +1451,8 @@ BucketContext::OpenAndVerifyBackingStore(base::FilePath data_directory,
                                          PartitionedLockManager* lock_manager,
                                          bool is_first_attempt,
                                          bool create_if_missing) {
-  // Please see docs/open_and_verify_leveldb_database.code2flow, and the
-  // generated pdf (from https://code2flow.com).
-  // The intended strategy here is to have this function match that flowchart,
-  // where the flowchart should be seen as the 'master' logic template. Please
-  // check the git history of both to make sure they are in sync.
-  DCHECK_EQ(database_path.empty(), data_directory.empty());
-  DCHECK_EQ(blob_path.empty(), data_directory.empty());
+  CHECK_EQ(database_path.empty(), data_directory.empty());
+  CHECK_EQ(blob_path.empty(), data_directory.empty());
   TRACE_EVENT0("IndexedDB", "indexed_db::OpenAndVerifyLevelDBDatabase");
 
   bool in_memory = data_directory.empty();
@@ -1493,10 +1488,10 @@ BucketContext::OpenAndVerifyBackingStore(base::FilePath data_directory,
 
   // Open the leveldb database.
   scoped_refptr<LevelDBState> database_state;
-  bool is_disk_full;
   {
     TRACE_EVENT0("IndexedDB", "BucketContext::OpenLevelDB");
     base::TimeTicks begin_time = base::TimeTicks::Now();
+    bool is_disk_full = false;
     std::tie(database_state, status, is_disk_full) = CreateLevelDBState(
         leveldb_options_, database_path, create_if_missing,
         base::StringPrintf("indexedDB-bucket-%" PRId64,
@@ -1526,7 +1521,6 @@ BucketContext::OpenAndVerifyBackingStore(base::FilePath data_directory,
             base::BindRepeating(&BucketContext::OnDatabaseError,
                                 base::Unretained(this))));
     status = scopes->Initialize();
-
     if (!status.ok()) [[unlikely]] {
       return {nullptr, status, std::move(data_loss_info),
               /*is_disk_full=*/false};
@@ -1550,7 +1544,8 @@ BucketContext::OpenAndVerifyBackingStore(base::FilePath data_directory,
         INDEXED_DB_BACKING_STORE_OPEN_FAILED_IO_ERROR_CHECKING_SCHEMA,
         bucket_locator());
     return {nullptr, status, std::move(data_loss_info), /*is_disk_full=*/false};
-  } else if (!are_schemas_known) [[unlikely]] {
+  }
+  if (!are_schemas_known) [[unlikely]] {
     LOG(ERROR) << "IndexedDB backing store had unknown schema, treating it as "
                   "failure to open.";
     ReportOpenStatus(INDEXED_DB_BACKING_STORE_OPEN_FAILED_UNKNOWN_SCHEMA,
@@ -1565,14 +1560,11 @@ BucketContext::OpenAndVerifyBackingStore(base::FilePath data_directory,
   auto backing_store = std::make_unique<BackingStore>(
       backing_store_mode, bucket_locator(), blob_path,
       *transactional_leveldb_factory_, std::move(database),
-      base::BindRepeating(delegate_.on_files_written,
-                          /*flushed=*/true),
+      base::BindRepeating(delegate_.on_files_written, /*flushed=*/true),
       base::BindRepeating(&BucketContext::ReportOutstandingBlobs,
                           weak_factory_.GetWeakPtr()),
       base::SequencedTaskRunner::GetCurrentDefault());
-  status = backing_store->Initialize(
-      /*clean_active_blob_journal=*/!in_memory);
-
+  status = backing_store->Initialize(/*clean_active_blob_journal=*/!in_memory);
   if (!status.ok()) [[unlikely]] {
     return {nullptr, status, IndexedDBDataLossInfo(), /*is_disk_full=*/false};
   }
