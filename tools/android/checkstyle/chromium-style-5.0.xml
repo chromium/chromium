@@ -233,6 +233,12 @@
       <property name="format" value="/\*\*? ?\w+ ?\*/,|, /\*\*? ?\w+ ?\*/"/>
       <property name="message" value="Parameter comments should use the ErrorProne-aware syntax: /* paramName= */."/>
     </module>
+    <module name="RegexpSinglelineJava">
+      <property name="id" value="RemoveObserverMethodReference"/>
+      <property name="severity" value="warning"/>
+      <property name="format" value="removeObserver\([a-zA-Z]+::"/>
+      <property name="message"  value="Each method reference creates a new instance. The instance given to addObserver needs to be remembered and supplied to removeObserver."/>
+    </module>
   </module>
   <module name="RegexpMultiline">
     <property name="id" value="VisibleForTestingForTesting"/>
