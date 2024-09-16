@@ -90,13 +90,14 @@ class FakeSafeBrowsingUrlCheckerImpl
       const std::string& method,
       safe_browsing::SafeBrowsingUrlCheckerImpl::NativeCheckUrlCallback
           callback) override {
-    if (!is_async_check_ && client_ && client_->is_sync_response_paused()) {
-      client_->store_sync_callback(base::BindOnce(
-          &RunCheckUrlCallback, url, IsUrlUnsafe(url), std::move(callback)));
-    } else if (!is_async_check_ && client_ &&
-               client_->is_async_response_paused()) {
-      client_->store_async_callback(base::BindOnce(
-          &RunCheckUrlCallback, url, IsUrlUnsafe(url), std::move(callback)));
+    if (client_) {
+      if (is_async_check_) {
+        client_->store_async_callback(base::BindOnce(
+            &RunCheckUrlCallback, url, IsUrlUnsafe(url), std::move(callback)));
+      } else {
+        client_->store_sync_callback(base::BindOnce(
+            &RunCheckUrlCallback, url, IsUrlUnsafe(url), std::move(callback)));
+      }
     } else {
       RunCheckUrlCallback(url, IsUrlUnsafe(url), std::move(callback));
     }

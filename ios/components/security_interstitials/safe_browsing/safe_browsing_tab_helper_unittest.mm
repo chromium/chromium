@@ -156,6 +156,23 @@ class SafeBrowsingTabHelperTest
     }
   }
 
+  // Helper function to run all sync callbacks first then async callbacks.
+  void RunSyncCallbacksThenAsyncCallbacks() {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(^() {
+          client_.run_sync_callbacks();
+        }));
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(^() {
+          client_.run_async_callbacks();
+        }));
+
+    // TODO(crbug.com/359420122): Remove when clean up is complete.
+    if (SafeBrowsingDecisionArrivesBeforeResponse()) {
+      base::RunLoop().RunUntilIdle();
+    }
+  }
+
   web::WebTaskEnvironment task_environment_{
       web::WebTaskEnvironment::MainThreadType::IO};
   std::unique_ptr<web::FakeBrowserState> browser_state_;
@@ -187,10 +204,7 @@ TEST_P(SafeBrowsingTabHelperTest, SingleSafeRequestAndResponseSyncQuery) {
       safe_browsing::kSafeBrowsingAsyncRealTimeCheck);
   GURL url("http://chromium.test");
   EXPECT_TRUE(ShouldAllowRequestUrl(url).ShouldAllowNavigation());
-
-  if (SafeBrowsingDecisionArrivesBeforeResponse())
-    base::RunLoop().RunUntilIdle();
-
+  RunSyncCallbacksThenAsyncCallbacks();
   web::WebStatePolicyDecider::PolicyDecision response_decision =
       ShouldAllowResponseUrl(url);
   EXPECT_TRUE(response_decision.ShouldAllowNavigation());
@@ -203,7 +217,6 @@ TEST_P(SafeBrowsingTabHelperTest, SingleSafeRequestAndResponseAsyncQueryFirst) {
   scoped_feature_list_.InitAndEnableFeature(
       safe_browsing::kSafeBrowsingAsyncRealTimeCheck);
   GURL url("http://chromium.test");
-  client_.pause_sync_response();
   EXPECT_TRUE(ShouldAllowRequestUrl(url).ShouldAllowNavigation());
   RunAsyncCallbacksThenSyncCallbacks();
 
@@ -236,11 +249,7 @@ TEST_P(SafeBrowsingTabHelperTest, SingleUnsafeRequestAndResponseSyncQuery) {
   GURL url("http://" + FakeSafeBrowsingService::kUnsafeHost);
   EXPECT_TRUE(ShouldAllowRequestUrl(url).ShouldAllowNavigation());
   StoreUnsafeResource(url);
-
-  if (SafeBrowsingDecisionArrivesBeforeResponse()) {
-    base::RunLoop().RunUntilIdle();
-  }
-
+  RunSyncCallbacksThenAsyncCallbacks();
   web::WebStatePolicyDecider::PolicyDecision response_decision =
       ShouldAllowResponseUrl(url);
   EXPECT_TRUE(response_decision.ShouldCancelNavigation());
@@ -464,20 +473,14 @@ TEST_P(SafeBrowsingTabHelperTest, SafeRedirectChainWithAsyncCheck) {
   GURL url2("http://chromium2.test");
   GURL url3("http://chromium3.test");
   EXPECT_TRUE(ShouldAllowRequestUrl(url1).ShouldAllowNavigation());
-  if (SafeBrowsingDecisionArrivesBeforeResponse()) {
-    base::RunLoop().RunUntilIdle();
-  }
+  RunSyncCallbacksThenAsyncCallbacks();
 
   EXPECT_TRUE(ShouldAllowRequestUrl(url2).ShouldAllowNavigation());
-  if (SafeBrowsingDecisionArrivesBeforeResponse()) {
-    base::RunLoop().RunUntilIdle();
-  }
+  RunSyncCallbacksThenAsyncCallbacks();
   SimulateMainFrameRedirect();
 
   EXPECT_TRUE(ShouldAllowRequestUrl(url3).ShouldAllowNavigation());
-  if (SafeBrowsingDecisionArrivesBeforeResponse()) {
-    base::RunLoop().RunUntilIdle();
-  }
+  RunSyncCallbacksThenAsyncCallbacks();
   SimulateMainFrameRedirect();
 
   web::WebStatePolicyDecider::PolicyDecision response_decision =
@@ -523,20 +526,14 @@ TEST_P(SafeBrowsingTabHelperTest,
   GURL url3("http://chromium3.test");
   EXPECT_TRUE(ShouldAllowRequestUrl(url1).ShouldAllowNavigation());
   StoreUnsafeResource(url1);
-  if (SafeBrowsingDecisionArrivesBeforeResponse()) {
-    base::RunLoop().RunUntilIdle();
-  }
+  RunSyncCallbacksThenAsyncCallbacks();
 
   EXPECT_TRUE(ShouldAllowRequestUrl(url2).ShouldAllowNavigation());
-  if (SafeBrowsingDecisionArrivesBeforeResponse()) {
-    base::RunLoop().RunUntilIdle();
-  }
+  RunSyncCallbacksThenAsyncCallbacks();
   SimulateMainFrameRedirect();
 
   EXPECT_TRUE(ShouldAllowRequestUrl(url3).ShouldAllowNavigation());
-  if (SafeBrowsingDecisionArrivesBeforeResponse()) {
-    base::RunLoop().RunUntilIdle();
-  }
+  RunSyncCallbacksThenAsyncCallbacks();
   SimulateMainFrameRedirect();
 
   web::WebStatePolicyDecider::PolicyDecision response_decision =
@@ -582,21 +579,16 @@ TEST_P(SafeBrowsingTabHelperTest,
   GURL url2("http://" + FakeSafeBrowsingService::kUnsafeHost);
   GURL url3("http://chromium3.test");
   EXPECT_TRUE(ShouldAllowRequestUrl(url1).ShouldAllowNavigation());
-  if (SafeBrowsingDecisionArrivesBeforeResponse()) {
-    base::RunLoop().RunUntilIdle();
-  }
+  RunSyncCallbacksThenAsyncCallbacks();
 
   EXPECT_TRUE(ShouldAllowRequestUrl(url2).ShouldAllowNavigation());
   StoreUnsafeResource(url2);
-  if (SafeBrowsingDecisionArrivesBeforeResponse()) {
-    base::RunLoop().RunUntilIdle();
-  }
+  RunSyncCallbacksThenAsyncCallbacks();
   SimulateMainFrameRedirect();
 
   EXPECT_TRUE(ShouldAllowRequestUrl(url3).ShouldAllowNavigation());
-  if (SafeBrowsingDecisionArrivesBeforeResponse()) {
-    base::RunLoop().RunUntilIdle();
-  }
+  RunSyncCallbacksThenAsyncCallbacks();
+
   SimulateMainFrameRedirect();
 
   web::WebStatePolicyDecider::PolicyDecision response_decision =
@@ -641,21 +633,15 @@ TEST_P(SafeBrowsingTabHelperTest,
   GURL url2("http://chromium3.test");
   GURL url3("http://" + FakeSafeBrowsingService::kUnsafeHost);
   EXPECT_TRUE(ShouldAllowRequestUrl(url1).ShouldAllowNavigation());
-  if (SafeBrowsingDecisionArrivesBeforeResponse()) {
-    base::RunLoop().RunUntilIdle();
-  }
+  RunSyncCallbacksThenAsyncCallbacks();
 
   EXPECT_TRUE(ShouldAllowRequestUrl(url2).ShouldAllowNavigation());
-  if (SafeBrowsingDecisionArrivesBeforeResponse()) {
-    base::RunLoop().RunUntilIdle();
-  }
+  RunSyncCallbacksThenAsyncCallbacks();
   SimulateMainFrameRedirect();
 
   EXPECT_TRUE(ShouldAllowRequestUrl(url3).ShouldAllowNavigation());
   StoreUnsafeResource(url3);
-  if (SafeBrowsingDecisionArrivesBeforeResponse()) {
-    base::RunLoop().RunUntilIdle();
-  }
+  RunSyncCallbacksThenAsyncCallbacks();
   SimulateMainFrameRedirect();
 
   web::WebStatePolicyDecider::PolicyDecision response_decision =
@@ -703,22 +689,16 @@ TEST_P(SafeBrowsingTabHelperTest,
   GURL url3("http://" + FakeSafeBrowsingService::kUnsafeHost + "/3");
   EXPECT_TRUE(ShouldAllowRequestUrl(url1).ShouldAllowNavigation());
   StoreUnsafeResource(url1);
-  if (SafeBrowsingDecisionArrivesBeforeResponse()) {
-    base::RunLoop().RunUntilIdle();
-  }
+  RunSyncCallbacksThenAsyncCallbacks();
 
   EXPECT_TRUE(ShouldAllowRequestUrl(url2).ShouldAllowNavigation());
   StoreUnsafeResource(url2);
-  if (SafeBrowsingDecisionArrivesBeforeResponse()) {
-    base::RunLoop().RunUntilIdle();
-  }
+  RunSyncCallbacksThenAsyncCallbacks();
   SimulateMainFrameRedirect();
 
   EXPECT_TRUE(ShouldAllowRequestUrl(url3).ShouldAllowNavigation());
   StoreUnsafeResource(url3);
-  if (SafeBrowsingDecisionArrivesBeforeResponse()) {
-    base::RunLoop().RunUntilIdle();
-  }
+  RunSyncCallbacksThenAsyncCallbacks();
   SimulateMainFrameRedirect();
 
   web::WebStatePolicyDecider::PolicyDecision response_decision =
@@ -795,21 +775,17 @@ TEST_P(SafeBrowsingTabHelperTest,
   GURL url3("http://chromium3.test");
   EXPECT_TRUE(ShouldAllowRequestUrl(url1).ShouldAllowNavigation());
   StoreUnsafeResource(url1);
-  if (SafeBrowsingDecisionArrivesBeforeResponse()) {
-    base::RunLoop().RunUntilIdle();
-  }
+  RunSyncCallbacksThenAsyncCallbacks();
 
   EXPECT_TRUE(ShouldAllowRequestUrl(url2).ShouldAllowNavigation());
   StoreUnsafeResource(url2);
-  if (SafeBrowsingDecisionArrivesBeforeResponse())
-    base::RunLoop().RunUntilIdle();
+  RunSyncCallbacksThenAsyncCallbacks();
   SimulateMainFrameRedirect();
 
   // Interrupt the redirection chain with a brand new unrelated query. This
   // should be treated as safe.
   EXPECT_TRUE(ShouldAllowRequestUrl(url3).ShouldAllowNavigation());
-  if (SafeBrowsingDecisionArrivesBeforeResponse())
-    base::RunLoop().RunUntilIdle();
+  RunSyncCallbacksThenAsyncCallbacks();
 
   web::WebStatePolicyDecider::PolicyDecision response_decision =
       ShouldAllowResponseUrl(url3);

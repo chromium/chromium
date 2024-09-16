@@ -574,6 +574,11 @@ void SafeBrowsingTabHelper::PolicyDecider::OnMainFrameUrlAsyncQueryDecided(
       std::move(response_callback).Run(decision);
       pending_main_frame_redirect_chain_.clear();
     }
+
+    if (decision.ShouldCancelNavigation()) {
+      const GURL& url = query_data.query.url;
+      client_->OnMainFrameUrlQueryCancellationDecided(web_state(), url);
+    }
   }
 }
 

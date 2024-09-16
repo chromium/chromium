@@ -37,12 +37,6 @@ class FakeSafeBrowsingClient : public SafeBrowsingClient {
     return main_frame_cancellation_decided_called_;
   }
 
-  // Pauses sync responses to resume at a later point.
-  void pause_sync_response() { pause_sync_check_ = true; }
-
-  // Checks if logic should `pause_sync_check_`.
-  bool is_sync_response_paused() { return pause_sync_check_; }
-
   // Stores a sync callback in `sync_completion_callbacks_` to be ran at a later
   // point.
   void store_sync_callback(
@@ -55,13 +49,8 @@ class FakeSafeBrowsingClient : public SafeBrowsingClient {
     for (auto& callback : sync_completion_callbacks_) {
       std::move(callback).Run();
     }
+    sync_completion_callbacks_.clear();
   }
-
-  // Pauses async responses to resume at a later point.
-  void pause_async_response() { pause_async_check_ = true; }
-
-  // Checks if logic should `pause_async_check_`.
-  bool is_async_response_paused() { return pause_async_check_; }
 
   // Stores a async callback in `async_completion_callbacks_` to be ran at a
   // later point.
@@ -75,10 +64,9 @@ class FakeSafeBrowsingClient : public SafeBrowsingClient {
     for (auto& callback : async_completion_callbacks_) {
       std::move(callback).Run();
     }
+    async_completion_callbacks_.clear();
   }
 
-  bool pause_sync_check_ = false;
-  bool pause_async_check_ = false;
   std::vector<base::OnceCallback<void()>> sync_completion_callbacks_;
   std::vector<base::OnceCallback<void()>> async_completion_callbacks_;
 
