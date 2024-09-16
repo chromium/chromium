@@ -26,6 +26,11 @@
 #include "chrome/browser/ui/webui/predictors/predictors_ui.h"
 #include "chrome/browser/ui/webui/segmentation_internals/segmentation_internals_ui.h"
 #include "chrome/browser/ui/webui/signin_internals_ui.h"
+#include "chrome/browser/ui/webui/sync_internals/sync_internals_ui.h"
+#include "chrome/browser/ui/webui/translate_internals/translate_internals_ui.h"
+#include "chrome/browser/ui/webui/usb_internals/usb_internals_ui.h"
+#include "chrome/browser/ui/webui/user_actions/user_actions_ui.h"
+#include "chrome/browser/ui/webui/version/version_ui.h"
 #include "content/public/browser/webui_config_map.h"
 #include "extensions/buildflags/buildflags.h"
 #include "printing/buildflags/buildflags.h"
@@ -109,6 +114,11 @@ void RegisterChromeWebUIConfigs() {
   map.AddWebUIConfig(std::make_unique<NetInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<SegmentationInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<SignInInternalsUIConfig>());
+  map.AddWebUIConfig(std::make_unique<SyncInternalsUIConfig>());
+  map.AddWebUIConfig(std::make_unique<TranslateInternalsUIConfig>());
+  map.AddWebUIConfig(std::make_unique<UsbInternalsUIConfig>());
+  map.AddWebUIConfig(std::make_unique<UserActionsUIConfig>());
+  map.AddWebUIConfig(std::make_unique<VersionUIConfig>());
 
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
   map.AddWebUIConfig(std::make_unique<BluetoothInternalsUIConfig>());

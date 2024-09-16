@@ -49,11 +49,6 @@
 #include "chrome/browser/ui/webui/policy/policy_ui.h"
 #include "chrome/browser/ui/webui/privacy_sandbox/privacy_sandbox_internals_ui.h"
 #include "chrome/browser/ui/webui/suggest_internals/suggest_internals_ui.h"
-#include "chrome/browser/ui/webui/sync_internals/sync_internals_ui.h"
-#include "chrome/browser/ui/webui/translate_internals/translate_internals_ui.h"
-#include "chrome/browser/ui/webui/usb_internals/usb_internals_ui.h"
-#include "chrome/browser/ui/webui/user_actions/user_actions_ui.h"
-#include "chrome/browser/ui/webui/version/version_ui.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_features.h"
@@ -416,20 +411,10 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
                            ChromeSafeBrowsingLocalStateDelegate>;
   if (url.host_piece() == chrome::kChromeUISupervisedUserPassphrasePageHost)
     return &NewWebUI<ConstrainedWebDialogUI>;
-  if (url.host_piece() == chrome::kChromeUISyncInternalsHost)
-    return &NewWebUI<SyncInternalsUI>;
-  if (url.host_piece() == chrome::kChromeUITranslateInternalsHost)
-    return &NewWebUI<TranslateInternalsUI>;
   if (url.host_piece() ==
       history_clusters_internals::kChromeUIHistoryClustersInternalsHost) {
     return &NewWebUI<HistoryClustersInternalsUI>;
   }
-  if (url.host_piece() == chrome::kChromeUIUsbInternalsHost)
-    return &NewWebUI<UsbInternalsUI>;
-  if (url.host_piece() == chrome::kChromeUIUserActionsHost)
-    return &NewWebUI<UserActionsUI>;
-  if (url.host_piece() == chrome::kChromeUIVersionHost)
-    return &NewWebUI<VersionUI>;
 
 #if !BUILDFLAG(IS_ANDROID)
 #if !BUILDFLAG(IS_CHROMEOS)

@@ -5,7 +5,20 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SYNC_INTERNALS_SYNC_INTERNALS_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_SYNC_INTERNALS_SYNC_INTERNALS_UI_H_
 
+#include "chrome/common/url_constants.h"
+#include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/web_ui_controller.h"
+#include "content/public/browser/webui_config.h"
+
+class SyncInternalsUI;
+
+class SyncInternalsUIConfig
+    : public content::DefaultWebUIConfig<SyncInternalsUI> {
+ public:
+  SyncInternalsUIConfig()
+      : DefaultWebUIConfig(content::kChromeUIScheme,
+                           chrome::kChromeUISyncInternalsHost) {}
+};
 
 // The implementation for the chrome://sync-internals page.
 class SyncInternalsUI : public content::WebUIController {

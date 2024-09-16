@@ -5,7 +5,19 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_USER_ACTIONS_USER_ACTIONS_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_USER_ACTIONS_USER_ACTIONS_UI_H_
 
+#include "chrome/common/url_constants.h"
+#include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/web_ui_controller.h"
+#include "content/public/browser/webui_config.h"
+
+class UserActionsUI;
+
+class UserActionsUIConfig : public content::DefaultWebUIConfig<UserActionsUI> {
+ public:
+  UserActionsUIConfig()
+      : DefaultWebUIConfig(content::kChromeUIScheme,
+                           chrome::kChromeUIUserActionsHost) {}
+};
 
 // The UI for chrome://user-actions/
 class UserActionsUI : public content::WebUIController {
