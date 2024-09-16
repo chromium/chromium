@@ -1124,6 +1124,7 @@ void WallpaperControllerImpl::ConfirmPreviewWallpaper() {
     return;
   }
   std::move(confirm_preview_wallpaper_callback_).Run();
+  reload_preview_wallpaper_callback_.Reset();
 
   // Ensure shield is applied after confirming the preview wallpaper.
   if (ShouldApplyShield())
