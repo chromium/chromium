@@ -824,8 +824,9 @@ void SystemNetworkContextManager::OnNetworkServiceCreated(
   // requires the SystemNetworkContextManager to be ready. It does not need to
   // be recreated every time the network service is restarted (and should not,
   // since it expects to outlive the NetworkTimeTracker).
+  // g_browser_process can be null in some tests.
   if (base::FeatureList::IsEnabled(features::kCertVerificationNetworkTime) &&
-      !cert_verifier_time_updater_) {
+      !cert_verifier_time_updater_ && g_browser_process) {
     cert_verifier_time_updater_ =
         std::make_unique<CertVerifierServiceTimeUpdater>(
             g_browser_process->network_time_tracker());
