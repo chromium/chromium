@@ -54,7 +54,6 @@ import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
-import org.chromium.chrome.browser.history.HistoryManager;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthCoordinatorFactory;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthManager;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -511,14 +510,13 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
     public void onPostInflationStartup() {
         super.onPostInflationStartup();
         mCustomTabHeightStrategy.onPostInflationStartup();
-        if (HistoryManager.isAppSpecificHistoryEnabled() && mAppMenuCoordinator != null) {
-            mCustomTabHistoryIPHController =
-                    new CustomTabHistoryIPHController(
-                            mActivity,
-                            mActivityTabProvider,
-                            mProfileSupplier,
-                            mAppMenuCoordinator.getAppMenuHandler());
-        }
+        mCustomTabHistoryIPHController =
+                CustomTabAppMenuHelper.maybeCreateHistoryIPHController(
+                        mAppMenuCoordinator,
+                        mActivity,
+                        mActivityTabProvider,
+                        mProfileSupplier,
+                        mIntentDataProvider.get());
     }
 
     @Override

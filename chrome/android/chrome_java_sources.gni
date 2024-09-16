@@ -457,6 +457,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/customtabs/CustomTabActivity.java",
   "java/src/org/chromium/chrome/browser/customtabs/CustomTabActivityClientConnectionKeeper.java",
   "java/src/org/chromium/chrome/browser/customtabs/CustomTabActivityLifecycleUmaTracker.java",
+  "java/src/org/chromium/chrome/browser/customtabs/CustomTabAppMenuHelper.java",
   "java/src/org/chromium/chrome/browser/customtabs/CustomTabAppMenuPropertiesDelegate.java",
   "java/src/org/chromium/chrome/browser/customtabs/CustomTabAuthUrlHeuristics.java",
   "java/src/org/chromium/chrome/browser/customtabs/CustomTabBottomBarDelegate.java",
