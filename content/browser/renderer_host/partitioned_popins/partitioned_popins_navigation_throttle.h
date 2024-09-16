@@ -23,10 +23,15 @@ class CONTENT_EXPORT PartitionedPopinsNavigationThrottle
   const char* GetNameForLogging() override;
   NavigationThrottle::ThrottleCheckResult WillStartRequest() override;
   NavigationThrottle::ThrottleCheckResult WillRedirectRequest() override;
+  NavigationThrottle::ThrottleCheckResult WillProcessResponse() override;
 
  private:
   explicit PartitionedPopinsNavigationThrottle(
       NavigationHandle* navigation_handle);
+
+  // Whether the `Popin-Policy` response header blocks access.
+  // See https://explainers-by-googlers.github.io/partitioned-popins/
+  bool DoesPopinPolicyBlockResponse();
 };
 
 }  // namespace content

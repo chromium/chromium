@@ -4,6 +4,7 @@
 
 #include "content/browser/renderer_host/partitioned_popins/partitioned_popins_navigation_throttle.h"
 
+#include "content/browser/renderer_host/partitioned_popins/partitioned_popins_policy.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/navigation_handle.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -50,6 +51,12 @@ PartitionedPopinsNavigationThrottle::WillStartRequest() {
 
 NavigationThrottle::ThrottleCheckResult
 PartitionedPopinsNavigationThrottle::WillRedirectRequest() {
+  // Partitioned popin top-frames must respond with a policy that permits the
+  // top-frame-origin of the popin opener.
+  // See https://explainers-by-googlers.github.io/partitioned-popins/
+  if (DoesPopinPolicyBlockResponse()) {
+    return BLOCK_REQUEST;
+  }
   // Partitioned popin top-frames cannot redirect to HTTP pages, if this occurs
   // we need to block the request.
   // See https://explainers-by-googlers.github.io/partitioned-popins/
@@ -59,8 +66,48 @@ PartitionedPopinsNavigationThrottle::WillRedirectRequest() {
   return PROCEED;
 }
 
+NavigationThrottle::ThrottleCheckResult
+PartitionedPopinsNavigationThrottle::WillProcessResponse() {
+  // Partitioned popin top-frames must respond with a policy that permits the
+  // top-frame-origin of the popin opener.
+  // See https://explainers-by-googlers.github.io/partitioned-popins/
+  if (DoesPopinPolicyBlockResponse()) {
+    return BLOCK_RESPONSE;
+  }
+  return PROCEED;
+}
+
 PartitionedPopinsNavigationThrottle::PartitionedPopinsNavigationThrottle(
     NavigationHandle* navigation_handle)
     : NavigationThrottle(navigation_handle) {}
+
+bool PartitionedPopinsNavigationThrottle::DoesPopinPolicyBlockResponse() {
+  const net::HttpResponseHeaders* response_headers =
+      navigation_handle()->GetResponseHeaders();
+  const WebContentsImpl* web_contents =
+      static_cast<WebContentsImpl*>(navigation_handle()->GetWebContents());
+  // TODO(crbug.com/340606651): This should default closed, but for now we
+  // default open so that we can split the core logic changes from having to
+  // fix a bunch of existing tests.
+  if (!web_contents || !response_headers ||
+      !response_headers->HasHeader("Popin-Policy")) {
+    return false;
+  }
+  std::string untrusted_popin_policy;
+  response_headers->GetNormalizedHeader("Popin-Policy",
+                                        &untrusted_popin_policy);
+  PartitionedPopinsPolicy policy(untrusted_popin_policy);
+  if (policy.wildcard) {
+    return false;
+  }
+  for (const url::Origin& policy_origin : policy.origins) {
+    if (policy_origin == web_contents->PartitionedPopinOpener()
+                             ->GetMainFrame()
+                             ->GetLastCommittedOrigin()) {
+      return false;
+    }
+  }
+  return true;
+}
 
 }  // namespace content

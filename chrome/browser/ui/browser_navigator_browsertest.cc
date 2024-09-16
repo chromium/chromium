@@ -2350,25 +2350,162 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, PopinHttpNavigation) {
                 .ExtractString());
 }
 
-// Intercepts requests with a 'redirect' query parameter and 302's the request
-// to the location specified.
-std::unique_ptr<net::test_server::HttpResponse> HandlePopinServerRedirect(
+// Intercepts requests and makes them 302 to the 'redirect' query parameter
+// if it's set. If the 'popin-policy' query parameter is set, it sets the
+// 'Popin-Policy' response header to that value.
+std::unique_ptr<net::test_server::HttpResponse> PopinRequestHandler(
     const net::test_server::HttpRequest& request) {
-  const GURL& url = request.GetURL();
-  net::test_server::RequestQuery query = net::test_server::ParseQuery(url);
-  if (query.find("redirect") == query.end()) {
-    return nullptr;
-  }
-  std::string destination = query["redirect"][0];
   auto response = std::make_unique<net::test_server::BasicHttpResponse>();
-  response->AddCustomHeader("Location", destination);
-  response->set_code(net::HTTP_FOUND);
   response->set_content_type("text/html");
-  response->set_content(base::StringPrintf(
-      "<html><head></head><body>Redirecting to %s</body></html>",
-      destination.c_str()));
+  response->set_content("<html></html");
+  net::test_server::RequestQuery query =
+      net::test_server::ParseQuery(request.GetURL());
+  if (query.find("redirect") != query.end()) {
+    response->AddCustomHeader("Location", query["redirect"][0]);
+    response->set_code(net::HTTP_FOUND);
+  } else {
+    response->set_code(net::HTTP_OK);
+  }
+  if (query.find("popin_policy") != query.end()) {
+    std::string proposed_policy = query["popin_policy"][0];
+    // We need to fixup the dynamic port so that the policies can match.
+    base::ReplaceSubstringsAfterOffset(&proposed_policy, 0, "a.test",
+                                       "a.test:" + request.GetURL().port());
+    response->AddCustomHeader("Popin-Policy", "partitioned=" + proposed_policy);
+  }
   return response;
 }
+
+struct PopinPolicyTestParams {
+  std::string description;
+  std::string relative_url;
+  bool policy_allows;
+};
+
+class BrowserNavigatorPopinPolicyTest
+    : public BrowserNavigatorTest,
+      public testing::WithParamInterface<
+          std::tuple<PopinPolicyTestParams, PopinPolicyTestParams>> {
+ public:
+  PopinPolicyTestParams redirect_case() { return std::get<0>(GetParam()); }
+  PopinPolicyTestParams target_case() { return std::get<1>(GetParam()); }
+};
+
+// Test that the HTTP response header `Popin-Policy` is respected.
+IN_PROC_BROWSER_TEST_P(BrowserNavigatorPopinPolicyTest, PopinPolicy) {
+  // Setup servers.
+  embedded_https_test_server().SetSSLConfig(
+      net::EmbeddedTestServer::CERT_TEST_NAMES);
+  embedded_https_test_server().ServeFilesFromSourceDirectory(
+      GetChromeTestDataDir());
+  embedded_https_test_server().RegisterRequestHandler(
+      base::BindRepeating(&PopinRequestHandler));
+  ASSERT_TRUE(embedded_https_test_server().Start());
+
+  // Navigate to a.test.
+  const GURL url = embedded_https_test_server().GetURL("a.test", "/empty.html");
+  content::WebContents* tab_web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  // Open the popin and ensure the target page only loads if both the redirect
+  // and the target policy permit it.
+  SCOPED_TRACE(redirect_case().description + " -> " +
+               target_case().description);
+  content::WebContentsAddedObserver new_tab_observer;
+  content::TestNavigationObserver nav_observer(nullptr);
+  nav_observer.StartWatchingNewWebContents();
+  EXPECT_TRUE(content::ExecJs(
+      tab_web_contents, "window.open('" +
+                            embedded_https_test_server()
+                                .GetURL("a.test", redirect_case().relative_url)
+                                .spec() +
+                            embedded_https_test_server()
+                                .GetURL("a.test", target_case().relative_url)
+                                .spec() +
+                            "', '_blank', 'popin')"));
+  content::WebContents* popin_web_contents = new_tab_observer.GetWebContents();
+  EXPECT_TRUE(popin_web_contents);
+  nav_observer.Wait();
+  EXPECT_EQ((redirect_case().policy_allows && target_case().policy_allows)
+                ? "a.test"
+                : "chromewebdata",
+            content::EvalJs(popin_web_contents, "window.location.hostname")
+                .ExtractString());
+  BrowserWindow::FindBrowserWindowWithWebContents(popin_web_contents)->Close();
+}
+
+// Test all policy combinations.
+INSTANTIATE_TEST_SUITE_P(
+    /*no prefix*/,
+    BrowserNavigatorPopinPolicyTest,
+    testing::Combine(
+        testing::ValuesIn(std::vector<PopinPolicyTestParams>{
+            {
+                "unset policy",
+                "/empty.html?redirect=",
+                /*policy_allows*/ true,
+            },
+            {
+                "wildcard policy",
+                "/empty.html?popin_policy=*&redirect=",
+                /*policy_allows*/ true,
+            },
+            {
+                "none policy",
+                "/empty.html?popin_policy=()&redirect=",
+                /*policy_allows*/ false,
+            },
+            {
+                "origin a policy",
+                "/empty.html?popin_policy=(\"https://a.test/\")&redirect=",
+                /*policy_allows*/ true,
+            },
+            {
+                "origin b policy",
+                "/empty.html?popin_policy=(\"https://b.test/\")&redirect=",
+                /*policy_allows*/ false,
+            },
+            {
+                "origins policy",
+                "/empty.html?popin_policy=(\"https://a.test/\" "
+                "\"https://b.test/\")&redirect=",
+                /*policy_allows*/ true,
+            },
+        }),
+        testing::ValuesIn(std::vector<PopinPolicyTestParams>{
+            {
+                "unset policy",
+                "/empty.html",
+                /*policy_allows*/ true,
+            },
+            {
+                "wildcard policy",
+                "/empty.html?popin_policy=*",
+                /*policy_allows*/ true,
+            },
+            {
+                "none policy",
+                "/empty.html?popin_policy=()",
+                /*policy_allows*/ false,
+            },
+            {
+                "origin a policy",
+                "/empty.html?popin_policy=(\"https://a.test/\")",
+                /*policy_allows*/ true,
+            },
+            {
+                "origin b policy",
+                "/empty.html?popin_policy=(\"https://b.test/\")",
+                /*policy_allows*/ false,
+            },
+            {
+                "origins policy",
+                "/empty.html?popin_policy=(\"https://a.test/\" "
+                "\"https://b.test/\")",
+                /*policy_allows*/ true,
+            },
+        })));
 
 // Test that a popin cannot navigate to an HTTP page
 IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, PopinHttpRedirectNavigation) {
@@ -2376,7 +2513,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, PopinHttpRedirectNavigation) {
   embedded_https_test_server().SetSSLConfig(
       net::EmbeddedTestServer::CERT_TEST_NAMES);
   embedded_https_test_server().RegisterRequestHandler(
-      base::BindRepeating(&HandlePopinServerRedirect));
+      base::BindRepeating(&PopinRequestHandler));
   ASSERT_TRUE(embedded_https_test_server().Start());
   ASSERT_TRUE(embedded_test_server()->Start());
 
