@@ -104,6 +104,11 @@ class DemoSession : public session_manager::SessionManagerObserver,
 
   static std::string DemoConfigToString(DemoModeConfig config);
 
+  // TODO(b/366092466): Refactor demo code that not related to ChromeOS UI to
+  // //chromeos/ash/components/demo_mode.
+
+  // DO NOT USE. Please use `IsDeviceInDemoMode()` in
+  // chromeos/ash/components/demo_mode/utils/demo_session_utils.h
   // Whether the device is set up to run demo sessions.
   static bool IsDeviceInDemoMode();
 
