@@ -3908,6 +3908,12 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_CONTENT_SUGGESTIONS_PRICE_TRACKING_PROMO_TITLE" desc="Title for Price Tracking Promotion in Magic Stack">
           Get price tracking notifications
       </message>
+      <message name="IDS_IOS_CONTENT_SUGGESTIONS_PRICE_TRACKING_PROMO_SNACKBAR_TITLE" desc="Snackbar title indicating price tracking notifications have been turned on">
+          Price tracking notifications turned on
+      </message>
+      <message name="IDS_IOS_CONTENT_SUGGESTIONS_PRICE_TRACKING_PROMO_SNACKBAR_MANAGE" desc="Snackbar action enabling management of price tracking notifications">
+          Manage
+      </message>
       <message name="IDS_IOS_PRINT_PDF_ERROR_SUBTITLE" desc="Message of a popup window indicating that the printing operation did not succeed. [Length: 100em] [iOS only]">
         Make sure you have a network connection, and try again.
       </message>
