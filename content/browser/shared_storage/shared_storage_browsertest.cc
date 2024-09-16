@@ -7039,6 +7039,41 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
   EXPECT_EQ(expected_error, extra_result.error);
 }
 
+class SharedStorageFencedFrameDocumentGetFeatureDisabledBrowserTest
+    : public SharedStorageFencedFrameInteractionBrowserTest {
+ public:
+  SharedStorageFencedFrameDocumentGetFeatureDisabledBrowserTest() {
+    fenced_frame_feature_.InitAndDisableFeature(
+        blink::features::kFencedFramesLocalUnpartitionedDataAccess);
+  }
+
+ private:
+  base::test::ScopedFeatureList fenced_frame_feature_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    SharedStorageFencedFrameDocumentGetFeatureDisabledBrowserTest,
+    GetDisabledInFencedFrameWithFeatureOff) {
+  GURL main_frame_url = https_server()->GetURL("a.test", kSimplePagePath);
+  EXPECT_TRUE(NavigateToURL(shell(), main_frame_url));
+
+  EXPECT_TRUE(ExecJs(shell(), R"(
+    sharedStorage.set('test', 'apple');
+  )"));
+
+  FrameTreeNode* fenced_frame_root_node =
+      CreateFencedFrame(https_server()->GetURL("a.test", kFencedFramePath));
+
+  EvalJsResult get_result = EvalJs(fenced_frame_root_node, R"(
+    sharedStorage.get('test');
+  )");
+
+  EXPECT_THAT(
+      get_result.error,
+      testing::HasSubstr("Cannot call get() in a fenced frame with feature "
+                         "FencedFramesLocalUnpartitionedDataAccess disabled."));
+}
+
 class SharedStorageFencedFrameDocumentGetBrowserTest
     : public SharedStorageFencedFrameInteractionBrowserTest {
  public:

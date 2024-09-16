@@ -144,9 +144,7 @@ bool CanGetOutsideWorklet(ScriptState* script_state) {
   LocalFrame* frame = To<LocalDOMWindow>(execution_context)->GetFrame();
   DCHECK(frame);
 
-  if (!blink::features::IsFencedFramesEnabled() ||
-      !base::FeatureList::IsEnabled(
-          blink::features::kFencedFramesLocalUnpartitionedDataAccess)) {
+  if (!blink::features::IsFencedFramesEnabled()) {
     return false;
   }
 
@@ -633,6 +631,15 @@ ScriptPromise<IDLString> SharedStorage::get(ScriptState* script_state,
       resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
           script_state->GetIsolate(), DOMExceptionCode::kOperationError,
           "Cannot call get() outside of a fenced frame."));
+      return promise;
+    }
+
+    if (!base::FeatureList::IsEnabled(
+            blink::features::kFencedFramesLocalUnpartitionedDataAccess)) {
+      resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
+          script_state->GetIsolate(), DOMExceptionCode::kOperationError,
+          "Cannot call get() in a fenced frame with feature "
+          "FencedFramesLocalUnpartitionedDataAccess disabled."));
       return promise;
     }
   }
