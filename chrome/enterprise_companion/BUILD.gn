@@ -57,6 +57,7 @@ source_set("base") {
     "app/app_client_base.cc",
     "app/app_client_base.h",
     "app/app_fetch_policies.cc",
+    "app/app_install_if_needed.cc",
     "app/app_installer.cc",
     "app/app_server.cc",
     "app/app_shutdown.cc",

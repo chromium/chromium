@@ -67,6 +67,11 @@ std::unique_ptr<App> CreateAppInstall();
 
 std::unique_ptr<App> CreateAppUninstall();
 
+// AppInstallIfNeeded installs the application if the device requires
+// cloud management and no installation already exists. Otherwise, it exits
+// successfully.
+std::unique_ptr<App> CreateAppInstallIfNeeded();
+
 #if BUILDFLAG(IS_MAC)
 // Creates an App which handles network requests for another process. If
 // the current process is running as root, the app will set the process' uid and
