@@ -30,26 +30,16 @@ void EditorConsentStore::SetConsentStatus(ConsentStatus consent_status) {
 }
 
 void EditorConsentStore::ProcessConsentAction(ConsentAction consent_action) {
-  ConsentStatus current_consent_status = GetConsentStatus();
-  // The consent action can only affect the consent status if the status is
-  // pending, unset or invalid (invalid is treated as unset). If the user
-  // already approved or (implicitly) declined the consent, there should not be
-  // any response from the consent page because it should stop being shown to
-  // the user.
-  if (current_consent_status == ConsentStatus::kInvalid ||
-      current_consent_status == ConsentStatus::kPending ||
-      current_consent_status == ConsentStatus::kUnset) {
-    if (consent_action == ConsentAction::kApprove) {
-      SetConsentStatus(ConsentStatus::kApproved);
-      metrics_recorder_->LogEditorState(EditorStates::kApproveConsent);
-      return;
-    }
+  if (consent_action == ConsentAction::kApprove) {
+    SetConsentStatus(ConsentStatus::kApproved);
+    metrics_recorder_->LogEditorState(EditorStates::kApproveConsent);
+    return;
+  }
 
-    if (consent_action == ConsentAction::kDecline) {
-      SetConsentStatus(ConsentStatus::kDeclined);
-      OverrideUserPref(/*new_pref_value=*/false);
-      metrics_recorder_->LogEditorState(EditorStates::kDeclineConsent);
-    }
+  if (consent_action == ConsentAction::kDecline) {
+    SetConsentStatus(ConsentStatus::kDeclined);
+    OverrideUserPref(/*new_pref_value=*/false);
+    metrics_recorder_->LogEditorState(EditorStates::kDeclineConsent);
   }
 }
 

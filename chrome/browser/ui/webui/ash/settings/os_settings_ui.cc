@@ -42,6 +42,7 @@
 #include "chrome/browser/ui/webui/ash/settings/pages/apps/app_notification_handler.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/apps/app_parental_controls_handler.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/privacy/app_permission_handler.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/search/magic_boost_notice_page_handler_factory.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/storage/device_storage_handler.h"
 #include "chrome/browser/ui/webui/ash/settings/pref_names.h"
 #include "chrome/browser/ui/webui/ash/settings/search/search_handler.h"
@@ -445,6 +446,14 @@ void OSSettingsUI::BindInterface(
     mojo::PendingReceiver<date_time::mojom::PageHandlerFactory> receiver) {
   date_time_handler_factory_ = std::make_unique<DateTimeHandlerFactory>(
       web_ui(), Profile::FromWebUI(web_ui()), std::move(receiver));
+}
+
+void OSSettingsUI::BindInterface(
+    mojo::PendingReceiver<magic_boost_handler::mojom::PageHandlerFactory>
+        receiver) {
+  magic_boost_notice_page_handler_factory_ =
+      std::make_unique<MagicBoostNoticePageHandlerFactory>(
+          Profile::FromWebUI(web_ui()), std::move(receiver));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(OSSettingsUI)

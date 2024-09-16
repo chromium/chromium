@@ -8634,6 +8634,7 @@ static_library("browser_generated_files") {
       "//chrome/browser/ui/webui/ash/settings/pages/device/input_device_settings:mojom",
       "//chrome/browser/ui/webui/ash/settings/pages/files/mojom",
       "//chrome/browser/ui/webui/ash/settings/pages/privacy/mojom",
+      "//chrome/browser/ui/webui/ash/settings/pages/search/mojom",
       "//chrome/browser/ui/webui/ash/settings/search/mojom",
       "//chrome/browser/ui/webui/ash/skyvault:mojo_bindings",
       "//chrome/browser/ui/webui/ash/vm:mojo_bindings",
