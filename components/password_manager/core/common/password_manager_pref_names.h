@@ -290,7 +290,7 @@ inline constexpr char kProfileStoreDateLastUsedForFilling[] =
 inline constexpr char kAccountStoreDateLastUsedForFilling[] =
     "password_manager.account_store_date_last_used_for_filling";
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
 // Integer indicating how many times user saw biometric authentication before
 // filling promo.
 inline constexpr char kBiometricAuthBeforeFillingPromoShownCounter[] =
@@ -299,8 +299,6 @@ inline constexpr char kBiometricAuthBeforeFillingPromoShownCounter[] =
 // before filling promo.
 inline constexpr char kHasUserInteractedWithBiometricAuthPromo[] =
     "password_manager.has_user_interacted_with_biometric_authentication_promo";
-#endif
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
 // Boolean indicating whether user had ever biometrics available on their
 // device.
 inline constexpr char kHadBiometricsAvailable[] =
