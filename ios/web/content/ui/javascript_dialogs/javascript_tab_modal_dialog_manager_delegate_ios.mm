@@ -6,6 +6,8 @@
 
 #import "components/javascript_dialogs/ios/tab_modal_dialog_view_ios.h"
 #import "content/public/browser/javascript_dialog_manager.h"
+#import "content/public/browser/visibility.h"
+#import "content/public/browser/web_contents.h"
 
 JavaScriptTabModalDialogManagerDelegateIOS::
     JavaScriptTabModalDialogManagerDelegateIOS(
@@ -39,7 +41,9 @@ void JavaScriptTabModalDialogManagerDelegateIOS::SetTabNeedsAttention(
     bool attention) {}
 
 bool JavaScriptTabModalDialogManagerDelegateIOS::IsWebContentsForemost() {
-  return false;
+  // TODO(crbug.com/361215210): Need to find a more effective way to determine
+  // if the web content is active or in the foreground.
+  return web_contents_->GetVisibility() == content::Visibility::VISIBLE;
 }
 
 bool JavaScriptTabModalDialogManagerDelegateIOS::IsApp() {

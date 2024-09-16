@@ -4,8 +4,11 @@
 
 #import "components/javascript_dialogs/ios/tab_modal_dialog_view_ios.h"
 
+#import "base/strings/sys_string_conversions.h"
 #import "content/public/browser/browser_thread.h"
 #import "content/public/browser/web_contents.h"
+#import "content/public/common/javascript_dialog_type.h"
+#import "ui/gfx/native_widget_types.h"
 
 namespace javascript_dialogs {
 
@@ -32,11 +35,26 @@ base::WeakPtr<TabModalDialogViewIOS> TabModalDialogViewIOS::Create(
 TabModalDialogViewIOS::~TabModalDialogViewIOS() {}
 
 void TabModalDialogViewIOS::CloseDialogWithoutCallback() {
+  coordinator_ = nullptr;
   delete this;
 }
 
 std::u16string TabModalDialogViewIOS::GetUserInput() {
   return std::u16string();
+}
+
+void TabModalDialogViewIOS::Accept(const std::u16string& prompt_text) {
+  if (callback_on_button_clicked_) {
+    std::move(callback_on_button_clicked_).Run(true, prompt_text);
+  }
+  delete this;
+}
+
+void TabModalDialogViewIOS::Cancel() {
+  if (callback_on_cancelled_) {
+    std::move(callback_on_cancelled_).Run();
+  }
+  delete this;
 }
 
 TabModalDialogViewIOS::TabModalDialogViewIOS(
@@ -52,6 +70,17 @@ TabModalDialogViewIOS::TabModalDialogViewIOS(
     : callback_on_button_clicked_(std::move(callback_on_button_clicked)),
       callback_on_cancelled_(std::move(callback_on_cancelled)) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  gfx::NativeWindow native_window =
+      parent_web_contents->GetTopLevelNativeWindow();
+
+  coordinator_ = [[JavascriptDialogViewCoordinator alloc]
+      initWithBaseViewController:native_window.Get().rootViewController
+                      dialogView:this
+                      dialogType:dialog_type
+                           title:base::SysUTF16ToNSString(title)
+                     messageText:base::SysUTF16ToNSString(message_text)
+               defaultPromptText:base::SysUTF16ToNSString(default_prompt_text)];
 }
 
 }  // namespace javascript_dialogs

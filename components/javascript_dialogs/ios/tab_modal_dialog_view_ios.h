@@ -9,8 +9,11 @@
 
 #import "base/functional/callback.h"
 #import "base/memory/weak_ptr.h"
+#import "components/javascript_dialogs/ios/javascript_dialog_view_coordinator.h"
 #import "components/javascript_dialogs/tab_modal_dialog_view.h"
 #import "content/public/browser/javascript_dialog_manager.h"
+
+@class JavascriptDialogViewCoordinator;
 
 namespace javascript_dialogs {
 
@@ -38,6 +41,9 @@ class TabModalDialogViewIOS : public TabModalDialogView {
   void CloseDialogWithoutCallback() override;
   std::u16string GetUserInput() override;
 
+  void Accept(const std::u16string& prompt_text);
+  void Cancel();
+
  private:
   TabModalDialogViewIOS(content::WebContents* parent_web_contents,
                         content::WebContents* alerting_web_contents,
@@ -50,6 +56,7 @@ class TabModalDialogViewIOS : public TabModalDialogView {
                         base::OnceClosure callback_on_cancelled);
 
   std::unique_ptr<TabModalDialogViewIOS> dialog_;
+  JavascriptDialogViewCoordinator* __strong coordinator_;
 
   content::JavaScriptDialogManager::DialogClosedCallback
       callback_on_button_clicked_;
