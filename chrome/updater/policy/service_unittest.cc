@@ -4,6 +4,7 @@
 
 #include "chrome/updater/policy/service.h"
 
+#include <map>
 #include <memory>
 #include <optional>
 #include <set>
@@ -12,8 +13,11 @@
 #include <vector>
 
 #include "base/memory/ref_counted.h"
+#include "base/ranges/algorithm.h"
+#include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "chrome/enterprise_companion/global_constants.h"
 #include "chrome/updater/external_constants.h"
 #include "chrome/updater/policy/dm_policy_manager.h"
 #include "chrome/updater/policy/manager.h"
@@ -89,17 +93,20 @@ class FakePolicyManager : public PolicyManagerInterface {
   void SetPackageCacheExpirationTimeDays(int expiration_time) {
     cache_expiration_time_ = std::make_optional(expiration_time);
   }
+  void SetInstallPolicy(const std::string& app_id, int install_policy) {
+    install_policies_[app_id] = install_policy;
+  }
   std::optional<int> GetEffectivePolicyForAppInstalls(
       const std::string& app_id) const override {
-    return std::nullopt;
+    auto value = install_policies_.find(app_id);
+    return value == install_policies_.end() ? std::nullopt
+                                            : std::make_optional(value->second);
   }
   std::optional<int> GetEffectivePolicyForAppUpdates(
       const std::string& app_id) const override {
     auto value = update_policies_.find(app_id);
-    if (value == update_policies_.end()) {
-      return std::nullopt;
-    }
-    return value->second;
+    return value == update_policies_.end() ? std::nullopt
+                                           : std::make_optional(value->second);
   }
   void SetUpdatePolicy(const std::string& app_id, int update_policy) {
     update_policies_[app_id] = update_policy;
@@ -151,13 +158,17 @@ class FakePolicyManager : public PolicyManagerInterface {
   }
   std::optional<std::vector<std::string>> GetAppsWithPolicy() const override {
     std::set<std::string> apps_with_policy;
-    for (const auto& policy_entry : update_policies_) {
-      apps_with_policy.insert(policy_entry.first);
-    }
-    for (const auto& policy_entry : channels_) {
-      apps_with_policy.insert(policy_entry.first);
-    }
-
+    base::ranges::transform(
+        install_policies_,
+        std::inserter(apps_with_policy, apps_with_policy.end()),
+        [](const auto& pair) { return pair.first; });
+    base::ranges::transform(
+        update_policies_,
+        std::inserter(apps_with_policy, apps_with_policy.end()),
+        [](const auto& pair) { return pair.first; });
+    base::ranges::transform(
+        channels_, std::inserter(apps_with_policy, apps_with_policy.end()),
+        [](const auto& pair) { return pair.first; });
     return std::vector<std::string>(apps_with_policy.begin(),
                                     apps_with_policy.end());
   }
@@ -174,6 +185,7 @@ class FakePolicyManager : public PolicyManagerInterface {
   std::string proxy_mode_;
   std::string proxy_server_;
   std::string proxy_pac_url_;
+  std::map<std::string, int> install_policies_;
   std::map<std::string, int> update_policies_;
   std::map<std::string, std::string> channels_;
   std::map<std::string, std::string> target_version_prefixes_;
@@ -296,13 +308,16 @@ TEST(PolicyService, MultiplePolicyManagers) {
   updates_suppressed_times.duration_minute_ = 30;
   manager->SetUpdatesSuppressedTimes(updates_suppressed_times);
   manager->SetPackageCacheSizeLimitMBytes(1000);
+  manager->SetInstallPolicy("app1", 0);
   manager->SetChannel("app1", "channel_gp");
   manager->SetUpdatePolicy("app2", 1);
+  manager->SetUpdatePolicy(enterprise_companion::kCompanionAppId, 0);
   managers.push_back(std::move(manager));
 
   manager = base::MakeRefCounted<FakePolicyManager>(true, "device_management");
   manager->SetUpdatesSuppressedTimes(updates_suppressed_times);
   manager->SetPackageCacheExpirationTimeDays(60);
+  manager->SetInstallPolicy("app1", 1);
   manager->SetChannel("app1", "channel_dm");
   manager->SetUpdatePolicy("app1", 3);
   managers.push_back(std::move(manager));
@@ -311,14 +326,16 @@ TEST(PolicyService, MultiplePolicyManagers) {
   manager->SetProxyMode("direct");
   manager->SetProxyPacUrl("url://proxyurl");
   manager->SetProxyServer("test-server");
+  manager->SetDownloadPreference("cacheable");
   updates_suppressed_times.start_hour_ = 1;
   updates_suppressed_times.start_minute_ = 1;
   updates_suppressed_times.duration_minute_ = 20;
+  manager->SetInstallPolicy(enterprise_companion::kCompanionAppId, 0);
   manager->SetUpdatesSuppressedTimes(updates_suppressed_times);
   manager->SetChannel("app1", "channel_imaginary");
   manager->SetTargetVersionPrefix("app1", "103.3.");
   manager->SetUpdatePolicy("app1", 2);
-  manager->SetDownloadPreference("cacheable");
+  manager->SetInstallPolicy("app2", 2);
   managers.push_back(std::move(manager));
 
   // The default policy manager.
@@ -372,6 +389,32 @@ TEST(PolicyService, MultiplePolicyManagers) {
   EXPECT_EQ(channel_conflict_policy.policy, "channel_dm");
   EXPECT_EQ(channel_status.policy(), "channel_gp");
 
+  PolicyStatus<int> companion_app_install_status =
+      policy_service->GetPolicyForAppInstalls(
+          enterprise_companion::kCompanionAppId);
+  EXPECT_FALSE(companion_app_install_status)
+      << "Compaion app install cannot be disabled.";
+
+  PolicyStatus<int> companion_app_update_status =
+      policy_service->GetPolicyForAppUpdates(
+          enterprise_companion::kCompanionAppId);
+  EXPECT_FALSE(companion_app_update_status)
+      << "Compaion app update cannot be disabled.";
+
+  PolicyStatus<int> app1_install_status =
+      policy_service->GetPolicyForAppInstalls("app1");
+  ASSERT_TRUE(app1_install_status);
+  const PolicyStatus<int>::Entry& app1_install_policy =
+      app1_install_status.effective_policy().value();
+  EXPECT_EQ(app1_install_policy.source, "group_policy");
+  EXPECT_EQ(app1_install_policy.policy, 0);
+  EXPECT_TRUE(app1_install_status.conflict_policy());
+  const PolicyStatus<int>::Entry& app1_install_conflict_policy =
+      app1_install_status.conflict_policy().value();
+  EXPECT_EQ(app1_install_conflict_policy.policy, 1);
+  EXPECT_EQ(app1_install_conflict_policy.source, "device_management");
+  EXPECT_EQ(app1_install_status.policy(), 0);
+
   PolicyStatus<int> app1_update_status =
       policy_service->GetPolicyForAppUpdates("app1");
   ASSERT_TRUE(app1_update_status);
@@ -386,6 +429,20 @@ TEST(PolicyService, MultiplePolicyManagers) {
   EXPECT_EQ(app1_update_conflict_policy.policy, 2);
   EXPECT_EQ(app1_update_conflict_policy.source, "imaginary");
   EXPECT_EQ(app1_update_status.policy(), 3);
+
+  PolicyStatus<int> app2_install_status =
+      policy_service->GetPolicyForAppInstalls("app2");
+  ASSERT_TRUE(app2_install_status);
+  const PolicyStatus<int>::Entry& app2_install_policy =
+      app2_install_status.effective_policy().value();
+  EXPECT_EQ(app2_install_policy.source, "imaginary");
+  EXPECT_EQ(app2_install_policy.policy, 2);
+  EXPECT_TRUE(app2_install_status.conflict_policy());
+  const PolicyStatus<int>::Entry& app2_install_conflict_policy =
+      app2_install_status.conflict_policy().value();
+  EXPECT_EQ(app2_install_conflict_policy.policy, 1);
+  EXPECT_EQ(app2_install_conflict_policy.source, "Default");
+  EXPECT_EQ(app2_install_status.policy(), 2);
 
   PolicyStatus<int> app2_update_status =
       policy_service->GetPolicyForAppUpdates("app2");
@@ -408,30 +465,35 @@ TEST(PolicyService, MultiplePolicyManagers) {
   EXPECT_EQ(download_preference_status.conflict_policy(), std::nullopt);
 
   EXPECT_EQ(policy_service->GetAllPoliciesAsString(),
-            "{\n"
-            "  CloudPolicyOverridesPlatformPolicy = 0 (group_policy)\n"
-            "  LastCheckPeriod = 270 (Default)\n"
-            "  UpdatesSuppressed = "
-            "{StartHour: 5, StartMinute: 10, Duration: 30} (group_policy)\n"
-            "  DownloadPreference = cacheable (imaginary)\n"
-            "  PackageCacheSizeLimit = 1000 MB (group_policy)\n"
-            "  PackageCacheExpires = 60 days (device_management)\n"
-            "  ProxyMode = direct (imaginary)\n"
-            "  ProxyPacURL = url://proxyurl (imaginary)\n"
-            "  ProxyServer = test-server (imaginary)\n"
-            "  \"app1\": {\n"
-            "    Install = 1 (Default)\n"
-            "    Update = 3 (device_management)\n"
-            "    TargetChannel = channel_gp (group_policy)\n"
-            "    TargetVersionPrefix = 103.3. (imaginary)\n"
-            "    RollbackToTargetVersionAllowed = 0 (Default)\n"
-            "  }\n"
-            "  \"app2\": {\n"
-            "    Install = 1 (Default)\n"
-            "    Update = 1 (group_policy)\n"
-            "    RollbackToTargetVersionAllowed = 0 (Default)\n"
-            "  }\n"
-            "}\n");
+            base::StringPrintf(
+                "{\n"
+                "  CloudPolicyOverridesPlatformPolicy = 0 (group_policy)\n"
+                "  LastCheckPeriod = 270 (Default)\n"
+                "  UpdatesSuppressed = "
+                "{StartHour: 5, StartMinute: 10, Duration: 30} (group_policy)\n"
+                "  DownloadPreference = cacheable (imaginary)\n"
+                "  PackageCacheSizeLimit = 1000 MB (group_policy)\n"
+                "  PackageCacheExpires = 60 days (device_management)\n"
+                "  ProxyMode = direct (imaginary)\n"
+                "  ProxyPacURL = url://proxyurl (imaginary)\n"
+                "  ProxyServer = test-server (imaginary)\n"
+                "  \"app1\": {\n"
+                "    Install = 0 (group_policy)\n"
+                "    Update = 3 (device_management)\n"
+                "    TargetChannel = channel_gp (group_policy)\n"
+                "    TargetVersionPrefix = 103.3. (imaginary)\n"
+                "    RollbackToTargetVersionAllowed = 0 (Default)\n"
+                "  }\n"
+                "  \"app2\": {\n"
+                "    Install = 2 (imaginary)\n"
+                "    Update = 1 (group_policy)\n"
+                "    RollbackToTargetVersionAllowed = 0 (Default)\n"
+                "  }\n"
+                "  \"%s\": {\n"
+                "    \n"
+                "  }\n"
+                "}\n",
+                enterprise_companion::kCompanionAppId));
   EXPECT_EQ(
       policy_service->GetAllPolicies(),
       base::Value(
@@ -472,8 +534,8 @@ TEST(PolicyService, MultiplePolicyManagers) {
               .Set("app1",
                    base::Value::Dict()
                        .Set("Install", base::Value::Dict()
-                                           .Set("value", 1)
-                                           .Set("source", "Default"))
+                                           .Set("value", 0)
+                                           .Set("source", "group_policy"))
                        .Set("Update", base::Value::Dict()
                                           .Set("value", 3)
                                           .Set("source", "device_management"))
@@ -495,8 +557,8 @@ TEST(PolicyService, MultiplePolicyManagers) {
               .Set("app2",
                    base::Value::Dict()
                        .Set("Install", base::Value::Dict()
-                                           .Set("value", 1)
-                                           .Set("source", "Default"))
+                                           .Set("value", 2)
+                                           .Set("source", "imaginary"))
                        .Set("Update", base::Value::Dict()
                                           .Set("value", 1)
                                           .Set("source", "group_policy"))
@@ -507,7 +569,9 @@ TEST(PolicyService, MultiplePolicyManagers) {
                        .Set("RollbackToTargetVersionAllowed",
                             base::Value::Dict()
                                 .Set("value", false)
-                                .Set("source", "Default")))));
+                                .Set("source", "Default")))
+              .Set(enterprise_companion::kCompanionAppId,
+                   base::Value::Dict())));
 }
 
 TEST(PolicyService, MultiplePolicyManagers_WithUnmanagedOnes) {

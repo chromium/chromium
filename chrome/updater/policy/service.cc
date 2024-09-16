@@ -307,10 +307,6 @@ PolicyStatus<int> PolicyService::GetPolicyForAppInstalls(
 PolicyStatus<int> PolicyService::GetPolicyForAppUpdates(
     const std::string& app_id) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (IsUpdaterOrCompanionApp(app_id) || app_id == kQualificationAppId) {
-    // Updater itself, companion app and qualification can't be disabled.
-    return {};
-  }
   return QueryAppPolicy(
       &PolicyManagerInterface::GetEffectivePolicyForAppUpdates, app_id);
 }
@@ -703,6 +699,11 @@ PolicyStatus<T> PolicyService::QueryAppPolicy(
     AppPolicyQueryFunction<T> policy_query_function,
     const std::string& app_id) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (IsUpdaterOrCompanionApp(app_id) || app_id == kQualificationAppId) {
+    // Updater itself, qualification and the companion app are excluded from
+    // policy settings.
+    return {};
+  }
   PolicyStatus<T> status;
   for (const scoped_refptr<PolicyManagerInterface>& policy_manager :
        policy_managers_.managers) {
