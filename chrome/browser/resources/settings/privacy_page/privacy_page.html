@@ -109,26 +109,27 @@
 </if>
 
       <template is="dom-if" route-path="/content/v8" no-search>
-        <settings-subpage page-title="$i18n{siteSettingsCategoryJavascriptJit}"
+        <settings-subpage
+            page-title="$i18n{siteSettingsCategoryJavascriptOptimizer}"
             search-label="$i18n{siteSettingsAllSitesSearch}"
             search-term="{{searchFilter_}}">
           <div class="content-settings-header secondary">
-            $i18n{siteSettingsJavascriptJitDescription}
+            $i18n{siteSettingsJavascriptOptimizerDescription}
           </div>
           <settings-category-default-radio-group
-              category="[[contentSettingsTypesEnum_.JAVASCRIPT_JIT]]"
+              category="[[contentSettingsTypesEnum_.JAVASCRIPT_OPTIMIZER]]"
               allow-option-label=
-                  "$i18n{siteSettingsJavascriptJitAllowed}"
+                  "$i18n{siteSettingsJavascriptOptimizerAllowed}"
               allow-option-sub-label=
-                  "$i18n{siteSettingsJavascriptJitAllowedSubLabel}"
-              block-option-label="$i18n{siteSettingsJavascriptJitBlocked}"
+                  "$i18n{siteSettingsJavascriptOptimizerAllowedSubLabel}"
+              block-option-label="$i18n{siteSettingsJavascriptOptimizerBlocked}"
               block-option-sub-label=
-                  "$i18n{siteSettingsJavascriptJitBlockedSubLabel}">
+                  "$i18n{siteSettingsJavascriptOptimizerBlockedSubLabel}">
           </settings-category-default-radio-group>
           <category-setting-exceptions
-              category="[[contentSettingsTypesEnum_.JAVASCRIPT_JIT]]"
-              allow-header="$i18n{siteSettingsJavascriptJitAllowedExceptions}"
-              block-header="$i18n{siteSettingsJavascriptJitBlockedExceptions}"
+              category="[[contentSettingsTypesEnum_.JAVASCRIPT_OPTIMIZER]]"
+              allow-header="$i18n{siteSettingsJavascriptOptimizerAllowedExceptions}"
+              block-header="$i18n{siteSettingsJavascriptOptimizerBlockedExceptions}"
               search-filter="[[searchFilter_]]">
           </category-setting-exceptions>
         </settings-subpage>

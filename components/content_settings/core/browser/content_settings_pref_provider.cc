@@ -58,6 +58,18 @@ const char
 constexpr char kObsoleteFederatedIdentityActiveSesssionExceptionsPref[] =
     "profile.content_settings.exceptions.fedcm_active_session";
 
+#if !BUILDFLAG(IS_IOS)
+// This setting was accidentally bound to a UI surface intended for a different
+// setting (https://crbug.com/364820109). It should not have been settable
+// except via enterprise policy, so it is temporarily cleaned up here to revert
+// it to its default value.
+// TODO(https://crbug.com/367181093): clean this up.
+constexpr char kBug364820109ExceptionSettingToClear[] =
+    "profile.content_settings.exceptions.javascript_jit";
+constexpr char kBug364820109AlreadyWorkedAroundPref[] =
+    "profile.did_work_around_bug_364820109_exceptions";
+#endif  // !BUILDFLAG(IS_IOS)
+
 }  // namespace
 
 // ////////////////////////////////////////////////////////////////////////////
@@ -94,6 +106,10 @@ void PrefProvider::RegisterProfilePrefs(
       kObsoleteGetDisplayMediaSetAutoSelectAllScreensAllowedForUrlsExceptionsPref);
   registry->RegisterListPref(
       kObsoleteFederatedIdentityActiveSesssionExceptionsPref);
+#if !BUILDFLAG(IS_IOS)
+  // TODO(https://crbug.com/367181093): clean this up.
+  registry->RegisterBooleanPref(kBug364820109AlreadyWorkedAroundPref, false);
+#endif  // !BUILDFLAG(IS_IOS)
 }
 
 PrefProvider::PrefProvider(PrefService* prefs,
@@ -427,6 +443,14 @@ void PrefProvider::DiscardOrMigrateObsoletePreferences() {
   prefs_->ClearPref(
       kObsoleteGetDisplayMediaSetAutoSelectAllScreensAllowedForUrlsExceptionsPref);
   prefs_->ClearPref(kObsoleteFederatedIdentityActiveSesssionExceptionsPref);
+
+#if !BUILDFLAG(IS_IOS)
+  // TODO(https://crbug.com/367181093): clean this up.
+  if (!prefs_->GetBoolean(kBug364820109AlreadyWorkedAroundPref)) {
+    prefs_->ClearPref(kBug364820109ExceptionSettingToClear);
+    prefs_->SetBoolean(kBug364820109AlreadyWorkedAroundPref, true);
+  }
+#endif  // !BUILDFLAG(IS_IOS)
 }
 
 void PrefProvider::SetClockForTesting(const base::Clock* clock) {
