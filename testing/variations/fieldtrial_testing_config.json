@@ -19209,13 +19209,15 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "EnabledWithPreconnect_20240916",
                     "params": {
-                        "use_predictions": "false"
+                        "use_predictions": "true"
                     },
                     "enable_features": [
-                        "LoadingPredictorPrefetch",
                         "LoadingPredictorUseOptimizationGuide"
+                    ],
+                    "disable_features": [
+                        "LoadingPredictorPrefetch"
                     ]
                 }
             ]
