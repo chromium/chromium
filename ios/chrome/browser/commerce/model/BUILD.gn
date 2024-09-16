@@ -75,6 +75,7 @@ source_set("session_proto_db") {
     "//components/keyed_service/ios:ios",
     "//components/leveldb_proto:leveldb_proto",
     "//components/session_proto_db:session_proto_db",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/web/public:public",
   ]
 }
