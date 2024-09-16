@@ -29,17 +29,17 @@ IOSChromeAffiliationServiceFactory::GetInstance() {
 
 // static
 affiliations::AffiliationService*
-IOSChromeAffiliationServiceFactory::GetForBrowserState(
-    web::BrowserState* browser_state) {
-  CHECK(browser_state, base::NotFatalUntil::M123);
-
-  // Always use the original Profile, not incognito. AffiliationService is
-  // safe to use in incognito.
-  auto* original_profile =
-      ProfileIOS::FromBrowserState(browser_state)->GetOriginalProfile();
+IOSChromeAffiliationServiceFactory::GetForProfile(ProfileIOS* profile) {
+  CHECK(profile, base::NotFatalUntil::M123);
 
   return static_cast<affiliations::AffiliationService*>(
-      GetInstance()->GetServiceForBrowserState(original_profile, true));
+      GetInstance()->GetServiceForBrowserState(profile, true));
+}
+
+// static
+affiliations::AffiliationService*
+IOSChromeAffiliationServiceFactory::GetForBrowserState(ProfileIOS* profile) {
+  return GetForProfile(profile);
 }
 
 IOSChromeAffiliationServiceFactory::IOSChromeAffiliationServiceFactory()
@@ -66,4 +66,9 @@ IOSChromeAffiliationServiceFactory::BuildServiceInstanceFor(
           affiliations::kAffiliationDatabaseFileName));
 
   return affiliation_service;
+}
+
+web::BrowserState* IOSChromeAffiliationServiceFactory::GetBrowserStateToUse(
+    web::BrowserState* context) const {
+  return GetBrowserStateRedirectedInIncognito(context);
 }

@@ -85,7 +85,7 @@ IOSChromeAccountPasswordStoreFactory::BuildServiceInstanceFor(
           browser_state->GetPrefs(), os_crypt_async));
 
   AffiliationService* affiliation_service =
-      IOSChromeAffiliationServiceFactory::GetForBrowserState(context);
+      IOSChromeAffiliationServiceFactory::GetForBrowserState(browser_state);
   std::unique_ptr<AffiliatedMatchHelper> affiliated_match_helper =
       std::make_unique<AffiliatedMatchHelper>(affiliation_service);
 
