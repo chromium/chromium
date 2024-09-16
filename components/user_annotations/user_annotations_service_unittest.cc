@@ -15,6 +15,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/optimization_guide/core/mock_optimization_guide_model_executor.h"
 #include "components/optimization_guide/core/test_optimization_guide_decider.h"
@@ -80,10 +81,13 @@ class UserAnnotationsServiceTest : public testing::Test,
       optimization_guide::proto::AXTreeUpdate ax_tree_update,
       const autofill::FormData& form_data) {
     UserAnnotationsEntries entries;
+    std::unique_ptr<autofill::FormStructure> form =
+        std::make_unique<autofill::FormStructure>(form_data);
     service()->AddFormSubmission(
-        ax_tree_update, form_data,
+        ax_tree_update, std::move(form),
         base::BindLambdaForTesting(
             [&entries](
+                std::unique_ptr<autofill::FormStructure> form,
                 UserAnnotationsEntries upserted_entries,
                 base::OnceCallback<void(bool)> prompt_acceptance_callback) {
               entries = upserted_entries;
@@ -405,9 +409,11 @@ TEST_P(UserAnnotationsServiceTest, FormNotImported) {
           test_request.forms_annotations_response, /*log_entry=*/nullptr));
 
   service()->AddFormSubmission(
-      test_request.ax_tree, test_request.form_data,
+      test_request.ax_tree,
+      std::make_unique<autofill::FormStructure>(test_request.form_data),
       base::BindLambdaForTesting(
-          [](UserAnnotationsEntries upserted_entries,
+          [](std::unique_ptr<autofill::FormStructure> form,
+             UserAnnotationsEntries upserted_entries,
              base::OnceCallback<void(bool)> prompt_acceptance_callback) {
             std::move(prompt_acceptance_callback).Run(false);
           }));

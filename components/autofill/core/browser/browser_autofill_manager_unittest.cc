@@ -7216,7 +7216,7 @@ TEST_F(BrowserAutofillManagerTest,
   ON_CALL(autofill_client_, GetAutofillPredictionImprovementsDelegate)
       .WillByDefault(Return(&delegate));
   EXPECT_CALL(delegate, MaybeImportForm)
-      .WillOnce(MoveArg<2>(&import_form_callback));
+      .WillOnce(MoveArg<1>(&import_form_callback));
 
   // Fill the form.
   FormData response_data =
@@ -7236,7 +7236,8 @@ TEST_F(BrowserAutofillManagerTest,
   entry.set_key("key");
   entry.set_value("value");
   std::move(import_form_callback)
-      .Run(/*to_be_upserted_entries=*/{std::move(entry)},
+      .Run(std::make_unique<FormStructure>(response_data),
+           /*to_be_upserted_entries=*/{std::move(entry)},
            /*prompt_acceptance_callback=*/base::DoNothing());
   EXPECT_TRUE(adm.GetProfiles().empty());
 }
@@ -7250,12 +7251,20 @@ TEST_F(BrowserAutofillManagerTest,
   FormsSeen({form});
 
   NiceMock<MockAutofillPredictionImprovementsDelegate> delegate;
-  AutofillPredictionImprovementsDelegate::ImportFormCallback
-      import_form_callback;
   ON_CALL(autofill_client_, GetAutofillPredictionImprovementsDelegate)
       .WillByDefault(Return(&delegate));
-  EXPECT_CALL(delegate, MaybeImportForm)
-      .WillOnce(MoveArg<2>(&import_form_callback));
+  // This simulates that UserAnnotations failed to import data from the
+  // submitted form.
+  ON_CALL(delegate, MaybeImportForm)
+      .WillByDefault(
+          [](std::unique_ptr<autofill::FormStructure> form,
+             AutofillPredictionImprovementsDelegate::ImportFormCallback
+                 callback) {
+            std::move(callback).Run(
+                std::move(form),
+                /*to_be_upserted_entries=*/{},
+                /*prompt_acceptance_callback=*/base::DoNothing());
+          });
 
   // Fill the form.
   FormData response_data =
@@ -7269,9 +7278,6 @@ TEST_F(BrowserAutofillManagerTest,
   adm.ClearProfiles();
   EXPECT_TRUE(adm.GetProfiles().empty());
   FormSubmitted(response_data);
-  std::move(import_form_callback)
-      .Run(/*to_be_upserted_entries=*/{},
-           /*prompt_acceptance_callback=*/base::DoNothing());
   EXPECT_FALSE(adm.GetProfiles().empty());
 }
 

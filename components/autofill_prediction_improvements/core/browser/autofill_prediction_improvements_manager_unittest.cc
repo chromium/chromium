@@ -333,18 +333,18 @@ TEST_P(AutofillPredictionImprovementsManagerImportFormTest,
                   .label = u"First Name",
                   .value = u"Jane"}}};
   autofill::FormData form_data = autofill::test::GetFormData(form_description);
-  autofill::FormStructure eligible_form_structure(form_data);
-  autofill::FormStructureTestApi form_test_api(eligible_form_structure);
+  std::unique_ptr<autofill::FormStructure> eligible_form_structure =
+      std::make_unique<autofill::FormStructure>(form_data);
 
-  autofill::AutofillField& prediction_improvement_field =
-      form_test_api.PushField();
+  test_api(*eligible_form_structure)
+      .PushField()
 #if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
-  prediction_improvement_field.set_heuristic_type(
-      autofill::HeuristicSource::kPredictionImprovementRegexes,
-      autofill::IMPROVED_PREDICTION);
+      .set_heuristic_type(
+          autofill::HeuristicSource::kPredictionImprovementRegexes,
+          autofill::IMPROVED_PREDICTION);
 #else
-  prediction_improvement_field.set_heuristic_type(
-      autofill::GetActiveHeuristicSource(), autofill::IMPROVED_PREDICTION);
+      .set_heuristic_type(autofill::GetActiveHeuristicSource(),
+                          autofill::IMPROVED_PREDICTION);
 #endif
   base::MockCallback<
       autofill::AutofillPredictionImprovementsDelegate::ImportFormCallback>
@@ -358,8 +358,8 @@ TEST_P(AutofillPredictionImprovementsManagerImportFormTest,
   std::vector<optimization_guide::proto::UserAnnotationsEntry>
       user_annotations_entries;
   EXPECT_CALL(import_form_callback, Run)
-      .WillOnce(SaveArg<0>(&user_annotations_entries));
-  manager_->MaybeImportForm(form_data, eligible_form_structure,
+      .WillOnce(SaveArg<1>(&user_annotations_entries));
+  manager_->MaybeImportForm(std::move(eligible_form_structure),
                             import_form_callback.Get());
   std::move(axtree_received_callback).Run({});
   EXPECT_THAT(user_annotations_entries.empty(), !GetParam());
@@ -384,10 +384,10 @@ TEST_F(AutofillPredictionImprovementsManagerTest,
   std::vector<optimization_guide::proto::UserAnnotationsEntry>
       user_annotations_entries;
   EXPECT_CALL(import_form_callback, Run)
-      .WillOnce(SaveArg<0>(&user_annotations_entries));
-  manager_->MaybeImportForm(/*form=*/{},
-                            /*form_structure=*/autofill::FormStructure({}),
-                            import_form_callback.Get());
+      .WillOnce(SaveArg<1>(&user_annotations_entries));
+  manager_->MaybeImportForm(
+      std::make_unique<autofill::FormStructure>(autofill::FormData()),
+      import_form_callback.Get());
   EXPECT_TRUE(user_annotations_entries.empty());
 }
 

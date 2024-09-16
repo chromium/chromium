@@ -13,10 +13,10 @@ MockAutofillPredictionImprovementsDelegate::
   // By default make `MaybeImportForm` signal that the form was not imported by
   // user annotations so that Autofill's usual import logic will run in tests.
   ON_CALL(*this, MaybeImportForm)
-      .WillByDefault([](const autofill::FormData& form,
-                        const autofill::FormStructure& form_structure,
+      .WillByDefault([](std::unique_ptr<autofill::FormStructure> form,
                         ImportFormCallback callback) {
         std::move(callback).Run(
+            std::move(form),
             /*to_be_upserted_entries=*/{},
             /*prompt_acceptance_callback=*/base::DoNothing());
       });

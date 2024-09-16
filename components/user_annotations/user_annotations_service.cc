@@ -12,7 +12,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/browser/form_structure.h"
 #include "components/optimization_guide/core/optimization_guide_decider.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
@@ -100,23 +100,26 @@ bool UserAnnotationsService::ShouldAddFormSubmissionForURL(const GURL& url) {
 
 void UserAnnotationsService::AddFormSubmission(
     optimization_guide::proto::AXTreeUpdate ax_tree_update,
-    const autofill::FormData& form_data,
+    std::unique_ptr<autofill::FormStructure> form,
     ImportFormCallback callback) {
   // Construct request.
   optimization_guide::proto::FormsAnnotationsRequest request;
   optimization_guide::proto::PageContext* page_context =
       request.mutable_page_context();
-  page_context->set_url(form_data.url().spec());
+  page_context->set_url(form->source_url().spec());
   page_context->set_title(ax_tree_update.tree_data().title());
   *page_context->mutable_ax_tree_data() = std::move(ax_tree_update);
-  *request.mutable_form_data() = optimization_guide::ToFormDataProto(form_data);
-  RetrieveAllEntries(base::BindOnce(
-      &UserAnnotationsService::ExecuteModelWithEntries,
-      weak_ptr_factory_.GetWeakPtr(), request, std::move(callback)));
+  *request.mutable_form_data() =
+      optimization_guide::ToFormDataProto(form->ToFormData());
+  RetrieveAllEntries(
+      base::BindOnce(&UserAnnotationsService::ExecuteModelWithEntries,
+                     weak_ptr_factory_.GetWeakPtr(), request, std::move(form),
+                     std::move(callback)));
 }
 
 void UserAnnotationsService::ExecuteModelWithEntries(
     optimization_guide::proto::FormsAnnotationsRequest request,
+    std::unique_ptr<autofill::FormStructure> form,
     ImportFormCallback callback,
     UserAnnotationsEntries entries) {
   for (const auto& entry : entries) {
@@ -125,7 +128,8 @@ void UserAnnotationsService::ExecuteModelWithEntries(
   model_executor_->ExecuteModel(
       optimization_guide::ModelBasedCapabilityKey::kFormsAnnotations, request,
       base::BindOnce(&UserAnnotationsService::OnModelExecuted,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     std::move(form)));
 }
 
 void UserAnnotationsService::RetrieveAllEntries(
@@ -168,10 +172,12 @@ void UserAnnotationsService::Shutdown() {}
 
 void UserAnnotationsService::OnModelExecuted(
     ImportFormCallback callback,
+    std::unique_ptr<autofill::FormStructure> form,
     optimization_guide::OptimizationGuideModelExecutionResult result,
     std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry) {
   if (!result.has_value()) {
-    SendFormSubmissionResult(std::move(callback), /*to_be_upserted_entries=*/{},
+    SendFormSubmissionResult(std::move(callback), std::move(form),
+                             /*to_be_upserted_entries=*/{},
                              UserAnnotationsExecutionResult::kResponseError);
     return;
   }
@@ -181,20 +187,22 @@ void UserAnnotationsService::OnModelExecuted(
           optimization_guide::proto::FormsAnnotationsResponse>(result.value());
   if (!maybe_response) {
     SendFormSubmissionResult(
-        std::move(callback), /*to_be_upserted_entries=*/{},
+        std::move(callback), std::move(form),
+        /*to_be_upserted_entries=*/{},
         UserAnnotationsExecutionResult::kResponseMalformed);
     return;
   }
 
   if (ShouldPersistUserAnnotations() && !user_annotations_database_) {
     SendFormSubmissionResult(
-        std::move(callback), /*to_be_upserted_entries=*/{},
+        std::move(callback), std::move(form),
+        /*to_be_upserted_entries=*/{},
         UserAnnotationsExecutionResult::kCryptNotInitialized);
     return;
   }
 
   SendFormSubmissionResult(
-      std::move(callback),
+      std::move(callback), std::move(form),
       /*to_be_upserted_entries=*/
       UserAnnotationsEntries(maybe_response->added_entries().begin(),
                              maybe_response->added_entries().end()),
@@ -238,21 +246,22 @@ void UserAnnotationsService::OnImportFormConfirmation(
 
 void UserAnnotationsService::SendFormSubmissionResult(
     UserAnnotationsService::ImportFormCallback callback,
+    std::unique_ptr<autofill::FormStructure> form,
     const UserAnnotationsEntries& to_be_upserted_entries,
     UserAnnotationsExecutionResult result) {
   base::UmaHistogramEnumeration("UserAnnotations.AddFormSubmissionResult",
                                 result);
   if (result != UserAnnotationsExecutionResult::kSuccess) {
-    std::move(callback).Run(
-        /*to_be_upserted_entries=*/{},
-        /*prompt_acceptance_callback=*/base::DoNothing());
+    std::move(callback).Run(std::move(form),
+                            /*to_be_upserted_entries=*/{},
+                            /*prompt_acceptance_callback=*/base::DoNothing());
     return;
   }
   // TODO(crbug.com/366142497): Bind to `prompt_acceptance_callback` and only
   // import any form data if the binding method's parameter
   // `prompt_was_accepted` equals `true`.
   std::move(callback).Run(
-      to_be_upserted_entries,
+      std::move(form), to_be_upserted_entries,
       base::BindOnce(&UserAnnotationsService::OnImportFormConfirmation,
                      weak_ptr_factory_.GetWeakPtr(), to_be_upserted_entries));
 }

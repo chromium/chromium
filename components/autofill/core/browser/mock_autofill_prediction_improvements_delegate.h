@@ -47,8 +47,7 @@ class MockAutofillPredictionImprovementsDelegate
               (override));
   MOCK_METHOD(void,
               MaybeImportForm,
-              (const autofill::FormData& form,
-               const autofill::FormStructure& form_structure,
+              (std::unique_ptr<autofill::FormStructure> form,
                ImportFormCallback callback),
               (override));
   MOCK_METHOD(void, HasDataStored, (HasDataCallback callback), (override));

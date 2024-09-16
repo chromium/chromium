@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_USER_ANNOTATIONS_USER_ANNOTATIONS_SERVICE_H_
 #define COMPONENTS_USER_ANNOTATIONS_USER_ANNOTATIONS_SERVICE_H_
 
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -20,7 +21,7 @@
 #include "url/gurl.h"
 
 namespace autofill {
-class FormData;
+class FormStructure;
 }  // namespace autofill
 
 namespace optimization_guide {
@@ -47,8 +48,9 @@ class UserAnnotationsService : public KeyedService {
   // the Autofill prediction improvements prompt. The prompt then notifies the
   // `UserAnnotationsService` about the user decision by running
   // `prompt_acceptance_callback`, that is also provided by
-  // `ImportFormCallback`.
+  // `ImportFormCallback`. Note that `form` is always expected to be non-null.
   using ImportFormCallback = base::OnceCallback<void(
+      std::unique_ptr<autofill::FormStructure> form,
       std::vector<optimization_guide::proto::UserAnnotationsEntry>
           to_be_upserted_entries,
       base::OnceCallback<void(bool prompt_was_accepted)>
@@ -76,7 +78,7 @@ class UserAnnotationsService : public KeyedService {
   // Virtual for testing.
   virtual void AddFormSubmission(
       optimization_guide::proto::AXTreeUpdate ax_tree_update,
-      const autofill::FormData& form_data,
+      std::unique_ptr<autofill::FormStructure> form,
       ImportFormCallback callback);
 
   // Retrieves all entries from the database. Invokes `callback` when complete.
@@ -111,6 +113,7 @@ class UserAnnotationsService : public KeyedService {
   // received.
   void OnModelExecuted(
       ImportFormCallback callback,
+      std::unique_ptr<autofill::FormStructure> form,
       optimization_guide::OptimizationGuideModelExecutionResult result,
       std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry);
 
@@ -123,12 +126,14 @@ class UserAnnotationsService : public KeyedService {
   // filling the entries.
   void ExecuteModelWithEntries(
       optimization_guide::proto::FormsAnnotationsRequest request,
+      std::unique_ptr<autofill::FormStructure> form,
       ImportFormCallback callback,
       UserAnnotationsEntries entries);
 
   // Sends the result of form submission.
   void SendFormSubmissionResult(
       UserAnnotationsService::ImportFormCallback callback,
+      std::unique_ptr<autofill::FormStructure> form,
       const UserAnnotationsEntries& to_be_upserted_entries,
       UserAnnotationsExecutionResult result);
 

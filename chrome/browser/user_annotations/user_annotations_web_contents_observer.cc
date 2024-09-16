@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/autofill/autofill_client_provider_factory.h"
 #include "chrome/browser/user_annotations/user_annotations_service_factory.h"
 #include "components/autofill/content/browser/scoped_autofill_managers_observation.h"
+#include "components/autofill/core/browser/form_structure.h"
 #include "components/compose/buildflags.h"
 #include "components/optimization_guide/proto/features/compose.pb.h"
 #include "components/user_annotations/user_annotations_features.h"
@@ -96,8 +97,12 @@ void UserAnnotationsWebContentsObserver::OnAXTreeSnapshotted(
 #if BUILDFLAG(ENABLE_COMPOSE)
   ComposeAXSerializationUtils::PopulateAXTreeUpdate(snapshot, &ax_tree);
 #endif
-  user_annotations_service_->AddFormSubmission(std::move(ax_tree), form,
-                                               base::DoNothing());
+  // TODO(crbug.com/356633475): This will pass an unparsed form to
+  // UserAnnotationService, since AutofillManager::Observer doesn't have access
+  // to the parsed form.
+  user_annotations_service_->AddFormSubmission(
+      std::move(ax_tree), std::make_unique<autofill::FormStructure>(form),
+      base::DoNothing());
 }
 
 }  // namespace user_annotations

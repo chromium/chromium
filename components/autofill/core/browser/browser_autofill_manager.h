@@ -480,9 +480,9 @@ class BrowserAutofillManager : public AutofillManager {
   // on form submission if the delegate exists.
   void OnUserAnnotationsMaybeImportableFormFound(
       const FormData& form,
-      std::unique_ptr<FormStructure> submitted_form,
       mojom::SubmissionSource source,
       base::TimeTicks form_submitted_timestamp,
+      std::unique_ptr<FormStructure> submitted_form,
       std::vector<optimization_guide::proto::UserAnnotationsEntry>
           to_be_upserted_entries,
       base::OnceCallback<void(bool prompt_was_accepted)>

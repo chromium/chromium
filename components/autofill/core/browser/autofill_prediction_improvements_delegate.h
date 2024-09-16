@@ -39,6 +39,7 @@ class AutofillPredictionImprovementsDelegate {
   // `prompt_acceptance_callback`, that is also provided by
   // `ImportFormCallback`.
   using ImportFormCallback = base::OnceCallback<void(
+      std::unique_ptr<FormStructure> form,
       std::vector<optimization_guide::proto::UserAnnotationsEntry>
           to_be_upserted_entries,
       base::OnceCallback<void(bool prompt_was_accepted)>
@@ -76,9 +77,9 @@ class AutofillPredictionImprovementsDelegate {
 
   // Forwards `form` and `callback` to the user annotations service which calls
   // `callback` with its response.
-  virtual void MaybeImportForm(const autofill::FormData& form,
-                               const autofill::FormStructure& form_structure,
-                               ImportFormCallback callback) = 0;
+  virtual void MaybeImportForm(
+      std::unique_ptr<autofill::FormStructure> form_structure,
+      ImportFormCallback callback) = 0;
 
   // Checks if there is any data stored in the profile's user annotations that can be used for
   // filling and runs the `callback` accordingly.

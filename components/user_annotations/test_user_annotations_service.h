@@ -11,6 +11,10 @@
 #include "components/user_annotations/user_annotations_service.h"
 #include "components/user_annotations/user_annotations_types.h"
 
+namespace autofill {
+class FormStructure;
+}
+
 namespace optimization_guide::proto {
 class UserAnnotationsEntry;
 }  // namespace optimization_guide::proto
@@ -40,7 +44,7 @@ class TestUserAnnotationsService : public UserAnnotationsService {
   // UserAnnotationsService:
   bool ShouldAddFormSubmissionForURL(const GURL& url) override;
   void AddFormSubmission(optimization_guide::proto::AXTreeUpdate ax_tree_update,
-                         const autofill::FormData& form_data,
+                         std::unique_ptr<autofill::FormStructure> form,
                          ImportFormCallback callback) override;
   void RetrieveAllEntries(
       base::OnceCallback<void(UserAnnotationsEntries)> callback) override;

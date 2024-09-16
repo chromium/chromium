@@ -896,11 +896,11 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
           client().GetAutofillPredictionImprovementsDelegate();
       delegate && submitted_form) {
     delegate->MaybeImportForm(
-        form, *submitted_form,
+        std::move(submitted_form),
         base::BindOnce(
             &BrowserAutofillManager::OnUserAnnotationsMaybeImportableFormFound,
-            weak_ptr_factory_.GetWeakPtr(), form, std::move(submitted_form),
-            source, form_submitted_timestamp));
+            weak_ptr_factory_.GetWeakPtr(), form, source,
+            form_submitted_timestamp));
   } else {
     MaybeImportFromSubmittedForm(
         form, submitted_form.get(),
@@ -1070,9 +1070,9 @@ void BrowserAutofillManager::ProcessPendingFormForUpload() {
 
 void BrowserAutofillManager::OnUserAnnotationsMaybeImportableFormFound(
     const FormData& form,
-    std::unique_ptr<FormStructure> submitted_form,
     SubmissionSource source,
     base::TimeTicks form_submitted_timestamp,
+    std::unique_ptr<FormStructure> submitted_form,
     std::vector<optimization_guide::proto::UserAnnotationsEntry>
         to_be_upserted_entries,
     base::OnceCallback<void(bool prompt_was_accepted)>

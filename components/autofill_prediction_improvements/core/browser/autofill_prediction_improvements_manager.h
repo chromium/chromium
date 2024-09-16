@@ -56,8 +56,7 @@ class AutofillPredictionImprovementsManager
       const autofill::FormData& form,
       const autofill::FormFieldData& trigger_field,
       UpdateSuggestionsCallback update_suggestions_callback) override;
-  void MaybeImportForm(const autofill::FormData& form,
-                       const autofill::FormStructure& form_structure,
+  void MaybeImportForm(std::unique_ptr<autofill::FormStructure> form,
                        ImportFormCallback callback) override;
   void HasDataStored(HasDataCallback callback) override;
 
@@ -94,7 +93,7 @@ class AutofillPredictionImprovementsManager
   bool HasImprovedPredictionsForField(const autofill::FormFieldData& field);
 
   void OnReceivedAXTreeForFormImport(
-      const autofill::FormData& form,
+      std::unique_ptr<autofill::FormStructure> form,
       ImportFormCallback callback,
       optimization_guide::proto::AXTreeUpdate ax_tree_update);
 

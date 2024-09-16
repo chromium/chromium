@@ -380,8 +380,7 @@ void AutofillPredictionImprovementsManager::UpdateSuggestions(
 }
 
 void AutofillPredictionImprovementsManager::MaybeImportForm(
-    const autofill::FormData& form,
-    const autofill::FormStructure& form_structure,
+    std::unique_ptr<autofill::FormStructure> form,
     ImportFormCallback callback) {
   // TODO(crbug.com/365962363): Also return early here if
   // `!IsFormEligibleByFieldCriteria(form_structure))` once the parser is
@@ -389,30 +388,30 @@ void AutofillPredictionImprovementsManager::MaybeImportForm(
   if (user_annotations::IsUserAnnotationsObserveFormSubmissionsEnabled() ||
       !client_->GetUserAnnotationsService() ||
       !client_->GetUserAnnotationsService()->ShouldAddFormSubmissionForURL(
-          form.url())) {
-    std::move(callback).Run(
-        /*to_be_upserted_entries=*/{},
-        /*prompt_acceptance_callback=*/base::DoNothing());
+          form->source_url())) {
+    std::move(callback).Run(std::move(form),
+                            /*to_be_upserted_entries=*/{},
+                            /*prompt_acceptance_callback=*/base::DoNothing());
     return;
   }
   // TODO(crbug.com/366222226): Ensure the AX tree retrieval is not delayed,
   // e.g. by async filters added in future.
   client_->GetAXTree(base::BindOnce(
       &AutofillPredictionImprovementsManager::OnReceivedAXTreeForFormImport,
-      weak_ptr_factory_.GetWeakPtr(), form, std::move(callback)));
+      weak_ptr_factory_.GetWeakPtr(), std::move(form), std::move(callback)));
 }
 
 void AutofillPredictionImprovementsManager::OnReceivedAXTreeForFormImport(
-    const autofill::FormData& form,
+    std::unique_ptr<autofill::FormStructure> form,
     ImportFormCallback callback,
     optimization_guide::proto::AXTreeUpdate ax_tree_update) {
   if (user_annotations::UserAnnotationsService* user_annotations_service =
           client_->GetUserAnnotationsService()) {
-    user_annotations_service->AddFormSubmission(std::move(ax_tree_update), form,
-                                                std::move(callback));
+    user_annotations_service->AddFormSubmission(
+        std::move(ax_tree_update), std::move(form), std::move(callback));
     return;
   }
-  std::move(callback).Run(/*to_be_upserted_entries=*/{},
+  std::move(callback).Run(std::move(form), /*to_be_upserted_entries=*/{},
                           /*prompt_acceptance_callback=*/base::DoNothing());
 }
 
