@@ -5927,13 +5927,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Video.Capture.Mac.ScreenCaptureSystemPermission"
-    enum="BooleanAllowed" expires_after="2024-02-11">
+    enum="BooleanAllowed" expires_after="2025-03-16">
   <owner>bur@chromium.org</owner>
   <owner>mark@chromium.org</owner>
   <summary>
     The Mac system permission state for screen capture. Logged once at browser
     startup and when attempting to screen capture. Requires macOS 10.15+.
-    Samples will not be collected on earlier macOS versions.
+    Samples will not be collected on earlier macOS versions. Warning: this
+    histogram was expired from 2024-02-11 to 2024-09-16; data may be missing.
   </summary>
 </histogram>
 
