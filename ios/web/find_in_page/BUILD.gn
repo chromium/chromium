@@ -53,7 +53,6 @@ optimize_ts("find_in_page_js") {
 
   deps = [
     ":compile_ts",
-    "//ios/web/public/js_messaging:error_reporting",
     "//ios/web/public/js_messaging:gcrweb",
   ]
 }

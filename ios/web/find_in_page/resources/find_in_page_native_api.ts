@@ -11,11 +11,12 @@ import {
   MAX_VISIBLE_ELEMENTS,
   TIMEOUT
 } from '//ios/web/find_in_page/resources/find_in_page_constants.js';
+
 import {Match, PartialMatch, Replacement, Section, Timer} from
     '//ios/web/find_in_page/resources/find_in_page.js';
 import {createRegex, escapeHTML} from
     '//ios/web/find_in_page/resources/find_in_page_utils.js';
-import {catchAndReportErrors} from '//ios/web/public/js_messaging/resources/error_reporting.js';
+
 import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 // clang-format on
 
@@ -340,38 +341,36 @@ function removeStyle_(): void {
  * @param {number} timeout Maximum time to run.
  * @return {number} that represents the total matches found.
  */
-function findString(string: string, timeout: number): number | unknown {
-  return catchAndReportErrors(function() {
-    // Enable findInPage module if hasn't been done yet.
-    if (!gCrWeb.findInPage.hasInitialized) {
-      enable_();
-      gCrWeb.findInPage.hasInitialized = true;
-    }
+function findString(string: string, timeout: number): number {
+  // Enable findInPage module if hasn't been done yet.
+  if (!gCrWeb.findInPage.hasInitialized) {
+    enable_();
+    gCrWeb.findInPage.hasInitialized = true;
+  }
 
-    if (!searchStateIsClean_) {
-      // Clean up a previous run.
-      cleanUp_();
-    }
-    if (!string) {
-      // No searching for emptyness.
-      return 0;
-    }
+  if (!searchStateIsClean_) {
+    // Clean up a previous run.
+    cleanUp_();
+  }
+  if (!string) {
+    // No searching for emptyness.
+    return 0;
+  }
 
-    // Holds what nodes we have not processed yet.
-    gCrWeb.findInPage.stack = [document.body];
+  // Holds what nodes we have not processed yet.
+  gCrWeb.findInPage.stack = [document.body];
 
-    // Number of visible matches found.
-    visibleMatchCount_ = 0;
+  // Number of visible matches found.
+  visibleMatchCount_ = 0;
 
-    // Index tracking variables so search can be broken up into multiple calls.
-    visibleMatchesCountIndexIterator_ = 0;
+  // Index tracking variables so search can be broken up into multiple calls.
+  visibleMatchesCountIndexIterator_ = 0;
 
-    gCrWeb.findInPage.regex = createRegex(string);
+  gCrWeb.findInPage.regex = createRegex(string);
 
-    searchInProgress_ = true;
+  searchInProgress_ = true;
 
-    return pumpSearch(timeout);
-  });
+  return pumpSearch(timeout);
 };
 
 /**
@@ -392,113 +391,111 @@ function findString(string: string, timeout: number): number | unknown {
  * @param {number} timeout Only run find in page until timeout.
  * @return {number} that represents the total matches found.
  */
-function pumpSearch(timeout: number): number | unknown {
-  return catchAndReportErrors(function() {
-    // TODO(crbug.com/41420794): It would be better if this DCHECKed.
-    if (searchInProgress_ == false) {
-      return 0;
-    }
+function pumpSearch(timeout: number): number {
+  // TODO(crbug.com/41420794): It would be better if this DCHECKed.
+  if (searchInProgress_ == false) {
+    return 0;
+  }
 
-    searchStateIsClean_ = false;
+  searchStateIsClean_ = false;
 
-    let timer = new Timer(timeout);
+  let timer = new Timer(timeout);
 
-    // Go through every node in DFS fashion.
-    while (gCrWeb.findInPage.stack.length) {
-      let node = gCrWeb.findInPage.stack.pop();
-      let children = node.childNodes;
-      if (children && children.length) {
-        // add all (reasonable) children
-        for (let i = children.length - 1; i >= 0; --i) {
-          let child = children[i];
-          if ((child.nodeType == 1 || child.nodeType == 3) &&
-              !IGNORE_NODE_NAMES.has(child.nodeName)) {
-            gCrWeb.findInPage.stack.push(children[i]);
-          }
+  // Go through every node in DFS fashion.
+  while (gCrWeb.findInPage.stack.length) {
+    let node = gCrWeb.findInPage.stack.pop();
+    let children = node.childNodes;
+    if (children && children.length) {
+      // add all (reasonable) children
+      for (let i = children.length - 1; i >= 0; --i) {
+        let child = children[i];
+        if ((child.nodeType == 1 || child.nodeType == 3) &&
+            !IGNORE_NODE_NAMES.has(child.nodeName)) {
+          gCrWeb.findInPage.stack.push(children[i]);
         }
       }
-
-      // Build up `allText_` and `sections_`.
-      if (node.nodeType == 3 && node.parentNode) {
-        sections_.push(new Section(
-            allText_.length, allText_.length + node.textContent.length, node));
-        allText_ += node.textContent.toLowerCase();
-      }
-
-      if (timer.overtime()) {
-        return TIMEOUT;
-      }
     }
 
-    // Do regex match in `allText_`, create `matches` and `replacements`. The
-    // regex is set on __gCrWeb, so its state is kept between continuous calls
-    // on pumpSearch.
-    let regex = gCrWeb.findInPage.regex;
-    if (regex) {
-      for (let res; res = regex.exec(allText_);) {
-        // The range of current Match in `allText_` is [begin, end).
-        let begin = res.index;
-        let end = begin + res[0].length;
-        gCrWeb.findInPage.matches.push(new Match());
+    // Build up |allText_| and |sections_|.
+    if (node.nodeType == 3 && node.parentNode) {
+      sections_.push(new Section(
+          allText_.length, allText_.length + node.textContent.length, node));
+      allText_ += node.textContent.toLowerCase();
+    }
 
-        // Find the Section where current Match starts.
-        let oldSectionIndex = sectionsIndex_;
-        let newSectionIndex = findFirstSectionEndsAfter_(begin);
-        // If current Match starts at a new Section, process current Section and
-        // move to the new Section.
-        if (newSectionIndex > oldSectionIndex) {
+    if (timer.overtime()) {
+      return TIMEOUT;
+    }
+  }
+
+  // Do regex match in |allText_|, create |matches| and |replacements|. The
+  // regex is set on __gCrWeb, so its state is kept between continuous calls on
+  // pumpSearch.
+  let regex = gCrWeb.findInPage.regex;
+  if (regex) {
+    for (let res; res = regex.exec(allText_);) {
+      // The range of current Match in |allText_| is [begin, end).
+      let begin = res.index;
+      let end = begin + res[0].length;
+      gCrWeb.findInPage.matches.push(new Match());
+
+      // Find the Section where current Match starts.
+      let oldSectionIndex = sectionsIndex_;
+      let newSectionIndex = findFirstSectionEndsAfter_(begin);
+      // If current Match starts at a new Section, process current Section and
+      // move to the new Section.
+      if (newSectionIndex > oldSectionIndex) {
+        processPartialMatchesInCurrentSection();
+        sectionsIndex_ = newSectionIndex;
+      }
+
+      // Create all PartialMatches of current Match.
+      while (true) {
+        let section = sections_[sectionsIndex_];
+        if (!section) {
+          break;
+        }
+        partialMatches_.push(new PartialMatch(
+            matchId_, Math.max(section.begin, begin),
+            Math.min(section.end, end)));
+        // If current Match.end exceeds current Section.end, process current
+        // Section and move to next Section.
+        if (section.end < end) {
           processPartialMatchesInCurrentSection();
-          sectionsIndex_ = newSectionIndex;
-        }
-
-        // Create all PartialMatches of current Match.
-        while (true) {
-          let section = sections_[sectionsIndex_];
-          if (!section) {
-            break;
-          }
-          partialMatches_.push(new PartialMatch(
-              matchId_, Math.max(section.begin, begin),
-              Math.min(section.end, end)));
-          // If current Match.end exceeds current Section.end, process current
-          // Section and move to next Section.
-          if (section.end < end) {
-            processPartialMatchesInCurrentSection();
-            ++sectionsIndex_;
-          } else {
-            // Current Match ends in current Section.
-            break;
-          }
-        }
-        ++matchId_;
-
-        if (timer.overtime()) {
-          return TIMEOUT;
+          ++sectionsIndex_;
+        } else {
+          // Current Match ends in current Section.
+          break;
         }
       }
-      // Process remaining PartialMatches.
-      processPartialMatchesInCurrentSection();
-      gCrWeb.findInPage.regex = undefined;
-    }
+      ++matchId_;
 
-    // Execute replacements to highlight search results.
-    for (let i = replacementsIndex_; i < replacements_.length; ++i) {
       if (timer.overtime()) {
-        replacementsIndex_ = i;
         return TIMEOUT;
       }
-      const replacement = replacements_[i];
-      if (replacement) {
-        replacement.doSwap();
-      }
     }
+    // Process remaining PartialMatches.
+    processPartialMatchesInCurrentSection();
+    gCrWeb.findInPage.regex = undefined;
+  }
 
-    let visibleMatchCount = countVisibleMatches_(timer);
+  // Execute replacements to highlight search results.
+  for (let i = replacementsIndex_; i < replacements_.length; ++i) {
+    if (timer.overtime()) {
+      replacementsIndex_ = i;
+      return TIMEOUT;
+    }
+    const replacement = replacements_[i];
+    if (replacement) {
+      replacement.doSwap();
+    }
+  }
 
-    searchInProgress_ = false;
+  let visibleMatchCount = countVisibleMatches_(timer);
 
-    return visibleMatchCount;
-  });
+  searchInProgress_ = false;
+
+  return visibleMatchCount;
 };
 
 /**
@@ -515,92 +512,90 @@ function pumpSearch(timeout: number): number | unknown {
  * match index.
  */
 function selectAndScrollToVisibleMatch(index: number):
-    {matches: number, index: number, contextString?: string} | unknown {
-  return catchAndReportErrors(function() {
-    if (index >= visibleMatchCount_ || index < 0) {
-      // Do nothing if invalid index is passed or if there are no matches.
-      return {matches: visibleMatchCount_, index: selectedMatchIndex_};
-    }
+    {matches: number, index: number, contextString?: string} {
+  if (index >= visibleMatchCount_ || index < 0) {
+    // Do nothing if invalid index is passed or if there are no matches.
+    return {matches: visibleMatchCount_, index: selectedMatchIndex_};
+  }
 
-    // Remove previous highlight.
-    let match = getCurrentSelectedMatch_();
-    if (match) {
-      match.removeSelectHighlight();
-    }
+  // Remove previous highlight.
+  let match = getCurrentSelectedMatch_();
+  if (match) {
+    match.removeSelectHighlight();
+  }
 
-    // Recalculate total visible matches in case it has changed.
-    let visibleMatchCount = countVisibleMatches_(null);
+  // Recalculate total visible matches in case it has changed.
+  let visibleMatchCount = countVisibleMatches_(null);
 
-    if (visibleMatchCount == 0) {
-      selectedMatchIndex_ = -1;
-      selectedVisibleMatchIndex_ = -1;
-      return {matches: visibleMatchCount, index: -1};
-    }
+  if (visibleMatchCount == 0) {
+    selectedMatchIndex_ = -1;
+    selectedVisibleMatchIndex_ = -1;
+    return {matches: visibleMatchCount, index: -1};
+  }
 
-    if (index >= visibleMatchCount) {
-      // There are no longer that many visible matches.
-      // Select the last match if moving to previous match.
-      // Select the first currently visible match if moving to next match.
-      index = index > selectedVisibleMatchIndex_ ? 0 : visibleMatchCount - 1;
-    }
+  if (index >= visibleMatchCount) {
+    // There are no longer that many visible matches.
+    // Select the last match if moving to previous match.
+    // Select the first currently visible match if moving to next match.
+    index = index > selectedVisibleMatchIndex_ ? 0 : visibleMatchCount - 1;
+  }
 
-    let total_match_index = 0;
-    var visible_match_count = index;
-    // Select the `index`-th visible match.
-    while (total_match_index < gCrWeb.findInPage.matches.length) {
-      if (gCrWeb.findInPage.matches[total_match_index].visible()) {
-        visible_match_count--;
-        if (visible_match_count < 0) {
-          break;
-        }
+  let total_match_index = 0;
+  var visible_match_count = index;
+  // Select the |index|-th visible match.
+  while (total_match_index < gCrWeb.findInPage.matches.length) {
+    if (gCrWeb.findInPage.matches[total_match_index].visible()) {
+      visible_match_count--;
+      if (visible_match_count < 0) {
+        break;
       }
-      total_match_index++;
     }
+    total_match_index++;
+  }
 
-    selectedMatchIndex_ = total_match_index;
-    selectedVisibleMatchIndex_ = index;
+  selectedMatchIndex_ = total_match_index;
+  selectedVisibleMatchIndex_ = index;
 
-    match = getCurrentSelectedMatch_();
-    if (!match) {
-      return {matches: visibleMatchCount, index: -1};
-    }
-    match.addSelectHighlight();
-    scrollToCurrentlySelectedMatch_();
+  match = getCurrentSelectedMatch_();
+  if (!match) {
+    return {matches: visibleMatchCount, index: -1};
+  }
+  match.addSelectHighlight();
+  scrollToCurrentlySelectedMatch_();
 
-    // Get string consisting of the text contents of the match nodes and the
-    // nodes before and after them, if applicable.
-    // This will be read out as an accessibility notification for the match.
-    // The siblings's textContent are added into the node array, because the
-    // nextSibling and previousSibling properties to the match nodes sometimes
-    // are text nodes, not HTML nodes. This results in '[object Text]' string
-    // being added to the array instead of the object.
+  // Get string consisting of the text contents of the match nodes and the
+  // nodes before and after them, if applicable.
+  // This will be read out as an accessibility notification for the match.
+  // The siblings's textContent are added into the node array, because the
+  // nextSibling and previousSibling properties to the match nodes sometimes
+  // are text nodes, not HTML nodes. This results in '[object Text]' string
+  // being added to the array instead of the object.
 
-    let contextString = '';
-    const firstNode = match.nodes[0];
-    if (firstNode && firstNode.previousSibling) {
-      contextString += firstNode.previousSibling.textContent;
-    }
-    contextString += match.nodes
-                         .map(function(node) {
-                           if (node.textContent) {
-                             return node.textContent;
-                           } else {
-                             return node;
-                           }
-                         })
-                         .join('');
+  let contextString = '';
+  const firstNode = match.nodes[0];
+  if (firstNode && firstNode.previousSibling) {
+    contextString += firstNode.previousSibling.textContent;
+  }
+  contextString += match.nodes
+                       .map(function(node) {
+                         if (node.textContent) {
+                           return node.textContent;
+                         } else {
+                           return node;
+                         }
+                       })
+                       .join('');
 
-    const lastNode = match.nodes[match.nodes.length - 1];
-    if (lastNode && lastNode.nextSibling) {
-      contextString += lastNode.nextSibling.textContent;
-    }
+  const lastNode = match.nodes[match.nodes.length - 1];
+  if (lastNode && lastNode.nextSibling) {
+    contextString += lastNode.nextSibling.textContent;
+  }
 
-    return {
-      matches: visibleMatchCount,
-      index: index,
-      contextString: contextString
-    };
-  });
+  return {
+    matches: visibleMatchCount,
+    index: index,
+    contextString: contextString
+  };
 };
 
 /**
@@ -608,13 +603,11 @@ function selectAndScrollToVisibleMatch(index: number):
  * and class names.
  */
 function stop(): void {
-  catchAndReportErrors(function() {
-    if (styleElement_) {
-      removeStyle_();
-      cleanUp_();
-    }
-    gCrWeb.findInPage.hasInitialized = false;
-  });
+  if (styleElement_) {
+    removeStyle_();
+    cleanUp_();
+  }
+  gCrWeb.findInPage.hasInitialized = false;
 };
 
 // Mark: Public API
