@@ -1053,6 +1053,9 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 CcFeatures.THROTTLE_FRAME_RATE_ON_MANY_DID_NOT_PRODUCE_FRAME,
                 "Reduce frame rate when pixels aren't updated for many frames"),
+        Flag.baseFeature(
+                "MojoMessageAlwaysUseLatestVersion",
+                "Performance experiment to always use the latest (largest) message version."),
 
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.

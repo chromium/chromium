@@ -37,6 +37,10 @@
 
 namespace mojo {
 
+BASE_FEATURE(kMojoMessageAlwaysUseLatestVersion,
+             "MojoMessageAlwaysUseLatestVersion",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 namespace {
 
 BASE_FEATURE(kMojoBindingsInlineSLS,
@@ -93,13 +97,26 @@ uint64_t GetTraceId(uint32_t name, uint32_t trace_nonce) {
          static_cast<uint64_t>(trace_nonce);
 }
 
+void WriteMessageHeaderV1(uint32_t name,
+                          uint32_t flags,
+                          uint32_t trace_nonce,
+                          internal::Buffer* payload_buffer) {
+  internal::MessageHeaderV1* header;
+  AllocateHeaderFromBuffer(payload_buffer, &header);
+  header->version = 1;
+  header->name = name;
+  header->flags = flags;
+  header->trace_nonce = trace_nonce;
+}
+
 void WriteMessageHeader(uint32_t name,
                         uint32_t flags,
                         uint32_t trace_nonce,
                         size_t payload_interface_id_count,
                         internal::Buffer* payload_buffer,
                         int64_t creation_timeticks_us) {
-  if (creation_timeticks_us > 0) {
+  if (creation_timeticks_us > 0 ||
+      base::FeatureList::IsEnabled(kMojoMessageAlwaysUseLatestVersion)) {
     // Version 3
     internal::MessageHeaderV3* header;
     AllocateHeaderFromBuffer(payload_buffer, &header);
@@ -123,12 +140,7 @@ void WriteMessageHeader(uint32_t name,
   } else if (flags &
              (Message::kFlagExpectsResponse | Message::kFlagIsResponse)) {
     // Version 1
-    internal::MessageHeaderV1* header;
-    AllocateHeaderFromBuffer(payload_buffer, &header);
-    header->version = 1;
-    header->name = name;
-    header->flags = flags;
-    header->trace_nonce = trace_nonce;
+    WriteMessageHeaderV1(name, flags, trace_nonce, payload_buffer);
   } else {
     internal::MessageHeader* header;
     AllocateHeaderFromBuffer(payload_buffer, &header);
@@ -343,9 +355,8 @@ Message::Message(ScopedMessageHandle handle,
     return;
 
   payload_buffer_ = internal::Buffer(handle_.get(), 0, buffer, buffer_size);
-  WriteMessageHeader(header.name, header.flags, trace_nonce,
-                     /*payload_interface_id_count=*/0, &payload_buffer_,
-                     /*creation_timeticks_us=*/0);
+  WriteMessageHeaderV1(header.name, header.flags, trace_nonce,
+                       &payload_buffer_);
 
   // We need to copy additional header data which may have been set after
   // original message construction, as this codepath may be reached at some

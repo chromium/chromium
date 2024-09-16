@@ -30,6 +30,10 @@ void CreateTestMessagePayload(std::vector<uint8_t>* bytes,
   Message message(kTestMessageName, kTestMessageFlags, 0, kTestPayloadSize,
                   nullptr);
   message.header()->trace_nonce = 0;
+  if (message.version() >= 3) {
+    message.header_v3()->creation_timeticks_us = 0;
+  }
+
   bytes->resize(message.data_num_bytes());
   std::copy(message.data(), message.data() + message.data_num_bytes(),
             bytes->begin());

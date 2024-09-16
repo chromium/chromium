@@ -549,6 +549,9 @@
 
     this.associatedEndpointHandles = [];
     var ids = this.getPayloadInterfaceIds();
+    if (ids == null) {
+      return true;
+    }
 
     var result = true;
     for (var i = 0; i < ids.length; i++) {

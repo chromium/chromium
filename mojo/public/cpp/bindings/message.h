@@ -17,6 +17,7 @@
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/containers/span.h"
+#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -34,6 +35,9 @@ class AssociatedGroupController;
 
 using ReportBadMessageCallback =
     base::OnceCallback<void(std::string_view error)>;
+
+COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
+BASE_DECLARE_FEATURE(kMojoMessageAlwaysUseLatestVersion);
 
 // Message is a holder for the data and handles to be sent over a MessagePipe.
 // Message owns its data and handles, but a consumer of Message is free to
@@ -189,6 +193,10 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) Message {
   const internal::MessageHeaderV3* header_v3() const {
     DCHECK_GE(version(), 3u);
     return reinterpret_cast<const internal::MessageHeaderV3*>(data());
+  }
+  internal::MessageHeaderV3* header_v3() {
+    DCHECK_GE(version(), 3u);
+    return reinterpret_cast<internal::MessageHeaderV3*>(mutable_data());
   }
 
   uint32_t version() const { return header()->version; }

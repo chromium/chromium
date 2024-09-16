@@ -15,7 +15,8 @@ namespace {
 size_t ComputeHeaderSize(uint32_t flags,
                          size_t payload_interface_id_count,
                          int64_t creation_timeticks_us) {
-  if (creation_timeticks_us > 0) {
+  if (creation_timeticks_us > 0 ||
+      base::FeatureList::IsEnabled(kMojoMessageAlwaysUseLatestVersion)) {
     // Version 3
     return sizeof(MessageHeaderV3);
   } else if (payload_interface_id_count > 0) {
