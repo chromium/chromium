@@ -237,7 +237,7 @@ TEST_F(PersonalizationAppUtilsTest, IsEligibleForSeaPenPublicAccount) {
       true);
   AddAndLoginUser(AccountId::FromUserEmail(email),
                   user_manager::UserType::kPublicAccount);
-  ASSERT_TRUE(IsAllowedToInstallSeaPen(managed_profile));
+  ASSERT_FALSE(IsAllowedToInstallSeaPen(managed_profile));
   ASSERT_FALSE(IsEligibleForSeaPen(managed_profile));
 }
 

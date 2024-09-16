@@ -172,12 +172,6 @@ bool IsAllowedToInstallSeaPen(Profile* profile) {
            user->GetType() == user_manager::UserType::kPublicAccount;
   }
 
-  if (profile->GetProfilePolicyConnector()->IsManaged()) {
-    // Without the experiment, managed users are not allowed for SeaPen.
-    DVLOG(1) << __func__ << " managed profile";
-    return features::IsSeaPenEnterpriseEnabled();
-  }
-
   const auto* user = GetUser(profile);
   if (!user) {
     LOG(ERROR) << __func__ << " no user";
@@ -196,6 +190,11 @@ bool IsAllowedToInstallSeaPen(Profile* profile) {
     case user_manager::UserType::kGuest:
       return false;
     case user_manager::UserType::kRegular:
+      if (profile->GetProfilePolicyConnector()->IsManaged()) {
+        // Without the experiment, managed users are not allowed for SeaPen.
+        DVLOG(1) << __func__ << " managed profile";
+        return features::IsSeaPenEnterpriseEnabled();
+      }
       return true;
   }
 }
