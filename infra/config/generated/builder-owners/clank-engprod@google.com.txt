@@ -45,6 +45,7 @@ try/android-14-x64-rel
 try/android-15-x64-fyi-rel
 try/android-15-x64-rel
 try/android-clobber-rel
+try/android-desktop-14-x64-rel
 try/android-desktop-arm64-compile-dbg
 try/android-desktop-arm64-compile-rel
 try/android-desktop-x64-compile-dbg

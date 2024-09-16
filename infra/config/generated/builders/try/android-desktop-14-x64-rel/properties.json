@@ -2,7 +2,7 @@
   "$build/chromium_tests_builder_config": {
     "builder_config": {
       "additional_exclusions": [
-        "infra/config/generated/builders/ci/android-desktop-x64-compile-rel/gn-args.json"
+        "infra/config/generated/builders/try/android-desktop-14-x64-rel/gn-args.json"
       ],
       "builder_db": {
         "entries": [
@@ -83,21 +83,11 @@
           "project": "chromium"
         }
       ],
-      "mirroring_builder_group_and_names": [
-        {
-          "builder": "android-desktop-14-x64-rel",
-          "group": "tryserver.chromium.android"
-        },
-        {
-          "builder": "android-desktop-x64-compile-rel",
-          "group": "tryserver.chromium.android"
-        }
-      ],
-      "targets_spec_directory": "src/infra/config/generated/builders/ci/android-desktop-x64-compile-rel/targets"
+      "targets_spec_directory": "src/infra/config/generated/builders/try/android-desktop-14-x64-rel/targets"
     }
   },
   "$build/reclient": {
-    "instance": "rbe-chromium-trusted",
+    "instance": "rbe-chromium-untrusted",
     "metrics_project": "chromium-reclient-metrics",
     "scandeps_server": true
   },
@@ -108,8 +98,8 @@
     "enable_cloud_profiler": true,
     "enable_cloud_trace": true,
     "experiments": [],
-    "project": "rbe-chromium-trusted",
-    "remote_jobs": 250
+    "project": "rbe-chromium-untrusted",
+    "remote_jobs": 150
   },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],
@@ -118,6 +108,6 @@
       "v.test_suite"
     ]
   },
-  "builder_group": "chromium.android.desktop",
-  "recipe": "chromium"
+  "builder_group": "tryserver.chromium.android",
+  "recipe": "chromium_trybot"
 }

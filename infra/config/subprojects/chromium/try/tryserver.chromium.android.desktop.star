@@ -81,3 +81,17 @@ try_.builder(
         ],
     ),
 )
+
+try_.builder(
+    name = "android-desktop-14-x64-rel",
+    mirrors = [
+        "ci/android-desktop-x64-compile-rel",
+        "ci/android-desktop-x64-rel-14-tests",
+    ],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/android-desktop-x64-compile-rel",
+            "release_try_builder",
+        ],
+    ),
+)

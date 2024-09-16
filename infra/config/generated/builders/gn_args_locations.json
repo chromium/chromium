@@ -608,6 +608,7 @@
     "android-cronet-x86-dbg-oreo-tests": "try/android-cronet-x86-dbg-oreo-tests/gn-args.json",
     "android-cronet-x86-dbg-pie-tests": "try/android-cronet-x86-dbg-pie-tests/gn-args.json",
     "android-cronet-x86-rel": "try/android-cronet-x86-rel/gn-args.json",
+    "android-desktop-14-x64-rel": "try/android-desktop-14-x64-rel/gn-args.json",
     "android-desktop-arm64-compile-dbg": "try/android-desktop-arm64-compile-dbg/gn-args.json",
     "android-desktop-arm64-compile-rel": "try/android-desktop-arm64-compile-rel/gn-args.json",
     "android-desktop-x64-compile-dbg": "try/android-desktop-x64-compile-dbg/gn-args.json",
