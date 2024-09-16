@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.metrics.UmaUtils;
 import org.chromium.chrome.browser.metrics.VariationsSession;
 import org.chromium.chrome.browser.notifications.NotificationPlatformBridge;
+import org.chromium.chrome.browser.notifications.chime.ChimeDelegate;
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
 import org.chromium.chrome.browser.password_manager.PasswordManagerLifecycleHelper;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -163,7 +164,7 @@ public class ChromeActivitySessionTracker {
             ChromeLocalizationUtils.recordUiLanguageStatus();
             mVariationsSession.start();
             mOmahaServiceStartDelayer.onForegroundSessionStart();
-            AppHooks.get().getChimeDelegate().startSession();
+            new ChimeDelegate().startSession();
             PasswordManagerLifecycleHelper.getInstance().onStartForegroundSession();
 
             // Track the ratio of Chrome startups that are caused by notification clicks.

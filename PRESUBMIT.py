@@ -2216,7 +2216,6 @@ _LONG_PATH_ERROR = (
 )
 
 _JAVA_MULTIPLE_DEFINITION_EXCLUDED_PATHS = [
-    r".*/AppHooksImpl\.java",
     r".*/BuildHooksAndroidImpl\.java",
     r".*/LicenseContentProvider\.java",
     r".*/PlatformServiceBridgeImpl.java",

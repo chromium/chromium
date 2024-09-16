@@ -74,8 +74,6 @@ if (android_64bit_target_cpu) {
 }
 
 if (current_toolchain == default_toolchain) {
-  app_hooks_impl = "java/src/org/chromium/chrome/browser/AppHooksImpl.java"
-
   template("chrome_public_bundle") {
     _is_monochrome = defined(invoker.is_monochrome) && invoker.is_monochrome
     if (_is_monochrome) {
@@ -291,15 +289,8 @@ if (current_toolchain == default_toolchain) {
     deps = [ "//ui/android:ui_java_resources" ]
   }
 
-  android_library("app_hooks_java") {
-    sources = [ app_hooks_impl ]
-    deps = [ ":chrome_java" ]
-    jacoco_never_instrument = true
-  }
-
   java_group("delegate_public_impl_java") {
     deps = [
-      ":app_hooks_java",
       "//chrome/android/modules/readaloud/public:provider_public_java",
       "//chrome/browser/accessibility/hierarchysnapshotter/android:delegate_public_impl_java",
       "//chrome/browser/android/metrics:delegate_public_impl_java",
@@ -793,7 +784,7 @@ if (current_toolchain == default_toolchain) {
     ]
 
     # From java_sources.gni.
-    sources = chrome_java_sources + [ app_hooks_impl ]
+    sources = chrome_java_sources
 
     # Include sources from feed_java_sources.gni.
     sources += feed_java_sources
@@ -806,10 +797,6 @@ if (current_toolchain == default_toolchain) {
     sources += internal_tab_management_java_sources
 
     srcjar_deps += [ ":chrome_jni_headers" ]
-
-    # Add the actual implementation where necessary so that downstream targets
-    # can provide their own implementations.
-    jar_excluded_patterns = [ "*/AppHooksImpl.class" ]
 
     annotation_processor_deps = [
       # Dagger must come first so that when enable_chrome_android_internal=true,
