@@ -310,7 +310,6 @@ void SequenceManagerImpl::InitializeFeatures() {
   g_record_crash_keys.store(
       FeatureList::IsEnabled(kRecordSequenceManagerCrashKeys),
       std::memory_order_relaxed);
-  TaskQueueSelector::InitializeFeatures();
 }
 
 void SequenceManagerImpl::BindToMessagePump(std::unique_ptr<MessagePump> pump) {

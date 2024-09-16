@@ -76,13 +76,6 @@ BASE_FEATURE(kThreadPoolCap2,
 const base::FeatureParam<int> kThreadPoolCapRestrictedCount{
     &kThreadPoolCap2, "restricted_count", 3};
 
-BASE_FEATURE(kMaxDelayedStarvationTasks,
-             "MaxDelayedStarvationTasks",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-const base::FeatureParam<int> kMaxDelayedStarvationTasksParam{
-    &kMaxDelayedStarvationTasks, "count", 3};
-
 BASE_FEATURE(kThreadGroupSemaphore,
              "ThreadGroupSemaphore",
              base::FEATURE_DISABLED_BY_DEFAULT);
