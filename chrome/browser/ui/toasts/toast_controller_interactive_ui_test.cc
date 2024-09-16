@@ -14,13 +14,21 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "content/public/test/browser_test.h"
+#include "net/dns/mock_host_resolver.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
 #include "ui/base/accelerators/accelerator.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/interactive_test.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/interaction/interactive_views_test.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
+
+namespace {
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTab);
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTab);
+}  // namespace
 
 class ToastControllerInteractiveTest : public InteractiveBrowserTest {
  public:
@@ -30,6 +38,17 @@ class ToastControllerInteractiveTest : public InteractiveBrowserTest {
          toast_features::kImageCopiedToast, toast_features::kReadingListToast},
         {});
     InteractiveBrowserTest::SetUp();
+  }
+
+  void SetUpOnMainThread() override {
+    InteractiveBrowserTest::SetUpOnMainThread();
+    host_resolver()->AddRule("*", "127.0.0.1");
+    ASSERT_TRUE(embedded_test_server()->Start());
+  }
+
+  GURL GetURL(std::string_view hostname = "example.com",
+              std::string_view path = "/title1.html") {
+    return embedded_test_server()->GetURL(hostname, path);
   }
 
   ToastController* GetToastController() {
@@ -149,3 +168,43 @@ IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest, FocusNextPane) {
 }
 
 // TODO(crbug.com/358664193): Add tests for focus traversal using tab/shift-tab.
+
+IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest,
+                       HideTabScopedToastOnTabChange) {
+  RunTestSequence(InstrumentTab(kFirstTab),
+                  AddInstrumentedTab(kSecondTab, GetURL()),
+                  SelectTab(kTabStripElementId, 0), WaitForShow(kFirstTab),
+                  ShowToast(ToastParams(ToastId::kLinkCopied)),
+                  WaitForShow(toasts::ToastView::kToastViewId),
+                  SelectTab(kTabStripElementId, 1),
+                  WaitForHide(toasts::ToastView::kToastViewId));
+}
+
+IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest,
+                       GlobalScopedToastStaysOnTabChange) {
+  RunTestSequence(InstrumentTab(kFirstTab),
+                  AddInstrumentedTab(kSecondTab, GetURL()),
+                  SelectTab(kTabStripElementId, 0), WaitForShow(kFirstTab),
+                  ShowToast(ToastParams(ToastId::kNonMilestoneUpdate)),
+                  WaitForShow(toasts::ToastView::kToastViewId),
+                  SelectTab(kTabStripElementId, 1),
+                  EnsurePresent(toasts::ToastView::kToastViewId));
+}
+
+IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest,
+                       HideTabScopedToastOnNavigation) {
+  RunTestSequence(InstrumentTab(kFirstTab),
+                  ShowToast(ToastParams(ToastId::kLinkCopied)),
+                  WaitForShow(toasts::ToastView::kToastViewId),
+                  NavigateWebContents(kFirstTab, GetURL()),
+                  WaitForHide(toasts::ToastView::kToastViewId));
+}
+
+IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest,
+                       GlobalScopedToastStaysOnNavigation) {
+  RunTestSequence(InstrumentTab(kFirstTab),
+                  ShowToast(ToastParams(ToastId::kNonMilestoneUpdate)),
+                  WaitForShow(toasts::ToastView::kToastViewId),
+                  NavigateWebContents(kFirstTab, GetURL()),
+                  EnsurePresent(toasts::ToastView::kToastViewId));
+}

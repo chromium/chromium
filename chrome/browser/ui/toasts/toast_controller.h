@@ -15,13 +15,20 @@
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_observer.h"
+#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "ui/views/widget/widget_observer.h"
 
 class Browser;
 class BrowserWindowInterface;
+class TabStripModel;
 class ToastRegistry;
 class ToastSpecification;
 enum class ToastId;
+
+namespace content {
+class Page;
+}
 
 namespace toasts {
 enum class ToastCloseReason;
@@ -41,7 +48,9 @@ struct ToastParams {
 
 class ToastController : public views::WidgetObserver,
                         public BrowserListObserver,
-                        public FullscreenObserver {
+                        public FullscreenObserver,
+                        public TabStripModelObserver,
+                        public content::WebContentsObserver {
  public:
   explicit ToastController(BrowserWindowInterface* browser_window_interface,
                            const ToastRegistry* toast_registry);
@@ -68,6 +77,15 @@ class ToastController : public views::WidgetObserver,
   // BrowserListObserver::
   void OnBrowserClosing(Browser* browser) override;
 
+  // TabStripModelObserver::
+  void OnTabStripModelChanged(
+      TabStripModel* tab_strip_model,
+      const TabStripModelChange& change,
+      const TabStripSelectionChange& selection) override;
+
+  // content::WebContentsObserver::
+  void PrimaryPageChanged(content::Page& page) override;
+
   base::OneShotTimer* GetToastCloseTimerForTesting();
 
  private:
@@ -78,6 +96,7 @@ class ToastController : public views::WidgetObserver,
   virtual void CloseToast(toasts::ToastCloseReason reason);
   std::u16string FormatString(int string_id,
                               std::vector<std::u16string> replacement);
+  void ClearTabScopedToasts();
 
   // FullscreenObserver:
   void OnFullscreenStateChanged() override;
@@ -99,6 +118,7 @@ class ToastController : public views::WidgetObserver,
       this};
 
   raw_ptr<toasts::ToastView> toast_;
+  raw_ptr<TabStripModel> tab_strip_model_;
 };
 
 #endif  // CHROME_BROWSER_UI_TOASTS_TOAST_CONTROLLER_H_

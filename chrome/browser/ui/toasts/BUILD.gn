@@ -18,6 +18,7 @@ source_set("toasts") {
     "//chrome/browser/ui:browser_list",
     "//chrome/browser/ui/browser_window:browser_window",
     "//chrome/browser/ui/exclusive_access",
+    "//chrome/browser/ui/tabs:tab_strip_model_observer",
     "//chrome/browser/ui/toasts/api:toasts",
     "//content/public/browser",
     "//ui/base",

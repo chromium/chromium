@@ -18,6 +18,7 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
@@ -42,10 +43,19 @@ ToastController::ToastController(
     : browser_window_interface_(browser_window_interface),
       toast_registry_(toast_registry) {
   BrowserList::AddObserver(this);
+
+  if (browser_window_interface) {
+    tab_strip_model_ =
+        browser_window_interface->GetFeatures().tab_strip_model();
+    tab_strip_model_->AddObserver(this);
+  }
 }
 
 ToastController::~ToastController() {
   BrowserList::RemoveObserver(this);
+  if (tab_strip_model_) {
+    tab_strip_model_->RemoveObserver(this);
+  }
 }
 
 bool ToastController::IsShowingToast() const {
@@ -142,6 +152,20 @@ void ToastController::OnBrowserClosing(Browser* browser) {
     next_ephemeral_params_ = std::nullopt;
     persistent_params_ = std::nullopt;
   }
+}
+
+void ToastController::OnTabStripModelChanged(
+    TabStripModel* tab_strip_model,
+    const TabStripModelChange& change,
+    const TabStripSelectionChange& selection) {
+  if (selection.active_tab_changed() && selection.new_contents) {
+    Observe(selection.new_contents);
+    ClearTabScopedToasts();
+  }
+}
+
+void ToastController::PrimaryPageChanged(content::Page& page) {
+  ClearTabScopedToasts();
 }
 
 base::OneShotTimer* ToastController::GetToastCloseTimerForTesting() {
@@ -251,4 +275,25 @@ std::u16string ToastController::FormatString(
 void ToastController::OnFullscreenStateChanged() {
   toast_->UpdateRenderToastOverWebContentsAndPaint(
       browser_window_interface_->ShouldHideUIForFullscreen());
+}
+
+void ToastController::ClearTabScopedToasts() {
+  toast_close_timer_.Stop();
+  if (next_ephemeral_params_.has_value()) {
+    const ToastSpecification* const specification =
+        toast_registry_->GetToastSpecification(
+            next_ephemeral_params_.value().toast_id_);
+    if (!specification->is_global_scope()) {
+      next_ephemeral_params_ = std::nullopt;
+    }
+  }
+
+  if (current_ephemeral_params_.has_value()) {
+    const ToastSpecification* const specification =
+        toast_registry_->GetToastSpecification(
+            current_ephemeral_params_.value().toast_id_);
+    if (!specification->is_global_scope()) {
+      CloseToast(toasts::ToastCloseReason::kAbort);
+    }
+  }
 }

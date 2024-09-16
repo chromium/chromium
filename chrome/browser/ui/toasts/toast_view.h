@@ -28,7 +28,8 @@ enum class ToastCloseReason {
   kPreempted = 3,
   kMenuItemClick = 4,
   kFeatureDismiss = 5,
-  kMaxValue = kFeatureDismiss
+  kAbort = 6,
+  kMaxValue = kAbort
 };
 
 // The view for toasts.
