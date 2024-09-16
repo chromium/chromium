@@ -27,7 +27,6 @@
 #include "chrome/browser/ui/toasts/toast_service.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_utils.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_toolbar_bubble_controller.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_coordinator.h"
 #include "components/commerce/core/commerce_feature_list.h"
@@ -116,9 +115,6 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
       chrome_labs_coordinator_ =
           std::make_unique<ChromeLabsCoordinator>(browser);
     }
-
-    send_tab_to_self_toolbar_bubble_controller_ = std::make_unique<
-        send_tab_to_self::SendTabToSelfToolbarBubbleController>(browser);
 
     // TODO(b/350508658): Ideally, we don't pass in a reference to browser as
     // per the guidance in the comment above. However, currently, we need

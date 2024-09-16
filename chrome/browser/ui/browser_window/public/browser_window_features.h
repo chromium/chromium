@@ -39,10 +39,6 @@ namespace tab_groups {
 class SessionServiceTabGroupSyncObserver;
 }  // namespace tab_groups
 
-namespace send_tab_to_self {
-class SendTabToSelfToolbarBubbleController;
-}  // namespace send_tab_to_self
-
 // This class owns the core controllers for features that are scoped to a given
 // browser window on desktop. It can be subclassed by tests to perform
 // dependency injection.
@@ -122,11 +118,6 @@ class BrowserWindowFeatures {
   // supported for those cases.
   ToastService* toast_service() { return toast_service_.get(); }
 
-  send_tab_to_self::SendTabToSelfToolbarBubbleController*
-  send_tab_to_self_toolbar_bubble_controller() {
-    return send_tab_to_self_toolbar_bubble_controller_.get();
-  }
-
  protected:
   BrowserWindowFeatures();
 
@@ -137,9 +128,6 @@ class BrowserWindowFeatures {
  private:
   // Features that are per-browser window will each have a controller. e.g.
   // std::unique_ptr<FooFeature> foo_feature_;
-
-  std::unique_ptr<send_tab_to_self::SendTabToSelfToolbarBubbleController>
-      send_tab_to_self_toolbar_bubble_controller_;
 
   std::unique_ptr<ChromeLabsCoordinator> chrome_labs_coordinator_;
 

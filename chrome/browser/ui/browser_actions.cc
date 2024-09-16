@@ -23,7 +23,6 @@
 #include "chrome/browser/ui/browser_action_prefs_listener.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
@@ -36,7 +35,6 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
-#include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_toolbar_bubble_controller.h"
 #include "chrome/browser/ui/views/side_panel/companion/companion_utils.h"
 #include "chrome/browser/ui/views/side_panel/history_clusters/history_clusters_side_panel_utils.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_action_callback.h"
@@ -323,15 +321,8 @@ void BrowserActions::InitializeBrowserActions() {
             base::BindRepeating(
                 [](Browser* browser, actions::ActionItem* item,
                    actions::ActionInvocationContext context) {
-                  auto* bubble_controller =
-                      browser->browser_window_features()
-                          ->send_tab_to_self_toolbar_bubble_controller();
-                  if (bubble_controller->IsBubbleShowing()) {
-                    bubble_controller->HideBubble();
-                  } else {
-                    send_tab_to_self::ShowBubble(
-                        browser->tab_strip_model()->GetActiveWebContents());
-                  }
+                  send_tab_to_self::ShowBubble(
+                      browser->tab_strip_model()->GetActiveWebContents());
                 },
                 base::Unretained(browser)),
             kActionSendTabToSelf, IDS_SEND_TAB_TO_SELF, IDS_SEND_TAB_TO_SELF,
