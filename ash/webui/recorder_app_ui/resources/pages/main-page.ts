@@ -13,6 +13,7 @@ import '../components/recording-file-list.js';
 import '../components/recording-info-dialog.js';
 import '../components/secondary-button.js';
 import '../components/settings-menu.js';
+import '../components/system-audio-consent-dialog.js';
 
 import {
   createRef,
@@ -29,6 +30,9 @@ import {OnboardingDialog} from '../components/onboarding-dialog.js';
 import {RecordingFileList} from '../components/recording-file-list.js';
 import {RecordingInfoDialog} from '../components/recording-info-dialog.js';
 import {SettingsMenu} from '../components/settings-menu.js';
+import {
+  SystemAudioConsentDialog,
+} from '../components/system-audio-consent-dialog.js';
 import {AudioPlayerController} from '../core/audio_player_controller.js';
 import {focusToBody} from '../core/focus.js';
 import {i18n} from '../core/i18n.js';
@@ -146,6 +150,9 @@ export class MainPage extends ReactiveLitElement {
     this.recordingDataManager.getAllMetadata();
 
   private readonly deleteRecordingDialog = createRef<DeleteRecordingDialog>();
+
+  private readonly systemAudioConsentDialog =
+    createRef<SystemAudioConsentDialog>();
 
   private readonly exportDialog = createRef<ExportDialog>();
 
@@ -336,6 +343,18 @@ export class MainPage extends ReactiveLitElement {
     });
   }
 
+  private showSystemAudioConsentDialog() {
+    const dialog = assertExists(this.systemAudioConsentDialog.value);
+    dialog.show();
+  }
+
+  private onSystemAudioConsentDone() {
+    settings.mutate((s) => {
+      s.systemAudioConsentDone = true;
+      s.includeSystemAudio = true;
+    });
+  }
+
   override render(): RenderResult {
     const onboarding = settings.value.onboardingDone !== true;
 
@@ -345,6 +364,11 @@ export class MainPage extends ReactiveLitElement {
         @close=${this.onOnboardingDone}
         ${ref(this.onboardingDialogRef)}
       ></onboarding-dialog>
+      <system-audio-consent-dialog
+        ${ref(this.systemAudioConsentDialog)}
+        @system-audio-consent-clicked=${this.onSystemAudioConsentDone}
+      >
+      </system-audio-consent-dialog>
       <delete-recording-dialog
         ${ref(this.deleteRecordingDialog)}
         @delete=${this.onDeleteRecording}
@@ -372,7 +396,9 @@ export class MainPage extends ReactiveLitElement {
           part="actions"
           ${ref(this.actionsContainerRef)}
         >
-          <mic-selection-button></mic-selection-button>
+          <mic-selection-button
+            @trigger-system-audio-consent=${this.showSystemAudioConsentDialog}
+          ></mic-selection-button>
           ${this.renderRecordButton()}${this.renderSettingsButton()}
         </div>
         <settings-menu></settings-menu>

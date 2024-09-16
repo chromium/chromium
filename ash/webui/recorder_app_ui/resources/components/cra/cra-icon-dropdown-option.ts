@@ -8,6 +8,8 @@ import {
   'chrome://resources/cros_components/icon_dropdown/icon-dropdown-option.js';
 import {PropertyValues} from 'chrome://resources/mwc/lit/index.js';
 
+import {assertExists} from '../../core/utils/assert.js';
+
 export class CraIconDropdownOption extends IconDropdownOption {
   private setAriaChecked(): void {
     this.listItem?.setAttribute('aria-checked', this.checked.toString());
@@ -29,13 +31,21 @@ export class CraIconDropdownOption extends IconDropdownOption {
     if (changedProperties.has('checked')) {
       this.setAriaChecked();
     }
+    if (changedProperties.has('itemEnd') && this.itemEnd === 'switch') {
+      // Ad-hoc propagates the @change event from the switch.
+      // TODO: b/338544996 - Figure out a better solution for switch states
+      // and upstream it. See comment in mic-selection-button.ts.
+      const crosSwitch = assertExists(
+        this.renderRoot.querySelector('cros-switch'),
+      );
+      crosSwitch.addEventListener('change', () => {
+        this.dispatchEvent(new CustomEvent('change'));
+      });
+    }
   }
 }
 
-window.customElements.define(
-  'cra-icon-dropdown-option',
-  CraIconDropdownOption,
-);
+window.customElements.define('cra-icon-dropdown-option', CraIconDropdownOption);
 
 declare global {
   interface HTMLElementTagNameMap {

@@ -168,6 +168,7 @@ export const settingsSchema = z.object({
     z.nativeEnum(SpeakerLabelEnableState),
     SpeakerLabelEnableState.UNKNOWN,
   ),
+  systemAudioConsentDone: z.withDefault(z.boolean(), false),
 });
 
 type Settings = Infer<typeof settingsSchema>;
@@ -186,6 +187,7 @@ const defaultSettings: Settings = {
   transcriptionEnabled: TranscriptionEnableState.UNKNOWN,
   summaryEnabled: SummaryEnableState.UNKNOWN,
   speakerLabelEnabled: SpeakerLabelEnableState.UNKNOWN,
+  systemAudioConsentDone: false,
 };
 
 export const settings = signal(defaultSettings);

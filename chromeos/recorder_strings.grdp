@@ -420,6 +420,18 @@ Download the transcription model (up to 100MB) to get these transcriptions.
   <message desc="Status message for screen reader to update that the summary generation has started." name="IDS_RECORDER_SUMMARY_STARTED_STATUS_MESSAGE">
     Generating summary
   </message>
+  <message desc="Button to cancel recording from system audio." name="IDS_RECORDER_SYSTEM_AUDIO_CONSENT_DIALOG_CANCEL_BUTTON">
+    Cancel
+  </message>
+  <message desc="Button to acknowledge recording all sounds from Chromebook." name="IDS_RECORDER_SYSTEM_AUDIO_CONSENT_DIALOG_CONSENT_BUTTON">
+    OK
+  </message>
+  <message desc="Description of the system audio consent dialog." name="IDS_RECORDER_SYSTEM_AUDIO_CONSENT_DIALOG_DESCRIPTION">
+    When Chromebook audio is on, Recorder captures all audio playing on this device. Make sure you want to record all sounds.
+  </message>
+  <message desc="Header of the system audio consent dialog." name="IDS_RECORDER_SYSTEM_AUDIO_CONSENT_DIALOG_HEADER">
+    Recording all Chromebook audio
+  </message>
   <message desc="Tooltip of the record title renaming text input." name="IDS_RECORDER_TITLE_RENAME_TOOLTIP">
     Rename
   </message>

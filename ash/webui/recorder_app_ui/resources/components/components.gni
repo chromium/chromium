@@ -40,6 +40,7 @@ component_files = [
   "styles/speaker_label.ts",
   "summarization-view.ts",
   "summary-consent-card.ts",
+  "system-audio-consent-dialog.ts",
   "transcription-consent-dialog.ts",
   "transcription-view.ts",
 ]
