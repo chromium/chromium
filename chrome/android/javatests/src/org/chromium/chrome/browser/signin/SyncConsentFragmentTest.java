@@ -29,6 +29,7 @@ import static org.mockito.Mockito.when;
 
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
+import android.app.Activity;
 import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
@@ -283,6 +284,7 @@ public class SyncConsentFragmentTest {
     @Feature("RenderTest")
     public void testSyncConsentFragmentNewAccount() throws IOException {
         mChromeActivityTestRule.startMainActivityOnBlankPage();
+        mSigninTestRule.setResultForNextAddAccountFlow(Activity.RESULT_CANCELED, null);
         mSyncConsentActivity =
                 ActivityTestUtils.waitForActivity(
                         InstrumentationRegistry.getInstrumentation(),
@@ -292,8 +294,6 @@ public class SyncConsentFragmentTest {
                                     .launchActivityForPromoAddAccountFlow(
                                             mChromeActivityTestRule.getActivity(),
                                             SigninAccessPoint.BOOKMARK_MANAGER);
-                            onViewWaiting(AccountManagerTestRule.CANCEL_ADD_ACCOUNT_BUTTON_MATCHER)
-                                    .perform(click());
                         });
         mRenderTestRule.render(
                 mSyncConsentActivity.findViewById(R.id.fragment_container),
@@ -350,8 +350,6 @@ public class SyncConsentFragmentTest {
                                             mChromeActivityTestRule.getActivity(),
                                             SigninAccessPoint.BOOKMARK_MANAGER,
                                             accountInfo.getEmail());
-                            onViewWaiting(AccountManagerTestRule.CANCEL_ADD_ACCOUNT_BUTTON_MATCHER)
-                                    .perform(click());
                         });
         mRenderTestRule.render(
                 mSyncConsentActivity.findViewById(R.id.fragment_container),
@@ -705,6 +703,7 @@ public class SyncConsentFragmentTest {
         var settingsHistogram =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Signin.SigninStartedAccessPoint", SigninAccessPoint.SETTINGS);
+        mSigninTestRule.setResultForNextAddAccountFlow(Activity.RESULT_CANCELED, null);
         mSyncConsentActivity =
                 ActivityTestUtils.waitForActivity(
                         InstrumentationRegistry.getInstrumentation(),
@@ -714,8 +713,6 @@ public class SyncConsentFragmentTest {
                                     .launchActivityForPromoAddAccountFlow(
                                             mChromeActivityTestRule.getActivity(),
                                             SigninAccessPoint.SETTINGS);
-                            onViewWaiting(AccountManagerTestRule.CANCEL_ADD_ACCOUNT_BUTTON_MATCHER)
-                                    .perform(click());
                         });
         onView(withId(R.id.button_primary)).check(matches(withText(R.string.signin_add_account)));
         onView(withId(R.id.button_secondary)).check(matches(withText(R.string.cancel)));
@@ -823,6 +820,7 @@ public class SyncConsentFragmentTest {
     @LargeTest
     public void testSyncConsentFragmentAddAccountFlowSucceeded() {
         mChromeActivityTestRule.startMainActivityOnBlankPage();
+        mSigninTestRule.setResultForNextAddAccountFlow(Activity.RESULT_OK, NEW_ACCOUNT_NAME);
         HistogramWatcher addAccountStateHistogram =
                 HistogramWatcher.newBuilder()
                         .expectIntRecords(
@@ -841,9 +839,6 @@ public class SyncConsentFragmentTest {
                                     .launchActivityForPromoAddAccountFlow(
                                             mChromeActivityTestRule.getActivity(),
                                             SigninAccessPoint.BOOKMARK_MANAGER);
-                            mSigninTestRule.setUpNextAddAccountFlow(NEW_ACCOUNT_NAME);
-                            onViewWaiting(AccountManagerTestRule.ADD_ACCOUNT_BUTTON_MATCHER)
-                                    .perform(click());
                         });
 
         onView(withText(NEW_ACCOUNT_NAME)).check(matches(isDisplayed()));
@@ -855,6 +850,7 @@ public class SyncConsentFragmentTest {
     @LargeTest
     public void testSyncConsentFragmentAddAccountFlowCancelled() {
         mChromeActivityTestRule.startMainActivityOnBlankPage();
+        mSigninTestRule.setResultForNextAddAccountFlow(Activity.RESULT_CANCELED, null);
         HistogramWatcher addAccountStateHistogram =
                 HistogramWatcher.newBuilder()
                         .expectIntRecords(
@@ -873,8 +869,6 @@ public class SyncConsentFragmentTest {
                                     .launchActivityForPromoAddAccountFlow(
                                             mChromeActivityTestRule.getActivity(),
                                             SigninAccessPoint.BOOKMARK_MANAGER);
-                            onViewWaiting(AccountManagerTestRule.CANCEL_ADD_ACCOUNT_BUTTON_MATCHER)
-                                    .perform(click());
                         });
 
         onView(withText(R.string.signin_add_account)).check(matches(isDisplayed()));
@@ -895,7 +889,6 @@ public class SyncConsentFragmentTest {
                         InstrumentationRegistry.getInstrumentation(),
                         SyncConsentActivity.class,
                         () -> {
-                            mSigninTestRule.forceAddAccountIntentCreationFailure();
                             SyncConsentActivityLauncherImpl.get()
                                     .launchActivityForPromoAddAccountFlow(
                                             mChromeActivityTestRule.getActivity(),
@@ -912,6 +905,7 @@ public class SyncConsentFragmentTest {
     @LargeTest
     public void testSyncConsentFragmentAddAccountFlowReturnedNullAccountName() {
         mChromeActivityTestRule.startMainActivityOnBlankPage();
+        mSigninTestRule.setResultForNextAddAccountFlow(Activity.RESULT_OK, null);
         HistogramWatcher addAccountStateHistogram =
                 HistogramWatcher.newBuilder()
                         .expectIntRecords(
@@ -931,8 +925,6 @@ public class SyncConsentFragmentTest {
                                     .launchActivityForPromoAddAccountFlow(
                                             mChromeActivityTestRule.getActivity(),
                                             SigninAccessPoint.BOOKMARK_MANAGER);
-                            onViewWaiting(AccountManagerTestRule.ADD_ACCOUNT_BUTTON_MATCHER)
-                                    .perform(click());
                         });
 
         onView(withText(R.string.signin_add_account)).check(matches(isDisplayed()));
@@ -1597,8 +1589,6 @@ public class SyncConsentFragmentTest {
                                     .launchActivityForPromoAddAccountFlow(
                                             mChromeActivityTestRule.getActivity(),
                                             SigninAccessPoint.START_PAGE);
-                            onViewWaiting(AccountManagerTestRule.CANCEL_ADD_ACCOUNT_BUTTON_MATCHER)
-                                    .perform(click());
                         });
         mRenderTestRule.render(
                 mSyncConsentActivity.findViewById(R.id.fragment_container),

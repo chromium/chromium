@@ -4,18 +4,14 @@
 
 package org.chromium.chrome.test.util.browser.signin;
 
-import static androidx.test.espresso.matcher.ViewMatchers.withId;
-
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
-import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 
-import org.hamcrest.Matcher;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
@@ -149,13 +145,6 @@ public class AccountManagerTestRule implements TestRule {
                     .build();
 
     public static final AccountInfo AADC_UNRESOLVED_ACCOUNT = TEST_ACCOUNT_1;
-
-    // The matcher for the add account button in the fake add account activity.
-    public static final Matcher<View> ADD_ACCOUNT_BUTTON_MATCHER =
-            withId(FakeAccountManagerFacade.AddAccountActivityStub.OK_BUTTON_ID);
-    // The matcher for the cancel button in the fake add account activity.
-    public static final Matcher<View> CANCEL_ADD_ACCOUNT_BUTTON_MATCHER =
-            withId(FakeAccountManagerFacade.AddAccountActivityStub.CANCEL_BUTTON_ID);
 
     // TODO(crbug.com/40890215): Use TEST_ACCOUNT_1 instead.
     @Deprecated public static final String TEST_ACCOUNT_EMAIL = "test@gmail.com";
@@ -315,31 +304,28 @@ public class AccountManagerTestRule implements TestRule {
     }
 
     /**
-     * Initializes the next add account flow with a given account to add.
+     * Sets the result for the next add account flow.
      *
-     * @param newAccountName The account name to return when the add account flow finishes.
+     * @param result The activity result to return when the intent is launched
+     * @param newAccountName The account name to return when the intent is launched
      */
-    public void setUpNextAddAccountFlow(@Nullable String newAccountName) {
-        setUpNextAddAccountFlow(newAccountName, false);
+    public void setResultForNextAddAccountFlow(int result, @Nullable String newAccountName) {
+        setResultForNextAddAccountFlow(result, newAccountName, false);
     }
 
     /**
-     * Initializes the next add account flow with a given account to add. Should be called before
-     * the add account flow starts.
+     * Sets the result for the next add account flow.
      *
-     * @param newAccountName The account name to return when the add account flow finishes.
+     * @param result The activity result to return when the intent is launched
+     * @param newAccountName The account name to return when the intent is launched
      * @param isMinorModeEnabled The account be subject to minor mode restrictions
      */
-    public void setUpNextAddAccountFlow(
-            @Nullable String newAccountName, boolean isMinorModeEnabled) {
+    public void setResultForNextAddAccountFlow(
+            int result, @Nullable String newAccountName, boolean isMinorModeEnabled) {
         // TODO(crbug.com/343872217) To be replaced with a single method that takes {@link
         // AccountInfo}
-        mFakeAccountManagerFacade.setUpNextAddAccountFlow(newAccountName, isMinorModeEnabled);
-    }
-
-    /** Makes the add account intent creation fail. */
-    public void forceAddAccountIntentCreationFailure() {
-        mFakeAccountManagerFacade.forceAddAccountIntentCreationFailure();
+        mFakeAccountManagerFacade.setResultForNextAddAccountFlow(
+                result, newAccountName, isMinorModeEnabled);
     }
 
     /** Removes an account with the given {@link CoreAccountId}. */
