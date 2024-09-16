@@ -61,6 +61,8 @@ ToastView::ToastView(views::View* anchor_view,
   SetProperty(views::kElementIdentifierKey, kToastElementId);
   set_close_on_deactivate(false);
   SetProperty(views::kElementIdentifierKey, kToastViewId);
+  SetAccessibleWindowRole(ax::mojom::Role::kAlert);
+  SetAccessibleTitle(toast_text_);
 }
 
 ToastView::~ToastView() = default;
@@ -254,10 +256,6 @@ void ToastView::OnThemeChanged() {
       *icon_, color_provider->GetColor(ui::kColorToastForeground),
       ChromeLayoutProvider::Get()->GetDistanceMetric(
           DISTANCE_TOAST_BUBBLE_HEIGHT_CONTENT)));
-}
-
-std::u16string ToastView::GetAccessibleWindowTitle() const {
-  return toast_text_;
 }
 
 void ToastView::AnimateOut(base::OnceClosure callback,

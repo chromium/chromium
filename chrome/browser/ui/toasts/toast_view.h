@@ -73,7 +73,6 @@ class ToastView : public views::BubbleDialogDelegateView,
   // views::BubbleDialogDelegateView:
   gfx::Rect GetBubbleBounds() override;
   void OnThemeChanged() override;
-  std::u16string GetAccessibleWindowTitle() const override;
 
  private:
   void AnimateOut(base::OnceClosure callback, bool show_height_animation);
