@@ -736,7 +736,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SafeBrowsing.Enhanced.ProtegoRequestSentInLast7Days"
-    enum="SafeBrowsingEnhancedProtegoPingType" expires_after="2024-11-07">
+    enum="SafeBrowsingEnhancedProtegoPingType" expires_after="2025-11-07">
   <owner>jacastro@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
