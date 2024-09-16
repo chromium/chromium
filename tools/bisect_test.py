@@ -852,6 +852,19 @@ class AndroidReleaseBuildTest(AndroidBuildTest):
     build._launch_revision('temp-dir', None)
     mock_LaunchOnAndroid.assert_called_once_with(self.device, 'chrome')
 
+  @patch('bisect-builds.LaunchOnAndroid')
+  def test_webview_launch_revision(self, mock_LaunchOnAndroid):
+    options, args = bisect_builds.ParseCommandLine([
+        '-r', '-a', 'android-arm64', '-g', '127.0.6533.76', '-b',
+        '127.0.6533.79', '--apk', 'system_webview'
+    ])
+    build = bisect_builds.create_archive_build(options)
+    self.assertIsInstance(build, bisect_builds.AndroidReleaseBuild)
+    build._launch_revision('temp-dir', None)
+    mock_LaunchOnAndroid.assert_called_once_with(self.device, 'system_webview')
+    with self.assertRaises(bisect_builds.BisectException):
+      build._launch_revision('temp-dir', None, ['args'])
+
 
 class AndroidSnapshotBuildTest(AndroidBuildTest):
 

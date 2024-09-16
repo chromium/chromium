@@ -1095,11 +1095,9 @@ class AndroidBuildMixin:
     super().__init__(options)
     self.apk = options.apk
     self.device = InitializeAndroidDevice(options.device_id, self.apk, None)
+    self.flag_changer = None
     if not self.device:
       raise BisectException('Failed to initialize device.')
-    # The args could be set via self.run_revision
-    self.flags = flag_changer.FlagChanger(
-        self.device, chrome.PACKAGE_INFO[self.apk].cmdline_file)
     self.binary_name = self._get_apk_filename()
 
   def _get_apk_filename(self, prefer_64bit=True):
@@ -1127,7 +1125,14 @@ class AndroidBuildMixin:
     InstallOnAndroid(self.device, apk_paths['chrome'])
 
   def _launch_revision(self, tempdir, executables, args=()):
-    self.flags.ReplaceFlags(args)
+    if args:
+      if self.apk not in chrome.PACKAGE_INFO:
+        raise BisectException(
+            f'Launching args are not supported for {self.apk}')
+      if not self.flag_changer:
+        self.flag_changer = flag_changer.FlagChanger(
+            self.device, chrome.PACKAGE_INFO[self.apk].cmdline_file)
+      self.flag_changer.ReplaceFlags(args)
     LaunchOnAndroid(self.device, self.apk)
     return (0, sys.stdout, sys.stderr)
 
