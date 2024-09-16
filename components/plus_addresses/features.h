@@ -92,6 +92,9 @@ BASE_DECLARE_FEATURE(kPlusAddressProfileAwareFeatureCheck);
 COMPONENT_EXPORT(PLUS_ADDRESSES_FEATURES)
 BASE_DECLARE_FEATURE(kPlusAddressSuggestionRedesign);
 
+COMPONENT_EXPORT(PLUS_ADDRESSES_FEATURES)
+extern const base::FeatureParam<bool> kShowForwardingEmailInSuggestion;
+
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 COMPONENT_EXPORT(PLUS_ADDRESSES_FEATURES)
 BASE_DECLARE_FEATURE(kPlusAddressUpdatedErrorStatesInOnboardingModal);

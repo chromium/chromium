@@ -18,6 +18,7 @@ constexpr char kPlusAddressLearnMoreUrlName[] = "learn-more";
 constexpr char kPlusAddressExcludedSitesName[] = "excluded-sites";
 constexpr char kPlusAddressErrorReportUrlName[] = "error-report-url";
 constexpr char kDisableForForbiddenUsersName[] = "disable-for-forbidden-users";
+constexpr char kShowForwardingEmailInSuggestionName[] = "show-forwarding-email";
 
 }  // namespace
 
@@ -132,11 +133,16 @@ BASE_FEATURE(kPlusAddressProfileAwareFeatureCheck,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, creation suggestions do not contain a label prior to the user
-// acknowledging the notice. When labels are shown, they contain information
-// about the forwarding address.
+// acknowledging the notice.
 BASE_FEATURE(kPlusAddressSuggestionRedesign,
              "PlusAddressSuggestionRedesign",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// If set to `true`, then labels, when shown, contain information about the
+// forwarding address.
+const base::FeatureParam<bool> kShowForwardingEmailInSuggestion{
+    &kPlusAddressSuggestionRedesign, kShowForwardingEmailInSuggestionName,
+    false};
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 // When enabled, we show refined error states in the onboarding dialog on

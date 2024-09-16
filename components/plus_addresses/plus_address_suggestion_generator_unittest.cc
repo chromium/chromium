@@ -232,8 +232,10 @@ TEST_F(PlusAddressSuggestionGeneratorTest, FirstTimeCreateSuggestion) {
 // - On iOS, the label should not contain the primary email.
 // - On Desktop, the label should contain the primary email.
 TEST_F(PlusAddressSuggestionGeneratorTest, ProfileInLabel) {
-  base::test::ScopedFeatureList feature_list{
-      features::kPlusAddressSuggestionRedesign};
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kPlusAddressSuggestionRedesign,
+      {{"show-forwarding-email", "true"}});
   setting_service().set_has_accepted_notice(true);
 
   PlusAddressSuggestionGenerator generator(

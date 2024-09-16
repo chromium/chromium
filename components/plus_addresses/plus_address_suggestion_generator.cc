@@ -97,7 +97,7 @@ std::vector<std::vector<Suggestion::Text>> CreateLabelsForCreateSuggestion(
   }
 
   std::u16string label_text =
-      base::FeatureList::IsEnabled(features::kPlusAddressSuggestionRedesign)
+      features::kShowForwardingEmailInSuggestion.Get()
           ? l10n_util::GetStringFUTF16(
                 IDS_PLUS_ADDRESS_CREATE_SUGGESTION_SECONDARY_TEXT_WITH_FORWARDING_INFO,
                 base::UTF8ToUTF16(forwarding_address))
