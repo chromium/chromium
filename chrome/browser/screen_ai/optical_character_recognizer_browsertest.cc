@@ -350,9 +350,8 @@ IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest, PerformOCR_Simple) {
   histograms.ExpectTotalCount("Accessibility.ScreenAI.OCR.Latency.XLarge", 0);
 }
 
-// TODO(362478055): Fix this flaky test.
 IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest,
-                       DISABLED_PerformOCR_AfterServiceRevive) {
+                       PerformOCR_AfterServiceRevive) {
   if (!IsOcrAvailable()) {
     GTEST_SKIP() << "This test is only available when service is available";
   }
