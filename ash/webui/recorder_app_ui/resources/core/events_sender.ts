@@ -47,9 +47,15 @@ export interface SummarizeEventParams {
   wordCount: number;
 }
 
+export interface FeedbackEventParams {
+  isPositive: boolean;
+}
+
 export abstract class EventsSender {
   abstract sendStartSessionEvent(params: StartSessionEventParams): void;
   abstract sendRecordEvent(params: RecordEventParams): void;
   abstract sendSuggestTitleEvent(params: SuggestTitleEventParams): void;
   abstract sendSummarizeEvent(params: SummarizeEventParams): void;
+  abstract sendFeedbackTitleSuggestionEvent(params: FeedbackEventParams): void;
+  abstract sendFeedbackSummaryEvent(params: FeedbackEventParams): void;
 }

@@ -1316,6 +1316,11 @@
     <variant value="3">UNSUPPORTED_TRANSCRIPTION_IS_TOO_SHORT</variant>
     <variant value="4">UNSUPPORTED_TRANSCRIPTION_IS_TOO_LONG</variant>
   </enum>
+
+  <enum name="RecorderAppModelFeedback">
+    <variant value="0">NEGATIVE</variant>
+    <variant value="1">POSITIVE</variant>
+  </enum>
   <event name="AppDiscovery.AppInstalled">
     <summary>
       Recorded whenever a new app is installed on Chrome OS.
@@ -2842,6 +2847,28 @@
     <metric name="ResultStatus" type="RecorderAppModelResultStatus">
       <summary>
         Status of the summary generation result.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="RecorderApp.FeedbackTitleSuggestion">
+    <summary>
+      Event recorded when user give feedback to title suggestion result.
+    </summary>
+    <metric name="Feedback" type="RecorderAppModelFeedback">
+      <summary>
+        Feedback given by user
+      </summary>
+    </metric>
+  </event>
+
+  <event name="RecorderApp.FeedbackSummary">
+    <summary>
+      Event recorded when user give feedback to recording summary result.
+    </summary>
+    <metric name="Feedback" type="RecorderAppModelFeedback">
+      <summary>
+        Feedback given by user
       </summary>
     </metric>
   </event>

@@ -4,6 +4,7 @@
 
 import {
   EventsSender as EventsSenderBase,
+  FeedbackEventParams,
   RecordEventParams,
   StartSessionEventParams,
   SuggestTitleEventParams,
@@ -18,4 +19,8 @@ export class EventsSender extends EventsSenderBase {
   override sendSuggestTitleEvent(_: SuggestTitleEventParams): void {}
 
   override sendSummarizeEvent(_: SummarizeEventParams): void {}
+
+  override sendFeedbackTitleSuggestionEvent(_: FeedbackEventParams): void {}
+
+  override sendFeedbackSummaryEvent(_: FeedbackEventParams): void {}
 }

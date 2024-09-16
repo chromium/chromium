@@ -41,6 +41,11 @@ export enum ModelResponseError {
   UNSAFE = 'UNSAFE',
 }
 
+export enum GenaiResultType {
+  SUMMARY = 'SUMMARY',
+  TITLE_SUGGESTION = 'TITLE_SUGGESTION',
+}
+
 // prettier-ignore
 export type ModelResponse<T> = {
   kind: 'error',

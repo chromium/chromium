@@ -17,14 +17,12 @@ import {
   MAX_WORD_LENGTH,
   MIN_WORD_LENGTH,
 } from '../core/on_device_model/ai_feature_constants.js';
-import {ModelResponseError} from '../core/on_device_model/types.js';
+import {
+  GenaiResultType,
+  ModelResponseError,
+} from '../core/on_device_model/types.js';
 import {ReactiveLitElement} from '../core/reactive/lit.js';
 import {assertExhaustive, assertExists} from '../core/utils/assert.js';
-
-export enum GenaiResultType {
-  SUMMARY = 'SUMMARY',
-  TITLE_SUGGESTION = 'TITLE_SUGGESTION',
-}
 
 export class GenaiError extends ReactiveLitElement {
   static override styles: CSSResultGroup = css`

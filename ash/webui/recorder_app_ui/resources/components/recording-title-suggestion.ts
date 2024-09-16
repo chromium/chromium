@@ -24,7 +24,10 @@ import {
 
 import {i18n} from '../core/i18n.js';
 import {usePlatformHandler} from '../core/lit/context.js';
-import {ModelResponse} from '../core/on_device_model/types.js';
+import {
+  GenaiResultType,
+  ModelResponse,
+} from '../core/on_device_model/types.js';
 import {
   ComputedState,
   ReactiveLitElement,
@@ -38,7 +41,6 @@ import {
 } from '../core/utils/assert.js';
 
 import {CraIconButton} from './cra/cra-icon-button.js';
-import {GenaiResultType} from './genai-error.js';
 
 /**
  * The title suggestion popup in playback page of Recorder App.
@@ -208,7 +210,8 @@ export class RecordingTitleSuggestion extends ReactiveLitElement {
         ${i18n.genAiDisclaimerText}
         <a href=${HELP_URL} target="_blank">${i18n.genAiLearnMoreLink}</a>
       </div>
-      <genai-feedback-buttons></genai-feedback-buttons>
+      <genai-feedback-buttons .resultType=${GenaiResultType.TITLE_SUGGESTION}>
+      </genai-feedback-buttons>
     `;
   }
 

@@ -25,7 +25,10 @@ import {
 
 import {i18n} from '../core/i18n.js';
 import {usePlatformHandler} from '../core/lit/context.js';
-import {ModelResponse} from '../core/on_device_model/types.js';
+import {
+  GenaiResultType,
+  ModelResponse,
+} from '../core/on_device_model/types.js';
 import {ReactiveLitElement} from '../core/reactive/lit.js';
 import {signal} from '../core/reactive/signal.js';
 import {Transcription} from '../core/soda/soda.js';
@@ -36,8 +39,6 @@ import {
   assertExhaustive,
   assertExists,
 } from '../core/utils/assert.js';
-
-import {GenaiResultType} from './genai-error.js';
 
 export class SummarizationView extends ReactiveLitElement {
   static override styles: CSSResultGroup = css`
@@ -231,7 +232,8 @@ export class SummarizationView extends ReactiveLitElement {
         ${i18n.genAiDisclaimerText}
         <a href=${HELP_URL} target="_blank">${i18n.genAiLearnMoreLink}</a>
       </div>
-      <genai-feedback-buttons></genai-feedback-buttons>
+      <genai-feedback-buttons .resultType=${GenaiResultType.SUMMARY}>
+      </genai-feedback-buttons>
     `;
   }
 

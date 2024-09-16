@@ -3,13 +3,16 @@
 // found in the LICENSE file.
 
 import {
+  CrOSEvents_RecorderApp_FeedbackSummary,
   // Events
+  CrOSEvents_RecorderApp_FeedbackTitleSuggestion,
   CrOSEvents_RecorderApp_Record,
   CrOSEvents_RecorderApp_StartSession,
   CrOSEvents_RecorderApp_SuggestTitle,
   CrOSEvents_RecorderApp_Summarize,
   // Enums
   CrOSEvents_RecorderAppMicrophoneType,
+  CrOSEvents_RecorderAppModelFeedback,
   CrOSEvents_RecorderAppModelResultStatus,
   CrOSEvents_RecorderAppSpeakerLabelEnableState,
   CrOSEvents_RecorderAppSummaryEnableState,
@@ -22,6 +25,7 @@ import {
 
 import {
   EventsSender as EventsSenderBase,
+  FeedbackEventParams,
   RecordEventParams,
   StartSessionEventParams,
   SuggestTitleEventParams,
@@ -143,6 +147,13 @@ function convertToModelResultStatus(
   }
 }
 
+function convertToModelFeedback(
+  isPositive: boolean,
+): CrOSEvents_RecorderAppModelFeedback {
+  return isPositive ? CrOSEvents_RecorderAppModelFeedback.POSITIVE :
+                      CrOSEvents_RecorderAppModelFeedback.NEGATIVE;
+}
+
 export class EventsSender extends EventsSenderBase {
   override sendStartSessionEvent({
     speakerLabelEnableState,
@@ -180,10 +191,12 @@ export class EventsSender extends EventsSenderBase {
     const mic = convertToMicrophoneType(params.isInternalMicrophone);
     const locale = convertTranscriptionLocaleType(params.transcriptionLocale);
     const speakerLabel = getSpeakerLabelEnableState(
-      params.transcriptionAvailable, params.speakerLabelEnableState
+      params.transcriptionAvailable,
+      params.speakerLabelEnableState,
     );
     const transcription = getTranscriptionEnableState(
-      params.transcriptionAvailable, params.transcriptionEnableState
+      params.transcriptionAvailable,
+      params.transcriptionEnableState,
     );
 
     const event = new CrOSEvents_RecorderApp_Record()
@@ -223,6 +236,24 @@ export class EventsSender extends EventsSenderBase {
         .setResultStatus(convertToModelResultStatus(params.responseError))
         .setWordCount(BigInt(params.wordCount))
         .build();
+
+    record(event);
+  }
+
+  override sendFeedbackTitleSuggestionEvent({
+    isPositive,
+  }: FeedbackEventParams): void {
+    const event = new CrOSEvents_RecorderApp_FeedbackTitleSuggestion()
+                    .setFeedback(convertToModelFeedback(isPositive))
+                    .build();
+
+    record(event);
+  }
+
+  override sendFeedbackSummaryEvent({isPositive}: FeedbackEventParams): void {
+    const event = new CrOSEvents_RecorderApp_FeedbackSummary()
+                    .setFeedback(convertToModelFeedback(isPositive))
+                    .build();
 
     record(event);
   }

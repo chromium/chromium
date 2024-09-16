@@ -10,10 +10,12 @@ import {css, CSSResultGroup, html} from 'chrome://resources/mwc/lit/index.js';
 
 import {i18n} from '../core/i18n.js';
 import {usePlatformHandler} from '../core/lit/context.js';
+import {GenaiResultType} from '../core/on_device_model/types.js';
 import {ReactiveLitElement} from '../core/reactive/lit.js';
 import {signal} from '../core/reactive/signal.js';
+import {assertExhaustive} from '../core/utils/assert.js';
 
-enum UserRating {
+export enum UserRating {
   THUMB_UP,
   THUMB_DOWN,
 }
@@ -55,12 +57,32 @@ export class GenaiFeedbackButtons extends ReactiveLitElement {
 
   private readonly platformHandler = usePlatformHandler();
 
+  resultType: GenaiResultType|null = null;
+
+  private sendFeedbackEvent(rating: UserRating): void {
+    if (this.resultType === null) {
+      return;
+    }
+
+    const isPositive = rating === UserRating.THUMB_UP;
+    const eventsSender = this.platformHandler.eventsSender;
+
+    switch (this.resultType) {
+      case GenaiResultType.TITLE_SUGGESTION:
+        return eventsSender.sendFeedbackTitleSuggestionEvent({isPositive});
+      case GenaiResultType.SUMMARY:
+        return eventsSender.sendFeedbackSummaryEvent({isPositive});
+      default:
+        assertExhaustive(this.resultType);
+    }
+  }
+
   private onThumbUpClick() {
     if (this.userRating.value === UserRating.THUMB_UP) {
       this.userRating.value = null;
     } else {
       this.userRating.value = UserRating.THUMB_UP;
-      // TODO: b/344789836 - Send metrics for thumbs up.
+      this.sendFeedbackEvent(UserRating.THUMB_UP);
     }
   }
 
@@ -69,11 +91,11 @@ export class GenaiFeedbackButtons extends ReactiveLitElement {
       this.userRating.value = null;
     } else {
       this.userRating.value = UserRating.THUMB_DOWN;
+      this.sendFeedbackEvent(UserRating.THUMB_DOWN);
       // TODO: b/344789836 - Determine what should be the default description
       // for the feedback report (we likely want the model input & output), and
       // also put it into recorder_strings.grdp for i18n.
       this.platformHandler.showAiFeedbackDialog('#RecorderApp');
-      // TODO: b/344789836 - Send metrics for thumbs down.
     }
   }
 
