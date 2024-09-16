@@ -4,6 +4,7 @@
 
 import {ModelResponseError} from './on_device_model/types.js';
 import {
+  ExportSettings,
   SpeakerLabelEnableState,
   SummaryEnableState,
   TranscriptionEnableState,
@@ -57,6 +58,11 @@ export interface OnboardEventParams {
   transcriptionEnableState: TranscriptionEnableState;
 }
 
+export interface ExportEventParams {
+  exportSettings: ExportSettings;
+  transcriptionAvailable: boolean;
+}
+
 export abstract class EventsSender {
   abstract sendStartSessionEvent(params: StartSessionEventParams): void;
   abstract sendRecordEvent(params: RecordEventParams): void;
@@ -65,4 +71,5 @@ export abstract class EventsSender {
   abstract sendFeedbackTitleSuggestionEvent(params: FeedbackEventParams): void;
   abstract sendFeedbackSummaryEvent(params: FeedbackEventParams): void;
   abstract sendOnboardEvent(params: OnboardEventParams): void;
+  abstract sendExportEvent(params: ExportEventParams): void;
 }

@@ -3,8 +3,9 @@
 // found in the LICENSE file.
 
 import {
-  CrOSEvents_RecorderApp_FeedbackSummary,
   // Events
+  CrOSEvents_RecorderApp_Export,
+  CrOSEvents_RecorderApp_FeedbackSummary,
   CrOSEvents_RecorderApp_FeedbackTitleSuggestion,
   CrOSEvents_RecorderApp_Onboard,
   CrOSEvents_RecorderApp_Record,
@@ -12,11 +13,13 @@ import {
   CrOSEvents_RecorderApp_SuggestTitle,
   CrOSEvents_RecorderApp_Summarize,
   // Enums
+  CrOSEvents_RecorderAppAudioFormat,
   CrOSEvents_RecorderAppMicrophoneType,
   CrOSEvents_RecorderAppModelFeedback,
   CrOSEvents_RecorderAppModelResultStatus,
   CrOSEvents_RecorderAppSpeakerLabelEnableState,
   CrOSEvents_RecorderAppSummaryEnableState,
+  CrOSEvents_RecorderAppTranscriptFormat,
   CrOSEvents_RecorderAppTranscriptionEnableState,
   CrOSEvents_RecorderAppTranscriptionLocale,
 } from 'chrome://resources/ash/common/metrics/structured_events.js';
@@ -26,6 +29,7 @@ import {
 
 import {
   EventsSender as EventsSenderBase,
+  ExportEventParams,
   FeedbackEventParams,
   OnboardEventParams,
   RecordEventParams,
@@ -35,6 +39,9 @@ import {
 } from '../../core/events_sender.js';
 import {ModelResponseError} from '../../core/on_device_model/types.js';
 import {
+  ExportAudioFormat,
+  ExportSettings,
+  ExportTranscriptionFormat,
   SpeakerLabelEnableState,
   SummaryEnableState,
   TranscriptionEnableState,
@@ -146,6 +153,39 @@ function convertToModelResultStatus(
       return UNSUPPORTED_TRANSCRIPTION_IS_TOO_LONG;
     default:
       assertExhaustive(responseError);
+  }
+}
+
+function convertToAudioFormat(
+  settings: ExportSettings,
+): CrOSEvents_RecorderAppAudioFormat {
+  if (!settings.audio) {
+    return CrOSEvents_RecorderAppAudioFormat.NOT_EXPORTED;
+  }
+
+  switch (settings.audioFormat) {
+    case ExportAudioFormat.WEBM_ORIGINAL:
+      return CrOSEvents_RecorderAppAudioFormat.WEBM_ORIGINAL;
+    default:
+      assertExhaustive(settings.audioFormat);
+  }
+}
+
+function convertToTranscriptFormat(
+  settings: ExportSettings,
+  transcriptionAvailable: boolean,
+): CrOSEvents_RecorderAppTranscriptFormat {
+  if (!transcriptionAvailable) {
+    return CrOSEvents_RecorderAppTranscriptFormat.NOT_AVAILABLE;
+  } else if (!settings.transcription) {
+    return CrOSEvents_RecorderAppTranscriptFormat.NOT_EXPORTED;
+  }
+
+  switch (settings.transcriptionFormat) {
+    case ExportTranscriptionFormat.TXT:
+      return CrOSEvents_RecorderAppTranscriptFormat.TXT;
+    default:
+      assertExhaustive(settings.transcriptionFormat);
   }
 }
 
@@ -273,6 +313,20 @@ export class EventsSender extends EventsSenderBase {
     const event = new CrOSEvents_RecorderApp_Onboard()
                     .setSpeakerLabelEnableState(speakerLabel)
                     .setTranscriptionEnableState(transcription)
+                    .build();
+
+    record(event);
+  }
+
+  override sendExportEvent(params: ExportEventParams): void {
+    const {exportSettings, transcriptionAvailable} = params;
+    const audioFormat = convertToAudioFormat(exportSettings);
+    const transcriptFormat =
+      convertToTranscriptFormat(exportSettings, transcriptionAvailable);
+
+    const event = new CrOSEvents_RecorderApp_Export()
+                    .setAudioFormat(audioFormat)
+                    .setTranscriptFormat(transcriptFormat)
                     .build();
 
     record(event);

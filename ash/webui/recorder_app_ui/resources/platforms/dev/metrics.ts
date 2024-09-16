@@ -4,6 +4,7 @@
 
 import {
   EventsSender as EventsSenderBase,
+  ExportEventParams,
   FeedbackEventParams,
   OnboardEventParams,
   RecordEventParams,
@@ -26,4 +27,6 @@ export class EventsSender extends EventsSenderBase {
   override sendFeedbackSummaryEvent(_: FeedbackEventParams): void {}
 
   override sendOnboardEvent(_: OnboardEventParams): void {}
+
+  override sendExportEvent(_: ExportEventParams): void {}
 }

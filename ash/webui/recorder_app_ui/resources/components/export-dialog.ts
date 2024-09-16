@@ -16,7 +16,10 @@ import {
 } from 'chrome://resources/mwc/lit/index.js';
 
 import {i18n} from '../core/i18n.js';
-import {useRecordingDataManager} from '../core/lit/context.js';
+import {
+  usePlatformHandler,
+  useRecordingDataManager,
+} from '../core/lit/context.js';
 import {
   ReactiveLitElement,
   ScopedAsyncComputed,
@@ -74,6 +77,8 @@ export class ExportDialog extends ReactiveLitElement {
     () => settings.value.exportSettings,
   );
 
+  private readonly platformHandler = usePlatformHandler();
+
   private readonly recordingDataManager = useRecordingDataManager();
 
   private readonly transcription = new ScopedAsyncComputed(this, async () => {
@@ -122,6 +127,10 @@ export class ExportDialog extends ReactiveLitElement {
         exportSettings,
       );
       this.hide();
+    });
+    this.platformHandler.eventsSender.sendExportEvent({
+      exportSettings,
+      transcriptionAvailable: this.transcriptionAvailable.value,
     });
   }
 
