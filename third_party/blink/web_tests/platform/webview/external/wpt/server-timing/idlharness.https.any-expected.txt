@@ -1,9 +1,0 @@
-This is a testharness.js-based test.
-Found 3 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[FAIL] PerformanceResourceTiming interface: attribute contentType
-  assert_true: The prototype object must have a property "contentType" expected true got false
-[FAIL] PerformanceResourceTiming interface: resource must inherit property "contentType" with the proper type
-  assert_inherits: property "contentType" not found in prototype chain
-[FAIL] PerformanceResourceTiming interface: default toJSON operation on resource
-  assert_true: property "id" should be present in the output of PerformanceResourceTiming.prototype.toJSON() expected true got false
-Harness: the test ran to completion.
