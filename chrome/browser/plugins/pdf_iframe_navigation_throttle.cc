@@ -113,8 +113,6 @@ PDFIFrameNavigationThrottle::WillProcessResponse() {
     return content::NavigationThrottle::PROCEED;
   }
 
-  ReportPDFLoadStatus(PDFLoadStatus::kLoadedIframePdfWithNoPdfViewer);
-
 #if BUILDFLAG(ENABLE_PLUGINS)
   bool is_stale = false;
   bool pdf_plugin_enabled = IsPDFPluginEnabled(navigation_handle(), &is_stale);
@@ -165,6 +163,8 @@ void PDFIFrameNavigationThrottle::LoadPlaceholderHTML() {
   content::WebContents* web_contents = navigation_handle()->GetWebContents();
   if (!web_contents)
     return;
+
+  ReportPDFLoadStatus(PDFLoadStatus::kLoadedIframePdfWithNoPdfViewer);
 
   PdfWebContentsLifetimeHelper::CreateForWebContents(web_contents);
   PdfWebContentsLifetimeHelper* helper =

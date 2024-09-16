@@ -6830,6 +6830,7 @@ test("unit_tests") {
     "//components/payments/content:test_support",
     "//components/payments/content:utils",
     "//components/pdf/common:constants",
+    "//components/pdf/common:util",
     "//components/performance_manager",
     "//components/performance_manager/public/mojom",
     "//components/performance_manager/test_support:test_support_common",

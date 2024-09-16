@@ -2935,11 +2935,11 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, Metrics) {
   EXPECT_EQ(1, actions.GetActionCount("PDF.LoadSuccess"));
 }
 
-// Test that the PDF.LoadStatus metric is incremented correctly when the PDF is
+// Test that the PDF.LoadStatus2 metric is incremented correctly when the PDF is
 // loaded with PDFium.
 IN_PROC_BROWSER_TEST_P(PDFExtensionTest,
                        MetricsPDFLoadStatusLoadedPdfWithPdfium) {
-  const char kPdfLoadStatusMetric[] = "PDF.LoadStatus";
+  const char kPdfLoadStatusMetric[] = "PDF.LoadStatus2";
   base::HistogramTester histograms;
 
   histograms.ExpectBucketCount(kPdfLoadStatusMetric,
@@ -2970,9 +2970,8 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest,
   histograms.ExpectBucketCount(
       kPdfLoadStatusMetric, PDFLoadStatus::kTriggeredNoGestureDriveByDownload,
       0);
-  // TODO(crbug.com/365953522): Count should be 0.
   histograms.ExpectBucketCount(
-      kPdfLoadStatusMetric, PDFLoadStatus::kLoadedIframePdfWithNoPdfViewer, 1);
+      kPdfLoadStatusMetric, PDFLoadStatus::kLoadedIframePdfWithNoPdfViewer, 0);
   histograms.ExpectBucketCount(
       kPdfLoadStatusMetric,
       PDFLoadStatus::kViewPdfClickedInPdfPluginPlaceholder, 0);
@@ -4165,10 +4164,10 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest,
   base::RunLoop().RunUntilIdle();
 }
 
-// Test that the PDF.LoadStatus metric is incremented only after the PDF fully
+// Test that the PDF.LoadStatus2 metric is incremented only after the PDF fully
 // loads.
 IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest, MetricsPDFLoadStatusPartialLoad) {
-  const char kPdfLoadStatusMetric[] = "PDF.LoadStatus";
+  const char kPdfLoadStatusMetric[] = "PDF.LoadStatus2";
   base::HistogramTester histograms;
 
   histograms.ExpectBucketCount(kPdfLoadStatusMetric,
@@ -4191,7 +4190,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest, MetricsPDFLoadStatusPartialLoad) {
   test_pdf_viewer_stream_manager->WaitUntilPdfExtensionNavigationStarted(
       primary_main_frame);
 
-  // The PDF.LoadStatus metric should not be incremented yet.
+  // The PDF.LoadStatus2 metric should not be incremented yet.
   histograms.ExpectBucketCount(kPdfLoadStatusMetric,
                                PDFLoadStatus::kLoadedFullPagePdfWithPdfium, 0);
 
@@ -4201,7 +4200,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest, MetricsPDFLoadStatusPartialLoad) {
   EXPECT_TRUE(
       test_pdf_viewer_stream_manager->WaitUntilPdfLoaded(primary_main_frame));
 
-  // The PDF.LoadStatus metric should be incremented.
+  // The PDF.LoadStatus2 metric should be incremented.
   histograms.ExpectBucketCount(kPdfLoadStatusMetric,
                                PDFLoadStatus::kLoadedFullPagePdfWithPdfium, 1);
 }

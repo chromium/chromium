@@ -8,15 +8,18 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/common/chrome_content_client.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/pdf/common/constants.h"
+#include "components/pdf/common/pdf_util.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "net/http/http_util.h"
 #include "ppapi/buildflags/buildflags.h"
 
 #if BUILDFLAG(ENABLE_PLUGINS)
+#include "base/test/test_future.h"
 #include "chrome/browser/plugins/chrome_plugin_service_filter.h"
 #include "chrome/browser/plugins/plugin_prefs.h"
 #include "content/public/browser/plugin_service.h"
@@ -40,6 +43,14 @@ class PDFIFrameNavigationThrottleTest : public ChromeRenderViewHostTestHarness {
     ChromePluginServiceFilter* filter =
         ChromePluginServiceFilter::GetInstance();
     filter->RegisterProfile(profile());
+#endif
+  }
+
+  void LoadPluginsSynchronously() {
+#if BUILDFLAG(ENABLE_PLUGINS)
+    base::test::TestFuture<const std::vector<content::WebPluginInfo>&> signal;
+    content::PluginService::GetInstance()->GetPlugins(signal.GetCallback());
+    EXPECT_TRUE(signal.Wait());
 #endif
   }
 
@@ -102,20 +113,9 @@ TEST_F(PDFIFrameNavigationThrottleTest, OnlyCreateThrottleForSubframes) {
 }
 
 TEST_F(PDFIFrameNavigationThrottleTest, InterceptPDFOnly) {
-  // Setup
+  // Setup.
   SetAlwaysOpenPdfExternallyForTests(true);
-
-  // Load plugins to keep this test synchronous.
-#if BUILDFLAG(ENABLE_PLUGINS)
-  base::RunLoop run_loop;
-  content::PluginService::GetInstance()->GetPlugins(base::BindOnce(
-      [](base::RunLoop* run_loop,
-         const std::vector<content::WebPluginInfo>& plugins) {
-        run_loop->Quit();
-      },
-      base::Unretained(&run_loop)));
-  run_loop.Run();
-#endif
+  LoadPluginsSynchronously();
 
   NiceMock<content::MockNavigationHandle> handle(GURL(kExampleURL), subframe());
   handle.set_response_headers(GetHeaderWithMimeType("application/pdf"));
@@ -218,5 +218,30 @@ TEST_F(PDFIFrameNavigationThrottleTest, CancelIfPDFViewerIsDisabled) {
   ASSERT_NE(nullptr, throttle);
   ASSERT_EQ(content::NavigationThrottle::CANCEL_AND_IGNORE,
             throttle->WillProcessResponse().action());
+}
+
+TEST_F(PDFIFrameNavigationThrottleTest, MetricsPDFLoadStatus) {
+  const char kPdfLoadStatusMetric[] = "PDF.LoadStatus2";
+  base::HistogramTester histograms;
+  histograms.ExpectBucketCount(
+      kPdfLoadStatusMetric, PDFLoadStatus::kLoadedIframePdfWithNoPdfViewer, 0);
+
+  // Setup.
+  SetAlwaysOpenPdfExternallyForTests(true);
+  LoadPluginsSynchronously();
+
+  NiceMock<content::MockNavigationHandle> handle(GURL(kExampleURL), subframe());
+  handle.set_response_headers(GetHeaderWithMimeType("application/pdf"));
+
+  // Verify that we CANCEL for PDF mime type.
+  std::unique_ptr<content::NavigationThrottle> throttle =
+      PDFIFrameNavigationThrottle::MaybeCreateThrottleFor(&handle);
+  ASSERT_NE(nullptr, throttle);
+  ASSERT_EQ(content::NavigationThrottle::CANCEL_AND_IGNORE,
+            throttle->WillProcessResponse().action());
+
+  histograms.ExpectUniqueSample(kPdfLoadStatusMetric,
+                                PDFLoadStatus::kLoadedIframePdfWithNoPdfViewer,
+                                /*expected_bucket_count=*/1);
 }
 #endif

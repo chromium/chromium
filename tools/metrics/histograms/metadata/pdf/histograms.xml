@@ -55,7 +55,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PDF.LoadStatus" enum="ChromePDFViewerLoadStatus"
+<histogram name="PDF.LoadStatus2" enum="ChromePDFViewerLoadStatus"
     expires_after="2025-01-19">
   <owner>kmoon@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
