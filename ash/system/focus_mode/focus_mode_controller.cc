@@ -152,7 +152,8 @@ FocusModeController::FocusModeController(
   CHECK_EQ(g_instance, nullptr);
   g_instance = this;
 
-  focus_mode_sounds_controller_ = std::make_unique<FocusModeSoundsController>();
+  focus_mode_sounds_controller_ =
+      std::make_unique<FocusModeSoundsController>(delegate_->GetLocale());
 
   focus_mode_sounds_controller_->AddObserver(this);
   tasks_model_.SetDelegate(weak_factory_.GetWeakPtr());

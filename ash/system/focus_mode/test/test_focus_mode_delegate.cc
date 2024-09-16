@@ -6,6 +6,12 @@
 
 namespace ash {
 
+namespace {
+
+constexpr char kLocale[] = "en-US";
+
+}  // namespace
+
 TestFocusModeDelegate::TestFocusModeDelegate() = default;
 
 TestFocusModeDelegate::~TestFocusModeDelegate() = default;
@@ -15,6 +21,11 @@ TestFocusModeDelegate::CreateYouTubeMusicClient(const AccountId&,
                                                 const std::string&) {
   // TODO(yongshun): Return the active fake client.
   return nullptr;
+}
+
+const std::string& TestFocusModeDelegate::GetLocale() {
+  static const std::string locale(kLocale);
+  return locale;
 }
 
 bool TestFocusModeDelegate::IsMinorUser() {

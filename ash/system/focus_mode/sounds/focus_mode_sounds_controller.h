@@ -68,7 +68,7 @@ class ASH_EXPORT FocusModeSoundsController
     virtual void OnPlayerError() {}
   };
 
-  FocusModeSoundsController();
+  FocusModeSoundsController(const std::string& locale);
   FocusModeSoundsController(const FocusModeSoundsController&) = delete;
   FocusModeSoundsController& operator=(const FocusModeSoundsController&) =
       delete;

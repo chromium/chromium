@@ -24,6 +24,7 @@ static_library("focus_mode") {
   deps = [
     "//ash",
     "//base",
+    "//chrome/browser:browser_process",
     "//chrome/browser/ash/attestation",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles",

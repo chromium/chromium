@@ -305,12 +305,10 @@ void RecordPlaylistChosenHistogram(
 
 }  // namespace
 
-FocusModeSoundsController::FocusModeSoundsController()
-    : soundscape_delegate_(FocusModeSoundscapeDelegate::Create("en-US")),
-      youtube_music_delegate_(
+FocusModeSoundsController::FocusModeSoundsController(const std::string& locale)
+    : youtube_music_delegate_(
           std::make_unique<FocusModeYouTubeMusicDelegate>()) {
-  // TODO(b/341176182): Plumb the locale here and replace the default
-  // locale.
+  soundscape_delegate_ = FocusModeSoundscapeDelegate::Create(locale);
   soundscape_playlists_.reserve(kFocusModePlaylistViewsNum);
   youtube_music_playlists_.reserve(kFocusModePlaylistViewsNum);
 
