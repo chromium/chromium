@@ -68,6 +68,9 @@ struct CORE_EXPORT MatchedProperties {
     // Try-tactics style come from <try-tactic>.
     // https://drafts.csswg.org/css-anchor-position-1/#typedef-position-try-fallbacks-try-tactic
     bool is_try_tactics_style = false;
+    // 15 free bits after this, but since the MPC hashes this as raw bytes,
+    // we cannot have undefined padding.
+    uint8_t padding = 0;
   };
 
   MatchedProperties(CSSPropertyValueSet* properties_arg, const Data& data_arg)
