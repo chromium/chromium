@@ -63,12 +63,15 @@ void PasswordStoreBackendMigrationDecorator::InitBackend(
       base::BindRepeating(remote_changes_callback,
                           android_backend_->AsWeakPtr()),
       base::NullCallback(), pending_initialization_calls);
-
-  // Post delayed task to start migration of local passwords to avoid extra load
-  // on start-up.
-
+  if (password_manager::features::kSimulateFailedMigration.Get()) {
+    // Don't try to migrate to simulate a failed migration. This causes the
+    // pref to remain 'kOffAndMigrationPending' and no passwords to be migrated.
+    return;
+  }
   metrics_util::LogLocalPwdMigrationProgressState(
       metrics_util::LocalPwdMigrationProgressState::kScheduled);
+  // Post delayed task to start migration of local passwords to avoid extra load
+  // on start-up.
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&BuiltInBackendToAndroidBackendMigrator::

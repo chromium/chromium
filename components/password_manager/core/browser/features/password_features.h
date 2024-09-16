@@ -126,6 +126,12 @@ inline constexpr base::FeatureParam<bool> kIgnoreAccessLossWarningTimeout = {
     &kUnifiedPasswordManagerLocalPasswordsAndroidAccessLossWarning,
     "ignore_access_loss_warning_timeout", false};
 
+// If set to true, this will simulate a failed migration to UPM (only if the
+// client hasn't migrated yet).
+inline constexpr base::FeatureParam<bool> kSimulateFailedMigration = {
+    &kUnifiedPasswordManagerLocalPasswordsAndroidAccessLossWarning,
+    "simulate_failed_migration", false};
+
 // Enables clearing the login database for the users who already migrated their
 // credentials to GMS Core.
 BASE_DECLARE_FEATURE(kClearLoginDatabaseForAllMigratedUPMUsers);
