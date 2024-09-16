@@ -49,7 +49,7 @@ WebContentsStateByteBuffer::WebContentsStateByteBuffer(
     : state_version(saved_state_version) {
   JNIEnv* env = base::android::AttachCurrentThread();
   java_buffer.Reset(web_contents_byte_buffer_result);
-  backing_buffer = base::android::JavaByteBufferToSpan(env, java_buffer.obj());
+  backing_buffer = base::android::JavaByteBufferToSpan(env, java_buffer);
 }
 
 WebContentsStateByteBuffer::WebContentsStateByteBuffer(
@@ -476,7 +476,7 @@ ScopedJavaLocalRef<jstring> WebContentsState::GetVirtualUrlFromByteBuffer(
 
 ScopedJavaLocalRef<jobject> WebContentsState::RestoreContentsFromByteBuffer(
     JNIEnv* env,
-    jobject state,
+    const base::android::JavaRef<jobject>& state,
     jint saved_state_version,
     jboolean initially_hidden,
     jboolean no_renderer) {

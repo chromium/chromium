@@ -646,7 +646,7 @@ MediaCodecResult MediaCodecBridgeImpl::QueueInputBlock(
   }
 
   if (!data.empty()) {
-    base::android::JavaByteBufferToMutableSpan(env, j_buffer.obj())
+    base::android::JavaByteBufferToMutableSpan(env, j_buffer)
         .copy_from_nonoverlapping(data);
   }
 

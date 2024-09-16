@@ -3838,6 +3838,7 @@ test("base_unittests") {
       "test/launcher/test_results_tracker_unittest.cc",
     ]
     deps += [
+      ":base_jni",
       ":base_unittest_support_java",
       ":base_unittest_support_jni",
       "//base/test:test_support_java",
@@ -4260,6 +4261,7 @@ if (is_android || is_robolectric) {
       "java/lang/Runnable.class",
       "java/lang/Runtime.class",
       "java/lang/Throwable.class",
+      "java/nio/Buffer.class",
     ]
   }
 

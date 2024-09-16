@@ -432,8 +432,7 @@ void ImeAdapterAndroid::HandleStylusWritingGestureAction(
     return;
   blink::mojom::StylusWritingGestureDataPtr gesture_data;
   if (!blink::mojom::StylusWritingGestureData::Deserialize(
-          base::android::JavaByteBufferToSpan(env,
-                                              jgesture_data_byte_buffer.obj()),
+          base::android::JavaByteBufferToSpan(env, jgesture_data_byte_buffer),
           &gesture_data)) {
     NOTREACHED_IN_MIGRATION();
     return;
