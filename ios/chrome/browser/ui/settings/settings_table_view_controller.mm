@@ -7,6 +7,7 @@
 #import <memory>
 
 #import "base/apple/foundation_util.h"
+#import "base/debug/dump_without_crashing.h"
 #import "base/feature_list.h"
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_macros.h"
@@ -1663,7 +1664,11 @@ struct EnhancedSafeBrowsingActivePromoData
 }
 
 - (void)showGoogleServices {
-  DCHECK(!_googleServicesSettingsCoordinator);
+  if (_googleServicesSettingsCoordinator &&
+      self.navigationController.topViewController != self) {
+    base::debug::DumpWithoutCrashing();
+  }
+
   _googleServicesSettingsCoordinator =
       [[GoogleServicesSettingsCoordinator alloc]
           initWithBaseNavigationController:self.navigationController
@@ -1673,6 +1678,10 @@ struct EnhancedSafeBrowsingActivePromoData
 }
 
 - (void)showTabsSettings {
+  if (_tabsCoordinator && self.navigationController.topViewController != self) {
+    base::debug::DumpWithoutCrashing();
+  }
+
   _tabsCoordinator = [[TabsSettingsCoordinator alloc]
       initWithBaseNavigationController:self.navigationController
                                browser:_browser];
@@ -1680,6 +1689,11 @@ struct EnhancedSafeBrowsingActivePromoData
 }
 
 - (void)showSwitchProfileSettings {
+  if (_switchProfileCoordinator &&
+      self.navigationController.topViewController != self) {
+    base::debug::DumpWithoutCrashing();
+  }
+
   _switchProfileCoordinator = [[SwitchProfileSettingsCoordinator alloc]
       initWithBaseNavigationController:self.navigationController
                                browser:_browser];
@@ -1687,6 +1701,11 @@ struct EnhancedSafeBrowsingActivePromoData
 }
 
 - (void)showAddressBarPreferenceSetting {
+  if (_addressBarPreferenceCoordinator &&
+      self.navigationController.topViewController != self) {
+    base::debug::DumpWithoutCrashing();
+  }
+
   _addressBarPreferenceCoordinator = [[AddressBarPreferenceCoordinator alloc]
       initWithBaseNavigationController:self.navigationController
                                browser:_browser];
@@ -1702,9 +1721,11 @@ struct EnhancedSafeBrowsingActivePromoData
 }
 
 - (void)showGoogleSync {
-  // TODO(crbug.com/40067451): Switch back to DCHECK if the number of reports is
-  // low.
-  DUMP_WILL_BE_CHECK(!_manageSyncSettingsCoordinator);
+  if (_manageSyncSettingsCoordinator &&
+      self.navigationController.topViewController != self) {
+    base::debug::DumpWithoutCrashing();
+  }
+
   SyncSettingsAccountState accountState =
       [self shouldReplaceSyncSettingsWithAccountSettings]
           ? SyncSettingsAccountState::kSignedIn
@@ -1718,9 +1739,11 @@ struct EnhancedSafeBrowsingActivePromoData
 }
 
 - (void)showPasswords {
-  // TODO(crbug.com/40067451): Switch back to DCHECK if the number of reports is
-  // low.
-  DUMP_WILL_BE_CHECK(!_passwordsCoordinator);
+  if (_passwordsCoordinator &&
+      self.navigationController.topViewController != self) {
+    base::debug::DumpWithoutCrashing();
+  }
+
   _passwordsCoordinator = [[PasswordsCoordinator alloc]
       initWithBaseNavigationController:self.navigationController
                                browser:_browser];
@@ -1730,9 +1753,10 @@ struct EnhancedSafeBrowsingActivePromoData
 
 // Shows the Safety Check screen.
 - (void)showSafetyCheck {
-  // TODO(crbug.com/40067451): Switch back to DCHECK if the number of reports is
-  // low.
-  DUMP_WILL_BE_CHECK(!_safetyCheckCoordinator);
+  if (_safetyCheckCoordinator &&
+      self.navigationController.topViewController != self) {
+    base::debug::DumpWithoutCrashing();
+  }
 
   _safetyCheckCoordinator = [[SafetyCheckCoordinator alloc]
       initWithBaseNavigationController:self.navigationController
@@ -1786,8 +1810,11 @@ struct EnhancedSafeBrowsingActivePromoData
 
 // Shows Notifications screen.
 - (void)showNotifications {
-  DCHECK(!_notificationsCoordinator);
-  DCHECK(self.navigationController);
+  if (_notificationsCoordinator &&
+      self.navigationController.topViewController != self) {
+    base::debug::DumpWithoutCrashing();
+  }
+
   _notificationsCoordinator = [[NotificationsCoordinator alloc]
       initWithBaseNavigationController:self.navigationController
                                browser:_browser];
@@ -1797,9 +1824,11 @@ struct EnhancedSafeBrowsingActivePromoData
 
 // Shows Privacy screen.
 - (void)showPrivacy {
-  // TODO(crbug.com/40067451): Switch back to DCHECK if the number of reports is
-  // low.
-  DUMP_WILL_BE_CHECK(!_privacyCoordinator);
+  if (_privacyCoordinator &&
+      self.navigationController.topViewController != self) {
+    base::debug::DumpWithoutCrashing();
+  }
+
   _privacyCoordinator = [[PrivacyCoordinator alloc]
       initWithBaseNavigationController:self.navigationController
                                browser:_browser];
@@ -2109,9 +2138,9 @@ struct EnhancedSafeBrowsingActivePromoData
 }
 
 - (void)showDownloadsSettings {
-  if (_downloadsSettingsCoordinator) {
-    [_downloadsSettingsCoordinator stop];
-    _downloadsSettingsCoordinator = nil;
+  if (_downloadsSettingsCoordinator &&
+      self.navigationController.topViewController != self) {
+    base::debug::DumpWithoutCrashing();
   }
 
   _downloadsSettingsCoordinator = [[DownloadsSettingsCoordinator alloc]

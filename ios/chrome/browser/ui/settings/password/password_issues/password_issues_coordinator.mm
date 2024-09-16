@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/settings/password/password_issues/password_issues_coordinator.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/debug/dump_without_crashing.h"
 #import "base/memory/raw_ptr.h"
 #import "base/memory/scoped_refptr.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
@@ -206,9 +207,10 @@ DetailsContext ComputeDetailsContextFromWarningType(WarningType warning_type) {
 }
 
 - (void)presentDismissedCompromisedCredentials {
-  // Not an invariant due to possible race conditions. DCHECKing for debugging
-  // purposes. See crbug.com/40067451.
-  DCHECK(!_dismissedPasswordIssuesCoordinator);
+  if (_dismissedPasswordIssuesCoordinator &&
+      self.baseNavigationController.topViewController != _viewController) {
+    base::debug::DumpWithoutCrashing();
+  }
 
   [self stopReauthCoordinatorBeforeStartingChildCoordinator];
 
@@ -319,7 +321,10 @@ DetailsContext ComputeDetailsContextFromWarningType(WarningType warning_type) {
 // Local authentication is required every time the current
 // scene is backgrounded and foregrounded until reauthCoordinator is stopped.
 - (void)startReauthCoordinatorWithAuthOnStart:(BOOL)authOnStart {
-  DCHECK(!_reauthCoordinator);
+  if (_reauthCoordinator &&
+      self.baseNavigationController.topViewController != _viewController) {
+    base::debug::DumpWithoutCrashing();
+  }
 
   _reauthCoordinator = [[ReauthenticationCoordinator alloc]
       initWithBaseNavigationController:_baseNavigationController
