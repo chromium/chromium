@@ -137,7 +137,7 @@ class PrivacyMathPerfTest
 
     perf_test::PerfResultReporter reporter(metric_basename,
                                            StoryName(GetParam()));
-    reporter.RegisterImportantMetric(".wall_time", "ms");
+    reporter.RegisterImportantMetric(".wall_time", "us");
     reporter.AddResult(".wall_time", timer.TimePerLap());
   }
 };
