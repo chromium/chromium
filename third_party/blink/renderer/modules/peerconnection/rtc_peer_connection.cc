@@ -1384,7 +1384,14 @@ ScriptPromise<RTCCertificate> RTCPeerConnection::generateCertificate(
                 ->Value();
         if (expires_double >= 0) {
           expires = static_cast<DOMTimeStamp>(expires_double);
+        } else {
+          exception_state.ThrowTypeError(
+              "Negative value for expires attribute.");
+          return EmptyPromise();
         }
+      } else {
+        exception_state.ThrowTypeError("Invalid type for expires attribute.");
+        return EmptyPromise();
       }
     }
   }
