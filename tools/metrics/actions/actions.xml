@@ -31774,6 +31774,16 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="PrivacyPage_DeleteBrowsingData">
+  <owner>fsenra@google.com</owner>
+  <owner>alimariam@google.com</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
+  <description>
+    The user has tapped on the delete browsing data entry point on the privacy
+    settings page. iOS only.
+  </description>
+</action>
+
 <action name="ProcessSwapBindingsMismatch_RVHM">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
