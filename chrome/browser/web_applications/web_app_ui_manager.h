@@ -167,6 +167,14 @@ class WebAppUiManager {
                                           const webapps::AppId& app_id,
                                           bool shortcut_created) = 0;
 
+  // Reparents the `contents` to a new browser window, returns a nullptr if the
+  // operation failed. Runs `completion_callback` with the web contents of the
+  // newly reparented app window.
+  virtual Browser* ReparentAppTabToWindow(
+      content::WebContents* contents,
+      const webapps::AppId& app_id,
+      base::OnceCallback<void(content::WebContents*)> completion_callback) = 0;
+
   // Shows the pre-launch dialog for a file handling web app launch. The user
   // can allow or block the launch.
   virtual void ShowWebAppFileLaunchDialog(

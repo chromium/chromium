@@ -198,7 +198,7 @@ void ChromeOsAppsIntentPickerDelegate::LaunchApp(
     web_app::WebAppProvider* provider =
         web_app::WebAppProvider::GetForWebApps(&profile_.get());
     provider->ui_manager().ReparentAppTabToWindow(web_contents, launch_name,
-                                                  /*shortcut_created=*/true);
+                                                  base::DoNothing());
   } else {
     CHECK(proxy_);
     proxy_->LaunchAppWithUrl(

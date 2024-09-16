@@ -11,6 +11,7 @@
 #include <optional>
 #include <string>
 
+#include "base/functional/callback_helpers.h"
 #include "base/memory/stack_allocated.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
@@ -67,16 +68,24 @@ void PrunePreScopeNavigationHistory(const GURL& scope,
 // app in scope.
 Browser* ReparentWebAppForActiveTab(Browser* browser);
 
-// Reparents |contents| into a standalone web app window for |app_id|.
+// Reparents `contents` into a standalone web app window for `app_id`.
 // - If the web app has a launch_handler set to reuse existing windows and there
 // are existing web app windows around this will launch the web app into the
-// existing window and close |contents|.
+// existing window and close `contents`.
 // - If the web app is in experimental tabbed mode and has and existing web app
-// window, |contents| will be reparented into the existing window.
-// - Otherwise a new browser window is created for |contents| to be reparented
+// window, `contents` will be reparented into the existing window.
+// - Otherwise a new browser window is created for `contents` to be reparented
 // into.
-Browser* ReparentWebContentsIntoAppBrowser(content::WebContents* contents,
-                                           const webapps::AppId& app_id);
+// Returns the browser instance where the reparenting has happened, nullptr
+// otherwise. Runs `completion_callback` with the existing `contents`, if it was
+// reparented, or with the new `web_contents` that was created if the behavior
+// deemed it necessary (like for focus existing and navigate-existing
+// use-cases).
+Browser* ReparentWebContentsIntoAppBrowser(
+    content::WebContents* contents,
+    const webapps::AppId& app_id,
+    base::OnceCallback<void(content::WebContents*)> completion_callback =
+        base::DoNothingAs<void(content::WebContents*)>());
 
 // Marks the web contents as being the pinned home tab of a tabbed web app.
 void SetWebContentsIsPinnedHomeTab(content::WebContents* contents);

@@ -91,6 +91,11 @@ class WebAppUiManagerImpl : public BrowserListObserver,
   Browser* ReparentAppTabToWindow(content::WebContents* contents,
                                   const webapps::AppId& app_id,
                                   bool shortcut_created) override;
+  Browser* ReparentAppTabToWindow(
+      content::WebContents* contents,
+      const webapps::AppId& app_id,
+      base::OnceCallback<void(content::WebContents*)> completion_callback)
+      override;
   void ShowWebAppFileLaunchDialog(
       const std::vector<base::FilePath>& file_paths,
       const webapps::AppId& app_id,

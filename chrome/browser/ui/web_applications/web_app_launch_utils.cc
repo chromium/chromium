@@ -389,8 +389,10 @@ Browser* ReparentWebAppForActiveTab(Browser* browser) {
       browser->tab_strip_model()->GetActiveWebContents(), *app_id);
 }
 
-Browser* ReparentWebContentsIntoAppBrowser(content::WebContents* contents,
-                                           const webapps::AppId& app_id) {
+Browser* ReparentWebContentsIntoAppBrowser(
+    content::WebContents* contents,
+    const webapps::AppId& app_id,
+    base::OnceCallback<void(content::WebContents*)> completion_callback) {
   Profile* profile = Profile::FromBrowserContext(contents->GetBrowserContext());
   // Incognito tabs reparent correctly, but remain incognito without any
   // indication to the user, so disallow it.
@@ -404,6 +406,7 @@ Browser* ReparentWebContentsIntoAppBrowser(content::WebContents* contents,
   WebAppRegistrar& registrar = provider->registrar_unsafe();
   const WebApp* web_app = registrar.GetAppById(app_id);
   if (!web_app) {
+    std::move(completion_callback).Run(contents);
     return nullptr;
   }
 
@@ -438,6 +441,7 @@ Browser* ReparentWebContentsIntoAppBrowser(content::WebContents* contents,
           WebAppLaunchProcess::CreateAndRun(
               *profile, registrar, provider->os_integration_manager(), params);
       contents->Close();
+      std::move(completion_callback).Run(new_web_contents);
       return chrome::FindBrowserWithTab(new_web_contents);
     }
   }
@@ -462,8 +466,10 @@ Browser* ReparentWebContentsIntoAppBrowser(content::WebContents* contents,
   bool as_pinned_home_tab =
       browser->app_controller()->IsUrlInHomeTabScope(launch_url);
 
-  return ReparentWebContentsIntoAppBrowser(contents, browser, app_id,
-                                           as_pinned_home_tab);
+  Browser* reparented_browser = ReparentWebContentsIntoAppBrowser(
+      contents, browser, app_id, as_pinned_home_tab);
+  std::move(completion_callback).Run(contents);
+  return reparented_browser;
 }
 
 void SetWebContentsIsPinnedHomeTab(content::WebContents* contents) {

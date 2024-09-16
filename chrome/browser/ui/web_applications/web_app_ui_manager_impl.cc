@@ -337,6 +337,14 @@ Browser* WebAppUiManagerImpl::ReparentAppTabToWindow(
   return ReparentWebContentsIntoAppBrowser(contents, app_id);
 }
 
+Browser* WebAppUiManagerImpl::ReparentAppTabToWindow(
+    content::WebContents* contents,
+    const webapps::AppId& app_id,
+    base::OnceCallback<void(content::WebContents*)> completion_callback) {
+  return ReparentWebContentsIntoAppBrowser(contents, app_id,
+                                           std::move(completion_callback));
+}
+
 void WebAppUiManagerImpl::ShowWebAppFileLaunchDialog(
     const std::vector<base::FilePath>& file_paths,
     const webapps::AppId& app_id,

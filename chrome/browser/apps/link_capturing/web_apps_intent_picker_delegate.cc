@@ -25,6 +25,7 @@
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "components/webapps/common/web_app_id.h"
+#include "content/public/browser/web_contents.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/image/image.h"
@@ -35,6 +36,28 @@
 #endif
 
 namespace apps {
+
+namespace {
+
+void OnAppReparentedRunInNewContents(const std::string& launch_name,
+                                     content::WebContents* web_contents) {
+  if (!features::ShouldShowLinkCapturingUX()) {
+    return;
+  }
+
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  web_app::WebAppProvider* provider =
+      web_app::WebAppProvider::GetForWebApps(profile);
+  CHECK(provider);
+
+  provider->ui_manager().MaybeCreateEnableSupportedLinksInfobar(web_contents,
+                                                                launch_name);
+  provider->ui_manager().MaybeShowIPHPromoForAppsLaunchedViaLinkCapturing(
+      /*browser=*/nullptr, profile, launch_name);
+}
+
+}  // namespace
 
 WebAppsIntentPickerDelegate::WebAppsIntentPickerDelegate(Profile* profile)
     : profile_(*profile),
@@ -211,14 +234,11 @@ void WebAppsIntentPickerDelegate::LaunchApp(content::WebContents* web_contents,
   CHECK(entry_type == apps::PickerEntryType::kWeb ||
         entry_type == apps::PickerEntryType::kMacOs);
   if (entry_type == apps::PickerEntryType::kWeb) {
-    provider_->ui_manager().ReparentAppTabToWindow(web_contents, launch_name,
-                                                   /*shortcut_created=*/true);
-    if (features::ShouldShowLinkCapturingUX()) {
-      provider_->ui_manager().MaybeCreateEnableSupportedLinksInfobar(
-          web_contents, launch_name);
-      provider_->ui_manager().MaybeShowIPHPromoForAppsLaunchedViaLinkCapturing(
-          /*browser=*/nullptr, &profile_.get(), launch_name);
-    }
+    // Note: This call can destroy the current web contents synchronously,
+    // which will destroy this object.
+    provider_->ui_manager().ReparentAppTabToWindow(
+        web_contents, launch_name,
+        base::BindOnce(&OnAppReparentedRunInNewContents, launch_name));
   } else if (entry_type == apps::PickerEntryType::kMacOs) {
 #if BUILDFLAG(IS_MAC)
     LaunchMacApp(url, launch_name);
