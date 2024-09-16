@@ -104,6 +104,12 @@
       <property name="format" value="^m|s|((([ms][a-z0-9])|([a-ln-rt-z]))[a-zA-Z0-9]*)$"/>
       <message key="name.invalidPattern" value="Local variables should be camel-cased (e.g. int minWidth = 4)."/>
     </module>
+    <module name="AbbreviationAsWordInName">
+      <!-- https://source.android.com/docs/setup/contribute/code-style#treat-acronyms-as-words -->
+      <property name="severity" value="warning"/>
+      <property name="allowedAbbreviationLength" value="0"/>
+      <property name="allowedAbbreviations" value="GURL"/>
+    </module>
     <module name="FallThrough">
       <property name="severity" value="error"/>
       <property name="reliefPattern" value=".*"/>
