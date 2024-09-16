@@ -36,25 +36,30 @@
 
 - (instancetype)initWithAppState:(AppState*)appState
                     browserState:(ChromeBrowserState*)browserState {
+  return [self initWithAppState:appState profile:browserState];
+}
+
+- (instancetype)initWithAppState:(AppState*)appState
+                         profile:(ProfileIOS*)profile {
   if ((self = [super initWithAppState:appState])) {
-    DCHECK(browserState);
-    DCHECK(!browserState->IsOffTheRecord());
+    DCHECK(profile);
+    DCHECK(!profile->IsOffTheRecord());
     self.activationLevel = SceneActivationLevelForegroundInactive;
     self.browserProviderInterface = [[StubBrowserProviderInterface alloc] init];
     self.appState = appState;
 
-    _browser = std::make_unique<TestBrowser>(browserState, self);
+    _browser = std::make_unique<TestBrowser>(profile, self);
     base::apple::ObjCCastStrict<StubBrowserProvider>(
         self.browserProviderInterface.mainBrowserProvider)
         .browser = _browser.get();
 
-    _inactive_browser = std::make_unique<TestBrowser>(browserState, self);
+    _inactive_browser = std::make_unique<TestBrowser>(profile, self);
     base::apple::ObjCCastStrict<StubBrowserProvider>(
         self.browserProviderInterface.mainBrowserProvider)
         .inactiveBrowser = _inactive_browser.get();
 
-    _incognito_browser = std::make_unique<TestBrowser>(
-        browserState->GetOffTheRecordChromeBrowserState(), self);
+    _incognito_browser =
+        std::make_unique<TestBrowser>(profile->GetOffTheRecordProfile(), self);
     base::apple::ObjCCastStrict<StubBrowserProvider>(
         self.browserProviderInterface.incognitoBrowserProvider)
         .browser = _incognito_browser.get();
@@ -65,10 +70,14 @@
 + (NSArray<FakeSceneState*>*)sceneArrayWithCount:(int)count
                                     browserState:
                                         (ChromeBrowserState*)browserState {
+  return [FakeSceneState sceneArrayWithCount:count profile:browserState];
+}
+
++ (NSArray<FakeSceneState*>*)sceneArrayWithCount:(int)count
+                                         profile:(ProfileIOS*)profile {
   NSMutableArray<SceneState*>* scenes = [NSMutableArray array];
   for (int i = 0; i < count; i++) {
-    [scenes addObject:[[self alloc] initWithAppState:nil
-                                        browserState:browserState]];
+    [scenes addObject:[[self alloc] initWithAppState:nil profile:profile]];
   }
   return [scenes copy];
 }

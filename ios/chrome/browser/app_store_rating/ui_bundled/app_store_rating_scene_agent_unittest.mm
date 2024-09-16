@@ -135,7 +135,7 @@ class AppStoreRatingSceneAgentTest : public PlatformTest {
 
  protected:
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   web::WebTaskEnvironment task_environment_;
   AppStoreRatingSceneAgent* test_scene_agent_;
   std::unique_ptr<MockPromosManager> promos_manager_;
@@ -149,11 +149,11 @@ class AppStoreRatingSceneAgentTest : public PlatformTest {
   // Create a FakeSceneState.
   void CreateFakeSceneState() {
     id mockAppState = OCMClassMock([AppState class]);
-    TestChromeBrowserState::Builder builder;
-    browser_state_ = std::move(builder).Build();
+    TestProfileIOS::Builder builder;
+    profile_ = std::move(builder).Build();
     fake_scene_state_ =
         [[FakeSceneState alloc] initWithAppState:mockAppState
-                                    browserState:browser_state_.get()];
+                                         profile:profile_.get()];
   }
 
   // Create an AppStoreRatingSceneAgent to test.
@@ -171,13 +171,13 @@ class AppStoreRatingSceneAgentTest : public PlatformTest {
 
   // Enable Credentials Provider.
   void EnableCPE() {
-    browser_state_->GetPrefs()->SetBoolean(
+    profile_->GetPrefs()->SetBoolean(
         password_manager::prefs::kCredentialProviderEnabledOnStartup, true);
   }
 
   // Disable Credentials Provider.
   void DisableCPE() {
-    browser_state_->GetPrefs()->SetBoolean(
+    profile_->GetPrefs()->SetBoolean(
         password_manager::prefs::kCredentialProviderEnabledOnStartup, false);
   }
 };
