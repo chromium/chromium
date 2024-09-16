@@ -5,6 +5,10 @@
 #ifndef IOS_CHROME_APP_PROFILE_PROFILE_INIT_STAGE_H_
 #define IOS_CHROME_APP_PROFILE_PROFILE_INIT_STAGE_H_
 
+// TODO(crbug.com/353683675): remove when profile init stage and app
+// init stage are fully separate.
+#include "ios/chrome/app/application_delegate/app_init_stage.h"
+
 // Profile initialisation stages. The app will go sequentially in-order through
 // each stage each time a new profile is added.
 enum class ProfileInitStage {
@@ -54,5 +58,10 @@ enum class ProfileInitStage {
   // Final stage, no transition until the profile is shut down.
   InitStageFinal
 };
+
+// Returns the equivalent ProfileInitStage from application InitStage.
+// TODO(crbug.com/353683675): remove when profile init stage and app
+// init stage are fully separate.
+ProfileInitStage ProfileInitStageFromAppInitStage(InitStage app_init_stage);
 
 #endif  // IOS_CHROME_APP_PROFILE_PROFILE_INIT_STAGE_H_

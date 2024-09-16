@@ -76,33 +76,6 @@ void FlushCookieStoreOnIOThread(
   getter->GetURLRequestContext()->cookie_store()->FlushStore(
       std::move(closure));
 }
-
-// Return the equivalent ProfileInitStage from app InitStage.
-ProfileInitStage ProfileInitStageFromAppInitStage(InitStage app_init_stage) {
-  switch (app_init_stage) {
-    case InitStageStart:
-    case InitStageBrowserBasic:
-    case InitStageSafeMode:
-    case InitStageVariationsSeed:
-      NOTREACHED();
-
-    case InitStageBrowserObjectsForBackgroundHandlers:
-      return ProfileInitStage::InitStageProfileLoaded;
-    case InitStageEnterprise:
-      return ProfileInitStage::InitStageEnterprise;
-    case InitStageBrowserObjectsForUI:
-      return ProfileInitStage::InitStagePrepareUI;
-    case InitStageNormalUI:
-      return ProfileInitStage::InitStageUIReady;
-    case InitStageFirstRun:
-      return ProfileInitStage::InitStageFirstRun;
-    case InitStageChoiceScreen:
-      return ProfileInitStage::InitStageChoiceScreen;
-    case InitStageFinal:
-      return ProfileInitStage::InitStageFinal;
-  }
-}
-
 }  // namespace
 
 #pragma mark - AppStateObserverList
