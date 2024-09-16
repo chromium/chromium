@@ -20,7 +20,6 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.SwipeRefreshHandler;
 import org.chromium.chrome.browser.app.bluetooth.BluetoothNotificationService;
 import org.chromium.chrome.browser.app.usb.UsbNotificationService;
@@ -243,7 +242,7 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
                 String failingUrl, String description, int errorCode) {
             assert description != null;
 
-            PolicyAuditor auditor = AppHooks.get().getPolicyAuditor();
+            PolicyAuditor auditor = PolicyAuditor.maybeCreate();
             if (auditor != null) {
                 auditor.notifyAuditEvent(
                         ContextUtils.getApplicationContext(),
