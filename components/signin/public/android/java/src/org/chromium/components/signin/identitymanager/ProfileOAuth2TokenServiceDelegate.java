@@ -17,39 +17,19 @@ import org.chromium.components.signin.AccessTokenData;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
-import org.chromium.components.signin.AuthException;
-import org.chromium.components.signin.ConnectionRetry;
-import org.chromium.components.signin.ConnectionRetry.AuthTask;
 import org.chromium.components.signin.base.CoreAccountInfo;
 
 import java.util.List;
 
 /**
  * Java instance for the native ProfileOAuth2TokenServiceDelegate.
- * <p/>
- * This class forwards calls to request or invalidate access tokens made by native code to
+ *
+ * <p>This class forwards calls to request or invalidate access tokens made by native code to
  * AccountManagerFacade and forwards callbacks to native code.
- * <p/>
+ *
+ * <p>
  */
 final class ProfileOAuth2TokenServiceDelegate {
-    /** A simple callback for getAccessToken. */
-    interface GetAccessTokenCallback {
-        /**
-         * Invoked on the UI thread if a token is provided by the AccountManager.
-         *
-         * @param token Access token, guaranteed not to be null.
-         */
-        void onGetTokenSuccess(AccessTokenData token);
-
-        /**
-         * Invoked on the UI thread if no token is available.
-         *
-         * @param isTransientError Indicates if the error is transient (network timeout or
-         * unavailable, etc) or persistent (bad credentials, permission denied, etc).
-         */
-        void onGetTokenFailure(boolean isTransientError);
-    }
-
     private static final String OAUTH2_SCOPE_PREFIX = "oauth2:";
 
     private final AccountManagerFacade mAccountManagerFacade;
@@ -95,10 +75,10 @@ final class ProfileOAuth2TokenServiceDelegate {
                                 return;
                             }
                             String oauth2Scope = OAUTH2_SCOPE_PREFIX + scope;
-                            getAccessToken(
+                            mAccountManagerFacade.getAccessToken(
                                     coreAccountInfo,
                                     oauth2Scope,
-                                    new GetAccessTokenCallback() {
+                                    new AccountManagerFacade.GetAccessTokenCallback() {
                                         @Override
                                         public void onGetTokenSuccess(AccessTokenData token) {
                                             ProfileOAuth2TokenServiceDelegateJni.get()
@@ -121,35 +101,6 @@ final class ProfileOAuth2TokenServiceDelegate {
                                         }
                                     });
                         });
-    }
-
-    /**
-     * Call this method to retrieve an OAuth2 access token for the given account and scope.
-     * Please note that this method expects a scope with 'oauth2:' prefix.
-     * @param account the account to get the access token for.
-     * @param scope The scope to get an auth token for (with Android-style 'oauth2:' prefix).
-     * @param callback called on successful and unsuccessful fetching of auth token.
-     */
-    @MainThread
-    void getAccessToken(
-            CoreAccountInfo coreAccountInfo, String scope, GetAccessTokenCallback callback) {
-        ConnectionRetry.runAuthTask(
-                new AuthTask<AccessTokenData>() {
-                    @Override
-                    public AccessTokenData run() throws AuthException {
-                        return mAccountManagerFacade.getAccessToken(coreAccountInfo, scope);
-                    }
-
-                    @Override
-                    public void onSuccess(AccessTokenData token) {
-                        callback.onGetTokenSuccess(token);
-                    }
-
-                    @Override
-                    public void onFailure(boolean isTransientError) {
-                        callback.onGetTokenFailure(isTransientError);
-                    }
-                });
     }
 
     /**

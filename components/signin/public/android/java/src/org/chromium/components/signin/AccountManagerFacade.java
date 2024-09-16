@@ -24,6 +24,24 @@ import java.util.List;
 
 /** Interface for {@link AccountManagerFacadeImpl}. */
 public interface AccountManagerFacade {
+    /** A callback for getAccessToken. */
+    interface GetAccessTokenCallback {
+        /**
+         * Invoked on the UI thread if a token is provided.
+         *
+         * @param token Access token, guaranteed not to be null.
+         */
+        void onGetTokenSuccess(AccessTokenData token);
+
+        /**
+         * Invoked on the UI thread if no token is available.
+         *
+         * @param isTransientError Indicates if the error is transient (network timeout or
+         *     unavailable, etc) or persistent (bad credentials, permission denied, etc).
+         */
+        void onGetTokenFailure(boolean isTransientError);
+    }
+
     // TODO(crbug.com/40201126): consider refactoring this interface to use Promises.
     /** Listener for whether the account is a child one. */
     interface ChildAccountStatusListener {
@@ -63,20 +81,22 @@ public interface AccountManagerFacade {
     Promise<List<CoreAccountInfo>> getCoreAccountInfos();
 
     /**
-     * Synchronously gets an OAuth2 access token. May return a cached version, use {@link
-     * #invalidateAccessToken} to invalidate a token in the cache.
+     * Asynchronously gets OAuth2 access token for the given account and scope. May return a cached
+     * version, use {@link #invalidateAccessToken} to invalidate a token in the cache. Please note
+     * that this method expects a scope with 'oauth2:' prefix.
      *
-     * @param coreAccountInfo The {@link CoreAccountInfo} for which the token is requested.
-     * @param scope OAuth2 scope for which the requested token should be valid.
-     * @return The OAuth2 access token as an AccessTokenData with a string and an expiration time.
+     * @param account the account to get the access token for.
+     * @param scope The scope to get an auth token for (with Android-style 'oauth2:' prefix).
+     * @param callback called on successful and unsuccessful fetching of auth token.
      */
-    @WorkerThread
-    AccessTokenData getAccessToken(CoreAccountInfo coreAccountInfo, String scope)
-            throws AuthException;
+    @MainThread
+    void getAccessToken(
+            CoreAccountInfo coreAccountInfo, String scope, GetAccessTokenCallback callback);
 
     /**
-     * Removes an OAuth2 access token from the cache with retries asynchronously.
-     * Uses {@link #getAccessToken} to issue a new token after invalidating the old one.
+     * Removes an OAuth2 access token from the cache with retries asynchronously. Uses {@link
+     * #getAccessToken} to issue a new token after invalidating the old one.
+     *
      * @param accessToken The access token to invalidate.
      */
     @MainThread

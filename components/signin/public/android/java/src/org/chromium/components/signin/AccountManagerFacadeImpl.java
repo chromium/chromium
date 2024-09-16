@@ -28,6 +28,7 @@ import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.components.signin.AccountManagerDelegate.CapabilityResponse;
+import org.chromium.components.signin.ConnectionRetry.AuthTask;
 import org.chromium.components.signin.base.AccountCapabilities;
 import org.chromium.components.signin.base.CoreAccountInfo;
 
@@ -130,26 +131,38 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
         return mCoreAccountInfosPromise;
     }
 
-    /**
-     * Synchronously gets an OAuth2 access token. May return a cached version, use {@link
-     * #invalidateAccessToken} to invalidate a token in the cache.
-     *
-     * @param coreAccountInfo The {@link CoreAccountInfo} for which the token is requested.
-     * @param scope OAuth2 scope for which the requested token should be valid.
-     * @return The OAuth2 access token as an AccessTokenData with a string and an expiration time..
-     */
+    @MainThread
     @Override
-    public AccessTokenData getAccessToken(CoreAccountInfo coreAccountInfo, String scope)
-            throws AuthException {
+    public void getAccessToken(
+            CoreAccountInfo coreAccountInfo, String scope, GetAccessTokenCallback callback) {
+        ThreadUtils.assertOnUiThread();
         assert coreAccountInfo != null;
         assert scope != null;
-        return mDelegate.getAuthToken(
-                AccountUtils.createAccountFromName(coreAccountInfo.getEmail()), scope);
+        ConnectionRetry.runAuthTask(
+                new AuthTask<AccessTokenData>() {
+                    @Override
+                    public AccessTokenData run() throws AuthException {
+                        return mDelegate.getAuthToken(
+                                AccountUtils.createAccountFromName(coreAccountInfo.getEmail()),
+                                scope);
+                    }
+
+                    @Override
+                    public void onSuccess(AccessTokenData token) {
+                        callback.onGetTokenSuccess(token);
+                    }
+
+                    @Override
+                    public void onFailure(boolean isTransientError) {
+                        callback.onGetTokenFailure(isTransientError);
+                    }
+                });
     }
 
     /**
-     * Removes an OAuth2 access token from the cache with retries asynchronously.
-     * Uses {@link #getAccessToken} to issue a new token after invalidating the old one.
+     * Removes an OAuth2 access token from the cache with retries asynchronously. Uses {@link
+     * #getAccessToken} to issue a new token after invalidating the old one.
+     *
      * @param accessToken The access token to invalidate.
      */
     @Override

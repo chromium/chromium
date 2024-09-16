@@ -6,6 +6,9 @@ package org.chromium.components.signin;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import android.accounts.Account;
@@ -20,7 +23,10 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.components.signin.base.AccountInfo;
+import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.test.util.FakeAccountManagerDelegate;
+import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -52,6 +58,44 @@ public class AccountManagerFacadeTest {
             WORKER.execute(mBlockGetAccounts::notifyCalled);
         }
     }
+
+    /** Class handling GetAccessToken callbacks and providing a blocking {@link #getToken()}. */
+    private static class CustomGetAccessTokenCallback
+            implements AccountManagerFacade.GetAccessTokenCallback {
+        private String mToken;
+        private final CountDownLatch mTokenRetrievedCountDown = new CountDownLatch(1);
+
+        /**
+         * Blocks until the callback is called once and returns the token. See {@link
+         * CountDownLatch#await}
+         */
+        String getToken() {
+            try {
+                mTokenRetrievedCountDown.await();
+            } catch (InterruptedException e) {
+                throw new RuntimeException("Interrupted or timed-out while waiting for updates", e);
+            }
+            return mToken;
+        }
+
+        @Override
+        public void onGetTokenSuccess(AccessTokenData token) {
+            mToken = token.getToken();
+            mTokenRetrievedCountDown.countDown();
+        }
+
+        @Override
+        public void onGetTokenFailure(boolean isTransientError) {
+            mToken = null;
+            mTokenRetrievedCountDown.countDown();
+        }
+    }
+
+    private static final AccountInfo ACCOUNT =
+            new AccountInfo.Builder(
+                            "test@gmail.com", FakeAccountManagerFacade.toGaiaId("test@gmail.com"))
+                    .build();
+    private static final String TOKEN_SCOPE = "oauth2:http://example.com/scope";
 
     @Test
     @SmallTest
@@ -128,5 +172,66 @@ public class AccountManagerFacadeTest {
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         assertEquals(
                 "Callback should be posted to UI thread right away", 0, secondCounter.getCount());
+    }
+
+    @Test
+    @SmallTest
+    public void testGetOAuth2AccessTokenOnSuccess() throws AuthException {
+        FakeAccountManagerDelegate delegate = new FakeAccountManagerDelegate();
+        AccountManagerFacade facade =
+                ThreadUtils.runOnUiThreadBlocking(() -> new AccountManagerFacadeImpl(delegate));
+
+        delegate.addAccount(ACCOUNT);
+        AccessTokenData expectedToken =
+                delegate.getAuthToken(CoreAccountInfo.getAndroidAccountFrom(ACCOUNT), TOKEN_SCOPE);
+
+        CustomGetAccessTokenCallback callback = new CustomGetAccessTokenCallback();
+        ThreadUtils.runOnUiThread(() -> facade.getAccessToken(ACCOUNT, TOKEN_SCOPE, callback));
+        assertEquals(expectedToken.getToken(), callback.getToken());
+    }
+
+    @Test
+    @SmallTest
+    public void testGetOAuth2AccessTokenOnFailure() throws AuthException {
+        FakeAccountManagerDelegate delegate = new FakeAccountManagerDelegate();
+        AccountManagerFacade facade =
+                ThreadUtils.runOnUiThreadBlocking(() -> new AccountManagerFacadeImpl(delegate));
+
+        CustomGetAccessTokenCallback callback = new CustomGetAccessTokenCallback();
+        // Request a token for an account that wasn't added.
+        ThreadUtils.runOnUiThread(() -> facade.getAccessToken(ACCOUNT, TOKEN_SCOPE, callback));
+
+        assertNull(callback.getToken());
+    }
+
+    @Test
+    @SmallTest
+    public void testGetAndInvalidateAccessToken() throws Exception {
+        FakeAccountManagerDelegate delegate = new FakeAccountManagerDelegate();
+        AccountManagerFacade facade =
+                ThreadUtils.runOnUiThreadBlocking(() -> new AccountManagerFacadeImpl(delegate));
+
+        delegate.addAccount(ACCOUNT);
+
+        CustomGetAccessTokenCallback callback1 = new CustomGetAccessTokenCallback();
+        ThreadUtils.runOnUiThread(() -> facade.getAccessToken(ACCOUNT, TOKEN_SCOPE, callback1));
+        String originalToken = callback1.getToken();
+
+        CustomGetAccessTokenCallback callback2 = new CustomGetAccessTokenCallback();
+        ThreadUtils.runOnUiThread(() -> facade.getAccessToken(ACCOUNT, TOKEN_SCOPE, callback2));
+        assertEquals(
+                "The same token should be returned before invalidating the token.",
+                callback2.getToken(),
+                originalToken);
+
+        ThreadUtils.runOnUiThread(() -> facade.invalidateAccessToken(originalToken));
+
+        CustomGetAccessTokenCallback callback3 = new CustomGetAccessTokenCallback();
+        ThreadUtils.runOnUiThread(() -> facade.getAccessToken(ACCOUNT, TOKEN_SCOPE, callback3));
+        assertNotEquals(
+                "A different token should be returned since the original token is invalidated.",
+                callback3.getToken(),
+                originalToken);
+        assertNotNull(callback3.getToken());
     }
 }
