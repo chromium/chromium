@@ -262,7 +262,7 @@ IN_PROC_BROWSER_TEST_F(PasswordSelectionScreenTest, RecoveryGaiaPassword) {
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordSelectionScreenTest,
-                       DISABLED_RecoveryWithNoPasswordGAIAChoice) {
+                       RecoveryWithNoPasswordGAIAChoice) {
   StartLogin();
   auto user_context = BorrowUserContext();
   LoginDisplayHost::default_host()
@@ -280,7 +280,7 @@ IN_PROC_BROWSER_TEST_F(PasswordSelectionScreenTest,
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordSelectionScreenTest,
-                       DISABLED_RecoveryWithNoPasswordLocalChoice) {
+                       RecoveryWithNoPasswordLocalChoice) {
   StartLogin();
   auto user_context = BorrowUserContext();
   LoginDisplayHost::default_host()
