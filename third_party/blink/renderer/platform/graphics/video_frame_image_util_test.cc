@@ -19,7 +19,7 @@
 #include "third_party/blink/renderer/platform/graphics/test/gpu_test_utils.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/video_frame_utils.h"
-#include "third_party/skia/include/gpu/GrDriverBugWorkarounds.h"
+#include "third_party/skia/include/gpu/ganesh/GrDriverBugWorkarounds.h"
 
 namespace blink {
 
