@@ -85,7 +85,7 @@ class ConfigBase final : public TargetConfig {
   void SetZeroAppShim() override;
 
  private:
-  // Can call Freeze()
+  // Can call Freeze() and is_csrss_connected().
   friend class BrokerServicesBase;
   // Can examine private fields.
   friend class PolicyDiagnostic;

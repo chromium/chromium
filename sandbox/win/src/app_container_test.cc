@@ -514,13 +514,6 @@ TEST(LowBoxTest, ChildProcessMitigationLowBox) {
 
   TestRunner runner(JobLevel::kUnprotected, USER_UNPROTECTED, USER_UNPROTECTED);
 
-#if defined(ARCH_CPU_ARM64)
-  // TODO(crbug.com/41497342) A DPLOG issued when CreateProcess() fails
-  // conflicts with Csrss lockdown on Win11 ARM64 - so allow Csrss to allow the
-  // process to run the right exitcode and not an access violation crash.
-  runner.SetDisableCsrss(false);
-#endif  // defined(ARCH_CPU_ARM64)
-
   EXPECT_EQ(SBOX_ALL_OK,
             runner.GetPolicy()->GetConfig()->SetLowBox(kAppContainerSid));
 
