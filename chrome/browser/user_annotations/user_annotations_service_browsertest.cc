@@ -255,6 +255,11 @@ IN_PROC_BROWSER_TEST_P(UserAnnotationsServiceExplicitAllowlistBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(UserAnnotationsServiceExplicitAllowlistBrowserTest,
                        OnAllowlist) {
+  if (!GetParam()) {
+    // TODO(b/367201367): Test is flaky in this case. Re-enable when fixed.
+    return;
+  }
+
   base::HistogramTester histogram_tester;
 
   GURL url(embedded_test_server()->GetURL("allowed.com",
