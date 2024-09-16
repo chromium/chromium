@@ -271,6 +271,10 @@ void SetFlags(IsolateHolder::ScriptMode mode,
       features::kV8ExperimentalRegexpEngine,
       "--enable-experimental-regexp-engine-on-excessive-backtracks",
       "--no-enable-experimental-regexp-engine-on-excessive-backtracks");
+  SetV8FlagsIfOverridden(
+      features::kV8ExternalMemoryAccountedInGlobalLimit,
+      "--enable-external-memory-accounted-in-global-limit",
+      "--no-enable-external-memory-accounted-in-global-limit");
   SetV8FlagsIfOverridden(features::kV8TurboFastApiCalls,
                          "--turbo-fast-api-calls", "--no-turbo-fast-api-calls");
   SetV8FlagsIfOverridden(features::kV8MegaDomIC, "--mega-dom-ic",

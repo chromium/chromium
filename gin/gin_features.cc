@@ -94,6 +94,12 @@ BASE_FEATURE(kV8ExperimentalRegexpEngine,
              "V8ExperimentalRegexpEngine",
              kFeatureDefaultStateControlledByV8);
 
+// Enable accounting for external memory limits as part of global limits in v8
+// Heap.
+BASE_FEATURE(kV8ExternalMemoryAccountedInGlobalLimit,
+             "V8ExternalMemoryAccountedInGlobalLimit",
+             kFeatureDefaultStateControlledByV8);
+
 // Enables the Turbofan compiler.
 BASE_FEATURE(kV8Turbofan, ("V8Turbofan"), kFeatureDefaultStateControlledByV8);
 
