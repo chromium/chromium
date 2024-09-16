@@ -1966,7 +1966,7 @@
   {
     "name": "darken-websites-checkbox-in-themes-setting",
     "owners": [ "nemco@google.com", "wenyufu@google.com", "twellington@chromium.org" ],
-    "expiry_milestone": 130
+    "expiry_milestone": 140
   },
   {
     "name": "data-sharing",
