@@ -19,7 +19,7 @@ constexpr char kDefaultPredictionServiceUrlSwitchKey[] =
 
 constexpr float kRoundToMultiplesOf = 0.1f;
 
-constexpr int kCountBuckets[] = {20, 15, 12, 10, 9, 8, 7, 6, 5, 4};
+constexpr int kCountBuckets[] = {20, 15, 12, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0};
 
 // Thresholds of the likelihood that triggers the CPSS prompts.
 constexpr float kNotificationPredictionsThreshold = 0.81;
