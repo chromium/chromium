@@ -196,7 +196,7 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
                     "Signin_AccountMenu_ManageAccount"));
                 [self.mutator didTapManageYourGoogleAccount];
               }];
-  // TODO(crbug.com/336719423): Add the primary account email as subtitle.
+  manageYourAccountAction.subtitle = [self.dataSource primaryAccountEmail];
 
   UIAction* editAccountListAction = [UIAction
       actionWithTitle:l10n_util::GetNSString(
