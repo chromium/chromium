@@ -595,6 +595,8 @@ void PlusAddressService::OnClickedRefreshInlineSuggestion(
     base::OnceCallback<void(std::vector<autofill::Suggestion>,
                             AutofillSuggestionTriggerSource)>
         update_suggestions_callback) {
+  RecordAutofillSuggestionEvent(
+      SuggestionEvent::kRefreshPlusAddressInlineClicked);
   std::vector<Suggestion> updated_suggestions(current_suggestions.begin(),
                                               current_suggestions.end());
   PlusAddressSuggestionGenerator(
@@ -616,14 +618,20 @@ void PlusAddressService::OnShowedInlineSuggestion(
                               SuggestionType::kCreateNewPlusAddressInline,
                               &Suggestion::type);
   CHECK(it != current_suggestions.end());
-
-  // TODO(crbug.com/362445807): Consider adding metrics.
-
   if (it->GetPayload<Suggestion::PlusAddressPayload>().address.has_value()) {
+    // Only record if this is not in a loading state - otherwise it represents
+    // a state in which we are waiting for a response from a create call.
+    if (!it->is_loading) {
+      RecordAutofillSuggestionEvent(
+          SuggestionEvent::kCreateNewPlusAddressInlineSuggested);
+    }
+
     // The suggestion already has a plus address - there is nothing to do.
     return;
   }
 
+  RecordAutofillSuggestionEvent(
+      SuggestionEvent::kCreateNewPlusAddressInlineReserveLoadingStateShown);
   PlusAddressRequestCallback callback = base::BindOnce(
       [](std::vector<Suggestion> suggestions, size_t suggestion_index,
          UpdateSuggestionsCallback update_callback,
@@ -632,6 +640,8 @@ void PlusAddressService::OnShowedInlineSuggestion(
           suggestions[suggestion_index] =
               PlusAddressSuggestionGenerator::GetPlusAddressErrorSuggestion(
                   profile_or_error.error());
+          metrics::RecordAutofillSuggestionEvent(
+              SuggestionEvent::kErrorDuringReserve);
           std::move(update_callback)
               .Run(std::move(suggestions),
                    AutofillSuggestionTriggerSource::
@@ -661,7 +671,8 @@ void PlusAddressService::OnAcceptedInlineSuggestion(
     ShowAffiliationErrorDialogCallback show_affiliation_error_dialog,
     ShowErrorDialogCallback show_error_dialog,
     base::OnceClosure reshow_suggestions) {
-  // TODO(crbug.com/362445807): Record metrics.
+  RecordAutofillSuggestionEvent(
+      SuggestionEvent::kCreateNewPlusAddressInlineChosen);
   const std::u16string suggested_address =
       current_suggestions[current_suggestion_index]
           .GetPayload<Suggestion::PlusAddressPayload>()

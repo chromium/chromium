@@ -13,6 +13,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/metrics/histogram_base.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_expected_support.h"
@@ -22,8 +23,10 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/affiliations/core/browser/mock_affiliation_service.h"
+#include "components/autofill/core/browser/autofill_plus_address_delegate.h"
 #include "components/autofill/core/browser/password_form_classification.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/ui/suggestion_hiding_reason.h"
@@ -79,7 +82,9 @@ using autofill::FormFieldData;
 using autofill::PasswordFormClassification;
 using autofill::Suggestion;
 using autofill::SuggestionType;
-using ::base::test::RunOnceCallback;
+using base::Bucket;
+using base::BucketsAre;
+using base::test::RunOnceCallback;
 using test::CreatePreallocatedPlusAddress;
 using ::testing::_;
 using ::testing::AllOf;
@@ -91,6 +96,9 @@ using ::testing::IsEmpty;
 using ::testing::MockFunction;
 using ::testing::NiceMock;
 using ::testing::UnorderedElementsAre;
+
+constexpr std::string_view kPlusAddressSuggestionMetric =
+    "PlusAddresses.Suggestion.Events";
 
 constexpr char kPlusAddress[] = "plus+remote@plus.plus";
 
@@ -614,6 +622,7 @@ TEST_F(PlusAddressServiceRequestsTest, OngoingRequestsCancelledOnSignout) {
 // a new reserve request is sent and the address updated on its completion.
 TEST_F(PlusAddressServiceRequestsTest,
        OnShowedInlineSuggestionWithoutProposedAddress) {
+  base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList feature_list{
       features::kPlusAddressInlineCreation};
   base::MockCallback<PlusAddressService::UpdateSuggestionsCallback> callback;
@@ -629,6 +638,9 @@ TEST_F(PlusAddressServiceRequestsTest,
   service().OnShowedInlineSuggestion(
       url::Origin::Create(GURL("https://foo.com")), current_suggestions,
       callback.Get());
+  histogram_tester.ExpectUniqueSample(
+      kPlusAddressSuggestionMetric,
+      SuggestionEvent::kCreateNewPlusAddressInlineReserveLoadingStateShown, 1);
 
   PlusProfile profile = test::CreatePlusProfile();
   profile.is_confirmed = false;
@@ -641,6 +653,7 @@ TEST_F(PlusAddressServiceRequestsTest,
        OnShowedInlineSuggestionWithReserveError) {
   base::test::ScopedFeatureList feature_list{
       features::kPlusAddressInlineCreation};
+  base::HistogramTester histogram_tester;
   base::MockCallback<PlusAddressService::UpdateSuggestionsCallback> callback;
 
   EXPECT_CALL(
@@ -663,6 +676,14 @@ TEST_F(PlusAddressServiceRequestsTest,
   profile.is_confirmed = false;
   url_loader_factory().SimulateResponseForPendingRequest(
       kReservePlusAddressEndpoint, "", net::HTTP_REQUEST_TIMEOUT);
+  using enum SuggestionEvent;
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(kPlusAddressSuggestionMetric),
+      BucketsAre(
+          Bucket(base::to_underlying(
+                     kCreateNewPlusAddressInlineReserveLoadingStateShown),
+                 1),
+          Bucket(base::to_underlying(kErrorDuringReserve), 1)));
 }
 
 // Tests that if an inline suggestion with a proposed address is shown, no
@@ -671,6 +692,7 @@ TEST_F(PlusAddressServiceRequestsTest,
        OnShowedInlineSuggestionWithProposedAddress) {
   base::test::ScopedFeatureList feature_list{
       features::kPlusAddressInlineCreation};
+  base::HistogramTester histogram_tester;
   base::MockCallback<PlusAddressService::UpdateSuggestionsCallback> callback;
 
   EXPECT_CALL(callback, Run).Times(0);
@@ -682,6 +704,9 @@ TEST_F(PlusAddressServiceRequestsTest,
       url::Origin::Create(GURL("https://foo.com")), current_suggestions,
       callback.Get());
 
+  histogram_tester.ExpectUniqueSample(
+      kPlusAddressSuggestionMetric,
+      SuggestionEvent::kCreateNewPlusAddressInlineSuggested, 1);
   EXPECT_EQ(url_loader_factory().NumPending(), 0);
 }
 
@@ -691,6 +716,7 @@ TEST_F(PlusAddressServiceRequestsTest,
 TEST_F(PlusAddressServiceRequestsTest, OnAcceptedInlineSuggestion) {
   base::test::ScopedFeatureList feature_list{
       features::kPlusAddressInlineCreation};
+  base::HistogramTester histogram_tester;
   base::MockCallback<PlusAddressService::UpdateSuggestionsCallback>
       update_callback;
   base::MockCallback<PlusAddressService::HideSuggestionsCallback> hide_callback;
@@ -725,6 +751,9 @@ TEST_F(PlusAddressServiceRequestsTest, OnAcceptedInlineSuggestion) {
       /*reshow_suggestions=*/base::DoNothing());
   check.Call();
 
+  histogram_tester.ExpectUniqueSample(
+      kPlusAddressSuggestionMetric,
+      SuggestionEvent::kCreateNewPlusAddressInlineChosen, 1);
   url_loader_factory().SimulateResponseForPendingRequest(
       kCreatePlusAddressEndpoint, test::MakeCreationResponse(profile));
 }
@@ -1475,10 +1504,6 @@ class PlusAddressSuggestionsTest : public PlusAddressServiceTest {
     InitService();
   }
 
- protected:
-  static constexpr std::string_view kPlusAddressSuggestionMetric =
-      "PlusAddresses.Suggestion.Events";
-
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   autofill::test::AutofillUnitTestEnvironment autofill_test_environment_;
@@ -1825,6 +1850,7 @@ TEST_F(PlusAddressSuggestionsTest, GetManagePlusAddressSuggestion) {
 TEST_F(PlusAddressSuggestionsTest, OnClickedRefreshInlineSuggestion) {
   base::test::ScopedFeatureList feature_list{
       features::kPlusAddressInlineCreation};
+  base::HistogramTester histogram_tester;
   base::MockCallback<PlusAddressService::UpdateSuggestionsCallback> callback;
   // TODO(crbug.com/362445807): Check the parameters passed to the callback.
   EXPECT_CALL(callback, Run);
@@ -1834,6 +1860,9 @@ TEST_F(PlusAddressSuggestionsTest, OnClickedRefreshInlineSuggestion) {
   service().OnClickedRefreshInlineSuggestion(
       url::Origin::Create(GURL("https://foo.com")), current_suggestions,
       /*current_suggestion_index=*/0, callback.Get());
+  histogram_tester.ExpectUniqueSample(
+      kPlusAddressSuggestionMetric,
+      SuggestionEvent::kRefreshPlusAddressInlineClicked, 1);
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 

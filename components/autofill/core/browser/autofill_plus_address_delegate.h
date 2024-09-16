@@ -41,11 +41,25 @@ class AutofillPlusAddressDelegate {
   // Describes interactions with Autofill suggestions for plus addresses.
   // The values are persisted to metrics, do not change them.
   enum class SuggestionEvent {
+    // Suggestion shown events.
     kExistingPlusAddressSuggested = 0,
     kCreateNewPlusAddressSuggested = 1,
+    kCreateNewPlusAddressInlineSuggested = 4,
+    kErrorDuringReserve = 8,
+
+    // Suggestion accepted events.
     kExistingPlusAddressChosen = 2,
     kCreateNewPlusAddressChosen = 3,
-    kMaxValue = kCreateNewPlusAddressChosen,
+    kCreateNewPlusAddressInlineChosen = 5,
+
+    // Other events.
+    // The other clicked the refresh button on an inline creation suggestion.
+    kRefreshPlusAddressInlineClicked = 6,
+    // A loading state for the suggested address was shown because none was
+    // available synchronously.
+    kCreateNewPlusAddressInlineReserveLoadingStateShown = 7,
+
+    kMaxValue = kErrorDuringReserve,
   };
 
   virtual ~AutofillPlusAddressDelegate() = default;
