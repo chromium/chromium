@@ -34,9 +34,11 @@ namespace {
 
 // This is kill-switch for fixing error handling of ReadbackImagePixels
 // function.
+// TODO(crbug.com/40058879): Disable this work-around, once call-sites are
+// handling failures correctly.
 BASE_FEATURE(kDisableErrorHandlingForReadbackGLES,
              "kDisableErrorHandlingForReadbackGLES",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 GLenum SkColorTypeToGLDataFormat(SkColorType color_type, bool supports_rg) {
   switch (color_type) {
