@@ -170,17 +170,7 @@ struct EnrollmentConfig {
   ~EnrollmentConfig();
 
   // Whether enrollment should be triggered.
-  bool should_enroll() const {
-    return should_enroll_with_attestation() || should_enroll_interactively();
-  }
-
-  // Whether attestation enrollment should be triggered.
-  bool should_enroll_with_attestation() const {
-    return auth_mechanism != AUTH_MECHANISM_INTERACTIVE;
-  }
-
-  // Whether interactive enrollment should be triggered.
-  bool should_enroll_interactively() const { return mode != MODE_NONE; }
+  bool should_enroll() const { return mode != MODE_NONE; }
 
   // Whether we fell back into manual enrollment.
   bool is_manual_fallback() const {

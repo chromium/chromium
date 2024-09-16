@@ -544,11 +544,8 @@ class WizardController : public OobeUI::Observer {
   bool SetOnTimeZoneResolvedForTesting(base::OnceClosure callback);
 
   // Start the enrollment screen using the config from
-  // `prescribed_enrollment_config_`. If `force_interactive` is true,
-  // the user will be presented with a manual enrollment screen requiring
-  // Gaia credentials. If it is false, the screen may return after trying
-  // attestation-based enrollment if appropriate.
-  void StartEnrollmentScreen(bool force_interactive);
+  // `prescribed_enrollment_config_`.
+  void StartEnrollmentScreen();
   void ShowEnrollmentScreenIfEligible();
 
   void NotifyScreenChanged();

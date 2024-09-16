@@ -787,7 +787,9 @@ IN_PROC_BROWSER_TEST_P(AttestationEnrollmentErrorScreenTest,
                        AttestationEnrollmentErrorAndScreenData) {
   enrollment_ui_.SetExitHandler();
   const policy::EnrollmentConfig enrollment_config = GetEnrollmentConfigParam();
-  ASSERT_TRUE(enrollment_config.should_enroll_with_attestation());
+  ASSERT_NE(
+      enrollment_config.auth_mechanism,
+      policy::EnrollmentConfig::AuthMechanism::AUTH_MECHANISM_INTERACTIVE);
   ASSERT_TRUE(enrollment_config.is_mode_attestation());
 
   // The test expects the error screen to be shown. Avoid automatic fallback

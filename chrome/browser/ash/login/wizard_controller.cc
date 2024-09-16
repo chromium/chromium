@@ -1107,7 +1107,7 @@ void WizardController::ShowEnrollmentScreen() {
   GetLoginDisplayHost()->GetOobeMetricsHelper()->RecordEnrollingUserType();
   prescribed_enrollment_config_ =
       policy::EnrollmentConfig::GetPrescribedEnrollmentConfig();
-  StartEnrollmentScreen(/*force_interactive=*/false);
+  StartEnrollmentScreen();
 }
 
 void WizardController::ShowDemoModePreferencesScreen() {
@@ -2811,7 +2811,7 @@ void WizardController::OnDeviceDisabledChecked(bool device_disabled) {
             << wizard_context_->enrollment_triggered_early
             << ", prescribed_enrollment_config_.should_enroll()="
             << prescribed_enrollment_config_.should_enroll();
-    StartEnrollmentScreen(wizard_context_->enrollment_triggered_early);
+    StartEnrollmentScreen();
   } else {
     PerformOOBECompletedActions(
         OobeMetricsHelper::CompletedPreLoginOobeFlowType::kRegular);
@@ -3417,9 +3417,8 @@ bool WizardController::SetOnTimeZoneResolvedForTesting(
   return true;
 }
 
-void WizardController::StartEnrollmentScreen(bool force_interactive) {
-  VLOG(1) << "Showing enrollment screen."
-          << " Forcing interactive enrollment: " << force_interactive << ".";
+void WizardController::StartEnrollmentScreen() {
+  VLOG(1) << "Showing enrollment screen.";
 
   // Determine the effective enrollment configuration. If there is a valid
   // prescribed configuration, use that. If not, figure out which variant of
@@ -3427,8 +3426,7 @@ void WizardController::StartEnrollmentScreen(bool force_interactive) {
   // If OOBE Configuration exits, it might also affect enrollment
   // configuration.
   policy::EnrollmentConfig effective_config = prescribed_enrollment_config_;
-  if (!effective_config.should_enroll() ||
-      (force_interactive && !effective_config.should_enroll_interactively())) {
+  if (!effective_config.should_enroll()) {
     effective_config.mode =
         prescribed_enrollment_config_.management_domain.empty()
             ? policy::EnrollmentConfig::MODE_MANUAL

@@ -195,9 +195,7 @@ void EnrollmentScreen::SetEnrollmentConfig(
         break;
       }
       current_auth_ = AUTH_ATTESTATION;
-      next_auth_ = prescribed_config_.should_enroll_interactively()
-                       ? AUTH_OAUTH
-                       : AUTH_ATTESTATION;
+      next_auth_ = AUTH_OAUTH;
       break;
     case EnrollmentConfig::AUTH_MECHANISM_TOKEN_PREFERRED:
       current_auth_ = AUTH_ENROLLMENT_TOKEN;
