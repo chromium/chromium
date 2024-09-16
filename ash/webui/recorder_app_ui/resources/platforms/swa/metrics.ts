@@ -4,14 +4,21 @@
 
 import {
   // Events
+  CrOSEvents_RecorderApp_AppStartPerf,
   CrOSEvents_RecorderApp_Export,
+  CrOSEvents_RecorderApp_ExportPerf,
   CrOSEvents_RecorderApp_FeedbackSummary,
   CrOSEvents_RecorderApp_FeedbackTitleSuggestion,
   CrOSEvents_RecorderApp_Onboard,
   CrOSEvents_RecorderApp_Record,
+  CrOSEvents_RecorderApp_RecordingSavingPerf,
   CrOSEvents_RecorderApp_StartSession,
   CrOSEvents_RecorderApp_SuggestTitle,
   CrOSEvents_RecorderApp_Summarize,
+  CrOSEvents_RecorderApp_SummaryModelDownloadPerf,
+  CrOSEvents_RecorderApp_SummaryPerf,
+  CrOSEvents_RecorderApp_TitleSuggestionPerf,
+  CrOSEvents_RecorderApp_TranscriptionModelDownloadPerf,
   // Enums
   CrOSEvents_RecorderAppAudioFormat,
   CrOSEvents_RecorderAppMicrophoneType,
@@ -32,6 +39,7 @@ import {
   ExportEventParams,
   FeedbackEventParams,
   OnboardEventParams,
+  PerfEvent,
   RecordEventParams,
   StartSessionEventParams,
   SuggestTitleEventParams,
@@ -327,6 +335,96 @@ export class EventsSender extends EventsSenderBase {
     const event = new CrOSEvents_RecorderApp_Export()
                     .setAudioFormat(audioFormat)
                     .setTranscriptFormat(transcriptFormat)
+                    .build();
+
+    record(event);
+  }
+
+  override sendPerfEvent(event: PerfEvent, duration: number): void {
+    // TODO(kamchonlathorn): Collect perf of all events in the following CL.
+    const {kind} = event;
+    switch (kind) {
+      case 'appStart':
+        return this.sendAppStartPerf(duration);
+      case 'export':
+        return this.sendExportPerf(duration, event.recordingSize);
+      case 'record':
+        return this.sendRecordingSavingPerf(
+          duration, event.audioDuration, event.wordCount
+        );
+      case 'summary':
+        return this.sendSummaryPerf(duration, event.wordCount);
+      case 'summaryModelDownload':
+        return this.sendSummaryModelDownloadPerf(duration);
+      case 'titleSuggestion':
+        return this.sendTitleSuggestionPerf(duration, event.wordCount);
+      case 'transcriptionModelDownload':
+        return this.sendTranscriptionModelDownloadPerf(duration);
+      default:
+        assertExhaustive(kind);
+    }
+  }
+
+  private sendAppStartPerf(duration: number): void {
+    const dur = BigInt(duration);
+    const event =
+      new CrOSEvents_RecorderApp_AppStartPerf().setDuration(dur).build();
+
+    record(event);
+  }
+
+  private sendTranscriptionModelDownloadPerf(duration: number): void {
+    const event = new CrOSEvents_RecorderApp_TranscriptionModelDownloadPerf()
+                    .setDuration(BigInt(duration))
+                    .build();
+
+    record(event);
+  }
+
+  private sendSummaryModelDownloadPerf(duration: number): void {
+    const event = new CrOSEvents_RecorderApp_SummaryModelDownloadPerf()
+                    .setDuration(BigInt(duration))
+                    .build();
+
+    record(event);
+  }
+
+  private sendExportPerf(duration: number, recordingSize: number): void {
+    const event = new CrOSEvents_RecorderApp_ExportPerf()
+                    .setDuration(BigInt(duration))
+                    .setRecordingSize(BigInt(recordingSize))
+                    .build();
+
+    record(event);
+  }
+
+  private sendRecordingSavingPerf(
+    duration: number,
+    audioDuration: number,
+    wordCount: number,
+  ): void {
+    const event = new CrOSEvents_RecorderApp_RecordingSavingPerf()
+                    .setAudioDuration(BigInt(audioDuration))
+                    .setDuration(BigInt(duration))
+                    .setWordCount(BigInt(wordCount))
+                    .build();
+
+    record(event);
+  }
+
+  private sendTitleSuggestionPerf(duration: number, wordCount: number): void {
+    const event = new CrOSEvents_RecorderApp_TitleSuggestionPerf()
+                    .setDuration(BigInt(duration))
+                    .setWordCount(BigInt(wordCount))
+                    .build();
+
+    record(event);
+  }
+
+  private sendSummaryPerf(duration: number, wordCount: number): void {
+    const event = new CrOSEvents_RecorderApp_SummaryPerf()
+                    .setDuration(BigInt(duration))
+                    .setWordCount(BigInt(wordCount))
                     .build();
 
     record(event);

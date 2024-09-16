@@ -6,6 +6,7 @@ import {EventsSender} from './events_sender.js';
 import {NoArgStringName} from './i18n.js';
 import {InternalMicInfo} from './microphone_manager.js';
 import {ModelLoader, ModelState} from './on_device_model/types.js';
+import {PerfLogger} from './perf.js';
 import {ReadonlySignal, Signal} from './reactive/signal.js';
 import {SodaSession} from './soda/types.js';
 
@@ -145,4 +146,9 @@ export abstract class PlatformHandler {
    * Events sender to collect events of interest.
    */
   abstract readonly eventsSender: EventsSender;
+
+  /**
+   * Performance logger to measure performance.
+   */
+  abstract readonly perfLogger: PerfLogger;
 }

@@ -87,6 +87,7 @@ export class RecorderApp extends ReactiveLitElement {
       transcriptionAvailable: isAvailable(sodaState.value),
       transcriptionEnableState: settings.value.transcriptionEnabled,
     });
+    this.platformHandler.perfLogger.finish('appStart');
   }
 
   override render(): RenderResult {

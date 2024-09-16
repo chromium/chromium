@@ -63,6 +63,27 @@ export interface ExportEventParams {
   transcriptionAvailable: boolean;
 }
 
+interface DurationOnlyPerf {
+  kind: 'appStart'|'summaryModelDownload'|'transcriptionModelDownload';
+}
+interface RecordPerf {
+  // Audio duration in milliseconds.
+  audioDuration: number;
+  kind: 'record';
+  wordCount: number;
+}
+interface ModelProcessPerf {
+  kind: 'summary'|'titleSuggestion';
+  wordCount: number;
+}
+interface ExportPerf {
+  kind: 'export';
+  // Recording size in bytes.
+  recordingSize: number;
+}
+
+export type PerfEvent = DurationOnlyPerf|ExportPerf|ModelProcessPerf|RecordPerf;
+
 export abstract class EventsSender {
   abstract sendStartSessionEvent(params: StartSessionEventParams): void;
   abstract sendRecordEvent(params: RecordEventParams): void;
@@ -72,4 +93,5 @@ export abstract class EventsSender {
   abstract sendFeedbackSummaryEvent(params: FeedbackEventParams): void;
   abstract sendOnboardEvent(params: OnboardEventParams): void;
   abstract sendExportEvent(params: ExportEventParams): void;
+  abstract sendPerfEvent(event: PerfEvent, duration: number): void;
 }

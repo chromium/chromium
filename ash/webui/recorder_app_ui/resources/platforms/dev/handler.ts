@@ -27,6 +27,7 @@ import {
   ModelResponse,
   ModelState,
 } from '../../core/on_device_model/types.js';
+import {PerfLogger} from '../../core/perf.js';
 import {
   PlatformHandler as PlatformHandlerBase,
 } from '../../core/platform_handler.js';
@@ -372,6 +373,8 @@ export class PlatformHandler extends PlatformHandlerBase {
   );
 
   override eventsSender = new EventsSender();
+
+  override perfLogger = new PerfLogger(this.eventsSender);
 
   override installSoda(): void {
     console.log('SODA installation requested');

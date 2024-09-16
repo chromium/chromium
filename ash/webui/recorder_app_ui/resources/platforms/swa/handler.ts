@@ -19,6 +19,7 @@ import {nothing} from 'chrome://resources/mwc/lit/index.js';
 import {NoArgStringName} from '../../core/i18n.js';
 import {InternalMicInfo} from '../../core/microphone_manager.js';
 import {ModelState} from '../../core/on_device_model/types.js';
+import {PerfLogger} from '../../core/perf.js';
 import {
   PlatformHandler as PlatformHandlerBase,
 } from '../../core/platform_handler.js';
@@ -68,6 +69,8 @@ export class PlatformHandler extends PlatformHandlerBase {
   override readonly canCaptureSystemAudioWithLoopback = signal(false);
 
   override readonly eventsSender = new EventsSender();
+
+  override perfLogger = new PerfLogger(this.eventsSender);
 
   constructor() {
     super();

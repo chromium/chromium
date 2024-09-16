@@ -7,6 +7,7 @@ import {
   ExportEventParams,
   FeedbackEventParams,
   OnboardEventParams,
+  PerfEvent,
   RecordEventParams,
   StartSessionEventParams,
   SuggestTitleEventParams,
@@ -29,4 +30,6 @@ export class EventsSender extends EventsSenderBase {
   override sendOnboardEvent(_: OnboardEventParams): void {}
 
   override sendExportEvent(_: ExportEventParams): void {}
+
+  override sendPerfEvent(_event: PerfEvent, _duration: number): void {}
 }

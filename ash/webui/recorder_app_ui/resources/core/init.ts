@@ -16,6 +16,7 @@ import {init as initSettings} from './state/settings.js';
 export async function init(platformHandler: PlatformHandler): Promise<void> {
   let dataDir: DataDir|null = null;
 
+  platformHandler.perfLogger.start({kind: 'appStart'});
   window.addEventListener('unhandledrejection', (rejection) => {
     // Browser will print the unhandled rejection to the console so no need to
     // print it ourselves.
