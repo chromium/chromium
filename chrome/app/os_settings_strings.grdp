@@ -657,9 +657,6 @@
   <message name="IDS_OS_SETTINGS_SUGGESTIONS_ORCA_DESCRIPTION" desc="The description for Help me write settings">
     Right-click in a text box to create a draft or refine existing work, powered by Google AI. Currently has limited availability.
   </message>
-  <message name="IDS_SETTINGS_SUGGESTIONS_ORCA_REVIEW_TERMS_BANNER_DESCRIPTION" desc="The description for Help me write review notice banner">
-    You need to review and accept terms to use this feature
-  </message>
   <message name="IDS_SETTINGS_SUGGESTIONS_EMOJI_SUGGESTION_TITLE" desc="The label for emoji suggestion (when an user types a word, some emojis might be suggested for the user to insert after) section.">
     Emoji suggestions
   </message>
@@ -1034,12 +1031,6 @@
   </message>
   <message name="IDS_OS_SETTINGS_ENABLE_MAGIC_BOOST_DESCRIPTION" desc="The description of the toggle to enable/disable Magic Boost in ChromeOS settings.">
     Right-click to write with more confidence, summarize content, get definitions, and more. Currently has limited availability.
-  </message>
-  <message name="IDS_OS_SETTINGS_MAGIC_BOOST_REVIEW_TERMS_BANNER_DESCRIPTION" desc="The description for Magic Boost review notice banner">
-    You need to review and accept terms to use these features
-  </message>
-  <message name="IDS_OS_SETTINGS_MAGIC_BOOST_REVIEW_TERMS_BUTTON_LABEL" desc="The label for Magic Boost review notice button">
-    Review
   </message>
   <message name="IDS_OS_SETTINGS_ENABLE_HELP_ME_READ" desc="The label of the toggle to enable/disable Help Me Read in ChromeOS settings.">
     Help me read

@@ -13,10 +13,6 @@ bool FakeMagicBoostState::IsMagicBoostAvailable() {
   return true;
 }
 
-bool FakeMagicBoostState::CanShowNoticeBannerForHMR() {
-  return false;
-}
-
 int32_t FakeMagicBoostState::AsyncIncrementHMRConsentWindowDismissCount() {
   return 0;
 }

@@ -9,7 +9,6 @@
  */
 
 import 'chrome://resources/ash/common/cr_elements/cr_link_row/cr_link_row.js';
-import './magic_boost_review_terms_banner.js';
 import '../os_settings_page/settings_card.js';
 import '../settings_shared.css.js';
 import './search_engine.js';
@@ -19,7 +18,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
-import {isAssistantAllowed, isMagicBoostFeatureEnabled, isMagicBoostNoticeBannerVisible, isQuickAnswersSupported, isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
+import {isAssistantAllowed, isMagicBoostFeatureEnabled, isQuickAnswersSupported, isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
 import {RouteOriginMixin} from '../common/route_origin_mixin.js';
 import {PrefsState} from '../common/types.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
@@ -58,13 +57,6 @@ export class SearchAndAssistantSettingsCardElement extends
         type: Boolean,
         value: () => {
           return isMagicBoostFeatureEnabled();
-        },
-      },
-
-      isMagicBoostNoticeBannerVisible_: {
-        type: Boolean,
-        value: () => {
-          return isMagicBoostNoticeBannerVisible();
         },
       },
 

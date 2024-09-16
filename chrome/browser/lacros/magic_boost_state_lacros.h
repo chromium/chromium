@@ -21,7 +21,6 @@ class MagicBoostStateLacros : public MagicBoostState {
 
   // MagicBoostState:
   bool IsMagicBoostAvailable() override;
-  bool CanShowNoticeBannerForHMR() override;
   int32_t AsyncIncrementHMRConsentWindowDismissCount() override;
   void AsyncWriteConsentStatus(
       chromeos::HMRConsentStatus consent_status) override;

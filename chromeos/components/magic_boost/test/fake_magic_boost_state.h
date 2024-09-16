@@ -13,7 +13,6 @@ namespace test {
 class FakeMagicBoostState : public chromeos::MagicBoostState {
  public:
   bool IsMagicBoostAvailable() override;
-  bool CanShowNoticeBannerForHMR() override;
   int32_t AsyncIncrementHMRConsentWindowDismissCount() override;
   void AsyncWriteConsentStatus(
       chromeos::HMRConsentStatus consent_status) override;
