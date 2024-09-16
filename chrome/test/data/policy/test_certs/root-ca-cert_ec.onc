@@ -1,0 +1,13 @@
+{
+  "Certificates": [
+    {
+      "GUID": "{b3aae353-cfa9-4093-9aff-9f8ee2bf8c29}",
+      "TrustBits": [
+        "Web"
+      ],
+      "Type": "Authority",
+      "X509": "-----BEGIN CERTIFICATE-----\nMIIBmDCCAT+gAwIBAgIUTIXqARj3mXjmzZDYD4qdPRMtc6owCgYIKoZIzj0EAwIw\nGjEYMBYGA1UEAwwPcm9vdF9jYV9jZXJ0X2VjMB4XDTI0MDkxMjEwNTM1N1oXDTM0\nMDkxMDEwNTM1N1owGjEYMBYGA1UEAwwPcm9vdF9jYV9jZXJ0X2VjMFkwEwYHKoZI\nzj0CAQYIKoZIzj0DAQcDQgAEfvHw/Fj+p50zVlAfSxjIXdrTGL+Pxe3HzvtDCS+r\nQFqJfDeT0Nd0EOQyPNmwb/qnGin9iXmDHuq0nz+Y3KtFg6NjMGEwDwYDVR0TAQH/\nBAUwAwEB/zAdBgNVHQ4EFgQU2WQdI/7A5otWqaRzXqM1DONaiQkwHwYDVR0jBBgw\nFoAU2WQdI/7A5otWqaRzXqM1DONaiQkwDgYDVR0PAQH/BAQDAgEGMAoGCCqGSM49\nBAMCA0cAMEQCIA/yfOj1zcBxEBcXPMY6u4mBWTW74NqpKKpBgoJhj1zSAiATySyU\nMOXls/JPQ/RCRDC6R4fRi4BRNJ9mt5p8QMQHxA==\n-----END CERTIFICATE-----\n"
+    }
+  ],
+  "Type": "UnencryptedConfiguration"
+}

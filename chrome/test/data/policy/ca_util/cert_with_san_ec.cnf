@@ -1,4 +1,4 @@
-.include ${ENV::CA_CERT_UTIL_DIR}/ca.cnf
+.include ${ENV::CA_CERT_UTIL_DIR}/ca_ec.cnf
 
 [leaf_cert_san]
 # Extensions to add when signing a request for an leaf cert

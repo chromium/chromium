@@ -1,0 +1,19 @@
+{
+  "Certificates": [
+    {
+      "GUID": "{b3aae353-cfa9-4093-9aff-9f8ee2bf8c29}",
+      "TrustBits": [
+        "Web"
+      ],
+      "Type": "Authority",
+      "X509": "-----BEGIN CERTIFICATE-----\nMIIBmDCCAT+gAwIBAgIUTIXqARj3mXjmzZDYD4qdPRMtc6owCgYIKoZIzj0EAwIw\nGjEYMBYGA1UEAwwPcm9vdF9jYV9jZXJ0X2VjMB4XDTI0MDkxMjEwNTM1N1oXDTM0\nMDkxMDEwNTM1N1owGjEYMBYGA1UEAwwPcm9vdF9jYV9jZXJ0X2VjMFkwEwYHKoZI\nzj0CAQYIKoZIzj0DAQcDQgAEfvHw/Fj+p50zVlAfSxjIXdrTGL+Pxe3HzvtDCS+r\nQFqJfDeT0Nd0EOQyPNmwb/qnGin9iXmDHuq0nz+Y3KtFg6NjMGEwDwYDVR0TAQH/\nBAUwAwEB/zAdBgNVHQ4EFgQU2WQdI/7A5otWqaRzXqM1DONaiQkwHwYDVR0jBBgw\nFoAU2WQdI/7A5otWqaRzXqM1DONaiQkwDgYDVR0PAQH/BAQDAgEGMAoGCCqGSM49\nBAMCA0cAMEQCIA/yfOj1zcBxEBcXPMY6u4mBWTW74NqpKKpBgoJhj1zSAiATySyU\nMOXls/JPQ/RCRDC6R4fRi4BRNJ9mt5p8QMQHxA==\n-----END CERTIFICATE-----\n"
+    },
+    {
+      "GUID": "{ac861420-3342-4537-a20e-3c2ec0809b7a}",
+      "TrustBits": [ ],
+      "Type": "Authority",
+      "X509": "Certificate:\n    Data:\n        Version: 3 (0x2)\n        Serial Number: 2 (0x2)\n        Signature Algorithm: ecdsa-with-SHA256\n        Issuer: CN=root_ca_cert_ec\n        Validity\n            Not Before: Sep 12 10:53:57 2024 GMT\n            Not After : Sep 10 10:53:57 2034 GMT\n        Subject: CN=intermediate_ca_cert_ec\n        Subject Public Key Info:\n            Public Key Algorithm: id-ecPublicKey\n                Public-Key: (256 bit)\n                pub:\n                    04:69:c1:ae:d9:92:64:bf:b7:e7:f1:d7:f0:de:24:\n                    d5:e7:a5:c5:f5:88:f0:da:42:5c:34:90:ec:a2:aa:\n                    52:79:65:91:8e:5d:8b:02:42:25:15:c4:b4:5e:01:\n                    fc:37:29:eb:5c:c3:e0:eb:5f:80:39:e8:fc:52:bc:\n                    65:cf:f7:7c:df\n                ASN1 OID: prime256v1\n                NIST CURVE: P-256\n        X509v3 extensions:\n            X509v3 Basic Constraints: critical\n                CA:TRUE\n            X509v3 Subject Key Identifier: \n                08:39:3F:08:ED:D4:14:68:50:F5:1E:D5:98:07:42:B5:67:FE:90:8E\n            X509v3 Authority Key Identifier: \n                D9:64:1D:23:FE:C0:E6:8B:56:A9:A4:73:5E:A3:35:0C:E3:5A:89:09\n            X509v3 Key Usage: critical\n                Certificate Sign\n CRL Sign\n    Signature Algorithm: ecdsa-with-SHA256\n    Signature Value:\n        30:45:02:21:00:b5:1f:fc:25:e3:dd:33:2e:6f:53:52:44:e6:\n        f1:59:e1:23:55:f0:82:aa:9f:9a:15:2a:22:9e:16:a1:01:b8:\n        c1:02:20:1e:22:3e:8d:5d:e1:34:a1:75:d5:ba:8b:03:58:0c:\n        ac:eb:db:3f:29:9c:21:41:6c:e9:e8:06:3d:7d:6c:00:cb\n-----BEGIN CERTIFICATE-----\nMIIBjjCCATSgAwIBAgIBAjAKBggqhkjOPQQDAjAaMRgwFgYDVQQDDA9yb290X2Nh\nX2NlcnRfZWMwHhcNMjQwOTEyMTA1MzU3WhcNMzQwOTEwMTA1MzU3WjAiMSAwHgYD\nVQQDDBdpbnRlcm1lZGlhdGVfY2FfY2VydF9lYzBZMBMGByqGSM49AgEGCCqGSM49\nAwEHA0IABGnBrtmSZL+35/HX8N4k1eelxfWI8NpCXDSQ7KKqUnllkY5diwJCJRXE\ntF4B/Dcp61zD4OtfgDno/FK8Zc/3fN+jYzBhMA8GA1UdEwEB/wQFMAMBAf8wHQYD\nVR0OBBYEFAg5Pwjt1BRoUPUe1ZgHQrVn/pCOMB8GA1UdIwQYMBaAFNlkHSP+wOaL\nVqmkc16jNQzjWokJMA4GA1UdDwEB/wQEAwIBBjAKBggqhkjOPQQDAgNIADBFAiEA\ntR/8JePdMy5vU1JE5vFZ4SNV8IKqn5oVKiKeFqEBuMECIB4iPo1d4TShddW6iwNY\nDKzr2z8pnCFBbOnoBj19bADL\n-----END CERTIFICATE-----\n"
+    }
+  ],
+  "Type": "UnencryptedConfiguration"
+}
