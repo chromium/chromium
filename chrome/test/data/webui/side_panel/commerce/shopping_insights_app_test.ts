@@ -168,7 +168,7 @@ suite('ShoppingInsightsAppTest', () => {
     assertEquals(
         loadTimeData.getString('buyOptions'), buyOption.textContent!.trim());
 
-    const button = attributesRow.shadowRoot!.querySelector('iron-icon');
+    const button = attributesRow.shadowRoot!.querySelector('cr-icon');
     assertTrue(!!button);
     button.click();
     const url = await shoppingServiceApi.whenCalled('openUrlInNewTab');

@@ -45,17 +45,17 @@
     border: var(--cr-hairline);
   }
 
-  iron-icon {
+  cr-icon {
     --icon-size: 16px;
     height: var(--icon-size);
     width: var(--icon-size);
   }
 
-  sp-list-item-badge iron-icon {
+  sp-list-item-badge cr-icon {
     --icon-size: 12px;
   }
 
-  iron-icon[invisible] {
+  cr-icon[invisible] {
     visibility: hidden;
   }
 
@@ -76,7 +76,7 @@
     gap: 12px;
   }
 
-  .dialog-body > iron-icon {
+  .dialog-body > cr-icon {
     --icon-size: 20px;
   }
 
@@ -291,7 +291,7 @@
           aria-label="$i18n{createNewFolderA11yLabel}"
           on-click="onAddNewFolderClicked_">
         <div class="new-folder-icon-container">
-          <iron-icon icon="cr:add"></iron-icon>
+          <cr-icon icon="cr:add"></cr-icon>
         </div>
         $i18n{tooltipNewFolder}
       </button>
@@ -323,7 +323,7 @@
           aria-label="$i18n{createNewFolderA11yLabel}"
           on-click="onAddNewFolderClicked_">
         <div class="new-folder-icon-container">
-          <iron-icon icon="cr:add"></iron-icon>
+          <cr-icon icon="cr:add"></cr-icon>
         </div>
         $i18n{tooltipNewFolder}
       </button>
@@ -383,7 +383,7 @@
         on-click="onAddTabClicked_"
         disabled="[[!canAddCurrentUrl_(
                     activeFolderPath_.*, currentUrl_, hasLoadedData_)]]">
-      <iron-icon slot="prefix-icon" icon="bookmarks:add-tab"></iron-icon>
+      <cr-icon slot="prefix-icon" icon="bookmarks:add-tab"></cr-icon>
       $i18n{addCurrentTab}
     </cr-button>
 
@@ -415,9 +415,9 @@
 <cr-action-menu id="sortMenu">
   <template is="dom-repeat" items="[[sortTypes_]]">
     <button class="dropdown-item" on-click="onSortTypeClicked_">
-      <iron-icon icon="cr:check"
+      <cr-icon icon="cr:check"
           invisible$="[[!sortMenuItemIsSelected_(item, activeSortIndex_)]]">
-      </iron-icon>
+      </cr-icon>
       [[getSortMenuItemLowerLabel_(item)]]
     </button>
   </template>
@@ -429,7 +429,7 @@
 
 <cr-dialog id="disabledFeatureDialog">
   <div slot="body" class="dialog-body">
-    <iron-icon icon="cr:domain"></iron-icon>
+    <cr-icon icon="cr:domain"></cr-icon>
     <div>$i18n{disabledFeature}</div>
   </div>
   <div class="button-row" slot="button-container">

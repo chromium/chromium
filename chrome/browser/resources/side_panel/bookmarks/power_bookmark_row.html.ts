@@ -8,6 +8,7 @@ import type {PowerBookmarkRowElement} from './power_bookmark_row.ts';
 
 export function getHtml(this: PowerBookmarkRowElement) {
   const { id, url, title, children } = this.bookmark || {};
+  // clang-format off
   const urlListItem = html`
 <cr-url-list-item id="crUrlListItem"
     role="listitem"
@@ -46,7 +47,7 @@ export function getHtml(this: PowerBookmarkRowElement) {
     ${this.isPriceTracked_(this.bookmark) ? html`
     <sp-list-item-badge slot="badges"
         .updated="${this.showDiscountedPrice_(this.bookmark)}">
-      <iron-icon icon="bookmarks:price-tracking"></iron-icon>
+      <cr-icon icon="bookmarks:price-tracking"></cr-icon>
       <div>
         ${this.getCurrentPrice_(this.bookmark)}
       </div>
@@ -64,12 +65,13 @@ export function getHtml(this: PowerBookmarkRowElement) {
   ` : ''}
 
   ${this.isBookmarksBar_() ? html`
-    <iron-icon slot="folder-icon" icon="bookmarks:bookmarks-bar"></iron-icon>
+    <cr-icon slot="folder-icon" icon="bookmarks:bookmarks-bar"></cr-icon>
   ` :''}
 
   ${this.isShoppingCollection_(this.bookmark) ? html`
-    <iron-icon slot="folder-icon" icon="bookmarks:shopping-collection">
-        </iron-icon>` : ''}
+    <cr-icon slot="folder-icon" icon="bookmarks:shopping-collection">
+    </cr-icon>
+  ` : ''}
 </cr-url-list-item>`;
 
 if (this.shouldExpand_()) {
@@ -104,3 +106,4 @@ if (this.shouldExpand_()) {
     }`;
   }
 }
+// clang-format off
