@@ -29,7 +29,7 @@ class ToastViewTest : public DialogBrowserTest {
     const gfx::VectorIcon& icon = vector_icons::kLinkIcon;
     std::unique_ptr<toasts::ToastView> toast =
         std::make_unique<toasts::ToastView>(anchor_view, toast_text, icon,
-                                            name == "CloseButton");
+                                            name == "CloseButton", false);
     if (name == "ActionButton") {
       toast->AddActionButton(l10n_util::GetStringUTF16(IDS_APP_OK));
     }

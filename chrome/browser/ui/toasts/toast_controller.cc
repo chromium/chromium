@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/api/toast_registry.h"
 #include "chrome/browser/ui/toasts/api/toast_specification.h"
@@ -123,6 +124,7 @@ void ToastController::OnWidgetDestroyed(views::Widget* widget) {
   currently_showing_toast_id_ = std::nullopt;
   toast_ = nullptr;
   toast_observer_.Reset();
+  fullscreen_observation_.Reset();
   toast_close_timer_.Stop();
 
   if (next_ephemeral_params_.has_value()) {
@@ -207,7 +209,8 @@ void ToastController::CreateToast(const ToastParams& params,
       anchor_view,
       FormatString(spec->body_string_id(),
                    params.body_string_replacement_params_),
-      spec->icon(), spec->has_close_button());
+      spec->icon(), spec->has_close_button(),
+      browser_window_interface_->ShouldHideUIForFullscreen());
 
   if (spec->action_button_string_id().has_value()) {
     toast_view->AddActionButton(
@@ -219,6 +222,9 @@ void ToastController::CreateToast(const ToastParams& params,
   views::Widget* const toast_widget =
       views::BubbleDialogDelegateView::CreateBubble(std::move(toast_view));
   toast_observer_.Observe(toast_widget);
+  fullscreen_observation_.Observe(
+      browser_window_interface_->GetExclusiveAccessManager()
+          ->fullscreen_controller());
   toast_widget->SetVisibilityChangedAnimationsEnabled(false);
   // Set the the focus traversable parent of the toast widget to be the anchor
   // view, so that when focus leaves the toast, the search for the next
@@ -237,4 +243,9 @@ std::u16string ToastController::FormatString(
     int string_id,
     std::vector<std::u16string> replacements) {
   return l10n_util::GetStringFUTF16(string_id, replacements, nullptr);
+}
+
+void ToastController::OnFullscreenStateChanged() {
+  toast_->UpdateRenderToastOverWebContentsAndPaint(
+      browser_window_interface_->ShouldHideUIForFullscreen());
 }

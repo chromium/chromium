@@ -41,7 +41,8 @@ class ToastView : public views::BubbleDialogDelegateView,
   ToastView(views::View* anchor_view,
             const std::u16string& toast_text,
             const gfx::VectorIcon& icon,
-            bool has_close_button);
+            bool has_close_button,
+            bool should_hide_ui_for_fullscreen);
   ~ToastView() override;
 
   // Must be called prior to Init (which is called from
@@ -60,6 +61,9 @@ class ToastView : public views::BubbleDialogDelegateView,
 
   // Animates out the toast, then closes the toast widget.
   void Close(ToastCloseReason close_reason);
+
+  void UpdateRenderToastOverWebContentsAndPaint(
+      const bool render_toast_over_web_contents);
 
   views::Label* label_for_testing() { return label_; }
   views::MdTextButton* action_button_for_testing() { return action_button_; }
@@ -82,6 +86,7 @@ class ToastView : public views::BubbleDialogDelegateView,
   const std::u16string toast_text_;
   const raw_ref<const gfx::VectorIcon> icon_;
   const bool has_close_button_;
+  bool render_toast_over_web_contents_;
   bool has_action_button_ = false;
   std::u16string action_button_text_;
   base::RepeatingClosure action_button_callback_;

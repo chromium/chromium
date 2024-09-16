@@ -70,6 +70,9 @@ class BrowserWindowInterface : public content::PageNavigator {
   // initialized.
   virtual bool IsTabStripVisible() = 0;
 
+  // Returns true if the browser controls are hidden due to being in fullscreen.
+  virtual bool ShouldHideUIForFullscreen() const = 0;
+
   // Returns the top container view.
   virtual views::View* TopContainer() = 0;
 

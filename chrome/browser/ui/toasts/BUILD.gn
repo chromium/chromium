@@ -17,6 +17,7 @@ source_set("toasts") {
     "//base",
     "//chrome/browser/ui:browser_list",
     "//chrome/browser/ui/browser_window:browser_window",
+    "//chrome/browser/ui/exclusive_access",
     "//chrome/browser/ui/toasts/api:toasts",
     "//content/public/browser",
     "//ui/base",

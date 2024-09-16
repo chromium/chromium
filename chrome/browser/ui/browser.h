@@ -841,6 +841,7 @@ class Browser : public TabStripModelObserver,
   const SessionID& GetSessionID() override;
   TabStripModel* GetTabStripModel() override;
   bool IsTabStripVisible() override;
+  bool ShouldHideUIForFullscreen() const override;
   views::View* TopContainer() override;
   tabs::TabInterface* GetActiveTabInterface() override;
   BrowserWindowFeatures& GetFeatures() override;
@@ -1241,8 +1242,6 @@ class Browser : public TabStripModelObserver,
   void UpdateBookmarkBarState(BookmarkBarStateChangeReason reason);
 
   bool ShouldShowBookmarkBar() const;
-
-  bool ShouldHideUIForFullscreen() const;
 
   // Returns true if we can start the shutdown sequence for the browser, i.e.
   // the last browser window is being closed.

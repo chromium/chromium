@@ -46,12 +46,14 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ToastView, kToastViewId);
 ToastView::ToastView(views::View* anchor_view,
                      const std::u16string& toast_text,
                      const gfx::VectorIcon& icon,
-                     bool has_close_button)
+                     bool has_close_button,
+                     bool render_toast_over_web_contents)
     : BubbleDialogDelegateView(anchor_view, views::BubbleBorder::NONE),
       AnimationDelegateViews(this),
       toast_text_(toast_text),
       icon_(icon),
-      has_close_button_(has_close_button) {
+      has_close_button_(has_close_button),
+      render_toast_over_web_contents_(render_toast_over_web_contents) {
   SetShowCloseButton(false);
   DialogDelegate::SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   set_corner_radius(ChromeLayoutProvider::Get()->GetDistanceMetric(
@@ -219,6 +221,12 @@ void ToastView::Close(ToastCloseReason reason) {
       reason != ToastCloseReason::kPreempted);
 }
 
+void ToastView::UpdateRenderToastOverWebContentsAndPaint(
+    const bool render_toast_over_web_contents) {
+  render_toast_over_web_contents_ = render_toast_over_web_contents;
+  SizeToContents();
+}
+
 gfx::Rect ToastView::GetBubbleBounds() {
   views::View* anchor_view = GetAnchorView();
   if (!anchor_view) {
@@ -230,8 +238,11 @@ gfx::Rect ToastView::GetBubbleBounds() {
   const gfx::Rect anchor_bounds = anchor_view->GetBoundsInScreen();
   const int x =
       anchor_bounds.x() + (anchor_bounds.width() - bubble_size.width()) / 2;
-  // Take bubble out of its original bounds to cross "line of death".
-  const int y = anchor_bounds.bottom() - bubble_size.height() / 2;
+  // Take bubble out of its original bounds to cross "line of death", unless in
+  // fullscreen mode where the top container isn't rendered.
+  const int y = anchor_bounds.bottom() - (render_toast_over_web_contents_
+                                              ? views::BubbleBorder::kShadowBlur
+                                              : (bubble_size.height() / 2));
   return gfx::Rect(x, y, bubble_size.width(), bubble_size.height());
 }
 

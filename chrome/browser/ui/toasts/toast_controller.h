@@ -13,6 +13,8 @@
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
+#include "chrome/browser/ui/exclusive_access/fullscreen_observer.h"
 #include "ui/views/widget/widget_observer.h"
 
 class Browser;
@@ -38,7 +40,8 @@ struct ToastParams {
 };
 
 class ToastController : public views::WidgetObserver,
-                        public BrowserListObserver {
+                        public BrowserListObserver,
+                        public FullscreenObserver {
  public:
   explicit ToastController(BrowserWindowInterface* browser_window_interface,
                            const ToastRegistry* toast_registry);
@@ -76,6 +79,9 @@ class ToastController : public views::WidgetObserver,
   std::u16string FormatString(int string_id,
                               std::vector<std::u16string> replacement);
 
+  // FullscreenObserver:
+  void OnFullscreenStateChanged() override;
+
   const raw_ptr<BrowserWindowInterface> browser_window_interface_;
   const raw_ptr<const ToastRegistry> toast_registry_;
   std::optional<ToastParams> current_ephemeral_params_;
@@ -83,6 +89,10 @@ class ToastController : public views::WidgetObserver,
   std::optional<ToastParams> persistent_params_;
   std::optional<ToastId> currently_showing_toast_id_;
   base::OneShotTimer toast_close_timer_;
+
+  // Observer to check for browser window entering fullscreen.
+  base::ScopedObservation<FullscreenController, FullscreenObserver>
+      fullscreen_observation_{this};
 
   // Observer to check when the toast is destroyed.
   base::ScopedObservation<views::Widget, views::WidgetObserver> toast_observer_{
