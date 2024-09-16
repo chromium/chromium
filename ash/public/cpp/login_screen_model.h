@@ -44,7 +44,8 @@ class ASH_PUBLIC_EXPORT LoginScreenModel {
   // authentication) availability for the given user.
   virtual void SetAuthFactorsForUser(
       const AccountId& user,
-      cryptohome::AuthFactorsSet auth_factors) = 0;
+      cryptohome::AuthFactorsSet auth_factors,
+      cryptohome::PinLockAvailability pin_available_at) = 0;
 
   // Notification if pin is enabled or disabled for the given user.
   // |user|:         The account id of the user in the user pod.

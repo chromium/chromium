@@ -13,7 +13,8 @@ void TestLoginScreenModel::SetUserList(
     const std::vector<ash::LoginUserInfo>& users) {}
 void TestLoginScreenModel::SetAuthFactorsForUser(
     const AccountId& user,
-    cryptohome::AuthFactorsSet auth_factors) {}
+    cryptohome::AuthFactorsSet auth_factors,
+    cryptohome::PinLockAvailability pin_available_at) {}
 void TestLoginScreenModel::SetPinEnabledForUser(
     const AccountId& account_id,
     bool is_enabled,

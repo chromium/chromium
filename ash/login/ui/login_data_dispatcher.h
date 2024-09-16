@@ -54,7 +54,8 @@ class ASH_EXPORT LoginDataDispatcher : public LoginScreenModel {
     // authentication should be disabled.
     virtual void OnUserAuthFactorsChanged(
         const AccountId& user,
-        cryptohome::AuthFactorsSet auth_factors);
+        cryptohome::AuthFactorsSet auth_factors,
+        cryptohome::PinLockAvailability pin_available_at);
 
     // Called when pin should be enabled or disabled for |user|. By default, pin
     // should be disabled.
@@ -190,8 +191,10 @@ class ASH_EXPORT LoginDataDispatcher : public LoginScreenModel {
   // LoginScreenModel is complete, separate out the methods that aren't
   // overrides.
   void SetUserList(const std::vector<LoginUserInfo>& users) override;
-  void SetAuthFactorsForUser(const AccountId& user,
-                             cryptohome::AuthFactorsSet auth_factors) override;
+  void SetAuthFactorsForUser(
+      const AccountId& user,
+      cryptohome::AuthFactorsSet auth_factors,
+      cryptohome::PinLockAvailability pin_available_at) override;
   void SetPinEnabledForUser(
       const AccountId& user,
       bool enabled,

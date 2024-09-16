@@ -795,7 +795,8 @@ void LockContentsView::OnUserAvatarChanged(const AccountId& account_id,
 
 void LockContentsView::OnUserAuthFactorsChanged(
     const AccountId& user,
-    cryptohome::AuthFactorsSet auth_factors) {
+    cryptohome::AuthFactorsSet auth_factors,
+    cryptohome::PinLockAvailability pin_available_at) {
   UserState* state = FindStateForUser(user);
   if (!state) {
     LOG(ERROR) << "Unable to find user when updating auth factors";
@@ -808,14 +809,23 @@ void LockContentsView::OnUserAuthFactorsChanged(
   const bool enable_smart_card =
       auth_factors.Has(cryptohome::AuthFactorType::kSmartCard);
 
-  if (!enable_password && !enable_pin && !enable_smart_card) {
+  // If PIN is enabled, or PIN is disabled and permanently locked, reset
+  // the `pin_available_at` as it's meaningless.
+  if (enable_pin || !IsTimeInFuture(pin_available_at)) {
+    pin_available_at = std::nullopt;
+  }
+
+  if (!enable_password && !enable_pin && !enable_smart_card &&
+      !pin_available_at.has_value()) {
     LOG(ERROR) << "Unable to update auth factors, neither password, PIN or "
                   "smart card auth is configured";
     return;
   }
+
   if (state->show_password == enable_password &&
       state->show_pin == enable_pin &&
-      state->show_challenge_response_auth == enable_smart_card) {
+      state->show_challenge_response_auth == enable_smart_card &&
+      state->pin_available_at == pin_available_at) {
     LOG(WARNING)
         << "Unexpected call to OnUserAuthFactorsChanged; state unchanged.";
     return;
@@ -826,11 +836,7 @@ void LockContentsView::OnUserAuthFactorsChanged(
   state->autosubmit_pin_length =
       user_manager::KnownUser(Shell::Get()->local_state())
           .GetUserPinLength(user);
-  // If PIN is enabled, or PIN is disabled and permanently locked, reset
-  // the `pin_available_at` as it's meaningless.
-  if (enable_pin || !IsTimeInFuture(state->pin_available_at)) {
-    state->pin_available_at = std::nullopt;
-  }
+  state->pin_available_at = pin_available_at;
   state->show_challenge_response_auth = enable_smart_card;
 
   LoginBigUserView* big_user =
@@ -1924,7 +1930,6 @@ void LockContentsView::LayoutAuth(LoginBigUserView* to_update,
         to_update_auth = LoginAuthUserView::AUTH_CHALLENGE_RESPONSE;
       } else {
         if (features::IsAllowPasswordlessSetupEnabled()) {
-          CHECK(state->show_password || state->show_pin);
           to_update_auth = LoginAuthUserView::AUTH_NONE;
         } else {
           to_update_auth = LoginAuthUserView::AUTH_PASSWORD;
@@ -1943,6 +1948,11 @@ void LockContentsView::LayoutAuth(LoginBigUserView* to_update,
         auth_metadata.pin_available_at = state->pin_available_at;
         if (state->show_pin) {
           to_update_auth |= LoginAuthUserView::AUTH_PIN;
+        }
+        if (to_update_auth == LoginAuthUserView::AUTH_NONE) {
+          CHECK(IsTimeInFuture(state->pin_available_at))
+              << "Password or pin factor must be present, if pin is not locked";
+          to_update_auth |= LoginAuthUserView::AUTH_RECOVERY;
         }
         if (state->fingerprint_state != FingerprintState::UNAVAILABLE) {
           to_update_auth |= LoginAuthUserView::AUTH_FINGERPRINT;

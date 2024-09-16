@@ -19,7 +19,8 @@ void LoginDataDispatcher::Observer::OnUserAvatarChanged(
 
 void LoginDataDispatcher::Observer::OnUserAuthFactorsChanged(
     const AccountId& user,
-    cryptohome::AuthFactorsSet auth_factors) {}
+    cryptohome::AuthFactorsSet auth_factors,
+    cryptohome::PinLockAvailability pin_available_at) {}
 
 void LoginDataDispatcher::Observer::OnPinEnabledForUserChanged(
     const AccountId& user,
@@ -135,9 +136,10 @@ void LoginDataDispatcher::SetUserList(const std::vector<LoginUserInfo>& users) {
 
 void LoginDataDispatcher::SetAuthFactorsForUser(
     const AccountId& user,
-    cryptohome::AuthFactorsSet auth_factors) {
+    cryptohome::AuthFactorsSet auth_factors,
+    cryptohome::PinLockAvailability pin_available_at) {
   for (auto& observer : observers_) {
-    observer.OnUserAuthFactorsChanged(user, auth_factors);
+    observer.OnUserAuthFactorsChanged(user, auth_factors, pin_available_at);
   }
 }
 
