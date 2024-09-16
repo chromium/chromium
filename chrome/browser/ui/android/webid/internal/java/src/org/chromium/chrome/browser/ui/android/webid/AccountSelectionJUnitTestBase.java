@@ -30,6 +30,7 @@ import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderData;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderMetadata;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.image_fetcher.ImageFetcher;
+import org.chromium.content.webid.IdentityRequestDialogDisclosureField;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -66,6 +67,12 @@ public class AccountSelectionJUnitTestBase {
     protected static final int[] RP_CONTEXTS =
             new int[] {RpContext.SIGN_IN, RpContext.SIGN_UP, RpContext.USE, RpContext.CONTINUE};
     protected static final @Px int DESIRED_AVATAR_SIZE = 100;
+    protected static final @IdentityRequestDialogDisclosureField int[] DEFAULT_DISCLOSURE_FIELDS =
+            new int[] {
+                IdentityRequestDialogDisclosureField.NAME,
+                IdentityRequestDialogDisclosureField.EMAIL,
+                IdentityRequestDialogDisclosureField.PICTURE
+            };
 
     @Mock Callback<Account> mAccountCallback;
     @Mock AccountSelectionComponent.Delegate mMockDelegate;
@@ -199,7 +206,7 @@ public class AccountSelectionJUnitTestBase {
                                 mTestUrlPrivacyPolicy,
                                 mTestRpBrandIconUrl.getSpec()),
                         RpContext.SIGN_IN,
-                        /* request_permission= */ true,
+                        DEFAULT_DISCLOSURE_FIELDS,
                         /* has_login_status_mismatch= */ false);
 
         mNewAccountsSingleReturningAccount = Arrays.asList(mAnaAccount);

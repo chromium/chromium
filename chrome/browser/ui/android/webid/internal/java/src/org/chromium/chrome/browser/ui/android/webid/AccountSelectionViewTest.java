@@ -416,6 +416,7 @@ public class AccountSelectionViewTest extends AccountSelectionJUnitTestBase {
         properties.mIdpForDisplay = idpEtldPlusOne;
         properties.mTermsOfServiceUrl = new GURL("https://www.one.com/");
         properties.mPrivacyPolicyUrl = new GURL("https://www.two.com/");
+        properties.mDisclosureFields = DEFAULT_DISCLOSURE_FIELDS;
 
         return new PropertyModel.Builder(DataSharingConsentProperties.ALL_KEYS)
                 .with(DataSharingConsentProperties.PROPERTIES, properties)

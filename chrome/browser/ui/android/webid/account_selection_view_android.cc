@@ -109,6 +109,16 @@ ScopedJavaLocalRef<jobjectArray> ConvertToJavaAccounts(
   return array;
 }
 
+inline ScopedJavaLocalRef<jintArray> ConvertFieldsToJavaArray(
+    JNIEnv* env,
+    const std::vector<content::IdentityRequestDialogDisclosureField>& fields) {
+  std::vector<int> int_array;
+  for (auto field : fields) {
+    int_array.push_back(static_cast<int>(field));
+  }
+  return base::android::ToJavaIntArray(env, int_array);
+}
+
 ScopedJavaLocalRef<jobject> ConvertToJavaIdentityProviderData(
     JNIEnv* env,
     content::IdentityProviderData* idp_data) {
@@ -117,7 +127,7 @@ ScopedJavaLocalRef<jobject> ConvertToJavaIdentityProviderData(
       ConvertToJavaIdentityProviderMetadata(env, idp_data->idp_metadata),
       ConvertToJavaClientIdMetadata(env, idp_data->client_metadata),
       static_cast<jint>(idp_data->rp_context),
-      !idp_data->disclosure_fields.empty(),
+      ConvertFieldsToJavaArray(env, idp_data->disclosure_fields),
       idp_data->has_login_status_mismatch);
 }
 
@@ -146,6 +156,7 @@ IdentityRequestAccountPtr ConvertFieldsToAccount(
       std::move(domain_hints), std::move(labels), login_state,
       browser_trusted_login_state);
 }
+
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class FedCmJavaObjectCreationOutcome {

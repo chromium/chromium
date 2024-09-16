@@ -46,6 +46,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.Shee
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.image_fetcher.ImageFetcher;
+import org.chromium.content.webid.IdentityRequestDialogDisclosureField;
 import org.chromium.content.webid.IdentityRequestDialogDismissReason;
 import org.chromium.content.webid.IdentityRequestDialogLinkType;
 import org.chromium.content_public.browser.NavigationHandle;
@@ -156,7 +157,7 @@ class AccountSelectionMediator {
     private boolean mIsAutoReauthn;
     private @RpContext.EnumType int mRpContext;
     private IdentityCredentialTokenError mError;
-    private boolean mRequestPermission;
+    private @IdentityRequestDialogDisclosureField int[] mDisclosureFields;
     private ImageFetcher mImageFetcher;
 
     // All of the user's accounts.
@@ -561,7 +562,7 @@ class AccountSelectionMediator {
         mClientMetadata = idpData.getClientMetadata();
         mIsAutoReauthn = isAutoReauthn;
         mRpContext = idpData.getRpContext();
-        mRequestPermission = idpData.getRequestPermission();
+        mDisclosureFields = idpData.getDisclosureFields();
         mSelectedAccount = null;
 
         fetchBrandIcon(mIdpMetadata.getBrandIconUrl(), bitmap -> updateIdpBrandIcon(bitmap));
@@ -688,7 +689,7 @@ class AccountSelectionMediator {
             // if we do not skip the next dialog. Also skip when request_permission
             // is false (controlled by the fields API).
             boolean shouldShowRequestPermissionDialog =
-                    !newlySignedInAccount.isSignIn() && mRequestPermission;
+                    !newlySignedInAccount.isSignIn() && mDisclosureFields.length > 0;
             if (shouldShowRequestPermissionDialog) {
                 showRequestPermissionSheet(mSelectedAccount);
                 return;
@@ -744,7 +745,8 @@ class AccountSelectionMediator {
         if (mHeaderType == HeaderType.SIGN_IN && mSelectedAccount != null) {
             // Only show the user data sharing consent text for sign up and only
             // if we're asked to request permission.
-            isDataSharingConsentVisible = !mSelectedAccount.isSignIn() && mRequestPermission;
+            isDataSharingConsentVisible =
+                    !mSelectedAccount.isSignIn() && mDisclosureFields.length > 0;
             continueButtonCallback = this::onClickAccountSelected;
         }
 
@@ -786,7 +788,8 @@ class AccountSelectionMediator {
             mModel.set(
                     ItemProperties.DATA_SHARING_CONSENT,
                     isDataSharingConsentVisible
-                            ? createDataSharingConsentItem(mIdpForDisplay, mClientMetadata)
+                            ? createDataSharingConsentItem(
+                                    mIdpForDisplay, mClientMetadata, mDisclosureFields)
                             : null);
         }
         mModel.set(
@@ -803,7 +806,8 @@ class AccountSelectionMediator {
             mModel.set(
                     ItemProperties.DATA_SHARING_CONSENT,
                     isDataSharingConsentVisible
-                            ? createDataSharingConsentItem(mIdpForDisplay, mClientMetadata)
+                            ? createDataSharingConsentItem(
+                                    mIdpForDisplay, mClientMetadata, mDisclosureFields)
                             : null);
         }
         mModel.set(
@@ -963,7 +967,7 @@ class AccountSelectionMediator {
         if ((mRpMode == RpMode.WIDGET && oldSelectedAccount != null)
                 || selectedAccount.isSignIn()
                 || mHeaderType == HeaderType.REQUEST_PERMISSION
-                || !mRequestPermission) {
+                || mDisclosureFields.length == 0) {
             mDelegate.onAccountSelected(mIdpMetadata.getConfigUrl(), selectedAccount);
             showVerifySheet(selectedAccount);
             return;
@@ -1031,7 +1035,9 @@ class AccountSelectionMediator {
     }
 
     private PropertyModel createDataSharingConsentItem(
-            String idpForDisplay, ClientIdMetadata metadata) {
+            String idpForDisplay,
+            ClientIdMetadata metadata,
+            @IdentityRequestDialogDisclosureField int[] disclosureFields) {
         DataSharingConsentProperties.Properties properties =
                 new DataSharingConsentProperties.Properties();
         properties.mIdpForDisplay = idpForDisplay;
@@ -1052,6 +1058,7 @@ class AccountSelectionMediator {
                             metadata.getPrivacyPolicyUrl());
                 };
         properties.mSetFocusViewCallback = this::setFocusView;
+        properties.mDisclosureFields = disclosureFields;
 
         return new PropertyModel.Builder(DataSharingConsentProperties.ALL_KEYS)
                 .with(DataSharingConsentProperties.PROPERTIES, properties)

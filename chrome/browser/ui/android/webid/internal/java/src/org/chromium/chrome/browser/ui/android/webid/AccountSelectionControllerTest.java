@@ -185,7 +185,7 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
                         idpMetadataNoBrandIconUrl,
                         clientMetadataNoBrandIconUrl,
                         RpContext.SIGN_IN,
-                        /* requestPermission= */ true,
+                        DEFAULT_DISCLOSURE_FIELDS,
                         /* isAutoReauthn= */ false);
         mMediator.showAccounts(
                 mTestEtldPlusOne,
@@ -504,7 +504,7 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
 
     @Test
     public void testNewUserWithoutRequestPermission() {
-        mIdpData.setRequestPermission(false);
+        mIdpData.setDisclosureFields(new int[0]);
         mMediator.showAccounts(
                 mTestEtldPlusOne,
                 mTestEtldPlusOne2,
@@ -512,7 +512,7 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
                 mIdpData,
                 /* isAutoReauthn= */ false,
                 /* newAccounts= */ Collections.EMPTY_LIST);
-        // Because requestPermission is false, we expect header + account + continue btn
+        // Because disclosureFields are empty, we expect header + account + continue btn
         assertEquals(3, countAllItems());
         assertEquals("Incorrect item sheet count", 1, mSheetAccountItems.size());
         assertFalse(containsItemOfType(mModel, ItemProperties.DATA_SHARING_CONSENT));
@@ -521,7 +521,7 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
     @Test
     public void testMultiAccountSkipConsentSheetWithoutRequestPermission() {
         when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
-        mIdpData.setRequestPermission(false);
+        mIdpData.setDisclosureFields(new int[0]);
         mMediator.showAccounts(
                 mTestEtldPlusOne,
                 mTestEtldPlusOne2,

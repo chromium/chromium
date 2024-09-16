@@ -10,6 +10,7 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 
 import org.chromium.blink.mojom.RpContext;
+import org.chromium.content.webid.IdentityRequestDialogDisclosureField;
 
 /**
  * Holds data associated with the identity provider in FedCM dialogs. Android counterpart of
@@ -20,7 +21,7 @@ public class IdentityProviderData {
     private final IdentityProviderMetadata mIdpMetadata;
     private final ClientIdMetadata mClientMetadata;
     private @RpContext.EnumType int mRpContext;
-    private boolean mRequestPermission;
+    private @IdentityRequestDialogDisclosureField int[] mDisclosureFields;
     private final boolean mHasLoginStatusMismatch;
 
     @CalledByNative
@@ -29,13 +30,13 @@ public class IdentityProviderData {
             IdentityProviderMetadata idpMetadata,
             ClientIdMetadata clientMetadata,
             @RpContext.EnumType int rpContext,
-            boolean requestPermission,
+            @IdentityRequestDialogDisclosureField int[] disclosureFields,
             boolean hasLoginStatusMismatch) {
         mIdpForDisplay = idpForDisplay;
         mIdpMetadata = idpMetadata;
         mClientMetadata = clientMetadata;
         mRpContext = rpContext;
-        mRequestPermission = requestPermission;
+        mDisclosureFields = disclosureFields;
         mHasLoginStatusMismatch = hasLoginStatusMismatch;
     }
 
@@ -55,8 +56,8 @@ public class IdentityProviderData {
         return mRpContext;
     }
 
-    public boolean getRequestPermission() {
-        return mRequestPermission;
+    public @IdentityRequestDialogDisclosureField int[] getDisclosureFields() {
+        return mDisclosureFields;
     }
 
     public boolean getHasLoginStatusMismatch() {
@@ -64,8 +65,8 @@ public class IdentityProviderData {
     }
 
     @VisibleForTesting
-    public void setRequestPermission(boolean requestPermission) {
-        mRequestPermission = requestPermission;
+    public void setDisclosureFields(@IdentityRequestDialogDisclosureField int[] disclosureFields) {
+        mDisclosureFields = disclosureFields;
     }
 
     @VisibleForTesting

@@ -229,7 +229,7 @@ public class AccountSelectionButtonModeControllerTest extends AccountSelectionJU
     @Test
     public void testNewAccountsIdpRequestPermissionFalseShowsAccountChooserDialog() {
         mMediator.showLoadingDialog(mTestEtldPlusOne, mTestEtldPlusOne2, RpContext.SIGN_IN);
-        mIdpData.setRequestPermission(false);
+        mIdpData.setDisclosureFields(new int[0]);
         mMediator.showAccounts(
                 mTestEtldPlusOne,
                 mTestEtldPlusOne2,

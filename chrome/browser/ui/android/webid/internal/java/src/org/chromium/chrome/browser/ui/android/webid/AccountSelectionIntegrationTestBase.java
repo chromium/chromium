@@ -29,6 +29,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.components.image_fetcher.ImageFetcher;
+import org.chromium.content.webid.IdentityRequestDialogDisclosureField;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -80,6 +81,13 @@ public class AccountSelectionIntegrationTestBase {
                     /* loginUrl= */ null,
                     /* supportsAddAccount= */ true);
 
+    protected static final @IdentityRequestDialogDisclosureField int[] DEFAULT_DISCLOSURE_FIELDS =
+            new int[] {
+                IdentityRequestDialogDisclosureField.NAME,
+                IdentityRequestDialogDisclosureField.EMAIL,
+                IdentityRequestDialogDisclosureField.PICTURE
+            };
+
     AccountSelectionCoordinator mAccountSelection;
 
     @Mock AccountSelectionComponent.Delegate mMockBridge;
@@ -122,7 +130,7 @@ public class AccountSelectionIntegrationTestBase {
                         IDP_METADATA,
                         mClientIdMetadata,
                         RpContext.SIGN_IN,
-                        /* requestPermission= */ true,
+                        DEFAULT_DISCLOSURE_FIELDS,
                         /* hasLoginStatusMismatch= */ false);
         mIdpDataWithAddAccount =
                 new IdentityProviderData(
@@ -130,7 +138,7 @@ public class AccountSelectionIntegrationTestBase {
                         IDP_METADATA_WITH_ADD_ACCOUNT,
                         mClientIdMetadata,
                         RpContext.SIGN_IN,
-                        /* requestPermission= */ true,
+                        DEFAULT_DISCLOSURE_FIELDS,
                         /* hasLoginStatusMismatch= */ false);
 
         runOnUiThreadBlocking(
