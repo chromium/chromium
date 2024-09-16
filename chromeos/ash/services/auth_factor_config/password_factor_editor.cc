@@ -54,10 +54,36 @@ PasswordFactorEditor::PasswordFactorEditor(AuthFactorConfig* auth_factor_config)
 
 PasswordFactorEditor::~PasswordFactorEditor() = default;
 
-void PasswordFactorEditor::UpdateLocalPassword(
+void PasswordFactorEditor::UpdateOrSetLocalPassword(
     const std::string& auth_token,
     const std::string& new_password,
     base::OnceCallback<void(mojom::ConfigureResult)> callback) {
+  if (!ash::AuthSessionStorage::Get()->IsValid(auth_token)) {
+    LOG(ERROR) << "Invalid auth token";
+    std::move(callback).Run(mojom::ConfigureResult::kInvalidTokenError);
+    return;
+  }
+
+  ash::AuthSessionStorage::Get()->BorrowAsync(
+      FROM_HERE, auth_token,
+      base::BindOnce(&PasswordFactorEditor::UpdateOrSetPasswordWithContext,
+                     weak_factory_.GetWeakPtr(), auth_token, new_password,
+                     cryptohome::KeyLabel{kCryptohomeLocalPasswordKeyLabel},
+                     std::move(callback)));
+}
+
+void PasswordFactorEditor::UpdateOrSetPasswordWithContext(
+    const std::string& auth_token,
+    const std::string& new_password,
+    const cryptohome::KeyLabel& label,
+    base::OnceCallback<void(mojom::ConfigureResult)> callback,
+    std::unique_ptr<UserContext> context) {
+  if (!context) {
+    LOG(ERROR) << "Invalid auth token";
+    std::move(callback).Run(mojom::ConfigureResult::kInvalidTokenError);
+    return;
+  }
+
   // Mojo strings are valid UTF-8, so the `CheckLocalPasswordComplexityImpl`
   // call is OK.
   if (CheckLocalPasswordComplexityImpl(new_password) !=
@@ -66,20 +92,20 @@ void PasswordFactorEditor::UpdateLocalPassword(
     return;
   }
 
-  if (!ash::AuthSessionStorage::Get()->IsValid(auth_token)) {
-    LOG(ERROR) << "Invalid auth token";
-    std::move(callback).Run(mojom::ConfigureResult::kInvalidTokenError);
-    return;
+  CHECK(context->HasAuthFactorsConfiguration());
+  if (context->GetAuthFactorsConfiguration().HasConfiguredFactor(
+          cryptohome::AuthFactorType::kPassword)) {
+    // Update.
+    UpdatePasswordWithContext(auth_token, new_password, label,
+                              std::move(callback), std::move(context));
+  } else {
+    // Set.
+    SetPasswordWithContext(auth_token, new_password, label, std::move(callback),
+                           std::move(context));
   }
-  ash::AuthSessionStorage::Get()->BorrowAsync(
-      FROM_HERE, auth_token,
-      base::BindOnce(&PasswordFactorEditor::UpdatePasswordWithContext,
-                     weak_factory_.GetWeakPtr(), auth_token, new_password,
-                     cryptohome::KeyLabel{kCryptohomeLocalPasswordKeyLabel},
-                     std::move(callback)));
 }
 
-void PasswordFactorEditor::UpdateOnlinePassword(
+void PasswordFactorEditor::UpdateOrSetOnlinePassword(
     const std::string& auth_token,
     const std::string& new_password,
     base::OnceCallback<void(mojom::ConfigureResult)> callback) {
@@ -88,9 +114,10 @@ void PasswordFactorEditor::UpdateOnlinePassword(
     std::move(callback).Run(mojom::ConfigureResult::kInvalidTokenError);
     return;
   }
+
   ash::AuthSessionStorage::Get()->BorrowAsync(
       FROM_HERE, auth_token,
-      base::BindOnce(&PasswordFactorEditor::UpdatePasswordWithContext,
+      base::BindOnce(&PasswordFactorEditor::UpdateOrSetPasswordWithContext,
                      weak_factory_.GetWeakPtr(), auth_token, new_password,
                      cryptohome::KeyLabel{kCryptohomeGaiaKeyLabel},
                      std::move(callback)));

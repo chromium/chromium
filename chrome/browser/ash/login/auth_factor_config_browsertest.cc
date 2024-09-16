@@ -88,8 +88,8 @@ class AuthFactorConfigTestWithLocalPassword : public AuthFactorConfigTestBase {
       : AuthFactorConfigTestBase(ash::AshAuthFactor::kLocalPassword) {}
 };
 
-// Checks that PasswordFactorEditor::UpdateLocalPassword can be used to set a
-// new password. This test is mostly here to make sure that the test fixture
+// Checks that PasswordFactorEditor::UpdateOrSetLocalPassword can be used to set
+// a new password. This test is mostly here to make sure that the test fixture
 // works as intended.
 IN_PROC_BROWSER_TEST_F(AuthFactorConfigTestWithLocalPassword,
                        UpdateLocalPasswordSuccess) {
@@ -100,8 +100,8 @@ IN_PROC_BROWSER_TEST_F(AuthFactorConfigTestWithLocalPassword,
                               g_browser_process->local_state());
 
   base::test::TestFuture<mojom::ConfigureResult> result;
-  password_editor.UpdateLocalPassword(*auth_token, test::kNewPassword,
-                                      result.GetCallback());
+  password_editor.UpdateOrSetLocalPassword(*auth_token, test::kNewPassword,
+                                           result.GetCallback());
 
   ASSERT_EQ(result.Get(), mojom::ConfigureResult::kSuccess);
   // Since MakeAuthToken authenticates using the provided password, this will
@@ -110,8 +110,8 @@ IN_PROC_BROWSER_TEST_F(AuthFactorConfigTestWithLocalPassword,
   ASSERT_TRUE(auth_token.has_value());
 }
 
-// Checks that PasswordFactorEditor::UpdateLocalPassword rejects insufficiently
-// complex passwords.
+// Checks that PasswordFactorEditor::UpdateOrSetLocalPassword rejects
+// insufficiently complex passwords.
 IN_PROC_BROWSER_TEST_F(AuthFactorConfigTestWithLocalPassword,
                        UpdateLocalPasswordComplexityFailure) {
   static const std::string kBadPassword = "asdfas∆";
@@ -123,8 +123,8 @@ IN_PROC_BROWSER_TEST_F(AuthFactorConfigTestWithLocalPassword,
                               g_browser_process->local_state());
 
   base::test::TestFuture<mojom::ConfigureResult> result;
-  password_editor.UpdateLocalPassword(*auth_token, kBadPassword,
-                                      result.GetCallback());
+  password_editor.UpdateOrSetLocalPassword(*auth_token, kBadPassword,
+                                           result.GetCallback());
 
   ASSERT_EQ(result.Get(), mojom::ConfigureResult::kFatalError);
   // Since MakeAuthToken authenticates using the provided password, this will
@@ -157,8 +157,8 @@ IN_PROC_BROWSER_TEST_F(ChangeGaiaPasswordFactorTest,
                               g_browser_process->local_state());
 
   base::test::TestFuture<mojom::ConfigureResult> result;
-  password_editor.UpdateLocalPassword(*auth_token, test::kLocalPassword,
-                                      result.GetCallback());
+  password_editor.UpdateOrSetLocalPassword(*auth_token, test::kLocalPassword,
+                                           result.GetCallback());
 
   ASSERT_EQ(result.Get(), mojom::ConfigureResult::kSuccess);
   // Since MakeAuthToken authenticates using the provided password, this will
