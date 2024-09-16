@@ -554,7 +554,7 @@ BASE_FEATURE(kCompressParkableStrings,
 // foreground, and increase aging tick intervals.
 BASE_FEATURE(kLessAggressiveParkableString,
              "LessAggressiveParkableString",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Limits maximum capacity of disk data allocator per renderer process.
 // DiskDataAllocator and its clients(ParkableString, ParkableImage) will try
@@ -2472,7 +2472,7 @@ BASE_FEATURE(kUseSnappyForParkableStrings,
 // Use the zstd compression algorithm for ParkableString compression.
 BASE_FEATURE(kUseZstdForParkableStrings,
              "UseZstdForParkableStrings",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Allows to tweak the compression / speed tradeoff.
 //

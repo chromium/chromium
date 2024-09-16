@@ -16422,27 +16422,6 @@
             ]
         }
     ],
-    "ParkableStringExperiments": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20240415",
-                    "enable_features": [
-                        "LessAggressiveParkableString",
-                        "UseZstdForParkableStrings"
-                    ]
-                }
-            ]
-        }
-    ],
     "PartitionAllocAdvancedMemorySafetyChecks": [
         {
             "platforms": [
