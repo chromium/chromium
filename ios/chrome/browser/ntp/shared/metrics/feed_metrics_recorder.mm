@@ -581,7 +581,6 @@ using feed::FeedUserActionType;
 - (void)recordFeedSelected:(FeedType)feedType
     fromPreviousFeedPosition:(NSUInteger)index {
   if (!self.followDelegate) {
-    NOTREACHED(base::NotFatalUntil::M129);
     return;
   }
   switch (feedType) {
