@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <cstdint>
 #include <memory>
 #include <optional>
@@ -228,6 +229,16 @@ const char kHostOfflineReasonZombieStateDetected[] = "ZOMBIE_STATE_DETECTED";
 // File to write webrtc trace events to. If not specified, webrtc trace events
 // will not be enabled.
 const char kWebRtcTraceEventFile[] = "webrtc-trace-event-file";
+
+// Helper to check if a string value is in a Policy allowlist.
+bool IsInAllowlist(std::string_view value,
+                   const std::vector<std::string> allowlist) {
+  return std::find_if(allowlist.begin(), allowlist.end(),
+                      [&value](const std::string& allowed_value) {
+                        return base::EqualsCaseInsensitiveASCII(value,
+                                                                allowed_value);
+                      }) != allowlist.end();
+}
 
 }  // namespace
 
@@ -806,12 +817,7 @@ bool HostProcess::CheckAccessPermission(std::string_view user_email_view) {
   }
 
   auto [_, domain] = *email_parts;
-  bool allowed_by_policy =
-      std::find_if(client_domain_list_.begin(), client_domain_list_.end(),
-                   [&domain](const std::string& allowed_domain) {
-                     return base::EqualsCaseInsensitiveASCII(domain,
-                                                             allowed_domain);
-                   }) != client_domain_list_.end();
+  bool allowed_by_policy = IsInAllowlist(domain, client_domain_list_);
   LOG_IF(ERROR, !allowed_by_policy) << user_email << " has a domain which is "
                                     << "not in the client domain allowlist.";
   return allowed_by_policy;
@@ -1108,6 +1114,8 @@ void HostProcess::OnFirstHeartbeatSuccessful() {
 }
 
 void HostProcess::OnUpdateHostOwner(const std::string& owner_email) {
+  DCHECK(!owner_email.empty());
+
   auto new_owner_email = base::ToLowerASCII(owner_email);
   if (host_owner_emails_.contains(new_owner_email)) {
     return;
@@ -1368,12 +1376,7 @@ void HostProcess::ApplyHostDomainListPolicy() {
   std::set<std::string> allowed_emails;
   for (const std::string& owner_email : host_owner_emails_) {
     auto [_, domain] = *base::SplitStringOnce(owner_email, '@');
-    bool allowed_by_policy =
-        std::find_if(host_domain_list_.begin(), host_domain_list_.end(),
-                     [&domain](const std::string& allowed_domain) {
-                       return base::EqualsCaseInsensitiveASCII(domain,
-                                                               allowed_domain);
-                     }) != host_domain_list_.end();
+    bool allowed_by_policy = IsInAllowlist(domain, host_domain_list_);
     if (allowed_by_policy) {
       allowed_emails.emplace(owner_email);
     } else {
