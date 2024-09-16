@@ -16,8 +16,10 @@ source_set("window_error") {
   ]
 
   sources = [
-    "window_error_java_script_feature.h",
-    "window_error_java_script_feature.mm",
+    "error_event_listener_java_script_feature.h",
+    "error_event_listener_java_script_feature.mm",
+    "script_error_message_handler_java_script_feature.h",
+    "script_error_message_handler_java_script_feature.mm",
   ]
 }
 
@@ -41,5 +43,5 @@ source_set("unittests") {
     "//testing/gtest",
   ]
 
-  sources = [ "window_error_java_script_feature_unittest.mm" ]
+  sources = [ "script_error_message_handler_java_script_feature_unittest.mm" ]
 }

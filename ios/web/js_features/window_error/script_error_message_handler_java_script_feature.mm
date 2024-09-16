@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/web/js_features/window_error/window_error_java_script_feature.h"
+#import "ios/web/js_features/window_error/script_error_message_handler_java_script_feature.h"
 
 #import "base/debug/crash_logging.h"
 #import "base/debug/dump_without_crashing.h"
@@ -15,8 +15,6 @@
 #import "net/base/apple/url_conversions.h"
 
 namespace {
-const char kScriptName[] = "error";
-
 const char kWindowErrorResultHandlerName[] = "WindowErrorResultHandler";
 
 static const char kScriptMessageResponseFilenameKey[] = "filename";
@@ -27,32 +25,28 @@ static const char kScriptMessageResponseStackKey[] = "stack";
 
 namespace web {
 
-WindowErrorJavaScriptFeature::ErrorDetails::ErrorDetails()
+ScriptErrorMessageHandlerJavaScriptFeature::ErrorDetails::ErrorDetails()
     : is_main_frame(true) {}
-WindowErrorJavaScriptFeature::ErrorDetails::~ErrorDetails() = default;
+ScriptErrorMessageHandlerJavaScriptFeature::ErrorDetails::~ErrorDetails() =
+    default;
 
-WindowErrorJavaScriptFeature::WindowErrorJavaScriptFeature(
-    base::RepeatingCallback<void(ErrorDetails)> callback)
-    : JavaScriptFeature(
-          ContentWorld::kIsolatedWorld,
-          {FeatureScript::CreateWithFilename(
-              kScriptName,
-              FeatureScript::InjectionTime::kDocumentStart,
-              FeatureScript::TargetFrames::kAllFrames,
-              FeatureScript::ReinjectionBehavior::
-                  kReinjectOnDocumentRecreation)},
-          {web::java_script_features::GetCommonJavaScriptFeature()}),
+ScriptErrorMessageHandlerJavaScriptFeature::
+    ScriptErrorMessageHandlerJavaScriptFeature(
+        base::RepeatingCallback<void(ErrorDetails)> callback)
+    : JavaScriptFeature(ContentWorld::kAllContentWorlds, {}),
       callback_(std::move(callback)) {
   DCHECK(callback_);
 }
-WindowErrorJavaScriptFeature::~WindowErrorJavaScriptFeature() = default;
+ScriptErrorMessageHandlerJavaScriptFeature::
+    ~ScriptErrorMessageHandlerJavaScriptFeature() = default;
 
 std::optional<std::string>
-WindowErrorJavaScriptFeature::GetScriptMessageHandlerName() const {
+ScriptErrorMessageHandlerJavaScriptFeature::GetScriptMessageHandlerName()
+    const {
   return kWindowErrorResultHandlerName;
 }
 
-void WindowErrorJavaScriptFeature::ScriptMessageReceived(
+void ScriptErrorMessageHandlerJavaScriptFeature::ScriptMessageReceived(
     WebState* web_state,
     const ScriptMessage& script_message) {
   ErrorDetails details;

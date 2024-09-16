@@ -2,49 +2,56 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/web/js_features/window_error/window_error_java_script_feature.h"
+#import "ios/web/js_features/window_error/script_error_message_handler_java_script_feature.h"
 
 #import <memory>
 #import <optional>
 
 #import "base/test/ios/wait_util.h"
+#import "ios/web/js_features/window_error/error_event_listener_java_script_feature.h"
 #import "ios/web/js_messaging/java_script_feature_manager.h"
 #import "ios/web/public/js_messaging/java_script_feature_util.h"
 #import "ios/web/public/test/web_test_with_web_state.h"
 #import "testing/gtest_mac.h"
 
-using base::test::ios::WaitUntilConditionOrTimeout;
 using base::test::ios::kWaitForJSCompletionTimeout;
+using base::test::ios::WaitUntilConditionOrTimeout;
 
 namespace web {
 
-class WindowErrorJavaScriptFeatureTest : public WebTestWithWebState {
+class ScriptErrorMessageHandlerJavaScriptFeatureTest
+    : public WebTestWithWebState {
  protected:
-  WindowErrorJavaScriptFeatureTest()
+  ScriptErrorMessageHandlerJavaScriptFeatureTest()
       : WebTestWithWebState(),
         feature_(base::BindRepeating(
-            ^(WindowErrorJavaScriptFeature::ErrorDetails error_details) {
+            ^(ScriptErrorMessageHandlerJavaScriptFeature::ErrorDetails
+                  error_details) {
               error_details_ = error_details;
             })) {}
 
   void SetUp() override {
     WebTestWithWebState::SetUp();
     OverrideJavaScriptFeatures(
-        {web::java_script_features::GetMessageJavaScriptFeature(), &feature_});
+        {ErrorEventListenerJavaScriptFeature::GetInstance(),
+         web::java_script_features::GetMessageJavaScriptFeature(), &feature_});
   }
 
-  std::optional<WindowErrorJavaScriptFeature::ErrorDetails> error_details() {
+  std::optional<ScriptErrorMessageHandlerJavaScriptFeature::ErrorDetails>
+  error_details() {
     return error_details_;
   }
 
  private:
-  WindowErrorJavaScriptFeature feature_;
-  std::optional<WindowErrorJavaScriptFeature::ErrorDetails> error_details_;
+  ScriptErrorMessageHandlerJavaScriptFeature feature_;
+  std::optional<ScriptErrorMessageHandlerJavaScriptFeature::ErrorDetails>
+      error_details_;
 };
 
 // Tests that error details are received for a script error occurring in the
 // head of the main frame.
-TEST_F(WindowErrorJavaScriptFeatureTest, ReceiveErrorFromMainFramePageHead) {
+TEST_F(ScriptErrorMessageHandlerJavaScriptFeatureTest,
+       ReceiveErrorFromMainFramePageHead) {
   ASSERT_FALSE(error_details());
 
   NSString* html = @"<html><head>"
@@ -65,7 +72,8 @@ TEST_F(WindowErrorJavaScriptFeatureTest, ReceiveErrorFromMainFramePageHead) {
 
 // Tests that error details are received for a script error occurring in the
 // body of the main frame.
-TEST_F(WindowErrorJavaScriptFeatureTest, ReceiveErrorFromMainFramePageBody) {
+TEST_F(ScriptErrorMessageHandlerJavaScriptFeatureTest,
+       ReceiveErrorFromMainFramePageBody) {
   ASSERT_FALSE(error_details());
 
   NSString* html = @"<html><body>"
@@ -86,7 +94,8 @@ TEST_F(WindowErrorJavaScriptFeatureTest, ReceiveErrorFromMainFramePageBody) {
 
 // Tests that error details are received for a script error occurring in the
 // head of an iframe.
-TEST_F(WindowErrorJavaScriptFeatureTest, ReceiveErrorFromIframePageHead) {
+TEST_F(ScriptErrorMessageHandlerJavaScriptFeatureTest,
+       ReceiveErrorFromIframePageHead) {
   ASSERT_FALSE(error_details());
 
   NSString* html = @"<html><body>"
@@ -108,7 +117,8 @@ TEST_F(WindowErrorJavaScriptFeatureTest, ReceiveErrorFromIframePageHead) {
 
 // Tests that error details are received for a script error occurring in the
 // body of an iframe.
-TEST_F(WindowErrorJavaScriptFeatureTest, ReceiveErrorFromIframePageBody) {
+TEST_F(ScriptErrorMessageHandlerJavaScriptFeatureTest,
+       ReceiveErrorFromIframePageBody) {
   ASSERT_FALSE(error_details());
   NSString* html = @"<html><body>"
                     "<iframe "
@@ -130,7 +140,8 @@ TEST_F(WindowErrorJavaScriptFeatureTest, ReceiveErrorFromIframePageBody) {
 // Ensures that error details are still retreived after a document is recreated.
 // (Since event listeners are removed and need to be reinjected after a set of
 // calls to document.open/write/close.)
-TEST_F(WindowErrorJavaScriptFeatureTest, ReceiveErrorAfterDocumentRecreated) {
+TEST_F(ScriptErrorMessageHandlerJavaScriptFeatureTest,
+       ReceiveErrorAfterDocumentRecreated) {
   ASSERT_FALSE(error_details());
   LoadHtml(@"<html></html>");
 

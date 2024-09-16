@@ -2,20 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_WEB_JS_FEATURES_WINDOW_ERROR_WINDOW_ERROR_JAVA_SCRIPT_FEATURE_H_
-#define IOS_WEB_JS_FEATURES_WINDOW_ERROR_WINDOW_ERROR_JAVA_SCRIPT_FEATURE_H_
+#ifndef IOS_WEB_JS_FEATURES_WINDOW_ERROR_SCRIPT_ERROR_MESSAGE_HANDLER_JAVA_SCRIPT_FEATURE_H_
+#define IOS_WEB_JS_FEATURES_WINDOW_ERROR_SCRIPT_ERROR_MESSAGE_HANDLER_JAVA_SCRIPT_FEATURE_H_
 
-#include <optional>
+#import <optional>
 
-#include "base/functional/callback.h"
-#include "ios/web/public/js_messaging/java_script_feature.h"
-#include "url/gurl.h"
+#import "base/functional/callback.h"
+#import "ios/web/public/js_messaging/java_script_feature.h"
+#import "url/gurl.h"
 
 namespace web {
 
-// A feature which listens for JavaScript errors in all frames and executes a
-// given callback with details about each received error.
-class WindowErrorJavaScriptFeature : public JavaScriptFeature {
+// A feature which listens for `WindowErrorResultHandler` script messages and
+// executes the given callback with details about each received error.
+class ScriptErrorMessageHandlerJavaScriptFeature : public JavaScriptFeature {
  public:
   // Wraps information about an error.
   struct ErrorDetails {
@@ -42,13 +42,14 @@ class WindowErrorJavaScriptFeature : public JavaScriptFeature {
     bool is_main_frame;
   };
 
-  WindowErrorJavaScriptFeature(
+  ScriptErrorMessageHandlerJavaScriptFeature(
       base::RepeatingCallback<void(ErrorDetails)> callback);
-  ~WindowErrorJavaScriptFeature() override;
+  ~ScriptErrorMessageHandlerJavaScriptFeature() override;
 
-  WindowErrorJavaScriptFeature(const WindowErrorJavaScriptFeature&) = delete;
-  WindowErrorJavaScriptFeature& operator=(const WindowErrorJavaScriptFeature&) =
-      delete;
+  ScriptErrorMessageHandlerJavaScriptFeature(
+      const ScriptErrorMessageHandlerJavaScriptFeature&) = delete;
+  ScriptErrorMessageHandlerJavaScriptFeature& operator=(
+      const ScriptErrorMessageHandlerJavaScriptFeature&) = delete;
 
  private:
   // JavaScriptFeature:
@@ -61,4 +62,4 @@ class WindowErrorJavaScriptFeature : public JavaScriptFeature {
 
 }  // namespace web
 
-#endif  // IOS_WEB_JS_FEATURES_WINDOW_ERROR_WINDOW_ERROR_JAVA_SCRIPT_FEATURE_H_
+#endif  // IOS_WEB_JS_FEATURES_WINDOW_ERROR_SCRIPT_ERROR_MESSAGE_HANDLER_JAVA_SCRIPT_FEATURE_H_
