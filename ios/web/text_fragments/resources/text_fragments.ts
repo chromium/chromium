@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import * as utils from '//third_party/text-fragments-polyfill/src/src/text-fragment-utils.js';
+import {catchAndReportErrors} from '//ios/web/public/js_messaging/resources/error_reporting.js';
 import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.js';
+import * as utils from '//third_party/text-fragments-polyfill/src/src/text-fragment-utils.js';
 
 /**
  * @fileoverview Interface used for Chrome/WebView to call into the
@@ -34,35 +35,39 @@ let cachedFragments: TextFragment[];
 */
 function handleTextFragments(fragments:TextFragment[], scroll: boolean,
           backgroundColor: string, foregroundColor: string): void {
-  // If `marks` already exists, it's because we've already highlighted
-  // fragments on this page. This might happen if the user got here by
-  // navigating back. Stop now to avoid creating nested <mark> elements.
-  if (marks?.length)
-    return;
+  catchAndReportErrors(function() {
+    // If `marks` already exists, it's because we've already highlighted
+    // fragments on this page. This might happen if the user got here by
+    // navigating back. Stop now to avoid creating nested <mark> elements.
+    if (marks?.length)
+      return;
 
-  let markDefaultStyle: MarkStyle | null = null;
+    let markDefaultStyle: MarkStyle|null = null;
 
-  if (backgroundColor && foregroundColor) {
-    markDefaultStyle =
-      {backgroundColor: `#${backgroundColor}`,
-      color: `#${foregroundColor}`};
-  }
+    if (backgroundColor && foregroundColor) {
+      markDefaultStyle = {
+        backgroundColor: `#${backgroundColor}`,
+        color: `#${foregroundColor}`
+      };
+    }
 
-  if (document.readyState === "complete" ||
-      document.readyState === "interactive") {
-    doHandleTextFragments(fragments, scroll, markDefaultStyle);
-    return;
-  }
+    if (document.readyState === 'complete' ||
+        document.readyState === 'interactive') {
+      doHandleTextFragments(fragments, scroll, markDefaultStyle);
+      return;
+    }
 
-  document.addEventListener('DOMContentLoaded', () => {
-    doHandleTextFragments(fragments, scroll, markDefaultStyle);
+    document.addEventListener('DOMContentLoaded', () => {
+      doHandleTextFragments(fragments, scroll, markDefaultStyle);
+    });
   });
 };
 
 function removeHighlights(new_url: string): void {
+  catchAndReportErrors(function() {
     if (marks) {
-        utils.removeMarks(marks);
-        marks = null;
+      utils.removeMarks(marks);
+      marks = null;
     }
     document.removeEventListener("click", handleClick,
                                  /*useCapture=*/true);
@@ -70,7 +75,7 @@ function removeHighlights(new_url: string): void {
       try {
         history.replaceState(
             history.state,  // Don't overwrite any existing state object
-            "",  // Title param is required but unused
+            '',             // Title param is required but unused
             new_url);
       } catch (err) {
         // history.replaceState throws an exception if the origin of the new URL
@@ -79,7 +84,8 @@ function removeHighlights(new_url: string): void {
         // side-effects.
       }
     }
-  };
+  });
+};
 
 /**
  * Does the actual work for handleTextFragments.
