@@ -2798,7 +2798,7 @@
           Please connect to a network and reload the page to view screen saver.
         </message>
         <message name="IDS_PERSONALIZATION_APP_MANAGED_FEATURE" desc="Message to show in the personalization hub for a feature which is enterprise managed by administrators.">
-          This feature is managed by your administrators
+          This feature is managed by your administrator
         </message>
         <message name="IDS_PERSONALIZATION_APP_MANAGED_SETTING" desc="Message to show in the personalization hub for a setting which is enterprise managed by administrators.">
           This setting is managed by your administrators

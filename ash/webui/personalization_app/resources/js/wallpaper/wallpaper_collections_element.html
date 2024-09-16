@@ -176,6 +176,10 @@
     transform: translate(-50%, 0);
     z-index: 1;
   }
+
+  .unavailable-tag {
+    background-color: var(--cros-sys-disabled_opaque);
+  }
 </style>
 <template is="dom-if" if="[[hasError_]]">
   <wallpaper-error></wallpaper-error>
@@ -202,13 +206,14 @@
             </wallpaper-grid-item>
           </template>
           <template is="dom-if" if="[[isSeaPenPromptingTile_(item)]]" restamp>
-            <div id="freeformTileTag" class="tile-tag">
-              $i18n{seaPenExperimentLabel}
+            <div id="freeformTileTag"
+                class$="[[getSeaPenTileTagClass_(item)]]">
+              [[getSeaPenTileTagLabel_(item)]]
             </div>
             <wallpaper-grid-item
                 data-sea-pen-freeform
                 data-is-promoted-tile
-                aria-description="$i18n{seaPenExperimentLabel}"
+                aria-description$="[[getSeaPenTileAriaDescription_(item)]]"
                 aria-posinset$="[[getAriaIndex_(index)]]"
                 disabled="[[!isSelectableTile_(item)]]"
                 index="[[index]]"
@@ -231,13 +236,14 @@
             </wallpaper-grid-item>
           </template>
           <template is="dom-if" if="[[isSeaPenTemplatesTile_(item)]]" restamp>
-            <div id="templatesTileTag" class="tile-tag">
-              $i18n{seaPenExperimentLabel}
+            <div id="templatesTileTag"
+                class$="[[getSeaPenTileTagClass_(item)]]">
+              [[getSeaPenTileTagLabel_(item)]]
             </div>
             <wallpaper-grid-item
                 data-sea-pen
                 data-is-promoted-tile
-                aria-description="$i18n{seaPenExperimentLabel}"
+                aria-description$="[[getSeaPenTileAriaDescription_(item)]]"
                 aria-posinset$="[[getAriaIndex_(index)]]"
                 disabled="[[!isSelectableTile_(item)]]"
                 index="[[index]]"
