@@ -860,8 +860,7 @@ ci.builder(
 
 ci.builder(
     name = "android-12l-x64-rel-cq",
-    # TODO(crbug.com/364967534): Enable on branch once stable.
-    # branch_selector = branches.selector.ANDROID_BRANCHES,
+    branch_selector = branches.selector.ANDROID_BRANCHES,
     description_html = "Run CQ-specific Chromium test suites on Android 12l " +
                        "tablet-flavor emulator.",
     builder_spec = builder_config.copy_from("ci/android-13-x64-rel"),
@@ -885,8 +884,7 @@ ci.builder(
     ),
     tree_closing = True,
     console_view_entry = consoles.console_view_entry(
-        # TODO(crbug.com/364967534): Change to "on_cq".
-        category = "builder_tester|x64",
+        category = "on_cq|x64",
         short_name = "12L",
     ),
     contact_team_email = "clank-engprod@google.com",
