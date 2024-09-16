@@ -745,6 +745,7 @@ src/webgpu/shader/validation/expression/binary/bitwise_shift.spec.ts
 src/webgpu/shader/validation/expression/binary/comparison.spec.ts
 src/webgpu/shader/validation/expression/binary/div_rem.spec.ts
 src/webgpu/shader/validation/expression/binary/parse.spec.ts
+src/webgpu/shader/validation/expression/binary/short_circuiting_and_or.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/abs.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/acos.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/acosh.spec.ts
