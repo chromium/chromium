@@ -591,7 +591,6 @@ void DownloadItemImpl::ValidateInsecureDownload() {
 void DownloadItemImpl::CopyDownload(AcquireFileCallback callback) {
   DVLOG(20) << __func__ << "() download = " << DebugString(true);
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(IsDangerous());
   DCHECK(AllDataSaved());
 
   if (download_file_) {
