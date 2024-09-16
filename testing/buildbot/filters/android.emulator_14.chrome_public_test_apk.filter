@@ -1,9 +1,6 @@
 # crbug.com/1036556
 -org.chromium.chrome.browser.usage_stats.TabSuspensionTest.testTabAddedFromCustomTab
 
-# crbug.com/350391770
--org.chromium.chrome.browser.app.appmenu.TabbedAppMenuTest.*
-
 # crbug.com/350393662
 -org.chromium.chrome.browser.searchwidget.SearchActivityTest.*
 
