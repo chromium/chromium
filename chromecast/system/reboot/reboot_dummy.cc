@@ -4,10 +4,8 @@
 
 #include "chromecast/public/reboot_shlib.h"
 
-#if !defined(NDEBUG) || defined(DCHECK_ALWAYS_ON)
 #include <stdlib.h>  // abort()
 #define NOTREACHED() abort()
-#endif
 
 namespace chromecast {
 

@@ -12,7 +12,6 @@
 // swap in their implementation it complains about missing symbols.
 #include <stdlib.h>  // abort()
 #define NOTREACHED() abort()
-#endif
 
 namespace chromecast {
 namespace media {
