@@ -51,6 +51,12 @@ export interface FeedbackEventParams {
   isPositive: boolean;
 }
 
+export interface OnboardEventParams {
+  speakerLabelEnableState: SpeakerLabelEnableState;
+  transcriptionAvailable: boolean;
+  transcriptionEnableState: TranscriptionEnableState;
+}
+
 export abstract class EventsSender {
   abstract sendStartSessionEvent(params: StartSessionEventParams): void;
   abstract sendRecordEvent(params: RecordEventParams): void;
@@ -58,4 +64,5 @@ export abstract class EventsSender {
   abstract sendSummarizeEvent(params: SummarizeEventParams): void;
   abstract sendFeedbackTitleSuggestionEvent(params: FeedbackEventParams): void;
   abstract sendFeedbackSummaryEvent(params: FeedbackEventParams): void;
+  abstract sendOnboardEvent(params: OnboardEventParams): void;
 }

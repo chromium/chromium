@@ -5,6 +5,7 @@
 import {
   EventsSender as EventsSenderBase,
   FeedbackEventParams,
+  OnboardEventParams,
   RecordEventParams,
   StartSessionEventParams,
   SuggestTitleEventParams,
@@ -23,4 +24,6 @@ export class EventsSender extends EventsSenderBase {
   override sendFeedbackTitleSuggestionEvent(_: FeedbackEventParams): void {}
 
   override sendFeedbackSummaryEvent(_: FeedbackEventParams): void {}
+
+  override sendOnboardEvent(_: OnboardEventParams): void {}
 }

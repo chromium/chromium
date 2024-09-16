@@ -153,7 +153,19 @@ export class OnboardingDialog extends ReactiveLitElement {
     }
   }
 
+  private sendOnboardEvent(): void {
+    const sodaState = this.platformHandler.sodaState.value.kind;
+    const isAvailable = sodaState !== 'unavailable' && sodaState !== 'error';
+
+    this.platformHandler.eventsSender.sendOnboardEvent({
+      speakerLabelEnableState: settings.value.speakerLabelEnabled,
+      transcriptionAvailable: isAvailable,
+      transcriptionEnableState: settings.value.transcriptionEnabled,
+    });
+  }
+
   private close() {
+    this.sendOnboardEvent();
     this.dispatchEvent(new Event('close'));
   }
 

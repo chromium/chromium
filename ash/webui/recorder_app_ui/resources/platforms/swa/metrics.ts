@@ -6,6 +6,7 @@ import {
   CrOSEvents_RecorderApp_FeedbackSummary,
   // Events
   CrOSEvents_RecorderApp_FeedbackTitleSuggestion,
+  CrOSEvents_RecorderApp_Onboard,
   CrOSEvents_RecorderApp_Record,
   CrOSEvents_RecorderApp_StartSession,
   CrOSEvents_RecorderApp_SuggestTitle,
@@ -26,6 +27,7 @@ import {
 import {
   EventsSender as EventsSenderBase,
   FeedbackEventParams,
+  OnboardEventParams,
   RecordEventParams,
   StartSessionEventParams,
   SuggestTitleEventParams,
@@ -253,6 +255,24 @@ export class EventsSender extends EventsSenderBase {
   override sendFeedbackSummaryEvent({isPositive}: FeedbackEventParams): void {
     const event = new CrOSEvents_RecorderApp_FeedbackSummary()
                     .setFeedback(convertToModelFeedback(isPositive))
+                    .build();
+
+    record(event);
+  }
+
+  override sendOnboardEvent(params: OnboardEventParams): void {
+    const speakerLabel = getSpeakerLabelEnableState(
+      params.transcriptionAvailable,
+      params.speakerLabelEnableState,
+    );
+    const transcription = getTranscriptionEnableState(
+      params.transcriptionAvailable,
+      params.transcriptionEnableState,
+    );
+
+    const event = new CrOSEvents_RecorderApp_Onboard()
+                    .setSpeakerLabelEnableState(speakerLabel)
+                    .setTranscriptionEnableState(transcription)
                     .build();
 
     record(event);
