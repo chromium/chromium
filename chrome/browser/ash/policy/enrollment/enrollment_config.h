@@ -193,12 +193,6 @@ struct EnrollmentConfig {
            is_manual_fallback();
   }
 
-  // Whether attestation-based authentication is forced. The user cannot enroll
-  // manually.
-  bool is_attestation_auth_forced() const {
-    return auth_mechanism == AUTH_MECHANISM_ATTESTATION;
-  }
-
   // Whether this configuration is in attestation mode per server request.
   bool is_mode_attestation_server() const {
     return mode == MODE_ATTESTATION_SERVER_FORCED ||

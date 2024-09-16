@@ -214,12 +214,6 @@ void EnrollmentScreen::SetConfig() {
       effective_config_.is_mode_with_manual_fallback()) {
     effective_config_.mode =
         policy::EnrollmentConfig::GetManualFallbackMode(effective_config_.mode);
-  } else if (current_auth_ == AUTH_ATTESTATION &&
-             !prescribed_config_.is_mode_attestation()) {
-    effective_config_.mode =
-        effective_config_.is_attestation_auth_forced()
-            ? policy::EnrollmentConfig::MODE_ATTESTATION_LOCAL_FORCED
-            : policy::EnrollmentConfig::MODE_ATTESTATION;
   }
   // TODO(crbug.com/40805389): Logging as "WARNING" to make sure it's preserved
   // in the logs.
