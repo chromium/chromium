@@ -203,9 +203,35 @@ views::View* GetWindowCaptionButtonContainer() {
       chromeos::ViewID::VIEW_ID_CAPTION_BUTTON_CONTAINER);
 }
 
-views::Widget* GetAnchorWidget() {
+views::Widget* GetAnchorWidgetForWindowBoundAnchor(
+    const views::BubbleBorder::Arrow& arrow) {
   // Currently the anchor widget is the triggering window widget.
-  return GetTriggeringWindowWidget();
+  auto* anchor_widget = GetTriggeringWindowWidget();
+  if (!anchor_widget) {
+    // No targeted anchor widget found. Skip showing nudge.
+    growth::RecordCampaignsManagerError(
+        growth::CampaignsManagerError::kNudgeAnchorWidgetNotFound);
+    CAMPAIGNS_LOG(ERROR)
+        << "Targeted anchor widget is not found. Skip showing nudge.";
+    return nullptr;
+  }
+
+  // The arrow type will determine the nudge position in the widget, although
+  // we do not draw the arrow. Only the two bottom corners are supported.
+  switch (arrow) {
+    case views::BubbleBorder::Arrow::BOTTOM_LEFT:
+    case views::BubbleBorder::Arrow::LEFT_BOTTOM:
+    case views::BubbleBorder::Arrow::BOTTOM_RIGHT:
+    case views::BubbleBorder::Arrow::RIGHT_BOTTOM:
+      break;
+    default:
+      // Other arrows are not supported. Skip showing nudge.
+      growth::RecordCampaignsManagerError(
+          growth::CampaignsManagerError::kNudgeAnchorPositionNotSupported);
+      CAMPAIGNS_LOG(ERROR) << "Position is not supported. Skip showing nudge.";
+      return nullptr;
+  }
+  return anchor_widget;
 }
 
 bool IsAnchorOnCaptionButtonContainer(
@@ -329,59 +355,44 @@ bool ShowNudgeActionPerformer::ShowNudge(int campaign_id,
     nudge_data.arrow = ConvertArrow(static_cast<Arrow>(arrow_value));
   }
 
+  bool is_nudge_anchor_view_parent = false;
   auto anchor = GetAnchorConfig(nudge_payload);
-  if (anchor &&
-      IsAnchorOnWindowBounds(anchor->GetActiveAppWindowAnchorType())) {
-    if (!ash::features::IsGrowthCampaignsShowNudgeInsideWindowBoundsEnabled()) {
-      // Not showing the nudge that anchors on bounds but the feature is
-      // disabled.
-      return false;
-    }
-
-    auto* anchor_widget = GetAnchorWidget();
-    if (!anchor_widget) {
-      // No targeted anchor widget found. Skip showing nudge.
-      growth::RecordCampaignsManagerError(
-          growth::CampaignsManagerError::kNudgeAnchorWidgetNotFound);
-      CAMPAIGNS_LOG(ERROR)
-          << "Targeted anchor widget is not found. Skip showing nudge.";
-      return false;
-    }
-
-    // The arrow type will determine the nudge position in the widget, although
-    // we do not draw the arrow. Only the two bottom corners are supported.
-    switch (nudge_data.arrow) {
-      case views::BubbleBorder::Arrow::BOTTOM_LEFT:
-      case views::BubbleBorder::Arrow::LEFT_BOTTOM:
-      case views::BubbleBorder::Arrow::BOTTOM_RIGHT:
-      case views::BubbleBorder::Arrow::RIGHT_BOTTOM:
-        break;
-      default:
-        // Other arrows are not supported. Skip showing nudge.
-        growth::RecordCampaignsManagerError(
-            growth::CampaignsManagerError::kNudgeAnchorPositionNotSupported);
-        CAMPAIGNS_LOG(ERROR)
-            << "Position is not supported. Skip showing nudge.";
+  if (anchor) {
+    auto window_anchor_type = anchor->GetActiveAppWindowAnchorType();
+    if (IsAnchorOnWindowBounds(window_anchor_type)) {
+      if (!ash::features::
+              IsGrowthCampaignsShowNudgeInsideWindowBoundsEnabled()) {
+        // Not showing the nudge that anchors on bounds as the feature is
+        // disabled.
         return false;
-    }
+      }
 
-    nudge_data.anchor_widget = anchor_widget;
-  } else {
-    auto anchor_view = GetAnchorView(nudge_payload);
-    if (!anchor_view) {
-      // No targeted anchor view found. Skip showing nudge.
-      growth::RecordCampaignsManagerError(
-          growth::CampaignsManagerError::kNudgeAnchorViewNotFound);
-      CAMPAIGNS_LOG(ERROR)
-          << "Targeted anchor view is not found. Skip showing nudge.";
-      return false;
-    }
+      auto* anchor_widget =
+          GetAnchorWidgetForWindowBoundAnchor(nudge_data.arrow);
+      if (!anchor_widget) {
+        return false;
+      }
+      nudge_data.anchor_widget = anchor_widget;
+    } else {
+      auto anchor_view = GetAnchorView(nudge_payload);
+      if (!anchor_view) {
+        // No targeted anchor view found. Skip showing nudge.
+        growth::RecordCampaignsManagerError(
+            growth::CampaignsManagerError::kNudgeAnchorViewNotFound);
+        CAMPAIGNS_LOG(ERROR)
+            << "Targeted anchor view is not found. Skip showing nudge.";
+        return false;
+      }
+      nudge_data.SetAnchorView(anchor_view.value());
 
-    nudge_data.SetAnchorView(anchor_view.value());
-    if (!ash::features::IsGrowthCampaignsShowNudgeInDefaultParentEnabled() &&
-        anchor_view.value()) {
-      if (anchor && IsAnchorOnCaptionButtonContainer(
-                        anchor->GetActiveAppWindowAnchorType())) {
+      is_nudge_anchor_view_parent =
+          ash::features::IsGrowthCampaignsNudgeParentToAppWindow() &&
+          IsAnchorOnCaptionButtonContainer(window_anchor_type) &&
+          anchor_view.value();
+
+      // Set the nudge as part of the anchor window view hierarchy to keep the
+      // nudge from overlapping other views when the app window is behind.
+      if (is_nudge_anchor_view_parent) {
         nudge_data.set_anchor_view_as_parent = true;
       }
     }
@@ -427,8 +438,11 @@ bool ShowNudgeActionPerformer::ShowNudge(int campaign_id,
   // Shell may not be initialized in test.
   if (ash::Shell::HasInstance()) {
     ash::Shell::Get()->anchored_nudge_manager()->Show(nudge_data);
-
-    if (ash::features::IsGrowthCampaignsCloseNudgeWhenTargetInactivated()) {
+    // If the anchor widget is not the parent, the nudge may overlap with other
+    // view when anchor's visibility changes. Observe the target widget
+    // visibility or activation change and close the nudge to prevent the nudge
+    // from showing on top of the other active view.
+    if (!is_nudge_anchor_view_parent) {
       auto* nudge =
           ash::Shell::Get()->anchored_nudge_manager()->GetNudgeIfShown(
               kGrowthNudgeId);
@@ -588,14 +602,12 @@ void ShowNudgeActionPerformer::MaybeCancelNudge() {
 }
 
 void ShowNudgeActionPerformer::CancelNudge() {
-  if (ash::features::IsGrowthCampaignsCloseNudgeWhenTargetInactivated()) {
-    if (triggering_widget_) {
-      scoped_observation_.Reset();
-      triggering_widget_ = nullptr;
-    }
-    is_nudge_active_ = false;
-    nudge_widget_scoped_observation_.Reset();
+  if (triggering_widget_) {
+    scoped_observation_.Reset();
+    triggering_widget_ = nullptr;
   }
+  is_nudge_active_ = false;
+  nudge_widget_scoped_observation_.Reset();
 
   ash::Shell::Get()->anchored_nudge_manager()->Cancel(kGrowthNudgeId);
 }

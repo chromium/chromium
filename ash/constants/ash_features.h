@@ -456,7 +456,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kFlexFirmwareUpdate);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kGrowthFramework);
 COMPONENT_EXPORT(ASH_CONSTANTS)
-BASE_DECLARE_FEATURE(kGrowthCampaignsCloseNudgeWhenTargetInactivated);
+BASE_DECLARE_FEATURE(kGrowthCampaignsNudgeParentToAppWindow);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kGrowthCampaignsCrOSEvents);
 // Predefined Growth Framework experiments.
@@ -511,8 +511,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kGrowthCampaignsInConsumerSession);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kGrowthCampaignsInDemoMode);
-COMPONENT_EXPORT(ASH_CONSTANTS)
-BASE_DECLARE_FEATURE(kGrowthCampaignsShowNudgeInDefaultParent);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kGrowthCampaignsShowNudgeInsideWindowBounds);
 COMPONENT_EXPORT(ASH_CONSTANTS)
@@ -1249,15 +1247,13 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsFeatureManagementGrowthFrameworkEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsGrowthFrameworkEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
-bool IsGrowthCampaignsCloseNudgeWhenTargetInactivated();
+bool IsGrowthCampaignsNudgeParentToAppWindow();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsGrowthCampaignsCrOSEventsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsGrowthCampaignsExperimentTagTargetingEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsGrowthCampaignsInConsumerSessionEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsGrowthCampaignsInDemoModeEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS)
-bool IsGrowthCampaignsShowNudgeInDefaultParentEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsGrowthCampaignsShowNudgeInsideWindowBoundsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)

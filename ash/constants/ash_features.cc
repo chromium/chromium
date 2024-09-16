@@ -1391,9 +1391,9 @@ BASE_FEATURE(kGrowthFramework,
              "GrowthFramework",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Close the nudge when targeted app window is inactive.
-BASE_FEATURE(kGrowthCampaignsCloseNudgeWhenTargetInactivated,
-             "GrowthCampaignsCloseNudgeWhenTargetInactivated",
+// Enable set app window as nudge parent.
+BASE_FEATURE(kGrowthCampaignsNudgeParentToAppWindow,
+             "GrowthCampaignsNudgeParentToAppWindow",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables CrOS events recording with growth campaigns.
@@ -1497,11 +1497,6 @@ BASE_FEATURE(kGrowthCampaignsInConsumerSession,
 // Enables Demo Mode customizations with growth campaigns.
 BASE_FEATURE(kGrowthCampaignsInDemoMode,
              "GrowthCampaignsInDemoMode",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Parent the nudge widget to the default container.
-BASE_FEATURE(kGrowthCampaignsShowNudgeInDefaultParent,
-             "GrowthCampaignsShowNudgeInDefaultParent",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Show the nudge widget inside the window bounds and parent to the window.
@@ -4052,9 +4047,8 @@ bool IsGrowthFrameworkEnabled() {
   return base::FeatureList::IsEnabled(kGrowthFramework);
 }
 
-bool IsGrowthCampaignsCloseNudgeWhenTargetInactivated() {
-  return base::FeatureList::IsEnabled(
-      kGrowthCampaignsCloseNudgeWhenTargetInactivated);
+bool IsGrowthCampaignsNudgeParentToAppWindow() {
+  return base::FeatureList::IsEnabled(kGrowthCampaignsNudgeParentToAppWindow);
 }
 
 bool IsGrowthCampaignsCrOSEventsEnabled() {
@@ -4073,10 +4067,6 @@ bool IsGrowthCampaignsInConsumerSessionEnabled() {
 bool IsGrowthCampaignsInDemoModeEnabled() {
   return IsGrowthFrameworkEnabled() &&
          base::FeatureList::IsEnabled(kGrowthCampaignsInDemoMode);
-}
-
-bool IsGrowthCampaignsShowNudgeInDefaultParentEnabled() {
-  return base::FeatureList::IsEnabled(kGrowthCampaignsShowNudgeInDefaultParent);
 }
 
 bool IsGrowthCampaignsShowNudgeInsideWindowBoundsEnabled() {
