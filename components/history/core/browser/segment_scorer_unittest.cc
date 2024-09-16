@@ -4,6 +4,7 @@
 
 #include "components/history/core/browser/segment_scorer.h"
 
+#include <limits.h>
 #include <stddef.h>
 
 #include <algorithm>
@@ -12,8 +13,10 @@
 #include <utility>
 #include <vector>
 
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/time/time.h"
+#include "components/history/core/browser/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace history {
@@ -106,14 +109,30 @@ class SegmentScorerTest : public ::testing::Test {
 
 TEST_F(SegmentScorerTest, RankByDefaultScorer) {
   std::vector<std::string> names_by_rank = GetTestDataRankingUsingScorer(
-      MakeTestItems(), base::WrapUnique(new SegmentScorer()));
-
+      MakeTestItems(), base::WrapUnique(new SegmentScorer(
+                           kMvtScoringParamRecencyFactor_Default, INT_MAX)));
   int cur = 0;
   ASSERT_EQ("10 last 10 days", names_by_rank[cur++]);
   ASSERT_EQ("10 last 5 days", names_by_rank[cur++]);
   ASSERT_EQ("10 last 19 days", names_by_rank[cur++]);
   ASSERT_EQ("10 increase last 4 days", names_by_rank[cur++]);
   ASSERT_EQ("10 decrease last 4 days", names_by_rank[cur++]);
+  ASSERT_EQ("10 last 2 days", names_by_rank[cur++]);
+  ASSERT_EQ("10 over 2 days week apart", names_by_rank[cur++]);
+  ASSERT_EQ("10 today", names_by_rank[cur++]);
+  ASSERT_EQ("1 today", names_by_rank[cur++]);
+}
+
+TEST_F(SegmentScorerTest, RankByDecayStaircaseCap10Scorer) {
+  std::vector<std::string> names_by_rank = GetTestDataRankingUsingScorer(
+      MakeTestItems(), base::WrapUnique(new SegmentScorer(
+                           kMvtScoringParamRecencyFactor_DecayStaircase, 10)));
+  int cur = 0;
+  ASSERT_EQ("10 last 10 days", names_by_rank[cur++]);
+  ASSERT_EQ("10 last 5 days", names_by_rank[cur++]);
+  ASSERT_EQ("10 increase last 4 days", names_by_rank[cur++]);
+  ASSERT_EQ("10 decrease last 4 days", names_by_rank[cur++]);
+  ASSERT_EQ("10 last 19 days", names_by_rank[cur++]);
   ASSERT_EQ("10 last 2 days", names_by_rank[cur++]);
   ASSERT_EQ("10 over 2 days week apart", names_by_rank[cur++]);
   ASSERT_EQ("10 today", names_by_rank[cur++]);

@@ -4,11 +4,15 @@
 
 #include "components/history/core/browser/segment_scorer.h"
 
+#include <limits.h>
 #include <math.h>
 
+#include <algorithm>
 #include <utility>
 
+#include "base/features.h"
 #include "base/memory/ptr_util.h"
+#include "components/history/core/browser/features.h"
 
 namespace history {
 
@@ -26,16 +30,46 @@ float SegmentScorer::RecencyFactorDefault::Compute(int days_ago) {
   return 1.0f + (2.0f * (1.0f / (1.0f + days_ago / 7.0f)));
 }
 
+/******** SegmentScorer::RecencyFactorDecayStaircase ********/
+
+SegmentScorer::RecencyFactorDecayStaircase::~RecencyFactorDecayStaircase() =
+    default;
+
+// Computes an exponential decay over the past two weeks. Thereafter, the factor
+// is a staircase function decreasing across 3 ranges.
+float SegmentScorer::RecencyFactorDecayStaircase::Compute(int days_ago) {
+  if (days_ago <= 14) {
+    return ::exp(-days_ago / 15.0f) / 1.5f;
+  }
+  return (days_ago <= 45) ? 0.2f : ((days_ago <= 70) ? 0.1f : 0.05f);
+}
+
 /******** SegmentScorer ********/
 
 // static
 std::unique_ptr<SegmentScorer> SegmentScorer::CreateFromFeatureFlags() {
-  // TODO(crbug.com/365590025): Add feature flags, and use them to configure.
-  return base::WrapUnique(new SegmentScorer());
+  std::string recency_factor_name =
+      base::FeatureParam<std::string>(&history::kMostVisitedTilesNewScoring,
+                                      kMvtScoringParamRecencyFactor,
+                                      kMvtScoringParamRecencyFactor_Default)
+          .Get();
+  int daily_visit_count_cap =
+      base::FeatureParam<int>(&history::kMostVisitedTilesNewScoring,
+                              kMvtScoringParamDailyVisitCountCap, INT_MAX)
+          .Get();
+  return base::WrapUnique(
+      new SegmentScorer(recency_factor_name, daily_visit_count_cap));
 }
 
-SegmentScorer::SegmentScorer() {
-  recency_factor_ = std::make_unique<RecencyFactorDefault>();
+SegmentScorer::SegmentScorer(const std::string& recency_factor_name,
+                             int daily_visit_count_cap) {
+  if (recency_factor_name == kMvtScoringParamRecencyFactor_DecayStaircase) {
+    recency_factor_ = std::make_unique<RecencyFactorDecayStaircase>();
+  } else {
+    CHECK_EQ(recency_factor_name, kMvtScoringParamRecencyFactor_Default);
+    recency_factor_ = std::make_unique<RecencyFactorDefault>();
+  }
+  daily_visit_count_cap_ = daily_visit_count_cap;
 }
 
 SegmentScorer::~SegmentScorer() = default;
@@ -49,7 +83,7 @@ float SegmentScorer::Compute(const std::vector<base::Time>& time_slots,
 
   for (size_t i = 0; i < n; ++i) {
     base::Time time_slot = time_slots[i];
-    int visit_count = visit_counts[i];
+    int visit_count = std::min(visit_counts[i], daily_visit_count_cap_);
     // Score for this day in isolation.
     float day_visits_score = (visit_count <= 0.0f)
                                  ? 0.0f

@@ -1416,6 +1416,9 @@ extern const char kMediaRouterCastAllowAllIPsDescription[];
 extern const char kMojoLinuxChannelSharedMemName[];
 extern const char kMojoLinuxChannelSharedMemDescription[];
 
+extern const char kMostVisitedTilesNewScoringName[];
+extern const char kMostVisitedTilesNewScoringDescription[];
+
 extern const char kMostVisitedTilesReselectName[];
 extern const char kMostVisitedTilesReselectDescription[];
 

@@ -2489,6 +2489,12 @@ const char kMostVisitedTilesReselectDescription[] =
     "When MV tiles is clicked, scans for a tab with a matching URL. "
     "If found, selects the tab and closes the NTP. Else opens into NTP.";
 
+const char kMostVisitedTilesNewScoringName[] =
+    "Most Visited Tile: New scoring function";
+const char kMostVisitedTilesNewScoringDescription[] =
+    "When showing MV tiles, use a new scoring function to compute the score of "
+    "each segment.";
+
 const char kCanvas2DLayersName[] =
     "Enables canvas 2D methods BeginLayer and EndLayer";
 const char kCanvas2DLayersDescription[] =

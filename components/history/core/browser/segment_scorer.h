@@ -27,12 +27,19 @@ class SegmentScorer {
     float Compute(int days_ago) override;
   };
 
+  struct RecencyFactorDecayStaircase : public RecencyFactor {
+    ~RecencyFactorDecayStaircase() override;
+    float Compute(int days_ago) override;
+  };
+
  public:
   static std::unique_ptr<SegmentScorer> CreateFromFeatureFlags();
 
  private:
-  SegmentScorer();
+  SegmentScorer(const std::string& recency_factor_name,
+                int daily_visit_count_cap);
   FRIEND_TEST_ALL_PREFIXES(SegmentScorerTest, RankByDefaultScorer);
+  FRIEND_TEST_ALL_PREFIXES(SegmentScorerTest, RankByDecayStaircaseCap10Scorer);
 
  public:
   ~SegmentScorer();
@@ -46,6 +53,8 @@ class SegmentScorer {
 
  private:
   std::unique_ptr<RecencyFactor> recency_factor_;
+  // Cap for daily visit to prevent domination by single-day outliers.
+  int daily_visit_count_cap_;
 };
 
 }  // namespace history

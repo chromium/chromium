@@ -6135,6 +6135,11 @@
     "expiry_milestone": 99
   },
   {
+    "name": "most-visited-tiles-new-scoring",
+    "owners": [ "ckitagawa@chromium.org", "fredmello@chromium.org", "huangs@chromium.org" ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "mouse-and-trackpad-dropdown-menu",
     "owners": [ "wbjacksonjr@chromium.org" ],
     "expiry_milestone": 124

@@ -1467,6 +1467,17 @@ const FeatureEntry::FeatureVariation kMlUrlSearchBlendingVariations[] = {
      std::size(kMlUrlSearchBlendingMappedAggressiveUrls), nullptr},
 };
 
+const FeatureEntry::FeatureParam
+    kMostVitedTilesNewScoring_DecayStaircaseCap10[] = {
+        {history::kMvtScoringParamRecencyFactor,
+         history::kMvtScoringParamRecencyFactor_DecayStaircase},
+        {history::kMvtScoringParamDailyVisitCountCap, "10"},
+};
+const FeatureEntry::FeatureVariation kMostVisitedTilesNewScoringVariations[] = {
+    {"Decay Staircase, Cap 10", kMostVitedTilesNewScoring_DecayStaircaseCap10,
+     std::size(kMostVitedTilesNewScoring_DecayStaircaseCap10), nullptr},
+};
+
 const FeatureEntry::FeatureVariation kUrlScoringModelVariations[] = {
     {"Small model (desktop)", nullptr, 0, nullptr},
     {"Full model (desktop)", nullptr, 0, "3380045"},
@@ -6302,6 +6313,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDisableInstanceLimitDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kDisableInstanceLimit)},
 #endif  // BUILDFLAG(IS_ANDROID)
+
+    {"most-visited-tiles-new-scoring",
+     flag_descriptions::kMostVisitedTilesNewScoringName,
+     flag_descriptions::kMostVisitedTilesNewScoringDescription, kOsAll,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(history::kMostVisitedTilesNewScoring,
+                                    kMostVisitedTilesNewScoringVariations,
+                                    "MostVisitedTilesNewScoring")},
 
     {"omnibox-local-history-zero-suggest-beyond-ntp",
      flag_descriptions::kOmniboxLocalHistoryZeroSuggestBeyondNTPName,
