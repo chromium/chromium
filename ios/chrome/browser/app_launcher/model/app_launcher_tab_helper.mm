@@ -296,9 +296,10 @@ AppLauncherTabHelper::GetPolicyDecisionAndOptionalAppLaunchRequest(
   }
 
   // Do not allow allow navigation if URL is blocked by enterprise policy.
+  ProfileIOS* profile =
+      ProfileIOS::FromBrowserState(web_state()->GetBrowserState());
   PolicyBlocklistService* blocklistService =
-      PolicyBlocklistServiceFactory::GetForBrowserState(
-          web_state()->GetBrowserState());
+      PolicyBlocklistServiceFactory::GetForProfile(profile);
   if (blocklistService->GetURLBlocklistState(request_url) ==
       policy::URLBlocklist::URLBlocklistState::URL_IN_BLOCKLIST) {
     return {PolicyDecision::CancelAndDisplayError(

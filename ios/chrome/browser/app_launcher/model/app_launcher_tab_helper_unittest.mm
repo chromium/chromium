@@ -994,7 +994,7 @@ class BlockedUrlPolicyAppLauncherTabHelperTest
         policy_map);
 
     policy_blocklist_service_ = static_cast<PolicyBlocklistService*>(
-        PolicyBlocklistServiceFactory::GetForBrowserState(
+        PolicyBlocklistServiceFactory::GetForProfile(
             enterprise_policy_helper_->GetBrowserState()));
   }
 
