@@ -20,9 +20,6 @@ namespace {}  // namespace
 
 @interface LockdownModeMediator () <BooleanObserver>
 
-// User pref service.
-@property(nonatomic, assign, readonly) PrefService* userPrefService;
-
 // Preference value for the Lockdown Mode feature.
 @property(nonatomic, strong, readonly)
     PrefBackedBoolean* lockdownModePreference;
@@ -31,13 +28,11 @@ namespace {}  // namespace
 
 @implementation LockdownModeMediator
 
-- (instancetype)initWithUserPrefService:(PrefService*)userPrefService {
+- (instancetype)init {
   self = [super init];
   if (self) {
-    DCHECK(userPrefService);
-    _userPrefService = userPrefService;
     _lockdownModePreference = [[PrefBackedBoolean alloc]
-        initWithPrefService:userPrefService
+        initWithPrefService:GetApplicationContext()->GetLocalState()
                    prefName:prefs::kBrowserLockdownModeEnabled];
     _lockdownModePreference.observer = self;
   }

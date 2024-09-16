@@ -264,9 +264,8 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
       }
 
       if (!self.beingDestroyed) {
-        web::BrowserState* browser_state = self.webStateImpl->GetBrowserState();
         bool browser_lockdown_mode_enabled =
-            web::GetWebClient()->IsBrowserLockdownModeEnabled(browser_state);
+            web::GetWebClient()->IsBrowserLockdownModeEnabled();
         if ((policy == WKNavigationActionPolicyAllow) &&
             isMainFrameNavigationAction) {
           UMA_HISTOGRAM_BOOLEAN(

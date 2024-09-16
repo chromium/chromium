@@ -28,6 +28,7 @@
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/web/model/chrome_web_client.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/test/scoped_testing_web_client.h"
 #import "ios/web/public/test/task_observer_util.h"
@@ -112,6 +113,7 @@ class ChromeAutofillClientIOSTest : public PlatformTest {
   web::WebState* web_state() { return web_state_.get(); }
 
  private:
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   test::AutofillUnitTestEnvironment autofill_environment_{
       {.disable_server_communication = true}};
   web::WebTaskEnvironment task_environment_;

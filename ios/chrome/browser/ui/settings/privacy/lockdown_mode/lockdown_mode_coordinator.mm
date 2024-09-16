@@ -38,8 +38,7 @@
   self.viewController =
       [[LockdownModeViewController alloc] initWithStyle:ChromeTableViewStyle()];
   self.viewController.presentationDelegate = self;
-  self.mediator = [[LockdownModeMediator alloc]
-      initWithUserPrefService:self.browser->GetBrowserState()->GetPrefs()];
+  self.mediator = [[LockdownModeMediator alloc] init];
   self.mediator.consumer = self.viewController;
   self.viewController.modelDelegate = self.mediator;
   DCHECK(self.baseNavigationController);

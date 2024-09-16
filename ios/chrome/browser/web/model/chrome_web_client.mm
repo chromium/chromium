@@ -529,11 +529,9 @@ bool ChromeWebClient::IsPointingToSameDocument(const GURL& url1,
   return url_to_compare1 == url_to_compare2;
 }
 
-bool ChromeWebClient::IsBrowserLockdownModeEnabled(
-    web::BrowserState* browser_state) {
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(browser_state);
-  PrefService* prefs = profile->GetPrefs();
-  return prefs->GetBoolean(prefs::kBrowserLockdownModeEnabled);
+bool ChromeWebClient::IsBrowserLockdownModeEnabled() {
+  return GetApplicationContext()->GetLocalState()->GetBoolean(
+      prefs::kBrowserLockdownModeEnabled);
 }
 
 void ChromeWebClient::SetOSLockdownModeEnabled(bool enabled) {

@@ -31,6 +31,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/web/model/chrome_web_client.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/common/user_agent.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
@@ -449,6 +450,7 @@ class SessionRestorationServiceImplTest : public PlatformTest {
   }
 
  private:
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   FileModificationTracker file_tracker_;
 
   std::unique_ptr<web::ScopedTestingWebClient> scoped_web_client_;
