@@ -2445,25 +2445,26 @@ StyleColor ResolveColorValue(const CSSValue& value,
         ResolveColorValue(color_mix_value->Color1(), context);
     const StyleColor style_color2 =
         ResolveColorValue(color_mix_value->Color2(), context);
-    // If neither color is "currentcolor" (or a color-mix function containing a
-    // currentcolor) then color-mix functions can be resolved right now like
-    // other colors. Otherwise we need to store an unresolved value on
-    // StyleColor.
-    if (style_color1.IsAbsoluteColor() && style_color2.IsAbsoluteColor()) {
-      const Color c1 = style_color1.Resolve(Color(), context.used_color_scheme);
-      const Color c2 = style_color2.Resolve(Color(), context.used_color_scheme);
-      return StyleColor(color_mix_value->Mix(c1, c2, context.length_resolver));
-    }
     double alpha_multiplier = 0.0;
     double mix_amount = 0.0;
     // TODO(crbug.com/40238188): Not sure what is appropriate to return when
     // both mix amounts are zero.
     color_mix_value->NormalizePercentages(mix_amount, alpha_multiplier,
                                           context.length_resolver);
-    return StyleColor(MakeGarbageCollected<StyleColor::UnresolvedColorMix>(
-        color_mix_value->ColorInterpolationSpace(),
-        color_mix_value->HueInterpolationMethod(), style_color1, style_color2,
-        mix_amount, alpha_multiplier));
+    const StyleColor::UnresolvedColorMix* unresolved_color_mix =
+        MakeGarbageCollected<StyleColor::UnresolvedColorMix>(
+            color_mix_value->ColorInterpolationSpace(),
+            color_mix_value->HueInterpolationMethod(), style_color1,
+            style_color2, mix_amount, alpha_multiplier);
+    // https://drafts.csswg.org/css-color-5/#resolving-mix
+    // If both parameters are resolvable at computed-value time, the color-mix
+    // function should be resolved at computed-value time as well.
+    // Otherwise we need to store an unresolved value on StyleColor.
+    if (style_color1.IsAbsoluteColor() && style_color2.IsAbsoluteColor()) {
+      return StyleColor(unresolved_color_mix->Resolve(Color()));
+    } else {
+      return StyleColor(unresolved_color_mix);
+    }
   }
 
   if (auto* relative_color_value =
@@ -2475,6 +2476,10 @@ StyleColor ResolveColorValue(const CSSValue& value,
             origin_color, relative_color_value->ColorInterpolationSpace(),
             relative_color_value->Channel0(), relative_color_value->Channel1(),
             relative_color_value->Channel2(), relative_color_value->Alpha());
+    // https://drafts.csswg.org/css-color-5/#resolving-rcs
+    // If the origin color is resolvable at computed-value time, the relative
+    // color function should be resolved at computed-value time as well.
+    // Otherwise we need to store an unresolved value on StyleColor.
     if (origin_color.IsAbsoluteColor()) {
       return StyleColor(unresolved_relative_color->Resolve(Color()));
     } else {

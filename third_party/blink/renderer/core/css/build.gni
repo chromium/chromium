@@ -888,6 +888,7 @@ blink_core_tests_css = [
   "resolver/selector_filter_parent_scope_test.cc",
   "resolver/style_adjuster_test.cc",
   "resolver/style_builder_test.cc",
+  "resolver/style_builder_converter_test.cc",
   "resolver/style_cascade_test.cc",
   "resolver/style_resolver_test.cc",
   "rule_feature_set_test.cc",

@@ -504,12 +504,18 @@ CORE_EXPORT std::ostream& operator<<(std::ostream& stream,
   if (color.IsCurrentColor()) {
     return stream << "currentcolor";
   } else if (color.IsUnresolvedColorFunction()) {
-    return stream << "<unresolved color function>";
+    return stream << color.GetUnresolvedColorFunction();
   } else if (color.HasColorKeyword() && !color.IsNumeric()) {
     return stream << getValueName(color.GetColorKeyword());
   } else {
     return stream << color.GetColor();
   }
+}
+
+CORE_EXPORT std::ostream& operator<<(
+    std::ostream& stream,
+    const StyleColor::UnresolvedColorFunction& unresolved_color_function) {
+  return stream << unresolved_color_function.ToCSSValue()->CssText();
 }
 
 }  // namespace blink
