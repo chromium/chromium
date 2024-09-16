@@ -134,10 +134,11 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
       mv2_disabled_dialog_controller_ =
           std::make_unique<extensions::Mv2DisabledDialogController>(browser);
     }
+  }
 
-    if (base::FeatureList::IsEnabled(toast_features::kToastFramework)) {
-      toast_service_ = std::make_unique<ToastService>(browser);
-    }
+  if ((browser->is_type_normal() || browser->is_type_app()) &&
+      base::FeatureList::IsEnabled(toast_features::kToastFramework)) {
+    toast_service_ = std::make_unique<ToastService>(browser);
   }
 }
 
