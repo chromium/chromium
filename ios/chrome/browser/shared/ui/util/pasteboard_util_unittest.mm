@@ -50,17 +50,15 @@ TEST_F(PasteboardUtilTest, StoreInPasteboardWorks) {
       [test_ns_url isEqual:[UIPasteboard.generalPasteboard
                                valuesForPasteboardType:UTTypeURL.identifier
                                              inItemSet:firstIndex][0]]);
-  EXPECT_TRUE(
-      [url_as_data isEqualToData:[UIPasteboard.generalPasteboard
-                                     dataForPasteboardType:plainTextType
-                                                 inItemSet:firstIndex][0]]);
+  EXPECT_NSEQ(url_as_data, [UIPasteboard.generalPasteboard
+                               dataForPasteboardType:plainTextType
+                                           inItemSet:firstIndex][0]);
 
   // The additional text is stored as the second item.
   NSIndexSet* secondIndex = [NSIndexSet indexSetWithIndex:1];
-  EXPECT_TRUE(
-      [text_as_data isEqualToData:[UIPasteboard.generalPasteboard
-                                      dataForPasteboardType:plainTextType
-                                                  inItemSet:secondIndex][0]]);
+  EXPECT_NSEQ(text_as_data, [UIPasteboard.generalPasteboard
+                                dataForPasteboardType:plainTextType
+                                            inItemSet:secondIndex][0]);
   EXPECT_NSEQ(test_text, [UIPasteboard.generalPasteboard
                              valuesForPasteboardType:UTTypeText.identifier
                                            inItemSet:secondIndex][0]);
