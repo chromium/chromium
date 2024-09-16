@@ -37,11 +37,6 @@ VIZ_COMMON_EXPORT bool GetScaledRegion(const gfx::Rect& rect,
 VIZ_COMMON_EXPORT bool GetScaledRRectF(const gfx::Rect& space,
                                        const gfx::RRectF& rect,
                                        gfx::RRectF* scaled_rect);
-// This takes a gfx::Rect and a clip region quad in the same space,
-// and returns the proportional uv's in the space 0->1.
-VIZ_COMMON_EXPORT bool GetScaledUVs(const gfx::Rect& rect,
-                                    const gfx::QuadF* clip,
-                                    float uvs[8]);
 
 // Returns File Descriptor (FD) stats for current process.
 // Rendering resources can consume FDs. This this function can be used to

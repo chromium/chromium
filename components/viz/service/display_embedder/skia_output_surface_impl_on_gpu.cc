@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/viz/service/display_embedder/skia_output_surface_impl_on_gpu.h"
 
 #include <memory>
@@ -16,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
@@ -2698,8 +2694,7 @@ void SkiaOutputSurfaceImplOnGpu::CreateSolidColorSharedImage(
   if (solid_color_image_format_ == SinglePlaneFormat::kBGRA_8888) {
     SkSwapRB(&premul_bytes, &premul_rgba_bytes, 1);
   }
-  auto pixel_span = base::make_span(
-      reinterpret_cast<const uint8_t*>(&premul_bytes), sizeof(uint32_t));
+  auto pixel_span = base::byte_span_from_ref(premul_bytes);
 
   // TODO(crbug.com/40237688) Some work is needed to properly support F16
   // format.
