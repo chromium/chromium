@@ -841,35 +841,6 @@ TEST_F(Canvas2DLayerBridgeTest,
   EXPECT_FALSE(release_callback2);
 }
 
-class CustomFakeCanvasResourceHost : public FakeCanvasResourceHost {
- public:
-  explicit CustomFakeCanvasResourceHost(const gfx::Size& size)
-      : FakeCanvasResourceHost(size) {}
-  void InitializeForRecording(cc::PaintCanvas* canvas) const override {
-    // Restore the canvas stack to hold a simple matrix transform.
-    canvas->save();
-    canvas->translate(5, 0);
-  }
-};
-
-TEST_F(Canvas2DLayerBridgeTest, WritePixelsRestoresClipStack) {
-  gfx::Size size(300, 300);
-  auto host = std::make_unique<CustomFakeCanvasResourceHost>(size);
-  std::unique_ptr<Canvas2DLayerBridge> bridge =
-      MakeBridge(size, RasterModeHint::kPreferGPU, kOpaque, std::move(host));
-  cc::PaintFlags flags;
-
-  // MakeBridge() results in a call to restore the matrix. So we already have 1.
-  EXPECT_EQ(Canvas().getLocalToDevice().rc(0, 3), 5);
-  // Drawline so WritePixels has something to flush
-  Canvas().drawLine(0, 0, 2, 2, flags);
-
-  // WritePixels flushes recording. Post flush, a new drawing canvas is created
-  // that should have the matrix restored onto it.
-  bridge->WritePixels(SkImageInfo::MakeN32Premul(10, 10), nullptr, 10, 0, 0);
-  EXPECT_EQ(Canvas().getLocalToDevice().rc(0, 3), 5);
-}
-
 TEST_F(Canvas2DLayerBridgeTest, DisplayedCanvasIsRateLimited) {
   std::unique_ptr<Canvas2DLayerBridge> bridge =
       MakeBridge(gfx::Size(300, 150), RasterModeHint::kPreferGPU, kNonOpaque);

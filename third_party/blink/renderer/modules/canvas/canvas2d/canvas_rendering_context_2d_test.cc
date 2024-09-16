@@ -2109,6 +2109,25 @@ TEST_P(CanvasRenderingContext2DTest, FlushRestoresClipStack) {
   EXPECT_EQ(Canvas().getLocalToDevice().rc(0, 3), 5);
 }
 
+TEST_P(CanvasRenderingContext2DTest, PutImageDataRestoresClipStack) {
+  CreateContext(kNonOpaque);
+
+  // Ensure that the ResourceProvider and canvas are created.
+  CanvasElement().GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferCPU);
+
+  // Set a transform.
+  Context2D()->translate(5, 0);
+  EXPECT_EQ(Canvas().getLocalToDevice().rc(0, 3), 5);
+
+  // Invoke putImageData(). This forces a flush, after which the transform
+  // should be restored.
+  NonThrowableExceptionState exception_state;
+  Context2D()->fillRect(3, 3, 1, 1);
+  Context2D()->putImageData(full_image_data_.Get(), 0, 0, exception_state);
+
+  EXPECT_EQ(Canvas().getLocalToDevice().rc(0, 3), 5);
+}
+
 TEST_P(CanvasRenderingContext2DTestAccelerated,
        DISABLED_DisableAcceleration_UpdateGPUMemoryUsage) {
   CreateContext(kNonOpaque);
