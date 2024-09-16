@@ -16,11 +16,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/types/strong_alias.h"
+#include "chromeos/ash/components/dbus/chaps/chaps_client.h"
 #include "chromeos/crosapi/mojom/chaps_service.mojom.h"
-
-namespace crosapi::mojom {
-class ChapsService;
-}
 
 namespace kcer {
 
@@ -141,12 +138,7 @@ class COMPONENT_EXPORT(KCER) SessionChapsClient {
 class COMPONENT_EXPORT(KCER) SessionChapsClientImpl
     : public SessionChapsClient {
  public:
-  // Returns the currently valid ChapsService. Might also return a nullptr if
-  // none is available.
-  using ChapsServiceGetter =
-      base::RepeatingCallback<crosapi::mojom::ChapsService*()>;
-
-  explicit SessionChapsClientImpl(ChapsServiceGetter getter);
+  explicit SessionChapsClientImpl();
   ~SessionChapsClientImpl() override;
 
   // Implements SessionChapsClient.
@@ -244,7 +236,6 @@ class COMPONENT_EXPORT(KCER) SessionChapsClientImpl
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  ChapsServiceGetter chaps_service_getter_;
   base::flat_map<SlotId, SessionId> sessions_map_;
   base::WeakPtrFactory<SessionChapsClientImpl> weak_factory_{this};
 };

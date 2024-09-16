@@ -10,14 +10,21 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/containers/flat_map.h"
+#include "base/types/expected.h"
 #include "chromeos/ash/components/dbus/chaps/chaps_client.h"
 
 namespace ash {
 
-// A fake version of ChapsClient. Right now always returns an error for all
-// requests. Can be updated to better simulate replies from the real Chaps if
-// needed.
+// A fake version of ChapsClient. Does not simulate the real Chaps very
+// precisely. When implementing new features, do not blindly rely on this class
+// behaving correctly and add required functionality as needed. See comments in
+// the .cc file for known simplifications.
 class COMPONENT_EXPORT(ASH_DBUS_CHAPS) FakeChapsClient : public ChapsClient {
+ public:
+  FakeChapsClient();
+  ~FakeChapsClient() override;
+
   // Implements ChapsClient.
   void GetSlotList(bool token_present, ArrayOfUint64Callback callback) override;
   void GetMechanismList(uint64_t slot_id,
@@ -101,6 +108,43 @@ class COMPONENT_EXPORT(ASH_DBUS_CHAPS) FakeChapsClient : public ChapsClient {
                  uint64_t base_key_handle,
                  const std::vector<uint8_t>& attributes,
                  Uint64Callback callback) override;
+
+  // Methods below are a part of the "for testing" interface of this fake
+  // object.
+
+  // If a value is passed, the `OpenSession` method will start returning it as
+  // an error. If a nullopt is passed, `OpenSession` will be reset to the
+  // default behavior.
+  void SimulateOpenSessionError(std::optional<uint32_t> result_code);
+  // Get the current counter of how many times `OpenSession` was called and
+  // reset it to 0.
+  int GetAndResetOpenSessionCounter();
+
+ private:
+  using ObjectMap = base::flat_map<uint64_t /*object_id*/,
+                                   std::vector<uint8_t> /*object_attrs*/>;
+
+  struct ObjectLocation {
+    uint64_t slot_id;
+    ObjectMap::iterator iterator;
+  };
+
+  base::expected<ObjectLocation, uint32_t /*result_code*/> FindObject(
+      uint64_t session_id,
+      uint64_t object_handle);
+
+  uint64_t next_session_id_ = 1;
+  base::flat_map<uint64_t /*session_id*/, uint64_t /*slot_id*/> open_sessions_;
+
+  uint64_t next_object_id_ = 1;
+
+  base::flat_map<uint64_t /*slot_id*/, ObjectMap> stored_objects_;
+
+  base::flat_map<uint64_t /*session_id*/, bool> find_objects_init_called_;
+  base::flat_map<uint64_t /*session_id*/, bool> sign_init_called_;
+
+  std::optional<uint32_t> simulated_open_session_result_code_;
+  size_t open_session_call_counter_ = 0;
 };
 
 }  // namespace ash

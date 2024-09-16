@@ -41,8 +41,7 @@ inline constexpr uint64_t kSessionFlags =
 SessionChapsClient::SessionChapsClient() = default;
 SessionChapsClient::~SessionChapsClient() = default;
 
-SessionChapsClientImpl::SessionChapsClientImpl(ChapsServiceGetter getter)
-    : chaps_service_getter_(std::move(getter)) {}
+SessionChapsClientImpl::SessionChapsClientImpl() = default;
 SessionChapsClientImpl::~SessionChapsClientImpl() = default;
 
 // static
@@ -67,7 +66,7 @@ void SessionChapsClientImpl::GetMechanismList(
     GetMechanismListCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  crosapi::mojom::ChapsService* chaps_service = chaps_service_getter_.Run();
+  ash::ChapsClient* chaps_service = ash::ChapsClient::Get();
   if (!chaps_service) {
     return std::move(callback).Run({}, chaps::CKR_DBUS_CLIENT_IS_NULL);
   }
@@ -84,7 +83,7 @@ void SessionChapsClientImpl::CreateObject(
     CreateObjectCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  crosapi::mojom::ChapsService* chaps_service = chaps_service_getter_.Run();
+  ash::ChapsClient* chaps_service = ash::ChapsClient::Get();
   if (!chaps_service) {
     return std::move(callback).Run(ObjectHandle(0),
                                    chaps::CKR_DBUS_CLIENT_IS_NULL);
@@ -134,7 +133,7 @@ void SessionChapsClientImpl::DestroyObject(SlotId slot_id,
                                            DestroyObjectCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  crosapi::mojom::ChapsService* chaps_service = chaps_service_getter_.Run();
+  ash::ChapsClient* chaps_service = ash::ChapsClient::Get();
   if (!chaps_service) {
     return std::move(callback).Run(chaps::CKR_DBUS_CLIENT_IS_NULL);
   }
@@ -183,7 +182,7 @@ void SessionChapsClientImpl::GetAttributeValue(
     GetAttributeValueCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  crosapi::mojom::ChapsService* chaps_service = chaps_service_getter_.Run();
+  ash::ChapsClient* chaps_service = ash::ChapsClient::Get();
   if (!chaps_service) {
     return std::move(callback).Run({}, chaps::CKR_DBUS_CLIENT_IS_NULL);
   }
@@ -235,7 +234,7 @@ void SessionChapsClientImpl::SetAttributeValue(
     SetAttributeValueCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  crosapi::mojom::ChapsService* chaps_service = chaps_service_getter_.Run();
+  ash::ChapsClient* chaps_service = ash::ChapsClient::Get();
   if (!chaps_service) {
     return std::move(callback).Run(chaps::CKR_DBUS_CLIENT_IS_NULL);
   }
@@ -284,7 +283,7 @@ void SessionChapsClientImpl::FindObjects(SlotId slot_id,
                                          FindObjectsCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  crosapi::mojom::ChapsService* chaps_service = chaps_service_getter_.Run();
+  ash::ChapsClient* chaps_service = ash::ChapsClient::Get();
   if (!chaps_service) {
     return std::move(callback).Run({}, chaps::CKR_DBUS_CLIENT_IS_NULL);
   }
@@ -329,7 +328,7 @@ void SessionChapsClientImpl::DidFindObjectsInit(SlotId slot_id,
   SessionId session_id = GetSessionForSlot(slot_id);
   CHECK_NE(session_id.value(), chromeos::PKCS11_INVALID_SESSION_ID);
 
-  crosapi::mojom::ChapsService* chaps_service = chaps_service_getter_.Run();
+  ash::ChapsClient* chaps_service = ash::ChapsClient::Get();
   if (!chaps_service) {
     return std::move(callback).Run({}, chaps::CKR_DBUS_CLIENT_IS_NULL);
   }
@@ -359,7 +358,7 @@ void SessionChapsClientImpl::DidFindObjects(
 
   std::vector<ObjectHandle> typed_list(object_list.begin(), object_list.end());
 
-  crosapi::mojom::ChapsService* chaps_service = chaps_service_getter_.Run();
+  ash::ChapsClient* chaps_service = ash::ChapsClient::Get();
   if (!chaps_service) {
     return std::move(callback).Run({}, chaps::CKR_DBUS_CLIENT_IS_NULL);
   }
@@ -402,7 +401,7 @@ void SessionChapsClientImpl::Sign(SlotId slot_id,
                                   SignCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  crosapi::mojom::ChapsService* chaps_service = chaps_service_getter_.Run();
+  ash::ChapsClient* chaps_service = ash::ChapsClient::Get();
   if (!chaps_service) {
     return std::move(callback).Run({}, chaps::CKR_DBUS_CLIENT_IS_NULL);
   }
@@ -455,7 +454,7 @@ void SessionChapsClientImpl::DidSignInit(SlotId slot_id,
   // bytes.
   constexpr uint64_t kMaxOutLength = 512;
 
-  crosapi::mojom::ChapsService* chaps_service = chaps_service_getter_.Run();
+  ash::ChapsClient* chaps_service = ash::ChapsClient::Get();
   if (!chaps_service) {
     return std::move(callback).Run({}, chaps::CKR_DBUS_CLIENT_IS_NULL);
   }
@@ -491,7 +490,7 @@ void SessionChapsClientImpl::GenerateKeyPair(
     GenerateKeyPairCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  crosapi::mojom::ChapsService* chaps_service = chaps_service_getter_.Run();
+  ash::ChapsClient* chaps_service = ash::ChapsClient::Get();
   if (!chaps_service) {
     return std::move(callback).Run(ObjectHandle(0), ObjectHandle(0),
                                    chaps::CKR_DBUS_CLIENT_IS_NULL);

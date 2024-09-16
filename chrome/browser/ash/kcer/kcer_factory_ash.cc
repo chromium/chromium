@@ -61,22 +61,6 @@ const user_manager::User* GetUserByContext(content::BrowserContext* context) {
   return ash::ProfileHelper::Get()->GetUserByProfile(profile);
 }
 
-// Returns the currently valid ChapsService. Might return a nullptr during early
-// initialization and after shutdown.
-crosapi::mojom::ChapsService* GetChapsService() {
-  crosapi::mojom::ChapsService* chaps_service = nullptr;
-  if (crosapi::CrosapiManager::IsInitialized() &&
-      crosapi::CrosapiManager::Get() &&
-      crosapi::CrosapiManager::Get()->crosapi_ash()) {
-    chaps_service =
-        crosapi::CrosapiManager::Get()->crosapi_ash()->chaps_service_ash();
-  }
-  if (!chaps_service) {
-    LOG(ERROR) << "ChapsService mojo interface is not available";
-  }
-  return chaps_service;
-}
-
 KcerFactoryAsh::UniqueSlotId GetUniqueId(PK11SlotInfo* nss_slot) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   return {PK11_GetModuleID(nss_slot), PK11_GetSlotID(nss_slot)};
@@ -518,8 +502,7 @@ bool KcerFactoryAsh::EnsureHighLevelChapsClientInitialized() {
     return true;
   }
 
-  session_chaps_client_ = std::make_unique<SessionChapsClientImpl>(
-      base::BindRepeating(&GetChapsService));
+  session_chaps_client_ = std::make_unique<SessionChapsClientImpl>();
   high_level_chaps_client_ =
       std::make_unique<HighLevelChapsClientImpl>(session_chaps_client_.get());
 

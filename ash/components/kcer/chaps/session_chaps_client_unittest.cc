@@ -7,7 +7,9 @@
 #include <stdint.h>
 
 #include "base/test/gmock_callback_support.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "chromeos/ash/components/dbus/chaps/fake_chaps_client.h"
 #include "chromeos/constants/pkcs11_definitions.h"
 #include "chromeos/crosapi/mojom/chaps_service.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -25,448 +27,287 @@ using testing::Mock;
 namespace kcer {
 namespace {
 
-class MockChapsService : public crosapi::mojom::ChapsService {
- public:
-  MockChapsService() = default;
-  MockChapsService(const MockChapsService&) = delete;
-  MockChapsService& operator=(const MockChapsService&) = delete;
-  ~MockChapsService() override = default;
-
-  // Implements mojom::ChapsService.
-  MOCK_METHOD(void,
-              GetSlotList,
-              (bool token_present, GetSlotListCallback callback),
-              (override));
-  MOCK_METHOD(void,
-              GetMechanismList,
-              (uint64_t slot_id, GetMechanismListCallback callback),
-              (override));
-  MOCK_METHOD(void,
-              OpenSession,
-              (uint64_t slot_id, uint64_t flags, OpenSessionCallback callback),
-              (override));
-  MOCK_METHOD(void,
-              CloseSession,
-              (uint64_t session_id, CloseSessionCallback callback),
-              (override));
-  MOCK_METHOD(void,
-              CreateObject,
-              (uint64_t session_id,
-               const std::vector<uint8_t>& attributes,
-               CreateObjectCallback callback),
-              (override));
-  MOCK_METHOD(void,
-              DestroyObject,
-              (uint64_t session_id,
-               uint64_t object_handle,
-               DestroyObjectCallback callback),
-              (override));
-  MOCK_METHOD(void,
-              GetAttributeValue,
-              (uint64_t session_id,
-               uint64_t object_handle,
-               const std::vector<uint8_t>& attributes,
-               GetAttributeValueCallback callback),
-              (override));
-  MOCK_METHOD(void,
-              SetAttributeValue,
-              (uint64_t session_id,
-               uint64_t object_handle,
-               const std::vector<uint8_t>& attributes,
-               SetAttributeValueCallback callback),
-              (override));
-  MOCK_METHOD(void,
-              FindObjectsInit,
-              (uint64_t session_id,
-               const std::vector<uint8_t>& attributes,
-               FindObjectsInitCallback callback),
-              (override));
-  MOCK_METHOD(void,
-              FindObjects,
-              (uint64_t session_id,
-               uint64_t max_object_count,
-               FindObjectsCallback callback),
-              (override));
-  MOCK_METHOD(void,
-              FindObjectsFinal,
-              (uint64_t session_id, FindObjectsFinalCallback callback),
-              (override));
-  MOCK_METHOD(void,
-              EncryptInit,
-              (uint64_t session_id,
-               uint64_t mechanism_type,
-               const std::vector<uint8_t>& mechanism_parameter,
-               uint64_t key_handle,
-               EncryptInitCallback callback),
-              (override));
-  MOCK_METHOD(void,
-              Encrypt,
-              (uint64_t session_id,
-               const std::vector<uint8_t>& data,
-               uint64_t max_out_length,
-               EncryptCallback callback),
-              (override));
-  MOCK_METHOD(void,
-              DecryptInit,
-              (uint64_t session_id,
-               uint64_t mechanism_type,
-               const std::vector<uint8_t>& mechanism_parameter,
-               uint64_t key_handle,
-               DecryptInitCallback callback),
-              (override));
-  MOCK_METHOD(void,
-              Decrypt,
-              (uint64_t session_id,
-               const std::vector<uint8_t>& data,
-               uint64_t max_out_length,
-               DecryptCallback callback),
-              (override));
-  MOCK_METHOD(void,
-              SignInit,
-              (uint64_t session_id,
-               uint64_t mechanism_type,
-               const std::vector<uint8_t>& mechanism_parameter,
-               uint64_t key_handle,
-               SignInitCallback callback),
-              (override));
-  MOCK_METHOD(void,
-              Sign,
-              (uint64_t session_id,
-               const std::vector<uint8_t>& data,
-               uint64_t max_out_length,
-               SignCallback callback),
-              (override));
-  MOCK_METHOD(void,
-              GenerateKeyPair,
-              (uint64_t session_id,
-               uint64_t mechanism_type,
-               const std::vector<uint8_t>& mechanism_parameter,
-               const std::vector<uint8_t>& public_attributes,
-               const std::vector<uint8_t>& private_attributes,
-               GenerateKeyPairCallback callback),
-              (override));
-  MOCK_METHOD(void,
-              WrapKey,
-              (uint64_t session_id,
-               uint64_t mechanism_type,
-               const std::vector<uint8_t>& mechanism_parameter,
-               uint64_t wrapping_key_handle,
-               uint64_t key_handle,
-               uint64_t max_out_length,
-               WrapKeyCallback callback),
-              (override));
-  MOCK_METHOD(void,
-              UnwrapKey,
-              (uint64_t session_id,
-               uint64_t mechanism_type,
-               const std::vector<uint8_t>& mechanism_parameter,
-               uint64_t wrapping_key_handle,
-               const std::vector<uint8_t>& wrapped_key,
-               const std::vector<uint8_t>& attributes,
-               UnwrapKeyCallback callback),
-              (override));
-  MOCK_METHOD(void,
-              DeriveKey,
-              (uint64_t session_id,
-               uint64_t mechanism_type,
-               const std::vector<uint8_t>& mechanism_parameter,
-               uint64_t base_key_handle,
-               const std::vector<uint8_t>& attributes,
-               DeriveKeyCallback callback),
-              (override));
-};
-
 class SessionChapsClientTest : public testing::Test {
  public:
   void SetUp() override {
-    ON_CALL(chaps_mojo_, OpenSession)
-        .WillByDefault(RunOnceCallback<2>(kSessionId, chromeos::PKCS11_CKR_OK));
+    if (ash::ChapsClient::Get()) {
+      ash::ChapsClient::Shutdown();
+    }
+    ash::ChapsClient::InitializeFake();
+    fake_chaps_client_ =
+        static_cast<ash::FakeChapsClient*>(ash::ChapsClient::Get());
+  }
+
+  void TearDown() override {
+    fake_chaps_client_ = nullptr;
+    ash::ChapsClient::Shutdown();
   }
 
  protected:
-  crosapi::mojom::ChapsService* GetChapsService() { return &chaps_mojo_; }
+  ObjectHandle CreateObject(SlotId slot_id,
+                            const std::vector<uint8_t>& attributes) {
+    base::test::TestFuture<ObjectHandle, uint32_t> create_waiter;
+    client_.CreateObject(slot_id, attributes,
+                         /*attempts_left=*/1, create_waiter.GetCallback());
+    EXPECT_EQ(create_waiter.Get<uint32_t>(), chromeos::PKCS11_CKR_OK);
+    return create_waiter.Get<ObjectHandle>();
+  }
 
-  const uint64_t kSessionId = 11;
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
-  MockChapsService chaps_mojo_;
-  SessionChapsClientImpl client_{
-      base::BindRepeating(&SessionChapsClientTest::GetChapsService,
-                          base::Unretained(this))};
+  raw_ptr<ash::FakeChapsClient> fake_chaps_client_ = nullptr;
+  SessionChapsClientImpl client_;
+
+  // In the real world the attributes are supposed to be a binary encoding of
+  // the chaps::AttributeList proto message. With the current implementation of
+  // FakeChapsClient just some binary buffer is good enough.
+  const std::vector<uint8_t> kFakeAttrs{1, 1, 1};
+
+  // In the current implementation of FakeChapsClient the query doesn't matter
+  // and it will return all attributes anyway.
+  const std::vector<uint8_t> kFakeQuery{2, 2, 2};
 };
 
-// Test that DestroyObject correctly forwards the arguments to the mojo layer
-// and the result back from it.
-TEST_F(SessionChapsClientTest, DestroyObjectSuccess) {
-  constexpr ObjectHandle kExpectedHandle(22);
-  constexpr uint32_t kExpectedResultCode = 33;
+TEST_F(SessionChapsClientTest, CreateAndFetchObject) {
+  // Test that CreateObject() can create an object.
+  base::test::TestFuture<ObjectHandle, uint32_t> create_waiter;
+  client_.CreateObject(SlotId(1), /*attributes=*/kFakeAttrs,
+                       /*attempts_left=*/1, create_waiter.GetCallback());
+  EXPECT_EQ(create_waiter.Get<uint32_t>(), chromeos::PKCS11_CKR_OK);
+  EXPECT_NE(create_waiter.Get<ObjectHandle>(), ObjectHandle(0));
+  ObjectHandle handle = create_waiter.Get<ObjectHandle>();
 
-  EXPECT_CALL(chaps_mojo_,
-              DestroyObject(kSessionId, kExpectedHandle.value(), _))
-      .WillOnce(RunOnceCallback<2>(kExpectedResultCode));
+  // Test that GetAttributeValue() can retrieve attributes from an object and
+  // that CreateObject() did forward the attributes correctly.
+  base::test::TestFuture<std::vector<uint8_t>, uint32_t> attr_waiter;
+  client_.GetAttributeValue(SlotId(1), handle, kFakeQuery,
+                            /*attempts_left=*/1, attr_waiter.GetCallback());
+  EXPECT_EQ(attr_waiter.Get<uint32_t>(), chromeos::PKCS11_CKR_OK);
+  EXPECT_EQ(attr_waiter.Get<std::vector<uint8_t>>(), kFakeAttrs);
+}
 
-  base::test::TestFuture<uint32_t> waiter;
-  client_.DestroyObject(SlotId(1), kExpectedHandle,
-                        /*attempts_left=*/1, waiter.GetCallback());
-  EXPECT_EQ(waiter.Get<uint32_t>(), kExpectedResultCode);
+TEST_F(SessionChapsClientTest, CreateFindDestroyObject) {
+  // Create a test object.
+  ObjectHandle handle = CreateObject(SlotId(1), kFakeAttrs);
+
+  // Test that FindObjects() can correctly find the created object.
+  base::test::TestFuture<std::vector<ObjectHandle>, uint32_t> find_waiter_1;
+  client_.FindObjects(SlotId(1), kFakeQuery,
+                      /*attempts_left=*/1, find_waiter_1.GetCallback());
+  EXPECT_EQ(find_waiter_1.Get<uint32_t>(), chromeos::PKCS11_CKR_OK);
+  EXPECT_EQ(find_waiter_1.Get<std::vector<ObjectHandle>>(),
+            std::vector<ObjectHandle>{handle});
+
+  // Test DestroyObject() can successfully  delete the object.
+  base::test::TestFuture<uint32_t> destroy_waiter;
+  client_.DestroyObject(SlotId(1), handle,
+                        /*attempts_left=*/1, destroy_waiter.GetCallback());
+  EXPECT_EQ(destroy_waiter.Get<uint32_t>(), chromeos::PKCS11_CKR_OK);
+
+  // Test that FindObjects() doesn't find the deleted object.
+  base::test::TestFuture<std::vector<ObjectHandle>, uint32_t> find_waiter_2;
+  client_.FindObjects(SlotId(1), kFakeQuery,
+                      /*attempts_left=*/1, find_waiter_2.GetCallback());
+  EXPECT_EQ(find_waiter_2.Get<uint32_t>(), chromeos::PKCS11_CKR_OK);
+  EXPECT_EQ(find_waiter_2.Get<std::vector<ObjectHandle>>(),
+            std::vector<ObjectHandle>());
 }
 
 // Test that GetAttributeValue correctly forwards the arguments to the mojo
 // layer and the result back from it.
-TEST_F(SessionChapsClientTest, GetAttributeValueSuccess) {
-  constexpr ObjectHandle kExpectedHandle(22);
-  const std::vector<uint8_t> kExpectedQuery{3, 3, 3};
-  const std::vector<uint8_t> kExpectedResult{4, 4, 4};
-  constexpr uint32_t kExpectedResultCode = 55;
+TEST_F(SessionChapsClientTest, SetGetAttributeValue) {
+  // Create a test object.
+  ObjectHandle handle = CreateObject(SlotId(1), kFakeAttrs);
 
-  EXPECT_CALL(
-      chaps_mojo_,
-      GetAttributeValue(kSessionId, kExpectedHandle.value(), kExpectedQuery, _))
-      .WillOnce(RunOnceCallback<3>(kExpectedResult, kExpectedResultCode));
+  // Create different fake attributes.
+  const std::vector<uint8_t> kFakeAttrs2{9, 9, 9, 9};
+  ASSERT_NE(kFakeAttrs, kFakeAttrs2);
 
+  // Test that SetAttributeValue() can successfully set attributes on an object.
+  base::test::TestFuture<uint32_t> set_waiter;
+  client_.SetAttributeValue(SlotId(1), handle, kFakeAttrs2,
+                            /*attempts_left=*/1, set_waiter.GetCallback());
+  EXPECT_EQ(set_waiter.Get<uint32_t>(), chromeos::PKCS11_CKR_OK);
+
+  // Test that GetAttributeValue() can retrieve attributes from an object and
+  // that SetAttributeValue() successfully overwritten the old attributes.
+  base::test::TestFuture<std::vector<uint8_t>, uint32_t> get_waiter;
+  client_.GetAttributeValue(SlotId(1), handle, kFakeQuery,
+                            /*attempts_left=*/1, get_waiter.GetCallback());
+  EXPECT_EQ(get_waiter.Get<uint32_t>(), chromeos::PKCS11_CKR_OK);
+  EXPECT_EQ(get_waiter.Get<std::vector<uint8_t>>(), kFakeAttrs2);
+}
+
+TEST_F(SessionChapsClientTest, Sign) {
+  constexpr uint64_t kFakeMechanismType = 11;
+  const std::vector<uint8_t> kFakeMechanismParams = {2, 2, 2};
+  const std::vector<uint8_t> kFakeData = {4, 4, 4};
+  // In the current implementation of FakeChapsClient, it just returns the
+  // original data as signature.
+  const std::vector<uint8_t>& kExpectedSignature = kFakeData;
+
+  // In the real world Sign should be called with a handle of a key, but the
+  // current implementation of FakeChapsClient only checks that the object
+  // exists.
+  ObjectHandle handle = CreateObject(SlotId(1), kFakeAttrs);
+
+  // Test that Sign() can be called successfully and that it forwards the data
+  // and the signature back correctly.
   base::test::TestFuture<std::vector<uint8_t>, uint32_t> waiter;
-  client_.GetAttributeValue(SlotId(1), kExpectedHandle, kExpectedQuery,
-                            /*attempts_left=*/1, waiter.GetCallback());
-  EXPECT_EQ(waiter.Get<uint32_t>(), kExpectedResultCode);
-  EXPECT_EQ(waiter.Get<std::vector<uint8_t>>(), kExpectedResult);
-}
-
-// Test that GetAttributeValue correctly forwards the arguments to the mojo
-// layer and the result back from it.
-TEST_F(SessionChapsClientTest, SetAttributeValueSuccess) {
-  constexpr ObjectHandle kExpectedHandle(22);
-  const std::vector<uint8_t> kExpectedAttrs{3, 3, 3};
-  constexpr uint32_t kExpectedResultCode = 44;
-
-  EXPECT_CALL(
-      chaps_mojo_,
-      SetAttributeValue(kSessionId, kExpectedHandle.value(), kExpectedAttrs, _))
-      .WillOnce(RunOnceCallback<3>(kExpectedResultCode));
-
-  base::test::TestFuture<uint32_t> waiter;
-  client_.SetAttributeValue(SlotId(1), kExpectedHandle, kExpectedAttrs,
-                            /*attempts_left=*/1, waiter.GetCallback());
-  EXPECT_EQ(waiter.Get<uint32_t>(), kExpectedResultCode);
-}
-
-// Test that FindObjects correctly forwards the arguments to the mojo layer
-// and the result back from it.
-TEST_F(SessionChapsClientTest, FindObjectsSuccess) {
-  const std::vector<uint8_t> kExpectedAttrs{1, 1, 1};
-  constexpr uint32_t kExpectedResultCode = chromeos::PKCS11_CKR_OK;
-  constexpr uint64_t kExpectedMaxObjectCount = 1 << 20;
-  const std::vector<uint64_t> kExpectedObjectList{4, 4};
-  const std::vector<ObjectHandle> kExpectedTypedList{ObjectHandle(4),
-                                                     ObjectHandle(4)};
-
-  EXPECT_CALL(chaps_mojo_, FindObjectsInit(kSessionId, kExpectedAttrs, _))
-      .WillOnce(RunOnceCallback<2>(kExpectedResultCode));
-  EXPECT_CALL(chaps_mojo_, FindObjects(kSessionId, kExpectedMaxObjectCount, _))
-      .WillOnce(RunOnceCallback<2>(kExpectedObjectList, kExpectedResultCode));
-  EXPECT_CALL(chaps_mojo_, FindObjectsFinal(kSessionId, _))
-      .WillOnce(RunOnceCallback<1>(kExpectedResultCode));
-
-  base::test::TestFuture<std::vector<ObjectHandle>, uint32_t> waiter;
-  client_.FindObjects(SlotId(1), kExpectedAttrs,
-                      /*attempts_left=*/1, waiter.GetCallback());
-
-  EXPECT_EQ(waiter.Get<std::vector<ObjectHandle>>(), kExpectedTypedList);
-  EXPECT_EQ(waiter.Get<uint32_t>(), kExpectedResultCode);
-}
-
-// Test that FindObjects correctly fails when mojom::FindObjectsInit returns an
-// error.
-TEST_F(SessionChapsClientTest, FindObjectsInitFailed) {
-  constexpr uint32_t kExpectedErrorCode = 11;
-
-  EXPECT_CALL(chaps_mojo_, FindObjectsInit)
-      .WillOnce(RunOnceCallback<2>(kExpectedErrorCode));
-  EXPECT_CALL(chaps_mojo_, FindObjects).Times(0);
-  EXPECT_CALL(chaps_mojo_, FindObjectsFinal).Times(0);
-
-  base::test::TestFuture<std::vector<ObjectHandle>, uint32_t> waiter;
-  client_.FindObjects(SlotId(1), /*attributes=*/{},
-                      /*attempts_left=*/1, waiter.GetCallback());
-
-  EXPECT_TRUE(waiter.Get<std::vector<ObjectHandle>>().empty());
-  EXPECT_EQ(waiter.Get<uint32_t>(), kExpectedErrorCode);
-}
-
-// Test that FindObjects correctly fails when  mojom::FindObjects returns an
-// error.
-TEST_F(SessionChapsClientTest, FindObjectsFailed) {
-  constexpr uint32_t kExpectedErrorCode = 11;
-
-  EXPECT_CALL(chaps_mojo_, FindObjectsInit)
-      .WillOnce(RunOnceCallback<2>(chromeos::PKCS11_CKR_OK));
-  EXPECT_CALL(chaps_mojo_, FindObjects)
-      .WillOnce(
-          RunOnceCallback<2>(std::vector<uint64_t>(), kExpectedErrorCode));
-  EXPECT_CALL(chaps_mojo_, FindObjectsFinal).Times(0);
-
-  base::test::TestFuture<std::vector<ObjectHandle>, uint32_t> waiter;
-  client_.FindObjects(SlotId(1), /*attributes=*/{},
-                      /*attempts_left=*/1, waiter.GetCallback());
-
-  EXPECT_TRUE(waiter.Get<std::vector<ObjectHandle>>().empty());
-  EXPECT_EQ(waiter.Get<uint32_t>(), kExpectedErrorCode);
-}
-
-// Test that Sign correctly forwards the arguments to the mojo layer and the
-// result back from it.
-TEST_F(SessionChapsClientTest, SignSuccess) {
-  constexpr uint64_t kExpectedMechanismType = 11;
-  const std::vector<uint8_t> kExpectedMechanismParams = {2, 2, 2};
-  constexpr uint64_t kExpectedKeyHandle = 33;
-  constexpr ObjectHandle kTypedKeyHandle(kExpectedKeyHandle);
-  constexpr uint64_t kExpectedMaxOutLength = 512;
-  const std::vector<uint8_t> kExpectedData = {4, 4, 4};
-  constexpr uint64_t kExpectedActualOutLength = 55;
-  const std::vector<uint8_t> kExpectedSignature = {6, 6};
-  constexpr uint32_t kExpectedResultCode = 77;
-
-  EXPECT_CALL(chaps_mojo_,
-              SignInit(kSessionId, kExpectedMechanismType,
-                       kExpectedMechanismParams, kExpectedKeyHandle, _))
-      .WillOnce(RunOnceCallback<4>(chromeos::PKCS11_CKR_OK));
-  EXPECT_CALL(chaps_mojo_,
-              Sign(kSessionId, kExpectedData, kExpectedMaxOutLength, _))
-      .WillOnce(RunOnceCallback<3>(kExpectedActualOutLength, kExpectedSignature,
-                                   kExpectedResultCode));
-
-  base::test::TestFuture<std::vector<uint8_t>, uint32_t> waiter;
-  client_.Sign(SlotId(1), kExpectedMechanismType, kExpectedMechanismParams,
-               kTypedKeyHandle, kExpectedData,
+  client_.Sign(SlotId(1), kFakeMechanismType, kFakeMechanismParams, handle,
+               kFakeData,
                /*attempts_left=*/1, waiter.GetCallback());
   EXPECT_EQ(waiter.Get<std::vector<uint8_t>>(), kExpectedSignature);
-  EXPECT_EQ(waiter.Get<uint32_t>(), kExpectedResultCode);
+  EXPECT_EQ(waiter.Get<uint32_t>(), chromeos::PKCS11_CKR_OK);
 }
 
-// Test that Sign correctly fails when mojom::SignInit returns an error.
-TEST_F(SessionChapsClientTest, SignInitFailed) {
-  constexpr uint32_t kExpectedErrorCode = 11;
+TEST_F(SessionChapsClientTest, GenerateAndGetKeyPair) {
+  constexpr uint64_t kFakeMechanismType = 11;
+  const std::vector<uint8_t> kFakeMechanismParams = {2, 2, 2};
+  const std::vector<uint8_t> kFakePublicAttrs = {3, 3, 3};
+  const std::vector<uint8_t> kFakePrivateAttrs = {4, 4, 4};
 
-  EXPECT_CALL(chaps_mojo_, SignInit)
-      .WillOnce(RunOnceCallback<4>(kExpectedErrorCode));
-  EXPECT_CALL(chaps_mojo_, Sign).Times(0);
-
-  base::test::TestFuture<std::vector<uint8_t>, uint32_t> waiter;
-  client_.Sign(SlotId(1), /*mechanism_type=*/0, /*mechanism_parameter=*/{},
-               /*key_handle=*/ObjectHandle(0), /*data=*/{},
-               /*attempts_left=*/1, waiter.GetCallback());
-  EXPECT_TRUE(waiter.Get<std::vector<uint8_t>>().empty());
-  EXPECT_EQ(waiter.Get<uint32_t>(), kExpectedErrorCode);
-}
-
-// Test that Sign correctly fails when mojom::Sign returns an error.
-TEST_F(SessionChapsClientTest, SignFailed) {
-  constexpr uint32_t kExpectedErrorCode = 11;
-
-  EXPECT_CALL(chaps_mojo_, SignInit)
-      .WillOnce(RunOnceCallback<4>(chromeos::PKCS11_CKR_OK));
-  EXPECT_CALL(chaps_mojo_, Sign)
-      .WillOnce(
-          RunOnceCallback<3>(0, std::vector<uint8_t>(), kExpectedErrorCode));
-
-  base::test::TestFuture<std::vector<uint8_t>, uint32_t> waiter;
-  client_.Sign(SlotId(1), /*mechanism_type=*/0, /*mechanism_parameter=*/{},
-               /*key_handle=*/ObjectHandle(0), /*data=*/{},
-               /*attempts_left=*/1, waiter.GetCallback());
-  EXPECT_TRUE(waiter.Get<std::vector<uint8_t>>().empty());
-  EXPECT_EQ(waiter.Get<uint32_t>(), kExpectedErrorCode);
-}
-
-// Test that GenerateKeyPair correctly forwards the arguments to the mojo layer
-// and the result back from it.
-TEST_F(SessionChapsClientTest, GenerateKeyPairSuccess) {
-  constexpr uint64_t kExpectedMechanismType = 11;
-  const std::vector<uint8_t> kExpectedMechanismParams = {2, 2, 2};
-  const std::vector<uint8_t> kExpectedPublicAttrs = {3, 3, 3};
-  const std::vector<uint8_t> kExpectedPrivateAttrs = {4, 4, 4};
-  constexpr uint64_t kExpectedPublicKey = 55;
-  constexpr ObjectHandle kTypedPublicKey(kExpectedPublicKey);
-  constexpr uint64_t kExpectedPrivateKey = 66;
-  constexpr ObjectHandle kTypedPrivateKey(kExpectedPrivateKey);
-  constexpr uint32_t kExpectedResultCode = 77;
-
-  EXPECT_CALL(chaps_mojo_,
-              GenerateKeyPair(kSessionId, kExpectedMechanismType,
-                              kExpectedMechanismParams, kExpectedPublicAttrs,
-                              kExpectedPrivateAttrs, _))
-      .WillOnce(RunOnceCallback<5>(kExpectedPublicKey, kExpectedPrivateKey,
-                                   kExpectedResultCode));
-
+  // Test that GenerateKeyPair() can be successfully called.
   base::test::TestFuture<ObjectHandle, ObjectHandle, uint32_t> waiter;
-  client_.GenerateKeyPair(SlotId(1), kExpectedMechanismType,
-                          kExpectedMechanismParams, kExpectedPublicAttrs,
-                          kExpectedPrivateAttrs, /*attempts_left=*/1,
+  client_.GenerateKeyPair(SlotId(1), kFakeMechanismType, kFakeMechanismParams,
+                          kFakePublicAttrs, kFakePrivateAttrs,
+                          /*attempts_left=*/1, waiter.GetCallback());
+  EXPECT_EQ(waiter.Get<uint32_t>(), chromeos::PKCS11_CKR_OK);
+  ObjectHandle pub_key_handle = waiter.Get<0>();
+  ObjectHandle priv_key_handle = waiter.Get<1>();
+  EXPECT_NE(pub_key_handle, ObjectHandle(0));
+  EXPECT_NE(priv_key_handle, ObjectHandle(0));
+  EXPECT_NE(pub_key_handle, priv_key_handle);
+
+  // Test that GenerateKeyPair() forwarded the key attributes correctly. Note
+  // that in the real world the attributes given to GenerateKeyPair() are more
+  // like command arguments and not the actual attributes for the generated
+  // keys.
+
+  base::test::TestFuture<std::vector<uint8_t>, uint32_t> get_waiter_1;
+  client_.GetAttributeValue(SlotId(1), pub_key_handle, kFakeQuery,
+                            /*attempts_left=*/1, get_waiter_1.GetCallback());
+  EXPECT_EQ(get_waiter_1.Get<uint32_t>(), chromeos::PKCS11_CKR_OK);
+  EXPECT_EQ(get_waiter_1.Get<std::vector<uint8_t>>(), kFakePublicAttrs);
+
+  base::test::TestFuture<std::vector<uint8_t>, uint32_t> get_waiter_2;
+  client_.GetAttributeValue(SlotId(1), priv_key_handle, kFakeQuery,
+                            /*attempts_left=*/1, get_waiter_2.GetCallback());
+  EXPECT_EQ(get_waiter_2.Get<uint32_t>(), chromeos::PKCS11_CKR_OK);
+  EXPECT_EQ(get_waiter_2.Get<std::vector<uint8_t>>(), kFakePrivateAttrs);
+}
+
+// Test that all methods fail if they need to open a session and fail to do so.
+TEST_F(SessionChapsClientTest, CannotOpenSessionThenAllMethodsFail) {
+  fake_chaps_client_->SimulateOpenSessionError(
+      chromeos::PKCS11_CKR_GENERAL_ERROR);
+
+  // GetMechanismList() doesn't require a session, so it wouldn't fail and is
+  // not called in the test.
+
+  {
+    base::test::TestFuture<ObjectHandle, uint32_t> waiter;
+    client_.CreateObject(SlotId(1), /*attributes=*/{},
+                         /*attempts_left=*/1, waiter.GetCallback());
+    EXPECT_NE(waiter.Get<uint32_t>(), chromeos::PKCS11_CKR_OK);
+  }
+
+  {
+    base::test::TestFuture<uint32_t> waiter;
+    client_.DestroyObject(SlotId(1), ObjectHandle(0), /*attempts_left=*/1,
                           waiter.GetCallback());
-  EXPECT_EQ(waiter.Get<uint32_t>(), kExpectedResultCode);
-  EXPECT_EQ(waiter.Get<0>(), kTypedPublicKey);
-  EXPECT_EQ(waiter.Get<1>(), kTypedPrivateKey);
+    EXPECT_NE(waiter.Get<uint32_t>(), chromeos::PKCS11_CKR_OK);
+  }
+
+  {
+    base::test::TestFuture<std::vector<uint8_t>, uint32_t> waiter;
+    client_.GetAttributeValue(SlotId(1), ObjectHandle(1),
+                              /*attributes_query=*/{}, /*attempts_left=*/1,
+                              waiter.GetCallback());
+    EXPECT_NE(waiter.Get<uint32_t>(), chromeos::PKCS11_CKR_OK);
+  }
+
+  {
+    base::test::TestFuture<uint32_t> waiter;
+    client_.SetAttributeValue(SlotId(1), ObjectHandle(1),
+                              /*attributes=*/{},
+                              /*attempts_left=*/1, waiter.GetCallback());
+    EXPECT_NE(waiter.Get<uint32_t>(), chromeos::PKCS11_CKR_OK);
+  }
+
+  {
+    base::test::TestFuture<std::vector<ObjectHandle>, uint32_t> waiter;
+    client_.FindObjects(SlotId(1),
+                        /*attributes=*/{},
+                        /*attempts_left=*/1, waiter.GetCallback());
+    EXPECT_NE(waiter.Get<uint32_t>(), chromeos::PKCS11_CKR_OK);
+  }
+
+  {
+    base::test::TestFuture<std::vector<uint8_t>, uint32_t> waiter;
+    client_.Sign(SlotId(1), /*mechanism_type=*/0,
+                 /*mechanism_parameter=*/{}, /*key_handle=*/ObjectHandle(0),
+                 /*data=*/{}, /*attempts_left=*/1, waiter.GetCallback());
+    EXPECT_NE(waiter.Get<uint32_t>(), chromeos::PKCS11_CKR_OK);
+  }
+
+  {
+    base::test::TestFuture<ObjectHandle, ObjectHandle, uint32_t> waiter;
+    client_.GenerateKeyPair(SlotId(1), /*mechanism_type=*/0,
+                            /*mechanism_parameter=*/{},
+                            /*public_attributes=*/{},
+                            /*private_attributes=*/{}, /*attempts_left=*/1,
+                            waiter.GetCallback());
+    EXPECT_NE(waiter.Get<uint32_t>(), chromeos::PKCS11_CKR_OK);
+  }
 }
 
 // Test that the first call to each slot opens a session that can be reused by
 // all the other methods.
 TEST_F(SessionChapsClientTest, AllMethodsDontReopenSession) {
-  EXPECT_CALL(chaps_mojo_, OpenSession(0, _, _))
-      .WillOnce(RunOnceCallback<2>(kSessionId, chromeos::PKCS11_CKR_OK));
-  EXPECT_CALL(chaps_mojo_, OpenSession(1, _, _))
-      .WillOnce(RunOnceCallback<2>(kSessionId, chromeos::PKCS11_CKR_OK));
-  EXPECT_CALL(chaps_mojo_, DestroyObject)
-      .Times(2)
-      .WillRepeatedly(RunOnceCallbackRepeatedly<2>(chromeos::PKCS11_CKR_OK));
-
   // Call a method on two different slots that should open new sessions for
-  // them.
+  // them. Also save created objects to use them for other methods.
+  std::vector<ObjectHandle> objects_handles(2);
   for (uint64_t slot_id = 0; slot_id < 2; ++slot_id) {
-    base::test::TestFuture<uint32_t> waiter;
-    client_.DestroyObject(SlotId(slot_id), ObjectHandle(0), /*attempts_left=*/1,
-                          waiter.GetCallback());
+    base::test::TestFuture<ObjectHandle, uint32_t> waiter;
+    client_.CreateObject(SlotId(slot_id), /*attributes=*/{},
+                         /*attempts_left=*/1, waiter.GetCallback());
+    EXPECT_EQ(waiter.Get<uint32_t>(), chromeos::PKCS11_CKR_OK);
+    objects_handles[slot_id] = waiter.Get<ObjectHandle>();
+  }
+
+  // Prevent any new sessions from being opened, as covered by the
+  // CannotOpenSessionThenAllMethodsFail test, the methods will fail if they
+  // attempt to open new session. They are expected to reuse the existing
+  // session.
+  fake_chaps_client_->SimulateOpenSessionError(
+      chromeos::PKCS11_CKR_GENERAL_ERROR);
+
+  for (uint64_t slot_id = 0; slot_id < 2; ++slot_id) {
+    base::test::TestFuture<ObjectHandle, uint32_t> waiter;
+    client_.CreateObject(SlotId(slot_id), /*attributes=*/{},
+                         /*attempts_left=*/1, waiter.GetCallback());
     EXPECT_EQ(waiter.Get<uint32_t>(), chromeos::PKCS11_CKR_OK);
   }
 
-  Mock::VerifyAndClear(&chaps_mojo_);
-  EXPECT_CALL(chaps_mojo_, OpenSession).Times(0);
-  // Use all methods and check that they are reusing the exiting sessions.
-
   for (uint64_t slot_id = 0; slot_id < 2; ++slot_id) {
-    EXPECT_CALL(chaps_mojo_, DestroyObject)
-        .WillOnce(RunOnceCallback<2>(chromeos::PKCS11_CKR_OK));
-    base::test::TestFuture<uint32_t> waiter;
-    client_.DestroyObject(SlotId(slot_id), ObjectHandle(1),
-                          /*attempts_left=*/1, waiter.GetCallback());
-    EXPECT_EQ(waiter.Get<uint32_t>(), chromeos::PKCS11_CKR_OK);
-  }
-
-  for (uint64_t slot_id = 0; slot_id < 2; ++slot_id) {
-    EXPECT_CALL(chaps_mojo_, GetAttributeValue)
-        .WillOnce(RunOnceCallback<3>(std::vector<uint8_t>(),
-                                     chromeos::PKCS11_CKR_OK));
     base::test::TestFuture<std::vector<uint8_t>, uint32_t> waiter;
-    client_.GetAttributeValue(SlotId(slot_id), ObjectHandle(1),
+    client_.GetAttributeValue(SlotId(slot_id), objects_handles[slot_id],
                               /*attributes_query=*/{}, /*attempts_left=*/1,
                               waiter.GetCallback());
     EXPECT_EQ(waiter.Get<uint32_t>(), chromeos::PKCS11_CKR_OK);
   }
 
   for (uint64_t slot_id = 0; slot_id < 2; ++slot_id) {
-    EXPECT_CALL(chaps_mojo_, SetAttributeValue)
-        .WillOnce(RunOnceCallback<3>(chromeos::PKCS11_CKR_OK));
     base::test::TestFuture<uint32_t> waiter;
-    client_.SetAttributeValue(SlotId(slot_id), ObjectHandle(1),
+    client_.SetAttributeValue(SlotId(slot_id), objects_handles[slot_id],
                               /*attributes=*/{},
                               /*attempts_left=*/1, waiter.GetCallback());
     EXPECT_EQ(waiter.Get<uint32_t>(), chromeos::PKCS11_CKR_OK);
   }
 
   for (uint64_t slot_id = 0; slot_id < 2; ++slot_id) {
-    EXPECT_CALL(chaps_mojo_, FindObjectsInit)
-        .WillOnce(RunOnceCallback<2>(chromeos::PKCS11_CKR_OK));
-    EXPECT_CALL(chaps_mojo_, FindObjects)
-        .WillOnce(RunOnceCallback<2>(std::vector<uint64_t>(),
-                                     chromeos::PKCS11_CKR_OK));
-    EXPECT_CALL(chaps_mojo_, FindObjectsFinal)
-        .WillOnce(RunOnceCallback<1>(chromeos::PKCS11_CKR_OK));
     base::test::TestFuture<std::vector<ObjectHandle>, uint32_t> waiter;
     client_.FindObjects(SlotId(slot_id),
                         /*attributes=*/{},
@@ -475,26 +316,27 @@ TEST_F(SessionChapsClientTest, AllMethodsDontReopenSession) {
   }
 
   for (uint64_t slot_id = 0; slot_id < 2; ++slot_id) {
-    EXPECT_CALL(chaps_mojo_, SignInit)
-        .WillOnce(RunOnceCallback<4>(chromeos::PKCS11_CKR_OK));
-    EXPECT_CALL(chaps_mojo_, Sign)
-        .WillOnce(RunOnceCallback<3>(0, std::vector<uint8_t>(),
-                                     chromeos::PKCS11_CKR_OK));
     base::test::TestFuture<std::vector<uint8_t>, uint32_t> waiter;
     client_.Sign(SlotId(slot_id), /*mechanism_type=*/0,
-                 /*mechanism_parameter=*/{}, /*key_handle=*/ObjectHandle(0),
+                 /*mechanism_parameter=*/{},
+                 /*key_handle=*/objects_handles[slot_id],
                  /*data=*/{}, /*attempts_left=*/1, waiter.GetCallback());
     EXPECT_EQ(waiter.Get<uint32_t>(), chromeos::PKCS11_CKR_OK);
   }
 
   for (uint64_t slot_id = 0; slot_id < 2; ++slot_id) {
-    EXPECT_CALL(chaps_mojo_, GenerateKeyPair)
-        .WillOnce(RunOnceCallback<5>(0, 0, chromeos::PKCS11_CKR_OK));
     base::test::TestFuture<ObjectHandle, ObjectHandle, uint32_t> waiter;
     client_.GenerateKeyPair(
         SlotId(slot_id), /*mechanism_type=*/0,
         /*mechanism_parameter=*/{}, /*public_attributes=*/{},
         /*private_attributes=*/{}, /*attempts_left=*/1, waiter.GetCallback());
+    EXPECT_EQ(waiter.Get<uint32_t>(), chromeos::PKCS11_CKR_OK);
+  }
+
+  for (uint64_t slot_id = 0; slot_id < 2; ++slot_id) {
+    base::test::TestFuture<uint32_t> waiter;
+    client_.DestroyObject(SlotId(slot_id), objects_handles[slot_id],
+                          /*attempts_left=*/1, waiter.GetCallback());
     EXPECT_EQ(waiter.Get<uint32_t>(), chromeos::PKCS11_CKR_OK);
   }
 }
@@ -503,83 +345,70 @@ TEST_F(SessionChapsClientTest, AllMethodsDontReopenSession) {
 // open session at the beginning of each method.
 TEST_F(SessionChapsClientTest, AllMethodsTryReopenSession) {
   constexpr int kAttempts = 5;
-  constexpr uint64_t kSlotId = 1;
+  fake_chaps_client_->SimulateOpenSessionError(
+      chromeos::PKCS11_CKR_GENERAL_ERROR);
+
+  EXPECT_EQ(fake_chaps_client_->GetAndResetOpenSessionCounter(), 0);
 
   {
-    EXPECT_CALL(chaps_mojo_, OpenSession(kSlotId, _, _))
-        .Times(kAttempts)
-        .WillRepeatedly(RunOnceCallbackRepeatedly<2>(
-            0, chromeos::PKCS11_CKR_GENERAL_ERROR));
-    base::test::TestFuture<uint32_t> waiter;
-    client_.DestroyObject(SlotId(kSlotId), ObjectHandle(1), kAttempts,
-                          waiter.GetCallback());
-    EXPECT_EQ(waiter.Get<uint32_t>(), chaps::CKR_FAILED_TO_OPEN_SESSION);
-    Mock::VerifyAndClear(&chaps_mojo_);
+    base::test::TestFuture<ObjectHandle, uint32_t> waiter;
+    client_.CreateObject(SlotId(1), /*attributes=*/{}, kAttempts,
+                         waiter.GetCallback());
+    EXPECT_TRUE(waiter.Wait());
+    EXPECT_EQ(fake_chaps_client_->GetAndResetOpenSessionCounter(), kAttempts);
   }
 
   {
-    EXPECT_CALL(chaps_mojo_, OpenSession(kSlotId, _, _))
-        .Times(kAttempts)
-        .WillRepeatedly(RunOnceCallbackRepeatedly<2>(
-            0, chromeos::PKCS11_CKR_GENERAL_ERROR));
+    base::test::TestFuture<uint32_t> waiter;
+    client_.DestroyObject(SlotId(1), ObjectHandle(1), kAttempts,
+                          waiter.GetCallback());
+    EXPECT_TRUE(waiter.Wait());
+    EXPECT_EQ(fake_chaps_client_->GetAndResetOpenSessionCounter(), kAttempts);
+  }
+
+  {
     base::test::TestFuture<std::vector<uint8_t>, uint32_t> waiter;
-    client_.GetAttributeValue(SlotId(kSlotId), ObjectHandle(1),
+    client_.GetAttributeValue(SlotId(1), ObjectHandle(1),
                               /*attributes_query=*/{}, kAttempts,
                               waiter.GetCallback());
-    EXPECT_EQ(waiter.Get<uint32_t>(), chaps::CKR_FAILED_TO_OPEN_SESSION);
-    Mock::VerifyAndClear(&chaps_mojo_);
+    EXPECT_TRUE(waiter.Wait());
+    EXPECT_EQ(fake_chaps_client_->GetAndResetOpenSessionCounter(), kAttempts);
   }
 
   {
-    EXPECT_CALL(chaps_mojo_, OpenSession(kSlotId, _, _))
-        .Times(kAttempts)
-        .WillRepeatedly(RunOnceCallbackRepeatedly<2>(
-            0, chromeos::PKCS11_CKR_GENERAL_ERROR));
     base::test::TestFuture<uint32_t> waiter;
-    client_.SetAttributeValue(SlotId(kSlotId), ObjectHandle(1),
+    client_.SetAttributeValue(SlotId(1), ObjectHandle(1),
                               /*attributes=*/{}, kAttempts,
                               waiter.GetCallback());
-    EXPECT_EQ(waiter.Get<uint32_t>(), chaps::CKR_FAILED_TO_OPEN_SESSION);
-    Mock::VerifyAndClear(&chaps_mojo_);
+    EXPECT_TRUE(waiter.Wait());
+    EXPECT_EQ(fake_chaps_client_->GetAndResetOpenSessionCounter(), kAttempts);
   }
 
   {
-    EXPECT_CALL(chaps_mojo_, OpenSession(kSlotId, _, _))
-        .Times(kAttempts)
-        .WillRepeatedly(RunOnceCallbackRepeatedly<2>(
-            0, chromeos::PKCS11_CKR_GENERAL_ERROR));
     base::test::TestFuture<std::vector<ObjectHandle>, uint32_t> waiter;
-    client_.FindObjects(SlotId(kSlotId),
+    client_.FindObjects(SlotId(1),
                         /*attributes=*/{}, kAttempts, waiter.GetCallback());
-    EXPECT_EQ(waiter.Get<uint32_t>(), chaps::CKR_FAILED_TO_OPEN_SESSION);
-    Mock::VerifyAndClear(&chaps_mojo_);
+    EXPECT_TRUE(waiter.Wait());
+    EXPECT_EQ(fake_chaps_client_->GetAndResetOpenSessionCounter(), kAttempts);
   }
 
   {
-    EXPECT_CALL(chaps_mojo_, OpenSession(kSlotId, _, _))
-        .Times(kAttempts)
-        .WillRepeatedly(RunOnceCallbackRepeatedly<2>(
-            0, chromeos::PKCS11_CKR_GENERAL_ERROR));
     base::test::TestFuture<std::vector<uint8_t>, uint32_t> waiter;
-    client_.Sign(SlotId(kSlotId), /*mechanism_type=*/0,
+    client_.Sign(SlotId(1), /*mechanism_type=*/0,
                  /*mechanism_parameter=*/{}, /*key_handle=*/ObjectHandle(0),
                  /*data=*/{}, kAttempts, waiter.GetCallback());
-    EXPECT_EQ(waiter.Get<uint32_t>(), chaps::CKR_FAILED_TO_OPEN_SESSION);
-    Mock::VerifyAndClear(&chaps_mojo_);
+    EXPECT_TRUE(waiter.Wait());
+    EXPECT_EQ(fake_chaps_client_->GetAndResetOpenSessionCounter(), kAttempts);
   }
 
   {
-    EXPECT_CALL(chaps_mojo_, OpenSession(kSlotId, _, _))
-        .Times(kAttempts)
-        .WillRepeatedly(RunOnceCallbackRepeatedly<2>(
-            0, chromeos::PKCS11_CKR_GENERAL_ERROR));
     base::test::TestFuture<ObjectHandle, ObjectHandle, uint32_t> waiter;
     client_.GenerateKeyPair(
-        SlotId(kSlotId), /*mechanism_type=*/0,
+        SlotId(1), /*mechanism_type=*/0,
         /*mechanism_parameter=*/{}, /*public_attributes=*/{},
         /*private_attributes=*/{}, kAttempts, waiter.GetCallback());
-    EXPECT_EQ(waiter.Get<uint32_t>(), chaps::CKR_FAILED_TO_OPEN_SESSION);
-    Mock::VerifyAndClear(&chaps_mojo_);
+    EXPECT_TRUE(waiter.Wait());
+    EXPECT_EQ(fake_chaps_client_->GetAndResetOpenSessionCounter(), kAttempts);
   }
 }
 

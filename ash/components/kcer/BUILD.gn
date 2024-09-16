@@ -56,6 +56,7 @@ component("kcer") {
   public_deps = [ ":chaps_proto" ]
   deps = [
     "//base",
+    "//chromeos/ash/components/dbus/chaps",
     "//chromeos/constants",
     "//chromeos/crosapi/mojom",
     "//content/public/browser",
@@ -125,6 +126,7 @@ source_set("unit_tests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
+    "//chromeos/ash/components/dbus/chaps",
     "//chromeos/constants:constants",
     "//chromeos/crosapi/mojom",
     "//content/public/browser",
