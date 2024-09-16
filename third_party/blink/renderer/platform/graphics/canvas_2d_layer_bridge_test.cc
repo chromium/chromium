@@ -172,14 +172,15 @@ TEST_F(Canvas2DLayerBridgeTest, PrepareMailboxWhenContextIsLost) {
       MakeBridge(gfx::Size(300, 150), RasterModeHint::kPreferGPU, kNonOpaque);
 
   EXPECT_TRUE(GetRasterMode(bridge.get()) == RasterMode::kGPU);
-  bridge->FinalizeFrame(FlushReason::kTesting);  // Trigger the creation
-                                                 // of a backing store
-  // When the context is lost we are not sure if we should still be producing
-  // GL frames for the compositor or not, so fail to generate frames.
-  test_context_provider_->TestContextGL()->set_context_lost(true);
 
   viz::TransferableResource resource;
   viz::ReleaseCallback release_callback;
+  EXPECT_TRUE(Host()->PrepareTransferableResource(nullptr, &resource,
+                                                  &release_callback));
+
+  // When the context is lost we are not sure if we should still be producing
+  // GL frames for the compositor or not, so fail to generate frames.
+  test_context_provider_->TestContextGL()->set_context_lost(true);
   EXPECT_FALSE(Host()->PrepareTransferableResource(nullptr, &resource,
                                                    &release_callback));
 }
