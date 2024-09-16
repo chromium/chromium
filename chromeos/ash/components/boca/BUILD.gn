@@ -34,6 +34,8 @@ static_library("invalidations") {
   sources = [
     "invalidations/fcm_handler.cc",
     "invalidations/fcm_handler.h",
+    "invalidations/invalidation_service_impl.cc",
+    "invalidations/invalidation_service_impl.h",
   ]
   deps = [
     ":boca",
@@ -53,6 +55,7 @@ source_set("unit_tests") {
     "boca_session_manager_unittest.cc",
     "boca_session_util_unittest.cc",
     "invalidations/fcm_handler_unittest.cc",
+    "invalidations/invalidation_service_impl_unittest.cc",
   ]
 
   deps = [

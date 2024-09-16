@@ -109,7 +109,7 @@ class BocaSessionManager
   void RemoveObserver(Observer* observer);
 
   void StartSessionPolling();
-  void LoadCurrentSession();
+  virtual void LoadCurrentSession();
   void ParseSessionResponse(base::expected<std::unique_ptr<::boca::Session>,
                                            google_apis::ApiErrorCode> result);
 
