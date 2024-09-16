@@ -10268,6 +10268,21 @@
                         "EnableFingerprintingProtectionFilter"
                     ],
                     "disable_features": [
+                        "FingerprintingProtectionSetting",
+                        "FingerprintingProtectionUx"
+                    ]
+                },
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "activation_level": "dry_run",
+                        "enable_on_3pc_blocked": "false"
+                    },
+                    "enable_features": [
+                        "EnableFingerprintingProtectionFilter"
+                    ],
+                    "disable_features": [
+                        "FingerprintingProtectionSetting",
                         "FingerprintingProtectionUx"
                     ]
                 }
