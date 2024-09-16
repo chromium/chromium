@@ -7,9 +7,11 @@
 #import <objc/runtime.h>
 
 #import "base/memory/weak_ptr.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "components/bookmarks/browser/bookmark_model.h"
+#import "components/browsing_data/core/browsing_data_utils.h"
 #import "components/prefs/pref_service.h"
 #import "components/sessions/core/tab_restore_service_helper.h"
 #import "components/strings/grit/components_strings.h"
@@ -528,6 +530,11 @@ using base::UserMetricsAction;
 
 - (void)keyCommand_clearBrowsingData {
   RecordAction(UserMetricsAction("MobileKeyCommandClearBrowsingData"));
+  base::UmaHistogramEnumeration(
+      browsing_data::kDeleteBrowsingDataDialogHistogram,
+      browsing_data::DeleteBrowsingDataDialogAction::
+          kKeyboardEntryPointSelected);
+
   if (IsIosQuickDeleteEnabled()) {
     [_quickDeleteHandler showQuickDeleteAndCanPerformTabsClosureAnimation:YES];
   } else {

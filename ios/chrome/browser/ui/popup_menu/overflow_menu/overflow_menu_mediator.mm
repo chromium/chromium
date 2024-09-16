@@ -12,6 +12,7 @@
 #import "base/strings/utf_string_conversions.h"
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/common/bookmark_pref_names.h"
+#import "components/browsing_data/core/browsing_data_utils.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/feature_engagement/public/tracker.h"
@@ -2055,6 +2056,11 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 // Dismisses the menu and opens the Clear Browsing Data screen.
 - (void)openClearBrowsingData {
   RecordAction(UserMetricsAction("MobileMenuClearBrowsingData"));
+  base::UmaHistogramEnumeration(
+      browsing_data::kDeleteBrowsingDataDialogHistogram,
+      browsing_data::DeleteBrowsingDataDialogAction::
+          kMenuItemEntryPointSelected);
+
   [self dismissMenu];
   if (IsIosQuickDeleteEnabled()) {
     [self.quickDeleteHandler

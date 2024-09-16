@@ -6,6 +6,8 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
+#import "base/metrics/histogram_functions.h"
+#import "components/browsing_data/core/browsing_data_utils.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
@@ -127,6 +129,11 @@
 }
 
 - (void)showClearBrowsingData {
+  base::UmaHistogramEnumeration(
+      browsing_data::kDeleteBrowsingDataDialogHistogram,
+      browsing_data::DeleteBrowsingDataDialogAction::
+          kPrivacyEntryPointSelected);
+
   if (IsIosQuickDeleteEnabled()) {
     id<QuickDeleteCommands> quickDeleteHandler = HandlerForProtocol(
         self.browser->GetCommandDispatcher(), QuickDeleteCommands);

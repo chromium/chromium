@@ -4165,6 +4165,10 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
   <int value="25" label="Deletion selected"/>
   <int value="26" label="Cancel selected"/>
   <int value="27" label="Dialog dismissed implicitly"/>
+  <int value="28" label="Menu item entry point (i.e. three dot menu) selected"/>
+  <int value="29" label="History page entry point selected"/>
+  <int value="30" label="Privacy page entry point selected"/>
+  <int value="31" label="Keyboard entry point selected"/>
 </enum>
 
 <!--LINT.ThenChange(//components/browsing_data/core/browsing_data_utils.h:DeleteBrowsingDataDialogAction) -->

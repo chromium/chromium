@@ -7,9 +7,11 @@
 #import "base/apple/foundation_util.h"
 #import "base/i18n/time_formatting.h"
 #import "base/ios/ios_util.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/browsing_data/core/browsing_data_utils.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/base/data_type.h"
 #import "components/sync/service/sync_service.h"
@@ -1274,6 +1276,10 @@ const CGFloat kButtonHorizontalPadding = 30.0;
 - (void)openPrivacySettings {
   base::RecordAction(
       base::UserMetricsAction("HistoryPage_InitClearBrowsingData"));
+  base::UmaHistogramEnumeration(
+      browsing_data::kDeleteBrowsingDataDialogHistogram,
+      browsing_data::DeleteBrowsingDataDialogAction::
+          kHistoryEntryPointSelected);
 
   if (IsIosQuickDeleteEnabled()) {
     if (!self.browser) {

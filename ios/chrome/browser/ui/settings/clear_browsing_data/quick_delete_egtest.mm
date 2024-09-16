@@ -345,6 +345,11 @@ NSString* CapitalizeFirstLetter(NSString* string) {
 
 // Tests if the Quick Delete UI is shown correctly from Privacy settings.
 - (void)testOpenAndDismissQuickDeleteFromPrivacySettings {
+  // At the beginning of the test, the Delete Browsing Data dialog metric should
+  // be empty.
+  NoDeleteBrowsingDataDialogHistogram(
+      DeleteBrowsingDataDialogAction::kPrivacyEntryPointSelected);
+
   [self openQuickDeleteFromPrivacySettings];
 
   // Check that Quick Delete is presented.
@@ -363,17 +368,24 @@ NSString* CapitalizeFirstLetter(NSString* string) {
   [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
                                           IDS_IOS_SETTINGS_PRIVACY_TITLE))]
       assertWithMatcher:grey_notNil()];
+
+  // Assert that the Delete Browsing Data dialog metric is populated.
+  ExpectDeleteBrowsingDataDialogHistogram(
+      DeleteBrowsingDataDialogAction::kPrivacyEntryPointSelected);
 }
 
 // Tests if the Quick Delete UI is shown correctly from the three dot menu entry
 // point and if dismissing implicitly by swipping down works correctly.
 - (void)testOpenAndDismissImplicityQuickDeleteFromThreeDotMenu {
-  [self openQuickDeleteFromThreeDotMenu];
-
-  // At the beginning of the test, the Delete Browsing Data dialog metric should
-  // be empty.
+  // At the beginning of the test, the Delete Browsing Data dialog metrics
+  // should be empty.
   NoDeleteBrowsingDataDialogHistogram(
       DeleteBrowsingDataDialogAction::kDialogDismissedImplicitly);
+  NoDeleteBrowsingDataDialogHistogram(
+      DeleteBrowsingDataDialogAction::kMenuItemEntryPointSelected);
+
+  // Open Quick Delete.
+  [self openQuickDeleteFromThreeDotMenu];
 
   // Check that Quick Delete is presented.
   [[EarlGrey selectElementWithMatcher:ClearBrowsingDataView()]
@@ -387,9 +399,11 @@ NSString* CapitalizeFirstLetter(NSString* string) {
   [[EarlGrey selectElementWithMatcher:ClearBrowsingDataView()]
       assertWithMatcher:grey_nil()];
 
-  // Assert that the Delete Browsing Data dialog metric is populated.
+  // Assert that the Delete Browsing Data dialog metrics are populated.
   ExpectDeleteBrowsingDataDialogHistogram(
       DeleteBrowsingDataDialogAction::kDialogDismissedImplicitly);
+  ExpectDeleteBrowsingDataDialogHistogram(
+      DeleteBrowsingDataDialogAction::kMenuItemEntryPointSelected);
 }
 
 // Tests if the Quick Delete UI is shown correctly from the three dot menu entry
@@ -422,6 +436,12 @@ NSString* CapitalizeFirstLetter(NSString* string) {
 
 // Tests if the Quick Delete UI is shown correctly from the history entry point.
 - (void)testOpenAndDismissQuickDeleteFromHistory {
+  // At the beginning of the test, the Delete Browsing Data dialog metric should
+  // be empty.
+  NoDeleteBrowsingDataDialogHistogram(
+      DeleteBrowsingDataDialogAction::kHistoryEntryPointSelected);
+
+  // Open Quick Delete.
   [self openQuickDeleteFromHistory];
 
   // Check that Quick Delete is presented.
@@ -435,6 +455,10 @@ NSString* CapitalizeFirstLetter(NSString* string) {
   // Check that Quick Delete has been dismissed.
   [[EarlGrey selectElementWithMatcher:ClearBrowsingDataView()]
       assertWithMatcher:grey_nil()];
+
+  // Assert that the Delete Browsing Data dialog metric is populated.
+  ExpectDeleteBrowsingDataDialogHistogram(
+      DeleteBrowsingDataDialogAction::kHistoryEntryPointSelected);
 }
 
 // Tests that the browsing data button is disabled if no browsing data type is

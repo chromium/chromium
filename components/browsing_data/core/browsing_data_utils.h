@@ -112,7 +112,11 @@ enum class DeleteBrowsingDataDialogAction {
   kDeletionSelected = 25,
   kCancelSelected = 26,
   kDialogDismissedImplicitly = 27,
-  kMaxValue = kDialogDismissedImplicitly,
+  kMenuItemEntryPointSelected = 28,
+  kHistoryEntryPointSelected = 29,
+  kPrivacyEntryPointSelected = 30,
+  kKeyboardEntryPointSelected = 31,
+  kMaxValue = kKeyboardEntryPointSelected,
 };
 // LINT.ThenChange(//tools/metrics/histograms/enums.xml:DeleteBrowsingDataDialogAction)
 
