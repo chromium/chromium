@@ -11,26 +11,26 @@ package J;
 public class N {
 
 
-      // Original name: org_jni_1zero_SampleProxyEdgeCases_addStructB
+    // Original name: org_jni_1zero_SampleProxyEdgeCases_addStructB
     public static native int MYplquli(Object caller, Object b);
-      // Original name: org_jni_1zero_SampleProxyEdgeCases_arrayTypes1
+    // Original name: org_jni_1zero_SampleProxyEdgeCases_arrayTypes1
     public static native Object M3RUFTzC(Object a, Object b);
-      // Original name: org_jni_1zero_SampleProxyEdgeCases_arrayTypes2
+    // Original name: org_jni_1zero_SampleProxyEdgeCases_arrayTypes2
     public static native Object MV9JEAYF(Object a, Object b);
-      // Original name: org_jni_1zero_SampleProxyEdgeCases_fooForTest
+    // Original name: org_jni_1zero_SampleProxyEdgeCases_fooForTest
     public static native void M3noEmrf_ForTesting();
-      // Original name: org_jni_1zero_SampleProxyEdgeCases_fooForTesting
+    // Original name: org_jni_1zero_SampleProxyEdgeCases_fooForTesting
     public static native void M1XMhKEd_ForTesting();
-      // Original name: org_jni_1zero_SampleProxyEdgeCases_fooForTests
+    // Original name: org_jni_1zero_SampleProxyEdgeCases_fooForTests
     public static native void M0ykt7m__ForTesting();
-      // Original name: org_jni_1zero_SampleProxyEdgeCases_foo_1_1weirdly_1_1escaped_1name1
+    // Original name: org_jni_1zero_SampleProxyEdgeCases_foo_1_1weirdly_1_1escaped_1name1
     public static native void MKWEYRlq();
-      // Original name: org_jni_1zero_SampleProxyEdgeCases_genericsWithNestedClassArray
+    // Original name: org_jni_1zero_SampleProxyEdgeCases_genericsWithNestedClassArray
     public static native Object MalqUoB_(Object arg);
-      // Original name: org_jni_1zero_SampleProxyEdgeCases_setBool
+    // Original name: org_jni_1zero_SampleProxyEdgeCases_setBool
     public static native void M0E4cldm(Object b, Object i);
-      // Original name: org_jni_1zero_SampleProxyEdgeCases_setStringBuilder
+    // Original name: org_jni_1zero_SampleProxyEdgeCases_setStringBuilder
     public static native boolean MWbFhvyA(Object sb);
-      // Original name: org_jni_1zero_SampleProxyEdgeCases_setStringBuilder
+    // Original name: org_jni_1zero_SampleProxyEdgeCases_setStringBuilder
     public static native int MWbFhvyA(int sb);
 }

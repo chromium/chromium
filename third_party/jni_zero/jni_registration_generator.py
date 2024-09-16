@@ -462,7 +462,7 @@ extern const int64_t kJniZeroHash{module_name}Priority = {priority_hash}LL;
 
   sb(header_common.class_accessors(non_proxy_natives_java_classes, module_name))
 
-  sb('// Forward declarations (methods).\n\n')
+  sb('\n// Forward declarations (methods).\n\n')
   for jni_obj in jni_objs:
     for native in jni_obj.natives:
       with sb.statement():
@@ -476,22 +476,17 @@ extern const int64_t kJniZeroHash{module_name}Priority = {priority_hash}LL;
     # methods.
     if not registration_dict['PROXY_NATIVE_METHOD_ARRAY']:
       gen_jni_class = None
-    sb('// Method declarations.\n\n')
 
-    for jni_obj in jni_objs:
-      if not jni_obj.non_proxy_natives:
-        continue
-      register_natives.non_proxy_kmethod_array(sb, jni_obj)
+    sb('\n// Helper Methods.\n\n')
+    with sb.namespace(''):
+      if gen_jni_class:
+        register_natives.gen_jni_register_function(
+            sb, gen_jni_class, registration_dict['PROXY_NATIVE_METHOD_ARRAY'])
+      for jni_obj in jni_objs:
+        if jni_obj.non_proxy_natives:
+          register_natives.per_class_register_function(sb, jni_obj)
 
-    if gen_jni_class:
-      register_natives.gen_jni_register_natives_helper(
-          sb, gen_jni_class, registration_dict['PROXY_NATIVE_METHOD_ARRAY'])
-    sb('\n')
-    for jni_obj in jni_objs:
-      if jni_obj.non_proxy_natives:
-        register_natives.per_file_register_function(sb, jni_obj)
-
-    sb('\n')
+    sb('\n// Main Register Function.\n\n')
     register_natives.main_register_function(sb, jni_objs, options.namespace,
                                             gen_jni_class)
   sb(epilogue)
@@ -690,13 +685,13 @@ def _MakeProxySignature(options, proxy_native):
     params_with_types = ', '.join(params_with_types_list)
   elif options.use_proxy_hash:
     signature_template = string.Template("""
-      // Original name: ${ALT_NAME}""" + native_method_line)
+    // Original name: ${ALT_NAME}""" + native_method_line)
 
     alt_name = proxy_native.proxy_name
     proxy_name = proxy_native.hashed_proxy_name
   else:
     signature_template = string.Template("""
-      // Hashed name: ${ALT_NAME}""" + native_method_line)
+    // Hashed name: ${ALT_NAME}""" + native_method_line)
 
     # We add the prefix that is sometimes used so that codesearch can find it if
     # someone searches a full method name from the stacktrace.

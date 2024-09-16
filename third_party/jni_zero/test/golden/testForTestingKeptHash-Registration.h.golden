@@ -20,6 +20,7 @@ inline jclass org_jni_1zero_SampleProxyEdgeCases_clazz(JNIEnv* env) {
 }
 #endif
 
+
 // Forward declarations (methods).
 
 JNI_POSSIBLE_BOUNDARY_EXPORT jint Java_J_N_MYplquli(

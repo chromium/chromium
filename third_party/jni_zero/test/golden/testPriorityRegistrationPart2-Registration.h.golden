@@ -12,6 +12,7 @@
 
 extern const int64_t kJniZeroHashWhole = 4128442159926458845LL;
 extern const int64_t kJniZeroHashPriority = 0LL;
+
 // Forward declarations (methods).
 
 JNI_POSSIBLE_BOUNDARY_EXPORT void Java_org_1jni_11zero_1TinySample2_1test(

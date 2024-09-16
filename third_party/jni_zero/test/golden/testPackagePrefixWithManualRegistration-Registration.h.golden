@@ -10,6 +10,7 @@
 
 #include "third_party/jni_zero/jni_zero_internal.h"
 
+
 // Forward declarations (methods).
 
 JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_this_1is_1a_1package_1prefix_1org_1jni_11zero_1SampleForAnnotationProcessor_1bar(
@@ -117,10 +118,13 @@ JNI_POSSIBLE_BOUNDARY_EXPORT void Java_this_is_a_package_prefix_org_jni_1zero_GE
     jobject view,
     jobject context,
     jobject convertedObjects);
-// Method declarations.
 
+// Helper Methods.
 
-static const JNINativeMethod kMethods_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI[] = {
+namespace {
+
+bool RegisterNative_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI(JNIEnv* env) {
+  static const JNINativeMethod kMethods[] = {
     { "this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_bar",
         "(Ljava/lang/Object;)Ljava/lang/Object;",
         reinterpret_cast<void*>(Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_this_1is_1a_1package_1prefix_1org_1jni_11zero_1SampleForAnnotationProcessor_1bar)
@@ -209,20 +213,11 @@ static const JNINativeMethod kMethods_this_is_a_package_prefix_org_jni_1zero_GEN
         reinterpret_cast<void*>(Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_this_1is_1a_1package_1prefix_1org_1jni_11zero_1SampleForAnnotationProcessor_1testSpecialTypes)
         },
 
-};
-
-namespace {
-
-bool RegisterNative_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI(JNIEnv* env) {
-  const int number_of_methods = std::size(kMethods_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI);
+  };
 
   jni_zero::ScopedJavaLocalRef<jclass> native_clazz =
       jni_zero::GetClass(env, "this/is/a/package/prefix/org/jni_zero/GEN_JNI");
-  if (env->RegisterNatives(
-      native_clazz.obj(),
-      kMethods_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI,
-      number_of_methods) < 0) {
-
+  if (env->RegisterNatives(native_clazz.obj(), kMethods, std::size(kMethods)) < 0) {
     jni_zero::internal::HandleRegistrationError(env, native_clazz.obj(), __FILE__);
     return false;
   }
@@ -232,8 +227,7 @@ bool RegisterNative_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI(JNIEnv* env)
 
 }  // namespace
 
-
-// Registration function.
+// Main Register Function.
 
 namespace {
 

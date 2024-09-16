@@ -12,6 +12,7 @@
 
 extern const int64_t kJniZeroHashWhole = 3865356290363738592LL;
 extern const int64_t kJniZeroHashPriority = 0LL;
+
 // Forward declarations (methods).
 
 JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_this_1is_1a_1package_1prefix_1org_1jni_11zero_1SampleForAnnotationProcessor_1bar(
@@ -206,10 +207,13 @@ JNI_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_J_N__1O_1O(
             return {};
         }
 }
-// Method declarations.
 
+// Helper Methods.
 
-static const JNINativeMethod kMethods_this_is_a_package_prefix_J_N[] = {
+namespace {
+
+bool RegisterNative_this_is_a_package_prefix_J_N(JNIEnv* env) {
+  static const JNINativeMethod kMethods[] = {
     { "_O", "(I)Ljava/lang/Object;", reinterpret_cast<void*>(Java_this_is_a_package_prefix_J_N__1O)
         },
     { "_O_L", "(ILjava/lang/Class;)Ljava/lang/Object;",
@@ -224,20 +228,11 @@ static const JNINativeMethod kMethods_this_is_a_package_prefix_J_N[] = {
         "(ILjava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)V",
         reinterpret_cast<void*>(Java_this_is_a_package_prefix_J_N__1V_1OOOOOOOOOOOOOOOOOO) },
     { "_Z", "(I)Z", reinterpret_cast<void*>(Java_this_is_a_package_prefix_J_N__1Z) }
-};
-
-namespace {
-
-bool RegisterNative_this_is_a_package_prefix_J_N(JNIEnv* env) {
-  const int number_of_methods = std::size(kMethods_this_is_a_package_prefix_J_N);
+  };
 
   jni_zero::ScopedJavaLocalRef<jclass> native_clazz =
       jni_zero::GetClass(env, "this/is/a/package/prefix/J/N");
-  if (env->RegisterNatives(
-      native_clazz.obj(),
-      kMethods_this_is_a_package_prefix_J_N,
-      number_of_methods) < 0) {
-
+  if (env->RegisterNatives(native_clazz.obj(), kMethods, std::size(kMethods)) < 0) {
     jni_zero::internal::HandleRegistrationError(env, native_clazz.obj(), __FILE__);
     return false;
   }
@@ -247,8 +242,7 @@ bool RegisterNative_this_is_a_package_prefix_J_N(JNIEnv* env) {
 
 }  // namespace
 
-
-// Registration function.
+// Main Register Function.
 
 namespace {
 

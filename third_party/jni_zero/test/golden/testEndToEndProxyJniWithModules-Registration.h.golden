@@ -10,6 +10,7 @@
 
 #include "third_party/jni_zero/jni_zero_internal.h"
 
+
 // Forward declarations (methods).
 
 JNI_POSSIBLE_BOUNDARY_EXPORT jboolean Java_J_module_1N_MejItBT4(
@@ -19,27 +20,21 @@ JNI_POSSIBLE_BOUNDARY_EXPORT jboolean Java_J_module_1N_MejItBT4(
 JNI_POSSIBLE_BOUNDARY_EXPORT void Java_J_module_1N_MqDgXQiH(
     JNIEnv* env,
     jclass jcaller);
-// Method declarations.
 
-
-static const JNINativeMethod kMethods_J_module_1N[] = {
-    { "MejItBT4", "(Z)Z", reinterpret_cast<void*>(Java_J_module_1N_MejItBT4) },
-    { "MqDgXQiH", "()V", reinterpret_cast<void*>(Java_J_module_1N_MqDgXQiH) },
-
-};
+// Helper Methods.
 
 namespace {
 
 bool RegisterNative_J_module_1N(JNIEnv* env) {
-  const int number_of_methods = std::size(kMethods_J_module_1N);
+  static const JNINativeMethod kMethods[] = {
+    { "MejItBT4", "(Z)Z", reinterpret_cast<void*>(Java_J_module_1N_MejItBT4) },
+    { "MqDgXQiH", "()V", reinterpret_cast<void*>(Java_J_module_1N_MqDgXQiH) },
+
+  };
 
   jni_zero::ScopedJavaLocalRef<jclass> native_clazz =
       jni_zero::GetClass(env, "J/module_N");
-  if (env->RegisterNatives(
-      native_clazz.obj(),
-      kMethods_J_module_1N,
-      number_of_methods) < 0) {
-
+  if (env->RegisterNatives(native_clazz.obj(), kMethods, std::size(kMethods)) < 0) {
     jni_zero::internal::HandleRegistrationError(env, native_clazz.obj(), __FILE__);
     return false;
   }
@@ -49,8 +44,7 @@ bool RegisterNative_J_module_1N(JNIEnv* env) {
 
 }  // namespace
 
-
-// Registration function.
+// Main Register Function.
 
 namespace {
 
