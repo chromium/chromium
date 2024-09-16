@@ -57,3 +57,16 @@ message SignInGaiaRequest {
 message SignInGaiaResponse {
   AuthToken auth_token = 4;
 }
+
+message ReceiveMessagesRequest {
+  RequestHeader header = 1;
+}
+
+message ReceiveMessagesResponse {
+  message Pong {}
+
+  oneof body {
+    InboxMessage inbox_message = 2;
+    Pong pong = 3;
+  }
+}
