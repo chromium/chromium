@@ -1613,6 +1613,7 @@ static_library("test_support") {
     "//chrome/browser:test_support",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
+    "//chrome/common/safe_browsing:proto",
     "//components/crx_file",
     "//components/policy/core/common:test_support",
     "//components/safe_browsing/core/browser/db:database_manager",

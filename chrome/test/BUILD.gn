@@ -9314,6 +9314,7 @@ test("unit_tests") {
       "//chrome/common/apps/platform_apps",
       "//chrome/common/extensions:extension_features_unittest",
       "//chrome/common/extensions/api",
+      "//chrome/common/safe_browsing:proto",
       "//chrome/renderer/extensions",
       "//chrome/utility/image_writer:unit_tests",
       "//components/enterprise:test_support",
