@@ -81,8 +81,7 @@ constexpr char kCheckApiAvailability[] =
            await chrome.userScripts.unregister();
          } catch(e) {
            const expectedError =
-               `Error: Failed to read the 'userScripts' property from ` +
-               `'Object': The 'userScripts' API is only available for users ` +
+               `Error: The 'userScripts' API is only available for users ` +
                'in developer mode.';
            message = e.toString() == expectedError
                ? 'success'

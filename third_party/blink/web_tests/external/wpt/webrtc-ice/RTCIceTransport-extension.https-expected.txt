@@ -1,65 +1,65 @@
 This is a testharness.js-based test.
 [FAIL] RTCIceTransport constructor does not throw
-  Failed to construct 'RTCIceTransport': Illegal constructor
+  Illegal constructor
 [FAIL] RTCIceTransport initial properties are set
-  Failed to construct 'RTCIceTransport': Illegal constructor
+  Illegal constructor
 [FAIL] gather() with { iceServers: null } should throw TypeError
-  Failed to construct 'RTCIceTransport': Illegal constructor
+  Illegal constructor
 [FAIL] gather() with { iceServers: undefined } should succeed
-  Failed to construct 'RTCIceTransport': Illegal constructor
+  Illegal constructor
 [FAIL] gather() with one turns server, one turn server, username, credential should succeed
-  Failed to construct 'RTCIceTransport': Illegal constructor
+  Illegal constructor
 [FAIL] gather() with 2 stun servers should succeed
-  Failed to construct 'RTCIceTransport': Illegal constructor
+  Illegal constructor
 [FAIL] gather() throws if closed
-  Failed to construct 'RTCIceTransport': Illegal constructor
+  Illegal constructor
 [FAIL] gather() transitions gatheringState to 'gathering'
-  Failed to construct 'RTCIceTransport': Illegal constructor
+  Illegal constructor
 [FAIL] gather() throws if called twice
-  Failed to construct 'RTCIceTransport': Illegal constructor
+  Illegal constructor
 [FAIL] eventually transition gatheringState to 'complete'
-  promise_test: Unhandled rejection with value: object "TypeError: Failed to construct 'RTCIceTransport': Illegal constructor"
+  promise_test: Unhandled rejection with value: object "TypeError: Illegal constructor"
 [FAIL] onicecandidate fires with null candidate before gatheringState transitions to 'complete'
-  promise_test: Unhandled rejection with value: object "TypeError: Failed to construct 'RTCIceTransport': Illegal constructor"
+  promise_test: Unhandled rejection with value: object "TypeError: Illegal constructor"
 [FAIL] gather() returns at least one host candidate
-  promise_test: Unhandled rejection with value: object "TypeError: Failed to construct 'RTCIceTransport': Illegal constructor"
+  promise_test: Unhandled rejection with value: object "TypeError: Illegal constructor"
 [FAIL] gather() returns no candidates with { gatherPolicy: 'relay'} and no turn servers
-  promise_test: Unhandled rejection with value: object "TypeError: Failed to construct 'RTCIceTransport': Illegal constructor"
+  promise_test: Unhandled rejection with value: object "TypeError: Illegal constructor"
 [FAIL] start() throws if closed
-  Failed to construct 'RTCIceTransport': Illegal constructor
+  Illegal constructor
 [FAIL] start() throws if usernameFragment or password not set
-  Failed to construct 'RTCIceTransport': Illegal constructor
+  Illegal constructor
 [FAIL] start() throws if usernameFragment does not conform to syntax
-  Failed to construct 'RTCIceTransport': Illegal constructor
+  Illegal constructor
 [FAIL] start() throws if password does not conform to syntax
-  Failed to construct 'RTCIceTransport': Illegal constructor
+  Illegal constructor
 [FAIL] start() does not transition state to 'checking' if no remote candidates added
-  Failed to construct 'RTCIceTransport': Illegal constructor
+  Illegal constructor
 [FAIL] start() with default role sets role attribute to 'controlled'
-  Failed to construct 'RTCIceTransport': Illegal constructor
+  Illegal constructor
 [FAIL] start() sets role attribute to 'controlling'
-  Failed to construct 'RTCIceTransport': Illegal constructor
+  Illegal constructor
 [FAIL] addRemoteCandidate() throws if closed
-  Failed to construct 'RTCIceTransport': Illegal constructor
+  Illegal constructor
 [FAIL] addRemoteCandidate() throws on invalid candidate
-  Failed to construct 'RTCIceTransport': Illegal constructor
+  Illegal constructor
 [FAIL] start() transitions state to 'checking' if one remote candidate had been added
-  Failed to construct 'RTCIceTransport': Illegal constructor
+  Illegal constructor
 [FAIL] addRemoteCandidate() transitions state to 'checking' if start() had been called before
-  Failed to construct 'RTCIceTransport': Illegal constructor
+  Illegal constructor
 [FAIL] start() throws if later called with a different role
-  Failed to construct 'RTCIceTransport': Illegal constructor
+  Illegal constructor
 [FAIL] start() flushes remote candidates and transitions state to 'new' if later called with different remote parameters
-  Failed to construct 'RTCIceTransport': Illegal constructor
+  Illegal constructor
 [FAIL] Two RTCIceTransports connect to each other
-  promise_test: Unhandled rejection with value: object "TypeError: Failed to construct 'RTCIceTransport': Illegal constructor"
+  promise_test: Unhandled rejection with value: object "TypeError: Illegal constructor"
 [FAIL] Two RTCIceTransports configured with the controlling role resolve the conflict in band and still connect.
-  promise_test: Unhandled rejection with value: object "TypeError: Failed to construct 'RTCIceTransport': Illegal constructor"
+  promise_test: Unhandled rejection with value: object "TypeError: Illegal constructor"
 [FAIL] Two RTCIceTransports configured with the controlled role resolve the conflict in band and still connect.
-  promise_test: Unhandled rejection with value: object "TypeError: Failed to construct 'RTCIceTransport': Illegal constructor"
+  promise_test: Unhandled rejection with value: object "TypeError: Illegal constructor"
 [FAIL] Selected candidate pair changes once the RTCIceTransports connect.
-  promise_test: Unhandled rejection with value: object "TypeError: Failed to construct 'RTCIceTransport': Illegal constructor"
+  promise_test: Unhandled rejection with value: object "TypeError: Illegal constructor"
 [FAIL] getSelectedCandidatePair() returns null once the RTCIceTransport is stopped.
-  promise_test: Unhandled rejection with value: object "TypeError: Failed to construct 'RTCIceTransport': Illegal constructor"
+  promise_test: Unhandled rejection with value: object "TypeError: Illegal constructor"
 Harness: the test ran to completion.
 

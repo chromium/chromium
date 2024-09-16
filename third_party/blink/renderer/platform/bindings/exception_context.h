@@ -34,6 +34,13 @@ class PLATFORM_EXPORT ExceptionContext final {
       case v8::ExceptionContext::kAttributeGet:
       case v8::ExceptionContext::kAttributeSet:
       case v8::ExceptionContext::kOperation:
+        DCHECK(class_name);
+        DCHECK(property_name);
+        break;
+      case v8::ExceptionContext::kConstructor:
+      case v8::ExceptionContext::kNamedEnumerator:
+        DCHECK(class_name);
+        break;
       case v8::ExceptionContext::kIndexedGetter:
       case v8::ExceptionContext::kIndexedDescriptor:
       case v8::ExceptionContext::kIndexedSetter:
@@ -46,12 +53,9 @@ class PLATFORM_EXPORT ExceptionContext final {
       case v8::ExceptionContext::kNamedDefiner:
       case v8::ExceptionContext::kNamedDeleter:
       case v8::ExceptionContext::kNamedQuery:
-        DCHECK(class_name);
-        DCHECK(property_name);
-        break;
-      case v8::ExceptionContext::kConstructor:
-      case v8::ExceptionContext::kNamedEnumerator:
-        DCHECK(class_name);
+        // Named and indexed property interceptors go through the constructor
+        // variant that takes a const String&, never this one.
+        NOTREACHED_IN_MIGRATION();
         break;
       case v8::ExceptionContext::kUnknown:
         break;

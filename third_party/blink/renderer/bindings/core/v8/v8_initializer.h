@@ -83,7 +83,6 @@ class CORE_EXPORT V8Initializer {
       v8::AccessType type,
       v8::Local<v8::Value> data);
   static void PromiseRejectHandlerInMainThread(v8::PromiseRejectMessage data);
-  static void ExceptionPropagationCallback(v8::ExceptionPropagationMessage);
 
   static void WasmAsyncResolvePromiseCallback(
       v8::Isolate* isolate,
