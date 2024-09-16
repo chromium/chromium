@@ -554,3 +554,48 @@ TEST_F(TipsNotificationClientTest, TestTriggerTimeDeltas) {
       TipsNotificationTriggerDelta(TipsNotificationUserType::kActiveSeeker),
       base::Days(3));
 }
+
+// Tests that the order of notification types changes correctly when the feature
+// param is set.
+TEST_F(TipsNotificationClientTest, TestOrderParam) {
+  // Test order #1.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      kIOSTipsNotifications, {
+                                 {kIOSTipsNotificationsOrderParam, "1"},
+                             });
+  std::vector<TipsNotificationType> order = TipsNotificationsTypesOrder();
+  EXPECT_EQ(order[0], TipsNotificationType::kSetUpListContinuation);
+  EXPECT_EQ(order[1], TipsNotificationType::kWhatsNew);
+
+  // Test order #2.
+  feature_list.Reset();
+  feature_list.InitAndEnableFeatureWithParameters(
+      kIOSTipsNotifications, {
+                                 {kIOSTipsNotificationsOrderParam, "2"},
+                             });
+  order = TipsNotificationsTypesOrder();
+  EXPECT_EQ(order[0], TipsNotificationType::kLens);
+  EXPECT_EQ(order[1], TipsNotificationType::kWhatsNew);
+
+  // Test order #3.
+  feature_list.Reset();
+  feature_list.InitAndEnableFeatureWithParameters(
+      kIOSTipsNotifications, {
+                                 {kIOSTipsNotificationsOrderParam, "3"},
+                             });
+  order = TipsNotificationsTypesOrder();
+  EXPECT_EQ(order[0], TipsNotificationType::kEnhancedSafeBrowsing);
+  EXPECT_EQ(order[1], TipsNotificationType::kWhatsNew);
+
+  // Test order #4.
+  feature_list.Reset();
+  feature_list.InitAndEnableFeatureWithParameters(
+      kIOSTipsNotifications, {
+                                 {kIOSTipsNotificationsOrderParam, "4"},
+                             });
+  order = TipsNotificationsTypesOrder();
+  EXPECT_EQ(order[0], TipsNotificationType::kLens);
+  EXPECT_EQ(order[1], TipsNotificationType::kOmniboxPosition);
+  EXPECT_EQ(order[2], TipsNotificationType::kEnhancedSafeBrowsing);
+}
