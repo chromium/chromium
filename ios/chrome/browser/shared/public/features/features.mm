@@ -881,11 +881,11 @@ bool IsPinnedTabsEnabled() {
 
 BASE_FEATURE(kPrefetchSystemCapabilitiesOnFirstRun,
              "PrefetchSystemCapabilitiesOnFirstRun",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPrefetchSystemCapabilitiesOnAppStartup,
              "PrefetchSystemCapabilitiesOnAppStartup",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsPrefetchingSystemCapabilitiesOnFirstRun() {
   return base::FeatureList::IsEnabled(kPrefetchSystemCapabilitiesOnFirstRun);
