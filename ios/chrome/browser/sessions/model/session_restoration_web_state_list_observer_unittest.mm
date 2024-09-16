@@ -246,17 +246,15 @@ TEST_F(SessionRestorationWebStateListObserverTest, ClearDirty) {
 }
 
 // Tests that SessionRestorationWebStateListObserver consider the WebStateList
-// as dirty when detaching a serializable WebState. The WebState is still listed
-// as up for adoption.
+// as dirty when detaching a serializable WebState. The WebState is not listed
+// as up for adoption as it is realized.
 TEST_F(SessionRestorationWebStateListObserverTest, Detach) {
   size_t call_count = 0;
   SessionRestorationWebStateListObserver observer(
       web_state_list(), base::IgnoreArgs<WebStateList*>(base::BindRepeating(
                             &IncrementCounter, &call_count)));
 
-  web::WebState* const web_state =
-      InsertWebState(CreateWebState(CreateWebStateAs::kSerializable));
-  const web::WebStateID web_state_id = web_state->GetUniqueIdentifier();
+  InsertWebState(CreateWebState(CreateWebStateAs::kSerializable));
 
   // Clear the dirty state and reset the call counter.
   observer.ClearDirty();
@@ -268,7 +266,7 @@ TEST_F(SessionRestorationWebStateListObserverTest, Detach) {
   EXPECT_TRUE(observer.is_web_state_list_dirty());
   EXPECT_TRUE(observer.dirty_web_states().empty());
   EXPECT_TRUE(observer.inserted_web_states().empty());
-  EXPECT_TRUE(base::Contains(observer.detached_web_states(), web_state_id));
+  EXPECT_TRUE(observer.detached_web_states().empty());
   EXPECT_TRUE(observer.closed_web_states().empty());
   EXPECT_EQ(call_count, 1u);
 
@@ -284,7 +282,7 @@ TEST_F(SessionRestorationWebStateListObserverTest, Detach) {
 
 // Tests that SessionRestorationWebStateListObserver consider the WebStateList
 // as dirty when detaching an unrealized WebState. The WebState is listed as up
-// for adoption.
+// for adoption if unrealized.
 TEST_F(SessionRestorationWebStateListObserverTest, Detach_Unrealized) {
   size_t call_count = 0;
   SessionRestorationWebStateListObserver observer(
@@ -321,16 +319,14 @@ TEST_F(SessionRestorationWebStateListObserverTest, Detach_Unrealized) {
 
 // Tests that SessionRestorationWebStateListObserver consider the WebStateList
 // as dirty when detaching a WebState whose navigation history is still being
-// restored. The WebState is listed as up for adoption.
+// restored. The WebState is not listed as up for adoption as it is realized.
 TEST_F(SessionRestorationWebStateListObserverTest, Detach_Unserializable) {
   size_t call_count = 0;
   SessionRestorationWebStateListObserver observer(
       web_state_list(), base::IgnoreArgs<WebStateList*>(base::BindRepeating(
                             &IncrementCounter, &call_count)));
 
-  web::WebState* const web_state =
-      InsertWebState(CreateWebState(CreateWebStateAs::kRestoreInProgress));
-  const web::WebStateID web_state_id = web_state->GetUniqueIdentifier();
+  InsertWebState(CreateWebState(CreateWebStateAs::kRestoreInProgress));
 
   // Clear the dirty state and reset the call counter.
   observer.ClearDirty();
@@ -342,7 +338,7 @@ TEST_F(SessionRestorationWebStateListObserverTest, Detach_Unserializable) {
   EXPECT_TRUE(observer.is_web_state_list_dirty());
   EXPECT_TRUE(observer.dirty_web_states().empty());
   EXPECT_TRUE(observer.inserted_web_states().empty());
-  EXPECT_TRUE(base::Contains(observer.detached_web_states(), web_state_id));
+  EXPECT_TRUE(observer.detached_web_states().empty());
   EXPECT_TRUE(observer.closed_web_states().empty());
   EXPECT_EQ(call_count, 1u);
 
@@ -366,9 +362,7 @@ TEST_F(SessionRestorationWebStateListObserverTest, Detach_Dirty) {
       web_state_list(), base::IgnoreArgs<WebStateList*>(base::BindRepeating(
                             &IncrementCounter, &call_count)));
 
-  web::WebState* const web_state =
-      InsertWebState(CreateWebState(CreateWebStateAs::kSerializable));
-  const web::WebStateID web_state_id = web_state->GetUniqueIdentifier();
+  InsertWebState(CreateWebState(CreateWebStateAs::kSerializable));
 
   ASSERT_GT(web_state_list()->count(), 0);
   web_state_list()->DetachWebStateAt(/*index*/ 0);
@@ -376,7 +370,7 @@ TEST_F(SessionRestorationWebStateListObserverTest, Detach_Dirty) {
   EXPECT_TRUE(observer.is_web_state_list_dirty());
   EXPECT_TRUE(observer.dirty_web_states().empty());
   EXPECT_TRUE(observer.inserted_web_states().empty());
-  EXPECT_TRUE(base::Contains(observer.detached_web_states(), web_state_id));
+  EXPECT_TRUE(observer.detached_web_states().empty());
   EXPECT_TRUE(observer.closed_web_states().empty());
   EXPECT_EQ(call_count, 1u);  // The callback is only called once!
 
@@ -432,9 +426,7 @@ TEST_F(SessionRestorationWebStateListObserverTest, Detach_DirtyUnserializable) {
       web_state_list(), base::IgnoreArgs<WebStateList*>(base::BindRepeating(
                             &IncrementCounter, &call_count)));
 
-  web::WebState* const web_state =
-      InsertWebState(CreateWebState(CreateWebStateAs::kRestoreInProgress));
-  const web::WebStateID web_state_id = web_state->GetUniqueIdentifier();
+  InsertWebState(CreateWebState(CreateWebStateAs::kRestoreInProgress));
 
   ASSERT_GT(web_state_list()->count(), 0);
   web_state_list()->DetachWebStateAt(/*index*/ 0);
@@ -442,7 +434,7 @@ TEST_F(SessionRestorationWebStateListObserverTest, Detach_DirtyUnserializable) {
   EXPECT_TRUE(observer.is_web_state_list_dirty());
   EXPECT_TRUE(observer.dirty_web_states().empty());
   EXPECT_TRUE(observer.inserted_web_states().empty());
-  EXPECT_TRUE(base::Contains(observer.detached_web_states(), web_state_id));
+  EXPECT_TRUE(observer.detached_web_states().empty());
   EXPECT_TRUE(observer.closed_web_states().empty());
   EXPECT_EQ(call_count, 1u);  // The callback is only called once!
 
@@ -935,4 +927,51 @@ TEST_F(SessionRestorationWebStateListObserverTest, AddExpectedWebState) {
   EXPECT_TRUE(observer.detached_web_states().empty());
   EXPECT_TRUE(observer.inserted_web_states().empty());
   EXPECT_TRUE(observer.closed_web_states().empty());
+  EXPECT_EQ(call_count, 1u);
+}
+
+// Tests that if a WebState is detached and then reinserted to the same Browser
+// the observer does not report it as either detached or inserted.
+TEST_F(SessionRestorationWebStateListObserverTest, DetachAndInsertBack) {
+  size_t call_count = 0;
+  SessionRestorationWebStateListObserver observer(
+      web_state_list(), base::IgnoreArgs<WebStateList*>(base::BindRepeating(
+                            &IncrementCounter, &call_count)));
+
+  std::unique_ptr<web::FakeWebState> web_state =
+      CreateWebState(CreateWebStateAs::kUnrealized);
+  const web::WebStateID web_state_id = web_state->GetUniqueIdentifier();
+  observer.AddExpectedWebState(web_state_id);
+  InsertWebState(std::move(web_state));
+
+  EXPECT_TRUE(observer.is_web_state_list_dirty());
+  EXPECT_TRUE(observer.detached_web_states().empty());
+  EXPECT_TRUE(observer.inserted_web_states().empty());
+  EXPECT_TRUE(observer.closed_web_states().empty());
+  EXPECT_EQ(call_count, 1u);
+
+  observer.ClearDirty();
+  call_count = 0;
+
+  // Detach the WebState, check that it is counted as detached.
+  ASSERT_GE(web_state_list()->count(), 1);
+  std::unique_ptr<web::WebState> detached_web_state =
+      web_state_list()->DetachWebStateAt(0);
+  ASSERT_EQ(detached_web_state->GetUniqueIdentifier(), web_state_id);
+
+  EXPECT_TRUE(observer.is_web_state_list_dirty());
+  EXPECT_TRUE(base::Contains(observer.detached_web_states(), web_state_id));
+  EXPECT_TRUE(observer.inserted_web_states().empty());
+  EXPECT_TRUE(observer.closed_web_states().empty());
+  EXPECT_EQ(call_count, 1u);
+
+  // Insert the WebState, check that it is no longer in the list of detached,
+  // but was not added to the inserted WebState either.
+  web_state_list()->InsertWebState(std::move(detached_web_state));
+
+  EXPECT_TRUE(observer.is_web_state_list_dirty());
+  EXPECT_TRUE(observer.detached_web_states().empty());
+  EXPECT_TRUE(observer.inserted_web_states().empty());
+  EXPECT_TRUE(observer.closed_web_states().empty());
+  EXPECT_EQ(call_count, 1u);
 }

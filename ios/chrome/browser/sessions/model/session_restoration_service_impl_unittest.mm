@@ -1203,6 +1203,90 @@ TEST_F(SessionRestorationServiceImplTest, ScheduleSaveSessions) {
   EXPECT_EQ(ModifiedFiles(), FilePathSet{});
 }
 
+// Tests that the code handle moving unrealized WebState between Browser when
+// saving the session, including if the WebState have been moved back to the
+// same Browser it was originally inserted in.
+TEST_F(SessionRestorationServiceImplTest, SaveAfterMovingWebStateAround) {
+  TestBrowser browser0 = TestBrowser(browser_state());
+  TestBrowser browser1 = TestBrowser(browser_state());
+  TestBrowser browser2 = TestBrowser(browser_state());
+  service()->SetSessionID(&browser0, kIdentifier0);
+  service()->SetSessionID(&browser1, kIdentifier1);
+  service()->SetSessionID(&browser2, kIdentifier2);
+
+  // Storage used to create unrealized WebStates.
+  const web::proto::WebStateStorage storage = web::CreateWebStateStorage(
+      web::NavigationManager::WebLoadParams(GURL(kURL)), kTitle, false,
+      web::UserAgentType::MOBILE, base::Time::Now());
+
+  // Create an unrealized WebState, insert it into browser0, then move it to
+  // browser1, and then to browser2.
+  {
+    browser0.GetWebStateList()->InsertWebState(
+        service()->CreateUnrealizedWebState(&browser0, storage));
+    browser1.GetWebStateList()->InsertWebState(
+        browser0.GetWebStateList()->DetachWebStateAt(0));
+    browser2.GetWebStateList()->InsertWebState(
+        browser1.GetWebStateList()->DetachWebStateAt(0));
+  }
+
+  // Create an unrealized WebState, insert it into browser0, then move it to
+  // browser1, and then back to browser0.
+  {
+    browser0.GetWebStateList()->InsertWebState(
+        service()->CreateUnrealizedWebState(&browser0, storage));
+    browser1.GetWebStateList()->InsertWebState(
+        browser0.GetWebStateList()->DetachWebStateAt(0));
+    browser0.GetWebStateList()->InsertWebState(
+        browser1.GetWebStateList()->DetachWebStateAt(0));
+  }
+
+  // Ensure that the Browser have the expected WebStates.
+  ASSERT_EQ(browser0.GetWebStateList()->count(), 1);
+  ASSERT_EQ(browser1.GetWebStateList()->count(), 0);
+  ASSERT_EQ(browser2.GetWebStateList()->count(), 1);
+
+  // Wait for the session to be saved.
+  WaitForSessionSaveComplete();
+
+  // Build the list of expected files.
+  const FilePathSet expected_browser0 = ExpectedStorageFilesForWebStates(
+      SessionPathFromIdentifier(kIdentifier0),
+      /*expect_session_metadata_storage=*/true,
+      {
+          WebStateReference{
+              .web_state = browser0.GetWebStateList()->GetWebStateAt(0),
+              .is_native_session_available = false,
+          },
+          WebStateReference{
+              .web_state = browser2.GetWebStateList()->GetWebStateAt(0),
+              .is_native_session_available = false,
+          },
+      });
+
+  const FilePathSet expected_browser1 = ExpectedStorageFilesForWebStates(
+      SessionPathFromIdentifier(kIdentifier1),
+      /*expect_session_metadata_storage=*/true, {});
+
+  const FilePathSet expected_browser2 = ExpectedStorageFilesForWebStates(
+      SessionPathFromIdentifier(kIdentifier2),
+      /*expect_session_metadata_storage=*/true,
+      {
+          WebStateReference{
+              .web_state = browser2.GetWebStateList()->GetWebStateAt(0),
+              .is_native_session_available = false,
+          },
+      });
+
+  // Check that the data has been correctly saved.
+  EXPECT_EQ(ModifiedFiles(),
+            expected_browser0 + expected_browser1 + expected_browser2);
+
+  service()->Disconnect(&browser2);
+  service()->Disconnect(&browser1);
+  service()->Disconnect(&browser0);
+}
+
 // Tests that calling DeleteDataForDiscardedSessions() deletes data for
 // discarded sessions and accept inexistant sessions identifiers.
 TEST_F(SessionRestorationServiceImplTest, DeleteDataForDiscardedSessions) {
@@ -1401,6 +1485,59 @@ TEST_F(SessionRestorationServiceImplTest, LoadWebStateStorage_AfterMove) {
   EXPECT_EQ(storage, original_storage);
 
   service()->Disconnect(&browser2);
+  service()->Disconnect(&browser1);
+  service()->Disconnect(&browser0);
+}
+
+// Tests that LoadWebStateStorage(...) is able to load the data even if the
+// WebState is moved multiple times between Browsers.
+TEST_F(SessionRestorationServiceImplTest, LoadWebStateStorage_MoveBack) {
+  TestBrowser browser0 = TestBrowser(browser_state());
+  TestBrowser browser1 = TestBrowser(browser_state());
+  service()->SetSessionID(&browser0, kIdentifier0);
+  service()->SetSessionID(&browser1, kIdentifier1);
+
+  const web::proto::WebStateStorage original_storage =
+      web::CreateWebStateStorage(
+          web::NavigationManager::WebLoadParams(GURL(kURL)), kTitle, false,
+          web::UserAgentType::MOBILE, base::Time::Now());
+
+  // Create an unrealized WebState in browser0 ....
+  std::unique_ptr<web::WebState> web_state =
+      service()->CreateUnrealizedWebState(&browser0, original_storage);
+  browser0.GetWebStateList()->InsertWebState(std::move(web_state));
+  ASSERT_EQ(browser0.GetWebStateList()->count(), 1);
+  ASSERT_EQ(browser1.GetWebStateList()->count(), 0);
+
+  // ... then move it to browser1 ...
+  browser1.GetWebStateList()->InsertWebState(
+      browser0.GetWebStateList()->DetachWebStateAt(0));
+  ASSERT_EQ(browser0.GetWebStateList()->count(), 0);
+  ASSERT_EQ(browser1.GetWebStateList()->count(), 1);
+
+  // ... then move it back to browser0 ....
+  browser0.GetWebStateList()->InsertWebState(
+      browser1.GetWebStateList()->DetachWebStateAt(0));
+  ASSERT_EQ(browser0.GetWebStateList()->count(), 1);
+  ASSERT_EQ(browser1.GetWebStateList()->count(), 0);
+
+  // ... and try to load the data from disk, this should succeed and load
+  // the data from browser0 (since the data has not been copied yet).
+  base::RunLoop run_loop;
+  web::proto::WebStateStorage storage;
+  service()->LoadWebStateStorage(
+      &browser0, browser0.GetWebStateList()->GetWebStateAt(0),
+      base::BindOnce(
+          [](web::proto::WebStateStorage* out_storage,
+             web::proto::WebStateStorage read_storage) {
+            *out_storage = std::move(read_storage);
+          },
+          &storage)
+          .Then(run_loop.QuitClosure()));
+  run_loop.Run();
+
+  EXPECT_EQ(storage, original_storage);
+
   service()->Disconnect(&browser1);
   service()->Disconnect(&browser0);
 }
