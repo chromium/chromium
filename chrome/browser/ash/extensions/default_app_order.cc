@@ -166,6 +166,7 @@ void GetDefault(std::vector<std::string>* app_ids) {
     web_app::kPlayBooksAppId,
 
     web_app::kCameraAppId,
+    web_app::kRecorderAppId,
 
     arc::kGooglePhotosAppId,
     extension_misc::kGooglePhotosAppId,
