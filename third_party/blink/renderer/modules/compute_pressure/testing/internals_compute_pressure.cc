@@ -29,7 +29,7 @@ device::mojom::blink::VirtualPressureSourceMetadataPtr ToMojoPressureMetadata(
   }
 
   auto metadata = device::mojom::blink::VirtualPressureSourceMetadata::New();
-  metadata->available = options->available();
+  metadata->available = options->supported();
   return metadata;
 }
 
