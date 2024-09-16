@@ -8,21 +8,9 @@
 #import <AuthenticationServices/AuthenticationServices.h>
 #import <Foundation/Foundation.h>
 
-#import "base/functional/callback.h"
 #import "ios/chrome/credential_provider_extension/passkey_keychain_provider.h"
 
 @protocol Credential;
-
-typedef void (^FetchKeyCompletionBlock)(
-    const PasskeyKeychainProvider::SharedKeyList& keyList);
-
-// Fetches the Security Domain Secret and calls the completion block
-// with the Security Domain Secret as the input argument.
-void FetchSecurityDomainSecret(
-    NSString* gaia,
-    UINavigationController* navigation_controller,
-    PasskeyKeychainProvider::ReauthenticatePurpose purpose,
-    FetchKeyCompletionBlock callback);
 
 // On a success, returns a newly created passkey.
 // Returns nil otherwise.

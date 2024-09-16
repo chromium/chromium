@@ -98,19 +98,6 @@ NSData* GenerateSignature(NSData* encrypted_private_key,
 
 }  // namespace
 
-void FetchSecurityDomainSecret(
-    NSString* gaia,
-    UINavigationController* navigation_controller,
-    PasskeyKeychainProvider::ReauthenticatePurpose purpose,
-    FetchKeyCompletionBlock callback) {
-  PasskeyKeychainProvider passkeyKeychainProvider;
-  passkeyKeychainProvider.FetchKeys(
-      gaia, navigation_controller, purpose,
-      base::BindOnce(^(const PasskeyKeychainProvider::SharedKeyList& keyList) {
-        callback(keyList);
-      }));
-}
-
 ASPasskeyRegistrationCredential* PerformPasskeyCreation(
     NSData* client_data_hash,
     NSString* rp_id,
