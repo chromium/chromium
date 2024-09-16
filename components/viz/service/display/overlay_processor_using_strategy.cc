@@ -404,7 +404,9 @@ void OverlayProcessorUsingStrategy::ProcessForOverlays(
   // If we have any copy requests, we can't remove any quads for overlays or
   // CALayers because the framebuffer would be missing the removed quads'
   // contents.
-  if (render_pass->copy_requests.empty() && !disable_overlay()) {
+  bool skip_because_copy_request = BlockForCopyRequests(render_pass);
+
+  if (!skip_because_copy_request && !disable_overlay()) {
     success = AttemptWithStrategies(
         output_color_matrix, render_pass_filters, render_pass_backdrop_filters,
         resource_provider, render_passes, &surface_damage_rect_list,
@@ -1174,6 +1176,27 @@ void OverlayProcessorUsingStrategy::UpdateDownscalingCapabilities(
   // legitimate.
   constexpr float kMaxFailedScaleMin = 0.70f;
   max_failed_scale_ = std::min(max_failed_scale_, kMaxFailedScaleMin);
+}
+
+bool OverlayProcessorUsingStrategy::BlockForCopyRequests(
+    const AggregatedRenderPass* root_render_pass) {
+  if (!base::FeatureList::IsEnabled(
+          features::kTemporalSkipOverlaysWithRootCopyOutputRequests)) {
+    return !root_render_pass->copy_requests.empty();
+  }
+
+  bool has_copy = false;
+  if (!root_render_pass->copy_requests.empty()) {
+    has_copy = true;
+  }
+
+  if (has_copy) {
+    copy_request_counter_ = kCopyRequestSkipOverlayFrames;
+  } else {
+    copy_request_counter_ = std::max(0, copy_request_counter_ - 1);
+  }
+
+  return copy_request_counter_ > 0;
 }
 
 }  // namespace viz

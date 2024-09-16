@@ -61,6 +61,10 @@ BASE_FEATURE(kUseFrameIntervalDecider,
              "UseFrameIntervalDecider",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kTemporalSkipOverlaysWithRootCopyOutputRequests,
+             "TemporalSkipOverlaysWithRootCopyOutputRequests",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kUseMultipleOverlays,
              "UseMultipleOverlays",
 #if BUILDFLAG(IS_CHROMEOS_ASH)
