@@ -18,6 +18,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.content.Context;
@@ -47,6 +48,9 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.components.autofill.AutofillFeatures;
 import org.chromium.components.autofill.AutofillProvider;
+import org.chromium.components.prefs.PrefService;
+import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
@@ -77,6 +81,8 @@ public class TabUnitTest {
     @Mock private WebContents mWebContents;
     @Mock private View mNativePageView;
     @Mock private ChromeActivity mChromeActivity;
+    @Mock private UserPrefs.Natives mUserPrefsNatives;
+    @Mock private PrefService mPrefs;
     @Mock TabImpl.Natives mNativeMock;
 
     private TabImpl mTab;
@@ -90,6 +96,8 @@ public class TabUnitTest {
         doReturn(mActivity).when(mWeakReferenceActivity).get();
         doReturn(mContext).when(mWeakReferenceContext).get();
         doReturn(mContext).when(mContext).getApplicationContext();
+        mocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsNatives);
+        when(mUserPrefsNatives.get(mProfile)).thenReturn(mPrefs);
 
         mTab =
                 new TabImpl(TAB1_ID, mProfile, null) {
@@ -268,7 +276,24 @@ public class TabUnitTest {
     @Test
     @SmallTest
     @EnableFeatures({AutofillFeatures.AUTOFILL_VIRTUAL_VIEW_STRUCTURE_ANDROID})
+    public void testAutofillUnavailableWithoutPref() {
+        when(mPrefs.getBoolean(TabImpl.AUTOFILL_PREF_USES_VIRTUAL_STRUCTURE)).thenReturn(false);
+        assertFalse(mTab.providesAutofillStructure());
+        mTab.setAutofillProvider(null);
+
+        mTab.onProvideAutofillVirtualStructure(mock(ViewStructure.class), 0);
+        verify(mAutofillProvider, never()).onProvideAutoFillVirtualStructure(any(), anyInt());
+
+        mTab.autofill(new SparseArray<AutofillValue>());
+        verify(mAutofillProvider, never()).autofill(any());
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({AutofillFeatures.AUTOFILL_VIRTUAL_VIEW_STRUCTURE_ANDROID})
     public void testAutofillRequestsHandledByProvider() {
+        when(mPrefs.getBoolean(TabImpl.AUTOFILL_PREF_USES_VIRTUAL_STRUCTURE)).thenReturn(true);
+        when(mProfile.isNativeInitialized()).thenReturn(true);
         assertTrue(mTab.providesAutofillStructure());
 
         ViewStructure structure = mock(ViewStructure.class);

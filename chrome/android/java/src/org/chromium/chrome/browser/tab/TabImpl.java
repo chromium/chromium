@@ -69,9 +69,11 @@ import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuPopulatorFactory;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.view.ContentView;
+import org.chromium.components.prefs.PrefService;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.components.security_state.SecurityStateModel;
 import org.chromium.components.url_formatter.UrlFormatter;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.ChildProcessImportance;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationHandle;
@@ -103,6 +105,14 @@ class TabImpl implements Tab {
             "Android.Tab.BackgroundColorChange.PreOptimization";
     private static final String BACKGROUND_COLOR_CHANGE_HISTOGRAM =
             "Android.Tab.BackgroundColorChange";
+
+    /**
+     * A pref from //components/autofill/core/common/autofill_prefs.h which allows the use of
+     * virtual viewstructures for Autofill when set.
+     */
+    @VisibleForTesting
+    static final String AUTOFILL_PREF_USES_VIRTUAL_STRUCTURE =
+            "autofill.using_virtual_view_structure";
 
     private static final String PRODUCT_VERSION = VersionInfo.getProductVersion();
 
@@ -1274,17 +1284,24 @@ class TabImpl implements Tab {
      * @return iff the AutofillProvider should provide a ViewStructure when prompted.
      */
     boolean providesAutofillStructure() {
-        // TODO(b/326231439): Check pref and AutofillService!
-        return ChromeFeatureList.isEnabled(
-                AutofillFeatures.AUTOFILL_VIRTUAL_VIEW_STRUCTURE_ANDROID);
+        if (!ChromeFeatureList.isEnabled(
+                AutofillFeatures.AUTOFILL_VIRTUAL_VIEW_STRUCTURE_ANDROID)) {
+            return false;
+        }
+        if (mProfile == null || !mProfile.isNativeInitialized()) {
+            return false;
+        }
+        @Nullable PrefService prefs = UserPrefs.get(mProfile);
+        return prefs != null && prefs.getBoolean(AUTOFILL_PREF_USES_VIRTUAL_STRUCTURE);
     }
 
     // Forwarded from TabWebContentsDelegateAndroid.
 
     /**
      * Called when a navigation begins and no navigation was in progress
-     * @param toDifferentDocument Whether this navigation will transition between
-     * documents (i.e., not a fragment navigation or JS History API call).
+     *
+     * @param toDifferentDocument Whether this navigation will transition between documents (i.e.,
+     *     not a fragment navigation or JS History API call).
      */
     void onLoadStarted(boolean toDifferentDocument) {
         if (toDifferentDocument) mIsLoading = true;
