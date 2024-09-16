@@ -12,7 +12,9 @@ android_library("helper_java") {
 
   sources = [
     "java/src/org/chromium/chrome/browser/access_loss/HelpUrlLauncher.java",
+    "java/src/org/chromium/chrome/browser/access_loss/PasswordAccessLossNotificationProperties.java",
     "java/src/org/chromium/chrome/browser/access_loss/PasswordAccessLossWarningHelper.java",
+    "java/src/org/chromium/chrome/browser/access_loss/PwdAccessLossNotificationCoordinator.java",
   ]
 
   deps = [
@@ -75,6 +77,7 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/access_loss/HelpUrlLauncherTest.java",
     "java/src/org/chromium/chrome/browser/access_loss/PasswordAccessLossDialogSettingsCoordinatorTest.java",
     "java/src/org/chromium/chrome/browser/access_loss/PasswordAccessLossWarningHelperTest.java",
+    "java/src/org/chromium/chrome/browser/access_loss/PwdAccessLossNotificationCoordinatorTest.java",
   ]
 
   deps = [

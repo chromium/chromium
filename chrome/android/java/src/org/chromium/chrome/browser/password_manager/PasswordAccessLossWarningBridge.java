@@ -13,6 +13,7 @@ import org.jni_zero.CalledByNative;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
 import org.chromium.chrome.browser.access_loss.PasswordAccessLossWarningHelper;
 import org.chromium.chrome.browser.access_loss.PasswordAccessLossWarningType;
+import org.chromium.chrome.browser.access_loss.PwdAccessLossNotificationCoordinator;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
@@ -24,6 +25,7 @@ import org.chromium.ui.base.WindowAndroid;
  */
 class PasswordAccessLossWarningBridge {
     PasswordAccessLossWarningHelper mHelper;
+    PwdAccessLossNotificationCoordinator mNotificationCoordinator;
 
     public PasswordAccessLossWarningBridge(
             Activity activity, BottomSheetController bottomSheetController, Profile profile) {
@@ -33,6 +35,8 @@ class PasswordAccessLossWarningBridge {
                         bottomSheetController,
                         profile,
                         LaunchIntentDispatcher::createCustomTabActivityIntent);
+        mNotificationCoordinator =
+                new PwdAccessLossNotificationCoordinator(activity.getBaseContext());
     }
 
     @CalledByNative
@@ -53,6 +57,8 @@ class PasswordAccessLossWarningBridge {
     @CalledByNative
     public void show(@PasswordAccessLossWarningType int warningType) {
         mHelper.show(warningType);
-        mHelper.showNotification(PasswordAccessLossWarningType.NO_UPM);
     }
+
+    // TODO: crbug.com/354886517 - Introduce the showNotification method and call it from the cpp
+    // bridge.
 }

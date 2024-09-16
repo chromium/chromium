@@ -17,63 +17,34 @@ import android.text.SpannableString;
 import android.view.View;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.bottom_sheet.SimpleNoticeSheetCoordinator;
-import org.chromium.chrome.browser.notifications.NotificationConstants;
-import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
-import org.chromium.chrome.browser.notifications.NotificationWrapperBuilderFactory;
-import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions.ChannelId;
 import org.chromium.chrome.browser.password_manager.CustomTabIntentHelper;
 import org.chromium.chrome.browser.password_manager.GmsUpdateLauncher;
 import org.chromium.chrome.browser.password_manager.PasswordExportLauncher;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxy;
-import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
-import org.chromium.components.browser_ui.notifications.NotificationMetadata;
-import org.chromium.components.browser_ui.notifications.NotificationWrapper;
-import org.chromium.components.browser_ui.notifications.NotificationWrapperBuilder;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 
 /** Entry-point to the access loss warning UI surface. */
 public class PasswordAccessLossWarningHelper {
-    private final BaseNotificationManagerProxy mNotificationManagerProxy;
-
-    @VisibleForTesting protected static final String TAG = "access_loss_warning";
     final Activity mActivity;
     final BottomSheetController mBottomSheetController;
     final Profile mProfile;
     final HelpUrlLauncher mHelpUrlLauncher;
-
-    @VisibleForTesting
-    PasswordAccessLossWarningHelper(
-            Activity activity,
-            BottomSheetController bottomSheetController,
-            Profile profile,
-            BaseNotificationManagerProxy manager,
-            CustomTabIntentHelper customTabIntentHelper) {
-        mBottomSheetController = bottomSheetController;
-        mProfile = profile;
-        mActivity = activity;
-        mNotificationManagerProxy = manager;
-        mHelpUrlLauncher = new HelpUrlLauncher(customTabIntentHelper);
-    }
 
     public PasswordAccessLossWarningHelper(
             Activity activity,
             BottomSheetController bottomSheetController,
             Profile profile,
             CustomTabIntentHelper customTabIntentHelper) {
-        this(
-                activity,
-                bottomSheetController,
-                profile,
-                BaseNotificationManagerProxyFactory.create(activity),
-                customTabIntentHelper);
+        mBottomSheetController = bottomSheetController;
+        mProfile = profile;
+        mActivity = activity;
+        mHelpUrlLauncher = new HelpUrlLauncher(customTabIntentHelper);
     }
 
     public void show(@PasswordAccessLossWarningType int warningType) {
@@ -84,42 +55,6 @@ public class PasswordAccessLossWarningHelper {
             return;
         }
         coordinator.showSheet(model);
-    }
-
-    private NotificationWrapperBuilder getNotificationBuilder() {
-        return NotificationWrapperBuilderFactory.createNotificationWrapperBuilder(
-                ChannelId.BROWSER,
-                new NotificationMetadata(
-                        NotificationUmaTracker.SystemNotificationType.UPM_ACCESS_LOSS_WARNING,
-                        TAG,
-                        NotificationConstants.NOTIFICATION_ID_UPM_ACCESS_LOSS));
-    }
-
-    public void showNotification(@PasswordAccessLossWarningType int warningType) {
-        PropertyModel model = getModelForWarningType(warningType);
-        String title = model.get(SHEET_TITLE);
-        String contents = model.get(SHEET_TEXT).toString();
-
-        // TODO: crbug.com/354886479 - Add the notification actions.
-        NotificationWrapperBuilder notificationWrapperBuilder =
-                getNotificationBuilder()
-                        .setSmallIcon(R.drawable.ic_chrome)
-                        .setShowWhen(false)
-                        .setAutoCancel(true)
-                        .setLocalOnly(true)
-                        .setContentTitle(title)
-                        .setContentText(contents)
-                        .setTicker(contents);
-
-        NotificationWrapper notification =
-                notificationWrapperBuilder.buildWithBigTextStyle(contents);
-
-        mNotificationManagerProxy.notify(notification);
-
-        NotificationUmaTracker.getInstance()
-                .onNotificationShown(
-                        NotificationUmaTracker.SystemNotificationType.UPM_ACCESS_LOSS_WARNING,
-                        notification.getNotification());
     }
 
     @Nullable

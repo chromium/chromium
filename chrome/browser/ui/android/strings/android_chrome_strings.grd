@@ -880,6 +880,12 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
       <message name="IDS_PWD_ACCESS_LOSS_WARNING_UPDATE_GMS_CORE_BUTTON_TEXT" desc="The button text of the password access loss warning sheet when the GMS Core version doesn't support local passwords." formatter_data="android_java">
         Update
       </message>
+      <message name="IDS_PWD_ACCESS_LOSS_NOTIFICATION_NO_GMS_CORE_TEXT" desc="The text of the password access loss notification when there is no GMS Core." formatter_data="android_java">
+        Passwords will stop working soon because Google Play services isn’t available. You can make a copy of your saved passwords before they stop working.
+      </message>
+      <message name="IDS_PWD_ACCESS_LOSS_NOTIFICATION_UPDATE_GMS_CORE_TEXT" desc="The text of the password access loss notification when the GMS Core version doesn't support local passwords." formatter_data="android_java">
+        Passwords may stop working soon on this device. To keep using your passwords, update Google Play services.
+      </message>
       <message name="IDS_PASSWORD_MIGRATION_WARNING_TITLE" desc="The title of the password migration warning sheet.">
         We’re changing how passwords are saved on this device
       </message>

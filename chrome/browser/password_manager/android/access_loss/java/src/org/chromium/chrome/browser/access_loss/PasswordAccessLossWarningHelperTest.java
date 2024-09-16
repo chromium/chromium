@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.access_loss;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyBoolean;
 import static org.mockito.Mockito.doNothing;
@@ -17,7 +16,6 @@ import static org.chromium.chrome.browser.bottom_sheet.SimpleNoticeSheetProperti
 import static org.chromium.chrome.browser.bottom_sheet.SimpleNoticeSheetProperties.SHEET_TITLE;
 
 import android.app.Activity;
-import android.app.Notification;
 import android.content.Context;
 import android.content.Intent;
 
@@ -34,23 +32,16 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 import org.robolectric.Robolectric;
-import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
-import org.robolectric.shadows.ShadowNotification;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.notifications.NotificationUmaTracker.SystemNotificationType;
-import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.chrome.browser.password_manager.CustomTabIntentHelper;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
-import org.chromium.components.browser_ui.notifications.AsyncNotificationManagerProxy;
-import org.chromium.components.browser_ui.notifications.NotificationMetadata;
-import org.chromium.components.browser_ui.notifications.NotificationWrapper;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
@@ -69,7 +60,6 @@ public class PasswordAccessLossWarningHelperTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private Profile mProfile;
-    @Mock private AsyncNotificationManagerProxy mNotificationManagerProxy;
 
     @Before
     public void setUp() {
@@ -79,11 +69,7 @@ public class PasswordAccessLossWarningHelperTest {
         CustomTabIntentHelper customTabIntentHelper = (Context context, Intent intent) -> intent;
         mHelper =
                 new PasswordAccessLossWarningHelper(
-                        mActivity,
-                        mBottomSheetController,
-                        mProfile,
-                        mNotificationManagerProxy,
-                        customTabIntentHelper);
+                        mActivity, mBottomSheetController, mProfile, customTabIntentHelper);
     }
 
     private void setUpBottomSheetController() {
@@ -170,94 +156,5 @@ public class PasswordAccessLossWarningHelperTest {
         assertEquals(
                 model.get(BUTTON_TITLE),
                 mActivity.getString(R.string.pwd_access_loss_warning_manual_migration_button_text));
-    }
-
-    @Test
-    public void testShowNotification() {
-        ArgumentCaptor<NotificationWrapper> captor =
-                ArgumentCaptor.forClass(NotificationWrapper.class);
-        mHelper.showNotification(PasswordAccessLossWarningType.ONLY_ACCOUNT_UPM);
-        verify(mNotificationManagerProxy).notify(captor.capture());
-
-        NotificationWrapper notificationWrapper = captor.getValue();
-        Notification notification = notificationWrapper.getNotification();
-        assertEquals(R.drawable.ic_chrome, notification.getSmallIcon().getResId());
-        assertEquals(ChromeChannelDefinitions.ChannelId.BROWSER, notification.getChannelId());
-
-        NotificationMetadata notificationMetadata = notificationWrapper.getMetadata();
-        assertEquals(SystemNotificationType.UPM_ACCESS_LOSS_WARNING, notificationMetadata.type);
-        assertEquals(PasswordAccessLossWarningHelper.TAG, notificationMetadata.tag);
-    }
-
-    @Test
-    public void testShowNotificationForNoGmsCore() {
-        ArgumentCaptor<NotificationWrapper> captor =
-                ArgumentCaptor.forClass(NotificationWrapper.class);
-        mHelper.showNotification(PasswordAccessLossWarningType.NO_GMS_CORE);
-        verify(mNotificationManagerProxy).notify(captor.capture());
-
-        ShadowNotification shadowNotification =
-                Shadows.shadowOf(captor.getValue().getNotification());
-        assertFalse(shadowNotification.isWhenShown());
-        assertEquals(
-                mActivity.getString(R.string.pwd_access_loss_warning_no_gms_core_title),
-                shadowNotification.getContentTitle());
-        assertEquals(
-                getStringWithoutLink(R.string.pwd_access_loss_warning_no_gms_core_text),
-                shadowNotification.getContentText());
-    }
-
-    @Test
-    public void testShowNotificationForNoUpm() {
-        ArgumentCaptor<NotificationWrapper> captor =
-                ArgumentCaptor.forClass(NotificationWrapper.class);
-        mHelper.showNotification(PasswordAccessLossWarningType.NO_UPM);
-        verify(mNotificationManagerProxy).notify(captor.capture());
-
-        ShadowNotification shadowNotification =
-                Shadows.shadowOf(captor.getValue().getNotification());
-        assertFalse(shadowNotification.isWhenShown());
-        assertEquals(
-                mActivity.getString(R.string.pwd_access_loss_warning_update_gms_core_title),
-                shadowNotification.getContentTitle());
-        assertEquals(
-                getStringWithoutLink(R.string.pwd_access_loss_warning_update_gms_core_text),
-                shadowNotification.getContentText());
-    }
-
-    @Test
-    public void testShowNotificationForOnlyAccountUpm() {
-        ArgumentCaptor<NotificationWrapper> captor =
-                ArgumentCaptor.forClass(NotificationWrapper.class);
-        mHelper.showNotification(PasswordAccessLossWarningType.ONLY_ACCOUNT_UPM);
-        verify(mNotificationManagerProxy).notify(captor.capture());
-
-        ShadowNotification shadowNotification =
-                Shadows.shadowOf(captor.getValue().getNotification());
-        assertFalse(shadowNotification.isWhenShown());
-        assertEquals(
-                mActivity.getString(R.string.pwd_access_loss_warning_update_gms_core_title),
-                shadowNotification.getContentTitle());
-        assertEquals(
-                getStringWithoutLink(R.string.pwd_access_loss_warning_update_gms_core_text),
-                shadowNotification.getContentText());
-    }
-
-    @Test
-    public void testShowNotificationWhenMigrationFailed() {
-        ArgumentCaptor<NotificationWrapper> captor =
-                ArgumentCaptor.forClass(NotificationWrapper.class);
-        mHelper.showNotification(PasswordAccessLossWarningType.NEW_GMS_CORE_MIGRATION_FAILED);
-        verify(mNotificationManagerProxy).notify(captor.capture());
-
-        ShadowNotification shadowNotification =
-                Shadows.shadowOf(captor.getValue().getNotification());
-        assertFalse(shadowNotification.isWhenShown());
-        assertEquals(
-                mActivity.getString(R.string.pwd_access_loss_warning_manual_migration_title),
-                shadowNotification.getContentTitle());
-        assertEquals(
-                mActivity.getString(R.string.pwd_access_loss_warning_manual_migration_text),
-                shadowNotification.getContentText());
     }
 }
