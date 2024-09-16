@@ -254,10 +254,12 @@ ci.thin_tester(
         ),
         run_tests_serially = True,
     ),
-    console_view_entry = consoles.console_view_entry(
-        category = "Android|T64|IMG",
-        short_name = "MGP",
-    ),
+    # Uncomment this entry when this experimental tester is actually in use.
+    # console_view_entry = consoles.console_view_entry(
+    #     category = "Android|T64|IMG",
+    #     short_name = "MGP",
+    # ),
+    list_view = "chromium.gpu.experimental",
 )
 
 # TODO(crbug.com/40282670): Add a trybot for this builder when there's capacity.
