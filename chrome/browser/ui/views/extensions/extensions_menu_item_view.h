@@ -78,9 +78,6 @@ class ExtensionMenuItemView : public views::FlexLayoutView {
   ExtensionMenuItemView& operator=(const ExtensionMenuItemView&) = delete;
   ~ExtensionMenuItemView() override;
 
-  // views::View:
-  void OnThemeChanged() override;
-
   // Updates the controller and child views to be on sync with the parent views.
   void Update(SiteAccessToggleState site_access_toggle_state,
               SitePermissionsButtonState site_permissions_button_state,

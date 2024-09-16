@@ -56,20 +56,6 @@ namespace {
 constexpr int EXTENSION_CONTEXT_MENU = 13;
 constexpr int EXTENSION_PINNING = 14;
 
-void SetButtonIconWithColor(HoverButton* button,
-                            const gfx::VectorIcon& icon,
-                            ui::ColorId icon_color_id,
-                            ui::ColorId disabled_icon_color_id) {
-  const int icon_size = ChromeLayoutProvider::Get()->GetDistanceMetric(
-      DISTANCE_EXTENSIONS_MENU_BUTTON_ICON_SIZE);
-  button->SetImageModel(
-      views::Button::STATE_NORMAL,
-      ui::ImageModel::FromVectorIcon(icon, icon_color_id, icon_size));
-  button->SetImageModel(
-      views::Button::STATE_DISABLED,
-      ui::ImageModel::FromVectorIcon(icon, disabled_icon_color_id, icon_size));
-}
-
 std::u16string GetPinButtonTooltip(bool is_force_pinned, bool is_pinned) {
   int tooltip_id = IDS_EXTENSIONS_PIN_TO_TOOLBAR;
   if (is_force_pinned) {
@@ -227,6 +213,9 @@ ExtensionMenuItemView::ExtensionMenuItemView(
   CHECK(!base::FeatureList::IsEnabled(
       extensions_features::kExtensionsMenuAccessControl));
 
+  const int icon_size = ChromeLayoutProvider::Get()->GetDistanceMetric(
+      DISTANCE_EXTENSIONS_MENU_BUTTON_ICON_SIZE);
+
   auto builder =
       views::Builder<ExtensionMenuItemView>(this)
           // Set so the extension button receives enter/exit on children to
@@ -255,7 +244,16 @@ ExtensionMenuItemView::ExtensionMenuItemView(
                       IDS_EXTENSIONS_MENU_CONTEXT_MENU_TOOLTIP))
                   .SetAccessibleName(l10n_util::GetStringFUTF16(
                       IDS_EXTENSIONS_MENU_CONTEXT_MENU_TOOLTIP_ACCESSIBLE_NAME,
-                      controller_->GetActionName())));
+                      controller_->GetActionName()))
+                  .SetImageModel(views::Button::STATE_NORMAL,
+                                 ui::ImageModel::FromVectorIcon(
+                                     kBrowserToolsChromeRefreshIcon,
+                                     kColorExtensionMenuIcon, icon_size))
+                  .SetImageModel(
+                      views::Button::STATE_DISABLED,
+                      ui::ImageModel::FromVectorIcon(
+                          kBrowserToolsChromeRefreshIcon,
+                          kColorExtensionMenuIconDisabled, icon_size)));
 
   if (allow_pinning) {
     // Pin button should be in between `primary_action_button_` and
@@ -273,6 +271,7 @@ ExtensionMenuItemView::ExtensionMenuItemView(
                 ChromeLayoutProvider::Get()->GetDistanceMetric(
                     DISTANCE_EXTENSIONS_MENU_BUTTON_MARGIN))),
         index);
+
     // By default, the button's accessible description is set to the button's
     // tooltip text. For the pin button, we only want the accessible name to be
     // read on accessibility mode since it includes the tooltip text. Thus we
@@ -280,6 +279,11 @@ ExtensionMenuItemView::ExtensionMenuItemView(
     pin_button_->GetViewAccessibility().SetDescription(
         std::u16string(),
         ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty);
+
+    bool is_pinned = model_ && model_->IsActionPinned(controller_->GetId());
+    bool is_force_pinned =
+        model_ && model_->IsActionForcePinned(controller_->GetId());
+    UpdatePinButton(is_force_pinned, is_pinned);
   }
 
   std::move(builder).BuildChildren();
@@ -401,26 +405,6 @@ ExtensionMenuItemView::ExtensionMenuItemView(
 
 ExtensionMenuItemView::~ExtensionMenuItemView() = default;
 
-void ExtensionMenuItemView::OnThemeChanged() {
-  views::View::OnThemeChanged();
-
-  if (base::FeatureList::IsEnabled(
-          extensions_features::kExtensionsMenuAccessControl)) {
-    bool is_pinned = model_ && model_->IsActionPinned(controller_->GetId());
-    UpdateContextMenuButton(is_pinned);
-  } else {
-    SetButtonIconWithColor(context_menu_button_, kBrowserToolsChromeRefreshIcon,
-                           kColorExtensionMenuIcon,
-                           kColorExtensionMenuIconDisabled);
-    if (pin_button_) {
-      bool is_pinned = model_ && model_->IsActionPinned(controller_->GetId());
-      bool is_force_pinned =
-          model_ && model_->IsActionForcePinned(controller_->GetId());
-      UpdatePinButton(is_force_pinned, is_pinned);
-    }
-  }
-}
-
 void ExtensionMenuItemView::Update(
     SiteAccessToggleState site_access_toggle_state,
     SitePermissionsButtonState site_permissions_button_state,
@@ -459,7 +443,7 @@ void ExtensionMenuItemView::Update(
 
 void ExtensionMenuItemView::UpdatePinButton(bool is_force_pinned,
                                             bool is_pinned) {
-  if (!pin_button_ || !GetWidget()) {
+  if (!pin_button_) {
     return;
   }
 
@@ -471,13 +455,22 @@ void ExtensionMenuItemView::UpdatePinButton(bool is_force_pinned,
   pin_button_->SetEnabled(!is_force_pinned &&
                           !browser_->profile()->IsOffTheRecord());
 
+  // Update the icon based on whether the extension is pinned.
+  const gfx::VectorIcon& icon = is_pinned ? kKeepFilledIcon : kKeepIcon;
   const ui::ColorId icon_color_id =
       is_pinned ? kColorExtensionMenuPinButtonIcon : kColorExtensionMenuIcon;
   const ui::ColorId disabled_icon_color_id =
       is_pinned ? kColorExtensionMenuPinButtonIconDisabled
                 : kColorExtensionMenuIconDisabled;
-  SetButtonIconWithColor(pin_button_, is_pinned ? kKeepFilledIcon : kKeepIcon,
-                         icon_color_id, disabled_icon_color_id);
+  const int icon_size = ChromeLayoutProvider::Get()->GetDistanceMetric(
+      DISTANCE_EXTENSIONS_MENU_BUTTON_ICON_SIZE);
+
+  pin_button_->SetImageModel(
+      views::Button::STATE_NORMAL,
+      ui::ImageModel::FromVectorIcon(icon, icon_color_id, icon_size));
+  pin_button_->SetImageModel(
+      views::Button::STATE_DISABLED,
+      ui::ImageModel::FromVectorIcon(icon, disabled_icon_color_id, icon_size));
 }
 
 void ExtensionMenuItemView::UpdateContextMenuButton(bool is_action_pinned) {
@@ -525,6 +518,12 @@ void ExtensionMenuItemView::SetupContextMenuButton() {
   // accessible name.
   context_menu_button_->GetViewAccessibility().SetDescription(
       std::u16string(), ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty);
+
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kExtensionsMenuAccessControl)) {
+    bool is_action_pinned = model_->IsActionPinned(controller_->GetId());
+    UpdateContextMenuButton(is_action_pinned);
+  }
 }
 
 void ExtensionMenuItemView::OnContextMenuPressed() {
