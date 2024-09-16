@@ -111,6 +111,12 @@ bool MaskedDomainListManager::Matches(
       DVLOG(3) << "NSPAL::Matches(" << request_url << ", "
                << top_frame_site.value() << ")";
 
+      // Bypass the proxy for same-site requests.
+      net::SchemefulSite request_site(request_url);
+      if (top_frame_site.has_value() && top_frame_site == request_site) {
+        return false;
+      }
+
       // Only proxy traffic where the top-level site is an HTTP/HTTPS page or
       // where the NAK corresponds to a fenced frame.
       if (net::features::kIpPrivacyRestrictTopLevelSiteSchemes.Get() &&

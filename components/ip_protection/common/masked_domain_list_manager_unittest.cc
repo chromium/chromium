@@ -128,7 +128,7 @@ const std::vector<ExperimentGroupMatchTest> kMatchTests = {
     // Should be proxied because `googleapis.com` is on the MDL and the two
     // don't belong to the same owner.
     ExperimentGroupMatchTest{
-        "OnPsl_MatchingOwnedResources_TopToSubOnSameDomain_"
+        "OnPsl_MatchingOwnedResources_TopToSubOnSameDomain"
         "OwnerDoesntClaimSubdomain",
         "sub.googleapis.com",
         "googleapis.com",
@@ -136,18 +136,17 @@ const std::vector<ExperimentGroupMatchTest> kMatchTests = {
         true,
         true,
     },
-    // Request from a domain to its subdomain.
+    // Request from one site in the PSL rules to another in the PSL rules.
     // `co.jp` is listed on the PSL.
     // No MDL entry claims ownership of `co.jp`
     // An MDL entry claims ownership of `sub.co.jp`
-    // Should be proxied because `co.jp` is listed on the PSL,
-    // therefore 3rd parties can claim subdomains and this is considered a
-    // request to a 3rd party tracker on the MDL.
+    // Should be proxied because `co.jp` is listed on the PSL and the
+    // top_frame_site has the same suffix but is not same-site.
     ExperimentGroupMatchTest{
-        "OnPsl_MatchingOwnedResources_TopToSubOnSameDomain_"
+        "OnPsl_MatchingOwnedResources_TopToSubOnSameDomain"
         "OwnerClaimsSubdomain",
         "sub.co.jp",
-        "co.jp",
+        "other.co.jp",
         "1",
         true,
         true,
@@ -162,6 +161,20 @@ const std::vector<ExperimentGroupMatchTest> kMatchTests = {
         "Psl_MatchingOwnedResources_SubdomainNotOnPsl",
         "sub.co.jp",
         "owned_property.com",
+        "1",
+        true,
+        false,
+    },
+    // Request from one site in the PSL rules to another in the PSL rules.
+    // `co.jp` is listed on the PSL.
+    // No MDL entry claims ownership of `co.jp`
+    // No MDL entry claims ownership of `site.co.jp`
+    // Bypasses the proxy for same-site check of request and top_frame_site.
+    ExperimentGroupMatchTest{
+        "OnPsl_SameSiteRequest"
+        "OwnerClaimsSubdomain",
+        "same.site.co.jp",
+        "site.co.jp",
         "1",
         true,
         false,
