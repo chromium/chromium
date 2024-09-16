@@ -22,6 +22,21 @@ using TokenError = content::IdentityCredentialTokenError;
 // identity dialog controller with the Android frontend.
 class AccountSelectionView {
  public:
+  // This enum is used for histograms. Do not remove or modify existing values,
+  // but you may add new values at the end and increase COUNT. This enum should
+  // be kept in sync with SheetType in
+  // chrome/browser/ui/android/webid/AccountSelectionMediator.java as well as
+  // with FedCmSheetType in tools/metrics/histograms/enums.xml.
+  enum SheetType {
+    ACCOUNT_SELECTION = 0,
+    VERIFYING = 1,
+    AUTO_REAUTHN = 2,
+    SIGN_IN_TO_IDP_STATIC = 3,
+    SIGN_IN_ERROR = 4,
+    LOADING = 5,
+    COUNT = 6
+  };
+
   class Delegate {
    public:
     virtual ~Delegate() = default;

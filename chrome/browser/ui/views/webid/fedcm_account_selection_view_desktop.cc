@@ -26,7 +26,7 @@
 #include "ui/views/widget/widget.h"
 
 using DismissReason = content::IdentityRequestDialogController::DismissReason;
-
+using SheetType = AccountSelectionView::SheetType;
 
 // static
 int AccountSelectionView::GetBrandIconMinimumSize(
@@ -807,8 +807,11 @@ content::WebContents* FedCmAccountSelectionView::ShowModalDialog(
   // modal and direct user attention to the pop-up window. Note that this change
   // does not apply to other pop-up windows such as use other account, instead
   // they will be shown centred.
-  if (rp_mode == blink::mojom::RpMode::kButton && state_ == State::LOADING) {
-    popup_window_->SetCustomYPosition(web_contents()->GetViewBounds().y());
+  if (rp_mode == blink::mojom::RpMode::kButton) {
+    popup_window_->SetButtonModeSheetType(GetSheetType());
+    if (state_ == State::LOADING) {
+      popup_window_->SetCustomYPosition(web_contents()->GetViewBounds().y());
+    }
   }
 
   // The modal should not be hidden when the pop-up window is displayed for
@@ -916,7 +919,7 @@ bool FedCmAccountSelectionView::ShowVerifyingSheet(
   return true;
 }
 
-FedCmAccountSelectionView::SheetType FedCmAccountSelectionView::GetSheetType() {
+SheetType FedCmAccountSelectionView::GetSheetType() {
   switch (state_) {
     case State::IDP_SIGNIN_STATUS_MISMATCH:
       return SheetType::SIGN_IN_TO_IDP_STATIC;

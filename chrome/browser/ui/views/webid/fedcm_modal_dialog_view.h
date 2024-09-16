@@ -9,6 +9,8 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ui/webid/identity_dialog_controller.h"
+#include "content/public/browser/identity_request_dialog_controller.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
 
@@ -46,6 +48,19 @@ class FedCmModalDialogView : public content::WebContentsObserver {
     kMaxValue = kPopupWindowDestroyed
   };
 
+  // This enum describes the reason for closing the pop-up window and is used
+  // for histograms. Do not remove or modify existing values, but you may add
+  // new values at the end. This enum should be kept in sync with
+  // FedCmPopupInteraction in tools/metrics/histograms/enums.xml.
+  enum class PopupInteraction {
+    kLosesFocusAndIdpInitiatedClose,
+    kLosesFocusAndPopupWindowDestroyed,
+    kNeverLosesFocusAndIdpInitiatedClose,
+    kNeverLosesFocusAndPopupWindowDestroyed,
+
+    kMaxValue = kNeverLosesFocusAndPopupWindowDestroyed
+  };
+
   explicit FedCmModalDialogView(content::WebContents* web_contents,
                                 FedCmModalDialogView::Observer* observer);
   FedCmModalDialogView(const FedCmModalDialogView&) = delete;
@@ -59,9 +74,13 @@ class FedCmModalDialogView : public content::WebContentsObserver {
   virtual void ClosePopupWindow();
   virtual void ResizeAndFocusPopupWindow();
   virtual void SetCustomYPosition(int y);
+  virtual void SetButtonModeSheetType(
+      AccountSelectionView::SheetType sheet_type);
 
   // content::WebContentsObserver
   void WebContentsDestroyed() override;
+  void OnWebContentsLostFocus(
+      content::RenderWidgetHost* render_widget_host) override;
 
  protected:
   Observer* GetObserverForTesting();
@@ -75,6 +94,23 @@ class FedCmModalDialogView : public content::WebContentsObserver {
   // Otherwise, the pop-up window is centred vertically and horizontally. Used
   // to position the pop-up window directly over the button mode modal dialog.
   std::optional<int> custom_y_position_;
+
+  // Whether one of Blink.FedCm.Button.LoadingStatePopupInteraction or
+  // Blink.FedCm.Button.UseOtherAccountPopupInteraction has been recorded. This
+  // bool prevents double counting because user closing the pop-up causes both
+  // `ClosePopupWindow` and `WebContentsDestroyed` to be called.
+  bool popup_interaction_metric_recorded_{false};
+
+  // The sheet type of the button mode dialog which opened this pop-up.
+  // `std::nullopt` for non-button mode cases.
+  std::optional<AccountSelectionView::SheetType> button_mode_sheet_type_;
+
+  // Number of times the user lost focus of the pop-up. i.e. number of times
+  // `OnWebContentsLostFocus` is called. This is an int because when the user
+  // closes the pop-up, the web contents loses focus before it gets destroyed so
+  // there is one lost focus event that is not from the user losing focus while
+  // the pop-up is open.
+  int num_lost_focus_{0};
 
   base::WeakPtrFactory<FedCmModalDialogView> weak_ptr_factory_{this};
 };

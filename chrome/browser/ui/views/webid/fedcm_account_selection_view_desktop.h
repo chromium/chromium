@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/views/webid/account_selection_bubble_view.h"
 #include "chrome/browser/ui/views/webid/fedcm_modal_dialog_view.h"
 #include "chrome/browser/ui/webid/account_selection_view.h"
+#include "chrome/browser/ui/webid/identity_dialog_controller.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/views/input_event_activation_protector.h"
@@ -36,21 +37,6 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // safe_zone_diameter/icon_size as defined in
   // https://www.w3.org/TR/appmanifest/#icon-masks
   static constexpr float kMaskableWebIconSafeZoneRatio = 0.8f;
-
-  // This enum is used for histograms. Do not remove or modify existing values,
-  // but you may add new values at the end and increase COUNT. This enum should
-  // be kept in sync with SheetType in
-  // chrome/browser/ui/android/webid/AccountSelectionMediator.java as well as
-  // with FedCmSheetType in tools/metrics/histograms/enums.xml.
-  enum SheetType {
-    ACCOUNT_SELECTION = 0,
-    VERIFYING = 1,
-    AUTO_REAUTHN = 2,
-    SIGN_IN_TO_IDP_STATIC = 3,
-    SIGN_IN_ERROR = 4,
-    LOADING = 5,
-    COUNT = 6
-  };
 
   enum class DialogType {
     // FedCM dialog inherits a bubble dialog, which is typically shown on the
@@ -297,7 +283,7 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   void ShowDialogWidget();
 
   // Returns the SheetType to be used for metrics reporting.
-  SheetType GetSheetType();
+  AccountSelectionView::SheetType GetSheetType();
 
   // Notify the delegate that the widget was closed with reason
   // `dismiss_reason`.

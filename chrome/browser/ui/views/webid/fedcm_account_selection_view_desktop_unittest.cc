@@ -181,6 +181,10 @@ class MockFedCmModalDialogView : public FedCmModalDialogView {
 
   MOCK_METHOD(void, ResizeAndFocusPopupWindow, (), (override));
   MOCK_METHOD(void, SetCustomYPosition, (int y), (override));
+  MOCK_METHOD(void,
+              SetButtonModeSheetType,
+              (AccountSelectionView::SheetType),
+              (override));
 };
 
 // Test FedCmAccountSelectionView which uses TestAccountSelectionView.
@@ -780,7 +784,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, CloseAutoReauthnSheetMetric) {
   observer->OnCloseButtonClicked(CreateMouseEvent());
   histogram_tester_->ExpectUniqueSample(
       "Blink.FedCm.ClosedSheetType.Desktop",
-      static_cast<int>(FedCmAccountSelectionView::SheetType::AUTO_REAUTHN), 1);
+      static_cast<int>(AccountSelectionView::SheetType::AUTO_REAUTHN), 1);
 }
 
 // Tests that when the mismatch dialog is closed through the close icon, the
@@ -2473,14 +2477,14 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
             controller->state_);
 }
 
-// Tests that a login to IDP pop-up opened during a button flow sets a custom Y
+// Tests that a loading state pop-up opened during a button flow sets a custom Y
 // position. This is so that the pop-up covers the loading modal dialog to
 // direct user attention towards the pop-up.
 TEST_F(FedCmAccountSelectionViewDesktopTest,
-       ButtonFlowLoadingDialogSetsCustomYPosition) {
+       ButtonFlowLoadingStatePopupSetsCustomYPosition) {
   auto controller = CreateAndShowLoadingDialog();
 
-  // Open login to IDP pop-up and expect it to call `SetCustomYPosition`.
+  // Open loading state pop-up and expect it to call `SetCustomYPosition`.
   auto popup_window = std::make_unique<MockFedCmModalDialogView>(
       test_web_contents_.get(), controller.get());
   EXPECT_CALL(*popup_window, ShowPopupWindow).Times(1);
@@ -2506,6 +2510,48 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
       test_web_contents_.get(), controller.get());
   EXPECT_CALL(*popup_window, ShowPopupWindow).Times(1);
   EXPECT_CALL(*popup_window, SetCustomYPosition).Times(0);
+  controller->SetIdpSigninPopupWindowForTesting(std::move(popup_window));
+  controller->ShowModalDialog(GURL(u"https://example.com"),
+                              blink::mojom::RpMode::kButton);
+
+  // Reset the widget explicitly since no widget was shown. Otherwise, the test
+  // will complain that a widget is still open.
+  dialog_widget_.reset();
+}
+
+// Tests that a loading state pop-up opened during a button flow should call
+// `SetButtonModeSheetType`.
+TEST_F(FedCmAccountSelectionViewDesktopTest,
+       ButtonFlowLoadingStatePopupSetsButtonModeSheetType) {
+  auto controller = CreateAndShowLoadingDialog();
+
+  // Open loading state pop-up and expect it to call `SetButtonModeSheetType`.
+  auto popup_window = std::make_unique<MockFedCmModalDialogView>(
+      test_web_contents_.get(), controller.get());
+  EXPECT_CALL(*popup_window, ShowPopupWindow).Times(1);
+  EXPECT_CALL(*popup_window, SetButtonModeSheetType).Times(1);
+  controller->SetIdpSigninPopupWindowForTesting(std::move(popup_window));
+  controller->ShowModalDialog(GURL(u"https://example.com"),
+                              blink::mojom::RpMode::kButton);
+
+  // Reset the widget explicitly since no widget was shown. Otherwise, the test
+  // will complain that a widget is still open.
+  dialog_widget_.reset();
+}
+
+// Tests that a use other account pop-up opened during a button flow should call
+// `SetButtonModeSheetType`.
+TEST_F(FedCmAccountSelectionViewDesktopTest,
+       ButtonFlowUseOtherAccountPopupSetsButtonModeSheetType) {
+  std::unique_ptr<TestFedCmAccountSelectionView> controller =
+      CreateAndShow(accounts_, SignInMode::kExplicit);
+
+  // Open use other account pop-up and expect it to call
+  // `SetButtonModeSheetType`.
+  auto popup_window = std::make_unique<MockFedCmModalDialogView>(
+      test_web_contents_.get(), controller.get());
+  EXPECT_CALL(*popup_window, ShowPopupWindow).Times(1);
+  EXPECT_CALL(*popup_window, SetButtonModeSheetType).Times(1);
   controller->SetIdpSigninPopupWindowForTesting(std::move(popup_window));
   controller->ShowModalDialog(GURL(u"https://example.com"),
                               blink::mojom::RpMode::kButton);

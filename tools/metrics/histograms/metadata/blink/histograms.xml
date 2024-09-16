@@ -1321,6 +1321,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.FedCm.Button.LoadingStatePopupInteraction"
+    enum="FedCmPopupInteraction" expires_after="2025-02-12">
+  <owner>tanzachary@chromium.org</owner>
+  <owner>web-identity-eng@google.com</owner>
+  <summary>
+    Records whether the user lost focus of the pop-up and whether it was the IDP
+    or the user that closed the pop-up. Recorded once per loading state pop-up
+    window closed in button mode.
+  </summary>
+</histogram>
+
+<histogram name="Blink.FedCm.Button.UseOtherAccountPopupInteraction"
+    enum="FedCmPopupInteraction" expires_after="2025-02-12">
+  <owner>tanzachary@chromium.org</owner>
+  <owner>web-identity-eng@google.com</owner>
+  <summary>
+    Records whether the user lost focus of the pop-up and whether it was the IDP
+    or the user that closed the pop-up. Recorded once per use other account
+    pop-up window closed in button mode.
+  </summary>
+</histogram>
+
 <histogram name="Blink.FedCm.CancelReason" enum="FedCmCancelReason"
     expires_after="2025-02-12">
   <owner>yigu@chromium.org</owner>
