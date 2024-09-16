@@ -7797,7 +7797,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Report.InitializerState" enum="ReportState"
-    expires_after="2024-12-08">
+    expires_after="2025-09-01">
   <owner>hirthanan@google.com</owner>
   <owner>chromeos-data-team@google.com</owner>
   <summary>
@@ -7809,7 +7809,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Report.IsActivateDateSet" enum="BooleanSuccess"
-    expires_after="2025-02-10">
+    expires_after="2025-09-01">
   <owner>hirthanan@google.com</owner>
   <owner>chromeos-data-team@google.com</owner>
   <summary>
@@ -7820,7 +7820,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Report.IsLastPowerwashTimeRead" enum="BooleanSuccess"
-    expires_after="2024-10-01">
+    expires_after="2025-09-01">
   <owner>hirthanan@google.com</owner>
   <owner>chromeos-data-team@google.com</owner>
   <summary>
@@ -7831,7 +7831,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Report.IsOobeCompleted" enum="BooleanSuccess"
-    expires_after="2025-02-10">
+    expires_after="2025-09-01">
   <owner>hirthanan@google.com</owner>
   <owner>chromeos-data-team@google.com</owner>
   <summary>
@@ -7843,7 +7843,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Report.IsPsmSecretSet" enum="BooleanSuccess"
-    expires_after="2025-02-10">
+    expires_after="2025-09-01">
   <owner>hirthanan@google.com</owner>
   <owner>chromeos-data-team@google.com</owner>
   <summary>
@@ -7854,7 +7854,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Report.IsPsm{PsmUseCase}OprfResponseBodySet"
-    enum="BooleanSuccess" expires_after="2024-10-01">
+    enum="BooleanSuccess" expires_after="2025-09-01">
   <owner>hirthanan@google.com</owner>
   <owner>chromeos-data-team@google.com</owner>
   <summary>
@@ -7866,7 +7866,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Report.IsPsm{PsmUseCase}OprfResponseParsedCorrectly"
-    enum="BooleanSuccess" expires_after="2024-10-01">
+    enum="BooleanSuccess" expires_after="2025-09-01">
   <owner>hirthanan@google.com</owner>
   <owner>chromeos-data-team@google.com</owner>
   <summary>
@@ -7878,7 +7878,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Report.IsSystemClockSynced" enum="BooleanSuccess"
-    expires_after="2024-12-08">
+    expires_after="2025-09-01">
   <owner>hirthanan@google.com</owner>
   <owner>chromeos-data-team@google.com</owner>
   <summary>
@@ -7889,7 +7889,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Report.IsTestDevice" enum="Boolean"
-    expires_after="2025-02-10">
+    expires_after="2025-09-01">
   <owner>hirthanan@google.com</owner>
   <owner>chromeos-data-team@google.com</owner>
   <summary>
@@ -7900,7 +7900,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Report.MarketSegment" enum="ReportMarketSegment"
-    expires_after="2024-10-01">
+    expires_after="2025-09-01">
   <owner>hirthanan@google.com</owner>
   <owner>chromeos-data-team@google.com</owner>
   <summary>
@@ -7910,7 +7910,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Report.PreservedFileReadAndParsed" enum="BooleanSuccess"
-    expires_after="2024-10-01">
+    expires_after="2025-09-01">
   <owner>hirthanan@google.com</owner>
   <owner>chromeos-data-team@google.com</owner>
   <summary>
@@ -7920,7 +7920,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Report.PreservedFileWritten" enum="BooleanSuccess"
-    expires_after="2024-12-08">
+    expires_after="2025-09-01">
   <owner>hirthanan@google.com</owner>
   <owner>chromeos-data-team@google.com</owner>
   <summary>
@@ -7932,7 +7932,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Report.PsmQueryMembershipResult" enum="BooleanKnown"
-    expires_after="2024-10-01">
+    expires_after="2025-09-01">
   <owner>hirthanan@google.com</owner>
   <owner>chromeos-data-team@google.com</owner>
   <summary>
@@ -7945,7 +7945,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Report.Psm{PsmUseCase}{PsmRequest}ResponseNetErrorCode"
-    enum="NetErrorCodes" expires_after="2024-12-08">
+    enum="NetErrorCodes" expires_after="2025-09-01">
   <owner>hirthanan@google.com</owner>
   <owner>chromeos-data-team@google.com</owner>
   <summary>
@@ -7959,7 +7959,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Report.StartupDelay" units="minutes"
-    expires_after="2025-02-10">
+    expires_after="2025-09-01">
   <owner>hirthanan@google.com</owner>
   <owner>chromeos-data-team@google.com</owner>
   <summary>
@@ -7972,7 +7972,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Report.TrustedStatus" enum="ReportTrustedStatus"
-    expires_after="2024-12-08">
+    expires_after="2025-09-01">
   <owner>hirthanan@google.com</owner>
   <owner>chromeos-data-team@google.com</owner>
   <summary>
@@ -7983,7 +7983,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Report.{PsmUseCase}.IsDevicePingRequired" enum="Boolean"
-    expires_after="2024-12-01">
+    expires_after="2025-09-01">
   <owner>hirthanan@google.com</owner>
   <owner>chromeos-data-team@google.com</owner>
   <summary>
@@ -7998,7 +7998,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Report.{PsmUseCase}CheckMembershipCases"
-    enum="ReportCheckMembershipResponseCases" expires_after="2024-10-01">
+    enum="ReportCheckMembershipResponseCases" expires_after="2025-09-01">
   <owner>qianwan@google.com</owner>
   <owner>chromeos-data-team@google.com</owner>
   <summary>
