@@ -4281,6 +4281,14 @@ void RenderViewContextMenu::ExecSaveLinkAs() {
   dl_params->set_prompt(true);
   dl_params->set_download_source(download::DownloadSource::CONTEXT_MENU);
 
+  // Attach the nonce. This allows URL loader to stop in-progress download
+  // request if the nonce is revoked for untruested network access.
+  url::Origin origin = url::Origin::Create(url);
+  dl_params->set_isolation_info(net::IsolationInfo::Create(
+      net::IsolationInfo::RequestType::kMainFrame, /*top_frame_origin=*/origin,
+      /*frame_origin=*/origin, net::SiteForCookies::FromUrl(url),
+      /*nonce=*/render_frame_host->GetIsolationInfoForSubresources().nonce()));
+
   browser_context_->GetDownloadManager()->DownloadUrl(std::move(dl_params));
 }
 

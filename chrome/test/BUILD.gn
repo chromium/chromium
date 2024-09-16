@@ -10870,6 +10870,7 @@ if (!is_android && !is_chromeos_device) {
       "../browser/chrome_render_widget_host_browsertests.cc",
       "../browser/controlled_frame/controlled_frame_interactive_browsertest.cc",
       "../browser/devtools/devtools_interactive_browsertest.cc",
+      "../browser/download/download_interactive_uitest.cc",
       "../browser/focus_ring_browsertest.cc",
       "../browser/media/webrtc/display_media_access_handler_interactive_uitest.cc",
       "../browser/media/webrtc/media_stream_permission_interactive_uitest.cc",
