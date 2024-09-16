@@ -53,6 +53,8 @@ static_library("installer_policies_no_content_deps") {
 
 static_library("installer_policies_with_content_deps") {
   sources = [
+    "history_search_strings_component_installer.cc",
+    "history_search_strings_component_installer.h",
     "on_device_head_suggest_component_installer.cc",
     "on_device_head_suggest_component_installer.h",
     "optimization_hints_component_installer.cc",
@@ -62,6 +64,7 @@ static_library("installer_policies_with_content_deps") {
   deps = [
     "//base",
     "//components/component_updater",
+    "//components/history_embeddings/core",
     "//components/omnibox/browser",
     "//components/omnibox/common",
     "//components/optimization_guide/core",
@@ -73,6 +76,7 @@ source_set("unit_tests") {
   sources = [
     "autofill_states_component_installer_unittest.cc",
     "first_party_sets_component_installer_policy_unittest.cc",
+    "history_search_strings_component_installer_unittest.cc",
     "masked_domain_list_component_installer_policy_unittest.cc",
     "optimization_hints_component_installer_unittest.cc",
     "plus_address_blocklist_component_installer_unittest.cc",
@@ -86,7 +90,9 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/autofill/core/browser:test_support",
     "//components/component_updater:test_support",
+    "//components/history_embeddings/core",
     "//components/optimization_guide/core",
+    "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/plus_addresses:blocklist_data",
     "//components/plus_addresses:features",
     "//components/privacy_sandbox/masked_domain_list:masked_domain_list_proto",

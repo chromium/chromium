@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/history_embeddings/search_strings_update_listener.h"
+#include "components/history_embeddings/core/search_strings_update_listener.h"
 
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -32,6 +32,9 @@ LoadSearchStringsFile(const base::FilePath& file_path) {
     DVLOG(1) << "Failed to parse contents of: " << file_path.LossyDisplayName();
     return nullptr;
   }
+
+  DVLOG(1) << "Successfully parsed contents of: "
+           << file_path.LossyDisplayName();
   return proto;
 }
 
