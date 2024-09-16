@@ -173,6 +173,12 @@ class OptionsMenuSheetContent extends MenuSheetContent {
         // Skip to the end of the animation if running, or just use animation to set X values if not
         // running.
         updateAnimationValues(mVoiceMenuState);
+
+        // Update the views' X translation using animation end(), which does nothing if the
+        // animation isn't started first.
+        if (!mVoiceMenuShowAnimation.isRunning()) {
+            mVoiceMenuShowAnimation.start();
+        }
         mVoiceMenuShowAnimation.end();
     }
 
