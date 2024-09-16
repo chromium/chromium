@@ -563,11 +563,12 @@ double ComputeChannelCapacityScopes(
   CHECK(num_states > 0u);
   CHECK(attribution_scope_limit > 0u);
 
-  double num_states_double = static_cast<double>(num_states);
-  double total_states =
-      num_states_double +
-      static_cast<uint32_t>(max_event_states) *
-          (static_cast<uint32_t>(attribution_scope_limit) - 1);
+  // Ensure that `double` arithmetic is performed here instead of `uint32_t`,
+  // which can overflow and produce incorrect results, e.g.
+  // https://crbug.com/366998247.
+  double total_states = static_cast<double>(num_states) +
+                        static_cast<double>(max_event_states) *
+                            (static_cast<double>(attribution_scope_limit) - 1);
 
   return log2(total_states);
 }

@@ -383,6 +383,14 @@ TEST(PrivacyMathTest, ComputeChannelCapacityWithScopes) {
           .attribution_scopes_limit = 5,
           .expected = 4.3923174227787607,
       },
+      // Regression test for multiplication overflow in
+      // https://crbug.com/366998247
+      {
+          .num_states = 1,
+          .max_event_states = std::numeric_limits<uint32_t>::max(),
+          .attribution_scopes_limit = std::numeric_limits<uint32_t>::max(),
+          .expected = 63.999999998992287,
+      },
   };
 
   for (const auto& test_case : kTestCases) {
