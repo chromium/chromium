@@ -140,6 +140,7 @@ import './os_privacy_page/secure_dns_input.js';
 import './os_reset_page/os_powerwash_dialog.js';
 import './os_reset_page/os_powerwash_dialog_esim_item.js';
 import './os_reset_page/os_sanitize_dialog.js';
+import './os_search_page/magic_boost_review_terms_banner.js';
 
 export {ScreenAiInstallStatus} from '/shared/settings/a11y_page/ax_annotations_browser_proxy.js';
 export {CaptionsBrowserProxy, CaptionsBrowserProxyImpl, LiveCaptionLanguage, LiveCaptionLanguageList} from '/shared/settings/a11y_page/captions_browser_proxy.js';

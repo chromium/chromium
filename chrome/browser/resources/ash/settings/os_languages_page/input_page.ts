@@ -21,6 +21,7 @@ import './os_edit_dictionary_page.js';
 import '../keyboard_shortcut_banner/keyboard_shortcut_banner.js';
 import '../controls/settings_toggle_button.js';
 import '../settings_shared.css.js';
+import '../os_search_page/magic_boost_review_terms_banner.js';
 import '../os_settings_page/os_settings_animated_pages.js';
 import 'chrome://resources/ash/common/shortcut_input_ui/shortcut_input_key.js';
 
@@ -204,6 +205,8 @@ export class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
   private readonly allowEmojiSuggestion_: boolean =
       loadTimeData.getBoolean('allowEmojiSuggestion');
   private readonly allowOrca_: boolean = loadTimeData.getBoolean('allowOrca');
+  private readonly showOrcaReviewTermsBanner_: boolean =
+      loadTimeData.getBoolean('showOrcaReviewTermsBanner');
   private readonly allowSuggestionSection_: boolean =
       this.allowOrca_ || this.allowEmojiSuggestion_;
 
