@@ -13,6 +13,7 @@
 
 #include "ash/system/focus_mode/focus_mode_controller.h"
 #include "ash/system/focus_mode/focus_mode_retry_util.h"
+#include "ash/system/focus_mode/focus_mode_util.h"
 #include "ash/system/focus_mode/sounds/sound_section_view.h"
 #include "ash/system/focus_mode/sounds/youtube_music/youtube_music_types.h"
 #include "base/check.h"
@@ -196,13 +197,20 @@ void FocusModeYouTubeMusicDelegate::GetPlaylistInternal(
   youtube_music_controller_->GetPlaylist(
       playlist_id,
       base::BindOnce(&FocusModeYouTubeMusicDelegate::OnGetPlaylistDone,
-                     weak_factory_.GetWeakPtr(), type));
+                     weak_factory_.GetWeakPtr(),
+                     /*start_time=*/base::Time::Now(), type));
 }
 
 void FocusModeYouTubeMusicDelegate::OnGetPlaylistDone(
+    const base::Time start_time,
     const GetPlaylistsRequestState::PlaylistType type,
     google_apis::ApiErrorCode http_error_code,
     std::optional<youtube_music::Playlist> playlist) {
+  const std::string method = "YouTubeMusic.GetPlaylist";
+  focus_mode_util::RecordHistogramForApiStatus(method, http_error_code);
+  focus_mode_util::RecordHistogramForApiLatency(method,
+                                                base::Time::Now() - start_time);
+
   if (!get_playlists_state_.done_callback) {
     return;
   }
@@ -210,6 +218,7 @@ void FocusModeYouTubeMusicDelegate::OnGetPlaylistDone(
   const size_t bucket = static_cast<size_t>(type);
   CHECK_LT(bucket, kYouTubeMusicPlaylistBucketCount);
 
+  FocusModeRetryState& retry_state = get_playlists_state_.retry_states[bucket];
   if (http_error_code != google_apis::ApiErrorCode::HTTP_SUCCESS) {
     // Handle forbidden error. No need to retry.
     if (http_error_code == google_apis::ApiErrorCode::HTTP_FORBIDDEN) {
@@ -224,8 +233,6 @@ void FocusModeYouTubeMusicDelegate::OnGetPlaylistDone(
     }
 
     // Handle too many request error. Retry if needed.
-    FocusModeRetryState& retry_state =
-        get_playlists_state_.retry_states[bucket];
     if (http_error_code == 429 &&
         retry_state.retry_index < kMaxRetryTooManyRequests) {
       retry_state.retry_index++;
@@ -255,19 +262,31 @@ void FocusModeYouTubeMusicDelegate::OnGetPlaylistDone(
         playlist.value().image.url);
   }
 
+  focus_mode_util::RecordHistogramForApiRetryCount(method,
+                                                   retry_state.retry_index);
+  focus_mode_util::RecordHistogramForApiResult(
+      method,
+      /*successful=*/playlist.has_value());
+
   get_playlists_state_.count++;
   MaybeReportBackPlaylists();
 }
 
 void FocusModeYouTubeMusicDelegate::GetMusicSectionInternal() {
-  youtube_music_controller_->GetMusicSection(
-      base::BindOnce(&FocusModeYouTubeMusicDelegate::OnGetMusicSectionDone,
-                     weak_factory_.GetWeakPtr()));
+  youtube_music_controller_->GetMusicSection(base::BindOnce(
+      &FocusModeYouTubeMusicDelegate::OnGetMusicSectionDone,
+      weak_factory_.GetWeakPtr(), /*start_time=*/base::Time::Now()));
 }
 
 void FocusModeYouTubeMusicDelegate::OnGetMusicSectionDone(
+    const base::Time start_time,
     google_apis::ApiErrorCode http_error_code,
     std::optional<const std::vector<youtube_music::Playlist>> playlists) {
+  const std::string method = "YouTubeMusic.GetMusicSection";
+  focus_mode_util::RecordHistogramForApiStatus(method, http_error_code);
+  focus_mode_util::RecordHistogramForApiLatency(method,
+                                                base::Time::Now() - start_time);
+
   if (!get_playlists_state_.done_callback) {
     return;
   }
@@ -276,6 +295,7 @@ void FocusModeYouTubeMusicDelegate::OnGetMusicSectionDone(
       static_cast<size_t>(GetPlaylistsRequestState::PlaylistType::kFocusIntent);
   CHECK_LT(bucket, kYouTubeMusicPlaylistBucketCount);
 
+  FocusModeRetryState& retry_state = get_playlists_state_.retry_states[bucket];
   if (http_error_code != google_apis::ApiErrorCode::HTTP_SUCCESS) {
     // Handle forbidden error. No need to retry.
     if (http_error_code == google_apis::ApiErrorCode::HTTP_FORBIDDEN) {
@@ -290,8 +310,6 @@ void FocusModeYouTubeMusicDelegate::OnGetMusicSectionDone(
     }
 
     // Handle too many request error. Retry if needed.
-    FocusModeRetryState& retry_state =
-        get_playlists_state_.retry_states[bucket];
     if (http_error_code == 429 &&
         retry_state.retry_index < kMaxRetryTooManyRequests) {
       retry_state.retry_index++;
@@ -324,6 +342,15 @@ void FocusModeYouTubeMusicDelegate::OnGetMusicSectionDone(
     }
   }
 
+  // Do not record retry count and final result for non-premium users.
+  if (http_error_code != google_apis::ApiErrorCode::HTTP_FORBIDDEN) {
+    focus_mode_util::RecordHistogramForApiRetryCount(method,
+                                                     retry_state.retry_index);
+    focus_mode_util::RecordHistogramForApiResult(
+        method,
+        /*successful=*/playlists.has_value() && !playlists.value().empty());
+  }
+
   get_playlists_state_.count++;
   MaybeReportBackPlaylists();
 }
@@ -348,19 +375,31 @@ void FocusModeYouTubeMusicDelegate::GetNextTrackInternal(
     youtube_music_controller_->PlaybackQueuePrepare(
         playlist_id,
         base::BindOnce(&FocusModeYouTubeMusicDelegate::OnNextTrackDone,
-                       weak_factory_.GetWeakPtr(), playlist_id));
+                       weak_factory_.GetWeakPtr(),
+                       /*start_time=*/base::Time::Now(), /*prepare==*/true,
+                       playlist_id));
   } else {
     youtube_music_controller_->PlaybackQueueNext(
         next_track_state_.last_queue_id,
         base::BindOnce(&FocusModeYouTubeMusicDelegate::OnNextTrackDone,
-                       weak_factory_.GetWeakPtr(), playlist_id));
+                       weak_factory_.GetWeakPtr(),
+                       /*start_time=*/base::Time::Now(), /*prepare==*/false,
+                       playlist_id));
   }
 }
 
 void FocusModeYouTubeMusicDelegate::OnNextTrackDone(
+    const base::Time start_time,
+    const bool prepare,
     const std::string& playlist_id,
     google_apis::ApiErrorCode http_error_code,
     std::optional<const youtube_music::PlaybackContext> playback_context) {
+  const std::string method = prepare ? "YouTubeMusic.PlaybackQueuePrepare"
+                                     : "YouTubeMusic.PlaybackQueueNext";
+  focus_mode_util::RecordHistogramForApiStatus(method, http_error_code);
+  focus_mode_util::RecordHistogramForApiLatency(method,
+                                                base::Time::Now() - start_time);
+
   if (!next_track_state_.done_callback) {
     return;
   }
@@ -379,46 +418,35 @@ void FocusModeYouTubeMusicDelegate::OnNextTrackDone(
       return;
     }
 
-    // Handle too many request error.
-    if (http_error_code == 429) {
-      // Retry if needed.
-      if (next_track_state_.retry_state.retry_index <
-          kMaxRetryTooManyRequests) {
-        next_track_state_.retry_state.retry_index++;
-        next_track_state_.retry_state.timer.Start(
-            FROM_HERE, kWaitTimeTooManyRequests,
-            base::BindOnce(&FocusModeYouTubeMusicDelegate::GetNextTrackInternal,
-                           weak_factory_.GetWeakPtr(), playlist_id));
-        return;
-      }
-
-      // Max number of retries reached. Bail gracefully.
-      std::move(next_track_state_.done_callback).Run(std::nullopt);
-      next_track_state_.Reset();
+    // Handle too many request error. Retry if needed.
+    if (http_error_code == 429 &&
+        next_track_state_.retry_state.retry_index < kMaxRetryTooManyRequests) {
+      next_track_state_.retry_state.retry_index++;
+      next_track_state_.retry_state.timer.Start(
+          FROM_HERE, kWaitTimeTooManyRequests,
+          base::BindOnce(&FocusModeYouTubeMusicDelegate::GetNextTrackInternal,
+                         weak_factory_.GetWeakPtr(), playlist_id));
       return;
     }
 
-    // Handle general HTTP errors.
-    if (ShouldRetryHttpError(http_error_code)) {
-      // Retry if needed.
-      if (next_track_state_.retry_state.retry_index < kMaxRetryOverall) {
-        next_track_state_.retry_state.retry_index++;
-        next_track_state_.retry_state.timer.Start(
-            FROM_HERE,
-            GetExponentialBackoffRetryWaitTime(
-                next_track_state_.retry_state.retry_index),
-            base::BindOnce(&FocusModeYouTubeMusicDelegate::GetNextTrackInternal,
-                           weak_factory_.GetWeakPtr(), playlist_id));
-        return;
-      }
-
-      // Max number of retries reached. Bail gracefully.
-      std::move(next_track_state_.done_callback).Run(std::nullopt);
-      next_track_state_.Reset();
+    // Handle general HTTP errors. Retry if needed.
+    if (ShouldRetryHttpError(http_error_code) &&
+        next_track_state_.retry_state.retry_index < kMaxRetryOverall) {
+      next_track_state_.retry_state.retry_index++;
+      next_track_state_.retry_state.timer.Start(
+          FROM_HERE,
+          GetExponentialBackoffRetryWaitTime(
+              next_track_state_.retry_state.retry_index),
+          base::BindOnce(&FocusModeYouTubeMusicDelegate::GetNextTrackInternal,
+                         weak_factory_.GetWeakPtr(), playlist_id));
       return;
     }
 
-    // Other unhandled HTTP errors. Bail gracefully.
+    // Other unhandled HTTP errors or maximum retry reached. Bail gracefully.
+    focus_mode_util::RecordHistogramForApiRetryCount(
+        method, next_track_state_.retry_state.retry_index);
+    focus_mode_util::RecordHistogramForApiResult(method,
+                                                 /*successful=*/false);
     std::move(next_track_state_.done_callback).Run(std::nullopt);
     next_track_state_.Reset();
     return;
@@ -443,6 +471,10 @@ void FocusModeYouTubeMusicDelegate::OnNextTrackDone(
       }
 
       // Max number of retries reached. Bail gracefully.
+      focus_mode_util::RecordHistogramForApiRetryCount(
+          method, next_track_state_.retry_state.retry_index);
+      focus_mode_util::RecordHistogramForApiResult(method,
+                                                   /*successful=*/false);
       std::move(next_track_state_.done_callback).Run(std::nullopt);
       next_track_state_.Reset();
       return;
@@ -464,6 +496,12 @@ void FocusModeYouTubeMusicDelegate::OnNextTrackDone(
         playback_context->playback_reporting_token;
   }
 
+  focus_mode_util::RecordHistogramForApiRetryCount(
+      method, next_track_state_.retry_state.retry_index);
+  focus_mode_util::RecordHistogramForApiResult(
+      method,
+      /*successful=*/result.has_value());
+
   std::move(next_track_state_.done_callback).Run(result);
   next_track_state_.done_callback = base::NullCallback();
 
@@ -483,13 +521,20 @@ void FocusModeYouTubeMusicDelegate::ReportPlaybackInternal(const GURL& url) {
   youtube_music_controller_->ReportPlayback(
       state.token, state.staged_playback_data.value(),
       base::BindOnce(&FocusModeYouTubeMusicDelegate::OnReportPlaybackDone,
-                     weak_factory_.GetWeakPtr(), url));
+                     weak_factory_.GetWeakPtr(),
+                     /*start_time=*/base::Time::Now(), url));
 }
 
 void FocusModeYouTubeMusicDelegate::OnReportPlaybackDone(
+    const base::Time start_time,
     const GURL& url,
     google_apis::ApiErrorCode http_error_code,
     std::optional<const std::string> new_playback_reporting_token) {
+  const std::string method = "YouTubeMusic.ReportPlayback";
+  focus_mode_util::RecordHistogramForApiStatus(method, http_error_code);
+  focus_mode_util::RecordHistogramForApiLatency(method,
+                                                base::Time::Now() - start_time);
+
   const auto state_iterator = report_playback_states_.find(url);
   if (state_iterator == report_playback_states_.end() ||
       !state_iterator->second.get()) {
@@ -538,6 +583,10 @@ void FocusModeYouTubeMusicDelegate::OnReportPlaybackDone(
     // state; otherwise, reset the retry state for the next report so that the
     // staged data could be aggregated into the new incoming data and still be
     // reported.
+    focus_mode_util::RecordHistogramForApiRetryCount(
+        method, state.retry_state.retry_index);
+    focus_mode_util::RecordHistogramForApiResult(method,
+                                                 /*successful=*/false);
     if (last_report) {
       report_playback_states_.erase(url);
     } else {
@@ -545,6 +594,11 @@ void FocusModeYouTubeMusicDelegate::OnReportPlaybackDone(
     }
     return;
   }
+
+  focus_mode_util::RecordHistogramForApiRetryCount(
+      method, state.retry_state.retry_index);
+  focus_mode_util::RecordHistogramForApiResult(method,
+                                               /*successful=*/true);
 
   // When a track is completed, clear the local data.
   if (last_report) {

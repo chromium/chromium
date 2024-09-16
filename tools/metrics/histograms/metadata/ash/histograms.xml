@@ -3993,6 +3993,103 @@ chromium-metrics-reviews@google.com.
   <summary>Record the floating workspace template upload status.</summary>
 </histogram>
 
+<histogram name="Ash.FocusMode.Api.{Method}.Latency" units="ms"
+    expires_after="2025-07-01">
+  <owner>yongshun@chromium.org</owner>
+  <owner>richui@chromium.org</owner>
+  <owner>skau@chromium.org</owner>
+  <owner>chromeos-wms@google.com</owner>
+  <summary>
+    Recorded API latency of the requests sent by Focus Mode. The recorded value
+    indicates the time to receive the response.
+  </summary>
+  <token key="Method">
+    <variant name="FocusSounds.FetchConfiguration"/>
+    <variant name="ImageDownload.PlaylistThumbnail"/>
+    <variant name="Tasks.AddTask"/>
+    <variant name="Tasks.GetTaskLists"/>
+    <variant name="Tasks.GetTasks"/>
+    <variant name="Tasks.UpdateTask"/>
+    <variant name="YouTubeMusic.GetMusicSection"/>
+    <variant name="YouTubeMusic.GetPlaylist"/>
+    <variant name="YouTubeMusic.PlaybackQueueNext"/>
+    <variant name="YouTubeMusic.PlaybackQueuePrepare"/>
+    <variant name="YouTubeMusic.ReportPlayback"/>
+  </token>
+</histogram>
+
+<histogram name="Ash.FocusMode.Api.{Method}.Result" enum="BooleanHit"
+    expires_after="2025-07-01">
+  <owner>yongshun@chromium.org</owner>
+  <owner>richui@chromium.org</owner>
+  <owner>skau@chromium.org</owner>
+  <owner>chromeos-wms@google.com</owner>
+  <summary>
+    Recorded API result of the requests sent by Focus Mode. The recorded value
+    indicates whether the request succeeds with retry.
+  </summary>
+  <token key="Method">
+    <variant name="FocusSounds.FetchConfiguration"/>
+    <variant name="ImageDownload.PlaylistThumbnail"/>
+    <variant name="Tasks.AddTask"/>
+    <variant name="Tasks.GetTaskLists"/>
+    <variant name="Tasks.GetTasks"/>
+    <variant name="Tasks.UpdateTask"/>
+    <variant name="YouTubeMusic.GetMusicSection"/>
+    <variant name="YouTubeMusic.GetPlaylist"/>
+    <variant name="YouTubeMusic.PlaybackQueueNext"/>
+    <variant name="YouTubeMusic.PlaybackQueuePrepare"/>
+    <variant name="YouTubeMusic.ReportPlayback"/>
+  </token>
+</histogram>
+
+<histogram name="Ash.FocusMode.Api.{Method}.RetryCount" units="count"
+    expires_after="2025-07-01">
+  <owner>yongshun@chromium.org</owner>
+  <owner>richui@chromium.org</owner>
+  <owner>skau@chromium.org</owner>
+  <owner>chromeos-wms@google.com</owner>
+  <summary>
+    Recorded API result of the requests sent by Focus Mode. The recorded value
+    indicates whether the request succeeds with retry.
+  </summary>
+  <token key="Method">
+    <variant name="ImageDownload.PlaylistThumbnail"/>
+    <variant name="Tasks.AddTask"/>
+    <variant name="Tasks.GetTaskLists"/>
+    <variant name="Tasks.GetTasks"/>
+    <variant name="Tasks.UpdateTask"/>
+    <variant name="YouTubeMusic.GetMusicSection"/>
+    <variant name="YouTubeMusic.GetPlaylist"/>
+    <variant name="YouTubeMusic.PlaybackQueueNext"/>
+    <variant name="YouTubeMusic.PlaybackQueuePrepare"/>
+    <variant name="YouTubeMusic.ReportPlayback"/>
+  </token>
+</histogram>
+
+<histogram name="Ash.FocusMode.Api.{Method}.Status" enum="ApiErrorCode"
+    expires_after="2025-07-01">
+  <owner>yongshun@chromium.org</owner>
+  <owner>richui@chromium.org</owner>
+  <owner>skau@chromium.org</owner>
+  <owner>chromeos-wms@google.com</owner>
+  <summary>
+    Recorded API status of the requests sent by Focus Mode. The recorded enum
+    value indicates the HTTP status code of response.
+  </summary>
+  <token key="Method">
+    <variant name="Tasks.AddTask"/>
+    <variant name="Tasks.GetTaskLists"/>
+    <variant name="Tasks.GetTasks"/>
+    <variant name="Tasks.UpdateTask"/>
+    <variant name="YouTubeMusic.GetMusicSection"/>
+    <variant name="YouTubeMusic.GetPlaylist"/>
+    <variant name="YouTubeMusic.PlaybackQueueNext"/>
+    <variant name="YouTubeMusic.PlaybackQueuePrepare"/>
+    <variant name="YouTubeMusic.ReportPlayback"/>
+  </token>
+</histogram>
+
 <histogram name="Ash.FocusMode.DNDStateOnFocusEnd"
     enum="DNDStateOnFocusEndType" expires_after="2025-05-01">
   <owner>hongyulong@chromium.org</owner>

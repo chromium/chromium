@@ -49,6 +49,12 @@ constexpr char kCountPlaylistsPlayedDuringSession[] =
 constexpr char kMusicPausedEventsCount[] =
     "Ash.FocusMode.MusicPausedSessionCount";
 
+// Format strings for API related histograms.
+inline constexpr char kApiStatus[] = "Ash.FocusMode.Api.%s.Status";
+inline constexpr char kApiLatency[] = "Ash.FocusMode.Api.%s.Latency";
+inline constexpr char kApiResult[] = "Ash.FocusMode.Api.%s.Result";
+inline constexpr char kApiRetryCount[] = "Ash.FocusMode.Api.%s.Latency";
+
 // This enum is used for metrics, so enum values should not be changed. New enum
 // values can be added, but existing enums must never be renumbered or deleted
 // and reused.

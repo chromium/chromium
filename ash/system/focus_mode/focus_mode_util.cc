@@ -13,12 +13,15 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/system_textfield.h"
 #include "ash/system/focus_mode/focus_mode_controller.h"
+#include "ash/system/focus_mode/focus_mode_histogram_names.h"
 #include "ash/system/model/clock_model.h"
 #include "ash/system/model/system_tray_model.h"
 #include "base/check_op.h"
 #include "base/i18n/time_formatting.h"
 #include "base/i18n/unicodestring.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "third_party/icu/source/i18n/unicode/measfmt.h"
 #include "third_party/icu/source/i18n/unicode/measunit.h"
 #include "third_party/icu/source/i18n/unicode/measure.h"
@@ -43,7 +46,7 @@ constexpr std::pair<int, std::u16string>
                        u"☑"),
 };
 
-}
+}  // namespace
 
 SelectedPlaylist::SelectedPlaylist() = default;
 
@@ -168,6 +171,38 @@ int GetNextProgressStep(double current_progress) {
   return std::min(
       (int)(std::floor(current_progress * kProgressIndicatorSteps) + 1),
       kProgressIndicatorSteps);
+}
+
+void RecordHistogramForApiStatus(const std::string& method,
+                                 const google_apis::ApiErrorCode error_code) {
+  base::UmaHistogramSparse(
+      base::StringPrintf(focus_mode_histogram_names::kApiStatus,
+                         method.c_str()),
+      error_code);
+}
+
+void RecordHistogramForApiLatency(const std::string& method,
+                                  const base::TimeDelta latency) {
+  base::UmaHistogramTimes(
+      base::StringPrintf(focus_mode_histogram_names::kApiLatency,
+                         method.c_str()),
+      latency);
+}
+
+void RecordHistogramForApiResult(const std::string& method,
+                                 const bool successful) {
+  base::UmaHistogramBoolean(
+      base::StringPrintf(focus_mode_histogram_names::kApiResult,
+                         method.c_str()),
+      successful);
+}
+
+void RecordHistogramForApiRetryCount(const std::string& method,
+                                     const int retry_count) {
+  base::UmaHistogramCounts100(
+      base::StringPrintf(focus_mode_histogram_names::kApiRetryCount,
+                         method.c_str()),
+      retry_count);
 }
 
 }  // namespace ash::focus_mode_util
