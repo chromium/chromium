@@ -356,8 +356,14 @@ void InformedRestoreController::OnWindowActivated(ActivationReason reason,
 void InformedRestoreController::OnInformedRestoreImageDecoded(
     base::TimeTicks start_time,
     const gfx::ImageSkia& image) {
-  CHECK(contents_data_);
   RecordScreenshotDecodeDuration(base::TimeTicks::Now() - start_time);
+
+  // `contents_data_` may be invalidated if the user or system activates a
+  // window while the image is decoding. If a window is activated, there is no
+  // need to show the informed restore dialog anymore so we can bail out here.
+  if (!contents_data_) {
+    return;
+  }
 
   if (ShouldShowInformedRestoreImage(image)) {
     contents_data_->image = image;
