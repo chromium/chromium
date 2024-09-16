@@ -208,11 +208,6 @@ bool SharedImageStub::CreateSharedImage(const Mailbox& mailbox,
                                         std::string debug_label) {
   TRACE_EVENT2("gpu", "SharedImageStub::CreateSharedImage", "width",
                size.width(), "height", size.height());
-  if (format.IsLegacyMultiplanar()) {
-    LOG(ERROR) << "SharedImageStub: Incompatible format.";
-    OnError();
-    return false;
-  }
 #if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN)
   if (format.PrefersExternalSampler()) {
     LOG(ERROR) << "SharedImageStub: Incompatible format.";

@@ -66,17 +66,11 @@ VkFormat ToVkFormatSinglePlanarInternal(viz::SharedImageFormat format) {
     return VK_FORMAT_R8_UNORM;
   } else if (format == viz::SinglePlaneFormat::kLUMINANCE_8) {
     return VK_FORMAT_R8_UNORM;
-  } else if (format == viz::LegacyMultiPlaneFormat::kYV12) {
-    return VK_FORMAT_G8_B8_R8_3PLANE_420_UNORM;
-  } else if (format == viz::LegacyMultiPlaneFormat::kNV12) {
-    return VK_FORMAT_G8_B8R8_2PLANE_420_UNORM;
   } else if (format == viz::SinglePlaneFormat::kETC1) {
     return VK_FORMAT_ETC2_R8G8B8_UNORM_BLOCK;
   } else if (format == viz::SinglePlaneFormat::kLUMINANCE_F16 ||
              format == viz::SinglePlaneFormat::kR_F16) {
     return VK_FORMAT_R16_SFLOAT;
-  } else if (format == viz::LegacyMultiPlaneFormat::kP010) {
-    return VK_FORMAT_G10X6_B10X6R10X6_2PLANE_420_UNORM_3PACK16;
   }
   return VK_FORMAT_UNDEFINED;
 }
@@ -525,18 +519,15 @@ wgpu::TextureFormat ToDawnFormat(viz::SharedImageFormat format) {
     return wgpu::TextureFormat::RGB10A2Unorm;
   } else if (format == viz::SinglePlaneFormat::kETC1) {
     return wgpu::TextureFormat::ETC2RGB8Unorm;
-  } else if (format == viz::LegacyMultiPlaneFormat::kNV12 ||
-             format == viz::MultiPlaneFormat::kNV12) {
+  } else if (format == viz::MultiPlaneFormat::kNV12) {
     return wgpu::TextureFormat::R8BG8Biplanar420Unorm;
   } else if (format == viz::MultiPlaneFormat::kNV16) {
     return wgpu::TextureFormat::R8BG8Biplanar422Unorm;
   } else if (format == viz::MultiPlaneFormat::kNV24) {
     return wgpu::TextureFormat::R8BG8Biplanar444Unorm;
-  } else if (format == viz::LegacyMultiPlaneFormat::kNV12A ||
-             format == viz::MultiPlaneFormat::kNV12A) {
+  } else if (format == viz::MultiPlaneFormat::kNV12A) {
     return wgpu::TextureFormat::R8BG8A8Triplanar420Unorm;
-  } else if (format == viz::LegacyMultiPlaneFormat::kP010 ||
-             format == viz::MultiPlaneFormat::kP010) {
+  } else if (format == viz::MultiPlaneFormat::kP010) {
     return wgpu::TextureFormat::R10X6BG10X6Biplanar420Unorm;
   } else if (format == viz::MultiPlaneFormat::kP210) {
     return wgpu::TextureFormat::R10X6BG10X6Biplanar422Unorm;
@@ -571,23 +562,6 @@ wgpu::TextureFormat ToDawnTextureViewFormat(viz::SharedImageFormat format,
         // `k16F` channel formats do not support UV planes.
         CHECK_EQ(num_channels, 1);
         return wgpu::TextureFormat::R16Float;
-    }
-  } else if (format.IsLegacyMultiplanar()) {
-    // TODO(crbug.com/40239769): Remove legacy multiplanar checks once
-    // multiplanar SI support lands.
-    if (format == viz::LegacyMultiPlaneFormat::kNV12 ||
-        format == viz::LegacyMultiPlaneFormat::kNV12A) {
-      // Y and A planes are R8, UV is RG8.
-      return plane_index == 1 ? wgpu::TextureFormat::RG8Unorm
-                              : wgpu::TextureFormat::R8Unorm;
-    } else if (format == viz::LegacyMultiPlaneFormat::kP010) {
-      // Y plane is R16, UV is RG16.
-      return plane_index == 0 ? wgpu::TextureFormat::R16Unorm
-                              : wgpu::TextureFormat::RG16Unorm;
-    } else {
-      // All planes are R8.
-      CHECK_EQ(format, viz::LegacyMultiPlaneFormat::kYV12);
-      return wgpu::TextureFormat::R8Unorm;
     }
   } else {
     // Fallback to return single-plane format.

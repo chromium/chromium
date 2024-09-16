@@ -368,38 +368,6 @@ TEST_F(SharedImageFormatTest, SinglePlaneETC1) {
   EXPECT_EQ(format.EstimatedSizeInBytes(kOddSize), 45u);
 }
 
-TEST_F(SharedImageFormatTest, LegacyMultiPlaneP010) {
-  auto format = LegacyMultiPlaneFormat::kP010;
-  EXPECT_EQ(1, format.NumberOfPlanes());
-
-  EXPECT_EQ(format.EstimatedSizeInBytes(kDefaultSize), 30000u);
-  EXPECT_EQ(format.EstimatedSizeInBytes(kOddSize), 262u);
-}
-
-TEST_F(SharedImageFormatTest, LegacyMultiPlaneYV12) {
-  auto format = LegacyMultiPlaneFormat::kYV12;
-  EXPECT_EQ(1, format.NumberOfPlanes());
-
-  EXPECT_EQ(format.EstimatedSizeInBytes(kDefaultSize), 15000u);
-  EXPECT_EQ(format.EstimatedSizeInBytes(kOddSize), 131u);
-}
-
-TEST_F(SharedImageFormatTest, LegacyMultiPlaneNV12) {
-  auto format = LegacyMultiPlaneFormat::kNV12;
-  EXPECT_EQ(1, format.NumberOfPlanes());
-
-  EXPECT_EQ(format.EstimatedSizeInBytes(kDefaultSize), 15000u);
-  EXPECT_EQ(format.EstimatedSizeInBytes(kOddSize), 131u);
-}
-
-TEST_F(SharedImageFormatTest, LegacyMultiPlaneNV12A) {
-  auto format = LegacyMultiPlaneFormat::kNV12A;
-  EXPECT_EQ(1, format.NumberOfPlanes());
-
-  EXPECT_EQ(format.EstimatedSizeInBytes(kDefaultSize), 25000u);
-  EXPECT_EQ(format.EstimatedSizeInBytes(kOddSize), 212u);
-}
-
 TEST_F(SharedImageFormatTest, EstimatedSizeInBytesOverflow) {
   auto format = SinglePlaneFormat::kRGBA_F16;
 

@@ -45,11 +45,6 @@ SkColorType ToClosestSkColorType(bool gpu_compositing,
              format == SinglePlaneFormat::kBGRX_8888 ||
              format == SinglePlaneFormat::kETC1) {
     return kRGB_888x_SkColorType;
-  } else if (format == LegacyMultiPlaneFormat::kP010) {
-#if BUILDFLAG(IS_APPLE)
-    DLOG(ERROR) << "Sampling of P010 resources must be done per-plane.";
-#endif
-    return kRGBA_1010102_SkColorType;
   } else if (format == SinglePlaneFormat::kRGBA_1010102 ||
              // This intentionally returns kRGBA_1010102_SkColorType for
              // BGRA_1010102 even though kBGRA_1010102_SkColorType exists. It
@@ -57,18 +52,6 @@ SkColorType ToClosestSkColorType(bool gpu_compositing,
              format == SinglePlaneFormat::kBGRA_1010102) {
     return kRGBA_1010102_SkColorType;
 
-  } else if (format == LegacyMultiPlaneFormat::kYV12 ||
-             format == LegacyMultiPlaneFormat::kNV12) {
-#if BUILDFLAG(IS_APPLE)
-    DLOG(ERROR) << "Sampling of YUV_420 resources must be done per-plane.";
-#endif
-    // YUV images are sampled as RGB.
-    return kRGB_888x_SkColorType;
-  } else if (format == LegacyMultiPlaneFormat::kNV12A) {
-#if BUILDFLAG(IS_APPLE)
-    DLOG(ERROR) << "Sampling of YUVA_420 resources must be done per-plane.";
-#endif
-    return kRGBA_8888_SkColorType;
   } else if (format == SinglePlaneFormat::kR_8) {
     return kAlpha_8_SkColorType;
   } else if (format == SinglePlaneFormat::kR_16) {
@@ -203,10 +186,6 @@ bool HasEquivalentBufferFormat(SharedImageFormat format) {
          format == SinglePlaneFormat::kBGRX_8888 ||
          format == SinglePlaneFormat::kRGBA_1010102 ||
          format == SinglePlaneFormat::kBGRA_1010102 ||
-         format == LegacyMultiPlaneFormat::kYV12 ||
-         format == LegacyMultiPlaneFormat::kNV12 ||
-         format == LegacyMultiPlaneFormat::kNV12A ||
-         format == LegacyMultiPlaneFormat::kP010 ||
          format == MultiPlaneFormat::kYV12 ||
          format == MultiPlaneFormat::kNV12 ||
          format == MultiPlaneFormat::kNV12A ||
@@ -242,14 +221,6 @@ gfx::BufferFormat SinglePlaneSharedImageFormatToBufferFormat(
     return gfx::BufferFormat::RGBA_1010102;
   } else if (format == SinglePlaneFormat::kBGRA_1010102) {
     return gfx::BufferFormat::BGRA_1010102;
-  } else if (format == LegacyMultiPlaneFormat::kYV12) {
-    return gfx::BufferFormat::YVU_420;
-  } else if (format == LegacyMultiPlaneFormat::kNV12) {
-    return gfx::BufferFormat::YUV_420_BIPLANAR;
-  } else if (format == LegacyMultiPlaneFormat::kNV12A) {
-    return gfx::BufferFormat::YUVA_420_TRIPLANAR;
-  } else if (format == LegacyMultiPlaneFormat::kP010) {
-    return gfx::BufferFormat::P010;
   } else {
     // CanCreateGpuMemoryBufferForSinglePlaneSharedImageFormat() returns
     // false for all other types, so give a default value that will not be used.
@@ -335,25 +306,9 @@ SharedImageFormatRestrictedSinglePlaneUtils::ToGLTextureStorageFormat(
     return use_angle_rgbx_format ? GL_RGBX8_ANGLE : GL_RGB8_OES;
   } else if (format == SinglePlaneFormat::kETC1) {
     return GL_ETC1_RGB8_OES;
-  } else if (format == LegacyMultiPlaneFormat::kP010) {
-#if BUILDFLAG(IS_APPLE)
-    DLOG(ERROR) << "Sampling of P010 resources must be done per-plane.";
-#endif
-    return GL_RGB10_A2_EXT;
   } else if (format == SinglePlaneFormat::kRGBA_1010102 ||
              format == SinglePlaneFormat::kBGRA_1010102) {
     return GL_RGB10_A2_EXT;
-  } else if (format == LegacyMultiPlaneFormat::kYV12 ||
-             format == LegacyMultiPlaneFormat::kNV12) {
-#if BUILDFLAG(IS_APPLE)
-    DLOG(ERROR) << "Sampling of YUV_420 resources must be done per-plane.";
-#endif
-    return GL_RGB8_OES;
-  } else if (format == LegacyMultiPlaneFormat::kNV12A) {
-#if BUILDFLAG(IS_APPLE)
-    DLOG(ERROR) << "Sampling of YUVA_420 resources must be done per-plane.";
-#endif
-    return GL_RGBA8_OES;
   }
   NOTREACHED_IN_MIGRATION();
   return GL_RGBA8_OES;

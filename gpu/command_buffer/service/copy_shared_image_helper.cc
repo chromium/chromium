@@ -683,8 +683,7 @@ base::expected<void, GLError> CopySharedImageHelper::CopySharedImage(
 
   auto dest_format = dest_shared_image->format();
   // Destination shared image cannot prefer external sampler.
-  if (dest_format.IsLegacyMultiplanar() ||
-      dest_format.PrefersExternalSampler()) {
+  if (dest_format.PrefersExternalSampler()) {
     return base::unexpected(
         GLError(GL_INVALID_VALUE, "glCopySubTexture", "unexpected format"));
   }

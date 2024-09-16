@@ -362,36 +362,4 @@ TEST(ClientSharedImageTest,
 }
 #endif
 
-#if BUILDFLAG(IS_OZONE)
-// On Ozone, the target for native buffers should be used if a legacy
-// multiplanar format is passed.
-TEST(ClientSharedImageTest, GetTextureTarget_LegacyMultiplanarFormats) {
-  auto sii = base::MakeRefCounted<TestSharedImageInterface>();
-  sii->emulate_client_provided_native_buffer();
-
-  const gfx::Size kSize(256, 256);
-  const SharedImageUsageSet kUsage =
-      SHARED_IMAGE_USAGE_RASTER_WRITE | SHARED_IMAGE_USAGE_DISPLAY_READ;
-
-  for (auto format : viz::LegacyMultiPlaneFormat::kAll) {
-    SharedImageInfo si_info{format,
-                            kSize,
-                            gfx::ColorSpace(),
-                            kTopLeft_GrSurfaceOrigin,
-                            kOpaque_SkAlphaType,
-                            kUsage,
-                            ""};
-
-    auto client_si = sii->CreateSharedImage(si_info, kNullSurfaceHandle);
-
-#if BUILDFLAG(IS_FUCHSIA)
-    EXPECT_EQ(client_si->GetTextureTarget(), 0u);
-#else
-    EXPECT_EQ(client_si->GetTextureTarget(),
-              static_cast<uint32_t>(GL_TEXTURE_EXTERNAL_OES));
-#endif
-  }
-}
-#endif
-
 }  // namespace gpu
