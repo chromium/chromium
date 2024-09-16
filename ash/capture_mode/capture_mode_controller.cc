@@ -2211,9 +2211,15 @@ void CaptureModeController::OnDlpRestrictionCheckedAtSessionInit(
   BehaviorType behavior_type = BehaviorType::kDefault;
 
   // Before we start the session, if video recording is in progress, we need to
-  // set the current type to image, as we can't have more than one recording at
-  // a time. The video toggle button in the capture mode bar will be disabled.
-  if (!can_start_new_recording()) {
+  // set the current type to image (except if the new behavior type is sunfish),
+  // as we can't have more than one recording at a time. The video toggle button
+  // in the capture mode bar will be disabled.
+  // Order here matters: we enforce setting behavior type as sunfish even if a
+  // recording is in progress so the behavior, source, and type can be updated.
+  if (entry_type == CaptureModeEntryType::kSunfish) {
+    DCHECK(features::IsSunfishFeatureEnabled());
+    behavior_type = BehaviorType::kSunfish;
+  } else if (!can_start_new_recording()) {
     SetType(CaptureModeType::kImage);
   } else if (entry_type == CaptureModeEntryType::kProjector) {
     CHECK(!delegate_->IsAudioCaptureDisabledByPolicy())
@@ -2224,9 +2230,6 @@ void CaptureModeController::OnDlpRestrictionCheckedAtSessionInit(
   } else if (entry_type == CaptureModeEntryType::kGameDashboard) {
     CHECK(features::IsGameDashboardEnabled());
     behavior_type = BehaviorType::kGameDashboard;
-  } else if (entry_type == CaptureModeEntryType::kSunfish) {
-    DCHECK(features::IsSunfishFeatureEnabled());
-    behavior_type = BehaviorType::kSunfish;
   }
 
   RecordCaptureModeEntryType(entry_type);

@@ -82,6 +82,14 @@ class DefaultBehavior : public CaptureModeBehavior {
   DefaultBehavior(const DefaultBehavior&) = delete;
   DefaultBehavior& operator=(const DefaultBehavior&) = delete;
   ~DefaultBehavior() override = default;
+
+  // CaptureModeBehavior:
+  void AttachToSession() override {
+    // Do not override the session configs in `DefaultBehavior`, since the
+    // source and type may have been set before the session was started and
+    // initialized.
+  }
+  void DetachFromSession() override {}
 };
 
 // -----------------------------------------------------------------------------
@@ -100,24 +108,6 @@ class ProjectorBehavior : public CaptureModeBehavior {
   ProjectorBehavior(const ProjectorBehavior&) = delete;
   ProjectorBehavior& operator=(const ProjectorBehavior&) = delete;
   ~ProjectorBehavior() override = default;
-
-  // CaptureModeBehavior:
-  void AttachToSession() override {
-    cached_configs_ = GetCaptureModeSessionConfigs();
-
-    // Overwrite the current capture mode session with the projector
-    // configurations.
-    SetCaptureModeSessionConfigs(capture_mode_configs_);
-  }
-
-  void DetachFromSession() override {
-    CHECK(cached_configs_);
-
-    // Restore the capture mode configurations after being overwritten with the
-    // projector-specific configurations.
-    SetCaptureModeSessionConfigs(cached_configs_.value());
-    cached_configs_.reset();
-  }
 
   bool ShouldImageCaptureTypeBeAllowed() const override { return false; }
   bool ShouldSaveToSettingsBeIncluded() const override { return false; }
@@ -195,9 +185,7 @@ class GameDashboardBehavior : public CaptureModeBehavior,
 
   // CaptureModeBehavior:
   void AttachToSession() override {
-    cached_configs_ = GetCaptureModeSessionConfigs();
-
-    SetCaptureModeSessionConfigs(capture_mode_configs_);
+    CaptureModeBehavior::AttachToSession();
 
     CaptureModeController* controller = CaptureModeController::Get();
     BaseCaptureModeSession* session = controller->capture_mode_session();
@@ -219,9 +207,7 @@ class GameDashboardBehavior : public CaptureModeBehavior,
   }
 
   void DetachFromSession() override {
-    CHECK(cached_configs_);
-    SetCaptureModeSessionConfigs(cached_configs_.value());
-    cached_configs_.reset();
+    CaptureModeBehavior::DetachFromSession();
 
     if (pre_selected_window_) {
       pre_selected_window_->RemoveObserver(this);
@@ -316,7 +302,6 @@ class SunfishBehavior : public CaptureModeBehavior {
   SunfishBehavior& operator=(const SunfishBehavior&) = delete;
   ~SunfishBehavior() override = default;
 
-  // CaptureModeBehavior:
   bool ShouldShowUserNudge() const override { return false; }
   bool ShouldReShowUisAtPerformingCapture() const override { return true; }
   const std::u16string GetCaptureLabelRegionText() const override {
@@ -362,9 +347,22 @@ std::unique_ptr<CaptureModeBehavior> CaptureModeBehavior::Create(
   }
 }
 
-void CaptureModeBehavior::AttachToSession() {}
+void CaptureModeBehavior::AttachToSession() {
+  cached_configs_ = GetCaptureModeSessionConfigs();
 
-void CaptureModeBehavior::DetachFromSession() {}
+  // Overwrite the current capture mode session with the behavior
+  // configurations.
+  SetCaptureModeSessionConfigs(capture_mode_configs_);
+}
+
+void CaptureModeBehavior::DetachFromSession() {
+  CHECK(cached_configs_);
+
+  // Restore the capture mode configurations after being overwritten with the
+  // behavior-specific configurations.
+  SetCaptureModeSessionConfigs(cached_configs_.value());
+  cached_configs_.reset();
+}
 
 bool CaptureModeBehavior::ShouldImageCaptureTypeBeAllowed() const {
   return true;

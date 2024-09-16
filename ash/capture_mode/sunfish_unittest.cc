@@ -11,6 +11,7 @@
 #include "ash/capture_mode/capture_mode_session_test_api.h"
 #include "ash/capture_mode/capture_mode_test_util.h"
 #include "ash/capture_mode/search_results_panel.h"
+#include "ash/capture_mode/sunfish_capture_bar_view.h"
 #include "ash/capture_mode/test_capture_mode_delegate.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
@@ -389,6 +390,53 @@ TEST_F(SunfishTest, UpdateCursor) {
   // Simulate mouse release in the panel.
   event_generator->ReleaseLeftButton();
   EXPECT_EQ(ui::mojom::CursorType::kHand, cursor_manager->GetCursor().type());
+}
+
+// Tests that while a video recording is in progress, starting sunfish works
+// correctly.
+TEST_F(SunfishTest, StartRecordingThenStartSunfish) {
+  // Start Capture Mode in a fullscreen video recording mode.
+  CaptureModeController* controller = StartCaptureSession(
+      CaptureModeSource::kFullscreen, CaptureModeType::kVideo);
+  EXPECT_TRUE(controller->IsActive());
+  EXPECT_FALSE(controller->is_recording_in_progress());
+
+  // Start a video recording.
+  StartVideoRecordingImmediately();
+  EXPECT_FALSE(controller->IsActive());
+  EXPECT_TRUE(controller->is_recording_in_progress());
+
+  // Start sunfish session.
+  controller->StartSunfishSession();
+  EXPECT_TRUE(controller->IsActive());
+
+  // Expect the behavior and UI to be updated.
+  auto* session =
+      static_cast<CaptureModeSession*>(controller->capture_mode_session());
+  EXPECT_EQ(session->active_behavior()->behavior_type(),
+            BehaviorType::kSunfish);
+  CaptureModeSessionTestApi test_api(session);
+  EXPECT_TRUE(views::AsViewClass<SunfishCaptureBarView>(
+      test_api.GetCaptureModeBarView()));
+
+  // Before the drag, only the capture label is visible and is in waiting to
+  // select a capture region phase.
+  auto* capture_button =
+      test_api.GetCaptureLabelView()->capture_button_container();
+  auto* capture_label = test_api.GetCaptureLabelInternalView();
+  EXPECT_FALSE(capture_button->GetVisible());
+  EXPECT_TRUE(capture_label->GetVisible());
+  EXPECT_EQ(u"Drag to select an area to search", capture_label->GetText());
+
+  // Test we can select a region and show the search results panel.
+  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(100, 100, 600, 500),
+                          /*release_mouse=*/true, /*proceed=*/true);
+  WaitForImageCapturedForSearch();
+  EXPECT_TRUE(session->search_results_panel_widget());
+
+  // Test we can stop video recording.
+  controller->EndVideoRecording(EndRecordingReason::kStopRecordingButton);
+  EXPECT_FALSE(controller->is_recording_in_progress());
 }
 
 }  // namespace ash
