@@ -259,6 +259,12 @@ TabGroupSyncServiceProxy::CreateScopedLocalObserverPauser() {
   return service_->CreateScopedLocalObserverPauser();
 }
 
+void TabGroupSyncServiceProxy::GetURLRestriction(
+    const GURL& url,
+    TabGroupSyncService::UrlRestrictionCallback callback) {
+  std::move(callback).Run(std::nullopt);
+}
+
 void TabGroupSyncServiceProxy::AddObserver(Observer* observer) {}
 
 void TabGroupSyncServiceProxy::RemoveObserver(Observer* observer) {}

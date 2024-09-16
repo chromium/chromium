@@ -28,6 +28,7 @@ source_set("model") {
     "//components/tab_groups",
     "//ios/chrome/app:tests_hook",
     "//ios/chrome/app/application_delegate:app_state_header",
+    "//ios/chrome/browser/optimization_guide/model",
     "//ios/chrome/browser/sessions/model:restoration_observer",
     "//ios/chrome/browser/sessions/model:session_restoration_service",
     "//ios/chrome/browser/sessions/model:session_restoration_service_factory",

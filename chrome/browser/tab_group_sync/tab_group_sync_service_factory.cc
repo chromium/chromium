@@ -8,12 +8,15 @@
 
 #include "base/no_destructor.h"
 #include "build/build_config.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/data_type_store_service_factory.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
 #include "chrome/common/channel_info.h"
 #include "components/data_sharing/public/features.h"
+#include "components/optimization_guide/proto/hints.pb.h"
 #include "components/saved_tab_groups/empty_tab_group_sync_delegate.h"
 #include "components/saved_tab_groups/features.h"
 #include "components/saved_tab_groups/saved_tab_group_model.h"
@@ -85,6 +88,7 @@ TabGroupSyncServiceFactory::TabGroupSyncServiceFactory()
               .Build()) {
   DependsOn(DataTypeStoreServiceFactory::GetInstance());
   DependsOn(DeviceInfoSyncServiceFactory::GetInstance());
+  DependsOn(OptimizationGuideKeyedServiceFactory::GetInstance());
 }
 
 TabGroupSyncServiceFactory::~TabGroupSyncServiceFactory() = default;
@@ -106,7 +110,8 @@ TabGroupSyncServiceFactory::BuildServiceInstanceForBrowserContext(
 
   auto service = std::make_unique<TabGroupSyncServiceImpl>(
       std::move(model), std::move(saved_config), std::move(shared_config),
-      profile->GetPrefs(), std::move(metrics_logger));
+      profile->GetPrefs(), std::move(metrics_logger),
+      OptimizationGuideKeyedServiceFactory::GetForProfile(profile));
 
   std::unique_ptr<TabGroupSyncDelegate> delegate;
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \

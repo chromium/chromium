@@ -26,6 +26,8 @@ source_set("core") {
     ":tab_group_sync_bridge",
     "//base",
     "//components/keyed_service/core",
+    "//components/optimization_guide/core",
+    "//components/saved_tab_groups/proto",
     "//components/sync",
     "//components/tab_groups",
     "//ui/gfx",
@@ -183,8 +185,10 @@ source_set("unit_tests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
+    "//components/optimization_guide/core",
     "//components/pref_registry:pref_registry",
     "//components/prefs:test_support",
+    "//components/saved_tab_groups/proto",
     "//components/sync",
     "//components/sync:test_support",
     "//components/sync_device_info",
@@ -236,6 +240,7 @@ source_set("fake_tab_group_sync_service") {
     ":core",
     ":model",
     "//base",
+    "//components/saved_tab_groups/proto",
   ]
 }
 

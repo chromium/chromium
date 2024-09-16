@@ -13,6 +13,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/optimization_guide/proto/hints.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/saved_tab_groups/features.h"
@@ -36,6 +37,25 @@ namespace tab_groups {
 namespace {
 constexpr base::TimeDelta kDelayBeforeMetricsLogged = base::Seconds(10);
 
+void OnCanApplyOptimizationCompleted(
+    TabGroupSyncService::UrlRestrictionCallback callback,
+    optimization_guide::OptimizationGuideDecision decision,
+    const optimization_guide::OptimizationMetadata& metadata) {
+  if (decision != optimization_guide::OptimizationGuideDecision::kTrue) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+
+  std::optional<proto::UrlRestriction> url_restriction;
+  if (metadata.any_metadata().has_value()) {
+    url_restriction =
+        optimization_guide::ParsedAnyMetadata<proto::UrlRestriction>(
+            metadata.any_metadata().value());
+  }
+
+  std::move(callback).Run(std::move(url_restriction));
+}
+
 }  // namespace
 
 TabGroupSyncServiceImpl::TabGroupSyncServiceImpl(
@@ -43,7 +63,8 @@ TabGroupSyncServiceImpl::TabGroupSyncServiceImpl(
     std::unique_ptr<SyncDataTypeConfiguration> saved_tab_group_configuration,
     std::unique_ptr<SyncDataTypeConfiguration> shared_tab_group_configuration,
     PrefService* pref_service,
-    std::unique_ptr<TabGroupSyncMetricsLogger> metrics_logger)
+    std::unique_ptr<TabGroupSyncMetricsLogger> metrics_logger,
+    optimization_guide::OptimizationGuideDecider* optimization_guide_decider)
     : model_(std::move(model)),
       sync_bridge_mediator_(std::make_unique<TabGroupSyncBridgeMediator>(
           model_.get(),
@@ -51,8 +72,13 @@ TabGroupSyncServiceImpl::TabGroupSyncServiceImpl(
           std::move(saved_tab_group_configuration),
           std::move(shared_tab_group_configuration))),
       metrics_logger_(std::move(metrics_logger)),
-      pref_service_(pref_service) {
+      pref_service_(pref_service),
+      opt_guide_(optimization_guide_decider) {
   model_->AddObserver(this);
+  if (opt_guide_) {
+    opt_guide_->RegisterOptimizationTypes(
+        {optimization_guide::proto::SAVED_TAB_GROUP});
+  }
 }
 
 TabGroupSyncServiceImpl::~TabGroupSyncServiceImpl() {
@@ -73,6 +99,19 @@ void TabGroupSyncServiceImpl::SetCoordinator(
 std::unique_ptr<ScopedLocalObservationPauser>
 TabGroupSyncServiceImpl::CreateScopedLocalObserverPauser() {
   return coordinator_->CreateScopedLocalObserverPauser();
+}
+
+void TabGroupSyncServiceImpl::GetURLRestriction(
+    const GURL& url,
+    TabGroupSyncService::UrlRestrictionCallback callback) {
+  if (!opt_guide_) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+
+  opt_guide_->CanApplyOptimization(
+      url, optimization_guide::proto::SAVED_TAB_GROUP,
+      base::BindOnce(&OnCanApplyOptimizationCompleted, std::move(callback)));
 }
 
 void TabGroupSyncServiceImpl::AddObserver(

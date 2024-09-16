@@ -80,6 +80,9 @@ class MockTabGroupSyncService : public TabGroupSyncService {
   MOCK_METHOD(std::unique_ptr<ScopedLocalObservationPauser>,
               CreateScopedLocalObserverPauser,
               ());
+  MOCK_METHOD(void,
+              GetURLRestriction,
+              (const GURL&, TabGroupSyncService::UrlRestrictionCallback));
 
   MOCK_METHOD(void, AddObserver, (Observer*));
   MOCK_METHOD(void, RemoveObserver, (Observer*));

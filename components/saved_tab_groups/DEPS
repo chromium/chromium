@@ -1,6 +1,7 @@
 include_rules = [
   "+components/data_sharing",
   "+components/keyed_service",
+  "+components/optimization_guide",
   "+components/prefs",
   "+components/pref_registry",
   "+components/tab_groups",

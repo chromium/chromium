@@ -14,6 +14,7 @@
 #include "base/containers/circular_deque.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "components/optimization_guide/core/optimization_guide_decider.h"
 #include "components/saved_tab_groups/saved_tab_group.h"
 #include "components/saved_tab_groups/saved_tab_group_model.h"
 #include "components/saved_tab_groups/saved_tab_group_sync_bridge.h"
@@ -45,7 +46,8 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
       std::unique_ptr<SyncDataTypeConfiguration> saved_tab_group_configuration,
       std::unique_ptr<SyncDataTypeConfiguration> shared_tab_group_configuration,
       PrefService* pref_service,
-      std::unique_ptr<TabGroupSyncMetricsLogger> metrics_logger);
+      std::unique_ptr<TabGroupSyncMetricsLogger> metrics_logger,
+      optimization_guide::OptimizationGuideDecider* optimization_guide_decider);
   ~TabGroupSyncServiceImpl() override;
 
   // Disallow copy/assign.
@@ -113,6 +115,9 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
 
   std::unique_ptr<ScopedLocalObservationPauser>
   CreateScopedLocalObserverPauser() override;
+  void GetURLRestriction(
+      const GURL& url,
+      TabGroupSyncService::UrlRestrictionCallback callback) override;
 
   void AddObserver(TabGroupSyncService::Observer* observer) override;
   void RemoveObserver(TabGroupSyncService::Observer* observer) override;
@@ -214,6 +219,9 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
   // after this step. Currently used only for UpdateLocalTabGroupMapping()
   // calls.
   base::circular_deque<base::OnceClosure> pending_actions_;
+
+  // A handle to optimization guide for information about synced URLs.
+  raw_ptr<optimization_guide::OptimizationGuideDecider> opt_guide_ = nullptr;
 
   base::WeakPtrFactory<TabGroupSyncServiceImpl> weak_ptr_factory_{this};
 };

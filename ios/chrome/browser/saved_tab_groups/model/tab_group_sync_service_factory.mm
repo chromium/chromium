@@ -19,6 +19,8 @@
 #import "components/sync/model/data_type_store_service.h"
 #import "components/sync_device_info/device_info_sync_service.h"
 #import "ios/chrome/app/tests_hook.h"
+#import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
+#import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_delegate.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_local_update_observer.h"
 #import "ios/chrome/browser/sessions/model/session_restoration_service_factory.h"
@@ -72,6 +74,7 @@ TabGroupSyncServiceFactory::TabGroupSyncServiceFactory()
   DependsOn(DataTypeStoreServiceFactory::GetInstance());
   DependsOn(DeviceInfoSyncServiceFactory::GetInstance());
   DependsOn(SessionRestorationServiceFactory::GetInstance());
+  DependsOn(OptimizationGuideServiceFactory::GetInstance());
 }
 
 TabGroupSyncServiceFactory::~TabGroupSyncServiceFactory() = default;
@@ -101,10 +104,12 @@ TabGroupSyncServiceFactory::BuildServiceInstanceFor(
     return sync_service;
   }
 
+  auto* opt_guide =
+      OptimizationGuideServiceFactory::GetForProfile(browser_state);
   std::unique_ptr<TabGroupSyncServiceImpl> sync_service =
       std::make_unique<TabGroupSyncServiceImpl>(
           std::move(model), std::move(saved_config), nullptr,
-          browser_state->GetPrefs(), std::move(metrics_logger));
+          browser_state->GetPrefs(), std::move(metrics_logger), opt_guide);
 
   BrowserList* browser_list =
       BrowserListFactory::GetForBrowserState(browser_state);

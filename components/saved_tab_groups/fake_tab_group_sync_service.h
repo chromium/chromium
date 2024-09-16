@@ -70,6 +70,9 @@ class FakeTabGroupSyncService : public TabGroupSyncService {
   GetSharedTabGroupControllerDelegate() override;
   std::unique_ptr<ScopedLocalObservationPauser>
   CreateScopedLocalObserverPauser() override;
+  void GetURLRestriction(
+      const GURL& url,
+      TabGroupSyncService::UrlRestrictionCallback callback) override;
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
 

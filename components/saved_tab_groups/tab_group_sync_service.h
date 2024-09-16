@@ -11,10 +11,12 @@
 #include <string_view>
 #include <vector>
 
+#include "base/functional/callback.h"
 #include "base/observer_list_types.h"
 #include "base/supports_user_data.h"
 #include "base/uuid.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/saved_tab_groups/proto/url_restriction.pb.h"
 #include "components/saved_tab_groups/saved_tab_group.h"
 #include "components/saved_tab_groups/types.h"
 #include "components/sync/model/data_type_sync_bridge.h"
@@ -192,6 +194,12 @@ class TabGroupSyncService : public KeyedService, public base::SupportsUserData {
   // Helper method to pause / resume local observer.
   virtual std::unique_ptr<ScopedLocalObservationPauser>
   CreateScopedLocalObserverPauser() = 0;
+
+  using UrlRestrictionCallback =
+      base::OnceCallback<void(std::optional<proto::UrlRestriction>)>;
+  // Get the restrictions on a given URL.
+  virtual void GetURLRestriction(const GURL& url,
+                                 UrlRestrictionCallback callback) = 0;
 
   // Add / remove observers.
   virtual void AddObserver(Observer* observer) = 0;

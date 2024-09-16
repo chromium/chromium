@@ -309,6 +309,12 @@ FakeTabGroupSyncService::CreateScopedLocalObserverPauser() {
   return std::make_unique<ScopedLocalObservationPauser>();
 }
 
+void FakeTabGroupSyncService::GetURLRestriction(
+    const GURL& url,
+    TabGroupSyncService::UrlRestrictionCallback callback) {
+  std::move(callback).Run(std::nullopt);
+}
+
 void FakeTabGroupSyncService::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
 
