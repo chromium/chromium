@@ -19,9 +19,9 @@ def lint_wpt_root(input_api, output_api, repo_root: Optional[str] = None):
     # test-side change may invalidate the other files' contents. For example,
     # removing a test variant will orphan its expectations.
     paths = []
-    for abs_path in input_api.AbsoluteLocalPaths():
-        if abs_path.endswith(input_api.os_path.relpath(abs_path, repo_root)):
-            paths.append(abs_path)
+    for af in input_api.AffectedFiles(include_deletes=False):
+        if af.AbsoluteLocalPath().startswith(repo_root):
+            paths.append(af.AbsoluteLocalPath())
 
     # Without an explicit file list, `wpt lint` will lint all files in the
     # root, which is slow.
