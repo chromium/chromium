@@ -20,10 +20,9 @@
  * size of Chromium-BiDi when used the tab.
  * See rollup.config.mjs
  */
-import type UrlPatternTypes from 'urlpattern-polyfill/dist/types.js';
+import type {URLPattern as URLPatternType} from 'urlpattern-polyfill/dist/types.js';
 
-const URLPattern = (globalThis as any)
-  .URLPattern as typeof UrlPatternTypes.URLPattern;
+const URLPattern = (globalThis as any).URLPattern as typeof URLPatternType;
 
 if (!URLPattern) {
   throw new Error('Unable to find URLPattern');
