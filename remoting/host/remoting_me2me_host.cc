@@ -326,7 +326,7 @@ class HostProcess : public ConfigWatcher::Delegate,
   void StartWatchingConfigChanges();
 
   // Indicates whether |user_email| is allowed to access this machine based on
-  // |host_owner_| and the client domain policies that are set.
+  // |host_owner_emails_| and the client domain policies that are set.
   // Provided as a Callback to Me2MeHostAuthenticatorFactory and is called for
   // every connection attempt.
   bool CheckAccessPermission(std::string_view user_email);
@@ -421,7 +421,7 @@ class HostProcess : public ConfigWatcher::Delegate,
   std::string oauth_refresh_token_;
   std::string service_account_email_;
   base::Value::Dict config_;
-  std::string host_owner_;
+  std::set<std::string> host_owner_emails_;
 
   std::unique_ptr<PolicyWatcher> policy_watcher_;
   PolicyState policy_state_ = POLICY_INITIALIZING;
@@ -787,33 +787,34 @@ void HostProcess::SigTermHandler(int signal_number) {
 }
 #endif  // BUILDFLAG(IS_POSIX)
 
-bool HostProcess::CheckAccessPermission(std::string_view user_email) {
-  auto email_parts = base::SplitStringOnce(user_email, '@');
+bool HostProcess::CheckAccessPermission(std::string_view user_email_view) {
+  auto email_parts = base::SplitStringOnce(user_email_view, '@');
   if (!email_parts) {
-    LOG(ERROR) << "Unexpected email address format: " << user_email;
-    return false;
-  }
-  if (!base::EqualsCaseInsensitiveASCII(host_owner_, user_email)) {
-    LOG(ERROR) << user_email << " does not have access to this machine as it "
-               << "does not match the host owner: " << host_owner_;
+    LOG(ERROR) << "Unexpected email address format: " << user_email_view;
     return false;
   }
 
-  // If a client domain policy has been set, then verify that remote user's
-  // domain is included in the list.
-  if (!client_domain_list_.empty()) {
-    auto [hostname, domain] = *email_parts;
-    for (const std::string& required_domain : client_domain_list_) {
-      if (base::EqualsCaseInsensitiveASCII(domain, required_domain)) {
-        return true;
-      }
-    }
-    LOG(ERROR) << user_email << " has a domain which is not in the client "
-               << "domain allowlist.";
+  auto user_email = base::ToLowerASCII(user_email_view);
+  if (!host_owner_emails_.contains(user_email)) {
+    LOG(ERROR) << user_email << " does not have access to this machine.";
     return false;
   }
 
-  return true;
+  // Verify the remote user is not disallowed based on the client domain policy.
+  if (client_domain_list_.empty()) {
+    return true;
+  }
+
+  auto [_, domain] = *email_parts;
+  bool allowed_by_policy =
+      std::find_if(client_domain_list_.begin(), client_domain_list_.end(),
+                   [&domain](const std::string& allowed_domain) {
+                     return base::EqualsCaseInsensitiveASCII(domain,
+                                                             allowed_domain);
+                   }) != client_domain_list_.end();
+  LOG_IF(ERROR, !allowed_by_policy) << user_email << " has a domain which is "
+                                    << "not in the client domain allowlist.";
+  return allowed_by_policy;
 }
 
 void HostProcess::CreateAuthenticatorFactory() {
@@ -1106,14 +1107,17 @@ void HostProcess::OnFirstHeartbeatSuccessful() {
 #endif
 }
 
-void HostProcess::OnUpdateHostOwner(const std::string& host_owner) {
-  if (host_owner == host_owner_) {
+void HostProcess::OnUpdateHostOwner(const std::string& owner_email) {
+  auto new_owner_email = base::ToLowerASCII(owner_email);
+  if (host_owner_emails_.contains(new_owner_email)) {
     return;
   }
 
-  LOG(INFO) << "Updating host_owner from '" << host_owner_ << "' to '"
-            << host_owner << "'";
-  host_owner_ = host_owner;
+  LOG(INFO) << "Adding '" << new_owner_email << "' to host owner emails.";
+  host_owner_emails_.emplace(std::move(new_owner_email));
+
+  ApplyHostDomainListPolicy();
+  ApplyUsernamePolicy();
 }
 
 void HostProcess::OnUpdateRequireSessionAuthorization(bool require) {
@@ -1245,10 +1249,10 @@ bool HostProcess::ApplyConfig(const base::Value::Dict& config) {
                << kHostOwnerConfigPath << "`";
     return false;
   }
+  // TODO: joedow - Remove the email check once all Corp hosts have a hint set.
+  bool has_google_email = IsGoogleEmail(*host_owner);
   OnUpdateHostOwner(*host_owner);
 
-  // TODO: joedow - Remove the email check once all Corp hosts have a hint set.
-  bool has_google_email = IsGoogleEmail(host_owner_);
   auto* host_type_hint = config.FindString(kHostTypeHintPath);
   is_corp_host_ = (host_type_hint && *host_type_hint == kCorpHostTypeHint) ||
                   has_google_email;
@@ -1357,19 +1361,29 @@ void HostProcess::ApplyHostDomainListPolicy() {
 
   HOST_LOG << "Policy sets host domains: "
            << base::JoinString(host_domain_list_, ", ");
+  if (host_domain_list_.empty()) {
+    return;
+  }
 
-  if (!host_domain_list_.empty()) {
-    bool matched = false;
-    for (const std::string& domain : host_domain_list_) {
-      if (base::EndsWith(host_owner_, std::string("@") + domain,
-                         base::CompareCase::INSENSITIVE_ASCII)) {
-        matched = true;
-      }
+  std::set<std::string> allowed_emails;
+  for (const std::string& owner_email : host_owner_emails_) {
+    auto [_, domain] = *base::SplitStringOnce(owner_email, '@');
+    bool allowed_by_policy =
+        std::find_if(host_domain_list_.begin(), host_domain_list_.end(),
+                     [&domain](const std::string& allowed_domain) {
+                       return base::EqualsCaseInsensitiveASCII(domain,
+                                                               allowed_domain);
+                     }) != host_domain_list_.end();
+    if (allowed_by_policy) {
+      allowed_emails.emplace(owner_email);
+    } else {
+      LOG(WARNING) << owner_email << " is not allowed by host domain policy";
     }
-    if (!matched) {
-      LOG(ERROR) << "The host domain does not match the policy.";
-      ShutdownHost(kInvalidHostDomainExitCode);
-    }
+  }
+  host_owner_emails_.swap(allowed_emails);
+  if (host_owner_emails_.empty()) {
+    LOG(ERROR) << "No owner emails are allowed based on host domain policy.";
+    ShutdownHost(kInvalidHostDomainExitCode);
   }
 }
 
@@ -1429,21 +1443,20 @@ void HostProcess::ApplyUsernamePolicy() {
     return;
   }
 
-  if (host_username_match_required_) {
-    HOST_LOG << "Policy requires host username match.";
+  if (!host_username_match_required_) {
+    HOST_LOG << "Policy does not require host username match.";
+    return;
+  }
 
-    std::string username = GetUsername();
-    bool shutdown = username.empty() ||
-                    !base::StartsWith(host_owner_, username + std::string("@"),
-                                      base::CompareCase::INSENSITIVE_ASCII);
+  HOST_LOG << "Policy requires host username match.";
 
 #if BUILDFLAG(IS_APPLE)
     // On Mac, we run as root at the login screen, so the username won't match.
     // However, there's no need to enforce the policy at the login screen, as
     // the client will have to reconnect if a login occurs.
-    if (shutdown && getuid() == 0) {
-      shutdown = false;
-    }
+  if (getuid() == 0) {
+    return;
+  }
 #endif
 
     // Curtain-mode on Windows presents the standard OS login prompt to the user
@@ -1455,17 +1468,25 @@ void HostProcess::ApplyUsernamePolicy() {
     }
 #endif  // BUILDFLAG(IS_WIN) && defined(REMOTING_RDP_SESSION)
 
-    // Shutdown the host if the username does not match.
-    if (shutdown) {
-      LOG(ERROR) << "\n Policy error: username and host owner(ignoring domain) "
-                 << "don't match:\n"
-                 << "   username:   `" << username << "`\n"
-                 << "   host owner: `" << host_owner_ << "`";
+    std::string username = GetUsername();
+    LOG(INFO) << "Current local username is '" << username << "'";
+    std::set<std::string> allowed_emails;
+    for (const std::string& owner_email : host_owner_emails_) {
+      auto [owner_username, _] = *base::SplitStringOnce(owner_email, '@');
+      if (base::EqualsCaseInsensitiveASCII(username, owner_username)) {
+        LOG(WARNING) << owner_email << " matches the local username";
+        allowed_emails.emplace(owner_email);
+      } else {
+        LOG(WARNING) << owner_email << " does not match the local username";
+      }
+    }
+
+    host_owner_emails_.swap(allowed_emails);
+    if (host_owner_emails_.empty()) {
+      LOG(ERROR)
+          << "No owner emails are allowed based on match username policy.";
       ShutdownHost(kUsernameMismatchExitCode);
     }
-  } else {
-    HOST_LOG << "Policy does not require host username match.";
-  }
 }
 
 bool HostProcess::OnUsernamePolicyUpdate(const base::Value::Dict& policies) {
@@ -1799,7 +1820,10 @@ void HostProcess::StartHost() {
       HostEventLogger::Create(host_->status_monitor(), kApplicationName);
 #endif  // !defined(REMOTING_MULTI_PROCESS)
 
-  host_->Start(host_owner_);
+  // The email provided here is only used for logging via OnHostStarted().
+  // TODO: joedow - Update host observer interface to handle multiple email
+  // addresses.
+  host_->Start(*host_owner_emails_.begin());
 
 #if BUILDFLAG(IS_LINUX)
   // For Windows, ChromotingHostServices connections are handled by the daemon
