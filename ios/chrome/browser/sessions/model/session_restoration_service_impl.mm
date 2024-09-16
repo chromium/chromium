@@ -31,12 +31,6 @@ namespace {
 // Maximum size of session state NSData objects.
 const int kMaxSessionState = 5 * 1024 * 1024;
 
-// Information about an orphaned WebState.
-struct OrphanInfo {
-  std::string session_id;
-  web::proto::WebStateMetadataStorage metadata;
-};
-
 // Deletes all files and directory in `path` not present in `items_to_keep`.
 void DeleteUnknownContent(const base::FilePath& path,
                           const std::set<base::FilePath>& items_to_keep) {
@@ -214,6 +208,12 @@ void IterateDataForSessionAtPath(const base::FilePath& session_dir,
 }
 
 }  // anonymous namespace
+
+// Information about an orphaned WebState.
+struct SessionRestorationServiceImpl::OrphanInfo {
+  std::string session_id;
+  web::proto::WebStateMetadataStorage metadata;
+};
 
 // Class storing information about a WebStateList tracked by the
 // SessionRestorationServiceImpl.
@@ -485,31 +485,23 @@ void SessionRestorationServiceImpl::LoadWebStateStorage(
         base::BindOnce(&ios::sessions::ExecuteIORequests, std::move(requests)));
   }
 
+  // Updates the orphan map.
+  UpdateOrphanInfoMap();
+
   // This method is usually called after a WebState has been detached. It may
   // be called before the pending changes have been committed to disk thus it
   // needs to partially replicate the logic from SaveDirtySessions(...) to
   // track the location of the WebState data.
   std::string session_id;
 
-  // First check whether any Browser has marked the WebState for adoption. If
-  // this is the case, then the data should be loaded in that Browser session
-  // directory.
   const web::WebStateID web_state_id = web_state->GetUniqueIdentifier();
-  for (WebStateList* web_state_list : dirty_web_state_lists_) {
-    DCHECK(base::Contains(infos_, web_state_list));
-    WebStateListInfo& info = *infos_[web_state_list];
-
-    const auto& detached_web_states = info.observer().detached_web_states();
-    if (base::Contains(detached_web_states, web_state_id)) {
-      DCHECK(session_id.empty());
-      session_id = info.identifier();
-    }
-  }
-
-  // If the WebState is not up for adoption, assume its data is available in
-  // `browser`. We cannot check whether it is in the Browser's WebStateList
-  // as this method is usually called after the WebState has been detached.
-  if (session_id.empty()) {
+  auto iter = orphaned_map_.find(web_state_id);
+  if (iter != orphaned_map_.end()) {
+    session_id = iter->second.session_id;
+  } else {
+    // If the WebState is not up for adoption, assume its data is available in
+    // `browser`. We cannot check whether it is in the Browser's WebStateList
+    // as this method is usually called after the WebState has been detached.
     WebStateListInfo& info = *iterator->second;
     const auto& inserted_web_states = info.observer().inserted_web_states();
     DCHECK(!base::Contains(inserted_web_states, web_state_id));
@@ -517,7 +509,6 @@ void SessionRestorationServiceImpl::LoadWebStateStorage(
   }
 
   DCHECK(!session_id.empty());
-
   const base::FilePath web_state_dir = ios::sessions::WebStateDirectory(
       storage_path_.Append(session_id), web_state_id);
   const base::FilePath storage_path =
@@ -680,6 +671,48 @@ void SessionRestorationServiceImpl::MarkWebStateListDirty(
   }
 }
 
+void SessionRestorationServiceImpl::UpdateOrphanInfoMap() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  for (WebStateList* web_state_list : dirty_web_state_lists_) {
+    DCHECK(base::Contains(infos_, web_state_list));
+    WebStateListInfo& info = *infos_[web_state_list];
+
+    const auto& detached_web_states = info.observer().detached_web_states();
+    if (!detached_web_states.empty()) {
+      WebStateMetadataMap& metadata_map = info.metadata_map();
+      const std::string& identifier = info.identifier();
+
+      for (const auto web_state_id : detached_web_states) {
+        // It is possible for this method to be called multiple times before
+        // the dirty flag is called on the observer (as it is called by both
+        // SaveDirySession() and LoadWebStateStorage() methods).
+        if (base::Contains(orphaned_map_, web_state_id)) {
+          continue;
+        }
+
+        // If a realized WebState is created, inserted into a Browser and
+        // then moved to another Browser before its state could be saved,
+        // the metadata will not be present in the metadata_map. See the
+        // bug https://crbug.com/329219388 for more details.
+        auto iter = metadata_map.find(web_state_id);
+        if (iter == metadata_map.end()) {
+          continue;
+        }
+
+        OrphanInfo orphan_info{
+            .session_id = identifier,
+            .metadata = std::move(iter->second),
+        };
+
+        orphaned_map_.insert(
+            std::make_pair(web_state_id, std::move(orphan_info)));
+
+        metadata_map.erase(iter);
+      }
+    }
+  }
+}
+
 void SessionRestorationServiceImpl::SaveDirtySessions() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (timer_.IsRunning()) {
@@ -698,41 +731,8 @@ void SessionRestorationServiceImpl::SaveDirtySessions() {
   ios::sessions::IORequestList requests;
   std::swap(requests, pending_requests_);
 
-  // Create a map of orphaned WebStates (i.e. "unrealized" WebStates detached
-  // from a WebStateList).
-  std::map<web::WebStateID, OrphanInfo> orphaned_map;
-  for (WebStateList* web_state_list : dirty_web_state_lists_) {
-    DCHECK(base::Contains(infos_, web_state_list));
-    WebStateListInfo& info = *infos_[web_state_list];
-
-    const auto& detached_web_states = info.observer().detached_web_states();
-    if (!detached_web_states.empty()) {
-      WebStateMetadataMap& metadata_map = info.metadata_map();
-      const std::string& identifier = info.identifier();
-
-      for (const auto web_state_id : detached_web_states) {
-        // If a realized WebState is created, inserted into a Browser and
-        // then moved to another Browser before its state could be saved,
-        // the metadata will not be present in the metadata_map. See the
-        // bug https://crbug.com/329219388 for more details.
-        auto iter = metadata_map.find(web_state_id);
-        if (iter == metadata_map.end()) {
-          continue;
-        }
-
-        OrphanInfo orphan_info{
-            .session_id = identifier,
-            .metadata = std::move(iter->second),
-        };
-
-        DCHECK(!base::Contains(orphaned_map, web_state_id));
-        orphaned_map.insert(
-            std::make_pair(web_state_id, std::move(orphan_info)));
-
-        metadata_map.erase(iter);
-      }
-    }
-  }
+  // Updates the map of orphaned WebStates.
+  UpdateOrphanInfoMap();
 
   // Handle adopted WebStates (i.e. "unrealized" WebStates inserted into a
   // WebStateList).
@@ -747,15 +747,18 @@ void SessionRestorationServiceImpl::SaveDirtySessions() {
       WebStateMetadataMap& metadata_map = info.metadata_map();
       for (const auto web_state_id : inserted_web_states) {
         // The `web_state_id` must be adopted from another Browser, thus needs
-        // to be in the `orphaned_map` (the case of expected WebState is dealt
+        // to be in the `orphaned_map_` (the case of expected WebState is dealt
         // entirely in SessionRestorationWebStateListObserver).
-        DCHECK(base::Contains(orphaned_map, web_state_id));
-        auto iter = orphaned_map.find(web_state_id);
-        OrphanInfo& orphan_info = iter->second;
+        DCHECK(base::Contains(orphaned_map_, web_state_id));
+        auto iter = orphaned_map_.find(web_state_id);
+
+        // The WebState is adopted, remove it from the orphan map.
+        OrphanInfo orphan_info = std::move(iter->second);
+        orphaned_map_.erase(iter);
 
         // Only unrealized WebState should be adopted, realized WebState
         // will instead be considered dirty. Thus the metadata should be
-        // present in the orphaned_map.
+        // present in the orphaned_map_.
         DCHECK(!base::Contains(metadata_map, web_state_id));
         metadata_map.insert(
             std::make_pair(web_state_id, std::move(orphan_info.metadata)));
@@ -821,6 +824,9 @@ void SessionRestorationServiceImpl::SaveDirtySessions() {
         iter->second = std::move(*metadata);
       }
 
+      // The WebState is serialized, remove it from the orphan map.
+      orphaned_map_.erase(web_state_id);
+
       // Create a request to serialize the `storage`.
       requests.push_back(std::make_unique<ios::sessions::WriteProtoIORequest>(
           web_state_dir.Append(kWebStateStorageFilename), std::move(storage)));
@@ -847,10 +853,13 @@ void SessionRestorationServiceImpl::SaveDirtySessions() {
       // the data from the Browser that listed the WebState for adoption.
       base::FilePath browser_dir = dest_dir;
 
-      auto iter = orphaned_map.find(web_state_id);
-      if (iter != orphaned_map.end()) {
+      auto iter = orphaned_map_.find(web_state_id);
+      if (iter != orphaned_map_.end()) {
         const OrphanInfo& orphan_info = iter->second;
         browser_dir = storage_path_.Append(orphan_info.session_id);
+
+        // The WebState is closed, remove it from the orphan map.
+        orphaned_map_.erase(iter);
       } else {
         metadata_map.erase(web_state_id);
       }
