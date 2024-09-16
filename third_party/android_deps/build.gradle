@@ -57,7 +57,7 @@ dependencies.constraints {
 dependencies {
     // Note about the configuration names: they are defined in buildSrc/ChromiumPlugin
 
-    compile 'com.google.android.material:material:1.11.0-beta01'
+    compile 'com.google.android.material:material:1.13.0-alpha05'
 
     compile 'com.google.android.play:feature-delivery:2.0.1'
 

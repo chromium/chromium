@@ -565,7 +565,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   if (!defined(material_design_target)) {
     android_aar_prebuilt("com_google_android_material_material_java") {
-      aar_path = "cipd/libs/com_google_android_material_material/material-1.11.0-beta01.aar"
+      aar_path = "cipd/libs/com_google_android_material_material/material-1.13.0-alpha05.aar"
       info_path = "libs/com_google_android_material_material/com_google_android_material_material.info"
       enable_bytecode_checks = false
 
@@ -576,7 +576,7 @@ if (!limit_android_deps) {
         ":com_google_errorprone_error_prone_annotations_java",
         "//third_party/androidx:androidx_activity_activity_java",
         "//third_party/androidx:androidx_annotation_annotation_experimental_java",
-        "//third_party/androidx:androidx_annotation_annotation_java",
+        "//third_party/androidx:androidx_annotation_annotation_jvm_java",
         "//third_party/androidx:androidx_appcompat_appcompat_java",
         "//third_party/androidx:androidx_cardview_cardview_java",
         "//third_party/androidx:androidx_constraintlayout_constraintlayout_java",
@@ -850,7 +850,7 @@ if (!limit_android_deps) {
     deps = [
       ":io_grpc_grpc_core_java",
       "//third_party/android_deps:guava_android_java",
-      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/androidx:androidx_annotation_annotation_jvm_java",
       "//third_party/androidx:androidx_core_core_java",
       "//third_party/androidx:androidx_lifecycle_lifecycle_common_java",
     ]
@@ -1154,7 +1154,8 @@ if (!limit_android_deps) {
         ":*",
         "//third_party/androidx:*",
       ]
-      deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
+      deps =
+          [ "//third_party/androidx:androidx_annotation_annotation_jvm_java" ]
     }
   }
 
@@ -1346,7 +1347,7 @@ if (!limit_android_deps) {
       ]
       deps = [
         "$google_play_services_package:google_firebase_firebase_annotations_java",
-        "//third_party/androidx:androidx_annotation_annotation_java",
+        "//third_party/androidx:androidx_annotation_annotation_jvm_java",
       ]
     }
   }
@@ -1365,7 +1366,8 @@ if (!limit_android_deps) {
         ":*",
         "//third_party/androidx:*",
       ]
-      deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
+      deps =
+          [ "//third_party/androidx:androidx_annotation_annotation_jvm_java" ]
 
       # https://crbug.com/1412551
       requires_android = true
@@ -1387,7 +1389,7 @@ if (!limit_android_deps) {
       ]
       deps = [
         "$google_play_services_package:google_firebase_firebase_encoders_java",
-        "//third_party/androidx:androidx_annotation_annotation_java",
+        "//third_party/androidx:androidx_annotation_annotation_jvm_java",
       ]
     }
   }
