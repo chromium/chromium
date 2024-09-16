@@ -3433,6 +3433,10 @@ TEST_F(AttributionManagerImplTest,
   EXPECT_THAT(StoredSources(), SizeIs(1));
 
   histograms.ExpectTotalCount("Conversions.DelayOnAttestationsLoaded", 1);
+  histograms.ExpectUniqueSample(
+      "Conversions.NumEventsQueuedOnAttestationsLoaded", 1, 1);
+  histograms.ExpectTotalCount(
+      "Conversions.NumOsEventsQueuedOnAttestationsLoaded", 0);
 }
 
 TEST_F(AttributionManagerImplTest,
@@ -3464,6 +3468,52 @@ TEST_F(AttributionManagerImplTest,
   EXPECT_THAT(StoredSources(), SizeIs(1));
 
   histograms.ExpectTotalCount("Conversions.DelayOnAttestationsLoaded", 1);
+}
+
+TEST_F(AttributionManagerImplTest, OsRegistrationDelayedByAttestationsLoading) {
+  ShutdownManager();
+
+  MockAttributionReportingContentBrowserClient browser_client;
+  EXPECT_CALL(browser_client, AddPrivacySandboxAttestationsObserver)
+      .WillOnce(Return(false));
+  EXPECT_CALL(browser_client,
+              IsAttributionReportingOperationAllowed(
+                  _,
+                  AnyOf(AttributionReportingOperation::kOsSource,
+                        AttributionReportingOperation::
+                            kOsSourceTransitionalDebugReporting),
+                  _, _, _, _, _))
+      .WillRepeatedly(Return(true));
+  ScopedContentBrowserClientSetting setting(&browser_client);
+
+  base::HistogramTester histograms;
+
+  CreateManager();
+
+  Checkpoint checkpoint;
+
+  {
+    InSequence seq;
+    EXPECT_CALL(checkpoint, Call(1));
+    EXPECT_CALL(*os_level_manager_, Register);
+  }
+
+  attribution_manager_->HandleOsRegistration(OsRegistration(
+      {OsRegistrationItem(/*url=*/GURL("https://r.test"),
+                          /*debug_reporting=*/false)},
+      /*top_level_origin=*/url::Origin::Create(GURL("https://s.test")),
+      AttributionInputEvent(),
+      /*is_within_fenced_frame=*/false, kFrameId, kRegistrar));
+
+  checkpoint.Call(1);
+
+  NotifyAttestationsLoaded();
+
+  histograms.ExpectTotalCount("Conversions.DelayOnAttestationsLoaded", 1);
+  histograms.ExpectUniqueSample(
+      "Conversions.NumOsEventsQueuedOnAttestationsLoaded", 1, 1);
+  histograms.ExpectTotalCount("Conversions.NumEventsQueuedOnAttestationsLoaded",
+                              0);
 }
 
 TEST_F(AttributionManagerImplTest,

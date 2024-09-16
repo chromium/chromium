@@ -845,6 +845,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Conversions.NumEventsQueuedOnAttestationsLoaded"
+    units="registrations" expires_after="2025-03-12">
+  <owner>linnan@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Measures how many web registrations are enqueued waiting for attestations to
+    be loaded. Recorded once per storage partition when attestations are loaded
+    or timeout if there are any pending registrations..
+  </summary>
+</histogram>
+
+<histogram name="Conversions.NumOsEventsQueuedOnAttestationsLoaded"
+    units="registrations" expires_after="2025-03-12">
+  <owner>linnan@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Measures how many OS registrations are enqueued waiting for attestations to
+    be loaded. Recorded once per storage partition when attestations are loaded
+    or timeout if there are any pending registrations.
+  </summary>
+</histogram>
+
 <histogram name="Conversions.OsRegistrationItemsPerBatch" units="count"
     expires_after="2025-01-26">
   <owner>linnan@chromium.org</owner>

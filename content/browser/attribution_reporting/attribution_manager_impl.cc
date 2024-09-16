@@ -112,6 +112,8 @@ using ::attribution_reporting::OsRegistrationItem;
 using ::attribution_reporting::mojom::OsRegistrationResult;
 using ::attribution_reporting::mojom::RegistrationType;
 
+constexpr size_t kMaxPendingEvents = 1000u;
+
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 //
@@ -589,7 +591,7 @@ AttributionManagerImpl::AttributionManagerImpl(
           user_data_directory,
           // TODO(crbug.com/40267739): consider reducing this number when
           // os registrations will include multiple items.
-          /*max_pending_events=*/1000,
+          kMaxPendingEvents,
           std::move(special_storage_policy),
           /*resolver_delegate=*/nullptr,
           std::make_unique<AttributionCookieCheckerImpl>(storage_partition),
@@ -1898,6 +1900,18 @@ void AttributionManagerImpl::OnAttestationsLoaded() {
                                 time_since_construction_.Elapsed(),
                                 base::Milliseconds(1), base::Minutes(5),
                                 /*buckets=*/50);
+
+  static_assert(kMaxPendingEvents == 1000u);
+  if (!pending_events_.empty()) {
+    base::UmaHistogramCounts1000(
+        "Conversions.NumEventsQueuedOnAttestationsLoaded",
+        pending_events_.size());
+  }
+  if (!pending_os_events_.empty()) {
+    base::UmaHistogramCounts1000(
+        "Conversions.NumOsEventsQueuedOnAttestationsLoaded",
+        pending_os_events_.size());
+  }
 
   scheduler_timer_ = std::make_unique<ReportSchedulerTimer>(
       std::make_unique<ReportScheduler>(weak_factory_.GetWeakPtr()));
