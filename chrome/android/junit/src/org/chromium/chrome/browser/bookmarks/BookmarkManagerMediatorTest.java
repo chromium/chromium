@@ -86,6 +86,7 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.ui.native_page.BasicNativePage;
 import org.chromium.chrome.browser.ui.signin.SyncPromoController.SyncPromoState;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
@@ -185,6 +186,7 @@ public class BookmarkManagerMediatorTest {
     @Mock private ListObservable.ListObserver<Void> mListObserver;
     @Mock private Consumer<OnScrollListener> mOnScrollListenerConsumer;
     @Mock private BookmarkMoveSnackbarManager mBookmarkMoveSnackbarManager;
+    @Mock private BasicNativePage mNativePage;
 
     @Captor private ArgumentCaptor<BookmarkModelObserver> mBookmarkModelObserverArgumentCaptor;
     @Captor private ArgumentCaptor<SelectionObserver> mSelectionObserver;
@@ -2252,6 +2254,19 @@ public class BookmarkManagerMediatorTest {
         // This should no-op as the folder is gone.
         onClick3.run();
         verify(mBookmarkModel, never()).getChildIds(mFolderId3);
+    }
+
+    @Test
+    public void testNativePageState() {
+        finishLoading();
+        mMediator.setBasicNativePage(mNativePage);
+
+        mMediator.openFolder(mFolderId1);
+        verify(mNativePage).onStateChange("chrome-native://bookmarks/folder/5", false);
+
+        doReturn("chrome://bookmarks/").when(mNativePage).getUrl();
+        mMediator.openFolder(mFolderId2);
+        verify(mNativePage).onStateChange("chrome-native://bookmarks/folder/6", true);
     }
 
     private void verifyMenuListItemTitles(ModelList modelList, int... expectedTitleIds) {
