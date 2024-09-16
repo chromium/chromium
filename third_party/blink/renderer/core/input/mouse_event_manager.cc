@@ -92,10 +92,7 @@ void SetMouseEventAttributes(MouseEventInit* initializer,
   initializer->setButtons(
       MouseEvent::WebInputEventModifiersToButtons(mouse_event.GetModifiers()));
   initializer->setView(target_node->GetDocument().domWindow());
-  initializer->setComposed(
-      RuntimeEnabledFeatures::NonComposedEnterLeaveEventsEnabled()
-          ? !is_mouse_enter_or_leave
-          : true);
+  initializer->setComposed(!is_mouse_enter_or_leave);
   initializer->setDetail(click_count);
   initializer->setRelatedTarget(related_target);
   UIEventWithKeyState::SetFromWebInputEventModifiers(

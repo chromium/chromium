@@ -2848,13 +2848,6 @@
       name: "NoIncreasingEndOffsetOnSplittingTextNodes",
       status: "stable",
     },
-    // Makes enter/leave Mouse and Pointer Events non-composed as per
-    // corresponding specifications.
-    {
-      name: "NonComposedEnterLeaveEvents",
-      public: true,
-      status: "stable",
-    },
     // Doesn't insert empty blockquotes on outdenting a blockquote. See
     // https://crbug.com/323960902
     {
