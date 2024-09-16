@@ -739,8 +739,9 @@ void ChromeBrowserMainParts::StartMetricsRecording() {
   if (heap_profiler_controller &&
       heap_profiler_controller->GetSyntheticFieldTrial(trial_name,
                                                        group_name)) {
-    ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(trial_name,
-                                                              group_name);
+    ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
+        trial_name, group_name,
+        variations::SyntheticTrialAnnotationMode::kCurrentLog);
   }
 
 #if BUILDFLAG(IS_ANDROID)
