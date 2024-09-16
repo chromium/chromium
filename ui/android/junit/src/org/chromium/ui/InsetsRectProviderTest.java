@@ -162,7 +162,7 @@ public class InsetsRectProviderTest {
 
     @Test
     public void testAppliedInsetsNotConsumed_EmptyFrame() {
-        // Assume a caption bar top insets.
+        // Assume caption bar has top insets.
         int type = WindowInsetsCompat.Type.captionBar();
         Insets insets = Insets.of(0, 10, 0, 0);
 
@@ -172,7 +172,7 @@ public class InsetsRectProviderTest {
         WindowInsetsCompat emptyWindowInsets = new WindowInsetsCompat.Builder().build();
         mInsetsRectProvider = new InsetsRectProvider(mInsetObserver, type, emptyWindowInsets);
 
-        // Attach an observer to verify that input insets are not processed.
+        // Attach an observer to verify that input insets are not processed or consumed.
         CallbackHelper observer = new CallbackHelper();
         mInsetsRectProvider.addObserver(rect -> observer.notifyCalled());
         WindowInsetsCompat newWindowInsets =
@@ -184,8 +184,8 @@ public class InsetsRectProviderTest {
     }
 
     @Test
-    public void testAppliedInsetsConsumed_SameAsCachedInsets() {
-        // Assume a caption bar top insets.
+    public void testAppliedInsetsConsumed_SameAsCachedInsets_UnoccludedAreaAvailable() {
+        // Assume caption bar has top insets.
         int type = WindowInsetsCompat.Type.captionBar();
         Insets insets = Insets.of(0, 10, 0, 0);
 
@@ -193,13 +193,16 @@ public class InsetsRectProviderTest {
         WindowInsetsCompat emptyWindowInsets = new WindowInsetsCompat.Builder().build();
         mInsetsRectProvider = new InsetsRectProvider(mInsetObserver, type, emptyWindowInsets);
 
-        // Attach an observer to verify that new insets are processed once with duplicate back to
-        // back updates. Also verify that the insets are consumed in both cases.
+        // Attach an observer to verify that new insets are processed once, with back to back
+        // updates. Also verify that the insets are consumed in both cases.
         CallbackHelper observer = new CallbackHelper();
         mInsetsRectProvider.addObserver(rect -> observer.notifyCalled());
 
+        Rect availableArea = new Rect(0, 0, WINDOW_WIDTH - 20, 10);
+        List<Rect> blockingRects = List.of(new Rect(WINDOW_WIDTH - 20, 0, WINDOW_WIDTH, 10));
         WindowInsetsCompat newWindowInsets =
-                buildTestWindowInsets(type, insets, new Rect(), INSETS_FRAME_SIZE, List.of());
+                buildTestWindowInsets(
+                        type, insets, availableArea, INSETS_FRAME_SIZE, blockingRects);
         var appliedInsets = mInsetsRectProvider.onApplyWindowInsets(mView, newWindowInsets);
         assertEquals(
                 "Input insets should be consumed.", Insets.NONE, appliedInsets.getInsets(type));
@@ -207,6 +210,57 @@ public class InsetsRectProviderTest {
         appliedInsets = mInsetsRectProvider.onApplyWindowInsets(mView, newWindowInsets);
         assertEquals(
                 "Input insets should be consumed.", Insets.NONE, appliedInsets.getInsets(type));
+
+        assertEquals("Observer should be called once.", 1, observer.getCallCount());
+        assertSuppliedValues(insets, availableArea, blockingRects);
+    }
+
+    @Test
+    public void testAppliedInsetsNotConsumed_UnoccludedAreaUnavailable() {
+        // Assume caption bar has top insets.
+        int type = WindowInsetsCompat.Type.captionBar();
+        Insets insets = Insets.of(0, 10, 0, 0);
+
+        // Initialize with empty window insets.
+        WindowInsetsCompat emptyWindowInsets = new WindowInsetsCompat.Builder().build();
+        mInsetsRectProvider = new InsetsRectProvider(mInsetObserver, type, emptyWindowInsets);
+
+        // Attach an observer to verify that new insets are not consumed when there is no available
+        // area in the insets region for customization. Verify that the insets are not consumed.
+        CallbackHelper observer = new CallbackHelper();
+        mInsetsRectProvider.addObserver(rect -> observer.notifyCalled());
+
+        WindowInsetsCompat newWindowInsets =
+                buildTestWindowInsets(type, insets, new Rect(), INSETS_FRAME_SIZE, List.of());
+        var appliedInsets = mInsetsRectProvider.onApplyWindowInsets(mView, newWindowInsets);
+        assertEquals("Input insets should not be consumed.", newWindowInsets, appliedInsets);
+        assertEquals("Observer should be called once.", 1, observer.getCallCount());
+        assertSuppliedValues(insets, new Rect(), List.of());
+    }
+
+    @Test
+    public void testAppliedInsetsNotConsumed_SameAsCachedInsets_UnoccludedAreaUnavailable() {
+        // Assume caption bar has top insets.
+        int type = WindowInsetsCompat.Type.captionBar();
+        Insets insets = Insets.of(0, 10, 0, 0);
+
+        // Initialize with empty window insets.
+        WindowInsetsCompat emptyWindowInsets = new WindowInsetsCompat.Builder().build();
+        mInsetsRectProvider = new InsetsRectProvider(mInsetObserver, type, emptyWindowInsets);
+
+        // Attach an observer to verify that new insets are processed once but never consumed, with
+        // back to back updates, when there is no unoccluded area available for customization in
+        // the insets region. Also verify that the insets are not consumed in both cases.
+        CallbackHelper observer = new CallbackHelper();
+        mInsetsRectProvider.addObserver(rect -> observer.notifyCalled());
+
+        WindowInsetsCompat newWindowInsets =
+                buildTestWindowInsets(type, insets, new Rect(), INSETS_FRAME_SIZE, List.of());
+        var appliedInsets = mInsetsRectProvider.onApplyWindowInsets(mView, newWindowInsets);
+        assertEquals("Input insets should not be consumed.", newWindowInsets, appliedInsets);
+
+        appliedInsets = mInsetsRectProvider.onApplyWindowInsets(mView, newWindowInsets);
+        assertEquals("Input insets should not be consumed.", newWindowInsets, appliedInsets);
 
         assertEquals("Observer should be called once.", 1, observer.getCallCount());
         assertSuppliedValues(insets, new Rect(), List.of());
