@@ -834,7 +834,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TabGroups.ShowTabGroupCreationDialogSwitch.ToggledToState"
-    enum="Boolean" expires_after="2024-10-30">
+    enum="Boolean" expires_after="2025-04-30">
+  <owner>bjfong@google.com</owner>
   <owner>ckitagawa@chromium.org</owner>
   <owner>clank-tab-dev@google.com</owner>
   <summary>
@@ -1524,7 +1525,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tabs.AutoOpenSyncedTabGroupsSwitch.ToggledToState"
-    enum="Boolean" expires_after="2024-10-30">
+    enum="Boolean" expires_after="2025-04-30">
   <owner>ckitagawa@chromium.org</owner>
   <owner>clank-tab-dev@google.com</owner>
   <summary>
