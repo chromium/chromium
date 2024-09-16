@@ -4154,7 +4154,6 @@
 <translation id="3937640725563832867">Алтернативно име на издавач на сертификат</translation>
 <translation id="3937734102568271121">Секогаш преведувај <ph name="LANGUAGE" /></translation>
 <translation id="3938128855950761626">Уреди од продавачот <ph name="VENDOR_ID" /></translation>
-<translation id="3939622756852381766">Автоматски создава титлови за аудио и видео</translation>
 <translation id="3941565636838060942">За да се сокрие пристапот до оваа програма, треба да ја деинсталирате со помош на
   <ph name="CONTROL_PANEL_APPLET_NAME" /> во Контролната табла.
 
@@ -8024,7 +8023,6 @@
 <translation id="6823561724060793716">Од лентата за адреси, може да ги отворите информациите за страницата за да видите дополнителни детали за страницата што ја отворате</translation>
 <translation id="6824564591481349393">Копирај &amp;адреса на е-пошта</translation>
 <translation id="6824584962142919697">&amp;Проверете ги елементите</translation>
-<translation id="6824725898506587159">Управувај јазици</translation>
 <translation id="6825184156888454064">Подреди по име</translation>
 <translation id="6826872289184051766">Потврди преку USB</translation>
 <translation id="6827121912381363404">Дозволувај сите екстензии да го читаат и менуваат <ph name="PERMITTED_SITE" /></translation>
@@ -9696,6 +9694,7 @@
 <translation id="8037357227543935929">Прашај (стандардно)</translation>
 <translation id="803771048473350947">Датотека</translation>
 <translation id="8037801708772278989">Тукушто проверено</translation>
+<translation id="8038111231936746805">(стандардно)</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{Се копира 1 датотека во <ph name="CLOUD_PROVIDER" />}one{Се копираат {NUM_OF_FILES} датотека во <ph name="CLOUD_PROVIDER" />}other{Се копираат {NUM_OF_FILES} датотеки во <ph name="CLOUD_PROVIDER" />}}</translation>
 <translation id="8041089156583427627">Испратете повратни информации</translation>
 <translation id="8041093619605951337">Среќно</translation>
@@ -11319,7 +11318,6 @@
 <translation id="918352324374649435">{COUNT,plural, =1{Апликација}one{# апликација}other{# апликации}}</translation>
 <translation id="9186963452600581158">Најавете се со сметка на Google на дете</translation>
 <translation id="9187967020623675250">Клучевите не се совпаѓаат. Притиснете на кое било копче за да <ph name="RESPONSE" />.</translation>
-<translation id="9191638749941292185">Испраќа титлови до Google за да ги преведе автоматски</translation>
 <translation id="9192019773545828776">Слушајте говорни повратни информации за да може да го користите уредот без да гледате во екранот. Повратни информации со Брајово писмо се достапни со поврзан уред. Користете Ctrl + Alt + Z за да се вклучи или исклучи ChromeVox. Користете Search + стрелка налево или налево за да се движите. Користете Search + празно место за да изберете (активирате).</translation>
 <translation id="919686179725692564">Дознајте повеќе за правењето бекап за апликациите</translation>
 <translation id="9199503643457729322">Кликнете за да заминете од „Водичот за приватност“.</translation>
@@ -11440,7 +11438,6 @@
 <translation id="98515147261107953">Пејзаж</translation>
 <translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">Општо</translation>
-<translation id="987475089238841621">Јазичните пакети се користат за „Автоматски титлови“ и се складираат на вашиот уред</translation>
 <translation id="988320949174893488">Повремени пречки</translation>
 <translation id="988978206646512040">Не е дозволена празна лозинка</translation>
 <translation id="992032470292211616">Наставки, апликации и теми може да му наштетат на вашиот уред. Дали сте сигурни дека сакате да продолжите?</translation>

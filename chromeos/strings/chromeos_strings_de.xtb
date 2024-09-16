@@ -249,6 +249,7 @@
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2148716181193084225">Heute</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> Fotos</translation>
+<translation id="2154460308960858308">Suche löschen</translation>
 <translation id="2156072344042480449">Dies sind deine letzten 2 Prompts. Du kannst sie nur verwenden, solange du dich auf dieser Seite befindest.</translation>
 <translation id="2157660087437850958">Emoji-Auswahl</translation>
 <translation id="2157959690810728433">IN WARTESCHLANGE</translation>
@@ -495,6 +496,7 @@
 <translation id="3557205324756024651">Lokale Identität (optional)</translation>
 <translation id="3565064564551103223">Zugelassene IPs</translation>
 <translation id="3569407787324516067">Bildschirmschoner</translation>
+<translation id="3571184524500629183">Suche schließen</translation>
 <translation id="3577473026931028326">Ein Fehler ist aufgetreten. Versuche es noch einmal.</translation>
 <translation id="357889014807611375">Kostenpflichtiges WLAN</translation>
 <translation id="3583278742022654445">Schwaches Signal. Gehe näher an die Quelle des WLAN-Signals heran.</translation>
@@ -936,6 +938,7 @@
 <translation id="5860033963881614850">Aus</translation>
 <translation id="5860491529813859533">Aktivieren</translation>
 <translation id="5876385649737594562">Aktivieren, um Optionen auszuwählen</translation>
+<translation id="5877503382465267833">„<ph name="RECORDING_NAME" />“ pausieren</translation>
 <translation id="588258955323874662">Vollbild</translation>
 <translation id="5893975327266416093">Zum Zuweisen auf eine Taste drücken</translation>
 <translation id="5895138241574237353">Neu starten</translation>
@@ -1152,6 +1155,7 @@
 <translation id="6910312834584889076">Die Abdeckung des Scanners ist offen. Schließe sie und versuche es noch einmal.</translation>
 <translation id="6910845598686542904">Modelle der Stimmen in der Aufnahme erstellen</translation>
 <translation id="6911383237894364323">Verbindung zu Medienservern kann nicht hergestellt werden</translation>
+<translation id="6927968682840110570">Name der Aufzeichnung</translation>
 <translation id="6930242544192836755">Dauer</translation>
 <translation id="6930597342185648547">Informationen zum Hintergrund</translation>
 <translation id="6939667434404433010">Aufnahme suchen</translation>
@@ -1264,6 +1268,7 @@
 <translation id="7378170410161264436">Mit der Rekorder App kannst du Transkripte zu Aufnahmen mit gesprochenem Text erstellen lassen.
 Wenn du das möchtest, lade das Transkriptmodell (bis zu 100 MB) herunter.</translation>
 <translation id="7384004438856720753">Palast</translation>
+<translation id="7388345524791662148">Weitere Optionen für „<ph name="RECORDING_NAME" />“</translation>
 <translation id="7388959671917308825">Eingebautes Touchpad</translation>
 <translation id="7397270852490618635">Helles Design ausschalten</translation>
 <translation id="7401543881546089382">Verknüpfung löschen</translation>
@@ -1285,6 +1290,7 @@ Wenn du das möchtest, lade das Transkriptmodell (bis zu 100 MB) herunter.</tra
 <translation id="7513770521371759388">unten</translation>
 <translation id="7514365320538308">Herunterladen</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7519481256236810334">„<ph name="RECORDING_NAME" />“ abspielen</translation>
 <translation id="7525067979554623046">Erstellen</translation>
 <translation id="7528507600602050979">Hilfeinhalte nicht verfügbar</translation>
 <translation id="7535791657097741517">Helles Design einschalten</translation>
@@ -1360,6 +1366,7 @@ Wenn du das möchtest, lade das Transkriptmodell (bis zu 100 MB) herunter.</tra
 <translation id="7897043345768902965">Fußgängerweg</translation>
 <translation id="7902285181767404769">Benachrichtigungen während der Aufnahme stumm schalten</translation>
 <translation id="7903695460270716054">Ausgewählte Kunstwerke und Bilder auswählen</translation>
+<translation id="7912005977894000746">Zurück zur Hauptseite</translation>
 <translation id="7915220255123750251">Hier kannst du die APN-Netzwerkeinstellungen verwalten. APNs stellen eine Verbindung zwischen einem Mobilfunknetz und dem Internet her.</translation>
 <translation id="7936303884198020182">Es wurden keine Nameserver gefunden</translation>
 <translation id="7942349550061667556">Rot</translation>

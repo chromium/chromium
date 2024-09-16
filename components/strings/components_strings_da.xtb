@@ -28,7 +28,6 @@
 <translation id="1050038467049342496">Luk andre apps</translation>
 <translation id="1053959602163383901">Du har valgt at verificere med en authenticator-enhed på websites, der anvender <ph name="PROVIDER_ORIGIN" />. Denne udbyder har muligvis gemt oplysninger om din betalingsmetode. Du kan <ph name="LINK_TEXT" /> af disse oplysninger.</translation>
 <translation id="1055184225775184556">&amp;Fortryd tilføjelse</translation>
-<translation id="105642538515333723">Du kan angive en hvilken som helst sætning eller detalje, du kan huske fra sider, du tidligere har besøgt, f.eks. "praktiske spadseresko"</translation>
 <translation id="1056898198331236512">Advarsel</translation>
 <translation id="1058344460600311577"><ph name="PLAY_CHROME_DINO_GAME_FOCUSED_FRIENDLY_MATCH_TEXT" /> – tryk på Tab-tasten og derefter Enter for at starte Dino Run-spillet i Chrome</translation>
 <translation id="1058479211578257048">Gemmer kort...</translation>
@@ -2955,7 +2954,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6433797564277305076">Bekræft dine kort hurtigere ved hjælp af enhedsoplåsning fra nu af</translation>
 <translation id="643917412048333145">Kjoler</translation>
 <translation id="6440503408713884761">Ignoreret</translation>
-<translation id="6440534369669992497">Du kan angive en hvilken som helst sætning eller detalje, du kan huske fra sider, du tidligere har besøgt, f.eks. "praktiske spadseresko". Tast <ph name="SHORTCUT" /> for at søge.</translation>
 <translation id="6443406338865242315">Hvilke udvidelser og plugins, du har installeret</translation>
 <translation id="6444329331928531170">Pension</translation>
 <translation id="6446608382365791566">Tilføj flere oplysninger</translation>

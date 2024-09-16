@@ -153,6 +153,7 @@
 <translation id="1672499492233627739">Вебкамерын видео хангамж</translation>
 <translation id="1676557873873341166">Видео бичиж байна</translation>
 <translation id="1684279041537802716">Өргөлтийн өнгө</translation>
+<translation id="1697278726914783200">Бичих</translation>
 <translation id="1703835215927279855">Захидал</translation>
 <translation id="1706391837335750954">DNS тайлагчийг үзүүлэх</translation>
 <translation id="1708602061922134366">Google-н цэнхэр</translation>
@@ -703,6 +704,7 @@
 <translation id="458794348635939462">Бүх хостыг шийдвэрлэж чадсангүй</translation>
 <translation id="4593212453765072419">Проксиг баталгаажуулах шаардлагатай</translation>
 <translation id="4594021849294327751">Сийрүүлэг үүсгэх</translation>
+<translation id="4602266091140407479">Микрофон</translation>
 <translation id="4607282946861182308">Үүний зургийг үүсгэх боломжгүй. Өөр заавар оролдож үзнэ үү.</translation>
 <translation id="4609350030397390689">Гарны гэрэлтүүлгийг багасгах</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="TOTAL_PAGE_NUMBER" />-с <ph name="PRINTED_PAGE_NUMBER" />. Хэвлэх ажлыг цуцлахын тулд enter дээр дарна уу.</translation>
@@ -1011,6 +1013,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6188737759358894319"><ph name="DATE" />-нд үүсгэсэн</translation>
 <translation id="6189418609903030344">Батарейн хүчин чадлыг ашиглалт бууруулдаг</translation>
+<translation id="6189987971574353264">Тоглуулах</translation>
 <translation id="6191293864534840972">DNS алдаатай байна</translation>
 <translation id="6196607555925437199">Дахин үүсгэх</translation>
 <translation id="6205145102504628069">Cloud Flow</translation>

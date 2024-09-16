@@ -42,6 +42,7 @@
 <translation id="1148499908455722006"><ph name="USER_NAME" /> の情報ダイアログを開きます</translation>
 <translation id="1150989369772528668">カレンダー</translation>
 <translation id="1153356358378277386">ペア設定されたデバイス</translation>
+<translation id="1153918444040990015">フォーカス モード用のサウンドに接続できませんでした</translation>
 <translation id="1155734730463845512">現在のバッテリー残量 <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1157514002898505378">生成 AI は試験運用中のため、不正確または不適切な内容や、誤解を招く内容が出力される可能性があります。問題を報告するには、管理者にお問い合わせください。<ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="1160215328209699296">オンで使用中</translation>
@@ -175,6 +176,7 @@
 <translation id="1550523713251050646">クリックするとその他のオプションが表示されます</translation>
 <translation id="1555130319947370107">青</translation>
 <translation id="1557622599341396706">デスク名を表示</translation>
+<translation id="1567138500090284106">マウスキー ボタン</translation>
 <translation id="1569384531973824928">カメラとマイクへのアクセス権を持つすべてのアプリとウェブサイトに対して、アクセスを許可します。ウェブページの更新またはアプリの再起動が必要となる場合があります。</translation>
 <translation id="1571697193564730395">サイレント モードを切り替えます。<ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">拡大鏡がオンのときにズームアウトします</translation>
@@ -242,6 +244,7 @@
 <translation id="1787955149152357925">オフ</translation>
 <translation id="1796561540704213354">アクセスしたページ、開いているページなどのウェブサイト</translation>
 <translation id="179842970735685253">Google 利用規約</translation>
+<translation id="1805407494113167797">フォーカス モード用のサウンドを再生できませんでした</translation>
 <translation id="181103072419391116">信号強度 <ph name="SIGNAL_STRENGTH" />、管理者によって管理</translation>
 <translation id="1816896987747843206">カメラへのアクセス権を持つすべてのアプリとウェブサイトに対して、カメラへのアクセスを許可します</translation>
 <translation id="1823873187264960516">イーサネット: <ph name="ADDRESS" /></translation>
@@ -2283,6 +2286,7 @@
 <translation id="8876661425082386199">接続を確認してください</translation>
 <translation id="8877788021141246043">リマインダーを設定して</translation>
 <translation id="8878886163241303700">画面を拡張しています</translation>
+<translation id="8885424115080869847">YouTube Music に接続できませんでした</translation>
 <translation id="888982883502837004">デバイスで利用可能なファームウェアのアップデートがあります。確認して更新するにはクリックしてください。</translation>
 <translation id="8896630965521842259">「<ph name="DESK_TEMPLATE_NAME" />」を完全に削除します</translation>
 <translation id="889790758758811533">バッテリー残量が <ph name="PERCENTAGE" />% です（約 <ph name="TIME_LEFT" />）。デバイスを電源に接続してください。</translation>

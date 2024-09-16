@@ -2556,6 +2556,7 @@
 <translation id="2787354132612937472">—</translation>
 <translation id="2788135150614412178">+</translation>
 <translation id="2789486458103222910">ٹھیک ہے</translation>
+<translation id="2790750268015892264">عیلحدہ کردہ ویب ایپس اسمارٹ کارڈ ریڈرز کو کنٹرول نہیں کر سکتیں۔ ایپس کو کسی بھی اسمارٹ کارڈ تک رسائی حاصل نہیں ہوگی۔</translation>
 <translation id="2791529110887957050">‏Linux ہٹائیں</translation>
 <translation id="2791952154587244007">ایک خرابی پیش آ گئی۔ کیوسک ایپلیکیشن اس آلے پر خودکار طور پر شروع نہیں ہو سکے گی۔</translation>
 <translation id="2792290659606763004">‏Android ایپس کو ہٹائیں؟</translation>
@@ -2587,6 +2588,7 @@
 <translation id="2806372837663997957">آپ جس آلے کے ساتھ اشتراک کرنے کی کوشش کر رہے ہیں اس نے قبول نہیں کیا</translation>
 <translation id="2806891468525657116">شارٹ کٹ پہلے سے موجود ہے</translation>
 <translation id="2807517655263062534">آپ کی ڈاؤن لوڈ کردہ فائلز یہاں ظاہر ہوتی ہیں</translation>
+<translation id="2808481877345177494">اپنے کام اور ذاتی براؤزنگ کو محفوظ طریقے سے الگ کرنے کے لیے سائن ان کریں۔ کمپنی کے حساس ڈیٹا کی حفاظت کرتے ہوئے اپنی پروڈکٹیوٹی میں اضافہ کریں۔</translation>
 <translation id="2811205483104563968">اکاؤنٹس</translation>
 <translation id="2812049959647166806">‏Thunderbolt تعاون یافتہ نہیں ہے</translation>
 <translation id="2812171980080389735">محفوظ کردہ نیٹ ورکس اور پاس ورڈز تاکہ آپ فوری طور پر منسلک کر سکیں</translation>
@@ -3432,6 +3434,7 @@
 <translation id="3450157232394774192">معطل صورتحال کے تصرف کی فیصد</translation>
 <translation id="3450180775417907283">‏<ph name="MANAGER" /> کو درکار ہے کہ آپ ابھی Wi-Fi سے منسلک ہوں اور اپ ڈیٹ ڈاؤن لوڈ کریں۔</translation>
 <translation id="345078987193237421">یہ ایپس، کیمرا کی اجازت والی ویب سائٹس اور سسٹم سروسز کے لیے کیمرا تک رسائی کی اجازت دیتا ہے</translation>
+<translation id="3451362021220965191">عیلحدہ کردہ ویب ایپس اسمارٹ کارڈ ریڈرز کو ان سمارٹ کارڈز تک رسائی حاصل کرنے کے لیے کنٹرول کرتی ہیں جو ان میں داخل کیے جاتے ہیں یا انہیں پیش کیے جاتے ہیں۔ اسمارٹ کارڈز میں عام طور پر ایسی شناختیں ہوتی ہیں جو آپریشنز کی تصدیق یا اجازت دینے، سروسز میں لاگ ان کرنے وغیرہ کے لیے استعمال کی جاتی ہیں۔</translation>
 <translation id="3452999110156026232">والدین کے لیے رسائی</translation>
 <translation id="3453082738208775226">آف لائن اسٹوریج صاف کریں؟</translation>
 <translation id="3453597230179205517">مقام تک رسائی مسدود ہے</translation>
@@ -3994,6 +3997,7 @@
 <translation id="3828953470056652895">‏میں نے پڑھا اور میں <ph name="BEGIN_LINK1" />Google کی سروس کی شرائط<ph name="END_LINK1" />، <ph name="BEGIN_LINK2" />Chrome اور ChromeOS کی اضافی سروس کی شرائط<ph name="END_LINK2" /> اور <ph name="BEGIN_LINK3" />Play کی سروس کی شرائط<ph name="END_LINK3" /> سے اتفاق کرتا ہوں۔</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> - زیادہ میموری کا استعمال - <ph name="MEMORY_VALUE" /></translation>
 <translation id="3829765597456725595">‏SMB فائل کا اشتراک</translation>
+<translation id="38298897782945211">عیلحدہ کردہ ویب ایپس خودکار طور پر اس ترتیب کی پیروی کرتی ہیں۔</translation>
 <translation id="3830470485672984938">مختلف پاس کی استعمال کریں</translation>
 <translation id="3830654885961023588">{NUM_EXTENSIONS,plural, =1{آپ کے منتظم نے 1 ممکنہ طور پر نقصان دہ ایکسٹینشن کو پھر سے آن کر دیا}other{آپ کے منتظم نے {NUM_EXTENSIONS} ممکنہ طور پر نقصان دہ ایکسٹینشنز کو واپس آن کر دیا}}</translation>
 <translation id="3834728400518755610">‏مائیکروفون کی ترتیب میں تبدیلی کیلئے Linux کو شٹ ڈاؤن کرنے کی ضرورت ہے۔ آگے بڑھنے کے لیے Linux کو شٹ ڈاؤن کریں۔</translation>
@@ -4007,6 +4011,7 @@
 <translation id="3839516600093027468">کلپ بورڈ کو دیکھنے سے <ph name="HOST" /> کو ہمیشہ مسدود کریں</translation>
 <translation id="3841282988425489367">‏Chromebook (بی ٹا) کے لیے Steam سیٹ اپ نہیں کیا جا سکتا</translation>
 <translation id="3841319830220785495">ڈیفالٹ قدرتی آواز</translation>
+<translation id="3841356782900714251">اسمارٹ کارڈ ریڈرز</translation>
 <translation id="3841964634449506551">پاس ورڈ غلط ہے</translation>
 <translation id="3842552989725514455">‏Serif فونٹ</translation>
 <translation id="3843464315703645664">اندرونی طور پر اجازت یافتہ</translation>
@@ -4140,7 +4145,6 @@
 <translation id="3937640725563832867">سرٹیفیکیٹ جاری کنندہ کا متبادل نام</translation>
 <translation id="3937734102568271121"><ph name="LANGUAGE" /> کا ہمیشہ ترجمہ کریں</translation>
 <translation id="3938128855950761626">وینڈر <ph name="VENDOR_ID" /> کے آلات</translation>
-<translation id="3939622756852381766">یہ خصوصیت آڈیو اور ویڈیو کیلئے خودکار طور پر کیپشنز تخلیق کرتی ہے</translation>
 <translation id="3941565636838060942">اس پروگرام تک رسائی کو چھپانے کیلئے، کنٹرول پینل میں آپ کو
   <ph name="CONTROL_PANEL_APPLET_NAME" /> استعمال کر کے اسے ان انسٹال کرنے کی ضرورت ہے۔
 
@@ -5717,6 +5721,7 @@
 <translation id="5120886753782992638"><ph name="APPROVED_URL" /> ملاحظہ کرنے کیلئے یہاں کلک کریں</translation>
 <translation id="5121052518313988218">‏آپ کے Linux کنٹینر میں آپریٹنگ سسٹم مزید تعاون یافتہ نہیں ہے۔ یہ سیکیورٹی اپ ڈیٹس اور بگ کی اصلاحات وصول کرنا بند کر دے گا، اور خصوصیات جو فی الحال کام کر رہی ہیں غیر متوقع طور پر کام کرنا بند کر سکتی ہیں۔ Linux کا استعمال جاری رکھنے کیلئے براہ کرم تازہ ترین ورژن میں اپ گریڈ کریں۔</translation>
 <translation id="5121130586824819730">آپ کی ہارڈ ڈسک بھری ہوئی ہے۔  براہ کرم کسی دوسرے مقام میں محفوظ کریں یا ہارڈ ڈسک پر مزید جگہ بنائیں۔</translation>
+<translation id="5121803000325086087">عیلحدہ کردہ ویب ایپس اسمارٹ کارڈ ریڈرز کو کنٹرول کرنے کے لیے کہہ سکتی ہیں۔ ایپس کو اپنے زیر کنٹرول قارئین کو پیش کیے گئے اسمارٹ کارڈز تک رسائی حاصل ہوگی۔</translation>
 <translation id="5123433949759960244">باسکٹ بال</translation>
 <translation id="5125714798187802869">فعال کریں</translation>
 <translation id="5125751979347152379">‏غلط URL۔</translation>
@@ -6974,6 +6979,7 @@
 <translation id="6064764629679333574">کم ریزولیوشن آڈیو کو ہائی ریزولوشن آڈیو میں تبدیل کر کے بلوٹوتھ مائیک کی آواز کے معیار کو بہتر بنائیں۔</translation>
 <translation id="6065289257230303064">سرٹیفیکیٹ موضوع ڈائریکٹری انتسابات</translation>
 <translation id="6066794465984119824">تصویری ہیش سیٹ نہیں ہے</translation>
+<translation id="6069027071882229820">بطور تصویر کاپی کریں</translation>
 <translation id="6069464830445383022">‏آپ کا Google اکاؤنٹ آپ کا Chromebook سائن ان ہے</translation>
 <translation id="6069500411969514374">کام</translation>
 <translation id="6071181508177083058">پاس ورڈ کی توثیق کریں</translation>
@@ -8005,7 +8011,6 @@
 <translation id="6823561724060793716">ایڈریس بار سے، آپ جس صفحے کو ملاحظہ کر رہے ہیں اس کے بارے میں اضافی معلومات دیکھنے کے لیے صفحے کی معلومات کھول سکتے ہیں</translation>
 <translation id="6824564591481349393">ای میل پتہ کاپی کریں</translation>
 <translation id="6824584962142919697">&amp;عناصر کا معائنہ کریں</translation>
-<translation id="6824725898506587159">زبانوں کا نظم کریں</translation>
 <translation id="6825184156888454064">نام کے لحاظ سے ترتیب دیں</translation>
 <translation id="6826872289184051766">‏USB کے ذریعے توثیق کریں</translation>
 <translation id="6827121912381363404">تمام ایکسٹینشنز کو <ph name="PERMITTED_SITE" /> پڑھنے اور تبدیل کرنے کی اجازت دیں</translation>
@@ -9677,6 +9682,7 @@
 <translation id="8037357227543935929">پوچھیں (ڈیفالٹ)</translation>
 <translation id="803771048473350947">فائل</translation>
 <translation id="8037801708772278989">ابھی چیک کیا گيا</translation>
+<translation id="8038111231936746805">(ڈیفالٹ)</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{1 فائل <ph name="CLOUD_PROVIDER" /> میں کاپی ہو رہی ہے}other{{NUM_OF_FILES} فائلز <ph name="CLOUD_PROVIDER" /> میں کاپی ہو رہی ہیں}}</translation>
 <translation id="8041089156583427627">تاثرات بھیجیں</translation>
 <translation id="8041093619605951337">خوش</translation>
@@ -10072,6 +10078,7 @@
 <translation id="8319414634934645341">توسیعی کلید کا استعمال</translation>
 <translation id="8321476692217554900">اطلاعات</translation>
 <translation id="8321837372750396788">یہ <ph name="DEVICE_TYPE" /> <ph name="MANAGER" /> کے زیر انتظام ہوگا۔</translation>
+<translation id="8321888067342493336">بطور تصویر کے محفوظ کریں</translation>
 <translation id="8322814362483282060">اس صفحہ کو آپ کے مائیکروفون تک رسائی حاصل کرنے سے مسدود کر دیا گیا ہے۔</translation>
 <translation id="8323167517179506834">‏URL ٹائپ کریں</translation>
 <translation id="8323317289166663449">اپنے کمپیوٹر اور سبھی ویب سائٹس پر اپنا سبھی ڈیٹا پڑھیں اور تبدیل کریں</translation>
@@ -11297,7 +11304,6 @@
 <translation id="918352324374649435">{COUNT,plural, =1{ایپ}other{# ایپس}}</translation>
 <translation id="9186963452600581158">‏بچے کے Google اکاؤنٹ سے سائن ان کریں</translation>
 <translation id="9187967020623675250">کلیدیں مماثل نہیں ہیں۔ <ph name="RESPONSE" /> کے لیے کوئی بھی کلید دبائیں۔</translation>
-<translation id="9191638749941292185">‏کیپشنز کا خودکار طور پر ترجمہ کرنے کے لیے انہیں Google کو بھیجتی ہے</translation>
 <translation id="9192019773545828776">‏صوتی تاثرات سنیں تاکہ آپ اسکرین پر دیکھے بغیر اپنا آلہ استعمال کر سکیں۔ بریل تاثرات منسلک آلہ کے ساتھ دستیاب ہے۔ ChromeVox کو آن اور آف کرنے کے لیے Ctrl + Alt + Z استعمال کریں۔ نیویگیٹ کرنے کے لیے Search + بائیں تیر کے نشان یا دائیں تیر کے نشان کا استعمال کریں۔ منتخب کرنے کے لیے Search + Space استعمال کریں (فعال کریں)۔</translation>
 <translation id="919686179725692564">اپنی ایپس کا بیک اپ لینے کے بارے میں مزید جانیں</translation>
 <translation id="9199503643457729322">رازداری کی گائیڈ سے دور نیویگیٹ کرنے کے لیے کلک کریں۔</translation>
@@ -11418,7 +11424,6 @@
 <translation id="98515147261107953">لینڈ اسکیپ</translation>
 <translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">عمومی</translation>
-<translation id="987475089238841621">زبان کے پیکس لائیو کیپشن کے لیے استعمال کیے جاتے ہیں اور آپ کے آلے پر اسٹور ہوتے ہیں</translation>
 <translation id="988320949174893488">کبھی کبھار رکتی ہے</translation>
 <translation id="988978206646512040">خالی پاس فریز کی اجازت نہیں ہے</translation>
 <translation id="992032470292211616">ایکسٹینشنز، ایپس اور تھیمز آپ کے آلے کو نقصان پہنچا سکتے ہیں۔ کیا آپ واقعی جاری رکھنا چاہتے ہیں؟</translation>

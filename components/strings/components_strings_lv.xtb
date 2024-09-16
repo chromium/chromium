@@ -28,7 +28,6 @@
 <translation id="1050038467049342496">Aizveriet citas lietotnes</translation>
 <translation id="1053959602163383901">Jūs izvēlējāties veikt verifikāciju ar autentifikatora ierīci vietnēs, kas izmanto <ph name="PROVIDER_ORIGIN" /> pakalpojumus. Šis pakalpojumu sniedzējs, iespējams, ir saglabājis informāciju par jūsu maksājuma veidu, un jūs varat <ph name="LINK_TEXT" />.</translation>
 <translation id="1055184225775184556">&amp;Pievienošanas atsaukšana</translation>
-<translation id="105642538515333723">Varat ievadīt jebkuras frāzes vai informāciju, ko atceraties no iepriekš pārlūkotām lapām, piemēram, “ērti pastaigu apavi”.</translation>
 <translation id="1056898198331236512">Brīdinājums</translation>
 <translation id="1058344460600311577"><ph name="PLAY_CHROME_DINO_GAME_FOCUSED_FRIENDLY_MATCH_TEXT" />. Lai spēlētu dinozaura skriešanas spēli pārlūkā Chrome, nospiediet tabulēšanas taustiņu un pēc tam — taustiņu Enter.</translation>
 <translation id="1058479211578257048">Notiek karšu datu saglabāšana...</translation>
@@ -2953,7 +2952,6 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="6433797564277305076">Turpmāk apstipriniet kartes ātrāk, izmantojot ierīces atbloķēšanu</translation>
 <translation id="643917412048333145">Kleitas</translation>
 <translation id="6440503408713884761">Ignorēts</translation>
-<translation id="6440534369669992497">Varat ievadīt jebkuras frāzes vai informāciju, ko atceraties no iepriekš pārlūkotām lapām, piemēram, “ērti pastaigu apavi”. Izmantojiet īsinājumtaustiņu <ph name="SHORTCUT" />, lai meklētu.</translation>
 <translation id="6443406338865242315">Kurus paplašinājumus un spraudņus esat instalējis</translation>
 <translation id="6444329331928531170">Aiziešana pensijā un pensijas</translation>
 <translation id="6446608382365791566">Papildu informācijas pievienošana</translation>

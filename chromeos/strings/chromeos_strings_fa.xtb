@@ -255,6 +255,7 @@
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />٪</translation>
 <translation id="2148716181193084225">امروز</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> عکس</translation>
+<translation id="2154460308960858308">پاک کردن جستجو</translation>
 <translation id="2156072344042480449">‫۲ پیام‌واره اخیر شما. فقط زمانی‌که در این صفحه هستید، می‌توانید از این پیام‌واره‌ها استفاده کنید.</translation>
 <translation id="2157660087437850958">انتخاب‌گر اموجی</translation>
 <translation id="2157959690810728433">در صف</translation>
@@ -501,6 +502,7 @@
 <translation id="3557205324756024651">شناسه محلی (اختیاری)</translation>
 <translation id="3565064564551103223">‏IPهای مجاز</translation>
 <translation id="3569407787324516067">محافظ صفحه</translation>
+<translation id="3571184524500629183">بستن جستجو</translation>
 <translation id="3577473026931028326">مشکلی پیش آمد. دوباره امتحان کنید.</translation>
 <translation id="357889014807611375">‏Wi-Fi کنتوردار</translation>
 <translation id="3583278742022654445">‏سیگنال ضعیف است. به منبع سیگنال Wi-Fi نزدیک‌تر شوید.</translation>
@@ -950,6 +952,7 @@
 <translation id="5860033963881614850">خاموش</translation>
 <translation id="5860491529813859533">روشن کردن</translation>
 <translation id="5876385649737594562">برای انتخاب گزینه‌ها، این حالت را روشن کنید</translation>
+<translation id="5877503382465267833">موقتاً متوقف کردن <ph name="RECORDING_NAME" /></translation>
 <translation id="588258955323874662">تمام صفحه</translation>
 <translation id="5893975327266416093">برای اختصاص دادن، روی یکی از کلیدهای صفحه‌کلید تک‌ضرب بزنید.</translation>
 <translation id="5895138241574237353">راه‌اندازی مجدد</translation>
@@ -1167,6 +1170,7 @@
 <translation id="6910312834584889076">پوشش اسکنر باز است. پوشش را ببندید و دوباره امتحان کنید.</translation>
 <translation id="6910845598686542904">محاسبه مدل‌هایی از صداهای شناسایی‌شده در صدای ضبط‌شده</translation>
 <translation id="6911383237894364323">امکان اتصال به سرورهای رسانه وجود ندارد</translation>
+<translation id="6927968682840110570">نام قطعه ضبطشده</translation>
 <translation id="6930242544192836755">مدت زمان</translation>
 <translation id="6930597342185648547">درباره پس‌زمینه</translation>
 <translation id="6939667434404433010">نام قطعه ضبطشده را جستجو کنید</translation>
@@ -1279,6 +1283,7 @@
 <translation id="7378170410161264436">«ضبط‌صوت» می‌تواند از گفتار بیان‌شده در قطعه ضبط‌شده ترانویسی بسازد.
 برای دریافت این ترانویسی، مدل ترانویسی (تا ۱۰۰ مگابایت) را بارگیری کنید.</translation>
 <translation id="7384004438856720753">کاخ</translation>
+<translation id="7388345524791662148">گزینه‌های بیشتر برای <ph name="RECORDING_NAME" /></translation>
 <translation id="7388959671917308825">صفحه لمسی داخلی</translation>
 <translation id="7397270852490618635">خاموش کردن زمینه روشن</translation>
 <translation id="7401543881546089382">حذف میان‌بر</translation>
@@ -1300,6 +1305,7 @@
 <translation id="7513770521371759388">پایین</translation>
 <translation id="7514365320538308">بارگیری</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7519481256236810334">پخش کردن <ph name="RECORDING_NAME" /></translation>
 <translation id="7525067979554623046">ایجاد</translation>
 <translation id="7528507600602050979">محتوای راهنما دردسترس نیست</translation>
 <translation id="7535791657097741517">روشن کردن زمینه روشن</translation>
@@ -1376,6 +1382,7 @@
 <translation id="7897043345768902965">مسیر پیاده</translation>
 <translation id="7902285181767404769">بی‌صدا کردن اعلان‌ها درحین ضبط</translation>
 <translation id="7903695460270716054">انتخاب کار هنری و تصاویر گردآوری‌شده</translation>
+<translation id="7912005977894000746">برگشتن به صفحه اصلی</translation>
 <translation id="7915220255123750251">مدیریت تنظیمات «نام نقطه دستیابی» شبکه. «نام نقطه دستیابی» اتصالی میان شبکه تلفن همراه و اینترنت برقرار می‌کند.</translation>
 <translation id="7936303884198020182">سرور نام دامنه پیدا نشد</translation>
 <translation id="7942349550061667556">قرمز</translation>

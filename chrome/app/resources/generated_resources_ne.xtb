@@ -495,6 +495,7 @@
 <translation id="1355088139103479645">सबै डेटा मेटाउने हो?</translation>
 <translation id="1356376170199999104">प्रयोग गर्ने अनुमति दिइएको छ – <ph name="PERMISSION_DETAILS" />। स्विच प्रयोग गरी माइक्रोफोन प्रयोग गर्ने अनुमति दिनुहोस्।</translation>
 <translation id="1356959069439783953">निष्क्रिय ट्याबहरूको स्वरूप परिवर्तन भएको छ</translation>
+<translation id="1357766361161708728">प्रयोग नगरिएका ट्याबहरू बन्द गर्ने हो?</translation>
 <translation id="1358741672408003399">हिज्जे तथा व्याकरण</translation>
 <translation id="1359923111303110318">तपाईंको यन्त्र Smart Lock प्रयोग गरी अनलक गर्न सकिन्छ। अनलक गर्न Enter थिच्नुहोस्।</translation>
 <translation id="1361164813881551742">म्यानुअल तरिकाले थप्नुहोस्</translation>
@@ -4141,7 +4142,6 @@
 <translation id="3937640725563832867">प्रमाणपत्र जारीकर्ता वैकल्पिक नाम</translation>
 <translation id="3937734102568271121">जुनसुकै बेला <ph name="LANGUAGE" /> भाषामा अनुवाद गर्नुहोस्</translation>
 <translation id="3938128855950761626">विक्रेता <ph name="VENDOR_ID" /> का यन्त्रहरू</translation>
-<translation id="3939622756852381766">अडियो तथा भिडियोमा क्याप्सनहरू स्वतः बनाउँछ</translation>
 <translation id="3941565636838060942">यो कार्यक्रमको पहुँचलाई लुकाउउन चाहनुहुन्छ भने, तपाईंले नियन्त्रण प्यानलमा रहेको <ph name="CONTROL_PANEL_APPLET_NAME" /> मा प्रयोग गरेर यसको स्थापना हटाउनु पर्दछ।
 
 के तपाईं <ph name="CONTROL_PANEL_APPLET_NAME" /> सुरु गर्न चाहनुहुन्छ?</translation>
@@ -6555,6 +6555,7 @@
 <translation id="5750288053043553775">०</translation>
 <translation id="5751345516399502412">टेदरिङको उपलब्धता जाँच्नुहोस्</translation>
 <translation id="5753570386948603678">हिस्ट्रीबाट मेटाउनुहोस्</translation>
+<translation id="5753652925946671505">यी ट्याबहरू <ph name="COUNT" /> वा सोभन्दा बढी दिनदेखि प्रयोग गरिएका छैनन्।</translation>
 <translation id="5756163054456765343">मद्द&amp;त केन्द्र</translation>
 <translation id="5757187557809630523">"अर्को ट्र्याक" जनाउने आइकन</translation>
 <translation id="5758631781033351321">तपाईंको अध्ययन सूची यहाँ देखिने छ</translation>
@@ -8009,7 +8010,6 @@
 <translation id="6823561724060793716">तपाईं एड्रेस बारबाट पेजसम्बन्धी जानकारी खोलेर आफूले हेरिरहेको पेजसम्बन्धी थप जानकारी प्राप्त गर्न सक्नुहुन्छ</translation>
 <translation id="6824564591481349393">&amp;इमेल ठेगाना कपी गर्नुहोस्</translation>
 <translation id="6824584962142919697">तत्त्वहरूको निरीक्षण गर्नुहोस्</translation>
-<translation id="6824725898506587159">भाषाहरूलाई व्यवस्थित गर्नुहोस्</translation>
 <translation id="6825184156888454064">नामअनुसार क्रमबद्ध गर्नुहोस्</translation>
 <translation id="6826872289184051766">USB मार्फत पुष्टि गर्नुहोस्</translation>
 <translation id="6827121912381363404">सबै एक्स्टेन्सनलाई <ph name="PERMITTED_SITE" /> रिड गर्ने र बदल्ने अनुमति दिनुहोस्</translation>
@@ -9681,6 +9681,7 @@
 <translation id="8037357227543935929">सोध्नुहोस् (डिफल्ट मान)</translation>
 <translation id="803771048473350947">फाइल</translation>
 <translation id="8037801708772278989">भर्खरै जाँच गरिएको</translation>
+<translation id="8038111231936746805">(डिफल्ट)</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{एउटा फाइल कपी गरेर <ph name="CLOUD_PROVIDER" /> मा पेस्ट गरिँदै छ}other{{NUM_OF_FILES} वटा फाइल कपी गरेर <ph name="CLOUD_PROVIDER" /> मा पेस्ट गरिँदै छन्}}</translation>
 <translation id="8041089156583427627">प्रतिक्रिया पठाउनुहोस्।</translation>
 <translation id="8041093619605951337">खुसी</translation>
@@ -11302,7 +11303,6 @@
 <translation id="918352324374649435">{COUNT,plural, =1{एप}other{# वटा एप}}</translation>
 <translation id="9186963452600581158">आफ्ना बच्चाको Google खाता प्रयोग गरी साइन इन गर्नुहोस्</translation>
 <translation id="9187967020623675250">की मिलेन। तपाईं <ph name="RESPONSE" /> चाहनुहुन्छ भने कुनै की थिच्नुहोस्।</translation>
-<translation id="9191638749941292185">यो सुविधाले क्याप्सनहरू स्वतः अनुवाद गर्ने प्रयोजनका लागि ती क्याप्सनहरू Google मा पठाउँछ</translation>
 <translation id="9192019773545828776">तपाईं स्क्रिनमा नहेरिकन आफ्नो डिभाइस प्रयोग गर्न सक्नुहोस् भन्नाका लागि बोलेर दिइने प्रतिक्रिया सुन्नुहोस्। डिभाइस कनेक्ट गरेर ब्रेल प्रतिक्रिया प्राप्त गर्न सकिन्छ। ChromeVox अन र अफ गर्न Ctrl + Alt + Z थिच्नुहोस्। एउटा वस्तुबाट अर्को वस्तुमा जान Search + लेफ्ट एरो वा राइट एरो प्रयोग गर्नुहोस्। चयन (एक्टिभेट) गर्न Search + Space थिच्नुहोस्।</translation>
 <translation id="919686179725692564">आफ्नो डिभाइसमा भएका एपहरू ब्याकअप गर्ने तरिकाका बारेमा थप जान्नुहोस्</translation>
 <translation id="9199503643457729322">गोपनीयतासम्बन्धी गाइडबाट बाहिरिन क्लिक गर्नुहोस्।</translation>
@@ -11423,7 +11423,6 @@
 <translation id="98515147261107953">ल्यान्डस्केप</translation>
 <translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">सामान्य</translation>
-<translation id="987475089238841621">ल्याङ्ग्वेज प्याकहरू लाइभ क्याप्सनका लागि प्रयोग गरिन्छन् र तपाईंको डिभाइसमा भण्डारण गरिन्छन्</translation>
 <translation id="988320949174893488">अनियमित रूपमा अड्केर चल्ने</translation>
 <translation id="988978206646512040">खाली पासफ्रेजलाई अनुमति छैन</translation>
 <translation id="992032470292211616">विस्तारहरू, एपहरू, र विषयवस्तुहरूले तपाइँको यन्त्रलाई हानी गर्न सक्छ। के तपाइँ पक्का हुनुहुन्छ की तपाइँ जारी राख्न चाहनुहुन्छ?</translation>

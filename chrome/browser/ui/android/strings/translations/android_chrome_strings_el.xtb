@@ -75,6 +75,7 @@
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - Στάλθηκε από <ph name="DEVICE_NAME" /></translation>
 <translation id="1320912611264252795">Φάκελοι ροής αποθήκευσης σελιδοδείκτη ανοιγμένοι στο πλήρες ύψος</translation>
 <translation id="1327257854815634930">Το ιστορικό περιήγησης έχει ανοίξει</translation>
+<translation id="1328235593824723509"><ph name="TAB_TITLE" />, νέα ή ενημερωμένη καρτέλα</translation>
 <translation id="1331212799747679585">Δεν είναι δυνατή η ενημέρωση του Chrome. Περισσότερες επιλογές</translation>
 <translation id="1332501820983677155">Συντομεύσεις λειτουργιών Google Chrome</translation>
 <translation id="1333491156693005331">Ελέγχθηκε πρόσφατα</translation>
@@ -1213,6 +1214,7 @@
 <translation id="6674571176963658787">Για να ξεκινήσετε τον συγχρονισμό, εισαγάγετε τη φράση πρόσβασης.</translation>
 <translation id="6676927815633975364">Συνδεθείτε σε αυτόν τον ιστότοπο και στο Chrome</translation>
 <translation id="6684809838922667136">Βελτίωση του Chrome</translation>
+<translation id="6700279777779583398">Οι επιλογές αποθηκεύτηκαν</translation>
 <translation id="6704048624334633734">Εξαγωγή και διαγραφή των κωδικών πρόσβασης</translation>
 <translation id="670498945988402717">Ελέγχθηκε χθες</translation>
 <translation id="6710213216561001401">Προηγούμενο</translation>
@@ -1426,6 +1428,7 @@
 <translation id="752731652852882757">Αποκλεισμός κατά τη χρήση ανώνυμης περιήγησης</translation>
 <translation id="7554643625247105821">Δεν είναι δυνατός ο έλεγχος της έκδοσης του Chrome</translation>
 <translation id="7557508262441527045">Έγινε αποσύνδεση</translation>
+<translation id="7573665567024262965">Επιλέξτε τις προεπιλεγμένες εφαρμογές σας</translation>
 <translation id="7577900504646297215">Διαχείριση ενδιαφερόντων</translation>
 <translation id="757855969265046257">{FILES,plural, =1{Έγινε λήψη <ph name="FILES_DOWNLOADED_ONE" /> αρχείου}other{Έγινε λήψη <ph name="FILES_DOWNLOADED_MANY" /> αρχείων}}</translation>
 <translation id="7581273696622423628">Συμμετοχή σε έρευνα</translation>
@@ -1468,6 +1471,7 @@
 <translation id="7764225426217299476">Προσθήκη διεύθυνσης</translation>
 <translation id="7772032839648071052">Επιβεβαίωση φράσης πρόσβασης</translation>
 <translation id="7772375229873196092">Κλείσιμο <ph name="APP_NAME" /></translation>
+<translation id="7774125747223422443">Βάσει ενός νόμου στην περιοχή σας, πρέπει να επιλέξετε πρόγραμμα περιήγησης και μηχανή αναζήτησης</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 και <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ακόμη}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 και <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ακόμη}}</translation>
 <translation id="777637629667389858">Όταν είστε συνδεδεμένοι, σας προστατεύει σε όλες τις υπηρεσίες Google.</translation>
 <translation id="7778840695157240389">Ελέγξτε πάλι αργότερα για νέες ιστορίες</translation>
@@ -1592,6 +1596,7 @@
 <translation id="8265018477030547118">Μόνο σε αυτήν τη συσκευή</translation>
 <translation id="8266753737658117282">Συνέχεια με <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8266862848225348053">Τοποθεσία λήψης</translation>
+<translation id="8279945625179116733">Προστατεύεται από <ph name="APP_NAME" /></translation>
 <translation id="8281886186245836920">Παράβλεψη</translation>
 <translation id="8282297628636750033">Σκούρο θέμα σε ιστοτ., όταν είναι δυνατό</translation>
 <translation id="8282950411412455249">Μετάβαση στις ρυθμίσεις ασφαλείας</translation>
@@ -1736,6 +1741,7 @@
 <translation id="8982113230057126145">Με την επιλογή Δεν εγκρίνω υποβάλλεται ένα σχόλιο που δηλώνει ότι αυτή η σύνοψη δεν σας αρέσει</translation>
 <translation id="8992769679401294069">Τα δεδομένα σας κρυπτογραφούνται με τη φράση πρόσβασης. Εισαγάγετε τη φράση πρόσβασης, για να χρησιμοποιήσετε και να αποθηκεύσετε δεδομένα Chrome στον Λογαριασμό σας Google.</translation>
 <translation id="8993760627012879038">Άνοιγμα καρτέλας σε κατάσταση ανώνυμης περιήγησης</translation>
+<translation id="8995521496079646922">Οι εφαρμογές που επιλέξατε θα χρησιμοποιούνται από προεπιλογή. Αν μια εφαρμογή δεν υπάρχει ήδη σε αυτή τη συσκευή, θα ληφθεί σύντομα.</translation>
 <translation id="8996847606757455498">Επιλογή άλλου παρόχου</translation>
 <translation id="8998289560386111590">Δεν διατίθεται στη συσκευή σας</translation>
 <translation id="8998837250940831980">Δεν ήταν δυνατή η ελαχιστοποίηση της καρτέλας. Δοκιμάστε ξανά αργότερα.</translation>

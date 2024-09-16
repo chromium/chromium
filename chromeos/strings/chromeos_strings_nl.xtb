@@ -254,6 +254,7 @@
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2148716181193084225">Vandaag</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> foto's</translation>
+<translation id="2154460308960858308">Zoekvak wissen</translation>
 <translation id="2156072344042480449">Je 2 meest recente prompts. Je kunt deze prompts alleen gebruiken terwijl je op deze pagina bent.</translation>
 <translation id="2157660087437850958">emoji-kiezer</translation>
 <translation id="2157959690810728433">IN DE WACHTRIJ</translation>
@@ -500,6 +501,7 @@
 <translation id="3557205324756024651">Lokale identiteit (optioneel)</translation>
 <translation id="3565064564551103223">Toegestane IP's</translation>
 <translation id="3569407787324516067">Screensaver</translation>
+<translation id="3571184524500629183">Zoekvak sluiten</translation>
 <translation id="3577473026931028326">Er is iets misgegaan. Probeer het opnieuw.</translation>
 <translation id="357889014807611375">wifi met datalimiet</translation>
 <translation id="3583278742022654445">Zwak signaal. Ga dichter bij de wifi-signaalbron staan.</translation>
@@ -945,6 +947,7 @@
 <translation id="5860033963881614850">Uit</translation>
 <translation id="5860491529813859533">Aanzetten</translation>
 <translation id="5876385649737594562">Aanzetten om opties te selecteren</translation>
+<translation id="5877503382465267833"><ph name="RECORDING_NAME" /> onderbreken</translation>
 <translation id="588258955323874662">Volledig scherm</translation>
 <translation id="5893975327266416093">Tik op een toets op het toetsenbord om de toets toe te wijzen</translation>
 <translation id="5895138241574237353">Opnieuw starten</translation>
@@ -1162,6 +1165,7 @@
 <translation id="6910312834584889076">De klep van de scanner staat open. Sluit de klep en probeer het opnieuw.</translation>
 <translation id="6910845598686542904">Modellen berekenen van de stemmen die worden gevonden in de opname</translation>
 <translation id="6911383237894364323">Kan geen verbinding maken met mediaservers</translation>
+<translation id="6927968682840110570">Naam van opname</translation>
 <translation id="6930242544192836755">Duur</translation>
 <translation id="6930597342185648547">Over de achtergrond</translation>
 <translation id="6939667434404433010">Naam van opname zoeken</translation>
@@ -1274,6 +1278,7 @@ Je kunt alleen achtergronden met AI maken voor persoonlijk, niet-commercieel geb
 <translation id="7378170410161264436">Recorder kan transcripten maken van opnamen met spraak.
 Download het transcriptiemodel (maximaal 100 MB) om deze transcripties te krijgen.</translation>
 <translation id="7384004438856720753">paleis</translation>
+<translation id="7388345524791662148">Meer opties voor <ph name="RECORDING_NAME" /></translation>
 <translation id="7388959671917308825">Geïntegreerde touchpad</translation>
 <translation id="7397270852490618635">Licht thema uitzetten</translation>
 <translation id="7401543881546089382">Snelle link verwijderen</translation>
@@ -1295,6 +1300,7 @@ Download het transcriptiemodel (maximaal 100 MB) om deze transcripties te krijg
 <translation id="7513770521371759388">onder</translation>
 <translation id="7514365320538308">Downloaden</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7519481256236810334"><ph name="RECORDING_NAME" /> afspelen</translation>
 <translation id="7525067979554623046">Maken</translation>
 <translation id="7528507600602050979">Help-content is niet beschikbaar</translation>
 <translation id="7535791657097741517">Licht thema aanzetten</translation>
@@ -1371,6 +1377,7 @@ Download het transcriptiemodel (maximaal 100 MB) om deze transcripties te krijg
 <translation id="7897043345768902965">voetpad</translation>
 <translation id="7902285181767404769">Meldingen op stil zetten tijdens opnemen</translation>
 <translation id="7903695460270716054">Beheerde kunst en afbeeldingen kiezen</translation>
+<translation id="7912005977894000746">Terug naar hoofdpagina</translation>
 <translation id="7915220255123750251">Beheer de APN-instellingen voor het netwerk. APN's maken verbinding tussen een mobiel netwerk en internet.</translation>
 <translation id="7936303884198020182">Geen naamservers gevonden</translation>
 <translation id="7942349550061667556">Rood</translation>

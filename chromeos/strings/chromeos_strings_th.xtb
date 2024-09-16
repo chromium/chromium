@@ -255,6 +255,7 @@
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2148716181193084225">วันนี้</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> ภาพ</translation>
+<translation id="2154460308960858308">ล้างการค้นหา</translation>
 <translation id="2156072344042480449">พรอมต์ 2 รายการล่าสุด คุณใช้พรอมต์เหล่านี้ได้ขณะที่อยู่ในหน้านี้เท่านั้น</translation>
 <translation id="2157660087437850958">เครื่องมือเลือกอีโมจิ</translation>
 <translation id="2157959690810728433">อยู่ในคิว</translation>
@@ -501,6 +502,7 @@
 <translation id="3557205324756024651">ข้อมูลประจำตัวในเครื่อง (ไม่บังคับ)</translation>
 <translation id="3565064564551103223">IP ที่อนุญาต</translation>
 <translation id="3569407787324516067">ภาพพักหน้าจอ</translation>
+<translation id="3571184524500629183">ปิดการค้นหา</translation>
 <translation id="3577473026931028326">เกิดข้อผิดพลาด ลองใหม่</translation>
 <translation id="357889014807611375">Wi-Fi ที่มีการวัดปริมาณอินเทอร์เน็ต</translation>
 <translation id="3583278742022654445">ความแรงสัญญาณไม่ดี ลองขยับไปใกล้ๆ แหล่งสัญญาณ Wi-Fi มากขึ้น</translation>
@@ -950,6 +952,7 @@
 <translation id="5860033963881614850">ปิด</translation>
 <translation id="5860491529813859533">เปิด</translation>
 <translation id="5876385649737594562">เปิดเพื่อเลือกตัวเลือก</translation>
+<translation id="5877503382465267833">หยุด <ph name="RECORDING_NAME" /> ชั่วคราว</translation>
 <translation id="588258955323874662">เต็มหน้าจอ</translation>
 <translation id="5893975327266416093">แตะคีย์บนแป้นพิมพ์เพื่อกำหนดการดำเนินการ</translation>
 <translation id="5895138241574237353">ปิดแล้วเปิดอีกครั้ง</translation>
@@ -1167,6 +1170,7 @@
 <translation id="6910312834584889076">ฝาเครื่องสแกนเปิดอยู่ ปิดฝาแล้วลองอีกครั้ง</translation>
 <translation id="6910845598686542904">ประมวลผลรูปแบบเสียงที่ตรวจพบในเสียงที่บันทึกไว้</translation>
 <translation id="6911383237894364323">เชื่อมต่อเซิร์ฟเวอร์สื่อไม่ได้</translation>
+<translation id="6927968682840110570">ชื่อการบันทึก</translation>
 <translation id="6930242544192836755">ระยะเวลา</translation>
 <translation id="6930597342185648547">เกี่ยวกับพื้นหลัง</translation>
 <translation id="6939667434404433010">ค้นหาชื่อการบันทึก</translation>
@@ -1279,6 +1283,7 @@
 <translation id="7378170410161264436">โปรแกรมอัดเสียงสามารถสร้างการถอดเสียงเป็นคำสำหรับการบันทึกที่มีเสียงพูดได้
 ดาวน์โหลดโมเดลการถอดเสียงเป็นคำ (สูงสุด 100 MB) เพื่อรับการถอดเสียงเป็นคำเหล่านี้</translation>
 <translation id="7384004438856720753">พระราชวัง</translation>
+<translation id="7388345524791662148">ตัวเลือกเพิ่มเติมสำหรับ <ph name="RECORDING_NAME" /></translation>
 <translation id="7388959671917308825">ทัชแพดในตัว</translation>
 <translation id="7397270852490618635">ปิดธีมสว่าง</translation>
 <translation id="7401543881546089382">ลบทางลัด</translation>
@@ -1300,6 +1305,7 @@
 <translation id="7513770521371759388">ด้านล่าง</translation>
 <translation id="7514365320538308">ดาวน์โหลด</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7519481256236810334">เปิด <ph name="RECORDING_NAME" /></translation>
 <translation id="7525067979554623046">สร้าง</translation>
 <translation id="7528507600602050979">เนื้อหาช่วยเหลือไม่พร้อมใช้งาน</translation>
 <translation id="7535791657097741517">เปิดธีมสว่าง</translation>
@@ -1376,6 +1382,7 @@
 <translation id="7897043345768902965">ทางเท้า</translation>
 <translation id="7902285181767404769">ปิดเสียงการแจ้งเตือนขณะบันทึก</translation>
 <translation id="7903695460270716054">เลือกงานศิลปะและรูปภาพที่ดูแลจัดการ</translation>
+<translation id="7912005977894000746">กลับไปที่หน้าหลัก</translation>
 <translation id="7915220255123750251">จัดการการตั้งค่า APN ของเครือข่าย APN จะเริ่มการเชื่อมต่อระหว่างเครือข่ายมือถือกับอินเทอร์เน็ต</translation>
 <translation id="7936303884198020182">ไม่พบเนมเซิร์ฟเวอร์</translation>
 <translation id="7942349550061667556">สีแดง</translation>

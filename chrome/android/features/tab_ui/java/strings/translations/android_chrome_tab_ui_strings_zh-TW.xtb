@@ -104,6 +104,7 @@
 <translation id="5400836586163650660">灰</translation>
 <translation id="5490235265819901748">已展開分頁群組</translation>
 <translation id="5494920125229734069">全選</translation>
+<translation id="5549653163690032080">開啟共用分頁群組「<ph name="TITLE_OF_GROUP" />」的動作選單</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{關閉含有 <ph name="TABS_COUNT_ONE" /> 個分頁的分頁群組，顏色為<ph name="COLOR_NAME" />。}other{關閉含有 <ph name="TABS_COUNT_MANY" /> 個分頁的分頁群組，顏色為<ph name="COLOR_NAME" />。}}</translation>
 <translation id="5556417849629758491">商店資訊和可用選項位於靠近畫面頂端的地方</translation>
 <translation id="5627941783489838464">沒有更新的分頁</translation>
@@ -135,6 +136,7 @@
 <translation id="6694634756612002311">管理共用設定</translation>
 <translation id="6744956528665271406">編輯群組顏色</translation>
 <translation id="6856809498882026482">隱藏多選模式</translation>
+<translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{展開含有 <ph name="TABS_COUNT_ONE" /> 個分頁的「<ph name="TITLE_OF_GROUP" />」共用分頁群組，顏色為<ph name="COLOR_NAME" />。}other{展開含有 <ph name="TABS_COUNT_MANY" /> 個分頁的「<ph name="TITLE_OF_GROUP" />」共用分頁群組，顏色為<ph name="COLOR_NAME" />。}}</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{分享分頁}other{分享分頁}}</translation>
 <translation id="7129458170538955174">這間店的資訊已開啟，顯示在畫面下半部</translation>
 <translation id="7200189319044305940">{NUMBER_OF_TABS,plural, =1{關閉含有 <ph name="TABS_COUNT_ONE" /> 個分頁的「<ph name="TITLE_OF_GROUP" />」群組。}other{關閉含有 <ph name="TABS_COUNT_MANY" /> 個分頁的「<ph name="TITLE_OF_GROUP" />」群組。}}</translation>
@@ -170,6 +172,7 @@
 <translation id="8205266828577616993">將分頁上移</translation>
 <translation id="8261506727792406068">刪除</translation>
 <translation id="8338427544764842461">分頁群組會儲存在這裡，並同步至你登入帳戶的所有裝置</translation>
+<translation id="8344020191144794051">{NUMBER_OF_TABS,plural, =1{展開含有 <ph name="TABS_COUNT_ONE" /> 個分頁的共用分頁群組，顏色為<ph name="COLOR_NAME" />。}other{展開含有 <ph name="TABS_COUNT_MANY" /> 個分頁的共用分頁群組，顏色為<ph name="COLOR_NAME" />。}}</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{關閉 <ph name="TABS_COUNT_ONE" /> 個所選分頁}other{關閉 <ph name="TABS_COUNT_MANY" /> 個所選分頁}}</translation>
 <translation id="8398929769197326728">新資料夾 - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">設定</translation>

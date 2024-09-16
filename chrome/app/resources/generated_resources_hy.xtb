@@ -4138,7 +4138,6 @@
 <translation id="3937640725563832867">Վկայագիր թողարկողի այլընտրանքային անունը</translation>
 <translation id="3937734102568271121">Միշտ թարգմանել <ph name="LANGUAGE" /> էջերը</translation>
 <translation id="3938128855950761626">Սարքեր <ph name="VENDOR_ID" /> մատակարարից</translation>
-<translation id="3939622756852381766">Ավտոմատ ստեղծում է ենթագրեր մեդիա բովանդակության համար</translation>
 <translation id="3941565636838060942">Այս ծրագրի մուտքը փակելու համար պետք է ապատեղադրեք այն՝
  Հսկիչ վահանակում անցնելով <ph name="CONTROL_PANEL_APPLET_NAME" />:
 
@@ -8004,7 +8003,6 @@
 <translation id="6823561724060793716">Հասցեագոտում դուք կարող եք լրացուցիչ տեղեկություններ բացել ձեր այցելած էջի մասին</translation>
 <translation id="6824564591481349393">Պատճենել &amp;էլփոստի հասցեն</translation>
 <translation id="6824584962142919697">&amp;Ստուգել տարրերը</translation>
-<translation id="6824725898506587159">Կառավարել լեզուները</translation>
 <translation id="6825184156888454064">Դասավորել ըստ անվան</translation>
 <translation id="6826872289184051766">Հաստատել USB-ի միջոցով</translation>
 <translation id="6827121912381363404">Թույլատրել բոլոր ընդլայնումներին կարդալ և փոփոխել <ph name="PERMITTED_SITE" /> կայքը</translation>
@@ -9675,6 +9673,7 @@
 <translation id="8037357227543935929">Հարցնել (կանխադրված)</translation>
 <translation id="803771048473350947">Ֆայլ</translation>
 <translation id="8037801708772278989">Ստուգվել է հենց նոր</translation>
+<translation id="8038111231936746805">(կանխադրված)</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{Պատճենվում է 1 ֆայլ <ph name="CLOUD_PROVIDER" />-ում}one{Պատճենվում է {NUM_OF_FILES} ֆայլ <ph name="CLOUD_PROVIDER" />-ում}other{Պատճենվում է {NUM_OF_FILES} ֆայլ <ph name="CLOUD_PROVIDER" />-ում}}</translation>
 <translation id="8041089156583427627">Կարծիք հայտնել</translation>
 <translation id="8041093619605951337">Ուրախ</translation>
@@ -11296,7 +11295,6 @@
 <translation id="918352324374649435">{COUNT,plural, =1{Հավելված}one{# հավելված}other{# հավելված}}</translation>
 <translation id="9186963452600581158">Մտեք երեխայի Google հաշիվ</translation>
 <translation id="9187967020623675250">Ստեղները չեն համընկնում։ Սեղմեք որևէ ստեղն՝ <ph name="RESPONSE" /> համար։</translation>
-<translation id="9191638749941292185">Ենթագրերն ուղարկում է Google-ին՝ ավտոմատ թարգմանելու համար</translation>
 <translation id="9192019773545828776">Լսեք ձայնային ուղեկցումը, որպեսզի կարողանաք օգտագործել սարքն առանց էկրանին նայելու։ Բրայլյան գրերի աջակցումը հասանելի է միացված սարքի հետ։ Օգտագործեք Ctrl + Alt + Z դյուրանցումը՝ ChromeVox-ը միացնելու և անջատելու համար։ Նավիգացիայի համար օգտագործեք Որոնում + Ձախ սլաք կամ Աջ սլաք դյուրանցումը։ Օգտագործեք Որոնում + Բացատ դյուրանցումը՝ ընտրելու (ակտիվացնելու) համար։</translation>
 <translation id="919686179725692564">Իմանալ ավելին հավելվածների պահուստավորման մասին</translation>
 <translation id="9199503643457729322">Սեղմեք՝ Գաղտնիության ուղեցույցից դուրս գալու համար։</translation>
@@ -11417,7 +11415,6 @@
 <translation id="98515147261107953">Հորիզոնական</translation>
 <translation id="987068745968718743">Parallels Desktop՝ <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">Ընդհանուր</translation>
-<translation id="987475089238841621">Լեզվի փաթեթներն օգտագործվում են Կենդանի ենթագրերի համար և պահվում են ձեր սարքում</translation>
 <translation id="988320949174893488">Հաճախակի գծեր</translation>
 <translation id="988978206646512040">Անցաբառի դաշտը չի կարող դատարկ լինել</translation>
 <translation id="992032470292211616">Ընդլայնումները, հավելվածները և թեմաները կարող են վնասել ձեր սարքը: Համոզվա՞ծ եք, որ ուզում եք շարունակել:</translation>

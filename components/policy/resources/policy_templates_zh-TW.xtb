@@ -5964,6 +5964,29 @@
 <translation id="5622590774455244290">Android 應用程式可能會主動選擇接受這份清單，無法以強制方式執行這項操作。</translation>
 <translation id="5622924058222112599">啟用預設的 CECPQ2 推出程序</translation>
 <translation id="5623304306796942802">有多個憑證相符時，顯示提示訊息</translation>
+<translation id="5624334866248253262">設定資料控管規則清單，避免資料外洩。
+
+      每項規則都包含：
+      - 觸發該規則的條件欄位。只有使用者動作符合「<ph name="DATA_CONTROLS_SOURCES" />」、「<ph name="DATA_CONTROLS_DESTINATIONS" />」、「<ph name="DATA_CONTROLS_AND" />」、「<ph name="DATA_CONTROLS_OR" />」和「<ph name="DATA_CONTROLS_NOT" />」欄位中填入的所有欄位時，才會觸發規則。如果是清單子欄位，只要一個項目相符即可。例如，只要一個網址模式相符就會觸發規則。
+      - 要套用的限制清單。可用的條件或許只有「<ph name="DATA_CONTROLS_SOURCES" />」或「<ph name="DATA_CONTROLS_DESTINATIONS" />」，具體情況視限制而定。
+
+      你可以透過新增規則控管下列項目：
+      - 來源與目的地共用的剪貼簿資料。
+      - 根據來源分頁控管是否禁止螢幕截圖。
+
+      如果將 <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" /> 政策設為 True，系統會將觸發的規則回報給管理員。
+      限制等級可設為「BLOCK」、「WARN」或「REPORT」。
+      - 如果將限制等級設為「BLOCK」，將無法執行該動作。
+      - 如果將限制等級設為「WARN」，系統會顯示警告訊息，使用者可選擇繼續執行或取消動作。
+      - 如果將限制等級設為「REPORT」，使用者動作不會遭到中斷，但如果 <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" /> 政策已啟用，系統就會傳送報告。
+
+      注意：
+      - 網址模式的格式必須符合規定，詳情請參閱 https://support.google.com/chrome/a?p=url_blocklist_filter_format。
+      - 如要瞭解 <ph name="PRODUCT_OS_NAME" /> 專屬的資料外洩防範規則，請參閱 <ph name="DATA_LEAK_PREVENTION_RULES_LIST" /> 政策。
+
+      如果不設定這項政策，系統不會套用任何限制。
+
+      只有取得 Chrome Enterprise 進階版授權的使用者，才能適用這項政策。</translation>
 <translation id="5625771176514429288">系統會允許 Chrome 應用程式在這些平台上執行。</translation>
 <translation id="5630352020869108293">還原上次工作階段</translation>
 <translation id="5633871703004128675">啟用插入點醒目顯示無障礙功能</translation>

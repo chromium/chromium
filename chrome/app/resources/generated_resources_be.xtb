@@ -4139,7 +4139,6 @@
 <translation id="3937640725563832867">Альтэрнатыўнае імя выдаўца сертыфіката</translation>
 <translation id="3937734102568271121">Заўсёды перакладаць з мовы <ph name="LANGUAGE" /></translation>
 <translation id="3938128855950761626">Прылады ад пастаўшчыка <ph name="VENDOR_ID" /></translation>
-<translation id="3939622756852381766">Аўтаматычна стварае субцітры для аўдыя і відэа</translation>
 <translation id="3941565636838060942">Каб прыбраць доступ да гэтай праграмы, трэба выдаліць яе з дапамогай
   <ph name="CONTROL_PANEL_APPLET_NAME" /> на Панэлі кіравання.
 
@@ -8012,7 +8011,6 @@
 <translation id="6823561724060793716">З адраснага радка можна адкрыць дадатковую інфармацыю аб старонцы, на якой вы знаходзіцеся</translation>
 <translation id="6824564591481349393">Скапіраваць &amp;адрас электроннай пошты</translation>
 <translation id="6824584962142919697">&amp;Праверыць элементы</translation>
-<translation id="6824725898506587159">Кіраванне мовамі</translation>
 <translation id="6825184156888454064">Сартаваць па назве</translation>
 <translation id="6826872289184051766">Спраўдзіць праз USB</translation>
 <translation id="6827121912381363404">Дазволіць усім пашырэнням чытаць і змяняць сайт <ph name="PERMITTED_SITE" /></translation>
@@ -9684,6 +9682,7 @@
 <translation id="8037357227543935929">Запытаць (стандартна)</translation>
 <translation id="803771048473350947">Файл</translation>
 <translation id="8037801708772278989">Праверка праводзілася толькі што</translation>
+<translation id="8038111231936746805">(стандартна)</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{Ідзе капіраванне 1 файла ў сэрвіс "<ph name="CLOUD_PROVIDER" />"}one{Ідзе капіраванне {NUM_OF_FILES} файла ў сэрвіс "<ph name="CLOUD_PROVIDER" />"}few{Ідзе капіраванне {NUM_OF_FILES} файлаў у сэрвіс "<ph name="CLOUD_PROVIDER" />"}many{Ідзе капіраванне {NUM_OF_FILES} файлаў у сэрвіс "<ph name="CLOUD_PROVIDER" />"}other{Ідзе капіраванне {NUM_OF_FILES} файла ў сэрвіс "<ph name="CLOUD_PROVIDER" />"}}</translation>
 <translation id="8041089156583427627">Адправіць водгук</translation>
 <translation id="8041093619605951337">Шчаслівы</translation>
@@ -11304,7 +11303,6 @@
 <translation id="918352324374649435">{COUNT,plural, =1{Праграма}one{# праграма}few{# праграмы}many{# праграм}other{# праграмы}}</translation>
 <translation id="9186963452600581158">Увайсці праз Уліковы запіс Google дзіцяці</translation>
 <translation id="9187967020623675250">Клавішы не супадаюць Каб <ph name="RESPONSE" />, націсніце любую клавішу.</translation>
-<translation id="9191638749941292185">Адпраўляе субцітры ў Google для іх аўтаматычнага перакладу</translation>
 <translation id="9192019773545828776">Выкарыстоўвайце галасавую зваротную сувязь, дзякуючы якой можна карыстацца прыладай не гледзячы на экран. Каб тэкст паказваўся з дапамогай шрыфту Брайля, неабходна падключыць спецыяльную прыладу. Каб уключыць або выключыць ChromeVox, выкарыстоўвайце спалучэнне Ctrl + Alt + Z. Для навігацыі націскайце Пошук + стрэлку ўлева або ўправа. Каб выбраць (актываваць) аб’ект, націсніце Пошук + Прабел.</translation>
 <translation id="919686179725692564">Даведацца больш пра рэзервовае капіраванне праграм</translation>
 <translation id="9199503643457729322">Націснуўшы на яе, вы пакінеце Дапаможнік па прыватнасці.</translation>
@@ -11425,7 +11423,6 @@
 <translation id="98515147261107953">Альбомная</translation>
 <translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">Агульныя</translation>
-<translation id="987475089238841621">Моўныя пакеты выкарыстоўваюцца для функцыі "Аўтаматычныя субцітры" і захоўваюцца на прыладзе</translation>
 <translation id="988320949174893488">Часам відэа перарываецца</translation>
 <translation id="988978206646512040">Неабходна задаць фразу-пароль</translation>
 <translation id="992032470292211616">Пашырэнні, праграмы і тэмы могуць нашкодзіць вашай прыладзе. Вы сапраўды хочаце працягнуць?</translation>

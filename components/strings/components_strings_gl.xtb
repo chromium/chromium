@@ -28,7 +28,6 @@
 <translation id="1050038467049342496">Pecha outras aplicacións</translation>
 <translation id="1053959602163383901">Escolliches verificar a túa identidade cun dispositivo de autenticación nos sitios web que usan <ph name="PROVIDER_ORIGIN" />. É posible que este provedor almacenase información sobre o teu método de pago. Podes <ph name="LINK_TEXT" />.</translation>
 <translation id="1055184225775184556">&amp;Desfacer adición</translation>
-<translation id="105642538515333723">Podes introducir frases ou detalles que lembres de páxinas polas que navegaches, como "zapatos cómodos para camiñar".</translation>
 <translation id="1056898198331236512">Advertencia</translation>
 <translation id="1058344460600311577"><ph name="PLAY_CHROME_DINO_GAME_FOCUSED_FRIENDLY_MATCH_TEXT" />. Para xogar a Dino Run en Chrome, preme Tabulador e, a continuación, Introducir</translation>
 <translation id="1058479211578257048">Gardando tarxetas…</translation>
@@ -1015,6 +1014,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2882949212241984732">Dobrez en ventá dobre</translation>
 <translation id="2891963978019740012">O teu buscador en Chrome</translation>
 <translation id="2893773853358652045">Cuarto rolo</translation>
+<translation id="2894137550885451583">Estes son os prezos en <ph name="CURRENCY" /> para o produto <ph name="PRODUCT" /></translation>
 <translation id="2900528713135656174">Crear evento</translation>
 <translation id="2902312830803030883">Máis accións</translation>
 <translation id="2903493209154104877">Enderezos</translation>
@@ -1612,6 +1612,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3949601375789751990">O teu historial de navegación aparece aquí</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">Non hai ningún método de pago gardado</translation>
+<translation id="3950560191811267370">Pechouse o panel inferior do comercio</translation>
 <translation id="3950574001630941635">Reiniciar titorial</translation>
 <translation id="3950820424414687140">Iniciar sesión</translation>
 <translation id="3953505489397572035">Este prezo é habitual</translation>
@@ -2353,6 +2354,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5331585574693522196">Establecer como predeterminado</translation>
 <translation id="5332219387342487447">Método de envío</translation>
 <translation id="5332769172018416402">Preguntar cunha mensaxe</translation>
+<translation id="533323551986281710">Panel inferior do comercio aberto a altura completa</translation>
 <translation id="5334013548165032829">Rexistros do sistema detallados</translation>
 <translation id="5334145288572353250">Queres gardar este enderezo?</translation>
 <translation id="5340250774223869109">A aplicación está bloqueada</translation>
@@ -2535,6 +2537,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5675650730144413517">Esta páxina non funciona</translation>
 <translation id="5675809467256309336">Música dance e electrónica</translation>
 <translation id="5675959228867414813">Mostrar por data</translation>
+<translation id="567604591393105935">Panel inferior do comercio aberto a altura media</translation>
 <translation id="5677928146339483299">Bloqueada</translation>
 <translation id="5678007133659493065">Lámina</translation>
 <translation id="5680642791693447368">Películas de intriga, policiais e de suspense</translation>
@@ -2955,7 +2958,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6433797564277305076">A partir de agora, confirma as tarxetas máis rápido co desbloqueo do dispositivo</translation>
 <translation id="643917412048333145">Vestidos</translation>
 <translation id="6440503408713884761">Política ignorada</translation>
-<translation id="6440534369669992497">Podes introducir frases ou detalles que lembres de páxinas polas que navegaches, como "zapatos cómodos para camiñar". <ph name="SHORTCUT" /> para buscar.</translation>
 <translation id="6443406338865242315">As extensións e os complementos que teñas instalados</translation>
 <translation id="6444329331928531170">Xubilación e pensións</translation>
 <translation id="6446608382365791566">Engadir máis información</translation>
@@ -3441,6 +3443,7 @@ Detalles adicionais:
 <translation id="7374733840632556089">Este problema prodúcese por causa dun certificado instalado por ti ou por outra persoa no teu dispositivo. Sábese que este certificado se utiliza para supervisar e interceptar redes, e Chrome non confía nel. Aínda que existen algunhas situacións lexítimas para a supervisión, como no caso de redes de empresas ou de centros educativos, Chrome quere asegurarse de que sexas consciente do que acontece, inda que non poidas facer nada ao respecto. A supervisión pode levarse a cabo en calquera navegador ou aplicación que acceda á Web.</translation>
 <translation id="7375532151824574023">{NUM_COOKIES,plural, =0{Non hai sitios permitidos}=1{1 sitio permitido}other{# sitios permitidos}}</translation>
 <translation id="7375818412732305729">Anéxase un ficheiro</translation>
+<translation id="7376031331622621328">Panel inferior do comercio</translation>
 <translation id="7377249249140280793"><ph name="RELATIVE_DATE" /> - <ph name="FULL_DATE" /></translation>
 <translation id="7377314930809374926">Sector hostaleiro</translation>
 <translation id="7378594059915113390">Controis de contido multimedia</translation>

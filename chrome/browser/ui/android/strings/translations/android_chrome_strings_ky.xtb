@@ -1213,6 +1213,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="6674571176963658787">Шайкештирүүнү баштоо үчүн сыр сүйлөмүңүздү киргизиңиз</translation>
 <translation id="6676927815633975364">Бул сайтка жана Chrome'го кириңиз</translation>
 <translation id="6684809838922667136">Chrome'ду жакшыртууга жардам бериңиз</translation>
+<translation id="6700279777779583398">Тандоолор сакталды</translation>
 <translation id="6704048624334633734">Сырсөздөрдү экспорттоо жана өчүрүү</translation>
 <translation id="670498945988402717">Кечээ текшерилди</translation>
 <translation id="6710213216561001401">Мурунку</translation>
@@ -1426,6 +1427,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="752731652852882757">Жашыруун режимде бөгөттөө</translation>
 <translation id="7554643625247105821">Chrome версиясын текшерүү мүмкүн болбой жатат</translation>
 <translation id="7557508262441527045">Аккаунтуңуздан чыктыңыз</translation>
+<translation id="7573665567024262965">Демейки колдонмолоруңузду тандаңыз</translation>
 <translation id="7577900504646297215">Кызыккан нерселерди башкаруу</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> файл жүктөлүп алынды}other{<ph name="FILES_DOWNLOADED_MANY" /> файл жүктөлүп алынды}}</translation>
 <translation id="7581273696622423628">Сурамжылоого катышуу</translation>
@@ -1468,6 +1470,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="7764225426217299476">Дарек кошуу</translation>
 <translation id="7772032839648071052">Купуя сөз айкашын ырастаңыз</translation>
 <translation id="7772375229873196092"><ph name="APP_NAME" /> өтмөгүн жабуу</translation>
+<translation id="7774125747223422443">Сиз жашаган региондун мыйзамына ылайык серепчиңизди жана издөө куралыңызды тандап алышыңыз керек</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 жана дагы <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 жана дагы <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="777637629667389858">Кирип турганыңызда, сизди Google кызматтарында коргойт.</translation>
 <translation id="7778840695157240389">Жаңы окуяларды көрүү үчүн мезгил-мезгили менен баш багып туруңуз</translation>
@@ -1736,6 +1739,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="8982113230057126145">"Жаккан жок" баскычын басып, бул корутундунун сизге жакпаганын билдире аласыз</translation>
 <translation id="8992769679401294069">Маалыматыңыз сыр сүйлөм менен шифрленген. Google аккаунтуңузга Chrome маалыматын сактоо жана колдонуу үчүн аны киргизиңиз.</translation>
 <translation id="8993760627012879038">Жаңы өтмөктү жашыруун режимде ачуу</translation>
+<translation id="8995521496079646922">Сиз тандаган колдонмолор демейки боюнча колдонулат. Эгер колдонмо бул түзмөктө жок болсо, ал бир аздан кийин жүктөлүп алынат.</translation>
 <translation id="8996847606757455498">Башка провайдерди тандоо</translation>
 <translation id="8998289560386111590">Түзмөгүңүздө жеткиликтүү эмес</translation>
 <translation id="8998837250940831980">Өтмөк кичирейген жок. Кийинчерээк кайталап көрүңүз.</translation>

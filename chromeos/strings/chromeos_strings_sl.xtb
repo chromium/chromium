@@ -254,6 +254,7 @@
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2148716181193084225">Danes</translation>
 <translation id="2152882202543497059">Št. fotografij: <ph name="NUMBER" /></translation>
+<translation id="2154460308960858308">Počisti iskanje</translation>
 <translation id="2156072344042480449">Vaša najnovejša poziva. Na tej strani lahko uporabite samo ta poziva.</translation>
 <translation id="2157660087437850958">izbirnik emodžijev</translation>
 <translation id="2157959690810728433">NA ČAKANJU</translation>
@@ -500,6 +501,7 @@
 <translation id="3557205324756024651">Lokalna identiteta (izbirno)</translation>
 <translation id="3565064564551103223">Dovoljeni IP-ji</translation>
 <translation id="3569407787324516067">Ohranjevalnik zaslona</translation>
+<translation id="3571184524500629183">Zapri iskanje</translation>
 <translation id="3577473026931028326">Prišlo je do napake. Poskusite znova.</translation>
 <translation id="357889014807611375">Wi‑Fi z omejeno količino prenosa</translation>
 <translation id="3583278742022654445">Šibka moč signala. Poskusite se premakniti bliže viru signala omrežja Wi-Fi.</translation>
@@ -945,6 +947,7 @@
 <translation id="5860033963881614850">Izklopljeno</translation>
 <translation id="5860491529813859533">Vklopi</translation>
 <translation id="5876385649737594562">Vklopite, če želite izbrati možnosti.</translation>
+<translation id="5877503382465267833">Začasno zaustavi »<ph name="RECORDING_NAME" />«</translation>
 <translation id="588258955323874662">Celozaslonsko</translation>
 <translation id="5893975327266416093">Dotaknite se tipke na tipkovnici za dodelitev</translation>
 <translation id="5895138241574237353">Znova zaženi</translation>
@@ -1162,6 +1165,7 @@
 <translation id="6910312834584889076">Pokrov optičnega bralnika je odprt. Zaprite ga in poskusite znova.</translation>
 <translation id="6910845598686542904">Izračunavanje modelov v posnetku zaznanih glasov.</translation>
 <translation id="6911383237894364323">Povezave s strežniki za predstavnost ni bilo mogoče vzpostaviti.</translation>
+<translation id="6927968682840110570">Ime posnetka</translation>
 <translation id="6930242544192836755">Trajanje</translation>
 <translation id="6930597342185648547">O ozadju</translation>
 <translation id="6939667434404433010">Iskanje imena posnetka</translation>
@@ -1274,6 +1278,7 @@
 <translation id="7378170410161264436">Snemalnik lahko ustvari prepise za posnetke z govorom.
 Če želite prejeti te prepise, prenesite model prepisa (do 100 MB).</translation>
 <translation id="7384004438856720753">palača</translation>
+<translation id="7388345524791662148">Več možnosti za »<ph name="RECORDING_NAME" />«</translation>
 <translation id="7388959671917308825">Vgrajena sledilna ploščica</translation>
 <translation id="7397270852490618635">Izklop svetle teme</translation>
 <translation id="7401543881546089382">Izbriši bližnjico</translation>
@@ -1295,6 +1300,7 @@
 <translation id="7513770521371759388">spodaj</translation>
 <translation id="7514365320538308">Prenos</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7519481256236810334">Predvajaj »<ph name="RECORDING_NAME" />«</translation>
 <translation id="7525067979554623046">Ustvari</translation>
 <translation id="7528507600602050979">Vsebina s pomočjo ni na voljo.</translation>
 <translation id="7535791657097741517">Vklop svetle teme</translation>
@@ -1371,6 +1377,7 @@
 <translation id="7897043345768902965">sprehajalna pot</translation>
 <translation id="7902285181767404769">Utišanje obvestil med snemanjem</translation>
 <translation id="7903695460270716054">Izberite izbrani slikovni material in slike</translation>
+<translation id="7912005977894000746">Nazaj na glavno stran</translation>
 <translation id="7915220255123750251">Upravljanje nastavitev APN-ja. APN-ji vzpostavijo povezavo med mobilnim omrežjem in internetom.</translation>
 <translation id="7936303884198020182">Najden ni bil noben imenski strežnik</translation>
 <translation id="7942349550061667556">Rdeča</translation>

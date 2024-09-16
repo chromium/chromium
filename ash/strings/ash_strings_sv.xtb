@@ -77,6 +77,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1240638468526743569">En app</translation>
 <translation id="1242198791279543032">Aviseringar är avstängda</translation>
 <translation id="1242883863226959074">enhet</translation>
+<translation id="1245476784081715330">Bra jobbat!</translation>
 <translation id="1245644940275736236">Öppna assistenten</translation>
 <translation id="124678866338384709">Stäng den aktuella fliken</translation>
 <translation id="1246890715821376239">Appar som inte stöds</translation>
@@ -839,6 +840,7 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="3958714870339660776">Heldag</translation>
 <translation id="3962859241508114581">Föregående spår</translation>
 <translation id="3963124517343721543">Fortsätt enkelt där du slutade genom att öppna tidigare fönster och flikar. Du får även anpassade förslag på saker du kan göra härnäst.</translation>
+<translation id="396506362088290977">Testa mikrofonljudet</translation>
 <translation id="3969043077941541451">Av</translation>
 <translation id="3970324493235864154">Visa telefonens aviseringar</translation>
 <translation id="397105322502079400">Beräknar ...</translation>
@@ -896,6 +898,7 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="4156293514828496577"><ph name="PERCENTAGE" /> % av batteriet återstår (ungefär <ph name="TIME_LEFT" />).
 Vissa funktioner är begränsade för att förlänga batteritiden.</translation>
 <translation id="4160919062868802509">Flera ljudkällor har upptäckts</translation>
+<translation id="416245495747357243">Klart!</translation>
 <translation id="4165275524535002941">Kabeln kanske inte har stöd för skärmar</translation>
 <translation id="4177415338862979658">Klicka för mer information</translation>
 <translation id="4177913004758410636">{0,plural, =1{Uppdatera enheten inom en dag}other{Uppdatera enheten inom # dagar}}</translation>
@@ -981,6 +984,7 @@ Vissa funktioner är begränsade för att förlänga batteritiden.</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> är av.</translation>
 <translation id="4417647906073317561">Fokusinställningar. Ställ in en timer, uppgift och musik för att komma igång.</translation>
 <translation id="4424159417645388645">Skrivbord 5</translation>
+<translation id="4426817706804363424">Snyggt jobbat!</translation>
 <translation id="4430019312045809116">Volym</translation>
 <translation id="4441283832827406317">Apparna har sorterats efter namn</translation>
 <translation id="4445159312344259901">Logga in för att låsa upp</translation>
@@ -1245,6 +1249,7 @@ Du kan även använda kortkommandot. Markera först text och tryck sedan på <ph
 <translation id="5283198616748585639">Lägg till en min</translation>
 <translation id="528468243742722775">Avsluta</translation>
 <translation id="5286194356314741248">Skannar</translation>
+<translation id="528641622273682395">Aktivera/inaktivera mikrofontest</translation>
 <translation id="5297423144044956168">Inga mobila enheter hittades</translation>
 <translation id="5297704307811127955">Av</translation>
 <translation id="5300589172476337783">Visa</translation>
@@ -1272,6 +1277,7 @@ Inga enheter är anslutna.</translation>
 <translation id="536019650977002321">Administratören tillåter inte ljudinspelning. Kontakta administratören för mer information.</translation>
 <translation id="5361524080961918551">Filer med tal på <ph name="LANGUAGE" /> har delvis laddats ned</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Öppna den här fliken</translation>
+<translation id="5363835273551457276">Du kan testa mikrofonljudet. Stäng panelen för att sluta.</translation>
 <translation id="5364693579536176785">lagringsutrymme</translation>
 <translation id="5369573834963677938">Ansiktsstyrning blir tillgängligt för andra användare på enheten</translation>
 <translation id="5369717264580061086">Förhandsgranska fil i appen Filer</translation>
@@ -1411,6 +1417,7 @@ Inga enheter är anslutna.</translation>
 <translation id="5802516411616338943">Öppna Snabbinställningar</translation>
 <translation id="5804651031882187592">Inaktivera inställningen Lås SIM</translation>
 <translation id="5805809050170488595">Klicka för att aktivera <ph name="NETWORK_NAME" /></translation>
+<translation id="5818796501620225415">Du kan lägga till mer tid eller avsluta fokussessionen</translation>
 <translation id="5819918159912280082">Din Chromebook startades om oväntat. Öppna dina föregående fönster och appar.</translation>
 <translation id="5823239091726045201">Google Tasks på webben</translation>
 <translation id="5825969630400862129">Inställningar för anslutna enheter</translation>
@@ -2122,6 +2129,7 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="8262312463845990408">Aktivera och inaktivera uppspelning</translation>
 <translation id="8268302343625273732">Visa alla uppgifter i Google Classroom</translation>
 <translation id="8277261673056602147">Markera text på skärmen</translation>
+<translation id="8282784978194352587">Du klarade det!</translation>
 <translation id="8287009018010202411">Produktivitet</translation>
 <translation id="828708037801473432">Av</translation>
 <translation id="8297006494302853456">Svag</translation>
@@ -2199,6 +2207,7 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="8609384513243082612">Öppna ny flik</translation>
 <translation id="861045123704058818">Apparna ordnas tillfälligt efter kategori</translation>
 <translation id="8612216344243590325">Spara viktiga filer i ditt <ph name="HOLDING_SPACE_TITLE" /> i stället för på skrivbordet. Dra bara filerna till <ph name="HOLDING_SPACE_TITLE" />.</translation>
+<translation id="8612338981637220013">Bravo!</translation>
 <translation id="8614517853887502247">Aviseringar från <ph name="APP_1_TITLE" /> och <ph name="APP_2_TITLE" /> har dolts eftersom skyddet mot smygtittare har aktiverats</translation>
 <translation id="8615778328722901791">Öppna verktygsfältet</translation>
 <translation id="8619000641825875669">OneDrive</translation>
@@ -2241,6 +2250,7 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />: aktiverar …</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
+<translation id="8751299148074971734">Fortsätt så!</translation>
 <translation id="8753368202781196133">Det här språket stöds för närvarande inte.</translation>
 <translation id="8755498163081687682">Verifiera din identitet: <ph name="ORIGIN_NAME" /> vill kontrollera din identitet</translation>
 <translation id="875593634123171288">Visa VPN-inställningar</translation>

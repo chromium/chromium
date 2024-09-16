@@ -35,6 +35,7 @@
 <translation id="1155154308031262006">Унесите упит</translation>
 <translation id="115705039208660697">ананаси</translation>
 <translation id="1164939766849482256">Чувар екрана који приказује цео дан од свитања до мрака</translation>
+<translation id="1166688493741195933">Генерисање имена за снимак није успело</translation>
 <translation id="1167755866710282443">Отворите мени да бисте прилагодили тастере. Превуците мени да бисте га преместили.</translation>
 <translation id="1171349345463658120">пешчана лагуна</translation>
 <translation id="1173894706177603556">Преименуј</translation>
@@ -494,6 +495,7 @@
 <translation id="3502426834823382181">прикажи све апликације</translation>
 <translation id="3510890413042482857">Шаљи <ph name="BEGIN_LINK1" />податке о праћењу учинка<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Ажурирање Chrome ОС-а</translation>
+<translation id="3522508178835057262">За сада није подржан транкрипт са мање од <ph name="MAX_WORD_LENGTH" /> речи</translation>
 <translation id="3527036260304016759">Није успело – непозната грешка</translation>
 <translation id="353214771040290298">Измене су готове</translation>
 <translation id="3532980081107202182">Преостало је још око <ph name="MIN_REMAINING" /> минута</translation>
@@ -711,6 +713,7 @@
 <translation id="4602266091140407479">Микрофон</translation>
 <translation id="4607282946861182308">Не можемо да направимо слике на којима је ово. Пробајте са другим упитом.</translation>
 <translation id="4609350030397390689">Смањите осветљеност тастатуре</translation>
+<translation id="4623061655523261501">Имена за снимак су генерисана</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> од <ph name="TOTAL_PAGE_NUMBER" />. Притисните тастер Enter да бисте отказали задатак штампања.</translation>
 <translation id="463791356324567266">Отказује се скенирање...</translation>
 <translation id="4644611440022666152">Укључи и преузми</translation>
@@ -1043,6 +1046,8 @@
 <translation id="628726841779494414">Управљајте штампачима у подешавањима штампача</translation>
 <translation id="6292095526077353682">Током пуњења прикажи чувар екрана за</translation>
 <translation id="629550705077076970">затамњивање тастатуре</translation>
+<translation id="6301193653204230066">Безбедно ресетовање искључује додатке за Chrome прегледач и ресетује мрежна и друга подешавања на безбедне подразумеване вредности.
+          Картице, фајлови, колачићи и историја неће бити промењени.</translation>
 <translation id="6302401976930124515">Тест <ph name="TEST_NAME" /> је отказан</translation>
 <translation id="631063167932043783">Истражите апликацију</translation>
 <translation id="6318437367327684789">заувек</translation>
@@ -1052,6 +1057,7 @@
 <translation id="6325525973963619867">Неуспешно</translation>
 <translation id="6327262166342360252">Ова позадина је направљена помоћу вештачке интелигенције користећи следећи текст: „<ph name="PROMPT" />“.</translation>
 <translation id="6331191339300272798">Аутоматска тамна тема</translation>
+<translation id="6335228876613776082">Преузимање модела је завршено</translation>
 <translation id="6340526405444716530">Персонализација</translation>
 <translation id="6348252528297699679">Можете да искључите локацију у одељку Подешавања &gt; Приватност и безбедност &gt; Контроле приватности &gt; Приступ локацији. <ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">Корисничко име и лозинка</translation>
@@ -1213,6 +1219,7 @@
 <translation id="708426984172631313">ЗАУСТАВЉЕНО</translation>
 <translation id="7086168019478250425">биолуминисцентна плажа</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="7086916854357021265">Генеришу се имена за снимак</translation>
 <translation id="7097908713073775559">шарено</translation>
 <translation id="710028965487274708">Неуспешно – овлашћење није успело</translation>
 <translation id="7101959270679078188">Откључајте уређај <ph name="DEVICE_NAME" /> да бисте наставили процес ажурирања</translation>
@@ -1545,6 +1552,7 @@
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Албум Google слика</translation>
 <translation id="8775713578693478175">Назив приступне тачке модема</translation>
+<translation id="877735394245039557">Преузимање модела је у току</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Ова мрежа можда има улазни портал</translation>
 <translation id="8797082062139985406">Направите назив помоћу Google вештачке интелигенције</translation>

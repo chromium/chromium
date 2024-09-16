@@ -145,6 +145,7 @@
 <translation id="1651925268237749928">你已選取共享相簿。其他使用者可以新增或變更相片。系統不一定會使用目前這本相簿中的相片做為桌布。</translation>
 <translation id="1661512400125589646">暫停</translation>
 <translation id="1661865805917886535">系統可能會將部分帳戶和系統資訊傳送給 Google。我們會依據《隱私權政策》(<ph name="PRIVACYPOLICYURL" />) 和《服務條款》(<ph name="TERMSOFSERVICEURL" />) 的規定使用這項資訊，解決技術問題及改善服務品質。如要提出內容變更要求，請前往法律說明中心 (<ph name="LEGALHELPPAGEURL" />)。</translation>
+<translation id="1662699081856352167">已成功產生摘要</translation>
 <translation id="1662989795263954667">已停止 - 墨水已用盡</translation>
 <translation id="1664796644829245314">預覽「<ph name="PREVIEW_OBJECT" />」</translation>
 <translation id="1668469839109562275">內建 VPN</translation>
@@ -254,6 +255,7 @@
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2148716181193084225">今天</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> 張相片</translation>
+<translation id="2154460308960858308">清除搜尋內容</translation>
 <translation id="2156072344042480449">這是你最近使用的 2 個提示。你只能在這個頁面上使用這些提示。</translation>
 <translation id="2157660087437850958">表情符號挑選器</translation>
 <translation id="2157959690810728433">已排入佇列</translation>
@@ -500,6 +502,7 @@
 <translation id="3557205324756024651">本機識別 (選用)</translation>
 <translation id="3565064564551103223">已允許的 IP</translation>
 <translation id="3569407787324516067">螢幕保護程式</translation>
+<translation id="3571184524500629183">關閉搜尋框</translation>
 <translation id="3577473026931028326">發生錯誤，請再試一次。</translation>
 <translation id="357889014807611375">計量付費的 Wi-Fi</translation>
 <translation id="3583278742022654445">訊號強度偏弱，建議你移動到較靠近 Wi-Fi 訊號來源的位置。</translation>
@@ -539,6 +542,7 @@
 <translation id="3780740315729837296">指定鍵盤按鍵</translation>
 <translation id="3784455785234192852">鎖定</translation>
 <translation id="3785643128701396311">像素畫</translation>
+<translation id="3799381533888781854">關閉 - 這項設定是由系統管理員管理。</translation>
 <translation id="380097101658023925">rgb 控制選項</translation>
 <translation id="38114475217616659">清除所有記錄</translation>
 <translation id="3820172043799983114">PIN 無效。</translation>
@@ -742,6 +746,7 @@
 <translation id="4809927044794281115">淺色主題</translation>
 <translation id="4813136279048157860">我的圖片</translation>
 <translation id="4813345808229079766">連線</translation>
+<translation id="4824527342590024245">目前的轉錄稿字數下限為 <ph name="MIN_WORD_LENGTH" /> 個字</translation>
 <translation id="4830894019733815633">峽谷</translation>
 <translation id="4832079907277790330">在「檔案」應用程式中選取資料夾...</translation>
 <translation id="4835901797422965222">沒有使用中的網路</translation>
@@ -770,6 +775,7 @@
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> 秒內已充電 <ph name="RATE" />。</translation>
 <translation id="4930320165497208503">如要設定或更新連線，請前往<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />頁面。</translation>
 <translation id="4932733599132424254">日期</translation>
+<translation id="4946927805998996217">正在產生摘要</translation>
 <translation id="4950314376641394653">「<ph name="DEVICE_NAME" />」的韌體已更新至版本 <ph name="VERSION" /></translation>
 <translation id="4950893758552030541">樹木隧道</translation>
 <translation id="4965661459364092269">「安全重設」已完成</translation>
@@ -830,6 +836,7 @@
 <translation id="5229104491259541281">換算「<ph name="QUERY" />」</translation>
 <translation id="5229344016299762883">結束全螢幕模式</translation>
 <translation id="5234764350956374838">關閉</translation>
+<translation id="5236119614998611749">無法產生摘要</translation>
 <translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{系統管理員已將「<ph name="APP_NAME" />」設為登入時自動啟動。}=2{系統管理員已將「<ph name="APP_NAME" />」和另外 1 個應用程式設為登入時自動啟動。}other{系統管理員已將「<ph name="APP_NAME" />」和另外 # 個應用程式設為登入時自動啟動。}}</translation>
 <translation id="5248419081947706722">藍色</translation>
 <translation id="5252456968953390977">漫遊中</translation>
@@ -945,6 +952,7 @@
 <translation id="5860033963881614850">關閉</translation>
 <translation id="5860491529813859533">啟用</translation>
 <translation id="5876385649737594562">開啟即可選取選項</translation>
+<translation id="5877503382465267833">暫停「<ph name="RECORDING_NAME" />」</translation>
 <translation id="588258955323874662">全螢幕</translation>
 <translation id="5893975327266416093">輕觸要指派的鍵盤按鍵</translation>
 <translation id="5895138241574237353">重新啟動</translation>
@@ -1035,6 +1043,8 @@
 <translation id="628726841779494414">前往印表機設定管理印表機</translation>
 <translation id="6292095526077353682">裝置充電時，螢幕保護程式的顯示時間長度：</translation>
 <translation id="629550705077076970">將鍵盤調暗</translation>
+<translation id="6301193653204230066">「安全重設」會關閉 Chrome 瀏覽器擴充功能，並將網路和其他設定重設為安全預設值。
+          這項功能不會變更你的分頁、檔案、Cookie 和歷史記錄。</translation>
 <translation id="6302401976930124515">已取消<ph name="TEST_NAME" />測試</translation>
 <translation id="631063167932043783">探索應用程式</translation>
 <translation id="6318437367327684789">不限時間</translation>
@@ -1044,6 +1054,7 @@
 <translation id="6325525973963619867">失敗</translation>
 <translation id="6327262166342360252">這張桌布是使用下列文字由 AI 建立而成：「<ph name="PROMPT" />」。</translation>
 <translation id="6331191339300272798">自動深色主題</translation>
+<translation id="6335228876613776082">模型下載完成</translation>
 <translation id="6340526405444716530">個人化</translation>
 <translation id="6348252528297699679">如要關閉定位功能，請依序前往「設定」&gt;「隱私權和安全性」&gt;「隱私權控制項」&gt;「位置資訊存取權」。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">使用者名稱和密碼</translation>
@@ -1162,6 +1173,7 @@
 <translation id="6910312834584889076">掃描器的蓋子已打開。請蓋上蓋子，然後再試一次。</translation>
 <translation id="6910845598686542904">根據錄音中偵測到的語音算出模型</translation>
 <translation id="6911383237894364323">無法連線至媒體伺服器</translation>
+<translation id="6927968682840110570">錄音檔名稱</translation>
 <translation id="6930242544192836755">持續時間</translation>
 <translation id="6930597342185648547">關於背景</translation>
 <translation id="6939667434404433010">搜尋錄音檔名稱</translation>
@@ -1274,6 +1286,7 @@
 <translation id="7378170410161264436">錄音工具可轉錄含有語音內容的錄音。
 如要取得這些語音轉錄內容，請下載語音轉錄模型 (最多 100 MB)。</translation>
 <translation id="7384004438856720753">宮殿</translation>
+<translation id="7388345524791662148">更多「<ph name="RECORDING_NAME" />」的選項</translation>
 <translation id="7388959671917308825">內建觸控板</translation>
 <translation id="7397270852490618635">關閉淺色主題</translation>
 <translation id="7401543881546089382">刪除捷徑</translation>
@@ -1295,6 +1308,7 @@
 <translation id="7513770521371759388">下方</translation>
 <translation id="7514365320538308">下載</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7519481256236810334">播放「<ph name="RECORDING_NAME" />」</translation>
 <translation id="7525067979554623046">建立</translation>
 <translation id="7528507600602050979">無法存取說明內容</translation>
 <translation id="7535791657097741517">開啟淺色主題</translation>
@@ -1371,6 +1385,7 @@
 <translation id="7897043345768902965">走道</translation>
 <translation id="7902285181767404769">錄音時關閉通知音效</translation>
 <translation id="7903695460270716054">請選擇精選圖片</translation>
+<translation id="7912005977894000746">返回主頁面</translation>
 <translation id="7915220255123750251">管理網路 APN 設定。APN 會在行動網路和網際網路之間建立連線。</translation>
 <translation id="7936303884198020182">找不到任何名稱伺服器</translation>
 <translation id="7942349550061667556">紅色</translation>
@@ -1533,6 +1548,7 @@
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google 相簿中的相簿</translation>
 <translation id="8775713578693478175">數據機 APN</translation>
+<translation id="877735394245039557">正在下載模型</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">這個網站可能有網頁認證入口</translation>
 <translation id="8797082062139985406">使用 Google AI 設定名稱</translation>

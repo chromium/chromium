@@ -28,7 +28,6 @@
 <translation id="1050038467049342496">Zavřete ostatní aplikace</translation>
 <translation id="1053959602163383901">Rozhodli jste se provést ověření pomocí ověřovací aplikace na webech, které používají <ph name="PROVIDER_ORIGIN" />. Tento poskytovatel může mít uložené údaje o vaší platební metodě – můžete <ph name="LINK_TEXT" />.</translation>
 <translation id="1055184225775184556">&amp;Vrátit přidání zpět</translation>
-<translation id="105642538515333723">Můžete zadat libovolné fráze nebo podrobnosti, které si pamatujete ze stránek, které jste si prohlíželi v minulosti, například „pohodlná vycházková obuv“.</translation>
 <translation id="1056898198331236512">Upozornění</translation>
 <translation id="1058344460600311577"><ph name="PLAY_CHROME_DINO_GAME_FOCUSED_FRIENDLY_MATCH_TEXT" />, stisknutím tabulátoru a poté klávesy Enter v Chromu spustíte dinosauří hru</translation>
 <translation id="1058479211578257048">Ukládání karet...</translation>
@@ -2950,7 +2949,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6433797564277305076">Od teď karty potvrzovat rychleji pomocí odemknutí zařízení</translation>
 <translation id="643917412048333145">Šaty</translation>
 <translation id="6440503408713884761">Ignorováno</translation>
-<translation id="6440534369669992497">Můžete zadat libovolné fráze nebo podrobnosti, které si pamatujete ze stránek, které jste si prohlíželi v minulosti, například „pohodlná vycházková obuv“. Vyhledávání spustíte klávesovou zkratkou <ph name="SHORTCUT" />.</translation>
 <translation id="6443406338865242315">Která rozšíření a pluginy máte nainstalované</translation>
 <translation id="6444329331928531170">Důchod a penze</translation>
 <translation id="6446608382365791566">Přidání dalších informací</translation>

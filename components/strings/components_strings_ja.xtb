@@ -28,7 +28,6 @@
 <translation id="1050038467049342496">他のアプリを終了する</translation>
 <translation id="1053959602163383901"><ph name="PROVIDER_ORIGIN" /> を使用するウェブサイトで認証システム デバイスによる確認を行うよう選択しています。このプロバイダにお支払い方法に関する情報が保存されている可能性があります。その場合、<ph name="LINK_TEXT" /> を行うことができます。</translation>
 <translation id="1055184225775184556">追加の取り消し（&amp;U）</translation>
-<translation id="105642538515333723">「快適なウォーキング シューズ」など、過去に閲覧したページについて覚えているフレーズや詳細を入力できます。</translation>
 <translation id="1056898198331236512">警告</translation>
 <translation id="1058344460600311577"><ph name="PLAY_CHROME_DINO_GAME_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab、Enter キーの順に押すと、Chrome で Dino Run ゲームをプレイできます</translation>
 <translation id="1058479211578257048">カードを保存しています...</translation>
@@ -2959,7 +2958,6 @@
 <translation id="6433797564277305076">今後はデバイスのロック解除を使用して、カードの確認をより迅速に行います</translation>
 <translation id="643917412048333145">ドレス</translation>
 <translation id="6440503408713884761">除外されました</translation>
-<translation id="6440534369669992497">「快適なウォーキング シューズ」など、過去に閲覧したページについて覚えているフレーズや詳細を入力できます。<ph name="SHORTCUT" /> キーで検索します。</translation>
 <translation id="6443406338865242315">インストールした拡張機能とプラグイン</translation>
 <translation id="6444329331928531170">老後、年金</translation>
 <translation id="6446608382365791566">他の情報を追加</translation>

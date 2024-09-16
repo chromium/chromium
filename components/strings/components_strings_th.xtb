@@ -28,7 +28,6 @@
 <translation id="1050038467049342496">ปิดแอปอื่นๆ</translation>
 <translation id="1053959602163383901">คุณเลือกยืนยันด้วยอุปกรณ์ Authenticator ในเว็บไซต์ที่ใช้ <ph name="PROVIDER_ORIGIN" /> ผู้ให้บริการนี้อาจจัดเก็บข้อมูลเกี่ยวกับวิธีการชำระเงินของคุณไว้แล้ว โดยคุณ<ph name="LINK_TEXT" />ได้</translation>
 <translation id="1055184225775184556">&amp;เลิกทำการเพิ่ม</translation>
-<translation id="105642538515333723">คุณสามารถป้อนคำหรือรายละเอียดที่จำได้จากหน้าเว็บที่เคยเรียกดู เช่น "รองเท้าใส่เดินสบายๆ"</translation>
 <translation id="1056898198331236512">คำเตือน</translation>
 <translation id="1058344460600311577"><ph name="PLAY_CHROME_DINO_GAME_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Tab ตามด้วย Enter เพื่อเล่นเกมไดโนเสาร์วิ่งใน Chrome</translation>
 <translation id="1058479211578257048">กำลังบันทึกบัตร...</translation>
@@ -1015,6 +1014,7 @@
 <translation id="2882949212241984732">พับทบ 4 ตอน</translation>
 <translation id="2891963978019740012">เครื่องมือค้นหาใน Chrome</translation>
 <translation id="2893773853358652045">ม้วนกระดาษ 4</translation>
+<translation id="2894137550885451583">รายการต่อไปนี้คือราคา <ph name="CURRENCY" /> สำหรับผลิตภัณฑ์ <ph name="PRODUCT" /></translation>
 <translation id="2900528713135656174">สร้างกิจกรรม</translation>
 <translation id="2902312830803030883">การทำงานเพิ่มเติม</translation>
 <translation id="2903493209154104877">ที่อยู่</translation>
@@ -1611,6 +1611,7 @@
 <translation id="3949601375789751990">ประวัติการท่องเว็บของคุณจะปรากฏที่นี่</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">ไม่มีวิธีการชำระเงินที่บันทึกไว้</translation>
+<translation id="3950560191811267370">ปิด Bottom Sheet ของ Commerce แล้ว</translation>
 <translation id="3950574001630941635">เริ่มต้นบทแนะนำใหม่อีกครั้ง</translation>
 <translation id="3950820424414687140">ลงชื่อเข้าใช้</translation>
 <translation id="3953505489397572035">ราคานี้เป็นราคาปกติ</translation>
@@ -2352,6 +2353,7 @@
 <translation id="5331585574693522196">ตั้งเป็นค่าเริ่มต้น</translation>
 <translation id="5332219387342487447">วิธีการจัดส่ง</translation>
 <translation id="5332769172018416402">ส่งคำขอทางข้อความ</translation>
+<translation id="533323551986281710">Bottom Sheet ของ Commerce เปิดแบบเต็มหน้า</translation>
 <translation id="5334013548165032829">บันทึกของระบบโดยละเอียด</translation>
 <translation id="5334145288572353250">บันทึกที่อยู่ไหม</translation>
 <translation id="5340250774223869109">แอปพลิเคชันถูกบล็อก</translation>
@@ -2534,6 +2536,7 @@
 <translation id="5675650730144413517">หน้านี้ใช้ไม่ได้</translation>
 <translation id="5675809467256309336">เพลงแดนซ์และอิเล็กทรอนิก</translation>
 <translation id="5675959228867414813">แสดงตามวันที่</translation>
+<translation id="567604591393105935">Bottom Sheet ของ Commerce เปิดแบบครึ่งหน้า</translation>
 <translation id="5677928146339483299">ถูกบล็อก</translation>
 <translation id="5678007133659493065">ฟอยล์</translation>
 <translation id="5680642791693447368">ภาพยนตร์ลึกลับ สืบสวน และเขย่าขวัญ</translation>
@@ -2954,7 +2957,6 @@
 <translation id="6433797564277305076">ยืนยันบัตรได้เร็วขึ้นโดยใช้การปลดล็อกอุปกรณ์จากนี้ไป</translation>
 <translation id="643917412048333145">ชุดกระโปรง</translation>
 <translation id="6440503408713884761">ละเว้น</translation>
-<translation id="6440534369669992497">คุณสามารถป้อนคำหรือรายละเอียดที่จำได้จากหน้าเว็บที่เคยเรียกดู เช่น "รองเท้าใส่เดินสบายๆ" <ph name="SHORTCUT" /> เพื่อค้นหา</translation>
 <translation id="6443406338865242315">ส่วนขยายและปลั๊กอินที่คุณติดตั้ง</translation>
 <translation id="6444329331928531170">การเกษียณอายุและบำนาญ</translation>
 <translation id="6446608382365791566">เพิ่มข้อมูลเพิ่มเติม</translation>
@@ -3441,6 +3443,7 @@
 <translation id="7374733840632556089">ปัญหานี้เกิดจากใบรับรองที่คุณหรือคนอื่นติดตั้งไว้ในอุปกรณ์ เป็นที่ทราบกันว่า ใบรับรองนี้ใช้สำหรับการตรวจสอบและสกัดกั้นเครือข่าย และ Chrome ไม่เชื่อถือใบรับรองนี้ แม้ว่าจะมีบางกรณีที่การตรวจสอบชอบด้วยกฎหมาย เช่น เครือข่ายของบริษัทหรือโรงเรียน แต่ Chrome ก็ยังอยากจะแน่ใจว่าคุณรับรู้ว่ามีการตรวจสอบถึงแม้จะหยุดการตรวจสอบนั้นไม่ได้ก็ตาม การตรวจสอบอาจเกิดขึ้นได้ในทุกเบราว์เซอร์หรือแอปพลิเคชันที่เข้าถึงเว็บ</translation>
 <translation id="7375532151824574023">{NUM_COOKIES,plural, =0{ไม่มีเว็บไซต์ที่อนุญาต}=1{มี 1 เว็บไซต์ที่อนุญาต}other{มี # เว็บไซต์ที่อนุญาต}}</translation>
 <translation id="7375818412732305729">มีการแนบไฟล์</translation>
+<translation id="7376031331622621328">Bottom Sheet ของ Commerce</translation>
 <translation id="7377249249140280793"><ph name="RELATIVE_DATE" /> - <ph name="FULL_DATE" /></translation>
 <translation id="7377314930809374926">อุตสาหกรรมการบริการ</translation>
 <translation id="7378594059915113390">การควบคุมสื่อ</translation>

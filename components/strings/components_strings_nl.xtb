@@ -28,7 +28,6 @@
 <translation id="1050038467049342496">Andere apps sluiten</translation>
 <translation id="1053959602163383901">Je hebt ervoor gekozen om te verifiëren met een authenticator-apparaat op websites die <ph name="PROVIDER_ORIGIN" /> gebruiken. Deze provider heeft misschien informatie over je betaalmethode opgeslagen. Hiervoor kun je <ph name="LINK_TEXT" />.</translation>
 <translation id="1055184225775184556">&amp;Toevoegen ongedaan maken</translation>
-<translation id="105642538515333723">Je kunt zinnen of details invoeren die je je herinnert van pagina's die je in het verleden hebt doorzocht, zoals 'comfortabele wandelschoenen'.</translation>
 <translation id="1056898198331236512">Waarschuwing</translation>
 <translation id="1058344460600311577"><ph name="PLAY_CHROME_DINO_GAME_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk op Tab en daarna op Enter om de Dino Run-game in Chrome te spelen</translation>
 <translation id="1058479211578257048">Passen opslaan...</translation>
@@ -1015,6 +1014,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2882949212241984732">4-luik gesloten luikvouw</translation>
 <translation id="2891963978019740012">Je zoekmachine in Chrome</translation>
 <translation id="2893773853358652045">4e rol</translation>
+<translation id="2894137550885451583">Dit zijn de prijzen in <ph name="CURRENCY" /> voor het product <ph name="PRODUCT" /></translation>
 <translation id="2900528713135656174">Afspraak maken</translation>
 <translation id="2902312830803030883">Meer acties</translation>
 <translation id="2903493209154104877">Adressen</translation>
@@ -1607,6 +1607,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3949601375789751990">Je browsegeschiedenis zie je hier</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">Geen opgeslagen betaalmethoden</translation>
+<translation id="3950560191811267370">Blad onderaan voor Handel is gesloten</translation>
 <translation id="3950574001630941635">Tutorial opnieuw starten</translation>
 <translation id="3950820424414687140">Inloggen</translation>
 <translation id="3953505489397572035">Deze prijs is gebruikelijk</translation>
@@ -2347,6 +2348,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5331585574693522196">Instellen als standaard</translation>
 <translation id="5332219387342487447">Verzendmethode</translation>
 <translation id="5332769172018416402">Bericht sturen</translation>
+<translation id="533323551986281710">Blad onderaan voor Handel is op volledige hoogte geopend</translation>
 <translation id="5334013548165032829">Gedetailleerde systeemlogboeken</translation>
 <translation id="5334145288572353250">Adres opslaan?</translation>
 <translation id="5340250774223869109">App is geblokkeerd</translation>
@@ -2529,6 +2531,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5675650730144413517">Deze pagina werkt niet</translation>
 <translation id="5675809467256309336">Dance en elektronische muziek</translation>
 <translation id="5675959228867414813">Tonen op datum</translation>
+<translation id="567604591393105935">Blad onderaan voor Handel is op halve hoogte geopend</translation>
 <translation id="5677928146339483299">Geblokkeerd</translation>
 <translation id="5678007133659493065">Folie</translation>
 <translation id="5680642791693447368">Thrillers, misdaad- en mysteriefilms</translation>
@@ -2647,7 +2650,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5919090499915321845">B10</translation>
 <translation id="5920262536204764679">{NUM_COOKIES,plural, =1{1 in gebruik}other{# in gebruik}}</translation>
 <translation id="5921185718311485855">Aan</translation>
-<translation id="5921639886840618607">Pas opslaan in Google-account?</translation>
+<translation id="5921639886840618607">Kaart opslaan in Google-account?</translation>
 <translation id="5921952831792678223">Pick-ups</translation>
 <translation id="5922853866070715753">Bijna klaar</translation>
 <translation id="5923492272538889093">Apparaatontgrendeling gebruiken in plaats van CVC?</translation>
@@ -2948,7 +2951,6 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="6433797564277305076">Bevestig je kaarten sneller door vanaf nu apparaatontgrendeling te gebruiken</translation>
 <translation id="643917412048333145">Jurken</translation>
 <translation id="6440503408713884761">Genegeerd</translation>
-<translation id="6440534369669992497">Je kunt zinnen of details invoeren die je je herinnert van pagina's die je in het verleden hebt doorzocht, zoals 'comfortabele wandelschoenen'. <ph name="SHORTCUT" /> om te zoeken.</translation>
 <translation id="6443406338865242315">Welke extensies en plug-ins je hebt geïnstalleerd</translation>
 <translation id="6444329331928531170">Pensioen en pensionering</translation>
 <translation id="6446608382365791566">Meer informatie toevoegen</translation>
@@ -3435,6 +3437,7 @@ Aanvullende informatie:
 <translation id="7374733840632556089">Dit probleem doet zich voor als gevolg van een certificaat dat jij of iemand anders heeft geïnstalleerd op je apparaat. Het certificaat staat erom bekend dat het wordt gebruikt voor netwerkmonitoring en -onderschepping en wordt niet vertrouwd door Chrome. Hoewel er ook legitieme certificaten bestaan, bijvoorbeeld op een school- of zakelijk netwerk, wil Chrome zeker weten dat je begrijpt wat er gebeurt, ook als je het niet kunt tegenhouden. Monitoring kan plaatsvinden in elke browser of app met toegang tot internet.</translation>
 <translation id="7375532151824574023">{NUM_COOKIES,plural, =0{Geen sites toegestaan}=1{1 site toegestaan}other{# sites toegestaan}}</translation>
 <translation id="7375818412732305729">Bestand wordt bijgevoegd</translation>
+<translation id="7376031331622621328">Blad onderaan voor Handel</translation>
 <translation id="7377249249140280793"><ph name="RELATIVE_DATE" /> - <ph name="FULL_DATE" /></translation>
 <translation id="7377314930809374926">Horecasector</translation>
 <translation id="7378594059915113390">Mediabediening</translation>

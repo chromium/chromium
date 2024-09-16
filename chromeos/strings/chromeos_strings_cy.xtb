@@ -254,6 +254,7 @@
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2148716181193084225">Heddiw</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> o luniau</translation>
+<translation id="2154460308960858308">Clirio'r blwch chwilio</translation>
 <translation id="2156072344042480449">Eich 2 neges annog ddiweddaraf. Dim ond tra byddwch ar y dudalen hon y gallwch chi ddefnyddio'r negeseuon annog hyn.</translation>
 <translation id="2157660087437850958">dewisydd emoji</translation>
 <translation id="2157959690810728433">MEWN CIW</translation>
@@ -500,6 +501,7 @@
 <translation id="3557205324756024651">Hunaniaeth leol (dewisol)</translation>
 <translation id="3565064564551103223">Cyfeiriadau IP a ganiateir</translation>
 <translation id="3569407787324516067">Arbedydd sgrîn</translation>
+<translation id="3571184524500629183">Cau'r blwch chwilio</translation>
 <translation id="3577473026931028326">Aeth rhywbeth o'i le. Rhowch gynnig arall arni.</translation>
 <translation id="357889014807611375">Wi-Fi ar fesurydd</translation>
 <translation id="3583278742022654445">Cryfder signal gwan. Rhowch gynnig ar symud yn agosach at ffynhonnell y signal Wi-Fi.</translation>
@@ -945,6 +947,7 @@
 <translation id="5860033963881614850">Diffodd</translation>
 <translation id="5860491529813859533">Troi ymlaen</translation>
 <translation id="5876385649737594562">Trowch ymlaen i ddewis opsiynau</translation>
+<translation id="5877503382465267833">Seibio <ph name="RECORDING_NAME" /></translation>
 <translation id="588258955323874662">Sgrîn lawn</translation>
 <translation id="5893975327266416093">Tapiwch ar allwedd bysellfwrdd i aseinio</translation>
 <translation id="5895138241574237353">Ailgychwyn</translation>
@@ -1162,6 +1165,7 @@
 <translation id="6910312834584889076">Mae gorchudd y sganiwr ar agor. Caewch y gorchudd a rhowch gynnig arall arni.</translation>
 <translation id="6910845598686542904">Cyfrifo modelau o'r lleisiau a ganfyddir yn y recordiad</translation>
 <translation id="6911383237894364323">Methu â chysylltu â gweinyddion cyfryngau</translation>
+<translation id="6927968682840110570">Enw recordiad</translation>
 <translation id="6930242544192836755">Hyd</translation>
 <translation id="6930597342185648547">Ynglŷn â'r cefndir</translation>
 <translation id="6939667434404433010">Chwilio enw recordiad</translation>
@@ -1274,6 +1278,7 @@
 <translation id="7378170410161264436">Gall Recorder greu trawsgrifiadau ar gyfer recordiadau â lleferydd.
 Lawrlwythwch y model trawsgrifio (hyd at 100MB) i gael y trawsgrifiadau hyn.</translation>
 <translation id="7384004438856720753">palas</translation>
+<translation id="7388345524791662148">Rhagor o ddewisiadau ar gyfer <ph name="RECORDING_NAME" /></translation>
 <translation id="7388959671917308825">Pad cyffwrdd integredig</translation>
 <translation id="7397270852490618635">Diffodd y thema olau</translation>
 <translation id="7401543881546089382">Dileu llwybr byr</translation>
@@ -1295,6 +1300,7 @@ Lawrlwythwch y model trawsgrifio (hyd at 100MB) i gael y trawsgrifiadau hyn.</tr
 <translation id="7513770521371759388">gwaelod</translation>
 <translation id="7514365320538308">Lawrlwytho</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7519481256236810334">Chwarae <ph name="RECORDING_NAME" /></translation>
 <translation id="7525067979554623046">Creu</translation>
 <translation id="7528507600602050979">Nid yw cynnwys help ar gael</translation>
 <translation id="7535791657097741517">Troi'r thema olau ymlaen</translation>
@@ -1371,6 +1377,7 @@ Lawrlwythwch y model trawsgrifio (hyd at 100MB) i gael y trawsgrifiadau hyn.</tr
 <translation id="7897043345768902965">rhodfa</translation>
 <translation id="7902285181767404769">Distewi hysbysiadau wrth recordio</translation>
 <translation id="7903695460270716054">Dewiswch waith celf a lluniau sydd wedi'u curadu</translation>
+<translation id="7912005977894000746">Yn ôl i'r brif dudalen</translation>
 <translation id="7915220255123750251">Rheoli gosodiadau APN rhwydwaith. Mae APN yn sefydlu cysylltiad rhwng rhwydwaith cellog a'r rhyngrwyd.</translation>
 <translation id="7936303884198020182">Ni chanfuwyd gweinyddion enwau</translation>
 <translation id="7942349550061667556">Coch</translation>

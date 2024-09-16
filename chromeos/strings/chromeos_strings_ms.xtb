@@ -35,6 +35,7 @@
 <translation id="1155154308031262006">Masukkan gesaan</translation>
 <translation id="115705039208660697">nanas</translation>
 <translation id="1164939766849482256">Penyelamat skrin subuh sehingga gelap</translation>
+<translation id="1166688493741195933">Gagal menjana nama rakaman</translation>
 <translation id="1167755866710282443">Buka menu untuk menyesuaikan kunci. Seret menu untuk bergerak.</translation>
 <translation id="1171349345463658120">lagun berpasir</translation>
 <translation id="1173894706177603556">Namakan semula</translation>
@@ -494,6 +495,7 @@
 <translation id="3502426834823382181">lihat semua apl</translation>
 <translation id="3510890413042482857">Hantar <ph name="BEGIN_LINK1" />data surih prestasi<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Kemaskinian ChromeOS</translation>
+<translation id="3522508178835057262">Pada masa ini, transkrip lebih panjang daripada <ph name="MAX_WORD_LENGTH" /> perkataan tidak disokong</translation>
 <translation id="3527036260304016759">Gagal - Ralat tidak diketahui</translation>
 <translation id="353214771040290298">Selesai mengedit</translation>
 <translation id="3532980081107202182">Kira-kira <ph name="MIN_REMAINING" /> minit lagi</translation>
@@ -711,6 +713,7 @@
 <translation id="4602266091140407479">Mikrofon</translation>
 <translation id="4607282946861182308">Tidak dapat membuat imej ini. Cuba gesaan lain.</translation>
 <translation id="4609350030397390689">Mengurangkan kecerahan papan kekunci</translation>
+<translation id="4623061655523261501">Nama rakaman berjaya dijana</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> daripada <ph name="TOTAL_PAGE_NUMBER" />. Tekan enter untuk membatalkan tugas cetak.</translation>
 <translation id="463791356324567266">Membatalkan pengimbasan...</translation>
 <translation id="4644611440022666152">Hidupkan dan muat turun</translation>
@@ -1043,6 +1046,8 @@
 <translation id="628726841779494414">Urus pencetak anda dalam tetapan pencetak</translation>
 <translation id="6292095526077353682">Semasa pengecasan, paparkan penyelamat skrin selama</translation>
 <translation id="629550705077076970">pemalapan papan kekunci</translation>
+<translation id="6301193653204230066">Penetapan semula keselamatan akan mematikan sambungan penyemak imbas Chrome dan menetapkan semula rangkaian dan tetapan lain kepada lalai selamat.
+          Tab, fail, kuki dan sejarah anda tidak akan diubah.</translation>
 <translation id="6302401976930124515">Ujian <ph name="TEST_NAME" /> telah dibatalkan</translation>
 <translation id="631063167932043783">Teroka apl</translation>
 <translation id="6318437367327684789">selamanya</translation>
@@ -1052,6 +1057,7 @@
 <translation id="6325525973963619867">Gagal</translation>
 <translation id="6327262166342360252">Hiasan latar ini dibuat dengan AI menggunakan teks yang berikut: "<ph name="PROMPT" />".</translation>
 <translation id="6331191339300272798">Tema gelap automatik</translation>
+<translation id="6335228876613776082">Muat turun model selesai</translation>
 <translation id="6340526405444716530">Pemperibadian</translation>
 <translation id="6348252528297699679">Anda boleh mematikan lokasi dalam Tetapan &gt; Privasi dan keselamatan &gt; Kawalan privasi &gt; Akses lokasi. <ph name="LINK_BEGIN" />Ketahui lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">Nama pengguna dan kata laluan</translation>
@@ -1213,6 +1219,7 @@
 <translation id="708426984172631313">DIHENTIKAN</translation>
 <translation id="7086168019478250425">pantai biopendarkilau</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="7086916854357021265">Sedang menjana nama rakaman</translation>
 <translation id="7097908713073775559">berwarna-warni</translation>
 <translation id="710028965487274708">Gagal - Pemberian Keizinan Gagal</translation>
 <translation id="7101959270679078188">Buka kunci <ph name="DEVICE_NAME" /> untuk meneruskan proses kemaskinian</translation>
@@ -1545,6 +1552,7 @@ Muat turun model transkripsi (hingga 100MB) untuk mendapatkan transkripsi ini.</
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Album Google Photos</translation>
 <translation id="8775713578693478175">APN modem</translation>
+<translation id="877735394245039557">Muat turun model sedang dijalankan</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Rangkaian ini mungkin mempunyai portal terbolot</translation>
 <translation id="8797082062139985406">Buat nama menggunakan Google AI</translation>

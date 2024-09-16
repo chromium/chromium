@@ -28,7 +28,6 @@
 <translation id="1050038467049342496">دیگر ایپس بند کریں</translation>
 <translation id="1053959602163383901">آپ نے <ph name="PROVIDER_ORIGIN" /> استعمال کرنے والی ویب سائٹس پر ایک مستند آلہ سے تصدیق کرنے کا انتخاب کیا۔ ممکن ہے کہ اس فراہم کنندہ کے پاس آپ کی ادائیگی کے طریقہ کے بارے میں معلومات اسٹور کردہ ہے جن کو <ph name="LINK_TEXT" />آپ کر سکتے ہیں۔</translation>
 <translation id="1055184225775184556">شامل کریں کو &amp;کالعدم کریں</translation>
-<translation id="105642538515333723">آپ ماضی میں اپنے براؤز کردہ صفحات سے یاد آنے والا کوئی بھی جملہ یا تفصیل درج کر سکتے ہیں، جیسے "سہولت بخش چہل قدمی کے جوتے"</translation>
 <translation id="1056898198331236512">وارننگ</translation>
 <translation id="1058344460600311577">‏<ph name="PLAY_CHROME_DINO_GAME_FOCUSED_FRIENDLY_MATCH_TEXT" />، Chrome میں Dino Run گیم چلانے کیلئے ٹیب پھر اینٹر دبائیں</translation>
 <translation id="1058479211578257048">کارڈز محفوظ کیے جا رہے ہیں...</translation>
@@ -1015,6 +1014,7 @@
 <translation id="2882949212241984732">ڈبل گیٹ فولڈ</translation>
 <translation id="2891963978019740012">‏Chrome میں آپ کا سرچ انجن</translation>
 <translation id="2893773853358652045">چوتھا رول</translation>
+<translation id="2894137550885451583">یہ پروڈکٹ <ph name="PRODUCT" /> کے لیے <ph name="CURRENCY" /> قیمتیں ہیں</translation>
 <translation id="2900528713135656174">ایونٹ تخلیق کریں</translation>
 <translation id="2902312830803030883">مزید کارروائیاں</translation>
 <translation id="2903493209154104877">پتے</translation>
@@ -1613,6 +1613,7 @@
 <translation id="3949601375789751990">آپ کی براؤزنگ سرگزشت یہاں ظاہر ہوتی ہے</translation>
 <translation id="3949790930165450333">‎<ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)‎</translation>
 <translation id="3949870428812919180">کوئی محفوظ کردہ ادائیگی کا طریقہ دستیاب نہیں ہے</translation>
+<translation id="3950560191811267370">کامرس سے متعلق نیچے کی شیٹ بند ہے</translation>
 <translation id="3950574001630941635">ٹیوٹوریل ری سٹارٹ کریں</translation>
 <translation id="3950820424414687140">سائن ان کریں</translation>
 <translation id="3953505489397572035">یہ قیمت عمومی ہے</translation>
@@ -2354,6 +2355,7 @@
 <translation id="5331585574693522196">بطور ڈیفالٹ سیٹ کریں</translation>
 <translation id="5332219387342487447">ترسیل کا طریقہ</translation>
 <translation id="5332769172018416402">پیغام میں پوچھیں</translation>
+<translation id="533323551986281710">کامرس سے متعلق نیچے کی شیٹ پوری کھلی ہے</translation>
 <translation id="5334013548165032829">مفصل سسٹم لاگز</translation>
 <translation id="5334145288572353250">پتہ محفوظ کریں؟</translation>
 <translation id="5340250774223869109">ایپلیکیشن مسدود ہے</translation>
@@ -2536,6 +2538,7 @@
 <translation id="5675650730144413517">یہ صفحہ کام نہیں کر رہا ہے</translation>
 <translation id="5675809467256309336">رقص اور الیکٹرانک موسیقی</translation>
 <translation id="5675959228867414813">تاریخ کے لحاظ سے دکھائیں</translation>
+<translation id="567604591393105935">کامرس سے متعلق نیچے کی شیٹ آدھی اونچائی پر کھلی ہوئی ہے</translation>
 <translation id="5677928146339483299">مسدود کردہ</translation>
 <translation id="5678007133659493065">فوئل</translation>
 <translation id="5680642791693447368">ہیجانی، جرم اور پُراسرار موویز</translation>
@@ -2957,7 +2960,6 @@
 <translation id="6433797564277305076">اب سے آلے کو غیر مقفل کرنے کی خصوصیت کا استعمال کر کے تیزی سے اپنے کارڈ کی تصدیق کریں</translation>
 <translation id="643917412048333145">ملبوسات</translation>
 <translation id="6440503408713884761">نظر انداز کردہ</translation>
-<translation id="6440534369669992497">آپ ماضی میں اپنے براؤز کردہ صفحات سے یاد آنے والا کوئی بھی جملہ یا تفصیل درج کر سکتے ہیں، جیسے "سہولت بخش چہل قدمی کے جوتے"۔ تلاش کرنے کے لیے <ph name="SHORTCUT" />۔</translation>
 <translation id="6443406338865242315">آپ نے کن ایکسٹینشنز اور پلگ انز کو انسٹال کیا ہے</translation>
 <translation id="6444329331928531170">ریٹائرمنٹ اور پینشن</translation>
 <translation id="6446608382365791566">مزید معلومات شامل کریں</translation>
@@ -3443,6 +3445,7 @@
 <translation id="7374733840632556089">‏آپ کے آلہ پر آپ یا کسی اور کے ذریعہ انسٹال کردہ سرٹیفکیٹ کی وجہ سے یہ مسئلہ پیش آتا ہے۔ اس سرٹیفکیٹ کو نیٹ ورکس مانیٹر کرنے اور منقطع کرنے کے استعمال کے لیے جانا جاتا ہے، اور یہ Chrome کی طرف سے قابل اعتماد نہیں ہے۔ جبکہ مانیٹرنگ کے لئے کچھ جائز صورتیں موجود ہیں، جیسے اسکول یا کمپنی کے نیٹ ورک پر، Chrome یقینی بنانا چاہتا ہے کہ آپ ہونے والی چیزوں سے وافق ہیں، چاہے آپ اسے روک نہیں سکتے۔ مانیٹرنگ کسی بھی براؤزر یا ایپلیکیشن میں ہو سکتی ہے جسے ویب تک رسائی حاصل ہے۔</translation>
 <translation id="7375532151824574023">{NUM_COOKIES,plural, =0{کسی سائٹ کی اجازت نہیں ہے}=1{1 سائٹ کی اجازت ہے}other{# سائٹس کی اجازت ہے}}</translation>
 <translation id="7375818412732305729">فائل منسلک کی جاتی ہے</translation>
+<translation id="7376031331622621328">کامرس سے متعلق نیچے کی شیٹ</translation>
 <translation id="7377249249140280793"><ph name="RELATIVE_DATE" /> - <ph name="FULL_DATE" /></translation>
 <translation id="7377314930809374926">مہمان نوازی کی انڈسٹری</translation>
 <translation id="7378594059915113390">میڈیا کنٹرولز</translation>

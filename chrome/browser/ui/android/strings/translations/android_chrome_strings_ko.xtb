@@ -75,6 +75,7 @@
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - <ph name="DEVICE_NAME" />에서 전송</translation>
 <translation id="1320912611264252795">북마크 저장 흐름 폴더가 전체 높이로 열림</translation>
 <translation id="1327257854815634930">탐색 기록 열림</translation>
+<translation id="1328235593824723509"><ph name="TAB_TITLE" />, 새 탭 또는 업데이트된 탭</translation>
 <translation id="1331212799747679585">Chrome을 업데이트할 수 없습니다. 옵션 더보기</translation>
 <translation id="1332501820983677155">Chrome 기능 단축키</translation>
 <translation id="1333491156693005331">최근에 확인됨</translation>
@@ -1213,6 +1214,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="6674571176963658787">동기화를 시작하려면 암호를 입력하세요.</translation>
 <translation id="6676927815633975364">이 사이트 및 Chrome에 로그인하세요</translation>
 <translation id="6684809838922667136">Chrome 개선에 참여</translation>
+<translation id="6700279777779583398">선택사항 저장됨</translation>
 <translation id="6704048624334633734">비밀번호 내보내기 및 삭제</translation>
 <translation id="670498945988402717">어제 확인됨</translation>
 <translation id="6710213216561001401">이전</translation>
@@ -1426,6 +1428,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="752731652852882757">시크릿 모드를 사용하는 동안에는 차단</translation>
 <translation id="7554643625247105821">Chrome 버전을 확인할 수 없음</translation>
 <translation id="7557508262441527045">로그아웃됨</translation>
+<translation id="7573665567024262965">기본 앱 선택</translation>
 <translation id="7577900504646297215">관심분야 관리</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" />개 파일 다운로드됨}other{<ph name="FILES_DOWNLOADED_MANY" />개 파일 다운로드됨}}</translation>
 <translation id="7581273696622423628">설문조사 참여</translation>
@@ -1468,6 +1471,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="7764225426217299476">주소 추가</translation>
 <translation id="7772032839648071052">암호 확인</translation>
 <translation id="7772375229873196092"><ph name="APP_NAME" /> 닫기</translation>
+<translation id="7774125747223422443">거주 지역의 법규에 따라 브라우저 및 검색엔진을 선택해야 합니다.</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" /> 외 <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />개}other{<ph name="PAYMENT_METHOD_PREVIEW" /> 외 <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />개}}</translation>
 <translation id="777637629667389858">로그인하면 Google 서비스 전반에서 사용자를 보호합니다.</translation>
 <translation id="7778840695157240389">나중에 다시 새 스토리를 확인하세요.</translation>
@@ -1592,6 +1596,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="8265018477030547118">이 기기에서만</translation>
 <translation id="8266753737658117282"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 계정으로 계속</translation>
 <translation id="8266862848225348053">다운로드 위치</translation>
+<translation id="8279945625179116733"><ph name="APP_NAME" /> 앱으로 보호됨</translation>
 <translation id="8281886186245836920">건너뛰기</translation>
 <translation id="8282297628636750033">가능하면 사이트에 어두운 테마를 적용합니다</translation>
 <translation id="8282950411412455249">보안 설정으로 이동</translation>
@@ -1736,6 +1741,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="8982113230057126145">싫어요를 누르면 이 요약이 마음에 들지 않는다는 의견이 제출됩니다</translation>
 <translation id="8992769679401294069">데이터가 암호로 암호화되어 있습니다. Google 계정에서 Chrome 데이터를 사용하고 저장하려면 암호를 입력하세요.</translation>
 <translation id="8993760627012879038">시크릿 모드로 새 탭 열기</translation>
+<translation id="8995521496079646922">선택한 앱이 기본적으로 사용됩니다. 이 기기에 앱이 아직 설치되어 있지 않은 경우 곧 다운로드됩니다.</translation>
 <translation id="8996847606757455498">다른 제공업체 선택</translation>
 <translation id="8998289560386111590">내 기기에서 사용할 수 없음</translation>
 <translation id="8998837250940831980">탭을 최소화할 수 없습니다. 나중에 다시 시도해 주세요.</translation>

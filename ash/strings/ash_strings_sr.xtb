@@ -78,6 +78,7 @@
 <translation id="1240638468526743569">Апликација</translation>
 <translation id="1242198791279543032">Обавештења су искључена</translation>
 <translation id="1242883863226959074">уређају</translation>
+<translation id="1245476784081715330">Сјајно!</translation>
 <translation id="1245644940275736236">Иди у Помоћник</translation>
 <translation id="124678866338384709">Затварање актуелне картице</translation>
 <translation id="1246890715821376239">Неподржане апликације</translation>
@@ -842,6 +843,7 @@
 <translation id="3958714870339660776">Цео дан</translation>
 <translation id="3962859241508114581">Претходна песма</translation>
 <translation id="3963124517343721543">Лако наставите тамо где сте стали тако што ћете отворити претходне прозоре и картице. Видећете и персонализоване предлоге за предложене активности.</translation>
+<translation id="396506362088290977">Тестирајте звук микрофона</translation>
 <translation id="3969043077941541451">Искључи</translation>
 <translation id="3970324493235864154">Прегледајте обавештења на телефону</translation>
 <translation id="397105322502079400">Израчунавање...</translation>
@@ -900,6 +902,7 @@
 <translation id="4156293514828496577">Преостало је још <ph name="PERCENTAGE" />% батерије (око <ph name="TIME_LEFT" />).
 Неке функције су ограничене да би се продужило трајање батерије.</translation>
 <translation id="4160919062868802509">Откривено је више извора звука</translation>
+<translation id="416245495747357243">Крај!</translation>
 <translation id="4165275524535002941">Кабл не подржава екране</translation>
 <translation id="4177415338862979658">Кликните да бисте проверили детаље</translation>
 <translation id="4177913004758410636">{0,plural, =1{Ажурирајте уређај у року од једног дана}one{Ажурирајте уређај у року од # дана}few{Ажурирајте уређај у року од # дана}other{Ажурирајте уређај у року од # дана}}</translation>
@@ -985,6 +988,7 @@
 <translation id="4412944820643904175">Функција <ph name="FEATURE_NAME" /> је искључена.</translation>
 <translation id="4417647906073317561">Подешавања фокуса. Подесите тајмер, задатак и музику да бисте се фокусирали.</translation>
 <translation id="4424159417645388645">Радна површина 5</translation>
+<translation id="4426817706804363424">Свака част!</translation>
 <translation id="4430019312045809116">Јачина звука</translation>
 <translation id="4441283832827406317">Апликације су сортиране према називу</translation>
 <translation id="4445159312344259901">Пријавите се да откључате</translation>
@@ -1249,6 +1253,7 @@
 <translation id="5283198616748585639">Додај 1 мин</translation>
 <translation id="528468243742722775">Заврши</translation>
 <translation id="5286194356314741248">Скенирање</translation>
+<translation id="528641622273682395">Укључите/искључите тест микрофона</translation>
 <translation id="5297423144044956168">Није пронађен ниједан мобилни уређај</translation>
 <translation id="5297704307811127955">Искључено</translation>
 <translation id="5300589172476337783">Прикажи</translation>
@@ -1276,6 +1281,7 @@
 <translation id="536019650977002321">Администратор не дозвољава снимање звука. Додатне информације потражите од администратора.</translation>
 <translation id="5361524080961918551">Фајлови говора за језик <ph name="LANGUAGE" /> су делимично преузети</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Идите на ову картицу</translation>
+<translation id="5363835273551457276">Можете да тестирате звук микрофона. Затворите окно да бисте зауставили.</translation>
 <translation id="5364693579536176785">меморијски простор</translation>
 <translation id="5369573834963677938">Контрола лицем ће бити доступна другим корисницима на уређају</translation>
 <translation id="5369717264580061086">Прегледајте фајл у апликацији Фајлови</translation>
@@ -1416,6 +1422,7 @@
 <translation id="5802516411616338943">Отвори Брза подешавања</translation>
 <translation id="5804651031882187592">Искључите подешавање Закључај SIM</translation>
 <translation id="5805809050170488595">Кликните да бисте активирали <ph name="NETWORK_NAME" /></translation>
+<translation id="5818796501620225415">Можете да додате још времена или да завршите сесију фокуса</translation>
 <translation id="5819918159912280082">Chromebook се неочекивано рестартовао. Отворите претходне прозоре и апликације.</translation>
 <translation id="5823239091726045201">Google задаци на вебу</translation>
 <translation id="5825969630400862129">Подешавања повезаних уређаја</translation>
@@ -2128,6 +2135,7 @@
 <translation id="8262312463845990408">Укључите/искључите репродукцију</translation>
 <translation id="8268302343625273732">Погледајте све задатке у Google учионици</translation>
 <translation id="8277261673056602147">Истакните текст на екрану</translation>
+<translation id="8282784978194352587">Успели сте!</translation>
 <translation id="8287009018010202411">Продуктивност</translation>
 <translation id="828708037801473432">Искључено</translation>
 <translation id="8297006494302853456">Слаб</translation>
@@ -2205,6 +2213,7 @@
 <translation id="8609384513243082612">Отворите нову картицу</translation>
 <translation id="861045123704058818">Апликације су привремено организоване према категорији</translation>
 <translation id="8612216344243590325">Чувајте важне фајлове у фолдеру <ph name="HOLDING_SPACE_TITLE" /> уместо на позадини. Само превуците фајлове у <ph name="HOLDING_SPACE_TITLE" />.</translation>
+<translation id="8612338981637220013">Не стајете!</translation>
 <translation id="8614517853887502247">Обавештења апликација <ph name="APP_1_TITLE" /> и <ph name="APP_2_TITLE" /> су скривена јер је заштита од прегледа укључена</translation>
 <translation id="8615778328722901791">Отворите траку с алаткама</translation>
 <translation id="8619000641825875669">OneDrive</translation>
@@ -2247,6 +2256,7 @@
 <translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />: Активира се…</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
+<translation id="8751299148074971734">Само тако наставите!</translation>
 <translation id="8753368202781196133">Овај језик тренутно није подржан.</translation>
 <translation id="8755498163081687682">Верификујте идентитет: <ph name="ORIGIN_NAME" /> жели да потврди да сте то ви</translation>
 <translation id="875593634123171288">Прегледајте подешавања VPN-а</translation>

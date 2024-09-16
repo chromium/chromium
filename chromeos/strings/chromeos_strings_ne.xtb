@@ -255,6 +255,7 @@
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2148716181193084225">आज</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> वटा फोटो</translation>
+<translation id="2154460308960858308">सर्च बक्समा भएको टेक्स्ट हटाउनुहोस्</translation>
 <translation id="2156072344042480449">तपाईंले हालसालै प्रयोग गर्नुभएका २ वटा प्रम्प्ट। तपाईं यो पेजमा भएका बेला मात्र यी प्रम्प्टहरू प्रयोग गर्न सक्नुहुन्छ।</translation>
 <translation id="2157660087437850958">"इमोजी पिकर" जनाउने आइकन</translation>
 <translation id="2157959690810728433">लाइनमा राखिएको छ</translation>
@@ -501,6 +502,7 @@
 <translation id="3557205324756024651">लोकल आइडेन्टिटी (ऐच्छिक)</translation>
 <translation id="3565064564551103223">अनुमति दिइएका IP</translation>
 <translation id="3569407787324516067">स्क्रिन सेभर</translation>
+<translation id="3571184524500629183">सर्च बक्स बन्द गर्नुहोस्</translation>
 <translation id="3577473026931028326">कुनै समस्या आयो। फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="357889014807611375">मिटर चढ्ने Wi-Fi</translation>
 <translation id="3583278742022654445">सिग्नल कमजोर छ। Wi-Fi सिग्नलको स्रोतको नजिक गई हेर्नुहोस्।</translation>
@@ -950,6 +952,7 @@
 <translation id="5860033963881614850">बन्द</translation>
 <translation id="5860491529813859533">अन गर्नुहोस्</translation>
 <translation id="5876385649737594562">विकल्पहरू चयन गर्न अन गर्नुहोस्</translation>
+<translation id="5877503382465267833"><ph name="RECORDING_NAME" /> पज गर्नुहोस्</translation>
 <translation id="588258955323874662">पूर्णस्क्रिन</translation>
 <translation id="5893975327266416093">असाइन गर्न किबोर्डको कुनै कीमा ट्याप गर्नुहोस्</translation>
 <translation id="5895138241574237353">पुन: शुरू गर्नुहोस्</translation>
@@ -1167,6 +1170,7 @@
 <translation id="6910312834584889076">स्क्यानरको कभर खुला छ। कभर लगाउनुहोस् र फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="6910845598686542904">रेकर्डिङमा पहिचान गरिएका आवाजका मोडेलहरू विश्लेषण गर्न</translation>
 <translation id="6911383237894364323">मिडिया सर्भरहरूमा कनेक्ट गर्न सकिएन</translation>
+<translation id="6927968682840110570">रेकर्डिङको नाम</translation>
 <translation id="6930242544192836755">अवधि</translation>
 <translation id="6930597342185648547">ब्याकग्राउन्डका बारेमा</translation>
 <translation id="6939667434404433010">रेकर्डिङको नाम खोज्नुहोस्</translation>
@@ -1279,6 +1283,7 @@
 <translation id="7378170410161264436">रेकर्डरले कुनै मान्छे बोलिरहेको रेकर्डिङका ट्रान्स्क्रिप्सनहरू बनाउन सक्छ।
 यी ट्रान्स्क्रिप्सन प्राप्त गर्न ट्रान्स्क्रिप्सन मोडेल (बढीमा १०० एम.बि.) डाउनलोड गर्नुहोस्।</translation>
 <translation id="7384004438856720753">दरबार</translation>
+<translation id="7388345524791662148"><ph name="RECORDING_NAME" />का थप विकल्पहरू</translation>
 <translation id="7388959671917308825">अन्तर्निर्मित टचप्याड</translation>
 <translation id="7397270852490618635">उज्यालो थिम अफ गर्नुहोस्</translation>
 <translation id="7401543881546089382">शर्टकट मेटाउनुहोस्</translation>
@@ -1300,6 +1305,7 @@
 <translation id="7513770521371759388">पुछार</translation>
 <translation id="7514365320538308">डाउनलोड गर्नुहोस्</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7519481256236810334"><ph name="RECORDING_NAME" /> प्ले गर्नुहोस्</translation>
 <translation id="7525067979554623046">सिर्जना गर्नुहोस्</translation>
 <translation id="7528507600602050979">मद्दतसम्बन्धी सामग्री उपलब्ध छैन</translation>
 <translation id="7535791657097741517">उज्यालो थिम अन गर्नुहोस्</translation>
@@ -1376,6 +1382,7 @@
 <translation id="7897043345768902965">वाकवे</translation>
 <translation id="7902285181767404769">रेकर्ड गरिरहेका बेला नोटिफिकेसनको आवाज साइलेन्ट पार्नुहोस्</translation>
 <translation id="7903695460270716054">छनौट गरिएका कलाकृति तथा फोटोहरू छनौट गर्नुहोस्</translation>
+<translation id="7912005977894000746">मुख्य पेजमा फर्कनुहोस्</translation>
 <translation id="7915220255123750251">नेटवर्क APN सम्बन्धी सेटिङ मिलाउनुहोस्। APN ले मोबाइल नेटवर्क र इन्टरनेटबिचको कनेक्सन बनाउँछ।</translation>
 <translation id="7936303884198020182">कुनै पनि डोमेन नेम सर्भर फेला परेन</translation>
 <translation id="7942349550061667556">रातो</translation>

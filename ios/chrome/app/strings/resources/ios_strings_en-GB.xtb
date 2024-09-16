@@ -1603,6 +1603,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8637431369725868556">Get protection from dangerous sites.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{No compromised passwords}=1{{COUNT} compromised password}other{{COUNT} compromised passwords}}</translation>
 <translation id="8640575194957831802">Last opened</translation>
+<translation id="8647280737650867362">Couldn't untrack the price.</translation>
 <translation id="8654802032646794042">Cancel</translation>
 <translation id="8660600697590740984">Lens copied image</translation>
 <translation id="866266761389616183">Aw, snap!</translation>

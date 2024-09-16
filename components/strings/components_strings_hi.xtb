@@ -28,7 +28,6 @@
 <translation id="1050038467049342496">दूूूूसरे ऐप्लिकेशन बंद करें</translation>
 <translation id="1053959602163383901">आपने <ph name="PROVIDER_ORIGIN" /> इस्तेमाल करने वाली वेबसाइटों पर, पुष्टि करने वाले एक डिवाइस की मदद से पुष्टि करने का विकल्प चुना है. हो सकता है कि सेवा उपलब्ध कराने वाली इस कंपनी ने आपके पैसे चुकाने के तरीके से जुड़ी जानकारी सेव की हो, जिसे <ph name="LINK_TEXT" /> किया जा सकता है.</translation>
 <translation id="1055184225775184556">&amp;जोड़ना वापस लाएं</translation>
-<translation id="105642538515333723">आपने पहले कभी जिन पेजों को ब्राउज़ किया था उन पर मौजूद कोई वाक्यांश या जानकारी यहां डाली जा सकती है. जैसे, "चलने के लिए आरामदायक जूते"</translation>
 <translation id="1056898198331236512">चेतावनी</translation>
 <translation id="1058344460600311577"><ph name="PLAY_CHROME_DINO_GAME_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome में Dino Run गेम खेलने के लिए, पहले Tab और फिर Enter दबाएं</translation>
 <translation id="1058479211578257048">कार्ड सेव किए जा रहे हैं...</translation>
@@ -1016,6 +1015,7 @@
 <translation id="2882949212241984732">डबल-गेट फ़ोल्ड</translation>
 <translation id="2891963978019740012">Chrome में आपका सर्च इंजन</translation>
 <translation id="2893773853358652045">चौथा रोल</translation>
+<translation id="2894137550885451583">ये <ph name="CURRENCY" /> में प्रॉडक्ट <ph name="PRODUCT" /> की कीमतें हैं</translation>
 <translation id="2900528713135656174">इवेंट बनाएं</translation>
 <translation id="2902312830803030883">और क्रियाएं</translation>
 <translation id="2903493209154104877">पते</translation>
@@ -1612,6 +1612,7 @@
 <translation id="3949601375789751990">आपका ब्राउज़िंग इतिहास यहां दिखाई देता है</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">भुगतान का कोई तरीका सेव नहीं किया गया</translation>
+<translation id="3950560191811267370">कॉमर्स बॉटम शीट बंद कर दी गई है</translation>
 <translation id="3950574001630941635">ट्यूटोरियल को रीस्टार्ट करें</translation>
 <translation id="3950820424414687140">साइन इन करें</translation>
 <translation id="3953505489397572035">यह औसत कीमत है</translation>
@@ -2353,6 +2354,7 @@
 <translation id="5331585574693522196">डिफ़ॉल्ट के तौर पर सेट करें</translation>
 <translation id="5332219387342487447">शिपिंग का तरीका</translation>
 <translation id="5332769172018416402">मैसेज में पूछें</translation>
+<translation id="533323551986281710">कॉमर्स बॉटम शीट, पूरी स्क्रीन पर खोल दी गई है</translation>
 <translation id="5334013548165032829">सिस्टम लॉग की ज़्यादा जानकारी</translation>
 <translation id="5334145288572353250">क्या आप पता सेव करना चाहते हैं?</translation>
 <translation id="5340250774223869109">ऐप्लिकेशन को ब्लॉक किया गया है</translation>
@@ -2535,6 +2537,7 @@
 <translation id="5675650730144413517">यह पेज काम नहीं कर रहा है</translation>
 <translation id="5675809467256309336">डांस और इलेक्ट्रॉनिक म्यूज़िक</translation>
 <translation id="5675959228867414813">तारीख के हिसाब से दिखाएं</translation>
+<translation id="567604591393105935">कॉमर्स बॉटम शीट, आधी स्क्रीन पर खोल दी गई है</translation>
 <translation id="5677928146339483299">ब्लॉक किया गया है</translation>
 <translation id="5678007133659493065">फ़ॉयल</translation>
 <translation id="5680642791693447368">रोमांचक, अपराध, और रहस्य वाली फ़िल्में</translation>
@@ -2955,7 +2958,6 @@
 <translation id="6433797564277305076">अब से, कार्ड को अनलॉक करने की सुविधा का इस्तेमाल करके, अपने कार्ड की पुष्टि जल्दी करें</translation>
 <translation id="643917412048333145">कपड़े</translation>
 <translation id="6440503408713884761">अनदेखा किया गया</translation>
-<translation id="6440534369669992497">आपने पहले कभी जिन पेजों को ब्राउज़ किया था उन पर मौजूद कोई वाक्यांश या जानकारी यहां डाली जा सकती है. जैसे, "चलने के लिए आरामदायक जूते". खोजने के लिए, <ph name="SHORTCUT" /> दबाएं.</translation>
 <translation id="6443406338865242315">आपने कौनसे एक्सटेंशन और प्लग इन इंस्टॉल किए हैं</translation>
 <translation id="6444329331928531170">रिटायरमेंट और पेंशन</translation>
 <translation id="6446608382365791566">और जानकारी जोड़ें</translation>
@@ -3442,6 +3444,7 @@
 <translation id="7374733840632556089">यह गड़बड़ी आपके डिवाइस पर इंस्टॉल किए गए सर्टिफ़िकेट की वजह से हो सकती है. हो सकता है कि इसे आपने या किसी दूसरे व्यक्ति ने इंस्टॉल किया हो. यह सर्टिफ़िकेट, नेटवर्क पर नज़र रखने और रोकने के लिए इस्तेमाल किया जाता है. Chrome की नज़र में यह भरोसेमंद नहीं है. हालांकि, नज़र रखने के कुछ वैध मामले भी होते हैं, जैसे कि किसी स्कूल या कंपनी का नेटवर्क. Chrome यह पक्का करना चाहता है कि आपको इसकी जानकारी हो, भले ही आप इसे रोक न पाएं. वेब को ऐक्सेस करने वाले किसी भी ब्राउज़र या ऐप्लिकेशन पर नज़र रखी जा सकती है.</translation>
 <translation id="7375532151824574023">{NUM_COOKIES,plural, =0{किसी भी साइट को अनुमति नहीं है}=1{1 साइट को अनुमति है}one{# साइट को अनुमति है}other{# साइटों को अनुमति है}}</translation>
 <translation id="7375818412732305729">फ़ाइल अटैच की गई है</translation>
+<translation id="7376031331622621328">कॉमर्स बॉटम शीट</translation>
 <translation id="7377249249140280793"><ph name="RELATIVE_DATE" /> - <ph name="FULL_DATE" /></translation>
 <translation id="7377314930809374926">हॉस्पिटैलिटी इंडस्ट्री</translation>
 <translation id="7378594059915113390">मीडिया नियंत्रण</translation>

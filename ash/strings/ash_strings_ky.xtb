@@ -42,6 +42,7 @@
 <translation id="1148499908455722006"><ph name="USER_NAME" /> үчүн маалымат диалогун ачуу</translation>
 <translation id="1150989369772528668">Жылнаама</translation>
 <translation id="1153356358378277386">Жупташкан түзмөктөр</translation>
+<translation id="1153918444040990015">Focus добуштарына туташкан жок</translation>
 <translation id="1155734730463845512">Батареянын учурдагы деңгээли: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1157514002898505378">Жаратуучу жасалма акыл сынамык болуп эсептелет жана мазмун так эмес, адаштыруучу же адепсиз болушу мүмкүн. Маселе тууралуу кабарлоо үчүн администратор менен байланышыңыз. <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="1160215328209699296">күйүк жана колдонулууда</translation>
@@ -175,6 +176,7 @@
 <translation id="1550523713251050646">Көбүрөөк опциялар үчүн чыкылдатыңыз</translation>
 <translation id="1555130319947370107">Көк</translation>
 <translation id="1557622599341396706">Иш такта аталышын көрсөтүү</translation>
+<translation id="1567138500090284106">Чычкандын баскычтары</translation>
 <translation id="1569384531973824928">Камерага жана микрофонго уруксаты бар колдонмолордун жана вебсайттардын баарына аларды пайдалануу мүмкүнчүлүгү берилет. Веб бетти жаңыртуу же колдонмону өчүрүп күйгүзүү керектелиши мүмкүн.</translation>
 <translation id="1571697193564730395">"Тынчымды алба" режимин өчүрүү/күйгүзүү. <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">Лупа күйүп турганда алыстатуу</translation>
@@ -242,6 +244,7 @@
 <translation id="1787955149152357925">Өчүк</translation>
 <translation id="1796561540704213354">Вебсайттар, анын ичинде сиз баш баккан жана ачык барактар</translation>
 <translation id="179842970735685253">Google’дун Тейлөө шарттары</translation>
+<translation id="1805407494113167797">Focus добуштары ойнотулган жок</translation>
 <translation id="181103072419391116">Сигналдын күчү <ph name="SIGNAL_STRENGTH" />, Администраторуңуз башкарат</translation>
 <translation id="1816896987747843206">Камерага уруксаты бар колдонмолордун жана вебсайттардын баарына камераны пайдалануу мүмкүнчүлүгү берилет</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
@@ -2282,6 +2285,7 @@
 <translation id="8876661425082386199">Туташууңузду текшериңиз</translation>
 <translation id="8877788021141246043">Эстеткич коюу</translation>
 <translation id="8878886163241303700">Кеңейтилген экран</translation>
+<translation id="8885424115080869847">YouTube Music'ке туташкан жок</translation>
 <translation id="888982883502837004">Түзмөгүңүздө орнотулган программаны жаңыртууга болот. Жаңыртууну көрүү үчүн басыңыз.</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> биротоло өчүрүлөт</translation>
 <translation id="889790758758811533">Батареянын кубаты <ph name="PERCENTAGE" />% калды (болжол менен <ph name="TIME_LEFT" />). Түзмөгүңүздү электр кубатына туташтырыңыз.</translation>

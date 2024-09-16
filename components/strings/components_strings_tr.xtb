@@ -28,7 +28,6 @@
 <translation id="1050038467049342496">Diğer uygulamaları kapatın</translation>
 <translation id="1053959602163383901"><ph name="PROVIDER_ORIGIN" /> kullanan web sitelerinde kimlik doğrulayıcı bir cihazla doğrulamayı seçtiniz. Bu sağlayıcı, ödeme yönteminizle ilgili bilgileri depolamış olabilir. Bu bilgilerin <ph name="LINK_TEXT" />.</translation>
 <translation id="1055184225775184556">Eklemeyi &amp;Geri Al</translation>
-<translation id="105642538515333723">Geçmişte göz attığınız sayfalarda yer aldığını hatırladığınız "rahat yürüyüş ayakkabıları" gibi ifadeleri veya ayrıntıları girebilirsiniz</translation>
 <translation id="1056898198331236512">Uyarı</translation>
 <translation id="1058344460600311577"><ph name="PLAY_CHROME_DINO_GAME_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome'da Dinazor oyununu oynamak için sekmeye, ardından Enter'a basın</translation>
 <translation id="1058479211578257048">Kartlar kaydediliyor...</translation>
@@ -2955,7 +2954,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6433797564277305076">Bundan böyle cihazda kilit açma kullanarak kartlarınızı daha hızlı onaylayın</translation>
 <translation id="643917412048333145">Elbise</translation>
 <translation id="6440503408713884761">Yoksayıldı</translation>
-<translation id="6440534369669992497">Geçmişte göz attığınız sayfalarda yer aldığını hatırladığınız "rahat yürüyüş ayakkabıları" gibi ifadeleri veya ayrıntıları girebilirsiniz. Aramak için <ph name="SHORTCUT" />.</translation>
 <translation id="6443406338865242315">Hangi uzantıları ve eklentileri yüklediğiniz</translation>
 <translation id="6444329331928531170">Emeklilik</translation>
 <translation id="6446608382365791566">Daha fazla bilgi ekleyin</translation>

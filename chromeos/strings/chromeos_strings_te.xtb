@@ -1043,6 +1043,8 @@
 <translation id="628726841779494414">ప్రింటర్ సెట్టింగ్‌లలో మీ ప్రింటర్‌లను మేనేజ్ చేయండి</translation>
 <translation id="6292095526077353682">ఛార్జింగ్ చేస్తున్నప్పుడు, స్క్రీన్ సేవర్‌ను చూపించండి</translation>
 <translation id="629550705077076970">కీబోర్డ్ బ్రైట్‌నెస్ తగ్గుతోంది</translation>
+<translation id="6301193653204230066">Chrome బ్రౌజర్ ఎక్స్‌టెన్షన్‌లను సేఫ్టీ రీసెట్ ఆఫ్ చేస్తుంది, నెట్‌వర్క్‌ను, ఇతర సెట్టింగ్‌లను సురక్షిత ఆటోమేటిక్ సెట్టింగ్‌లకు రీసెట్ చేస్తుంది.
+          మీ ట్యాబ్‌లు, ఫైల్స్, కుక్కీలు, హిస్టరీ మార్చబడవు.</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> టెస్ట్ రద్దు చేయబడింది</translation>
 <translation id="631063167932043783">అన్వేషణ యాప్</translation>
 <translation id="6318437367327684789">ఎప్పటికీ</translation>
@@ -1052,6 +1054,7 @@
 <translation id="6325525973963619867">విఫలమైంది</translation>
 <translation id="6327262166342360252">ఈ వాల్‌పేపర్ ఈ టెక్స్ట్‌ను ఉపయోగించి AIతో క్రియేట్ చేయబడింది: "<ph name="PROMPT" />."</translation>
 <translation id="6331191339300272798">ఆటోమేటిక్ ముదురు రంగు రూపం</translation>
+<translation id="6335228876613776082">మోడల్‌ను డౌన్‌లోడ్ చేయడం పూర్తయింది</translation>
 <translation id="6340526405444716530">వ్యక్తిగతీకరణ</translation>
 <translation id="6348252528297699679">లొకేషన్‌ను మీరు సెట్టింగ్‌లు &gt; గోప్యత, సెక్యూరిటీ &gt; గోప్యతా కంట్రోల్స్ &gt; లొకేషన్ యాక్సెస్‌లో ఆఫ్ చేయవచ్చు. <ph name="LINK_BEGIN" />మరింత తెలుసుకోండి<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">యూజర్‌నేమ్, పాస్‌వర్డ్</translation>
@@ -1545,6 +1548,7 @@
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Photos ఆల్బమ్</translation>
 <translation id="8775713578693478175">మోడెమ్ APN</translation>
+<translation id="877735394245039557">మోడల్ డౌన్‌లోడ్ ప్రోగ్రెస్‌లో ఉంది</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">ఈ నెట్‌వర్క్‌లో క్యాప్టివ్ పోర్టల్ ఉండవచ్చు</translation>
 <translation id="8797082062139985406">Google AIని ఉపయోగించి పేరును క్రియేట్ చేయండి</translation>

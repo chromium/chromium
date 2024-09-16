@@ -42,6 +42,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1148499908455722006">Open info dialogue for <ph name="USER_NAME" /></translation>
 <translation id="1150989369772528668">Calendar</translation>
 <translation id="1153356358378277386">Paired devices</translation>
+<translation id="1153918444040990015">Couldn't connect to Focus sounds</translation>
 <translation id="1155734730463845512">Current battery level <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1157514002898505378">Generative AI is experimental and content may be inaccurate, misleading or offensive. Contact your administrator to report an issue. <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="1160215328209699296">on and in use</translation>
@@ -175,6 +176,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1550523713251050646">Click for more options</translation>
 <translation id="1555130319947370107">Blue</translation>
 <translation id="1557622599341396706">Show desk name</translation>
+<translation id="1567138500090284106">Mouse keys button</translation>
 <translation id="1569384531973824928">This allows access for all apps and websites with the camera and microphone permissions. You may need to refresh the web page or restart the app.</translation>
 <translation id="1571697193564730395">Toggle Do Not Disturb. <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">Zoom out when magnifier is on</translation>
@@ -242,6 +244,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1787955149152357925">Off</translation>
 <translation id="1796561540704213354">Websites including pages you've visited and open pages</translation>
 <translation id="179842970735685253">Google's Terms of Service</translation>
+<translation id="1805407494113167797">Couldn't play Focus sounds</translation>
 <translation id="181103072419391116">Signal strength <ph name="SIGNAL_STRENGTH" />, managed by your administrator</translation>
 <translation id="1816896987747843206">This allows camera access for all apps and websites with the camera permission</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
@@ -2283,6 +2286,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="8876661425082386199">Check your connection</translation>
 <translation id="8877788021141246043">Set a reminder</translation>
 <translation id="8878886163241303700">Extending screen</translation>
+<translation id="8885424115080869847">Couldn't connect to YouTube Music</translation>
 <translation id="888982883502837004">Firmware updates are available for your device. Click to review and update.</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> will be permanently deleted</translation>
 <translation id="889790758758811533"><ph name="PERCENTAGE" />% battery left (about <ph name="TIME_LEFT" />). Connect your device to power.</translation>

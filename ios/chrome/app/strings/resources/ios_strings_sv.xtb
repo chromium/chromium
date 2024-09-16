@@ -80,12 +80,14 @@
 <translation id="1363028406613469049">Spår</translation>
 <translation id="1364367057792633742">Ny flik</translation>
 <translation id="1365106417372288489">Din iPhone återställdes nyligen. Detta kan ha ändrat standardwebbläsaren.</translation>
+<translation id="1366297852155605523">Delas med mig</translation>
 <translation id="136942498637440594">Du kan söka efter bilder och saker du ser.</translation>
 <translation id="1377508275003315939">Lösenord</translation>
 <translation id="1381022135873211423">{count,plural, =1{{position} av {count} adress}other{{position} av {count} adresser}}</translation>
 <translation id="1383876407941801731">Sök</translation>
 <translation id="138618066238211776">Fortsätt som <ph name="USER_NAME" /></translation>
 <translation id="138692594145659985">Alternativ för att spara kort</translation>
+<translation id="1396260204083880024">Inloggad som <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Öppna kontomenyn</translation>
 <translation id="1397144142234474689">Dölj historik</translation>
 <translation id="1407135791313364759">Öppna alla</translation>
 <translation id="1408847409015257906">Tryck på Integritet och säkerhet.</translation>
@@ -331,6 +333,7 @@ Webbplatser får inte se din webbaktivitet på olika webbplatser med hjälp av c
 <translation id="2551153019974022505">Kontofel</translation>
 <translation id="2559843230610279254">Flikgrupp <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> flikar.</translation>
 <translation id="2577522251608256362">Stadsdel</translation>
+<translation id="2579713773888829241">Delade enheter</translation>
 <translation id="2597486707832946298">Få ut det bästa av din favoritwebbläsare på datorn – nu på din iPhone.</translation>
 <translation id="260378315836159338">Tryck på + högst upp på skärmen</translation>
 <translation id="2612676031748830579">Kortnummer</translation>
@@ -526,6 +529,7 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="3591006724568464696">De senaste flikarna är inte tillgängliga</translation>
 <translation id="3595252146048399851">Du kan alltid välja vad som ska synkroniseras i <ph name="BEGIN_LINK" />inställningarna<ph name="END_LINK" />. Google kan anpassa Sök och andra tjänster utifrån din historik.</translation>
 <translation id="3596414637720633074">Blockera cookies från tredje part med inkognitoläget</translation>
+<translation id="3602260545951981695">Välj Utökat skydd</translation>
 <translation id="3606746615845065096">Stäng flik</translation>
 <translation id="3622175633937495219">Sökhistorik (<ph name="COUNT" /> hittades)</translation>
 <translation id="3625008969091706597">Du kan svepa från kanten för att gå tillbaka.</translation>
@@ -595,6 +599,7 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="3967327056943561740">Bokmärken</translation>
 <translation id="3967822245660637423">Nedladdning slutförd</translation>
 <translation id="3982893814825393515">Rapportera ett problem …</translation>
+<translation id="398604237578616937">Inloggad som <ph name="USER_EMAIL" />. Öppna kontomenyn</translation>
 <translation id="3987993985790029246">Kopiera länk</translation>
 <translation id="3992684624889376114">Om den här sidan</translation>
 <translation id="3994422733891749358">Välj vilka aviseringar du vill ta emot</translation>
@@ -665,6 +670,7 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="4304713468139749426">Lösenordshantering</translation>
 <translation id="4309403553630140242">Tryck snabbt två gånger för mer information</translation>
 <translation id="4324735664183300693">Aktivera aviseringar</translation>
+<translation id="4328843285884395590">Min enhet</translation>
 <translation id="4331177082088332784">Du kan hantera detta i BEGIN_LINK innehållsinställningarna END_LINK</translation>
 <translation id="4333100555184633720">Radera webbinformation</translation>
 <translation id="4334428914252001502">1 oläst artikel.</translation>
@@ -732,6 +738,7 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="4636930964841734540">Info</translation>
 <translation id="4642472735733036929">Prisbevakning har avslutats</translation>
 <translation id="4645575059429386691">Hanteras av din förälder</translation>
+<translation id="4647758699119474035">Inloggad som <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Fel i Google-konto. Öppna kontomenyn</translation>
 <translation id="4650125387981512669">Fortsätt som <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4652817563047461855">Se till att dina lösenord är säkra, ta reda på om de har utsatts för intrång och få råd om hur du skyddar dig online. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="4658335131052370646">Sparad</translation>
@@ -914,6 +921,7 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 
 Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och samma iCloud-konto måste användas på enheterna.</translation>
 <translation id="5551825465462320939">Håll koll på nyheter, sport och annat utifrån dina intressen.</translation>
+<translation id="5555008247722361784">Inloggad som <ph name="USER_EMAIL" />. Fel i Google-konto. Öppna kontomenyn</translation>
 <translation id="5556459405103347317">Hämta igen</translation>
 <translation id="555749644339804659">Kontrollerar lösenord …</translation>
 <translation id="5559567453458728487">Konvertera måttenheter som hittas på webben</translation>
@@ -1260,6 +1268,7 @@ I inkognitoläget får inte webbplatser se din webbaktivitet på olika webbplats
 <translation id="7026724612456523899">Spåra alltid paket</translation>
 <translation id="7029809446516969842">Lösenord</translation>
 <translation id="7035825883570480307">Vill du aktivera aviseringar?</translation>
+<translation id="7039345315346323556">Senaste</translation>
 <translation id="7055240621761583113">Autofyll lösenordet</translation>
 <translation id="7058455400288852416">Öppna Flikbyte</translation>
 <translation id="7063811929043357292">Ditt konto hanteras av din förälder.
@@ -1277,6 +1286,7 @@ I inkognitoläget får inte webbplatser se din webbaktivitet på olika webbplats
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">Kameran är inte tillgänglig</translation>
 <translation id="7141960840225504692">Flikarna stängs och webbinformationen rensas</translation>
+<translation id="714291438898585119">Stjärnmärkta</translation>
 <translation id="7146301801400584641">Kalenderfil tillgänglig</translation>
 <translation id="7149893636342594995">Senaste 24 timmarna</translation>
 <translation id="716059570521443369">Sök efter kopierad text</translation>
@@ -1331,6 +1341,7 @@ I inkognitoläget får inte webbplatser se din webbaktivitet på olika webbplats
 <translation id="7435356471928173109">Inaktiverat av administratören</translation>
 <translation id="7438481509621345350">Nu visas artiklar från <ph name="CHANNEL_NAME" /> när du öppnar en ny flik.</translation>
 <translation id="7451023311965289370">{count,plural, =1{Bokmärke har sparats i {title}}other{Bokmärken har sparats i {title}}}</translation>
+<translation id="7451404862887877229">Tryck på Integritet och säkerhet och sedan på Säker webbsökning</translation>
 <translation id="7454057999980797137">Delstat/county</translation>
 <translation id="7458706065921255639">Anpassning och länkning</translation>
 <translation id="745899714366929493">Heldag</translation>
@@ -1409,6 +1420,7 @@ I inkognitoläget får inte webbplatser se din webbaktivitet på olika webbplats
 <translation id="7788868432173225918">Stäng utökad vy</translation>
 <translation id="7790954908631836016">Dölj Använd webbplats för dator</translation>
 <translation id="7791543448312431591">Lägg till</translation>
+<translation id="7801064017114765401">Datorer</translation>
 <translation id="7802239711290932774">Använd det föreslagna lösenordet:</translation>
 <translation id="780301667611848630">Nej tack</translation>
 <translation id="7807060072011926525">Tillhandahålls av Google</translation>
@@ -1592,6 +1604,7 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="8571213806525832805">Senaste fyra veckorna</translation>
 <translation id="8577056989960190117">Autofyll utgångsåret <ph name="YEAR" /></translation>
 <translation id="8588404856427128947">Av</translation>
+<translation id="8590286732816598906">Flikgrupp <ph name="GROUP_TITLE" />, meny.</translation>
 <translation id="8593565399399144771">Du kan öppna en ny flik här.</translation>
 <translation id="8600272508328041907">Byt till översättning av hela sidan</translation>
 <translation id="860043288473659153">Namn på kortinnehavare</translation>
@@ -1727,6 +1740,7 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="9162432979321511934">Aktivera Autofyll lösenord</translation>
 <translation id="9165320910061267720">Om du vill få aviseringar om sänkta priser måste du aktivera aviseringar i iOS-inställningarna.</translation>
 <translation id="9179151630575358778">Döljer det här objektet</translation>
+<translation id="918129721713827015">Visa flikar i grupp</translation>
 <translation id="9183733013282108610">Inkognitosökning</translation>
 <translation id="9186762474139509529">Starta loggning</translation>
 <translation id="9191031968346938109">Lägg till i …</translation>

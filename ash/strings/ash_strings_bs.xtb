@@ -42,7 +42,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="1148499908455722006">Otvaranje informativnog dijaloškog okvira za korisnika <ph name="USER_NAME" /></translation>
 <translation id="1150989369772528668">Kalendar</translation>
 <translation id="1153356358378277386">Upareni uređaji</translation>
-<translation id="1153918444040990015">Povezivanje sa zvukovima za Fokus nije uspjelo</translation>
+<translation id="1153918444040990015">Povezivanje sa Zvukovima fokusiranja nije uspjelo</translation>
 <translation id="1155734730463845512">Trenutno je baterija napunjena <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1157514002898505378">Generativni AI je eksperimentalan i sadržaj može biti netačan, obmanjujući ili uvredljiv. Kontaktirajte administratora da prijavite problem. <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="1160215328209699296">uključena i u upotrebi</translation>
@@ -176,7 +176,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="1550523713251050646">Kliznite za više opcija</translation>
 <translation id="1555130319947370107">Plava</translation>
 <translation id="1557622599341396706">Prikaži naziv radne površine</translation>
-<translation id="1567138500090284106">Gumb tipki miša</translation>
+<translation id="1567138500090284106">Dugme za tipke miša</translation>
 <translation id="1569384531973824928">Ovo dozvoljava pristup kameri i mikrofonu za sve aplikacije i web lokacije s odobrenjima za njih. Možda ćete morati osvježiti web stranicu ili ponovo pokrenuti aplikaciju.</translation>
 <translation id="1571697193564730395">Uključi/isključi funkciju Ne ometaj. <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">Umanjite kada je povećalo uključeno</translation>
@@ -244,7 +244,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="1787955149152357925">Isključeno</translation>
 <translation id="1796561540704213354">Web lokacije uključujući posjećene i otvorene stranice</translation>
 <translation id="179842970735685253">Googleovim Uslovima korištenja usluge</translation>
-<translation id="1805407494113167797">Zvuci za Fokus nisu se mogli reproducirati</translation>
+<translation id="1805407494113167797">Reprodukcija Zvukova fokusiranja nije uspjela</translation>
 <translation id="181103072419391116">Jačina signala <ph name="SIGNAL_STRENGTH" />, upravlja vaš administrator</translation>
 <translation id="1816896987747843206">Ovo omogućava pristup kameri za sve aplikacije i web lokacije s odobrenjem za nju</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>

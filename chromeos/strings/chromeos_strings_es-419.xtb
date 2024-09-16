@@ -254,6 +254,7 @@
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2148716181193084225">Hoy</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> fotos</translation>
+<translation id="2154460308960858308">Borrar búsqueda</translation>
 <translation id="2156072344042480449">Tus 2 instrucciones más recientes. Solo puedes usar estas instrucciones mientras estás en esta página.</translation>
 <translation id="2157660087437850958">selector de emojis</translation>
 <translation id="2157959690810728433">EN COLA</translation>
@@ -500,6 +501,7 @@
 <translation id="3557205324756024651">Identidad local (opcional)</translation>
 <translation id="3565064564551103223">IP habilitadas</translation>
 <translation id="3569407787324516067">Protector de pantalla</translation>
+<translation id="3571184524500629183">Cerrar búsqueda</translation>
 <translation id="3577473026931028326">Se produjo un error. Vuelve a intentarlo.</translation>
 <translation id="357889014807611375">Wi-Fi de uso medido</translation>
 <translation id="3583278742022654445">La intensidad de la señal es débil. Intenta acercarte a la fuente de la señal Wi-Fi.</translation>
@@ -945,6 +947,7 @@
 <translation id="5860033963881614850">Desactivado</translation>
 <translation id="5860491529813859533">Activar</translation>
 <translation id="5876385649737594562">Activa esta opción para seleccionar opciones</translation>
+<translation id="5877503382465267833">Pausar <ph name="RECORDING_NAME" /></translation>
 <translation id="588258955323874662">Pantalla completa</translation>
 <translation id="5893975327266416093">Presionar una tecla del teclado para asignar</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
@@ -1162,6 +1165,7 @@
 <translation id="6910312834584889076">La tapa del escáner está abierta. Ciérrala y vuelve a intentarlo.</translation>
 <translation id="6910845598686542904">Procesar los modelos de las voces detectadas en la grabación</translation>
 <translation id="6911383237894364323">No es posible conectarse a los servidores de medios</translation>
+<translation id="6927968682840110570">Nombre de la grabación</translation>
 <translation id="6930242544192836755">Duración</translation>
 <translation id="6930597342185648547">Acerca del fondo</translation>
 <translation id="6939667434404433010">Buscar nombre de la grabación</translation>
@@ -1274,6 +1278,7 @@
 <translation id="7378170410161264436">Grabadora puede crear transcripciones de las grabaciones con voz.
 Descarga el modelo de transcripción (hasta 100 MB) para obtener estas transcripciones.</translation>
 <translation id="7384004438856720753">palacio</translation>
+<translation id="7388345524791662148">Más opciones para <ph name="RECORDING_NAME" /></translation>
 <translation id="7388959671917308825">Panel táctil integrado</translation>
 <translation id="7397270852490618635">Desactivar el tema claro</translation>
 <translation id="7401543881546089382">Eliminar acceso directo</translation>
@@ -1295,6 +1300,7 @@ Descarga el modelo de transcripción (hasta 100 MB) para obtener estas transcri
 <translation id="7513770521371759388">inferior</translation>
 <translation id="7514365320538308">Descargar</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7519481256236810334">Reproducir <ph name="RECORDING_NAME" /></translation>
 <translation id="7525067979554623046">Crear</translation>
 <translation id="7528507600602050979">El contenido de ayuda no está disponible</translation>
 <translation id="7535791657097741517">Activar el tema claro</translation>
@@ -1371,6 +1377,7 @@ Descarga el modelo de transcripción (hasta 100 MB) para obtener estas transcri
 <translation id="7897043345768902965">acera</translation>
 <translation id="7902285181767404769">Silenciar las notificaciones durante la grabación</translation>
 <translation id="7903695460270716054">Elegir imágenes y material gráfico seleccionados</translation>
+<translation id="7912005977894000746">Volver a la página principal</translation>
 <translation id="7915220255123750251">Administra la configuración del APN de red. Los APNs establecen una conexión entre Internet y una red móvil.</translation>
 <translation id="7936303884198020182">no se encontraron servidores de nombres</translation>
 <translation id="7942349550061667556">Rojo</translation>

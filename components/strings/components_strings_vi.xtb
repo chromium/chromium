@@ -28,7 +28,6 @@
 <translation id="1050038467049342496">Đóng các ứng dụng khác</translation>
 <translation id="1053959602163383901">Bạn đã chọn xác minh bằng một thiết bị xác thực trên các trang web sử dụng <ph name="PROVIDER_ORIGIN" />. Nhà cung cấp này có thể đã lưu trữ thông tin về phương thức thanh toán của bạn mà bạn có thể <ph name="LINK_TEXT" />.</translation>
 <translation id="1055184225775184556">&amp;Hoàn tác thêm</translation>
-<translation id="105642538515333723">Bạn có thể nhập một cụm từ hoặc thông tin bất kỳ có trên các trang đã từng duyệt xem, chẳng hạn như "giày đi bộ thoải mái"</translation>
 <translation id="1056898198331236512">Cảnh báo</translation>
 <translation id="1058344460600311577"><ph name="PLAY_CHROME_DINO_GAME_FOCUSED_FRIENDLY_MATCH_TEXT" />, Nhấn phím Tab rồi nhấn phím Enter để chơi trò chơi khủng long trên Chrome</translation>
 <translation id="1058479211578257048">Đang lưu thẻ...</translation>
@@ -2959,7 +2958,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6433797564277305076">Từ giờ trở đi, bạn có thể xác nhận thẻ nhanh hơn bằng tính năng mở khoá thiết bị</translation>
 <translation id="643917412048333145">Váy đầm</translation>
 <translation id="6440503408713884761">Bị bỏ qua</translation>
-<translation id="6440534369669992497">Bạn có thể nhập một cụm từ hoặc thông tin bất kỳ có trên các trang đã từng duyệt xem, chẳng hạn như "giày đi bộ thoải mái". Nhấn <ph name="SHORTCUT" /> để tìm kiếm.</translation>
 <translation id="6443406338865242315">Các tiện ích và plugin bạn đã cài đặt</translation>
 <translation id="6444329331928531170">Nghỉ hưu và lương hưu</translation>
 <translation id="6446608382365791566">Thêm thông tin khác</translation>

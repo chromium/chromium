@@ -42,6 +42,7 @@
 <translation id="1148499908455722006">打开“<ph name="USER_NAME" />”的信息对话框</translation>
 <translation id="1150989369772528668">日历</translation>
 <translation id="1153356358378277386">已配对的设备</translation>
+<translation id="1153918444040990015">无法连接到专注模式音乐</translation>
 <translation id="1155734730463845512">当前电池电量为 <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1157514002898505378">生成式 AI 尚处于实验阶段，可能会生成不准确、具有误导性或冒犯性的内容。请与您的管理员联系报告问题。<ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="1160215328209699296">开启且正在使用中</translation>
@@ -175,6 +176,7 @@
 <translation id="1550523713251050646">点击即可查看更多选项</translation>
 <translation id="1555130319947370107">蓝色</translation>
 <translation id="1557622599341396706">显示桌面名称</translation>
+<translation id="1567138500090284106">鼠标键按钮</translation>
 <translation id="1569384531973824928">这将允许所有具有摄像头和麦克风使用权限的应用和网站使用摄像头/麦克风。您可能需要刷新网页或重启应用。</translation>
 <translation id="1571697193564730395">开启/关闭“勿扰”模式。<ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">开启放大镜时缩小</translation>
@@ -242,6 +244,7 @@
 <translation id="1787955149152357925">关闭</translation>
 <translation id="1796561540704213354">一系列网站，包含您访问过的网页和打开的网页</translation>
 <translation id="179842970735685253">Google 的服务条款</translation>
+<translation id="1805407494113167797">无法播放专注模式音乐</translation>
 <translation id="181103072419391116">信号强度为 <ph name="SIGNAL_STRENGTH" />，由您的管理员管理</translation>
 <translation id="1816896987747843206">如果您开启摄像头，即意味着允许所有具有摄像头使用权限的应用和网站使用摄像头</translation>
 <translation id="1823873187264960516">以太网：<ph name="ADDRESS" /></translation>
@@ -2281,6 +2284,7 @@
 <translation id="8876661425082386199">请检查您的网络连接状况</translation>
 <translation id="8877788021141246043">设置提醒</translation>
 <translation id="8878886163241303700">正在扩展屏幕</translation>
+<translation id="8885424115080869847">无法连接到 YouTube Music</translation>
 <translation id="888982883502837004">有适用于您设备的固件更新。点击即可查看并更新。</translation>
 <translation id="8896630965521842259">“<ph name="DESK_TEMPLATE_NAME" />”会被永久删除</translation>
 <translation id="889790758758811533">电量剩余 <ph name="PERCENTAGE" />%（大约能维持 <ph name="TIME_LEFT" />）。请为设备接通电源。</translation>

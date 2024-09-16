@@ -28,7 +28,6 @@
 <translation id="1050038467049342496">ఇతర యాప్‌లను మూసివేయండి</translation>
 <translation id="1053959602163383901"><ph name="PROVIDER_ORIGIN" />‌ను ఉపయోగించే వెబ్‌సైట్‌లలో ప్రామాణీకరణదారు పరికరంతో వెరిఫై చేయాలని మీరు ఎంచుకున్నారు. ఈ ప్రొవైడర్ మీ పేమెంట్ ఆప్షన్‌కు సంబంధించిన సమాచారాన్ని స్టోర్ చేసుకొని ఉండవచ్చు, దీనిని మీరు <ph name="LINK_TEXT" />.</translation>
 <translation id="1055184225775184556">&amp;జోడించడాన్ని రద్దు చేయండి</translation>
-<translation id="105642538515333723">మీరు గతంలో బ్రౌజ్ చేసిన పేజీల నుండి మీకు గుర్తున్న ఏవైనా పదబంధాలు లేదా వివరాలను ఎంటర్ చేయవచ్చు. ఉదాహరణకు, "సౌకర్యవంతమైన వాకింగ్ షూస్"</translation>
 <translation id="1056898198331236512">హెచ్చరిక</translation>
 <translation id="1058344460600311577"><ph name="PLAY_CHROME_DINO_GAME_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chromeలో Dino Run గేమ్‌ను ఆడటానికి Tabను నొక్కి, ఆపై Enterను నొక్కండి</translation>
 <translation id="1058479211578257048">కార్డ్‌లు సేవ్ చేయబడుతున్నాయి...</translation>
@@ -442,6 +441,7 @@
 <translation id="1771254328977666895">ధర హిస్టరీని చూడండి</translation>
 <translation id="1777422078676229054">ఫోటో (ఆర్కైవల్)</translation>
 <translation id="1778646502362731194">JIS B0</translation>
+<translation id="1785118555253503473">వెబ్ యాప్‌లను ఇన్‌స్టాల్ చేయాలా?</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, మీ Google ఖాతాలో మీ సమాచారం, గోప్యత, ఇంకా భద్రతను మేనేజ్ చేయడం కోసం Tabను నొక్కి, ఆపై Enterను నొక్కండి</translation>
 <translation id="1793631236004319016">చివరిగా <ph name="NUM_HOURS_MINUTES_SECONDS" /> క్రితం ఉపయోగించడం జరిగింది</translation>
@@ -1159,6 +1159,7 @@
 <translation id="3157931365184549694">పునరుద్ధరించు</translation>
 <translation id="3158539265159265653">డిస్క్</translation>
 <translation id="3162559335345991374">మీరు ఉపయోగిస్తున్న Wi-Fiకి మీరు దాని లాగిన్ పేజీని సందర్శించడం అవసరం.</translation>
+<translation id="316638481603975524">వెబ్ యాప్‌లను ఇన్‌స్టాల్ చేయమని అడగవచ్చు</translation>
 <translation id="3168744840365648658">రేడియో ఎక్విప్‌మెంట్</translation>
 <translation id="3168938241115725594">క్లాసిక్ వాహనాలు</translation>
 <translation id="3169472444629675720">కనుగొనండి</translation>
@@ -2318,6 +2319,7 @@
 <translation id="5273658854610202413">హెచ్చరిక: ఈ విధానం విలీనం చేయగల నిఘంటువు విధానాలలో భాగం కానందున, PolicyDictionaryMultipleSourceMergeList విధానంలో పేర్కొన్నట్లుగా ఇది విలీనం చేయబడలేదు.</translation>
 <translation id="5278778426231952189">ఇప్పుడే అప్‌లోడ్ చేయండి</translation>
 <translation id="5279286380302340275">డౌన్‌లోడ్‌లను మేనేజ్ చేయండి</translation>
+<translation id="5280963125494874678">వెబ్ అప్లికేషన్‌లు</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">డాక్యుమెంట్ ప్రాపర్టీలు</translation>
 <translation id="528468243742722775">ముగించు</translation>
@@ -2820,6 +2822,7 @@
 <translation id="6221311046884916259">మీరు ఈ కార్డ్‌ను మీ Google ఖాతాకు సేవ్ చేయాలనుకుంటున్నారా?</translation>
 <translation id="6221892641068781024">సరళీకృత వీక్షణ</translation>
 <translation id="6222527803348563979">స్టేషనరీ</translation>
+<translation id="62231116988543150">వెబ్ యాప్‌లను ఇన్‌స్టాల్ చేయగలగాలి</translation>
 <translation id="6224281071334553713">రత్నాలు &amp; నగలు</translation>
 <translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome సెట్టింగ్‌లలో మీ యాక్సెసిబిలిటీ టూల్స్‌ను వ్యక్తిగతీకరించడానికి 'Tab'ను నొక్కి, ఆపై 'Enter'ను నొక్కండి</translation>
 <translation id="6228346913624365233">విలాసమైన వాహనాలు</translation>
@@ -2954,7 +2957,6 @@
 <translation id="6433797564277305076">ఇప్పటి నుండి, పరికర అన్‌లాక్‌ను ఉపయోగించడం ద్వారా మీ కార్డ్‌లను వేగంగా నిర్ధారించండి</translation>
 <translation id="643917412048333145">డ్రసెస్</translation>
 <translation id="6440503408713884761">విస్మరించబడింది</translation>
-<translation id="6440534369669992497">మీరు గతంలో బ్రౌజ్ చేసిన పేజీల నుండి మీకు గుర్తున్న ఏవైనా పదబంధాలు లేదా వివరాలను ఎంటర్ చేయవచ్చు. ఉదాహరణకు, "సౌకర్యవంతమైన వాకింగ్ షూస్". సెర్చ్ చేయడానికి <ph name="SHORTCUT" />.</translation>
 <translation id="6443406338865242315">ఏ ఎక్స్‌టెన్షన్‌లు మరియు ప్లగిన్‌లను మీరు ఇన్‌స్టాల్ చేశారు</translation>
 <translation id="6444329331928531170">పదవీ విరమణ &amp; పెన్షన్</translation>
 <translation id="6446608382365791566">మరింత సమాచారాన్ని జోడించండి</translation>
@@ -3084,6 +3086,7 @@
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google ఖాతాలో మీ పరికరాన్ని కనుగొనడానికి Tabను నొక్కి, ఆపై Enterను నొక్కండి</translation>
 <translation id="6695428916538794739">యాక్షన్ &amp; అడ్వెంచర్ సినిమాలు</translation>
 <translation id="6696424331653607346">ట్రావెల్ గైడ్‌లు &amp; ట్రావెలాగ్‌లు</translation>
+<translation id="6696575039575740785">వెబ్ యాప్‌లను ఇన్‌స్టాల్ చేయడం వీలు కాదు</translation>
 <translation id="6698097747703777657">మీ కోడ్‌ను స్వీకరించలేదా? <ph name="BEGIN_LINK" />కొత్త కోడ్‌ను పొందండి<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">క్రియేట్ చేయబడింది:</translation>
 <translation id="67007264085648978">టైమ్ స్క్రబ్బర్</translation>
@@ -3197,6 +3200,7 @@
 <translation id="6915804003454593391">వినియోగదారు:</translation>
 <translation id="6916193791494646625">డౌన్‌లోడ్ చేయడానికి కారణాన్ని పేర్కొనండి (అవసరం)</translation>
 <translation id="6917795328362592458">మీరు ఇప్పుడే ఉపయోగించిన పాస్‌వర్డ్, డేటా ఉల్లంఘనలో కనగొనబడింది. మీ ఖాతాలను సురక్షితం చేయడానికి, మీరు సేవ్ చేసిన పాస్‌వర్డ్‌లను చెక్ చేయమని పాస్‌వర్డ్ మేనేజర్ సిఫార్సు చేస్తోంది.</translation>
+<translation id="6921197121276419421">వెబ్ యాప్‌లను ఇన్‌స్టాల్ చేయడం వీలు అవుతుంది</translation>
 <translation id="6924013822850225188">చెక్ అవుట్ (బ్యాంక్ నియమాలు వర్తిస్తాయి) సమయంలో మీ కార్డ్ ప్రయోజనాలు కనిపించాలో లేదో ఎంచుకోండి</translation>
 <translation id="6925267999184670015">ఉత్తర అమెరికా B+</translation>
 <translation id="6926216138694948720">టాట్టూలు</translation>
@@ -3694,6 +3698,7 @@
 <translation id="7761701407923456692">సర్వర్ ప్రమాణపత్రం URLతో సరిపోలలేదు.</translation>
 <translation id="7764225426217299476">అడ్రస్‌ను జోడించండి</translation>
 <translation id="7766518757692125295">స్కర్ట్</translation>
+<translation id="7766899888934244586">వెబ్ అప్లికేషన్‌లు</translation>
 <translation id="7767278989746220252">డాబా, లాన్ &amp; గార్డెన్</translation>
 <translation id="776749070095465053">ఫ్యాబ్రిక్</translation>
 <translation id="7773005668374414287">ఒకే క్రమంలో ఉన్న ఫేస్ అప్</translation>

@@ -28,7 +28,6 @@
 <translation id="1050038467049342496">Close other apps</translation>
 <translation id="1053959602163383901">You chose to verify with an authenticator device on websites that use <ph name="PROVIDER_ORIGIN" />. This provider may have stored information about your payment method, which you can <ph name="LINK_TEXT" />.</translation>
 <translation id="1055184225775184556">&amp;Undo add</translation>
-<translation id="105642538515333723">You can enter any phrases or details that you remember from pages that you've browsed in the past, like 'comfortable walking shoes'</translation>
 <translation id="1056898198331236512">Warning</translation>
 <translation id="1058344460600311577"><ph name="PLAY_CHROME_DINO_GAME_FOCUSED_FRIENDLY_MATCH_TEXT" />, Press tab then Enter to play the Dino Run game in Chrome</translation>
 <translation id="1058479211578257048">Saving cards...</translation>
@@ -2959,7 +2958,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6433797564277305076">Confirm your cards faster by using device unlock from now on</translation>
 <translation id="643917412048333145">Dresses</translation>
 <translation id="6440503408713884761">Ignored</translation>
-<translation id="6440534369669992497">You can enter any phrases or details that you remember from pages that you've browsed in the past, like 'comfortable walking shoes'. <ph name="SHORTCUT" /> to search.</translation>
 <translation id="6443406338865242315">Which extensions and plug-ins you have installed</translation>
 <translation id="6444329331928531170">Retirement and pension</translation>
 <translation id="6446608382365791566">Add more information</translation>

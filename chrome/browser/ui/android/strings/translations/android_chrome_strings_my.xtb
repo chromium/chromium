@@ -75,6 +75,7 @@
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - <ph name="DEVICE_NAME" /> မှ ပို့ထားသည်</translation>
 <translation id="1320912611264252795">လိပ်စာသိမ်းရန် လုပ်ငန်းစဉ်ကို မြင်ကွင်းအပြည့်ဖွင့်ထားသည်</translation>
 <translation id="1327257854815634930">လမ်းညွှန်မှု မှတ်တမ်း ဖွင့်ထားသည်</translation>
+<translation id="1328235593824723509"><ph name="TAB_TITLE" />၊ အသစ် (သို့) အပ်ဒိတ်လုပ်ထားသော တဘ်</translation>
 <translation id="1331212799747679585">Chrome ကို အပ်ဒိတ်လုပ်၍မရပါ။ နောက်ထပ်ရွေးချယ်စရာများ</translation>
 <translation id="1332501820983677155">Google Chrome ဝန်ဆောင်မှု ဖြတ်လမ်းလင့်ခ်များ</translation>
 <translation id="1333491156693005331">လတ်တလော စစ်ဆေးထားသည်</translation>
@@ -1212,6 +1213,7 @@
 <translation id="6674571176963658787">စင့်ခ်လုပ်ခြင်းစတင်ရန် သင်၏စကားဝှက်စာ ထည့်ပါ</translation>
 <translation id="6676927815633975364">ဤဝဘ်ဆိုက်နှင့် Chrome သို့ လက်မှတ်ထိုးဝင်ပါ</translation>
 <translation id="6684809838922667136">Chrome ပိုကောင်းရန်လုပ်ခြင်း</translation>
+<translation id="6700279777779583398">ရွေးချယ်မှုများ သိမ်းလိုက်သည်</translation>
 <translation id="6704048624334633734">စကားဝှက်များ ထုတ်ယူခြင်း၊ ဖျက်ခြင်း</translation>
 <translation id="670498945988402717">မနေ့က စစ်ဆေးခဲ့သည်</translation>
 <translation id="6710213216561001401">အရင်</translation>
@@ -1425,6 +1427,7 @@
 <translation id="752731652852882757">‘ရုပ်ဖျက်မုဒ်’ သုံးနေစဉ် ပိတ်ထားရန်</translation>
 <translation id="7554643625247105821">Chrome ဗားရှင်းကို စစ်ဆေး၍မရပါ</translation>
 <translation id="7557508262441527045">ထွက်ထားသည်</translation>
+<translation id="7573665567024262965">သင့်မူရင်းအက်ပ်များကို ရွေးပါ</translation>
 <translation id="7577900504646297215">စိတ်ဝင်စားမှုများ စီမံရန်</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> ဖိုင် ဒေါင်းလုဒ်လုပ်ပြီးပြီ}other{<ph name="FILES_DOWNLOADED_MANY" /> ဖိုင် ဒေါင်းလုဒ်လုပ်ပြီးပြီ}}</translation>
 <translation id="7581273696622423628">စစ်တမ်းကောက်ယူမှုကို ဖြေဆိုရန်</translation>
@@ -1467,6 +1470,7 @@
 <translation id="7764225426217299476">လိပ်စာများ ထည့်သွင်းပါ</translation>
 <translation id="7772032839648071052">စကားစုဝှက်ကို အတည်ပြုရန်</translation>
 <translation id="7772375229873196092"><ph name="APP_NAME" /> ကိုပိတ်ပါ</translation>
+<translation id="7774125747223422443">သင့်ဒေသဆိုင်ရာ ဥပဒေအရ ဘရောင်ဇာနှင့် ရှာဖွေရေး အင်ဂျင်ကို ရွေးရမည်</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 နှင့် နောက်ထပ် <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ခု}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 နှင့် နောက်ထပ် <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ခု}}</translation>
 <translation id="777637629667389858">လက်မှတ်ထိုးဝင်ထားသောအခါ သင့်အား Google ဝန်ဆောင်မှုများတွင် ကာကွယ်ပေးသည်။</translation>
 <translation id="7778840695157240389">သတင်းဆောင်းပါးသစ်များအတွက် နောက်မှ ပြန်လာကြည့်ပါ</translation>
@@ -1591,6 +1595,7 @@
 <translation id="8265018477030547118">ဤစက်တွင်သာ</translation>
 <translation id="8266753737658117282"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ဖြင့် ရှေ့ဆက်ရန်</translation>
 <translation id="8266862848225348053">တည်နေရာ ဒေါင်းလုဒ်လုပ်ခြင်း</translation>
+<translation id="8279945625179116733"><ph name="APP_NAME" /> က လုံခြုံမှုပေးထားသည်</translation>
 <translation id="8281886186245836920">ကျော်ရန်</translation>
 <translation id="8282297628636750033">ဝဘ်ဆိုက်ကိုဖြစ်နိုင်ပါက အမှောင်နောက်ခံပြောင်းခြင်း</translation>
 <translation id="8282950411412455249">လုံခြုံရေးဆက်တင်များသို့ သွားရန်</translation>
@@ -1735,6 +1740,7 @@
 <translation id="8982113230057126145">ဤအကျဉ်းချုပ်ကို သင်မကြိုက်ကြောင်း ‘လက်မအောက်စိုက်’ ပေးပို့ပြီး တုံ့ပြန်နိုင်သည်</translation>
 <translation id="8992769679401294069">ဒေတာကို သင့်စကားဝှက်စာဖြင့် အသွင်ဝှက်ထားသည်။ သင်၏ Google Account ရှိ Chrome ဒေတာ သုံးရန်၊ သိမ်းရန် ၎င်းကိုထည့်ပါ။</translation>
 <translation id="8993760627012879038">တဘ်အသစ်ကို ရုပ်ဖျက်မုဒ်တွင် ဖွင့်ရန်</translation>
+<translation id="8995521496079646922">သင်ရွေးသည့် အက်ပ်များကို မူရင်းအဖြစ် အသုံးပြုပါမည်။ ဤစက်တွင် အက်ပ်တစ်ခု မရှိပါက ၎င်းကို မကြာမီ ဒေါင်းလုဒ်လုပ်ပါမည်။</translation>
 <translation id="8996847606757455498">ဝန်ဆောင်မှုပေးသူ နောက်တစ်ခု ရွေးရန်</translation>
 <translation id="8998289560386111590">သင့်စက်တွင် မရနိုင်ပါ</translation>
 <translation id="8998837250940831980">တဘ်ကို ချုံ့၍မရပါ။ နောက်မှထပ်စမ်းပါ။</translation>

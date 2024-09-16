@@ -78,6 +78,7 @@
 <translation id="1240638468526743569">აპი</translation>
 <translation id="1242198791279543032">შეტყობინებები დადუმებულია</translation>
 <translation id="1242883863226959074">მოწყობილობა</translation>
+<translation id="1245476784081715330">მშვენიერია!</translation>
 <translation id="1245644940275736236">ასისტენტზე გადასვლა</translation>
 <translation id="124678866338384709">მიმდინარე ჩანართის დახურვა</translation>
 <translation id="1246890715821376239">მხარდაუჭერელი აპები</translation>
@@ -842,6 +843,7 @@
 <translation id="3958714870339660776">მთელი დღე</translation>
 <translation id="3962859241508114581">წინა ჩანაწერი</translation>
 <translation id="3963124517343721543">გახსენით წარსულში გამოყენებული ფანჯრები და ჩანართები, რომ მარტივად განაგრძოთ იქიდან, სადაც გაჩერდით. თქვენ ნახავთ პერსონალიზებულ შემოთავაზებებს მომდევნო მოქმედებებისთვისაც.</translation>
+<translation id="396506362088290977">შეამოწმეთ თქვენი მიკროფონი</translation>
 <translation id="3969043077941541451">გამორთული</translation>
 <translation id="3970324493235864154">თქვენი ტელეფონის შეტყობინებების ნახვა</translation>
 <translation id="397105322502079400">ანგარიშობს…</translation>
@@ -899,6 +901,7 @@
 <translation id="4156293514828496577">დარჩენილია ბატარეის <ph name="PERCENTAGE" />% (დაახლოებით <ph name="TIME_LEFT" />).
 ზოგიერთი ფუნქცია შეზღუდულია, ბატარეის მუშაობის ხანგრძლივობა რომ გაიზარდოს.</translation>
 <translation id="4160919062868802509">აღმოჩენილია რამდენიმე აუდიო წყარო</translation>
+<translation id="416245495747357243">მზადაა!</translation>
 <translation id="4165275524535002941">კაბელს შეიძლება არ ჰქონდეს ეკრანების მხარდაჭერა</translation>
 <translation id="4177415338862979658">დააწკაპუნეთ დეტალების გასაცნობად</translation>
 <translation id="4177913004758410636">{0,plural, =1{განაახლეთ მოწყობილობა დღის განმავლობაში}other{განაახლეთ მოწყობილობა # დღის განმავლობაში}}</translation>
@@ -984,6 +987,7 @@
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> გამორთულია.</translation>
 <translation id="4417647906073317561">ფოკუსირების რეჟიმის პარამეტრები. დააყენეთ ტაიმები, ამოცანა და მუსიკა, რომ შეუდგეთ საქმეს.</translation>
 <translation id="4424159417645388645">სამუშაო მაგიდა 5</translation>
+<translation id="4426817706804363424">ყოჩაღ!</translation>
 <translation id="4430019312045809116">ხმა</translation>
 <translation id="4441283832827406317">აპები დალაგებულია სახელის მიხედვით</translation>
 <translation id="4445159312344259901">განსაბლოკად შედით სისტემაში</translation>
@@ -1248,6 +1252,7 @@
 <translation id="5283198616748585639">1 წუთის დამატება</translation>
 <translation id="528468243742722775">დასასრული</translation>
 <translation id="5286194356314741248">მიმდინარეობს სკანირება</translation>
+<translation id="528641622273682395">მიკროფონის შემოწმების ჩართვა</translation>
 <translation id="5297423144044956168">მობილური მოწყობილობები ვერ მოიძებნა</translation>
 <translation id="5297704307811127955">გამორთვა</translation>
 <translation id="5300589172476337783">ჩვენება</translation>
@@ -1275,6 +1280,7 @@
 <translation id="536019650977002321">აუდიოს აღბეჭდვა არ არის ნებადართული თქვენი ადმინისტრატორის მიერ. დამატებითი ინფორმაციისთვის მიმართეთ თქვენს ადმინისტრატორს.</translation>
 <translation id="5361524080961918551"><ph name="LANGUAGE" /> მეტყველების ფაილები ნაწილობრივ ჩამოიტვირთა</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> ამ ჩანართზე გადასვლა</translation>
+<translation id="5363835273551457276">შეგიძლიათ მიკროფონის ხმის შემოწმება. შესაწყვეტად დახურეთ არე.</translation>
 <translation id="5364693579536176785">მეხსიერება საცავში</translation>
 <translation id="5369573834963677938">სახის კონტროლი ხელმისაწვდომი იქნება ამ მოწყობილობის სხვა მომხმარებლებისთვის</translation>
 <translation id="5369717264580061086">ფაილის წინასწარ გადახედვა ფაილების აპში</translation>
@@ -2126,6 +2132,7 @@
 <translation id="8262312463845990408">დაკვრის გადართვა</translation>
 <translation id="8268302343625273732">ყველა დავალების Google Classroom-ში ნახვა</translation>
 <translation id="8277261673056602147">ტექსტის გამოყოფა თქვენს ეკრანზე</translation>
+<translation id="8282784978194352587">ყოჩაღ!</translation>
 <translation id="8287009018010202411">პროდუქტიულობა</translation>
 <translation id="828708037801473432">გამორთვა</translation>
 <translation id="8297006494302853456">სუსტი</translation>
@@ -2203,6 +2210,7 @@
 <translation id="8609384513243082612">ახალი ჩანართის გახსნა</translation>
 <translation id="861045123704058818">აპები დროებით არის ორგანიზებული კატეგორიების მიხედვით</translation>
 <translation id="8612216344243590325">შეინახეთ მნიშვნელოვანი ფაილები დესკტოპის ნაცვლად <ph name="HOLDING_SPACE_TITLE" />-ში. უბრალოდ, ჩავლებით გადაიტანეთ ფაილები <ph name="HOLDING_SPACE_TITLE" />-ში.</translation>
+<translation id="8612338981637220013">ყოჩაღ!</translation>
 <translation id="8614517853887502247"><ph name="APP_1_TITLE" />-ისა და <ph name="APP_2_TITLE" />-ის შეტყობინებები დამალულია, რადგან ჩართულია ნახვის დაცვა</translation>
 <translation id="8615778328722901791">ხელსაწყოთა ზოლის გახსნა</translation>
 <translation id="8619000641825875669">OneDrive</translation>
@@ -2245,6 +2253,7 @@
 <translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />: მიმდინარეობს გააქტიურება....</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
+<translation id="8751299148074971734">ასე განაგრძეთ!</translation>
 <translation id="8753368202781196133">ეს ენა ამჟამად არ არის მხარდაჭერილი.</translation>
 <translation id="8755498163081687682">დაადასტურეთ ვინაობა: <ph name="ORIGIN_NAME" /> ითხოვს თქვენი ვინაობის დადასტურებას</translation>
 <translation id="875593634123171288">VPN-ის პარამეტრების ჩვენება</translation>

@@ -28,7 +28,6 @@
 <translation id="1050038467049342496">Затворите друге апликације</translation>
 <translation id="1053959602163383901">Одабрали сте да се верификујете помоћу уређаја за потврду идентитета на веб-сајтовима који користе <ph name="PROVIDER_ORIGIN" />. Овај добављач је можда сачувао информације о начину плаћања, за који можете да <ph name="LINK_TEXT" />.</translation>
 <translation id="1055184225775184556">&amp;Опозови додавање</translation>
-<translation id="105642538515333723">Можете да унесете било коју фразу или детаље којих се сећате са страница које сте прегледали у прошлости, на пример „удобне ципеле за ходање“</translation>
 <translation id="1056898198331236512">Упозорење</translation>
 <translation id="1058344460600311577"><ph name="PLAY_CHROME_DINO_GAME_FOCUSED_FRIENDLY_MATCH_TEXT" />, притисните Tab, па Enter да бисте играли игру Диносаурус у Chrome-у</translation>
 <translation id="1058479211578257048">Картице се чувају...</translation>
@@ -447,6 +446,7 @@
 <translation id="1771254328977666895">Погледајте историју цена</translation>
 <translation id="1777422078676229054">Слика (архивска)</translation>
 <translation id="1778646502362731194">JIS B0</translation>
+<translation id="1785118555253503473">Желите да инсталирате веб-апликације?</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, притисните Tab, па Enter да бисте управљали информацијама, приватношћу и безбедношћу на Google налогу</translation>
 <translation id="1793631236004319016">Последњи пут коришћена пре <ph name="NUM_HOURS_MINUTES_SECONDS" /></translation>
@@ -678,6 +678,7 @@
 <translation id="2212735316055980242">Смернице нису пронађене</translation>
 <translation id="2213606439339815911">Преузимање уноса...</translation>
 <translation id="2213612003795704869">Страница је одштампана</translation>
+<translation id="2215368073167343359">Аутоматско попуњавање уз Google</translation>
 <translation id="2215539479425228550">Алпинизам и планинарење</translation>
 <translation id="2215727959747642672">Мењање датотека</translation>
 <translation id="2215963164070968490">Пси</translation>
@@ -710,6 +711,7 @@
 <translation id="2262243747453050782">HTTP грешка</translation>
 <translation id="2265192657948645752">Послови у малопродаји</translation>
 <translation id="2265356434276802347">Највећи број истакнутих уноса које ове смернице могу да имају је <ph name="MAX_ITEMS_LIMIT" />.</translation>
+<translation id="2266175583972138136">Важе услови за предности картица</translation>
 <translation id="2267047181501709434">Верификује се идентитет...</translation>
 <translation id="2268044343513325586">Прецизирај</translation>
 <translation id="2268966938956566076">Отпреми за <ph name="MINUTES" /> мин</translation>
@@ -1164,6 +1166,7 @@
 <translation id="3157931365184549694">Поново отвори</translation>
 <translation id="3158539265159265653">Диск</translation>
 <translation id="3162559335345991374">WiFi мрежа коју користите ће можда захтевати да посетите страницу за пријављивање.</translation>
+<translation id="316638481603975524">Може да затражи инсталирање веб-апликација</translation>
 <translation id="3168744840365648658">Радио опрема</translation>
 <translation id="3168938241115725594">Класична возила</translation>
 <translation id="3169472444629675720">Discover</translation>
@@ -1798,6 +1801,7 @@
 <translation id="4269264543938335308">Одећа за пливање</translation>
 <translation id="4269599248168651462">Сертификат сервера се издаје са називом који није јединствен.</translation>
 <translation id="4270541775497538019">6. преграда за слагање</translation>
+<translation id="4271652479722040953">Када се додаци додају у Chrome, релевантни подаци о тим додацима се шаљу трећим странама на анализу и могу да буду видљиви администратору. Подаци обухватају информације о додацима, попут назива, времена инсталирања, извора инсталирања, као и активности повезаних са овим додацима (попут промене картица, контакта са веб-сајтовима или приступања колачићима). Ови подаци се прикупљају за додатке инсталиране из Chrome веб-продавнице, као и за додатке ван продавнице.</translation>
 <translation id="4275830172053184480">Поновно покретање уређаја</translation>
 <translation id="4276974990916607331">Не, хвала</translation>
 <translation id="4277028893293644418">Ресетујте лозинку</translation>
@@ -1879,6 +1883,7 @@
 <translation id="4406896451731180161">резултати претраге</translation>
 <translation id="4408413947728134509">Колачићи (<ph name="NUM_COOKIES" />)</translation>
 <translation id="4412074349188076601">Ова конфигурација је означена као да може да се инсталира, али за ову архитектуру није наведена слика, па не може да се инсталира.</translation>
+<translation id="4414452699610169758">Користите Google менаџер лозинки и Chrome аутоматско попуњавање да бисте чували и попуњавали лозинке, начине плаћања и адресе</translation>
 <translation id="4414515549596849729">колачићи и подаци о сајтовима</translation>
 <translation id="4415156962929755728">Пластика (високи сјај)</translation>
 <translation id="4415426530740016218">Адреса преузимања</translation>
@@ -2323,6 +2328,7 @@
 <translation id="5273658854610202413">Упозорење: Ове смернице нису обједињене као што је наведено у смерницама PolicyDictionaryMultipleSourceMergeList зато што нису део смерница за речнике које могу да се обједињују.</translation>
 <translation id="5278778426231952189">Отпреми одмах</translation>
 <translation id="5279286380302340275">Управљајте преузимањима</translation>
+<translation id="5280963125494874678">веб-апликације</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">Својства документа</translation>
 <translation id="528468243742722775">Заврши</translation>
@@ -2824,6 +2830,7 @@
 <translation id="6221311046884916259">Да ли желите да сачувате ову картицу на Google налогу?</translation>
 <translation id="6221892641068781024">Поједностављени приказ</translation>
 <translation id="6222527803348563979">Канцеларијски прибор</translation>
+<translation id="62231116988543150">Да може да инсталира веб-апликације</translation>
 <translation id="6224281071334553713">Драго камење и накит</translation>
 <translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, притисните Tab, па Enter да бисте персонализовали алатке за приступачност у подешавањима Chrome-а</translation>
 <translation id="6228346913624365233">Луксузна возила</translation>
@@ -2958,7 +2965,6 @@
 <translation id="6433797564277305076">Од сада брже потврђујте картице уз откључавање уређаја</translation>
 <translation id="643917412048333145">Хаљине</translation>
 <translation id="6440503408713884761">Занемарено</translation>
-<translation id="6440534369669992497">Можете да унесете било коју фразу или детаље којих се сећате са страница које сте прегледали у прошлости, на пример „удобне ципеле за ходање“. <ph name="SHORTCUT" /> да бисте претраживали.</translation>
 <translation id="6443406338865242315">додатке и додатне компонента које сте инсталирали</translation>
 <translation id="6444329331928531170">Пензионисање</translation>
 <translation id="6446608382365791566">Додајте још информација</translation>
@@ -3088,6 +3094,7 @@
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />, притисните Tab, па Enter да бисте отворили опцију за тражење уређаја на Google налогу</translation>
 <translation id="6695428916538794739">Акције и авантуре</translation>
 <translation id="6696424331653607346">Туристички водичи и каталози</translation>
+<translation id="6696575039575740785">Инсталирање веб-апликација није дозвољено</translation>
 <translation id="6698097747703777657">Нисте добили кôд? <ph name="BEGIN_LINK" />Преузми нов кôд<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">Направљено:</translation>
 <translation id="67007264085648978">Клизач за трајање</translation>
@@ -3201,6 +3208,7 @@
 <translation id="6915804003454593391">Корисник:</translation>
 <translation id="6916193791494646625">Наведите разлог за преузимање (обавезно)</translation>
 <translation id="6917795328362592458">Лозинка коју сте управо користили је пронађена при повреди података. Да бисте заштитили налоге, Менаџер лозинки препоручује да проверите сачуване лозинке.</translation>
+<translation id="6921197121276419421">Инсталирање веб-апликација је дозвољено</translation>
 <translation id="6924013822850225188">Одаберите да ли ћете при плаћању видети предности картице (примењују се услови банке)</translation>
 <translation id="6925267999184670015">North American B+</translation>
 <translation id="6926216138694948720">Боди арт</translation>
@@ -3379,6 +3387,7 @@
 <translation id="7232352818707016189">Још радњи за табелу за поређење</translation>
 <translation id="7233592378249864828">Лист потврде штампања</translation>
 <translation id="7234112195906418665">Путовања и превоз</translation>
+<translation id="7234585564776614047">Аутоматско попуњавање помоћу друге услуге</translation>
 <translation id="7236417832106250253"><ph name="PROGRESS_PERCENT" />% завршено | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
 <translation id="7237166092326447040">Поклони и предмети за посебне догађаје</translation>
 <translation id="7237454422623102448">Системска подешавања</translation>
@@ -3698,6 +3707,7 @@
 <translation id="7761701407923456692">Сертификат сервера се не подудара са URL адресом.</translation>
 <translation id="7764225426217299476">Додајте адресу</translation>
 <translation id="7766518757692125295">Обод</translation>
+<translation id="7766899888934244586">Веб-апликације</translation>
 <translation id="7767278989746220252">Терасе, травњаци и баште</translation>
 <translation id="776749070095465053">Тканина</translation>
 <translation id="7773005668374414287">Истим редоследом са одштампаном страном нагоре</translation>
@@ -4039,6 +4049,7 @@
 <translation id="8409413588194360210">обрађивачи плаћања</translation>
 <translation id="8412145213513410671">Отказивања (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">Потребно је да двапут унесете исту приступну фразу.</translation>
+<translation id="8414322570408428950">Откривен је догађај додатка</translation>
 <translation id="8416694386774425977">Конфигурација мреже је неважећа и не може да се увезе.
 Додатни детаљи:
 <ph name="DEBUG_INFO" /></translation>
@@ -4291,6 +4302,7 @@
 <translation id="8891031436559779793">Добићете обавештење ако се цена снизи на било ком сајту.</translation>
 <translation id="8891727572606052622">Неважећи режим проксија.</translation>
 <translation id="8894794286471754040">Прво дугачка ивица</translation>
+<translation id="8895334001368918465">Да бисте користили другу услугу аутоматског попуњавања у Chrome-у, укључите је у Android подешавањима и овде</translation>
 <translation id="8897428486789851669">Пливање</translation>
 <translation id="8899807382908246773">Огласи који ометају</translation>
 <translation id="8903921497873541725">Увећавање</translation>

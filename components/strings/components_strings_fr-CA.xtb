@@ -28,7 +28,6 @@
 <translation id="1050038467049342496">Fermer les autres applications</translation>
 <translation id="1053959602163383901">Vous avez choisi de valider avec un appareil d'authentification sur des sites Web qui utilisent <ph name="PROVIDER_ORIGIN" />. Ce fournisseur peut avoir stocké de l'information sur votre mode de paiement, dont vous pouvez <ph name="LINK_TEXT" />.</translation>
 <translation id="1055184225775184556">&amp;Annuler l'ajout</translation>
-<translation id="105642538515333723">Vous pouvez saisir des phrases ou des détails dont vous vous souvenez à partir de pages que vous avez consultées précédemment, comme « chaussures de marche confortables »</translation>
 <translation id="1056898198331236512">Avertissement</translation>
 <translation id="1058344460600311577"><ph name="PLAY_CHROME_DINO_GAME_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur la touche Tabulation, puis sur la touche Entrée pour jouer au jeu du dinosaure dans Chrome</translation>
 <translation id="1058479211578257048">Enregistrement des cartes en cours…</translation>
@@ -2955,7 +2954,6 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="6433797564277305076">Vérifiez dès maintenant vos cartes plus rapidement avec le déverrouillage de l'appareil</translation>
 <translation id="643917412048333145">Robes</translation>
 <translation id="6440503408713884761">Ignorée</translation>
-<translation id="6440534369669992497">Vous pouvez saisir des phrases ou des détails dont vous vous souvenez à partir de pages que vous avez consultées précédemment, comme « chaussures de marche confortables ». <ph name="SHORTCUT" /> pour rechercher.</translation>
 <translation id="6443406338865242315">Les extensions et les plugiciels que vous avez installés</translation>
 <translation id="6444329331928531170">Retraite et prestations de retraite</translation>
 <translation id="6446608382365791566">Ajouter plus de renseignements</translation>

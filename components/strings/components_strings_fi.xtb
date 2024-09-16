@@ -28,7 +28,6 @@
 <translation id="1050038467049342496">Sulje muita sovelluksia.</translation>
 <translation id="1053959602163383901">Valitsit todennuslaitteella vahvistamisen verkkosivustoilla, jotka käyttävät <ph name="PROVIDER_ORIGIN" /> ‐palvelua. Tämä palveluntarjoaja on saattanut tallentaa maksutapaasi koskevia tietoja, joille voit <ph name="LINK_TEXT" />.</translation>
 <translation id="1055184225775184556">K&amp;umoa lisäys</translation>
-<translation id="105642538515333723">Voit kirjoittaa mitä tahansa lauseita tai tietoja, jotka muistat aiemmin selaamiesi sivujen kautta, kuten "mukavat kävelykengät"</translation>
 <translation id="1056898198331236512">Varoitus</translation>
 <translation id="1058344460600311577"><ph name="PLAY_CHROME_DINO_GAME_FOCUSED_FRIENDLY_MATCH_TEXT" />, paina ensin sarkainta ja sitten Enter, niin voit pelata Dino Run ‑peliä Chromessa</translation>
 <translation id="1058479211578257048">Tallennetaan kortteja…</translation>
@@ -2956,7 +2955,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="6433797564277305076">Vahvista kortit jatkossa nopeammin laitteen lukituksen avaustavalla</translation>
 <translation id="643917412048333145">Mekot</translation>
 <translation id="6440503408713884761">Ohitettu</translation>
-<translation id="6440534369669992497">Voit kirjoittaa mitä tahansa lauseita tai tietoja, jotka muistat aiemmin selaamiesi sivujen kautta, kuten "mukavat kävelykengät". Tee haku painamalla <ph name="SHORTCUT" /></translation>
 <translation id="6443406338865242315">Asentamasi laajennukset</translation>
 <translation id="6444329331928531170">Eläkkeelle siirtyminen ja eläke</translation>
 <translation id="6446608382365791566">Lisää tietoja</translation>

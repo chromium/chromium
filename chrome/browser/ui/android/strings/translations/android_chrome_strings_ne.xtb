@@ -75,6 +75,7 @@
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - <ph name="DEVICE_NAME" /> बाट पठाइएको</translation>
 <translation id="1320912611264252795">बुकमार्क सेभ गर्ने फ्लोका फोल्डरहरू स्क्रिनको पूरा भाग ओगट्ने गरी खोलिएको छ</translation>
 <translation id="1327257854815634930">नेभिगेसनको इतिहास खोलियो</translation>
+<translation id="1328235593824723509"><ph name="TAB_TITLE" />, नयाँ वा परिवर्तन गरिएको ट्याब</translation>
 <translation id="1331212799747679585">Chrome अद्यावधिक गर्न सकिँदैन। थप विकल्पहरू</translation>
 <translation id="1332501820983677155">Google Chrome को विशेषताका सर्टकटहरू</translation>
 <translation id="1333491156693005331">हालसालै जाँचिएको</translation>
@@ -1594,6 +1595,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="8265018477030547118">यो डिभाइसमा मात्र</translation>
 <translation id="8266753737658117282"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> मार्फत जारी राख्नुहोस्</translation>
 <translation id="8266862848225348053">स्थान डाउनलोड गर्नुहोस्</translation>
+<translation id="8279945625179116733"><ph name="APP_NAME" /> ले सुरक्षित राखेको</translation>
 <translation id="8281886186245836920">स्किप गर्नुहोस्</translation>
 <translation id="8282297628636750033">साइटहरूमा सकेसम्म अँध्यारो थिम लागू गर्नु…</translation>
 <translation id="8282950411412455249">सुरक्षासम्बन्धी सेटिङमा जानुहोस्</translation>

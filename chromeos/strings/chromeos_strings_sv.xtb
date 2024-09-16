@@ -35,6 +35,7 @@
 <translation id="1155154308031262006">Ange en prompt</translation>
 <translation id="115705039208660697">ananaser</translation>
 <translation id="1164939766849482256">Morgon till kväll-skärmsläckare</translation>
+<translation id="1166688493741195933">Det gick inte att generera inspelade namn</translation>
 <translation id="1167755866710282443">Öppna menyn för att anpassa tangenter. Flytta menyn genom att trycka och dra.</translation>
 <translation id="1171349345463658120">sandig lagun</translation>
 <translation id="1173894706177603556">Ändra namn</translation>
@@ -492,6 +493,7 @@
 <translation id="3502426834823382181">visa alla appar</translation>
 <translation id="3510890413042482857">Skicka <ph name="BEGIN_LINK1" />data från resultatspårning<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">ChromeOS-uppdatering</translation>
+<translation id="3522508178835057262">För närvarande stöds inte transkriptioner med fler än <ph name="MAX_WORD_LENGTH" /> ord</translation>
 <translation id="3527036260304016759">Misslyckades – okänt fel</translation>
 <translation id="353214771040290298">Klar med redigeringen</translation>
 <translation id="3532980081107202182">Ungefär <ph name="MIN_REMAINING" /> minuter kvar</translation>
@@ -707,6 +709,7 @@
 <translation id="4602266091140407479">Mikrofon</translation>
 <translation id="4607282946861182308">Det går inte att skapa bilder av detta. Testa en annan prompt.</translation>
 <translation id="4609350030397390689">Tangenten som minskar ljusstyrkan på tangentbordet</translation>
+<translation id="4623061655523261501">Inspelade namn har genererats</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> av <ph name="TOTAL_PAGE_NUMBER" />. Tryck på retur för att avbryta utskriftsjobbet.</translation>
 <translation id="463791356324567266">Skanningen avbryts …</translation>
 <translation id="4644611440022666152">Aktivera och ladda ned</translation>
@@ -1035,6 +1038,8 @@
 <translation id="628726841779494414">Hantera dina skrivare i skrivarinställningarna</translation>
 <translation id="6292095526077353682">Skärmsläckarens visningstid vid laddning:</translation>
 <translation id="629550705077076970">tona ned tangentbordet</translation>
+<translation id="6301193653204230066">Säkerhetsåterställning inaktiverar tillägg i webbläsaren Chrome och återställer nätverk och andra inställningar till säkra standardinställningar.
+          Dina flikar, filer, cookies och din historik ändras inte.</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" />-testet har avbrutits</translation>
 <translation id="631063167932043783">Appen Utforska</translation>
 <translation id="6318437367327684789">för alltid</translation>
@@ -1044,6 +1049,7 @@
 <translation id="6325525973963619867">Misslyckades</translation>
 <translation id="6327262166342360252">Den här bakgrunden skapades med AI utifrån följande text: ”<ph name="PROMPT" />”.</translation>
 <translation id="6331191339300272798">Automatiskt mörkt tema</translation>
+<translation id="6335228876613776082">Modellnedladdning har slutförts</translation>
 <translation id="6340526405444716530">Anpassning</translation>
 <translation id="6348252528297699679">Du kan inaktivera plats i Inställningar &gt; Integritet och säkerhet &gt; Integritetsinställningar &gt; Platsåtkomst. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">Användarnamn och lösenord</translation>
@@ -1204,6 +1210,7 @@
 <translation id="708426984172631313">HAR STOPPATS</translation>
 <translation id="7086168019478250425">bioluminiscent strand</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="7086916854357021265">Genererar inspelade namn</translation>
 <translation id="7097908713073775559">färgstarka</translation>
 <translation id="710028965487274708">Misslyckades – auktoriseringen misslyckades</translation>
 <translation id="7101959270679078188">Lås upp <ph name="DEVICE_NAME" /> för att fortsätta uppdateringsprocessen</translation>
@@ -1533,6 +1540,7 @@ Ladda ned transkriptionsmodellen (upp till 100 MB) för att få transkriptioner
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Album i Google Foto</translation>
 <translation id="8775713578693478175">Modem-APN</translation>
+<translation id="877735394245039557">Modellnedladdning pågår</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Nätverket kan ha en infångstportal</translation>
 <translation id="8797082062139985406">Skapa ett namn med Google AI</translation>

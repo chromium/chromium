@@ -145,6 +145,7 @@
 <translation id="1651925268237749928">မျှဝေထားသော အယ်လ်ဘမ်ကို ရွေးထားသည်။ အခြားလူများက ဓာတ်ပုံများ ထည့်နိုင်၊ ပြောင်းနိုင်သည်။ ဤအယ်လ်ဘမ်တွင် လောလောဆယ် မရှိသော ဓာတ်ပုံများကို သင့်နောက်ခံက သုံးနိုင်လောက်သည်။</translation>
 <translation id="1661512400125589646">ခဏရပ်ရန်</translation>
 <translation id="1661865805917886535">အကောင့်နှင့် စနစ်အချက်အလက် အချို့ကို Google သို့ ပို့နိုင်သည်။ ကျွန်ုပ်တို့၏ ကိုယ်ရေးအချက်အလက်လုံခြုံမှုဆိုင်ရာ မူဝါဒ (<ph name="PRIVACYPOLICYURL" />) နှင့် ဝန်ဆောင်မှုစည်းမျဉ်းများ (<ph name="TERMSOFSERVICEURL" />) အရ ဝန်ဆောင်မှုများ ပိုကောင်းမွန်စေရန်နှင့် နည်းပညာဆိုင်ရာ ပြဿနာများ ကူညီဖြေရှင်းပေးနိုင်ရန် ဤအချက်အလက်များကို ကျွန်ုပ်တို့ အသုံးပြုပါသည်။ အကြောင်းအရာ အပြောင်းအလဲများ တောင်းဆိုရန် ‘ဥပဒေဆိုင်ရာ အကူအညီ’ (<ph name="LEGALHELPPAGEURL" />) သို့ သွားပါ။</translation>
+<translation id="1662699081856352167">အနှစ်ချုပ် ထုတ်ပြီးပါပြီ</translation>
 <translation id="1662989795263954667">ရပ်သွားသည် - မင်ကုန်နေသည်</translation>
 <translation id="1664796644829245314"><ph name="PREVIEW_OBJECT" /> ကို အစမ်းကြည့်ရန်</translation>
 <translation id="1668469839109562275">အသင့်ပါသော VPN</translation>
@@ -254,6 +255,7 @@
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2148716181193084225">ယနေ့</translation>
 <translation id="2152882202543497059">ဓာတ်ပုံ <ph name="NUMBER" /> ပုံ</translation>
+<translation id="2154460308960858308">ရှာဖွေမှုကို ရှင်းထုတ်ရန်</translation>
 <translation id="2156072344042480449">သင်၏ နောက်ဆုံးညွှန်ကြားချက် ၂ ခု။ ဤစာမျက်နှာတွင် ရှိနေမှသာ ယင်းညွှန်ကြားချက်များကို သုံးနိုင်သည်။</translation>
 <translation id="2157660087437850958">အီမိုဂျီ ရွေးချယ်စနစ်</translation>
 <translation id="2157959690810728433">စီထားသည်</translation>
@@ -500,6 +502,7 @@
 <translation id="3557205324756024651">နေရာတွင်း အထောက်အထား (ဆန္ဒရှိလျှင်)</translation>
 <translation id="3565064564551103223">ခွင့်ပြုထားသည့် IP များ</translation>
 <translation id="3569407787324516067">စခရင်နားချိန်ပုံ</translation>
+<translation id="3571184524500629183">ရှာဖွေမှု ပိတ်ရန်</translation>
 <translation id="3577473026931028326">တစ်ခုခုမှားသွားသည်။ ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="357889014807611375">အခမဲ့မဟုတ်သော Wi-Fi</translation>
 <translation id="3583278742022654445">လိုင်းဆွဲအား မကောင်းပါ။ Wi-Fi လိုင်းရင်းမြစ် အနီးသို့ ရွှေ့ကြည့်ပါ။</translation>
@@ -539,6 +542,7 @@
 <translation id="3780740315729837296">ကီးဘုတ်ကီး သတ်မှတ်ပါ</translation>
 <translation id="3784455785234192852">သော့ခတ်</translation>
 <translation id="3785643128701396311">ပစ်ဆယ်ပုံ</translation>
+<translation id="3799381533888781854">ပိတ်ထားသည် - ဤဆက်တင်ကို သင့် ကြီးကြပ်သူက စီမံသည်။</translation>
 <translation id="380097101658023925">rgb သတ်မှတ်ချက်များ</translation>
 <translation id="38114475217616659">မှတ်တမ်းအားလုံး ရှင်းထုတ်ရန်</translation>
 <translation id="3820172043799983114">ပင်နံပါတ် မမှန်ကန်ပါ။</translation>
@@ -742,6 +746,7 @@
 <translation id="4809927044794281115">လင်းသည့် အပြင်အဆင်</translation>
 <translation id="4813136279048157860">ကျွန်ုပ်၏ ပုံများ</translation>
 <translation id="4813345808229079766">ချိတ်ဆက်မှု</translation>
+<translation id="4824527342590024245">စာလုံး <ph name="MIN_WORD_LENGTH" /> လုံးထက်နည်းသော စာသားမှတ်တမ်းကို လောလောဆယ် မပံ့ပိုးပါ</translation>
 <translation id="4830894019733815633">ချောက်ကြီး</translation>
 <translation id="4832079907277790330">Files အက်ပ်တွင် ဖိုင်တွဲကိုရွေးရန်...</translation>
 <translation id="4835901797422965222">ဖွင့်ထားသော ကွန်ရက်မရှိပါ</translation>
@@ -770,6 +775,7 @@
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> စက္ကန့်အတွင်း <ph name="RATE" /> အားသွင်းထားသည်။</translation>
 <translation id="4930320165497208503">ချိတ်ဆက်မှု စနစ်ထည့်သွင်းရန် (သို့) အပ်ဒိတ်လုပ်ရန် <ph name="BEGIN_LINK" />ဆက်တင်များ<ph name="END_LINK" /> သို့ သွားပါ။</translation>
 <translation id="4932733599132424254">ရက်စွဲ</translation>
+<translation id="4946927805998996217">အနှစ်ချုပ် ထုတ်နေသည်</translation>
 <translation id="4950314376641394653"><ph name="DEVICE_NAME" /> ဖာမ်းဝဲကို <ph name="VERSION" /> ဗားရှင်းသို့ အပ်ဒိတ်လုပ်ထားသည်</translation>
 <translation id="4950893758552030541">သစ်ပင်လိုဏ်ခေါင်း</translation>
 <translation id="4965661459364092269">လုံခြုံမှု ပြင်ဆင်သတ်မှတ်ခြင်း ပြီးပါပြီ</translation>
@@ -830,6 +836,7 @@
 <translation id="5229104491259541281">"<ph name="QUERY" />" ကို ပြောင်းလဲပါ</translation>
 <translation id="5229344016299762883">ဖန်သားပြင်အပြည့်မှ ထွက်ရန်</translation>
 <translation id="5234764350956374838">ပယ်ရန်</translation>
+<translation id="5236119614998611749">အနှစ်ချုပ် ထုတ်၍ မရလိုက်ပါ</translation>
 <translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{သင်၏စီမံခန့်ခွဲသူက "<ph name="APP_NAME" />" ကို သင်လက်မှတ်ထိုးဝင်တိုင်းတွင် အလိုအလျောက်စတင်ရန် စီစဉ်သတ်မှတ်ထားသည်။}=2{သင်၏စီမံခန့်ခွဲသူက "<ph name="APP_NAME" />" နှင့် အခြားအက်ပ် ၁ ခုကို သင်လက်မှတ်ထိုးဝင်တိုင်းတွင် အလိုအလျောက်စတင်ရန် စီစဉ်သတ်မှတ်ထားသည်။}other{သင်၏စီမံခန့်ခွဲသူက "<ph name="APP_NAME" />" နှင့် အခြားအက်ပ် # ခုကို သင်လက်မှတ်ထိုးဝင်တိုင်းတွင် အလိုအလျောက်စတင်ရန် စီစဉ်သတ်မှတ်ထားသည်။}}</translation>
 <translation id="5248419081947706722">အပြာရောင်</translation>
 <translation id="5252456968953390977">ရွမ်မင်း</translation>
@@ -945,6 +952,7 @@
 <translation id="5860033963881614850">ပိတ်ထား</translation>
 <translation id="5860491529813859533">ဖွင့်ရန်</translation>
 <translation id="5876385649737594562">ရွေးရန် ဖွင့်ပါ</translation>
+<translation id="5877503382465267833"><ph name="RECORDING_NAME" /> ခဏရပ်ရန်</translation>
 <translation id="588258955323874662">မျက်နှာပြင် အပြည့်</translation>
 <translation id="5893975327266416093">သတ်မှတ်ရန်အတွက် ကီးဘုတ်ကီးကို တို့ပါ</translation>
 <translation id="5895138241574237353">ပြန်စတင်မည</translation>
@@ -1162,6 +1170,7 @@
 <translation id="6910312834584889076">စကင်ဖတ်စက်၏ အဖုံး ပွင့်နေသည်။ အဖုံးကိုပိတ်ပြီး ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="6910845598686542904">အသံဖိုင်တွင်တွေ့ရှိသော အသံနမူနာများကို တွက်ထုတ်ပေးသည်</translation>
 <translation id="6911383237894364323">မီဒီယာဆာဗာများသို့ ချိတ်ဆက်၍ မရပါ</translation>
+<translation id="6927968682840110570">အသံဖိုင်အမည်</translation>
 <translation id="6930242544192836755">ကြာချိန်</translation>
 <translation id="6930597342185648547">နောက်ခံအကြောင်း</translation>
 <translation id="6939667434404433010">အသံသွင်းချက်အမည်ကို ရှာပါ</translation>
@@ -1274,6 +1283,7 @@
 <translation id="7378170410161264436">Recorder သည် စကားသံနှင့် အသံသွင်းချက်များအတွက် စာသားမှတ်တမ်းများ ပြုလုပ်နိုင်သည်။
 ဤစာသားမှတ်တမ်းများ ရရှိရန် စာသားမှတ်တမ်းမော်ဒယ် (၁၀၀ MB အထိ) ဒေါင်းလုဒ်လုပ်နိုင်သည်။</translation>
 <translation id="7384004438856720753">နန်းတော်</translation>
+<translation id="7388345524791662148"><ph name="RECORDING_NAME" /> အတွက် နောက်ထပ်ရွေးစရာများ</translation>
 <translation id="7388959671917308825">အသင့်ပါတာ့ချ်ပက်</translation>
 <translation id="7397270852490618635">လင်းသည့် အပြင်အဆင် ပိတ်ရန်</translation>
 <translation id="7401543881546089382">ဖြတ်လမ်းကို ဖျက်ရန်</translation>
@@ -1295,6 +1305,7 @@
 <translation id="7513770521371759388">အောက်</translation>
 <translation id="7514365320538308">ဒေါင်းလုဒ်</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7519481256236810334"><ph name="RECORDING_NAME" /> ဖွင့်ရန်</translation>
 <translation id="7525067979554623046">ပြုလုပ်ရန်</translation>
 <translation id="7528507600602050979">အကူအညီ အကြောင်းအရာ မရနိုင်ပါ</translation>
 <translation id="7535791657097741517">လင်းသည့် အပြင်အဆင် ဖွင့်ရန်</translation>
@@ -1371,6 +1382,7 @@
 <translation id="7897043345768902965">လူသွားစင်္ကြံ</translation>
 <translation id="7902285181767404769">အသံသွင်းနေစဉ် အကြောင်းကြားချက်များကို အသံတိတ်နိုင်သည်</translation>
 <translation id="7903695460270716054">ရွေးချယ်ထားသော ပိုစတာပုံနှင့် ပုံများ ရွေးရန်</translation>
+<translation id="7912005977894000746">ပင်မစာမျက်နှာသို့ ပြန်သွားရန်</translation>
 <translation id="7915220255123750251">ကွန်ရက် APN ဆက်တင်များကို စီမံနိုင်သည်။ APN များက ဆယ်လူလာ ကွန်ရက်နှင့် အင်တာနက်အကြား ချိတ်ဆက်ပေးသည်။</translation>
 <translation id="7936303884198020182">အမည်ဆာဗာတစ်ခုမျှ ရှာမတွေ့ပါ</translation>
 <translation id="7942349550061667556">အနီရောင်</translation>

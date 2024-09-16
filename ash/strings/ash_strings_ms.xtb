@@ -78,6 +78,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="1240638468526743569">Apl</translation>
 <translation id="1242198791279543032">Pemberitahuan diredamkan</translation>
 <translation id="1242883863226959074">peranti</translation>
+<translation id="1245476784081715330">Syabas!</translation>
 <translation id="1245644940275736236">Akses Assistant</translation>
 <translation id="124678866338384709">Tutup tab semasa</translation>
 <translation id="1246890715821376239">Apl tidak disokong</translation>
@@ -843,6 +844,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="3958714870339660776">Sepanjang Hari</translation>
 <translation id="3962859241508114581">Lagu Sebelumnya</translation>
 <translation id="3963124517343721543">Teruskan dari tempat anda berhenti dengan mudah dengan membuka tetingkap dan tab anda sebelumnya. Anda juga akan melihat cadangan diperibadikan untuk aktiviti yang boleh dilakukan seterusnya.</translation>
+<translation id="396506362088290977">Uji bunyi mikrofon anda</translation>
 <translation id="3969043077941541451">Mati</translation>
 <translation id="3970324493235864154">Lihat pemberitahuan telefon anda</translation>
 <translation id="397105322502079400">Mengira...</translation>
@@ -899,6 +901,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="4151054805501931758">Kemasan potret</translation>
 <translation id="4156293514828496577">Baki bateri <ph name="PERCENTAGE" />% (kira-kira <ph name="TIME_LEFT" />). Sesetengah ciri dihadkan untuk meningkatkan hayat bateri.</translation>
 <translation id="4160919062868802509">Berbilang sumber audio dikesan</translation>
+<translation id="416245495747357243">Selesai!</translation>
 <translation id="4165275524535002941">Kabel mungkin tidak menyokong paparan</translation>
 <translation id="4177415338862979658">Klik untuk menyemak butiran</translation>
 <translation id="4177913004758410636">{0,plural, =1{Kemas kini peranti dalam masa sehari}other{Kemas kini peranti dalam masa # hari}}</translation>
@@ -984,6 +987,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> dimatikan.</translation>
 <translation id="4417647906073317561">Tetapan fokus. Tetapkan pemasa, tugasan dan muzik untuk meningkatkan tumpuan.</translation>
 <translation id="4424159417645388645">Meja 5</translation>
+<translation id="4426817706804363424">Syabas!</translation>
 <translation id="4430019312045809116">Kelantangan</translation>
 <translation id="4441283832827406317">Apl diisih mengikut nama</translation>
 <translation id="4445159312344259901">Log masuk untuk membuka kunci</translation>
@@ -1248,6 +1252,7 @@ Anda juga boleh menggunakan pintasan papan kekunci. Mula-mula, serlahkan teks, k
 <translation id="5283198616748585639">Tambah 1 min</translation>
 <translation id="528468243742722775">End</translation>
 <translation id="5286194356314741248">Mengimbas</translation>
+<translation id="528641622273682395">Togol ujian mikrofon</translation>
 <translation id="5297423144044956168">Tiada peranti mudah alih ditemukan</translation>
 <translation id="5297704307811127955">Dimatikan</translation>
 <translation id="5300589172476337783">Paparkan</translation>
@@ -1275,6 +1280,7 @@ Tiada peranti disambungkan.</translation>
 <translation id="536019650977002321">Pentadbir anda tidak membenarkan rakaman audio. Hubungi pentadbir anda untuk mendapatkan maklumat lanjut.</translation>
 <translation id="5361524080961918551">Fail pertuturan <ph name="LANGUAGE" /> dimuat turun sebahagiannya</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Pergi ke tab ini</translation>
+<translation id="5363835273551457276">Anda boleh menguji bunyi mikrofon anda. Tutup panel untuk berhenti.</translation>
 <translation id="5364693579536176785">ruang storan</translation>
 <translation id="5369573834963677938">Kawalan wajah akan tersedia kepada semua pengguna pada peranti</translation>
 <translation id="5369717264580061086">Pratonton fail pada apl Files</translation>
@@ -1415,6 +1421,7 @@ Tiada peranti disambungkan.</translation>
 <translation id="5802516411616338943">Buka Tetapan Pantas</translation>
 <translation id="5804651031882187592">Matikan tetapan "Kunci SIM"</translation>
 <translation id="5805809050170488595">Klik untuk aktifkan <ph name="NETWORK_NAME" /></translation>
+<translation id="5818796501620225415">Anda boleh menambahkan lebih banyak masa atau menamatkan sesi fokus anda</translation>
 <translation id="5819918159912280082">Chromebook anda dimulakan semula secara tiba-tiba. Buka tetingkap dan apl anda sebelum ini.</translation>
 <translation id="5823239091726045201">Google Task pada web</translation>
 <translation id="5825969630400862129">Tetapan peranti yang bersambung</translation>
@@ -2126,6 +2133,7 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="8262312463845990408">Togol main balik</translation>
 <translation id="8268302343625273732">Lihat semua tugasan dalam Google Classroom</translation>
 <translation id="8277261673056602147">Serlahkan teks pada skrin anda</translation>
+<translation id="8282784978194352587">Anda berjaya!</translation>
 <translation id="8287009018010202411">Produktiviti</translation>
 <translation id="828708037801473432">Dimatikan</translation>
 <translation id="8297006494302853456">Lemah</translation>
@@ -2203,6 +2211,7 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="8609384513243082612">Buka tab baharu</translation>
 <translation id="861045123704058818">Apl disusun mengikut kategori buat sementara waktu</translation>
 <translation id="8612216344243590325">Simpan fail penting dalam <ph name="HOLDING_SPACE_TITLE" />, bukannya pada desktop. Seret fail kepada <ph name="HOLDING_SPACE_TITLE" />.</translation>
+<translation id="8612338981637220013">Teruskan pencapaian anda yang hebat!</translation>
 <translation id="8614517853887502247">Pemberitahuan <ph name="APP_1_TITLE" /> dan <ph name="APP_2_TITLE" /> disembunyikan kerana perlindungan paparan dihidupkan</translation>
 <translation id="8615778328722901791">Buka bar alat</translation>
 <translation id="8619000641825875669">OneDrive</translation>
@@ -2245,6 +2254,7 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />: Mengaktifkan...</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
+<translation id="8751299148074971734">Teruskan usaha anda!</translation>
 <translation id="8753368202781196133">Bahasa ini tidak disokong pada masa ini.</translation>
 <translation id="8755498163081687682">Sahkan identiti anda: <ph name="ORIGIN_NAME" /> ingin mengesahkan orang itu ialah anda</translation>
 <translation id="875593634123171288">Tunjukkan tetapan VPN</translation>

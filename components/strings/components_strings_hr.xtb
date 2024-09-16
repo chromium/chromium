@@ -28,7 +28,6 @@
 <translation id="1050038467049342496">Zatvorite ostale aplikacije</translation>
 <translation id="1053959602163383901">Odabrali ste potvrdu pomoću uređaja za autentifikaciju na web-lokacijama koje koriste <ph name="PROVIDER_ORIGIN" />. Taj je davatelj usluga možda pohranio podatke o vašem načinu plaćanja za koje možete <ph name="LINK_TEXT" />.</translation>
 <translation id="1055184225775184556">&amp;Poništi dodavanje</translation>
-<translation id="105642538515333723">Možete unijeti bilo koje fraze ili pojedinosti kojih se sjećate sa stranica koje ste ranije pregledavali, poput "udobne cipele za hodanje"</translation>
 <translation id="1056898198331236512">Upozorenje</translation>
 <translation id="1058344460600311577"><ph name="PLAY_CHROME_DINO_GAME_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, a zatim Enter da biste igrali igru Dino Run u Chromeu</translation>
 <translation id="1058479211578257048">Spremanje kartica...</translation>
@@ -2958,7 +2957,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="6433797564277305076">Odsad koristite otključavanje uređaja kako biste brže potvrdili kartice</translation>
 <translation id="643917412048333145">Haljine</translation>
 <translation id="6440503408713884761">Zanemareno</translation>
-<translation id="6440534369669992497">Možete unijeti bilo koje fraze ili pojedinosti kojih se sjećate sa stranica koje ste ranije pregledavali, poput "udobne cipele za hodanje". Da biste pretraživali, pritisnite <ph name="SHORTCUT" />.</translation>
 <translation id="6443406338865242315">koja ste proširenja i dodatke instalirali</translation>
 <translation id="6444329331928531170">Umirovljenje i mirovina</translation>
 <translation id="6446608382365791566">Dodajte još podataka</translation>

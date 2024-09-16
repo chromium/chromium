@@ -42,6 +42,7 @@
 <translation id="1148499908455722006">打開 <ph name="USER_NAME" /> 嘅資料對話框</translation>
 <translation id="1150989369772528668">日曆</translation>
 <translation id="1153356358378277386">已配對的裝置</translation>
+<translation id="1153918444040990015">無法連接「專注模式」音效</translation>
 <translation id="1155734730463845512">目前電量 <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1157514002898505378">生成式 AI 尚在實驗階段，內容或會不準確、誤導或令人反感。如要舉報問題，請聯絡你的管理員。<ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="1160215328209699296">已開啟且正在使用中</translation>
@@ -175,6 +176,7 @@
 <translation id="1550523713251050646">點擊即可取得更多選項</translation>
 <translation id="1555130319947370107">藍色</translation>
 <translation id="1557622599341396706">顯示桌面名稱</translation>
+<translation id="1567138500090284106">滑鼠鍵按鈕</translation>
 <translation id="1569384531973824928">此操作會允許所有具備相機和麥克風權限的應用程式和網站存取。系統可能會要求你重新整理網頁或重新啟動應用程式。</translation>
 <translation id="1571697193564730395">切換「請勿騷擾」模式。<ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">放大鏡開啟時縮小畫面</translation>
@@ -242,6 +244,7 @@
 <translation id="1787955149152357925">關閉</translation>
 <translation id="1796561540704213354">網站，包括你瀏覽過的網頁和目前開啟的頁面</translation>
 <translation id="179842970735685253">Google 服務條款</translation>
+<translation id="1805407494113167797">無法播放「專注模式」音效</translation>
 <translation id="181103072419391116">訊號強度係 <ph name="SIGNAL_STRENGTH" />，由管理員管理</translation>
 <translation id="1816896987747843206">此操作會允許具備相機權限的所有應用程式和網站存取相機</translation>
 <translation id="1823873187264960516">以太網：<ph name="ADDRESS" /></translation>
@@ -1353,6 +1356,7 @@
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">無法驗證您的密碼。請再試一次。</translation>
 <translation id="5632485077360054581">顯示方法</translation>
+<translation id="5633826232582408011">當你啟用「幫我寫」和「幫我讀」後，輸入的文字、文件內容和網頁網址將傳送至 Google AI 伺服器，以生成寫作建議、產生摘要、回答問題及根據《<ph name="LINK_TO_SERVICE_TERMS" />》改善產品。請勿加入任何個人、敏感或機密內容。</translation>
 <translation id="5648021990716966815">麥克風插孔</translation>
 <translation id="5652575806481723716">「<ph name="FOCUSED_APP_NAME" />」有新嘅要求需要你處理。</translation>
 <translation id="5662075790140998213">桌面 10</translation>
@@ -1410,6 +1414,7 @@
 <translation id="5802516411616338943">開啟「快速設定」</translation>
 <translation id="5804651031882187592">關閉「鎖定 SIM 卡」設定</translation>
 <translation id="5805809050170488595">按一下即可啟用 <ph name="NETWORK_NAME" /></translation>
+<translation id="5818796501620225415">你可以延長時間，也可以結束專注模式</translation>
 <translation id="5819918159912280082">Chromebook 意外重新開機。你可開啟之前使用的視窗和應用程式。</translation>
 <translation id="5823239091726045201">Google Tasks 網頁版</translation>
 <translation id="5825969630400862129">已連接裝置設定</translation>
@@ -2280,6 +2285,7 @@
 <translation id="8876661425082386199">請檢查連線</translation>
 <translation id="8877788021141246043">設定提醒</translation>
 <translation id="8878886163241303700">延伸螢幕</translation>
+<translation id="8885424115080869847">無法連接 YouTube Music</translation>
 <translation id="888982883502837004">有適用於裝置的韌體更新，按一下即可查看並更新。</translation>
 <translation id="8896630965521842259">「<ph name="DESK_TEMPLATE_NAME" />」將被永久刪除</translation>
 <translation id="889790758758811533">剩餘 <ph name="PERCENTAGE" />% 電量 (大約 <ph name="TIME_LEFT" />)。請將裝置接上電源。</translation>
