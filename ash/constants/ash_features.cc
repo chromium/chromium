@@ -2590,6 +2590,11 @@ BASE_FEATURE(kPickerDogfood,
              "PickerDogfood",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables filtering of link suggestions.
+BASE_FEATURE(kPickerFilterLinks,
+             "PickerFilterLinks",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Uses grid view for recent local files.
 BASE_FEATURE(kPickerGrid, "PickerGrid", base::FEATURE_ENABLED_BY_DEFAULT);
 

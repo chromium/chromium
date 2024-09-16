@@ -83,10 +83,15 @@ void PickerSuggestionsController::GetSuggestions(const PickerModel& model,
     // asking for 1 result.
     // TODO: b/357740941: Request only one Drive file once directory filtering
     // is implemented inside DriveFS.
+    // TODO: b/366237507 - Request only one Link result once HistoryService
+    // supports filtering.
     switch (category) {
       case PickerCategory::kLinks:
         client_->GetSuggestedLinkResults(
-            /*max_results=*/1,
+            /*max_results=*/base::FeatureList::IsEnabled(
+                ash::features::kPickerFilterLinks)
+                ? 10
+                : 1,
             base::BindRepeating(&GetMostRecentResults, 1).Then(callback));
         break;
       case PickerCategory::kLocalFiles: {
@@ -120,7 +125,13 @@ void PickerSuggestionsController::GetSuggestionsForCategory(
     case PickerCategory::kEditorRewrite:
       NOTREACHED_NORETURN();
     case PickerCategory::kLinks:
-      client_->GetSuggestedLinkResults(kMaxRecentLinks, std::move(callback));
+      // TODO: b/366237507 - Request only kMaxRecentLinks results once
+      // HistoryService supports filtering.
+      client_->GetSuggestedLinkResults(
+          base::FeatureList::IsEnabled(ash::features::kPickerFilterLinks)
+              ? kMaxRecentLinks * 3
+              : kMaxRecentLinks,
+          std::move(callback));
       return;
     case PickerCategory::kEmojisGifs:
     case PickerCategory::kEmojis:

@@ -194,7 +194,7 @@ TEST_F(PickerSuggestionsControllerTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(ash::features::kPickerGrid);
   NiceMock<MockPickerClient> client;
-  EXPECT_CALL(client, GetSuggestedLinkResults(1, _))
+  EXPECT_CALL(client, GetSuggestedLinkResults(_, _))
       .WillRepeatedly(
           WithArg<1>(RunCallbackArgWith(std::vector<PickerSearchResult>{
               PickerBrowsingHistoryResult(GURL("a.com"), u"a",
@@ -238,7 +238,7 @@ TEST_F(PickerSuggestionsControllerTest,
        GetSuggestionsRequestsAndReturnsSuggestionsPerCategory) {
   base::test::ScopedFeatureList feature_list(ash::features::kPickerGrid);
   NiceMock<MockPickerClient> client;
-  EXPECT_CALL(client, GetSuggestedLinkResults(1, _))
+  EXPECT_CALL(client, GetSuggestedLinkResults(_, _))
       .WillRepeatedly(
           WithArg<1>(RunCallbackArgWith(std::vector<PickerSearchResult>{
               PickerBrowsingHistoryResult(GURL("a.com"), u"a",

@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/picker/picker_controller.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -576,6 +577,30 @@ TEST_F(PickerClientImplTest, GetSuggestedLinkResultsAreTruncatedToMostRecent) {
                   Field("url", &ash::PickerBrowsingHistoryResult::url,
                         GURL("http://b.com/history")))));
   EXPECT_EQ(favicon_service.page_url_, GURL("http://b.com/history"));
+}
+
+TEST_F(PickerClientImplTest,
+       GetSuggestedLinkResultsFiltersOutPersonalizedLinks) {
+  base::test::ScopedFeatureList features(ash::features::kPickerFilterLinks);
+  ash::PickerController controller;
+  PickerClientImpl client(&controller, user_manager());
+  const base::Time now = base::Time::Now();
+  AddSearchToHistory(profile(),
+                     GURL("https://mail.google.com/mail/u/0/#inbox/aaa"), now);
+  AddSearchToHistory(profile(),
+                     GURL("https://mail.google.com/chat/u/0/#chat/aaa"), now);
+  AddSearchToHistory(profile(), GURL("https://mail.google.com"), now);
+  TestFaviconService favicon_service;
+  client.get_link_suggester_for_test()->set_favicon_service_for_test(
+      &favicon_service);
+
+  base::test::TestFuture<std::vector<ash::PickerSearchResult>> future;
+  client.GetSuggestedLinkResults(100u, future.GetRepeatingCallback());
+
+  EXPECT_THAT(future.Get(),
+              ElementsAre(VariantWith<ash::PickerBrowsingHistoryResult>(
+                  Field("url", &ash::PickerBrowsingHistoryResult::url,
+                        GURL("https://mail.google.com")))));
 }
 
 class PickerClientImplEditorTest : public PickerClientImplTest {
