@@ -3736,6 +3736,25 @@
             ]
         }
     ],
+    "CPSS-V3": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PermissionPredictionsV3"
+                    ]
+                }
+            ]
+        }
+    ],
     "CPUMeasurementInFreezingPolicy": [
         {
             "platforms": [
