@@ -715,6 +715,17 @@ class SnapshotBuildTest(BisectTestCase):
     self.assertRegex(mock_run.call_args.args[0],
                      r'driver=.+/chromedriver prog=.+/chrome')
 
+  @patch('bisect-builds.GetChromiumRevision', return_value=1313185)
+  def test_get_bad_revision(self, mock_GetChromiumRevision):
+    options, args = bisect_builds.ParseCommandLine(
+        ['-a', 'linux64', '-g', '1313161'])
+    build = bisect_builds.create_archive_build(options)
+    self.assertIsInstance(build, bisect_builds.SnapshotBuild)
+    mock_GetChromiumRevision.assert_called_once_with(
+        'http://commondatastorage.googleapis.com/chromium-browser-snapshots'
+        '/Linux_x64/LAST_CHANGE')
+    self.assertEqual(build.bad_revision, 1313185)
+
 
 class ASANBuildTest(BisectTestCase):
 

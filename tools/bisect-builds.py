@@ -910,8 +910,8 @@ class OfficialBuild(ArchiveBuildWithCommitPosition):
 class SnapshotBuild(ArchiveBuildWithCommitPosition):
 
   def __init__(self, options):
-    super().__init__(options)
     self.base_url = CHROMIUM_BASE_URL
+    super().__init__(options)
 
   @property
   def build_type(self):
