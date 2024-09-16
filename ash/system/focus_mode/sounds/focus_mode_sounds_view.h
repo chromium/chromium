@@ -29,7 +29,7 @@ class ASH_EXPORT FocusModeSoundsView
   METADATA_HEADER(FocusModeSoundsView, RoundedContainer)
 
  public:
-  explicit FocusModeSoundsView(
+  FocusModeSoundsView(
       const base::flat_set<focus_mode_util::SoundType>& sound_sections,
       bool is_network_connected);
   FocusModeSoundsView(const FocusModeSoundsView&) = delete;
