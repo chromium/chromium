@@ -454,7 +454,8 @@ void CreateDefaultTabGroupAndOpenMenu(
 
 // Tests that the Tab Grid button indicator is correctly updated whether a tab
 // is grouped or not.
-- (void)testTabGridButtonUpdatesWhenTabIsGroupedUngrouped {
+// TODO(crbug.com/367287351): Test fails on iphone-device.
+- (void)DISABLED_testTabGridButtonUpdatesWhenTabIsGroupedUngrouped {
   // Check that the Tab Grid button is in normal style.
   [[EarlGrey selectElementWithMatcher:TabGridButtonInNormalStyle()]
       assertWithMatcher:grey_sufficientlyVisible()];
