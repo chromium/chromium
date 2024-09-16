@@ -139,8 +139,8 @@ void AnnotationsTabHelper::OnTextExtracted(web::WebState* web_state,
   metadata_ = std::make_unique<base::Value::Dict>(metadata.Clone());
 
   TextClassifierModelService* service =
-      TextClassifierModelServiceFactory::GetForBrowserState(
-          ChromeBrowserState::FromBrowserState(web_state->GetBrowserState()));
+      TextClassifierModelServiceFactory::GetForProfile(
+          ProfileIOS::FromBrowserState(web_state->GetBrowserState()));
   base::FilePath model_path =
       service ? service->GetModelPath() : base::FilePath();
 
@@ -221,11 +221,11 @@ void AnnotationsTabHelper::ApplyDeferredProcessing(
   if (main_frame && deferred) {
     std::vector<web::TextAnnotation> annotations(std::move(deferred.value()));
 
-    PrefService* prefs = IsHomeCustomizationEnabled()
-                             ? ChromeBrowserState::FromBrowserState(
-                                   web_state_->GetBrowserState())
-                                   ->GetPrefs()
-                             : GetApplicationContext()->GetLocalState();
+    PrefService* prefs =
+        IsHomeCustomizationEnabled()
+            ? ProfileIOS::FromBrowserState(web_state_->GetBrowserState())
+                  ->GetPrefs()
+            : GetApplicationContext()->GetLocalState();
 
     if (IsIOSParcelTrackingEnabled() && !IsParcelTrackingDisabled(prefs)) {
       parcel_number_tracker_.ProcessAnnotations(annotations);

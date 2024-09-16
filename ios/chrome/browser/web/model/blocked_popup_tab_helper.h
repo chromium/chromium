@@ -68,8 +68,8 @@ class BlockedPopupTabHelper
   // existing infobar with the updated count.
   void ShowInfoBar();
 
-  // Returns BrowserState for the WebState that this object is attached to.
-  ChromeBrowserState* GetBrowserState() const;
+  // Returns the profile for the WebState that this object is attached to.
+  ProfileIOS* GetProfile() const;
 
   // Registers this object as an observer for the InfoBarManager associated with
   // `web_state_`.  Does nothing if already registered.

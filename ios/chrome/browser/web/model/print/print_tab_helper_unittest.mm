@@ -39,10 +39,10 @@ class PrintTabHelperTest : public PlatformTest {
     RegisterBrowserStatePrefs(registry.get());
     sync_preferences::PrefServiceMockFactory factory;
 
-    TestChromeBrowserState::Builder test_cbs_builder;
+    TestProfileIOS::Builder test_cbs_builder;
     test_cbs_builder.SetPrefService(factory.CreateSyncable(registry.get()));
-    chrome_browser_state_ = std::move(test_cbs_builder).Build();
-    web_state_.SetBrowserState(chrome_browser_state_.get());
+    profile_ = std::move(test_cbs_builder).Build();
+    web_state_.SetBrowserState(profile_.get());
 
     printer_ = [[PrintTabHelperTestPrinter alloc] init];
     PrintTabHelper::GetOrCreateForWebState(&web_state_)->set_printer(printer_);
@@ -50,7 +50,7 @@ class PrintTabHelperTest : public PlatformTest {
 
   PrintTabHelperTestPrinter* printer_;
   base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   web::FakeWebState web_state_;
 };
 
@@ -65,7 +65,7 @@ TEST_F(PrintTabHelperTest, PrintEnabled) {
 // Tests printing when the pref controlling printing is disabled.
 TEST_F(PrintTabHelperTest, PrintDisabled) {
   ASSERT_FALSE(printer_.printInvoked);
-  chrome_browser_state_->GetPrefs()->SetBoolean(prefs::kPrintingEnabled, false);
+  profile_->GetPrefs()->SetBoolean(prefs::kPrintingEnabled, false);
 
   PrintTabHelper::GetOrCreateForWebState(&web_state_)->Print();
   EXPECT_FALSE(printer_.printInvoked);

@@ -52,22 +52,20 @@ class CertificatePolicyAppStateAgentTest : public BlockCleanupTest {
     startup_information_mock_ =
         [OCMockObject mockForProtocol:@protocol(StartupInformation)];
 
-    chrome_browser_state_ = profile_manager_.AddProfileWithBuilder(
-        TestChromeBrowserState::Builder());
+    profile_ =
+        profile_manager_.AddProfileWithBuilder(TestProfileIOS::Builder());
 
     BrowserList* browser_list =
-        BrowserListFactory::GetForBrowserState(chrome_browser_state_.get());
+        BrowserListFactory::GetForProfile(profile_.get());
 
     app_state_ =
         [[AppState alloc] initWithStartupInformation:startup_information_mock_];
 
     // Create two regular and one OTR browsers.
-    regular_browser_1_ =
-        std::make_unique<TestBrowser>(chrome_browser_state_.get());
-    regular_browser_2_ =
-        std::make_unique<TestBrowser>(chrome_browser_state_.get());
-    incognito_browser_ = std::make_unique<TestBrowser>(
-        chrome_browser_state_->GetOffTheRecordChromeBrowserState());
+    regular_browser_1_ = std::make_unique<TestBrowser>(profile_.get());
+    regular_browser_2_ = std::make_unique<TestBrowser>(profile_.get());
+    incognito_browser_ =
+        std::make_unique<TestBrowser>(profile_->GetOffTheRecordProfile());
     browser_list->AddBrowser(regular_browser_1_.get());
     browser_list->AddBrowser(regular_browser_2_.get());
     browser_list->AddBrowser(incognito_browser_.get());
@@ -81,7 +79,7 @@ class CertificatePolicyAppStateAgentTest : public BlockCleanupTest {
   // Adds a web state with `host` as the active URL to `browser`.
   void AddWebStateToBrowser(std::string host, Browser* browser) {
     auto test_web_state = std::make_unique<web::FakeWebStateWithPolicyCache>(
-        browser->GetBrowserState());
+        browser->GetProfile());
     GURL url(host);
     test_web_state->SetCurrentURL(url);
     WebStateList* web_state_list = browser->GetWebStateList();
@@ -92,7 +90,7 @@ class CertificatePolicyAppStateAgentTest : public BlockCleanupTest {
   // as having a valid certificate to `browser`.
   void AddCertifiedWebStateToBrowser(std::string host, Browser* browser) {
     auto test_web_state = std::make_unique<web::FakeWebStateWithPolicyCache>(
-        browser->GetBrowserState());
+        browser->GetProfile());
     GURL url(host);
     test_web_state->SetCurrentURL(url);
     test_web_state->GetSessionCertificatePolicyCache()
@@ -178,16 +176,15 @@ class CertificatePolicyAppStateAgentTest : public BlockCleanupTest {
     }));
   }
 
-  // The policy cache for the regular browser state used in this test.
+  // The policy cache for the regular profile used in this test.
   scoped_refptr<web::CertificatePolicyCache> RegularPolicyCache() {
-    return web::BrowserState::GetCertificatePolicyCache(
-        chrome_browser_state_.get());
+    return web::BrowserState::GetCertificatePolicyCache(profile_.get());
   }
 
-  // The policy cache for the incognito browser state used in this test.
+  // The policy cache for the incognito profile used in this test.
   scoped_refptr<web::CertificatePolicyCache> IncognitoPolicyCache() {
     return web::BrowserState::GetCertificatePolicyCache(
-        chrome_browser_state_->GetOffTheRecordChromeBrowserState());
+        profile_->GetOffTheRecordProfile());
   }
 
   bool RegularPolicyCacheContainsHost(const std::string& host) {
@@ -223,7 +220,7 @@ class CertificatePolicyAppStateAgentTest : public BlockCleanupTest {
   TestProfileManagerIOS profile_manager_;
   AppState* app_state_;
   CertificatePolicyAppAgent* app_agent_;
-  raw_ptr<ChromeBrowserState> chrome_browser_state_;
+  raw_ptr<ProfileIOS> profile_;
   std::unique_ptr<TestBrowser> regular_browser_1_;
   std::unique_ptr<TestBrowser> regular_browser_2_;
   std::unique_ptr<TestBrowser> incognito_browser_;

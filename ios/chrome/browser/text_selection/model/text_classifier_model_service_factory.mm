@@ -23,10 +23,14 @@ TextClassifierModelServiceFactory::GetInstance() {
 
 // static
 TextClassifierModelService*
-TextClassifierModelServiceFactory::GetForBrowserState(
-    ChromeBrowserState* state) {
+TextClassifierModelServiceFactory::GetForBrowserState(ProfileIOS* profile) {
+  return GetForProfile(profile);
+}
+
+TextClassifierModelService* TextClassifierModelServiceFactory::GetForProfile(
+    ProfileIOS* profile) {
   return static_cast<TextClassifierModelService*>(
-      GetInstance()->GetServiceForBrowserState(state, true));
+      GetInstance()->GetServiceForBrowserState(profile, true));
 }
 
 TextClassifierModelServiceFactory::TextClassifierModelServiceFactory()

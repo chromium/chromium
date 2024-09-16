@@ -31,8 +31,8 @@ const char kURL2[] = "https://www.some.url2.com";
 class WebStateDelegateBrowserAgentTest : public PlatformTest {
  public:
   WebStateDelegateBrowserAgentTest() {
-    browser_state_ = TestChromeBrowserState::Builder().Build();
-    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    profile_ = TestProfileIOS::Builder().Build();
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
     TabInsertionBrowserAgent::CreateForBrowser(browser_.get());
     WebStateDelegateBrowserAgent::CreateForBrowser(
         browser_.get(), TabInsertionBrowserAgent::FromBrowser(browser_.get()));
@@ -47,7 +47,7 @@ class WebStateDelegateBrowserAgentTest : public PlatformTest {
     web::NavigationManager::WebLoadParams load_params(url);
     load_params.transition_type = ui::PAGE_TRANSITION_TYPED;
 
-    web::WebState::CreateParams create_params(browser_->GetBrowserState());
+    web::WebState::CreateParams create_params(browser_->GetProfile());
     create_params.created_with_opener = false;
 
     std::unique_ptr<web::WebState> web_state =
@@ -66,7 +66,7 @@ class WebStateDelegateBrowserAgentTest : public PlatformTest {
 
  protected:
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
 };
 

@@ -5,8 +5,9 @@
 #ifndef IOS_CHROME_BROWSER_WEB_MODEL_JAVA_SCRIPT_CONSOLE_JAVA_SCRIPT_CONSOLE_FEATURE_FACTORY_H_
 #define IOS_CHROME_BROWSER_WEB_MODEL_JAVA_SCRIPT_CONSOLE_JAVA_SCRIPT_CONSOLE_FEATURE_FACTORY_H_
 
-#include "base/no_destructor.h"
-#include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "base/no_destructor.h"
+#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
 class JavaScriptConsoleFeature;
 
@@ -15,12 +16,11 @@ class BrowserState;
 }  // namespace web
 
 // Singleton that owns all JavaScriptConsoleFeatures and associates them with
-// a BrowserState.
+// a profile.
 class JavaScriptConsoleFeatureFactory : public BrowserStateKeyedServiceFactory {
  public:
   static JavaScriptConsoleFeatureFactory* GetInstance();
-  static JavaScriptConsoleFeature* GetForBrowserState(
-      web::BrowserState* browser_state);
+  static JavaScriptConsoleFeature* GetForProfile(ProfileIOS* profile);
 
  private:
   friend class base::NoDestructor<JavaScriptConsoleFeatureFactory>;

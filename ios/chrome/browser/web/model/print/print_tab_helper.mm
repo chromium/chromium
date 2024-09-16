@@ -21,7 +21,7 @@ void PrintTabHelper::set_printer(id<WebStatePrinter> printer) {
 
 void PrintTabHelper::Print() {
   BOOL printingEnabled =
-      ChromeBrowserState::FromBrowserState(web_state_->GetBrowserState())
+      ProfileIOS::FromBrowserState(web_state_->GetBrowserState())
           ->GetPrefs()
           ->GetBoolean(prefs::kPrintingEnabled);
 

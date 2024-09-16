@@ -77,21 +77,19 @@ NSError* CreateTestError() {
 
 class ChromeWebClientTest : public PlatformTest {
  public:
-  ChromeWebClientTest() {
-    browser_state_ = TestChromeBrowserState::Builder().Build();
-  }
+  ChromeWebClientTest() { profile_ = TestProfileIOS::Builder().Build(); }
 
   ChromeWebClientTest(const ChromeWebClientTest&) = delete;
   ChromeWebClientTest& operator=(const ChromeWebClientTest&) = delete;
 
   ~ChromeWebClientTest() override = default;
 
-  ChromeBrowserState* browser_state() { return browser_state_.get(); }
+  ProfileIOS* profile() { return profile_.get(); }
 
  protected:
   web::WebTaskEnvironment environment_{
       web::WebTaskEnvironment::MainThreadType::IO};
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
 };
 
 TEST_F(ChromeWebClientTest, UserAgent) {
@@ -271,12 +269,12 @@ TEST_F(ChromeWebClientTest, PrepareErrorPageWithSSLInfo) {
   test_loader_factory.AddResponse(
       captive_portal::CaptivePortalDetector::kDefaultURL, "",
       net::HTTP_NO_CONTENT);
-  browser_state_->SetSharedURLLoaderFactory(
+  profile_->SetSharedURLLoaderFactory(
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
           &test_loader_factory));
 
   CaptivePortalTabHelper::GetOrCreateForWebState(&web_state);
-  web_state.SetBrowserState(browser_state());
+  web_state.SetBrowserState(profile());
   web_client.PrepareErrorPage(&web_state, GURL(kTestUrl), error,
                               /*is_post=*/false,
                               /*is_off_the_record=*/false,
@@ -296,7 +294,7 @@ TEST_F(ChromeWebClientTest, PrepareErrorPageWithSSLInfo) {
 TEST_F(ChromeWebClientTest, PrepareErrorPageForSafeBrowsingError) {
   // Store an unsafe resource in `web_state`'s container.
   web::FakeWebState web_state;
-  web_state.SetBrowserState(browser_state());
+  web_state.SetBrowserState(profile());
   SafeBrowsingUrlAllowList::CreateForWebState(&web_state);
   SafeBrowsingUnsafeResourceContainer::CreateForWebState(&web_state);
   security_interstitials::IOSBlockingPageTabHelper::CreateForWebState(
@@ -341,7 +339,7 @@ TEST_F(ChromeWebClientTest, PrepareErrorPageForSafeBrowsingError) {
 // committed lookalike interstitial.
 TEST_F(ChromeWebClientTest, PrepareErrorPageForLookalikeUrlError) {
   web::FakeWebState web_state;
-  web_state.SetBrowserState(browser_state());
+  web_state.SetBrowserState(profile());
   LookalikeUrlContainer::CreateForWebState(&web_state);
   security_interstitials::IOSBlockingPageTabHelper::CreateForWebState(
       &web_state);
@@ -383,7 +381,7 @@ TEST_F(ChromeWebClientTest, PrepareErrorPageForLookalikeUrlError) {
 // button instead of 'Back to safety' (when there is no back item).
 TEST_F(ChromeWebClientTest, PrepareErrorPageForLookalikeUrlErrorNoSuggestion) {
   web::FakeWebState web_state;
-  web_state.SetBrowserState(browser_state());
+  web_state.SetBrowserState(profile());
   LookalikeUrlContainer::CreateForWebState(&web_state);
   security_interstitials::IOSBlockingPageTabHelper::CreateForWebState(
       &web_state);
@@ -428,7 +426,7 @@ TEST_F(ChromeWebClientTest, PrepareErrorPageForLookalikeUrlErrorNoSuggestion) {
 // committed HTTPS-Only Mode interstitial that has a 'Go back'.
 TEST_F(ChromeWebClientTest, PrepareErrorPageForHttpsOnlyModeError) {
   web::FakeWebState web_state;
-  web_state.SetBrowserState(browser_state());
+  web_state.SetBrowserState(profile());
   HttpsOnlyModeContainer::CreateForWebState(&web_state);
   security_interstitials::IOSBlockingPageTabHelper::CreateForWebState(
       &web_state);
@@ -466,10 +464,10 @@ TEST_F(ChromeWebClientTest, PrepareErrorPageForHttpsOnlyModeError) {
 TEST_F(ChromeWebClientTest, DefaultUserAgent) {
   ChromeWebClient web_client;
   web::FakeWebState web_state;
-  web_state.SetBrowserState(browser_state());
+  web_state.SetBrowserState(profile());
 
   scoped_refptr<HostContentSettingsMap> settings_map(
-      ios::HostContentSettingsMapFactory::GetForBrowserState(browser_state()));
+      ios::HostContentSettingsMapFactory::GetForProfile(profile()));
   settings_map->SetContentSettingCustomScope(
       ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
       ContentSettingsType::REQUEST_DESKTOP_SITE, CONTENT_SETTING_BLOCK);

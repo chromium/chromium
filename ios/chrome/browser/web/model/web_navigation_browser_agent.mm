@@ -119,8 +119,7 @@ void WebNavigationBrowserAgent::SetDelegate(
 void WebNavigationBrowserAgent::RequestDesktopSite() {
   ReloadWithUserAgentType(web::UserAgentType::DESKTOP);
 
-  feature_engagement::TrackerFactory::GetForBrowserState(
-      browser_->GetBrowserState())
+  feature_engagement::TrackerFactory::GetForProfile(browser_->GetProfile())
       ->NotifyEvent(feature_engagement::events::kDesktopVersionRequested);
 }
 

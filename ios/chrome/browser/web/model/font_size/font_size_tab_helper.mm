@@ -304,9 +304,9 @@ void FontSizeTabHelper::NewPageZoom() {
 }
 
 PrefService* FontSizeTabHelper::GetPrefService() const {
-  ChromeBrowserState* chrome_browser_state =
-      ChromeBrowserState::FromBrowserState(web_state_->GetBrowserState());
-  return chrome_browser_state->GetPrefs();
+  ProfileIOS* profile =
+      ProfileIOS::FromBrowserState(web_state_->GetBrowserState());
+  return profile->GetPrefs();
 }
 
 std::string FontSizeTabHelper::GetCurrentUserZoomMultiplierKey() const {
