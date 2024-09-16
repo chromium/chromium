@@ -87,7 +87,6 @@ class SharingHubBubbleControllerChromeOsImpl final
   void OnSharesheetClosedLacros();
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
-  void OnShareDelivered(sharesheet::SharesheetResult result);
   void OnSharesheetClosed(views::Widget::ClosedReason reason);
 
   void DeselectIcon();

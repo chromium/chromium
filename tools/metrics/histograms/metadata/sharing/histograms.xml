@@ -584,16 +584,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Sharing.SharingHubDesktop.CrOSSharesheetResult"
-    enum="SharingHubSharesheetResult" expires_after="2024-09-22">
-  <owner>tsergeant@chromium.org</owner>
-  <owner>src/chrome/browser/share/OWNERS</owner>
-  <summary>
-    Records whether the user selects a share target after opening the Chrome OS
-    sharesheet.
-  </summary>
-</histogram>
-
 <histogram name="Sharing.SmsFetcherAvailableDeviceCount" units="devices"
     expires_after="2025-01-26">
   <owner>yigu@chromium.org</owner>
