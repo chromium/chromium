@@ -17364,8 +17364,12 @@
                         "PlusAddressAndSingleFieldFormFill",
                         "PlusAddressBlocklistEnabled",
                         "PlusAddressFallbackFromContextMenu",
+                        "PlusAddressGlobalToggle",
+                        "PlusAddressIOSManualFallbackEnabled",
                         "PlusAddressOfferCreationOnSingleUsernameForms",
                         "PlusAddressPreallocation",
+                        "PlusAddressSuggestionRedesign",
+                        "PlusAddressUpdatedErrorStatesInOnboardingModal",
                         "PlusAddressUserOnboardingEnabled",
                         "PlusAddressesEnabled"
                     ]
