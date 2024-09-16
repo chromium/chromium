@@ -19,6 +19,12 @@
 // static
 BringAndroidTabsToIOSService*
 BringAndroidTabsToIOSServiceFactory::GetForBrowserState(ProfileIOS* profile) {
+  return GetForProfile(profile);
+}
+
+// static
+BringAndroidTabsToIOSService*
+BringAndroidTabsToIOSServiceFactory::GetForProfile(ProfileIOS* profile) {
   DCHECK(!profile->IsOffTheRecord());
   return static_cast<BringAndroidTabsToIOSService*>(
       GetInstance()->GetServiceForBrowserState(profile, true));
@@ -66,14 +72,11 @@ BringAndroidTabsToIOSServiceFactory::BuildServiceInstanceFor(
     return nullptr;
   }
 
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
-  PrefService* browser_state_prefs =
-      browser_state ? browser_state->GetPrefs() : nullptr;
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
+  PrefService* profile_prefs = profile ? profile->GetPrefs() : nullptr;
   return std::make_unique<BringAndroidTabsToIOSService>(
       segmentation_platform::SegmentationPlatformServiceFactory::
-          GetDispatcherForProfile(browser_state),
-      SyncServiceFactory::GetForBrowserState(browser_state),
-      SessionSyncServiceFactory::GetForBrowserState(browser_state),
-      browser_state_prefs);
+          GetDispatcherForProfile(profile),
+      SyncServiceFactory::GetForProfile(profile),
+      SessionSyncServiceFactory::GetForProfile(profile), profile_prefs);
 }

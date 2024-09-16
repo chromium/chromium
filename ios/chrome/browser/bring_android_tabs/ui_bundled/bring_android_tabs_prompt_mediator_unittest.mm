@@ -23,13 +23,13 @@ class BringAndroidTabsPromptMediatorTest : public PlatformTest {
  public:
   BringAndroidTabsPromptMediatorTest() : PlatformTest() {
     // Environment setup.
-    TestChromeBrowserState::Builder builder;
+    TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         segmentation_platform::SegmentationPlatformServiceFactory::
             GetInstance(),
         segmentation_platform::SegmentationPlatformServiceFactory::
             GetDefaultFactory());
-    browser_state_ = std::move(builder).Build();
+    profile_ = std::move(builder).Build();
 
     // Create a tab in the mock BringAndroidTabsToIOS service.
     std::vector<std::unique_ptr<synced_sessions::DistantTab>> tabs;
@@ -40,12 +40,12 @@ class BringAndroidTabsPromptMediatorTest : public PlatformTest {
     // Create the BringAndroidTabsToIOSService.
     segmentation_platform::DeviceSwitcherResultDispatcher* dispatcher =
         segmentation_platform::SegmentationPlatformServiceFactory::
-            GetDispatcherForProfile(browser_state_.get());
+            GetDispatcherForProfile(profile_.get());
     syncer::SyncService* sync_service =
-        SyncServiceFactory::GetForBrowserState(browser_state_.get());
+        SyncServiceFactory::GetForProfile(profile_.get());
     sync_sessions::SessionSyncService* session_sync_service =
-        SessionSyncServiceFactory::GetForBrowserState(browser_state_.get());
-    PrefService* prefs = browser_state_->GetPrefs();
+        SessionSyncServiceFactory::GetForProfile(profile_.get());
+    PrefService* prefs = profile_->GetPrefs();
     fake_bring_android_tabs_service_ = new FakeBringAndroidTabsToIOSService(
         std::move(tabs), dispatcher, sync_service, session_sync_service, prefs);
 
@@ -67,7 +67,7 @@ class BringAndroidTabsPromptMediatorTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_;
   raw_ptr<FakeBringAndroidTabsToIOSService> fake_bring_android_tabs_service_;
   // Mediator dependencies.
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   BringAndroidTabsPromptMediator* mediator_;
 };
 
