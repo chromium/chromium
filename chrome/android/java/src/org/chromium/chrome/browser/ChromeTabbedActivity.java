@@ -98,6 +98,7 @@ import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperMa
 import org.chromium.chrome.browser.cookies.CookiesFetcher;
 import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingNotificationManager;
+import org.chromium.chrome.browser.data_sharing.DataSharingTabGroupUtils;
 import org.chromium.chrome.browser.dependency_injection.ChromeActivityComponent;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.dom_distiller.ReaderModeManager;
@@ -266,6 +267,7 @@ import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -3082,10 +3084,11 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     }
 
     /**
-     * [true]: Reached the bottom of the back stack on a tab the user did not explicitly
-     * create (i.e. it was created by an external app or opening a link in background, etc).
-     * [false]: Reached the bottom of the back stack on a tab that the user explicitly
-     * created (e.g. selecting "new tab" from menu).
+     * [true]: Reached the bottom of the back stack on a tab the user did not explicitly create
+     * (i.e. it was created by an external app or opening a link in background, etc). [false]:
+     * Reached the bottom of the back stack on a tab that the user explicitly created (e.g.
+     * selecting "new tab" from menu). Also applies if the close action would result in the
+     * destruction of a collaboration.
      *
      * @return Whether pressing the back button on the provided Tab should close the Tab.
      */
@@ -3094,6 +3097,13 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         if (!tab.isInitialized() || tab.isClosing() || tab.isDestroyed()) {
             return false;
         }
+        TabModel tabModel = mTabModelSelector.getModel(tab.isIncognitoBranded());
+        if (!DataSharingTabGroupUtils.getCollaborationsDestroyedByTabRemoval(
+                        tabModel, Arrays.asList(tab))
+                .isEmpty()) {
+            return false;
+        }
+
         @TabLaunchType int type = tab.getLaunchType();
 
         return type == TabLaunchType.FROM_LINK
