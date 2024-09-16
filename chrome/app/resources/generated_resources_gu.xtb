@@ -522,7 +522,7 @@
 <translation id="1375557162880614858">શું તમે ChromeOS Flex માટેનું બિલ્ટ-ઇન સ્ક્રીન રીડર, ChromeVox સક્રિય કરવા માગો છો?</translation>
 <translation id="1375938286942050085">સેટઅપ પૂર્ણ થયું! આગલી ગેમ રમવા માટે, તમારું ડિવાઇસ તૈયાર કરો</translation>
 <translation id="137651782282853227">સાચવેલા સરનામાં અહીં દેખાશે</translation>
-<translation id="1376771218494401509">નામ અને વિંડો…</translation>
+<translation id="1376771218494401509">વિન્ડોને કોઈ નામ આપો...</translation>
 <translation id="1377600615067678409">હાલ પૂરતું છોડો</translation>
 <translation id="1378613616312864539"><ph name="NAME" />, આ સેટિંગને નિયંત્રિત કરી રહ્યાં છે</translation>
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{ચેડાં કરાયેલો કોઈ પાસવર્ડ નથી}=1{ચેડાં કરાયેલો 1 પાસવર્ડ}one{ચેડાં કરાયેલો {NUM_COMPROMISED} પાસવર્ડ}other{ચેડાં કરાયેલા {NUM_COMPROMISED} પાસવર્ડ}}</translation>
@@ -630,7 +630,7 @@
 <translation id="1456849775870359518">તમારા ટૅબ ફરી ખૂલશે</translation>
 <translation id="1457907785077086338">ઍપના બૅજનો રંગ</translation>
 <translation id="146000042969587795">આ ફ્રેમ બ્લૉક કરવામાં આવી હતી કારણ કે તેમાં અમુક અસુરક્ષિત કન્ટેન્ટ છે.</translation>
-<translation id="1461041542809785877">ભજવણી</translation>
+<translation id="1461041542809785877">પર્ફોર્મન્સ</translation>
 <translation id="1461177659295855031">બુકમાર્ક બાર ફોલ્ડર પર ખસેડો</translation>
 <translation id="1461288887896722288">તમે હમણાં જ મેનેજ કરેલા એકાઉન્ટમાં સાઇન ઇન થયા છો, મેનેજ કરેલી નવી પ્રોફાઇલ બનાવવાથી તમે તે એકાઉન્ટ સાથે લિંક કરેલા કેટલાક સંસાધનો ઍક્સેસ કરી શકશો.</translation>
 <translation id="146219525117638703">ONC સ્થિતિ</translation>
@@ -11232,7 +11232,7 @@ USB ડિવાઇસ</translation>
 <translation id="9106236359747881194">શોધવા માટે ટેક્સ્ટ પસંદ કરો</translation>
 <translation id="9107096627210171112">અનુવાદ કરો...</translation>
 <translation id="9107624673674616016">રંગની પેન્સિલ</translation>
-<translation id="9108035152087032312">નામ અને વિંડો…</translation>
+<translation id="9108035152087032312">વિન્ડોને કોઈ નામ આપો...</translation>
 <translation id="9108072915170399168">ડેટા વપરાશના હાલના સેટિંગ ઇન્ટરનેટ વિના માટે સેટ છે</translation>
 <translation id="9108294543511800041">હવે તમે તમારા ફોનના તાજેતરના ફોટા, મીડિયા અને નોટિફિકેશન જોઈ શકો છો</translation>
 <translation id="9108674852930645435">તમારા <ph name="DEVICE_TYPE" /> પર નવું શું છે તે જુઓ</translation>
