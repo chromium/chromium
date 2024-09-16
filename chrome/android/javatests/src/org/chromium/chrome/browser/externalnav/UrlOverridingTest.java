@@ -1415,7 +1415,8 @@ public class UrlOverridingTest {
                 });
 
         // Press back to go back to first page with BFCache.
-        ThreadUtils.runOnUiThreadBlocking(() -> mActivityTestRule.getActivity().onBackPressed());
+        ThreadUtils.runOnUiThreadBlocking(
+                mActivityTestRule.getActivity().getOnBackPressedDispatcher()::onBackPressed);
         finishCallback.waitForCallback(1);
         Assert.assertTrue(mLastNavigationHandle.get().isPageActivation());
         // Page activations should clear the RedirectHandler so future navigations aren't part of
