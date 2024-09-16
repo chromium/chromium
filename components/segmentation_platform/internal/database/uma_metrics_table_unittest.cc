@@ -100,6 +100,89 @@ TEST_F(UmaMetricsTableTest, InsertRow) {
   test_util::AssertRowsInUmaMetricsTable(db(), {row2, row3});
 }
 
+TEST_F(UmaMetricsTableTest, CleanupItems) {
+  const base::Time kTimestamp1 = base::Time::Now();
+  const base::Time kTimestamp2 = kTimestamp1 + base::Seconds(1);
+  const base::Time kTimestamp3 = kTimestamp1 + base::Seconds(2);
+  const base::Time kTimestamp4 = kTimestamp1 + base::Seconds(3);
+  const base::Time kTimestamp5 = kTimestamp1 + base::Seconds(4);
+  const int64_t kHash1 = 201;
+  const int64_t kHash2 = 202;
+  const int64_t kHash3 = 203;
+  const int64_t kHash4 = 204;
+
+  ASSERT_TRUE(metrics_table().InitTable());
+
+  std::vector<CleanupItem> empty_items;
+  EXPECT_TRUE(metrics_table().CleanupItems(kProfileId, empty_items));
+  test_util::AssertRowsInUmaMetricsTable(db(), {});
+
+  std::vector<CleanupItem> items{
+      CleanupItem(kHash1, 0, proto::SignalType::HISTOGRAM_VALUE, kTimestamp3),
+      CleanupItem(kHash2, 0, proto::SignalType::HISTOGRAM_VALUE, kTimestamp3),
+      CleanupItem(10, 0, proto::SignalType::HISTOGRAM_VALUE, kTimestamp3),
+      CleanupItem(kHash4, 0, proto::SignalType::HISTOGRAM_VALUE, kTimestamp3),
+  };
+  EXPECT_TRUE(metrics_table().CleanupItems(kProfileId, items));
+  test_util::AssertRowsInUmaMetricsTable(db(), {});
+
+  auto row1 = GetSampleMetricsRow();
+  row1.time = kTimestamp1;
+  row1.name_hash = kHash1;
+  EXPECT_TRUE(metrics_table().AddUmaMetric(kProfileId, row1));
+  auto row2 = GetSampleMetricsRow();
+  row2.time = kTimestamp2;
+  row2.name_hash = kHash2;
+  EXPECT_TRUE(metrics_table().AddUmaMetric(kProfileId, row2));
+  auto row3 = GetSampleMetricsRow();
+  row3.time = kTimestamp3;
+  row3.name_hash = kHash3;
+  EXPECT_TRUE(metrics_table().AddUmaMetric(kProfileId, row3));
+  auto row4 = GetSampleMetricsRow();
+  row4.time = kTimestamp4;
+  row4.name_hash = kHash4;
+  EXPECT_TRUE(metrics_table().AddUmaMetric(kProfileId, row4));
+
+  test_util::AssertRowsInUmaMetricsTable(db(), {row1, row2, row3, row4});
+
+  EXPECT_TRUE(metrics_table().CleanupItems(kProfileId, empty_items));
+  test_util::AssertRowsInUmaMetricsTable(db(), {row1, row2, row3, row4});
+
+  EXPECT_TRUE(metrics_table().CleanupItems("bad-profile", items));
+  test_util::AssertRowsInUmaMetricsTable(db(), {row1, row2, row3, row4});
+
+  EXPECT_TRUE(metrics_table().CleanupItems(kProfileId, items));
+  test_util::AssertRowsInUmaMetricsTable(db(), {row3, row4});
+
+  EXPECT_TRUE(metrics_table().CleanupItems(kProfileId, items));
+  test_util::AssertRowsInUmaMetricsTable(db(), {row3, row4});
+
+  // Add more rows.
+  auto row5 = GetSampleMetricsRow();
+  row5.time = kTimestamp5;
+  row5.name_hash = kHash3;
+  EXPECT_TRUE(metrics_table().AddUmaMetric(kProfileId, row5));
+  auto row6 = GetSampleMetricsRow();
+  row6.time = kTimestamp5;
+  row6.name_hash = kHash3;
+  EXPECT_TRUE(metrics_table().AddUmaMetric(kProfileId, row6));
+  test_util::AssertRowsInUmaMetricsTable(db(), {row3, row4, row5, row6});
+
+  EXPECT_TRUE(metrics_table().CleanupItems(kProfileId, items));
+  test_util::AssertRowsInUmaMetricsTable(db(), {row3, row4, row5, row6});
+
+  std::vector<CleanupItem> items2{
+      CleanupItem(kHash3, 0, proto::SignalType::HISTOGRAM_VALUE, kTimestamp5),
+      CleanupItem(10, 0, proto::SignalType::HISTOGRAM_VALUE, kTimestamp3),
+      CleanupItem(kHash4, 0, proto::SignalType::HISTOGRAM_VALUE, kTimestamp3),
+  };
+  EXPECT_TRUE(metrics_table().CleanupItems("bad-profile", items2));
+  test_util::AssertRowsInUmaMetricsTable(db(), {row3, row4, row5, row6});
+
+  EXPECT_TRUE(metrics_table().CleanupItems(kProfileId, items2));
+  test_util::AssertRowsInUmaMetricsTable(db(), {row4});
+}
+
 TEST_F(UmaMetricsTableTest, DeleteBeforeTimestamp) {
   const base::Time kTimestamp1 = base::Time::Now();
   const base::Time kTimestamp2 = kTimestamp1 + base::Seconds(1);

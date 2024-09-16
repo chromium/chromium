@@ -138,11 +138,18 @@ void ModelExecutorImpl::ExecuteModel(
     return;
   }
 
+  base::Time prediction_time = clock_->Now();
+  if (segment_info->model_metadata().has_fixed_prediction_timestamp() &&
+      segment_info->model_metadata().fixed_prediction_timestamp() > 0) {
+    prediction_time = base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(
+        segment_info->model_metadata().fixed_prediction_timestamp()));
+  }
+
   state->upload_tensors =
       SegmentationUkmHelper::GetInstance()->IsUploadRequested(*segment_info);
   feature_list_query_processor_->ProcessFeatureList(
       segment_info->model_metadata(), request->input_context, segment_id,
-      clock_->Now(), base::Time(),
+      prediction_time, base::Time(),
       FeatureListQueryProcessor::ProcessOption::kInputsOnly,
       base::BindOnce(&ModelExecutorImpl::OnProcessingFeatureListComplete,
                      weak_ptr_factory_.GetWeakPtr(), std::move(state)));

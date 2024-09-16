@@ -525,9 +525,35 @@ TEST_F(UkmDatabaseBackendTest, DeleteOldEntries) {
   backend_->DeleteEntriesOlderThan(base::Time::Max());
 
   test_util::AssertUrlsInTable(backend_->db(), {});
-  EXPECT_EQ(test_util::GetAllUmaMetrics(backend_->db()).size(), 0u);
+  // UMA metrics are not deleted.
+  EXPECT_EQ(test_util::GetAllUmaMetrics(backend_->db()).size(), 3u);
 
   EXPECT_TRUE(backend_->has_transaction_for_testing());
+}
+
+TEST_F(UkmDatabaseBackendTest, CleanupItems) {
+  auto uma = GetSampleMetricsRow();
+  uma.name_hash = 10;
+  backend_->AddUmaMetric("1", uma);
+  uma.name_hash = 20;
+  backend_->AddUmaMetric("1", uma);
+  uma.name_hash = 30;
+  backend_->AddUmaMetric("1", uma);
+
+  EXPECT_EQ(test_util::GetAllUmaMetrics(backend_->db()).size(), 3u);
+
+  base::Time now = base::Time::Now();
+  std::vector<CleanupItem> cleanup{
+      CleanupItem(10, 0, uma.type, now),
+      CleanupItem(15, 0, uma.type, now),
+      CleanupItem(20, 0, uma.type, now),
+  };
+  // Wrong profile id.
+  backend_->CleanupItems("2", cleanup);
+  EXPECT_EQ(test_util::GetAllUmaMetrics(backend_->db()).size(), 3u);
+
+  backend_->CleanupItems("1", cleanup);
+  EXPECT_EQ(test_util::GetAllUmaMetrics(backend_->db()).size(), 1u);
 }
 
 TEST_F(UkmDatabaseBackendTest, ReadOnlyQueries) {
@@ -664,6 +690,9 @@ TEST_F(FailedUkmDatabaseTest, QueriesAreNoop) {
   backend_->RemoveUrls({kUrl1}, /*all_urls=*/true);
   backend_->DeleteEntriesOlderThan(base::Time() - base::Seconds(10));
   backend_->AddUmaMetric("1", GetSampleMetricsRow());
+  backend_->CleanupItems("",
+                         {CleanupItem(1, 2, proto::SignalType::HISTOGRAM_ENUM,
+                                      base::Time() - base::Seconds(10))});
 
   UkmDatabase::QueryList queries;
   queries.emplace(0, UkmDatabase::CustomSqlQuery("SELECT bad query", {}));

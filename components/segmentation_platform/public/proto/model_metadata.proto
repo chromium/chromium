@@ -378,6 +378,11 @@ message SegmentationModelMetadata {
   // it is OK to cache the result without recalculating with updated data.
   optional int64 result_time_to_live = 6;
 
+  // The model always executes with a fixed timestamp. This is used when the
+  // model is trained on data from a specific time period, and needs to evaluate
+  // on the same date.
+  optional int64 fixed_prediction_timestamp = 17;
+
   message DiscreteMapping {
     // A mapping result from the raw continuous result to a discrete and
     // comparable value based on |rank|.
