@@ -961,14 +961,14 @@ void SetAnalysisConnector(PrefService* prefs,
                           AnalysisConnector connector,
                           const std::string& pref_value,
                           bool machine_scope) {
-  ScopedListPrefUpdate settings_list(prefs, ConnectorPref(connector));
+  ScopedListPrefUpdate settings_list(prefs, AnalysisConnectorPref(connector));
   if (!settings_list->empty()) {
     settings_list->clear();
   }
 
   settings_list->Append(*base::JSONReader::Read(pref_value));
   prefs->SetInteger(
-      ConnectorScopePref(connector),
+      AnalysisConnectorScopePref(connector),
       machine_scope ? policy::POLICY_SCOPE_MACHINE : policy::POLICY_SCOPE_USER);
 }
 
@@ -1010,9 +1010,9 @@ void SetOnSecurityEventReporting(
 }
 
 void ClearAnalysisConnector(PrefService* prefs, AnalysisConnector connector) {
-  ScopedListPrefUpdate settings_list(prefs, ConnectorPref(connector));
+  ScopedListPrefUpdate settings_list(prefs, AnalysisConnectorPref(connector));
   settings_list->clear();
-  prefs->ClearPref(ConnectorScopePref(connector));
+  prefs->ClearPref(AnalysisConnectorScopePref(connector));
 }
 #endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 

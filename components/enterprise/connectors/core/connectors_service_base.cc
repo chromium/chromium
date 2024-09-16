@@ -67,7 +67,7 @@ ConnectorsServiceBase::GetReportingServiceProviderNames(
     return {};
   }
 
-  if (!GetDmToken(ConnectorScopePref(connector)).has_value()) {
+  if (!GetDmToken(kOnSecurityEventScopePref).has_value()) {
     return {};
   }
 
@@ -87,7 +87,7 @@ std::optional<ReportingSettings> ConnectorsServiceBase::GetReportingSettings(
     return std::nullopt;
   }
 
-  std::optional<DmToken> dm_token = GetDmToken(ConnectorScopePref(connector));
+  std::optional<DmToken> dm_token = GetDmToken(kOnSecurityEventScopePref);
   if (!dm_token.has_value()) {
     return std::nullopt;
   }

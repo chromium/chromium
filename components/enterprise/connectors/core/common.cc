@@ -45,7 +45,7 @@ ReportingSettings::ReportingSettings(const ReportingSettings&) = default;
 ReportingSettings& ReportingSettings::operator=(ReportingSettings&&) = default;
 ReportingSettings::~ReportingSettings() = default;
 
-const char* ConnectorPref(AnalysisConnector connector) {
+const char* AnalysisConnectorPref(AnalysisConnector connector) {
   switch (connector) {
     case AnalysisConnector::BULK_DATA_ENTRY:
       return kOnBulkDataEntryPref;
@@ -65,14 +65,7 @@ const char* ConnectorPref(AnalysisConnector connector) {
   }
 }
 
-const char* ConnectorPref(ReportingConnector connector) {
-  switch (connector) {
-    case ReportingConnector::SECURITY_EVENT:
-      return kOnSecurityEventPref;
-  }
-}
-
-const char* ConnectorScopePref(AnalysisConnector connector) {
+const char* AnalysisConnectorScopePref(AnalysisConnector connector) {
   switch (connector) {
     case AnalysisConnector::BULK_DATA_ENTRY:
       return kOnBulkDataEntryScopePref;
@@ -89,13 +82,6 @@ const char* ConnectorScopePref(AnalysisConnector connector) {
     case AnalysisConnector::ANALYSIS_CONNECTOR_UNSPECIFIED:
       NOTREACHED_IN_MIGRATION() << "Using unspecified analysis connector";
       return "";
-  }
-}
-
-const char* ConnectorScopePref(ReportingConnector connector) {
-  switch (connector) {
-    case ReportingConnector::SECURITY_EVENT:
-      return kOnSecurityEventScopePref;
   }
 }
 

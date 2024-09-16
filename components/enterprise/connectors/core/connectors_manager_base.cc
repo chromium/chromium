@@ -4,6 +4,8 @@
 
 #include "components/enterprise/connectors/core/connectors_manager_base.h"
 
+#include "components/enterprise/connectors/core/connectors_prefs.h"
+
 namespace enterprise_connectors {
 
 ConnectorsManagerBase::ConnectorsManagerBase(
@@ -24,7 +26,7 @@ bool ConnectorsManagerBase::IsReportingConnectorEnabled(
     return true;
   }
 
-  const char* pref = ConnectorPref(connector);
+  const char* pref = kOnSecurityEventPref;
   return pref && prefs()->HasPrefPath(pref);
 }
 
@@ -92,7 +94,7 @@ void ConnectorsManagerBase::CacheReportingConnectorPolicy(
   reporting_connector_settings_.erase(connector);
 
   // Connectors with non-existing policies should not reach this code.
-  const char* pref = ConnectorPref(connector);
+  const char* pref = kOnSecurityEventPref;
   DCHECK(pref);
 
   const base::Value::List& policy_value = prefs()->GetList(pref);
@@ -112,7 +114,7 @@ void ConnectorsManagerBase::StartObservingPrefs(PrefService* pref_service) {
 }
 
 void ConnectorsManagerBase::StartObservingPref(ReportingConnector connector) {
-  const char* pref = ConnectorPref(connector);
+  const char* pref = kOnSecurityEventPref;
   DCHECK(pref);
   if (!pref_change_registrar_.IsObserved(pref)) {
     pref_change_registrar_.Add(

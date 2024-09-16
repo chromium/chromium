@@ -78,7 +78,7 @@ ConnectorsManager::~ConnectorsManager() = default;
 bool ConnectorsManager::IsAnalysisConnectorEnabled(
     AnalysisConnector connector) const {
   if (analysis_connector_settings_.count(connector) == 0 &&
-      prefs()->HasPrefPath(ConnectorPref(connector))) {
+      prefs()->HasPrefPath(AnalysisConnectorPref(connector))) {
     CacheAnalysisConnectorPolicy(connector);
   }
 
@@ -178,7 +178,7 @@ void ConnectorsManager::CacheAnalysisConnectorPolicy(
   analysis_connector_settings_.erase(connector);
 
   // Connectors with non-existing policies should not reach this code.
-  const char* pref = ConnectorPref(connector);
+  const char* pref = AnalysisConnectorPref(connector);
   DCHECK(pref);
 
   const base::Value::List& policy_value = prefs()->GetList(pref);
@@ -342,7 +342,7 @@ void ConnectorsManager::StartObservingPrefs(PrefService* pref_service) {
 }
 
 void ConnectorsManager::StartObservingPref(AnalysisConnector connector) {
-  const char* pref = ConnectorPref(connector);
+  const char* pref = AnalysisConnectorPref(connector);
   DCHECK(pref);
   if (!pref_change_registrar_.IsObserved(pref)) {
     pref_change_registrar_.Add(
