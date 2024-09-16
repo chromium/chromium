@@ -147,7 +147,7 @@ BASE_FEATURE(kDisableMemoryReclaimerInBackground,
 // exceeded.
 BASE_FEATURE(kPartitionAllocShortMemoryReclaim,
              "PartitionAllocShortMemoryReclaim",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // static
 MemoryReclaimerSupport& MemoryReclaimerSupport::Instance() {
