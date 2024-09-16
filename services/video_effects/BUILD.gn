@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//third_party/mediapipe/features.gni")
+
 source_set("service") {
   public = [
     "video_effects_processor_impl.h",
@@ -35,6 +37,10 @@ source_set("service") {
     "//third_party/dawn/src/dawn:proc",
     "//third_party/dawn/src/dawn/wire",
   ]
+
+  if (build_with_mediapipe_lib) {
+    deps += [ "//third_party/mediapipe" ]
+  }
 }
 
 source_set("tests") {
