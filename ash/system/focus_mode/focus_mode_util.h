@@ -57,7 +57,8 @@ constexpr std::string_view kPlaylistIdKey = "playlistId";
 
 constexpr base::TimeDelta kMinimumDuration = base::Minutes(1);
 constexpr base::TimeDelta kMaximumDuration = base::Minutes(300);
-constexpr base::TimeDelta kEndingMomentDuration = base::Seconds(9);
+
+constexpr base::TimeDelta kInitialEndingMomentDuration = base::Seconds(9);
 
 // Number of steps we break the tray circular progress indicator into.
 constexpr int kProgressIndicatorSteps = 120;

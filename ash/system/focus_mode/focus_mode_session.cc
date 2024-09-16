@@ -24,7 +24,7 @@ FocusModeSession::State FocusModeSession::GetState(
   }
 
   if (persistent_ending_ ||
-      now < (end_time_ + focus_mode_util::kEndingMomentDuration)) {
+      now < (end_time_ + focus_mode_util::kInitialEndingMomentDuration)) {
     return State::kEnding;
   }
 

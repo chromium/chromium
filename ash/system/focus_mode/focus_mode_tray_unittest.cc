@@ -527,13 +527,12 @@ TEST_F(FocusModeTrayTest, BubbleTabbingAndAccessibility) {
 }
 
 // Tests basic ending moment functionality. If the time expires for the ending
-// moment, the tray icon will disappear.
+// moment, the tray icon will persist until user interacts with it.
 TEST_F(FocusModeTrayTest, EndingMoment) {
   FocusModeController* controller = FocusModeController::Get();
   EXPECT_FALSE(controller->in_focus_session());
   EXPECT_FALSE(focus_mode_tray_->GetVisible());
 
-  // Case 1: the ending moment automatically terminates.
   // Start a focus session.
   controller->ToggleFocusMode();
   EXPECT_TRUE(controller->in_focus_session());
@@ -543,11 +542,19 @@ TEST_F(FocusModeTrayTest, EndingMoment) {
   // still visible, even though the focus session has ended.
   AdvanceClock(controller->GetSessionDuration());
   EXPECT_FALSE(controller->in_focus_session());
+  EXPECT_TRUE(controller->in_ending_moment());
   EXPECT_TRUE(focus_mode_tray_->GetVisible());
 
-  // Verify that if there is no action for the `kEndingMomentDuration`, the
-  // ending moment terminates and the tray icon is hidden.
-  AdvanceClock(focus_mode_util::kEndingMomentDuration);
+  // Verify that the tray icon persists until the user interacts and dismisses
+  // it.
+  AdvanceClock(base::Minutes(10));
+  EXPECT_TRUE(focus_mode_tray_->GetVisible());
+
+  FocusModeTray* focus_mode_tray =
+      StatusAreaWidgetTestHelper::GetStatusAreaWidget()->focus_mode_tray();
+  LeftClickOn(focus_mode_tray);
+  LeftClickOn(focus_mode_tray);
+  // controller->ResetFocusSession();
   EXPECT_FALSE(focus_mode_tray_->GetVisible());
 }
 
@@ -565,6 +572,9 @@ TEST_F(FocusModeTrayTest, EndingMomentPersists) {
   // Focus session ends.
   AdvanceClock(controller->GetSessionDuration());
   EXPECT_FALSE(controller->in_focus_session());
+  EXPECT_TRUE(controller->in_ending_moment());
+  EXPECT_TRUE(focus_mode_tray_->GetVisible());
+  AdvanceClock(base::Minutes(2));
   EXPECT_TRUE(controller->in_ending_moment());
   EXPECT_TRUE(focus_mode_tray_->GetVisible());
 

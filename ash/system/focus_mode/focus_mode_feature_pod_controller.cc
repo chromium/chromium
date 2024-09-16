@@ -95,8 +95,10 @@ void FocusModeFeaturePodController::OnLabelPressed() {
   tray_controller_->ShowFocusModeDetailedView();
 }
 
-void FocusModeFeaturePodController::OnFocusModeChanged(bool in_focus_session) {
+void FocusModeFeaturePodController::OnFocusModeChanged(
+    FocusModeSession::State session_state) {
   UpdateUI(FocusModeController::Get()->GetSnapshot(base::Time::Now()));
+  const bool in_focus_session = session_state == FocusModeSession::State::kOn;
   tile_->SetToggled(in_focus_session);
 }
 
