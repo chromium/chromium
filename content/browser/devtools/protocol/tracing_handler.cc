@@ -204,7 +204,12 @@ void FillFrameData(base::trace_event::TracedValue* data,
   data->SetString("url", std::move(trimmed_url));
   data->SetString("name", frame_host->GetFrameName());
   data->SetBoolean("isOutermostMainFrame", frame_host->IsOutermostMainFrame());
-  data->SetBoolean("isInPrimaryMainFrame", frame_host->IsInPrimaryMainFrame());
+  // Use FrameTree's primary status since the `frame_host` itself might not be
+  // the primary main RenderFrameHost yet, if this function is called when
+  // `frame_host` is still speculative / pending commit.
+  data->SetBoolean("isInPrimaryMainFrame",
+                   frame_host->IsOutermostMainFrame() &&
+                       frame_host->frame_tree()->is_primary());
   if (frame_host->GetParent()) {
     data->SetString(
         "parent", frame_host->GetParent()->GetDevToolsFrameToken().ToString());
