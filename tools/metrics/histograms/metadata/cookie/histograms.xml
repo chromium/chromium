@@ -42,6 +42,17 @@ chromium-metrics-reviews@google.com.
   <owner>dylancutler@google.com</owner>
   <owner>src/net/cookies/OWNERS</owner>
   <summary>
+    Obsolete histogram as of M131, superseded by Cookie.AvgCookieJarSizePerKey2.
+    This histogram records the average sum of the sizes of the name and value of
+    all cookies per domain. This metric is recorded every 10 minutes.
+  </summary>
+</histogram>
+
+<histogram name="Cookie.AvgCookieJarSizePerKey2" units="bytes"
+    expires_after="2025-10-26">
+  <owner>dylancutler@google.com</owner>
+  <owner>src/net/cookies/OWNERS</owner>
+  <summary>
     This histogram records the average sum of the sizes of the name and value of
     all cookies per domain. This metric is recorded every 10 minutes.
   </summary>

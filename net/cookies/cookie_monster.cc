@@ -2654,8 +2654,8 @@ bool CookieMonster::DoRecordPeriodicStats() {
                                max_n_cookies);
   base::UmaHistogramCounts100000("Cookie.CookieJarSize", n_bytes >> 10);
   base::UmaHistogramCounts100000(
-      "Cookie.AvgCookieJarSizePerKey",
-      (n_bytes >> 10) / std::max(num_keys_, static_cast<size_t>(1)));
+      "Cookie.AvgCookieJarSizePerKey2",
+      n_bytes / std::max(num_keys_, static_cast<size_t>(1)));
   base::UmaHistogramCounts100000("Cookie.MaxCookieJarSizePerKey",
                                  max_n_bytes >> 10);
 
