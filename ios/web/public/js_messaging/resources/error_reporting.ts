@@ -10,9 +10,10 @@ import {sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.j
  * @param closure The closure block to be executed.
  * @return The result of running `closure`.
  */
-function catchAndReportErrors(closure: Function): unknown {
+function catchAndReportErrors(
+    closure: Function, closureArgs?: unknown[]): unknown {
   try {
-    return closure();
+    return closure.apply(null, closureArgs);
   } catch (error) {
     var errorMessage = '';
     var errorStack = '';
