@@ -4,6 +4,7 @@
 
 package org.chromium.components.commerce.core;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
@@ -170,7 +171,7 @@ public class ShoppingService {
          * @param url The URL the discounts info was fetched for.
          * @param info A list of available discounts for the URL or empty if none is available.
          */
-        void onResult(GURL url, List<DiscountInfo> info);
+        void onResult(GURL url, @NonNull List<DiscountInfo> info);
     }
 
     /** A pointer to the native side of the object. */
