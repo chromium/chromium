@@ -487,7 +487,8 @@ class ASH_EXPORT BirchWeatherItem : public BirchItem {
 class ASH_EXPORT BirchCoralItem : public BirchItem {
  public:
   BirchCoralItem(const std::u16string& coral_title,
-                 const std::u16string& coral_text);
+                 const std::u16string& coral_text,
+                 const std::vector<GURL>& page_urls);
   BirchCoralItem(BirchCoralItem&&);
   BirchCoralItem(const BirchCoralItem&);
   BirchCoralItem& operator=(const BirchCoralItem&);
@@ -504,6 +505,14 @@ class ASH_EXPORT BirchCoralItem : public BirchItem {
   std::u16string GetAddonAccessibleName() const override;
 
  private:
+  // Helper method that calls `birch_client` to retrieve the image from
+  // `favicon_service`.
+  void GetFaviconImageCoral(
+      const GURL& url,
+      base::OnceCallback<void(const ui::ImageModel&)> barrier_callback) const;
+
+  // A vector of urls representing the tabs received from coral provider.
+  std::vector<GURL> page_urls_;
   // TODO(yulunwu):Add coral data to `BirchCoralItem`
 };
 

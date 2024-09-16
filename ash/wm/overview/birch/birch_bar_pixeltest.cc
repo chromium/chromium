@@ -114,11 +114,17 @@ std::vector<std::unique_ptr<BirchItem>> CreateItems(BirchItemType type) {
           /*secondary_icon_type=*/SecondaryIconType::kLostMediaVideo,
           /*activation_callback=*/base::DoNothing()));
       break;
-    case BirchItemType::kCoral:
+    case BirchItemType::kCoral: {
+      std::vector<GURL> page_urls;
+      page_urls.emplace_back(("https://www.reddit.com/"));
+      page_urls.emplace_back(("https://www.figma.com/"));
+      page_urls.emplace_back(("https://www.notion.so/"));
       items.push_back(std::make_unique<BirchCoralItem>(
           /*coral_title=*/u"coral_title",
-          /*coral_text=*/u"coral_text"));
+          /*coral_text=*/u"coral_text",
+          /*page_urls=*/page_urls));
       break;
+    }
     case BirchItemType::kTest:
       break;
   }

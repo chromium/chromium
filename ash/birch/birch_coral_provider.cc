@@ -157,8 +157,13 @@ void BirchCoralProvider::OnTabItemRemoved(TabClusterUIItem* tab_item) {}
 void BirchCoralProvider::RequestBirchDataFetch() {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kForceBirchFakeCoral)) {
+    // TODO(owenzhang): Remove placeholder page_urls.
+    std::vector<GURL> page_urls;
+    page_urls.emplace_back(("https://www.reddit.com/"));
+    page_urls.emplace_back(("https://www.figma.com/"));
+    page_urls.emplace_back(("https://www.notion.so/"));
     Shell::Get()->birch_model()->SetCoralItems(
-        {BirchCoralItem(u"CoralTitle", u"CoralText")});
+        {BirchCoralItem(u"CoralTitle", u"CoralText", page_urls)});
     return;
   }
 
@@ -200,10 +205,16 @@ void BirchCoralProvider::HandleCoralResponse(
   response_ = std::move(response);
   CHECK(HasValidClusterCount(response_->clusters().size()));
   std::vector<BirchCoralItem> items;
+  // TODO(owenzhang): Remove placeholder page_urls.
+  std::vector<GURL> page_urls;
+  page_urls.emplace_back(("https://chromeunboxed.com/"));
+  page_urls.emplace_back(("https://www.unrealengine.com/"));
+  page_urls.emplace_back(("https://godotengine.org/"));
   for (auto& cluster : response_->clusters()) {
-    items.emplace_back(cluster.title(), /*subtitle=*/std::u16string());
+    items.emplace_back(cluster.title(), /*subtitle=*/std::u16string(),
+                       page_urls);
   }
-  birch_model_->SetCoralItems(items);
+  Shell::Get()->birch_model()->SetCoralItems(items);
 }
 
 }  // namespace ash

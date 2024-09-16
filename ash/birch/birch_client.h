@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "base/functional/callback.h"
+#include "ui/base/models/image_model.h"
 
 class GURL;
 
@@ -54,6 +55,10 @@ class ASH_EXPORT BirchClient {
       const GURL& url,
       const bool is_page_url,
       base::OnceCallback<void(const ui::ImageModel&)> callback) = 0;
+
+  // Retrieves the chrome icon to use as a backup icon when favicon loading
+  // fails. Used by Birch Coral Item.
+  virtual ui::ImageModel GetChromeBackupIcon() = 0;
 
   virtual ~BirchClient() = default;
 };

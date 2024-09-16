@@ -75,6 +75,7 @@ class StubBirchClient : public BirchClient {
       const GURL& url,
       const bool is_page_url,
       base::OnceCallback<void(const ui::ImageModel&)> callback) override;
+  ui::ImageModel GetChromeBackupIcon() override;
 
  private:
   std::unique_ptr<StubDataProvider> calendar_provider_;

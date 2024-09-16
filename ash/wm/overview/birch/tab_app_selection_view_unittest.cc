@@ -45,7 +45,11 @@ class TabAppSelectionViewTest : public AshTestBase {
     run_loop.Run();
 
     // Prepare a coral item so we have a coral glanceable to click.
-    coral_provider_->set_items({BirchCoralItem(u"Title", u"Text")});
+    std::vector<GURL> page_urls;
+    page_urls.emplace_back(("https://www.reddit.com/"));
+    page_urls.emplace_back(("https://www.figma.com/"));
+    page_urls.emplace_back(("https://www.notion.so/"));
+    coral_provider_->set_items({BirchCoralItem(u"Title", u"Text", page_urls)});
   }
 
   void TearDown() override {

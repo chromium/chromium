@@ -85,6 +85,7 @@ class StubBirchClient : public BirchClient {
     did_get_favicon_image_ = true;
     std::move(callback).Run(ui::ImageModel());
   }
+  ui::ImageModel GetChromeBackupIcon() override { return ui::ImageModel(); }
 
   bool did_get_favicon_image_ = false;
 };

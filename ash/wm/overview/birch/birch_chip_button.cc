@@ -57,6 +57,7 @@ constexpr int kFaviconCornerRadius = 8;
 constexpr int kAppIconSize = 16;
 constexpr int kAppCornerRadius = 20;
 constexpr int kIllustrationSize = 40;
+constexpr int kCoralGroupedImageSize = 40;
 constexpr int kIllustrationCornerRadius = 8;
 constexpr int kWeatherImageSize = 32;
 
@@ -267,12 +268,14 @@ void BirchChipButton::StylizeIconForItemType(
       rounded_corners = kIllustrationCornerRadius;
       background_color_id = kIconBackgroundColorId;
       break;
+    case BirchItemType::kCoral:
+      icon_size = kCoralGroupedImageSize;
+      break;
     case BirchItemType::kTab:
     case BirchItemType::kSelfShare:
     case BirchItemType::kMostVisited:
     case BirchItemType::kLastActive:
     case BirchItemType::kLostMedia:
-    case BirchItemType::kCoral:
       // When `use_smaller_dimension` is true, we use the smaller app icon sizes
       // because we have access only to smaller icons.
       use_smaller_dimension ? icon_size = kAppIconSize
@@ -288,7 +291,7 @@ void BirchChipButton::StylizeIconForItemType(
   primary_icon_view_->SetBorder(views::CreateEmptyBorder(
       gfx::Insets((kMainIconViewSize - icon_size) / 2)));
 
-  if (background_color_id) {
+  if (background_color_id.has_value()) {
     primary_icon_view_->SetBackground(views::CreateThemedRoundedRectBackground(
         background_color_id.value(), rounded_corners));
   }
