@@ -264,8 +264,6 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
           DequeueTableViewCell<SettingsImageDetailTextCell>(tableView);
       cell.selectionStyle = UITableViewCellSelectionStyleNone;
       cell.accessibilityIdentifier = kAccountMenuErrorMessageId;
-      cell.backgroundColor =
-          [UIColor colorNamed:kGroupedSecondaryBackgroundColor];
       cell.detailTextLabel.text =
           l10n_util::GetNSString(self.dataSource.accountErrorUIInfo.messageID);
       cell.image =
