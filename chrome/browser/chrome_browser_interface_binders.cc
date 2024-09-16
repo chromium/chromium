@@ -372,6 +372,7 @@
 #include "chrome/browser/ui/webui/ash/settings/pages/files/mojom/google_drive_handler.mojom.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/files/mojom/one_drive_handler.mojom.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/privacy/mojom/app_permission_handler.mojom.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/search/mojom/magic_boost_handler.mojom.h"
 #include "chrome/browser/ui/webui/ash/settings/search/mojom/search.mojom.h"
 #include "chrome/browser/ui/webui/ash/settings/search/mojom/user_action_recorder.mojom.h"
 #include "chrome/browser/ui/webui/ash/skyvault/local_files_migration.mojom.h"
@@ -1699,6 +1700,13 @@ void PopulateChromeWebUIFrameBinders(
           ash::features::kSystemJapanesePhysicalTyping)) {
     RegisterWebUIControllerInterfaceBinder<
         ash::ime::mojom::InputMethodUserDataService,
+        ash::settings::OSSettingsUI>(map);
+  }
+
+  if (chromeos::features::IsOrcaEnabled() ||
+      chromeos::features::IsMahiEnabled()) {
+    RegisterWebUIControllerInterfaceBinder<
+        ash::settings::magic_boost_handler::mojom::PageHandlerFactory,
         ash::settings::OSSettingsUI>(map);
   }
 

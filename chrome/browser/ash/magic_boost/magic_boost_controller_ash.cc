@@ -16,16 +16,33 @@
 
 namespace ash {
 
+namespace {
+
+MagicBoostControllerAsh* g_instance = nullptr;
+
 // The disclaimer terms of service and learn more urls.
 constexpr char kDisclaimerTOSURL[] = "https://policies.google.com/terms";
 constexpr char kLearnMoreURL[] =
     "https://support.google.com/chromebook/?p=settings_help_me_read_write";
 
+}  // namespace
+
 using TransitionAction = crosapi::mojom::MagicBoostController::TransitionAction;
 
-MagicBoostControllerAsh::MagicBoostControllerAsh() = default;
+// static
+MagicBoostControllerAsh* MagicBoostControllerAsh::Get() {
+  return g_instance;
+}
 
-MagicBoostControllerAsh::~MagicBoostControllerAsh() = default;
+MagicBoostControllerAsh::MagicBoostControllerAsh() {
+  DCHECK(!g_instance);
+  g_instance = this;
+}
+
+MagicBoostControllerAsh::~MagicBoostControllerAsh() {
+  DCHECK_EQ(this, g_instance);
+  g_instance = nullptr;
+}
 
 void MagicBoostControllerAsh::BindReceiver(
     mojo::PendingReceiver<crosapi::mojom::MagicBoostController> receiver) {

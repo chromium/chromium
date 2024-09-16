@@ -14,12 +14,20 @@ import 'chrome://resources/ash/common/shortcut_input_ui/shortcut_input_key.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {MagicBoostNoticeBrowserProxy} from '../os_search_page/magic_boost_browser_proxy.js';
+
 import {getTemplate} from './magic_boost_review_terms_banner.html.js';
 
 const MagicBoostReviewTermsBannerBase = I18nMixin(PolymerElement);
 
 export class MagicBoostReviewTermsBanner extends
     MagicBoostReviewTermsBannerBase {
+  private magicBoostNoticeProxy_: MagicBoostNoticeBrowserProxy;
+
+  constructor() {
+    super();
+    this.magicBoostNoticeProxy_ = MagicBoostNoticeBrowserProxy.getInstance();
+  }
   static get is() {
     return 'magic-boost-review-terms-banner';
   }
@@ -41,6 +49,10 @@ export class MagicBoostReviewTermsBanner extends
   }
   description: string;
   buttonLabel: string;
+
+  private onReviewButtonClick_(): void {
+    this.magicBoostNoticeProxy_.showNotice();
+  }
 }
 
 customElements.define(

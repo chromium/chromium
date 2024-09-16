@@ -25,6 +25,8 @@
 #include "chrome/browser/ui/webui/ash/settings/pages/files/mojom/one_drive_handler.mojom-forward.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/files/one_drive_page_handler_factory.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/privacy/mojom/app_permission_handler.mojom-forward.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/search/magic_boost_notice_page_handler_factory.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/search/mojom/magic_boost_handler.mojom-forward.h"
 #include "chrome/browser/ui/webui/ash/settings/search/mojom/user_action_recorder.mojom-forward.h"
 #include "chrome/browser/ui/webui/nearby_share/nearby_share.mojom.h"
 #include "chrome/browser/ui/webui/webui_load_timer.h"
@@ -240,6 +242,11 @@ class OSSettingsUI : public ui::MojoWebUIController {
   void BindInterface(
       mojo::PendingReceiver<date_time::mojom::PageHandlerFactory> receiver);
 
+  // Binds to the MagicBoostNoticePageHandler mojo.
+  void BindInterface(
+      mojo::PendingReceiver<magic_boost_handler::mojom::PageHandlerFactory>
+          receiver);
+
  private:
   base::TimeTicks time_when_opened_;
 
@@ -252,6 +259,8 @@ class OSSettingsUI : public ui::MojoWebUIController {
       google_drive_page_handler_factory_;
   std::unique_ptr<OneDrivePageHandlerFactory> one_drive_page_handler_factory_;
   std::unique_ptr<DateTimeHandlerFactory> date_time_handler_factory_;
+  std::unique_ptr<MagicBoostNoticePageHandlerFactory>
+      magic_boost_notice_page_handler_factory_;
 
   // This handler notifies the WebUI when the color provider changes.
   std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;
