@@ -106,6 +106,10 @@ class UserAnnotationsService : public KeyedService {
  private:
   friend class TestUserAnnotationsService;
 
+  using FormSubmissionResult =
+      base::expected<optimization_guide::proto::FormsAnnotationsResponse,
+                     UserAnnotationsExecutionResult>;
+
   // Used in testing, to construct the service without encryptor and database.
   UserAnnotationsService();
 
@@ -134,13 +138,12 @@ class UserAnnotationsService : public KeyedService {
   void SendFormSubmissionResult(
       UserAnnotationsService::ImportFormCallback callback,
       std::unique_ptr<autofill::FormStructure> form,
-      const UserAnnotationsEntries& to_be_upserted_entries,
-      UserAnnotationsExecutionResult result);
+      FormSubmissionResult result);
 
   // Called when decision has been made whether to import form entries.
   // `prompt_was_accepted` is the user decision, and `entries` will be persisted
   // to database when true.
-  void OnImportFormConfirmation(const UserAnnotationsEntries& entries,
+  void OnImportFormConfirmation(FormSubmissionResult result,
                                 bool prompt_was_accepted);
 
   // An in-memory representation of the "database" of user annotation entries.
