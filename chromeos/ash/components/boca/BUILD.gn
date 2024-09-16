@@ -30,22 +30,42 @@ static_library("boca") {
       [ "//chromeos/ash/components/boca/session_api" ]
 }
 
+static_library("invalidations") {
+  sources = [
+    "invalidations/fcm_handler.cc",
+    "invalidations/fcm_handler.h",
+  ]
+  deps = [
+    ":boca",
+    "//base",
+    "//chromeos/ash/components/boca/session_api",
+    "//components/account_id",
+    "//components/gcm_driver",
+    "//components/keyed_service/core",
+    "//google_apis/common:common",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
 
   sources = [
     "boca_session_manager_unittest.cc",
     "boca_session_util_unittest.cc",
+    "invalidations/fcm_handler_unittest.cc",
   ]
 
   deps = [
     ":boca",
+    ":invalidations",
     "//ash:test_support",
     "//base",
     "//base/test:test_support",
     "//chromeos/ash/components/boca/proto",
     "//chromeos/ash/components/boca/session_api",
     "//chromeos/ash/components/network",
+    "//components/gcm_driver",
+    "//components/gcm_driver:test_support",
     "//components/signin/public/identity_manager",
     "//components/signin/public/identity_manager:test_support",
     "//components/user_manager",
