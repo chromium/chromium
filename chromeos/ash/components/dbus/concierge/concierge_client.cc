@@ -80,7 +80,7 @@ class ConciergeClientImpl : public ConciergeClient {
   }
 
   bool IsDiskImageProgressSignalConnected() override {
-    return is_disk_import_progress_signal_connected_;
+    return is_disk_image_progress_signal_connected_;
   }
 
   void CreateDiskImage(
@@ -118,6 +118,15 @@ class ConciergeClientImpl : public ConciergeClient {
       override {
     CallMethodWithFd(concierge::kImportDiskImageMethod, request, std::move(fd),
                      std::move(callback));
+  }
+
+  void ExportDiskImage(
+      std::vector<base::ScopedFD> fds,
+      const concierge::ExportDiskImageRequest& request,
+      chromeos::DBusMethodCallback<concierge::ExportDiskImageResponse> callback)
+      override {
+    CallMethodWithFds(concierge::kExportDiskImageMethod, request,
+                      std::move(fds), std::move(callback));
   }
 
   void CancelDiskImageOperation(
@@ -526,7 +535,7 @@ class ConciergeClientImpl : public ConciergeClient {
     } else if (signal_name == concierge::kVmStoppedSignal) {
       is_vm_stopped_signal_connected_ = is_connected;
     } else if (signal_name == concierge::kDiskImageProgressSignal) {
-      is_disk_import_progress_signal_connected_ = is_connected;
+      is_disk_image_progress_signal_connected_ = is_connected;
     } else if (signal_name == concierge::kVmStoppingSignal) {
       is_vm_stopping_signal_connected_ = is_connected;
     } else if (signal_name == concierge::kVmSwappingSignal) {
@@ -548,7 +557,7 @@ class ConciergeClientImpl : public ConciergeClient {
   bool is_vm_started_signal_connected_ = false;
   bool is_vm_stopped_signal_connected_ = false;
   bool is_vm_stopping_signal_connected_ = false;
-  bool is_disk_import_progress_signal_connected_ = false;
+  bool is_disk_image_progress_signal_connected_ = false;
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.

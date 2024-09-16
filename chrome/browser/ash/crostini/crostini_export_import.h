@@ -17,6 +17,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/crostini/crostini_export_import_notification_controller.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
+#include "chrome/browser/ash/crostini/crostini_simple_types.h"
 #include "chrome/browser/ash/guest_os/guest_id.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -33,7 +34,12 @@ namespace crostini {
 enum class ExportContainerResult;
 enum class ImportContainerResult;
 
-enum class ExportImportType { EXPORT, IMPORT };
+enum class ExportImportType {
+  EXPORT,
+  IMPORT,
+  EXPORT_DISK_IMAGE,
+  IMPORT_DISK_IMAGE
+};
 
 // ExportContainerResult is used for UMA, if you update this make sure to update
 // CrostiniExportContainerResult in enums.xml
@@ -66,7 +72,8 @@ enum class ImportContainerResult {
 class CrostiniExportImport : public KeyedService,
                              public ui::SelectFileDialog::Listener,
                              public crostini::ExportContainerProgressObserver,
-                             public crostini::ImportContainerProgressObserver {
+                             public crostini::ImportContainerProgressObserver,
+                             public crostini::DiskImageProgressObserver {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -190,6 +197,11 @@ class CrostiniExportImport : public KeyedService,
   FRIEND_TEST_ALL_PREFIXES(CrostiniExportImportTest,
                            TestImportFailArchitecture);
   FRIEND_TEST_ALL_PREFIXES(CrostiniExportImportTest, TestImportFailSpace);
+  FRIEND_TEST_ALL_PREFIXES(CrostiniExportImportTest,
+                           TestExportDiskImageSuccess);
+  FRIEND_TEST_ALL_PREFIXES(CrostiniExportImportTest, TestExportDiskImageFail);
+  FRIEND_TEST_ALL_PREFIXES(CrostiniExportImportTest,
+                           TestExportDiskImageCancelled);
 
   void FillOperationData(ExportImportType type,
                          guest_os::GuestId id,
@@ -209,8 +221,8 @@ class CrostiniExportImport : public KeyedService,
   void EnsureLxdStartedThenSharePath(
       const guest_os::GuestId& container_id,
       const base::FilePath& path,
-      bool create_new_container,
       bool persist,
+      bool create_new_container,
       guest_os::GuestOsSharePath::SharePathCallback callback);
 
   // Share the file path with VM after VM has been restarted.
@@ -223,6 +235,11 @@ class CrostiniExportImport : public KeyedService,
   void OnExportContainerProgress(const guest_os::GuestId& container_id,
                                  const StreamingExportStatus& status) override;
 
+  // crostini::DiskImageProgressObserver implementation.
+  void OnDiskImageProgress(const guest_os::GuestId& container_id,
+                           DiskImageProgressStatus status,
+                           int progress) override;
+
   // crostini::ImportContainerProgressObserver implementation.
   void OnImportContainerProgress(const guest_os::GuestId& container_id,
                                  crostini::ImportContainerProgressStatus status,
@@ -232,6 +249,15 @@ class CrostiniExportImport : public KeyedService,
                                  const std::string& architecture_container,
                                  uint64_t available_space,
                                  uint64_t minimum_required_space) override;
+
+  void ExportDiskImage(const guest_os::GuestId& container_id,
+                       const base::FilePath& path,
+                       CrostiniManager::CrostiniResultCallback callback,
+                       CrostiniResult result);
+
+  void AfterExportDiskImage(const guest_os::GuestId& container_id,
+                            CrostiniManager::CrostiniResultCallback callback,
+                            CrostiniResult result);
 
   void ExportAfterSharing(const guest_os::GuestId& container_id,
                           const base::FilePath& path,

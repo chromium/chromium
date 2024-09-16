@@ -5323,6 +5323,9 @@
   <message name="IDS_CROSTINI_IMPORT_NOTIFICATION_MESSAGE_FAILED_SPACE" desc="Message displayed in the notification when import (restore) of the Linux container fails due to insufficient space.">
     Cannot restore due to lack of storage space. Free up <ph name="SPACE_REQUIRED">$1<ex>10Gb</ex></ph> from the device and try again.
   </message>
+  <message name="IDS_CROSTINI_IMPORT_NOTIFICATION_MESSAGE_FAILED_SPACE_UNKNOWN_AMOUNT" desc="Message displayed in the notification when import (restore) of the Linux container fails due to insufficient space.">
+    Cannot restore due to lack of storage space.
+  </message>
   <message name="IDS_CROSTINI_RECOVERY_TITLE" desc="Title displayed in the dialog when a Linux will be restarted after a Chrome crash.">
     Restart Linux?
   </message>
