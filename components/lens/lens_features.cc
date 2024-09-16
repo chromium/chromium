@@ -246,11 +246,11 @@ constexpr base::FeatureParam<int> kLensOverlayFindBarStringsVariant{
 
 constexpr base::FeatureParam<bool>
     kLensOverlayImageContextMenuActionsEnableCopyAsImage{
-        &kLensOverlayImageContextMenuActions, "enable-copy-as-image", true};
+        &kLensOverlayImageContextMenuActions, "enable-copy-as-image", false};
 
 constexpr base::FeatureParam<bool>
     kLensOverlayImageContextMenuActionsEnableSaveAsImage{
-        &kLensOverlayImageContextMenuActions, "enable-save-as-image", true};
+        &kLensOverlayImageContextMenuActions, "enable-save-as-image", false};
 
 constexpr base::FeatureParam<int>
     kLensOverlayImageContextMenuActionsTextReceivedTimeout{
