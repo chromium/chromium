@@ -2528,6 +2528,18 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_LENS_PROMO_TITLE" desc="The title text for a Lens promo view.">
         Search with Lens
       </message>
+      <message name="IDS_IOS_LENS_OVERLAY_CONSENT_ACCEPT_TERMS_BUTTON_TITLE" desc="The accept terms button title for the lens overlay consent dialog [iOS only].">
+        Continue
+      </message>
+      <message name="IDS_IOS_LENS_OVERLAY_CONSENT_DENY_TERMS_BUTTON_TITLE" desc="The deny terms button title for the lens overlay consent dialog [iOS only].">
+        Cancel
+      </message>
+      <message name="IDS_IOS_LENS_OVERLAY_CONSENT_DESCRIPTION" desc="The description for the lens overlay consent dialog [iOS only].">
+        When you use Google Lens, a screenshot of the page is sent to Google.
+      </message>
+      <message name="IDS_IOS_LENS_OVERLAY_CONSENT_TITLE" desc="The title for the lens overlay consent dialog. [iOS only].">
+        Tap or highlight to search anything with Google Lens
+      </message>
       <message name="IDS_IOS_LINK_TO_TEXT_ERROR_DESCRIPTION" desc="Description message in the alert dialog shown when link-to-text link generation failed. [iOS only]">
         A link to the highlight can not be created.
       </message>

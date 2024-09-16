@@ -67,6 +67,9 @@ LensEntrypoint LensEntrypointFromOverlayEntrypoint(
 
 const CGFloat kSelectionOffsetPadding = 50.0f;
 
+NSString* const kCustomConsentSheetDetentIdentifier =
+    @"kCustomConsentSheetDetentIdentifier";
+
 #if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
 const CGFloat kMenuSymbolSize = 18;
 #endif
@@ -750,11 +753,22 @@ const CGFloat kMenuSymbolSize = 18;
   sheet.prefersEdgeAttachedInCompactHeight = YES;
   sheet.largestUndimmedDetentIdentifier =
       [UISheetPresentationControllerDetent largeDetent].identifier;
-  sheet.detents = @[
-    [UISheetPresentationControllerDetent mediumDetent],
-    [UISheetPresentationControllerDetent largeDetent]
-  ];
   sheet.prefersGrabberVisible = YES;
+
+  __weak LensOverlayConsentViewController* weakConsentViewController =
+      _consentViewController;
+
+  auto resolver = ^CGFloat(
+      id<UISheetPresentationControllerDetentResolutionContext> context) {
+    return [weakConsentViewController preferredContentSize].height;
+  };
+
+  UISheetPresentationControllerDetent* customDetent =
+      [UISheetPresentationControllerDetent
+          customDetentWithIdentifier:kCustomConsentSheetDetentIdentifier
+                            resolver:resolver];
+
+  sheet.detents = @[ customDetent ];
 
   [_containerViewController presentViewController:_consentViewController
                                          animated:YES
