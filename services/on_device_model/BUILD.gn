@@ -12,6 +12,7 @@ component("on_device_model_service") {
     "pre_sandbox_init.cc",
   ]
   deps = [
+    "//services/on_device_model/fake",
     "//services/on_device_model/ml:ml_no_internal",
 
     # TODO(crbug.com/41492700): Remove this once possible. This is a hack due to
@@ -36,8 +37,6 @@ component("on_device_model_service") {
   if (enable_ml_internal) {
     deps += [ "//services/on_device_model/ml" ]
     defines += [ "ENABLE_ML_INTERNAL" ]
-  } else {
-    deps += [ "//services/on_device_model/fake" ]
   }
 
   if (is_linux || is_chromeos) {

@@ -8,19 +8,18 @@
 #include <queue>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/not_fatal_until.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/uuid.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "services/on_device_model/fake/on_device_model_fake.h"
 #include "services/on_device_model/ml/gpu_blocklist.h"
 #include "services/on_device_model/ml/on_device_model_executor.h"
 #include "services/on_device_model/ml/on_device_model_internal.h"
 #include "services/on_device_model/ml/performance_class.h"
-
-#if !defined(ENABLE_ML_INTERNAL)
-#include "services/on_device_model/fake/on_device_model_fake.h"  //nogncheck
-#endif
+#include "services/on_device_model/public/cpp/features.h"
 
 namespace on_device_model {
 namespace {
@@ -366,6 +365,9 @@ void SessionWrapper::CloneInternal(
 }
 
 const ml::ChromeML* DefaultImpl() {
+  if (base::FeatureList::IsEnabled(features::kUseFakeChromeML)) {
+    return fake_ml::GetFakeChromeML();
+  }
 #if defined(ENABLE_ML_INTERNAL)
   return ::ml::ChromeML::Get();
 #else
