@@ -1733,6 +1733,9 @@ IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest, UseCounter_Fetch) {
     histogram_tester.ExpectBucketCount(
         "Blink.UseCounter.Features", blink::mojom::WebFeature::kTopicsAPIFetch,
         1);
+    histogram_tester.ExpectBucketCount("Blink.UseCounter.Features",
+                                    blink::mojom::WebFeature::kTopicsAPIAll,
+                                    1);
   }
 }
 

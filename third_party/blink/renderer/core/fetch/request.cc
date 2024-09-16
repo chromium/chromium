@@ -559,6 +559,8 @@ Request* Request::CreateRequestWithRequestOrString(
     if (init->browsingTopics()) {
       UseCounter::Count(execution_context,
                         mojom::blink::WebFeature::kTopicsAPIFetch);
+      UseCounter::Count(execution_context,
+                        mojom::blink::WebFeature::kTopicsAPIAll);
     }
   }
 

@@ -283,6 +283,7 @@ void HTMLIFrameElement::ParseAttribute(
       if (new_browsing_topics) {
         UseCounter::Count(GetDocument(),
                           WebFeature::kIframeBrowsingTopicsAttribute);
+        UseCounter::Count(GetDocument(), WebFeature::kTopicsAPIAll);
       }
 
       if (new_browsing_topics != old_browsing_topics) {
