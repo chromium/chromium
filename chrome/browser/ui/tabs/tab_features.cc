@@ -24,6 +24,7 @@
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/commerce/commerce_ui_tab_helper.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
+#include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
@@ -32,6 +33,8 @@
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_side_panel_controller.h"
 #include "chrome/browser/ui/views/webid/fedcm_account_selection_view_controller.h"
 #include "chrome/browser/user_annotations/user_annotations_web_contents_observer.h"
+#include "chrome/browser/web_applications/web_app_tab_helper.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "components/browsing_topics/browsing_topics_service.h"
 #include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_features.h"
 #include "components/image_fetcher/core/image_fetcher_service.h"
@@ -116,6 +119,12 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
     privacy_sandbox_tab_observer_ =
         std::make_unique<privacy_sandbox::PrivacySandboxTabObserver>(
             tab.GetContents());
+  }
+
+  if (web_app::AreWebAppsEnabled(profile)) {
+    auto* web_app_tab_helper =
+        web_app::WebAppTabHelper::FromWebContents(tab.GetContents());
+    web_app_tab_helper->InitForTabFeatures(&tab);
   }
 
   // FedCM is supported in general web content, but not in chrome UI. Of the
