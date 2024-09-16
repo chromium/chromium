@@ -175,6 +175,9 @@ constexpr base::TimeDelta kBrowsingDataRemoveCompletionDelay = base::Seconds(1);
 }
 
 - (void)triggerDeletion {
+  browsing_data::RecordDeleteBrowsingDataAction(
+      browsing_data::DeleteBrowsingDataAction::kClearBrowsingDataDialog);
+
   // TODO(crbug.com/365776279): Monitor if deletion can be double triggered.
   DUMP_WILL_BE_CHECK(!_deletionTriggered);
   _deletionTriggered = YES;

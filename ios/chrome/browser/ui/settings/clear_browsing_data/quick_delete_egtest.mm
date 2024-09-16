@@ -366,9 +366,14 @@ NSString* CapitalizeFirstLetter(NSString* string) {
 }
 
 // Tests if the Quick Delete UI is shown correctly from the three dot menu entry
-// point.
-- (void)testOpenAndDismissQuickDeleteFromThreeDotMenu {
+// point and if dismissing implicitly by swipping down works correctly.
+- (void)testOpenAndDismissImplicityQuickDeleteFromThreeDotMenu {
   [self openQuickDeleteFromThreeDotMenu];
+
+  // At the beginning of the test, the Delete Browsing Data dialog metric should
+  // be empty.
+  NoDeleteBrowsingDataDialogHistogram(
+      DeleteBrowsingDataDialogAction::kDialogDismissedImplicitly);
 
   // Check that Quick Delete is presented.
   [[EarlGrey selectElementWithMatcher:ClearBrowsingDataView()]
@@ -381,6 +386,38 @@ NSString* CapitalizeFirstLetter(NSString* string) {
   // Check that Quick Delete has been dismissed.
   [[EarlGrey selectElementWithMatcher:ClearBrowsingDataView()]
       assertWithMatcher:grey_nil()];
+
+  // Assert that the Delete Browsing Data dialog metric is populated.
+  ExpectDeleteBrowsingDataDialogHistogram(
+      DeleteBrowsingDataDialogAction::kDialogDismissedImplicitly);
+}
+
+// Tests if the Quick Delete UI is shown correctly from the three dot menu entry
+// point and if tapping cancel works correctly.
+- (void)testOpenAndCancelQuickDeleteFromThreeDotMenu {
+  [self openQuickDeleteFromThreeDotMenu];
+
+  // At the beginning of the test, the Delete Browsing Data dialog metric should
+  // be empty.
+  NoDeleteBrowsingDataDialogHistogram(
+      DeleteBrowsingDataDialogAction::kCancelSelected);
+
+  // Check that Quick Delete is presented.
+  [[EarlGrey selectElementWithMatcher:ClearBrowsingDataView()]
+      assertWithMatcher:grey_notNil()];
+
+  // Tap the cancel button.
+  [ChromeEarlGreyUI tapClearBrowsingDataMenuButton:
+                        ButtonWithAccessibilityLabel(l10n_util::GetNSString(
+                            IDS_IOS_DELETE_BROWSING_DATA_CANCEL))];
+
+  // Check that Quick Delete has been dismissed.
+  [[EarlGrey selectElementWithMatcher:ClearBrowsingDataView()]
+      assertWithMatcher:grey_nil()];
+
+  // Assert that the Delete Browsing Data dialog metric is populated.
+  ExpectDeleteBrowsingDataDialogHistogram(
+      DeleteBrowsingDataDialogAction::kCancelSelected);
 }
 
 // Tests if the Quick Delete UI is shown correctly from the history entry point.
@@ -517,6 +554,16 @@ NSString* CapitalizeFirstLetter(NSString* string) {
 
   [self openQuickDeleteFromThreeDotMenu];
 
+  NoDeleteBrowsingDataDialogHistogram(
+      DeleteBrowsingDataDialogAction::kDeletionSelected);
+  GREYAssertNil([MetricsAppInterface
+                     expectCount:0
+                       forBucket:static_cast<int>(
+                                     browsing_data::DeleteBrowsingDataAction::
+                                         kClearBrowsingDataDialog)
+                    forHistogram:@"Privacy.DeleteBrowsingData.Action"],
+                @"Privacy.DeleteBrowsingData.Action histogram was logged.");
+
   // Check that Quick Delete is presented.
   [[EarlGrey selectElementWithMatcher:ClearBrowsingDataView()]
       assertWithMatcher:grey_notNil()];
@@ -537,6 +584,16 @@ NSString* CapitalizeFirstLetter(NSString* string) {
   // Check that the history entry was deleted.
   GREYAssertEqual([ChromeEarlGrey browsingHistoryEntryCount], 0,
                   @"History entries were not deleted.");
+
+  ExpectDeleteBrowsingDataDialogHistogram(
+      DeleteBrowsingDataDialogAction::kDeletionSelected);
+  GREYAssertNil([MetricsAppInterface
+                     expectCount:1
+                       forBucket:static_cast<int>(
+                                     browsing_data::DeleteBrowsingDataAction::
+                                         kClearBrowsingDataDialog)
+                    forHistogram:@"Privacy.DeleteBrowsingData.Action"],
+                @"Privacy.DeleteBrowsingData.Action histogram was not logged.");
 }
 
 // Tests that the number of browsing history items is shown on the browsing data
@@ -631,6 +688,16 @@ NSString* CapitalizeFirstLetter(NSString* string) {
 
   [self openQuickDeleteFromThreeDotMenu];
 
+  NoDeleteBrowsingDataDialogHistogram(
+      DeleteBrowsingDataDialogAction::kDeletionSelected);
+  GREYAssertNil([MetricsAppInterface
+                     expectCount:0
+                       forBucket:static_cast<int>(
+                                     browsing_data::DeleteBrowsingDataAction::
+                                         kClearBrowsingDataDialog)
+                    forHistogram:@"Privacy.DeleteBrowsingData.Action"],
+                @"Privacy.DeleteBrowsingData.Action histogram was logged.");
+
   // Check that Quick Delete is presented.
   [[EarlGrey selectElementWithMatcher:ClearBrowsingDataView()]
       assertWithMatcher:grey_notNil()];
@@ -677,6 +744,16 @@ NSString* CapitalizeFirstLetter(NSString* string) {
                  grey_sufficientlyVisible(), nil);
   [[EarlGrey selectElementWithMatcher:titleOfPage]
       assertWithMatcher:grey_nil()];
+
+  ExpectDeleteBrowsingDataDialogHistogram(
+      DeleteBrowsingDataDialogAction::kDeletionSelected);
+  GREYAssertNil([MetricsAppInterface
+                     expectCount:1
+                       forBucket:static_cast<int>(
+                                     browsing_data::DeleteBrowsingDataAction::
+                                         kClearBrowsingDataDialog)
+                    forHistogram:@"Privacy.DeleteBrowsingData.Action"],
+                @"Privacy.DeleteBrowsingData.Action histogram was not logged.");
 }
 
 // Tests that when Quick Delete is opened from Privacy Settings and tabs are
@@ -1291,6 +1368,11 @@ NSString* CapitalizeFirstLetter(NSString* string) {
   // Open Quick Delete bottom sheet.
   [self openQuickDeleteFromThreeDotMenu];
 
+  // At the beginning of the test, the Delete Browsing Data dialog metric should
+  // be empty.
+  NoDeleteBrowsingDataDialogHistogram(
+      DeleteBrowsingDataDialogAction::kSearchHistoryLinkOpened);
+
   // Check that Quick Delete is presented.
   [[EarlGrey selectElementWithMatcher:ClearBrowsingDataView()]
       assertWithMatcher:grey_notNil()];
@@ -1309,9 +1391,11 @@ NSString* CapitalizeFirstLetter(NSString* string) {
                   [ChromeEarlGrey webStateVisibleURL].host(),
                   @"Did not navigate to the search activity url.");
 
-  // Validate histogram entry for search history is recorded.
+  // Assert that the metrics are populated.
   ExpectClearBrowsingDataNavigationHistograms(
       MyActivityNavigation::kSearchHistory);
+  ExpectDeleteBrowsingDataDialogHistogram(
+      DeleteBrowsingDataDialogAction::kSearchHistoryLinkOpened);
 }
 
 // Tests the footer other forms of activity link is opened correctly and metrics
@@ -1322,6 +1406,11 @@ NSString* CapitalizeFirstLetter(NSString* string) {
   [self signIn];
   // Open Quick Delete bottom sheet.
   [self openQuickDeleteFromThreeDotMenu];
+
+  // At the beginning of the test, the Delete Browsing Data dialog metric should
+  // be empty.
+  NoDeleteBrowsingDataDialogHistogram(
+      DeleteBrowsingDataDialogAction::kMyActivityLinkedOpened);
 
   // Check that Quick Delete is presented.
   [[EarlGrey selectElementWithMatcher:ClearBrowsingDataView()]
@@ -1341,8 +1430,10 @@ NSString* CapitalizeFirstLetter(NSString* string) {
                   [ChromeEarlGrey webStateVisibleURL].host(),
                   @"Did not navigate to the search activity url.");
 
-  // Validate histogram entry for top level is recorded.
+  // Assert that the metrics are populated.
   ExpectClearBrowsingDataNavigationHistograms(MyActivityNavigation::kTopLevel);
+  ExpectDeleteBrowsingDataDialogHistogram(
+      DeleteBrowsingDataDialogAction::kMyActivityLinkedOpened);
 }
 
 // Tests the footer discalimer string is hidden when the user is signed out and

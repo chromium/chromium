@@ -34,6 +34,12 @@
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
+namespace {
+
+using browsing_data::DeleteBrowsingDataDialogAction;
+
+}  // namespace
+
 @interface QuickDeleteCoordinator () <QuickDeleteBrowsingDataDelegate,
                                       QuickDeletePresentationCommands,
                                       UIAdaptivePresentationControllerDelegate>
@@ -118,9 +124,15 @@
   if (URL == GURL(kClearBrowsingDataDSESearchUrlInFooterURL)) {
     base::UmaHistogramEnumeration("Settings.ClearBrowsingData.OpenMyActivity",
                                   MyActivityNavigation::kSearchHistory);
+    base::UmaHistogramEnumeration(
+        browsing_data::kDeleteBrowsingDataDialogHistogram,
+        DeleteBrowsingDataDialogAction::kSearchHistoryLinkOpened);
   } else if (URL == GURL(kClearBrowsingDataDSEMyActivityUrlInFooterURL)) {
     base::UmaHistogramEnumeration("Settings.ClearBrowsingData.OpenMyActivity",
                                   MyActivityNavigation::kTopLevel);
+    base::UmaHistogramEnumeration(
+        browsing_data::kDeleteBrowsingDataDialogHistogram,
+        DeleteBrowsingDataDialogAction::kMyActivityLinkedOpened);
   } else {
     NOTREACHED();
   }
@@ -223,6 +235,10 @@
 
 - (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
+  base::UmaHistogramEnumeration(
+      browsing_data::kDeleteBrowsingDataDialogHistogram,
+      DeleteBrowsingDataDialogAction::kDialogDismissedImplicitly);
+
   [self disconnect];
   [self dismissQuickDelete];
 }

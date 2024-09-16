@@ -7,6 +7,8 @@
 #import <UIKit/UIKit.h>
 
 #import "base/check.h"
+#import "base/metrics/histogram_functions.h"
+#import "base/metrics/user_metrics.h"
 #import "components/browsing_data/core/browsing_data_utils.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
@@ -29,6 +31,8 @@
 #import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
+
+using browsing_data::DeleteBrowsingDataDialogAction;
 
 // Delay to observe when dismissing the UI after showing the confirmation
 // indicator that the deletion has concluded.
@@ -113,6 +117,9 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
 }
 
 - (void)viewDidLoad {
+  base::RecordAction(
+      base::UserMetricsAction("ClearBrowsingData_DialogCreated"));
+
   _tableView = [self createTableView];
   _dataSource = [self createAndFillDataSource];
   _tableView.dataSource = _dataSource;
@@ -181,10 +188,16 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
 #pragma mark - ConfirmationAlertActionHandler
 
 - (void)confirmationAlertPrimaryAction {
+  base::UmaHistogramEnumeration(
+      browsing_data::kDeleteBrowsingDataDialogHistogram,
+      DeleteBrowsingDataDialogAction::kDeletionSelected);
   [_mutator triggerDeletion];
 }
 
 - (void)confirmationAlertSecondaryAction {
+  base::UmaHistogramEnumeration(
+      browsing_data::kDeleteBrowsingDataDialogHistogram,
+      DeleteBrowsingDataDialogAction::kCancelSelected);
   [self dismissQuickDelete];
 }
 
@@ -196,6 +209,9 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   ItemIdentifier itemType = static_cast<ItemIdentifier>(
       [_dataSource itemIdentifierForIndexPath:indexPath].integerValue);
   CHECK(itemType == ItemIdentifierBrowsingData) << itemType;
+  base::UmaHistogramEnumeration(
+      browsing_data::kDeleteBrowsingDataDialogHistogram,
+      DeleteBrowsingDataDialogAction::kBrowsingDataSelected);
   [self.presentationHandler showBrowsingDataPage];
 }
 

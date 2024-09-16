@@ -182,13 +182,15 @@ void NoDeleteBrowsingDataDialogHistogram(
 
 // Tests the cancel button dismisses the browsing data page.
 - (void)testPageNavigationCancelButton {
-  // Open quick delete browsing data page.
-  [self openQuickDeleteBrowsingDataPage];
-
   // At the beginning of the test, the Delete Browsing Data dialog metric should
   // be empty.
   NoDeleteBrowsingDataDialogHistogram(
+      DeleteBrowsingDataDialogAction::kBrowsingDataSelected);
+  NoDeleteBrowsingDataDialogHistogram(
       DeleteBrowsingDataDialogAction::kCancelDataTypesSelected);
+
+  // Open quick delete browsing data page.
+  [self openQuickDeleteBrowsingDataPage];
 
   // Tap cancel button.
   [[EarlGrey
@@ -204,18 +206,22 @@ void NoDeleteBrowsingDataDialogHistogram(
 
   // Assert that the Delete Browsing Data dialog metric is populated.
   ExpectDeleteBrowsingDataDialogHistogram(
+      DeleteBrowsingDataDialogAction::kBrowsingDataSelected);
+  ExpectDeleteBrowsingDataDialogHistogram(
       DeleteBrowsingDataDialogAction::kCancelDataTypesSelected);
 }
 
 // Tests the confirm button dismisses the browsing data page.
 - (void)testPageNavigationConfirmButton {
-  // Open quick delete browsing data page.
-  [self openQuickDeleteBrowsingDataPage];
-
-  // At the beginning of the test, the Delete Browsing Data dialog metric should
-  // be empty.
+  // At the beginning of the test, the Delete Browsing Data dialog metrics
+  // should be empty.
+  NoDeleteBrowsingDataDialogHistogram(
+      DeleteBrowsingDataDialogAction::kBrowsingDataSelected);
   NoDeleteBrowsingDataDialogHistogram(
       DeleteBrowsingDataDialogAction::kUpdateDataTypesSelected);
+
+  // Open quick delete browsing data page.
+  [self openQuickDeleteBrowsingDataPage];
 
   // Tap confirm button.
   [[EarlGrey selectElementWithMatcher:BrowsingDataConfirmButtonMatcher()]
@@ -227,7 +233,9 @@ void NoDeleteBrowsingDataDialogHistogram(
   [[EarlGrey selectElementWithMatcher:ClearBrowsingDataView()]
       assertWithMatcher:grey_notNil()];
 
-  // Assert that the Delete Browsing Data dialog metric is populated.
+  // Assert that the Delete Browsing Data dialog metrics are populated.
+  ExpectDeleteBrowsingDataDialogHistogram(
+      DeleteBrowsingDataDialogAction::kBrowsingDataSelected);
   ExpectDeleteBrowsingDataDialogHistogram(
       DeleteBrowsingDataDialogAction::kUpdateDataTypesSelected);
 }
