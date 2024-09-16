@@ -88,7 +88,7 @@ public class BookmarkPromoHeader
                         SigninAndHistorySyncActivityLauncherImpl.get());
         if (SigninPromoCoordinator.canShowBookmarkSigninPromo(mProfile)
                 && ChromeFeatureList.isEnabled(ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP)) {
-            // TODO(crbug.com/40284908): Remove dependency on ProfileDataCache and move
+            // TODO(crbug.com/327387704): Remove dependency on ProfileDataCache and move
             // corresponding logic into SigninPromoMediator.
             mProfileDataCache = null;
             mSigninPromoCoordinator =
@@ -156,7 +156,8 @@ public class BookmarkPromoHeader
     /** Sets up the sync promo view. */
     void setUpSyncPromoView(PersonalizedSigninPromoView view) {
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP)) {
-            // TODO(crbug.com/40284908): Set up the view directly in the BookmarkManagerCoordinator.
+            // TODO(crbug.com/327387704): Set up the view directly in the
+            // BookmarkManagerCoordinator.
             mSigninPromoCoordinator.setView(view);
         } else {
             mSyncPromoController.setUpSyncPromoView(

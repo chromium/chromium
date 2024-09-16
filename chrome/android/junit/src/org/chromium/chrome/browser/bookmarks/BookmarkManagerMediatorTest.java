@@ -145,7 +145,7 @@ import java.util.function.Consumer;
     ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS,
     ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS
 })
-// TODO(crbug.com/40284908): Add tests with this flag enabled.
+// TODO(crbug.com/327387704): Add tests with this flag enabled.
 @DisableFeatures(ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP)
 public class BookmarkManagerMediatorTest {
     private static final GURL EXAMPLE_URL = JUnitTestGURLs.EXAMPLE_URL;

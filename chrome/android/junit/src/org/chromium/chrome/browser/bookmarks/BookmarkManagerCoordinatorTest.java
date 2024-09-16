@@ -63,7 +63,7 @@ import org.chromium.ui.base.TestActivity;
     ChromeFeatureList.ENABLE_PASSWORDS_ACCOUNT_STORAGE_FOR_NON_SYNCING_USERS,
     ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS
 })
-// TODO(crbug.com/40284908): Add tests with this flag enabled.
+// TODO(crbug.com/327387704): Add tests with this flag enabled.
 @Features.DisableFeatures(ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP)
 public class BookmarkManagerCoordinatorTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();

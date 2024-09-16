@@ -23,7 +23,7 @@ final class SigninPromoMediator implements ProfileDataCache.Observer {
             boolean shouldSuppressSecondaryButton,
             boolean shouldHideDismissButton) {
         mProfileDataCache = ProfileDataCache.createWithDefaultImageSizeAndNoBadge(context);
-        // TODO(crbug.com/40284908): Fetch the account email and use it to update the
+        // TODO(crbug.com/327387704): Fetch the account email and use it to update the
         // ProfileDataCache.
         mModel =
                 SigninPromoProperties.createModel(
@@ -49,10 +49,10 @@ final class SigninPromoMediator implements ProfileDataCache.Observer {
     }
 
     private void onAcceptClicked(View view) {
-        // TODO(crbug.com/40284908): Implement this method
+        // TODO(crbug.com/327387704): Implement this method
     }
 
     private void onDeclineClicked(View view) {
-        // TODO(crbug.com/40284908): Implement this method
+        // TODO(crbug.com/327387704): Implement this method
     }
 }

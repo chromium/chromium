@@ -44,7 +44,7 @@ public final class SigninPromoCoordinator {
             @StringRes int descriptionStringId,
             boolean shouldSuppressSecondaryButton,
             boolean shouldHideDismissButton) {
-        // TODO(crbug.com/40284908): Observe the AccountManagerFacade so that the promo gets
+        // TODO(crbug.com/327387704): Observe the AccountManagerFacade so that the promo gets
         // properly updated when the list of accounts changes.
         mMediator =
                 new SigninPromoMediator(
@@ -67,10 +67,10 @@ public final class SigninPromoCoordinator {
     }
 
     public void increasePromoShowCount() {
-        // TODO(crbug.com/40284908): Implement this method
+        // TODO(crbug.com/327387704): Implement this method
     }
 
-    // TODO(crbug.com/40284908): When this MVC is integrated into more access points, move this
+    // TODO(crbug.com/327387704): When this MVC is integrated into more access points, move this
     // inside a switch statement.
     public static boolean canShowBookmarkSigninPromo(Profile profile) {
         if (IdentityServicesProvider.get()

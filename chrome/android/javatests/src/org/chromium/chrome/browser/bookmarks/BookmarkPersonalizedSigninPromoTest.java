@@ -290,7 +290,7 @@ public class BookmarkPersonalizedSigninPromoTest {
         showBookmarkManagerAndCheckSigninPromoIsDisplayed(true);
     }
 
-    // TODO(crbug.com/40284908): Once we implement the correct impression recording, always check
+    // TODO(crbug.com/327387704): Once we implement the correct impression recording, always check
     // histograms.
     private void showBookmarkManagerAndCheckSigninPromoIsDisplayed(boolean checkHistogram) {
         var shownHistogram = HistogramWatcher.newSingleRecordWatcher(SHOWN_HISTOGRAM_NAME, 1);
