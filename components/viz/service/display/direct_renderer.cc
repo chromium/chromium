@@ -1238,7 +1238,7 @@ DelegatedInkPointRendererBase* DirectRenderer::GetDelegatedInkPointRenderer(
 }
 
 void DirectRenderer::DrawDelegatedInkTrail() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 bool DirectRenderer::CompositeTimeTracingEnabled() {
