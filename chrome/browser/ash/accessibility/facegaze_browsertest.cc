@@ -524,8 +524,10 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, AcceptDialog) {
   AccessibilityManager::Get()->SetOpenSettingsSubpageObserverForTest(
       base::BindLambdaForTesting(
           [&settings_waiter]() { settings_waiter.Quit(); }));
-  // Accepting the dialog should make FaceGaze open the settings page.
+  // Accepting the dialog should initialize the FaceLandmarker and open the
+  // settings page.
   controller->GetConfirmationDialogForTest()->Accept();
+  utils()->WaitForFaceLandmarker();
   settings_waiter.Run();
   ASSERT_TRUE(prefs->GetBoolean(prefs::kAccessibilityFaceGazeEnabled));
   // Verify that the dialog accepted pref is now true.

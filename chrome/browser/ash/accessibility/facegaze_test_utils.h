@@ -265,17 +265,16 @@ class FaceGazeTestUtils {
 
   void AssertScrollMode(bool active);
 
+  void WaitForFaceLandmarker();
+
  private:
   void ExecuteAccessibilityCommonScript(const std::string& script);
 
   // Setup-related methods.
   void SetUpMediapipeDir();
   void WaitForJSReady();
-  void SkipInitializeWebCamFaceLandmarker();
   void SetUpJSTestSupport();
   void CancelMouseControllerInterval();
-  // Creates and initializes the FaceLandmarker API within the extension.
-  void CreateFaceLandmarker();
   void ConfigureFaceGaze(const Config& config);
 
   // Preference-related methods.

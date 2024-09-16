@@ -289,10 +289,14 @@ void FaceGazeTestUtils::EnableFaceGaze(const Config& config) {
   host_helper.WaitForHostCompletedFirstLoad();
 
   WaitForJSReady();
-  SkipInitializeWebCamFaceLandmarker();
   SetUpJSTestSupport();
+  if (config.dialog_accepted()) {
+    // The FaceLandmarker will be automatically initialized after the dialog has
+    // been accepted.
+    WaitForFaceLandmarker();
+  }
+
   CancelMouseControllerInterval();
-  CreateFaceLandmarker();
   ConfigureFaceGaze(config);
 }
 
@@ -375,17 +379,6 @@ void FaceGazeTestUtils::WaitForJSReady() {
   ExecuteAccessibilityCommonScript(script);
 }
 
-void FaceGazeTestUtils::SkipInitializeWebCamFaceLandmarker() {
-  std::string script = base::StringPrintf(R"JS(
-    (function() {
-      window.accessibilityCommon.getFaceGazeForTest()
-          .setSkipInitializeWebCamFaceLandmarkerForTesting(true);
-      chrome.test.sendScriptResult('ready');
-    })();
-  )JS");
-  ExecuteAccessibilityCommonScript(script);
-}
-
 void FaceGazeTestUtils::SetUpJSTestSupport() {
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::FilePath source_dir;
@@ -402,8 +395,8 @@ void FaceGazeTestUtils::CancelMouseControllerInterval() {
   ExecuteAccessibilityCommonScript(script);
 }
 
-void FaceGazeTestUtils::CreateFaceLandmarker() {
-  std::string script = "faceGazeTestSupport.createFaceLandmarker();";
+void FaceGazeTestUtils::WaitForFaceLandmarker() {
+  std::string script = "faceGazeTestSupport.waitForFaceLandmarker();";
   ExecuteAccessibilityCommonScript(script);
 }
 

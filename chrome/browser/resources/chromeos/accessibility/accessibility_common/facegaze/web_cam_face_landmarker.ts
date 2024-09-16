@@ -18,12 +18,18 @@ export class WebCamFaceLandmarker {
   private imageCapture_: ImageCapture|undefined;
   private onFaceLandmarkerResult_:
       (resultWithLatency: FaceLandmarkerResultWithLatency) => void;
+  declare private readyForTesting_: Promise<void>;
+  private setReadyForTesting_?: () => void;
 
   constructor(
       onFaceLandmarkerResult:
           (resultWithLatency: FaceLandmarkerResultWithLatency) => void) {
     this.onFaceLandmarkerResult_ = onFaceLandmarkerResult;
     this.intervalID_ = null;
+
+    this.readyForTesting_ = new Promise(resolve => {
+      this.setReadyForTesting_ = resolve;
+    });
   }
 
   /**
@@ -76,6 +82,9 @@ export class WebCamFaceLandmarker {
         numFaces: 1,
       };
       this.faceLandmarker_!.setOptions(options);
+      if (this.setReadyForTesting_) {
+        this.setReadyForTesting_();
+      }
       proceed!();
     });
 
