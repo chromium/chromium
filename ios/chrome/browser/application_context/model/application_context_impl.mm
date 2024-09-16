@@ -209,7 +209,7 @@ void ApplicationContextImpl::StartTearDown() {
     safe_browsing_service_->ShutDown();
   }
 
-  // Need to clear browser states before the IO thread.
+  // Need to clear profiles before the IO thread.
   profile_manager_.reset();
 
   // The policy providers managed by `browser_policy_connector_` need to shut
@@ -599,12 +599,11 @@ void ApplicationContextImpl::OnAppEnterState(AppState app_state) {
     }
   }
 
-  // Request saving the local state prefs and all loaded ChromeBrowserStates'
+  // Request saving the local state prefs and all loaded ProfileIOS'
   // prefs (taking care not to create the objects if they have not been created
   // yet).
   if (profile_manager_) {
-    for (ChromeBrowserState* browser_state :
-         profile_manager_->GetLoadedProfiles()) {
+    for (ProfileIOS* profile : profile_manager_->GetLoadedProfiles()) {
       switch (app_state) {
         case AppState::kForeground:
           // Nothing extra to do when entering foreground.
@@ -613,16 +612,16 @@ void ApplicationContextImpl::OnAppEnterState(AppState app_state) {
         case AppState::kBackground:
           if (history::HistoryService* history_service =
                   ios::HistoryServiceFactory::GetForProfileIfExists(
-                      browser_state, ServiceAccessType::EXPLICIT_ACCESS)) {
+                      profile, ServiceAccessType::EXPLICIT_ACCESS)) {
             history_service->HandleBackgrounding();
           }
           break;
       }
 
       // No need to check that `GetPrefs()` returns non-null value since the
-      // ChromeBrowserState owns its PrefService and thus the method cannot
+      // ProfileIOS owns its PrefService and thus the method cannot
       // return null.
-      browser_state->GetPrefs()->CommitPendingWrite();
+      profile->GetPrefs()->CommitPendingWrite();
     }
   }
 
