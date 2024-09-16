@@ -159,10 +159,12 @@ DownloadInterruptReason DownloadFileImpl::SourceStream::GetCompletionStatus()
   return input_stream_->GetCompletionStatus();
 }
 
-void DownloadFileImpl::SourceStream::RegisterCompletionCallback(
-    DownloadFileImpl::SourceStream::CompletionCallback callback) {
-  input_stream_->RegisterCompletionCallback(
-      base::BindOnce(std::move(callback), base::Unretained(this)));
+void DownloadFileImpl::SourceStream::RequestCompletionNotification(
+    base::WeakPtr<DownloadFileImpl> download_file) {
+  input_stream_->RegisterCompletionCallback(base::BindOnce(
+      &DownloadFileImpl::OnStreamCompleted, std::move(download_file),
+      // Precondition: `download_file` owns `this`.
+      base::Unretained(this)));
 }
 
 InputStream::StreamState DownloadFileImpl::SourceStream::Read(
@@ -626,8 +628,8 @@ void DownloadFileImpl::StreamActive(SourceStream* source_stream,
         }
       } break;
       case InputStream::WAIT_FOR_COMPLETION:
-        source_stream->RegisterCompletionCallback(base::BindOnce(
-            &DownloadFileImpl::OnStreamCompleted, weak_factory_.GetWeakPtr()));
+        source_stream->RequestCompletionNotification(
+            weak_factory_.GetWeakPtr());
         break;
       case InputStream::COMPLETE:
         break;

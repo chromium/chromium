@@ -133,9 +133,10 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadFileImpl : public DownloadFile {
     // DownloadItem/DownloadFile somewhere.
     DownloadInterruptReason GetCompletionStatus() const;
 
-    using CompletionCallback = base::OnceCallback<void(SourceStream*)>;
-    // Register an callback to be called when download completes.
-    void RegisterCompletionCallback(CompletionCallback callback);
+    // Requests that on completion, `StreamSource` invokes
+    // `DownloadFileImpl::OnStreamCompleted` with `this`.
+    void RequestCompletionNotification(
+        base::WeakPtr<DownloadFileImpl> download_file);
 
     InputStream::StreamState Read(scoped_refptr<net::IOBuffer>* data,
                                   size_t* length);
