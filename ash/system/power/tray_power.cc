@@ -54,6 +54,7 @@ PowerTrayView::PowerTrayView(Shelf* shelf) : TrayItemView(shelf) {
   PowerStatus::Get()->AddObserver(this);
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kImage);
+  UpdateAccessibleName();
 }
 
 PowerTrayView::~PowerTrayView() {
@@ -71,14 +72,6 @@ gfx::Size PowerTrayView::CalculatePreferredSize(
 
   // Ensure battery isn't too tall in side shelf.
   return gfx::Size(standard_size.width(), kUnifiedTrayIconSize);
-}
-
-void PowerTrayView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  std::u16string accessible_name =
-      PowerStatus::Get()->GetAccessibleNameString(/* full_description*/ true);
-  if (!accessible_name.empty()) {
-    node_data->SetNameChecked(accessible_name);
-  }
 }
 
 views::View* PowerTrayView::GetTooltipHandlerForPoint(const gfx::Point& point) {
@@ -127,8 +120,7 @@ void PowerTrayView::OnPowerStatusChanged() {
 void PowerTrayView::UpdateStatus(bool icon_color_changed) {
   UpdateImage(icon_color_changed);
   SetVisible(PowerStatus::Get()->IsBatteryPresent());
-  GetViewAccessibility().SetName(
-      PowerStatus::Get()->GetAccessibleNameString(/* full_description */ true));
+  UpdateAccessibleName();
   tooltip_ = PowerStatus::Get()->GetInlinedStatusString();
   // Currently ChromeVox only reads the inner view when touching the icon.
   // As a result this node's accessible node data will not be read.
@@ -158,6 +150,17 @@ void PowerTrayView::UpdateImage(bool icon_color_changed) {
   info_ = info;
 
   UpdateLabelOrImageViewColor(is_active());
+}
+
+void PowerTrayView::UpdateAccessibleName() {
+  std::u16string accessible_name =
+      PowerStatus::Get()->GetAccessibleNameString(/* full_description*/ true);
+  if (!accessible_name.empty()) {
+    GetViewAccessibility().SetName(accessible_name);
+  } else {
+    GetViewAccessibility().SetName(
+        std::u16string(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
+  }
 }
 
 BEGIN_METADATA(PowerTrayView)

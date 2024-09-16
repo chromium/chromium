@@ -897,4 +897,27 @@ TEST_F(PowerTrayViewTest, AccessibleProperties) {
   EXPECT_EQ(data.role, ax::mojom::Role::kImage);
 }
 
+TEST_F(PowerTrayViewTest, AccessibleName) {
+  ui::AXNodeData data;
+
+  power_tray_view()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(
+      data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+      PowerStatus::Get()->GetAccessibleNameString(/* full_description*/ true));
+
+  FakePowerStatus* fake_power_status = GetFakePowerStatus();
+  fake_power_status->SetIsBatteryPresent(false);
+
+  // `OnPowerStatusChanged` is called in an asynchronous method, but for the
+  // purpose of this test, it is called explicitly to ensure that the visibility
+  // is set before the check.
+  power_tray_view()->OnPowerStatusChanged();
+  data = ui::AXNodeData();
+
+  power_tray_view()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(
+      data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+      PowerStatus::Get()->GetAccessibleNameString(/* full_description*/ true));
+}
+
 }  // namespace ash

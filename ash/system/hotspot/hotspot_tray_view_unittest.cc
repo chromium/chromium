@@ -165,10 +165,13 @@ TEST_F(HotspotTrayViewTest, HotspotIconTooltip) {
 }
 
 TEST_F(HotspotTrayViewTest, AccessibleProperties) {
+  SetHotspotStateAndClientCount(HotspotState::kEnabled, 0);
   ui::AXNodeData data;
 
   hotspot_tray_view_->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(data.role, ax::mojom::Role::kImage);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            GetTooltip());
 }
 
 }  // namespace ash
