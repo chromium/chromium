@@ -28,11 +28,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/css/css_math_expression_node.h"
 
 #include <algorithm>
@@ -234,7 +229,7 @@ double TanDegrees(double degrees) {
     double n45degrees = degrees / 45.0;
     int octant = static_cast<int>(n45degrees);
     if (octant == n45degrees) {
-      constexpr double kTanN45[] = {
+      constexpr std::array<double, 8> kTanN45 = {
           /* 0deg */ 0.0,
           /* 45deg */ 1.0,
           /* 90deg */ std::numeric_limits<double>::infinity(),
@@ -997,42 +992,42 @@ bool CSSMathExpressionNumericLiteral::InvolvesPercentageComparisons() const {
 
 // ------ End of CSSMathExpressionNumericLiteral member functions
 
-static const CalculationResultCategory
-    kAddSubtractResult[kCalcOther][kCalcOther] = {
+static constexpr std::array<std::array<CalculationResultCategory, kCalcOther>,
+                            kCalcOther>
+    kAddSubtractResult = {
         /* CalcNumber */
-        {kCalcNumber, kCalcOther, kCalcOther, kCalcOther, kCalcOther,
-         kCalcOther, kCalcOther, kCalcOther, kCalcOther, kCalcOther},
-        /* CalcLength */
-        {kCalcOther, kCalcLength, kCalcLengthFunction, kCalcLengthFunction,
-         kCalcOther, kCalcOther, kCalcOther, kCalcOther, kCalcOther,
-         kCalcOther},
-        /* CalcPercent */
-        {kCalcOther, kCalcLengthFunction, kCalcPercent, kCalcLengthFunction,
-         kCalcOther, kCalcOther, kCalcOther, kCalcOther, kCalcOther,
-         kCalcOther},
-        /* CalcLengthFunction */
-        {kCalcOther, kCalcLengthFunction, kCalcLengthFunction,
-         kCalcLengthFunction, kCalcOther, kCalcOther, kCalcOther, kCalcOther,
-         kCalcOther, kCalcOther},
-        /* CalcIntrinsicSize */
-        {kCalcOther, kCalcOther, kCalcOther, kCalcOther, kCalcOther, kCalcOther,
-         kCalcOther, kCalcOther, kCalcOther, kCalcOther},
-        /* CalcAngle */
-        {kCalcOther, kCalcOther, kCalcOther, kCalcOther, kCalcOther, kCalcAngle,
-         kCalcOther, kCalcOther, kCalcOther, kCalcOther},
-        /* CalcTime */
-        {kCalcOther, kCalcOther, kCalcOther, kCalcOther, kCalcOther, kCalcOther,
-         kCalcTime, kCalcOther, kCalcOther, kCalcOther},
-        /* CalcFrequency */
-        {kCalcOther, kCalcOther, kCalcOther, kCalcOther, kCalcOther, kCalcOther,
-         kCalcOther, kCalcFrequency, kCalcOther, kCalcOther},
-        /* CalcResolution */
-        {kCalcOther, kCalcOther, kCalcOther, kCalcOther, kCalcOther, kCalcOther,
-         kCalcOther, kCalcOther, kCalcResolution, kCalcOther},
-        /* CalcIdent */
-        {kCalcOther, kCalcOther, kCalcOther, kCalcOther, kCalcOther, kCalcOther,
-         kCalcOther, kCalcOther, kCalcOther, kCalcOther},
-};
+        {{kCalcNumber, kCalcOther, kCalcOther, kCalcOther, kCalcOther,
+          kCalcOther, kCalcOther, kCalcOther, kCalcOther, kCalcOther},
+         /* CalcLength */
+         {kCalcOther, kCalcLength, kCalcLengthFunction, kCalcLengthFunction,
+          kCalcOther, kCalcOther, kCalcOther, kCalcOther, kCalcOther,
+          kCalcOther},
+         /* CalcPercent */
+         {kCalcOther, kCalcLengthFunction, kCalcPercent, kCalcLengthFunction,
+          kCalcOther, kCalcOther, kCalcOther, kCalcOther, kCalcOther,
+          kCalcOther},
+         /* CalcLengthFunction */
+         {kCalcOther, kCalcLengthFunction, kCalcLengthFunction,
+          kCalcLengthFunction, kCalcOther, kCalcOther, kCalcOther, kCalcOther,
+          kCalcOther, kCalcOther},
+         /* CalcIntrinsicSize */
+         {kCalcOther, kCalcOther, kCalcOther, kCalcOther, kCalcOther,
+          kCalcOther, kCalcOther, kCalcOther, kCalcOther, kCalcOther},
+         /* CalcAngle */
+         {kCalcOther, kCalcOther, kCalcOther, kCalcOther, kCalcOther,
+          kCalcAngle, kCalcOther, kCalcOther, kCalcOther, kCalcOther},
+         /* CalcTime */
+         {kCalcOther, kCalcOther, kCalcOther, kCalcOther, kCalcOther,
+          kCalcOther, kCalcTime, kCalcOther, kCalcOther, kCalcOther},
+         /* CalcFrequency */
+         {kCalcOther, kCalcOther, kCalcOther, kCalcOther, kCalcOther,
+          kCalcOther, kCalcOther, kCalcFrequency, kCalcOther, kCalcOther},
+         /* CalcResolution */
+         {kCalcOther, kCalcOther, kCalcOther, kCalcOther, kCalcOther,
+          kCalcOther, kCalcOther, kCalcOther, kCalcResolution, kCalcOther},
+         /* CalcIdent */
+         {kCalcOther, kCalcOther, kCalcOther, kCalcOther, kCalcOther,
+          kCalcOther, kCalcOther, kCalcOther, kCalcOther, kCalcOther}}};
 
 static CalculationResultCategory DetermineCategory(
     const CSSMathExpressionNode& left_side,
