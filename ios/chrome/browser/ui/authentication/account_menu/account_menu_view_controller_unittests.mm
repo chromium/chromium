@@ -123,7 +123,7 @@ class AccountMenuViewControllerTest : public PlatformTest {
     AddSecondaryIdentity();
 
     view_controller_ = [[AccountMenuViewController alloc]
-        initWithStyle:ChromeTableViewStyle()];
+        initWithStyle:UITableViewStyleInsetGrouped];
     mutator_ = OCMStrictProtocolMock(@protocol(AccountMenuMutator));
 
     view_controller_.dataSource = data_source_;

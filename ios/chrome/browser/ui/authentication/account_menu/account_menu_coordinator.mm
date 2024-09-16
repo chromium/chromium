@@ -106,7 +106,7 @@
                                            ApplicationCommands);
 
   _viewController = [[AccountMenuViewController alloc]
-      initWithStyle:ChromeTableViewStyle()];
+      initWithStyle:UITableViewStyleInsetGrouped];
 
   _navigationController = [[UINavigationController alloc]
       initWithRootViewController:_viewController];
