@@ -327,6 +327,9 @@ void StorageAccessGrantPermissionContext::DecidePermission(
     return;
   }
 
+  const url::Origin embedding_origin =
+      url::Origin::Create(request_data.embedding_origin);
+
   // Return early without prompting users if cookie access is already allowed.
   // This does not take previously granted SAA permission into account.
   scoped_refptr<content_settings::CookieSettings> cookie_settings =
@@ -334,17 +337,15 @@ void StorageAccessGrantPermissionContext::DecidePermission(
           Profile::FromBrowserContext(browser_context()));
   net::CookieSettingOverrides overrides = rfh->GetCookieSettingOverrides();
   overrides.Remove(net::CookieSettingOverride::kStorageAccessGrantEligible);
-  if (cookie_settings->IsFullCookieAccessAllowed(
-          request_data.requesting_origin, net::SiteForCookies(),
-          url::Origin::Create(request_data.embedding_origin), overrides)) {
+  if (cookie_settings->IsFullCookieAccessAllowed(request_data.requesting_origin,
+                                                 net::SiteForCookies(),
+                                                 embedding_origin, overrides)) {
     RecordOutcomeSample(RequestOutcome::kAllowedByCookieSettings);
     std::move(callback).Run(CONTENT_SETTING_ALLOW);
     return;
   }
 
   const net::SchemefulSite requesting_site(request_data.requesting_origin);
-  const url::Origin embedding_origin =
-      url::Origin::Create(request_data.embedding_origin);
   const net::SchemefulSite embedding_site(embedding_origin);
 
   // Return early without prompting users if the requesting frame is same-site
