@@ -234,7 +234,7 @@ TEST_P(BubbleViewPixelTest, Basic) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "video_conference_bubble_view_basic",
-      /*revision_number=*/14, bubble_view()));
+      /*revision_number=*/15, bubble_view()));
 }
 
 // Pixel test that tests toggled on/off and focused/not focused for the toggle
@@ -271,6 +271,7 @@ TEST_P(BubbleViewPixelTest, ToggleButton) {
   LeftClickOn(first_toggle_effect_button);
   ASSERT_EQ(2, office_bunny()->num_activations_for_testing());
   auto* event_generator = GetEventGenerator();
+  event_generator->PressAndReleaseKey(ui::KeyboardCode::VKEY_TAB);
   event_generator->PressAndReleaseKey(ui::KeyboardCode::VKEY_TAB);
   event_generator->PressAndReleaseKey(ui::KeyboardCode::VKEY_TAB);
   ASSERT_TRUE(first_toggle_effect_button->HasFocus());
@@ -437,7 +438,7 @@ TEST_P(BubbleViewPixelTest, DLCUIInErrorShowsWarningLabelSingleError) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "one-toggle-effects-view",
-      /*revision_number=*/2, bubble_view()));
+      /*revision_number=*/3, bubble_view()));
 
   // Add one set-value effect.
   controller()->GetEffectsManager().RegisterDelegate(shaggy_fur());
@@ -453,7 +454,7 @@ TEST_P(BubbleViewPixelTest, DLCUIInErrorShowsWarningLabelSingleError) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "additional-set-value-view",
-      /*revision_number=*/2, bubble_view()));
+      /*revision_number=*/3, bubble_view()));
 }
 
 TEST_P(BubbleViewPixelTest, DLCUIInErrorShowsWarningLabelMaxErrors) {
@@ -474,7 +475,7 @@ TEST_P(BubbleViewPixelTest, DLCUIInErrorShowsWarningLabelMaxErrors) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "one-toggle-effects-view",
-      /*revision_number=*/2, bubble_view()));
+      /*revision_number=*/3, bubble_view()));
 
   // Add one set-value effect.
   controller()->GetEffectsManager().RegisterDelegate(shaggy_fur());
@@ -491,7 +492,7 @@ TEST_P(BubbleViewPixelTest, DLCUIInErrorShowsWarningLabelMaxErrors) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "additional-set-value-view",
-      /*revision_number=*/2, bubble_view()));
+      /*revision_number=*/3, bubble_view()));
 }
 
 }  // namespace ash::video_conference
