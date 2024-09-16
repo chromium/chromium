@@ -3054,6 +3054,17 @@ TEST_F(
       autofill_metrics::ServerCardUnmaskResult::kFlowCancelled, 1);
 }
 
+TEST_F(CreditCardAccessManagerTest, Prefetching_RiskData) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAutofillEnablePrefetchingRiskDataForRetrieval};
+  // Setting up a server card.
+  CreateServerCard(kTestGUID, kTestNumber);
+
+  credit_card_access_manager().PrepareToFetchCreditCard();
+
+  EXPECT_TRUE(autofill_client_.GetPaymentsAutofillClient()->risk_data_loaded());
+}
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
 // Ensures that the virtual card risk-based unmasking response is handled
 // correctly and authentication is delegated to the FIDO authenticator, when

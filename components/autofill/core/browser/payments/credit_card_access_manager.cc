@@ -143,6 +143,14 @@ void CreditCardAccessManager::PrepareToFetchCreditCard() {
   // Reset in case a late response was ignored.
   ready_to_start_authentication_.Reset();
 
+  // Prefetching risk data for latency optimization and caching it for upcoming
+  // use in retrieval.
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnablePrefetchingRiskDataForRetrieval)) {
+    autofill_client().GetPaymentsAutofillClient()->LoadRiskData(
+        base::DoNothing());
+  }
+
   // If `is_user_verifiable_` is set, then directly call
   // `GetUnmaskDetailsIfUserIsVerifiable()`, otherwise fetch value for
   // `is_user_verifiable_`.

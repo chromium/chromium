@@ -45,6 +45,7 @@ TestPaymentsAutofillClient::~TestPaymentsAutofillClient() = default;
 
 void TestPaymentsAutofillClient::LoadRiskData(
     base::OnceCallback<void(const std::string&)> callback) {
+  risk_data_loaded_ = true;
   std::move(callback).Run("some risk data");
 }
 
