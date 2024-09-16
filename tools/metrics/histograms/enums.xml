@@ -34229,6 +34229,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="-734627230" label="chrome://extension-icon/"/>
   <int value="-727952446" label="chrome://nacl/"/>
   <int value="-707542503" label="chrome://choose-mobile-network/"/>
+  <int value="-695712248" label="chrome://segmentation-internals/"/>
   <int value="-680649366" label="chrome-untrusted://hats/"/>
   <int value="-675896339" label="chrome://healthd-internals/"/>
   <int value="-672072143" label="chrome://site-engagement/"/>

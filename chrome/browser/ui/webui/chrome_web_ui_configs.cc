@@ -19,9 +19,13 @@
 #include "chrome/browser/ui/webui/location_internals/location_internals_ui.h"
 #include "chrome/browser/ui/webui/memory_internals_ui.h"
 #include "chrome/browser/ui/webui/metrics_internals/metrics_internals_ui.h"
+#include "chrome/browser/ui/webui/net_export_ui.h"
+#include "chrome/browser/ui/webui/net_internals/net_internals_ui.h"
 #include "chrome/browser/ui/webui/ntp_tiles_internals_ui.h"
 #include "chrome/browser/ui/webui/omnibox/omnibox_ui.h"
 #include "chrome/browser/ui/webui/predictors/predictors_ui.h"
+#include "chrome/browser/ui/webui/segmentation_internals/segmentation_internals_ui.h"
+#include "chrome/browser/ui/webui/signin_internals_ui.h"
 #include "content/public/browser/webui_config_map.h"
 #include "extensions/buildflags/buildflags.h"
 #include "printing/buildflags/buildflags.h"
@@ -101,6 +105,10 @@ void RegisterChromeWebUIConfigs() {
   map.AddWebUIConfig(std::make_unique<OmniboxUIConfig>());
   map.AddWebUIConfig(std::make_unique<PasswordManagerInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<PredictorsUIConfig>());
+  map.AddWebUIConfig(std::make_unique<NetExportUIConfig>());
+  map.AddWebUIConfig(std::make_unique<NetInternalsUIConfig>());
+  map.AddWebUIConfig(std::make_unique<SegmentationInternalsUIConfig>());
+  map.AddWebUIConfig(std::make_unique<SignInInternalsUIConfig>());
 
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
   map.AddWebUIConfig(std::make_unique<BluetoothInternalsUIConfig>());

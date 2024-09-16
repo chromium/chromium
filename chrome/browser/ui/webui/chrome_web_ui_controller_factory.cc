@@ -46,12 +46,8 @@
 #include "chrome/browser/ui/webui/intro/intro_ui.h"
 #include "chrome/browser/ui/webui/media/media_engagement_ui.h"
 #include "chrome/browser/ui/webui/media/webrtc_logs_ui.h"
-#include "chrome/browser/ui/webui/net_export_ui.h"
-#include "chrome/browser/ui/webui/net_internals/net_internals_ui.h"
 #include "chrome/browser/ui/webui/policy/policy_ui.h"
 #include "chrome/browser/ui/webui/privacy_sandbox/privacy_sandbox_internals_ui.h"
-#include "chrome/browser/ui/webui/segmentation_internals/segmentation_internals_ui.h"
-#include "chrome/browser/ui/webui/signin_internals_ui.h"
 #include "chrome/browser/ui/webui/suggest_internals/suggest_internals_ui.h"
 #include "chrome/browser/ui/webui/sync_internals/sync_internals_ui.h"
 #include "chrome/browser/ui/webui/translate_internals/translate_internals_ui.h"
@@ -411,10 +407,6 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     return &NewWebUI<ash::kiosk_vision::UIController>;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  if (url.host_piece() == chrome::kChromeUINetExportHost)
-    return &NewWebUI<NetExportUI>;
-  if (url.host_piece() == chrome::kChromeUINetInternalsHost)
-    return &NewWebUI<NetInternalsUI>;
   if (url.host_piece() ==
       optimization_guide_internals::kChromeUIOptimizationGuideInternalsHost) {
     return &NewWebUI<OptimizationGuideInternalsUI>;
@@ -422,10 +414,6 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
   if (url.host_piece() == safe_browsing::kChromeUISafeBrowsingHost)
     return &NewComponentUI<safe_browsing::SafeBrowsingUI,
                            ChromeSafeBrowsingLocalStateDelegate>;
-  if (url.host_piece() == chrome::kChromeUISegmentationInternalsHost)
-    return &NewWebUI<SegmentationInternalsUI>;
-  if (url.host_piece() == chrome::kChromeUISignInInternalsHost)
-    return &NewWebUI<SignInInternalsUI>;
   if (url.host_piece() == chrome::kChromeUISupervisedUserPassphrasePageHost)
     return &NewWebUI<ConstrainedWebDialogUI>;
   if (url.host_piece() == chrome::kChromeUISyncInternalsHost)

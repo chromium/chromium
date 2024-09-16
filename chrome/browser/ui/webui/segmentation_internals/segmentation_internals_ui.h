@@ -7,11 +7,23 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/webui/segmentation_internals/segmentation_internals.mojom.h"  // nogncheck
+#include "chrome/common/url_constants.h"
+#include "chrome/common/webui_url_constants.h"
+#include "content/public/browser/webui_config.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
 class Profile;
 class SegmentationInternalsPageHandlerImpl;
+class SegmentationInternalsUI;
+
+class SegmentationInternalsUIConfig
+    : public content::DefaultWebUIConfig<SegmentationInternalsUI> {
+ public:
+  SegmentationInternalsUIConfig()
+      : DefaultWebUIConfig(content::kChromeUIScheme,
+                           chrome::kChromeUISegmentationInternalsHost) {}
+};
 
 // The WebUI controller for chrome://segmentation-internals.
 class SegmentationInternalsUI

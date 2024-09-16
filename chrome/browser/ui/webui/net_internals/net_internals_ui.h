@@ -5,11 +5,24 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_NET_INTERNALS_NET_INTERNALS_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_NET_INTERNALS_NET_INTERNALS_UI_H_
 
+#include "chrome/common/url_constants.h"
+#include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/web_ui_controller.h"
+#include "content/public/browser/webui_config.h"
 
 namespace network::mojom {
 class NetworkContext;
 }
+
+class NetInternalsUI;
+
+class NetInternalsUIConfig
+    : public content::DefaultWebUIConfig<NetInternalsUI> {
+ public:
+  NetInternalsUIConfig()
+      : DefaultWebUIConfig(content::kChromeUIScheme,
+                           chrome::kChromeUINetInternalsHost) {}
+};
 
 class NetInternalsUI : public content::WebUIController {
  public:
