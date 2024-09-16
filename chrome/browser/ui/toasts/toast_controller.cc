@@ -221,6 +221,9 @@ void ToastController::CreateToast(const ToastParams& params,
   toast_ = toast_view.get();
   views::Widget* const toast_widget =
       views::BubbleDialogDelegateView::CreateBubble(std::move(toast_view));
+  // Get rid of the border that is drawn by default when we set the toast to
+  // have a shadow.
+  toast_->GetBubbleFrameView()->bubble_border()->set_draw_border_stroke(false);
   toast_observer_.Observe(toast_widget);
   fullscreen_observation_.Observe(
       browser_window_interface_->GetExclusiveAccessManager()
