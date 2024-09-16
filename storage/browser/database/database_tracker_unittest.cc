@@ -107,7 +107,7 @@ class TestQuotaManagerProxy : public QuotaManagerProxy {
   void RegisterClient(
       mojo::PendingRemote<mojom::QuotaClient> client,
       QuotaClientType client_type,
-      const std::vector<blink::mojom::StorageType>& storage_types) override {
+      const base::flat_set<blink::mojom::StorageType>& storage_types) override {
     EXPECT_FALSE(registered_client_);
     registered_client_.Bind(std::move(client));
   }

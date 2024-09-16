@@ -37,7 +37,8 @@ class MockBGFQuotaManagerProxy : public storage::MockQuotaManagerProxy {
   void RegisterClient(
       mojo::PendingRemote<storage::mojom::QuotaClient> client,
       storage::QuotaClientType client_type,
-      const std::vector<blink::mojom::StorageType>& storage_types) override {}
+      const base::flat_set<blink::mojom::StorageType>& storage_types) override {
+  }
 
   void GetUsageAndQuota(
       const blink::StorageKey& storage_key,

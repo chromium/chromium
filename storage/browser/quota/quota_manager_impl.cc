@@ -1721,16 +1721,7 @@ void QuotaManagerImpl::GetBucketUsageWithBreakdown(
 bool QuotaManagerImpl::IsStorageUnlimited(const StorageKey& storage_key,
                                           StorageType type) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  // For syncable storage we should always enforce quota (since the
-  // quota must be capped by the server limit).
-  if (type == StorageType::kSyncable) {
-    return false;
-  }
-  if (type == StorageType::kDeprecatedQuotaNotManaged) {
-    return true;
-  }
-  return special_storage_policy_.get() &&
+  return type == StorageType::kTemporary && special_storage_policy_.get() &&
          special_storage_policy_->IsStorageUnlimited(
              storage_key.origin().GetURL());
 }
@@ -1953,7 +1944,7 @@ void QuotaManagerImpl::RunDatabaseCallbacks() {
 void QuotaManagerImpl::RegisterClient(
     mojo::PendingRemote<mojom::QuotaClient> client,
     QuotaClientType client_type,
-    const std::vector<blink::mojom::StorageType>& storage_types) {
+    const base::flat_set<blink::mojom::StorageType>& storage_types) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!database_.get())
       << "All clients must be registered before the database is initialized";
@@ -1974,10 +1965,9 @@ UsageTracker* QuotaManagerImpl::GetUsageTracker(StorageType type) const {
     case StorageType::kSyncable:
       return syncable_usage_tracker_.get();
     case StorageType::kDeprecatedQuotaNotManaged:
-      return nullptr;
     case StorageType::kDeprecatedPersistent:
     case StorageType::kUnknown:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   return nullptr;
 }

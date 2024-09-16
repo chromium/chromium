@@ -192,7 +192,7 @@ class MockCacheStorageQuotaManagerProxy
   void RegisterClient(
       mojo::PendingRemote<storage::mojom::QuotaClient> client,
       storage::QuotaClientType client_type,
-      const std::vector<blink::mojom::StorageType>& storage_types) override {
+      const base::flat_set<blink::mojom::StorageType>& storage_types) override {
     registered_clients_.emplace_back(std::move(client));
   }
 

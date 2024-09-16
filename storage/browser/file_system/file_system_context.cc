@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -647,25 +648,18 @@ FileSystemContext::~FileSystemContext() {
   env_override_.release();
 }
 
-std::vector<blink::mojom::StorageType>
+base::flat_set<blink::mojom::StorageType>
 FileSystemContext::QuotaManagedStorageTypes() {
   std::vector<blink::mojom::StorageType> quota_storage_types;
-  for (const auto& file_system_type_and_backend : backend_map_) {
-    FileSystemType file_system_type = file_system_type_and_backend.first;
-    blink::mojom::StorageType storage_type =
+  for (FileSystemType file_system_type : GetFileSystemTypes()) {
+    const blink::mojom::StorageType storage_type =
         FileSystemTypeToQuotaStorageType(file_system_type);
-
-    // An more elegant way of filtering out non-quota-managed backends would be
-    // to call GetQuotaUtil() on backends. Unfortunately, the method assumes the
-    // backends are initialized.
-    if (storage_type == blink::mojom::StorageType::kUnknown ||
-        storage_type == blink::mojom::StorageType::kDeprecatedQuotaNotManaged) {
-      continue;
+    if (storage_type == blink::mojom::StorageType::kTemporary ||
+        storage_type == blink::mojom::StorageType::kSyncable) {
+      quota_storage_types.push_back(storage_type);
     }
-
-    quota_storage_types.push_back(storage_type);
   }
-  return quota_storage_types;
+  return base::MakeFlatSet<blink::mojom::StorageType>(quota_storage_types);
 }
 
 std::unique_ptr<FileSystemOperation>
