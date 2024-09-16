@@ -23,9 +23,9 @@ void AddProductSpecificationsColorMixer(ui::ColorProvider* provider,
   mixer[kColorProductSpecificationsDisclosureForeground] = {
       ui::kColorPrimaryForeground};
   mixer[kColorProductSpecificationsDisclosureGradientEnd] = {
-      ui::kColorSysGradientTertiary};
-  mixer[kColorProductSpecificationsDisclosureGradientStart] = {
       ui::kColorSysGradientPrimary};
+  mixer[kColorProductSpecificationsDisclosureGradientStart] = {
+      ui::kColorSysGradientTertiary};
   mixer[kColorProductSpecificationsDisclosureSummaryBackground] = {
       ui::kColorSysSurface4};
   mixer[kColorProductSpecificationsDivider] = {ui::kColorSysDivider};
