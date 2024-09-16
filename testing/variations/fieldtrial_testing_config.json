@@ -13416,28 +13416,6 @@
             ]
         }
     ],
-    "LevelDBProtoAsyncWrite": [
-        {
-            "platforms": [
-                "android_webview",
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "LevelDBProtoAsyncWrite"
-                    ]
-                }
-            ]
-        }
-    ],
     "LightweightUAFDetector": [
         {
             "platforms": [
@@ -17001,7 +16979,9 @@
                         "ExpandedPrefetchRange",
                         "FledgeEnableWALForInterestGroupStorage",
                         "GpuInfoCollectionSeparatePrefetch",
+                        "LevelDBProtoAsyncWrite",
                         "MojoBindingsInlineSLS",
+                        "ReduceCpuUtilization2",
                         "RunTasksByBatches",
                         "SharedStorageAPIEnableWALForDatabase",
                         "SqlWALModeOnDipsDatabase",
@@ -17022,9 +17002,11 @@
                     },
                     "enable_features": [
                         "FledgeEnableWALForInterestGroupStorage",
+                        "LevelDBProtoAsyncWrite",
                         "MacEfficientFileFlush",
                         "MojoBindingsInlineSLS",
                         "NumberOfCoresWithCpuSecurityMitigation",
+                        "ReduceCpuUtilization2",
                         "SharedStorageAPIEnableWALForDatabase",
                         "SqlWALModeOnDipsDatabase",
                         "SqlWALModeOnSegmentationDatabase"
@@ -17037,7 +17019,25 @@
                 "chromeos",
                 "chromeos_lacros",
                 "linux",
-                "fuchsia",
+                "fuchsia"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "FledgeEnableWALForInterestGroupStorage",
+                        "LevelDBProtoAsyncWrite",
+                        "MojoBindingsInlineSLS",
+                        "ReduceCpuUtilization2",
+                        "SharedStorageAPIEnableWALForDatabase",
+                        "SqlWALModeOnDipsDatabase",
+                        "SqlWALModeOnSegmentationDatabase"
+                    ]
+                }
+            ]
+        },
+        {
+            "platforms": [
                 "android_webview"
             ],
             "experiments": [
@@ -17045,7 +17045,9 @@
                     "name": "Enabled",
                     "enable_features": [
                         "FledgeEnableWALForInterestGroupStorage",
+                        "LevelDBProtoAsyncWrite",
                         "MojoBindingsInlineSLS",
+                        "PumpFastToSleepAndroid",
                         "SharedStorageAPIEnableWALForDatabase",
                         "SqlWALModeOnDipsDatabase",
                         "SqlWALModeOnSegmentationDatabase"
@@ -17062,7 +17064,10 @@
                     "name": "Enabled",
                     "enable_features": [
                         "FledgeEnableWALForInterestGroupStorage",
+                        "LevelDBProtoAsyncWrite",
                         "MojoBindingsInlineSLS",
+                        "PumpFastToSleepAndroid",
+                        "ReduceCpuUtilization2",
                         "SharedStorageAPIEnableWALForDatabase",
                         "SqlWALModeOnDipsDatabase",
                         "SqlWALModeOnSegmentationDatabase"
@@ -18975,23 +18980,6 @@
             ]
         }
     ],
-    "PumpFastToSleepAndroid": [
-        {
-            "platforms": [
-                "android_weblayer",
-                "android_webview",
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PumpFastToSleepAndroid"
-                    ]
-                }
-            ]
-        }
-    ],
     "PushMessagingDisallowSenderIDs": [
         {
             "platforms": [
@@ -19484,14 +19472,7 @@
     "ReduceCpuUtilization2": [
         {
             "platforms": [
-                "android_webview",
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
+                "android_webview"
             ],
             "experiments": [
                 {
