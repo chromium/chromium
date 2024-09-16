@@ -11,7 +11,7 @@ This document describes the destruction procedure of Widget related classes.
 ### NativeWidgetOwnsWidget
 ![NativeWidgetOwnsWidget - NativeWidget](images/widget_destruction_NWOW_non_desktop.png)
 
-### NativeWidgetOwnsWidget
+### WidgetOwnsNativeWidget
 ![WidgetOwnsNativeWidget - NativeWidget](images/widget_destruction_WONW_non_desktop.png)
 
 ## MacViews
