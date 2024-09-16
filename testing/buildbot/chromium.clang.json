@@ -2380,7 +2380,7 @@
           ],
           "dimensions": {
             "cpu": "x86-64",
-            "device": "iPhone15 Pro",
+            "device": "iPhone16,1",
             "os": "Mac-14"
           },
           "expiration": 21600,
