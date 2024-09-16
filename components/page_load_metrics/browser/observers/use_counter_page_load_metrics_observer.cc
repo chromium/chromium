@@ -444,6 +444,8 @@ UseCounterMetricsRecorder::GetWebFeatureToWebDXFeatureMap() {
           {WebFeature::kCssDisplayPropertyMultipleValues,
            WebDXFeature::kTwoValueDisplay},
           {WebFeature::kTwoValuedOverflow, WebDXFeature::kOverflowShorthand},
+          {WebFeature::kKeyboardApiGetLayoutMap,
+           WebDXFeature::kKeyboardMap},
       }};
 
   return *kMap;

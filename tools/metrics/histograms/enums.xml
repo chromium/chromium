@@ -33845,6 +33845,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="113" label="FieldSizing"/>
   <int value="114" label="DetailsName"/>
   <int value="115" label="ElementCheckVisibility"/>
+  <int value="116" label="KeyboardMap"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->
