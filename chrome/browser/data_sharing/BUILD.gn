@@ -138,6 +138,7 @@ if (is_android) {
 
   android_library("delegate_java") {
     sources = [
+      "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingImplFactory.java",
       "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingSDKDelegateImpl.java",
       "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingUIDelegateImpl.java",
       "android/java/src/org/chromium/chrome/browser/data_sharing/MemberPickerListenerImpl.java",

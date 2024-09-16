@@ -75,6 +75,7 @@ java_cpp_features("signin_java_features_srcjar") {
 android_library("account_email_domain_displayability_java") {
   deps = [ ":java" ]
   sources = [ "java/src/org/chromium/components/signin/AccountEmailDomainDisplayability.java" ]
+  jar_excluded_patterns = [ "*/AccountEmailDomainDisplayability\$Impl.class" ]
 }
 
 generate_jni("jni_headers") {

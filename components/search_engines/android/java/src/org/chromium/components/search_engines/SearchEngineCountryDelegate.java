@@ -18,6 +18,9 @@ import java.lang.annotation.RetentionPolicy;
 /** Placeholder delegate class to get device country. Implemented in the internal code. */
 public abstract class SearchEngineCountryDelegate {
     @MainThread
+    public SearchEngineCountryDelegate() {}
+
+    @MainThread
     public SearchEngineCountryDelegate(Context context) {}
 
     /**
