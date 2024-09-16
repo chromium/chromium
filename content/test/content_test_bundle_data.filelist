@@ -7392,6 +7392,8 @@ data/page_with_samesite_iframe.html
 data/page_with_sandboxed_iframe.html
 data/page_with_sandboxed_srcdoc_iframe.html
 data/page_with_scrollable_div.html
+data/page_with_srcdoc_iframe_and_csp.html
+data/page_with_srcdoc_iframe_and_csp.html.mock-http-headers
 data/page_with_stop_iframe.html
 data/page_with_subresources.html
 data/page_with_touch_handler.html

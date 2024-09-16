@@ -1892,6 +1892,7 @@ void NavigationControllerImpl::UpdateNavigationEntryDetails(
       params.method, params.post_id, nullptr /* blob_url_loader_factory */,
       ComputePolicyContainerPoliciesForFrameEntry(
           rfh, request && request->IsSameDocument(),
+          request ? request->DidEncounterError() : false,
           request ? request->common_params().url : params.url));
 
   if (rfh->GetParent()) {
@@ -2340,6 +2341,7 @@ void NavigationControllerImpl::RendererDidNavigateNewSubframe(
   }
   std::unique_ptr<PolicyContainerPolicies> policy_container_policies =
       ComputePolicyContainerPoliciesForFrameEntry(rfh, is_same_document,
+                                                  request->DidEncounterError(),
                                                   request->GetURL());
   bool protect_url_in_navigation_api = false;
   if (is_same_document) {
@@ -4571,7 +4573,14 @@ std::unique_ptr<PolicyContainerPolicies>
 NavigationControllerImpl::ComputePolicyContainerPoliciesForFrameEntry(
     RenderFrameHostImpl* rfh,
     bool is_same_document,
+    bool navigation_encountered_error,
     const GURL& url) {
+  if (navigation_encountered_error) {
+    // We should never reload the policy container of an error page from
+    // history, see https://crbug.com/364773822.
+    return nullptr;
+  }
+
   if (is_same_document) {
     DCHECK(GetLastCommittedEntry());
     FrameNavigationEntry* previous_frame_entry =
