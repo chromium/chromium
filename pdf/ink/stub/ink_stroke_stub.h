@@ -13,11 +13,15 @@
 
 namespace chrome_pdf {
 
-class InkModeledShapeViewStub;
+struct InkRect;
 
 class InkStrokeStub : public InkStroke {
  public:
   InkStrokeStub(SkColor brush_color, const InkStrokeInputBatchStub& inputs);
+  InkStrokeStub(SkColor brush_color,
+                const InkStrokeInputBatchStub& inputs,
+                const InkModeledShapeView::GroupsOutlines& groups_outlines,
+                const InkRect& bounds);
   InkStrokeStub(const InkStrokeStub&) = delete;
   InkStrokeStub& operator=(const InkStrokeStub&) = delete;
   ~InkStrokeStub() override;

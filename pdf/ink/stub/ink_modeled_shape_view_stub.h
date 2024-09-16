@@ -12,6 +12,8 @@ namespace chrome_pdf {
 class InkModeledShapeViewStub : public InkModeledShapeView {
  public:
   InkModeledShapeViewStub();
+  InkModeledShapeViewStub(const GroupsOutlines& groups_outlines,
+                          const InkRect& bounds);
   InkModeledShapeViewStub(const InkModeledShapeViewStub&) = delete;
   InkModeledShapeViewStub& operator=(const InkModeledShapeViewStub&) = delete;
   ~InkModeledShapeViewStub() override;
@@ -22,6 +24,10 @@ class InkModeledShapeViewStub : public InkModeledShapeView {
   std::vector<OutlinePositions> GetRenderGroupOutlinePositions(
       uint32_t group_index) const override;
   InkRect Bounds() const override;
+
+ private:
+  const GroupsOutlines groups_outlines_;
+  const InkRect bounds_;
 };
 
 }  // namespace chrome_pdf

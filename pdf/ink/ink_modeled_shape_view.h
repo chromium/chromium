@@ -17,6 +17,7 @@ namespace chrome_pdf {
 class InkModeledShapeView {
  public:
   using OutlinePositions = std::vector<InkPoint>;
+  using GroupsOutlines = std::vector<std::vector<OutlinePositions>>;
 
   virtual ~InkModeledShapeView() = default;
 

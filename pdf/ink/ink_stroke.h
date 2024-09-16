@@ -5,15 +5,31 @@
 #ifndef PDF_INK_INK_STROKE_H_
 #define PDF_INK_INK_STROKE_H_
 
+#include <memory>
+
+#include "pdf/ink/ink_modeled_shape_view.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 namespace chrome_pdf {
 
-class InkModeledShapeView;
+class InkBrush;
+class InkStrokeInputBatch;
 class InkStrokeInputBatchView;
 
 class InkStroke {
  public:
+  // Create a stroke for use in testing.  The `groups_outlines` and `bounds`
+  // parameters are needed only by the stub implementation; they will be
+  // ignored by the wrapper, which can generate a real modeled shape using
+  // `inputs`.
+  // TODO(crbug.com/339682315):  Remove the parameters used only by the stub
+  // implementation once the wrapper is fully available.
+  static std::unique_ptr<InkStroke> CreateForTesting(
+      const InkBrush& brush,
+      const InkStrokeInputBatch& inputs,
+      const InkModeledShapeView::GroupsOutlines& groups_outlines,
+      const InkRect& bounds);
+
   virtual ~InkStroke() = default;
 
   // Get the color used with the brush for this stroke.  Ink's API allows
