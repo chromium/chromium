@@ -125,6 +125,14 @@ UIColor* HeaderBackgroundColor(id<UITraitEnvironment> environment) {
   }
 }
 
+UIColor* AccountParticleDiscBadgeBackgroundColor(UIUserInterfaceStyle style) {
+  if (style == UIUserInterfaceStyleDark) {
+    return [UIColor colorNamed:kBackgroundColor];
+  } else {
+    return [UIColor colorNamed:@"ntp_background_color"];
+  }
+}
+
 // Returns a color which is a blend of `color_1` and `color_2`, depending on
 // the value of `fraction`. `fraction` is a value between 0 and 1. If it is
 // closer to 0, the output will be closer to `color_1`, and if it is closer to
@@ -689,7 +697,8 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   _accountDiscParticleBadgeImageView.tintColor =
       [UIColor colorNamed:kRed500Color];
   _accountDiscParticleBadgeImageView.backgroundColor =
-      [UIColor colorNamed:@"ntp_background_color"];
+      AccountParticleDiscBadgeBackgroundColor(
+          self.traitCollection.userInterfaceStyle);
   _accountDiscParticleBadgeImageView.layer.cornerRadius =
       _accountDiscParticleBadgeImageView.frame.size.width / 2;
   _accountDiscParticleBadgeImageView.clipsToBounds = YES;
@@ -799,6 +808,12 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
     // automatically update when dark/light mode is changed. It needs to be
     // manually updated here.
     [self setFakeboxBackgroundWithProgress:_lastAnimationPercent];
+
+    if (_accountDiscParticleBadgeImageView) {
+      _accountDiscParticleBadgeImageView.backgroundColor =
+          AccountParticleDiscBadgeBackgroundColor(
+              self.traitCollection.userInterfaceStyle);
+    }
   }
 }
 
