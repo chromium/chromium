@@ -41,6 +41,73 @@ base::expected<std::vector<uint8_t>, Error> DownloadObfuscator::ObfuscateChunk(
   return result;
 }
 
+base::expected<std::vector<uint8_t>, Error>
+DownloadObfuscator::DeobfuscateChunk(base::span<const uint8_t> data,
+                                     size_t& obfuscated_file_offset) {
+  if (data.size() < kHeaderSize + kChunkSizePrefixSize) {
+    return base::unexpected(Error::kDeobfuscationFailed);
+  }
+
+  // If it's the first chunk, get obfuscation data from header.
+  if (chunk_counter_ == 0) {
+    std::vector<uint8_t> header(data.begin(), data.begin() + kHeaderSize);
+    auto header_data = GetHeaderData(header);
+    if (!header_data.has_value()) {
+      return base::unexpected(header_data.error());
+    }
+    derived_key_ = std::move(header_data->first);
+    nonce_prefix_ = std::move(header_data->second);
+    obfuscated_file_offset = kHeaderSize;
+  }
+
+  // Read the size of the next chunk.
+  auto chunk_size = GetObfuscatedChunkSize(
+      data.subspan(obfuscated_file_offset, kChunkSizePrefixSize));
+  if (!chunk_size.has_value()) {
+    return base::unexpected(chunk_size.error());
+  }
+  obfuscated_file_offset += kChunkSizePrefixSize;
+
+  // Deobfuscate the next data chunk.
+  bool is_last_chunk =
+      (obfuscated_file_offset + chunk_size.value() >= data.size());
+  auto result = DeobfuscateDataChunk(
+      base::make_span(data).subspan(obfuscated_file_offset, chunk_size.value()),
+      derived_key_, nonce_prefix_, chunk_counter_++, is_last_chunk);
+
+  if (!result.has_value()) {
+    return base::unexpected(result.error());
+  }
+
+  obfuscated_file_offset += chunk_size.value();
+  return result.value();
+}
+
+base::expected<int64_t, Error>
+DownloadObfuscator::CalculateDeobfuscationOverhead(
+    base::span<const uint8_t> data) {
+  if (data.size() < kHeaderSize + kChunkSizePrefixSize) {
+    return base::unexpected(Error::kDeobfuscationFailed);
+  }
+
+  size_t offset = kHeaderSize;
+  int num_chunks = 0;
+
+  while (offset < data.size()) {
+    auto chunk_size = enterprise_obfuscation::GetObfuscatedChunkSize(
+        data.subspan(offset, kChunkSizePrefixSize));
+    offset += kChunkSizePrefixSize;
+    if (!chunk_size.has_value()) {
+      return base::unexpected(chunk_size.error());
+    }
+
+    offset += chunk_size.value();
+    num_chunks++;
+  }
+  size_t chunk_overhead = kAuthTagSize + kChunkSizePrefixSize;
+  return num_chunks * chunk_overhead + kHeaderSize;
+}
+
 std::unique_ptr<crypto::SecureHash> DownloadObfuscator::GetUnobfuscatedHash() {
   return std::move(unobfuscated_hash_);
 }

@@ -17,28 +17,6 @@ namespace enterprise_obfuscation {
 
 namespace {
 
-// Default key and derived key size, nonce length and max tag length in
-// BoringSSL's implementation of AES-256 GCM used by the crypto library.
-// TODO(b/356473947): Consider switching to 128-bit key for performance.
-static constexpr size_t kKeySize = 32u;
-static constexpr size_t kNonceSize = 12u;
-static constexpr size_t kAuthTagSize = 16u;
-
-// Nonce prefix and header size based on Tink streaming AEAD implementation
-// (https://developers.google.com/tink/streaming-aead/aes_gcm_hkdf_streaming).
-static constexpr size_t kNoncePrefixSize = 7u;
-static constexpr size_t kSaltSize = kKeySize;
-static constexpr size_t kHeaderSize = 1u + kSaltSize + kNoncePrefixSize;
-
-// Maximum size of a data chunk for obfuscation/deobfuscation.
-//
-// This size is chosen to be the default buffer size in bytes used for downloads
-// (kDefaultDownloadFileBufferSize = 524288) plus the auth tag length.
-static constexpr size_t kMaxChunkSize = 512 * 1024 + kAuthTagSize;
-
-// Size of the chunk size prefix for variable size.
-static constexpr size_t kChunkSizePrefixSize = 4u;
-
 // Generates a random 256 bit AES key.
 const std::vector<uint8_t>& GetSymmetricKey() {
   static const base::NoDestructor<std::vector<uint8_t>> kSymmetricKey(

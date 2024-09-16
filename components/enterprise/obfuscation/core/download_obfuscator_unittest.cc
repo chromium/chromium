@@ -26,10 +26,7 @@ constexpr char kTestData1[] = "Hello, world!";
 constexpr char kTestData2[] = "This is another test.";
 constexpr char kTestData3[] = "Download obfuscation test.";
 
-// Each obfuscated chunk adds 16 (authentication tag) + 4 (chunk size) = 20
-// bytes of overhead. The first chunk also has a 40 byte header prepended.
-constexpr int64_t kOverheadPerChunk = 20;
-constexpr int64_t kHeaderSize = 40;
+constexpr int64_t kOverheadPerChunk = kAuthTagSize + kChunkSizePrefixSize;
 
 struct TestParams {
   std::vector<std::string> chunks;
@@ -51,13 +48,15 @@ class DownloadObfuscatorTest : public testing::TestWithParam<TestParams> {
   base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_P(DownloadObfuscatorTest, ObfuscateAndVerify) {
+TEST_P(DownloadObfuscatorTest, ObfuscateAndDeobfuscateVerify) {
   DownloadObfuscator obfuscator;
   const auto& params = GetParam();
 
   auto expected_hash = crypto::SecureHash::Create(crypto::SecureHash::SHA256);
   size_t expected_overhead = 0;
+  std::vector<uint8_t> obfuscated_content;
 
+  // Test obfuscation process.
   for (size_t i = 0; i < params.chunks.size(); ++i) {
     bool is_last_chunk = (i == params.chunks.size() - 1);
     auto result = obfuscator.ObfuscateChunk(StringToVector(params.chunks[i]),
@@ -72,6 +71,8 @@ TEST_P(DownloadObfuscatorTest, ObfuscateAndVerify) {
       }
       EXPECT_EQ(result->size(), expected_size);
       expected_overhead += kOverheadPerChunk;
+      obfuscated_content.insert(obfuscated_content.end(), result->begin(),
+                                result->end());
     } else {
       ASSERT_FALSE(result.has_value());
       EXPECT_EQ(result.error(), Error::kDisabled);
@@ -87,6 +88,26 @@ TEST_P(DownloadObfuscatorTest, ObfuscateAndVerify) {
   auto hash = obfuscator.GetUnobfuscatedHash();
   ASSERT_TRUE(hash);
   EXPECT_EQ(GetHexEncodedHash(hash), GetHexEncodedHash(expected_hash));
+
+  // Test deobfuscation process.
+  if (params.feature_enabled) {
+    DownloadObfuscator deobfuscator;
+    size_t offset = 0;
+    for (const auto& chunk : params.chunks) {
+      auto deobfuscated =
+          deobfuscator.DeobfuscateChunk(obfuscated_content, offset);
+      ASSERT_TRUE(deobfuscated.has_value());
+      EXPECT_EQ(deobfuscated.value(), StringToVector(chunk));
+    }
+    EXPECT_EQ(offset, obfuscated_content.size());
+
+    // Test overhead calculation.
+    auto calculated_overhead =
+        deobfuscator.CalculateDeobfuscationOverhead(obfuscated_content);
+    ASSERT_TRUE(calculated_overhead.has_value());
+    EXPECT_EQ(calculated_overhead.value(),
+              static_cast<int64_t>(expected_overhead));
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -99,12 +120,18 @@ INSTANTIATE_TEST_SUITE_P(
                     TestParams{{kTestData1}, false}  // Feature disabled
                     ));
 
+class DownloadObfuscatorEnabledTest : public testing::Test {
+ protected:
+  void SetUp() override {
+    feature_list_.InitAndEnableFeature(kEnterpriseFileObfuscation);
+  }
+
+  base::test::ScopedFeatureList feature_list_;
+};
+
 // Verifies that the obfuscated results should be different for the same input,
 // but unobfuscated hash stays the same.
-TEST(DownloadObfuscatorConsistencyTest, ObfuscationConsistency) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kEnterpriseFileObfuscation);
-
+TEST_F(DownloadObfuscatorEnabledTest, ObfuscationConsistency) {
   DownloadObfuscator obfuscator1;
   DownloadObfuscator obfuscator2;
 
@@ -117,6 +144,25 @@ TEST(DownloadObfuscatorConsistencyTest, ObfuscationConsistency) {
   EXPECT_NE(*result1, *result2);
   EXPECT_EQ(GetHexEncodedHash(obfuscator1.GetUnobfuscatedHash()),
             GetHexEncodedHash(obfuscator2.GetUnobfuscatedHash()));
+}
+
+// Test invalid data scenarios.
+TEST_F(DownloadObfuscatorEnabledTest, InvalidData) {
+  DownloadObfuscator obfuscator;
+
+  // Test deobfuscation with invalid header.
+  std::vector<uint8_t> invalid_header(kHeaderSize - 1, 0);
+  size_t offset = 0;
+  auto deobfuscate_result = obfuscator.DeobfuscateChunk(invalid_header, offset);
+  EXPECT_FALSE(deobfuscate_result.has_value());
+  EXPECT_EQ(deobfuscate_result.error(), Error::kDeobfuscationFailed);
+
+  // Test overhead calculation with invalid data.
+  std::vector<uint8_t> invalid_data(kHeaderSize + kChunkSizePrefixSize - 1, 0);
+  auto overhead_result =
+      obfuscator.CalculateDeobfuscationOverhead(invalid_data);
+  EXPECT_FALSE(overhead_result.has_value());
+  EXPECT_EQ(overhead_result.error(), Error::kDeobfuscationFailed);
 }
 
 }  // namespace enterprise_obfuscation
