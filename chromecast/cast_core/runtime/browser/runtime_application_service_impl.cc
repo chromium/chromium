@@ -373,7 +373,7 @@ void RuntimeApplicationServiceImpl::SetTouchInput(
     case cast::common::TouchInput::UNDEFINED:
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -389,7 +389,7 @@ void RuntimeApplicationServiceImpl::SetVisibility(
     case cast::common::Visibility::UNDEFINED:
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -408,7 +408,7 @@ void RuntimeApplicationServiceImpl::SetMediaBlocking(
     case cast::common::MediaState::UNDEFINED:
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 

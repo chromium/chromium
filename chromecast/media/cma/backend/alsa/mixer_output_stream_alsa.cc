@@ -74,8 +74,8 @@ void ToFixedPoint(const float* input,
           input, frames, reinterpret_cast<int32_t*>(dest_buffer));
       break;
     default:
-      NOTREACHED_IN_MIGRATION()
-          << "Unsupported bytes per sample encountered: " << bytes_per_sample;
+      NOTREACHED() << "Unsupported bytes per sample encountered: "
+                   << bytes_per_sample;
   }
 }
 

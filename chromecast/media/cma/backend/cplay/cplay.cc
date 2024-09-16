@@ -73,13 +73,11 @@ struct Parameters {
 
 std::string ReadInputFile(const Parameters& params) {
   if (!base::PathExists(params.input_file_path)) {
-    NOTREACHED_IN_MIGRATION()
-        << "File " << params.input_file_path << " does not exist.";
+    NOTREACHED() << "File " << params.input_file_path << " does not exist.";
   }
   std::string wav_data;
   if (!base::ReadFileToString(params.input_file_path, &wav_data)) {
-    NOTREACHED_IN_MIGRATION()
-        << "Unable to open wav file, " << params.input_file_path;
+    NOTREACHED() << "Unable to open wav file, " << params.input_file_path;
   }
   return wav_data;
 }

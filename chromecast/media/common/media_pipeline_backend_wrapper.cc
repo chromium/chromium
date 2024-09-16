@@ -63,15 +63,9 @@ class RevokedMediaPipelineBackendWrapper : public DecoderCreatorCmaBackend {
   }
 
   // CmaBackend implementation:
-  CmaBackend::AudioDecoder* CreateAudioDecoder() override {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
-  }
+  CmaBackend::AudioDecoder* CreateAudioDecoder() override { NOTREACHED(); }
 
-  CmaBackend::VideoDecoder* CreateVideoDecoder() override {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
-  }
+  CmaBackend::VideoDecoder* CreateVideoDecoder() override { NOTREACHED(); }
 
   bool Initialize() override { return true; }
   bool Start(int64_t start_pts) override { return true; }
@@ -182,14 +176,12 @@ ActiveMediaPipelineBackendWrapper::~ActiveMediaPipelineBackendWrapper() {
 
 CmaBackend::AudioDecoder*
 ActiveMediaPipelineBackendWrapper::CreateAudioDecoder() {
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 CmaBackend::VideoDecoder*
 ActiveMediaPipelineBackendWrapper::CreateVideoDecoder() {
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 void ActiveMediaPipelineBackendWrapper::LogicalPause() {

@@ -25,9 +25,8 @@ media::SampleFormat ConvertSampleFormat(SampleFormat format) {
     case SAMPLE_FORMAT_FLOAT_P:
       return kSampleFormatPlanarF32;
     default:
-      NOTREACHED_IN_MIGRATION() << "Unknown sample format " << format;
+      NOTREACHED() << "Unknown sample format " << format;
   }
-  return kSampleFormatS16;
 }
 
 SampleFormat ConvertSampleFormat(media::SampleFormat format) {
@@ -45,9 +44,8 @@ SampleFormat ConvertSampleFormat(media::SampleFormat format) {
     case kSampleFormatPlanarF32:
       return SAMPLE_FORMAT_FLOAT_P;
     default:
-      NOTREACHED_IN_MIGRATION() << "Unhandled sample format " << format;
+      NOTREACHED() << "Unhandled sample format " << format;
   }
-  return SAMPLE_FORMAT_INT16_I;
 }
 
 int GetSampleSizeBytes(SampleFormat format) {

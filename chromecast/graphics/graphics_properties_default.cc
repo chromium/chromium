@@ -21,8 +21,7 @@ bool GraphicsPropertiesShlib::IsSupported(
     case Resolution::kUHDTV:
       return false;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 }
 

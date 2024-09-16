@@ -59,8 +59,7 @@ chromecast::media::VideoPlane::Transform ConvertTransform(
     case gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_270:
       return chromecast::media::VideoPlane::ROTATE_270;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return chromecast::media::VideoPlane::TRANSFORM_NONE;
+      NOTREACHED();
   }
 }
 
@@ -81,8 +80,7 @@ chromecast::media::VideoPlane::Transform ConvertTransform(
     return chromecast::media::VideoPlane::FLIP_HORIZONTAL;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return chromecast::media::VideoPlane::TRANSFORM_NONE;
+  NOTREACHED();
 }
 
 }  // namespace

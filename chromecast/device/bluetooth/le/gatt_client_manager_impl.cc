@@ -434,8 +434,7 @@ void GattClientManagerImpl::OnGetServices(
   if (pending_connect_requests_.empty() ||
       addr != pending_connect_requests_.front().addr ||
       !pending_connect_requests_.front().is_connect) {
-    NOTREACHED_IN_MIGRATION() << "Unexpected call to " << __func__;
-    return;
+    NOTREACHED() << "Unexpected call to " << __func__;
   }
 
   pending_connect_requests_.pop_front();

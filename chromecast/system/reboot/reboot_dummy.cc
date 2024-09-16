@@ -6,9 +6,7 @@
 
 #if !defined(NDEBUG) || defined(DCHECK_ALWAYS_ON)
 #include <stdlib.h>  // abort()
-#define NOTREACHED_IN_MIGRATION() abort()
-#else
-#define NOTREACHED_IN_MIGRATION() static_cast<void>(0)
+#define NOTREACHED() abort()
 #endif
 
 namespace chromecast {
@@ -35,7 +33,7 @@ bool RebootShlib::IsFdrForNextRebootSupported() {
 }
 
 void RebootShlib::SetFdrForNextReboot() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 bool RebootShlib::IsOtaForNextRebootSupported() {
@@ -43,7 +41,7 @@ bool RebootShlib::IsOtaForNextRebootSupported() {
 }
 
 void RebootShlib::SetOtaForNextReboot() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 bool RebootShlib::IsClearOtaForNextRebootSupported() {
@@ -51,7 +49,7 @@ bool RebootShlib::IsClearOtaForNextRebootSupported() {
 }
 
 void RebootShlib::ClearOtaForNextReboot() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 }  // namespace chromecast

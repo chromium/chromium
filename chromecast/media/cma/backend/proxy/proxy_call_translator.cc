@@ -34,8 +34,7 @@ CmaProxyHandler::PipelineState ToClientTypes(
         PIPELINE_STATE_PAUSED:
       return CmaProxyHandler::PipelineState::kPaused;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return CmaProxyHandler::PipelineState::kUninitialized;
+      NOTREACHED();
   }
 }
 
@@ -67,8 +66,7 @@ cast::media::AudioConfiguration_AudioCodec ToGrpcTypes(AudioCodec codec) {
       return cast::media::
           AudioConfiguration_AudioCodec_AUDIO_CODEC_MPEG_H_AUDIO;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return cast::media::AudioConfiguration_AudioCodec_AUDIO_CODEC_UNKNOWN;
+      NOTREACHED();
   }
 }
 
@@ -93,9 +91,7 @@ cast::media::AudioConfiguration_ChannelLayout ToGrpcTypes(
       return cast::media::
           AudioConfiguration_ChannelLayout_CHANNEL_LAYOUT_DISCRETE;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return cast::media::
-          AudioConfiguration_ChannelLayout_CHANNEL_LAYOUT_UNSUPPORTED;
+      NOTREACHED();
   }
 }
 
@@ -124,8 +120,7 @@ cast::media::AudioConfiguration_SampleFormat ToGrpcTypes(
     case kSampleFormatS24:
       return cast::media::AudioConfiguration_SampleFormat_SAMPLE_FORMAT_S24;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return cast::media::AudioConfiguration_SampleFormat_SAMPLE_FORMAT_UNKNOWN;
+      NOTREACHED();
   }
 }
 
@@ -341,7 +336,7 @@ void ProxyCallTranslator::HandlePushBufferResponse(
 void ProxyCallTranslator::HandleGetMediaTimeResponse(
     std::optional<MediaTime> time,
     CastRuntimeAudioChannelBroker::StatusCode status) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 bool ProxyCallTranslator::HandleError(
