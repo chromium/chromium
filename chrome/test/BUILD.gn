@@ -2699,6 +2699,7 @@ if (!is_android) {
       "../browser/favicon/content_favicon_driver_browsertest.cc",
       "../browser/fingerprinting_protection/fingerprinting_protection_filter_browsertest.cc",
       "../browser/fingerprinting_protection/fingerprinting_protection_filter_ruleset_browsertest.cc",
+      "../browser/fingerprinting_protection/fingerprinting_protection_filter_user_bypass_browsertest.cc",
       "../browser/first_party_sets/first_party_sets_browsertest.cc",
       "../browser/first_party_sets/first_party_sets_policy_browsertest.cc",
       "../browser/first_run/first_run_browsertest.cc",

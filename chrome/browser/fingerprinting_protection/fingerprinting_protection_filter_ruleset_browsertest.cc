@@ -28,34 +28,15 @@ const char kIndexRulesetWallDurationHistogram[] =
 const char kIndexRulesetWriteRulesetResultHistogram[] =
     "FingerprintingProtection.WriteRuleset.Result";
 
-class
-    FingerprintingProtectionFilterRulesetBrowserTestFingerprintingProtectionDisabled
-    : public FingerprintingProtectionFilterBrowserTest {
- public:
-  FingerprintingProtectionFilterRulesetBrowserTestFingerprintingProtectionDisabled() {
-    feature_list_.InitWithFeatureStates(
-        {{fingerprinting_protection_filter::features::
-              kEnableFingerprintingProtectionFilterInIncognito,
-          false},
-         {fingerprinting_protection_filter::features::
-              kEnableFingerprintingProtectionFilter,
-          false}});
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
 IN_PROC_BROWSER_TEST_F(
-    FingerprintingProtectionFilterRulesetBrowserTestFingerprintingProtectionDisabled,
+    FingerprintingProtectionFilterDisabledBrowserTest,
     RulesetServiceNotCreated_DisabledFingerprintingProtectionFlag) {
   EXPECT_EQ(g_browser_process->fingerprinting_protection_ruleset_service(),
             nullptr);
 }
 
-IN_PROC_BROWSER_TEST_F(
-    FingerprintingProtectionFilterRulesetBrowserTestFingerprintingProtectionDisabled,
-    RulesetServiceNotCreated_DisabledIncognitoFlag) {
+IN_PROC_BROWSER_TEST_F(FingerprintingProtectionFilterDisabledBrowserTest,
+                       RulesetServiceNotCreated_DisabledIncognitoFlag) {
   EXPECT_EQ(g_browser_process->fingerprinting_protection_ruleset_service(),
             nullptr);
 }

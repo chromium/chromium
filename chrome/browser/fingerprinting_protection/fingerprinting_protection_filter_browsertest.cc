@@ -23,10 +23,6 @@
 // functionality once blocking is fully implemented.
 namespace fingerprinting_protection_filter {
 
-// The path to a multi-frame document used for tests.
-static constexpr const char kTestFrameSetPath[] =
-    "/subresource_filter/frame_set.html";
-
 // =================================== Tests ==================================
 //
 // Note: Similar to the FPF component, these tests leverage Subresource Filter
@@ -92,6 +88,7 @@ IN_PROC_BROWSER_TEST_F(FingerprintingProtectionFilterBrowserTest,
 
   ExpectFramesIncludedInLayout(kSubframeNames, kExpectOnlySecondSubframe);
 
+  // TODO(https://crbug.com/366267410): Add UKM testing.
   // TODO(https://crbug.com/358371545): Add PageLoad.SubresourceLoads histogram
   // testing.
   histogram_tester.ExpectBucketCount(
