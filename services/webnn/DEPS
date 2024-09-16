@@ -14,5 +14,4 @@ include_rules = [
   "+third_party/tflite",
   "+third_party/xnnpack",
   "+ui/gl/gl_switches.h",
-  "+components/viz/service/gl/gpu_service_impl.h",
 ]
