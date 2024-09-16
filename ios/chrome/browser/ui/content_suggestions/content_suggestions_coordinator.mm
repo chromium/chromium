@@ -810,10 +810,16 @@
       break;
     }
     case SafetyCheckItemType::kPassword: {
-      std::vector<password_manager::CredentialUIEntry> credentials =
+      std::vector<password_manager::CredentialUIEntry> insecure_credentials =
           safetyCheckManager->GetInsecureCredentials();
-      HandleSafetyCheckPasswordTap(credentials, applicationHandler,
+
+      password_manager::InsecurePasswordCounts insecure_password_counts =
+          safetyCheckManager->GetInsecurePasswordCounts();
+
+      HandleSafetyCheckPasswordTap(insecure_credentials,
+                                   insecure_password_counts, applicationHandler,
                                    settingsHandler);
+
       break;
     }
     case SafetyCheckItemType::kSafeBrowsing:

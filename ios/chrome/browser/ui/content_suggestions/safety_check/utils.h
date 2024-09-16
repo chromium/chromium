@@ -17,6 +17,7 @@
 @protocol SettingsCommands;
 namespace password_manager {
 struct CredentialUIEntry;
+struct InsecurePasswordCounts;
 }  // namespace password_manager
 class GURL;
 @class SafetyCheckState;
@@ -27,10 +28,11 @@ void HandleSafetyCheckUpdateChromeTap(
     const GURL& chrome_upgrade_url,
     id<ApplicationCommands> applicationHandler);
 
-// Fires the proper UI command based on the current compromised credentials
-// list, `credentials`.
+// Fires the proper UI command based on the current `insecure_credentials`
+// and `insecure_password_counts`.
 void HandleSafetyCheckPasswordTap(
-    std::vector<password_manager::CredentialUIEntry>& credentials,
+    std::vector<password_manager::CredentialUIEntry>& insecure_credentials,
+    password_manager::InsecurePasswordCounts insecure_password_counts,
     id<ApplicationCommands> applicationHandler,
     id<SettingsCommands> settingsHandler);
 

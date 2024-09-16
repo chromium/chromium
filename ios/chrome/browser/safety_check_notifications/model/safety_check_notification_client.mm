@@ -472,14 +472,18 @@ void SafetyCheckNotificationClient::ShowUIForNotificationMetadata(
     return;
   }
 
-  // If Password notification, then, depending on `insecure_credentials`,
-  // navigate to the specific page for that insecure credential(s) type.
+  // If Password notification, then, depending on `insecure_credentials` and
+  // `insecure_password_counts`, navigate to the specific page for that insecure
+  // credential(s) type.
   if (notification_metadata[kSafetyCheckPasswordNotificationID]) {
     std::vector<password_manager::CredentialUIEntry> insecure_credentials =
         safety_check_manager->GetInsecureCredentials();
 
-    HandleSafetyCheckPasswordTap(insecure_credentials, applicationHandler,
-                                 settingsHandler);
+    password_manager::InsecurePasswordCounts insecure_password_counts =
+        safety_check_manager->GetInsecurePasswordCounts();
+
+    HandleSafetyCheckPasswordTap(insecure_credentials, insecure_password_counts,
+                                 applicationHandler, settingsHandler);
 
     return;
   }
