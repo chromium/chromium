@@ -755,17 +755,10 @@ void VerifyThatBrowserAndRendererCalculatedOriginsToCommitMatch(
   if (navigation_request->state() < NavigationRequest::WILL_PROCESS_RESPONSE)
     return;
 
-  // Blob urls with content scheme are opaque on browser side because the
-  // browser doesn't have access to the BlobURLNullOriginMap.
-  // (https://crbug.com/1295268).
   const url::Origin& renderer_side_origin = params.origin;
   std::pair<std::optional<url::Origin>, std::string>
       browser_side_origin_and_debug_info =
           navigation_request->browser_side_origin_to_commit_with_debug_info();
-  if (renderer_side_origin.scheme() == url::kContentScheme &&
-      browser_side_origin_and_debug_info.first->opaque()) {
-    return;
-  }
 
   // For non-opaque origins, we say the browser and renderer calculated origins
   // match if they are exactly the same.
@@ -787,6 +780,21 @@ void VerifyThatBrowserAndRendererCalculatedOriginsToCommitMatch(
   if (renderer_side_origin.opaque() &&
       browser_side_origin_and_debug_info.first->opaque() &&
       params.origin_calculation_debug_info.ends_with("is_newly_created")) {
+    origins_match = (renderer_side_origin.GetTupleOrPrecursorTupleIfOpaque() ==
+                     browser_side_origin_and_debug_info.first
+                         ->GetTupleOrPrecursorTupleIfOpaque());
+  }
+
+  // For Blob URLs, it's possible that the renderer thinks the origin is opaque
+  // while the browser thinks it's not opaque if the Blob URL origin is
+  // registered in the BlobURLNullOriginMap by the document that the navigation
+  // is replacing, causing the origin to be de-registered just before the new
+  // document commits. In this case the browser actually has the correct origin,
+  // so just compare the precursor origin of the renderer side.
+  if (params.url.SchemeIsBlob() && renderer_side_origin.opaque() &&
+      params.origin_calculation_debug_info.ends_with("is_newly_created") &&
+      navigation_request->GetRenderFrameHost()
+          ->ShouldChangeRenderFrameHostOnSameSiteNavigation()) {
     origins_match = (renderer_side_origin.GetTupleOrPrecursorTupleIfOpaque() ==
                      browser_side_origin_and_debug_info.first
                          ->GetTupleOrPrecursorTupleIfOpaque());
