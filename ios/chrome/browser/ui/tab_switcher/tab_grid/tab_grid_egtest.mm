@@ -1177,7 +1177,7 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 #pragma mark - Drag and drop in Multiwindow
 
 // Tests that dragging a tab grid item to the edge opens a new window and that
-// the tab is properly transferred, incuding navigation stack.
+// the tab is properly transferred, including navigation stack.
 - (void)testDragAndDropAtEdgeToCreateNewWindow {
   if (![ChromeEarlGrey areMultipleWindowsSupported])
     EARL_GREY_TEST_SKIPPED(@"Multiple windows can't be opened.");
