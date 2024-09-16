@@ -19,7 +19,8 @@ export function getHtml(this: ShortcutsElement) {
   <cr-collapse ?opened="${this.show_}" ?no-animation="${!this.initialized_}">
     <hr class="sp-hr">
     <cr-radio-group id="radioSelection" ?disabled="${!this.show_}"
-        .selected="${this.radioSelection_}" nested-selectable>
+        .selected="${this.radioSelection_}"
+         @selected-changed="${this.onRadioSelectionChanged_}" nested-selectable>
       <div class="option" id="customLinksContainer"
           @click="${this.onCustomLinksClick_}">
         <customize-chrome-button-label label="$i18n{myShortcuts}"
