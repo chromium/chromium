@@ -4983,8 +4983,7 @@ void InterestGroupAuction::OnComponentAuctionComplete(
         base::TimeTicks::Now() - bidding_and_scoring_phase_start_time_);
   }
 
-  // TODO(morlovich): Can try to consolidate these as kBothKAnonModes when
-  // possible.
+  bool is_both = component_auction->NonKAnonWinnerIsKAnon();
   ScoredBid* non_kanon_enforced_bid =
       component_auction->top_non_kanon_enforced_bid();
   if (non_kanon_enforced_bid) {
@@ -4992,11 +4991,12 @@ void InterestGroupAuction::OnComponentAuctionComplete(
     // since that already happened when running the component auction.
     ScoreBidIfReady(CreateBidFromComponentAuctionWinner(
         non_kanon_enforced_bid,
-        auction_worklet::mojom::BidRole::kUnenforcedKAnon));
+        is_both ? auction_worklet::mojom::BidRole::kBothKAnonModes
+                : auction_worklet::mojom::BidRole::kUnenforcedKAnon));
   }
 
   ScoredBid* kanon_bid = component_auction->top_kanon_enforced_bid();
-  if (kanon_bid) {
+  if (kanon_bid && !is_both) {
     ScoreBidIfReady(CreateBidFromComponentAuctionWinner(
         kanon_bid, auction_worklet::mojom::BidRole::kEnforcedKAnon));
   }

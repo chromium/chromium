@@ -23653,6 +23653,61 @@ TEST_P(AuctionRunnerKAnonTest, Basic) {
   }
 }
 
+// Test on not running into trouble if there is a k-anon winner but no
+// non-k-anon winner, which was previously possible in component auctions with
+// some top-level scoring functions. This particular one had a 25% chance of
+// hitting the problem.
+//
+// See https://crbug.com/367302752
+TEST_P(AuctionRunnerKAnonTest, NoNonKAnonWinner) {
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder1Url,
+      MakeFilteringBidScript(1) + kSimpleReportWin);
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kComponentSeller1Url,
+      std::string(kMinimumDecisionScript) + kBasicReportResult);
+
+  const char kTopLevelScript[] = R"(
+    function scoreAd() {
+      // Accept the bid with 50% chance.
+      return {
+        allowComponentAuction: true,
+        desirability: Math.random() - 0.5
+      };
+    }
+  )";
+
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kSellerUrl,
+      std::string(kTopLevelScript) + kBasicReportResult);
+
+  std::vector<StorageInterestGroup> bidders;
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder1, kBidder1Name, kBidder1Url,
+      /*trusted_bidding_signals_url=*/std::nullopt,
+      /*trusted_bidding_signals_keys=*/{}, GURL("https://ad1.com")));
+
+  // Authorize ad 1.
+  AuthorizeKAnonAd(bidders[0].interest_group.ads.value()[0], "https://ad1.com/",
+                   bidders[0]);
+
+  std::vector<std::string> ad1_k_anon_keys = {
+      blink::HashedKAnonKeyForAdBid(
+          bidders[0].interest_group,
+          bidders[0].interest_group.ads.value()[0].render_url()),
+      blink::HashedKAnonKeyForAdNameReporting(
+          bidders[0].interest_group, bidders[0].interest_group.ads.value()[0],
+          /*selected_buyer_and_seller_reporting_id=*/std::nullopt),
+  };
+
+  component_auctions_.emplace_back(
+      CreateAuctionConfig(kComponentSeller1Url, {{kBidder1}}));
+  interest_group_buyers_->clear();
+  StartAuction(kSellerUrl, bidders);
+  auction_run_loop_->Run();
+  EXPECT_THAT(result_.errors, testing::ElementsAre());
+}
+
 // Test where the k-anon ad has a higher bid.
 TEST_P(AuctionRunnerKAnonTest, KAnonHigher) {
   auction_worklet::AddJavascriptResponse(
