@@ -6722,11 +6722,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "omnibox-modernize-visual-update",
-    "owners": [ "gangwu@chromium.org", "chrome-omnibox-team@google.com"],
-    "expiry_milestone": 130
-  },
-  {
     "name": "omnibox-most-visited-tiles-horizontal-render-group",
     "owners": [ "stkhapugin@chromium.org", "chrome-mobile-search@google.com"],
     "expiry_milestone": 140
