@@ -170,6 +170,51 @@ TEST_F(FocusModeTrayTest, ActiveVisibility) {
   EXPECT_FALSE(focus_mode_tray_->GetVisible());
 }
 
+// Tests that the focus mode tray is hidden in the lock screen.
+TEST_F(FocusModeTrayTest, HiddenInLockScreen) {
+  FocusModeController* controller = FocusModeController::Get();
+  EXPECT_FALSE(controller->in_focus_session());
+  EXPECT_FALSE(focus_mode_tray_->GetVisible());
+
+  // Start the focus session, the tray should appear on the shelf.
+  controller->ToggleFocusMode();
+  EXPECT_TRUE(controller->in_focus_session());
+  EXPECT_TRUE(focus_mode_tray_->GetVisible());
+
+  // Lock the screen, the tray should be hidden.
+  GetSessionControllerClient()->LockScreen();
+  EXPECT_FALSE(focus_mode_tray_->GetVisible());
+
+  // Unlock the screen, the tray should be back on the shelf.
+  GetSessionControllerClient()->UnlockScreen();
+  EXPECT_TRUE(focus_mode_tray_->GetVisible());
+}
+
+// Tests that the focus mode tray is hidden and doesn't animate in the lock
+// screen.
+TEST_F(FocusModeTrayTest, LockScreenNoAnimationAndStaysHidden) {
+  FocusModeController* controller = FocusModeController::Get();
+  EXPECT_FALSE(controller->in_focus_session());
+  EXPECT_FALSE(focus_mode_tray_->GetVisible());
+
+  // Start the focus session, the tray should appear on the shelf.
+  controller->ToggleFocusMode();
+  EXPECT_TRUE(controller->in_focus_session());
+  EXPECT_TRUE(focus_mode_tray_->GetVisible());
+
+  // Lock the screen, the tray should be hidden.
+  GetSessionControllerClient()->LockScreen();
+  EXPECT_FALSE(focus_mode_tray_->GetVisible());
+
+  // End the session, the tray animation shouldn't trigger.
+  controller->ToggleFocusMode();
+  EXPECT_FALSE(focus_mode_tray_->GetVisible());
+
+  // Unlock the screen, the tray should still be hidden.
+  GetSessionControllerClient()->UnlockScreen();
+  EXPECT_FALSE(focus_mode_tray_->GetVisible());
+}
+
 // Tests that the focus mode tray can be activated by being clicked, and can
 // be deactivated by clicking anywhere outside of the bubble (including on the
 // tray again).

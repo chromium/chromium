@@ -118,6 +118,7 @@ class ASH_EXPORT FocusModeController
 
   // SessionObserver:
   void OnActiveUserSessionChanged(const AccountId& account_id) override;
+  void OnSessionStateChanged(session_manager::SessionState state) override;
 
   // FocusModeSoundsController::Observer:
   // Will close/create the media widget for an active focus session depending on
