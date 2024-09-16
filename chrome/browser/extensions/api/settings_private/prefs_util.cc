@@ -286,13 +286,7 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
   (*s_allowlist)[::prefs::kDownloadBubblePartialViewEnabled] =
       settings_api::PrefType::kBoolean;
 
-  // Miscellaneous. TODO(stevenjb): categorize.
-  (*s_allowlist)[::prefs::kEnableEncryptedMedia] =
-      settings_api::PrefType::kBoolean;
-  (*s_allowlist)[::language::prefs::kApplicationLocale] =
-      settings_api::PrefType::kString;
-  (*s_allowlist)[::prefs::kNetworkPredictionOptions] =
-      settings_api::PrefType::kNumber;
+  // Password Manager settings.
   (*s_allowlist)[password_manager::prefs::kCredentialsEnableService] =
       settings_api::PrefType::kBoolean;
   (*s_allowlist)[password_manager::prefs::kCredentialsEnableAutosignin] =
@@ -309,10 +303,28 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       [password_manager::prefs::kBiometricAuthenticationBeforeFilling] =
           settings_api::PrefType::kBoolean;
 #endif
+
+#if BUILDFLAG(IS_CHROMEOS)
+  (*s_allowlist)
+      [password_manager::prefs::kBiometricAuthBeforeFillingPromoShownCounter] =
+          settings_api::PrefType::kNumber;
+  (*s_allowlist)
+      [password_manager::prefs::kHasUserInteractedWithBiometricAuthPromo] =
+          settings_api::PrefType::kNumber;
+#endif
+
 #if BUILDFLAG(IS_MAC)
   (*s_allowlist)[::prefs::kCreatePasskeysInICloudKeychain] =
       settings_api::PrefType::kBoolean;
 #endif
+
+  // Miscellaneous. TODO(stevenjb): categorize.
+  (*s_allowlist)[::prefs::kEnableEncryptedMedia] =
+      settings_api::PrefType::kBoolean;
+  (*s_allowlist)[::language::prefs::kApplicationLocale] =
+      settings_api::PrefType::kString;
+  (*s_allowlist)[::prefs::kNetworkPredictionOptions] =
+      settings_api::PrefType::kNumber;
 
   // Privacy page
   (*s_allowlist)[::prefs::kSigninAllowedOnNextStartup] =
