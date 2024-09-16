@@ -46,12 +46,14 @@ chromium-metrics-reviews@google.com.
   <variant name="ClipboardReadWrite"/>
   <variant name="Geolocation"/>
   <variant name="IdleDetection"/>
+  <variant name="KeyboardLock"/>
   <variant name="LocalFonts"/>
   <variant name="MidiSysEx"/>
   <variant name="MultipleDownload"/>
   <variant name="Nfc"/>
   <variant name="Notifications"/>
   <variant name="PaymentHandler"/>
+  <variant name="PointerLock"/>
   <variant name="ProtectedMedia"/>
   <variant name="Quota"/>
   <variant name="RegisterProtocolHandler"/>
