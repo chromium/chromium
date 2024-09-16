@@ -3715,6 +3715,7 @@
       "external/wpt/css/css-color/relative-currentcolor-rec2020-02.html",
       "external/wpt/css/css-color/relative-currentcolor-rgb-01.html",
       "external/wpt/css/css-color/relative-currentcolor-rgb-02.html",
+      "external/wpt/css/css-color/relative-currentcolor-visited-getcomputedstyle.html",
       "external/wpt/css/css-color/relative-currentcolor-xyzd50-01.html",
       "external/wpt/css/css-color/relative-currentcolor-xyzd65-01.html",
       "external/wpt/css/css-color/parsing/color-computed-relative-color.html",
