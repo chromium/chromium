@@ -1686,6 +1686,12 @@ namespace autotestPrivate {
     // A restart is required for this change to take effect.
     // |value|: the locale of the language.
     static void setDeviceLanguage(DOMString locale, VoidCallback callback);
+
+    // Gets the chrome://device-log entries for a given type or all types.
+    // |type|: A string like "printer" to fetch a specific type, or an empty
+    // string to fetch all entries.
+    // |callback|: Called with the logs as a single string.
+    static void getDeviceEventLog(DOMString type, DOMStringCallback callback);
   };
 
   interface Events {

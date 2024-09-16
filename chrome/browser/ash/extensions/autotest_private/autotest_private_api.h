@@ -1895,6 +1895,17 @@ class AutotestPrivateSetDeviceLanguageFunction : public ExtensionFunction {
   ResponseAction Run() override;
 };
 
+class AutotestPrivateGetDeviceEventLogFunction : public ExtensionFunction {
+ public:
+  AutotestPrivateGetDeviceEventLogFunction();
+  DECLARE_EXTENSION_FUNCTION("autotestPrivate.getDeviceEventLog",
+                             AUTOTESTPRIVATE_GETDEVICEEVENTLOG)
+
+ private:
+  ~AutotestPrivateGetDeviceEventLogFunction() override;
+  ResponseAction Run() override;
+};
+
 template <>
 KeyedService*
 BrowserContextKeyedAPIFactory<AutotestPrivateAPI>::BuildServiceInstanceFor(

@@ -52,6 +52,7 @@
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_prefs.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chromeos/ash/components/standalone_browser/feature_refs.h"
+#include "components/device_event_log/device_event_log.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
@@ -726,6 +727,14 @@ IN_PROC_BROWSER_TEST_F(AutotestPrivateApiTest, SetDeviceLanguage) {
   std::string cur_locale = browser()->profile()->GetPrefs()->GetString(
       language::prefs::kApplicationLocale);
   EXPECT_EQ(cur_locale, target_locale);
+}
+
+IN_PROC_BROWSER_TEST_F(AutotestPrivateApiTest, GetDeviceEventLog) {
+  device_event_log::ClearAll();
+  PRINTER_LOG(DEBUG) << "PrinterTestLog";
+  NET_LOG(DEBUG) << "NetworkTestLog";
+  USB_LOG(DEBUG) << "USBTestLog";
+  ASSERT_TRUE(RunAutotestPrivateExtensionTest("getDeviceEventLog")) << message_;
 }
 
 }  // namespace extensions
