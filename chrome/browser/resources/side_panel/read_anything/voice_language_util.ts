@@ -75,9 +75,11 @@ export enum VoiceClientSideStatusCode {
 }
 
 // These strings are not localized and will be in English, even for non-English
-// Natural and eSpeak voices.
+// Natural, Google, and eSpeak voices.
 const NATURAL_STRING_IDENTIFIER = '(Natural)';
 const ESPEAK_STRING_IDENTIFIER = 'eSpeak';
+// Google voices that are not Natural.
+const GOOGLE_STRING_IDENTIFIER = 'Google';
 
 // Helper for filtering the voice list broken into a separate method
 // that doesn't modify instance data to simplify testing.
@@ -96,14 +98,31 @@ export function getFilteredVoiceList(possibleVoices: SpeechSynthesisVoice[]):
   if (chrome.readingMode.isChromeOsAsh) {
     availableVoices = availableVoices.filter(
         ({name}) => !name.toLowerCase().includes('android'));
-  }
-  // Filter out espeak voices if there exists a Google voice in the same
-  // locale.
-  if (chrome.readingMode.isChromeOsAsh) {
+    // Filter out espeak voices if there exists a Google voice in the same
+    // locale.
     availableVoices = availableVoices.filter(
         voice => !isEspeak(voice) ||
             convertLangOrLocaleToExactVoicePackLocale(voice.lang) ===
                 undefined);
+  } else {
+    // Group non-Google voices by language and select a default voice for each
+    // language. This represents the system voice for each language.
+    const languageToNonGoogleVoices =
+        availableVoices.filter(voice => !isGoogle(voice))
+            .reduce((map, voice) => {
+              map[voice.lang] = map[voice.lang] || [];
+              map[voice.lang].push(voice);
+              return map;
+            }, {} as {[language: string]: SpeechSynthesisVoice[]});
+    const systemVoices =
+        Object.values(languageToNonGoogleVoices).map((voices) => {
+          const defaultVoice = voices.find(voice => voice.default);
+          return defaultVoice || voices[0];
+        });
+
+    // Keep all Google voices and one system voice per language.
+    availableVoices = availableVoices.filter(
+        voice => isGoogle(voice) || systemVoices.includes(voice));
   }
 
   return availableVoices;
@@ -115,6 +134,10 @@ export function isNatural(voice: SpeechSynthesisVoice) {
 
 export function isEspeak(voice: SpeechSynthesisVoice|undefined) {
   return voice && voice.name.includes(ESPEAK_STRING_IDENTIFIER);
+}
+
+export function isGoogle(voice: SpeechSynthesisVoice|undefined) {
+  return voice && voice.name.includes(GOOGLE_STRING_IDENTIFIER);
 }
 
 export function getNaturalVoiceOrDefault(voices: SpeechSynthesisVoice[]):

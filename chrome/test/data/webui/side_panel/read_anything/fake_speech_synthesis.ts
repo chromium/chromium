@@ -57,14 +57,15 @@ export class FakeSpeechSynthesis {
 
   setDefaultVoices() {
     this.setVoices([
-      createSpeechSynthesisVoice({lang: 'en', name: 'Lauren', default: true}),
-      createSpeechSynthesisVoice({lang: 'en', name: 'Eitan'}),
-      createSpeechSynthesisVoice({lang: 'en', name: 'Kristi'}),
-      createSpeechSynthesisVoice({lang: 'en', name: 'Shari'}),
-      createSpeechSynthesisVoice({lang: 'en', name: 'Yu'}),
+      createSpeechSynthesisVoice(
+          {lang: 'en', name: 'Google Lauren', default: true}),
+      createSpeechSynthesisVoice({lang: 'en', name: 'Google Eitan'}),
+      createSpeechSynthesisVoice({lang: 'en', name: 'Google Kristi'}),
+      createSpeechSynthesisVoice({lang: 'en', name: 'Google Shari'}),
+      createSpeechSynthesisVoice({lang: 'en', name: 'Google Yu'}),
       createSpeechSynthesisVoice({
         lang: 'en',
-        name: 'Xiang',
+        name: 'Google Xiang',
         localService: this.shouldUseLocalVoices,
       }),
     ]);

@@ -27,22 +27,23 @@ suite('LanguageChanged', () => {
 
   const defaultVoice = createSpeechSynthesisVoice({
     lang: langForDefaultVoice,
-    name: 'Kristi',
+    name: 'Google Kristi',
     default: true,
   });
   const firstVoiceWithLang1 =
-      createSpeechSynthesisVoice({lang: lang1, name: 'Lauren'});
-  const defaultVoiceWithLang1 =
-      createSpeechSynthesisVoice({lang: lang1, name: 'Eitan', default: true});
+      createSpeechSynthesisVoice({lang: lang1, name: 'Google Lauren'});
+  const defaultVoiceWithLang1 = createSpeechSynthesisVoice(
+      {lang: lang1, name: 'Google Eitan', default: true});
   const firstVoiceWithLang2 =
-      createSpeechSynthesisVoice({lang: lang2, name: 'Yu'});
+      createSpeechSynthesisVoice({lang: lang2, name: 'Google Yu'});
   const secondVoiceWithLang2 =
-      createSpeechSynthesisVoice({lang: lang2, name: 'Xiang'});
+      createSpeechSynthesisVoice({lang: lang2, name: 'Google Xiang'});
   const firstVoiceWithLang3 =
-      createSpeechSynthesisVoice({lang: lang3, name: 'Kristi'});
-  const naturalVoiceWithLang3 =
-      createSpeechSynthesisVoice({lang: lang3, name: 'Kristi (Natural)'});
-  const otherVoice = createSpeechSynthesisVoice({lang: 'it', name: 'Shari'});
+      createSpeechSynthesisVoice({lang: lang3, name: 'Google Kristi'});
+  const naturalVoiceWithLang3 = createSpeechSynthesisVoice(
+      {lang: lang3, name: 'Google Kristi (Natural)'});
+  const otherVoice =
+      createSpeechSynthesisVoice({lang: 'it', name: 'Google Shari'});
   const voices = [
     defaultVoice,
     firstVoiceWithLang1,

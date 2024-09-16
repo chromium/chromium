@@ -91,6 +91,7 @@ ReadAnythingUntrustedUI::ReadAnythingUntrustedUI(content::WebUI* web_ui)
       {"voiceHighlightLabel", IDS_READING_MODE_VOICE_HIGHLIGHT},
       {"voiceSpeedWithRateLabel", IDS_READING_MODE_VOICE_SPEED_WITH_RATE},
       {"voiceSelectionLabel", IDS_READING_MODE_VOICE_SELECTION},
+      {"systemVoiceLabel", IDS_READING_MODE_SYSTEM_VOICE},
       {"increaseFontSizeLabel",
        IDS_READING_MODE_INCREASE_FONT_SIZE_BUTTON_LABEL},
       {"decreaseFontSizeLabel",
