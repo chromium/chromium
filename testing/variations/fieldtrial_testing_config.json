@@ -16718,26 +16718,6 @@
             ]
         }
     ],
-    "PartitionVisitedLinkDatabase": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "PartitionVisitedLinkDatabase",
-                    "enable_features": [
-                        "PartitionVisitedLinkDatabase"
-                    ]
-                }
-            ]
-        }
-    ],
     "PartitionVisitedLinkDatabaseWithSelfLinks": [
         {
             "platforms": [
@@ -16750,9 +16730,28 @@
             ],
             "experiments": [
                 {
-                    "name": "PartitionVisitedLinkDatabaseWithSelfLinks",
+                    "name": "Control",
+                    "disable_features": [
+                        "PartitionVisitedLinkDatabase",
+                        "PartitionVisitedLinkDatabaseWithSelfLinks"
+                    ]
+                },
+                {
+                    "name": "EnabledNoSelfLinks",
+                    "enable_features": [
+                        "PartitionVisitedLinkDatabase"
+                    ],
+                    "disable_features": [
+                        "PartitionVisitedLinkDatabaseWithSelfLinks"
+                    ]
+                },
+                {
+                    "name": "EnabledWithSelfLinks",
                     "enable_features": [
                         "PartitionVisitedLinkDatabaseWithSelfLinks"
+                    ],
+                    "disable_features": [
+                        "PartitionVisitedLinkDatabase"
                     ]
                 }
             ]
