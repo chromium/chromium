@@ -83,7 +83,6 @@
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/base/mojom/window_show_state.mojom-blink-forward.h"
-#include "ui/base/ui_base_types.h"
 #include "ui/gfx/ca_layer_result.h"
 
 namespace gfx {

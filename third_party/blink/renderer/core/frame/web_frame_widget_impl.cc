@@ -153,7 +153,6 @@
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-blink.h"
 #include "ui/base/mojom/window_show_state.mojom-blink.h"
-#include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/point_conversions.h"
 
 #if BUILDFLAG(IS_MAC)

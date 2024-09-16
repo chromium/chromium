@@ -21,7 +21,6 @@
 #include "ui/base/ime/mojom/text_input_state.mojom-blink.h"
 #include "ui/base/ime/mojom/virtual_keyboard_types.mojom-blink.h"
 #include "ui/base/mojom/window_show_state.mojom-blink-forward.h"
-#include "ui/base/ui_base_types.h"
 #include "ui/gfx/mojom/delegated_ink_metadata.mojom-blink.h"
 
 namespace cc {

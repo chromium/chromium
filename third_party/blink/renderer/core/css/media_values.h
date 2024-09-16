@@ -21,7 +21,6 @@
 #include "third_party/blink/renderer/platform/text/writing_mode.h"
 #include "ui/base/mojom/window_show_state.mojom-blink-forward.h"
 #include "ui/base/pointer/pointer_device.h"
-#include "ui/base/ui_base_types.h"
 
 namespace blink {
 

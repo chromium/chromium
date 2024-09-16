@@ -66,7 +66,6 @@
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "ui/base/mojom/window_show_state.mojom-blink.h"
-#include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {

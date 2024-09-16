@@ -82,7 +82,6 @@
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "ui/base/mojom/window_show_state.mojom-blink.h"
-#include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/size_f.h"
 
 namespace blink {
@@ -4019,13 +4018,13 @@ TEST_F(StyleEngineTest, MediaQueriesChangeDisplayState) {
             GetDocument().body()->GetComputedStyle()->VisitedDependentColor(
                 GetCSSPropertyBackgroundColor()));
 
-  WTF::Vector<std::pair<ui::mojom::WindowShowState, Color>> test_cases = {
-      {ui::mojom::WindowShowState::kMinimized,
-       Color::FromRGB(/*cyan*/ 0, 255, 255)},
-      {ui::mojom::WindowShowState::kMaximized,
-       Color::FromRGB(/*red*/ 255, 0, 0)},
-      {ui::mojom::WindowShowState::kFullscreen,
-       Color::FromRGB(/*blue*/ 0, 0, 255)}};
+  WTF::Vector<std::pair<ui::mojom::blink::WindowShowState, Color>> test_cases =
+      {{ui::mojom::blink::WindowShowState::kMinimized,
+        Color::FromRGB(/*cyan*/ 0, 255, 255)},
+       {ui::mojom::blink::WindowShowState::kMaximized,
+        Color::FromRGB(/*red*/ 255, 0, 0)},
+       {ui::mojom::blink::WindowShowState::kFullscreen,
+        Color::FromRGB(/*blue*/ 0, 0, 255)}};
 
   for (const auto& [show_state, color] : test_cases) {
     GetFrame().GetSettings()->SetWindowShowState(show_state);
