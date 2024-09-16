@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.access_loss;
 
+import static org.chromium.chrome.browser.access_loss.HelpUrlLauncher.GOOGLE_PLAY_SUPPORTED_DEVICES_SUPPORT_URL;
+import static org.chromium.chrome.browser.access_loss.HelpUrlLauncher.KEEP_APPS_AND_DEVICES_WORKING_WITH_GMS_CORE_SUPPORT_URL;
 import static org.chromium.chrome.browser.bottom_sheet.SimpleNoticeSheetProperties.ALL_KEYS;
 import static org.chromium.chrome.browser.bottom_sheet.SimpleNoticeSheetProperties.BUTTON_ACTION;
 import static org.chromium.chrome.browser.bottom_sheet.SimpleNoticeSheetProperties.BUTTON_TITLE;
@@ -19,11 +21,11 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.bottom_sheet.SimpleNoticeSheetCoordinator;
-import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherFactory;
 import org.chromium.chrome.browser.notifications.NotificationConstants;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.chrome.browser.notifications.NotificationWrapperBuilderFactory;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions.ChannelId;
+import org.chromium.chrome.browser.password_manager.CustomTabIntentHelper;
 import org.chromium.chrome.browser.password_manager.GmsUpdateLauncher;
 import org.chromium.chrome.browser.password_manager.PasswordExportLauncher;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -45,32 +47,33 @@ public class PasswordAccessLossWarningHelper {
     final Activity mActivity;
     final BottomSheetController mBottomSheetController;
     final Profile mProfile;
-
-    // TODO(crbug.com/361286381): Extract the constants into a dedicated support article helper.
-    static final String KEEP_APPS_AND_DEVICES_WORKING_WITH_GMS_CORE_SUPPORT_URL =
-            "https://support.google.com/googleplay/?p=keep_apps_and_devices_working_with_gms";
-    static final String GOOGLE_PLAY_SUPPORTED_DEVICES_SUPPORT_URL =
-            "https://support.google.com/googleplay/?p=google_play_supported_devices";
+    final HelpUrlLauncher mHelpUrlLauncher;
 
     @VisibleForTesting
     PasswordAccessLossWarningHelper(
             Activity activity,
             BottomSheetController bottomSheetController,
             Profile profile,
-            BaseNotificationManagerProxy manager) {
+            BaseNotificationManagerProxy manager,
+            CustomTabIntentHelper customTabIntentHelper) {
         mBottomSheetController = bottomSheetController;
         mProfile = profile;
         mActivity = activity;
         mNotificationManagerProxy = manager;
+        mHelpUrlLauncher = new HelpUrlLauncher(customTabIntentHelper);
     }
 
     public PasswordAccessLossWarningHelper(
-            Activity activity, BottomSheetController bottomSheetController, Profile profile) {
+            Activity activity,
+            BottomSheetController bottomSheetController,
+            Profile profile,
+            CustomTabIntentHelper customTabIntentHelper) {
         this(
                 activity,
                 bottomSheetController,
                 profile,
-                BaseNotificationManagerProxyFactory.create(activity));
+                BaseNotificationManagerProxyFactory.create(activity),
+                customTabIntentHelper);
     }
 
     public void show(@PasswordAccessLossWarningType int warningType) {
@@ -148,7 +151,10 @@ public class PasswordAccessLossWarningHelper {
                         getBottomSheetTextWithLink(
                                 mActivity.getString(
                                         R.string.pwd_access_loss_warning_no_gms_core_text),
-                                this::openGooglePlaySupportedDevicesHelpPage))
+                                (unusedView) ->
+                                        mHelpUrlLauncher.showHelpArticle(
+                                                mActivity,
+                                                GOOGLE_PLAY_SUPPORTED_DEVICES_SUPPORT_URL)))
                 .with(
                         BUTTON_TITLE,
                         mActivity.getString(
@@ -172,7 +178,10 @@ public class PasswordAccessLossWarningHelper {
                         getBottomSheetTextWithLink(
                                 mActivity.getString(
                                         R.string.pwd_access_loss_warning_update_gms_core_text),
-                                this::openGmsCoreHelpPage))
+                                (unusedView) ->
+                                        mHelpUrlLauncher.showHelpArticle(
+                                                mActivity,
+                                                KEEP_APPS_AND_DEVICES_WORKING_WITH_GMS_CORE_SUPPORT_URL)))
                 .with(
                         BUTTON_TITLE,
                         mActivity.getString(
@@ -217,15 +226,5 @@ public class PasswordAccessLossWarningHelper {
                 sheetText,
                 new SpanApplier.SpanInfo(
                         "<link>", "</link>", new NoUnderlineClickableSpan(mActivity, callback)));
-    }
-
-    private void openGooglePlaySupportedDevicesHelpPage(View view) {
-        HelpAndFeedbackLauncherFactory.getForProfile(mProfile)
-                .show(mActivity, GOOGLE_PLAY_SUPPORTED_DEVICES_SUPPORT_URL, null);
-    }
-
-    private void openGmsCoreHelpPage(View view) {
-        HelpAndFeedbackLauncherFactory.getForProfile(mProfile)
-                .show(mActivity, KEEP_APPS_AND_DEVICES_WORKING_WITH_GMS_CORE_SUPPORT_URL, null);
     }
 }

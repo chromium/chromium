@@ -18,6 +18,8 @@ import static org.chromium.chrome.browser.bottom_sheet.SimpleNoticeSheetProperti
 
 import android.app.Activity;
 import android.app.Notification;
+import android.content.Context;
+import android.content.Intent;
 
 import androidx.annotation.StringRes;
 
@@ -42,6 +44,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker.SystemNotificationType;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
+import org.chromium.chrome.browser.password_manager.CustomTabIntentHelper;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
@@ -73,10 +76,14 @@ public class PasswordAccessLossWarningHelperTest {
         MockitoAnnotations.openMocks(this);
         mActivity = Robolectric.buildActivity(Activity.class).create().start().resume().get();
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
-
+        CustomTabIntentHelper customTabIntentHelper = (Context context, Intent intent) -> intent;
         mHelper =
                 new PasswordAccessLossWarningHelper(
-                        mActivity, mBottomSheetController, mProfile, mNotificationManagerProxy);
+                        mActivity,
+                        mBottomSheetController,
+                        mProfile,
+                        mNotificationManagerProxy,
+                        customTabIntentHelper);
     }
 
     private void setUpBottomSheetController() {

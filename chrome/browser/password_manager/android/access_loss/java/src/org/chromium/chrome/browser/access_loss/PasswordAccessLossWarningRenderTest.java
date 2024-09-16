@@ -32,6 +32,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
+import org.chromium.chrome.browser.password_manager.CustomTabIntentHelper;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
@@ -74,6 +75,7 @@ public class PasswordAccessLossWarningRenderTest {
                     .build();
 
     @Mock private Profile mProfile;
+    @Mock private CustomTabIntentHelper mCustomTabIntentHelper;
 
     private BottomSheetController mBottomSheetController;
     private PasswordAccessLossWarningHelper mHelper;
@@ -103,7 +105,8 @@ public class PasswordAccessLossWarningRenderTest {
                             new PasswordAccessLossWarningHelper(
                                     mActivityTestRule.getActivity(),
                                     BottomSheetControllerProvider.from(windowAndroid),
-                                    mProfile);
+                                    mProfile,
+                                    mCustomTabIntentHelper);
                 });
     }
 

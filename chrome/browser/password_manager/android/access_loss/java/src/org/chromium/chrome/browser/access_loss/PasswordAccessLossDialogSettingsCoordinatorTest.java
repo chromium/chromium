@@ -8,8 +8,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
-import static org.chromium.chrome.browser.access_loss.PasswordAccessLossWarningHelper.GOOGLE_PLAY_SUPPORTED_DEVICES_SUPPORT_URL;
-import static org.chromium.chrome.browser.access_loss.PasswordAccessLossWarningHelper.KEEP_APPS_AND_DEVICES_WORKING_WITH_GMS_CORE_SUPPORT_URL;
+import static org.chromium.chrome.browser.access_loss.HelpUrlLauncher.GOOGLE_PLAY_SUPPORTED_DEVICES_SUPPORT_URL;
+import static org.chromium.chrome.browser.access_loss.HelpUrlLauncher.KEEP_APPS_AND_DEVICES_WORKING_WITH_GMS_CORE_SUPPORT_URL;
 
 import android.app.Activity;
 import android.content.Context;

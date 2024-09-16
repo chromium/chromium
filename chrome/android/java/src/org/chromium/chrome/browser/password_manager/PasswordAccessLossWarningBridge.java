@@ -10,6 +10,7 @@ import androidx.annotation.Nullable;
 
 import org.jni_zero.CalledByNative;
 
+import org.chromium.chrome.browser.LaunchIntentDispatcher;
 import org.chromium.chrome.browser.access_loss.PasswordAccessLossWarningHelper;
 import org.chromium.chrome.browser.access_loss.PasswordAccessLossWarningType;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -26,7 +27,12 @@ class PasswordAccessLossWarningBridge {
 
     public PasswordAccessLossWarningBridge(
             Activity activity, BottomSheetController bottomSheetController, Profile profile) {
-        mHelper = new PasswordAccessLossWarningHelper(activity, bottomSheetController, profile);
+        mHelper =
+                new PasswordAccessLossWarningHelper(
+                        activity,
+                        bottomSheetController,
+                        profile,
+                        LaunchIntentDispatcher::createCustomTabActivityIntent);
     }
 
     @CalledByNative

@@ -4,19 +4,10 @@
 
 package org.chromium.chrome.browser.access_loss;
 
-import static org.chromium.chrome.browser.access_loss.PasswordAccessLossWarningHelper.GOOGLE_PLAY_SUPPORTED_DEVICES_SUPPORT_URL;
-import static org.chromium.chrome.browser.access_loss.PasswordAccessLossWarningHelper.KEEP_APPS_AND_DEVICES_WORKING_WITH_GMS_CORE_SUPPORT_URL;
-
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
-import android.provider.Browser;
-
-import androidx.browser.customtabs.CustomTabsIntent;
 
 import org.chromium.base.Callback;
-import org.chromium.base.IntentUtils;
 import org.chromium.chrome.browser.password_manager.CustomTabIntentHelper;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -34,7 +25,7 @@ class PasswordAccessLossDialogSettingsMediator implements ModalDialogProperties.
     private final @PasswordAccessLossWarningType int mWarningType;
     private final Callback<Context> mLaunchGmsUpdate;
     private final Runnable mLaunchExportFlow;
-    private final CustomTabIntentHelper mCustomTabIntentHelper;
+    private final HelpUrlLauncher mHelpUrLauncher;
 
     public PasswordAccessLossDialogSettingsMediator(
             Activity activity,
@@ -48,7 +39,7 @@ class PasswordAccessLossDialogSettingsMediator implements ModalDialogProperties.
         mWarningType = warningType;
         mLaunchGmsUpdate = launchGmsUpdate;
         mLaunchExportFlow = launchExportFlow;
-        mCustomTabIntentHelper = customTabIntentHelper;
+        mHelpUrLauncher = new HelpUrlLauncher(customTabIntentHelper);
     }
 
     private void runPositiveButtonCallback() {
@@ -72,7 +63,8 @@ class PasswordAccessLossDialogSettingsMediator implements ModalDialogProperties.
     void onHelpButtonClicked() {
         switch (mWarningType) {
             case PasswordAccessLossWarningType.NO_GMS_CORE:
-                openUrlInCct(GOOGLE_PLAY_SUPPORTED_DEVICES_SUPPORT_URL);
+                mHelpUrLauncher.showHelpArticle(
+                        mActivity, HelpUrlLauncher.GOOGLE_PLAY_SUPPORTED_DEVICES_SUPPORT_URL);
                 return;
             case PasswordAccessLossWarningType.NEW_GMS_CORE_MIGRATION_FAILED:
                 assert false
@@ -81,7 +73,9 @@ class PasswordAccessLossDialogSettingsMediator implements ModalDialogProperties.
                 return;
             case PasswordAccessLossWarningType.NO_UPM:
             case PasswordAccessLossWarningType.ONLY_ACCOUNT_UPM:
-                openUrlInCct(KEEP_APPS_AND_DEVICES_WORKING_WITH_GMS_CORE_SUPPORT_URL);
+                mHelpUrLauncher.showHelpArticle(
+                        mActivity,
+                        HelpUrlLauncher.KEEP_APPS_AND_DEVICES_WORKING_WITH_GMS_CORE_SUPPORT_URL);
                 return;
             case PasswordAccessLossWarningType.NONE:
                 assert false
@@ -91,21 +85,6 @@ class PasswordAccessLossDialogSettingsMediator implements ModalDialogProperties.
         }
 
         assert false : "Value " + mWarningType + " of PasswordAccessLossWarningType is not known";
-    }
-
-    // TODO(crbug.com/365755043): Use HelpAndFeedbackLauncher once support for p-link is added
-    // or make this reusable by other components.
-    void openUrlInCct(String url) {
-        CustomTabsIntent customTabIntent =
-                new CustomTabsIntent.Builder().setShowTitle(true).build();
-        customTabIntent.intent.setData(Uri.parse(url));
-        Intent intent =
-                mCustomTabIntentHelper.createCustomTabActivityIntent(
-                        mActivity, customTabIntent.intent);
-        intent.setPackage(mActivity.getPackageName());
-        intent.putExtra(Browser.EXTRA_APPLICATION_ID, mActivity.getPackageName());
-        IntentUtils.addTrustedIntentExtras(intent);
-        IntentUtils.safeStartActivity(mActivity, intent);
     }
 
     @Override
