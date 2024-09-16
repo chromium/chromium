@@ -22611,6 +22611,7 @@
                         "DeleteOrphanLocalStorageOnStartup",
                         "DeleteStaleLocalStorageOnStartup",
                         "DeleteStaleSessionCookiesOnStartup",
+                        "EvictOrphanQuotaStorage",
                         "EvictStaleQuotaStorage"
                     ]
                 },
