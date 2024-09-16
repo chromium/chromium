@@ -593,6 +593,40 @@ async def test_serialization_deserialization_date(websocket, context_id):
     }
 
 
+@pytest.mark.asyncio
+async def test_serialization_iframe(websocket, context_id, html, iframe):
+    iframe_url = html("<h1>FRAME</h1>")
+    await goto_url(websocket, context_id, html(iframe(iframe_url)))
+
+    result = await execute_command(
+        websocket, {
+            "method": "script.evaluate",
+            "params": {
+                "script": "document.querySelector('iframe')",
+                "expression": "document.getElementsByTagName('iframe')[0]",
+                "awaitPromise": False,
+                "target": {
+                    "context": context_id
+                }
+            }
+        })
+
+    assert result["result"] == {
+        'sharedId': ANY_SHARED_ID,
+        'type': 'node',
+        'value': {
+            'attributes': {
+                'src': iframe_url
+            },
+            'childNodeCount': 1,
+            'localName': 'iframe',
+            'namespaceURI': 'http://www.w3.org/1999/xhtml',
+            'nodeType': 1,
+            'shadowRoot': None,
+        },
+    }
+
+
 @pytest.mark.parametrize("serialization_options, expected_node_value", [
     ({
         "maxDomDepth": 0
