@@ -109,8 +109,6 @@ class EditorMediator : public EditorContext::Observer,
   // KeyedService overrides
   void Shutdown() override;
 
-  void ShowNotice();
-
   // Checks if the feature should be visible.
   bool IsAllowedForUse();
 

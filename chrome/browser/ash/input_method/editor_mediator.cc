@@ -237,30 +237,26 @@ void EditorMediator::HandleTrigger(
     case EditorMode::kConsentNeeded:
       query_context_ = EditorQueryContext(/*preset_query_id=*/preset_query_id,
                                           /*freeform_text=*/freeform_text);
-      ShowNotice();
+      if (chromeos::MagicBoostState::Get()->IsMagicBoostAvailable()) {
+        crosapi::CrosapiManager::Get()
+            ->crosapi_ash()
+            ->magic_boost_controller_ash()
+            ->ShowDisclaimerUi(
+                /*display_id=*/display::Screen::GetScreen()
+                    ->GetPrimaryDisplay()
+                    .id(),
+                /*action=*/
+                crosapi::mojom::MagicBoostController::TransitionAction::
+                    kShowEditorPanel,
+                /*opt_in_features=*/OptInFeatures::kOrcaAndHmr);
+      } else {
+        mako_bubble_coordinator_.LoadConsentUI(profile_);
+      }
       metrics_recorder_->LogEditorState(EditorStates::kConsentScreenImpression);
       break;
     case EditorMode::kHardBlocked:
     case EditorMode::kSoftBlocked:
       mako_bubble_coordinator_.CloseUI();
-  }
-}
-
-void EditorMediator::ShowNotice() {
-  if (chromeos::MagicBoostState::Get()->IsMagicBoostAvailable()) {
-    crosapi::CrosapiManager::Get()
-        ->crosapi_ash()
-        ->magic_boost_controller_ash()
-        ->ShowDisclaimerUi(
-            /*display_id=*/display::Screen::GetScreen()
-                ->GetPrimaryDisplay()
-                .id(),
-            /*action=*/
-            crosapi::mojom::MagicBoostController::TransitionAction::
-                kShowEditorPanel,
-            /*opt_in_features=*/OptInFeatures::kOrcaAndHmr);
-  } else {
-    mako_bubble_coordinator_.LoadConsentUI(profile_);
   }
 }
 

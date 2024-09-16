@@ -19,8 +19,6 @@ using OptInFeatures = crosapi::mojom::MagicBoostController::OptInFeatures;
 // and connect with Orca services in ash.
 class MagicBoostControllerAsh : public crosapi::mojom::MagicBoostController {
  public:
-  static MagicBoostControllerAsh* Get();
-
   MagicBoostControllerAsh();
 
   MagicBoostControllerAsh(const MagicBoostControllerAsh&) = delete;
