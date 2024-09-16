@@ -592,7 +592,7 @@ public class ViewAndroidDelegate {
     public void autofill(final SparseArray<AutofillValue> values) {}
 
     /**
-     * Check whether the Android can request a ViewStructure for Autofill.
+     * Check whether the Android Autofill Framework can request a ViewStructure for Autofill.
      *
      * @return true iff an AutofillProvider provides a ViewStructure when prompted.
      */
