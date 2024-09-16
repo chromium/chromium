@@ -3,34 +3,59 @@
 // found in the LICENSE file.
 
 #import <Foundation/Foundation.h>
-#include <stddef.h>
+#import <stddef.h>
 
-#include <array>
+#import <array>
 
-#include "base/strings/sys_string_conversions.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/test/scoped_feature_list.h"
+#import "components/autofill/ios/common/features.h"
+#import "components/autofill/ios/form_util/cross_content_world_util_java_script_feature.h"
 #import "components/autofill/ios/form_util/form_util_java_script_feature.h"
 #import "ios/web/public/test/js_test_util.h"
 #import "ios/web/public/test/web_test_with_web_state.h"
-#include "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 
-namespace {
+namespace autofill {
 
-class FillJsTest : public web::WebTestWithWebState {
+class FillJsTest : public web::WebTestWithWebState,
+                   public ::testing::WithParamInterface<bool> {
  public:
   FillJsTest() : web::WebTestWithWebState() {}
 
   void SetUp() override {
     web::WebTestWithWebState::SetUp();
+    // Enable isolated autofill flag before the JS feature is instantiated. This
+    // way the scripts are injected in the right content world.
+    if (GetParam()) {
+      feature_list_.InitAndEnableFeature(
+          kAutofillIsolatedWorldForJavascriptIos);
+    }
 
     OverrideJavaScriptFeatures(
-        {autofill::FormUtilJavaScriptFeature::GetInstance()});
+        {form_util_java_script_feature(),
+         autofill::CrossContentWorldUtilJavaScriptFeature::GetInstance()});
   }
+
+  void TearDown() override {
+    // Clean up overriden features. Don't leave a dangling pointer to
+    // `form_util_java_script_feature`.
+    OverrideJavaScriptFeatures({});
+    web::WebTestWithWebState::TearDown();
+  }
+
+  FormUtilJavaScriptFeature* form_util_java_script_feature() {
+    return &form_util_java_script_feature_;
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+  // Test instance of FormUtilJavaScriptFeature.
+  FormUtilJavaScriptFeature form_util_java_script_feature_;
 };
 
-}  // namespace
-
-TEST_F(FillJsTest, GetCanonicalActionForForm) {
+TEST_P(FillJsTest, GetCanonicalActionForForm) {
   struct TestData {
     NSString* html_action;
     NSString* expected_action;
@@ -55,17 +80,16 @@ TEST_F(FillJsTest, GetCanonicalActionForForm) {
         data.html_action == nil
             ? @""
             : [NSString stringWithFormat:@"action='%@'", data.html_action];
-    NSString* html = [NSString stringWithFormat:
-                                   @"<html><body>"
-                                    "<form %@></form>"
-                                    "</body></html>",
-                                   html_action];
+    NSString* html = [NSString stringWithFormat:@"<html><body>"
+                                                 "<form %@></form>"
+                                                 "</body></html>",
+                                                html_action];
 
     LoadHtml(html);
     id result = web::test::ExecuteJavaScriptForFeature(
         web_state(),
         @"__gCrWeb.fill.getCanonicalActionForForm(document.body.children[0])",
-        autofill::FormUtilJavaScriptFeature::GetInstance());
+        form_util_java_script_feature());
     NSString* base_url = base::SysUTF8ToNSString(BaseUrl());
     NSString* expected_action =
         [data.expected_action stringByReplacingOccurrencesOfString:@"baseurl/"
@@ -77,13 +101,13 @@ TEST_F(FillJsTest, GetCanonicalActionForForm) {
 }
 
 // Tests the extraction of the aria-label attribute.
-TEST_F(FillJsTest, GetAriaLabel) {
+TEST_P(FillJsTest, GetAriaLabel) {
   LoadHtml(@"<input id='input' type='text' aria-label='the label'/>");
 
   id result = web::test::ExecuteJavaScriptForFeature(
       web_state(),
       @"__gCrWeb.fill.getAriaLabel(document.getElementById('input'));",
-      autofill::FormUtilJavaScriptFeature::GetInstance());
+      form_util_java_script_feature());
   NSString* expected_result = @"the label";
   EXPECT_NSEQ(result, expected_result);
 }
@@ -96,7 +120,7 @@ TEST_F(FillJsTest, ShouldAutocompleteOneTimeCode) {
   id result = web::test::ExecuteJavaScriptForFeature(
       web_state(),
       @"__gCrWeb.fill.shouldAutocomplete(document.getElementById('input'));",
-      autofill::FormUtilJavaScriptFeature::GetInstance());
+      form_util_java_script_feature());
   EXPECT_NSEQ(result, @NO);
 }
 
@@ -113,13 +137,13 @@ TEST_F(FillJsTest, GetAriaLabelledBySingle) {
   id result = web::test::ExecuteJavaScriptForFeature(
       web_state(),
       @"__gCrWeb.fill.getAriaLabel(document.getElementById('input'));",
-      autofill::FormUtilJavaScriptFeature::GetInstance());
+      form_util_java_script_feature());
   NSString* expected_result = @"Name";
   EXPECT_NSEQ(result, expected_result);
 }
 
 // Tests that aria-labelledby works: Complex case: multiple ids referenced.
-TEST_F(FillJsTest, GetAriaLabelledByMulti) {
+TEST_P(FillJsTest, GetAriaLabelledByMulti) {
   LoadHtml(@"<html><body>"
             "<div id='billing'>Billing</div>"
             "<div>"
@@ -131,7 +155,7 @@ TEST_F(FillJsTest, GetAriaLabelledByMulti) {
   id result = web::test::ExecuteJavaScriptForFeature(
       web_state(),
       @"__gCrWeb.fill.getAriaLabel(document.getElementById('input'));",
-      autofill::FormUtilJavaScriptFeature::GetInstance());
+      form_util_java_script_feature());
   NSString* expected_result = @"Billing Name";
   EXPECT_NSEQ(result, expected_result);
 }
@@ -150,14 +174,14 @@ TEST_F(FillJsTest, GetAriaLabelledByTakesPrecedence) {
   id result = web::test::ExecuteJavaScriptForFeature(
       web_state(),
       @"__gCrWeb.fill.getAriaLabel(document.getElementById('input'));",
-      autofill::FormUtilJavaScriptFeature::GetInstance());
+      form_util_java_script_feature());
   NSString* expected_result = @"Name";
   EXPECT_NSEQ(result, expected_result);
 }
 
 // Tests that an invalid aria-labelledby reference gets ignored (as opposed to
 // crashing, for example).
-TEST_F(FillJsTest, GetAriaLabelledByInvalid) {
+TEST_P(FillJsTest, GetAriaLabelledByInvalid) {
   LoadHtml(@"<html><body>"
             "<div id='billing'>Billing</div>"
             "<div>"
@@ -169,13 +193,13 @@ TEST_F(FillJsTest, GetAriaLabelledByInvalid) {
   id result = web::test::ExecuteJavaScriptForFeature(
       web_state(),
       @"__gCrWeb.fill.getAriaLabel(document.getElementById('input'));",
-      autofill::FormUtilJavaScriptFeature::GetInstance());
+      form_util_java_script_feature());
   NSString* expected_result = @"";
   EXPECT_NSEQ(result, expected_result);
 }
 
 // Tests that invalid aria-labelledby references fall back to aria-label.
-TEST_F(FillJsTest, GetAriaLabelledByFallback) {
+TEST_P(FillJsTest, GetAriaLabelledByFallback) {
   LoadHtml(@"<html><body>"
             "<div id='billing'>Billing</div>"
             "<div>"
@@ -188,13 +212,13 @@ TEST_F(FillJsTest, GetAriaLabelledByFallback) {
   id result = web::test::ExecuteJavaScriptForFeature(
       web_state(),
       @"__gCrWeb.fill.getAriaLabel(document.getElementById('input'));",
-      autofill::FormUtilJavaScriptFeature::GetInstance());
+      form_util_java_script_feature());
   NSString* expected_result = @"valid";
   EXPECT_NSEQ(result, expected_result);
 }
 
 // Tests that aria-describedby works: Simple case: a single id referenced.
-TEST_F(FillJsTest, GetAriaDescriptionSingle) {
+TEST_P(FillJsTest, GetAriaDescriptionSingle) {
   LoadHtml(@"<html><body>"
             "<input id='input' type='text' aria-describedby='div1'/>"
             "<div id='div1'>aria description</div>"
@@ -203,7 +227,7 @@ TEST_F(FillJsTest, GetAriaDescriptionSingle) {
   id result = web::test::ExecuteJavaScriptForFeature(
       web_state(),
       @"__gCrWeb.fill.getAriaDescription(document.getElementById('input'));",
-      autofill::FormUtilJavaScriptFeature::GetInstance());
+      form_util_java_script_feature());
   NSString* expected_result = @"aria description";
   EXPECT_NSEQ(result, expected_result);
 }
@@ -219,13 +243,13 @@ TEST_F(FillJsTest, GetAriaDescriptionMulti) {
   id result = web::test::ExecuteJavaScriptForFeature(
       web_state(),
       @"__gCrWeb.fill.getAriaDescription(document.getElementById('input'));",
-      autofill::FormUtilJavaScriptFeature::GetInstance());
+      form_util_java_script_feature());
   NSString* expected_result = @"aria description";
   EXPECT_NSEQ(result, expected_result);
 }
 
 // Tests that invalid aria-describedby returns the empty string.
-TEST_F(FillJsTest, GetAriaDescriptionInvalid) {
+TEST_P(FillJsTest, GetAriaDescriptionInvalid) {
   LoadHtml(@"<html><body>"
             "<input id='input' type='text' aria-describedby='invalid'/>"
             "</body></html>");
@@ -233,7 +257,14 @@ TEST_F(FillJsTest, GetAriaDescriptionInvalid) {
   id result = web::test::ExecuteJavaScriptForFeature(
       web_state(),
       @"__gCrWeb.fill.getAriaDescription(document.getElementById('input'));",
-      autofill::FormUtilJavaScriptFeature::GetInstance());
+      form_util_java_script_feature());
   NSString* expected_result = @"";
   EXPECT_NSEQ(result, expected_result);
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    /*No InstantiationName*/,
+    FillJsTest,
+    /*enable kAutofillIsolatedWorldForJavascriptIos*/ testing::Bool());
+
+}  // namespace autofill

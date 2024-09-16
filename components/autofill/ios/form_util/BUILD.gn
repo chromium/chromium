@@ -230,6 +230,7 @@ source_set("unit_tests") {
   ]
   deps = [
     ":child_frame_registrar",
+    ":cross_content_world_util_feature",
     ":fill_js",
     ":form_handler_feature",
     ":form_js",
@@ -240,6 +241,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/autofill/ios/browser",
     "//components/autofill/ios/browser:util",
+    "//components/autofill/ios/common",
     "//ios/web/public/js_messaging",
     "//ios/web/public/test:javascript_test",
     "//ios/web/public/test:test_fixture",
