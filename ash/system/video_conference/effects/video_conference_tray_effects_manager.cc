@@ -4,6 +4,7 @@
 
 #include "ash/system/video_conference/effects/video_conference_tray_effects_manager.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <vector>
@@ -230,6 +231,10 @@ VideoConferenceTrayEffectsManager::GetTotalToggleEffectButtons() {
     }
   }
 
+  std::sort(effects.begin(), effects.end(),
+            [](const VcHostedEffect* lhs, const VcHostedEffect* rhs) {
+              return lhs->id() < rhs->id();
+            });
   return effects;
 }
 

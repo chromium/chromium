@@ -105,18 +105,19 @@ enum class VcEffectType {
 
 // Represents all the available effects in the Video Conference panel. Each
 // effect must have its own id for the purpose of metrics collection, unless it
-// is for testing.
+// is for testing. For toggle buttons, keep their values sorted in the order
+// that the buttons should appear in the VC panel.
 enum class VcEffectId {
   kTestEffect = -1,
-  kBackgroundBlur = 0,
+  kStudioLook = 0,
   kPortraitRelighting = 1,
-  kNoiseCancellation = 2,
-  kLiveCaption = 3,
-  kCameraFraming = 4,
-  kStyleTransfer = 5,
-  kFaceRetouch = 6,
-  kStudioLook = 7,
-  kMaxValue = kStudioLook,
+  kFaceRetouch = 2,
+  kCameraFraming = 3,
+  kBackgroundBlur = 4,
+  kLiveCaption = 5,
+  kNoiseCancellation = 6,
+  kStyleTransfer = 7,
+  kMaxValue = kStyleTransfer,
 };
 
 // Represents a single video conference effect that's being "hosted" by an
