@@ -16,6 +16,17 @@
 #include "components/sync/protocol/unencrypted_sharing_message.pb.h"
 #include "components/sync_device_info/local_device_info_provider.h"
 
+namespace {
+bool MessageTypeExpectsAck(sharing_message::MessageType message_type) {
+  switch (message_type) {
+    case sharing_message::SEND_TAB_TO_SELF_PUSH_NOTIFICATION:
+      return false;
+    default:
+      return true;
+  }
+}
+}  // namespace
+
 SharingMessageSender::SharingMessageSender(
     syncer::LocalDeviceInfoProvider* local_device_info_provider,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
@@ -82,7 +93,8 @@ base::OnceClosure SharingMessageSender::SendMessageToDevice(
   delegate->DoSendMessageToDevice(
       device, response_timeout, std::move(message),
       base::BindOnce(&SharingMessageSender::OnMessageSent,
-                     weak_ptr_factory_.GetWeakPtr(), message_guid));
+                     weak_ptr_factory_.GetWeakPtr(), message_guid,
+                     message_type));
 
   return base::BindOnce(&SharingMessageSender::InvokeSendMessageCallback,
                         weak_ptr_factory_.GetWeakPtr(), message_guid,
@@ -134,7 +146,8 @@ base::OnceClosure SharingMessageSender::SendUnencryptedMessageToDevice(
   delegate->DoSendUnencryptedMessageToDevice(
       device, std::move(message),
       base::BindOnce(&SharingMessageSender::OnMessageSent,
-                     weak_ptr_factory_.GetWeakPtr(), message_guid));
+                     weak_ptr_factory_.GetWeakPtr(), message_guid,
+                     message_type));
 
   return base::BindOnce(&SharingMessageSender::InvokeSendMessageCallback,
                         weak_ptr_factory_.GetWeakPtr(), message_guid,
@@ -170,10 +183,12 @@ SharingMessageSender::MaybeGetSendMessageDelegate(
   return delegate;
 }
 
-void SharingMessageSender::OnMessageSent(const std::string& message_guid,
-                                         SharingSendMessageResult result,
-                                         std::optional<std::string> message_id,
-                                         SharingChannelType channel_type) {
+void SharingMessageSender::OnMessageSent(
+    const std::string& message_guid,
+    sharing_message::MessageType message_type,
+    SharingSendMessageResult result,
+    std::optional<std::string> message_id,
+    SharingChannelType channel_type) {
   auto metadata_iter = message_metadata_.find(message_guid);
   DCHECK(metadata_iter != message_metadata_.end());
   TRACE_EVENT_NESTABLE_ASYNC_END1(
@@ -181,7 +196,10 @@ void SharingMessageSender::OnMessageSent(const std::string& message_guid,
       TRACE_ID_LOCAL(metadata_iter->second.trace_id), "result",
       SharingSendMessageResultToString(result));
   metadata_iter->second.channel_type = channel_type;
-  if (result != SharingSendMessageResult::kSuccessful) {
+  // For unsuccessful responses or for messages that don't expect an Ack
+  // response, record the result here.
+  if (result != SharingSendMessageResult::kSuccessful ||
+      !MessageTypeExpectsAck(message_type)) {
     InvokeSendMessageCallback(message_guid, result,
                               /*response=*/nullptr);
     return;

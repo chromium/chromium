@@ -47,12 +47,16 @@ void SharingIOSPushSender::DoSendUnencryptedMessageToDevice(
   const syncer::DeviceInfo* target_device_info =
       device_info_tracker_->GetDeviceInfo(device.guid());
 
+  sharing_message::MessageType message_type =
+      SharingPayloadCaseToMessageType(message.payload_case());
+
   // Double check that device info is not null since the list of devices could
   // have been updated.
   if (!target_device_info) {
-    std::move(callback).Run(SharingSendMessageResult::kDeviceNotFound,
-                            /*message_id=*/std::nullopt,
-                            SharingChannelType::kIosPush);
+    std::move(callback).Run(
+        SharingSendMessageResult::kDeviceNotFound,
+        /*message_id=*/SharingMessageTypeToString(message_type),
+        SharingChannelType::kIosPush);
     return;
   }
 
@@ -60,20 +64,19 @@ void SharingIOSPushSender::DoSendUnencryptedMessageToDevice(
       target_device_info->sharing_info();
   if (!sharing_info.has_value() ||
       sharing_info.value().chime_representative_target_id.empty()) {
-    std::move(callback).Run(SharingSendMessageResult::kDeviceNotFound,
-                            /*message_id=*/std::nullopt,
-                            SharingChannelType::kIosPush);
+    std::move(callback).Run(
+        SharingSendMessageResult::kDeviceNotFound,
+        /*message_id=*/SharingMessageTypeToString(message_type),
+        SharingChannelType::kIosPush);
     return;
   }
 
-  sharing_message::MessageType message_type =
-      SharingPayloadCaseToMessageType(message.payload_case());
-
   if (message_type == sharing_message::SEND_TAB_TO_SELF_PUSH_NOTIFICATION &&
       !CanSendSendTabPushMessage(*target_device_info)) {
-    std::move(callback).Run(SharingSendMessageResult::kInternalError,
-                            /*message_id=*/std::nullopt,
-                            SharingChannelType::kIosPush);
+    std::move(callback).Run(
+        SharingSendMessageResult::kInternalError,
+        /*message_id=*/SharingMessageTypeToString(message_type),
+        SharingChannelType::kIosPush);
     return;
   }
 
@@ -96,7 +99,7 @@ void SharingIOSPushSender::DoSendUnencryptedMessageToDevice(
       std::move(specifics),
       base::BindOnce(&SharingIOSPushSender::OnMessageSent,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                     /*message_id=*/std::string(),
+                     /*message_id=*/SharingMessageTypeToString(message_type),
                      SharingChannelType::kIosPush));
 }
 
