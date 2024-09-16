@@ -160,6 +160,16 @@ constexpr base::TimeDelta kBrowsingDataRemoveCompletionDelay = base::Seconds(1);
 #pragma mark - QuickDeleteMutator
 
 - (void)timeRangeSelected:(browsing_data::TimePeriod)timeRange {
+  browsing_data::TimePeriod currentTimePeriod =
+      static_cast<browsing_data::TimePeriod>(
+          _prefs->GetInteger(browsing_data::prefs::kDeleteTimePeriod));
+
+  if (currentTimePeriod == timeRange) {
+    return;
+  }
+
+  browsing_data::RecordTimePeriodChange(timeRange);
+
   _prefs->SetInteger(browsing_data::prefs::kDeleteTimePeriod,
                      static_cast<int>(timeRange));
 }

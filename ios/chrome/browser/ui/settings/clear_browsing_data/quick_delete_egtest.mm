@@ -4,6 +4,7 @@
 
 #import <XCTest/XCTest.h>
 
+#import "base/strings/sys_string_conversions.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "components/browsing_data/core/browsing_data_utils.h"
 #import "components/browsing_data/core/pref_names.h"
@@ -40,6 +41,7 @@
 
 namespace {
 
+using browsing_data::DeleteBrowsingDataDialogAction;
 using chrome_test_util::ButtonWithAccessibilityLabel;
 using chrome_test_util::ClearBrowsingDataButton;
 using chrome_test_util::ClearBrowsingDataView;
@@ -153,6 +155,35 @@ void ExpectClearBrowsingDataNavigationHistograms(
              forBucket:static_cast<int>(navigation)
           forHistogram:@"Settings.ClearBrowsingData.OpenMyActivity"],
       @"Settings.ClearBrowsingData.OpenMyActivity histogram not logged.");
+}
+
+// Asserts if the Privacy.DeleteBrowsingData.Dialog histogram for bucket of
+// `action` was logged once.
+void ExpectDeleteBrowsingDataDialogHistogram(
+    DeleteBrowsingDataDialogAction action) {
+  GREYAssertNil(
+      [MetricsAppInterface
+           expectCount:1
+             forBucket:static_cast<int>(action)
+          forHistogram:base::SysUTF8ToNSString(
+                           browsing_data::kDeleteBrowsingDataDialogHistogram)],
+      @"Privacy.DeleteBrowsingData.Dialog histogram for action %d was not "
+      @"logged.",
+      static_cast<int>(action));
+}
+
+// Asserts if the Privacy.DeleteBrowsingData.Dialog histogram for bucket of
+// `action` was not logged.
+void NoDeleteBrowsingDataDialogHistogram(
+    DeleteBrowsingDataDialogAction action) {
+  GREYAssertNil(
+      [MetricsAppInterface
+           expectCount:0
+             forBucket:static_cast<int>(action)
+          forHistogram:base::SysUTF8ToNSString(
+                           browsing_data::kDeleteBrowsingDataDialogHistogram)],
+      @"Privacy.DeleteBrowsingData.Dialog histogram for action %d was logged.",
+      static_cast<int>(action));
 }
 
 // Returns the given `string` with the first letter capitalized.
@@ -413,6 +444,11 @@ NSString* CapitalizeFirstLetter(NSString* string) {
 
   [self openQuickDeleteFromThreeDotMenu];
 
+  // At the beginning of the test, the Delete Browsing Data dialog metric should
+  // be empty.
+  NoDeleteBrowsingDataDialogHistogram(
+      DeleteBrowsingDataDialogAction::kLast15MinutesSelected);
+
   // Check that Quick Delete is presented.
   [[EarlGrey selectElementWithMatcher:ClearBrowsingDataView()]
       assertWithMatcher:grey_notNil()];
@@ -461,6 +497,10 @@ NSString* CapitalizeFirstLetter(NSString* string) {
       [ChromeEarlGrey userIntegerPref:browsing_data::prefs::kDeleteTimePeriod],
       static_cast<int>(browsing_data::TimePeriod::LAST_15_MINUTES),
       @"Incorrect local pref value.");
+
+  // Assert that the Delete Browsing Data dialog metric is populated.
+  ExpectDeleteBrowsingDataDialogHistogram(
+      DeleteBrowsingDataDialogAction::kLast15MinutesSelected);
 }
 
 // Tests that the number of browsing history items is shown on the browsing data
@@ -854,6 +894,11 @@ NSString* CapitalizeFirstLetter(NSString* string) {
   [ChromeEarlGrey waitUntilReadyWindowWithNumber:1];
   [ChromeEarlGrey waitForForegroundWindowCount:2];
 
+  // At the beginning of the test, the Delete Browsing Data dialog metric should
+  // be empty.
+  NoDeleteBrowsingDataDialogHistogram(
+      DeleteBrowsingDataDialogAction::kLast15MinutesSelected);
+
   // In the first window, open quick delete and check that time range is set to
   // the last hour.
   [EarlGrey setRootMatcherForSubsequentInteractions:chrome_test_util::
@@ -917,6 +962,10 @@ NSString* CapitalizeFirstLetter(NSString* string) {
           PopupCellWithTimeRange(l10n_util::GetNSString(
               IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_OPTION_LAST_15_MINUTES))]
       assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Assert that the Delete Browsing Data dialog metric is populated.
+  ExpectDeleteBrowsingDataDialogHistogram(
+      DeleteBrowsingDataDialogAction::kLast15MinutesSelected);
 }
 
 // Tests that the number of tabs are not shown on the browsing data row when

@@ -99,7 +99,14 @@ enum class DeleteBrowsingDataDialogAction {
   kUpdateDataTypesSelected = 12,
   kCancelDataTypesSelected = 13,
   kSignoutLinkOpened = 14,
-  kMaxValue = kSignoutLinkOpened,
+  kLast15MinutesSelected = 15,
+  kLastHourSelected = 16,
+  kLastDaySelected = 17,
+  kLastWeekSelected = 18,
+  kLastFourWeeksSelected = 19,
+  kOlderThan30DaysSelected = 20,
+  kAllTimeSelected = 21,
+  kMaxValue = kAllTimeSelected,
 };
 // LINT.ThenChange(//tools/metrics/histograms/enums.xml:DeleteBrowsingDataDialogAction)
 

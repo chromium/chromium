@@ -4152,6 +4152,13 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
   <int value="12" label="Confirm data type selection changes"/>
   <int value="13" label="Cancel data type selection changes"/>
   <int value="14" label="Sign out footer link opened"/>
+  <int value="15" label="Last 15 Minutes selected"/>
+  <int value="16" label="Last Hour selected"/>
+  <int value="17" label="Last day selected"/>
+  <int value="18" label="Last week selected"/>
+  <int value="19" label="Last four weeks selected"/>
+  <int value="20" label="Older than 30 days selected"/>
+  <int value="21" label="All time selected"/>
 </enum>
 
 <!--LINT.ThenChange(//components/browsing_data/core/browsing_data_utils.h:DeleteBrowsingDataDialogAction) -->
