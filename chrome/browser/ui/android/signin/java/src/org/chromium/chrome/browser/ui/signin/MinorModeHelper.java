@@ -108,7 +108,9 @@ public class MinorModeHelper implements IdentityManager.Observer {
         AccountInfo accountInfo =
                 identityManager.findExtendedAccountInfoByEmailAddress(primaryAccount.getEmail());
 
-        if (hasCapabilities(accountInfo)) {
+        // TODO(crbug.com/363988040): Remove the nullness check once
+        // ReplaceSyncPromosWithSigninPromos is removed.
+        if (accountInfo != null && hasCapabilities(accountInfo)) {
             uiUpdater.onScreenModeReady(
                     screenModeFromCapabilities(accountInfo.getAccountCapabilities()));
             recordImmediateAvailability();
