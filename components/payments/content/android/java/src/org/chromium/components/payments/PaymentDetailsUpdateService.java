@@ -10,6 +10,7 @@ import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
 
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 
@@ -76,6 +77,8 @@ public class PaymentDetailsUpdateService extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
+        RecordHistogram.recordBooleanHistogram(
+                "PaymentRequest.PaymentDetailsUpdateService.Bind", true);
         return mBinder;
     }
 }
