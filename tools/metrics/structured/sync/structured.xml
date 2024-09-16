@@ -1321,6 +1321,17 @@
     <variant value="0">NEGATIVE</variant>
     <variant value="1">POSITIVE</variant>
   </enum>
+
+  <enum name="RecorderAppAudioFormat">
+    <variant value="0">NOT_EXPORTED</variant>
+    <variant value="1">WEBM_ORIGINAL</variant>
+  </enum>
+
+  <enum name="RecorderAppTranscriptFormat">
+    <variant value="0">NOT_AVAILABLE</variant>
+    <variant value="1">NOT_EXPORTED</variant>
+    <variant value="2">TXT</variant>
+  </enum>
   <event name="AppDiscovery.AppInstalled">
     <summary>
       Recorded whenever a new app is installed on Chrome OS.
@@ -2869,6 +2880,170 @@
     <metric name="Feedback" type="RecorderAppModelFeedback">
       <summary>
         Feedback given by user
+      </summary>
+    </metric>
+  </event>
+
+  <event name="RecorderApp.Onboard">
+    <summary>
+      Event recorded when user finishes onboarding steps when using app for the
+      first time.
+    </summary>
+    <metric name="TranscriptionEnableState" type="RecorderAppTranscriptionEnableState">
+      <summary>
+        Enable state of the transcription feature when onboarding is complete.
+      </summary>
+    </metric>
+    <metric name="SpeakerLabelEnableState" type="RecorderAppSpeakerLabelEnableState">
+      <summary>
+        Enable state of the speaker label feature after onboarding is complete.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="RecorderApp.Export">
+    <summary>
+      Event recorded when user exports the recording audio, transcript, or both.
+    </summary>
+    <metric name="AudioFormat" type="RecorderAppAudioFormat">
+      <summary>
+        Format of the exported audio or NOT_EXPORTED if user does not export audio.
+      </summary>
+    </metric>
+    <metric name="TranscriptFormat" type="RecorderAppTranscriptFormat">
+      <summary>
+        Format of the exported transcription, NOT_EXPORTED, or NOT_AVAILABLE.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="RecorderApp.ChangePlaybackSpeed">
+    <summary>
+      Event recorded when user changes the playback speed in the playback page.
+    </summary>
+    <metric name="PlaybackSpeed" type="double">
+      <summary>
+        Playback speed chosen by user.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="RecorderApp.ChangePlaybackVolume">
+    <summary>
+      Event recorded when user changes the playback volume in the playback page.
+    </summary>
+    <metric name="Volume" type="int">
+      <summary>
+        Percent of the volume chosen by user, can be higher than zero when mute
+        is toggled on.
+      </summary>
+    </metric>
+    <metric name="Muted" type="int">
+      <summary>
+        Boolean indicating whether mute is toggled on.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="RecorderApp.AppStartPerf">
+    <summary>
+      Performance measured during app initialization.
+    </summary>
+    <metric name="Duration" type="int">
+      <summary>
+        The duration of app initialization in milliseconds.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="RecorderApp.TranscriptionModelDownloadPerf">
+    <summary>
+      Performance measured during transcription model download.
+    </summary>
+    <metric name="Duration" type="int">
+      <summary>
+        The duration of transcription model download in milliseconds.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="RecorderApp.SummaryModelDownloadPerf">
+    <summary>
+      Performance measured during summary model download.
+    </summary>
+    <metric name="Duration" type="int">
+      <summary>
+        The duration of summary model download in milliseconds.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="RecorderApp.RecordingSavingPerf">
+    <summary>
+      Performance measured during recording saving.
+    </summary>
+    <metric name="Duration" type="int">
+      <summary>
+        The duration of recording saving in milliseconds.
+      </summary>
+    </metric>
+    <metric name="AudioDuration" type="int">
+      <summary>
+        The duration of the audio which is being saved in milliseconds.
+      </summary>
+    </metric>
+    <metric name="WordCount" type="int">
+      <summary>
+        Number of words in the recording transcription which is being saved.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="RecorderApp.TitleSuggestionPerf">
+    <summary>
+      Performance measured during recording title suggestion.
+    </summary>
+    <metric name="Duration" type="int">
+      <summary>
+        The duration of title suggestion in milliseconds.
+      </summary>
+    </metric>
+    <metric name="WordCount" type="int">
+      <summary>
+        Number of words in the transcription which is used for title suggestion.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="RecorderApp.SummaryPerf">
+    <summary>
+      Performance measured during recording summary generation.
+    </summary>
+    <metric name="Duration" type="int">
+      <summary>
+        The duration of the summary generation in milliseconds.
+      </summary>
+    </metric>
+    <metric name="WordCount" type="int">
+      <summary>
+        Number of words in the transcription which is used for summary
+        generation.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="RecorderApp.ExportPerf">
+    <summary>
+      Performance measured during recording file export.
+    </summary>
+    <metric name="Duration" type="int">
+      <summary>
+        The duration of the recording file export in milliseconds.
+      </summary>
+    </metric>
+    <metric name="RecordingSize" type="int">
+      <summary>
+        Size of the exported recording in bytes.
       </summary>
     </metric>
   </event>
