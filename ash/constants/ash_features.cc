@@ -3137,7 +3137,7 @@ BASE_FEATURE(kUseAnnotatedAccountId,
 // `AuthPanel` is used as an authentication UI.
 BASE_FEATURE(kUseAuthPanelInSession,
              "UseAuthPanelInSession",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // This features controls whether or not passwordless setup is enabled, such as
 // having a pin-only config.
@@ -3149,7 +3149,7 @@ BASE_FEATURE(kAllowPasswordlessSetup,
 // lockout or attempt based lockout.
 BASE_FEATURE(kAllowPinTimeoutSetup,
              "AllowPinTimeoutSetup",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // This features controls whether or not we'll show the legacy WebAuthNDialog,
 // that lives in ash/in_session_auth/auth_dialog_contents_view or
@@ -3157,7 +3157,7 @@ BASE_FEATURE(kAllowPinTimeoutSetup,
 // that lives in ash/auth/view/active_session_auth_view
 BASE_FEATURE(kWebAuthNAuthDialogMerge,
              "WebAuthNAuthDialogMerge",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Use the staging URL as part of the "Messages" feature under "Connected
 // Devices" settings.
