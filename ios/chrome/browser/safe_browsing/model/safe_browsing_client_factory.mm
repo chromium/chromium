@@ -19,10 +19,16 @@
 #import "ios/web/public/browser_state.h"
 
 // static
-SafeBrowsingClient* SafeBrowsingClientFactory::GetForBrowserState(
-    web::BrowserState* browser_state) {
+SafeBrowsingClient* SafeBrowsingClientFactory::GetForProfile(
+    ProfileIOS* profile) {
   return static_cast<SafeBrowsingClient*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, /*create=*/true));
+      GetInstance()->GetServiceForBrowserState(profile, /*create=*/true));
+}
+
+// static
+SafeBrowsingClient* SafeBrowsingClientFactory::GetForBrowserState(
+    ProfileIOS* profile) {
+  return GetForProfile(profile);
 }
 
 // static

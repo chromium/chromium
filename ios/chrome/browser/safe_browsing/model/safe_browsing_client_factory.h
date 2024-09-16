@@ -9,10 +9,7 @@
 
 #include "base/no_destructor.h"
 #include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-
-namespace web {
-class BrowserState;
-}  // namespace web
+#include "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
 class SafeBrowsingClient;
 
@@ -20,8 +17,10 @@ class SafeBrowsingClient;
 // a browser state.
 class SafeBrowsingClientFactory : public BrowserStateKeyedServiceFactory {
  public:
-  static SafeBrowsingClient* GetForBrowserState(
-      web::BrowserState* browser_state);
+  static SafeBrowsingClient* GetForProfile(ProfileIOS* profile);
+
+  // Deprecated: use GetForProfile(...).
+  static SafeBrowsingClient* GetForBrowserState(ProfileIOS* profile);
   static SafeBrowsingClientFactory* GetInstance();
 
   SafeBrowsingClientFactory(const SafeBrowsingClientFactory&) = delete;
