@@ -9,6 +9,7 @@
 
 #import "base/no_destructor.h"
 #import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
 namespace drive {
 
@@ -18,7 +19,9 @@ class DriveService;
 // instances of ChromeBrowserState.
 class DriveServiceFactory final : public BrowserStateKeyedServiceFactory {
  public:
-  static DriveService* GetForBrowserState(web::BrowserState* browser_state);
+  static DriveService* GetForProfile(ProfileIOS* profile);
+  // Deprecated: use GetForProfile(...).
+  static DriveService* GetForBrowserState(ProfileIOS* profile);
   static DriveServiceFactory* GetInstance();
 
  private:
