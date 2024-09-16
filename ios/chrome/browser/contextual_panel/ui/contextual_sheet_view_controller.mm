@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/contextual_panel/ui/contextual_sheet_view_controller.h"
 
 #import "base/metrics/histogram_functions.h"
+#import "ios/chrome/browser/contextual_panel/ui/contextual_panel_view_constants.h"
 #import "ios/chrome/browser/contextual_panel/ui/trait_collection_change_delegate.h"
 #import "ios/chrome/browser/contextual_panel/utils/contextual_panel_metrics.h"
 #import "ios/chrome/browser/shared/public/commands/contextual_sheet_commands.h"
@@ -26,6 +27,10 @@ const CGFloat kHeightAnimationDuration = 0.3;
 const CGFloat kTopCornerRadius = 10;
 
 }  // namespace
+
+@interface ContextualSheetViewController () <UIGestureRecognizerDelegate>
+
+@end
 
 @implementation ContextualSheetViewController {
   // Gesture recognizer used to expand and dismiss the sheet.
@@ -54,6 +59,7 @@ const CGFloat kTopCornerRadius = 10;
   _panGestureRecognizer = [[UIPanGestureRecognizer alloc]
       initWithTarget:self
               action:@selector(handlePanGesture:)];
+  _panGestureRecognizer.delegate = self;
   [self.view addGestureRecognizer:_panGestureRecognizer];
 
   self.view.layer.cornerRadius = kTopCornerRadius;
@@ -277,6 +283,30 @@ const CGFloat kTopCornerRadius = 10;
   base::UmaHistogramEnumeration("IOS.ContextualPanel.DismissedReason",
                                 ContextualPanelDismissedReason::KeyboardOpened);
   [self.contextualSheetHandler closeContextualSheet];
+}
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer*)gestureRecognizer
+    shouldRequireFailureOfGestureRecognizer:
+        (UIGestureRecognizer*)otherGestureRecognizer {
+  // Require gestures in the panel's content to fail before expanding the panel
+  // itself. SwiftUI only allows setting the name field on their gesture
+  // recognizers in iOS 18, so use a workaround for identifying SwiftUI gesture
+  // recognizers in earlier iOS versions.
+
+  // SwiftUI only allowed setting a name on a gesture recognizer in iOS 18, so
+  // this check is necessary for cases where the app is built on an earlier SDK
+  // but is running on iOS 18, but can be removed once the build target is
+  // updated.
+  BOOL isSwiftUIOniOS18 = [NSStringFromClass([otherGestureRecognizer class])
+      isEqualToString:@"SwiftUI.UIKitResponderGestureRecognizer"];
+  if ([NSStringFromClass([otherGestureRecognizer class])
+          isEqualToString:@"SwiftUI.UIKitGestureRecognizer"] ||
+      isSwiftUIOniOS18 ||
+      [otherGestureRecognizer.name
+          isEqualToString:kPanelContentGestureRecognizerName]) {
+    return YES;
+  }
+  return NO;
 }
 
 @end
