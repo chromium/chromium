@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.7.1](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.7.0...chromium-bidi-v0.7.1) (2024-09-16)
+
+
+### Features
+
+* initial implementation for the Web Bluetooth spec ([#2060](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2060)) ([ecb18d3](https://github.com/GoogleChromeLabs/chromium-bidi/commit/ecb18d3e53582424b579dae8dd3367e937c66d66))
+* support ESM module ([#2451](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2451)) ([662a857](https://github.com/GoogleChromeLabs/chromium-bidi/commit/662a857fc45a07b9278b95399494920e533594bd))
+* support network.setCacheBehavior ([#2593](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2593)) ([75ba46c](https://github.com/GoogleChromeLabs/chromium-bidi/commit/75ba46c2d18d4f9542962388bde722c51beaf0bb))
+* support only statusCode in continueResponse ([#2598](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2598)) ([1eeff5b](https://github.com/GoogleChromeLabs/chromium-bidi/commit/1eeff5bd9f84beadd1cf0305d9d288fb974fe2a2))
+
+
+### Bug Fixes
+
+* add bluetooth command parser and fix tests ([#2589](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2589)) ([98ad2d9](https://github.com/GoogleChromeLabs/chromium-bidi/commit/98ad2d904c3be330c4fdf52032111156a1b88ab6))
+* clear the buffered logs when browsing context is destroyed ([#2592](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2592)) ([36fb707](https://github.com/GoogleChromeLabs/chromium-bidi/commit/36fb7078ec0da6dc6b29befc1ce0e08a43bbf6d4)), closes [#475](https://github.com/GoogleChromeLabs/chromium-bidi/issues/475)
+* provide invalid set cache props ([#2590](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2590)) ([0830f00](https://github.com/GoogleChromeLabs/chromium-bidi/commit/0830f001231b795a56724407562d81b8e0a469ab))
+* **spec:** update WebBluetooth implementation to match the latest spec ([#2588](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2588)) ([ec1ab96](https://github.com/GoogleChromeLabs/chromium-bidi/commit/ec1ab9652196765293f1ae54ba73ac9d7a9e88d5))
+
 ## [0.7.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.6.5...chromium-bidi-v0.7.0) (2024-09-05)
 
 
