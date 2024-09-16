@@ -429,7 +429,7 @@ class TestWidget : public Widget {
 // Verifies the size of the widget doesn't change more than once during Init if
 // the window ends up maximized. This is important as otherwise
 // RenderWidgetHostViewAura ends up getting resized during construction, which
-// leads to noticable flashes.
+// leads to noticeable flashes.
 TEST_F(NativeWidgetAuraTest, ShowMaximizedDoesntBounceAround) {
   root_window()->SetBounds(gfx::Rect(0, 0, 640, 480));
   root_window()->SetLayoutManager(std::make_unique<MaximizeLayoutManager>());
