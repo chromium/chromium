@@ -18,6 +18,7 @@ import '//resources/cr_elements/cr_toolbar/cr_toolbar.js';
 import type {CrDialogElement} from '//resources/cr_elements/cr_dialog/cr_dialog.js';
 import type {CrDrawerElement} from '//resources/cr_elements/cr_drawer/cr_drawer.js';
 import type {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js';
+import type {CrToolbarSearchFieldElement} from '//resources/cr_elements/cr_toolbar/cr_toolbar_search_field.ts';
 import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -238,6 +239,15 @@ class SuggestInternalsAppElement extends PolymerElement {
     return JSON.stringify(
         this.requests_,
         (_key, value) => typeof value === 'bigint' ? value.toString() : value);
+  }
+
+  private populateSearchInput_(e: CustomEvent<string>) {
+    // Populate the searchbar with the pgcl of the selected chip.
+    const toolbar = this.shadowRoot!.querySelector<HTMLElement>('cr-toolbar')!;
+    const searchbar =
+        toolbar.shadowRoot!.querySelector<CrToolbarSearchFieldElement>(
+            'cr-toolbar-search-field')!;
+    searchbar.setValue('pgcl=' + e.detail);
   }
 }
 

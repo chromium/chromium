@@ -71,14 +71,16 @@
   <template is="dom-if" if="[[hardcodedRequest_]]">
     <suggest-request request="[[hardcodedRequest_]]"
         on-show-toast="onShowToast_"
-        on-open-hardcode-response-dialog="onOpenHardcodeResponseDialog_">
+        on-open-hardcode-response-dialog="onOpenHardcodeResponseDialog_"
+        on-chip-click="populateSearchInput_">
     </suggest-request>
   </template>
   <template is="dom-repeat" items="[[requests_]]" as="request"
       filter="[[requestFilter_(filter_)]]">
     <suggest-request request="[[request]]"
         on-show-toast="onShowToast_"
-        on-open-hardcode-response-dialog="onOpenHardcodeResponseDialog_">
+        on-open-hardcode-response-dialog="onOpenHardcodeResponseDialog_"
+        on-chip-click="populateSearchInput_">
     </suggest-request>
   </template>
 </div>

@@ -43,12 +43,18 @@ export class SuggestRequestElement extends PolymerElement {
         type: String,
         computed: `computeResponseJson_(request.response)`,
       },
+
+      pgcl_: {
+        type: String,
+        computed: `computePageClassification_(request.url)`,
+      },
     };
   }
 
   request: Request;
   private requestDataJson_: string = '';
   private responseJson_: string = '';
+  private pgcl_: string = '';
 
   private computeRquestDataJson_(): string {
     try {
@@ -72,6 +78,19 @@ export class SuggestRequestElement extends PolymerElement {
     } catch (e) {
       return '';
     }
+  }
+
+  private computePageClassification_(): string {
+    // Find pgcl value in request url.
+    const url = new URL(this.request.url.url);
+    const queryMatches = url.search.match(/pgcl=(?<pgcl>[^&]*)/);
+    // If no pgcl value in request, set pgcl to empty
+    const pgcl = queryMatches?.groups ? queryMatches?.groups['pgcl'] : '';
+    return pgcl;
+  }
+
+  private getPageClassificationLabel_(): string {
+    return PageClassification[parseInt(this.pgcl_)];
   }
 
   private insertTextProtoLinks_(stringJSON: string): string {
@@ -100,15 +119,6 @@ export class SuggestRequestElement extends PolymerElement {
                   .type}": <a target='_blank' href=https://protoshop.corp.google.com/embed?tabs=textproto&type=${
               urlType}&protobytes=${groups.proto}>${groups.proto}</a>`;
         });
-  }
-
-  private getPageClassification_(): string {
-    // Find pgcl value in request url.
-    const url = new URL(this.request.url.url);
-    const queryMatches = url.search.match(/pgcl=(?<pgcl>[^&]*)/);
-    const pgcl = queryMatches?.groups!['pgcl']!;
-    // Return page associated with pgcl value.
-    return PageClassification[parseInt(pgcl)];
   }
 
   private getRequestDataHtml_(): TrustedHTML {
@@ -208,6 +218,22 @@ export class SuggestRequestElement extends PolymerElement {
       composed: true,
       detail: this.responseJson_,
     }));
+  }
+
+  private onChipClick_(e: CustomEvent<string>) {
+    this.dispatchEvent(new CustomEvent('chip-click', {
+      bubbles: true,
+      composed: true,
+      detail: this.pgcl_,
+    }));
+    // Allow chip to be found with aria label (originally hidden).
+    const button =
+        this.shadowRoot!.querySelector<HTMLElement>('cr-expand-button')!;
+    const label = button.shadowRoot!.querySelector<HTMLElement>('#label')!;
+    label.ariaHidden = 'false';
+    // Prevent cr-expand-button from being clicked when chip is clicked.
+    e.stopPropagation();
+    e.preventDefault();
   }
 }
 

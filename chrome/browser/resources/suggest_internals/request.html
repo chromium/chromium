@@ -51,7 +51,9 @@
       title="[[getStatusTitle_(request.endTime)]]">
   </cr-icon>
   <span class="label">[[getRequestPath_(request)]]</span>
-  <cr-chip class="pagelabel">[[getPageClassification_(request)]]</cr-chip>
+  <template is="dom-if" if="[[getPageClassificationLabel_(pgcl_)]]">
+    <cr-chip class="pagelabel" on-click="onChipClick_">[[getPageClassificationLabel_(pgcl_)]]</cr-chip>
+  </template>
 </cr-expand-button>
 <cr-collapse opened="[[request.expanded]]">
   <div class="cr-row" hidden$="[[!requestDataJson_]]">
