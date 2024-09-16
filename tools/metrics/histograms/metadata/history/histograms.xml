@@ -2050,6 +2050,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="History.Embeddings.EmbeddingScoreSufficient" enum="Boolean"
+    expires_after="2024-12-31">
+  <owner>orinj@chromium.org</owner>
+  <owner>src/components/history_embeddings/OWNERS</owner>
+  <summary>
+    Whether a search result could be included in the final result set based on
+    its embedding score alone, without the word match boost from text search.
+    This is logged for each result that passes the threshold filter with its
+    total score including the word match boost, so it signals how helpful the
+    boost from text search is in yielding results that would not have been
+    included otherwise.
+  </summary>
+</histogram>
+
 <histogram name="History.Embeddings.ExtractionCancelled"
     enum="EmbeddingsExtractionCancelled" expires_after="2025-03-02">
   <owner>orinj@chromium.org</owner>
@@ -2196,6 +2210,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="History.Embeddings.Search.PassageScanningTime" units="ms"
+    expires_after="2025-03-09">
+  <owner>orinj@chromium.org</owner>
+  <owner>src/components/history_embeddings/OWNERS</owner>
+  <summary>
+    The number of milliseconds spent on the passage scanning portion of the
+    search, i.e. the text search required to compute word match score boost.
+    Includes scoring for embeddings and word match boost scoring from text
+    search. Logged each time a vector database search is performed.
+  </summary>
+</histogram>
+
+<histogram name="History.Embeddings.Search.ScoringTime" units="ms"
+    expires_after="2025-03-09">
+  <owner>orinj@chromium.org</owner>
+  <owner>src/components/history_embeddings/OWNERS</owner>
+  <summary>
+    The number of milliseconds spent on the scoring portion of the search.
+    Includes scoring for embeddings and word match boost scoring from text
+    search. Logged each time a vector database search is performed.
+  </summary>
+</histogram>
+
 <histogram name="History.Embeddings.Search.SkippedNonAsciiPassageCount"
     units="passages" expires_after="2025-03-09">
   <owner>orinj@chromium.org</owner>
@@ -2204,6 +2241,16 @@ chromium-metrics-reviews@google.com.
     The number of passages that had their embeddings scored zero during search
     due to the source passage containing non-ASCII characters. Logged each time
     a vector database search is performed.
+  </summary>
+</histogram>
+
+<histogram name="History.Embeddings.Search.TotalSearchTime" units="ms"
+    expires_after="2025-03-09">
+  <owner>orinj@chromium.org</owner>
+  <owner>src/components/history_embeddings/OWNERS</owner>
+  <summary>
+    The number of milliseconds spent on the core of the vector database search.
+    Logged each time a vector database search is performed.
   </summary>
 </histogram>
 

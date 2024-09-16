@@ -31,7 +31,9 @@ struct ScoredUrl {
   history::VisitID visit_id;
   base::Time visit_time;
 
-  // A measure of how closely the query matched the found data.
+  // A measure of how closely the query matched the found data. This includes
+  // the single best embedding score plus a word match boost from text search
+  // across all passages.
   float score;
 };
 

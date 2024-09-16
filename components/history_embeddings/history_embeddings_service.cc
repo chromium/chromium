@@ -641,6 +641,12 @@ std::vector<ScoredUrlRow> HistoryEmbeddingsService::Storage::Search(
       search_info.skipped_nonascii_passage_count);
   base::UmaHistogramBoolean("History.Embeddings.Search.Completed",
                             search_info.completed);
+  base::UmaHistogramTimes("History.Embeddings.Search.TotalSearchTime",
+                          search_info.total_search_time);
+  base::UmaHistogramTimes("History.Embeddings.Search.ScoringTime",
+                          search_info.scoring_time);
+  base::UmaHistogramTimes("History.Embeddings.Search.PassageScanningTime",
+                          search_info.passage_scanning_time);
 
   VLOG(1) << "History.Embeddings.Search.Duration (ms): "
           << elapsed.InMilliseconds()
@@ -859,6 +865,8 @@ void HistoryEmbeddingsService::OnSearchCompleted(
                std::make_move_iterator(scored_url_rows.end()),
                std::back_inserter(filtered),
                [=](const ScoredUrlRow& scored_url_row) {
+                 // This score is the total for the URL, including the
+                 // best embedding score plus a holistic word match boost.
                  return scored_url_row.scored_url.score > threshold;
                });
   VLOG(3) << "Search found " << scored_url_rows.size() << " results and kept "
@@ -866,6 +874,17 @@ void HistoryEmbeddingsService::OnSearchCompleted(
 
   base::UmaHistogramCounts100("History.Embeddings.NumUrlsDiscardedForLowScore",
                               scored_url_rows.size() - filtered.size());
+
+  // The score used for filtering is the scored_url.score but this can exceed
+  // the maximum embedding score due to word match boosting across all passages.
+  // Detect and log cases that would have been filtered if not for text search.
+  for (const ScoredUrlRow& row : filtered) {
+    float best_embedding_score = std::ranges::max(row.scores);
+    bool sufficient = best_embedding_score > threshold;
+    base::UmaHistogramBoolean("History.Embeddings.EmbeddingScoreSufficient",
+                              sufficient);
+  }
+
   DeterminePassageVisibility(std::move(callback), std::move(result),
                              std::move(filtered));
 }
