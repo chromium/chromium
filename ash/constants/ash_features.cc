@@ -461,7 +461,7 @@ BASE_FEATURE(kClipboardHistoryUrlTitles,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls enabling/disabling conch.
-BASE_FEATURE(kConch, "Conch", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kConch, "Conch", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, conch will use microphone to capture system audio.
 BASE_FEATURE(kConchSystemAudioFromMic,
