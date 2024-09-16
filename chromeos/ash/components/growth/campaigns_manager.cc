@@ -126,7 +126,6 @@ base::Time GetOobeTimestampBackground() {
 
 // static
 CampaignsManager* CampaignsManager::Get() {
-  DCHECK(g_instance);
   return g_instance;
 }
 

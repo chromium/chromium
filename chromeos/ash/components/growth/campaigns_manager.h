@@ -45,6 +45,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH) CampaignsManager {
   ~CampaignsManager();
 
   // Static.
+  // Returns nullptr if no CampaignsManager has been created (e.g. in tests).
   static CampaignsManager* Get();
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 

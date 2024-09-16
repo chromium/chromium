@@ -3364,6 +3364,7 @@ component("ash") {
     "//chromeos/ash/components/fwupd",
     "//chromeos/ash/components/geolocation",
     "//chromeos/ash/components/growth",
+    "//chromeos/ash/components/growth:utils",
     "//chromeos/ash/components/hid_detection",
     "//chromeos/ash/components/human_presence",
     "//chromeos/ash/components/login/login_state",
