@@ -26,11 +26,13 @@ import org.robolectric.Shadows;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelStateProvider;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.keyboard_accessory.AccessorySheetVisualStateProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsVisualState;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -294,6 +296,11 @@ public class BottomAttachedUiObserverTest {
     }
 
     @Test
+    @Features.DisableFeatures({
+        ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN,
+        ChromeFeatureList.EDGE_TO_EDGE_WEB_OPT_IN,
+        ChromeFeatureList.DRAW_EDGE_TO_EDGE
+    })
     public void testAdaptsColorToBottomSheet_doesNotCoverFullWidth() {
         when(mBottomSheetController.isFullWidth()).thenReturn(false, false);
 
@@ -302,6 +309,20 @@ public class BottomAttachedUiObserverTest {
 
         mBottomAttachedUiObserver.onSheetOpened(0);
         mColorChangeObserver.assertState(BOTTOM_SHEET_YELLOW, true, false);
+        mBottomAttachedUiObserver.onSheetClosed(0);
+        mColorChangeObserver.assertState(null, false, false);
+    }
+
+    @Test
+    @Features.EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN)
+    public void testAdaptsColorToBottomSheet_doesNotCoverFullWidth_drawingEdgeToEdge() {
+        when(mBottomSheetController.isFullWidth()).thenReturn(false, false);
+
+        mBottomAttachedUiObserver.onSheetContentChanged(mBottomSheetContentYellowBackground);
+        mColorChangeObserver.assertState(null, false, false);
+
+        mBottomAttachedUiObserver.onSheetOpened(0);
+        mColorChangeObserver.assertState(null, false, false);
         mBottomAttachedUiObserver.onSheetClosed(0);
         mColorChangeObserver.assertState(null, false, false);
     }
