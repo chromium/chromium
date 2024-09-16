@@ -783,7 +783,8 @@ TEST_F(CredentialProviderServiceTest, UpdatePasskey) {
       {
           .user_name = "new_passkey_username",
           .user_display_name = "new_passkey_display_name",
-      });
+      },
+      /*updated_by_user=*/true);
   task_environment_.RunUntilIdle();
 
   ASSERT_EQ(credential_store_.credentials.count, 1u);

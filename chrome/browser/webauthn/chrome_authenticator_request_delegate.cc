@@ -712,7 +712,8 @@ void ChromeWebAuthenticationDelegate::UpdateUserPasskeys(
          passkey.user_display_name() != display_name)) {
       passkey_store->UpdatePasskey(
           passkey.credential_id(),
-          {.user_name = name, .user_display_name = display_name});
+          {.user_name = name, .user_display_name = display_name},
+          /*updated_by_user=*/false);
       is_passkey_updated = true;
     }
   }

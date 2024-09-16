@@ -149,15 +149,20 @@ void TestPasskeyModel::DeleteAllPasskeys() {
 }
 
 bool TestPasskeyModel::UpdatePasskey(const std::string& credential_id,
-                                     PasskeyUpdate change) {
+                                     PasskeyUpdate change,
+                                     bool updated_by_user) {
   const auto credential_it =
       base::ranges::find(credentials_, credential_id,
                          &sync_pb::WebauthnCredentialSpecifics::credential_id);
   if (credential_it == credentials_.end()) {
     return false;
   }
+  if (credential_it->edited_by_user() && !updated_by_user) {
+    return false;
+  }
   credential_it->set_user_name(std::move(change.user_name));
   credential_it->set_user_display_name(std::move(change.user_display_name));
+  credential_it->set_edited_by_user(updated_by_user);
   NotifyPasskeysChanged({PasskeyModelChange(
       PasskeyModelChange::ChangeType::UPDATE, *credential_it)});
   return true;

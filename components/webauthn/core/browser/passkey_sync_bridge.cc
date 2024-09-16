@@ -407,7 +407,8 @@ void PasskeySyncBridge::DeleteAllPasskeys() {
 }
 
 bool PasskeySyncBridge::UpdatePasskey(const std::string& credential_id,
-                                      PasskeyUpdate change) {
+                                      PasskeyUpdate change,
+                                      bool updated_by_user) {
   // Find the credential with the given |credential_id|.
   const auto passkey_it =
       base::ranges::find_if(data_, [&credential_id](const auto& passkey) {
@@ -417,6 +418,12 @@ bool PasskeySyncBridge::UpdatePasskey(const std::string& credential_id,
     DVLOG(1) << "Attempted to update non existent passkey";
     return false;
   }
+  if (passkey_it->second.edited_by_user() && !updated_by_user) {
+    // Respect the user's choice and do not change a passkey's user data if
+    // explicitly set by the user previously.
+    return false;
+  }
+  passkey_it->second.set_edited_by_user(updated_by_user);
   passkey_it->second.set_user_name(std::move(change.user_name));
   passkey_it->second.set_user_display_name(std::move(change.user_display_name));
   std::unique_ptr<syncer::DataTypeStore::WriteBatch> write_batch =

@@ -635,10 +635,12 @@ SavedPasswordsPresenter::EditResult SavedPasswordsPresenter::EditPasskey(
   std::string credential_id(original_credential->credential_id().begin(),
                             original_credential->credential_id().end());
   passkey_store_->UpdatePasskey(
-      credential_id, {
-                         .user_name = std::move(new_username),
-                         .user_display_name = std::move(new_display_name),
-                     });
+      credential_id,
+      {
+          .user_name = std::move(new_username),
+          .user_display_name = std::move(new_display_name),
+      },
+      /*updated_by_user=*/true);
   return EditResult::kSuccess;
 }
 
