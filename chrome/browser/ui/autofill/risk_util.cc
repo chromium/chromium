@@ -63,7 +63,7 @@ ui::BaseWindow* GetBaseWindowForWebContents(
   extensions::AppWindow* app_window =
       AppWindowRegistryUtil::GetAppWindowForNativeWindowAnyProfile(
           native_window);
-  return app_window->GetBaseWindow();
+  return app_window ? app_window->GetBaseWindow() : nullptr;
 }
 #endif
 
@@ -77,7 +77,9 @@ void LoadRiskData(uint64_t obfuscated_gaia_id,
   // contents).
   gfx::Rect window_bounds;
 #if !BUILDFLAG(IS_ANDROID)
-  window_bounds = GetBaseWindowForWebContents(web_contents)->GetBounds();
+  if (ui::BaseWindow* base_window = GetBaseWindowForWebContents(web_contents)) {
+    window_bounds = base_window->GetBounds();
+  }
 #endif
 
   PrefService* user_prefs =
