@@ -239,7 +239,11 @@ const char kCustomizeChromeWallpaperSearchInspirationCardDescription[] =
 
 const char kDataSharingName[] = "Data Sharing";
 const char kDataSharingDescription[] =
-    "Enabled Data Sharing related UI and features.";
+    "Enabled all Data Sharing related UI and features.";
+
+const char kDataSharingJoinOnlyName[] = "Data Sharing Join Only";
+const char kDataSharingJoinOnlyDescription[] =
+    "Enabled Data Sharing Joining flow related UI and features.";
 
 const char kDeprecateUnloadName[] = "Deprecate the unload event";
 const char kDeprecateUnloadDescription[] =

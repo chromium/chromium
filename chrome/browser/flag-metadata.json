@@ -1974,6 +1974,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "data-sharing-join-only",
+    "owners": [ "haileywang@google.com", "chrome-tab-group-eng@google.com"],
+    "expiry_milestone": 140
+  },
+  {
     "name": "dawn-si-reps-use-client-provided-internal-usages",
     "owners": [ "blundell@chromium.org" ],
     "expiry_milestone": 132

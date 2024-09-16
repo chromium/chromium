@@ -16746,6 +16746,7 @@ from previous Chrome versions.
       label="LegacyTechReportEnableCookieIssueReports:disabled"/>
   <int value="-1449590570" label="RestrictGamepadAccess:enabled"/>
   <int value="-1449358747" label="RemoveStatusBarInWebApps:enabled"/>
+  <int value="-1448951651" label="DataSharingJoinOnly:enabled"/>
   <int value="-1448511207" label="UseMessagesStagingUrl:disabled"/>
   <int value="-1448094672" label="CCTBrandTransparency:disabled"/>
   <int value="-1448056519" label="MlUrlScoring:enabled"/>
@@ -19356,6 +19357,7 @@ from previous Chrome versions.
   <int value="-357464687" label="SharingPreferVapid:enabled"/>
   <int value="-357250869"
       label="ActivateMetricsReportingEnabledPolicyAndroid:enabled"/>
+  <int value="-356767031" label="DataSharingJoinOnly:disabled"/>
   <int value="-355931495" label="FastPair:enabled"/>
   <int value="-355278724" label="CorbAllowlistAlsoAppliesToOorCors:disabled"/>
   <int value="-355005246" label="CaptureModeAudioMixing:enabled"/>

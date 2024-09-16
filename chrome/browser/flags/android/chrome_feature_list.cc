@@ -118,6 +118,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &content_settings::features::kTrackingProtection3pcd,
     &content_settings::features::kUserBypassUI,
     &data_sharing::features::kDataSharingFeature,
+    &data_sharing::features::kDataSharingJoinOnly,
     &device::kWebAuthnEnableAndroidCableAuthenticator,
     &download::features::kSmartSuggestionForLargeDownloads,
     &download::features::kDownloadsMigrateToJobsAPI,

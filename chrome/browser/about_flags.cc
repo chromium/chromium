@@ -11874,6 +11874,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDataSharingDescription, kOsAll,
      FEATURE_VALUE_TYPE(data_sharing::features::kDataSharingFeature)},
 
+    {"data-sharing-join-only", flag_descriptions::kDataSharingJoinOnlyName,
+     flag_descriptions::kDataSharingJoinOnlyDescription, kOsAll,
+     FEATURE_VALUE_TYPE(data_sharing::features::kDataSharingJoinOnly)},
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"cros-content-adjusted-refresh-rate",
      flag_descriptions::kCrosContentAdjustedRefreshRateName,
