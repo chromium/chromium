@@ -22,9 +22,9 @@ String LayoutThemeLinux::ExtraDefaultStyleSheet() {
   String stylesheet =
       LayoutThemeDefault::ExtraDefaultStyleSheet() +
       UncompressResourceAsASCIIString(IDR_UASTYLE_THEME_CHROMIUM_LINUX_CSS);
-  if (RuntimeEnabledFeatures::StylableSelectEnabled()) {
+  if (RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
     stylesheet = stylesheet + UncompressResourceAsASCIIString(
-                                  IDR_UASTYLE_STYLABLE_SELECT_LINUX_CSS);
+                                  IDR_UASTYLE_CUSTOMIZABLE_SELECT_LINUX_CSS);
   }
   return stylesheet;
 }

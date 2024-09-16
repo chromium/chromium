@@ -2128,7 +2128,7 @@ CSSValue* ConsumeColorInternal(CSSParserTokenStream& stream,
     return functional_syntax_color;
   }
 
-  if (RuntimeEnabledFeatures::StylableSelectEnabled() &&
+  if (RuntimeEnabledFeatures::CustomizableSelectEnabled() &&
       IsUASheetBehavior(context.Mode())) {
     if (CSSAppearanceAutoBaseSelectValuePair* auto_base_select_pair =
             ConsumeAppearanceAutoBaseSelectColor(stream, context)) {
@@ -4990,7 +4990,7 @@ CSSValue* ParseBorderWidthSide(CSSParserTokenStream& stream,
 
 const CSSValue* ParseBorderStyleSide(CSSParserTokenStream& stream,
                                      const CSSParserContext& context) {
-  if (RuntimeEnabledFeatures::StylableSelectEnabled() &&
+  if (RuntimeEnabledFeatures::CustomizableSelectEnabled() &&
       IsUASheetBehavior(context.Mode()) &&
       stream.Peek().FunctionId() ==
           CSSValueID::kInternalAppearanceAutoBaseSelect) {
@@ -7264,7 +7264,7 @@ CSSValue* ConsumeBorderColorSide(CSSParserTokenStream& stream,
   bool allow_quirky_colors = IsQuirksModeBehavior(context.Mode()) &&
                              (shorthand == CSSPropertyID::kInvalid ||
                               shorthand == CSSPropertyID::kBorderColor);
-  if (RuntimeEnabledFeatures::StylableSelectEnabled() &&
+  if (RuntimeEnabledFeatures::CustomizableSelectEnabled() &&
       stream.Peek().FunctionId() ==
           CSSValueID::kInternalAppearanceAutoBaseSelect &&
       IsUASheetBehavior(context.Mode())) {
@@ -7277,7 +7277,7 @@ CSSValue* ConsumeBorderColorSide(CSSParserTokenStream& stream,
 CSSValue* ConsumeBorderWidth(CSSParserTokenStream& stream,
                              const CSSParserContext& context,
                              UnitlessQuirk unitless) {
-  if (RuntimeEnabledFeatures::StylableSelectEnabled() &&
+  if (RuntimeEnabledFeatures::CustomizableSelectEnabled() &&
       IsUASheetBehavior(context.Mode()) &&
       stream.Peek().FunctionId() ==
           CSSValueID::kInternalAppearanceAutoBaseSelect) {

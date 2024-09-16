@@ -1537,7 +1537,7 @@ void HTMLTreeBuilder::ProcessStartTag(AtomicHTMLToken* token) {
         }
         case HTMLTag::kInput:
           // TODO(crbug.com/1511354): Remove this UseCounter when the
-          // SelectParserRelaxation/StylableSelect flags are removed.
+          // SelectParserRelaxation/CustomizableSelect flags are removed.
           UseCounter::Count(tree_.CurrentNode()->GetDocument(),
                             WebFeature::kHTMLInputInSelect);
           [[fallthrough]];
@@ -1577,7 +1577,7 @@ void HTMLTreeBuilder::ProcessStartTag(AtomicHTMLToken* token) {
         case HTMLTag::kButton:
           if (!RuntimeEnabledFeatures::SelectParserRelaxationEnabled()) {
             // TODO(crbug.com/1511354): Remove this UseCounter when the
-            // SelectParserRelaxation/StylableSelect flags are removed.
+            // SelectParserRelaxation/CustomizableSelect flags are removed.
             UseCounter::Count(tree_.CurrentNode()->GetDocument(),
                               WebFeature::kHTMLButtonInSelect);
           }
@@ -1586,7 +1586,7 @@ void HTMLTreeBuilder::ProcessStartTag(AtomicHTMLToken* token) {
           if (tag == HTMLTag::kDatalist &&
               !RuntimeEnabledFeatures::SelectParserRelaxationEnabled()) {
             // TODO(crbug.com/1511354): Remove this UseCounter when the
-            // SelectParserRelaxation/StylableSelect flags are removed.
+            // SelectParserRelaxation/CustomizableSelect flags are removed.
             UseCounter::Count(tree_.CurrentNode()->GetDocument(),
                               WebFeature::kHTMLDatalistInSelect);
           }
@@ -1596,7 +1596,7 @@ void HTMLTreeBuilder::ProcessStartTag(AtomicHTMLToken* token) {
             ProcessStartTagForInBody(token);
           } else {
             // TODO(crbug.com/1511354): Remove this UseCounter when the
-            // SelectParserRelaxation/StylableSelect flags are removed.
+            // SelectParserRelaxation/CustomizableSelect flags are removed.
             UseCounter::Count(tree_.CurrentNode()->GetDocument(),
                               WebFeature::kSelectParserDroppedTag);
             tree_.OpenElements()->TopNode()->AddConsoleMessage(

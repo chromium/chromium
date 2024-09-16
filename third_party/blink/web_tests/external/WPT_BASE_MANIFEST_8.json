@@ -283535,14 +283535,14 @@
          {}
         ]
        ],
-       "stylable-select": {
+       "customizable-select": {
         "appearance-base-select-other-elements.tentative.html": [
          "b0b98b74f941ac9956e73c3e7c58a0bb5de7b21f",
          [
           null,
           [
            [
-            "/html/semantics/forms/the-select-element/stylable-select/appearance-base-select-other-elements-ref.html",
+            "/html/semantics/forms/the-select-element/customizable-select/appearance-base-select-other-elements-ref.html",
             "=="
            ]
           ],
@@ -283555,7 +283555,7 @@
           null,
           [
            [
-            "/html/semantics/forms/the-select-element/stylable-select/border-rendering-ref.html",
+            "/html/semantics/forms/the-select-element/customizable-select/border-rendering-ref.html",
             "=="
            ]
           ],
@@ -283568,7 +283568,7 @@
           null,
           [
            [
-            "/html/semantics/forms/the-select-element/stylable-select/closed-listbox-rendering-ref.html",
+            "/html/semantics/forms/the-select-element/customizable-select/closed-listbox-rendering-ref.html",
             "=="
            ]
           ],
@@ -283581,7 +283581,7 @@
           null,
           [
            [
-            "/html/semantics/forms/the-select-element/stylable-select/select-size-multiple-new-content-ref.html",
+            "/html/semantics/forms/the-select-element/customizable-select/select-size-multiple-new-content-ref.html",
             "=="
            ]
           ],
@@ -383020,7 +383020,7 @@
         "33210c7ac09736ca139ba7c0f8924bcb6d8c152a",
         []
        ],
-       "stylable-select": {
+       "customizable-select": {
         "appearance-base-select-other-elements-ref.html": [
          "72abb8843f6dab611347c60a5c3ab06860f3a33b",
          []
@@ -598444,7 +598444,7 @@
          }
         ]
        ],
-       "stylable-select": {
+       "customizable-select": {
         "nested-options.tenative.html": [
          "7e89a5ad428f69b04d21d1ba7dbd56a8d06ff988",
          [

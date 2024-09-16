@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<link rel=stylesheet href="resources/customizable-select-styles.css">
+
+<style>
+.customizable-select-selectedoption::after {
+  padding-inline-start: 0.5em;
+  content: counter(fake-counter-name, disclosure-closed);
+  color: red;
+}
+</style>
+
+<div class=customizable-select-container>
+  <button class=customizable-select-button popovertarget=popover id=button>
+    <span class=customizable-select-selectedoption>option</span>
+  </button>
+</div>

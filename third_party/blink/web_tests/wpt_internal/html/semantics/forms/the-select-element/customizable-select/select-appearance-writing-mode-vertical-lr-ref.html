@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<link rel=stylesheet href="resources/customizable-select-styles.css">
+
+<style>
+html {
+  writing-mode: vertical-lr;
+}
+</style>
+
+<div id=container class=customizable-select-container>
+  <button class="customizable-select-button open" popovertarget=popover id=button>
+    <span class=customizable-select-selectedoption>one</span>
+  </button>
+  <div id=popover popover=auto anchor=container class=customizable-select-datalist>
+    <div class="customizable-select-option selected">one</div>
+    <div class=customizable-select-option>two</div>
+  </div>
+</div>
+
+<script>
+document.getElementById('popover').showPopover();
+</script>

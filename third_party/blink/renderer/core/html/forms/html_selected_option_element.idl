@@ -5,5 +5,5 @@
 [
     Exposed=Window,
     HTMLConstructor,
-    RuntimeEnabled=StylableSelect
+    RuntimeEnabled=CustomizableSelect
 ] interface HTMLSelectedOptionElement : HTMLElement {};

@@ -757,7 +757,7 @@ CSSSelector::PseudoType CSSSelector::NameToPseudoType(
   if ((match->type == CSSSelector::kPseudoSelectFallbackButton ||
        match->type == CSSSelector::kPseudoSelectFallbackButtonText ||
        match->type == CSSSelector::kPseudoPicker) &&
-      !RuntimeEnabledFeatures::StylableSelectEnabled()) {
+      !RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
     return CSSSelector::kPseudoUnknown;
   }
 

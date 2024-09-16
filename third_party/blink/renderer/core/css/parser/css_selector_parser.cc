@@ -1761,7 +1761,7 @@ bool CSSSelectorParser::ConsumePseudo(CSSParserTokenStream& stream) {
       return true;
     }
     case CSSSelector::kPseudoPicker:
-      if (!RuntimeEnabledFeatures::StylableSelectEnabled()) {
+      if (!RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
         return false;
       }
       [[fallthrough]];

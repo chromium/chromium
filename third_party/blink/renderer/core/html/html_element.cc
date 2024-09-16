@@ -2356,7 +2356,7 @@ void HTMLElement::HoveredElementChanged(Element* old_element,
 
 void HTMLElement::SetInternalImplicitAnchor(HTMLElement* element) {
   CHECK(RuntimeEnabledFeatures::HTMLSelectListElementEnabled() ||
-        RuntimeEnabledFeatures::StylableSelectEnabled());
+        RuntimeEnabledFeatures::CustomizableSelectEnabled());
   CHECK(HasPopoverAttribute());
   GetPopoverData()->setInternalImplicitAnchor(element);
 }

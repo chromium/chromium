@@ -904,7 +904,7 @@
     // stretch
     // repeat
     "round",
-    // TODO(crbug.com/1511354): "base-select" is a temporary name for stylable
+    // TODO(crbug.com/1511354): "base-select" is a temporary name for customizable
     // <select>. It should be renamed when a standardized name is chosen.
     "base-select",
     "-internal-appearance-auto-base-select",

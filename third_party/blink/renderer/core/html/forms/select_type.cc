@@ -103,7 +103,7 @@ class PopoverElementForAppearanceBase : public HTMLDivElement {
  public:
   explicit PopoverElementForAppearanceBase(Document& document)
       : HTMLDivElement(document) {
-    CHECK(RuntimeEnabledFeatures::StylableSelectEnabled());
+    CHECK(RuntimeEnabledFeatures::CustomizableSelectEnabled());
   }
 
   void ShowPopoverInternal(Element* invoker,
@@ -117,8 +117,8 @@ class PopoverElementForAppearanceBase : public HTMLDivElement {
       // MenuListSelectType::ManuallyAssignSlots changes behavior based on
       // whether the popover is opened or closed.
       select->GetShadowRoot()->SetNeedsAssignmentRecalc();
-      // This is a StylableSelect popup. When it is shown, we should focus the
-      // selected option.
+      // This is a CustomizableSelect popup. When it is shown, we should focus
+      // the selected option.
       HTMLOptionElement* option_to_focus = select->SelectedOption();
       if (!option_to_focus || !option_to_focus->IsFocusable()) {
         for (auto* option : select->GetOptionList()) {
@@ -542,13 +542,14 @@ void MenuListSelectType::CreateShadowSubtree(ShadowRoot& root) {
   // Even in MenuList mode, slotting <option>s is necessary to have
   // ComputedStyles for <option>s. LayoutFlexibleBox::IsChildAllowed() rejects
   // all of LayoutObject children except for MenuListInnerElement's.
-  // This slot does not have anything slotted into it in the StylableSelect mode
-  // because the UA popover containing all the <option>s is slotted in instead.
+  // This slot does not have anything slotted into it in the CustomizableSelect
+  // mode because the UA popover containing all the <option>s is slotted in
+  // instead.
   option_slot_ = MakeGarbageCollected<HTMLSlotElement>(doc);
   option_slot_->SetIdAttribute(shadow_element_names::kSelectOptions);
   root.appendChild(option_slot_);
 
-  if (RuntimeEnabledFeatures::StylableSelectEnabled()) {
+  if (RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
     button_slot_ = MakeGarbageCollected<HTMLSlotElement>(doc);
     button_slot_->SetIdAttribute(shadow_element_names::kSelectButton);
     root.appendChild(button_slot_);
@@ -611,7 +612,7 @@ void MenuListSelectType::ManuallyAssignSlots() {
   }
 
   CHECK(option_slot_);
-  if (RuntimeEnabledFeatures::StylableSelectEnabled()) {
+  if (RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
     CHECK(button_slot_);
     button_slot_->Assign(first_button);
     // The IsInTopLayer check here is needed in order to support the case that a
@@ -639,7 +640,7 @@ void MenuListSelectType::ManuallyAssignSlots() {
 }
 
 HTMLButtonElement* MenuListSelectType::SlottedButton() const {
-  if (!RuntimeEnabledFeatures::StylableSelectEnabled()) {
+  if (!RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
     CHECK(!button_slot_);
     return nullptr;
   }
@@ -648,7 +649,7 @@ HTMLButtonElement* MenuListSelectType::SlottedButton() const {
 }
 
 HTMLButtonElement* MenuListSelectType::DisplayedButton() const {
-  if (!RuntimeEnabledFeatures::StylableSelectEnabled()) {
+  if (!RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
     CHECK(!button_slot_);
     return nullptr;
   }
@@ -667,7 +668,7 @@ HTMLElement* MenuListSelectType::PopoverForAppearanceBase() const {
 }
 
 bool MenuListSelectType::IsAppearanceBaseButton() const {
-  if (!RuntimeEnabledFeatures::StylableSelectEnabled()) {
+  if (!RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
     return false;
   }
   // TODO(crbug.com/364348901): Update style and layout here.
@@ -683,7 +684,7 @@ bool MenuListSelectType::IsAppearanceBasePicker() const {
     // before the ::picker is allowed to have appearance:base-select.
     return false;
   }
-  CHECK(RuntimeEnabledFeatures::StylableSelectEnabled());
+  CHECK(RuntimeEnabledFeatures::CustomizableSelectEnabled());
   // TODO(crbug.com/364348901): Consider using EnsureComputedStyle() here to get
   // more reliable results, though it has the risk of causing more style
   // computation, sometimes at bad times.
@@ -1007,7 +1008,7 @@ String MenuListSelectType::UpdateTextStyleInternal() {
 void MenuListSelectType::UpdateTextStyleAndContent() {
   String text = UpdateTextStyleInternal();
   select_->InnerElementForAppearanceAuto().firstChild()->setNodeValue(text);
-  if (RuntimeEnabledFeatures::StylableSelectEnabled()) {
+  if (RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
     // Copy the text of the selected <option> into the fallback <button> so that
     // the user can see what the selected option is, just like the
     // appearance:auto case.
@@ -1202,8 +1203,9 @@ class ListBoxSelectType final : public SelectType {
   Member<HTMLOptionElement> option_to_scroll_to_;
   Member<HTMLOptionElement> active_selection_anchor_;
   Member<HTMLOptionElement> active_selection_end_;
-  // TODO(crbug.com/1511354): Remove option_slot_ when the StylableSelect flag
-  // is enabled and removed. It is only used when StylableSelect is disabled.
+  // TODO(crbug.com/1511354): Remove option_slot_ when the CustomizableSelect
+  // flag is enabled and removed. It is only used when CustomizableSelect is
+  // disabled.
   Member<HTMLSlotElement> option_slot_;
   bool is_in_non_contiguous_selection_ = false;
   bool active_selection_state_ = false;
@@ -1826,14 +1828,14 @@ void ListBoxSelectType::ManuallyAssignSlots() {
   for (Node& child : NodeTraversal::ChildrenOf(*select_)) {
     if (child.IsSlotable() &&
         (CanAssignToSelectSlot(child) ||
-         (RuntimeEnabledFeatures::StylableSelectEnabled() &&
+         (RuntimeEnabledFeatures::CustomizableSelectEnabled() &&
           CanAssignToCustomizableSelectSlot(child)))) {
       option_nodes.push_back(child);
     }
   }
   CHECK(option_slot_);
   option_slot_->Assign(option_nodes);
-  if (RuntimeEnabledFeatures::StylableSelectEnabled()) {
+  if (RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
     select_->GetShadowRoot()->SetDelegatesFocus(false);
   }
 }

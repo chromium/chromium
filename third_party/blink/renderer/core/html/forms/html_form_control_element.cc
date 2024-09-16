@@ -363,7 +363,7 @@ HTMLFormControlElement::popoverTargetElement() {
   // The select element's author provided <button> which opens its UA popover
   // forms an implicit popover trigger for the UA popover in order to function
   // properly with light dismiss.
-  if (!target_element && RuntimeEnabledFeatures::StylableSelectEnabled()) {
+  if (!target_element && RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
     if (auto* button = DynamicTo<HTMLButtonElement>(this)) {
       if (auto* select = button->OwnerSelect()) {
         if (select->IsAppearanceBasePicker()) {

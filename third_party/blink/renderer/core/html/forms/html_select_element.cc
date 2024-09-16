@@ -380,7 +380,7 @@ void HTMLSelectElement::ParseAttribute(
     // FIXME: ignore for the moment.
     //
   } else if (params.name == html_names::kSelectedoptionelementAttr) {
-    if (RuntimeEnabledFeatures::StylableSelectEnabled()) {
+    if (RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
       HTMLSelectedOptionElement* old_selectedoption =
           DynamicTo<HTMLSelectedOptionElement>(
               getElementByIdIncludingDisconnected(*this, params.old_value));
@@ -448,7 +448,7 @@ void HTMLSelectElement::OptionElementChildrenChanged(
   }
 
   if (option.Selected()) {
-    if (RuntimeEnabledFeatures::StylableSelectEnabled()) {
+    if (RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
       for (HTMLSelectedOptionElement* selectedoption :
            TargetSelectedOptions()) {
         selectedoption->CloneContentsFromOptionElement(&option);
@@ -980,7 +980,7 @@ void HTMLSelectElement::SelectOption(HTMLOptionElement* element,
     SetAutofillState(element ? autofill_state : WebAutofillState::kNotFilled);
   }
 
-  if (RuntimeEnabledFeatures::StylableSelectEnabled()) {
+  if (RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
     for (HTMLSelectedOptionElement* selectedoption : TargetSelectedOptions()) {
       selectedoption->CloneContentsFromOptionElement(element);
     }
@@ -1541,7 +1541,7 @@ void HTMLSelectElement::ChangeRendering() {
     select_type_->WillBeDestroyed();
     select_type_ = SelectType::Create(*this);
 
-    if (RuntimeEnabledFeatures::StylableSelectEnabled()) {
+    if (RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
       // Make <option>s render all child content when in MenuList mode in order
       // to support appearance:base-select.
       for (HTMLOptionElement* option : GetOptionList()) {
@@ -1787,14 +1787,14 @@ void HTMLSelectElement::SelectAutofillPreviewElement::Trace(
 }
 
 HTMLSelectedOptionElement* HTMLSelectElement::selectedOptionElement() const {
-  CHECK(RuntimeEnabledFeatures::StylableSelectEnabled());
+  CHECK(RuntimeEnabledFeatures::CustomizableSelectEnabled());
   return DynamicTo<HTMLSelectedOptionElement>(
       GetElementAttribute(html_names::kSelectedoptionelementAttr));
 }
 
 void HTMLSelectElement::setSelectedOptionElement(
     HTMLSelectedOptionElement* new_selectedoption) {
-  CHECK(RuntimeEnabledFeatures::StylableSelectEnabled());
+  CHECK(RuntimeEnabledFeatures::CustomizableSelectEnabled());
   auto* old_selectedoption = selectedOptionElement();
   if (new_selectedoption) {
     SetElementAttribute(html_names::kSelectedoptionelementAttr,

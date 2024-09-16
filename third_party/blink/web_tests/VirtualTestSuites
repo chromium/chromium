@@ -3393,7 +3393,7 @@
     "owners": ["fergal@chromium.org", "rakina@chromium.org"]
   },
   "select-parser-relaxation is needed in addition to",
-  "stylable-select-disabled because we might launch parser changes first.",
+  "customizable-select-disabled because we might launch parser changes first.",
   {
     "prefix": "select-parser-relaxation",
     "platforms": ["Linux"],
@@ -3419,12 +3419,12 @@
       "html5lib/generated"
     ],
     "args": ["--enable-features=SelectParserRelaxation",
-             "--disable-features=StylableSelect"],
+             "--disable-features=CustomizableSelect"],
     "expires": "Oct 1, 2024",
     "owners": ["jarhar@chromium.org", "dom-dev@google.com"]
   },
   {
-    "prefix": "stylable-select-disabled",
+    "prefix": "customizable-select-disabled",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [
       "accessibility/aria-hidden-select.html",
@@ -3447,7 +3447,7 @@
       "fast/parser/inselect-tokenization.html",
       "html5lib/generated"
     ],
-    "args": ["--disable-features=StylableSelect,SelectParserRelaxation"],
+    "args": ["--disable-features=CustomizableSelect,SelectParserRelaxation"],
     "expires": "Oct 1, 2024",
     "owners": ["jarhar@chromium.org", "dom-dev@google.com"]
   },

@@ -1298,6 +1298,18 @@
       // No status as this will be controlled by the matching Chromium feature.
     },
     {
+      // Adds the appearance:base-select CSS value which makes <select>
+      // rendering using alternate content in the UA shadowroot which is
+      // customizable.
+      name: "CustomizableSelect",
+      status: "experimental",
+      // :open is used in the UA stylesheet for CustomizableSelect, so this feature
+      // will not work properly without CSSPseudoOpenClosed.
+      // SelectParserRelaxation is needed to allow more content in <select>
+      // than just <option>s etc.
+      depends_on: ["CSSPseudoOpenClosed", "SelectParserRelaxation"],
+    },
+    {
       name: "Database",
       public: true,
       status: "experimental",
@@ -4039,18 +4051,6 @@
     {
       name: "StrictMimeTypesForWorkers",
       status: "experimental",
-    },
-    {
-      // Adds the appearance:base-select CSS value which makes <select>
-      // rendering using alternate content in the UA shadowroot which is
-      // stylable.
-      name: "StylableSelect",
-      status: "experimental",
-      // :open is used in the UA stylesheet for StylableSelect, so this feature
-      // will not work properly without CSSPseudoOpenClosed.
-      // SelectParserRelaxation is needed to allow more content in <select>
-      // than just <option>s etc.
-      depends_on: ["CSSPseudoOpenClosed", "SelectParserRelaxation"],
     },
     {
       name: "StylusHandwriting",

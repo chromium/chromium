@@ -182,7 +182,7 @@ ControlPart LayoutTheme::AdjustAppearanceWithElementType(
     case kMediaControlPart:
       return part;
     case kBaseSelectPart:
-      CHECK(RuntimeEnabledFeatures::StylableSelectEnabled());
+      CHECK(RuntimeEnabledFeatures::CustomizableSelectEnabled());
       return IsA<HTMLSelectElement>(element) ||
                      HTMLSelectElement::IsPopoverForAppearanceBase(element)
                  ? part

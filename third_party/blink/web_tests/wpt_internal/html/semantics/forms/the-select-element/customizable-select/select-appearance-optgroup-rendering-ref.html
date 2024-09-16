@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<link rel=stylesheet href="resources/customizable-select-styles.css">
+
+<style>
+.border {
+  border: 2px solid green;
+}
+.optgroup {
+  padding-inline: 2px;
+}
+.optgroup-label {
+  padding: 0 2px 1px;
+  min-height: 1.2em;
+  font-weight: bolder;
+}
+.optgroup .customizable-select-option {
+  padding-inline-start: 20px;
+}
+</style>
+
+<div id=container class=customizable-select-container>
+  <button class="customizable-select-button open" popovertarget=popover id=button>
+    <span class=customizable-select-selectedoption>one</span>
+    <div class=customizable-select-button-icon></div>
+  </button>
+  <div id=popover popover=auto anchor=container class=customizable-select-datalist>
+    <div class="customizable-select-option selected">one</div>
+    <div class=optgroup>
+      <div class=optgroup-label>labelattribute</div>
+      <div class=customizable-select-option>two</div>
+      <div class=border>
+        <div class=customizable-select-option>three</div>
+      </div>
+    </div>
+    <div class=customizable-select-option>four</div>
+  </div>
+</div>
+
+<script>
+document.getElementById('popover').showPopover();
+</script>
+

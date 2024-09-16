@@ -314,7 +314,7 @@ inline CSSIdentifierValue::CSSIdentifierValue(ControlPart e)
       value_id_ = CSSValueID::kTextarea;
       break;
     case kBaseSelectPart:
-      CHECK(RuntimeEnabledFeatures::StylableSelectEnabled());
+      CHECK(RuntimeEnabledFeatures::CustomizableSelectEnabled());
       value_id_ = CSSValueID::kBaseSelect;
       break;
   }

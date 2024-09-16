@@ -3884,8 +3884,8 @@ void AXObjectCacheImpl::SetMenuListOptionsBounds(
 
 const WTF::Vector<gfx::Rect>* AXObjectCacheImpl::GetOptionsBounds(
     const AXObject& ax_menu_list) const {
-  if (RuntimeEnabledFeatures::StylableSelectEnabled()) {
-    // Stylable select does not render in a special popup document and does
+  if (RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
+    // Customizable select does not render in a special popup document and does
     // not need to supply bounding boxes via options_bounds_.
     HTMLSelectElement* select = To<HTMLSelectElement>(ax_menu_list.GetNode());
     if (select->IsAppearanceBasePicker()) {
