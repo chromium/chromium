@@ -633,10 +633,10 @@ VideoFrame::VideoFrame(scoped_refptr<media::VideoFrame> frame,
   handle_ = base::MakeRefCounted<VideoFrameHandle>(
       frame, std::move(sk_image), context, std::move(monitoring_source_id),
       use_capture_timestamp);
-  external_allocated_memory_ =
+  size_t external_allocated_memory =
       media::VideoFrame::AllocationSize(frame->format(), frame->coded_size());
-  context->GetIsolate()->AdjustAmountOfExternalAllocatedMemory(
-      external_allocated_memory_);
+  external_memory_accounter_.Increase(context->GetIsolate(),
+                                      external_allocated_memory);
 }
 
 VideoFrame::VideoFrame(scoped_refptr<VideoFrameHandle> handle)
@@ -649,10 +649,10 @@ VideoFrame::VideoFrame(scoped_refptr<VideoFrameHandle> handle)
   if (!local_frame)
     return;
 
-  external_allocated_memory_ = media::VideoFrame::AllocationSize(
+  size_t external_allocated_memory = media::VideoFrame::AllocationSize(
       local_frame->format(), local_frame->coded_size());
-  v8::Isolate::GetCurrent()->AdjustAmountOfExternalAllocatedMemory(
-      external_allocated_memory_);
+  external_memory_accounter_.Increase(v8::Isolate::GetCurrent(),
+                                      external_allocated_memory);
 }
 
 VideoFrame::~VideoFrame() {
@@ -1475,11 +1475,7 @@ bool VideoFrame::IsAccelerated() const {
 }
 
 void VideoFrame::ResetExternalMemory() {
-  if (external_allocated_memory_) {
-    v8::Isolate::GetCurrent()->AdjustAmountOfExternalAllocatedMemory(
-        -external_allocated_memory_);
-    external_allocated_memory_ = 0;
-  }
+  external_memory_accounter_.Clear(v8::Isolate::GetCurrent());
 }
 
 gfx::Size VideoFrame::BitmapSourceSize() const {

@@ -92,8 +92,7 @@ OffscreenCanvas* OffscreenCanvas::Create(ScriptState* script_state,
 }
 
 OffscreenCanvas::~OffscreenCanvas() {
-  v8::Isolate::GetCurrent()->AdjustAmountOfExternalAllocatedMemory(
-      -memory_usage_);
+  external_memory_accounter_.Decrease(v8::Isolate::GetCurrent(), memory_usage_);
 }
 
 void OffscreenCanvas::Commit(scoped_refptr<CanvasResource>&& canvas_resource,
@@ -736,8 +735,7 @@ void OffscreenCanvas::UpdateMemoryUsage() {
     // AdjustAmountOfExternalAllocatedMemory is safe, hence the
     // 'diposing_' condition in the DCHECK below.
     DCHECK(ThreadState::Current()->IsAllocationAllowed() || disposing_);
-    v8::Isolate::GetCurrent()->AdjustAmountOfExternalAllocatedMemory(
-        delta_bytes);
+    external_memory_accounter_.Update(v8::Isolate::GetCurrent(), delta_bytes);
     memory_usage_ = new_memory_usage;
   }
 }

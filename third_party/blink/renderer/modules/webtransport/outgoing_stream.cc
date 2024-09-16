@@ -162,13 +162,12 @@ OutgoingStream::CachedDataBuffer::CachedDataBuffer(v8::Isolate* isolate,
   buffer_ = reinterpret_cast<uint8_t*>(
       WTF::Partitions::BufferPartition()->Alloc(length, "OutgoingStream"));
   memcpy(buffer_, data, length);
-  isolate_->AdjustAmountOfExternalAllocatedMemory(static_cast<int64_t>(length));
+  external_memory_accounter_.Increase(isolate_.get(), length);
 }
 
 OutgoingStream::CachedDataBuffer::~CachedDataBuffer() {
   WTF::Partitions::BufferPartition()->Free(buffer_.ExtractAsDangling());
-  isolate_->AdjustAmountOfExternalAllocatedMemory(
-      -static_cast<int64_t>(length_));
+  external_memory_accounter_.Decrease(isolate_.get(), length_);
 }
 
 OutgoingStream::OutgoingStream(ScriptState* script_state,

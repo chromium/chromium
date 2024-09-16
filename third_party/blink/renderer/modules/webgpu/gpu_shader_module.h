@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/modules/webgpu/dawn_object.h"
+#include "third_party/blink/renderer/platform/bindings/v8_external_memory_accounter.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_cpp.h"
 
 namespace blink {
@@ -26,7 +27,7 @@ class GPUShaderModule : public DawnObject<wgpu::ShaderModule> {
 
   GPUShaderModule(const GPUShaderModule&) = delete;
   GPUShaderModule& operator=(const GPUShaderModule&) = delete;
-  ~GPUShaderModule() override = default;
+  ~GPUShaderModule() override;
 
   ScriptPromise<GPUCompilationInfo> getCompilationInfo(
       ScriptState* script_state);
@@ -43,7 +44,7 @@ class GPUShaderModule : public DawnObject<wgpu::ShaderModule> {
   }
 
   // Holds an estimate of the memory used by Tint for this shader module.
-  ExternalMemoryTracker tint_memory_estimate_;
+  V8ExternalMemoryAccounter tint_memory_estimate_;
 };
 
 }  // namespace blink

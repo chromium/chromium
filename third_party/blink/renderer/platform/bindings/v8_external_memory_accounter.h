@@ -7,6 +7,8 @@
 
 #include <stdlib.h>
 
+#include <utility>
+
 #include "base/check_op.h"
 #include "base/memory/raw_ptr.h"
 #include "v8/include/v8-isolate.h"
@@ -15,6 +17,32 @@ namespace blink {
 
 class V8ExternalMemoryAccounterBase {
  public:
+  V8ExternalMemoryAccounterBase() = default;
+
+  V8ExternalMemoryAccounterBase(const V8ExternalMemoryAccounterBase&) = delete;
+  V8ExternalMemoryAccounterBase(V8ExternalMemoryAccounterBase&& other) {
+#if DCHECK_IS_ON()
+    amount_of_external_memory_ =
+        std::exchange(other.amount_of_external_memory_, 0U);
+    isolate_ = std::exchange(other.isolate_, nullptr);
+#endif
+  }
+
+  V8ExternalMemoryAccounterBase& operator=(
+      const V8ExternalMemoryAccounterBase&) = delete;
+  V8ExternalMemoryAccounterBase& operator=(
+      V8ExternalMemoryAccounterBase&& other) {
+#if DCHECK_IS_ON()
+    if (this == &other) {
+      return *this;
+    }
+    amount_of_external_memory_ =
+        std::exchange(other.amount_of_external_memory_, 0U);
+    isolate_ = std::exchange(other.isolate_, nullptr);
+#endif
+    return *this;
+  }
+
   ~V8ExternalMemoryAccounterBase() {
 #if DCHECK_IS_ON()
     DCHECK_EQ(amount_of_external_memory_, 0U);
@@ -30,7 +58,20 @@ class V8ExternalMemoryAccounterBase {
     isolate->AdjustAmountOfExternalAllocatedMemory(static_cast<int64_t>(size));
   }
 
-  void Decrease(v8::Isolate* isolate, size_t size) {
+  void Update(v8::Isolate* isolate, int64_t delta) {
+#if DCHECK_IS_ON()
+    DCHECK(isolate == isolate_ || isolate_ == nullptr);
+    DCHECK_GE(static_cast<int64_t>(amount_of_external_memory_), -delta);
+    isolate_ = isolate;
+    amount_of_external_memory_ += delta;
+#endif
+    isolate->AdjustAmountOfExternalAllocatedMemory(delta);
+  }
+
+  void Decrease(v8::Isolate* isolate, size_t size) const {
+    if (size == 0) {
+      return;
+    }
 #if DCHECK_IS_ON()
     DCHECK_EQ(isolate, isolate_);
     DCHECK_GE(amount_of_external_memory_, size);
@@ -41,8 +82,10 @@ class V8ExternalMemoryAccounterBase {
 
  private:
 #if DCHECK_IS_ON()
-  size_t amount_of_external_memory_ = 0;
-  raw_ptr<v8::Isolate> isolate_;
+  mutable size_t amount_of_external_memory_ = 0;
+  // `isolate_` may become dangling, this is safe since it's only used for
+  // checking passed `isolate`.
+  raw_ptr<v8::Isolate, DisableDanglingPtrDetection> isolate_;
 #endif
 };
 
@@ -53,11 +96,19 @@ class V8ExternalMemoryAccounter {
     memory_accounter_base_.Increase(isolate, size);
   }
 
+  void Set(v8::Isolate* isolate, size_t size) {
+    int64_t delta = size - amount_of_external_memory_;
+    if (delta != 0) {
+      amount_of_external_memory_ = size;
+      memory_accounter_base_.Update(isolate, delta);
+    }
+  }
+
   void Clear(v8::Isolate* isolate) {
     if (amount_of_external_memory_ != 0) {
       memory_accounter_base_.Decrease(isolate, amount_of_external_memory_);
+      amount_of_external_memory_ = 0;
     }
-    amount_of_external_memory_ = 0;
   }
 
  private:

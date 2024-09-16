@@ -2115,8 +2115,7 @@ void XMLHttpRequest::ReportMemoryUsageToV8() {
   response_text_last_reported_size_ = response_text_size;
 
   if (diff) {
-    GetExecutionContext()->GetIsolate()->AdjustAmountOfExternalAllocatedMemory(
-        diff);
+    external_memory_accounter_.Update(v8::Isolate::GetCurrent(), diff);
   }
 }
 

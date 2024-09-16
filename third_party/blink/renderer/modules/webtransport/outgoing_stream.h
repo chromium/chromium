@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
+#include "third_party/blink/renderer/platform/bindings/v8_external_memory_accounter.h"
 #include "third_party/blink/renderer/platform/heap/prefinalizer.h"
 #include "v8/include/v8.h"
 
@@ -155,11 +156,12 @@ class MODULES_EXPORT OutgoingStream final
     uint8_t* data() { return buffer_; }
 
    private:
-    // We need the isolate to call |AdjustAmountOfExternalAllocatedMemory| for
-    // the memory stored in |buffer_|.
+    // We need the isolate to report memory to
+    // |external_memory_accounter_| for the memory stored in |buffer_|.
     raw_ptr<v8::Isolate> isolate_;
     size_t length_ = 0u;
     raw_ptr<uint8_t> buffer_ = nullptr;
+    NO_UNIQUE_ADDRESS V8ExternalMemoryAccounterBase external_memory_accounter_;
   };
 
   const Member<ScriptState> script_state_;

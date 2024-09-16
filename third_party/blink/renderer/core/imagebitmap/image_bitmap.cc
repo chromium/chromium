@@ -923,14 +923,13 @@ void ImageBitmap::UpdateImageBitmapMemoryUsage() {
         std::numeric_limits<int32_t>::max());
   }
 
-  v8::Isolate::GetCurrent()->AdjustAmountOfExternalAllocatedMemory(
-      new_memory_usage - memory_usage_);
+  external_memory_accounter_.Update(v8::Isolate::GetCurrent(),
+                                    new_memory_usage - memory_usage_);
   memory_usage_ = new_memory_usage;
 }
 
 ImageBitmap::~ImageBitmap() {
-  v8::Isolate::GetCurrent()->AdjustAmountOfExternalAllocatedMemory(
-      -memory_usage_);
+  external_memory_accounter_.Decrease(v8::Isolate::GetCurrent(), memory_usage_);
 }
 
 void ImageBitmap::ResolvePromiseOnOriginalThread(

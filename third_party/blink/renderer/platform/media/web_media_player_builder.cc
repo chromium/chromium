@@ -82,7 +82,6 @@ std::unique_ptr<WebMediaPlayer> WebMediaPlayerBuilder::Build(
     scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner>
         video_frame_compositor_task_runner,
-    AdjustAllocatedMemoryCB adjust_allocated_memory_cb,
     WebContentDecryptionModule* initial_cdm,
     media::RequestRoutingTokenCallback request_routing_token_cb,
     base::WeakPtr<media::MediaObserver> media_observer,
@@ -105,8 +104,7 @@ std::unique_ptr<WebMediaPlayer> WebMediaPlayerBuilder::Build(
       std::move(defer_load_cb), std::move(audio_renderer_sink),
       std::move(media_task_runner), std::move(worker_task_runner),
       std::move(compositor_task_runner),
-      std::move(video_frame_compositor_task_runner),
-      std::move(adjust_allocated_memory_cb), initial_cdm,
+      std::move(video_frame_compositor_task_runner), initial_cdm,
       std::move(request_routing_token_cb), std::move(media_observer),
       enable_instant_source_buffer_gc, embedded_media_experience_enabled,
       std::move(metrics_provider), std::move(create_bridge_callback),

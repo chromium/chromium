@@ -242,8 +242,10 @@ HTMLCanvasElement::HTMLCanvasElement(Document& document)
 }
 
 HTMLCanvasElement::~HTMLCanvasElement() {
-  v8::Isolate::GetCurrent()->AdjustAmountOfExternalAllocatedMemory(
-      -externally_allocated_memory_);
+  if (externally_allocated_memory_ > 0) {
+    external_memory_accounter_.Decrease(v8::Isolate::GetCurrent(),
+                                        externally_allocated_memory_);
+  }
 }
 
 void HTMLCanvasElement::Dispose() {
@@ -1802,8 +1804,7 @@ void HTMLCanvasElement::UpdateMemoryUsage() {
     // AdjustAmountOfExternalAllocatedMemory is safe, hence the
     // 'diposing_' condition in the DCHECK below.
     DCHECK(ThreadState::Current()->IsAllocationAllowed() || disposing_);
-    v8::Isolate::GetCurrent()->AdjustAmountOfExternalAllocatedMemory(
-        delta_bytes);
+    external_memory_accounter_.Update(v8::Isolate::GetCurrent(), delta_bytes);
     externally_allocated_memory_ = externally_allocated_memory;
   }
 }

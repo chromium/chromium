@@ -261,9 +261,8 @@ SerializedScriptValue::~SerializedScriptValue() {
   // likely used in a context other than Worker's onmessage environment and the
   // presence of current v8 context is not guaranteed. Avoid calling v8 then.
   if (has_registered_external_allocation_) {
-    DCHECK(v8::Isolate::GetCurrent());
-    v8::Isolate::GetCurrent()->AdjustAmountOfExternalAllocatedMemory(
-        -static_cast<int64_t>(DataLengthInBytes()));
+    DCHECK_NE(isolate_, nullptr);
+    external_memory_accounter_.Decrease(isolate_.get(), DataLengthInBytes());
   }
 }
 
@@ -645,8 +644,8 @@ SerializedScriptValue::TransferArrayBufferContents(
 void SerializedScriptValue::
     UnregisterMemoryAllocatedWithCurrentScriptContext() {
   if (has_registered_external_allocation_) {
-    v8::Isolate::GetCurrent()->AdjustAmountOfExternalAllocatedMemory(
-        -static_cast<int64_t>(DataLengthInBytes()));
+    DCHECK_NE(isolate_, nullptr);
+    external_memory_accounter_.Decrease(isolate_.get(), DataLengthInBytes());
     has_registered_external_allocation_ = false;
   }
 }
@@ -654,11 +653,13 @@ void SerializedScriptValue::
 void SerializedScriptValue::RegisterMemoryAllocatedWithCurrentScriptContext() {
   if (has_registered_external_allocation_)
     return;
-
+  DCHECK_EQ(isolate_, nullptr);
+  DCHECK_NE(v8::Isolate::GetCurrent(), nullptr);
   has_registered_external_allocation_ = true;
+  isolate_ = v8::Isolate::GetCurrent();
   int64_t diff = static_cast<int64_t>(DataLengthInBytes());
   DCHECK_GE(diff, 0);
-  v8::Isolate::GetCurrent()->AdjustAmountOfExternalAllocatedMemory(diff);
+  external_memory_accounter_.Increase(isolate_.get(), diff);
 }
 
 bool SerializedScriptValue::IsLockedToAgentCluster() const {

@@ -67,7 +67,8 @@ GPUShaderModule* GPUShaderModule::Create(
   //
   // TODO(crbug.com/dawn/2367): Get a real memory estimate from Tint.
   base::ClampedNumeric<int32_t> input_code_size = wgsl_code.size();
-  shader->tint_memory_estimate_.SetCurrentSize(input_code_size * 100);
+  shader->tint_memory_estimate_.Set(v8::Isolate::GetCurrent(),
+                                    input_code_size * 100);
 
   return shader;
 }
@@ -119,6 +120,10 @@ void GPUShaderModule::OnCompilationInfoCallback(
   }
 
   resolver->Resolve(result);
+}
+
+GPUShaderModule::~GPUShaderModule() {
+  tint_memory_estimate_.Clear(v8::Isolate::GetCurrent());
 }
 
 ScriptPromise<GPUCompilationInfo> GPUShaderModule::getCompilationInfo(

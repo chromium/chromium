@@ -362,7 +362,6 @@ WebMediaPlayerImpl::WebMediaPlayerImpl(
     scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner>
         video_frame_compositor_task_runner,
-    WebMediaPlayerBuilder::AdjustAllocatedMemoryCB adjust_allocated_memory_cb,
     WebContentDecryptionModule* initial_cdm,
     media::RequestRoutingTokenCallback request_routing_token_cb,
     base::WeakPtr<media::MediaObserver> media_observer,
@@ -388,7 +387,7 @@ WebMediaPlayerImpl::WebMediaPlayerImpl(
       delegate_(delegate),
       delegate_has_audio_(HasUnmutedAudio()),
       defer_load_cb_(std::move(defer_load_cb)),
-      adjust_allocated_memory_cb_(std::move(adjust_allocated_memory_cb)),
+      isolate_(frame_->GetAgentGroupScheduler()->Isolate()),
       demuxer_manager_(std::make_unique<media::DemuxerManager>(
           this,
           media_task_runner_,
@@ -424,7 +423,7 @@ WebMediaPlayerImpl::WebMediaPlayerImpl(
                               base::Unretained(this))),
       will_play_helper_(nullptr) {
   DVLOG(1) << __func__;
-  DCHECK(adjust_allocated_memory_cb_);
+  DCHECK(isolate_);
   DCHECK(renderer_factory_selector_);
   DCHECK(client_);
   DCHECK(delegate_);
@@ -578,8 +577,10 @@ WebMediaPlayerImpl::~WebMediaPlayerImpl() {
   // after trampolining through the media thread.
   pipeline_controller_->Stop();
 
-  if (last_reported_memory_usage_)
-    adjust_allocated_memory_cb_.Run(-last_reported_memory_usage_);
+  if (last_reported_memory_usage_) {
+    external_memory_accounter_.Decrease(isolate_.get(),
+                                        last_reported_memory_usage_);
+  }
 
   // Destruct compositor resources in the proper order.
   client_->SetCcLayer(nullptr);
@@ -3396,7 +3397,7 @@ void WebMediaPlayerImpl::FinishMemoryUsageReport(int64_t demuxer_memory_usage) {
 
   const int64_t delta = current_memory_usage - last_reported_memory_usage_;
   last_reported_memory_usage_ = current_memory_usage;
-  adjust_allocated_memory_cb_.Run(delta);
+  external_memory_accounter_.Update(isolate_.get(), delta);
 }
 
 void WebMediaPlayerImpl::OnMainThreadMemoryDump(

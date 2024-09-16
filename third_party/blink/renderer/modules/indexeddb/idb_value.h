@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/modules/indexeddb/idb_key.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_key_path.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
+#include "third_party/blink/renderer/platform/bindings/v8_external_memory_accounter.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -114,7 +115,8 @@ class MODULES_EXPORT IDBValue final {
   // unregister that memory in the destructor. Unused in other construction
   // paths.
   raw_ptr<v8::Isolate> isolate_ = nullptr;
-  int64_t external_allocated_size_ = 0;
+
+  V8ExternalMemoryAccounter external_memory_accounter_;
 };
 
 }  // namespace blink
