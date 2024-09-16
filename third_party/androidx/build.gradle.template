@@ -69,6 +69,8 @@ dependencies {
     compile 'androidx.core:core:{{androidx_dependency_version}}'
     compile 'androidx.core:core-animation:{{androidx_dependency_version}}'
     compile 'androidx.customview:customview:{{androidx_dependency_version}}'
+    compile 'androidx.datastore:datastore-android:{{androidx_dependency_version}}'
+    compile 'androidx.datastore:datastore-core:{{androidx_dependency_version}}'
     compile 'androidx.drawerlayout:drawerlayout:{{androidx_dependency_version}}'
     compile 'androidx.dynamicanimation:dynamicanimation:{{androidx_dependency_version}}'
     compile 'androidx.exifinterface:exifinterface:{{androidx_dependency_version}}'
@@ -80,6 +82,8 @@ dependencies {
     compile 'androidx.localbroadcastmanager:localbroadcastmanager:1.0.0'
     compile 'androidx.media:media:{{androidx_dependency_version}}'
     compile 'androidx.mediarouter:mediarouter:{{androidx_dependency_version}}'
+    compile 'androidx.navigation:navigation-compose:{{androidx_dependency_version}}'
+    compile 'androidx.navigation:navigation-runtime:{{androidx_dependency_version}}'
     compile 'androidx.pdf:pdf-viewer:{{androidx_dependency_version}}'
     compile 'androidx.pdf:pdf-viewer-fragment:{{androidx_dependency_version}}'
     compile 'androidx.preference:preference:{{androidx_dependency_version}}'
@@ -102,7 +106,6 @@ dependencies {
     compile 'androidx.viewpager:viewpager:{{androidx_dependency_version}}'
     compile 'androidx.window:window:{{androidx_dependency_version}}'
     compile 'androidx.window.extensions:extensions:{{androidx_dependency_version}}'
-    compile 'androidx.window:window-java:{{androidx_dependency_version}}'
     compile 'androidx.window.sidecar:sidecar:{{androidx_dependency_version}}'
 
     // Those are for use by doubledown libraries.
