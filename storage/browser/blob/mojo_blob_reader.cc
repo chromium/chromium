@@ -20,8 +20,9 @@ void MojoBlobReader::Create(
     const net::HttpByteRange& range,
     std::unique_ptr<Delegate> delegate,
     mojo::ScopedDataPipeProducerHandle response_body_stream) {
-  new MojoBlobReader(handle, range, std::move(delegate),
-                     std::move(response_body_stream));
+  (new MojoBlobReader(handle, range, std::move(delegate),
+                      std::move(response_body_stream)))
+      ->Start();
 }
 
 MojoBlobReader::MojoBlobReader(
@@ -43,9 +44,6 @@ MojoBlobReader::MojoBlobReader(
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("Blob", "BlobReader", TRACE_ID_LOCAL(this),
                                     "uuid", handle->uuid());
   DCHECK(delegate_);
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&MojoBlobReader::Start, weak_factory_.GetWeakPtr()));
 }
 
 MojoBlobReader::~MojoBlobReader() {
