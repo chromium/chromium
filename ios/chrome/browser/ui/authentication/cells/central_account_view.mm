@@ -156,6 +156,12 @@ UIImage* GetEnterpriseIcon() {
                            constant:kLabelVerticalSpacing],
         [horizontalStack.centerXAnchor
             constraintEqualToAnchor:self.centerXAnchor],
+        [horizontalStack.leadingAnchor
+            constraintGreaterThanOrEqualToAnchor:self.leadingAnchor
+                                        constant:kTableViewHorizontalSpacing],
+        [horizontalStack.trailingAnchor
+            constraintLessThanOrEqualToAnchor:self.trailingAnchor
+                                     constant:-kTableViewHorizontalSpacing],
 
         [self.bottomAnchor
             constraintEqualToAnchor:horizontalStack.bottomAnchor
