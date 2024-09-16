@@ -35,10 +35,10 @@ class WebStateList;
 // TODO(crbug.com/40233361): Stop lazy loading in NTPCoordinator and remove this
 // dependency.
 // TODO(crbug.com/40901519): TabEventsMediator should not have knoledge of
-// browserState.
+// profile.
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
                       ntpCoordinator:(NewTabPageCoordinator*)ntpCoordinator
-                        browserState:(ChromeBrowserState*)browserState
+                             profile:(ProfileIOS*)profile
                      loadingNotifier:
                          (UrlLoadingNotifierBrowserAgent*)urlLoadingNotifier;
 

@@ -1012,7 +1012,7 @@ enum HeaderBehaviour {
     }
   }
 
-  // After `-shutdown` is called, browserState is invalid and will cause a
+  // After `-shutdown` is called, profile is invalid and will cause a
   // crash.
   if (_isShutdown) {
     return;
@@ -1324,7 +1324,7 @@ enum HeaderBehaviour {
 }
 
 // Builds the UI parts of tab strip and the toolbar. Does not matter whether
-// or not browser state and browser are valid.
+// or not profile and browser are valid.
 - (void)buildToolbarAndTabStrip {
   DCHECK([self isViewLoaded]);
 

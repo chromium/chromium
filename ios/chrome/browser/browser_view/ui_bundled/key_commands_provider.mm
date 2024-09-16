@@ -172,7 +172,7 @@ using base::UserMetricsAction;
     return canPerformForward;
   }
   if (sel_isEqual(action, @selector(keyCommand_showHistory))) {
-    return !_browser->GetBrowserState()->IsOffTheRecord() && self.tabsCount > 0;
+    return !_browser->GetProfile()->IsOffTheRecord() && self.tabsCount > 0;
   }
   if (sel_isEqual(action, @selector(keyCommand_openLocation)) ||
       sel_isEqual(action, @selector(keyCommand_closeTab)) ||
@@ -208,8 +208,8 @@ using base::UserMetricsAction;
   }
   if (sel_isEqual(action, @selector(keyCommand_reopenLastClosedTab))) {
     sessions::TabRestoreService* const tabRestoreService =
-        IOSChromeTabRestoreServiceFactory::GetForBrowserState(
-            _browser->GetBrowserState());
+        IOSChromeTabRestoreServiceFactory::GetForProfile(
+            _browser->GetProfile());
     return tabRestoreService && !tabRestoreService->entries().empty();
   }
   if (sel_isEqual(action, @selector(keyCommand_reportAnIssue))) {
@@ -217,15 +217,15 @@ using base::UserMetricsAction;
   }
   if (sel_isEqual(action, @selector(keyCommand_openNewRegularTab))) {
     // Don't open regular tab if incognito is forced by policy.
-    return !IsIncognitoModeForced(_browser->GetBrowserState()->GetPrefs());
+    return !IsIncognitoModeForced(_browser->GetProfile()->GetPrefs());
   }
   if (sel_isEqual(action, @selector(keyCommand_openNewIncognitoTab))) {
     // Don't open incognito tab if incognito is disabled by policy.
-    return !IsIncognitoModeDisabled(_browser->GetBrowserState()->GetPrefs());
+    return !IsIncognitoModeDisabled(_browser->GetProfile()->GetPrefs());
   }
   if (sel_isEqual(action, @selector(keyCommand_clearBrowsingData))) {
     // Clear Browsing Data shouldn't be available in incognito mode.
-    return !_browser->GetBrowserState()->IsOffTheRecord();
+    return !_browser->GetProfile()->IsOffTheRecord();
   }
 
   return [super canPerformAction:action withSender:sender];
@@ -255,7 +255,7 @@ using base::UserMetricsAction;
 
 - (void)keyCommand_openNewTab {
   RecordAction(UserMetricsAction("MobileKeyCommandOpenNewTab"));
-  if (_browser->GetBrowserState()->IsOffTheRecord()) {
+  if (_browser->GetProfile()->IsOffTheRecord()) {
     [self openNewIncognitoTab];
   } else {
     [self openNewRegularTab];
@@ -291,9 +291,9 @@ using base::UserMetricsAction;
 
 - (void)keyCommand_reopenLastClosedTab {
   RecordAction(UserMetricsAction("MobileKeyCommandReopenLastClosedTab"));
-  ChromeBrowserState* browserState = _browser->GetBrowserState();
+  ProfileIOS* profile = _browser->GetProfile();
   sessions::TabRestoreService* const tabRestoreService =
-      IOSChromeTabRestoreServiceFactory::GetForBrowserState(browserState);
+      IOSChromeTabRestoreServiceFactory::GetForProfile(profile);
   if (!tabRestoreService || tabRestoreService->entries().empty()) {
     return;
   }
@@ -621,8 +621,7 @@ using base::UserMetricsAction;
 
   const GURL& url = currentWebState->GetLastCommittedURL();
   bookmarks::BookmarkModel* bookmarkModel =
-      ios::BookmarkModelFactory::GetForBrowserState(
-          _browser->GetBrowserState());
+      ios::BookmarkModelFactory::GetForProfile(_browser->GetProfile());
   return bookmarkModel->IsBookmarked(url);
 }
 

@@ -697,10 +697,10 @@ enum class ToolbarKind {
     [self showActivityOverlay];
   }
 
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
-  if (browserState) {
+  ProfileIOS* profile = self.browser->GetProfile();
+  if (profile) {
     TextToSpeechPlaybackControllerFactory::GetInstance()
-        ->GetForBrowserState(browserState)
+        ->GetForProfile(profile)
         ->SetEnabled(active);
   }
   self.webUsageEnabled = active;
@@ -854,7 +854,7 @@ enum class ToolbarKind {
 }
 
 - (void)setWebUsageEnabled:(BOOL)webUsageEnabled {
-  if (!self.browser->GetBrowserState() || !self.started) {
+  if (!self.browser->GetProfile() || !self.started) {
     return;
   }
   _webUsageEnabled = webUsageEnabled;
@@ -966,7 +966,7 @@ enum class ToolbarKind {
     [_dispatcher startDispatchingToTarget:self forProtocol:protocol];
   }
 
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  ProfileIOS* profile = self.browser->GetProfile();
 
   _keyCommandsProvider =
       [[KeyCommandsProvider alloc] initWithBrowser:self.browser];
@@ -989,8 +989,8 @@ enum class ToolbarKind {
       static_cast<id<BookmarksCommands>>(_dispatcher);
 
   PrerenderService* prerenderService =
-      PrerenderServiceFactory::GetForBrowserState(browserState);
-  if (!browserState->IsOffTheRecord()) {
+      PrerenderServiceFactory::GetForProfile(profile);
+  if (!profile->IsOffTheRecord()) {
     DCHECK(prerenderService);
     prerenderService->SetDelegate(self);
   }
@@ -1004,7 +1004,7 @@ enum class ToolbarKind {
       UrlLoadingNotifierBrowserAgent::FromBrowser(self.browser);
 
   feature_engagement::Tracker* engagementTracker =
-      feature_engagement::TrackerFactory::GetForBrowserState(browserState);
+      feature_engagement::TrackerFactory::GetForProfile(profile);
 
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
     if (IsModernTabStripOrRaccoonEnabled()) {
@@ -1027,7 +1027,7 @@ enum class ToolbarKind {
       [[ToolbarCoordinator alloc] initWithBrowser:self.browser];
 
   _toolbarAccessoryPresenter = [[ToolbarAccessoryPresenter alloc]
-      initWithIsIncognito:browserState->IsOffTheRecord()];
+      initWithIsIncognito:profile->IsOffTheRecord()];
   _toolbarAccessoryPresenter.toolbarLayoutGuide =
       [_layoutGuideCenter makeLayoutGuideNamed:kPrimaryToolbarGuide];
 
@@ -1107,7 +1107,7 @@ enum class ToolbarKind {
       HandlerForProtocol(_dispatcher, ApplicationCommands);
   _viewControllerDependencies.findInPageCommandsHandler =
       HandlerForProtocol(_dispatcher, FindInPageCommands);
-  _viewControllerDependencies.isOffTheRecord = browserState->IsOffTheRecord();
+  _viewControllerDependencies.isOffTheRecord = profile->IsOffTheRecord();
   _viewControllerDependencies.urlLoadingBrowserAgent = _urlLoadingBrowserAgent;
   _viewControllerDependencies.tabUsageRecorderBrowserAgent =
       TabUsageRecorderBrowserAgent::FromBrowser(self.browser);
@@ -1263,7 +1263,7 @@ enum class ToolbarKind {
   self.tabLifecycleMediator.printCoordinator = self.printCoordinator;
 
   // Help should only show in regular, non-incognito.
-  if (!self.browser->GetBrowserState()->IsOffTheRecord()) {
+  if (!self.browser->GetProfile()->IsOffTheRecord()) {
     [self.popupMenuCoordinator startPopupMenuHelpCoordinator];
   }
 
@@ -1532,14 +1532,14 @@ enum class ToolbarKind {
 - (void)startIndependentMediators {
   // Cache frequently repeated property values to curb generated code bloat.
 
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  ProfileIOS* profile = self.browser->GetProfile();
   BrowserViewController* browserViewController = self.viewController;
 
   DCHECK(self.browserContainerCoordinator.viewController);
   self.tabEventsMediator = [[TabEventsMediator alloc]
       initWithWebStateList:self.browser->GetWebStateList()
             ntpCoordinator:_NTPCoordinator
-              browserState:browserState
+                   profile:profile
            loadingNotifier:_urlLoadingNotifierBrowserAgent];
   self.tabEventsMediator.toolbarSnapshotProvider = _toolbarCoordinator;
   self.tabEventsMediator.consumer = browserViewController;
@@ -1552,7 +1552,7 @@ enum class ToolbarKind {
 
   browserViewController.nonModalPromoPresentationDelegate = self;
 
-  if (browserState->IsOffTheRecord()) {
+  if (profile->IsOffTheRecord()) {
     SceneState* sceneState = self.browser->GetSceneState();
     IncognitoReauthSceneAgent* reauthAgent =
         [IncognitoReauthSceneAgent agentFromScene:sceneState];
@@ -1571,7 +1571,7 @@ enum class ToolbarKind {
 
   // Set properties that are already valid.
   tabLifecycleMediator.prerenderService =
-      PrerenderServiceFactory::GetForBrowserState(browser->GetBrowserState());
+      PrerenderServiceFactory::GetForProfile(browser->GetProfile());
   tabLifecycleMediator.commandDispatcher = browser->GetCommandDispatcher();
   tabLifecycleMediator.tabHelperDelegate = self;
   tabLifecycleMediator.repostFormDelegate = self;
@@ -1602,9 +1602,9 @@ enum class ToolbarKind {
   [HandlerForProtocol(self.dispatcher, ContextualPanelEntrypointCommands)
       contextualPanelEntrypointIPHWasDismissed];
 
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  ProfileIOS* profile = self.browser->GetProfile();
   feature_engagement::Tracker* engagementTracker =
-      feature_engagement::TrackerFactory::GetForBrowserState(browserState);
+      feature_engagement::TrackerFactory::GetForProfile(profile);
 
   if (!engagementTracker || !_contextualPanelEntrypointHelpPresenter) {
     return;
@@ -1942,7 +1942,7 @@ enum class ToolbarKind {
 
   base::UmaHistogramEnumeration(
       "Download.OpenDownloads.PerProfileType",
-      profile_metrics::GetBrowserProfileType(self.browser->GetBrowserState()));
+      profile_metrics::GetBrowserProfileType(self.browser->GetProfile()));
 }
 
 - (void)showRecentTabs {
@@ -1969,10 +1969,10 @@ enum class ToolbarKind {
 }
 
 - (void)showTranslate {
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  ProfileIOS* profile = self.browser->GetProfile();
 
   feature_engagement::Tracker* engagementTracker =
-      feature_engagement::TrackerFactory::GetForBrowserState(browserState);
+      feature_engagement::TrackerFactory::GetForProfile(profile);
   engagementTracker->NotifyEvent(
       feature_engagement::events::kTriggeredTranslateInfobar);
   web::WebState* activeWebState = self.activeWebState;
@@ -1994,7 +1994,7 @@ enum class ToolbarKind {
   UrlLoadParams params = UrlLoadParams::InNewTab(helpUrl);
   params.append_to = OpenPosition::kCurrentTab;
   params.user_initiated = NO;
-  params.in_incognito = self.browser->GetBrowserState()->IsOffTheRecord();
+  params.in_incognito = self.browser->GetProfile()->IsOffTheRecord();
   _urlLoadingBrowserAgent->Load(params);
 }
 
@@ -2173,8 +2173,8 @@ enum class ToolbarKind {
   ContextualPanelItemConfiguration& config_ref = CHECK_DEREF(config.get());
 
   feature_engagement::Tracker* engagementTracker =
-      feature_engagement::TrackerFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
+      feature_engagement::TrackerFactory::GetForProfile(
+          self.browser->GetProfile());
 
   if (!engagementTracker) {
     return NO;
@@ -2421,7 +2421,7 @@ enum class ToolbarKind {
   auto* helper = GetConcreteFindTabHelperFromWebState(activeWebState);
   helper->StartFinding([self.findBarCoordinator.findBarController searchTerm]);
 
-  if (!self.browser->GetBrowserState()->IsOffTheRecord()) {
+  if (!self.browser->GetProfile()->IsOffTheRecord()) {
     helper->PersistSearchTerm();
   }
 }
@@ -2835,22 +2835,22 @@ enum class ToolbarKind {
   }
 }
 
-// Installs delegates for self.browser->GetBrowserState()
+// Installs delegates for self.browser->GetProfile()
 - (void)installDelegatesForBrowserState {
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
-  if (browserState) {
+  ProfileIOS* profile = self.browser->GetProfile();
+  if (profile) {
     TextToSpeechPlaybackControllerFactory::GetInstance()
-        ->GetForBrowserState(browserState)
+        ->GetForProfile(profile)
         ->SetWebStateList(self.browser->GetWebStateList());
   }
 }
 
-// Uninstalls delegates for self.browser->GetBrowserState()
+// Uninstalls delegates for self.browser->GetProfile()
 - (void)uninstallDelegatesForBrowserState {
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
-  if (browserState) {
+  ProfileIOS* profile = self.browser->GetProfile();
+  if (profile) {
     TextToSpeechPlaybackControllerFactory::GetInstance()
-        ->GetForBrowserState(browserState)
+        ->GetForProfile(profile)
         ->SetWebStateList(nullptr);
   }
 }
@@ -2875,7 +2875,7 @@ enum class ToolbarKind {
 - (void)showTrackingForParcels:(NSArray<CustomTextCheckingResult*>*)parcels {
   commerce::ShoppingService* shoppingService =
       commerce::ShoppingServiceFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
+          self.browser->GetProfile());
   if (!shoppingService) {
     return;
   }
@@ -2890,12 +2890,12 @@ enum class ToolbarKind {
     (NSArray<CustomTextCheckingResult*>*)parcels {
   commerce::ShoppingService* shoppingService =
       commerce::ShoppingServiceFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
+          self.browser->GetProfile());
   if (!shoppingService) {
     return;
   }
   if (IsUserEligibleParcelTrackingOptInPrompt(
-          self.browser->GetBrowserState()->GetPrefs(), shoppingService)) {
+          self.browser->GetProfile()->GetPrefs(), shoppingService)) {
     [self showParcelTrackingOptInPromptWithParcels:parcels];
   } else {
     [self maybeShowParcelTrackingInfobarWithParcels:parcels];
@@ -2909,14 +2909,14 @@ enum class ToolbarKind {
   if(!activeWebState) {
     return;
   }
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
-  if (!commerce::ShoppingServiceFactory::GetForBrowserState(browserState)
+  ProfileIOS* profile = self.browser->GetProfile();
+  if (!commerce::ShoppingServiceFactory::GetForBrowserState(profile)
            ->IsParcelTrackingEligible()) {
     return;
   }
   if (step == ParcelTrackingStep::kNewPackageTracked) {
     feature_engagement::Tracker* engagementTracker =
-        feature_engagement::TrackerFactory::GetForBrowserState(browserState);
+        feature_engagement::TrackerFactory::GetForProfile(profile);
     engagementTracker->NotifyEvent(feature_engagement::events::kParcelTracked);
   }
   std::unique_ptr<ParcelTrackingInfobarDelegate> delegate =
@@ -2944,7 +2944,7 @@ enum class ToolbarKind {
     (NSArray<CustomTextCheckingResult*>*)parcels {
   IOSParcelTrackingOptInStatus optInStatus =
       static_cast<IOSParcelTrackingOptInStatus>(
-          self.browser->GetBrowserState()->GetPrefs()->GetInteger(
+          self.browser->GetProfile()->GetPrefs()->GetInteger(
               prefs::kIosParcelTrackingOptInStatus));
   switch (optInStatus) {
     case IOSParcelTrackingOptInStatus::kAlwaysTrack: {
@@ -3382,7 +3382,7 @@ enum class ToolbarKind {
     // If the NTP is active, then it's used as the base view for snapshotting.
     // When the tab strip is visible, or for the incognito NTP, the NTP is laid
     // out between the toolbars, so it should not be inset while snapshotting.
-    if (canShowTabStrip || self.browser->GetBrowserState()->IsOffTheRecord()) {
+    if (canShowTabStrip || self.browser->GetProfile()->IsOffTheRecord()) {
       return UIEdgeInsetsZero;
     }
 
@@ -3652,7 +3652,7 @@ enum class ToolbarKind {
       HandlerForProtocol(_dispatcher, ApplicationCommands);
   [applicationCommandsHandler
       openURLInNewTab:[OpenNewTabCommand
-                          commandWithIncognito:self.browser->GetBrowserState()
+                          commandWithIncognito:self.browser->GetProfile()
                                                    ->IsOffTheRecord()]];
 }
 
@@ -3666,9 +3666,9 @@ enum class ToolbarKind {
   // occurring will cut the animation short.
   web::WebState* activeWebState = self.activeWebState;
   DCHECK(activeWebState);
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  ProfileIOS* profile = self.browser->GetProfile();
   feature_engagement::Tracker* engagementTracker =
-      feature_engagement::TrackerFactory::GetForBrowserState(browserState);
+      feature_engagement::TrackerFactory::GetForProfile(profile);
   if (engagementTracker) {
     engagementTracker->NotifyEvent(
         feature_engagement::events::kIOSPullToRefreshUsed);
@@ -3859,7 +3859,7 @@ enum class ToolbarKind {
 - (void)showQuickDeleteAndCanPerformTabsClosureAnimation:
     (BOOL)canPerformTabsClosureAnimation {
   CHECK(IsIosQuickDeleteEnabled());
-  CHECK(!self.browser->GetBrowserState()->IsOffTheRecord());
+  CHECK(!self.browser->GetProfile()->IsOffTheRecord());
 
   [_quickDeleteCoordinator stop];
 
