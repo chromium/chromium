@@ -4149,6 +4149,9 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
   <int value="9" label="Passwords Toggled Off"/>
   <int value="10" label="Autofill Toggled On"/>
   <int value="11" label="Autofill Toggled Off"/>
+  <int value="12" label="Confirm data type selection changes"/>
+  <int value="13" label="Cancel data type selection changes"/>
+  <int value="14" label="Sign out footer link opened"/>
 </enum>
 
 <!--LINT.ThenChange(//components/browsing_data/core/browsing_data_utils.h:DeleteBrowsingDataDialogAction) -->

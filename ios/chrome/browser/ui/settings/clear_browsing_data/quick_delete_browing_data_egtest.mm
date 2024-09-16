@@ -185,6 +185,11 @@ void NoDeleteBrowsingDataDialogHistogram(
   // Open quick delete browsing data page.
   [self openQuickDeleteBrowsingDataPage];
 
+  // At the beginning of the test, the Delete Browsing Data dialog metric should
+  // be empty.
+  NoDeleteBrowsingDataDialogHistogram(
+      DeleteBrowsingDataDialogAction::kCancelDataTypesSelected);
+
   // Tap cancel button.
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::NavigationBarCancelButton()]
@@ -196,12 +201,21 @@ void NoDeleteBrowsingDataDialogHistogram(
       assertWithMatcher:grey_nil()];
   [[EarlGrey selectElementWithMatcher:ClearBrowsingDataView()]
       assertWithMatcher:grey_notNil()];
+
+  // Assert that the Delete Browsing Data dialog metric is populated.
+  ExpectDeleteBrowsingDataDialogHistogram(
+      DeleteBrowsingDataDialogAction::kCancelDataTypesSelected);
 }
 
 // Tests the confirm button dismisses the browsing data page.
 - (void)testPageNavigationConfirmButton {
   // Open quick delete browsing data page.
   [self openQuickDeleteBrowsingDataPage];
+
+  // At the beginning of the test, the Delete Browsing Data dialog metric should
+  // be empty.
+  NoDeleteBrowsingDataDialogHistogram(
+      DeleteBrowsingDataDialogAction::kUpdateDataTypesSelected);
 
   // Tap confirm button.
   [[EarlGrey selectElementWithMatcher:BrowsingDataConfirmButtonMatcher()]
@@ -212,6 +226,10 @@ void NoDeleteBrowsingDataDialogHistogram(
       assertWithMatcher:grey_nil()];
   [[EarlGrey selectElementWithMatcher:ClearBrowsingDataView()]
       assertWithMatcher:grey_notNil()];
+
+  // Assert that the Delete Browsing Data dialog metric is populated.
+  ExpectDeleteBrowsingDataDialogHistogram(
+      DeleteBrowsingDataDialogAction::kUpdateDataTypesSelected);
 }
 
 // Tests that the confirm button is disabled if no browsing data type is
@@ -481,7 +499,7 @@ void NoDeleteBrowsingDataDialogHistogram(
                                    kQuickDeleteBrowsingDataFooterIdentifier)]
       assertWithMatcher:grey_sufficientlyVisible()];
 
-  // At the beginning of the test this bucket should be empty.
+  // At the beginning of the test, the buckets should be empty.
   GREYAssertNil(
       [MetricsAppInterface
            expectCount:0
@@ -490,6 +508,8 @@ void NoDeleteBrowsingDataDialogHistogram(
                                kUserClickedSignoutFromClearBrowsingDataPage)
           forHistogram:@"Signin.SignoutProfile"],
       @"Signin.SignoutProfile histogram is logged at the start of the test.");
+  NoDeleteBrowsingDataDialogHistogram(
+      DeleteBrowsingDataDialogAction::kSignoutLinkOpened);
 
   // Tap on the "sign out of Chrome" link.
   // As the sign out link can be split into two lines we need a more precise
@@ -509,7 +529,7 @@ void NoDeleteBrowsingDataDialogHistogram(
   // Assert that the user is signed out.
   [SigninEarlGrey verifySignedOut];
 
-  // Assert that the correct sign out metrics bucket is populated.
+  // Assert that the correct sign out metrics are populated.
   GREYAssertNil(
       [MetricsAppInterface
            expectCount:1
@@ -518,6 +538,8 @@ void NoDeleteBrowsingDataDialogHistogram(
                                kUserClickedSignoutFromClearBrowsingDataPage)
           forHistogram:@"Signin.SignoutProfile"],
       @"Signin.SignoutProfile histogram not logged.");
+  ExpectDeleteBrowsingDataDialogHistogram(
+      DeleteBrowsingDataDialogAction::kSignoutLinkOpened);
 }
 
 - (void)testSelectionUpdateInMultiwindow {

@@ -4,7 +4,10 @@
 
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/quick_delete_browsing_data_view_controller.h"
 
+#import "base/metrics/histogram_functions.h"
+#import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/browsing_data/core/browsing_data_utils.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
@@ -20,6 +23,8 @@
 #import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
+
+using browsing_data::DeleteBrowsingDataDialogAction;
 
 // Browing data type icon size.
 const CGFloat kDefaultSymbolSize = 24;
@@ -177,6 +182,10 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
 
 - (void)view:(TableViewLinkHeaderFooterView*)view didTapLinkURL:(CrURL*)url {
   CHECK(url.gurl == kDBDSignOutOfChromeURL);
+  base::UmaHistogramEnumeration(
+      browsing_data::kDeleteBrowsingDataDialogHistogram,
+      DeleteBrowsingDataDialogAction::kSignoutLinkOpened);
+  base::RecordAction(base::UserMetricsAction("ClearBrowsingData_SignOut"));
   [_delegate signOutAndShowActionSheet];
 }
 
@@ -300,12 +309,18 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
 
 // Dismisses the page without saving changes in selection.
 - (void)onCancel:(id)sender {
+  base::UmaHistogramEnumeration(
+      browsing_data::kDeleteBrowsingDataDialogHistogram,
+      DeleteBrowsingDataDialogAction::kCancelDataTypesSelected);
   [_delegate dismissBrowsingDataPage];
 }
 
 // Notifies the mutator of the confirmation of the browsing data types
 // selection.
 - (void)onConfirm:(id)sender {
+  base::UmaHistogramEnumeration(
+      browsing_data::kDeleteBrowsingDataDialogHistogram,
+      DeleteBrowsingDataDialogAction::kUpdateDataTypesSelected);
   [_mutator updateHistorySelection:_historySelected];
   [_mutator updateTabsSelection:_tabsSelected];
   [_mutator updateSiteDataSelection:_siteDataSelected];

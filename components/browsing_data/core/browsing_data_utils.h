@@ -96,7 +96,10 @@ enum class DeleteBrowsingDataDialogAction {
   kPasswordsToggledOff = 9,
   kAutofillToggledOn = 10,
   kAutofillToggledOff = 11,
-  kMaxValue = kAutofillToggledOff,
+  kUpdateDataTypesSelected = 12,
+  kCancelDataTypesSelected = 13,
+  kSignoutLinkOpened = 14,
+  kMaxValue = kSignoutLinkOpened,
 };
 // LINT.ThenChange(//tools/metrics/histograms/enums.xml:DeleteBrowsingDataDialogAction)
 
