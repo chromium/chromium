@@ -102,7 +102,7 @@ body.supervised-user-verify-subframe {
 
   #main-message {
     text-align: center;
-    max-width: 210px;
+    max-width: 225px;
 
     p, #debugging {
       display: none;
