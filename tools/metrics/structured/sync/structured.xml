@@ -1308,6 +1308,14 @@
     <variant value="0">NONE</variant>
     <variant value="1">EN_US</variant>
   </enum>
+
+  <enum name="RecorderAppModelResultStatus">
+    <variant value="0">SUCCESS</variant>
+    <variant value="1">GENERAL_ERROR</variant>
+    <variant value="2">UNSAFE</variant>
+    <variant value="3">UNSUPPORTED_TRANSCRIPTION_IS_TOO_SHORT</variant>
+    <variant value="4">UNSUPPORTED_TRANSCRIPTION_IS_TOO_LONG</variant>
+  </enum>
   <event name="AppDiscovery.AppInstalled">
     <summary>
       Recorded whenever a new app is installed on Chrome OS.
@@ -2788,6 +2796,35 @@
     <metric name="WordCount" type="int">
       <summary>
         Number of words in the recording transcription.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="RecorderApp.SuggestTitle">
+    <summary>
+      Event recorded when user chooses or dismisses the recording title
+      suggestion.
+    </summary>
+    <metric name="WordCount" type="int">
+      <summary>
+        Number of words in the recording transcription, which is used as an
+        input to generate the title.
+      </summary>
+    </metric>
+    <metric name="ResultStatus" type="RecorderAppModelResultStatus">
+      <summary>
+        Status of the recording title suggestion result.
+      </summary>
+    </metric>
+    <metric name="SuggestionAccepted" type="int">
+      <summary>
+        Boolean indicating whether the title suggestion is accepted or not.
+      </summary>
+    </metric>
+    <metric name="AcceptedSuggestionIndex" type="int">
+      <summary>
+        Zero-based index of the title suggestion that is chosen by user, set to
+        -1 if the suggestion is not accepted.
       </summary>
     </metric>
   </event>

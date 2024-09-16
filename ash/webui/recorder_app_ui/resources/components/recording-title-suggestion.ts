@@ -23,6 +23,7 @@ import {
 } from 'chrome://resources/mwc/lit/index.js';
 
 import {i18n} from '../core/i18n.js';
+import {usePlatformHandler} from '../core/lit/context.js';
 import {ModelResponse} from '../core/on_device_model/types.js';
 import {
   ComputedState,
@@ -128,12 +129,17 @@ export class RecordingTitleSuggestion extends ReactiveLitElement {
 
   static override properties: PropertyDeclarations = {
     suggestedTitles: {attribute: false},
+    wordCount: {attribute: false},
   };
 
   suggestedTitles: ScopedAsyncComputed<ModelResponse<string[]>|null>|null =
     null;
 
+  wordCount = 0;
+
   private readonly closeButtonRef = createRef<CraIconButton>();
+
+  private readonly platformHandler = usePlatformHandler();
 
   get firstSuggestedTitleForTest(): Chip {
     return assertExists(this.shadowRoot?.querySelector('.suggestion'));
@@ -155,16 +161,35 @@ export class RecordingTitleSuggestion extends ReactiveLitElement {
     });
   }
 
+  private sendSuggestTitleEvent(
+    suggestionAccepted: boolean, acceptedIndex = -1
+  ) {
+    // Skip sending the event if there is no transcription or suggested titles.
+    const suggestedTitle = this.suggestedTitles?.value;
+    if (suggestedTitle === null || suggestedTitle === undefined) {
+      return;
+    }
+
+    const hasError = suggestedTitle.kind === 'error';
+    this.platformHandler.eventsSender.sendSuggestTitleEvent({
+      acceptedSuggestionIndex: acceptedIndex,
+      responseError: hasError ? suggestedTitle.error : null,
+      suggestionAccepted,
+      wordCount: this.wordCount,
+    });
+  }
+
   private onCloseClick() {
     this.dispatchEvent(new Event('close'));
+    this.sendSuggestTitleEvent(/* suggestionAccepted= */ false);
   }
 
-  private onSuggestionClick(ev: PointerEvent) {
-    const target = assertInstanceof(ev.target, Chip);
-    this.dispatchEvent(new CustomEvent('change', {detail: target.label}));
+  private onSuggestionClick(label: string, index: number) {
+    this.dispatchEvent(new CustomEvent('change', {detail: label}));
+    this.sendSuggestTitleEvent(/* suggestionAccepted= */ true, index);
   }
 
-  private renderSuggestion(suggestion: string) {
+  private renderSuggestion(suggestion: string, index: number) {
     // TODO: b/336963138 - Handle when the suggestion is too long to fit in one
     // line. Currently the cros-chip (and underlying md-chip) can't handle
     // either multiline or setting width / text-overflow: ellipsis, so we might
@@ -173,7 +198,7 @@ export class RecordingTitleSuggestion extends ReactiveLitElement {
       type="input"
       label=${suggestion}
       class="suggestion"
-      @click=${this.onSuggestionClick}
+      @click=${() => this.onSuggestionClick(suggestion, index)}
     ></cros-chip>`;
   }
 
@@ -217,7 +242,7 @@ export class RecordingTitleSuggestion extends ReactiveLitElement {
       case 'success': {
         const suggestions = map(
           suggestedTitles.result,
-          (s) => this.renderSuggestion(s),
+          (s, index) => this.renderSuggestion(s, index),
         );
         return html`<spoken-message role="status" aria-live="polite">
             ${i18n.titleSuggestionFinishedStatusMessage}

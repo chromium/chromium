@@ -6,8 +6,10 @@ import {
   // Events
   CrOSEvents_RecorderApp_Record,
   CrOSEvents_RecorderApp_StartSession,
+  CrOSEvents_RecorderApp_SuggestTitle,
   // Enums
   CrOSEvents_RecorderAppMicrophoneType,
+  CrOSEvents_RecorderAppModelResultStatus,
   CrOSEvents_RecorderAppSpeakerLabelEnableState,
   CrOSEvents_RecorderAppSummaryEnableState,
   CrOSEvents_RecorderAppTranscriptionEnableState,
@@ -21,7 +23,9 @@ import {
   EventsSender as EventsSenderBase,
   RecordEventParams,
   StartSessionEventParams,
+  SuggestTitleEventParams,
 } from '../../core/events_sender.js';
+import {ModelResponseError} from '../../core/on_device_model/types.js';
 import {
   SpeakerLabelEnableState,
   SummaryEnableState,
@@ -112,6 +116,32 @@ function convertTranscriptionLocaleType(language: TranscriptionLanguage
   }
 }
 
+function convertToModelResultStatus(
+  responseError: ModelResponseError|null,
+): CrOSEvents_RecorderAppModelResultStatus {
+  if (responseError === null) {
+    return CrOSEvents_RecorderAppModelResultStatus.SUCCESS;
+  }
+
+  const {
+    UNSUPPORTED_TRANSCRIPTION_IS_TOO_LONG,
+    UNSUPPORTED_TRANSCRIPTION_IS_TOO_SHORT,
+  } = CrOSEvents_RecorderAppModelResultStatus;
+
+  switch (responseError) {
+    case ModelResponseError.GENERAL:
+      return CrOSEvents_RecorderAppModelResultStatus.GENERAL_ERROR;
+    case ModelResponseError.UNSAFE:
+      return CrOSEvents_RecorderAppModelResultStatus.UNSAFE;
+    case ModelResponseError.UNSUPPORTED_TRANSCRIPTION_IS_TOO_SHORT:
+      return UNSUPPORTED_TRANSCRIPTION_IS_TOO_SHORT;
+    case ModelResponseError.UNSUPPORTED_TRANSCRIPTION_IS_TOO_LONG:
+      return UNSUPPORTED_TRANSCRIPTION_IS_TOO_LONG;
+    default:
+      assertExhaustive(responseError);
+  }
+}
+
 export class EventsSender extends EventsSenderBase {
   override sendStartSessionEvent({
     speakerLabelEnableState,
@@ -169,6 +199,19 @@ export class EventsSender extends EventsSenderBase {
                     .setTranscriptionLocale(locale)
                     .setWordCount(BigInt(params.wordCount))
                     .build();
+
+    record(event);
+  }
+
+  override sendSuggestTitleEvent(params: SuggestTitleEventParams): void {
+    const status = convertToModelResultStatus(params.responseError);
+    const event =
+      new CrOSEvents_RecorderApp_SuggestTitle()
+        .setAcceptedSuggestionIndex(BigInt(params.acceptedSuggestionIndex))
+        .setSuggestionAccepted(BigInt(params.suggestionAccepted))
+        .setResultStatus(status)
+        .setWordCount(BigInt(params.wordCount))
+        .build();
 
     record(event);
   }

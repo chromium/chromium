@@ -220,10 +220,6 @@ export class RecordingTitle extends ReactiveLitElement {
   }
 
   private openSuggestionDialog() {
-    // We focus on the text field before showing the suggestion, so the
-    // focusout event from the icon button won't cause edit to be exited.
-    // TODO(pihsun): Check a11y on where we should focus in this case.
-    this.editTextfield?.focusTextfield();
     this.suggestionShown.value = true;
   }
 
@@ -243,6 +239,7 @@ export class RecordingTitle extends ReactiveLitElement {
       @close=${this.closeSuggestionDialog}
       @change=${this.onSuggestTitle}
       .suggestedTitles=${this.suggestedTitles}
+      .wordCount=${this.transcription.value?.wordCount ?? 0}
       ${ref(this.recordingTitleSuggestion)}
     ></recording-title-suggestion>`;
   }

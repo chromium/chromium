@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {ModelResponseError} from './on_device_model/types.js';
 import {
   SpeakerLabelEnableState,
   SummaryEnableState,
@@ -34,7 +35,15 @@ export interface RecordEventParams {
   wordCount: number;
 }
 
+export interface SuggestTitleEventParams {
+  acceptedSuggestionIndex: number;
+  suggestionAccepted: boolean;
+  responseError: ModelResponseError|null;
+  wordCount: number;
+}
+
 export abstract class EventsSender {
   abstract sendStartSessionEvent(params: StartSessionEventParams): void;
   abstract sendRecordEvent(params: RecordEventParams): void;
+  abstract sendSuggestTitleEvent(params: SuggestTitleEventParams): void;
 }
