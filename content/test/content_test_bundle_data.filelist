@@ -4161,8 +4161,10 @@ data/accessibility/html/input-types-expected-auralinux.txt
 data/accessibility/html/input-types-expected-blink.txt
 data/accessibility/html/input-types-expected-fuchsia.txt
 data/accessibility/html/input-types-expected-mac.txt
-data/accessibility/html/input-types-expected-uia-win.txt
-data/accessibility/html/input-types-expected-win.txt
+data/accessibility/html/input-types-for-win-expected-blink.txt
+data/accessibility/html/input-types-for-win-expected-uia-win.txt
+data/accessibility/html/input-types-for-win-expected-win.txt
+data/accessibility/html/input-types-for-win.html
 data/accessibility/html/input-types-with-placeholder-expected-android-external.txt
 data/accessibility/html/input-types-with-placeholder-expected-android.txt
 data/accessibility/html/input-types-with-placeholder-expected-blink.txt
