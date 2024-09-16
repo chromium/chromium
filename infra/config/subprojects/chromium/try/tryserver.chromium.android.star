@@ -121,7 +121,8 @@ try_.builder(
 
 try_.builder(
     name = "android-12l-x64-rel-cq",
-    branch_selector = branches.selector.ANDROID_BRANCHES,
+    # TODO(crbug.com/364967534): Enable on branch once stable.
+    # branch_selector = branches.selector.ANDROID_BRANCHES,
     mirrors = [
         "ci/android-12l-x64-rel-cq",
     ],
@@ -1076,7 +1077,6 @@ try_.orchestrator_builder(
     branch_selector = branches.selector.ANDROID_BRANCHES,
     description_html = "Run Chromium tests on Android emulators.",
     mirrors = [
-        "ci/android-12l-x64-rel-cq",
         "ci/android-13-x64-rel",
         "ci/android-webview-13-x64-hostside-rel",
     ],
