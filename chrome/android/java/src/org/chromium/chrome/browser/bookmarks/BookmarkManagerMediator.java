@@ -53,7 +53,6 @@ import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelega
 import org.chromium.components.commerce.core.CommerceSubscription;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.commerce.core.SubscriptionsObserver;
-import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
 import org.chromium.components.power_bookmarks.PowerBookmarkType;
@@ -875,11 +874,7 @@ class BookmarkManagerMediator
             BookmarkUtils.setLastUsedUrl(state.mUrl);
             // If a loading state is replaced by another loading state, do not notify this change.
             if (mNativePage != null) {
-                boolean replaceLastUrl =
-                        TextUtils.equals(mNativePage.getUrl(), UrlConstants.BOOKMARKS_URL)
-                                || TextUtils.equals(
-                                        mNativePage.getUrl(), UrlConstants.BOOKMARKS_NATIVE_URL);
-                mNativePage.onStateChange(state.mUrl, replaceLastUrl);
+                mNativePage.onStateChange(state.mUrl, false);
             }
         } else if (state.mUiMode == BookmarkUiMode.SEARCHING) {
             String searchText = getCurrentSearchText();
