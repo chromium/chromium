@@ -537,6 +537,13 @@ export class RecordPage extends ReactiveLitElement {
     }
     this.releaseWakeLock();
     const session = this.recordingSession.value;
+
+    this.platformHandler.perfLogger.start({
+      audioDuration: Math.round(session.progress.value.length * 1000),
+      kind: 'record',
+      wordCount: session.progress.value.transcription?.wordCount ?? 0,
+    });
+
     const audioData = await session.finish();
     const params: RecordingCreateParams = {
       title: this.recordingTitle,
@@ -550,6 +557,7 @@ export class RecordPage extends ReactiveLitElement {
       audioData,
     );
     this.sendRecordEvent(/* recordingSaved= */ true);
+    this.platformHandler.perfLogger.finish('record');
 
     this.transcriptionEnableDispose?.();
     this.transcriptionEnableDispose = null;

@@ -154,11 +154,24 @@ export class SettingsMenu extends ReactiveLitElement {
 
   private readonly summaryDownloadRequested = signal(false);
 
+  private readonly downloadPerfCollected = signal(false);
+
   private readonly transcriptionConsentDialog =
     createRef<TranscriptionConsentDialog>();
 
   private readonly speakerLabelConsentDialog =
     createRef<SpeakerLabelConsentDialog>();
+
+  override updated(): void {
+    if (this.summaryDownloadRequested.value &&
+      !this.downloadPerfCollected.value &&
+      this.platformHandler.summaryModelLoader.state.value.kind === 'installed'
+    ) {
+      // TODO: b/367263595 - Collect perf in PlatformHandler instead.
+      this.platformHandler.perfLogger.finish('summaryModelDownload');
+      this.downloadPerfCollected.value = true;
+    }
+  }
 
   show(): void {
     this.dialog.value?.show();
@@ -172,6 +185,7 @@ export class SettingsMenu extends ReactiveLitElement {
     settings.mutate((s) => {
       s.summaryEnabled = SummaryEnableState.ENABLED;
     });
+    this.platformHandler.perfLogger.start({kind: 'summaryModelDownload'});
     this.platformHandler.summaryModelLoader.download();
     // The settings download both the model for summary and title suggestion.
     this.platformHandler.titleSuggestionModelLoader.download();

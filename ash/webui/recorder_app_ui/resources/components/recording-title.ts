@@ -160,7 +160,17 @@ export class RecordingTitle extends ReactiveLitElement {
     // TODO(pihsun): Have a specific format for transcription to be used as
     // model input.
     const text = this.transcription.value.toPlainText();
-    return this.platformHandler.titleSuggestionModelLoader.loadAndExecute(text);
+
+    this.platformHandler.perfLogger.start({
+      kind: 'titleSuggestion',
+      wordCount: this.transcription.value.wordCount,
+    });
+
+    const {titleSuggestionModelLoader} = this.platformHandler;
+    const suggestions = await titleSuggestionModelLoader.loadAndExecute(text);
+    this.platformHandler.perfLogger.finish('titleSuggestion');
+
+    return suggestions;
   });
 
   private get editTextfield(): Textfield|null {

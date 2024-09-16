@@ -341,7 +341,6 @@ export class EventsSender extends EventsSenderBase {
   }
 
   override sendPerfEvent(event: PerfEvent, duration: number): void {
-    // TODO(kamchonlathorn): Collect perf of all events in the following CL.
     const {kind} = event;
     switch (kind) {
       case 'appStart':
@@ -359,6 +358,7 @@ export class EventsSender extends EventsSenderBase {
       case 'titleSuggestion':
         return this.sendTitleSuggestionPerf(duration, event.wordCount);
       case 'transcriptionModelDownload':
+        // TODO: b/327538356 - Collect soda download perf.
         return this.sendTranscriptionModelDownloadPerf(duration);
       default:
         assertExhaustive(kind);

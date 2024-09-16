@@ -90,6 +90,15 @@ export class ExportDialog extends ReactiveLitElement {
     );
   });
 
+  private readonly recordingSize = new ScopedAsyncComputed(this, async () => {
+    const id = this.recordingIdSignal.value;
+    if (id === null) {
+      return null;
+    }
+    const file = await this.recordingDataManager.getAudioFile(id);
+    return file.size;
+  });
+
   private readonly transcriptionAvailable = computed(
     () => !(this.transcription.value?.isEmpty() ?? true),
   );
@@ -119,13 +128,21 @@ export class ExportDialog extends ReactiveLitElement {
     if (!this.saveEnabled || recordingId === null) {
       return;
     }
+
     // TODO(pihsun): Loading state for export recording.
     // TODO(pihsun): Handle failure.
     this.exportQueue.push(async () => {
+      this.platformHandler.perfLogger.start({
+        kind: 'export',
+        recordingSize: this.recordingSize.value ?? 0,
+      });
+
       await this.recordingDataManager.exportRecording(
         recordingId,
         exportSettings,
       );
+
+      this.platformHandler.perfLogger.finish('export');
       this.hide();
     });
     this.platformHandler.eventsSender.sendExportEvent({
