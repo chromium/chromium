@@ -12,6 +12,7 @@
 #include "ash/webui/grit/ash_graduation_resources.h"
 #include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "chrome/browser/ash/system_web_apps/apps/system_web_app_install_utils.h"
+#include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -28,10 +29,7 @@ GraduationAppDelegate::GraduationAppDelegate(Profile* profile)
     : SystemWebAppDelegate(SystemWebAppType::GRADUATION,
                            "Graduation",
                            GURL(kChromeUIGraduationAppURL),
-                           profile),
-      pref_service_(profile->GetPrefs()) {
-  CHECK(pref_service_);
-}
+                           profile) {}
 
 std::unique_ptr<web_app::WebAppInstallInfo>
 GraduationAppDelegate::GetWebAppInfo() const {
@@ -62,13 +60,18 @@ GraduationAppDelegate::GetWebAppInfo() const {
   return info;
 }
 
-bool GraduationAppDelegate::ShouldShowInSearchAndShelf() const {
-  return true;
+bool GraduationAppDelegate::ShouldShowInLauncher() const {
+  return features::IsGraduationEnabled() &&
+         IsEligibleForGraduation(profile()->GetPrefs());
 }
 
 bool GraduationAppDelegate::IsAppEnabled() const {
+  // The Graduation app is by default installed, but hidden on every managed
+  // user's device. When the user session starts, the app is made visible and
+  // pinned for the user if the policy allows access to the app. If access is
+  // disabled, the app is unpinned and hidden again.
   return features::IsGraduationEnabled() &&
-         IsEligibleForGraduation(pref_service_);
+         profile()->GetProfilePolicyConnector()->IsManaged();
 }
 
 bool GraduationAppDelegate::ShouldCaptureNavigations() const {

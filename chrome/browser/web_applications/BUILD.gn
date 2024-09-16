@@ -582,6 +582,7 @@ source_set("web_applications") {
 
   if (is_chromeos_ash) {
     deps += [
+      "//ash",
       "//ash/components/arc:arc_base",
       "//ash/constants",
       "//ash/public/cpp",

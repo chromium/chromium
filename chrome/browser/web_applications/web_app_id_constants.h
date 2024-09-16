@@ -114,6 +114,10 @@ inline constexpr char kGoogleSlidesManifestId[] =
     "https://docs.google.com/presentation/?usp=installed_webapp";
 
 // Generated as: web_app::GenerateAppId(/*manifest_id=*/std::nullopt, GURL(
+//     "chrome://graduation/"))
+inline constexpr char kGraduationAppId[] = "dcmgllglecpogfcjmdkdncendnjphdcd";
+
+// Generated as: web_app::GenerateAppId(/*manifest_id=*/std::nullopt, GURL(
 //     "chrome://help-app/"))
 inline constexpr char kHelpAppId[] = "nbljnnecbjbmifnoehiemkgefbnpoeak";
 

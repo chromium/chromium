@@ -62,6 +62,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "base/test/scoped_command_line.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
@@ -1523,6 +1524,63 @@ INSTANTIATE_TEST_SUITE_P(WebAppPolicyManagerTestWithParams,
 
                            return test_name;
                          });
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+class WebAppPolicyManagerWithGraduationTest
+    : public WebAppPolicyManagerTestBase {
+ public:
+  WebAppPolicyManagerWithGraduationTest() {
+    scoped_feature_list_.InitAndEnableFeature(ash::features::kGraduation);
+  }
+
+  ~WebAppPolicyManagerWithGraduationTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<TestingProfile> managed_profile_;
+};
+
+TEST_F(WebAppPolicyManagerWithGraduationTest,
+       GraduationNotDisabledWhenAllowed) {
+  auto disabled_apps = policy_manager().GetDisabledSystemWebApps();
+  EXPECT_TRUE(disabled_apps.empty());
+
+  testing_local_state_.Get()->SetUserPref(
+      policy::policy_prefs::kSystemFeaturesDisableList,
+      base::Value::List()
+          .Append(static_cast<int>(policy::SystemFeature::kCamera))
+          .Append(static_cast<int>(policy::SystemFeature::kOsSettings))
+          .Append(static_cast<int>(policy::SystemFeature::kKeyShortcuts)));
+  base::Value::Dict graduation_status;
+  graduation_status.Set("is_enabled", true);
+  profile()->GetPrefs()->SetDict(ash::prefs::kGraduationEnablementStatus,
+                                 graduation_status.Clone());
+
+  disabled_apps = policy_manager().GetDisabledSystemWebApps();
+  EXPECT_FALSE(disabled_apps.contains(ash::SystemWebAppType::GRADUATION));
+}
+
+TEST_F(WebAppPolicyManagerWithGraduationTest, GraduationDisabledWhenBlocked) {
+  auto disabled_apps = policy_manager().GetDisabledSystemWebApps();
+  EXPECT_TRUE(disabled_apps.empty());
+
+  // Add supported system web apps to system features disable list policy.
+  testing_local_state_.Get()->SetUserPref(
+      policy::policy_prefs::kSystemFeaturesDisableList,
+      base::Value::List()
+          .Append(static_cast<int>(policy::SystemFeature::kCamera))
+          .Append(static_cast<int>(policy::SystemFeature::kOsSettings))
+          .Append(static_cast<int>(policy::SystemFeature::kKeyShortcuts)));
+  base::Value::Dict graduation_status;
+  graduation_status.Set("is_enabled", false);
+  profile()->GetPrefs()->SetDict(ash::prefs::kGraduationEnablementStatus,
+                                 graduation_status.Clone());
+
+  disabled_apps = policy_manager().GetDisabledSystemWebApps();
+  EXPECT_TRUE(disabled_apps.contains(ash::SystemWebAppType::GRADUATION));
+}
+
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 class WebAppPolicyManagerPreventCloseTest
     : public WebAppPolicyManagerTestBase,

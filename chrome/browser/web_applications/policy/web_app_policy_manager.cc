@@ -63,6 +63,10 @@
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
+#include "ash/edusumer/graduation_utils.h"
+#include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/web_applications/web_app_system_web_app_delegate_map_utils.h"
 #include "components/user_manager/user_manager.h"
 #endif
@@ -785,6 +789,14 @@ void WebAppPolicyManager::ObserveDisabledSystemFeaturesPolicy() {
       policy::policy_prefs::kSystemFeaturesDisableMode,
       base::BindRepeating(&WebAppPolicyManager::OnDisableModePolicyChanged,
                           base::Unretained(this)));
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (ash::features::IsGraduationEnabled()) {
+    pref_change_registrar_.Add(
+        ash::prefs::kGraduationEnablementStatus,
+        base::BindRepeating(&WebAppPolicyManager::OnDisableListPolicyChanged,
+                            weak_ptr_factory_.GetWeakPtr()));
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   // Make sure we get the right disabled mode in case it was changed before
   // policy registration.
   OnDisableModePolicyChanged();
@@ -802,6 +814,11 @@ void WebAppPolicyManager::PopulateDisabledWebAppsIdsLists() {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   disabled_system_apps_.clear();
+
+  if (ash::features::IsGraduationEnabled() &&
+      !ash::graduation::IsEligibleForGraduation(pref_service_)) {
+    disabled_system_apps_.insert(ash::SystemWebAppType::GRADUATION);
+  }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS)
