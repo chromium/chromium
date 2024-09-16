@@ -711,28 +711,20 @@ void ContextImplDml::HandleContextLostOrCrash(std::string_view message_for_log,
                                               HRESULT hr) {
   LOG(ERROR) << "[WebNN] " << message_for_log << " "
              << logging::SystemErrorCodeToString(hr);
-
   HRESULT device_removed_reason =
       adapter_->d3d12_device()->GetDeviceRemovedReason();
   if (FAILED(device_removed_reason)) {
     LOG(ERROR) << "[WebNN] Device Removed Reason: "
                << logging::SystemErrorCodeToString(device_removed_reason);
-    // GPU/NPU contexts rely on the same device. If the device enters a
-    // "device-removed" state, all affected contexts become unavailable and
-    // should be destroyed immediately. Additionally, since other components
-    // besides WebNN may reference the device, we have to terminate the GPU
-    // process to allow for the re-creation of the device and recovery from
-    // device removal.
-    // TODO(crbug.com/364445586): Move non-GPU backends like TFLite outside of
-    // the GPU process.
-    context_provider()->DestroyContextsAndKillGpuProcess("device removed.");
-    return;
   }
 
   std::string_view message_for_promise;
   switch (hr) {
     case E_OUTOFMEMORY:
       message_for_promise = "out of memory.";
+      break;
+    case DXGI_ERROR_DEVICE_REMOVED:
+      message_for_promise = "device removed.";
       break;
     case DXGI_ERROR_DEVICE_RESET:
       message_for_promise = "device reset.";
@@ -742,7 +734,8 @@ void ContextImplDml::HandleContextLostOrCrash(std::string_view message_for_log,
   }
 
   OnLost(base::StrCat({"WebNN context is lost due to ", message_for_promise}));
-  CHECK(hr == E_OUTOFMEMORY || hr == DXGI_ERROR_DEVICE_RESET);
+  CHECK(hr == E_OUTOFMEMORY || hr == DXGI_ERROR_DEVICE_REMOVED ||
+        hr == DXGI_ERROR_DEVICE_RESET);
 }
 
 }  // namespace webnn::dml

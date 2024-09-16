@@ -17,10 +17,6 @@
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/webnn_object_impl.h"
 
-namespace viz {
-class GpuServiceImpl;
-}
-
 namespace webnn {
 
 class WebNNContextImpl;
@@ -43,8 +39,9 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
   // in the GPU service and used to add additional WebNNContextProvider
   // receivers.
   static std::unique_ptr<WebNNContextProviderImpl> Create(
-      viz::GpuServiceImpl* gpu_service,
-      scoped_refptr<gpu::SharedContextState> shared_context_state);
+      scoped_refptr<gpu::SharedContextState> shared_context_state,
+      gpu::GpuFeatureInfo gpu_feature_info,
+      gpu::GPUInfo gpu_info);
 
   // Called to add a another WebNNContextProvider receiver to this
   // existing `WebNNContextProviderImpl` instance.
@@ -67,12 +64,6 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
   // is no longer safe to access |impl|.
   void OnConnectionError(WebNNContextImpl* impl);
 
-#if BUILDFLAG(IS_WIN)
-  // Send the contexts lost reason to the renderer process and kill the GPU
-  // process to destroy all contexts.
-  void DestroyContextsAndKillGpuProcess(std::string_view reason);
-#endif  // BUILDFLAG(IS_WIN)
-
   using WebNNContextImplSet = base::flat_set<
       std::unique_ptr<WebNNContextImpl>,
       WebNNObjectImpl<blink::WebNNContextToken>::Comparator<WebNNContextImpl>>;
@@ -94,7 +85,6 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
   WebNNContextProviderImpl();
 #else
   WebNNContextProviderImpl(
-      viz::GpuServiceImpl* gpu_service,
       scoped_refptr<gpu::SharedContextState> shared_context_state,
       gpu::GpuFeatureInfo gpu_feature_info,
       gpu::GPUInfo gpu_info);
@@ -104,8 +94,6 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
   void CreateWebNNContext(mojom::CreateContextOptionsPtr options,
                           CreateWebNNContextCallback callback) override;
 
-  // `GpuServiceImpl` owns this object.
-  raw_ptr<viz::GpuServiceImpl> gpu_service_;
   scoped_refptr<gpu::SharedContextState> shared_context_state_;
   const gpu::GpuFeatureInfo gpu_feature_info_;
   const gpu::GPUInfo gpu_info_;
