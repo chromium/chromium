@@ -326,6 +326,18 @@ reviewer.
   </summary>
 </histogram>
 
+<histogram name="Privacy.DeleteBrowsingData.Dialog"
+    enum="DeleteBrowsingDataDialogAction" expires_after="2025-03-09">
+  <owner>fsenra@google.com</owner>
+  <owner>alimariam@google.com</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
+  <summary>
+    Cross-platform metric to show interactions with DBD Dialog. Recorded when
+    the user interacts with the dialog either by opening it, changing its prefs
+    from time range to different browsing data selection, or commiting deletion.
+  </summary>
+</histogram>
+
 <histogram name="Privacy.DIPS.BounceCategory{DIPSRedirectType}{DIPSCookieMode}"
     enum="DIPSRedirectCategory" expires_after="2025-01-12">
   <owner>rtarpine@chromium.org</owner>

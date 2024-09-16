@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/quick_delete_mediator.h"
 
+#import "base/metrics/histogram_functions.h"
 #import "components/browsing_data/core/browsing_data_utils.h"
 #import "components/browsing_data/core/counters/autofill_counter.h"
 #import "components/browsing_data/core/counters/history_counter.h"
@@ -26,6 +27,8 @@
 #import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
+
+using browsing_data::DeleteBrowsingDataDialogAction;
 
 // Delay to observe when triggering further actions after browsing data removal
 // has completed so the progress UI state is not flashed.
@@ -272,26 +275,83 @@ constexpr base::TimeDelta kBrowsingDataRemoveCompletionDelay = base::Seconds(1);
 }
 
 - (void)updateHistorySelection:(BOOL)selected {
+  BOOL current_state =
+      _prefs->GetBoolean(browsing_data::prefs::kDeleteBrowsingHistory);
+  if (current_state == selected) {
+    return;
+  }
+
+  base::UmaHistogramEnumeration(
+      browsing_data::kDeleteBrowsingDataDialogHistogram,
+      selected ? DeleteBrowsingDataDialogAction::kBrowsingHistoryToggledOn
+               : DeleteBrowsingDataDialogAction::kBrowsingHistoryToggledOff);
   _prefs->SetBoolean(browsing_data::prefs::kDeleteBrowsingHistory, selected);
 }
 
 - (void)updateTabsSelection:(BOOL)selected {
+  BOOL current_state = _prefs->GetBoolean(browsing_data::prefs::kCloseTabs);
+  if (current_state == selected) {
+    return;
+  }
+
+  base::UmaHistogramEnumeration(
+      browsing_data::kDeleteBrowsingDataDialogHistogram,
+      selected ? DeleteBrowsingDataDialogAction::kTabsToggledOn
+               : DeleteBrowsingDataDialogAction::kTabsToggledOff);
   _prefs->SetBoolean(browsing_data::prefs::kCloseTabs, selected);
 }
 
 - (void)updateSiteDataSelection:(BOOL)selected {
+  BOOL current_state = _prefs->GetBoolean(browsing_data::prefs::kDeleteCookies);
+  if (current_state == selected) {
+    return;
+  }
+
+  base::UmaHistogramEnumeration(
+      browsing_data::kDeleteBrowsingDataDialogHistogram,
+      selected ? DeleteBrowsingDataDialogAction::kSiteDataToggledOn
+               : DeleteBrowsingDataDialogAction::kSiteDataToggledOff);
   _prefs->SetBoolean(browsing_data::prefs::kDeleteCookies, selected);
 }
 
 - (void)updateCacheSelection:(BOOL)selected {
+  BOOL current_state = _prefs->GetBoolean(browsing_data::prefs::kDeleteCache);
+  if (current_state == selected) {
+    return;
+  }
+
+  base::UmaHistogramEnumeration(
+      browsing_data::kDeleteBrowsingDataDialogHistogram,
+      selected ? DeleteBrowsingDataDialogAction::kCacheToggledOn
+               : DeleteBrowsingDataDialogAction::kCacheToggledOff);
   _prefs->SetBoolean(browsing_data::prefs::kDeleteCache, selected);
 }
 
 - (void)updatePasswordsSelection:(BOOL)selected {
+  BOOL current_state =
+      _prefs->GetBoolean(browsing_data::prefs::kDeletePasswords);
+  if (current_state == selected) {
+    return;
+  }
+
+  base::UmaHistogramEnumeration(
+      browsing_data::kDeleteBrowsingDataDialogHistogram,
+      selected ? DeleteBrowsingDataDialogAction::kPasswordsToggledOn
+               : DeleteBrowsingDataDialogAction::kPasswordsToggledOff);
   _prefs->SetBoolean(browsing_data::prefs::kDeletePasswords, selected);
 }
 
 - (void)updateAutofillSelection:(BOOL)selected {
+  BOOL current_state =
+      _prefs->GetBoolean(browsing_data::prefs::kDeleteFormData);
+  if (current_state == selected) {
+    return;
+  }
+
+  base::UmaHistogramEnumeration(
+      browsing_data::kDeleteBrowsingDataDialogHistogram,
+      selected ? DeleteBrowsingDataDialogAction::kAutofillToggledOn
+               : DeleteBrowsingDataDialogAction::kAutofillToggledOff);
   _prefs->SetBoolean(browsing_data::prefs::kDeleteFormData, selected);
 }
 

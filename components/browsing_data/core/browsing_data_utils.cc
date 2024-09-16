@@ -23,6 +23,9 @@
 
 namespace browsing_data {
 
+const char kDeleteBrowsingDataDialogHistogram[] =
+    "Privacy.DeleteBrowsingData.Dialog";
+
 // Creates a string like "for a.com, b.com, and 4 more".
 std::u16string CreateDomainExamples(
     int password_count,

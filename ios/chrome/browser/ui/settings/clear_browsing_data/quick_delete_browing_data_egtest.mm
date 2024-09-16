@@ -4,7 +4,9 @@
 
 #import <XCTest/XCTest.h>
 
+#import "base/strings/sys_string_conversions.h"
 #import "base/test/metrics/histogram_tester.h"
+#import "components/browsing_data/core/browsing_data_utils.h"
 #import "components/browsing_data/core/pref_names.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/sync/base/command_line_switches.h"
@@ -27,6 +29,7 @@
 
 namespace {
 
+using browsing_data::DeleteBrowsingDataDialogAction;
 using chrome_test_util::BrowsingDataButtonMatcher;
 using chrome_test_util::BrowsingDataConfirmButtonMatcher;
 using chrome_test_util::ButtonWithAccessibilityLabel;
@@ -70,6 +73,35 @@ id<GREYMatcher> SignOutLinkMatcher() {
       // element in the label with attributed string.
       grey_kindOfClassName(@"UIAccessibilityLinkSubelement"),
       grey_accessibilityTrait(UIAccessibilityTraitLink), nil);
+}
+
+// Asserts if the Privacy.DeleteBrowsingData.Dialog histogram for bucket of
+// `action` was logged once.
+void ExpectDeleteBrowsingDataDialogHistogram(
+    DeleteBrowsingDataDialogAction action) {
+  GREYAssertNil(
+      [MetricsAppInterface
+           expectCount:1
+             forBucket:static_cast<int>(action)
+          forHistogram:base::SysUTF8ToNSString(
+                           browsing_data::kDeleteBrowsingDataDialogHistogram)],
+      @"Privacy.DeleteBrowsingData.Dialog histogram for action %d was not "
+      @"logged.",
+      static_cast<int>(action));
+}
+
+// Asserts if the Privacy.DeleteBrowsingData.Dialog histogram for bucket of
+// `action` was not logged.
+void NoDeleteBrowsingDataDialogHistogram(
+    DeleteBrowsingDataDialogAction action) {
+  GREYAssertNil(
+      [MetricsAppInterface
+           expectCount:0
+             forBucket:static_cast<int>(action)
+          forHistogram:base::SysUTF8ToNSString(
+                           browsing_data::kDeleteBrowsingDataDialogHistogram)],
+      @"Privacy.DeleteBrowsingData.Dialog histogram for action %d was logged.",
+      static_cast<int>(action));
 }
 
 }  // namespace
@@ -186,17 +218,16 @@ id<GREYMatcher> SignOutLinkMatcher() {
 // selected.
 - (void)testDisabledConfirmButtonWhenNoSelection {
   // Disable selection of all browsing data types.
-  [ChromeEarlGrey setBoolValue:false
+  [ChromeEarlGrey setBoolValue:NO
                    forUserPref:browsing_data::prefs::kDeleteBrowsingHistory];
-  [ChromeEarlGrey setBoolValue:false
-                   forUserPref:browsing_data::prefs::kCloseTabs];
-  [ChromeEarlGrey setBoolValue:false
+  [ChromeEarlGrey setBoolValue:NO forUserPref:browsing_data::prefs::kCloseTabs];
+  [ChromeEarlGrey setBoolValue:NO
                    forUserPref:browsing_data::prefs::kDeleteCookies];
-  [ChromeEarlGrey setBoolValue:false
+  [ChromeEarlGrey setBoolValue:NO
                    forUserPref:browsing_data::prefs::kDeleteCache];
-  [ChromeEarlGrey setBoolValue:false
+  [ChromeEarlGrey setBoolValue:NO
                    forUserPref:browsing_data::prefs::kDeletePasswords];
-  [ChromeEarlGrey setBoolValue:false
+  [ChromeEarlGrey setBoolValue:NO
                    forUserPref:browsing_data::prefs::kDeleteFormData];
 
   [self openQuickDeleteBrowsingDataPage];
@@ -306,9 +337,15 @@ id<GREYMatcher> SignOutLinkMatcher() {
   GREYAssertEqual(
       [ChromeEarlGrey userBooleanPref:browsing_data::prefs::kDeleteFormData],
       NO, @"Autofill pref changed on cancel.");
+
+  // Check that the Delete Browsing Data dialog metric is empty, since the
+  // selection wasn't confirmed.
+  NoDeleteBrowsingDataDialogHistogram(
+      DeleteBrowsingDataDialogAction::kBrowsingHistoryToggledOn);
 }
 
-// Tests the confirm button should save changes to prefs.
+// Tests the confirm button should save changes to prefs, in this case, from
+// unselected to selected.
 - (void)testConfirmButtonShouldUpdatePrefs {
   // Set all prefs to false.
   [ChromeEarlGrey setBoolValue:NO
@@ -325,6 +362,21 @@ id<GREYMatcher> SignOutLinkMatcher() {
 
   // Open quick delete browsing data page.
   [self openQuickDeleteBrowsingDataPage];
+
+  // At the beginning of the test, the Delete Browsing Data dialog metric should
+  // be empty.
+  NoDeleteBrowsingDataDialogHistogram(
+      DeleteBrowsingDataDialogAction::kBrowsingHistoryToggledOn);
+  NoDeleteBrowsingDataDialogHistogram(
+      DeleteBrowsingDataDialogAction::kTabsToggledOn);
+  NoDeleteBrowsingDataDialogHistogram(
+      DeleteBrowsingDataDialogAction::kSiteDataToggledOn);
+  NoDeleteBrowsingDataDialogHistogram(
+      DeleteBrowsingDataDialogAction::kCacheToggledOn);
+  NoDeleteBrowsingDataDialogHistogram(
+      DeleteBrowsingDataDialogAction::kPasswordsToggledOn);
+  NoDeleteBrowsingDataDialogHistogram(
+      DeleteBrowsingDataDialogAction::kAutofillToggledOn);
 
   // Assert all browsing data rows are not selected.
   [[EarlGrey selectElementWithMatcher:ClearBrowsingHistoryButton()]
@@ -399,6 +451,20 @@ id<GREYMatcher> SignOutLinkMatcher() {
   GREYAssertEqual(
       [ChromeEarlGrey userBooleanPref:browsing_data::prefs::kDeleteFormData],
       YES, @"Failed to save autofill pref change on confirm.");
+
+  // Assert that the Delete Browsing Data dialog metric is populated.
+  ExpectDeleteBrowsingDataDialogHistogram(
+      DeleteBrowsingDataDialogAction::kBrowsingHistoryToggledOn);
+  ExpectDeleteBrowsingDataDialogHistogram(
+      DeleteBrowsingDataDialogAction::kTabsToggledOn);
+  ExpectDeleteBrowsingDataDialogHistogram(
+      DeleteBrowsingDataDialogAction::kSiteDataToggledOn);
+  ExpectDeleteBrowsingDataDialogHistogram(
+      DeleteBrowsingDataDialogAction::kCacheToggledOn);
+  ExpectDeleteBrowsingDataDialogHistogram(
+      DeleteBrowsingDataDialogAction::kPasswordsToggledOn);
+  ExpectDeleteBrowsingDataDialogHistogram(
+      DeleteBrowsingDataDialogAction::kAutofillToggledOn);
 }
 
 // Tests the "sign out of Chrome" link in the footer.
@@ -466,6 +532,11 @@ id<GREYMatcher> SignOutLinkMatcher() {
   [ChromeEarlGrey waitUntilReadyWindowWithNumber:1];
   [ChromeEarlGrey waitForForegroundWindowCount:2];
 
+  // At the beginning of the test, the Delete Browsing Data dialog metric should
+  // be empty.
+  NoDeleteBrowsingDataDialogHistogram(
+      DeleteBrowsingDataDialogAction::kBrowsingHistoryToggledOn);
+
   // Focus the first window for the subsequent interactions.
   [EarlGrey setRootMatcherForSubsequentInteractions:chrome_test_util::
                                                         WindowWithNumber(0)];
@@ -520,6 +591,11 @@ id<GREYMatcher> SignOutLinkMatcher() {
   // Assert history row is selected in the second window after the pref update.
   [[EarlGrey selectElementWithMatcher:ClearBrowsingHistoryButton()]
       assertWithMatcher:elementIsSelectedMatcher(true)];
+
+  // Assert that the Delete Browsing Data dialog metric is populated only once,
+  // when the selection is saved.
+  ExpectDeleteBrowsingDataDialogHistogram(
+      DeleteBrowsingDataDialogAction::kBrowsingHistoryToggledOn);
 }
 
 @end
