@@ -141,6 +141,8 @@ class COMPONENT_EXPORT(INPUT) RenderInputRouter
       const blink::WebTouchEvent& touch_event,
       const ui::LatencyInfo& latency);  // Virtual for testing
 
+  void ForwardGestureEvent(const blink::WebGestureEvent& gesture_event);
+
   // Retrieve an iterator over any RenderInputRouters that are
   // immediately embedded within this one. This does not return
   // RenderInputRouters that are embedded indirectly (i.e. nested within

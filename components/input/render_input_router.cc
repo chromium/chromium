@@ -314,6 +314,14 @@ void RenderInputRouter::OnInvalidInputEventSource() {
   delegate_->OnInvalidInputEventSource();
 }
 
+void RenderInputRouter::ForwardGestureEvent(
+    const blink::WebGestureEvent& gesture_event) {
+  TRACE_EVENT("input", "RenderInputRouter::ForwardGestureEvent", "type",
+              WebInputEvent::GetName(gesture_event.GetType()));
+
+  ForwardGestureEventWithLatencyInfo(gesture_event, ui::LatencyInfo());
+}
+
 void RenderInputRouter::ForwardGestureEventWithLatencyInfo(
     const blink::WebGestureEvent& gesture_event,
     const ui::LatencyInfo& latency_info) {

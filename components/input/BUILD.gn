@@ -50,6 +50,7 @@ component("input") {
     "render_input_router_latency_tracker.h",
     "render_widget_host_input_event_router.cc",
     "render_widget_host_input_event_router.h",
+    "render_widget_host_view_input.cc",
     "render_widget_host_view_input.h",
     "render_widget_host_view_input_observer.cc",
     "render_widget_host_view_input_observer.h",
