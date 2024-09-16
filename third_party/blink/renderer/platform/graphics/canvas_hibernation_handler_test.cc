@@ -140,7 +140,10 @@ class TestSingleThreadTaskRunner : public base::SingleThreadTaskRunner {
                                   base::TimeDelta delay) override {
     return false;
   }
-  bool RunsTasksInCurrentSequence() const override { return false; }
+
+  // Since this is mocking a SingleThreadTaskRunner, tasks will always be run
+  // in the same sequence they are posted from.
+  bool RunsTasksInCurrentSequence() const override { return true; }
 
   static size_t RunAll(std::list<base::OnceClosure>& tasks) {
     size_t count = 0;
