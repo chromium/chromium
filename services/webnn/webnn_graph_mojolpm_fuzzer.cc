@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
+
 #include "base/command_line.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ref.h"
@@ -11,12 +13,14 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "content/test/fuzzer/mojolpm_fuzzer_support.h"
+#include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom-mojolpm.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
 #include "services/webnn/tflite/context_impl_tflite.h"
 #include "services/webnn/tflite/graph_builder_tflite.h"
+#include "services/webnn/webnn_constant_operand.h"
 #include "services/webnn/webnn_context_impl.h"
 #include "services/webnn/webnn_graph_builder_impl.h"
 #include "services/webnn/webnn_graph_impl.h"
@@ -76,6 +80,32 @@ scoped_refptr<webnn::dml::Adapter> GetAdapter() {
 }
 #endif
 
+webnn::mojom::GraphInfoPtr CloneGraphInfo(
+    const webnn::mojom::GraphInfo& graph_info) {
+  webnn::mojom::GraphInfoPtr cloned_graph_info = webnn::mojom::GraphInfo::New();
+
+  cloned_graph_info->id_to_operand_map.reserve(
+      graph_info.id_to_operand_map.size());
+  for (auto& [operand_id, operand_info] : graph_info.id_to_operand_map) {
+    cloned_graph_info->id_to_operand_map[operand_id] = operand_info.Clone();
+  }
+  cloned_graph_info->input_operands = graph_info.input_operands;
+  cloned_graph_info->output_operands = graph_info.output_operands;
+
+  cloned_graph_info->operations.reserve(graph_info.operations.size());
+  for (auto& operation : graph_info.operations) {
+    cloned_graph_info->operations.push_back(operation.Clone());
+  }
+
+  cloned_graph_info->constant_id_to_buffer_map.reserve(
+      graph_info.constant_id_to_buffer_map.size());
+  for (const auto& [constant_id, buffer] :
+       graph_info.constant_id_to_buffer_map) {
+    cloned_graph_info->constant_id_to_buffer_map[constant_id] = buffer.Clone();
+  }
+  return cloned_graph_info;
+}
+
 scoped_refptr<base::SingleThreadTaskRunner> GetFuzzerTaskRunner() {
   return GetEnvironment().GetMainThreadTaskRunner();
 }
@@ -103,23 +133,16 @@ class WebnnGraphLPMFuzzer {
       // Test the Core ML graph builder.
       base::ScopedTempDir temp_dir;
       CHECK(temp_dir.CreateUniqueTempDir());
+
+      auto cloned_graph_info_ptr = CloneGraphInfo(*graph_info_ptr);
+      auto constant_operands =
+          webnn::WebNNGraphBuilderImpl::TakeConstants(*cloned_graph_info_ptr);
       auto coreml_graph_builder =
           webnn::coreml::GraphBuilderCoreml::CreateAndBuild(
-              *graph_info_ptr, std::move(coreml_properties),
-              temp_dir.GetPath());
+              *cloned_graph_info_ptr, std::move(coreml_properties),
+              constant_operands, temp_dir.GetPath());
     }
 #endif
-
-    auto tflite_properties =
-        webnn::WebNNContextImpl::IntersectWithBaseProperties(
-            webnn::tflite::GraphBuilderTflite::GetContextProperties());
-    if (webnn::WebNNGraphBuilderImpl::ValidateGraph(tflite_properties,
-                                                    *graph_info_ptr)
-            .has_value()) {
-      // Test the TFLite graph builder.
-      auto flatbuffer = webnn::tflite::GraphBuilderTflite::CreateAndBuild(
-          std::move(tflite_properties), *graph_info_ptr);
-    }
 
 #if BUILDFLAG(IS_WIN)
     CHECK(GetAdapter());
@@ -133,19 +156,40 @@ class WebnnGraphLPMFuzzer {
       // DirectML version 1.2 (DML_FEATURE_LEVEL_2_1).
       CHECK(GetAdapter()->IsDMLDeviceCompileGraphSupportedForTesting());
 
+      auto cloned_graph_info_ptr = CloneGraphInfo(*graph_info_ptr);
+      auto constant_operands =
+          webnn::WebNNGraphBuilderImpl::TakeConstants(*cloned_graph_info_ptr);
+
       webnn::dml::GraphBuilderDml graph_builder(GetAdapter()->dml_device());
       std::unordered_map<uint64_t, uint32_t> constant_id_to_input_index_map;
       webnn::dml::GraphImplDml::GraphBufferBindingInfo
           graph_buffer_binding_info;
       auto create_operator_result =
           webnn::dml::GraphImplDml::CreateAndBuildInternal(
-              dml_properties, GetAdapter(), graph_info_ptr, graph_builder,
-              constant_id_to_input_index_map, graph_buffer_binding_info);
+              dml_properties, GetAdapter(), cloned_graph_info_ptr,
+              constant_operands, graph_builder, constant_id_to_input_index_map,
+              graph_buffer_binding_info);
       if (create_operator_result.has_value()) {
         auto dml_graph_builder = graph_builder.Compile(DML_EXECUTION_FLAG_NONE);
       }
     }
 #endif
+
+    auto tflite_properties =
+        webnn::WebNNContextImpl::IntersectWithBaseProperties(
+            webnn::tflite::GraphBuilderTflite::GetContextProperties());
+    if (webnn::WebNNGraphBuilderImpl::ValidateGraph(tflite_properties,
+                                                    *graph_info_ptr)
+            .has_value()) {
+      // Test the TFLite graph builder.
+      //
+      // No need to clone `graph_info_ptr` since this is the last use.
+      auto constant_operands =
+          webnn::WebNNGraphBuilderImpl::TakeConstants(*graph_info_ptr);
+      auto flatbuffer = webnn::tflite::GraphBuilderTflite::CreateAndBuild(
+          std::move(tflite_properties), *graph_info_ptr, constant_operands);
+    }
+
     ++action_index_;
   }
 

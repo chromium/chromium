@@ -47,6 +47,7 @@
 #include "services/webnn/public/cpp/webnn_errors.h"
 #include "services/webnn/public/mojom/webnn_error.mojom.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
+#include "services/webnn/webnn_constant_operand.h"
 #include "services/webnn/webnn_utils.h"
 #include "third_party/coremltools/mlmodel/format/FeatureTypes.pb.h"
 #include "third_party/coremltools/mlmodel/format/MIL.pb.h"
@@ -590,9 +591,12 @@ std::string GetCoreMLNameFromOutput(std::string_view output_name,
 
 // static
 base::expected<std::unique_ptr<GraphBuilderCoreml::Result>, mojom::ErrorPtr>
-GraphBuilderCoreml::CreateAndBuild(const mojom::GraphInfo& graph_info,
-                                   ContextProperties context_properties,
-                                   const base::FilePath& working_directory) {
+GraphBuilderCoreml::CreateAndBuild(
+    const mojom::GraphInfo& graph_info,
+    ContextProperties context_properties,
+    const base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>&
+        constant_operands,
+    const base::FilePath& working_directory) {
   // Use a random string for the model package directory, because MLModel
   // compileModelAtURL creates a folder directly in the NSTemporaryDirectory
   // with the name of the .mlmodel file. Using a random string will avoid any
@@ -604,6 +608,7 @@ GraphBuilderCoreml::CreateAndBuild(const mojom::GraphInfo& graph_info,
   base::FilePath data_dir = ml_package_dir.Append(kMlPackageDataDir);
 
   GraphBuilderCoreml graph_builder(graph_info, std::move(context_properties),
+                                   constant_operands,
                                    std::move(ml_package_dir));
 
   RETURN_IF_ERROR(graph_builder.BuildCoreMLModel());
@@ -766,10 +771,14 @@ ContextProperties GraphBuilderCoreml::GetContextProperties() {
        /*where_value=*/kFloatsAndInt32});
 }
 
-GraphBuilderCoreml::GraphBuilderCoreml(const mojom::GraphInfo& graph_info,
-                                       ContextProperties context_properties,
-                                       base::FilePath ml_package_dir)
+GraphBuilderCoreml::GraphBuilderCoreml(
+    const mojom::GraphInfo& graph_info,
+    ContextProperties context_properties,
+    const base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>&
+        constant_operands,
+    base::FilePath ml_package_dir)
     : graph_info_(graph_info),
+      constant_operands_(constant_operands),
       context_properties_(std::move(context_properties)),
       internal_operand_id_(
           base::ranges::max_element(
@@ -1071,30 +1080,29 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::WriteWeightsToFile(
   }
 
   uint64_t current_offset = 0;
-  WeightHeader header{
-      static_cast<uint32_t>(graph_info_->constant_id_to_buffer_map.size())};
+  WeightHeader header{static_cast<uint32_t>(constant_operands_->size())};
   if (!weights_file.WriteAtCurrentPosAndCheck(
           base::byte_span_from_ref(header))) {
     return NewUnknownError(kWriteWeightsErrorMessage);
   }
   current_offset += sizeof(header);
 
-  for (auto& [key, buffer] : graph_info_->constant_id_to_buffer_map) {
-    const mojom::Operand& operand = GetOperand(key);
+  for (auto& [id, constant_operand] : *constant_operands_) {
     // int32 is only supported as immediate value.
-    if (operand.descriptor.shape().empty() ||
-        operand.descriptor.data_type() == OperandDataType::kInt32) {
-      RETURN_IF_ERROR(AddConstantImmediateValue(key, block));
+    if (constant_operand->descriptor().shape().empty() ||
+        constant_operand->descriptor().data_type() == OperandDataType::kInt32) {
+      RETURN_IF_ERROR(AddConstantImmediateValue(id, block));
       continue;
     }
 
-    std::optional<BlobDataType> weight_type =
-        OperandTypeToDataTypeInWeightFile(operand.descriptor.data_type());
+    std::optional<BlobDataType> weight_type = OperandTypeToDataTypeInWeightFile(
+        constant_operand->descriptor().data_type());
     if (!weight_type.has_value()) {
       return NewNotSupportedError("Unsupported constant type.");
     }
 
-    WeightMetadata metadata(weight_type.value(), buffer.size(),
+    WeightMetadata metadata(weight_type.value(),
+                            constant_operand->ByteSpan().size(),
                             current_offset + sizeof(metadata));
 
     if (!weights_file.WriteAtCurrentPosAndCheck(
@@ -1102,13 +1110,13 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::WriteWeightsToFile(
       return NewUnknownError(kWriteWeightsErrorMessage);
     }
 
-    if (!weights_file.WriteAtCurrentPosAndCheck(base::make_span(buffer))) {
+    if (!weights_file.WriteAtCurrentPosAndCheck(constant_operand->ByteSpan())) {
       return NewUnknownError(kWriteWeightsErrorMessage);
     }
 
-    RETURN_IF_ERROR(AddConstantFileValue(key, current_offset, block));
+    RETURN_IF_ERROR(AddConstantFileValue(id, current_offset, block));
     current_offset += sizeof(metadata);
-    current_offset += buffer.size();
+    current_offset += constant_operand->ByteSpan().size();
     current_offset = base::bits::AlignUp(current_offset, kWeightAlignment);
     if (!weights_file.Seek(base::File::Whence::FROM_BEGIN, current_offset)) {
       return NewUnknownError(kWriteWeightsErrorMessage);
@@ -2856,18 +2864,18 @@ GraphBuilderCoreml::AddConstantImmediateValue(
   std::string name = GetOperandInfo(constant_id).coreml_name;
   attributes["name"] = CreateStringImmediateValue(name);
 
-  base::span<const uint8_t> value(
-      graph_info_->constant_id_to_buffer_map.at(constant_id));
-  const mojom::Operand& operand = GetOperand(constant_id);
-  switch (operand.descriptor.data_type()) {
+  auto& constant_operand = constant_operands_->at(constant_id);
+  base::span<const uint8_t> value = constant_operand->ByteSpan();
+
+  switch (constant_operand->descriptor().data_type()) {
     case OperandDataType::kFloat32: {
       std::vector<float> floats(value.size() / sizeof(float));
       for (size_t i = 0u; i < floats.size(); ++i) {
         floats[i] = base::FloatFromNativeEndian(
             value.subspan(i * sizeof(float)).first<4u>());
       }
-      attributes["val"] =
-          CreateTensorImmediateValue<float>(operand.descriptor.shape(), floats);
+      attributes["val"] = CreateTensorImmediateValue<float>(
+          constant_operand->descriptor().shape(), floats);
       break;
     }
     case OperandDataType::kFloat16: {
@@ -2877,7 +2885,7 @@ GraphBuilderCoreml::AddConstantImmediateValue(
             value.subspan(i * sizeof(Float16)).first<2u>());
       }
       attributes["val"] = CreateTensorImmediateValue<Float16>(
-          operand.descriptor.shape(), float16s);
+          constant_operand->descriptor().shape(), float16s);
       break;
     }
     case OperandDataType::kInt32: {
@@ -2886,8 +2894,8 @@ GraphBuilderCoreml::AddConstantImmediateValue(
         ints[i] = base::I32FromNativeEndian(
             value.subspan(i * sizeof(int32_t)).first<4u>());
       }
-      attributes["val"] =
-          CreateTensorImmediateValue<int32_t>(operand.descriptor.shape(), ints);
+      attributes["val"] = CreateTensorImmediateValue<int32_t>(
+          constant_operand->descriptor().shape(), ints);
       break;
     }
     case OperandDataType::kUint32:

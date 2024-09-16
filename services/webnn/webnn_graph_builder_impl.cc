@@ -14,6 +14,7 @@
 #include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/cpp/supported_data_types.h"
 #include "services/webnn/public/mojom/webnn_error.mojom.h"
+#include "services/webnn/webnn_constant_operand.h"
 #include "services/webnn/webnn_context_impl.h"
 #include "services/webnn/webnn_graph_impl.h"
 #include "services/webnn/webnn_utils.h"
@@ -2381,8 +2382,12 @@ void WebNNGraphBuilderImpl::CreateGraph(mojom::GraphInfoPtr graph_info,
     return;
   }
 
+  base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>
+      constant_operands = TakeConstants(*graph_info);
+
   context_->CreateGraphImpl(
       std::move(graph_info), *std::move(compute_resource_info),
+      std::move(constant_operands),
       base::BindOnce(&WebNNGraphBuilderImpl::DidCreateGraph,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
@@ -2445,7 +2450,10 @@ WebNNGraphBuilderImpl::ValidateGraph(
   graph_inputs.reserve(graph_info.input_operands.size());
   std::vector<uint64_t> graph_outputs;
   graph_outputs.reserve(graph_info.output_operands.size());
-  base::flat_map<uint64_t, size_t> constant_id_to_byte_length_map;
+  base::flat_map<uint64_t, size_t> constant_ids_to_byte_lengths;
+  constant_ids_to_byte_lengths.reserve(
+      graph_info.constant_id_to_buffer_map.size());
+
   // The operand id must start from 1.
   uint64_t expected_operand_id = 1;
   for (auto& [id, operand] : graph_info.id_to_operand_map) {
@@ -2493,8 +2501,10 @@ WebNNGraphBuilderImpl::ValidateGraph(
           // Constant operand should not have a name.
           return std::nullopt;
         }
-        constant_id_to_byte_length_map[id] =
+
+        constant_ids_to_byte_lengths[id] =
             operand->descriptor.PackedByteLength();
+
         processed_operands.insert(id);
         break;
       }
@@ -2512,7 +2522,7 @@ WebNNGraphBuilderImpl::ValidateGraph(
 
   // Validate the constant weight data are valid.
   if (!base::ranges::equal(graph_info.constant_id_to_buffer_map,
-                           constant_id_to_byte_length_map,
+                           constant_ids_to_byte_lengths,
                            [](const auto& iter_a, const auto& iter_b) {
                              // Compare the constant id with the key of map and
                              // the byte length of buffer with value of map.
@@ -2540,6 +2550,31 @@ bool WebNNGraphBuilderImpl::IsValidForTesting(
     const ContextProperties& context_properties,
     const mojom::GraphInfo& graph_info) {
   return ValidateGraph(context_properties, graph_info).has_value();
+}
+
+// static
+base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>
+WebNNGraphBuilderImpl::TakeConstants(mojom::GraphInfo& graph_info) {
+  std::vector<std::pair<uint64_t, std::unique_ptr<WebNNConstantOperand>>>
+      constant_operands;
+  constant_operands.reserve(graph_info.constant_id_to_buffer_map.size());
+
+  for (auto it = graph_info.constant_id_to_buffer_map.begin();
+       it != graph_info.constant_id_to_buffer_map.end();) {
+    const auto* operand =
+        GetMojoOperand(graph_info.id_to_operand_map, it->first);
+    CHECK(operand);
+    constant_operands.emplace_back(
+        it->first, std::make_unique<WebNNConstantOperand>(operand->descriptor,
+                                                          it->second));
+    // Destroy the `BigBuffer` immediately after copying it, to avoid ending up
+    // holding two copies of the all weights simultaneously by the last
+    // iteration of this loop.
+    it = graph_info.constant_id_to_buffer_map.erase(it);
+  }
+
+  return base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>(
+      std::move(constant_operands));
 }
 
 void WebNNGraphBuilderImpl::DestroySelf() {

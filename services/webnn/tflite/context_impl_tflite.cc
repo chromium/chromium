@@ -4,13 +4,12 @@
 
 #include "services/webnn/tflite/context_impl_tflite.h"
 
-#include "base/types/expected_macros.h"
-#include "services/webnn/public/cpp/supported_data_types.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom-shared.h"
 #include "services/webnn/tflite/graph_builder_tflite.h"
 #include "services/webnn/tflite/graph_impl_tflite.h"
 #include "services/webnn/tflite/tensor_impl_tflite.h"
+#include "services/webnn/webnn_constant_operand.h"
 #include "services/webnn/webnn_context_impl.h"
 #include "services/webnn/webnn_graph_impl.h"
 
@@ -35,9 +34,12 @@ base::WeakPtr<WebNNContextImpl> ContextImplTflite::AsWeakPtr() {
 void ContextImplTflite::CreateGraphImpl(
     mojom::GraphInfoPtr graph_info,
     WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
+    base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>
+        constant_operands,
     CreateGraphImplCallback callback) {
   std::move(callback).Run(GraphImplTflite::CreateAndBuild(
-      std::move(graph_info), std::move(compute_resource_info), this));
+      std::move(graph_info), std::move(compute_resource_info),
+      std::move(constant_operands), this));
 }
 
 void ContextImplTflite::CreateTensorImpl(

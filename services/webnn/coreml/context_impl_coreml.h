@@ -10,7 +10,11 @@
 #include "services/webnn/webnn_graph_impl.h"
 #include "services/webnn/webnn_tensor_impl.h"
 
-namespace webnn::coreml {
+namespace webnn {
+
+class WebNNConstantOperand;
+
+namespace coreml {
 
 // `ContextImplCoreml` is created by `WebNNContextProviderImpl` and responsible
 // for creating a `GraphImplCoreml` for the CoreML backend on macOS. Mac OS
@@ -39,6 +43,8 @@ class API_AVAILABLE(macos(14.0)) ContextImplCoreml final
   void CreateGraphImpl(
       mojom::GraphInfoPtr graph_info,
       WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
+      base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>
+          constant_operands,
       CreateGraphImplCallback callback) override;
 
   void CreateTensorImpl(
@@ -49,6 +55,7 @@ class API_AVAILABLE(macos(14.0)) ContextImplCoreml final
   base::WeakPtrFactory<ContextImplCoreml> weak_factory_{this};
 };
 
-}  // namespace webnn::coreml
+}  // namespace coreml
+}  // namespace webnn
 
 #endif  // SERVICES_WEBNN_COREML_CONTEXT_IMPL_COREML_H_

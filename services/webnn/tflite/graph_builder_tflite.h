@@ -23,7 +23,11 @@
 #include "third_party/flatbuffers/src/include/flatbuffers/flatbuffers.h"
 #include "third_party/tflite/src/tensorflow/compiler/mlir/lite/schema/schema_generated.h"
 
-namespace webnn::tflite {
+namespace webnn {
+
+class WebNNConstantOperand;
+
+namespace tflite {
 
 namespace internal {
 
@@ -55,8 +59,11 @@ class GraphBuilderTflite final {
   // Factory method that creates a GraphBuilderTflite and builds a TFLite
   // Flatbuffer Returns unexpected if it fails.
   [[nodiscard]] static base::expected<flatbuffers::DetachedBuffer, std::string>
-  CreateAndBuild(ContextProperties context_properties,
-                 const mojom::GraphInfo& graph_info);
+  CreateAndBuild(
+      ContextProperties context_properties,
+      const mojom::GraphInfo& graph_info,
+      const base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>&
+          constant_operands);
 
   static ContextProperties GetContextProperties();
 
@@ -68,8 +75,11 @@ class GraphBuilderTflite final {
   using TensorOffset = flatbuffers::Offset<::tflite::Tensor>;
   using StringOffset = flatbuffers::Offset<flatbuffers::String>;
 
-  GraphBuilderTflite(ContextProperties context_properties,
-                     const mojom::GraphInfo& graph_info);
+  GraphBuilderTflite(
+      ContextProperties context_properties,
+      const mojom::GraphInfo& graph_info,
+      const base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>&
+          constant_operands);
   ~GraphBuilderTflite();
 
   // Serialize tensor for input, constant and output operand. It's output
@@ -95,7 +105,7 @@ class GraphBuilderTflite final {
   // The `Buffer` in TFLite schema is the table of raw data buffers, it is used
   // for WebNN constant operations. Referenced by tensors with the index of
   // buffer.
-  uint32_t SerializeBuffer(const mojo_base::BigBuffer& constant);
+  uint32_t SerializeBuffer(base::span<const uint8_t> buffer);
 
   // Serializes `buffer` as a tensor with the given `dimensions` and `type `to
   // the flat buffer and returns the index in `tensors_` if it's successful.
@@ -493,6 +503,12 @@ class GraphBuilderTflite final {
   // into `CreateAndBuild()` is valid for as long as `this` exists.
   base::raw_ref<const mojom::GraphInfo> graph_info_;
 
+  // A reference to the constant operands used by this graph. The creator of
+  // `this` must ensure this reference is valid for as long as `this` exists.
+  base::raw_ref<
+      const base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>>
+      constant_operands_;
+
   flatbuffers::FlatBufferBuilder builder_;
   // `is_created_model_` indicates whether the tflite model is created and the
   // detached buffer owns the buffer and its allocator of the `builder_`.
@@ -521,6 +537,7 @@ class GraphBuilderTflite final {
   std::vector<OperatorOffset> operators_;
 };
 
-}  // namespace webnn::tflite
+}  // namespace tflite
+}  // namespace webnn
 
 #endif  // SERVICES_WEBNN_TFLITE_GRAPH_BUILDER_TFLITE_H_

@@ -22,10 +22,12 @@ void GraphImplCrOS::CreateAndBuild(
     ContextImplCrOS* context_impl,
     mojom::GraphInfoPtr graph_info,
     ComputeResourceInfo compute_resource_info,
+    base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>
+        constant_operands,
     WebNNContextImpl::CreateGraphImplCallback callback) {
   base::expected<flatbuffers::DetachedBuffer, std::string> conversion_result =
       GraphBuilderTflite::CreateAndBuild(context_impl->properties(),
-                                         *graph_info);
+                                         *graph_info, constant_operands);
   if (!conversion_result.has_value()) {
     std::move(callback).Run(base::unexpected(mojom::Error::New(
         mojom::Error::Code::kUnknownError, conversion_result.error())));

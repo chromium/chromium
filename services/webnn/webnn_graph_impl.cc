@@ -101,12 +101,6 @@ WebNNGraphImpl::ComputeResourceInfo::ComputeResourceInfo(
       output_names_to_descriptors(std::move(output_names_to_descriptors)) {}
 
 WebNNGraphImpl::ComputeResourceInfo::ComputeResourceInfo(
-    const ComputeResourceInfo&) = default;
-WebNNGraphImpl::ComputeResourceInfo&
-WebNNGraphImpl::ComputeResourceInfo::operator=(const ComputeResourceInfo&) =
-    default;
-
-WebNNGraphImpl::ComputeResourceInfo::ComputeResourceInfo(
     ComputeResourceInfo&&) = default;
 WebNNGraphImpl::ComputeResourceInfo&
 WebNNGraphImpl::ComputeResourceInfo::operator=(ComputeResourceInfo&&) = default;

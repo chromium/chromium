@@ -94,10 +94,12 @@ void ContextImplCrOS::OnModelLoaderCreated(
 void ContextImplCrOS::CreateGraphImpl(
     mojom::GraphInfoPtr graph_info,
     WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
+    base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>
+        constant_operands,
     CreateGraphImplCallback callback) {
-  GraphImplCrOS::CreateAndBuild(this, std::move(graph_info),
-                                std::move(compute_resource_info),
-                                std::move(callback));
+  GraphImplCrOS::CreateAndBuild(
+      this, std::move(graph_info), std::move(compute_resource_info),
+      std::move(constant_operands), std::move(callback));
 }
 
 void ContextImplCrOS::CreateTensorImpl(

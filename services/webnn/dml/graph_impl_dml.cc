@@ -13,12 +13,14 @@
 
 #include <algorithm>
 #include <array>
+#include <iterator>
 #include <limits>
 #include <numeric>
 
 #include "base/bits.h"
 #include "base/check.h"
 #include "base/containers/fixed_flat_set.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
@@ -45,6 +47,7 @@
 #include "services/webnn/public/cpp/graph_validation_utils.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/mojom/webnn_error.mojom.h"
+#include "services/webnn/webnn_constant_operand.h"
 #include "services/webnn/webnn_context_impl.h"
 #include "services/webnn/webnn_utils.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -207,19 +210,21 @@ base::expected<void, mojom::ErrorPtr> CreateUnexpectedError(
 // Calculate the total byte length of buffers and the D3D12_RANGE for each
 // buffer, all with the required alignment.
 std::optional<AlignedByteLength<uint64_t>> CalculateAlignedByteLength(
-    const base::flat_map<uint64_t, mojo_base::BigBuffer>& ids_to_buffers) {
+    const base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>&
+        constant_operands) {
   base::CheckedNumeric<size_t> total_byte_length(0);
   std::map<uint64_t, D3D12_RANGE> key_to_d3d12_range_map;
 
-  for (const auto& [buffer_id, buffer] : ids_to_buffers) {
-    auto& d3d12_range = key_to_d3d12_range_map[buffer_id];
+  for (const auto& [operand_id, constant_operand] : constant_operands) {
+    auto& d3d12_range = key_to_d3d12_range_map[operand_id];
     d3d12_range.Begin = total_byte_length.ValueOrDie();
 
     // The buffer has a minimum base address alignment requirement of 16 bytes
     // in the macro `DML_MINIMUM_BUFFER_TENSOR_ALIGNMENT`:
     // https://learn.microsoft.com/en-us/windows/win32/direct3d12/direct3d-directml-constants
-    total_byte_length += base::bits::AlignUp<size_t>(
-        buffer.size(), DML_MINIMUM_BUFFER_TENSOR_ALIGNMENT);
+    total_byte_length +=
+        base::bits::AlignUp<size_t>(constant_operand->ByteSpan().size(),
+                                    DML_MINIMUM_BUFFER_TENSOR_ALIGNMENT);
     if (!total_byte_length.IsValid()) {
       LOG(ERROR) << "[WebNN] Failed to calculate the total byte length.";
       return std::nullopt;
@@ -281,7 +286,8 @@ struct UploadAndDefaultBuffers {
 base::expected<std::map<uint64_t, DML_BUFFER_BINDING>, HRESULT>
 UploadAndCreateConstantBufferBinding(
     CommandRecorder* command_recorder,
-    const base::flat_map<uint64_t, mojo_base::BigBuffer>& key_to_buffer_map,
+    const base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>&
+        constant_operands,
     const AlignedByteLength<uint64_t>& aligned_byte_length,
     absl::variant<UploadAndDefaultBuffers, ComPtr<ID3D12Resource>>
         buffer_variant) {
@@ -311,16 +317,18 @@ UploadAndCreateConstantBufferBinding(
   RETURN_UNEXPECTED_IF_FAILED(buffer_to_map->Map(0, nullptr, &mapped_buffer));
 
   std::map<uint64_t, DML_BUFFER_BINDING> key_to_buffer_binding_map;
-  for (auto& [key, buffer] : key_to_buffer_map) {
+  for (auto& [operand_id, constant_operand] : constant_operands) {
     // Copy the input data to the upload heap with byte offset
     const auto& d3d12_range =
-        aligned_byte_length.key_to_d3d12_range_map.at(key);
-    memcpy(static_cast<uint8_t*>(mapped_buffer) + d3d12_range.Begin,
-           buffer.data(), buffer.size());
+        aligned_byte_length.key_to_d3d12_range_map.at(operand_id);
+    auto mapped_buffer_span = base::make_span(
+        static_cast<uint8_t*>(mapped_buffer) + d3d12_range.Begin,
+        constant_operand->descriptor().PackedByteLength());
+    mapped_buffer_span.copy_from(constant_operand->ByteSpan());
     // Create the buffer binding for each constant/input and push back into the
     // DML_BUFFER_BINDING array.
     auto size_in_bytes = d3d12_range.End - d3d12_range.Begin;
-    key_to_buffer_binding_map[key] =
+    key_to_buffer_binding_map[operand_id] =
         DML_BUFFER_BINDING{.Buffer = buffer_to_bind,
                            .Offset = d3d12_range.Begin,
                            .SizeInBytes = size_in_bytes};
@@ -417,33 +425,35 @@ const DML_TENSOR_DESC* GetOptionalDmlTensorDescPtr(
 // Build a one-element constant operand with specified rank for float value and
 // add it into the graph info. For example, if the rank is 3, the operand
 // dimensions would be {1, 1, 1}.
-uint64_t BuildConstantOperandForFloatValue(mojom::GraphInfoPtr& graph_info,
-                                           uint64_t& next_operand_id,
-                                           OperandDataType data_type,
-                                           size_t rank,
-                                           float value) {
-  OperandPtr constant_operand = Operand::New();
-  constant_operand->kind = Operand::Kind::kConstant;
-  constant_operand->descriptor =
+uint64_t BuildConstantOperandForFloatValue(
+    mojom::GraphInfoPtr& graph_info,
+    base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>&
+        constant_operands,
+    uint64_t& next_operand_id,
+    OperandDataType data_type,
+    size_t rank,
+    float value) {
+  auto descriptor =
       *OperandDescriptor::Create(data_type, std::vector<uint32_t>(rank, 1));
 
-  uint64_t constant_id = next_operand_id++;
+  auto constant_operand =
+      Operand::New(Operand::Kind::kConstant, descriptor, /*name=*/std::nullopt);
+
+  uint64_t constant_operand_id = next_operand_id++;
   CHECK(graph_info->id_to_operand_map
-            .try_emplace(constant_id, std::move(constant_operand))
+            .try_emplace(constant_operand_id, std::move(constant_operand))
             .second);
 
-  mojo_base::BigBuffer buffer;
-
+  base::HeapArray<uint8_t> buffer;
   switch (data_type) {
-    case OperandDataType::kFloat32: {
-      buffer = mojo_base::BigBuffer(base::make_span(
-          reinterpret_cast<const uint8_t*>(&value), sizeof(value)));
+    case OperandDataType::kFloat32:
+      buffer =
+          base::HeapArray<uint8_t>::CopiedFrom(base::byte_span_from_ref(value));
       break;
-    }
     case OperandDataType::kFloat16: {
       uint16_t fp16_value = fp16_ieee_from_fp32_value(value);
-      buffer = mojo_base::BigBuffer(base::make_span(
-          reinterpret_cast<const uint8_t*>(&fp16_value), sizeof(fp16_value)));
+      buffer = base::HeapArray<uint8_t>::CopiedFrom(
+          base::byte_span_from_ref(fp16_value));
       break;
     }
     default:
@@ -452,11 +462,13 @@ uint64_t BuildConstantOperandForFloatValue(mojom::GraphInfoPtr& graph_info,
       NOTREACHED();
   }
 
-  CHECK(graph_info->constant_id_to_buffer_map
-            .try_emplace(constant_id, std::move(buffer))
+  CHECK(constant_operands
+            .try_emplace(constant_operand_id,
+                         std::make_unique<WebNNConstantOperand>(
+                             std::move(descriptor), std::move(buffer)))
             .second);
 
-  return constant_id;
+  return constant_operand_id;
 }
 
 const TensorDesc CreateOutputTensorDesc(const IdToOperandMap& id_to_operand_map,
@@ -1368,6 +1380,8 @@ void CreateOperatorNodeForBatchNormalization(
     const std::map<const Operation*, const Operation*>&
         operation_to_fusible_standalone_activation_map,
     mojom::GraphInfoPtr& graph_info,
+    base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>&
+        constant_operands,
     GraphBuilderDml& graph_builder,
     IdToNodeOutputMap& id_to_node_output_map,
     std::unordered_map<uint64_t, uint32_t>& constant_id_to_input_index_map,
@@ -1422,7 +1436,7 @@ void CreateOperatorNodeForBatchNormalization(
     // If the scale is not present, create a constant operand for scale and
     // insert the operand into the graph.
     scale_operand_id = BuildConstantOperandForFloatValue(
-        graph_info, next_operand_id, data_type,
+        graph_info, constant_operands, next_operand_id, data_type,
         /*rank*/ 1, /*default scale*/ 1.0);
 
     // Create an input node for the scale operand and store the assigned input
@@ -1455,7 +1469,7 @@ void CreateOperatorNodeForBatchNormalization(
     // If the bias is not present, create a constant operand for bias and insert
     // the operand into the graph.
     bias_operand_id = BuildConstantOperandForFloatValue(
-        graph_info, next_operand_id, data_type,
+        graph_info, constant_operands, next_operand_id, data_type,
         /*rank*/ 1, /*default bias*/ 0);
 
     // Create an input node for the bias operand and store the assigned input
@@ -2884,6 +2898,8 @@ void CreateOperatorNodeForGelu(
     const IdToOperandMap& id_to_operand_map,
     const mojom::GeluPtr& gelu,
     mojom::GraphInfoPtr& graph_info,
+    base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>&
+        constant_operands,
     GraphBuilderDml& graph_builder,
     IdToNodeOutputMap& id_to_node_output_map,
     std::unordered_map<uint64_t, uint32_t>& constant_id_to_input_index_map,
@@ -2905,7 +2921,7 @@ void CreateOperatorNodeForGelu(
       id_to_operand_map.at(gelu->input_operand_id);
   const OperandDataType data_type = input_operand->descriptor.data_type();
   uint64_t constant_for_sqrt_operand_id = BuildConstantOperandForFloatValue(
-      graph_info, next_operand_id, data_type, /*rank*/ 1,
+      graph_info, constant_operands, next_operand_id, data_type, /*rank*/ 1,
       /*default value*/ 2.0);
   uint32_t constant_for_sqrt_input_index =
       CreateInputNode(id_to_operand_map, constant_for_sqrt_operand_id,
@@ -2970,7 +2986,7 @@ void CreateOperatorNodeForGelu(
 
   // Build constant operand (1.0)
   uint64_t constant_for_add_operand_id = BuildConstantOperandForFloatValue(
-      graph_info, next_operand_id, data_type, /*rank*/ 1,
+      graph_info, constant_operands, next_operand_id, data_type, /*rank*/ 1,
       /*default value*/ 1.0);
   uint32_t constant_for_add_input_index =
       CreateInputNode(id_to_operand_map, constant_for_add_operand_id,
@@ -3012,7 +3028,7 @@ void CreateOperatorNodeForGelu(
 
   // Build constant operand (0.5)
   uint64_t constant_for_mul_operand_id = BuildConstantOperandForFloatValue(
-      graph_info, next_operand_id, data_type, /*rank*/ 1,
+      graph_info, constant_operands, next_operand_id, data_type, /*rank*/ 1,
       /*default value*/ 0.5);
   uint32_t constant_for_mul_input_index =
       CreateInputNode(id_to_operand_map, constant_for_mul_operand_id,
@@ -3176,6 +3192,8 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForGru(
     const IdToOperandMap& id_to_operand_map,
     const GruType& gru,
     mojom::GraphInfoPtr& graph_info,
+    base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>&
+        constant_operands,
     GraphBuilderDml& graph_builder,
     IdToNodeOutputMap& id_to_node_output_map,
     std::unordered_map<uint64_t, uint32_t>& constant_id_to_input_index_map,
@@ -3258,7 +3276,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForGru(
     if (!gru->bias_operand_id.has_value() ||
         !gru->recurrent_bias_operand_id.has_value()) {
       uint64_t zero_bias_operand_id = BuildConstantOperandForFloatValue(
-          graph_info, next_operand_id, data_type, /*rank*/ 1,
+          graph_info, constant_operands, next_operand_id, data_type, /*rank*/ 1,
           /*default bias*/ 0);
       uint32_t bias_input_index =
           CreateInputNode(id_to_operand_map, zero_bias_operand_id,
@@ -3563,6 +3581,8 @@ CreateOperatorNodeForMeanVarianceNormalization(
     const std::map<const Operation*, const Operation*>&
         operation_to_fusible_standalone_activation_map,
     mojom::GraphInfoPtr& graph_info,
+    base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>&
+        constant_operands,
     GraphBuilderDml& graph_builder,
     IdToNodeOutputMap& id_to_node_output_map,
     std::unordered_map<uint64_t, uint32_t>& constant_id_to_input_index_map,
@@ -3607,7 +3627,7 @@ CreateOperatorNodeForMeanVarianceNormalization(
   if ((scale && !bias) || (!scale && bias)) {
     if (!scale) {
       uint64_t scale_operand_id = BuildConstantOperandForFloatValue(
-          graph_info, next_operand_id, data_type,
+          graph_info, constant_operands, next_operand_id, data_type,
           scale_bias_broadcast_axes.size(),
           /*default scale*/ 1.0);
 
@@ -3625,7 +3645,7 @@ CreateOperatorNodeForMeanVarianceNormalization(
     }
     if (!bias) {
       uint64_t bias_operand_id = BuildConstantOperandForFloatValue(
-          graph_info, next_operand_id, data_type,
+          graph_info, constant_operands, next_operand_id, data_type,
           scale_bias_broadcast_axes.size(),
           /*default bias*/ 0);
 
@@ -3780,6 +3800,8 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForLstm(
     const ContextProperties& context_properties,
     const LstmType& lstm,
     mojom::GraphInfoPtr& graph_info,
+    base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>&
+        constant_operands,
     GraphBuilderDml& graph_builder,
     IdToNodeOutputMap& id_to_node_output_map,
     std::unordered_map<uint64_t, uint32_t>& constant_id_to_input_index_map,
@@ -3900,7 +3922,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForLstm(
   // given.
   if ((bias && !recurrent_bias) || (!bias && recurrent_bias)) {
     uint64_t bias_operand_id = BuildConstantOperandForFloatValue(
-        graph_info, next_operand_id, output_data_type,
+        graph_info, constant_operands, next_operand_id, output_data_type,
         /*rank=*/1, /*default bias=*/0);
 
     // Create an input node for the bias operand and store the assigned input
@@ -4536,6 +4558,8 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForTriangular(
     Adapter* adapter,
     const mojom::TriangularPtr& triangular,
     mojom::GraphInfoPtr& graph_info,
+    base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>&
+        constant_operands,
     GraphBuilderDml& graph_builder,
     IdToNodeOutputMap& id_to_node_output_map,
     std::unordered_map<uint64_t, uint32_t>& constant_id_to_input_index_map,
@@ -4680,7 +4704,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForTriangular(
 
   OperandDataType webnn_mask_data_type;
   DML_TENSOR_DATA_TYPE dml_mask_data_type;
-  mojo_base::BigBuffer buffer;
+  base::HeapArray<uint8_t> buffer;
   switch (data_type) {
     case OperandDataType::kInt8:
     case OperandDataType::kUint8: {
@@ -4688,7 +4712,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForTriangular(
       dml_mask_data_type = DML_TENSOR_DATA_TYPE_UINT8;
       std::array<uint8_t, 2> values = {static_cast<uint8_t>(lower_mask),
                                        static_cast<uint8_t>(upper_mask)};
-      buffer = mojo_base::BigBuffer(base::as_bytes(base::make_span(values)));
+      buffer = base::HeapArray<uint8_t>::CopiedFrom(base::as_byte_span(values));
       break;
     }
     case OperandDataType::kFloat16: {
@@ -4698,7 +4722,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForTriangular(
       dml_mask_data_type = DML_TENSOR_DATA_TYPE_UINT16;
       std::array<uint16_t, 2> values = {static_cast<uint16_t>(lower_mask),
                                         static_cast<uint16_t>(upper_mask)};
-      buffer = mojo_base::BigBuffer(base::as_bytes(base::make_span(values)));
+      buffer = base::HeapArray<uint8_t>::CopiedFrom(base::as_byte_span(values));
       break;
     }
     case OperandDataType::kFloat32:
@@ -4708,7 +4732,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForTriangular(
       dml_mask_data_type = DML_TENSOR_DATA_TYPE_UINT32;
       std::array<uint32_t, 2> values = {static_cast<uint32_t>(lower_mask),
                                         static_cast<uint32_t>(upper_mask)};
-      buffer = mojo_base::BigBuffer(base::as_bytes(base::make_span(values)));
+      buffer = base::HeapArray<uint8_t>::CopiedFrom(base::as_byte_span(values));
       break;
     }
     case OperandDataType::kInt64:
@@ -4717,22 +4741,26 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForTriangular(
       dml_mask_data_type = DML_TENSOR_DATA_TYPE_UINT64;
       std::array<uint64_t, 2> values = {static_cast<uint64_t>(lower_mask),
                                         static_cast<uint64_t>(upper_mask)};
-      buffer = mojo_base::BigBuffer(base::as_bytes(base::make_span(values)));
+      buffer = base::HeapArray<uint8_t>::CopiedFrom(
+          base::as_bytes(base::make_span(values)));
       break;
     }
   }
 
-  OperandPtr constant_operand = Operand::New();
-  constant_operand->kind = Operand::Kind::kConstant;
-  constant_operand->descriptor = *OperandDescriptor::Create(
+  auto descriptor = *OperandDescriptor::Create(
       webnn_mask_data_type, std::array<uint32_t, 3>{1, 2, 1});
+
+  auto constant_operand =
+      Operand::New(Operand::Kind::kConstant, descriptor, /*name=*/std::nullopt);
 
   uint64_t constant_operand_id = next_operand_id++;
   CHECK(graph_info->id_to_operand_map
             .try_emplace(constant_operand_id, std::move(constant_operand))
             .second);
-  CHECK(graph_info->constant_id_to_buffer_map
-            .try_emplace(constant_operand_id, std::move(buffer))
+  CHECK(constant_operands
+            .try_emplace(constant_operand_id,
+                         std::make_unique<WebNNConstantOperand>(
+                             descriptor, std::move(buffer)))
             .second);
 
   uint32_t constant_input_index =
@@ -5337,10 +5365,11 @@ void GraphImplDml::OnCompilationComplete(
     scoped_refptr<Adapter> adapter,
     base::WeakPtr<ContextImplDml> context,
     WebNNContextImpl::CreateGraphImplCallback callback,
-    base::flat_map<uint64_t, mojo_base::BigBuffer> constant_id_to_buffer_map,
     std::unordered_map<uint64_t, uint32_t> constant_id_to_input_index_map,
     GraphBufferBindingInfo graph_buffer_binding_info,
     ComputeResourceInfo compute_resource_info,
+    base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>
+        constant_operands,
     base::expected<ComPtr<IDMLCompiledOperator>, HRESULT> compilation_result) {
   TRACE_EVENT0("gpu", "dml::GraphImplDml::OnCompilationComplete");
 
@@ -5402,10 +5431,10 @@ void GraphImplDml::OnCompilationComplete(
   std::vector<DML_BUFFER_BINDING> input_buffer_binding(
       graph_buffer_binding_info.input_buffer_binding_count,
       DML_BUFFER_BINDING{.Buffer = nullptr, .Offset = 0, .SizeInBytes = 0});
-  if (!constant_id_to_buffer_map.empty()) {
+  if (!constant_operands.empty()) {
     std::optional<AlignedByteLength<uint64_t>>
         aligned_byte_length_of_constants =
-            CalculateAlignedByteLength(constant_id_to_buffer_map);
+            CalculateAlignedByteLength(constant_operands);
     if (!aligned_byte_length_of_constants) {
       std::move(callback).Run(base::unexpected(CreateError(
           mojom::Error::Code::kUnknownError,
@@ -5466,7 +5495,7 @@ void GraphImplDml::OnCompilationComplete(
     ASSIGN_OR_RETURN(
         (std::map<uint64_t, DML_BUFFER_BINDING> constant_buffer_binding),
         UploadAndCreateConstantBufferBinding(
-            initialization_command_recorder.get(), constant_id_to_buffer_map,
+            initialization_command_recorder.get(), constant_operands,
             aligned_byte_length_of_constants.value(),
             std::move(buffer_variant)),
         &HandleGraphCreationFailure, "Failed to upload constant weight data.",
@@ -5706,6 +5735,8 @@ base::expected<void, mojom::ErrorPtr> GraphImplDml::CreateAndBuildInternal(
     const ContextProperties& context_properties,
     scoped_refptr<Adapter> adapter,
     mojom::GraphInfoPtr& graph_info,
+    base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>&
+        constant_operands,
     GraphBuilderDml& graph_builder,
     std::unordered_map<uint64_t, uint32_t>& constant_id_to_input_index_map,
     GraphBufferBindingInfo& graph_buffer_binding_info) {
@@ -5724,7 +5755,7 @@ base::expected<void, mojom::ErrorPtr> GraphImplDml::CreateAndBuildInternal(
 
   // The constant operand in WebNNGraph also is treated as input node in graph
   // desc.
-  for (auto& [constant_id, _] : graph_info->constant_id_to_buffer_map) {
+  for (auto& [constant_id, _] : constant_operands) {
     auto graph_input_index = CreateInputNode(
         id_to_operand_map, constant_id, graph_builder, id_to_node_output_map);
     constant_id_to_input_index_map[constant_id] = graph_input_index;
@@ -5778,7 +5809,7 @@ base::expected<void, mojom::ErrorPtr> GraphImplDml::CreateAndBuildInternal(
         CreateOperatorNodeForBatchNormalization(
             context_properties, operation.get(),
             graph_fusion_info.operation_to_fusible_standalone_activation_map,
-            graph_info, graph_builder, id_to_node_output_map,
+            graph_info, constant_operands, graph_builder, id_to_node_output_map,
             constant_id_to_input_index_map, next_operand_id);
         break;
       }
@@ -5849,7 +5880,7 @@ base::expected<void, mojom::ErrorPtr> GraphImplDml::CreateAndBuildInternal(
       case mojom::Operation::Tag::kGelu: {
         CreateOperatorNodeForGelu(
             adapter.get(), id_to_operand_map, operation->get_gelu(), graph_info,
-            graph_builder, id_to_node_output_map,
+            constant_operands, graph_builder, id_to_node_output_map,
             constant_id_to_input_index_map, next_operand_id);
         break;
       }
@@ -5863,14 +5894,14 @@ base::expected<void, mojom::ErrorPtr> GraphImplDml::CreateAndBuildInternal(
       case mojom::Operation::Tag::kGru: {
         create_operator_result = CreateOperatorNodeForGru<mojom::GruPtr>(
             context_properties, id_to_operand_map, operation->get_gru(),
-            graph_info, graph_builder, id_to_node_output_map,
+            graph_info, constant_operands, graph_builder, id_to_node_output_map,
             constant_id_to_input_index_map, next_operand_id);
         break;
       }
       case mojom::Operation::Tag::kGruCell: {
         create_operator_result = CreateOperatorNodeForGru<mojom::GruCellPtr>(
             context_properties, id_to_operand_map, operation->get_gru_cell(),
-            graph_info, graph_builder, id_to_node_output_map,
+            graph_info, constant_operands, graph_builder, id_to_node_output_map,
             constant_id_to_input_index_map, next_operand_id);
         break;
       }
@@ -5906,7 +5937,7 @@ base::expected<void, mojom::ErrorPtr> GraphImplDml::CreateAndBuildInternal(
         create_operator_result = CreateOperatorNodeForMeanVarianceNormalization(
             context_properties, instance_normalization, operation.get(),
             graph_fusion_info.operation_to_fusible_standalone_activation_map,
-            graph_info, graph_builder, id_to_node_output_map,
+            graph_info, constant_operands, graph_builder, id_to_node_output_map,
             constant_id_to_input_index_map, next_operand_id, mean_variance_axes,
             scale_bias_broadcast_axes, Operation::Tag::kInstanceNormalization);
         break;
@@ -5917,7 +5948,7 @@ base::expected<void, mojom::ErrorPtr> GraphImplDml::CreateAndBuildInternal(
         create_operator_result = CreateOperatorNodeForMeanVarianceNormalization(
             context_properties, layer_normalization, operation.get(),
             graph_fusion_info.operation_to_fusible_standalone_activation_map,
-            graph_info, graph_builder, id_to_node_output_map,
+            graph_info, constant_operands, graph_builder, id_to_node_output_map,
             constant_id_to_input_index_map, next_operand_id, axes, axes,
             Operation::Tag::kLayerNormalization);
         break;
@@ -5937,14 +5968,14 @@ base::expected<void, mojom::ErrorPtr> GraphImplDml::CreateAndBuildInternal(
       case Operation::Tag::kLstm: {
         create_operator_result = CreateOperatorNodeForLstm<mojom::Lstm>(
             context_properties, *operation->get_lstm(), graph_info,
-            graph_builder, id_to_node_output_map,
+            constant_operands, graph_builder, id_to_node_output_map,
             constant_id_to_input_index_map, next_operand_id);
         break;
       }
       case Operation::Tag::kLstmCell: {
         create_operator_result = CreateOperatorNodeForLstm<mojom::LstmCell>(
             context_properties, *operation->get_lstm_cell(), graph_info,
-            graph_builder, id_to_node_output_map,
+            constant_operands, graph_builder, id_to_node_output_map,
             constant_id_to_input_index_map, next_operand_id);
         break;
       }
@@ -6067,7 +6098,7 @@ base::expected<void, mojom::ErrorPtr> GraphImplDml::CreateAndBuildInternal(
       case mojom::Operation::Tag::kTriangular: {
         create_operator_result = CreateOperatorNodeForTriangular(
             context_properties, adapter.get(), operation->get_triangular(),
-            graph_info, graph_builder, id_to_node_output_map,
+            graph_info, constant_operands, graph_builder, id_to_node_output_map,
             constant_id_to_input_index_map, next_operand_id);
         break;
       }
@@ -6126,6 +6157,8 @@ void GraphImplDml::CreateAndBuild(
     base::WeakPtr<ContextImplDml> context,
     mojom::GraphInfoPtr graph_info,
     ComputeResourceInfo compute_resource_info,
+    base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>
+        constant_operands,
     WebNNContextImpl::CreateGraphImplCallback callback,
     const bool pass_dml_execution_disable_meta_commands) {
   TRACE_EVENT0("gpu", "dml::GraphImplDml::CreateAndBuild");
@@ -6135,8 +6168,9 @@ void GraphImplDml::CreateAndBuild(
   GraphBufferBindingInfo graph_buffer_binding_info;
   base::expected<void, mojom::ErrorPtr> create_operator_result =
       GraphImplDml::CreateAndBuildInternal(
-          context->properties(), adapter, graph_info, graph_builder,
-          constant_id_to_input_index_map, graph_buffer_binding_info);
+          context->properties(), adapter, graph_info, constant_operands,
+          graph_builder, constant_id_to_input_index_map,
+          graph_buffer_binding_info);
 
   // TODO(crbug.com/349649099): Handle context lost for operator creation
   // failures.
@@ -6155,10 +6189,10 @@ void GraphImplDml::CreateAndBuild(
                      pass_dml_execution_disable_meta_commands),
       base::BindOnce(&GraphImplDml::OnCompilationComplete, std::move(adapter),
                      std::move(context), std::move(callback),
-                     std::move(graph_info->constant_id_to_buffer_map),
                      std::move(constant_id_to_input_index_map),
                      std::move(graph_buffer_binding_info),
-                     std::move(compute_resource_info)));
+                     std::move(compute_resource_info),
+                     std::move(constant_operands)));
 }
 
 void GraphImplDml::HandleComputationFailure(

@@ -12,6 +12,7 @@
 #include "services/webnn/coreml/tensor_impl_coreml.h"
 #include "services/webnn/public/cpp/context_properties.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
+#include "services/webnn/webnn_constant_operand.h"
 #include "services/webnn/webnn_context_impl.h"
 #include "services/webnn/webnn_context_provider_impl.h"
 
@@ -36,10 +37,13 @@ base::WeakPtr<WebNNContextImpl> ContextImplCoreml::AsWeakPtr() {
 void ContextImplCoreml::CreateGraphImpl(
     mojom::GraphInfoPtr graph_info,
     WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
+    base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>
+        constant_operands,
     CreateGraphImplCallback callback) {
   GraphImplCoreml::CreateAndBuild(
       this, std::move(graph_info), std::move(compute_resource_info),
-      options().Clone(), properties(), std::move(callback));
+      std::move(constant_operands), options().Clone(), properties(),
+      std::move(callback));
 }
 
 void ContextImplCoreml::CreateTensorImpl(

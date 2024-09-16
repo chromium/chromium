@@ -42,6 +42,7 @@
 #include "services/webnn/public/mojom/webnn_error.mojom.h"
 #include "services/webnn/queueable_resource_state_base.h"
 #include "services/webnn/resource_task.h"
+#include "services/webnn/webnn_constant_operand.h"
 #include "services/webnn/webnn_context_impl.h"
 #include "services/webnn/webnn_switches.h"
 
@@ -174,6 +175,8 @@ void GraphImplCoreml::CreateAndBuild(
     ContextImplCoreml* context,
     mojom::GraphInfoPtr graph_info,
     ComputeResourceInfo compute_resource_info,
+    base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>
+        constant_operands,
     mojom::CreateContextOptionsPtr context_options,
     ContextProperties context_properties,
     WebNNContextImpl::CreateGraphImplCallback callback) {
@@ -187,7 +190,8 @@ void GraphImplCoreml::CreateAndBuild(
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN, base::MayBlock()},
       base::BindOnce(&GraphImplCoreml::CreateAndBuildOnBackgroundThread,
                      std::move(graph_info), std::move(compute_resource_info),
-                     std::move(context_options), std::move(context_properties),
+                     std::move(constant_operands), std::move(context_options),
+                     std::move(context_properties),
                      std::move(wrapped_callback)));
 }
 
@@ -195,6 +199,8 @@ void GraphImplCoreml::CreateAndBuild(
 void GraphImplCoreml::CreateAndBuildOnBackgroundThread(
     mojom::GraphInfoPtr graph_info,
     ComputeResourceInfo compute_resource_info,
+    base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>
+        constant_operands,
     mojom::CreateContextOptionsPtr context_options,
     ContextProperties context_properties,
     base::OnceCallback<void(
@@ -210,9 +216,9 @@ void GraphImplCoreml::CreateAndBuildOnBackgroundThread(
   // Generate .mlpackage.
   ASSIGN_OR_RETURN(
       std::unique_ptr<GraphBuilderCoreml::Result> build_graph_result,
-      GraphBuilderCoreml::CreateAndBuild(*graph_info.get(),
-                                         std::move(context_properties),
-                                         model_file_dir.GetPath()),
+      GraphBuilderCoreml::CreateAndBuild(
+          *graph_info.get(), std::move(context_properties), constant_operands,
+          model_file_dir.GetPath()),
       [&](mojom::ErrorPtr error) {
         std::move(callback).Run(base::unexpected(std::move(error)));
         return;

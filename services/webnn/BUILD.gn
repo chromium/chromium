@@ -189,6 +189,8 @@ component("webnn_service") {
 
 component("webnn_utils") {
   sources = [
+    "webnn_constant_operand.cc",
+    "webnn_constant_operand.h",
     "webnn_utils.cc",
     "webnn_utils.h",
   ]

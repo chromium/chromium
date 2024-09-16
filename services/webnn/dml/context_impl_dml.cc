@@ -28,6 +28,7 @@
 #include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/cpp/supported_data_types.h"
 #include "services/webnn/public/mojom/webnn_tensor.mojom.h"
+#include "services/webnn/webnn_constant_operand.h"
 #include "services/webnn/webnn_context_impl.h"
 
 namespace webnn::dml {
@@ -438,10 +439,13 @@ base::WeakPtr<WebNNContextImpl> ContextImplDml::AsWeakPtr() {
 void ContextImplDml::CreateGraphImpl(
     mojom::GraphInfoPtr graph_info,
     WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
+    base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>
+        constant_operands,
     WebNNContextImpl::CreateGraphImplCallback callback) {
   GraphImplDml::CreateAndBuild(
       adapter_, weak_factory_.GetWeakPtr(), std::move(graph_info),
-      std::move(compute_resource_info), std::move(callback),
+      std::move(compute_resource_info), std::move(constant_operands),
+      std::move(callback),
       gpu_feature_info_->IsWorkaroundEnabled(
           gpu::DML_EXECUTION_DISABLE_META_COMMANDS));
 }
