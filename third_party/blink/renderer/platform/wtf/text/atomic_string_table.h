@@ -45,6 +45,7 @@ class WTF_EXPORT AtomicStringTable final {
   scoped_refptr<StringImpl> Add(const UChar* chars,
                                 unsigned length,
                                 AtomicStringUCharEncoding encoding);
+  scoped_refptr<StringImpl> Add(const StringView& string_view);
 
   // Adding UTF8.
   // Returns null if the characters contain invalid utf8 sequences.

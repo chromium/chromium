@@ -59,6 +59,9 @@ AtomicString::AtomicString(const UChar* chars)
           chars ? LengthOfNullTerminatedString(chars) : 0,
           AtomicStringUCharEncoding::kUnknown)) {}
 
+AtomicString::AtomicString(const StringView& string_view)
+    : string_(AtomicStringTable::Instance().Add(string_view)) {}
+
 scoped_refptr<StringImpl> AtomicString::AddSlowCase(
     scoped_refptr<StringImpl>&& string) {
   DCHECK(!string->IsAtomic());

@@ -374,6 +374,25 @@ struct LCharBufferTranslator {
   }
 };
 
+scoped_refptr<StringImpl> AtomicStringTable::Add(
+    const StringView& string_view) {
+  if (string_view.IsNull()) {
+    return nullptr;
+  }
+
+  if (string_view.empty()) {
+    return StringImpl::empty_;
+  }
+
+  if (string_view.Is8Bit()) {
+    LCharBuffer buffer(string_view.Characters8(), string_view.length());
+    return AddToStringTable<LCharBuffer, LCharBufferTranslator>(buffer);
+  }
+  UCharBuffer buffer(string_view.Characters16(), string_view.length(),
+                     AtomicStringUCharEncoding::kUnknown);
+  return AddToStringTable<UCharBuffer, UCharBufferTranslator>(buffer);
+}
+
 scoped_refptr<StringImpl> AtomicStringTable::Add(const LChar* s,
                                                  unsigned length) {
   if (!s)
