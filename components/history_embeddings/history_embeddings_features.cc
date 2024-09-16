@@ -135,10 +135,6 @@ const base::FeatureParam<base::TimeDelta> kEmbeddingsServiceTimeout(
     "EmbeddingsServiceTimeout",
     base::Seconds(60));
 
-const base::FeatureParam<std::string> kFilterHashes(&kHistoryEmbeddings,
-                                                    "FilterHashes",
-                                                    "");
-
 const base::FeatureParam<bool> kEnableSidePanel(&kHistoryEmbeddings,
                                                 "EnableSidePanel",
                                                 false);

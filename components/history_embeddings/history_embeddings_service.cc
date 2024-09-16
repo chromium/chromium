@@ -274,11 +274,6 @@ HistoryEmbeddingsService::HistoryEmbeddingsService(
       history_service_->history_dir());
   history_service_observation_.Observe(history_service_);
 
-  if (!kFilterHashes.Get().empty()) {
-    SearchStringsUpdateListener::GetInstance()->SetFilterWordsHashes(
-        kFilterHashes.Get());
-  }
-
   // Notify page content annotations service that we will need the content
   // visibility model during the session.
   if (page_content_annotations_service_) {

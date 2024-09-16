@@ -7,7 +7,6 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_split.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 
@@ -55,18 +54,6 @@ void SearchStringsUpdateListener::OnSearchStringsUpdate(
       base::BindOnce(&LoadSearchStringsFile, file_path),
       base::BindOnce(&SearchStringsUpdateListener::SetSearchStrings,
                      weak_ptr_factory_.GetWeakPtr()));
-}
-
-void SearchStringsUpdateListener::SetFilterWordsHashes(
-    const std::string_view filter_words_hashes) {
-  for (std::string_view hash_string : base::SplitStringPiece(
-           filter_words_hashes, ",", base::WhitespaceHandling::TRIM_WHITESPACE,
-           base::SplitResult::SPLIT_WANT_NONEMPTY)) {
-    uint32_t hash;
-    if (base::StringToUint(hash_string, &hash)) {
-      filter_words_hashes_.insert(hash);
-    }
-  }
 }
 
 void SearchStringsUpdateListener::ResetForTesting() {

@@ -7,7 +7,6 @@
 
 #include <memory>
 #include <string>
-#include <string_view>
 #include <unordered_set>
 
 #include "base/files/file_path.h"
@@ -17,10 +16,8 @@
 
 namespace history_embeddings {
 
-// Used by HistoryEmbeddingsService to hold the filter words hashes received via
-// Finch. It will eventually be used by a ComponentInstaller to hold the
-// filter words hashes received via Component Updater.
-// TODO(b/365559465): Update this comment once ComponentInstaller is set up.
+// Used by HistorySearchStringsComponentInstallerPolicy to hold the filter words
+// and stop words hashes via Component Updater.
 class SearchStringsUpdateListener {
  public:
   static SearchStringsUpdateListener* GetInstance();
@@ -30,10 +27,6 @@ class SearchStringsUpdateListener {
 
   // Called by ComponentInstaller when the search strings file is installed.
   void OnSearchStringsUpdate(const base::FilePath& file_path);
-
-  // Populates `filter_words_hashes_` from the comma-separated input string.
-  // TODO(b/365559465): Remove this function once ComponentInstaller is set up.
-  void SetFilterWordsHashes(const std::string_view filter_words_hashes);
 
   const std::unordered_set<uint32_t>& filter_words_hashes() {
     return filter_words_hashes_;
