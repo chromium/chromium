@@ -53,6 +53,7 @@ aggregate_vector_icons("components_vector_icons") {
     "close.icon",
     "close_chrome_refresh.icon",
     "close_rounded.icon",
+    "close_small.icon",
     "code.icon",
     "code_chrome_refresh.icon",
     "code_off_chrome_refresh.icon",

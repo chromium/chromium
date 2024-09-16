@@ -189,9 +189,9 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaProgressView
   // Whether we should use the paused colors for the progress view.
   bool use_paused_colors_ = true;
 
-  // Width for a foreground straight progress line. The value can change
-  // depending on whether the user is dragging the progress line.
-  int foreground_straight_line_width_ = 0;
+  // Stroke width for the straight progress line that changes depending on
+  // whether the user is dragging the progress line.
+  int straight_progress_stroke_width_ = 0;
 };
 
 }  // namespace global_media_controls

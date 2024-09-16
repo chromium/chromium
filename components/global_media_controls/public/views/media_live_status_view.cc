@@ -16,7 +16,7 @@ namespace global_media_controls {
 
 namespace {
 
-constexpr int kViewHeight = 24;
+constexpr int kViewHeight = 28;
 constexpr int kLineViewHeight = 2;
 constexpr int kLiveLabelPadding = 4;
 constexpr int kLiveLabelCornerRadius = 4;

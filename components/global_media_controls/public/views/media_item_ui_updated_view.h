@@ -196,6 +196,9 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIUpdatedView
 
   base::ObserverList<MediaItemUIObserver> observers_;
 
+  // Required to store the returned value though it is not used.
+  base::CallbackListSubscription title_label_changed_callback_;
+
   raw_ptr<views::ImageView> artwork_view_ = nullptr;
   raw_ptr<views::ImageView> favicon_view_ = nullptr;
   raw_ptr<views::ImageView> casting_indicator_view_ = nullptr;
@@ -218,7 +221,6 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIUpdatedView
   media_message_center::MediaColorTheme media_color_theme_;
   raw_ptr<MediaItemUIDeviceSelector> device_selector_view_ = nullptr;
   raw_ptr<MediaItemUIFooter> footer_view_ = nullptr;
-  base::CallbackListSubscription title_label_changed_callback_;
 };
 
 }  // namespace global_media_controls

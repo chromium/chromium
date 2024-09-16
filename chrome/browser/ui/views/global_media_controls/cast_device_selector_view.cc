@@ -32,7 +32,7 @@
 
 namespace {
 
-constexpr gfx::Size kCloseButtonSize{20, 20};
+constexpr gfx::Size kCloseButtonSize{28, 28};
 
 constexpr int kBackgroundBorderThickness = 1;
 constexpr int kBackgroundCornerRadius = 8;
@@ -40,11 +40,11 @@ constexpr int kDeviceEntryCornerRadius = 4;
 constexpr int kBackgroundSeparator = 8;
 constexpr int kDeviceContainerSeparator = 4;
 constexpr int kDeviceEntrySeparator = 8;
-constexpr int kCloseButtonIconSize = 16;
+constexpr int kCloseButtonIconSize = 20;
 constexpr int kDeviceEntryIconSize = 20;
 
-constexpr gfx::Insets kBackgroundInsets = gfx::Insets::VH(16, 8);
-constexpr gfx::Insets kCastHeaderRowInsets = gfx::Insets::VH(0, 8);
+constexpr gfx::Insets kBackgroundInsets = gfx::Insets::TLBR(12, 8, 16, 8);
+constexpr gfx::Insets kCastHeaderRowInsets = gfx::Insets::TLBR(0, 8, 0, 4);
 constexpr gfx::Insets kIconHoverButtonInsets = gfx::Insets::VH(6, 8);
 constexpr gfx::Insets kThrobberHoverButtonInsets = gfx::Insets::VH(0, 8);
 
@@ -132,6 +132,8 @@ CastDeviceSelectorView::CastDeviceSelectorView(
   auto* cast_header_row =
       AddChildView(std::make_unique<views::BoxLayoutView>());
   cast_header_row->SetInsideBorderInsets(kCastHeaderRowInsets);
+  cast_header_row->SetCrossAxisAlignment(
+      views::BoxLayout::CrossAxisAlignment::kCenter);
 
   // Create the cast header label.
   views::Label* cast_header_label =
@@ -148,7 +150,7 @@ CastDeviceSelectorView::CastDeviceSelectorView(
                               base::Unretained(this)),
           global_media_controls::kEmptyMediaActionButtonId,
           IDS_GLOBAL_MEDIA_CONTROLS_CLOSE_DEVICE_LIST_TEXT,
-          kCloseButtonIconSize, vector_icons::kCloseIcon, kCloseButtonSize,
+          kCloseButtonIconSize, vector_icons::kCloseSmallIcon, kCloseButtonSize,
           media_color_theme_.secondary_foreground_color_id,
           media_color_theme_.secondary_foreground_color_id,
           media_color_theme_.focus_ring_color_id);
