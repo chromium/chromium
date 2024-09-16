@@ -512,8 +512,11 @@ void ShortcutsBackend::ComputeDatabaseMetrics() {
   UMA_HISTOGRAM_COUNTS_10000("ShortcutsProvider.DatabaseSize.OldEntries",
                              num_old_shortcuts);
 
-  int tenth_percent_old_shortcuts =
-      static_cast<int>((num_old_shortcuts * 1000.0 / num_shortcuts));
+  int tenth_percent_old_shortcuts = 0;
+  if (num_shortcuts > 0) {
+    tenth_percent_old_shortcuts =
+        static_cast<int>((num_old_shortcuts * 1000.0 / num_shortcuts));
+  }
   UMA_HISTOGRAM_EXACT_LINEAR(
       "ShortcutsProvider.DatabaseSize.OldEntriesPercentage",
       tenth_percent_old_shortcuts, 1001);
