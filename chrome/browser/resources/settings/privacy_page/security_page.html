@@ -272,15 +272,17 @@
           numeric-checked-value="[[httpsFirstModeSettingEnum_.ENABLED_FULL]]">
       </settings-toggle-button>
       <template is="dom-if" if="[[showSecureDnsSetting_]]">
-        <settings-secure-dns prefs="{{prefs}}"></settings-secure-dns>
-      </template>
-    </template>
-    <tempate is="dom-if" if="[[enableHttpsFirstModeNewSettings_]]" restamp>
-      <template is="dom-if" if="[[showSecureDnsSetting_]]">
-        <settings-secure-dns prefs="{{prefs}}" class="no-hr">
+        <settings-secure-dns prefs="{{prefs}}" id="secureDnsSettingOld">
         </settings-secure-dns>
       </template>
-    </tempate>
+    </template>
+    <template is="dom-if" if="[[enableHttpsFirstModeNewSettings_]]" restamp>
+      <template is="dom-if" if="[[showSecureDnsSetting_]]">
+        <settings-secure-dns prefs="{{prefs}}" class="no-hr"
+            id="secureDnsSettingNew">
+        </settings-secure-dns>
+      </template>
+    </template>
 <if expr="is_chromeos">
     <template is="dom-if" if="[[showSecureDnsSettingLink_]]">
         <cr-link-row id="openChromeOSSecureDnsSettings"
