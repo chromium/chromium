@@ -215,6 +215,10 @@ class MockPersonalizationAppThemeProvider
               IsGeolocationEnabledForSystemServices,
               (IsGeolocationEnabledForSystemServicesCallback callback),
               (override));
+  MOCK_METHOD(void,
+              IsGeolocationUserModifiable,
+              (IsGeolocationUserModifiableCallback callback),
+              (override));
 };
 
 class MockPersonalizationAppWallpaperProvider

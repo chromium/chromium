@@ -2827,6 +2827,9 @@
         <message name="IDS_PERSONALIZATION_APP_ERROR_TOOLTIP_AUTO_COLOR_MODE" desc="Tooltip for the button to enable auto color mode.">
           Time based changes may not be accurate. Turn on system location access in settings.
         </message>
+        <message name="IDS_PERSONALIZATION_APP_MANAGED_ERROR_TOOLTIP_AUTO_COLOR_MODE" desc="Tooltip text for auto color mode, when geolocation is disabled by the admin.">
+          Time based changes may not be accurate. This setting is managed by your administrator.
+        </message>
         <message name="IDS_PERSONALIZATION_APP_ARIA_LABEL_GO_TO_ACCOUNT_SETTINGS" desc="Aria label for the link to account settings.">
           Go to account settings
         </message>

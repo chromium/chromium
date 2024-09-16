@@ -6,7 +6,7 @@
 
 import 'chrome://personalization/strings.m.js';
 
-import {emptyState, PersonalizationThemeElement, SetDarkModeEnabledAction, setGeolocationPermissionEnabledAction, SetGeolocationPermissionEnabledActionForTheme, ThemeActionName, ThemeObserver} from 'chrome://personalization/js/personalization_app.js';
+import {CrTooltipIconElement, emptyState, PersonalizationThemeElement, SetDarkModeEnabledAction, setGeolocationIsUserModifiableAction, SetGeolocationIsUserModifiableActionForTheme, setGeolocationPermissionEnabledAction, SetGeolocationPermissionEnabledActionForTheme, ThemeActionName, ThemeObserver} from 'chrome://personalization/js/personalization_app.js';
 import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -142,7 +142,7 @@ suite('PersonalizationThemeTest', function() {
         personalizationThemeElement!.shadowRoot!.getElementById(
             colorModeButtonId)! as CrButtonElement;
     colorModeButton.click();
-    flushTasks();
+    await flushTasks();
     await waitAfterNextRender(personalizationThemeElement!);
   }
 
@@ -151,22 +151,34 @@ suite('PersonalizationThemeTest', function() {
         'locationDeniedInfoIcon');
   }
 
-  async function setGeolocationPermissionEnabled(enabled: boolean) {
+  function isAutoModeLocationWarningIconManaged(): boolean {
+    const tooltip = personalizationThemeElement!.shadowRoot!.getElementById(
+                        'locationDeniedInfoIcon') as CrTooltipIconElement;
+    return tooltip.iconClass! === 'personalization:managed';
+  }
+
+  // Use this helper method to set the geolocation permission in the
+  // `personalizationStore`. `isManaged` is an optional parameter, used for
+  // testing managed scenarios.
+  async function setGeolocationPermission(
+      enabled: boolean, isManaged: boolean = false) {
     personalizationStore.expectAction(
         ThemeActionName.SET_GEOLOCATION_PERMISSION_ENABLED);
     personalizationStore.dispatch(
         setGeolocationPermissionEnabledAction(enabled));
-    const action = await personalizationStore.waitForAction(
-                       ThemeActionName.SET_GEOLOCATION_PERMISSION_ENABLED) as
+    let action: any = await personalizationStore.waitForAction(
+                          ThemeActionName.SET_GEOLOCATION_PERMISSION_ENABLED) as
         SetGeolocationPermissionEnabledActionForTheme;
-    if (enabled) {
-      assertTrue(action.enabled);
+    assertEquals(enabled, action.enabled);
 
-    } else {
-      assertFalse(action.enabled);
-    }
-
-    personalizationStore.notifyObservers();
+    personalizationStore.expectAction(
+        ThemeActionName.SET_GEOLOCATION_IS_USER_MODIFIABLE);
+    personalizationStore.dispatch(
+        setGeolocationIsUserModifiableAction(!isManaged));
+    action = await personalizationStore.waitForAction(
+                 ThemeActionName.SET_GEOLOCATION_IS_USER_MODIFIABLE) as
+        SetGeolocationIsUserModifiableActionForTheme;
+    assertEquals(!isManaged, action.isUserModifiable);
   }
 
   test(
@@ -179,15 +191,15 @@ suite('PersonalizationThemeTest', function() {
         personalizationStore.setReducersEnabled(true);
 
         // Check that geolocation content is not displayed on any configuration.
-        setThemeColorMode(LIGHT_MODE_BUTTON_ID);
+        await setThemeColorMode(LIGHT_MODE_BUTTON_ID);
         assertFalse(
             isAutoModeLocationWarningIconPresent(),
             'Tooltip shown when PH is disabled');
-        setThemeColorMode(DARK_MODE_BUTTON_ID);
+        await setThemeColorMode(DARK_MODE_BUTTON_ID);
         assertFalse(
             isAutoModeLocationWarningIconPresent(),
             'Tooltip shown when PH is disabled');
-        setThemeColorMode(AUTO_MODE_BUTTON_ID);
+        await setThemeColorMode(AUTO_MODE_BUTTON_ID);
         assertFalse(
             isAutoModeLocationWarningIconPresent(),
             'Tooltip shown when PH is disabled');
@@ -195,7 +207,7 @@ suite('PersonalizationThemeTest', function() {
 
 
   test(
-      'shows geolocation warning tooltip on location disabled ' +
+      'shows geolocation warning tooltip on location disabled by user ' +
           '(PrivacyHub enabled)',
       async () => {
         // Enable Privacy Hub feature flag.
@@ -205,36 +217,88 @@ suite('PersonalizationThemeTest', function() {
         personalizationStore.setReducersEnabled(true);
 
         // Enable geolocation.
-        setGeolocationPermissionEnabled(true);
+        await setGeolocationPermission(/*enabled=*/ true);
         // Check that tooltip is not shown on any configuration.
-        setThemeColorMode(LIGHT_MODE_BUTTON_ID);
+        await setThemeColorMode(LIGHT_MODE_BUTTON_ID);
         assertFalse(
             isAutoModeLocationWarningIconPresent(),
             'Tooltip shown when system geolocation is enabled');
-        setThemeColorMode(DARK_MODE_BUTTON_ID);
+        await setThemeColorMode(DARK_MODE_BUTTON_ID);
         assertFalse(
             isAutoModeLocationWarningIconPresent(),
             'Tooltip shown when system geolocation is enabled');
-        setThemeColorMode(AUTO_MODE_BUTTON_ID);
+        await setThemeColorMode(AUTO_MODE_BUTTON_ID);
         assertFalse(
             isAutoModeLocationWarningIconPresent(),
             'Tooltip shown when system geolocation is enabled');
 
         // Disable geolocation.
-        setGeolocationPermissionEnabled(false);
+        await setGeolocationPermission(/*enabled=*/ false);
         // Check that tooltip is only shown when Auto Schedule is selected.
-        setThemeColorMode(LIGHT_MODE_BUTTON_ID);
+        await setThemeColorMode(LIGHT_MODE_BUTTON_ID);
         assertFalse(
             isAutoModeLocationWarningIconPresent(),
             'Tooltip shown when AutoMode not selected');
-        setThemeColorMode(DARK_MODE_BUTTON_ID);
+        await setThemeColorMode(DARK_MODE_BUTTON_ID);
         assertFalse(
             isAutoModeLocationWarningIconPresent(),
             'Tooltip shown when AutoMode not selected');
-        setThemeColorMode(AUTO_MODE_BUTTON_ID);
+        await setThemeColorMode(AUTO_MODE_BUTTON_ID);
         assertTrue(
             isAutoModeLocationWarningIconPresent(),
             'Tooltip not shown when AutoMode is selected');
+        assertFalse(isAutoModeLocationWarningIconManaged());
+        assertTrue(isGeolocationDialogVisible());
+      });
+
+  test(
+      'show managed tooltip when location is managed by the admin',
+      async () => {
+        // Enable Privacy Hub feature flag.
+        loadTimeData.overrideValues({isCrosPrivacyHubLocationEnabled: true});
+
+        personalizationThemeElement = initElement(PersonalizationThemeElement);
+        personalizationStore.setReducersEnabled(true);
+
+        // Force-enable geolocation, tooltip should never be displayed.
+        await setGeolocationPermission(/*enabled=*/ true, /*managed=*/ true);
+        await flushTasks();
+        await setThemeColorMode(LIGHT_MODE_BUTTON_ID);
+        assertFalse(
+            isAutoModeLocationWarningIconPresent(),
+            'Tooltip shown when system geolocation is force-enabled');
+        assertFalse(isGeolocationDialogVisible());
+        await setThemeColorMode(DARK_MODE_BUTTON_ID);
+        assertFalse(
+            isAutoModeLocationWarningIconPresent(),
+            'Tooltip shown when system geolocation is force-enabled');
+        assertFalse(isGeolocationDialogVisible());
+        await setThemeColorMode(AUTO_MODE_BUTTON_ID);
+        assertFalse(
+            isAutoModeLocationWarningIconPresent(),
+            'Tooltip shown when system geolocation is force-enabled');
+        assertFalse(isGeolocationDialogVisible());
+
+        // Force-disable geolocation.
+        await setGeolocationPermission(/*enabled=*/ false, /*managed=*/ true);
+        await flushTasks();
+        // Check that tooltip is only shown when Auto Schedule is selected.
+        await setThemeColorMode(LIGHT_MODE_BUTTON_ID);
+        assertFalse(
+            isAutoModeLocationWarningIconPresent(),
+            'Tooltip shown when AutoMode not selected');
+        assertFalse(isGeolocationDialogVisible());
+        await setThemeColorMode(DARK_MODE_BUTTON_ID);
+        assertFalse(
+            isAutoModeLocationWarningIconPresent(),
+            'Tooltip shown when AutoMode not selected');
+        assertFalse(isGeolocationDialogVisible());
+        await setThemeColorMode(AUTO_MODE_BUTTON_ID);
+        assertTrue(
+            isAutoModeLocationWarningIconPresent(),
+            'Tooltip not shown when AutoMode is selected');
+        assertTrue(isAutoModeLocationWarningIconManaged(), 'wrong tooltip');
+        assertFalse(isGeolocationDialogVisible());
       });
 
   function isGeolocationDialogVisible(): boolean {
@@ -243,24 +307,29 @@ suite('PersonalizationThemeTest', function() {
   }
 
   test('show Geolocation dialog and click allow', async () => {
-    personalizationThemeElement = initElement(PersonalizationThemeElement);
-    personalizationStore.setReducersEnabled(true);
-
     // Enable Privacy Hub feature flag.
     loadTimeData.overrideValues({isCrosPrivacyHubLocationEnabled: true});
+
+    // Load personalization theme element.
+    personalizationThemeElement = initElement(PersonalizationThemeElement);
 
     // Set the default sunrise/sunset time.
     personalizationStore.data.theme.sunriseTime = '6:00AM';
     personalizationStore.data.theme.sunsetTime = '6:00PM';
+    personalizationStore.notifyObservers();
+    await flushTasks();
 
+    personalizationStore.setReducersEnabled(true);
     // Disable geolocation and select Auto Schedule; This should show the
     // warning tooltip.
-    setGeolocationPermissionEnabled(false);
-    setThemeColorMode(AUTO_MODE_BUTTON_ID);
-    assertTrue(isAutoModeLocationWarningIconPresent());
-
+    await setGeolocationPermission(/*enabled=*/ false, /*managed=*/ false);
+    await waitAfterNextRender(personalizationThemeElement);
+    // personalizationStore.expectAction(
+    //     ThemeActionName.SET_COLOR_MODE_AUTO_SCHEDULE_ENABLED);
+    await setThemeColorMode(AUTO_MODE_BUTTON_ID);
+    assertTrue(isAutoModeLocationWarningIconPresent(), 'tooltip missing');
     // Check that the dialog has popped up.
-    assertTrue(isGeolocationDialogVisible());
+    assertTrue(isGeolocationDialogVisible(), 'dialog not being displayed');
 
     // Check that the dialog mentions the sunset/sunrise times.
     const geolocationDialog =
@@ -285,11 +354,28 @@ suite('PersonalizationThemeTest', function() {
                        ThemeActionName.SET_GEOLOCATION_PERMISSION_ENABLED) as
         SetGeolocationPermissionEnabledActionForTheme;
     assertTrue(action.enabled);
-    personalizationStore.notifyObservers();
+    // personalizationStore.notifyObservers();
     await waitAfterNextRender(personalizationThemeElement);
 
     // Check that both warning tooltip and dialog has diappeared.
-    assertFalse(isAutoModeLocationWarningIconPresent());
+    assertFalse(
+        isAutoModeLocationWarningIconPresent(), 'tooltip didn\'t disappear');
+    assertFalse(isGeolocationDialogVisible(), 'dialog didn\'t disappear');
+  });
+
+  test('Do not show geolocation dialog when location is managed', async () => {
+    personalizationThemeElement = initElement(PersonalizationThemeElement);
+    personalizationStore.setReducersEnabled(true);
+
+    // Enable Privacy Hub feature flag.
+    loadTimeData.overrideValues({isCrosPrivacyHubLocationEnabled: true});
+
+    await setThemeColorMode(AUTO_MODE_BUTTON_ID);
+    await setGeolocationPermission(/*enabled=*/ false, /*managed=*/ true);
+    await flushTasks();
+
+    // Check that managed icon is present, but the dialog is not triggered.
+    assertTrue(isAutoModeLocationWarningIconPresent());
     assertFalse(isGeolocationDialogVisible());
   });
 
