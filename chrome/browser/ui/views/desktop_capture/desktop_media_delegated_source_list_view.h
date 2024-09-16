@@ -33,9 +33,6 @@ class DesktopMediaDelegatedSourceListView
 
   void OnSelectionChanged();
 
-  // views::View:
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-
   // DesktopMediaListController::ListView:
   std::optional<content::DesktopMediaID> GetSelection() override;
   DesktopMediaListController::SourceListListener* GetSourceListListener()
@@ -53,8 +50,6 @@ class DesktopMediaDelegatedSourceListView
 
  private:
   base::WeakPtr<DesktopMediaListController> controller_;
-
-  const std::u16string accessible_name_;
 
   std::optional<content::DesktopMediaID> selected_id_;
 
