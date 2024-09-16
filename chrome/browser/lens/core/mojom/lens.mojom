@@ -37,6 +37,8 @@ enum UserAction {
   kTranslateSourceLanguageChanged = 12,
   kTranslateTargetLanguageChanged = 13,
   kTranslateTextSelection = 14,
+  kCopyAsImage = 15,
+  kSaveAsImage = 16,
 };
 
 // LINT.ThenChange(//tools/metrics/histograms/metadata/lens/enums.xml:LensOverlayUserAction)
