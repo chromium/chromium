@@ -4542,8 +4542,8 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_PRICE_INSIGHTS_CONTENT_PRICE_TRACKING_ENABLED_BUTTON_TEXT" desc="The label of the price tracking button when the user is tracking the product.">
         Tracking
       </message>
-      <message name="IDS_PRICE_INSIGHTS_CONTENT_PRICE_TRACKING_BUTTON_CONTENT_DESCRIPTION" desc="Accessibility string that describes the price tracking button to track or untrack a product.">
-        Tap to track or untrack a product.
+      <message name="IDS_PRICE_INSIGHTS_CONTENT_PRICE_TRACKING_BUTTON_ACTION_DESCRIPTION" desc="Accessibility string that describes the price tracking button to track or untrack a product.">
+        Track or untrack a product.
       </message>
       <message name="IDS_PRICE_INSIGHTS_CONTENT_PRICE_TRACKING_ERROR_MESSAGE" desc="Error message when user is tracking or untracking a product encountered an error.">
         Something went wrong

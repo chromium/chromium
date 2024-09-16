@@ -17,12 +17,14 @@ found in the LICENSE file.
     android:background="@drawable/price_insights_sheet_content_background">
     <TextView
         android:id="@+id/price_history_title"
+        android:focusable="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="@style/TextAppearance.TextMedium.Primary"
         android:textAlignment="viewStart"/>
     <TextView
         android:id="@+id/price_history_description"
+        android:focusable="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="@style/TextAppearance.TextSmall.Secondary"

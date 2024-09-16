@@ -25,6 +25,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.core.view.ViewCompat;
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat;
 import androidx.core.widget.TextViewCompat;
 
 import org.chromium.ui.modelutil.PropertyKey;
@@ -64,6 +65,16 @@ public class PriceInsightsBottomSheetViewBinder {
         } else if (PRICE_TRACKING_BUTTON_ENABLED == propertyKey) {
             priceTrackingButton.setEnabled(model.get(PRICE_TRACKING_BUTTON_ENABLED));
         } else if (PRICE_TRACKING_BUTTON_ON_CLICK_LISTENER == propertyKey) {
+            ViewCompat.replaceAccessibilityAction(
+                    priceTrackingButton,
+                    AccessibilityActionCompat.ACTION_CLICK,
+                    priceTrackingButton
+                            .getContext()
+                            .getResources()
+                            .getString(
+                                    R.string
+                                            .price_insights_content_price_tracking_button_action_description),
+                    null);
             priceTrackingButton.setOnClickListener(
                     model.get(PRICE_TRACKING_BUTTON_ON_CLICK_LISTENER));
         } else if (PRICE_HISTORY_TITLE == propertyKey) {

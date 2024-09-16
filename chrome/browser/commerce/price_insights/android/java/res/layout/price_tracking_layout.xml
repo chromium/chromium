@@ -26,6 +26,7 @@ found in the LICENSE file.
         android:orientation="vertical">
         <TextView
             android:id="@+id/price_tracking_title"
+            android:focusable="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="@style/TextAppearance.TextMediumThick"
@@ -34,6 +35,7 @@ found in the LICENSE file.
             android:ellipsize="end"/>
         <TextView
             android:id="@+id/price_tracking_description"
+            android:focusable="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/price_insights_content_price_tracking_description"
@@ -46,7 +48,6 @@ found in the LICENSE file.
         style="@style/FilledButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:contentDescription="@string/price_insights_content_price_tracking_button_content_description"
         android:drawablePadding="@dimen/price_insights_price_tracking_button_drawable_padding"
         android:textAppearance="@style/TextAppearance.TextMediumThick"
         android:paddingStart="@dimen/price_tracking_button_padding_start"
