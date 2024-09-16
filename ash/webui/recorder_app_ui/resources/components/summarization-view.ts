@@ -210,6 +210,19 @@ export class SummarizationView extends ReactiveLitElement {
     const text = this.transcription?.toPlainText() ?? '';
     this.summary.value =
       await this.platformHandler.summaryModelLoader.loadAndExecute(text);
+    this.sendSummarizeEvent();
+  }
+
+  private sendSummarizeEvent() {
+    const response = this.summary.value;
+    if (this.transcription === null || response === null) {
+      return;
+    }
+
+    this.platformHandler.eventsSender.sendSummarizeEvent({
+      responseError: response.kind === 'error' ? response.error : null,
+      wordCount: this.transcription.wordCount,
+    });
   }
 
   private renderSummaryFooter() {

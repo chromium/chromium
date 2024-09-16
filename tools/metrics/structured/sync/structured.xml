@@ -2829,6 +2829,23 @@
     </metric>
   </event>
 
+  <event name="RecorderApp.Summarize">
+    <summary>
+      Event recorded when the recording summary is generated.
+    </summary>
+    <metric name="WordCount" type="int">
+      <summary>
+        Number of words in the recording transcription, which is used as an
+        input to generate the summary.
+      </summary>
+    </metric>
+    <metric name="ResultStatus" type="RecorderAppModelResultStatus">
+      <summary>
+        Status of the summary generation result.
+      </summary>
+    </metric>
+  </event>
+
   <event name="UserLogin">
     <summary>
       An event to signify a user is using the system.

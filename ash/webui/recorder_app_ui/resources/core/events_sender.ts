@@ -42,8 +42,14 @@ export interface SuggestTitleEventParams {
   wordCount: number;
 }
 
+export interface SummarizeEventParams {
+  responseError: ModelResponseError|null;
+  wordCount: number;
+}
+
 export abstract class EventsSender {
   abstract sendStartSessionEvent(params: StartSessionEventParams): void;
   abstract sendRecordEvent(params: RecordEventParams): void;
   abstract sendSuggestTitleEvent(params: SuggestTitleEventParams): void;
+  abstract sendSummarizeEvent(params: SummarizeEventParams): void;
 }

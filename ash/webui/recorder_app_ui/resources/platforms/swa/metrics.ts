@@ -7,6 +7,7 @@ import {
   CrOSEvents_RecorderApp_Record,
   CrOSEvents_RecorderApp_StartSession,
   CrOSEvents_RecorderApp_SuggestTitle,
+  CrOSEvents_RecorderApp_Summarize,
   // Enums
   CrOSEvents_RecorderAppMicrophoneType,
   CrOSEvents_RecorderAppModelResultStatus,
@@ -24,6 +25,7 @@ import {
   RecordEventParams,
   StartSessionEventParams,
   SuggestTitleEventParams,
+  SummarizeEventParams,
 } from '../../core/events_sender.js';
 import {ModelResponseError} from '../../core/on_device_model/types.js';
 import {
@@ -83,7 +85,6 @@ function getTranscriptionEnableState(
   if (!transcriptionEnabled) {
     return CrOSEvents_RecorderAppTranscriptionEnableState.NOT_AVAILABLE;
   }
-
   switch (state) {
     case TranscriptionEnableState.DISABLED:
       return CrOSEvents_RecorderAppTranscriptionEnableState.DISABLED;
@@ -210,6 +211,16 @@ export class EventsSender extends EventsSenderBase {
         .setAcceptedSuggestionIndex(BigInt(params.acceptedSuggestionIndex))
         .setSuggestionAccepted(BigInt(params.suggestionAccepted))
         .setResultStatus(status)
+        .setWordCount(BigInt(params.wordCount))
+        .build();
+
+    record(event);
+  }
+
+  override sendSummarizeEvent(params: SummarizeEventParams): void {
+    const event =
+      new CrOSEvents_RecorderApp_Summarize()
+        .setResultStatus(convertToModelResultStatus(params.responseError))
         .setWordCount(BigInt(params.wordCount))
         .build();
 

@@ -7,6 +7,7 @@ import {
   RecordEventParams,
   StartSessionEventParams,
   SuggestTitleEventParams,
+  SummarizeEventParams,
 } from '../../core/events_sender.js';
 
 export class EventsSender extends EventsSenderBase {
@@ -15,4 +16,6 @@ export class EventsSender extends EventsSenderBase {
   override sendRecordEvent(_: RecordEventParams): void {}
 
   override sendSuggestTitleEvent(_: SuggestTitleEventParams): void {}
+
+  override sendSummarizeEvent(_: SummarizeEventParams): void {}
 }
