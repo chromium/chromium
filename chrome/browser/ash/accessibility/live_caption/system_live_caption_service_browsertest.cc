@@ -106,7 +106,7 @@ class SystemLiveCaptionServiceTest
         /*enabled_features=*/{features::kOnDeviceSpeechRecognition,
                               features::kSystemLiveCaption,
                               media::kLiveCaptionMultiLanguage},
-        /*disabled_features=*/{});
+        /*disabled_features=*/{ash::features::kConch});
   }
 
   ~SystemLiveCaptionServiceTest() override = default;
