@@ -66,7 +66,7 @@ void LensOverlayBlurLayerDelegate::StopBackgroundImageCapture() {
 
 void LensOverlayBlurLayerDelegate::OnPaintLayer(
     const ui::PaintContext& context) {
-  if (background_screenshot_.empty()) {
+  if (background_screenshot_.drawsNothing()) {
     return;
   }
 
@@ -130,7 +130,8 @@ void LensOverlayBlurLayerDelegate::FetchBackgroundImage() {
 
 void LensOverlayBlurLayerDelegate::UpdateBackgroundImage(
     const SkBitmap& bitmap) {
-  if (AreBitmapsEqual(background_screenshot_, bitmap)) {
+  if (bitmap.drawsNothing() ||
+      AreBitmapsEqual(background_screenshot_, bitmap)) {
     return;
   }
   background_screenshot_ = bitmap;
