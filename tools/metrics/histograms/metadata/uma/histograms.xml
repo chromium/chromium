@@ -940,6 +940,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="UMA.TPMMetricsProvider.ReadSuccess" enum="Boolean"
+    expires_after="2025-06-29">
+  <owner>psarouthakis@google.com</owner>
+  <owner>kristianm@google.com</owner>
+  <summary>
+    Records if Chrome was able to read the manufacturer ID on the devices TPM.
+    This is recorded once during metrics initialization.
+  </summary>
+</histogram>
+
+<histogram name="UMA.TPMMetricsProvider.UnknownID" enum="Boolean"
+    expires_after="2025-06-29">
+  <owner>psarouthakis@google.com</owner>
+  <owner>kristianm@google.com</owner>
+  <summary>
+    Records if the Windows device has a unknown TPM. TPM ID's are compared to a
+    list of trusted ID provided by the Trusted Computing Group. This is recorded
+    once during metrics initialization if the TPMMetricsProvider was able to
+    read the TPM ID.
+  </summary>
+</histogram>
+
 <histogram name="UMA.TruncatedEvents.UserAction" units="events"
     expires_after="2025-03-09">
   <owner>rkaplow@chromium.org</owner>

@@ -32,6 +32,7 @@
 #include "chrome/installer/util/registry_util.h"
 #include "chrome/installer/util/taskbar_util.h"
 #include "chrome/services/util_win/av_products.h"
+#include "chrome/services/util_win/tpm_metrics.h"
 #include "content/public/common/content_features.h"
 #include "third_party/metrics_proto/system_profile.pb.h"
 #include "ui/shell_dialogs/execute_select_file_win.h"
@@ -345,3 +346,7 @@ void UtilWinImpl::GetAntiVirusProducts(bool report_full_names,
   std::move(callback).Run(::GetAntiVirusProducts(report_full_names));
 }
 
+void UtilWinImpl::GetTpmIdentifier(bool report_full_names,
+                                   GetTpmIdentifierCallback callback) {
+  std::move(callback).Run(::GetTpmIdentifier(report_full_names));
+}
