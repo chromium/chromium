@@ -5562,6 +5562,72 @@ IN_PROC_BROWSER_TEST_F(WebContentsDiscardBrowserTest, DiscardRetainsTitle) {
   EXPECT_EQ(test_title, contents->GetTitle());
 }
 
+// Helper class that waits to receive a favicon from the renderer process.
+class FaviconWaiter : public WebContentsObserver {
+ public:
+  explicit FaviconWaiter(WebContents* web_contents)
+      : WebContentsObserver(web_contents) {}
+
+  // WebContentsObserver:
+  void DidUpdateFaviconURL(
+      RenderFrameHost* render_frame_host,
+      const std::vector<blink::mojom::FaviconURLPtr>& candidates) override {
+    received_favicon_ = true;
+    run_loop_.Quit();
+  }
+
+  void Wait() {
+    if (received_favicon_) {
+      return;
+    }
+    run_loop_.Run();
+  }
+
+ private:
+  bool received_favicon_ = false;
+  base::RunLoop run_loop_;
+};
+
+IN_PROC_BROWSER_TEST_F(WebContentsDiscardBrowserTest, DiscardRetainsFavicon) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Navigate to an initial page.
+  const GURL initial_url =
+      embedded_test_server()->GetURL("/frame_tree/top.html");
+  ASSERT_TRUE(NavigateToURL(shell(), initial_url));
+
+  WebContentsImpl* contents =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+  FaviconWaiter favicon_waiter(contents);
+
+  // Insert a favicon dynamically.
+  ASSERT_TRUE(
+      ExecJs(shell()->web_contents(),
+             "let l = document.createElement('link'); "
+             "l.rel='icon'; l.type='image/png'; l.href='single_face.jpg'; "
+             "document.head.appendChild(l)"));
+
+  // Wait until it's received by the browser process.
+  favicon_waiter.Wait();
+  EXPECT_EQ(1u, contents->GetFaviconURLs().size());
+  auto favicon_url = contents->GetFaviconURLs()[0]->icon_url;
+
+  // Discard the tab.
+  testing::NiceMock<MockWebContentsObserver> observer(contents);
+  EXPECT_CALL(observer, AboutToBeDiscarded(contents)).Times(1);
+  EXPECT_CALL(observer, WasDiscarded()).Times(1);
+  EXPECT_FALSE(contents->WasDiscarded());
+  contents->Discard();
+  EXPECT_TRUE(contents->WasDiscarded());
+  FrameTreeNode* root = contents->GetPrimaryFrameTree().root();
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return 0u == root->child_count(); }));
+
+  // The favicon URLs should remain unchanged.
+  EXPECT_EQ(1u, contents->GetFaviconURLs().size());
+  EXPECT_THAT(favicon_url, contents->GetFaviconURLs()[0]->icon_url);
+}
+
 #if !BUILDFLAG(IS_ANDROID)
 class WebContentsImplBrowserTestWindowControlsOverlay
     : public WebContentsImplBrowserTest {

@@ -6349,7 +6349,13 @@ void RenderFrameHostImpl::MaybeStartOutermostMainFrameNavigation(
 // TODO(crbug.com/40183812): Move this method to content::PageImpl.
 void RenderFrameHostImpl::UpdateFaviconURL(
     std::vector<blink::mojom::FaviconURLPtr> favicon_urls) {
+  // This message should only be sent for top-level frames. Suppress favicon
+  // updates if the message was sent for a discarded document.
   DCHECK(!GetParent());
+  if (document_associated_data_->is_discarded()) {
+    return;
+  }
+
   GetPage().set_favicon_urls(std::move(favicon_urls));
   delegate_->UpdateFaviconURL(this, GetPage().favicon_urls());
 }
