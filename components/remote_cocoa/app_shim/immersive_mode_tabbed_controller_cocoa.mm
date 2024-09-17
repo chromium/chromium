@@ -33,6 +33,13 @@ ImmersiveModeTabbedControllerCocoa::ImmersiveModeTabbedControllerCocoa(
   // enough is able to paint underneath the traffic lights. This also works with
   // RTL setups.
   tab_titlebar_view_controller_.layoutAttribute = NSLayoutAttributeTrailing;
+
+  // During fullscreen restore or split screen restore tab window can be left
+  // without a parent, leading to the window being hidden which causes
+  // compositing to stop.
+  if (!tab_window.parentWindow) {
+    [overlay_window addChildWindow:tab_window ordered:NSWindowAbove];
+  }
 }
 
 ImmersiveModeTabbedControllerCocoa::~ImmersiveModeTabbedControllerCocoa() {
@@ -138,10 +145,7 @@ void ImmersiveModeTabbedControllerCocoa::UpdateToolbarVisibility(
   }
   ImmersiveModeControllerCocoa::UpdateToolbarVisibility(style);
 
-  // During fullscreen restore or split screen restore tab window can be left
-  // without a parent, leading to the window being hidden which causes
-  // compositing to stop. This call ensures that tab window is parented to
-  // overlay window and is in the correct z-order.
+  // Ensures that tab window is in the correct z-order.
   OrderTabWindowZOrderOnTop();
 
   // macOS 10.15 does not call `OnTitlebarFrameDidChange` as often as newer
