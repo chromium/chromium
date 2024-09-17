@@ -21,6 +21,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/extensions/account_extension_tracker.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -31,6 +32,7 @@
 #include "chrome/browser/extensions/test_blocklist.h"
 #include "chrome/browser/extensions/updater/extension_updater.h"
 #include "chrome/browser/profiles/profile_key.h"
+#include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/themes/test/theme_service_changed_waiter.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
@@ -39,6 +41,7 @@
 #include "chrome/common/extensions/sync_helper.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/crx_file/id_util.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync/model/sync_data.h"
 #include "components/sync/protocol/app_specifics.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
@@ -61,6 +64,7 @@
 #include "extensions/common/mojom/manifest.mojom-shared.h"
 #include "extensions/common/permissions/permission_set.h"
 
+using extensions::AccountExtensionTracker;
 using extensions::AppSorting;
 using extensions::Extension;
 using extensions::ExtensionPrefs;
@@ -232,6 +236,12 @@ class ExtensionServiceSyncTest
 
   ExtensionSystem* extension_system() {
     return ExtensionSystem::Get(profile());
+  }
+
+  AccountExtensionTracker::AccountExtensionType GetAccountExtensionType(
+      const extensions::ExtensionId& id) {
+    return AccountExtensionTracker::Get(profile())
+        ->GetAccountExtensionTypeForTesting(id);
   }
 };
 
@@ -1463,6 +1473,93 @@ TEST_F(ExtensionServiceSyncTest, ProcessSyncDataEnableDisable) {
     // Remove the extension again, so we can install it again for the next case.
     UninstallExtension(id);
   }
+}
+
+// Test that incoming sync changes (which should be from a signed in user) will
+// correctly link an existing extension to the user's account data. This is done
+// by checking an extension's AccountExtensionType.
+TEST_F(ExtensionServiceSyncTest, AccountExtensionTypeChangesWithSync) {
+  InitializeEmptyExtensionService();
+
+  service()->Init();
+
+  auto load_extension = [this](const std::string& extension_path) {
+    extensions::ChromeTestExtensionLoader extension_loader(profile());
+    extension_loader.set_pack_extension(true);
+    return extension_loader.LoadExtension(
+        data_dir().AppendASCII(extension_path));
+  };
+
+  // Install two extensions: `first_extension` before a user signs in, and
+  // `second_extension` after a user signs in.
+  scoped_refptr<const Extension> first_extension =
+      load_extension("simple_with_file");
+  ASSERT_TRUE(first_extension);
+  const std::string first_extension_id = first_extension->id();
+  ASSERT_TRUE(registry()->enabled_extensions().GetByID(first_extension_id));
+
+  // Use a test identity environment to mimic signing a user in with sync
+  // enabled.
+  auto identity_test_env_profile_adaptor =
+      std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile());
+  identity_test_env_profile_adaptor->identity_test_env()
+      ->MakePrimaryAccountAvailable("testy@mctestface.com",
+                                    signin::ConsentLevel::kSync);
+
+  scoped_refptr<const Extension> second_extension =
+      load_extension("simple_with_icon");
+  ASSERT_TRUE(second_extension);
+  const std::string second_extension_id = second_extension->id();
+
+  // After the user has signed in but before any sync data is received,
+  // `first_extension` is treated as a local extension and `second_extension` is
+  // treated as an account extension since it was installed after sign in.
+  // Note that both extensions are syncable.
+  EXPECT_EQ(AccountExtensionTracker::AccountExtensionType::kLocal,
+            GetAccountExtensionType(first_extension_id));
+  EXPECT_EQ(
+      AccountExtensionTracker::AccountExtensionType::kAccountInstalledSignedIn,
+      GetAccountExtensionType(second_extension_id));
+
+  // Sync starts up.
+  extension_sync_service()->MergeDataAndStartSyncing(
+      syncer::EXTENSIONS, syncer::SyncDataList(),
+      std::make_unique<syncer::FakeSyncChangeProcessor>());
+
+  // Then sync data arrives telling us to disable both `first_extension_id` and
+  // `second_extension_id`. In practice, any incoming sync will do. Note if
+  // incoming sync data contains an extension ID, then that extension is part of
+  // a user's account data.
+  ExtensionSyncData disable_first_extension(
+      *first_extension, false, extensions::disable_reason::DISABLE_USER_ACTION,
+      false, false, extension_urls::GetWebstoreUpdateUrl());
+  ExtensionSyncData disable_second_extension(
+      *second_extension, false, extensions::disable_reason::DISABLE_USER_ACTION,
+      false, false, extension_urls::GetWebstoreUpdateUrl());
+  SyncChangeList list;
+  list.push_back(
+      disable_first_extension.GetSyncChange(SyncChange::ACTION_UPDATE));
+  list.push_back(
+      disable_second_extension.GetSyncChange(SyncChange::ACTION_UPDATE));
+
+  extension_sync_service()->ProcessSyncChanges(FROM_HERE, list);
+
+  ASSERT_FALSE(service()->IsExtensionEnabled(first_extension_id));
+  ASSERT_FALSE(service()->IsExtensionEnabled(second_extension_id));
+
+  // `first_extension` has the AccountExtensionType `kAccountInstalledLocally`
+  // since it's part of the signed in user's account data but was first
+  // installed on this device before the user has signed in. Note that the
+  // incoming sync above links it to the user's account data.
+  EXPECT_EQ(
+      AccountExtensionTracker::AccountExtensionType::kAccountInstalledLocally,
+      GetAccountExtensionType(first_extension_id));
+
+  // `second_extension`'s AccountExtensionType should remain unchanged since we
+  // already know it's part of the signed in user's account data.
+  EXPECT_EQ(
+      AccountExtensionTracker::AccountExtensionType::kAccountInstalledSignedIn,
+      GetAccountExtensionType(second_extension_id));
 }
 
 class ExtensionServiceSyncCustomGalleryTest : public ExtensionServiceSyncTest {

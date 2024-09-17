@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/extension_sync_service_factory.h"
 
+#include "chrome/browser/extensions/account_extension_tracker.h"
 #include "chrome/browser/extensions/extension_sync_service.h"
 #include "chrome/browser/extensions/extension_system_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -38,6 +39,7 @@ ExtensionSyncServiceFactory::ExtensionSyncServiceFactory()
               // Ash Internals.
               .WithAshInternals(ProfileSelection::kRedirectedToOriginal)
               .Build()) {
+  DependsOn(extensions::AccountExtensionTracker::GetFactory());
   DependsOn(extensions::ExtensionPrefsFactory::GetInstance());
   DependsOn(extensions::ExtensionRegistryFactory::GetInstance());
   DependsOn(extensions::ExtensionSystemFactory::GetInstance());

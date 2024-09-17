@@ -25,6 +25,8 @@ assert(!is_fuchsia, "Fuchsia shouldn't use anything in //chrome")
 
 source_set("extensions") {
   sources = [
+    "account_extension_tracker.cc",
+    "account_extension_tracker.h",
     "active_install_data.cc",
     "active_install_data.h",
     "activity_log/activity_action_constants.cc",

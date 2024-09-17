@@ -8974,6 +8974,7 @@ test("unit_tests") {
       "../browser/autocomplete/keyword_extensions_delegate_impl_unittest.cc",
       "../browser/browsing_data/counters/hosted_apps_counter_unittest.cc",
       "../browser/controlled_frame/controlled_frame_menu_icon_loader_unittest.cc",
+      "../browser/extensions/account_extension_tracker_unittest.cc",
       "../browser/extensions/activity_log/activity_database_unittest.cc",
       "../browser/extensions/activity_log/activity_log_enabled_unittest.cc",
       "../browser/extensions/activity_log/activity_log_policy_unittest.cc",
