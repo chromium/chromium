@@ -360,31 +360,16 @@
     "channel": "stable",
     "contexts": ["privileged_extension", "content_script"]
   },
-  "downloads": [
-    {
-      "dependencies": ["permission:downloads"],
-      "contexts": ["privileged_extension"]
-    },
-    {
-      "channel": "stable",
-      "contexts": ["webui"],
-      "matches": ["chrome://download-shelf.top-chrome/*"]
-    }
-  ],
-  "downloadsInternal": [
-    {
-      "internal": true,
-      "channel": "stable",
-      "contexts": ["privileged_extension"],
-      "dependencies": ["permission:downloads"]
-    },
-    {
-      "internal": true,
-      "channel": "stable",
-      "contexts": ["webui"],
-      "matches": ["chrome://download-shelf.top-chrome/*"]
-    }
-  ],
+  "downloads": {
+    "dependencies": ["permission:downloads"],
+    "contexts": ["privileged_extension"]
+  },
+  "downloadsInternal": {
+    "internal": true,
+    "channel": "stable",
+    "contexts": ["privileged_extension"],
+    "dependencies": ["permission:downloads"]
+  },
   "echoPrivate": {
     "dependencies": ["permission:echoPrivate"],
     "contexts": ["privileged_extension"]
