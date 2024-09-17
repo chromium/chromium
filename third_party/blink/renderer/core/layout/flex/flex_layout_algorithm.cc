@@ -595,23 +595,7 @@ ConstraintSpace FlexLayoutAlgorithm::BuildSpaceForLayout(
 void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
     Phase phase,
     HeapVector<Member<LayoutBox>>* oof_children) {
-  // This block sets up data collection for
-  // https://github.com/w3c/csswg-drafts/issues/3052
-  bool all_items_have_non_auto_cross_sizes = true;
-  bool all_items_match_container_alignment = true;
-  const StyleContentAlignmentData align_content =
-      algorithm_.ResolvedAlignContent(Style());
-  bool is_alignment_behavior_change_possible =
-      !algorithm_.IsMultiline() &&
-      align_content.Distribution() != ContentDistributionType::kStretch &&
-      align_content.GetPosition() != ContentPosition::kBaseline;
-  const LayoutUnit kAvailableFreeSpace(100);
-  LayoutUnit line_offset = FlexibleBoxAlgorithm::InitialContentPositionOffset(
-      Style(), kAvailableFreeSpace, align_content,
-      /* number_of_items */ 1,
-      /* is_reversed */ false);
-
-  bool is_wrap_reverse = Style().FlexWrap() == EFlexWrap::kWrapReverse;
+  const bool is_wrap_reverse = Style().FlexWrap() == EFlexWrap::kWrapReverse;
 
   FlexChildIterator iterator(Node());
   for (BlockNode child = iterator.NextChild(); child;
@@ -644,16 +628,6 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
     const bool is_main_axis_inline_axis =
         IsHorizontalWritingMode(child_writing_mode) == is_horizontal_flow_;
 
-    if (is_alignment_behavior_change_possible &&
-        all_items_match_container_alignment && phase == Phase::kLayout) {
-      LayoutUnit item_offset = FlexItem::AlignmentOffset(
-          kAvailableFreeSpace,
-          FlexibleBoxAlgorithm::AlignmentForChild(Style(), child_style),
-          LayoutUnit(), /* is_wrap_reverse */ false,
-          Style().IsDeprecatedWebkitBox());
-      all_items_match_container_alignment = (item_offset == line_offset);
-    }
-
     ConstraintSpace flex_basis_space = BuildSpaceForFlexBasis(child);
 
     PhysicalBoxStrut physical_child_margins =
@@ -670,10 +644,6 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
     const LayoutUnit main_axis_border_padding =
         is_horizontal_flow_ ? physical_border_padding.HorizontalSum()
                             : physical_border_padding.VerticalSum();
-
-    const Length& cross_axis_length =
-        is_horizontal_flow_ ? child.Style().Height() : child.Style().Width();
-    all_items_have_non_auto_cross_sizes &= !cross_axis_length.HasAuto();
 
     bool depends_on_min_max_sizes = false;
     auto MinMaxSizesFunc = [&](SizeType type) -> MinMaxSizesResult {
@@ -950,20 +920,6 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
     }
     algorithm_.all_items_.back().max_content_contribution_ =
         max_content_contribution;
-  }
-
-  if (phase == Phase::kLayout && is_alignment_behavior_change_possible &&
-      algorithm_.all_items_.size() > 0 &&
-      !all_items_match_container_alignment) {
-    if (algorithm_.IsColumnFlow()) {
-      if (all_items_have_non_auto_cross_sizes) {
-        UseCounter::Count(node_.GetDocument(),
-                          WebFeature::kFlexboxAlignSingleLineDifference);
-      }
-    } else if (is_cross_size_definite_) {
-      UseCounter::Count(node_.GetDocument(),
-                        WebFeature::kFlexboxAlignSingleLineDifference);
-    }
   }
 }
 
