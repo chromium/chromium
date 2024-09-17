@@ -110,6 +110,16 @@ chromium-metrics-reviews@google.com.
   <int value="14" label="Feedback Tool System Logs"/>
 </enum>
 
+<enum name="RequestWorkletServiceOutcome">
+  <summary>
+    The outcome of AuctionProcessManager::RequestWorkletService().
+  </summary>
+  <int value="0" label="Hit process limit"/>
+  <int value="1" label="Used shared process"/>
+  <int value="2" label="Used existing dedicated process"/>
+  <int value="3" label="Created new dedicated process"/>
+</enum>
+
 <enum name="SalientImageUrlFetchResult">
   <int value="0" label="Failed to fetch salient image url from network."/>
   <int value="1" label="A previous network request failed."/>

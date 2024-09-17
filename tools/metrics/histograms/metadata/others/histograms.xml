@@ -1212,6 +1212,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Ads.InterestGroup.Auction.{WorkletType}.RequestWorkletServiceOutcome"
+    enum="RequestWorkletServiceOutcome" expires_after="2025-03-13">
+  <owner>abigailkatcoff@chromium.org</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    The result of requesting a {WorkletType} worklet process from the
+    AuctionProcessManager. Recorded after requesting a process for a
+    ProcessHandle.
+  </summary>
+  <token key="WorkletType">
+    <variant name="Buyer" summary="buyer"/>
+    <variant name="Seller" summary="seller"/>
+  </token>
+</histogram>
+
 <histogram name="Ads.InterestGroup.BaDataConstructionTime2" units="ms"
     expires_after="2024-11-17">
   <owner>behamilton@google.com</owner>

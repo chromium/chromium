@@ -57,6 +57,17 @@ class CONTENT_EXPORT AuctionProcessManager {
     kSeller,
   };
 
+  // Outcome of RequestWorkletService.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class RequestWorkletServiceOutcome {
+    kHitProcessLimit = 0,
+    kUsedSharedProcess = 1,
+    kUsedExistingDedicatedProcess = 2,
+    kCreatedNewDedicatedProcess = 3,
+    kMaxValue = kCreatedNewDedicatedProcess
+  };
+
   // Refcounted class that creates / holds Mojo Remote for an
   // AuctionWorkletService. Only public so it can be used by ProcessHandle.
   class WorkletProcess;
@@ -252,7 +263,8 @@ class CONTENT_EXPORT AuctionProcessManager {
   // Tries to reuse an existing process for `process_handle` or create a new
   // one. `process_handle`'s WorkletType and Origin must be populated. Respects
   // the bidder and seller limits.
-  bool TryCreateOrGetProcessForHandle(ProcessHandle* process_handle);
+  RequestWorkletServiceOutcome TryCreateOrGetProcessForHandle(
+      ProcessHandle* process_handle);
 
   // Invoked by ProcessHandle's destructor, if it has previously been passed to
   // RequestWorkletService(). Checks if a new seller worklet can be created.
