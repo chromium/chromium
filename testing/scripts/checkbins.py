@@ -49,7 +49,8 @@ def main_run(args):
         os.path.join(common.SRC_DIR, 'tools', 'checkbins', 'checkbins.py'),
         '--verbose',
         '--json', tempfile_path,
-        os.path.join(args.paths['checkout'], 'out', args.build_config_fs),
+        args.build_dir
+        or os.path.join(args.paths['checkout'], 'out', args.build_config_fs),
     ])
 
     with open(tempfile_path) as f:

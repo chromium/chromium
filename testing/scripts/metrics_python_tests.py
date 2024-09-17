@@ -23,7 +23,8 @@ def main_run(args):
                      'metrics_python_tests.py'),
         '--isolated-script-test-output', tempfile_path,
         '--skip-set-lpac-acls=1',
-    ], cwd=os.path.join(common.SRC_DIR, 'out', args.build_config_fs))
+    ], cwd=args.build_dir
+       or os.path.join(common.SRC_DIR, 'out', args.build_config_fs))
 
     with open(tempfile_path) as f:
       isolated_results = json.load(f)
