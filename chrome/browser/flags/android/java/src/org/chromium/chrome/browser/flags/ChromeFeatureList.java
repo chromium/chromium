@@ -337,7 +337,8 @@ public abstract class ChromeFeatureList {
     public static final String FULLSCREEN_INSETS_API_MIGRATION = "FullscreenInsetsApiMigration";
     public static final String FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE =
             "FullscreenInsetsApiMigrationOnAutomotive";
-    public static final String GTS_CLOSE_TAB_ANIMATION = "GtsCloseTabAnimation";
+    public static final String GTS_CLOSE_TAB_ANIMATION_KILL_SWITCH =
+            "GtsCloseTabAnimationKillSwitch";
     public static final String HASH_PREFIX_REAL_TIME_LOOKUPS =
             "SafeBrowsingHashPrefixRealTimeLookups";
     public static final String HISTORY_JOURNEYS = "Journeys";
@@ -863,8 +864,10 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(BROWSER_CONTROLS_EARLY_RESIZE, false);
     public static final MutableFlagWithSafeDefault sForceBrowserControlsUponExitingFullscreen =
             newMutableFlagWithSafeDefault(FORCE_BROWSER_CONTROLS_UPON_EXITING_FULLSCREEN, true);
-    public static final MutableFlagWithSafeDefault sGtsCloseTabAnimation =
-            newMutableFlagWithSafeDefault(GTS_CLOSE_TAB_ANIMATION, false);
+    // Defaulted to true in native, but since it is being used as a kill switch set the default
+    // value pre-native to false as it is safer if the feature needs to be killed via Finch config.
+    public static final MutableFlagWithSafeDefault sGtsCloseTabAnimationKillSwitch =
+            newMutableFlagWithSafeDefault(GTS_CLOSE_TAB_ANIMATION_KILL_SWITCH, false);
     public static final MutableFlagWithSafeDefault sIncognitoScreenshot =
             newMutableFlagWithSafeDefault(INCOGNITO_SCREENSHOT, false);
     public static final MutableFlagWithSafeDefault sNoVisibleHintForDifferentTLD =

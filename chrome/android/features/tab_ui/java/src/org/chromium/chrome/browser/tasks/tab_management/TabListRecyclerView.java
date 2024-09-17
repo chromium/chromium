@@ -100,11 +100,13 @@ class TabListRecyclerView extends RecyclerView
     }
 
     void setupCustomItemAnimator() {
-        if (!ChromeFeatureList.sGtsCloseTabAnimation.isEnabled()) return;
-
-        if (mTabListItemAnimator == null) {
-            mTabListItemAnimator = new TabListItemAnimator();
-            setItemAnimator(mTabListItemAnimator);
+        // Kill switch is defaulted to enabled and can be shut off to false via config if issues are
+        // discovered.
+        if (ChromeFeatureList.sGtsCloseTabAnimationKillSwitch.isEnabled()) {
+            if (mTabListItemAnimator == null) {
+                mTabListItemAnimator = new TabListItemAnimator();
+                setItemAnimator(mTabListItemAnimator);
+            }
         }
     }
 

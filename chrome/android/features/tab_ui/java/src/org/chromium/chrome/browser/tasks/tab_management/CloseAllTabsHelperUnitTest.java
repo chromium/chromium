@@ -28,7 +28,7 @@ import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 
 /** Unit test for {@link CloseAllTabsHelper}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures(ChromeFeatureList.GTS_CLOSE_TAB_ANIMATION)
+@EnableFeatures(ChromeFeatureList.GTS_CLOSE_TAB_ANIMATION_KILL_SWITCH)
 public class CloseAllTabsHelperUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

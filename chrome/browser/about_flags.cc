@@ -10133,10 +10133,6 @@ const FeatureEntry kFeatureEntries[] = {
                                     kTabGroupParityAndroidVariations,
                                     "TabGroupParityVariations")},
 
-    {"gts-close-tab-animation", flag_descriptions::kGtsCloseTabAnimationName,
-     flag_descriptions::kGtsCloseTabAnimationDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kGtsCloseTabAnimation)},
-
     {"tab-strip-group-collapse-android",
      flag_descriptions::kTabStripGroupCollapseAndroidName,
      flag_descriptions::kTabStripGroupCollapseAndroidDescription, kOsAndroid,

@@ -116,11 +116,7 @@ public class CloseAllTabsDialogTest {
     @LargeTest
     @EnableAnimations
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
-    @EnableFeatures({ChromeFeatureList.GTS_CLOSE_TAB_ANIMATION + "<Study"})
-    @CommandLineFlags.Add({
-        "force-fieldtrials=Study/Group",
-        "force-fieldtrial-params=Study.Group:close_all_custom_animation/true"
-    })
+    @EnableFeatures({ChromeFeatureList.GTS_CLOSE_TAB_ANIMATION_KILL_SWITCH})
     public void testCloseAllTabs_CustomAnimation() {
         TabModelSelector selector =
                 mActivityTestRule.getActivity().getTabModelSelectorSupplier().get();
