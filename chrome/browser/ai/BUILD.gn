@@ -9,6 +9,8 @@ source_set("ai") {
     "ai_assistant.h",
     "ai_context_bound_object.h",
     "ai_context_bound_object_set.h",
+    "ai_data_keyed_service.h",
+    "ai_data_keyed_service_factory.h",
     "ai_manager_keyed_service.h",
     "ai_manager_keyed_service_factory.h",
     "ai_rewriter.h",
@@ -28,6 +30,8 @@ source_set("impl") {
   sources = [
     "ai_assistant.cc",
     "ai_context_bound_object_set.cc",
+    "ai_data_keyed_service.cc",
+    "ai_data_keyed_service_factory.cc",
     "ai_manager_keyed_service.cc",
     "ai_manager_keyed_service_factory.cc",
     "ai_rewriter.cc",
@@ -35,7 +39,10 @@ source_set("impl") {
     "ai_utils.cc",
     "ai_writer.cc",
   ]
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+  public_deps = [
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/content_extraction:content_extraction",
+  ]
   deps = [ ":ai" ]
 }
 

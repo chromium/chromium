@@ -13,6 +13,7 @@
 #include "chrome/browser/accessibility/accessibility_labels_service_factory.h"
 #include "chrome/browser/accessibility/page_colors_factory.h"
 #include "chrome/browser/affiliations/affiliation_service_factory.h"
+#include "chrome/browser/ai/ai_data_keyed_service_factory.h"
 #include "chrome/browser/ai/ai_manager_keyed_service_factory.h"
 #include "chrome/browser/autocomplete/autocomplete_classifier_factory.h"
 #include "chrome/browser/autocomplete/document_suggestions_service_factory.h"
@@ -627,6 +628,7 @@ void ChromeBrowserMainExtraPartsProfiles::
   AndroidSessionDurationsServiceFactory::GetInstance();
 #endif
   AffiliationServiceFactory::GetInstance();
+  AiDataKeyedServiceFactory::GetInstance();
   if (base::FeatureList::IsEnabled(blink::features::kEnableBuiltInAIAPI)) {
     AIManagerKeyedServiceFactory::GetInstance();
   }

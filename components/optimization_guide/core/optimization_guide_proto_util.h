@@ -11,13 +11,23 @@ class FormData;
 
 namespace optimization_guide::proto {
 class FormData;
+class AXTreeUpdate;
 }  // namespace optimization_guide::proto
+
+namespace ui {
+struct AXTreeUpdate;
+}  // namespace ui
 
 namespace optimization_guide {
 
 // Converts `form_data` to its corresponding form data proto.
 optimization_guide::proto::FormData ToFormDataProto(
     const autofill::FormData& form_data);
+
+// Populate the AXTreeUpdate proto structure from the ui structure.
+void PopulateAXTreeUpdateProto(
+    const ui::AXTreeUpdate& source,
+    optimization_guide::proto::AXTreeUpdate* destination);
 
 }  // namespace optimization_guide
 

@@ -24,7 +24,6 @@
 #include "base/timer/timer.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/compose/compose_ax_serialization_utils.h"
 #include "chrome/browser/content_extraction/inner_text.h"
 #include "chrome/browser/feedback/show_feedback_page.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
@@ -50,6 +49,7 @@
 #include "components/optimization_guide/core/model_quality/feature_type_map.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
+#include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/features/compose.pb.h"
 #include "components/optimization_guide/proto/model_quality_service.pb.h"
@@ -1114,7 +1114,7 @@ void ComposeSession::UpdateAXSnapshotAndContinueComposeIfNecessary(
     page_metadata_.emplace();
   }
 
-  ComposeAXSerializationUtils::PopulateAXTreeUpdate(
+  optimization_guide::PopulateAXTreeUpdateProto(
       update, page_metadata_->mutable_ax_tree_update());
 
   TryContinueComposeWithContext();

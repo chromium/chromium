@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_EXTENSIONS_API_EXPERIMENTAL_AI_DATA_EXPERIMENTAL_AI_DATA_API_H_
 
 #include "base/feature_list.h"
+#include "chrome/browser/ai/ai_data_keyed_service.h"
 #include "extensions/browser/extension_function.h"
 
 namespace extensions {
@@ -26,6 +27,7 @@ class ExperimentalAiDataGetAiDataFunction : public ExtensionFunction {
   ~ExperimentalAiDataGetAiDataFunction() override;
 
   ResponseAction Run() override;
+  void OnDataCollected(AiDataKeyedService::AiData browser_collected_data);
 
   DECLARE_EXTENSION_FUNCTION("experimentalAiData.getAiData",
                              EXPERIMENTALAIDATA_PRIVATE_GETAIDATA)

@@ -16,6 +16,7 @@ include_rules = [
   "+third_party/mediapipe",
   "+third_party/tensorflow_models/src",
   "+third_party/zlib/google",
+  "+ui/accessibility",
   "+ui/base/l10n",
 ]
 

@@ -13,16 +13,11 @@
 #include "chrome/browser/user_annotations/user_annotations_service_factory.h"
 #include "components/autofill/content/browser/scoped_autofill_managers_observation.h"
 #include "components/autofill/core/browser/form_structure.h"
-#include "components/compose/buildflags.h"
-#include "components/optimization_guide/proto/features/compose.pb.h"
+#include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/user_annotations/user_annotations_features.h"
 #include "components/user_annotations/user_annotations_service.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/accessibility/ax_tree_update.h"
-
-#if BUILDFLAG(ENABLE_COMPOSE)
-#include "chrome/browser/compose/compose_ax_serialization_utils.h"
-#endif
 
 namespace user_annotations {
 
@@ -94,9 +89,7 @@ void UserAnnotationsWebContentsObserver::OnAXTreeSnapshotted(
     const autofill::FormData& form,
     ui::AXTreeUpdate& snapshot) {
   optimization_guide::proto::AXTreeUpdate ax_tree;
-#if BUILDFLAG(ENABLE_COMPOSE)
-  ComposeAXSerializationUtils::PopulateAXTreeUpdate(snapshot, &ax_tree);
-#endif
+  optimization_guide::PopulateAXTreeUpdateProto(snapshot, &ax_tree);
   // TODO(crbug.com/356633475): This will pass an unparsed form to
   // UserAnnotationService, since AutofillManager::Observer doesn't have access
   // to the parsed form.

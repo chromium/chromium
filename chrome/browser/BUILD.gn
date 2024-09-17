@@ -8289,8 +8289,6 @@ static_library("browser") {
     sources += [
       "compose/chrome_compose_client.cc",
       "compose/chrome_compose_client.h",
-      "compose/compose_ax_serialization_utils.cc",
-      "compose/compose_ax_serialization_utils.h",
       "compose/compose_enabling.cc",
       "compose/compose_enabling.h",
       "compose/compose_session.cc",

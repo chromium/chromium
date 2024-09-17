@@ -17,6 +17,8 @@ source_set("experimental_ai_data") {
 
   deps = [
     "//base",
+    "//chrome/browser/ai",
     "//chrome/browser/extensions",
+    "//chrome/browser/ui",
   ]
 }

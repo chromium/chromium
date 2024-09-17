@@ -13,16 +13,11 @@
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_features.h"
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_filling_engine_impl.h"
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_manager.h"
-#include "components/compose/buildflags.h"
+#include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/user_annotations/user_annotations_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "ui/accessibility/ax_tree_update.h"
-
-// TODO(crbug.com/359116403): Move AX serialization out of `compose`.
-#if BUILDFLAG(ENABLE_COMPOSE)
-#include "chrome/browser/compose/compose_ax_serialization_utils.h"
-#endif
 
 ChromeAutofillPredictionImprovementsClient::
     ChromeAutofillPredictionImprovementsClient(
@@ -60,10 +55,8 @@ void ChromeAutofillPredictionImprovementsClient::GetAXTree(
   base::OnceCallback<ProtoTreeUpdate(ui::AXTreeUpdate&)> processing_callback =
       base::BindOnce([](ui::AXTreeUpdate& ax_tree_update) {
         ProtoTreeUpdate ax_tree_proto;
-#if BUILDFLAG(ENABLE_COMPOSE)
-        ComposeAXSerializationUtils::PopulateAXTreeUpdate(ax_tree_update,
-                                                          &ax_tree_proto);
-#endif
+        optimization_guide::PopulateAXTreeUpdateProto(ax_tree_update,
+                                                      &ax_tree_proto);
         return ax_tree_proto;
       });
   GetWebContents().RequestAXTreeSnapshot(
