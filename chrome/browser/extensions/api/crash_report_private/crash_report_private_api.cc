@@ -5,7 +5,6 @@
 #include "chrome/browser/extensions/api/crash_report_private/crash_report_private_api.h"
 
 #include "base/time/time.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
@@ -15,6 +14,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/browser/extensions_browser_client.h"
 
 namespace extensions {
 namespace api {
@@ -104,7 +104,8 @@ ExtensionFunction::ResponseAction CrashReportPrivateReportErrorFunction::Run() {
         render_process_uptime.InMilliseconds();
   }
 
-  error_report.app_locale = g_browser_process->GetApplicationLocale();
+  error_report.app_locale =
+      ExtensionsBrowserClient::Get()->GetApplicationLocale();
 
   processor->SendErrorReport(
       std::move(error_report),

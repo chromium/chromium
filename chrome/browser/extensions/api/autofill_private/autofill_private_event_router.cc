@@ -14,7 +14,6 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/api/autofill_private/autofill_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"

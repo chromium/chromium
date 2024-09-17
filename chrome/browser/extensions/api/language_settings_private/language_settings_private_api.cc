@@ -22,7 +22,6 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/api/language_settings_private/language_settings_private_delegate.h"
 #include "chrome/browser/extensions/api/language_settings_private/language_settings_private_delegate_factory.h"
 #include "chrome/browser/language/language_model_manager_factory.h"
@@ -43,6 +42,7 @@
 #include "components/spellcheck/spellcheck_buildflags.h"
 #include "components/translate/core/browser/translate_download_manager.h"
 #include "components/translate/core/browser/translate_prefs.h"
+#include "extensions/browser/extensions_browser_client.h"
 #include "third_party/icu/source/i18n/unicode/coll.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/l10n_util_collator.h"
@@ -182,7 +182,8 @@ std::vector<std::string> GetSortedThirdPartyIMEs(
 std::vector<std::string> GetInputMethodTags(
     language_settings_private::InputMethod* input_method) {
   std::vector<std::string> tags = {input_method->display_name};
-  const std::string app_locale = g_browser_process->GetApplicationLocale();
+  const std::string app_locale =
+      ExtensionsBrowserClient::Get()->GetApplicationLocale();
   for (const auto& language_code : input_method->language_codes) {
     tags.push_back(base::UTF16ToUTF8(l10n_util::GetDisplayNameForLocale(
         language_code, app_locale, /*is_for_ui=*/true)));
@@ -210,7 +211,8 @@ LanguageSettingsPrivateGetLanguageListFunction::
 ExtensionFunction::ResponseAction
 LanguageSettingsPrivateGetLanguageListFunction::Run() {
   // Collect the language codes from the supported accept-languages.
-  const std::string app_locale = g_browser_process->GetApplicationLocale();
+  const std::string app_locale =
+      ExtensionsBrowserClient::Get()->GetApplicationLocale();
   const std::unique_ptr<translate::TranslatePrefs> translate_prefs =
       CreateTranslatePrefsForBrowserContext(browser_context());
 
@@ -482,7 +484,8 @@ LanguageSettingsPrivateMoveLanguageFunction::Run() {
       language_settings_private::MoveLanguage::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
 
-  const std::string app_locale = g_browser_process->GetApplicationLocale();
+  const std::string app_locale =
+      ExtensionsBrowserClient::Get()->GetApplicationLocale();
   std::vector<std::string> supported_language_codes;
   l10n_util::GetAcceptLanguagesForLocale(app_locale, &supported_language_codes);
 

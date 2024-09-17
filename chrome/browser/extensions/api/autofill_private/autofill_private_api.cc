@@ -17,7 +17,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/uuid.h"
 #include "base/values.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/api/autofill_private/autofill_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/autofill_private.h"
@@ -50,6 +49,7 @@
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_function_registry.h"
+#include "extensions/browser/extensions_browser_client.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_ui.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_ui_component.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/localization.h"
@@ -216,7 +216,8 @@ ExtensionFunction::ResponseAction AutofillPrivateSaveAddressFunction::Run() {
     if (field.type == autofill_private::FieldType::kNameFull) {
       profile.SetInfoWithVerificationStatus(
           autofill::NAME_FULL, base::UTF8ToUTF16(field.value),
-          g_browser_process->GetApplicationLocale(), kUserVerified);
+          ExtensionsBrowserClient::Get()->GetApplicationLocale(),
+          kUserVerified);
     } else {
       profile.SetRawInfoWithVerificationStatus(
           autofill::TypeNameToFieldType(autofill_private::ToString(field.type)),
@@ -286,7 +287,8 @@ AutofillPrivateGetAddressComponentsFunction::Run() {
   std::string language_code;
 
   autofill::GetAddressComponents(
-      parameters->country_code, g_browser_process->GetApplicationLocale(),
+      parameters->country_code,
+      ExtensionsBrowserClient::Get()->GetApplicationLocale(),
       /*include_literals=*/false, &lines, &language_code);
   // Convert std::vector<std::vector<::i18n::addressinput::AddressUiComponent>>
   // to AddressComponents

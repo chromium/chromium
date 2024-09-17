@@ -13,7 +13,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/api/settings_private/prefs_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/autofill_private.h"
@@ -35,6 +34,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/base/user_selectable_type.h"
+#include "extensions/browser/extensions_browser_client.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
@@ -190,7 +190,7 @@ AddressEntryList GenerateAddressList(
   autofill::AutofillProfile::CreateDifferentiatingLabels(
       std::vector<raw_ptr<const autofill::AutofillProfile, VectorExperimental>>(
           profiles.begin(), profiles.end()),
-      g_browser_process->GetApplicationLocale(), &labels);
+      ExtensionsBrowserClient::Get()->GetApplicationLocale(), &labels);
   DCHECK_EQ(labels.size(), profiles.size());
 
   AddressEntryList list;
@@ -206,7 +206,7 @@ CountryEntryList GenerateCountryList(
   autofill::CountryComboboxModel model;
   model.SetCountries(personal_data,
                      base::RepeatingCallback<bool(const std::string&)>(),
-                     g_browser_process->GetApplicationLocale());
+                     ExtensionsBrowserClient::Get()->GetApplicationLocale());
   const std::vector<std::unique_ptr<autofill::AutofillCountry>>& countries =
       model.countries();
 

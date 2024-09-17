@@ -23,7 +23,6 @@ source_set("autofill_private") {
 
   deps = [
     "//base",
-    "//chrome/browser:browser_process",
     "//chrome/browser/autofill:autofill",
     "//chrome/browser/extensions:extensions",
     "//chrome/browser/profiles:profile",
