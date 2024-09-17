@@ -216,13 +216,30 @@ public final class PrivacySandboxDialogTest {
         onView(withId(R.id.privacy_sandbox_learn_more_text))
                 .inRoot(isDialog())
                 .check(matches(isDisplayed()));
+        // Click "Privacy Policy" link
         onView(withId(R.id.privacy_sandbox_learn_more_text))
                 .inRoot(isDialog())
                 .perform(clickOnClickableSpan(0));
+        // Validate EEA Consent is not shown
         onView(withId(R.id.privacy_sandbox_consent_eea_view))
                 .inRoot(isDialog())
                 .check(matches(not(isDisplayed())));
+        // Validate Privacy Policy View is shown
         onView(withId(R.id.privacy_policy_view)).inRoot(isDialog()).check(matches(isDisplayed()));
+        onView(withId(R.id.privacy_policy_title)).inRoot(isDialog()).check(matches(isDisplayed()));
+        onView(withId(R.id.privacy_policy_back_button))
+                .inRoot(isDialog())
+                .check(matches(isDisplayed()));
+        // Click back button
+        onView(withId(R.id.privacy_policy_back_button)).inRoot(isDialog()).perform(click());
+        // Validate EEA Consent is shown
+        onView(withId(R.id.privacy_sandbox_consent_eea_view))
+                .inRoot(isDialog())
+                .check(matches(isDisplayed()));
+        // Validate Privacy Policy View is not shown
+        onView(withId(R.id.privacy_policy_view))
+                .inRoot(isDialog())
+                .check(matches(not(isDisplayed())));
     }
 
     @Test

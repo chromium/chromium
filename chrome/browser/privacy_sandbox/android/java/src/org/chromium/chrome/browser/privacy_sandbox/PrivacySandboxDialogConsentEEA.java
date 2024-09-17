@@ -26,6 +26,7 @@ import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.widget.ButtonCompat;
 import org.chromium.ui.widget.CheckableImageView;
+import org.chromium.ui.widget.ChromeImageButton;
 import org.chromium.ui.widget.TextViewWithLeading;
 
 /** Dialog in the form of a consent shown for the Privacy Sandbox. */
@@ -50,6 +51,8 @@ public class PrivacySandboxDialogConsentEEA extends ChromeDialog
     private int mSurfaceType;
     private LinearLayout mPrivacyPolicyView;
     private FrameLayout mPrivacyPolicyContent;
+    private ChromeImageButton mPrivacyPolicyBackButton;
+
     private ThinWebView mThinWebView;
     private WebContents mWebContents;
     private final Profile mProfile;
@@ -86,6 +89,8 @@ public class PrivacySandboxDialogConsentEEA extends ChromeDialog
         mConsentViewContainer = mContentView.findViewById(R.id.privacy_sandbox_consent_eea_view);
         mPrivacyPolicyView = mContentView.findViewById(R.id.privacy_policy_view);
         mPrivacyPolicyContent = mContentView.findViewById(R.id.privacy_policy_content);
+        mPrivacyPolicyBackButton = mContentView.findViewById(R.id.privacy_policy_back_button);
+        mPrivacyPolicyBackButton.setOnClickListener(this);
 
         // Controls for the expanding section.
         mDropdownElement = mContentView.findViewById(R.id.dropdown_element);
@@ -183,35 +188,7 @@ public class PrivacySandboxDialogConsentEEA extends ChromeDialog
                         () -> {
                             mScrollView.scrollTo(0, mDropdownElement.getTop());
                         });
-                mLearnMoreText = mContentView.findViewById(R.id.privacy_sandbox_learn_more_text);
-                if (ChromeFeatureList.isEnabled(ChromeFeatureList.PRIVACY_SANDBOX_PRIVACY_POLICY)) {
-                    mLearnMoreText.setText(
-                            SpanApplier.applySpans(
-                                    getContext()
-                                            .getResources()
-                                            .getString(
-                                                    R.string
-                                                            .privacy_sandbox_m1_notice_learn_more_v2_clank),
-                                    new SpanApplier.SpanInfo(
-                                            "<link>",
-                                            "</link>",
-                                            new NoUnderlineClickableSpan(
-                                                    getContext(), this::onPrivacyPolicyClicked))));
-                    mLearnMoreText.setMovementMethod(LinkMovementMethod.getInstance());
-                    if (mThinWebView == null
-                            || mWebContents == null
-                            || mWebContents.isDestroyed()) {
-                        mWebContents = WebContentsFactory.createWebContents(mProfile, true, false);
-                        // TODO(crbug.com/366010532): Add in functionality to add language code to
-                        // the url
-                        mThinWebView =
-                                PrivacySandboxDialogController.createThinWebView(
-                                        mWebContents,
-                                        mProfile,
-                                        mActivityWindowAndroid,
-                                        UrlConstants.GOOGLE_EMBEDDED_PRIVACY_POLICY);
-                    }
-                }
+                handlePrivacyPolicyFeature();
             }
 
             mExpandArrowView.setChecked(isDropdownExpanded());
@@ -227,6 +204,42 @@ public class PrivacySandboxDialogConsentEEA extends ChromeDialog
                                     isDropdownExpanded()
                                             ? R.string.accessibility_expanded_group
                                             : R.string.accessibility_collapsed_group));
+        } else if (id == R.id.privacy_policy_back_button) {
+            handlePrivacyPolicyBackButtonClicked();
+        }
+    }
+
+    private void handlePrivacyPolicyBackButtonClicked() {
+        mPrivacyPolicyView.setVisibility(View.GONE);
+        mPrivacyPolicyContent.removeAllViews();
+        mConsentViewContainer.setVisibility(View.VISIBLE);
+    }
+
+    private void handlePrivacyPolicyFeature() {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.PRIVACY_SANDBOX_PRIVACY_POLICY)) {
+            mLearnMoreText = mContentView.findViewById(R.id.privacy_sandbox_learn_more_text);
+            mLearnMoreText.setText(
+                    SpanApplier.applySpans(
+                            getContext()
+                                    .getResources()
+                                    .getString(
+                                            R.string.privacy_sandbox_m1_notice_learn_more_v2_clank),
+                            new SpanApplier.SpanInfo(
+                                    "<link>",
+                                    "</link>",
+                                    new NoUnderlineClickableSpan(
+                                            getContext(), this::onPrivacyPolicyClicked))));
+            mLearnMoreText.setMovementMethod(LinkMovementMethod.getInstance());
+            if (mThinWebView == null || mWebContents == null || mWebContents.isDestroyed()) {
+                mWebContents = WebContentsFactory.createWebContents(mProfile, true, false);
+                // TODO(crbug.com/366010532): Add in functionality to add language code to the url
+                mThinWebView =
+                        PrivacySandboxDialogController.createThinWebView(
+                                mWebContents,
+                                mProfile,
+                                mActivityWindowAndroid,
+                                UrlConstants.GOOGLE_EMBEDDED_PRIVACY_POLICY);
+            }
         }
     }
 

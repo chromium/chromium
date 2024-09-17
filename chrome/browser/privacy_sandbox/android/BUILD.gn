@@ -154,6 +154,7 @@ android_resources("java_resources") {
   sources = [
     "java/res/drawable-night/privacy_sandbox_interests_illustration.xml",
     "java/res/drawable-night/privacy_sandbox_notice_eea_illustration.xml",
+    "java/res/drawable/ic_arrow_back.xml",
     "java/res/drawable/ic_arrow_down.xml",
     "java/res/drawable/ic_auto_delete_24dp.xml",
     "java/res/drawable/ic_background_replace_24dp.xml",

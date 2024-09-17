@@ -503,6 +503,13 @@
           </message>
         </else>
       </if>
+      <!--Privacy Sandbox Privacy Policy-->
+      <message name="IDS_PRIVACY_SANDBOX_PRIVACY_POLICY_PAGE_TITLE" desc="Title for Google's Privacy Policy page." translateable="false" formatter_data="android_java">
+        Google Privacy Policy
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_PRIVACY_POLICY_BACK_BUTTON" desc="Content description for the Privacy Policy page back button." translateable="false" formatter_data="android_java">
+        Back
+      </message>
     </messages>
   </release>
 </grit>
