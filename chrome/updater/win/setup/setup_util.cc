@@ -421,8 +421,9 @@ void AddComServiceWorkItems(const base::FilePath& com_service_path,
 
   list->AddWorkItem(new installer::InstallServiceWorkItem(
       GetServiceName(internal_service).c_str(),
-      GetServiceDisplayName(internal_service).c_str(), SERVICE_AUTO_START,
-      com_service_command, com_switch, UPDATER_KEY, clsids, {}));
+      GetServiceDisplayName(internal_service).c_str(), /*description=*/{},
+      SERVICE_AUTO_START, com_service_command, com_switch, UPDATER_KEY, clsids,
+      {}));
 
   for (const auto& clsid : clsids) {
     AddInstallComProgIdWorkItems(UpdaterScope::kSystem, clsid, list);

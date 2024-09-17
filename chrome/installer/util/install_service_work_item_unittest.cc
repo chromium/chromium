@@ -27,6 +27,8 @@ namespace {
 
 constexpr wchar_t kServiceName[] = L"InstallServiceWorkItemService";
 constexpr wchar_t kServiceDisplayName[] = L"InstallServiceWorkItemService";
+constexpr wchar_t kServiceDescription[] =
+    L"InstallServiceWorkItemService is a test service";
 constexpr uint32_t kServiceStartType = SERVICE_DEMAND_START;
 constexpr base::FilePath::CharType kServiceProgramPath[] =
     FILE_PATH_LITERAL("c:\\windows\\SysWow64\\cmd.exe");
@@ -229,7 +231,7 @@ TEST_F(InstallServiceWorkItemTest, Do_FreshInstall) {
   com_service_cmd_line_args.AppendArgNative(kComServiceCmdLineArgs);
 
   auto item = std::make_unique<InstallServiceWorkItem>(
-      kServiceName, kServiceDisplayName, kServiceStartType,
+      kServiceName, kServiceDisplayName, kServiceDescription, kServiceStartType,
       base::CommandLine(base::FilePath(kServiceProgramPath)),
       com_service_cmd_line_args, kProductRegPath, kClsids, kIids);
 
@@ -252,7 +254,7 @@ TEST_F(InstallServiceWorkItemTest, Do_FreshInstallThenDeleteService) {
     GTEST_SKIP() << "This test must be run by an admin user";
   }
   auto item = std::make_unique<InstallServiceWorkItem>(
-      kServiceName, kServiceDisplayName, kServiceStartType,
+      kServiceName, kServiceDisplayName, kServiceDescription, kServiceStartType,
       base::CommandLine(base::FilePath(kServiceProgramPath)),
       base::CommandLine(base::CommandLine::NO_PROGRAM), kProductRegPath,
       kClsids, kIids);
@@ -274,7 +276,7 @@ TEST_F(InstallServiceWorkItemTest, Do_UpgradeNoChanges) {
     GTEST_SKIP() << "This test must be run by an admin user";
   }
   auto item = std::make_unique<InstallServiceWorkItem>(
-      kServiceName, kServiceDisplayName, kServiceStartType,
+      kServiceName, kServiceDisplayName, kServiceDescription, kServiceStartType,
       base::CommandLine(base::FilePath(kServiceProgramPath)),
       base::CommandLine(base::CommandLine::NO_PROGRAM), kProductRegPath,
       kClsids, kIids);
@@ -284,7 +286,7 @@ TEST_F(InstallServiceWorkItemTest, Do_UpgradeNoChanges) {
 
   // Same command line:
   auto item_upgrade = std::make_unique<InstallServiceWorkItem>(
-      kServiceName, kServiceDisplayName, kServiceStartType,
+      kServiceName, kServiceDisplayName, kServiceDescription, kServiceStartType,
       base::CommandLine(base::FilePath(kServiceProgramPath)),
       base::CommandLine(base::CommandLine::NO_PROGRAM), kProductRegPath,
       kClsids, kIids);
@@ -320,7 +322,7 @@ TEST_F(InstallServiceWorkItemTest, Do_UpgradeChangedCmdLineStartTypeCOMArgs) {
   com_service_cmd_line_args.AppendArgNative(kComServiceCmdLineArgs);
 
   auto item = std::make_unique<InstallServiceWorkItem>(
-      kServiceName, kServiceDisplayName, kServiceStartType,
+      kServiceName, kServiceDisplayName, kServiceDescription, kServiceStartType,
       base::CommandLine(base::FilePath(kServiceProgramPath)),
       com_service_cmd_line_args, kProductRegPath, kClsids, kIids);
   ASSERT_TRUE(item->Do());
@@ -328,10 +330,13 @@ TEST_F(InstallServiceWorkItemTest, Do_UpgradeChangedCmdLineStartTypeCOMArgs) {
   EXPECT_TRUE(IsServiceCorrectlyConfigured(item.get()));
   ExpectServiceCOMRegistrationCorrect(com_service_cmd_line_args,
                                       kServiceProgramPath);
+  EXPECT_EQ(GetImpl(item.get())->GetCurrentServiceDescription(),
+            kServiceDescription);
 
   // New command line and start type.
   auto item_upgrade = std::make_unique<InstallServiceWorkItem>(
-      kServiceName, kServiceDisplayName, SERVICE_AUTO_START,
+      kServiceName, kServiceDisplayName, kServiceDescription,
+      SERVICE_AUTO_START,
       base::CommandLine::FromString(L"NewCmd.exe arg1 arg2"),
       base::CommandLine(base::CommandLine::NO_PROGRAM), kProductRegPath,
       kClsids, kIids);
@@ -341,6 +346,8 @@ TEST_F(InstallServiceWorkItemTest, Do_UpgradeChangedCmdLineStartTypeCOMArgs) {
   // service is correctly configured, while the old item shows that the service
   // is not correctly configured.
   EXPECT_TRUE(IsServiceCorrectlyConfigured(item_upgrade.get()));
+  EXPECT_EQ(GetImpl(item_upgrade.get())->GetCurrentServiceDescription(),
+            kServiceDescription);
   ExpectServiceCOMRegistrationCorrect(
       base::CommandLine(base::CommandLine::NO_PROGRAM), L"NewCmd.exe");
   EXPECT_FALSE(IsServiceCorrectlyConfigured(item.get()));
@@ -369,7 +376,7 @@ TEST_F(InstallServiceWorkItemTest, Do_ServiceName) {
     GTEST_SKIP() << "This test must be run by an admin user";
   }
   auto item = std::make_unique<InstallServiceWorkItem>(
-      kServiceName, kServiceDisplayName, kServiceStartType,
+      kServiceName, kServiceDisplayName, kServiceDescription, kServiceStartType,
       base::CommandLine(base::CommandLine::NO_PROGRAM),
       base::CommandLine(base::FilePath(kServiceProgramPath)), kProductRegPath,
       kClsids, kIids);

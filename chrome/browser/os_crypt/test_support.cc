@@ -84,8 +84,9 @@ std::optional<base::ScopedClosureRunner> InstallService() {
       elevation_service::switches::kElevatorClsIdForTestingSwitch);
   installer::InstallServiceWorkItem install_service_work_item(
       install_static::GetElevationServiceName(),
-      install_static::GetElevationServiceDisplayName(), SERVICE_DEMAND_START,
-      service_cmd, base::CommandLine(base::CommandLine::NO_PROGRAM),
+      install_static::GetElevationServiceDisplayName(), /*description=*/{},
+      SERVICE_DEMAND_START, service_cmd,
+      base::CommandLine(base::CommandLine::NO_PROGRAM),
       install_static::GetClientStateKeyPath(),
       {install_static::GetElevatorClsid()}, {install_static::GetElevatorIid()});
   install_service_work_item.set_best_effort(true);
