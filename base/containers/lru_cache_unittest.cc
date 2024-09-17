@@ -4,16 +4,13 @@
 
 #include "base/containers/lru_cache.h"
 
-#include <algorithm>
 #include <cstddef>
-#include <iterator>
 #include <memory>
 #include <string>
 
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/tracing_buildflags.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(ENABLE_BASE_TRACING)
@@ -23,9 +20,6 @@
 namespace base {
 
 namespace {
-
-using testing::_;
-using testing::Pair;
 
 int cached_item_live_count = 0;
 
@@ -599,49 +593,5 @@ TYPED_TEST(LRUCacheTest, EstimateMemory) {
             trace_event::EstimateMemoryUsage(key));
 }
 #endif  // BUILDFLAG(ENABLE_BASE_TRACING)
-
-TEST(LRUCacheIndexOrderTest, IndexIteration) {
-  using OrderedCache = LRUCache<int, CachedItem>;
-  using UnorderedCache = HashingLRUCache<int, CachedItem>;
-
-  OrderedCache ordered(OrderedCache::NO_AUTO_EVICT);
-  UnorderedCache unordered(UnorderedCache::NO_AUTO_EVICT);
-
-  // Add items in any order.
-  static const int kItem1Key = 1;
-  CachedItem item1(10);
-  ordered.Put(kItem1Key, item1);
-  unordered.Put(kItem1Key, item1);
-
-  static const int kItem3Key = 3;
-  CachedItem item3(30);
-  ordered.Put(kItem3Key, item3);
-  unordered.Put(kItem3Key, item3);
-
-  static const int kItem2Key = 2;
-  CachedItem item2(20);
-  ordered.Put(kItem2Key, item2);
-  unordered.Put(kItem2Key, item2);
-
-  static const int kItem4Key = 4;
-  CachedItem item4(40);
-  ordered.Put(kItem4Key, item4);
-  unordered.Put(kItem4Key, item4);
-
-  // Ordered should be ordered, and unordered should at least have all elements.
-  std::vector<int> ordered_keys;
-  std::ranges::transform(
-      ordered.index(), std::back_inserter(ordered_keys),
-      [](const auto& key_value_pair) -> int { return key_value_pair.first; });
-  EXPECT_THAT(ordered_keys,
-              testing::ElementsAre(kItem1Key, kItem2Key, kItem3Key, kItem4Key));
-
-  std::vector<int> unordered_keys;
-  std::ranges::transform(
-      unordered.index(), std::back_inserter(unordered_keys),
-      [](const auto& key_value_pair) -> int { return key_value_pair.first; });
-  EXPECT_THAT(unordered_keys, testing::UnorderedElementsAre(
-                                  kItem1Key, kItem2Key, kItem3Key, kItem4Key));
-}
 
 }  // namespace base

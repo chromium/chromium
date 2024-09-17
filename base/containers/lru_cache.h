@@ -211,22 +211,6 @@ class LRUCacheBase {
   reverse_iterator rend() { return ordering_.rend(); }
   const_reverse_iterator rend() const { return ordering_.rend(); }
 
-  struct IndexRange {
-    using iterator = KeyIndex::const_iterator;
-
-    IndexRange(const iterator& begin, const iterator& end)
-        : begin_(begin), end_(end) {}
-
-    iterator begin() const { return begin_; }
-    iterator end() const { return end_; }
-
-   private:
-    iterator begin_;
-    iterator end_;
-  };
-  // Allows iterating the index, which can be useful when the index is ordered.
-  IndexRange index() const { return IndexRange(index_.begin(), index_.end()); }
-
   bool empty() const { return ordering_.empty(); }
 
  private:

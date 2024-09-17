@@ -46,10 +46,6 @@ class WebappsClientDesktop : public ChromeWebappsClient {
       const GURL& site_url) const override;
   bool IsAppFullyInstalledForSiteUrl(content::BrowserContext* browsing_context,
                                      const GURL& site_url) const override;
-  bool IsUrlControlledBySeenManifest(content::BrowserContext* browsing_context,
-                                     const GURL& site_url) const override;
-  void OnManifestSeen(content::BrowserContext* browsing_context,
-                      const blink::mojom::Manifest& manifest) const override;
   void SaveInstallationIgnoredForMl(content::BrowserContext* browsing_context,
                                     const GURL& manifest_id) const override;
   void SaveInstallationDismissedForMl(content::BrowserContext* browsing_context,

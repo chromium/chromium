@@ -16,7 +16,6 @@
 namespace web_app {
 
 struct PartitionedLockHolder;
-class VisitedManifestManager;
 class WebAppLockManager;
 class WebContentsManager;
 
@@ -79,7 +78,6 @@ class Lock {
 
   // Resources that are available on all locks:
   WebContentsManager& web_contents_manager();
-  VisitedManifestManager& visited_manifest_manager();
 
  protected:
   explicit Lock(std::unique_ptr<PartitionedLockHolder> holder,

@@ -114,12 +114,8 @@ class MLInstallabilityPromoter
       scoped_refptr<base::SequencedTaskRunner> task_runner);
   void AwaitMetricsCollectionTasksCompleteForTesting();
 
-  bool IsPendingVisibilityForTesting() const {
+  bool IsPendingVisibilityForTesting() {
     return state_ == MLPipelineState::kWaitingForVisibility;
-  }
-
-  bool IsCompleteForTesting() const {
-    return state_ == MLPipelineState::kComplete;
   }
 
  private:

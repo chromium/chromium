@@ -34,7 +34,6 @@ class IsolatedWebAppUpdateManager;
 class ManifestUpdateManager;
 class OsIntegrationManager;
 class PreinstalledWebAppManager;
-class VisitedManifestManager;
 class WebAppAudioFocusIdMap;
 class WebAppCommandManager;
 class WebAppCommandScheduler;
@@ -191,8 +190,6 @@ class WebAppProvider : public KeyedService {
 
   AbstractWebAppDatabaseFactory& database_factory();
 
-  VisitedManifestManager& visited_manifest_manager();
-
   // KeyedService:
   void Shutdown() override;
 
@@ -262,7 +259,6 @@ class WebAppProvider : public KeyedService {
   std::unique_ptr<ExtensionsManager> extensions_manager_;
   std::unique_ptr<GeneratedIconFixManager> generated_icon_fix_manager_;
   scoped_refptr<FileUtilsWrapper> file_utils_;
-  std::unique_ptr<VisitedManifestManager> visited_manifest_manager_;
 
   base::OneShotEvent on_registry_ready_;
   base::OneShotEvent on_external_managers_synchronized_;

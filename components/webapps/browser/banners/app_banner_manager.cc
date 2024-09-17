@@ -410,8 +410,6 @@ void AppBannerManager::OnDidGetManifest(const InstallableData& data) {
   CHECK(data.manifest->id.is_valid());
   web_app_data_.emplace(data.manifest->id, data.manifest->Clone(),
                         data.web_page_metadata->Clone(), *(data.manifest_url));
-  WebappsClient::Get()->OnManifestSeen(web_contents()->GetBrowserContext(),
-                                       *data.manifest);
 
   // Skip checks for PasswordManager WebUI page.
   if (content::HasWebUIScheme(validated_url_) &&
