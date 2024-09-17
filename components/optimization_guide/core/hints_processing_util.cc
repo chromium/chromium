@@ -145,6 +145,8 @@ std::string GetStringNameForOptimizationType(
       return "SavedTabGroup";
     case proto::OptimizationType::FORMS_ANNOTATIONS:
       return "FormsAnnotations";
+    case proto::OptimizationType::TEXT_CLASSIFIER_ENTITY_DETECTION:
+      return "TextClassifierEntityDetection";
   }
 
   // The returned string is used to record histograms for the optimization type.

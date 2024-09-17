@@ -291,6 +291,9 @@ enum OptimizationType {
   // This optimization provides information about whether a URL is eligible for
   // generating user annotations derived from forms.
   FORMS_ANNOTATIONS = 73;
+  // This optimization provides information about whether a page is eligible for
+  // text classifier entity detection. This feature is iOS only.
+  TEXT_CLASSIFIER_ENTITY_DETECTION = 74;
 }
 
 // Presents semantics for how page load URLs should be matched.
