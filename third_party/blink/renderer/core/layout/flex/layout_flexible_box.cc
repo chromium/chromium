@@ -26,11 +26,13 @@ LayoutFlexibleBox::LayoutFlexibleBox(Element* element) : LayoutBlock(element) {}
 bool LayoutFlexibleBox::HasTopOverflow() const {
   const auto& style = StyleRef();
   bool is_wrap_reverse = StyleRef().FlexWrap() == EFlexWrap::kWrapReverse;
-  if (style.IsHorizontalWritingMode()) {
+  if (style.GetWritingDirection().BlockStart() == PhysicalDirection::kUp) {
     return style.ResolvedIsColumnReverseFlexDirection() ||
            (style.ResolvedIsRowFlexDirection() && is_wrap_reverse);
   }
-  return style.IsLeftToRightDirection() ==
+
+  return (style.GetWritingDirection().InlineStart() ==
+          PhysicalDirection::kUp) ==
          (style.ResolvedIsRowReverseFlexDirection() ||
           (style.ResolvedIsColumnFlexDirection() && is_wrap_reverse));
 }
@@ -43,7 +45,8 @@ bool LayoutFlexibleBox::HasLeftOverflow() const {
            (style.ResolvedIsRowReverseFlexDirection() ||
             (style.ResolvedIsColumnFlexDirection() && is_wrap_reverse));
   }
-  return (style.GetWritingMode() == WritingMode::kVerticalLr) ==
+  return (style.GetWritingDirection().BlockStart() ==
+          PhysicalDirection::kLeft) ==
          (style.ResolvedIsColumnReverseFlexDirection() ||
           (style.ResolvedIsRowFlexDirection() && is_wrap_reverse));
 }
