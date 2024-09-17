@@ -299,7 +299,7 @@ LayoutUnit FlexItem::CrossAxisOffset(const NGFlexLine& line,
   }
   return FlowAwareMarginBefore() +
          FlexItem::AlignmentOffset(available_space, position, baseline_offset,
-                                   is_wrap_reverse, is_webkit_box);
+                                   is_wrap_reverse);
 }
 
 void FlexItem::Trace(Visitor* visitor) const {
@@ -312,8 +312,7 @@ void FlexItem::Trace(Visitor* visitor) const {
 LayoutUnit FlexItem::AlignmentOffset(LayoutUnit available_free_space,
                                      ItemPosition position,
                                      LayoutUnit baseline_offset,
-                                     bool is_wrap_reverse,
-                                     bool is_deprecated_webkit_box) {
+                                     bool is_wrap_reverse) {
   switch (position) {
     case ItemPosition::kLegacy:
     case ItemPosition::kAuto:

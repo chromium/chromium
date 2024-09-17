@@ -141,8 +141,7 @@ class FlexItem {
   static LayoutUnit AlignmentOffset(LayoutUnit available_free_space,
                                     ItemPosition position,
                                     LayoutUnit baseline_offset,
-                                    bool is_wrap_reverse,
-                                    bool is_deprecated_webkit_box);
+                                    bool is_wrap_reverse);
 
   void Trace(Visitor*) const;
 
