@@ -49,6 +49,7 @@
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "components/signin/public/identity_manager/set_accounts_in_cookie_result.h"
+#include "components/signin/public/identity_manager/test_identity_manager_observer.h"
 #include "components/supervised_user/core/common/buildflags.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "google_apis/gaia/core_account_id.h"
@@ -1927,6 +1928,44 @@ TEST_P(AccountReconcilorDiceTestWithUnoDesktop,
   EXPECT_EQ(is_uno_desktop_enabled(),
             pref_service()->GetBoolean(
                 prefs::kCookieClearOnExitMigrationNoticeComplete));
+}
+
+TEST_P(AccountReconcilorDiceTestWithUnoDesktop,
+       PendingStateThenClearPrimaryAccount) {
+  if (!switches::IsExplicitBrowserSigninUIOnDesktopEnabled()) {
+    GTEST_SKIP();
+  }
+
+  signin::SetListAccountsResponseNoAccounts(&test_url_loader_factory_);
+  AccountInfo primary_account_info =
+      identity_test_env()->MakePrimaryAccountAvailable(
+          "primary@gmail.com", signin::ConsentLevel::kSignin);
+  identity_test_env()->SetInvalidRefreshTokenForPrimaryAccount();
+  signin::IdentityManager* identity_manager =
+      identity_test_env()->identity_manager();
+  ASSERT_TRUE(identity_manager->HasPrimaryAccountWithRefreshToken(
+      signin::ConsentLevel::kSignin));
+  ASSERT_TRUE(
+      identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
+          primary_account_info.account_id));
+  ASSERT_EQ(identity_manager->GetAccountsWithRefreshTokens().size(), 1u);
+
+  AccountReconcilor* reconcilor = GetMockReconcilor();
+  ASSERT_FALSE(reconcilor->is_reconcile_started_);
+
+  base::RunLoop run_loop;
+  signin::TestIdentityManagerObserver token_updated_observer(identity_manager);
+  token_updated_observer.SetOnRefreshTokenRemovedCallback(
+      run_loop.QuitClosure());
+
+  identity_manager->GetPrimaryAccountMutator()
+      ->RemovePrimaryAccountButKeepTokens(
+          signin_metrics::ProfileSignout::kTest);
+  ASSERT_FALSE(identity_manager->HasPrimaryAccountWithRefreshToken(
+      signin::ConsentLevel::kSignin));
+
+  run_loop.Run();
+  ASSERT_EQ(identity_manager->GetAccountsWithRefreshTokens().size(), 0u);
 }
 
 const std::vector<AccountReconcilorTestTableParam>

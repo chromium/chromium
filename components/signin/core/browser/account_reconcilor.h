@@ -248,6 +248,8 @@ class AccountReconcilor
                            DeleteCookieForSignedInUser);
   FRIEND_TEST_ALL_PREFIXES(AccountReconcilorDiceTestWithUnoDesktop,
                            DeleteCookieForSyncingUser);
+  FRIEND_TEST_ALL_PREFIXES(AccountReconcilorDiceTestWithUnoDesktop,
+                           PendingStateThenClearPrimaryAccount);
   FRIEND_TEST_ALL_PREFIXES(AccountReconcilorMirrorTest, TokensNotLoaded);
   FRIEND_TEST_ALL_PREFIXES(AccountReconcilorMirrorTest,
                            StartReconcileCookiesDisabled);
@@ -339,6 +341,8 @@ class AccountReconcilor
   // Event triggering a call to StartReconcile().
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
+  //
+  // LINT.IfChange(Trigger)
   enum class Trigger {
     kInitialized = 0,
     kTokensLoaded = 1,
@@ -349,9 +353,11 @@ class AccountReconcilor
     kCookieChange = 6,
     kCookieSettingChange = 7,
     kForcedReconcile = 8,
+    kPrimaryAccountChanged = 9,
 
-    kMaxValue = kForcedReconcile
+    kMaxValue = kPrimaryAccountChanged
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:SigninReconcilerTrigger)
 
   void set_timer_for_testing(std::unique_ptr<base::OneShotTimer> timer);
 

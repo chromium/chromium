@@ -728,6 +728,8 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Throttled"/>
 </enum>
 
+<!-- LINT.IfChange(SigninReconcilerTrigger) -->
+
 <enum name="SigninReconcilerTrigger">
   <int value="0" label="Initialized"/>
   <int value="1" label="Tokens loaded"/>
@@ -738,7 +740,10 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Cookie change"/>
   <int value="7" label="Cookie setting change"/>
   <int value="8" label="Forced reconcile"/>
+  <int value="9" label="Primary account changed"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/signin/core/browser/account_reconcilor.h:Trigger) -->
 
 <enum name="SigninSignoutProfile">
   <int value="0" label="Preference changed">
