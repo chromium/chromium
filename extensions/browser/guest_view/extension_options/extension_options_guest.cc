@@ -159,8 +159,9 @@ WebContents* ExtensionOptionsGuest::AddNewContents(
   // called is WebContentsImpl::ViewSource - which generates a non-guest
   // WebContents.
   DCHECK(!ExtensionOptionsGuest::FromWebContents(new_contents.get()));
-  if (!attached() || !embedder_web_contents()->GetDelegate())
+  if (!attached() || !embedder_web_contents()->GetDelegate()) {
     return nullptr;
+  }
 
   embedder_web_contents()->GetDelegate()->AddNewContents(
       source, std::move(new_contents), target_url, disposition, window_features,
@@ -202,8 +203,9 @@ void ExtensionOptionsGuest::CloseContents(WebContents* source) {
 bool ExtensionOptionsGuest::HandleContextMenu(
     content::RenderFrameHost& render_frame_host,
     const content::ContextMenuParams& params) {
-  if (!extension_options_guest_delegate_)
+  if (!extension_options_guest_delegate_) {
     return false;
+  }
 
   return extension_options_guest_delegate_->HandleContextMenu(render_frame_host,
                                                               params);

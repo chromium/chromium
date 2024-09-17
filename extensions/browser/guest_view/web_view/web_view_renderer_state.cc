@@ -46,8 +46,9 @@ void WebViewRendererState::AddGuest(int guest_process_id,
   bool updating =
       web_view_info_map_.find(global_routing_id) != web_view_info_map_.end();
   web_view_info_map_[global_routing_id] = web_view_info;
-  if (updating)
+  if (updating) {
     return;
+  }
 
   auto iter = web_view_partition_id_map_.find(guest_process_id);
   if (iter != web_view_partition_id_map_.end()) {
@@ -68,8 +69,9 @@ void WebViewRendererState::RemoveGuest(int guest_process_id,
   // this case, ensure that the refcount in web_view_partition_id_map_ isn't
   // double-decremented.  In particular, this can happen when a <webview>'s
   // process is terminated and then reloaded.
-  if (web_view_info_map_.erase(global_routing_id) == 0)
+  if (web_view_info_map_.erase(global_routing_id) == 0) {
     return;
+  }
 
   auto iter = web_view_partition_id_map_.find(guest_process_id);
   if (iter != web_view_partition_id_map_.end() &&
@@ -103,10 +105,12 @@ bool WebViewRendererState::GetOwnerInfo(int guest_process_id,
   // WebViewInfo.
   for (const auto& info : web_view_info_map_) {
     if (info.first.child_id == guest_process_id) {
-      if (owner_process_id)
+      if (owner_process_id) {
         *owner_process_id = info.second.embedder_process_id;
-      if (owner_host)
+      }
+      if (owner_host) {
         *owner_host = info.second.owner_host;
+      }
       return true;
     }
   }

@@ -90,8 +90,9 @@ MimeHandlerViewAttachHelper* MimeHandlerViewAttachHelper::Get(
   auto& map = *GetProcessIdToHelperMap();
   if (!base::Contains(map, render_process_id)) {
     auto* process_host = content::RenderProcessHost::FromID(render_process_id);
-    if (!process_host)
+    if (!process_host) {
       return nullptr;
+    }
     map[render_process_id] = base::WrapUnique<MimeHandlerViewAttachHelper>(
         new MimeHandlerViewAttachHelper(process_host));
   }
@@ -144,8 +145,9 @@ std::string MimeHandlerViewAttachHelper::OverrideBodyForInterceptedResponse(
 
 void MimeHandlerViewAttachHelper::RenderProcessHostDestroyed(
     content::RenderProcessHost* render_process_host) {
-  if (render_process_host != render_process_host_)
+  if (render_process_host != render_process_host_) {
     return;
+  }
   render_process_host->RemoveObserver(this);
   GetProcessIdToHelperMap()->erase(render_process_host_->GetID());
 }
@@ -197,8 +199,9 @@ void MimeHandlerViewAttachHelper::ResumeAttachOrDestroy(
 
   DCHECK(!plugin_render_frame_host ||
          (plugin_render_frame_host->GetProcess() == render_process_host_));
-  if (!guest_view)
+  if (!guest_view) {
     return;
+  }
   if (!plugin_render_frame_host) {
     auto* embedder_frame = guest_view->GetEmbedderFrame();
     if (embedder_frame && embedder_frame->IsRenderFrameLive()) {
