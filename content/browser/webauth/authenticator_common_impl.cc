@@ -1562,6 +1562,10 @@ void AuthenticatorCommonImpl::ContinueGetAssertionAfterRpIdCheck(
   }
 
   req_state_->request_delegate->SetConditionalRequest(options->is_conditional);
+  if (options->is_conditional) {
+    req_state_->request_delegate->SetAmbientCredentialTypes(
+        options->requested_credential_type_flags);
+  }
 
   req_state_->request_delegate->SetCredentialIdFilter(
       options->allow_credentials);

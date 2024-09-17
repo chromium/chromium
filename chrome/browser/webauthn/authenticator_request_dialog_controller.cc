@@ -1624,6 +1624,11 @@ void AuthenticatorRequestDialogController::set_has_icloud_drive_enabled(
 
 #endif
 
+void AuthenticatorRequestDialogController::set_ambient_credential_types(
+    int types) {
+  ambient_credential_types_ = types;
+}
+
 base::WeakPtr<AuthenticatorRequestDialogController>
 AuthenticatorRequestDialogController::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
@@ -1826,7 +1831,7 @@ void AuthenticatorRequestDialogController::StartConditionalMediationRequest() {
         ambient_signin::AmbientSigninController::GetOrCreateForCurrentDocument(
             render_frame_host);
     controller->AddAndShowWebAuthnMethods(
-        model(), credentials,
+        model(), credentials, ambient_credential_types_,
         base::BindOnce(
             [](base::WeakPtr<AuthenticatorRequestDialogController> controller,
                std::vector<uint8_t> credential_id) {

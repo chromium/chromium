@@ -366,6 +366,10 @@ class CONTENT_EXPORT AuthenticatorRequestClientDelegate
   // shown alongside autofilled passwords, instead of the modal flow.
   virtual void SetConditionalRequest(bool is_conditional);
 
+  // Set the credential types that are expected by the Ambient UI.
+  // Credential types are defined in `credential_types.mojom`.
+  virtual void SetAmbientCredentialTypes(int credential_type_flags);
+
   // Sets a credential filter for conditional mediation requests, which will
   // only allow passkeys with matching credential IDs to be displayed to the
   // user.

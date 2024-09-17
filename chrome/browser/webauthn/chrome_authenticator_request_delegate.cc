@@ -1337,6 +1337,11 @@ void ChromeAuthenticatorRequestDelegate::SetConditionalRequest(
   is_conditional_ = is_conditional;
 }
 
+void ChromeAuthenticatorRequestDelegate::SetAmbientCredentialTypes(
+    int credential_type_flags) {
+  ambient_credential_types_ = credential_type_flags;
+}
+
 void ChromeAuthenticatorRequestDelegate::SetCredentialIdFilter(
     std::vector<device::PublicKeyCredentialDescriptor> credential_list) {
   credential_filter_ = std::move(credential_list);
@@ -1533,6 +1538,8 @@ void ChromeAuthenticatorRequestDelegate::ShowUI(
   // all other platforms, GPM should be the default.
   dialog_controller_->set_enclave_can_be_default(
       EnclaveCanBeDefault(Profile::FromBrowserContext(GetBrowserContext())));
+
+  dialog_controller_->set_ambient_credential_types(ambient_credential_types_);
 
   dialog_controller_->StartFlow(std::move(tai), is_conditional_);
 

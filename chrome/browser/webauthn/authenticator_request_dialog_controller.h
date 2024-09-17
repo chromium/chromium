@@ -22,6 +22,7 @@
 #include "components/webauthn/core/browser/passkey_model_change.h"
 #include "content/public/browser/authenticator_request_client_delegate.h"
 #include "content/public/browser/global_routing_id.h"
+#include "third_party/blink/public/mojom/credentialmanagement/credential_type_flags.mojom.h"
 
 class Profile;
 
@@ -356,6 +357,8 @@ class AuthenticatorRequestDialogController
   void set_has_icloud_drive_enabled(bool);
 #endif
 
+  void set_ambient_credential_types(int types);
+
   base::WeakPtr<AuthenticatorRequestDialogController> GetWeakPtr();
 
  private:
@@ -603,6 +606,11 @@ class AuthenticatorRequestDialogController
 #endif
 
   bool enclave_can_be_default_ = true;
+
+  // The credential types that are being asked for in an ambient UI
+  // request.
+  int ambient_credential_types_ =
+      static_cast<int>(blink::mojom::CredentialTypeFlags::kNone);
 
   const content::GlobalRenderFrameHostId frame_host_id_;
 

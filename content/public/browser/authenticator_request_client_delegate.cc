@@ -214,6 +214,9 @@ bool AuthenticatorRequestClientDelegate::IsVirtualEnvironmentEnabled() {
 void AuthenticatorRequestClientDelegate::SetConditionalRequest(
     bool is_conditional) {}
 
+void AuthenticatorRequestClientDelegate::SetAmbientCredentialTypes(
+    int credential_type_flags) {}
+
 void AuthenticatorRequestClientDelegate::SetCredentialIdFilter(
     std::vector<device::PublicKeyCredentialDescriptor>) {}
 

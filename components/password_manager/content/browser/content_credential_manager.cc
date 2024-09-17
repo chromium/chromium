@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "mojo/public/cpp/bindings/message.h"
+#include "third_party/blink/public/mojom/credentialmanagement/credential_type_flags.mojom.h"
 
 namespace password_manager {
 
@@ -56,10 +57,14 @@ void ContentCredentialManager::PreventSilentAccess(
 }
 
 void ContentCredentialManager::Get(CredentialMediationRequirement mediation,
-                                   bool include_passwords,
+                                   int requested_credential_type_flags,
                                    const std::vector<GURL>& federations,
                                    GetCallback callback) {
-  impl_.Get(mediation, include_passwords, federations, std::move(callback));
+  bool has_passwords =
+      requested_credential_type_flags &
+      static_cast<int>(blink::mojom::CredentialTypeFlags::kPassword);
+  impl_.Get(mediation, has_passwords, requested_credential_type_flags,
+            federations, std::move(callback));
 }
 
 }  // namespace password_manager

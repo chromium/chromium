@@ -4549,6 +4549,13 @@
       name: "WebAuthAuthenticatorAttachment",
       status: "test",
     },
+    // Prototyping https://github.com/w3c/webauthn/issues/2144
+    {
+      name: "WebAuthenticationAmbient",
+      status: "experimental",
+      base_feature: "none",
+      public: true,
+    },
     // https://w3c.github.io/webauthn/#dom-publickeycredentialcreationoptions-attestationformats
     {
       name: "WebAuthenticationAttestationFormats",

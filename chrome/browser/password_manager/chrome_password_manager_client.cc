@@ -1275,12 +1275,14 @@ ChromePasswordManagerClient::ShowCrossDomainConfirmationPopup(
 
 void ChromePasswordManagerClient::ShowCredentialsInAmbientBubble(
     std::vector<std::unique_ptr<password_manager::PasswordForm>> forms,
+    int credential_type_flags,
     CredentialsCallback callback) {
 #if !BUILDFLAG(IS_ANDROID)
   auto* controller =
       ambient_signin::AmbientSigninController::GetOrCreateForCurrentDocument(
           web_contents()->GetPrimaryMainFrame());
-  controller->AddAndShowPasswordMethods(std::move(forms), std::move(callback));
+  controller->AddAndShowPasswordMethods(std::move(forms), credential_type_flags,
+                                        std::move(callback));
 #else
   NOTREACHED_NORETURN();
 #endif

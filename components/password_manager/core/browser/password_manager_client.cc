@@ -202,6 +202,7 @@ void PasswordManagerClient::RefreshPasswordManagerSettingsIfNeeded() const {
 
 void PasswordManagerClient::ShowCredentialsInAmbientBubble(
     std::vector<std::unique_ptr<password_manager::PasswordForm>> forms,
+    int credential_type_flags,
     CredentialsCallback callback) {
   std::move(callback).Run(nullptr);
 }

@@ -14,6 +14,7 @@
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/public/common/sms/webotp_constants.h"
 #include "third_party/blink/public/mojom/credentialmanagement/credential_manager.mojom-blink.h"
+#include "third_party/blink/public/mojom/credentialmanagement/credential_type_flags.mojom-blink.h"
 #include "third_party/blink/public/mojom/payments/payment_credential.mojom-blink.h"
 #include "third_party/blink/public/mojom/sms/webotp_service.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
@@ -1273,6 +1274,9 @@ ScriptPromise<IDLNullable<Credential>> AuthenticationCredentialsContainer::get(
     return promise;
   }
 
+  uint32_t requested_credential_types =
+      static_cast<int>(mojom::blink::CredentialTypeFlags::kNone);
+
   // TODO(cbiesinger): Consider removing the hasIdentity() check after FedCM
   // ships. Before then, it is useful for RPs to pass both identity and
   // federated while transitioning from the older to the new API.
@@ -1284,6 +1288,39 @@ ScriptPromise<IDLNullable<Credential>> AuthenticationCredentialsContainer::get(
   if (options->hasPassword() && options->password()) {
     UseCounter::Count(context,
                       WebFeature::kCredentialManagerGetPasswordCredential);
+    requested_credential_types |=
+        static_cast<int>(mojom::blink::CredentialTypeFlags::kFederated);
+  }
+
+  if (options->hasPublicKey()) {
+    requested_credential_types |=
+        static_cast<int>(mojom::blink::CredentialTypeFlags::kPublicKey);
+  }
+
+  if (options->hasPassword() && options->password()) {
+    requested_credential_types |=
+        static_cast<int>(mojom::blink::CredentialTypeFlags::kPassword);
+  }
+
+  bool ambient_request_enabled = false;
+  if (RuntimeEnabledFeatures::WebAuthenticationAmbientEnabled() &&
+      options->hasPublicKey() && options->hasPassword() &&
+      options->password() && options->mediation() == "conditional") {
+    // TODO(358119268): For prototyping we allow this for all
+    // conditionally-mediated requests that contain both credential types. This
+    // will change.
+    ambient_request_enabled = true;
+
+    // Unsupported ambient credential types:
+    if (options->hasOtp() || options->hasIdentity() ||
+        (options->publicKey()->hasExtensions() &&
+         options->publicKey()->extensions()->hasPayment()) ||
+        options->hasFederated()) {
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kNotSupportedError,
+          "Unsupported combination of credential types requested."));
+      return promise;
+    }
   }
 
   if (options->hasPublicKey()) {
@@ -1425,6 +1462,8 @@ ScriptPromise<IDLNullable<Credential>> AuthenticationCredentialsContainer::get(
       if (!mojo_options->relying_party_id) {
         mojo_options->relying_party_id = context->GetSecurityOrigin()->Domain();
       }
+      mojo_options->requested_credential_type_flags =
+          requested_credential_types;
       auto* authenticator =
           CredentialManagerProxy::From(script_state)->Authenticator();
       authenticator->GetAssertion(
@@ -1437,8 +1476,11 @@ ScriptPromise<IDLNullable<Credential>> AuthenticationCredentialsContainer::get(
       resolver->Reject(MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kNotSupportedError,
           "Required parameters missing in 'options.publicKey'."));
+      return promise;
     }
-    return promise;
+    if (!ambient_request_enabled) {
+      return promise;
+    }
   }
 
   if (options->hasOtp() && options->otp()->hasTransport()) {
@@ -1493,7 +1535,7 @@ ScriptPromise<IDLNullable<Credential>> AuthenticationCredentialsContainer::get(
     }
   }
   CredentialMediationRequirement requirement;
-  if (options->mediation() == "conditional") {
+  if (!ambient_request_enabled && options->mediation() == "conditional") {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kNotSupportedError,
         "Conditional mediation is not supported for this credential type"));
@@ -1507,17 +1549,19 @@ ScriptPromise<IDLNullable<Credential>> AuthenticationCredentialsContainer::get(
     UseCounter::Count(context,
                       WebFeature::kCredentialManagerGetMediationOptional);
     requirement = CredentialMediationRequirement::kOptional;
-  } else {
-    DCHECK_EQ("required", options->mediation());
+  } else if (options->mediation() == "required") {
     UseCounter::Count(context,
                       WebFeature::kCredentialManagerGetMediationRequired);
+    requirement = CredentialMediationRequirement::kRequired;
+  } else {
+    CHECK_EQ("conditional", options->mediation());
     requirement = CredentialMediationRequirement::kRequired;
   }
 
   auto* credential_manager =
       CredentialManagerProxy::From(script_state)->CredentialManager();
   credential_manager->Get(
-      requirement, options->password(), std::move(providers),
+      requirement, requested_credential_types, std::move(providers),
       WTF::BindOnce(&OnGetComplete,
                     std::make_unique<ScopedPromiseResolver>(resolver),
                     required_origin_type));

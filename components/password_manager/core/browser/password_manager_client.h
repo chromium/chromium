@@ -542,6 +542,7 @@ class PasswordManagerClient {
   // the selected `PasswordForm`.
   virtual void ShowCredentialsInAmbientBubble(
       std::vector<std::unique_ptr<password_manager::PasswordForm>> forms,
+      int credential_type_flags,
       CredentialsCallback callback);
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
