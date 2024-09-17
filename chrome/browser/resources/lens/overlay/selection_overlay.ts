@@ -187,6 +187,10 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
         type: Boolean,
         reflectToAttribute: true,
       },
+      suppressCopyAndSaveAsImage: {
+        type: Boolean,
+        reflectToAttribute: true,
+      },
       shimmerOnSegmentation: {
         type: Boolean,
         reflectToAttribute: true,
@@ -251,6 +255,9 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
   private useShimmerCanvas: boolean;
   private enableCopyAsImage: boolean;
   private enableSaveAsImage: boolean;
+  private suppressCopyAndSaveAsImage: boolean =
+      loadTimeData.getString('invocationSource') ===
+      'ContentAreaContextMenuImage';
   // Whether the overlay is being shut down.
   private isClosing: boolean = false;
   // Whether the default background scrim is currently being darkened.
@@ -367,8 +374,10 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
           this.showDetectedTextContextMenuOptions =
               this.detectedTextStartIndex !== -1 &&
               this.detectedTextEndIndex !== -1;
-          this.showSelectedRegionContextMenu = this.enableCopyAsImage ||
-              this.enableSaveAsImage || this.showDetectedTextContextMenuOptions;
+          this.showSelectedRegionContextMenu =
+              (!this.suppressCopyAndSaveAsImage &&
+               (this.enableCopyAsImage || this.enableSaveAsImage)) ||
+              this.showDetectedTextContextMenuOptions;
         });
     this.eventTracker_.add(
         document, 'hide-selected-region-context-menu', () => {
@@ -616,6 +625,7 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
     this.addDragListeners();
     this.browserProxy.handler.closeSearchBubble();
     this.browserProxy.handler.closePreselectionBubble();
+    this.suppressCopyAndSaveAsImage = false;
 
     this.currentGesture = {
       state: GestureState.STARTING,
@@ -1015,6 +1025,10 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
 
   getShowDetectedTextContextMenuOptionsForTesting() {
     return this.showDetectedTextContextMenuOptions;
+  }
+
+  getSuppressCopyAndSaveAsImageForTesting() {
+    return this.suppressCopyAndSaveAsImage;
   }
 
   handleSelectTextForTesting() {

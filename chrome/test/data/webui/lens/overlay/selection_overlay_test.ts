@@ -1188,4 +1188,38 @@ suite('SelectionOverlay', function() {
         assertTrue(
             selectionOverlayElement.getShowSelectedTextContextMenuForTesting());
       });
+
+
+  suite('InvocationSourceContextMenuImage', function() {
+    setup(async function() {
+      loadTimeData.overrideValues({
+        invocationSource: 'ContentAreaContextMenuImage',
+      });
+
+      // Recreate overlay element with new load time data.
+      document.body.removeChild(selectionOverlayElement);
+      selectionOverlayElement =
+          document.createElement('lens-selection-overlay');
+      document.body.appendChild(selectionOverlayElement);
+      selectionOverlayElement.$.selectionOverlay.style.width = '100%';
+      selectionOverlayElement.$.selectionOverlay.style.height = '100%';
+      await waitAfterNextRender(selectionOverlayElement);
+      return waitAfterNextRender(selectionOverlayElement);
+    });
+
+    test(
+        'verify that copy and save as image are initially suppressed',
+        async () => {
+          await addWords();
+
+          assertTrue(selectionOverlayElement
+                         .getSuppressCopyAndSaveAsImageForTesting());
+
+          await simulateDrag(
+              selectionOverlayElement, {x: 0, y: 0}, {x: 80, y: 40});
+
+          assertFalse(selectionOverlayElement
+                          .getSuppressCopyAndSaveAsImageForTesting());
+        });
+  });
 });
