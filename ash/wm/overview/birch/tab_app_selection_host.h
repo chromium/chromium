@@ -17,6 +17,8 @@ class TabAppSelectionHost : public views::Widget {
   TabAppSelectionHost& operator=(const TabAppSelectionHost&) = delete;
   ~TabAppSelectionHost() override;
 
+  void ProcessKeyEvent(ui::KeyEvent* event);
+
   const BirchChipButton* owner_for_testing() const { return owner_; }
 
  private:

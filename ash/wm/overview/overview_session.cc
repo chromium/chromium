@@ -29,6 +29,8 @@
 #include "ash/wm/desks/templates/saved_desk_util.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/birch/birch_bar_controller.h"
+#include "ash/wm/overview/birch/birch_bar_util.h"
+#include "ash/wm/overview/birch/tab_app_selection_host.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_delegate.h"
 #include "ash/wm/overview/overview_grid.h"
@@ -1392,6 +1394,12 @@ void OverviewSession::OnKeyEvent(ui::KeyEvent* event) {
   // If a desk templates dialog is visible it should receive the key events.
   if (saved_desk_dialog_controller_ &&
       saved_desk_dialog_controller_->dialog_widget()) {
+    return;
+  }
+
+  if (TabAppSelectionHost* coral_selector =
+          birch_bar_util::GetVisibleTabAppSelectionHost()) {
+    coral_selector->ProcessKeyEvent(event);
     return;
   }
 
