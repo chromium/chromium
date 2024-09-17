@@ -231,6 +231,13 @@ void PasswordReuseModalWarningDialog::CreateGaiaPasswordReuseModalWarningDialog(
   AddChildView(message_body_label);
 }
 
+gfx::Size PasswordReuseModalWarningDialog::GetMinimumSize() const {
+  // The default GetMinimumSize of `View` will call the layout manager to
+  // calculate under unconstrained conditions when there is a layout manager.
+  // This will cause the minimum value to be calculated incorrectly.
+  return GetPreferredSize(views::SizeBounds(0, 0));
+}
+
 gfx::Size PasswordReuseModalWarningDialog::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
   constexpr int kDialogWidth = 400;
