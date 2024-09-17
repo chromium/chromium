@@ -1,9 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Send and receive messages using a dedicated worker.
-  promise_test: Unhandled rejection with value: object "ReferenceError: create_dedicated_worker is not defined"
-[FAIL] Send and receive messages using a service worker.
-  promise_test: Unhandled rejection with value: object "ReferenceError: kServiceWorkerMessageTarget is not defined"
-[FAIL] Send and receive messages using a shared worker.
-  promise_test: Unhandled rejection with value: object "ReferenceError: kSharedWorkerMessageTarget is not defined"
-Harness: the test ran to completion.
-
