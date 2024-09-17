@@ -2182,6 +2182,13 @@ TEST_F(HttpStreamFactoryTest, TwoSpdyConnects) {
 }
 
 TEST_F(HttpStreamFactoryTest, RequestBidirectionalStreamImpl) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  // Explicitly disable HappyEyeballsV3 because it doesn't support bidirectional
+  // streams yet.
+  // TODO(crbug.com/346835898): Support bidirectional streams in
+  // HappyEyeballsV3.
+  scoped_feature_list.InitAndDisableFeature(features::kHappyEyeballsV3);
+
   SpdySessionDependencies session_deps(
       ConfiguredProxyResolutionService::CreateDirect());
 
@@ -2778,6 +2785,13 @@ INSTANTIATE_TEST_SUITE_P(VersionIncludeStreamDependencySequence,
 
 TEST_P(HttpStreamFactoryBidirectionalQuicTest,
        RequestBidirectionalStreamImplQuicAlternative) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  // Explicitly disable HappyEyeballsV3 because it doesn't support bidirectional
+  // streams yet.
+  // TODO(crbug.com/346835898): Support bidirectional streams in
+  // HappyEyeballsV3.
+  scoped_feature_list.InitAndDisableFeature(features::kHappyEyeballsV3);
+
   MockQuicData mock_quic_data(version());
   // Set priority to default value so that
   // QuicTestPacketMaker::MakeRequestHeadersPacket() does not add mock
@@ -2868,6 +2882,13 @@ TEST_P(HttpStreamFactoryBidirectionalQuicTest,
 // BidirectionalStreamQuicImpl.
 TEST_P(HttpStreamFactoryBidirectionalQuicTest,
        RequestBidirectionalStreamImplHttpJobFailsQuicJobSucceeds) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  // Explicitly disable HappyEyeballsV3 because it doesn't support bidirectional
+  // streams yet.
+  // TODO(crbug.com/346835898): Support bidirectional streams in
+  // HappyEyeballsV3.
+  scoped_feature_list.InitAndDisableFeature(features::kHappyEyeballsV3);
+
   // Set up Quic data.
   MockQuicData mock_quic_data(version());
   // Set priority to default value so that
@@ -2958,6 +2979,13 @@ TEST_P(HttpStreamFactoryBidirectionalQuicTest,
 }
 
 TEST_F(HttpStreamFactoryTest, RequestBidirectionalStreamImplFailure) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  // Explicitly disable HappyEyeballsV3 because it doesn't support bidirectional
+  // streams yet.
+  // TODO(crbug.com/346835898): Support bidirectional streams in
+  // HappyEyeballsV3.
+  scoped_feature_list.InitAndDisableFeature(features::kHappyEyeballsV3);
+
   SpdySessionDependencies session_deps(
       ConfiguredProxyResolutionService::CreateDirect());
 
