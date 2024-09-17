@@ -3854,17 +3854,8 @@ void LineBreaker::HandleCloseTag(const InlineItem& item, LineInfo* line_info) {
 // At this point, item_results does not fit into the current line, and there
 // are no break opportunities in item_results.back().
 void LineBreaker::HandleOverflow(LineInfo* line_info) {
-  // Compute the width needing to rewind. When |width_to_rewind| goes negative,
-  // items can fit within the line.
-  LayoutUnit available_width = AvailableWidthToFit();
-  LayoutUnit width_to_rewind = position_ - available_width;
-  DCHECK_GT(width_to_rewind, 0);
-
-  // Keep track of the shortest break opportunity.
-  unsigned break_before = 0;
-
-  // True if there is at least one item that has `break-word`.
-  bool has_break_anywhere_if_overflow = break_anywhere_if_overflow_;
+  const LayoutUnit available_width = AvailableWidthToFit();
+  DCHECK_GT(position_, available_width);
 
   // Save the hyphenation states before we may make changes.
   InlineItemResults* item_results = line_info->MutableResults();
@@ -3872,6 +3863,16 @@ void LineBreaker::HandleOverflow(LineInfo* line_info) {
   if (HasHyphen()) [[unlikely]] {
     position_ -= RemoveHyphen(item_results);
   }
+
+  // Compute the width needing to rewind. When |width_to_rewind| goes negative,
+  // items can fit within the line.
+  LayoutUnit width_to_rewind = position_ - available_width;
+
+  // Keep track of the shortest break opportunity.
+  unsigned break_before = 0;
+
+  // True if there is at least one item that has `break-word`.
+  bool has_break_anywhere_if_overflow = break_anywhere_if_overflow_;
 
   // Search for a break opportunity that can fit.
   for (unsigned i = item_results->size(); i;) {
