@@ -24,14 +24,19 @@ class ASH_EXPORT PickerSuggestionsController {
   using SuggestionsCallback =
       base::RepeatingCallback<void(std::vector<PickerSearchResult>)>;
 
-  explicit PickerSuggestionsController(PickerClient* client);
+  PickerSuggestionsController();
   PickerSuggestionsController(const PickerSuggestionsController&) = delete;
   PickerSuggestionsController& operator=(const PickerSuggestionsController&) =
       delete;
   ~PickerSuggestionsController();
 
-  void GetSuggestions(const PickerModel& model, SuggestionsCallback callback);
-  void GetSuggestionsForCategory(PickerCategory category,
+  // `client` only needs to remain valid until the function ends.
+  void GetSuggestions(PickerClient& client,
+                      const PickerModel& model,
+                      SuggestionsCallback callback);
+  // `client` only needs to remain valid until the function ends.
+  void GetSuggestionsForCategory(PickerClient& client,
+                                 PickerCategory category,
                                  SuggestionsCallback callback);
 
  private:

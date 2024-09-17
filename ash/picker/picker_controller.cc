@@ -326,11 +326,8 @@ void PickerController::SetClient(PickerClient* client) {
   // The destructor of `PickerSearchRequest` inside `PickerSearchController` may
   // result in "stop search" calls to the PREVIOUS `PickerClient`.
   if (client_ == nullptr) {
-    suggestions_controller_ = nullptr;
     search_controller_ = nullptr;
   } else {
-    suggestions_controller_ =
-        std::make_unique<PickerSuggestionsController>(client_);
     search_controller_ =
         std::make_unique<PickerSearchController>(client_, kBurnInPeriod);
   }
@@ -378,7 +375,9 @@ std::vector<PickerCategory> PickerController::GetAvailableCategories() {
 
 void PickerController::GetZeroStateSuggestedResults(
     SuggestedResultsCallback callback) {
-  suggestions_controller_->GetSuggestions(session_->model, std::move(callback));
+  CHECK(client_);
+  suggestions_controller_.GetSuggestions(*client_, session_->model,
+                                         std::move(callback));
 }
 
 void PickerController::GetResultsForCategory(PickerCategory category,
@@ -389,8 +388,9 @@ void PickerController::GetResultsForCategory(PickerCategory category,
           ? PickerSectionType::kExamples
           : PickerSectionType::kNone;
 
-  suggestions_controller_->GetSuggestionsForCategory(
-      category,
+  CHECK(client_);
+  suggestions_controller_.GetSuggestionsForCategory(
+      *client_, category,
       base::BindRepeating(CreateSingleSectionForCategoryResults, section_type)
           .Then(std::move(callback)));
 }

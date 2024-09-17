@@ -20,6 +20,7 @@
 #include "ash/picker/picker_asset_fetcher_impl_delegate.h"
 #include "ash/picker/picker_caps_lock_bubble_controller.h"
 #include "ash/picker/picker_insert_media_request.h"
+#include "ash/picker/picker_suggestions_controller.h"
 #include "ash/picker/views/picker_feature_tour.h"
 #include "ash/picker/views/picker_view_delegate.h"
 #include "ash/public/cpp/picker/picker_search_result.h"
@@ -52,7 +53,6 @@ class PickerClient;
 class PickerModel;
 class PickerPasteRequest;
 class PickerSearchController;
-class PickerSuggestionsController;
 
 // Controls a Picker widget.
 class ASH_EXPORT PickerController : public PickerViewDelegate,
@@ -197,7 +197,7 @@ class ASH_EXPORT PickerController : public PickerViewDelegate,
   std::unique_ptr<PickerAssetFetcher> asset_fetcher_;
   std::unique_ptr<PickerInsertMediaRequest> insert_media_request_;
   std::unique_ptr<PickerPasteRequest> paste_request_;
-  std::unique_ptr<PickerSuggestionsController> suggestions_controller_;
+  PickerSuggestionsController suggestions_controller_;
   std::unique_ptr<PickerSearchController> search_controller_;
 
   raw_ptr<PickerClient> client_ = nullptr;

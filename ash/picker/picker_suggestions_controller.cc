@@ -25,9 +25,7 @@ constexpr base::TimeDelta kMaxLocalFileSuggestionRecencyDelta = base::Days(30);
 constexpr base::TimeDelta kMaxLocalFileCategoryRecencyDelta = base::Days(3652);
 }
 
-PickerSuggestionsController::PickerSuggestionsController(PickerClient* client)
-    : client_(client) {}
-
+PickerSuggestionsController::PickerSuggestionsController() = default;
 PickerSuggestionsController::~PickerSuggestionsController() = default;
 
 std::vector<PickerSearchResult> GetMostRecentResults(
@@ -39,7 +37,8 @@ std::vector<PickerSearchResult> GetMostRecentResults(
   return results;
 }
 
-void PickerSuggestionsController::GetSuggestions(const PickerModel& model,
+void PickerSuggestionsController::GetSuggestions(PickerClient& client,
+                                                 const PickerModel& model,
                                                  SuggestionsCallback callback) {
   if (model.GetMode() == PickerModeType::kUnfocused) {
     std::vector<PickerSearchResult> new_window_results;
@@ -62,7 +61,7 @@ void PickerSuggestionsController::GetSuggestions(const PickerModel& model,
 
   if (base::Contains(model.GetAvailableCategories(),
                      PickerCategory::kEditorRewrite)) {
-    client_->GetSuggestedEditorResults(callback);
+    client.GetSuggestedEditorResults(callback);
   }
 
   if (model.GetMode() == PickerModeType::kHasSelection) {
@@ -87,7 +86,7 @@ void PickerSuggestionsController::GetSuggestions(const PickerModel& model,
     // supports filtering.
     switch (category) {
       case PickerCategory::kLinks:
-        client_->GetSuggestedLinkResults(
+        client.GetSuggestedLinkResults(
             /*max_results=*/base::FeatureList::IsEnabled(
                 ash::features::kPickerFilterLinks)
                 ? 10
@@ -97,20 +96,20 @@ void PickerSuggestionsController::GetSuggestions(const PickerModel& model,
       case PickerCategory::kLocalFiles: {
         const size_t max_results =
             base::FeatureList::IsEnabled(ash::features::kPickerGrid) ? 3 : 1;
-        client_->GetRecentLocalFileResults(
+        client.GetRecentLocalFileResults(
             max_results, kMaxLocalFileSuggestionRecencyDelta,
             base::BindRepeating(&GetMostRecentResults, max_results)
                 .Then(callback));
         break;
       }
       case PickerCategory::kDriveFiles:
-        client_->GetRecentDriveFileResults(
+        client.GetRecentDriveFileResults(
             /*max_results=*/5,
             base::BindRepeating(&GetMostRecentResults, 1).Then(callback));
         break;
       default:
         GetSuggestionsForCategory(
-            category,
+            client, category,
             base::BindRepeating(&GetMostRecentResults, 1).Then(callback));
         break;
     }
@@ -118,6 +117,7 @@ void PickerSuggestionsController::GetSuggestions(const PickerModel& model,
 }
 
 void PickerSuggestionsController::GetSuggestionsForCategory(
+    PickerClient& client,
     PickerCategory category,
     SuggestionsCallback callback) {
   switch (category) {
@@ -127,7 +127,7 @@ void PickerSuggestionsController::GetSuggestionsForCategory(
     case PickerCategory::kLinks:
       // TODO: b/366237507 - Request only kMaxRecentLinks results once
       // HistoryService supports filtering.
-      client_->GetSuggestedLinkResults(
+      client.GetSuggestedLinkResults(
           base::FeatureList::IsEnabled(ash::features::kPickerFilterLinks)
               ? kMaxRecentLinks * 3
               : kMaxRecentLinks,
@@ -137,10 +137,10 @@ void PickerSuggestionsController::GetSuggestionsForCategory(
     case PickerCategory::kEmojis:
       NOTREACHED_NORETURN();
     case PickerCategory::kDriveFiles:
-      client_->GetRecentDriveFileResults(kMaxRecentFiles, std::move(callback));
+      client.GetRecentDriveFileResults(kMaxRecentFiles, std::move(callback));
       return;
     case PickerCategory::kLocalFiles:
-      client_->GetRecentLocalFileResults(
+      client.GetRecentLocalFileResults(
           kMaxRecentFiles,
           base::FeatureList::IsEnabled(ash::features::kPickerRecentFiles)
               ? kMaxLocalFileCategoryRecencyDelta
