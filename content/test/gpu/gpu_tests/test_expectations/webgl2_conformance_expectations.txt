@@ -570,6 +570,7 @@ crbug.com/1473838 [ android angle-opengles passthrough ] conformance2/extensions
 # Failing on some platforms.
 crbug.com/1175371 [ angle-opengl display-server-x linux passthrough ] conformance/extensions/khr-parallel-shader-compile.html [ Failure ]
 crbug.com/1175371 [ amd-0x7340 angle-metal mac-x86_64 no-asan oop-c sonoma ] conformance/extensions/khr-parallel-shader-compile.html [ Failure ]
+crbug.com/366502831 [ mac angle-metal intel-0x3e9b passthrough ] conformance/extensions/khr-parallel-shader-compile.html [ RetryOnFailure ]
 
 # Won't investigate failure on validating command decoder. Remove once it's unshipped.
 crbug.com/angleproject/5499 [ no-passthrough ] conformance/glsl/misc/shaders-with-name-conflicts.html [ Failure ]
