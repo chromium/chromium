@@ -43,7 +43,6 @@
 #include "components/viz/test/fake_output_surface.h"
 #include "components/viz/test/test_context_provider.h"
 #include "components/viz/test/test_gles2_interface.h"
-#include "components/viz/test/test_shared_bitmap_manager.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "media/base/media.h"
@@ -819,7 +818,6 @@ class LayerTreeHostContextTestDontUseLostResources
     child_context_provider_ = viz::TestContextProvider::CreateRaster();
     auto result = child_context_provider_->BindToCurrentSequence();
     CHECK_EQ(result, gpu::ContextResult::kSuccess);
-    shared_bitmap_manager_ = std::make_unique<viz::TestSharedBitmapManager>();
     child_resource_provider_ = std::make_unique<viz::ClientResourceProvider>();
   }
 
@@ -970,7 +968,6 @@ class LayerTreeHostContextTestDontUseLostResources
   bool lost_context_;
 
   scoped_refptr<viz::TestContextProvider> child_context_provider_;
-  std::unique_ptr<viz::SharedBitmapManager> shared_bitmap_manager_;
   std::unique_ptr<viz::ClientResourceProvider> child_resource_provider_;
 
   scoped_refptr<VideoFrame> color_video_frame_;
