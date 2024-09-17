@@ -36,13 +36,6 @@ class FacilitatedPaymentsDriver {
   // main frame by the platform-specific implementation.
   void DidNavigateToOrAwayFromPage() const;
 
-  // Informs `FacilitatedPaymentsManager` that the content has finished loading
-  // in the primary main frame. It is invoked by the platform-specific
-  // implementation.
-  virtual void OnContentLoadedInThePrimaryMainFrame(
-      const GURL& url,
-      ukm::SourceId ukm_source_id) const;
-
   // Trigger PIX code detection on the page. The `callback` is called after
   // running PIX code detection.
   virtual void TriggerPixCodeDetection(

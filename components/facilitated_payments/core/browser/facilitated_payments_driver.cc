@@ -23,12 +23,6 @@ void FacilitatedPaymentsDriver::DidNavigateToOrAwayFromPage() const {
   manager_->Reset();
 }
 
-void FacilitatedPaymentsDriver::OnContentLoadedInThePrimaryMainFrame(
-    const GURL& url,
-    ukm::SourceId ukm_source_id) const {
-  manager_->DelayedCheckAllowlistAndTriggerPixCodeDetection(url, ukm_source_id);
-}
-
 void FacilitatedPaymentsDriver::OnTextCopiedToClipboard(
     const GURL& render_frame_host_url,
     const std::u16string& copied_text,

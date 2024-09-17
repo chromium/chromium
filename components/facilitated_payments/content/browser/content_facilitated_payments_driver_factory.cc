@@ -81,45 +81,6 @@ void ContentFacilitatedPaymentsDriverFactory::DidFinishNavigation(
   driver.DidNavigateToOrAwayFromPage();
 }
 
-void ContentFacilitatedPaymentsDriverFactory::DOMContentLoaded(
-    content::RenderFrameHost* render_frame_host) {
-  // The driver is only created for the outermost main frame as the PIX code
-  // is only expected to be present there. PIX code detection is triggered
-  // only on active frames.
-  if (render_frame_host != render_frame_host->GetOutermostMainFrame() ||
-      !render_frame_host->IsActive()) {
-    return;
-  }
-  if (!base::FeatureList::IsEnabled(kEnablePixDetectionOnDomContentLoaded)) {
-    return;
-  }
-  auto& driver = GetOrCreateForFrame(render_frame_host);
-  // Initialize PIX code detection.
-  driver.OnContentLoadedInThePrimaryMainFrame(
-      render_frame_host->GetLastCommittedURL(),
-      render_frame_host->GetPageUkmSourceId());
-}
-
-void ContentFacilitatedPaymentsDriverFactory::DidFinishLoad(
-    content::RenderFrameHost* render_frame_host,
-    const GURL& validated_url) {
-  // The driver is only created for the outermost main frame as the PIX code is
-  // only expected to be present there. PIX code detection is triggered only on
-  // active frames.
-  if (render_frame_host != render_frame_host->GetOutermostMainFrame() ||
-      !render_frame_host->IsActive()) {
-    return;
-  }
-  if (base::FeatureList::IsEnabled(kEnablePixDetectionOnDomContentLoaded) ||
-      !base::FeatureList::IsEnabled(kEnablePixDetection)) {
-    return;
-  }
-  auto& driver = GetOrCreateForFrame(render_frame_host);
-  // Initialize PIX code detection.
-  driver.OnContentLoadedInThePrimaryMainFrame(
-      validated_url, render_frame_host->GetPageUkmSourceId());
-}
-
 void ContentFacilitatedPaymentsDriverFactory::OnTextCopiedToClipboard(
     content::RenderFrameHost* render_frame_host,
     const std::u16string& copied_text) {
