@@ -711,6 +711,7 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
       std::unique_ptr<CrossOriginEmbedderPolicyReporter> coep_reporter,
       int http_response_code) override;
   void CancelNavigation(NavigationDiscardReason reason) override;
+  void ResetNavigationsForDiscard() override;
   bool Credentialless() const override;
 #if !BUILDFLAG(IS_ANDROID)
   void GetVirtualAuthenticatorManager(

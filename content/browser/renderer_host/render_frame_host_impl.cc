@@ -11835,6 +11835,7 @@ void RenderFrameHostImpl::HandleRendererDebugURL(const GURL& url) {
 
 void RenderFrameHostImpl::DiscardFrame() {
   document_associated_data_->MarkDiscarded();
+  owner_->ResetNavigationsForDiscard();
   BackForwardCache::DisableForRenderFrameHost(
       this, BackForwardCacheDisable::DisabledReason(
                 BackForwardCacheDisable::DisabledReasonId::kDiscarded));

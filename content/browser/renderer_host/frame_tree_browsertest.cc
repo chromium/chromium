@@ -36,6 +36,7 @@
 #include "content/shell/browser/shell.h"
 #include "content/shell/common/shell_switches.h"
 #include "content/test/content_browser_test_utils_internal.h"
+#include "content/test/render_document_feature.h"
 #include "net/base/features.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
@@ -425,6 +426,110 @@ IN_PROC_BROWSER_TEST_F(FrameTreeBrowserWithDiscardTest,
 
   ASSERT_TRUE(
       base::test::RunUntil([&]() { return 0u == root->child_count(); }));
+}
+
+// Runs pending navigation discard browsertests with RenderDocument enabled for
+// all frames to ensure a speculative RFH is created during navigation.
+class FrameTreeDiscardPendingNavigationTest
+    : public FrameTreeBrowserWithDiscardTest {
+ public:
+  FrameTreeDiscardPendingNavigationTest() {
+    InitAndEnableRenderDocumentFeature(
+        &feature_list_,
+        GetRenderDocumentLevelName(RenderDocumentLevel::kAllFrames));
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(FrameTreeDiscardPendingNavigationTest,
+                       DiscardHandlesNavigationWaitingResponse) {
+  WebContentsImpl* wc = static_cast<WebContentsImpl*>(shell()->web_contents());
+  FrameTree& frame_tree = wc->GetPrimaryFrameTree();
+  FrameTreeNode* root = frame_tree.root();
+
+  const GURL original_url =
+      embedded_test_server()->GetURL("/frame_tree/top.html");
+  EXPECT_TRUE(NavigateToURL(shell(), original_url));
+  EXPECT_FALSE(root->was_discarded());
+  EXPECT_FALSE(wc->GetController().NeedsReload());
+  EXPECT_EQ(3UL, root->child_count());
+
+  // Queue a navigation.
+  const GURL new_url = embedded_test_server()->GetURL("/frame_tree/1-1.html");
+  TestNavigationManager manager(shell()->web_contents(), new_url);
+  shell()->LoadURL(new_url);
+
+  // Get to the point where the frame is waiting for the response.
+  EXPECT_TRUE(manager.WaitForRequestStart());
+  manager.ResumeNavigation();
+
+  // Discard while waiting for a response for the previous navigation.
+  frame_tree.Discard();
+  EXPECT_TRUE(WaitForLoadStop(wc));
+  EXPECT_TRUE(root->was_discarded());
+  EXPECT_TRUE(wc->GetController().NeedsReload());
+
+  // Assert the pending navigation finished.
+  ASSERT_TRUE(manager.WaitForNavigationFinished());
+
+  // Wait for the discarded document to be replaced and clear its children.
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return 0u == root->child_count(); }));
+  EXPECT_EQ(original_url, root->current_url());
+}
+
+IN_PROC_BROWSER_TEST_F(FrameTreeDiscardPendingNavigationTest,
+                       DiscardHandlesNavigationPendingCommit) {
+  class ReadyToCommitWaiter : public content::WebContentsObserver {
+   public:
+    explicit ReadyToCommitWaiter(content::WebContents* web_contents)
+        : content::WebContentsObserver(web_contents) {}
+
+    void Wait() { run_loop_.Run(); }
+
+    void ReadyToCommitNavigation(
+        content::NavigationHandle* navigation_handle) override {
+      run_loop_.Quit();
+    }
+
+   private:
+    base::RunLoop run_loop_;
+  };
+
+  WebContentsImpl* wc = static_cast<WebContentsImpl*>(shell()->web_contents());
+  FrameTree& frame_tree = wc->GetPrimaryFrameTree();
+  FrameTreeNode* root = frame_tree.root();
+
+  const GURL original_url =
+      embedded_test_server()->GetURL("/frame_tree/top.html");
+  EXPECT_TRUE(NavigateToURL(shell(), original_url));
+  EXPECT_FALSE(root->was_discarded());
+  EXPECT_FALSE(wc->GetController().NeedsReload());
+  EXPECT_EQ(3UL, root->child_count());
+
+  RenderFrameHostImplWrapper initial_rfh(wc->GetPrimaryMainFrame());
+  EXPECT_TRUE(initial_rfh->IsRenderFrameLive());
+
+  // Queue a navigation and wait until the browser is ready to commit.
+  ReadyToCommitWaiter ready_to_commit_waiter(wc);
+  const GURL new_url = embedded_test_server()->GetURL("/title1.html");
+  shell()->LoadURL(new_url);
+  ready_to_commit_waiter.Wait();
+
+  // Discard while ready to commit the previous navigation.
+  frame_tree.Discard();
+  EXPECT_TRUE(WaitForLoadStop(wc));
+
+  // The pending navigation will commit to a new rfh and the tab will settle to
+  // an undiscarded state.
+  EXPECT_FALSE(root->was_discarded());
+  EXPECT_FALSE(wc->GetController().NeedsReload());
+
+  RenderFrameHostImplWrapper final_rfh(wc->GetPrimaryMainFrame());
+  EXPECT_NE(initial_rfh.get(), final_rfh.get());
+  EXPECT_EQ(new_url, root->current_url());
 }
 
 class DedicatedWorkerObserver : public DedicatedWorkerService::Observer {
