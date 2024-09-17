@@ -8,15 +8,20 @@
 #include <string>
 
 #include "base/files/file_path.h"
+#include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
+#include "build/buildflag.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/proxy_config/proxy_config_dictionary.h"
 #include "components/proxy_config/proxy_config_pref_names.h"
+#include "net/base/proxy_chain.h"
+#include "net/base/proxy_server.h"
 #include "net/base/proxy_string_util.h"
+#include "net/net_buildflags.h"
 #include "net/proxy_resolution/proxy_info.h"
 #include "net/proxy_resolution/proxy_list.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
@@ -149,6 +154,99 @@ TEST_F(PrefProxyConfigTrackerImplTest, DynamicPrefOverrides) {
             proxy_config_service_->GetLatestProxyConfig(&actual_config));
   EXPECT_TRUE(actual_config.value().auto_detect());
 }
+
+#if BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
+TEST_F(PrefProxyConfigTrackerImplTest, DynamicPrefOverridesSingleBracketedUri) {
+  InitConfigService(net::ProxyConfigService::CONFIG_VALID);
+  pref_service_->SetManagedPref(
+      proxy_config::prefs::kProxy,
+      std::make_unique<base::Value>(ProxyConfigDictionary::CreateFixedServers(
+          "[http://example.com:3128]", std::string())));
+  base::RunLoop().RunUntilIdle();
+
+  net::ProxyConfigWithAnnotation actual_config;
+  EXPECT_EQ(net::ProxyConfigService::CONFIG_VALID,
+            proxy_config_service_->GetLatestProxyConfig(&actual_config));
+  EXPECT_FALSE(actual_config.value().auto_detect());
+  EXPECT_EQ(net::ProxyConfig::ProxyRules::Type::PROXY_LIST,
+            actual_config.value().proxy_rules().type);
+  EXPECT_EQ(actual_config.value().proxy_rules().single_proxies.First(),
+            net::ProxyUriToProxyChain("http://example.com:3128",
+                                      net::ProxyServer::SCHEME_HTTP));
+
+  pref_service_->SetManagedPref(
+      proxy_config::prefs::kProxy,
+      std::make_unique<base::Value>(ProxyConfigDictionary::CreateAutoDetect()));
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(net::ProxyConfigService::CONFIG_VALID,
+            proxy_config_service_->GetLatestProxyConfig(&actual_config));
+  EXPECT_TRUE(actual_config.value().auto_detect());
+}
+
+TEST_F(PrefProxyConfigTrackerImplTest, DynamicPrefOverridesMultiBracketedUris) {
+  InitConfigService(net::ProxyConfigService::CONFIG_VALID);
+  pref_service_->SetManagedPref(
+      proxy_config::prefs::kProxy,
+      std::make_unique<base::Value>(ProxyConfigDictionary::CreateFixedServers(
+          "[https://foopy:443 https://hoopy:443]", std::string())));
+  base::RunLoop().RunUntilIdle();
+
+  net::ProxyConfigWithAnnotation actual_config;
+  EXPECT_EQ(net::ProxyConfigService::CONFIG_VALID,
+            proxy_config_service_->GetLatestProxyConfig(&actual_config));
+  EXPECT_FALSE(actual_config.value().auto_detect());
+  EXPECT_EQ(net::ProxyConfig::ProxyRules::Type::PROXY_LIST,
+            actual_config.value().proxy_rules().type);
+
+  // Build expected proxy chain for multi-proxy chain.
+  net::ProxyChain expected_proxy_chain(
+      {net::ProxyUriToProxyServer("https://foopy:443",
+                                  net::ProxyServer::SCHEME_HTTPS),
+       net::ProxyUriToProxyServer("https://hoopy:443",
+                                  net::ProxyServer::SCHEME_HTTPS)});
+  EXPECT_EQ(actual_config.value().proxy_rules().single_proxies.First(),
+            expected_proxy_chain);
+
+  pref_service_->SetManagedPref(
+      proxy_config::prefs::kProxy,
+      std::make_unique<base::Value>(ProxyConfigDictionary::CreateAutoDetect()));
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(net::ProxyConfigService::CONFIG_VALID,
+            proxy_config_service_->GetLatestProxyConfig(&actual_config));
+  EXPECT_TRUE(actual_config.value().auto_detect());
+}
+#else
+// Ensure that bracketed URIs are not parsed in release builds.
+TEST_F(PrefProxyConfigTrackerImplTest,
+       DynamicPrefOverridesBracketedUriNotValidInReleaseBuilds) {
+  InitConfigService(net::ProxyConfigService::CONFIG_VALID);
+  pref_service_->SetManagedPref(
+      proxy_config::prefs::kProxy,
+      std::make_unique<base::Value>(ProxyConfigDictionary::CreateFixedServers(
+          "[http://example.com:3128]", std::string())));
+  base::RunLoop().RunUntilIdle();
+
+  net::ProxyConfigWithAnnotation actual_config;
+  EXPECT_EQ(net::ProxyConfigService::CONFIG_VALID,
+            proxy_config_service_->GetLatestProxyConfig(&actual_config));
+  EXPECT_FALSE(actual_config.value().auto_detect());
+  EXPECT_EQ(net::ProxyConfig::ProxyRules::Type::PROXY_LIST,
+            actual_config.value().proxy_rules().type);
+  // ProxyList should be empty b/c brackets in URI are invalid format.
+  EXPECT_TRUE(actual_config.value().proxy_rules().single_proxies.IsEmpty());
+
+  pref_service_->SetManagedPref(
+      proxy_config::prefs::kProxy,
+      std::make_unique<base::Value>(ProxyConfigDictionary::CreateAutoDetect()));
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(net::ProxyConfigService::CONFIG_VALID,
+            proxy_config_service_->GetLatestProxyConfig(&actual_config));
+  EXPECT_TRUE(actual_config.value().auto_detect());
+}
+#endif
 
 // Compares proxy configurations, but allows different sources.
 MATCHER_P(ProxyConfigMatches, config, "") {
