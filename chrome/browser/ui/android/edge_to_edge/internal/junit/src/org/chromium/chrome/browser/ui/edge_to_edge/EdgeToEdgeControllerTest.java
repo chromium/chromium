@@ -770,6 +770,9 @@ public class EdgeToEdgeControllerTest {
             mInset = inset;
         }
 
+        @Override
+        public void destroy() {}
+
         void checkInsets(int expected) {
             assertEquals("The pad adjuster does not have the expected inset.", expected, mInset);
         }

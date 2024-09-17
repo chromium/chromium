@@ -10,7 +10,6 @@ import android.view.LayoutInflater;
 
 import androidx.core.view.ViewCompat;
 
-import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.R;
@@ -38,7 +37,6 @@ public class IncognitoNewTabPage extends BasicNativePage
     private final Activity mActivity;
     private final Profile mProfile;
     private final int mIncognitoNtpBackgroundColor;
-    private final ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
 
     private String mTitle;
     protected IncognitoNewTabPageView mIncognitoNewTabPageView;
@@ -48,9 +46,6 @@ public class IncognitoNewTabPage extends BasicNativePage
     private IncognitoNewTabPageManager mIncognitoNewTabPageManager;
     private IncognitoCookieControlsManager mCookieControlsManager;
     private IncognitoCookieControlsManager.Observer mCookieControlsObserver;
-
-    private Callback<EdgeToEdgeController> mEdgeToEdgeSupplierCallback;
-    private EdgeToEdgeController mEdgeToEdgeController;
     private EdgeToEdgePadAdjuster mEdgeToEdgePadAdjuster;
 
     private void showIncognitoLearnMore() {
@@ -78,7 +73,6 @@ public class IncognitoNewTabPage extends BasicNativePage
 
         mActivity = activity;
         mProfile = profile;
-        mEdgeToEdgeControllerSupplier = edgeToEdgeControllerSupplier;
 
         if (!mProfile.isOffTheRecord()) {
             throw new IllegalStateException(
@@ -104,19 +98,8 @@ public class IncognitoNewTabPage extends BasicNativePage
 
         if (EdgeToEdgeUtils.isDrawKeyNativePageToEdgeEnabled()) {
             mEdgeToEdgePadAdjuster =
-                    EdgeToEdgeControllerFactory.createForView(
-                            mIncognitoNewTabPageView.getScrollView());
-            mEdgeToEdgeSupplierCallback =
-                    (e2eController) -> {
-                        if (mEdgeToEdgeController != null) {
-                            mEdgeToEdgeController.unregisterAdjuster(mEdgeToEdgePadAdjuster);
-                        }
-                        mEdgeToEdgeController = e2eController;
-                        if (mEdgeToEdgeController != null) {
-                            mEdgeToEdgeController.registerAdjuster(mEdgeToEdgePadAdjuster);
-                        }
-                    };
-            mEdgeToEdgeControllerSupplier.addObserver(mEdgeToEdgeSupplierCallback);
+                    EdgeToEdgeControllerFactory.createForViewAndObserveSupplier(
+                            mIncognitoNewTabPageView.getScrollView(), edgeToEdgeControllerSupplier);
         }
     }
 
@@ -135,13 +118,10 @@ public class IncognitoNewTabPage extends BasicNativePage
                 : "Destroy called before removed from window";
         mIncognitoNewTabPageManager.destroy();
 
-        mEdgeToEdgeControllerSupplier.removeObserver(mEdgeToEdgeSupplierCallback);
-        mEdgeToEdgeSupplierCallback = null;
-        if (mEdgeToEdgeController != null && mEdgeToEdgePadAdjuster != null) {
-            mEdgeToEdgeController.unregisterAdjuster(mEdgeToEdgePadAdjuster);
+        if (mEdgeToEdgePadAdjuster != null) {
+            mEdgeToEdgePadAdjuster.destroy();
+            mEdgeToEdgePadAdjuster = null;
         }
-        mEdgeToEdgeController = null;
-        mEdgeToEdgePadAdjuster = null;
 
         super.destroy();
     }

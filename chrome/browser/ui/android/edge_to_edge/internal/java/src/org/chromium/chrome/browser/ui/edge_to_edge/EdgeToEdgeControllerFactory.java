@@ -115,6 +115,22 @@ public class EdgeToEdgeControllerFactory {
     }
 
     /**
+     * Creates an adjuster for padding to the view to account for edge-to-edge, and observe the
+     * supplier if edge to edge is enabled.
+     *
+     * @param view The view to be adjusted.
+     * @param edgeToEdgeControllerSupplier Supplier to the {@link EdgeToEdgeController}.
+     */
+    public static EdgeToEdgePadAdjuster createForViewAndObserveSupplier(
+            View view,
+            @Nullable ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier) {
+        return new SimpleEdgeToEdgePadAdjuster(
+                view,
+                edgeToEdgeControllerSupplier,
+                EdgeToEdgeUtils.isDrawKeyNativePageToEdgeEnabled());
+    }
+
+    /**
      * Returns whether the configuration of the device should allow Edge To Edge. Note the results
      * are false-positive, if the method is called before the |activity|'s decor view being attached
      * to the window.

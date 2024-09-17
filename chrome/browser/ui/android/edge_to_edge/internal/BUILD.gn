@@ -38,6 +38,7 @@ android_library("java") {
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//third_party/androidx:androidx_core_core_java",
+    "//third_party/androidx:androidx_recyclerview_recyclerview_java",
     "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_java",
   ]
@@ -48,6 +49,7 @@ robolectric_library("junit") {
     "junit/src/org/chromium/chrome/browser/ui/edge_to_edge/EdgeToEdgeBottomChinCoordinatorTest.java",
     "junit/src/org/chromium/chrome/browser/ui/edge_to_edge/EdgeToEdgeBottomChinMediatorTest.java",
     "junit/src/org/chromium/chrome/browser/ui/edge_to_edge/EdgeToEdgeControllerTest.java",
+    "junit/src/org/chromium/chrome/browser/ui/edge_to_edge/SimpleEdgeToEdgePadAdjusterUnitTest.java",
   ]
 
   deps = [
@@ -66,11 +68,15 @@ robolectric_library("junit") {
     "//content/public/android:content_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//third_party/androidx:androidx_core_core_java",
+    "//third_party/androidx:androidx_recyclerview_recyclerview_java",
+    "//third_party/androidx:androidx_test_core_java",
+    "//third_party/androidx:androidx_test_ext_junit_java",
     "//third_party/blink/public/mojom:mojom_core_java",
     "//third_party/hamcrest:hamcrest_core_java",
     "//third_party/hamcrest:hamcrest_library_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
+    "//ui/android:ui_java_test_support",
     "//ui/android:ui_no_recycler_view_java",
     "//ui/android:ui_utils_java",
   ]
