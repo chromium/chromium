@@ -411,41 +411,6 @@ TEST(AggregatableValuesTest, Parse_FilteringIdsDisabled) {
   }
 }
 
-TEST(AggregatableValuesTest, Parse_KeyLength) {
-  auto parse_dict_with_key_length = [](size_t length) {
-    base::Value::Dict dict;
-    dict.Set(std::string(length, 'a'), 1);
-    base::Value value(std::move(dict));
-    return AggregatableValues::FromJSON(&value);
-  };
-
-  for (size_t length = 0; length < 26; length++) {
-    EXPECT_THAT(parse_dict_with_key_length(length), ValueIs(_));
-  }
-
-  EXPECT_THAT(parse_dict_with_key_length(26),
-              ErrorIs(TriggerRegistrationError::kAggregatableValuesKeyTooLong));
-}
-
-TEST(AggregatableValuesTest, Parse_ListKeyLength) {
-  auto parse_dict_with_key_length = [](size_t length) {
-    base::Value::Dict values;
-    values.Set(std::string(length, 'a'), 1);
-
-    base::Value value(base::Value::List().Append(
-        base::Value::Dict().Set(kValues, std::move(values))));
-    return AggregatableValues::FromJSON(&value);
-  };
-
-  for (size_t length = 0; length < 26; length++) {
-    EXPECT_THAT(parse_dict_with_key_length(length), ValueIs(_));
-  }
-
-  EXPECT_THAT(
-      parse_dict_with_key_length(26),
-      ErrorIs(TriggerRegistrationError::kAggregatableValuesListKeyTooLong));
-}
-
 TEST(AggregatableValuesTest, ToJson_FilteringIdsEnabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(

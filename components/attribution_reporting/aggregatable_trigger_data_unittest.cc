@@ -36,16 +36,6 @@ using ::testing::IsEmpty;
 using ::testing::Property;
 
 TEST(AggregatableTriggerDataTest, FromJSON) {
-  const auto make_aggregatable_trigger_data_with_key_length = [](size_t n) {
-    base::Value::Dict dict;
-    dict.Set("key_piece", "0x1");
-
-    base::Value::List list;
-    list.Append(std::string(n, 'a'));
-    dict.Set("source_keys", std::move(list));
-    return base::Value(std::move(dict));
-  };
-
   struct {
     const char* description;
     base::Value json;
@@ -144,13 +134,6 @@ TEST(AggregatableTriggerDataTest, FromJSON) {
                       kAggregatableTriggerDataSourceKeysInvalid),
       },
       {
-          "source_keys_key_too_long",
-          make_aggregatable_trigger_data_with_key_length(
-              kMaxBytesPerAggregationKeyId + 1),
-          ErrorIs(TriggerRegistrationError::
-                      kAggregatableTriggerDataSourceKeysInvalid),
-      },
-      {
           "filters_wrong_type",
           base::test::ParseJson(R"json({
             "key_piece": "0x1",
@@ -175,12 +158,6 @@ TEST(AggregatableTriggerDataTest, FromJSON) {
     EXPECT_THAT(AggregatableTriggerData::FromJSON(test_case.json),
                 test_case.matches);
   }
-
-  {
-    base::Value json = make_aggregatable_trigger_data_with_key_length(
-        kMaxBytesPerAggregationKeyId);
-    EXPECT_TRUE(AggregatableTriggerData::FromJSON(json).has_value());
-  }
 }
 
 TEST(AggregatableTriggerDataTest, ToJson) {
@@ -193,7 +170,7 @@ TEST(AggregatableTriggerDataTest, ToJson) {
           R"json({"key_piece":"0x0"})json",
       },
       {
-          *AggregatableTriggerData::Create(
+          AggregatableTriggerData(
               /*key_piece=*/1,
               /*source_keys=*/{"a", "b"},
               FilterPair(

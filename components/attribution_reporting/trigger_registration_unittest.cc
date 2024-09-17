@@ -199,10 +199,10 @@ TEST(TriggerRegistrationTest, Parse) {
           ]
         })json",
           ValueIs(Field(&TriggerRegistration::aggregatable_trigger_data,
-                        ElementsAre(*AggregatableTriggerData::Create(
+                        ElementsAre(AggregatableTriggerData(
                                         /*key_piece=*/1,
                                         /*source_keys=*/{"a"}, FilterPair()),
-                                    *AggregatableTriggerData::Create(
+                                    AggregatableTriggerData(
                                         /*key_piece=*/2,
                                         /*source_keys=*/{"b"}, FilterPair())))),
       },

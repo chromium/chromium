@@ -26,6 +26,10 @@ namespace {
 
 using ::attribution_reporting::mojom::SourceRegistrationError;
 
+bool AggregationKeyIdHasValidLength(const std::string& key) {
+  return key.size() <= AggregationKeys::kMaxBytesPerAggregationKeyId;
+}
+
 bool IsValid(const AggregationKeys::Keys& keys) {
   return keys.size() <= kMaxAggregationKeysPerSource &&
          base::ranges::all_of(keys, [](const auto& key) {

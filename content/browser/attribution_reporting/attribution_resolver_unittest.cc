@@ -2458,10 +2458,9 @@ TEST_F(AttributionResolverTest, AggregatableDedupKeysFiltering) {
   const auto origin = *SuitableOrigin::Deserialize("https://r.test");
 
   std::vector<attribution_reporting::AggregatableTriggerData>
-      aggregatable_trigger_data{
-          *attribution_reporting::AggregatableTriggerData::Create(
-              absl::MakeUint128(/*high=*/1, /*low=*/0),
-              /*source_keys=*/{"0"}, FilterPair())};
+      aggregatable_trigger_data{attribution_reporting::AggregatableTriggerData(
+          absl::MakeUint128(/*high=*/1, /*low=*/0),
+          /*source_keys=*/{"0"}, FilterPair())};
 
   auto aggregatable_values = {*AggregatableValues::Create(
       {{"0", *AggregatableValuesValue::Create(1, kDefaultFilteringId)}},
@@ -3452,7 +3451,7 @@ TEST_F(AttributionResolverTest, TopLevelTriggerFiltering) {
 
   std::vector<attribution_reporting::AggregatableTriggerData>
       aggregatable_trigger_data = {
-          *attribution_reporting::AggregatableTriggerData::Create(
+          attribution_reporting::AggregatableTriggerData(
               absl::MakeUint128(/*high=*/1, /*low=*/0),
               /*source_keys=*/{"0"}, FilterPair())};
 

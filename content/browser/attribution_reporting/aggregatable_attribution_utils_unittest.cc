@@ -64,7 +64,7 @@ TEST(AggregatableAttributionUtilsTest, CreateAggregatableHistogram) {
   std::vector<attribution_reporting::AggregatableTriggerData>
       aggregatable_trigger_data{
           // The first trigger data applies to "key1", "key3".
-          *attribution_reporting::AggregatableTriggerData::Create(
+          attribution_reporting::AggregatableTriggerData(
               absl::MakeUint128(/*high=*/0, /*low=*/1024),
               /*source_keys=*/{"key1", "key3"},
               FilterPair(
@@ -72,7 +72,7 @@ TEST(AggregatableAttributionUtilsTest, CreateAggregatableHistogram) {
                   /*negative=*/{})),
 
           // The second trigger data applies to "key2", "key4" is ignored.
-          *attribution_reporting::AggregatableTriggerData::Create(
+          attribution_reporting::AggregatableTriggerData(
               absl::MakeUint128(/*high=*/0, /*low=*/2688),
               /*source_keys=*/{"key2", "key4"},
               FilterPair(
@@ -80,14 +80,14 @@ TEST(AggregatableAttributionUtilsTest, CreateAggregatableHistogram) {
                   /*negative=*/{})),
 
           // The third trigger will be ignored due to mismatched filters.
-          *attribution_reporting::AggregatableTriggerData::Create(
+          attribution_reporting::AggregatableTriggerData(
               absl::MakeUint128(/*high=*/0, /*low=*/4096),
               /*source_keys=*/{"key1", "key2"},
               FilterPair(/*positive=*/{*FilterConfig::Create({{"filter", {}}})},
                          /*negative=*/{})),
 
           // The fourth trigger will be ignored due to matched not_filters.
-          *attribution_reporting::AggregatableTriggerData::Create(
+          attribution_reporting::AggregatableTriggerData(
               absl::MakeUint128(/*high=*/0, /*low=*/4096),
               /*source_keys=*/{"key1", "key2"},
               FilterPair(
@@ -97,7 +97,7 @@ TEST(AggregatableAttributionUtilsTest, CreateAggregatableHistogram) {
 
           // The fifth trigger will be ignored due to mismatched
           // lookback_window.
-          *attribution_reporting::AggregatableTriggerData::Create(
+          attribution_reporting::AggregatableTriggerData(
               absl::MakeUint128(/*high=*/0, /*low=*/4096),
               /*source_keys=*/{"key1", "key3"},
               FilterPair(
@@ -151,7 +151,7 @@ TEST(AggregatableAttributionUtilsTest,
 
   std::vector<attribution_reporting::AggregatableTriggerData>
       aggregatable_trigger_data{
-          *attribution_reporting::AggregatableTriggerData::Create(
+          attribution_reporting::AggregatableTriggerData(
               absl::MakeUint128(/*high=*/0, /*low=*/1024),
               /*source_keys=*/{"key1", "key2"}, FilterPair()),
       };

@@ -22,7 +22,6 @@ inline constexpr size_t kMaxDestinations = 3;
 
 inline constexpr size_t kMaxEventLevelReportWindows = 5;
 
-inline constexpr size_t kMaxBytesPerAggregationKeyId = 25;
 inline constexpr size_t kMaxAggregationKeysPerSource = 20;
 
 inline constexpr int kMaxAggregatableValue = 65536;

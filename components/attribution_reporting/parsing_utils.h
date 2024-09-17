@@ -38,9 +38,6 @@ base::expected<absl::uint128, ParseError> ParseAggregationKeyPiece(
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
 std::string HexEncodeAggregationKey(absl::uint128);
 
-COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
-bool AggregationKeyIdHasValidLength(const std::string& key);
-
 template <typename T>
   requires(std::integral<T>)
 constexpr T ValueOrZero(std::optional<T> value) {
