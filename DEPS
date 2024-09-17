@@ -2787,14 +2787,14 @@ deps = {
     'dep_type': 'cipd',
   },
 
-  'src/third_party/webpagereplay': {
+  'src/third_party/webpagereplay/cipd': {
       'packages' : [
           {
               'package': 'infra/tools/wpr/linux_x86_64',
               'version': 'y28SfbEF6nHSkZ1eHysM1t711zpOCmtk7jUdxZB-QSMC',
           },
       ],
-      'condition': 'checkout_android',
+      'condition': 'checkout_android and non_git_source',
       'dep_type': 'cipd',
   },
 

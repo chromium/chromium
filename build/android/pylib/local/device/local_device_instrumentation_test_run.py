@@ -63,8 +63,8 @@ _JINJA_TEMPLATE_DIR = os.path.join(
 _JINJA_TEMPLATE_FILENAME = 'render_test.html.jinja'
 
 _WPR_GO_LINUX_X86_64_PATH = os.path.join(host_paths.DIR_SOURCE_ROOT,
-                                         'third_party', 'webpagereplay', 'bin',
-                                         'linux', 'x86_64', 'wpr')
+                                         'third_party', 'webpagereplay', 'cipd',
+                                         'bin', 'linux', 'x86_64', 'wpr')
 
 _TAG = 'test_runner_py'
 
