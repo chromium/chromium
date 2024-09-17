@@ -241,8 +241,12 @@ UrlPassagesEmbeddings::UrlPassagesEmbeddings(history::URLID url_id,
       url_embeddings(url_id, visit_id, visit_time) {}
 UrlPassagesEmbeddings::UrlPassagesEmbeddings(const UrlPassagesEmbeddings&) =
     default;
+UrlPassagesEmbeddings::UrlPassagesEmbeddings(UrlPassagesEmbeddings&&) = default;
 UrlPassagesEmbeddings& UrlPassagesEmbeddings::operator=(
     const UrlPassagesEmbeddings&) = default;
+UrlPassagesEmbeddings& UrlPassagesEmbeddings::operator=(
+    UrlPassagesEmbeddings&&) = default;
+UrlPassagesEmbeddings::~UrlPassagesEmbeddings() = default;
 bool UrlPassagesEmbeddings::operator==(const UrlPassagesEmbeddings&) const =
     default;
 

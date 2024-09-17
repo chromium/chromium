@@ -176,7 +176,11 @@ struct UrlPassagesEmbeddings {
                         history::VisitID visit_id,
                         base::Time visit_time);
   UrlPassagesEmbeddings(const UrlPassagesEmbeddings&);
+  UrlPassagesEmbeddings(UrlPassagesEmbeddings&&);
   UrlPassagesEmbeddings& operator=(const UrlPassagesEmbeddings&);
+  UrlPassagesEmbeddings& operator=(UrlPassagesEmbeddings&&);
+  ~UrlPassagesEmbeddings();
+
   bool operator==(const UrlPassagesEmbeddings&) const;
 
   UrlPassages url_passages;

@@ -602,7 +602,7 @@ void HistoryEmbeddingsService::Storage::ProcessAndStorePassages(
   url_data.url_passages = std::move(url_passages);
 
   // Store all embeddings and passages.
-  vector_database.AddUrlData(url_data);
+  vector_database.AddUrlData(std::move(url_data));
   vector_database.SaveTo(&sql_database);
 }
 
