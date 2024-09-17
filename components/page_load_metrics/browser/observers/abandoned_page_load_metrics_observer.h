@@ -19,6 +19,7 @@ extern const char kSuffixTabWasHiddenStaysHidden[];
 extern const char kSuffixTabWasHiddenLaterShown[];
 extern const char kRendererProcessCreatedBeforeNavHistogramName[];
 extern const char kRendererProcessInitHistogramName[];
+extern const char kNavigationTypeBrowserNav[];
 
 }  // namespace internal
 
@@ -106,6 +107,9 @@ class AbandonedPageLoadMetricsObserver
       std::optional<AbandonReason> abandon_reason);
   static std::string GetTimeToAbandonFromNavigationStartWithoutPrefixSuffix(
       NavigationMilestone milestone);
+  static std::string GetNavigationTypeToAbandonWithoutPrefixSuffix(
+      const std::string_view& tracked_navigation_type,
+      std::optional<AbandonReason> abandon_reason);
 
   AbandonedPageLoadMetricsObserver();
   ~AbandonedPageLoadMetricsObserver() override;
@@ -219,9 +223,10 @@ class AbandonedPageLoadMetricsObserver
   // page load is complete (or navigate away from the page).
   void FinalizeLCP();
 
-  // The ID and start time of the navigation being tracked.
+  // The ID, start time, and type of the navigation being tracked.
   int64_t navigation_id_ = 0;
   base::TimeTicks navigation_start_time_;
+  std::string_view navigation_type_;
 
   base::TimeTicks renderer_process_init_time_;
 

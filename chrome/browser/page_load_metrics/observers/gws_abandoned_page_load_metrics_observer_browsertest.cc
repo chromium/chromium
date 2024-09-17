@@ -250,6 +250,17 @@ class GWSAbandonedPageLoadMetricsObserverBrowserTest
            suffix;
   }
 
+  std::string GetNavigationTypeToAbandonHistogramName(
+      std::string_view navigation_type,
+      std::optional<AbandonReason> abandon_reason = std::nullopt,
+      std::string suffix = "") {
+    return internal::kGWSAbandonedPageLoadMetricsHistogramPrefix +
+           GWSAbandonedPageLoadMetricsObserver::
+               GetNavigationTypeToAbandonWithoutPrefixSuffix(navigation_type,
+                                                             abandon_reason) +
+           suffix;
+  }
+
   void ExpectTotalCountForAllNavigationMilestones(
       bool include_redirect,
       int count,
@@ -398,8 +409,9 @@ class GWSAbandonedPageLoadMetricsObserverBrowserTest
     // navigation is first abandoned by hiding, then abandoned again by
     // `abandon_after_hiding_reason` which is not kHidden.
 
-    // Check that the last milestone before abandonment due to `abandon_reason`
-    // and `abandon_after_hiding_reason` (if set) is correctly recorded.
+    // Check that the navigation type and last milestone before abandonment due
+    // to `abandon_reason` and `abandon_after_hiding_reason` (if set) is
+    // correctly recorded.
     if (!abandon_after_hiding_reason.has_value() ||
         abandon_after_hiding_reason == AbandonReason::kHidden) {
       EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix(
@@ -409,6 +421,13 @@ class GWSAbandonedPageLoadMetricsObserverBrowserTest
                            abandon_reason, histogram_suffix),
                        GetLastMilestoneBeforeAbandonHistogramName(
                            std::nullopt, histogram_suffix)})));
+      EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix(
+                      GetNavigationTypeToAbandonHistogramName(
+                          internal::kNavigationTypeBrowserNav)),
+                  testing::UnorderedElementsAreArray(
+                      ExpandHistograms({GetNavigationTypeToAbandonHistogramName(
+                          internal::kNavigationTypeBrowserNav, abandon_reason,
+                          histogram_suffix)})));
     } else {
       EXPECT_THAT(
           histogram_tester.GetTotalCountsForPrefix(
@@ -424,6 +443,19 @@ class GWSAbandonedPageLoadMetricsObserverBrowserTest
                GetLastMilestoneBeforeAbandonHistogramName(
                    std::nullopt, internal::kSuffixTabWasHiddenStaysHidden +
                                      histogram_suffix)})));
+      EXPECT_THAT(
+          histogram_tester.GetTotalCountsForPrefix(
+              GetNavigationTypeToAbandonHistogramName(
+                  internal::kNavigationTypeBrowserNav)),
+          testing::UnorderedElementsAreArray(ExpandHistograms({
+              GetNavigationTypeToAbandonHistogramName(
+                  internal::kNavigationTypeBrowserNav, abandon_reason,
+                  histogram_suffix),
+              GetNavigationTypeToAbandonHistogramName(
+                  internal::kNavigationTypeBrowserNav,
+                  abandon_after_hiding_reason,
+                  internal::kSuffixTabWasHiddenStaysHidden + histogram_suffix),
+          })));
     }
 
     for (auto milestone : all_milestones()) {
