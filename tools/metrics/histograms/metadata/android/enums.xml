@@ -555,7 +555,9 @@ chromium-metrics-reviews@google.com.
   <int value="106" label="WebSettingsCompat.setBackForwardCacheEnabled"/>
   <int value="107" label="WebSettingsCompat.getBackForwardCacheEnabled"/>
   <int value="108" label="Profile.prefetchUrl"/>
-  <int value="109" label="Profile.clearPrefetchCache"/>
+  <int value="109" label="Profile.prefetchUrlWithParams"/>
+  <int value="110" label="Profile.clearPrefetch"/>
+  <int value="111" label="Profile.cancelPrefetch"/>
 <!-- LINT.ThenChange(/android_webview/support_library/java/src/org/chromium/support_lib_glue/SupportLibWebViewChromiumFactory.java:ApiCall) -->
 
 </enum>
