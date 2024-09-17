@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/ash/login/test_login_screen_model.h"
+#include "ash/login/test_login_screen_model.h"
 
 class AccountId;
 

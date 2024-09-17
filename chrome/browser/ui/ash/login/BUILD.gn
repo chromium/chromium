@@ -200,10 +200,6 @@ static_library("test_support") {
     "mock_login_display_host.h",
     "mock_signin_ui.cc",
     "mock_signin_ui.h",
-    "test_login_screen.cc",
-    "test_login_screen.h",
-    "test_login_screen_model.cc",
-    "test_login_screen_model.h",
   ]
 
   public_deps = [

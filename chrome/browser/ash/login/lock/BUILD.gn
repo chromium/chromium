@@ -176,6 +176,7 @@ source_set("unit_tests") {
 
   deps = [
     ":lock",
+    "//ash:test_support",
     "//ash/public/cpp",
     "//base",
     "//chrome/browser",
@@ -185,7 +186,6 @@ source_set("unit_tests") {
     "//chrome/browser/ui/ash:test_support",
     "//chrome/browser/ui/ash/assistant",
     "//chrome/browser/ui/ash/login",
-    "//chrome/browser/ui/ash/login:test_support",
     "//chrome/browser/ui/ash/session",
     "//chrome/browser/ui/ash/session:test_support",
     "//chrome/common:non_code_constants",

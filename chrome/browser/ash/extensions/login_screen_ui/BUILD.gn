@@ -36,12 +36,12 @@ source_set("unit_tests") {
 
   deps = [
     ":login_screen_ui",
+    "//ash:test_support",
     "//base",
     "//base/test:test_support",
     "//chrome/browser/ash/settings:test_support",
     "//chrome/browser/ui/ash",
     "//chrome/browser/ui/ash:test_support",
-    "//chrome/browser/ui/ash/login:test_support",
     "//chrome/browser/ui/ash/login/login_screen_extension_ui",
     "//chrome/common",
     "//chrome/test:test_support",

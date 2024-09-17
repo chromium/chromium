@@ -2,23 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_ASH_LOGIN_TEST_LOGIN_SCREEN_H_
-#define CHROME_BROWSER_UI_ASH_LOGIN_TEST_LOGIN_SCREEN_H_
+#ifndef ASH_LOGIN_TEST_LOGIN_SCREEN_H_
+#define ASH_LOGIN_TEST_LOGIN_SCREEN_H_
 
 #include <string>
 #include <vector>
 
+#include "ash/ash_export.h"
+#include "ash/login/test_login_screen_model.h"
 #include "ash/public/cpp/login_screen.h"
 #include "ash/public/cpp/management_disclosure_client.h"
-#include "chrome/browser/ui/ash/login/test_login_screen_model.h"
 
 namespace ash {
 class ScopedGuestButtonBlocker;
 enum class SupervisedAction;
-}
+}  // namespace ash
 
 // Test implementation of ash's mojo LoginScreen interface.
-class TestLoginScreen : public ash::LoginScreen {
+class ASH_EXPORT TestLoginScreen : public ash::LoginScreen {
  public:
   TestLoginScreen();
 
@@ -53,4 +54,4 @@ class TestLoginScreen : public ash::LoginScreen {
   TestLoginScreenModel test_screen_model_;
 };
 
-#endif  // CHROME_BROWSER_UI_ASH_LOGIN_TEST_LOGIN_SCREEN_H_
+#endif  // ASH_LOGIN_TEST_LOGIN_SCREEN_H_
