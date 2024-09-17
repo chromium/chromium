@@ -4096,6 +4096,7 @@ Wird die Richtlinie auf „False“ gesetzt, verwendet <ph name="PRODUCT_NAME" /
 <translation id="4140646780789794190">Weitergabe von Diagnosedaten an PluginVm deaktivieren</translation>
 <translation id="4144417751555442768">Generative KI</translation>
 <translation id="4145383150978634398">Nutzern Zugriff auf den Unified Desktop-Modus gewähren</translation>
+<translation id="4146319954420095470">(Warnung: Diese Abhängigkeit wird bald aufgehoben. Verwende stattdessen bitte „<ph name="GLS_POLICY_NAME" />“. Wenn diese Richtlinie auf „<ph name="BLOCK_GEOLOCATION_SETTING" />“ gesetzt ist, haben <ph name="PRODUCT_OS_NAME" />-Systemdienste und Android-Apps keinen Zugriff auf Standortinformationen. Wenn du diese Richtlinie auf einen anderen Wert setzt oder sie nicht konfigurierst, wird der Nutzer um seine Zustimmung gebeten, wenn eine Android-App auf Standortinformationen zugreifen möchte.</translation>
 <translation id="4147818922357566987">Nur Variationen für wichtige Fehlerbehebungen aktivieren</translation>
 <translation id="4150201353443180367">Display</translation>
 <translation id="4154221011709068799">Externe Speichergeräte nicht zulassen</translation>

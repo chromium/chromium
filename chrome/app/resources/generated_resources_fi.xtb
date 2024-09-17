@@ -1603,6 +1603,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="211803431539496924">Vahvistetaanko laajennetut tietoturvapäivitykset?</translation>
 <translation id="2118594521750010466">Korjaa nyt</translation>
 <translation id="2119461801241504254">Selaussuoja on päällä ja suojelee sinua haitallisilta sivustoilta ja latauksilta</translation>
+<translation id="2119602978828978573">Tuetut livetekstityksen kielet</translation>
 <translation id="2120297377148151361">Toiminnot ja vuorovaikutukset</translation>
 <translation id="2120639962942052471"><ph name="PERMISSION" /> estetty</translation>
 <translation id="2121055421682309734">{COUNT,plural, =0{Evästeet on estetty}=1{Evästeet on estetty, 1 poikkeus}other{Evästeet on estetty, {COUNT} poikkeusta}}</translation>
@@ -2672,6 +2673,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2864601841139725659">Määritä profiilikuvasi</translation>
 <translation id="2865057607286263192">Näet aksentti- ja erikoismerkit painamalla näppäimiä pitkään. Tämä poistaa käytöstä näppäinpainalluksen toiston aakkosnäppäinten osalta. Käytettävissä vain englanniksi (Yhdysvallat).</translation>
 <translation id="2865919525181940183">Kuvakaappaus ohjelmista, jotka ovat näytöllä tällä hetkellä</translation>
+<translation id="286643536820867504">Tekstittää tuetut kielet automaattisesti. Audio ei poistu laitteelta.</translation>
 <translation id="286674810810214575">Tarkistetaan virtalähteitä…</translation>
 <translation id="2867768963760577682">Avaa kiinnitetyllä välilehdellä</translation>
 <translation id="2868746137289129307">Tämä laajennus on vanhentunut ja poistettu käytöstä yrityksen käytännön mukaisesti. Se voidaan ottaa käyttöön uudelleen automaattisesti, kun uusi versio on saatavilla.</translation>
@@ -3291,6 +3293,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3337568642696914359">Älä salli sivustojen käsitellä protokollia</translation>
 <translation id="3340620525920140773">Lataus valmis: <ph name="FILE_NAME" /></translation>
 <translation id="3340978935015468852">asetuksissa</translation>
+<translation id="3341091511696469129">Chrome voi luoda ja kääntää tekstityksiä täällä näkyville kielille</translation>
 <translation id="3341699307020049241">Väärä PIN-koodi. Jäljellä on <ph name="RETRIES" /> yritystä.</translation>
 <translation id="3341703758641437857">Salli tiedostojen URL-osoitteiden käyttö</translation>
 <translation id="334171495789408663">Tunnus kopioitu</translation>
@@ -3637,6 +3640,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3596414637720633074">Estä kolmannen osapuolen evästeet incognito-tilassa</translation>
 <translation id="3599221874935822507">Korotettu</translation>
 <translation id="3600051066689725006">Verkkopyynnön tiedot</translation>
+<translation id="3600956933576601730">Sinun on tarkistettava ja hyväksyttävä ehdot, jotta voit käyttää näitä ominaisuuksia</translation>
 <translation id="3601374594714740284">Vapauta tilaa laitteelta, jotta äänenlaatu on parempi</translation>
 <translation id="360180734785106144">Sinulle voidaan tarjota uusia ominaisuuksia, kun ne tulevat saataville.</translation>
 <translation id="3602290021589620013">Esikatselu</translation>
@@ -5862,6 +5866,7 @@ Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="5214639857958972833">Kirjanmerkki "<ph name="BOOKMARK_TITLE" />" luotiin.</translation>
 <translation id="5215450412607891876">Laita laajennetut tietoturvapäivitykset päälle</translation>
 <translation id="5215502535566372932">Valitse maa</translation>
+<translation id="5216674789212441076">Kääntää livetekstitykset automaattisesti. Tekstitykset lähetetään Googlelle käännettäväksi.</translation>
 <translation id="5220011581825921581">haku + ylänuoli</translation>
 <translation id="5221516927483787768">Osoitteen <ph name="HOST_NAME" /> striimaus ei onnistu</translation>
 <translation id="5222403284441421673">Suojaamaton lataus estetty</translation>
@@ -5977,6 +5982,7 @@ Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="5297984209202974345">Viimeaikainen AI-teema <ph name="INDEX" /> / <ph name="SUBJECT" />, tyyli: <ph name="STYLE" /></translation>
 <translation id="5298219193514155779">Teeman loi</translation>
 <translation id="5298315677001348398">Haluatko jatkaa ja antaa ohjelmiston tehdä muutoksia laitteeseesi?</translation>
+<translation id="5298611529917615393">Sinun on tarkistettava ja hyväksyttävä ehdot, jotta voit käyttää tätä ominaisuutta</translation>
 <translation id="5299109548848736476">Do Not Track</translation>
 <translation id="5299558715747014286">Katso ja ylläpidä välilehtiryhmiä</translation>
 <translation id="5300589172476337783">Näytä</translation>
@@ -7952,6 +7958,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="6785739405821760313">Näytetään tallennetut työpöydät. Selaa painamalla sarkainta.</translation>
 <translation id="6785915470941880363">Käänteinen vieritys <ph name="LINK_BEGIN" />Lue lisää<ph name="LINK_END" /></translation>
 <translation id="67862343314499040">Lila</translation>
+<translation id="6786480815699355166">Vain tuettuja livetekstityksen kieliä voidaan kääntää</translation>
 <translation id="6786747875388722282">Laajennukset</translation>
 <translation id="6787097042755590313">Muu välilehti</translation>
 <translation id="6787531944787756058">käyttäjätunnus <ph name="USER_EMAIL" /> tallennetaan vain tälle laitteelle. Katso tiedot</translation>
@@ -10543,6 +10550,7 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8656888282555543604">Ota pistekirjoituksen kirjaaminen käyttöön</translation>
 <translation id="8657393004602556571">Hylätäänkö palaute?</translation>
 <translation id="8657542881463614516">Siirry sivujen välillä pyyhkäisyeleellä</translation>
+<translation id="865857184419171576">Käännä tekstitykset kielelle</translation>
 <translation id="865936634714975126">Lisää URL-osoitteeseen kyselyparametri, jotta voit valita tyyppejä sivun lataamisen yhteydessä. Esimerkki: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875"><ph name="FEATURE_NAME" /> / yhteystiedot</translation>
 <translation id="8659609431223166673">Ikkuna siirretty alas</translation>

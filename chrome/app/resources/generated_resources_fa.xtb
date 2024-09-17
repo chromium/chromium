@@ -554,6 +554,7 @@
 <translation id="1401216725754314428">در برگه جدیدی درباره سایت‌های مرتبط بیشتر بدانید</translation>
 <translation id="1402426911829176748">درحال اتصال به دستگاه</translation>
 <translation id="1403222014593521787">امکان اتصال به پراکسی وجود ندارد</translation>
+<translation id="1405336513195181336">این داده‌ها شامل نشانک‌ها، افزونه‌ها، و سابقه مرور سایت‌ها می‌شود.</translation>
 <translation id="1405779994569073824">خراب.</translation>
 <translation id="1406500794671479665">در حال تأیید...</translation>
 <translation id="1407069428457324124">زمینه تاریک</translation>
@@ -2509,6 +2510,7 @@
 <translation id="2749881179542288782">بررسی گرامر با املا</translation>
 <translation id="2750020734439919571">‏دیگر تنظیمات و اجازه‌های برنامه Chrome</translation>
 <translation id="2750602041558385535">بارگیری تأییدنشده مسدود است</translation>
+<translation id="2751883373055093745">‫<ph name="WEBSITE" /> می‌خواهد شماره شناسه کلید امنیتی‌تان را متوجه شود. سایت دقیقاً متوجه خواهد شد که از کدام کلید امنیتی استفاده می‌کنید.</translation>
 <translation id="275213133112113418">کارتتان ذخیره شد</translation>
 <translation id="2753623023919742414">برای جستجو، کلیک کنید</translation>
 <translation id="2754226775788136540">درحال جستجوی دستگاه‌های مجهز به «جفت‌سازی سریع» که در <ph name="PRIMARY_EMAIL" /> ذخیره شده است</translation>
@@ -3738,6 +3740,7 @@
 <translation id="3665589677786828986">‏Chrome تشخیص داد که برنامه دیگری برخی از تنظیمات شما را خراب کرده است و این تنظیمات را به پیش‌فرض‌های اولیه آن‌ها بازنشانی کرد.</translation>
 <translation id="3665919494326051362">نسخه کنونی: <ph name="CURRENT_VERSION" /></translation>
 <translation id="3666196264870170605">‏رونوشت اشکال‌زدایی کنترل‌کننده‌های رابط شبکه Intel Wi-Fi</translation>
+<translation id="3666529246018937077">داده‌های مرور موجود در نمایه قبلی باقی خواهد ماند. نمایه کاری‌تان حاوی داده‌های مرور قبلی نخواهد بود.</translation>
 <translation id="3666971425390608309">بارگیری <ph name="FILE_NAME" /> موقتاً متوقف شد.</translation>
 <translation id="3670113805793654926">دستگاه‌های همه فروشنده‌ها</translation>
 <translation id="3670229581627177274">روشن کردن بلوتوث</translation>
@@ -4479,6 +4482,7 @@
 <translation id="4181841719683918333">زبان‌ها</translation>
 <translation id="4182339886482390129">«مرور ایمن پیشرفته» کارهای بیشتری برای محافظت از شما دربرابر وب‌سایت‌ها، بارگیری‌ها، و افزونه‌های خطرناک انجام می‌دهد</translation>
 <translation id="4184803915913850597">‏دستگاه HID (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
+<translation id="418527077671811642">‫<ph name="WEBSITE" /> ساخت و مدل کلید امنیتی‌تان را متوجه خواهد شد</translation>
 <translation id="4186749321808907788"><ph name="QUERY_NAME" /> - جستجوی <ph name="DEFAULT_SEARCH_ENGINE_NAME" /></translation>
 <translation id="4187424053537113647">درحال راه‌اندازی<ph name="APP_NAME" />...</translation>
 <translation id="4190446002599583608">جستجوی سابقه، با بهره‌گیری از هوش مصنوعی</translation>
@@ -4606,6 +4610,7 @@
 <translation id="4278779213160967034">این پردازش ممکن است چند دقیقه طول بکشد. درحال بارگیری فایل‌ها</translation>
 <translation id="4279129444466079448">می‌توانید تا <ph name="PROFILE_LIMIT" /> نمایه سیم‌کارت داخلی را در این دستگاه نصب کنید. برای افزودن نمایه‌ای دیگر، ابتدا یکی از نمایه‌ها موجود را بردارید.</translation>
 <translation id="4280325816108262082">وقتی دستگاه خاموش شود یا از آن استفاده نشود، به‌طور خودکار قطع می‌شود</translation>
+<translation id="4281412694055934031">سایت‌ها بتوانند نصب کردن برنامه‌های وب در دستگاه شما را درخواست کنند</translation>
 <translation id="4281789858103154731">ایجاد کردن</translation>
 <translation id="4281844954008187215">شرایط استفاده از سرویس</translation>
 <translation id="4281849573951338030">سفارشی‌سازی دکمه‌های قلم</translation>
@@ -4813,6 +4818,7 @@
 <translation id="4426857487270413362">فایل‌های نصب‌کننده بارگیری نشد. لطفاً اتصال اینترنت و داشتن فضای دیسک کافی را بررسی و دوباره امتحان کنید. کد خطا <ph name="ERROR" /> است.</translation>
 <translation id="4427111270137140798">‫<ph name="COUNT" /> بار شناسایی شده است</translation>
 <translation id="4427365070557649936">درحال راستی‌آزمایی کد تأیید…</translation>
+<translation id="4428579202668721841">داده‌های مرور موجود جدا از نمایه کاری‌تان نگه داشته شود؟</translation>
 <translation id="4429163740524851942">جانمایی صفحه‌کلید فیزیکی</translation>
 <translation id="4430019312045809116">میزان صدا</translation>
 <translation id="443031431654216610">فقط از اعداد استفاده کنید</translation>
@@ -5452,8 +5458,10 @@
 <translation id="490031510406860025">در این سایت مجاز نیست</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> هرتز - درهم‌بافته</translation>
 <translation id="4900652253009739885">نمی‌توان تنها کلید اختصاص‌یافته به کنش «انتخاب» را برداشت. برای <ph name="RESPONSE" />، کلیدی را فشار دهید.</translation>
+<translation id="4900908761825556116">به سایت‌ها اجازه داده نشود برنامه‌های وب را در دستگاه شما نصب کنند</translation>
 <translation id="4901154724271753917">ازهم بازکردن موارد اخیراً بسته‌شده</translation>
 <translation id="4901309472892185668">وضعیت آزمایش را برای آزمایش <ph name="EXPERIMENT_NAME" /> انتخاب کنید.</translation>
+<translation id="4902675024946078396">نه، به نمایه کاری منتقل شود</translation>
 <translation id="49027928311173603">خط‌مشی بارگیری‌شده از سرور نامعتبر است: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4903967893652864401">این ویژگی با محدود کردن فعالیت پس‌زمینه و جلوه‌های بصری مثل پیمایش روان، ماندگاری شارژ باتری را افزایش می‌دهد.</translation>
 <translation id="4906490889887219338">راه‌اندازی یا مدیریت دستگاه‌های ذخیره‌سازی متصل به شبکه. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
@@ -7485,6 +7493,7 @@
 <translation id="6434104957329207050">سرعت اسکن کردن نقطه</translation>
 <translation id="6434309073475700221">صرف‌نظرکردن</translation>
 <translation id="6434325376267409267">قبل از اینکه بتوانید از <ph name="APP_NAME" /> استفاده کنید باید دستگاه را به‌روزرسانی کنید.</translation>
+<translation id="6434690603850475457">بله، جدا نگه داشته شود (توصیه می‌شود)</translation>
 <translation id="6434755719322447931">نامنظم</translation>
 <translation id="6435339218366409950">انتخاب کنید زیرنویس ناشنوایان به چه زبانی ترجمه شود</translation>
 <translation id="6436164536244065364">نمایش در «نت‌بازار»</translation>
@@ -8389,6 +8398,7 @@
 <translation id="708060913198414444">کپی آدرس صوت</translation>
 <translation id="7082568314107259011">سرپرستتان <ph name="NETWORK_NAME" /> را مدیریت می‌کند</translation>
 <translation id="7082850163410901674">‏اعلان‌ها در «تنظیمات سیستم Mac» خاموش است</translation>
+<translation id="7083729794572207131">سایت‌ها معمولاً درخواست می‌کنند برنامه‌های وب نصب کنند تا تجربه‌تان را در سایت بهبود دهند</translation>
 <translation id="7083774521940805477">‏«Steam ویژه Chromebook» (بتا) در Chromebook شما دردسترس نیست.</translation>
 <translation id="708550780726587276">(پیکربندی نشده است)</translation>
 <translation id="7086377898680121060">زیاد کردن روشنایی</translation>
@@ -10494,6 +10504,7 @@
 <translation id="8617601976406256334">داده‌ها و اجازه‌های سایت <ph name="SITE_NAME" /> حذف شود؟</translation>
 <translation id="8617748779076050570">شناسه اتصال ایمن: <ph name="CONNECTION_ID" /></translation>
 <translation id="8619000641825875669">OneDrive</translation>
+<translation id="8619369551122276044">اجازه ندارد نصب کردن برنامه‌های وب در دستگاه شما را درخواست کند</translation>
 <translation id="8619803522055190423">سایه‌دار</translation>
 <translation id="8619892228487928601"><ph name="CERTIFICATE_NAME" />: <ph name="ERROR" /></translation>
 <translation id="8620206585293032550">ظاهر برگه‌های غیرفعال</translation>
@@ -11377,6 +11388,7 @@
 <translation id="93393615658292258">فقط گذرواژه</translation>
 <translation id="934244546219308557">نامی برای گروه وارد کنید</translation>
 <translation id="93480724622239549">اشکال یا خطا</translation>
+<translation id="9354763467503131">اجازه دارد نصب کردن برنامه‌های وب در دستگاه شما را درخواست کند</translation>
 <translation id="936646668635477464">دوربین و میکروفون</translation>
 <translation id="936801553271523408">داده‌های تشخیص خطای سیستم</translation>
 <translation id="93766956588638423">تعمیر افزونه</translation>

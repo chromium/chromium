@@ -1045,6 +1045,8 @@
 <translation id="628726841779494414">Tvarkykite spausdintuvus spausdintuvų nustatymuose</translation>
 <translation id="6292095526077353682">Kol kraunama, rodyti ekrano užsklandą</translation>
 <translation id="629550705077076970">klaviatūros pritemdymas</translation>
+<translation id="6301193653204230066">Iš naujo nustatant Saugumo programą išjungiami naršyklės „Chrome“ plėtiniai ir iš naujo nustatomi tinklo bei kiti nustatymai į saugius numatytuosius.
+          Skirtukai, failai, slapukai ir istorija nebus pakeisti.</translation>
 <translation id="6302401976930124515">Bandymas „<ph name="TEST_NAME" />“ atšauktas</translation>
 <translation id="631063167932043783">Programa „Explore“</translation>
 <translation id="6318437367327684789">visada</translation>
@@ -1054,6 +1056,7 @@
 <translation id="6325525973963619867">Nepavyko</translation>
 <translation id="6327262166342360252">Šis ekrano fonas sukurtas naudojant DI ir šį tekstą: „<ph name="PROMPT" />“.</translation>
 <translation id="6331191339300272798">Automatinė tamsioji tema</translation>
+<translation id="6335228876613776082">Modelis atsisiųstas</translation>
 <translation id="6340526405444716530">Suasmeninimas</translation>
 <translation id="6348252528297699679">Vietovės informaciją galite išjungti skiltyje „Nustatymai“ &gt; „Privatumas ir sauga“ &gt; „Privatumo valdikliai“ &gt; „Prieiga prie vietovės informacijos“. <ph name="LINK_BEGIN" />Sužinokite daugiau<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">Naudotojo vardas ir slaptažodis</translation>
@@ -1548,6 +1551,7 @@ Atsisiųskite transkribavimo modelį (iki 100 MB), kad gautumėte transkribuotus
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">„Google“ nuotraukų albumas</translation>
 <translation id="8775713578693478175">Modemo APN</translation>
+<translation id="877735394245039557">Atsisiunčiamas modelis</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Šiame tinkle gali būti fiksuotasis portalas</translation>
 <translation id="8797082062139985406">Kurti pavadinimą naudojantis „Google“ DI</translation>

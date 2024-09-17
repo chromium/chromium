@@ -1045,6 +1045,8 @@
 <translation id="628726841779494414">چاپگرهایتان را در تنظیمات چاپگر مدیریت کنید</translation>
 <translation id="6292095526077353682">درحین شارژ، محافظ صفحه برای مدت زیر نشان داده شود</translation>
 <translation id="629550705077076970">کم‌نور کردن صفحه‌کلید</translation>
+<translation id="6301193653204230066">‏«بازنشانی ایمنی» افزونه‌های مرورگر Chrome را خاموش می‌کند و شبکه و تنظیمات دیگر را به پیش‌فرض‌های ایمن بازمی‌گرداند.
+          برگه‌ها، فایل‌ها، کوکی‌ها، و سابقه‌تان تغییر نخواهد کرد.</translation>
 <translation id="6302401976930124515">آزمایش <ph name="TEST_NAME" /> لغو شده است</translation>
 <translation id="631063167932043783">برنامه کاوش</translation>
 <translation id="6318437367327684789">همیشه</translation>
@@ -1054,6 +1056,7 @@
 <translation id="6325525973963619867">ناموفق بود</translation>
 <translation id="6327262166342360252">این کاغذدیواری ازطریق هوش مصنوعی بااستفاده از نوشتار زیر ایجاد شده است: «<ph name="PROMPT" />».</translation>
 <translation id="6331191339300272798">زمینه تاریک خودکار</translation>
+<translation id="6335228876613776082">مدل بارگیری شد</translation>
 <translation id="6340526405444716530">شخصی‌سازی</translation>
 <translation id="6348252528297699679">می‌توانید مکان را در «تنظیمات &gt; حریم خصوصی و امنیت &gt; تنظیمات حریم خصوصی &gt; دسترسی به مکان» خاموش کنید. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">نام کاربری و گذرواژه</translation>
@@ -1548,6 +1551,7 @@
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">‏آلبوم Google Photos</translation>
 <translation id="8775713578693478175">«نام نقطه دستیابی» مدرن</translation>
+<translation id="877735394245039557">مدل درحال بارگیری است</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">ممکن است این شبکه درگاه مهمان داشته باشد</translation>
 <translation id="8797082062139985406">‏ایجاد کردن نام بااستفاده از هوش مصنوعی Google</translation>

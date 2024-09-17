@@ -86,6 +86,7 @@
 <translation id="1383876407941801731">Zoeken</translation>
 <translation id="138618066238211776">Doorgaan als <ph name="USER_NAME" /></translation>
 <translation id="138692594145659985">Opties om een kaart op te slaan</translation>
+<translation id="1396260204083880024">Ingelogd als <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Accountmenu openen.</translation>
 <translation id="1397144142234474689">Geschiedenis verbergen</translation>
 <translation id="1407135791313364759">Alles openen</translation>
 <translation id="1408847409015257906">Tik op Privacy en beveiliging.</translation>
@@ -596,6 +597,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="3967327056943561740">Bookmarks</translation>
 <translation id="3967822245660637423">Downloaden voltooid</translation>
 <translation id="3982893814825393515">Een probleem melden…</translation>
+<translation id="398604237578616937">Ingelogd als <ph name="USER_EMAIL" />. Accountmenu openen.</translation>
 <translation id="3987993985790029246">Link kopiëren</translation>
 <translation id="3992684624889376114">Over deze pagina</translation>
 <translation id="3994422733891749358">Kies welke meldingen je wilt krijgen</translation>
@@ -733,6 +735,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="4636930964841734540">Info</translation>
 <translation id="4642472735733036929">Prijs volgen gestopt</translation>
 <translation id="4645575059429386691">Beheerd door je ouder</translation>
+<translation id="4647758699119474035">Ingelogd als <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Fout in Google-account. Accountmenu openen.</translation>
 <translation id="4650125387981512669">Doorgaan als <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4652817563047461855">Zorg dat je wachtwoorden veilig zijn, ga na of ze zijn gehackt en krijg advies om je online te beschermen. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="4658335131052370646">Opslaan</translation>
@@ -915,6 +918,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 
 Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je apparaten moeten hetzelfde iCloud-account gebruiken.</translation>
 <translation id="5551825465462320939">Blijf op de hoogte van onder meer nieuws en sport op basis van je interesses.</translation>
+<translation id="5555008247722361784">Ingelogd als <ph name="USER_EMAIL" />. Fout in Google-account. Accountmenu openen.</translation>
 <translation id="5556459405103347317">Opnieuw laden</translation>
 <translation id="555749644339804659">Wachtwoorden checken…</translation>
 <translation id="5559567453458728487">Converteer meeteenheden die op internet zijn gevonden</translation>
@@ -1593,6 +1597,7 @@ Sites mogen cookies gebruiken om je browse-activiteit op verschillende sites te 
 <translation id="8571213806525832805">Afgelopen 4 weken</translation>
 <translation id="8577056989960190117">Het vervaljaar <ph name="YEAR" /> automatisch invullen</translation>
 <translation id="8588404856427128947">Uit</translation>
+<translation id="8590286732816598906">Tabbladgroep, <ph name="GROUP_TITLE" />, menu.</translation>
 <translation id="8593565399399144771">Je kunt hier een nieuw tabblad openen.</translation>
 <translation id="8600272508328041907">Overschakelen naar vertaling van volledige pagina</translation>
 <translation id="860043288473659153">Naam kaarthouder</translation>
@@ -1729,6 +1734,7 @@ Sites mogen cookies gebruiken om je browse-activiteit op verschillende sites te 
 <translation id="9162432979321511934">Zet Wachtwoorden automatisch invullen aan</translation>
 <translation id="9165320910061267720">Als je meldingen wilt krijgen over prijsdalingen, moet je meldingen aanzetten in de iOS-instellingen.</translation>
 <translation id="9179151630575358778">Verbergt dit item</translation>
+<translation id="918129721713827015">Tabbladen in groep tonen</translation>
 <translation id="9183733013282108610">Incognito zoeken</translation>
 <translation id="9186762474139509529">Logboekregistratie starten</translation>
 <translation id="9191031968346938109">Toevoegen aan…</translation>

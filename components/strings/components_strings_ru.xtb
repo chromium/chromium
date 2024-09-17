@@ -3735,6 +3735,7 @@
 <translation id="7831993212387676366">Что такое список покупок</translation>
 <translation id="7840103971441592723">Запись экрана начата</translation>
 <translation id="784137052867620416">Shopping Insights</translation>
+<translation id="7842611866969435396">Начать</translation>
 <translation id="784404208867107517">История с распределением по группам</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Нет}=1{1 приложение (<ph name="EXAMPLE_APP_1" />)}=2{2 приложения (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# приложение (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}few{# приложения (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}many{# приложений (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}other{# приложения (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}}</translation>
 <translation id="785476343534277563">Студенческий спорт</translation>

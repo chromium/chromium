@@ -1214,6 +1214,7 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="6674571176963658787">Lai sāktu sinhronizāciju, ievadiet savu ieejas frāzi</translation>
 <translation id="6676927815633975364">Pierakstieties šajā vietnē un pārlūkā Chrome.</translation>
 <translation id="6684809838922667136">Uzlabojiet Chrome</translation>
+<translation id="6700279777779583398">Izvēlētās lietotnes ir saglabātas</translation>
 <translation id="6704048624334633734">Paroļu eksportēšana un dzēšana</translation>
 <translation id="670498945988402717">Pārbaudīts: vakar</translation>
 <translation id="6710213216561001401">Iepriekšējais</translation>
@@ -1426,6 +1427,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />izdzēsiet Chrome datus s
 <translation id="752731652852882757">Bloķēt, kad tiek izmantots inkognito režīms</translation>
 <translation id="7554643625247105821">Nevar pārbaudīt Chrome versiju</translation>
 <translation id="7557508262441527045">Izrakstījies</translation>
+<translation id="7573665567024262965">Noklusējuma lietotņu izvēle</translation>
 <translation id="7577900504646297215">Pārvaldīt intereses</translation>
 <translation id="757855969265046257">{FILES,plural, =1{Lejupielādēts <ph name="FILES_DOWNLOADED_ONE" /> fails}zero{Lejupielādēti <ph name="FILES_DOWNLOADED_MANY" /> faili}one{Lejupielādēts <ph name="FILES_DOWNLOADED_MANY" /> fails}other{Lejupielādēti <ph name="FILES_DOWNLOADED_MANY" /> faili}}</translation>
 <translation id="7581273696622423628">Piedalīties aptaujā</translation>
@@ -1468,6 +1470,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />izdzēsiet Chrome datus s
 <translation id="7764225426217299476">Pievienot adresi</translation>
 <translation id="7772032839648071052">Apstipriniet ieejas frāzi</translation>
 <translation id="7772375229873196092">Aizvērt <ph name="APP_NAME" /></translation>
+<translation id="7774125747223422443">Saskaņā ar tiesību aktiem, kas ir spēkā jūsu reģionā, jums ir jāizvēlas pārlūks un meklētājprogramma.</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />… un vēl <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}zero{<ph name="PAYMENT_METHOD_PREVIEW" />… un vēl <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}one{<ph name="PAYMENT_METHOD_PREVIEW" />… un vēl <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />… un vēl <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="777637629667389858">Kad esat pierakstījies, šī funkcija aizsargā jūsu informāciju Google pakalpojumos.</translation>
 <translation id="7778840695157240389">Lai skatītu jaunus rakstus, atgriezieties vēlāk</translation>
@@ -1737,6 +1740,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />izdzēsiet Chrome datus s
 <translation id="8982113230057126145">Noklikšķinot uz ikonas “Nepatīk”, varat norādīt, ka jums nepatīk šis kopsavilkums.</translation>
 <translation id="8992769679401294069">Jūsu dati ir šifrēti, izmantojot ieejas frāzi. Ievadiet ieejas frāzi, lai izmantotu un saglabātu Chrome datus savā Google kontā.</translation>
 <translation id="8993760627012879038">Atvērt jaunu cilni inkognito režīmā</translation>
+<translation id="8995521496079646922">Pēc noklusējuma tiks izmantotas jūsu izvēlētās lietotnes. Ja kādas lietotnes vēl nav šajā ierīcē, tā drīzumā tiks lejupielādēta.</translation>
 <translation id="8996847606757455498">Izvēlēties citu nodrošinātāju</translation>
 <translation id="8998289560386111590">Nav pieejams jūsu ierīcē</translation>
 <translation id="8998837250940831980">Nevarēja minimizēt cilni. Vēlāk mēģiniet vēlreiz.</translation>

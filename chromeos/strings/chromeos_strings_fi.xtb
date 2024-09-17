@@ -341,6 +341,7 @@
 <translation id="2560876255701405320">Lista audiotallenteista</translation>
 <translation id="2561093647892030937">sitruunat</translation>
 <translation id="2570743873672969996">Tehdään testiä <ph name="TEST_NAME" />…</translation>
+<translation id="2573178735329662769">Kaiken Chromebookin audion tallentaminen</translation>
 <translation id="2575552334616524665">Voit laittaa tämän päälle asetuksista tai valikosta <ph name="THREE_DOTS_MENU_ICON" /></translation>
 <translation id="2576253868710695442">Tämä vie korkeintaan 2 Gt tallennustilaa.</translation>
 <translation id="2584547424703650812">Hohtavat maisemat</translation>
@@ -508,6 +509,7 @@
 <translation id="3588034708467091142">Varmista, että internetyhteys on muodostettu, ja yritä uudelleen.</translation>
 <translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> on sovelluksen (<ph name="APN_NAME" />) käyttäjäystävällinen nimi.</translation>
 <translation id="3595596368722241419">Akku täynnä</translation>
+<translation id="3600063043775287169">Kun Chromebookin audio on päällä, Tallentaja tallentaa kaiken laitteella toistettavan audion. Varmista, että haluat tallentaa kaikki äänet.</translation>
 <translation id="3600339377155080675">Näytön peilaus</translation>
 <translation id="3602290021589620013">Esikatselu</translation>
 <translation id="3603829704940252505">Avatar</translation>

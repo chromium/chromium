@@ -341,6 +341,7 @@
 <translation id="2560876255701405320">Lijst met audio-opnamen</translation>
 <translation id="2561093647892030937">citroenen</translation>
 <translation id="2570743873672969996">Test <ph name="TEST_NAME" /> wordt uitgevoerd...</translation>
+<translation id="2573178735329662769">Alle Chromebook-audio opnemen</translation>
 <translation id="2575552334616524665">Je kunt dit aanzetten in Instellingen of in het menu <ph name="THREE_DOTS_MENU_ICON" /></translation>
 <translation id="2576253868710695442">Dit kan tot 2 GB aan opslagruimte in beslag nemen</translation>
 <translation id="2584547424703650812">Lichtlandschappen</translation>
@@ -508,6 +509,7 @@
 <translation id="3588034708467091142">Zorg dat je verbonden bent met internet en probeer het opnieuw.</translation>
 <translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> is de gebruiksvriendelijke naam voor <ph name="APN_NAME" />.</translation>
 <translation id="3595596368722241419">Batterij is vol</translation>
+<translation id="3600063043775287169">Als Chromebook-audio aanstaat, neemt Recorder alle audio op die op dit apparaat wordt afgespeeld. Ga na of je alle geluiden wilt opnemen.</translation>
 <translation id="3600339377155080675">Scherm spiegelen</translation>
 <translation id="3602290021589620013">Voorbeeld</translation>
 <translation id="3603829704940252505">Avatar</translation>
@@ -1042,6 +1044,8 @@
 <translation id="628726841779494414">Beheer je printers in de printerinstellingen</translation>
 <translation id="6292095526077353682">Screensaver tonen tijdens opladen voor</translation>
 <translation id="629550705077076970">toetsenbord dimmen</translation>
+<translation id="6301193653204230066">De beveiligingsreset zet Chrome-browserextensies uit en zet netwerk- en andere instellingen terug naar veilige standaardwaarden.
+          Je tabbladen, bestanden, cookies en geschiedenis worden niet gewijzigd.</translation>
 <translation id="6302401976930124515">Test <ph name="TEST_NAME" /> is geannuleerd</translation>
 <translation id="631063167932043783">App verkennen</translation>
 <translation id="6318437367327684789">oneindig</translation>
@@ -1051,6 +1055,7 @@
 <translation id="6325525973963619867">Mislukt</translation>
 <translation id="6327262166342360252">Deze achtergrond is gemaakt met AI met de volgende tekst: <ph name="PROMPT" />.</translation>
 <translation id="6331191339300272798">Automatisch donker thema</translation>
+<translation id="6335228876613776082">Model gedownload</translation>
 <translation id="6340526405444716530">Personalisatie</translation>
 <translation id="6348252528297699679">Je kunt de locatie uitzetten via Instellingen &gt; Privacy en beveiliging &gt; Privacyopties &gt; Locatietoegang. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">Gebruikersnaam en wachtwoord</translation>
@@ -1544,6 +1549,7 @@ Download het transcriptiemodel (maximaal 100 MB) om deze transcripties te krijg
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Foto's-album</translation>
 <translation id="8775713578693478175">Modem-APN</translation>
+<translation id="877735394245039557">Model wordt gedownload</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Dit netwerk heeft misschien een captive portal</translation>
 <translation id="8797082062139985406">Naam maken met AI van Google</translation>

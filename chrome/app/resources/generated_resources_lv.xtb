@@ -2556,6 +2556,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2787354132612937472">—</translation>
 <translation id="2788135150614412178">+</translation>
 <translation id="2789486458103222910">Labi</translation>
+<translation id="2790750268015892264">Izolētas tīmekļa lietotnes nevar kontrolēt viedkaršu lasītājus. Lietotnes nevarēs iegūt piekļuvi nevienai viedkartei.</translation>
 <translation id="2791529110887957050">Linux noņemšana</translation>
 <translation id="2791952154587244007">Notika kļūda. Šajā ierīcē kioska lietojumprogrammu nevarēs palaist automātiski.</translation>
 <translation id="2792290659606763004">Vai noņemt Android lietotnes?</translation>
@@ -2587,6 +2588,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2806372837663997957">Ierīce, ar kuru mēģinājāt kopīgot saturu, to nepieņēma.</translation>
 <translation id="2806891468525657116">Saīsne jau pastāv</translation>
 <translation id="2807517655263062534">Šeit ir redzami lejupielādētie faili.</translation>
+<translation id="2808481877345177494">Pierakstieties, lai droši nošķirtu pārlūkošanu darba un personīgajām vajadzībām. Palieliniet produktivitāti, vienlaikus aizsargājot sensitīvus uzņēmuma datus.</translation>
 <translation id="2811205483104563968">Konti</translation>
 <translation id="2812049959647166806">Thunderbolt savienojums netiek atbalstīts</translation>
 <translation id="2812171980080389735">Saglabāti tīkli un paroles tūlītējai savienojuma izveidei</translation>
@@ -3432,6 +3434,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3450157232394774192">Neaktīvs stāvoklis — noslogojuma procentuālais daudzums</translation>
 <translation id="3450180775417907283"><ph name="MANAGER" /> pieprasa, lai jūs tūlīt izveidotu savienojumu ar Wi-Fi tīklu un lejupielādētu atjauninājumu.</translation>
 <translation id="345078987193237421">Tādējādi kamerai drīkstēs piekļūt lietotnes, vietnes ar kameras atļauju un sistēmas pakalpojumi.</translation>
+<translation id="3451362021220965191">Izolētas tīmekļa lietotnes kontrolē viedkaršu lasītājus, lai iegūtu piekļuvi ievietotajām vai uzrādītajām viedkartēm. Viedkartēs parasti ir ietverti identitātes dati, kas tiek izmantoti, lai autentificētu vai pilnvarotu darbības, pierakstītos pakalpojumos utt.</translation>
 <translation id="3452999110156026232">Vecāku piekļuve</translation>
 <translation id="3453082738208775226">Vai atbrīvot vietu bezsaistes krātuvē?</translation>
 <translation id="3453597230179205517">Piekļuve atrašanās vietas datiem ir bloķēta.</translation>
@@ -3994,6 +3997,7 @@ Tā var ietvert informāciju par ierīcē instalēto programmatūru, failiem, p�
 <translation id="3828953470056652895">Es izlasīju <ph name="BEGIN_LINK1" />Google pakalpojumu sniegšanas noteikumus<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Chrome un Chrome OS pakalpojumu sniegšanas papildu noteikumus<ph name="END_LINK2" /> un <ph name="BEGIN_LINK3" />Play pakalpojumu sniegšanas noteikumus<ph name="END_LINK3" /> un piekrītu tiem.</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> — liels atmiņas lietojums: <ph name="MEMORY_VALUE" /></translation>
 <translation id="3829765597456725595">SMB failu kopīgošana</translation>
+<translation id="38298897782945211">Izolētās tīmekļa lietotnēs tiks automātiski lietots šis iestatījums.</translation>
 <translation id="3830470485672984938">Izmantot citu piekļuves atslēgu</translation>
 <translation id="3830654885961023588">{NUM_EXTENSIONS,plural, =1{Administrators atkārtoti ieslēdza 1 potenciāli kaitīgu paplašinājumu.}zero{Administrators atkārtoti ieslēdza {NUM_EXTENSIONS} potenciāli kaitīgus paplašinājumus.}one{Administrators atkārtoti ieslēdza {NUM_EXTENSIONS} potenciāli kaitīgu paplašinājumu.}other{Administrators atkārtoti ieslēdza {NUM_EXTENSIONS} potenciāli kaitīgus paplašinājumus.}}</translation>
 <translation id="3834728400518755610">Lai mikrofona iestatījuma izmaiņas stātos spēkā, ir jāizslēdz Linux dators. Lai turpinātu, izslēdziet Linux datoru.</translation>
@@ -4007,6 +4011,7 @@ Tā var ietvert informāciju par ierīcē instalēto programmatūru, failiem, p�
 <translation id="3839516600093027468">Vienmēr bloķēt starpliktuves satura rādīšanu vietnei <ph name="HOST" /></translation>
 <translation id="3841282988425489367">Nevar iestatīt Steam for Chromebook (Beta)</translation>
 <translation id="3841319830220785495">Noklusējuma, dabiska balss</translation>
+<translation id="3841356782900714251">Viedkaršu lasītāji</translation>
 <translation id="3841964634449506551">Parole ir nederīga</translation>
 <translation id="3842552989725514455">Serif fonts</translation>
 <translation id="3843464315703645664">Iekšējā atļaušanas sarakstā</translation>
@@ -5717,6 +5722,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="5120886753782992638">Noklikšķiniet šeit, lai apmeklētu vietni <ph name="APPROVED_URL" /></translation>
 <translation id="5121052518313988218">Jūsu Linux konteinera operētājsistēma vairs netiek atbalstīta. Tai vairs netiks sūtīti drošības atjauninājumi un kļūdu labojumi, un funkcijas, kuras šobrīd var izmantot, var negaidīti pārtraukt darboties. Lai turpinātu Linux izmantošanu, jauniniet uz jaunāko versiju.</translation>
 <translation id="5121130586824819730">Cietais disks ir pilns. Saglabājiet citā atrašanās vietā vai atbrīvojiet vietu cietajā diskā.</translation>
+<translation id="5121803000325086087">Izolētas tīmekļa lietotnes var pieprasīt atļauju kontrolēt viedkaršu lasītājus. Lietotnes iegūs piekļuvi viedkartēm, kas tiks uzrādītas karšu lasītājiem, kurus tās kontrolē.</translation>
 <translation id="5123433949759960244">Basketbols</translation>
 <translation id="5125714798187802869">Aktivizēt</translation>
 <translation id="5125751979347152379">Nederīgs URL.</translation>
@@ -6973,6 +6979,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="6064764629679333574">Uzlabojiet Bluetooth mikrofona skaņas kvalitāti, zemas izšķirtspējas audio iestatot augstu izšķirtspēju.</translation>
 <translation id="6065289257230303064">Sertifikāta subjekta kataloga atribūti</translation>
 <translation id="6066794465984119824">Nav iestatīta attēla jaucējvērtība</translation>
+<translation id="6069027071882229820">Kopēt kā attēlu</translation>
 <translation id="6069464830445383022">Jūsu Google konts — pierakstīšanās informācija Chromebook datoram</translation>
 <translation id="6069500411969514374">Darbs</translation>
 <translation id="6071181508177083058">apstipriniet paroli</translation>
@@ -10076,6 +10083,7 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8319414634934645341">Paplašināta atslēgas lietošana</translation>
 <translation id="8321476692217554900">paziņojumi</translation>
 <translation id="8321837372750396788">Šo <ph name="DEVICE_TYPE" /> ierīci pārvaldīs <ph name="MANAGER" />.</translation>
+<translation id="8321888067342493336">Saglabāt kā attēlu</translation>
 <translation id="8322814362483282060">Šīs lapas piekļuve jūsu mikrofonam ir bloķēta.</translation>
 <translation id="8323167517179506834">Ierakstiet URL</translation>
 <translation id="8323317289166663449">Lasīt un mainīt visus jūsu datus jūsu datorā un visās vietnēs</translation>

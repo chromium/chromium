@@ -341,6 +341,7 @@
 <translation id="2560876255701405320">Список аудиозаписей</translation>
 <translation id="2561093647892030937">лимоны</translation>
 <translation id="2570743873672969996">Запуск теста "<ph name="TEST_NAME" />"…</translation>
+<translation id="2573178735329662769">Запись всех звуков на Chromebook</translation>
 <translation id="2575552334616524665">Чтобы ее включить, перейдите в настройки или нажмите на значок меню <ph name="THREE_DOTS_MENU_ICON" />.</translation>
 <translation id="2576253868710695442">Для работы функции потребуется не более 2 ГБ в хранилище</translation>
 <translation id="2584547424703650812">Сияющий пейзаж</translation>
@@ -508,6 +509,7 @@
 <translation id="3588034708467091142">Проверьте подключение к интернету и попробуйте снова.</translation>
 <translation id="3594280220611906414">"<ph name="USER_FRIENDLY_APN_NAME" />" – это удобное название точки доступа "<ph name="APN_NAME" />".</translation>
 <translation id="3595596368722241419">Аккумулятор заряжен</translation>
+<translation id="3600063043775287169">Когда включен параметр "Аудио Chromebook", Диктофон записывает все звуки, которые воспроизводятся на устройстве. Имейте это в виду при настройке записи.</translation>
 <translation id="3600339377155080675">Дублирование экрана</translation>
 <translation id="3602290021589620013">Предварительный просмотр</translation>
 <translation id="3603829704940252505">Аватар</translation>

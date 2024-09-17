@@ -446,6 +446,7 @@
 <translation id="1771254328977666895">ดูประวัติราคา</translation>
 <translation id="1777422078676229054">รูปภาพ (Archival)</translation>
 <translation id="1778646502362731194">JIS B0</translation>
+<translation id="1785118555253503473">ติดตั้งเว็บแอปไหม</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Tab ตามด้วย Enter เพื่อจัดการข้อมูล ความเป็นส่วนตัว และการรักษาความปลอดภัยในบัญชี Google ของคุณ</translation>
 <translation id="1793631236004319016">ใช้ล่าสุดเมื่อ <ph name="NUM_HOURS_MINUTES_SECONDS" />ที่ผ่านมา</translation>
@@ -1165,6 +1166,7 @@
 <translation id="3157931365184549694">คืนค่า</translation>
 <translation id="3158539265159265653">ดิสก์</translation>
 <translation id="3162559335345991374">Wi-Fi ที่คุณใช้อาจต้องการให้คุณไปที่หน้าการเข้าสู่ระบบ</translation>
+<translation id="316638481603975524">สามารถขอติดตั้งเว็บแอปได้</translation>
 <translation id="3168744840365648658">อุปกรณ์วิทยุ</translation>
 <translation id="3168938241115725594">ยานยนต์คลาสสิก</translation>
 <translation id="3169472444629675720">สำรวจ</translation>
@@ -2325,6 +2327,7 @@
 <translation id="5273658854610202413">คำเตือน: ระบบไม่ได้รวมนโยบายนี้ตามที่ระบุในนโยบาย PolicyDictionaryMultipleSourceMergeList เพราะไม่ใช่ส่วนหนึ่งของนโยบายพจนานุกรมที่รวมได้</translation>
 <translation id="5278778426231952189">อัปโหลดเลย</translation>
 <translation id="5279286380302340275">จัดการการดาวน์โหลด</translation>
+<translation id="5280963125494874678">เว็บแอปพลิเคชัน</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">คุณสมบัติของเอกสาร</translation>
 <translation id="528468243742722775">สิ้นสุด</translation>
@@ -2827,6 +2830,7 @@
 <translation id="6221311046884916259">ต้องการบันทึกบัตรนี้ไว้ในบัญชี Google ไหม</translation>
 <translation id="6221892641068781024">มุมมองอย่างง่าย</translation>
 <translation id="6222527803348563979">กระดาษจดหมาย</translation>
+<translation id="62231116988543150">ติดตั้งเว็บแอปได้</translation>
 <translation id="6224281071334553713">อัญมณีและเครื่องประดับ</translation>
 <translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Tab ตามด้วย Enter เพื่อปรับเปลี่ยนเครื่องมือช่วยเหลือพิเศษในแบบของคุณที่การตั้งค่า Chrome</translation>
 <translation id="6228346913624365233">ยานพาหนะหรูหรา</translation>
@@ -3090,6 +3094,7 @@
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Tab ตามด้วย Enter เพื่อหาอุปกรณ์ในบัญชี Google</translation>
 <translation id="6695428916538794739">ภาพยนตร์แอ็กชันและการผจญภัย</translation>
 <translation id="6696424331653607346">คู่มือและสารคดีการท่องเที่ยว</translation>
+<translation id="6696575039575740785">ไม่อนุญาตให้ติดตั้งเว็บแอป</translation>
 <translation id="6698097747703777657">หากไม่ได้รับรหัส <ph name="BEGIN_LINK" />ขอรหัสใหม่<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">สร้าง:</translation>
 <translation id="67007264085648978">ตัวควบคุมเวลา</translation>
@@ -3203,6 +3208,7 @@
 <translation id="6915804003454593391">ผู้ใช้:</translation>
 <translation id="6916193791494646625">ระบุเหตุผลในการดาวน์โหลด (ต้องระบุ)</translation>
 <translation id="6917795328362592458">ระบบพบว่ารหัสผ่านที่คุณเพิ่งใช้มีการรั่วไหลในการละเมิดข้อมูลครั้งหนึ่ง เพื่อรักษาความปลอดภัยของบัญชี เครื่องมือจัดการรหัสผ่านแนะนำให้ตรวจสอบรหัสผ่านที่บันทึกไว้</translation>
+<translation id="6921197121276419421">อนุญาตให้ติดตั้งเว็บแอป</translation>
 <translation id="6924013822850225188">เลือกว่าต้องการดูสิทธิประโยชน์ของบัตรที่จุดชำระเงินหรือไม่ (เป็นไปตามข้อกำหนดของธนาคาร)</translation>
 <translation id="6925267999184670015">North American B+</translation>
 <translation id="6926216138694948720">รอยสัก</translation>
@@ -3701,6 +3707,7 @@
 <translation id="7761701407923456692">ใบรับรองของเซิร์ฟเวอร์ไม่ตรงกับ URL</translation>
 <translation id="7764225426217299476">เพิ่มที่อยู่</translation>
 <translation id="7766518757692125295">Skirt</translation>
+<translation id="7766899888934244586">เว็บแอปพลิเคชัน</translation>
 <translation id="7767278989746220252">ลานบ้าน สนามหญ้า และสวน</translation>
 <translation id="776749070095465053">ผ้า</translation>
 <translation id="7773005668374414287">ลำดับเดียวกันหงายหน้าขึ้น</translation>

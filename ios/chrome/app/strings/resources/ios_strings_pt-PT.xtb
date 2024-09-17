@@ -489,6 +489,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="3435738964857648380">Segurança</translation>
 <translation id="3443810440409579745">Separador recebido.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
+<translation id="344589138074534176">Saiba mais acerca do Google Lens</translation>
 <translation id="345348365500626747">Morada encontrada</translation>
 <translation id="3464194322481586217">Não foi possível acompanhar o preço.</translation>
 <translation id="3469117812148449995">Opções para guardar a palavra-passe</translation>
@@ -573,6 +574,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="3851938967634752633">As palavras-passe de <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> e outros <ph name="NUMBER_OF_ACCOUNTS" /> URLs vão ser apagadas. As suas contas não vão ser apagadas.</translation>
 <translation id="3858860766373142691">Nome</translation>
 <translation id="3861908220442487587">Este endereço só é guardado neste dispositivo. Para usá-lo nos seus outros dispositivos, mova-o para a sua Conta Google, <ph name="USER_EMAIL" /></translation>
+<translation id="3868495844258915202">Mostrar URL completo</translation>
 <translation id="3876833929577368454">Perguntar-me sempre</translation>
 <translation id="3885587018298784481">Adira a um grupo familiar</translation>
 <translation id="3888863481921783344">Isto vai ser usado para lhe mostrar possíveis convidados para o seu evento.</translation>
@@ -857,6 +859,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="5210365745912300556">Fechar separador</translation>
 <translation id="5211488077761630279">Permitir que "<ph name="SITE_NAME" />" use a autorização <ph name="PERMISSION" />?</translation>
 <translation id="5217245356412073535">Pode alterar a vista do site predefinida para o computador em Definições &gt; Definições de conteúdo</translation>
+<translation id="5217329997012062137">Quando usa o Google Lens, é enviada uma captura de ecrã da página para a Google.</translation>
 <translation id="5220945116117011963">Crie eventos de calendário a partir de datas</translation>
 <translation id="5222676887888702881">Terminar sessão</translation>
 <translation id="5228579091201413441">Ativar a sincronização</translation>
@@ -1625,6 +1628,7 @@ Os sites podem utilizar cookies para ver a sua atividade de navegação em difer
 <translation id="8712534545803964353">Localizar na página…</translation>
 <translation id="8712637175834984815">OK</translation>
 <translation id="8722229818691036192">Contas neste dispositivo</translation>
+<translation id="8722649775263832315">Toque ou realce para pesquisar qualquer coisa com o Google Lens</translation>
 <translation id="8725066075913043281">Tentar novamente</translation>
 <translation id="8728922029615312208">Fechar tudo</translation>
 <translation id="8730621377337864115">Concluído</translation>

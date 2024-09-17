@@ -87,6 +87,7 @@
 <translation id="1383876407941801731">Ieškoti</translation>
 <translation id="138618066238211776">Tęsti kaip <ph name="USER_NAME" /></translation>
 <translation id="138692594145659985">Kortelės išsaugojimo parinktys</translation>
+<translation id="1396260204083880024">Prisijungta kaip <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Atidaryti paskyros meniu.</translation>
 <translation id="1397144142234474689">Slėpti istoriją</translation>
 <translation id="1407135791313364759">Atidaryti viską</translation>
 <translation id="1408847409015257906">Palieskite „Privatumas ir sauga“.</translation>
@@ -599,6 +600,7 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="3967327056943561740">Žymės</translation>
 <translation id="3967822245660637423">Atsisiuntimas baigtas</translation>
 <translation id="3982893814825393515">Pranešimas apie problemą…</translation>
+<translation id="398604237578616937">Prisijungta kaip <ph name="USER_EMAIL" />. Atidaryti paskyros meniu.</translation>
 <translation id="3987993985790029246">Kop. nuor.</translation>
 <translation id="3992684624889376114">Apie šį puslapį</translation>
 <translation id="3994422733891749358">Pasirinkite, kuriuos pranešimus norite gauti</translation>
@@ -737,6 +739,7 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="4636930964841734540">Informacija</translation>
 <translation id="4642472735733036929">Kainų stebėjimas sustabdytas</translation>
 <translation id="4645575059429386691">Tvarko vienas iš jūsų tėvų</translation>
+<translation id="4647758699119474035">Prisijungta kaip <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. „Google“ paskyros klaida. Atidaryti paskyros meniu.</translation>
 <translation id="4650125387981512669">Tęsti kaip <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4652817563047461855">Įsitikinkite, kad slaptažodžiai saugūs, sužinokite, ar jie nebuvo pažeisti, ir gaukite patarimų, kaip apsisaugoti internete. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="4658335131052370646">Išsaugoti</translation>
@@ -919,6 +922,7 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 
 Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įrenginiuose turi būti naudojama ta pati „iCloud“ paskyra.</translation>
 <translation id="5551825465462320939">Nepraleiskite naujienų, sporto ir kitos informacijos pagal savo pomėgius.</translation>
+<translation id="5555008247722361784">Prisijungta kaip <ph name="USER_EMAIL" />. „Google“ paskyros klaida. Atidaryti paskyros meniu.</translation>
 <translation id="5556459405103347317">Įkelti iš naujo</translation>
 <translation id="555749644339804659">Tikrinami slaptažodžiai…</translation>
 <translation id="5559567453458728487">Konvertuoti žiniatinklyje rastus matavimo vienetus</translation>
@@ -1601,6 +1605,7 @@ Svetainės gali naudoti slapukus, kad sužinotų apie naršymo veiklą skirtingo
 <translation id="8571213806525832805">Pastarosios 4 savaitės</translation>
 <translation id="8577056989960190117">Automatiškai pildyti galiojimo pabaigos metus (<ph name="YEAR" />)</translation>
 <translation id="8588404856427128947">Išjungta</translation>
+<translation id="8590286732816598906">Skirtukų grupė „<ph name="GROUP_TITLE" />“, meniu.</translation>
 <translation id="8593565399399144771">Čia galite atidaryti naują skirtuką.</translation>
 <translation id="8600272508328041907">Perjungimas į viso puslapio vertimą</translation>
 <translation id="860043288473659153">Kortelės savininko vardas</translation>
@@ -1737,6 +1742,7 @@ Svetainės gali naudoti slapukus, kad sužinotų apie naršymo veiklą skirtingo
 <translation id="9162432979321511934">Įjunkite parinktį „Automatinis slaptažodžių pildymas“</translation>
 <translation id="9165320910061267720">Jei norite gauti įspėjimų apie sumažintas kainas pranešimus, turite įjungti pranešimus „iOS“ nustatymuose.</translation>
 <translation id="9179151630575358778">Slepiamas šis elementas</translation>
+<translation id="918129721713827015">Rodyti skirtukų grupę</translation>
 <translation id="9183733013282108610">Paieška inkognito režimu</translation>
 <translation id="9186762474139509529">Pradėti registravimą</translation>
 <translation id="9191031968346938109">Pridėti prie…</translation>

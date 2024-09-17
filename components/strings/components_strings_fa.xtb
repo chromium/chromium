@@ -446,6 +446,7 @@
 <translation id="1771254328977666895">دیدن سابقه قیمت</translation>
 <translation id="1777422078676229054">عکس (آرشیوی)</translation>
 <translation id="1778646502362731194">JIS B0</translation>
+<translation id="1785118555253503473">برنامه‌های وب نصب شود؟</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507">‏<ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />؛ برای مدیریت اطلاعات، حریم خصوصی، و امنیت در «حساب Google»، کلید «جهش» و سپس «ورود» را فشار دهید</translation>
 <translation id="1793631236004319016">آخرین‌بار <ph name="NUM_HOURS_MINUTES_SECONDS" /> قبل استفاده شده است</translation>
@@ -1165,6 +1166,7 @@
 <translation id="3157931365184549694">بازیابی</translation>
 <translation id="3158539265159265653">دیسک</translation>
 <translation id="3162559335345991374">‏شبکه Wi-Fi مورد استفاده‌تان احتمالاً نیاز دارد که به یک صفحه ورود به سیستم بروید.</translation>
+<translation id="316638481603975524">می‌تواند نصب کردن برنامه‌های وب را درخواست کند</translation>
 <translation id="3168744840365648658">تجهیزات رادیویی</translation>
 <translation id="3168938241115725594">وسایل نقلیه کلاسیک</translation>
 <translation id="3169472444629675720">کشف کردن</translation>
@@ -2326,6 +2328,7 @@
 <translation id="5273658854610202413">‏هشدار: این خط‌مشی طبق آنچه در خط‌مشی PolicyDictionaryMultipleSourceMergeList مشخص شده ادغام نشد، زیرا بخشی از خط‌مشی‌های فهرستی نیست که بتواند ادغام شود.</translation>
 <translation id="5278778426231952189">اکنون بارگذاری شود</translation>
 <translation id="5279286380302340275">مدیریت بارگیری‌ها</translation>
+<translation id="5280963125494874678">برنامه‌های وب</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">مشخصات سند</translation>
 <translation id="528468243742722775">پایان</translation>
@@ -2828,6 +2831,7 @@
 <translation id="6221311046884916259">‏می‌خواهید این کارت در «حساب Google» شما ذخیره شود؟</translation>
 <translation id="6221892641068781024">نمای ساده‌شده</translation>
 <translation id="6222527803348563979">نوشت‌افزار</translation>
+<translation id="62231116988543150">بتواند برنامه‌های وب نصب کند</translation>
 <translation id="6224281071334553713">جواهرات و سنگ‌های قیمتی</translation>
 <translation id="6226163402662242066">‏<ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />؛ برای شخصی کردن ابزارهای دسترس‌پذیری در تنظیمات Chrome، کلید «جهش» و سپس «ورود» را فشار دهید</translation>
 <translation id="6228346913624365233">وسایل نقلیه تجملی</translation>
@@ -3091,6 +3095,7 @@
 <translation id="6694681292321232194">‏<ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />، برای پیدا کردن دستگاهتان در «حساب Google»، کلید «جهش» و سپس «ورود» را فشار دهید</translation>
 <translation id="6695428916538794739">فیلم‌های اکشن و ماجراجویی</translation>
 <translation id="6696424331653607346">راهنمای سفر و سفرنامه</translation>
+<translation id="6696575039575740785">نصب کردن برنامه‌های وب مجاز نیست</translation>
 <translation id="6698097747703777657">کد را دریافت نکردید؟ <ph name="BEGIN_LINK" />دریافت کد جدید<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">ایجاد شده:</translation>
 <translation id="67007264085648978">لغزنده زمان</translation>
@@ -3204,6 +3209,7 @@
 <translation id="6915804003454593391">کاربر:</translation>
 <translation id="6916193791494646625">دلیلی برای بارگیری ارائه دهید (الزامی)</translation>
 <translation id="6917795328362592458">گذرواژه‌ای که اکنون استفاده کردید در سرقت اطلاعات شبکه پیدا شده است. برای حفظ امنیت حساب‌هایتان، «مدیر گذرواژه» توصیه می‌کند گذرواژه‌های ذخیره‌شده‌تان را بررسی کنید.</translation>
+<translation id="6921197121276419421">نصب کردن برنامه‌های وب مجاز است</translation>
 <translation id="6924013822850225188">انتخاب می‌کنید مزایای کارت هنگام تصفیه‌حساب به شما نمایش داده شود یا نه (شرایط بانک اعمال می‌شود)</translation>
 <translation id="6925267999184670015">‏B+‎ آمریکای شمالی</translation>
 <translation id="6926216138694948720">هنر بدن</translation>
@@ -3702,6 +3708,7 @@
 <translation id="7761701407923456692">گواهی سرور با نشانی وب مطابقت ندارد.</translation>
 <translation id="7764225426217299476">افزودن آدرس</translation>
 <translation id="7766518757692125295">«اسکیرت»</translation>
+<translation id="7766899888934244586">برنامه‌های وب</translation>
 <translation id="7767278989746220252">ایوان، چمن، و باغ</translation>
 <translation id="776749070095465053">پارچه</translation>
 <translation id="7773005668374414287">ترتیب یکسان، روبه‌بالا</translation>
