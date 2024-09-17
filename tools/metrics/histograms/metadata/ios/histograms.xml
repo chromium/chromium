@@ -4270,7 +4270,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.SiriShortcuts.Count" units="shortcuts"
-    expires_after="2024-10-25">
+    expires_after="2025-10-25">
   <owner>gujen@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>
