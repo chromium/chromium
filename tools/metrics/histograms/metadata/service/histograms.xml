@@ -58,8 +58,6 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="ServiceWorkerCacheClientType">
-  <variant name="BackgroundSyncManager"
-      summary="Collected from a BackgroundSyncManager instance"/>
   <variant name="Cache" summary="Collected from a CacheStorageCache instance"/>
   <variant name="CacheStorage"
       summary="Collected from a CacheStorage instance"/>

@@ -17,14 +17,13 @@ using CacheStorageSchedulerId = int64_t;
 // ok to renumber the enumeration since it is converted to a string and not
 // directly recorded in the histogram.
 enum class CacheStorageSchedulerClient {
-  kBackgroundSync = 0,
-  kCache = 1,
-  kStorage = 2,
+  kCache,    // `CacheStorageCache`
+  kStorage,  // `CacheStorage`
 };
 
 enum class CacheStorageSchedulerMode {
-  kExclusive,
-  kShared,
+  kExclusive,  // Used for writes.
+  kShared,     // Used for reads.
 };
 
 // Define the different types of operations that can be scheduled.  This enum
@@ -33,27 +32,26 @@ enum class CacheStorageSchedulerMode {
 // It is ok to renumber the enumeration since it is converted to a string and
 // not directly recorded in the histogram.
 enum class CacheStorageSchedulerOp {
-  kBackgroundSync = 0,
-  kClose = 1,
-  kDelete = 2,
-  kGetAllMatched = 3,
-  kHas = 4,
-  kInit = 5,
-  kKeys = 6,
-  kMatch = 7,
-  kMatchAll = 8,
-  kOpen = 9,
-  kPut = 10,
-  kSize = 11,
-  kSizeThenClose = 12,
-  kTest = 13,
-  kWriteIndex = 14,
-  kWriteSideData = 15,
+  kClose,
+  kDelete,
+  kGetAllMatched,
+  kHas,
+  kInit,
+  kKeys,
+  kMatch,
+  kMatchAll,
+  kOpen,
+  kPut,
+  kSize,
+  kSizeThenClose,
+  kTest,
+  kWriteIndex,
+  kWriteSideData,
 };
 
 enum class CacheStorageSchedulerPriority {
-  kNormal = 0,
-  kHigh = 1,
+  kNormal,
+  kHigh,
 };
 
 }  // namespace content
