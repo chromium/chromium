@@ -216,6 +216,8 @@ struct BidderTimingMetrics {
   // execution which happened (which it might not have depending on the
   // execution mode).
   mojo_base.mojom.TimeDelta script_latency;
+
+  bool script_timed_out;
 };
 
 // Single use client for each GenerateBid() call. Allows deferring generating

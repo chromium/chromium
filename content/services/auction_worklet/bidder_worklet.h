@@ -413,6 +413,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
         RealTimeReportingContributions real_time_contributions,
         base::TimeDelta bidding_latency,
         mojom::RejectReason reject_reason,
+        bool script_timed_out,
         std::vector<std::string> error_msgs)>;
     using ReportWinCallbackInternal = base::OnceCallback<void(
         std::optional<GURL> report_url,
@@ -420,6 +421,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
         base::flat_map<std::string, std::string> ad_macro_map,
         PrivateAggregationRequests pa_requests,
         base::TimeDelta reporting_latency,
+        bool script_timed_out,
         std::vector<std::string> errors)>;
 
     // Matches GenerateBidCallbackInternal, but with only one
@@ -438,6 +440,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
           PrivateAggregationRequests pa_requests,
           RealTimeReportingContributions real_time_contributions,
           mojom::RejectReason reject_reason,
+          bool script_timed_out,
           std::vector<std::string> error_msgs);
 
       SingleGenerateBidResult(const SingleGenerateBidResult&) = delete;
@@ -463,6 +466,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
       PrivateAggregationRequests non_kanon_pa_requests;
       RealTimeReportingContributions real_time_contributions;
       mojom::RejectReason reject_reason;
+      bool script_timed_out;
       std::vector<std::string> error_msgs;
     };
 
@@ -579,6 +583,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
         uint64_t trace_id,
         AuctionV8Helper::TimeLimit& total_timeout,
         bool should_deep_freeze,
+        bool& script_timed_out,
         std::vector<std::string>& errors_out);
 
     void FinishInit(mojo::PendingRemote<mojom::AuctionSharedStorageHost>
@@ -591,6 +596,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
         base::flat_map<std::string, std::string> ad_macro_map,
         PrivateAggregationRequests pa_requests,
         base::TimeDelta reporting_latency,
+        bool script_timed_out,
         std::vector<std::string> errors);
 
     void PostErrorBidCallbackToUserThread(
@@ -722,6 +728,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
       RealTimeReportingContributions real_time_contributions,
       base::TimeDelta bidding_latency,
       mojom::RejectReason reject_reason,
+      bool script_timed_out,
       std::vector<std::string> error_msgs);
 
   // Removes `task` from `generate_bid_tasks_` only. Used in case where the
@@ -738,6 +745,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
       base::flat_map<std::string, std::string> ad_macro_map,
       PrivateAggregationRequests pa_requests,
       base::TimeDelta reporting_latency,
+      bool script_timed_out,
       std::vector<std::string> errors);
 
   // Returns true if unpaused and the script and WASM helper (if needed) have

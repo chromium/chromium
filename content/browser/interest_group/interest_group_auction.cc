@@ -1488,6 +1488,9 @@ class InterestGroupAuction::BuyerHelper
     if (generate_bid_metrics->wasm_fetch_latency.has_value()) {
       code_fetch_time_.RecordLatency(*generate_bid_metrics->wasm_fetch_latency);
     }
+    if (generate_bid_metrics->script_timed_out) {
+      ++bidder_scripts_timed_out_;
+    }
 
     // This is intentionally recorded here as opposed to in
     // OnGenerateBidCompleteInternal in order to exclude bids that were
@@ -1552,6 +1555,14 @@ class InterestGroupAuction::BuyerHelper
           code_fetch_time_.GetMeanLatency();
     }
     buyer_metrics_.participating_interest_group_count = bid_states_.size();
+    if (buyer_metrics_.participating_interest_group_count) {
+      buyer_metrics_.percent_scripts_timeout =
+          100.0 * bidder_scripts_timed_out_ /
+          buyer_metrics_.participating_interest_group_count;
+      buyer_metrics_.percent_igs_cumulative_timeout =
+          100.0 * num_bids_affected_by_cumulative_timeout_ /
+          buyer_metrics_.participating_interest_group_count;
+    }
   }
 
   void GetInterestGroupsThatBidAndReportBidCounts(
@@ -2659,6 +2670,7 @@ class InterestGroupAuction::BuyerHelper
   // Per-buyer PA metrics.
   PrivateAggregationParticipantData buyer_metrics_;
   AuctionMetricsRecorder::LatencyAggregator code_fetch_time_;
+  int bidder_scripts_timed_out_ = 0;
 
   // True if any interest group owned by `owner_` participating in this auction
   // has `use_biddings_signals_prioritization` set to true. When this is true,
@@ -4295,6 +4307,10 @@ void InterestGroupAuction::FillInSellerParticipantDataMetrics() {
   if (code_fetch_time_.GetNumRecords() != 0) {
     seller_metrics_.average_code_fetch_time = code_fetch_time_.GetMeanLatency();
   }
+  if (seller_scripts_ran_) {
+    seller_metrics_.percent_scripts_timeout =
+        100.0 * seller_scripts_timed_out_ / seller_scripts_ran_;
+  }
 }
 
 uint16_t InterestGroupAuction::GetBuyerMultiBidLimit(const url::Origin& buyer) {
@@ -5273,6 +5289,10 @@ void InterestGroupAuction::OnScoreAdComplete(
       *score_ad_dependency_latencies);
   if (score_ad_timing_metrics->js_fetch_latency.has_value()) {
     code_fetch_time_.RecordLatency(*score_ad_timing_metrics->js_fetch_latency);
+  }
+  ++seller_scripts_ran_;
+  if (score_ad_timing_metrics->script_timed_out) {
+    ++seller_scripts_timed_out_;
   }
 
   TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", ScoreAdTraceEventName(*bid),

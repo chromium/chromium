@@ -81,6 +81,8 @@ struct SellerTimingMetrics {
   // How long it took to execute the script (including both the top-level
   // and the function).
   mojo_base.mojom.TimeDelta script_latency;
+
+  bool script_timed_out;
 };
 
 // Interface for returning ScoreAd results. The advantage of having an interface

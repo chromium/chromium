@@ -659,6 +659,8 @@ void InterestGroupAuctionReporter::OnSellerReportResultComplete(
               : PrivateAggregationPhase::kNonTopLevelSeller)];
   participant_data.average_code_fetch_time =
       timing_metrics->js_fetch_latency.value_or(base::TimeDelta());
+  participant_data.percent_scripts_timeout =
+      timing_metrics->script_timed_out ? 100 : 0;
 
   if (!ValidateReportingPrivateAggregationRequests(pa_requests)) {
     pa_requests.clear();
@@ -990,6 +992,8 @@ void InterestGroupAuctionReporter::OnBidderReportWinComplete(
   participant_data.average_code_fetch_time =
       code_fetch_time.GetNumRecords() != 0 ? code_fetch_time.GetMeanLatency()
                                            : base::TimeDelta();
+  participant_data.percent_scripts_timeout =
+      timing_metrics->script_timed_out ? 100 : 0;
 
   if (!ValidateReportingPrivateAggregationRequests(pa_requests)) {
     pa_requests.clear();

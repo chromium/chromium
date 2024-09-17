@@ -644,6 +644,8 @@ class BidderWorkletTest : public testing::Test {
                                : AuctionV8Helper::kScriptTimeout) *
                               0.9);
               }
+              EXPECT_EQ(expected_reporting_latency_timeout,
+                        timing_metrics->script_timed_out);
               std::move(done_closure).Run();
             },
             expected_report_url, expected_ad_beacon_map,
@@ -1375,15 +1377,18 @@ TEST_F(BidderWorkletTest, GenerateBidReturnValueBid) {
   RunGenerateBidWithReturnValueExpectingResult(
       "",
       /*expected_bids=*/mojom::BidderWorkletBidPtr());
+  EXPECT_FALSE(generate_bid_metrics_->script_timed_out);
   RunGenerateBidWithReturnValueExpectingResult(
       "null",
       /*expected_bids=*/mojom::BidderWorkletBidPtr());
+  EXPECT_FALSE(generate_bid_metrics_->script_timed_out);
 
   // Missing bid value is also treated as not bidding, since setBid(null)
   // is basically the same as setBid({}) in WebIDL.
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: "ad", render:"https://response.test/"})",
       /*expected_bids=*/mojom::BidderWorkletBidPtr());
+  EXPECT_FALSE(generate_bid_metrics_->script_timed_out);
 
   // Valid positive bid values.
   RunGenerateBidWithReturnValueExpectingResult(
@@ -1396,6 +1401,7 @@ TEST_F(BidderWorkletTest, GenerateBidReturnValueBid) {
           /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
           /*ad_component_descriptors=*/std::nullopt,
           /*modeling_signals=*/std::nullopt, base::TimeDelta()));
+  EXPECT_FALSE(generate_bid_metrics_->script_timed_out);
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: "ad", bid:1.5, render:"https://response.test/"})",
       mojom::BidderWorkletBid::New(
@@ -1498,6 +1504,7 @@ TEST_F(BidderWorkletTest, GenerateBidReturnValueBid) {
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/ generateBid() Converting field 'bid' to a Number did "
        "not produce a finite double."});
+  EXPECT_FALSE(generate_bid_metrics_->script_timed_out);
 
   // Test with bid with a non-terminating conversion.
   RunGenerateBidWithJavascriptExpectingResult(
@@ -1511,6 +1518,7 @@ TEST_F(BidderWorkletTest, GenerateBidReturnValueBid) {
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/ generateBid() Converting field 'bid' to Number timed"
        " out."});
+  EXPECT_TRUE(generate_bid_metrics_->script_timed_out);
 
   // Test with bid with a non-terminating getter.
   RunGenerateBidWithJavascriptExpectingResult(
@@ -1524,6 +1532,7 @@ TEST_F(BidderWorkletTest, GenerateBidReturnValueBid) {
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/ generateBid() Execution timed out trying to access "
        "field 'bid'."});
+  EXPECT_TRUE(generate_bid_metrics_->script_timed_out);
 }
 
 TEST_F(BidderWorkletTest, GenerateBidReturnBidCurrencyExpectUnspecified) {
@@ -7006,6 +7015,18 @@ TEST_F(BidderWorkletTest, GenerateBidTimedOut) {
       /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/ execution of `generateBid` timed out."});
+  EXPECT_TRUE(generate_bid_metrics_->script_timed_out);
+}
+
+TEST_F(BidderWorkletTest, GenerateBidTopLevelTimeout) {
+  // The bidding script has an endless while loop. It will time out due to
+  // AuctionV8Helper's default script timeout (50 ms).
+  RunGenerateBidWithJavascriptExpectingResult(
+      "while (1) {}",
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/std::nullopt,
+      {"https://url.test/ top-level execution timed out."});
+  EXPECT_TRUE(generate_bid_metrics_->script_timed_out);
 }
 
 TEST_F(BidderWorkletTest, GenerateBidPerBuyerTimeOut) {
@@ -7030,6 +7051,7 @@ TEST_F(BidderWorkletTest, GenerateBidPerBuyerTimeOut) {
       /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/ execution of `generateBid` timed out."});
+  EXPECT_TRUE(generate_bid_metrics_->script_timed_out);
 }
 
 // Even though the script timed out, it had set an intermediate result with
@@ -7057,6 +7079,7 @@ TEST_F(BidderWorkletTest, GenerateBidTimedOutWithSetBid) {
           /*modeling_signals=*/std::nullopt, AuctionV8Helper::kScriptTimeout),
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/ execution of `generateBid` timed out."});
+  EXPECT_TRUE(generate_bid_metrics_->script_timed_out);
 
   // Test the case where setBid() sets no bid. There should be no bid, and
   // no error, other than the timeout.
@@ -7072,6 +7095,7 @@ TEST_F(BidderWorkletTest, GenerateBidTimedOutWithSetBid) {
       mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/ execution of `generateBid` timed out."});
+  EXPECT_TRUE(generate_bid_metrics_->script_timed_out);
 }
 
 // Test that per-buyer timeout of zero results in no bid produced.
@@ -7082,6 +7106,7 @@ TEST_F(BidderWorkletTest, PerBuyerTimeoutZero) {
       mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       /*expected_errors=*/{"generateBid() aborted due to zero timeout."});
+  EXPECT_TRUE(generate_bid_metrics_->script_timed_out);
 }
 
 // Test that in the case of multiple setBid() calls, the most recent call takes
@@ -7113,6 +7138,7 @@ TEST_F(BidderWorkletTest, GenerateBidTimedOutWithSetBidTwice) {
           /*modeling_signals=*/std::nullopt, AuctionV8Helper::kScriptTimeout),
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/ execution of `generateBid` timed out."});
+  EXPECT_TRUE(generate_bid_metrics_->script_timed_out);
 
   // Test the case where the second setBid() call clears the bid from the first
   // call without setting a new bid, by passing in no bid. There should be no
@@ -7130,6 +7156,7 @@ TEST_F(BidderWorkletTest, GenerateBidTimedOutWithSetBidTwice) {
       mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/ execution of `generateBid` timed out."});
+  EXPECT_TRUE(generate_bid_metrics_->script_timed_out);
 
   // Test the case where the second setBid() call clears the bid from the first
   // call without setting a new bid, by passing in null. There should be no bid,
@@ -7147,6 +7174,7 @@ TEST_F(BidderWorkletTest, GenerateBidTimedOutWithSetBidTwice) {
       mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/ execution of `generateBid` timed out."});
+  EXPECT_TRUE(generate_bid_metrics_->script_timed_out);
 }
 
 // Even though the script timed out, it had set an intermediate result with
@@ -7578,15 +7606,38 @@ TEST_F(BidderWorkletTest, ReportWin) {
       /*expected_pa_requests=*/{},
       {"https://url.test/:11 Uncaught TypeError: sendReportTo may be called at "
        "most once."});
+}
 
-  RunReportWinWithFunctionBodyExpectingResult(
-      R"(sendReportTo({
-              toString:() => {while(true) {}}
-         }))",
-      /*expected_report_url=*/std::nullopt, /*expected_ad_beacon_map=*/{},
+TEST_F(BidderWorkletTest, ReportWinTimeout) {
+  const char kBody[] = R"(
+    sendReportTo({
+      toString:() => {while(true) {}}
+    }))";
+  AddJavascriptResponse(&url_loader_factory_, interest_group_bidding_url_,
+                        CreateReportWinScript(kBody));
+  RunReportWinExpectingResult(
+      /*expected_report_url=*/std::nullopt,
+      /*expected_ad_beacon_map=*/{},
       /*expected_ad_macro_map=*/{},
       /*expected_pa_requests=*/{},
+      /*expected_reporting_latency_timeout=*/true,
+      /*expected_errors=*/
       {"https://url.test/ execution of `reportWin` timed out."});
+}
+
+TEST_F(BidderWorkletTest, ReportWinTopLevelTimeout) {
+  const char kScript[] = "while (1) {}";
+
+  AddJavascriptResponse(&url_loader_factory_, interest_group_bidding_url_,
+                        kScript);
+  RunReportWinExpectingResult(
+      /*expected_report_url=*/std::nullopt,
+      /*expected_ad_beacon_map=*/{},
+      /*expected_ad_macro_map=*/{},
+      /*expected_pa_requests=*/{},
+      /*expected_reporting_latency_timeout=*/true,
+      /*expected_errors=*/
+      {"https://url.test/ top-level execution timed out."});
 }
 
 TEST_F(BidderWorkletTest, SendReportToLongUrl) {
@@ -10684,16 +10735,21 @@ TEST_F(BidderWorkletSharedStorageAPIEnabledTest,
         &test_shared_storage_host);
     shared_storage_hosts_[0] = receiver.BindNewPipeAndPassRemote();
 
-    RunReportWinWithFunctionBodyExpectingResult(
-        R"(
-          sharedStorage.delete({toString: () => {
-              while(true) {}
-            }
-          });
-        )",
+    const char kBody[] = R"(
+      sharedStorage.delete({toString: () => {
+          while(true) {}
+        }
+      });
+    )";
+    AddJavascriptResponse(&url_loader_factory_, interest_group_bidding_url_,
+                          CreateReportWinScript(kBody));
+
+    RunReportWinExpectingResult(
         /*expected_report_url=*/std::nullopt,
-        /*expected_ad_beacon_map=*/{}, /*expected_ad_macro_map=*/{},
+        /*expected_ad_beacon_map=*/{},
+        /*expected_ad_macro_map=*/{},
         /*expected_pa_requests=*/{},
+        /*expected_reporting_latency_timeout=*/true,
         /*expected_errors=*/
         {"https://url.test/ execution of `reportWin` timed out."});
   }

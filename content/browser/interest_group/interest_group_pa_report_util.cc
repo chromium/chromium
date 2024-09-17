@@ -72,6 +72,11 @@ std::optional<double> GetBaseValue(
       return participant_data.participating_interest_group_count;
     case auction_worklet::mojom::BaseValue::kAverageCodeFetchTime:
       return participant_data.average_code_fetch_time.InMillisecondsF();
+    case auction_worklet::mojom::BaseValue::kPercentScriptsTimeout:
+      return participant_data.percent_scripts_timeout;
+    case auction_worklet::mojom::BaseValue::
+        kPercentInterestGroupsCumulativeTimeout:
+      return participant_data.percent_igs_cumulative_timeout;
   }
   NOTREACHED();
 }

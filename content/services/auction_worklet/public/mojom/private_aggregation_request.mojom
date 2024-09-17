@@ -20,6 +20,8 @@ enum BaseValue {
   // kPrivateAggregationApiProtectedAudienceAdditionalExtensions to be on.
   kParticipatingInterestGroupCount = 5,
   kAverageCodeFetchTime = 6,
+  kPercentScriptsTimeout = 7,
+  kPercentInterestGroupsCumulativeTimeout = 8,
 };
 
 // Bucket's offset to add/subtract to the auction result value. Offset's `value`

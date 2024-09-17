@@ -13123,7 +13123,8 @@ TEST_F(AuctionRunnerTest, PerBuyerCumulativeTimeouts) {
 }
 
 // Test the case where two out of three bids for a bidder timeout due to the
-// perBuyerCumulativeTimeouts and how it interacts with reserved.once.
+// perBuyerCumulativeTimeouts, how it interacts with reserved.once, and the
+// corresponding PA metric.
 TEST_F(AuctionRunnerTest, PerBuyerTwoThirdsCumulativeTimeouts) {
   interest_group_buyers_ = {{kBidder1}};
   UseMockWorkletService();
@@ -13161,6 +13162,11 @@ TEST_F(AuctionRunnerTest, PerBuyerTwoThirdsCumulativeTimeouts) {
   // Generate one bid before the timeout.
   std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>
       bidder_pa_requests;
+  bidder_pa_requests.push_back(BuildPrivateAggregationForBaseValue(
+      /*bucket=*/100,
+      auction_worklet::mojom::BaseValue::
+          kPercentInterestGroupsCumulativeTimeout,
+      Reserved(auction_worklet::mojom::ReservedEventType::kReservedOnce)));
   bidder_pa_requests.push_back(BuildPrivateAggregationForEventRequest(
       /*bucket=*/101,
       /*value=*/1,
@@ -13236,7 +13242,10 @@ TEST_F(AuctionRunnerTest, PerBuyerTwoThirdsCumulativeTimeouts) {
       testing::UnorderedElementsAre(
           testing::Pair(
               kBidder1,
-              ElementsAreRequests(BuildPrivateAggregationRequest(/*bucket=*/101,
+              // 66% of bids timed out.
+              ElementsAreRequests(BuildPrivateAggregationRequest(/*bucket=*/100,
+                                                                 /*value=*/66),
+                                  BuildPrivateAggregationRequest(/*bucket=*/101,
                                                                  /*value=*/1))),
           testing::Pair(kSeller,
                         ElementsAreRequests(
@@ -13272,9 +13281,23 @@ TEST_F(AuctionRunnerTest,
   EXPECT_FALSE(auction_complete_);
 
   // Bid generation completes.
+  std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>
+      bidder_pa_requests;
+  bidder_pa_requests.push_back(BuildPrivateAggregationForBaseValue(
+      /*bucket=*/100,
+      auction_worklet::mojom::BaseValue::
+          kPercentInterestGroupsCumulativeTimeout,
+      Reserved(auction_worklet::mojom::ReservedEventType::kReservedOnce)));
   bidder1_worklet->InvokeGenerateBidCallback(
       /*bid=*/2, /*bid_currency=*/std::nullopt,
-      blink::AdDescriptor(GURL("https://ad1.com/")));
+      blink::AdDescriptor(GURL("https://ad1.com/")),
+      auction_worklet::mojom::BidRole::kUnenforcedKAnon,
+      /*further_bids=*/{},
+      /*ad_component_descriptors=*/std::nullopt,
+      /*duration=*/base::Seconds(1),
+      /*bidding_signals_data_version=*/std::nullopt,
+      /*debug_loss_report_url=*/std::nullopt,
+      /*debug_win_report_url=*/std::nullopt, std::move(bidder_pa_requests));
 
   // More than the timeout time passes, but since the bid is being blocked on
   // the seller, there should be no timeout.
@@ -13322,6 +13345,14 @@ TEST_F(AuctionRunnerTest,
   EXPECT_THAT(result_.errors, testing::UnorderedElementsAre());
   EXPECT_EQ(kBidder1Key, result_.winning_group_id);
   EXPECT_EQ(GURL("https://ad1.com/"), result_.ad_descriptor->url);
+
+  EXPECT_THAT(
+      private_aggregation_manager_.TakePrivateAggregationRequests(),
+      testing::UnorderedElementsAre(testing::Pair(
+          kBidder1,
+          // 0% of bids timed out.
+          ElementsAreRequests(BuildPrivateAggregationRequest(/*bucket=*/100,
+                                                             /*value=*/0)))));
 
   CheckMetrics(MetricsExpectations(AuctionResult::kSuccess)
                    .SetNumInterestGroups(1)
@@ -16865,7 +16896,8 @@ TEST_F(AuctionRunnerTest, PrivateAggregationTimeMetrics) {
             /*score_ad_timing_metrics=*/
             auction_worklet::mojom::SellerTimingMetrics::New(
                 /*js_fetch_latency=*/std::nullopt,
-                /*scoring_latency=*/base::Milliseconds(100 * i + 20)),
+                /*scoring_latency=*/base::Milliseconds(100 * i + 20),
+                /*script_timed_out=*/false),
             /*score_ad_dependency_latencies=*/
             auction_worklet::mojom::ScoreAdDependencyLatencies::New(
                 /*code_ready_latency=*/std::nullopt,
@@ -17051,7 +17083,8 @@ TEST_F(AuctionRunnerTest, PrivateAggregationTimeMetricsPerParticipant) {
             /*score_ad_timing_metrics=*/
             auction_worklet::mojom::SellerTimingMetrics::New(
                 /*js_fetch_latency=*/base::Milliseconds(100 * i + 45),
-                /*scoring_latency=*/base::Milliseconds(100 * i + 20)),
+                /*scoring_latency=*/base::Milliseconds(100 * i + 20),
+                /*script_timed_out=*/false),
             /*score_ad_dependency_latencies=*/
             auction_worklet::mojom::ScoreAdDependencyLatencies::New(
                 /*code_ready_latency=*/std::nullopt,
@@ -17197,6 +17230,12 @@ TEST_F(AuctionRunnerTest, PrivateAggregationMetricsPerParticipant) {
           /*bucket=*/100 * i,
           auction_worklet::mojom::BaseValue::kParticipatingInterestGroupCount,
           Reserved(auction_worklet::mojom::ReservedEventType::kReservedOnce)));
+      bidder_pa_requests.push_back(BuildPrivateAggregationForBaseValue(
+          /*bucket=*/100 * i + 1,
+          auction_worklet::mojom::BaseValue::kPercentScriptsTimeout,
+          Reserved(auction_worklet::mojom::ReservedEventType::kReservedOnce)));
+      // For bidder 0, mark 2 as timed out, for bidder 1 mark all as timed out.
+      bidder_worklets[i]->SetScriptTimedOut(i == 1 ? true : ig == 2);
       bidder_worklets[i]->InvokeGenerateBidCallback(
           ig == 0 ? std::make_optional<double>(i + 1) : std::nullopt,
           /*bid_currency=*/std::nullopt,
@@ -17217,6 +17256,10 @@ TEST_F(AuctionRunnerTest, PrivateAggregationMetricsPerParticipant) {
         /*bucket=*/10,
         auction_worklet::mojom::BaseValue::kParticipatingInterestGroupCount,
         Reserved(auction_worklet::mojom::ReservedEventType::kReservedOnce)));
+    seller_pa_requests.push_back(BuildPrivateAggregationForBaseValue(
+        /*bucket=*/11,
+        auction_worklet::mojom::BaseValue::kPercentScriptsTimeout,
+        Reserved(auction_worklet::mojom::ReservedEventType::kReservedOnce)));
 
     auto score_ad_params = seller_worklet->WaitForScoreAd();
     mojo::Remote<auction_worklet::mojom::ScoreAdClient>(
@@ -17235,7 +17278,8 @@ TEST_F(AuctionRunnerTest, PrivateAggregationMetricsPerParticipant) {
             /*score_ad_timing_metrics=*/
             auction_worklet::mojom::SellerTimingMetrics::New(
                 /*js_fetch_latency=*/base::Milliseconds(100 * i + 45),
-                /*scoring_latency=*/base::Milliseconds(100 * i + 20)),
+                /*scoring_latency=*/base::Milliseconds(100 * i + 20),
+                /*script_timed_out=*/i == 0),
             /*score_ad_dependency_latencies=*/
             auction_worklet::mojom::ScoreAdDependencyLatencies::New(
                 /*code_ready_latency=*/std::nullopt,
@@ -17254,14 +17298,21 @@ TEST_F(AuctionRunnerTest, PrivateAggregationMetricsPerParticipant) {
       /*bucket=*/50,
       auction_worklet::mojom::BaseValue::kParticipatingInterestGroupCount,
       Reserved(auction_worklet::mojom::ReservedEventType::kReservedAlways)));
+  bidder_report_pa_requests.push_back(BuildPrivateAggregationForBaseValue(
+      /*bucket=*/51, auction_worklet::mojom::BaseValue::kPercentScriptsTimeout,
+      Reserved(auction_worklet::mojom::ReservedEventType::kReservedAlways)));
   seller_report_pa_requests.push_back(BuildPrivateAggregationForBaseValue(
       /*bucket=*/60,
       auction_worklet::mojom::BaseValue::kParticipatingInterestGroupCount,
+      Reserved(auction_worklet::mojom::ReservedEventType::kReservedAlways)));
+  seller_report_pa_requests.push_back(BuildPrivateAggregationForBaseValue(
+      /*bucket=*/61, auction_worklet::mojom::BaseValue::kPercentScriptsTimeout,
       Reserved(auction_worklet::mojom::ReservedEventType::kReservedAlways)));
 
   // Need to flush the service pipe to make sure the AuctionRunner has
   // received the score.
   seller_worklet->Flush();
+  seller_worklet->SetScriptTimedOut(true);
   seller_worklet->WaitForReportResult();
   seller_worklet->InvokeReportResultCallback(
       /*report_url=*/std::nullopt,
@@ -17270,6 +17321,7 @@ TEST_F(AuctionRunnerTest, PrivateAggregationMetricsPerParticipant) {
   auto winning_bidder_worklet =
       mock_auction_process_manager_->TakeBidderWorklet(kBidder2Url);
   ASSERT_TRUE(winning_bidder_worklet);
+  winning_bidder_worklet->SetScriptTimedOut(false);
   winning_bidder_worklet->WaitForReportWin();
   winning_bidder_worklet->InvokeReportWinCallback(
       /*report_url=*/std::nullopt,
@@ -17282,23 +17334,35 @@ TEST_F(AuctionRunnerTest, PrivateAggregationMetricsPerParticipant) {
       testing::UnorderedElementsAre(
           testing::Pair(
               kBidder1,
-              // 3 IGs are actually useful.
-              ElementsAreRequests(BuildPrivateAggregationRequest(/*bucket=*/0,
-                                                                 /*value=*/3))),
+              // 3 IGs are actually useful; 1 times out so 33% timed out.
+              ElementsAreRequests(
+                  BuildPrivateAggregationRequest(/*bucket=*/0,
+                                                 /*value=*/3),
+                  BuildPrivateAggregationRequest(/*bucket=*/1,
+                                                 /*value=*/33))),
           testing::Pair(
               kBidder2,
-              // 2 IGs w/ads
+              // 2 IGs w/ads; all "time out"; but reporting doesn't.
               ElementsAreRequests(BuildPrivateAggregationRequest(/*bucket=*/100,
                                                                  /*value=*/2),
+                                  BuildPrivateAggregationRequest(/*bucket=*/101,
+                                                                 /*value=*/100),
                                   BuildPrivateAggregationRequest(/*bucket=*/50,
-                                                                 /*value=*/2))),
+                                                                 /*value=*/2),
+                                  BuildPrivateAggregationRequest(/*bucket=*/51,
+                                                                 /*value=*/0))),
           testing::Pair(kSeller,
-                        // No IG metric for sellers.
+                        // No IG metric for sellers; timeouts do exist.
+                        // Seller scoring timeouts is 1 out of 2.
                         ElementsAreRequests(
                             BuildPrivateAggregationRequest(/*bucket=*/10,
                                                            /*value=*/0),
+                            BuildPrivateAggregationRequest(/*bucket=*/11,
+                                                           /*value=*/50),
                             BuildPrivateAggregationRequest(/*bucket=*/60,
-                                                           /*value=*/0)))));
+                                                           /*value=*/0),
+                            BuildPrivateAggregationRequest(/*bucket=*/61,
+                                                           /*value=*/100)))));
 }
 
 TEST_F(AuctionRunnerTest, ComponentAuctionPrivateAggregationTimeMetrics) {
@@ -17388,7 +17452,8 @@ TEST_F(AuctionRunnerTest, ComponentAuctionPrivateAggregationTimeMetrics) {
             /*score_ad_timing_metrics=*/
             auction_worklet::mojom::SellerTimingMetrics::New(
                 /*js_fetch_latency=*/base::Milliseconds(100 * i + 50),
-                /*scoring_latency=*/base::Milliseconds(100 * i + 20)),
+                /*scoring_latency=*/base::Milliseconds(100 * i + 20),
+                /*script_timed_out=*/false),
             /*score_ad_dependency_latencies=*/
             auction_worklet::mojom::ScoreAdDependencyLatencies::New(
                 /*code_ready_latency=*/std::nullopt,
@@ -17430,7 +17495,8 @@ TEST_F(AuctionRunnerTest, ComponentAuctionPrivateAggregationTimeMetrics) {
           /*score_ad_timing_metrics=*/
           auction_worklet::mojom::SellerTimingMetrics::New(
               /*js_fetch_latency=*/base::Milliseconds(50),
-              /*scoring_latency=*/base::Milliseconds(30)),
+              /*scoring_latency=*/base::Milliseconds(30),
+              /*script_timed_out=*/false),
           /*score_ad_dependency_latencies=*/
           auction_worklet::mojom::ScoreAdDependencyLatencies::New(
               /*code_ready_latency=*/std::nullopt,

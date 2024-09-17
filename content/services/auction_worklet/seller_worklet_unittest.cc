@@ -473,6 +473,8 @@ class SellerWorkletTest : public testing::Test {
                 EXPECT_GE(score_ad_timing_metrics->script_latency,
                           expected_score_ad_timeout.value() * 0.9);
               }
+              EXPECT_EQ(expected_score_ad_timeout.has_value(),
+                        score_ad_timing_metrics->script_timed_out);
               if (expected_signals_fetch_latency) {
                 EXPECT_EQ(score_ad_dependency_latencies
                               ->trusted_scoring_signals_latency,
@@ -687,6 +689,8 @@ class SellerWorkletTest : public testing::Test {
                                : AuctionV8Helper::kScriptTimeout) *
                               0.9);
               }
+              EXPECT_EQ(expected_reporting_latency_timeout,
+                        timing_metrics->script_timed_out);
               EXPECT_EQ(expected_errors, errors);
               std::move(done_closure).Run();
             },
@@ -6183,12 +6187,56 @@ TEST_F(SellerWorkletRealTimeTest, ScoreAdDefaultTimeout) {
   run_loop.Run();
 }
 
+TEST_F(SellerWorkletRealTimeTest, ScoreAdTopLevelTimeout) {
+  AddJavascriptResponse(&url_loader_factory_, decision_logic_url_,
+                        "while (1) {}");
+  auto seller_worklet = CreateWorklet();
+  ASSERT_TRUE(seller_worklet);
+  base::RunLoop run_loop;
+  RunScoreAdOnWorkletAsync(seller_worklet.get(), /*expected_score=*/0,
+                           /*expected_errors=*/
+                           {"https://url.test/ top-level execution timed out."},
+                           mojom::ComponentAuctionModifiedBidParamsPtr(),
+                           /*expected_data_version=*/std::nullopt,
+                           /*expected_debug_loss_report_url=*/std::nullopt,
+                           /*expected_debug_win_report_url=*/std::nullopt,
+                           mojom::RejectReason::kNotAvailable,
+                           /*expected_pa_requests=*/{},
+                           /*expected_real_time_contributions=*/{},
+                           /*expected_bid_in_seller_currency=*/std::nullopt,
+                           /*expected_score_ad_timeout=*/true,
+                           /*expected_signals_fetch_latency=*/std::nullopt,
+                           /*expected_code_ready_latency=*/std::nullopt,
+                           run_loop.QuitClosure());
+  run_loop.Run();
+}
+
 // Test that seller timeout zero results in no score produced.
 TEST_F(SellerWorkletRealTimeTest, ScoreAdZeroTimeout) {
   seller_timeout_ = base::TimeDelta();
-  RunScoreAdWithReturnValueExpectingResult(
-      "10", /*expected_score=*/0,
-      /*expected_errors=*/{"scoreAd() aborted due to zero timeout."});
+
+  AddJavascriptResponse(&url_loader_factory_, decision_logic_url_,
+                        CreateScoreAdScript("10"));
+
+  auto seller_worklet = CreateWorklet();
+  ASSERT_TRUE(seller_worklet);
+  base::RunLoop run_loop;
+  RunScoreAdOnWorkletAsync(seller_worklet.get(), /*expected_score=*/0,
+                           /*expected_errors=*/
+                           {"scoreAd() aborted due to zero timeout."},
+                           mojom::ComponentAuctionModifiedBidParamsPtr(),
+                           /*expected_data_version=*/std::nullopt,
+                           /*expected_debug_loss_report_url=*/std::nullopt,
+                           /*expected_debug_win_report_url=*/std::nullopt,
+                           mojom::RejectReason::kNotAvailable,
+                           /*expected_pa_requests=*/{},
+                           /*expected_real_time_contributions=*/{},
+                           /*expected_bid_in_seller_currency=*/std::nullopt,
+                           /*expected_score_ad_timeout=*/true,
+                           /*expected_signals_fetch_latency=*/std::nullopt,
+                           /*expected_code_ready_latency=*/std::nullopt,
+                           run_loop.QuitClosure());
+  run_loop.Run();
 }
 
 TEST_F(SellerWorkletRealTimeTest, ScoreAdSellerTimeoutFromAuctionConfig) {
@@ -6351,6 +6399,21 @@ TEST_F(SellerWorkletRealTimeTest, ReportResultJsonTimeout) {
       {"https://url.test/ timeout serializing reportResult() return value."});
 }
 
+TEST_F(SellerWorkletRealTimeTest, ReportResultTopLevelTimeout) {
+  auction_ad_config_non_shared_params_.reporting_timeout =
+      base::Milliseconds(30);
+  AddJavascriptResponse(&url_loader_factory_, decision_logic_url_,
+                        "while (true) {}");
+  RunReportResultExpectingResult(
+      /*expected_signals_for_winner=*/std::nullopt,
+      /*expected_report_url=*/std::nullopt,
+      /*expected_ad_beacon_map=*/{},
+      /*expected_pa_requests=*/{},
+      /*expected_reporting_latency_timeout=*/true,
+      /*expected_errors=*/
+      {"https://url.test/ top-level execution timed out."});
+}
+
 class SellerWorkletBiddingAndScoringDebugReportingAPIEnabledTest
     : public SellerWorkletRealTimeTest {
  public:
@@ -6478,15 +6541,33 @@ TEST_F(SellerWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
        ScoreAdTimedOut) {
   // The seller script has an endless while loop. It will time out due to
   // AuctionV8Helper's default script timeout (50 ms).
-  RunScoreAdWithJavascriptExpectingResult(
+  AddJavascriptResponse(
+      &url_loader_factory_, decision_logic_url_,
       CreateScoreAdScript(
           /*raw_return_value=*/"",
           R"(forDebuggingOnly.reportAdAuctionLoss("https://loss.url1");
             while (1);
-            forDebuggingOnly.reportAdAuctionLoss("https://loss.url2"))"),
-      0, {"https://url.test/ execution of `scoreAd` timed out."},
+            forDebuggingOnly.reportAdAuctionLoss("https://loss.url2"))"));
+
+  auto seller_worklet = CreateWorklet();
+  ASSERT_TRUE(seller_worklet);
+  base::RunLoop run_loop;
+  RunScoreAdOnWorkletAsync(
+      seller_worklet.get(), /*expected_score=*/0,
+      /*expected_errors=*/
+      {"https://url.test/ execution of `scoreAd` timed out."},
       mojom::ComponentAuctionModifiedBidParamsPtr(),
-      /*expected_data_version=*/{}, GURL("https://loss.url1"));
+      /*expected_data_version=*/std::nullopt,
+      /*expected_debug_loss_report_url=*/GURL("https://loss.url1"),
+      /*expected_debug_win_report_url=*/std::nullopt,
+      mojom::RejectReason::kNotAvailable,
+      /*expected_pa_requests=*/{},
+      /*expected_real_time_contributions=*/{},
+      /*expected_bid_in_seller_currency=*/std::nullopt,
+      /*expected_score_ad_timeout=*/true,
+      /*expected_signals_fetch_latency=*/std::nullopt,
+      /*expected_code_ready_latency=*/std::nullopt, run_loop.QuitClosure());
+  run_loop.Run();
 }
 
 // Subsequent runs of the same script should not affect each other.
@@ -7644,16 +7725,29 @@ while (1);
   expected_real_time_contributions.push_back(
       expected_latency_histogram.Clone());
 
-  RunScoreAdWithJavascriptExpectingResult(
-      CreateScoreAdScript("5", kExtraCode), 0,
+  AddJavascriptResponse(&url_loader_factory_, decision_logic_url_,
+                        CreateScoreAdScript("5", kExtraCode));
+
+  auto seller_worklet = CreateWorklet();
+  ASSERT_TRUE(seller_worklet);
+  base::RunLoop run_loop;
+  RunScoreAdOnWorkletAsync(
+      seller_worklet.get(), /*expected_score=*/0,
       /*expected_errors=*/
       {"https://url.test/ execution of `scoreAd` timed out."},
       mojom::ComponentAuctionModifiedBidParamsPtr(),
       /*expected_data_version=*/std::nullopt,
       /*expected_debug_loss_report_url=*/std::nullopt,
       /*expected_debug_win_report_url=*/std::nullopt,
-      /*expected_reject_reason=*/mojom::RejectReason::kNotAvailable,
-      /*expected_pa_requests=*/{}, std::move(expected_real_time_contributions));
+      mojom::RejectReason::kNotAvailable,
+      /*expected_pa_requests=*/{},
+      /*expected_real_time_contributions=*/
+      std::move(expected_real_time_contributions),
+      /*expected_bid_in_seller_currency=*/std::nullopt,
+      /*expected_score_ad_timeout=*/true,
+      /*expected_signals_fetch_latency=*/std::nullopt,
+      /*expected_code_ready_latency=*/std::nullopt, run_loop.QuitClosure());
+  run_loop.Run();
 }
 
 // contributeToHistogram's is dropped when the script's latency does not

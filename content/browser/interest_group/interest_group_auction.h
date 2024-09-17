@@ -1456,6 +1456,8 @@ class CONTENT_EXPORT InterestGroupAuction
   // Metrics for this auction's seller.
   PrivateAggregationParticipantData seller_metrics_;
   AuctionMetricsRecorder::LatencyAggregator code_fetch_time_;
+  int seller_scripts_ran_ = 0;
+  int seller_scripts_timed_out_ = 0;
 
   // Stores all pending Private Aggregation API report requests of reserved
   // event type from the bidding and scoring phase. These are passed to the

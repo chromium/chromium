@@ -55,8 +55,11 @@ struct CONTENT_EXPORT PrivateAggregationParticipantData {
   // capabilities checks, discarding those w/o ads, etc).
   int participating_interest_group_count = 0;
 
+  double percent_igs_cumulative_timeout = 0;
+
   // These metrics are set for both bidders and sellers.
   base::TimeDelta average_code_fetch_time;
+  double percent_scripts_timeout = 0;
 };
 
 // Key used to group Private aggregation signals.

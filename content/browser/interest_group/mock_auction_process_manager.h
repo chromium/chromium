@@ -144,6 +144,7 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet,
   void SetBiddingLatency(base::TimeDelta delta);
   void SetCodeFetchLatencies(std::optional<base::TimeDelta> js_fetch_latency,
                              std::optional<base::TimeDelta> wasm_fetch_latency);
+  void SetScriptTimedOut(bool val) { script_timed_out_ = val; }
 
   // Same for `reporting_latency` for ReportWin()
   void SetReportingLatency(base::TimeDelta delta) {
@@ -240,15 +241,17 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet,
   std::map<std::string, base::TimeDelta> expected_per_buyer_timeouts_;
 
   // To be fed as `trusted_signals_fetch_latency` (from
-  // OnBiddingSignalsReceived()) and `bidding_latency` (from
-  // OnGenerateBidComplete()), respectively,
+  // OnBiddingSignalsReceived()).
   base::TimeDelta trusted_signals_fetch_latency_;
+
+  // These are fed as part of BidderTimingMetrics. Except for
+  // `bidding_latency_` and `reporting_latency_` they are used both for
+  // generateBid and reportWin.
   base::TimeDelta bidding_latency_;
+  base::TimeDelta reporting_latency_;
   std::optional<base::TimeDelta> js_fetch_latency_;
   std::optional<base::TimeDelta> wasm_fetch_latency_;
-
-  // To be fed as `reporting_latency` to ReportWin() callback.
-  base::TimeDelta reporting_latency_;
+  bool script_timed_out_ = false;
 
   // Receiver is last so that destroying `this` while there's a pending callback
   // over the pipe will not DCHECK.
@@ -384,6 +387,8 @@ class MockSellerWorklet : public auction_worklet::mojom::SellerWorklet {
     js_fetch_latency_ = js_fetch_latency;
   }
 
+  void SetScriptTimedOut(bool val) { script_timed_out_ = val; }
+
  private:
   std::unique_ptr<base::RunLoop> score_ad_run_loop_;
   std::list<ScoreAdParams> score_ad_params_;
@@ -399,6 +404,7 @@ class MockSellerWorklet : public auction_worklet::mojom::SellerWorklet {
 
   // Used for reporting callback as well.
   std::optional<base::TimeDelta> js_fetch_latency_;
+  bool script_timed_out_ = false;
 
   // Receiver is last so that destroying `this` while there's a pending callback
   // over the pipe will not DCHECK.
