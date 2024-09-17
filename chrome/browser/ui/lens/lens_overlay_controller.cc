@@ -1322,6 +1322,15 @@ void LensOverlayController::ContinueCreateInitializationData(
     return;
   }
 
+  // Try and fetch the innerHTML if enabled.
+  if (lens::features::UseInnerHtmlAsContext() && render_frame_host) {
+    content_extraction::GetInnerHtml(
+        *render_frame_host,
+        base::BindOnce(&LensOverlayController::OnInnerHtmlReceived,
+                       weak_factory_.GetWeakPtr()));
+    return;
+  }
+
   // Initialize since there are no PDF bytes to wait on.
   InitializeOverlay();
 }
@@ -1339,6 +1348,16 @@ void LensOverlayController::OnInnerTextReceived(
     initialization_data_->page_content_bytes_ = std::vector<uint8_t>(
         result->inner_text.begin(), result->inner_text.end());
     initialization_data_->page_content_type_ = kPlainTextMimeType;
+  }
+  InitializeOverlay();
+}
+
+void LensOverlayController::OnInnerHtmlReceived(
+    const std::optional<std::string>& result) {
+  if (result.has_value()) {
+    initialization_data_->page_content_bytes_ =
+        std::vector<uint8_t>(result->begin(), result->end());
+    initialization_data_->page_content_type_ = "text/html";
   }
   InitializeOverlay();
 }

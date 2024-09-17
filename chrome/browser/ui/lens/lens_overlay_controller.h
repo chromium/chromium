@@ -9,6 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
+#include "chrome/browser/content_extraction/inner_html.h"
 #include "chrome/browser/content_extraction/inner_text.h"
 #include "chrome/browser/lens/core/mojom/geometry.mojom.h"
 #include "chrome/browser/lens/core/mojom/lens.mojom.h"
@@ -648,6 +649,9 @@ class LensOverlayController : public LensSearchboxClient,
   // Callback for when the inner text is retrieved from the underlying page.
   void OnInnerTextReceived(
       std::unique_ptr<content_extraction::InnerTextResult> result);
+
+  // Callback for when the inner HTML is retrieved from the underlying page.
+  void OnInnerHtmlReceived(const std::optional<std::string>& result);
 
   // Adds bounding boxes to the initialization data.
   void AddBoundingBoxesToInitializationData(

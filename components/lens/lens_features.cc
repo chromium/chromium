@@ -192,6 +192,9 @@ constexpr base::FeatureParam<bool> kUsePdfsAsContext{
 constexpr base::FeatureParam<bool> kUseInnerTextAsContext{
     &kLensOverlay, "use-inner-text-as-context", false};
 
+constexpr base::FeatureParam<bool> kUseInnerHtmlAsContext{
+    &kLensOverlay, "use-inner-html-as-context", false};
+
 constexpr base::FeatureParam<int> kLensOverlayTapRegionHeight{
     &kLensOverlay, "tap-region-height", 300};
 constexpr base::FeatureParam<int> kLensOverlayTapRegionWidth{
@@ -491,6 +494,10 @@ bool UsePdfsAsContext() {
 
 bool UseInnerTextAsContext() {
   return kUseInnerTextAsContext.Get();
+}
+
+bool UseInnerHtmlAsContext() {
+  return kUseInnerHtmlAsContext.Get();
 }
 
 int GetLensOverlayVerticalTextMargin() {

@@ -590,6 +590,7 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
         {
             {"search-bubble", "true"},
             {"use-inner-text-as-context", "true"},
+            {"use-inner-html-as-context", "true"},
             {"results-search-url", kResultsSearchBaseUrl},
             {"use-dynamic-theme", "true"},
             {"use-dynamic-theme-min-population-pct", "0.002"},
@@ -4198,6 +4199,56 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   ASSERT_EQ("The below are non-ascii characters.\n\nこんにちは thêrē 🐶 ©",
             std::string(last_sent_underlying_content_bytes.begin(),
                         last_sent_underlying_content_bytes.end()));
+}
+
+class LensOverlayControllerInnerHtmlEnabledTest
+    : public LensOverlayControllerBrowserTest {
+ protected:
+  void SetupFeatureList() override {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        lens::features::kLensOverlay,
+        {
+            {"search-bubble", "true"},
+            {"use-inner-text-as-context", "false"},
+            {"use-inner-html-as-context", "true"},
+        });
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerInnerHtmlEnabledTest,
+                       InnerHtmlBytesInRequest) {
+  WaitForPaint(kDocumentWithNonAsciiCharacters);
+
+  // State should start in off.
+  auto* controller = browser()
+                         ->tab_strip_model()
+                         ->GetActiveTab()
+                         ->tab_features()
+                         ->lens_overlay_controller();
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // Open the overlay.
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_EQ(controller->state(), State::kScreenshot);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+
+  // Verify inner HTML was included as bytes in the the query.
+  auto* fake_query_controller = static_cast<LensOverlayQueryControllerFake*>(
+      controller->get_lens_overlay_query_controller_for_testing());
+  ASSERT_FALSE(
+      fake_query_controller->last_sent_underlying_content_bytes_.empty());
+  ASSERT_EQ("text/html",
+            fake_query_controller->last_sent_underlying_content_type_);
+
+  // Verify the bytes are actually what we expect them to be.
+  auto last_sent_underlying_content_bytes =
+      fake_query_controller->last_sent_underlying_content_bytes_;
+  ASSERT_EQ(
+      "<body>\n  <h1>The below are non-ascii characters.</h1>\n  <p>こんにちは "
+      "thêrē 🐶 ©</p>\n\n</body>",
+      std::string(last_sent_underlying_content_bytes.begin(),
+                  last_sent_underlying_content_bytes.end()));
 }
 
 class LensOverlayControllerContextualFeaturesDisabledTest

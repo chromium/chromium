@@ -348,6 +348,12 @@ extern bool UsePdfsAsContext();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool UseInnerTextAsContext();
 
+// Returns whether to include the inner html from the underlying page in the
+// request to be used as page context. Does nothing if UseInnerTextAsContext is
+// enabled.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool UseInnerHtmlAsContext();
+
 // Returns the margin in pixels to add to the top and bottom of word bounding
 // boxes.
 COMPONENT_EXPORT(LENS_FEATURES)
