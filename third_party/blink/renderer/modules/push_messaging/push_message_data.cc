@@ -100,7 +100,7 @@ ScriptValue PushMessageData::json(ScriptState* script_state,
 }
 
 String PushMessageData::text() const {
-  return UTF8Encoding().Decode(data_.data(), data_.size());
+  return UTF8Encoding().Decode(base::as_byte_span(data_));
 }
 
 }  // namespace blink

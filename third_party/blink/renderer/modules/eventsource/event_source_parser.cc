@@ -120,9 +120,8 @@ void EventSourceParser::ParseLine() {
   // Unrecognized field name. Ignore!
 }
 
-String EventSourceParser::FromUTF8(base::span<const char> bytes) {
-  return codec_->Decode(bytes.data(), bytes.size(),
-                        WTF::FlushBehavior::kDataEOF);
+String EventSourceParser::FromUTF8(base::span<const char> chars) {
+  return codec_->Decode(base::as_bytes(chars), WTF::FlushBehavior::kDataEOF);
 }
 
 void EventSourceParser::Trace(Visitor* visitor) const {

@@ -83,8 +83,7 @@ bool HTMLMetaCharsetParser::CheckForMetaCharset(base::span<const char> data) {
   // are disallowed in <head>, we don't bail out until we've checked at least
   // bytesToCheckUnconditionally bytes of input.
 
-  input_.Append(SegmentedString(assumed_codec_->Decode(
-      data.data(), base::checked_cast<wtf_size_t>(data.size()))));
+  input_.Append(SegmentedString(assumed_codec_->Decode(base::as_bytes(data))));
 
   while (HTMLToken* token = tokenizer_->NextToken(input_)) {
     bool end = token->GetType() == HTMLToken::kEndTag;

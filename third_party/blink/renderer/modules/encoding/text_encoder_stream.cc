@@ -64,8 +64,7 @@ class TextEncoderStream::Transformer final : public TransformStreamTransformer {
         // check is needed.
         prefix = ReplacementCharacterInUtf8();
       }
-      result = encoder_->Encode(input.Characters8(), input.length(),
-                                WTF::kNoUnencodables);
+      result = encoder_->Encode(input.Span8(), WTF::kNoUnencodables);
     } else {
       bool have_output =
           Encode16BitString(input, high_surrogate, &prefix, &result);
@@ -128,35 +127,35 @@ class TextEncoderStream::Transformer final : public TransformStreamTransformer {
                          std::optional<UChar> high_surrogate,
                          std::string* prefix,
                          std::string* result) {
-    const UChar* begin = input.Characters16();
-    const UChar* end = input.Characters16() + input.length();
-    DCHECK_GT(end, begin);
+    base::span<const UChar> input_span = input.Span16();
+    DCHECK(!input_span.empty());
     if (high_surrogate.has_value()) {
-      if (*begin >= 0xDC00 && *begin <= 0xDFFF) {
-        const UChar astral_character[2] = {high_surrogate.value(), *begin};
+      const UChar code_unit = input_span.front();
+      if (code_unit >= 0xDC00 && code_unit <= 0xDFFF) {
+        const UChar astral_character[2] = {high_surrogate.value(), code_unit};
         // Third argument is ignored, as above.
-        *prefix =
-            encoder_->Encode(astral_character, std::size(astral_character),
-                             WTF::kNoUnencodables);
-        ++begin;
-        if (begin == end)
+        *prefix = encoder_->Encode(base::span(astral_character),
+                                   WTF::kNoUnencodables);
+        input_span = input_span.subspan<1u>();
+        if (input_span.empty()) {
           return true;
+        }
       } else {
         *prefix = ReplacementCharacterInUtf8();
       }
     }
 
-    const UChar final_token = *(end - 1);
+    const UChar final_token = input_span.back();
     if (final_token >= 0xD800 && final_token <= 0xDBFF) {
       pending_high_surrogate_ = final_token;
-      --end;
-      if (begin == end)
+      input_span = input_span.first(input_span.size() - 1u);
+      if (input_span.empty()) {
         return prefix->length() != 0;
+      }
     }
 
     // Third argument is ignored, as above.
-    *result = encoder_->Encode(begin, static_cast<wtf_size_t>(end - begin),
-                               WTF::kEntitiesForUnencodables);
+    *result = encoder_->Encode(input_span, WTF::kEntitiesForUnencodables);
     DCHECK_NE(result->length(), 0u);
     return true;
   }

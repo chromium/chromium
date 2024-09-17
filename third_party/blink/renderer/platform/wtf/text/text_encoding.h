@@ -49,12 +49,11 @@ class WTF_EXPORT TextEncoding final {
   const TextEncoding& ClosestByteBasedEquivalent() const;
   const TextEncoding& EncodingForFormSubmission() const;
 
-  String Decode(const char* str, wtf_size_t length) const {
+  String Decode(base::span<const uint8_t> data) const {
     bool ignored;
-    return Decode(str, length, false, ignored);
+    return Decode(data, false, ignored);
   }
-  String Decode(const char*,
-                wtf_size_t length,
+  String Decode(base::span<const uint8_t> data,
                 bool stop_on_error,
                 bool& saw_error) const;
 

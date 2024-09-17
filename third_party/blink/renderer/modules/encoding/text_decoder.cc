@@ -90,13 +90,10 @@ String TextDecoder::decode(std::optional<base::span<const uint8_t>> input,
     return String();
   }
 
-  return decode(reinterpret_cast<const char*>(input_span.data()),
-                static_cast<uint32_t>(input_span.size()), options,
-                exception_state);
+  return Decode(input_span, options, exception_state);
 }
 
-String TextDecoder::decode(const char* start,
-                           uint32_t length,
+String TextDecoder::Decode(base::span<const uint8_t> input,
                            const TextDecodeOptions* options,
                            ExceptionState& exception_state) {
   DCHECK(options);
@@ -119,7 +116,7 @@ String TextDecoder::decode(const char* start,
                                            : WTF::FlushBehavior::kDataEOF;
 
   bool saw_error = false;
-  String s = codec_->Decode(start, length, flush, fatal_, saw_error);
+  String s = codec_->Decode(input, flush, fatal_, saw_error);
 
   if (fatal_ && saw_error) {
     if (!do_not_flush_) {
@@ -145,7 +142,7 @@ String TextDecoder::decode(const char* start,
 
 String TextDecoder::decode(ExceptionState& exception_state) {
   TextDecodeOptions* options = TextDecodeOptions::Create();
-  return decode(nullptr, 0, options, exception_state);
+  return Decode({}, options, exception_state);
 }
 
 }  // namespace blink

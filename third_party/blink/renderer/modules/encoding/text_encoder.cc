@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/encoding/encoding.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding_registry.h"
 
 namespace blink {
@@ -64,19 +65,14 @@ String TextEncoder::encoding() const {
 
 NotShared<DOMUint8Array> TextEncoder::encode(const String& input,
                                              ExceptionState& exception_state) {
-  std::string result;
   // Note that the UnencodableHandling here is never used since the
   // only possible encoding is UTF-8, which will use
   // U+FFFD-replacement rather than ASCII fallback substitution when
   // unencodable sequences (for instance, unpaired UTF-16 surrogates)
   // are present in the input.
-  if (input.Is8Bit()) {
-    result = codec_->Encode(input.Characters8(), input.length(),
-                            WTF::kNoUnencodables);
-  } else {
-    result = codec_->Encode(input.Characters16(), input.length(),
-                            WTF::kNoUnencodables);
-  }
+  std::string result = WTF::VisitCharacters(input, [this](auto chars) {
+    return codec_->Encode(chars, WTF::kNoUnencodables);
+  });
   if (base::FeatureList::IsEnabled(kThrowExceptionWhenTextEncodeOOM)) {
     NotShared<DOMUint8Array> result_array(
         DOMUint8Array::CreateOrNull(base::as_byte_span(result)));

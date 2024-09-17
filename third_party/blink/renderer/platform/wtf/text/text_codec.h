@@ -87,11 +87,28 @@ class WTF_EXPORT TextCodec {
     size_t bytes_written;
   };
 
-  String Decode(const char* str,
-                wtf_size_t length,
+  String Decode(base::span<const uint8_t> bytes,
                 FlushBehavior flush = FlushBehavior::kDoNotFlush) {
     bool ignored;
-    return Decode(str, length, flush, false, ignored);
+    return Decode(bytes, flush, false, ignored);
+  }
+  String Decode(base::span<const uint8_t> bytes,
+                FlushBehavior flush_behavior,
+                bool stop_on_error,
+                bool& saw_error) {
+    auto chars = base::as_chars(bytes);
+    return Decode(chars.data(), base::checked_cast<wtf_size_t>(chars.size()),
+                  flush_behavior, stop_on_error, saw_error);
+  }
+  std::string Encode(base::span<const UChar> data,
+                     UnencodableHandling handling) {
+    return Encode(data.data(), base::checked_cast<wtf_size_t>(data.size()),
+                  handling);
+  }
+  std::string Encode(base::span<const LChar> data,
+                     UnencodableHandling handling) {
+    return Encode(data.data(), base::checked_cast<wtf_size_t>(data.size()),
+                  handling);
   }
 
   virtual String Decode(const char*,
