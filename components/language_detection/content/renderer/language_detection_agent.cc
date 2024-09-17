@@ -68,6 +68,13 @@ void LanguageDetectionAgent::UpdateLanguageDetectionModel(
   base::ScopedUmaHistogramTimer timer(
       "LanguageDetection.TFLiteModel.UpdateLanaguageDetectionModelTime");
 
+#if BUILDFLAG(IS_IOS)
+  language_detection::LanguageDetectionModel& language_detection_model =
+      language_detection::GetLanguageDetectionModel();
+  language_detection_model.UpdateWithFileAsync(std::move(model_file),
+                                               base::DoNothing());
+
+#else
   auto update_file = base::BindOnce(
       [](base::File model_file) {
         language_detection::LanguageDetectionModel& language_detection_model =
@@ -87,6 +94,7 @@ void LanguageDetectionAgent::UpdateLanguageDetectionModel(
   } else {
     std::move(update_file).Run();
   }
+#endif
 }
 
 void LanguageDetectionAgent::WasShown() {

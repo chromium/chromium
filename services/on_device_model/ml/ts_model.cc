@@ -13,8 +13,10 @@
 #include "base/files/memory_mapped_file.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/notimplemented.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
+#include "build/build_config.h"
 #include "components/language_detection/core/language_detection_provider.h"
 #include "components/translate/core/language_detection/language_detection_model.h"
 #include "services/on_device_model/ml/chrome_ml.h"
@@ -43,6 +45,13 @@ base::SequenceBound<std::unique_ptr<TsModel>> TsModel::Create(
     const ChromeML& chrome_ml,
     on_device_model::mojom::ModelAssetsPtr ts_assets,
     base::File language_detection_file) {
+#if BUILDFLAG(IS_IOS)
+  // TODO(crbug.com/356380874): UpdateWithFile does not exist for iOS there is
+  // an async version but its not clear how we get this to work with the
+  // sequence bound object.
+  NOTIMPLEMENTED();
+  return {};
+#else
   std::unique_ptr<translate::LanguageDetectionModel> language_detector;
   if (language_detection_file.IsValid()) {
     language_detector = std::make_unique<translate::LanguageDetectionModel>(
@@ -70,6 +79,7 @@ base::SequenceBound<std::unique_ptr<TsModel>> TsModel::Create(
     result.AsyncCall(&TsModel::InitTextSafetyModel);
   }
   return result;
+#endif
 }
 
 DISABLE_CFI_DLSYM
