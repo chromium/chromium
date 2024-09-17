@@ -483,6 +483,10 @@ if (enable_pdf) {
         "test/pdf_ink_test_helpers.cc",
         "test/pdf_ink_test_helpers.h",
       ]
+
+      # TODO(thestig): Remove this once there is a real dependency on
+      # ink_stroke_modeler.
+      deps += [ "//third_party/ink_stroke_modeler" ]
     }
 
     if (enable_screen_ai_service) {

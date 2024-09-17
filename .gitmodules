@@ -263,6 +263,9 @@
 [submodule "third_party/harfbuzz-ng/src"]
 	path = third_party/harfbuzz-ng/src
 	url = https://chromium.googlesource.com/external/github.com/harfbuzz/harfbuzz
+[submodule "third_party/ink_stroke_modeler/src"]
+	path = third_party/ink_stroke_modeler/src
+	url = https://chromium.googlesource.com/external/github.com/google/ink-stroke-modeler
 [submodule "third_party/instrumented_libs"]
 	path = third_party/instrumented_libs
 	url = https://chromium.googlesource.com/chromium/third_party/instrumented_libraries

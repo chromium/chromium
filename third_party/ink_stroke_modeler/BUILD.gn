@@ -1,0 +1,50 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+config("public_config") {
+  include_dirs = [ "//third_party/ink_stroke_modeler/src" ]
+}
+
+source_set("ink_stroke_modeler") {
+  sources = [
+    "src/ink_stroke_modeler/internal/internal_types.cc",
+    "src/ink_stroke_modeler/internal/internal_types.h",
+    "src/ink_stroke_modeler/internal/loop_contraction_mitigation_modeler.cc",
+    "src/ink_stroke_modeler/internal/loop_contraction_mitigation_modeler.h",
+    "src/ink_stroke_modeler/internal/position_modeler.cc",
+    "src/ink_stroke_modeler/internal/position_modeler.h",
+    "src/ink_stroke_modeler/internal/prediction/input_predictor.h",
+    "src/ink_stroke_modeler/internal/prediction/kalman_filter/axis_predictor.cc",
+    "src/ink_stroke_modeler/internal/prediction/kalman_filter/axis_predictor.h",
+    "src/ink_stroke_modeler/internal/prediction/kalman_filter/kalman_filter.cc",
+    "src/ink_stroke_modeler/internal/prediction/kalman_filter/kalman_filter.h",
+    "src/ink_stroke_modeler/internal/prediction/kalman_filter/matrix.h",
+    "src/ink_stroke_modeler/internal/prediction/kalman_predictor.cc",
+    "src/ink_stroke_modeler/internal/prediction/kalman_predictor.h",
+    "src/ink_stroke_modeler/internal/prediction/stroke_end_predictor.cc",
+    "src/ink_stroke_modeler/internal/prediction/stroke_end_predictor.h",
+    "src/ink_stroke_modeler/internal/stylus_state_modeler.cc",
+    "src/ink_stroke_modeler/internal/stylus_state_modeler.h",
+    "src/ink_stroke_modeler/internal/utils.cc",
+    "src/ink_stroke_modeler/internal/utils.h",
+    "src/ink_stroke_modeler/internal/utils.h",
+    "src/ink_stroke_modeler/internal/validation.h",
+    "src/ink_stroke_modeler/internal/wobble_smoother.cc",
+    "src/ink_stroke_modeler/internal/wobble_smoother.h",
+    "src/ink_stroke_modeler/numbers.h",
+    "src/ink_stroke_modeler/params.cc",
+    "src/ink_stroke_modeler/params.h",
+    "src/ink_stroke_modeler/stroke_modeler.cc",
+    "src/ink_stroke_modeler/stroke_modeler.h",
+    "src/ink_stroke_modeler/types.cc",
+    "src/ink_stroke_modeler/types.h",
+  ]
+
+  public_configs = [ ":public_config" ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+
+  public_deps = [ "//third_party/abseil-cpp:absl" ]
+}
