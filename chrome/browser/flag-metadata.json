@@ -2098,7 +2098,7 @@
   {
     "name": "device-posture",
     "owners": [ "alexis.menard@intel.com" ],
-    "expiry_milestone": 130
+    "expiry_milestone": 140
   },
   {
     "name": "devtools-privacy-ui",
@@ -9342,7 +9342,7 @@
   {
     "name": "viewport-segments",
     "owners": [ "alexis.menard@intel.com" ],
-    "expiry_milestone": 130
+    "expiry_milestone": 140
   },
   {
     "name": "visited-url-ranking-service-history-visibility-score-filter",
