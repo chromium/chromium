@@ -19,9 +19,12 @@ BackgroundTracingAgentImpl::BackgroundTracingAgentImpl(
     mojo::PendingRemote<mojom::BackgroundTracingAgentClient> client)
     : client_(std::move(client)) {
   client_->OnInitialized();
+  NamedTriggerManager::SetInstance(this);
 }
 
-BackgroundTracingAgentImpl::~BackgroundTracingAgentImpl() = default;
+BackgroundTracingAgentImpl::~BackgroundTracingAgentImpl() {
+  NamedTriggerManager::SetInstance(nullptr);
+}
 
 void BackgroundTracingAgentImpl::SetUMACallback(
     tracing::mojom::BackgroundTracingRulePtr rule,
@@ -43,6 +46,14 @@ void BackgroundTracingAgentImpl::SetUMACallback(
 void BackgroundTracingAgentImpl::ClearUMACallback(
     tracing::mojom::BackgroundTracingRulePtr rule) {
   histogram_callback_map_.erase(rule->rule_id);
+}
+
+bool BackgroundTracingAgentImpl::DoEmitNamedTrigger(
+    const std::string& trigger_name,
+    std::optional<int32_t> value) {
+  client_->OnTriggerBackgroundTrace(
+      tracing::mojom::BackgroundTracingRule::New(trigger_name), value);
+  return true;
 }
 
 void BackgroundTracingAgentImpl::OnHistogramChanged(
