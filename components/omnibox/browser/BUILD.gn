@@ -831,6 +831,7 @@ source_set("unit_tests") {
     "on_device_head_provider_unittest.cc",
     "on_device_model_update_listener_unittest.cc",
     "on_device_tail_tokenizer_unittest.cc",
+    "open_tab_provider_unittest.cc",
     "remote_suggestions_service_unittest.cc",
     "scored_history_match_unittest.cc",
     "search_suggestion_parser_unittest.cc",

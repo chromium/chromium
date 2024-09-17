@@ -71,8 +71,8 @@ TEST_F(TabMatcherDesktopTest, GetOpenTabsOnlyWithinProfile) {
 
   const auto tabs = matcher.GetOpenTabs();
   ASSERT_EQ(tabs.size(), 2U);
-  EXPECT_EQ(tabs[0]->GetURL(), GURL("http://bar.chromium.org"));
-  EXPECT_EQ(tabs[1]->GetURL(), GURL("http://foo.chromium.org"));
+  EXPECT_EQ(tabs[0].url, GURL("http://bar.chromium.org"));
+  EXPECT_EQ(tabs[1].url, GURL("http://foo.chromium.org"));
 
   other_browser->tab_strip_model()->CloseAllTabs();
 }
