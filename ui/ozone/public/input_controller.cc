@@ -148,6 +148,8 @@ class StubInputController : public InputController {
     return std::make_unique<ScopedDisableInputDevicesImpl>(*this);
   }
 
+  void DisableKeyboardImposterCheck() override {}
+
  private:
   int num_scoped_input_devices_disablers_ = 0;
 };

@@ -133,6 +133,10 @@ InputControllerEvdev::DisableInputDevices() {
       weak_ptr_factory_.GetWeakPtr());
 }
 
+void InputControllerEvdev::DisableKeyboardImposterCheck() {
+  input_device_factory_->DisableKeyboardImposterCheck();
+}
+
 InputDeviceSettingsEvdev InputControllerEvdev::GetInputDeviceSettings() const {
   return input_device_settings_;
 }

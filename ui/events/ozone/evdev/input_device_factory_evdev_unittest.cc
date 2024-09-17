@@ -1063,4 +1063,81 @@ TEST_F(InputDeviceFactoryEvdevTest, DescribeForLogOneDeviceMouseAndKeyboard) {
   EXPECT_THAT(lines, Contains(HasSubstr(kMouseImposterIsTrue)));
 }
 
+TEST_F(InputDeviceFactoryEvdevTest,
+       ImposterCheckerStateCanDisableKeyboardCheckAfterDeviceIsAdded) {
+  std::vector<std::unique_ptr<FakeEventConverterEvdev>> converters;
+  base::RunLoop run_loop;
+
+  std::unique_ptr<FakeEventConverterEvdev> mouse_converter =
+      std::make_unique<FakeEventConverterEvdev>(
+          GetReadFdForDevice(1), base::FilePath("path"), 1,
+          InputDeviceType::INPUT_DEVICE_INTERNAL, "name", "phys_path", 1, 1, 1,
+          DeviceForm::MOUSE | DeviceForm::KEYBOARD);
+
+  converters.push_back(std::move(mouse_converter));
+  std::unique_ptr<InputDeviceFactoryEvdev> input_device_factory_ =
+      std::make_unique<InputDeviceFactoryEvdev>(
+          std::move(dispatcher_), nullptr,
+          std::make_unique<FakeInputDeviceOpenerEvdev>(std::move(converters)),
+          &input_controller_);
+  input_device_factory_->OnStartupScanComplete();
+  input_device_factory_->AddInputDevice(1, base::FilePath("unused_value"));
+  input_device_factory_->DisableKeyboardImposterCheck();
+
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
+  RunDescribeForLog(input_device_factory_.get());
+
+  std::string response = GetLogResponse();
+
+  EXPECT_NE(response, "");
+
+  auto lines = SplitLines(response);
+
+  EXPECT_THAT(lines,
+              Contains(HasSubstr(kDescriptionLogInputDeviceHeader)).Times(1));
+  EXPECT_THAT(lines, Contains(HasSubstr(kKeyboardImposterIsFalse)));
+  EXPECT_THAT(lines, Contains(HasSubstr(kMouseImposterIsTrue)));
+}
+
+TEST_F(InputDeviceFactoryEvdevTest,
+       ImposterCheckerStateCannotOverrideFakeKeyboardHeuristicFeatureFlag) {
+  scoped_feature_list_.InitAndDisableFeature(kEnableFakeKeyboardHeuristic);
+  std::vector<std::unique_ptr<FakeEventConverterEvdev>> converters;
+  base::RunLoop run_loop;
+
+  std::unique_ptr<FakeEventConverterEvdev> mouse_converter =
+      std::make_unique<FakeEventConverterEvdev>(
+          GetReadFdForDevice(1), base::FilePath("path"), 1,
+          InputDeviceType::INPUT_DEVICE_INTERNAL, "name", "phys_path", 1, 1, 1,
+          DeviceForm::MOUSE | DeviceForm::KEYBOARD);
+
+  converters.push_back(std::move(mouse_converter));
+  std::unique_ptr<InputDeviceFactoryEvdev> input_device_factory_ =
+      std::make_unique<InputDeviceFactoryEvdev>(
+          std::move(dispatcher_), nullptr,
+          std::make_unique<FakeInputDeviceOpenerEvdev>(std::move(converters)),
+          &input_controller_);
+  input_device_factory_->OnStartupScanComplete();
+  input_device_factory_->AddInputDevice(1, base::FilePath("unused_value"));
+  input_device_factory_->DisableKeyboardImposterCheck();
+
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
+  RunDescribeForLog(input_device_factory_.get());
+
+  std::string response = GetLogResponse();
+
+  EXPECT_NE(response, "");
+
+  auto lines = SplitLines(response);
+
+  EXPECT_THAT(lines,
+              Contains(HasSubstr(kDescriptionLogInputDeviceHeader)).Times(1));
+  EXPECT_THAT(lines, Contains(HasSubstr(kKeyboardImposterIsFalse)));
+  EXPECT_THAT(lines, Contains(HasSubstr(kMouseImposterIsTrue)));
+}
+
 }  // namespace ui

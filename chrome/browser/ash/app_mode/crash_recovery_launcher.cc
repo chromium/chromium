@@ -10,6 +10,8 @@
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/app_mode/startup_app_launcher.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_service_launcher.h"
+#include "ui/ozone/public/input_controller.h"
+#include "ui/ozone/public/ozone_platform.h"
 
 namespace ash {
 
@@ -67,7 +69,12 @@ void CrashRecoveryLauncher::OnAppPrepared() {
   app_launcher_->LaunchApp();
 }
 
-void CrashRecoveryLauncher::OnAppLaunched() {}
+void CrashRecoveryLauncher::OnAppLaunched() {
+  if (auto* input_controller =
+          ui::OzonePlatform::GetInstance()->GetInputController()) {
+    input_controller->DisableKeyboardImposterCheck();
+  }
+}
 
 void CrashRecoveryLauncher::OnAppWindowCreated(
     const std::optional<std::string>& app_name) {

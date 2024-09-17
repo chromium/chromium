@@ -180,6 +180,7 @@ class MockInputController : public ui::InputController {
       ui::HapticTouchpadEffect effect_type,
       ui::HapticTouchpadEffectStrength strength) override {}
   bool AreAnyKeysPressed() override { return false; }
+  void DisableKeyboardImposterCheck() override {}
 };
 
 const ui::InputDevice CreateInputDevice(int id,

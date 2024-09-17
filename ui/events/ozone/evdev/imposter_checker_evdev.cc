@@ -6,9 +6,11 @@
 
 #include <map>
 
+#include "base/functional/callback_forward.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "third_party/re2/src/re2/re2.h"
+#include "ui/events/ozone/evdev/imposter_checker_evdev_state.h"
 #include "ui/events/ozone/features.h"
 
 namespace ui {
@@ -39,7 +41,7 @@ std::vector<int> ImposterCheckerEvdev::GetIdsOnSamePhys(
 bool ImposterCheckerEvdev::IsSuspectedKeyboardImposter(
     EventConverterEvdev* converter,
     bool shared_phys) {
-  if (!base::FeatureList::IsEnabled(kEnableFakeKeyboardHeuristic)) {
+  if (!imposter_checker_evdev_state_->IsKeyboardCheckEnabled()) {
     return false;
   }
 
@@ -122,7 +124,9 @@ std::vector<int> ImposterCheckerEvdev::OnDeviceRemoved(
   return GetIdsOnSamePhys(StandardizedPhys(converter->input_device().phys));
 }
 
-ImposterCheckerEvdev::ImposterCheckerEvdev() = default;
+ImposterCheckerEvdev::ImposterCheckerEvdev()
+    : imposter_checker_evdev_state_(
+          std::make_unique<ImposterCheckerEvdevState>()) {}
 
 ImposterCheckerEvdev::~ImposterCheckerEvdev() = default;
 

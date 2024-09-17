@@ -5,6 +5,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_input_controller.h"
 
 #include "base/memory/raw_ptr.h"
+#include "base/notimplemented.h"
 #include "ui/events/devices/haptic_touchpad_effects.h"
 #include "ui/events/devices/stylus_state.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
@@ -139,6 +140,8 @@ class WaylandInputController : public InputController {
   }
 
   bool AreInputDevicesEnabled() const override { return true; }
+
+  void DisableKeyboardImposterCheck() override { NOTIMPLEMENTED_LOG_ONCE(); }
 
  private:
   const raw_ptr<WaylandConnection, LeakedDanglingUntriaged> connection_;

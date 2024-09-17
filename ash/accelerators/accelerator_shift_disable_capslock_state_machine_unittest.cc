@@ -126,6 +126,7 @@ class MockInputController : public ui::InputController {
       override {
     return nullptr;
   }
+  void DisableKeyboardImposterCheck() override {}
 };
 
 const bool kKeysPressed = true;
