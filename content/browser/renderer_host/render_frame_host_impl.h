@@ -2209,7 +2209,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   net::CookieSettingOverrides GetCookieSettingOverrides() override;
 
-  PolicyContainerHost* policy_container_host() {
+  PolicyContainerHost* policy_container_host() const {
     return policy_container_host_.get();
   }
 

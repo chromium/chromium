@@ -1476,6 +1476,36 @@ BackForwardCacheImpl::GetOrEvictEntry(int navigation_entry_id) {
   return (*matching_entry).get();
 }
 
+bool BackForwardCacheImpl::HasPotentiallyMatchingEntry(
+    const RenderFrameHostImpl& commiting_rfh,
+    bool require_no_subframes) const {
+  if (commiting_rfh.GetSiteInstance()->GetRelatedActiveContentsCount() > 1) {
+    // If the committing RFH has relation to other pages/WebContents, it can't
+    // possibly restore BFCached pages, as BFCached pages use a separate
+    // BrowsingInstance (and thus will sever relation to other pages).
+    return false;
+  }
+  for (auto& entry : entries_) {
+    auto* bfcached_rfh = entry->render_frame_host();
+    if (require_no_subframes && bfcached_rfh->child_count() > 0) {
+      continue;
+    }
+    // If the URL, origin, and security properties match, the navigation is
+    // targeting the same page as `bfcached_rfh`, so theoretically it could
+    // just use `bfcached_rfh` instead of creating a new RenderFrameHost to
+    // commit in. We don't currently do that, but track these cases in metrics.
+    if (commiting_rfh.GetLastCommittedURL() ==
+            bfcached_rfh->GetLastCommittedURL() &&
+        commiting_rfh.GetLastCommittedOrigin() ==
+            bfcached_rfh->GetLastCommittedOrigin() &&
+        commiting_rfh.policy_container_host()->policies() ==
+            bfcached_rfh->policy_container_host()->policies()) {
+      return true;
+    }
+  }
+  return false;
+}
+
 void BackForwardCacheImpl::RenderViewHostNoLongerStored(
     RenderViewHostImpl* rvh) {
   // `AddProcessesForEntry` are gated on
