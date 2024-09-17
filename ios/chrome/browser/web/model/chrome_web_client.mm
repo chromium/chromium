@@ -163,7 +163,7 @@ NSString* GetHttpsOnlyModeErrorPageHtml(web::WebState* web_state,
   HttpsOnlyModeContainer* container =
       HttpsOnlyModeContainer::FromWebState(web_state);
   HttpsUpgradeService* service = HttpsUpgradeServiceFactory::GetForBrowserState(
-      web_state->GetBrowserState());
+      ProfileIOS::FromBrowserState(web_state->GetBrowserState()));
 
   // Construct the blocking page and associate it with the WebState.
   std::unique_ptr<security_interstitials::IOSSecurityInterstitialPage> page =
