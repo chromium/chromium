@@ -21,10 +21,16 @@
 
 // static
 ChromePasswordProtectionService*
-ChromePasswordProtectionServiceFactory::GetForBrowserState(
-    web::BrowserState* browser_state) {
+ChromePasswordProtectionServiceFactory::GetForProfile(ProfileIOS* profile) {
   return static_cast<ChromePasswordProtectionService*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, /*create=*/true));
+      GetInstance()->GetServiceForBrowserState(profile, /*create=*/true));
+}
+
+// static
+ChromePasswordProtectionService*
+ChromePasswordProtectionServiceFactory::GetForBrowserState(
+    ProfileIOS* profile) {
+  return GetForProfile(profile);
 }
 
 // static
