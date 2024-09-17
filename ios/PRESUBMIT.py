@@ -49,12 +49,12 @@ def _CheckNullabilityAnnotations(input_api, output_api):
         return []
 
     plural_suffix = '' if len(errors) == 1 else 's'
-    error_message = ('Found Nullability annotation%(plural)s. '
+    warning_message = ('Found Nullability annotation%(plural)s. '
                      'Prefer DCHECKs in ios code to check for nullness:' % {
                          'plural': plural_suffix
                      })
 
-    return [output_api.PresubmitPromptWarning(error_message, items=errors)]
+    return [output_api.PresubmitPromptWarning(warning_message, items=errors)]
 
 
 def _CheckBugInToDo(input_api, output_api):
@@ -149,13 +149,13 @@ def _CheckHasNoPipeInComment(input_api, output_api):
                 errors.append('%s:%s' % (f.LocalPath(), line_num))
     if not errors:
         return []
-    error_message = '\n'.join([
+    warning_message = '\n'.join([
         'Please use backticks "`" instead of pipes "|" if you need to quote'
         ' variable names and symbols in comments.\n'
         'Found potential uses of pipes in:'
     ] + errors) + '\n'
 
-    return [output_api.PresubmitPromptWarning(error_message)]
+    return [output_api.PresubmitPromptWarning(warning_message)]
 
 def _CheckHasNoChromeBrowserStateForwardDeclaration(input_api, output_api):
     """ Checks that header files don't forward-declare ChromeBrowserState."""
@@ -170,14 +170,50 @@ def _CheckHasNoChromeBrowserStateForwardDeclaration(input_api, output_api):
     plural_suffix = '' if len(errors) == 1 else 's'
     error_message = '\n'.join([
          'Found forward-declaration%(plural)s of ChromeBrowserState. Please'
-         'instead import this header:'
-         '  ios/chrome/browser/shared/model/profile/profile_ios_forward.h'
+         ' instead import this header:'
+         ' ios/chrome/browser/shared/model/profile/profile_ios_forward.h'
          '\n\nAffected file%(plural)s:' % {
             'plural': plural_suffix,
           }
     ] + errors) + '\n'
 
     return [output_api.PresubmitError(error_message)]
+
+def _CheckCanImproveTestUsingExpectNSEQ(input_api, output_api):
+    """ Checks that test files use EXPECT_NSEQ when possible."""
+    errors = []
+    # Substrings that should not be used together with EXPECT_TRUE or
+    # EXPECT_FALSE in tests.
+    wrong_patterns = ["isEqualToString:", "isEqualToData:", "isEqualToArray:"]
+    for f in input_api.AffectedFiles():
+        if not '_unittest.' in f.LocalPath():
+          continue
+        for line_num, line in f.ChangedContents():
+            if line.startswith(("EXPECT_TRUE", "EXPECT_FALSE")):
+              # Condition is in one line.
+              if any(x in line for x in wrong_patterns):
+                errors.append('%s:%s' % (f.LocalPath(), line_num))
+              # Condition is split on multiple lines.
+              elif not line.endswith(";"):
+                # Check this is not the last line.
+                if line_num < len(f.NewContents()):
+                  next_line = f.NewContents()[line_num]
+                  if any(x in next_line for x in wrong_patterns):
+                    errors.append('%s:%s' % (f.LocalPath(), line_num))
+
+    if not errors:
+        return []
+
+    plural_suffix = '' if len(errors) == 1 else 's'
+    warning_message = '\n'.join([
+         'Found possible improvement in unittest. Prefer using'
+         ' EXPECT_NSEQ() or EXPECT_NSNE() when possible.'
+         '\n\nAffected file%(plural)s:' % {
+            'plural': plural_suffix,
+          }
+    ] + errors) + '\n'
+
+    return [output_api.PresubmitPromptWarning(warning_message)]
 
 def _IsInIosPackage(input_api, path):
     """ Returns True if path is within ios package"""
@@ -227,12 +263,12 @@ def _CheckHasNoBoxedBOOL(input_api, output_api):
         return []
 
     plural_suffix = '' if len(errors) == 1 else 's'
-    error_message = ('Found boxed BOOL%(plural)s. '
+    warning_message = ('Found boxed BOOL%(plural)s. '
                      'Prefer @YES or @NO in ios code:' % {
                          'plural': plural_suffix
                      })
 
-    return [output_api.PresubmitPromptWarning(error_message, items=errors)]
+    return [output_api.PresubmitPromptWarning(warning_message, items=errors)]
 
 def CheckChangeOnUpload(input_api, output_api):
     results = []
@@ -243,4 +279,5 @@ def CheckChangeOnUpload(input_api, output_api):
     results.extend(_CheckHasNoBoxedBOOL(input_api, output_api))
     results.extend(_CheckHasNoChromeBrowserStateForwardDeclaration(input_api,
         output_api))
+    results.extend(_CheckCanImproveTestUsingExpectNSEQ(input_api, output_api))
     return results
