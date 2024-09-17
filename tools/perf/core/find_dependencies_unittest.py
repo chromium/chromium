@@ -23,16 +23,12 @@ class FindDependenciesTest(unittest.TestCase):
           'dependency_test_dir', 'other_animals', 'cat', 'cat')
       cat_module_init_path = os.path.join(cat_module_path, '__init__.py')
       cat_object_path = os.path.join(cat_module_path, 'cat_object.py')
-      answer_set = {
-          dog_object_path, cat_module_path, cat_module_init_path,
-          cat_object_path
-      }
       dependencies = set(
           p for p in find_dependencies.FindPythonDependencies(dog_object_path))
-
-      for path in answer_set:
-        self.assertTrue(path in dependencies)
-
+      self.assertEqual(dependencies, {
+          dog_object_path, cat_module_path, cat_module_init_path,
+          cat_object_path
+      })
     except ImportError:  # crbug.com/559527
       pass
 

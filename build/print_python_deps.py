@@ -24,16 +24,16 @@ def ComputePythonDependencies():
   """Gets the paths of imported non-system python modules.
 
   A path is assumed to be a "system" import if it is outside of chromium's
-  src/. The paths for __file__ are relative for python 3.8 and below. Paths are
-  absolute after python 3.9.
+  src/. The paths will be relative to the current directory.
   """
   module_paths = (m.__file__ for m in sys.modules.values()
-                  if m and hasattr(m, '__file__') and m.__file__
-                  and m.__name__ != '__main__')
+                  if m and hasattr(m, '__file__') and m.__file__)
 
   src_paths = set()
   for path in module_paths:
-    path = os.path.abspath(path) # paths can be relative before 3.9.
+    if path == __file__:
+      continue
+    path = os.path.abspath(path)
     if not path.startswith(_SRC_ROOT):
       continue
 
