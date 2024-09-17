@@ -60,15 +60,10 @@ public abstract class ItemDividerBase extends RecyclerView.ItemDecoration {
     @Override
     public void onDraw(Canvas canvas, RecyclerView parent, RecyclerView.State state) {
         int itemCount = parent.getAdapter().getItemCount();
-        if (itemCount > 1
-                && shouldSkipItemType(parent.getAdapter().getItemViewType(itemCount - 2))) {
-            // Avoid counting the button item.
-            itemCount = itemCount - 1;
-        }
-        if (itemCount > 0
+        // Do not count items at the end like footer, fill button, additional info, etc.
+        while (itemCount > 1
                 && shouldSkipItemType(parent.getAdapter().getItemViewType(itemCount - 1))) {
-            // Avoid counting the footer item.
-            itemCount = itemCount - 1;
+            itemCount--;
         }
         for (int posInView = 0; posInView < parent.getChildCount(); posInView++) {
             View child = parent.getChildAt(posInView);

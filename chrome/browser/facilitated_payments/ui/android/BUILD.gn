@@ -48,18 +48,14 @@ android_library("public_java") {
   resources_package = "org.chromium.chrome.browser.facilitated_payments"
 
   sources = [
-    "java/src/org/chromium/chrome/browser/facilitated_payments/FacilitatedPaymentsItemDividerBase.java",
     "java/src/org/chromium/chrome/browser/facilitated_payments/FacilitatedPaymentsPaymentMethodsComponent.java",
     "java/src/org/chromium/chrome/browser/facilitated_payments/FacilitatedPaymentsSequenceView.java",
   ]
 
   deps = [
     "//chrome/browser/profiles/android:java",
-    "//chrome/browser/touch_to_fill/common/android:java_resources",
     "//components/autofill/android:payments_autofill_java",
     "//components/browser_ui/bottomsheet/android:java",
-    "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
-    "//third_party/androidx:androidx_recyclerview_recyclerview_java",
     "//ui/android:ui_no_recycler_view_java",
   ]
 }
