@@ -16,8 +16,6 @@ example_value:
 features:
   dynamic_refresh: true
   per_profile: false
-future_on:
-- fuchsia
 owners:
 - mattreynolds@chromium.org
 - file://third_party/blink/renderer/modules/hid/OWNERS

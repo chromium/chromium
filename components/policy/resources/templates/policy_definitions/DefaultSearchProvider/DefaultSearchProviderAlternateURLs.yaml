@@ -10,8 +10,6 @@ features:
   can_be_recommended: true
   dynamic_refresh: true
   per_profile: true
-future_on:
-- fuchsia
 owners:
 - file://components/policy/OWNERS
 - rsorokin@chromium.org

@@ -37,7 +37,6 @@ future_on:
 - android
 - chrome.*
 - chrome_os
-- fuchsia
 owners:
 - ellyjones@chromium.org
 - wfh@chromium.org
