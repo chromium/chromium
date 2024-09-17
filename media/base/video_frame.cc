@@ -1563,14 +1563,11 @@ gpu::SyncToken VideoFrame::UpdateReleaseSyncToken(SyncTokenClient* client) {
   return release_sync_token_;
 }
 
-// TODO(crbug.com/332564976): Update method to not take in plane param.
 gpu::SyncToken VideoFrame::UpdateMailboxHolderSyncToken(
-    size_t plane,
     SyncTokenClient* client) {
   DCHECK(HasOneRef());
   DCHECK(HasTextures());
   DCHECK(!wrapped_frame_);
-  DCHECK_LT(plane, kMaxPlanes);
 
   // No lock is required due to the HasOneRef() check.
   auto& token = mailbox_holder_.sync_token;

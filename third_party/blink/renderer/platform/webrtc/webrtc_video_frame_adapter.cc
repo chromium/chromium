@@ -278,6 +278,7 @@ WebRtcVideoFrameAdapter::SharedResources::ConstructVideoFrameFromTexture(
     }
 
     if (dst_frame) {
+      CHECK(dst_frame->HasTextures());
       const bool copy_succeeded = media::CopyRGBATextureToVideoFrame(
           raster_context_provider.get(), format, source_frame->coded_size(),
           source_frame->ColorSpace(), origin, source_frame->mailbox_holder(0),
@@ -311,10 +312,9 @@ WebRtcVideoFrameAdapter::SharedResources::ConstructVideoFrameFromTexture(
         ri->GenUnverifiedSyncTokenCHROMIUM(blit_done_sync_token.GetData());
 
         auto* sii = raster_context_provider->SharedImageInterface();
-        for (size_t plane = 0; plane < dst_frame->NumTextures(); ++plane) {
-          const auto& mailbox = dst_frame->mailbox_holder(plane).mailbox;
-          sii->CopyToGpuMemoryBuffer(blit_done_sync_token, mailbox);
-        }
+
+        const auto& mailbox = dst_frame->mailbox_holder(/*plane=*/0).mailbox;
+        sii->CopyToGpuMemoryBuffer(blit_done_sync_token, mailbox);
 
         // Synchronize RasterInterface with SharedImageInterface.
         auto copy_to_gmb_done_sync_token = sii->GenUnverifiedSyncToken();
@@ -331,9 +331,7 @@ WebRtcVideoFrameAdapter::SharedResources::ConstructVideoFrameFromTexture(
         // synchronized with the GPU.
         gpu::SyncToken empty_sync_token;
         media::SimpleSyncTokenClient simple_client(empty_sync_token);
-        for (size_t plane = 0; plane < dst_frame->NumTextures(); ++plane) {
-          dst_frame->UpdateMailboxHolderSyncToken(plane, &simple_client);
-        }
+        dst_frame->UpdateMailboxHolderSyncToken(&simple_client);
         dst_frame->UpdateReleaseSyncToken(&simple_client);
 
         auto vf = ConstructVideoFrameFromGpu(std::move(dst_frame));
