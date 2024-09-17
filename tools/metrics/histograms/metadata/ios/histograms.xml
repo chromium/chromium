@@ -2490,6 +2490,17 @@ the generic promo launch. -->
   <summary>Logs a user's action on the Notifications Opt-In Prompt.</summary>
 </histogram>
 
+<histogram name="IOS.Notifications.SendTab.Received"
+    enum="PushNotificationSettingsAuthorizationStatus"
+    expires_after="2025-09-13">
+  <owner>hiramahmood@google.com</owner>
+  <owner>bling-get-set-up@google.com</owner>
+  <summary>
+    Logs the notification permission status when a Send Tab notification is
+    recieved on the target device.
+  </summary>
+</histogram>
+
 <histogram name="IOS.Notifications.Tips.Cleared" enum="IOSTipsNotificationType"
     expires_after="2024-12-29">
   <owner>scottyoder@chromium.org</owner>
