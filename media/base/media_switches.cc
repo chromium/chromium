@@ -1152,6 +1152,11 @@ BASE_FEATURE(kMediaCodecCodedSizeGuessing,
              "MediaCodecCodedSizeGuessing",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Allow EOS buffers to be elided by MediaCodecVideoDecoder.
+BASE_FEATURE(kMediaCodecElideEOS,
+             "MediaCodecElideEOS",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enable a gesture to make the media controls expanded into the display cutout.
 // TODO(beccahughes): Remove this.
 BASE_FEATURE(kMediaControlsExpandGesture,

@@ -58,9 +58,10 @@ bool IsSurfaceControlEnabled(const gpu::GpuFeatureInfo& info) {
          gpu::kGpuFeatureStatusEnabled;
 }
 
-std::vector<SupportedVideoDecoderConfig> GetSupportedConfigsInternal(
+std::vector<SupportedVideoDecoderConfig> GenerateSupportedConfigs(
     DeviceInfo* device_info,
-    const bool allow_media_codec_software_decoder) {
+    bool allow_media_codec_sw_decoder,
+    bool require_min_resolution_for_hw_decoder) {
   std::vector<SupportedVideoDecoderConfig> supported_configs;
   for (const auto& info : GetDecoderInfoCache()) {
     const auto codec = VideoCodecProfileToVideoCodec(info.profile);
@@ -81,8 +82,7 @@ std::vector<SupportedVideoDecoderConfig> GetSupportedConfigsInternal(
           info.profile != VP9PROFILE_PROFILE3 &&
           info.secure_codec_capability == SecureCodecCapability::kClear;
       const bool is_os_software_decoder_allowed =
-          !can_use_builtin_software_decoder ||
-          allow_media_codec_software_decoder;
+          !can_use_builtin_software_decoder || allow_media_codec_sw_decoder;
       if (info.is_software_codec && !is_os_software_decoder_allowed) {
         supported_configs.emplace_back(info.profile, info.profile,
                                        info.coded_size_min, info.coded_size_max,
@@ -94,7 +94,8 @@ std::vector<SupportedVideoDecoderConfig> GetSupportedConfigsInternal(
       // Require a minimum of 360p even for hardware decoding of VP8+VP9 and
       // H.264 (if built-in support is available).
       auto coded_size_min = info.coded_size_min;
-      if (!info.is_software_codec && can_use_builtin_software_decoder &&
+      if (require_min_resolution_for_hw_decoder && !info.is_software_codec &&
+          can_use_builtin_software_decoder &&
           (codec == VideoCodec::kVP8 || codec == VideoCodec::kVP9 ||
            codec == VideoCodec::kH264)) {
         coded_size_min.SetToMax(gfx::Size(360, 360));
@@ -230,9 +231,10 @@ PendingDecode::~PendingDecode() = default;
 // static
 std::vector<SupportedVideoDecoderConfig>
 MediaCodecVideoDecoder::GetSupportedConfigs() {
-  static const auto configs = GetSupportedConfigsInternal(
+  static const auto configs = GenerateSupportedConfigs(
       DeviceInfo::GetInstance(),
-      base::FeatureList::IsEnabled(media::kAllowMediaCodecSoftwareDecoder));
+      base::FeatureList::IsEnabled(media::kAllowMediaCodecSoftwareDecoder),
+      /*require_min_resolution_for_hw_decoder=*/true);
   return configs;
 }
 
@@ -362,22 +364,10 @@ void MediaCodecVideoDecoder::Initialize(const VideoDecoderConfig& config,
     return;
   }
 
-  // Tests override the DeviceInfo, so if an override is provided query the
-  // configs as they look under that DeviceInfo. If not, use the default method
-  // which is statically cached for faster Initialize().
-  //
-  // The tests also require the presence of software codecs.
-  const auto configs =
-      device_info_ == DeviceInfo::GetInstance()
-          ? GetSupportedConfigs()
-          : GetSupportedConfigsInternal(
-                device_info_, /*allow_media_codec_software_decoder=*/true);
-
   // If we don't have support support for a given codec, try to initialize
   // anyways -- otherwise we're certain to fail playback.
-  if (!IsVideoDecoderConfigSupported(configs, config) &&
+  if (!IsVideoDecoderConfigSupported(GetSupportedConfigsInternal(), config) &&
       IsBuiltInVideoCodec(config.codec())) {
-    DVLOG(1) << "Unsupported configuration.";
     MEDIA_LOG(INFO, media_log_) << "Video configuration is not valid: "
                                 << config.AsHumanReadableString();
     base::BindPostTaskToCurrentDefault(std::move(init_cb))
@@ -395,6 +385,7 @@ void MediaCodecVideoDecoder::Initialize(const VideoDecoderConfig& config,
         .Run(DecoderStatus::Codes::kCantChangeCodec);
     return;
   }
+  const auto old_size = decoder_config_.coded_size();
   decoder_config_ = config;
 
   surface_chooser_helper_.SetVideoRotation(
@@ -435,8 +426,12 @@ void MediaCodecVideoDecoder::Initialize(const VideoDecoderConfig& config,
   // Restrict this behavior to Q, where the behavior changed.
   if (first_init) {
     last_width_ = width;
-  } else if (width > last_width_ * kReallocateThreshold && device_info_ &&
-             device_info_->SdkVersion() > base::android::SDK_VERSION_P) {
+  } else if (CodecNeedsReallocation(width)) {
+    MEDIA_LOG(INFO, media_log_)
+        << "Queuing deferred codec reallocation for resolution change from "
+        << old_size.ToString() << " to "
+        << decoder_config_.coded_size().ToString();
+
     // Reallocate the codec the next time we queue input, once there are no
     // outstanding output buffers.  Note that |deferred_flush_pending_| might
     // already be set, which is fine.  We're just upgrading the flush.
@@ -449,7 +444,12 @@ void MediaCodecVideoDecoder::Initialize(const VideoDecoderConfig& config,
     // race condition in the android framework.
     should_retry_codec_allocation_ = true;
     last_width_ = width;
-  }  // else leave |last_width_| unmodified, since we're re-using the codec.
+  } else {
+    MEDIA_LOG(INFO, media_log_)
+        << "Reusing codec without reallocation for resolution change from "
+        << old_size.ToString() << " to "
+        << decoder_config_.coded_size().ToString();
+  }
 }
 
 void MediaCodecVideoDecoder::SetCdm(CdmContext* cdm_context, InitCB init_cb) {
@@ -780,8 +780,8 @@ void MediaCodecVideoDecoder::OnCodecConfigured(
     return;
   }
 
-  const auto name = codec->GetName();
-  MEDIA_LOG(INFO, media_log_) << "Created MediaCodec " << name
+  codec_name_ = codec->GetName();
+  MEDIA_LOG(INFO, media_log_) << "Created MediaCodec " << codec_name_
                               << ", is_software_codec=" << is_software_codec_;
 
   // Since we can't get the coded size w/o rendering the frame, we try to guess
@@ -789,7 +789,8 @@ void MediaCodecVideoDecoder::OnCodecConfigured(
   // we can't guess, there will be a visible rendering glitch.
   std::optional<gfx::Size> coded_size_alignment;
   if (base::FeatureList::IsEnabled(kMediaCodecCodedSizeGuessing)) {
-    coded_size_alignment = MediaCodecUtil::LookupCodedSizeAlignment(name);
+    coded_size_alignment =
+        MediaCodecUtil::LookupCodedSizeAlignment(codec_name_);
     if (coded_size_alignment) {
       MEDIA_LOG(INFO, media_log_) << "Using a coded size alignment of "
                                   << coded_size_alignment->ToString();
@@ -797,7 +798,7 @@ void MediaCodecVideoDecoder::OnCodecConfigured(
       // TODO(crbug.com/40917948): If the known cases work well, we can try
       // guessing generically since we get a glitch either way.
       MEDIA_LOG(WARNING, media_log_)
-          << "Unable to lookup coded size alignment for codec " << name;
+          << "Unable to lookup coded size alignment for codec " << codec_name_;
     }
   }
 
@@ -953,6 +954,43 @@ bool MediaCodecVideoDecoder::QueueInput() {
       deferred_flush_pending_ = true;
       deferred_reallocation_pending_ = true;
       last_width_ = decoder_config_.coded_size().width();
+      return true;
+    }
+  }
+
+  // See if we can elide the EOS / Flush for a config change. Some platforms
+  // may tear down expensive scaffolding around HDR during a flush.
+  //
+  // Note: Normally we must wait for all buffers to be emitted and rendered
+  // before running the EOS DecodeCB. We're relying on an implementation detail
+  // in DecoderSelector -- that the existing VideoDecoder will be reused.
+  //
+  // If this ever changes, the code below runs the risk of dropping all frames
+  // which haven't been received and rendered from the MediaCodec instance.
+  if (base::FeatureList::IsEnabled(kMediaCodecElideEOS) &&
+      pending_decode.buffer->end_of_stream() &&
+      pending_decode.buffer->next_config()) {
+    const auto new_config =
+        absl::get<VideoDecoderConfig>(*pending_decode.buffer->next_config());
+
+    // The underlying MediaCodec must remain the same in order for us to elide
+    // the end of stream flush.
+    const bool can_reuse_codec = [&]() {
+      bool unused_is_sw_codec;
+      std::string codec_name;
+      SelectMediaCodec(new_config, requires_secure_codec_, &codec_name,
+                       &unused_is_sw_codec);
+      return !codec_name_.empty() && codec_name == codec_name_ &&
+             !CodecNeedsReallocation(new_config.coded_size().width());
+    }();
+
+    if (can_reuse_codec) {
+      MEDIA_LOG(INFO, media_log_)
+          << "Eliding EOS buffer and flush for resolution change from "
+          << decoder_config_.coded_size().ToString() << " to "
+          << new_config.coded_size().ToString();
+      std::move(pending_decode.decode_cb).Run(DecoderStatus::Codes::kOk);
+      pending_decodes_.pop_front();
       return true;
     }
   }
@@ -1319,6 +1357,43 @@ void MediaCodecVideoDecoder::NotifyPromotionHint(
 void MediaCodecVideoDecoder::CacheFrameInformation() {
   cached_frame_information_ =
       surface_chooser_helper_.ComputeFrameInformation(IsUsingOverlay());
+}
+
+bool MediaCodecVideoDecoder::CodecNeedsReallocation(int new_width) {
+  return !use_block_model_ && new_width > last_width_ * kReallocateThreshold &&
+         device_info_ &&
+         device_info_->SdkVersion() > base::android::SDK_VERSION_P;
+}
+
+std::vector<SupportedVideoDecoderConfig>
+MediaCodecVideoDecoder::GetSupportedConfigsInternal() {
+  const bool first_init = !decoder_config_.IsValidConfig();
+  const bool require_min_resolution_for_hw_decoder =
+      first_init || !base::FeatureList::IsEnabled(kMediaCodecElideEOS);
+
+  // Tests override the DeviceInfo, so if an override is provided query the
+  // configs as they look under that DeviceInfo.
+  if (device_info_ != DeviceInfo::GetInstance()) {
+    return GenerateSupportedConfigs(device_info_,
+                                    /*allow_media_codec_sw_decoder=*/true,
+                                    require_min_resolution_for_hw_decoder);
+  }
+
+  // Use the default cached results if minimum resolutions should be enforced.
+  if (require_min_resolution_for_hw_decoder) {
+    return GetSupportedConfigs();
+  }
+
+  // Otherwise, regenerate the supported config list w/o the artificial minimum
+  // resolution requirements so we can reuse the codec for adaptations below the
+  // minimum resolution. The actual minimum resolution will still be set.
+  //
+  // Note: This only regenerates the std::vector<> of configs, the actual
+  // MediaCodecInfo data is still cached elsewhere.
+  return GenerateSupportedConfigs(
+      device_info_,
+      base::FeatureList::IsEnabled(media::kAllowMediaCodecSoftwareDecoder),
+      require_min_resolution_for_hw_decoder);
 }
 
 }  // namespace media

@@ -42,9 +42,16 @@ DecoderBuffer::DecoderBuffer(base::HeapArray<uint8_t> data)
 DecoderBuffer::DecoderBuffer(std::unique_ptr<ExternalMemory> external_memory)
     : external_memory_(std::move(external_memory)) {}
 
-DecoderBuffer::DecoderBuffer(DecoderBufferType decoder_buffer_type)
+DecoderBuffer::DecoderBuffer(DecoderBufferType decoder_buffer_type,
+                             std::optional<ConfigVariant> next_config)
     : is_end_of_stream_(decoder_buffer_type ==
-                        DecoderBufferType::kEndOfStream) {}
+                        DecoderBufferType::kEndOfStream) {
+  if (next_config) {
+    DCHECK(end_of_stream());
+    side_data_ = std::make_unique<DecoderBufferSideData>();
+    side_data_->next_config = std::move(next_config);
+  }
+}
 
 DecoderBuffer::~DecoderBuffer() = default;
 
@@ -110,9 +117,10 @@ scoped_refptr<DecoderBuffer> DecoderBuffer::FromExternalMemory(
 }
 
 // static
-scoped_refptr<DecoderBuffer> DecoderBuffer::CreateEOSBuffer() {
-  return base::WrapRefCounted(
-      new DecoderBuffer(DecoderBufferType::kEndOfStream));
+scoped_refptr<DecoderBuffer> DecoderBuffer::CreateEOSBuffer(
+    std::optional<ConfigVariant> next_config) {
+  return base::WrapRefCounted(new DecoderBuffer(DecoderBufferType::kEndOfStream,
+                                                std::move(next_config)));
 }
 
 // static
@@ -148,6 +156,7 @@ void DecoderBuffer::set_discard_padding(const DiscardPadding& discard_padding) {
 }
 
 DecoderBufferSideData& DecoderBuffer::WritableSideData() {
+  DCHECK(!end_of_stream());
   if (!has_side_data()) {
     side_data_ = std::make_unique<DecoderBufferSideData>();
   }
@@ -156,6 +165,7 @@ DecoderBufferSideData& DecoderBuffer::WritableSideData() {
 
 void DecoderBuffer::set_side_data(
     std::optional<DecoderBufferSideData> side_data) {
+  DCHECK(!end_of_stream());
   if (!side_data) {
     side_data_.reset();
     return;
@@ -165,15 +175,7 @@ void DecoderBuffer::set_side_data(
 
 bool DecoderBuffer::MatchesMetadataForTesting(
     const DecoderBuffer& buffer) const {
-  if (end_of_stream() != buffer.end_of_stream())
-    return false;
-
-  // It is illegal to call any member function if eos is true.
-  if (end_of_stream())
-    return true;
-
-  if (timestamp() != buffer.timestamp() || duration() != buffer.duration() ||
-      is_key_frame() != buffer.is_key_frame()) {
+  if (end_of_stream() != buffer.end_of_stream()) {
     return false;
   }
 
@@ -181,7 +183,18 @@ bool DecoderBuffer::MatchesMetadataForTesting(
     return false;
   }
 
-  if (has_side_data() && !side_data()->Matches(buffer.side_data().value())) {
+  // Note: We use `side_data_` directly to avoid DCHECKs for EOS buffers.
+  if (has_side_data() && !side_data_->Matches(*buffer.side_data_)) {
+    return false;
+  }
+
+  // None of the following methods may be called on an EOS buffer.
+  if (end_of_stream()) {
+    return true;
+  }
+
+  if (timestamp() != buffer.timestamp() || duration() != buffer.duration() ||
+      is_key_frame() != buffer.is_key_frame()) {
     return false;
   }
 

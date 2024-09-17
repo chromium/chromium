@@ -545,13 +545,6 @@ void DecoderStream<StreamType>::DecodeInternal(
 }
 
 template <DemuxerStream::Type StreamType>
-void DecoderStream<StreamType>::FlushDecoder() {
-  // Send the EOS directly to the decoder, bypassing a potential add to
-  // |pending_buffers_|.
-  DecodeInternal(DecoderBuffer::CreateEOSBuffer());
-}
-
-template <DemuxerStream::Type StreamType>
 void DecoderStream<StreamType>::OnDecodeDone(
     int buffer_size,
     bool end_of_stream,
@@ -876,7 +869,8 @@ void DecoderStream<StreamType>::OnBuffersReady(
       }
       // Reinitialization will continue after Reset() is done.
     } else {
-      FlushDecoder();
+      // Flush the decoder with an EOS buffer including the upcoming config.
+      DecodeInternal(DecoderBuffer::CreateEOSBuffer(config));
     }
     return;
   }
@@ -926,7 +920,12 @@ void DecoderStream<StreamType>::ReinitializeDecoder() {
   DCHECK_EQ(pending_decode_requests_, 0);
 
   state_ = State::kStateReinitializingDecoder;
+
+  // Note: Some VideoDecoder implementations (e.g., MediaCodecVideoDecoder) are
+  // relying on the fact that the existing VideoDecoder instance is given first
+  // dibs to handle any configuration changes. Take care when changing this.
   decoder_selector_.PrependDecoder(std::move(decoder_));
+
   BeginDecoderSelection();
 }
 

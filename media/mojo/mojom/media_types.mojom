@@ -268,15 +268,33 @@ struct DecryptConfig {
   EncryptionPattern? encryption_pattern;
 };
 
+union DecoderBufferSideDataNextConfig {
+  AudioDecoderConfig next_audio_config;
+  VideoDecoderConfig next_video_config;
+};
+
 // This defines a mojo transport format for media::DecoderBufferSideData.
 struct DecoderBufferSideData {
+  // VP9 specific information.
   array<uint32> spatial_layers;
   array<uint8> alpha_data;
+
+  // Secure buffer handle corresponding to the decrypted contents of the
+  // associated DecoderBuffer. A non-zero value indicates this was set.
+  //
+  // Required by some hardware content protection mechanisms to ensure the
+  // decrypted buffer never leaves secure memory. When set, this DecoderBuffer
+  // generally carries the partially (headers in the clear) encrypted payload;
   uint64 secure_handle;
 
   // These fields indicate the amount of data to discard after decoding.
   mojo_base.mojom.TimeDelta front_discard;
   mojo_base.mojom.TimeDelta back_discard;
+
+  // If the buffer is an end of stream buffer, presence of `next_config`
+  // indicates that the EOS is for a config change. Decoders may make more
+  // optimal flushing decisions using this information.
+  DecoderBufferSideDataNextConfig? next_config;
 };
 
 // This defines a mojo transport format for media::DecoderBuffer.

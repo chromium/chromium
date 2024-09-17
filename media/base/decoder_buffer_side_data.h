@@ -11,7 +11,10 @@
 #include <vector>
 
 #include "base/time/time.h"
+#include "media/base/audio_decoder_config.h"
 #include "media/base/media_export.h"
+#include "media/base/video_decoder_config.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace media {
 
@@ -30,6 +33,10 @@ struct MEDIA_EXPORT DecoderBufferSideData {
 
   // Secure buffer handle corresponding to the decrypted contents of the
   // associated DecoderBuffer. A non-zero value indicates this was set.
+  //
+  // Required by some hardware content protection mechanisms to ensure the
+  // decrypted buffer never leaves secure memory. When set, this DecoderBuffer
+  // generally carries the partially (headers in the clear) encrypted payload;
   uint64_t secure_handle = 0;
 
   // Duration of (audio) samples from the beginning and end of this frame
@@ -38,6 +45,12 @@ struct MEDIA_EXPORT DecoderBufferSideData {
   // second value must be base::TimeDelta() in this case.
   using DiscardPadding = std::pair<base::TimeDelta, base::TimeDelta>;
   DiscardPadding discard_padding;
+
+  // If set, it signals that the current end of stream buffer is for a config
+  // change. The upcoming config may be used by the decoder to make more optimal
+  // decisions around reallocation and flushing. Only set on EOS buffers.
+  using ConfigVariant = absl::variant<AudioDecoderConfig, VideoDecoderConfig>;
+  std::optional<ConfigVariant> next_config;
 };
 
 }  // namespace media

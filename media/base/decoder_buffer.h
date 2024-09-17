@@ -113,11 +113,15 @@ class MEDIA_EXPORT DecoderBuffer
   static scoped_refptr<DecoderBuffer> FromExternalMemory(
       std::unique_ptr<ExternalMemory> external_memory);
 
-  // Create a DecoderBuffer indicating we've reached end of stream.
+  // Create a DecoderBuffer indicating we've reached end of stream. If this is
+  // an EOS buffer for a config change, the upcoming config may optionally be
+  // provided to allow the decoder to make more optimal configuration decisions.
   //
-  // Calling any method other than end_of_stream() on the resulting buffer
-  // is disallowed.
-  static scoped_refptr<DecoderBuffer> CreateEOSBuffer();
+  // Calling any method other than end_of_stream() or next_config() on the
+  // resulting buffer is disallowed.
+  using ConfigVariant = DecoderBufferSideData::ConfigVariant;
+  static scoped_refptr<DecoderBuffer> CreateEOSBuffer(
+      std::optional<ConfigVariant> next_config = std::nullopt);
 
   // Method to verify if subsamples of a DecoderBuffer match.
   static bool DoSubsamplesMatch(const DecoderBuffer& buffer);
@@ -188,8 +192,7 @@ class MEDIA_EXPORT DecoderBuffer
     return external_memory_ ? external_memory_->Span().empty() : data_.empty();
   }
 
-  // TODO(crbug.com/365814210): Remove this method and force callers to get it
-  // through side_data().
+  // TODO(crbug.com/365814210): Change the return type to std::optional.
   DiscardPadding discard_padding() const {
     DCHECK(!end_of_stream());
     return side_data_ ? side_data_->discard_padding : DiscardPadding();
@@ -235,6 +238,7 @@ class MEDIA_EXPORT DecoderBuffer
 
   // TODO(crbug.com/365814210): Convert to const*.
   std::optional<DecoderBufferSideData> side_data() const {
+    DCHECK(!end_of_stream());
     return side_data_ ? std::optional<DecoderBufferSideData>(*side_data_)
                       : std::nullopt;
   }
@@ -258,6 +262,12 @@ class MEDIA_EXPORT DecoderBuffer
   // function is added for more accurately memory management.
   virtual size_t GetMemoryUsage() const;
 
+  // Accessor for DecoderBufferSideData::next_config.
+  std::optional<ConfigVariant> next_config() const {
+    DCHECK(end_of_stream());
+    return side_data_ ? side_data_->next_config : std::nullopt;
+  }
+
  protected:
   friend class base::RefCountedThreadSafe<DecoderBuffer>;
   enum class DecoderBufferType { kNormal, kEndOfStream };
@@ -270,7 +280,8 @@ class MEDIA_EXPORT DecoderBuffer
 
   explicit DecoderBuffer(std::unique_ptr<ExternalMemory> external_memory);
 
-  explicit DecoderBuffer(DecoderBufferType decoder_buffer_type);
+  DecoderBuffer(DecoderBufferType decoder_buffer_type,
+                std::optional<ConfigVariant> next_config);
 
   virtual ~DecoderBuffer();
 

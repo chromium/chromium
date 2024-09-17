@@ -668,12 +668,30 @@ TEST_P(VideoDecoderStreamTest, ConfigChangeHwToSw) {
   auto const height_delta = size_delta.height() / kNumConfigs;
   CreateDemuxerStream(TestVideoConfig::LargeCodedSize(),
                       gfx::Vector2dF(-width_delta, -height_delta));
+  auto base_config = demuxer_stream_->video_decoder_config();
   Initialize();
 
   // We should initially be using a hardware decoder
   EXPECT_TRUE(decoder_);
   EXPECT_TRUE(decoder_->IsPlatformDecoder());
   ReadAllFrames();
+
+  // Test goes through 3 size changes from the initial LargeCodedSize, each step
+  // reduces by [width_delta, height_delta].
+  auto expected_config = base_config;
+  auto expected_size =
+      expected_config.coded_size() -
+      gfx::ScaleToCeiledSize(gfx::Size(width_delta, height_delta),
+                             kNumConfigs - 1);
+  expected_config.set_coded_size(expected_size);
+  expected_config.set_visible_rect(gfx::Rect(expected_size));
+  expected_config.set_natural_size(expected_size);
+  ASSERT_FALSE(decoder_->eos_next_configs().empty());
+  if (!decoder_->eos_next_configs().back().is_encrypted() &&
+      expected_config.is_encrypted()) {
+    expected_config.SetIsEncrypted(false);  // May be stripped by demuxer.
+  }
+  EXPECT_TRUE(decoder_->eos_next_configs().back().Matches(expected_config));
 
   // We should end up on a software decoder
   EXPECT_FALSE(decoder_->IsPlatformDecoder());

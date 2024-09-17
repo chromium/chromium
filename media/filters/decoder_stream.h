@@ -197,10 +197,6 @@ class MEDIA_EXPORT DecoderStream {
   // Performs the heavy lifting of the decode call.
   void DecodeInternal(scoped_refptr<DecoderBuffer> buffer);
 
-  // Flushes the decoder with an EOS buffer to retrieve internally buffered
-  // decoder output.
-  void FlushDecoder();
-
   // Callback for Decoder::Decode().
   void OnDecodeDone(int buffer_size,
                     bool end_of_stream,

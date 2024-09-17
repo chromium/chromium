@@ -12,6 +12,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "gpu/command_buffer/service/mock_texture_owner.h"
 #include "gpu/command_buffer/service/ref_counted_lock_for_test.h"
@@ -22,6 +23,7 @@
 #include "media/base/android/mock_media_crypto_context.h"
 #include "media/base/async_destroy_video_decoder.h"
 #include "media/base/decoder_buffer.h"
+#include "media/base/media_switches.h"
 #include "media/base/media_util.h"
 #include "media/base/supported_video_decoder_config.h"
 #include "media/base/test_helpers.h"
@@ -728,6 +730,67 @@ TEST_P(MediaCodecVideoDecoderTest, ResetDoesNotDrainCodecs) {
   mcvd_->Reset(reset_cb.Get());
   // The reset should complete before destroying the codec.
   testing::Mock::VerifyAndClearExpectations(&reset_cb);
+}
+
+TEST_P(MediaCodecVideoDecoderTest, ElidedEOSForConfigChange) {
+  base::test::ScopedFeatureList enabled(kMediaCodecElideEOS);
+  auto* codec =
+      InitializeFully_OneDecodePending(TestVideoConfig::Large(codec_));
+  ASSERT_TRUE(codec);
+  mcvd_->Decode(DecoderBuffer::CreateEOSBuffer(TestVideoConfig::Normal(codec_)),
+                decode_cb_.Get());
+
+  // Produce one output that VFF will hold onto.
+  codec->AcceptOneInput();
+  codec->ProduceOneOutput();
+  PumpCodec();
+
+  // Skip draining the codec.
+  EXPECT_CALL(*codec, Flush()).Times(0);
+  PumpCodec();
+
+  // Create a pending decode. The codec should still not be flushed because
+  // there is an unrendered output buffer.
+  mcvd_->Decode(fake_decoder_buffer_, decode_cb_.Get());
+  PumpCodec();
+
+  // Unlike the normal EOS path, releasing the output shouldn't cause a flush.
+  video_frame_factory_->last_output_buffer_.reset();
+  EXPECT_CALL(*codec, Flush()).Times(0);
+  PumpCodec();
+}
+
+TEST_P(MediaCodecVideoDecoderTest, ElidedEOSSkippedForCodecChange) {
+  base::test::ScopedFeatureList enabled(kMediaCodecElideEOS);
+  auto* codec =
+      InitializeFully_OneDecodePending(TestVideoConfig::Large(codec_));
+  ASSERT_TRUE(codec);
+  auto different_codec =
+      codec_ == VideoCodec::kAV1 ? VideoCodec::kVP9 : VideoCodec::kAV1;
+  mcvd_->Decode(
+      DecoderBuffer::CreateEOSBuffer(TestVideoConfig::Normal(different_codec)),
+      decode_cb_.Get());
+
+  // Produce one output that VFF will hold onto.
+  codec->AcceptOneInput();
+  codec->ProduceOneOutput();
+  PumpCodec();
+
+  // Drain the codec.
+  EXPECT_CALL(*codec, Flush()).Times(0);
+  codec->AcceptOneInput(MockMediaCodecBridge::kEos);
+  codec->ProduceOneOutput(MockMediaCodecBridge::kEos);
+  PumpCodec();
+
+  // Create a pending decode. The codec should still not be flushed because
+  // there is an unrendered output buffer.
+  mcvd_->Decode(fake_decoder_buffer_, decode_cb_.Get());
+  PumpCodec();
+
+  // Releasing the output buffer should now trigger a flush.
+  video_frame_factory_->last_output_buffer_.reset();
+  EXPECT_CALL(*codec, Flush());
+  PumpCodec();
 }
 
 TEST_P(MediaCodecVideoDecoderTest, CodecFlushIsDeferredAfterDraining) {

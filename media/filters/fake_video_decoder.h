@@ -89,6 +89,8 @@ class FakeVideoDecoder : public VideoDecoder {
 
   int total_bytes_decoded() const { return total_bytes_decoded_; }
 
+  auto eos_next_configs() const { return eos_next_configs_; }
+
  protected:
   enum State {
     STATE_UNINITIALIZED,
@@ -141,6 +143,8 @@ class FakeVideoDecoder : public VideoDecoder {
   int total_bytes_decoded_;
 
   bool fail_to_initialize_;
+
+  std::vector<VideoDecoderConfig> eos_next_configs_;
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
   base::WeakPtrFactory<FakeVideoDecoder> weak_factory_{this};

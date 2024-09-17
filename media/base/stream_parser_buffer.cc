@@ -19,9 +19,10 @@ namespace media {
 static_assert(StreamParserBuffer::Type::TYPE_MAX < 4,
               "StreamParserBuffer::type_ has a max storage size of two bits.");
 
-scoped_refptr<StreamParserBuffer> StreamParserBuffer::CreateEOSBuffer() {
-  return base::WrapRefCounted(
-      new StreamParserBuffer(DecoderBufferType::kEndOfStream));
+scoped_refptr<StreamParserBuffer> StreamParserBuffer::CreateEOSBuffer(
+    std::optional<ConfigVariant> next_config) {
+  return base::WrapRefCounted(new StreamParserBuffer(
+      DecoderBufferType::kEndOfStream, std::move(next_config)));
 }
 
 scoped_refptr<StreamParserBuffer> StreamParserBuffer::CopyFrom(
@@ -115,8 +116,11 @@ StreamParserBuffer::StreamParserBuffer(const uint8_t* data,
     set_is_key_frame(true);
 }
 
-StreamParserBuffer::StreamParserBuffer(DecoderBufferType decoder_buffer_type)
-    : DecoderBuffer(decoder_buffer_type), type_(Type::UNKNOWN), track_id_(-1) {}
+StreamParserBuffer::StreamParserBuffer(DecoderBufferType decoder_buffer_type,
+                                       std::optional<ConfigVariant> next_config)
+    : DecoderBuffer(decoder_buffer_type, next_config),
+      type_(Type::UNKNOWN),
+      track_id_(-1) {}
 
 StreamParserBuffer::~StreamParserBuffer() = default;
 

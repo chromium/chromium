@@ -131,7 +131,8 @@ class MEDIA_EXPORT StreamParserBuffer : public DecoderBuffer {
   typedef DemuxerStream::Type Type;
   typedef StreamParser::TrackId TrackId;
 
-  static scoped_refptr<StreamParserBuffer> CreateEOSBuffer();
+  static scoped_refptr<StreamParserBuffer> CreateEOSBuffer(
+      std::optional<ConfigVariant> next_config = std::nullopt);
 
   static scoped_refptr<StreamParserBuffer> CopyFrom(const uint8_t* data,
                                                     int data_size,
@@ -211,7 +212,8 @@ class MEDIA_EXPORT StreamParserBuffer : public DecoderBuffer {
                      bool is_key_frame,
                      Type type,
                      TrackId track_id);
-  explicit StreamParserBuffer(DecoderBufferType decoder_buffer_type);
+  StreamParserBuffer(DecoderBufferType decoder_buffer_type,
+                     std::optional<ConfigVariant> next_config);
   ~StreamParserBuffer() override;
 
   // ***************************************************************************
