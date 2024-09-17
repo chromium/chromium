@@ -10,6 +10,7 @@
 #include "base/json/json_file_value_serializer.h"
 #include "base/json/values_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/run_until.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/enterprise/connectors/reporting/extension_telemetry_event_router_factory.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client.h"
@@ -81,6 +82,8 @@ constexpr const char kScriptCode[] = "document.write('Hello World')";
 constexpr const char kCookieName[] = "cookie-1";
 constexpr const char kCookieStoreId[] = "store-1";
 constexpr const char kCookieURL[] = "http://www.example1.com/";
+// Size of extension ids are 33 bytes.
+constexpr const int kMinReportSize = 32;
 
 constexpr char kFileDataProcessTimestampPref[] = "last_processed_timestamp";
 constexpr char kFileDataDictPref[] = "file_data";
@@ -92,7 +95,9 @@ constexpr char kJavaScriptFile[] = "js_file.js";
 
 class ExtensionTelemetryServiceTest : public ::testing::Test {
  protected:
-  ExtensionTelemetryServiceTest();
+  explicit ExtensionTelemetryServiceTest(
+      base::test::TaskEnvironment::TimeSource time_source =
+          base::test::TaskEnvironment::TimeSource::MOCK_TIME);
   void SetUp() override {
     ASSERT_NE(telemetry_service_, nullptr);
     ASSERT_TRUE(extensions_root_dir_.CreateUniqueTempDir());
@@ -194,8 +199,9 @@ class ExtensionTelemetryServiceTest : public ::testing::Test {
   base::TimeDelta kStartupUploadCheckDelaySeconds = base::Seconds(20);
 };
 
-ExtensionTelemetryServiceTest::ExtensionTelemetryServiceTest()
-    : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+ExtensionTelemetryServiceTest::ExtensionTelemetryServiceTest(
+    base::test::TaskEnvironment::TimeSource time_source)
+    : task_environment_{time_source} {
   scoped_feature_list_.InitWithFeatures(
       /*enabled_features=*/{kExtensionTelemetryDisableOffstoreExtensions,
                             kExtensionTelemetryFileDataForCommandLineExtensions,
@@ -664,8 +670,8 @@ TEST_F(ExtensionTelemetryServiceTest,
     task_environment_.FastForwardBy(
         telemetry_service_->current_reporting_interval());
 
-    EXPECT_EQ(GetTelemetryReport()->management_authority_trustworthiness(),
-              TelemetryReport::NONE);
+    EXPECT_EQ(GetTelemetryReport()->management_authority(),
+              TelemetryReport::MANAGEMENT_AUTHORITY_NONE);
   }
 
   {
@@ -682,8 +688,8 @@ TEST_F(ExtensionTelemetryServiceTest,
     task_environment_.FastForwardBy(
         telemetry_service_->current_reporting_interval());
 
-    EXPECT_EQ(GetTelemetryReport()->management_authority_trustworthiness(),
-              TelemetryReport::LOW);
+    EXPECT_EQ(GetTelemetryReport()->management_authority(),
+              TelemetryReport::MANAGEMENT_AUTHORITY_LOW);
   }
 
   {
@@ -700,8 +706,8 @@ TEST_F(ExtensionTelemetryServiceTest,
     task_environment_.FastForwardBy(
         telemetry_service_->current_reporting_interval());
 
-    EXPECT_EQ(GetTelemetryReport()->management_authority_trustworthiness(),
-              TelemetryReport::TRUSTED);
+    EXPECT_EQ(GetTelemetryReport()->management_authority(),
+              TelemetryReport::MANAGEMENT_AUTHORITY_TRUSTED);
   }
 
   {
@@ -718,8 +724,8 @@ TEST_F(ExtensionTelemetryServiceTest,
     task_environment_.FastForwardBy(
         telemetry_service_->current_reporting_interval());
 
-    EXPECT_EQ(GetTelemetryReport()->management_authority_trustworthiness(),
-              TelemetryReport::FULLY_TRUSTED);
+    EXPECT_EQ(GetTelemetryReport()->management_authority(),
+              TelemetryReport::MANAGEMENT_AUTHORITY_FULLY_TRUSTED);
   }
 }
 
@@ -1515,6 +1521,44 @@ TEST_F(ExtensionTelemetryServiceTest, DisableOffstoreExtensions_Reenable) {
       extension_registry_->enabled_extensions().Contains(kExtensionId[0]));
   EXPECT_FALSE(
       extension_registry_->blocklisted_extensions().Contains(kExtensionId[0]));
+}
+
+class ExtensionTelemetryServiceSystemTimeTest
+    : public ExtensionTelemetryServiceTest {
+ public:
+  ExtensionTelemetryServiceSystemTimeTest()
+      : ExtensionTelemetryServiceTest(
+            base::test::TaskEnvironment::TimeSource::SYSTEM_TIME) {}
+};
+
+// Verify that a telemetry report persisted at service shutdown should have the
+// `MANAGEMENT_AUTHORITY_UNSPECIFIED` management authority value.
+// Regression test for https://crbug.com/362493322.
+TEST_F(ExtensionTelemetryServiceSystemTimeTest,
+       PersistsReportsWithUnspecifiedManagementAuthorityOnShutdown) {
+  // Set up signals and persist a telemetry report after shutdown.
+  PrimeTelemetryServiceWithSignal();
+  telemetry_service_->Shutdown();
+
+  // Retrieve persisted report.
+  base::FilePath persisted_file_path = profile_.GetPath()
+                                           .AppendASCII("CRXTelemetry")
+                                           .AppendASCII("CRXTelemetry_0");
+  EXPECT_TRUE(base::test::RunUntil([&] {
+    int64_t file_size = 0;
+    return base::PathExists(persisted_file_path) &&
+           base::GetFileSize(persisted_file_path, &file_size) &&
+           file_size > kMinReportSize;
+  }));
+
+  std::string persisted_report;
+  EXPECT_TRUE(base::ReadFileToString(persisted_file_path, &persisted_report));
+  ExtensionTelemetryReportRequest request;
+  request.ParseFromString(persisted_report);
+
+  // Verify management authority.
+  EXPECT_EQ(request.management_authority(),
+            TelemetryReport::MANAGEMENT_AUTHORITY_UNSPECIFIED);
 }
 
 }  // namespace safe_browsing

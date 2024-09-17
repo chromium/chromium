@@ -2482,7 +2482,8 @@ message ExtensionTelemetryReportRequest {
   // Tracks the current setting of developer mode in chrome://extensions page.
   optional bool developer_mode_enabled = 4;
 
-  // Level of trustworthiness of a management authority entity.
+  // DEPRECATED.
+  // TODO(crbug.com/367327319): Clean up after new proto is live.
   enum ManagementAuthorityTrustworthiness {
     NONE = 0;           // No management authority found.
     LOW = 1;            // Local device management authority.
@@ -2491,11 +2492,27 @@ message ExtensionTelemetryReportRequest {
                         // e.g. CBCM, ChromeOS.
   }
 
-  // The highest level of trustworthiness between the platform and the browser.
+  // DEPRECATED.
+  // TODO(crbug.com/367327319): Clean up after new proto is live.
   optional ManagementAuthorityTrustworthiness
-      management_authority_trustworthiness = 5;
+      management_authority_trustworthiness = 5 [deprecated = true];
 
-  // Next available tag number: 6.
+  // Level of trustworthiness of a management authority entity.
+  enum ManagementAuthority {
+    MANAGEMENT_AUTHORITY_UNSPECIFIED = 0;
+    MANAGEMENT_AUTHORITY_NONE = 1;     // No management authority found.
+    MANAGEMENT_AUTHORITY_LOW = 2;      // Local device management authority.
+    MANAGEMENT_AUTHORITY_TRUSTED = 3;  // Non-local management authority.
+    MANAGEMENT_AUTHORITY_FULLY_TRUSTED =
+        4;  // Cryptographically verifiable policy source
+            // e.g. CBCM, ChromeOS.
+  }
+
+  // The highest level of management authority trustworthiness between the
+  // platform and the browser.
+  optional ManagementAuthority management_authority = 6;
+
+  // Next available tag number: 7.
 }
 
 message ExtensionTelemetryReportResponse {
