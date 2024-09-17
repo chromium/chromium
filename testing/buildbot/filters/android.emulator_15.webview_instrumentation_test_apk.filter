@@ -18,8 +18,5 @@
 # crbug.com/362627263
 -org.chromium.android_webview.test.PopupWindowTest.testSingleWindowModeJsInjection
 
-# crbug.com/366524564
--org.chromium.android_webview.test.AwContentsGarbageCollectionTest.*
-
 # crbug.com/366525212
 -org.chromium.android_webview.test.AndroidAutofillSafeModeTest.testAutofillProviderNotInitialised
