@@ -866,10 +866,7 @@ void ManagePasswordsUIController::SavePassword(const std::u16string& username,
   bubble_status_ = BubbleStatus::SHOWN_PENDING_ICON_UPDATE;
   Browser* browser = chrome::FindBrowserWithTab(web_contents());
   // Do not trigger the IPH if the sign in promo will be shown.
-  if (browser &&
-      !signin::ShouldShowSignInPromo(
-          *browser->profile(),
-          signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE)) {
+  if (browser && !signin::ShouldShowPasswordSignInPromo(*browser->profile())) {
     if (browser->window()->MaybeShowFeaturePromo(
             feature_engagement::
                 kIPHPasswordsManagementBubbleAfterSaveFeature)) {

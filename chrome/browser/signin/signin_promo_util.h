@@ -11,15 +11,21 @@ namespace signin_metrics {
 enum class AccessPoint;
 }
 
+namespace autofill {
+class AutofillProfile;
+}
+
 namespace signin {
 
 // Whether we should show the sync promo.
 bool ShouldShowSyncPromo(Profile& profile);
 
-// Whether we should show the sign in promo after data of the type
-// |signin_promo_type| was saved.
-bool ShouldShowSignInPromo(Profile& profile,
-                           signin_metrics::AccessPoint access_point);
+// Whether we should show the sign in promo after a password was saved.
+bool ShouldShowPasswordSignInPromo(Profile& profile);
+
+// Whether we should show the sign in promo after `address` was saved.
+bool ShouldShowAddressSignInPromo(Profile& profile,
+                                  const autofill::AutofillProfile& address);
 
 // Returns whether `access_point` has an equivalent autofill signin promo.
 bool IsAutofillSigninPromo(signin_metrics::AccessPoint access_point);

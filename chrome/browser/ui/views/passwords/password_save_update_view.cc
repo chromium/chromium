@@ -215,9 +215,7 @@ bool PasswordSaveUpdateView::OnCloseRequested(
 bool PasswordSaveUpdateView::CloseOrReplaceWithPromo() {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Close the bubble if the sign in promo should not be shown.
-  if (!signin::ShouldShowSignInPromo(
-          *controller_.GetProfile(),
-          signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE)) {
+  if (!signin::ShouldShowPasswordSignInPromo(*controller_.GetProfile())) {
     return true;
   }
 
