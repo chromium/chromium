@@ -35,6 +35,10 @@
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_file_handle.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_transfer_token.mojom.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/content_uri_utils.h"
+#endif
+
 using blink::mojom::FileSystemAccessEntry;
 using blink::mojom::FileSystemAccessEntryPtr;
 using blink::mojom::FileSystemAccessHandle;
@@ -780,9 +784,17 @@ FileSystemAccessDirectoryHandleImpl::GetChildURL(
         FileSystemAccessStatus::kInvalidArgument, "Name is not allowed.");
   }
 
+#if BUILDFLAG(IS_ANDROID)
+  base::FilePath child_path =
+      parent.virtual_path().IsContentUri()
+          ? ContentUriBuildDocumentUriUsingTree(parent.virtual_path(), basename)
+          : parent.virtual_path().Append(basename);
+#else
+  base::FilePath child_path =
+      parent.virtual_path().Append(base::FilePath::FromUTF8Unsafe(basename));
+#endif
   *result = file_system_context()->CreateCrackedFileSystemURL(
-      parent.storage_key(), parent.mount_type(),
-      parent.virtual_path().Append(base::FilePath::FromUTF8Unsafe(basename)));
+      parent.storage_key(), parent.mount_type(), child_path);
   // Child URLs inherit their parent's storage bucket.
   if (parent.bucket()) {
     result->SetBucket(parent.bucket().value());

@@ -982,29 +982,19 @@ bool GetFileInfo(const FilePath& file_path, File::Info* results) {
   stat_wrapper_t file_info;
 #if BUILDFLAG(IS_ANDROID)
   if (file_path.IsContentUri()) {
+    // Content-URIs may represent files on the local disk, or may be virtual
+    // files backed by a ContentProvider. First attempt to use fstat(fd) with a
+    // FD from ContentResolver#openAssetFileDescriptor(). Some files may not
+    // succeed at all, or may have size=0 in which case we will attempt to get
+    // info via DocumentFile.
     File file = OpenContentUri(file_path, File::FLAG_OPEN | File::FLAG_READ);
-    if (!file.IsValid()) {
-      return false;
-    }
-    bool success = file.GetInfo(results);
-    // Fstat on a virtual content-uri will get size=0 and last_modified=now.
-    // Fix size, and set last_modified=0 to at least make it stable.
-    if (success && results->size == 0) {
-      int64_t size = GetContentUriFileSize(file_path);
-      if (size >= 0) {
-        results->size = size;
-        results->last_modified = Time();
-      }
-    }
-    return success;
-  } else {
-#endif  // BUILDFLAG(IS_ANDROID)
-    if (File::Stat(file_path, &file_info) != 0) {
-      return false;
-    }
-#if BUILDFLAG(IS_ANDROID)
+    return (file.IsValid() && file.GetInfo(results) && results->size > 0) ||
+           ContentUriGetFileInfo(file_path, results);
   }
 #endif  // BUILDFLAG(IS_ANDROID)
+  if (File::Stat(file_path, &file_info) != 0) {
+    return false;
+  }
 
   results->FromStat(file_info);
   return true;

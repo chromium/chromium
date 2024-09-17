@@ -4759,6 +4759,7 @@ if (is_android) {
       ":stream_util_java",
       ":tasks_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/androidx:androidx_documentfile_documentfile_java",
       "//third_party/jni_zero:jni_zero_java",
     ]
     sources = [ "android/java/src/org/chromium/base/ContentUriUtils.java" ]

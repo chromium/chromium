@@ -291,7 +291,9 @@ class BASE_EXPORT File {
   // Updates the file times.
   bool SetTimes(Time last_access_time, Time last_modified_time);
 
-  // Returns some basic information for the given file.
+  // Returns some basic information for the given file. Code that needs to
+  // support android Content-URIs should use base::GetFileInfo(FilePath)
+  // which is able to use the path (URI) to populate Info via Java APIs.
   bool GetInfo(Info* info);
 
 #if !BUILDFLAG( \
