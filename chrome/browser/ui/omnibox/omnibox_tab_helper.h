@@ -23,10 +23,17 @@ class OmniboxTabHelper : public content::WebContentsUserData<OmniboxTabHelper> {
    public:
     // Invoked when the omnibox input state is changed.
     virtual void OnOmniboxInputStateChanged() = 0;
+
+    // Invoked when the omnibox input is in progress.
+    virtual void OnOmniboxInputInProgress(bool in_progress) = 0;
+
     // Called to indicate that the omnibox focus state changed with the given
     // |reason|.
     virtual void OnOmniboxFocusChanged(OmniboxFocusState state,
                                        OmniboxFocusChangeReason reason) = 0;
+
+    // Invoked when the omnibox popup visibility changes.
+    virtual void OnOmniboxPopupVisibilityChanged(bool popup_is_open) = 0;
   };
 
   ~OmniboxTabHelper() override;
@@ -36,7 +43,9 @@ class OmniboxTabHelper : public content::WebContentsUserData<OmniboxTabHelper> {
 
   // Calls forwarded from omnibox. See OmniboxClient for details.
   void OnInputStateChanged();
+  void OnInputInProgress(bool in_progress);
   void OnFocusChanged(OmniboxFocusState state, OmniboxFocusChangeReason reason);
+  void OnPopupVisibilityChanged(bool popup_is_open);
 
  private:
   explicit OmniboxTabHelper(content::WebContents* contents);
