@@ -526,7 +526,7 @@ const CGFloat kMenuSymbolSize = 18;
         ::signin::ConsentLevel::kSignin);
     configuration.identity = identity;
   }
-
+  configuration.localState = GetApplicationContext()->GetLocalState();
   return configuration;
 }
 

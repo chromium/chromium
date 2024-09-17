@@ -214,6 +214,7 @@ const base::TimeDelta kCloseLensViewTimeout = base::Seconds(10);
   configuration.singleSignOnService =
       GetApplicationContext()->GetSingleSignOnService();
   configuration.entrypoint = entrypoint;
+  configuration.localState = GetApplicationContext()->GetLocalState();
 
   // Mark IPHs as completed.
   if (entrypoint == LensEntrypoint::Keyboard) {
