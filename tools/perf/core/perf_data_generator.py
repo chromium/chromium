@@ -1019,6 +1019,8 @@ BUILDERS = {
             'mac_model': 'Mac14,7',
             'os': 'Mac',
             'pool': 'chrome.tests.perf',
+            'synthetic_product_name':
+                'Mac14,7_arm64-64-Apple_M2_apple m2_8192_APPLE SSD AP0256Z',
         },
     },
     'linux-perf': {
