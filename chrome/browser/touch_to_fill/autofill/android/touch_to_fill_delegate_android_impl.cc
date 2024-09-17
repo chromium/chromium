@@ -390,7 +390,8 @@ bool TouchToFillDelegateAndroidImpl::HasAnyAutofilledFields(
 bool TouchToFillDelegateAndroidImpl::IsFillingPerfect(
     const FormStructure& submitted_form) const {
   return std::ranges::all_of(submitted_form, [](const auto& field) {
-    return field->value().empty() || field->is_autofilled();
+    return field->value(ValueSemantics::kCurrent).empty() ||
+           field->is_autofilled();
   });
 }
 

@@ -72,6 +72,10 @@ FastCheckoutTriggerOutcome FastCheckoutTriggerValidatorImpl::ShouldRun(
   }
 
   // Trigger only on empty fields.
+  // TODO: crbug.com/40227496 - `field.value()` is ambiguous: sometimes it's the
+  // current value, sometimes it's the initial value. The reason is that some
+  // callers upcast `field` from `AutofillField`, whose `value()` is the initial
+  // value. The feature `kAutofillFixValueSemantics` fixes this.
   if (!field.value().empty()) {
     LogAutofillInternals("not triggered because field was not empty.");
     return FastCheckoutTriggerOutcome::kFailureFieldNotEmpty;

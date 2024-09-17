@@ -33,7 +33,8 @@ void TestUserAnnotationsService::AddFormSubmission(
       optimization_guide::proto::UserAnnotationsEntry entry;
       entry.set_entry_id(entry_id++);
       entry.set_key(base::UTF16ToUTF8(field->label()));
-      entry.set_value(base::UTF16ToUTF8(field->value()));
+      entry.set_value(
+          base::UTF16ToUTF8(field->value(autofill::ValueSemantics::kCurrent)));
       entries_.emplace_back(std::move(entry));
     }
     std::move(callback).Run(std::move(form),

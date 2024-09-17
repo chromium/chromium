@@ -605,7 +605,8 @@ bool DuplicatedFilling(const FormStructure& form, const AutofillField& field) {
           // *duplicate* filling happened.
           return false;
         }
-        return field.value() == form_field->value() &&
+        return field.value(ValueSemantics::kCurrent) ==
+                   form_field->value(ValueSemantics::kCurrent) &&
                form_field->is_autofilled();
       };
   return std::ranges::any_of(form, is_autofilled_with_same_value);
@@ -1308,11 +1309,12 @@ void AutofillMetrics::LogOverallPredictionQualityMetrics(
 void AutofillMetrics::LogEmailFieldPredictionMetrics(
     const AutofillField& field) {
   // If the field has no value, there is no need to record any of the metrics.
-  if (field.value().empty()) {
+  if (field.value(ValueSemantics::kCurrent).empty()) {
     return;
   }
 
-  bool is_valid_email = IsValidEmailAddress(field.value());
+  bool is_valid_email =
+      IsValidEmailAddress(field.value(ValueSemantics::kCurrent));
   bool is_email_prediction = field.Type().GetStorableType() == EMAIL_ADDRESS;
 
   if (is_email_prediction) {

@@ -841,10 +841,11 @@ void VotesUploader::SetKnownValueFlag(
   // If we are updating a password, the known value is the old password, not
   // the new one.
   for (auto& field : *form) {
-    if (field->value().empty()) {
+    if (field->value(autofill::ValueSemantics::kCurrent).empty()) {
       continue;
     }
-    if (known_username == field->value() || known_password == field->value()) {
+    if (known_username == field->value(autofill::ValueSemantics::kCurrent) ||
+        known_password == field->value(autofill::ValueSemantics::kCurrent)) {
       field->set_properties_mask(field->properties_mask() |
                                  autofill::FieldPropertiesFlags::kKnownValue);
     }

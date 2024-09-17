@@ -301,11 +301,21 @@ class FormFieldData {
   // "value") or the contenteditable's text content, depending on the
   // FormFieldData::form_control_type().
   //
-  // FormFieldData::value() may not be the ideal human-readable representation:
-  // <select> elements usually (but not necessarily!) have one selected option
-  // with a human-visible "text", which is usually the better string to display
-  // to the user (e.g., during form import). See SelectOption and
-  // FormFieldData::selected_value() for details.
+  // A note on FormFieldData objects of type FormControlType::kSelect*, i.e.,
+  // <select> elements:
+  //
+  //   <select> elements have an associated list <option> elements, each of
+  //   which has a value and a text. The idea is that the value serves technical
+  //   purposes, while the text is visible to the user.
+  //
+  //   FormFieldData::value() is the value of the selected <option>, if any, or
+  //   the empty string. See SelectOption for details on how the value of an
+  //   <option> is determined.
+  //
+  //   FormFieldData::value() may not be the ideal human-readable representation
+  //   of a <select> element. The selected option's text is usually the better
+  //   string to display to the user (e.g., during form import). For further
+  //   details, see SelectOption and FormFieldData::selected_option().
   //
   // Truncated at `kMaxStringLength`.
   // TODO(crbug.com/40941640): Extract the value of contenteditables on iOS.
