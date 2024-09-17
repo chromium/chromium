@@ -5,6 +5,7 @@
 #include "components/viz/service/display/overdraw_tracker.h"
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/time/time.h"
@@ -34,11 +35,13 @@ AggregatedFrame MakeAggregatedFrame(const gfx::Rect& output_rect) {
 
 void AppendDrawQuad(AggregatedFrame* frame,
                     const gfx::Rect& visible_rect,
-                    const gfx::Transform& transform = gfx::Transform()) {
+                    const gfx::Transform& transform = gfx::Transform(),
+                    const std::optional<gfx::Rect>& clip_rect = std::nullopt) {
   auto& root_render_pass = frame->render_pass_list.back();
 
   auto* sqs = root_render_pass->CreateAndAppendSharedQuadState();
   sqs->quad_to_target_transform = transform;
+  sqs->clip_rect = clip_rect;
 
   auto* quad = root_render_pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
   quad->SetAll(sqs, visible_rect, visible_rect, false, SkColor4f(), true);
@@ -74,6 +77,24 @@ TEST_F(OverdrawTrackerTest, OverdrawCalculationsOfQuadsWithTransform) {
     AppendDrawQuad(&frame, gfx::Rect(10, 10), rotation_transform);
 
     EXPECT_EQ(OverdrawTracker::EstimateOverdraw(&frame), 0.0);
+  }
+}
+
+TEST_F(OverdrawTrackerTest, OverdrawCalculationsOfQuadsWithClip) {
+  {
+    AggregatedFrame frame = MakeAggregatedFrame(gfx::Rect(20, 20));
+    AppendDrawQuad(&frame, gfx::Rect(100, 100), gfx::Transform(),
+                   gfx::Rect(20, 20));
+
+    EXPECT_EQ(OverdrawTracker::EstimateOverdraw(&frame), 1.0f);
+  }
+
+  {
+    AggregatedFrame frame = MakeAggregatedFrame(gfx::Rect(20, 20));
+    AppendDrawQuad(&frame, gfx::Rect(100, 100), gfx::Transform(),
+                   gfx::Rect(5, 5, 10, 10));
+
+    EXPECT_EQ(OverdrawTracker::EstimateOverdraw(&frame), 0.25f);
   }
 }
 

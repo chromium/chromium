@@ -76,6 +76,9 @@ float OverdrawTracker::EstimateOverdraw(const AggregatedFrame* frame) {
 
       auto quad_rect = gfx::ToEnclosingRect(
           quad_to_root_transform.MapRect(gfx::RectF(quad->visible_rect)));
+      if (sqs->clip_rect) {
+        quad_rect.Intersect(sqs->clip_rect.value());
+      }
 
       overdraw += quad_rect.size().GetCheckedArea();
     }
