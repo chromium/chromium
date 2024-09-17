@@ -20,6 +20,8 @@ enum class CannotFreezeReason {
   kHoldingIndexedDBLock,
   kConnectedToUsbDevice,
   kConnectedToBluetoothDevice,
+  kConnectedToHidDevice,
+  kConnectedToSerialPort,
   kCapturingVideo,
   kCapturingAudio,
   kBeingMirrored,

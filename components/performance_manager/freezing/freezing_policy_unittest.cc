@@ -499,6 +499,56 @@ TEST_F(FreezingPolicyTest, ConnectedToBluetoothDeviceWhenFrozen) {
   VerifyFreezerExpectations();
 }
 
+TEST_F(FreezingPolicyTest, FreezeVoteWhenConnectedToHidDevice) {
+  PageLiveStateDecorator::Data::GetOrCreateForPageNode(page_node())
+      ->SetIsConnectedToHidDeviceForTesting(true);
+
+  // Don't expect freezing.
+  policy()->AddFreezeVote(page_node());
+
+  // Expect freezing after disconnecting from HID device.
+  EXPECT_CALL(*freezer(), MaybeFreezePageNode(page_node()));
+  PageLiveStateDecorator::Data::GetOrCreateForPageNode(page_node())
+      ->SetIsConnectedToHidDeviceForTesting(false);
+  VerifyFreezerExpectations();
+}
+
+TEST_F(FreezingPolicyTest, ConnectedToHidDeviceWhenFrozen) {
+  EXPECT_CALL(*freezer(), MaybeFreezePageNode(page_node()));
+  policy()->AddFreezeVote(page_node());
+  VerifyFreezerExpectations();
+
+  EXPECT_CALL(*freezer(), UnfreezePageNode(page_node()));
+  PageLiveStateDecorator::Data::GetOrCreateForPageNode(page_node())
+      ->SetIsConnectedToHidDeviceForTesting(true);
+  VerifyFreezerExpectations();
+}
+
+TEST_F(FreezingPolicyTest, FreezeVoteWhenConnectedToSerialPort) {
+  PageLiveStateDecorator::Data::GetOrCreateForPageNode(page_node())
+      ->SetIsConnectedToSerialPortForTesting(true);
+
+  // Don't expect freezing.
+  policy()->AddFreezeVote(page_node());
+
+  // Expect freezing after disconnecting from HID device.
+  EXPECT_CALL(*freezer(), MaybeFreezePageNode(page_node()));
+  PageLiveStateDecorator::Data::GetOrCreateForPageNode(page_node())
+      ->SetIsConnectedToSerialPortForTesting(false);
+  VerifyFreezerExpectations();
+}
+
+TEST_F(FreezingPolicyTest, ConnectedToSerialPortWhenFrozen) {
+  EXPECT_CALL(*freezer(), MaybeFreezePageNode(page_node()));
+  policy()->AddFreezeVote(page_node());
+  VerifyFreezerExpectations();
+
+  EXPECT_CALL(*freezer(), UnfreezePageNode(page_node()));
+  PageLiveStateDecorator::Data::GetOrCreateForPageNode(page_node())
+      ->SetIsConnectedToSerialPortForTesting(true);
+  VerifyFreezerExpectations();
+}
+
 TEST_F(FreezingPolicyTest, FreezeVoteWhenCapturingVideo) {
   PageLiveStateDecorator::Data::GetOrCreateForPageNode(page_node())
       ->SetIsCapturingVideoForTesting(true);

@@ -130,6 +130,8 @@ class PageLiveStateDecorator::Data {
 
   virtual void SetIsConnectedToUSBDeviceForTesting(bool value) = 0;
   virtual void SetIsConnectedToBluetoothDeviceForTesting(bool value) = 0;
+  virtual void SetIsConnectedToHidDeviceForTesting(bool value) = 0;
+  virtual void SetIsConnectedToSerialPortForTesting(bool value) = 0;
   virtual void SetIsCapturingVideoForTesting(bool value) = 0;
   virtual void SetIsCapturingAudioForTesting(bool value) = 0;
   virtual void SetIsBeingMirroredForTesting(bool value) = 0;

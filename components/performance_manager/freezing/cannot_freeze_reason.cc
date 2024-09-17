@@ -22,6 +22,10 @@ const char* CannotFreezeReasonToString(CannotFreezeReason reason) {
       return "connected to USB device";
     case CannotFreezeReason::kConnectedToBluetoothDevice:
       return "connected to Bluetooth device";
+    case CannotFreezeReason::kConnectedToHidDevice:
+      return "connected to HID device";
+    case CannotFreezeReason::kConnectedToSerialPort:
+      return "connected to serial port";
     case CannotFreezeReason::kCapturingVideo:
       return "capturing video";
     case CannotFreezeReason::kCapturingAudio:

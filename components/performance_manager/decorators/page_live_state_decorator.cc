@@ -108,6 +108,12 @@ class PageLiveStateDataImpl
   void SetIsConnectedToBluetoothDeviceForTesting(bool value) override {
     set_is_connected_to_bluetooth_device(value);
   }
+  void SetIsConnectedToHidDeviceForTesting(bool value) override {
+    set_is_connected_to_hid_device(value);
+  }
+  void SetIsConnectedToSerialPortForTesting(bool value) override {
+    set_is_connected_to_serial_port(value);
+  }
   void SetIsCapturingVideoForTesting(bool value) override {
     set_is_capturing_video(value);
   }
