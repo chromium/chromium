@@ -579,11 +579,11 @@ IN_PROC_BROWSER_TEST_F(DeviceSettingsInteractiveUiTest, AddNewTouchpad) {
                                  "Built-in Touchpad"));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) && defined(MEMORY_SANITIZER)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_KeyboardModifierRemapping DISABLED_KeyboardModifierRemapping
 #else
 #define MAYBE_KeyboardModifierRemapping KeyboardModifierRemapping
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) && defined(MEMORY_SANITIZER)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(DeviceSettingsInteractiveUiTest,
                        MAYBE_KeyboardModifierRemapping) {
   const DeepQuery kCtrlDropdownQuery{
