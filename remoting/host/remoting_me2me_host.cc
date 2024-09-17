@@ -372,6 +372,11 @@ class HostProcess : public ConfigWatcher::Delegate,
   bool OnAllowRemoteAccessConnections(const base::Value::Dict& policies);
   bool OnAllowPinAuthenticationUpdate(const base::Value::Dict& policies);
 
+  void InitializeOauth();
+  void OnOauthTokenCallback(OAuthTokenGetter::Status status,
+                            const std::string& user_email,
+                            const std::string& access_token,
+                            const std::string& scopes);
   void InitializeSignaling();
 
   void StartHostIfReady();
@@ -433,6 +438,7 @@ class HostProcess : public ConfigWatcher::Delegate,
   std::string service_account_email_;
   base::Value::Dict config_;
   std::set<std::string> host_owner_emails_;
+  std::string scopes_;
 
   std::unique_ptr<PolicyWatcher> policy_watcher_;
   PolicyState policy_state_ = POLICY_INITIALIZING;
@@ -1656,13 +1662,10 @@ bool HostProcess::OnAllowRemoteAccessConnections(
   return false;
 }
 
-void HostProcess::InitializeSignaling() {
+void HostProcess::InitializeOauth() {
   DCHECK(!host_id_.empty());  // ApplyConfig() should already have been run.
 
-  DCHECK(!signal_strategy_);
   DCHECK(!oauth_token_getter_);
-  DCHECK(!ftl_signaling_connector_);
-  DCHECK(!heartbeat_sender_);
 
   auto oauth_credentials =
       std::make_unique<OAuthTokenGetter::OAuthAuthorizationCredentials>(
@@ -1672,6 +1675,23 @@ void HostProcess::InitializeSignaling() {
   // callback will never be invoked once it is destroyed.
   oauth_token_getter_ = std::make_unique<OAuthTokenGetterImpl>(
       std::move(oauth_credentials), context_->url_loader_factory(), false);
+
+  oauth_token_getter_->CallWithToken(base::BindOnce(
+      &HostProcess::OnOauthTokenCallback, base::Unretained(this)));
+}
+
+void HostProcess::OnOauthTokenCallback(OAuthTokenGetter::Status status,
+                                       const std::string& user_email,
+                                       const std::string& access_token,
+                                       const std::string& scopes) {
+  scopes_ = scopes;
+  InitializeSignaling();
+}
+
+void HostProcess::InitializeSignaling() {
+  DCHECK(!signal_strategy_);
+  DCHECK(!ftl_signaling_connector_);
+  DCHECK(!heartbeat_sender_);
 
   log_to_server_ = std::make_unique<RemotingLogToServer>(
       ServerLogEntry::ME2ME,
@@ -1692,6 +1712,8 @@ void HostProcess::InitializeSignaling() {
       base::BindOnce(&HostProcess::OnAuthFailed, base::Unretained(this)));
   ftl_signaling_connector_->Start();
 
+  // TODO(garykac) Based on the given |scopes_|, pass info to the
+  // HeartbeatSender so that it knows which API to use (me2me, corp, cloud).
   heartbeat_sender_ = std::make_unique<HeartbeatSender>(
       this, host_id_, ftl_signal_strategy.get(), oauth_token_getter_.get(),
       zombie_host_detector_.get(), context_->url_loader_factory(),
@@ -1739,7 +1761,7 @@ void HostProcess::StartHost() {
 
   SetState(HOST_STARTED);
 
-  InitializeSignaling();
+  InitializeOauth();
 
   scoped_refptr<protocol::TransportContext> transport_context =
       new protocol::TransportContext(
@@ -1903,7 +1925,7 @@ void HostProcess::GoOffline(const std::string& host_offline_reason) {
     return;
   } else if (!config_.empty()) {
     if (!signal_strategy_) {
-      InitializeSignaling();
+      InitializeOauth();
     }
 
     HOST_LOG << "SendHostOfflineReason: sending " << host_offline_reason << ".";
