@@ -8,7 +8,7 @@ import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/icons.html.js';
 
 import type {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.js';
-import {assert, assertInstanceof} from '//resources/js/assert.js';
+import {assertInstanceof} from '//resources/js/assert.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {DomRepeat} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -155,8 +155,16 @@ export class TranslateButtonElement extends PolymerElement {
   private onTargetLanguageRetrieved(languageCode: string) {
     const defaultLanguage = this.translateLanguageList.find(
         language => language.code === languageCode);
-    assert(defaultLanguage);
-    this.targetLanguage = defaultLanguage;
+
+    // If the target language is set to one supported by Lens, then we set it
+    // and are done.
+    if (defaultLanguage) {
+      this.targetLanguage = defaultLanguage;
+      return;
+    }
+
+    // Otherwise, we default to the first language in the list.
+    this.targetLanguage = this.translateLanguageList[0];
   }
 
   private onAutoDetectMenuItemClick() {
