@@ -14,12 +14,6 @@
 
 // static
 TextToSpeechPlaybackController*
-TextToSpeechPlaybackControllerFactory::GetForBrowserState(ProfileIOS* profile) {
-  return GetForProfile(profile);
-}
-
-// static
-TextToSpeechPlaybackController*
 TextToSpeechPlaybackControllerFactory::GetForProfile(ProfileIOS* profile) {
   return static_cast<TextToSpeechPlaybackController*>(
       GetInstance()->GetServiceForBrowserState(profile, true));

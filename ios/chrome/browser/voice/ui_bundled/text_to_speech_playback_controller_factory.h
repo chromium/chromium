@@ -16,10 +16,6 @@ class TextToSpeechPlaybackController;
 class TextToSpeechPlaybackControllerFactory
     : public BrowserStateKeyedServiceFactory {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static TextToSpeechPlaybackController* GetForBrowserState(
-      ProfileIOS* profile);
-
   static TextToSpeechPlaybackController* GetForProfile(ProfileIOS* profile);
   // Getter for singleton instance.
   static TextToSpeechPlaybackControllerFactory* GetInstance();
