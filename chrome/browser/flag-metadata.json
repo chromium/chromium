@@ -8620,11 +8620,6 @@
     "expiry_milestone": 132
   },
   {
-    "name": "tab-group-parity-android",
-    "owners": [ "bjfong@google.com", "ckitagawa@chromium.org", "fredmello@chromium.org" ],
-    "expiry_milestone": 132
-  },
-  {
     "name": "tab-group-sync",
     "owners": [ "lpromero@google.com", "bling-flags@google.com" ],
     "expiry_milestone": 140

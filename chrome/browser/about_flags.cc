@@ -3547,13 +3547,6 @@ const FeatureEntry::FeatureVariation
          std::size(kAndroidHubFloatingActionButtonAlternativeColors), nullptr},
 };
 
-const FeatureEntry::FeatureParam kTabGroupParityAndroidSkipCreationDialog[] = {
-    {"skip_tab_group_creation_dialog", "true"}};
-
-const FeatureEntry::FeatureVariation kTabGroupParityAndroidVariations[] = {
-    {"Skip tab group creation dialog", kTabGroupParityAndroidSkipCreationDialog,
-     std::size(kTabGroupParityAndroidSkipCreationDialog), nullptr}};
-
 const FeatureEntry::FeatureParam kTabGroupCreationDialogAndroidShowSetting[] = {
     {"show_tab_group_creation_dialog_setting", "true"}};
 
@@ -10126,12 +10119,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"tab-group-pane-android", flag_descriptions::kTabGroupPaneAndroidName,
      flag_descriptions::kTabGroupPaneAndroidDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(tab_groups::kTabGroupPaneAndroid)},
-
-    {"tab-group-parity-android", flag_descriptions::kTabGroupParityAndroidName,
-     flag_descriptions::kTabGroupParityAndroidDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kTabGroupParityAndroid,
-                                    kTabGroupParityAndroidVariations,
-                                    "TabGroupParityVariations")},
 
     {"tab-strip-group-collapse-android",
      flag_descriptions::kTabStripGroupCollapseAndroidName,
