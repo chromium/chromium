@@ -3694,6 +3694,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebRTC.Video{TypeOfStream}.CorruptionLikelihoodPermille"
+    units="permille (‰)" expires_after="2025-01-01">
+  <owner>sprang@chromium.org</owner>
+  <owner>webrtc-video@google.com</owner>
+  <summary>
+    The average corruption score (in permille) for a received {TypeOfStream}.
+    Recorded when a stream is removed.
+  </summary>
+  <token key="TypeOfStream">
+    <variant name="" summary="video stream"/>
+    <variant name=".Screenshare" summary="(screen content) video stream"/>
+  </token>
+</histogram>
+
 <histogram name="WebRTC.webkitApiCount" enum="RTCAPIName"
     expires_after="2024-05-19">
   <owner>toprice@chromium.org</owner>
