@@ -17,6 +17,7 @@ import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.icu.text.ListFormatter;
 import android.text.SpannableString;
 import android.text.method.LinkMovementMethod;
 import android.view.View;
@@ -44,6 +45,7 @@ import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderMetadat
 import org.chromium.components.browser_ui.util.AvatarGenerator;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
+import org.chromium.content.webid.IdentityRequestDialogDisclosureField;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
@@ -56,6 +58,7 @@ import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.function.Consumer;
 
 /**
@@ -265,6 +268,26 @@ class AccountSelectionViewBinder {
                     model.get(DataSharingConsentProperties.PROPERTIES);
 
             Context context = view.getContext();
+            ArrayList<String> fieldStrings = new ArrayList<String>();
+            for (@IdentityRequestDialogDisclosureField int field : properties.mDisclosureFields) {
+                switch (field) {
+                    case IdentityRequestDialogDisclosureField.NAME:
+                        fieldStrings.add(
+                                context.getString(R.string.account_selection_data_sharing_name));
+                        break;
+                    case IdentityRequestDialogDisclosureField.EMAIL:
+                        fieldStrings.add(
+                                context.getString(R.string.account_selection_data_sharing_email));
+                        break;
+                    case IdentityRequestDialogDisclosureField.PICTURE:
+                        fieldStrings.add(
+                                context.getString(R.string.account_selection_data_sharing_picture));
+                        break;
+                }
+            }
+            ListFormatter formatter = ListFormatter.getInstance(Locale.getDefault());
+            String allFields = formatter.format(fieldStrings);
+
             SpanApplier.SpanInfo privacyPolicySpan =
                     createLink(
                             context,
@@ -288,7 +311,8 @@ class AccountSelectionViewBinder {
             } else {
                 consentTextId = R.string.account_selection_data_sharing_consent;
             }
-            String consentText = context.getString(consentTextId, properties.mIdpForDisplay);
+            String consentText =
+                    context.getString(consentTextId, properties.mIdpForDisplay, allFields);
 
             List<SpanApplier.SpanInfo> spans = new ArrayList<>();
             if (privacyPolicySpan != null) {
