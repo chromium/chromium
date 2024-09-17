@@ -14194,26 +14194,6 @@
             ]
         }
     ],
-    "MinorModeRestrictionsForHistorySyncOptInIosStudy": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Deadline500_WithPrefetchOnStartup_20240819_M128+",
-                    "params": {
-                        "MinorModeRestrictionsFetchDeadlineMs": "500"
-                    },
-                    "enable_features": [
-                        "MinorModeRestrictionsForHistorySyncOptIn",
-                        "PrefetchSystemCapabilitiesOnAppStartup",
-                        "PrefetchSystemCapabilitiesOnFirstRun"
-                    ]
-                }
-            ]
-        }
-    ],
     "MojoChannelAssociatedCrashesOnSendError": [
         {
             "platforms": [
