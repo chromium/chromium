@@ -908,7 +908,7 @@ by a child template that "extends" this file.
 
         <!-- Quick Action Search widget -->
         <receiver
-            android:name="org.chromium.chrome.browser.quickactionsearchwidget.QuickActionSearchWidgetProvider$QuickActionSearchWidgetProviderSearch"
+            android:name="org.chromium.chrome.browser.shortcuts_widget.QuickActionSearchWidgetProvider$QuickActionSearchWidgetProviderSearch"
             android:label="@string/quick_action_search_widget_title"
             android:exported="true">
             <intent-filter>
@@ -920,7 +920,7 @@ by a child template that "extends" this file.
         </receiver>
 
         <receiver
-        android:name="org.chromium.chrome.browser.quickactionsearchwidget.QuickActionSearchWidgetProvider$QuickActionSearchWidgetProviderDino"
+        android:name="org.chromium.chrome.browser.shortcuts_widget.QuickActionSearchWidgetProvider$QuickActionSearchWidgetProviderDino"
         android:label="@string/dino_widget_text"
             android:exported="true">
             <intent-filter>

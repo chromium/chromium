@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.ui.quickactionsearchwidget;
+package org.chromium.chrome.browser.ui.shortcuts_widget;
 
 import static org.mockito.Mockito.verify;
 
@@ -40,10 +40,10 @@ import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.searchwidget.SearchActivityClientImpl;
-import org.chromium.chrome.browser.ui.quickactionsearchwidget.QuickActionSearchWidgetProviderDelegate.WidgetButtonSettings;
-import org.chromium.chrome.browser.ui.quickactionsearchwidget.QuickActionSearchWidgetProviderDelegate.WidgetVariant;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityPreferencesManager.SearchActivityPreferences;
+import org.chromium.chrome.browser.ui.shortcuts_widget.QuickActionSearchWidgetProviderDelegate.WidgetButtonSettings;
+import org.chromium.chrome.browser.ui.shortcuts_widget.QuickActionSearchWidgetProviderDelegate.WidgetVariant;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.url.GURL;

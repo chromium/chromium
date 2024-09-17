@@ -5,7 +5,7 @@
 import("//build/config/android/rules.gni")
 
 android_library("java") {
-  sources = [ "java/src/org/chromium/chrome/browser/ui/quickactionsearchwidget/QuickActionSearchWidgetProviderDelegate.java" ]
+  sources = [ "java/src/org/chromium/chrome/browser/ui/shortcuts_widget/QuickActionSearchWidgetProviderDelegate.java" ]
   deps = [
     ":java_resources",
     "//base:base_java",
@@ -17,15 +17,15 @@ android_library("java") {
     "//third_party/androidx:androidx_core_core_java",
     "//url:url_java",
   ]
-  resources_package = "org.chromium.chrome.browser.ui.quickactionsearchwidget"
+  resources_package = "org.chromium.chrome.browser.ui.shortcuts_widget"
 }
 
 android_library("javatests") {
   testonly = true
-  resources_package = "org.chromium.chrome.browser.ui.quickactionsearchwidget"
+  resources_package = "org.chromium.chrome.browser.ui.shortcuts_widget"
   sources = [
-    "java/src/org/chromium/chrome/browser/ui/quickactionsearchwidget/QuickActionSearchWidgetProviderDelegateTest.java",
-    "java/src/org/chromium/chrome/browser/ui/quickactionsearchwidget/QuickActionSearchWidgetTestUtils.java",
+    "java/src/org/chromium/chrome/browser/ui/shortcuts_widget/QuickActionSearchWidgetProviderDelegateTest.java",
+    "java/src/org/chromium/chrome/browser/ui/shortcuts_widget/QuickActionSearchWidgetTestUtils.java",
   ]
   deps = [
     ":java",
