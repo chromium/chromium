@@ -146,13 +146,9 @@ LibYUVImageProcessorBackend::CreateWithTaskRunner(
   std::unique_ptr<VideoFrameMapper> input_frame_mapper;
   if (input_config.storage_type == VideoFrame::STORAGE_DMABUFS ||
       input_config.storage_type == VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
-    // The LibYUVImageProcessorBackend is not currently used to read from
-    // Intel media compressed buffers, so we don't need the VideoFrameMapper
-    // to support those.
     input_frame_mapper = VideoFrameMapperFactory::CreateMapper(
         input_config.fourcc.ToVideoPixelFormat(), input_config.storage_type,
-        /*force_linear_buffer_mapper=*/true,
-        /*must_support_intel_media_compressed_buffers=*/false);
+        /*force_linear_buffer_mapper=*/true);
   }
 
   if (!input_frame_mapper &&
@@ -164,13 +160,9 @@ LibYUVImageProcessorBackend::CreateWithTaskRunner(
   std::unique_ptr<VideoFrameMapper> output_frame_mapper;
   if (output_config.storage_type == VideoFrame::STORAGE_DMABUFS ||
       output_config.storage_type == VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
-    // The LibYUVImageProcessorBackend is not currently used to write onto
-    // Intel media compressed buffers, so we don't need the VideoFrameMapper
-    // to support those.
     output_frame_mapper = VideoFrameMapperFactory::CreateMapper(
         output_config.fourcc.ToVideoPixelFormat(), output_config.storage_type,
-        /*force_linear_buffer_mapper=*/true,
-        /*must_support_intel_media_compressed_buffers=*/false);
+        /*force_linear_buffer_mapper=*/true);
   }
 
   if (!output_frame_mapper &&

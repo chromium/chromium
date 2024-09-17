@@ -219,7 +219,6 @@ source_set("video_frame_mapper") {
   ]
 
   deps = [
-    ":common",
     "//base",
     "//media",
     "//media/gpu:command_buffer_helper",

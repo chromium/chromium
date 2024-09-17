@@ -25,7 +25,6 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/config/gpu_feature_info.h"
-#include "media/gpu/chromeos/chromeos_compressed_gpu_memory_buffer_video_frame_utils.h"
 #include "media/gpu/chromeos/image_processor_factory.h"
 #include "media/gpu/chromeos/perf_test_util.h"
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
@@ -152,14 +151,10 @@ scoped_refptr<VideoFrame> CreateRandomMM21Frame(const gfx::Size& size,
 
   scoped_refptr<VideoFrame> mapped_frame;
   if (type != VideoFrame::STORAGE_OWNED_MEMORY) {
-    // The MM21 path only makes sense for V4L2, so we should never get an Intel
-    // media compressed buffer here.
-    CHECK(!IsIntelMediaCompressedModifier(frame->layout().modifier()));
     std::unique_ptr<VideoFrameMapper> frame_mapper =
         VideoFrameMapperFactory::CreateMapper(
             VideoPixelFormat::PIXEL_FORMAT_NV12, type,
-            /*force_linear_buffer_mapper=*/true,
-            /*must_support_intel_media_compressed_buffers=*/false);
+            /*force_linear_buffer_mapper=*/true);
     if (!frame_mapper) {
       LOG(ERROR) << "Unable to create a VideoFrameMapper";
       return nullptr;
@@ -604,18 +599,10 @@ TEST_F(ImageProcessorPerfTest, GLNV12ScalingComparisonTest) {
       input_image_frame_, gl_upscaling_output_frame, std::move(gl_callback1));
   run_loop.Run();
 
-  // The image processor perf tests are currently only available with V4L2, and
-  // we should never get Intel media compressed buffers in V4L2 platforms.
-  ASSERT_FALSE(IsIntelMediaCompressedModifier(
-      gl_downscaling_output_frame->layout().modifier()));
-  ASSERT_FALSE(
-      IsIntelMediaCompressedModifier(input_image_frame_->layout().modifier()));
-
   const std::unique_ptr<VideoFrameMapper> output_frame_mapper =
       VideoFrameMapperFactory::CreateMapper(
           PIXEL_FORMAT_NV12, VideoFrame::STORAGE_GPU_MEMORY_BUFFER,
-          /*force_linear_buffer_mapper=*/true,
-          /*must_support_intel_media_compressed_buffers=*/false);
+          /*force_linear_buffer_mapper=*/true);
   ASSERT_TRUE(output_frame_mapper);
 
   const scoped_refptr<VideoFrame> mapped_gl_output = output_frame_mapper->Map(

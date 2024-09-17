@@ -35,7 +35,6 @@
 #include "media/base/video_frame.h"
 #include "media/base/video_frame_layout.h"
 #include "media/base/video_types.h"
-#include "media/gpu/chromeos/chromeos_compressed_gpu_memory_buffer_video_frame_utils.h"
 #include "media/gpu/chromeos/fourcc.h"
 #include "media/gpu/chromeos/gl_image_processor_backend.h"
 #include "media/gpu/chromeos/image_processor_backend.h"
@@ -306,14 +305,10 @@ scoped_refptr<VideoFrame> CreateRandomMM21Frame(const gfx::Size& size,
     return nullptr;
   }
 
-  // The MM21 path only makes sense for V4L2, so we should never get an Intel
-  // media compressed buffer here.
-  CHECK(!IsIntelMediaCompressedModifier(ret->layout().modifier()));
   std::unique_ptr<VideoFrameMapper> frame_mapper =
       VideoFrameMapperFactory::CreateMapper(
           VideoPixelFormat::PIXEL_FORMAT_NV12, type,
-          /*force_linear_buffer_mapper=*/true,
-          /*must_support_intel_media_compressed_buffers=*/false);
+          /*force_linear_buffer_mapper=*/true);
   if (!frame_mapper) {
     LOG(ERROR) << "Unable to create a VideoFrameMapper";
     return nullptr;
@@ -353,24 +348,17 @@ bool CompareNV12VideoFrames(scoped_refptr<VideoFrame> test_frame,
     return false;
   }
 
-  // We run this test for the V4L2 path only, so we should never get Intel media
-  // compressed frames here.
-  CHECK(!IsIntelMediaCompressedModifier(test_frame->layout().modifier()));
-  CHECK(!IsIntelMediaCompressedModifier(golden_frame->layout().modifier()));
-
   std::unique_ptr<VideoFrameMapper> test_frame_mapper =
       VideoFrameMapperFactory::CreateMapper(
           VideoPixelFormat::PIXEL_FORMAT_NV12, test_frame->storage_type(),
-          /*force_linear_buffer_mapper=*/true,
-          /*must_support_intel_media_compressed_buffers=*/false);
+          /*force_linear_buffer_mapper=*/true);
   if (!test_frame_mapper) {
     return false;
   }
   std::unique_ptr<VideoFrameMapper> golden_frame_mapper =
       VideoFrameMapperFactory::CreateMapper(
           VideoPixelFormat::PIXEL_FORMAT_NV12, golden_frame->storage_type(),
-          /*force_linear_buffer_mapper=*/true,
-          /*must_support_intel_media_compressed_buffers=*/false);
+          /*force_linear_buffer_mapper=*/true);
   if (!golden_frame_mapper) {
     return false;
   }
