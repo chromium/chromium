@@ -19,6 +19,7 @@ include_rules = [
   "+chrome/browser/ash/file_manager",
   "+chrome/browser/ash/multidevice_setup",
   "+chrome/browser/ash/profiles",
+  "+chrome/browser/ash/scanner",
   "+chrome/browser/browser_process.h",
   "+chrome/browser/browser_process_platform_part_ash.h",
   "+chrome/browser/nearby_sharing",

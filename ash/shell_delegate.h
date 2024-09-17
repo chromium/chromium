@@ -51,6 +51,7 @@ class MediaNotificationProvider;
 class NearbyShareController;
 class NearbyShareDelegate;
 class SavedDeskDelegate;
+class ScannerDelegate;
 class SystemSoundsDelegate;
 class UserEducationDelegate;
 class WindowState;
@@ -122,6 +123,9 @@ class ASH_EXPORT ShellDelegate {
   // Creates and returns the delegate for user education features.
   virtual std::unique_ptr<UserEducationDelegate> CreateUserEducationDelegate()
       const = 0;
+
+  // Creates and returns the delegate for the scanner feature.
+  virtual std::unique_ptr<ScannerDelegate> CreateScannerDelegate() const = 0;
 
   // Returns the `SharedURLLoaderFactory` associated with the browser process.
   // Do not use for requests related to the user profile.

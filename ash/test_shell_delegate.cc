@@ -120,6 +120,11 @@ TestShellDelegate::CreateUserEducationDelegate() const {
              : std::make_unique<testing::NiceMock<MockUserEducationDelegate>>();
 }
 
+std::unique_ptr<ash::ScannerDelegate> TestShellDelegate::CreateScannerDelegate()
+    const {
+  return nullptr;
+}
+
 scoped_refptr<network::SharedURLLoaderFactory>
 TestShellDelegate::GetBrowserProcessUrlLoaderFactory() const {
   return url_loader_factory_;

@@ -38,6 +38,7 @@
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/multidevice_setup/multidevice_setup_service_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/ash/scanner/chrome_scanner_delegate.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chrome/browser/nearby_sharing/nearby_share_delegate_impl.h"
@@ -224,6 +225,11 @@ ChromeShellDelegate::CreateFocusModeDelegate() const {
 std::unique_ptr<ash::UserEducationDelegate>
 ChromeShellDelegate::CreateUserEducationDelegate() const {
   return std::make_unique<ChromeUserEducationDelegate>();
+}
+
+std::unique_ptr<ash::ScannerDelegate>
+ChromeShellDelegate::CreateScannerDelegate() const {
+  return std::make_unique<ChromeScannerDelegate>();
 }
 
 scoped_refptr<network::SharedURLLoaderFactory>

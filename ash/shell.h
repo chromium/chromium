@@ -238,6 +238,7 @@ class SavedDeskDelegate;
 class TabClusterUIController;
 class TabStripDelegate;
 class UsbPeripheralNotificationController;
+class ScannerController;
 class ScreenLayoutObserver;
 class ScreenOrientationController;
 class ScreenPinningController;
@@ -736,6 +737,7 @@ class ASH_EXPORT Shell : public SessionObserver,
   RgbKeyboardManager* rgb_keyboard_manager() {
     return rgb_keyboard_manager_.get();
   }
+  ScannerController* scanner_controller() { return scanner_controller_.get(); }
   ScreenLayoutObserver* screen_layout_observer() {
     return screen_layout_observer_.get();
   }
@@ -1139,6 +1141,7 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<PipController> pip_controller_;
   std::unique_ptr<PrivacyScreenController> privacy_screen_controller_;
   std::unique_ptr<PolicyRecommendationRestorer> policy_recommendation_restorer_;
+  std::unique_ptr<ScannerController> scanner_controller_;
   std::unique_ptr<ScreenSwitchCheckController> screen_switch_check_controller_;
   std::unique_ptr<ShelfConfig> shelf_config_;
   std::unique_ptr<ShelfController> shelf_controller_;

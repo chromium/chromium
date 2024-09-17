@@ -78,6 +78,7 @@ class TestShellDelegate : public ShellDelegate {
   std::unique_ptr<FocusModeDelegate> CreateFocusModeDelegate() const override;
   std::unique_ptr<UserEducationDelegate> CreateUserEducationDelegate()
       const override;
+  std::unique_ptr<ash::ScannerDelegate> CreateScannerDelegate() const override;
   scoped_refptr<network::SharedURLLoaderFactory>
   GetBrowserProcessUrlLoaderFactory() const override;
   bool CanGoBack(gfx::NativeWindow window) const override;

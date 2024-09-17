@@ -327,6 +327,7 @@
 #include "chrome/browser/ash/policy/dlp/files_policy_notification_manager_factory.h"
 #include "chrome/browser/ash/policy/multi_screen_capture/multi_screen_capture_policy_service_factory.h"
 #include "chrome/browser/ash/policy/skyvault/local_files_migration_manager.h"
+#include "chrome/browser/ash/scanner/scanner_keyed_service_factory.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service_factory.h"
 #include "chrome/browser/push_notification/push_notification_service_factory.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -1213,6 +1214,11 @@ void ChromeBrowserMainExtraPartsProfiles::
   screen_ai::PdfOcrControllerFactory::GetInstance();
 #endif  // BUILDFLAG(ENABLE_PDF)
   screen_ai::ScreenAIServiceRouterFactory::EnsureFactoryBuilt();
+#endif
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (ash::features::IsScannerEnabled()) {
+    ScannerKeyedServiceFactory::GetInstance();
+  }
 #endif
   SCTReportingServiceFactory::GetInstance();
   search_engines::SearchEngineChoiceServiceFactory::GetInstance();

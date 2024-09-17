@@ -1104,6 +1104,9 @@ const char kSamlPasswordChangeUrl[] = "saml-password-change-url";
 // smaller shelf in clamshell mode.
 const char kShelfHotseat[] = "shelf-hotseat";
 
+// Supply the secret key for Scanner (for more details see b/363103871).
+const char kScannerUpdateKey[] = "scanner-update-key";
+
 // Supply secret key for Seal feature.
 const char kSealKey[] = "seal-key";
 

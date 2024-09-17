@@ -123,6 +123,7 @@
 #include "ash/public/cpp/login/local_authentication_request_controller.h"
 #include "ash/public/cpp/nearby_share_delegate.h"
 #include "ash/public/cpp/saved_desk_delegate.h"
+#include "ash/public/cpp/scanner/scanner_delegate.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/shell_window_ids.h"
@@ -131,6 +132,7 @@
 #include "ash/quick_pair/keyed_service/quick_pair_mediator.h"
 #include "ash/rgb_keyboard/rgb_keyboard_manager.h"
 #include "ash/root_window_controller.h"
+#include "ash/scanner/scanner_controller.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf_controller.h"
 #include "ash/shelf/shelf_window_watcher.h"
@@ -1830,6 +1832,11 @@ void Shell::Init(
 
   if (features::IsLobsterEnabled() && LobsterController::IsEnabled()) {
     lobster_controller_ = std::make_unique<LobsterController>();
+  }
+
+  if (features::IsScannerEnabled() && ScannerController::IsEnabled()) {
+    scanner_controller_ = std::make_unique<ScannerController>(
+        shell_delegate_->CreateScannerDelegate());
   }
 
   if (features::IsTilingWindowResizeEnabled()) {
