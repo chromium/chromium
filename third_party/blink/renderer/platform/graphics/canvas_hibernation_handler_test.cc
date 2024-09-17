@@ -434,7 +434,7 @@ TEST_P(CanvasHibernationHandlerTest, CanvasWriteInBackground) {
   EXPECT_FALSE(handler.is_encoded());
 }
 
-TEST_P(CanvasHibernationHandlerTest, CanvasWriteWhileCompressing) {
+TEST_P(CanvasHibernationHandlerTest, ClearWhileCompressingEndsHibernation) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures({features::kCanvas2DHibernation}, {});
 
@@ -447,16 +447,26 @@ TEST_P(CanvasHibernationHandlerTest, CanvasWriteWhileCompressing) {
   auto& handler = bridge->GetHibernationHandlerForTesting();
   handler.SetTaskRunnersForTesting(task_runner, task_runner);
 
+  // Set the page to hidden to kick off hibernation.
   SetPageVisible(Host(), bridge.get(), platform, false);
-  // Wait for the canvas to be encoded.
+  EXPECT_TRUE(bridge->IsHibernating());
+  EXPECT_FALSE(handler.is_encoded());
+
+  // Run the task that kicks off compression, then run the compression task
+  // itself, but *don't* run the callback for compression completing.
   EXPECT_EQ(1u, TestSingleThreadTaskRunner::RunAll(task_runner->delayed()));
-  // Run the compression task, not the callback.
   EXPECT_TRUE(TestSingleThreadTaskRunner::RunOne(task_runner->immediate()));
+  EXPECT_TRUE(bridge->IsHibernating());
+  EXPECT_FALSE(handler.is_encoded());
 
-  bridge->WritePixels(SkImageInfo::MakeN32Premul(10, 10), nullptr, 10, 0, 0);
+  // A clear while compression is in progress should end hibernation.
+  handler.Clear();
+  EXPECT_FALSE(bridge->IsHibernating());
+  EXPECT_FALSE(handler.is_encoded());
+
+  // Compression finishing should then be a no-op because the canvas is no
+  // longer in hibernation.
   EXPECT_EQ(1u, TestSingleThreadTaskRunner::RunAll(task_runner->immediate()));
-
-  // No hibernation, read happened in-between.
   EXPECT_FALSE(bridge->IsHibernating());
   EXPECT_FALSE(handler.is_encoded());
 }
