@@ -4445,6 +4445,9 @@ targets.legacy_basic_suite(
     name = "optimization_guide_gpu_gtests",
     tests = {
         "optimization_guide_gpu_unittests": targets.legacy_test_config(
+            args = [
+                "--ui-test-action-timeout=30000",
+            ],
             linux_args = [
                 "-use-xvfb",
             ],
