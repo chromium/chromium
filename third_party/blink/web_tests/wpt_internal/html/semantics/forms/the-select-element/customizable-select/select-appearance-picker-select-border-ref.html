@@ -1,18 +1,15 @@
 <!DOCTYPE html>
 <link rel=stylesheet href="resources/customizable-select-styles.css">
 
-<div id=container class=customizable-select-container>
-  <button class="customizable-select-button open" popovertarget=popover id=button>
-    <span class=customizable-select-selectedoption>option</span>
-    <div class=customizable-select-button-icon></div>
-  </button>
-  <div id=popover popover=auto anchor=container class=customizable-select-datalist>
-    <div class="customizable-select-option selected">option</div>
-  </div>
+<div class="customizable-select-button open" id=button>
+  <span class=customizable-select-selectedoption>option</span>
+</div>
+<div id=popover popover=auto anchor=button class=customizable-select-popover>
+  <div class="customizable-select-option selected">option</div>
 </div>
 
 <style>
-.customizable-select-datalist {
+.customizable-select-popover {
   border: 5px solid red;
 }
 </style>

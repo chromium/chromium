@@ -1337,9 +1337,25 @@ const CSSValue* StyleCascade::ResolveAppearanceAutoBaseSelect(
   // on select elements, which is currently the only element which supports
   // appearance:base-select.
   CHECK(IsA<HTMLSelectElement>(state_.GetElement()));
-  const CSSValue& selected = state_.StyleBuilder().HasBaseSelectAppearance()
-                                 ? value.Second()
-                                 : value.First();
+  bool has_base_appearance = state_.StyleBuilder().HasBaseSelectAppearance();
+  if (state_.IsForPseudoElement()) {
+    CHECK_EQ(state_.GetPseudoElement()->GetPseudoId(), kPseudoIdAfter)
+        << " -internal-appearance-base-select() is only supported on "
+           "select::after right now.";
+    // There is a rule in the UA sheet for select::after which uses
+    // -internal-appearance-auto-base-select(), so for that rule we have to
+    // account for this here by checking the style of the select element instead
+    // of this state_ which is for ::after.
+    // Both state_.LayoutParentStyle() and
+    // state_.GetElement().GetComputedStyle() seem to have the correct
+    // appearance value set.
+    // TODO(crbug.com/1511354): LayoutParentStyle might not be the right thing
+    // to call for all pseudo-elements.
+    has_base_appearance = state_.LayoutParentStyle()->EffectiveAppearance() ==
+                          ControlPart::kBaseSelectPart;
+  }
+  const CSSValue& selected =
+      has_base_appearance ? value.Second() : value.First();
   return Resolve(property, selected, priority, origin, resolver);
 }
 

@@ -4355,7 +4355,7 @@ bool AXObject::ComputeCanSetFocusAttribute() {
 
   // Customizable select: get focusable state from displayed button if present.
   if (auto* select = DynamicTo<HTMLSelectElement>(elem)) {
-    if (auto* button = select->DisplayedButton()) {
+    if (auto* button = select->SlottedButton()) {
       elem = button;
     }
   }
@@ -7272,7 +7272,7 @@ bool AXObject::OnNativeClickAction() {
   // Forward default action on custom select to its button.
   if (auto* select = DynamicTo<HTMLSelectElement>(GetNode())) {
     if (select->IsAppearanceBaseButton()) {
-      if (auto* button = select->DisplayedButton()) {
+      if (auto* button = select->SlottedButton()) {
         element = button;
       }
     }

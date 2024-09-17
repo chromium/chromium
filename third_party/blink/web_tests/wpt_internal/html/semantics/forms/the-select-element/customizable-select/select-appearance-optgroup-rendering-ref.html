@@ -18,22 +18,19 @@
 }
 </style>
 
-<div id=container class=customizable-select-container>
-  <button class="customizable-select-button open" popovertarget=popover id=button>
-    <span class=customizable-select-selectedoption>one</span>
-    <div class=customizable-select-button-icon></div>
-  </button>
-  <div id=popover popover=auto anchor=container class=customizable-select-datalist>
-    <div class="customizable-select-option selected">one</div>
-    <div class=optgroup>
-      <div class=optgroup-label>labelattribute</div>
-      <div class=customizable-select-option>two</div>
-      <div class=border>
-        <div class=customizable-select-option>three</div>
-      </div>
+<div class="customizable-select-button open" id=button>
+  <span class=customizable-select-selectedoption>one</span>
+</div>
+<div id=popover popover=auto anchor=button class=customizable-select-popover>
+  <div class="customizable-select-option selected">one</div>
+  <div class=optgroup>
+    <div class=optgroup-label>labelattribute</div>
+    <div class=customizable-select-option>two</div>
+    <div class=border>
+      <div class=customizable-select-option>three</div>
     </div>
-    <div class=customizable-select-option>four</div>
   </div>
+  <div class=customizable-select-option>four</div>
 </div>
 
 <script>

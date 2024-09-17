@@ -302,8 +302,6 @@ static void ExtractSelectorValues(const CSSSelector* selector,
         case CSSSelector::kPseudoHost:
         case CSSSelector::kPseudoHostContext:
         case CSSSelector::kPseudoSlotted:
-        case CSSSelector::kPseudoSelectFallbackButton:
-        case CSSSelector::kPseudoSelectFallbackButtonText:
         case CSSSelector::kPseudoSelectorFragmentAnchor:
         case CSSSelector::kPseudoRoot:
           pseudo_type = selector->GetPseudoType();
@@ -559,8 +557,6 @@ void RuleSet::FindBestRuleSetAndAdd(CSSSelector& component,
       return;
     case CSSSelector::kPseudoPlaceholder:
     case CSSSelector::kPseudoFileSelectorButton:
-    case CSSSelector::kPseudoSelectFallbackButton:
-    case CSSSelector::kPseudoSelectFallbackButtonText:
       if (it->FollowsSlotted()) {
         AddToRuleSet(slotted_pseudo_element_rules_, rule_data);
       } else {
@@ -571,12 +567,6 @@ void RuleSet::FindBestRuleSetAndAdd(CSSSelector& component,
             break;
           case CSSSelector::kPseudoFileSelectorButton:
             name = shadow_element_names::kPseudoFileUploadButton;
-            break;
-          case CSSSelector::kPseudoSelectFallbackButton:
-            name = shadow_element_names::kSelectFallbackButton;
-            break;
-          case CSSSelector::kPseudoSelectFallbackButtonText:
-            name = shadow_element_names::kSelectFallbackButtonText;
             break;
           default:
             NOTREACHED_IN_MIGRATION();

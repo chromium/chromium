@@ -14,6 +14,8 @@
 */
 
 select:not(:-internal-list-box) {
-    /* Selects with popup menus look like buttons with a drop down triangle on Linux. */
-    background-color: -internal-appearance-auto-base-select(ButtonFace, transparent);
+    /* Selects with popup menus look like buttons with a drop down triangle on
+     * Linux. Don't apply this platform-specific rule on an
+     * appearance:base-select <select>. */
+    background-color: -internal-appearance-auto-base-select(ButtonFace, Field);
 }

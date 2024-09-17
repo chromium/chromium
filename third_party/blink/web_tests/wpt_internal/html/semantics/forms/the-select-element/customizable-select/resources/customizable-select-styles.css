@@ -1,13 +1,16 @@
 /* These are UA styles for select and customizable select. */
+/* TODO(crbug.com/1511354): These rules will probably change here:
+ * https://github.com/w3c/csswg-drafts/issues/10857 */
 
-.customizable-select-container {
+.customizable-select-button, .customizable-select-popover {
   box-sizing: border-box;
-  display: inline-block;
+  /* TODO(crbug.com/1511354): Make the UA stylesheet use something standardized
+   * instead of -webkit-small-control. */
+  font: -webkit-small-control;
 }
 
-.customizable-select-datalist {
+.customizable-select-popover {
   box-shadow: 0px 12.8px 28.8px rgba(0, 0, 0, 0.13), 0px 0px 9.2px rgba(0, 0, 0, 0.11);
-  box-sizing: border-box;
   overflow: auto;
   border: 1px solid rgba(0, 0, 0, 0.15);
   border-radius: 0.25em;
@@ -20,9 +23,6 @@
   min-block-size: 1lh;
   inset-block-start: anchor(self-end);
   inset-inline-start: anchor(self-start);
-
-  font-family: Arial;
-  font-size: 13.3333px;
 }
 
 /* These are the UA styles for <option> in chromium.
@@ -53,6 +53,7 @@
   border: 1px solid ButtonBorder;
   cursor: default;
   text-align: inherit;
+  /* TODO(crbug.com/1511354): Make display match the UA stylesheet. */
   display: inline-flex;
   flex-grow: 1;
   flex-shrink: 1;
@@ -73,14 +74,4 @@
 
 .customizable-select-button.open::after {
   content: counter(fake-counter-name, disclosure-open);
-}
-
-.customizable-select-selectedoption {
-  color: inherit;
-  min-inline-size: 0px;
-  max-block-size: 100%;
-  flex-grow: 1;
-  flex-shrink: 1;
-  overflow: hidden;
-  display: inline;
 }

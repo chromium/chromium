@@ -3284,7 +3284,7 @@ String Internals::selectMenuListText(HTMLSelectElement* select) {
   DCHECK(select);
   if (!select->UsesMenuList())
     return String();
-  return select->InnerElementForAppearanceAuto().innerText();
+  return select->InnerElement().innerText();
 }
 
 bool Internals::isSelectPopupVisible(Node* node) {

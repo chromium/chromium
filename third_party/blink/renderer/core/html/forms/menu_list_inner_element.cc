@@ -20,6 +20,11 @@ MenuListInnerElement::MenuListInnerElement(Document& document)
 const ComputedStyle* MenuListInnerElement::CustomStyleForLayoutObject(
     const StyleRecalcContext& style_recalc_context) {
   const ComputedStyle& parent_style = OwnerShadowHost()->ComputedStyleRef();
+
+  if (parent_style.EffectiveAppearance() == ControlPart::kBaseSelectPart) {
+    return HTMLDivElement::CustomStyleForLayoutObject(style_recalc_context);
+  }
+
   ComputedStyleBuilder style_builder =
       GetDocument().GetStyleResolver().CreateAnonymousStyleBuilderWithDisplay(
           parent_style, EDisplay::kBlock);

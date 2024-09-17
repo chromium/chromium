@@ -1418,11 +1418,6 @@ TEST_F(FormAutofillUtilsTest, GetFormFieldElements_Unowned) {
   std::vector<WebFormControlElement> unowned_form_fields =
       form_util::GetOwnedFormControlsForTesting(doc, WebFormElement());
 
-  // Both `<select>` and `<selectlist>` contain <button> elements in their
-  // Shadow DOM.
-  auto button = [] {
-    return Property(&WebElement::TagName, WebString(u"BUTTON"));
-  };
   EXPECT_THAT(
       unowned_form_fields,
       ElementsAre(GetFormControlElementById(doc, "unowned_button"),
@@ -1430,9 +1425,8 @@ TEST_F(FormAutofillUtilsTest, GetFormFieldElements_Unowned) {
                   GetFormControlElementById(doc, "unowned_input"),
                   GetFormControlElementById(doc, "unowned_textarea"),
                   GetFormControlElementById(doc, "unowned_output"),
-                  GetFormControlElementById(doc, "unowned_select"), button(),
-                  GetFormControlElementById(doc, "unowned_selectlist"),
-                  button()));
+                  GetFormControlElementById(doc, "unowned_select"),
+                  GetFormControlElementById(doc, "unowned_selectlist")));
 }
 
 // Tests that FormData::fields and FormData::child_frames are extracted fully

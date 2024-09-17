@@ -90,14 +90,6 @@
       Symbol: "kSelectPopoverOptions",
     },
     {
-      name: "select-fallback-button",
-      Symbol: "kSelectFallbackButton",
-    },
-    {
-      name: "select-fallback-button-text",
-      Symbol: "kSelectFallbackButtonText",
-    },
-    {
       name: "picker(select)",
       Symbol: "kPickerSelect",
     },

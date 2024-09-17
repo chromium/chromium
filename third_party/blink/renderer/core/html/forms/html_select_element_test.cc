@@ -55,7 +55,7 @@ class HTMLSelectElementTest : public PageTestBase {
 
   String MenuListLabel() const {
     auto* select = To<HTMLSelectElement>(GetDocument().body()->firstChild());
-    return select->InnerElementForAppearanceAuto().textContent();
+    return select->InnerElement().textContent();
   }
 
  private:
@@ -122,9 +122,8 @@ TEST_F(HTMLSelectElementTest, SaveRestoreSelectSingleFormControlState) {
   EXPECT_EQ(2, To<HTMLSelectElement>(element)->selectedIndex());
   EXPECT_FALSE(opt0->Selected());
   EXPECT_TRUE(opt2->Selected());
-  EXPECT_EQ("!666", To<HTMLSelectElement>(element)
-                        ->InnerElementForAppearanceAuto()
-                        .textContent());
+  EXPECT_EQ("!666",
+            To<HTMLSelectElement>(element)->InnerElement().textContent());
 }
 
 TEST_F(HTMLSelectElementTest, SaveRestoreSelectMultipleFormControlState) {

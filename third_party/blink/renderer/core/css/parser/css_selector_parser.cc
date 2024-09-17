@@ -69,8 +69,6 @@ CSSSelector::RelationType GetImplicitShadowCombinatorForMatching(
     case CSSSelector::PseudoType::kPseudoDetailsContent:
     case CSSSelector::PseudoType::kPseudoPlaceholder:
     case CSSSelector::PseudoType::kPseudoFileSelectorButton:
-    case CSSSelector::PseudoType::kPseudoSelectFallbackButton:
-    case CSSSelector::PseudoType::kPseudoSelectFallbackButtonText:
     case CSSSelector::PseudoType::kPseudoPicker:
       return CSSSelector::RelationType::kUAShadow;
     case CSSSelector::PseudoType::kPseudoPart:
@@ -1186,13 +1184,8 @@ bool IsPseudoClassValidAfterPseudoElement(
       // kPseudoPopoverOpen. As part of the part-like pseudo-elements feature,
       // kPseudoPopoverOpen may be supported by kPseudoPart, in which case this
       // case could be combined with kPseudoPart.
-      if (pseudo_class == CSSSelector::kPseudoPopoverOpen) {
-        return true;
-      }
-      [[fallthrough]];
-    case CSSSelector::kPseudoSelectFallbackButton:
-    case CSSSelector::kPseudoSelectFallbackButtonText:
       return IsUserActionPseudoClass(pseudo_class) ||
+             pseudo_class == CSSSelector::kPseudoPopoverOpen ||
              pseudo_class == CSSSelector::kPseudoState ||
              pseudo_class == CSSSelector::kPseudoStateDeprecatedSyntax;
     case CSSSelector::kPseudoWebKitCustomElement:

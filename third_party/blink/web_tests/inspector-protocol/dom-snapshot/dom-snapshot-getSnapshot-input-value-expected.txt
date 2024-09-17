@@ -47,7 +47,7 @@ Tests DOMSnapshot.getSnapshot method returning input values.
             childNodeIndexes : [
                 [0] : 4
                 [1] : 5
-                [2] : 48
+                [2] : 44
             ]
             layoutNodeIndex : 2
             nodeName : BODY
@@ -71,21 +71,21 @@ Tests DOMSnapshot.getSnapshot method returning input values.
             childNodeIndexes : [
                 [0] : 6
                 [1] : 7
-                [2] : 28
-                [3] : 29
-                [4] : 32
-                [5] : 33
-                [6] : 35
-                [7] : 36
-                [8] : 37
-                [9] : 38
-                [10] : 39
-                [11] : 40
-                [12] : 41
-                [13] : 42
-                [14] : 43
-                [15] : 44
-                [16] : 47
+                [2] : 24
+                [3] : 25
+                [4] : 28
+                [5] : 29
+                [6] : 31
+                [7] : 32
+                [8] : 33
+                [9] : 34
+                [10] : 35
+                [11] : 36
+                [12] : 37
+                [13] : 38
+                [14] : 39
+                [15] : 40
+                [16] : 43
             ]
             layoutNodeIndex : 3
             nodeName : DIV
@@ -104,8 +104,8 @@ Tests DOMSnapshot.getSnapshot method returning input values.
                 [0] : 8
                 [1] : 10
                 [2] : 19
-                [3] : 24
-                [4] : 26
+                [3] : 20
+                [4] : 22
             ]
             layoutNodeIndex : 4
             nodeName : SELECT
@@ -246,65 +246,12 @@ Tests DOMSnapshot.getSnapshot method returning input values.
                 }
             ]
             backendNodeId : <number>
-            childNodeIndexes : [
-                [0] : 20
-            ]
             nodeName : SLOT
             nodeType : 1
             nodeValue : 
             shadowRootType : user-agent
         }
         [20] : {
-            attributes : [
-                [0] : {
-                    name : pseudo
-                    value : select-fallback-button
-                }
-            ]
-            backendNodeId : <number>
-            childNodeIndexes : [
-                [0] : 22
-            ]
-            nodeName : BUTTON
-            nodeType : 1
-            nodeValue : 
-            pseudoElementIndexes : [
-                [0] : 21
-            ]
-            shadowRootType : user-agent
-        }
-        [21] : {
-            backendNodeId : <number>
-            nodeName : ::after
-            nodeType : 1
-            nodeValue : 
-            pseudoType : after
-            shadowRootType : user-agent
-        }
-        [22] : {
-            attributes : [
-                [0] : {
-                    name : pseudo
-                    value : select-fallback-button-text
-                }
-            ]
-            backendNodeId : <number>
-            childNodeIndexes : [
-                [0] : 23
-            ]
-            nodeName : SPAN
-            nodeType : 1
-            nodeValue : 
-            shadowRootType : user-agent
-        }
-        [23] : {
-            backendNodeId : <number>
-            nodeName : #text
-            nodeType : 3
-            nodeValue : Option 1
-            shadowRootType : user-agent
-        }
-        [24] : {
             attributes : [
                 [0] : {
                     name : pseudo
@@ -317,14 +264,14 @@ Tests DOMSnapshot.getSnapshot method returning input values.
             ]
             backendNodeId : <number>
             childNodeIndexes : [
-                [0] : 25
+                [0] : 21
             ]
             nodeName : DIV
             nodeType : 1
             nodeValue : 
             shadowRootType : user-agent
         }
-        [25] : {
+        [21] : {
             attributes : [
                 [0] : {
                     name : id
@@ -337,7 +284,7 @@ Tests DOMSnapshot.getSnapshot method returning input values.
             nodeValue : 
             shadowRootType : user-agent
         }
-        [26] : {
+        [22] : {
             attributes : [
                 [0] : {
                     name : popover
@@ -350,14 +297,14 @@ Tests DOMSnapshot.getSnapshot method returning input values.
             ]
             backendNodeId : <number>
             childNodeIndexes : [
-                [0] : 27
+                [0] : 23
             ]
             nodeName : DIV
             nodeType : 1
             nodeValue : 
             shadowRootType : user-agent
         }
-        [27] : {
+        [23] : {
             attributes : [
                 [0] : {
                     name : pseudo
@@ -370,14 +317,14 @@ Tests DOMSnapshot.getSnapshot method returning input values.
             nodeValue : 
             shadowRootType : user-agent
         }
-        [28] : {
+        [24] : {
             backendNodeId : <number>
             layoutNodeIndex : 7
             nodeName : #text
             nodeType : 3
             nodeValue :    
         }
-        [29] : {
+        [25] : {
             attributes : [
                 [0] : {
                     name : id
@@ -390,7 +337,7 @@ Tests DOMSnapshot.getSnapshot method returning input values.
             ]
             backendNodeId : <number>
             childNodeIndexes : [
-                [0] : 30
+                [0] : 26
             ]
             inputValue : InputValue
             isClickable : true
@@ -399,10 +346,10 @@ Tests DOMSnapshot.getSnapshot method returning input values.
             nodeType : 1
             nodeValue : 
         }
-        [30] : {
+        [26] : {
             backendNodeId : <number>
             childNodeIndexes : [
-                [0] : 31
+                [0] : 27
             ]
             isClickable : true
             layoutNodeIndex : 9
@@ -411,7 +358,7 @@ Tests DOMSnapshot.getSnapshot method returning input values.
             nodeValue : 
             shadowRootType : user-agent
         }
-        [31] : {
+        [27] : {
             backendNodeId : <number>
             isClickable : true
             layoutNodeIndex : 10
@@ -420,14 +367,14 @@ Tests DOMSnapshot.getSnapshot method returning input values.
             nodeValue : InputValue
             shadowRootType : user-agent
         }
-        [32] : {
+        [28] : {
             backendNodeId : <number>
             layoutNodeIndex : 11
             nodeName : #text
             nodeType : 3
             nodeValue :    
         }
-        [33] : {
+        [29] : {
             attributes : [
                 [0] : {
                     name : id
@@ -444,7 +391,7 @@ Tests DOMSnapshot.getSnapshot method returning input values.
             ]
             backendNodeId : <number>
             childNodeIndexes : [
-                [0] : 34
+                [0] : 30
             ]
             inputValue : ButtonValue
             isClickable : true
@@ -453,7 +400,7 @@ Tests DOMSnapshot.getSnapshot method returning input values.
             nodeType : 1
             nodeValue : 
         }
-        [34] : {
+        [30] : {
             backendNodeId : <number>
             layoutNodeIndex : 13
             nodeName : #text
@@ -461,14 +408,14 @@ Tests DOMSnapshot.getSnapshot method returning input values.
             nodeValue : ButtonValue
             shadowRootType : user-agent
         }
-        [35] : {
+        [31] : {
             backendNodeId : <number>
             layoutNodeIndex : 14
             nodeName : #text
             nodeType : 3
             nodeValue :    
         }
-        [36] : {
+        [32] : {
             attributes : [
                 [0] : {
                     name : id
@@ -496,14 +443,14 @@ Tests DOMSnapshot.getSnapshot method returning input values.
             nodeType : 1
             nodeValue : 
         }
-        [37] : {
+        [33] : {
             backendNodeId : <number>
             layoutNodeIndex : 16
             nodeName : #text
             nodeType : 3
             nodeValue :    
         }
-        [38] : {
+        [34] : {
             attributes : [
                 [0] : {
                     name : id
@@ -523,14 +470,14 @@ Tests DOMSnapshot.getSnapshot method returning input values.
             nodeType : 1
             nodeValue : 
         }
-        [39] : {
+        [35] : {
             backendNodeId : <number>
             layoutNodeIndex : 18
             nodeName : #text
             nodeType : 3
             nodeValue :    
         }
-        [40] : {
+        [36] : {
             attributes : [
                 [0] : {
                     name : id
@@ -558,14 +505,14 @@ Tests DOMSnapshot.getSnapshot method returning input values.
             nodeType : 1
             nodeValue : 
         }
-        [41] : {
+        [37] : {
             backendNodeId : <number>
             layoutNodeIndex : 20
             nodeName : #text
             nodeType : 3
             nodeValue :    
         }
-        [42] : {
+        [38] : {
             attributes : [
                 [0] : {
                     name : id
@@ -589,14 +536,14 @@ Tests DOMSnapshot.getSnapshot method returning input values.
             nodeType : 1
             nodeValue : 
         }
-        [43] : {
+        [39] : {
             backendNodeId : <number>
             layoutNodeIndex : 22
             nodeName : #text
             nodeType : 3
             nodeValue :    
         }
-        [44] : {
+        [40] : {
             attributes : [
                 [0] : {
                     name : id
@@ -605,7 +552,7 @@ Tests DOMSnapshot.getSnapshot method returning input values.
             ]
             backendNodeId : <number>
             childNodeIndexes : [
-                [0] : 45
+                [0] : 41
             ]
             layoutNodeIndex : 23
             nodeName : TEXTAREA
@@ -613,10 +560,10 @@ Tests DOMSnapshot.getSnapshot method returning input values.
             nodeValue : 
             textValue : TextAreaValue
         }
-        [45] : {
+        [41] : {
             backendNodeId : <number>
             childNodeIndexes : [
-                [0] : 46
+                [0] : 42
             ]
             isClickable : true
             layoutNodeIndex : 24
@@ -625,7 +572,7 @@ Tests DOMSnapshot.getSnapshot method returning input values.
             nodeValue : 
             shadowRootType : user-agent
         }
-        [46] : {
+        [42] : {
             backendNodeId : <number>
             isClickable : true
             layoutNodeIndex : 25
@@ -634,14 +581,14 @@ Tests DOMSnapshot.getSnapshot method returning input values.
             nodeValue : TextAreaValue
             shadowRootType : user-agent
         }
-        [47] : {
+        [43] : {
             backendNodeId : <number>
             layoutNodeIndex : 26
             nodeName : #text
             nodeType : 3
             nodeValue :  
         }
-        [48] : {
+        [44] : {
             backendNodeId : <number>
             nodeName : #text
             nodeType : 3

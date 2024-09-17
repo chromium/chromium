@@ -4271,8 +4271,7 @@ String AXNodeObject::GetValueForControl(AXObjectSet& visited) const {
     // We don't retrieve the element's value attribute on purpose. The value
     // attribute might be sanitized and might be different from what is actually
     // displayed inside the <select> element on screen.
-    return select_element->InnerElementForAppearanceAuto()
-        .GetInnerTextWithoutUpdate();
+    return select_element->InnerElement().GetInnerTextWithoutUpdate();
   }
 
   if (IsAtomicTextField()) {
@@ -5634,7 +5633,7 @@ void AXNodeObject::AddMenuListPopupChildren() {
     // popup are all of the natural dom children of the <select>.
     for (Node* child = NodeTraversal::FirstChild(*select); child;
          child = NodeTraversal::NextSibling(*child)) {
-      if (child == select->DisplayedButton()) {
+      if (child == select->SlottedButton()) {
         // The displayed button does not need to be part of the a11y tree. It
         // is not in the popup, and for accessibility purposes it is redundant
         // with the <select>.
@@ -6153,7 +6152,7 @@ bool AXNodeObject::OnNativeFocusAction() {
   // which actually handles the focus.
   // TODO(accessibility) Try to remove after crrev.com/c/5800883 lands.
   if (auto* select = DynamicTo<HTMLSelectElement>(element)) {
-    if (auto* button = select->DisplayedButton()) {
+    if (auto* button = select->SlottedButton()) {
       element = button;
     }
   }

@@ -7610,8 +7610,6 @@ void Element::SetShadowPseudoId(const AtomicString& id) {
     DCHECK(type == CSSSelector::kPseudoWebKitCustomElement ||
            type == CSSSelector::kPseudoBlinkInternalElement ||
            type == CSSSelector::kPseudoDetailsContent ||
-           type == CSSSelector::kPseudoSelectFallbackButton ||
-           type == CSSSelector::kPseudoSelectFallbackButtonText ||
            id == shadow_element_names::kPickerSelect)
         << "type: " << type << ", id: " << id;
   }
@@ -8215,10 +8213,6 @@ const AtomicString& StringForPseudoId(PseudoId pseudo_id) {
       return shadow_element_names::kPseudoFileUploadButton;
     case kPseudoIdDetailsContent:
       return shadow_element_names::kIdDetailsContent;
-    case kPseudoIdSelectFallbackButton:
-      return shadow_element_names::kSelectFallbackButton;
-    case kPseudoIdSelectFallbackButtonText:
-      return shadow_element_names::kSelectFallbackButtonText;
     case kPseudoIdPickerSelect:
       return shadow_element_names::kPickerSelect;
     default:

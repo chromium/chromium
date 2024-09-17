@@ -1893,8 +1893,6 @@ TEST_F(UnassociatedListedElementTest, GetUnassociatedListedElements) {
         GetElement("unassociated_button"), GetElement("unassociated_fieldset"),
         GetElement("unassociated_input"), GetElement("unassociated_textarea"),
         GetElement("unassociated_output"), GetElement("unassociated_select"),
-        /*Button inside <select> Shadow DOM*/ _,
-        GetElement("unassociated_object"),
         /*Button inside <object> Shadow DOM*/ _,
         GetElement("unassociated_custom_element"));
   };

@@ -87,7 +87,9 @@ bool LayoutFlexibleBox::IsChildAllowed(LayoutObject* object,
       // However, the InnerElement is only used for rendering in
       // appearance:auto, so don't include that one.
       Node* child = object->GetNode();
-      if (child == &select->InnerElementForAppearanceAuto()) {
+      if (child == &select->InnerElement() && select->SlottedButton()) {
+        // If the author doesn't provide a button, then we still want to display
+        // the InnerElement.
         return false;
       }
       if (auto* popover = select->PopoverForAppearanceBase()) {
@@ -103,7 +105,7 @@ bool LayoutFlexibleBox::IsChildAllowed(LayoutObject* object,
       // For a size=1 appearance:auto <select>, we only render the active option
       // label through the InnerElement. We do not allow adding layout objects
       // for options and optgroups.
-      return object->GetNode() == &select->InnerElementForAppearanceAuto();
+      return object->GetNode() == &select->InnerElement();
     }
   }
   return LayoutBlock::IsChildAllowed(object, style);

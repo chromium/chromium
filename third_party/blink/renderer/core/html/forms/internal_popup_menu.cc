@@ -309,8 +309,7 @@ void InternalPopupMenu::WriteDocument(SegmentedBuffer& data) {
       {kPseudoIdScrollbarCorner, "select::-webkit-scrollbar-corner"}};
 
   Scrollbar* temp_scrollbar = nullptr;
-  const LayoutBox* box =
-      owner_element.InnerElementForAppearanceAuto().GetLayoutBox();
+  const LayoutBox* box = owner_element.InnerElement().GetLayoutBox();
   if (box && box->GetScrollableArea()) {
     if (ScrollableArea* scrollable = box->GetScrollableArea()) {
       temp_scrollbar = MakeGarbageCollected<CustomScrollbar>(
