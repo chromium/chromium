@@ -4057,9 +4057,6 @@ extern const char kFocusModeYTMDescription[];
 extern const char kForceReSyncDriveName[];
 extern const char kForceReSyncDriveDescription[];
 
-extern const char kFSPsInRecentsName[];
-extern const char kFSPsInRecentsDescription[];
-
 extern const char kFuseBoxDebugName[];
 extern const char kFuseBoxDebugDescription[];
 

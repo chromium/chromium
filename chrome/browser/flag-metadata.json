@@ -4984,11 +4984,6 @@
     "expiry_milestone": 132
   },
   {
-    "name": "fsps-in-recents",
-    "owners": [ "simmonsjosh@google.com", "benhartney@google.com", "majewski@chromium.org" ],
-    "expiry_milestone": 132
-  },
-  {
     "name": "fullscreen-improvement",
     "owners": [ "alionadangla@google.com", "ajuma@google.com" ],
     "expiry_milestone": 130
