@@ -3040,6 +3040,7 @@ if (!is_android) {
       "../browser/top_level_storage_access_api/request_storage_access_for_browsertest.cc",
       "../browser/tpcd/experiment/eligibility_service_browsertest.cc",
       "../browser/tpcd/experiment/experiment_manager_impl_browsertest.cc",
+      "../browser/tpcd/experiment/tpcd_mitigations_browsertest.cc",
       "../browser/tpcd/heuristics/opener_heuristic_browsertest.cc",
       "../browser/tpcd/metadata/devtools_observer_browsertest.cc",
       "../browser/tpcd/metadata/manager_browsertest.cc",

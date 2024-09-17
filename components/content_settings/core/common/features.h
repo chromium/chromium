@@ -117,6 +117,10 @@ BASE_DECLARE_FEATURE(kCrosSystemLevelPermissionBlockedWarnings);
 COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
 BASE_DECLARE_FEATURE(kTrackingProtection3pcd);
 
+// Forces unpartitioned storage access with third-party cookie blocking.
+COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
+BASE_DECLARE_FEATURE(kNativeUnpartitionedStoragePermittedWhen3PCOff);
+
 COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
 extern const char kTpcdReadHeuristicsGrantsName[];
 
