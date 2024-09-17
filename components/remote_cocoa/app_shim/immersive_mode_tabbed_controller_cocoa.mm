@@ -9,13 +9,14 @@
 #include "base/functional/callback_forward.h"
 #import "components/remote_cocoa/app_shim/NSToolbar+Private.h"
 #import "components/remote_cocoa/app_shim/bridged_content_view.h"
+#include "components/remote_cocoa/app_shim/features.h"
 
 namespace remote_cocoa {
 
 ImmersiveModeTabbedControllerCocoa::ImmersiveModeTabbedControllerCocoa(
     NativeWidgetMacNSWindow* browser_window,
-    NativeWidgetMacNSWindow* overlay_window,
-    NativeWidgetMacNSWindow* tab_window)
+    NativeWidgetMacOverlayNSWindow* overlay_window,
+    NativeWidgetMacOverlayNSWindow* tab_window)
     : ImmersiveModeControllerCocoa(browser_window, overlay_window) {
   tab_window_ = tab_window;
 #ifndef NDEBUG
@@ -54,6 +55,10 @@ void ImmersiveModeTabbedControllerCocoa::Init() {
   // Use a placeholder view since the content has been moved to the
   // NSTitlebarAccessoryViewController.
   tab_window_.contentView = [[OpaqueView alloc] init];
+  if (base::FeatureList::IsEnabled(
+          remote_cocoa::features::kImmersiveFullscreenOverlayWindowDebug)) {
+    [tab_window_ debugWithColor:NSColor.redColor];
+  }
 
   // This will allow the NSToolbarFullScreenWindow to become key when
   // interacting with the tab strip.

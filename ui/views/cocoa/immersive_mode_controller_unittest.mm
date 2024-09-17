@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/remote_cocoa/app_shim/immersive_mode_controller_cocoa.h"
-
 #import <Cocoa/Cocoa.h>
 
 #include <memory>
@@ -11,8 +9,10 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "components/remote_cocoa/app_shim/bridged_content_view.h"
+#include "components/remote_cocoa/app_shim/immersive_mode_controller_cocoa.h"
 #include "components/remote_cocoa/app_shim/immersive_mode_tabbed_controller_cocoa.h"
 #include "components/remote_cocoa/app_shim/native_widget_mac_nswindow.h"
+#import "components/remote_cocoa/app_shim/native_widget_mac_overlay_nswindow.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #import "ui/base/cocoa/window_size_constants.h"
 #import "ui/base/test/cocoa_helper.h"
@@ -32,6 +32,16 @@ constexpr float kTabOverlayViewWidth = kBrowserWidth;
 constexpr float kPopupHeight = 100;
 constexpr float kPopupWidth = kPopupHeight;
 
+void SetupWindow(NativeWidgetMacNSWindow* window,
+                 CGFloat width,
+                 CGFloat height) {
+  window.releasedWhenClosed = NO;
+  [window setFrame:NSMakeRect(0, 0, width, height) display:YES];
+  window.contentView = [[BridgedContentView alloc] initWithBridge:nullptr
+                                                           bounds:gfx::Rect()];
+  [window.contentView setFrame:NSMakeRect(0, 0, width, height)];
+}
+
 NativeWidgetMacNSWindow* CreateNativeWidgetMacNSWindow(
     CGFloat width,
     CGFloat height,
@@ -41,12 +51,21 @@ NativeWidgetMacNSWindow* CreateNativeWidgetMacNSWindow(
                 styleMask:style_mask
                   backing:NSBackingStoreBuffered
                     defer:NO];
-  window.releasedWhenClosed = NO;
-  [window setFrame:NSMakeRect(0, 0, width, height) display:YES];
-  window.contentView = [[BridgedContentView alloc] initWithBridge:nullptr
-                                                           bounds:gfx::Rect()];
-  [window.contentView setFrame:NSMakeRect(0, 0, width, height)];
+  SetupWindow(window, width, height);
+  return window;
+}
 
+NativeWidgetMacOverlayNSWindow* CreateNativeWidgetMacOverlayNSWindow(
+    CGFloat width,
+    CGFloat height,
+    NSWindowStyleMask style_mask = NSWindowStyleMaskBorderless) {
+  NativeWidgetMacOverlayNSWindow* window =
+      [[NativeWidgetMacOverlayNSWindow alloc]
+          initWithContentRect:ui::kWindowSizeDeterminedLater
+                    styleMask:style_mask
+                      backing:NSBackingStoreBuffered
+                        defer:NO];
+  SetupWindow(window, width, height);
   return window;
 }
 
@@ -74,14 +93,14 @@ class CocoaImmersiveModeControllerTest : public ui::CocoaTest {
     [browser_ orderBack:nil];
 
     // Create a blank overlay window.
-    overlay_ =
-        CreateNativeWidgetMacNSWindow(kOverlayViewWidth, kOverlayViewHeight);
+    overlay_ = CreateNativeWidgetMacOverlayNSWindow(kOverlayViewWidth,
+                                                    kOverlayViewHeight);
     [browser_ addChildWindow:overlay_ ordered:NSWindowAbove];
     EXPECT_EQ(overlay_.isVisible, YES);
 
     // Create a blank tab overlay window as a child of overlay window.
-    tab_overlay_ = CreateNativeWidgetMacNSWindow(kTabOverlayViewWidth,
-                                                 kTabOverlayViewHeight);
+    tab_overlay_ = CreateNativeWidgetMacOverlayNSWindow(kTabOverlayViewWidth,
+                                                        kTabOverlayViewHeight);
     [overlay_ addChildWindow:tab_overlay_ ordered:NSWindowAbove];
     EXPECT_EQ(tab_overlay_.isVisible, YES);
   }
@@ -100,13 +119,13 @@ class CocoaImmersiveModeControllerTest : public ui::CocoaTest {
   }
 
   NativeWidgetMacNSWindow* browser() { return browser_; }
-  NativeWidgetMacNSWindow* overlay() { return overlay_; }
-  NativeWidgetMacNSWindow* tab_overlay() { return tab_overlay_; }
+  NativeWidgetMacOverlayNSWindow* overlay() { return overlay_; }
+  NativeWidgetMacOverlayNSWindow* tab_overlay() { return tab_overlay_; }
 
  private:
   NativeWidgetMacNSWindow* __strong browser_;
-  NativeWidgetMacNSWindow* __strong overlay_;
-  NativeWidgetMacNSWindow* __strong tab_overlay_;
+  NativeWidgetMacOverlayNSWindow* __strong overlay_;
+  NativeWidgetMacOverlayNSWindow* __strong tab_overlay_;
 };
 
 // Test ImmersiveModeController construction and destruction.
@@ -346,8 +365,8 @@ class MockImmersiveModeTabbedControllerCocoa
  public:
   MockImmersiveModeTabbedControllerCocoa(
       NativeWidgetMacNSWindow* browser_window,
-      NativeWidgetMacNSWindow* overlay_window,
-      NativeWidgetMacNSWindow* tab_window)
+      NativeWidgetMacOverlayNSWindow* overlay_window,
+      NativeWidgetMacOverlayNSWindow* tab_window)
       : ImmersiveModeTabbedControllerCocoa(browser_window,
                                            overlay_window,
                                            tab_window) {}

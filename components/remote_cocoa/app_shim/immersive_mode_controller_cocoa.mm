@@ -10,6 +10,7 @@
 #include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
+#include "components/remote_cocoa/app_shim/features.h"
 #import "components/remote_cocoa/app_shim/immersive_mode_delegate_mac.h"
 #import "components/remote_cocoa/app_shim/native_widget_ns_window_bridge.h"
 #include "ui/gfx/geometry/rect.h"
@@ -151,7 +152,7 @@ bool IsNSToolbarFullScreenWindow(NSWindow* window) {
 
 ImmersiveModeControllerCocoa::ImmersiveModeControllerCocoa(
     NativeWidgetMacNSWindow* browser_window,
-    NativeWidgetMacNSWindow* overlay_window)
+    NativeWidgetMacOverlayNSWindow* overlay_window)
     : weak_ptr_factory_(this) {
   browser_window_ = browser_window;
   overlay_window_ = overlay_window;
@@ -195,6 +196,10 @@ ImmersiveModeControllerCocoa::ImmersiveModeControllerCocoa(
   // Use a placeholder view since the content has been moved to the
   // ImmersiveModeTitlebarViewController.
   overlay_window_.contentView = [[OpaqueView alloc] init];
+  if (base::FeatureList::IsEnabled(
+          remote_cocoa::features::kImmersiveFullscreenOverlayWindowDebug)) {
+    [overlay_window_ debugWithColor:NSColor.greenColor];
+  }
 
   // The overlay window will become a child of NSToolbarFullScreenWindow and sit
   // above it in the z-order. Allow mouse events that are not handled by the
@@ -415,7 +420,7 @@ bool ImmersiveModeControllerCocoa::ShouldObserveChildWindow(NSWindow* child) {
 NSWindow* ImmersiveModeControllerCocoa::browser_window() {
   return browser_window_;
 }
-NSWindow* ImmersiveModeControllerCocoa::overlay_window() {
+NativeWidgetMacOverlayNSWindow* ImmersiveModeControllerCocoa::overlay_window() {
   return overlay_window_;
 }
 BridgedContentView* ImmersiveModeControllerCocoa::overlay_content_view() {

@@ -9,6 +9,7 @@
 
 REMOTE_COCOA_APP_SHIM_EXPORT
 @interface NativeWidgetMacOverlayNSWindow : NativeWidgetMacNSWindow
+- (void)debugWithColor:(NSColor*)color;
 @end
 
 #endif  // COMPONENTS_REMOTE_COCOA_APP_SHIM_NATIVE_WIDGET_MAC_OVERLAY_NSWINDOW_H_
