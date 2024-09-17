@@ -154,6 +154,7 @@ bool ShouldRecordFillingHistory(FillingProduct filling_product) {
   switch (filling_product) {
     case FillingProduct::kAddress:
     case FillingProduct::kCreditCard:
+    case FillingProduct::kPlusAddresses:
       return true;
     case FillingProduct::kNone:
     case FillingProduct::kMerchantPromoCode:
@@ -161,7 +162,6 @@ bool ShouldRecordFillingHistory(FillingProduct filling_product) {
     case FillingProduct::kAutocomplete:
     case FillingProduct::kPassword:
     case FillingProduct::kCompose:
-    case FillingProduct::kPlusAddresses:
     case FillingProduct::kStandaloneCvc:
     case FillingProduct::kPredictionImprovements:
       return false;
