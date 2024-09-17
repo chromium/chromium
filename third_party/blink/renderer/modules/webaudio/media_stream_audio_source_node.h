@@ -76,7 +76,7 @@ class MediaStreamAudioSourceNode final
   MediaStreamAudioSourceHandler& GetMediaStreamAudioSourceHandler() const;
 
   // https://chromium.googlesource.com/chromium/src/+/refs/heads/main/docs/media/capture/README.md#logs
-  void SendLogMessage(const String& message);
+  void SendLogMessage(const char* const func, const String& message);
 
   Member<MediaStreamTrack> audio_track_;
   Member<MediaStream> media_stream_;

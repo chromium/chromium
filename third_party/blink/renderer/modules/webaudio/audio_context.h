@@ -261,7 +261,7 @@ class MODULES_EXPORT AudioContext final
   void HandleRenderError();
 
   // https://chromium.googlesource.com/chromium/src/+/refs/heads/main/docs/media/capture/README.md#logs
-  void SendLogMessage(const String& message);
+  void SendLogMessage(const char* const func, const String& message);
 
   // https://webaudio.github.io/web-audio-api/#dom-audiocontext-suspended-by-user-slot
   bool suspended_by_user_ = false;
