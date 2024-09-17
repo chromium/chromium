@@ -188,7 +188,7 @@ export class StreamManager {
     try {
       return await this.camera3DevicesInfo;
     } catch (e) {
-      if (loadTimeData.isVideoCaptureDisallowed()) {
+      if (loadTimeData.isCCADisallowed()) {
         // The failure is expected due to the policy so don't throw any error.
         // TODO(b/297317408): Show messages on the UI.
         // eslint-disable-next-line no-console

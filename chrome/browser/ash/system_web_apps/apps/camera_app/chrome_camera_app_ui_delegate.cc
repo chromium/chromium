@@ -35,6 +35,7 @@
 #include "chrome/browser/media/webrtc/media_device_salt_service_factory.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/pdf/pdf_service.h"
+#include "chrome/browser/policy/policy_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/screen_ai/public/optical_character_recognizer.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service.h"
@@ -482,8 +483,12 @@ void ChromeCameraAppUIDelegate::PopulateLoadTimeData(
                                       ash::features::kCameraSuperResSupported));
 
   const PrefService* prefs = Profile::FromWebUI(web_ui_)->GetPrefs();
-  source->AddBoolean("video_capture_disallowed",
-                     !prefs->GetBoolean(prefs::kVideoCaptureAllowed));
+  GURL cca_url = GURL(ash::kChromeUICameraAppURL);
+  bool url_allowed = policy::IsOriginInAllowlist(
+      cca_url, prefs, prefs::kVideoCaptureAllowedUrls);
+  source->AddBoolean(
+      "cca_disallowed",
+      !prefs->GetBoolean(prefs::kVideoCaptureAllowed) && !url_allowed);
 
   const char kChromeOSReleaseTrack[] = "CHROMEOS_RELEASE_TRACK";
   const char kTestImageRelease[] = "testimage-channel";

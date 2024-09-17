@@ -580,7 +580,7 @@ export class CameraManager implements EventListener {
     state.set(state.State.CAMERA_CONFIGURING, true);
     this.setCameraAvailable(false);
     this.scheduler.reconfigurer.setShouldSuspend(this.shouldSuspend());
-    if (loadTimeData.isVideoCaptureDisallowed()) {
+    if (loadTimeData.isCCADisallowed()) {
       if (this.watchdog === null) {
         nav.open(ViewName.WARNING, WarningType.DISABLED_CAMERA);
         this.watchdog = new ResumeStateWatchdog(() => this.doReconfigure());

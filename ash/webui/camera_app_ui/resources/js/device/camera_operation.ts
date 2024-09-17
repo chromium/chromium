@@ -456,7 +456,7 @@ export class OperationScheduler {
   async initialize(cameraViewUI: CameraViewUI): Promise<void> {
     this.modes.initialize(cameraViewUI);
     await StreamManager.getInstance().deviceUpdate();
-    if (!loadTimeData.isVideoCaptureDisallowed()) {
+    if (!loadTimeData.isCCADisallowed()) {
       await this.firstInfoUpdate.wait();
     }
   }
