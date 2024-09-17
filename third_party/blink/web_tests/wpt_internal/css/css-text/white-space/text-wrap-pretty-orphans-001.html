@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<meta name="variant" content="?default">
+<meta name="variant" content="?hyphens">
+<meta name="variant" content="?hyphens&justify">
+<meta name="variant" content="?justify">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+#container {
+  font-family: sans-serif;
+  font-size: 16px;
+}
+#container > p {
+  width: 500px;
+  outline: 1px solid;
+  overflow: hidden;
+  resize: horizontal;
+}
+.hyphens { hyphens: auto; }
+.justify { text-align: justify; }
+.pretty { text-wrap: pretty; }
+.no-orphans { background: limegreen; }
+.has-orphans { background: red; }
+.unknown-orphans { background: yellow; }
+</style>
+<div id="log"></div>
+<div>
+  <input id="hyphens" type="checkbox">
+  <label for="hyphens">hyphens: auto</label>
+  <input id="justify" type="checkbox">
+  <label for="justify">text-align: justify</label>
+  <button id="rerun">Re-run</button>
+  <input id="pretty" type="checkbox">
+  <label for="pretty">text-wrap: pretty</label>
+</div>
+
+<div id="container" lang="en">
+<p>
+Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Pellentesque adipiscing commodo elit at imperdiet dui. Aliquam faucibus purus in massa tempor nec feugiat nisl. Luctus accumsan tortor posuere ac ut consequat semper viverra nam.
+</p>
+<p>
+Velit ut tortor pretium viverra suspendisse potenti nullam ac. Diam quam nulla porttitor massa id neque. Cursus euismod quis viverra nibh cras. Bibendum enim facilisis gravida neque convallis. Id porta nibh venenatis cras. Ridiculus mus mauris vitae ultricies leo integer malesuada nunc. Aenean et tortor at risus viverra adipiscing at in. Mollis aliquam ut porttitor leo a diam sollicitudin tempor.
+</p>
+<p>
+Ullamcorper dignissim cras tincidunt lobortis feugiat vivamus at augue eget. Placerat duis ultricies lacus sed turpis tincidunt id aliquet risus. Aliquam vestibulum morbi blandit cursus. Vel risus commodo viverra maecenas. Sociis natoque penatibus et magnis dis parturient montes nascetur. Sapien et ligula ullamcorper malesuada proin libero nunc consequat interdum. Consequat nisl vel pretium lectus quam. Egestas congue quisque egestas diam in arcu. Turpis egestas pretium aenean pharetra magna ac. Cursus in hac habitasse platea dictumst quisque. At consectetur lorem donec massa sapien faucibus.
+</p>
+</div>
+<script>
+const container = document.getElementById('container');
+setupUI();
+
+class TestParagraph {
+  constructor(element) {
+    this.element = element;
+    this.last_word_index = indexOfLastWord(element);
+    this.is_adjusted = this.last_word_index >= 0 &&
+        adjustWithForLastLineToStartAt(element, this.last_word_index);
+  }
+
+  checkOrphans() {
+    const element = this.element;
+    const index_of_last_line = indexOfLastLine(element);
+    if (!this.is_adjusted || index_of_last_line < 0) {
+      element.classList.add('unknown-orphans');
+      return;
+    }
+    test(() => {
+      try {
+        assert_not_equals(index_of_last_line, this.last_word_index);
+        element.classList.add('no-orphans');
+      } catch (e) {
+        element.classList.add('has-orphans');
+        throw e;
+      }
+    }, ellipsize(element.innerText, 20));
+  }
+}
+
+// Make test paragraphs to have orphans (single word on the last line).
+const test_paragraphs = [];
+for (const element of container.children) {
+  test_paragraphs.push(new TestParagraph(element));
+}
+
+// Check if the orphans are eliminated by applying `text-wrap: pretty`.
+setCheckboxWithEvent(pretty, true);
+for (const test_paragraph of test_paragraphs) {
+  test_paragraph.checkOrphans();
+}
+
+// UI utility functions.
+function setupUI() {
+  // Test parameters are set to checkboxes, then to classes by event handlers.
+  // The checkboxes are not needed for automated tests, but to help manual
+  // debugging by changing conditions.
+  const params = new URLSearchParams(window.location.search);
+  for (const key of params.keys()) {
+    const element = document.getElementById(key);
+    if (element) {
+      element.checked = true;
+    }
+  }
+  bindCheckboxToClassName('hyphens', 'hyphens');
+  bindCheckboxToClassName('justify', 'justify');
+  bindCheckboxToClassName('pretty', 'pretty');
+  document.getElementById('rerun').addEventListener('click', rerun);
+}
+
+function bindCheckboxToClassName(id, className) {
+  const element = document.getElementById(id);
+  container.classList.toggle(className, element.checked);
+  element.addEventListener('change', (e) => {
+    container.classList.toggle(className, e.target.checked);
+  });
+}
+
+function setCheckboxWithEvent(element, value) {
+  element.checked = value;
+  element.dispatchEvent(new Event('change'));
+}
+
+function ellipsize(str, max) {
+  return str.length <= max ? str : str.substr(0, max) + '...';
+}
+
+function rerun() {
+  pretty.checked = false;
+  const keys = [...document.querySelectorAll('input[type="checkbox"]')]
+      .filter(input => input.checked)
+      .map(input => input.id);
+  window.location.search = '?' + keys.join('&');
+}
+
+// Utility functions.
+function indexOfLastWord(element) {
+  const text = element.innerText;
+  const last_space_index = text.lastIndexOf(' ');
+  return last_space_index >= 0 ? last_space_index + 1 : -1;
+}
+
+function indexOfLastLine(element) {
+  const x = element.offsetLeft;
+  const y = element.offsetTop + element.offsetHeight - 5;
+  const position = document.caretPositionFromPoint(x, y);
+  if (!position) {
+    return -1;
+  }
+  // `CaretPosition.offset` is 1-indexed, convert it to 0-indexed.
+  return position.offset - 1;
+}
+
+function adjustWithForLastLineToStartAt(element, index) {
+  for (let width = 300; ; width += 1) {
+    element.style.width = `${width}px`;
+    const last_line_index = indexOfLastLine(element);
+    if (last_line_index == index) {
+      break;
+    }
+    if (width > 1000) {
+      element.style.width = ''
+      return false;
+    }
+  }
+  return true;
+}
+</script>
