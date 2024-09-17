@@ -396,7 +396,8 @@ using base::UserMetricsAction;
                    }];
 
     // Log to FET overflow menu opened if opened with blue dot.
-    if ([self.popupMenuHelpCoordinator hasBlueDotForOverflowMenu] && tracker) {
+    if (IsBlueDotOnToolsMenuButtoneEnabled() &&
+        [self.popupMenuHelpCoordinator hasBlueDotForOverflowMenu] && tracker) {
       tracker->NotifyEvent(
           feature_engagement::events::kBlueDotPromoOverflowMenuOpened);
       [self updateToolsMenuBlueDotVisibility];

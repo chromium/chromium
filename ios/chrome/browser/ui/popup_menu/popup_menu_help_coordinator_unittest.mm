@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_help_coordinator.h"
 
+#import "base/test/scoped_feature_list.h"
 #import "components/feature_engagement/test/mock_tracker.h"
 #import "components/prefs/testing_pref_service.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
@@ -14,6 +15,7 @@
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/toolbar/toolbar_coordinator.h"
 #import "ios/chrome/test/testing_application_context.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -29,7 +31,7 @@ std::unique_ptr<KeyedService> BuildFeatureEngagementMockTracker(
   return std::make_unique<feature_engagement::test::MockTracker>();
 }
 
-class PopopMenuHelpCoordinatorTest : public PlatformTest {
+class PopupMenuHelpCoordinatorTest : public PlatformTest {
  public:
   void SetUp() override {
     PlatformTest::SetUp();
@@ -74,6 +76,7 @@ class PopopMenuHelpCoordinatorTest : public PlatformTest {
 
  protected:
   web::WebTaskEnvironment task_environment_;
+  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<TestingPrefServiceSimple> local_state_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   SceneState* scene_state_;
@@ -84,7 +87,8 @@ class PopopMenuHelpCoordinatorTest : public PlatformTest {
 };
 
 // Test that blue dot is set on foreground.
-TEST_F(PopopMenuHelpCoordinatorTest, ShowBlueDotSetOnForeground) {
+TEST_F(PopupMenuHelpCoordinatorTest, ShowBlueDotSetOnForeground) {
+  scoped_feature_list_.InitAndEnableFeature(kBlueDotOnToolsMenuButton);
   ON_CALL(
       *tracker_,
       ShouldTriggerHelpUI(testing::Ref(
@@ -101,7 +105,8 @@ TEST_F(PopopMenuHelpCoordinatorTest, ShowBlueDotSetOnForeground) {
 //
 
 // Test that blue dot is not set on foreground when FET feature is not eligible.
-TEST_F(PopopMenuHelpCoordinatorTest, DontShowBlueDotSetOnForeground) {
+TEST_F(PopupMenuHelpCoordinatorTest, DontShowBlueDotSetOnForeground) {
+  scoped_feature_list_.InitAndEnableFeature(kBlueDotOnToolsMenuButton);
   ON_CALL(
       *tracker_,
       ShouldTriggerHelpUI(testing::Ref(

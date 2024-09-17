@@ -2302,6 +2302,13 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 
 // Dismisses the menu and opens settings.
 - (void)openSettings {
+  if (!IsBlueDotOnToolsMenuButtoneEnabled() &&
+      self.settingsDestination.badge == BadgeTypePromo &&
+      self.engagementTracker) {
+    self.engagementTracker->NotifyEvent(
+        feature_engagement::events::kBlueDotPromoOverflowMenuDismissed);
+    [self.popupMenuHandler updateToolsMenuBlueDotVisibility];
+  }
   [self dismissMenu];
   profile_metrics::BrowserProfileType type =
       self.isIncognito ? profile_metrics::BrowserProfileType::kIncognito

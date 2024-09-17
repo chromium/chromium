@@ -25,6 +25,7 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
@@ -377,25 +378,28 @@ base::TimeDelta kPromoDisplayDelayForTests = base::Seconds(1);
 }
 
 - (void)updateBlueDotVisibility {
-  BOOL hasBlueDot = YES;
+  self.hasBlueDot = YES;
 
   // Don't show blue dot if already showing another IPH.
   if (self.popupMenuBubblePresenter) {
-    hasBlueDot = NO;
+    self.hasBlueDot = NO;
   }
 
   if (![self shouldShowBlueDot]) {
-    hasBlueDot = NO;
+    self.hasBlueDot = NO;
   }
 
-  [self.UIUpdater setOverflowMenuBlueDot:hasBlueDot];
-  self.hasBlueDot = hasBlueDot;
+  if (IsBlueDotOnToolsMenuButtoneEnabled()) {
+    [self.UIUpdater setOverflowMenuBlueDot:self.hasBlueDot];
+  }
 }
 
 - (void)notifyIPHBubblePresenting {
   // Remove blue dot if IPH bubble will be presenting on tools menu button.
   self.hasBlueDot = NO;
-  [self.UIUpdater setOverflowMenuBlueDot:self.hasBlueDot];
+  if (IsBlueDotOnToolsMenuButtoneEnabled()) {
+    [self.UIUpdater setOverflowMenuBlueDot:self.hasBlueDot];
+  }
 }
 
 #pragma mark - Overflow Menu Bubble methods
