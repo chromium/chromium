@@ -50,6 +50,10 @@ import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImp
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.toolbar.top.Toolbar;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerFactory;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgePadAdjuster;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.TouchEnabledDelegate;
 import org.chromium.chrome.browser.ui.signin.PersonalizedSigninPromoView;
@@ -154,6 +158,9 @@ public class FeedSurfaceCoordinator
     private boolean mWebFeedHasContent;
     private final ObservableSupplier<Integer> mTabStripHeightSupplier;
     private Callback<Integer> mTabStripHeightChangeCallback;
+
+    // Used to handle padding adjustment when edge to edge is enabled.
+    private @Nullable EdgeToEdgePadAdjuster mEdgePadAdjuster;
 
     /** Provides the additional capabilities needed for the container view. */
     private class RootView extends FrameLayout {
@@ -375,6 +382,7 @@ public class FeedSurfaceCoordinator
      *     purposes, or |null| if the view returned by HybridListRenderer is to be used.
      * @param actionDelegate Implements some Feed actions.
      * @param tabStripHeightSupplier Supplier for the tab strip height.
+     * @param edgeToEdgeControllerSupplier Supplier for the {@link EdgeToEdgeController} instance.
      */
     public FeedSurfaceCoordinator(
             Activity activity,
@@ -398,7 +406,8 @@ public class FeedSurfaceCoordinator
             boolean overScrollDisabled,
             @Nullable ViewGroup viewportView,
             FeedActionDelegate actionDelegate,
-            @NonNull ObservableSupplier<Integer> tabStripHeightSupplier) {
+            @NonNull ObservableSupplier<Integer> tabStripHeightSupplier,
+            @NonNull ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier) {
         mActivity = activity;
         mSnackbarManager = snackbarManager;
         mNtpHeader = ntpHeader;
@@ -517,6 +526,13 @@ public class FeedSurfaceCoordinator
 
         FeedSurfaceTracker.getInstance().trackSurface(this);
 
+        // Set up edge to edge
+        if (EdgeToEdgeUtils.isDrawKeyNativePageToEdgeEnabled()) {
+            mEdgePadAdjuster =
+                    EdgeToEdgeControllerFactory.createForViewAndObserveSupplier(
+                            mRecyclerView, edgeToEdgeControllerSupplier);
+        }
+
         // Creates streams, initiates content changes.
         mMediator.updateContent();
     }
@@ -631,6 +647,9 @@ public class FeedSurfaceCoordinator
         }
         mRootView.removeAllViews();
         mTabStripHeightSupplier.removeObserver(mTabStripHeightChangeCallback);
+        if (mEdgePadAdjuster != null) {
+            mEdgePadAdjuster.destroy();
+        }
     }
 
     /**

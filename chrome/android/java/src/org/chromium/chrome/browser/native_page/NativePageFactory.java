@@ -234,7 +234,8 @@ public class NativePageFactory {
                     mHomeSurfaceTracker,
                     mTabContentManagerSupplier,
                     mTabStripHeightSupplier,
-                    mModuleRegistrySupplier);
+                    mModuleRegistrySupplier,
+                    mEdgeToEdgeControllerSupplier);
         }
 
         protected NativePage buildBookmarksPage(Tab tab) {
