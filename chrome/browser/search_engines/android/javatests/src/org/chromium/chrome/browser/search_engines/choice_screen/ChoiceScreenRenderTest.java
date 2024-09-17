@@ -9,6 +9,7 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.isNotEnabled;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
@@ -73,6 +74,7 @@ public class ChoiceScreenRenderTest {
             MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
     private ModalDialogManager mDialogManager;
+    private FakeSearchEngineCountryDelegate mFakeDelegate;
 
     public ChoiceScreenRenderTest(boolean nightModeEnabled) {
         // Sets a fake background color to make the screenshots easier to compare with bare eyes.
@@ -85,12 +87,29 @@ public class ChoiceScreenRenderTest {
         FeatureList.setDisableNativeForTesting(true);
         mActivityTestRule.launchActivity(null);
         mDialogManager = mActivityTestRule.getActivity().getModalDialogManager();
-        ThreadUtils.runOnUiThreadBlocking(
-                () ->
-                        SearchEngineChoiceService.setInstanceForTests(
-                                new SearchEngineChoiceService(
-                                        new FakeSearchEngineCountryDelegate(
-                                                /* enableLogging= */ false))));
+        mFakeDelegate =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            var delegate =
+                                    new FakeSearchEngineCountryDelegate(/* enableLogging= */ false);
+                            SearchEngineChoiceService.setInstanceForTests(
+                                    new SearchEngineChoiceService(delegate));
+                            return delegate;
+                        });
+    }
+
+    @Test
+    @LargeTest
+    @Feature("RenderTest")
+    public void testLoadingChoiceScreenBlockingDialog() throws Exception {
+        // Make the delegate not emit a value, putting the UI in the "loading" state.
+        ThreadUtils.runOnUiThreadBlocking(() -> mFakeDelegate.setIsDeviceChoiceRequired(null));
+
+        ThreadUtils.runOnUiThreadBlocking(this::showDialog);
+
+        onView(withId(R.id.choice_dialog_button)).inRoot(isDialog()).check(matches(isNotEnabled()));
+
+        mRenderTestRule.render(getDialogView(), "loading_choice_screen_blocking_dialog");
     }
 
     @Test

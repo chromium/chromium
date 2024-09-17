@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
@@ -39,7 +40,7 @@ public class ChoiceDialogCoordinator implements ChoiceDialogMediator.Delegate {
         View getView();
 
         void updateViewForType(
-                @DialogType int dialogType, Callback<Integer> actionButtonClickCallback);
+                @DialogType int dialogType, @Nullable Callback<Integer> actionButtonClickCallback);
     }
 
     private final ViewHolder mViewHolder;
@@ -123,10 +124,12 @@ public class ChoiceDialogCoordinator implements ChoiceDialogMediator.Delegate {
 
     @Override
     public void updateDialogType(@DialogType int dialogType) {
-        mViewHolder.updateViewForType(dialogType, mMediator::onActionButtonClick);
+        mViewHolder.updateViewForType(
+                dialogType,
+                dialogType == DialogType.LOADING ? null : mMediator::onActionButtonClick);
 
         switch (dialogType) {
-            case DialogType.CHOICE_LAUNCH -> {
+            case DialogType.LOADING, DialogType.CHOICE_LAUNCH -> {
                 mModel.set(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, false);
                 mModel.set(
                         ModalDialogProperties.APP_MODAL_DIALOG_BACK_PRESS_HANDLER,
@@ -176,14 +179,14 @@ public class ChoiceDialogCoordinator implements ChoiceDialogMediator.Delegate {
 
         @Override
         public void updateViewForType(
-                @DialogType int dialogType, Callback<Integer> actionButtonClickCallback) {
+                @DialogType int dialogType, @Nullable Callback<Integer> actionButtonClickCallback) {
             View illustration = mView.findViewById(R.id.illustration);
             TextView title = mView.findViewById(R.id.choice_dialog_title);
             TextView message = mView.findViewById(R.id.choice_dialog_message);
             ButtonCompat button = mView.findViewById(R.id.choice_dialog_button);
 
             switch (dialogType) {
-                case DialogType.CHOICE_LAUNCH -> {
+                case DialogType.LOADING, DialogType.CHOICE_LAUNCH -> {
                     illustration.setBackgroundResource(
                             R.drawable.blocking_choice_dialog_illustration);
                     title.setText(R.string.blocking_choice_dialog_first_title);
@@ -200,7 +203,11 @@ public class ChoiceDialogCoordinator implements ChoiceDialogMediator.Delegate {
                 case DialogType.UNKNOWN -> throw new IllegalStateException();
             }
 
-            button.setOnClickListener(ignored -> actionButtonClickCallback.onResult(dialogType));
+            button.setOnClickListener(
+                    actionButtonClickCallback == null
+                            ? null
+                            : ignored -> actionButtonClickCallback.onResult(dialogType));
+            button.setEnabled(actionButtonClickCallback != null);
         }
     }
 }

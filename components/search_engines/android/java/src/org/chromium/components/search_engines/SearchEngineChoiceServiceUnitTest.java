@@ -89,13 +89,20 @@ public class SearchEngineChoiceServiceUnitTest {
             assertTrue(service.getDeviceCountry().isFulfilled());
 
             assertTrue(service.isDeviceChoiceDialogEligible());
-            assertTrue(service.getIsDeviceChoiceRequiredSupplier().get());
+
+            var supplier = service.getIsDeviceChoiceRequiredSupplier();
+            ShadowLooper.runUiThreadTasks();
+            assertTrue(supplier.get());
         } else {
             // Same as the abstract delegate.
             assertTrue(service.getDeviceCountry().isRejected());
 
             assertFalse(service.isDeviceChoiceDialogEligible());
-            assertFalse(service.getIsDeviceChoiceRequiredSupplier().get());
+
+            var supplier = service.getIsDeviceChoiceRequiredSupplier();
+            ShadowLooper.runUiThreadTasks();
+
+            assertFalse(supplier.get());
         }
 
         // The calls below should be fine to run without triggering anything.
@@ -232,6 +239,8 @@ public class SearchEngineChoiceServiceUnitTest {
                 SearchEnginesFeatures.CLAY_BLOCKING,
                 "is_dark_launch",
                 isDarkLaunchEnabled ? "true" : "");
+        testFeatures.addFieldTrialParamOverride(
+                SearchEnginesFeatures.CLAY_BLOCKING, "dialog_timeout_millis", "0");
         FeatureList.setTestValues(testFeatures);
     }
 }
