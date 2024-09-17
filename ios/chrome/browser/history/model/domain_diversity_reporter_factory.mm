@@ -18,10 +18,16 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 // static
-DomainDiversityReporter* DomainDiversityReporterFactory::GetForBrowserState(
-    web::BrowserState* browser_state) {
+DomainDiversityReporter* DomainDiversityReporterFactory::GetForProfile(
+    ProfileIOS* profile) {
   return static_cast<DomainDiversityReporter*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, /*create=*/true));
+      GetInstance()->GetServiceForBrowserState(profile, /*create=*/true));
+}
+
+// static
+DomainDiversityReporter* DomainDiversityReporterFactory::GetForBrowserState(
+    ProfileIOS* profile) {
+  return GetForProfile(profile);
 }
 
 // static
