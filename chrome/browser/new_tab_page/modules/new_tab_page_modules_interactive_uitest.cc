@@ -63,7 +63,7 @@ ModuleDetails kMostRelevantTabResumptionModuleDetails = {
     {"ntp-app", "ntp-modules-v2", "ntp-module-wrapper",
      "ntp-most-relevant-tab-resumption", "ntp-module-header-v2", "#disable"},
     {{{"ntp-app", "ntp-modules-v2", "ntp-module-wrapper",
-       "ntp-most-relevant-tab-resumption", "#tabs", "a"},
+       "ntp-most-relevant-tab-resumption", "#urlVisits", "a"},
       kGooglePageUrl}},
 };
 

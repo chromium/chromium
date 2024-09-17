@@ -50,9 +50,9 @@ if (optimize_webui) {
     "file_suggestion.mojom-webui.js",
     "google_calendar.mojom-webui.js",
     "outlook_calendar.mojom-webui.js",
-    "history_types.mojom-webui.js",
     "new_tab_page.mojom-webui.js",
     "most_relevant_tab_resumption.mojom-webui.js",
+    "url_visit_types.mojom-webui.js",
   ]
 
   if (!is_official_build) {

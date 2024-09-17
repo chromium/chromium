@@ -12,7 +12,7 @@
       outline: var(--cr-border-hcm);
      }
 
-    .tab {
+    .url-visit {
       overflow: visible;
     }
   }
@@ -28,14 +28,14 @@
     outline: none;
   }
 
-  #tabs {
+  #urlVisits {
     background-color: var(--color-new-tab-page-module-item-background);
     border-radius: var(--ntp-module-item-border-radius);
     overflow: hidden;
     margin: 8px;
   }
 
-  .tab {
+  .url-visit {
     align-items: center;
     display: flex;
     height: 56px;
@@ -44,7 +44,7 @@
     overflow: hidden;
   }
 
-  .tab:hover #hoverLayer {
+  .url-visit:hover #hoverLayer {
     background: var(--color-new-tab-page-module-item-background-hovered);
     display: block;
     inset: 0;
@@ -56,7 +56,7 @@
     display: none;
   }
 
-  .tab:first-of-type {
+  .url-visit:first-of-type {
     border-radius: var(--ntp-module-item-border-radius)
         var(--ntp-module-item-border-radius) 0 0;
     padding-top: var(--ntp-module-first-element-top-padding);
@@ -71,39 +71,39 @@
     width: var(--ntp-module-icon-size);
   }
 
-  .tab-info {
+  .url-visit-info {
     color: var(--color-new-tab-page-secondary-foreground);
     min-width: 0;
     padding-inline-end: 16px;
     position: relative;
   }
 
-  .tab-title,
-  .tab-domain,
-  .tab-device {
+  .url-visit-title,
+  .url-visit-domain,
+  .url-visit-device {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
 
-  .tab-title {
+  .url-visit-title {
     color: var(--color-new-tab-page-primary-foreground);
     font-size: var(--ntp-module-text-size);
     line-height: var(--ntp-module-line-height);
   }
 
-  .tab-description {
+  .url-visit-description {
     display: flex;
     flex-direction: row;
     font-size: var(--ntp-module-secondary-text-size);
     line-height: var(--ntp-module-secondary-line-height);
   }
 
-  .tab-reason {
+  .url-visit-reason {
     white-space: nowrap;
   }
 
-  :host([should-show-device-icon_]) .tab-device {
+  :host([should-show-device-icon_]) .url-visit-device {
     flex-shrink: 0;
     height: 14px;
     margin-bottom: auto;
@@ -122,7 +122,7 @@
     margin-right: 16px;
   }
 
-  .tab:hover cr-icon-button {
+  .url-visit:hover cr-icon-button {
       display: block;
   }
 
@@ -165,28 +165,29 @@
     on-info-button-click="onInfoButtonClick_"
     on-menu-button-click="onMenuButtonClick_">
 </ntp-module-header-v2>
-<div id="tabs">
-  <template id="tabRepeat" is="dom-repeat" items="[[getVisibleTabs_()]]">
-    <a class="tab" href="[[item.url.url]]" on-click="onTabClick_">
+<div id="urlVisits">
+  <template id="urlVisitRepeat" is="dom-repeat"
+            items="[[getVisibleUrlVisits_()]]">
+    <a class="url-visit" href="[[item.url.url]]" on-click="onUrlVisitClick_">
       <div id="hoverLayer"></div>
       <page-favicon class="icon" url="[[item.url]]"
                     size="[[computeFaviconSize_()]]">
       </page-favicon>
-      <div class="tab-info">
-        <div class="tab-title">[[item.title]]</div>
-        <div class="tab-description">
-          <cr-icon class="tab-device" hidden="[[!shouldShowDeviceIcon_]]"
+      <div class="url-visit-info">
+        <div class="url-visit-title">[[item.title]]</div>
+        <div class="url-visit-description">
+          <cr-icon class="url-visit-device" hidden="[[!shouldShowDeviceIcon_]]"
               icon="[[computeIcon_(item)]]"></cr-icon>
-          <div class="tab-domain">[[computeDomain_(item)]]</div>
+          <div class="url-visit-domain">[[computeDomain_(item)]]</div>
           <span class="dot" hidden="[[!computeShouldShowDeviceName_(item)]]">
             &nbsp&#8226&nbsp</span>
-          <div class="tab-device"
+          <div class="url-visit-device"
                hidden="[[!computeShouldShowDeviceName_(item)]]">
             [[computeDeviceName_(item)]]
           </div>
           <span class="dot">
             &nbsp&#8226&nbsp</span>
-          <span class="tab-reason">
+          <span class="url-visit-reason">
             [[item.decoration.displayString]]
           </span>
         </div>

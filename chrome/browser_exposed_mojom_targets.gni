@@ -99,7 +99,6 @@ browser_exposed_mojom_targets = [
   "//components/heap_profiling/in_process:mojom",
   "//components/history_clusters/history_clusters_internals/webui:mojo_bindings",
   "//components/history_clusters/public/mojom:mojo_bindings",
-  "//components/history/core/browser/mojom:mojo_bindings",
   "//components/language_detection/content/common:common",
   "//components/lens:lens_mojo",
   "//components/media_router/common/mojom:debugger",
