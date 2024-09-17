@@ -1274,6 +1274,10 @@ void FrameTreeNode::GetVirtualAuthenticatorManager(
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+FrameType FrameTreeNode::GetCurrentFrameType() const {
+  return GetFrameType();
+}
+
 void FrameTreeNode::RestartBackForwardCachedNavigationAsync(int nav_entry_id) {
   TRACE_EVENT0("navigation",
                "FrameTreeNode::RestartBackForwardCachedNavigationAsync");

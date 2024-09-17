@@ -718,6 +718,7 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
       mojo::PendingReceiver<blink::test::mojom::VirtualAuthenticatorManager>
           receiver) override;
 #endif
+  FrameType GetCurrentFrameType() const override;
 
   // Restart the navigation restoring the page from the back-forward cache
   // as a regular non-BFCached history navigation.

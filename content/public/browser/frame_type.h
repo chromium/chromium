@@ -33,7 +33,7 @@ enum class FrameType {
   kPrerenderMainFrame,
   // A root of an isolated frame tree created on behalf of a <fencedframe>
   // element.
-  kFencedFrameRoot
+  kFencedFrameRoot,
 };
 
 }  // namespace content

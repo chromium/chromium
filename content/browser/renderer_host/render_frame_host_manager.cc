@@ -5196,7 +5196,8 @@ std::unique_ptr<RenderFrameHostImpl> RenderFrameHostManager::SetRenderFrameHost(
   if (old_render_frame_host && !old_render_frame_host->IsPendingDeletion()) {
     // After the old RenderFrameHost is no longer the current one, set the value
     // of |has_pending_lifecycle_state_update_| to true if it is not null.
-    old_render_frame_host->SetHasPendingLifecycleStateUpdate();
+    old_render_frame_host->SetHasPendingLifecycleStateUpdate(
+        /*last_frame_type=*/frame_tree_node_->GetFrameType());
   }
 
   // Update the count of active documents using this SiteInstance, both for

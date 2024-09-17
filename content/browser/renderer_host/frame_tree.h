@@ -212,18 +212,13 @@ class CONTENT_EXPORT FrameTree {
     kPrerender,
 
     // This FrameTree is used to host the contents of a <fencedframe> element.
-    // Even for <fencedframe>s hosted inside a prerendered page, the FrameTree
-    // associated with the fenced frame will be kFencedFrame, but the
-    // RenderFrameHosts inside of it will have their lifecycle state set to
-    // `RenderFrameHost::LifecycleState::kActive`.
     //
-    // TODO(crbug.com/1232528, crbug.com/1244274): We should either:
-    //  * Fully support nested FrameTrees inside prerendered pages, in which
-    //    case all of the RenderFrameHosts inside the nested trees should have
-    //    their lifecycle state set to kPrerendering, or...
-    //  * Ban nested FrameTrees in prerendered pages, and therefore obsolete the
-    //    above paragraph about <fencedframe>s hosted in prerendered pages.
-    kFencedFrame
+    // Note that the FrameTree's Type should not be confused for
+    // `RenderFrameHost::LifecycleState`. For example, when a <fencedframe> is
+    // nested in a page in the bfcache, the FrameTree associated with the fenced
+    // frame will be kFencedFrame, but the RenderFrameHosts inside of it will
+    // have their lifecycle state indicate that they are bfcached.
+    kFencedFrame,
   };
 
   // A set of delegates are remembered here so that we can create
