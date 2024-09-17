@@ -208,6 +208,10 @@ void SyncPrefs::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterTimePref(
       prefs::internal::kFirstTimeTriedToMigrateSyncFeaturePausedToSignin,
       base::Time());
+#if BUILDFLAG(IS_ANDROID)
+  registry->RegisterBooleanPref(prefs::internal::kWipedWebAPkDataForMigration,
+                                false);
+#endif  // BUILDFLAG(IS_ANDROID)
 
   SyncFeatureStatusForMigrationsRecorder::RegisterProfilePrefs(registry);
 

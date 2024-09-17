@@ -147,6 +147,13 @@ inline constexpr char kSyncToSigninMigrationState[] =
 inline constexpr char kFirstTimeTriedToMigrateSyncFeaturePausedToSignin[] =
     "sync.first_time_tried_to_migrate_sync_feature_paused_to_signin";
 
+#if BUILDFLAG(IS_ANDROID)
+// Name of a boolean pref recording whether the WEB_APK data went through a
+// one-off wipe to fix crbug.com/361771496.
+inline constexpr char kWipedWebAPkDataForMigration[] =
+    "sync.wiped_web_apk_data_for_migration";
+#endif  // BUILDFLAG(IS_ANDROID)
+
 }  // namespace internal
 }  // namespace syncer::prefs
 

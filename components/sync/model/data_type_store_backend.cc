@@ -97,8 +97,8 @@ DataTypeStoreBackend::~DataTypeStoreBackend() = default;
 
 std::optional<ModelError> DataTypeStoreBackend::Init(
     const base::FilePath& path,
-    const std::vector<std::pair<std::string, std::string>>&
-        prefixes_to_update) {
+    const base::flat_map<std::string, std::optional<std::string>>&
+        prefixes_to_update_or_delete) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!IsInitialized());
   const std::string path_str = path.AsUTF8Unsafe();
@@ -132,8 +132,9 @@ std::optional<ModelError> DataTypeStoreBackend::Init(
 
   // Note: It's the caller's responsibility to ensure that the prefix migration
   // is only triggered once.
-  for (const auto& [from, to] : prefixes_to_update) {
-    std::optional<ModelError> error = UpdateDataPrefix(from, to);
+  for (const auto& [from, to] : prefixes_to_update_or_delete) {
+    std::optional<ModelError> error =
+        to.has_value() ? UpdateDataPrefix(from, *to) : RemoveDataPrefix(from);
     if (error) {
       return error;
     }
@@ -341,6 +342,25 @@ std::optional<ModelError> DataTypeStoreBackend::UpdateDataPrefix(
     // is now the prefix-less ID.
     write_batch->Delete(old_prefix + record.id);
     write_batch->Put(new_prefix + record.id, record.value);
+  }
+
+  return WriteModifications(std::move(write_batch));
+}
+
+std::optional<ModelError> DataTypeStoreBackend::RemoveDataPrefix(
+    const std::string& prefix) {
+  DataTypeStore::RecordList records;
+
+  if (std::optional<ModelError> error =
+          ReadAllRecordsWithPrefix(prefix, &records)) {
+    return error;
+  }
+
+  auto write_batch = std::make_unique<leveldb::WriteBatch>();
+  for (const DataTypeStore::Record& record : records) {
+    // Note that `ReadAllRecordsWithPrefix` strips the prefix, so `record.id`
+    // is now the prefix-less ID.
+    write_batch->Delete(base::StrCat({prefix, record.id}));
   }
 
   return WriteModifications(std::move(write_batch));

@@ -1041,7 +1041,7 @@ const char* DataTypeToStableLowerCaseString(DataType data_type) {
     case WEB_APPS:
       return "web_apps";
     case WEB_APKS:
-      return "web_apks";
+      return "webapks";
     case OS_PREFERENCES:
       return "os_preferences";
     case OS_PRIORITY_PREFERENCES:
