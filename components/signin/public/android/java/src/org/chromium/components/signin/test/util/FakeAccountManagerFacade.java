@@ -149,7 +149,7 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
     }
 
     @Override
-    public void invalidateAccessToken(String accessToken) {
+    public void invalidateAccessToken(String accessToken, @Nullable Runnable completedRunnable) {
         ThreadUtils.checkUiThread();
         synchronized (mAccountHolders) {
             for (AccountHolder accountHolder : mAccountHolders) {
@@ -157,6 +157,9 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
                     break;
                 }
             }
+        }
+        if (completedRunnable != null) {
+            completedRunnable.run();
         }
     }
 

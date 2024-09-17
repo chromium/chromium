@@ -224,7 +224,12 @@ public class AccountManagerFacadeTest {
                 callback2.getToken(),
                 originalToken);
 
-        ThreadUtils.runOnUiThread(() -> facade.invalidateAccessToken(originalToken));
+        CallbackHelper invalidationCallback = new CallbackHelper();
+        ThreadUtils.runOnUiThread(
+                () ->
+                        facade.invalidateAccessToken(
+                                originalToken, () -> invalidationCallback.notifyCalled()));
+        invalidationCallback.waitForOnly();
 
         CustomGetAccessTokenCallback callback3 = new CustomGetAccessTokenCallback();
         ThreadUtils.runOnUiThread(() -> facade.getAccessToken(ACCOUNT, TOKEN_SCOPE, callback3));

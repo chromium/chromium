@@ -110,7 +110,8 @@ final class ProfileOAuth2TokenServiceDelegate {
     @MainThread
     @CalledByNative
     void invalidateAccessToken(String accessToken) {
-        mAccountManagerFacade.invalidateAccessToken(accessToken);
+        // TODO(https://crbug.com/40637583): Pass a callback from native to wait for completion.
+        mAccountManagerFacade.invalidateAccessToken(accessToken, null);
     }
 
     /**

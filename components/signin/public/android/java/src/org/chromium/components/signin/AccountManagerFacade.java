@@ -98,9 +98,10 @@ public interface AccountManagerFacade {
      * #getAccessToken} to issue a new token after invalidating the old one.
      *
      * @param accessToken The access token to invalidate.
+     * @param completedRunnable The callback to run after the operation is complete. Can be null.
      */
     @MainThread
-    void invalidateAccessToken(String accessToken);
+    void invalidateAccessToken(String accessToken, @Nullable Runnable completedRunnable);
 
     /**
      * Checks the child account status of the given account.

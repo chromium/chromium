@@ -159,21 +159,38 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
                 });
     }
 
-    /**
-     * Removes an OAuth2 access token from the cache with retries asynchronously. Uses {@link
-     * #getAccessToken} to issue a new token after invalidating the old one.
-     *
-     * @param accessToken The access token to invalidate.
-     */
     @Override
-    public void invalidateAccessToken(String accessToken) {
-        if (!TextUtils.isEmpty(accessToken)) {
-            ConnectionRetry.runAuthTask(
-                    () -> {
-                        mDelegate.invalidateAuthToken(accessToken);
-                        return true;
-                    });
+    public void invalidateAccessToken(String accessToken, @Nullable Runnable completedRunnable) {
+        ThreadUtils.assertOnUiThread();
+        if (TextUtils.isEmpty(accessToken)) {
+            // TODO(https://crbug.com/366403142): Replace this with an exception.
+            if (completedRunnable != null) {
+                completedRunnable.run();
+            }
+            return;
         }
+        ConnectionRetry.runAuthTask(
+                new AuthTask<Void>() {
+                    @Override
+                    public Void run() throws AuthException {
+                        mDelegate.invalidateAuthToken(accessToken);
+                        return null;
+                    }
+
+                    @Override
+                    public void onSuccess(Void ignored) {
+                        if (completedRunnable != null) {
+                            completedRunnable.run();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(boolean ignored) {
+                        if (completedRunnable != null) {
+                            completedRunnable.run();
+                        }
+                    }
+                });
     }
 
     @Override
