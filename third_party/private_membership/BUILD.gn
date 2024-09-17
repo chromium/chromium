@@ -79,6 +79,8 @@ proto_library("private_membership_proto") {
   component_build_force_source_set = true
 
   link_deps = [ "//third_party/shell-encryption:serialization_proto" ]
+  proto_data_sources =
+      [ "//third_party/shell-encryption/src/serialization.proto" ]
 }
 
 if (is_chromeos) {
