@@ -41,7 +41,7 @@ BASE_FEATURE(kPlusAddressAndroidManualFallbackEnabled,
 // context menu.
 BASE_FEATURE(kPlusAddressAndSingleFieldFormFill,
              "PlusAddressAndSingleFieldFormFill",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, Chrome will fetch the blocklist data using the Component
 // Updater and employ that for blocking Plus Addresses. Otherwise, the blocklist

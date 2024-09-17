@@ -17324,7 +17324,6 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "PlusAddressAndSingleFieldFormFill",
                         "PlusAddressAndroidManualFallbackEnabled",
                         "PlusAddressBlocklistEnabled",
                         "PlusAddressFallbackFromContextMenu",
