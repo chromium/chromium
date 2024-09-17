@@ -27,10 +27,10 @@ Full steps to add a new third party library or update existing libraries:
 
 1. Update `build.gradle` with the new dependency or the new versions.
 
-2. Run `fetch_all.py` to update your current workspace with the changes. This
-   will update, among other things, your top-level DEPS file. If this is a new
-   library, you can skip directly to step 5 since the next step is not going to
-   work for you.
+2. Run `fetch_all.py --local` to update your current workspace with the
+   changes. This will update, among other things, your top-level DEPS file. If
+   this is a new library, you can skip directly to step 5 since the next step
+   is not going to work for you.
 
 3. Run `gclient sync` to make sure that cipd has access to the versions you are
    trying to roll. This might fail with a cipd error failing to resolve a tag.
@@ -41,7 +41,7 @@ Full steps to add a new third party library or update existing libraries:
 5. Add a `overrideLatest` property override to your package in
    `ChromiumDepGraph.groovy` in the `PROPERTY_OVERRIDES` map, set it to `true`.
 
-6. Run `fetch_all.py` again.
+6. Run `fetch_all.py --local` again.
 
 7. `git add` all the 3pp related changes and create a CL for review. Keep the
    `3pp/`, `.gradle`, `OWNERS`, `.groovy` changes in the CL and revert the other
@@ -68,7 +68,7 @@ Full steps to add a new third party library or update existing libraries:
     storing the latest versions of your package so that it is available when you
     next try to roll.
 
-11. Run `fetch_all.py` again. Create a CL with the changes and land it.
+11. Run `fetch_all.py --local` again. Create a CL with the changes and land it.
 
    If the CL is doing more than upgrading existing packages or adding packages
    from the same source and license (e.g. gms) follow
