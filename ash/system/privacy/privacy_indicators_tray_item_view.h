@@ -177,10 +177,6 @@ class ASH_EXPORT PrivacyIndicatorsTrayItemView : public TrayItemView,
   // Used to record metrics of the number of shows per session.
   int count_visible_per_session_ = 0;
 
-  // Used to record metrics of repeated shows per 100 ms.
-  int count_repeated_shows_ = 0;
-  base::DelayTimer repeated_shows_timer_;
-
   // Keeps track of the last time the indicator starts showing. Used to record
   // visibility duration metrics.
   base::Time start_showing_time_;
