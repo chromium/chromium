@@ -296,6 +296,7 @@ void AccountSelectionBubbleView::InitDialogWidget() {
   }
 
   dialog_widget_ = widget->GetWeakPtr();
+  occlusion_observation_.Observe(widget);
 }
 
 void AccountSelectionBubbleView::ShowMultiAccountPicker(

@@ -154,6 +154,7 @@ void AccountSelectionModalView::InitDialogWidget() {
   }
 
   dialog_widget_ = widget->GetWeakPtr();
+  occlusion_observation_.Observe(widget);
 }
 
 std::unique_ptr<views::View>
