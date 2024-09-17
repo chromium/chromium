@@ -379,12 +379,13 @@ void NetworkScreen::OnContinueButtonClicked() {
 
 void NetworkScreen::OnQuickStartButtonClicked() {
   CHECK(context()->quick_start_enabled);
+  CHECK(!context()->quick_start_setup_ongoing);
   exit_callback_.Run(Result::QUICK_START);
 }
 
 void NetworkScreen::SetQuickStartButtonVisibility(bool visible) {
-  if (visible && view_) {
-    view_->SetQuickStartEnabled();
+  if (view_) {
+    view_->SetQuickStartEntryPointVisibility(visible);
   }
 }
 

@@ -200,6 +200,22 @@ class QuickStartBrowserTest : public OobeBaseTest {
     OobeScreenWaiter(QuickStartView::kScreenId).Wait();
   }
 
+  void EnterQuickStartFlowFromNetworkScreen() {
+    test::WaitForWelcomeScreen();
+    WizardController::default_controller()->AdvanceToScreen(
+        NetworkScreenView::kScreenId);
+    OobeScreenWaiter(NetworkScreenView::kScreenId).Wait();
+
+    auto kQuickStartEntryPointName = l10n_util::GetStringUTF8(
+        IDS_LOGIN_QUICK_START_SETUP_NETWORK_SCREEN_ENTRY_POINT);
+    test::OobeJS()
+        .CreateWaiter(NetworkElementSelector(kQuickStartEntryPointName) +
+                      " != null")
+        ->Wait();
+    ClickOnWifiNetwork(kQuickStartEntryPointName);
+    OobeScreenWaiter(QuickStartView::kScreenId).Wait();
+  }
+
   void SetUpBluetoothIsPoweredResponse(
       scoped_refptr<testing::NiceMock<device::MockBluetoothAdapter>>
           mock_bluetooth_adapter,
@@ -822,6 +838,56 @@ IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest, EndToEndWithEmptyWifiCreds) {
   // GaiaScreen.
   OobeScreenWaiter(QuickStartView::kScreenId).Wait();
   EnsureFlowActive();
+}
+
+// Tests that the entry point for QuickStart is hidden while the network screen
+// is being used to show a list of networks when the flow started on the Welcome
+// screen.
+IN_PROC_BROWSER_TEST_F(
+    QuickStartBrowserTest,
+    NoEntryPointWhileShowingNetworkListWhenStartingOnWelcome) {
+  auto kQuickStartEntryPointName = l10n_util::GetStringUTF8(
+      IDS_LOGIN_QUICK_START_SETUP_NETWORK_SCREEN_ENTRY_POINT);
+  // Set up a network that will be used for manually connecting.
+  SetUpDisconnectedWifiNetwork();
+
+  EnterQuickStartFlowFromWelcomeScreen();
+
+  SimulatePhoneConnection();
+  SimulateUserVerification();
+
+  // Send empty WiFi credentials to trigger the network list step.
+  SimulateWiFiTransfer(/*send_empty_creds=*/true);
+
+  // Expect the network screen to be shown without the QuickStart entry point.
+  OobeScreenWaiter(NetworkScreenView::kScreenId).Wait();
+  test::OobeJS().ExpectTrue(NetworkElementSelector(kQuickStartEntryPointName) +
+                            " == null");
+}
+
+// Tests that the entry point for QuickStart is hidden while the network screen
+// is being used to show a list of networks when the flow started on the network
+// screen itself.
+IN_PROC_BROWSER_TEST_F(
+    QuickStartBrowserTest,
+    NoEntryPointWhileShowingNetworkListWhenStartingOnNetwork) {
+  auto kQuickStartEntryPointName = l10n_util::GetStringUTF8(
+      IDS_LOGIN_QUICK_START_SETUP_NETWORK_SCREEN_ENTRY_POINT);
+  // Set up a network that will be used for manually connecting.
+  SetUpDisconnectedWifiNetwork();
+
+  EnterQuickStartFlowFromNetworkScreen();
+
+  SimulatePhoneConnection();
+  SimulateUserVerification();
+
+  // Send empty WiFi credentials to trigger the network list step.
+  SimulateWiFiTransfer(/*send_empty_creds=*/true);
+
+  // Expect the network screen to be shown without the QuickStart entry point.
+  OobeScreenWaiter(NetworkScreenView::kScreenId).Wait();
+  test::OobeJS().ExpectTrue(NetworkElementSelector(kQuickStartEntryPointName) +
+                            " == null");
 }
 
 // Simulate the phone cancelling the flow when the user is prompted to connect

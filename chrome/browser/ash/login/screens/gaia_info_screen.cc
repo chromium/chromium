@@ -91,6 +91,8 @@ void GaiaInfoScreen::OnNextClicked(UserCreationFlowType user_flow) {
   if (user_flow == UserCreationFlowType::kManual) {
     exit_callback_.Run(Result::kManual);
   } else {
+    CHECK(context()->quick_start_enabled);
+    CHECK(!context()->quick_start_setup_ongoing);
     exit_callback_.Run(Result::kEnterQuickStart);
   }
 }
