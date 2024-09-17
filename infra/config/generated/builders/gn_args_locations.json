@@ -447,7 +447,6 @@
     "Simple Chrome Builder reclient staging untrusted": "reclient/Simple Chrome Builder reclient staging untrusted/gn-args.json",
     "Simple Chrome Builder reclient test": "reclient/Simple Chrome Builder reclient test/gn-args.json",
     "Simple Chrome Builder reclient test untrusted": "reclient/Simple Chrome Builder reclient test untrusted/gn-args.json",
-    "Win Builder (reclient shadow)": "reclient/Win Builder (reclient shadow)/gn-args.json",
     "Win x64 Builder reclient staging": "reclient/Win x64 Builder reclient staging/gn-args.json",
     "Win x64 Builder reclient staging untrusted": "reclient/Win x64 Builder reclient staging untrusted/gn-args.json",
     "Win x64 Builder reclient test": "reclient/Win x64 Builder reclient test/gn-args.json",

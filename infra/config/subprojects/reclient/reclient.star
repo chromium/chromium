@@ -727,32 +727,3 @@ The bot specs should be in sync with {}.\
     siso_project = siso.project.TEST_UNTRUSTED,
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CQ,
 )
-
-# TODO(crbug.com/352206623) Turn down builder once reclient depscan issue has been resolved.
-ci.builder(
-    name = "Win Builder (reclient shadow)",
-    description_html = "This builder mirrors Win Builder in order to debug an reclient dependency scanner issue (crbug.com/352206623).",
-    builder_spec = builder_config.copy_from(
-        "ci/Win Builder",
-        lambda spec: structs.evolve(
-            spec,
-            gclient_config = structs.extend(
-                spec.gclient_config,
-                apply_configs = ["reclient_experimental"],
-            ),
-        ),
-    ),
-    gn_args = "ci/Win Builder",
-    builderless = False,
-    cores = 32,
-    os = os.WINDOWS_ANY,
-    tree_closing = False,
-    console_view_entry = consoles.console_view_entry(
-        category = "release|builder",
-        short_name = "32",
-    ),
-    contact_team_email = "git-build-tools@google.com",
-    siso_enabled = True,
-    siso_project = siso.project.DEFAULT_TRUSTED,
-    siso_remote_jobs = siso.remote_jobs.DEFAULT,
-)
