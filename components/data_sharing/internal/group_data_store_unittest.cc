@@ -31,9 +31,11 @@ class GroupDataStoreTest : public testing::Test {
   ~GroupDataStoreTest() override = default;
 
   void MimicRestart() {
+    base::RunLoop run_loop;
+    store_->SetShutdownCallbackForTesting(run_loop.QuitClosure());
+
     store_ = nullptr;
-    // Wait for shutdown tasks completion.
-    task_environment_.RunUntilIdle();
+    run_loop.Run();
 
     InitStoreAndWaitForDBLoading();
   }

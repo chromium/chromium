@@ -10,6 +10,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
@@ -42,6 +43,13 @@ class GroupDataStore {
   // with kSuccess.
   GroupDataStore(const base::FilePath& db_path,
                  DBLoadedCallback db_loaded_callback);
+
+  GroupDataStore(const GroupDataStore& other) = delete;
+  GroupDataStore& operator=(const GroupDataStore& other) = delete;
+
+  GroupDataStore(GroupDataStore&& other) = delete;
+  GroupDataStore& operator=(GroupDataStore&& other) = delete;
+
   ~GroupDataStore();
 
   void StoreGroupData(const VersionToken& version_token,
@@ -52,6 +60,9 @@ class GroupDataStore {
       const GroupId& group_id) const;
   std::optional<GroupData> GetGroupData(const GroupId& group_id) const;
   std::vector<GroupId> GetAllGroupIds() const;
+
+  // Allows test to wait until DB shutdown tasks are complete.
+  void SetShutdownCallbackForTesting(base::OnceClosure shutdown_callback);
 
  private:
   void OnDBReady(DBLoadedCallback db_loaded_callback, DBInitStatus init_status);
@@ -70,6 +81,10 @@ class GroupDataStore {
       group_entity_data_;
 
   DBInitStatus db_init_status_ = DBInitStatus::kNotLoaded;
+
+  // Used only for tests to notify that shutdown tasks are completed on the DB
+  // sequence.
+  base::OnceClosure shutdown_callback_;
 
   base::WeakPtrFactory<GroupDataStore> weak_ptr_factory_{this};
 };
