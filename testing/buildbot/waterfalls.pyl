@@ -262,8 +262,7 @@
       },
       'win-chrome': {
         'additional_compile_targets': [
-          'chrome',
-          'chrome_official_builder',
+          'all',
         ],
         'mixins': [
           'chrome-swarming-pool',
@@ -279,8 +278,7 @@
       },
       'win64-chrome': {
         'additional_compile_targets': [
-          'chrome',
-          'chrome_official_builder',
+          'all',
         ],
         'mixins': [
           'chrome-swarming-pool',

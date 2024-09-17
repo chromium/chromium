@@ -3859,8 +3859,7 @@
   },
   "win-chrome": {
     "additional_compile_targets": [
-      "chrome",
-      "chrome_official_builder"
+      "all"
     ],
     "gtest_tests": [
       {
@@ -3931,8 +3930,7 @@
   },
   "win64-chrome": {
     "additional_compile_targets": [
-      "chrome",
-      "chrome_official_builder"
+      "all"
     ],
     "isolated_scripts": [
       {
