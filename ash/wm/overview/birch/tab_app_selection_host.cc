@@ -4,42 +4,17 @@
 
 #include "ash/wm/overview/birch/tab_app_selection_host.h"
 
-#include "ash/birch/birch_item.h"
 #include "ash/public/cpp/window_properties.h"
-#include "ash/wm/overview/birch/birch_bar_controller.h"
-#include "ash/wm/overview/birch/birch_bar_view.h"
-#include "ash/wm/overview/birch/birch_chip_button_base.h"
+#include "ash/wm/overview/birch/birch_chip_button.h"
 #include "ash/wm/overview/birch/tab_app_selection_view.h"
 #include "ash/wm/window_properties.h"
+#include "ui/aura/window.h"
 #include "ui/views/widget/widget_delegate.h"
 
 namespace ash {
 
-namespace {
-
-BirchChipButtonBase* GetCoralChip() {
-  BirchBarView* bar_view = BirchBarController::Get()->primary_birch_bar_view();
-  auto it =
-      base::ranges::find_if(bar_view->chips(), [](BirchChipButtonBase* button) {
-        return button->GetItem()->GetType() == BirchItemType::kCoral;
-      });
-  return it == bar_view->chips().end() ? nullptr : *it;
-}
-
-}  // namespace
-
-TabAppSelectionHost::TabAppSelectionHost(BirchChipButtonBase* coral_button)
-    : owner_(coral_button) {}
-
-TabAppSelectionHost::~TabAppSelectionHost() = default;
-
-// static
-std::unique_ptr<TabAppSelectionHost> TabAppSelectionHost::Create() {
-  BirchChipButtonBase* coral_chip = GetCoralChip();
-  if (!coral_chip) {
-    return nullptr;
-  }
-
+TabAppSelectionHost::TabAppSelectionHost(BirchChipButton* coral_chip)
+    : owner_(coral_chip) {
   using InitParams = views::Widget::InitParams;
   InitParams params(InitParams::CLIENT_OWNS_WIDGET, InitParams::TYPE_POPUP);
   params.accept_events = true;
@@ -49,17 +24,16 @@ std::unique_ptr<TabAppSelectionHost> TabAppSelectionHost::Create() {
   params.init_properties_container.SetProperty(kHideInDeskMiniViewKey, true);
   params.init_properties_container.SetProperty(kOverviewUiKey, true);
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
+  params.parent = coral_chip->GetWidget()->GetNativeWindow()->parent();
 
-  auto widget = std::make_unique<TabAppSelectionHost>(coral_chip);
-  widget->Init(std::move(params));
-  widget->SetContentsView(std::make_unique<TabAppSelectionView>());
-  widget->widget_delegate()->set_desired_bounds_delegate(
-      base::BindRepeating(&TabAppSelectionHost::GetDesiredBoundsInScreen,
-                          base::Unretained(widget.get())));
-  widget->Show();
-  widget->SetBounds(widget->GetDesiredBoundsInScreen());
-  return widget;
+  Init(std::move(params));
+  SetContentsView(std::make_unique<TabAppSelectionView>());
+  widget_delegate()->set_desired_bounds_delegate(base::BindRepeating(
+      &TabAppSelectionHost::GetDesiredBoundsInScreen, base::Unretained(this)));
+  SetBounds(GetDesiredBoundsInScreen());
 }
+
+TabAppSelectionHost::~TabAppSelectionHost() = default;
 
 gfx::Rect TabAppSelectionHost::GetDesiredBoundsInScreen() {
   const int preferred_height = GetContentsView()->GetPreferredSize().height();

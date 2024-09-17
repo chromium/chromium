@@ -22,8 +22,9 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/wm/overview/overview_controller.h"
-#include "ash/wm/overview/overview_session.h"
+#include "ash/style/ash_color_provider.h"
+#include "ash/wm/desks/desk.h"
+#include "ash/wm/desks/desks_controller.h"
 #include "base/barrier_callback.h"
 #include "base/i18n/time_formatting.h"
 #include "base/json/json_writer.h"
@@ -1115,14 +1116,8 @@ void BirchCoralItem::LoadIcon(LoadIconCallback original_callback) const {
   }
 }
 
-void BirchCoralItem::PerformAddonAction() {
-  auto* overview_session = OverviewController::Get()->overview_session();
-  CHECK(overview_session);
-  overview_session->ToggleTabAppSelectionMenu();
-}
-
 BirchAddonType BirchCoralItem::GetAddonType() const {
-  return BirchAddonType::kButton;
+  return BirchAddonType::kCoralButton;
 }
 
 std::u16string BirchCoralItem::GetAddonAccessibleName() const {

@@ -56,8 +56,10 @@ enum class SecondaryIconType {
 // These values are used to determine the types of chip add-ons which is an
 // additional UI component like the join button of calendar item.
 enum class BirchAddonType {
-  kNone,    // No add-ons.
-  kButton,  // A button with an action, e,g. the calendar join button.
+  kNone,         // No add-ons.
+  kButton,       // A button with an action, e,g. the calendar join button.
+  kCoralButton,  // A special button for coral, has a different UI and brings up
+                 // a new UI on click.
   kWeatherTempLabelF,  // A label for weather temperature in Fahrenheit.
   kWeatherTempLabelC,  // A label for weather temperature in Celsius.
 };
@@ -500,7 +502,6 @@ class ASH_EXPORT BirchCoralItem : public BirchItem {
   std::string ToString() const override;
   void PerformAction() override;
   void LoadIcon(LoadIconCallback callback) const override;
-  void PerformAddonAction() override;
   BirchAddonType GetAddonType() const override;
   std::u16string GetAddonAccessibleName() const override;
 

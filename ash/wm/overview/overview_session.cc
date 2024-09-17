@@ -368,8 +368,6 @@ void OverviewSession::Shutdown() {
   // windows in response to work area changes from window activation.
   display_observer_.reset();
 
-  tab_app_selection_widget_.reset();
-
   // Stop observing split view state changes before restoring window focus.
   // Otherwise the activation of the window triggers OnSplitViewStateChanged()
   // that will call into this function again.
@@ -1284,15 +1282,6 @@ void OverviewSession::UpdateFrameThrottling() {
   }
   Shell::Get()->frame_throttling_controller()->StartThrottling(
       windows_to_throttle);
-}
-
-void OverviewSession::ToggleTabAppSelectionMenu() {
-  if (tab_app_selection_widget_) {
-    tab_app_selection_widget_.reset();
-    return;
-  }
-
-  tab_app_selection_widget_ = TabAppSelectionHost::Create();
 }
 
 void OverviewSession::OnDeskActivationChanged(const Desk* activated,

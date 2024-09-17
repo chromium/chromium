@@ -5,27 +5,24 @@
 #ifndef ASH_WM_OVERVIEW_BIRCH_TAB_APP_SELECTION_HOST_H_
 #define ASH_WM_OVERVIEW_BIRCH_TAB_APP_SELECTION_HOST_H_
 
-#include <memory>
-
 #include "ui/views/widget/widget.h"
 
 namespace ash {
-class BirchChipButtonBase;
+class BirchChipButton;
 
 class TabAppSelectionHost : public views::Widget {
  public:
-  explicit TabAppSelectionHost(BirchChipButtonBase* coral_button);
+  explicit TabAppSelectionHost(BirchChipButton* coral_chip);
   TabAppSelectionHost(const TabAppSelectionHost&) = delete;
   TabAppSelectionHost& operator=(const TabAppSelectionHost&) = delete;
   ~TabAppSelectionHost() override;
 
-  static std::unique_ptr<TabAppSelectionHost> Create();
+  const BirchChipButton* owner_for_testing() const { return owner_; }
 
  private:
   gfx::Rect GetDesiredBoundsInScreen();
 
-  // TODO(sammiequon): Ensure that `owner_` outlives `this`.
-  const raw_ptr<BirchChipButtonBase> owner_;
+  const raw_ptr<BirchChipButton> owner_;
 };
 
 }  // namespace ash

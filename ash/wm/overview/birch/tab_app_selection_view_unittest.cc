@@ -14,6 +14,7 @@
 #include "ash/wm/overview/birch/birch_bar_controller.h"
 #include "ash/wm/overview/birch/birch_chip_button.h"
 #include "ash/wm/overview/birch/birch_chip_button_base.h"
+#include "ash/wm/overview/birch/tab_app_selection_host.h"
 #include "ash/wm/overview/birch/tab_app_selection_view.h"
 #include "ash/wm/overview/overview_grid_test_api.h"
 #include "base/test/scoped_feature_list.h"
@@ -73,9 +74,7 @@ class TabAppSelectionViewTest : public AshTestBase {
     CHECK_EQ(BirchItemType::kCoral, coral_button->GetItem()->GetType());
 
     LeftClickOn(coral_button->addon_view_for_testing());
-    return OverviewController::Get()
-        ->overview_session()
-        ->tab_app_selection_widget_.get();
+    return coral_button->tab_app_selection_widget_.get();
   }
 
  private:
@@ -84,6 +83,20 @@ class TabAppSelectionViewTest : public AshTestBase {
 
   base::test::ScopedFeatureList feature_list_{features::kBirchCoral};
 };
+
+// Tests that the menu can be toggled to show and hide.
+TEST_F(TabAppSelectionViewTest, ToggleMenu) {
+  TabAppSelectionHost* menu = ShowAndGetSelectorMenu();
+  ASSERT_TRUE(menu);
+  EXPECT_TRUE(menu->IsVisible());
+
+  // Activation change on the menu has a post task.
+  LeftClickOn(menu->owner_for_testing()->addon_view_for_testing());
+  EXPECT_FALSE(menu->IsVisible());
+
+  LeftClickOn(menu->owner_for_testing()->addon_view_for_testing());
+  EXPECT_TRUE(menu->IsVisible());
+}
 
 // Tests clicking the close buttons on the selector menu.
 TEST_F(TabAppSelectionViewTest, CloseSelectorItems) {

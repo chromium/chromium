@@ -24,6 +24,7 @@ namespace ash {
 
 class BirchItem;
 class PillButton;
+class TabAppSelectionHost;
 
 // A compact view of an app, displaying its icon, name, a brief description, and
 // an optional call to action.
@@ -52,6 +53,7 @@ class ASH_EXPORT BirchChipButton : public BirchChipButtonBase,
   FRIEND_TEST_ALL_PREFIXES(BirchBarTest, NoCrashOnSettingIconAfterShutdown);
   FRIEND_TEST_ALL_PREFIXES(BirchBarTest, UpdateLostMediaChip);
   class ChipMenuController;
+  friend class TabAppSelectionViewTest;
 
   void SetAddon(std::unique_ptr<views::View> addon_view);
 
@@ -67,6 +69,10 @@ class ASH_EXPORT BirchChipButton : public BirchChipButtonBase,
   void SetIconImage(const ui::ImageModel& icon_image,
                     SecondaryIconType secondary_icon_image);
 
+  // Callback for the coral addon button. Should only be clicked for a coral
+  // item.
+  void OnCoralAddonClicked();
+
   // The chip context menu controller.
   std::unique_ptr<ChipMenuController> chip_menu_controller_;
 
@@ -81,6 +87,10 @@ class ASH_EXPORT BirchChipButton : public BirchChipButtonBase,
   raw_ptr<views::Label> title_ = nullptr;
   raw_ptr<views::Label> subtitle_ = nullptr;
   raw_ptr<views::View> addon_view_ = nullptr;
+
+  // The selection menu to select tabs and apps for coral launching. Created
+  // once the coral add on button is clicked.
+  std::unique_ptr<TabAppSelectionHost> tab_app_selection_widget_;
 
   base::WeakPtrFactory<BirchChipButton> weak_factory_{this};
 };
