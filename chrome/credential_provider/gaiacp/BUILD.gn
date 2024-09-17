@@ -20,6 +20,10 @@ source_set("common") {
     "experiments_fetcher.h",
     "experiments_manager.cc",
     "experiments_manager.h",
+    "gcp_crash_reporter_client.cc",
+    "gcp_crash_reporter_client.h",
+    "gcp_crash_reporting_utils.cc",
+    "gcp_crash_reporting_utils.h",
     "gem_device_details_manager.cc",
     "gem_device_details_manager.h",
   ]
@@ -34,6 +38,8 @@ source_set("common") {
     "//build:branding_buildflags",
     "//chrome/common:version_header",
     "//chrome/installer/launcher_support",
+    "//components/crash/core/app",
+    "//components/crash/core/common",
     "//components/version_info",
     "//google_apis:google_apis",
     "//url",
@@ -92,7 +98,6 @@ source_set("util") {
     "//third_party/re2",
     "//url:url",
   ]
-  libs = [ "winhttp.lib" ]
 }
 
 config("util_config") {
@@ -144,23 +149,6 @@ source_set("mdm_utils") {
   ]
 }
 
-source_set("crash") {
-  sources = [
-    "gcp_crash_reporter_client.cc",
-    "gcp_crash_reporter_client.h",
-    "gcp_crash_reporting_utils.cc",
-    "gcp_crash_reporting_utils.h",
-  ]
-  deps = [
-    ":common",
-    ":util",
-    "//base",
-    "//build:branding_buildflags",
-    "//components/crash/core/app",
-    "//components/crash/core/common",
-  ]
-}
-
 # This static library is shared with the test code.
 
 source_set("gaiacp_lib") {
@@ -205,7 +193,6 @@ source_set("gaiacp_lib") {
   public_configs = [ ":gaiacp_config" ]
   public_deps = [ ":common" ]
   deps = [
-    ":crash",
     ":gaia_credential_provider_idl",
     ":mdm_utils",
     ":policies",
@@ -221,6 +208,7 @@ source_set("gaiacp_lib") {
     "//chrome/credential_provider/gaiacp/mojom",
     "//chrome/installer/launcher_support",
     "//components/crash/core/app:app",
+    "//components/crash/core/app:crash_export_thunks",
     "//components/crash/core/app:run_as_crashpad_handler",
     "//content/public/browser",
     "//crypto",
@@ -306,7 +294,6 @@ shared_library("gaia1_0") {
     "//build:branding_buildflags",
     "//chrome/common:version_header",
     "//components/crash/core/app",
-    "//components/crash/core/app:crash_export_thunks",
     "//components/crash/core/app:run_as_crashpad_handler",
     "//content/public/browser",
   ]

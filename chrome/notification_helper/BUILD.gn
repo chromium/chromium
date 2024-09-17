@@ -87,7 +87,6 @@ test("notification_helper_unittests") {
     "//chrome/install_static/test:test_support",
     "//chrome/installer/setup:lib",
     "//chrome/installer/util:with_no_strings",
-    "//components/crash/core/app:test_support",
     "//testing/gtest",
   ]
 
