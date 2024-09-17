@@ -822,11 +822,10 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   static RenderProcessHost* FromRendererInstanceId(
       const base::Token& instance_id);
 
-  // Returns true if the caller should attempt to use an existing
-  // RenderProcessHost rather than creating a new one.
-  static bool ShouldTryToUseExistingProcessHost(
-      content::BrowserContext* browser_context,
-      const GURL& site_url);
+  // Returns true if the process limit is reached. In that case, site instances
+  // will be assigned to an existing process host instead of a new one when
+  // possible (see MayReuseAndIsSuitable).
+  static bool IsProcessLimitReached();
 
   // Overrides the default heuristic for limiting the max renderer process
   // count.  This is useful for unit testing process limit behaviors.  It is

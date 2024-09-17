@@ -385,12 +385,6 @@ bool IsToolbarPinningEnabled() {
 }
 #endif
 
-// Controls whether top chrome pages will use the spare renderer if no top
-// chrome renderers are present.
-BASE_FEATURE(kTopChromeWebUIUsesSpareRenderer,
-             "TopChromeWebUIUsesSpareRenderer",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 // Enables alternate update-related text to be displayed in browser app menu
 // button, menu item and confirmation dialog.

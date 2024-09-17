@@ -4564,9 +4564,7 @@ size_t RenderProcessHostImpl::GetProcessCountForLimit() {
 }
 
 // static
-bool RenderProcessHost::ShouldTryToUseExistingProcessHost(
-    BrowserContext* browser_context,
-    const GURL& url) {
+bool RenderProcessHost::IsProcessLimitReached() {
   if (run_renderer_in_process())
     return true;
 
@@ -4584,8 +4582,7 @@ bool RenderProcessHost::ShouldTryToUseExistingProcessHost(
     return true;
   }
 
-  return GetContentClient()->browser()->ShouldTryToUseExistingProcessHost(
-      browser_context, url);
+  return false;
 }
 
 // static
@@ -4744,7 +4741,18 @@ RenderProcessHost* RenderProcessHostImpl::GetProcessHostForSiteInstance(
         SiteInstanceProcessAssignment::REUSED_EXISTING_PROCESS);
   }
 
-  // See if the spare RenderProcessHost can be used.
+  // See if the embedder prefers using an existing process.
+  if (!render_process_host &&
+      GetContentClient()->browser()->ShouldTryToUseExistingProcessHost(
+          browser_context, site_info.site_url())) {
+    render_process_host = GetExistingProcessHost(site_instance);
+    if (render_process_host) {
+      site_instance->set_process_assignment(
+          SiteInstanceProcessAssignment::REUSED_EXISTING_PROCESS);
+    }
+  }
+
+  // If not (or if none found), see if the spare RenderProcessHost can be used.
   auto& spare_process_manager = SpareRenderProcessHostManager::GetInstance();
   bool spare_was_taken = false;
   if (!render_process_host) {
@@ -4757,9 +4765,9 @@ RenderProcessHost* RenderProcessHostImpl::GetProcessHostForSiteInstance(
     }
   }
 
-  // If not (or if none found), see if we should reuse an existing process.
-  if (!render_process_host && ShouldTryToUseExistingProcessHost(
-                                  browser_context, site_info.site_url())) {
+  // If not (or if none found), see if the process limit was reached, in which
+  // case an existing process should be used if possible."
+  if (!render_process_host && IsProcessLimitReached()) {
     render_process_host = GetExistingProcessHost(site_instance);
     if (render_process_host) {
       site_instance->set_process_assignment(

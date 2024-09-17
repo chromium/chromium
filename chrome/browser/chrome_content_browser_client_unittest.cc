@@ -1567,9 +1567,6 @@ TEST_F(DisableWebAuthnWithBrokenCertsTest, IgnoreCertificateErrorsFlag) {
 }
 
 TEST_F(ChromeContentBrowserClientTest, ShouldUseSpareRenderProcessHost) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      features::kTopChromeWebUIUsesSpareRenderer);
   using SpareProcessRefusedByEmbedderReason =
       content::ContentBrowserClient::SpareProcessRefusedByEmbedderReason;
   ChromeContentBrowserClient browser_client;
@@ -1582,11 +1579,6 @@ TEST_F(ChromeContentBrowserClientTest, ShouldUseSpareRenderProcessHost) {
   EXPECT_EQ(SpareProcessRefusedByEmbedderReason::NoProfile,
             browser_client.ShouldUseSpareRenderProcessHost(
                 nullptr, GURL("https://www.example.com")));
-
-  // Chrome top UI URL
-  EXPECT_EQ(SpareProcessRefusedByEmbedderReason::TopFrameChromeWebUI,
-            browser_client.ShouldUseSpareRenderProcessHost(
-                &profile_, GURL("chrome://test.top-chrome")));
 
 #if !BUILDFLAG(IS_ANDROID)
   // Chrome-search URL
