@@ -204,6 +204,9 @@ TEST_F(PrivacyIndicatorsTrayItemViewTest, IconsVisibility) {
   UpdateCameraAndMicrophoneUsage(
       /*is_camera_used=*/false,
       /*is_microphone_used=*/false);
+  // Fast forward by the minimum duration the privacy indicator should be held.
+  task_environment()->FastForwardBy(
+      ash::PrivacyIndicatorsController::kPrivacyIndicatorsMinimumHoldDuration);
   EXPECT_FALSE(privacy_indicators_view()->GetVisible());
 }
 
@@ -624,17 +627,26 @@ TEST_F(PrivacyIndicatorsTrayItemViewTest, MultipleAppsAccess) {
   UpdateCameraAndMicrophoneUsage(
       /*is_camera_used=*/false,
       /*is_microphone_used=*/false, /*app_id=*/"app_id2");
+  // Fast forward by the minimum duration the privacy indicator should be held.
+  task_environment()->FastForwardBy(
+      ash::PrivacyIndicatorsController::kPrivacyIndicatorsMinimumHoldDuration);
   EXPECT_TRUE(privacy_indicators_view()->GetVisible());
 
   UpdateCameraAndMicrophoneUsage(
       /*is_camera_used=*/false,
       /*is_microphone_used=*/false, /*app_id=*/"app_id3");
+  // Fast forward by the minimum duration the privacy indicator should be held.
+  task_environment()->FastForwardBy(
+      ash::PrivacyIndicatorsController::kPrivacyIndicatorsMinimumHoldDuration);
   EXPECT_TRUE(privacy_indicators_view()->GetVisible());
 
   // Indicator should hide when removing all apps.
   UpdateCameraAndMicrophoneUsage(
       /*is_camera_used=*/false,
       /*is_microphone_used=*/false);
+  // Fast forward by the minimum duration the privacy indicator should be held.
+  task_environment()->FastForwardBy(
+      ash::PrivacyIndicatorsController::kPrivacyIndicatorsMinimumHoldDuration);
   EXPECT_FALSE(privacy_indicators_view()->GetVisible());
 }
 
@@ -690,16 +702,22 @@ TEST_F(PrivacyIndicatorsTrayItemViewTest, RecordShowPerSessionMetrics) {
   int expected_count = 1;
 
   // Show the indicator in the given `show_count` number of times.
-  auto trigger_show_indicator = [](int show_count) {
-    // Update the state of camera/microphone access so that the indicators on
-    // all displays show, then hide for `show_count` times.
-    for (auto i = 0; i < show_count; i++) {
-      UpdateCameraAndMicrophoneUsage(/*is_camera_used=*/true,
-                                     /*is_microphone_used=*/true);
-      UpdateCameraAndMicrophoneUsage(/*is_camera_used=*/false,
-                                     /*is_microphone_used=*/false);
-    }
-  };
+  auto trigger_show_indicator =
+      [](int show_count, base::test::TaskEnvironment* task_environment) {
+        // Update the state of camera/microphone access so that the indicators
+        // on all displays show, then hide for `show_count` times.
+        for (auto i = 0; i < show_count; i++) {
+          UpdateCameraAndMicrophoneUsage(/*is_camera_used=*/true,
+                                         /*is_microphone_used=*/true);
+          UpdateCameraAndMicrophoneUsage(/*is_camera_used=*/false,
+                                         /*is_microphone_used=*/false);
+          // Fast forward by the minimum duration the privacy indicator should
+          // be held.
+          task_environment->FastForwardBy(
+              ash::PrivacyIndicatorsController::
+                  kPrivacyIndicatorsMinimumHoldDuration);
+        }
+      };
 
   base::HistogramTester histograms;
 
@@ -707,7 +725,7 @@ TEST_F(PrivacyIndicatorsTrayItemViewTest, RecordShowPerSessionMetrics) {
       session_manager::SessionState::ACTIVE);
 
   int expected_sample = 1;
-  trigger_show_indicator(expected_sample);
+  trigger_show_indicator(expected_sample, task_environment());
 
   // After session changed, metrics should be recorded.
   GetSessionControllerClient()->SetSessionState(
@@ -716,7 +734,7 @@ TEST_F(PrivacyIndicatorsTrayItemViewTest, RecordShowPerSessionMetrics) {
                                expected_sample, expected_count);
 
   expected_sample = 6;
-  trigger_show_indicator(expected_sample);
+  trigger_show_indicator(expected_sample, task_environment());
 
   // After session changed, metrics should be recorded.
   GetSessionControllerClient()->SetSessionState(
@@ -725,7 +743,7 @@ TEST_F(PrivacyIndicatorsTrayItemViewTest, RecordShowPerSessionMetrics) {
                                expected_sample, expected_count);
 
   expected_sample = 10;
-  trigger_show_indicator(expected_sample);
+  trigger_show_indicator(expected_sample, task_environment());
 
   // After session changed, metrics should be recorded.
   GetSessionControllerClient()->SetSessionState(
@@ -775,7 +793,9 @@ TEST_F(PrivacyIndicatorsTrayItemViewTest, RecordVisibilityDuration) {
   UpdateCameraAndMicrophoneUsage(
       /*is_camera_used=*/false,
       /*is_microphone_used=*/false);
-
+  // Fast forward by the minimum duration the privacy indicator should be held.
+  task_environment()->FastForwardBy(
+      ash::PrivacyIndicatorsController::kPrivacyIndicatorsMinimumHoldDuration);
   auto expected_sample1 = base::Time::Now() - start_time;
   histograms.ExpectTimeBucketCount(kVisibilityDurationHistogramName,
                                    expected_sample1, 1);
@@ -790,6 +810,9 @@ TEST_F(PrivacyIndicatorsTrayItemViewTest, RecordVisibilityDuration) {
   UpdateCameraAndMicrophoneUsage(
       /*is_camera_used=*/false,
       /*is_microphone_used=*/false);
+  // Fast forward by the minimum duration the privacy indicator should be held.
+  task_environment()->FastForwardBy(
+      ash::PrivacyIndicatorsController::kPrivacyIndicatorsMinimumHoldDuration);
   histograms.ExpectTimeBucketCount(kVisibilityDurationHistogramName,
                                    base::Time::Now() - start_time, 1);
 

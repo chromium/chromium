@@ -31,6 +31,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "components/session_manager/session_manager_types.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -106,7 +107,8 @@ class PrivacyIndicatorsControllerTest
     : public AshTestBase,
       public testing::WithParamInterface<bool> {
  public:
-  PrivacyIndicatorsControllerTest() {
+  PrivacyIndicatorsControllerTest()
+      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     scoped_feature_list_.InitWithFeatureState(features::kOngoingProcesses,
                                               AreOngoingProcessesEnabled());
   }
@@ -316,10 +318,17 @@ TEST_P(PrivacyIndicatorsControllerTest, NotificationWithTwoApps) {
       app_id1, u"test_app_name",
       /*is_camera_used=*/false,
       /*is_microphone_used=*/false, delegate, PrivacyIndicatorsSource::kApps);
+  // Fast forward by the minimum duration the privacy indicator should be held.
+  task_environment()->FastForwardBy(
+      PrivacyIndicatorsController::kPrivacyIndicatorsMinimumHoldDuration);
+
   PrivacyIndicatorsController::Get()->UpdatePrivacyIndicators(
       app_id2, u"test_app_name",
       /*is_camera_used=*/false,
       /*is_microphone_used=*/false, delegate, PrivacyIndicatorsSource::kApps);
+  // Fast forward by the minimum duration the privacy indicator should be held.
+  task_environment()->FastForwardBy(
+      PrivacyIndicatorsController::kPrivacyIndicatorsMinimumHoldDuration);
 
   EXPECT_FALSE(message_center->FindNotificationById(notification_id1));
   EXPECT_FALSE(message_center->FindNotificationById(notification_id2));
@@ -356,6 +365,9 @@ TEST_P(PrivacyIndicatorsControllerTest, PrivacyIndicatorsTrayItemView) {
       "test_id", u"test_app_name",
       /*is_camera_used=*/false,
       /*is_microphone_used=*/false, delegate, PrivacyIndicatorsSource::kApps);
+  // Fast forward by the minimum duration the privacy indicator should be held.
+  task_environment()->FastForwardBy(
+      PrivacyIndicatorsController::kPrivacyIndicatorsMinimumHoldDuration);
   ExpectPrivacyIndicatorsTrayItemVisible(
       /*visible=*/false, /*camera_visible=*/false,
       /*microphone_visible=*/false);
@@ -708,7 +720,9 @@ TEST_P(PrivacyIndicatorsControllerTest, UpdateUsageStageInLockScreen) {
                                       /*is_camera_used=*/false,
                                       /*is_microphone_used=*/false, delegate,
                                       PrivacyIndicatorsSource::kApps);
-
+  // Fast forward by the minimum duration the privacy indicator should be held.
+  task_environment()->FastForwardBy(
+      PrivacyIndicatorsController::kPrivacyIndicatorsMinimumHoldDuration);
   EXPECT_FALSE(message_center::MessageCenter::Get()->FindNotificationById(
       notification_id));
   EXPECT_FALSE(GetPrimaryDisplayPrivacyIndicatorsView()->GetVisible());

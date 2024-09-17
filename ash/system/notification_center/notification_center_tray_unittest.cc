@@ -36,7 +36,8 @@ constexpr char kNotificationCenterTrayNoNotificationsToastId[] =
 class NotificationCenterTrayTestBase : public AshTestBase {
  public:
   NotificationCenterTrayTestBase(bool enable_notification_center_controller)
-      : enable_notification_center_controller_(
+      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
+        enable_notification_center_controller_(
             enable_notification_center_controller) {
     scoped_feature_list_.InitWithFeatureState(
         features::kNotificationCenterController,
@@ -453,6 +454,9 @@ TEST_P(NotificationCenterTrayTest, PrivacyIndicatorsVisibility) {
       /*app_id=*/"app_id", /*app_name=*/u"App Name",
       /*is_camera_used=*/false,
       /*is_microphone_used=*/false, delegate, PrivacyIndicatorsSource::kApps);
+  // Fast forward by the minimum duration the privacy indicator should be held.
+  task_environment()->FastForwardBy(
+      PrivacyIndicatorsController::kPrivacyIndicatorsMinimumHoldDuration);
   EXPECT_FALSE(privacy_indicators_view->GetVisible());
 }
 

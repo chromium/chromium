@@ -277,12 +277,79 @@ void PrivacyIndicatorsController::UpdatePrivacyIndicators(
   is_microphone_used =
       is_microphone_used && !CrasAudioHandler::Get()->IsInputMuted();
 
+  if (!is_camera_used && !is_microphone_used) {
+    indicator_hiding_delay_timer_.Start(
+        FROM_HERE, CalculateIndicatorsDelayTime(),
+        base::BindOnce(&PrivacyIndicatorsController::TriggerPrivacyIndicators,
+                       base::Unretained(this), is_camera_used,
+                       is_microphone_used, is_new_app, was_camera_in_use,
+                       was_microphone_in_use, app_id, app_name, delegate));
+  } else {
+    if (!ShouldSkipShowPrivacyIndicators(is_camera_used, is_microphone_used,
+                                         is_new_app, was_camera_in_use)) {
+      privacy_indicator_time_ = base::TimeTicks::Now();
+      recent_active_state_ = {is_camera_used, is_microphone_used};
+      TriggerPrivacyIndicators(is_camera_used, is_microphone_used, is_new_app,
+                               was_camera_in_use, was_microphone_in_use, app_id,
+                               app_name, delegate);
+    }
+    indicator_hiding_delay_timer_.Stop();
+  }
+
+  base::UmaHistogramEnumeration("Ash.PrivacyIndicators.Source", source);
+}
+
+base::TimeDelta PrivacyIndicatorsController::CalculateIndicatorsDelayTime()
+    const {
+  base::TimeDelta delay;
+  const base::TimeDelta indicator_display_time =
+      base::TimeTicks::Now() - privacy_indicator_time_;
+  if (indicator_display_time < kPrivacyIndicatorsMinimumHoldDuration) {
+    delay =
+        std::max(kPrivacyIndicatorsMinimumHoldDuration - indicator_display_time,
+                 kPrivacyIndicatorsHoldAfterUseDuration);
+  } else {
+    delay = kPrivacyIndicatorsHoldAfterUseDuration;
+  }
+  return delay;
+}
+
+// Determines whether to skip showing privacy indicators for a new app.
+// This is necessary to prevent flickering in scenarios where:
+// 1. Another app is currently using the camera (`was_camera_in_use`).
+// 2. The new app (`is_new_app`) is attempting to access the
+// camera(`is_camera_used`).
+// 3. The camera/mic state matches the recent active state
+// (`recent_active_state_`).
+// 4. The indicator hiding timer is running, indicating a recent disconnection.
+//
+// In such conflicts, we avoid constantly canceling and restarting the hiding
+// delay timer for every retry attempt by the new app, ensuring a smoother user
+// experience.
+bool PrivacyIndicatorsController::ShouldSkipShowPrivacyIndicators(
+    bool is_camera_used,
+    bool is_microphone_used,
+    bool is_new_app,
+    bool was_camera_in_use) const {
+  return was_camera_in_use && is_new_app && is_camera_used &&
+         (recent_active_state_ ==
+          std::make_pair(is_camera_used, is_microphone_used)) &&
+         indicator_hiding_delay_timer_.IsRunning();
+}
+
+void PrivacyIndicatorsController::TriggerPrivacyIndicators(
+    bool is_camera_used,
+    bool is_microphone_used,
+    bool is_new_app,
+    bool was_camera_in_use,
+    bool was_microphone_in_use,
+    const std::string& app_id,
+    std::optional<std::u16string> app_name,
+    scoped_refptr<PrivacyIndicatorsNotificationDelegate> delegate) {
   ModifyPrivacyIndicatorsNotification(app_id, app_name, is_camera_used,
                                       is_microphone_used, delegate);
   UpdatePrivacyIndicatorsView(is_camera_used, is_microphone_used, is_new_app,
                               was_camera_in_use, was_microphone_in_use);
-
-  base::UmaHistogramEnumeration("Ash.PrivacyIndicators.Source", source);
 }
 
 void PrivacyIndicatorsController::OnCameraHWPrivacySwitchStateChanged(
