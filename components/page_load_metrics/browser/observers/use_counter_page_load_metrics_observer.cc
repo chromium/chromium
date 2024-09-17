@@ -446,8 +446,12 @@ UseCounterMetricsRecorder::GetWebFeatureToWebDXFeatureMap() {
           {WebFeature::kCssDisplayPropertyMultipleValues,
            WebDXFeature::kTwoValueDisplay},
           {WebFeature::kTwoValuedOverflow, WebDXFeature::kOverflowShorthand},
-          {WebFeature::kKeyboardApiGetLayoutMap,
-           WebDXFeature::kKeyboardMap},
+          {WebFeature::kKeyboardApiGetLayoutMap, WebDXFeature::kKeyboardMap},
+          {WebFeature::kSchedulerPostTask, WebDXFeature::kScheduler},
+          {WebFeature::kSchedulerYield, WebDXFeature::kScheduler},
+          {WebFeature::kTaskControllerConstructor, WebDXFeature::kScheduler},
+          {WebFeature::kTaskControllerSetPriority, WebDXFeature::kScheduler},
+          {WebFeature::kTaskSignalPriority, WebDXFeature::kScheduler},
       }};
 
   return *kMap;
