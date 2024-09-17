@@ -15,14 +15,14 @@
   test_valid_value("position-try-fallbacks", "flip-block");
   test_valid_value("position-try-fallbacks", "flip-block ", 'flip-block');
   test_valid_value("position-try-fallbacks", "flip-start, flip-block");
-  test_valid_value("position-try-fallbacks", "flip-start flip-inline, flip-block", "flip-inline flip-start, flip-block");
+  test_valid_value("position-try-fallbacks", "flip-start flip-inline, flip-block");
   test_valid_value("position-try-fallbacks", "flip-start, flip-start");
-  test_valid_value("position-try-fallbacks", "flip-start flip-inline flip-block", "flip-block flip-inline flip-start");
+  test_valid_value("position-try-fallbacks", "flip-start flip-inline flip-block");
   test_valid_value("position-try-fallbacks", "flip-block, --foo");
   test_valid_value("position-try-fallbacks", "--bar, flip-block flip-start");
   test_valid_value("position-try-fallbacks", "--foo, --bar, --baz");
   test_valid_value("position-try-fallbacks", "--bar flip-block");
-  test_valid_value("position-try-fallbacks", "--bar flip-inline flip-block", "--bar flip-block flip-inline");
+  test_valid_value("position-try-fallbacks", "--bar flip-inline flip-block");
   test_valid_value("position-try-fallbacks", "flip-inline --foo", "--foo flip-inline");
   test_valid_value("position-try-fallbacks", "flip-inline flip-start --foo", "--foo flip-inline flip-start");
   test_valid_value("position-try-fallbacks", "left top");

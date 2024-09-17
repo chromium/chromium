@@ -1,22 +1,7 @@
 // GENERATED CONTENT - DO NOT EDIT
 // Content was automatically extracted by Reffy into webref
 // (https://github.com/w3c/webref)
-// Source: Federated Credential Management API (https://fedidcg.github.io/FedCM/)
-
-enum LoginStatus {
-  "logged-in",
-  "logged-out",
-};
-
-[Exposed=Window, SecureContext]
-
-interface NavigatorLogin {
-  Promise<undefined> setStatus(LoginStatus status);
-};
-
-partial interface Navigator {
-  [SecureContext] readonly attribute NavigatorLogin login;
-};
+// Source: Federated Credential Management API (https://w3c-fedid.github.io/FedCM/)
 
 dictionary IdentityCredentialDisconnectOptions : IdentityProviderConfig {
   required USVString accountHint;

@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] e.style['position-try'] = "most-inline-size flip-inline flip-block, --foo, --bar" should set position-try-fallbacks
-  assert_equals: position-try-fallbacks should be canonical expected "flip-block flip-inline, --foo, --bar" but got "flip-inline flip-block, --foo, --bar"
-Harness: the test ran to completion.
-

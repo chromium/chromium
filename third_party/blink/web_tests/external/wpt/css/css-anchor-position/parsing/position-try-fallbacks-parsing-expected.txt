@@ -1,9 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] e.style['position-try-fallbacks'] = "flip-start flip-inline, flip-block" should set the property value
-  assert_equals: serialization should be canonical expected "flip-inline flip-start, flip-block" but got "flip-start flip-inline, flip-block"
-[FAIL] e.style['position-try-fallbacks'] = "flip-start flip-inline flip-block" should set the property value
-  assert_equals: serialization should be canonical expected "flip-block flip-inline flip-start" but got "flip-start flip-inline flip-block"
-[FAIL] e.style['position-try-fallbacks'] = "--bar flip-inline flip-block" should set the property value
-  assert_equals: serialization should be canonical expected "--bar flip-block flip-inline" but got "--bar flip-inline flip-block"
-Harness: the test ran to completion.
-
