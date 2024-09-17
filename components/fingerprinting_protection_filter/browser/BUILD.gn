@@ -68,6 +68,7 @@ if (use_blink) {
       "fingerprinting_protection_child_navigation_throttle_unittest.cc",
       "fingerprinting_protection_page_activation_throttle_unittest.cc",
       "fingerprinting_protection_profile_interaction_manager_unittest.cc",
+      "fingerprinting_protection_web_contents_helper_unittest.cc",
       "throttle_manager_unittest.cc",
     ]
     deps = [
