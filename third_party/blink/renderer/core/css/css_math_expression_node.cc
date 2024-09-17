@@ -4115,6 +4115,10 @@ class CSSMathExpressionNodeParser {
       return result;
     }
 
+    if (stream.Peek().GetBlockType() != CSSParserToken::kNotBlock) {
+      return nullptr;
+    }
+
     return ParseValue(stream, state, whitespace_after_token);
   }
 
