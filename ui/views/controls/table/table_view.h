@@ -114,7 +114,8 @@ class VIEWS_EXPORT TableView : public View, public ui::TableModelObserver {
 
   // Returns a new ScrollView that contains the given |table|.
   static std::unique_ptr<ScrollView> CreateScrollViewWithTable(
-      std::unique_ptr<TableView> table);
+      std::unique_ptr<TableView> table,
+      bool has_border = true);
 
   // Returns a new Builder<ScrollView> that contains the |table| constructed
   // from the given Builder<TableView>.

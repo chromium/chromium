@@ -209,8 +209,10 @@ TableView::~TableView() {
 
 // static
 std::unique_ptr<ScrollView> TableView::CreateScrollViewWithTable(
-    std::unique_ptr<TableView> table) {
-  auto scroll_view = ScrollView::CreateScrollViewWithBorder();
+    std::unique_ptr<TableView> table,
+    bool has_border) {
+  auto scroll_view = has_border ? ScrollView::CreateScrollViewWithBorder()
+                                : std::make_unique<ScrollView>();
   auto* table_ptr = table.get();
   scroll_view->SetContents(std::move(table));
   table_ptr->CreateHeaderIfNecessary(scroll_view.get());
