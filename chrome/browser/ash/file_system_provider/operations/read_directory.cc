@@ -37,7 +37,7 @@ bool ConvertRequestValueToEntryList(const RequestValue& value,
       return false;
     }
 
-    output->emplace_back(base::FilePath(*entry_metadata.name),
+    output->emplace_back(base::FilePath(*entry_metadata.name), base::FilePath(),
                          *entry_metadata.is_directory
                              ? filesystem::mojom::FsFileType::DIRECTORY
                              : filesystem::mojom::FsFileType::REGULAR_FILE);

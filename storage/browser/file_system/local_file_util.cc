@@ -72,6 +72,8 @@ class LocalFileUtil::LocalFileEnumerator
 
   base::File::Error GetError() override { return error_; }
 
+  base::FilePath GetName() override { return file_util_info_.GetName(); }
+
   int64_t Size() override { return file_util_info_.GetSize(); }
 
   base::Time LastModifiedTime() override {

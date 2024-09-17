@@ -131,7 +131,7 @@ void ReadDirectoryHelper(FileSystemFileUtil* file_util,
 
   base::FilePath current;
   while (!(current = file_enum->Next()).empty()) {
-    entries.emplace_back(VirtualPath::BaseName(current),
+    entries.emplace_back(VirtualPath::BaseName(current), file_enum->GetName(),
                          file_enum->IsDirectory()
                              ? filesystem::mojom::FsFileType::DIRECTORY
                              : filesystem::mojom::FsFileType::REGULAR_FILE);

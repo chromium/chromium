@@ -203,6 +203,8 @@ class ObfuscatedFileEnumerator final
 
   int64_t Size() override { return current_platform_file_info_.size; }
 
+  base::FilePath GetName() override { return base::FilePath(); }
+
   base::Time LastModifiedTime() override {
     return current_platform_file_info_.last_modified;
   }

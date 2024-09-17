@@ -31,6 +31,7 @@ class CONTENT_EXPORT FileSystemAccessDataTransferTokenImpl
       FileSystemAccessManagerImpl* manager,
       FileSystemAccessManagerImpl::PathType path_type,
       const base::FilePath& file_path,
+      const base::FilePath& display_name,
       int renderer_process_id,
       mojo::PendingReceiver<blink::mojom::FileSystemAccessDataTransferToken>
           receiver);
@@ -48,6 +49,8 @@ class CONTENT_EXPORT FileSystemAccessDataTransferTokenImpl
   FileSystemAccessManagerImpl::PathType path_type() const { return path_type_; }
 
   const base::FilePath& file_path() const { return file_path_; }
+
+  const base::FilePath& display_name() const { return display_name_; }
 
   const base::UnguessableToken& token() const { return token_; }
 
@@ -67,6 +70,7 @@ class CONTENT_EXPORT FileSystemAccessDataTransferTokenImpl
   const raw_ptr<FileSystemAccessManagerImpl> manager_ = nullptr;
   const FileSystemAccessManagerImpl::PathType path_type_;
   const base::FilePath file_path_;
+  const base::FilePath display_name_;
   const int renderer_process_id_;
   const base::UnguessableToken token_;
 

@@ -586,8 +586,8 @@ void FileSystemAccessDirectoryHandleImpl::DidReadDirectory(
       }
 
       if (entry.type == filesystem::mojom::FsFileType::DIRECTORY) {
-        auto directory_result_entry =
-            CreateEntry(basename, child_url, HandleType::kDirectory);
+        auto directory_result_entry = CreateEntry(
+            entry.name, entry.display_name, child_url, HandleType::kDirectory);
         barrier_callback.Run(std::move(directory_result_entry));
         continue;
       }
@@ -603,8 +603,8 @@ void FileSystemAccessDirectoryHandleImpl::DidReadDirectory(
           context().frame_id,
           base::BindOnce(&FileSystemAccessDirectoryHandleImpl::
                              DidVerifySensitiveAccessForFileEntry,
-                         weak_factory_.GetWeakPtr(), std::move(basename),
-                         child_url, barrier_callback));
+                         weak_factory_.GetWeakPtr(), entry.name,
+                         entry.display_name, child_url, barrier_callback));
     }
     return;
   }
@@ -624,7 +624,7 @@ void FileSystemAccessDirectoryHandleImpl::DidReadDirectory(
     }
 
     entries.push_back(
-        CreateEntry(basename, child_url,
+        CreateEntry(entry.name, entry.display_name, child_url,
                     entry.type == filesystem::mojom::FsFileType::DIRECTORY
                         ? HandleType::kDirectory
                         : HandleType::kFile));
@@ -633,7 +633,8 @@ void FileSystemAccessDirectoryHandleImpl::DidReadDirectory(
 }
 
 void FileSystemAccessDirectoryHandleImpl::DidVerifySensitiveAccessForFileEntry(
-    std::string basename,
+    base::FilePath basename,
+    base::FilePath display_name,
     storage::FileSystemURL child_url,
     base::OnceCallback<void(FileSystemAccessEntryPtr)> barrier_callback,
     FileSystemAccessPermissionContext::SensitiveEntryResult
@@ -645,7 +646,8 @@ void FileSystemAccessDirectoryHandleImpl::DidVerifySensitiveAccessForFileEntry(
     return;
   }
 
-  auto entry = CreateEntry(basename, child_url, HandleType::kFile);
+  auto entry =
+      CreateEntry(basename, display_name, child_url, HandleType::kFile);
   std::move(barrier_callback).Run(std::move(entry));
 }
 
@@ -809,21 +811,24 @@ FileSystemAccessDirectoryHandleImpl::GetChildURL(
 }
 
 FileSystemAccessEntryPtr FileSystemAccessDirectoryHandleImpl::CreateEntry(
-    const std::string& basename,
+    const base::FilePath& basename,
+    const base::FilePath& display_name,
     const storage::FileSystemURL& url,
     HandleType handle_type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  std::string name =
+      storage::FilePathToString(display_name.empty() ? basename : display_name);
   if (handle_type == HandleType::kDirectory) {
     return FileSystemAccessEntry::New(
         FileSystemAccessHandle::NewDirectory(
             manager()->CreateDirectoryHandle(context(), url, handle_state())),
-        basename);
+        name);
   }
   return FileSystemAccessEntry::New(
       FileSystemAccessHandle::NewFile(
           manager()->CreateFileHandle(context(), url, handle_state())),
-      basename);
+      name);
 }
 
 void FileSystemAccessDirectoryHandleImpl::GetUniqueId(

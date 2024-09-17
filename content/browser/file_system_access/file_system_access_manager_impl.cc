@@ -298,6 +298,15 @@ void DidCheckIfDefaultDirectoryExists(
   }
 }
 
+// SelectFileDialog on all platforms returns an optional `display_name` in
+// addition to `path`. Most platforms (linux, win, mac, cros) set it to
+// path.BaseName(), but in particular for android content-URIs, the path URI can
+// be unrelated to the display name.
+std::string DisplayName(const base::FilePath& path,
+                        const base::FilePath& display_name) {
+  return (display_name.empty() ? path.BaseName() : display_name).AsUTF8Unsafe();
+}
+
 }  // namespace
 
 FileSystemAccessManagerImpl::SharedHandleState::SharedHandleState(
@@ -642,6 +651,7 @@ void FileSystemAccessManagerImpl::SetDefaultPathAndShowPicker(
 void FileSystemAccessManagerImpl::CreateFileSystemAccessDataTransferToken(
     PathType path_type,
     const base::FilePath& file_path,
+    const base::FilePath& display_name,
     int renderer_id,
     mojo::PendingReceiver<blink::mojom::FileSystemAccessDataTransferToken>
         receiver) {
@@ -649,7 +659,8 @@ void FileSystemAccessManagerImpl::CreateFileSystemAccessDataTransferToken(
 
   auto data_transfer_token_impl =
       std::make_unique<FileSystemAccessDataTransferTokenImpl>(
-          this, path_type, file_path, renderer_id, std::move(receiver));
+          this, path_type, file_path, display_name, renderer_id,
+          std::move(receiver));
   auto token = data_transfer_token_impl->token();
   data_transfer_tokens_.emplace(token, std::move(data_transfer_token_impl));
 }
@@ -717,6 +728,7 @@ void FileSystemAccessManagerImpl::ResolveDataTransferToken(
                                    ResolveDataTransferTokenWithFileType,
                                weak_factory_.GetWeakPtr(), binding_context,
                                data_transfer_token_impl->second->file_path(),
+                               data_transfer_token_impl->second->display_name(),
                                fs_url, std::move(token_resolved_callback))),
       fs_url,
       storage::FileSystemOperation::GetMetadataFieldSet(
@@ -726,6 +738,7 @@ void FileSystemAccessManagerImpl::ResolveDataTransferToken(
 void FileSystemAccessManagerImpl::ResolveDataTransferTokenWithFileType(
     const BindingContext& binding_context,
     const base::FilePath& file_path,
+    const base::FilePath& display_name,
     const storage::FileSystemURL& url,
     GetEntryFromDataTransferTokenCallback token_resolved_callback,
     HandleType file_type) {
@@ -736,7 +749,7 @@ void FileSystemAccessManagerImpl::ResolveDataTransferTokenWithFileType(
       !base::FeatureList::IsEnabled(
           features::kFileSystemAccessDragAndDropCheckBlocklist)) {
     DidVerifySensitiveDirectoryAccessForDataTransfer(
-        binding_context, file_path, url, file_type,
+        binding_context, file_path, display_name, url, file_type,
         std::move(token_resolved_callback), SensitiveEntryResult::kAllowed);
     return;
   }
@@ -757,13 +770,15 @@ void FileSystemAccessManagerImpl::ResolveDataTransferTokenWithFileType(
       base::BindOnce(&FileSystemAccessManagerImpl::
                          DidVerifySensitiveDirectoryAccessForDataTransfer,
                      weak_factory_.GetWeakPtr(), binding_context, file_path,
-                     url, file_type, std::move(token_resolved_callback)));
+                     display_name, url, file_type,
+                     std::move(token_resolved_callback)));
 }
 
 void FileSystemAccessManagerImpl::
     DidVerifySensitiveDirectoryAccessForDataTransfer(
         const BindingContext& binding_context,
         const base::FilePath& file_path,
+        const base::FilePath& display_name,
         const storage::FileSystemURL& url,
         HandleType file_type,
         GetEntryFromDataTransferTokenCallback token_resolved_callback,
@@ -788,12 +803,12 @@ void FileSystemAccessManagerImpl::
     entry = blink::mojom::FileSystemAccessEntry::New(
         blink::mojom::FileSystemAccessHandle::NewDirectory(
             CreateDirectoryHandle(binding_context, url, shared_handle_state)),
-        file_path.BaseName().AsUTF8Unsafe());
+        DisplayName(file_path, display_name));
   } else {
     entry = blink::mojom::FileSystemAccessEntry::New(
         blink::mojom::FileSystemAccessHandle::NewFile(
             CreateFileHandle(binding_context, url, shared_handle_state)),
-        file_path.BaseName().AsUTF8Unsafe());
+        DisplayName(file_path, display_name));
   }
 
   std::move(token_resolved_callback)
@@ -1067,6 +1082,7 @@ FileSystemAccessManagerImpl::CreateFileEntryFromPath(
     const BindingContext& binding_context,
     PathType path_type,
     const base::FilePath& file_path,
+    const base::FilePath& display_name,
     UserAction user_action) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   storage::FileSystemURL url =
@@ -1080,7 +1096,7 @@ FileSystemAccessManagerImpl::CreateFileEntryFromPath(
   return blink::mojom::FileSystemAccessEntry::New(
       blink::mojom::FileSystemAccessHandle::NewFile(
           CreateFileHandle(binding_context, url, shared_handle_state)),
-      file_path.BaseName().AsUTF8Unsafe());
+      DisplayName(file_path, display_name));
 }
 
 blink::mojom::FileSystemAccessEntryPtr
@@ -1088,6 +1104,7 @@ FileSystemAccessManagerImpl::CreateDirectoryEntryFromPath(
     const BindingContext& binding_context,
     PathType path_type,
     const base::FilePath& file_path,
+    const base::FilePath& display_name,
     UserAction user_action) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   storage::FileSystemURL url =
@@ -1101,7 +1118,7 @@ FileSystemAccessManagerImpl::CreateDirectoryEntryFromPath(
   return blink::mojom::FileSystemAccessEntry::New(
       blink::mojom::FileSystemAccessHandle::NewDirectory(
           CreateDirectoryHandle(binding_context, url, shared_handle_state)),
-      file_path.BaseName().AsUTF8Unsafe());
+      DisplayName(file_path, display_name));
 }
 
 mojo::PendingRemote<blink::mojom::FileSystemAccessFileHandle>
@@ -1497,8 +1514,10 @@ void FileSystemAccessManagerImpl::DidVerifySensitiveDirectoryAccess(
                  std::make_move_iterator(entries.end()),
                  std::back_inserter(pathinfos_to_check),
                  [](FileSystemChooser::ResultEntry&& entry) {
-                   return PathInfo{.type = entry.type,
-                                   .path = std::move(entry.path)};
+                   return PathInfo{
+                       .type = entry.type,
+                       .path = std::move(entry.path),
+                       .display_name = std::move(entry.display_name)};
                  });
 
   // There is no need to scan the file in case of saving, since it's
@@ -1595,8 +1614,9 @@ void FileSystemAccessManagerImpl::OnCheckPathsAgainstEnterprisePolicy(
   std::vector<blink::mojom::FileSystemAccessEntryPtr> result_entries;
   result_entries.reserve(entries.size());
   for (const auto& entry : entries) {
-    result_entries.push_back(CreateFileEntryFromPath(
-        binding_context, entry.type, entry.path, UserAction::kOpen));
+    result_entries.push_back(
+        CreateFileEntryFromPath(binding_context, entry.type, entry.path,
+                                entry.display_name, UserAction::kOpen));
   }
 
   std::move(callback).Run(file_system_access_error::Ok(),
@@ -1636,7 +1656,7 @@ void FileSystemAccessManagerImpl::DidCreateAndTruncateSaveFile(
   result_entries.push_back(blink::mojom::FileSystemAccessEntry::New(
       blink::mojom::FileSystemAccessHandle::NewFile(
           CreateFileHandle(binding_context, url, shared_handle_state)),
-      entry.path.BaseName().AsUTF8Unsafe()));
+      DisplayName(entry.path, entry.display_name)));
 
   std::move(callback).Run(file_system_access_error::Ok(),
                           std::move(result_entries));
@@ -1667,7 +1687,7 @@ void FileSystemAccessManagerImpl::DidChooseDirectory(
           binding_context, url,
           SharedHandleState(shared_handle_state.read_grant,
                             shared_handle_state.write_grant))),
-      entry.path.BaseName().AsUTF8Unsafe()));
+      DisplayName(entry.path, entry.display_name)));
   std::move(callback).Run(file_system_access_error::Ok(),
                           std::move(result_entries));
 }

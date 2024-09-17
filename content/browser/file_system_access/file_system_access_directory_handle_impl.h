@@ -128,7 +128,8 @@ class CONTENT_EXPORT FileSystemAccessDirectoryHandleImpl
                    FileSystemAccessTransferTokenImpl* possible_child);
 
   void DidVerifySensitiveAccessForFileEntry(
-      std::string basename,
+      base::FilePath basename,
+      base::FilePath display_name,
       storage::FileSystemURL child_url,
       base::OnceCallback<void(blink::mojom::FileSystemAccessEntryPtr)>
           barrier_callback,
@@ -142,7 +143,8 @@ class CONTENT_EXPORT FileSystemAccessDirectoryHandleImpl
 
   // Helper to create a blink::mojom::FileSystemAccessEntry struct.
   blink::mojom::FileSystemAccessEntryPtr CreateEntry(
-      const std::string& basename,
+      const base::FilePath& basename,
+      const base::FilePath& display_name,
       const storage::FileSystemURL& url,
       FileSystemAccessPermissionContext::HandleType handle_type);
 

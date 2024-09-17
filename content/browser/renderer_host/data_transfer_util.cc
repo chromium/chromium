@@ -71,7 +71,7 @@ std::vector<blink::mojom::DataTransferFilePtr> FileInfosToDataTransferFiles(
     FileSystemAccessManagerImpl::PathType path_type =
         MaybeRemapPath(&entry_path);
     file_system_access_manager->CreateFileSystemAccessDataTransferToken(
-        path_type, entry_path, child_id,
+        path_type, entry_path, file_info.display_name, child_id,
         pending_token.InitWithNewPipeAndPassReceiver());
     file->file_system_access_token = std::move(pending_token);
     result.push_back(std::move(file));

@@ -36,13 +36,15 @@ void DirectoryImpl::Read(ReadCallback callback) {
   base::FileEnumerator directory_enumerator(
       directory_path_, false,
       base::FileEnumerator::DIRECTORIES | base::FileEnumerator::FILES);
-  for (base::FilePath name = directory_enumerator.Next(); !name.empty();
-       name = directory_enumerator.Next()) {
+  for (base::FilePath path = directory_enumerator.Next(); !path.empty();
+       path = directory_enumerator.Next()) {
     base::FileEnumerator::FileInfo info = directory_enumerator.GetInfo();
     mojom::DirectoryEntryPtr entry = mojom::DirectoryEntry::New();
     entry->type = info.IsDirectory() ? mojom::FsFileType::DIRECTORY
                                      : mojom::FsFileType::REGULAR_FILE;
-    entry->name = info.GetName();
+    entry->name = path.BaseName();
+    entry->display_name = info.GetName();
+
     entries.push_back(std::move(entry));
   }
 
