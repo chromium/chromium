@@ -10,8 +10,6 @@
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/common/mailbox_holder.h"
 #include "media/base/media_export.h"
-#include "ui/gfx/color_space.h"
-#include "ui/gfx/geometry/size.h"
 
 namespace viz {
 class RasterContextProvider;
@@ -51,11 +49,8 @@ class MEDIA_EXPORT VideoFrameYUVConverter {
   ~VideoFrameYUVConverter();
   static bool IsVideoFrameFormatSupported(const VideoFrame& video_frame);
 
-  static bool ConvertYUVVideoFrameNoCaching(
-      const VideoFrame* video_frame,
-      viz::RasterContextProvider* raster_context_provider,
-      const gpu::MailboxHolder& dest_mailbox_holder,
-      std::optional<GrParams> gr_params = std::nullopt);
+  // For pure software pixel upload path with video frame that does not have
+  // textures.
   bool ConvertYUVVideoFrame(const VideoFrame* video_frame,
                             viz::RasterContextProvider* raster_context_provider,
                             const gpu::MailboxHolder& dest_mailbox_holder,
