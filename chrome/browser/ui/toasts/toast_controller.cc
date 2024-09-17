@@ -249,8 +249,13 @@ void ToastController::ShowToast(ToastParams params) {
     persistent_params_ = std::move(params);
   } else {
     current_ephemeral_params_ = std::move(params);
+    base::TimeDelta timeout =
+        current_toast_spec->action_button_string_id().has_value()
+            ? toast_features::kToastTimeout.Get()
+            : toast_features::kToastWithoutActionTimeout.Get();
+
     toast_close_timer_.Start(
-        FROM_HERE, toast_features::kToastTimeout.Get(),
+        FROM_HERE, timeout,
         base::BindOnce(&ToastController::CloseToast, base::Unretained(this),
                        toasts::ToastCloseReason::kAutoDismissed));
   }

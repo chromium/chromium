@@ -22,6 +22,9 @@ const base::FeatureParam<bool> kToastDemoMode{&kToastFramework,
 const base::FeatureParam<base::TimeDelta> kToastTimeout{
     &kToastFramework, "toast_timeout", base::Seconds(10)};
 
+const base::FeatureParam<base::TimeDelta> kToastWithoutActionTimeout{
+    &kToastFramework, "toast_without_action_timeout", base::Seconds(10)};
+
 // Enables the link copied confirmation toast.
 BASE_FEATURE(kLinkCopiedToast,
              "LinkCopiedToast",
