@@ -7,7 +7,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "GPU Win x64 Builder",
-              "project": "chromium"
+              "project": "chromium-m130"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-gpu-archive",
@@ -35,7 +35,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Win10 x64 Release (NVIDIA)",
-              "project": "chromium"
+              "project": "chromium-m130"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-gpu-archive",
@@ -59,7 +59,7 @@
               "parent": {
                 "bucket": "ci",
                 "builder": "GPU Win x64 Builder",
-                "project": "chromium"
+                "project": "chromium-m130"
               }
             }
           }
@@ -69,7 +69,7 @@
         {
           "bucket": "ci",
           "builder": "Win10 x64 Release (NVIDIA)",
-          "project": "chromium"
+          "project": "chromium-m130"
         }
       ],
       "mirroring_builder_group_and_names": [
@@ -89,10 +89,10 @@
   },
   "builder_group": "chromium.gpu",
   "gardener_rotations": [
-    "chromium.gpu"
+    "chrome_browser_release"
   ],
   "recipe": "chromium",
   "sheriff_rotations": [
-    "chromium.gpu"
+    "chrome_browser_release"
   ]
 }

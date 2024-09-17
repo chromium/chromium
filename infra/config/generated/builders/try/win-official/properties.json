@@ -10,7 +10,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "win-official",
-              "project": "chromium"
+              "project": "chromium-m130"
             },
             "builder_spec": {
               "builder_group": "chromium",
@@ -37,7 +37,7 @@
         {
           "bucket": "ci",
           "builder": "win-official",
-          "project": "chromium"
+          "project": "chromium-m130"
         }
       ],
       "targets_spec_directory": "src/infra/config/generated/builders/try/win-official/targets"

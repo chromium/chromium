@@ -10,7 +10,7 @@
             "builder_id": {
               "bucket": "try",
               "builder": "win11-blink-rel",
-              "project": "chromium"
+              "project": "chromium-m130"
             },
             "builder_spec": {
               "builder_group": "tryserver.blink",
@@ -35,7 +35,7 @@
         {
           "bucket": "try",
           "builder": "win11-blink-rel",
-          "project": "chromium"
+          "project": "chromium-m130"
         }
       ],
       "retry_failed_shards": true

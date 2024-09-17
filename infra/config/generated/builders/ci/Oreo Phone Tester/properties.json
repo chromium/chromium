@@ -7,7 +7,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Android arm64 Builder (dbg)",
-              "project": "chromium"
+              "project": "chromium-m130"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-android-archive",
@@ -37,7 +37,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Oreo Phone Tester",
-              "project": "chromium"
+              "project": "chromium-m130"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-android-archive",
@@ -64,7 +64,7 @@
               "parent": {
                 "bucket": "ci",
                 "builder": "Android arm64 Builder (dbg)",
-                "project": "chromium"
+                "project": "chromium-m130"
               }
             }
           }
@@ -74,16 +74,12 @@
         {
           "bucket": "ci",
           "builder": "Oreo Phone Tester",
-          "project": "chromium"
+          "project": "chromium-m130"
         }
       ],
       "mirroring_builder_group_and_names": [
         {
           "builder": "android-oreo-arm64-dbg",
-          "group": "tryserver.chromium.android"
-        },
-        {
-          "builder": "android_arm64_dbg_recipe",
           "group": "tryserver.chromium.android"
         }
       ],
@@ -98,5 +94,11 @@
     ]
   },
   "builder_group": "chromium.android",
-  "recipe": "chromium"
+  "gardener_rotations": [
+    "chrome_browser_release"
+  ],
+  "recipe": "chromium",
+  "sheriff_rotations": [
+    "chrome_browser_release"
+  ]
 }

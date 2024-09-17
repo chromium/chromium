@@ -14,7 +14,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "win-arm64-rel",
-              "project": "chromium"
+              "project": "chromium-m130"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-win-archive",
@@ -43,7 +43,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "win11-arm64-rel-tests",
-              "project": "chromium"
+              "project": "chromium-m130"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-win-archive",
@@ -68,7 +68,7 @@
               "parent": {
                 "bucket": "ci",
                 "builder": "win-arm64-rel",
-                "project": "chromium"
+                "project": "chromium-m130"
               }
             }
           }
@@ -78,14 +78,14 @@
         {
           "bucket": "ci",
           "builder": "win-arm64-rel",
-          "project": "chromium"
+          "project": "chromium-m130"
         }
       ],
       "builder_ids_in_scope_for_testing": [
         {
           "bucket": "ci",
           "builder": "win11-arm64-rel-tests",
-          "project": "chromium"
+          "project": "chromium-m130"
         }
       ]
     }

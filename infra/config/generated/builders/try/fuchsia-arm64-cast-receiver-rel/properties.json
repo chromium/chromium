@@ -10,7 +10,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "fuchsia-arm64-cast-receiver-rel",
-              "project": "chromium"
+              "project": "chromium-m130"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-linux-archive",
@@ -41,7 +41,7 @@
         {
           "bucket": "ci",
           "builder": "fuchsia-arm64-cast-receiver-rel",
-          "project": "chromium"
+          "project": "chromium-m130"
         }
       ],
       "targets_spec_directory": "src/infra/config/generated/builders/try/fuchsia-arm64-cast-receiver-rel/targets"

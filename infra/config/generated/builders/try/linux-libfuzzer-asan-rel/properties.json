@@ -10,7 +10,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Libfuzzer Upload Linux ASan",
-              "project": "chromium"
+              "project": "chromium-m130"
             },
             "builder_spec": {
               "builder_group": "chromium.fuzz",
@@ -36,7 +36,7 @@
         {
           "bucket": "ci",
           "builder": "Libfuzzer Upload Linux ASan",
-          "project": "chromium"
+          "project": "chromium-m130"
         }
       ]
     }

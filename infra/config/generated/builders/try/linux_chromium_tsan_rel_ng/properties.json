@@ -14,7 +14,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Linux TSan Builder",
-              "project": "chromium"
+              "project": "chromium-m130"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-memory-archive",
@@ -38,7 +38,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Linux TSan Tests",
-              "project": "chromium"
+              "project": "chromium-m130"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-memory-archive",
@@ -59,7 +59,7 @@
               "parent": {
                 "bucket": "ci",
                 "builder": "Linux TSan Builder",
-                "project": "chromium"
+                "project": "chromium-m130"
               }
             }
           }
@@ -69,14 +69,14 @@
         {
           "bucket": "ci",
           "builder": "Linux TSan Builder",
-          "project": "chromium"
+          "project": "chromium-m130"
         }
       ],
       "builder_ids_in_scope_for_testing": [
         {
           "bucket": "ci",
           "builder": "Linux TSan Tests",
-          "project": "chromium"
+          "project": "chromium-m130"
         }
       ]
     }

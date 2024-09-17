@@ -10,7 +10,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Android arm64 Builder All Targets (dbg)",
-              "project": "chromium"
+              "project": "chromium-m130"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-android-archive",
@@ -42,7 +42,7 @@
         {
           "bucket": "ci",
           "builder": "Android arm64 Builder All Targets (dbg)",
-          "project": "chromium"
+          "project": "chromium-m130"
         }
       ],
       "is_compile_only": true,
