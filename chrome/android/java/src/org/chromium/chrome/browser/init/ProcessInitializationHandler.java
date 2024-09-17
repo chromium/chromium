@@ -456,7 +456,9 @@ public class ProcessInitializationHandler {
                 new ObservableSupplierImpl<>();
         crashUploadPermissionSupplier.set(
                 PrivacyPreferencesManagerImpl.getInstance().isUsageAndCrashReportingPermitted());
-        PrivacyPreferencesManagerImpl.getInstance().addObserver(crashUploadPermissionSupplier::set);
+        PrivacyPreferencesManagerImpl.getInstance()
+                .getUsageAndCrashReportingPermittedObservableSupplier()
+                .addObserver(crashUploadPermissionSupplier::set);
         SurveyClientFactory.initialize(crashUploadPermissionSupplier);
 
         AppHooks.get().registerPolicyProviders(CombinedPolicyProvider.get());

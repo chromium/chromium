@@ -18,6 +18,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.policy.PolicyServiceFactory;
@@ -128,6 +129,19 @@ public class PrivacyPreferencesManagerImpl implements PrivacyPreferencesManager 
         return networkInfo != null;
     }
 
+    /**
+     * Get the supplier for isUsageAndCrashReportingPermitted. If the supplier is null, initialize a
+     * new one. Ui Thread only.
+     */
+    protected ObservableSupplierImpl<Boolean> getCrashUploadPermittedSupplier() {
+        ThreadUtils.assertOnUiThread();
+        if (mCrashUploadPermittedSupplier == null) {
+            mCrashUploadPermittedSupplier =
+                    new ObservableSupplierImpl<>(isUsageAndCrashReportingPermitted());
+        }
+        return mCrashUploadPermittedSupplier;
+    }
+
     public void syncUsageAndCrashReportingPermittedByPolicy() {
         // Skip if native browser process is not yet fully initialized.
         if (!mNativeInitialized) return;
@@ -135,18 +149,6 @@ public class PrivacyPreferencesManagerImpl implements PrivacyPreferencesManager 
         mPrefs.writeBoolean(
                 ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_PERMITTED_BY_POLICY,
                 !PrivacyPreferencesManagerImplJni.get().isMetricsReportingDisabledByPolicy());
-    }
-
-    @Override
-    public void addObserver(Observer observer) {
-        getUsageAndCrashReportingPermittedObservableSupplier()
-                .addObserver(observer::onIsUsageAndCrashReportingPermittedChanged);
-    }
-
-    @Override
-    public void removeObserver(Observer observer) {
-        getUsageAndCrashReportingPermittedObservableSupplier()
-                .removeObserver(observer::onIsUsageAndCrashReportingPermittedChanged);
     }
 
     @Override
@@ -228,17 +230,12 @@ public class PrivacyPreferencesManagerImpl implements PrivacyPreferencesManager 
     @Override
     public void setMetricsReportingEnabled(boolean enabled) {
         PrivacyPreferencesManagerImplJni.get().setMetricsReportingEnabled(enabled);
-        getUsageAndCrashReportingPermittedObservableSupplier().set(enabled);
+        getCrashUploadPermittedSupplier().set(enabled);
     }
 
     @Override
-    public ObservableSupplierImpl<Boolean> getUsageAndCrashReportingPermittedObservableSupplier() {
-        ThreadUtils.assertOnUiThread();
-        if (mCrashUploadPermittedSupplier == null) {
-            mCrashUploadPermittedSupplier = new ObservableSupplierImpl<>();
-            mCrashUploadPermittedSupplier.set(isUsageAndCrashReportingPermitted());
-        }
-        return mCrashUploadPermittedSupplier;
+    public ObservableSupplier<Boolean> getUsageAndCrashReportingPermittedObservableSupplier() {
+        return getCrashUploadPermittedSupplier();
     }
 
     @NativeMethods
