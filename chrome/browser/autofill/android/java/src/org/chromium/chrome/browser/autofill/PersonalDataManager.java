@@ -1055,7 +1055,7 @@ public class PersonalDataManager implements Destroyable {
      * @return Whether FIDO authentication is available.
      */
     public boolean isFidoAuthenticationAvailable() {
-        return isAutofillCreditCardEnabled()
+        return isAutofillPaymentMethodsEnabled()
                 && PersonalDataManagerJni.get()
                         .isFidoAuthenticationAvailable(mPersonalDataManagerAndroid);
     }
@@ -1068,9 +1068,10 @@ public class PersonalDataManager implements Destroyable {
     }
 
     /**
-     * @return Whether the Autofill feature for Credit Cards is enabled.
+     * @return Whether the Autofill feature for Payment Methods is enabled.
      */
-    public boolean isAutofillCreditCardEnabled() {
+    public boolean isAutofillPaymentMethodsEnabled() {
+        // TODO(crbug.com/40903277): Rename pref to AUTOFILL_PAYMENT_METHODS_ENABLED.
         return mPrefService.getBoolean(Pref.AUTOFILL_CREDIT_CARD_ENABLED);
     }
 
