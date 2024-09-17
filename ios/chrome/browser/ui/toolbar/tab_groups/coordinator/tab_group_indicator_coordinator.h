@@ -21,6 +21,9 @@
 /// Delegate that handles the toolbars height.
 @property(nonatomic, weak) id<ToolbarHeightDelegate> toolbarHeightDelegate;
 
+// Whether the current page is an NTP.
+@property(nonatomic, assign) BOOL displayedOnNTP;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TOOLBAR_TAB_GROUPS_COORDINATOR_TAB_GROUP_INDICATOR_COORDINATOR_H_

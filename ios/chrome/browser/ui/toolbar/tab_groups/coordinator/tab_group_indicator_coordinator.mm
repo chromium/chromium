@@ -46,6 +46,7 @@
 - (void)start {
   CHECK(IsTabGroupIndicatorEnabled());
   _view = [[TabGroupIndicatorView alloc] init];
+  _view.displayedOnNTP = _displayedOnNTP;
   _view.incognito = self.browser->GetBrowserState()->IsOffTheRecord();
   _view.toolbarHeightDelegate = self.toolbarHeightDelegate;
   tab_groups::TabGroupSyncService* tabGroupSyncService =
