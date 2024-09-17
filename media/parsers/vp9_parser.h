@@ -335,11 +335,17 @@ class MEDIA_EXPORT Vp9Parser {
   // Stores start pointer and size of each frame within the current superframe.
   struct FrameInfo {
     FrameInfo();
-    FrameInfo(const FrameInfo& copy_from);
     FrameInfo(const uint8_t* ptr, off_t size);
+    FrameInfo(FrameInfo&& other);
+    FrameInfo& operator=(FrameInfo&& other);
+
+    // Move-only type. Copying would require manual duplication of
+    // `other.decrypt_config`.
+    FrameInfo(const FrameInfo& other) = delete;
+    FrameInfo& operator=(const FrameInfo& other) = delete;
+
     ~FrameInfo();
 
-    FrameInfo& operator=(const FrameInfo& copy_from);
     bool IsValid() const { return ptr != nullptr; }
     void Reset() { ptr = nullptr; }
 
