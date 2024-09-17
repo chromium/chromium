@@ -417,14 +417,6 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
   }
 
 #if !BUILDFLAG(IS_ANDROID)
-#if !BUILDFLAG(IS_CHROMEOS)
-  // AppHome is not needed on Android or ChromeOS.
-  if (url.host_piece() == chrome::kChromeUIAppLauncherPageHost && profile &&
-      extensions::ExtensionSystem::Get(profile)->extension_service() &&
-      !profile->IsGuestSession()) {
-    return &NewWebUI<webapps::AppHomeUI>;
-  }
-#endif  // !BUILDFLAG(IS_CHROMEOS)
   if (profile->IsGuestSession() &&
       (url.host_piece() == chrome::kChromeUIAppLauncherPageHost ||
        url.host_piece() == chrome::kChromeUINewTabPageHost ||

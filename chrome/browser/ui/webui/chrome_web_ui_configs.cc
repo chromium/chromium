@@ -36,6 +36,9 @@
 #include "printing/buildflags/buildflags.h"
 
 #if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/ui/webui/app_home/app_home_ui.h"
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #include "chrome/browser/ui/webui/media_router/cast_feedback_ui.h"
 #endif
@@ -126,6 +129,9 @@ void RegisterChromeWebUIConfigs() {
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_CHROMEOS)
+  map.AddWebUIConfig(std::make_unique<AppHomeUIConfig>());
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   map.AddWebUIConfig(std::make_unique<media_router::CastFeedbackUIConfig>());
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
