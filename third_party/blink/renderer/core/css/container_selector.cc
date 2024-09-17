@@ -46,6 +46,7 @@ unsigned ContainerSelector::GetHash() const {
   WTF::AddIntToHash(hash, logical_axes_.value());
   WTF::AddIntToHash(hash, has_style_query_);
   WTF::AddIntToHash(hash, has_sticky_query_);
+  WTF::AddIntToHash(hash, has_snap_query_);
   return hash;
 }
 

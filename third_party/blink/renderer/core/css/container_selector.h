@@ -85,7 +85,7 @@ class CORE_EXPORT ContainerSelector {
   bool has_unknown_feature_{false};
 };
 
-class ScopedContainerSelector
+class CORE_EXPORT ScopedContainerSelector
     : public GarbageCollected<ScopedContainerSelector> {
  public:
   ScopedContainerSelector(ContainerSelector selector,
