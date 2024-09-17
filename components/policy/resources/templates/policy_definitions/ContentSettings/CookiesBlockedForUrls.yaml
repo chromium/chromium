@@ -13,6 +13,8 @@ example_value:
 features:
   dynamic_refresh: true
   per_profile: true
+future_on:
+- fuchsia
 owners:
 - dullweber@google.com
 - file://components/content_settings/OWNERS

@@ -8,6 +8,8 @@ example_value: 2
 features:
   dynamic_refresh: true
   per_profile: true
+future_on:
+- fuchsia
 items:
 - caption: Do not allow any site to request access to Bluetooth devices via the Web
     Bluetooth API

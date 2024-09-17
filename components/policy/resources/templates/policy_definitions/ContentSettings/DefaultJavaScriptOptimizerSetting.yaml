@@ -23,6 +23,7 @@ future_on:
 - android
 - chrome.*
 - chrome_os
+- fuchsia
 items:
 - caption: Enable advanced JavaScript optimizations on all sites
   name: AllowJavaScriptOptimizer

@@ -20,6 +20,7 @@ supported_on:
 - android:124-
 future_on:
 - chrome_os
+- fuchsia
 items:
 - caption: Enable managed profile cloud reporting
   value: true

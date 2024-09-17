@@ -13,6 +13,8 @@ features:
   cloud_only: true
   dynamic_refresh: true
   per_profile: false
+future_on:
+- fuchsia
 items:
 - caption: Enable managed browser cloud reporting
   value: true

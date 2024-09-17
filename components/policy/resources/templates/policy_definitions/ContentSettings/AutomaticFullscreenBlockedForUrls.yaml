@@ -23,6 +23,8 @@ example_value:
 features:
   dynamic_refresh: true
   per_profile: true
+future_on:
+- fuchsia
 owners:
 - file://third_party/blink/renderer/core/fullscreen/OWNERS
 - msw@chromium.org

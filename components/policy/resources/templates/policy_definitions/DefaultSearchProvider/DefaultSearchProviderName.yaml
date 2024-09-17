@@ -8,6 +8,8 @@ features:
   can_be_recommended: true
   dynamic_refresh: true
   per_profile: true
+future_on:
+- fuchsia
 owners:
 - chrome-desktop-search@google.com
 - jdonnelly@google.com
