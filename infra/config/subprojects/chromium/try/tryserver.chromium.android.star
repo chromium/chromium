@@ -376,6 +376,10 @@ try_.builder(
     builderless = not settings.is_main,
     cores = "16|32",
     ssd = True,
+    experiments = {
+        # crbug.com/355218109
+        "chromium.use_per_builder_build_dir_name": 100,
+    },
     main_list_view = "try",
     properties = {
         "$build/binary_size": {
@@ -1283,6 +1287,8 @@ try_.builder(
     experiments = {
         # crbug/940930
         "chromium.enable_cleandead": 100,
+        # crbug.com/355218109
+        "chromium.use_per_builder_build_dir_name": 100,
     },
     main_list_view = "try",
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CQ,
