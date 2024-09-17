@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/safe_browsing/core/browser/safe_browsing_url_checker_impl.h"
+
 #include <memory>
 
 #include "base/containers/contains.h"
@@ -15,6 +16,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/timer/mock_timer.h"
+#include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "components/safe_browsing/core/browser/db/test_database_manager.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/browser/realtime/fake_url_lookup_service.h"
@@ -94,19 +96,17 @@ class MockSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
   // set by |SetAllowlistLookupDetailsForUrl|. It crashes if either of the
   // allowlist match result or the logging details are not set in advance for
   // the |gurl|.
-  std::optional<
-      SafeBrowsingDatabaseManager::HighConfidenceAllowlistCheckLoggingDetails>
-  CheckUrlForHighConfidenceAllowlist(
+  void CheckUrlForHighConfidenceAllowlist(
       const GURL& gurl,
-      base::OnceCallback<void(bool)> callback) override {
+      CheckUrlForHighConfidenceAllowlistCallback callback) override {
     std::string url = gurl.spec();
     DCHECK(base::Contains(urls_allowlist_match_, url));
     DCHECK(base::Contains(urls_allowlist_logging_details_, url));
 
     ui_task_runner()->PostTask(
         FROM_HERE,
-        base::BindOnce(std::move(callback), urls_allowlist_match_[url]));
-    return urls_allowlist_logging_details_[url];
+        base::BindOnce(std::move(callback), urls_allowlist_match_[url],
+                       urls_allowlist_logging_details_[url]));
   }
 
   // Helper functions.

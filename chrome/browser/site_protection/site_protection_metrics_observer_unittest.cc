@@ -38,12 +38,13 @@ class TestSafeBrowsingDatabaseManager : public MockSafeBrowsingDatabaseManager {
     url_on_high_confidence_allowlist_ = url;
   }
 
-  std::optional<HighConfidenceAllowlistCheckLoggingDetails>
-  CheckUrlForHighConfidenceAllowlist(
+  void CheckUrlForHighConfidenceAllowlist(
       const GURL& url,
-      base::OnceCallback<void(bool)> callback) override {
-    std::move(callback).Run((url == url_on_high_confidence_allowlist_));
-    return std::nullopt;
+      CheckUrlForHighConfidenceAllowlistCallback callback) override {
+    std::move(callback).Run(
+        /*url_on_high_confidence_allowlist=*/(
+            url == url_on_high_confidence_allowlist_),
+        /*logging_details=*/std::nullopt);
   }
 
  protected:

@@ -30,6 +30,7 @@
 #include "base/task/thread_pool.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safebrowsing_switches.h"
@@ -222,6 +223,17 @@ void HandleUrlCallback(base::OnceCallback<void(bool)> callback,
   // This callback was already run asynchronously so no need for another
   // thread hop.
   std::move(callback).Run(allowed);
+}
+
+void OnCheckForUrlHighConfidenceAllowlistComplete(
+    SafeBrowsingDatabaseManager::CheckUrlForHighConfidenceAllowlistCallback
+        callback,
+    std::optional<
+        SafeBrowsingDatabaseManager::HighConfidenceAllowlistCheckLoggingDetails>
+        logging_details,
+    bool url_on_high_confidence_allowlist) {
+  std::move(callback).Run(url_on_high_confidence_allowlist,
+                          std::move(logging_details));
 }
 
 }  // namespace
@@ -429,17 +441,17 @@ bool V4LocalDatabaseManager::CheckExtensionIDs(
   return false;
 }
 
-std::optional<
-    SafeBrowsingDatabaseManager::HighConfidenceAllowlistCheckLoggingDetails>
-V4LocalDatabaseManager::CheckUrlForHighConfidenceAllowlist(
+void V4LocalDatabaseManager::CheckUrlForHighConfidenceAllowlist(
     const GURL& url,
-    base::OnceCallback<void(bool)> callback) {
+    CheckUrlForHighConfidenceAllowlistCallback callback) {
   DCHECK(ui_task_runner()->RunsTasksInCurrentSequence());
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           kSkipHighConfidenceAllowlist)) {
-    ui_task_runner()->PostTask(FROM_HERE,
-                               base::BindOnce(std::move(callback), false));
-    return std::nullopt;
+    ui_task_runner()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback),
+                                  /*url_on_high_confidence_allowlist=*/false,
+                                  /*logging_details=*/std::nullopt));
+    return;
   }
 
   StoresToCheck stores_to_check({GetUrlHighConfidenceAllowlistId()});
@@ -449,8 +461,9 @@ V4LocalDatabaseManager::CheckUrlForHighConfidenceAllowlist(
   bool is_allowlist_too_small =
       IsStoreTooSmall(GetUrlHighConfidenceAllowlistId(), kBytesPerFullHashEntry,
                       kHighConfidenceAllowlistMinimumEntryCount);
-  auto logging_details = HighConfidenceAllowlistCheckLoggingDetails(
-      all_stores_available, is_allowlist_too_small);
+  HighConfidenceAllowlistCheckLoggingDetails logging_details;
+  logging_details.were_all_stores_available = all_stores_available;
+  logging_details.was_allowlist_size_too_small = is_allowlist_too_small;
   if (!IsDatabaseReady() ||
       (is_allowlist_too_small && is_artificial_prefix_empty) ||
       !CanCheckUrl(url) ||
@@ -460,18 +473,21 @@ V4LocalDatabaseManager::CheckUrlForHighConfidenceAllowlist(
     // is too small, return that there is a match. The full URL check won't be
     // performed, but hash-based check will still be done. If any artificial
     // matches are present, consider the allowlist as ready.
-    ui_task_runner()->PostTask(FROM_HERE,
-                               base::BindOnce(std::move(callback), true));
-    return logging_details;
+    ui_task_runner()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback),
+                                  /*url_on_high_confidence_allowlist=*/true,
+                                  std::move(logging_details)));
+    return;
   }
 
   std::unique_ptr<PendingCheck> check = std::make_unique<PendingCheck>(
       nullptr, ClientCallbackType::CHECK_OTHER, stores_to_check,
       std::vector<GURL>(1, url));
 
-  HandleAllowlistCheck(std::move(check), /*allow_async_full_hash_check=*/false,
-                       std::move(callback));
-  return logging_details;
+  HandleAllowlistCheck(
+      std::move(check), /*allow_async_full_hash_check=*/false,
+      base::BindOnce(&OnCheckForUrlHighConfidenceAllowlistComplete,
+                     std::move(callback), std::move(logging_details)));
 }
 
 bool V4LocalDatabaseManager::CheckUrlForSubresourceFilter(const GURL& url,
@@ -1232,12 +1248,5 @@ V4LocalDatabaseManager::CopyAndRemoveAllPendingChecks() {
   }
   return pending_checks;
 }
-
-V4LocalDatabaseManager::HighConfidenceAllowlistCheckLoggingDetails::
-    HighConfidenceAllowlistCheckLoggingDetails(
-        bool were_all_stores_available,
-        bool was_allowlist_size_too_small)
-    : were_all_stores_available(were_all_stores_available),
-      was_allowlist_size_too_small(was_allowlist_size_too_small) {}
 
 }  // namespace safe_browsing

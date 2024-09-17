@@ -35,7 +35,11 @@ class DatabaseManagerMechanism : public SafeBrowsingLookupMechanism,
   // Callback from the allowlist check. If |did_match_allowlist| is true, this
   // will skip the blocklist check. Should only be called if `check_allowlist_`
   // is true.
-  void OnCheckUrlForHighConfidenceAllowlist(bool did_match_allowlist);
+  void OnCheckUrlForHighConfidenceAllowlist(
+      bool did_match_allowlist,
+      std::optional<SafeBrowsingDatabaseManager::
+                        HighConfidenceAllowlistCheckLoggingDetails>
+          logging_details);
 
   // Calls |CheckBrowseUrl| on the database manager and sets
   // is_async_blocklist_check_in_progress_ if the check is asynchronous.

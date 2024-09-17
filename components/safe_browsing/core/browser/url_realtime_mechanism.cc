@@ -21,8 +21,19 @@ namespace {
 constexpr char kMatchResultHistogramName[] =
     "SafeBrowsing.RT.LocalMatch.Result";
 
-void RecordLocalMatchResult(bool has_match,
-                            std::string url_lookup_service_metric_suffix) {
+void RecordLocalMatchResult(
+    bool has_match,
+    std::optional<
+        SafeBrowsingDatabaseManager::HighConfidenceAllowlistCheckLoggingDetails>
+        logging_details,
+    std::string url_lookup_service_metric_suffix) {
+  if (logging_details) {
+    base::UmaHistogramBoolean("SafeBrowsing.RT.AllStoresAvailable",
+                              logging_details->were_all_stores_available);
+    base::UmaHistogramBoolean("SafeBrowsing.RT.AllowlistSizeTooSmall",
+                              logging_details->was_allowlist_size_too_small);
+  }
+
   AsyncMatch match_result =
       has_match ? AsyncMatch::MATCH : AsyncMatch::NO_MATCH;
   base::UmaHistogramEnumeration(kMatchResultHistogramName, match_result);
@@ -71,27 +82,18 @@ UrlRealTimeMechanism::StartCheckInternal() {
 
   bool check_allowlist = can_check_db_ && can_check_high_confidence_allowlist_;
   if (check_allowlist) {
-    std::optional<
-        SafeBrowsingDatabaseManager::HighConfidenceAllowlistCheckLoggingDetails>
-        logging_details = database_manager_->CheckUrlForHighConfidenceAllowlist(
-            url_,
-            base::BindOnce(
-                &UrlRealTimeMechanism::OnCheckUrlForHighConfidenceAllowlist,
-                weak_factory_.GetWeakPtr()));
-    if (logging_details.has_value()) {
-      base::UmaHistogramBoolean(
-          "SafeBrowsing.RT.AllStoresAvailable",
-          logging_details.value().were_all_stores_available);
-      base::UmaHistogramBoolean(
-          "SafeBrowsing.RT.AllowlistSizeTooSmall",
-          logging_details.value().was_allowlist_size_too_small);
-    }
+    database_manager_->CheckUrlForHighConfidenceAllowlist(
+        url_, base::BindOnce(
+                  &UrlRealTimeMechanism::OnCheckUrlForHighConfidenceAllowlist,
+                  weak_factory_.GetWeakPtr()));
   } else {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(
             &UrlRealTimeMechanism::OnCheckUrlForHighConfidenceAllowlist,
-            weak_factory_.GetWeakPtr(), /*did_match_allowlist=*/false));
+            weak_factory_.GetWeakPtr(),
+            /*url_on_high_confidence_allowlist=*/false,
+            /*logging_details=*/std::nullopt));
   }
 
   bool send_background_hprt_lookup = !!hash_realtime_lookup_mechanism_;
@@ -134,9 +136,12 @@ void UrlRealTimeMechanism::OnHashRealTimeCompleteCheckResultInternal(
 }
 
 void UrlRealTimeMechanism::OnCheckUrlForHighConfidenceAllowlist(
-    bool did_match_allowlist) {
+    bool did_match_allowlist,
+    std::optional<
+        SafeBrowsingDatabaseManager::HighConfidenceAllowlistCheckLoggingDetails>
+        logging_details) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  RecordLocalMatchResult(did_match_allowlist,
+  RecordLocalMatchResult(did_match_allowlist, std::move(logging_details),
                          url_lookup_service_metric_suffix_);
 
   if (did_match_allowlist) {

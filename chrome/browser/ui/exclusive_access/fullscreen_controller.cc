@@ -123,7 +123,10 @@ void CheckUrlForAllowlistAndRecordMetric(
       ->CheckUrlForHighConfidenceAllowlist(
           url,
           base::BindOnce(
-              [](history::HistoryLastVisitResult result, bool on_allowlist) {
+              [](history::HistoryLastVisitResult result, bool on_allowlist,
+                 std::optional<safe_browsing::SafeBrowsingDatabaseManager::
+                                   HighConfidenceAllowlistCheckLoggingDetails>
+                     logging_details) {
                 RecordWebsiteStateAtApiRequest(result, on_allowlist);
               },
               result));

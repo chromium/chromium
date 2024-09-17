@@ -50,7 +50,10 @@ DatabaseManagerMechanism::StartCheckInternal() {
 }
 
 void DatabaseManagerMechanism::OnCheckUrlForHighConfidenceAllowlist(
-    bool did_match_allowlist) {
+    bool did_match_allowlist,
+    std::optional<
+        SafeBrowsingDatabaseManager::HighConfidenceAllowlistCheckLoggingDetails>
+        logging_details) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(check_allowlist_);
 

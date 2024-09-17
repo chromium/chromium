@@ -216,18 +216,18 @@ class MockSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
   // Calls the callback with the allowlist match result previously set by
   // |SetAllowlistLookupDetailsForUrl|. Returns std::nullopt. It crashes if
   // the allowlist match result is not set in advance for the |gurl|.
-  std::optional<
-      SafeBrowsingDatabaseManager::HighConfidenceAllowlistCheckLoggingDetails>
-  CheckUrlForHighConfidenceAllowlist(
+  void CheckUrlForHighConfidenceAllowlist(
       const GURL& gurl,
-      base::OnceCallback<void(bool)> callback) override {
+      CheckUrlForHighConfidenceAllowlistCallback callback) override {
     std::string url = gurl.spec();
     DCHECK(base::Contains(urls_allowlist_match_, url));
 
     ui_task_runner()->PostTask(
         FROM_HERE,
-        base::BindOnce(std::move(callback), urls_allowlist_match_[url]));
-    return std::nullopt;
+        base::BindOnce(
+            std::move(callback),
+            /*url_on_high_confidence_allowlist=*/urls_allowlist_match_[url],
+            /*logging_details=*/std::nullopt));
   }
 
   void SetAllowlistLookupDetailsForUrl(const GURL& gurl, bool match) {

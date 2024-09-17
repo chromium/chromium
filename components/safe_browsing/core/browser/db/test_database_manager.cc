@@ -50,14 +50,13 @@ bool TestSafeBrowsingDatabaseManager::CheckExtensionIDs(
   return true;
 }
 
-std::optional<
-    SafeBrowsingDatabaseManager::HighConfidenceAllowlistCheckLoggingDetails>
-TestSafeBrowsingDatabaseManager::CheckUrlForHighConfidenceAllowlist(
+void TestSafeBrowsingDatabaseManager::CheckUrlForHighConfidenceAllowlist(
     const GURL& url,
-    base::OnceCallback<void(bool)> callback) {
+    CheckUrlForHighConfidenceAllowlistCallback callback) {
   NOTIMPLEMENTED();
-  std::move(callback).Run(false);
-  return std::nullopt;
+  std::move(callback).Run(
+      /*url_on_high_confidence_allowlist=*/false,
+      /*logging_details=*/std::nullopt);
 }
 
 bool TestSafeBrowsingDatabaseManager::CheckUrlForSubresourceFilter(

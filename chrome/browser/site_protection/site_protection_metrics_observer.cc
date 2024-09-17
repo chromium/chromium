@@ -211,12 +211,16 @@ void SiteProtectionMetricsObserver::OnKnowIfAnyVisitOlderThanADayAgo(
   }
 
   LogMetrics(std::move(metrics_data),
-             /* url_on_safe_browsing_high_confidence_allowlist=*/false);
+             /*url_on_safe_browsing_high_confidence_allowlist=*/false,
+             /*logging_details=*/std::nullopt);
 }
 
 void SiteProtectionMetricsObserver::LogMetrics(
     std::unique_ptr<MetricsData> metrics_data,
-    bool url_on_safe_browsing_high_confidence_allowlist) {
+    bool url_on_safe_browsing_high_confidence_allowlist,
+    std::optional<safe_browsing::SafeBrowsingDatabaseManager::
+                      HighConfidenceAllowlistCheckLoggingDetails>
+        logging_details) {
   if (url_on_safe_browsing_high_confidence_allowlist) {
     metrics_data->matched_heuristics.push_back(
         SiteFamiliarityHeuristicName::kGlobalAllowlistMatch);
