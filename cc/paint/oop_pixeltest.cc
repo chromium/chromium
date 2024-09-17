@@ -283,7 +283,7 @@ class OopPixelTest : public testing::Test,
       gpu::raster::RasterInterface* ri,
       gpu::SharedImageInterface* sii,
       const RasterOptions& options,
-      viz::SharedImageFormat image_format,
+      viz::SharedImageFormat format,
       std::optional<gfx::ColorSpace> color_space = std::nullopt) {
     // These SharedImages serve as both the source of reads and destination of
     // writes via the raster interface in these tests.
@@ -291,7 +291,7 @@ class OopPixelTest : public testing::Test,
                                      gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
                                      gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
     auto client_shared_image = sii->CreateSharedImage(
-        {image_format, options.resource_size,
+        {format, options.resource_size,
          color_space.value_or(options.target_color_params.color_space), flags,
          "TestLabel"},
         gpu::kNullSurfaceHandle);
@@ -308,6 +308,13 @@ class OopPixelTest : public testing::Test,
     ri->WritePixels(mailbox, /*dst_x_offset=*/0, /*dst_y_offset=*/0,
                     /*texture_target=*/0,
                     SkPixmap(info, bitmap.getPixels(), info.minRowBytes()));
+    EXPECT_EQ(ri->GetError(), static_cast<unsigned>(GL_NO_ERROR));
+  }
+
+  void UploadPixelsYUV(gpu::raster::RasterInterface* ri,
+                       const gpu::Mailbox& mailbox,
+                       const SkYUVAPixmaps& yuv_pixmap) {
+    ri->WritePixelsYUV(mailbox, yuv_pixmap);
     EXPECT_EQ(ri->GetError(), static_cast<unsigned>(GL_NO_ERROR));
   }
 
@@ -2523,27 +2530,14 @@ TEST_F(OopPixelTest, CopySharedImage) {
 
 // The Android emulator does not support RED_8 or RG_88 texture formats.
 #if !BUILDFLAG(IS_ANDROID_EMULATOR)
-using OopYUVToRGBConfig = ::testing::tuple<gfx::ColorSpace, bool>;
-
 class OopYUVToRGBPixelTest
     : public OopPixelTest,
-      public ::testing::WithParamInterface<OopYUVToRGBConfig> {
+      public ::testing::WithParamInterface<gfx::ColorSpace> {
  public:
-  bool TestColorSpaceConversion() const {
-    return ::testing::get<1>(GetParam());
-  }
-
-  gfx::ColorSpace DestinationColorSpace() const {
-    return ::testing::get<0>(GetParam());
-  }
+  gfx::ColorSpace DestinationColorSpace() const { return GetParam(); }
 };
 
-TEST_P(OopYUVToRGBPixelTest, ConvertYUVToRGB) {
-  // The source color space for the YUV image. If color space conversion is
-  // disabled, or if `dest_color_space` is invalid, then this will be ignored.
-  const gfx::ColorSpace source_color_space(gfx::ColorSpace::PrimaryID::P3,
-                                           gfx::ColorSpace::TransferID::SRGB);
-
+TEST_P(OopYUVToRGBPixelTest, CopyI420SharedImage) {
   // The output SharedImage color space.
   const gfx::ColorSpace dest_color_space = DestinationColorSpace();
 
@@ -2556,17 +2550,10 @@ TEST_P(OopYUVToRGBPixelTest, ConvertYUVToRGB) {
   auto dest_client_si = CreateClientSharedImage(
       ri, sii, options, viz::SinglePlaneFormat::kRGBA_8888, dest_color_space);
 
-  constexpr viz::SharedImageFormat format = viz::SinglePlaneFormat::kR_8;
-  scoped_refptr<gpu::ClientSharedImage> yuv_client_si[3]{
-      CreateClientSharedImage(ri, sii, options, format),
-      CreateClientSharedImage(ri, sii, uv_options, format),
-      CreateClientSharedImage(ri, sii, uv_options, format)};
+  scoped_refptr<gpu::ClientSharedImage> yuv_client_si =
+      CreateClientSharedImage(ri, sii, options, viz::MultiPlaneFormat::kI420);
 
-  gpu::Mailbox yuv_mailboxes[3]{
-      yuv_client_si[0]->mailbox(),
-      yuv_client_si[1]->mailbox(),
-      yuv_client_si[2]->mailbox(),
-  };
+  SkPixmap pixmaps[SkYUVAInfo::kMaxPlanes] = {};
 
   SkImageInfo y_info = SkImageInfo::Make(
       options.resource_size.width(), options.resource_size.height(),
@@ -2582,35 +2569,37 @@ TEST_P(OopYUVToRGBPixelTest, ConvertYUVToRGB) {
   SkBitmap y_bitmap;
   y_bitmap.allocPixels(y_info);
   memset(y_bitmap.getPixels(), 0x1d, y_bitmap.computeByteSize());
+  pixmaps[0] = SkPixmap(y_info, y_bitmap.getPixels(), y_info.minRowBytes());
 
   SkBitmap u_bitmap;
   u_bitmap.allocPixels(uv_info);
   memset(u_bitmap.getPixels(), 0xff, u_bitmap.computeByteSize());
+  pixmaps[1] = SkPixmap(uv_info, u_bitmap.getPixels(), uv_info.minRowBytes());
 
   SkBitmap v_bitmap;
   v_bitmap.allocPixels(uv_info);
   memset(v_bitmap.getPixels(), 0x6b, v_bitmap.computeByteSize());
+  pixmaps[2] = SkPixmap(uv_info, v_bitmap.getPixels(), uv_info.minRowBytes());
+
+  SkYUVColorSpace yuv_color_space = kIdentity_SkYUVColorSpace;
+  SkYUVAInfo yuv_info = SkYUVAInfo(
+      SizeToSkISize(options.resource_size), SkYUVAInfo::PlaneConfig::kY_U_V,
+      SkYUVAInfo::Subsampling::k420, yuv_color_space);
+  SkYUVAPixmaps yuv_pixmap =
+      SkYUVAPixmaps::FromExternalPixmaps(yuv_info, pixmaps);
 
   // Upload initial Y+U+V planes and convert to RGB.
-  UploadPixels(ri, yuv_client_si[0]->mailbox(), y_info, y_bitmap);
-  UploadPixels(ri, yuv_client_si[1]->mailbox(), uv_info, u_bitmap);
-  UploadPixels(ri, yuv_client_si[2]->mailbox(), uv_info, v_bitmap);
+  UploadPixelsYUV(ri, yuv_client_si->mailbox(), yuv_pixmap);
 
-  ri->ConvertYUVAMailboxesToRGB(
-      dest_client_si->mailbox(), 0, 0, options.resource_size.width(),
-      options.resource_size.height(), kJPEG_SkYUVColorSpace,
-      TestColorSpaceConversion() ? source_color_space.ToSkColorSpace().get()
-                                 : nullptr,
-      SkYUVAInfo::PlaneConfig::kY_U_V, SkYUVAInfo::Subsampling::k420,
-      yuv_mailboxes);
+  ri->CopySharedImage(yuv_client_si->mailbox(), dest_client_si->mailbox(),
+                      GL_TEXTURE_2D, 0, 0, 0, 0, options.resource_size.width(),
+                      options.resource_size.height(), GL_FALSE, GL_FALSE);
+
   SkBitmap actual_bitmap =
       ReadbackMailbox(ri, dest_client_si->mailbox(), options.resource_size,
                       dest_color_space.ToSkColorSpace());
 
-  SkColor expected_color =
-      (TestColorSpaceConversion() && dest_color_space.IsValid())
-          ? SkColorSetARGB(255, 61, 29, 252)
-          : SkColorSetARGB(255, 0, 0, 254);
+  SkColor expected_color = SkColorSetARGB(255, 0, 0, 254);
   SkBitmap expected_bitmap = MakeSolidColorBitmap(
       options.resource_size, SkColor4f::FromColor(expected_color));
 
@@ -2622,21 +2611,17 @@ TEST_P(OopYUVToRGBPixelTest, ConvertYUVToRGB) {
 
   gpu::SyncToken sync_token;
   sii->DestroySharedImage(sync_token, std::move(dest_client_si));
-  sii->DestroySharedImage(sync_token, std::move(yuv_client_si[0]));
-  sii->DestroySharedImage(sync_token, std::move(yuv_client_si[1]));
-  sii->DestroySharedImage(sync_token, std::move(yuv_client_si[2]));
+  sii->DestroySharedImage(sync_token, std::move(yuv_client_si));
 }
 
 INSTANTIATE_TEST_SUITE_P(
     P,
     OopYUVToRGBPixelTest,
-    ::testing::Combine(
-        ::testing::Values(gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT2020,
-                                          gfx::ColorSpace::TransferID::SRGB),
-                          gfx::ColorSpace()),
-        ::testing::Bool()));
+    ::testing::Values(gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT2020,
+                                      gfx::ColorSpace::TransferID::SRGB),
+                      gfx::ColorSpace()));
 
-TEST_F(OopPixelTest, ConvertNV12ToRGB) {
+TEST_F(OopPixelTest, CopyNV12SharedImage) {
   RasterOptions options(gfx::Size(16, 16));
   RasterOptions uv_options(gfx::Size(options.resource_size.width() / 2,
                                      options.resource_size.height() / 2));
@@ -2646,16 +2631,11 @@ TEST_F(OopPixelTest, ConvertNV12ToRGB) {
   scoped_refptr<gpu::ClientSharedImage> dest_client_si =
       CreateClientSharedImage(ri, sii, options,
                               viz::SinglePlaneFormat::kRGBA_8888);
-  scoped_refptr<gpu::ClientSharedImage> y_uv_client_si[2]{
-      CreateClientSharedImage(ri, sii, options, viz::SinglePlaneFormat::kR_8),
-      CreateClientSharedImage(ri, sii, uv_options,
-                              viz::SinglePlaneFormat::kRG_88),
-  };
+  scoped_refptr<gpu::ClientSharedImage> y_uv_client_si =
+      CreateClientSharedImage(ri, sii, options, viz::MultiPlaneFormat::kNV12,
+                              gfx::ColorSpace::CreateJpeg());
 
-  gpu::Mailbox y_uv_mailboxes[2]{
-      y_uv_client_si[0]->mailbox(),
-      y_uv_client_si[1]->mailbox(),
-  };
+  SkPixmap pixmaps[SkYUVAInfo::kMaxPlanes] = {};
 
   SkImageInfo y_info = SkImageInfo::Make(
       options.resource_size.width(), options.resource_size.height(),
@@ -2671,6 +2651,7 @@ TEST_F(OopPixelTest, ConvertNV12ToRGB) {
   SkBitmap y_bitmap;
   y_bitmap.allocPixels(y_info);
   memset(y_bitmap.getPixels(), 0x1d, y_bitmap.computeByteSize());
+  pixmaps[0] = SkPixmap(y_info, y_bitmap.getPixels(), y_info.minRowBytes());
 
   SkBitmap uv_bitmap;
   uv_bitmap.allocPixels(uv_info);
@@ -2679,16 +2660,22 @@ TEST_F(OopPixelTest, ConvertNV12ToRGB) {
     uv_pix[i] = 0xff;
     uv_pix[i + 1] = 0x6d;
   }
+  pixmaps[1] = SkPixmap(uv_info, uv_bitmap.getPixels(), uv_info.minRowBytes());
+
+  SkYUVColorSpace yuv_color_space = kJPEG_SkYUVColorSpace;
+  SkYUVAInfo yuv_info = SkYUVAInfo(
+      SizeToSkISize(options.resource_size), SkYUVAInfo::PlaneConfig::kY_UV,
+      SkYUVAInfo::Subsampling::k420, yuv_color_space);
+  SkYUVAPixmaps yuv_pixmap =
+      SkYUVAPixmaps::FromExternalPixmaps(yuv_info, pixmaps);
 
   // Upload initial Y+UV planes and convert to RGB.
-  UploadPixels(ri, y_uv_client_si[0]->mailbox(), y_info, y_bitmap);
-  UploadPixels(ri, y_uv_client_si[1]->mailbox(), uv_info, uv_bitmap);
+  UploadPixelsYUV(ri, y_uv_client_si->mailbox(), yuv_pixmap);
 
-  ri->ConvertYUVAMailboxesToRGB(
-      dest_client_si->mailbox(), 0, 0, options.resource_size.width(),
-      options.resource_size.height(), kJPEG_SkYUVColorSpace,
-      SkColorSpace::MakeSRGB().get(), SkYUVAInfo::PlaneConfig::kY_UV,
-      SkYUVAInfo::Subsampling::k420, y_uv_mailboxes);
+  ri->CopySharedImage(y_uv_client_si->mailbox(), dest_client_si->mailbox(),
+                      GL_TEXTURE_2D, 0, 0, 0, 0, options.resource_size.width(),
+                      options.resource_size.height(), GL_FALSE, GL_FALSE);
+
   SkBitmap actual_bitmap =
       ReadbackMailbox(ri, dest_client_si->mailbox(), options.resource_size);
 
@@ -2700,8 +2687,7 @@ TEST_F(OopPixelTest, ConvertNV12ToRGB) {
 
   gpu::SyncToken sync_token;
   sii->DestroySharedImage(sync_token, std::move(dest_client_si));
-  sii->DestroySharedImage(sync_token, std::move(y_uv_client_si[0]));
-  sii->DestroySharedImage(sync_token, std::move(y_uv_client_si[1]));
+  sii->DestroySharedImage(sync_token, std::move(y_uv_client_si));
 }
 #endif  // !BUILDFLAG(IS_ANDROID_EMULATOR)
 
