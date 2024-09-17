@@ -100,7 +100,6 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-04-01">
   <owner>amoylan@chromium.org</owner>
   <owner>alanlxl@chromium.org</owner>
-  <owner>charleszhao@chromium.org</owner>
   <summary>
     The result of load handwriting model, which can be OK or some specific
     error. The error code could be logged in machine learning service in chrome
@@ -112,7 +111,6 @@ chromium-metrics-reviews@google.com.
     enum="Boolean" expires_after="2025-03-02">
   <owner>amoylan@chromium.org</owner>
   <owner>alanlxl@chromium.org</owner>
-  <owner>charleszhao@chromium.org</owner>
   <summary>
     The result of handwriting recognition, which can be OK or some specific
     error.
@@ -300,7 +298,6 @@ chromium-metrics-reviews@google.com.
     enum="Boolean" expires_after="2025-03-01">
   <owner>amoylan@chromium.org</owner>
   <owner>alanlxl@chromium.org</owner>
-  <owner>charleszhao@chromium.org</owner>
   <summary>
     The result of Web platform handwriting recognition, which can be either OK
     or Error.
@@ -313,7 +310,6 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-03-09">
   <owner>amoylan@chromium.org</owner>
   <owner>alanlxl@chromium.org</owner>
-  <owner>charleszhao@chromium.org</owner>
   <summary>
     The result of load web platform handwriting model, which can be OK or some
     specific error. The error code could be logged in machine learning service
