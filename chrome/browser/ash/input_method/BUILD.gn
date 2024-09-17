@@ -199,7 +199,6 @@ static_library("input_method") {
     "//chrome/browser/ash/file_manager",
     "//chrome/browser/ash/input_method/japanese",
     "//chrome/browser/ash/login/demo_mode",
-    "//chrome/browser/ash/login/session",
     "//chrome/browser/ash/magic_boost",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/feedback",
