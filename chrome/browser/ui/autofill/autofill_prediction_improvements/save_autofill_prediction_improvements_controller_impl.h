@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_controller_base.h"
 #include "chrome/browser/ui/autofill/autofill_prediction_improvements/save_autofill_prediction_improvements_controller.h"
@@ -32,7 +33,8 @@ class SaveAutofillPredictionImprovementsControllerImpl
 
   // SaveAutofillPredictionImprovementsController:
   void OfferSave(std::vector<optimization_guide::proto::UserAnnotationsEntry>
-                     prediction_improvements) override;
+                     prediction_improvements,
+                 PromptAcceptanceCallback prompt_acceptance_callback) override;
   void OnSaveButtonClicked() override;
   const std::vector<optimization_guide::proto::UserAnnotationsEntry>&
   GetPredictionImprovements() const override;
@@ -61,6 +63,10 @@ class SaveAutofillPredictionImprovementsControllerImpl
   // to save.
   std::vector<optimization_guide::proto::UserAnnotationsEntry>
       prediction_improvements_;
+
+  // Callback to notify the data provider about the user decision for the save
+  // prompt.
+  PromptAcceptanceCallback prompt_acceptance_callback_ = base::NullCallback();
 
   // Weak pointer factory for this save prediction improvements bubble
   // controller.

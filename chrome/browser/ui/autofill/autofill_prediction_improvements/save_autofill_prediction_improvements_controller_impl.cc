@@ -42,22 +42,31 @@ SaveAutofillPredictionImprovementsController::GetOrCreate(
 
 void SaveAutofillPredictionImprovementsControllerImpl::OfferSave(
     std::vector<optimization_guide::proto::UserAnnotationsEntry>
-        new_prediction_improvements) {
+        new_prediction_improvements,
+    PromptAcceptanceCallback prompt_acceptance_callback) {
   // Don't show the bubble if it's already visible.
   if (bubble_view()) {
     return;
   }
   prediction_improvements_ = std::move(new_prediction_improvements);
+  prompt_acceptance_callback_ = std::move(prompt_acceptance_callback);
   DoShowBubble();
 }
 
-void SaveAutofillPredictionImprovementsControllerImpl::OnSaveButtonClicked() {}
+void SaveAutofillPredictionImprovementsControllerImpl::OnSaveButtonClicked() {
+  OnBubbleClosed(PredictionImprovementsBubbleClosedReason::kAccepted);
+}
 
 void SaveAutofillPredictionImprovementsControllerImpl::OnBubbleClosed(
     SaveAutofillPredictionImprovementsController::
         PredictionImprovementsBubbleClosedReason closed_reason) {
   set_bubble_view(nullptr);
   UpdatePageActionIcon();
+  if (!prompt_acceptance_callback_.is_null()) {
+    std::move(prompt_acceptance_callback_)
+        .Run(/*prompt_was_accepted=*/closed_reason ==
+             PredictionImprovementsBubbleClosedReason::kAccepted);
+  }
 }
 
 PageActionIconType

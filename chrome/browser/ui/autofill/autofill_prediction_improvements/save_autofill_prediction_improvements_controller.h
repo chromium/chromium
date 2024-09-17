@@ -20,6 +20,10 @@ namespace autofill {
 // improvements bubble.
 class SaveAutofillPredictionImprovementsController {
  public:
+  // Callback to notify the data provider (`UserAnnotationsService`) about the
+  // user decision for the save prompt.
+  using PromptAcceptanceCallback =
+      base::OnceCallback<void(bool prompt_was_accepted)>;
   enum class PredictionImprovementsBubbleClosedReason {
     // Bubble closed reason not specified.
     kUnknown,
@@ -49,7 +53,8 @@ class SaveAutofillPredictionImprovementsController {
   // decline.
   virtual void OfferSave(
       std::vector<optimization_guide::proto::UserAnnotationsEntry>
-          prediction_improvements) = 0;
+          prediction_improvements,
+      PromptAcceptanceCallback prompt_acceptance_callback) = 0;
 
   // Called when the user accepts to save prediction improvements.
   virtual void OnSaveButtonClicked() = 0;

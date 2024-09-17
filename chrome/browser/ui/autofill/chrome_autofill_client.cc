@@ -790,18 +790,14 @@ void ChromeAutofillClient::NotifyAutofillManualFallbackUsed() {
 void ChromeAutofillClient::ShowSaveAutofillPredictionImprovementsBubble(
     const std::vector<optimization_guide::proto::UserAnnotationsEntry>&
         to_be_upserted_entries,
-    base::OnceCallback<void(bool prompt_was_accepted)>
+    SaveAutofillPredictionImprovementsController::PromptAcceptanceCallback
         prompt_acceptance_callback) {
 #if !BUILDFLAG(IS_ANDROID)
   if (SaveAutofillPredictionImprovementsController* controller =
           SaveAutofillPredictionImprovementsController::GetOrCreate(
               web_contents())) {
-    controller->OfferSave(std::move(to_be_upserted_entries));
-    // TODO(crbug.com/366183828): Remove the line below (to not accept the
-    // prompt by default) and pass `prompt_acceptance_callback` to the
-    // `OfferSave()` call above instead. Run `prompt_acceptance_callback` in the
-    // `SaveAutofillPredictionImprovementsController` appropriately.
-    std::move(prompt_acceptance_callback).Run(/*prompt_was_accepted=*/true);
+    controller->OfferSave(std::move(to_be_upserted_entries),
+                          std::move(prompt_acceptance_callback));
     return;
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
