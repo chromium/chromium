@@ -99,6 +99,32 @@ void ShowSettings(Browser* browser) {
   chrome::ShowSettingsSubPageInTabbedBrowser(browser, std::string());
 }
 
+// Intercepts requests and makes them 302 to the 'redirect' query parameter
+// if it's set. If the 'popin-policy' query parameter is set, it sets the
+// 'Popin-Policy' response header to that value.
+std::unique_ptr<net::test_server::HttpResponse> PopinRequestHandler(
+    const net::test_server::HttpRequest& request) {
+  auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+  response->set_content_type("text/html");
+  response->set_content("<html></html");
+  net::test_server::RequestQuery query =
+      net::test_server::ParseQuery(request.GetURL());
+  if (query.find("redirect") != query.end()) {
+    response->AddCustomHeader("Location", query["redirect"][0]);
+    response->set_code(net::HTTP_FOUND);
+  } else {
+    response->set_code(net::HTTP_OK);
+  }
+  if (query.find("popin_policy") != query.end()) {
+    std::string proposed_policy = query["popin_policy"][0];
+    // We need to fixup the dynamic port so that the policies can match.
+    base::ReplaceSubstringsAfterOffset(&proposed_policy, 0, "a.test",
+                                       "a.test:" + request.GetURL().port());
+    response->AddCustomHeader("Popin-Policy", "partitioned=" + proposed_policy);
+  }
+  return response;
+}
+
 }  // namespace
 
 BrowserNavigatorTest::BrowserNavigatorTest() {
@@ -2165,6 +2191,8 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, Popin) {
   // Setup server.
   embedded_https_test_server().SetSSLConfig(
       net::EmbeddedTestServer::CERT_TEST_NAMES);
+  embedded_https_test_server().RegisterRequestHandler(
+      base::BindRepeating(&PopinRequestHandler));
   ASSERT_TRUE(embedded_https_test_server().Start());
 
   // Navigate to a.test.
@@ -2176,8 +2204,9 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, Popin) {
 
   // Open popin and verify it's visible.
   content::WebContentsAddedObserver new_tab_observer;
-  EXPECT_TRUE(content::ExecJs(tab_web_contents, "window.open('" + url.spec() +
-                                                    "', '_blank', 'popin')"));
+  EXPECT_TRUE(content::ExecJs(
+      tab_web_contents,
+      "window.open('" + url.spec() + "?popin_policy=*', '_blank', 'popin')"));
   content::WebContents* popin_web_contents = new_tab_observer.GetWebContents();
   BrowserWindow* popin_browser_window =
       BrowserWindow::FindBrowserWindowWithWebContents(popin_web_contents);
@@ -2198,6 +2227,8 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, PopinContext) {
   // Setup servers.
   embedded_https_test_server().SetSSLConfig(
       net::EmbeddedTestServer::CERT_TEST_NAMES);
+  embedded_https_test_server().RegisterRequestHandler(
+      base::BindRepeating(&PopinRequestHandler));
   ASSERT_TRUE(embedded_https_test_server().Start());
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -2211,33 +2242,33 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, PopinContext) {
 
   // Insecure context and insecure popin fails.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), insecure_url));
-  auto result =
-      content::ExecJs(tab_web_contents, "window.open('" + insecure_url.spec() +
-                                            "', '_blank', 'popin')");
+  auto result = content::ExecJs(tab_web_contents,
+                                "window.open('" + insecure_url.spec() +
+                                    "?popin_policy=*', '_blank', 'popin')");
   EXPECT_TRUE(strstr(result.message(),
                      "Partitioned popins must be opened from https URLs."));
 
   // Secure context and insecure popin fails.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), secure_url));
-  result =
-      content::ExecJs(tab_web_contents, "window.open('" + insecure_url.spec() +
-                                            "', '_blank', 'popin')");
+  result = content::ExecJs(tab_web_contents,
+                           "window.open('" + insecure_url.spec() +
+                               "?popin_policy=*', '_blank', 'popin')");
   EXPECT_TRUE(
       strstr(result.message(), "Partitioned popins can only open https URLs."));
 
   // Insecure context and secure popin fails.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), insecure_url));
-  result =
-      content::ExecJs(tab_web_contents, "window.open('" + secure_url.spec() +
-                                            "', '_blank', 'popin')");
+  result = content::ExecJs(tab_web_contents,
+                           "window.open('" + secure_url.spec() +
+                               "?popin_policy=*', '_blank', 'popin')");
   EXPECT_TRUE(strstr(result.message(),
                      "Partitioned popins must be opened from https URLs."));
 
   // Secure context and secure popin succeeds.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), secure_url));
-  EXPECT_TRUE(content::ExecJs(
-      tab_web_contents,
-      "window.open('" + secure_url.spec() + "', '_blank', 'popin')"));
+  EXPECT_TRUE(content::ExecJs(tab_web_contents,
+                              "window.open('" + secure_url.spec() +
+                                  "?popin_policy=*', '_blank', 'popin')"));
 }
 
 // Test that a popin cannot be opened from a popin
@@ -2245,6 +2276,8 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, PopinRecursion) {
   // Setup server.
   embedded_https_test_server().SetSSLConfig(
       net::EmbeddedTestServer::CERT_TEST_NAMES);
+  embedded_https_test_server().RegisterRequestHandler(
+      base::BindRepeating(&PopinRequestHandler));
   ASSERT_TRUE(embedded_https_test_server().Start());
 
   // Navigate to a.test.
@@ -2255,8 +2288,9 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, PopinRecursion) {
 
   // Open popin and verify it's visible.
   content::WebContentsAddedObserver new_tab_observer;
-  EXPECT_TRUE(content::ExecJs(tab_web_contents, "window.open('" + url.spec() +
-                                                    "', '_blank', 'popin')"));
+  EXPECT_TRUE(content::ExecJs(
+      tab_web_contents,
+      "window.open('" + url.spec() + "?popin_policy=*', '_blank', 'popin')"));
   content::WebContents* popin_web_contents = new_tab_observer.GetWebContents();
   BrowserWindow* popin_browser_window =
       BrowserWindow::FindBrowserWindowWithWebContents(popin_web_contents);
@@ -2264,9 +2298,9 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, PopinRecursion) {
   EXPECT_TRUE(popin_browser_window->IsVisible());
 
   // Opening a popin from a popin fails.
-  const auto& result =
-      content::ExecJs(popin_web_contents,
-                      "window.open('" + url.spec() + "', '_blank', 'popin')");
+  const auto& result = content::ExecJs(
+      popin_web_contents,
+      "window.open('" + url.spec() + "?popin_policy=*', '_blank', 'popin')");
   EXPECT_TRUE(strstr(result.message(),
                      "Partitioned popins cannot open their own popin."));
 }
@@ -2276,6 +2310,8 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, PopinLimit) {
   // Setup server.
   embedded_https_test_server().SetSSLConfig(
       net::EmbeddedTestServer::CERT_TEST_NAMES);
+  embedded_https_test_server().RegisterRequestHandler(
+      base::BindRepeating(&PopinRequestHandler));
   ASSERT_TRUE(embedded_https_test_server().Start());
 
   // Navigate to a.test.
@@ -2288,8 +2324,9 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, PopinLimit) {
   content::WebContents* popin_web_contents;
   {
     content::WebContentsAddedObserver new_tab_observer;
-    EXPECT_TRUE(content::ExecJs(tab_web_contents, "window.open('" + url.spec() +
-                                                      "', '_blank', 'popin')"));
+    EXPECT_TRUE(content::ExecJs(
+        tab_web_contents,
+        "window.open('" + url.spec() + "?popin_policy=*', '_blank', 'popin')"));
     popin_web_contents = new_tab_observer.GetWebContents();
     EXPECT_TRUE(popin_web_contents);
   }
@@ -2299,16 +2336,18 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, PopinLimit) {
   console_observer.SetPattern(
       "Only one partitioned popin can be active at a time.");
   EXPECT_FALSE(
-      content::EvalJs(tab_web_contents, "window.open('" + url.spec() +
-                                            "', '_blank', 'popin') != null")
+      content::EvalJs(tab_web_contents,
+                      "window.open('" + url.spec() +
+                          "?popin_policy=*', '_blank', 'popin') != null")
           .ExtractBool());
   ASSERT_TRUE(console_observer.Wait());
 
   // Close first popin and verify second can be opened.
   BrowserWindow::FindBrowserWindowWithWebContents(popin_web_contents)->Close();
   EXPECT_TRUE(
-      content::EvalJs(tab_web_contents, "window.open('" + url.spec() +
-                                            "', '_blank', 'popin') != null")
+      content::EvalJs(tab_web_contents,
+                      "window.open('" + url.spec() +
+                          "?popin_policy=*', '_blank', 'popin') != null")
           .ExtractBool());
 }
 
@@ -2317,7 +2356,11 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, PopinHttpNavigation) {
   // Setup servers.
   embedded_https_test_server().SetSSLConfig(
       net::EmbeddedTestServer::CERT_TEST_NAMES);
+  embedded_https_test_server().RegisterRequestHandler(
+      base::BindRepeating(&PopinRequestHandler));
   ASSERT_TRUE(embedded_https_test_server().Start());
+  embedded_test_server()->RegisterRequestHandler(
+      base::BindRepeating(&PopinRequestHandler));
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // Navigate to a.test.
@@ -2331,9 +2374,9 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, PopinHttpNavigation) {
 
   // Open popin and verify it's visible.
   content::WebContentsAddedObserver new_tab_observer;
-  EXPECT_TRUE(content::ExecJs(
-      tab_web_contents,
-      "window.open('" + secure_url.spec() + "', '_blank', 'popin')"));
+  EXPECT_TRUE(content::ExecJs(tab_web_contents,
+                              "window.open('" + secure_url.spec() +
+                                  "?popin_policy=*', '_blank', 'popin')"));
   content::WebContents* popin_web_contents = new_tab_observer.GetWebContents();
   BrowserWindow* popin_browser_window =
       BrowserWindow::FindBrowserWindowWithWebContents(popin_web_contents);
@@ -2343,37 +2386,12 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, PopinHttpNavigation) {
   // Navigating to HTTP page fails.
   content::TestNavigationObserver nav_observer(popin_web_contents);
   EXPECT_TRUE(content::ExecJs(
-      popin_web_contents, "window.location = '" + insecure_url.spec() + "';"));
+      popin_web_contents,
+      "window.location = '" + insecure_url.spec() + "?popin_policy=*';"));
   nav_observer.Wait();
   EXPECT_EQ("chrome-error://chromewebdata/",
             content::EvalJs(popin_web_contents, "window.location.href")
                 .ExtractString());
-}
-
-// Intercepts requests and makes them 302 to the 'redirect' query parameter
-// if it's set. If the 'popin-policy' query parameter is set, it sets the
-// 'Popin-Policy' response header to that value.
-std::unique_ptr<net::test_server::HttpResponse> PopinRequestHandler(
-    const net::test_server::HttpRequest& request) {
-  auto response = std::make_unique<net::test_server::BasicHttpResponse>();
-  response->set_content_type("text/html");
-  response->set_content("<html></html");
-  net::test_server::RequestQuery query =
-      net::test_server::ParseQuery(request.GetURL());
-  if (query.find("redirect") != query.end()) {
-    response->AddCustomHeader("Location", query["redirect"][0]);
-    response->set_code(net::HTTP_FOUND);
-  } else {
-    response->set_code(net::HTTP_OK);
-  }
-  if (query.find("popin_policy") != query.end()) {
-    std::string proposed_policy = query["popin_policy"][0];
-    // We need to fixup the dynamic port so that the policies can match.
-    base::ReplaceSubstringsAfterOffset(&proposed_policy, 0, "a.test",
-                                       "a.test:" + request.GetURL().port());
-    response->AddCustomHeader("Popin-Policy", "partitioned=" + proposed_policy);
-  }
-  return response;
 }
 
 struct PopinPolicyTestParams {
@@ -2444,7 +2462,7 @@ INSTANTIATE_TEST_SUITE_P(
             {
                 "unset policy",
                 "/empty.html?redirect=",
-                /*policy_allows*/ true,
+                /*policy_allows*/ false,
             },
             {
                 "wildcard policy",
@@ -2477,7 +2495,7 @@ INSTANTIATE_TEST_SUITE_P(
             {
                 "unset policy",
                 "/empty.html",
-                /*policy_allows*/ true,
+                /*policy_allows*/ false,
             },
             {
                 "wildcard policy",
@@ -2528,9 +2546,9 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, PopinHttpRedirectNavigation) {
 
   // Open popin and verify it's visible.
   content::WebContentsAddedObserver new_tab_observer;
-  EXPECT_TRUE(content::ExecJs(
-      tab_web_contents,
-      "window.open('" + secure_url.spec() + "', '_blank', 'popin')"));
+  EXPECT_TRUE(content::ExecJs(tab_web_contents,
+                              "window.open('" + secure_url.spec() +
+                                  "?popin_policy=*', '_blank', 'popin')"));
   content::WebContents* popin_web_contents = new_tab_observer.GetWebContents();
   BrowserWindow* popin_browser_window =
       BrowserWindow::FindBrowserWindowWithWebContents(popin_web_contents);
@@ -2539,9 +2557,10 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, PopinHttpRedirectNavigation) {
 
   // Navigating to HTTPS page that redirects to HTTP which fails.
   content::TestNavigationObserver nav_observer(popin_web_contents);
-  EXPECT_TRUE(content::ExecJs(popin_web_contents,
-                              "window.location = '" + secure_url.spec() +
-                                  "?redirect=" + insecure_url.spec() + "';"));
+  EXPECT_TRUE(content::ExecJs(
+      popin_web_contents,
+      "window.location = '" + secure_url.spec() +
+          "?popin_policy=*&redirect=" + insecure_url.spec() + "';"));
   nav_observer.Wait();
   EXPECT_EQ("chrome-error://chromewebdata/",
             content::EvalJs(popin_web_contents, "window.location.href")
@@ -2559,7 +2578,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
 
   // Navigate to a.test.
   const GURL url_a = embedded_https_test_server().GetURL(
-      "a.test", "/iframe_allow_popins.html");
+      "a.test", "/partitioned_popins/iframe_allow_popins.html");
   content::WebContents* tab_web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_a));

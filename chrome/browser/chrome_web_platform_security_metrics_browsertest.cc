@@ -2096,7 +2096,8 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
                        WindowProxyAccessFromOtherPartitionedPopin) {
-  GURL url = https_server().GetURL("a.com", "/empty.html");
+  GURL url = https_server().GetURL("a.com",
+                                   "/partitioned_popins/wildcard_policy.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   struct TestCase {
@@ -2200,7 +2201,8 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
 
   // Check that cross-origin access does register use counters.
   BrowserWindow::FindBrowserWindowWithWebContents(same_origin_popin)->Close();
-  GURL cross_origin_url = https_server().GetURL("b.test", "/empty.html");
+  GURL cross_origin_url = https_server().GetURL(
+      "b.test", "/partitioned_popins/wildcard_policy.html");
   content::WebContents* cross_origin_popin =
       OpenPopup(cross_origin_url, /*is_popin=*/true);
   for (auto test : cases) {

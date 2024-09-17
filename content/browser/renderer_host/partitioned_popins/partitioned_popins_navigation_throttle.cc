@@ -86,12 +86,9 @@ bool PartitionedPopinsNavigationThrottle::DoesPopinPolicyBlockResponse() {
       navigation_handle()->GetResponseHeaders();
   const WebContentsImpl* web_contents =
       static_cast<WebContentsImpl*>(navigation_handle()->GetWebContents());
-  // TODO(crbug.com/340606651): This should default closed, but for now we
-  // default open so that we can split the core logic changes from having to
-  // fix a bunch of existing tests.
   if (!web_contents || !response_headers ||
       !response_headers->HasHeader("Popin-Policy")) {
-    return false;
+    return true;
   }
   std::string untrusted_popin_policy;
   response_headers->GetNormalizedHeader("Popin-Policy",
