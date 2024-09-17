@@ -75,6 +75,14 @@ BASE_FEATURE(kPlusAddressFallbackFromContextMenu,
              "PlusAddressFallbackFromContextMenu",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, if the user has an existing plus address for the current
+// domain, address profile suggestions will be updated to reflect the plus
+// address email instead of the stored one. Note that only profile emails
+// matching the user's GAIA account will be replaced.
+BASE_FEATURE(kPlusAddressFullFormFill,
+             "PlusAddressFullFormFill",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, the `PlusAddressSettingService` will be consulted on whether
 // to offer plus address creation.
 BASE_FEATURE(kPlusAddressGlobalToggle,
