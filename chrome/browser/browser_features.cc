@@ -77,7 +77,7 @@ BASE_FEATURE(kClosedTabCache,
 // disabled without losing data.
 BASE_FEATURE(kDbusSecretPortal,
              "DbusSecretPortal",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_LINUX)
 
 // Destroy profiles when their last browser window is closed, instead of when
