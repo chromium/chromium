@@ -4008,7 +4008,9 @@ class TestResolveHostClient : public ResolveHostClientBase {
   const raw_ptr<base::RunLoop> run_loop_;
 };
 
-TEST_F(NetworkContextTest, ResolveHost_Sync) {
+using NetworkContextResolveHostTest = NetworkContextTest;
+
+TEST_F(NetworkContextResolveHostTest, Sync) {
   auto resolver = std::make_unique<net::MockHostResolver>();
   resolver->rules()->AddRule("sync.test", "1.2.3.4");
   resolver->set_synchronous_mode(true);
@@ -4043,7 +4045,7 @@ TEST_F(NetworkContextTest, ResolveHost_Sync) {
             network_context->GetNumOutstandingResolveHostRequestsForTesting());
 }
 
-TEST_F(NetworkContextTest, ResolveHost_Async) {
+TEST_F(NetworkContextResolveHostTest, Async) {
   auto resolver = std::make_unique<net::MockHostResolver>();
   resolver->rules()->AddRule("async.test", "1.2.3.4");
   resolver->set_synchronous_mode(false);
@@ -4083,7 +4085,7 @@ TEST_F(NetworkContextTest, ResolveHost_Async) {
             network_context->GetNumOutstandingResolveHostRequestsForTesting());
 }
 
-TEST_F(NetworkContextTest, ResolveHost_Failure_Sync) {
+TEST_F(NetworkContextResolveHostTest, FailureSync) {
   auto resolver = std::make_unique<net::MockHostResolver>();
   resolver->rules()->AddSimulatedTimeoutFailure("example.com");
   resolver->set_synchronous_mode(true);
@@ -4116,7 +4118,7 @@ TEST_F(NetworkContextTest, ResolveHost_Failure_Sync) {
             network_context->GetNumOutstandingResolveHostRequestsForTesting());
 }
 
-TEST_F(NetworkContextTest, ResolveHost_Failure_Async) {
+TEST_F(NetworkContextResolveHostTest, FailureAsync) {
   auto resolver = std::make_unique<net::MockHostResolver>();
   resolver->rules()->AddSimulatedTimeoutFailure("example.com");
   resolver->set_synchronous_mode(false);
@@ -4155,7 +4157,7 @@ TEST_F(NetworkContextTest, ResolveHost_Failure_Async) {
             network_context->GetNumOutstandingResolveHostRequestsForTesting());
 }
 
-TEST_F(NetworkContextTest, ResolveHost_NetworkAnonymizationKey) {
+TEST_F(NetworkContextResolveHostTest, NetworkAnonymizationKey) {
   const net::SchemefulSite kSite =
       net::SchemefulSite(GURL("https://foo.test/"));
   const auto kNetworkAnonymizationKey =
@@ -4197,8 +4199,8 @@ TEST_F(NetworkContextTest, ResolveHost_NetworkAnonymizationKey) {
 
 // Revoke fenced frame network but the resolve request is without the
 // NetworkAnonymizationKey. The request should succeed.
-TEST_F(NetworkContextTest,
-       ResolveSchemeHostPort_RevokeNetwork_WithoutNetworkAnonymizationKey) {
+TEST_F(NetworkContextResolveHostTest,
+       SchemeHostPortRevokeNetworkWithoutNetworkAnonymizationKey) {
   const GURL url = GURL("https://sync.test");
   auto resolver = std::make_unique<net::MockHostResolver>();
   resolver->rules()->AddRule(url.host(), "1.2.3.4");
@@ -4247,8 +4249,8 @@ TEST_F(NetworkContextTest,
 
 // Revoke fenced frame network and the resolve request is with the
 // NetworkAnonymizationKey. The request should be disabled.
-TEST_F(NetworkContextTest,
-       ResolveSchemeHostPort_RevokeNetwork_WithNetworkAnonymizationKey) {
+TEST_F(NetworkContextResolveHostTest,
+       SchemeHostPortRevokeNetworkWithNetworkAnonymizationKey) {
   const GURL url = GURL("https://sync.test");
   auto resolver = std::make_unique<net::MockHostResolver>();
   resolver->rules()->AddRule(url.host(), "1.2.3.4");
@@ -4301,8 +4303,8 @@ TEST_F(NetworkContextTest,
 
 // Revoke fenced frame network but the resolve request is without the
 // NetworkAnonymizationKey. The request should succeed.
-TEST_F(NetworkContextTest,
-       ResolveHostPortPair_RevokeNetwork_WithoutNetworkAnonymizationKey) {
+TEST_F(NetworkContextResolveHostTest,
+       HostPortPairRevokeNetworkWithoutNetworkAnonymizationKey) {
   auto resolver = std::make_unique<net::MockHostResolver>();
   resolver->rules()->AddRule("nik.test", "1.2.3.4");
   resolver->set_synchronous_mode(true);
@@ -4351,8 +4353,8 @@ TEST_F(NetworkContextTest,
 
 // Revoke fenced frame network and the resolve request is with the
 // NetworkAnonymizationKey. The request should be disabled.
-TEST_F(NetworkContextTest,
-       ResolveHostPortPair_RevokeNetwork_WithNetworkAnonymizationKey) {
+TEST_F(NetworkContextResolveHostTest,
+       HostPortPairRevokeNetworkWithNetworkAnonymizationKey) {
   auto resolver = std::make_unique<net::MockHostResolver>();
   resolver->rules()->AddRule("nik.test", "1.2.3.4");
   resolver->set_synchronous_mode(true);
@@ -4403,7 +4405,7 @@ TEST_F(NetworkContextTest,
             network_context->GetNumOutstandingResolveHostRequestsForTesting());
 }
 
-TEST_F(NetworkContextTest, ResolveHost_NoControlHandle) {
+TEST_F(NetworkContextResolveHostTest, NoControlHandle) {
   std::unique_ptr<NetworkContext> network_context =
       CreateContextWithParams(CreateNetworkContextParamsForTesting());
 
@@ -4429,7 +4431,7 @@ TEST_F(NetworkContextTest, ResolveHost_NoControlHandle) {
             network_context->GetNumOutstandingResolveHostRequestsForTesting());
 }
 
-TEST_F(NetworkContextTest, ResolveHost_CloseControlHandle) {
+TEST_F(NetworkContextResolveHostTest, CloseControlHandle) {
   std::unique_ptr<NetworkContext> network_context =
       CreateContextWithParams(CreateNetworkContextParamsForTesting());
 
@@ -4461,7 +4463,7 @@ TEST_F(NetworkContextTest, ResolveHost_CloseControlHandle) {
             network_context->GetNumOutstandingResolveHostRequestsForTesting());
 }
 
-TEST_F(NetworkContextTest, ResolveHost_Cancellation) {
+TEST_F(NetworkContextResolveHostTest, Cancellation) {
   // Override the HostResolver with a hanging one, so the test can ensure the
   // request won't be completed before the cancellation arrives.
   auto resolver = std::make_unique<net::HangingHostResolver>();
@@ -4506,7 +4508,7 @@ TEST_F(NetworkContextTest, ResolveHost_Cancellation) {
             network_context->GetNumOutstandingResolveHostRequestsForTesting());
 }
 
-TEST_F(NetworkContextTest, ResolveHost_DestroyContext) {
+TEST_F(NetworkContextResolveHostTest, DestroyContext) {
   // Override the HostResolver with a hanging one, so the test can ensure the
   // request won't be completed before the cancellation arrives.
   auto resolver = std::make_unique<net::HangingHostResolver>();
@@ -4549,7 +4551,7 @@ TEST_F(NetworkContextTest, ResolveHost_DestroyContext) {
   EXPECT_TRUE(control_handle_closed);
 }
 
-TEST_F(NetworkContextTest, ResolveHost_CloseClient) {
+TEST_F(NetworkContextResolveHostTest, CloseClient) {
   // Override the HostResolver with a hanging one, so the test can ensure the
   // request won't be completed before the cancellation arrives.
   auto resolver = std::make_unique<net::HangingHostResolver>();
@@ -4641,7 +4643,9 @@ class TestResolverFactory : public net::HostResolver::Factory {
   std::vector<raw_ptr<net::ContextHostResolver, VectorExperimental>> resolvers_;
 };
 
-TEST_F(NetworkContextTest, CreateHostResolver) {
+using NetworkContextCreateHostResolverTest = NetworkContextTest;
+
+TEST_F(NetworkContextCreateHostResolverTest, Basic) {
   // Inject a factory to control and capture created net::HostResolvers.
   TestResolverFactory* factory =
       TestResolverFactory::CreateAndSetFactory(network_service_.get());
@@ -4679,7 +4683,7 @@ TEST_F(NetworkContextTest, CreateHostResolver) {
             network_context->GetNumOutstandingResolveHostRequestsForTesting());
 }
 
-TEST_F(NetworkContextTest, CreateHostResolver_CloseResolver) {
+TEST_F(NetworkContextCreateHostResolverTest, CloseResolver) {
   // Override the HostResolver with a hanging one, so the test can ensure the
   // request won't be completed before the cancellation arrives.
   auto resolver = std::make_unique<net::HangingHostResolver>();
@@ -4726,7 +4730,7 @@ TEST_F(NetworkContextTest, CreateHostResolver_CloseResolver) {
   EXPECT_TRUE(control_handle_closed);
 }
 
-TEST_F(NetworkContextTest, CreateHostResolver_CloseContext) {
+TEST_F(NetworkContextCreateHostResolverTest, CloseContext) {
   // Override the HostResolver with a hanging one, so the test can ensure the
   // request won't be completed before the cancellation arrives.
   auto resolver = std::make_unique<net::HangingHostResolver>();
@@ -4785,7 +4789,7 @@ TEST_F(NetworkContextTest, CreateHostResolver_CloseContext) {
 
 // Config overrides are not supported on iOS.
 #if !BUILDFLAG(IS_IOS)
-TEST_F(NetworkContextTest, CreateHostResolverWithConfigOverrides) {
+TEST_F(NetworkContextCreateHostResolverTest, WithConfigOverrides) {
   // Inject a factory to control and capture created net::HostResolvers.
   TestResolverFactory* factory =
       TestResolverFactory::CreateAndSetFactory(network_service_.get());
@@ -4863,7 +4867,9 @@ TEST_F(NetworkContextTest, CreateHostResolverWithConfigOverrides) {
 }
 #endif  // BUILDFLAG(IS_IOS)
 
-TEST_F(NetworkContextTest, ActivateDohProbes) {
+using NetworkContextActivateDohProbesTest = NetworkContextTest;
+
+TEST_F(NetworkContextActivateDohProbesTest, Basic) {
   auto resolver = std::make_unique<net::MockHostResolver>();
   scoped_refptr<const net::MockHostResolver::State> state = resolver->state();
   network_service_->set_host_resolver_factory_for_testing(
@@ -4886,7 +4892,7 @@ TEST_F(NetworkContextTest, ActivateDohProbes) {
   EXPECT_FALSE(state->IsDohProbeRunning());
 }
 
-TEST_F(NetworkContextTest, ActivateDohProbes_NotPrimaryContext) {
+TEST_F(NetworkContextActivateDohProbesTest, NotPrimaryContext) {
   auto resolver = std::make_unique<net::MockHostResolver>();
   scoped_refptr<const net::MockHostResolver::State> state = resolver->state();
   network_service_->set_host_resolver_factory_for_testing(
@@ -5108,8 +5114,10 @@ TEST_F(NetworkContextTest, CanSetCookieTrueIfCookiesAllowed) {
       net::CookieInclusionStatus::WARN_THIRD_PARTY_PHASEOUT));
 }
 
-TEST_F(NetworkContextTest,
-       AnnotateAndMoveUserBlockedCookies_FalseIfCookiesBlocked) {
+using NetworkContextAnnotateAndMoveUserBlockedCookiesTest = NetworkContextTest;
+
+TEST_F(NetworkContextAnnotateAndMoveUserBlockedCookiesTest,
+       FalseIfCookiesBlocked) {
   std::unique_ptr<NetworkContext> network_context =
       CreateContextWithParams(CreateNetworkContextParamsForTesting());
   std::unique_ptr<net::URLRequestContext> context =
@@ -5156,8 +5164,8 @@ TEST_F(NetworkContextTest,
                                               included, excluded));
 }
 
-TEST_F(NetworkContextTest,
-       AnnotateAndMoveUserBlockedCookies_TrueIfCookiesAllowed) {
+TEST_F(NetworkContextAnnotateAndMoveUserBlockedCookiesTest,
+       TrueIfCookiesAllowed) {
   std::unique_ptr<NetworkContext> network_context =
       CreateContextWithParams(CreateNetworkContextParamsForTesting());
   std::unique_ptr<net::URLRequestContext> context =
@@ -5637,9 +5645,11 @@ TEST_F(NetworkContextTest, CloseConnections) {
   }
 }
 
+using NetworkContextTrustedParamsTest = NetworkContextTest;
+
 // Test that only trusted URLLoaderFactories accept
 // ResourceRequest::trusted_params.
-TEST_F(NetworkContextTest, TrustedParams) {
+TEST_F(NetworkContextTrustedParamsTest, Basic) {
   for (bool trusted_factory : {false, true}) {
     ConnectionListener connection_listener;
     net::EmbeddedTestServer test_server;
@@ -5692,7 +5702,7 @@ TEST_F(NetworkContextTest, TrustedParams) {
 
 // Test that the disable_secure_dns trusted param is passed through to the
 // host resolver.
-TEST_F(NetworkContextTest, TrustedParams_DisableSecureDns) {
+TEST_F(NetworkContextTrustedParamsTest, DisableSecureDns) {
   net::EmbeddedTestServer test_server;
   test_server.AddDefaultHandlers(
       base::FilePath(FILE_PATH_LITERAL("services/test/data")));
@@ -5749,7 +5759,7 @@ TEST_F(NetworkContextTest, TrustedParams_DisableSecureDns) {
 
 // Test that the disable_secure_dns factory param is passed through to the
 // host resolver.
-TEST_F(NetworkContextTest, FactoryParams_DisableSecureDns) {
+TEST_F(NetworkContextTest, FactoryParamsDisableSecureDns) {
   net::EmbeddedTestServer test_server;
   test_server.AddDefaultHandlers(
       base::FilePath(FILE_PATH_LITERAL("services/test/data")));
@@ -6799,8 +6809,9 @@ TEST_F(NetworkContextTest, HangingHeaderClientAbortDuringOnHeadersReceived) {
   return ::testing::AssertionSuccess();
 }
 
-TEST_F(NetworkContextTest,
-       IncludeRequestCookiesWithResponse_FailWhenUntrusted) {
+using NetworkContextIncludeRequestCookiesWithResponseTest = NetworkContextTest;
+
+TEST_F(NetworkContextIncludeRequestCookiesWithResponseTest, FailWhenUntrusted) {
   // This somewhat duplicates NetworkContextTest.TrustedParams; see that test
   // for more detail.
   net::test_server::EmbeddedTestServer test_server;
@@ -6843,8 +6854,8 @@ TEST_F(NetworkContextTest,
               net::test::IsError(net::ERR_INVALID_ARGUMENT));
 }
 
-TEST_F(NetworkContextTest,
-       IncludeRequestCookiesWithResponse_NoCookiesByDefault) {
+TEST_F(NetworkContextIncludeRequestCookiesWithResponseTest,
+       NoCookiesByDefault) {
   net::test_server::EmbeddedTestServer test_server;
   test_server.AddDefaultHandlers(
       base::FilePath(FILE_PATH_LITERAL("services/test/data")));
@@ -6883,7 +6894,7 @@ TEST_F(NetworkContextTest,
   EXPECT_EQ(0u, client.response_head()->request_cookies.size());
 }
 
-TEST_F(NetworkContextTest, IncludeRequestCookiesWithResponse_Cookie) {
+TEST_F(NetworkContextIncludeRequestCookiesWithResponseTest, Cookie) {
   net::test_server::EmbeddedTestServer test_server;
   test_server.AddDefaultHandlers(
       base::FilePath(FILE_PATH_LITERAL("services/test/data")));
@@ -6923,8 +6934,8 @@ TEST_F(NetworkContextTest, IncludeRequestCookiesWithResponse_Cookie) {
       HasCookie(client.response_head()->request_cookies, "chocolate", "chip"));
 }
 
-TEST_F(NetworkContextTest,
-       IncludeRequestCookiesWithResponse_CookieWithRedirect) {
+TEST_F(NetworkContextIncludeRequestCookiesWithResponseTest,
+       CookieWithRedirect) {
   net::test_server::EmbeddedTestServer test_server;
   test_server.AddDefaultHandlers(
       base::FilePath(FILE_PATH_LITERAL("services/test/data")));
@@ -6979,8 +6990,8 @@ TEST_F(NetworkContextTest,
   EXPECT_FALSE(HasCookie(client.response_head()->request_cookies, "chocolate"));
 }
 
-TEST_F(NetworkContextTest,
-       IncludeRequestCookiesWithResponse_CookiesFromBrowser) {
+TEST_F(NetworkContextIncludeRequestCookiesWithResponseTest,
+       CookiesFromBrowser) {
   net::test_server::EmbeddedTestServer test_server;
   test_server.AddDefaultHandlers(
       base::FilePath(FILE_PATH_LITERAL("services/test/data")));
@@ -7023,7 +7034,7 @@ TEST_F(NetworkContextTest,
   EXPECT_TRUE(HasCookie(client.response_head()->request_cookies, "eggs", "2"));
 }
 
-TEST_F(NetworkContextTest, IncludeRequestCookiesWithResponse_HeaderClient) {
+TEST_F(NetworkContextIncludeRequestCookiesWithResponseTest, HeaderClient) {
   net::test_server::EmbeddedTestServer test_server;
   test_server.AddDefaultHandlers(
       base::FilePath(FILE_PATH_LITERAL("services/test/data")));
@@ -7067,8 +7078,8 @@ TEST_F(NetworkContextTest, IncludeRequestCookiesWithResponse_HeaderClient) {
                         "triple"));
 }
 
-TEST_F(NetworkContextTest,
-       IncludeRequestCookiesWithResponse_HSTSRedirectClearsCookie) {
+TEST_F(NetworkContextIncludeRequestCookiesWithResponseTest,
+       HSTSRedirectClearsCookie) {
   net::test_server::EmbeddedTestServer test_server;
   test_server.AddDefaultHandlers(
       base::FilePath(FILE_PATH_LITERAL("services/test/data")));
@@ -10389,8 +10400,7 @@ INSTANTIATE_TEST_SUITE_P(,
 // This test fetches `kStorageAccessRetryPath`, but the browser does not retry
 // the request since there is no matching content setting (and therefore
 // retrying the request would be a waste of time).
-TEST_P(StorageAccessHeaderNetworkContextTest,
-       StorageAccessHeader_Retry_WithoutContentSetting) {
+TEST_P(StorageAccessHeaderNetworkContextTest, RetryWithoutContentSetting) {
   StartTestServerWithRequestHeaderMonitorAndRetryHandler();
 
   const GURL request_url =
@@ -10477,7 +10487,7 @@ TEST_P(StorageAccessHeaderNetworkContextTest,
 // the request (including unpartitioned cookies, if applicable). The second
 // response still includes the header, but the browser ignores it the second
 // time, since retrying would not make any difference.
-TEST_P(StorageAccessHeaderNetworkContextTest, StorageAccessHeader_Retry) {
+TEST_P(StorageAccessHeaderNetworkContextTest, Retry) {
   StartTestServerWithRequestHeaderMonitorAndRetryHandler();
 
   const GURL request_url =
@@ -10528,8 +10538,7 @@ TEST_P(StorageAccessHeaderNetworkContextTest, StorageAccessHeader_Retry) {
 }
 
 // Regression test for https://crbug.com/352722603.
-TEST_P(StorageAccessHeaderNetworkContextTest,
-       StorageAccessHeader_Retry_ABA_WithStorageAccess) {
+TEST_P(StorageAccessHeaderNetworkContextTest, RetryABAWithStorageAccess) {
   StartTestServerWithRequestHeaderMonitorAndRetryHandler();
 
   const GURL request_url =
@@ -10590,7 +10599,7 @@ TEST_P(StorageAccessHeaderNetworkContextTest,
   EXPECT_THAT(cookie_headers(), ElementsAre("None", "3PCookie=1"));
 }
 
-TEST_P(StorageAccessHeaderNetworkContextTest, StorageAccessHeader_Load) {
+TEST_P(StorageAccessHeaderNetworkContextTest, Load) {
   StartTestServerWithRequestHeaderMonitorAndRetryHandler();
 
   const GURL top_level_url = test_server()->GetURL("a.test", "/");
@@ -10646,8 +10655,7 @@ TEST_P(StorageAccessHeaderNetworkContextTest, StorageAccessHeader_Load) {
 
 // Only the final response in a redirect chain has any say on the
 // `load_with_storage_access` field of the response.
-TEST_P(StorageAccessHeaderNetworkContextTest,
-       StorageAccessHeader_RedirectWithLoad) {
+TEST_P(StorageAccessHeaderNetworkContextTest, RedirectWithLoad) {
   StartTestServerWithRequestHeaderMonitorAndRetryHandler();
   const GURL top_level_url = test_server()->GetURL("a.test", "/");
   const GURL request_url =
