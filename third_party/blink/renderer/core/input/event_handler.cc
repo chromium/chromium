@@ -923,7 +923,7 @@ WebInputEventResult EventHandler::HandleMousePressEvent(
   }
 
   mouse_event_manager_->SetClickCount(mouse_event.click_count);
-  mouse_event_manager_->SetClickElement(mev.InnerElement());
+  mouse_event_manager_->SetMouseDownElement(mev.InnerElement());
 
   if (!mouse_event.FromTouch())
     frame_->Selection().SetCaretBlinkingSuspended(true);

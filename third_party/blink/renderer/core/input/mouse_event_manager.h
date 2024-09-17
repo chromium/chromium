@@ -134,12 +134,14 @@ class CORE_EXPORT MouseEventManager final
     mouse_down_may_start_autoscroll_ = true;
   }
 
+  // TODO(crbug.com/40870245): Do we even need `mouse_press_node_` when we have
+  // `mouse_down_element_`?  The "node" version is used only in one place
+  // (`ScrollManager::LogicalScroll`) which could never see a non-element node,
+  // right?
   Node* MousePressNode();
   void SetMousePressNode(Node*);
 
-  Element* ClickElement();
-
-  void SetClickElement(Element*);
+  void SetMouseDownElement(Element*);
   void SetClickCount(int);
 
   bool MouseDownMayStartDrag();
@@ -216,10 +218,12 @@ class CORE_EXPORT MouseEventManager final
   unsigned svg_pan_ : 1;
   unsigned mouse_down_may_start_drag_ : 1;
 
+  // Tracks the element that received the last mousedown event.  This is cleared
+  // on mouseup.
+  Member<Element> mousedown_element_;
   Member<Node> mouse_press_node_;
 
   int click_count_ = 0;
-  Member<Element> click_element_;
 
   gfx::Point mouse_down_pos_;
   base::TimeTicks mouse_down_timestamp_;

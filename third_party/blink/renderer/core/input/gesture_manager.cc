@@ -265,7 +265,7 @@ WebInputEventResult GestureManager::HandleGestureTap(
       tapped_node ? tapped_node->GetDocument().GetFrame() : nullptr,
       mojom::blink::UserActivationNotificationType::kInteraction);
 
-  mouse_event_manager_->SetClickElement(tapped_element);
+  mouse_event_manager_->SetMouseDownElement(tapped_element);
 
   WebMouseEvent fake_mouse_down(
       WebInputEvent::Type::kMouseDown, gesture_event,
@@ -349,7 +349,7 @@ WebInputEventResult GestureManager::HandleGestureTap(
       if (frame_->View())
         frame_->View()->RegisterTapEvent(tapped_element);
     }
-    mouse_event_manager_->SetClickElement(nullptr);
+    mouse_event_manager_->SetMouseDownElement(nullptr);
   }
 
   if (mouse_up_event_result == WebInputEventResult::kNotHandled) {
