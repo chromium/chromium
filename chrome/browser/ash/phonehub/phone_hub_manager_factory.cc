@@ -149,15 +149,6 @@ PhoneHubManagerFactory::BuildServiceInstanceForBrowserContext(
             profile, std::move(soft_bind_attestation_flow));
   }
 
-  SyncedSessionClientAsh* synced_session_client = nullptr;
-  if (BrowserTabsModelProviderImpl::IsLacrosSessionSyncFeatureEnabled()) {
-    SyncMojoServiceAsh* sync_mojo_service =
-        SyncMojoServiceFactoryAsh::GetForProfile(profile);
-    if (sync_mojo_service) {
-      synced_session_client = sync_mojo_service->GetSyncedSessionClientAsh();
-    }
-  }
-
   auto phone_hub_manager = std::make_unique<PhoneHubManagerImpl>(
       profile->GetPrefs(),
       device_sync::DeviceSyncClientFactory::GetForProfile(profile),
@@ -166,7 +157,6 @@ PhoneHubManagerFactory::BuildServiceInstanceForBrowserContext(
       std::make_unique<BrowserTabsModelProviderImpl>(
           multidevice_setup::MultiDeviceSetupClientFactory::GetForProfile(
               profile),
-          synced_session_client,
           SyncServiceFactory::GetInstance()->GetForProfile(profile),
           SessionSyncServiceFactory::GetInstance()->GetForProfile(profile),
           std::make_unique<BrowserTabsMetadataFetcherImpl>(

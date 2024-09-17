@@ -15,15 +15,11 @@
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/ash/sync/synced_session_client_ash.h"
 #include "chromeos/ash/components/multidevice/remote_device_test_util.h"
 #include "chromeos/ash/components/phonehub/fake_browser_tabs_metadata_fetcher.h"
 #include "chromeos/ash/components/phonehub/mutable_phone_model.h"
 #include "chromeos/ash/components/phonehub/phone_model_test_util.h"
-#include "chromeos/ash/components/standalone_browser/lacros_availability.h"
-#include "chromeos/ash/components/standalone_browser/standalone_browser_features.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
 #include "chromeos/crosapi/mojom/synced_session_client.mojom.h"
 #include "components/account_id/account_id.h"
@@ -47,9 +43,6 @@ using ::testing::_;
 
 constexpr char kPhoneNameOne[] = "Pixel";
 constexpr char kPhoneNameTwo[] = "Galaxy";
-constexpr char kManagedUserEmail[] = "user@managedchrome.com";
-constexpr base::Time kRecentSessionTime = base::Time::FromTimeT(100);
-constexpr base::Time kOlderSessionTime = base::Time::FromTimeT(10);
 
 class SessionSyncServiceMock : public sync_sessions::SessionSyncService {
  public:
@@ -89,50 +82,6 @@ class OpenTabsUIDelegateMock : public sync_sessions::OpenTabsUIDelegate {
                bool(const sync_sessions::SyncedSession** local));
 };
 
-// This class wraps the setup of a Lacros Only environment and makes it easy to
-// reset the state after use by destroying the handle.
-class ScopedLacrosOnlyHandle {
- public:
-  ScopedLacrosOnlyHandle() {
-    auto fake_user_manager = std::make_unique<ash::FakeChromeUserManager>();
-    fake_user_manager_ = fake_user_manager.get();
-    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::move(fake_user_manager));
-
-    SetLoggedInUser();
-    SetLacrosAvailability();
-  }
-
-  ~ScopedLacrosOnlyHandle() { ResetLacrosAvailability(); }
-
- private:
-  void SetLoggedInUser() {
-    AccountId account_id = AccountId::FromUserEmail(kManagedUserEmail);
-    const user_manager::User* user = fake_user_manager_->AddUser(account_id);
-    fake_user_manager_->UserLoggedIn(account_id, user->username_hash(),
-                                     /*browser_restart=*/false,
-                                     /*is_child=*/false);
-  }
-
-  void SetLacrosAvailability() {
-    policy::PolicyMap policy;
-    policy.Set(policy::key::kLacrosAvailability, policy::POLICY_LEVEL_MANDATORY,
-               policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
-               base::Value(GetLacrosAvailabilityPolicyName(
-                   standalone_browser::LacrosAvailability::kLacrosOnly)),
-               /*external_data_fetcher=*/nullptr);
-    crosapi::browser_util::CacheLacrosAvailability(policy);
-  }
-
-  void ResetLacrosAvailability() {
-    crosapi::browser_util::ClearLacrosAvailabilityCacheForTest();
-  }
-
-  raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged> fake_user_manager_ =
-      nullptr;
-  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
-};
-
 multidevice::RemoteDeviceRef CreatePhoneDevice(const std::string& pii_name) {
   multidevice::RemoteDeviceRefBuilder builder;
   builder.SetPiiFreeName(pii_name);
@@ -146,45 +95,6 @@ std::unique_ptr<sync_sessions::SyncedSession> CreateNewSession(
   session->SetSessionName(session_name);
   session->SetModifiedTime(session_time);
   return session;
-}
-
-std::vector<crosapi::mojom::SyncedSessionPtr>
-CreateTestSyncedSessionsNoMatchingSession() {
-  // This is the most recent session for Galaxy session.
-  std::vector<crosapi::mojom::SyncedSessionPtr> sessions;
-  crosapi::mojom::SyncedSessionPtr session =
-      crosapi::mojom::SyncedSession::New();
-  session->session_name = kPhoneNameTwo;
-  session->modified_time = kRecentSessionTime;
-  sessions.push_back(std::move(session));
-  return sessions;
-}
-
-std::vector<crosapi::mojom::SyncedSessionPtr> CreateTestSyncedSessions() {
-  std::vector<crosapi::mojom::SyncedSessionPtr> sessions;
-
-  // This is the most recent session for Pixel session.
-  crosapi::mojom::SyncedSessionPtr session1 =
-      crosapi::mojom::SyncedSession::New();
-  session1->session_name = kPhoneNameOne;
-  session1->modified_time = kRecentSessionTime;
-  sessions.push_back(std::move(session1));
-
-  // This is the most recent session for Galaxy session.
-  crosapi::mojom::SyncedSessionPtr session2 =
-      crosapi::mojom::SyncedSession::New();
-  session2->session_name = kPhoneNameTwo;
-  session2->modified_time = kRecentSessionTime;
-  sessions.push_back(std::move(session2));
-
-  // This is an older session for Pixel session.
-  crosapi::mojom::SyncedSessionPtr session3 =
-      crosapi::mojom::SyncedSession::New();
-  session3->session_name = kPhoneNameOne;
-  session3->modified_time = kOlderSessionTime;
-  sessions.push_back(std::move(session3));
-
-  return sessions;
 }
 
 }  // namespace
@@ -228,8 +138,8 @@ class BrowserTabsModelProviderImplTest
 
   void CreateProvider() {
     provider_ = std::make_unique<BrowserTabsModelProviderImpl>(
-        &fake_multidevice_setup_client_, &synced_session_client_ash_,
-        &mock_sync_service_, &mock_session_sync_service_,
+        &fake_multidevice_setup_client_, &mock_sync_service_,
+        &mock_session_sync_service_,
         std::make_unique<FakeBrowserTabsMetadataFetcher>());
     provider_->AddObserver(this);
   }
@@ -264,13 +174,10 @@ class BrowserTabsModelProviderImplTest
 
   void OnForeignSyncedPhoneSessionsUpdated(
       std::vector<crosapi::mojom::SyncedSessionPtr> sessions) {
-    synced_session_client_ash_.OnForeignSyncedPhoneSessionsUpdated(
-        std::move(sessions));
+    NOTREACHED();
   }
 
-  void OnSessionSyncEnabledChanged(bool enabled) {
-    synced_session_client_ash_.OnSessionSyncEnabledChanged(enabled);
-  }
+  void OnSessionSyncEnabledChanged(bool enabled) { NOTREACHED(); }
 
   void set_synced_sessions(
       std::vector<raw_ptr<const sync_sessions::SyncedSession,
@@ -287,7 +194,6 @@ class BrowserTabsModelProviderImplTest
 
   MutablePhoneModel phone_model_;
   multidevice_setup::FakeMultiDeviceSetupClient fake_multidevice_setup_client_;
-  SyncedSessionClientAsh synced_session_client_ash_;
 
   testing::NiceMock<syncer::MockSyncService> mock_sync_service_;
   testing::NiceMock<SessionSyncServiceMock> mock_session_sync_service_;
@@ -369,109 +275,6 @@ TEST_F(BrowserTabsModelProviderImplTest, AttemptBrowserTabsModelUpdate) {
   fake_browser_tabs_metadata_fetcher()->RespondToCurrentFetchAttempt(
       std::move(metadata));
   EXPECT_EQ(phone_model_.browser_tabs_model()->most_recent_tabs().size(), 1U);
-}
-
-TEST_F(BrowserTabsModelProviderImplTest, OnForeignSyncedPhoneSessionsUpdated) {
-  // Enable "Lacros Only" by setting feature flags and creating a handle which
-  // sets the logged-in user and the Lacros availability policy.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{syncer::kChromeOSSyncedSessionSharing},
-      /*disabled_features=*/{});
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      ash::switches::kEnableLacrosForTesting);
-  ScopedLacrosOnlyHandle lacros_only_handle;
-
-  CreateProvider();
-  OnSessionSyncEnabledChanged(true);
-
-  // Test no Pii Free name.
-  OnForeignSyncedPhoneSessionsUpdated({});
-  ASSERT_TRUE(phone_model_.browser_tabs_model().has_value());
-  EXPECT_FALSE(phone_model_.browser_tabs_model()->is_tab_sync_enabled());
-  EXPECT_TRUE(phone_model_.browser_tabs_model()->most_recent_tabs().empty());
-  EXPECT_FALSE(
-      fake_browser_tabs_metadata_fetcher()->DoesPendingCallbackExist());
-
-  // Set name of phone. Tests that OnHostStatusChanged causes name change.
-  SetPiiFreeName(kPhoneNameOne);
-
-  // Test tab sync with no foreign synced sessions updated.
-  OnForeignSyncedPhoneSessionsUpdated({});
-  ASSERT_TRUE(phone_model_.browser_tabs_model().has_value());
-  EXPECT_TRUE(phone_model_.browser_tabs_model()->is_tab_sync_enabled());
-  EXPECT_TRUE(phone_model_.browser_tabs_model()->most_recent_tabs().empty());
-  EXPECT_FALSE(
-      fake_browser_tabs_metadata_fetcher()->DoesPendingCallbackExist());
-
-  // Test tab sync with foreign synced sessions that do not match session.
-  OnForeignSyncedPhoneSessionsUpdated(
-      CreateTestSyncedSessionsNoMatchingSession());
-  ASSERT_TRUE(phone_model_.browser_tabs_model().has_value());
-  EXPECT_TRUE(phone_model_.browser_tabs_model()->is_tab_sync_enabled());
-  EXPECT_FALSE(
-      fake_browser_tabs_metadata_fetcher()->DoesPendingCallbackExist());
-
-  // Test tab sync with foreign synced sessions updated.
-  OnForeignSyncedPhoneSessionsUpdated(CreateTestSyncedSessions());
-  ASSERT_TRUE(phone_model_.browser_tabs_model().has_value());
-  EXPECT_TRUE(phone_model_.browser_tabs_model()->is_tab_sync_enabled());
-  EXPECT_TRUE(fake_browser_tabs_metadata_fetcher()->DoesPendingCallbackExist());
-  // TODO(b/260599791): Move ForeignSyncedSessionAsh to a directory that can
-  // be imported by FakeBrowserTabsMetadataFetcher and verify that the
-  // correct session is being passed.
-}
-
-TEST_F(BrowserTabsModelProviderImplTest, OnSessionSyncEnabledChanged) {
-  // Enable "Lacros Only" by setting feature flags and creating a handle which
-  // sets the logged-in user and the Lacros availability policy.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{syncer::kChromeOSSyncedSessionSharing},
-      /*disabled_features=*/{});
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      ash::switches::kEnableLacrosForTesting);
-  ScopedLacrosOnlyHandle lacros_only_handle;
-
-  CreateProvider();
-
-  // Set name of phone and cached sessions.
-  SetPiiFreeName(kPhoneNameOne);
-
-  // If session sync becomes enabled with no sessions available, metadata
-  // fetcher is not invoked.
-  OnSessionSyncEnabledChanged(true);
-  ASSERT_TRUE(phone_model_.browser_tabs_model().has_value());
-  EXPECT_TRUE(phone_model_.browser_tabs_model()->is_tab_sync_enabled());
-  EXPECT_FALSE(
-      fake_browser_tabs_metadata_fetcher()->DoesPendingCallbackExist());
-
-  // Trigger an update and respond to the fetch request.
-  OnForeignSyncedPhoneSessionsUpdated(CreateTestSyncedSessions());
-  EXPECT_TRUE(fake_browser_tabs_metadata_fetcher()->DoesPendingCallbackExist());
-  std::vector<BrowserTabsModel::BrowserTabMetadata> metadata1;
-  metadata1.push_back(CreateFakeBrowserTabMetadata());
-  fake_browser_tabs_metadata_fetcher()->RespondToCurrentFetchAttempt(
-      std::move(metadata1));
-  ASSERT_TRUE(phone_model_.browser_tabs_model().has_value());
-  EXPECT_TRUE(phone_model_.browser_tabs_model()->is_tab_sync_enabled());
-
-  // If session sync becomes disabled we should reflect this in the model.
-  OnSessionSyncEnabledChanged(false);
-  ASSERT_TRUE(phone_model_.browser_tabs_model().has_value());
-  EXPECT_FALSE(phone_model_.browser_tabs_model()->is_tab_sync_enabled());
-  EXPECT_FALSE(
-      fake_browser_tabs_metadata_fetcher()->DoesPendingCallbackExist());
-
-  // If session sync is re-enabled, we should invoke the metadata fetcher.
-  OnSessionSyncEnabledChanged(true);
-  EXPECT_TRUE(fake_browser_tabs_metadata_fetcher()->DoesPendingCallbackExist());
-  std::vector<BrowserTabsModel::BrowserTabMetadata> metadata2;
-  metadata2.push_back(CreateFakeBrowserTabMetadata());
-  fake_browser_tabs_metadata_fetcher()->RespondToCurrentFetchAttempt(
-      std::move(metadata2));
-  ASSERT_TRUE(phone_model_.browser_tabs_model().has_value());
-  EXPECT_TRUE(phone_model_.browser_tabs_model()->is_tab_sync_enabled());
 }
 
 TEST_F(BrowserTabsModelProviderImplTest, ClearTabMetadataDuringMetadataFetch) {
