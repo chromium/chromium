@@ -8680,11 +8680,6 @@
     "expiry_milestone": 135
   },
   {
-    "name": "tab-groups-in-grid",
-    "owners": [ "alionadangla@chromium.org", "lpromero@chromium.org", "bling-flags@google.com" ],
-    "expiry_milestone": 135
-  },
-  {
     "name": "tab-groups-on-ipad",
     "owners": [ "alionadangla@chromium.org", "lpromero@chromium.org", "bling-flags@google.com" ],
     "expiry_milestone": 135

@@ -48,7 +48,7 @@ class TabStripMediatorUtilsTest : public PlatformTest {
  public:
   TabStripMediatorUtilsTest() {
     feature_list_.InitWithFeatures(
-        {kTabGroupsInGrid, kTabGroupsIPad, kModernTabStrip, kTabGroupSync}, {});
+        {kTabGroupsIPad, kModernTabStrip, kTabGroupSync}, {});
     TestChromeBrowserState::Builder browser_state_builder;
     browser_state_builder.AddTestingFactory(
         tab_groups::TabGroupSyncServiceFactory::GetInstance(),

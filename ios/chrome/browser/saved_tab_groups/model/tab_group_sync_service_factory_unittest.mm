@@ -23,7 +23,6 @@ class TabGroupSyncServiceFactoryTest : public PlatformTest {
             kTabGroupSync,
             kTabGroupsIPad,
             kModernTabStrip,
-            kTabGroupsInGrid,
         },
         /*disable_features=*/{});
     browser_state_ = TestChromeBrowserState::Builder().Build();

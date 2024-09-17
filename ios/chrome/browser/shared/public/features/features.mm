@@ -412,10 +412,6 @@ BASE_FEATURE(kFullscreenImprovement,
              "FullscreenImprovement",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kTabGroupsInGrid,
-             "TabGroupsInGrid",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kTabGroupsIPad,
              "TabGroupsIPad",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -425,7 +421,7 @@ bool IsTabGroupInGridEnabled() {
     return base::FeatureList::IsEnabled(kTabGroupsIPad) &&
            base::FeatureList::IsEnabled(kModernTabStrip);
   }
-  return base::FeatureList::IsEnabled(kTabGroupsInGrid);
+  return true;
 }
 
 BASE_FEATURE(kTabGroupSync, "TabGroupSync", base::FEATURE_DISABLED_BY_DEFAULT);

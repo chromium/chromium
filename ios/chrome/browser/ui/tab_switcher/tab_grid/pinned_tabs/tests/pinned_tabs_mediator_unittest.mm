@@ -295,8 +295,6 @@ TEST_F(PinnedTabsMediatorTest, DropTabGroupTabs) {
   if (!IsPinnedTabsEnabled()) {
     return;
   }
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kTabGroupsInGrid);
 
   WebStateList* web_state_list = regular_browser_->GetWebStateList();
   CloseAllWebStates(*web_state_list, WebStateList::CLOSE_NO_FLAGS);

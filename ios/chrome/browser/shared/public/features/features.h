@@ -403,9 +403,6 @@ BASE_DECLARE_FEATURE(kIOSLargeFakebox);
 // Feature flag to enable a more stable fullscreen.
 BASE_DECLARE_FEATURE(kFullscreenImprovement);
 
-// Feature flag to enable Tab Groups in Grid.
-BASE_DECLARE_FEATURE(kTabGroupsInGrid);
-
 // Feature flag to enable Tab Groups on iPad.
 BASE_DECLARE_FEATURE(kTabGroupsIPad);
 
