@@ -17,6 +17,7 @@
 #include "ui/gfx/animation/animation.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "base/system/sys_info.h"
 #include "content/browser/renderer_host/compositor_impl_android.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
@@ -266,6 +267,17 @@ bool NavigationTransitionUtils::
   if (!NavigationTransitionConfig::AreBackForwardTransitionsEnabled()) {
     return false;
   }
+
+#if BUILDFLAG(IS_ANDROID)
+  if (base::SysInfo::GetAndroidHardwareEGL() == "emulation") {
+    // TODO(https://crbug.com/337886037): On Android emulators, the incomplete
+    // GL support is breaking the screenshotting flow.
+    // TODO(liuwilliam): Maybe we should disable the feature for emulators
+    // entirely?
+    InvokeTestCallbackForNoScreenshot(navigation_request);
+    return false;
+  }
+#endif
 
   CHECK(!navigation_request.IsSameDocument());
 

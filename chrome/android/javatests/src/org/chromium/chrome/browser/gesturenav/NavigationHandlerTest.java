@@ -400,10 +400,6 @@ public class NavigationHandlerTest {
     @Test
     @SmallTest
     @DisableIf.Device(type = {UiDisableIf.TABLET}) // https://crbug.com/338972492
-    @CommandLineFlags.Add({
-        // TODO(crbug.com/337886037): GPU channel timing out on x86 emulators.
-        "disable-features=BackForwardTransitions"
-    })
     public void testSwipeNavigateOnNativePage() {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()

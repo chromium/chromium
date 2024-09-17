@@ -71,6 +71,8 @@ import java.util.concurrent.TimeoutException;
 })
 @DoNotBatch(reason = "Affect nav settings")
 @EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
+@DisableIf.Build(supported_abis_includes = "x86", message = "https://crbug.com/337886037")
+@DisableIf.Build(supported_abis_includes = "x86_64", message = "https://crbug.com/337886037")
 public class ScreenshotCaptureTest {
     @Rule
     public final SuggestionsDependenciesRule mSuggestionsDeps = new SuggestionsDependenciesRule();
