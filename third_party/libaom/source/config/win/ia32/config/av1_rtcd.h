@@ -108,11 +108,6 @@ void aom_upsampled_pred_sse2(MACROBLOCKD *xd, const struct AV1Common *const cm, 
                                           int subpel_y_q3, const uint8_t *ref, int ref_stride, int subpel_search);
 #define aom_upsampled_pred aom_upsampled_pred_sse2
 
-int av1_apply_selfguided_restoration_c(const uint8_t *dat, int width, int height, int stride, int eps, const int *xqd, uint8_t *dst, int dst_stride, int32_t *tmpbuf, int bit_depth, int highbd);
-int av1_apply_selfguided_restoration_sse4_1(const uint8_t *dat, int width, int height, int stride, int eps, const int *xqd, uint8_t *dst, int dst_stride, int32_t *tmpbuf, int bit_depth, int highbd);
-int av1_apply_selfguided_restoration_avx2(const uint8_t *dat, int width, int height, int stride, int eps, const int *xqd, uint8_t *dst, int dst_stride, int32_t *tmpbuf, int bit_depth, int highbd);
-RTCD_EXTERN int (*av1_apply_selfguided_restoration)(const uint8_t *dat, int width, int height, int stride, int eps, const int *xqd, uint8_t *dst, int dst_stride, int32_t *tmpbuf, int bit_depth, int highbd);
-
 int64_t av1_block_error_c(const tran_low_t *coeff, const tran_low_t *dqcoeff, intptr_t block_size, int64_t *ssz);
 int64_t av1_block_error_sse2(const tran_low_t *coeff, const tran_low_t *dqcoeff, intptr_t block_size, int64_t *ssz);
 int64_t av1_block_error_avx2(const tran_low_t *coeff, const tran_low_t *dqcoeff, intptr_t block_size, int64_t *ssz);
@@ -481,19 +476,6 @@ void av1_round_shift_array_c(int32_t *arr, int size, int bit);
 void av1_round_shift_array_sse4_1(int32_t *arr, int size, int bit);
 RTCD_EXTERN void (*av1_round_shift_array)(int32_t *arr, int size, int bit);
 
-int av1_selfguided_restoration_c(const uint8_t *dgd8, int width, int height,
-                                int dgd_stride, int32_t *flt0, int32_t *flt1, int flt_stride,
-                                int sgr_params_idx, int bit_depth, int highbd);
-int av1_selfguided_restoration_sse4_1(const uint8_t *dgd8, int width, int height,
-                                int dgd_stride, int32_t *flt0, int32_t *flt1, int flt_stride,
-                                int sgr_params_idx, int bit_depth, int highbd);
-int av1_selfguided_restoration_avx2(const uint8_t *dgd8, int width, int height,
-                                int dgd_stride, int32_t *flt0, int32_t *flt1, int flt_stride,
-                                int sgr_params_idx, int bit_depth, int highbd);
-RTCD_EXTERN int (*av1_selfguided_restoration)(const uint8_t *dgd8, int width, int height,
-                                int dgd_stride, int32_t *flt0, int32_t *flt1, int flt_stride,
-                                int sgr_params_idx, int bit_depth, int highbd);
-
 void av1_txb_init_levels_c(const tran_low_t *const coeff, const int width, const int height, uint8_t *const levels);
 void av1_txb_init_levels_sse4_1(const tran_low_t *const coeff, const int width, const int height, uint8_t *const levels);
 void av1_txb_init_levels_avx2(const tran_low_t *const coeff, const int width, const int height, uint8_t *const levels);
@@ -502,11 +484,6 @@ RTCD_EXTERN void (*av1_txb_init_levels)(const tran_low_t *const coeff, const int
 void av1_upsample_intra_edge_c(uint8_t *p, int sz);
 void av1_upsample_intra_edge_sse4_1(uint8_t *p, int sz);
 RTCD_EXTERN void (*av1_upsample_intra_edge)(uint8_t *p, int sz);
-
-void av1_warp_affine_c(const int32_t *mat, const uint8_t *ref, int width, int height, int stride, uint8_t *pred, int p_col, int p_row, int p_width, int p_height, int p_stride, int subsampling_x, int subsampling_y, ConvolveParams *conv_params, int16_t alpha, int16_t beta, int16_t gamma, int16_t delta);
-void av1_warp_affine_sse4_1(const int32_t *mat, const uint8_t *ref, int width, int height, int stride, uint8_t *pred, int p_col, int p_row, int p_width, int p_height, int p_stride, int subsampling_x, int subsampling_y, ConvolveParams *conv_params, int16_t alpha, int16_t beta, int16_t gamma, int16_t delta);
-void av1_warp_affine_avx2(const int32_t *mat, const uint8_t *ref, int width, int height, int stride, uint8_t *pred, int p_col, int p_row, int p_width, int p_height, int p_stride, int subsampling_x, int subsampling_y, ConvolveParams *conv_params, int16_t alpha, int16_t beta, int16_t gamma, int16_t delta);
-RTCD_EXTERN void (*av1_warp_affine)(const int32_t *mat, const uint8_t *ref, int width, int height, int stride, uint8_t *pred, int p_col, int p_row, int p_width, int p_height, int p_stride, int subsampling_x, int subsampling_y, ConvolveParams *conv_params, int16_t alpha, int16_t beta, int16_t gamma, int16_t delta);
 
 void av1_wedge_compute_delta_squares_c(int16_t *d, const int16_t *a, const int16_t *b, int N);
 void av1_wedge_compute_delta_squares_sse2(int16_t *d, const int16_t *a, const int16_t *b, int N);
@@ -522,11 +499,6 @@ uint64_t av1_wedge_sse_from_residuals_c(const int16_t *r1, const int16_t *d, con
 uint64_t av1_wedge_sse_from_residuals_sse2(const int16_t *r1, const int16_t *d, const uint8_t *m, int N);
 uint64_t av1_wedge_sse_from_residuals_avx2(const int16_t *r1, const int16_t *d, const uint8_t *m, int N);
 RTCD_EXTERN uint64_t (*av1_wedge_sse_from_residuals)(const int16_t *r1, const int16_t *d, const uint8_t *m, int N);
-
-void av1_wiener_convolve_add_src_c(const uint8_t *src, ptrdiff_t src_stride, uint8_t *dst, ptrdiff_t dst_stride, const int16_t *filter_x, int x_step_q4, const int16_t *filter_y, int y_step_q4, int w, int h, const WienerConvolveParams *conv_params);
-void av1_wiener_convolve_add_src_sse2(const uint8_t *src, ptrdiff_t src_stride, uint8_t *dst, ptrdiff_t dst_stride, const int16_t *filter_x, int x_step_q4, const int16_t *filter_y, int y_step_q4, int w, int h, const WienerConvolveParams *conv_params);
-void av1_wiener_convolve_add_src_avx2(const uint8_t *src, ptrdiff_t src_stride, uint8_t *dst, ptrdiff_t dst_stride, const int16_t *filter_x, int x_step_q4, const int16_t *filter_y, int y_step_q4, int w, int h, const WienerConvolveParams *conv_params);
-RTCD_EXTERN void (*av1_wiener_convolve_add_src)(const uint8_t *src, ptrdiff_t src_stride, uint8_t *dst, ptrdiff_t dst_stride, const int16_t *filter_x, int x_step_q4, const int16_t *filter_y, int y_step_q4, int w, int h, const WienerConvolveParams *conv_params);
 
 void cdef_copy_rect8_8bit_to_16bit_c(uint16_t *dst, int dstride, const uint8_t *src, int sstride, int width, int height);
 void cdef_copy_rect8_8bit_to_16bit_ssse3(uint16_t *dst, int dstride, const uint8_t *src, int sstride, int width, int height);
@@ -594,31 +566,6 @@ void cdef_find_dir_dual_sse4_1(const uint16_t *img1, const uint16_t *img2, int s
 void cdef_find_dir_dual_avx2(const uint16_t *img1, const uint16_t *img2, int stride, int32_t *var1, int32_t *var2, int coeff_shift, int *out1, int *out2);
 RTCD_EXTERN void (*cdef_find_dir_dual)(const uint16_t *img1, const uint16_t *img2, int stride, int32_t *var1, int32_t *var2, int coeff_shift, int *out1, int *out2);
 
-cfl_subsample_lbd_fn cfl_get_luma_subsampling_420_lbd_c(TX_SIZE tx_size);
-cfl_subsample_lbd_fn cfl_get_luma_subsampling_420_lbd_ssse3(TX_SIZE tx_size);
-cfl_subsample_lbd_fn cfl_get_luma_subsampling_420_lbd_avx2(TX_SIZE tx_size);
-RTCD_EXTERN cfl_subsample_lbd_fn (*cfl_get_luma_subsampling_420_lbd)(TX_SIZE tx_size);
-
-cfl_subsample_lbd_fn cfl_get_luma_subsampling_422_lbd_c(TX_SIZE tx_size);
-cfl_subsample_lbd_fn cfl_get_luma_subsampling_422_lbd_ssse3(TX_SIZE tx_size);
-cfl_subsample_lbd_fn cfl_get_luma_subsampling_422_lbd_avx2(TX_SIZE tx_size);
-RTCD_EXTERN cfl_subsample_lbd_fn (*cfl_get_luma_subsampling_422_lbd)(TX_SIZE tx_size);
-
-cfl_subsample_lbd_fn cfl_get_luma_subsampling_444_lbd_c(TX_SIZE tx_size);
-cfl_subsample_lbd_fn cfl_get_luma_subsampling_444_lbd_ssse3(TX_SIZE tx_size);
-cfl_subsample_lbd_fn cfl_get_luma_subsampling_444_lbd_avx2(TX_SIZE tx_size);
-RTCD_EXTERN cfl_subsample_lbd_fn (*cfl_get_luma_subsampling_444_lbd)(TX_SIZE tx_size);
-
-cfl_predict_lbd_fn cfl_get_predict_lbd_fn_c(TX_SIZE tx_size);
-cfl_predict_lbd_fn cfl_get_predict_lbd_fn_ssse3(TX_SIZE tx_size);
-cfl_predict_lbd_fn cfl_get_predict_lbd_fn_avx2(TX_SIZE tx_size);
-RTCD_EXTERN cfl_predict_lbd_fn (*cfl_get_predict_lbd_fn)(TX_SIZE tx_size);
-
-cfl_subtract_average_fn cfl_get_subtract_average_fn_c(TX_SIZE tx_size);
-cfl_subtract_average_fn cfl_get_subtract_average_fn_sse2(TX_SIZE tx_size);
-cfl_subtract_average_fn cfl_get_subtract_average_fn_avx2(TX_SIZE tx_size);
-RTCD_EXTERN cfl_subtract_average_fn (*cfl_get_subtract_average_fn)(TX_SIZE tx_size);
-
 void av1_rtcd(void);
 
 #ifdef RTCD_C
@@ -629,9 +576,6 @@ static void setup_rtcd_internal(void)
 
     (void)flags;
 
-    av1_apply_selfguided_restoration = av1_apply_selfguided_restoration_c;
-    if (flags & HAS_SSE4_1) av1_apply_selfguided_restoration = av1_apply_selfguided_restoration_sse4_1;
-    if (flags & HAS_AVX2) av1_apply_selfguided_restoration = av1_apply_selfguided_restoration_avx2;
     av1_block_error = av1_block_error_sse2;
     if (flags & HAS_AVX2) av1_block_error = av1_block_error_avx2;
     av1_block_error_lp = av1_block_error_lp_sse2;
@@ -759,25 +703,17 @@ static void setup_rtcd_internal(void)
     }
     av1_round_shift_array = av1_round_shift_array_c;
     if (flags & HAS_SSE4_1) av1_round_shift_array = av1_round_shift_array_sse4_1;
-    av1_selfguided_restoration = av1_selfguided_restoration_c;
-    if (flags & HAS_SSE4_1) av1_selfguided_restoration = av1_selfguided_restoration_sse4_1;
-    if (flags & HAS_AVX2) av1_selfguided_restoration = av1_selfguided_restoration_avx2;
     av1_txb_init_levels = av1_txb_init_levels_c;
     if (flags & HAS_SSE4_1) av1_txb_init_levels = av1_txb_init_levels_sse4_1;
     if (flags & HAS_AVX2) av1_txb_init_levels = av1_txb_init_levels_avx2;
     av1_upsample_intra_edge = av1_upsample_intra_edge_c;
     if (flags & HAS_SSE4_1) av1_upsample_intra_edge = av1_upsample_intra_edge_sse4_1;
-    av1_warp_affine = av1_warp_affine_c;
-    if (flags & HAS_SSE4_1) av1_warp_affine = av1_warp_affine_sse4_1;
-    if (flags & HAS_AVX2) av1_warp_affine = av1_warp_affine_avx2;
     av1_wedge_compute_delta_squares = av1_wedge_compute_delta_squares_sse2;
     if (flags & HAS_AVX2) av1_wedge_compute_delta_squares = av1_wedge_compute_delta_squares_avx2;
     av1_wedge_sign_from_residuals = av1_wedge_sign_from_residuals_sse2;
     if (flags & HAS_AVX2) av1_wedge_sign_from_residuals = av1_wedge_sign_from_residuals_avx2;
     av1_wedge_sse_from_residuals = av1_wedge_sse_from_residuals_sse2;
     if (flags & HAS_AVX2) av1_wedge_sse_from_residuals = av1_wedge_sse_from_residuals_avx2;
-    av1_wiener_convolve_add_src = av1_wiener_convolve_add_src_sse2;
-    if (flags & HAS_AVX2) av1_wiener_convolve_add_src = av1_wiener_convolve_add_src_avx2;
     cdef_copy_rect8_8bit_to_16bit = cdef_copy_rect8_8bit_to_16bit_c;
     if (flags & HAS_SSSE3) cdef_copy_rect8_8bit_to_16bit = cdef_copy_rect8_8bit_to_16bit_ssse3;
     if (flags & HAS_SSE4_1) cdef_copy_rect8_8bit_to_16bit = cdef_copy_rect8_8bit_to_16bit_sse4_1;
@@ -822,20 +758,6 @@ static void setup_rtcd_internal(void)
     if (flags & HAS_SSSE3) cdef_find_dir_dual = cdef_find_dir_dual_ssse3;
     if (flags & HAS_SSE4_1) cdef_find_dir_dual = cdef_find_dir_dual_sse4_1;
     if (flags & HAS_AVX2) cdef_find_dir_dual = cdef_find_dir_dual_avx2;
-    cfl_get_luma_subsampling_420_lbd = cfl_get_luma_subsampling_420_lbd_c;
-    if (flags & HAS_SSSE3) cfl_get_luma_subsampling_420_lbd = cfl_get_luma_subsampling_420_lbd_ssse3;
-    if (flags & HAS_AVX2) cfl_get_luma_subsampling_420_lbd = cfl_get_luma_subsampling_420_lbd_avx2;
-    cfl_get_luma_subsampling_422_lbd = cfl_get_luma_subsampling_422_lbd_c;
-    if (flags & HAS_SSSE3) cfl_get_luma_subsampling_422_lbd = cfl_get_luma_subsampling_422_lbd_ssse3;
-    if (flags & HAS_AVX2) cfl_get_luma_subsampling_422_lbd = cfl_get_luma_subsampling_422_lbd_avx2;
-    cfl_get_luma_subsampling_444_lbd = cfl_get_luma_subsampling_444_lbd_c;
-    if (flags & HAS_SSSE3) cfl_get_luma_subsampling_444_lbd = cfl_get_luma_subsampling_444_lbd_ssse3;
-    if (flags & HAS_AVX2) cfl_get_luma_subsampling_444_lbd = cfl_get_luma_subsampling_444_lbd_avx2;
-    cfl_get_predict_lbd_fn = cfl_get_predict_lbd_fn_c;
-    if (flags & HAS_SSSE3) cfl_get_predict_lbd_fn = cfl_get_predict_lbd_fn_ssse3;
-    if (flags & HAS_AVX2) cfl_get_predict_lbd_fn = cfl_get_predict_lbd_fn_avx2;
-    cfl_get_subtract_average_fn = cfl_get_subtract_average_fn_sse2;
-    if (flags & HAS_AVX2) cfl_get_subtract_average_fn = cfl_get_subtract_average_fn_avx2;
 }
 #endif
 
