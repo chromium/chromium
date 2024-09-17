@@ -412,7 +412,7 @@ IN_PROC_BROWSER_TEST_F(AbandonedPageLoadMetricsObserverBrowserTest,
   histogram_tester.ExpectTotalCount(
       GetTimeToAbandonFromNavigationStart(
           NavigationMilestone::kNonRedirectResponseLoaderCallback,
-          internal::kSuffixWasHidden),
+          internal::kSuffixTabWasHiddenStaysHidden),
       1);
 }
 
