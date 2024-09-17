@@ -63,21 +63,24 @@ void AXRelationCache::DoInitialDocumentScan(Document& document) {
 }
 
 void AXRelationCache::CacheRelationIds(Element& element) {
+  DOMNodeId node_id = element.GetDomNodeId();
+
 #if DCHECK_IS_ON()
   // Register that the relations for this element have been cached, to
   // help enforce that relations are never missed.
-  DOMNodeId node_id = element.GetDomNodeId();
   DCHECK(node_id);
   processed_elements_.insert(node_id);
 #endif
+
+  UpdateRegisteredIdAttribute(element, node_id);
 
   // Register aria-owns.
   UpdateReverseOwnsRelations(element);
 
   // Register <label for>.
-  const auto& id = element.FastGetAttribute(html_names::kForAttr);
-  if (!id.empty()) {
-    all_previously_seen_label_target_ids_.insert(id);
+  const auto& for_id = element.FastGetAttribute(html_names::kForAttr);
+  if (!for_id.empty()) {
+    all_previously_seen_label_target_ids_.insert(for_id);
   }
 
   // Register aria-labelledby, aria-describedby relations.
@@ -861,17 +864,14 @@ bool AXRelationCache::IsARIALabelOrDescription(Element& element) {
 
 // Fill source_objects with AXObjects for relations pointing to target.
 void AXRelationCache::GetReverseRelated(
-    Node* target,
+    const AtomicString& target_id_attr,
     HashMap<String, HashSet<DOMNodeId>>& id_attr_to_node_map,
     HeapVector<Member<AXObject>>& source_objects) {
-  auto* element = DynamicTo<Element>(target);
-  if (!element)
+  if (target_id_attr == g_null_atom) {
     return;
+  }
 
-  if (!element->HasID())
-    return;
-
-  auto it = id_attr_to_node_map.find(element->GetIdAttribute());
+  auto it = id_attr_to_node_map.find(target_id_attr);
   if (it == id_attr_to_node_map.end()) {
     return;
   }
@@ -886,7 +886,8 @@ void AXRelationCache::GetReverseRelated(
 AXObject* AXRelationCache::GetOrCreateAriaOwnerFor(Node* node, AXObject* obj) {
   CHECK(object_cache_->lifecycle().StateAllowsImmediateTreeUpdates());
 
-  if (!IsA<Element>(node)) {
+  Element* element = DynamicTo<Element>(node);
+  if (!element) {
     return nullptr;
   }
 
@@ -902,7 +903,8 @@ AXObject* AXRelationCache::GetOrCreateAriaOwnerFor(Node* node, AXObject* obj) {
   // Look for any new aria-owns relations.
   // Schedule an update on any potential new owner.
   HeapVector<Member<AXObject>> related_sources;
-  GetReverseRelated(node, id_attr_to_owns_relation_mapping_, related_sources);
+  GetReverseRelated(element->GetIdAttribute(),
+                    id_attr_to_owns_relation_mapping_, related_sources);
 
   // First check for an existing aria-owns relation to the related AXObject.
   AXObject* ax_new_owner = nullptr;
@@ -939,7 +941,7 @@ AXObject* AXRelationCache::GetOrCreateAriaOwnerFor(Node* node, AXObject* obj) {
 
 void AXRelationCache::UpdateRelatedTree(Node* node, AXObject* obj) {
   // This can happen if MarkAXObjectDirtyWithCleanLayout is
-  /// called and then UpdateRelatedTree is called on the same object,
+  // called and then UpdateRelatedTree is called on the same object,
   // e.g. in TextChangedWithCleanLayout.
   if (obj && obj->IsDetached()) {
     return;
@@ -954,7 +956,21 @@ void AXRelationCache::UpdateRelatedTree(Node* node, AXObject* obj) {
 
   UpdateRelatedText(node);
 
-  UpdateRelatedActiveDescendant(node);
+  if (Element* element = DynamicTo<Element>(node)) {
+    UpdateRelatedActiveDescendant(*element);
+
+    UpdateRegisteredIdAttribute(*element, element->GetDomNodeId());
+  }
+}
+
+void AXRelationCache::UpdateRegisteredIdAttribute(Element& element,
+                                                  DOMNodeId node_id) {
+  const auto& id_attr = element.GetIdAttribute();
+  if (id_attr == g_null_atom) {
+    registered_id_attributes_.erase(node_id);
+  } else {
+    registered_id_attributes_.insert(node_id, id_attr);
+  }
 }
 
 void AXRelationCache::UpdateRelatedText(Node* node) {
@@ -977,14 +993,16 @@ void AXRelationCache::UpdateRelatedText(Node* node) {
        ++count < kMaxAncestorsForNameChangeCheck && current_node &&
        !IsA<HTMLBodyElement>(current_node);
        current_node = current_node->parentNode()) {
-    // Reverse relations via aria-labelledby, aria-describedby, aria-owns.
-    HeapVector<Member<AXObject>> related_sources;
-    GetReverseRelated(current_node, id_attr_to_text_relation_mapping_,
-                      related_sources);
-    for (AXObject* related : related_sources) {
-      if (related && related->IsIncludedInTree() &&
-          !related->NeedsToUpdateChildren()) {
-        object_cache_->MarkAXObjectDirtyWithCleanLayout(related);
+    if (Element* element = DynamicTo<Element>(current_node)) {
+      // Reverse relations via aria-labelledby, aria-describedby, aria-owns.
+      HeapVector<Member<AXObject>> related_sources;
+      GetReverseRelated(element->GetIdAttribute(),
+                        id_attr_to_text_relation_mapping_, related_sources);
+      for (AXObject* related : related_sources) {
+        if (related && related->IsIncludedInTree() &&
+            !related->NeedsToUpdateChildren()) {
+          object_cache_->MarkAXObjectDirtyWithCleanLayout(related);
+        }
       }
     }
 
@@ -1009,10 +1027,21 @@ void AXRelationCache::UpdateRelatedText(Node* node) {
   }
 }
 
-void AXRelationCache::UpdateRelatedActiveDescendant(Node* node) {
+void AXRelationCache::UpdateRelatedActiveDescendant(Element& element) {
   HeapVector<Member<AXObject>> related_sources;
-  GetReverseRelated(node, id_attr_to_active_descendant_mapping_,
+  const AtomicString& id_attr = element.GetIdAttribute();
+  GetReverseRelated(id_attr, id_attr_to_active_descendant_mapping_,
                     related_sources);
+
+  // If id attribute changed, also mark old relation source dirty.
+  auto iter = registered_id_attributes_.find(element.GetDomNodeId());
+  if (iter != registered_id_attributes_.end()) {
+    const AtomicString& old_id_attr = iter->value;
+    if (old_id_attr != id_attr) {
+      GetReverseRelated(old_id_attr, id_attr_to_active_descendant_mapping_,
+                        related_sources);
+    }
+  }
   for (AXObject* related : related_sources) {
     object_cache_->MarkAXObjectDirtyWithCleanLayout(related);
   }
@@ -1047,6 +1076,7 @@ void AXRelationCache::RemoveAXID(AXID obj_id) {
         MaybeRestoreParentOfOwnedChild(child_axid);
       }
     }
+    registered_id_attributes_.erase(obj_id);
   }
 
   // Another id owned |obj_id|:
@@ -1124,10 +1154,13 @@ void AXRelationCache::MaybeRestoreParentOfOwnedChild(AXID removed_child_axid) {
     // by making sure they are updated in the next round, in case one of them
     // can now own it because of the removal the old_parent.
     HeapVector<Member<AXObject>> other_potential_owners;
-    GetReverseRelated(child_node, id_attr_to_owns_relation_mapping_,
-                      other_potential_owners);
-    for (AXObject* other_potential_owner : other_potential_owners) {
-      owner_ids_to_update_.insert(other_potential_owner->AXObjectID());
+    if (Element* child_element = DynamicTo<Element>(child_node)) {
+      GetReverseRelated(child_element->GetIdAttribute(),
+                        id_attr_to_owns_relation_mapping_,
+                        other_potential_owners);
+      for (AXObject* other_potential_owner : other_potential_owners) {
+        owner_ids_to_update_.insert(other_potential_owner->AXObjectID());
+      }
     }
   }
 }

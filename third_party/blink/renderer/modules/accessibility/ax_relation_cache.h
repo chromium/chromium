@@ -68,7 +68,7 @@ class AXRelationCache {
   // and any aria-activedescendant relations.
   void UpdateRelatedTree(Node* node, AXObject* obj);
 
-  void UpdateRelatedActiveDescendant(Node* node);
+  void UpdateRelatedActiveDescendant(Element& element);
 
   // Remove given AXID from cache.
   void RemoveAXID(AXID);
@@ -195,7 +195,7 @@ class AXRelationCache {
   void MapOwnedChildrenWithCleanLayout(const AXObject* owner,
                                        const Vector<AXID>&);
   void GetReverseRelated(
-      Node*,
+      const AtomicString& target_id_attr,
       HashMap<String, HashSet<DOMNodeId>>& id_attr_to_node_map,
       HeapVector<Member<AXObject>>& sources);
   void MaybeRestoreParentOfOwnedChild(AXID removed_child_axid);
@@ -206,6 +206,9 @@ class AXRelationCache {
       AXObject* owner,
       HeapVector<Member<AXObject>>& validated_owned_children_result,
       bool force);
+
+  // Save the current id attribute for the given DOMNodeId.
+  void UpdateRegisteredIdAttribute(Element& element, DOMNodeId node_id);
 
   WeakPersistent<AXObjectCacheImpl> object_cache_;
 
@@ -250,6 +253,9 @@ class AXRelationCache {
   // A map from a source AXObject to the id attribute values for relations
   // targets that are not yet in the DOM tree.
   HashMap<String, Vector<AXID>> incomplete_relations_;
+
+  // For each DOM node, the most recent id attribute value processed.
+  HashMap<DOMNodeId, AtomicString> registered_id_attributes_;
 
   // Helpers that call back into object cache
   AXObject* ObjectFromAXID(AXID) const;

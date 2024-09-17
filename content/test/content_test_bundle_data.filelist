@@ -402,6 +402,8 @@ data/accessibility/aria/annotation-roles-expected-mac.txt
 data/accessibility/aria/annotation-roles-expected-uia-win.txt
 data/accessibility/aria/annotation-roles-expected-win.txt
 data/accessibility/aria/annotation-roles.html
+data/accessibility/aria/aria-activedescendant-dynamic-expected-blink.txt
+data/accessibility/aria/aria-activedescendant-dynamic.html
 data/accessibility/aria/aria-activedescendant-expected-auralinux.txt
 data/accessibility/aria/aria-activedescendant-expected-blink.txt
 data/accessibility/aria/aria-activedescendant-expected-mac.txt
