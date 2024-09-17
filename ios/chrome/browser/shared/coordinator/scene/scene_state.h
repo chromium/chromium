@@ -13,9 +13,10 @@
 #import "ios/chrome/browser/window_activities/model/window_activity_helpers.h"
 
 @class AppState;
+@protocol BrowserProviderInterface;
+@class ProfileState;
 @class SceneController;
 @class SceneState;
-@protocol BrowserProviderInterface;
 
 // Scene agents are objects owned by a scene state and providing some
 // scene-scoped function. They can be driven by SceneStateObserver events.
@@ -38,6 +39,9 @@
 
 // The app state for the app that owns this scene. Set in init.
 @property(nonatomic, weak, readonly) AppState* appState;
+
+// The profile state for profile that owns this scene.
+@property(nonatomic, weak) ProfileState* profileState;
 
 // The current activation level.
 @property(nonatomic, assign) SceneActivationLevel activationLevel;

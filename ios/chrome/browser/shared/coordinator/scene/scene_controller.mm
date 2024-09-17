@@ -1008,24 +1008,13 @@ void OnListFamilyMembersResponse(
 - (void)startUpChromeUI {
   DCHECK(!self.browserViewWrangler);
   DCHECK(_sceneURLLoadingService.get());
-  DCHECK(self.sceneState.appState.mainProfile.browserState);
+  DCHECK(self.sceneState.profileState.browserState);
 
   SceneState* sceneState = self.sceneState;
-
-  // TODO(crbug.com/353683683): do not use appState but instead use
-  // only profileState which should be set in SceneState initializer.
-  ChromeBrowserState* browserState =
-      self.sceneState.appState.mainProfile.browserState;
-
-  GetApplicationContext()
-      ->GetProfileManager()
-      ->GetProfileAttributesStorage()
-      ->SetProfileNameForSceneID(
-          base::SysNSStringToUTF8(sceneState.sceneSessionID),
-          browserState->GetProfileName());
+  ProfileIOS* profile = sceneState.profileState.browserState;
 
   self.browserViewWrangler =
-      [[BrowserViewWrangler alloc] initWithBrowserState:browserState
+      [[BrowserViewWrangler alloc] initWithBrowserState:profile
                                              sceneState:sceneState
                                     applicationEndpoint:self
                                        settingsEndpoint:self];
@@ -1035,7 +1024,7 @@ void OnListFamilyMembersResponse(
   Browser* mainBrowser = self.browserViewWrangler.mainInterface.browser;
 
   PromosManager* promosManager =
-      PromosManagerFactory::GetForBrowserState(browserState);
+      PromosManagerFactory::GetForBrowserState(profile);
 
   DefaultBrowserPromoSceneAgent* defaultBrowserAgent =
       [[DefaultBrowserPromoSceneAgent alloc] init];
@@ -1058,17 +1047,16 @@ void OnListFamilyMembersResponse(
                     applicationCommandsHandler:applicationCommandsHandler
                    policyChangeCommandsHandler:policyChangeCommandsHandler]];
 
-  PrefService* prefService = browserState->GetPrefs();
+  PrefService* prefService = profile->GetPrefs();
   AuthenticationService* authService =
-      AuthenticationServiceFactory::GetForBrowserState(browserState);
+      AuthenticationServiceFactory::GetForBrowserState(profile);
 
   policy::UserCloudPolicyManager* userPolicyManager =
-      browserState->GetUserCloudPolicyManager();
+      profile->GetUserCloudPolicyManager();
   if (IsUserPolicyNotificationNeeded(authService, prefService,
                                      userPolicyManager)) {
     policy::UserPolicySigninService* userPolicyService =
-        policy::UserPolicySigninServiceFactory::GetForBrowserState(
-            browserState);
+        policy::UserPolicySigninServiceFactory::GetForBrowserState(profile);
     [sceneState
         addAgent:[[UserPolicySceneAgent alloc]
                         initWithSceneUIProvider:self
@@ -1081,8 +1069,7 @@ void OnListFamilyMembersResponse(
   }
 
   enterprise_idle::IdleService* idleService =
-      enterprise_idle::IdleServiceFactory::GetForBrowserState(
-          mainBrowser->GetBrowserState());
+      enterprise_idle::IdleServiceFactory::GetForBrowserState(profile);
   id<SnackbarCommands> snackbarCommandsHandler =
       static_cast<id<SnackbarCommands>>(mainCommandDispatcher);
 
