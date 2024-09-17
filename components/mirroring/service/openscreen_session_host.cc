@@ -698,6 +698,7 @@ void OpenscreenSessionHost::CreateVideoEncodeAccelerator(
     }
     mojo::PendingRemote<media::mojom::VideoEncodeAccelerator> vea;
     vea_provider_->CreateVideoEncodeAccelerator(
+        nullptr /* EncodeCommandBufferIdPtr */,
         vea.InitWithNewPipeAndPassReceiver());
 
     // This is a highly unusual statement due to the fact that

@@ -20,6 +20,7 @@
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_info.h"
 #include "gpu/config/gpu_preferences.h"
+#include "gpu/ipc/service/command_buffer_stub.h"
 #include "media/mojo/mojom/video_encode_accelerator.mojom.h"
 #include "media/mojo/services/media_mojo_export.h"
 #include "media/video/video_encode_accelerator.h"
@@ -37,6 +38,8 @@ class MEDIA_MOJO_EXPORT MojoVideoEncodeAcceleratorService
     : public mojom::VideoEncodeAccelerator,
       public VideoEncodeAccelerator::Client {
  public:
+  using GetCommandBufferHelperCB =
+      base::RepeatingCallback<scoped_refptr<CommandBufferHelper>()>;
   // Create and initialize a VEA. Returns nullptr if either part fails.
   using CreateAndInitializeVideoEncodeAcceleratorCallback =
       base::OnceCallback<std::unique_ptr<::media::VideoEncodeAccelerator>(
@@ -45,20 +48,26 @@ class MEDIA_MOJO_EXPORT MojoVideoEncodeAcceleratorService
           const gpu::GpuPreferences& gpu_preferences,
           const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
           const gpu::GPUInfo::GPUDevice& gpu_device,
-          std::unique_ptr<MediaLog> media_log)>;
+          std::unique_ptr<MediaLog> media_log,
+          GetCommandBufferHelperCB get_command_buffer_helper_cb,
+          scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner)>;
 
   static void Create(
       mojo::PendingReceiver<mojom::VideoEncodeAccelerator> receiver,
       CreateAndInitializeVideoEncodeAcceleratorCallback create_vea_callback,
       const gpu::GpuPreferences& gpu_preferences,
       const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
-      const gpu::GPUInfo::GPUDevice& gpu_device);
+      const gpu::GPUInfo::GPUDevice& gpu_device,
+      GetCommandBufferHelperCB get_command_buffer_helper_cb,
+      scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner);
 
   MojoVideoEncodeAcceleratorService(
       CreateAndInitializeVideoEncodeAcceleratorCallback create_vea_callback,
       const gpu::GpuPreferences& gpu_preferences,
       const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
-      const gpu::GPUInfo::GPUDevice& gpu_device);
+      const gpu::GPUInfo::GPUDevice& gpu_device,
+      GetCommandBufferHelperCB get_command_buffer_helper_cb,
+      scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner);
 
   MojoVideoEncodeAcceleratorService(const MojoVideoEncodeAcceleratorService&) =
       delete;
@@ -107,6 +116,8 @@ class MEDIA_MOJO_EXPORT MojoVideoEncodeAcceleratorService
   const gpu::GpuPreferences gpu_preferences_;
   const gpu::GpuDriverBugWorkarounds gpu_workarounds_;
   const gpu::GPUInfo::GPUDevice gpu_device_;
+  GetCommandBufferHelperCB get_command_buffer_helper_cb_;
+  scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner_;
 
   // Owned pointer to the underlying VideoEncodeAccelerator.
   std::unique_ptr<::media::VideoEncodeAccelerator> encoder_;

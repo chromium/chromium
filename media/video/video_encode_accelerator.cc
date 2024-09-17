@@ -218,14 +218,16 @@ VideoEncodeAccelerator::SupportedProfile::SupportedProfile(
     uint32_t max_framerate_denominator,
     SupportedRateControlMode rc_modes,
     const std::vector<SVCScalabilityMode>& scalability_modes,
-    const std::vector<VideoPixelFormat>& gpu_supported_pixel_formats)
+    const std::vector<VideoPixelFormat>& gpu_supported_pixel_formats,
+    bool supports_gpu_shared_images)
     : profile(profile),
       max_resolution(max_resolution),
       max_framerate_numerator(max_framerate_numerator),
       max_framerate_denominator(max_framerate_denominator),
       rate_control_modes(rc_modes),
       scalability_modes(scalability_modes),
-      gpu_supported_pixel_formats(gpu_supported_pixel_formats) {}
+      gpu_supported_pixel_formats(gpu_supported_pixel_formats),
+      supports_gpu_shared_images(supports_gpu_shared_images) {}
 
 VideoEncodeAccelerator::SupportedProfile::SupportedProfile(
     const SupportedProfile& other) = default;
@@ -257,6 +259,11 @@ bool VideoEncodeAccelerator::IsGpuFrameResizeSupported() {
   return false;
 #endif
 }
+
+void VideoEncodeAccelerator::SetCommandBufferHelperCB(
+    base::RepeatingCallback<scoped_refptr<CommandBufferHelper>()>
+        get_command_buffer_helper_cb,
+    scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner) {}
 
 void VideoEncodeAccelerator::RequestEncodingParametersChange(
     const VideoBitrateAllocation& bitrate_allocation,

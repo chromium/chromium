@@ -212,6 +212,8 @@ void GpuVideoAcceleratorFactoriesImpl::OnChannelTokenReady(
   channel_token_ = token;
   channel_token_callbacks_.Notify(channel_token_);
   DCHECK(channel_token_callbacks_.empty());
+  codec_factory_->OnChannelTokenReady(
+      token, context_provider_->GetCommandBufferProxy()->route_id());
 }
 
 int32_t GpuVideoAcceleratorFactoriesImpl::GetCommandBufferRouteId() {

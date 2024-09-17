@@ -880,7 +880,8 @@ void GpuServiceImpl::CreateVideoEncodeAcceleratorProvider(
       std::move(vea_provider_receiver),
       base::BindRepeating(&media::GpuVideoEncodeAcceleratorFactory::CreateVEA),
       gpu_preferences_, gpu_channel_manager_->gpu_driver_bug_workarounds(),
-      gpu_info_.active_gpu(), std::move(runner));
+      gpu_info_.active_gpu(), std::move(runner),
+      media_gpu_channel_manager_->AsWeakPtr(), main_runner_);
 }
 
 void GpuServiceImpl::BindClientGmbInterface(

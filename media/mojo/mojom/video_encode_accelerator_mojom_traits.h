@@ -92,6 +92,11 @@ struct StructTraits<
     return profile.gpu_supported_pixel_formats;
   }
 
+  static bool supports_gpu_shared_images(
+      const media::VideoEncodeAccelerator::SupportedProfile& profile) {
+    return profile.supports_gpu_shared_images;
+  }
+
   static bool Read(
       media::mojom::VideoEncodeAcceleratorSupportedProfileDataView data,
       media::VideoEncodeAccelerator::SupportedProfile* out);
