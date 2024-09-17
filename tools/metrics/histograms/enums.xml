@@ -17633,6 +17633,7 @@ from previous Chrome versions.
   <int value="-1096694296" label="UpcomingFollowFeatures:enabled"/>
   <int value="-1096595907" label="disable-new-virtual-keyboard-behavior"/>
   <int value="-1095947169" label="ModalPermissionDialogView:disabled"/>
+  <int value="-1095899172" label="LensOverlayContextualSearchbox:enabled"/>
   <int value="-1095698985" label="ChromeSharePageInfo:enabled"/>
   <int value="-1093225454" label="FedCmIdPregistration:disabled"/>
   <int value="-1093135462" label="DesktopPWAsAttentionBadgingCrOS:disabled"/>
@@ -25235,6 +25236,7 @@ from previous Chrome versions.
       label="AccessibilitySelectToSpeakContextMenuOption:disabled"/>
   <int value="2044623453" label="DeferredShaping:disabled"/>
   <int value="2046329062" label="ReleaseTrackUi:enabled"/>
+  <int value="2046958942" label="LensOverlayContextualSearchbox:disabled"/>
   <int value="2047503404" label="FilesSWA:enabled"/>
   <int value="2047636405" label="MemorySaverModeAggressiveness:disabled"/>
   <int value="2047695652" label="DelegateOverscrollSwipes:enabled"/>

@@ -178,23 +178,6 @@ constexpr base::FeatureParam<bool> kUseOauthForLensOverlayRequests{
 constexpr base::FeatureParam<int> kLensOverlayClusterInfoLifetimeSeconds{
     &kLensOverlay, "cluster-info-lifetime-seconds", 600};
 
-constexpr base::FeatureParam<bool>
-    kUseVideoContextForTextOnlyLensOverlayRequests{
-        &kLensOverlay, "use-video-context-for-text-only-requests", false};
-
-constexpr base::FeatureParam<bool>
-    kUseVideoContextForMultimodalLensOverlayRequests{
-        &kLensOverlay, "use-video-context-for-multimodal-requests", false};
-
-constexpr base::FeatureParam<bool> kUsePdfsAsContext{
-    &kLensOverlay, "use-pdfs-as-context", false};
-
-constexpr base::FeatureParam<bool> kUseInnerTextAsContext{
-    &kLensOverlay, "use-inner-text-as-context", false};
-
-constexpr base::FeatureParam<bool> kUseInnerHtmlAsContext{
-    &kLensOverlay, "use-inner-html-as-context", false};
-
 constexpr base::FeatureParam<int> kLensOverlayTapRegionHeight{
     &kLensOverlay, "tap-region-height", 300};
 constexpr base::FeatureParam<int> kLensOverlayTapRegionWidth{
@@ -258,6 +241,25 @@ constexpr base::FeatureParam<bool>
 constexpr base::FeatureParam<int>
     kLensOverlayImageContextMenuActionsTextReceivedTimeout{
         &kLensOverlayImageContextMenuActions, "text-received-timeout", 2000};
+
+constexpr base::FeatureParam<bool> kUsePdfsAsContext{
+    &kLensOverlayContextualSearchbox, "use-pdfs-as-context", false};
+
+constexpr base::FeatureParam<bool> kUseInnerTextAsContext{
+    &kLensOverlayContextualSearchbox, "use-inner-text-as-context", false};
+
+constexpr base::FeatureParam<bool> kUseInnerHtmlAsContext{
+    &kLensOverlayContextualSearchbox, "use-inner-html-as-context", false};
+
+constexpr base::FeatureParam<bool>
+    kUseVideoContextForTextOnlyLensOverlayRequests{
+        &kLensOverlayContextualSearchbox,
+        "use-video-context-for-text-only-requests", false};
+
+constexpr base::FeatureParam<bool>
+    kUseVideoContextForMultimodalLensOverlayRequests{
+        &kLensOverlayContextualSearchbox,
+        "use-video-context-for-multimodal-requests", false};
 
 constexpr base::FeatureParam<std::string> kHomepageURLForLens{
     &kLensStandalone, "lens-homepage-url", "https://lens.google.com/v3/"};

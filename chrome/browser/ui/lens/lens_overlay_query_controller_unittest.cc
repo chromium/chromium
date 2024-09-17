@@ -598,7 +598,7 @@ TEST_F(LensOverlayQueryControllerTest,
 TEST_F(LensOverlayQueryControllerTest,
        FetchTextOnlyInteraction_ReturnsResponse) {
   feature_list_.InitAndEnableFeatureWithParameters(
-      lens::features::kLensOverlay,
+      lens::features::kLensOverlayContextualSearchbox,
       {{"use-video-context-for-text-only-requests", "true"}});
   base::test::TestFuture<std::vector<lens::mojom::OverlayObjectPtr>,
                          lens::mojom::TextPtr, bool>

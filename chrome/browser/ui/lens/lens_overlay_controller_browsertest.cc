@@ -585,17 +585,19 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
   }
 
   virtual void SetupFeatureList() {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        lens::features::kLensOverlay,
-        {
-            {"search-bubble", "true"},
-            {"use-inner-text-as-context", "true"},
-            {"use-inner-html-as-context", "true"},
-            {"results-search-url", kResultsSearchBaseUrl},
-            {"use-dynamic-theme", "true"},
-            {"use-dynamic-theme-min-population-pct", "0.002"},
-            {"use-dynamic-theme-min-chroma", "3.0"},
-        });
+    feature_list_.InitWithFeaturesAndParameters(
+        {{lens::features::kLensOverlay,
+          {{"search-bubble", "true"},
+           {"results-search-url", kResultsSearchBaseUrl},
+           {"use-dynamic-theme", "true"},
+           {"use-dynamic-theme-min-population-pct", "0.002"},
+           {"use-dynamic-theme-min-chroma", "3.0"}}},
+         {lens::features::kLensOverlayContextualSearchbox,
+          {
+              {"use-inner-text-as-context", "true"},
+              {"use-inner-html-as-context", "true"},
+          }}},
+        /*disabled_features=*/{});
   }
 
   const SkBitmap CreateNonEmptyBitmap(int width, int height) {
@@ -3845,8 +3847,8 @@ class LensOverlayControllerBrowserPDFContextualizationTest
   std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
       const override {
     auto enabled = PDFExtensionTestBase::GetEnabledFeatures();
-    enabled.push_back(
-        {lens::features::kLensOverlay, {{"use-pdfs-as-context", "true"}}});
+    enabled.push_back({lens::features::kLensOverlayContextualSearchbox,
+                       {{"use-pdfs-as-context", "true"}}});
     return enabled;
   }
 };
@@ -4206,9 +4208,8 @@ class LensOverlayControllerInnerHtmlEnabledTest
  protected:
   void SetupFeatureList() override {
     feature_list_.InitAndEnableFeatureWithParameters(
-        lens::features::kLensOverlay,
+        lens::features::kLensOverlayContextualSearchbox,
         {
-            {"search-bubble", "true"},
             {"use-inner-text-as-context", "false"},
             {"use-inner-html-as-context", "true"},
         });
@@ -4256,9 +4257,8 @@ class LensOverlayControllerContextualFeaturesDisabledTest
  protected:
   void SetupFeatureList() override {
     feature_list_.InitAndEnableFeatureWithParameters(
-        lens::features::kLensOverlay,
+        lens::features::kLensOverlayContextualSearchbox,
         {
-            {"search-bubble", "false"},
             {"use-inner-text-as-context", "false"},
         });
   }

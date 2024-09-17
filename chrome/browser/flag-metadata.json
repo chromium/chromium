@@ -3540,6 +3540,11 @@
     "expiry_milestone": 135
   },
   {
+    "name": "enable-lens-overlay-contextual-search-box",
+    "owners": [ "mercerd@google.com", "niharm@google.com", "mahmadi@chromium.org", "lens-chrome@google.com" ],
+    "expiry_milestone": 136
+  },
+  {
     "name": "enable-lens-overlay-translate-button",
     "owners": [ "juanmojica@google.com", "jdonnelly@chromium.org", "lens-chrome@google.com" ],
     "expiry_milestone": 135

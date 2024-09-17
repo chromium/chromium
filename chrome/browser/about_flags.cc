@@ -3074,12 +3074,6 @@ const FeatureEntry::FeatureParam kLensOverlayPersistentOmniboxEntryPoint[] = {
     {"omnibox-entry-point", "true"},
     {"omnibox-entry-point-always-visible", "true"},
 };
-const FeatureEntry::FeatureParam kLensOverlaySearchBubble[] = {
-    {"search-bubble", "true"},
-    {"use-video-context-for-text-only-requests", "true"},
-    {"use-video-context-for-multimodal-requests", "true"},
-    {"use-pdfs-as-context", "true"},
-};
 
 const FeatureEntry::FeatureVariation kLensOverlayVariations[] = {
     {"with no omnibox entry point", kLensOverlayNoOmniboxEntryPoint,
@@ -3090,8 +3084,19 @@ const FeatureEntry::FeatureVariation kLensOverlayVariations[] = {
     {"with persistent icon omnibox entry point",
      kLensOverlayPersistentOmniboxEntryPoint,
      std::size(kLensOverlayPersistentOmniboxEntryPoint), nullptr},
-    {"with contextualization", kLensOverlaySearchBubble,
-     std::size(kLensOverlaySearchBubble), nullptr},
+};
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+#if !BUILDFLAG(IS_ANDROID)
+const FeatureEntry::FeatureParam kContextualSearchboxWithPageContent[] = {
+    {"use-pdfs-as-context", "true"},
+    {"use-video-context-for-text-only-requests", "true"},
+    {"use-video-context-for-multimodal-requests", "true"},
+};
+
+const FeatureEntry::FeatureVariation kContextualSearchboxVariations[] = {
+    {"with page content", kContextualSearchboxWithPageContent,
+     std::size(kContextualSearchboxWithPageContent), nullptr},
 };
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -11936,6 +11941,16 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kLensOverlayTranslateButtonName,
      flag_descriptions::kLensOverlayTranslateButtonDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(lens::features::kLensOverlayTranslateButton)},
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+#if !BUILDFLAG(IS_ANDROID)
+    {"enable-lens-overlay-contextual-search-box",
+     flag_descriptions::kLensOverlayContextualSearchboxName,
+     flag_descriptions::kLensOverlayContextualSearchboxDescription, kOsDesktop,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         lens::features::kLensOverlayContextualSearchbox,
+         kContextualSearchboxVariations,
+         "LensOverlayContextualSearchbox")},
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)

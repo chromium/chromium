@@ -35,13 +35,17 @@ class LensOverlayUrlBuilderTest : public testing::Test {
     g_browser_process->SetApplicationLocale(kLanguage);
     // Set all the feature params here to keep the test consistent if future
     // default values are changed.
-    feature_list_.InitAndEnableFeatureWithParameters(
-        lens::features::kLensOverlay,
-        {
-            {"results-search-url", kResultsSearchBaseUrl},
-            {"use-video-context-for-text-only-requests", "true"},
-            {"use-video-context-for-multimodal-requests", "true"},
-        });
+    feature_list_.InitWithFeaturesAndParameters(
+        {{lens::features::kLensOverlay,
+          {
+              {"results-search-url", kResultsSearchBaseUrl},
+          }},
+         {lens::features::kLensOverlayContextualSearchbox,
+          {
+              {"use-video-context-for-text-only-requests", "true"},
+              {"use-video-context-for-multimodal-requests", "true"},
+          }}},
+        /*disabled_features=*/{});
   }
 
   std::string EncodeRequestId(lens::LensOverlayRequestId* request_id) {
@@ -139,12 +143,16 @@ TEST_F(LensOverlayUrlBuilderTest, BuildTextOnlySearchURLForLensTextSelection) {
 TEST_F(LensOverlayUrlBuilderTest,
        BuildTextOnlySearchURLWithVideoContextFlagOff) {
   feature_list_.Reset();
-  feature_list_.InitAndEnableFeatureWithParameters(
-      lens::features::kLensOverlay,
-      {
-          {"results-search-url", kResultsSearchBaseUrl},
-          {"use-video-context-for-text-only-requests", "false"},
-      });
+  feature_list_.InitWithFeaturesAndParameters(
+      {{lens::features::kLensOverlay,
+        {
+            {"results-search-url", kResultsSearchBaseUrl},
+        }},
+       {lens::features::kLensOverlayContextualSearchbox,
+        {
+            {"use-video-context-for-text-only-requests", "false"},
+        }}},
+      /*disabled_features=*/{});
 
   std::string text_query = "Apples";
   std::map<std::string, std::string> additional_params;
@@ -485,12 +493,16 @@ TEST_F(LensOverlayUrlBuilderTest,
 TEST_F(LensOverlayUrlBuilderTest,
        BuildMultimodalSearchURLWithVideoContextFlagOff) {
   feature_list_.Reset();
-  feature_list_.InitAndEnableFeatureWithParameters(
-      lens::features::kLensOverlay,
-      {
-          {"results-search-url", kResultsSearchBaseUrl},
-          {"use-video-context-for-multimodal-requests", "false"},
-      });
+  feature_list_.InitWithFeaturesAndParameters(
+      {{lens::features::kLensOverlay,
+        {
+            {"results-search-url", kResultsSearchBaseUrl},
+        }},
+       {lens::features::kLensOverlayContextualSearchbox,
+        {
+            {"use-video-context-for-multimodal-requests", "false"},
+        }}},
+      /*disabled_features=*/{});
 
   std::string text_query = "Green Apples";
   std::map<std::string, std::string> additional_params;

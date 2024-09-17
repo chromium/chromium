@@ -1380,6 +1380,9 @@ extern const char kLensRegionSearchStaticPageDescription[];
 extern const char kLensOverlayName[];
 extern const char kLensOverlayDescription[];
 
+extern const char kLensOverlayContextualSearchboxName[];
+extern const char kLensOverlayContextualSearchboxDescription[];
+
 extern const char kLensOverlayTranslateButtonName[];
 extern const char kLensOverlayTranslateButtonDescription[];
 
