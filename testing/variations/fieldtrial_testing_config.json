@@ -23426,6 +23426,33 @@
             ]
         }
     ],
+    "TopChromeToast": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledWith10sDuration",
+                    "params": {
+                        "toast_timeout": "10s",
+                        "toast_without_action_timeout": "10s"
+                    },
+                    "enable_features": [
+                        "ImageCopiedToast",
+                        "LinkCopiedToast",
+                        "LinkToHighlightCopiedToast",
+                        "ReadingListToast",
+                        "ToastFramework"
+                    ]
+                }
+            ]
+        }
+    ],
     "TopChromeWebUIUsesSpareRenderer": [
         {
             "platforms": [
