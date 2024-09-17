@@ -321,16 +321,10 @@ bool PdfViewWebPlugin::Initialize(blink::WebPluginContainer* container) {
   client_->SetPluginContainer(container);
   DCHECK_EQ(container->Plugin(), this);
 
-  pdf_accessibility_data_handler_ = client_->CreateAccessibilityDataHandler(
-      this, this, container, IsPrintPreview());
-
   return InitializeCommon();
 }
 
 bool PdfViewWebPlugin::InitializeForTesting() {
-  pdf_accessibility_data_handler_ =
-      client_->CreateAccessibilityDataHandler(this, this, nullptr, false);
-
   return InitializeCommon();
 }
 
@@ -382,6 +376,9 @@ bool PdfViewWebPlugin::InitializeCommon() {
   DCHECK(engine_);
 
   SendSetSmoothScrolling();
+
+  pdf_accessibility_data_handler_ = client_->CreateAccessibilityDataHandler(
+      this, this, client_->PluginContainer(), IsPrintPreview());
 
   // Skip the remaining initialization when in Print Preview mode. Loading will
   // continue after the plugin receives a "resetPrintPreviewMode" message.
