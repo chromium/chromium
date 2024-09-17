@@ -1740,6 +1740,9 @@ extern const char kPasswordParsingOnSaveUsesPredictionsDescription[];
 extern const char kPdfOcrName[];
 extern const char kPdfOcrDescription[];
 
+extern const char kPdfSearchifyName[];
+extern const char kPdfSearchifyDescription[];
+
 extern const char kPdfXfaFormsName[];
 extern const char kPdfXfaFormsDescription[];
 

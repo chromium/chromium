@@ -20797,6 +20797,7 @@ from previous Chrome versions.
   <int value="244208319"
       label="AutofillEnableMerchantDomainInUnmaskCardRequest:disabled"/>
   <int value="244697230" label="enable-theme-color-in-tabbed-mode"/>
+  <int value="244998311" label="PdfSearchify:disabled"/>
   <int value="245100553" label="PcieBillboardNotification:enabled"/>
   <int value="245338502" label="OpenXrExtendedFeatureSupport:enabled"/>
   <int value="245896533" label="SearchSuggestionsOnLocalNtp:enabled"/>
@@ -21407,6 +21408,7 @@ from previous Chrome versions.
   <int value="487810392" label="EnablePalmOnToolTypePalm:enabled"/>
   <int value="491258649" label="UseFirstPartySet"/>
   <int value="492113129" label="ExperimentalAppBanners:enabled"/>
+  <int value="492184007" label="PdfSearchify:enabled"/>
   <int value="492355659" label="SurfaceSyncThrottling:disabled"/>
   <int value="492528575"
       label="AutofillEnableUserAvatarInSaveCardFooter:enabled"/>

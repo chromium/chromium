@@ -7131,6 +7131,14 @@
     "expiry_milestone": 130
   },
   {
+    "name": "pdf-searchify",
+    "owners": [
+      "rhalavati@chromium.org",
+      "//pdf/OWNERS"
+    ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "pdf-use-skia-renderer",
     "owners": [ "thestig@chromium.org", "//pdf/OWNERS" ],
     "expiry_milestone": 133

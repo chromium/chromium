@@ -9065,13 +9065,14 @@ const FeatureEntry kFeatureEntries[] = {
 #endif
 
 #if BUILDFLAG(ENABLE_PDF)
-
-#if !BUILDFLAG(IS_ANDROID)
     {"pdf-ocr", flag_descriptions::kPdfOcrName,
      flag_descriptions::kPdfOcrDescription,
      kOsMac | kOsWin | kOsLinux | kOsCrOS | kOsLacros,
      FEATURE_VALUE_TYPE(features::kPdfOcr)},
-#endif  // !BUILDFLAG(IS_ANDROID)
+
+    {"pdf-searchify", flag_descriptions::kPdfSearchifyName,
+     flag_descriptions::kPdfSearchifyDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(chrome_pdf::features::kPdfSearchify)},
 
     {"pdf-xfa-forms", flag_descriptions::kPdfXfaFormsName,
      flag_descriptions::kPdfXfaFormsDescription, kOsDesktop,

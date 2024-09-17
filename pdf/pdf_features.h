@@ -21,6 +21,7 @@ BASE_DECLARE_FEATURE(kPdfIncrementalLoading);
 BASE_DECLARE_FEATURE(kPdfOopif);
 BASE_DECLARE_FEATURE(kPdfPartialLoading);
 BASE_DECLARE_FEATURE(kPdfPortfolio);
+BASE_DECLARE_FEATURE(kPdfSearchify);
 BASE_DECLARE_FEATURE(kPdfUseSkiaRenderer);
 BASE_DECLARE_FEATURE(kPdfXfaSupport);
 

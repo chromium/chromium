@@ -3017,6 +3017,11 @@ const char kPdfOcrDescription[] =
     "Enables a feature whereby inaccessible (i.e. untagged) PDFs are made "
     "accessible using an optical character recognition service.";
 
+const char kPdfSearchifyName[] = "Make the text in PDF images interactable";
+const char kPdfSearchifyDescription[] =
+    "Enables a feature which runs OCR on PDF images and makes the recognized "
+    "text searchable and editable.";
+
 const char kPdfXfaFormsName[] = "PDF XFA support";
 const char kPdfXfaFormsDescription[] =
     "Enables support for XFA forms in PDFs. "

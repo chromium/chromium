@@ -35,6 +35,8 @@ BASE_FEATURE(kPdfPartialLoading,
 
 BASE_FEATURE(kPdfPortfolio, "PdfPortfolio", base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kPdfSearchify, "PdfSearchify", base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kPdfUseSkiaRenderer,
              "PdfUseSkiaRenderer",
              base::FEATURE_DISABLED_BY_DEFAULT);
