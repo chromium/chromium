@@ -17,6 +17,7 @@
 #include "base/not_fatal_until.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/to_string.h"
+#include "base/types/optional_ref.h"
 #include "base/types/optional_util.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
@@ -35,6 +36,7 @@
 #include "net/cookies/cookie_util.h"
 #include "net/cookies/static_cookie_policy.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/tpcd/metadata/manager.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -444,11 +446,17 @@ void CookieSettings::AugmentInclusionStatus(
       net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES);
 }
 
-bool CookieSettings::IsStorageAccessHeaderOriginTrialEnabled(
+bool CookieSettings::IsStorageAccessHeadersEnabled(
     const GURL& url,
-    const GURL& first_party_url) const {
-  return GetContentSetting(
-             url, first_party_url,
+    base::optional_ref<const url::Origin> top_frame_origin) const {
+  if (base::FeatureList::IsEnabled(network::features::kStorageAccessHeaders)) {
+    return true;
+  }
+  return top_frame_origin &&
+         base::FeatureList::IsEnabled(
+             network::features::kStorageAccessHeadersTrial) &&
+         GetContentSetting(
+             url, top_frame_origin->GetURL(),
              ContentSettingsType::STORAGE_ACCESS_HEADER_ORIGIN_TRIAL,
              /*info=*/nullptr) == CONTENT_SETTING_ALLOW;
 }

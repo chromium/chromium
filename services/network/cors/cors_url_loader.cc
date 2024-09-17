@@ -24,6 +24,7 @@
 #include "net/log/net_log_values.h"
 #include "net/shared_dictionary/shared_dictionary.h"
 #include "net/url_request/url_request_context.h"
+#include "services/network/cookie_manager.h"
 #include "services/network/cors/cors_url_loader_factory.h"
 #include "services/network/cors/cors_util.h"
 #include "services/network/cors/preflight_controller.h"
@@ -863,11 +864,10 @@ void CorsURLLoader::StartRequest() {
       return false;
     }
 
-    if (context_->url_request_context()
-            ->network_delegate()
-            ->IsStorageAccessHeaderEnabled(
-                base::OptionalToPtr(isolation_info_.top_frame_origin()),
-                request_.url) &&
+    if (context_->cookie_manager()
+            ->cookie_settings()
+            .IsStorageAccessHeadersEnabled(
+                request_.url, isolation_info_.top_frame_origin()) &&
         !request_.site_for_cookies.IsFirstParty(request_.url)) {
       // TODO(https://crbug.com/366284840): CorsURLLoader ought to be aware of
       // the Sec-Fetch-Storage-Access state, so that it can only add the Origin

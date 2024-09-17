@@ -13,6 +13,7 @@
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
+#include "base/types/optional_ref.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -161,11 +162,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
     return (setting == CONTENT_SETTING_ALLOW);
   }
 
-  // Returns true if there is a setting for the origin trial for storage access
-  // headers indicating that the url and first party url are participating.
-  bool IsStorageAccessHeaderOriginTrialEnabled(
+  // Returns true if Storage Access Headers are enabled in the given context.
+  bool IsStorageAccessHeadersEnabled(
       const GURL& url,
-      const GURL& first_party_url) const;
+      base::optional_ref<const url::Origin> top_frame_origin) const;
 
  private:
   // content_settings::CookieSettingsBase:

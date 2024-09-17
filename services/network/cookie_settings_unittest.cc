@@ -2179,8 +2179,8 @@ TEST_F(CookieSettingsTest, GetStorageAccessStatus) {
 TEST_F(CookieSettingsTest,
        StorageAccessHeaderOriginTrialSettingDefaultBlocked) {
   CookieSettings settings;
-  EXPECT_FALSE(settings.IsStorageAccessHeaderOriginTrialEnabled(
-      GURL(kURL), GURL(kOtherURL)));
+  EXPECT_FALSE(settings.IsStorageAccessHeadersEnabled(
+      GURL(kURL), url::Origin::Create(GURL(kOtherURL))));
 }
 
 TEST_F(CookieSettingsTest,
@@ -2190,8 +2190,8 @@ TEST_F(CookieSettingsTest,
       ContentSettingsType::STORAGE_ACCESS_HEADER_ORIGIN_TRIAL,
       {CreateSetting(kURL, kOtherURL, CONTENT_SETTING_ALLOW)});
 
-  EXPECT_TRUE(settings.IsStorageAccessHeaderOriginTrialEnabled(
-      GURL(kURL), GURL(kOtherURL)));
+  EXPECT_TRUE(settings.IsStorageAccessHeadersEnabled(
+      GURL(kURL), url::Origin::Create(GURL(kOtherURL))));
 }
 
 TEST_F(CookieSettingsTest,
@@ -2201,8 +2201,8 @@ TEST_F(CookieSettingsTest,
       ContentSettingsType::STORAGE_ACCESS,
       {CreateSetting(kURL, kOtherURL, CONTENT_SETTING_ALLOW)});
 
-  EXPECT_FALSE(settings.IsStorageAccessHeaderOriginTrialEnabled(
-      GURL(kURL), GURL(kOtherURL)));
+  EXPECT_FALSE(settings.IsStorageAccessHeadersEnabled(
+      GURL(kURL), url::Origin::Create(GURL(kOtherURL))));
 }
 
 TEST_F(
@@ -2213,8 +2213,8 @@ TEST_F(
       ContentSettingsType::STORAGE_ACCESS_HEADER_ORIGIN_TRIAL,
       {CreateSetting(kUnrelatedURL, kOtherURL, CONTENT_SETTING_ALLOW)});
 
-  EXPECT_FALSE(settings.IsStorageAccessHeaderOriginTrialEnabled(
-      GURL(kURL), GURL(kOtherURL)));
+  EXPECT_FALSE(settings.IsStorageAccessHeadersEnabled(
+      GURL(kURL), url::Origin::Create(GURL(kOtherURL))));
 }
 
 // NOTE: These tests will fail if their FINAL name is of length greater than 256
