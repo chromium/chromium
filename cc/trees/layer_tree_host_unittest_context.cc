@@ -1019,6 +1019,11 @@ class ScrollbarLayerLostContext : public LayerTreeHostContextTest {
  public:
   ScrollbarLayerLostContext() : commits_(0) {}
 
+  void SetupTree() override {
+    SetInitialRootBounds(gfx::Size(256, 256));
+    LayerTreeTest::SetupTree();
+  }
+
   void BeginTest() override {
     scoped_refptr<Layer> scroll_layer = Layer::Create();
     scrollbar_layer_ = base::MakeRefCounted<FakePaintedScrollbarLayer>(
