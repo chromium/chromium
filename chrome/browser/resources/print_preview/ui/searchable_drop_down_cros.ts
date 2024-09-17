@@ -20,7 +20,7 @@
  */
 import '//resources/cr_elements/cr_input/cr_input.js';
 import '//resources/cr_elements/cr_hidden_style.css.js';
-import '//resources/cr_elements/icons.html.js';
+import '//resources/cr_elements/icons_lit.html.js';
 import '//resources/cr_elements/cr_shared_style.css.js';
 import '//resources/cr_elements/cr_shared_vars.css.js';
 import '//resources/polymer/v3_0/iron-dropdown/iron-dropdown.js';
