@@ -76,7 +76,8 @@ void DisplayManagerTestApi::ResetMaximumDisplay() {
   maximum_support_display_ = kDefaultMaxSupportDisplayTest;
 }
 
-int64_t DisplayManagerTestApi::AddDisplay(const DisplayParams& display_params) {
+int64_t DisplayManagerTestApi::AddDisplay(uint8_t id,
+                                          const DisplayParams& display_params) {
   const Displays& current_displays = display_manager_->active_display_list();
   if (current_displays.size() >= maximum_support_display_) {
     LOG(ERROR) << "Display limit exceeded.";
@@ -85,6 +86,10 @@ int64_t DisplayManagerTestApi::AddDisplay(const DisplayParams& display_params) {
   int64_t new_display_id = GetASynthesizedDisplayId();
   std::vector<ManagedDisplayInfo> current_display_infos;
   for (const Display& display : current_displays) {
+    if (display_id_to_add_display_id_[display.id()] == id) {
+      LOG(ERROR) << "Display with ID " << id << " already exists.";
+      return kInvalidDisplayId;
+    }
     ManagedDisplayInfo display_info =
         GetInternalManagedDisplayInfo(display.id());
     gfx::Rect bounds = display_info.bounds_in_native();
@@ -105,6 +110,7 @@ int64_t DisplayManagerTestApi::AddDisplay(const DisplayParams& display_params) {
   current_display_infos.push_back(new_display);
   UpdateDisplayWithDisplayInfoList(current_display_infos,
                                    /*from_native_platform=*/false);
+  display_id_to_add_display_id_[new_display.id()] = id;
   return new_display.id();
 }
 
@@ -113,6 +119,7 @@ void DisplayManagerTestApi::RemoveDisplay(int64_t display_id) {
   std::vector<ManagedDisplayInfo> desired_display_infos;
   for (const Display& display : active_displays) {
     if (display.id() == display_id) {
+      display_id_to_add_display_id_.erase(display_id);
       continue;
     }
     desired_display_infos.push_back(

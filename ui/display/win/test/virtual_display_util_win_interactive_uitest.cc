@@ -42,31 +42,45 @@ TEST_F(VirtualDisplayUtilWinInteractiveUitest, IsAPIAvailable) {
   EXPECT_TRUE(virtual_display_util_win_.IsAPIAvailable());
 }
 
+TEST_F(VirtualDisplayUtilWinInteractiveUitest, AddDisplay) {
+  int initial_display_count = screen()->GetNumDisplays();
+  int64_t display_id = virtual_display_util_win_.AddDisplay(
+      1, display::test::VirtualDisplayUtilWin::k1920x1080);
+  EXPECT_NE(display_id, display::kInvalidDisplayId);
+  EXPECT_EQ(screen()->GetNumDisplays(), initial_display_count + 1);
+  display::Display d;
+  EXPECT_TRUE(screen()->GetDisplayWithDisplayId(display_id, &d));
+  EXPECT_EQ(d.size(), gfx::Size(1920, 1080));
+
+  // Expect failure when adding a duplicate index.
+  EXPECT_EQ(virtual_display_util_win_.AddDisplay(
+                1, display::test::VirtualDisplayUtilWin::k1920x1080),
+            display::kInvalidDisplayId);
+
+  virtual_display_util_win_.ResetDisplays();
+  EXPECT_FALSE(screen()->GetDisplayWithDisplayId(display_id, &d));
+}
+
 TEST_F(VirtualDisplayUtilWinInteractiveUitest, AddRemove) {
   int64_t display_id[3];
   int initial_display_count = screen()->GetNumDisplays();
   display_id[0] = virtual_display_util_win_.AddDisplay(
-      display::test::VirtualDisplayUtilWin::k1920x1080);
+      0, display::test::VirtualDisplayUtilWin::k1920x1080);
   EXPECT_NE(display_id[0], display::kInvalidDisplayId);
   display::Display d;
-  EXPECT_EQ(screen()->GetNumDisplays(), initial_display_count + 1);
   EXPECT_TRUE(screen()->GetDisplayWithDisplayId(display_id[0], &d));
-  EXPECT_EQ(d.size(), gfx::Size(1920, 1080));
 
   display_id[1] = virtual_display_util_win_.AddDisplay(
-      display::test::VirtualDisplayUtilWin::k1024x768);
+      1, display::test::VirtualDisplayUtilWin::k1024x768);
   EXPECT_NE(display_id[1], display::kInvalidDisplayId);
-  EXPECT_EQ(screen()->GetNumDisplays(), initial_display_count + 2);
   EXPECT_TRUE(screen()->GetDisplayWithDisplayId(display_id[1], &d));
-  EXPECT_EQ(d.size(), gfx::Size(1024, 768));
 
   display_id[2] = virtual_display_util_win_.AddDisplay(
-      display::test::VirtualDisplayUtilWin::k1920x1080);
+      2, display::test::VirtualDisplayUtilWin::k1920x1080);
   EXPECT_NE(display_id[2], display::kInvalidDisplayId);
-  EXPECT_EQ(screen()->GetNumDisplays(), initial_display_count + 3);
   EXPECT_TRUE(screen()->GetDisplayWithDisplayId(display_id[2], &d));
-  EXPECT_EQ(d.size(), gfx::Size(1920, 1080));
 
+  EXPECT_EQ(screen()->GetNumDisplays(), initial_display_count+3);
   virtual_display_util_win_.RemoveDisplay(display_id[1]);
   EXPECT_EQ(screen()->GetNumDisplays(), initial_display_count+2);
   // Only virtual display 2 should no longer exist.

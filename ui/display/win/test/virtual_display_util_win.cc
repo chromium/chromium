@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <functional>
 #include <iterator>
-#include <limits>
 
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_tree.h"
@@ -144,8 +143,8 @@ bool VirtualDisplayUtilWin::IsAPIAvailable() {
   return DisplayDriverController::IsDriverInstalled();
 }
 
-int64_t VirtualDisplayUtilWin::AddDisplay(const DisplayParams& display_params) {
-  uint8_t id = SynthesizeInternalDisplayId();
+int64_t VirtualDisplayUtilWin::AddDisplay(uint8_t id,
+                                          const DisplayParams& display_params) {
   if (virtual_displays_.find(id) != virtual_displays_.end()) {
     LOG(ERROR) << "Duplicate virtual display ID added: " << id;
     return kInvalidDisplayId;
@@ -270,14 +269,6 @@ void VirtualDisplayUtilWin::StartWaiting() {
 void VirtualDisplayUtilWin::StopWaiting() {
   CHECK(run_loop_);
   run_loop_->Quit();
-}
-
-// static
-uint8_t VirtualDisplayUtilWin::SynthesizeInternalDisplayId() {
-  static uint8_t synthesized_display_id = 0;
-  CHECK_LT(synthesized_display_id, std::numeric_limits<uint8_t>::max())
-      << "All synthesized display IDs in use.";
-  return synthesized_display_id++;
 }
 
 // static
