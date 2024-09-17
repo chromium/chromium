@@ -103,9 +103,7 @@ class TabListRecyclerView extends RecyclerView
         if (!ChromeFeatureList.sGtsCloseTabAnimation.isEnabled()) return;
 
         if (mTabListItemAnimator == null) {
-            boolean removeEmphasizedAccelerate =
-                    ChromeFeatureList.sGtsCloseTabAnimationRemoveEmphasizedAccelerate.getValue();
-            mTabListItemAnimator = new TabListItemAnimator(removeEmphasizedAccelerate);
+            mTabListItemAnimator = new TabListItemAnimator();
             setItemAnimator(mTabListItemAnimator);
         }
     }

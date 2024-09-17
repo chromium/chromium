@@ -1160,20 +1160,6 @@ public class TabSwitcherPaneUnitTest {
         verify(mUserEducationHelper, never()).requestShowIPH(any());
     }
 
-    @Test
-    public void testShowCloseAllTabsAnimation() {
-        mTabSwitcherPane.showCloseAllTabsAnimation(mRunnable);
-        verify(mRunnable).run();
-
-        mTabSwitcherPane.initWithNative();
-        mTabSwitcherPane.createTabSwitcherPaneCoordinator();
-        TabSwitcherPaneCoordinator coordinator = mTabSwitcherPane.getTabSwitcherPaneCoordinator();
-        assertNotNull(coordinator);
-
-        mTabSwitcherPane.showCloseAllTabsAnimation(mRunnable);
-        verify(coordinator).showCloseAllTabsAnimation(mRunnable);
-    }
-
     private void createSelectedTab() {
         mTabModel.addTab(TAB_ID);
         mTabModel.setIndex(0, TabSelectionType.FROM_USER);

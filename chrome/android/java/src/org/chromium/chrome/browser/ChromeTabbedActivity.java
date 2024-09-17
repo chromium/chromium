@@ -2831,11 +2831,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             // Close both incognito and normal tabs.
             Runnable closeAllTabsRunnable =
                     CloseAllTabsHelper.buildCloseAllTabsRunnable(
-                            mHubProvider.getHubManagerSupplier(),
-                            mTabSwitcherSupplier,
-                            mIncognitoTabSwitcherSupplier,
-                            getTabModelSelectorSupplier().get(),
-                            /* isIncognitoOnly= */ false);
+                            getTabModelSelectorSupplier().get(), /* isIncognitoOnly= */ false);
             CloseAllTabsDialog.show(
                     this,
                     getModalDialogManagerSupplier(),
@@ -2846,11 +2842,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             // Close only incognito tabs
             Runnable closeAllTabsRunnable =
                     CloseAllTabsHelper.buildCloseAllTabsRunnable(
-                            mHubProvider.getHubManagerSupplier(),
-                            mTabSwitcherSupplier,
-                            mIncognitoTabSwitcherSupplier,
-                            getTabModelSelectorSupplier().get(),
-                            /* isIncognitoOnly= */ true);
+                            getTabModelSelectorSupplier().get(), /* isIncognitoOnly= */ true);
             CloseAllTabsDialog.show(
                     this,
                     getModalDialogManagerSupplier(),

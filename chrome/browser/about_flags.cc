@@ -3558,30 +3558,6 @@ const FeatureEntry::FeatureVariation
          kTabGroupCreationDialogAndroidShowSetting,
          std::size(kTabGroupCreationDialogAndroidShowSetting), nullptr}};
 
-const FeatureEntry::FeatureParam kGtsCloseTabAnimationRemoveStandard200[] = {
-    {"remove_emphasized_accelerate", "false"},
-    {"remove_extend_duration", "false"}};
-const FeatureEntry::FeatureParam kGtsCloseTabAnimationRemoveStandard300[] = {
-    {"remove_emphasized_accelerate", "false"},
-    {"remove_extend_duration", "true"}};
-const FeatureEntry::FeatureParam kGtsCloseTabAnimationRemoveEmphasized200[] = {
-    {"remove_emphasized_accelerate", "true"},
-    {"remove_extend_duration", "false"}};
-const FeatureEntry::FeatureParam kGtsCloseTabAnimationRemoveEmphasized300[] = {
-    {"remove_emphasized_accelerate", "true"},
-    {"remove_extend_duration", "true"}};
-
-const FeatureEntry::FeatureVariation kGtsCloseTabAnimationVariations[] = {
-    {"Standard accelerate 200ms", kGtsCloseTabAnimationRemoveStandard200,
-     std::size(kGtsCloseTabAnimationRemoveStandard200), nullptr},
-    {"Standard accelerate 300ms", kGtsCloseTabAnimationRemoveStandard300,
-     std::size(kGtsCloseTabAnimationRemoveStandard300), nullptr},
-    {"Emphasized accelerate 200ms", kGtsCloseTabAnimationRemoveEmphasized200,
-     std::size(kGtsCloseTabAnimationRemoveEmphasized200), nullptr},
-    {"Emphasized accelerate 300ms", kGtsCloseTabAnimationRemoveEmphasized300,
-     std::size(kGtsCloseTabAnimationRemoveEmphasized300), nullptr},
-};
-
 const FeatureEntry::FeatureParam kEdgeToEdgeBottomChinDebugFeatureParams[] = {
     {chrome::android::kEdgeToEdgeBottomChinDebugParam.name, "true"}};
 const FeatureEntry::FeatureVariation kEdgeToEdgeBottomChinVariations[] = {
@@ -10159,9 +10135,7 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"gts-close-tab-animation", flag_descriptions::kGtsCloseTabAnimationName,
      flag_descriptions::kGtsCloseTabAnimationDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kGtsCloseTabAnimation,
-                                    kGtsCloseTabAnimationVariations,
-                                    "GtsCloseTabAnimationVariations")},
+     FEATURE_VALUE_TYPE(chrome::android::kGtsCloseTabAnimation)},
 
     {"tab-strip-group-collapse-android",
      flag_descriptions::kTabStripGroupCollapseAndroidName,
