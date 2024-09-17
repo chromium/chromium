@@ -2961,11 +2961,6 @@
     "expiry_milestone": 128
   },
   {
-    "name": "enable-cros-virtual-keyboard-round-corners",
-    "owners": [ "jopalmer@chromium.org", "essential-inputs-team@google.com" ],
-    "expiry_milestone": 115
-  },
-  {
     "name": "enable-cros-vm-memory-management-service",
     "owners": [ "kalutes@google.com", "cwd@google.com", "cros-vm-technology@google.com" ],
     "expiry_milestone": 130

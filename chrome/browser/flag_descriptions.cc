@@ -7732,11 +7732,6 @@ const char kVirtualKeyboardGlobalEmojiPreferencesDescription[] =
     "Enable global preferences for skin tone and gender in the virtual "
     "keyboard emoji picker.";
 
-const char kVirtualKeyboardRoundCornersName[] =
-    "Virtual Keyboard Round Corners";
-const char kVirtualKeyboardRoundCornersDescription[] =
-    "Enables round corners on the virtual keyboard.";
-
 const char kWakeOnWifiAllowedName[] = "Allow enabling wake on WiFi features";
 const char kWakeOnWifiAllowedDescription[] =
     "Allows wake on WiFi features in shill to be enabled.";
