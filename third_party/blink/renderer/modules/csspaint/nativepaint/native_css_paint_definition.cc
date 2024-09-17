@@ -64,11 +64,26 @@ Animation* NativeCssPaintDefinition::GetAnimationForProperty(
   // type only. Fall back to the main thread if it is not composite:replace.
   const AnimationEffect* effect = compositable_animation->effect();
 
-  // TODO(crbug.com/1429770): Paint worklet animations do not presently work
-  // with positive delays, so don't composite them for the moment. This should
-  // be removed when the issue is resolved.
+  // TODO(crbug.com/1429770): Implement positive delay fix for bgcolor.
   if (effect->SpecifiedTiming().start_delay.AsTimeValue().InSecondsF() > 0.f) {
-    return nullptr;
+    if (property.PropertyID() == CSSPropertyID::kClipPath) {
+      // TODO(crbug.com/365481208): When clip-path: none, the clip path paint
+      // worklet won't be painted. This results in a composited animation with
+      // no associated paint worklet. This prevents that from happening by
+      // forcing these animations to be downgraded to main thread, however this
+      // solution is far from ideal, and introduces complexity into an already
+      // complex state machine. This should be removed once a better solution
+      // is found to clip-path: none during delays.
+      if (!element->GetLayoutObject()->StyleRef().HasClipPath()) {
+        // Set the animation to kNotComposited so that when the animation begins
+        // the paint worklet is not painted.
+        element->GetElementAnimations()->SetCompositedClipPathStatus(
+            ElementAnimations::CompositedPaintStatus::kNotComposited);
+        return nullptr;
+      }
+    } else {
+      return nullptr;
+    }
   }
 
   DCHECK(effect->IsKeyframeEffect());

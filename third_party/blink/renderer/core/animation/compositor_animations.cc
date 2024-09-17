@@ -178,7 +178,7 @@ void DefaultToUnsupportedProperty(
 
 // True if it is either a no-op background-color animation, or a no-op custom
 // property animation.
-bool IsNoOpBGColorOrVariableAnimation(const PropertyHandle& property,
+bool IsNoOpPaintWorkletOrVariableAnimation(const PropertyHandle& property,
                                       const LayoutObject* layout_object) {
   // If the background color paint worklet was painted, a unique id will be
   // generated. See BackgroundColorPaintWorklet::GetBGColorPaintWorkletParams
@@ -192,9 +192,12 @@ bool IsNoOpBGColorOrVariableAnimation(const PropertyHandle& property,
   bool is_no_op_bgcolor_anim =
       RuntimeEnabledFeatures::CompositeBGColorAnimationEnabled() &&
       property.GetCSSProperty().PropertyID() == CSSPropertyID::kBackgroundColor;
+  bool is_no_op_clip_anim =
+      RuntimeEnabledFeatures::CompositeClipPathAnimationEnabled() &&
+      property.GetCSSProperty().PropertyID() == CSSPropertyID::kClipPath;
   bool is_no_op_variable_anim =
       property.GetCSSProperty().PropertyID() == CSSPropertyID::kVariable;
-  return is_no_op_variable_anim || is_no_op_bgcolor_anim;
+  return is_no_op_variable_anim || is_no_op_clip_anim || is_no_op_bgcolor_anim;
 }
 
 bool CompositedAnimationRequiresProperties(const PropertyHandle& property,
@@ -1130,12 +1133,12 @@ void CompositorAnimations::GetAnimationOnCompositor(
 
     // By default, it is a kInvalidElementId.
     CompositorElementId id;
-    if (!IsNoOpBGColorOrVariableAnimation(property,
-                                          target_element.GetLayoutObject())) {
+    if (!IsNoOpPaintWorkletOrVariableAnimation(
+            property, target_element.GetLayoutObject())) {
       id = CompositorElementIdFromUniqueObjectId(
-          target_element.GetLayoutObject()->UniqueId(),
-          CompositorElementNamespaceForProperty(
-              property.GetCSSProperty().PropertyID()));
+              target_element.GetLayoutObject()->UniqueId(),
+              CompositorElementNamespaceForProperty(
+                  property.GetCSSProperty().PropertyID()));
     }
     keyframe_model->set_element_id(id);
     keyframe_model->set_iterations(compositor_timing.adjusted_iteration_count);
