@@ -38,14 +38,19 @@ id<GREYMatcher> TabGroupIndicatorViewMatcher() {
       grey_sufficientlyVisible(), nil);
 }
 
-// Matcher for the Tab Grid button in its kNormal style.
-id<GREYMatcher> TabGridButtonInNormalStyle() {
-  return ButtonWithAccessibilityLabelId(IDS_IOS_TOOLBAR_SHOW_TABS);
+// Matcher for the Tab Grid button in its kNormal style with the given tab
+// count text.
+id<GREYMatcher> TabGridButtonInNormalStyle(NSString* tabCountText) {
+  return grey_allOf(ButtonWithAccessibilityLabelId(IDS_IOS_TOOLBAR_SHOW_TABS),
+                    grey_accessibilityValue(tabCountText), nil);
 }
 
-// Matcher for the Tab Grid button in its kTabGroup style.
-id<GREYMatcher> TabGridButtonInTabGroupStyle() {
-  return ButtonWithAccessibilityLabelId(IDS_IOS_TOOLBAR_SHOW_TAB_GROUP);
+// Matcher for the Tab Grid button in its kTabGroup style with the given tab
+// count text.
+id<GREYMatcher> TabGridButtonInTabGroupStyle(NSString* tabCountText) {
+  return grey_allOf(
+      ButtonWithAccessibilityLabelId(IDS_IOS_TOOLBAR_SHOW_TAB_GROUP),
+      grey_accessibilityValue(tabCountText), nil);
 }
 
 // Returns a matcher for the tab group indicator view with `title` as title.
@@ -405,7 +410,7 @@ void CreateDefaultTabGroupAndOpenMenu(
 // Tests that the tab group indicator is correctly displayed on the NTP.
 - (void)testTabGroupIndicatorNTP {
   if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"On iPad, the tab indicator is not displauyed if "
+    EARL_GREY_TEST_SKIPPED(@"On iPad, the tab indicator is not displayed if "
                            @"the tab strip is visible.");
   }
 
@@ -453,20 +458,30 @@ void CreateDefaultTabGroupAndOpenMenu(
 
 // Tests that the Tab Grid button indicator is correctly updated whether a tab
 // is grouped or not.
-// TODO(crbug.com/367287351): Test fails on iphone-device.
-- (void)DISABLED_testTabGridButtonUpdatesWhenTabIsGroupedUngrouped {
-  // Check that the Tab Grid button is in normal style.
-  [[EarlGrey selectElementWithMatcher:TabGridButtonInNormalStyle()]
+// TODO(crbug.com/367287351): Test fails on official bots.
+#if defined(OFFICIAL_BUILD)
+#define MAYBE_testTabGridButtonUpdatesWhenTabIsGroupedUngrouped \
+  DISABLED_testTabGridButtonUpdatesWhenTabIsGroupedUngrouped
+#else
+#define MAYBE_testTabGridButtonUpdatesWhenTabIsGroupedUngrouped \
+  testTabGridButtonUpdatesWhenTabIsGroupedUngrouped
+#endif  // defined(OFFICIAL_BUILD)
+- (void)MAYBE_testTabGridButtonUpdatesWhenTabIsGroupedUngrouped {
+  // Open a second tab.
+  [ChromeEarlGreyUI openNewTab];
+
+  // Check that the Tab Grid button is in normal style, with 2 tabs.
+  [[EarlGrey selectElementWithMatcher:TabGridButtonInNormalStyle(@"2")]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Create a group.
   [ChromeEarlGreyUI openTabGrid];
-  CreateDefaultFirstGroupFromTabCellAtIndex(0);
+  CreateDefaultFirstGroupFromTabCellAtIndex(1);
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridDoneButton()]
       performAction:grey_tap()];
 
-  // Check that the Tab Grid button is in kTabGroup style.
-  [[EarlGrey selectElementWithMatcher:TabGridButtonInTabGroupStyle()]
+  // Check that the Tab Grid button is in kTabGroup style, with 1 tab.
+  [[EarlGrey selectElementWithMatcher:TabGridButtonInTabGroupStyle(@"1")]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Ungroup the tab.
@@ -486,8 +501,8 @@ void CreateDefaultTabGroupAndOpenMenu(
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridDoneButton()]
       performAction:grey_tap()];
 
-  // Check that the Tab Grid button is in normal style.
-  [[EarlGrey selectElementWithMatcher:TabGridButtonInNormalStyle()]
+  // Check that the Tab Grid button is in normal style, with 2 tabs.
+  [[EarlGrey selectElementWithMatcher:TabGridButtonInNormalStyle(@"2")]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
