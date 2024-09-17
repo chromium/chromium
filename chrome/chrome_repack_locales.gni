@@ -105,7 +105,7 @@ template("chrome_repack_locales") {
       source_patterns += [ "${root_gen_dir}/components/strings/search_engine_descriptions_strings_" ]
       deps += [ "//components/strings:search_engine_descriptions_strings" ]
     }
-    if (enable_extensions) {
+    if (enable_extensions_core) {
       source_patterns +=
           [ "${root_gen_dir}/extensions/strings/extensions_strings_" ]
       deps += [ "//extensions/strings" ]

@@ -808,7 +808,7 @@ void ChromeContentRendererClient::WebViewCreated(
     const url::Origin* outermost_origin) {
   new prerender::NoStatePrefetchClient(web_view);
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   extensions::ExtensionsRendererClient::Get()->WebViewCreated(web_view,
                                                               outermost_origin);
 #endif
