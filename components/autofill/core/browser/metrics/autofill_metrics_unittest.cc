@@ -1215,6 +1215,12 @@ TEST_F(AutofillMetricsTest, LogStoredCreditCardWithInvalidCardNumberMetrics) {
 
 // Test that the credit card checkout flow user actions are correctly logged.
 TEST_F(AutofillMetricsTest, CreditCardCheckoutFlowUserActions) {
+#if BUILDFLAG(IS_ANDROID)
+  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+    GTEST_SKIP() << "This test should not run on automotive.";
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+
   // Disable mandatory reauth as it is not part of this test and will
   // interfere with the card retrieval flow.
   personal_data()
@@ -2334,6 +2340,12 @@ TEST_P(AutofillMetricsIFrameTest,
 
 // Test that we log filled form events for credit cards.
 TEST_P(AutofillMetricsIFrameTest, CreditCardFilledFormEvents) {
+#if BUILDFLAG(IS_ANDROID)
+  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+    GTEST_SKIP() << "This test should not run on automotive.";
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+
   // Disable mandatory reauth as it is not part of this test and will
   // interfere with the card retrieval flow.
   personal_data()
