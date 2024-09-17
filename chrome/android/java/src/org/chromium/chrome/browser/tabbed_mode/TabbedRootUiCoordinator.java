@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.tabbed_mode;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -176,7 +175,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private WebFeedFollowIntroController mWebFeedFollowIntroController;
     private UrlFocusChangeListener mUrlFocusChangeListener;
     private @Nullable ToolbarButtonInProductHelpController mToolbarButtonInProductHelpController;
-    private LinkToTextIPHController mLinkToTextIPHController;
     private PwaBottomSheetController mPwaBottomSheetController;
     private NotificationPermissionController mNotificationPermissionController;
     private HistoryNavigationCoordinator mHistoryNavigationCoordinator;
@@ -186,10 +184,10 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private UndoGroupSnackbarController mUndoGroupSnackbarController;
     private final InsetObserver mInsetObserver;
     private final Function<Tab, Boolean> mBackButtonShouldCloseTabFn;
-    private LayoutStateProvider.LayoutStateObserver mGestureNavLayoutObserver;
+    private final LayoutStateProvider.LayoutStateObserver mGestureNavLayoutObserver;
     private final OneshotSupplierImpl<EphemeralTabCoordinator> mEphemeralTabCoordinatorSupplier;
     private Callback<Integer> mOnTabStripHeightChangedCallback;
-    private MultiInstanceManager mMultiInstanceManager;
+    private final MultiInstanceManager mMultiInstanceManager;
     private int mStatusIndicatorHeight;
     private final OneshotSupplier<HubManager> mHubManagerSupplier;
     private TouchEventObserver mDragDropTouchObserver;
@@ -197,8 +195,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private final ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
     private @Nullable AppHeaderCoordinator mAppHeaderCoordinator;
     private final ManualFillingComponentSupplier mManualFillingComponentSupplier;
-    private @NonNull DataSharingTabManager mDataSharingTabManager;
-    private @NonNull DataSharingTabSwitcherDelegate mDataSharingTabSwitcherDelegate;
+    private final @NonNull DataSharingTabManager mDataSharingTabManager;
 
     // Activity tab observer that updates the current tab used by various UI components.
     private class RootUiTabObserver extends ActivityTabTabObserver {
@@ -405,12 +402,12 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         mEdgeToEdgeControllerSupplier = edgeToEdgeSupplier;
         mManualFillingComponentSupplier = manualFillingComponentSupplier;
 
-        mDataSharingTabSwitcherDelegate =
+        DataSharingTabSwitcherDelegate dataSharingTabSwitcherDelegate =
                 (int tabId) -> mTabSwitcherSupplier.get().requestOpenTabGroupDialog(tabId);
 
         mDataSharingTabManager =
                 new DataSharingTabManager(
-                        mDataSharingTabSwitcherDelegate,
+                        dataSharingTabSwitcherDelegate,
                         mProfileSupplier,
                         this::getBottomSheetController,
                         mShareDelegateSupplier,
@@ -515,9 +512,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             mAppHeaderCoordinator = null;
         }
 
-        if (mDataSharingTabManager != null) {
-            mDataSharingTabManager.destroy();
-        }
+        mDataSharingTabManager.destroy();
 
         super.onDestroy();
     }
@@ -661,15 +656,13 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                                 }
                             }
                         },
-                        () -> mCompositorViewHolderSupplier.get());
+                        mCompositorViewHolderSupplier::get);
         mRootUiTabObserver.swapToTab(mActivityTabProvider.get());
 
         // TODO(crbug.com/40946488): Consider register this drag listener to other views besides
         // CVH.
-        /**
-         * Instantiating ChromeTabbedOnDragListener on tablets since tab drags is enabled only via
-         * tablet tab strip.
-         */
+        // Instantiating ChromeTabbedOnDragListener on tablets since tab drags is enabled only via
+        // tablet tab strip.
         if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity)) {
             ChromeTabbedOnDragListener chromeTabbedOnDragListener =
                     new ChromeTabbedOnDragListener(
@@ -681,13 +674,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             mCompositorViewHolderSupplier.get().setOnDragListener(chromeTabbedOnDragListener);
 
             // Disable touch event while drag is in progress.
-            mDragDropTouchObserver =
-                    new TouchEventObserver() {
-                        @Override
-                        public boolean onInterceptTouchEvent(MotionEvent e) {
-                            return DragDropGlobalState.hasValue();
-                        }
-                    };
+            mDragDropTouchObserver = e -> DragDropGlobalState.hasValue();
             ((CoordinatorLayoutForPointer) mCoordinator)
                     .addTouchEventObserver(mDragDropTouchObserver);
         }
@@ -950,9 +937,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                             mStatusIndicatorCoordinator);
         }
 
-        mLinkToTextIPHController =
-                new LinkToTextIPHController(
-                        mActivityTabProvider, mTabModelSelectorSupplier.get(), mProfileSupplier);
+        new LinkToTextIPHController(
+                mActivityTabProvider, mTabModelSelectorSupplier.get(), mProfileSupplier);
         if (!didTriggerPromo
                 && mWindowAndroid.getWindow() != null
                 && LocalizationUtils.isLayoutRtl()
@@ -1075,12 +1061,11 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             return;
         }
 
-        final BrowserControlsSizer browserControlsSizer = mBrowserControlsManager;
         mStatusIndicatorCoordinator =
                 new StatusIndicatorCoordinator(
                         mActivity,
                         mCompositorViewHolderSupplier.get().getResourceManager(),
-                        browserControlsSizer,
+                        mBrowserControlsManager,
                         mTabObscuringHandlerSupplier.get(),
                         mStatusBarColorController::getStatusBarColorWithoutStatusIndicator,
                         mCanAnimateBrowserControls,
