@@ -48,6 +48,7 @@
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/compositor/layer.h"
+#include "ui/events/ash/keyboard_capability.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/layout/flex_layout.h"
@@ -327,15 +328,24 @@ void InformedRestoreController::OnOverviewModeEndingAnimationComplete(bool cance
     return;
   }
 
+  const ui::ImageModel& nudge_image =
+      ui::ResourceBundle::GetSharedInstance().GetThemedLottieImageNamed([]() {
+        if (Shell::Get()->keyboard_capability()->UseRefreshedIcons()) {
+          return DarkLightModeControllerImpl::Get()->IsDarkModeEnabled()
+                     ? IDR_INFORMED_RESTORE_REFRESH_NUDGE_IMAGE_DM
+                     : IDR_INFORMED_RESTORE_REFRESH_NUDGE_IMAGE_LM;
+        }
+
+        return DarkLightModeControllerImpl::Get()->IsDarkModeEnabled()
+                   ? IDR_INFORMED_RESTORE_NUDGE_IMAGE_DM
+                   : IDR_INFORMED_RESTORE_NUDGE_IMAGE_LM;
+      }());
+
   AnchoredNudgeData nudge_data(
       informed_restore::kSuggestionsNudgeId,
       NudgeCatalogName::kInformedRestoreEducationNudge,
       l10n_util::GetStringUTF16(IDS_ASH_INFORMED_RESTORE_EDUCATION_NUDGE));
-  nudge_data.image_model =
-      ui::ResourceBundle::GetSharedInstance().GetThemedLottieImageNamed(
-          DarkLightModeControllerImpl::Get()->IsDarkModeEnabled()
-              ? IDR_INFORMED_RESTORE_NUDGE_IMAGE_DM
-              : IDR_INFORMED_RESTORE_NUDGE_IMAGE_LM);
+  nudge_data.image_model = nudge_image;
   nudge_data.fill_image_size = true;
   AnchoredNudgeManager::Get()->Show(nudge_data);
 
