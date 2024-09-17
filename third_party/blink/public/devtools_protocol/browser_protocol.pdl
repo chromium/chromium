@@ -7925,8 +7925,8 @@ experimental domain Overlay
       # True for showing hit-test borders
       boolean show
 
-  # Request that backend shows an overlay with web vital metrics.
-  command setShowWebVitals
+  # Deprecated, no longer has any effect.
+  deprecated command setShowWebVitals
     parameters
       boolean show
 
