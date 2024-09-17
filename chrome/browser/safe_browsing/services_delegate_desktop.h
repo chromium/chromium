@@ -22,7 +22,7 @@ struct V4ProtocolConfig;
 // ServicesDelegate::Create().
 class ServicesDelegateDesktop : public ServicesDelegate {
  public:
-  ServicesDelegateDesktop(SafeBrowsingServiceImpl* safe_browsing_service,
+  ServicesDelegateDesktop(SafeBrowsingService* safe_browsing_service,
                           ServicesDelegate::ServicesCreator* services_creator);
 
   ServicesDelegateDesktop(const ServicesDelegateDesktop&) = delete;

@@ -80,16 +80,16 @@ class TriggerManager;
 class HashRealTimeService;
 
 // Construction needs to happen on the main thread.
-// The SafeBrowsingServiceImpl owns both the UI and Database managers which do
+// The SafeBrowsingService owns both the UI and Database managers which do
 // the heavylifting of safebrowsing service. Both of these managers stay
-// alive until SafeBrowsingServiceImpl is destroyed, however, they are disabled
+// alive until SafeBrowsingService is destroyed, however, they are disabled
 // permanently when Shutdown method is called.
-class SafeBrowsingServiceImpl : public SafeBrowsingServiceInterface,
-                                public ProfileManagerObserver,
-                                public ProfileObserver {
+class SafeBrowsingService : public SafeBrowsingServiceInterface,
+                            public ProfileManagerObserver,
+                            public ProfileObserver {
  public:
-  SafeBrowsingServiceImpl(const SafeBrowsingServiceImpl&) = delete;
-  SafeBrowsingServiceImpl& operator=(const SafeBrowsingServiceImpl&) = delete;
+  SafeBrowsingService(const SafeBrowsingService&) = delete;
+  SafeBrowsingService& operator=(const SafeBrowsingService&) = delete;
 
   static base::FilePath GetCookieFilePathForTesting();
 
@@ -127,8 +127,8 @@ class SafeBrowsingServiceImpl : public SafeBrowsingServiceInterface,
   }
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
-  // The DownloadProtectionService is not valid after the
-  // SafeBrowsingServiceImpl is destroyed.
+  // The DownloadProtectionService is not valid after the SafeBrowsingService
+  // is destroyed.
   DownloadProtectionService* download_protection_service() const {
     return services_delegate_->GetDownloadService();
   }
@@ -247,9 +247,9 @@ class SafeBrowsingServiceImpl : public SafeBrowsingServiceInterface,
 
  protected:
   // Creates the safe browsing service.  Need to initialize before using.
-  SafeBrowsingServiceImpl();
+  SafeBrowsingService();
 
-  ~SafeBrowsingServiceImpl() override;
+  ~SafeBrowsingService() override;
 
   virtual SafeBrowsingUIManager* CreateUIManager();
 
@@ -263,7 +263,7 @@ class SafeBrowsingServiceImpl : public SafeBrowsingServiceInterface,
   friend class SafeBrowsingServiceFactoryImpl;
   friend struct content::BrowserThread::DeleteOnThread<
       content::BrowserThread::UI>;
-  friend class base::DeleteHelper<SafeBrowsingServiceImpl>;
+  friend class base::DeleteHelper<SafeBrowsingService>;
   friend class SafeBrowsingBlockingPageTestBase;
   friend class SafeBrowsingBlockingQuietPageTest;
   friend class extensions::SafeBrowsingPrivateApiUnitTest;
@@ -288,9 +288,9 @@ class SafeBrowsingServiceImpl : public SafeBrowsingServiceInterface,
   // UI.
   void Start();
 
-  // Stops the SafeBrowsingServiceImpl. This can be called when the safe
-  // browsing preference is disabled. When shutdown is true, operation is
-  // permanently shutdown and cannot be restarted.
+  // Stops the SafeBrowsingService. This can be called when the safe browsing
+  // preference is disabled. When shutdown is true, operation is permanently
+  // shutdown and cannot be restarted.
   void Stop(bool shutdown);
 
   // ProfileManagerObserver:
@@ -340,8 +340,8 @@ class SafeBrowsingServiceImpl : public SafeBrowsingServiceInterface,
   // Whether the service has been shutdown.
   bool shutdown_;
 
-  // Whether the service is running. 'enabled_' is used by
-  // SafeBrowsingServiceImpl on the IO thread during normal operations.
+  // Whether the service is running. 'enabled_' is used by SafeBrowsingService
+  // on the IO thread during normal operations.
   bool enabled_;
 
   // Whether SafeBrowsing is enabled by the current set of profiles.
@@ -376,14 +376,6 @@ class SafeBrowsingServiceImpl : public SafeBrowsingServiceInterface,
 
   scoped_refptr<network::SharedURLLoaderFactory>
       url_loader_factory_for_testing_;
-};
-
-// TODO(crbug.com/41437292): Remove this once dependencies are using the
-// SafeBrowsingServiceInterface.
-class SafeBrowsingService : public SafeBrowsingServiceImpl {
- protected:
-  SafeBrowsingService() = default;
-  ~SafeBrowsingService() override = default;
 };
 
 SafeBrowsingServiceFactory* GetSafeBrowsingServiceFactory();

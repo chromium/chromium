@@ -30,9 +30,8 @@
 
 namespace safe_browsing {
 
-ServicesDelegate::ServicesDelegate(
-    SafeBrowsingServiceImpl* safe_browsing_service,
-    ServicesCreator* services_creator)
+ServicesDelegate::ServicesDelegate(SafeBrowsingService* safe_browsing_service,
+                                   ServicesCreator* services_creator)
     : safe_browsing_service_(safe_browsing_service),
       services_creator_(services_creator) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);

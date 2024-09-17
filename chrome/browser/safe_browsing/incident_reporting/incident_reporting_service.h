@@ -56,7 +56,7 @@ class ClientIncidentReport_EnvironmentData;
 class ClientIncidentReport_ExtensionData;
 class Incident;
 class IncidentReceiver;
-class SafeBrowsingServiceImpl;
+class SafeBrowsingService;
 
 // A class that manages the collection of incidents and submission of incident
 // reports to the safe browsing client-side detection service. The service
@@ -75,8 +75,7 @@ class SafeBrowsingServiceImpl;
 class IncidentReportingService : public ProfileManagerObserver,
                                  public ProfileObserver {
  public:
-  explicit IncidentReportingService(
-      SafeBrowsingServiceImpl* safe_browsing_service);
+  explicit IncidentReportingService(SafeBrowsingService* safe_browsing_service);
 
   IncidentReportingService(const IncidentReportingService&) = delete;
   IncidentReportingService& operator=(const IncidentReportingService&) = delete;
@@ -121,7 +120,7 @@ class IncidentReportingService : public ProfileManagerObserver,
   // For testing so that the TaskRunner used for delayed analysis callbacks can
   // be specified.
   IncidentReportingService(
-      SafeBrowsingServiceImpl* safe_browsing_service,
+      SafeBrowsingService* safe_browsing_service,
       base::TimeDelta delayed_task_interval,
       const scoped_refptr<base::TaskRunner>& delayed_task_runner);
 
