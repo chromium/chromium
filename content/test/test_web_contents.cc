@@ -423,6 +423,22 @@ void TestWebContents::TestDecrementUsbActiveFrameCount() {
   DecrementUsbActiveFrameCount();
 }
 
+void TestWebContents::TestIncrementHidActiveFrameCount() {
+  IncrementHidActiveFrameCount();
+}
+
+void TestWebContents::TestDecrementHidActiveFrameCount() {
+  DecrementHidActiveFrameCount();
+}
+
+void TestWebContents::TestIncrementSerialActiveFrameCount() {
+  IncrementSerialActiveFrameCount();
+}
+
+void TestWebContents::TestDecrementSerialActiveFrameCount() {
+  DecrementSerialActiveFrameCount();
+}
+
 void TestWebContents::TestIncrementBluetoothConnectedDeviceCount() {
   IncrementBluetoothConnectedDeviceCount();
 }

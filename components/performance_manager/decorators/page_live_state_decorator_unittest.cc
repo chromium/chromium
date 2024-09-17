@@ -22,6 +22,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_mode.h"
 
@@ -45,6 +46,8 @@ class TestPageLiveStateObserver : public PageLiveStateObserver {
     kNone,
     kOnIsConnectedToUSBDeviceChanged,
     kOnIsConnectedToBluetoothDeviceChanged,
+    kOnIsConnectedToHidDeviceChanged,
+    kOnIsConnectedToSerialPortChanged,
     kOnIsCapturingVideoChanged,
     kOnIsCapturingAudioChanged,
     kOnIsBeingMirroredChanged,
@@ -67,6 +70,16 @@ class TestPageLiveStateObserver : public PageLiveStateObserver {
       const PageNode* page_node) override {
     latest_function_called_ =
         ObserverFunction::kOnIsConnectedToBluetoothDeviceChanged;
+    page_node_passed_ = page_node;
+  }
+  void OnIsConnectedToHidDeviceChanged(const PageNode* page_node) override {
+    latest_function_called_ =
+        ObserverFunction::kOnIsConnectedToHidDeviceChanged;
+    page_node_passed_ = page_node;
+  }
+  void OnIsConnectedToSerialPortChanged(const PageNode* page_node) override {
+    latest_function_called_ =
+        ObserverFunction::kOnIsConnectedToSerialPortChanged;
     page_node_passed_ = page_node;
   }
   void OnIsCapturingVideoChanged(const PageNode* page_node) override {
@@ -213,24 +226,60 @@ class PageLiveStateDecoratorTest : public PerformanceManagerTestHarness {
   std::unique_ptr<TestPageLiveStateObserver> observer_;
 };
 
-TEST_F(PageLiveStateDecoratorTest, OnIsConnectedToUSBDeviceChanged) {
+TEST_F(PageLiveStateDecoratorTest, Usb) {
+  auto setter = [](content::WebContents* contents, bool value) {
+    PageLiveStateDecorator::OnDeviceConnectionTypesChanged(
+        contents, content::WebContentsObserver::DeviceConnectionType::kUSB,
+        value);
+  };
   testing::EndToEndBooleanPropertyTest(
       web_contents(), &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
-      &PageLiveStateDecorator::Data::IsConnectedToUSBDevice,
-      &PageLiveStateDecorator::OnIsConnectedToUSBDeviceChanged);
+      &PageLiveStateDecorator::Data::IsConnectedToUSBDevice, setter);
   VerifyObserverExpectationOnPMSequence(
       TestPageLiveStateObserver::ObserverFunction::
           kOnIsConnectedToUSBDeviceChanged);
 }
 
-TEST_F(PageLiveStateDecoratorTest, OnIsConnectedToBluetoothDeviceChanged) {
+TEST_F(PageLiveStateDecoratorTest, Bluetooth) {
+  auto setter = [](content::WebContents* contents, bool value) {
+    PageLiveStateDecorator::OnDeviceConnectionTypesChanged(
+        contents,
+        content::WebContentsObserver::DeviceConnectionType::kBluetooth, value);
+  };
   testing::EndToEndBooleanPropertyTest(
       web_contents(), &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
-      &PageLiveStateDecorator::Data::IsConnectedToBluetoothDevice,
-      &PageLiveStateDecorator::OnIsConnectedToBluetoothDeviceChanged);
+      &PageLiveStateDecorator::Data::IsConnectedToBluetoothDevice, setter);
   VerifyObserverExpectationOnPMSequence(
       TestPageLiveStateObserver::ObserverFunction::
           kOnIsConnectedToBluetoothDeviceChanged);
+}
+
+TEST_F(PageLiveStateDecoratorTest, Hid) {
+  auto setter = [](content::WebContents* contents, bool value) {
+    PageLiveStateDecorator::OnDeviceConnectionTypesChanged(
+        contents, content::WebContentsObserver::DeviceConnectionType::kHID,
+        value);
+  };
+  testing::EndToEndBooleanPropertyTest(
+      web_contents(), &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
+      &PageLiveStateDecorator::Data::IsConnectedToHidDevice, setter);
+  VerifyObserverExpectationOnPMSequence(
+      TestPageLiveStateObserver::ObserverFunction::
+          kOnIsConnectedToHidDeviceChanged);
+}
+
+TEST_F(PageLiveStateDecoratorTest, Serial) {
+  auto setter = [](content::WebContents* contents, bool value) {
+    PageLiveStateDecorator::OnDeviceConnectionTypesChanged(
+        contents, content::WebContentsObserver::DeviceConnectionType::kSerial,
+        value);
+  };
+  testing::EndToEndBooleanPropertyTest(
+      web_contents(), &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
+      &PageLiveStateDecorator::Data::IsConnectedToSerialPort, setter);
+  VerifyObserverExpectationOnPMSequence(
+      TestPageLiveStateObserver::ObserverFunction::
+          kOnIsConnectedToSerialPortChanged);
 }
 
 TEST_F(PageLiveStateDecoratorTest, OnIsCapturingVideoChanged) {

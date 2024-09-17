@@ -1278,11 +1278,6 @@ class CONTENT_EXPORT WebContentsImpl
   void IncrementBluetoothConnectedDeviceCount();
   void DecrementBluetoothConnectedDeviceCount();
 
-  // Notifies the delegate and observers when the connected to Bluetooth device
-  // state changes.
-  void OnIsConnectedToBluetoothDeviceChanged(
-      bool is_connected_to_bluetooth_device);
-
   void IncrementBluetoothScanningSessionsCount();
   void DecrementBluetoothScanningSessionsCount();
 
@@ -1296,9 +1291,11 @@ class CONTENT_EXPORT WebContentsImpl
   void IncrementHidActiveFrameCount();
   void DecrementHidActiveFrameCount();
 
-  // Notifies the delegate and observers when the connected to USB device state
-  // changes.
-  void OnIsConnectedToUsbDeviceChanged(bool is_connected_to_usb_device);
+  // Notifies the delegate and observers when device connection types used by
+  // the WebContents change.
+  void OnDeviceConnectionTypesChanged(
+      WebContentsObserver::DeviceConnectionType device_connection_type,
+      bool used);
 
   // Modify the counter of frames in this WebContents actively using USB
   // devices.

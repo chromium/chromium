@@ -1059,31 +1059,29 @@ class TestWebContentsObserver : public content::WebContentsObserver {
   TestWebContentsObserver& operator=(const TestWebContentsObserver&) = delete;
   ~TestWebContentsObserver() override = default;
 
-  void OnIsConnectedToBluetoothDeviceChanged(
-      bool is_connected_to_bluetooth_device) override {
-    ++num_is_connected_to_bluetooth_device_changed_;
-    last_is_connected_to_bluetooth_device_ = is_connected_to_bluetooth_device;
-    if (quit_closure_ && expected_updating_count_ ==
-                             num_is_connected_to_bluetooth_device_changed_) {
+  void OnDeviceConnectionTypesChanged(DeviceConnectionType connection_type,
+                                      bool used) override {
+    EXPECT_EQ(connection_type, DeviceConnectionType::kBluetooth);
+    ++num_device_connection_types_changed_;
+    last_device_used_ = used;
+    if (quit_closure_ &&
+        expected_updating_count_ == num_device_connection_types_changed_) {
       std::move(quit_closure_).Run();
     }
   }
 
-  int num_is_connected_to_bluetooth_device_changed() {
-    return num_is_connected_to_bluetooth_device_changed_;
+  int num_device_connection_types_changed() {
+    return num_device_connection_types_changed_;
   }
 
-  const std::optional<bool>& last_is_connected_to_bluetooth_device() {
-    return last_is_connected_to_bluetooth_device_;
-  }
+  const std::optional<bool>& last_device_used() { return last_device_used_; }
 
-  void clear_last_is_connected_to_bluetooth_device() {
-    last_is_connected_to_bluetooth_device_.reset();
-  }
+  void clear_last_device_used() { last_device_used_.reset(); }
 
   void WaitUntilConnectionIsUpdated(int expected_count) {
-    if (num_is_connected_to_bluetooth_device_changed_ == expected_count)
+    if (num_device_connection_types_changed_ == expected_count) {
       return;
+    }
     expected_updating_count_ = expected_count;
     base::RunLoop run_loop;
     quit_closure_ = run_loop.QuitClosure();
@@ -1091,8 +1089,8 @@ class TestWebContentsObserver : public content::WebContentsObserver {
   }
 
  private:
-  int num_is_connected_to_bluetooth_device_changed_ = 0;
-  std::optional<bool> last_is_connected_to_bluetooth_device_;
+  int num_device_connection_types_changed_ = 0;
+  std::optional<bool> last_device_used_;
   int expected_updating_count_;
   base::OnceClosure quit_closure_;
 };
@@ -1120,10 +1118,10 @@ IN_PROC_BROWSER_TEST_F(
 
   observer.WaitUntilConnectionIsUpdated(1);
   // In the active main frame, the connection of Web Bluetooth works.
-  EXPECT_EQ(observer.num_is_connected_to_bluetooth_device_changed(), 1);
-  EXPECT_TRUE(observer.last_is_connected_to_bluetooth_device().has_value());
-  EXPECT_TRUE(observer.last_is_connected_to_bluetooth_device().value());
-  observer.clear_last_is_connected_to_bluetooth_device();
+  EXPECT_EQ(observer.num_device_connection_types_changed(), 1);
+  EXPECT_TRUE(observer.last_device_used().has_value());
+  EXPECT_TRUE(observer.last_device_used().value());
+  observer.clear_last_device_used();
 
   // Loads a page in the prerender.
   auto prerender_url = embedded_test_server()->GetURL("/simple.html");
@@ -1146,8 +1144,8 @@ IN_PROC_BROWSER_TEST_F(
 
   // In the prerendering, the connection of Web Bluetooth is deferred and
   // `observer` doesn't have any update.
-  EXPECT_EQ(observer.num_is_connected_to_bluetooth_device_changed(), 1);
-  EXPECT_FALSE(observer.last_is_connected_to_bluetooth_device().has_value());
+  EXPECT_EQ(observer.num_device_connection_types_changed(), 1);
+  EXPECT_FALSE(observer.last_device_used().has_value());
 
   content::RenderFrameDeletedObserver rfh_observer(
       GetWebContents()->GetPrimaryMainFrame());
@@ -1163,9 +1161,9 @@ IN_PROC_BROWSER_TEST_F(
   // During prerendering activation, the connection from the previous
   // RenderFrameHost to Web Bluetooth is closed, while the connection attempt
   // from the prerendering RenderFrameHost was refused.
-  EXPECT_EQ(observer.num_is_connected_to_bluetooth_device_changed(), 2);
-  EXPECT_TRUE(observer.last_is_connected_to_bluetooth_device().has_value());
-  EXPECT_FALSE(observer.last_is_connected_to_bluetooth_device().value());
+  EXPECT_EQ(observer.num_device_connection_types_changed(), 2);
+  EXPECT_TRUE(observer.last_device_used().has_value());
+  EXPECT_FALSE(observer.last_device_used().value());
 }
 
 }  // namespace

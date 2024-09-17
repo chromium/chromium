@@ -117,6 +117,18 @@ struct TrustTokenAccessDetails;
 // returned by GetRenderViewHost().
 class CONTENT_EXPORT WebContentsObserver : public base::CheckedObserver {
  public:
+  // Device connection types that can be used by a WebContents.
+  enum class DeviceConnectionType {
+    // WebUSB
+    kUSB,
+    // Web Bluetooth
+    kBluetooth,
+    // WebHID
+    kHID,
+    // Web Serial
+    kSerial
+  };
+
   WebContentsObserver(WebContentsObserver&&) = delete;
   WebContentsObserver(const WebContentsObserver&) = delete;
   WebContentsObserver& operator=(WebContentsObserver&&) = delete;
@@ -752,13 +764,12 @@ class CONTENT_EXPORT WebContentsObserver : public base::CheckedObserver {
       RenderFrameHost* rfh,
       bool is_capturing_media_stream) {}
 
-  // Called when the connected to USB device state changes.
-  virtual void OnIsConnectedToUsbDeviceChanged(
-      bool is_connected_to_usb_device) {}
-
-  // Called when the connected to Bluetooth device state changes.
-  virtual void OnIsConnectedToBluetoothDeviceChanged(
-      bool is_connected_to_bluetooth_device) {}
+  // Called when WebContents starts/stops using a device connection type. The
+  // arguments indicate the device connection type that starts/stops being used
+  // and whether it is in use (true if it starts being used, false if it stops).
+  virtual void OnDeviceConnectionTypesChanged(
+      DeviceConnectionType connection_type,
+      bool used) {}
 
   // Invoked when the WebContents is muted/unmuted.
   virtual void DidUpdateAudioMutingState(bool muted) {}

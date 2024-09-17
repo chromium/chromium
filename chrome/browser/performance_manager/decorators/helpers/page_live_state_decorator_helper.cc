@@ -121,18 +121,11 @@ class PageLiveStateDecoratorHelper::WebContentsObserver
   }
 
   // content::WebContentsObserver:
-  void OnIsConnectedToBluetoothDeviceChanged(
-      bool is_connected_to_bluetooth_device) override {
+  void OnDeviceConnectionTypesChanged(DeviceConnectionType connection_type,
+                                      bool used) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    PageLiveStateDecorator::OnIsConnectedToBluetoothDeviceChanged(
-        web_contents(), is_connected_to_bluetooth_device);
-  }
-
-  void OnIsConnectedToUsbDeviceChanged(
-      bool is_connected_to_usb_device) override {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    PageLiveStateDecorator::OnIsConnectedToUSBDeviceChanged(
-        web_contents(), is_connected_to_usb_device);
+    PageLiveStateDecorator::OnDeviceConnectionTypesChanged(
+        web_contents(), connection_type, used);
   }
 
   void WebContentsDestroyed() override {

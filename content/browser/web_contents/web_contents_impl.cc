@@ -9984,7 +9984,8 @@ void WebContentsImpl::IncrementBluetoothConnectedDeviceCount() {
   // Notify for UI updates if the state changes.
   bluetooth_connected_device_count_++;
   if (bluetooth_connected_device_count_ == 1) {
-    OnIsConnectedToBluetoothDeviceChanged(true);
+    OnDeviceConnectionTypesChanged(
+        WebContentsObserver::DeviceConnectionType::kBluetooth, /*used=*/true);
   }
 }
 
@@ -10000,18 +10001,10 @@ void WebContentsImpl::DecrementBluetoothConnectedDeviceCount() {
   DCHECK_NE(bluetooth_connected_device_count_, 0u);
   bluetooth_connected_device_count_--;
   if (bluetooth_connected_device_count_ == 0) {
-    OnIsConnectedToBluetoothDeviceChanged(false);
+    OnDeviceConnectionTypesChanged(
+        WebContentsObserver::DeviceConnectionType::kBluetooth,
+        /*used=*/false);
   }
-}
-
-void WebContentsImpl::OnIsConnectedToBluetoothDeviceChanged(
-    bool is_connected_to_bluetooth_device) {
-  OPTIONAL_TRACE_EVENT0(
-      "content", "WebContentsImpl::OnIsConnectedToBluetoothDeviceChanged");
-  NotifyNavigationStateChanged(INVALIDATE_TYPE_TAB);
-  observers_.NotifyObservers(
-      &WebContentsObserver::OnIsConnectedToBluetoothDeviceChanged,
-      is_connected_to_bluetooth_device);
 }
 
 void WebContentsImpl::IncrementBluetoothScanningSessionsCount() {
@@ -10058,7 +10051,8 @@ void WebContentsImpl::IncrementSerialActiveFrameCount() {
   // Notify for UI updates if the state changes.
   serial_active_frame_count_++;
   if (serial_active_frame_count_ == 1) {
-    NotifyNavigationStateChanged(INVALIDATE_TYPE_TAB);
+    OnDeviceConnectionTypesChanged(
+        WebContentsObserver::DeviceConnectionType::kSerial, /*used=*/true);
   }
 }
 
@@ -10075,7 +10069,8 @@ void WebContentsImpl::DecrementSerialActiveFrameCount() {
   DCHECK_NE(0u, serial_active_frame_count_);
   serial_active_frame_count_--;
   if (serial_active_frame_count_ == 0) {
-    NotifyNavigationStateChanged(INVALIDATE_TYPE_TAB);
+    OnDeviceConnectionTypesChanged(
+        WebContentsObserver::DeviceConnectionType::kSerial, /*used=*/false);
   }
 }
 
@@ -10092,7 +10087,8 @@ void WebContentsImpl::IncrementHidActiveFrameCount() {
   // non-zero.
   hid_active_frame_count_++;
   if (hid_active_frame_count_ == 1) {
-    NotifyNavigationStateChanged(INVALIDATE_TYPE_TAB);
+    OnDeviceConnectionTypesChanged(
+        WebContentsObserver::DeviceConnectionType::kHID, /*used=*/true);
   }
 }
 
@@ -10110,18 +10106,20 @@ void WebContentsImpl::DecrementHidActiveFrameCount() {
   DCHECK_NE(0u, hid_active_frame_count_);
   hid_active_frame_count_--;
   if (hid_active_frame_count_ == 0) {
-    NotifyNavigationStateChanged(INVALIDATE_TYPE_TAB);
+    OnDeviceConnectionTypesChanged(
+        WebContentsObserver::DeviceConnectionType::kHID, /*used=*/false);
   }
 }
 
-void WebContentsImpl::OnIsConnectedToUsbDeviceChanged(
-    bool is_connected_to_usb_device) {
+void WebContentsImpl::OnDeviceConnectionTypesChanged(
+    WebContentsObserver::DeviceConnectionType device_connection_type,
+    bool used) {
   OPTIONAL_TRACE_EVENT0("content",
-                        "WebContentsImpl::OnIsConnectedToUsbDeviceChanged");
+                        "WebContentsImpl::OnDeviceConnectionTypesChanged");
   NotifyNavigationStateChanged(INVALIDATE_TYPE_TAB);
   observers_.NotifyObservers(
-      &WebContentsObserver::OnIsConnectedToUsbDeviceChanged,
-      is_connected_to_usb_device);
+      &WebContentsObserver::OnDeviceConnectionTypesChanged,
+      device_connection_type, used);
 }
 
 void WebContentsImpl::IncrementUsbActiveFrameCount() {
@@ -10137,7 +10135,8 @@ void WebContentsImpl::IncrementUsbActiveFrameCount() {
   // non-zero.
   usb_active_frame_count_++;
   if (usb_active_frame_count_ == 1) {
-    OnIsConnectedToUsbDeviceChanged(true);
+    OnDeviceConnectionTypesChanged(
+        WebContentsObserver::DeviceConnectionType::kUSB, /*used=*/true);
   }
 }
 
@@ -10155,7 +10154,8 @@ void WebContentsImpl::DecrementUsbActiveFrameCount() {
   DCHECK_NE(0u, usb_active_frame_count_);
   usb_active_frame_count_--;
   if (usb_active_frame_count_ == 0) {
-    OnIsConnectedToUsbDeviceChanged(false);
+    OnDeviceConnectionTypesChanged(
+        WebContentsObserver::DeviceConnectionType::kUSB, /*used=*/false);
   }
 }
 
