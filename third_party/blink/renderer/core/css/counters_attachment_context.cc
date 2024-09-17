@@ -266,7 +266,7 @@ Vector<int> CountersAttachmentContext::GetCounterValues(
     const AtomicString& counter_name,
     bool only_last) {
   RemoveStaleCounters(element, counter_name);
-  Vector<int> counter_values;
+  Vector<int> result;
   auto counter_stack_it = counter_inheritance_table_->find(counter_name);
   if (counter_stack_it == counter_inheritance_table_->end()) {
     return {0};
@@ -275,17 +275,25 @@ Vector<int> CountersAttachmentContext::GetCounterValues(
   if (counter_stack.empty()) {
     return {0};
   }
+
+  auto counter_value_it = counter_value_table_->find(counter_name);
+  CHECK_NE(counter_value_it, counter_value_table_->end(),
+           base::NotFatalUntil::M130);
+  CounterValues& counter_values = *counter_value_it->value;
+
   for (const Element* counter_element : base::Reversed(counter_stack)) {
     // counter() and counters() can cross style containment boundaries.
     if (counter_element == nullptr) {
       continue;
     }
-    counter_values.push_back(GetCounterValue(*counter_element, counter_name));
+    auto current_value_it = counter_values.find(counter_element);
+    CHECK_NE(current_value_it, counter_values.end(), base::NotFatalUntil::M130);
+    result.push_back(current_value_it->value);
     if (only_last) {
       break;
     }
   }
-  return counter_values;
+  return result;
 }
 
 // Push the counter on stack or create stack if there is none. Also set the
@@ -396,27 +404,6 @@ void CountersAttachmentContext::SetCounterValue(
     return;
   }
   element_value_it->value = value;
-}
-
-// Get the value for counter created on `element`.
-int CountersAttachmentContext::GetCounterValue(
-    const Element& element,
-    const AtomicString& counter_name) {
-  auto counter_stack_it = counter_inheritance_table_->find(counter_name);
-  if (counter_stack_it == counter_inheritance_table_->end()) {
-    return 0;
-  }
-  CounterStack& counter_stack = *counter_stack_it->value;
-  if (counter_stack.empty()) {
-    return 0;
-  }
-  auto counter_value_it = counter_value_table_->find(counter_name);
-  CHECK_NE(counter_value_it, counter_value_table_->end(),
-           base::NotFatalUntil::M130);
-  CounterValues& counter_values = *counter_value_it->value;
-  auto current_value_it = counter_values.find(&element);
-  CHECK_NE(current_value_it, counter_values.end(), base::NotFatalUntil::M130);
-  return current_value_it->value;
 }
 
 // Update the value of last on stack counter or create a new one, if there

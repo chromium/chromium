@@ -61,7 +61,6 @@ class CORE_EXPORT CountersAttachmentContext {
   void SetCounterValue(const Element& element,
                        const AtomicString& counter_name,
                        int value);
-  int GetCounterValue(const Element& element, const AtomicString& counter_name);
   void UpdateCounterValue(const Element& element,
                           const AtomicString& counter_name,
                           unsigned counter_type,
