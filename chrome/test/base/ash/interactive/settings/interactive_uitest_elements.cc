@@ -716,6 +716,13 @@ WebContentsInteractionTestUtil::DeepQuery BluetoothChangeDeviceNameButton() {
   return BluetoothDeviceDetailSubpage() + "cr-button#changeNameBtn";
 }
 
+WebContentsInteractionTestUtil::DeepQuery BluetoothBatteryPercentage() {
+  return BluetoothDeviceDetailSubpage() +
+         "bluetooth-device-battery-info#batteryInfo" +
+         "bluetooth-battery-icon-percentage#defaultBattery" +
+         "span#batteryPercentage";
+}
+
 WebContentsInteractionTestUtil::DeepQuery BluetoothForgetDeviceButton() {
   return BluetoothDeviceDetailSubpage() + "cr-button#forgetBtn";
 }

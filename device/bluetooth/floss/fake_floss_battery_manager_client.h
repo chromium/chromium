@@ -11,6 +11,8 @@ namespace floss {
 class DEVICE_BLUETOOTH_EXPORT FakeFlossBatteryManagerClient
     : public FlossBatteryManagerClient {
  public:
+  static constexpr int kDefaultBatteryPercentage = 85;
+
   FakeFlossBatteryManagerClient();
   ~FakeFlossBatteryManagerClient() override;
 
