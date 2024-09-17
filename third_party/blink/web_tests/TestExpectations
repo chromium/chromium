@@ -2595,10 +2595,10 @@ crbug.com/364700192 external/wpt/css/css-fonts/parsing/font-feature-settings-com
 crbug.com/364677549 external/wpt/css/css-properties-values-api/register-property-syntax-parsing.html [ Crash Pass Timeout ]
 
 # ====== New tests from wpt-importer added here ======
-external/wpt/css/css-inline/text-box-trim/text-box-trim-ignore-nested-text-box-edge.html [ Failure ]
-external/wpt/css/css-ruby/ruby-overhang.html [ Failure ]
-[ Mac15-arm64 ] external/wpt/webrtc-extensions/RTCRtpEncodingParameters-scaleResolutionDownTo.https.html [ Skip Timeout ]
-[ Mac15 ] external/wpt/webrtc-extensions/RTCRtpEncodingParameters-scaleResolutionDownTo.https.html [ Skip Timeout ]
+crbug.com/366343803 external/wpt/css/css-inline/text-box-trim/text-box-trim-ignore-nested-text-box-edge.html [ Failure ]
+crbug.com/366873207 external/wpt/css/css-ruby/ruby-overhang.html [ Failure ]
+crbug.com/367426146 [ Mac15-arm64 ] external/wpt/webrtc-extensions/RTCRtpEncodingParameters-scaleResolutionDownTo.https.html [ Skip Timeout ]
+crbug.com/367426146 [ Mac15 ] external/wpt/webrtc-extensions/RTCRtpEncodingParameters-scaleResolutionDownTo.https.html [ Skip Timeout ]
 crbug.com/366323456 [ Win11 ] external/wpt/html/semantics/forms/the-select-element/stylable-select/switch-picker-appearance.tentative.html [ Crash Timeout ]
 crbug.com/366307885 [ Mac15-arm64 ] virtual/webnn-service-on-npu/external/wpt/webnn/validation_tests/destroyGraph.https.any.worker.html?npu [ Skip Timeout ]
 crbug.com/366323411 external/wpt/css/css-writing-modes/table-progression-htb-002.html [ Failure ]
