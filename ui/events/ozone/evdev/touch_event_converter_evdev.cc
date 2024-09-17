@@ -136,6 +136,13 @@ std::vector<SupportedHidrawDevice> GetSupportedHidrawDevices() {
           .crop_heatmap = std::nullopt,
       },
       {
+          .name = "quickspi-hid 04F3:4222",
+          .vendor_id = 0x04F3,
+          .product_id = 0x4222,
+          .model_id = ui::HeatmapPalmDetector::ModelId::kRex,
+          .crop_heatmap = std::nullopt,
+      },
+      {
           .name = "hid-hxtp 4858:1002",
           .vendor_id = 0x4858,
           .product_id = 0x1002,
