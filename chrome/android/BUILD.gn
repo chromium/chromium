@@ -320,10 +320,6 @@ if (current_toolchain == default_toolchain) {
     if (defined(enable_data_sharing_internal) && enable_data_sharing_internal) {
       deps += [ "//chrome/browser/data_sharing:delegate_public_impl_java" ]
     }
-    if (defined(enable_tinker_tank_internal) && enable_tinker_tank_internal) {
-      deps +=
-          [ "//chrome/browser/android/tinker_tank:delegate_public_impl_java" ]
-    }
   }
 
   android_library("google_api_keys_java") {

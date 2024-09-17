@@ -11,7 +11,6 @@ import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tinker_tank.TinkerTankDelegate;
-import org.chromium.chrome.browser.tinker_tank.TinkerTankDelegateImpl;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 
@@ -34,7 +33,7 @@ public class TabListEditorTinkerTankAction extends TabListEditorAction {
             @ShowMode int showMode,
             @ButtonType int buttonType,
             @IconPosition int iconPosition) {
-        assert TinkerTankDelegateImpl.enabled();
+        assert TinkerTankDelegate.isEnabled();
 
         Drawable drawable =
                 AppCompatResources.getDrawable(activity, R.drawable.ic_add_box_rounded_corner);
@@ -75,7 +74,7 @@ public class TabListEditorTinkerTankAction extends TabListEditorAction {
                 getActionDelegate().getBottomSheetController();
 
         if (bottomSheetController != null) {
-            TinkerTankDelegate delegate = new TinkerTankDelegateImpl();
+            TinkerTankDelegate delegate = TinkerTankDelegate.create();
             delegate.maybeShowForSelectedTabs(mActivity, bottomSheetController, tabs);
         }
         return true;

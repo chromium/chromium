@@ -172,7 +172,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tinker_tank.TinkerTankDelegate;
-import org.chromium.chrome.browser.tinker_tank.TinkerTankDelegateImpl;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.translate.TranslateBridge;
@@ -2528,7 +2527,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         }
 
         if (id == R.id.tinker_tank_menu_id) {
-            TinkerTankDelegate delegate = new TinkerTankDelegateImpl();
+            TinkerTankDelegate delegate = TinkerTankDelegate.create();
             delegate.maybeShowBottomSheet(
                     this,
                     getProfileProviderSupplier().get().getOriginalProfile(),
