@@ -2595,11 +2595,11 @@ crbug.com/364700192 external/wpt/css/css-fonts/parsing/font-feature-settings-com
 crbug.com/364677549 external/wpt/css/css-properties-values-api/register-property-syntax-parsing.html [ Crash Pass Timeout ]
 
 # ====== New tests from wpt-importer added here ======
-[ Win11-arm64 ] external/wpt/digital-credentials/allow-attribute.https.html [ Failure Timeout ]
-[ Mac13 ] external/wpt/digital-credentials/allow-attribute.https.html [ Failure Timeout ]
-[ Mac11-arm64 ] external/wpt/digital-credentials/allow-attribute.https.html [ Failure Timeout ]
-[ Win11-arm64 ] external/wpt/digital-credentials/create.tentative.https.html [ Failure Timeout ]
-[ Linux ] external/wpt/html/semantics/forms/the-select-element/customizable-select/switch-picker-appearance.tentative.html [ Crash Timeout ]
+crbug.com/367497041 [ Win11-arm64 ] external/wpt/digital-credentials/allow-attribute.https.html [ Failure Timeout ]
+crbug.com/367497041 [ Mac13 ] external/wpt/digital-credentials/allow-attribute.https.html [ Failure Timeout ]
+crbug.com/367497041 [ Mac11-arm64 ] external/wpt/digital-credentials/allow-attribute.https.html [ Failure Timeout ]
+crbug.com/367497041 [ Win11-arm64 ] external/wpt/digital-credentials/create.tentative.https.html [ Failure Timeout ]
+crbug.com/367426156 [ Linux ] external/wpt/html/semantics/forms/the-select-element/customizable-select/switch-picker-appearance.tentative.html [ Crash Timeout ]
 crbug.com/366343803 external/wpt/css/css-inline/text-box-trim/text-box-trim-ignore-nested-text-box-edge.html [ Failure ]
 crbug.com/366873207 external/wpt/css/css-ruby/ruby-overhang.html [ Failure ]
 crbug.com/367426146 [ Mac15-arm64 ] external/wpt/webrtc-extensions/RTCRtpEncodingParameters-scaleResolutionDownTo.https.html [ Skip Timeout ]
