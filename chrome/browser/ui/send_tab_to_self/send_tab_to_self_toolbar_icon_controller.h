@@ -39,7 +39,6 @@ class SendTabToSelfToolbarIconController
   // BrowserListObserver implementation
   void OnBrowserSetLastActive(Browser* browser) override;
 
-  void ShowToolbarButton(const SendTabToSelfEntry& entry);
 
   void AddDelegate(SendTabToSelfToolbarIconControllerDelegate* delegate);
 
@@ -56,6 +55,9 @@ class SendTabToSelfToolbarIconController
  private:
   void StorePendingEntry(
       const SendTabToSelfEntry* new_entry_pending_notification);
+
+  void ShowToolbarButton(const SendTabToSelfEntry& entry,
+                         Browser* browser = nullptr);
 
   raw_ptr<Profile, DanglingUntriaged> profile_;
 

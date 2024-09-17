@@ -37,10 +37,6 @@ class SendTabToSelfToolbarIconView
 
   void DismissEntry(std::string& guid);
 
-  void LogNotificationOpened();
-
-  void LogNotificationDismissed();
-
  private:
   const raw_ptr<const Browser> browser_;
 

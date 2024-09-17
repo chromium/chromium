@@ -7,52 +7,69 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
-class Profile;
+class Browser;
 struct NavigateParams;
 
 namespace send_tab_to_self {
 
 class SendTabToSelfEntry;
-class SendTabToSelfToolbarIconView;
 
 class SendTabToSelfToolbarBubbleView : public views::BubbleDialogDelegateView {
+  METADATA_HEADER(SendTabToSelfToolbarBubbleView,
+                  views::BubbleDialogDelegateView)
+
  public:
+  SendTabToSelfToolbarBubbleView(
+      const Browser* browser,
+      View* parent,
+      const SendTabToSelfEntry& entry,
+      base::OnceCallback<void(NavigateParams*)> navigate_callback);
+
   ~SendTabToSelfToolbarBubbleView() override;
 
   // Creates and shows the bubble.
   static SendTabToSelfToolbarBubbleView* CreateBubble(
-      Profile* profile,
-      SendTabToSelfToolbarIconView* parent,
+      const Browser* browser,
+      View* parent,
       const SendTabToSelfEntry& entry,
       base::OnceCallback<void(NavigateParams*)> navigate_callback);
+
+  // Overwrites the existing entry in the bubble with `new_entry`.
+  void ReplaceEntry(const SendTabToSelfEntry& new_entry);
+  void Hide();
+
+  std::string GetGuidForTesting() { return guid_; }
 
  private:
   friend class SendTabToSelfToolbarBubbleViewTest;
   FRIEND_TEST_ALL_PREFIXES(SendTabToSelfToolbarBubbleViewTest,
                            ButtonNavigatesToPage);
 
-  SendTabToSelfToolbarBubbleView(
-      Profile* profile,
-      SendTabToSelfToolbarIconView* parent,
-      const SendTabToSelfEntry& entry,
-      base::OnceCallback<void(NavigateParams*)> navigate_callback);
 
   void OpenInNewTab();
 
   void Timeout();
 
-  void Hide();
+  void LogNotificationOpened();
+  void LogNotificationDismissed();
 
   // The button that owns |this|.
-  raw_ptr<SendTabToSelfToolbarIconView> toolbar_button_;
+  // TODO(b/361445261): Update this to PinnedActionToolbarButton after
+  // ToolbarPinning is fully launched.
+  raw_ptr<View> toolbar_button_;
 
   base::OnceCallback<void(NavigateParams*)> navigate_callback_;
 
   bool opened_ = false;
 
-  raw_ptr<Profile> profile_;
+  raw_ptr<const Browser> browser_;
+
+  raw_ptr<views::Label> title_label_;
+  raw_ptr<views::Label> url_label_;
+  raw_ptr<views::Label> device_label_;
 
   std::string title_;
   GURL url_;

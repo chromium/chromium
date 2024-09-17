@@ -62,8 +62,7 @@ void SendTabToSelfToolbarIconView::Show(const SendTabToSelfEntry& entry) {
   entry_ = &entry;
   SetVisible(true);
   SendTabToSelfToolbarBubbleView::CreateBubble(
-      browser_->profile(), this, *entry_,
-      base::BindOnce(base::IgnoreResult(&Navigate)));
+      browser_, this, *entry_, base::BindOnce(base::IgnoreResult(&Navigate)));
 }
 
 void SendTabToSelfToolbarIconView::DismissEntry(std::string& guid) {
@@ -75,18 +74,6 @@ void SendTabToSelfToolbarIconView::DismissEntry(std::string& guid) {
 
 bool SendTabToSelfToolbarIconView::IsActive() {
   return browser_view_->IsActive();
-}
-
-void SendTabToSelfToolbarIconView::LogNotificationOpened() {
-  send_tab_to_self::ReceivingUiHandlerRegistry::GetInstance()
-      ->GetToolbarButtonControllerForProfile(browser_->profile())
-      ->LogNotificationOpened();
-}
-
-void SendTabToSelfToolbarIconView::LogNotificationDismissed() {
-  send_tab_to_self::ReceivingUiHandlerRegistry::GetInstance()
-      ->GetToolbarButtonControllerForProfile(browser_->profile())
-      ->LogNotificationDismissed();
 }
 
 BEGIN_METADATA(SendTabToSelfToolbarIconView)
