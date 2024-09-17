@@ -143,9 +143,8 @@ UNNotificationRequest* PasswordNotificationRequest(
 UNNotificationContent* NotificationForPasswordCheckState(
     PasswordSafetyCheckState state,
     password_manager::InsecurePasswordCounts insecure_password_counts) {
-  if (state == PasswordSafetyCheckState::kUnmutedCompromisedPasswords) {
-    CHECK_GT(insecure_password_counts.compromised_count, 0);
-
+  if (state == PasswordSafetyCheckState::kUnmutedCompromisedPasswords &&
+      insecure_password_counts.compromised_count > 0) {
     return NotificationContent(
         l10n_util::GetNSString(
             IDS_IOS_SAFETY_CHECK_NOTIFICATIONS_CHANGE_PASSWORDS),
@@ -155,9 +154,8 @@ UNNotificationContent* NotificationForPasswordCheckState(
         UserInfoForPasswordNotification(state, insecure_password_counts));
   }
 
-  if (state == PasswordSafetyCheckState::kReusedPasswords) {
-    CHECK_GT(insecure_password_counts.reused_count, 0);
-
+  if (state == PasswordSafetyCheckState::kReusedPasswords &&
+      insecure_password_counts.reused_count > 0) {
     return NotificationContent(
         l10n_util::GetNSString(
             IDS_IOS_SAFETY_CHECK_NOTIFICATIONS_CHANGE_PASSWORDS),
@@ -167,9 +165,8 @@ UNNotificationContent* NotificationForPasswordCheckState(
         UserInfoForPasswordNotification(state, insecure_password_counts));
   }
 
-  if (state == PasswordSafetyCheckState::kWeakPasswords) {
-    CHECK_GT(insecure_password_counts.weak_count, 0);
-
+  if (state == PasswordSafetyCheckState::kWeakPasswords &&
+      insecure_password_counts.weak_count > 0) {
     return NotificationContent(
         l10n_util::GetNSString(
             IDS_IOS_SAFETY_CHECK_NOTIFICATIONS_CHANGE_PASSWORDS),
