@@ -67,9 +67,6 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
   SidePanelCoordinator& operator=(const SidePanelCoordinator&) = delete;
   ~SidePanelCoordinator() override;
 
-  // Exposed for testing.
-  static constexpr int kSidePanelContentWrapperViewId = 43;
-
   void TearDownPreBrowserViewDestruction();
 
   SidePanelRegistry* GetWindowRegistry();

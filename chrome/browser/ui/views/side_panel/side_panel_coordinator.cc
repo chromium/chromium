@@ -73,6 +73,8 @@
 
 namespace {
 
+constexpr int kSidePanelContentWrapperViewId = 43;
+
 void ConfigureControlButton(views::ImageButton* button) {
   button->SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
   views::InstallCircleHighlightPathGenerator(button);
@@ -194,7 +196,7 @@ class SidePanelContentSwappingContainer : public views::View {
         views::kFlexBehaviorKey,
         views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
                                  views::MaximumFlexSizeRule::kUnbounded));
-    SetID(SidePanelCoordinator::kSidePanelContentWrapperViewId);
+    SetID(kSidePanelContentWrapperViewId);
   }
 
   ~SidePanelContentSwappingContainer() override = default;
@@ -551,11 +553,11 @@ void SidePanelCoordinator::Show(
     content_wrapper->ResetLoadingEntryIfNecessary();
 
     // If the side panel is in the process of closing, show it instead.
-    content_wrapper->SetProperty(
-        kSidePanelContentStateKey,
-        static_cast<std::underlying_type_t<SidePanelContentState>>(
-            SidePanelContentState::kReadyToShow));
-    NotifyPinnedContainerOfActiveStateChange(entry->key(), true);
+    if (browser_view_->unified_side_panel()->state() ==
+        SidePanel::State::kClosing) {
+      browser_view_->unified_side_panel()->Open(/*animated=*/true);
+      NotifyPinnedContainerOfActiveStateChange(entry->key(), true);
+    }
     return;
   }
 
@@ -602,14 +604,10 @@ void SidePanelCoordinator::Close(bool suppress_animations) {
       entry->OnEntryWillHide(SidePanelEntryHideReason::kSidePanelClosed);
     }
   }
-  if (views::View* content_wrapper =
-          browser_view_->unified_side_panel()->GetViewByID(
-              kSidePanelContentWrapperViewId)) {
-    content_wrapper->SetProperty(
-        kSidePanelContentStateKey,
-        static_cast<std::underlying_type_t<SidePanelContentState>>(
-            suppress_animations ? SidePanelContentState::kHideImmediately
-                                : SidePanelContentState::kReadyToHide));
+  if (browser_view_->unified_side_panel()->GetViewByID(
+          kSidePanelContentWrapperViewId)) {
+    browser_view_->unified_side_panel()->Close(
+        /*animated=*/!suppress_animations);
   }
 
   MaybeEndPinPromo(/*pinned=*/false);
@@ -678,11 +676,7 @@ void SidePanelCoordinator::PopulateSidePanel(
   const bool opening_side_panel = !IsSidePanelShowing();
 
   content_wrapper->SetVisible(true);
-  content_wrapper->SetProperty(
-      kSidePanelContentStateKey,
-      static_cast<std::underlying_type_t<SidePanelContentState>>(
-          suppress_animations ? SidePanelContentState::kShowImmediately
-                              : SidePanelContentState::kReadyToShow));
+  browser_view_->unified_side_panel()->Open(/*animated=*/!suppress_animations);
 
   SidePanelEntry* previous_entry = current_entry_.get();
 

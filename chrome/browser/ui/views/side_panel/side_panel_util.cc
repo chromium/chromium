@@ -33,12 +33,6 @@
 #include "chrome/browser/ui/views/side_panel/extensions/extension_side_panel_manager.h"
 #include "extensions/common/extension_features.h"
 
-DEFINE_UI_CLASS_PROPERTY_TYPE(SidePanelContentState)
-DEFINE_UI_CLASS_PROPERTY_KEY(std::underlying_type_t<SidePanelContentState>,
-                             kSidePanelContentStateKey,
-                             std::underlying_type_t<SidePanelContentState>(
-                                 SidePanelContentState::kReadyToShow))
-
 // static
 void SidePanelUtil::PopulateGlobalEntries(Browser* browser,
                                           SidePanelRegistry* window_registry) {

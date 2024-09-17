@@ -71,23 +71,30 @@ class SidePanel : public views::AccessiblePaneView,
   // panel has been resized since metrics were last logged.
   void RecordMetricsIfResized();
 
+  // Reflects the current state of the visibility of the side panel.
+  enum class State { kClosed, kOpening, kOpen, kClosing };
+  State state() { return state_; }
+
+  // These two methods are the only mechanism to change visibility of the side
+  // panel. `animated` may be ignored.
+  void Open(bool animated);
+  void Close(bool animated);
+
  private:
   class VisibleBoundsViewClipper;
 
-  void UpdateVisibility();
+  // This method is the shared implementation of Open/Close.
+  void UpdateVisibility(bool should_be_open, bool animated);
+
   bool ShouldShowAnimation() const;
   void AnnounceResize();
 
   // views::View:
-  void ChildVisibilityChanged(View* child) override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
 
   // views::ViewObserver:
   void OnChildViewAdded(View* observed_view, View* child) override;
   void OnChildViewRemoved(View* observed_view, View* child) override;
-  void OnViewPropertyChanged(View* observed_view,
-                             const void* key,
-                             int64_t old_value) override;
 
   // views::AnimationDelegateViews:
   void AnimationProgressed(const gfx::Animation* animation) override;
@@ -135,6 +142,8 @@ class SidePanel : public views::AccessiblePaneView,
 
   // Observes and listens to side panel alignment changes.
   PrefChangeRegistrar pref_change_registrar_;
+
+  State state_ = State::kClosed;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_H_

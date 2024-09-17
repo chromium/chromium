@@ -341,25 +341,28 @@ TEST_F(SidePanelCoordinatorTest, ToggleSidePanel) {
   EXPECT_FALSE(browser_view()->unified_side_panel()->GetVisible());
 }
 
+// https://issues.chromium.org/issues/40670141: animations don't run on mac.
+#if !BUILDFLAG(IS_MAC)
 TEST_F(SidePanelCoordinatorTest, OpenWhileClosing) {
-  // Wait for the side panel to be visible, although it may not be fully shown.
+  // Wait for the side panel to be visible and fully shown.
   coordinator_->Show(SidePanelEntry::Key(SidePanelEntry::Id::kBookmarks));
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return browser_view()->unified_side_panel()->GetVisible(); }));
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return browser_view()->unified_side_panel()->state() ==
+           SidePanel::State::kOpen;
+  }));
 
-  // Closing the side panel is asynchronous and thus it should still be visible.
+  // Closing the side panel is asynchronous.
   coordinator_->Close();
-  EXPECT_TRUE(browser_view()->unified_side_panel()->GetVisible());
+  EXPECT_EQ(browser_view()->unified_side_panel()->state(),
+            SidePanel::State::kClosing);
 
   // Opening the same entry should cancel the close.
   coordinator_->Show(SidePanelEntry::Key(SidePanelEntry::Id::kBookmarks));
-
-  views::View* content_wrapper =
-      browser_view()->unified_side_panel()->GetViewByID(
-          SidePanelCoordinator::kSidePanelContentWrapperViewId);
-  EXPECT_EQ(content_wrapper->GetProperty(kSidePanelContentStateKey),
-            static_cast<int>(SidePanelContentState::kReadyToShow));
+  auto state = browser_view()->unified_side_panel()->state();
+  EXPECT_TRUE(state == SidePanel::State::kOpen ||
+              state == SidePanel::State::kOpening);
 }
+#endif  // !BUILDFLAG(IS_MAC)
 
 TEST_F(SidePanelCoordinatorTest, ChangeSidePanelWidth) {
   // Set side panel to right-aligned

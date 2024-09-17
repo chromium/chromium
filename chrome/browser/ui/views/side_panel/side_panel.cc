@@ -388,10 +388,6 @@ gfx::Size SidePanel::GetContentSizeUpperBound() const {
                    std::max(0, side_panel_height - GetBorderInsets().height()));
 }
 
-void SidePanel::ChildVisibilityChanged(View* child) {
-  UpdateVisibility();
-}
-
 void SidePanel::OnBoundsChanged(const gfx::Rect& previous_bounds) {
   if (previous_bounds.width() != width() && keyboard_resized_) {
     keyboard_resized_ = false;
@@ -415,7 +411,6 @@ void SidePanel::OnChildViewAdded(View* observed_view, View* child) {
     content_view_observations_.AddObservation(child);
   }
 
-  UpdateVisibility();
   // Reorder `border_view_` to be last so that it gets painted on top, even if
   // an added child also paints to a layer.
   ReorderChildView(border_view_, children().size());
@@ -446,18 +441,6 @@ void SidePanel::OnChildViewRemoved(View* observed_view, View* child) {
   if (content_view_observations_.IsObservingSource(child)) {
     content_view_observations_.RemoveObservation(child);
   }
-  UpdateVisibility();
-}
-
-void SidePanel::OnViewPropertyChanged(View* observed_view,
-                                      const void* key,
-                                      int64_t old_value) {
-  if (key == kSidePanelContentStateKey &&
-      static_cast<SidePanelContentState>(
-          observed_view->GetProperty(kSidePanelContentStateKey)) !=
-          static_cast<SidePanelContentState>(old_value)) {
-    UpdateVisibility();
-  }
 }
 
 void SidePanel::AnimationProgressed(const gfx::Animation* animation) {
@@ -474,6 +457,9 @@ void SidePanel::AnimationProgressed(const gfx::Animation* animation) {
 void SidePanel::AnimationEnded(const gfx::Animation* animation) {
   if (animation->GetCurrentValue() == 0) {
     SetVisible(false);
+    state_ = State::kClosed;
+  } else {
+    state_ = State::kOpen;
   }
   if (largest_animation_step_time_.has_value()) {
     SidePanelUtil::RecordSidePanelAnimationMetrics(
@@ -549,9 +535,20 @@ void SidePanel::RecordMetricsIfResized() {
   }
 }
 
-void SidePanel::UpdateVisibility() {
-  bool should_be_open = false;
-  bool animate_transition = true;
+void SidePanel::Open(bool animated) {
+  UpdateVisibility(/*should_be_open=*/true, animated);
+}
+
+void SidePanel::Close(bool animated) {
+  UpdateVisibility(/*should_be_open=*/false, animated);
+}
+
+void SidePanel::UpdateVisibility(bool should_be_open, bool animate_transition) {
+  if (should_be_open) {
+    state_ = animate_transition ? State::kOpening : State::kOpen;
+  } else {
+    state_ = animate_transition ? State::kClosing : State::kClosed;
+  }
   std::vector<views::View*> views_to_hide;
   // TODO(pbos): Iterate content instead. Requires moving the owned pointer out
   // of owned contents before resetting it.
@@ -561,21 +558,8 @@ void SidePanel::UpdateVisibility() {
       continue;
     }
 
-    SidePanelContentState current_state = static_cast<SidePanelContentState>(
-        view->GetProperty(kSidePanelContentStateKey));
-    switch (current_state) {
-      case SidePanelContentState::kHideImmediately:
-        animate_transition = false;
-        [[fallthrough]];
-      case SidePanelContentState::kReadyToHide:
-        views_to_hide.push_back(view);
-        break;
-      case SidePanelContentState::kShowImmediately:
-        animate_transition = false;
-        [[fallthrough]];
-      case SidePanelContentState::kReadyToShow:
-        should_be_open = true;
-        break;
+    if (state_ == State::kClosing || state_ == State::kClosed) {
+      views_to_hide.push_back(view);
     }
   }
   // Make sure the border visibility matches the side panel. Also dynamically
