@@ -772,18 +772,20 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
 
 - (void)updateTabGroupIndicatorAvailabilityWithOffset:(CGFloat)offset {
   CHECK(IsTabGroupIndicatorEnabled());
-  offset = fmax(offset, 0);
 
   BOOL canShowTabStrip = IsRegularXRegularSizeClass(self);
   BOOL isAvailable = !IsCompactHeight(self) && !canShowTabStrip;
   _tabGroupIndicatorView.available = isAvailable;
 
-  // Make the view disappear while the indicator is scrolled out of the screen.
+  // Make the view disappear when the indicator is scrolled out of the screen.
+  // The absolute value of the offset is used to make the view disappear when:
+  // - Scrolling down to reveal the Discover section.
+  // - Scrolling up to reveal the overscroll actions.
   _tabGroupIndicatorView.alpha =
-      1 - fmax(0, (offset / kTabGroupIndicatorHeight));
+      1 - fmax(0, (abs(offset) / kTabGroupIndicatorHeight));
 
   _toolbarTabGroupIndicartorConstraint.constant =
-      kTabGroupIndicatorNTPToolbarMargin - offset;
+      kTabGroupIndicatorNTPToolbarMargin - fmax(offset, 0);
   if (_tabGroupIndicatorView.hidden) {
     _toolbarTabGroupIndicartorConstraint.active = NO;
     _toolbarNoTabGroupIndicartorConstraint.active = YES;
