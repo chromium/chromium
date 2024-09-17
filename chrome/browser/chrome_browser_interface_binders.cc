@@ -154,6 +154,7 @@
 #include "chrome/browser/cart/chrome_cart.mojom.h"
 #include "chrome/browser/new_tab_page/modules/file_suggestion/file_suggestion.mojom.h"
 #include "chrome/browser/new_tab_page/modules/v2/calendar/google_calendar.mojom.h"
+#include "chrome/browser/new_tab_page/modules/v2/calendar/outlook_calendar.mojom.h"
 #include "chrome/browser/new_tab_page/modules/v2/most_relevant_tab_resumption/most_relevant_tab_resumption.mojom.h"
 #include "chrome/browser/new_tab_page/new_tab_page_util.h"
 #include "chrome/browser/payments/payment_request_factory.h"
@@ -1344,6 +1345,11 @@ void PopulateChromeWebUIFrameBinders(
   if (base::FeatureList::IsEnabled(ntp_features::kNtpCalendarModule)) {
     RegisterWebUIControllerInterfaceBinder<
         ntp::calendar::mojom::GoogleCalendarPageHandler, NewTabPageUI>(map);
+  }
+
+  if (base::FeatureList::IsEnabled(ntp_features::kNtpOutlookCalendarModule)) {
+    RegisterWebUIControllerInterfaceBinder<
+        ntp::calendar::mojom::OutlookCalendarPageHandler, NewTabPageUI>(map);
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

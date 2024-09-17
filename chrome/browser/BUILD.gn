@@ -3874,6 +3874,8 @@ static_library("browser") {
       "new_tab_page/modules/safe_browsing/safe_browsing_prefs.h",
       "new_tab_page/modules/v2/calendar/google_calendar_page_handler.cc",
       "new_tab_page/modules/v2/calendar/google_calendar_page_handler.h",
+      "new_tab_page/modules/v2/calendar/outlook_calendar_page_handler.cc",
+      "new_tab_page/modules/v2/calendar/outlook_calendar_page_handler.h",
       "new_tab_page/modules/v2/most_relevant_tab_resumption/most_relevant_tab_resumption_page_handler.cc",
       "new_tab_page/modules/v2/most_relevant_tab_resumption/most_relevant_tab_resumption_page_handler.h",
       "new_tab_page/new_tab_page_util.cc",

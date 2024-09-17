@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/new_tab_page/modules/file_suggestion/file_suggestion.mojom.h"
 #include "chrome/browser/new_tab_page/modules/v2/calendar/google_calendar.mojom.h"
+#include "chrome/browser/new_tab_page/modules/v2/calendar/outlook_calendar.mojom.h"
 #include "chrome/browser/new_tab_page/modules/v2/most_relevant_tab_resumption/most_relevant_tab_resumption.mojom.h"
 #include "components/user_education/webui/help_bubble_handler.h"
 #include "ui/webui/resources/cr_components/help_bubble/help_bubble.mojom.h"
@@ -66,6 +67,7 @@ class FileSuggestionHandler;
 class FooHandler;
 #endif
 class GoogleCalendarPageHandler;
+class OutlookCalendarPageHandler;
 class GURL;
 class MostRelevantTabResumptionPageHandler;
 class MostVisitedHandler;
@@ -148,6 +150,13 @@ class NewTabPageUI
   // pending receiver that will be internally bound.
   void BindInterface(
       mojo::PendingReceiver<ntp::calendar::mojom::GoogleCalendarPageHandler>
+          pending_receiver);
+
+  // Instantiates the implementor of
+  // npt::calendar::mojom::OutlookCalendarPageHandler mojo interface passing the
+  // pending receiver that will be internally bound.
+  void BindInterface(
+      mojo::PendingReceiver<ntp::calendar::mojom::OutlookCalendarPageHandler>
           pending_receiver);
 
 #if !defined(OFFICIAL_BUILD)
@@ -256,6 +265,7 @@ class NewTabPageUI
   // Mojo implementations for modules:
   std::unique_ptr<GoogleCalendarPageHandler> google_calendar_handler_;
   std::unique_ptr<FileSuggestionHandler> file_handler_;
+  std::unique_ptr<OutlookCalendarPageHandler> outlook_calendar_handler_;
   PrefChangeRegistrar pref_change_registrar_;
 
   // Holds subscriptions for TabInterface callbacks.

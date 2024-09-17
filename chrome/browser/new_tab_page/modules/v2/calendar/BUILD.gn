@@ -8,6 +8,7 @@ mojom("mojo_bindings") {
   sources = [
     "calendar_data.mojom",
     "google_calendar.mojom",
+    "outlook_calendar.mojom",
   ]
   webui_module_path = "/"
   public_deps = [

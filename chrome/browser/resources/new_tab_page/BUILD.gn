@@ -58,6 +58,7 @@ build_webui("build") {
   mojo_files = [
     "$root_gen_dir/chrome/browser/new_tab_page/modules/file_suggestion/file_suggestion.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/new_tab_page/modules/v2/calendar/calendar_data.mojom-webui.ts",
+    "$root_gen_dir/chrome/browser/new_tab_page/modules/v2/calendar/outlook_calendar.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/new_tab_page/modules/v2/calendar/google_calendar.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/new_tab_page/modules/v2/most_relevant_tab_resumption/most_relevant_tab_resumption.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/ui/webui/new_tab_page/new_tab_page.mojom-webui.ts",

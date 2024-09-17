@@ -14,6 +14,7 @@ calendar_v2_web_component_files = [
 calendar_v2_non_web_component_files = [
   "modules/v2/calendar/common.ts",
   "modules/v2/calendar/google_calendar_proxy.ts",
+  "modules/v2/calendar/outlook_calendar_proxy.ts",
 ]
 
 calendar_css_files = [
