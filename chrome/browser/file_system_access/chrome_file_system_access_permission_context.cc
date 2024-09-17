@@ -60,6 +60,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/buildflags/buildflags.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/origin.h"
@@ -77,9 +78,11 @@
 #include "chrome/browser/web_applications/web_app_install_manager_observer.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
-#include "extensions/browser/extension_registry.h"
+#if BUILDFLAG(ENABLE_PLATFORM_APPS)
+#include "extensions/browser/extension_registry.h"  // nogncheck
 #include "extensions/common/extension.h"
-#endif
+#endif  // BUILDFLAG(ENABLE_PLATFORM_APPS)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
@@ -2617,6 +2620,8 @@ bool ChromeFileSystemAccessPermissionContext::
   if (GetPersistedGrantType(origin) != PersistedGrantType::kDormant) {
     return false;
   }
+
+#if BUILDFLAG(ENABLE_PLATFORM_APPS)
   // The restore prompt is not displayed when there is a platform app installed,
   // because there is no valid UI element to display the restore prompt from.
   const extensions::ExtensionRegistry* registry =
@@ -2625,9 +2630,10 @@ bool ChromeFileSystemAccessPermissionContext::
       registry ? registry->enabled_extensions().GetExtensionOrAppByURL(
                      origin.GetURL())
                : nullptr;
-  if (app && app->extensions::Extension::is_platform_app()) {
+  if (app && app->is_platform_app()) {
     return false;
   }
+#endif
 
   // While this method is called from `RequestPermission`, which implies that
   // a `PermissionGrantImpl` exists - we want to insert the origin into the
