@@ -667,7 +667,6 @@ TrustedBiddingSignalsKVv2RequestHelperBuilder::
     CHECK_NE(pos, std::string::npos);
     std::string key = trusted_bidding_signals_slot_size_param.substr(0, pos);
     std::string value = trusted_bidding_signals_slot_size_param.substr(pos + 1);
-    CHECK(key == "slotSize" || key == "allSlotsRequestedSizes");
     trusted_bidding_signals_slot_size_param_ = {std::move(key),
                                                 std::move(value)};
   }

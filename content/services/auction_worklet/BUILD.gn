@@ -191,6 +191,7 @@ source_set("tests") {
     "//components/cbor:cbor",
     "//content/common:for_content_tests",
     "//content/public/common:common",
+    "//content/services/auction_worklet/public/cpp:test_support",
     "//gin",
     "//net",
     "//net:test_support",
