@@ -172,7 +172,7 @@ class TableView::HighlightPathGenerator : public views::HighlightPathGenerator {
 
 TableView::TableView() : weak_factory_(this) {
   constexpr int kTextContext = style::CONTEXT_TABLE_ROW;
-  constexpr int kTextStyle = style::STYLE_PRIMARY;
+  constexpr int kTextStyle = style::STYLE_BODY_4;
   font_list_ = TypographyProvider::Get().GetFont(kTextContext, kTextStyle);
   row_height_ = LayoutProvider::GetControlHeightForFont(kTextContext,
                                                         kTextStyle, font_list_);
