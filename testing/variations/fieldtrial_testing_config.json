@@ -17331,21 +17331,6 @@
             ]
         }
     ],
-    "PlusAddressAndroidManualFallbackEnabled": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PlusAddressAndroidManualFallbackEnabled"
-                    ]
-                }
-            ]
-        }
-    ],
     "PlusAddressCreateSuggestion": [
         {
             "platforms": [
@@ -17383,6 +17368,7 @@
                     "name": "Enabled",
                     "enable_features": [
                         "PlusAddressAndSingleFieldFormFill",
+                        "PlusAddressAndroidManualFallbackEnabled",
                         "PlusAddressBlocklistEnabled",
                         "PlusAddressFallbackFromContextMenu",
                         "PlusAddressGlobalToggle",
