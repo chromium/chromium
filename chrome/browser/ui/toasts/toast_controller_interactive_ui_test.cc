@@ -2,35 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <memory>
-
-#include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
-#include "chrome/browser/ui/location_bar/location_bar.h"
-#include "chrome/browser/ui/omnibox/omnibox_tab_helper.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/browser/ui/toasts/toast_features.h"
 #include "chrome/browser/ui/toasts/toast_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/test/base/interactive_test_utils.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
-#include "components/omnibox/browser/omnibox_edit_model.h"
-#include "components/omnibox/browser/omnibox_view.h"
-#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/interactive_test.h"
-#include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/interaction/interactive_views_test.h"
@@ -40,36 +28,6 @@
 namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTab);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTab);
-
-class OmniboxInputWaiter : public OmniboxTabHelper::Observer {
- public:
-  explicit OmniboxInputWaiter(content::WebContents* web_contents) {
-    omnibox_helper_observer_.Observe(
-        OmniboxTabHelper::FromWebContents(web_contents));
-
-    run_loop_ = std::make_unique<base::RunLoop>(
-        base::RunLoop::Type::kNestableTasksAllowed);
-  }
-  ~OmniboxInputWaiter() override = default;
-
-  void Wait() { run_loop_->Run(); }
-
-  void OnOmniboxInputStateChanged() override {}
-
-  void OnOmniboxInputInProgress(bool in_progress) override {
-    run_loop_->Quit();
-  }
-
-  void OnOmniboxFocusChanged(OmniboxFocusState state,
-                             OmniboxFocusChangeReason reason) override {}
-
-  void OnOmniboxPopupVisibilityChanged(bool popup_is_open) override {}
-
- private:
-  std::unique_ptr<base::RunLoop> run_loop_;
-  base::ScopedObservation<OmniboxTabHelper, OmniboxTabHelper::Observer>
-      omnibox_helper_observer_{this};
-};
 }  // namespace
 
 class ToastControllerInteractiveTest : public InteractiveBrowserTest {
@@ -117,11 +75,6 @@ class ToastControllerInteractiveTest : public InteractiveBrowserTest {
           return current_toast_id.value();
         },
         expected_id);
-  }
-
-  void RemoveOmniboxFocus() {
-    ui_test_utils::ClickOnView(
-        BrowserView::GetBrowserViewForBrowser(browser())->contents_web_view());
   }
 
  private:
@@ -254,98 +207,4 @@ IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest,
                   WaitForShow(toasts::ToastView::kToastViewId),
                   NavigateWebContents(kFirstTab, GetURL()),
                   EnsurePresent(toasts::ToastView::kToastViewId));
-}
-
-IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest,
-                       ToastReactToOmniboxFocus) {
-  LocationBar* const location_bar = browser()->window()->GetLocationBar();
-  ASSERT_TRUE(location_bar);
-  OmniboxView* const omnibox_view = location_bar->GetOmniboxView();
-  ASSERT_TRUE(omnibox_view);
-  browser()->window()->SetFocusToLocationBar(true);
-  ASSERT_FALSE(omnibox_view->model()->PopupIsOpen());
-
-  // Even though the omnibox is focused, the toast should still show because
-  // the omnibox doesn't have a popup and the user isn't interacting with the
-  // omnibox.
-  ToastController* const toast_controller = GetToastController();
-  EXPECT_TRUE(
-      toast_controller->MaybeShowToast(ToastParams(ToastId::kLinkCopied)));
-  EXPECT_TRUE(toast_controller->IsShowingToast());
-  EXPECT_TRUE(toast_controller->GetToastWidgetForTesting()->IsVisible());
-
-  // Omnibox should still show even when focus is removed from the omnibox.
-  RemoveOmniboxFocus();
-  EXPECT_TRUE(toast_controller->IsShowingToast());
-  EXPECT_TRUE(toast_controller->GetToastWidgetForTesting()->IsVisible());
-
-  // Focus the omnibox again should cause the toast to no longer be visible
-  // because we are focusing after the toast is already shown.
-  browser()->window()->SetFocusToLocationBar(true);
-  EXPECT_TRUE(toast_controller->IsShowingToast());
-  EXPECT_FALSE(toast_controller->GetToastWidgetForTesting()->IsVisible());
-}
-
-IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest,
-                       HidesWhenOmniboxPopupShows) {
-  // Even though the omnibox is focused, the toast should still show because
-  // the omnibox doesn't have a popup and the user isn't interacting with the
-  // omnibox.
-  ToastController* const toast_controller = GetToastController();
-  EXPECT_TRUE(
-      toast_controller->MaybeShowToast(ToastParams(ToastId::kLinkCopied)));
-  EXPECT_TRUE(toast_controller->IsShowingToast());
-  EXPECT_TRUE(toast_controller->GetToastWidgetForTesting()->IsVisible());
-
-  // Trigger the omnibox popup to show.
-  LocationBar* const location_bar = browser()->window()->GetLocationBar();
-  ASSERT_TRUE(location_bar);
-  OmniboxView* const omnibox_view = location_bar->GetOmniboxView();
-  ASSERT_TRUE(omnibox_view);
-  ASSERT_FALSE(omnibox_view->model()->PopupIsOpen());
-  omnibox_view->OnBeforePossibleChange();
-  omnibox_view->SetUserText(u"hello world");
-  omnibox_view->OnAfterPossibleChange(true);
-
-  ASSERT_TRUE(omnibox_view->model()->PopupIsOpen());
-
-  // The toast widget should no longer be visible because there is a popup.
-  EXPECT_TRUE(toast_controller->IsShowingToast());
-  EXPECT_FALSE(toast_controller->GetToastWidgetForTesting()->IsVisible());
-
-  // Toast widget is visible again after the omnibox is no longer focused.
-  RemoveOmniboxFocus();
-  ASSERT_FALSE(omnibox_view->model()->PopupIsOpen());
-  EXPECT_TRUE(toast_controller->IsShowingToast());
-  EXPECT_TRUE(toast_controller->GetToastWidgetForTesting()->IsVisible());
-}
-
-IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest,
-                       HidesWhenTypingInOmnibox) {
-  browser()->window()->SetFocusToLocationBar(true);
-
-  // Even though the omnibox is focused, the toast should still show because
-  // the omnibox doesn't have a popup and the user isn't interacting with the
-  // omnibox.
-  ToastController* const toast_controller = GetToastController();
-  EXPECT_TRUE(
-      toast_controller->MaybeShowToast(ToastParams(ToastId::kLinkCopied)));
-  EXPECT_TRUE(toast_controller->IsShowingToast());
-  EXPECT_TRUE(toast_controller->GetToastWidgetForTesting()->IsVisible());
-
-  // Start typing in the omnibox.
-  auto omnibox_input_waiter = std::make_unique<OmniboxInputWaiter>(
-      browser()->tab_strip_model()->GetActiveWebContents());
-  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_A, false,
-                                              false, false, false));
-  omnibox_input_waiter->Wait();
-
-  // The toast widget should no longer be visible because we are typing.
-  EXPECT_TRUE(toast_controller->IsShowingToast());
-  EXPECT_FALSE(toast_controller->GetToastWidgetForTesting()->IsVisible());
-
-  // Toast widget is visible again after the omnibox is no longer focused.
-  RemoveOmniboxFocus();
-  EXPECT_TRUE(toast_controller->IsShowingToast());
-  EXPECT_TRUE(toast_controller->GetToastWidgetForTesting()->IsVisible());
 }

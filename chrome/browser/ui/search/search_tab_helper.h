@@ -98,10 +98,8 @@ class SearchTabHelper : public content::WebContentsObserver,
 
   // Overridden from OmniboxTabHelper::Observer:
   void OnOmniboxInputStateChanged() override;
-  void OnOmniboxInputInProgress(bool in_progress) override {}
   void OnOmniboxFocusChanged(OmniboxFocusState state,
                              OmniboxFocusChangeReason reason) override;
-  void OnOmniboxPopupVisibilityChanged(bool popup_is_open) override {}
 
   void OnBitmapFetched(int match_index,
                        const std::string& image_url,

@@ -703,10 +703,8 @@ class LensOverlayController : public LensSearchboxClient,
 
   // OmniboxTabHelper::Observer:
   void OnOmniboxInputStateChanged() override {}
-  void OnOmniboxInputInProgress(bool in_progress) override {}
   void OnOmniboxFocusChanged(OmniboxFocusState state,
                              OmniboxFocusChangeReason reason) override;
-  void OnOmniboxPopupVisibilityChanged(bool popup_is_open) override {}
 
   // find_in_page::FindResultObserver:
   void OnFindEmptyText(content::WebContents* web_contents) override;
