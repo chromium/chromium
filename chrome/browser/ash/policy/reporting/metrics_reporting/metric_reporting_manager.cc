@@ -271,11 +271,12 @@ MetricReportingManager::MetricReportingManager(
       /*rate_limiter=*/nullptr, source_info);
   crash_event_report_queue_ = delegate_->CreateMetricReportQueue(
       EventType::kDevice, Destination::CRASH_EVENTS, Priority::FAST_BATCH,
-      /*rate_limiter=*/nullptr, std::move(source_info));
+      /*rate_limiter=*/nullptr, source_info);
   chrome_crash_event_report_queue_ = delegate_->CreateMetricReportQueue(
       EventType::kDevice, Destination::CHROME_CRASH_EVENTS,
       Priority::FAST_BATCH,
-      /*rate_limiter=*/nullptr, std::move(source_info));
+      /*rate_limiter=*/nullptr, source_info);
+
   DelayedInit();
 
   if (managed_session_service) {
@@ -292,9 +293,11 @@ void MetricReportingManager::Shutdown() {
   website_usage_observer_.reset();
   app_usage_observer_.reset();
   delegate_.reset();
-  // Reset the raw pointer `fatal_crash_events_observer_` before the actual
-  // class is destructed by `event_observer_managers_`.
+  // Reset the raw pointer for `fatal_crash_events_observer_` and
+  // `chrome_fatal_crash_events_observer_` before the actual class is destructed
+  // by `event_observer_managers_`.
   fatal_crash_events_observer_ = nullptr;
+  chrome_fatal_crash_events_observer_ = nullptr;
   event_observer_managers_.clear();
   info_collectors_.clear();
   telemetry_collectors_.clear();
@@ -727,9 +730,13 @@ void MetricReportingManager::InitFatalCrashCollectors() {
         metrics::kReportDeviceCrashReportInfoDefaultValue,
         /*collector_pool=*/this));
   }
+
   if (base::FeatureList::IsEnabled(kEnableChromeFatalCrashEventsObserver)) {
+    std::unique_ptr<ChromeFatalCrashEventsObserver>
+        chrome_fatal_crash_observer = ChromeFatalCrashEventsObserver::Create();
+    chrome_fatal_crash_events_observer_ = chrome_fatal_crash_observer.get();
     event_observer_managers_.emplace_back(delegate_->CreateEventObserverManager(
-        FatalCrashEventsObserver::Create(),
+        std::move(chrome_fatal_crash_observer),
         chrome_crash_event_report_queue_.get(), &reporting_settings_,
         ash::kReportDeviceCrashReportInfo,
         metrics::kReportDeviceCrashReportInfoDefaultValue,
