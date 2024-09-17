@@ -336,7 +336,7 @@ class HistoryClustersServiceTest : public testing::Test {
     // Including synced visits launched in early 2024.
     filter_params.include_synced_visits = true;
     const auto task = history_clusters_service_->QueryClusters(
-        ClusteringRequestSource::kJourneysPage, filter_params,
+        ClusteringRequestSource::kJourneysPage, std::move(filter_params),
         /*begin_time=*/base::Time(), continuation_params, /*recluster=*/false,
         base::BindLambdaForTesting(
             [&](std::vector<history::Cluster> clusters_temp,
