@@ -437,6 +437,7 @@ blink_core_sources_layout = [
   "masonry/layout_masonry.h",
   "masonry/masonry_layout_algorithm.cc",
   "masonry/masonry_layout_algorithm.h",
+  "masonry/masonry_node.h",
   "mathml/layout_mathml_block.cc",
   "mathml/layout_mathml_block.h",
   "mathml/layout_mathml_block_flow.cc",
