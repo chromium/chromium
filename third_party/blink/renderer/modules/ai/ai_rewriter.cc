@@ -64,8 +64,7 @@ ScriptPromise<IDLString> AIRewriter::rewrite(
   CHECK(options);
   AbortSignal* signal = options->getSignalOr(nullptr);
   if (signal && signal->aborted()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kAbortError,
-                                      kExceptionMessageRequestAborted);
+    ThrowAbortedException(exception_state);
     return ScriptPromise<IDLString>();
   }
   const String context_string = options->getContextOr(String());
@@ -100,8 +99,7 @@ ReadableStream* AIRewriter::rewriteStreaming(
   CHECK(options);
   AbortSignal* signal = options->getSignalOr(nullptr);
   if (signal && signal->aborted()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kAbortError,
-                                      kExceptionMessageRequestAborted);
+    ThrowAbortedException(exception_state);
     return nullptr;
   }
   const String context_string = options->getContextOr(String());

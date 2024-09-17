@@ -28,10 +28,10 @@ class AITextSession;
 class AITextSessionFactory : public GarbageCollected<AITextSessionFactory>,
                              public ExecutionContextClient {
  public:
-  using CanCreateTextSessionCallback =
+  using CanCreateAssistantCallback =
       base::OnceCallback<void(AICapabilityAvailability,
                               mojom::blink::ModelAvailabilityCheckResult)>;
-  using CreateTextSessionCallback =
+  using CreateAssistantCallback =
       base::OnceCallback<void(base::expected<AITextSession*, DOMException*>)>;
 
   AITextSessionFactory(ExecutionContext* context,
@@ -41,15 +41,15 @@ class AITextSessionFactory : public GarbageCollected<AITextSessionFactory>,
 
   void Trace(Visitor* visitor) const override;
 
-  void CanCreateTextSession(AIMetrics::AISessionType session_type,
-                            CanCreateTextSessionCallback callback);
+  void CanCreateAssistant(AIMetrics::AISessionType session_type,
+                          CanCreateAssistantCallback callback);
   // The sampling_params can be nullptr and the default value will be used.
-  void CreateTextSession(
+  void CreateAssistant(
       AIMetrics::AISessionType session_type,
-      mojom::blink::AITextSessionSamplingParamsPtr sampling_params,
+      mojom::blink::AIAssistantSamplingParamsPtr sampling_params,
       const WTF::String& system_prompt,
       Vector<mojom::blink::AIAssistantInitialPromptPtr> initial_prompts,
-      CreateTextSessionCallback callback);
+      CreateAssistantCallback callback);
 
  private:
   HeapMojoRemote<mojom::blink::AIManager>& GetAIRemote();

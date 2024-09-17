@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/modules/ai/ai.h"
+#include "third_party/blink/renderer/modules/ai/exception_helpers.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
@@ -62,7 +63,7 @@ class AIMojoSessionCreateClient : public ContextLifecycleObserver {
   AI* GetAI() { return ai_; }
 
  private:
-  // `ContextDestroyed` implementation
+  // `ContextLifecycleObserver` implementation
   void ContextDestroyed() override { Cleanup(); }
 
   void OnAborted() {
@@ -70,7 +71,8 @@ class AIMojoSessionCreateClient : public ContextLifecycleObserver {
       return;
     }
     resolver_->Reject(DOMException::Create(
-        "Aborted", DOMException::GetErrorName(DOMExceptionCode::kAbortError)));
+        kExceptionMessageRequestAborted,
+        DOMException::GetErrorName(DOMExceptionCode::kAbortError)));
     Cleanup();
   }
 

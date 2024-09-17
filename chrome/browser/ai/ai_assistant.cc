@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ai/ai_text_session.h"
+#include "chrome/browser/ai/ai_assistant.h"
 
 #include <memory>
 #include <optional>
@@ -22,8 +22,8 @@
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
 #include "components/optimization_guide/proto/string_value.pb.h"
+#include "third_party/blink/public/mojom/ai/ai_assistant.mojom.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom-shared.h"
-#include "third_party/blink/public/mojom/ai/ai_text_session_info.mojom.h"
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom.h"
 
 namespace {
@@ -60,22 +60,22 @@ const char kInitialPromptFormat[] = "%s: %s\n";
 using ModelExecutionError = optimization_guide::
     OptimizationGuideModelExecutionError::ModelExecutionError;
 
-AITextSession::Context::Context(uint32_t max_tokens,
-                                std::optional<ContextItem> initial_prompts)
+AIAssistant::Context::Context(uint32_t max_tokens,
+                              std::optional<ContextItem> initial_prompts)
     : max_tokens_(max_tokens), initial_prompts_(initial_prompts) {
   if (initial_prompts.has_value()) {
     CHECK_GE(max_tokens_, initial_prompts->tokens)
-        << "the caller shouldn't create an AITextSession with the initial "
+        << "the caller shouldn't create an AIAssistant with the initial "
            "prompts containing more tokens than the limit.";
     current_tokens_ += initial_prompts->tokens;
   }
 }
 
-AITextSession::Context::Context(const Context& context) = default;
+AIAssistant::Context::Context(const Context& context) = default;
 
-AITextSession::Context::~Context() = default;
+AIAssistant::Context::~Context() = default;
 
-void AITextSession::Context::AddContextItem(ContextItem context_item) {
+void AIAssistant::Context::AddContextItem(ContextItem context_item) {
   context_items_.emplace_back(context_item);
   current_tokens_ += context_item.tokens;
   while (current_tokens_ > max_tokens_) {
@@ -84,7 +84,7 @@ void AITextSession::Context::AddContextItem(ContextItem context_item) {
   }
 }
 
-std::string AITextSession::Context::GetContextString() {
+std::string AIAssistant::Context::GetContextString() {
   std::string context;
   if (initial_prompts_.has_value()) {
     context =
@@ -96,15 +96,15 @@ std::string AITextSession::Context::GetContextString() {
   return context;
 }
 
-bool AITextSession::Context::HasContextItem() {
+bool AIAssistant::Context::HasContextItem() {
   return initial_prompts_.has_value() || !context_items_.empty();
 }
 
-AITextSession::AITextSession(
+AIAssistant::AIAssistant(
     std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
         session,
     base::WeakPtr<content::BrowserContext> browser_context,
-    mojo::PendingReceiver<blink::mojom::AITextSession> receiver,
+    mojo::PendingReceiver<blink::mojom::AIAssistant> receiver,
     AIContextBoundObjectSet* context_bound_object_set,
     const std::optional<const Context>& context)
     : session_(std::move(session)),
@@ -123,12 +123,12 @@ AITextSession::AITextSession(
       session_->GetTokenLimits().max_context_tokens, std::nullopt);
 }
 
-AITextSession::~AITextSession() = default;
+AIAssistant::~AIAssistant() = default;
 
-void AITextSession::SetInitialPrompts(
+void AIAssistant::SetInitialPrompts(
     const std::optional<std::string> system_prompt,
     std::vector<blink::mojom::AIAssistantInitialPromptPtr> initial_prompts,
-    CreateTextSessionCallback callback) {
+    CreateAssistantCallback callback) {
   std::string initial_prompts_str = base::StringPrintf(
       kSystemPromptFormat, system_prompt.value_or("").c_str());
   for (auto& initial_prompt : initial_prompts) {
@@ -139,18 +139,18 @@ void AITextSession::SetInitialPrompts(
   base::TrimString(initial_prompts_str, "\n", &initial_prompts_str);
   session_->GetSizeInTokens(
       initial_prompts_str,
-      base::BindOnce(&AITextSession::InitializeContextWithInitialPrompts,
+      base::BindOnce(&AIAssistant::InitializeContextWithInitialPrompts,
                      weak_ptr_factory_.GetWeakPtr(), initial_prompts_str,
                      std::move(callback)));
 }
 
-void AITextSession::SetDeletionCallback(base::OnceClosure deletion_callback) {
+void AIAssistant::SetDeletionCallback(base::OnceClosure deletion_callback) {
   receiver_.set_disconnect_handler(std::move(deletion_callback));
 }
 
-void AITextSession::InitializeContextWithInitialPrompts(
+void AIAssistant::InitializeContextWithInitialPrompts(
     const std::string& initial_prompts_text,
-    CreateTextSessionCallback callback,
+    CreateAssistantCallback callback,
     uint32_t size) {
   // If the on device model service fails to get the size, it will be 0.
   // TODO(crbug.com/351935691): make sure the error is explicitly returned and
@@ -170,10 +170,10 @@ void AITextSession::InitializeContextWithInitialPrompts(
 
   context_ = std::make_unique<Context>(
       max_token, Context::ContextItem{initial_prompts_text, size});
-  std::move(callback).Run(GetTextSessionInfo());
+  std::move(callback).Run(GetAssistantInfo());
 }
 
-void AITextSession::OnGetSizeInTokensComplete(
+void AIAssistant::OnGetSizeInTokensComplete(
     const std::string& text,
     blink::mojom::ModelStreamingResponder* responder,
     uint32_t size) {
@@ -187,7 +187,7 @@ void AITextSession::OnGetSizeInTokensComplete(
                         std::nullopt, context_->current_tokens());
 }
 
-void AITextSession::ModelExecutionCallback(
+void AIAssistant::ModelExecutionCallback(
     const std::string& input,
     mojo::RemoteSetElementId responder_id,
     optimization_guide::OptimizationGuideModelStreamingExecutionResult result) {
@@ -214,16 +214,16 @@ void AITextSession::ModelExecutionCallback(
     std::string new_context = base::StringPrintf(kContextFormat, input.c_str(),
                                                  response->value().c_str());
     // TODO(crbug.com/351935390): instead of calculating this from the
-    // AITextSession, it should be returned by the model since the token should
+    // AIAssistant, it should be returned by the model since the token should
     // be calculated during the execution.
     session_->GetSizeInTokens(
         new_context,
-        base::BindOnce(&AITextSession::OnGetSizeInTokensComplete,
+        base::BindOnce(&AIAssistant::OnGetSizeInTokensComplete,
                        weak_ptr_factory_.GetWeakPtr(), new_context, responder));
   }
 }
 
-void AITextSession::Prompt(
+void AIAssistant::Prompt(
     const std::string& input,
     mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
         pending_responder) {
@@ -252,14 +252,13 @@ void AITextSession::Prompt(
       FormatPromptRole(blink::mojom::AIAssistantInitialPromptRole::kAssistant));
   request.set_value(formatted_input);
   session_->ExecuteModel(
-      request, base::BindRepeating(&AITextSession::ModelExecutionCallback,
+      request, base::BindRepeating(&AIAssistant::ModelExecutionCallback,
                                    weak_ptr_factory_.GetWeakPtr(),
                                    formatted_input, responder_id));
 }
 
-void AITextSession::Fork(
-    mojo::PendingReceiver<blink::mojom::AITextSession> session,
-    ForkCallback callback) {
+void AIAssistant::Fork(mojo::PendingReceiver<blink::mojom::AIAssistant> session,
+                       ForkCallback callback) {
   if (!browser_context_) {
     // The `browser_context_` is already destroyed before the renderer owner is
     // gone.
@@ -274,14 +273,14 @@ void AITextSession::Fork(
   const optimization_guide::SamplingParams sampling_param =
       session_->GetSamplingParams();
 
-  service->CreateTextSessionForCloning(
-      base::PassKey<AITextSession>(), std::move(session),
-      blink::mojom::AITextSessionSamplingParams::New(
-          sampling_param.top_k, sampling_param.temperature),
+  service->CreateAssistantForCloning(
+      base::PassKey<AIAssistant>(), std::move(session),
+      blink::mojom::AIAssistantSamplingParams::New(sampling_param.top_k,
+                                                   sampling_param.temperature),
       context_bound_object_set_, *context_, std::move(callback));
 }
 
-void AITextSession::Destroy() {
+void AIAssistant::Destroy() {
   if (session_) {
     session_.reset();
   }
@@ -295,17 +294,17 @@ void AITextSession::Destroy() {
   responder_set_.Clear();
 }
 
-blink::mojom::AITextSessionInfoPtr AITextSession::GetTextSessionInfo() {
+blink::mojom::AIAssistantInfoPtr AIAssistant::GetAssistantInfo() {
   const optimization_guide::SamplingParams session_sampling_params =
       session_->GetSamplingParams();
-  return blink::mojom::AITextSessionInfo::New(
+  return blink::mojom::AIAssistantInfo::New(
       context_->max_tokens(),
-      blink::mojom::AITextSessionSamplingParams::New(
+      blink::mojom::AIAssistantSamplingParams::New(
           session_sampling_params.top_k, session_sampling_params.temperature));
 }
 
 // static
-const char* AITextSession::FormatPromptRole(
+const char* AIAssistant::FormatPromptRole(
     blink::mojom::AIAssistantInitialPromptRole role) {
   switch (role) {
     case blink::mojom::AIAssistantInitialPromptRole::kSystem:

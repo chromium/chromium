@@ -50,14 +50,14 @@ void AIAssistantFactory::Trace(Visitor* visitor) const {
   visitor->Trace(text_session_factory_);
 }
 
-void AIAssistantFactory::OnGetTextModelInfoComplete(
+void AIAssistantFactory::OnGetModelInfoComplete(
     ScriptPromiseResolver<AIAssistantCapabilities>* resolver,
     AIAssistantCapabilities* capabilities,
-    mojom::blink::AITextModelInfoPtr text_model_info) {
-  CHECK(text_model_info);
-  capabilities->SetDefaultTopK(text_model_info->default_top_k);
-  capabilities->SetMaxTopK(text_model_info->max_top_k);
-  capabilities->SetDefaultTemperature(text_model_info->default_temperature);
+    mojom::blink::AIModelInfoPtr model_info) {
+  CHECK(model_info);
+  capabilities->SetDefaultTopK(model_info->default_top_k);
+  capabilities->SetMaxTopK(model_info->max_top_k);
+  capabilities->SetDefaultTemperature(model_info->default_temperature);
   resolver->Resolve(capabilities);
 }
 
@@ -72,8 +72,8 @@ void AIAssistantFactory::OnCanCreateSessionComplete(
     return;
   }
 
-  ai_->GetAIRemote()->GetTextModelInfo(WTF::BindOnce(
-      &AIAssistantFactory::OnGetTextModelInfoComplete, WrapPersistent(this),
+  ai_->GetAIRemote()->GetModelInfo(WTF::BindOnce(
+      &AIAssistantFactory::OnGetModelInfoComplete, WrapPersistent(this),
       WrapPersistent(resolver), WrapPersistent(capabilities)));
 }
 
@@ -89,7 +89,7 @@ ScriptPromise<AIAssistantCapabilities> AIAssistantFactory::capabilities(
       MakeGarbageCollected<ScriptPromiseResolver<AIAssistantCapabilities>>(
           script_state);
   auto promise = resolver->Promise();
-  text_session_factory_->CanCreateTextSession(
+  text_session_factory_->CanCreateAssistant(
       AIMetrics::AISessionType::kAssistant,
       WTF::BindOnce(&AIAssistantFactory::OnCanCreateSessionComplete,
                     WrapPersistent(this), WrapPersistent(resolver)));
@@ -109,14 +109,14 @@ ScriptPromise<AIAssistant> AIAssistantFactory::create(
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<AIAssistant>>(script_state);
   auto promise = resolver->Promise();
-  mojom::blink::AITextSessionSamplingParamsPtr sampling_params;
+  mojom::blink::AIAssistantSamplingParamsPtr sampling_params;
   WTF::String system_prompt;
   Vector<mojom::blink::AIAssistantInitialPromptPtr> initial_prompts;
   if (options) {
     if (!options->hasTopK() && !options->hasTemperature()) {
       sampling_params = nullptr;
     } else if (options->hasTopK() && options->hasTemperature()) {
-      sampling_params = mojom::blink::AITextSessionSamplingParams::New(
+      sampling_params = mojom::blink::AIAssistantSamplingParams::New(
           options->topK(), options->temperature());
     } else {
       resolver->Reject(DOMException::Create(
@@ -162,7 +162,7 @@ ScriptPromise<AIAssistant> AIAssistantFactory::create(
     }
   }
 
-  text_session_factory_->CreateTextSession(
+  text_session_factory_->CreateAssistant(
       AIMetrics::AISessionType::kAssistant, std::move(sampling_params),
       system_prompt, std::move(initial_prompts),
       WTF::BindOnce(

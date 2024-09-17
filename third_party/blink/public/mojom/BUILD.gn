@@ -27,11 +27,10 @@ mojom("mojom_platform") {
   sources = [
     "ad_tagging/ad_evidence.mojom",
     "aggregation_service/aggregatable_report.mojom",
+    "ai/ai_assistant.mojom",
     "ai/ai_manager.mojom",
     "ai/ai_rewriter.mojom",
     "ai/ai_summarizer.mojom",
-    "ai/ai_text_session.mojom",
-    "ai/ai_text_session_info.mojom",
     "ai/ai_writer.mojom",
     "ai/model_streaming_responder.mojom",
     "annotation/annotation.mojom",

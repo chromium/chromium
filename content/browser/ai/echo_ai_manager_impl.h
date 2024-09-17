@@ -12,8 +12,8 @@
 #include "content/public/browser/render_frame_host.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "third_party/blink/public/mojom/ai/ai_assistant.mojom-forward.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom.h"
-#include "third_party/blink/public/mojom/ai/ai_text_session_info.mojom-forward.h"
 
 namespace content {
 
@@ -41,14 +41,14 @@ class EchoAIManagerImpl : public blink::mojom::AIManager {
                     ReceiverContext context);
 
   // `blink::mojom::AIManager` implementation.
-  void CanCreateTextSession(CanCreateTextSessionCallback callback) override;
+  void CanCreateAssistant(CanCreateAssistantCallback callback) override;
 
-  void CreateTextSession(
-      mojo::PendingReceiver<::blink::mojom::AITextSession> receiver,
-      blink::mojom::AITextSessionSamplingParamsPtr sampling_params,
+  void CreateAssistant(
+      mojo::PendingReceiver<::blink::mojom::AIAssistant> receiver,
+      blink::mojom::AIAssistantSamplingParamsPtr sampling_params,
       const std::optional<std::string>& system_prompt,
       std::vector<blink::mojom::AIAssistantInitialPromptPtr> initial_prompts,
-      CreateTextSessionCallback callback) override;
+      CreateAssistantCallback callback) override;
 
   void CanCreateSummarizer(CanCreateSummarizerCallback callback) override;
 
@@ -56,7 +56,7 @@ class EchoAIManagerImpl : public blink::mojom::AIManager {
       mojo::PendingRemote<blink::mojom::AIManagerCreateSummarizerClient> client,
       blink::mojom::AISummarizerCreateOptionsPtr options) override;
 
-  void GetTextModelInfo(GetTextModelInfoCallback callback) override;
+  void GetModelInfo(GetModelInfoCallback callback) override;
   void CreateWriter(
       mojo::PendingRemote<blink::mojom::AIManagerCreateWriterClient> client,
       blink::mojom::AIWriterCreateOptionsPtr options) override;

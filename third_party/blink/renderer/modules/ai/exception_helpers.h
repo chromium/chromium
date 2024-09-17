@@ -23,8 +23,8 @@ extern const char kExceptionMessageSystemPromptAndInitialPromptsExist[];
 extern const char kExceptionMessageSystemPromptIsNotTheFirst[];
 
 void ThrowInvalidContextException(ExceptionState& exception_state);
-
 void ThrowSessionDestroyedException(ExceptionState& exception_state);
+void ThrowAbortedException(ExceptionState& exception_state);
 
 void RejectPromiseWithInternalError(ScriptPromiseResolverBase* resolver);
 

@@ -4,9 +4,8 @@
 
 module blink.mojom;
 
+import "third_party/blink/public/mojom/ai/ai_assistant.mojom";
 import "third_party/blink/public/mojom/ai/ai_rewriter.mojom";
-import "third_party/blink/public/mojom/ai/ai_text_session.mojom";
-import "third_party/blink/public/mojom/ai/ai_text_session_info.mojom";
 import "third_party/blink/public/mojom/ai/ai_writer.mojom";
 import "third_party/blink/public/mojom/ai/ai_summarizer.mojom";
 
@@ -83,7 +82,7 @@ interface AIManagerCreateRewriterClient {
 
 // The client interface that receives an AISummarizer from an AIManager.
 interface AIManagerCreateSummarizerClient {
-  // Called with a created writer's mojo interface as a result for the
+  // Called with a created summarizer's mojo interface as a result for the
   // CreateSummarizer() method of the AIManager. When failed to create a
   // AISummarizer, this method is called with a null pending remote.
   OnResult(pending_remote<blink.mojom.AISummarizer>? summarizer);
@@ -109,20 +108,20 @@ interface AIManager {
   // Returns if it is possible to create a text session. For example, when
   // the service in charge of model loading and session creation is not
   // available, this should return false.
-  CanCreateTextSession() => (ModelAvailabilityCheckResult result);
+  CanCreateAssistant() => (ModelAvailabilityCheckResult result);
   // Creates a new session and returns the text session info if the session is
   // created successfully.
   // Note that this could return nullptr even if the previous
-  // `CanCreateTextSession()` returns `kReadily`, because some errors can only
+  // `CanCreateAssistant()` returns `kReadily`, because some errors can only
   // occur when we actually create the text session.
   // See the explainer (https://github.com/explainers-by-googlers/prompt-api)
   // for more information about the meaning of each parameter.
-  CreateTextSession(
-    pending_receiver<blink.mojom.AITextSession> session,
-    AITextSessionSamplingParams? sampling_params,
+  CreateAssistant(
+    pending_receiver<blink.mojom.AIAssistant> session,
+    AIAssistantSamplingParams? sampling_params,
     string? system_prompt,
     array<AIAssistantInitialPrompt> initial_prompts
-  ) => (AITextSessionInfo? info);
+  ) => (AIAssistantInfo? info);
   // Returns if it is possible to create a summarizer. For example, when
   // the service in charge of model loading and session creation is not
   // available, this should return false.
@@ -132,8 +131,8 @@ interface AIManager {
     pending_remote<AIManagerCreateSummarizerClient> client,
     AISummarizerCreateOptions options);
   // Returns the default configuration for the text model information.
-  GetTextModelInfo() => (
-    AITextModelInfo text_model_info
+  GetModelInfo() => (
+    AIModelInfo model_info
   );
   // Creates a new AIWriter, and returns it through the passed client. When
   // the passed client is disconnected, the creation process will be aborted.

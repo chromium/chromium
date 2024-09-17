@@ -10,8 +10,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/pass_key.h"
-#include "third_party/blink/public/mojom/ai/ai_text_session.mojom-blink.h"
-#include "third_party/blink/public/mojom/ai/ai_text_session_info.mojom-blink.h"
+#include "third_party/blink/public/mojom/ai/ai_assistant.mojom-blink.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -23,8 +22,10 @@ namespace blink {
 class AIAssistant;
 class AITextSessionFactory;
 
+// TODO(crbug.com/365594095): replace this with `AIAssistantCreateClient` when
+// implementing the abort signal.
 // The class that represents a session with simple generic model execution. It's
-// a simple wrapper of the `mojom::blink::AITextSession` remote.
+// a simple wrapper of the `mojom::blink::AIAssistant` remote.
 class AITextSession final : public GarbageCollected<AITextSession>,
                             public ExecutionContextClient {
  public:
@@ -34,11 +35,11 @@ class AITextSession final : public GarbageCollected<AITextSession>,
 
   void Trace(Visitor* visitor) const override;
 
-  mojo::PendingReceiver<blink::mojom::blink::AITextSession>
+  mojo::PendingReceiver<blink::mojom::blink::AIAssistant>
   GetModelSessionReceiver();
 
-  HeapMojoRemote<blink::mojom::blink::AITextSession>& GetRemoteTextSession() {
-    return text_session_remote_;
+  HeapMojoRemote<blink::mojom::blink::AIAssistant>& GetAIRemote() {
+    return assistant_remote_;
   }
 
   // These `SetInfo()` allows `AITextSessionFactory` (for session creation) and
@@ -46,17 +47,17 @@ class AITextSession final : public GarbageCollected<AITextSession>,
   // the remote.
   void SetInfo(std::variant<base::PassKey<AITextSessionFactory>,
                             base::PassKey<AIAssistant>> pass_key,
-               blink::mojom::blink::AITextSessionInfoPtr info);
+               blink::mojom::blink::AIAssistantInfoPtr info);
 
-  const blink::mojom::blink::AITextSessionInfoPtr GetInfo() const {
+  const blink::mojom::blink::AIAssistantInfoPtr GetInfo() const {
     return info_.Clone();
   }
 
  private:
-  blink::mojom::blink::AITextSessionInfoPtr info_;
+  blink::mojom::blink::AIAssistantInfoPtr info_;
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  HeapMojoRemote<blink::mojom::blink::AITextSession> text_session_remote_;
+  HeapMojoRemote<blink::mojom::blink::AIAssistant> assistant_remote_;
 };
 
 }  // namespace blink

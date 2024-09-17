@@ -6,13 +6,13 @@ assert(is_win || is_mac || is_linux || is_chromeos || is_android)
 
 source_set("ai") {
   sources = [
+    "ai_assistant.h",
     "ai_context_bound_object.h",
     "ai_context_bound_object_set.h",
     "ai_manager_keyed_service.h",
     "ai_manager_keyed_service_factory.h",
     "ai_rewriter.h",
     "ai_summarizer.h",
-    "ai_text_session.h",
     "ai_utils.h",
     "ai_writer.h",
   ]
@@ -26,12 +26,12 @@ source_set("ai") {
 
 source_set("impl") {
   sources = [
+    "ai_assistant.cc",
     "ai_context_bound_object_set.cc",
     "ai_manager_keyed_service.cc",
     "ai_manager_keyed_service_factory.cc",
     "ai_rewriter.cc",
     "ai_summarizer.cc",
-    "ai_text_session.cc",
     "ai_utils.cc",
     "ai_writer.cc",
   ]
@@ -57,10 +57,10 @@ source_set("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "ai_assistant_unittest.cc",
     "ai_manager_keyed_service_unittest.cc",
     "ai_rewriter_unittest.cc",
     "ai_summarizer_unittest.cc",
-    "ai_text_session_unittest.cc",
     "ai_writer_unittest.cc",
   ]
   deps = [

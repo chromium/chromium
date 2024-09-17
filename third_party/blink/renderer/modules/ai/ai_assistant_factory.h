@@ -6,7 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_AI_AI_ASSISTANT_FACTORY_H_
 
 #include "base/task/sequenced_task_runner.h"
-#include "third_party/blink/public/mojom/ai/ai_text_session_info.mojom-blink.h"
+#include "third_party/blink/public/mojom/ai/ai_assistant.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ai_assistant_create_options.h"
@@ -43,10 +43,10 @@ class AIAssistantFactory final : public ScriptWrappable,
   ~AIAssistantFactory() override = default;
 
  private:
-  void OnGetTextModelInfoComplete(
+  void OnGetModelInfoComplete(
       ScriptPromiseResolver<AIAssistantCapabilities>* resolver,
       AIAssistantCapabilities* capabilities,
-      mojom::blink::AITextModelInfoPtr text_model_info);
+      mojom::blink::AIModelInfoPtr model_info);
   void OnCanCreateSessionComplete(
       ScriptPromiseResolver<AIAssistantCapabilities>* resolver,
       AICapabilityAvailability availability,

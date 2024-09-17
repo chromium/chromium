@@ -35,7 +35,7 @@ class AIRewriter : public AIContextBoundObject,
   // `AIContextBoundObject` implementation.
   void SetDeletionCallback(base::OnceClosure deletion_callback) override;
 
-  // `blink::mojom::ModelTextSession` implementation.
+  // `blink::mojom::AIRewriter` implementation.
   void Rewrite(const std::string& input,
                const std::optional<std::string>& context,
                mojo::PendingRemote<blink::mojom::ModelStreamingResponder>

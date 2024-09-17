@@ -95,7 +95,7 @@ ScriptPromise<AIWriter> AIWriterFactory::create(
   CHECK(options);
   AbortSignal* signal = options->getSignalOr(nullptr);
   if (signal && signal->aborted()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kAbortError, "Aborted");
+    ThrowAbortedException(exception_state);
     return ScriptPromise<AIWriter>();
   }
   auto* resolver =

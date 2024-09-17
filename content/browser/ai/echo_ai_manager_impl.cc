@@ -7,14 +7,14 @@
 #include "base/no_destructor.h"
 #include "base/supports_user_data.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "content/browser/ai/echo_ai_assistant.h"
 #include "content/browser/ai/echo_ai_rewriter.h"
 #include "content/browser/ai/echo_ai_summarizer.h"
-#include "content/browser/ai/echo_ai_text_session.h"
 #include "content/browser/ai/echo_ai_writer.h"
 #include "content/public/browser/browser_context.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
-#include "third_party/blink/public/mojom/ai/ai_text_session_info.mojom.h"
+#include "third_party/blink/public/mojom/ai/ai_assistant.mojom.h"
 
 namespace content {
 
@@ -32,23 +32,23 @@ void EchoAIManagerImpl::Create(
   ai->receivers_.Add(ai.get(), std::move(receiver), context);
 }
 
-void EchoAIManagerImpl::CanCreateTextSession(
-    CanCreateTextSessionCallback callback) {
+void EchoAIManagerImpl::CanCreateAssistant(
+    CanCreateAssistantCallback callback) {
   std::move(callback).Run(
       /*result=*/blink::mojom::ModelAvailabilityCheckResult::kReadily);
 }
 
-void EchoAIManagerImpl::CreateTextSession(
-    mojo::PendingReceiver<blink::mojom::AITextSession> receiver,
-    blink::mojom::AITextSessionSamplingParamsPtr sampling_params,
+void EchoAIManagerImpl::CreateAssistant(
+    mojo::PendingReceiver<blink::mojom::AIAssistant> receiver,
+    blink::mojom::AIAssistantSamplingParamsPtr sampling_params,
     const std::optional<std::string>& system_prompt,
     std::vector<blink::mojom::AIAssistantInitialPromptPtr> initial_prompts,
-    CreateTextSessionCallback callback) {
-  mojo::MakeSelfOwnedReceiver(std::make_unique<EchoAITextSession>(),
+    CreateAssistantCallback callback) {
+  mojo::MakeSelfOwnedReceiver(std::make_unique<EchoAIAssistant>(),
                               std::move(receiver));
-  std::move(callback).Run(blink::mojom::AITextSessionInfo::New(
+  std::move(callback).Run(blink::mojom::AIAssistantInfo::New(
       optimization_guide::features::GetOnDeviceModelMaxTokensForContext(),
-      blink::mojom::AITextSessionSamplingParams::New(
+      blink::mojom::AIAssistantSamplingParams::New(
           optimization_guide::features::GetOnDeviceModelDefaultTopK(),
           optimization_guide::features::GetOnDeviceModelDefaultTemperature())));
 }
@@ -70,8 +70,8 @@ void EchoAIManagerImpl::CreateSummarizer(
   client_remote->OnResult(std::move(summarzier));
 }
 
-void EchoAIManagerImpl::GetTextModelInfo(GetTextModelInfoCallback callback) {
-  std::move(callback).Run(blink::mojom::AITextModelInfo::New(
+void EchoAIManagerImpl::GetModelInfo(GetModelInfoCallback callback) {
+  std::move(callback).Run(blink::mojom::AIModelInfo::New(
       optimization_guide::features::GetOnDeviceModelDefaultTopK(),
       optimization_guide::features::GetOnDeviceModelMaxTopK(),
       optimization_guide::features::GetOnDeviceModelDefaultTemperature()));

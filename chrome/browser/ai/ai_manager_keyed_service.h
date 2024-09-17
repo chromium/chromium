@@ -9,16 +9,15 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/types/pass_key.h"
+#include "chrome/browser/ai/ai_assistant.h"
 #include "chrome/browser/ai/ai_context_bound_object_set.h"
 #include "chrome/browser/ai/ai_summarizer.h"
-#include "chrome/browser/ai/ai_text_session.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/browser_context.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "third_party/blink/public/mojom/ai/ai_assistant.mojom-forward.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom.h"
-#include "third_party/blink/public/mojom/ai/ai_text_session.mojom-forward.h"
-#include "third_party/blink/public/mojom/ai/ai_text_session_info.mojom-forward.h"
 
 // The browser-side implementation of `blink::mojom::AIManager`. There should
 // be one shared AIManagerKeyedService per BrowserContext.
@@ -33,13 +32,13 @@ class AIManagerKeyedService : public KeyedService,
 
   void AddReceiver(mojo::PendingReceiver<blink::mojom::AIManager> receiver,
                    AIContextBoundObjectSet::ReceiverContext host);
-  void CreateTextSessionForCloning(
-      base::PassKey<AITextSession> pass_key,
-      mojo::PendingReceiver<blink::mojom::AITextSession> receiver,
-      blink::mojom::AITextSessionSamplingParamsPtr sampling_params,
+  void CreateAssistantForCloning(
+      base::PassKey<AIAssistant> pass_key,
+      mojo::PendingReceiver<blink::mojom::AIAssistant> receiver,
+      blink::mojom::AIAssistantSamplingParamsPtr sampling_params,
       AIContextBoundObjectSet* context_bound_object_set,
-      const AITextSession::Context& context,
-      CreateTextSessionCallback callback);
+      const AIAssistant::Context& context,
+      CreateAssistantCallback callback);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(AIManagerKeyedServiceTest,
@@ -48,14 +47,14 @@ class AIManagerKeyedService : public KeyedService,
                            CreateSummarizerWithoutService);
 
   // `blink::mojom::AIManager` implementation.
-  void CanCreateTextSession(CanCreateTextSessionCallback callback) override;
-  void CreateTextSession(
-      mojo::PendingReceiver<blink::mojom::AITextSession> receiver,
-      blink::mojom::AITextSessionSamplingParamsPtr sampling_params,
+  void CanCreateAssistant(CanCreateAssistantCallback callback) override;
+  void CreateAssistant(
+      mojo::PendingReceiver<blink::mojom::AIAssistant> receiver,
+      blink::mojom::AIAssistantSamplingParamsPtr sampling_params,
       const std::optional<std::string>& system_prompt,
       std::vector<blink::mojom::AIAssistantInitialPromptPtr> initial_prompts,
-      CreateTextSessionCallback callback) override;
-  void GetTextModelInfo(GetTextModelInfoCallback callback) override;
+      CreateAssistantCallback callback) override;
+  void GetModelInfo(GetModelInfoCallback callback) override;
   void CreateWriter(
       mojo::PendingRemote<blink::mojom::AIManagerCreateWriterClient> client,
       blink::mojom::AIWriterCreateOptionsPtr options) override;
@@ -75,16 +74,15 @@ class AIManagerKeyedService : public KeyedService,
       optimization_guide::ModelBasedCapabilityKey capability);
   void CanOptimizationGuideKeyedServiceCreateGenericSession(
       optimization_guide::ModelBasedCapabilityKey capability,
-      CanCreateTextSessionCallback callback);
+      CanCreateAssistantCallback callback);
 
-  // Creates an `AITextSession`, either as a new session, or as a clone of
+  // Creates an `AIAssistant`, either as a new session, or as a clone of
   // an existing session with its context copied.
-  std::unique_ptr<AITextSession> CreateTextSessionInternal(
-      mojo::PendingReceiver<blink::mojom::AITextSession> receiver,
-      const blink::mojom::AITextSessionSamplingParamsPtr& sampling_params,
+  std::unique_ptr<AIAssistant> CreateAssistantInternal(
+      mojo::PendingReceiver<blink::mojom::AIAssistant> receiver,
+      const blink::mojom::AIAssistantSamplingParamsPtr& sampling_params,
       AIContextBoundObjectSet* context_bound_object_set,
-      const std::optional<const AITextSession::Context>& context =
-          std::nullopt);
+      const std::optional<const AIAssistant::Context>& context = std::nullopt);
 
   // A `KeyedService` should never outlive the `BrowserContext`.
   raw_ptr<content::BrowserContext> browser_context_;

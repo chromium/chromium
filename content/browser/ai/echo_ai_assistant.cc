@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/ai/echo_ai_text_session.h"
+#include "content/browser/ai/echo_ai_assistant.h"
 
 #include <optional>
 
@@ -13,18 +13,17 @@
 #include "content/public/browser/browser_thread.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
-#include "third_party/blink/public/mojom/ai/ai_text_session.mojom.h"
-#include "third_party/blink/public/mojom/ai/ai_text_session_info.mojom.h"
+#include "third_party/blink/public/mojom/ai/ai_assistant.mojom.h"
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom.h"
 
 namespace content {
 
-EchoAITextSession::EchoAITextSession() = default;
+EchoAIAssistant::EchoAIAssistant() = default;
 
-EchoAITextSession::~EchoAITextSession() = default;
+EchoAIAssistant::~EchoAIAssistant() = default;
 
-void EchoAITextSession::DoMockExecution(const std::string& input,
-                                        mojo::RemoteSetElementId responder_id) {
+void EchoAIAssistant::DoMockExecution(const std::string& input,
+                                      mojo::RemoteSetElementId responder_id) {
   blink::mojom::ModelStreamingResponder* responder =
       responder_set_.Get(responder_id);
   if (!responder) {
@@ -32,7 +31,7 @@ void EchoAITextSession::DoMockExecution(const std::string& input,
   }
 
   const std::string response = "Model not available in Chromium\n" + input;
-  // To make EchoAITextSession simple, we will use the string length as the size
+  // To make EchoAIAssistant simple, we will use the string length as the size
   // in tokens.
   current_tokens_ += response.size();
   responder->OnResponse(blink::mojom::ModelStreamingResponseStatus::kOngoing,
@@ -41,7 +40,7 @@ void EchoAITextSession::DoMockExecution(const std::string& input,
                         /*text=*/std::nullopt, current_tokens_);
 }
 
-void EchoAITextSession::Prompt(
+void EchoAIAssistant::Prompt(
     const std::string& input,
     mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
         pending_responder) {
@@ -59,24 +58,24 @@ void EchoAITextSession::Prompt(
   // Simulate the time taken by model execution.
   content::GetUIThreadTaskRunner()->PostDelayedTask(
       FROM_HERE,
-      base::BindOnce(&EchoAITextSession::DoMockExecution,
+      base::BindOnce(&EchoAIAssistant::DoMockExecution,
                      weak_ptr_factory_.GetWeakPtr(), input, responder_id),
       base::Seconds(1));
 }
 
-void EchoAITextSession::Fork(
-    mojo::PendingReceiver<blink::mojom::AITextSession> session,
+void EchoAIAssistant::Fork(
+    mojo::PendingReceiver<blink::mojom::AIAssistant> session,
     ForkCallback callback) {
-  mojo::MakeSelfOwnedReceiver(std::make_unique<EchoAITextSession>(),
+  mojo::MakeSelfOwnedReceiver(std::make_unique<EchoAIAssistant>(),
                               std::move(session));
-  std::move(callback).Run(blink::mojom::AITextSessionInfo::New(
+  std::move(callback).Run(blink::mojom::AIAssistantInfo::New(
       optimization_guide::features::GetOnDeviceModelMaxTokensForContext(),
-      blink::mojom::AITextSessionSamplingParams::New(
+      blink::mojom::AIAssistantSamplingParams::New(
           optimization_guide::features::GetOnDeviceModelDefaultTopK(),
           optimization_guide::features::GetOnDeviceModelDefaultTemperature())));
 }
 
-void EchoAITextSession::Destroy() {
+void EchoAIAssistant::Destroy() {
   is_destroyed_ = true;
 
   for (auto& responder : responder_set_) {
