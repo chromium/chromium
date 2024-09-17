@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/scalable_iph/scalable_iph_factory.h"
+#include "chrome/browser/ash/scalable_iph/scalable_iph_factory.h"
 
 #include "base/check_is_test.h"
 #include "base/logging.h"

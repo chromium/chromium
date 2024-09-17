@@ -61,7 +61,7 @@ include_rules = [
   "+chrome/browser/platform_util.h",
   "+chrome/browser/policy",
   "+chrome/browser/profiles",
-  "+chrome/browser/scalable_iph",
+  "+chrome/browser/ash/scalable_iph",
   "+chrome/browser/screen_ai",
   "+chrome/browser/search_engines",
   "+chrome/browser/signin",

@@ -79,7 +79,6 @@ static_library("app_list") {
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/app_list/search/ranking",
     "//chrome/browser/ash/crosapi:browser_util",
-    "//chrome/browser/scalable_iph:scalable_iph_factory",
     "//chrome/browser/search_engines",
     "//chrome/browser/ui:browser_list",
     "//chrome/browser/ui:browser_navigator_params_headers",

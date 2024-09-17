@@ -67,7 +67,7 @@ include_rules = [
   "+chrome/browser/prefs",
   "+chrome/browser/profiles",
   "+chrome/browser/rlz",
-  "+chrome/browser/scalable_iph",
+  "+chrome/browser/ash/scalable_iph",
   "+chrome/browser/screen_ai",
   "+chrome/browser/signin",
   "+chrome/browser/supervised_user/child_accounts",

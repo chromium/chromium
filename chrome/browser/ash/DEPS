@@ -46,7 +46,7 @@ include_rules = [
   "+chrome/browser/notifications/notification_display_service_factory.h",
   "+chrome/browser/profiles/profile.h",
   "+chrome/browser/profiles/profile_manager.h",
-  "+chrome/browser/scalable_iph/scalable_iph_factory_impl.h",
+  "+chrome/browser/ash/scalable_iph/scalable_iph_factory_impl.h",
   "+chrome/browser/speech/cros_speech_recognition_service_factory.h",
   "+chrome/browser/speech/extension_api/tts_engine_extension_observer_chromeos.h",
   "+chrome/browser/startup_data.h",

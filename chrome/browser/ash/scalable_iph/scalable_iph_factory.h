@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_SCALABLE_IPH_SCALABLE_IPH_FACTORY_H_
-#define CHROME_BROWSER_SCALABLE_IPH_SCALABLE_IPH_FACTORY_H_
+#ifndef CHROME_BROWSER_ASH_SCALABLE_IPH_SCALABLE_IPH_FACTORY_H_
+#define CHROME_BROWSER_ASH_SCALABLE_IPH_SCALABLE_IPH_FACTORY_H_
 
 #include "base/component_export.h"
 #include "base/functional/callback_forward.h"
@@ -58,4 +58,4 @@ class COMPONENT_EXPORT(SCALABLE_IPH_FACTORY) ScalableIphFactory
       on_building_service_instance_for_testing_callback_;
 };
 
-#endif  // CHROME_BROWSER_SCALABLE_IPH_SCALABLE_IPH_FACTORY_H_
+#endif  // CHROME_BROWSER_ASH_SCALABLE_IPH_SCALABLE_IPH_FACTORY_H_

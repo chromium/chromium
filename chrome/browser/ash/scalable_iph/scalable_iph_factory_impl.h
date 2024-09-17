@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_SCALABLE_IPH_SCALABLE_IPH_FACTORY_IMPL_H_
-#define CHROME_BROWSER_SCALABLE_IPH_SCALABLE_IPH_FACTORY_IMPL_H_
+#ifndef CHROME_BROWSER_ASH_SCALABLE_IPH_SCALABLE_IPH_FACTORY_IMPL_H_
+#define CHROME_BROWSER_ASH_SCALABLE_IPH_SCALABLE_IPH_FACTORY_IMPL_H_
 
 #include "base/functional/callback_forward.h"
 #include "base/no_destructor.h"
+#include "chrome/browser/ash/scalable_iph/scalable_iph_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/scalable_iph/scalable_iph_factory.h"
 #include "chromeos/ash/components/scalable_iph/logger.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph_delegate.h"
 
@@ -63,4 +63,4 @@ class ScalableIphFactoryImpl : public ScalableIphFactory {
   DelegateTestingFactory delegate_testing_factory_;
 };
 
-#endif  // CHROME_BROWSER_SCALABLE_IPH_SCALABLE_IPH_FACTORY_IMPL_H_
+#endif  // CHROME_BROWSER_ASH_SCALABLE_IPH_SCALABLE_IPH_FACTORY_IMPL_H_

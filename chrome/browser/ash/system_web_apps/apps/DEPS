@@ -71,7 +71,7 @@ include_rules = [
   "+chrome/browser/platform_util.h",
   "+chrome/browser/policy",
   "+chrome/browser/profiles",
-  "+chrome/browser/scalable_iph",
+  "+chrome/browser/ash/scalable_iph",
   # TODO(b/338516458): Allow ash to use ScreenAI without depending on //chrome.
   "+chrome/browser/screen_ai/public",
   "+chrome/browser/search_engines/template_url_service_factory.h",

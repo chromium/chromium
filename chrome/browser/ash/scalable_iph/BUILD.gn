@@ -10,6 +10,10 @@ static_library("scalable_iph") {
   sources = [
     "scalable_iph_delegate_impl.cc",
     "scalable_iph_delegate_impl.h",
+    "scalable_iph_factory.cc",
+    "scalable_iph_factory.h",
+    "scalable_iph_factory_impl.cc",
+    "scalable_iph_factory_impl.h",
   ]
 
   public_deps = [
@@ -26,6 +30,7 @@ static_library("scalable_iph") {
     "//chromeos/dbus/power",
     "//chromeos/services/network_config/public/cpp",
     "//chromeos/services/network_config/public/mojom",
+    "//components/keyed_service/content",
     "//components/keyed_service/core",
     "//mojo/public/cpp/bindings",
   ]
@@ -40,14 +45,21 @@ static_library("scalable_iph") {
     "//chrome/app/theme:chrome_unscaled_resources",
     "//chrome/app/theme:chrome_unscaled_resources_grit",
     "//chrome/browser:browser_process",
-    "//chrome/browser/apps/app_service",
+    "//chrome/browser/ash/app_list",
     "//chrome/browser/ash/app_list/arc",
     "//chrome/browser/ash/arc",
+    "//chrome/browser/ash/login/session",
     "//chrome/browser/ash/phonehub",
-    "//chrome/browser/ui/ash/system_web_apps",
+    "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/printing",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/ash/system_web_apps/apps/help_app",
+    "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/components/scalable_iph",
     "//chromeos/ash/components/scalable_iph:buildflags",
     "//chromeos/ash/resources",
     "//chromeos/ash/resources:resources_grit",
+    "//chromeos/ash/services/multidevice_setup/public/cpp:prefs",
     "//chromeos/ui/vector_icons",
     "//components/variations/service",
     "//net",
@@ -55,6 +67,13 @@ static_library("scalable_iph") {
     "//ui/gfx",
     "//ui/message_center/public/cpp",
     "//url",
+  ]
+
+  allow_circular_includes_from = [
+    "//chrome/browser/ash/app_list",
+    "//chrome/browser/ash/login/session",
+    "//chrome/browser/ash/printing",
+    "//chrome/browser/ash/system_web_apps/apps/help_app",
   ]
 }
 
@@ -95,7 +114,7 @@ static_library("test_support") {
     "//ash/constants",
     "//chrome/browser",
     "//chrome/browser/ash/login/test:test_support",
-    "//chrome/browser/scalable_iph:scalable_iph_factory",
+    "//chrome/browser/ash/scalable_iph",
     "//chrome/browser/ui",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/scalable_iph:constants",
@@ -133,8 +152,8 @@ source_set("browser_tests") {
     "//chrome/browser/ash/app_list/test:test_support",
     "//chrome/browser/ash/login/lock:test_support",
     "//chrome/browser/ash/printing",
+    "//chrome/browser/ash/scalable_iph",
     "//chrome/browser/ash/system_web_apps",
-    "//chrome/browser/scalable_iph:scalable_iph_factory",
     "//chrome/browser/ui",
     "//chrome/browser/ui/ash/login",
     "//chrome/browser/ui/ash/multi_user",

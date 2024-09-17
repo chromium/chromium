@@ -85,7 +85,7 @@ include_rules = [
   "+chrome/browser/renderer_preferences_util.h",
   "+chrome/browser/rlz",
   "+chrome/browser/safe_browsing",
-  "+chrome/browser/scalable_iph",
+  "+chrome/browser/ash/scalable_iph",
   "+chrome/browser/screen_ai",
   "+chrome/browser/sessions",
   "+chrome/browser/signin",

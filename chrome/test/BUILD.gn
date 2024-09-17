@@ -4961,7 +4961,6 @@ if (!is_android) {
         "//chrome/browser/policy/messaging_layer/proto:add_remove_user_event_proto",
         "//chrome/browser/policy/messaging_layer/proto:login_logout_event_proto",
         "//chrome/browser/resources/chromeos/accessibility:browser_tests",
-        "//chrome/browser/scalable_iph:scalable_iph_factory",
         "//chrome/browser/support_tool/ash:browser_tests",
         "//chrome/browser/ui/ash:browser_tests",
         "//chrome/browser/ui/ash/arc/arc_app_dialog_view:browser_tests",

@@ -38,7 +38,7 @@ include_rules = [
   "+chrome/browser/policy",
   "+chrome/browser/profiles",
   "+chrome/browser/renderer_context_menu",
-  "+chrome/browser/scalable_iph",
+  "+chrome/browser/ash/scalable_iph",
   "+chrome/browser/ui/ash",
   "+chrome/browser/ui/browser_commands.h",
   "+chrome/browser/ui/browser_finder.h",

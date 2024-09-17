@@ -53,7 +53,6 @@ static_library("help_app") {
     "//chrome/browser/ash/system_web_apps/apps/personalization_app",
     "//chrome/browser/chromeos/upload_office_to_cloud",
     "//chrome/browser/feedback",
-    "//chrome/browser/scalable_iph:scalable_iph_factory",
     "//chrome/browser/ui:browser_navigator_params_headers",
     "//chrome/browser/web_applications",
     "//chrome/browser/web_applications/mojom:mojom_web_apps_enum",

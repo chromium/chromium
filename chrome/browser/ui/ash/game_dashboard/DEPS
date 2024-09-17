@@ -13,6 +13,6 @@ include_rules = [
   "+chrome/browser/apps/app_service/metrics",
   "+chrome/browser/ash/app_list/arc",
   "+chrome/browser/profiles/profile_manager.h",
-  "+chrome/browser/scalable_iph",
+  "+chrome/browser/ash/scalable_iph",
   "+chrome/browser/ui/ash/multi_user",
 ]

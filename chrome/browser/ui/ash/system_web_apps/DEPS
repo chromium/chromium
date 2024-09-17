@@ -14,7 +14,7 @@ include_rules = [
   "+chrome/browser/ash/profiles",
   "+chrome/browser/ash/system_web_apps",
   "+chrome/browser/profiles",
-  "+chrome/browser/scalable_iph",
+  "+chrome/browser/ash/scalable_iph",
   "+chrome/browser/ui/ash/multi_user",
   "+chrome/browser/ui/browser.h",
   "+chrome/browser/ui/browser_list.h",
