@@ -190,7 +190,6 @@ TEST_F(Canvas2DLayerBridgeTest, PrepareMailboxAndLoseResource) {
   {
     std::unique_ptr<Canvas2DLayerBridge> bridge =
         MakeBridge(gfx::Size(300, 150), RasterModeHint::kPreferGPU, kNonOpaque);
-    bridge->FinalizeFrame(FlushReason::kTesting);
     viz::TransferableResource resource;
     viz::ReleaseCallback release_callback;
     EXPECT_TRUE(Host()->PrepareTransferableResource(nullptr, &resource,
@@ -208,7 +207,6 @@ TEST_F(Canvas2DLayerBridgeTest, PrepareMailboxAndLoseResource) {
     {
       std::unique_ptr<Canvas2DLayerBridge> bridge = MakeBridge(
           gfx::Size(300, 150), RasterModeHint::kPreferGPU, kNonOpaque);
-      bridge->FinalizeFrame(FlushReason::kTesting);
       Host()->PrepareTransferableResource(nullptr, &resource,
                                           &release_callback);
       // |bridge| goes out of scope and would normally be destroyed, but
@@ -231,7 +229,6 @@ TEST_F(Canvas2DLayerBridgeTest, ReleaseCallbackWithNullContextProviderWrapper) {
   {
     std::unique_ptr<Canvas2DLayerBridge> bridge =
         MakeBridge(gfx::Size(300, 150), RasterModeHint::kPreferGPU, kNonOpaque);
-    bridge->FinalizeFrame(FlushReason::kTesting);
     EXPECT_TRUE(Host()->PrepareTransferableResource(nullptr, &resource,
                                                     &release_callback));
   }
