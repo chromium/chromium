@@ -305,6 +305,18 @@ extern const char kAutofillEnableAmountExtractionDesktopDescription[];
 extern const char kAutofillEnableAndroidNKeyForFidoAuthenticationName[];
 extern const char kAutofillEnableAndroidNKeyForFidoAuthenticationDescription[];
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+extern const char kAutofillEnableBuyNowPayLaterForAffirmName[];
+extern const char kAutofillEnableBuyNowPayLaterForAffirmDescription[];
+
+extern const char kAutofillEnableBuyNowPayLaterForZipName[];
+extern const char kAutofillEnableBuyNowPayLaterForZipDescription[];
+
+extern const char kAutofillEnableBuyNowPayLaterSyncingName[];
+extern const char kAutofillEnableBuyNowPayLaterSyncingDescription[];
+#endif
+
 extern const char kAutofillEnableCvcStorageAndFillingName[];
 extern const char kAutofillEnableCvcStorageAndFillingDescription[];
 

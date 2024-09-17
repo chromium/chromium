@@ -471,6 +471,26 @@ const char kAutofillEnableAndroidNKeyForFidoAuthenticationDescription[] =
     "When enabled, Android N+ devices will be supported for FIDO "
     "authentication when autofilling server credit cards.";
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+const char kAutofillEnableBuyNowPayLaterForAffirmName[] =
+    "Enable buy now pay later on Autofill for Affirm";
+const char kAutofillEnableBuyNowPayLaterForAffirmDescription[] =
+    "When enabled, users will have the option to pay with buy now pay later "
+    "with Affirm on specific merchant webpages.";
+
+const char kAutofillEnableBuyNowPayLaterForZipName[] =
+    "Enable buy now pay later on Autofill for Zip";
+const char kAutofillEnableBuyNowPayLaterForZipDescription[] =
+    "When enabled, users will have the option to pay with buy now pay later "
+    "with Zip on specific merchant webpages.";
+
+const char kAutofillEnableBuyNowPayLaterSyncingName[] =
+    "Enable syncing buy now pay later user data.";
+const char kAutofillEnableBuyNowPayLaterSyncingDescription[] =
+    "When enabled, Chrome will sync user data related to buy now pay later.";
+#endif
+
 const char kAutofillEnableCvcStorageAndFillingName[] =
     "Enable CVC storage and filling for payments autofill";
 const char kAutofillEnableCvcStorageAndFillingDescription[] =

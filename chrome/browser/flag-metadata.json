@@ -661,6 +661,21 @@
     "expiry_milestone": 126
   },
   {
+    "name": "autofill-enable-buy-now-pay-later-for-affirm",
+    "owners": ["alexandertekle@google.com", "payments-autofill-team@google.com"],
+    "expiry_milestone": 145
+  },
+  {
+    "name": "autofill-enable-buy-now-pay-later-for-zip",
+    "owners": ["alexandertekle@google.com", "payments-autofill-team@google.com"],
+    "expiry_milestone": 145
+  },
+  {
+    "name": "autofill-enable-buy-now-pay-later-syncing",
+    "owners": ["alexandertekle@google.com", "payments-autofill-team@google.com"],
+    "expiry_milestone": 145
+  },
+  {
     "name": "autofill-enable-card-art-image",
     "owners": [ "vishwasuppoor@chromium.org", "siyua@chromium.org", "alexandertekle@chromium.org" ],
     "expiry_milestone": 130

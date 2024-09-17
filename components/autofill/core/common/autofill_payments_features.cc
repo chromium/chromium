@@ -22,6 +22,23 @@ BASE_FEATURE(kAutofillEnableAndroidNKeyForFidoAuthentication,
              "AutofillEnableAndroidNKeyForFidoAuthentication",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, buy now pay later (BNPL) in Autofill will be offered through
+// Affirm.
+BASE_FEATURE(kAutofillEnableBuyNowPayLaterForAffirm,
+             "AutofillEnableBuyNowPayLaterForAffirm",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When enabled, buy now pay later (BNPL) in Autofill will be offered through
+// Zip.
+BASE_FEATURE(kAutofillEnableBuyNowPayLaterForZip,
+             "AutofillEnableBuyNowPayLaterForZip",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When enabled, buy now pay later (BNPL) data will be synced to Chrome clients.
+BASE_FEATURE(kAutofillEnableBuyNowPayLaterSyncing,
+             "AutofillEnableBuyNowPayLaterSyncing",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, card art images (instead of network icons) will be shown in
 // Payments Autofill UI.
 BASE_FEATURE(kAutofillEnableCardArtImage,
