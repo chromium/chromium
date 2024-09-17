@@ -345,6 +345,8 @@ UseCounterMetricsRecorder::GetWebFeatureToWebDXFeatureMap() {
           {WebFeature::kCreateCSSModuleScript, WebDXFeature::kCssModules},
           {WebFeature::kStreamingDeclarativeShadowDOM,
            WebDXFeature::kDeclarativeShadowDom},
+          {WebFeature::kHiddenUntilFoundAttribute,
+           WebDXFeature::kHiddenUntilFoundAttribute},
           {WebFeature::kHTMLDetailsElementNameAttribute,
            WebDXFeature::kDetailsName},
           {WebFeature::kElementCheckVisibility,
