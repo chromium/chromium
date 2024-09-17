@@ -6049,7 +6049,7 @@ void Element::setAttributeNS(const AtomicString& namespace_uri,
 
   AtomicString trusted_value(TrustedTypesCheckFor(
       ExpectedTrustedTypeForAttribute(*parsed_name), std::move(value),
-      GetExecutionContext(), exception_state));
+      GetExecutionContext(), "Element", "setAttributeNS", exception_state));
   if (exception_state.HadException()) {
     return;
   }
@@ -6069,7 +6069,7 @@ void Element::setAttributeNS(const AtomicString& namespace_uri,
 
   AtomicString value(TrustedTypesCheckFor(
       ExpectedTrustedTypeForAttribute(*parsed_name), trusted_string,
-      GetExecutionContext(), exception_state));
+      GetExecutionContext(), "Element", "setAttributeNS", exception_state));
   if (exception_state.HadException()) {
     return;
   }
@@ -10242,9 +10242,9 @@ void Element::setAttribute(const QualifiedName& name,
                            ExceptionState& exception_state) {
   SynchronizeAttribute(name);
 
-  AtomicString trusted_value(
-      TrustedTypesCheckFor(ExpectedTrustedTypeForAttribute(name), value,
-                           GetExecutionContext(), exception_state));
+  AtomicString trusted_value(TrustedTypesCheckFor(
+      ExpectedTrustedTypeForAttribute(name), value, GetExecutionContext(),
+      "Element", "setAttribute", exception_state));
   if (exception_state.HadException()) {
     return;
   }
@@ -10277,7 +10277,7 @@ void Element::SetAttributeHinted(AtomicString local_name,
 
   AtomicString trusted_value(TrustedTypesCheckFor(
       ExpectedTrustedTypeForAttribute(q_name), std::move(value),
-      GetExecutionContext(), exception_state));
+      GetExecutionContext(), "Element", "setAttribute", exception_state));
   if (exception_state.HadException()) {
     return;
   }
@@ -10306,7 +10306,7 @@ void Element::SetAttributeHinted(AtomicString local_name,
       LookupAttributeQNameHinted(std::move(local_name), hint);
   AtomicString value(TrustedTypesCheckFor(
       ExpectedTrustedTypeForAttribute(q_name), trusted_string,
-      GetExecutionContext(), exception_state));
+      GetExecutionContext(), "Element", "setAttribute", exception_state));
   if (exception_state.HadException()) {
     return;
   }
@@ -10401,7 +10401,8 @@ Attr* Element::setAttributeNode(Attr* attr_node,
 
   AtomicString value(TrustedTypesCheckFor(
       ExpectedTrustedTypeForAttribute(attr_node->GetQualifiedName()),
-      attr_node->value(), GetExecutionContext(), exception_state));
+      attr_node->value(), GetExecutionContext(), "Element", "setAttributeNode",
+      exception_state));
   if (exception_state.HadException()) {
     return nullptr;
   }

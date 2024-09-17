@@ -847,6 +847,7 @@ static Node* NodeOrStringToNode(
     const V8UnionNodeOrStringOrTrustedScript* node_or_string,
     Document& document,
     bool needs_trusted_types_check,
+    const char* property_name,
     ExceptionState& exception_state) {
   if (!needs_trusted_types_check) {
     // Without trusted type checks, we simply extract the string from whatever
@@ -878,8 +879,9 @@ static Node* NodeOrStringToNode(
                             ? node_or_string->GetAsString()
                             : node_or_string->GetAsNode()->textContent();
 
-  string_value = TrustedTypesCheckForScript(
-      string_value, document.GetExecutionContext(), exception_state);
+  string_value =
+      TrustedTypesCheckForScript(string_value, document.GetExecutionContext(),
+                                 "Node", property_name, exception_state);
   if (exception_state.HadException())
     return nullptr;
   return Text::Create(document, string_value);
@@ -914,14 +916,15 @@ VectorOf<Node> ConvertNodeUnionsIntoNodes(
     const Node* parent,
     const HeapVector<Member<V8UnionNodeOrStringOrTrustedScript>>& node_unions,
     Document& document,
+    const char* property_name,
     ExceptionState& exception_state) {
   bool needs_check = IsA<HTMLScriptElement>(parent) &&
                      document.GetExecutionContext() &&
                      document.GetExecutionContext()->RequireTrustedTypes();
   VectorOf<Node> nodes;
   for (const auto& node_union : node_unions) {
-    Node* node =
-        NodeOrStringToNode(node_union, document, needs_check, exception_state);
+    Node* node = NodeOrStringToNode(node_union, document, needs_check,
+                                    property_name, exception_state);
     if (exception_state.HadException()) {
       nodes.clear();
       return nodes;
@@ -941,9 +944,10 @@ Node* Node::ConvertNodeUnionsIntoNode(
     const Node* parent,
     const HeapVector<Member<V8UnionNodeOrStringOrTrustedScript>>& node_unions,
     Document& document,
+    const char* property_name,
     ExceptionState& exception_state) {
-  VectorOf<Node> nodes = ConvertNodeUnionsIntoNodes(parent, node_unions,
-                                                    document, exception_state);
+  VectorOf<Node> nodes = ConvertNodeUnionsIntoNodes(
+      parent, node_unions, document, property_name, exception_state);
   if (exception_state.HadException()) {
     return nullptr;
   }
@@ -962,7 +966,7 @@ void Node::prepend(
   }
 
   if (Node* node = ConvertNodeUnionsIntoNode(this, nodes, GetDocument(),
-                                             exception_state)) {
+                                             "prepend", exception_state)) {
     this_node->InsertBefore(node, this_node->firstChild(), exception_state);
   }
 }
@@ -979,7 +983,7 @@ void Node::append(
   }
 
   if (Node* node = ConvertNodeUnionsIntoNode(this, nodes, GetDocument(),
-                                             exception_state)) {
+                                             "append", exception_state)) {
     this_node->AppendChild(node, exception_state);
   }
 }
@@ -992,7 +996,7 @@ void Node::before(
     return;
   Node* viable_previous_sibling = FindViablePreviousSibling(*this, nodes);
   if (Node* node = ConvertNodeUnionsIntoNode(parent, nodes, GetDocument(),
-                                             exception_state)) {
+                                             "before", exception_state)) {
     parent->InsertBefore(node,
                          viable_previous_sibling
                              ? viable_previous_sibling->nextSibling()
@@ -1009,7 +1013,7 @@ void Node::after(
     return;
   Node* viable_next_sibling = FindViableNextSibling(*this, nodes);
   if (Node* node = ConvertNodeUnionsIntoNode(parent, nodes, GetDocument(),
-                                             exception_state)) {
+                                             "after", exception_state)) {
     parent->InsertBefore(node, viable_next_sibling, exception_state);
   }
 }
@@ -1021,8 +1025,8 @@ void Node::replaceWith(
   if (!parent)
     return;
   Node* viable_next_sibling = FindViableNextSibling(*this, nodes);
-  Node* node =
-      ConvertNodeUnionsIntoNode(parent, nodes, GetDocument(), exception_state);
+  Node* node = ConvertNodeUnionsIntoNode(parent, nodes, GetDocument(),
+                                         "replaceWith", exception_state);
   if (exception_state.HadException())
     return;
   if (parent == parentNode())
@@ -1044,7 +1048,7 @@ void Node::replaceChildren(
   }
 
   VectorOf<Node> nodes = ConvertNodeUnionsIntoNodes(
-      this, node_unions, GetDocument(), exception_state);
+      this, node_unions, GetDocument(), "replace", exception_state);
   if (!exception_state.HadException()) {
     this_node->ReplaceChildren(nodes, exception_state);
   }

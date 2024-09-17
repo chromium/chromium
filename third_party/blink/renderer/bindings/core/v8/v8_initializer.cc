@@ -419,7 +419,8 @@ TrustedTypesCodeGenerationCheck(v8::Local<v8::Context> context,
   }
 
   String stringified_source = TrustedTypesCheckForScript(
-      string_or_trusted_script, ToExecutionContext(context), exception_state);
+      string_or_trusted_script, ToExecutionContext(context), "eval", "",
+      exception_state);
   if (exception_state.HadException()) {
     exception_state.ClearException();
     return {false, v8::MaybeLocal<v8::String>()};

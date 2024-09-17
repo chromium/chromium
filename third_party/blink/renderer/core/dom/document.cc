@@ -4457,8 +4457,9 @@ void Document::write(v8::Isolate* isolate,
   StringBuilder builder;
   for (const String& string : text)
     builder.Append(string);
-  String string = TrustedTypesCheckForHTML(
-      builder.ReleaseString(), GetExecutionContext(), exception_state);
+  String string =
+      TrustedTypesCheckForHTML(builder.ReleaseString(), GetExecutionContext(),
+                               "Document", "write", exception_state);
   if (exception_state.HadException())
     return;
 
@@ -4471,8 +4472,9 @@ void Document::writeln(v8::Isolate* isolate,
   StringBuilder builder;
   for (const String& string : text)
     builder.Append(string);
-  String string = TrustedTypesCheckForHTML(
-      builder.ReleaseString(), GetExecutionContext(), exception_state);
+  String string =
+      TrustedTypesCheckForHTML(builder.ReleaseString(), GetExecutionContext(),
+                               "Document", "writeln", exception_state);
   if (exception_state.HadException())
     return;
 

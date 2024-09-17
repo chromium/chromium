@@ -181,7 +181,7 @@ void ChildNodePart::replaceChildren(
   }
   // Insert new contents.
   Node* nodes_as_node = Node::ConvertNodeUnionsIntoNode(
-      parent, nodes, parent->GetDocument(), exception_state);
+      parent, nodes, parent->GetDocument(), "replaceChildren", exception_state);
   if (exception_state.HadException()) {
     return;
   }
