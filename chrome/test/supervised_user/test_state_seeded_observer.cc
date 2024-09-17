@@ -149,7 +149,8 @@ void WaitForRequestToComplete(const FamilyMember& supervising_user,
   base::RunLoop run_loop{base::RunLoop::Type::kNestableTasksAllowed};
   ProtoFetcher<std::string> fetcher(
       *supervising_user.identity_manager(),
-      supervising_user.url_loader_factory(), serialized_request,
+      supervising_user.url_loader_factory(),
+      {.request_body = std::string(serialized_request)},
       base::BindLambdaForTesting([&](const ProtoFetcherStatus& status,
                                      std::unique_ptr<std::string> response) {
         CHECK(status.IsOk()) << "WaitForRequestToComplete failed";

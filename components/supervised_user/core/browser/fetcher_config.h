@@ -95,11 +95,6 @@ struct FetcherConfig {
 
   net::RequestPriority request_priority;
 
-  // System parameters that apply to HTTP GET method.
-  // This is automatically concatenated to existing parameters, there is no need
-  // to include "&".
-  std::string_view system_param_suffix;
-
   std::string GetHttpMethod() const;
 
   // Returns the non-template service_path or crashes for templated one.
@@ -222,9 +217,6 @@ inline constexpr FetcherConfig kListFamilyMembersConfig{
         .oauth2_scope = "https://www.googleapis.com/auth/kid.family.readonly",
     },
     .request_priority = net::IDLE,
-    // If there is no associated Family Group with the account return an empty
-    // response instead of NOT_FOUND.
-    .system_param_suffix = "allow_empty_family=true",
 };
 
 inline constexpr FetcherConfig kCreatePermissionRequestConfig = {

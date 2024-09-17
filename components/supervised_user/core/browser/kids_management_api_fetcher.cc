@@ -4,11 +4,20 @@
 
 #include "components/supervised_user/core/browser/kids_management_api_fetcher.h"
 
+#include "base/strings/strcat.h"
 #include "base/version_info/channel.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/supervised_user/core/browser/proto/kidsmanagement_messages.pb.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace supervised_user {
+
+namespace {
+std::string ToQueryString(const kidsmanagement::ListMembersRequest& request) {
+  return base::StrCat({"allow_empty_family=",
+                       (request.allow_empty_family() ? "true" : "false")});
+}
+}  // namespace
 
 std::unique_ptr<ClassifyUrlFetcher> CreateClassifyURLFetcher(
     signin::IdentityManager& identity_manager,
@@ -28,10 +37,13 @@ std::unique_ptr<ListFamilyMembersFetcher> FetchListFamilyMembers(
     ListFamilyMembersFetcher::Callback callback,
     const FetcherConfig& config) {
   kidsmanagement::ListMembersRequest request;
+  request.set_allow_empty_family(true);
+
   std::unique_ptr<ListFamilyMembersFetcher> fetcher =
       CreateFetcher<kidsmanagement::ListMembersResponse>(
-          identity_manager, url_loader_factory, request, std::move(callback),
-          config);
+          identity_manager, url_loader_factory,
+          {.request_body = "", .query_string = ToQueryString(request)},
+          std::move(callback), config);
   return fetcher;
 }
 

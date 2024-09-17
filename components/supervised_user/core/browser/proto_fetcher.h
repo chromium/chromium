@@ -28,7 +28,6 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/supervised_user/core/browser/api_access_token_fetcher.h"
 #include "components/supervised_user/core/browser/fetcher_config.h"
-#include "components/supervised_user/core/browser/proto/kidsmanagement_messages.pb.h"
 #include "components/supervised_user/core/browser/proto/permissions_common.pb.h"
 #include "components/supervised_user/core/browser/proto_fetcher_status.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
@@ -152,13 +151,20 @@ class OverallMetrics final : public Metrics {
 // formats and uses them as bare strings.
 class FetchProcess {
  public:
+  // Data to send. request_body and query_string are respective parts of the
+  // HTTP request.
+  struct Payload {
+    std::string request_body;
+    std::string query_string;
+  };
+
   FetchProcess() = delete;
 
   // Identity manager and fetcher_config must outlive this call.
   FetchProcess(
       signin::IdentityManager& identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      std::string_view payload,
+      const Payload& payload,
       const FetcherConfig& fetcher_config,
       const FetcherConfig::PathArgs& args = {},
       std::optional<version_info::Channel> channel = std::nullopt);
@@ -187,11 +193,8 @@ class FetchProcess {
   virtual void OnResponse(std::unique_ptr<std::string> response_body) = 0;
   virtual void OnError(const ProtoFetcherStatus& status) = 0;
 
-  // Returns payload when it's eligible for the request type.
-  std::optional<std::string> GetRequestPayload() const;
-
   std::unique_ptr<network::SimpleURLLoader> simple_url_loader_;
-  const std::string payload_;
+  const Payload payload_;
   const raw_ref<const FetcherConfig> config_;
   const FetcherConfig::PathArgs args_;
   std::optional<version_info::Channel> channel_;
@@ -224,7 +227,7 @@ class TypedFetchProcess : public FetchProcess {
   TypedFetchProcess(
       signin::IdentityManager& identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      std::string_view payload,
+      const Payload& payload,
       Callback callback,
       const FetcherConfig& fetcher_config,
       const FetcherConfig::PathArgs& args,
@@ -277,7 +280,7 @@ class ProtoFetcher final {
   ProtoFetcher(
       signin::IdentityManager& identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      std::string_view request,
+      const FetchProcess::Payload& payload,
       TypedFetchProcess<Response>::Callback callback,
       const FetcherConfig& fetcher_config,
       FetcherConfig::PathArgs args,
@@ -287,7 +290,7 @@ class ProtoFetcher final {
                                      base::Unretained(this),
                                      std::ref(identity_manager),
                                      url_loader_factory,
-                                     request,
+                                     payload,
                                      fetcher_config,
                                      args,
                                      channel)),
@@ -304,12 +307,12 @@ class ProtoFetcher final {
   std::unique_ptr<TypedFetchProcess<Response>> Factory(
       signin::IdentityManager& identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      std::string_view request,
+      FetchProcess::Payload payload,
       const FetcherConfig& fetcher_config,
       FetcherConfig::PathArgs args,
       std::optional<version_info::Channel> channel) {
     return std::make_unique<TypedFetchProcess<Response>>(
-        identity_manager, url_loader_factory, request,
+        identity_manager, url_loader_factory, payload,
         base::BindOnce(&ProtoFetcher<Response>::OnResponse,
                        base::Unretained(this)),
         fetcher_config, args, channel);
@@ -387,7 +390,7 @@ template <typename Response>
 std::unique_ptr<ProtoFetcher<Response>> CreateFetcher(
     signin::IdentityManager& identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    const google::protobuf::MessageLite& request,
+    const FetchProcess::Payload& payload,
     typename ProtoFetcher<Response>::Callback callback,
     const FetcherConfig& fetcher_config,
     const FetcherConfig::PathArgs& args = {},
@@ -398,8 +401,24 @@ std::unique_ptr<ProtoFetcher<Response>> CreateFetcher(
       << "The Chrome channel must be specified for fetchers which can send "
          "requests without user credentials.";
   return std::make_unique<ProtoFetcher<Response>>(
-      identity_manager, url_loader_factory, request.SerializeAsString(),
-      std::move(callback), fetcher_config, args, channel);
+      identity_manager, url_loader_factory, payload, std::move(callback),
+      fetcher_config, args, channel);
+}
+
+// Same as above, but payload is implicitly constructed from the request
+template <typename Response>
+std::unique_ptr<ProtoFetcher<Response>> CreateFetcher(
+    signin::IdentityManager& identity_manager,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    const google::protobuf::MessageLite& message,
+    typename ProtoFetcher<Response>::Callback callback,
+    const FetcherConfig& fetcher_config,
+    const FetcherConfig::PathArgs& args = {},
+    const std::optional<version_info::Channel> channel = std::nullopt) {
+  return CreateFetcher<Response>(identity_manager, url_loader_factory,
+                                 {.request_body = message.SerializeAsString()},
+                                 std::move(callback), fetcher_config, args,
+                                 channel);
 }
 
 }  // namespace supervised_user

@@ -26,7 +26,6 @@
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/supervised_user/core/browser/fetcher_config.h"
-#include "components/supervised_user/core/browser/proto/kidsmanagement_messages.pb.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "google_apis/common/api_key_request_util.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -85,26 +84,22 @@ constexpr std::string_view kSystemParameters("alt=proto");
 // Creates a request url for kids management api which is independent from the
 // current profile (doesn't take Profile* parameter). It also adds query
 // parameter that configures the remote endpoint to respond with a protocol
-// buffer message and a system parameter that is configurable per Request type.
+// buffer message.
 GURL CreateRequestUrl(const FetcherConfig& config,
-                      const FetcherConfig::PathArgs& args) {
+                      const FetcherConfig::PathArgs& args,
+                      std::string_view query_string) {
   CHECK(!config.service_endpoint.Get().empty())
       << "Service endpoint is required";
+  // kSystemParameters is unconditionally concatenated with the path. If it can
+  // be empty, handle it in the code below.
+  CHECK(!kSystemParameters.empty());
 
-  if (config.method == FetcherConfig::Method::kGet) {
-    std::string url =
-        base::StrCat({config.ServicePath(args), "?", kSystemParameters});
-    if (!config.system_param_suffix.empty()) {
-      url += base::StrCat({"&", config.system_param_suffix});
-    }
-    return GURL(config.service_endpoint.Get()).Resolve(url);
+  std::string path_with_query = base::StrCat(
+      {config.ServicePath(args), "?", std::string(kSystemParameters)});
+  if (!query_string.empty()) {
+    path_with_query += base::StrCat({"&", std::string(query_string)});
   }
-
-  CHECK(config.system_param_suffix.empty())
-      << "System param suffix support for GET requests only.";
-  return GURL(config.service_endpoint.Get())
-      .Resolve(
-          base::StrCat({config.ServicePath(args), "?", kSystemParameters}));
+  return GURL(config.service_endpoint.Get()).Resolve(path_with_query);
 }
 
 std::unique_ptr<network::SimpleURLLoader> InitializeSimpleUrlLoader(
@@ -112,10 +107,11 @@ std::unique_ptr<network::SimpleURLLoader> InitializeSimpleUrlLoader(
     const FetcherConfig& fetcher_config,
     const FetcherConfig::PathArgs& args,
     std::optional<version_info::Channel> channel,
-    const std::optional<std::string>& payload) {
+    const FetchProcess::Payload& payload) {
   std::unique_ptr<network::ResourceRequest> resource_request =
       std::make_unique<network::ResourceRequest>();
-  resource_request->url = CreateRequestUrl(fetcher_config, args);
+  resource_request->url =
+      CreateRequestUrl(fetcher_config, args, payload.query_string);
   resource_request->method = fetcher_config.GetHttpMethod();
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   resource_request->priority = fetcher_config.request_priority;
@@ -133,8 +129,10 @@ std::unique_ptr<network::SimpleURLLoader> InitializeSimpleUrlLoader(
       network::SimpleURLLoader::Create(std::move(resource_request),
                                        fetcher_config.traffic_annotation());
 
-  if (payload.has_value()) {
-    simple_url_loader->AttachStringForUpload(*payload,
+  if (fetcher_config.method != FetcherConfig::Method::kGet) {
+    // Attach request body, even if it's empty, to all requests except for
+    // GET.
+    simple_url_loader->AttachStringForUpload(payload.request_body,
                                              "application/x-protobuf");
   }
 
@@ -287,7 +285,7 @@ void OverallMetrics::RecordRetryCount(int count) const {
 FetchProcess::FetchProcess(
     signin::IdentityManager& identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    std::string_view payload,
+    const Payload& payload,
     const FetcherConfig& fetcher_config,
     const FetcherConfig::PathArgs& args,
     std::optional<version_info::Channel> channel)
@@ -302,7 +300,12 @@ FetchProcess::FetchProcess(
                    &FetchProcess::OnAccessTokenFetchComplete,
                    base::Unretained(this),  // Unretained(.) is safe because
                                             // `this` owns `fetcher_`.
-                   url_loader_factory)) {}
+                   url_loader_factory)) {
+  // GET requests can't contain request body.
+  CHECK(fetcher_config.method != FetcherConfig::Method::kGet ||
+        payload.request_body.empty())
+      << "GET requests cannot set request_body in payload.";
+}
 FetchProcess::~FetchProcess() = default;
 bool FetchProcess::IsMetricsRecordingEnabled() const {
   return metrics_.has_value();
@@ -338,9 +341,9 @@ void FetchProcess::OnAccessTokenFetchComplete(
     }
   }
 
-  simple_url_loader_ = InitializeSimpleUrlLoader(
-      base::OptionalFromExpected(access_token), config_.get(), args_, channel_,
-      GetRequestPayload());
+  simple_url_loader_ =
+      InitializeSimpleUrlLoader(base::OptionalFromExpected(access_token),
+                                config_.get(), args_, channel_, payload_);
   simple_url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       url_loader_factory.get(),
       base::BindOnce(
@@ -359,13 +362,5 @@ void FetchProcess::OnSimpleUrlLoaderComplete(
   }
 
   OnResponse(std::move(response_body));
-}
-
-std::optional<std::string> FetchProcess::GetRequestPayload() const {
-  if (config_->method == FetcherConfig::Method::kGet) {
-    CHECK(payload_.empty());
-    return std::nullopt;
-  }
-  return payload_;
 }
 }  // namespace supervised_user

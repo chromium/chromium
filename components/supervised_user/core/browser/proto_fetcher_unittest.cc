@@ -44,6 +44,9 @@ bool operator==(const ProtoFetcherStatus& a, const ProtoFetcherStatus& b) {
 
 namespace {
 
+static const char* kMockEndpointDomain = "example.com";
+static const char* kExampleURL = "https://example.com/";
+
 using ::base::BindOnce;
 using ::base::Time;
 using ::kidsmanagement::ClassifyUrlRequest;
@@ -202,7 +205,7 @@ class ProtoFetcherTestBase {
  public:
   ProtoFetcherTestBase() = delete;
   explicit ProtoFetcherTestBase(const FetcherConfig& config) : config_(config) {
-    SetHttpEndpointsForKidsManagementApis(feature_list_, "example.com");
+    SetHttpEndpointsForKidsManagementApis(feature_list_, kMockEndpointDomain);
   }
 
  protected:
@@ -215,9 +218,13 @@ class ProtoFetcherTestBase {
     return std::make_unique<Receiver>();
   }
   std::unique_ptr<Fetcher> MakeFetcher(Receiver& receiver) {
+    ClassifyUrlRequest request;
+    if (GetConfig().method == FetcherConfig::Method::kPost) {
+      request.set_url(kExampleURL);
+    }
     return CreateClassifyURLFetcher(
         *identity_test_env_.identity_manager(),
-        test_url_loader_factory_.GetSafeWeakWrapper(), ClassifyUrlRequest(),
+        test_url_loader_factory_.GetSafeWeakWrapper(), request,
         BindOnce(&Receiver::Receive, base::Unretained(&receiver)), GetConfig());
   }
 
@@ -302,8 +309,8 @@ TEST_P(ProtoFetcherTest, ConfiguresEndpoint) {
       test_url_loader_factory_.GetPendingRequest(0);
 
   GURL expected_url =
-      GURL("http://example.com" + std::string(GetConfig().StaticServicePath()) +
-           "?alt=proto");
+      GURL("http://" + std::string(kMockEndpointDomain) +
+           std::string(GetConfig().StaticServicePath()) + "?alt=proto");
   EXPECT_EQ(pending_request->request.url, expected_url);
   EXPECT_EQ(pending_request->request.method, GetConfig().GetHttpMethod());
 }
