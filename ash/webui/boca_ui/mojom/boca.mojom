@@ -86,6 +86,16 @@ struct OnTaskConfig {
   array<ControlledTab> tabs;
 };
 
+enum GetSessionError{
+  kHTTPError,
+  kEmpty,
+};
+
+union SessionResult {
+ GetSessionError error;
+ Config config;
+};
+
 // Implemented by browser process for page chrome-untrusted://boca-app/
 interface PageHandler {
   // Fetches a list of browser windows and tabs in it. Windows are ordered using
@@ -101,7 +111,7 @@ interface PageHandler {
   // Create a session with `config`.
   CreateSession(Config config) => (bool success);
   // Retrieves the current session.
-  GetSession() => (Config config);
+  GetSession() => (SessionResult result);
 };
 
 // Implemented by renderer process

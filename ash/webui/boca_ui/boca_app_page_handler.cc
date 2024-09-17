@@ -9,6 +9,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/webui/boca_ui/boca_ui.h"
+#include "ash/webui/boca_ui/mojom/boca.mojom-forward.h"
 #include "ash/webui/boca_ui/mojom/boca.mojom-shared.h"
 #include "ash/webui/boca_ui/mojom/boca.mojom.h"
 #include "ash/webui/boca_ui/provider/classroom_page_handler_impl.h"
@@ -136,9 +137,14 @@ void BocaAppHandler::GetSession(GetSessionCallback callback) {
           [](GetSessionCallback callback,
              base::expected<std::unique_ptr<::boca::Session>,
                             google_apis::ApiErrorCode> result) {
-            // TODO(b/358476060):Potentially parse error code to UI;
             if (!result.has_value()) {
-              std::move(callback).Run(nullptr);
+              std::move(callback).Run(mojom::SessionResult::NewError(
+                  mojom::GetSessionError::kHTTPError));
+              return;
+            }
+            if (!result.value()) {
+              std::move(callback).Run(mojom::SessionResult::NewError(
+                  mojom::GetSessionError::kEmpty));
               return;
             }
             auto session = std::move(result.value());
@@ -183,7 +189,8 @@ void BocaAppHandler::GetSession(GetSessionCallback callback) {
                 std::move(students), std::move(on_task_config),
                 std::move(caption_config));
 
-            std::move(callback).Run(std::move(config));
+            std::move(callback).Run(
+                mojom::SessionResult::NewConfig(std::move(config)));
           },
           std::move(callback)));
   session_client_impl_->GetSession(std::move(get_session_request));

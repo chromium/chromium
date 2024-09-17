@@ -12,6 +12,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "chromeos/ash/components/boca/boca_app_client.h"
 #include "chromeos/ash/components/boca/boca_session_manager.h"
 #include "chromeos/ash/components/boca/proto/bundle.pb.h"
@@ -26,6 +27,7 @@
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_manager.h"
+#include "google_apis/common/api_error_codes.h"
 #include "google_apis/common/request_sender.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -298,7 +300,7 @@ TEST_F(BocaAppPageHandlerTest, GetSessionWithFullInputTest) {
                                         google_apis::ApiErrorCode>>
       future;
   // API callback.
-  base::test::TestFuture<mojom::ConfigPtr> future_1;
+  base::test::TestFuture<mojom::SessionResultPtr> future_1;
 
   GetSessionRequest request(nullptr, kGaiaId, future.GetCallback());
   EXPECT_CALL(*session_client_impl(), GetSession(_))
@@ -337,7 +339,7 @@ TEST_F(BocaAppPageHandlerTest, GetSessionWithFullInputTest) {
 
   boca_app_handler_->GetSession(future_1.GetCallback());
 
-  auto result = future_1.Take();
+  auto result = std::move(future_1.Take()->get_config());
 
   EXPECT_EQ(120, result->session_duration.InSeconds());
 
@@ -366,7 +368,7 @@ TEST_F(BocaAppPageHandlerTest, GetSessionWithPartialInputTest) {
                                         google_apis::ApiErrorCode>>
       future;
   // API callback.
-  base::test::TestFuture<mojom::ConfigPtr> future_1;
+  base::test::TestFuture<mojom::SessionResultPtr> future_1;
 
   GetSessionRequest request(nullptr, kGaiaId, future.GetCallback());
   EXPECT_CALL(*session_client_impl(), GetSession(_))
@@ -378,8 +380,49 @@ TEST_F(BocaAppPageHandlerTest, GetSessionWithPartialInputTest) {
 
   boca_app_handler_->GetSession(future_1.GetCallback());
 
-  auto result = future_1.Take();
+  auto result = std::move(future_1.Take()->get_config());
   EXPECT_EQ(120, result->session_duration.InSeconds());
+}
+
+TEST_F(BocaAppPageHandlerTest, GetSessionWithEmptyInputTest) {
+  // Page handler callback.
+  base::test::TestFuture<base::expected<std::unique_ptr<::boca::Session>,
+                                        google_apis::ApiErrorCode>>
+      future;
+  // API callback.
+  base::test::TestFuture<mojom::SessionResultPtr> future_1;
+
+  GetSessionRequest request(nullptr, kGaiaId, future.GetCallback());
+  EXPECT_CALL(*session_client_impl(), GetSession(_))
+      .WillOnce(WithArg<0>(Invoke([&](auto request) {
+        request->callback().Run(
+            base::unexpected(google_apis::ApiErrorCode::HTTP_BAD_REQUEST));
+      })));
+
+  boca_app_handler_->GetSession(future_1.GetCallback());
+  auto result = future_1.Take();
+  ASSERT_TRUE(result->is_error());
+  EXPECT_EQ(mojom::GetSessionError::kHTTPError, result->get_error());
+}
+
+TEST_F(BocaAppPageHandlerTest, GetSessionWithNullPtrInputTest) {
+  // Page handler callback.
+  base::test::TestFuture<base::expected<std::unique_ptr<::boca::Session>,
+                                        google_apis::ApiErrorCode>>
+      future;
+  // API callback.
+  base::test::TestFuture<mojom::SessionResultPtr> future_1;
+
+  GetSessionRequest request(nullptr, kGaiaId, future.GetCallback());
+  EXPECT_CALL(*session_client_impl(), GetSession(_))
+      .WillOnce(WithArg<0>(Invoke(
+          [&](auto request) { request->callback().Run(base::ok(nullptr)); })));
+
+  boca_app_handler_->GetSession(future_1.GetCallback());
+
+  auto result = future_1.Take();
+  ASSERT_TRUE(result->is_error());
+  EXPECT_EQ(mojom::GetSessionError::kEmpty, result->get_error());
 }
 
 }  // namespace
