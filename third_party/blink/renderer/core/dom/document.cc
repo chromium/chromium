@@ -398,8 +398,6 @@ namespace blink {
 
 namespace {
 
-constexpr char kTextHtml[] = "text/html";
-
 class IntrinsicSizeResizeObserverDelegate : public ResizeObserver::Delegate {
  public:
   void OnResize(const HeapVector<Member<ResizeObserverEntry>>& entries) final;
@@ -1661,12 +1659,12 @@ String Document::SuggestedMIMEType() const {
       return "application/xhtml+xml";
     if (IsSVGDocument())
       return "image/svg+xml";
-    return "application/xml";
+    return keywords::kApplicationXml;
   }
   if (xmlStandalone())
     return "text/xml";
   if (IsA<HTMLDocument>(this))
-    return kTextHtml;
+    return keywords::kTextHtml;
 
   if (DocumentLoader* document_loader = Loader())
     return document_loader->MimeType();
@@ -1688,7 +1686,7 @@ AtomicString Document::contentType() const {
   if (!mime_type.empty())
     return AtomicString(mime_type);
 
-  return AtomicString("application/xml");
+  return keywords::kApplicationXml;
 }
 
 Range* Document::caretRangeFromPoint(int x, int y) {
@@ -9325,13 +9323,13 @@ void Document::ScheduleSelectionchangeEvent() {
 Document* Document::parseHTMLUnsafe(ExecutionContext* context,
                                     const String& html) {
   Document* doc = DocumentInit::Create()
-                      .WithTypeFrom(kTextHtml)
+                      .WithTypeFrom(keywords::kTextHtml)
                       .WithExecutionContext(context)
                       .WithAgent(*context->GetAgent())
                       .CreateDocument();
   doc->setAllowDeclarativeShadowRoots(true);
   doc->SetContent(html);
-  doc->SetMimeType(AtomicString(kTextHtml));
+  doc->SetMimeType(keywords::kTextHtml);
   return doc;
 }
 

@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/platform/heap/member.h"
 
 namespace WTF {
+class AtomicString;
 class String;
 }  // namespace WTF
 
@@ -45,7 +46,7 @@ class CORE_EXPORT DOMParser final : public ScriptWrappable {
 
   explicit DOMParser(ScriptState*);
 
-  Document* parseFromString(const WTF::String&, const WTF::String& type);
+  Document* parseFromString(const WTF::String&, const WTF::AtomicString& type);
 
   void Trace(Visitor*) const override;
 

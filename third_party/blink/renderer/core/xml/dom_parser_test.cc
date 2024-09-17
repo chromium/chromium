@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/core/html/html_div_element.h"
 #include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/core/html/parser/html_construction_site.h"
+#include "third_party/blink/renderer/core/keywords.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
 #include "third_party/blink/renderer/core/xml/dom_parser.h"
@@ -32,7 +33,8 @@ TEST(DOMParserTest, DomParserDocumentUsesQuirksMode) {
   V8TestingScope scope;
   auto* parser = DOMParser::Create(scope.GetScriptState());
   base::HistogramTester histogram_tester;
-  Document* document = parser->parseFromString("<div></div>", "text/html");
+  Document* document =
+      parser->parseFromString("<div></div>", keywords::kTextHtml);
   EXPECT_TRUE(document->InQuirksMode());
 }
 
@@ -41,7 +43,8 @@ TEST(DOMParserTest, DomParserDocumentUsesNoQuirksMode) {
   V8TestingScope scope;
   auto* parser = DOMParser::Create(scope.GetScriptState());
   base::HistogramTester histogram_tester;
-  Document* document = parser->parseFromString("<!doctype html>", "text/html");
+  Document* document =
+      parser->parseFromString("<!doctype html>", keywords::kTextHtml);
   EXPECT_TRUE(document->InNoQuirksMode());
 }
 
