@@ -42,6 +42,7 @@ from .protocol import (BaseProtocolPart,
                        BidiScriptProtocolPart,
                        DevicePostureProtocolPart,
                        StorageProtocolPart,
+                       VirtualPressureSourceProtocolPart,
                        merge_dicts)
 
 from typing import List, Optional, Tuple
@@ -568,6 +569,22 @@ class WebDriverStorageProtocolPart(StorageProtocolPart):
     def run_bounce_tracking_mitigations(self):
         return self.webdriver.send_session_command("DELETE", "storage/run_bounce_tracking_mitigations")
 
+class WebDriverVirtualPressureSourceProtocolPart(VirtualPressureSourceProtocolPart):
+    def setup(self):
+        self.webdriver = self.parent.webdriver
+
+    def create_virtual_pressure_source(self, source_type, metadata):
+        body = {"type": source_type}
+        body.update(metadata)
+        return self.webdriver.send_session_command("POST", "pressuresource", body)
+
+    def update_virtual_pressure_source(self, source_type, sample):
+        body = {"sample": sample}
+        return self.webdriver.send_session_command("POST", "pressuresource/%s" % source_type, body)
+
+    def remove_virtual_pressure_source(self, source_type):
+        return self.webdriver.send_session_command("DELETE", "pressuresource/%s" % source_type)
+
 class WebDriverProtocol(Protocol):
     enable_bidi = False
     implements = [WebDriverBaseProtocolPart,
@@ -589,7 +606,8 @@ class WebDriverProtocol(Protocol):
                   WebDriverDebugProtocolPart,
                   WebDriverVirtualSensorPart,
                   WebDriverDevicePostureProtocolPart,
-                  WebDriverStorageProtocolPart]
+                  WebDriverStorageProtocolPart,
+                  WebDriverVirtualPressureSourceProtocolPart]
 
     def __init__(self, executor, browser, capabilities, **kwargs):
         super().__init__(executor, browser)
