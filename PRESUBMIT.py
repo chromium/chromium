@@ -1068,15 +1068,6 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
         ],
     ),
     BanRule(
-        r'/\babsl::StrFormat\b',
-        (
-            'absl::StrFormat() is not allowed yet (https://crbug.com/1371963). ',
-            'Use base::StringPrintf() instead.',
-        ),
-        True,
-        [_THIRD_PARTY_EXCEPT_BLINK],  # Not an error in third_party folders.
-    ),
-    BanRule(
         r'/\babsl::(StrSplit|StrJoin|StrCat|StrAppend|Substitute|StrContains)\b',
         ('Abseil string utilities are banned. Use base/strings instead.', ),
         True,
