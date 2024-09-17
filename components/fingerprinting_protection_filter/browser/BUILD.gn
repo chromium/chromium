@@ -30,6 +30,7 @@ if (use_blink) {
       "//components/fingerprinting_protection_filter/common:features",
       "//components/fingerprinting_protection_filter/mojom",
       "//components/privacy_sandbox:tracking_protection_settings",
+      "//components/site_engagement/content",
       "//components/subresource_filter/content/shared/browser",
       "//components/subresource_filter/content/shared/common",
       "//components/subresource_filter/core/browser",
