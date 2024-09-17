@@ -4476,6 +4476,9 @@ enum WebFeature {
   kSelectionIsCollapsedBehaviorChange = 5101,
   kTopicsAPIAll = 5102,
   kPaymentRequestDeprecatedPaymentMethod = 5103,
+  kV8PublicKeyCredential_SignalUnknownCredential_Method = 5104,
+  kV8PublicKeyCredential_SignalAllAcceptedCredentials_Method = 5105,
+  kV8PublicKeyCredential_SignalCurrentUserDetails_Method = 5106,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra
