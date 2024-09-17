@@ -537,6 +537,9 @@ message PaymentInstrument {
     // More details on payment links can be found at
     // https://github.com/aneeshali/paymentlink/blob/main/docs/explainer.md.
     PAYMENT_HYPERLINK = 3;
+    // This rail is used for making payments via card numbers. Example use case:
+    // Credit/Debit cards, BuyNowPayLater (BNPL), eWallet Fronting cards etc.
+    CARD_NUMBER = 4;
   }
   // The supported rails for which a payment can be made for the given account.
   // For example, Pix is the open-banking rail in Brazil, UPI is the
