@@ -51,7 +51,8 @@ enum class AttestationErasureOption;
 // https://w3c.github.io/webauthn/#enumdef-clientcapability
 namespace client_capabilities {
 
-inline constexpr char kConditionalCreate[] = "conditionalCreate";
+// This is the subset of client capabilities computed by the browser. See also
+// //third_party/blink/renderer/modules/credentialmanagement/public_key_credential.cc.
 inline constexpr char kConditionalGet[] = "conditionalGet";
 inline constexpr char kHybridTransport[] = "hybridTransport";
 inline constexpr char kPasskeyPlatformAuthenticator[] =
@@ -59,9 +60,6 @@ inline constexpr char kPasskeyPlatformAuthenticator[] =
 inline constexpr char kUserVerifyingPlatformAuthenticator[] =
     "userVerifyingPlatformAuthenticator";
 inline constexpr char kRelatedOrigins[] = "relatedOrigins";
-// TODO(crbug.com/360327828): Add following capabilities:
-// "signalAllAcceptedCredentials", "signalCurrentUserDetails",
-// "signalUnknownCredential".
 
 }  // namespace client_capabilities
 

@@ -1690,14 +1690,11 @@ void AuthenticatorCommonImpl::GetClientCapabilities(
   // collect the results of the check with the `BarrierCallback`), update this
   // constant to match the number of `barrier_callback.Run()` calls. Otherwise,
   // the `GetClientCapabilities()` call will crash or timeout.
-  constexpr size_t kNumberOfComputedCapabilities = 5;
+  constexpr size_t kNumberOfComputedCapabilities = 4;
   auto barrier_callback =
       base::BarrierCallback<blink::mojom::WebAuthnClientCapabilityPtr>(
           kNumberOfComputedCapabilities, std::move(completion_callback));
 
-  // TODO(crbug.com/360327828): Update when supported.
-  barrier_callback.Run(
-      MakeCapability(client_capabilities::kConditionalCreate, false));
   // TODO(crbug.com/360327828): Implement `isHybridTransportAvailable()`.
   barrier_callback.Run(
       MakeCapability(client_capabilities::kHybridTransport, false));

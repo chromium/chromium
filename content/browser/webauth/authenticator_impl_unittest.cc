@@ -1093,7 +1093,6 @@ TEST_F(AuthenticatorImplTest, GetClientCapabilities) {
       [](const auto& capability) { return capability->name; });
 
   const std::vector<std::string_view> kRequiredCapabilities = {
-      client_capabilities::kConditionalCreate,
       client_capabilities::kConditionalGet,
       client_capabilities::kHybridTransport,
       client_capabilities::kPasskeyPlatformAuthenticator,
@@ -1109,13 +1108,6 @@ TEST_F(AuthenticatorImplTest, GetClientCapabilities) {
     EXPECT_EQ(1u, static_cast<size_t>(
                       base::ranges::count(capability_names, capability)));
   }
-}
-
-TEST_F(AuthenticatorImplTest, GetClientCapabilities_ConditionalCreate) {
-  NavigateAndCommit(GURL(kTestOrigin1));
-  ClientCapabilitiesList capabilities = AuthenticatorGetClientCapabilities();
-  ExpectCapability(capabilities, client_capabilities::kConditionalCreate,
-                   false);
 }
 
 TEST_F(AuthenticatorImplTest, GetClientCapabilities_HybridTransport) {
