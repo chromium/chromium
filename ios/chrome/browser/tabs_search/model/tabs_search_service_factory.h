@@ -12,7 +12,7 @@
 class TabsSearchService;
 
 // Singleton that owns all TabsSearchServices and associates them with
-// ChromeBrowserState.
+// ProfileIOS.
 class TabsSearchServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
   TabsSearchServiceFactory(const TabsSearchServiceFactory&) = delete;
