@@ -130,7 +130,7 @@ class VIZ_COMMON_EXPORT DrawQuad {
   void AsValueInto(base::trace_event::TracedValue* value) const;
 
   struct VIZ_COMMON_EXPORT Resources {
-    enum : size_t { kMaxResourceIdCount = 4 };
+    enum : size_t { kMaxResourceIdCount = 1 };
     Resources();
 
     ResourceId* begin() { return ids; }
@@ -149,6 +149,8 @@ class VIZ_COMMON_EXPORT DrawQuad {
     ResourceId ids[kMaxResourceIdCount];
   };
 
+  // TODO(crbug.com/332564976): Change this to be one ResourceId since there is
+  // now max one resource per quad.
   Resources resources;
 
   template <typename T>

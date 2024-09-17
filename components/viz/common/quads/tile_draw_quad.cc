@@ -29,6 +29,7 @@ void TileDrawQuad::SetNew(const SharedQuadState* shared_quad_state,
                           bool is_premultiplied,
                           bool nearest_neighbor,
                           bool force_anti_aliasing_off) {
+  CHECK_NE(resource_id, kInvalidResourceId);
   ContentDrawQuadBase::SetNew(
       shared_quad_state, DrawQuad::Material::kTiledContent, rect, visible_rect,
       needs_blending, tex_coord_rect, texture_size, is_premultiplied,
@@ -47,6 +48,7 @@ void TileDrawQuad::SetAll(const SharedQuadState* shared_quad_state,
                           bool is_premultiplied,
                           bool nearest_neighbor,
                           bool force_anti_aliasing_off) {
+  CHECK_NE(resource_id, kInvalidResourceId);
   ContentDrawQuadBase::SetAll(
       shared_quad_state, DrawQuad::Material::kTiledContent, rect, visible_rect,
       needs_blending, tex_coord_rect, texture_size, is_premultiplied,
