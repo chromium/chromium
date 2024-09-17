@@ -17,10 +17,16 @@ generate_jni("jni_headers") {
 }
 
 android_library("sync_java") {
-  public_deps = [ ":explicit_passphrase_platform_client_interface_java" ]
+  # Public because CoreAccountInfo and NigoriKey are in the API.
+  public_deps = [
+    "//components/signin/public/android:java",
+    "//components/sync/protocol:protocol_java",
+  ]
   deps = [
     "//base:base_java",
+    "//base:service_loader_java",
     "//components/signin/public/android:java",
+    "//third_party/android_deps:protobuf_lite_runtime_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/jni_zero:jni_zero_java",
   ]
@@ -30,39 +36,13 @@ android_library("sync_java") {
     ":jni_headers",
   ]
   sources = [
+    "java/src/org/chromium/components/sync/ExplicitPassphrasePlatformClient.java",
     "java/src/org/chromium/components/sync/LocalDataDescription.java",
     "java/src/org/chromium/components/sync/Passphrase.java",
     "java/src/org/chromium/components/sync/SyncFeatureMap.java",
     "java/src/org/chromium/components/sync/SyncService.java",
     "java/src/org/chromium/components/sync/SyncServiceImpl.java",
   ]
-}
-
-android_library("explicit_passphrase_platform_client_interface_java") {
-  sources = [
-    "java/src/org/chromium/components/sync/ExplicitPassphrasePlatformClient.java",
-
-    # The impl is listed here but then excluded via jar_excluded_patterns, so
-    # downstream targets can provide their own implementation.
-    "java/src/org/chromium/components/sync/ExplicitPassphrasePlatformClientImpl.java",
-  ]
-  jar_excluded_patterns = [ "*/ExplicitPassphrasePlatformClientImpl.class" ]
-
-  # Public because CoreAccountInfo and NigoriKey are in the API.
-  public_deps = [
-    "//components/signin/public/android:java",
-    "//components/sync/protocol:protocol_java",
-  ]
-  deps = [
-    "//third_party/android_deps:protobuf_lite_runtime_java",
-    "//third_party/androidx:androidx_annotation_annotation_java",
-    "//third_party/jni_zero:jni_zero_java",
-  ]
-}
-
-android_library("explicit_passphrase_platform_client_stub_java") {
-  sources = [ "java/src/org/chromium/components/sync/ExplicitPassphrasePlatformClientImpl.java" ]
-  deps = [ ":explicit_passphrase_platform_client_interface_java" ]
 }
 
 java_cpp_enum("java_enums") {

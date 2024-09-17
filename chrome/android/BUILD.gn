@@ -314,7 +314,6 @@ if (current_toolchain == default_toolchain) {
       "//components/language/android:ulp_delegate_public_java",
       "//components/search_engines/android:delegate_public_impl_java",
       "//components/signin/public/android:account_email_domain_displayability_java",
-      "//components/sync/android:explicit_passphrase_platform_client_stub_java",
       "//content/public/android:identity_credentials_public_impl_java",
     ]
     if (defined(enable_data_sharing_internal) && enable_data_sharing_internal) {
