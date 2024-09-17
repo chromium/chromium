@@ -3153,6 +3153,25 @@ the generic promo launch. -->
   </summary>
 </histogram>
 
+<histogram name="IOS.PaymentsBottomSheet.AcceptAttempts.{Action}" units="count"
+    expires_after="2025-01-05">
+  <owner>vincb@google.com</owner>
+  <owner>tmartino@chromium.org</owner>
+  <owner>sugoi@chromium.org</owner>
+  <owner>bling-transactions@google.com</owner>
+  <summary>
+    Counts the number of attempts done for accepting a payment suggestion before
+    an {Action} on the payments sheet was really handled. Recorded when the user
+    does an effective action on the sheet such as accepting a selected
+    suggestion or dismissing the sheet. Won't be recorded if the action couldn't
+    be handled yet.
+  </summary>
+  <token key="Action">
+    <variant name=".Accept" summary="accept suggestion"/>
+    <variant name=".Dismiss" summary="dismiss without accepting suggestion"/>
+  </token>
+</histogram>
+
 <histogram name="IOS.PaymentsBottomSheet.ExitReason"
     enum="PaymentsSuggestionBottomSheetExitReason" expires_after="2025-02-16">
   <owner>sugoi@chromium.org</owner>
