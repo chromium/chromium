@@ -733,8 +733,11 @@ class BidirectionalStreamQuicImplTest
       std::string_view data,
       QuicTestPacketMaker* maker) {
     std::unique_ptr<quic::QuicReceivedPacket> packet(
-        maker->MakeAckAndDataPacket(packet_number, stream_id_, largest_received,
-                                    smallest_received, fin, data));
+        maker->Packet(packet_number)
+            .AddAckFrame(/*first_received=*/1, largest_received,
+                         smallest_received)
+            .AddStreamFrame(stream_id_, fin, data)
+            .Build());
     DVLOG(2) << "packet(" << packet_number << "): " << std::endl
              << quiche::QuicheTextUtils::HexDump(packet->AsStringPiece());
     return packet;

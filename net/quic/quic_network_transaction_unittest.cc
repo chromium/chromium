@@ -505,9 +505,10 @@ class QuicNetworkTransactionTest
       uint64_t smallest_received,
       bool fin,
       std::string_view data) {
-    return client_maker_->MakeAckAndDataPacket(packet_number, stream_id,
-                                               largest_received,
-                                               smallest_received, fin, data);
+    return client_maker_->Packet(packet_number)
+        .AddAckFrame(/*first_received=*/1, largest_received, smallest_received)
+        .AddStreamFrame(stream_id, fin, data)
+        .Build();
   }
 
   std::unique_ptr<quic::QuicEncryptedPacket> ConstructClientAckDataAndRst(
@@ -8431,9 +8432,12 @@ TEST_P(QuicNetworkTransactionTest, NetworkIsolationTunnel) {
 
     mock_quic_data[index]->AddWrite(
         SYNCHRONOUS,
-        client_maker.MakeAckAndDataPacket(
-            packet_num++, GetNthClientInitiatedBidirectionalStreamId(0), 1, 1,
-            false, ConstructDataFrame(kGetRequest)));
+        client_maker.Packet(packet_num++)
+            .AddAckFrame(/*first_received=*/1, /*largest_received=*/1,
+                         /*smallest_received=*/1)
+            .AddStreamFrame(GetNthClientInitiatedBidirectionalStreamId(0),
+                            false, ConstructDataFrame(kGetRequest))
+            .Build());
 
     mock_quic_data[index]->AddRead(
         ASYNC,

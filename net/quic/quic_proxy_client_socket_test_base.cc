@@ -328,9 +328,10 @@ QuicProxyClientSocketTestBase::ConstructAckAndDataPacket(
     uint64_t largest_received,
     uint64_t smallest_received,
     std::string_view data) {
-  return client_maker_.MakeAckAndDataPacket(
-      packet_number, client_data_stream_id1_, largest_received,
-      smallest_received, !kFin, data);
+  return client_maker_.Packet(packet_number)
+      .AddAckFrame(/*first_received=*/1, largest_received, smallest_received)
+      .AddStreamFrame(client_data_stream_id1_, !kFin, data)
+      .Build();
 }
 
 std::unique_ptr<quic::QuicReceivedPacket>
