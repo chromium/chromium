@@ -247,10 +247,6 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
   // Returns the SidePanelEntry uniquely specified by UniqueKey.
   SidePanelEntry* GetEntryForUniqueKey(const UniqueKey& unique_key) const;
 
-  // When true, prevent loading delays when switching between side panel
-  // entries.
-  bool no_delays_for_testing_ = false;
-
   // Timestamp of when the side panel was opened. Updated when the side panel is
   // triggered to be opened, not when visibility changes. These can differ due
   // to delays for loading content. This is used for metrics.
@@ -302,6 +298,10 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
 
   // Provides delay on pinning promo.
   base::OneShotTimer pin_promo_timer_;
+
+  // Inner class that waits for side panel entries to load.
+  class SidePanelEntryWaiter;
+  std::unique_ptr<SidePanelEntryWaiter> waiter_;
 
   // Set to the appropriate pin promo for the current side panel entry, or null
   // if none. (Not set if e.g. already pinned.)

@@ -180,15 +180,13 @@ using PopulateSidePanelCallback = base::OnceCallback<void(
     SidePanelEntry* entry,
     std::optional<std::unique_ptr<views::View>> content_view)>;
 
-// SidePanelContentSwappingContainer is used as the content wrapper for views
-// hosted in the side panel. This uses the SidePanelContentProxy to wait for the
-// SidePanelEntry's content view to be ready to be shown.
+// SidePanelContentSwappingContainer is the parent view for views hosted in the
+// side panel.
 class SidePanelContentSwappingContainer : public views::View {
   METADATA_HEADER(SidePanelContentSwappingContainer, views::View)
 
  public:
-  explicit SidePanelContentSwappingContainer(bool show_immediately_for_testing)
-      : show_immediately_for_testing_(show_immediately_for_testing) {
+  SidePanelContentSwappingContainer() {
     SetUseDefaultFillLayout(true);
     SetBackground(
         views::CreateThemedSolidBackground(kColorSidePanelBackground));
@@ -200,7 +198,17 @@ class SidePanelContentSwappingContainer : public views::View {
   }
 
   ~SidePanelContentSwappingContainer() override = default;
+};
 
+BEGIN_METADATA(SidePanelContentSwappingContainer)
+END_METADATA
+
+}  // namespace
+
+// This class uses the SidePanelContentProxy to wait for the SidePanelEntry's
+// content view to be ready to be shown.
+class SidePanelCoordinator::SidePanelEntryWaiter {
+ public:
   // Calling this method cancels all previous calls to this method.
   // If the entry is destroyed while waiting, the callback is not invoked.
   void WaitForEntry(SidePanelEntry* entry, PopulateSidePanelCallback callback) {
@@ -215,7 +223,7 @@ class SidePanelContentSwappingContainer : public views::View {
       entry->CacheView(std::move(content_view));
       loading_entry_ = entry->GetWeakPtr();
       loaded_callback_.Reset(
-          base::BindOnce(&SidePanelContentSwappingContainer::RunLoadedCallback,
+          base::BindOnce(&SidePanelEntryWaiter::RunLoadedCallback,
                          base::Unretained(this), std::move(callback)));
       content_proxy->SetAvailableCallback(loaded_callback_.callback());
     }
@@ -243,18 +251,13 @@ class SidePanelContentSwappingContainer : public views::View {
   }
 
   // When true, don't delay switching panels.
-  bool show_immediately_for_testing_;
+  bool show_immediately_for_testing_ = false;
   // Tracks the entry that is loading.
   base::WeakPtr<SidePanelEntry> loading_entry_;
   // This class will load at most one entry at a time. If a new one is
   // requested, the old one is canceled automatically.
   base::CancelableOnceClosure loaded_callback_;
 };
-
-BEGIN_METADATA(SidePanelContentSwappingContainer)
-END_METADATA
-
-}  // namespace
 
 SidePanelCoordinator::SidePanelCoordinator(BrowserView* browser_view)
     : browser_view_(browser_view) {
@@ -274,6 +277,8 @@ SidePanelCoordinator::SidePanelCoordinator(BrowserView* browser_view)
   SidePanelUtil::PopulateGlobalEntries(browser_view->browser(),
                                        window_registry_.get());
   browser_view_->unified_side_panel()->AddHeaderView(CreateHeader());
+
+  waiter_ = std::make_unique<SidePanelEntryWaiter>();
 
   // Add observation for the window registry after global entries have been
   // populated. This avoids re-entrancy during construction.
@@ -360,13 +365,8 @@ void SidePanelCoordinator::Toggle(
   // it should also be closed. This handles quick double clicks
   // to close the sidepanel.
   if (IsSidePanelShowing()) {
-    SidePanelContentSwappingContainer* content_wrapper =
-        static_cast<SidePanelContentSwappingContainer*>(
-            browser_view_->unified_side_panel()->GetViewByID(
-                kSidePanelContentWrapperViewId));
-
-    if (content_wrapper->loading_entry() == GetEntryForKey(key)) {
-      content_wrapper->ResetLoadingEntryIfNecessary();
+    if (waiter_->loading_entry() == GetEntryForKey(key)) {
+      waiter_->ResetLoadingEntryIfNecessary();
       Close();
       return;
     }
@@ -490,12 +490,7 @@ bool SidePanelCoordinator::IsSidePanelEntryShowing(
 }
 
 SidePanelEntry* SidePanelCoordinator::GetLoadingEntryForTesting() const {
-  SidePanelContentSwappingContainer* content_wrapper =
-      static_cast<SidePanelContentSwappingContainer*>(
-          browser_view_->unified_side_panel()->GetViewByID(
-              kSidePanelContentWrapperViewId));
-  DCHECK(content_wrapper);
-  return content_wrapper->loading_entry();
+  return waiter_->loading_entry();
 }
 
 void SidePanelCoordinator::Show(
@@ -542,15 +537,9 @@ void SidePanelCoordinator::Show(
     }
   }
 
-  SidePanelContentSwappingContainer* content_wrapper =
-      static_cast<SidePanelContentSwappingContainer*>(
-          browser_view_->unified_side_panel()->GetViewByID(
-              kSidePanelContentWrapperViewId));
-  DCHECK(content_wrapper);
-
   // If the side panel is already showing, cancel all loads and do nothing.
   if (current_key_ && *current_key_ == input) {
-    content_wrapper->ResetLoadingEntryIfNecessary();
+    waiter_->ResetLoadingEntryIfNecessary();
 
     // If the side panel is in the process of closing, show it instead.
     if (browser_view_->unified_side_panel()->state() ==
@@ -564,7 +553,7 @@ void SidePanelCoordinator::Show(
   SidePanelUtil::RecordEntryShowTriggeredMetrics(
       browser_view_->browser(), entry->key().id(), open_trigger);
 
-  content_wrapper->WaitForEntry(
+  waiter_->WaitForEntry(
       entry,
       base::BindOnce(&SidePanelCoordinator::PopulateSidePanel,
                      base::Unretained(this), suppress_animations, input));
@@ -646,9 +635,8 @@ SidePanelEntry* SidePanelCoordinator::GetActiveContextualEntryForKey(
 }
 
 void SidePanelCoordinator::InitializeSidePanel() {
-  auto content_wrapper = std::make_unique<SidePanelContentSwappingContainer>(
-      no_delays_for_testing_);  // Set to not visible so that the side panel is
-                                // not shown until content is
+  auto content_wrapper = std::make_unique<SidePanelContentSwappingContainer>();
+  // Set to not visible so that the side panel is not shown until content is
   // ready to be shown.
   content_wrapper->SetVisible(false);
 
@@ -1206,13 +1194,7 @@ SidePanelEntry* SidePanelCoordinator::GetCurrentSidePanelEntryForTesting() {
 }
 
 void SidePanelCoordinator::SetNoDelaysForTesting(bool no_delays_for_testing) {
-  no_delays_for_testing_ = no_delays_for_testing;
-  if (SidePanel* side_panel = browser_view_->unified_side_panel()) {
-    if (auto* wrapper = static_cast<SidePanelContentSwappingContainer*>(
-            side_panel->GetViewByID(kSidePanelContentWrapperViewId))) {
-      wrapper->SetNoDelaysForTesting(no_delays_for_testing_);  // IN-TEST
-    }
-  }
+  waiter_->SetNoDelaysForTesting(no_delays_for_testing);  // IN-TEST
 }
 
 void SidePanelCoordinator::UpdatePanelIconAndTitle(
