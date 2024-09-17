@@ -47,9 +47,8 @@ async function executeAsyncScript(controlledframe, script) {
     window.addEventListener('message', messageHandler);
   })()`;
 
-  const handlerSetupResults = await new Promise((resolve) => {
-    controlledframe.executeScript({code: embeddedHandlerSrc}, resolve);
-  });
+  const handlerSetupResults =
+      await controlledframe.executeScript({code: embeddedHandlerSrc});
   if (handlerSetupResults.length !== 1) {
     throw new Error(
         'executeAsyncScript doesn\'t support multiple frames, ' +
