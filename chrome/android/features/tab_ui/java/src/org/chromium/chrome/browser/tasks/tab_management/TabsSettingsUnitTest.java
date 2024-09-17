@@ -45,6 +45,7 @@ import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeaturesJni;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
+import org.chromium.components.browser_ui.settings.TextMessagePreference;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
@@ -252,5 +253,18 @@ public class TabsSettingsUnitTest {
 
         assertEquals("Inactive", archiveSettinsEntryPoint.getTitle());
         assertEquals("After 14 days", archiveSettinsEntryPoint.getSummary());
+    }
+
+    @Test
+    @SmallTest
+    public void testLaunchTabsSettingsShareTitlesAndIrls_noShowWhenDisabled() {
+        TabsSettings tabsSettings = launchFragment();
+        ChromeSwitchPreference shareTitlesAndUrlsWithOsSwitch =
+                tabsSettings.findPreference(TabsSettings.PREF_SHARE_TITLES_AND_URLS_WITH_OS_SWITCH);
+        TextMessagePreference learnMoreTextMessagePreference =
+                tabsSettings.findPreference(
+                        TabsSettings.PREF_SHARE_TITLES_AND_URLS_WITH_OS_LEARN_MORE);
+        assertFalse(shareTitlesAndUrlsWithOsSwitch.isVisible());
+        assertFalse(learnMoreTextMessagePreference.isVisible());
     }
 }
