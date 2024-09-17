@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<title>Digital Identity Credential tests.</title>
+<title>Digital Credential API tests for create.</title>
 <link rel="help" href="https://wicg.github.io/digital-credentials/" />
 <script src="/common/get-host-info.sub.js"></script>
 <script src="/resources/testharness.js"></script>
@@ -31,36 +31,36 @@
   });
 
   promise_test(async (t) => {
-    const result = await navigator.identity.create();
+    const result = await navigator.credentials.create();
     assert_equals(result, null);
-  }, "navigator.identity.create() frame just returns null.");
+  }, "navigator.credentials.create() frame just returns null.");
 
   promise_test(async (t) => {
     const { contentWindow: iframeWindow } = iframeSameOrigin;
-    const result = await iframeWindow.navigator.identity.create();
+    const result = await iframeWindow.navigator.credentials.create();
     assert_equals(result, null);
-  }, "navigator.identity.create() same-origin iframe just returns null.");
+  }, "navigator.credentials.create() same-origin iframe just returns null.");
 
   promise_test(async (t) => {
     const result = await sendMessage(iframeCrossOrigin, {
       action: "create",
     });
     assert_equals(result, null);
-  }, "navigator.identity.create() cross-origin iframe results in null.");
+  }, "navigator.credentials.create() cross-origin iframe results in null.");
 
   promise_test(async () => {
     for (const mediation of mediations) {
-      const result = await navigator.identity.create({ mediation });
+      const result = await navigator.credentials.create({ mediation });
       assert_equals(result, null);
     }
-  }, "navigator.identity.create() ignores mediations.");
+  }, "navigator.credentials.create() ignores mediations.");
 
   promise_test(async () => {
     for (const mediation of mediations) {
-      const result = await navigator.identity.create({ mediation });
+      const result = await navigator.credentials.create({ mediation });
       assert_equals(result, null);
     }
-  }, "navigator.identity.create() ignores mediations in same-origin iframe.");
+  }, "navigator.credentials.create() ignores mediations in same-origin iframe.");
 
   promise_test(async () => {
     for (const mediation of mediations) {
@@ -70,7 +70,7 @@
       });
       assert_equals(result, null);
     }
-  }, "navigator.identity.create() ignores mediations in cross-origin iframe.");
+  }, "navigator.credentials.create() ignores mediations in cross-origin iframe.");
 
   promise_test(async (t) => {
     const abortController = new AbortController();
@@ -79,11 +79,11 @@
     await promise_rejects_dom(
       t,
       "AbortError",
-      navigator.identity.create({
+      navigator.credentials.create({
         signal,
       })
     );
-  }, "navigator.identity.create() rejects if called with an aborted signal.");
+  }, "navigator.credentials.create() rejects if called with an aborted controller.");
 
   promise_test(async (t) => {
     const { contentWindow: iframeWindow } = iframeSameOrigin;
@@ -94,11 +94,11 @@
       t,
       "AbortError",
       iframeWindow.DOMException,
-      iframeWindow.navigator.identity.create({
+      iframeWindow.navigator.credentials.create({
         signal,
       })
     );
-  }, "navigator.identity.create() rejects if called with an aborted signal in same-origin iframe.");
+  }, "navigator.credentials.create() rejects if called with an aborted controller in same-origin iframe.");
 
   promise_test(async (t) => {
     const result = await sendMessage(iframeCrossOrigin, {
@@ -107,14 +107,14 @@
     });
     assert_equals(result.constructor, "DOMException");
     assert_equals(result.name, "AbortError");
-  }, "navigator.identity.create() rejects if called with an aborted signal in cross-origin iframe.");
+  }, "navigator.credentials.create() rejects if called with an aborted controller in cross-origin iframe.");
 
   promise_test(async (t) => {
     const abortController = new AbortController();
     const { signal } = abortController;
     abortController.abort();
     for (const mediation of mediations) {
-      const requestPromise = navigator.identity.create({
+      const requestPromise = navigator.credentials.create({
         mediation,
         signal,
       });

@@ -1,0 +1,8 @@
+This is a wdspec test.
+[FAIL] test_move_to_origin_position_within_frame[viewport]
+  assert 0 == 1
+[FAIL] test_move_to_origin_position_within_frame[pointer]
+  assert 0 == 1
+[FAIL] test_move_to_origin_position_within_frame[element]
+  assert [61, 26] == [71.0, 36.0]
+Harness: the test ran to completion.

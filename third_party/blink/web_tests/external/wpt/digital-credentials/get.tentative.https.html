@@ -35,35 +35,35 @@
         t,
         "NotSupportedError",
         global.DOMException,
-        global.navigator.identity.get()
+        global.navigator.credentials.get()
       );
 
       await promise_rejects_dom(
         t,
         "NotSupportedError",
         global.DOMException,
-        global.navigator.identity.get({})
+        global.navigator.credentials.get({})
       );
 
       await promise_rejects_dom(
         t,
         "NotSupportedError",
         global.DOMException,
-        global.navigator.identity.get({ x: "y" })
+        global.navigator.credentials.get({ x: "y" })
       );
 
       await promise_rejects_dom(
         t,
         "NotSupportedError",
         global.DOMException,
-        global.navigator.identity.get({ x: "y", y: "z" })
+        global.navigator.credentials.get({ x: "y", y: "z" })
       );
 
       await promise_rejects_dom(
         t,
         "NotSupportedError",
         global.DOMException,
-        global.navigator.identity.get({ mediation: "required" })
+        global.navigator.credentials.get({ mediation: "required" })
       );
 
       const abortController = new AbortController();
@@ -73,25 +73,25 @@
         t,
         "NotSupportedError",
         global.DOMException,
-        global.navigator.identity.get({ signal })
+        global.navigator.credentials.get({ signal })
       );
 
       await promise_rejects_dom(
         t,
         "NotSupportedError",
         global.DOMException,
-        global.navigator.identity.get({ signal, mediation: "required" })
+        global.navigator.credentials.get({ signal, mediation: "required" })
       );
     }
-  }, "Calling navigator.identity.get() without an digital member same origin.");
+  }, "Calling navigator.credentials.get() without an digital member same origin.");
 
   promise_test(async (t) => {
     for (const provider of [undefined, []]) {
       const options = makeGetOptions(provider);
       await test_driver.bless("user activation");
-      await promise_rejects_js(t, TypeError, navigator.identity.get(options));
+      await promise_rejects_js(t, TypeError, navigator.credentials.get(options));
     }
-  }, "navigator.identity.get() API rejects if there are no providers.");
+  }, "navigator.credentials.get() API rejects if there are no providers.");
 
   promise_test(async (t) => {
     iframeSameOrigin.focus();
@@ -102,10 +102,10 @@
       await promise_rejects_js(
         t,
         iframeWindow.TypeError,
-        iframeWindow.navigator.identity.get(options)
+        iframeWindow.navigator.credentials.get(options)
       );
     }
-  }, "navigator.identity.get() API rejects if there are no providers for same-origin iframe.");
+  }, "navigator.credentials.get() API rejects if there are no providers for same-origin iframe.");
 
   promise_test(async (t) => {
     iframeCrossOrigin.focus();
@@ -117,7 +117,7 @@
       });
       assert_equals(result.constructor, "TypeError");
     }
-  }, "navigator.identity.get() API rejects if there are no providers in cross-origin iframe.");
+  }, "navigator.credentials.get() API rejects if there are no providers in cross-origin iframe.");
 
   promise_test(async (t) => {
     const abortController = new AbortController();
@@ -127,10 +127,10 @@
       await promise_rejects_dom(
         t,
         "AbortError",
-        navigator.identity.get(options)
+        navigator.credentials.get(options)
       );
     }
-  }, "navigator.identity.get() promise is rejected if called with an aborted signal.");
+  }, "navigator.credentials.get() promise is rejected if called with an aborted controller.");
 
   promise_test(async (t) => {
     iframeSameOrigin.focus();
@@ -144,14 +144,14 @@
         t,
         "AbortError",
         iframeWindow.DOMException,
-        iframeWindow.navigator.identity.get(options)
+        iframeWindow.navigator.credentials.get(options)
       );
       assert_true(
         navigator.userActivation.isActive,
         "User activation is still active."
       );
     }
-  }, "navigator.identity.get() promise is rejected if called with an aborted signal in same-origin iframe.");
+  }, "navigator.credentials.get() promise is rejected if called with an aborted controller in same-origin iframe.");
 
   promise_test(async (t) => {
     iframeCrossOrigin.focus();
@@ -164,7 +164,7 @@
       assert_equals(result.constructor, "DOMException");
       assert_equals(result.name, "AbortError");
     }
-  }, "navigator.identity.get() promise is rejected if called with an aborted signal in cross-origin iframe.");
+  }, "navigator.credentials.get() promise is rejected if called with an aborted signal in cross-origin iframe.");
 
   promise_test(async (t) => {
     const abortController = new AbortController();
@@ -175,11 +175,11 @@
       t,
       "AbortError",
       DOMException,
-      navigator.identity.get(options)
+      navigator.credentials.get(options)
     );
     abortController.abort();
     await promise;
-  }, "navigator.identity.get() promise is rejected if abort controller is aborted after call to get().");
+  }, "navigator.credentials.get() promise is rejected if abort controller is aborted after call to get().");
 
   promise_test(async (t) => {
     iframeCrossOrigin.focus();
@@ -191,14 +191,14 @@
     });
     assert_equals(result.constructor, "DOMException");
     assert_equals(result.name, "AbortError");
-  }, "navigator.identity.get() promise is rejected if abort controller is aborted after call to get() in cross-origin iframe.");
+  }, "navigator.credentials.get() promise is rejected if abort controller is aborted after call to get() in cross-origin iframe.");
 
   promise_test(async (t) => {
     /** @type sequence<CredentialMediationRequirement> */
     const disallowedMediations = [ "conditional", "optional", "silent"];
     for (const mediation of disallowedMediations) {
       const options = makeGetOptions("default", mediation);
-      await promise_rejects_js(t, TypeError, navigator.identity.get(options));
+      await promise_rejects_js(t, TypeError, navigator.credentials.get(options));
     }
   }, "Mediation is required to get a DigitalCredential.");
 </script>

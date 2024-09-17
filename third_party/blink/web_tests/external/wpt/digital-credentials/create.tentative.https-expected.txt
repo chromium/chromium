@@ -1,0 +1,23 @@
+This is a testharness.js-based test.
+[FAIL] navigator.credentials.create() frame just returns null.
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Only exactly one of 'password', 'federated', and 'publicKey' credential types are currently supported."
+[FAIL] navigator.credentials.create() same-origin iframe just returns null.
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Only exactly one of 'password', 'federated', and 'publicKey' credential types are currently supported."
+[FAIL] navigator.credentials.create() cross-origin iframe results in null.
+  assert_equals: expected null but got object "[object Object]"
+[FAIL] navigator.credentials.create() ignores mediations.
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Only exactly one of 'password', 'federated', and 'publicKey' credential types are currently supported."
+[FAIL] navigator.credentials.create() ignores mediations in same-origin iframe.
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Only exactly one of 'password', 'federated', and 'publicKey' credential types are currently supported."
+[FAIL] navigator.credentials.create() ignores mediations in cross-origin iframe.
+  assert_equals: expected null but got object "[object Object]"
+[FAIL] navigator.credentials.create() rejects if called with an aborted controller.
+  promise_rejects_dom: function "function() { throw e }" threw object "NotSupportedError: Only exactly one of 'password', 'federated', and 'publicKey' credential types are currently supported." that is not a DOMException AbortError: property "code" is equal to 9, expected 20
+[FAIL] navigator.credentials.create() rejects if called with an aborted controller in same-origin iframe.
+  promise_rejects_dom: function "function() { throw e }" threw object "NotSupportedError: Only exactly one of 'password', 'federated', and 'publicKey' credential types are currently supported." that is not a DOMException AbortError: property "code" is equal to 9, expected 20
+[FAIL] navigator.credentials.create() rejects if called with an aborted controller in cross-origin iframe.
+  assert_equals: expected "AbortError" but got "NotSupportedError"
+[FAIL] Adding mediations together with abort signal respects the abort signal.
+  promise_rejects_dom: function "function() { throw e }" threw object "NotSupportedError: Only exactly one of 'password', 'federated', and 'publicKey' credential types are currently supported." that is not a DOMException AbortError: property "code" is equal to 9, expected 20
+Harness: the test ran to completion.
+

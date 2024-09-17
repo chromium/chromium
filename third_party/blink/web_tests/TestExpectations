@@ -2595,6 +2595,11 @@ crbug.com/364700192 external/wpt/css/css-fonts/parsing/font-feature-settings-com
 crbug.com/364677549 external/wpt/css/css-properties-values-api/register-property-syntax-parsing.html [ Crash Pass Timeout ]
 
 # ====== New tests from wpt-importer added here ======
+[ Win11-arm64 ] external/wpt/digital-credentials/allow-attribute.https.html [ Failure Timeout ]
+[ Mac13 ] external/wpt/digital-credentials/allow-attribute.https.html [ Failure Timeout ]
+[ Mac11-arm64 ] external/wpt/digital-credentials/allow-attribute.https.html [ Failure Timeout ]
+[ Win11-arm64 ] external/wpt/digital-credentials/create.tentative.https.html [ Failure Timeout ]
+[ Linux ] external/wpt/html/semantics/forms/the-select-element/customizable-select/switch-picker-appearance.tentative.html [ Crash Timeout ]
 crbug.com/366343803 external/wpt/css/css-inline/text-box-trim/text-box-trim-ignore-nested-text-box-edge.html [ Failure ]
 crbug.com/366873207 external/wpt/css/css-ruby/ruby-overhang.html [ Failure ]
 crbug.com/367426146 [ Mac15-arm64 ] external/wpt/webrtc-extensions/RTCRtpEncodingParameters-scaleResolutionDownTo.https.html [ Skip Timeout ]
@@ -3245,6 +3250,7 @@ crbug.com/331556923 external/wpt/geolocation-API/enabled-on-self-origin-by-permi
 crbug.com/626703 [ Mac12 ] external/wpt/webxr/ar-module/xrSession_interactionMode.https.html [ Timeout ]
 crbug.com/626703 [ Mac12 ] external/wpt/webxr/dom-overlay/ar_dom_overlay.https.html [ Timeout ]
 crbug.com/626703 [ Mac14 ] external/wpt/webxr/dom-overlay/ar_dom_overlay.https.html [ Timeout ]
+crbug.com/626703 [ Mac15 ] external/wpt/webxr/dom-overlay/ar_dom_overlay.https.html [ Timeout ]
 crbug.com/626703 [ Mac12 ] external/wpt/webxr/render_state_update.https.html [ Timeout ]
 crbug.com/626703 [ Linux Release ] virtual/feature-policy-permissions/external/wpt/mediacapture-streams/MediaDevices-enumerateDevices-per-origin-ids.sub.https.html [ Timeout ]
 crbug.com/626703 external/wpt/screen-orientation/active-lock.html [ Timeout ]
@@ -5505,7 +5511,8 @@ crbug.com/343631044 virtual/select-parser-relaxation/accessibility/role-attribut
 # crbug.com/364924718). I anticipate that once the crashes are fixed, the behavior will still be
 # wrong, particularly in the case that `appearance` is changed on the picker once it's open. If
 # so, please file a bug for that case with details.
-crbug.com/364924715 external/wpt/html/semantics/forms/the-select-element/customizable-select/switch-picker-appearance.tentative.html [ Crash ]
+crbug.com/364924715 [ Mac ] external/wpt/html/semantics/forms/the-select-element/customizable-select/switch-picker-appearance.tentative.html [ Crash ]
+crbug.com/364924715 [ Win ] external/wpt/html/semantics/forms/the-select-element/customizable-select/switch-picker-appearance.tentative.html [ Crash ]
 
 # Sheriff 2022-04-21
 crbug.com/1318318 external/wpt/fetch/private-network-access/service-worker-background-fetch.tentative.https.window.html [ Failure Pass Timeout ]
