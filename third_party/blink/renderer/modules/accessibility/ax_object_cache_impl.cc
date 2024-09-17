@@ -2567,7 +2567,8 @@ void AXObjectCacheImpl::NodeIsAttached(Node* node) {
       RemoveSubtree(node);
       return;
     }
-    if ((IsA<HTMLTableElement>(node) || IsA<HTMLSelectElement>(node)) &&
+    if ((IsA<HTMLTableElement>(node) || IsA<HTMLSelectElement>(node) ||
+         node->GetLayoutObject()->IsAtomicInlineLevel()) &&
         !node->IsFinishedParsingChildren() &&
         !node_to_parse_before_more_tree_updates_) {
       // * Tables must be fully parsed before building, because many of the
@@ -2578,6 +2579,8 @@ void AXObjectCacheImpl::NodeIsAttached(Node* node) {
       //   vs. natural DOM tree.
       // TODO(accessibility) Fix root select issue, while still passing
       // All/YieldingParserDumpAccessibilityTreeTest.AccessibilityCustomSelect/blink.
+      // * Inline text boxes must know their children in order to determine
+      //   whether they can be ignored;
       node_to_parse_before_more_tree_updates_ = node;
     }
 
