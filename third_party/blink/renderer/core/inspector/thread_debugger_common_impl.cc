@@ -243,15 +243,16 @@ v8::Local<v8::Object> SerializeNodeToV8Object(
   if (node->IsElementNode()) {
     Element* element = To<Element>(node);
 
-    if (element->IsFrameOwnerElement()) {
-      HTMLFrameOwnerElement* frameOwnerElement =
-          To<HTMLFrameOwnerElement>(node);
-
-      serialized_value_keys.push_back(V8String(isolate, kFrameIdParameterName));
-      serialized_value_values.push_back(V8String(
-          isolate,
-          IdentifiersFactory::IdFromToken(
-              frameOwnerElement->ContentFrame()->GetDevToolsFrameToken())));
+    if (HTMLFrameOwnerElement* frameOwnerElement =
+            DynamicTo<HTMLFrameOwnerElement>(node)) {
+      if (frameOwnerElement->ContentFrame()) {
+        serialized_value_keys.push_back(
+            V8String(isolate, kFrameIdParameterName));
+        serialized_value_values.push_back(V8String(
+            isolate,
+            IdentifiersFactory::IdFromToken(
+                frameOwnerElement->ContentFrame()->GetDevToolsFrameToken())));
+      }
     }
 
     if (ShadowRoot* shadow_root = node->GetShadowRoot()) {
