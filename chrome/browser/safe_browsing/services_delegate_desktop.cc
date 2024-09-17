@@ -42,21 +42,21 @@ const char* MigrateResultToString(HashPrefixMap::MigrateResult result) {
 
 // static
 std::unique_ptr<ServicesDelegate> ServicesDelegate::Create(
-    SafeBrowsingService* safe_browsing_service) {
+    SafeBrowsingServiceImpl* safe_browsing_service) {
   return base::WrapUnique(
       new ServicesDelegateDesktop(safe_browsing_service, nullptr));
 }
 
 // static
 std::unique_ptr<ServicesDelegate> ServicesDelegate::CreateForTest(
-    SafeBrowsingService* safe_browsing_service,
+    SafeBrowsingServiceImpl* safe_browsing_service,
     ServicesDelegate::ServicesCreator* services_creator) {
   return base::WrapUnique(
       new ServicesDelegateDesktop(safe_browsing_service, services_creator));
 }
 
 ServicesDelegateDesktop::ServicesDelegateDesktop(
-    SafeBrowsingService* safe_browsing_service,
+    SafeBrowsingServiceImpl* safe_browsing_service,
     ServicesDelegate::ServicesCreator* services_creator)
     : ServicesDelegate(safe_browsing_service, services_creator) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -147,7 +147,7 @@ DownloadProtectionService* ServicesDelegateDesktop::GetDownloadService() {
 scoped_refptr<SafeBrowsingDatabaseManager>
 ServicesDelegateDesktop::CreateDatabaseManager() {
   return V4LocalDatabaseManager::Create(
-      SafeBrowsingService::GetBaseFilename(),
+      SafeBrowsingServiceImpl::GetBaseFilename(),
       content::GetUIThreadTaskRunner({}), content::GetIOThreadTaskRunner({}),
       base::BindRepeating(
           &ServicesDelegateDesktop::GetEstimatedExtendedReportingLevel,
