@@ -4,7 +4,7 @@
 
 source_set("scene_state_observer") {
   sources = [ "scene_state_observer.h" ]
-
+  deps = [ ":scene_activation_level" ]
   frameworks = [ "UIKit.framework" ]
 }
 
@@ -22,6 +22,10 @@ source_set("observing_scene_agent") {
   ]
 }
 
+source_set("scene_activation_level") {
+  sources = [ "scene_activation_level.h" ]
+}
+
 source_set("scene_state_header") {
   sources = [
     "connection_information.h",
@@ -30,6 +34,7 @@ source_set("scene_state_header") {
     "scene_ui_provider.h",
   ]
   public_deps = [
+    ":scene_activation_level",
     ":scene_state_observer",
     "//ios/chrome/app/application_delegate:tab_opening",
     "//ios/chrome/browser/shared/model/browser",
