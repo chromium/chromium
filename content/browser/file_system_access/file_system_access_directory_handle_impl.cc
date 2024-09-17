@@ -789,6 +789,12 @@ FileSystemAccessDirectoryHandleImpl::GetChildURL(
       parent.virtual_path().IsContentUri()
           ? ContentUriBuildDocumentUriUsingTree(parent.virtual_path(), basename)
           : parent.virtual_path().Append(basename);
+  // If parent is not a Document Tree URI and basename not a document-id,
+  // child_path will not be valid.
+  if (child_path.empty()) {
+    return file_system_access_error::FromStatus(
+        blink::mojom::FileSystemAccessStatus::kInvalidModificationError);
+  }
 #else
   base::FilePath child_path =
       parent.virtual_path().Append(base::FilePath::FromUTF8Unsafe(basename));

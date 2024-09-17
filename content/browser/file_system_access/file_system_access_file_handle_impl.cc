@@ -625,22 +625,26 @@ void FileSystemAccessFileHandleImpl::StartCreateSwapFile(
     std::optional<base::SafeBaseName> opt_swap_name =
         base::SafeBaseName::Create(swap_name);
     CHECK(opt_swap_name.has_value());
-    storage::FileSystemURL swap_url = url().CreateSibling(*opt_swap_name);
-    CHECK(swap_url.is_valid());
 #if BUILDFLAG(IS_ANDROID)
     //  For content-URIs (e.g. content://com.android.../doc/msf%3A123), we will
     //  write the swap file to the local cache dir
     //  (e.g. /data/user/0/com.chrome.dev/cache/FileSystemAPISwap) and then
     //  copy back to the original content-URI when done.
-    if (swap_url.path().IsContentUri()) {
+    storage::FileSystemURL swap_url;
+    if (url().path().IsContentUri()) {
       // We must escape 'content://com.android...' to use it as the file name.
-      std::string file_name =
-          base::EscapeAllExceptUnreserved(swap_url.path().value());
+      std::string file_name = base::EscapeAllExceptUnreserved(
+          url().path().DirName().Append(*opt_swap_name).value());
       swap_url = manager()->CreateFileSystemURLFromPath(
           FileSystemAccessEntryFactory::PathType::kLocal,
           swap_dir_.Append(file_name));
+    } else {
+      swap_url = url().CreateSibling(*opt_swap_name);
     }
+#else
+    storage::FileSystemURL swap_url = url().CreateSibling(*opt_swap_name);
 #endif
+    CHECK(swap_url.is_valid());
 
     // Check if this swap file is not in use. If it isn't, take a lock on it.
     if (!manager()->IsContentious(swap_url,
