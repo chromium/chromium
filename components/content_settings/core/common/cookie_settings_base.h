@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/containers/fixed_flat_set.h"
+#include "base/types/optional_ref.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_setting_override.h"
@@ -233,7 +234,7 @@ class CookieSettingsBase {
   bool IsFullCookieAccessAllowed(
       const GURL& url,
       const net::SiteForCookies& site_for_cookies,
-      const std::optional<url::Origin>& top_frame_origin,
+      base::optional_ref<const url::Origin> top_frame_origin,
       net::CookieSettingOverrides overrides,
       CookieSettingWithMetadata* cookie_settings = nullptr) const;
 
@@ -334,7 +335,7 @@ class CookieSettingsBase {
   std::optional<net::cookie_util::StorageAccessStatus> GetStorageAccessStatus(
       const GURL& url,
       const net::SiteForCookies& site_for_cookies,
-      const std::optional<url::Origin>& top_frame_origin,
+      base::optional_ref<const url::Origin> top_frame_origin,
       net::CookieSettingOverrides overrides) const;
 
  protected:
