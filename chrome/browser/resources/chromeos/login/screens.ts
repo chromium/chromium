@@ -72,6 +72,7 @@ import './screens/login/lacros_data_migration.js';
 import './screens/login/management_transition.js';
 import './screens/login/offline_login.js';
 import './screens/login/update_required_card.js';
+import './screens/common/account_selection.js';
 // SCREENS USED DURING THE OOBE FLOW
 import './screens/oobe/auto_enrollment_check.js';
 import './screens/oobe/consumer_update.js';
@@ -256,6 +257,11 @@ export const loginScreensList: OobeTypes.ScreensList = [
   },
   {tag: 'offline-login-element', id: 'offline-login'},
   {tag: 'update-required-card-element', id: 'update-required'},
+  {
+    tag: 'account-selection-element',
+    id: 'account-selection',
+    condition: 'isOobeAddUserDuringEnrollmentEnabled',
+  },
 ];
 
 /**

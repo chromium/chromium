@@ -81,6 +81,7 @@ build_webui("build") {
     "screens/oobe/welcome_dialog.ts",
 
     # Common screens
+    "screens/common/account_selection.ts",
     "screens/common/adb_sideloading.ts",
     "screens/common/add_child.ts",
     "screens/common/ai_intro.ts",

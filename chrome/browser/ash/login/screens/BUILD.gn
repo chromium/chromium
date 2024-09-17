@@ -11,6 +11,8 @@ assert(is_chromeos_ash)
 
 static_library("screens") {
   sources = [
+    "account_selection_screen.cc",
+    "account_selection_screen.h",
     "add_child_screen.cc",
     "add_child_screen.h",
     "ai_intro_screen.cc",

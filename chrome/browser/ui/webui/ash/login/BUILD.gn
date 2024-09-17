@@ -11,6 +11,8 @@ assert(is_chromeos_ash)
 
 static_library("login") {
   sources = [
+    "account_selection_screen_handler.cc",
+    "account_selection_screen_handler.h",
     "add_child_screen_handler.cc",
     "add_child_screen_handler.h",
     "ai_intro_screen_handler.cc",

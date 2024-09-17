@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/webui/ash/login/account_selection_screen_handler.h"
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
 #pragma allow_unsafe_buffers
@@ -379,6 +380,9 @@ void CreateAndAddOobeUIDataSource(Profile* profile,
   source->AddBoolean("isSplitModifierKeyboardInfoEnabled",
                      features::IsOobeSplitModifierKeyboardInfoEnabled());
 
+  source->AddBoolean("isOobeAddUserDuringEnrollmentEnabled",
+                     features::IsOobeAddUserDuringEnrollmentEnabled());
+
   // Configure shared resources
   AddProductLogoResources(source);
   if (ash::features::IsBootAnimationEnabled()) {
@@ -622,6 +626,10 @@ void OobeUI::ConfigureOobeDisplay() {
   AddScreenHandler(std::make_unique<CryptohomeRecoveryScreenHandler>());
 
   AddScreenHandler(std::make_unique<SplitModifierKeyboardInfoScreenHandler>());
+
+  if (features::IsOobeAddUserDuringEnrollmentEnabled()) {
+    AddScreenHandler(std::make_unique<AccountSelectionScreenHandler>());
+  }
 
   if (base::FeatureList::IsEnabled(
           remoting::features::kEnableCrdAdminRemoteAccessV2)) {
