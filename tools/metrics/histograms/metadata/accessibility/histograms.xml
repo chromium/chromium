@@ -2695,17 +2695,6 @@ even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
-<histogram name="Accessibility.ScreenAI.Component.{Action}"
-    enum="BooleanSuccess" expires_after="2025-02-28">
-  <owner>rhalavati@chromium.org</owner>
-  <owner>chrome-a11y-core@google.com</owner>
-  <summary>Records success or failure of Screen AI component {Action}.</summary>
-  <token key="Action">
-    <variant name="Install" summary="install"/>
-    <variant name="Uninstall" summary="uninstall"/>
-  </token>
-</histogram>
-
 <histogram name="Accessibility.ScreenAI.DlcInstallResult"
     enum="DlcInstallResult" expires_after="2025-02-16">
   <owner>rhalavati@chromium.org</owner>

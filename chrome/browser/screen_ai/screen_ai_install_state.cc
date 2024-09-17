@@ -9,7 +9,6 @@
 #include "base/check_is_test.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/screen_ai/pref_names.h"
@@ -110,18 +109,6 @@ bool ScreenAIInstallState::ShouldInstall(PrefService* local_state) {
   }
 
   return true;
-}
-
-// static
-void ScreenAIInstallState::RecordComponentInstallationResult(bool install,
-                                                             bool successful) {
-  if (install) {
-    base::UmaHistogramBoolean("Accessibility.ScreenAI.Component.Install",
-                              successful);
-  } else {
-    base::UmaHistogramBoolean("Accessibility.ScreenAI.Component.Uninstall",
-                              successful);
-  }
 }
 
 void ScreenAIInstallState::AddObserver(

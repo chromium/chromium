@@ -11,6 +11,21 @@ class PrefService;
 
 namespace screen_ai::dlc_installer {
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// If any value is added, please update `DlcInstallResult` in `enums.xml`.
+enum class DlcInstallResult {
+  kSuccess = 0,
+  kErrorInternal = 1,
+  kErrorBusy = 2,
+  kErrorNeedReboot = 3,
+  kErrorInvalidDlc = 4,
+  kErrorAllocation = 5,
+  kErrorNoImageFound = 6,
+
+  kMaxValue = kErrorNoImageFound,
+};
+
 // If Screen AI library is needed, registers for installation of its DLC.
 // If not and after some delay, uninstalls the DLC.
 void ManageInstallation(PrefService* local_state);

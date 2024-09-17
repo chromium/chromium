@@ -58,9 +58,6 @@ class ScreenAIInstallState {
   // device and updated.
   static bool ShouldInstall(PrefService* local_state);
 
-  // Records an UMA metric on component install/uninstall result.
-  static void RecordComponentInstallationResult(bool install, bool successful);
-
   // Stores current time in a local state preference as the last time that the
   // service is used.
   virtual void SetLastUsageTime() = 0;
