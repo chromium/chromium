@@ -41,8 +41,8 @@ void fct() {
   buf4[index] = 11;
 
   // Expected rewrite:
-  // std::array<ns1::Type, 5> buf5 = {{1}, {1}, {1}, {1}, {1}};
-  std::array<ns1::Type1, 5> buf5 = {{1}, {1}, {1}, {1}, {1}};
+  // std::array<ns1::Type, 5> buf5 = {{{1}, {1}, {1}, {1}, {1}}};
+  std::array<ns1::Type1, 5> buf5 = {{{1}, {1}, {1}, {1}, {1}}};
   buf5[index].value = 11;
 
   // Expected rewrite:
@@ -51,19 +51,19 @@ void fct() {
   buf6[index] = 1;
 
   // Expected rewrite:
-  // std::array<int (*)(int), 16> buf7 = {nullptr};
-  std::array<int (*)(int), 16> buf7 = {nullptr};
+  // std::array<int (*)(int), 16> buf7 = {{nullptr}};
+  std::array<int (*)(int), 16> buf7 = {{nullptr}};
   buf7[index] = nullptr;
 
   // Expected rewrite:
-  // std::array<int (**)[], 16> buf8 = {nullptr};
-  std::array<int(**)[], 16> buf8 = {nullptr};
+  // std::array<int (**)[], 16> buf8 = {{nullptr}};
+  std::array<int(**)[], 16> buf8 = {{nullptr}};
   buf8[index] = nullptr;
 
   using Arr = int(**)[];
   // Expected rewrite:
-  // std::array<Arr, buf3[0]> buf9 = {nullptr};
-  std::array<Arr, buf3[0]> buf9 = {nullptr};
+  // std::array<Arr, buf3[0]> buf9 = {{nullptr}};
+  std::array<Arr, buf3[0]> buf9 = {{nullptr}};
   buf9[index] = nullptr;
 
   index = kPropertyVisitedIDs[index];

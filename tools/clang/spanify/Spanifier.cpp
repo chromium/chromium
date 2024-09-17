@@ -726,6 +726,44 @@ bool CanGetArrayTypeFromSourceText(const clang::TypeLoc* type_loc,
       array_type_loc.getBracketsRange());
 }
 
+// Returns an initializer list(`initListExpr`) of the given
+// `var_decl`(`clang::VarDecl`) if exists. Otherwise, returns `nullptr`.
+const clang::InitListExpr* GetArrayInitList(const clang::VarDecl* var_decl) {
+  const clang::Expr* init_expr = var_decl->getInit();
+  if (!init_expr) {
+    return nullptr;
+  }
+
+  const clang::InitListExpr* init_list_expr =
+      clang::dyn_cast_or_null<clang::InitListExpr>(init_expr);
+  if (init_list_expr) {
+    return init_list_expr;
+  }
+
+  // If we have the following array of std::vector<>:
+  //   `std::vector<Quad> quad[2] = {{...},{...}};`
+  // we may not be able to use `dyn_cast` with `init_expr` to obtain
+  // `InitListExpr`:
+  //   ExprWithCleanups 0x557ea7bdc860 'std::vector<Quad>[2]'
+  //   `-InitListExpr 0x557ea7ba3950 'std::vector<Quad>[2]'
+  //     |-CXXConstructExpr 0x557ea7bdc750  ...
+  //     ...
+  //     `-CXXConstructExpr
+  //       ...
+  // `init_expr` is an instance of `ExprWithCleanups`.
+  const clang::ExprWithCleanups* expr_with_cleanups =
+      clang::dyn_cast_or_null<clang::ExprWithCleanups>(init_expr);
+  if (!expr_with_cleanups) {
+    return nullptr;
+  }
+
+  auto first_child = expr_with_cleanups->child_begin();
+  if (first_child == expr_with_cleanups->child_end()) {
+    return nullptr;
+  }
+  return clang::dyn_cast_or_null<clang::InitListExpr>(*first_child);
+}
+
 // Creates a replacement node for c-style arrays on which we invoke operator[].
 // These arrays are rewritten to std::array<Type, Size>.
 Node getNodeFromArrayType(const MatchFinder::MatchResult& result) {
@@ -783,9 +821,34 @@ Node getNodeFromArrayType(const MatchFinder::MatchResult& result) {
       element_type_as_string =
           rw.getRewrittenText(element_loc.getSourceRange());
     }
-    replacement_text =
-        llvm::formatv("std::array<{0},{1}>{2}", element_type_as_string,
-                      array_size_as_string, array_variable_as_string);
+
+    const clang::InitListExpr* init_list_expr =
+        GetArrayInitList(array_variable);
+
+    // When replacing an array with std::array<>, we need one more {}-s.
+    // The replacement seems to work:
+    //   `int arr[] = {1, 2, 3};` => `std::array<int, 3> arr = {1, 2, 3};`
+    // (`std::array<int, 3> arr = {{1, 2, 3}};` also works)
+    // But when replacing std::vector's array, e.g.
+    //   `std::vector<int> arr[2] = {{1}, {2}};`
+    // we have to replace it with:
+    //   `std::array<std::vector<int>, 2> = {{{1}, {2}}};`
+    if (!element_type->isBuiltinType() && init_list_expr) {
+      clang::Rewriter rw(source_manager, ast_context.getLangOpts());
+      std::string init_expr_as_string = rw.getRewrittenText(clang::SourceRange(
+          init_list_expr->getBeginLoc(), init_list_expr->getEndLoc()));
+
+      replacement_range =
+          clang::SourceRange(array_type_loc->getSourceRange().getBegin(),
+                             init_list_expr->getEndLoc().getLocWithOffset(1));
+      replacement_text = llvm::formatv(
+          "std::array<{0},{1}> {2} = {{{3}}", element_type_as_string,
+          array_size_as_string, array_variable_as_string, init_expr_as_string);
+    } else {
+      replacement_text =
+          llvm::formatv("std::array<{0},{1}> {2}", element_type_as_string,
+                        array_size_as_string, array_variable_as_string);
+    }
   }
 
   auto replacement_and_include_pair = GetReplacementAndIncludeDirectives(
