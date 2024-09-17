@@ -3094,7 +3094,7 @@
   {
     "name": "enable-educational-tip-module",
     "owners": [ "hanxi@chromium.org", "xinyiji@chromium.org", "clank-start@chromium.org" ],
-    "expiry_milestone": 130
+    "expiry_milestone": 140
   },
   {
     "name": "enable-enterprise-profile-badging",
@@ -3452,11 +3452,6 @@
     "expiry_milestone": 160
   },
   {
-    "name": "enable-instant-start",
-    "owners": [ "hanxi@chromium.org", "wychen@chromium.org" ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "enable-ipad-feed-ghost-cards",
     "owners": [ "adamta@google.com", "chrome-feed-fundamentals@google.com" ],
     "expiry_milestone": 140
@@ -3627,7 +3622,7 @@
   {
     "name": "enable-magic-stack-android",
     "owners": [ "hanxi@chromium.org", "xinyiji@chromium.org", "clank-start@chromium.org" ],
-    "expiry_milestone": 130
+    "expiry_milestone": 140
   },
   {
     "name": "enable-managed-configuration-web-api",
@@ -3972,7 +3967,7 @@
   {
     "name": "enable-search-resumption-module",
     "owners": ["clank-start@chromium.org","hanxi@chromium.org"],
-    "expiry_milestone": 130
+    "expiry_milestone": 140
   },
   {
     "name": "enable-segmentation-internals-survey",
@@ -4073,7 +4068,7 @@
   {
     "name": "enable-start-surface-return-time",
     "owners": [ "hanxi@chromium.org", "clank-start@chromium.org" ],
-    "expiry_milestone": 140
+    "expiry_milestone": 150
   },
   {
     "name": "enable-surface-control",
@@ -4126,7 +4121,7 @@
   {
     "name": "enable-tab-resumption-module",
     "owners": ["clank-start@chromium.org","hanxi@chromium.org","huangs@chromium.org"],
-    "expiry_milestone": 130
+    "expiry_milestone": 140
   },
   {
     "name": "enable-tab-strip-startup-refactoring",
