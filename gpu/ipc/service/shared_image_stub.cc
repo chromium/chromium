@@ -64,11 +64,11 @@ SharedImageStub::SharedImageStub(GpuChannel* channel, int32_t route_id)
     : channel_(channel),
       command_buffer_id_(
           CommandBufferIdFromChannelAndRoute(channel->client_id(), route_id)),
-      sequence_(channel->scheduler()->CreateSequence(SchedulingPriority::kLow,
-                                                     channel_->task_runner())) {
-  channel->scheduler()->CreateSyncPointClientState(
-      sequence_, CommandBufferNamespace::GPU_IO, command_buffer_id_);
-}
+      sequence_(
+          channel->scheduler()->CreateSequence(SchedulingPriority::kLow,
+                                               channel_->task_runner(),
+                                               CommandBufferNamespace::GPU_IO,
+                                               command_buffer_id_)) {}
 
 SharedImageStub::~SharedImageStub() {
   channel_->scheduler()->DestroySequence(sequence_);

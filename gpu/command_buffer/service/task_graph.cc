@@ -60,6 +60,51 @@ void FenceSyncReleaseDelegate::Reset(const SyncToken& release_upperbound) {
   release_upperbound_ = release_upperbound;
 }
 
+ScopedSyncPointClientState::ScopedSyncPointClientState(
+    TaskGraph* task_graph,
+    SequenceId sequence_id,
+    CommandBufferNamespace namespace_id,
+    CommandBufferId command_buffer_id)
+    : task_graph_(task_graph),
+      sequence_id_(sequence_id),
+      namespace_id_(namespace_id),
+      command_buffer_id_(command_buffer_id) {}
+
+ScopedSyncPointClientState::~ScopedSyncPointClientState() {
+  Reset();
+}
+
+ScopedSyncPointClientState::ScopedSyncPointClientState(
+    ScopedSyncPointClientState&& other)
+    : task_graph_(other.task_graph_),
+      sequence_id_(other.sequence_id_),
+      namespace_id_(other.namespace_id_),
+      command_buffer_id_(other.command_buffer_id_) {
+  other.task_graph_ = nullptr;
+}
+
+ScopedSyncPointClientState& ScopedSyncPointClientState::operator=(
+    ScopedSyncPointClientState&& other) {
+  if (&other != this) {
+    task_graph_ = other.task_graph_;
+    other.task_graph_ = nullptr;
+    sequence_id_ = other.sequence_id_;
+    namespace_id_ = other.namespace_id_;
+    command_buffer_id_ = other.command_buffer_id_;
+  }
+  return *this;
+}
+
+void ScopedSyncPointClientState::Reset() {
+  if (!task_graph_) {
+    return;
+  }
+
+  task_graph_->DestroySyncPointClientState(sequence_id_, namespace_id_,
+                                           command_buffer_id_);
+  task_graph_ = nullptr;
+}
+
 TaskGraph::Sequence::Task::Task(base::OnceClosure task_closure,
                                 uint32_t order_num,
                                 const SyncToken& release,
@@ -91,7 +136,9 @@ TaskGraph::Sequence::WaitFence& TaskGraph::Sequence::WaitFence::operator=(
 TaskGraph::Sequence::Sequence(
     TaskGraph* task_graph,
     base::RepeatingClosure front_task_unblocked_callback,
-    scoped_refptr<base::SingleThreadTaskRunner> validation_runner)
+    scoped_refptr<base::SingleThreadTaskRunner> validation_runner,
+    CommandBufferNamespace namespace_id,
+    CommandBufferId command_buffer_id)
     : task_graph_(task_graph),
       order_data_(task_graph_->sync_point_manager_->CreateSyncPointOrderData()),
       sequence_id_(order_data_->sequence_id()),
@@ -104,17 +151,25 @@ TaskGraph::Sequence::Sequence(
                             base::Unretained(task_graph),
                             base::Unretained(this)));
   }
+
+  if (namespace_id != CommandBufferNamespace::INVALID) {
+    sync_point_states_.push_back(
+        task_graph_->sync_point_manager()->CreateSyncPointClientState(
+            namespace_id, command_buffer_id, sequence_id_));
+  }
 }
 
 TaskGraph::Sequence::~Sequence() {
 }
 
-void TaskGraph::Sequence::CreateSyncPointClientState(
+ScopedSyncPointClientState TaskGraph::Sequence::CreateSyncPointClientState(
     CommandBufferNamespace namespace_id,
     CommandBufferId command_buffer_id) {
   sync_point_states_.push_back(
       task_graph_->sync_point_manager()->CreateSyncPointClientState(
           namespace_id, command_buffer_id, sequence_id_));
+  return ScopedSyncPointClientState(task_graph_, sequence_id_, namespace_id,
+                                    command_buffer_id);
 }
 
 uint32_t TaskGraph::Sequence::AddTask(TaskCallback task_callback,
@@ -276,6 +331,24 @@ void TaskGraph::Sequence::Destroy() {
   order_data_->Destroy();
 }
 
+scoped_refptr<SyncPointClientState>
+TaskGraph::Sequence::TakeSyncPointClientState(
+    CommandBufferNamespace namespace_id,
+    CommandBufferId command_buffer_id) {
+  scoped_refptr<SyncPointClientState> sync_point_state;
+  for (auto iter = sync_point_states_.begin(); iter != sync_point_states_.end();
+       ++iter) {
+    if ((*iter)->namespace_id() == namespace_id &&
+        (*iter)->command_buffer_id() == command_buffer_id) {
+      sync_point_state = std::move(*iter);
+      sync_point_states_.erase(iter);
+      break;
+    }
+  }
+
+  return sync_point_state;
+}
+
 void TaskGraph::Sequence::UpdateValidationTimer() {
   if (!task_graph_->graph_validation_enabled()) {
     return;
@@ -332,10 +405,20 @@ TaskGraph::~TaskGraph() {
 SequenceId TaskGraph::CreateSequence(
     base::RepeatingClosure front_task_unblocked_callback,
     scoped_refptr<base::SingleThreadTaskRunner> validation_runner) {
+  return CreateSequence(
+      std::move(front_task_unblocked_callback), std::move(validation_runner),
+      CommandBufferNamespace::INVALID, /*command_buffer_id=*/{});
+}
+
+SequenceId TaskGraph::CreateSequence(
+    base::RepeatingClosure front_task_unblocked_callback,
+    scoped_refptr<base::SingleThreadTaskRunner> validation_runner,
+    CommandBufferNamespace namespace_id,
+    CommandBufferId command_buffer_id) {
   base::AutoLock auto_lock(lock_);
-  auto sequence =
-      std::make_unique<Sequence>(this, std::move(front_task_unblocked_callback),
-                                 std::move(validation_runner));
+  auto sequence = std::make_unique<Sequence>(
+      this, std::move(front_task_unblocked_callback),
+      std::move(validation_runner), namespace_id, command_buffer_id);
   SequenceId id = sequence->sequence_id();
   sequence_map_.emplace(id, std::move(sequence));
   return id;
@@ -347,13 +430,14 @@ void TaskGraph::AddSequence(std::unique_ptr<Sequence> sequence) {
   sequence_map_.emplace(id, std::move(sequence));
 }
 
-void TaskGraph::CreateSyncPointClientState(SequenceId sequence_id,
-                                           CommandBufferNamespace namespace_id,
-                                           CommandBufferId command_buffer_id) {
+ScopedSyncPointClientState TaskGraph::CreateSyncPointClientState(
+    SequenceId sequence_id,
+    CommandBufferNamespace namespace_id,
+    CommandBufferId command_buffer_id) {
   base::AutoLock auto_lock(lock_);
   auto* sequence = GetSequence(sequence_id);
   CHECK(sequence);
-  sequence->CreateSyncPointClientState(namespace_id, command_buffer_id);
+  return sequence->CreateSyncPointClientState(namespace_id, command_buffer_id);
 }
 
 void TaskGraph::DestroySequence(SequenceId sequence_id) {
@@ -392,6 +476,25 @@ void TaskGraph::SyncTokenFenceReleased(const SyncToken& sync_token,
 
   if (sequence) {
     sequence->RemoveWaitFence(sync_token, order_num, release_sequence_id);
+  }
+}
+
+void TaskGraph::DestroySyncPointClientState(SequenceId sequence_id,
+                                            CommandBufferNamespace namespace_id,
+                                            CommandBufferId command_buffer_id) {
+  scoped_refptr<SyncPointClientState> sync_point_client_state;
+  {
+    base::AutoLock auto_lock(lock_);
+    Sequence* sequence = GetSequence(sequence_id);
+
+    if (sequence) {
+      sync_point_client_state =
+          sequence->TakeSyncPointClientState(namespace_id, command_buffer_id);
+    }
+  }
+
+  if (sync_point_client_state) {
+    sync_point_client_state->Destroy();
   }
 }
 
