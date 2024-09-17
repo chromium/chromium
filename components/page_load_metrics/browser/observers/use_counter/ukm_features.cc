@@ -378,7 +378,6 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
           WebFeature::kUserFeatureNuxtThirdPartiesGTM,
           WebFeature::kUserFeatureNuxtThirdPartiesYouTubeEmbed,
           WebFeature::kUserFeatureNuxtThirdPartiesGoogleMaps,
-          WebFeature::kMouseDragOnCancelledMouseMove,
           WebFeature::
               kStorageAccessAPI_requestStorageAccess_BeyondCookies_SharedWorker,
           WebFeature::

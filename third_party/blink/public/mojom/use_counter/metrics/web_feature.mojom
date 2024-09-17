@@ -4116,7 +4116,7 @@ enum WebFeature {
   kAutoSizesNonLazy = 4751,
   kOBSOLETE_TrustedTypesIntrospection = 4752,
   kTrustedTypesIsCheck = 4753,
-  kMouseDragOnCancelledMouseMove = 4754,
+  kOBSOLETE_MouseDragOnCancelledMouseMove = 4754,
   // The items above roughly this point are available in the M121 branch.
 
   kFedCmDomainHint = 4755,

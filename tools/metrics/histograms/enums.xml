@@ -10569,7 +10569,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4751" label="AutoSizesNonLazy"/>
   <int value="4752" label="OBSOLETE_TrustedTypesIntrospection"/>
   <int value="4753" label="TrustedTypesIsCheck"/>
-  <int value="4754" label="MouseDragOnCancelledMouseMove"/>
+  <int value="4754" label="OBSOLETE_MouseDragOnCancelledMouseMove"/>
   <int value="4755" label="FedCmDomainHint"/>
   <int value="4756" label="LCPImageWasLazy"/>
   <int value="4757" label="EventTargetOnObservable"/>

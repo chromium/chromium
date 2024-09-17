@@ -2761,12 +2761,6 @@
       base_feature: "none",
       is_protected_feature: true,
     },
-    // crbug.com/40078978: Allow mouse-drag text selection even when mousemove
-    // event is cancelled.
-    {
-      name: "MouseDragOnCancelledMouseMove",
-      status: "stable",
-    },
     // Move the selection to the last position in the list item. See
     // https://crbug.com/331841851
     {
