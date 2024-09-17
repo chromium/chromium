@@ -13,7 +13,10 @@ import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.components.search_engines.SearchEngineChoiceService;
+import org.chromium.components.search_engines.SearchEngineChoiceService.RefreshReason;
 import org.chromium.components.search_engines.SearchEnginesFeatureUtils;
 
 import java.lang.annotation.Retention;
@@ -54,9 +57,11 @@ class ChoiceDialogMediator {
 
     private static final String TAG = "ChoiceDialogMediator";
 
+    private final ActivityLifecycleDispatcher mLifecycleDispatcher;
     private final SearchEngineChoiceService mSearchEngineChoiceService;
     private final ObservableSupplier<Boolean> mIsDeviceChoiceRequiredSupplier;
     private final Callback<Boolean> mIsDeviceChoiceRequiredObserver;
+    private final PauseResumeWithNativeObserver mActivityLifecycleObserver;
 
     private @DialogType int mDialogType = DialogType.UNKNOWN;
 
@@ -88,7 +93,10 @@ class ChoiceDialogMediator {
      * @param searchEngineChoiceService The service backing the dialog. It is used to determine
      *     whether it needs to be shown, process user actions, etc.
      */
-    ChoiceDialogMediator(SearchEngineChoiceService searchEngineChoiceService) {
+    ChoiceDialogMediator(
+            ActivityLifecycleDispatcher lifecycleDispatcher,
+            SearchEngineChoiceService searchEngineChoiceService) {
+        mLifecycleDispatcher = lifecycleDispatcher;
         mSearchEngineChoiceService = searchEngineChoiceService;
         mIsDeviceChoiceRequiredSupplier =
                 searchEngineChoiceService.getIsDeviceChoiceRequiredSupplier();
@@ -96,6 +104,18 @@ class ChoiceDialogMediator {
         // Need to store the lambda reference. As it changes on subsequent calls, it would otherwise
         // be impossible to remove the observer.
         mIsDeviceChoiceRequiredObserver = this::onIsDeviceChoiceRequiredChanged;
+
+        mActivityLifecycleObserver =
+                new PauseResumeWithNativeObserver() {
+                    @Override
+                    public void onResumeWithNative() {
+                        searchEngineChoiceService.refreshDeviceChoiceRequiredNow(
+                                RefreshReason.APP_RESUME);
+                    }
+
+                    @Override
+                    public void onPauseWithNative() {}
+                };
     }
 
     /**
@@ -123,6 +143,7 @@ class ChoiceDialogMediator {
                     });
         }
         mIsDeviceChoiceRequiredSupplier.addObserver(mIsDeviceChoiceRequiredObserver);
+        mLifecycleDispatcher.register(mActivityLifecycleObserver);
     }
 
     private void destroy() {
@@ -132,6 +153,7 @@ class ChoiceDialogMediator {
         var delegate = mDelegate;
         mDelegate = null;
 
+        mLifecycleDispatcher.unregister(mActivityLifecycleObserver);
         mIsDeviceChoiceRequiredSupplier.removeObserver(mIsDeviceChoiceRequiredObserver);
         mDialogType = DialogType.UNKNOWN;
 
@@ -177,7 +199,6 @@ class ChoiceDialogMediator {
     @MainThread
     private void onIsDeviceChoiceRequiredChanged(@Nullable Boolean isDeviceChoiceRequired) {
         ThreadUtils.checkUiThread();
-
         assert mDelegate != null;
         boolean wasDialogShown = mDialogAddedTimeMillis != null;
         boolean wasDialogDismissed = wasDialogShown && mDialogType == DialogType.UNKNOWN;

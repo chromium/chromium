@@ -166,11 +166,11 @@ public class SearchEngineChoiceServiceUnitTest {
 
     @Test
     public void testGetIsDeviceChoiceRequiredSupplier() {
+        ObservableSupplier<Boolean> fakeSupplier = new ObservableSupplierImpl<>();
+        doReturn(fakeSupplier).when(mDelegate).getIsDeviceChoiceRequiredSupplier();
+
         var service = new SearchEngineChoiceService(mDelegate);
 
-        ObservableSupplier<Boolean> fakeSupplier = new ObservableSupplierImpl<>();
-
-        doReturn(fakeSupplier).when(mDelegate).getIsDeviceChoiceRequiredSupplier();
         var actualSupplier = service.getIsDeviceChoiceRequiredSupplier();
 
         if (mIsClayBlockingEnabled) {
@@ -186,12 +186,10 @@ public class SearchEngineChoiceServiceUnitTest {
     @Test
     public void testGetIsDeviceChoiceRequiredSupplier_darkLaunch() {
         configureClayBlockingFeature(mIsClayBlockingEnabled, /* isDarkLaunchEnabled= */ true);
+        ObservableSupplierImpl<Boolean> fakeSupplier = new ObservableSupplierImpl<>();
+        doReturn(fakeSupplier).when(mDelegate).getIsDeviceChoiceRequiredSupplier();
 
         var service = new SearchEngineChoiceService(mDelegate);
-
-        ObservableSupplierImpl<Boolean> fakeSupplier = new ObservableSupplierImpl<>();
-
-        doReturn(fakeSupplier).when(mDelegate).getIsDeviceChoiceRequiredSupplier();
         var actualSupplier = service.getIsDeviceChoiceRequiredSupplier();
 
         if (mIsClayBlockingEnabled) {

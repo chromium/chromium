@@ -101,6 +101,13 @@ public class FakeSearchEngineCountryDelegate extends SearchEngineCountryDelegate
     }
 
     @Override
+    public void refreshDeviceChoiceRequiredNow(int reason) {
+        if (mEnableLogging) {
+            Log.i(TAG, "refreshDeviceChoiceRequiredNow()");
+        }
+    }
+
+    @Override
     @MainThread
     public void launchDeviceChoiceScreens() {
         ThreadUtils.assertOnUiThread();
@@ -138,7 +145,13 @@ public class FakeSearchEngineCountryDelegate extends SearchEngineCountryDelegate
                 // no provided response, but emit the `true` value halfway to the deadline.
                 mIsChoiceRequired = new ObservableSupplierImpl<>();
                 ThreadUtils.postOnUiThreadDelayed(
-                        () -> mIsChoiceRequired.set(true), dialogTimeoutMillis / 2);
+                        () -> {
+                            if (mEnableLogging) {
+                                Log.i(TAG, "triggering the delayed supplier response.");
+                            }
+                            mIsChoiceRequired.set(true);
+                        },
+                        dialogTimeoutMillis / 2);
             } else {
                 mIsChoiceRequired = new ObservableSupplierImpl<>(true);
             }

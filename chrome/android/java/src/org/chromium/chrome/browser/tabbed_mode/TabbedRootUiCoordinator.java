@@ -1223,7 +1223,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
      */
     private boolean maybeShowRequiredPromptsAndPromos(Profile profile, boolean intentWithEffect) {
         if (SearchEnginesFeatures.isEnabled(SearchEnginesFeatures.CLAY_BLOCKING)) {
-            if (ChoiceDialogCoordinator.maybeShow(mActivity, mModalDialogManagerSupplier.get())) {
+            if (ChoiceDialogCoordinator.maybeShow(
+                    mActivity, mModalDialogManagerSupplier.get(), mActivityLifecycleDispatcher)) {
                 return true;
             }
         }

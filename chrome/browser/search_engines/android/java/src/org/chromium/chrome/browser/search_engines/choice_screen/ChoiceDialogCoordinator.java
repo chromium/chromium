@@ -16,6 +16,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.search_engines.R;
 import org.chromium.chrome.browser.search_engines.choice_screen.ChoiceDialogMediator.DialogType;
 import org.chromium.components.search_engines.SearchEngineChoiceService;
@@ -73,12 +74,16 @@ public class ChoiceDialogCoordinator implements ChoiceDialogMediator.Delegate {
                 public void handleOnBackPressed() {}
             };
 
-    public static boolean maybeShow(Context context, ModalDialogManager modalDialogManager) {
+    public static boolean maybeShow(
+            Context context,
+            ModalDialogManager modalDialogManager,
+            ActivityLifecycleDispatcher lifecycleDispatcher) {
         return maybeShowInternal(
                 searchEngineChoiceService ->
                         new ChoiceDialogCoordinator(
                                 new ViewHolderImpl(context),
                                 modalDialogManager,
+                                lifecycleDispatcher,
                                 searchEngineChoiceService));
     }
 
@@ -100,6 +105,7 @@ public class ChoiceDialogCoordinator implements ChoiceDialogMediator.Delegate {
     ChoiceDialogCoordinator(
             ViewHolder viewHolder,
             ModalDialogManager modalDialogManager,
+            ActivityLifecycleDispatcher lifecycleDispatcher,
             @NonNull SearchEngineChoiceService searchEngineChoiceService) {
         mViewHolder = viewHolder;
         mModel =
@@ -117,7 +123,7 @@ public class ChoiceDialogCoordinator implements ChoiceDialogMediator.Delegate {
                                 })
                         .build();
         mModalDialogManager = modalDialogManager;
-        mMediator = new ChoiceDialogMediator(searchEngineChoiceService);
+        mMediator = new ChoiceDialogMediator(lifecycleDispatcher, searchEngineChoiceService);
 
         mMediator.startObserving(/* delegate= */ this);
     }

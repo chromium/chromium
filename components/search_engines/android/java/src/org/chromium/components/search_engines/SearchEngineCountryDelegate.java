@@ -49,6 +49,10 @@ public abstract class SearchEngineCountryDelegate {
         return new ObservableSupplierImpl<>(false);
     }
 
+    /** Proxy for {@link SearchEngineChoiceService#refreshDeviceChoiceRequiredNow}. */
+    @MainThread
+    public void refreshDeviceChoiceRequiredNow(int reason) {}
+
     /** Proxy for {@link SearchEngineChoiceService#launchDeviceChoiceScreens()}. */
     @MainThread
     public void launchDeviceChoiceScreens() {}
