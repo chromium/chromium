@@ -105,6 +105,7 @@
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/resource/resource_bundle.h"
 #import "url/gurl.h"
+
 namespace {
 // The tag describing the product name with a placeholder for the version.
 const char kProductTagWithPlaceholder[] = "CriOS/%s";
@@ -329,7 +330,7 @@ std::vector<web::JavaScriptFeature*> ChromeWebClient::GetJavaScriptFeatures(
 
   ProfileIOS* profile = ProfileIOS::FromBrowserState(browser_state);
   JavaScriptConsoleFeature* java_script_console_feature =
-      JavaScriptConsoleFeatureFactory::GetInstance()->GetForProfile(profile);
+      JavaScriptConsoleFeatureFactory::GetForProfile(profile);
   features.push_back(java_script_console_feature);
 
   features.push_back(print_feature.get());

@@ -11,10 +11,6 @@
 
 class JavaScriptConsoleFeature;
 
-namespace web {
-class BrowserState;
-}  // namespace web
-
 // Singleton that owns all JavaScriptConsoleFeatures and associates them with
 // a profile.
 class JavaScriptConsoleFeatureFactory : public BrowserStateKeyedServiceFactory {

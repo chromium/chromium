@@ -114,7 +114,7 @@ void InspectDOMHandler::SetLoggingEnabled(bool enabled) {
 
   ProfileIOS* profile = ProfileIOS::FromWebUIIOS(web_ui());
   JavaScriptConsoleFeature* feature =
-      JavaScriptConsoleFeatureFactory::GetInstance()->GetForProfile(profile);
+      JavaScriptConsoleFeatureFactory::GetForProfile(profile);
 
   feature->SetDelegate(enabled ? this : nullptr);
 }
