@@ -310,8 +310,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Fingerprint.Unlock.MatchIgnoredDueToPowerButtonPress"
-    enum="BooleanIgnored" expires_after="2024-09-15">
-  <owner>ravisadineni@chromium.org</owner>
+    enum="BooleanIgnored" expires_after="2025-09-15">
+  <owner>dawidn@google.com</owner>
   <owner>chromeos-fingerprint@google.com</owner>
   <summary>
     ChromeOS only. Record when a fingerprint touch was ignored due to parallel
