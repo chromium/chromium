@@ -14,14 +14,14 @@ function appendTextForTesting(text: string) {
 }
 
 export function buildDataSharingSdk() {
-  return new DataSharingSdkImpl();
+  return DataSharingSdkImpl.getInstance();
 }
 
 window.data_sharing_sdk = {
   buildDataSharingSdk,
 };
 
-class DataSharingSdkImpl implements DataSharingSdk {
+export class DataSharingSdkImpl implements DataSharingSdk {
   createGroup(
       _params: CreateGroupParams,
       ): Promise<{result?: CreateGroupResult, status: Code}> {
@@ -102,4 +102,15 @@ class DataSharingSdkImpl implements DataSharingSdk {
   // Setup Helpers
   setOauthAccessToken(_params: {accessToken: string}): void {}
   updateClearcut(_params: {enabled: boolean}): void {}
+
+  static getInstance(): DataSharingSdk {
+    return dataSharingSdkInstance ||
+        (dataSharingSdkInstance = new DataSharingSdkImpl());
+  }
+
+  static setInstance(obj: DataSharingSdk) {
+    dataSharingSdkInstance = obj;
+  }
 }
+
+let dataSharingSdkInstance: DataSharingSdk|null = null;

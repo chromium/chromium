@@ -8,6 +8,10 @@ build_webui_tests("build") {
   is_chrome_untrusted = true
   files = [ "mojom_conversion_utils_test.ts" ]
 
+  if (!is_chrome_branded) {
+    files += [ "data_sharing_test.ts" ]
+  }
+
   ts_path_mappings =
       [ "chrome-untrusted://data-sharing/*|" +
         rebase_path("$root_gen_dir/chrome/browser/resources/data_sharing/tsc/*",

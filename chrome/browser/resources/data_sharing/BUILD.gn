@@ -8,6 +8,9 @@ import("//ui/webui/resources/tools/generate_grd.gni")
 if (is_chrome_branded) {
   preprocess_folder = "$target_gen_dir/preprocessed"
 }
+
+html_to_wrapper_template = "native"
+
 build_webui("build") {
   grd_prefix = "data_sharing"
   ts_composite = true
@@ -33,9 +36,10 @@ build_webui("build") {
     "data_sharing_dev.css",
   ]
 
+  web_component_files = [ "data_sharing_app.ts" ]
+
   non_web_component_files = [
     "browser_proxy.ts",
-    "data_sharing.ts",
     "data_sharing_api.ts",
     "mojom_conversion_utils.ts",
     "data_sharing_sdk_types.ts",
