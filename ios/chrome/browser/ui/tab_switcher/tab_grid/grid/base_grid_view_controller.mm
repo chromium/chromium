@@ -1784,7 +1784,9 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
       base::RecordAction(
           base::UserMetricsAction("MobileTabGridTabGroupCellTapped"));
       const TabGroup* group = itemIdentifier.tabGroupItem.tabGroup;
-      [self.delegate gridViewController:self didSelectGroup:group];
+      if (group) {
+        [self.delegate gridViewController:self didSelectGroup:group];
+      }
       break;
     }
     case GridItemType::kSuggestedActions:
