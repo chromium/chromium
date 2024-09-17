@@ -101,85 +101,57 @@ export class CertificateManagerV2Element extends
   static get properties() {
     return {
       selectedPage_: String,
-      // TODO(crbug.com/40928765): Try to clean this up so that default values
-      // don't need to be repeated for each subpage.
       enterpriseSubpageLists_: {
-        type: Array,
-        value: () => {
+        type: Array<SubpageCertificateList>,
+        value: (): SubpageCertificateList[] => {
           return [
             {
               headerText: loadTimeData.getString(
                   'certificateManagerV2TrustedCertsList'),
               certSource: CertificateSource.kEnterpriseTrustedCerts,
-              hideExport: false,
-              showImport: false,
-              showImportAndBind: false,
-              hideIfEmpty: false,
-              hideHeader: false,
             },
             {
               headerText: loadTimeData.getString(
                   'certificateManagerV2IntermediateCertsList'),
               certSource: CertificateSource.kEnterpriseIntermediateCerts,
-              hideExport: false,
-              showImport: false,
-              showImportAndBind: false,
               hideIfEmpty: true,
-              hideHeader: false,
             },
             {
               headerText: loadTimeData.getString(
                   'certificateManagerV2DistrustedCertsList'),
               certSource: CertificateSource.kEnterpriseDistrustedCerts,
-              hideExport: false,
-              showImport: false,
-              showImportAndBind: false,
               hideIfEmpty: true,
-              hideHeader: false,
             },
           ];
         },
       },
       platformSubpageLists_: {
-        type: Array,
-        value: () => {
+        type: Array<SubpageCertificateList>,
+        value: (): SubpageCertificateList[] => {
           return [
             {
               headerText: loadTimeData.getString(
                   'certificateManagerV2TrustedCertsList'),
               certSource: CertificateSource.kPlatformUserTrustedCerts,
-              hideExport: false,
-              showImport: false,
-              showImportAndBind: false,
-              hideIfEmpty: false,
-              hideHeader: false,
             },
             {
               headerText: loadTimeData.getString(
                   'certificateManagerV2IntermediateCertsList'),
               certSource: CertificateSource.kPlatformUserIntermediateCerts,
-              hideExport: false,
-              showImport: false,
-              showImportAndBind: false,
               hideIfEmpty: true,
-              hideHeader: false,
             },
             {
               headerText: loadTimeData.getString(
                   'certificateManagerV2DistrustedCertsList'),
               certSource: CertificateSource.kPlatformUserDistrustedCerts,
-              hideExport: false,
-              showImport: false,
-              showImportAndBind: false,
               hideIfEmpty: true,
-              hideHeader: false,
             },
           ];
         },
       },
 
       clientPlatformSubpageLists_: {
-        type: Array,
+        type: Array<SubpageCertificateList>,
         computed: 'computeClientPlatformSubpageLists_(showClientCertImport_)',
       },
 
@@ -381,7 +353,6 @@ export class CertificateManagerV2Element extends
         hideExport: true,
         showImport: this.showClientCertImport_,
         showImportAndBind: this.showClientCertImport_,
-        hideIfEmpty: false,
         // TODO(crbug.com/40928765): Figure out how we want to display the
         // import buttons/etc on this subpage. For now just show the header
         // when we need the import buttons to be visible.

@@ -35,12 +35,12 @@ export interface CertificateSubpageV2Element {
 
 export class SubpageCertificateList {
   headerText: string;
-  hideExport: boolean;
   certSource: CertificateSource;
-  showImport: boolean;
-  showImportAndBind: boolean;
-  hideIfEmpty: boolean;
-  hideHeader: boolean;
+  hideExport?: boolean;
+  showImport?: boolean;
+  showImportAndBind?: boolean;
+  hideIfEmpty?: boolean;
+  hideHeader?: boolean;
 }
 
 const CertificateSubpageV2ElementBase = I18nMixin(PolymerElement);
