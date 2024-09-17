@@ -1485,8 +1485,8 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Conversions.{ReportType}.ReportBodySize"
-    enum="ConversionReportSendRetryCount" expires_after="2025-03-03">
+<histogram name="Conversions.{ReportType}.ReportBodySize" units="bytes"
+    expires_after="2025-03-03">
   <owner>linnan@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
