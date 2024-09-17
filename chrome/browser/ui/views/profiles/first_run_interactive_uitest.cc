@@ -932,8 +932,14 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest,
       ProfilePicker::FirstRunExitStatus::kCompleted, 1);
 }
 
+// TODO(crbug.com/366119368): Re-enable this test
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_DeclineProfileManagement DISABLED_DeclineProfileManagement
+#else
+#define MAYBE_DeclineProfileManagement DeclineProfileManagement
+#endif
 IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest,
-                       DeclineProfileManagement) {
+                       MAYBE_DeclineProfileManagement) {
   base::test::TestFuture<bool> proceed_future;
 
   policy::UserPolicySigninServiceFactory::GetInstance()->SetTestingFactory(
