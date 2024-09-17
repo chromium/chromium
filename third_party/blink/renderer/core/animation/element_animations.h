@@ -116,6 +116,10 @@ class CORE_EXPORT ElementAnimations final
   bool UpdateBoxSizeAndCheckTransformAxisAlignment(const gfx::SizeF& box_size);
   bool IsIdentityOrTranslation() const;
 
+  bool HasCompositedPaintWorkletAnimation();
+
+  void RecalcCompositedStatusForKeyframeChange(Element& element,
+                                               AnimationEffect* effect);
   void RecalcCompositedStatus(Element* element, const CSSProperty& property);
 
   // TODO(crbug.com/1301961): Consider converting to an array or flat map of

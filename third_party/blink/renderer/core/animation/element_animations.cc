@@ -86,6 +86,41 @@ bool ElementAnimations::IsIdentityOrTranslation() const {
   return true;
 }
 
+bool ElementAnimations::HasCompositedPaintWorkletAnimation() {
+  return CompositedBackgroundColorStatus() ==
+             ElementAnimations::CompositedPaintStatus::kComposited ||
+         CompositedClipPathStatus() ==
+             ElementAnimations::CompositedPaintStatus::kComposited;
+}
+
+void ElementAnimations::RecalcCompositedStatusForKeyframeChange(
+    Element& element,
+    AnimationEffect* effect) {
+  if (KeyframeEffect* keyframe_effect = DynamicTo<KeyframeEffect>(effect)) {
+    if (CompositedBackgroundColorStatus() ==
+            ElementAnimations::CompositedPaintStatus::kComposited &&
+        keyframe_effect->Affects(
+            PropertyHandle(GetCSSPropertyBackgroundColor())) &&
+        element.GetLayoutObject()) {
+      SetCompositedBackgroundColorStatus(
+          ElementAnimations::CompositedPaintStatus::kNeedsRepaint);
+      element.GetLayoutObject()->SetShouldDoFullPaintInvalidation();
+    }
+
+    if (CompositedClipPathStatus() ==
+            ElementAnimations::CompositedPaintStatus::kComposited &&
+        keyframe_effect->Affects(PropertyHandle(GetCSSPropertyClipPath())) &&
+        element.GetLayoutObject()) {
+      SetCompositedClipPathStatus(
+          ElementAnimations::CompositedPaintStatus::kNeedsRepaint);
+      element.GetLayoutObject()->SetShouldDoFullPaintInvalidation();
+      // For clip paths, we also need to update the paint properties to switch
+      // from path based to mask based clip.
+      element.GetLayoutObject()->SetNeedsPaintPropertyUpdate();
+    }
+  }
+}
+
 void ElementAnimations::RecalcCompositedStatus(Element* element,
                                                const CSSProperty& property) {
   ElementAnimations::CompositedPaintStatus status =

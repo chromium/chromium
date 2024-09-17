@@ -435,13 +435,11 @@ CompositorAnimations::CheckCanStartEffectOnCompositor(
           continue;
       }
 
-      // The compositor animation for clip path animations do not snapshot the
-      // individual keyframes. Instead the keyframes are interpolated within the
-      // worklet based on the overall animation progress.
-      // TODO(crbug.com/1399323): Do this for composited background color
-      // animations as well.
+      // The compositor animation for paint worklet animations do not snapshot
+      // the individual keyframes. Instead the keyframes are interpolated within
+      // the worklet based on the overall animation progress.
       const bool needs_compositor_keyframe_value =
-          property.GetCSSProperty().PropertyID() != CSSPropertyID::kClipPath;
+          CompositedPropertyRequiresSnapshot(property);
       // If an element does not have style, then it will never have taken a
       // snapshot of its (non-existent) value for the compositor to use.
       if (needs_compositor_keyframe_value &&
@@ -968,9 +966,13 @@ void AddKeyframesForPaintWorkletAnimation(
 
 bool CompositorAnimations::CompositedPropertyRequiresSnapshot(
     const PropertyHandle& property) {
-  // TODO(crbug.com/1374390): Refactor composited animations so that
-  // custom timing functions work for bgcolor animations as well
-  return property.GetCSSProperty().PropertyID() != CSSPropertyID::kClipPath;
+  switch (property.GetCSSProperty().PropertyID()) {
+    case CSSPropertyID::kClipPath:
+    case CSSPropertyID::kBackgroundColor:
+      return false;
+    default:
+      return true;
+  }
 }
 
 void CompositorAnimations::GetAnimationOnCompositor(
@@ -1079,11 +1081,7 @@ void CompositorAnimations::GetAnimationOnCompositor(
                 : CompositorPaintWorkletInput::NativePropertyType::kClipPath;
         auto float_curve = gfx::KeyframedFloatAnimationCurve::Create();
 
-        if (CompositedPropertyRequiresSnapshot(property)) {
-          AddKeyframesToCurve(*float_curve, values);
-        } else {
-          AddKeyframesForPaintWorkletAnimation(*float_curve);
-        }
+        AddKeyframesForPaintWorkletAnimation(*float_curve);
 
         float_curve->SetTimingFunction(timing.timing_function->CloneToCC());
         float_curve->set_scaled_duration(scale);

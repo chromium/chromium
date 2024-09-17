@@ -69,6 +69,7 @@
 #include "third_party/blink/renderer/core/css/css_keyframe_rule.h"
 #include "third_party/blink/renderer/core/css/css_property_equality.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
+#include "third_party/blink/renderer/core/css/native_paint_image_generator.h"
 #include "third_party/blink/renderer/core/css/parser/css_variable_parser.h"
 #include "third_party/blink/renderer/core/css/post_style_update_scope.h"
 #include "third_party/blink/renderer/core/css/properties/computed_style_utils.h"
@@ -1520,7 +1521,8 @@ void CSSAnimations::CalculateCompositorAnimationUpdate(
 
   const ComputedStyle* old_style = animating_element.GetComputedStyle();
   if (!old_style || old_style->IsEnsuredInDisplayNone() ||
-      !old_style->HasCurrentCompositableAnimation()) {
+      (!old_style->HasCurrentCompositableAnimation() &&
+       !element_animations->HasCompositedPaintWorkletAnimation())) {
     return;
   }
 
@@ -1554,8 +1556,13 @@ void CSSAnimations::CalculateCompositorAnimationUpdate(
 
   for (auto& entry : element_animations->Animations()) {
     Animation& animation = *entry.key;
-    if (snapshot(animation.effect()))
+    if (snapshot(animation.effect())) {
       update.UpdateCompositorKeyframes(&animation);
+    } else if (NativePaintImageGenerator::
+                   NativePaintWorkletAnimationsEnabled()) {
+      element_animations->RecalcCompositedStatusForKeyframeChange(
+          element, animation.effect());
+    }
   }
 
   for (auto& entry : element_animations->GetWorkletAnimations()) {
