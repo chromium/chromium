@@ -51,11 +51,6 @@ WhatsNewEdition::WhatsNewEdition(const base::Feature& feature,
 WhatsNewEdition::WhatsNewEdition(WhatsNewEdition&& other) = default;
 WhatsNewEdition::~WhatsNewEdition() = default;
 
-bool WhatsNewEdition::HasActiveFeature() const {
-  return base::FeatureList::IsEnabled(*feature_) &&
-         feature_->default_state == base::FEATURE_DISABLED_BY_DEFAULT;
-}
-
 bool WhatsNewEdition::IsFeatureEnabled() const {
   return base::FeatureList::IsEnabled(*feature_);
 }
@@ -114,7 +109,7 @@ const std::vector<std::string_view> WhatsNewRegistry::GetActiveFeatureNames()
     // Only request other unused editions if there was not one shown during
     // this version.
     for (const WhatsNewEdition& edition : editions_) {
-      if (edition.HasActiveFeature() &&
+      if (edition.IsFeatureEnabled() &&
           feature_names.size() < kRequestEntropyLimit &&
           !storage_service_->IsUsedEdition(edition.GetFeatureName())) {
         feature_names.emplace_back(edition.GetFeatureName());
