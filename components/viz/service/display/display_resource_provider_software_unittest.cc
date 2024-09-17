@@ -21,12 +21,12 @@
 #include "base/memory/shared_memory_mapping.h"
 #include "build/build_config.h"
 #include "components/viz/client/client_resource_provider.h"
-#include "components/viz/common/resources/bitmap_allocation.h"
 #include "components/viz/common/resources/release_callback.h"
 #include "components/viz/common/resources/returned_resource.h"
-#include "components/viz/common/resources/shared_bitmap.h"
-#include "components/viz/service/display/shared_bitmap_manager.h"
-#include "components/viz/test/test_shared_bitmap_manager.h"
+#include "components/viz/service/gl/gpu_service_impl.h"
+#include "components/viz/test/test_in_process_context_provider.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
+#include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/service/scheduler.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "gpu/command_buffer/service/sync_point_manager.h"
@@ -45,7 +45,10 @@ namespace {
 
 class MockReleaseCallback {
  public:
-  MOCK_METHOD2(Released, void(const gpu::SyncToken& token, bool lost));
+  MOCK_METHOD3(Released,
+               void(scoped_refptr<gpu::ClientSharedImage> shared_image,
+                    const gpu::SyncToken& token,
+                    bool lost));
 };
 
 static void CollectResources(std::vector<ReturnedResource>* array,
@@ -54,62 +57,73 @@ static void CollectResources(std::vector<ReturnedResource>* array,
                 std::make_move_iterator(returned.end()));
 }
 
-static SharedBitmapId CreateAndFillSharedBitmap(SharedBitmapManager* manager,
-                                                const gfx::Size& size,
-                                                SharedImageFormat format,
-                                                uint32_t value) {
-  SharedBitmapId shared_bitmap_id = SharedBitmap::GenerateId();
-
-  base::MappedReadOnlyRegion shm =
-      bitmap_allocation::AllocateSharedBitmap(size, format);
-  manager->ChildAllocatedSharedBitmap(shm.region.Map(), shared_bitmap_id);
-  base::span<uint32_t> span =
-      shm.mapping.GetMemoryAsSpan<uint32_t>(size.GetArea());
-  std::fill(span.begin(), span.end(), value);
-  return shared_bitmap_id;
-}
-
 class DisplayResourceProviderSoftwareTest : public testing::Test {
  public:
-  DisplayResourceProviderSoftwareTest()
-      : shared_bitmap_manager_(std::make_unique<TestSharedBitmapManager>()),
-        shared_image_manager_(std::make_unique<gpu::SharedImageManager>()),
-        sync_point_manager_(std::make_unique<gpu::SyncPointManager>()),
-        resource_provider_(std::make_unique<DisplayResourceProviderSoftware>(
-            shared_bitmap_manager_.get(),
-            shared_image_manager_.get(),
-            sync_point_manager_.get(),
-            gpu_scheduler_.get())),
-        child_resource_provider_(std::make_unique<ClientResourceProvider>()) {}
+  DisplayResourceProviderSoftwareTest() = default;
 
   ~DisplayResourceProviderSoftwareTest() override {
     child_resource_provider_->ShutdownAndReleaseAllResources();
   }
 
+  void InitializeProvider() {
+    auto context_provider = base::MakeRefCounted<TestInProcessContextProvider>(
+        TestContextType::kSoftwareRaster, /*support_locking=*/false);
+    gpu::ContextResult result = context_provider->BindToCurrentSequence();
+    CHECK_EQ(result, gpu::ContextResult::kSuccess);
+    auto* gpu_service = context_provider->GpuService();
+    child_context_provider_ = std::move(context_provider);
+
+    resource_provider_ = std::make_unique<DisplayResourceProviderSoftware>(
+        /*shared_bitmap_manager=*/nullptr, gpu_service->shared_image_manager(),
+        gpu_service->sync_point_manager(), gpu_service->gpu_scheduler());
+
+    child_resource_provider_ = std::make_unique<ClientResourceProvider>();
+  }
+
+  ResourceId AllocateAndFillSoftwareResource(
+      MockReleaseCallback& release_callback,
+      const gfx::Size& size,
+      const uint32_t value) {
+    auto* shared_image_interface =
+        child_context_provider_->SharedImageInterface();
+    auto shared_image_mapping = shared_image_interface->CreateSharedImage(
+        {SinglePlaneFormat::kBGRA_8888, size, gfx::ColorSpace(),
+         gpu::SHARED_IMAGE_USAGE_CPU_WRITE,
+         "DisplayResourceProviderSoftwareTest"});
+
+    base::span<uint32_t> span =
+        shared_image_mapping.mapping.GetMemoryAsSpan<uint32_t>(size.GetArea());
+    std::fill(span.begin(), span.end(), value);
+
+    auto transferable_resource = TransferableResource::MakeSoftwareSharedImage(
+        shared_image_mapping.shared_image,
+        shared_image_interface->GenVerifiedSyncToken(), size,
+        SinglePlaneFormat::kBGRA_8888,
+        TransferableResource::ResourceSource::kTileRasterTask);
+
+    auto callback = base::BindOnce(
+        &MockReleaseCallback::Released, base::Unretained(&release_callback),
+        std::move(shared_image_mapping.shared_image));
+
+    return child_resource_provider_->ImportResource(
+        std::move(transferable_resource), std::move(callback));
+  }
+
  protected:
-  const std::unique_ptr<TestSharedBitmapManager> shared_bitmap_manager_;
-  const std::unique_ptr<gpu::SharedImageManager> shared_image_manager_;
-  const std::unique_ptr<gpu::SyncPointManager> sync_point_manager_;
-  const std::unique_ptr<gpu::Scheduler> gpu_scheduler_;
-  const std::unique_ptr<DisplayResourceProviderSoftware> resource_provider_;
-  const std::unique_ptr<ClientResourceProvider> child_resource_provider_;
+  scoped_refptr<RasterContextProvider> child_context_provider_;
+  std::unique_ptr<DisplayResourceProviderSoftware> resource_provider_;
+  std::unique_ptr<ClientResourceProvider> child_resource_provider_;
 };
 
 TEST_F(DisplayResourceProviderSoftwareTest, ReadSoftwareResources) {
+  InitializeProvider();
+
   gfx::Size size(64, 64);
-  SharedImageFormat format = SinglePlaneFormat::kRGBA_8888;
   const uint32_t kBadBeef = 0xbadbeef;
-  SharedBitmapId shared_bitmap_id = CreateAndFillSharedBitmap(
-      shared_bitmap_manager_.get(), size, format, kBadBeef);
 
-  auto resource = TransferableResource::MakeSoftwareSharedBitmap(
-      shared_bitmap_id, gpu::SyncToken(), size, format);
-
-  MockReleaseCallback release;
-  ResourceId resource_id = child_resource_provider_->ImportResource(
-      resource, base::BindOnce(&MockReleaseCallback::Released,
-                               base::Unretained(&release)));
-  EXPECT_NE(kInvalidResourceId, resource_id);
+  MockReleaseCallback release_callback;
+  ResourceId resource_id =
+      AllocateAndFillSoftwareResource(release_callback, size, kBadBeef);
 
   // Transfer resources to the parent.
   std::vector<TransferableResource> send_to_parent;
@@ -125,16 +139,22 @@ TEST_F(DisplayResourceProviderSoftwareTest, ReadSoftwareResources) {
   std::unordered_map<ResourceId, ResourceId, ResourceIdHasher> resource_map =
       resource_provider_->GetChildToParentMap(child_id);
   ResourceId mapped_resource_id = resource_map[resource_id];
-
   {
+    SkBitmap dstBitmap;
+    dstBitmap.allocPixels(SkImageInfo::Make(size.width(), size.height(),
+                                            kBGRA_8888_SkColorType,
+                                            kPremul_SkAlphaType));
+
     DisplayResourceProviderSoftware::ScopedReadLockSkImage lock(
         resource_provider_.get(), mapped_resource_id, kPremul_SkAlphaType);
     const SkImage* sk_image = lock.sk_image();
-    SkBitmap sk_bitmap;
-    sk_image->asLegacyBitmap(&sk_bitmap);
+    bool result = sk_image->readPixels(nullptr, dstBitmap.pixmap(),
+                                       /*srcX=*/0, /*srcY=*/0);
+
+    EXPECT_TRUE(result);
     EXPECT_EQ(sk_image->width(), size.width());
     EXPECT_EQ(sk_image->height(), size.height());
-    EXPECT_EQ(*sk_bitmap.getAddr32(16, 16), kBadBeef);
+    EXPECT_EQ(*dstBitmap.getAddr32(16, 16), kBadBeef);
   }
 
   EXPECT_EQ(0u, returned_to_child.size());
@@ -145,7 +165,7 @@ TEST_F(DisplayResourceProviderSoftwareTest, ReadSoftwareResources) {
   child_resource_provider_->ReceiveReturnsFromParent(
       std::move(returned_to_child));
 
-  EXPECT_CALL(release, Released(_, false));
+  EXPECT_CALL(release_callback, Released(_, _, false));
   child_resource_provider_->RemoveImportedResource(resource_id);
 }
 

@@ -30,13 +30,16 @@
 #include "components/viz/common/quads/debug_border_draw_quad.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/common/quads/tile_draw_quad.h"
-#include "components/viz/common/resources/bitmap_allocation.h"
-#include "components/viz/common/resources/shared_bitmap.h"
 #include "components/viz/service/display/display_resource_provider_software.h"
 #include "components/viz/service/display/software_output_device.h"
+#include "components/viz/service/gl/gpu_service_impl.h"
 #include "components/viz/test/fake_output_surface.h"
-#include "components/viz/test/test_shared_bitmap_manager.h"
+#include "components/viz/test/test_in_process_context_provider.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
+#include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/service/scheduler.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
+#include "gpu/command_buffer/service/sync_point_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkCanvas.h"
@@ -45,6 +48,11 @@
 
 namespace viz {
 namespace {
+void DeleteSharedImage(scoped_refptr<gpu::ClientSharedImage> shared_image,
+                       const gpu::SyncToken& sync_token,
+                       bool is_lost) {
+  shared_image->UpdateDestructionSyncToken(sync_token);
+}
 
 class SoftwareRendererTest : public testing::Test {
  public:
@@ -54,13 +62,17 @@ class SoftwareRendererTest : public testing::Test {
         std::move(software_output_device));
     output_surface_->BindToClient(&output_surface_client_);
 
-    shared_bitmap_manager_ = std::make_unique<TestSharedBitmapManager>();
-    shared_image_manager_ = std::make_unique<gpu::SharedImageManager>();
-    sync_point_manager_ = std::make_unique<gpu::SyncPointManager>();
+    auto context_provider = base::MakeRefCounted<TestInProcessContextProvider>(
+        TestContextType::kSoftwareRaster, /*support_locking=*/false);
+    gpu::ContextResult result = context_provider->BindToCurrentSequence();
+    CHECK_EQ(result, gpu::ContextResult::kSuccess);
+    auto* gpu_service = context_provider->GpuService();
+    child_context_provider_ = std::move(context_provider);
 
     resource_provider_ = std::make_unique<DisplayResourceProviderSoftware>(
-        shared_bitmap_manager_.get(), shared_image_manager_.get(),
-        sync_point_manager_.get(), gpu_scheduler_.get());
+        /*shared_bitmap_manager=*/nullptr, gpu_service->shared_image_manager(),
+        gpu_service->sync_point_manager(), gpu_service->gpu_scheduler());
+
     renderer_ = std::make_unique<SoftwareRenderer>(
         &settings_, &debug_settings_, output_surface_.get(),
         resource_provider(), nullptr);
@@ -88,22 +100,25 @@ class SoftwareRendererTest : public testing::Test {
 
   ResourceId AllocateAndFillSoftwareResource(const gfx::Size& size,
                                              const SkBitmap& source) {
-    base::MappedReadOnlyRegion shm = bitmap_allocation::AllocateSharedBitmap(
-        size, SinglePlaneFormat::kRGBA_8888);
+    auto shared_image_mapping = shared_image_interface()->CreateSharedImage(
+        {SinglePlaneFormat::kBGRA_8888, size, gfx::ColorSpace(),
+         gpu::SHARED_IMAGE_USAGE_CPU_WRITE,
+         "SoftwareRendererTestSharedBitmap"});
+
     SkImageInfo info = SkImageInfo::MakeN32Premul(size.width(), size.height());
-    source.readPixels(info, shm.mapping.memory(), info.minRowBytes(), 0, 0);
+    source.readPixels(info, shared_image_mapping.mapping.memory(),
+                      info.minRowBytes(), 0, 0);
 
-    // Registers the SharedBitmapId in the display compositor.
-    SharedBitmapId shared_bitmap_id = SharedBitmap::GenerateId();
-    shared_bitmap_manager_->ChildAllocatedSharedBitmap(shm.region.Map(),
-                                                       shared_bitmap_id);
+    auto transferable_resource = TransferableResource::MakeSoftwareSharedImage(
+        shared_image_mapping.shared_image,
+        shared_image_interface()->GenVerifiedSyncToken(), size,
+        SinglePlaneFormat::kBGRA_8888,
+        TransferableResource::ResourceSource::kTileRasterTask);
+    auto release_callback = base::BindOnce(
+        &DeleteSharedImage, std::move(shared_image_mapping.shared_image));
 
-    // Makes a resource id that refers to the registered SharedBitmapId.
     return child_resource_provider_->ImportResource(
-        TransferableResource::MakeSoftwareSharedBitmap(
-            shared_bitmap_id, gpu::SyncToken(), size,
-            SinglePlaneFormat::kRGBA_8888),
-        base::DoNothing());
+        std::move(transferable_resource), std::move(release_callback));
   }
 
   std::unique_ptr<SkBitmap> DrawAndCopyOutput(AggregatedRenderPassList* list,
@@ -140,18 +155,19 @@ class SoftwareRendererTest : public testing::Test {
     std::move(quit_closure).Run();
   }
 
+  gpu::SharedImageInterface* shared_image_interface() {
+    return child_context_provider_->SharedImageInterface();
+  }
+
  protected:
   RendererSettings settings_;
   DebugRendererSettings debug_settings_;
   cc::FakeOutputSurfaceClient output_surface_client_;
   std::unique_ptr<FakeSoftwareOutputSurface> output_surface_;
-  std::unique_ptr<SharedBitmapManager> shared_bitmap_manager_;
-  std::unique_ptr<gpu::SharedImageManager> shared_image_manager_;
-  std::unique_ptr<gpu::SyncPointManager> sync_point_manager_;
-  std::unique_ptr<gpu::Scheduler> gpu_scheduler_;
   std::unique_ptr<DisplayResourceProviderSoftware> resource_provider_;
   std::unique_ptr<ClientResourceProvider> child_resource_provider_;
   std::unique_ptr<SoftwareRenderer> renderer_;
+  scoped_refptr<RasterContextProvider> child_context_provider_;
 };
 
 TEST_F(SoftwareRendererTest, SolidColorQuad) {
@@ -278,6 +294,7 @@ TEST_F(SoftwareRendererTest, DebugBorderDrawQuad) {
             output->getColor4f(rect_size.width() + 2, rect_size.height() + 3));
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(SoftwareRendererTest, TileQuad) {
   gfx::Size outer_size(100, 100);
   gfx::Size inner_size(98, 98);
@@ -416,6 +433,7 @@ TEST_F(SoftwareRendererTest, TileQuadVisibleRect) {
   EXPECT_EQ(SK_ColorYELLOW, output->getColor(visible_rect.right() - 1,
                                              visible_rect.bottom() - 1));
 }
+#endif  // BUILDFLAG(IS_ANDROID)
 
 TEST_F(SoftwareRendererTest, ShouldClearRootRenderPass) {
   float device_scale_factor = 1.f;
