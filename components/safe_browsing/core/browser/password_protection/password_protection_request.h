@@ -71,8 +71,7 @@ class PasswordProtectionRequest
   void Cancel(bool timed_out) override;
 
   // Processes the received response.
-  void OnURLLoaderComplete(bool has_access_token,
-                           std::unique_ptr<std::string> response_body);
+  void OnURLLoaderComplete(std::unique_ptr<std::string> response_body);
 
   GURL main_frame_url() const { return main_frame_url_; }
 

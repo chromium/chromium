@@ -18,11 +18,13 @@
 #include "components/safe_browsing/core/common/features.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
 #include "crypto/sha2.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/ip_address.h"
 #include "net/base/url_util.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/mojom/cookie_access_observer.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -39,6 +41,35 @@ const char kAuthHeaderBearer[] = "Bearer ";
 
 // Represents the HTTP response code when it has not explicitly been set.
 const int kUnsetHttpResponseCode = 0;
+
+class CookieWriteLogger : public network::mojom::CookieAccessObserver {
+ public:
+  explicit CookieWriteLogger(
+      safe_browsing::SafeBrowsingAuthenticatedEndpoint endpoint)
+      : endpoint_(endpoint) {}
+
+  // network::mojom::CookieAccessObserver:
+  void OnCookiesAccessed(
+      std::vector<network::mojom::CookieAccessDetailsPtr> details) override {
+    for (const network::mojom::CookieAccessDetailsPtr& access : details) {
+      if (access->type != network::mojom::CookieAccessDetails::Type::kChange) {
+        continue;
+      }
+
+      base::UmaHistogramEnumeration(
+          "SafeBrowsing.AuthenticatedCookieResetEndpoint", endpoint_);
+    }
+  }
+
+  void Clone(mojo::PendingReceiver<network::mojom::CookieAccessObserver>
+                 listener) override {
+    mojo::MakeSelfOwnedReceiver(std::make_unique<CookieWriteLogger>(endpoint_),
+                                std::move(listener));
+  }
+
+ private:
+  safe_browsing::SafeBrowsingAuthenticatedEndpoint endpoint_;
+};
 
 }  // namespace
 
@@ -120,13 +151,12 @@ bool CanGetReputationOfUrl(const GURL& url) {
   return true;
 }
 
-void MaybeLogCookieReset(const network::SimpleURLLoader& loader,
-                         SafeBrowsingAuthenticatedEndpoint endpoint) {
-  if (loader.ResponseInfo() &&
-      loader.ResponseInfo()->headers->HasHeader("Set-Cookie")) {
-    base::UmaHistogramEnumeration(
-        "SafeBrowsing.AuthenticatedCookieResetEndpoint", endpoint);
-  }
+void LogAuthenticatedCookieResets(network::ResourceRequest& resource_request,
+                                  SafeBrowsingAuthenticatedEndpoint endpoint) {
+  resource_request.trusted_params = network::ResourceRequest::TrustedParams();
+  mojo::MakeSelfOwnedReceiver(std::make_unique<CookieWriteLogger>(endpoint),
+                              resource_request.trusted_params->cookie_observer
+                                  .InitWithNewPipeAndPassReceiver());
 }
 
 void SetAccessTokenAndClearCookieInResourceRequest(

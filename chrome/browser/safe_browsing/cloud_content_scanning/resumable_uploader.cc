@@ -109,6 +109,8 @@ void ResumableUploadRequest::SetMetadataRequestHeaders(
                              kUploadContentType);
 
   if (!access_token_.empty()) {
+    LogAuthenticatedCookieResets(
+        *request, SafeBrowsingAuthenticatedEndpoint::kDeepScanning);
     SetAccessTokenAndClearCookieInResourceRequest(request, access_token_);
   }
   request->credentials_mode = network::mojom::CredentialsMode::kOmit;
@@ -213,11 +215,6 @@ void ResumableUploadRequest::OnMetadataUploadCompleted(
     // TODO(b/322005992): Add retry logics.
     Finish(url_loader_->NetError(), response_code, std::move(response_body));
     return;
-  }
-
-  if (!access_token_.empty()) {
-    MaybeLogCookieReset(*url_loader_,
-                        SafeBrowsingAuthenticatedEndpoint::kDeepScanning);
   }
 
   // If there is an error or if the metadata check has already determined a

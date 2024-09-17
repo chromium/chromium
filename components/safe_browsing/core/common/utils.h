@@ -78,10 +78,10 @@ enum class SafeBrowsingAuthenticatedEndpoint {
   kMaxValue = kRealtimeUrlLookup,
 };
 
-// Log the SafeBrowsing.AuthenticatedCookieResetEndpoint histogram, if
-// appropriate.
-void MaybeLogCookieReset(const network::SimpleURLLoader& loader,
-                         SafeBrowsingAuthenticatedEndpoint endpoint);
+// When cookies are changed on this request, log the
+// SafeBrowsing.AuthenticatedCookieResetEndpoint histogram.
+void LogAuthenticatedCookieResets(network::ResourceRequest& resource_request,
+                                  SafeBrowsingAuthenticatedEndpoint endpoint);
 
 // Set |access_token| in |resource_request|. Remove cookies in the request
 // since we only need one identifier.

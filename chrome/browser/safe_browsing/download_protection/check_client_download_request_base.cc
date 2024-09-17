@@ -467,6 +467,9 @@ void CheckClientDownloadRequestBase::SendRequest() {
   resource_request->load_flags = net::LOAD_DISABLE_CACHE;
 
   if (!access_token_.empty()) {
+    LogAuthenticatedCookieResets(
+        *resource_request,
+        SafeBrowsingAuthenticatedEndpoint::kDownloadProtection);
     SetAccessTokenAndClearCookieInResourceRequest(resource_request.get(),
                                                   access_token_);
   }
@@ -516,11 +519,6 @@ void CheckClientDownloadRequestBase::OnURLLoaderComplete(
   }
   base::UmaHistogramSparse("SBClientDownload.DownloadRequestNetError",
                            -loader_->NetError());
-
-  if (!access_token_.empty()) {
-    MaybeLogCookieReset(*loader_,
-                        SafeBrowsingAuthenticatedEndpoint::kDownloadProtection);
-  }
 
   DownloadCheckResultReason reason = REASON_SERVER_PING_FAILED;
   DownloadCheckResult result = DownloadCheckResult::UNKNOWN;
