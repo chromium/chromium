@@ -52,7 +52,7 @@ TEST_F(VirtualDisplayUtilMacInteractiveUitest, TryCreate) {
 
 TEST_F(VirtualDisplayUtilMacInteractiveUitest, AddDisplay) {
   int64_t id = virtual_display_util_mac_->AddDisplay(
-      1, display::test::VirtualDisplayUtilMac::k1920x1080);
+      display::test::VirtualDisplayUtilMac::k1920x1080);
   EXPECT_NE(id, display::kInvalidDisplayId);
 
   display::Display d;
@@ -62,7 +62,7 @@ TEST_F(VirtualDisplayUtilMacInteractiveUitest, AddDisplay) {
 
 TEST_F(VirtualDisplayUtilMacInteractiveUitest, RemoveDisplay) {
   int64_t id = virtual_display_util_mac_->AddDisplay(
-      1, display::test::VirtualDisplayUtilMac::k1920x1080);
+      display::test::VirtualDisplayUtilMac::k1920x1080);
   int display_count = display::Screen::GetScreen()->GetNumDisplays();
   EXPECT_GT(display_count, 1);
 
@@ -82,11 +82,11 @@ TEST_F(VirtualDisplayUtilMacInteractiveUitest, HotPlug) {
   int display_count = display::Screen::GetScreen()->GetNumDisplays();
 
   virtual_display_util_mac_->AddDisplay(
-      1, display::test::VirtualDisplayUtilMac::k1920x1080);
+      display::test::VirtualDisplayUtilMac::k1920x1080);
   EXPECT_EQ(display::Screen::GetScreen()->GetNumDisplays(), display_count + 1);
 
   virtual_display_util_mac_->AddDisplay(
-      2, display::test::VirtualDisplayUtilMac::k1920x1080);
+      display::test::VirtualDisplayUtilMac::k1920x1080);
   EXPECT_EQ(display::Screen::GetScreen()->GetNumDisplays(), display_count + 2);
 
   virtual_display_util_mac_->ResetDisplays();
@@ -95,7 +95,7 @@ TEST_F(VirtualDisplayUtilMacInteractiveUitest, HotPlug) {
 
 TEST_F(VirtualDisplayUtilMacInteractiveUitest, EnsureDisplayWithResolutionHD) {
   int64_t id = virtual_display_util_mac_->AddDisplay(
-      1, display::test::VirtualDisplayUtil::k1920x1080);
+      display::test::VirtualDisplayUtil::k1920x1080);
 
   display::Display d;
   display::Screen::GetScreen()->GetDisplayWithDisplayId(id, &d);
@@ -104,7 +104,7 @@ TEST_F(VirtualDisplayUtilMacInteractiveUitest, EnsureDisplayWithResolutionHD) {
 
 TEST_F(VirtualDisplayUtilMacInteractiveUitest, EnsureDisplayWithResolutionXGA) {
   int64_t id = virtual_display_util_mac_->AddDisplay(
-      1, display::test::VirtualDisplayUtil::k1024x768);
+      display::test::VirtualDisplayUtil::k1024x768);
 
   display::Display d;
   display::Screen::GetScreen()->GetDisplayWithDisplayId(id, &d);

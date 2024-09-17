@@ -91,7 +91,7 @@ class MAYBE_PopupMultiScreenTest : public PopupTestBase,
     if ((virtual_display_util_ = display::test::VirtualDisplayUtil::TryCreate(
              display::Screen::GetScreen()))) {
       virtual_display_util_->AddDisplay(
-          1, display::test::VirtualDisplayUtil::k1024x768);
+          display::test::VirtualDisplayUtil::k1024x768);
       return true;
     }
     return false;

@@ -5483,33 +5483,6 @@ TEST_F(DisplayManagerTest, DisplayManagerObserverNestedChangesOrdering) {
   UpdateDisplay("800x600,800x600");
 }
 
-// Tests adding a display via the VirtualDisplayUtil interface.
-// This test should roughly match other platforms, i.e.
-// //ui/display/linux/test/virtual_display_util_linux_interactive_uitest.cc
-// TODO(crbug.com/40271794): Consolidate testing of VirtualDisplayUtil.
-TEST_F(DisplayManagerTest, VirtualDisplayUtilAddDisplay) {
-  const display::Screen* screen = display::Screen::GetScreen();
-  std::unique_ptr<display::test::VirtualDisplayUtil> virtual_display_util =
-      std::make_unique<display::test::DisplayManagerTestApi>(display_manager());
-  int initial_display_count = screen->GetNumDisplays();
-  int64_t display_id = virtual_display_util->AddDisplay(
-      2, display::test::VirtualDisplayUtil::k1920x1080);
-  EXPECT_NE(display_id, display::kInvalidDisplayId);
-  EXPECT_EQ(screen->GetNumDisplays(), initial_display_count + 1);
-  display::Display d;
-  EXPECT_TRUE(screen->GetDisplayWithDisplayId(display_id, &d));
-  EXPECT_EQ(d.size(), gfx::Size(1920, 1080));
-
-  // Expect failure when adding a duplicate index.
-  EXPECT_EQ(virtual_display_util->AddDisplay(
-                2, display::test::VirtualDisplayUtil::k1920x1080),
-            display::kInvalidDisplayId);
-
-  virtual_display_util->ResetDisplays();
-  EXPECT_FALSE(screen->GetDisplayWithDisplayId(display_id, &d));
-  EXPECT_EQ(screen->GetNumDisplays(), initial_display_count);
-}
-
 // Tests adding and removing displays via the VirtualDisplayUtil interface.
 // This test should roughly match other platforms, i.e.
 // TODO(crbug.com/40271794): Consolidate testing of VirtualDisplayUtil.
@@ -5520,22 +5493,27 @@ TEST_F(DisplayManagerTest, VirtualDisplayUtilAddRemove) {
   int64_t display_id[3];
   int initial_display_count = screen->GetNumDisplays();
   display_id[0] = virtual_display_util->AddDisplay(
-      2, display::test::VirtualDisplayUtil::k1920x1080);
+      display::test::VirtualDisplayUtil::k1920x1080);
   EXPECT_NE(display_id[0], display::kInvalidDisplayId);
+  EXPECT_EQ(screen->GetNumDisplays(), initial_display_count + 1);
   display::Display d;
   EXPECT_TRUE(screen->GetDisplayWithDisplayId(display_id[0], &d));
+  EXPECT_EQ(d.size(), gfx::Size(1920, 1080));
 
   display_id[1] = virtual_display_util->AddDisplay(
-      3, display::test::VirtualDisplayUtil::k1024x768);
+      display::test::VirtualDisplayUtil::k1024x768);
   EXPECT_NE(display_id[1], display::kInvalidDisplayId);
+  EXPECT_EQ(screen->GetNumDisplays(), initial_display_count + 2);
   EXPECT_TRUE(screen->GetDisplayWithDisplayId(display_id[1], &d));
+  EXPECT_EQ(d.size(), gfx::Size(1024, 768));
 
   display_id[2] = virtual_display_util->AddDisplay(
-      4, display::test::VirtualDisplayUtil::k1920x1080);
+      display::test::VirtualDisplayUtil::k1920x1080);
   EXPECT_NE(display_id[2], display::kInvalidDisplayId);
-  EXPECT_TRUE(screen->GetDisplayWithDisplayId(display_id[2], &d));
-
   EXPECT_EQ(screen->GetNumDisplays(), initial_display_count + 3);
+  EXPECT_TRUE(screen->GetDisplayWithDisplayId(display_id[2], &d));
+  EXPECT_EQ(d.size(), gfx::Size(1920, 1080));
+
   virtual_display_util->RemoveDisplay(display_id[1]);
   EXPECT_EQ(screen->GetNumDisplays(), initial_display_count + 2);
   // Only virtual display 2 should no longer exist.

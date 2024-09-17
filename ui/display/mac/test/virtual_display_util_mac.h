@@ -34,8 +34,7 @@ class VirtualDisplayUtilMac : public VirtualDisplayUtil,
   VirtualDisplayUtilMac& operator=(const VirtualDisplayUtilMac&) = delete;
 
   // VirtualDisplayUtil overrides:
-  int64_t AddDisplay(uint8_t display_id,
-                     const DisplayParams& display_params) override;
+  int64_t AddDisplay(const DisplayParams& display_params) override;
   void RemoveDisplay(int64_t display_id) override;
   void ResetDisplays() override;
 
@@ -90,6 +89,10 @@ class VirtualDisplayUtilMac : public VirtualDisplayUtil,
   void OnDisplaysRemoved(const display::Displays& removed_displays) override;
 
   void OnDisplayAddedOrRemoved(int64_t id);
+
+  // Add a new display with a given serial number.
+  int64_t AddDisplay(int64_t serial_number,
+                     const DisplayParams& display_params);
 
   // Wait for the display with the given `id` to be added.
   // Return immediately if the display is already available.
