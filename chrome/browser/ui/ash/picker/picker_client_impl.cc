@@ -64,10 +64,6 @@
 #include "ui/gfx/native_widget_types.h"
 #include "url/gurl.h"
 
-namespace ash {
-enum class AppListSearchResultType;
-}
-
 namespace {
 
 // TODO: b/345303965 - Finalize this string.
