@@ -40,75 +40,6 @@ component("file_manager") {
 
 preprocess_folder = "$target_gen_dir/preprocessed"
 
-# Move files to the preprocessed folder to combine all resources in the same
-# folder for JS bundling with rollup.
-# This is for files direct from the src/:  input_folder="./".
-preprocess_if_expr("preprocess_static") {
-  in_folder = "./"
-  out_manifest = "$target_gen_dir/manifest_preprocess_static.json"
-  if (enable_webui_inline_sourcemaps) {
-    out_folder = "${preprocess_folder}/_tmp"
-    enable_removal_comments = enable_webui_inline_sourcemaps
-  } else {
-    out_folder = preprocess_folder
-  }
-
-  in_files = []
-}
-
-if (enable_webui_inline_sourcemaps) {
-  create_js_source_maps("create_source_maps_static") {
-    inline_sourcemaps = true
-
-    sources =
-        filter_include(get_target_outputs(":preprocess_static"), [ "*.js" ])
-    originals = []
-    outputs = []
-
-    foreach(in_file, sources) {
-      rebased_path = rebase_path(in_file, "${preprocess_folder}/_tmp")
-      originals += [ rebased_path ]
-      outputs += [ "${preprocess_folder}/" + rebased_path ]
-    }
-    deps = [ ":preprocess_static" ]
-  }
-}
-
-preprocess_if_expr("preprocess_static_image_loader") {
-  in_folder = "."
-  out_manifest = "$target_gen_dir/manifest_preprocess_static_image_loader.json"
-  if (enable_webui_inline_sourcemaps) {
-    out_folder = "${preprocess_folder}/_tmp"
-    enable_removal_comments = enable_webui_inline_sourcemaps
-  } else {
-    out_folder = preprocess_folder
-  }
-
-  in_files = image_loader_ts
-}
-
-if (enable_webui_inline_sourcemaps) {
-  create_js_source_maps("create_source_maps_image_loader") {
-    inline_sourcemaps = true
-
-    sources =
-        filter_include(get_target_outputs(":preprocess_static_image_loader"),
-                       [
-                         "*.js",
-                         "*.ts",
-                       ])
-    originals = []
-    outputs = []
-
-    foreach(in_file, sources) {
-      rebased_path = rebase_path(in_file, "${preprocess_folder}/_tmp")
-      originals += [ rebased_path ]
-      outputs += [ "${preprocess_folder}/" + rebased_path ]
-    }
-    deps = [ ":preprocess_static_image_loader" ]
-  }
-}
-
 # This is for files that are generated in "gen/": input_folder=target_gen_dir.
 preprocess_if_expr("preprocess_generated") {
   in_folder = target_gen_dir
@@ -161,17 +92,9 @@ webui_ts_library("build_ts") {
 
   if (enable_webui_inline_sourcemaps) {
     enable_source_maps = true
-    extra_deps += [
-      ":create_source_maps_copy_ts",
-      ":create_source_maps_image_loader",
-      ":create_source_maps_static",
-    ]
+    extra_deps += [ ":create_source_maps_copy_ts" ]
   } else {
-    extra_deps += [
-      ":copy_ts",
-      ":preprocess_static",
-      ":preprocess_static_image_loader",
-    ]
+    extra_deps += [ ":copy_ts" ]
   }
 
   deps = [
@@ -259,15 +182,9 @@ webui_ts_library("test_build_ts") {
     ":copy_definitions_to_preprocess",
   ]
   if (enable_webui_inline_sourcemaps) {
-    extra_deps += [
-      ":create_source_maps_copy_ts",
-      ":create_source_maps_static",
-    ]
+    extra_deps += [ ":create_source_maps_copy_ts" ]
   } else {
-    extra_deps += [
-      ":copy_ts",
-      ":preprocess_static",
-    ]
+    extra_deps += [ ":copy_ts" ]
   }
 }
 
@@ -303,7 +220,7 @@ preprocess_if_expr("copy_ts") {
     out_folder = preprocess_folder
   }
 
-  in_files = ts_files + ts_test_files + ts_polymer
+  in_files = ts_files + ts_test_files + ts_polymer + image_loader_ts
 }
 
 if (enable_webui_inline_sourcemaps) {

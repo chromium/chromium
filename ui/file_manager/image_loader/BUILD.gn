@@ -86,8 +86,6 @@ optimize_webui("build") {
   deps = [
     ":build_ts",
     "//ui/file_manager:preprocess_generated",
-    "//ui/file_manager:preprocess_static",
-    "//ui/file_manager:preprocess_static_image_loader",
   ]
   if (enable_webui_inline_sourcemaps) {
     deps += [ "//ui/file_manager:merge_source_maps" ]
