@@ -71,10 +71,6 @@ tast_disabled_tests_from_chrome_all = [
   "terminal.SSH@jacuzzi",
   "terminal.SSH@trogdor",
 
-  # b/314004675
-  "filemanager.DrivefsUI.fieldtrial_testing_config_on@reven-vmtest",
-  "filemanager.DrivefsUI.fieldtrial_testing_config_off@reven-vmtest",
-
   # b/338111076
   "crostini.AppAndroidStudio.bookworm_clamshell_stable@octopus",
 
