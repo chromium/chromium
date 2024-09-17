@@ -558,7 +558,7 @@ config("compiler") {
     # Enable ELF CREL (see crbug.com/357878242) for all platforms that use ELF
     # (excluding ChromeOS and NaCl toolchains). Exclude android because lld
     # crashes due to the partitions feature that Android uses.
-    if (is_linux && !is_nacl) {
+    if (is_linux && !is_nacl && !llvm_android_mainline) {
         cflags += [ "-Wa,--crel,--allow-experimental-crel" ]
     }
   }
