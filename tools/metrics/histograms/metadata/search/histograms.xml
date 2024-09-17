@@ -462,14 +462,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ContextualSearch.SelectionExpanded"
-    enum="ContextualSearchGestureIsTap" expires_after="2024-07-21">
-  <owner>donnd@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
+    enum="ContextualSearchGestureIsTap" expires_after="2025-09-15">
+  <owner>gangwu@chromium.org</owner>
+  <owner>contextual-search-eng@google.com</owner>
   <summary>
     Records that a resolve request from the server caused the selection to be
     expanded, and whether that original selection was due to a Tap or not (vs
     longpress). Recorded when the qualifying server response is received.
-    Implemented for Android.
+    Implemented for Android.(Expired in 2024-07-21. Revived in 2024-09-16.)
   </summary>
 </histogram>
 
