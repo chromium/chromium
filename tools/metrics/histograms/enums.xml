@@ -390,6 +390,24 @@ uploading your change for review.  These are checked by presubmit scripts.
              Frame)"/>
   <int value="20" label="Lens Overlay Location Bar (Image)"/>
   <int value="21" label="Lens Overlay Overflow Menu (Image)"/>
+  <int value="22"
+      label="Context menu item for 'Search with Google Lens' that leads to
+             Lens Overlay (Image)"/>
+  <int value="23"
+      label="Context menu item for 'Search with Google Lens' that leads to
+             Lens Overlay (Region)"/>
+  <int value="24"
+      label="Context menu item for 'Search with Google Lens' that leads to
+             Lens Overlay (Video)"/>
+  <int value="25"
+      label="Context menu item for 'Search with Google Lens', that leads to
+             Lens Overlay, entered via keyboard (Image)"/>
+  <int value="26"
+      label="Context menu item for 'Search with Google Lens' that leads to
+             Lens Overlay, entered via keyboard (Region)"/>
+  <int value="27"
+      label="Context menu item for 'Search with Google Lens' that leads to
+             Lens Overlay, entered via keyboard (Video)"/>
 </enum>
 
 <!-- LINT.ThenChange(//ios/chrome/browser/ui/lens/lens_entrypoint.h:IOSLensEntrypoint) -->
