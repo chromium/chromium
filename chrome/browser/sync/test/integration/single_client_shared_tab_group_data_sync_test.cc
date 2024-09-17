@@ -12,7 +12,9 @@
 #include "chrome/browser/sync/test/integration/shared_tab_group_data_helper.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
+#include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "components/data_sharing/public/features.h"
+#include "components/saved_tab_groups/features.h"
 #include "components/saved_tab_groups/saved_tab_group.h"
 #include "components/saved_tab_groups/saved_tab_group_model.h"
 #include "components/saved_tab_groups/saved_tab_group_tab.h"
@@ -26,13 +28,6 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "url/gurl.h"
-
-#if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
-#else
-#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
-#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace tab_groups {
 namespace {
@@ -69,8 +64,11 @@ sync_pb::SharedTabGroupDataSpecifics MakeSharedTabGroupTabSpecifics(
 class SingleClientSharedTabGroupDataSyncTest : public SyncTest {
  public:
   SingleClientSharedTabGroupDataSyncTest() : SyncTest(SINGLE_CLIENT) {
-    feature_overrides_.InitAndEnableFeature(
-        data_sharing::features::kDataSharingFeature);
+    feature_overrides_.InitWithFeatures(
+        {data_sharing::features::kDataSharingFeature,
+         tab_groups::kTabGroupsSaveUIUpdate,
+         tab_groups::kTabGroupSyncServiceDesktopMigration},
+        {});
   }
   ~SingleClientSharedTabGroupDataSyncTest() override = default;
 
@@ -92,43 +90,23 @@ class SingleClientSharedTabGroupDataSyncTest : public SyncTest {
                 collaboration_id));
   }
 
-// TabGroupSyncService is used on Android only.
-#if BUILDFLAG(IS_ANDROID)
   TabGroupSyncService* GetTabGroupSyncService() const {
     return TabGroupSyncServiceFactory::GetForProfile(GetProfile(0));
   }
-#else
-  SavedTabGroupModel* GetSavedTabGroupModel() const {
-    return SavedTabGroupServiceFactory::GetForProfile(GetProfile(0))->model();
-  }
-#endif  // BUILDFLAG(IS_ANDROID)
 
   // Returns both saved and shared tab groups.
   std::vector<SavedTabGroup> GetAllTabGroups() const {
-#if BUILDFLAG(IS_ANDROID)
     return GetTabGroupSyncService()->GetAllGroups();
-#else
-    return GetSavedTabGroupModel()->saved_tab_groups();
-#endif  // BUILDFLAG(IS_ANDROID)
   }
 
   void AddTabGroup(SavedTabGroup group) {
-#if BUILDFLAG(IS_ANDROID)
     GetTabGroupSyncService()->AddGroup(std::move(group));
-#else
-    GetSavedTabGroupModel()->Add(std::move(group));
-#endif  // BUILDFLAG(IS_ANDROID)
   }
 
   void MakeTabGroupShared(const LocalTabGroupID& local_group_id,
                           std::string_view collaboration_id) {
-#if BUILDFLAG(IS_ANDROID)
     GetTabGroupSyncService()->MakeTabGroupShared(local_group_id,
                                                  collaboration_id);
-#else
-    GetSavedTabGroupModel()->MakeTabGroupShared(local_group_id,
-                                                std::string(collaboration_id));
-#endif  // BUILDFLAG(IS_ANDROID)
   }
 
  private:
