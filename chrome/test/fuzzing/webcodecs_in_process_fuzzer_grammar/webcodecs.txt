@@ -1,0 +1,348 @@
+!include helpers.txt
+
+<root root=true> = <lines>
+
+<VideoFrame> = videoFrame1
+<VideoFrame> = videoFrame2
+<AudioData> = audioData1
+<Canvas> = canvas
+
+<VideoCodec> = <AV1>
+<VideoCodec> = <HEVC>
+<VideoCodec> = <VP8>
+<VideoCodec> = <VP9>
+
+<AudioCodec> = <FLAC>
+<AudioCodec> = <MP3>
+<AudioCodec> = <AAC>
+<AudioCodec> = <OPUS>
+<AudioCodec> = <VORBIS>
+<AudioCodec> = <ULAW>
+<AudioCodec> = <ALAW>
+<AudioCodec> = <PCM>
+
+<HardwarePreference> = "no-preference"
+<HardwarePreference> = "prefer-software"
+<HardwarePreference> = "prefer-hardware"
+
+<VideoSizes> = <int min=1 max=1024>
+
+<NumChannels> = <int min=1 max=32>
+<NumChannels> = 1
+<NumChannels> = 2
+
+<SampleRate> = <int min=3000 max=768000>
+<SampleRate> = 48000
+<SampleRate> = 16000
+<SampleRate> = 44100
+
+<ScalabilityMode> = "L1T1"
+<ScalabilityMode> = "L1T2"
+<ScalabilityMode> = "L1T3"
+<ScalabilityMode> = "L2T1"
+<ScalabilityMode> = "L2T2"
+<ScalabilityMode> = "L2T3"
+<ScalabilityMode> = "L3T1"
+<ScalabilityMode> = "L3T2"
+<ScalabilityMode> = "L3T3"
+<ScalabilityMode> = "L2T1h"
+<ScalabilityMode> = "L2T2h"
+<ScalabilityMode> = "L2T3h"
+<ScalabilityMode> = "L3T1h"
+<ScalabilityMode> = "L3T2h"
+<ScalabilityMode> = "L3T3h"
+<ScalabilityMode> = "S2T1"
+<ScalabilityMode> = "S2T2"
+<ScalabilityMode> = "S2T3"
+<ScalabilityMode> = "S2T1h"
+<ScalabilityMode> = "S2T2h"
+<ScalabilityMode> = "S2T3h"
+<ScalabilityMode> = "S3T1"
+<ScalabilityMode> = "S3T2"
+<ScalabilityMode> = "S3T3"
+<ScalabilityMode> = "S3T1h"
+<ScalabilityMode> = "S3T2h"
+<ScalabilityMode> = "S3T3h"
+<ScalabilityMode> = "L2T2_KEY"
+<ScalabilityMode> = "L2T2_KEY_SHIFT"
+<ScalabilityMode> = "L2T3_KEY"
+<ScalabilityMode> = "L2T3_KEY_SHIFT"
+<ScalabilityMode> = "L3T1_KEY"
+<ScalabilityMode> = "L3T2_KEY"
+<ScalabilityMode> = "L3T2_KEY_SHIFT"
+<ScalabilityMode> = "L3T3_KEY"
+<ScalabilityMode> = "L3T3_KEY_SHIFT"
+
+<VideoPixelFormat> = "I420"
+<VideoPixelFormat> = "I420A"
+<VideoPixelFormat> = "I422"
+<VideoPixelFormat> = "I444"
+<VideoPixelFormat> = "NV12"
+<VideoPixelFormat> = "RGBA"
+<VideoPixelFormat> = "RGBX"
+<VideoPixelFormat> = "BGRA"
+<VideoPixelFormat> = "BGRX"
+
+<AacBitstreamFormat> = "aac"
+<AacBitstreamFormat> = "adts"
+
+<AvcBitstreamFormat> = "annexb"
+<AvcBitstreamFormat> = "avc"
+
+<VideoEncoderBitrateMode> = "constant"
+<VideoEncoderBitrateMode> = "variable"
+<VideoEncoderBitrateMode> = "quantizer"
+
+<BitrateMode> = "constant"
+<BitrateMode> = "variable"
+<OpusBitstreamFormat> = "opus"
+<OpusBitstreamFormat> = "ogg"
+
+<HevcBitstreamFormat> = "annexb"
+<HevcBitstreamFormat> = "hevc"
+
+<AudioSampleFormat> = "u8"
+<AudioSampleFormat> = "s16"
+<AudioSampleFormat> = "s32"
+<AudioSampleFormat> = "f32"
+<AudioSampleFormat> = "u8-planar"
+<AudioSampleFormat> = "s16-planar"
+<AudioSampleFormat> = "s32-planar"
+<AudioSampleFormat> = "f32-planar"
+
+<QueueingStrategy> = <ByteLengthQueuingStrategy>
+<QueueingStrategy> = <CountQueuingStrategy>
+
+<LatencyMode> = "quality"
+<LatencyMode> = "realtime"
+
+<AlphaOption> = "discard"
+<AlphaOption> = "keep"
+
+<MediaStreamTrackGeneratorKind> = "audio"
+<MediaStreamTrackGeneratorKind> = "video"
+<QueuingStrategyInit> = { highWaterMark: 1 }
+
+
+<EncodedVideoChunkOutputCallback> = () => {}
+<WebCodecsErrorCallback> = () => {}
+
+<MediaStreamTrackGeneratorInit> = { kind: <MediaStreamTrackGeneratorKind>}
+<MediaStreamTrackProcessorInit> = { track: <MediaStreamTrack> }
+
+
+<VideoDecoderConfig> = { codec: <VideoCodec> }
+<VideoEncoderConfig> = { codec: <VideoCodec>, height: <VideoSizes>, width: <VideoSizes> }
+<VideoEncoderConfig> = { codec: <VideoCodec>, height: <VideoSizes>, width: <VideoSizes>, hardwareAcceleration: <HardwarePreference>}
+<VideoEncoderEncodeOptions> = { av1: <VideoEncoderEncodeOptionsForAv1>, avc: <VideoEncoderEncodeOptionsForAvc>, keyFrame: <Boolean>, vp9: <VideoEncoderEncodeOptionsForVp9> }
+<VideoEncoderEncodeOptionsForAv1> = { quantizer: <UnsignedShort> }
+<VideoEncoderEncodeOptionsForAvc> = { quantizer: <UnsignedShort> }
+<VideoEncoderEncodeOptionsForVp9> = { quantizer: <UnsignedShort> }
+<VideoEncoderInit> = { error: <WebCodecsErrorCallback>, output: <EncodedVideoChunkOutputCallback> }
+<AudioEncoderInit> = { error: <WebCodecsErrorCallback>, output: <EncodedVideoChunkOutputCallback> }
+<VideoEncoderSupport> = { config: <VideoEncoderConfig>, supported: <Boolean> }
+
+<AacEncoderConfig> = {}
+<AvcEncoderConfig> = {}
+<HevcEncoderConfig> = {}
+<OpusEncoderConfig> = { complexity: <UnsignedLongEnforceRange>, format: <OpusBitstreamFormat>, frameDuration: <UnsignedLongLongEnforceRange>, packetlossperc: <UnsignedLongEnforceRange>, usedtx: <Boolean>, useinbandfec: <Boolean> }
+<VideoEncoderEncodeOptionsForAvc> = { quantizer: <UnsignedShort> }
+
+<AudioEncoderConfig> = { codec: <AudioCodec>, numberOfChannels: <NumChannels>, sampleRate: <SampleRate> }
+<AudioEncoderInit> = { error: <WebCodecsErrorCallback>, output: <EncodedAudioChunkOutputCallback> }
+<AudioEncoderSupport> = { config: <AudioEncoderConfig>, supported: <Boolean> }
+
+<AudioDataInit> = { data: bigF32ArrayBuffer.buffer, format: <AudioSampleFormat>, numberOfChannels: <NumChannels>, numberOfFrames: <int min=0 max=100>, sampleRate: <SampleRate>, timestamp: <int min=0 max=100> }
+<AudioDataInit> = { data: bigF32ArrayBuffer.buffer, format: <AudioSampleFormat>, numberOfChannels: <NumChannels>, numberOfFrames: <int>, sampleRate: <SampleRate>, timestamp: <int> }
+
+<VideoFrameBufferInit> = { codedHeight: <int>, codedWidth: <int>, format: <VideoPixelFormat>, timestamp: <int> }
+<VideoFrameBufferInit> = { codedHeight: <int min=80 max=1280>, codedWidth: <int min=80 max=1280>, format: <VideoPixelFormat>, timestamp: <int min=0 min=100> }
+
+
+!lineguard try { <line> } catch(e) {}
+!varformat fuzzvar%05d
+!begin lines
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+#~~~~~~~~~~INTERFACES~~~~~~~~~~~~#
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+
+#~~~~~~~~~~~~~~~~VideoFrame~~~~~~~~~~~~~~~~#
+<VideoFrame>.close();
+
+#~~~~~~~~~~~~~~~~AudioData~~~~~~~~~~~~~~~~#
+<AudioData>.close();
+
+#~~~~~~~~~~~~~~~~VideoEncoder~~~~~~~~~~~~~~~~#
+<new VideoEncoder> = new VideoEncoder(<VideoEncoderInit>);
+
+<VideoEncoder>.configure(<VideoEncoderConfig>);
+<VideoEncoder>.configure(<VideoEncoderConfig>);
+<VideoEncoder>.configure(<VideoEncoderConfig>);
+<VideoEncoder>.configure(<VideoEncoderConfig>);
+<VideoEncoder>.configure(<VideoEncoderConfig>);
+<VideoEncoder>.configure(<VideoEncoderConfig>);
+<VideoEncoder>.configure(<VideoEncoderConfig>);
+<VideoEncoder>.configure(<VideoEncoderConfig>);
+<VideoEncoder>.configure(<VideoEncoderConfig>);
+<VideoEncoder>.configure(<VideoEncoderConfig>);
+<VideoEncoder>.configure(<VideoEncoderConfig>);
+<VideoEncoder>.configure(<VideoEncoderConfig>);
+
+<VideoEncoder>.encode(<VideoFrame>);
+<VideoEncoder>.encode(<VideoFrame>);
+<VideoEncoder>.encode(<VideoFrame>,<VideoEncoderEncodeOptions>);
+<VideoEncoder>.encode(<VideoFrame>,<VideoEncoderEncodeOptions>);
+<VideoEncoder>.encode(<VideoFrame>);
+<VideoEncoder>.encode(<VideoFrame>);
+<VideoEncoder>.encode(<VideoFrame>,<VideoEncoderEncodeOptions>);
+<VideoEncoder>.encode(<VideoFrame>,<VideoEncoderEncodeOptions>);
+<VideoEncoder>.encode(<VideoFrame>);
+<VideoEncoder>.encode(<VideoFrame>);
+<VideoEncoder>.encode(<VideoFrame>,<VideoEncoderEncodeOptions>);
+<VideoEncoder>.encode(<VideoFrame>,<VideoEncoderEncodeOptions>);
+<VideoEncoder>.encode(<VideoFrame>);
+<VideoEncoder>.encode(<VideoFrame>);
+<VideoEncoder>.encode(<VideoFrame>,<VideoEncoderEncodeOptions>);
+<VideoEncoder>.encode(<VideoFrame>,<VideoEncoderEncodeOptions>);
+<VideoEncoder>.encode(<VideoFrame>);
+<VideoEncoder>.encode(<VideoFrame>);
+<VideoEncoder>.encode(<VideoFrame>,<VideoEncoderEncodeOptions>);
+<VideoEncoder>.encode(<VideoFrame>,<VideoEncoderEncodeOptions>);
+
+await <VideoEncoder>.flush();
+await <VideoEncoder>.flush();
+await <VideoEncoder>.flush();
+await <VideoEncoder>.flush();
+await <VideoEncoder>.flush();
+await <VideoEncoder>.isConfigSupported(<VideoEncoderConfig>);
+await <VideoEncoder>.isConfigSupported(<VideoEncoderConfig>);
+await <VideoEncoder>.isConfigSupported(<VideoEncoderConfig>);
+await <VideoEncoder>.isConfigSupported(<VideoEncoderConfig>);
+await <VideoEncoder>.isConfigSupported(<VideoEncoderConfig>);
+await <VideoEncoder>.isConfigSupported(<VideoEncoderConfig>);
+<VideoEncoder>.reset();
+#<VideoEncoder>.close();
+
+
+#~~~~~~~~~~~~~~~~AudioEncoder~~~~~~~~~~~~~~~~#
+<new AudioEncoder> = new AudioEncoder(<VideoEncoderInit>);
+
+<AudioEncoder>.configure(<AudioEncoderConfig>);
+<AudioEncoder>.configure(<AudioEncoderConfig>);
+<AudioEncoder>.configure(<AudioEncoderConfig>);
+<AudioEncoder>.configure(<AudioEncoderConfig>);
+<AudioEncoder>.configure(<AudioEncoderConfig>);
+<AudioEncoder>.configure(<AudioEncoderConfig>);
+<AudioEncoder>.configure(<AudioEncoderConfig>);
+<AudioEncoder>.configure(<AudioEncoderConfig>);
+<AudioEncoder>.configure(<AudioEncoderConfig>);
+<AudioEncoder>.configure(<AudioEncoderConfig>);
+<AudioEncoder>.configure(<AudioEncoderConfig>);
+<AudioEncoder>.configure(<AudioEncoderConfig>);
+<AudioEncoder>.configure(<AudioEncoderConfig>);
+<AudioEncoder>.configure(<AudioEncoderConfig>);
+
+<AudioEncoder>.encode(<AudioData>);
+<AudioEncoder>.encode(<AudioData>);
+<AudioEncoder>.encode(<AudioData>);
+<AudioEncoder>.encode(<AudioData>);
+<AudioEncoder>.encode(<AudioData>);
+<AudioEncoder>.encode(<AudioData>);
+<AudioEncoder>.encode(<AudioData>);
+<AudioEncoder>.encode(<AudioData>);
+<AudioEncoder>.encode(<AudioData>);
+<AudioEncoder>.encode(<AudioData>);
+<AudioEncoder>.encode(<AudioData>);
+<AudioEncoder>.encode(<AudioData>);
+
+await <AudioEncoder>.isConfigSupported(<AudioEncoderConfig>);
+await <AudioEncoder>.flush();
+await <AudioEncoder>.isConfigSupported(<AudioEncoderConfig>);
+await <AudioEncoder>.flush();
+await <AudioEncoder>.isConfigSupported(<AudioEncoderConfig>);
+await <AudioEncoder>.flush();
+await <AudioEncoder>.isConfigSupported(<AudioEncoderConfig>);
+await <AudioEncoder>.flush();
+await <AudioEncoder>.isConfigSupported(<AudioEncoderConfig>);
+await <AudioEncoder>.flush();
+await <AudioEncoder>.isConfigSupported(<AudioEncoderConfig>);
+await <AudioEncoder>.flush();
+<AudioEncoder>.reset();
+# <AudioEncoder>.close();
+
+
+#~~~~~~~~~~~~~~~~MediaStreamTrackGenerator~~~~~~~~~~~~~~~~#
+<new MediaStreamTrackGenerator> = new MediaStreamTrackGenerator(<MediaStreamTrackGeneratorInit>);
+
+
+#~~~~~~~~~~~~~~~~CanvasCaptureMediaStreamTrack~~~~~~~~~~~~~~~~#
+<new CanvasCaptureMediaStreamTrack> = <Canvas>.captureStream(<int>).getTracks()[<int>];
+<new CanvasCaptureMediaStreamTrack> = <Canvas>.captureStream(<int min=0 max=32>).getTracks()[<int min=0 max=32>];
+<new CanvasCaptureMediaStreamTrack> = <Canvas>.captureStream(0).getTracks()[0];
+
+#~~~~~~~~~~~~~~~~MediaStreamTrack~~~~~~~~~~~~~~~~#
+<new MediaStreamTrack> = <MediaStreamTrackGenerator>;
+<new MediaStreamTrack> = <CanvasCaptureMediaStreamTrack>;
+
+
+#~~~~~~~~~~~~~~~~AudioData~~~~~~~~~~~~~~~~#
+<new AudioData> = new AudioData(<AudioDataInit>);
+let sampleRate = <SampleRate>; let numberOfFrames = sampleRate / 100; <new AudioData> = new AudioData({ data: bigF32ArrayBuffer.buffer, format: <AudioSampleFormat>, numberOfChannels: <NumChannels>, numberOfFrames: numberOfFrames, sampleRate: sampleRate, timestamp: <int min=0 max=100> });
+<new AudioData> = <AudioData>.clone();
+
+#~~~~~~~~~~~~~~~~VideoFrame~~~~~~~~~~~~~~~~#
+<new VideoFrame> = new VideoFrame(bigF32ArrayBuffer.buffer, <VideoFrameBufferInit>);
+
+#~~~~~~~~~~~~~~~~RTCPeerConnection~~~~~~~~~~~~~~~~#
+<new RTCPeerConnection> = new RTCPeerConnection();
+<RTCPeerConnection>.addTransceiver(<MediaStreamTrack>);
+
+
+#~~~~~~~~~~~~~~~~WritableStream~~~~~~~~~~~~~~~~#
+<new WritableStream> = <MediaStreamTrackGenerator>.writable;
+<new WritableStream> = <TransformStream>.writable;
+<WritableStream>.abort();
+<WritableStream>.abort();
+<WritableStream>.close();
+
+#~~~~~~~~~~~~~~~~ReadableStream~~~~~~~~~~~~~~~~#
+<new ReadableStream> = <MediaStreamTrackProcessor>.readable;
+<ReadableStream>.cancel();
+<new ReadableStream> = <ReadableStream>.pipeThrough(<TransformStream>);
+<ReadableStream>.pipeTo(<WritableStream>);
+<ReadableStream>.tee();
+
+#~~~~~~~~~~~~~~~~WritableStreamDefaultWriter~~~~~~~~~~~~~~~~#
+<new WritableStreamDefaultWriter> = <WritableStream>.getWriter();
+<new WritableStreamDefaultWriter> = new WritableStreamDefaultWriter(<WritableStream>);
+
+<WritableStreamDefaultWriter>.abort();
+<WritableStreamDefaultWriter>.close();
+<WritableStreamDefaultWriter>.releaseLock();
+<WritableStreamDefaultWriter>.write();
+<WritableStreamDefaultWriter>.write(<AudioData>);
+<WritableStreamDefaultWriter>.write(<VideoFrame>);
+
+#~~~~~~~~~~~~~~~~MediaStreamTrackProcessor~~~~~~~~~~~~~~~~#
+<new MediaStreamTrackProcessor> = new MediaStreamTrackProcessor(<MediaStreamTrack>);
+<new MediaStreamTrackProcessor> = new MediaStreamTrackProcessor(<MediaStreamTrack>);
+<new MediaStreamTrackProcessor> = new MediaStreamTrackProcessor(<MediaStreamTrack>);
+<new MediaStreamTrackProcessor> = new MediaStreamTrackProcessor(<MediaStreamTrack>,<int min=0 max=65536>);
+<new MediaStreamTrackProcessor> = new MediaStreamTrackProcessor(<MediaStreamTrackProcessorInit>);
+
+#~~~~~~~~~~~~~~~~TransformStream~~~~~~~~~~~~~~~~#
+<new TransformStream> = new TransformStream();
+<new TransformStream> = new TransformStream(transformer);
+<new TransformStream> = new TransformStream(transformer, <QueueingStrategy>, <QueueingStrategy>);
+<new TransformStream> = new TransformStream(transformer, <QueueingStrategy>, <QueueingStrategy>);
+
+#~~~~~~~~~~~~~~~~ByteLengthQueuingStrategy~~~~~~~~~~~~~~~~#
+<new ByteLengthQueuingStrategy> = new ByteLengthQueuingStrategy(<QueuingStrategyInit>);
+
+#~~~~~~~~~~~~~~~~CountQueuingStrategy~~~~~~~~~~~~~~~~#
+<new CountQueuingStrategy> = new CountQueuingStrategy(<QueuingStrategyInit>);
+
+cleanup();
+cleanup();

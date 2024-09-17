@@ -121,6 +121,21 @@ if (!is_android) {
     }
   }
 
+  domatolpm_fuzzer("webcodecs_fuzzer_grammar") {
+    template_file = "//chrome/test/fuzzing/webcodecs_in_process_fuzzer_grammar/template.html"
+    grammars = [ "webcodecs_fuzzer://chrome/test/fuzzing/webcodecs_in_process_fuzzer_grammar/webcodecs.txt" ]
+  }
+  in_process_fuzzer("webcodecs_in_process_fuzzer") {
+    sources = [ "webcodecs_in_process_fuzzer.cc" ]
+
+    deps = [
+      ":webcodecs_fuzzer_grammar",
+      "//chrome/test/fuzzing:in_process_proto_fuzzer_runner",
+      "//testing/libfuzzer/research/domatolpm:domatolpm_context",
+      "//third_party/libprotobuf-mutator",
+    ]
+  }
+
   if (is_linux) {
     in_process_proto_fuzzer("atspi_in_process_fuzzer") {
       sources = [ "atspi_in_process_fuzzer.cc" ]
