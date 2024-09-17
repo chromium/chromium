@@ -416,11 +416,7 @@ class Device final : public ui::GbmDevice {
     fd_data.num_fds = handle.planes.size();
     fd_data.modifier = handle.modifier;
 
-    // One specific situation where we expect 4 planes is for Intel media
-    // compressed buffers: the number of planes for such buffers and format
-    // NV12/P010 is twice the normal, two for Y and UV and two for auxiliary
-    // compression metadata.
-    DCHECK_LE(handle.planes.size(), 4u);
+    DCHECK_LE(handle.planes.size(), 3u);
 
     for (size_t i = 0; i < handle.planes.size(); ++i) {
       fd_data.fds[i] = handle.planes[i < handle.planes.size() ? i : 0].fd.get();

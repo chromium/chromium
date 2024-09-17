@@ -12,47 +12,15 @@
 #include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
 #include "media/base/video_frame.h"
-#include "media/media_buildflags.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#include <drm_fourcc.h>
 #include <sys/types.h>
 #include <unistd.h>
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "ui/gfx/switches.h"
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 namespace media {
-
-namespace {
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#ifndef I915_FORMAT_MOD_4_TILED_MTL_MC_CCS
-// TODO(b/271455200): Remove this definition once drm_fourcc.h contains it.
-/*
- * Intel color control surfaces (CCS) for display ver 14 media compression
- *
- * The main surface is tile4 and at plane index 0, the CCS is linear and
- * at index 1. A 64B CCS cache line corresponds to an area of 4x1 tiles in
- * main surface. In other words, 4 bits in CCS map to a main surface cache
- * line pair. The main surface pitch is required to be a multiple of four
- * tile4 widths. For semi-planar formats like NV12, CCS planes follow the
- * Y and UV planes i.e., planes 0 and 1 are used for Y and UV surfaces,
- * planes 2 and 3 for the respective CCS.
- */
-#define I915_FORMAT_MOD_4_TILED_MTL_MC_CCS fourcc_mod_code(INTEL, 14)
-#endif
-// Returns true if |modifier| is known to correspond to the Intel media
-// compression feature.
-bool IsIntelMediaCompressedModifier(uint64_t modifier) {
-  return modifier == I915_FORMAT_MOD_Y_TILED_GEN12_MC_CCS ||
-         modifier == I915_FORMAT_MOD_4_TILED_MTL_MC_CCS;
-}
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-}  // namespace
 
 bool GetFileSize(const int fd, size_t* size) {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
@@ -110,25 +78,6 @@ bool VerifyGpuMemoryBufferHandle(
     return false;
   }
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  const uint64_t modifier = gmb_handle.native_pixmap_handle.modifier;
-  const bool is_intel_media_compressed_buffer =
-      IsIntelMediaCompressedModifier(modifier);
-  const bool is_intel_media_compression_enabled =
-#if BUILDFLAG(IS_CHROMEOS)
-      base::FeatureList::IsEnabled(features::kEnableIntelMediaCompression);
-#elif BUILDFLAG(IS_LINUX)
-      false;
-#endif
-
-  if (is_intel_media_compressed_buffer) {
-    if (!is_intel_media_compression_enabled) {
-      return false;
-    }
-    // TODO(b/311757619): Address validation gap for media compressed buffer.
-    return pixel_format == PIXEL_FORMAT_NV12 ||
-           pixel_format == PIXEL_FORMAT_P010LE;
-  }
-
   const size_t num_planes = media::VideoFrame::NumPlanes(pixel_format);
   if (num_planes != gmb_handle.native_pixmap_handle.planes.size() ||
       num_planes == 0) {

@@ -425,14 +425,6 @@ component("buffer_validation") {
     "//base",
     "//media",
   ]
-
-  if (is_linux || is_chromeos) {
-    deps = [ "//build/config/linux/libdrm" ]
-  }
-
-  if (is_chromeos) {
-    deps += [ "//ui/gfx:gfx_switches" ]
-  }
 }
 
 source_set("command_buffer_helper") {
