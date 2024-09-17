@@ -1319,14 +1319,15 @@ bool RenderWidgetHostViewAndroid::TransformPointToCoordSpaceForView(
     return true;
   }
 
-  viz::SurfaceId surface_id = GetCurrentSurfaceId();
-  if (!surface_id.is_valid())
+  auto frame_sink_id = GetFrameSinkId();
+  if (!frame_sink_id.is_valid()) {
     return false;
+  }
 
   // In TransformPointToLocalCoordSpace() there is a Point-to-Pixel conversion,
   // but it is not necessary here because the final target view is responsible
   // for converting before computing the final transform.
-  return target_view->TransformPointToLocalCoordSpace(point, surface_id,
+  return target_view->TransformPointToLocalCoordSpace(point, frame_sink_id,
                                                       transformed_point);
 }
 

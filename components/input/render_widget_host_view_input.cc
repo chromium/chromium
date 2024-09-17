@@ -50,9 +50,8 @@ gfx::PointF RenderWidgetHostViewInput::TransformRootPointToViewCoordSpace(
 
 bool RenderWidgetHostViewInput::TransformPointToLocalCoordSpace(
     const gfx::PointF& point,
-    const viz::SurfaceId& original_surface,
+    const viz::FrameSinkId& original_frame_sink_id,
     gfx::PointF* transformed_point) {
-  viz::FrameSinkId original_frame_sink_id = original_surface.frame_sink_id();
   viz::FrameSinkId target_frame_sink_id = GetFrameSinkId();
   if (!original_frame_sink_id.is_valid() || !target_frame_sink_id.is_valid()) {
     return false;

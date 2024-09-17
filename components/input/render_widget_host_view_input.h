@@ -143,7 +143,7 @@ class COMPONENT_EXPORT(INPUT) RenderWidgetHostViewInput
   // coordinate space as an intermediate step.
   virtual bool TransformPointToLocalCoordSpace(
       const gfx::PointF& point,
-      const viz::SurfaceId& original_surface,
+      const viz::FrameSinkId& original_frame_sink_id,
       gfx::PointF* transformed_point);
 
   // Given a RenderWidgetHostViewInput that renders to a Surface that is

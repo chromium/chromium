@@ -251,9 +251,10 @@ bool CrossProcessFrameConnector::TransformPointToCoordSpaceForView(
   // ancestor of the other in the RenderWidgetHostView tree (e.g. they could
   // be siblings). To account for this, the point is first transformed into the
   // root coordinate space and then the root is asked to perform the conversion.
-  if (!root_view->TransformPointToLocalCoordSpace(point, local_surface_id,
-                                                  transformed_point))
+  if (!root_view->TransformPointToLocalCoordSpace(
+          point, local_surface_id.frame_sink_id(), transformed_point)) {
     return false;
+  }
 
   if (target_view == root_view)
     return true;
