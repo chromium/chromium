@@ -1159,16 +1159,16 @@
         You can use Chrome any time you tap links in messages, documents and other apps
       </message>
       <message name="IDS_EDUCATIONAL_TIP_TAB_GROUP_TITLE" desc="Title of the tab group promo in the educational tip module on NTP.">
-        Tab groups keep things tidy
+        Tidy up with tab groups
       </message>
       <message name="IDS_EDUCATIONAL_TIP_TAB_GROUP_DESCRIPTION" desc="Description of the Tab group promo in the educational tip module on NTP.">
-        You can group related pages, and your groups save and update across all your devices
+        Create tab groups that automatically save and update across all your devices
       </message>
       <message name="IDS_EDUCATIONAL_TIP_TAB_GROUP_SYNC_TITLE" desc="Title of the tab group sync promo in the educational tip module on NTP.">
         Your tab groups are saved
       </message>
       <message name="IDS_EDUCATIONAL_TIP_TAB_GROUP_SYNC_DESCRIPTION" desc="Description of the Tab group promo in the educational tip module on NTP.">
-        The groups you've created are saved in tab group section and update across your devices
+        You’ll find your groups in the tab group section across all your devices
       </message>
       <message name="IDS_EDUCATIONAL_TIP_QUICK_DELETE_TITLE" desc="Title of the quick delete promo in the educational tip module on NTP.">
         Manage your browsing data
