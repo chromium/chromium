@@ -126,6 +126,10 @@ void COMPONENT_EXPORT(MANTA)
     AddDialogToSparkyContext(const std::vector<DialogTurn>& dialog,
                              proto::SparkyContextData* sparky_context_proto);
 
+void COMPONENT_EXPORT(MANTA) AddDialogTurnToSparkyContext(
+    const DialogTurn& dialog_turn,
+    proto::SparkyContextData* sparky_context_proto);
+
 void COMPONENT_EXPORT(MANTA) AddFilesData(base::span<const FileData> files_data,
                                           proto::FilesData* files_proto);
 

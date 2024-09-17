@@ -391,6 +391,17 @@ TEST_F(SparkyUtilTest, AddDialog) {
   ASSERT_TRUE(ContainsDialog(dialog_proto, "Okay I have opened the text app",
                              Role::kAssistant, &multi_step_actions));
   ASSERT_EQ(dialog_proto.at(5).action_size(), 4);
+
+  DialogTurn new_turn(
+      "Okay I have created a new file with a poem about Platypuses",
+      Role::kAssistant, multi_step_actions);
+  AddDialogTurnToSparkyContext(new_turn, &sparky_context_data);
+
+  ASSERT_EQ(dialog_proto.size(), 7);
+  ASSERT_TRUE(ContainsDialog(
+      dialog_proto,
+      "Okay I have created a new file with a poem about Platypuses",
+      Role::kAssistant, &multi_step_actions));
 }
 
 TEST_F(SparkyUtilTest, AddFilesData) {

@@ -99,6 +99,33 @@ std::vector<manta::FileData> SparkyProvider::GetFilesSummary() {
   return sparky_delegate_->GetFileSummaries();
 }
 
+void SparkyProvider::ClearDialog() {
+  request_.Clear();
+  consecutive_assistant_turn_count_ = 0;
+}
+
+void SparkyProvider::MarkLastActionAllDone() {
+  if (request_.input_data_size() == 0) {
+    return;
+  }
+  auto* sparky_context_data =
+      request_.mutable_input_data(request_.input_data_size() - 1)
+          ->mutable_sparky_context_data();
+
+  if (sparky_context_data->conversation_size() == 0) {
+    return;
+  }
+  auto* last_conversation = sparky_context_data->mutable_conversation(
+      sparky_context_data->conversation_size() - 1);
+
+  if (last_conversation->action_size() == 0) {
+    return;
+  }
+  auto* last_action =
+      last_conversation->mutable_action(last_conversation->action_size() - 1);
+  last_action->set_all_done(true);
+}
+
 void SparkyProvider::QuestionAndAnswer(
     std::unique_ptr<SparkyContext> sparky_context,
     SparkyShowAnswerCallback done_callback) {
@@ -111,15 +138,26 @@ void SparkyProvider::OnScreenshotObtained(
     std::unique_ptr<SparkyContext> sparky_context,
     SparkyShowAnswerCallback done_callback,
     scoped_refptr<base::RefCountedMemory> jpeg_screenshot) {
-  proto::Request request;
-  request.set_feature_name(proto::FeatureName::CHROMEOS_SPARKY);
+  request_.set_feature_name(proto::FeatureName::CHROMEOS_SPARKY);
 
-  auto* input_data = request.add_input_data();
+  proto::InputData* input_data;
+  if (request_.input_data_size() > 0) {
+    input_data = request_.mutable_input_data(request_.input_data_size() - 1);
+  } else {
+    input_data = request_.add_input_data();
+  }
   input_data->set_tag("sparky_context");
 
   auto* sparky_context_data = input_data->mutable_sparky_context_data();
 
-  AddDialogToSparkyContext(sparky_context->dialog, sparky_context_data);
+  // Only adds the latest turn to the request if it is from the user. If the
+  // turn comes from the assistant, it has been added when the response is
+  // received from the assistant.
+  if (sparky_context->latest_turn.role == manta::Role::kUser) {
+    AddDialogTurnToSparkyContext(sparky_context->latest_turn,
+                                 sparky_context_data);
+    consecutive_assistant_turn_count_ = 0;
+  }
 
   sparky_context_data->set_task(sparky_context->task);
   if (sparky_context->page_url.has_value()) {
@@ -134,6 +172,14 @@ void SparkyProvider::OnScreenshotObtained(
     proto::Image* image_proto = sparky_context_data->mutable_screenshot();
     image_proto->set_serialized_bytes(
         std::string(base::as_string_view(*jpeg_screenshot)));
+    // Also appends the screenshot to the last conversation if it is available.
+    if (sparky_context_data->conversation_size() > 0) {
+      auto* last_conversation = sparky_context_data->mutable_conversation(
+          sparky_context_data->conversation_size() - 1);
+      proto::Image* screenshot = last_conversation->mutable_screenshot();
+      screenshot->set_serialized_bytes(
+          std::string(base::as_string_view(*jpeg_screenshot)));
+    }
   }
   auto* apps_data = sparky_context_data->mutable_apps_data();
   AddAppsData(sparky_delegate_->GetAppsList(), apps_data);
@@ -171,8 +217,9 @@ void SparkyProvider::OnScreenshotObtained(
   // TODO(b:338501686): MISSING_TRAFFIC_ANNOTATION should be resolved before
   // launch.
   RequestInternal(GURL{GetProviderEndpoint(false)}, kOauthConsumerName,
-                  MISSING_TRAFFIC_ANNOTATION, request, MantaMetricType::kSparky,
-                  std::move(internal_callback), kTimeout);
+                  MISSING_TRAFFIC_ANNOTATION, request_,
+                  MantaMetricType::kSparky, std::move(internal_callback),
+                  kTimeout);
 }
 
 void SparkyProvider::OnResponseReceived(
@@ -315,6 +362,13 @@ void SparkyProvider::OnDialogResponse(std::unique_ptr<SparkyContext>,
     std::move(done_callback).Run(status, nullptr);
     return;
   }
+
+  // It is possible that `request_` has been cleared before a new agent response
+  // is received, in which case we should totally drop this agent response.
+  if (request_.input_data_size() == 0) {
+    return;
+  }
+
   if (latest_reply.action_size() > 0) {
     auto actions_repeated_field = latest_reply.action();
     for (const proto::Action& action : actions_repeated_field) {
@@ -345,6 +399,13 @@ void SparkyProvider::OnDialogResponse(std::unique_ptr<SparkyContext>,
       }
     }
   }
+
+  // Attaches the response to the cache.
+  auto* input_data =
+      request_.mutable_input_data(request_.input_data_size() - 1);
+  auto* sparky_context_data = input_data->mutable_sparky_context_data();
+  *sparky_context_data->add_conversation() = latest_reply;
+  consecutive_assistant_turn_count_++;
 
   DialogTurn latest_dialog_struct = ConvertDialogToStruct(&latest_reply);
   std::move(done_callback).Run(status, &latest_dialog_struct);

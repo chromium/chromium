@@ -18,17 +18,16 @@ namespace manta {
 
 // Stores the input Sparky data to be included into the Sparky Provider.
 struct COMPONENT_EXPORT(MANTA) SparkyContext {
-  explicit SparkyContext(const std::vector<DialogTurn>& dialog);
+  explicit SparkyContext(const DialogTurn& latest_turn);
 
-  SparkyContext(const std::vector<DialogTurn>& dialog,
-                const std::string& page_content);
+  SparkyContext(const DialogTurn& latest_turn, const std::string& page_content);
 
   ~SparkyContext();
 
   SparkyContext(const SparkyContext&);
   SparkyContext& operator=(const SparkyContext&);
 
-  std::vector<DialogTurn> dialog;
+  DialogTurn latest_turn;
   std::optional<DiagnosticsData> diagnostics_data;
   std::optional<std::string> page_content;
   std::optional<std::string> page_url;

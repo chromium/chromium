@@ -180,6 +180,7 @@ message Turn {
   optional string message = 1;
   optional Role role = 2;
   repeated Action action = 3;
+  optional Image screenshot = 4;
 }
 
 message SparkyResponse {

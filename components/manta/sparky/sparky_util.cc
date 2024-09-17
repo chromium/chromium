@@ -351,44 +351,48 @@ DialogTurn ConvertDialogToStruct(proto::Turn* turn_proto) {
 void AddDialogToSparkyContext(const std::vector<DialogTurn>& dialog,
                               proto::SparkyContextData* sparky_context_proto) {
   for (const auto& dialog_turn : dialog) {
-    auto* dialog_proto = sparky_context_proto->add_conversation();
-    dialog_proto->set_message(dialog_turn.message);
-    dialog_proto->set_role(GetRole(dialog_turn.role));
-    for (const auto& action : dialog_turn.actions) {
-      auto* action_proto = dialog_proto->add_action();
-      if (action.type == ActionType::kLaunchApp &&
-          !action.launched_app.empty()) {
-        action_proto->set_launch_app_id(action.launched_app);
-      } else if (action.type == ActionType::kSetting &&
-                 action.updated_setting.has_value()) {
-        auto setting_type = VerifyValueAndConvertPrefTypeToSettingType(
-            action.updated_setting.value().pref_type,
-            action.updated_setting.value().GetValue());
-        if (setting_type == std::nullopt) {
-          DVLOG(1) << "Invalid setting type for"
-                   << action.updated_setting.value().pref_name;
-          continue;
-        }
-        auto* setting_proto = action_proto->mutable_update_setting();
-        AddSettingProto(action.updated_setting.value(), setting_proto,
-                        setting_type.value());
-      } else if (action.type == ActionType::kClick &&
-                 action.click.has_value()) {
-        auto* click_proto = action_proto->mutable_click();
-        click_proto->set_x_pos(action.click->x_pos);
-        click_proto->set_y_pos(action.click->y_pos);
-      } else if (action.type == ActionType::kLaunchFile &&
-                 action.file_action.has_value() &&
-                 !action.file_action->launch_file_path.empty()) {
-        auto* file_action = action_proto->mutable_file_action();
-        file_action->set_launch_file_path(action.file_action->launch_file_path);
-      } else if (action.type == ActionType::kAllDone) {
-        action_proto->set_all_done(action.all_done);
-      } else if (action.type == ActionType::kTextEntry &&
-                 !action.text_entry.empty()) {
-        auto* text_entry = action_proto->mutable_text_entry();
-        text_entry->set_text(action.text_entry);
+    AddDialogTurnToSparkyContext(dialog_turn, sparky_context_proto);
+  }
+}
+
+void AddDialogTurnToSparkyContext(
+    const DialogTurn& dialog_turn,
+    proto::SparkyContextData* sparky_context_proto) {
+  auto* dialog_proto = sparky_context_proto->add_conversation();
+  dialog_proto->set_message(dialog_turn.message);
+  dialog_proto->set_role(GetRole(dialog_turn.role));
+  for (const auto& action : dialog_turn.actions) {
+    auto* action_proto = dialog_proto->add_action();
+    if (action.type == ActionType::kLaunchApp && !action.launched_app.empty()) {
+      action_proto->set_launch_app_id(action.launched_app);
+    } else if (action.type == ActionType::kSetting &&
+               action.updated_setting.has_value()) {
+      auto setting_type = VerifyValueAndConvertPrefTypeToSettingType(
+          action.updated_setting.value().pref_type,
+          action.updated_setting.value().GetValue());
+      if (setting_type == std::nullopt) {
+        DVLOG(1) << "Invalid setting type for"
+                 << action.updated_setting.value().pref_name;
+        continue;
       }
+      auto* setting_proto = action_proto->mutable_update_setting();
+      AddSettingProto(action.updated_setting.value(), setting_proto,
+                      setting_type.value());
+    } else if (action.type == ActionType::kClick && action.click.has_value()) {
+      auto* click_proto = action_proto->mutable_click();
+      click_proto->set_x_pos(action.click->x_pos);
+      click_proto->set_y_pos(action.click->y_pos);
+    } else if (action.type == ActionType::kLaunchFile &&
+               action.file_action.has_value() &&
+               !action.file_action->launch_file_path.empty()) {
+      auto* file_action = action_proto->mutable_file_action();
+      file_action->set_launch_file_path(action.file_action->launch_file_path);
+    } else if (action.type == ActionType::kAllDone) {
+      action_proto->set_all_done(action.all_done);
+    } else if (action.type == ActionType::kTextEntry &&
+               !action.text_entry.empty()) {
+      auto* text_entry = action_proto->mutable_text_entry();
+      text_entry->set_text(action.text_entry);
     }
   }
 }

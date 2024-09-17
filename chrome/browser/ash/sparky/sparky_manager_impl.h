@@ -88,7 +88,7 @@ class SparkyManagerImpl : public chromeos::MahiManager, public KeyedService {
   // server is trying to exceed this limit, there is a manual override and the
   // last action for the latest turn will be set to done, so that no additional
   // calls to the server are made.
-  void CheckTurnLimit();
+  void CheckTurnLimit(const manta::DialogTurn& latest_turn);
 
   void RequestProviderWithQuestion(
       std::unique_ptr<manta::SparkyContext> sparky_context,
@@ -101,10 +101,6 @@ class SparkyManagerImpl : public chromeos::MahiManager, public KeyedService {
       crosapi::mojom::MahiPageContent::New();
 
   raw_ptr<Profile> profile_;
-
-  // Stores the dialog of the question and answers along with any associated
-  // actions.
-  std::vector<manta::DialogTurn> dialog_turns_;
 
   std::unique_ptr<manta::SparkyProvider> sparky_provider_;
 

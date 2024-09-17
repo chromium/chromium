@@ -180,14 +180,10 @@ TEST_F(SparkyProviderTest, SimpleRequestPayload) {
                           net::OK);
   std::unique_ptr<FakeSparkyProvider> sparky_provider = CreateSparkyProvider();
   auto quit_closure = task_environment_.QuitClosure();
-  auto dialog_turns = std::vector<DialogTurn>();
-
-  dialog_turns.emplace_back("Where is it?", Role::kUser);
-  dialog_turns.emplace_back("In Tokyo", Role::kAssistant);
-  dialog_turns.emplace_back("When is it?", Role::kUser);
+  manta::DialogTurn new_turn("When is it?", Role::kUser);
 
   sparky_provider->QuestionAndAnswer(
-      std::make_unique<SparkyContext>(dialog_turns, "page content"),
+      std::make_unique<SparkyContext>(new_turn, "page content"),
       base::BindLambdaForTesting(
           [&quit_closure](MantaStatus manta_status, DialogTurn* latest_dialog) {
             ASSERT_EQ(manta_status.status_code, MantaStatusCode::kOk);
@@ -212,8 +208,7 @@ TEST_F(SparkyProviderTest, EmptyResponseIfSparkyDataIsNotSet) {
   std::string response_data;
   response.SerializeToString(&response_data);
 
-  auto dialog_turns = std::vector<DialogTurn>();
-  dialog_turns.emplace_back("my question", Role::kUser);
+  manta::DialogTurn new_turn("my question", Role::kUser);
 
   SetEndpointMockResponse(GURL{kMockEndpoint}, response_data, net::HTTP_OK,
                           net::OK);
@@ -221,7 +216,7 @@ TEST_F(SparkyProviderTest, EmptyResponseIfSparkyDataIsNotSet) {
   auto quit_closure = task_environment_.QuitClosure();
 
   sparky_provider->QuestionAndAnswer(
-      std::make_unique<SparkyContext>(dialog_turns, "page content"),
+      std::make_unique<SparkyContext>(new_turn, "page content"),
       base::BindLambdaForTesting([&quit_closure](MantaStatus manta_status,
                                                  DialogTurn* latest_dialog) {
         ASSERT_EQ(manta_status.status_code, MantaStatusCode::kBlockedOutputs);
@@ -241,13 +236,12 @@ TEST_F(SparkyProviderTest, EmptyResponseAfterIdentityManagerShutdown) {
 
   identity_test_env_.reset();
 
-  auto dialog_turns = std::vector<DialogTurn>();
-  dialog_turns.emplace_back("my question", Role::kUser);
+  manta::DialogTurn new_turn("my question", Role::kUser);
 
   auto quit_closure = task_environment_.QuitClosure();
 
   sparky_provider->QuestionAndAnswer(
-      std::make_unique<SparkyContext>(dialog_turns, "page content"),
+      std::make_unique<SparkyContext>(new_turn, "page content"),
       base::BindLambdaForTesting(
           [&quit_closure](MantaStatus manta_status, DialogTurn* latest_dialog) {
             ASSERT_EQ(manta_status.status_code,
@@ -283,8 +277,7 @@ TEST_F(SparkyProviderTest, SettingAction) {
   std::string response_data;
   response.SerializeToString(&response_data);
 
-  auto dialog_turns = std::vector<DialogTurn>();
-  dialog_turns.emplace_back("Turn on adaptive charging", Role::kUser);
+  manta::DialogTurn new_turn("Turn on adaptive charging", Role::kUser);
 
   SetEndpointMockResponse(GURL{kMockEndpoint}, response_data, net::HTTP_OK,
                           net::OK);
@@ -297,7 +290,7 @@ TEST_F(SparkyProviderTest, SettingAction) {
                        ->GetBool());
 
   auto sparky_context =
-      std::make_unique<SparkyContext>(dialog_turns, "page content");
+      std::make_unique<SparkyContext>(new_turn, "page content");
   sparky_context->task = proto::Task::TASK_SETTINGS;
 
   sparky_provider->QuestionAndAnswer(
@@ -351,8 +344,7 @@ TEST_F(SparkyProviderTest, SettingActionWith2Actions) {
                           net::OK);
   std::unique_ptr<FakeSparkyProvider> sparky_provider = CreateSparkyProvider();
 
-  auto dialog_turns = std::vector<DialogTurn>();
-  dialog_turns.emplace_back("Turn on night light", Role::kUser);
+  manta::DialogTurn new_turn("Turn on night light", Role::kUser);
   auto quit_closure = task_environment_.QuitClosure();
 
   ASSERT_EQ(
@@ -363,7 +355,7 @@ TEST_F(SparkyProviderTest, SettingActionWith2Actions) {
                      ->GetDouble());
 
   auto sparky_context =
-      std::make_unique<SparkyContext>(dialog_turns, "page content");
+      std::make_unique<SparkyContext>(new_turn, "page content");
   sparky_context->task = proto::Task::TASK_SETTINGS;
 
   sparky_provider->QuestionAndAnswer(
@@ -411,8 +403,7 @@ TEST_F(SparkyProviderTest, SettingActionInvalidProto) {
   std::string response_data;
   response.SerializeToString(&response_data);
 
-  auto dialog_turns = std::vector<DialogTurn>();
-  dialog_turns.emplace_back("Turn on adaptive charging", Role::kUser);
+  manta::DialogTurn new_turn("Turn on adaptive charging", Role::kUser);
 
   SetEndpointMockResponse(GURL{kMockEndpoint}, response_data, net::HTTP_OK,
                           net::OK);
@@ -420,7 +411,7 @@ TEST_F(SparkyProviderTest, SettingActionInvalidProto) {
 
   auto quit_closure = task_environment_.QuitClosure();
   auto sparky_context =
-      std::make_unique<SparkyContext>(dialog_turns, "page content");
+      std::make_unique<SparkyContext>(new_turn, "page content");
   sparky_context->task = proto::Task::TASK_SETTINGS;
   sparky_provider->QuestionAndAnswer(
       std::move(sparky_context),
