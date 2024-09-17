@@ -43,6 +43,7 @@
 
 #include "base/functional/callback.h"
 #include "pdf/pdf_progressive_searchifier.h"
+#include "pdf/pdfium/pdfium_progressive_searchifier.h"
 #include "pdf/pdfium/pdfium_searchify.h"
 #include "services/screen_ai/public/mojom/screen_ai_service.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"

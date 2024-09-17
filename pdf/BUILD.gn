@@ -231,6 +231,8 @@ if (enable_pdf) {
 
     if (enable_screen_ai_service) {
       sources += [
+        "pdfium/pdfium_progressive_searchifier.cc",
+        "pdfium/pdfium_progressive_searchifier.h",
         "pdfium/pdfium_searchify.cc",
         "pdfium/pdfium_searchify.h",
         "pdfium/pdfium_searchify_font.cc",
