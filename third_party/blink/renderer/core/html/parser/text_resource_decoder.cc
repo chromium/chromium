@@ -339,8 +339,9 @@ void TextResourceDecoder::AutoDetectEncodingIfAllowed(
 
   WTF::TextEncoding detected_encoding;
   if (DetectTextEncoding(data.data(), base::checked_cast<uint32_t>(data.size()),
-                         options_.HintEncoding(), options_.HintURL(),
-                         options_.HintLanguage(), &detected_encoding)) {
+                         options_.HintEncoding().Utf8().c_str(),
+                         options_.HintURL(), options_.HintLanguage(),
+                         &detected_encoding)) {
     SetEncoding(detected_encoding, kEncodingFromContentSniffing);
   }
   if (detected_encoding != WTF::UnknownEncoding())
@@ -444,7 +445,7 @@ String TextResourceDecoder::Flush() {
 
 WebEncodingData TextResourceDecoder::GetEncodingData() const {
   return WebEncodingData{
-      .encoding = String(encoding_.GetName()),
+      .encoding = encoding_.GetName(),
       .was_detected_heuristically = EncodingWasDetectedHeuristically(),
       .saw_decoding_error = SawError()};
 }

@@ -1566,10 +1566,7 @@ bool Document::IsLoadCompleted() const {
 }
 
 AtomicString Document::EncodingName() const {
-  // TextEncoding::name() returns a char*, no need to allocate a new
-  // String for it each time.
-  // FIXME: We should fix TextEncoding to speak AtomicString anyway.
-  return AtomicString(Encoding().GetName());
+  return Encoding().GetName();
 }
 
 void Document::SetContentLanguage(const AtomicString& language) {

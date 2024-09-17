@@ -80,7 +80,7 @@ void ScriptCachedMetadataHandler::SetSerializedCachedMetadata(
 }
 
 String ScriptCachedMetadataHandler::Encoding() const {
-  return String(encoding_.GetName());
+  return encoding_.GetName();
 }
 
 bool ScriptCachedMetadataHandler::IsServedFromCacheStorage() const {

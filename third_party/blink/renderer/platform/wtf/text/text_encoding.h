@@ -28,6 +28,7 @@
 
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_codec.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_export.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
@@ -38,12 +39,12 @@ class WTF_EXPORT TextEncoding final {
   USING_FAST_MALLOC(TextEncoding);
 
  public:
-  TextEncoding() : name_(nullptr) {}
+  TextEncoding() = default;
   explicit TextEncoding(const char* name);
   explicit TextEncoding(const String& name);
 
-  bool IsValid() const { return name_; }
-  const char* GetName() const { return name_; }
+  bool IsValid() const { return !name_.IsNull(); }
+  const AtomicString& GetName() const { return name_; }
   bool UsesVisualOrdering() const;
   const TextEncoding& ClosestByteBasedEquivalent() const;
   const TextEncoding& EncodingForFormSubmission() const;
@@ -62,7 +63,7 @@ class WTF_EXPORT TextEncoding final {
   bool IsNonByteBasedEncoding() const;
 
  private:
-  const char* name_;
+  AtomicString name_;
 };
 
 inline bool operator==(const TextEncoding& a, const TextEncoding& b) {

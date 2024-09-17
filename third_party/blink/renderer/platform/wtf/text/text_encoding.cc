@@ -36,12 +36,10 @@
 namespace WTF {
 
 TextEncoding::TextEncoding(const char* name)
-    : name_(AtomicCanonicalTextEncodingName(name)) {
-}
+    : name_(AtomicString(AtomicCanonicalTextEncodingName(name))) {}
 
 TextEncoding::TextEncoding(const String& name)
-    : name_(AtomicCanonicalTextEncodingName(name)) {
-}
+    : name_(AtomicString(AtomicCanonicalTextEncodingName(name))) {}
 
 String TextEncoding::Decode(const char* data,
                             wtf_size_t length,

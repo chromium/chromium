@@ -663,7 +663,10 @@ class SerializerMarkupAccumulator : public MarkupAccumulator {
     if (!is_inline_css) {
       StringBuilder css_text;
       css_text.Append("@charset \"");
-      css_text.Append(String(style_sheet.Contents()->Charset().GetName())
+      css_text.Append(style_sheet.Contents()
+                          ->Charset()
+                          .GetName()
+                          .GetString()
                           .DeprecatedLower());
       css_text.Append("\";\n\n");
 

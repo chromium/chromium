@@ -51,14 +51,13 @@ TextEncoder* TextEncoder::Create(ExecutionContext* context,
 
 TextEncoder::TextEncoder(const WTF::TextEncoding& encoding)
     : encoding_(encoding), codec_(NewTextCodec(encoding)) {
-  String name(encoding_.GetName());
-  DCHECK_EQ(name, "UTF-8");
+  DCHECK_EQ(encoding_.GetName(), "UTF-8");
 }
 
 TextEncoder::~TextEncoder() = default;
 
 String TextEncoder::encoding() const {
-  String name = String(encoding_.GetName()).DeprecatedLower();
+  String name = encoding_.GetName().GetString().DeprecatedLower();
   DCHECK_EQ(name, "utf-8");
   return name;
 }

@@ -1104,27 +1104,27 @@ void TextCodecCJK::RegisterCodecs(TextCodecRegistrar registrar) {
 
 std::unique_ptr<TextCodec> TextCodecCJK::Create(const TextEncoding& encoding,
                                                 const void*) {
-  const char* name = encoding.GetName();
+  const AtomicString& name = encoding.GetName();
 
   // To keep the `TextCodecCJK` constructor private, we intend to `new`
   // it and use `base::WrapUnique`. Note that we cannot use `std::make_unique`
   // for a private constructor.
-  if (!strcmp(name, kCanonicalNameEucJp)) {
+  if (name == kCanonicalNameEucJp) {
     return base::WrapUnique(new TextCodecCJK(Encoding::kEucJp));
   }
-  if (!strcmp(name, kCanonicalNameShiftJis)) {
+  if (name == kCanonicalNameShiftJis) {
     return base::WrapUnique(new TextCodecCJK(Encoding::kShiftJis));
   }
-  if (!strcmp(name, kCanonicalNameEucKr)) {
+  if (name == kCanonicalNameEucKr) {
     return base::WrapUnique(new TextCodecCJK(Encoding::kEucKr));
   }
-  if (!strcmp(name, kCanonicalNameIso2022Jp)) {
+  if (name == kCanonicalNameIso2022Jp) {
     return base::WrapUnique(new TextCodecCJK(Encoding::kIso2022Jp));
   }
-  if (!strcmp(name, kCanonicalNameGbk)) {
+  if (name == kCanonicalNameGbk) {
     return base::WrapUnique(new TextCodecCJK(Encoding::kGbk));
   }
-  if (!strcmp(name, kCanonicalNameGb18030)) {
+  if (name == kCanonicalNameGb18030) {
     return base::WrapUnique(new TextCodecCJK(Encoding::kGb18030));
   }
   NOTREACHED_IN_MIGRATION();

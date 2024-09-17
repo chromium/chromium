@@ -342,7 +342,7 @@ void TextCodecICU::CreateICUConverter() const {
   }
 
   err = U_ZERO_ERROR;
-  converter_icu_ = ucnv_open(encoding_.GetName(), &err);
+  converter_icu_ = ucnv_open(encoding_.GetName().Utf8().c_str(), &err);
   DLOG_IF(ERROR, err == U_AMBIGUOUS_ALIAS_WARNING)
       << "ICU ambiguous alias warning for encoding: " << encoding_.GetName();
   if (converter_icu_)

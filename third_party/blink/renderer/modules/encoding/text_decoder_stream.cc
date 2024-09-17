@@ -125,7 +125,7 @@ class TextDecoderStream::Transformer final : public TransformStreamTransformer {
   }
 
   static bool EncodingHasBomRemoval(const WTF::TextEncoding& encoding) {
-    String name(encoding.GetName());
+    const AtomicString& name = encoding.GetName();
     return name == "UTF-8" || name == "UTF-16LE" || name == "UTF-16BE";
   }
 
@@ -161,7 +161,7 @@ TextDecoderStream* TextDecoderStream::Create(ScriptState* script_state,
 TextDecoderStream::~TextDecoderStream() = default;
 
 String TextDecoderStream::encoding() const {
-  return String(encoding_.GetName()).LowerASCII();
+  return encoding_.GetName().GetString().LowerASCII();
 }
 
 ReadableStream* TextDecoderStream::readable() const {

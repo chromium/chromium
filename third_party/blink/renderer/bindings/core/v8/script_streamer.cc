@@ -450,17 +450,16 @@ void ScriptStreamer::RecordStreamingHistogram(
 }
 
 bool ScriptStreamer::ConvertEncoding(
-    const char* encoding_name,
+    const AtomicString& encoding_name,
     v8::ScriptCompiler::StreamedSource::Encoding* encoding) {
   // Here's a list of encodings we can use for streaming. These are
   // the canonical names.
-  if (strcmp(encoding_name, "windows-1252") == 0 ||
-      strcmp(encoding_name, "ISO-8859-1") == 0 ||
-      strcmp(encoding_name, "US-ASCII") == 0) {
+  if (encoding_name == "windows-1252" || encoding_name == "ISO-8859-1" ||
+      encoding_name == "US-ASCII") {
     *encoding = v8::ScriptCompiler::StreamedSource::WINDOWS_1252;
     return true;
   }
-  if (strcmp(encoding_name, "UTF-8") == 0) {
+  if (encoding_name == "UTF-8") {
     *encoding = v8::ScriptCompiler::StreamedSource::UTF8;
     return true;
   }
