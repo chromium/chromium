@@ -316,6 +316,8 @@ static_library("common") {
     "ftl_signaling_connector.h",
     "heartbeat_sender.cc",
     "heartbeat_sender.h",
+    "heartbeat_service_client.cc",
+    "heartbeat_service_client.h",
     "host_attributes.cc",
     "host_attributes.h",
     "host_config.cc",
