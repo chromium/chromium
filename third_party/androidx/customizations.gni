@@ -83,6 +83,16 @@ template("_androidx_prebuilt") {
                "androidx_versionedparcelable_versionedparcelable_java") {
       # Target has AIDL, but we do not support it yet: http://crbug.com/644439
       ignore_aidl = true
+    } else if (target_name == "androidx_window_window_java") {
+      deps += [
+        # This library has a <uses-library> to enable some extra OS APIs, so ensure the
+        # .jar file is made available to R8 via this dep.
+        "//third_party/android_sdk:android_window_extensions_java",
+
+        # Sidecar as a library seems to be gone in Maven, so deps don't exist
+        # onto sidecar.
+        "//third_party/androidx:androidx_window_sidecar_sidecar_java",
+      ]
     } else if (target_name == "androidx_webkit_webkit_java") {
       visibility = [
         "//android_webview/tools/system_webview_shell:*",
@@ -105,7 +115,6 @@ template("_androidx_prebuilt") {
     }
   }
 }
-
 
 template("androidx_java_prebuilt") {
   _androidx_prebuilt(target_name) {

@@ -997,5 +997,7 @@
         <action android:name="org.chromium.intent.action.UPDATE_PAYMENT_DETAILS"/>
       </intent-filter>  # DIFF-ANCHOR: c68af934
     </service>  # DIFF-ANCHOR: 2a1cd701
+    <uses-library android:name="androidx.window.extensions" android:required="false"/>
+    <uses-library android:name="androidx.window.sidecar" android:required="false"/>
   </application>
 </manifest>
