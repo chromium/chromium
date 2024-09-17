@@ -148,7 +148,6 @@
 #include "skia/ext/font_utils.h"
 #include "skia/ext/skia_memory_dump_provider.h"
 #include "third_party/abseil-cpp/absl/base/attributes.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/origin_trials/origin_trials_settings_provider.h"
 #include "third_party/blink/public/common/page/launching_process_state.h"
 #include "third_party/blink/public/common/switches.h"
@@ -506,11 +505,7 @@ RenderThreadImpl::RenderThreadImpl(
               .ConnectToBrowser(true)
               .IPCTaskRunner(scheduler->DeprecatedDefaultTaskRunner())
               .ExposesInterfacesToBrowser()
-              .SetUrgentMessageObserver(
-                  base::FeatureList::IsEnabled(
-                      blink::features::kBlinkSchedulerPrioritizeNavigationIPCs)
-                      ? scheduler.get()
-                      : nullptr)
+              .SetUrgentMessageObserver(scheduler.get())
               .Build()),
       main_thread_scheduler_(std::move(scheduler)),
       client_id_(GetClientIdFromCommandLine()) {

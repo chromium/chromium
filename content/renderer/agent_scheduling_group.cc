@@ -23,7 +23,6 @@
 #include "ipc/ipc_channel_mojo.h"
 #include "ipc/ipc_listener.h"
 #include "ipc/ipc_sync_channel.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/page/browsing_context_group_info.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom.h"
 #include "third_party/blink/public/mojom/page/page.mojom.h"
@@ -129,10 +128,7 @@ AgentSchedulingGroup::AgentSchedulingGroup(
       /*listener_task_runner=*/agent_group_scheduler_->DefaultTaskRunner(),
       render_thread_->GetShutdownEvent());
 
-  if (base::FeatureList::IsEnabled(
-          blink::features::kBlinkSchedulerPrioritizeNavigationIPCs)) {
-    channel_->SetUrgentMessageObserver(agent_group_scheduler_.get());
-  }
+  channel_->SetUrgentMessageObserver(agent_group_scheduler_.get());
 
   // TODO(crbug.com/40142495): Add necessary filters.
   // Currently, the renderer process has these filters:

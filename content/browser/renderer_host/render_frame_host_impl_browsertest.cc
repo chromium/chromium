@@ -8701,13 +8701,11 @@ class RenderFrameHostImplUrgentNavigationIPCBrowserTest
     if (RenderDocumentEnabled()) {
       scoped_feature_list_.InitWithFeaturesAndParameters(
           /*enabled_features=*/
-          {{blink::features::kBlinkSchedulerPrioritizeNavigationIPCs, {}},
-           {features::kRenderDocument, {{"level", "all-frames"}}}},
+          {{features::kRenderDocument, {{"level", "all-frames"}}}},
           /*disabled_features=*/{});
     } else {
       scoped_feature_list_.InitWithFeatures(
-          /*enabled_features=*/
-          {blink::features::kBlinkSchedulerPrioritizeNavigationIPCs},
+          /*enabled_features=*/{},
           /*disabled_features=*/{features::kRenderDocument});
     }
   }

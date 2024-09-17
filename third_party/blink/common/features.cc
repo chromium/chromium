@@ -2436,10 +2436,6 @@ BASE_FEATURE(kBlinkSchedulerDiscreteInputMatchesResponsivenessMetrics,
              "BlinkSchedulerDiscreteInputMatchesResponsivenessMetrics",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kBlinkSchedulerPrioritizeNavigationIPCs,
-             "BlinkSchedulerPrioritizeNavigationIPCs",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kEnableFileBackedBlobFactory,
              "EnableFileBackedBlobFactory",
              base::FEATURE_ENABLED_BY_DEFAULT);

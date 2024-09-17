@@ -3614,15 +3614,7 @@ TEST_F(MainThreadSchedulerImplTest, DetachRunningTaskQueue) {
   EXPECT_FALSE(weak_queue);
 }
 
-class UrgentMessageSchedulingPolicyTest : public MainThreadSchedulerImplTest {
- public:
-  UrgentMessageSchedulingPolicyTest()
-      : MainThreadSchedulerImplTest(
-            {{features::kBlinkSchedulerPrioritizeNavigationIPCs}},
-            {}) {}
-};
-
-TEST_F(UrgentMessageSchedulingPolicyTest, PrioritizeIPCTasks) {
+TEST_F(MainThreadSchedulerImplTest, PrioritizeUrgentMessageIPCTasks) {
   Vector<String> run_order;
   PostTestTasks(&run_order, "T1 D1 T2");
   // Default TQ tasks after this are prioritized until the there are no more
@@ -3652,7 +3644,7 @@ TEST_F(UrgentMessageSchedulingPolicyTest, PrioritizeIPCTasks) {
                                    "D4", "D5", "T3", "T4", "T5", "T6", "D6"));
 }
 
-TEST_F(UrgentMessageSchedulingPolicyTest, UrgentMessageAndCompositorPriority) {
+TEST_F(MainThreadSchedulerImplTest, UrgentMessageAndCompositorPriority) {
   Vector<String> run_order;
   PostTestTasks(&run_order, "T1 T2 D1 PD1 C1");
   // Simulate receiving an urgent message while running a BeginMainFrame to make
