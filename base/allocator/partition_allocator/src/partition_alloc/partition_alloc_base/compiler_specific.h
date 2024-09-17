@@ -30,25 +30,25 @@
 
 // Annotate a function indicating it should not be inlined.
 // Use like:
-//   NOINLINE void DoStuff() { ... }
-#if defined(__clang__) && PA_HAS_ATTRIBUTE(noinline)
-#define PA_NOINLINE [[clang::noinline]]
-#elif PA_BUILDFLAG(PA_COMPILER_GCC) && PA_HAS_ATTRIBUTE(noinline)
-#define PA_NOINLINE __attribute__((noinline))
-#elif PA_BUILDFLAG(PA_COMPILER_MSVC)
-#define PA_NOINLINE __declspec(noinline)
+//   PA_NOINLINE void DoStuff() { ... }
+#if PA_HAS_CPP_ATTRIBUTE(gnu::noinline)
+#define PA_NOINLINE [[gnu::noinline]]
+#elif PA_HAS_CPP_ATTRIBUTE(msvc::noinline)
+#define PA_NOINLINE [[msvc::noinline]]
 #else
 #define PA_NOINLINE
 #endif
 
-#if defined(__clang__) && defined(NDEBUG) && PA_HAS_ATTRIBUTE(always_inline)
+#if defined(NDEBUG)
+#if PA_HAS_CPP_ATTRIBUTE(clang::always_inline)
 #define PA_ALWAYS_INLINE [[clang::always_inline]] inline
-#elif PA_BUILDFLAG(PA_COMPILER_GCC) && defined(NDEBUG) && \
-    PA_HAS_ATTRIBUTE(always_inline)
-#define PA_ALWAYS_INLINE inline __attribute__((__always_inline__))
-#elif PA_BUILDFLAG(PA_COMPILER_MSVC) && defined(NDEBUG)
+#elif PA_HAS_CPP_ATTRIBUTE(gnu::always_inline)
+#define PA_ALWAYS_INLINE [[gnu::always_inline]] inline
+#elif defined(PA_COMPILER_MSVC)
 #define PA_ALWAYS_INLINE __forceinline
-#else
+#endif
+#endif
+#if !defined(PA_ALWAYS_INLINE)
 #define PA_ALWAYS_INLINE inline
 #endif
 
@@ -59,8 +59,8 @@
 // folding of multiple identical caller functions into a single signature. To
 // prevent code folding, see NO_CODE_FOLDING() in base/debug/alias.h.
 // Use like:
-//   void NOT_TAIL_CALLED FooBar();
-#if defined(__clang__) && PA_HAS_ATTRIBUTE(not_tail_called)
+//   void PA_NOT_TAIL_CALLED FooBar();
+#if PA_HAS_CPP_ATTRIBUTE(clang::not_tail_called)
 #define PA_NOT_TAIL_CALLED [[clang::not_tail_called]]
 #else
 #define PA_NOT_TAIL_CALLED
@@ -70,7 +70,7 @@
 // Can be used only on return statements, even for functions returning void.
 // Caller and callee must have the same number of arguments and its types must
 // be "similar".
-#if defined(__clang__) && PA_HAS_ATTRIBUTE(musttail)
+#if PA_HAS_CPP_ATTRIBUTE(clang::musttail)
 #define PA_MUSTTAIL [[clang::musttail]]
 #else
 #define PA_MUSTTAIL
@@ -84,12 +84,12 @@
 // References:
 // * https://en.cppreference.com/w/cpp/language/attributes/no_unique_address
 // * https://wg21.link/dcl.attr.nouniqueaddr
-#if PA_BUILDFLAG(PA_COMPILER_MSVC) && \
-    PA_HAS_CPP_ATTRIBUTE(msvc::no_unique_address)
+//
 // Unfortunately MSVC ignores [[no_unique_address]] (see
 // https://devblogs.microsoft.com/cppblog/msvc-cpp20-and-the-std-cpp20-switch/#msvc-extensions-and-abi),
 // and clang-cl matches it for ABI compatibility reasons. We need to prefer
 // [[msvc::no_unique_address]] when available if we actually want any effect.
+#if PA_HAS_CPP_ATTRIBUTE(msvc::no_unique_address)
 #define PA_NO_UNIQUE_ADDRESS [[msvc::no_unique_address]]
 #elif PA_HAS_CPP_ATTRIBUTE(no_unique_address)
 #define PA_NO_UNIQUE_ADDRESS [[no_unique_address]]
@@ -103,20 +103,18 @@
 // For v*printf functions (which take a va_list), pass 0 for dots_param.
 // (This is undocumented but matches what the system C headers do.)
 // For member functions, the implicit this parameter counts as index 1.
-#if (PA_BUILDFLAG(PA_COMPILER_GCC) || defined(__clang__)) && \
-    PA_HAS_ATTRIBUTE(format)
+#if PA_HAS_CPP_ATTRIBUTE(gnu::format)
 #define PA_PRINTF_FORMAT(format_param, dots_param) \
-  __attribute__((format(printf, format_param, dots_param)))
+  [[gnu::format(printf, format_param, dots_param)]]
 #else
 #define PA_PRINTF_FORMAT(format_param, dots_param)
 #endif
 
 // Sanitizers annotations.
-#if PA_HAS_ATTRIBUTE(no_sanitize)
-#define PA_NO_SANITIZE(what) __attribute__((no_sanitize(what)))
-#endif
-#if !defined(PA_NO_SANITIZE)
-#define PA_NO_SANITIZE(what)
+#if PA_HAS_CPP_ATTRIBUTE(clang::no_sanitize)
+#define PA_NO_SANITIZE(sanitizer) [[clang::no_sanitize(sanitizer)]]
+#else
+#define PA_NO_SANITIZE(sanitizer)
 #endif
 
 // MemorySanitizer annotations.
@@ -139,43 +137,46 @@
 #define PA_HAS_FEATURE(FEATURE) 0
 #endif
 
+// ANALYZER_SKIP_THIS_PATH() suppresses static analysis for the current
+// codepath and any other branching codepaths that might follow.
+#if defined(__clang_analyzer__)
+namespace partition_alloc::internal {
+inline constexpr bool AnalyzerNoReturn()
+#if PA_HAS_ATTRIBUTE(analyzer_noreturn)
+    __attribute__((analyzer_noreturn))
+#endif
+{
+  return false;
+}
+}  // namespace partition_alloc::internal
+#define PA_ANALYZER_SKIP_THIS_PATH() \
+  static_cast<void>(::partition_alloc::internal::AnalyzerNoReturn())
+#else
+// The above definition would be safe even outside the analyzer, but defining
+// the macro away entirely avoids the need for the optimizer to eliminate it.
+#define PA_ANALYZER_SKIP_THIS_PATH()
+#endif
+
 // The ANALYZER_ASSUME_TRUE(bool arg) macro adds compiler-specific hints
 // to Clang which control what code paths are statically analyzed,
 // and is meant to be used in conjunction with assert & assert-like functions.
 // The expression is passed straight through if analysis isn't enabled.
-//
-// ANALYZER_SKIP_THIS_PATH() suppresses static analysis for the current
-// codepath and any other branching codepaths that might follow.
 #if defined(__clang_analyzer__)
-
 namespace partition_alloc::internal {
-
-inline constexpr bool AnalyzerNoReturn() __attribute__((analyzer_noreturn)) {
-  return false;
-}
-
 inline constexpr bool AnalyzerAssumeTrue(bool arg) {
-  // PartitionAllocAnalyzerNoReturn() is invoked and analysis is terminated if
-  // |arg| is false.
+  // AnalyzerNoReturn() is invoked and analysis is terminated if |arg| is false.
   return arg || AnalyzerNoReturn();
 }
-
 }  // namespace partition_alloc::internal
-
 #define PA_ANALYZER_ASSUME_TRUE(arg) \
   ::partition_alloc::internal::AnalyzerAssumeTrue(!!(arg))
-#define PA_ANALYZER_SKIP_THIS_PATH() \
-  static_cast<void>(::partition_alloc::internal::AnalyzerNoReturn())
-
-#else  // !defined(__clang_analyzer__)
-
+#else
+// Again, the above definition is safe, this is just simpler for the optimizer.
 #define PA_ANALYZER_ASSUME_TRUE(arg) (arg)
-#define PA_ANALYZER_SKIP_THIS_PATH()
-
-#endif  // defined(__clang_analyzer__)
+#endif
 
 // Use nomerge attribute to disable optimization of merging multiple same calls.
-#if defined(__clang__) && PA_HAS_ATTRIBUTE(nomerge)
+#if PA_HAS_CPP_ATTRIBUTE(clang::nomerge)
 #define PA_NOMERGE [[clang::nomerge]]
 #else
 #define PA_NOMERGE
@@ -202,7 +203,7 @@ inline constexpr bool AnalyzerAssumeTrue(bool arg) {
 // See also:
 //   https://clang.llvm.org/docs/AttributeReference.html#trivial-abi
 //   https://libcxx.llvm.org/docs/DesignDocs/UniquePtrTrivialAbi.html
-#if defined(__clang__) && PA_HAS_ATTRIBUTE(trivial_abi)
+#if PA_HAS_CPP_ATTRIBUTE(clang::trivial_abi)
 #define PA_TRIVIAL_ABI [[clang::trivial_abi]]
 #else
 #define PA_TRIVIAL_ABI
@@ -211,14 +212,15 @@ inline constexpr bool AnalyzerAssumeTrue(bool arg) {
 // Requires constant initialization. See constinit in C++20. Allows to rely on a
 // variable being initialized before execution, and not requiring a global
 // constructor.
-#if PA_HAS_ATTRIBUTE(require_constant_initialization)
-#define PA_CONSTINIT __attribute__((require_constant_initialization))
-#endif
-#if !defined(PA_CONSTINIT)
+// TODO(crbug.com/365046216): Use `constinit` directly when C++20 is available
+// and all usage sites have been reordered to be compatible with doing so.
+#if PA_HAS_CPP_ATTRIBUTE(clang::require_constant_initialization)
+#define PA_CONSTINIT [[clang::require_constant_initialization]]
+#else
 #define PA_CONSTINIT
 #endif
 
-#if defined(__clang__)
+#if PA_HAS_CPP_ATTRIBUTE(gsl::Pointer)
 #define PA_GSL_POINTER [[gsl::Pointer]]
 #else
 #define PA_GSL_POINTER

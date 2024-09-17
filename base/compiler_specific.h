@@ -11,20 +11,9 @@
 #error "Only clang-cl is supported on Windows, see https://crbug.com/988071"
 #endif
 
-// This is a wrapper around `__has_cpp_attribute`, which can be used to test for
+// A wrapper around `__has_attribute`, which can be used to test for
 // the presence of an attribute. In case the compiler does not support this
 // macro it will simply evaluate to 0.
-//
-// References:
-// https://wg21.link/sd6#testing-for-the-presence-of-an-attribute-__has_cpp_attribute
-// https://wg21.link/cpp.cond#:__has_cpp_attribute
-#if defined(__has_cpp_attribute)
-#define HAS_CPP_ATTRIBUTE(x) __has_cpp_attribute(x)
-#else
-#define HAS_CPP_ATTRIBUTE(x) 0
-#endif
-
-// A wrapper around `__has_attribute`, similar to HAS_CPP_ATTRIBUTE.
 #if defined(__has_attribute)
 #define HAS_ATTRIBUTE(x) __has_attribute(x)
 #else
@@ -41,32 +30,31 @@
 // Annotate a function indicating it should not be inlined.
 // Use like:
 //   NOINLINE void DoStuff() { ... }
-#if defined(__clang__) && HAS_ATTRIBUTE(noinline)
-#define NOINLINE [[clang::noinline]]
-#elif defined(COMPILER_GCC) && HAS_ATTRIBUTE(noinline)
-#define NOINLINE __attribute__((noinline))
-#elif defined(COMPILER_MSVC)
-#define NOINLINE __declspec(noinline)
+#if __has_cpp_attribute(gnu::noinline)
+#define NOINLINE [[gnu::noinline]]
+#elif __has_cpp_attribute(msvc::noinline)
+#define NOINLINE [[msvc::noinline]]
 #else
 #define NOINLINE
 #endif
 
 // Annotate a function indicating it should not be optimized.
-#if defined(__clang__) && HAS_ATTRIBUTE(optnone)
+#if __has_cpp_attribute(clang::optnone)
 #define NOOPT [[clang::optnone]]
-#elif defined(COMPILER_GCC) && HAS_ATTRIBUTE(optimize)
-#define NOOPT __attribute__((optimize(0)))
+#elif __has_cpp_attribute(gnu::optimize)
+#define NOOPT [[gnu::optimize(0)]]
 #else
 #define NOOPT
 #endif
 
-#if defined(__clang__) && defined(NDEBUG) && HAS_ATTRIBUTE(always_inline)
-#define ALWAYS_INLINE [[clang::always_inline]] inline
-#elif defined(COMPILER_GCC) && defined(NDEBUG) && HAS_ATTRIBUTE(always_inline)
-#define ALWAYS_INLINE inline __attribute__((__always_inline__))
-#elif defined(COMPILER_MSVC) && defined(NDEBUG)
+#if defined(NDEBUG)
+#if __has_cpp_attribute(gnu::always_inline)
+#define ALWAYS_INLINE [[gnu::always_inline]] inline
+#elif defined(COMPILER_MSVC)
 #define ALWAYS_INLINE __forceinline
-#else
+#endif
+#endif
+#if !defined(ALWAYS_INLINE)
 #define ALWAYS_INLINE inline
 #endif
 
@@ -78,7 +66,7 @@
 // prevent code folding, see NO_CODE_FOLDING() in base/debug/alias.h.
 // Use like:
 //   NOT_TAIL_CALLED void FooBar();
-#if defined(__clang__) && HAS_ATTRIBUTE(not_tail_called)
+#if __has_cpp_attribute(clang::not_tail_called)
 #define NOT_TAIL_CALLED [[clang::not_tail_called]]
 #else
 #define NOT_TAIL_CALLED
@@ -88,7 +76,7 @@
 // Can be used only on return statements, even for functions returning void.
 // Caller and callee must have the same number of arguments and its types must
 // be "similar".
-#if defined(__clang__) && HAS_ATTRIBUTE(musttail)
+#if __has_cpp_attribute(clang::musttail)
 #define MUSTTAIL [[clang::musttail]]
 #else
 #define MUSTTAIL
@@ -102,13 +90,14 @@
 // References:
 // * https://en.cppreference.com/w/cpp/language/attributes/no_unique_address
 // * https://wg21.link/dcl.attr.nouniqueaddr
-#if defined(COMPILER_MSVC) && HAS_CPP_ATTRIBUTE(msvc::no_unique_address)
+//
 // Unfortunately MSVC ignores [[no_unique_address]] (see
 // https://devblogs.microsoft.com/cppblog/msvc-cpp20-and-the-std-cpp20-switch/#msvc-extensions-and-abi),
 // and clang-cl matches it for ABI compatibility reasons. We need to prefer
 // [[msvc::no_unique_address]] when available if we actually want any effect.
+#if __has_cpp_attribute(msvc::no_unique_address)
 #define NO_UNIQUE_ADDRESS [[msvc::no_unique_address]]
-#elif HAS_CPP_ATTRIBUTE(no_unique_address)
+#elif __has_cpp_attribute(no_unique_address)
 #define NO_UNIQUE_ADDRESS [[no_unique_address]]
 #else
 #define NO_UNIQUE_ADDRESS
@@ -120,19 +109,18 @@
 // For v*printf functions (which take a va_list), pass 0 for dots_param.
 // (This is undocumented but matches what the system C headers do.)
 // For member functions, the implicit this parameter counts as index 1.
-#if (defined(COMPILER_GCC) || defined(__clang__)) && HAS_ATTRIBUTE(format)
+#if __has_cpp_attribute(gnu::format)
 #define PRINTF_FORMAT(format_param, dots_param) \
-  __attribute__((format(printf, format_param, dots_param)))
+  [[gnu::format(printf, format_param, dots_param)]]
 #else
 #define PRINTF_FORMAT(format_param, dots_param)
 #endif
 
 // Sanitizers annotations.
-#if HAS_ATTRIBUTE(no_sanitize)
-#define NO_SANITIZE(what) __attribute__((no_sanitize(what)))
-#endif
-#if !defined(NO_SANITIZE)
-#define NO_SANITIZE(what)
+#if __has_cpp_attribute(clang::no_sanitize)
+#define NO_SANITIZE(sanitizer) [[clang::no_sanitize(sanitizer)]]
+#else
+#define NO_SANITIZE(sanitizer)
 #endif
 
 // MemorySanitizer annotations.
@@ -175,9 +163,6 @@
 #define DISABLE_CFI_ICALL NO_SANITIZE("cfi-icall")
 #endif
 #endif
-#if !defined(DISABLE_CFI_ICALL)
-#define DISABLE_CFI_ICALL
-#endif
 
 // DISABLE_CFI_DLSYM -- applies DISABLE_CFI_ICALL on platforms where dlsym
 // functions must be called. Retains CFI checks on platforms where loaded
@@ -189,9 +174,6 @@
 #else
 #define DISABLE_CFI_DLSYM DISABLE_CFI_ICALL
 #endif
-#endif
-#if !defined(DISABLE_CFI_DLSYM)
-#define DISABLE_CFI_DLSYM
 #endif
 
 // Compiler feature-detection.
@@ -211,7 +193,6 @@
 #define PRETTY_FUNCTION __func__
 #endif
 
-#if defined(__clang__) && HAS_ATTRIBUTE(uninitialized)
 // Attribute "uninitialized" disables -ftrivial-auto-var-init=pattern for
 // the specified variable.
 // Library-wide alternative is
@@ -241,7 +222,10 @@
 // please document the problem for someone who is going to cleanup it later.
 // E.g. platform, bot, benchmark or test name in patch description or next to
 // the attribute.
+#if __has_cpp_attribute(clang::uninitialized)
 #define STACK_UNINITIALIZED [[clang::uninitialized]]
+#elif __has_cpp_attribute(gnu::uninitialized)
+#define STACK_UNINITIALIZED [[gnu::uninitialized]]
 #else
 #define STACK_UNINITIALIZED
 #endif
@@ -257,47 +241,49 @@
 //
 // In some cases it's desirable to remove this, e.g. on hot functions, or if
 // we have purposely changed the reference canary.
-#if defined(COMPILER_GCC) || defined(__clang__)
-#if HAS_ATTRIBUTE(__no_stack_protector__)
-#define NO_STACK_PROTECTOR __attribute__((__no_stack_protector__))
-#else
-#define NO_STACK_PROTECTOR __attribute__((__optimize__("-fno-stack-protector")))
-#endif
+#if __has_cpp_attribute(gnu::no_stack_protector)
+#define NO_STACK_PROTECTOR [[gnu::no_stack_protector]]
+#elif __has_cpp_attribute(gnu::optimize)
+#define NO_STACK_PROTECTOR [[gnu::optimize("-fno-stack-protector")]]
 #else
 #define NO_STACK_PROTECTOR
+#endif
+
+// ANALYZER_SKIP_THIS_PATH() suppresses static analysis for the current
+// codepath and any other branching codepaths that might follow.
+#if defined(__clang_analyzer__)
+inline constexpr bool AnalyzerNoReturn()
+#if HAS_ATTRIBUTE(analyzer_noreturn)
+    __attribute__((analyzer_noreturn))
+#endif
+{
+  return false;
+}
+#define ANALYZER_SKIP_THIS_PATH() static_cast<void>(::AnalyzerNoReturn())
+#else
+// The above definition would be safe even outside the analyzer, but defining
+// the macro away entirely avoids the need for the optimizer to eliminate it.
+#define ANALYZER_SKIP_THIS_PATH()
 #endif
 
 // The ANALYZER_ASSUME_TRUE(bool arg) macro adds compiler-specific hints
 // to Clang which control what code paths are statically analyzed,
 // and is meant to be used in conjunction with assert & assert-like functions.
 // The expression is passed straight through if analysis isn't enabled.
-//
-// ANALYZER_SKIP_THIS_PATH() suppresses static analysis for the current
-// codepath and any other branching codepaths that might follow.
 #if defined(__clang_analyzer__)
-
-inline constexpr bool AnalyzerNoReturn() __attribute__((analyzer_noreturn)) {
-  return false;
-}
-
 inline constexpr bool AnalyzerAssumeTrue(bool arg) {
   // AnalyzerNoReturn() is invoked and analysis is terminated if |arg| is
   // false.
   return arg || AnalyzerNoReturn();
 }
-
 #define ANALYZER_ASSUME_TRUE(arg) ::AnalyzerAssumeTrue(!!(arg))
-#define ANALYZER_SKIP_THIS_PATH() static_cast<void>(::AnalyzerNoReturn())
-
-#else  // !defined(__clang_analyzer__)
-
+#else
+// Again, the above definition is safe, this is just simpler for the optimizer.
 #define ANALYZER_ASSUME_TRUE(arg) (arg)
-#define ANALYZER_SKIP_THIS_PATH()
-
-#endif  // defined(__clang_analyzer__)
+#endif
 
 // Use nomerge attribute to disable optimization of merging multiple same calls.
-#if defined(__clang__) && HAS_ATTRIBUTE(nomerge)
+#if __has_cpp_attribute(clang::nomerge)
 #define NOMERGE [[clang::nomerge]]
 #else
 #define NOMERGE
@@ -324,7 +310,7 @@ inline constexpr bool AnalyzerAssumeTrue(bool arg) {
 // See also:
 //   https://clang.llvm.org/docs/AttributeReference.html#trivial-abi
 //   https://libcxx.llvm.org/docs/DesignDocs/UniquePtrTrivialAbi.html
-#if defined(__clang__) && HAS_ATTRIBUTE(trivial_abi)
+#if __has_cpp_attribute(clang::trivial_abi)
 #define TRIVIAL_ABI [[clang::trivial_abi]]
 #else
 #define TRIVIAL_ABI
@@ -338,7 +324,7 @@ inline constexpr bool AnalyzerAssumeTrue(bool arg) {
 // See also:
 //   https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/p1144r8.html
 //   https://clang.llvm.org/docs/LanguageExtensions.html#:~:text=__is_trivially_relocatable
-#if defined(__clang__) && HAS_BUILTIN(__is_trivially_relocatable)
+#if HAS_BUILTIN(__is_trivially_relocatable)
 #define IS_TRIVIALLY_RELOCATABLE(t) __is_trivially_relocatable(t)
 #else
 #define IS_TRIVIALLY_RELOCATABLE(t) false
@@ -347,17 +333,21 @@ inline constexpr bool AnalyzerAssumeTrue(bool arg) {
 // Marks a member function as reinitializing a moved-from variable.
 // See also
 // https://clang.llvm.org/extra/clang-tidy/checks/bugprone/use-after-move.html#reinitialization
-#if defined(__clang__) && HAS_ATTRIBUTE(reinitializes)
+#if __has_cpp_attribute(clang::reinitializes)
 #define REINITIALIZES_AFTER_MOVE [[clang::reinitializes]]
 #else
 #define REINITIALIZES_AFTER_MOVE
 #endif
 
-#if defined(__clang__)
+#if __has_cpp_attribute(gsl::Owner)
 #define GSL_OWNER [[gsl::Owner]]
-#define GSL_POINTER [[gsl::Pointer]]
 #else
 #define GSL_OWNER
+#endif
+
+#if __has_cpp_attribute(gsl::Pointer)
+#define GSL_POINTER [[gsl::Pointer]]
+#else
 #define GSL_POINTER
 #endif
 
@@ -368,30 +358,31 @@ inline constexpr bool AnalyzerAssumeTrue(bool arg) {
 //
 // [1]:
 // https://crsrc.org/c/docs/speed/binary_size/android_binary_size_trybot.md#Mutable-Constants
-#if defined(COMPILER_GCC) || defined(__clang__)
+#if __has_cpp_attribute(gnu::abi_tag)
 #define LOGICALLY_CONST [[gnu::abi_tag("logically_const")]]
 #else
 #define LOGICALLY_CONST
 #endif
 
+// Disable `PRESERVE_MOST` outside AArch64/x64, where it's currently unsupported
+// and thus may trigger warnings.
+//
+// Disable in component builds, since `_dl_runtime_resolve()` clobbers registers
+// on platforms where it's used, and the component build is not perf-critical
+// anyway; see https://github.com/llvm/llvm-project/issues/105588.
+//
+// Disable for Win ARM64 due to as-yet-uninvestigated crashes.
+// TODO(crbug.com/42204008): Investigate, fix, and re-enable.
+#if __has_cpp_attribute(clang::preserve_most) &&             \
+    (defined(ARCH_CPU_ARM64) || defined(ARCH_CPU_X86_64)) && \
+    !defined(COMPONENT_BUILD) &&                             \
+    !(BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64))
 // preserve_most clang's calling convention. Reduces register pressure for the
-// caller and as such can be used for cold calls. Support for the
-// "preserve_most" attribute is limited:
-// - 32-bit platforms do not implement it,
-// - component builds fail because _dl_runtime_resolve() clobbers registers,
-// - there are crashes on arm64 on Windows (https://crbug.com/v8/14065), which
-//   can hopefully be fixed in the future.
-// Additionally, the initial implementation in clang <= 16 overwrote the return
-// register(s) in the epilogue of a preserve_most function, so we only use
-// preserve_most in clang >= 17 (see https://reviews.llvm.org/D143425).
+// caller and as such can be used for cold calls.
 // Clang only supports preserve_most on X86-64 and AArch64 for now.
 // See https://clang.llvm.org/docs/AttributeReference.html#preserve-most for
 // more details.
-#if (defined(ARCH_CPU_ARM64) || defined(ARCH_CPU_X86_64)) && \
-    !(BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)) &&       \
-    !defined(COMPONENT_BUILD) && defined(__clang__) &&       \
-    __clang_major__ >= 17 && HAS_ATTRIBUTE(preserve_most)
-#define PRESERVE_MOST __attribute__((preserve_most))
+#define PRESERVE_MOST [[clang::preserve_most]]
 #else
 #define PRESERVE_MOST
 #endif
@@ -430,7 +421,7 @@ inline constexpr bool AnalyzerAssumeTrue(bool arg) {
 // pointee would be a destroyed temporary.
 //
 // Docs: https://clang.llvm.org/docs/AttributeReference.html#lifetimebound
-#if defined(__clang__)
+#if __has_cpp_attribute(clang::lifetimebound)
 #define LIFETIME_BOUND [[clang::lifetimebound]]
 #else
 #define LIFETIME_BOUND
@@ -451,7 +442,7 @@ inline constexpr bool AnalyzerAssumeTrue(bool arg) {
 // pointers, virtual methods, or methods of templates (including operators like
 // comparison), as the "pure" function can not know what those functions do and
 // can not guarantee there will never be sideeffects.
-#if defined(COMPILER_GCC) || defined(__clang__)
+#if __has_cpp_attribute(gnu::pure)
 #define PURE_FUNCTION [[gnu::pure]]
 #else
 #define PURE_FUNCTION
@@ -480,12 +471,15 @@ inline constexpr bool AnalyzerAssumeTrue(bool arg) {
 // in this way means that all callers will be required to wrap the call in an
 // `UNSAFE_BUFFERS()` macro (see below), with a comment justifying how it meets
 // the requirements.
-#if defined(__clang__) && HAS_ATTRIBUTE(unsafe_buffer_usage)
+#if __has_cpp_attribute(clang::unsafe_buffer_usage)
 #define UNSAFE_BUFFER_USAGE [[clang::unsafe_buffer_usage]]
 #else
 #define UNSAFE_BUFFER_USAGE
 #endif
 
+// Test for `__clang__` directly, as there's no `__has_pragma` or similar (see
+// https://github.com/llvm/llvm-project/issues/51887).
+#if defined(__clang__)
 // UNSAFE_BUFFERS() wraps code that violates the -Wunsafe-buffer-usage warning,
 // such as:
 // - pointer arithmetic,
@@ -527,10 +521,10 @@ inline constexpr bool AnalyzerAssumeTrue(bool arg) {
 // Safety explanations may not rely on invariants that are not fully
 // encapsulated close to the UNSAFE_BUFFERS() usage. Instead, use safer coding
 // patterns or stronger invariants.
-#if defined(__clang__)
-// clang-format off
+//
 // Formatting is off so that we can put each _Pragma on its own line, as
 // recommended by the gcc docs.
+// clang-format off
 #define UNSAFE_BUFFERS(...)                  \
   _Pragma("clang unsafe_buffer_usage begin") \
   __VA_ARGS__                                \
@@ -573,7 +567,7 @@ inline constexpr bool AnalyzerAssumeTrue(bool arg) {
 // `ENABLE_IF_ATTR` interacts correctly with metaprogramming. This is especially
 // painful for constructors. See also
 // https://github.com/chromium/subspace/issues/266.
-#if defined(__clang__)
+#if HAS_ATTRIBUTE(enable_if)
 #define ENABLE_IF_ATTR(cond, msg) __attribute__((enable_if(cond, msg)))
 #else
 #define ENABLE_IF_ATTR(cond, msg)

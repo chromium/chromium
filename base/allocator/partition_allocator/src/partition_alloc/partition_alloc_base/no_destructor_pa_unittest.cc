@@ -11,7 +11,7 @@
 
 namespace partition_alloc::internal::base {
 
-static PA_CONSTINIT NoDestructor<int> an_int;
+PA_CONSTINIT static NoDestructor<int> an_int;
 
 static auto& GetVector() {
   static NoDestructor<std::vector<int>> a_vec({1, 2, 3});

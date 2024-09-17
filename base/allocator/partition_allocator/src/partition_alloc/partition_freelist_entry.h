@@ -107,7 +107,7 @@ struct PartitionFreelistDispatcher {
 #else
   static const PartitionFreelistDispatcher* Create(
       PartitionFreelistEncoding encoding) {
-    static PA_CONSTINIT PartitionFreelistDispatcher dispatcher =
+    PA_CONSTINIT static PartitionFreelistDispatcher dispatcher =
         PartitionFreelistDispatcher();
     return &dispatcher;
   }
