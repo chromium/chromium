@@ -23,13 +23,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.language.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ProfileDependentSetting;
-import org.chromium.components.browser_ui.settings.SettingsPage;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 
 import java.util.ArrayList;
@@ -40,8 +37,7 @@ import java.util.Locale;
  * Fragment with a {@link RecyclerView} containing a list of languages that users may add to their
  * accept languages. There is a {@link SearchView} on its Actionbar to make a quick lookup.
  */
-public class SelectLanguageFragment extends Fragment
-        implements SettingsPage, ProfileDependentSetting {
+public class SelectLanguageFragment extends Fragment implements ProfileDependentSetting {
     // Intent key to pass selected language code from SelectLanguageFragment.
     static final String INTENT_SELECTED_LANGUAGE = "SelectLanguageFragment.SelectedLanguage";
     // Intent key to receive type of languages to populate fragment with.
@@ -100,22 +96,16 @@ public class SelectLanguageFragment extends Fragment
     private List<LanguageItem> mFilteredLanguages;
     private LanguageListBaseAdapter.ItemClickListener mItemClickListener;
     private Profile mProfile;
-    private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.DETAILED_LANGUAGE_SETTINGS)) {
-            mPageTitle.set(getString(R.string.languages_select));
+            getActivity().setTitle(R.string.languages_select);
         } else {
-            mPageTitle.set(getString(R.string.add_language));
+            getActivity().setTitle(R.string.add_language);
         }
         setHasOptionsMenu(true);
-    }
-
-    @Override
-    public ObservableSupplier<String> getPageTitle() {
-        return mPageTitle;
     }
 
     @Override
