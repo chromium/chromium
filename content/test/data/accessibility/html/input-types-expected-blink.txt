@@ -136,7 +136,11 @@ rootWebArea
 ++++++++staticText name='Password: '
 ++++++++++inlineTextBox name='Password: '
 ++++++++textField editable protected name='Password:'
-++++++++++genericContainer editable
+++++++++++genericContainer ignored
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer editable
+++++++++++++genericContainer ignored invisible
+++++++++++++++staticText ignored invisible
 ++++++labelText ignored
 ++++++++staticText ignored
 ++++++++radioButton name='Radio:' checkedState=false
