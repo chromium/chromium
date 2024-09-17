@@ -172,6 +172,8 @@ std::vector<commerce::UrlInfo> GetUrlInfos(std::vector<GURL> urls) {
 
 namespace commerce {
 
+const size_t kMaxNameLength = 64;
+
 ProductSpecificationsService::ProductSpecificationsService(
     syncer::OnceDataTypeStoreFactory create_store_callback,
     std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor)
@@ -343,6 +345,12 @@ ProductSpecificationsService::AddProductSpecificationsSet(
     return std::nullopt;
   }
 
+  // Don't allow names that are too long.
+  std::string final_name = name;
+  if (name.length() > kMaxNameLength) {
+    final_name = name.substr(0, kMaxNameLength);
+  }
+
   // TODO(crbug.com/332545064) add for a product specification set being added.
   std::vector<sync_pb::ProductComparisonSpecifics> specifics;
   int64_t time_now = base::Time::Now().InMillisecondsSinceUnixEpoch();
@@ -354,7 +362,7 @@ ProductSpecificationsService::AddProductSpecificationsSet(
     comparison_specifics.set_uuid(top_level_uuid);
     comparison_specifics.set_creation_time_unix_epoch_millis(time_now);
     comparison_specifics.set_update_time_unix_epoch_millis(time_now);
-    comparison_specifics.mutable_product_comparison()->set_name(name);
+    comparison_specifics.mutable_product_comparison()->set_name(final_name);
     specifics.push_back(comparison_specifics);
     base::Time now = base::Time::Now();
     std::vector<sync_pb::ProductComparisonSpecifics> item_specifics =
@@ -364,7 +372,7 @@ ProductSpecificationsService::AddProductSpecificationsSet(
                      std::make_move_iterator(item_specifics.end()));
     bridge_->AddSpecifics(specifics);
     ProductSpecificationsSet set = ProductSpecificationsSet(
-        top_level_uuid, time_now, time_now, url_infos, name);
+        top_level_uuid, time_now, time_now, url_infos, final_name);
     OnProductSpecificationsSetAdded(set);
     return set;
   } else {
@@ -373,7 +381,7 @@ ProductSpecificationsService::AddProductSpecificationsSet(
         base::Uuid::GenerateRandomV4().AsLowercaseString());
     comparison_specifics.set_creation_time_unix_epoch_millis(time_now);
     comparison_specifics.set_update_time_unix_epoch_millis(time_now);
-    comparison_specifics.set_name(name);
+    comparison_specifics.set_name(final_name);
     for (const GURL& url : GetUrls(url_infos)) {
       sync_pb::ComparisonData* comparison_data =
           comparison_specifics.add_data();
@@ -448,6 +456,13 @@ ProductSpecificationsService::SetName(const base::Uuid& uuid,
   if (!bridge_->IsSyncEnabled()) {
     return std::nullopt;
   }
+
+  // Don't allow names that are too long.
+  std::string final_name = name;
+  if (name.length() > kMaxNameLength) {
+    final_name = name.substr(0, kMaxNameLength);
+  }
+
   if (base::FeatureList::IsEnabled(
           commerce::kProductSpecificationsMultiSpecifics)) {
     // If we can't find the top level entry (perhaps due to a sync failure -
@@ -465,9 +480,9 @@ ProductSpecificationsService::SetName(const base::Uuid& uuid,
     }
     sync_pb::ProductComparisonSpecifics top_level_specific =
         *GetTopLevelSpecific(uuid.AsLowercaseString(), bridge_->entries());
-    top_level_specific.set_name(name);
+    top_level_specific.set_name(final_name);
     base::Time now = base::Time::Now();
-    top_level_specific.mutable_product_comparison()->set_name(name);
+    top_level_specific.mutable_product_comparison()->set_name(final_name);
     top_level_specific.set_update_time_unix_epoch_millis(
         now.InMillisecondsSinceUnixEpoch());
     bridge_->UpdateSpecifics(top_level_specific);
@@ -482,7 +497,7 @@ ProductSpecificationsService::SetName(const base::Uuid& uuid,
     ProductSpecificationsSet updated_set(
         uuid.AsLowercaseString(),
         top_level_specific.creation_time_unix_epoch_millis(),
-        now.InMillisecondsSinceUnixEpoch(), urls, name);
+        now.InMillisecondsSinceUnixEpoch(), urls, final_name);
     NotifyProductSpecificationsUpdate(previous_set.value(), updated_set);
     return updated_set;
   } else {
@@ -495,7 +510,7 @@ ProductSpecificationsService::SetName(const base::Uuid& uuid,
     sync_pb::ProductComparisonSpecifics& specifics = entry->second;
     specifics.set_update_time_unix_epoch_millis(
         base::Time::Now().InMillisecondsSinceUnixEpoch());
-    specifics.set_name(name);
+    specifics.set_name(final_name);
     bridge_->UpdateSpecifics(specifics);
     ProductSpecificationsSet set =
         ProductSpecificationsSet::FromProto(specifics);
