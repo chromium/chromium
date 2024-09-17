@@ -7,11 +7,21 @@
 
 namespace autofill {
 class FormStructure;
+class AutofillField;
 }  // namespace autofill
 
 namespace autofill_prediction_improvements {
 
-bool IsFormEligibleByFieldCriteria(const autofill::FormStructure& form);
+// Returns true if the `field` is eligible based on the type criteria.
+bool IsFieldEligibleByTypeCriteria(const autofill::AutofillField& field);
+
+// Return weather the forms is eligible for the filling journey.
+bool IsFormEligibleForFillingByFieldCriteria(
+    const autofill::FormStructure& form);
+
+// Return weather the forms is eligible for the import journey.
+bool IsFormEligibleForImportByFieldCriteria(
+    const autofill::FormStructure& form);
 
 }  // namespace autofill_prediction_improvements
 

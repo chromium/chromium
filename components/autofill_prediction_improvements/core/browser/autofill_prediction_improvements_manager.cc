@@ -18,6 +18,7 @@
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_features.h"
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_filling_engine.h"
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_utils.h"
+#include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_value_filter.h"
 #include "components/optimization_guide/core/optimization_guide_decider.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/optimization_guide/proto/hints.pb.h"
@@ -234,7 +235,7 @@ bool AutofillPredictionImprovementsManager::HasImprovedPredictionsForField(
 
 bool AutofillPredictionImprovementsManager::IsFormEligible(
     const autofill::FormStructure& form) {
-  if (!IsFormEligibleByFieldCriteria(form)) {
+  if (!IsFormEligibleForFillingByFieldCriteria(form)) {
     return false;
   }
 
@@ -382,18 +383,36 @@ void AutofillPredictionImprovementsManager::UpdateSuggestions(
 void AutofillPredictionImprovementsManager::MaybeImportForm(
     std::unique_ptr<autofill::FormStructure> form,
     ImportFormCallback callback) {
-  // TODO(crbug.com/365962363): Also return early here if
-  // `!IsFormEligibleByFieldCriteria(form_structure))` once the parser is
-  // implemented.
-  if (user_annotations::IsUserAnnotationsObserveFormSubmissionsEnabled() ||
-      !client_->GetUserAnnotationsService() ||
-      !client_->GetUserAnnotationsService()->ShouldAddFormSubmissionForURL(
-          form->source_url())) {
+  user_annotations::UserAnnotationsService* annotation_service =
+      client_->GetUserAnnotationsService();
+
+  // Apply the filter rules to mark potentially sensitive values.
+  FilterSensitiveValues(*form.get());
+
+  bool skip_import = false;
+
+  if (user_annotations::IsUserAnnotationsObserveFormSubmissionsEnabled()) {
+    // The import is skipped because importing is done by a different path.
+    skip_import = true;
+  } else if (!annotation_service) {
+    // The import is skipped because the annotation service is not available.
+    skip_import = true;
+  } else if (!annotation_service->ShouldAddFormSubmissionForURL(
+                 form->source_url())) {
+    // The import is disabled because the origin criteria is not fulfilled.
+    skip_import = true;
+  } else if (!IsFormEligibleForImportByFieldCriteria(*form.get())) {
+    // The form does not contain enough values that can be imported.
+    skip_import = true;
+  }
+
+  if (skip_import) {
     std::move(callback).Run(std::move(form),
                             /*to_be_upserted_entries=*/{},
                             /*prompt_acceptance_callback=*/base::DoNothing());
     return;
   }
+
   // TODO(crbug.com/366222226): Ensure the AX tree retrieval is not delayed,
   // e.g. by async filters added in future.
   client_->GetAXTree(base::BindOnce(
