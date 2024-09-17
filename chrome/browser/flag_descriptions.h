@@ -2206,9 +2206,6 @@ extern const char kTranslateForceTriggerOnEnglishDescription[];
 extern const char kTreatInsecureOriginAsSecureName[];
 extern const char kTreatInsecureOriginAsSecureDescription[];
 
-extern const char kTailoredSecurityRetryForSyncUsersName[];
-extern const char kTailoredSecurityRetryForSyncUsersDescription[];
-
 extern const char kTPCPhaseOutFacilitatedTestingName[];
 extern const char kTPCPhaseOutFacilitatedTestingDescription[];
 

@@ -4128,11 +4128,6 @@
     "expiry_milestone": 131
   },
   {
-    "name": "enable-tailored-security-retry-for-sync-users",
-    "owners": ["jacastro@chromium.org", "chrome-counter-abuse-alerts@google.com"],
-    "expiry_milestone": 120
-  },
-  {
     "name": "enable-task-manager-desktop-refresh",
     "owners": [
       "mwoj@google.com",

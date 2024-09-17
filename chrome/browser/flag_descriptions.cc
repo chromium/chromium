@@ -3768,11 +3768,6 @@ const char kTreatInsecureOriginAsSecureDescription[] =
     "specified e.g. \"http://example.com\". For the definition of secure "
     "contexts, see https://w3c.github.io/webappsec-secure-contexts/";
 
-const char kTailoredSecurityRetryForSyncUsersName[] =
-    "Enable Tailored Security retry for sync users";
-const char kTailoredSecurityRetryForSyncUsersDescription[] =
-    "Enables a stateful recovery mechanism for the Tailored Security feature";
-
 const char kTrustedVaultFrequentDegradedRecoverabilityPollingName[] =
     "Enable frequent polling of trusted vault degraded recoverability state";
 const char kTrustedVaultFrequentDegradedRecoverabilityPollingDescription[] =

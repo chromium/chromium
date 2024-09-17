@@ -8946,11 +8946,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableGooglePlayProtectPromptDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(safe_browsing::kGooglePlayProtectPrompt)},
 
-    {"enable-tailored-security-retry-for-sync-users",
-     flag_descriptions::kTailoredSecurityRetryForSyncUsersName,
-     flag_descriptions::kTailoredSecurityRetryForSyncUsersDescription, kOsAll,
-     FEATURE_VALUE_TYPE(safe_browsing::kTailoredSecurityRetryForSyncUsers)},
-
 #if !BUILDFLAG(IS_ANDROID)
     {"sct-auditing", flag_descriptions::kSCTAuditingName,
      flag_descriptions::kSCTAuditingDescription, kOsDesktop,
