@@ -73,10 +73,10 @@ class CC_PAINT_EXPORT PaintWorkletInput
     PropertyValue();
     explicit PropertyValue(float value);
     explicit PropertyValue(SkColor4f value);
-    PropertyValue(const PropertyValue&);
-    ~PropertyValue();
+
     bool has_value() const;
     void reset();
+
     std::optional<float> float_value;
     std::optional<SkColor4f> color_value;
   };

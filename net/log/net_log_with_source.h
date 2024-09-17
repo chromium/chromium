@@ -20,7 +20,6 @@ class NetLog;
 class NET_EXPORT NetLogWithSource {
  public:
   NetLogWithSource();
-  ~NetLogWithSource();
 
   // Adds a log entry to the NetLog for the bound source.
   void AddEntry(NetLogEventType type, NetLogEventPhase phase) const;

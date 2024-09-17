@@ -66,11 +66,6 @@ PaintWorkletInput::PropertyValue::PropertyValue(float value)
 PaintWorkletInput::PropertyValue::PropertyValue(SkColor4f value)
     : color_value(value) {}
 
-PaintWorkletInput::PropertyValue::PropertyValue(const PropertyValue& other) =
-    default;
-
-PaintWorkletInput::PropertyValue::~PropertyValue() = default;
-
 bool PaintWorkletInput::PropertyValue::has_value() const {
   DCHECK(float_value.has_value() != color_value.has_value() ||
          (!float_value.has_value() && !color_value.has_value()));

@@ -27,8 +27,6 @@ class EcdsaP256PublicKey {
   static base::expected<EcdsaP256PublicKey, std::string> Create(
       base::span<const uint8_t> bytes);
 
-  ~EcdsaP256PublicKey();
-
   bool operator==(const EcdsaP256PublicKey&) const = default;
 
   base::span<const uint8_t, kLength> bytes() const { return *bytes_; }
