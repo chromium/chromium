@@ -1495,6 +1495,10 @@ void AccessibilityController::RegisterProfilePrefs(
     registry->RegisterBooleanPref(
         prefs::kAccessibilityFaceGazeAdjustSpeedSeparately, false,
         user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+    registry->RegisterIntegerPref(
+        prefs::kAccessibilityFaceGazeVelocityThreshold,
+        kDefaultFaceGazeVelocityThreshold,
+        user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
   }
 
   if (::features::IsAccessibilityMagnifierFollowsChromeVoxEnabled()) {

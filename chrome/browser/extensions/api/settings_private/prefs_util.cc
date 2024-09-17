@@ -780,6 +780,8 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::kBoolean;
   (*s_allowlist)[ash::prefs::kAccessibilityFaceGazeActionsEnabled] =
       settings_api::PrefType::kBoolean;
+  (*s_allowlist)[ash::prefs::kAccessibilityFaceGazeVelocityThreshold] =
+      settings_api::PrefType::kNumber;
   (*s_allowlist)[ash::prefs::kAccessibilityCaretBlinkInterval] =
       settings_api::PrefType::kNumber;
   (*s_allowlist)[ash::prefs::kAccessibilityDisableTrackpadEnabled] =

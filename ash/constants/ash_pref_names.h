@@ -868,6 +868,10 @@ inline constexpr char kFaceGazeDlcSuccessNotificationHasBeenShown[] =
 // has ever been shown.
 inline constexpr char kFaceGazeDlcFailureNotificationHasBeenShown[] =
     "settings.a11y.face_gaze.dlc_failure_notification_has_been_shown";
+// An integer pref which determines the FaceGaze cursor controller movement
+// threshold.
+inline constexpr char kAccessibilityFaceGazeVelocityThreshold[] =
+    "settings.a11y.face_gaze.velocity_threshold";
 
 // A boolean pref which determines whether the accessibility menu shows
 // regardless of the state of a11y features.

@@ -363,6 +363,7 @@ enum {
   kAccessibilityFaceGazeGesturesToKeyCombos = 100301,
   kFocusModeYTMDisplayOAuthConsent = 100302,
   kFocusModeYTMDisplayFreeTrial = 100303,
+  kAccessibilityFaceGazeVelocityThreshold = 100304,
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -1180,6 +1181,10 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
       sync_preferences::MergeBehavior::kNone}},
     {ash::prefs::kAccessibilityFaceGazeAdjustSpeedSeparately,
      {syncable_prefs_ids::kAccessibilityFaceGazeAdjustSpeedSeparately,
+      syncer::OS_PREFERENCES, sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kNone}},
+    {ash::prefs::kAccessibilityFaceGazeVelocityThreshold,
+     {syncable_prefs_ids::kAccessibilityFaceGazeVelocityThreshold,
       syncer::OS_PREFERENCES, sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
     {ash::prefs::kAccessibilityFlashNotificationsEnabled,

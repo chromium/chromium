@@ -643,6 +643,7 @@ chromium-metrics-reviews@google.com.
   <int value="100301" label="AccessibilityFaceGazeGesturesToKeyCombos"/>
   <int value="100302" label="FocusModeYTMDisplayOAuthConsent"/>
   <int value="100303" label="FocusModeYTMDisplayFreeTrial"/>
+  <int value="100304" label="AccessibilityFaceGazeVelocityThreshold"/>
 <!-- LINT.ThenChange(/chrome/browser/sync/prefs/chrome_syncable_prefs_database.cc:ChromeSyncablePref)-->
 
 <!-- LINT.IfChange(IosSyncablePref) -->
