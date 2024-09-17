@@ -42,9 +42,9 @@ struct V8StringTwoBytesTrait {
   typedef UChar CharType;
   ALWAYS_INLINE static void Write(v8::Isolate* isolate,
                                   v8::Local<v8::String> v8_string,
-                                  CharType* buffer,
-                                  int length) {
-    v8_string->Write(isolate, reinterpret_cast<uint16_t*>(buffer), 0, length);
+                                  base::span<CharType> buffer) {
+    v8_string->Write(isolate, reinterpret_cast<uint16_t*>(buffer.data()), 0,
+                     static_cast<int>(buffer.size()));
   }
 };
 
@@ -52,9 +52,9 @@ struct V8StringOneByteTrait {
   typedef LChar CharType;
   ALWAYS_INLINE static void Write(v8::Isolate* isolate,
                                   v8::Local<v8::String> v8_string,
-                                  CharType* buffer,
-                                  int length) {
-    v8_string->WriteOneByte(isolate, buffer, 0, length);
+                                  base::span<CharType> buffer) {
+    v8_string->WriteOneByte(isolate, buffer.data(), 0,
+                            static_cast<int>(buffer.size()));
   }
 };
 
@@ -63,9 +63,9 @@ String StringTraits<String>::FromV8String(v8::Isolate* isolate,
                                           v8::Local<v8::String> v8_string,
                                           int length) {
   DCHECK(v8_string->Length() == length);
-  typename V8StringTrait::CharType* buffer;
+  base::span<typename V8StringTrait::CharType> buffer;
   String result = String::CreateUninitialized(length, buffer);
-  V8StringTrait::Write(isolate, v8_string, buffer, length);
+  V8StringTrait::Write(isolate, v8_string, buffer);
   return result;
 }
 
@@ -79,12 +79,12 @@ AtomicString StringTraits<AtomicString>::FromV8String(
       32 / sizeof(typename V8StringTrait::CharType);
   if (length <= kInlineBufferSize) {
     typename V8StringTrait::CharType inline_buffer[kInlineBufferSize];
-    V8StringTrait::Write(isolate, v8_string, inline_buffer, length);
+    V8StringTrait::Write(isolate, v8_string, inline_buffer);
     return AtomicString(inline_buffer, static_cast<unsigned>(length));
   }
-  typename V8StringTrait::CharType* buffer;
+  base::span<typename V8StringTrait::CharType> buffer;
   String string = String::CreateUninitialized(length, buffer);
-  V8StringTrait::Write(isolate, v8_string, buffer, length);
+  V8StringTrait::Write(isolate, v8_string, buffer);
   return AtomicString(string);
 }
 

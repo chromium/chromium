@@ -456,10 +456,10 @@ String String::Make8BitFrom16BitSource(const UChar* source, wtf_size_t length) {
   if (!length)
     return g_empty_string;
 
-  LChar* destination;
+  base::span<LChar> destination;
   String result = String::CreateUninitialized(length, destination);
 
-  CopyLCharsFromUCharSource(destination, source, length);
+  CopyLCharsFromUCharSource(destination.data(), source, length);
 
   return result;
 }
@@ -468,10 +468,10 @@ String String::Make16BitFrom8BitSource(const LChar* source, wtf_size_t length) {
   if (!length)
     return g_empty_string16_bit;
 
-  UChar* destination;
+  base::span<UChar> destination;
   String result = String::CreateUninitialized(length, destination);
 
-  StringImpl::CopyChars(destination, source, length);
+  StringImpl::CopyChars(destination.data(), source, length);
 
   return result;
 }

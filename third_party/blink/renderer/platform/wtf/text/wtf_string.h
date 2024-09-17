@@ -397,14 +397,14 @@ class WTF_EXPORT String {
   [[nodiscard]] String EncodeForDebugging() const;
 
   // Returns an uninitialized string. The characters needs to be written
-  // into the buffer returned in data before the returned string is used.
+  // into the buffer returned in `data` before the returned string is used.
   // Failure to do this will have unpredictable results.
   [[nodiscard]] static String CreateUninitialized(unsigned length,
-                                                  UChar*& data) {
+                                                  base::span<UChar>& data) {
     return StringImpl::CreateUninitialized(length, data);
   }
   [[nodiscard]] static String CreateUninitialized(unsigned length,
-                                                  LChar*& data) {
+                                                  base::span<LChar>& data) {
     return StringImpl::CreateUninitialized(length, data);
   }
 

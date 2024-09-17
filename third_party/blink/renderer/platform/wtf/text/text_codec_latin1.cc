@@ -115,15 +115,15 @@ String TextCodecLatin1::Decode(const char* bytes,
                                FlushBehavior,
                                bool,
                                bool&) {
-  LChar* characters;
   if (!length)
     return g_empty_string;
+  base::span<LChar> characters;
   String result = String::CreateUninitialized(length, characters);
 
   const uint8_t* source = reinterpret_cast<const uint8_t*>(bytes);
   const uint8_t* end = reinterpret_cast<const uint8_t*>(bytes + length);
   const uint8_t* aligned_end = AlignToMachineWord(end);
-  LChar* destination = characters;
+  LChar* destination = characters.data();
 
   while (source < end) {
     if (IsASCII(*source)) {
@@ -159,13 +159,13 @@ String TextCodecLatin1::Decode(const char* bytes,
   return result;
 
 upConvertTo16Bit:
-  UChar* characters16;
+  base::span<UChar> characters16;
   String result16 = String::CreateUninitialized(length, characters16);
 
-  UChar* destination16 = characters16;
+  UChar* destination16 = characters16.data();
 
   // Zero extend and copy already processed 8 bit data
-  LChar* ptr8 = characters;
+  LChar* ptr8 = characters.data();
   LChar* end_ptr8 = destination;
 
   while (ptr8 < end_ptr8)

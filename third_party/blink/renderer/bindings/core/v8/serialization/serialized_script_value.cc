@@ -285,13 +285,9 @@ String SerializedScriptValue::ToWireString() const {
   // This requires direct use of uninitialized strings, though.
   auto string_size_bytes = base::checked_cast<wtf_size_t>(
       base::bits::AlignUp(data_buffer_.size(), sizeof(UChar)));
-  UChar* backing_ptr;
-  String wire_string = String::CreateUninitialized(
-      string_size_bytes / sizeof(UChar), backing_ptr);
-  auto backing =
-      // TODO(crbug.com/40284755): CreateUninitialized should return a span
-      // pointing to the string backing, instead of a pointer.
-      UNSAFE_TODO(base::span(backing_ptr, wire_string.length()));
+  base::span<UChar> backing;
+  String wire_string =
+      String::CreateUninitialized(string_size_bytes / sizeof(UChar), backing);
   auto [content, padding] =
       base::as_writable_bytes(backing).split_at(data_buffer_.size());
   content.copy_from(data_buffer_);
