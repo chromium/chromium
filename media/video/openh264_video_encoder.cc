@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/video/openh264_video_encoder.h"
 
 #include <algorithm>
 #include <limits>
+#include <numeric>
 
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
@@ -289,32 +285,41 @@ EncoderStatus OpenH264VideoEncoder::DrainOutputs(const SFrameBSInfo& frame_info,
   result.key_frame = (frame_info.eFrameType == videoFrameTypeIDR);
   result.color_space = color_space;
   result.data = base::HeapArray<uint8_t>::Uninit(total_chunk_size);
-  auto* gather_buffer = result.data.data();
+  auto gather_buffer = result.data.as_span();
 
   if (h264_converter_) {
     // Copy data to a temporary buffer instead.
     conversion_buffer_.resize(total_chunk_size);
-    gather_buffer = conversion_buffer_.data();
+    gather_buffer = base::span(conversion_buffer_);
   }
 
   result.temporal_id = -1;
   size_t written_size = 0;
+  auto frame_layer_info = base::span(frame_info.sLayerInfo);
   for (int layer_idx = 0; layer_idx < frame_info.iLayerNum; ++layer_idx) {
-    const SLayerBSInfo& layer_info = frame_info.sLayerInfo[layer_idx];
+    const SLayerBSInfo& layer_info = frame_layer_info[layer_idx];
 
     // All layers in the same frame must have the same temporal_id.
-    if (result.temporal_id == -1)
+    if (result.temporal_id == -1) {
       result.temporal_id = layer_info.uiTemporalId;
-    else if (result.temporal_id != layer_info.uiTemporalId)
+    } else if (result.temporal_id != layer_info.uiTemporalId) {
       return EncoderStatus::Codes::kEncoderFailedEncode;
+    }
 
-    size_t layer_len = 0;
-    for (int nal_idx = 0; nal_idx < layer_info.iNalCount; ++nal_idx)
-      layer_len += layer_info.pNalLengthInByte[nal_idx];
-    if (written_size + layer_len > total_chunk_size)
+    // SAFETY: OpenH264 documents that layer_info.pNalLengthInByte has
+    // layer_info.iNalCount elements.
+    UNSAFE_BUFFERS(
+        base::span nal_len_bytes(layer_info.pNalLengthInByte,
+                                 static_cast<size_t>(layer_info.iNalCount)));
+    size_t layer_len =
+        std::accumulate(nal_len_bytes.begin(), nal_len_bytes.end(), 0);
+    if (written_size + layer_len > total_chunk_size) {
       return EncoderStatus::Codes::kEncoderFailedEncode;
+    }
 
-    memcpy(gather_buffer + written_size, layer_info.pBsBuf, layer_len);
+    // SAFETY: The whole buffer size is equal to the size of all NALs combined.
+    UNSAFE_BUFFERS(base::span layer_data(layer_info.pBsBuf, layer_len));
+    gather_buffer.subspan(written_size, layer_len).copy_from(layer_data);
     written_size += layer_len;
   }
   DCHECK_EQ(written_size, total_chunk_size);
@@ -431,15 +436,17 @@ void OpenH264VideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
   picture.iPicHeight = frame->visible_rect().height();
   picture.iColorFormat = EVideoFormatType::videoFormatI420;
   picture.uiTimeStamp = frame->timestamp().InMilliseconds();
-  picture.pData[0] =
+  auto picture_data = base::span(picture.pData);
+  picture_data[0] =
       const_cast<uint8_t*>(frame->visible_data(VideoFrame::Plane::kY));
-  picture.pData[1] =
+  picture_data[1] =
       const_cast<uint8_t*>(frame->visible_data(VideoFrame::Plane::kU));
-  picture.pData[2] =
+  picture_data[2] =
       const_cast<uint8_t*>(frame->visible_data(VideoFrame::Plane::kV));
-  picture.iStride[0] = frame->stride(VideoFrame::Plane::kY);
-  picture.iStride[1] = frame->stride(VideoFrame::Plane::kU);
-  picture.iStride[2] = frame->stride(VideoFrame::Plane::kV);
+  auto picture_stride = base::span(picture.iStride);
+  picture_stride[0] = frame->stride(VideoFrame::Plane::kY);
+  picture_stride[1] = frame->stride(VideoFrame::Plane::kU);
+  picture_stride[2] = frame->stride(VideoFrame::Plane::kV);
 
   if (key_frame) {
     if (int err = codec_->ForceIntraFrame(true)) {
