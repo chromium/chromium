@@ -10248,13 +10248,6 @@ const FeatureEntry kFeatureEntries[] = {
      MULTI_VALUE_TYPE(kPrintingPpdChannelChoices)},
 #endif
 
-#if BUILDFLAG(IS_ANDROID)
-    {"android-improved-bookmarks",
-     flag_descriptions::kAndroidImprovedBookmarksName,
-     flag_descriptions::kAndroidImprovedBookmarksDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kAndroidImprovedBookmarks)},
-#endif  // BUILDFLAG(IS_ANDROID)
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"arc-idle-manager", flag_descriptions::kArcIdleManagerName,
      flag_descriptions::kArcIdleManagerDescription, kOsCrOS,

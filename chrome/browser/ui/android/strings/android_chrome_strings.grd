@@ -4479,17 +4479,11 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_BOOKMARK_SAVE_FLOW_TITLE" desc="The title when a user chooses save a bookmarks.">
         Bookmark saved
       </message>
-      <message name="IDS_BOOKMARK_SAVE_FLOW_TITLE_MOVE" desc="The title when a user chooses to move a bookmark.">
-        Bookmark moved
-      </message>
       <message name="IDS_PRICE_TRACKING_TITLE" desc="The title when a user chooses to track the price of a product.">
         Tracking price
       </message>
       <message name="IDS_PRICE_TRACKING_SAVE_FLOW_NOTIFICATION_SWITCH_SUBTITLE" desc="The subtitle of an optional switch to track the price for product pages added as bookmarks.">
         Get alerts if the price drops on any site
-      </message>
-      <message name="IDS_PRICE_TRACKING_SAVE_FLOW_NOTIFICATION_SWITCH_SUBTITLE_ERROR" desc="The subtitle of an optional switch to track the price for product pages added as bookmarks shown in error.">
-        Couldn’t update Track price
       </message>
       <message name="IDS_ENABLE_PRICE_TRACKING_MENU_ITEM" desc="Menu item which allows user to track the price of a product page. [CHAR_LIMIT=32]">
         Track price

@@ -142,7 +142,6 @@ import java.util.function.Consumer;
 @Config(shadows = {ShadowPostTask.class})
 @EnableFeatures({
     SyncFeatureMap.SYNC_ENABLE_BOOKMARKS_IN_TRANSPORT_MODE,
-    ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS,
     ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS
 })
 // TODO(crbug.com/327387704): Add tests with this flag enabled.
@@ -1214,7 +1213,6 @@ public class BookmarkManagerMediatorTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS)
     public void testShoppingFilterUpdatedBySubscriptions() {
         finishLoading();
 
@@ -1655,7 +1653,6 @@ public class BookmarkManagerMediatorTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS})
     public void testRootLevelFolders_accountFoldersPresent() {
         doReturn(true).when(mBookmarkModel).areAccountBookmarkFoldersActive();
         BookmarkId accountReadingListId = new BookmarkId(mId++, BookmarkType.READING_LIST);

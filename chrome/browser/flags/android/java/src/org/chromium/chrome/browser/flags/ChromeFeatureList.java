@@ -168,7 +168,6 @@ public abstract class ChromeFeatureList {
             "AndroidHubFloatingActionButton";
     public static final String ANDROID_HUB_SEARCH = "AndroidHubSearch";
     public static final String ANDROID_HUB_V2 = "AndroidHubV2";
-    public static final String ANDROID_IMPROVED_BOOKMARKS = "AndroidImprovedBookmarks";
     public static final String ANDROID_NO_VISIBLE_HINT_FOR_DIFFERENT_TLD =
             "AndroidNoVisibleHintForDifferentTLD";
     public static final String ANDROID_TAB_DECLUTTER = "AndroidTabDeclutter";
@@ -844,8 +843,6 @@ public abstract class ChromeFeatureList {
     /* Alphabetical: */
     public static final MutableFlagWithSafeDefault sAdaptiveButtonInTopToolbarCustomizationV2 =
             newMutableFlagWithSafeDefault(ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2, false);
-    public static final MutableFlagWithSafeDefault sAndroidImprovedBookmarks =
-            newMutableFlagWithSafeDefault(ANDROID_IMPROVED_BOOKMARKS, false);
     public static final MutableFlagWithSafeDefault sAndroidTabDeclutter =
             newMutableFlagWithSafeDefault(ANDROID_TAB_DECLUTTER, false);
     public static final MutableFlagWithSafeDefault sAndroidTabDeclutterArchiveAllButActiveTab =

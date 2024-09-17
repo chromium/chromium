@@ -37,10 +37,8 @@ import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
@@ -174,7 +172,6 @@ public class ImprovedBookmarkFolderViewRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @EnableFeatures(ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS)
     public void testNoImage_bookmarksBar() throws IOException {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

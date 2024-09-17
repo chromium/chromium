@@ -43,13 +43,11 @@ import org.robolectric.annotation.LooperMode;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.bookmarks.BookmarkEditActivity;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowSortOrder;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiState.BookmarkUiMode;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkType;
@@ -73,7 +71,6 @@ import java.util.function.BooleanSupplier;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @LooperMode(LooperMode.Mode.LEGACY)
-@EnableFeatures(ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS)
 public class BookmarkToolbarMediatorTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -540,7 +537,6 @@ public class BookmarkToolbarMediatorTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS})
     public void testNavigateBackWhileSearching() {
         String folderName = "test folder";
         mMediator.onFolderStateSet(
@@ -557,7 +553,6 @@ public class BookmarkToolbarMediatorTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS})
     public void testSelectionWhileSorting() {
         String folderName = "test folder";
         mMediator.onFolderStateSet(

@@ -22,7 +22,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
 import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkSaveFlowProperties.FolderText;
 import org.chromium.chrome.browser.bookmarks.PowerBookmarkMetrics.PriceTrackingState;
 import org.chromium.chrome.browser.commerce.PriceTrackingUtils;
@@ -144,17 +143,9 @@ public class BookmarkSaveFlowMediator extends BookmarkModelObserver
                     });
         }
 
-        if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
-            mPropertyModel.set(
-                    ImprovedBookmarkSaveFlowProperties.BOOKMARK_ROW_CLICK_LISTENER,
-                    this::onEditClicked);
-        } else {
-            mPropertyModel.set(
-                    BookmarkSaveFlowProperties.EDIT_ONCLICK_LISTENER, this::onEditClicked);
-            mPropertyModel.set(
-                    BookmarkSaveFlowProperties.FOLDER_SELECT_ONCLICK_LISTENER,
-                    this::onFolderSelectClicked);
-        }
+        mPropertyModel.set(
+                ImprovedBookmarkSaveFlowProperties.BOOKMARK_ROW_CLICK_LISTENER,
+                this::onEditClicked);
 
         if (meta != null) {
             mSubscription = PowerBookmarkUtils.createCommerceSubscriptionForPowerBookmarkMeta(meta);
@@ -163,47 +154,20 @@ public class BookmarkSaveFlowMediator extends BookmarkModelObserver
         BookmarkItem item = mBookmarkModel.getBookmarkById(bookmarkId);
         bindBookmarkProperties(item, mPowerBookmarkMeta, mWasBookmarkMoved);
         bindPowerBookmarkProperties(mPowerBookmarkMeta, fromExplicitTrackUi);
-        if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
-            bindImage(item, meta);
-        }
+        bindImage(item, meta);
     }
 
     private void bindBookmarkProperties(
             BookmarkItem item, PowerBookmarkMeta meta, boolean wasBookmarkMoved) {
         mFolderName = mBookmarkModel.getBookmarkTitle(item.getParentId());
 
-        if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
-            mPropertyModel.set(ImprovedBookmarkSaveFlowProperties.TITLE, createTitleCharSequence());
-            mPropertyModel.set(
-                    ImprovedBookmarkSaveFlowProperties.SUBTITLE,
-                    createSubTitleCharSequnce(wasBookmarkMoved));
-        } else {
-            mPropertyModel.set(
-                    BookmarkSaveFlowProperties.TITLE_TEXT,
-                    mContext.getResources()
-                            .getString(
-                                    wasBookmarkMoved
-                                            ? R.string.bookmark_save_flow_title_move
-                                            : R.string.bookmark_save_flow_title));
-            mPropertyModel.set(
-                    BookmarkSaveFlowProperties.FOLDER_SELECT_ICON,
-                    BookmarkUtils.getFolderIcon(
-                            mContext,
-                            item.getId(),
-                            mBookmarkModel,
-                            BookmarkRowDisplayPref.COMPACT));
-            mPropertyModel.set(
-                    BookmarkSaveFlowProperties.FOLDER_SELECT_ICON_ENABLED,
-                    BookmarkUtils.isMovable(mBookmarkModel, item));
-            mPropertyModel.set(
-                    BookmarkSaveFlowProperties.SUBTITLE_TEXT,
-                    getFolderDisplayText(wasBookmarkMoved));
-        }
+        mPropertyModel.set(ImprovedBookmarkSaveFlowProperties.TITLE, createTitleCharSequence());
+        mPropertyModel.set(
+                ImprovedBookmarkSaveFlowProperties.SUBTITLE,
+                createSubTitleCharSequnce(wasBookmarkMoved));
     }
 
     private CharSequence createTitleCharSequence() {
-        assert BookmarkFeatures.isAndroidImprovedBookmarksEnabled();
-
         if (mBookmarkModel.areAccountBookmarkFoldersActive()) {
             return createHighlightedCharSequence(
                     mContext,
@@ -255,48 +219,23 @@ public class BookmarkSaveFlowMediator extends BookmarkModelObserver
 
         if (meta.hasShoppingSpecifics()) {
             setPriceTrackingNotificationUiEnabled(true);
-            setPriceTrackingIconForEnabledState(false);
-            if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
-                mPropertyModel.set(
-                        ImprovedBookmarkSaveFlowProperties.PRICE_TRACKING_SWITCH_CHECKED, false);
-                mPropertyModel.set(ImprovedBookmarkSaveFlowProperties.PRICE_TRACKING_VISIBLE, true);
-                mPropertyModel.set(
-                        ImprovedBookmarkSaveFlowProperties.PRICE_TRACKING_SWITCH_LISTENER,
-                        this::handlePriceTrackingSwitchToggle);
+            mPropertyModel.set(
+                    ImprovedBookmarkSaveFlowProperties.PRICE_TRACKING_SWITCH_CHECKED, false);
+            mPropertyModel.set(ImprovedBookmarkSaveFlowProperties.PRICE_TRACKING_VISIBLE, true);
+            mPropertyModel.set(
+                    ImprovedBookmarkSaveFlowProperties.PRICE_TRACKING_SWITCH_LISTENER,
+                    this::handlePriceTrackingSwitchToggle);
 
-                PriceTrackingUtils.isBookmarkPriceTracked(
-                        mProfile,
-                        mBookmarkId.getId(),
-                        (subscribed) -> {
-                            mPropertyModel.set(
-                                    ImprovedBookmarkSaveFlowProperties
-                                            .PRICE_TRACKING_SWITCH_CHECKED,
-                                    subscribed);
-                            PowerBookmarkMetrics.reportBookmarkSaveFlowPriceTrackingState(
-                                    PriceTrackingState.PRICE_TRACKING_SHOWN);
-                        });
-            } else {
-                mPropertyModel.set(BookmarkSaveFlowProperties.NOTIFICATION_SWITCH_VISIBLE, true);
-                mPropertyModel.set(
-                        BookmarkSaveFlowProperties.NOTIFICATION_SWITCH_TITLE,
-                        mContext.getResources()
-                                .getString(R.string.enable_price_tracking_menu_item));
-                mPropertyModel.set(
-                        BookmarkSaveFlowProperties.NOTIFICATION_SWITCH_TOGGLE_LISTENER,
-                        this::handlePriceTrackingSwitchToggle);
-                mPropertyModel.set(BookmarkSaveFlowProperties.NOTIFICATION_SWITCH_TOGGLED, false);
-
-                PriceTrackingUtils.isBookmarkPriceTracked(
-                        mProfile,
-                        mBookmarkId.getId(),
-                        (subscribed) -> {
-                            mPropertyModel.set(
-                                    BookmarkSaveFlowProperties.NOTIFICATION_SWITCH_TOGGLED,
-                                    subscribed);
-                        });
-                PowerBookmarkMetrics.reportBookmarkSaveFlowPriceTrackingState(
-                        PriceTrackingState.PRICE_TRACKING_SHOWN);
-            }
+            PriceTrackingUtils.isBookmarkPriceTracked(
+                    mProfile,
+                    mBookmarkId.getId(),
+                    (subscribed) -> {
+                        mPropertyModel.set(
+                                ImprovedBookmarkSaveFlowProperties.PRICE_TRACKING_SWITCH_CHECKED,
+                                subscribed);
+                        PowerBookmarkMetrics.reportBookmarkSaveFlowPriceTrackingState(
+                                PriceTrackingState.PRICE_TRACKING_SHOWN);
+                    });
         }
     }
 
@@ -323,7 +262,6 @@ public class BookmarkSaveFlowMediator extends BookmarkModelObserver
                             });
         }
 
-        setPriceTrackingIconForEnabledState(toggled);
         PriceTrackingUtils.setPriceTrackingStateForBookmark(
                 mProfile,
                 mBookmarkId.getId(),
@@ -337,30 +275,7 @@ public class BookmarkSaveFlowMediator extends BookmarkModelObserver
     }
 
     void setPriceTrackingNotificationUiEnabled(boolean enabled) {
-        if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
-            mPropertyModel.set(ImprovedBookmarkSaveFlowProperties.PRICE_TRACKING_ENABLED, enabled);
-        } else {
-            mPropertyModel.set(BookmarkSaveFlowProperties.NOTIFICATION_UI_ENABLED, enabled);
-            mPropertyModel.set(
-                    BookmarkSaveFlowProperties.NOTIFICATION_SWITCH_SUBTITLE,
-                    mContext.getResources()
-                            .getString(
-                                    enabled
-                                            ? R.string
-                                                    .price_tracking_save_flow_notification_switch_subtitle
-                                            : R.string
-                                                    .price_tracking_save_flow_notification_switch_subtitle_error));
-        }
-    }
-
-    void setPriceTrackingIconForEnabledState(boolean enabled) {
-        if (!BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
-            mPropertyModel.set(
-                    BookmarkSaveFlowProperties.NOTIFICATION_SWITCH_START_ICON_RES,
-                    enabled
-                            ? R.drawable.price_tracking_enabled_filled
-                            : R.drawable.price_tracking_disabled);
-        }
+        mPropertyModel.set(ImprovedBookmarkSaveFlowProperties.PRICE_TRACKING_ENABLED, enabled);
     }
 
     void destroy() {
@@ -378,23 +293,12 @@ public class BookmarkSaveFlowMediator extends BookmarkModelObserver
 
     @VisibleForTesting
     void setPriceTrackingToggleVisualsOnly(boolean enabled) {
-        if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
-            mPropertyModel.set(
-                    ImprovedBookmarkSaveFlowProperties.PRICE_TRACKING_SWITCH_LISTENER, null);
-            mPropertyModel.set(
-                    ImprovedBookmarkSaveFlowProperties.PRICE_TRACKING_SWITCH_CHECKED, enabled);
-            mPropertyModel.set(
-                    ImprovedBookmarkSaveFlowProperties.PRICE_TRACKING_SWITCH_LISTENER,
-                    this::handlePriceTrackingSwitchToggle);
-        } else {
-            mPropertyModel.set(
-                    BookmarkSaveFlowProperties.NOTIFICATION_SWITCH_TOGGLE_LISTENER, null);
-            mPropertyModel.set(BookmarkSaveFlowProperties.NOTIFICATION_SWITCH_TOGGLED, enabled);
-            setPriceTrackingIconForEnabledState(enabled);
-            mPropertyModel.set(
-                    BookmarkSaveFlowProperties.NOTIFICATION_SWITCH_TOGGLE_LISTENER,
-                    this::handlePriceTrackingSwitchToggle);
-        }
+        mPropertyModel.set(ImprovedBookmarkSaveFlowProperties.PRICE_TRACKING_SWITCH_LISTENER, null);
+        mPropertyModel.set(
+                ImprovedBookmarkSaveFlowProperties.PRICE_TRACKING_SWITCH_CHECKED, enabled);
+        mPropertyModel.set(
+                ImprovedBookmarkSaveFlowProperties.PRICE_TRACKING_SWITCH_LISTENER,
+                this::handlePriceTrackingSwitchToggle);
     }
 
     void setSubscriptionForTesting(CommerceSubscription subscription) {

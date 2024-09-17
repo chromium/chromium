@@ -25,10 +25,8 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowSortOrder;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
@@ -36,8 +34,7 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 @Batch(Batch.UNIT_TESTS)
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@EnableFeatures({ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS})
-public class BookmarkUiPrefsTest {
+public class BookmarkUiPrefsUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private BookmarkUiPrefs.Observer mObserver;
@@ -64,7 +61,6 @@ public class BookmarkUiPrefsTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS})
     public void returnsStoredPref() {
         mBookmarkUiPrefs.setBookmarkRowDisplayPref(BookmarkRowDisplayPref.VISUAL);
         Assert.assertEquals(
