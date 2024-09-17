@@ -18,7 +18,7 @@
         margin-top: auto;
       }
 
-      img {
+      #product-logo {
         margin-inline-end: var(--about-page-image-space);
       }
 
@@ -28,12 +28,17 @@
         text-align: center;
       }
 
-      iron-icon[icon='settings:check-circle'] {
+      cr-icon[icon='settings:check-circle'] {
         fill: var(--cr-checked-color);
       }
 
-      iron-icon[icon='cr:error'] {
+      cr-icon[icon='cr:error'] {
         fill: var(--settings-error-color);
+      }
+
+      #throbber {
+        height: var(--cr-icon-size);
+        vertical-align: middle;
       }
 
       cr-button {
@@ -55,12 +60,15 @@
 <if expr="not chromeos_ash">
         <div class="icon-container"
             hidden="[[!shouldShowIcons_(showUpdateStatus_)]]">
-          <iron-icon
-              icon$="[[getUpdateStatusIcon_(
+          <cr-icon
+              hidden="[[shouldShowThrobber_(
                   obsoleteSystemInfo_, currentUpdateStatusEvent_)]]"
-              src="[[getThrobberSrcIfUpdating_(
+              icon$="[[getUpdateStatusIcon_(
                   obsoleteSystemInfo_, currentUpdateStatusEvent_)]]">
-          </iron-icon>
+          </cr-icon>
+          <img id="throbber" src="chrome://resources/images/throbber_small.svg"
+              hidden="[[!shouldShowThrobber_(
+                  obsoleteSystemInfo_, currentUpdateStatusEvent_)]]">
         </div>
 </if>
         <div class="flex cr-padded-text">

@@ -9,8 +9,7 @@
     padding-inline-end: 0;
   }
 
-  cr-icon,
-  iron-icon {
+  cr-icon {
     display: flex;
     flex-shrink: 0;
     padding-inline-end: var(--cr-icon-button-margin-start);
@@ -40,13 +39,14 @@
     }
   }
 </style>
-<iron-icon id="statusIcon"
+<cr-icon id="statusIcon" hidden="[[shouldShowThrobber_(iconStatus)]]"
     icon="[[getStatusIcon_(iconStatus)]]"
-    src="[[getStatusIconSrc_(iconStatus)]]"
     class$="[[getStatusIconClass_(iconStatus)]]"
     role="img"
     aria-label="[[getStatusIconAriaLabel_(iconStatus)]]">
-</iron-icon>
+</cr-icon>
+<img hidden="[[!shouldShowThrobber_(iconStatus)]]"
+     src="chrome://resources/images/throbber_small.svg">
 <div class="flex cr-padded-text">
   <div id="label" inner-h-t-m-l="[[sanitizeInnerHtml_(label)]]"></div>
   <div id="subLabel" class="secondary" no-search

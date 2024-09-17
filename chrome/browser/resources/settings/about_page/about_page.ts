@@ -17,11 +17,11 @@ import '../settings_page_styles.css.js';
 import '../settings_shared.css.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
-import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
@@ -287,7 +287,7 @@ export class SettingsAboutPageElement extends SettingsAboutPageElementBase {
     }
   }
 
-  private getUpdateStatusIcon_(): string|null {
+  private getUpdateStatusIcon_(): string {
     // If this platform has reached the end of the line, display an error icon
     // and ignore UpdateStatus.
     if (this.obsoleteSystemInfo_.endOfLine) {
@@ -303,21 +303,21 @@ export class SettingsAboutPageElement extends SettingsAboutPageElementBase {
       case UpdateStatus.NEARLY_UPDATED:
         return 'settings:check-circle';
       default:
-        return null;
+        return '';
     }
   }
 
-  private getThrobberSrcIfUpdating_(): string|null {
+  private shouldShowThrobber_(): boolean {
     if (this.obsoleteSystemInfo_.endOfLine) {
-      return null;
+      return false;
     }
 
     switch (this.currentUpdateStatusEvent_!.status) {
       case UpdateStatus.CHECKING:
       case UpdateStatus.UPDATING:
-        return 'chrome://resources/images/throbber_small.svg';
+        return true;
       default:
-        return null;
+        return false;
     }
   }
   // </if>

@@ -41,11 +41,11 @@ export class CrIconElement extends CrLitElement {
       const [iconsetName, iconName] = this.icon.split(':');
       this.iconName_ = iconName || '';
       this.iconsetName_ = iconsetName || '';
-      this.updateIcon();
+      this.updateIcon_();
     }
   }
 
-  updateIcon() {
+  private updateIcon_() {
     if (this.iconName_ === '' && this.iconset_) {
       this.iconset_.removeIcon(this);
     } else if (this.iconsetName_) {
