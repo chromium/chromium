@@ -80,7 +80,7 @@ class CORE_EXPORT TextResourceDecoder : public BodyTextDecoder {
   WebEncodingData GetEncodingData() const override;
 
   bool SawError() const { return saw_error_; }
-  wtf_size_t CheckForBOM(const char*, wtf_size_t);
+  wtf_size_t CheckForBOM(base::span<const char>);
 
  private:
   static const WTF::TextEncoding& DefaultEncoding(
@@ -89,8 +89,8 @@ class CORE_EXPORT TextResourceDecoder : public BodyTextDecoder {
 
   void AddToBuffer(base::span<const char> data);
   void AddToBufferIfEmpty(base::span<const char> data);
-  bool CheckForCSSCharset(const char*, wtf_size_t);
-  bool CheckForXMLCharset(const char*, wtf_size_t);
+  bool CheckForCSSCharset(base::span<const char>);
+  bool CheckForXMLCharset(base::span<const char>);
   void CheckForMetaCharset(base::span<const char>);
   void AutoDetectEncodingIfAllowed(base::span<const char> data);
 
