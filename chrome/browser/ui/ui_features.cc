@@ -29,11 +29,6 @@ BASE_FEATURE(kAllowEyeDropperWGCScreenCapture,
 #endif  // BUILDFLAG(IS_WIN)
 );
 
-// Enables icon in titlebar for web apps.
-BASE_FEATURE(kWebAppIconInTitlebar,
-             "WebAppIconInTitlebar",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables Chrome Labs menu in the toolbar. See https://crbug.com/1145666
 BASE_FEATURE(kChromeLabs, "ChromeLabs", base::FEATURE_ENABLED_BY_DEFAULT);
 const char kChromeLabsActivationParameterName[] =

@@ -12,7 +12,6 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/app_menu_button.h"
 #include "chrome/browser/ui/views/frame/browser_caption_button_container_win.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view_win.h"
@@ -262,6 +261,11 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserFrameViewWinTest, ContainerHeight) {
             frame_view_->caption_button_container_for_testing()->height());
 }
 
+IN_PROC_BROWSER_TEST_F(WebAppBrowserFrameViewWinTest, WebAppIconInTitlebar) {
+  InstallAndLaunchWebApp();
+  ASSERT_EQ(true, frame_view_->window_icon_for_testing()->GetVisible());
+}
+
 class WebAppBrowserFrameViewWinWindowControlsOverlayTest
     : public InProcessBrowserTest {
  public:
@@ -461,43 +465,3 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserFrameViewWinWindowControlsOverlayTest,
   EXPECT_EQ(web_app_frame_toolbar->width(),
             web_app_frame_toolbar->get_right_container_for_testing()->width());
 }
-
-class WebAppBrowserFrameViewWinWebAppIconInTitlebarTest
-    : public WebAppBrowserFrameViewWinTest,
-      public testing::WithParamInterface<bool> {
- public:
-  WebAppBrowserFrameViewWinWebAppIconInTitlebarTest() {
-    if (GetParam()) {
-      feature_list_.InitAndEnableFeature(features::kWebAppIconInTitlebar);
-    } else {
-      feature_list_.InitAndDisableFeature(features::kWebAppIconInTitlebar);
-    }
-  }
-  WebAppBrowserFrameViewWinWebAppIconInTitlebarTest(
-      const WebAppBrowserFrameViewWinWebAppIconInTitlebarTest&) = delete;
-  WebAppBrowserFrameViewWinWebAppIconInTitlebarTest& operator=(
-      const WebAppBrowserFrameViewWinWebAppIconInTitlebarTest&) = delete;
-
-  ~WebAppBrowserFrameViewWinWebAppIconInTitlebarTest() override = default;
-  static std::string DescribeParams(
-      const testing::TestParamInfo<ParamType>& info) {
-    return info.param ? "Enabled" : "Disabled";
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-// Verify that the icon is present if the feature is enabled.
-IN_PROC_BROWSER_TEST_P(WebAppBrowserFrameViewWinWebAppIconInTitlebarTest,
-                       WebAppIconInTitlebar) {
-  InstallAndLaunchWebApp();
-
-  ASSERT_EQ(GetParam(), frame_view_->window_icon_for_testing()->GetVisible());
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    WebAppBrowserFrameViewWinWebAppIconInTitlebarTest,
-    testing::Bool(),
-    WebAppBrowserFrameViewWinWebAppIconInTitlebarTest::DescribeParams);

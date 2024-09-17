@@ -3936,7 +3936,7 @@ bool BrowserView::ShouldShowWindowTitle() const {
 bool BrowserView::ShouldShowWindowIcon() const {
 #if !BUILDFLAG(IS_CHROMEOS)
   if (GetIsWebAppType() && !GetSupportsTabStrip()) {
-    return base::FeatureList::IsEnabled(features::kWebAppIconInTitlebar);
+    return true;
   }
 #endif
   return WidgetDelegate::ShouldShowWindowIcon();
