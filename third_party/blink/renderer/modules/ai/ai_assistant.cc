@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/ai/ai_assistant.h"
 
+#include "base/check.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/types/pass_key.h"
 #include "third_party/blink/public/mojom/ai/ai_assistant.mojom-blink.h"
@@ -19,7 +20,12 @@ AIAssistant::AIAssistant(ExecutionContext* context,
                          scoped_refptr<base::SequencedTaskRunner> task_runner)
     : ExecutionContextClient(context),
       text_session_(text_session),
-      task_runner_(task_runner) {}
+      task_runner_(task_runner) {
+  auto info = text_session_->GetInfo();
+  if (info) {
+    SetInfo(std::move(info));
+  }
+}
 
 void AIAssistant::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
@@ -88,32 +94,6 @@ ReadableStream* AIAssistant::promptStreaming(ScriptState* script_state,
   return readable_stream;
 }
 
-uint64_t AIAssistant::maxTokens() const {
-  blink::mojom::blink::AIAssistantInfoPtr info = text_session_->GetInfo();
-  CHECK(info);
-  return info->max_tokens;
-}
-
-uint64_t AIAssistant::tokensSoFar() const {
-  return current_tokens_;
-}
-
-uint64_t AIAssistant::tokensLeft() const {
-  return maxTokens() - tokensSoFar();
-}
-
-uint32_t AIAssistant::topK() const {
-  blink::mojom::blink::AIAssistantInfoPtr info = text_session_->GetInfo();
-  CHECK(info);
-  return info->sampling_params->top_k;
-}
-
-float AIAssistant::temperature() const {
-  blink::mojom::blink::AIAssistantInfoPtr info = text_session_->GetInfo();
-  CHECK(info);
-  return info->sampling_params->temperature;
-}
-
 ScriptPromise<AIAssistant> AIAssistant::clone(ScriptState* script_state,
                                               ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
@@ -145,6 +125,7 @@ ScriptPromise<AIAssistant> AIAssistant::clone(ScriptState* script_state,
              AIAssistant* cloned_assistant,
              blink::mojom::blink::AIAssistantInfoPtr info) {
             if (info) {
+              cloned_assistant->SetInfo(info->Clone());
               cloned_assistant->text_session_->SetInfo(
                   base::PassKey<AIAssistant>(), std::move(info));
               resolver->Resolve(cloned_assistant);
@@ -182,6 +163,13 @@ void AIAssistant::OnResponseComplete(std::optional<uint64_t> current_tokens) {
   if (current_tokens.has_value()) {
     current_tokens_ = current_tokens.value();
   }
+}
+
+void AIAssistant::SetInfo(const blink::mojom::blink::AIAssistantInfoPtr info) {
+  CHECK(info);
+  top_k_ = info->sampling_params->top_k;
+  temperature_ = info->sampling_params->temperature;
+  max_tokens_ = info->max_tokens;
 }
 
 }  // namespace blink
