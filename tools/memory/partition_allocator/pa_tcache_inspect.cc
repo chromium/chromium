@@ -23,6 +23,7 @@
 
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/debug/proc_maps_linux.h"
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
@@ -630,7 +631,7 @@ int main(int argc, char** argv) {
               base::File(json_filename, base::File::Flags::FLAG_OPEN_ALWAYS |
                                             base::File::Flags::FLAG_WRITE);
           if (f.IsValid()) {
-            f.WriteAtCurrentPos(json_string.c_str(), json_string.size());
+            f.WriteAtCurrentPos(base::as_byte_span(json_string));
             std::cout << "\n\nDumped JSON to " << json_filename << std::endl;
             return 0;
           }
