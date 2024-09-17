@@ -13,6 +13,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/strings/stringprintf.h"
@@ -156,6 +157,20 @@ api::enterprise_reporting_private::ContextInfo ToContextInfo(
   }
 
   return info;
+}
+
+bool AllowClientCertificateReportingForUsers() {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  return base::FeatureList::IsEnabled(
+      enterprise_signals::features::kAllowClientCertificateReportingForUsers);
+#else
+  return false;
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+}
+
+bool IsProfilePrefManaged(Profile* profile, std::string_view pref_name) {
+  const auto* pref = profile->GetPrefs()->FindPreference(pref_name);
+  return pref && pref->IsManaged();
 }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
@@ -484,11 +499,23 @@ EnterpriseReportingPrivateGetCertificateFunction::Run() {
               args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  // If AutoSelectCertificateForUrl is not set at the machine level, this
-  // operation is not supported and should return immediately with the
-  // appropriate status field value.
-  if (!enterprise_util::IsMachinePolicyPref(
-          prefs::kManagedAutoSelectCertificateForUrls)) {
+  auto* profile = Profile::FromBrowserContext(browser_context());
+  if (AllowClientCertificateReportingForUsers()) {
+    if (!IsProfilePrefManaged(profile,
+                              prefs::kManagedAutoSelectCertificateForUrls)) {
+      // If the policy is not set, then fail fast as the policy is required to
+      // select which certificate to report.
+      api::enterprise_reporting_private::Certificate ret;
+      ret.status = extensions::api::enterprise_reporting_private::
+          CertificateStatus::kPolicyUnset;
+      return RespondNow(WithArguments(ret.ToValue()));
+    }
+  } else if (!enterprise_util::IsMachinePolicyPref(
+                 prefs::kManagedAutoSelectCertificateForUrls)) {
+    // If certificate reporting is not enabled for the user and
+    // AutoSelectCertificateForUrl is not set at the machine level, this
+    // operation is not supported and should return immediately with the
+    // appropriate status field value.
     api::enterprise_reporting_private::Certificate ret;
     ret.status = extensions::api::enterprise_reporting_private::
         CertificateStatus::kPolicyUnset;
