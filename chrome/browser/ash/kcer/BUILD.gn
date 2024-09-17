@@ -22,7 +22,6 @@ static_library("kcer") {
     "//base",
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/kcer/nssdb_migration",
-    "//chrome/browser/ash/platform_keys",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles:profile",
     "//chrome/common",
@@ -37,10 +36,7 @@ static_library("kcer") {
     "//crypto",
   ]
 
-  allow_circular_includes_from = [
-    "//chrome/browser/ash/kcer/nssdb_migration",
-    "//chrome/browser/ash/platform_keys:platform_keys",
-  ]
+  allow_circular_includes_from = [ "//chrome/browser/ash/kcer/nssdb_migration" ]
 }
 
 source_set("browser_tests") {
