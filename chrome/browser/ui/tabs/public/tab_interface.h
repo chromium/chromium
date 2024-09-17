@@ -111,9 +111,10 @@ class TabInterface {
   // never changes.
   virtual bool IsInNormalWindow() const = 0;
 
-  // Check that IsInForeground() is `true` before calling this method. If a tab
-  // is in the background there is no guarantee that it is associated with a
-  // browser window.
+  // Always valid in practice. Tabs briefly do not have a BrowserWindowInterface
+  // when they are detached from one window and moved to another. That is an
+  // implementation detail of tab dragging that should not be exposed to
+  // consumers of this interface.
   virtual BrowserWindowInterface* GetBrowserWindowInterface() = 0;
 
   // Returns the feature controllers scoped to this tab.
