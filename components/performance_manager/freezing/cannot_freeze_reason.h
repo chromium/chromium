@@ -14,6 +14,7 @@ namespace performance_manager {
 // share logic.
 enum class CannotFreezeReason {
   kVisible = 0,
+  kRecentlyVisible,
   kAudible,
   kRecentlyAudible,
   kHoldingWebLock,

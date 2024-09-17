@@ -359,6 +359,35 @@ TEST_F(FreezingPolicyTest, BecomesVisibleWhenFrozen) {
   VerifyFreezerExpectations();
 }
 
+TEST_F(FreezingPolicyTest, FreezeVoteWhenRecentlyVisible) {
+  page_node()->SetIsVisible(true);
+  page_node()->SetIsVisible(false);
+
+  // Don't expect freezing.
+  policy()->AddFreezeVote(page_node());
+
+  // Expect freezing after visible protection time.
+  EXPECT_CALL(*freezer(), MaybeFreezePageNode(page_node()));
+  task_env().FastForwardBy(features::kFreezingVisibleProtectionTime.Get());
+  VerifyFreezerExpectations();
+}
+
+TEST_F(FreezingPolicyTest, BecomesRecentlyVisibleWhenFrozen) {
+  EXPECT_CALL(*freezer(), MaybeFreezePageNode(page_node()));
+  policy()->AddFreezeVote(page_node());
+  VerifyFreezerExpectations();
+
+  EXPECT_CALL(*freezer(), UnfreezePageNode(page_node()));
+  page_node()->SetIsVisible(true);
+  // Don't expect freezing, because the page is still "recently visible".
+  page_node()->SetIsVisible(false);
+
+  // Expect freezing after visible protection time.
+  EXPECT_CALL(*freezer(), MaybeFreezePageNode(page_node()));
+  task_env().FastForwardBy(features::kFreezingVisibleProtectionTime.Get());
+  VerifyFreezerExpectations();
+}
+
 TEST_F(FreezingPolicyTest, FreezeVoteWhenAudible) {
   page_node()->SetIsAudible(true);
 
@@ -385,7 +414,7 @@ TEST_F(FreezingPolicyTest, FreezeVoteWhenRecentlyAudible) {
 
   // Expect freezing after audio protection time.
   EXPECT_CALL(*freezer(), MaybeFreezePageNode(page_node()));
-  task_env().FastForwardBy(FreezingPolicy::kAudioProtectionTime);
+  task_env().FastForwardBy(features::kFreezingAudioProtectionTime.Get());
   VerifyFreezerExpectations();
 }
 
@@ -401,7 +430,7 @@ TEST_F(FreezingPolicyTest, BecomesRecentlyAudibleWhenFrozen) {
 
   // Expect freezing after audio protection time.
   EXPECT_CALL(*freezer(), MaybeFreezePageNode(page_node()));
-  task_env().FastForwardBy(FreezingPolicy::kAudioProtectionTime);
+  task_env().FastForwardBy(features::kFreezingAudioProtectionTime.Get());
   VerifyFreezerExpectations();
 }
 

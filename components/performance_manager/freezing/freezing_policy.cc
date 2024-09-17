@@ -11,6 +11,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/timer/timer.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/graph/node_attached_data.h"
@@ -48,7 +49,10 @@ struct PageFreezingState
   // Reasons not to freeze the page.
   std::vector<CannotFreezeReason> cannot_freeze_reasons;
 
-  // Timer to remove the `CannotFreezeReason::kRecentlyAudible`.
+  // Timer to remove `CannotFreezeReason::kRecentlyVisible`.
+  base::OneShotTimer recently_visible_timer;
+
+  // Timer to remove `CannotFreezeReason::kRecentlyAudible`.
   base::OneShotTimer recently_audible_timer;
 };
 
@@ -337,15 +341,37 @@ void FreezingPolicy::OnBeforePageNodeRemoved(const PageNode* page_node) {
 }
 
 void FreezingPolicy::OnIsVisibleChanged(const PageNode* page_node) {
-  OnCannotFreezeReasonChange(page_node, /*add=*/page_node->IsVisible(),
-                             CannotFreezeReason::kVisible);
+  auto& page_freezing_state = PageFreezingState::FromPage(page_node);
+  if (page_node->IsVisible()) {
+    OnCannotFreezeReasonChange(page_node, /*add=*/true,
+                               CannotFreezeReason::kVisible);
+    if (page_freezing_state.recently_visible_timer.IsRunning()) {
+      page_freezing_state.recently_visible_timer.Stop();
+      OnCannotFreezeReasonChange(page_node, /*add=*/false,
+                                 CannotFreezeReason::kRecentlyVisible);
+    }
+  } else {
+    OnCannotFreezeReasonChange(page_node, /*add=*/true,
+                               CannotFreezeReason::kRecentlyVisible);
+    OnCannotFreezeReasonChange(page_node, /*add=*/false,
+                               CannotFreezeReason::kVisible);
+
+    page_freezing_state.recently_visible_timer.Start(
+        FROM_HERE, features::kFreezingVisibleProtectionTime.Get(),
+        base::BindOnce(
+            &FreezingPolicy::OnCannotFreezeReasonChange, base::Unretained(this),
+            // Safe because the `PageFreezingState` and the timer are deleted by
+            // `OnBeforePageNodeRemoved` before `page_node` is deleted.
+            base::Unretained(page_node),
+            /* add=*/false, CannotFreezeReason::kRecentlyVisible));
+  }
 }
 
 void FreezingPolicy::OnIsAudibleChanged(const PageNode* page_node) {
+  auto& page_freezing_state = PageFreezingState::FromPage(page_node);
   if (page_node->IsAudible()) {
     OnCannotFreezeReasonChange(page_node, /*add=*/true,
                                CannotFreezeReason::kAudible);
-    auto& page_freezing_state = PageFreezingState::FromPage(page_node);
     if (page_freezing_state.recently_audible_timer.IsRunning()) {
       page_freezing_state.recently_audible_timer.Stop();
       OnCannotFreezeReasonChange(page_node, /*add=*/false,
@@ -357,8 +383,8 @@ void FreezingPolicy::OnIsAudibleChanged(const PageNode* page_node) {
     OnCannotFreezeReasonChange(page_node, /*add=*/false,
                                CannotFreezeReason::kAudible);
 
-    PageFreezingState::FromPage(page_node).recently_audible_timer.Start(
-        FROM_HERE, kAudioProtectionTime,
+    page_freezing_state.recently_audible_timer.Start(
+        FROM_HERE, features::kFreezingAudioProtectionTime.Get(),
         base::BindOnce(
             &FreezingPolicy::OnCannotFreezeReasonChange, base::Unretained(this),
             // Safe because the `PageFreezingState` and the timer are deleted by
@@ -601,8 +627,7 @@ void FreezingPolicy::OnResourceUsageUpdated(
     return;
   }
 
-  const double high_cpu_proportion =
-      features::kFreezingOnBatterySaverHighCPUProportion.Get();
+  const double high_cpu_proportion = features::kFreezingHighCPUProportion.Get();
   const std::map<resource_attribution::ResourceContext, double>
       cpu_proportion_map = cpu_proportion_tracker_.StartNextInterval(
           base::TimeTicks::Now(), results);

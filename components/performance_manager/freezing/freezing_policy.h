@@ -79,8 +79,6 @@ class FreezingPolicy : public PageNode::ObserverDefaultImpl,
   void AddFreezeVote(PageNode* page_node);
   void RemoveFreezeVote(PageNode* page_node);
 
-  static constexpr base::TimeDelta kAudioProtectionTime = base::Minutes(1);
-
  private:
   // State of a browsing instance.
   struct BrowsingInstanceState {

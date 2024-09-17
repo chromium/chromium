@@ -10,6 +10,8 @@ const char* CannotFreezeReasonToString(CannotFreezeReason reason) {
   switch (reason) {
     case CannotFreezeReason::kVisible:
       return "visible";
+    case CannotFreezeReason::kRecentlyVisible:
+      return "recently visible";
     case CannotFreezeReason::kAudible:
       return "audible";
     case CannotFreezeReason::kRecentlyAudible:

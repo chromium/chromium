@@ -144,12 +144,24 @@ BASE_FEATURE(kCPUMeasurementInFreezingPolicy,
              "CPUMeasurementInFreezingPolicy",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Note: This param is associated with `kCPUMeasurementInFreezingPolicy` instead
-// of `kFreezingOnBatterySaver`, to allow retrieving the value without
+// Note: These params are associated with `kCPUMeasurementInFreezingPolicy`
+// instead of `kFreezingOnBatterySaver`, to allow retrieving the value without
 // activating the `kFreezingOnBatterySaver` feature.
-const base::FeatureParam<double> kFreezingOnBatterySaverHighCPUProportion{
-    &kCPUMeasurementInFreezingPolicy,
-    "freezing_on_battery_saver_high_cpu_proportion", 0.25};
+BASE_FEATURE_PARAM(double,
+                   kFreezingHighCPUProportion,
+                   &kCPUMeasurementInFreezingPolicy,
+                   "freezing_high_cpu_proportion",
+                   0.25);
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kFreezingVisibleProtectionTime,
+                   &kCPUMeasurementInFreezingPolicy,
+                   "freezing_visible_protection_time",
+                   base::Minutes(5));
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kFreezingAudioProtectionTime,
+                   &kCPUMeasurementInFreezingPolicy,
+                   "freezing_audio_protection_time",
+                   base::Minutes(5));
 
 BASE_FEATURE(kFreezingOnBatterySaver,
              "FreezingOnBatterySaver",
