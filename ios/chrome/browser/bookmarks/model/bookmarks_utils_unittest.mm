@@ -22,7 +22,7 @@ class BookmarksUtilsTest : public BookmarkIOSUnitTestSupport {
  protected:
   void SetUp() override {
     BookmarkIOSUnitTestSupport::SetUp();
-    prefs_ = chrome_browser_state_->GetPrefs();
+    prefs_ = profile_->GetPrefs();
     account_folder_node_ =
         AddFolder(bookmark_model_->account_mobile_node(), u"Account folder");
     local_folder_node_ =

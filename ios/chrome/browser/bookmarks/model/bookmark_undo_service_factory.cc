@@ -13,7 +13,7 @@
 namespace ios {
 
 // static
-BookmarkUndoService* BookmarkUndoServiceFactory::GetForBrowserState(
+BookmarkUndoService* BookmarkUndoServiceFactory::GetForProfile(
     ProfileIOS* profile) {
   return static_cast<BookmarkUndoService*>(
       GetInstance()->GetServiceForBrowserState(profile, true));

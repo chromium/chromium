@@ -254,14 +254,13 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
   self = [super initWithStyle:style];
   if (self) {
     _browser = browser->AsWeakPtr();
-    ChromeBrowserState* browserState = self.browserState;
+    ProfileIOS* profile = self.profile;
     _webStateList = browser->GetWebStateList();
 
-    _faviconLoader =
-        IOSChromeFaviconLoaderFactory::GetForBrowserState(browserState);
+    _faviconLoader = IOSChromeFaviconLoaderFactory::GetForProfile(profile);
 
-    _bookmarkModel = ios::BookmarkModelFactory::GetForBrowserState(browserState)
-                         ->AsWeakPtr();
+    _bookmarkModel =
+        ios::BookmarkModelFactory::GetForProfile(profile)->AsWeakPtr();
     _bookmarkModelBridge =
         std::make_unique<BookmarkModelBridge>(self, _bookmarkModel.get());
   }
@@ -324,7 +323,7 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
   // If cache is present then reconstruct the last visited bookmark from
   // cache.
   if (![BookmarkPathCache
-          bookmarkTopMostRowCacheWithPrefService:self.browserState->GetPrefs()
+          bookmarkTopMostRowCacheWithPrefService:self.profile->GetPrefs()
                                    bookmarkModel:_bookmarkModel.get()
                                         folderId:&cachedFolderID
                                       topMostRow:&cachedIndexPathRow] ||
@@ -430,7 +429,7 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
   [super viewWillAppear:animated];
 
   if (_isShutDown) {
-    // After `shutdown` is called, `_browserState` is null.
+    // After `shutdown` is called, `_profile` is null.
     return;
   }
   // Set the delegate here to make sure it is working when navigating in the
@@ -567,7 +566,7 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
   int topMostVisibleIndexPathRow = [self topMostVisibleIndexPathRow];
   if (self.displayedFolderNode) {
     [BookmarkPathCache
-        cacheBookmarkTopMostRowWithPrefService:self.browserState->GetPrefs()
+        cacheBookmarkTopMostRowWithPrefService:self.profile->GetPrefs()
                                       folderId:self.displayedFolderNode->id()
                                      inStorage:bookmark_utils_ios::
                                                    GetBookmarkStorageType(
@@ -870,7 +869,7 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
   base::RecordAction(base::UserMetricsAction(userAction));
   [self.snackbarCommandsHandler
       showSnackbarMessage:bookmark_utils_ios::DeleteBookmarksWithUndoToast(
-                              nodes, _bookmarkModel.get(), self.browserState,
+                              nodes, _bookmarkModel.get(), self.profile,
                               FROM_HERE)];
   [self setTableViewEditing:NO];
 }
@@ -1055,7 +1054,7 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
   }
   int64_t unusedFolderId;
   int unusedIndexPathRow;
-  PrefService* prefService = self.browserState->GetPrefs();
+  PrefService* prefService = self.profile->GetPrefs();
   while ([BookmarkPathCache
       bookmarkTopMostRowCacheWithPrefService:prefService
                                bookmarkModel:_bookmarkModel.get()
@@ -1191,7 +1190,7 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
       showSnackbarMessage:
           bookmark_utils_ios::UpdateBookmarkPositionWithUndoToast(
               node, self.displayedFolderNode, position, _bookmarkModel.get(),
-              self.browserState)];
+              self.profile)];
 }
 
 - (void)handleRefreshContextBar {
@@ -1244,16 +1243,15 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
   DCHECK_GE(editedNodesVector.size(), 1u);
 
   [self setTableViewEditing:NO];
-  ChromeBrowserState* browserState = self.browserState;
+  ProfileIOS* profile = self.profile;
   [self.snackbarCommandsHandler
       showSnackbarMessage:bookmark_utils_ios::MoveBookmarksWithUndoToast(
                               editedNodesVector, _bookmarkModel.get(), folder,
-                              browserState,
-                              AuthenticationServiceFactory::GetForBrowserState(
-                                  browserState)
+                              profile,
+                              AuthenticationServiceFactory::GetForProfile(
+                                  profile)
                                   ->GetWeakPtr(),
-                              SyncServiceFactory::GetForBrowserState(
-                                  browserState))];
+                              SyncServiceFactory::GetForProfile(profile))];
 }
 
 - (void)bookmarksFolderChooserCoordinatorDidCancel:
@@ -1289,7 +1287,7 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
   // again here if restoring of cache position is needed.  It is to prevent
   // crbug.com/765503.
   if ([BookmarkPathCache
-          bookmarkTopMostRowCacheWithPrefService:self.browserState->GetPrefs()
+          bookmarkTopMostRowCacheWithPrefService:self.profile->GetPrefs()
                                    bookmarkModel:_bookmarkModel.get()
                                         folderId:&unusedFolderId
                                       topMostRow:&unusedIndexPathRow]) {
@@ -1366,10 +1364,10 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
 
 #pragma mark - private
 
-// Returns the browser state.
-- (ChromeBrowserState*)browserState {
+// Returns the profile.
+- (ProfileIOS*)profile {
   if (Browser* browser = _browser.get()) {
-    return browser->GetBrowserState()->GetOriginalChromeBrowserState();
+    return browser->GetProfile()->GetOriginalProfile();
   }
   return nullptr;
 }
@@ -1492,7 +1490,7 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
 
   bool is_ntp = self.webStateList->GetActiveWebState()->GetVisibleURL() ==
                 kChromeUINewTabURL;
-  new_tab_page_uma::RecordNTPAction(self.browserState->IsOffTheRecord(), is_ntp,
+  new_tab_page_uma::RecordNTPAction(self.profile->IsOffTheRecord(), is_ntp,
                                     new_tab_page_uma::ACTION_OPENED_BOOKMARK);
   base::RecordAction(
       base::UserMetricsAction("MobileBookmarkManagerEntryOpened"));
@@ -1630,19 +1628,19 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
   // items within those folders. IsNodeManaged() returns true for the
   // managed_node and all nodes that are descendants of managed_node.
   bookmarks::ManagedBookmarkService* managedBookmarkService =
-      ManagedBookmarkServiceFactory::GetForBrowserState(self.browserState);
+      ManagedBookmarkServiceFactory::GetForProfile(self.profile);
   return managedBookmarkService ? !managedBookmarkService->IsNodeManaged(node)
                                 : YES;
 }
 
 // Returns YES if user is allowed to edit any bookmarks.
 - (BOOL)isEditBookmarksEnabled {
-  ChromeBrowserState* browserState = self.browserState;
-  if (!browserState) {
+  ProfileIOS* profile = self.profile;
+  if (!profile) {
     // The view is being closed.
     return NO;
   }
-  return browserState->GetPrefs()->GetBoolean(
+  return profile->GetPrefs()->GetBoolean(
       bookmarks::prefs::kEditBookmarksEnabled);
 }
 
@@ -1790,12 +1788,12 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
 
 // Returns whether the incognito mode is forced.
 - (BOOL)isIncognitoForced {
-  return IsIncognitoModeForced(self.browserState->GetPrefs());
+  return IsIncognitoModeForced(self.profile->GetPrefs());
 }
 
 // Returns whether the incognito mode is available.
 - (BOOL)isIncognitoAvailable {
-  return !IsIncognitoModeDisabled(self.browserState->GetPrefs());
+  return !IsIncognitoModeDisabled(self.profile->GetPrefs());
 }
 
 #pragma mark - Loading and Empty States
@@ -2759,7 +2757,7 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
           bookmark_utils_ios::CreateBookmarkAtPositionWithUndoToast(
               base::SysUTF8ToNSString(URL.spec()), URL,
               self.displayedFolderNode, index, _bookmarkModel.get(),
-              self.browserState)];
+              self.profile)];
 }
 
 @end

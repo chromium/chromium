@@ -283,14 +283,14 @@ MDCSnackbarMessage* UpdateBookmarkWithUndoToast(
     const BookmarkNode* original_folder,
     const BookmarkNode* folder,
     bookmarks::BookmarkModel* model,
-    ChromeBrowserState* browser_state,
+    ProfileIOS* profile,
     base::WeakPtr<AuthenticationService> authenticationService,
     raw_ptr<syncer::SyncService> syncService) {
   CHECK(node);
 
   // Secondly, create an Undo group for all undoable actions.
   UndoManagerWrapper* wrapper =
-      [[UndoManagerWrapper alloc] initWithBrowserState:browser_state];
+      [[UndoManagerWrapper alloc] initWithBrowserState:profile];
 
   // Create or update the bookmark.
   [wrapper startGroupingActions];
@@ -322,11 +322,11 @@ MDCSnackbarMessage* CreateBookmarkAtPositionWithUndoToast(
     const BookmarkNode* folder,
     int position,
     bookmarks::BookmarkModel* model,
-    ChromeBrowserState* browser_state) {
+    ProfileIOS* profile) {
   std::u16string titleString = base::SysNSStringToUTF16(title);
 
   UndoManagerWrapper* wrapper =
-      [[UndoManagerWrapper alloc] initWithBrowserState:browser_state];
+      [[UndoManagerWrapper alloc] initWithBrowserState:profile];
   [wrapper startGroupingActions];
 
   RecordModuleFreshnessSignal(ContentSuggestionsModuleType::kShortcuts);
@@ -349,7 +349,7 @@ MDCSnackbarMessage* UpdateBookmarkPositionWithUndoToast(
     const BookmarkNode* folder,
     size_t position,
     bookmarks::BookmarkModel* model,
-    ChromeBrowserState* browser_state) {
+    ProfileIOS* profile) {
   DCHECK(node);
   DCHECK(folder);
   DCHECK(!folder->HasAncestor(node));
@@ -362,7 +362,7 @@ MDCSnackbarMessage* UpdateBookmarkPositionWithUndoToast(
 
   // Secondly, create an Undo group for all undoable actions.
   UndoManagerWrapper* wrapper =
-      [[UndoManagerWrapper alloc] initWithBrowserState:browser_state];
+      [[UndoManagerWrapper alloc] initWithBrowserState:profile];
 
   // Update the bookmark.
   [wrapper startGroupingActions];
@@ -391,13 +391,13 @@ void DeleteBookmarks(const std::set<const BookmarkNode*>& bookmarks,
 MDCSnackbarMessage* DeleteBookmarksWithUndoToast(
     const std::set<const BookmarkNode*>& nodes,
     bookmarks::BookmarkModel* bookmark_model,
-    ChromeBrowserState* browser_state,
+    ProfileIOS* profile,
     const base::Location& location) {
   size_t node_count = nodes.size();
   DCHECK_GT(node_count, 0u);
 
   UndoManagerWrapper* wrapper =
-      [[UndoManagerWrapper alloc] initWithBrowserState:browser_state];
+      [[UndoManagerWrapper alloc] initWithBrowserState:profile];
 
   // Delete the selected bookmarks.
   [wrapper startGroupingActions];
@@ -440,7 +440,7 @@ MDCSnackbarMessage* MoveBookmarksWithUndoToast(
     const std::vector<const BookmarkNode*>& bookmarks_to_move,
     bookmarks::BookmarkModel* model,
     const BookmarkNode* destination_folder,
-    ChromeBrowserState* browser_state,
+    ProfileIOS* profile,
     base::WeakPtr<AuthenticationService> authenticationService,
     raw_ptr<syncer::SyncService> syncService) {
   size_t node_count = bookmarks_to_move.size();
@@ -454,7 +454,7 @@ MDCSnackbarMessage* MoveBookmarksWithUndoToast(
   bool multiple_bookmarks_to_move = node_count > 1 || contains_a_folder;
 
   UndoManagerWrapper* wrapper =
-      [[UndoManagerWrapper alloc] initWithBrowserState:browser_state];
+      [[UndoManagerWrapper alloc] initWithBrowserState:profile];
 
   // Move the selected bookmarks.
   [wrapper startGroupingActions];

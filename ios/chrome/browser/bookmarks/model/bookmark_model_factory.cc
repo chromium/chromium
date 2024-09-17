@@ -29,20 +29,17 @@ namespace ios {
 namespace {
 
 std::unique_ptr<KeyedService> BuildBookmarkModel(web::BrowserState* context) {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
 
   auto bookmark_model = std::make_unique<bookmarks::BookmarkModel>(
       std::make_unique<BookmarkClientImpl>(
-          browser_state,
-          ManagedBookmarkServiceFactory::GetForBrowserState(browser_state),
-          ios::LocalOrSyncableBookmarkSyncServiceFactory::GetForBrowserState(
-              browser_state),
-          ios::AccountBookmarkSyncServiceFactory::GetForBrowserState(
-              browser_state),
-          ios::BookmarkUndoServiceFactory::GetForBrowserState(browser_state)));
-  bookmark_model->Load(browser_state->GetStatePath());
-  ios::BookmarkUndoServiceFactory::GetForBrowserState(browser_state)
+          profile, ManagedBookmarkServiceFactory::GetForProfile(profile),
+          ios::LocalOrSyncableBookmarkSyncServiceFactory::GetForProfile(
+              profile),
+          ios::AccountBookmarkSyncServiceFactory::GetForProfile(profile),
+          ios::BookmarkUndoServiceFactory::GetForProfile(profile)));
+  bookmark_model->Load(profile->GetStatePath());
+  ios::BookmarkUndoServiceFactory::GetForProfile(profile)
       ->StartObservingBookmarkModel(bookmark_model.get());
   return bookmark_model;
 }

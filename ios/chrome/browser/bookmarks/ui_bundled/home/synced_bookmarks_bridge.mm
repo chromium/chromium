@@ -17,20 +17,19 @@ namespace sync_bookmarks {
 
 SyncedBookmarksObserverBridge::SyncedBookmarksObserverBridge(
     id<SyncObserverModelBridge> delegate,
-    ChromeBrowserState* browserState)
-    : SyncObserverBridge(delegate,
-                         SyncServiceFactory::GetForBrowserState(browserState)),
-      identity_manager_(IdentityManagerFactory::GetForProfile(browserState)),
-      browser_state_(browserState->AsWeakPtr()) {}
+    ProfileIOS* profile)
+    : SyncObserverBridge(delegate, SyncServiceFactory::GetForProfile(profile)),
+      identity_manager_(IdentityManagerFactory::GetForProfile(profile)),
+      profile_(profile->AsWeakPtr()) {}
 
 SyncedBookmarksObserverBridge::~SyncedBookmarksObserverBridge() {}
 
 #pragma mark - Signin and syncing status
 
 bool SyncedBookmarksObserverBridge::IsPerformingInitialSync() {
-  CHECK(browser_state_.get());
+  CHECK(profile_.get());
   syncer::SyncService* sync_service =
-      SyncServiceFactory::GetForBrowserState(browser_state_.get());
+      SyncServiceFactory::GetForProfile(profile_.get());
 
   return sync_service->GetTypesWithPendingDownloadForInitialSync().Has(
       syncer::BOOKMARKS);

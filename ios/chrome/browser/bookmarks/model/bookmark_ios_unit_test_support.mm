@@ -28,43 +28,41 @@ BookmarkIOSUnitTestSupport::BookmarkIOSUnitTestSupport(
 BookmarkIOSUnitTestSupport::~BookmarkIOSUnitTestSupport() = default;
 
 void BookmarkIOSUnitTestSupport::SetUp() {
-  // Get a BookmarkModel from the test ChromeBrowserState.
-  TestChromeBrowserState::Builder test_cbs_builder;
-  test_cbs_builder.AddTestingFactory(
+  // Get a BookmarkModel from the test ProfileIOS.
+  TestProfileIOS::Builder test_profile_builder;
+  test_profile_builder.AddTestingFactory(
       AuthenticationServiceFactory::GetInstance(),
       AuthenticationServiceFactory::GetDefaultFactory());
-  test_cbs_builder.AddTestingFactory(
+  test_profile_builder.AddTestingFactory(
       ios::BookmarkModelFactory::GetInstance(),
       ios::BookmarkModelFactory::GetDefaultFactory());
-  test_cbs_builder.AddTestingFactory(
+  test_profile_builder.AddTestingFactory(
       ManagedBookmarkServiceFactory::GetInstance(),
       ManagedBookmarkServiceFactory::GetDefaultFactory());
 
-  chrome_browser_state_ = std::move(test_cbs_builder).Build();
+  profile_ = std::move(test_profile_builder).Build();
 
   SetUpBrowserStateBeforeCreatingServices();
 
   AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
-      chrome_browser_state_.get(),
-      std::make_unique<FakeAuthenticationServiceDelegate>());
+      profile_.get(), std::make_unique<FakeAuthenticationServiceDelegate>());
 
-  bookmark_model_ = ios::BookmarkModelFactory::GetForBrowserState(
-      chrome_browser_state_.get());
+  bookmark_model_ = ios::BookmarkModelFactory::GetForProfile(profile_.get());
   if (wait_for_initialization_) {
     bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model_);
   }
 
-  pref_service_ = chrome_browser_state_->GetPrefs();
+  pref_service_ = profile_->GetPrefs();
   EXPECT_TRUE(pref_service_);
 
   if (wait_for_initialization_) {
     // Some tests exercise account bookmarks. Make sure their permanent
     // folders exist.
-    ios::BookmarkModelFactory::GetForBrowserState(chrome_browser_state_.get())
+    ios::BookmarkModelFactory::GetForProfile(profile_.get())
         ->CreateAccountPermanentFolders();
   }
 
-  browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get());
+  browser_ = std::make_unique<TestBrowser>(profile_.get());
 }
 
 void BookmarkIOSUnitTestSupport::SetUpBrowserStateBeforeCreatingServices() {}

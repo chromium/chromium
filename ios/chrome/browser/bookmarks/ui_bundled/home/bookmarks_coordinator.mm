@@ -124,11 +124,11 @@ enum class PresentedState {
 @end
 
 @implementation BookmarksCoordinator {
-  // The browser state of the current user.
-  base::WeakPtr<ChromeBrowserState> _currentBrowserState;
-  // The browser state to use, might be different from _currentBrowserState if
+  // The profile of the current user.
+  base::WeakPtr<ProfileIOS> _currentBrowserState;
+  // The profile to use, might be different from _currentBrowserState if
   // it is incognito.
-  base::WeakPtr<ChromeBrowserState> _browserState;
+  base::WeakPtr<ProfileIOS> _profile;
 
   base::WeakPtr<bookmarks::BookmarkModel> _bookmarkModel;
 }
@@ -140,21 +140,19 @@ enum class PresentedState {
 - (instancetype)initWithBrowser:(Browser*)browser {
   self = [super initWithBaseViewController:nil browser:browser];
   if (self) {
-    // Bookmarks are always opened with the main browser state, even in
+    // Bookmarks are always opened with the main profile, even in
     // incognito mode.
-    _currentBrowserState = browser->GetBrowserState()->AsWeakPtr();
-    _browserState =
-        _currentBrowserState->GetOriginalChromeBrowserState()->AsWeakPtr();
+    _currentBrowserState = browser->GetProfile()->AsWeakPtr();
+    _profile = _currentBrowserState->GetOriginalProfile()->AsWeakPtr();
     _bookmarkModel =
-        ios::BookmarkModelFactory::GetForBrowserState(_browserState.get())
-            ->AsWeakPtr();
+        ios::BookmarkModelFactory::GetForProfile(_profile.get())->AsWeakPtr();
     _mediator = [[BookmarkMediator alloc]
         initWithBookmarkModel:_bookmarkModel.get()
-                        prefs:_browserState->GetPrefs()
-        authenticationService:AuthenticationServiceFactory::GetForBrowserState(
-                                  _browserState.get())
-                  syncService:SyncServiceFactory::GetForBrowserState(
-                                  _browserState.get())];
+                        prefs:_profile->GetPrefs()
+        authenticationService:AuthenticationServiceFactory::GetForProfile(
+                                  _profile.get())
+                  syncService:SyncServiceFactory::GetForProfile(
+                                  _profile.get())];
     _currentPresentedState = PresentedState::NONE;
     DCHECK(_bookmarkModel) << [self description];
   }
@@ -162,7 +160,7 @@ enum class PresentedState {
 }
 
 - (void)dealloc {
-  DCHECK(!_browserState);
+  DCHECK(!_profile);
 }
 
 - (void)stop {
@@ -184,7 +182,7 @@ enum class PresentedState {
     case PresentedState::NONE:
       break;
   }
-  _browserState = nullptr;
+  _profile = nullptr;
   _currentBrowserState = nullptr;
   _bookmarkModel = nullptr;
   _mediator = nil;
@@ -235,7 +233,7 @@ enum class PresentedState {
                                                           URL:bookmarkedURL
                                                    editAction:editAction]];
   default_browser::NotifyBookmarkAddOrEdit(
-      feature_engagement::TrackerFactory::GetForBrowserState(
+      feature_engagement::TrackerFactory::GetForProfile(
           _currentBrowserState.get()));
 }
 
@@ -252,7 +250,7 @@ enum class PresentedState {
   [self presentEditorForURLNode:bookmark];
 
   default_browser::NotifyBookmarkAddOrEdit(
-      feature_engagement::TrackerFactory::GetForBrowserState(
+      feature_engagement::TrackerFactory::GetForProfile(
           _currentBrowserState.get()));
 }
 
@@ -261,7 +259,7 @@ enum class PresentedState {
                             selectingBookmark:nil];
 
   default_browser::NotifyBookmarkManagerOpened(
-      feature_engagement::TrackerFactory::GetForBrowserState(
+      feature_engagement::TrackerFactory::GetForProfile(
           _currentBrowserState.get()));
 }
 
@@ -335,11 +333,11 @@ enum class PresentedState {
 
   if (urlsToOpen.empty()) {
     default_browser::NotifyBookmarkManagerClosed(
-        feature_engagement::TrackerFactory::GetForBrowserState(
+        feature_engagement::TrackerFactory::GetForProfile(
             _currentBrowserState.get()));
   } else {
     default_browser::NotifyURLFromBookmarkOpened(
-        feature_engagement::TrackerFactory::GetForBrowserState(
+        feature_engagement::TrackerFactory::GetForProfile(
             _currentBrowserState.get()));
   }
   // If trying to open urls with tab mode changed, we need to postpone openUrls
@@ -492,13 +490,13 @@ enum class PresentedState {
 
   BookmarkStorageType type =
       bookmark_utils_ios::GetBookmarkStorageType(folder, _bookmarkModel.get());
-  SetLastUsedBookmarkFolder(_browserState->GetPrefs(), folder, type);
+  SetLastUsedBookmarkFolder(_profile->GetPrefs(), folder, type);
   [self.snackbarCommandsHandler
       showSnackbarMessage:[self.mediator addBookmarks:_URLs toFolder:folder]];
   _URLs = nil;
 
   default_browser::NotifyBookmarkAddOrEdit(
-      feature_engagement::TrackerFactory::GetForBrowserState(
+      feature_engagement::TrackerFactory::GetForProfile(
           _currentBrowserState.get()));
 }
 
@@ -550,12 +548,12 @@ enum class PresentedState {
       bool is_ntp = webStateList->GetActiveWebState()->GetVisibleURL() ==
                     kChromeUINewTabURL;
       new_tab_page_uma::RecordNTPAction(
-          _browserState->IsOffTheRecord(), is_ntp,
+          _profile->IsOffTheRecord(), is_ntp,
           new_tab_page_uma::ACTION_OPENED_BOOKMARK);
       base::RecordAction(
           base::UserMetricsAction("MobileBookmarkManagerEntryOpened"));
       default_browser::NotifyURLFromBookmarkOpened(
-          feature_engagement::TrackerFactory::GetForBrowserState(
+          feature_engagement::TrackerFactory::GetForProfile(
               _currentBrowserState.get()));
 
       if (newTab ||
@@ -716,8 +714,7 @@ enum class PresentedState {
 - (void)openURLInCurrentTab:(const GURL&)url {
   WebStateList* webStateList = self.browser->GetWebStateList();
   if (url.SchemeIs(url::kJavaScriptScheme) && webStateList) {  // bookmarklet
-    LoadJavaScriptURL(url, _browserState.get(),
-                      webStateList->GetActiveWebState());
+    LoadJavaScriptURL(url, _profile.get(), webStateList->GetActiveWebState());
     return;
   }
   UrlLoadParams params = UrlLoadParams::InCurrentTab(url);

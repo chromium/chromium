@@ -28,13 +28,13 @@
 #include "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 BookmarkClientImpl::BookmarkClientImpl(
-    ChromeBrowserState* browser_state,
+    ProfileIOS* profile,
     bookmarks::ManagedBookmarkService* managed_bookmark_service,
     sync_bookmarks::BookmarkSyncService*
         local_or_syncable_bookmark_sync_service,
     sync_bookmarks::BookmarkSyncService* account_bookmark_sync_service,
     BookmarkUndoService* bookmark_undo_service)
-    : browser_state_(browser_state),
+    : profile_(profile),
       managed_bookmark_service_(managed_bookmark_service),
       local_or_syncable_bookmark_sync_service_(
           local_or_syncable_bookmark_sync_service),
@@ -57,10 +57,9 @@ void BookmarkClientImpl::Init(bookmarks::BookmarkModel* model) {
 void BookmarkClientImpl::RequiredRecoveryToLoad(
     const std::multimap<int64_t, int64_t>&
         local_or_syncable_reassigned_ids_per_old_id) {
-  if (browser_state_->GetPrefs()) {
+  if (profile_->GetPrefs()) {
     MigrateLastUsedBookmarkFolderUponLocalIdsReassigned(
-        browser_state_->GetPrefs(),
-        local_or_syncable_reassigned_ids_per_old_id);
+        profile_->GetPrefs(), local_or_syncable_reassigned_ids_per_old_id);
   }
 }
 
@@ -70,8 +69,8 @@ BookmarkClientImpl::GetFaviconImageForPageURL(
     favicon_base::FaviconImageCallback callback,
     base::CancelableTaskTracker* tracker) {
   return favicon::GetFaviconImageForPageURL(
-      ios::FaviconServiceFactory::GetForBrowserState(
-          browser_state_, ServiceAccessType::EXPLICIT_ACCESS),
+      ios::FaviconServiceFactory::GetForProfile(
+          profile_, ServiceAccessType::EXPLICIT_ACCESS),
       page_url, favicon_base::IconType::kFavicon, std::move(callback), tracker);
 }
 
@@ -82,8 +81,8 @@ bool BookmarkClientImpl::SupportsTypedCountForUrls() {
 void BookmarkClientImpl::GetTypedCountForUrls(
     UrlTypedCountMap* url_typed_count_map) {
   history::HistoryService* history_service =
-      ios::HistoryServiceFactory::GetForBrowserState(
-          browser_state_, ServiceAccessType::EXPLICIT_ACCESS);
+      ios::HistoryServiceFactory::GetForProfile(
+          profile_, ServiceAccessType::EXPLICIT_ACCESS);
   history::URLDatabase* url_db =
       history_service ? history_service->InMemoryDatabase() : nullptr;
   for (auto& url_typed_count_pair : *url_typed_count_map) {

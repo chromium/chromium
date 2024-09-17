@@ -62,14 +62,14 @@ class BookmarkMediatorUnitTest
  public:
   void SetUp() override {
     BookmarkIOSUnitTestSupport::SetUp();
-    authentication_service_ = AuthenticationServiceFactory::GetForBrowserState(
-        chrome_browser_state_.get());
+    authentication_service_ =
+        AuthenticationServiceFactory::GetForProfile(profile_.get());
 
-    mediator_ = [[BookmarkMediator alloc]
-        initWithBookmarkModel:bookmark_model_.get()
-                        prefs:chrome_browser_state_->GetPrefs()
-        authenticationService:authentication_service_
-                  syncService:&sync_service_];
+    mediator_ =
+        [[BookmarkMediator alloc] initWithBookmarkModel:bookmark_model_.get()
+                                                  prefs:profile_->GetPrefs()
+                                  authenticationService:authentication_service_
+                                            syncService:&sync_service_];
   }
 
   // Number of bookmark saved.
@@ -260,8 +260,7 @@ TEST_P(BookmarkMediatorUnitTest, TestSnackBarMessage) {
       bookmark_utils_ios::messageForAddingBookmarksInFolder(
           parent_folder, bookmark_model_.get(), folder_was_selected_by_user,
           show_count, bookmark_count,
-          AuthenticationServiceFactory::GetForBrowserState(
-              chrome_browser_state_.get())
+          AuthenticationServiceFactory::GetForProfile(profile_.get())
               ->GetWeakPtr(),
           &sync_service_);
   ASSERT_NSEQ(snackbar_message, expected_snackbar_message);

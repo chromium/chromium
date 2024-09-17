@@ -18,6 +18,12 @@ namespace ios {
 // static
 sync_bookmarks::BookmarkSyncService*
 AccountBookmarkSyncServiceFactory::GetForBrowserState(ProfileIOS* profile) {
+  return GetForProfile(profile);
+}
+
+// static
+sync_bookmarks::BookmarkSyncService*
+AccountBookmarkSyncServiceFactory::GetForProfile(ProfileIOS* profile) {
   return static_cast<sync_bookmarks::BookmarkSyncService*>(
       GetInstance()->GetServiceForBrowserState(profile, true));
 }

@@ -32,8 +32,8 @@ class BookmarksFolderChooserMediatorUnitTest
         /*parent=*/bookmark_model_->account_mobile_node(),
         /*index=*/0, u"Account folder");
 
-    authentication_service_ = AuthenticationServiceFactory::GetForBrowserState(
-        chrome_browser_state_.get());
+    authentication_service_ =
+        AuthenticationServiceFactory::GetForProfile(profile_.get());
     FakeSystemIdentityManager* system_identity_manager =
         FakeSystemIdentityManager::FromSystemIdentityManager(
             GetApplicationContext()->GetSystemIdentityManager());

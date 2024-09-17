@@ -18,7 +18,7 @@ namespace ios {
 // ProfileIOS.
 class BookmarkUndoServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
-  static BookmarkUndoService* GetForBrowserState(ProfileIOS* profile);
+  static BookmarkUndoService* GetForProfile(ProfileIOS* profile);
   static BookmarkUndoService* GetForProfileIfExists(ProfileIOS* profile);
   static BookmarkUndoServiceFactory* GetInstance();
 
