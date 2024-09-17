@@ -3403,6 +3403,12 @@ BASE_FEATURE(kWindowSplitting,
 // position their windows using only mouse and touch gestures.
 BASE_FEATURE(kWmMode, "WmMode", base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables an experimental feature that overrides the specific holdback
+// experiments on the M-129.
+BASE_FEATURE(kIgnoreM129Holdback,
+             "IgnoreM129Holdback",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables or disables PSM CheckMembership for 28 day device active pings
 // on ChromeOS.
 BASE_FEATURE(kDeviceActiveClient28DayActiveCheckMembership,
@@ -3967,7 +3973,7 @@ bool IsFocusModeEnabled() {
   // controlled holdback feature flag.
   const bool device_excluded_from_holdback_study = base::FeatureList::IsEnabled(
       kFeatureManagementShouldExcludeFromSysUiHoldback);
-  if (base::FeatureList::IsEnabled(kSysUiShouldHoldbackFocusMode) &&
+  if (IsSysUiShouldHoldbackFocusModeEnabled() &&
       !device_excluded_from_holdback_study) {
     return false;
   }
@@ -3999,7 +4005,7 @@ bool IsForestFeatureEnabled() {
   // controlled holdback feature flag.
   const bool device_excluded_from_holdback_study = base::FeatureList::IsEnabled(
       kFeatureManagementShouldExcludeFromSysUiHoldback);
-  if (base::FeatureList::IsEnabled(kSysUiShouldHoldbackForest) &&
+  if (IsSysUiShouldHoldbackForestEnabled() &&
       !device_excluded_from_holdback_study) {
     return false;
   }
@@ -4141,7 +4147,7 @@ bool IsHoldingSpaceSuggestionsEnabled() {
   // controlled holdback feature flag.
   const bool device_excluded_from_holdback_study = base::FeatureList::IsEnabled(
       kFeatureManagementShouldExcludeFromSysUiHoldback);
-  if (base::FeatureList::IsEnabled(kSysUiShouldHoldbackDriveIntegration) &&
+  if (IsSysUiShouldHoldbackDriveIntegrationEnabled() &&
       !device_excluded_from_holdback_study) {
     return false;
   }
@@ -4256,7 +4262,7 @@ bool IsLauncherContinueSectionWithRecentsEnabled() {
   // controlled holdback feature flag.
   const bool device_excluded_from_holdback_study = base::FeatureList::IsEnabled(
       kFeatureManagementShouldExcludeFromSysUiHoldback);
-  if (base::FeatureList::IsEnabled(kSysUiShouldHoldbackDriveIntegration) &&
+  if (IsSysUiShouldHoldbackDriveIntegrationEnabled() &&
       !device_excluded_from_holdback_study) {
     return false;
   }
@@ -4869,6 +4875,21 @@ bool IsSystemNudgeMigrationEnabled() {
 
 bool IsSystemTrayShadowEnabled() {
   return base::FeatureList::IsEnabled(kSystemTrayShadow);
+}
+
+bool IsSysUiShouldHoldbackDriveIntegrationEnabled() {
+  return base::FeatureList::IsEnabled(kSysUiShouldHoldbackDriveIntegration) &&
+         !base::FeatureList::IsEnabled(kIgnoreM129Holdback);
+}
+
+bool IsSysUiShouldHoldbackFocusModeEnabled() {
+  return base::FeatureList::IsEnabled(kSysUiShouldHoldbackFocusMode) &&
+         !base::FeatureList::IsEnabled(kIgnoreM129Holdback);
+}
+
+bool IsSysUiShouldHoldbackForestEnabled() {
+  return base::FeatureList::IsEnabled(kSysUiShouldHoldbackForest) &&
+         !base::FeatureList::IsEnabled(kIgnoreM129Holdback);
 }
 
 bool IsTetheringExperimentalFunctionalityEnabled() {
