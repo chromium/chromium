@@ -66,9 +66,6 @@ constexpr int kTimeRangeHistogramBucketCount = 30;
 // the device.
 const char kLifecycleEventsHistogram[] = "IOS.PushNotification.LifecyleEvents";
 
-// Key for the PushNotificationClientId in the Send Tab notification payload.
-NSString* const kPushNotificationClientIdKey = @"push_notification_client_id";
-
 // This enum is used to represent a point along the push notification's
 // lifecycle.
 enum class PushNotificationLifecycleEvent {

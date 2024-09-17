@@ -70,6 +70,11 @@ class PushNotificationClient {
   // notification (maybe by including the gaia id of the associated profile).
   void LoadUrlInNewTab(const GURL& url);
 
+  // Loads a url in a new tab once an active browser is ready. Runs `callback`
+  // with the browser the URL is loaded in.
+  void LoadUrlInNewTab(const GURL& url,
+                       base::OnceCallback<void(Browser*)> callback);
+
   // Loads the feedback view controller once an active browser is ready.
   // TODO(crbug.com/41497027): This API should includes an identifier of the
   // Profile that should be used to open the URL which should come from the
@@ -99,7 +104,8 @@ class PushNotificationClient {
 
  private:
   friend class ::CommercePushNotificationClientTest;
-  std::vector<GURL> urls_delayed_for_loading_;
+  std::vector<std::pair<GURL, base::OnceCallback<void(Browser*)>>>
+      urls_delayed_for_loading_;
 
   // Stores whether or not the feedback view controller should be shown when a
   // Browser is ready.
@@ -112,7 +118,9 @@ class PushNotificationClient {
   NSDictionary<NSString*, NSString*>* feedback_data_ = nil;
 
   // Loads a url in a new tab for a given browser.
-  void LoadUrlInNewTab(const GURL& url, Browser* browser);
+  void LoadUrlInNewTab(const GURL& url,
+                       Browser* browser,
+                       base::OnceCallback<void(Browser*)> callback);
 };
 
 #endif  // IOS_CHROME_BROWSER_PUSH_NOTIFICATION_MODEL_PUSH_NOTIFICATION_CLIENT_H_
