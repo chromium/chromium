@@ -245,6 +245,12 @@
       <property name="format" value="removeObserver\([a-zA-Z]+::"/>
       <property name="message"  value="Each method reference creates a new instance. The instance given to addObserver needs to be remembered and supplied to removeObserver."/>
     </module>
+    <module name="RegexpSinglelineJava">
+      <property name="id" value="MockitoInitMocks"/>
+      <property name="severity" value="warning"/>
+      <property name="format" value="MockitoAnnotations.initMocks"/>
+      <property name="message" value="Prefer to use MockitoJUnit.Rule for consistency unless timing of when exactly mocks are initialized is required."/>
+    </module>
   </module>
   <module name="RegexpMultiline">
     <property name="id" value="VisibleForTestingForTesting"/>
