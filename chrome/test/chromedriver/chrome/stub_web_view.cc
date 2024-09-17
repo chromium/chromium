@@ -309,3 +309,7 @@ Status StubWebView::HandleDialog(bool accept,
                                  const std::optional<std::string>& text) {
   return Status(kOk);
 }
+
+WebView* StubWebView::FindContainerForFrame(const std::string& frame_id) {
+  return nullptr;
+}

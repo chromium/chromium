@@ -142,6 +142,8 @@ class StubWebView : public WebView {
   Status HandleDialog(bool accept,
                       const std::optional<std::string>& text) override;
 
+  WebView* FindContainerForFrame(const std::string& frame_id) override;
+
  private:
   std::string id_;
 };

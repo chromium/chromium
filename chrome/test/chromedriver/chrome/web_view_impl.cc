@@ -2143,6 +2143,10 @@ Status WebViewImpl::HandleDialog(bool accept,
   return client_->HandleDialog(accept, text);
 }
 
+WebView* WebViewImpl::FindContainerForFrame(const std::string& frame_id) {
+  return GetTargetForFrame(frame_id);
+}
+
 WebViewImplHolder::WebViewImplHolder(WebViewImpl* web_view) {
   // Lock input web view and all its parents, to prevent them from being
   // deleted while still in use. Inside |items_|, each web view must appear

@@ -192,6 +192,8 @@ class WebViewImpl : public WebView {
   Status HandleDialog(bool accept,
                       const std::optional<std::string>& text) override;
 
+  WebView* FindContainerForFrame(const std::string& frame_id) override;
+
  protected:
   WebViewImpl(const std::string& id,
               const bool w3c_compliant,

@@ -97,9 +97,6 @@ _NEGATIVE_FILTER = [
     # crbug.com/chromedriver/4362
     'BidiTest.testSwitchWindows',
     'BidiTest.testOpenMultipleTabsInJavaScript',
-    # crbug.com/chromedriver/4509
-    'ChromeDriverSiteIsolation.testScriptNavigateRemoteToLocal',
-    'ChromeDriverSiteIsolation.testClickNavigateRemoteToLocal',
     # crbug.com/chromedriver/4513
     'ChromeDriverSiteIsolation.testClickNavigateRemoteToSameRemote',
     # crbug.com/350916212
@@ -163,8 +160,6 @@ _OS_SPECIFIC_FILTER['mac'] = [
     'ChromeDriverSecureContextTest.testCreateVirtualSensorWithMinimumFrequency',
     'ChromeDriverSecureContextTest.testGetVirtualSensorInformation',
     'ChromeDriverSecureContextTest.testUpdateVirtualSensor',
-    # Flaky: https://crbug.com/361521805
-    'ChromeDriverSiteIsolation.testClickNavigateLocalToLocal',
 ]
 
 _BROWSER_SPECIFIC_FILTER = {}
@@ -5506,12 +5501,21 @@ class ChromeDriverSiteIsolation(ChromeDriverBaseTestWithWebServer):
       bytes('<p>Ready, Steady, Go!</p>', 'utf-8'))
     self._http_server.SetDataForPath('/main.html',
       bytes('<iframe src="/local1.html">', 'utf-8'))
-    self._driver.Load(self.GetHttpUrlForFile('/main.html'))
-    frame = self._driver.FindElement('tag name', 'iframe')
-    self._driver.SwitchToFrame(frame)
-    self._driver.ExecuteScript('location.href=arguments[0]', local2_url)
-    paragraph = self._driver.FindElement('tag name', 'p')
-    self.assertEqual('DONE!', paragraph.GetText())
+    for _ in range(0, 2):
+      self._driver.SwitchToMainFrame()
+      self._driver.Load(self.GetHttpUrlForFile('/main.html'))
+      self.WaitForCondition(
+        lambda: len(self._driver.FindElements('tag name', 'iframe')) > 0,
+        timeout=1)
+      frame = self._driver.FindElement('tag name', 'iframe')
+      self._driver.SwitchToFrame(frame)
+      self._driver.ExecuteScript('location.href=arguments[0]', local2_url)
+      self.WaitForCondition(
+        lambda: len(self._driver.FindElements('tag name', 'p')) > 0,
+        timeout=1)
+      time.sleep(0.3)
+      paragraph = self._driver.FindElement('tag name', 'p')
+      self.assertEqual('DONE!', paragraph.GetText())
 
   def testScriptNavigateLocalToRemote(self):
     """Test that user can switch into a local frame
@@ -5525,12 +5529,21 @@ class ChromeDriverSiteIsolation(ChromeDriverBaseTestWithWebServer):
       bytes('<p>Ready, Steady, Go!</p>', 'utf-8'))
     self._http_server.SetDataForPath('/main.html',
       bytes('<iframe src="/local.html">', 'utf-8'))
-    self._driver.Load(self.GetHttpUrlForFile('/main.html'))
-    frame = self._driver.FindElement('tag name', 'iframe')
-    self._driver.SwitchToFrame(frame)
-    self._driver.ExecuteScript('location.href=arguments[0]', remote_url)
-    paragraph = self._driver.FindElement('tag name', 'p')
-    self.assertEqual('DONE!', paragraph.GetText())
+    for _ in range(0, 2):
+      self._driver.SwitchToMainFrame()
+      self._driver.Load(self.GetHttpUrlForFile('/main.html'))
+      self.WaitForCondition(
+        lambda: len(self._driver.FindElements('tag name', 'iframe')) > 0,
+        timeout=1)
+      frame = self._driver.FindElement('tag name', 'iframe')
+      self._driver.SwitchToFrame(frame)
+      self._driver.ExecuteScript('location.href=arguments[0]', remote_url)
+      self.WaitForCondition(
+        lambda: len(self._driver.FindElements('tag name', 'p')) > 0,
+        timeout=1)
+      time.sleep(0.3)
+      paragraph = self._driver.FindElement('tag name', 'p')
+      self.assertEqual('DONE!', paragraph.GetText())
 
   def testScriptNavigateRemoteToSameRemote(self):
     """Test that user can switch into a remote frame,
@@ -5547,12 +5560,21 @@ class ChromeDriverSiteIsolation(ChromeDriverBaseTestWithWebServer):
       bytes('<p>Ready, Steady, Go!</p>', 'utf-8'))
     self._http_server.SetDataForPath('/main.html',
       bytes('<iframe src="%s">' % remote1_url, 'utf-8'))
-    self._driver.Load(self.GetHttpUrlForFile('/main.html'))
-    frame = self._driver.FindElement('tag name', 'iframe')
-    self._driver.SwitchToFrame(frame)
-    self._driver.ExecuteScript('location.href=arguments[0]', remote2_url)
-    paragraph = self._driver.FindElement('tag name', 'p')
-    self.assertEqual('DONE!', paragraph.GetText())
+    for _ in range(0, 2):
+      self._driver.SwitchToMainFrame()
+      self._driver.Load(self.GetHttpUrlForFile('/main.html'))
+      self.WaitForCondition(
+        lambda: len(self._driver.FindElements('tag name', 'iframe')) > 0,
+        timeout=1)
+      frame = self._driver.FindElement('tag name', 'iframe')
+      self._driver.SwitchToFrame(frame)
+      self._driver.ExecuteScript('location.href=arguments[0]', remote2_url)
+      self.WaitForCondition(
+        lambda: len(self._driver.FindElements('tag name', 'p')) > 0,
+        timeout=1)
+      time.sleep(0.3)
+      paragraph = self._driver.FindElement('tag name', 'p')
+      self.assertEqual('DONE!', paragraph.GetText())
 
   def testScriptNavigateRemoteToLocal(self):
     """Test that user can switch into a remote frame,
@@ -5577,9 +5599,16 @@ class ChromeDriverSiteIsolation(ChromeDriverBaseTestWithWebServer):
     for _ in range(0, 2):
       self._driver.SwitchToMainFrame()
       self._driver.Load(self.GetHttpUrlForFile('/main.html'))
+      self.WaitForCondition(
+        lambda: len(self._driver.FindElements('tag name', 'iframe')) > 0,
+        timeout=1)
       frame = self._driver.FindElement('tag name', 'iframe')
       self._driver.SwitchToFrame(frame)
       self._driver.ExecuteScript('location.href=arguments[0]', local_url)
+      self.WaitForCondition(
+        lambda: len(self._driver.FindElements('tag name', 'p')) > 0,
+        timeout=1)
+      time.sleep(0.3)
       paragraph = self._driver.FindElement('tag name', 'p')
       self.assertEqual('DONE!', paragraph.GetText())
 
@@ -5593,13 +5622,24 @@ class ChromeDriverSiteIsolation(ChromeDriverBaseTestWithWebServer):
       bytes('<a href="local2.html">To Another Local</a>', 'utf-8'))
     self._http_server.SetDataForPath('/main.html',
       bytes('<iframe src="/local1.html">', 'utf-8'))
-    self._driver.Load(self.GetHttpUrlForFile('/main.html'))
-    frame = self._driver.FindElement('tag name', 'iframe')
-    self._driver.SwitchToFrame(frame)
-    anchor = self._driver.FindElement('tag name', 'a')
-    anchor.Click()
-    paragraph = self._driver.FindElement('tag name', 'p')
-    self.assertEqual('DONE!', paragraph.GetText())
+    for _ in range(0, 2):
+      self._driver.Load(self.GetHttpUrlForFile('/main.html'))
+      self.WaitForCondition(
+        lambda: len(self._driver.FindElements('tag name', 'iframe')) > 0,
+        timeout=1)
+      frame = self._driver.FindElement('tag name', 'iframe')
+      self._driver.SwitchToFrame(frame)
+      self.WaitForCondition(
+        lambda: len(self._driver.FindElements('tag name', 'a')) > 0,
+        timeout=1)
+      anchor = self._driver.FindElement('tag name', 'a')
+      anchor.Click()
+      self.WaitForCondition(
+        lambda: len(self._driver.FindElements('tag name', 'p')) > 0,
+        timeout=1)
+      time.sleep(0.3)
+      paragraph = self._driver.FindElement('tag name', 'p')
+      self.assertEqual('DONE!', paragraph.GetText())
 
   def testClickNavigateLocalToRemote(self):
     """Test that user can switch into a local frame
@@ -5613,13 +5653,25 @@ class ChromeDriverSiteIsolation(ChromeDriverBaseTestWithWebServer):
       bytes('<a href="%s">To Remote</a>' % remote_url, 'utf-8'))
     self._http_server.SetDataForPath('/main.html',
       bytes('<iframe src="/local.html">', 'utf-8'))
-    self._driver.Load(self.GetHttpUrlForFile('/main.html'))
-    frame = self._driver.FindElement('tag name', 'iframe')
-    self._driver.SwitchToFrame(frame)
-    anchor = self._driver.FindElement('tag name', 'a')
-    anchor.Click()
-    paragraph = self._driver.FindElement('tag name', 'p')
-    self.assertEqual('DONE!', paragraph.GetText())
+    for _ in range(0, 2):
+      self._driver.SwitchToMainFrame()
+      self._driver.Load(self.GetHttpUrlForFile('/main.html'))
+      self.assertTrue(self.WaitForCondition(
+        lambda: len(self._driver.FindElements('tag name', 'iframe')) > 0,
+        timeout=1))
+      frame = self._driver.FindElement('tag name', 'iframe')
+      self._driver.SwitchToFrame(frame)
+      self.assertTrue(self.WaitForCondition(
+        lambda: len(self._driver.FindElements('tag name', 'a')) > 0,
+        timeout=1))
+      anchor = self._driver.FindElement('tag name', 'a')
+      anchor.Click()
+      self.assertTrue(self.WaitForCondition(
+        lambda: len(self._driver.FindElements('tag name', 'p')) > 0,
+        timeout=1))
+      time.sleep(0.3)
+      paragraph = self._driver.FindElement('tag name', 'p')
+      self.assertEqual('DONE!', paragraph.GetText())
 
   def testClickNavigateRemoteToSameRemote(self):
     """Test that user can switch into a remote frame,
@@ -5646,10 +5698,20 @@ class ChromeDriverSiteIsolation(ChromeDriverBaseTestWithWebServer):
     for _ in range(0, 4):
       self._driver.SwitchToMainFrame()
       self._driver.Load(self.GetHttpUrlForFile('/main.html'))
+      self.assertTrue(self.WaitForCondition(
+        lambda: len(self._driver.FindElements('tag name', 'iframe')) > 0,
+        timeout=1))
       frame = self._driver.FindElement('tag name', 'iframe')
       self._driver.SwitchToFrame(frame)
+      self.assertTrue(self.WaitForCondition(
+              lambda: len(self._driver.FindElements('tag name', 'a')) > 0,
+              timeout=1))
       anchor = self._driver.FindElement('tag name', 'a')
       anchor.Click()
+      self.assertTrue(self.WaitForCondition(
+        lambda: len(self._driver.FindElements('tag name', 'p')) > 0,
+        timeout=1))
+      time.sleep(0.3)
       paragraph = self._driver.FindElement('tag name', 'p')
       self.assertEqual('DONE!', paragraph.GetText())
 
@@ -5676,10 +5738,20 @@ class ChromeDriverSiteIsolation(ChromeDriverBaseTestWithWebServer):
     for _ in range(0, 2):
       self._driver.SwitchToMainFrame()
       self._driver.Load(self.GetHttpUrlForFile('/main.html'))
+      self.assertTrue(self.WaitForCondition(
+        lambda: len(self._driver.FindElements('tag name', 'iframe')) > 0,
+        timeout=1))
       frame = self._driver.FindElement('tag name', 'iframe')
       self._driver.SwitchToFrame(frame)
+      self.assertTrue(self.WaitForCondition(
+        lambda: len(self._driver.FindElements('tag name', 'a')) > 0,
+        timeout=1))
       anchor = self._driver.FindElement('tag name', 'a')
       anchor.Click()
+      self.assertTrue(self.WaitForCondition(
+        lambda: len(self._driver.FindElements('tag name', 'p')) > 0,
+        timeout=1))
+      time.sleep(0.3)
       paragraph = self._driver.FindElement('tag name', 'p')
       self.assertEqual('DONE!', paragraph.GetText())
 
