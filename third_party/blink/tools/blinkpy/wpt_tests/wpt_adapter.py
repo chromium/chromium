@@ -377,6 +377,10 @@ class WPTAdapter:
         # browser at Wptrunner side.
         runner_options.rerun = self.options.repeat_each
 
+        # TODO(crbug.com/367745137): Reenable webtransport-h3 server once
+        # unclean startup has been fixed.
+        runner_options.enable_webtransport_h3 = False
+
     def _set_up_runner_ssl_options(self, runner_options):
         # wptrunner doesn't recognize the `pregenerated.*` values in
         # `external/wpt/config.json`, so pass them here.
