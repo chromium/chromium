@@ -2006,7 +2006,7 @@ static_assert(offsetof(PartitionRoot, sentinel_bucket) ==
               "sentinel_bucket must be just after the regular buckets.");
 
 static_assert(
-    offsetof(PartitionRoot, lock_) >= 64,
+    offsetof(PartitionRoot, lock_) >= internal::kPartitionCachelineSize,
     "The lock should not be on the same cacheline as the read-mostly flags");
 #if defined(__clang__)
 #pragma clang diagnostic pop
