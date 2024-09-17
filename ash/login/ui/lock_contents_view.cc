@@ -1928,6 +1928,15 @@ void LockContentsView::LayoutAuth(LoginBigUserView* to_update,
         // Currently the challenge-response authentication can't be combined
         // with the password or PIN based one.
         to_update_auth = LoginAuthUserView::AUTH_CHALLENGE_RESPONSE;
+      } else if (!state->show_password && !state->show_pin) {
+        CHECK(IsTimeInFuture(state->pin_available_at))
+            << "Password or pin factor must be present, if pin is not locked";
+        to_update_auth = LoginAuthUserView::AUTH_RECOVERY;
+        auth_metadata.pin_available_at = state->pin_available_at;
+        // The auth error message might be shown at the moment due to previous
+        // wrong attempts. We will hide it as it shows similar content as the
+        // recover button and the pin delay message.
+        HideAuthErrorMessage();
       } else {
         if (features::IsAllowPasswordlessSetupEnabled()) {
           to_update_auth = LoginAuthUserView::AUTH_NONE;
@@ -1948,11 +1957,6 @@ void LockContentsView::LayoutAuth(LoginBigUserView* to_update,
         auth_metadata.pin_available_at = state->pin_available_at;
         if (state->show_pin) {
           to_update_auth |= LoginAuthUserView::AUTH_PIN;
-        }
-        if (to_update_auth == LoginAuthUserView::AUTH_NONE) {
-          CHECK(IsTimeInFuture(state->pin_available_at))
-              << "Password or pin factor must be present, if pin is not locked";
-          to_update_auth |= LoginAuthUserView::AUTH_RECOVERY;
         }
         if (state->fingerprint_state != FingerprintState::UNAVAILABLE) {
           to_update_auth |= LoginAuthUserView::AUTH_FINGERPRINT;
@@ -2085,6 +2089,13 @@ void LockContentsView::ShowAuthErrorMessage() {
   int unlock_attempt = unlock_attempt_by_user_[account_id];
   UserState* user_state = FindStateForUser(account_id);
 
+  // Do not show the auth error message when there's no password or pin factor
+  // configured. This usually occurs when pin is soft-locked due to multiple
+  // wrong attempts.
+  if (!user_state->show_password && !user_state->show_pin) {
+    return;
+  }
+
   auth_error_bubble_->ShowAuthError(
       /*anchor_view = */ big_view->auth_user()->GetActiveInputView(),
       /*unlock_attempt = */ unlock_attempt,
@@ -2188,6 +2199,8 @@ std::unique_ptr<LoginBigUserView> LockContentsView::AllocateLoginBigUserView(
           base::Unretained(this), user.basic_user_info.account_id);
   auth_user_callbacks.on_pin_unlock = base::BindRepeating(
       &LockContentsView::OnPinUnlock, base::Unretained(this), is_primary);
+  auth_user_callbacks.on_recover_button_pressed = base::BindRepeating(
+      &LockContentsView::RecoverUserButtonPressed, base::Unretained(this));
 
   LoginPublicAccountUserView::Callbacks public_account_callbacks;
   public_account_callbacks.on_tap = auth_user_callbacks.on_tap;

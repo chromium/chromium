@@ -97,6 +97,7 @@ const int kDistanceBetweenUserViewAndPasswordDp = 24;
 const int kDistanceBetweenUserViewAndPinInputDp = 32;
 const int kDistanceBetweenUserViewAndOnlineSigninDp = 24;
 const int kDistanceBetweenUserViewAndChallengeResponseDp = 32;
+const int kDistanceBetweenUserViewAndRecoverButtonDp = 24;
 
 // Distance between the password textfield and the the pin keyboard.
 const int kDistanceBetweenPasswordFieldAndPinKeyboardDp = 16;
@@ -388,6 +389,9 @@ struct LoginAuthUserView::UiState {
         view->HasAuthMethod(LoginAuthUserView::AUTH_ONLINE_SIGN_IN);
     auth_factor_is_hiding_password = view->HasAuthMethod(
         LoginAuthUserView::AUTH_AUTH_FACTOR_IS_HIDING_PASSWORD);
+    pin_is_locked = view->ShouldShowPinStatusMessage();
+    show_recover_button = view->HasAuthMethod(LoginAuthUserView::AUTH_RECOVERY);
+
     non_pin_y_start_in_screen = view->GetBoundsInScreen().y();
     pin_start_in_screen = view->pin_view_->GetBoundsInScreen().origin();
   }
@@ -403,6 +407,8 @@ struct LoginAuthUserView::UiState {
   bool tpm_is_locked = false;
   bool force_online_sign_in = false;
   bool auth_factor_is_hiding_password = false;
+  bool pin_is_locked = false;
+  bool show_recover_button = false;
   // Used for this view's animation in `ApplyAnimationPostLayout`.
   int non_pin_y_start_in_screen = 0;
   gfx::Point pin_start_in_screen;
@@ -514,12 +520,14 @@ LoginAuthUserView::LoginAuthUserView(const LoginUserInfo& user,
       on_tap_(callbacks.on_tap),
       on_remove_warning_shown_(callbacks.on_remove_warning_shown),
       on_remove_(callbacks.on_remove),
-      on_pin_unlock_(callbacks.on_pin_unlock) {
+      on_pin_unlock_(callbacks.on_pin_unlock),
+      on_recover_button_pressed_(callbacks.on_recover_button_pressed) {
   DCHECK(callbacks.on_auth);
   DCHECK(callbacks.on_tap);
   DCHECK(callbacks.on_remove);
   DCHECK(callbacks.on_auth_factor_is_hiding_password_changed);
   DCHECK(callbacks.on_pin_unlock);
+  DCHECK(callbacks.on_recover_button_pressed);
   DCHECK_NE(user.basic_user_info.type, user_manager::UserType::kPublicAccount);
   if (Shell::Get()->login_screen_controller()->IsAuthenticating()) {
     // TODO(b/276246832): We should avoid re-layouting during Authentication.
@@ -608,6 +616,12 @@ LoginAuthUserView::LoginAuthUserView(const LoginUserInfo& user,
       button_message);
   online_sign_in_button_ = online_sign_in_button.get();
 
+  auto recover_button = std::make_unique<PillButton>(
+      base::BindRepeating(&LoginAuthUserView::OnRecoverButtonPressed,
+                          base::Unretained(this)),
+      l10n_util::GetStringUTF16(IDS_ASH_LOGIN_RECOVER_USER_BUTTON));
+  recover_button_ = recover_button.get();
+
   auto disabled_auth_message = std::make_unique<DisabledAuthMessageView>();
   disabled_auth_message_ = disabled_auth_message.get();
 
@@ -657,6 +671,8 @@ LoginAuthUserView::LoginAuthUserView(const LoginUserInfo& user,
   auto wrapped_online_sign_in_message_view =
       login_views_utils::WrapViewForPreferredSize(
           std::move(online_sign_in_button));
+  auto wrapped_recover_button_view =
+      login_views_utils::WrapViewForPreferredSize(std::move(recover_button));
   auto wrapped_disabled_auth_message_view =
       login_views_utils::WrapViewForPreferredSize(
           std::move(disabled_auth_message));
@@ -700,6 +716,7 @@ LoginAuthUserView::LoginAuthUserView(const LoginUserInfo& user,
       AddChildView(std::move(wrapped_locked_tpm_message_view));
   AddChildView(std::move(wrapped_password_view));
   AddChildView(std::move(wrapped_online_sign_in_message_view));
+  AddChildView(std::move(wrapped_recover_button_view));
   auto* auth_message_ptr =
       AddChildView(std::move(wrapped_disabled_auth_message_view));
   AddChildView(std::move(wrapped_pin_input_view));
@@ -778,11 +795,9 @@ void LoginAuthUserView::SetAuthMethods(
         auth_metadata.time_until_tpm_unlock.value());
   }
 
-  const bool is_pin_soft_locked =
-      input_field_mode_ == InputFieldMode::kPasswordOnly &&
-      auth_metadata.pin_available_at.has_value();
-  pin_status_message_view_->SetVisible(is_pin_soft_locked);
-  if (is_pin_soft_locked) {
+  recover_button_->SetVisible(current_state.show_recover_button);
+  pin_status_message_view_->SetVisible(current_state.pin_is_locked);
+  if (current_state.pin_is_locked) {
     pin_status_message_view_->SetPinAvailbleAt(
         auth_metadata.pin_available_at.value());
   }
@@ -1313,6 +1328,12 @@ void LoginAuthUserView::OnPinTextChanged(bool is_empty) {
   }
 }
 
+void LoginAuthUserView::OnRecoverButtonPressed() {
+  DCHECK(recover_button_);
+  DCHECK(HasAuthMethod(AUTH_RECOVERY));
+  on_recover_button_pressed_.Run();
+}
+
 bool LoginAuthUserView::HasAuthMethod(AuthMethods auth_method) const {
   return (auth_methods_ & auth_method) != 0;
 }
@@ -1369,14 +1390,19 @@ void LoginAuthUserView::UpdateFocus() {
   }
   if (current_state.has_password && !previous_state_->has_password) {
     RequestFocusOnPasswordView();
+    return;
   }
   if (current_state.has_pin_input) {
     pin_input_view_->RequestFocus();
+    return;
   }
   // Tapping the user view will trigger the online sign-in flow when
   // |force_online_sign_in| is true.
   if (current_state.force_online_sign_in) {
     user_view_->RequestFocus();
+  }
+  if (current_state.show_recover_button) {
+    recover_button_->RequestFocus();
   }
 }
 
@@ -1500,6 +1526,17 @@ bool LoginAuthUserView::ShouldShowToggle() const {
          input_field_mode_ == InputFieldMode::kPasswordWithToggle;
 }
 
+bool LoginAuthUserView::ShouldShowPinStatusMessage() const {
+  if (!auth_metadata_.pin_available_at.has_value()) {
+    return false;
+  }
+
+  // When `pin_available_at` is present, pin status message should be shown when
+  // in `kPasswordOnly` mode or when the recover button is present.
+  return input_field_mode_ == InputFieldMode::kPasswordOnly ||
+         HasAuthMethod(AUTH_RECOVERY);
+}
+
 gfx::Size LoginAuthUserView::GetPaddingBelowUserView() const {
   const UiState state{this};
 
@@ -1514,6 +1551,9 @@ gfx::Size LoginAuthUserView::GetPaddingBelowUserView() const {
   }
   if (state.has_challenge_response) {
     return SizeFromHeight(kDistanceBetweenUserViewAndChallengeResponseDp);
+  }
+  if (state.show_recover_button) {
+    return SizeFromHeight(kDistanceBetweenUserViewAndRecoverButtonDp);
   }
 
   return SizeFromHeight(0);
