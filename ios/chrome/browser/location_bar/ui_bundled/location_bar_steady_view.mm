@@ -356,6 +356,17 @@ const CGFloat kSmallerLocationLabelFontMultiplier = 0.75;
       [_trailingButtonSpotlightView.heightAnchor
           constraintEqualToAnchor:self.heightAnchor],
     ]];
+
+    if (@available(iOS 17, *)) {
+      NSArray<UITrait>* traits = TraitCollectionSetForTraits(
+          @[ UITraitPreferredContentSizeCategory.self ]);
+      UITraitChangeHandler traitChangeHandler =
+          ^(id<UITraitEnvironment> traitEnvironment,
+            UITraitCollection* previousCollection) {
+            [weakSelf updateFontOnTraitChange:previousCollection];
+          };
+      [self registerForTraitChanges:traits withHandler:traitChangeHandler];
+    }
   }
 
   // Setup accessibility.
@@ -561,17 +572,16 @@ const CGFloat kSmallerLocationLabelFontMultiplier = 0.75;
 
 #pragma mark - UIView
 
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
-  if (previousTraitCollection.preferredContentSizeCategory !=
-      self.traitCollection.preferredContentSizeCategory) {
-    self.locationLabel.font = [self locationLabelFont];
+  if (@available(iOS 17, *)) {
+    return;
   }
 
-  self.trailingButtonTrailingAnchorConstraint.constant =
-      self.trailingButtonTrailingSpacing;
-  [self layoutIfNeeded];
+  [self updateFontOnTraitChange:previousTraitCollection];
 }
+#endif
 
 #pragma mark - UIAccessibilityContainer
 
@@ -628,6 +638,19 @@ const CGFloat kSmallerLocationLabelFontMultiplier = 0.75;
       highlighted ? [UIColor colorNamed:kSolidButtonTextColor]
                   : [UIColor colorNamed:kToolbarButtonColor];
   _trailingButtonSpotlightView.hidden = !highlighted;
+}
+
+// Updates the `locationLabel`'s font when the device's preferred content size
+// category changes.
+- (void)updateFontOnTraitChange:(UITraitCollection*)previousTraitCollection {
+  if (previousTraitCollection.preferredContentSizeCategory !=
+      self.traitCollection.preferredContentSizeCategory) {
+    self.locationLabel.font = [self locationLabelFont];
+  }
+
+  self.trailingButtonTrailingAnchorConstraint.constant =
+      self.trailingButtonTrailingSpacing;
+  [self layoutIfNeeded];
 }
 
 @end
