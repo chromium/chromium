@@ -230,6 +230,7 @@ ExtensionMenuItemView::ExtensionMenuItemView(
                   .CopyAddressTo(&primary_action_button_)
                   .SetProperty(views::kFlexBehaviorKey,
                                views::FlexSpecification(
+                                   views::LayoutOrientation::kHorizontal,
                                    views::MinimumFlexSizeRule::kScaleToZero,
                                    views::MaximumFlexSizeRule::kUnbounded)),
               views::Builder<HoverButton>(
@@ -339,6 +340,7 @@ ExtensionMenuItemView::ExtensionMenuItemView(
                                          kColorExtensionsMenuText)
                       .SetProperty(views::kFlexBehaviorKey,
                                    views::FlexSpecification(
+                                       views::LayoutOrientation::kHorizontal,
                                        views::MinimumFlexSizeRule::kScaleToZero,
                                        views::MaximumFlexSizeRule::kUnbounded)),
                   // Site access toggle.
