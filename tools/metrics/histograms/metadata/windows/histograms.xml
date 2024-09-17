@@ -33,16 +33,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Windows.AppCompatLayersRemoved" enum="Boolean"
-    expires_after="2024-10-31">
-  <owner>grt@chromium.org</owner>
-  <owner>wfh@chromium.org</owner>
-  <summary>
-    True if tokens were removed from the user's AppCompatFlags Layers value; see
-    http://crbug.com/581499. Recorded once shortly after browser startup.
-  </summary>
-</histogram>
-
 <histogram name="Windows.CetAvailable" enum="BooleanAvailable"
     expires_after="2024-12-01">
   <owner>ajgo@chromium.org</owner>
