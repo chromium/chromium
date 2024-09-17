@@ -47,24 +47,9 @@
     "expiry_milestone": 135
   },
   {
-    "name": "adaptive-button-in-top-toolbar-add-to-bookmarks",
-    "owners": [ "salg@google.com", "chrome-segmentation-platform@google.com" ],
-    "expiry_milestone": 130
-  },
-  {
-    "name": "adaptive-button-in-top-toolbar-customization",
-    "owners": [ "salg@google.com", "chrome-segmentation-platform@google.com" ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "adaptive-button-in-top-toolbar-page-summary",
     "owners": [ "salg@google.com", "chrome-segmentation-platform@google.com" ],
     "expiry_milestone": 135
-  },
-  {
-    "name": "adaptive-button-in-top-toolbar-translate",
-    "owners": [ "salg@google.com", "chrome-segmentation-platform@google.com" ],
-    "expiry_milestone": 130
   },
   {
     "name": "adaptive-charging",
@@ -7039,7 +7024,7 @@
       "salg@google.com",
       "ssid@chromium.org"
     ],
-    "expiry_milestone": 130
+    "expiry_milestone": 135
   },
   {
     "name": "page-visibility-page-content-annotations",
