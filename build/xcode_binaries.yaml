@@ -22,7 +22,7 @@ root: "xcode_binaries"
 data:
   - dir: Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/
   - dir: Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/share/bison
-  - dir: Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/metal
+  - dir: Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/metal/macos
   - file: Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/air-lld
   - file: Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/bison
   - file: Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/gm4
