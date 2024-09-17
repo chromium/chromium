@@ -4,6 +4,8 @@
 
 #import "ios/chrome/app/identity_confirmation_app_agent.h"
 
+#import <MaterialComponents/MaterialSnackbar.h>
+
 #import "base/logging.h"
 #import "base/metrics/field_trial_params.h"
 #import "base/metrics/histogram_functions.h"
@@ -12,6 +14,7 @@
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
+#import "ios/chrome/browser/policy/ui_bundled/management_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_observer.h"
@@ -24,11 +27,13 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/util/identity_snackbar/identity_snackbar_message.h"
 #import "ios/chrome/browser/shared/ui/util/snackbar_util.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -201,22 +206,35 @@ enum class IdentityConfirmationSnackbarDecision {
     return;
   }
 
+  [self showSnackbarMessageWithBrowser:browser];
+}
+
+- (void)showSnackbarMessageWithBrowser:(Browser*)browser {
+  ProfileIOS* profile = browser->GetProfile();
   AuthenticationService* authenticationService =
-      AuthenticationServiceFactory::GetForBrowserState(
-          browser->GetBrowserState());
+      AuthenticationServiceFactory::GetForProfile(profile);
   id<SystemIdentity> systemIdentity =
       authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
   DCHECK(systemIdentity);
-  NSString* accountName = systemIdentity.userGivenName
-                              ? systemIdentity.userGivenName
-                              : systemIdentity.userEmail;
-  MDCSnackbarMessage* snackbarTitle = CreateSnackbarMessage(
-      l10n_util::GetNSStringF(IDS_IOS_ACCOUNT_MENU_SWITCH_CONFIRMATION_TITLE,
-                              base::SysNSStringToUTF16(accountName)));
+  UIImage* avatar = ChromeAccountManagerServiceFactory::GetForProfile(profile)
+                        ->GetIdentityAvatarWithIdentity(
+                            systemIdentity, IdentityAvatarSize::Regular);
+  PrefService* prefService = profile->GetPrefs();
+  signin::IdentityManager* identityManager =
+      IdentityManagerFactory::GetForProfile(profile);
+  ManagementState managementState =
+      GetManagementState(identityManager, authenticationService, prefService);
+
+  MDCSnackbarMessage* snackbarTitle = [[IdentitySnackbarMessage alloc]
+      initWithName:systemIdentity.userGivenName
+             email:systemIdentity.userEmail
+            avatar:avatar
+           managed:managementState.is_profile_managed()];
+
   CommandDispatcher* dispatcher = browser->GetCommandDispatcher();
   id<SnackbarCommands> snackbarCommandsHandler =
       HandlerForProtocol(dispatcher, SnackbarCommands);
-  [snackbarCommandsHandler showSnackbarMessage:snackbarTitle bottomOffset:0];
+  [snackbarCommandsHandler showSnackbarMessageOverBrowserToolbar:snackbarTitle];
 }
 
 - (BOOL)isStartSurfaceWithBrowser:(Browser*)browser {
