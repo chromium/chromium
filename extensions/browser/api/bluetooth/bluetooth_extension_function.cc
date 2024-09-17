@@ -54,8 +54,9 @@ ExtensionFunction::ResponseAction BluetoothExtensionFunction::Run() {
 
   EXTENSION_FUNCTION_VALIDATE(CreateParams());
 
-  if (!IsBluetoothSupported(browser_context()))
+  if (!IsBluetoothSupported(browser_context())) {
     return RespondNow(Error(kPlatformNotSupported));
+  }
 
   GetAdapter(
       base::BindOnce(&BluetoothExtensionFunction::RunOnAdapterReady, this),
@@ -68,8 +69,9 @@ bool BluetoothExtensionFunction::CreateParams() {
 }
 
 std::string BluetoothExtensionFunction::GetExtensionId() {
-  if (extension())
+  if (extension()) {
     return extension()->id();
+  }
   return render_frame_host()->GetLastCommittedURL().host();
 }
 
