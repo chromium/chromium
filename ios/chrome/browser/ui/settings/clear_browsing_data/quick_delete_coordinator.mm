@@ -302,6 +302,10 @@ using browsing_data::DeleteBrowsingDataDialogAction;
                      allInactiveTabs:animateAllInactiveTabs
                    completionHandler:base::CallbackToBlock(
                                          std::move(onAnimationCompletion))];
+
+  // Shutdown this coordinator. We can do this right away since all the
+  // callbacks don't depend on this coordinator being alive.
+  [self dismissQuickDelete];
 }
 
 // Disconnects all instances.
