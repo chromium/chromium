@@ -1039,6 +1039,13 @@ class ComputedStyle final : public ComputedStyleBase {
     }
     return FlexDirection() == EFlexDirection::kRowReverse;
   }
+  bool ResolvedIsReverseFlexDirection() const {
+    if (IsDeprecatedWebkitBox()) {
+      return BoxDirection() == EBoxDirection::kReverse;
+    }
+    return FlexDirection() == EFlexDirection::kRowReverse ||
+           FlexDirection() == EFlexDirection::kColumnReverse;
+  }
   bool HasBoxReflect() const { return BoxReflect(); }
   float ResolvedFlexGrow(const ComputedStyle& box_style) const {
     if (box_style.IsDeprecatedWebkitBox()) {

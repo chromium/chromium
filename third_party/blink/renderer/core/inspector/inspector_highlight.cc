@@ -1142,9 +1142,7 @@ std::unique_ptr<protocol::DictionaryValue> BuildFlexContainerInfo(
   auto* layout_box = To<LayoutBox>(layout_object);
   DCHECK(layout_object);
   bool is_horizontal = IsHorizontalFlex(layout_object);
-  bool is_reverse =
-      layout_object->StyleRef().ResolvedIsRowReverseFlexDirection() ||
-      layout_object->StyleRef().ResolvedIsColumnReverseFlexDirection();
+  bool is_reverse = layout_object->StyleRef().ResolvedIsReverseFlexDirection();
 
   std::unique_ptr<protocol::DictionaryValue> flex_info =
       protocol::DictionaryValue::create();

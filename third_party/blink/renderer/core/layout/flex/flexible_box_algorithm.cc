@@ -525,8 +525,7 @@ void FlexLine::ComputeLineItemsPosition(LayoutUnit main_axis_start_offset,
 
   const LayoutUnit auto_margin_offset = ApplyMainAxisAutoMarginAdjustment();
   const LayoutUnit available_free_space = remaining_free_space_;
-  const bool is_reversed = style.ResolvedIsRowReverseFlexDirection() ||
-                           style.ResolvedIsColumnReverseFlexDirection();
+  const bool is_reversed = style.ResolvedIsReverseFlexDirection();
   const LayoutUnit initial_position =
       FlexibleBoxAlgorithm::InitialContentPositionOffset(
           style, available_free_space, justify_content, line_items_.size(),
@@ -1146,9 +1145,9 @@ FlexItem* FlexibleBoxAlgorithm::FlexItemAtIndex(wtf_size_t line_index,
     line_index = flex_lines_.size() - line_index - 1;
 
   DCHECK_LT(item_index, flex_lines_[line_index].line_items_.size());
-  if (Style()->ResolvedIsColumnReverseFlexDirection() ||
-      Style()->ResolvedIsRowReverseFlexDirection())
+  if (Style()->ResolvedIsReverseFlexDirection()) {
     item_index = flex_lines_[line_index].line_items_.size() - item_index - 1;
+  }
   return const_cast<FlexItem*>(
       &flex_lines_[line_index].line_items_[item_index]);
 }

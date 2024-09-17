@@ -170,19 +170,16 @@ namespace {
 enum AxisEdge { kStart, kCenter, kEnd };
 
 // Maps the resolved justify-content value to a static-position edge.
-AxisEdge MainAxisStaticPositionEdge(const ComputedStyle& style,
-                                    bool is_column) {
+AxisEdge MainAxisStaticPositionEdge(const ComputedStyle& style) {
   const StyleContentAlignmentData justify =
       FlexibleBoxAlgorithm::ResolvedJustifyContent(style);
   const ContentPosition content_position = justify.GetPosition();
-  bool is_reverse_flex = is_column
-                             ? style.ResolvedIsColumnReverseFlexDirection()
-                             : style.ResolvedIsRowReverseFlexDirection();
+  const bool is_reverse = style.ResolvedIsReverseFlexDirection();
 
   DCHECK_NE(content_position, ContentPosition::kLeft);
   DCHECK_NE(content_position, ContentPosition::kRight);
   if (content_position == ContentPosition::kFlexEnd)
-    return is_reverse_flex ? AxisEdge::kStart : AxisEdge::kEnd;
+    return is_reverse ? AxisEdge::kStart : AxisEdge::kEnd;
 
   if (content_position == ContentPosition::kCenter ||
       justify.Distribution() == ContentDistributionType::kSpaceAround ||
@@ -194,7 +191,7 @@ AxisEdge MainAxisStaticPositionEdge(const ComputedStyle& style,
   if (content_position == ContentPosition::kEnd)
     return AxisEdge::kEnd;
 
-  return is_reverse_flex ? AxisEdge::kEnd : AxisEdge::kStart;
+  return is_reverse ? AxisEdge::kEnd : AxisEdge::kStart;
 }
 
 // Maps the resolved alignment value to a static-position edge.
@@ -269,7 +266,7 @@ void FlexLayoutAlgorithm::HandleOutOfFlowPositionedItems(
   for (LayoutBox* oof_child : oofs) {
     BlockNode child(oof_child);
 
-    AxisEdge main_axis_edge = MainAxisStaticPositionEdge(Style(), is_column_);
+    AxisEdge main_axis_edge = MainAxisStaticPositionEdge(Style());
     AxisEdge cross_axis_edge =
         CrossAxisStaticPositionEdge(Style(), child.Style());
 
@@ -382,8 +379,7 @@ void FlexLayoutAlgorithm::SetReadingFlowElements(
   // in correct order.
   auto AddFlexItems = [&](const NGFlexLine& line) {
     if (reading_flow == EReadingFlow::kFlexFlow &&
-        (style.ResolvedIsColumnReverseFlexDirection() ||
-         style.ResolvedIsRowReverseFlexDirection())) {
+        style.ResolvedIsReverseFlexDirection()) {
       for (const auto& item : base::Reversed(line.line_items)) {
         AddItemIfNeeded(item);
       }
@@ -1276,8 +1272,7 @@ void FlexLayoutAlgorithm::ApplyFinalAlignmentAndReversals(
     algorithm_.LayoutColumnReverse(final_content_main_size,
                                    BorderScrollbarPadding().block_start);
   }
-  if (Style().ResolvedIsColumnReverseFlexDirection() ||
-      Style().ResolvedIsRowReverseFlexDirection()) {
+  if (Style().ResolvedIsReverseFlexDirection()) {
     for (auto& flex_line : *flex_line_outputs)
       flex_line.line_items.Reverse();
   }
@@ -2482,8 +2477,7 @@ void FlexLayoutAlgorithm::CheckFlexLines(
   if (Style().FlexWrap() == EFlexWrap::kWrapReverse)
     flex_line_outputs.Reverse();
 
-  if (Style().ResolvedIsColumnReverseFlexDirection() ||
-      Style().ResolvedIsRowReverseFlexDirection()) {
+  if (Style().ResolvedIsReverseFlexDirection()) {
     for (auto& flex_line : flex_line_outputs)
       flex_line.line_items.Reverse();
   }
