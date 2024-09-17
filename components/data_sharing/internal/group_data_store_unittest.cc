@@ -30,6 +30,15 @@ class GroupDataStoreTest : public testing::Test {
 
   ~GroupDataStoreTest() override = default;
 
+  void TearDown() override {
+    // This is needed to ensure that `temp_dir_` outlives any write tasks on DB
+    // sequence.
+    base::RunLoop run_loop;
+    store_->SetShutdownCallbackForTesting(run_loop.QuitClosure());
+    store_ = nullptr;
+    run_loop.Run();
+  }
+
   void MimicRestart() {
     base::RunLoop run_loop;
     store_->SetShutdownCallbackForTesting(run_loop.QuitClosure());
