@@ -31,11 +31,11 @@ NSData* ClientDataHash() {
   return Sha256(StringToData("ClientDataHash"));
 }
 
-PasskeyKeychainProvider::SharedKeyList SecurityDomainSecret() {
-  PasskeyKeychainProvider::SharedKey sds;
+NSData* SecurityDomainSecret() {
+  std::vector<uint8_t> sds;
   base::HexStringToBytes(
       "1234567890ABCDEF1234567890ABCDEF1234567890ABCDEF1234567890ABCDEF", &sds);
-  return {sds};
+  return [NSData dataWithBytes:sds.data() length:sds.size()];
 }
 
 ArchivableCredential* TestPasskeyCredential() {

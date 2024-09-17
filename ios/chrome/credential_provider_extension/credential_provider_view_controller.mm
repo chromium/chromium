@@ -234,7 +234,7 @@ UIColor* BackgroundColor() {
           passkeyCredentialRequest.credentialIdentity);
 
   __weak __typeof(self) weakSelf = self;
-  auto completion = ^(const PasskeyKeychainProvider::SharedKeyList& keyList) {
+  auto completion = ^(NSData* security_domain_secret) {
     CredentialProviderViewController* strongSelf = weakSelf;
     if (!strongSelf) {
       return;
@@ -243,7 +243,8 @@ UIColor* BackgroundColor() {
     ASPasskeyRegistrationCredential* passkeyRegistrationCredential =
         PerformPasskeyCreation(passkeyCredentialRequest.clientDataHash,
                                identity.relyingPartyIdentifier,
-                               identity.userName, identity.userHandle, keyList);
+                               identity.userName, identity.userHandle,
+                               security_domain_secret);
     if (passkeyRegistrationCredential) {
       [strongSelf completeRegistrationRequestWithSelectedPasskeyCredential:
                       passkeyRegistrationCredential];
@@ -252,11 +253,10 @@ UIColor* BackgroundColor() {
     }
   };
 
-  // TODO(crbug.com/355047459): Add navigation controller.
-  FetchSecurityDomainSecret(
-      [self gaia],
-      /*navigation_controller =*/nil,
-      PasskeyKeychainProvider::ReauthenticatePurpose::kEncrypt, completion);
+  [self fetchSecurityDomainSecretForGaia:[self gaia]
+                                 purpose:PasskeyKeychainProvider::
+                                             ReauthenticatePurpose::kEncrypt
+                              completion:completion];
 }
 
 #pragma mark - Properties
@@ -381,25 +381,23 @@ UIColor* BackgroundColor() {
       // passkeyCredentialRequest.userVerificationPreference.
 
       __weak __typeof(self) weakSelf = self;
-      auto completion =
-          ^(const PasskeyKeychainProvider::SharedKeyList& keyList) {
-            CredentialProviderViewController* strongSelf = weakSelf;
-            if (!strongSelf) {
-              return;
-            }
+      auto completion = ^(NSData* security_domain_secret) {
+        CredentialProviderViewController* strongSelf = weakSelf;
+        if (!strongSelf) {
+          return;
+        }
 
-            ASPasskeyAssertionCredential* passkeyCredential =
-                PerformPasskeyAssertion(credential,
-                                        passkeyCredentialRequest.clientDataHash,
-                                        nil, keyList);
-            [strongSelf userSelectedPasskey:passkeyCredential];
-          };
+        ASPasskeyAssertionCredential* passkeyCredential =
+            PerformPasskeyAssertion(credential,
+                                    passkeyCredentialRequest.clientDataHash,
+                                    nil, security_domain_secret);
+        [strongSelf userSelectedPasskey:passkeyCredential];
+      };
 
-      // TODO(crbug.com/355047459): Add navigation controller.
-      FetchSecurityDomainSecret(
-          credential.gaia,
-          /*navigation_controller =*/nil,
-          PasskeyKeychainProvider::ReauthenticatePurpose::kDecrypt, completion);
+      [self fetchSecurityDomainSecretForGaia:credential.gaia
+                                     purpose:PasskeyKeychainProvider::
+                                                 ReauthenticatePurpose::kDecrypt
+                                  completion:completion];
       return;
     }
   }
@@ -602,6 +600,15 @@ UIColor* BackgroundColor() {
   [self.consentCoordinator stop];
   self.consentCoordinator = nil;
   [self.extensionContext completeExtensionConfigurationRequest];
+}
+
+- (void)fetchSecurityDomainSecretForGaia:(NSString*)gaia
+                                 purpose:(PasskeyKeychainProvider::
+                                              ReauthenticatePurpose)purpose
+                              completion:(FetchKeyCompletionBlock)completion {
+  // TODO(crbug.com/355047459): Add navigation controller.
+  FetchSecurityDomainSecret(gaia, /*navigation_controller =*/nil, purpose,
+                            completion);
 }
 
 @end

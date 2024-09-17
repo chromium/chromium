@@ -32,4 +32,12 @@
   // No-op.
 }
 
+- (void)fetchSecurityDomainSecretForGaia:(NSString*)gaia
+                                 purpose:(PasskeyKeychainProvider::
+                                              ReauthenticatePurpose)purpose
+                              completion:(FetchKeyCompletionBlock)completion {
+  // Call the completion block with an empty response.
+  completion(nil);
+}
+
 @end

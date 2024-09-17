@@ -24,16 +24,6 @@ void Append(std::vector<uint8_t>& container, NSData* data) {
   container.insert(container.end(), span.begin(), span.end());
 }
 
-// Returns the security domain secret from the vault keys.
-NSData* GetSecurityDomainSecret(
-    const PasskeyKeychainProvider::SharedKeyList& keyList) {
-  if (keyList.empty()) {
-    return nil;
-  }
-  // TODO(crbug.com/355041765): Do we need to handle multiple keys?
-  return [NSData dataWithBytes:keyList[0].data() length:keyList[0].size()];
-}
-
 // Wrapper around passkey_model_utils's MakeAuthenticatorDataForAssertion
 // function.
 NSData* MakeAuthenticatorDataForAssertion(NSString* rp_id) {
@@ -103,9 +93,7 @@ ASPasskeyRegistrationCredential* PerformPasskeyCreation(
     NSString* rp_id,
     NSString* user_name,
     NSData* user_handle,
-    const PasskeyKeychainProvider::SharedKeyList& keyList)
-    API_AVAILABLE(ios(17.0)) {
-  NSData* security_domain_secret = GetSecurityDomainSecret(keyList);
+    NSData* security_domain_secret) API_AVAILABLE(ios(17.0)) {
   if (!security_domain_secret) {
     return nil;
   }
@@ -155,9 +143,7 @@ ASPasskeyAssertionCredential* PerformPasskeyAssertion(
     id<Credential> credential,
     NSData* client_data_hash,
     NSArray<NSData*>* allowed_credentials,
-    const PasskeyKeychainProvider::SharedKeyList& keyList)
-    API_AVAILABLE(ios(17.0)) {
-  NSData* security_domain_secret = GetSecurityDomainSecret(keyList);
+    NSData* security_domain_secret) API_AVAILABLE(ios(17.0)) {
   if (!security_domain_secret) {
     return nil;
   }

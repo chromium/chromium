@@ -6,9 +6,7 @@
 #define IOS_CHROME_CREDENTIAL_PROVIDER_EXTENSION_PASSKEY_KEYCHAIN_UTIL_H_
 
 #import "ios/chrome/credential_provider_extension/passkey_keychain_provider.h"
-
-typedef void (^FetchKeyCompletionBlock)(
-    const PasskeyKeychainProvider::SharedKeyList& keyList);
+#import "ios/chrome/credential_provider_extension/ui/credential_response_handler.h"
 
 // Fetches the Security Domain Secret and calls the completion block
 // with the Security Domain Secret as the input argument.

@@ -10,7 +10,6 @@
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/common/credential_provider/constants.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
-#import "ios/chrome/credential_provider_extension/passkey_keychain_util.h"
 #import "ios/chrome/credential_provider_extension/passkey_util.h"
 #import "ios/chrome/credential_provider_extension/password_util.h"
 #import "ios/chrome/credential_provider_extension/reauthentication_handler.h"
@@ -145,7 +144,7 @@
 
         __weak __typeof(self) weakSelf = self;
         auto completion =
-            ^(const PasskeyKeychainProvider::SharedKeyList& keyList) {
+            ^(NSData* security_domain_secret) {
               CredentialListCoordinator* strongSelf = weakSelf;
               if (!strongSelf) {
                 return;
@@ -154,17 +153,16 @@
               ASPasskeyAssertionCredential* passkeyCredential =
                   PerformPasskeyAssertion(
                       credential, strongSelf.requestParameters.clientDataHash,
-                      strongSelf.allowedCredentials, keyList);
+                      strongSelf.allowedCredentials, security_domain_secret);
               [strongSelf.credentialResponseHandler
                   userSelectedPasskey:passkeyCredential];
             };
 
-        // TODO(crbug.com/355047459): Add navigation controller.
-        FetchSecurityDomainSecret(
-            credential.gaia,
-            /*navigation_controller =*/nil,
-            PasskeyKeychainProvider::ReauthenticatePurpose::kDecrypt,
-            completion);
+        [self.credentialResponseHandler
+            fetchSecurityDomainSecretForGaia:credential.gaia
+                                     purpose:PasskeyKeychainProvider::
+                                                 ReauthenticatePurpose::kDecrypt
+                                  completion:completion];
       }
     }
   }];
