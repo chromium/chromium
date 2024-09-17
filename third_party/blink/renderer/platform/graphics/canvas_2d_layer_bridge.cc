@@ -64,9 +64,10 @@ gpu::ContextSupport* GetContextSupport() {
 
 }  // namespace
 
-Canvas2DLayerBridge::Canvas2DLayerBridge()
-    : logger_(std::make_unique<Logger>()),
-      resource_host_(nullptr) {
+Canvas2DLayerBridge::Canvas2DLayerBridge(CanvasResourceHost* resource_host)
+    : logger_(std::make_unique<Logger>()), resource_host_(resource_host) {
+  CHECK(resource_host_);
+
   // Used by browser tests to detect the use of a Canvas2DLayerBridge.
   TRACE_EVENT_INSTANT0("test_gpu", "Canvas2DLayerBridgeCreation",
                        TRACE_EVENT_SCOPE_GLOBAL);
@@ -75,10 +76,6 @@ Canvas2DLayerBridge::Canvas2DLayerBridge()
 Canvas2DLayerBridge::~Canvas2DLayerBridge() {
   if (IsHibernating())
     logger_->ReportHibernationEvent(kHibernationEndedWithTeardown);
-}
-
-void Canvas2DLayerBridge::SetCanvasResourceHost(CanvasResourceHost* host) {
-  resource_host_ = host;
 }
 
 // static
@@ -97,7 +94,6 @@ void Canvas2DLayerBridge::HibernateOrLogFailure(
 
 void Canvas2DLayerBridge::Hibernate() {
   TRACE_EVENT0("blink", __PRETTY_FUNCTION__);
-  CHECK(resource_host_);
   DCHECK(!IsHibernating());
   DCHECK(hibernation_scheduled_);
 
@@ -169,7 +165,6 @@ void Canvas2DLayerBridge::Hibernate() {
 }
 
 CanvasResourceProvider* Canvas2DLayerBridge::GetOrCreateResourceProvider() {
-  CHECK(resource_host_);
   CanvasResourceProvider* resource_provider =
       resource_host_->ResourceProvider();
 
@@ -296,7 +291,6 @@ bool Canvas2DLayerBridge::WritePixels(const SkImageInfo& orig_info,
                                       size_t row_bytes,
                                       int x,
                                       int y) {
-  CHECK(resource_host_);
   CanvasResourceProvider* provider = GetOrCreateResourceProvider();
   if (provider == nullptr) {
     return false;
@@ -333,7 +327,6 @@ bool Canvas2DLayerBridge::WritePixels(const SkImageInfo& orig_info,
 
 void Canvas2DLayerBridge::FinalizeFrame(FlushReason reason) {
   TRACE_EVENT0("blink", "Canvas2DLayerBridge::FinalizeFrame");
-  CHECK(resource_host_);
 
   // Make sure surface is ready for painting: fix the rendering mode now
   // because it will be too late during the paint invalidation phase.
@@ -361,7 +354,6 @@ void Canvas2DLayerBridge::FinalizeFrame(FlushReason reason) {
 
 scoped_refptr<StaticBitmapImage> Canvas2DLayerBridge::NewImageSnapshot(
     FlushReason reason) {
-  CHECK(resource_host_);
   if (IsHibernating()) {
     return UnacceleratedStaticBitmapImage::Create(
         hibernation_handler_.GetImage());

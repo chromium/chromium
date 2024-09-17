@@ -1383,7 +1383,7 @@ bool HTMLCanvasElement::ShouldDisableAccelerationBecauseOfReadback() const {
 }
 
 std::unique_ptr<Canvas2DLayerBridge> HTMLCanvasElement::Create2DLayerBridge() {
-  return std::make_unique<Canvas2DLayerBridge>();
+  return std::make_unique<Canvas2DLayerBridge>(this);
 }
 
 void HTMLCanvasElement::SetCanvas2DLayerBridgeInternal(
@@ -1422,8 +1422,6 @@ void HTMLCanvasElement::SetCanvas2DLayerBridgeInternal(
 
   if (!canvas2d_bridge_)
     return;
-
-  canvas2d_bridge_->SetCanvasResourceHost(this);
 
   did_fail_to_create_resource_provider_ = false;
   UpdateMemoryUsage();
@@ -1838,7 +1836,6 @@ void HTMLCanvasElement::ReplaceExisting2dLayerBridge(
   ResetLayer();
   ReplaceResourceProvider(nullptr);
   canvas2d_bridge_ = std::move(new_layer_bridge);
-  canvas2d_bridge_->SetCanvasResourceHost(this);
 
   if (new_provider_for_testing) {
     ReplaceResourceProvider(std::move(new_provider_for_testing));
@@ -1851,7 +1848,6 @@ void HTMLCanvasElement::ReplaceExisting2dLayerBridge(
   if (!new_provider) {
     if (old_layer_bridge) {
       canvas2d_bridge_ = std::move(old_layer_bridge);
-      canvas2d_bridge_->SetCanvasResourceHost(this);
     }
     return;
   }

@@ -82,7 +82,7 @@ TEST_F(HTMLCanvasPainterTest, Canvas2DLayerAppearsInLayerTree) {
       element->GetCanvasRenderingContext("2d", attributes);
   gfx::Size size(300, 200);
   std::unique_ptr<Canvas2DLayerBridge> bridge =
-      std::make_unique<Canvas2DLayerBridge>();
+      std::make_unique<Canvas2DLayerBridge>(element);
   element->SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
   element->SetResourceProviderForTesting(nullptr, std::move(bridge), size);
   ASSERT_EQ(context, element->RenderingContext());

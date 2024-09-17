@@ -48,7 +48,7 @@ class StaticBitmapImage;
 
 class PLATFORM_EXPORT Canvas2DLayerBridge {
  public:
-  explicit Canvas2DLayerBridge();
+  explicit Canvas2DLayerBridge(CanvasResourceHost* resource_host);
   Canvas2DLayerBridge(const Canvas2DLayerBridge&) = delete;
   Canvas2DLayerBridge& operator=(const Canvas2DLayerBridge&) = delete;
 
@@ -62,7 +62,6 @@ class PLATFORM_EXPORT Canvas2DLayerBridge {
                    size_t row_bytes,
                    int x,
                    int y);
-  void SetCanvasResourceHost(CanvasResourceHost* host);
 
   bool IsHibernating() const { return hibernation_handler_.IsHibernating(); }
 

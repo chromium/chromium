@@ -83,16 +83,15 @@ class Canvas2DLayerBridgeTest : public Test {
       RasterModeHint raster_mode,
       OpacityMode opacity_mode,
       std::unique_ptr<FakeCanvasResourceHost> custom_host = nullptr) {
-    std::unique_ptr<Canvas2DLayerBridge> bridge =
-        std::make_unique<Canvas2DLayerBridge>();
     if (custom_host)
       host_ = std::move(custom_host);
     if (!host_)
       host_ = std::make_unique<FakeCanvasResourceHost>(size);
+    std::unique_ptr<Canvas2DLayerBridge> bridge =
+        std::make_unique<Canvas2DLayerBridge>(host_.get());
     host_->SetPreferred2DRasterMode(raster_mode);
     host_->AlwaysEnableRasterTimersForTesting();
     host_->SetOpacityMode(opacity_mode);
-    bridge->SetCanvasResourceHost(host_.get());
     host_->GetOrCreateCanvasResourceProvider(raster_mode);
     host_->GetOrCreateCcLayerIfNeeded();
     return bridge;
@@ -324,11 +323,10 @@ TEST_F(Canvas2DLayerBridgeTest, FallbackToSoftwareOnFailedTextureAlloc) {
     GrDirectContext* gr = SharedGpuContext::ContextProviderWrapper()
                               ->ContextProvider()
                               ->GetGrContext();
-    std::unique_ptr<Canvas2DLayerBridge> bridge =
-        std::make_unique<Canvas2DLayerBridge>();
     host_ = std::make_unique<FakeCanvasResourceHost>(gfx::Size(300, 150));
     host_->SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
-    bridge->SetCanvasResourceHost(host_.get());
+    std::unique_ptr<Canvas2DLayerBridge> bridge =
+        std::make_unique<Canvas2DLayerBridge>(host_.get());
     host_->AlwaysEnableRasterTimersForTesting();
     EXPECT_EQ(GetRasterMode(bridge.get()),
               RasterMode::kGPU);  // We don't yet know that
