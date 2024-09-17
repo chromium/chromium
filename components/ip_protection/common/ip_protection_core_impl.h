@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_CONFIG_CACHE_IMPL_H_
-#define COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_CONFIG_CACHE_IMPL_H_
+#ifndef COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_CORE_IMPL_H_
+#define COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_CORE_IMPL_H_
 
 #include <deque>
 #include <map>
@@ -15,8 +15,8 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "components/ip_protection/common/ip_protection_config_cache.h"
 #include "components/ip_protection/common/ip_protection_config_getter.h"
+#include "components/ip_protection/common/ip_protection_core.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
 #include "components/ip_protection/common/ip_protection_proxy_config_manager.h"
 #include "components/ip_protection/common/ip_protection_token_manager.h"
@@ -26,18 +26,17 @@
 
 namespace ip_protection {
 
-// An implementation of IpProtectionConfigCache that fills itself by making
-// IPC calls to the IpProtectionConfigGetter in the browser process.
-class IpProtectionConfigCacheImpl
-    : public IpProtectionConfigCache,
-      net::NetworkChangeNotifier::NetworkChangeObserver {
+// An implementation of IpProtectionCore that makes IPC calls to the
+// IpProtectionConfigGetter in the browser process.
+class IpProtectionCoreImpl : public IpProtectionCore,
+                             net::NetworkChangeNotifier::NetworkChangeObserver {
  public:
   // If `config_getter` is unbound, no tokens will be provided.
-  explicit IpProtectionConfigCacheImpl(
+  explicit IpProtectionCoreImpl(
       std::unique_ptr<IpProtectionConfigGetter> config_getter);
-  ~IpProtectionConfigCacheImpl() override;
+  ~IpProtectionCoreImpl() override;
 
-  // IpProtectionConfigCache implementation.
+  // IpProtectionCore implementation.
   bool AreAuthTokensAvailable() override;
   std::optional<BlindSignedAuthToken> GetAuthToken(size_t chain_index) override;
   void InvalidateTryAgainAfterTime() override;
@@ -80,9 +79,9 @@ class IpProtectionConfigCacheImpl
   // Feature flag to safely introduce token caching by geo.
   const bool enable_token_caching_by_geo_;
 
-  base::WeakPtrFactory<IpProtectionConfigCacheImpl> weak_ptr_factory_{this};
+  base::WeakPtrFactory<IpProtectionCoreImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace ip_protection
 
-#endif  // COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_CONFIG_CACHE_IMPL_H_
+#endif  // COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_CORE_IMPL_H_

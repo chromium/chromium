@@ -16,7 +16,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "components/ip_protection/common/ip_protection_config_cache_impl.h"
+#include "components/ip_protection/common/ip_protection_core_impl.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
 #include "components/ip_protection/common/ip_protection_proxy_config_manager.h"
 #include "components/ip_protection/common/ip_protection_telemetry.h"
@@ -59,8 +59,7 @@ constexpr char kIsProxyListAvailableHistogram[] =
 constexpr char kAvailabilityHistogram[] =
     "NetworkService.IpProtection.ProtectionIsAvailableForRequest";
 
-class MockIpProtectionConfigCache
-    : public ip_protection::IpProtectionConfigCache {
+class MockIpProtectionCore : public ip_protection::IpProtectionCore {
  public:
   bool AreAuthTokensAvailable() override { return auth_token_.has_value(); }
   void InvalidateTryAgainAfterTime() override {
@@ -216,10 +215,9 @@ class IpProtectionProxyDelegateTest : public testing::Test {
  protected:
   std::unique_ptr<IpProtectionProxyDelegate> CreateDelegate(
       MaskedDomainListManager* masked_domain_list_manager,
-      std::unique_ptr<ip_protection::IpProtectionConfigCache>
-          ipp_config_cache) {
+      std::unique_ptr<ip_protection::IpProtectionCore> ipp_core) {
     return std::make_unique<IpProtectionProxyDelegate>(
-        masked_domain_list_manager, std::move(ipp_config_cache),
+        masked_domain_list_manager, std::move(ipp_core),
         /*is_ip_protection_enabled=*/true);
   }
 
@@ -259,11 +257,11 @@ class IpProtectionProxyDelegateTest : public testing::Test {
 TEST_F(IpProtectionProxyDelegateTest, AddsTokenToTunnelRequest) {
   auto masked_domain_list_manager = MaskedDomainListManager::CreateForTesting(
       /*first_party_map=*/{});
-  auto ipp_config_cache = std::make_unique<MockIpProtectionConfigCache>();
-  ipp_config_cache->SetNextAuthToken(MakeAuthToken("Bearer: a-token"));
-  ipp_config_cache->SetProxyList({MakeChain({"proxya", "proxyb"})});
+  auto ipp_core = std::make_unique<MockIpProtectionCore>();
+  ipp_core->SetNextAuthToken(MakeAuthToken("Bearer: a-token"));
+  ipp_core->SetProxyList({MakeChain({"proxya", "proxyb"})});
   auto delegate =
-      CreateDelegate(&masked_domain_list_manager, std::move(ipp_config_cache));
+      CreateDelegate(&masked_domain_list_manager, std::move(ipp_core));
 
   net::HttpRequestHeaders headers;
   auto ip_protection_proxy_chain = net::ProxyChain::ForIpProtection(
@@ -281,10 +279,10 @@ TEST_F(IpProtectionProxyDelegateTest, AddsTokenToTunnelRequest) {
 TEST_F(IpProtectionProxyDelegateTest, ErrorIfConnectionWithNoTokens) {
   auto masked_domain_list_manager = MaskedDomainListManager::CreateForTesting(
       /*first_party_map=*/{});
-  auto ipp_config_cache = std::make_unique<MockIpProtectionConfigCache>();
-  ipp_config_cache->SetProxyList({MakeChain({"proxya", "proxyb"})});
+  auto ipp_core = std::make_unique<MockIpProtectionCore>();
+  ipp_core->SetProxyList({MakeChain({"proxya", "proxyb"})});
   auto delegate =
-      CreateDelegate(&masked_domain_list_manager, std::move(ipp_config_cache));
+      CreateDelegate(&masked_domain_list_manager, std::move(ipp_core));
 
   net::HttpRequestHeaders headers;
   auto ip_protection_proxy_chain = net::ProxyChain::ForIpProtection(
@@ -309,11 +307,11 @@ TEST_F(IpProtectionProxyDelegateTest, AddsDebugExperimentArm) {
   for (int chain_index : {0, 1}) {
     auto masked_domain_list_manager = MaskedDomainListManager::CreateForTesting(
         /*first_party_map=*/{});
-    auto ipp_config_cache = std::make_unique<MockIpProtectionConfigCache>();
-    ipp_config_cache->SetNextAuthToken(MakeAuthToken("Bearer: a-token"));
-    ipp_config_cache->SetProxyList({MakeChain({"proxya", "proxyb"})});
-    auto delegate = CreateDelegate(&masked_domain_list_manager,
-                                   std::move(ipp_config_cache));
+    auto ipp_core = std::make_unique<MockIpProtectionCore>();
+    ipp_core->SetNextAuthToken(MakeAuthToken("Bearer: a-token"));
+    ipp_core->SetProxyList({MakeChain({"proxya", "proxyb"})});
+    auto delegate =
+        CreateDelegate(&masked_domain_list_manager, std::move(ipp_core));
 
     net::HttpRequestHeaders headers;
     auto ip_protection_proxy_chain = net::ProxyChain::ForIpProtection(
@@ -333,13 +331,12 @@ TEST_F(IpProtectionProxyDelegateTest, OnResolveProxyDeprioritizesBadProxies) {
   first_party_map["example.com"] = {};
   auto masked_domain_list_manager =
       MaskedDomainListManager::CreateForTesting(first_party_map);
-  auto ipp_config_cache = std::make_unique<MockIpProtectionConfigCache>();
-  ipp_config_cache->SetNextAuthToken(MakeAuthToken("Bearer: a-token"));
-  ipp_config_cache->SetProxyList(
-      {MakeChain({"proxya", "proxyb"}),
-       MakeChain({"backup-proxya", "backup-proxyb"})});
+  auto ipp_core = std::make_unique<MockIpProtectionCore>();
+  ipp_core->SetNextAuthToken(MakeAuthToken("Bearer: a-token"));
+  ipp_core->SetProxyList({MakeChain({"proxya", "proxyb"}),
+                          MakeChain({"backup-proxya", "backup-proxyb"})});
   auto delegate =
-      CreateDelegate(&masked_domain_list_manager, std::move(ipp_config_cache));
+      CreateDelegate(&masked_domain_list_manager, std::move(ipp_core));
 
   net::ProxyRetryInfoMap retry_map;
   net::ProxyRetryInfo& info = retry_map[net::ProxyChain::ForIpProtection(
@@ -381,11 +378,11 @@ TEST_F(IpProtectionProxyDelegateTest, OnResolveProxyAllProxiesBad) {
   first_party_map["example.com"] = {};
   auto masked_domain_list_manager =
       MaskedDomainListManager::CreateForTesting(first_party_map);
-  auto ipp_config_cache = std::make_unique<MockIpProtectionConfigCache>();
-  ipp_config_cache->SetNextAuthToken(MakeAuthToken("Bearer: a-token"));
-  ipp_config_cache->SetProxyList({MakeChain({"proxya", "proxyb"})});
+  auto ipp_core = std::make_unique<MockIpProtectionCore>();
+  ipp_core->SetNextAuthToken(MakeAuthToken("Bearer: a-token"));
+  ipp_core->SetProxyList({MakeChain({"proxya", "proxyb"})});
   auto delegate =
-      CreateDelegate(&masked_domain_list_manager, std::move(ipp_config_cache));
+      CreateDelegate(&masked_domain_list_manager, std::move(ipp_core));
 
   net::ProxyRetryInfoMap retry_map;
   net::ProxyRetryInfo& info = retry_map[net::ProxyChain::ForIpProtection(
@@ -419,12 +416,12 @@ TEST_F(IpProtectionProxyDelegateTest,
   first_party_map["example.com"] = {};
   auto masked_domain_list_manager =
       MaskedDomainListManager::CreateForTesting(first_party_map);
-  auto ipp_config_cache = std::make_unique<MockIpProtectionConfigCache>();
-  ipp_config_cache->SetNextAuthToken(MakeAuthToken("Bearer: a-token"));
-  ipp_config_cache->SetProxyList(
+  auto ipp_core = std::make_unique<MockIpProtectionCore>();
+  ipp_core->SetNextAuthToken(MakeAuthToken("Bearer: a-token"));
+  ipp_core->SetProxyList(
       {MakeChain({"ippro-1", "ippro-2"}), MakeChain({"ippro-2", "ippro-2"})});
   auto delegate =
-      CreateDelegate(&masked_domain_list_manager, std::move(ipp_config_cache));
+      CreateDelegate(&masked_domain_list_manager, std::move(ipp_core));
 
   net::ProxyInfo result;
   // Verify that the IP Protection proxy list is correctly merged with the
@@ -482,11 +479,11 @@ TEST_F(IpProtectionProxyDelegateTest,
   first_party_map["example.com"] = {};
   auto masked_domain_list_manager =
       MaskedDomainListManager::CreateForTesting(first_party_map);
-  auto ipp_config_cache = std::make_unique<MockIpProtectionConfigCache>();
-  ipp_config_cache->SetNextAuthToken(MakeAuthToken("Bearer: a-token"));
-  ipp_config_cache->SetProxyList({MakeChain({"foo"})});
+  auto ipp_core = std::make_unique<MockIpProtectionCore>();
+  ipp_core->SetNextAuthToken(MakeAuthToken("Bearer: a-token"));
+  ipp_core->SetProxyList({MakeChain({"foo"})});
   auto delegate =
-      CreateDelegate(&masked_domain_list_manager, std::move(ipp_config_cache));
+      CreateDelegate(&masked_domain_list_manager, std::move(ipp_core));
 
   net::ProxyInfo result;
   result.UseDirect();
@@ -515,12 +512,11 @@ TEST_F(IpProtectionProxyDelegateTest,
   first_party_map["example.com"] = {"top.com"};
   auto masked_domain_list_manager =
       MaskedDomainListManager::CreateForTesting(first_party_map);
-  auto ipp_config_cache = std::make_unique<MockIpProtectionConfigCache>();
-  ipp_config_cache->SetNextAuthToken(MakeAuthToken("Bearer: a-token"));
-  ipp_config_cache->SetProxyList(
-      {MakeChain({"ippro-1"}), MakeChain({"ippro-2"})});
+  auto ipp_core = std::make_unique<MockIpProtectionCore>();
+  ipp_core->SetNextAuthToken(MakeAuthToken("Bearer: a-token"));
+  ipp_core->SetProxyList({MakeChain({"ippro-1"}), MakeChain({"ippro-2"})});
   auto delegate =
-      CreateDelegate(&masked_domain_list_manager, std::move(ipp_config_cache));
+      CreateDelegate(&masked_domain_list_manager, std::move(ipp_core));
 
   net::ProxyInfo result;
   result.UseDirect();
@@ -543,11 +539,11 @@ TEST_F(IpProtectionProxyDelegateTest, OnResolveProxy_NoAuthToken) {
   first_party_map["example.com"] = {};
   auto masked_domain_list_manager =
       MaskedDomainListManager::CreateForTesting(first_party_map);
-  auto ipp_config_cache = std::make_unique<MockIpProtectionConfigCache>();
-  ipp_config_cache->SetProxyList({MakeChain({"proxy"})});
+  auto ipp_core = std::make_unique<MockIpProtectionCore>();
+  ipp_core->SetProxyList({MakeChain({"proxy"})});
   // No token is added to the cache, so the result will be direct.
   auto delegate =
-      CreateDelegate(&masked_domain_list_manager, std::move(ipp_config_cache));
+      CreateDelegate(&masked_domain_list_manager, std::move(ipp_core));
 
   net::ProxyInfo result;
   result.UseDirect();
@@ -571,11 +567,11 @@ TEST_F(IpProtectionProxyDelegateTest, OnResolveProxy_NoProxyList) {
   first_party_map["example.com"] = {};
   auto masked_domain_list_manager =
       MaskedDomainListManager::CreateForTesting(first_party_map);
-  auto ipp_config_cache = std::make_unique<MockIpProtectionConfigCache>();
+  auto ipp_core = std::make_unique<MockIpProtectionCore>();
   // No proxy list is added to the cache, so the result will be direct.
-  ipp_config_cache->SetNextAuthToken(MakeAuthToken("Bearer: a-token"));
+  ipp_core->SetNextAuthToken(MakeAuthToken("Bearer: a-token"));
   auto delegate =
-      CreateDelegate(&masked_domain_list_manager, std::move(ipp_config_cache));
+      CreateDelegate(&masked_domain_list_manager, std::move(ipp_core));
 
   net::ProxyInfo result;
   result.UseDirect();
@@ -600,11 +596,11 @@ TEST_F(IpProtectionProxyDelegateTest, OnResolveProxy_IpProtectionDisabled) {
   first_party_map["example.com"] = {};
   auto masked_domain_list_manager =
       MaskedDomainListManager::CreateForTesting(first_party_map);
-  auto ipp_config_cache = std::make_unique<MockIpProtectionConfigCache>();
-  ipp_config_cache->SetNextAuthToken(MakeAuthToken("Bearer: a-token"));
-  ipp_config_cache->SetProxyList({MakeChain({"proxy"})});
+  auto ipp_core = std::make_unique<MockIpProtectionCore>();
+  ipp_core->SetNextAuthToken(MakeAuthToken("Bearer: a-token"));
+  ipp_core->SetProxyList({MakeChain({"proxy"})});
   auto delegate =
-      CreateDelegate(&masked_domain_list_manager, std::move(ipp_config_cache));
+      CreateDelegate(&masked_domain_list_manager, std::move(ipp_core));
 
   delegate->SetIpProtectionEnabled(false);
 
@@ -631,12 +627,11 @@ TEST_F(IpProtectionProxyDelegateTest, OnResolveProxyIpProtectionNoMatch) {
   first_party_map["not.example.com"] = {};
   auto masked_domain_list_manager =
       MaskedDomainListManager::CreateForTesting(first_party_map);
-  auto ipp_config_cache = std::make_unique<MockIpProtectionConfigCache>();
-  ipp_config_cache->SetNextAuthToken(MakeAuthToken("Bearer: a-token"));
-  ipp_config_cache->SetProxyList(
-      {MakeChain({"ippro-1"}), MakeChain({"ippro-2"})});
+  auto ipp_core = std::make_unique<MockIpProtectionCore>();
+  ipp_core->SetNextAuthToken(MakeAuthToken("Bearer: a-token"));
+  ipp_core->SetProxyList({MakeChain({"ippro-1"}), MakeChain({"ippro-2"})});
   auto delegate =
-      CreateDelegate(&masked_domain_list_manager, std::move(ipp_config_cache));
+      CreateDelegate(&masked_domain_list_manager, std::move(ipp_core));
 
   net::ProxyInfo result;
   result.UseDirect();
@@ -661,12 +656,11 @@ TEST_F(IpProtectionProxyDelegateTest,
   std::map<std::string, std::set<std::string>> first_party_map;
   auto masked_domain_list_manager =
       MaskedDomainListManager::CreateForTesting(first_party_map);
-  auto ipp_config_cache = std::make_unique<MockIpProtectionConfigCache>();
-  ipp_config_cache->SetNextAuthToken(MakeAuthToken("Bearer: a-token"));
-  ipp_config_cache->SetProxyList(
-      {MakeChain({"ippro-1"}), MakeChain({"ippro-2"})});
+  auto ipp_core = std::make_unique<MockIpProtectionCore>();
+  ipp_core->SetNextAuthToken(MakeAuthToken("Bearer: a-token"));
+  ipp_core->SetProxyList({MakeChain({"ippro-1"}), MakeChain({"ippro-2"})});
   auto delegate =
-      CreateDelegate(&masked_domain_list_manager, std::move(ipp_config_cache));
+      CreateDelegate(&masked_domain_list_manager, std::move(ipp_core));
 
   net::ProxyInfo result;
   result.UseDirect();
@@ -691,11 +685,11 @@ TEST_F(IpProtectionProxyDelegateTest,
   first_party_map["example.com"] = {};
   auto masked_domain_list_manager =
       MaskedDomainListManager::CreateForTesting(first_party_map);
-  auto ipp_config_cache = std::make_unique<MockIpProtectionConfigCache>();
-  ipp_config_cache->SetNextAuthToken(MakeAuthToken("Bearer: a-token"));
-  ipp_config_cache->SetProxyList({MakeChain({"proxy1", "proxy2"})});
+  auto ipp_core = std::make_unique<MockIpProtectionCore>();
+  ipp_core->SetNextAuthToken(MakeAuthToken("Bearer: a-token"));
+  ipp_core->SetProxyList({MakeChain({"proxy1", "proxy2"})});
   auto delegate =
-      CreateDelegate(&masked_domain_list_manager, std::move(ipp_config_cache));
+      CreateDelegate(&masked_domain_list_manager, std::move(ipp_core));
 
   net::ProxyInfo result;
   result.UseDirect();
@@ -720,11 +714,11 @@ TEST_F(IpProtectionProxyDelegateTest, OnResolveProxyIpProtectionSuccess) {
   first_party_map["example.com"] = {};
   auto masked_domain_list_manager =
       MaskedDomainListManager::CreateForTesting(first_party_map);
-  auto ipp_config_cache = std::make_unique<MockIpProtectionConfigCache>();
-  ipp_config_cache->SetNextAuthToken(MakeAuthToken("Bearer: a-token"));
-  ipp_config_cache->SetProxyList({MakeChain({"proxya", "proxyb"})});
+  auto ipp_core = std::make_unique<MockIpProtectionCore>();
+  ipp_core->SetNextAuthToken(MakeAuthToken("Bearer: a-token"));
+  ipp_core->SetProxyList({MakeChain({"proxya", "proxyb"})});
   auto delegate =
-      CreateDelegate(&masked_domain_list_manager, std::move(ipp_config_cache));
+      CreateDelegate(&masked_domain_list_manager, std::move(ipp_core));
 
   net::ProxyInfo result;
   result.UseDirect();
@@ -750,11 +744,11 @@ TEST_F(IpProtectionProxyDelegateTest, OnSuccessfulRequestAfterFailures) {
     bool on_proxies_failed_called = false;
     auto masked_domain_list_manager = MaskedDomainListManager::CreateForTesting(
         /*first_party_map=*/{});
-    auto ipp_config_cache = std::make_unique<MockIpProtectionConfigCache>();
-    ipp_config_cache->SetOnProxiesFailed(
+    auto ipp_core = std::make_unique<MockIpProtectionCore>();
+    ipp_core->SetOnProxiesFailed(
         base::BindLambdaForTesting([&]() { on_proxies_failed_called = true; }));
-    auto delegate = CreateDelegate(&masked_domain_list_manager,
-                                   std::move(ipp_config_cache));
+    auto delegate =
+        CreateDelegate(&masked_domain_list_manager, std::move(ipp_core));
     delegate->OnSuccessfulRequestAfterFailures(proxy_retry_info_map);
     EXPECT_EQ(expected_call, on_proxies_failed_called);
   };
@@ -804,11 +798,11 @@ TEST_F(IpProtectionProxyDelegateTest, OnFallback) {
 
   auto masked_domain_list_manager = MaskedDomainListManager::CreateForTesting(
       /*first_party_map=*/{});
-  auto ipp_config_cache = std::make_unique<MockIpProtectionConfigCache>();
-  ipp_config_cache->SetOnRequestRefreshProxyList(
+  auto ipp_core = std::make_unique<MockIpProtectionCore>();
+  ipp_core->SetOnRequestRefreshProxyList(
       base::BindLambdaForTesting([&]() { force_refresh_called = true; }));
   auto delegate =
-      CreateDelegate(&masked_domain_list_manager, std::move(ipp_config_cache));
+      CreateDelegate(&masked_domain_list_manager, std::move(ipp_core));
 
   delegate->OnFallback(ip_protection_proxy_chain, net::ERR_FAILED);
   EXPECT_TRUE(force_refresh_called);
@@ -864,11 +858,11 @@ TEST_F(IpProtectionProxyDelegateTest, InvalidateTryAgainAfterTime) {
 
   auto masked_domain_list_manager = MaskedDomainListManager::CreateForTesting(
       /*first_party_map=*/{});
-  auto ipp_config_cache = std::make_unique<MockIpProtectionConfigCache>();
-  ipp_config_cache->SetOnInvalidateTryAgainAfterTime(
+  auto ipp_core = std::make_unique<MockIpProtectionCore>();
+  ipp_core->SetOnInvalidateTryAgainAfterTime(
       base::BindLambdaForTesting([&]() { invalidated = true; }));
   auto delegate =
-      CreateDelegate(&masked_domain_list_manager, std::move(ipp_config_cache));
+      CreateDelegate(&masked_domain_list_manager, std::move(ipp_core));
   delegate->InvalidateIpProtectionConfigCacheTryAgainAfterTime();
   EXPECT_TRUE(invalidated);
 }

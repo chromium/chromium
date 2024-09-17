@@ -10,8 +10,8 @@
 
 #include "base/check.h"
 #include "base/logging.h"
-#include "components/ip_protection/common/ip_protection_config_cache_impl.h"
 #include "components/ip_protection/common/ip_protection_config_getter.h"
+#include "components/ip_protection/common/ip_protection_core_impl.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 

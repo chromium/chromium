@@ -9,7 +9,7 @@
 
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
-#include "components/ip_protection/common/ip_protection_config_cache.h"
+#include "components/ip_protection/common/ip_protection_core.h"
 #include "components/ip_protection/common/ip_protection_telemetry.h"
 #include "components/ip_protection/common/masked_domain_list_manager.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -33,12 +33,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionProxyDelegate
     : public net::ProxyDelegate,
       public mojom::IpProtectionProxyDelegate {
  public:
-  // Both masked_domain_list_manager and ipp_config_cache must be
+  // Both masked_domain_list_manager and ipp_core must be
   // non-null. The masked_domain_list_manager (MaskedDomainList) feature
   // must be enabled.
   IpProtectionProxyDelegate(
       MaskedDomainListManager* masked_domain_list_manager,
-      std::unique_ptr<ip_protection::IpProtectionConfigCache> ipp_config_cache,
+      std::unique_ptr<ip_protection::IpProtectionCore> ipp_core,
       bool is_ip_protection_enabled);
 
   IpProtectionProxyDelegate(const IpProtectionProxyDelegate&) = delete;
@@ -102,8 +102,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionProxyDelegate
 
   const raw_ptr<MaskedDomainListManager> masked_domain_list_manager_;
 
-  const std::unique_ptr<ip_protection::IpProtectionConfigCache>
-      ipp_config_cache_;
+  const std::unique_ptr<ip_protection::IpProtectionCore> ipp_core_;
 
   bool is_ip_protection_enabled_;
 

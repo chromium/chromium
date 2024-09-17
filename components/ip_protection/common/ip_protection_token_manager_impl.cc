@@ -12,7 +12,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
-#include "components/ip_protection/common/ip_protection_config_cache.h"
+#include "components/ip_protection/common/ip_protection_core.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
 #include "components/ip_protection/common/ip_protection_telemetry.h"
 #include "net/base/features.h"
@@ -41,7 +41,7 @@ constexpr char kDefaultGeo[] = "EARTH";
 }  // namespace
 
 IpProtectionTokenManagerImpl::IpProtectionTokenManagerImpl(
-    IpProtectionConfigCache* config_cache,
+    IpProtectionCore* core,
     IpProtectionConfigGetter* config_getter,
     ProxyLayer proxy_layer,
     bool disable_cache_management_for_testing)
@@ -52,7 +52,7 @@ IpProtectionTokenManagerImpl::IpProtectionTokenManagerImpl(
           net::features::kIpPrivacyCacheTokensByGeo.Get()),
       config_getter_(config_getter),
       proxy_layer_(proxy_layer),
-      ip_protection_config_cache_(config_cache),
+      ip_protection_core_(core),
       disable_cache_management_for_testing_(
           disable_cache_management_for_testing) {
   // If caching by geo is disabled, the current geo will be resolved to
@@ -99,8 +99,8 @@ bool IpProtectionTokenManagerImpl::IsAuthTokenAvailable(
 // method is idempotent, and can be called at any time.
 void IpProtectionTokenManagerImpl::MaybeRefillCache() {
   RemoveExpiredTokens();
-  if (fetching_auth_tokens_ || !config_getter_ ||
-      !ip_protection_config_cache_ || disable_cache_management_for_testing_) {
+  if (fetching_auth_tokens_ || !config_getter_ || !ip_protection_core_ ||
+      disable_cache_management_for_testing_) {
     return;
   }
 
@@ -168,8 +168,8 @@ void IpProtectionTokenManagerImpl::ScheduleMaybeRefillCache() {
   //    completes, so there is no need to call a refill here.
   // 2. If there is no config getter or config cache, there is nothing to do.
   // 3. If testing requires disabling the cache management.
-  if (fetching_auth_tokens_ || !config_getter_ ||
-      !ip_protection_config_cache_ || disable_cache_management_for_testing_) {
+  if (fetching_auth_tokens_ || !config_getter_ || !ip_protection_core_ ||
+      disable_cache_management_for_testing_) {
     next_maybe_refill_cache_.Stop();
     return;
   }
@@ -230,7 +230,7 @@ bool IpProtectionTokenManagerImpl::NeedsRefill(
 // tokens.
 // This indicates a possible bad state where new tokens are continually
 // being requested "on-demand" due to a geo mismatch between token and proxy
-// list signals in `IpProtectionConfigCache`.
+// list signals in `IpProtectionCore`.
 bool IpProtectionTokenManagerImpl::IsTokenLimitExceeded(
     const std::string& geo_id) const {
   auto it = cache_by_geo_.find(geo_id);
@@ -333,7 +333,7 @@ void IpProtectionTokenManagerImpl::OnGotAuthTokens(
   // TODO(abhipatel): Change logic so that external code is not being relied on
   // to update our internal state.
   if (enable_token_caching_by_geo_ && has_geo_id_changed) {
-    ip_protection_config_cache_->GeoObserved(geo_id_from_token);
+    ip_protection_core_->GeoObserved(geo_id_from_token);
   }
 
   Telemetry().TokenBatchGenerationComplete(base::TimeTicks::Now() -

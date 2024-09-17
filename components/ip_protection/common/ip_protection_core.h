@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_CONFIG_CACHE_H_
-#define COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_CONFIG_CACHE_H_
+#ifndef COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_CORE_H_
+#define COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_CORE_H_
 
 #include <memory>
 #include <optional>
@@ -17,16 +17,10 @@
 
 namespace ip_protection {
 
-// A cache for blind-signed auth tokens.
-//
-// There is no API to fill the cache - it is the implementation's responsibility
-// to do that itself.
-//
-// This class provides sync access to a token, returning nullopt if none is
-// available, thereby avoiding adding latency to proxied requests.
-class IpProtectionConfigCache {
+// Core business logic for IP Protection.
+class IpProtectionCore {
  public:
-  virtual ~IpProtectionConfigCache() = default;
+  virtual ~IpProtectionCore() = default;
 
   // Check whether tokens are available in all token caches.
   //
@@ -48,8 +42,8 @@ class IpProtectionConfigCache {
   // Check whether a proxy chain list is available.
   virtual bool IsProxyListAvailable() = 0;
 
-  // Notify the ConfigCache that QUIC proxies failed for a request, suggesting
-  // that QUIC may not work on this network.
+  // Notifies that QUIC proxies failed for a request, suggesting that QUIC may
+  // not work on this network.
   virtual void QuicProxiesFailed() = 0;
 
   // Return the currently cached proxy chain lists. This contains the lists of
@@ -66,25 +60,21 @@ class IpProtectionConfigCache {
   // refreshed proxy list or refill of tokens.
   virtual void GeoObserved(const std::string& geo_id) = 0;
 
-  // Set the token cache manager for the cache.
   virtual void SetIpProtectionTokenManagerForTesting(
       ProxyLayer proxy_layer,
       std::unique_ptr<IpProtectionTokenManager> ipp_token_manager) = 0;
 
-  // Fetch the token cache manager.
   virtual IpProtectionTokenManager* GetIpProtectionTokenManagerForTesting(
       ProxyLayer proxy_layer) = 0;
 
-  // Set the proxy chain list manager for the cache.
   virtual void SetIpProtectionProxyConfigManagerForTesting(
       std::unique_ptr<IpProtectionProxyConfigManager>
           ipp_proxy_config_manager) = 0;
 
-  // Fetch the proxy chain list manager.
   virtual IpProtectionProxyConfigManager*
   GetIpProtectionProxyConfigManagerForTesting() = 0;
 };
 
 }  // namespace ip_protection
 
-#endif  // COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_CONFIG_CACHE_H_
+#endif  // COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_CORE_H_
