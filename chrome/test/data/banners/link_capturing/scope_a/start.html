@@ -69,6 +69,7 @@
           link.classList.contains('linkB') ? bDestinationUrl : xDestinationUrl;
           destination += param;
           link.setAttribute('href', destination);
+          console.log('link ' + link.id + ' clicked, dest ' + destination);
         });
       }
       var buttons = document.querySelectorAll('.btnA, .btnB, .btnX');
@@ -83,6 +84,7 @@
           let url = button.classList.contains('btnA') ? aDestinationUrl :
           button.classList.contains('btnB') ? bDestinationUrl : xDestinationUrl;
           url += param;
+          console.log('button ' + button.id + ' clicked, dest ' + url);
           if (rel) {
             window.open(url, target, rel);
           } else {

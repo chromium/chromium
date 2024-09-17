@@ -10,12 +10,15 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/link_capturing/link_capturing_feature_test_support.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/views/user_education/browser_feature_promo_controller.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
+#include "chrome/browser/web_applications/test/debug_info_printer.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -62,6 +65,17 @@ class WebAppNavigationCapturingIPHPromoTest
   void SetUpOnMainThread() override {
     InteractiveFeaturePromoTest::SetUpOnMainThread();
     ASSERT_TRUE(embedded_test_server()->Start());
+  }
+
+  void TearDownOnMainThread() override {
+    if (testing::Test::HasFailure()) {
+      // Intended to help track down issue 366580804.
+      ProfileManager* profile_manager = g_browser_process->profile_manager();
+      base::TimeDelta log_time = base::TimeTicks::Now() - start_time_;
+      web_app::test::LogDebugInfoToConsole(profile_manager->GetLoadedProfiles(),
+                                           log_time);
+    }
+    InteractiveFeaturePromoTest::TearDownOnMainThread();
   }
 
  protected:
@@ -197,6 +211,8 @@ class WebAppNavigationCapturingIPHPromoTest
   }
 
  private:
+  base::TimeTicks start_time_ = base::TimeTicks::Now();
+
   base::test::ScopedFeatureList scoped_feature_list_;
   web_app::OsIntegrationTestOverrideBlockingRegistration override_registration_;
 };
