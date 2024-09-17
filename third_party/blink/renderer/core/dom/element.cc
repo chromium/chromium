@@ -6958,6 +6958,8 @@ ScrollMarkerPseudoElement* Element::CreateColumnScrollMarker() {
   scroll_marker->SetComputedStyle(style);
   ElementRareDataVector& data = EnsureElementRareData();
   data.AddColumnScrollMarker(*scroll_marker);
+  scroll_marker->InsertedInto(*this);
+  probe::PseudoElementCreated(scroll_marker);
   return scroll_marker;
 }
 
