@@ -478,7 +478,8 @@ class DesksTest : public AshTestBase,
          {features::kPerDeskShelf, GetParam().per_desk_shelf},
          {features::kSnapGroup, true},
          {features::kOsSettingsRevampWayfinding, true},
-         {features::kDeskBarWindowOcclusionOptimization, true}});
+         {features::kDeskBarWindowOcclusionOptimization, true},
+         {chromeos::features::kOverviewSessionInitOptimizations, true}});
 
     AshTestBase::SetUp();
     SetVirtualKeyboardEnabled(true);
@@ -9268,6 +9269,8 @@ class DeskBarTest
     ASSERT_TRUE(desk_bar_view);
 
     // Clicking the library button on the desk button desk bar.
+    ASSERT_TRUE(desk_bar_view->library_button());
+    ASSERT_TRUE(desk_bar_view->library_button()->GetVisible());
     ClickOrPressOnView(desk_bar_view->library_button());
 
     // It should enter overview mode and the saved desk library should be
@@ -9551,9 +9554,12 @@ TEST_P(DeskBarTest, Basic) {
     EXPECT_THAT(new_desk_button->GetEnabled(),
                 desks_controller->CanCreateDesks());
     auto* library_button = desk_bar_view->library_button();
-    EXPECT_THAT(library_button->state(), expected_button_state);
-    EXPECT_THAT(library_button->GetVisible(), test.has_saved_desks);
-    EXPECT_TRUE(library_button->GetEnabled());
+    EXPECT_THAT(library_button && library_button->GetVisible(),
+                test.has_saved_desks);
+    if (library_button) {
+      EXPECT_THAT(library_button->state(), expected_button_state);
+      EXPECT_TRUE(library_button->GetEnabled());
+    }
 
     CloseDeskBar();
 
@@ -10209,6 +10215,7 @@ TEST_P(DeskBarTest, ForwardTabbing) {
 
   // Tab through library button.
   PressAndReleaseKey(ui::VKEY_TAB);
+  ASSERT_TRUE(desk_bar_view->library_button());
   ASSERT_TRUE(desk_bar_view->library_button()->HasFocus());
 
   CloseDeskBar();
@@ -10242,6 +10249,7 @@ TEST_P(DeskBarTest, ReverseTabbing) {
 
   // Tab through library button.
   PressAndReleaseKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
+  ASSERT_TRUE(desk_bar_view->library_button());
   ASSERT_TRUE(desk_bar_view->library_button()->HasFocus());
 
   // Tab through new desk button.

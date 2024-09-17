@@ -17,6 +17,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/run_until.h"
 #include "ui/compositor/layer.h"
 #include "ui/views/animation/bounds_animator.h"
 #include "ui/views/animation/bounds_animator_observer.h"
@@ -265,6 +266,11 @@ void WaitForSavedDeskUI() {
   SavedDeskPresenterTestApi(overview_session->saved_desk_presenter())
       .SetOnUpdateUiClosure(run_loop.QuitClosure());
   run_loop.Run();
+}
+
+bool WaitForLibraryButtonVisible() {
+  return base::test::RunUntil(
+      []() { return GetLibraryButton() && GetLibraryButton()->GetVisible(); });
 }
 
 const app_restore::AppRestoreData* QueryRestoreData(

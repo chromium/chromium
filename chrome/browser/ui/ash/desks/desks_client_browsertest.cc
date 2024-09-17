@@ -56,6 +56,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/spin_wait.h"
 #include "base/uuid.h"
@@ -98,6 +99,7 @@
 #include "chrome/test/base/chromeos/ash_browser_test_starter.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/app_types.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/base/window_state_type.h"
@@ -519,7 +521,8 @@ class DesksClientTest : public extensions::PlatformAppBrowserTest {
  public:
   DesksClientTest() {
     std::vector<base::test::FeatureRef> enabled_features = {
-        ash::features::kDesksTemplates};
+        ash::features::kDesksTemplates,
+        chromeos::features::kOverviewSessionInitOptimizations};
     std::vector<base::test::FeatureRef> disabled_features = {
         ash::features::kDeskTemplateSync};
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
@@ -1488,8 +1491,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, SystemUIBasic) {
   // Tests that since we have no saved desk right now, so the library button is
   // hidden.
   const views::Button* library_button = ash::GetLibraryButton();
-  ASSERT_TRUE(library_button);
-  EXPECT_FALSE(library_button->GetVisible());
+  EXPECT_FALSE(library_button && library_button->GetVisible());
 
   // Note that this button needs at least one window to show up. Browser tests
   // have an existing browser window, so no new window needs to be created.
@@ -1509,8 +1511,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, SystemUIBasic) {
 
   // Tests that since we have one template right now, so that the expanded state
   // library button is shown, and the saved desk grid has one item.
-  ASSERT_TRUE(library_button);
-  EXPECT_TRUE(library_button->GetVisible());
+  ASSERT_TRUE(ash::WaitForLibraryButtonVisible());
 
   const views::Button* template_item = ash::GetSavedDeskItemButton(/*index=*/0);
   EXPECT_TRUE(template_item);
@@ -2963,8 +2964,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, FloatingWorkspaceOnSavedDesksUI) {
   // Tests that since we have no saved desk right now, so the library button is
   // hidden.
   const views::Button* library_button = ash::GetLibraryButton();
-  ASSERT_TRUE(library_button);
-  EXPECT_FALSE(library_button->GetVisible());
+  EXPECT_FALSE(library_button && library_button->GetVisible());
 }
 
 IN_PROC_BROWSER_TEST_F(DesksClientTest,

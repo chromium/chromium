@@ -113,17 +113,17 @@ class ASH_EXPORT DeskBarViewBase : public views::View,
   DeskIconButton* new_desk_button() { return new_desk_button_; }
   const DeskIconButton* new_desk_button() const { return new_desk_button_; }
 
+  // May return null. See comments above `GetOrCreateLibraryButton()`.
   DeskIconButton* library_button() { return library_button_; }
   const DeskIconButton* library_button() const { return library_button_; }
+  views::Label* library_button_label() { return library_button_label_; }
+  const views::Label* library_button_label() const {
+    return library_button_label_;
+  }
 
   views::Label* new_desk_button_label() { return new_desk_button_label_; }
   const views::Label* new_desk_button_label() const {
     return new_desk_button_label_;
-  }
-
-  views::Label* library_button_label() { return library_button_label_; }
-  const views::Label* library_button_label() const {
-    return library_button_label_;
   }
 
   void set_library_ui_visibility(LibraryUiVisibility library_ui_visibility) {
@@ -176,11 +176,8 @@ class ASH_EXPORT DeskBarViewBase : public views::View,
   // Bring focus to the name view of the desk with `desk_index`.
   void NudgeDeskName(int desk_index);
 
-  // If in expanded state, updates the border color of the
-  // `expanded_state_library_button_` and the active desk's mini view
-  // after the saved desk library has been shown. If not in expanded state,
-  // updates the background color of the `zero_state_library_button_`
-  // and the `zero_state_default_desk_button_`.
+  // If in expanded state, updates the border color of the `library_button_` and
+  // the active desk's mini view`.
   void UpdateButtonsForSavedDeskGrid();
 
   // Update the visibility of the `default_desk_button_` on the desk bar's
@@ -289,6 +286,11 @@ class ASH_EXPORT DeskBarViewBase : public views::View,
   // Triggered when the bar UI update is done. This is triggered when the bar is
   // done with its animation or when `desk_activation_timer_` fires.
   void OnUiUpdateDone();
+
+  // The `library_button_` and its label get lazily constructed for performance
+  // reasons. Creates the button if it doesn't exist. Only use if the button
+  // should be visible.
+  DeskIconButton& GetOrCreateLibraryButton();
 
   // Gets full available bounds for the desk bar widget.
   virtual gfx::Rect GetAvailableBounds() const = 0;

@@ -50,6 +50,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "base/uuid.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/utils/haptics_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -816,30 +817,6 @@ DeskBarViewBase::DeskBarViewBase(
   new_desk_button_label_->SetPaintToLayer();
   new_desk_button_label_->layer()->SetFillsBoundsOpaquely(false);
 
-  if (saved_desk_util::ShouldShowSavedDesksOptions()) {
-    int button_text_id = IDS_ASH_DESKS_TEMPLATES_DESKS_BAR_BUTTON_LIBRARY;
-    if (!saved_desk_util::AreDesksTemplatesEnabled()) {
-      button_text_id = IDS_ASH_DESKS_TEMPLATES_DESKS_BAR_BUTTON_SAVED_FOR_LATER;
-    }
-
-    library_button_ =
-        scroll_view_contents_->AddChildView(std::make_unique<DeskIconButton>(
-            this, &kDesksTemplatesIcon,
-            l10n_util::GetStringUTF16(button_text_id),
-            cros_tokens::kCrosSysOnSecondaryContainer,
-            cros_tokens::kCrosSysInversePrimary,
-            /*initially_enabled=*/true,
-            base::BindRepeating(&DeskBarViewBase::OnLibraryButtonPressed,
-                                base::Unretained(this))));
-    library_button_label_ =
-        scroll_view_contents_->AddChildView(std::make_unique<views::Label>());
-    library_button_label_->SetFontList(
-        TypographyProvider::Get()->ResolveTypographyToken(
-            TypographyToken::kCrosAnnotation1));
-    library_button_label_->SetPaintToLayer();
-    library_button_label_->layer()->SetFillsBoundsOpaquely(false);
-  }
-
   on_contents_scrolled_subscription_ =
       scroll_view_->AddContentsScrolledCallback(base::BindRepeating(
           &DeskBarViewBase::OnContentsScrolled, base::Unretained(this)));
@@ -1162,7 +1139,7 @@ void DeskBarViewBase::UpdateButtonsForSavedDeskGrid() {
   FindMiniViewForDesk(Shell::Get()->desks_controller()->active_desk())
       ->UpdateFocusColor();
 
-  if (type_ == Type::kOverview) {
+  if (type_ == Type::kOverview && library_button_) {
     library_button_->set_paint_as_active(
         overview_grid_->IsShowingSavedDeskLibrary());
     library_button_->UpdateFocusState();
@@ -1183,25 +1160,36 @@ void DeskBarViewBase::UpdateLibraryButtonVisibility() {
     return;
   }
 
-  library_button_label_->SetVisible(
-      ShouldShowLibraryUi() &&
-      (library_button_->state() == DeskIconButton::State::kActive));
+  const bool should_show_library_button = ShouldShowLibraryUi();
+  DeskIconButton::State new_library_button_state = DeskIconButton::State::kZero;
+  if (type_ == Type::kOverview && overview_grid_->IsShowingSavedDeskLibrary()) {
+    new_library_button_state = DeskIconButton::State::kActive;
+  } else if (state_ == State::kExpanded) {
+    new_library_button_state = DeskIconButton::State::kExpanded;
+  }
 
+  // Lazy initialization will be the default when
+  // `kOverviewSessionInitOptimizations` is launched.
+  if (!chromeos::features::AreOverviewSessionInitOptimizationsEnabled() ||
+      should_show_library_button) {
+    GetOrCreateLibraryButton();
+  }
+
+  if (library_button_label_) {
+    library_button_label_->SetVisible(should_show_library_button &&
+                                      library_button_->state() ==
+                                          DeskIconButton::State::kActive);
+  }
   // If the visibility of the library button doesn't change, return early.
-  if (library_button_->GetVisible() == ShouldShowLibraryUi()) {
+  if (!library_button_ ||
+      (library_button_->GetVisible() == ShouldShowLibraryUi() &&
+       library_button_->state() == new_library_button_state)) {
     return;
   }
 
-  library_button_->SetVisible(ShouldShowLibraryUi());
-  if (ShouldShowLibraryUi()) {
-    if (type_ == Type::kOverview &&
-        overview_grid_->IsShowingSavedDeskLibrary()) {
-      library_button_->UpdateState(DeskIconButton::State::kActive);
-    } else if (state_ == State::kZero) {
-      library_button_->UpdateState(DeskIconButton::State::kZero);
-    } else {
-      library_button_->UpdateState(DeskIconButton::State::kExpanded);
-    }
+  library_button_->SetVisible(should_show_library_button);
+  if (should_show_library_button) {
+    library_button_->UpdateState(new_library_button_state);
   }
 
   if (mini_views_.empty()) {
@@ -1695,6 +1683,34 @@ void DeskBarViewBase::OnUiUpdateDone() {
   if (on_update_ui_closure_for_testing_) {
     std::move(on_update_ui_closure_for_testing_).Run();
   }
+}
+
+DeskIconButton& DeskBarViewBase::GetOrCreateLibraryButton() {
+  if (library_button_) {
+    return *library_button_;
+  }
+  const int button_text_id =
+      saved_desk_util::AreDesksTemplatesEnabled()
+          ? IDS_ASH_DESKS_TEMPLATES_DESKS_BAR_BUTTON_LIBRARY
+          : IDS_ASH_DESKS_TEMPLATES_DESKS_BAR_BUTTON_SAVED_FOR_LATER;
+
+  CHECK(scroll_view_contents_);
+  library_button_ =
+      scroll_view_contents_->AddChildView(std::make_unique<DeskIconButton>(
+          this, &kDesksTemplatesIcon, l10n_util::GetStringUTF16(button_text_id),
+          cros_tokens::kCrosSysOnSecondaryContainer,
+          cros_tokens::kCrosSysInversePrimary,
+          /*initially_enabled=*/true,
+          base::BindRepeating(&DeskBarViewBase::OnLibraryButtonPressed,
+                              base::Unretained(this))));
+  library_button_label_ =
+      scroll_view_contents_->AddChildView(std::make_unique<views::Label>());
+  library_button_label_->SetFontList(
+      TypographyProvider::Get()->ResolveTypographyToken(
+          TypographyToken::kCrosAnnotation1));
+  library_button_label_->SetPaintToLayer();
+  library_button_label_->layer()->SetFillsBoundsOpaquely(false);
+  return *library_button_;
 }
 
 void DeskBarViewBase::UpdateBarBounds() {}

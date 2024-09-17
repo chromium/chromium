@@ -2203,7 +2203,7 @@ void OverviewGrid::ShowSavedDeskLibrary() {
                                         /*expanding_bar_view=*/true);
   } else {
     desks_bar_view_->UpdateDeskIconButtonState(
-        desks_bar_view_->library_button(),
+        &desks_bar_view_->GetOrCreateLibraryButton(),
         /*target_state=*/DeskIconButton::State::kActive);
   }
 
@@ -2270,7 +2270,7 @@ void OverviewGrid::HideSavedDeskLibrary(bool exit_overview) {
   // saved desk. We have animation of adding a new desk for the library
   // button, thus to avoid the animation glitches, directly update the state
   // for the library button instead of applying the scale animation to it.
-  desks_bar_view_->library_button()->UpdateState(
+  desks_bar_view_->GetOrCreateLibraryButton().UpdateState(
       DeskIconButton::State::kExpanded);
 }
 

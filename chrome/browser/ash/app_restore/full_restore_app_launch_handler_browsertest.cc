@@ -64,6 +64,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/app_constants/constants.h"
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/app_restore_info.h"
@@ -411,7 +412,9 @@ class FullRestoreAppLaunchHandlerBrowserTest
  public:
   FullRestoreAppLaunchHandlerBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kDesksTemplates},
+        /*enabled_features=*/{features::kDesksTemplates,
+                              chromeos::features::
+                                  kOverviewSessionInitOptimizations},
         /*disabled_features=*/{features::kDeskTemplateSync});
   }
   ~FullRestoreAppLaunchHandlerBrowserTest() override = default;
