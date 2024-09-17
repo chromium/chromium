@@ -42,6 +42,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1148499908455722006">Abrir a caixa de diálogo de informações da conta <ph name="USER_NAME" /></translation>
 <translation id="1150989369772528668">Agenda</translation>
 <translation id="1153356358378277386">Dispositivos pareados</translation>
+<translation id="1153918444040990015">Não foi possível se conectar aos sons de foco</translation>
 <translation id="1155734730463845512">Nível atual de bateria: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1157514002898505378">A IA generativa é uma tecnologia experimental, e o conteúdo pode ser impreciso, enganoso ou ofensivo. Entre em contato com o administrador para informar um problema. <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="1160215328209699296">ativado e em uso</translation>
@@ -175,6 +176,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1550523713251050646">Clique para ver mais opções</translation>
 <translation id="1555130319947370107">Azul</translation>
 <translation id="1557622599341396706">Mostrar nome do espaço de trabalho</translation>
+<translation id="1567138500090284106">Botão de teclas do mouse</translation>
 <translation id="1569384531973824928">Essa ação libera o acesso para todos os apps e sites com as permissões de câmera e microfone. Talvez seja necessário atualizar a página da Web ou reiniciar o app.</translation>
 <translation id="1571697193564730395">Alternar "Não perturbe". <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">Diminuir zoom quando a lupa estiver ativada</translation>
@@ -242,6 +244,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1787955149152357925">Desativado</translation>
 <translation id="1796561540704213354">Sites que incluem páginas visitadas e páginas abertas</translation>
 <translation id="179842970735685253">Termos de Serviço do Google</translation>
+<translation id="1805407494113167797">Não foi possível tocar os sons de foco</translation>
 <translation id="181103072419391116"><ph name="SIGNAL_STRENGTH" /> de intensidade de sinal , gerenciada pelo seu administrador</translation>
 <translation id="1816896987747843206">Dá acesso à câmera para todos os apps e sites com essa permissão</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
@@ -1354,6 +1357,7 @@ Nenhum dispositivo conectado.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Não foi possível verificar sua senha. Tente de novo.</translation>
 <translation id="5632485077360054581">Me ajude a fazer isso</translation>
+<translation id="5633826232582408011">Quando você ativa os recursos "Quero ajuda para escrever" e "Quero ajuda para ler", o texto de entrada, o conteúdo do documento e o URL da página da Web são enviados aos servidores da IA do Google para gerar sugestões de escrita e resumos, responder a perguntas e melhorar o produto, de acordo com os <ph name="LINK_TO_SERVICE_TERMS" />. Não inclua informações pessoais, sensíveis ou confidenciais.</translation>
 <translation id="5648021990716966815">Entrada para microfone</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> precisa de atenção.</translation>
 <translation id="5662075790140998213">Espaço de trabalho 10</translation>
@@ -1411,6 +1415,7 @@ Nenhum dispositivo conectado.</translation>
 <translation id="5802516411616338943">Abrir as Configurações rápidas</translation>
 <translation id="5804651031882187592">Desative a configuração "Bloquear chip"</translation>
 <translation id="5805809050170488595">Clique para ativar <ph name="NETWORK_NAME" /></translation>
+<translation id="5818796501620225415">Você pode adicionar mais tempo ou encerrar sua sessão de foco</translation>
 <translation id="5819918159912280082">Seu Chromebook foi reiniciado de maneira inesperada. Abra as janelas e os apps anteriores.</translation>
 <translation id="5823239091726045201">Google Tarefas na Web</translation>
 <translation id="5825969630400862129">Configurações de dispositivos conectados</translation>
@@ -1504,7 +1509,6 @@ Nenhum dispositivo conectado.</translation>
 <translation id="6119972796024789243">Correção de cor</translation>
 <translation id="6121838516699723042">Confirmar o download de <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">O Google Assistente não está disponível em uma sessão de visitante.</translation>
-<translation id="6127370444807669747">Teste o YouTube Music Premium para playlists personalizadas e mais músicas de foco</translation>
 <translation id="6127395413317891856">Você está off-line. Verifique sua conexão e tente de novo.</translation>
 <translation id="6129953537138746214">Espaço</translation>
 <translation id="6137566720514957455">Abrir caixa de diálogo para a remoção de <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -2282,6 +2286,7 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="8876661425082386199">Verifique sua conexão</translation>
 <translation id="8877788021141246043">Definir um lembrete</translation>
 <translation id="8878886163241303700">Tela ampla</translation>
+<translation id="8885424115080869847">Não foi possível se conectar ao YouTube Music</translation>
 <translation id="888982883502837004">Há atualizações de firmware disponíveis para seu dispositivo. Clique para revisar e atualizar.</translation>
 <translation id="8896630965521842259">O modelo <ph name="DESK_TEMPLATE_NAME" /> será excluído permanentemente</translation>
 <translation id="889790758758811533"><ph name="PERCENTAGE" />% de bateria (cerca de <ph name="TIME_LEFT" />). Conecte o dispositivo a uma fonte de energia.</translation>

@@ -500,6 +500,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="1355088139103479645">Želite izbrisati vse podatke?</translation>
 <translation id="1356376170199999104">Dovoljeno – <ph name="PERMISSION_DETAILS" />. Vklopite mikrofon s fizičnim stikalom.</translation>
 <translation id="1356959069439783953">Neaktivni zavihki dobijo nov videz</translation>
+<translation id="1357766361161708728">Ali želite zapreti zavihke, ki jih ne uporabljate?</translation>
 <translation id="1358741672408003399">Črkovanje in slovnica</translation>
 <translation id="1359923111303110318">Napravo je mogoče odkleniti s funkcijo Smart Lock. Pritisnite Enter, če želite odkleniti.</translation>
 <translation id="1361164813881551742">Ročno dodajanje</translation>
@@ -1120,7 +1121,6 @@ Dovoljenja, ki ste jih že odobrili aplikacijam, morda veljajo za ta račun. Dov
 <translation id="1780273119488802839">Uvažanje zaznamkov ...</translation>
 <translation id="1780572199786401845">Prijavi kot žaljivo/nevarno.</translation>
 <translation id="178092663238929451">Nastavite Deljenje v bližini, če si želite z osebami okoli sebe izmenjevati datoteke.</translation>
-<translation id="1781164264587898620">Uporaba izločanja hrupa in izboljšav zvoka.</translation>
 <translation id="1781291988450150470">Trenutna koda PIN</translation>
 <translation id="1781502536226964113">Odpri nov zavihek s povezavami</translation>
 <translation id="1781553166608855614">Govorjeni jezik</translation>
@@ -2570,6 +2570,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2787354132612937472">–</translation>
 <translation id="2788135150614412178">+</translation>
 <translation id="2789486458103222910">V redu</translation>
+<translation id="2790750268015892264">Izolirane spletne aplikacije ne morejo upravljati bralnikov pametnih kartic. Aplikacije ne bodo imele dostopa do nobene pametne kartice.</translation>
 <translation id="2791529110887957050">Odstranitev Linuxa</translation>
 <translation id="2791952154587244007">Prišlo je do napake. Aplikacija za kiosk se v tej napravi ne bo mogla samodejno zagnati.</translation>
 <translation id="2792290659606763004">Želite odstraniti aplikacije za Android?</translation>
@@ -2601,6 +2602,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2806372837663997957">Naprava, s katero želite deliti vsebino, ni potrdila sprejema.</translation>
 <translation id="2806891468525657116">Bližnjica že obstaja</translation>
 <translation id="2807517655263062534">Tu so prikazane datoteke, ki jih prenesete</translation>
+<translation id="2808481877345177494">Prijavite se, da boste varno ločili službeno in osebno brskanje. Povečajte storilnost in hkrati zaščitite občutljive podatke podjetja.</translation>
 <translation id="2811205483104563968">Računi</translation>
 <translation id="2812049959647166806">Thunderbolt ni podprt</translation>
 <translation id="2812171980080389735">Shranjena omrežja in gesla za takojšnjo povezavo</translation>
@@ -3448,6 +3450,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3450157232394774192">Odstotek zasedenosti stanja nedejavnosti</translation>
 <translation id="3450180775417907283">Domena <ph name="MANAGER" /> zahteva, da se povežete z omrežjem Wi-Fi in prenesete posodobitev.</translation>
 <translation id="345078987193237421">To omogoča dostop do kamere za aplikacije, spletna mesta z dovoljenjem za kamero in sistemske storitve</translation>
+<translation id="3451362021220965191">Izolirane spletne aplikacije upravljajo bralnike pametnih kartic, da pridobijo dostop do vstavljenih ali predstavljenih pametnih kartic. Pametne kartice običajno vsebujejo identitete, ki se uporabljajo za preverjanje pristnosti ali pooblastitev postopkov, prijavo v storitve ipd.</translation>
 <translation id="3452999110156026232">Starševski dostop</translation>
 <translation id="3453082738208775226">Želite izbrisati podatke v shrambi brez povezave?</translation>
 <translation id="3453597230179205517">Dostop do lokacije je blokiran</translation>
@@ -4010,6 +4013,7 @@ To lahko vključuje podatke o nameščeni programski opremi, datotekah, brskalni
 <translation id="3828953470056652895">Prebral(-a) sem <ph name="BEGIN_LINK1" />Googlove pogoje storitve<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />dodatne pogoje storitve za Chrome in Chrome OS<ph name="END_LINK2" /> in <ph name="BEGIN_LINK3" />pogoje storitve za Google Play<ph name="END_LINK3" /> ter se strinjam z njimi.</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> – Visoka uporaba pomnilnika – <ph name="MEMORY_VALUE" /></translation>
 <translation id="3829765597456725595">Datotečno sredstvo v skupni rabi za SMB</translation>
+<translation id="38298897782945211">Izolirane spletne aplikacije samodejno upoštevajo to nastavitev.</translation>
 <translation id="3830470485672984938">Uporabi drug ključ za dostop</translation>
 <translation id="3830654885961023588">{NUM_EXTENSIONS,plural, =1{Skrbnik je znova vklopil eno morebiti škodljivo razširitev}one{Skrbnik je znova vklopil {NUM_EXTENSIONS} morebiti škodljivo razširitev}two{Skrbnik je znova vklopil {NUM_EXTENSIONS} morebiti škodljivi razširitvi}few{Skrbnik je znova vklopil {NUM_EXTENSIONS} morebiti škodljive razširitve}other{Skrbnik je znova vklopil {NUM_EXTENSIONS} morebiti škodljivih razširitev}}</translation>
 <translation id="3834728400518755610">Sprememba nastavitve mikrofona terja zaustavitev Linuxa. Zaustavite Linux, če želite nadaljevati.</translation>
@@ -4023,6 +4027,7 @@ To lahko vključuje podatke o nameščeni programski opremi, datotekah, brskalni
 <translation id="3839516600093027468">Vedno prepreči naslovu <ph name="HOST" /> ogled odložišča</translation>
 <translation id="3841282988425489367">Ni mogoče nastaviti aplikacije Steam za Chromebook (beta)</translation>
 <translation id="3841319830220785495">Privzeti naravni glas</translation>
+<translation id="3841356782900714251">Bralniki pametnih kartic</translation>
 <translation id="3841964634449506551">Neveljavno geslo</translation>
 <translation id="3842552989725514455">Serifna pisava</translation>
 <translation id="3843464315703645664">Interno na seznamu dovoljenih</translation>
@@ -5733,6 +5738,7 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="5120886753782992638">Kliknite tukaj, če želite obiskati <ph name="APPROVED_URL" />.</translation>
 <translation id="5121052518313988218">Operacijski sistem v vsebniku za Linux ni več podprt. Ne bo več prejemal varnostnih posodobitev in popravkov napak, funkcije, ki trenutno delujejo, pa bodo morda nepričakovano nehale delovati. Če želite še naprej uporabljati Linux, nadgradite na najnovejšo različico.</translation>
 <translation id="5121130586824819730">Trdi disk je poln. Shranite na drugo mesto ali sprostite prostor na trdem disku.</translation>
+<translation id="5121803000325086087">Izolirane spletne aplikacije lahko zahtevajo upravljanje bralnikov pametnih kartic. Aplikacije bodo imele dostop do pametnih kartic, ki so predstavljene bralnikom pod njihovim nadzorom.</translation>
 <translation id="5123433949759960244">Košarkarska žoga</translation>
 <translation id="5125714798187802869">Aktiviraj</translation>
 <translation id="5125751979347152379">Neveljaven spletni naslov.</translation>
@@ -6571,6 +6577,7 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="5750288053043553775">0</translation>
 <translation id="5751345516399502412">Preveri pripravljenost za povezavo računalnika z internetom prek mobilnega telefona</translation>
 <translation id="5753570386948603678">Izbriši iz zgodovine</translation>
+<translation id="5753652925946671505">Ti zavihki niso bili uporabljeni najmanj toliko dni: <ph name="COUNT" />.</translation>
 <translation id="5756163054456765343">Center za pomoč</translation>
 <translation id="5757187557809630523">naslednja skladba</translation>
 <translation id="5758631781033351321">Tukaj bo prikazan seznam za branje</translation>
@@ -6994,6 +7001,7 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="6064764629679333574">Izboljšajte kakovost zvoka mikrofona Bluetooth tako, da povečate kakovost zvoka v nizki ločljivosti na visoko ločljivost.</translation>
 <translation id="6065289257230303064">Atributi imenika subjekta potrdila</translation>
 <translation id="6066794465984119824">Zgoščena vrednost slike ni nastavljena.</translation>
+<translation id="6069027071882229820">Kopiraj kot sliko</translation>
 <translation id="6069464830445383022">Z računom Google se prijavite v Chromebook</translation>
 <translation id="6069500411969514374">Delo</translation>
 <translation id="6071181508177083058">potrditev gesla</translation>
@@ -10100,6 +10108,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8319414634934645341">Razširjena raba ključa</translation>
 <translation id="8321476692217554900">obvestila</translation>
 <translation id="8321837372750396788">To napravo <ph name="DEVICE_TYPE" /> bo upravljala domena <ph name="MANAGER" />.</translation>
+<translation id="8321888067342493336">Shrani kot sliko</translation>
 <translation id="8322814362483282060">Tej strani je onemogočen dostop do mikrofona.</translation>
 <translation id="8323167517179506834">Vnesite URL</translation>
 <translation id="8323317289166663449">Branje in spreminjanje vseh vaših podatkov v računalniku in na vseh spletnih mestih</translation>

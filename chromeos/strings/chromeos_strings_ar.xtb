@@ -283,7 +283,6 @@
 <translation id="2230624078793142213">إنشاء المزيد</translation>
 <translation id="2236746079896696523">إيقاف/تفعيل الإضاءة الخلفية للوحة المفاتيح</translation>
 <translation id="2240366984605217732">مفتاح التبديل بين تنسيقات لوحة المفاتيح</translation>
-<translation id="2242381852034179222">يدير المشرفون هذه الميزة</translation>
 <translation id="2244834438220057800">أخضر</translation>
 <translation id="225692081236532131">حالة التفعيل</translation>
 <translation id="2267285889943769271">إضافة لقطة شاشة</translation>
@@ -1040,6 +1039,8 @@
 <translation id="628726841779494414">إدارة الطابعات في إعدادات الطابعة</translation>
 <translation id="6292095526077353682">عرض شاشة الاستراحة أثناء الشحن لمدة</translation>
 <translation id="629550705077076970">تعتيم لوحة المفاتيح</translation>
+<translation id="6301193653204230066">‏تؤدي ميزة "إعادة الضبط لتعزيز الأمان" إلى إيقاف إضافات متصفِّح Chrome وإعادة ضبط الشبكة والإعدادات الأخرى على الإعدادات التلقائية الآمنة.
+          ولن يتم تغيير علامات التبويب والملفات وسجلّ البحث وملفات تعريف الارتباط.</translation>
 <translation id="6302401976930124515">تم إلغاء اختبار <ph name="TEST_NAME" />.</translation>
 <translation id="631063167932043783">تطبيق "استكشاف"</translation>
 <translation id="6318437367327684789">للأبد</translation>
@@ -1049,6 +1050,7 @@
 <translation id="6325525973963619867">إخفاق</translation>
 <translation id="6327262166342360252">‏تم إنشاء هذه الخلفية بواسطة الذكاء الاصطناعي (AI) باستخدام النص التالي: "<ph name="PROMPT" />".</translation>
 <translation id="6331191339300272798">المظهر الداكن التلقائي</translation>
+<translation id="6335228876613776082">اكتمل تنزيل النموذج</translation>
 <translation id="6340526405444716530">التخصيص</translation>
 <translation id="6348252528297699679">لإيقاف إمكانية الوصول إلى الموقع الجغرافي، انتقِل إلى "الإعدادات" &gt; "الخصوصية والأمان" &gt; "عناصر التحكّم في الخصوصية" &gt; "الوصول إلى الموقع الجغرافي". <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">اسم المستخدم وكلمة المرور</translation>
@@ -1542,6 +1544,7 @@
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">‏ألبوم "صور Google"</translation>
 <translation id="8775713578693478175">اسم نقطة وصول المودم</translation>
+<translation id="877735394245039557">جارٍ تنزيل النموذج</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">قد يكون للشبكة مدخل مشروط الوصول إليه.</translation>
 <translation id="8797082062139985406">‏إنشاء اسم باستخدام الذكاء الاصطناعي من Google</translation>

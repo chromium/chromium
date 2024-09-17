@@ -557,6 +557,7 @@
 <translation id="1401216725754314428">مزيد من المعلومات حول المواقع الإلكترونية ذات الصلة في علامة تبويب جديدة</translation>
 <translation id="1402426911829176748">جارٍ الربط بجهازك</translation>
 <translation id="1403222014593521787">تعذّر الاتصال بالخادم الوكيل.</translation>
+<translation id="1405336513195181336">يشمل ذلك الإشارات المرجعية والإضافات وسجلّ التصفّح للمواقع الإلكترونية.</translation>
 <translation id="1405779994569073824">علامة التبويب تعطَّلت.</translation>
 <translation id="1406500794671479665">جارٍ التحقق...</translation>
 <translation id="1407069428457324124">المظهر الداكن</translation>
@@ -1112,7 +1113,6 @@
 <translation id="1780273119488802839">جار استيراد إشارات مرجعية...</translation>
 <translation id="1780572199786401845">الإبلاغ عن محتوى مسيء أو غير آمن</translation>
 <translation id="178092663238929451">عليك إعداد ميزة "المشاركة عن قرب" لاستلام الملفات من الأشخاص من حولك وإرسالها إليهم.</translation>
-<translation id="1781164264587898620">يؤدي هذا الخيار إلى تفعيل ميزة "إلغاء الضوضاء" مع إجراء تحسينات على الصوت.</translation>
 <translation id="1781291988450150470">رمز رقم التعريف الشخصي الحالي</translation>
 <translation id="1781502536226964113">فتح صفحة علامة التبويب الجديدة</translation>
 <translation id="1781553166608855614">لغة التحدّث</translation>
@@ -2505,6 +2505,7 @@
 <translation id="2749881179542288782">تحقق من التدقيق النحوي مع التدقيق الإملائي</translation>
 <translation id="2750020734439919571">‏المزيد من إعدادات وأذونات تطبيق Chrome</translation>
 <translation id="2750602041558385535">تم حظر عملية تنزيل لم يتم التحقّق منها.</translation>
+<translation id="2751883373055093745">يريد <ph name="WEBSITE" /> معرفة رقم تعريف مفتاح الأمان الخاص بك، وذلك حتى يتمكّن من تحديد مفتاح الأمان الذي تستخدمه حاليًا.</translation>
 <translation id="275213133112113418">تم حفظ بطاقتك</translation>
 <translation id="2753623023919742414">انقر للبحث</translation>
 <translation id="2754226775788136540">جارٍ البحث عن أجهزة تستخدم ميزة "الإقران السريع" ومحفوظة في <ph name="PRIMARY_EMAIL" /></translation>
@@ -3732,6 +3733,7 @@
 <translation id="3665589677786828986">‏اكتشف Chrome أن بعض إعداداتك تم إتلافها من قبل برنامج آخر وإعادة تعيينها للحالة التلقائية الأصلية.</translation>
 <translation id="3665919494326051362">الإصدار الحالي هو <ph name="CURRENT_VERSION" />.</translation>
 <translation id="3666196264870170605">‏ملف الذاكرة الذي يضم بيانات تصحيح الأخطاء لوحدات تحكُّم واجهة الشبكة (NIC) الخاصة بـ Intel WiFi</translation>
+<translation id="3666529246018937077">ستظل بيانات التصفُّح الحالية في الملف الشخصي القديم. ولن يتضمّن ملف العمل أي بيانات تصفُّح سابقة.</translation>
 <translation id="3666971425390608309">تم إيقاف تنزيل <ph name="FILE_NAME" /> مؤقتًا.</translation>
 <translation id="3670113805793654926">أجهزة من أي مورّد</translation>
 <translation id="3670229581627177274">تفعيل البلوتوث</translation>
@@ -4471,6 +4473,7 @@
 <translation id="4181841719683918333">اللغات</translation>
 <translation id="4182339886482390129">تعزِّز ميزة "الحماية المُحسّنة للتصفّح الآمن" حمايتك من المواقع الإلكترونية وعمليات التنزيل والإضافات الخطيرة.</translation>
 <translation id="4184803915913850597">‏جهاز HID (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
+<translation id="418527077671811642">سيتعرّف <ph name="WEBSITE" /> على العلامة التجارية لمفتاح الأمان وطرازه</translation>
 <translation id="4186749321808907788"><ph name="QUERY_NAME" /> - بحث <ph name="DEFAULT_SEARCH_ENGINE_NAME" /></translation>
 <translation id="4187424053537113647">جارٍ إعداد <ph name="APP_NAME" />...</translation>
 <translation id="4190446002599583608">البحث في السجلّ باستخدام الذكاء الاصطناعي</translation>
@@ -4598,6 +4601,7 @@
 <translation id="4278779213160967034">قد تستغرق هذه العملية بضع دقائق. جارٍ تنزيل الملفات.</translation>
 <translation id="4279129444466079448">‏يمكنك تثبيت <ph name="PROFILE_LIMIT" /> ملف شخصي لبطاقة eSIM كحد أقصى على هذا الجهاز. لإضافة ملف شخصي آخر، عليك أولاً إزالة أحد الملفات الشخصية الحالية.</translation>
 <translation id="4280325816108262082">سيتم قطع اتصال الجهاز بالبلوتوث تلقائيًا عند إيقاف تشغيله أو عدم استخدامه.</translation>
+<translation id="4281412694055934031">السماح للمواقع الإلكترونية بطلب تثبيت تطبيقات الويب على جهازك</translation>
 <translation id="4281789858103154731">إنشاء</translation>
 <translation id="4281844954008187215">بنود الخدمة</translation>
 <translation id="4281849573951338030">تخصيص أزرار القلم</translation>
@@ -4805,6 +4809,7 @@
 <translation id="4426857487270413362">يتعذّر تنزيل ملفات أداة التثبيت. يُرجى التأكد من اتصالك بالإنترنت وتوفُّر مساحة كافية على القرص، ثم إعادة المحاولة. رمز الخطأ هو <ph name="ERROR" />.</translation>
 <translation id="4427111270137140798">عدد مرات رصد الإيماءة: <ph name="COUNT" /></translation>
 <translation id="4427365070557649936">جارٍ التحقّق من رمز تأكيد البيانات...</translation>
+<translation id="4428579202668721841">هل تريد الاحتفاظ ببيانات التصفّح الحالية منفصلة عن ملف العمل؟</translation>
 <translation id="4429163740524851942">تنسيق لوحة المفاتيح الفعلية</translation>
 <translation id="4430019312045809116">مستوى الصوت</translation>
 <translation id="443031431654216610">أدخِل أرقامًا فقط.</translation>
@@ -5444,8 +5449,10 @@
 <translation id="490031510406860025">الإضافات غير مسموح بها على هذا الموقع الإلكتروني.</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> هرتز - متداخل</translation>
 <translation id="4900652253009739885">تتعذّر إزالة مفتاح التحكّم الوحيد المخصَّص للإجراء "اختيار". اضغط على أي مفتاح من أجل <ph name="RESPONSE" />.</translation>
+<translation id="4900908761825556116">عدم السماح للمواقع الإلكترونية بتثبيت تطبيقات الويب على جهازك</translation>
 <translation id="4901154724271753917">توسيع قائمة علامات التبويب التي تم إغلاقها مؤخرًا</translation>
 <translation id="4901309472892185668">يمكنك اختيار حالة للتجربة <ph name="EXPERIMENT_NAME" />.</translation>
+<translation id="4902675024946078396">لا، أريد نقل البيانات إلى ملف العمل</translation>
 <translation id="49027928311173603">السياسة التي تم تنزيلها من الخادم غير صالحة: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4903967893652864401">يؤدي تفعيل هذا الوضع إلى زيادة عمر البطارية عن طريق الحدّ من الأنشطة في الخلفية والتأثيرات المرئية، مثل التمرير السلس.</translation>
 <translation id="4906490889887219338">إعداد خوادم مشاركة الملفات على الشبكة أو إدارتها <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
@@ -7476,6 +7483,7 @@
 <translation id="6434104957329207050">سرعة مؤشر فحص النقاط</translation>
 <translation id="6434309073475700221">تجاهل</translation>
 <translation id="6434325376267409267">يجب تحديث الجهاز للتمكّن من استخدام <ph name="APP_NAME" />.</translation>
+<translation id="6434690603850475457">نعم، أريد الاحتفاظ بالبيانات منفصلة (يُنصح بهذا الخيار)</translation>
 <translation id="6434755719322447931">فوضوية</translation>
 <translation id="6435339218366409950">اختَر اللغة التي تريد الترجمة إليها.</translation>
 <translation id="6436164536244065364">عرض في السوق الإلكتروني</translation>
@@ -8386,6 +8394,7 @@
 <translation id="708060913198414444">ن&amp;سخ عنوان الصوت</translation>
 <translation id="7082568314107259011">يدير المشرف <ph name="NETWORK_NAME" /></translation>
 <translation id="7082850163410901674">‏تم إيقاف الإشعارات في إعدادات نظام Mac</translation>
+<translation id="7083729794572207131">تطلب المواقع الإلكترونية عادةً تثبيت تطبيقات الويب لتحسين تجربتك على الموقع الإلكتروني</translation>
 <translation id="7083774521940805477">‏تطبيق "Steam لأجهزة Chromebook" (الإصدار التجريبي) غير متاح لجهازك.</translation>
 <translation id="708550780726587276">(لم يتم الضبط)</translation>
 <translation id="7086377898680121060">سطوع مرتفع</translation>
@@ -10488,6 +10497,7 @@
 <translation id="8617601976406256334">هل تريد حذف البيانات والأذونات الخاصة بالموقع الإلكتروني <ph name="SITE_NAME" />؟</translation>
 <translation id="8617748779076050570">رمز إتمام الاتصال الآمن: <ph name="CONNECTION_ID" /></translation>
 <translation id="8619000641825875669">OneDrive</translation>
+<translation id="8619369551122276044">المواقع الإلكترونية التي لا يُسمح لها بتثبيت تطبيقات الويب على جهازك</translation>
 <translation id="8619803522055190423">تظليل القطرات</translation>
 <translation id="8619892228487928601"><ph name="CERTIFICATE_NAME" />: <ph name="ERROR" /></translation>
 <translation id="8620206585293032550">مظهر علامات التبويب غير النشطة</translation>
@@ -11373,6 +11383,7 @@
 <translation id="93393615658292258">كلمة المرور فقط</translation>
 <translation id="934244546219308557">تسمية هذه المجموعة</translation>
 <translation id="93480724622239549">خلل أو خطأ</translation>
+<translation id="9354763467503131">المواقع الإلكترونية التي يُسمح لها بطلب تثبيت تطبيقات الويب على جهازك</translation>
 <translation id="936646668635477464">الكاميرا والميكروفون</translation>
 <translation id="936801553271523408">بيانات تشخيص النظام</translation>
 <translation id="93766956588638423">إصلاح الإضافة</translation>

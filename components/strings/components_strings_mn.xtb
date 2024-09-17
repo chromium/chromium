@@ -1014,6 +1014,7 @@
 <translation id="2882949212241984732">Давхар хаалган нугалаа</translation>
 <translation id="2891963978019740012">Таны Chrome-н хайлтын систем</translation>
 <translation id="2893773853358652045">Дөрөв дэх хуйлмал</translation>
+<translation id="2894137550885451583">Эдгээр нь <ph name="PRODUCT" /> бүтээгдэхүүний <ph name="CURRENCY" />-н үнэ юм</translation>
 <translation id="2900528713135656174">Арга хэмжээ үүсгэх</translation>
 <translation id="2902312830803030883">Бусад үйлдэл</translation>
 <translation id="2903493209154104877">Хаягууд</translation>
@@ -1612,6 +1613,7 @@
 <translation id="3949601375789751990">Таны хайлтын түүх энд харагдана</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">Хадгалсан төлбөрийн хэрэгсэл байхгүй</translation>
+<translation id="3950560191811267370">Худалдааны доод хүснэгтийг хаасан</translation>
 <translation id="3950574001630941635">Практик хичээлийг дахин эхлүүлэх</translation>
 <translation id="3950820424414687140">Нэвтрэх</translation>
 <translation id="3953505489397572035">Энэ нь дундаж үнэ юм</translation>
@@ -2353,6 +2355,7 @@
 <translation id="5331585574693522196">Өгөгдмөлөөр тохируулах</translation>
 <translation id="5332219387342487447">Хүргэлтийн арга</translation>
 <translation id="5332769172018416402">Мессежээр асуух</translation>
+<translation id="533323551986281710">Худалдааны доод хүснэгтийг бүтэн өндрөөр нээсэн</translation>
 <translation id="5334013548165032829">Системийн дэлгэрэнгүй лог</translation>
 <translation id="5334145288572353250">Хаягийг хадгалах уу?</translation>
 <translation id="5340250774223869109">Аппликэйшнийг блоклосон</translation>
@@ -2535,6 +2538,7 @@
 <translation id="5675650730144413517">Энэ хуудас ажиллахгүй байна</translation>
 <translation id="5675809467256309336">Бүжиг, электрон хөгжим</translation>
 <translation id="5675959228867414813">Огноогоор харуулах</translation>
+<translation id="567604591393105935">Худалдааны доод хүснэгтийг тал өндрөөр нээсэн</translation>
 <translation id="5677928146339483299">Хаагдсан</translation>
 <translation id="5678007133659493065">Тугалган цаас</translation>
 <translation id="5680642791693447368">Онц сонирхолтой, гэмт хэргийн болон нууцлаг кинонууд</translation>
@@ -3439,6 +3443,7 @@
 <translation id="7374733840632556089">Та эсвэл өөр хэн нэгэн таны төхөөрөмж дээр суулгасан сертификатын улмаас ийм асуудал гардаг. Сертификатыг сүлжээнд хяналт хийх болон дундаас нь өгөгдөл цуглуулахад ашигладаг гэж мэдэгдсэн бөгөөд Chrome түүнд итгэхгүй байна. Сургууль эсвэл компанийн сүлжээнд хяналт хийх зэрэг хууль ёсны зарим тохиолдол байдаг бөгөөд Chrome нь та хяналтыг зогсоож чадахгүй байсан ч хяналт хийгдэж байгаа тухай таныг мэдэж байгаа эсэхийг шалгах хүсэлтэй байна. Вэбэд ханддаг аливаа хөтөч эсвэл аппликэйшн дээр хяналт хийж болзошгүй.</translation>
 <translation id="7375532151824574023">{NUM_COOKIES,plural, =0{Ямар ч сайтад зөвшөөрөөгүй}=1{1 сайтад зөвшөөрсөн}other{# сайтад зөвшөөрсөн}}</translation>
 <translation id="7375818412732305729">Файлыг хавсаргадаг</translation>
+<translation id="7376031331622621328">Худалдааны доод хүснэгт</translation>
 <translation id="7377249249140280793"><ph name="RELATIVE_DATE" /> - <ph name="FULL_DATE" /></translation>
 <translation id="7377314930809374926">Зочлох үйлчилгээний салбар</translation>
 <translation id="7378594059915113390">Медиа хяналт</translation>

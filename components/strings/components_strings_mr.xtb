@@ -1014,6 +1014,7 @@
 <translation id="2882949212241984732">डबल-गेट फोल्ड</translation>
 <translation id="2891963978019740012">Chrome मधील तुमचे शोध इंजीन</translation>
 <translation id="2893773853358652045">चौथा रोल</translation>
+<translation id="2894137550885451583">या <ph name="PRODUCT" /> उत्पादनासाठीच्या <ph name="CURRENCY" /> किमती आहेत</translation>
 <translation id="2900528713135656174">इव्हेंट तयार करा</translation>
 <translation id="2902312830803030883">आणखी क्रिया</translation>
 <translation id="2903493209154104877">पत्ते</translation>
@@ -1610,6 +1611,7 @@
 <translation id="3949601375789751990">तुमचा ब्राउझिंग इतिहास येथे दिसतो</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">सेव्ह केलेल्या पेमेंट पद्धती नाहीत</translation>
+<translation id="3950560191811267370">वाणिज्य तळाशी असलेली शीट बंद केली</translation>
 <translation id="3950574001630941635">ट्यूटोरियल रीस्टार्ट करा</translation>
 <translation id="3950820424414687140">साइन इन करा</translation>
 <translation id="3953505489397572035">ही सामान्य किंमत आहे</translation>
@@ -2351,6 +2353,7 @@
 <translation id="5331585574693522196">डीफॉल्ट म्हणून सेट करा</translation>
 <translation id="5332219387342487447">पाठविण्‍याची पद्धत</translation>
 <translation id="5332769172018416402">मेसेज पाठवून विचारा</translation>
+<translation id="533323551986281710">वाणिज्य तळाशी असलेली शीट संपूर्ण उंचीवर उघडली</translation>
 <translation id="5334013548165032829">तपशीलवार सिस्टम लॉग</translation>
 <translation id="5334145288572353250">पत्ता सेव्ह करायचा आहे का?</translation>
 <translation id="5340250774223869109">अ‍ॅप्लिकेशन ब्लॉक केले आहे</translation>
@@ -2533,6 +2536,7 @@
 <translation id="5675650730144413517">हे पेज काम करत नाही</translation>
 <translation id="5675809467256309336">नृत्य आणि इलेक्ट्रॉनिक संगीत</translation>
 <translation id="5675959228867414813">तारखेनुसार दाखवा</translation>
+<translation id="567604591393105935">वाणिज्य तळाशी असलेली शीट अर्ध्या उंचीवर उघडली</translation>
 <translation id="5677928146339483299">ब्लॉक केले</translation>
 <translation id="5678007133659493065">फॉइल</translation>
 <translation id="5680642791693447368">रोमांचक, गुन्हेविषयक आणि गूढ चित्रपट</translation>
@@ -3440,6 +3444,7 @@
 <translation id="7374733840632556089">तुम्ही किंवा इतर कोणीतरी तुमच्या डिव्हाइसवर इंस्टॉल केलेल्या सर्टिफिकेटमुळे ही समस्या येते. हे सर्टिफिकेट नेटवर्कचे नियंत्रण करण्यासाठी आणि व्यत्यय आणण्यासाठी वापरले जाते आणि Chrome ला यावर विश्वास नाही. दरम्यान नियंत्रण करण्यासाठी काही कायदेशीर प्रकरणे अस्तित्त्वात आहेत, जसे की शाळा किंवा कंपनीच्या नेटवर्कवर, तुम्ही हे थांबवू शकत नसलात तरीही तुम्हाला याची जाणीव आहे याची Chrome ला खात्री करायची आहे. वेबचा ॲक्सेस असणाऱ्या कोणत्याही ब्राउझर किंवा ॲप्लिकेशनचे नियंत्रण केले जाऊ शकते.</translation>
 <translation id="7375532151824574023">{NUM_COOKIES,plural, =0{No sites allowed}=1{एका साइटला अनुमती दिली आहे}other{# साइटना अनुमती दिली आहे}}</translation>
 <translation id="7375818412732305729">फाइल अटॅच केली आहे</translation>
+<translation id="7376031331622621328">वाणिज्य तळाशी असलेली शीट</translation>
 <translation id="7377249249140280793"><ph name="RELATIVE_DATE" /> - <ph name="FULL_DATE" /></translation>
 <translation id="7377314930809374926">आदरातिथ्याशी संबंधित उद्योग</translation>
 <translation id="7378594059915113390">मीडिया नियंत्रणे</translation>
@@ -3724,6 +3729,7 @@
 <translation id="7831993212387676366">खरेदीची सूची काय आहे?</translation>
 <translation id="7840103971441592723">स्क्रीन कॅप्चर सुरू झाले आहे</translation>
 <translation id="784137052867620416">खरेदीशी संबंधित इनसाइट</translation>
+<translation id="7842611866969435396">चला सुरुवात करू या</translation>
 <translation id="784404208867107517">गटबद्ध केलेला इतिहास</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{काहीही नाही}=1{एक अ‍ॅप <ph name="EXAMPLE_APP_1" />}=2{२ अ‍ॅप्स <ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />}other{# अ‍ॅप्स <ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />}}</translation>
 <translation id="785476343534277563">महाविद्यालयीन क्रीडा</translation>

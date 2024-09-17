@@ -116,6 +116,7 @@
 <translation id="1517166097004694782">«በዚህ ትር ቀጥል» የሚለውን ደብቅ</translation>
 <translation id="1520027731907768768">ለሚከታተሏቸው ምርቶች የዋጋ ቅናሽ ማንቂያዎችን ይቀበሉ።</translation>
 <translation id="1521774566618522728">ገባሪ ዛሬ</translation>
+<translation id="1524563461097350801">አይ፣ አመሰግናለሁ</translation>
 <translation id="1531038290222364269">ትሮችን አሳይ</translation>
 <translation id="1536390784834419204">ገፅ ተርጉም</translation>
 <translation id="1540800554400757039">አድራሻ 1</translation>
@@ -1507,7 +1508,6 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="8173034266693057059">ርዝመት</translation>
 <translation id="8179976553408161302">አስገባ</translation>
 <translation id="8182037667962849780">{count,plural, =1{ለ{website_1}}=2{ለ{website_1}፣ {website_2}}=3{ለ{website_1}፣ {website_2} እና 1 ተጨማሪ}one{ለ{website_1}፣ {website_2} እና {more_count} ተጨማሪ}other{ለ{website_1}፣ {website_2} እና {more_count} ተጨማሪ}}</translation>
-<translation id="8189814768485665290">ሙሉ ዩአርኤልን አጋራ</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />የእርስዎ መሣሪያዎች<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">የይለፍ ቃል ያክሉ</translation>
 <translation id="8202744799033457229">ታሪክ አሳይ</translation>
@@ -1541,6 +1541,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="8349305172487531364">የዕልባቶች አሞሌ</translation>
 <translation id="8366466717204352506">በጭራሽ አታሂድ ላይ ምልክት ያድርጉ</translation>
 <translation id="8368001212524806591">የዋጋን ዱካ ይከታተሉ</translation>
+<translation id="8370406443343902172">ወደ ቅንብሮች ሂድ…</translation>
 <translation id="8372471489238799313">{count,plural, =1{አድራሻን ሰርዝ}one{አድራሻን ሰርዝ}other{አድራሻዎችን ሰርዝ}}</translation>
 <translation id="8378714024927312812">በእርስዎ ድርጅት የሚተዳደር</translation>
 <translation id="8386068868580335421">ዳግም አስጀምር</translation>

@@ -1014,6 +1014,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2882949212241984732">Pli en deux volets</translation>
 <translation id="2891963978019740012">Votre moteur de recherche dans Chrome</translation>
 <translation id="2893773853358652045">4e rouleau</translation>
+<translation id="2894137550885451583">Voici les prix en <ph name="CURRENCY" /> pour le produit <ph name="PRODUCT" /></translation>
 <translation id="2900528713135656174">Créer un événement</translation>
 <translation id="2902312830803030883">Autres actions</translation>
 <translation id="2903493209154104877">Adresses</translation>
@@ -1611,6 +1612,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3949601375789751990">Votre historique de navigation s'affiche ici</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">Aucun mode de paiement enregistré</translation>
+<translation id="3950560191811267370">Bottom sheet de commerce fermée</translation>
 <translation id="3950574001630941635">Relancer le tutoriel</translation>
 <translation id="3950820424414687140">Se connecter</translation>
 <translation id="3953505489397572035">Ce prix est dans la gamme habituelle</translation>
@@ -2352,6 +2354,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="5331585574693522196">Définir par défaut</translation>
 <translation id="5332219387342487447">Mode de livraison</translation>
 <translation id="5332769172018416402">Demander dans un message</translation>
+<translation id="533323551986281710">Bottom sheet de commerce ouverte à pleine hauteur</translation>
 <translation id="5334013548165032829">Journaux système détaillés</translation>
 <translation id="5334145288572353250">Enregistrer l'adresse ?</translation>
 <translation id="5340250774223869109">Application bloquée</translation>
@@ -2534,6 +2537,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="5675650730144413517">Cette page ne fonctionne pas</translation>
 <translation id="5675809467256309336">Dance et électro</translation>
 <translation id="5675959228867414813">Afficher par date</translation>
+<translation id="567604591393105935">Bottom sheet de commerce ouverte à mi-hauteur</translation>
 <translation id="5677928146339483299">Bloqués</translation>
 <translation id="5678007133659493065">Papier métallisé</translation>
 <translation id="5680642791693447368">Films policiers et thrillers</translation>
@@ -3441,6 +3445,7 @@ Informations supplémentaires :
 <translation id="7374733840632556089">Ce problème est dû à un certificat installé sur votre appareil par vous-même ou par quelqu'un d'autre. Ce certificat est utilisé pour surveiller et intercepter des réseaux, et n'est pas approuvé par Chrome. Bien qu'il existe des cas légitimes de surveillance (sur un réseau scolaire ou d'entreprise, par exemple), Chrome souhaite s'assurer que vous êtes au courant de cette activité, même si vous ne pouvez pas l'empêcher. La surveillance peut se produire sur n'importe quel navigateur ou application qui accède au Web.</translation>
 <translation id="7375532151824574023">{NUM_COOKIES,plural, =0{Aucun site autorisé}=1{1 site autorisé}one{# site autorisé}other{# sites autorisés}}</translation>
 <translation id="7375818412732305729">Fichier joint</translation>
+<translation id="7376031331622621328">Bottom sheet de commerce</translation>
 <translation id="7377249249140280793"><ph name="RELATIVE_DATE" /> - <ph name="FULL_DATE" /></translation>
 <translation id="7377314930809374926">Industrie de l'accueil</translation>
 <translation id="7378594059915113390">Commandes multimédias</translation>

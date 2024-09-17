@@ -116,6 +116,7 @@
 <translation id="1517166097004694782">Versteek “Gaan voort met hierdie oortjie”</translation>
 <translation id="1520027731907768768">Ontvang opletberigte oor prysverlagings vir produkte wat jy naspoor.</translation>
 <translation id="1521774566618522728">Aktief vandag</translation>
+<translation id="1524563461097350801">Nee, dankie</translation>
 <translation id="1531038290222364269">Wys oortjies</translation>
 <translation id="1536390784834419204">Vertaal bladsy</translation>
 <translation id="1540800554400757039">Adres 1</translation>
@@ -1507,7 +1508,6 @@ Werwe kan webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te si
 <translation id="8173034266693057059">Lengte</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8182037667962849780">{count,plural, =1{Vir {website_1}}=2{Vir {website_1}, {website_2}}=3{Vir {website_1}, {website_2} en nog 1}other{Vir {website_1}, {website_2} en nog {more_count}}}</translation>
-<translation id="8189814768485665290">Deel volledige URL</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Jou toestelle<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Voeg wagwoord by</translation>
 <translation id="8202744799033457229">Wys geskiedenis</translation>
@@ -1541,6 +1541,7 @@ Werwe kan webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te si
 <translation id="8349305172487531364">Boekmerkebalk</translation>
 <translation id="8366466717204352506">Kontrole is nooit uitgevoer nie</translation>
 <translation id="8368001212524806591">Spoor prys na</translation>
+<translation id="8370406443343902172">Gaan na instellings …</translation>
 <translation id="8372471489238799313">{count,plural, =1{Vee adres uit}other{Vee adresse uit}}</translation>
 <translation id="8378714024927312812">Bestuur deur jou organisasie</translation>
 <translation id="8386068868580335421">Stel terug</translation>
@@ -1603,6 +1604,7 @@ Werwe kan webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te si
 <translation id="8637431369725868556">Kry beskerming teen gevaarlike werwe.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Geen gekompromitteerde wagwoorde nie}=1{{COUNT} gekompromitteerde wagwoord}other{{COUNT} gekompromitteerde wagwoorde}}</translation>
 <translation id="8640575194957831802">Laas oopgemaak</translation>
+<translation id="8647280737650867362">Kon nie nasporing van die prys stop nie.</translation>
 <translation id="8654802032646794042">Kanselleer</translation>
 <translation id="8660600697590740984">Prent wat deur Lens gekopieer is</translation>
 <translation id="866266761389616183">O, mapstieks!</translation>

@@ -80,6 +80,7 @@
 <translation id="1363028406613469049">Lacak</translation>
 <translation id="1364367057792633742">Tab baru</translation>
 <translation id="1365106417372288489">iPhone Anda baru-baru ini dipulihkan, yang mungkin telah mengubah browser default Anda.</translation>
+<translation id="1366297852155605523">Dibagikan Kepada Saya</translation>
 <translation id="136942498637440594">Anda dapat menelusuri gambar dan objek yang Anda lihat.</translation>
 <translation id="1377508275003315939">Sandi</translation>
 <translation id="1381022135873211423">{count,plural, =1{{position} dari {count} alamat}other{{position} dari {count} alamat}}</translation>
@@ -116,6 +117,7 @@
 <translation id="1517166097004694782">Sembunyikan "Lanjutkan dengan tab ini"</translation>
 <translation id="1520027731907768768">Dapatkan notifikasi penurunan harga untuk produk yang Anda pantau.</translation>
 <translation id="1521774566618522728">Aktif hari ini</translation>
+<translation id="1524563461097350801">Lain Kali</translation>
 <translation id="1531038290222364269">Tampilkan tab</translation>
 <translation id="1536390784834419204">Terjemahkan halaman</translation>
 <translation id="1540800554400757039">Alamat 1</translation>
@@ -331,6 +333,7 @@ Situs tidak dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda d
 <translation id="2551153019974022505">Error akun</translation>
 <translation id="2559843230610279254">Grup tab, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> tab.</translation>
 <translation id="2577522251608256362">Kawasan</translation>
+<translation id="2579713773888829241">Drive Bersama</translation>
 <translation id="2597486707832946298">Dapatkan fitur terbaik dari browser desktop yang Anda kenal dan sukai di iPhone.</translation>
 <translation id="260378315836159338">Di bagian atas layar, ketuk +</translation>
 <translation id="2612676031748830579">Nomor kartu kredit</translation>
@@ -526,6 +529,7 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="3591006724568464696">Tab terbaru tidak tersedia</translation>
 <translation id="3595252146048399851">Anda dapat memilih jenis data yang akan disinkronkan di <ph name="BEGIN_LINK" />setelan<ph name="END_LINK" /> kapan saja. Google dapat mempersonalisasi Penelusuran dan layanan lainnya berdasarkan histori Anda.</translation>
 <translation id="3596414637720633074">Blokir cookie pihak ketiga dalam mode Samaran</translation>
+<translation id="3602260545951981695">Pilih "Perlindungan yang Ditingkatkan"</translation>
 <translation id="3606746615845065096">Tutup tab</translation>
 <translation id="3622175633937495219">Histori Penelusuran (<ph name="COUNT" /> ditemukan)</translation>
 <translation id="3625008969091706597">Anda dapat menggeser tepi untuk kembali.</translation>
@@ -665,6 +669,7 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="4304713468139749426">Pengelola Sandi</translation>
 <translation id="4309403553630140242">Ketuk dua kali untuk mengetahui informasi selengkapnya</translation>
 <translation id="4324735664183300693">Aktifkan notifikasi</translation>
+<translation id="4328843285884395590">Drive Saya</translation>
 <translation id="4331177082088332784">Anda dapat mengelolanya di BEGIN_LINK Setelan Konten END_LINK</translation>
 <translation id="4333100555184633720">Hapus data penjelajahan</translation>
 <translation id="4334428914252001502">1 artikel belum dibaca.</translation>
@@ -1260,6 +1265,7 @@ Selama dalam mode Samaran, situs tidak dapat menggunakan cookie untuk melihat ak
 <translation id="7026724612456523899">Selalu lacak paket</translation>
 <translation id="7029809446516969842">Sandi</translation>
 <translation id="7035825883570480307">Aktifkan notifikasi?</translation>
+<translation id="7039345315346323556">Terbaru</translation>
 <translation id="7055240621761583113">Isi otomatis sandi</translation>
 <translation id="7058455400288852416">Buka pengalih tab</translation>
 <translation id="7063811929043357292">Akunmu dikelola oleh orang tuamu.
@@ -1277,6 +1283,7 @@ Selama dalam mode Samaran, situs tidak dapat menggunakan cookie untuk melihat ak
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">Kamera tidak tersedia</translation>
 <translation id="7141960840225504692">Tab Anda akan ditutup dan data penjelajahan akan dihapus</translation>
+<translation id="714291438898585119">Berbintang</translation>
 <translation id="7146301801400584641">File kalender tersedia</translation>
 <translation id="7149893636342594995">24 jam terakhir</translation>
 <translation id="716059570521443369">Telusuri teks yang Anda salin</translation>
@@ -1331,6 +1338,7 @@ Selama dalam mode Samaran, situs tidak dapat menggunakan cookie untuk melihat ak
 <translation id="7435356471928173109">Dinonaktifkan oleh administrator Anda</translation>
 <translation id="7438481509621345350">Anda sekarang akan melihat artikel dari <ph name="CHANNEL_NAME" /> saat membuka tab baru.</translation>
 <translation id="7451023311965289370">{count,plural, =1{Bookmark disimpan ke "{title}"}other{Bookmark disimpan ke "{title}"}}</translation>
+<translation id="7451404862887877229">Ketuk "Privasi dan Keamanan", lalu "Safe Browsing"</translation>
 <translation id="7454057999980797137">Prov./County</translation>
 <translation id="7458706065921255639">Personalisasi &amp; penautan</translation>
 <translation id="745899714366929493">Sepanjang hari</translation>
@@ -1409,6 +1417,7 @@ Selama dalam mode Samaran, situs tidak dapat menggunakan cookie untuk melihat ak
 <translation id="7788868432173225918">Tutup tampilan yang diluaskan</translation>
 <translation id="7790954908631836016">Sembunyikan Minta situs desktop</translation>
 <translation id="7791543448312431591">Tambahkan</translation>
+<translation id="7801064017114765401">Komputer</translation>
 <translation id="7802239711290932774">Gunakan sandi yang disarankan:</translation>
 <translation id="780301667611848630">Lain kali</translation>
 <translation id="7807060072011926525">Disediakan oleh Google</translation>
@@ -1507,7 +1516,6 @@ Situs dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berb
 <translation id="8173034266693057059">Panjang</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8182037667962849780">{count,plural, =1{Untuk {website_1}}=2{Untuk {website_1}, {website_2}}=3{Untuk {website_1}, {website_2}, dan 1 lainnya}other{Untuk {website_1}, {website_2}, dan {more_count} lainnya}}</translation>
-<translation id="8189814768485665290">Bagikan URL lengkap</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Perangkat Anda<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Tambahkan sandi</translation>
 <translation id="8202744799033457229">Menampilkan histori</translation>
@@ -1541,6 +1549,7 @@ Situs dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berb
 <translation id="8349305172487531364">Bilah bookmark</translation>
 <translation id="8366466717204352506">Pemeriksaan tidak pernah dijalankan</translation>
 <translation id="8368001212524806591">Pantau harga</translation>
+<translation id="8370406443343902172">Buka Setelan...</translation>
 <translation id="8372471489238799313">{count,plural, =1{Hapus alamat}other{Hapus alamat}}</translation>
 <translation id="8378714024927312812">Dikelola oleh organisasi</translation>
 <translation id="8386068868580335421">Reset</translation>

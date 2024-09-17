@@ -42,6 +42,7 @@
 <translation id="1148499908455722006">開啟「<ph name="USER_NAME" />」的資訊對話方塊</translation>
 <translation id="1150989369772528668">日曆</translation>
 <translation id="1153356358378277386">配對裝置</translation>
+<translation id="1153918444040990015">無法連線至專注模式音效</translation>
 <translation id="1155734730463845512">目前電池電量：<ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1157514002898505378">生成式 AI 目前處於實驗階段，因此內容可能不正確、具誤導性或令人反感。如要回報問題，請與管理員聯絡。<ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="1160215328209699296">已開啟且正在使用中</translation>
@@ -175,6 +176,7 @@
 <translation id="1550523713251050646">按一下即可查看更多選項</translation>
 <translation id="1555130319947370107">藍色</translation>
 <translation id="1557622599341396706">顯示桌面名稱</translation>
+<translation id="1567138500090284106">滑鼠按鍵按鈕</translation>
 <translation id="1569384531973824928">這將允許具有攝影機和麥克風權限的所有應用程式和網站存取。系統可能會要求你重新整理網頁或重新啟動應用程式。</translation>
 <translation id="1571697193564730395">切換零打擾模式。<ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">放大鏡開啟時縮小畫面</translation>
@@ -242,6 +244,7 @@
 <translation id="1787955149152357925">關閉</translation>
 <translation id="1796561540704213354">網站，包括你造訪過的網頁和目前開啟的頁面</translation>
 <translation id="179842970735685253">Google 服務條款</translation>
+<translation id="1805407494113167797">無法播放專注模式音效</translation>
 <translation id="181103072419391116">訊號強度 <ph name="SIGNAL_STRENGTH" />，由系統管理員管理</translation>
 <translation id="1816896987747843206">這將允許具有攝影機權限的所有應用程式和網站存取攝影機</translation>
 <translation id="1823873187264960516">乙太網路：<ph name="ADDRESS" /></translation>
@@ -1503,7 +1506,6 @@
 <translation id="6119972796024789243">色彩校正</translation>
 <translation id="6121838516699723042">確認下載「<ph name="FILENAME" />」</translation>
 <translation id="612734058257491180">Google 助理不支援訪客工作階段。</translation>
-<translation id="6127370444807669747">如要聆聽個人化播放清單和其他專注模式音樂，請試試 YouTube Music Premium</translation>
 <translation id="6127395413317891856">目前已離線，請檢查連線狀態，然後再試一次。</translation>
 <translation id="6129953537138746214">空格</translation>
 <translation id="6137566720514957455">開啟移除 <ph name="USER_EMAIL_ADDRESS" /> 的對話方塊</translation>
@@ -2279,6 +2281,7 @@
 <translation id="8876661425082386199">請檢查連線狀態</translation>
 <translation id="8877788021141246043">設定提醒</translation>
 <translation id="8878886163241303700">延伸螢幕</translation>
+<translation id="8885424115080869847">無法連線至 YouTube Music</translation>
 <translation id="888982883502837004">有適用於裝置的韌體更新，按一下即可查看並更新。</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> 將永久刪除</translation>
 <translation id="889790758758811533">剩餘電量：<ph name="PERCENTAGE" />% (約 <ph name="TIME_LEFT" />)。請將裝置接上電源。</translation>

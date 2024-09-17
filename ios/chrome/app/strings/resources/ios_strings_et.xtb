@@ -86,6 +86,7 @@
 <translation id="1383876407941801731">Otsi</translation>
 <translation id="138618066238211776">Jätkake kasutajana <ph name="USER_NAME" /></translation>
 <translation id="138692594145659985">Kaardi salvestamise võimalused</translation>
+<translation id="1396260204083880024">Sisse logitud kasutajana <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Avage kontomenüü.</translation>
 <translation id="1397144142234474689">Peida valik Ajalugu</translation>
 <translation id="1407135791313364759">Ava kõik</translation>
 <translation id="1408847409015257906">Puudutage valikut „Privaatsus ja turvalisus“.</translation>
@@ -116,6 +117,7 @@
 <translation id="1517166097004694782">Peida valik „Jätka selle vahelehega“</translation>
 <translation id="1520027731907768768">Saate jälgitavate toodete hinnalanguse hoiatusi.</translation>
 <translation id="1521774566618522728">Aktiivne täna</translation>
+<translation id="1524563461097350801">Ei, tänan</translation>
 <translation id="1531038290222364269">Kuva vahelehed</translation>
 <translation id="1536390784834419204">Tõlgi leht</translation>
 <translation id="1540800554400757039">Aadress 1</translation>
@@ -595,6 +597,7 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="3967327056943561740">Järjehoidjad</translation>
 <translation id="3967822245660637423">Allalaadimine on lõpule viidud</translation>
 <translation id="3982893814825393515">Probleemist teatamine …</translation>
+<translation id="398604237578616937">Sisse logitud kasutajana <ph name="USER_EMAIL" />. Avage kontomenüü.</translation>
 <translation id="3987993985790029246">Kop. link</translation>
 <translation id="3992684624889376114">Lisateave selle lehe kohta</translation>
 <translation id="3994422733891749358">Saadavate märguannete valimine</translation>
@@ -732,6 +735,7 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="4636930964841734540">Teave</translation>
 <translation id="4642472735733036929">Hinna jälgimine on peatatud</translation>
 <translation id="4645575059429386691">Vanema hallatud</translation>
+<translation id="4647758699119474035">Sisse logitud kasutajana <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Google'i konto viga. Avage kontomenüü.</translation>
 <translation id="4650125387981512669">Jätkake kasutajana <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4652817563047461855">Saate veenduda, et teie paroolid oleksid kaitstud, kontrollida, kas need pole ohustatud, ja saada nõu, kuidas end veebis kaitsta. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
 <translation id="4658335131052370646">Salvesta</translation>
@@ -914,6 +918,7 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 
 Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama sama iCloudi kontot.</translation>
 <translation id="5551825465462320939">Püsige kursis uudiste, spordi ja muu teid huvitavaga.</translation>
+<translation id="5555008247722361784">Sisse logitud kasutajana <ph name="USER_EMAIL" />. Google'i konto viga. Avage kontomenüü.</translation>
 <translation id="5556459405103347317">Laadi uuesti</translation>
 <translation id="555749644339804659">Paroolide kontrollimine …</translation>
 <translation id="5559567453458728487">Veebist leitavate mõõtühikute teisendamine</translation>
@@ -1507,7 +1512,6 @@ Saidid saavad küpsisefailide abil eri saitidel teie sirvimistegevust jälgida, 
 <translation id="8173034266693057059">Pikkus</translation>
 <translation id="8179976553408161302">Sisestusklahv</translation>
 <translation id="8182037667962849780">{count,plural, =1{Saidi {website_1} jaoks}=2{Saitide {website_1} ja {website_2} jaoks}=3{Saitide {website_1} ja {website_2} ning veel ühe jaoks}other{Saitide {website_1} ja {website_2} ning veel {more_count} jaoks}}</translation>
-<translation id="8189814768485665290">Täieliku URL-i jagamine</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Teie seadmed<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Parooli lisamine</translation>
 <translation id="8202744799033457229">Kuva ajalugu</translation>
@@ -1541,6 +1545,7 @@ Saidid saavad küpsisefailide abil eri saitidel teie sirvimistegevust jälgida, 
 <translation id="8349305172487531364">Järjehoidjariba</translation>
 <translation id="8366466717204352506">Pole kunagi kontrollitud</translation>
 <translation id="8368001212524806591">Jälgi hinda</translation>
+<translation id="8370406443343902172">Ava seaded ...</translation>
 <translation id="8372471489238799313">{count,plural, =1{Kustuta aadress}other{Kustuta aadressid}}</translation>
 <translation id="8378714024927312812">Haldab teie organisatsioon</translation>
 <translation id="8386068868580335421">Lähtesta</translation>
@@ -1592,6 +1597,7 @@ Saidid saavad küpsisefailide abil eri saitidel teie sirvimistegevust jälgida, 
 <translation id="8571213806525832805">Viimased 4 nädalat</translation>
 <translation id="8577056989960190117">Aegumisaasta <ph name="YEAR" /> automaatne sisestamine</translation>
 <translation id="8588404856427128947">Väljas</translation>
+<translation id="8590286732816598906">Vahelehegrupp, <ph name="GROUP_TITLE" />, menüü.</translation>
 <translation id="8593565399399144771">Uue vahekaardi saate avada siin.</translation>
 <translation id="8600272508328041907">Terve lehe tõlkimise sisselülitamine</translation>
 <translation id="860043288473659153">Kaardiomaniku nimi</translation>
@@ -1603,6 +1609,7 @@ Saidid saavad küpsisefailide abil eri saitidel teie sirvimistegevust jälgida, 
 <translation id="8637431369725868556">Kaitske end ohtlike veebisaitide eest.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Ohustatud paroole pole}=1{{COUNT} ohustatud parool}other{{COUNT} ohustatud parooli}}</translation>
 <translation id="8640575194957831802">Viimati avatud</translation>
+<translation id="8647280737650867362">Hinna jälgimist ei saanud lõpetada.</translation>
 <translation id="8654802032646794042">Tühista</translation>
 <translation id="8660600697590740984">Otsi kopeeritud pilti Lensiga</translation>
 <translation id="866266761389616183">Ups, ebaõnn!</translation>
@@ -1727,6 +1734,7 @@ Saidid saavad küpsisefailide abil eri saitidel teie sirvimistegevust jälgida, 
 <translation id="9162432979321511934">Lülitage sisse valik Paroolide automaatne täitmine</translation>
 <translation id="9165320910061267720">Hinnaalanduse märguannete saamiseks peate märguanded iOS-i seadetes sisse lülitama.</translation>
 <translation id="9179151630575358778">Peidab selle üksuse</translation>
+<translation id="918129721713827015">Vahelehtede kuvamine grupis</translation>
 <translation id="9183733013282108610">Inkognito režiimis otsing</translation>
 <translation id="9186762474139509529">Alusta logimist</translation>
 <translation id="9191031968346938109">Lisa …</translation>

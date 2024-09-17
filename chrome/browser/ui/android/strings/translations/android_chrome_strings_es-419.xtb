@@ -1214,6 +1214,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="6674571176963658787">Para iniciar la sincronización, ingresa tu frase de contraseña.</translation>
 <translation id="6676927815633975364">Accede a este sitio y a Chrome</translation>
 <translation id="6684809838922667136">Mejora Chrome</translation>
+<translation id="6700279777779583398">Se guardaron las selecciones</translation>
 <translation id="6704048624334633734">Exporta y borra las contraseñas</translation>
 <translation id="670498945988402717">Se verificó ayer</translation>
 <translation id="6710213216561001401">Anterior</translation>
@@ -1291,7 +1292,6 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="6964300328304469089">Selección actual: <ph name="NAME" />, <ph name="EMAIL" />. Elige una cuenta.</translation>
 <translation id="696447261358045621">Salir del modo Incógnito</translation>
 <translation id="6965382102122355670">Aceptar</translation>
-<translation id="6966660124354134532">Presiona para iniciar o detener el seguimiento de un producto.</translation>
 <translation id="6971862865055170158">No aprobar</translation>
 <translation id="6978717888677691380">Sitios que bloqueaste</translation>
 <translation id="6979737339423435258">Todos</translation>
@@ -1427,6 +1427,7 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="752731652852882757">Bloquear cuando se usa el modo Incógnito</translation>
 <translation id="7554643625247105821">No se puede verificar la versión de Chrome</translation>
 <translation id="7557508262441527045">Saliste de la cuenta</translation>
+<translation id="7573665567024262965">Elige tus apps predeterminadas</translation>
 <translation id="7577900504646297215">Administrar intereses</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> archivo descargado}other{<ph name="FILES_DOWNLOADED_MANY" /> archivos descargados}}</translation>
 <translation id="7581273696622423628">Responder encuesta</translation>
@@ -1469,6 +1470,7 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="7764225426217299476">Agregar dirección</translation>
 <translation id="7772032839648071052">Confirmar frase de contraseña</translation>
 <translation id="7772375229873196092">Cerrar <ph name="APP_NAME" /></translation>
+<translation id="7774125747223422443">Según una ley de tu región, debes elegir tu navegador y motor de búsqueda</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" /> y <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> más}other{<ph name="PAYMENT_METHOD_PREVIEW" /> y <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> más}}</translation>
 <translation id="777637629667389858">Cuando accedes a tu cuenta, te protege en todos los servicios de Google.</translation>
 <translation id="7778840695157240389">Vuelve más tarde para ver historias nuevas</translation>
@@ -1738,6 +1740,7 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="8982113230057126145">La opción No me gusta envía comentarios que indican que no te gusta este resumen</translation>
 <translation id="8992769679401294069">Tus datos se encriptan con tu frase de contraseña. Ingrésala para usar y guardar datos de Chrome en tu Cuenta de Google.</translation>
 <translation id="8993760627012879038">Abrir ventana nueva en modo de navegación incógnito</translation>
+<translation id="8995521496079646922">Las apps que elegiste se usarán de forma predeterminada. Si una app no está en este dispositivo, se descargará en breve.</translation>
 <translation id="8996847606757455498">Elegir otro proveedor</translation>
 <translation id="8998289560386111590">No está disponible en tu dispositivo</translation>
 <translation id="8998837250940831980">No se pudo minimizar la pestaña. Inténtalo de nuevo más tarde.</translation>

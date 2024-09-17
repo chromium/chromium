@@ -116,6 +116,7 @@
 <translation id="1517166097004694782">"Shu varaqda davom etish" modulini yopish</translation>
 <translation id="1520027731907768768">Kuzatuvdagi mahsulotlar narxi tushganda xabar olish.</translation>
 <translation id="1521774566618522728">Bugun onlayn edi</translation>
+<translation id="1524563461097350801">Kerak emas</translation>
 <translation id="1531038290222364269">Varaqlarni koʻratish</translation>
 <translation id="1536390784834419204">Sahifani tarjima qilish</translation>
 <translation id="1540800554400757039">Manzil, 1-qator</translation>
@@ -1507,7 +1508,6 @@ Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzat
 <translation id="8173034266693057059">Uzunligi</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8182037667962849780">{count,plural, =1{{website_1} uchun}=2{{website_2} va {website_1} uchun}=3{{website_1}, {website_2} va yana 1 ta sayt uchun}other{{website_1}, {website_2} va yana {more_count} ta sayt uchun}}</translation>
-<translation id="8189814768485665290">Toʻliq URL manzilni ulashish</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Qurilmalaringiz<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Parol qoʻshish</translation>
 <translation id="8202744799033457229">Tarixni ochish</translation>
@@ -1541,6 +1541,7 @@ Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzat
 <translation id="8349305172487531364">Xatcho‘plar paneli</translation>
 <translation id="8366466717204352506">Hali tekshirilmagan</translation>
 <translation id="8368001212524806591">Narxni kuzatish</translation>
+<translation id="8370406443343902172">Sozlamalar ochilmoqda...</translation>
 <translation id="8372471489238799313">{count,plural, =1{Manzilni oʻchirish}other{Manzillarni oʻchirish}}</translation>
 <translation id="8378714024927312812">Tashkilotingiz tomonidan boshqariladi</translation>
 <translation id="8386068868580335421">Asliga qaytarish</translation>

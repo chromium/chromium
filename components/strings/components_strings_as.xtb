@@ -1014,6 +1014,7 @@
 <translation id="2882949212241984732">দুবাৰ গে'ট ফ'ল্ড কৰক</translation>
 <translation id="2891963978019740012">Chromeত আপোনাৰ সন্ধানৰ ইঞ্জিন</translation>
 <translation id="2893773853358652045">চতুৰ্থ ৰোল</translation>
+<translation id="2894137550885451583">এয়া প্ৰ’ডাক্ট <ph name="PRODUCT" />ৰ বাবে <ph name="CURRENCY" />ৰ দাম</translation>
 <translation id="2900528713135656174">অনুষ্ঠান সৃষ্টি কৰক</translation>
 <translation id="2902312830803030883">অধিক কাৰ্য</translation>
 <translation id="2903493209154104877">ঠিকনা</translation>
@@ -1608,6 +1609,7 @@
 <translation id="3949601375789751990">আপোনাৰ ব্ৰাউজিঙৰ ইতিহাস ইয়াত প্ৰদর্শিত হয়</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">ছেভ কৰি থোৱা পৰিশোধ পদ্ধতিসমূহ নাই</translation>
+<translation id="3950560191811267370">বাণিজ্যৰ তলৰ শ্বীটখন বন্ধ কৰা হৈছে</translation>
 <translation id="3950574001630941635">টিউট’ৰিয়েল ৰিষ্টাৰ্ট কৰক</translation>
 <translation id="3950820424414687140">ছাইন ইন কৰক</translation>
 <translation id="3953505489397572035">এয়া সচৰাচৰ মূল্য</translation>
@@ -2348,6 +2350,7 @@
 <translation id="5331585574693522196">ডিফ’ল্ট হিচাপে ছেট কৰক</translation>
 <translation id="5332219387342487447">শ্বিপিঙৰ পদ্ধতি</translation>
 <translation id="5332769172018416402">এটা বাৰ্তা পঠিয়াই সোধক</translation>
+<translation id="533323551986281710">বাণিজ্যৰ তলৰ শ্বীটখন পূৰ্ণ উচ্চতাত খোলা হৈছে</translation>
 <translation id="5334013548165032829">ছিষ্টেমৰ সূক্ষ্মাতিসূক্ষ্ম লগ</translation>
 <translation id="5334145288572353250">ঠিকনা ছেভ কৰিবনে?</translation>
 <translation id="5340250774223869109">এপ্লিকেশ্বনটো অৱৰোধ কৰা হৈছে</translation>
@@ -2530,6 +2533,7 @@
 <translation id="5675650730144413517">এই পৃষ্ঠাটোৱে কাম কৰা নাই</translation>
 <translation id="5675809467256309336">নৃত্য আৰু ইলেক্ট্ৰনিক সংগীত</translation>
 <translation id="5675959228867414813">তাৰিখ অনুসৰি দেখুৱাওক</translation>
+<translation id="567604591393105935">বাণিজ্যৰ তলৰ শ্বীটখন অৰ্ধ উচ্চতাত খোলা হৈছে</translation>
 <translation id="5677928146339483299">অৱৰোধিত</translation>
 <translation id="5678007133659493065">ফইল</translation>
 <translation id="5680642791693447368">থ্ৰিলাৰ, অপৰাধ আৰু ৰহস্যময় কাহিনীৰ চলচ্চিত্ৰ</translation>
@@ -3434,6 +3438,7 @@
 <translation id="7374733840632556089">আপোনাৰ ডিভাইচটোত আপুনি অথবা অন্য কোনোবাই ইনষ্টল কৰা এখন প্ৰমাণপত্ৰৰ বাবে এই সমস্যাটো হয়। এই প্ৰমাণপত্ৰখন নেটৱৰ্কসমূহ নিৰীক্ষণ আৰু বাধাগ্ৰস্ত কৰিবলৈ ব্যৱহাৰ কৰা হয় বুলি জনা যায় আৰু এইখনক Chromeএ বিশ্বাস নকৰে। যদিও কোনো বিদ্যালয় অথবা কোম্পানীৰ নেটৱৰ্কত নিৰীক্ষণ কৰাৰ দৰে কিছুমান বৈধ উদাহৰণ পোৱা যায়, Chromeএ আপুনি এই বিষয়ে অৱগত হৈ থকাটো নিশ্চিত কৰিবলৈ বিচাৰে, যদিওবা আপুনি সেয়া বন্ধ কৰিব নোৱাৰে। ৱেব এক্সেছ কৰা যিকোনো ব্ৰাউজাৰ অথবা এপ্লিকেশ্বন নিৰীক্ষণ কৰা হ’ব পাৰে।</translation>
 <translation id="7375532151824574023">{NUM_COOKIES,plural, =0{কোনো ছাইটক অনুমতি দিয়া হোৱা নাই}=1{১ টা ছাইটক অনুমতি দিয়া হৈছে}one{# টা ছাইটক অনুমতি দিয়া হৈছে}other{# টা ছাইটক অনুমতি দিয়া হৈছে}}</translation>
 <translation id="7375818412732305729">ফাইল সংলগ্ন কৰিলে</translation>
+<translation id="7376031331622621328">বাণিজ্যৰ তলৰ শ্বীট</translation>
 <translation id="7377249249140280793"><ph name="RELATIVE_DATE" /> - <ph name="FULL_DATE" /></translation>
 <translation id="7377314930809374926">আতিথ্য সেৱাৰ উদ্যোগ</translation>
 <translation id="7378594059915113390">মিডিয়াৰ নিয়ন্ত্ৰণসমূহ</translation>
@@ -3718,6 +3723,7 @@
 <translation id="7831993212387676366">শ্বপিঙৰ সূচী কি?</translation>
 <translation id="7840103971441592723">স্ক্ৰীন কেপচাৰ কৰাটো আৰম্ভ কৰা হ’ল</translation>
 <translation id="784137052867620416">শ্বপিং ইনছাইট</translation>
+<translation id="7842611866969435396">আৰম্ভ কৰোঁ আহক</translation>
 <translation id="784404208867107517">গোট হিচাপে ৰখা ইতিহাস</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{এটাও নহয়}=1{১টা এপ্ (<ph name="EXAMPLE_APP_1" />)}=2{২টা এপ্ (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{#টা এপ্ (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}other{#টা এপ্ (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="785476343534277563">কলেজৰ ক্ৰীড়া</translation>

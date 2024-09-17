@@ -35,6 +35,7 @@
 <translation id="1155154308031262006">Weka kidokezo</translation>
 <translation id="115705039208660697">mananasi</translation>
 <translation id="1164939766849482256">Taswira ya skrini ya asubuhi mpaka usiku</translation>
+<translation id="1166688493741195933">Imeshindwa kutayarisha majina ya rekodi</translation>
 <translation id="1167755866710282443">Fungua menyu ili uweke mapendeleo kwenye vitufe. Buruta menyu ili uhamishe.</translation>
 <translation id="1171349345463658120">wangwa wenye mchanga</translation>
 <translation id="1173894706177603556">Ipe jina jipya</translation>
@@ -284,7 +285,6 @@
 <translation id="2230624078793142213">Buni mandhari zaidi</translation>
 <translation id="2236746079896696523">Kipengele cha kuzima/kuwasha mwangaza wa kibodi</translation>
 <translation id="2240366984605217732">Swichi ya muundo</translation>
-<translation id="2242381852034179222">Kipengele hiki kinadhibitiwa na wasimamizi wako</translation>
 <translation id="2244834438220057800">rangi ya kijani</translation>
 <translation id="225692081236532131">Hali ya kuwasha</translation>
 <translation id="2267285889943769271">Weka picha ya skrini</translation>
@@ -494,6 +494,7 @@
 <translation id="3502426834823382181">angalia programu zote</translation>
 <translation id="3510890413042482857">Tuma <ph name="BEGIN_LINK1" />data ya ufuatiliaji wa utendaji<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Sasisho la ChromeOS</translation>
+<translation id="3522508178835057262">Kwa sasa, huruhusiwi kutumia manukuu yaliyo na maneno zaidi ya <ph name="MAX_WORD_LENGTH" /></translation>
 <translation id="3527036260304016759">Haijakamilika - Hitilafu isiyojulikana</translation>
 <translation id="353214771040290298">Umemaliza kubadilisha</translation>
 <translation id="3532980081107202182">Zimesalia takriban dakika <ph name="MIN_REMAINING" /></translation>
@@ -711,6 +712,7 @@
 <translation id="4602266091140407479">Maikrofoni</translation>
 <translation id="4607282946861182308">Imeshindwa kubuni picha za kidokezo hiki. Jaribu kidokezo kingine.</translation>
 <translation id="4609350030397390689">Punguza mwangaza wa kibodi</translation>
+<translation id="4623061655523261501">Imetayarisha majina ya rekodi</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> kati ya <ph name="TOTAL_PAGE_NUMBER" />. Bonyeza 'Enter' ili ughairi kazi ya kuchapisha.</translation>
 <translation id="463791356324567266">Inaghairi uchanganuzi...</translation>
 <translation id="4644611440022666152">Washa na upakue</translation>
@@ -1213,6 +1215,7 @@
 <translation id="708426984172631313">LIMESIMAMISHWA</translation>
 <translation id="7086168019478250425">ufukwe wenye mwangaza unaovutia</translation>
 <translation id="7086440545492620869"><ph name="DISPLAY_NAME" /> <ph name="VALUE" /></translation>
+<translation id="7086916854357021265">Inatayarisha majina ya rekodi</translation>
 <translation id="7097908713073775559">yenye rangi nyingi</translation>
 <translation id="710028965487274708">Haijafaulu - Imeshindwa Kuidhinisha</translation>
 <translation id="7101959270679078188">Fungua <ph name="DEVICE_NAME" /> ili uendelee na mchakato wa kusasisha</translation>

@@ -42,6 +42,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="1148499908455722006">Otvoriť dialógové okno informácií o používateľovi <ph name="USER_NAME" /></translation>
 <translation id="1150989369772528668">Kalendár</translation>
 <translation id="1153356358378277386">Spárované zariadenia</translation>
+<translation id="1153918444040990015">Nepodarilo sa pripojiť k zvukom na sústredenie</translation>
 <translation id="1155734730463845512">Aktuálna úroveň batérie: <ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="1157514002898505378">Generatívna umelá inteligencia je experimentálna a obsah môže byť nepresný, zavádzajúci alebo urážlivý. Kontaktujte svojho správcu a nahláste mu problém. <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="1160215328209699296">zapnutá a používaná</translation>
@@ -175,6 +176,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="1550523713251050646">Kliknutím zobrazíte ďalšie možnosti</translation>
 <translation id="1555130319947370107">Modrá</translation>
 <translation id="1557622599341396706">Zobraziť názov plochy</translation>
+<translation id="1567138500090284106">Tlačidlo klávesov myši</translation>
 <translation id="1569384531973824928">Týmto povolíte prístup všetkým aplikáciám a webom s povoleniami používať kameru a mikrofón. Zrejme budete musieť obnoviť webovú stránku alebo reštartovať aplikáciu.</translation>
 <translation id="1571697193564730395">Prepnúť režim bez vyrušení. <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">Oddialenie pri zapnutej lupe</translation>
@@ -242,6 +244,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="1787955149152357925">Vypnuté</translation>
 <translation id="1796561540704213354">Weby vrátane stránok, ktoré ste navštívili, a tých, ktoré sú otvorené</translation>
 <translation id="179842970735685253">zmluvnými podmienkami spoločnosti Google</translation>
+<translation id="1805407494113167797">Zvuky na sústredenie sa nepodarilo prehrať</translation>
 <translation id="181103072419391116">Sila signálu <ph name="SIGNAL_STRENGTH" />, ovládané správcom</translation>
 <translation id="1816896987747843206">Týmto povolíte prístup ku kamere všetkým aplikáciám a webom s povolením používať kameru</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
@@ -1505,7 +1508,6 @@ Nie sú pripojené žiadne zariadenia.</translation>
 <translation id="6119972796024789243">Úprava farieb</translation>
 <translation id="6121838516699723042">Potvrďte stiahnutie súboru <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">Asistent Google nie je k dispozícii v relácii hosťa.</translation>
-<translation id="6127370444807669747">Ak chcete získať prispôsobené zoznamy a ďalšiu hudbu, na ktorú ste sa zamerali, vyskúšajte YouTube Music Premium</translation>
 <translation id="6127395413317891856">Ste offline. Skontrolujte pripojenie a skúste to znova.</translation>
 <translation id="6129953537138746214">Medzera</translation>
 <translation id="6137566720514957455">Otvoriť dialógové okno na odstránenie účtu <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -2282,6 +2284,7 @@ Ak chcete zariadenie vypnúť, znova pridržte jeho vypínač.</translation>
 <translation id="8876661425082386199">Skontrolujte pripojenie</translation>
 <translation id="8877788021141246043">Nastaviť pripomenutie</translation>
 <translation id="8878886163241303700">Rozšírenie obrazovky</translation>
+<translation id="8885424115080869847">Nepodarilo sa pripojiť k službe YouTube Music</translation>
 <translation id="888982883502837004">Pre vaše zariadenie sú k dispozícii aktualizácie firmvéru. Kliknutím si ich zobrazte a firmvér aktualizujte.</translation>
 <translation id="8896630965521842259">Šablóna <ph name="DESK_TEMPLATE_NAME" /> bude natrvalo odstránená</translation>
 <translation id="889790758758811533">Zostávajúca batéria: <ph name="PERCENTAGE" /> % (približne <ph name="TIME_LEFT" />). Pripojte svoje zariadenie k napájaniu.</translation>

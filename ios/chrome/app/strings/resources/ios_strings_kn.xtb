@@ -117,6 +117,7 @@
 <translation id="1517166097004694782">"ಈ ಟ್ಯಾಬ್‌ನೊಂದಿಗೆ ಮುಂದುವರಿಸಿ" ಎಂಬುದನ್ನು ಮರೆಮಾಡಿ</translation>
 <translation id="1520027731907768768">ನೀವು ಟ್ರ್ಯಾಕ್ ಮಾಡುವ ಉತ್ಪನ್ನಗಳ ಬೆಲೆ ಕುಸಿತದ ಎಚ್ಚರಿಕೆಗಳನ್ನು ಸ್ವೀಕರಿಸಿ.</translation>
 <translation id="1521774566618522728">ಇಂದು ಸಕ್ರಿಯ</translation>
+<translation id="1524563461097350801">ಬೇಡ</translation>
 <translation id="1531038290222364269">ಟ್ಯಾಬ್‌ಗಳನ್ನು ತೋರಿಸಿ</translation>
 <translation id="1536390784834419204">ಪುಟವನ್ನು ಅನುವಾದಿಸಿ</translation>
 <translation id="1540800554400757039">ವಿಳಾಸ 1</translation>
@@ -1511,7 +1512,6 @@
 <translation id="8173034266693057059">ಉದ್ದ</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8182037667962849780">{count,plural, =1{{website_1} ಗಾಗಿ}=2{{website_1}, {website_2} ಗಾಗಿ}=3{{website_1}, {website_2} ಮತ್ತು ಇನ್ನೂ 1 ಕ್ಕಾಗಿ}one{{website_1}, {website_2}, ಮತ್ತು ಇನ್ನೂ {more_count} ಕ್ಕಾಗಿ}other{{website_1}, {website_2}, ಮತ್ತು ಇನ್ನೂ {more_count} ಕ್ಕಾಗಿ}}</translation>
-<translation id="8189814768485665290">ಪೂರ್ಣ URL ಅನ್ನು ಹಂಚಿಕೊಳ್ಳಿ</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />ನಿಮ್ಮ ಸಾಧನಗಳು<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">ಪಾಸ್‌ವರ್ಡ್ ಸೇರಿಸಿ</translation>
 <translation id="8202744799033457229">ಇತಿಹಾಸವನ್ನು ತೋರಿಸಿ</translation>
@@ -1545,6 +1545,7 @@
 <translation id="8349305172487531364">ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳ ಬಾರ್</translation>
 <translation id="8366466717204352506">ಪರಿಶೀಲನೆ ರನ್ ಆಗಿಲ್ಲ</translation>
 <translation id="8368001212524806591">ಬೆಲೆ ಟ್ರ್ಯಾಕ್ ಮಾಡಿ</translation>
+<translation id="8370406443343902172">ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ ಹೋಗಿ...</translation>
 <translation id="8372471489238799313">{count,plural, =1{ವಿಳಾಸವನ್ನು ಅಳಿಸಿ}one{ವಿಳಾಸಗಳನ್ನು ಅಳಿಸಿ}other{ವಿಳಾಸಗಳನ್ನು ಅಳಿಸಿ}}</translation>
 <translation id="8378714024927312812">ನಿಮ್ಮ ಸಂಸ್ಥೆಯ ಮೂಲಕ ನಿರ್ವಹಿಸಲಾಗಿದೆ</translation>
 <translation id="8386068868580335421">ಮರುಹೊಂದಿಸಿ</translation>

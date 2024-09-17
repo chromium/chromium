@@ -678,6 +678,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="2212735316055980242">Kebijakan tidak ditemukan</translation>
 <translation id="2213606439339815911">Mengambil entri...</translation>
 <translation id="2213612003795704869">Halaman dicetak</translation>
+<translation id="2215368073167343359">Isi Otomatis dengan Google</translation>
 <translation id="2215539479425228550">Panjat Tebing &amp; Pendakian Gunung</translation>
 <translation id="2215727959747642672">Pengeditan file</translation>
 <translation id="2215963164070968490">Anjing</translation>
@@ -710,6 +711,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="2262243747453050782">Kesalahan HTTP</translation>
 <translation id="2265192657948645752">Pekerjaan Retail</translation>
 <translation id="2265356434276802347">Kebijakan ini tidak boleh memiliki lebih dari <ph name="MAX_ITEMS_LIMIT" /> entri unggulan.</translation>
+<translation id="2266175583972138136">Persyaratan berlaku untuk manfaat kartu</translation>
 <translation id="2267047181501709434">Memverifikasi identitas Anda...</translation>
 <translation id="2268044343513325586">Saring</translation>
 <translation id="2268966938956566076">Upload dalam <ph name="MINUTES" /> mnt</translation>
@@ -1797,6 +1799,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="4269264543938335308">Pakaian Renang</translation>
 <translation id="4269599248168651462">Sertifikat server diterbitkan untuk nama yang tidak unik.</translation>
 <translation id="4270541775497538019">Tempat kertas 6</translation>
+<translation id="4271652479722040953">Saat ekstensi ditambahkan ke Chrome, data yang relevan tentang ekstensi ini akan dikirim ke pihak ketiga untuk dianalisis dan dapat dilihat oleh administrator Anda. Data mencakup informasi tentang ekstensi seperti nama, waktu penginstalan, sumber penginstalan, serta aktivitas yang terkait dengan ekstensi ini (seperti mengubah tab, menghubungi situs, atau mengakses cookie). Data ini dikumpulkan untuk ekstensi yang diinstal dari Chrome Web Store serta ekstensi di luar Chrome Web Store.</translation>
 <translation id="4275830172053184480">Mulai ulang perangkat Anda</translation>
 <translation id="4276974990916607331">Lain kali</translation>
 <translation id="4277028893293644418">Reset sandi</translation>
@@ -1878,6 +1881,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="4406896451731180161">hasil penelusuran</translation>
 <translation id="4408413947728134509">Cookie <ph name="NUM_COOKIES" /></translation>
 <translation id="4412074349188076601">Konfigurasi ini ditandai sebagai dapat diinstal, tetapi tidak ada gambar yang disediakan untuk arsitektur ini, sehingga tidak dapat diinstal.</translation>
+<translation id="4414452699610169758">Gunakan Pengelola Sandi Google dan Isi Otomatis Chrome untuk menyimpan dan mengisi sandi, metode pembayaran, dan alamat</translation>
 <translation id="4414515549596849729">cookie dan data situs</translation>
 <translation id="4415156962929755728">Plastik (Kilap Tinggi)</translation>
 <translation id="4415426530740016218">Alamat Pengambilan</translation>
@@ -3378,6 +3382,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="7232352818707016189">Tindakan lainnya untuk tabel Bandingkan</translation>
 <translation id="7233592378249864828">Cetak lembar konfirmasi</translation>
 <translation id="7234112195906418665">Perjalanan &amp; Transportasi</translation>
+<translation id="7234585564776614047">Isi otomatis menggunakan layanan lain</translation>
 <translation id="7236417832106250253"><ph name="PROGRESS_PERCENT" />% selesai | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
 <translation id="7237166092326447040">Hadiah &amp; Item Acara Khusus</translation>
 <translation id="7237454422623102448">Setelan Sistem</translation>
@@ -4036,6 +4041,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="8409413588194360210">pengendali pembayaran</translation>
 <translation id="8412145213513410671">Ngadat (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">Anda harus memasukkan frasa sandi yang sama dua kali.</translation>
+<translation id="8414322570408428950">Terjadi peristiwa ekstensi</translation>
 <translation id="8416694386774425977">Konfigurasi jaringan tidak valid dan tidak dapat diimpor. Detail tambahan: <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">Mikrofon diizinkan kali ini</translation>
 <translation id="8421158157346464398">Informasi profil kerja (seperti nama pengguna profil kerja Anda)</translation>
@@ -4285,6 +4291,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="8891031436559779793">Anda akan diberi tahu jika ada penurunan harga di situs mana pun.</translation>
 <translation id="8891727572606052622">Mode proxy tidak valid.</translation>
 <translation id="8894794286471754040">Tepi panjang lebih dulu</translation>
+<translation id="8895334001368918465">Untuk menggunakan layanan isi otomatis lain di Chrome, aktifkan layanan tersebut di setelan Android dan di sini</translation>
 <translation id="8897428486789851669">Renang</translation>
 <translation id="8899807382908246773">Iklan mengganggu</translation>
 <translation id="8903921497873541725">Perbesar</translation>

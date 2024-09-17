@@ -447,6 +447,7 @@
 <translation id="1771254328977666895">ဈေးနှုန်းမှတ်တမ်း ကြည့်ရန်</translation>
 <translation id="1777422078676229054">ဓာတ်ပုံ (မှတ်တမ်းဆိုင်ရာ)</translation>
 <translation id="1778646502362731194">JIS B0</translation>
+<translation id="1785118555253503473">ဝဘ်အက်ပ်များ ထည့်သွင်းမလား။</translation>
 <translation id="1791429645902722292">Google ကစမတ်သော့ခတ်</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />၊ သင်၏ Google Account တွင် သင့်အချက်အလက်၊ ပုဂ္ဂိုလ်ရေးနှင့် လုံခြုံရေးဆိုင်ရာများကို စီမံရန် ‘တဘ်’ နှိပ်ပြီးနောက် Enter ခလုတ် နှိပ်ပါ</translation>
 <translation id="1793631236004319016">ပြီးခဲ့သော <ph name="NUM_HOURS_MINUTES_SECONDS" /> က သုံးထားသည်</translation>
@@ -1168,6 +1169,7 @@
 <translation id="3157931365184549694">ပြန်လည်ဖေါ်ထုတ်ရန်</translation>
 <translation id="3158539265159265653">ဒစ်ခ်</translation>
 <translation id="3162559335345991374">သင်အသုံးပြုနေသော Wi-Fi ၏ login စာမျက်နှာသို့ သင်သွားရောက်ကြည့်ရှုရန် လိုမည်။</translation>
+<translation id="316638481603975524">ဝဘ်အက်ပ်များ ထည့်သွင်းရန် တောင်းဆိုနိုင်သည်</translation>
 <translation id="3168744840365648658">ရေဒီယိုသုံးစက်ပစ္စည်း</translation>
 <translation id="3168938241115725594">ရှေးဟောင်းယာဉ်</translation>
 <translation id="3169472444629675720">Discover</translation>
@@ -2323,6 +2325,7 @@
 <translation id="5273658854610202413">သတိပေးချက်− ဤမူဝါဒသည် ပေါင်းစည်းနိုင်သည့် အဘိဓာန် မူဝါဒများတွင် မပါဝင်သောကြောင့် PolicyDictionaryMultipleSourceMergeList မူဝါဒတွင် သတ်မှတ်ထားသည့်အတိုင်း ၎င်းကို ပေါင်းစည်းမထားပါ။</translation>
 <translation id="5278778426231952189">ယခုအပ်လုဒ်လုပ်ရန်</translation>
 <translation id="5279286380302340275">ဒေါင်းလုဒ်များစီမံရန်</translation>
+<translation id="5280963125494874678">ဝဘ်အပလီကေးရှင်းများ</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">မှတ်တမ်း သတ်မှတ်ချက်များ</translation>
 <translation id="528468243742722775">အဆုံး</translation>
@@ -2824,6 +2827,7 @@
 <translation id="6221311046884916259">သင့် Google Account တွင် ဤကဒ်ကို သိမ်းလိုပါသလား။</translation>
 <translation id="6221892641068781024">ရိုးရှင်းသည့်မြင်ကွင်း</translation>
 <translation id="6222527803348563979">စာရေးကိရိယာ</translation>
+<translation id="62231116988543150">ဝဘ်အက်ပ်များ ထည့်သွင်းနိုင်သည်</translation>
 <translation id="6224281071334553713">ကျောက်မျက်ရတနာနှင့် လက်ဝတ်လက်စား</translation>
 <translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />၊ Chrome ဆက်တင်များတွင် သင့်အများသုံးစွဲနိုင်မှု တူးလ်များကို ပုဂ္ဂိုလ်ရေးသီးသန့်ပြုလုပ်ရန် ‘တဘ်ခလုတ်’ ပြီးနောက် Enter နှိပ်ပါ</translation>
 <translation id="6228346913624365233">ဇိမ်ခံယာဉ်</translation>
@@ -3087,6 +3091,7 @@
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />၊ တဘ်နှိပ်ပြီးနောက် Enter နှိပ်၍ Google Account တွင် သင့်စက်ကိုရှာပါ</translation>
 <translation id="6695428916538794739">ဇာတ်ကြမ်း၊ စွန့်စားခန်း ရုပ်ရှင်</translation>
 <translation id="6696424331653607346">ခရီးသွားလမ်းညွှန်၊ ခရီးသွားမှတ်တမ်း</translation>
+<translation id="6696575039575740785">ဝဘ်အက်ပ်များ ထည့်သွင်းရန် ခွင့်ပြုမထားပါ</translation>
 <translation id="6698097747703777657">ကုဒ်မရရှိဘူးလား။ <ph name="BEGIN_LINK" />ကုဒ်အသစ် ရယူရန်<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">ဖန်တီးခဲ့:</translation>
 <translation id="67007264085648978">အချိန်ရွှေ့စနစ်</translation>
@@ -3200,6 +3205,7 @@
 <translation id="6915804003454593391">အသုံးပြုသူ:</translation>
 <translation id="6916193791494646625">ဒေါင်းလုဒ်လုပ်ခြင်းအတွက် အကြောင်းရင်းပေးရန် (လိုအပ်သည်)</translation>
 <translation id="6917795328362592458">သင်သုံးလိုက်သောစကားဝှက်ကို ဒေတာကျိုးပေါက်မှုတွင် တွေ့ရှိထားသည်။ သင့်အကောင့်များကို လုံခြုံစေရန် ‘စကားဝှက်မန်နေဂျာ’ က သင်သိမ်းထားသော စကားဝှက်များကို စစ်ဆေးရန် အကြံပြုပါသည်။</translation>
+<translation id="6921197121276419421">ဝဘ်အက်ပ်များ ထည့်သွင်းရန် ခွင့်ပြုလိုက်သည်</translation>
 <translation id="6924013822850225188">ငွေရှင်းသည့်အခါ သင့်ကတ်အကျိုးခံစားခွင့်များကို မြင်ရခြင်း ရှိ၊ မရှိ ရွေးနိုင်သည် (ဘဏ်စည်းမျဉ်းများ ရှိသည်)</translation>
 <translation id="6925267999184670015">မြောက်အမေရိကန် B+</translation>
 <translation id="6926216138694948720">ကိုယ်ပေါ်အလှဆင်ခြင်း အနုပညာ</translation>
@@ -3697,6 +3703,7 @@
 <translation id="7761701407923456692">Server's certificate does not match the URL နှင့်မကိုက်ညီပါ။</translation>
 <translation id="7764225426217299476">လိပ်စာများ ထည့်သွင်းပါ</translation>
 <translation id="7766518757692125295">အနားသတ်</translation>
+<translation id="7766899888934244586">ဝဘ်အပလီကေးရှင်းများ</translation>
 <translation id="7767278989746220252">အိမ်ကပြင်၊ မြက်ခင်းနှင့် ဥယျာဉ်</translation>
 <translation id="776749070095465053">အထည်</translation>
 <translation id="7773005668374414287">တူညီသည့်အစဉ်ဖြင့် အပေါ်လှန်ထားရန်</translation>

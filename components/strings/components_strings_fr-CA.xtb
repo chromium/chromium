@@ -446,6 +446,7 @@
 <translation id="1771254328977666895">Afficher l'historique des prix</translation>
 <translation id="1777422078676229054">Photo (archives)</translation>
 <translation id="1778646502362731194">JIS B0</translation>
+<translation id="1785118555253503473">Installer des applis Web?</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur Tabulation, puis sur Entrée pour gérer vos renseignements, la confidentialité et la sécurité de votre compte Google</translation>
 <translation id="1793631236004319016">Dernière utilisation : il y a <ph name="NUM_HOURS_MINUTES_SECONDS" /></translation>
@@ -1014,6 +1015,7 @@
 <translation id="2882949212241984732">Pli portefeuille</translation>
 <translation id="2891963978019740012">Votre moteur de recherche dans Chrome</translation>
 <translation id="2893773853358652045">Quatrième rouleau</translation>
+<translation id="2894137550885451583">Voici les prix en <ph name="CURRENCY" /> pour le produit suivant : <ph name="PRODUCT" /></translation>
 <translation id="2900528713135656174">Créer un événement</translation>
 <translation id="2902312830803030883">Autres actions</translation>
 <translation id="2903493209154104877">Adresses</translation>
@@ -1162,6 +1164,7 @@
 <translation id="3157931365184549694">Restaurer</translation>
 <translation id="3158539265159265653">Disque</translation>
 <translation id="3162559335345991374">Le réseau Wi-Fi que vous utilisez peut vous demander de visiter sa page de connexion.</translation>
+<translation id="316638481603975524">Peut demander d'installer des applis Web</translation>
 <translation id="3168744840365648658">Équipement radio</translation>
 <translation id="3168938241115725594">Véhicules classiques</translation>
 <translation id="3169472444629675720">Découvrir</translation>
@@ -1611,6 +1614,7 @@
 <translation id="3949601375789751990">Votre historique de navigation apparaît ici</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">Aucun mode de paiement enregistré</translation>
+<translation id="3950560191811267370">Zone de contenu dans le bas de l'écran concernant le commerce fermée</translation>
 <translation id="3950574001630941635">Redémarrer le tutoriel</translation>
 <translation id="3950820424414687140">Connexion</translation>
 <translation id="3953505489397572035">Ce prix est habituel</translation>
@@ -2320,6 +2324,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="5273658854610202413">Avertissement : Cette politique n'a pas été fusionnée, tel que cela est indiqué dans la politique PolicyDictionaryMultipleSourceMergeList, car elle ne fait pas partie des politiques de dictionnaire pouvant être fusionnées.</translation>
 <translation id="5278778426231952189">Téléverser maintenant</translation>
 <translation id="5279286380302340275">Gérer les téléchargements</translation>
+<translation id="5280963125494874678">applications Web</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">Propriétés du document</translation>
 <translation id="528468243742722775">Fin</translation>
@@ -2352,6 +2357,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="5331585574693522196">Définir par défaut</translation>
 <translation id="5332219387342487447">Mode de livraison</translation>
 <translation id="5332769172018416402">Demander dans un message</translation>
+<translation id="533323551986281710">Zone de contenu dans le bas de l'écran concernant le commerce ouverte à pleine hauteur</translation>
 <translation id="5334013548165032829">Journaux détaillés du système</translation>
 <translation id="5334145288572353250">Enregistrer l'adresse?</translation>
 <translation id="5340250774223869109">L'application est bloquée</translation>
@@ -2534,6 +2540,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="5675650730144413517">Cette page ne fonctionne pas</translation>
 <translation id="5675809467256309336">Dance et musique électronique</translation>
 <translation id="5675959228867414813">Afficher par date</translation>
+<translation id="567604591393105935">Zone de contenu dans le bas de l'écran concernant le commerce ouverte à mi-hauteur</translation>
 <translation id="5677928146339483299">Bloqué</translation>
 <translation id="5678007133659493065">Feuille</translation>
 <translation id="5680642791693447368">Films à suspense, policiers et mystères</translation>
@@ -2820,6 +2827,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="6221311046884916259">Voulez-vous enregistrer cette carte dans votre compte Google?</translation>
 <translation id="6221892641068781024">Affichage simplifié</translation>
 <translation id="6222527803348563979">Papeterie</translation>
+<translation id="62231116988543150">Obtenir l'autorisation d'installer des applis Web</translation>
 <translation id="6224281071334553713">Pierres précieuses et bijoux</translation>
 <translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur la touche Tabulation, puis sur la touche Entrée pour personnaliser vos outils d'accessibilité dans les paramètres de Chrome</translation>
 <translation id="6228346913624365233">Véhicules de luxe</translation>
@@ -3083,6 +3091,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur la touche Tabulation, puis sur la touche Entrée pour utiliser la fonctionnalité Localiser mon appareil dans le compte Google</translation>
 <translation id="6695428916538794739">Films d'action et d'aventure</translation>
 <translation id="6696424331653607346">Guides et récits de voyage</translation>
+<translation id="6696575039575740785">L'installation d'applis Web n'est pas autorisée</translation>
 <translation id="6698097747703777657">Vous n'avez pas reçu de code? <ph name="BEGIN_LINK" />Obtenir un nouveau code<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">Créé :</translation>
 <translation id="67007264085648978">Curseur de progression chronologique</translation>
@@ -3196,6 +3205,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="6915804003454593391">Utilisateur :</translation>
 <translation id="6916193791494646625">Fournir la raison du téléchargement (obligatoire)</translation>
 <translation id="6917795328362592458">Le mot de passe que vous venez d'utiliser a été trouvé dans un cas de violation de données. Pour sécuriser vos comptes, le Gestionnaire de mots de passe vous recommande de vérifier vos mots de passe enregistrés.</translation>
+<translation id="6921197121276419421">L'installation d'applis Web est autorisée</translation>
 <translation id="6924013822850225188">Choisissez si vous voyez les avantages de votre carte lors du paiement (des conditions bancaires s'appliquent)</translation>
 <translation id="6925267999184670015">Amérique du Nord B+</translation>
 <translation id="6926216138694948720">Art corporel</translation>
@@ -3439,6 +3449,7 @@ Détails supplémentaires :
 <translation id="7374733840632556089">Ce problème survient en raison d'un certificat installé, par vous ou quelqu'un d'autre, sur votre appareil. Le certificat n'est pas considéré comme fiable par Chrome, parce qu'on sait qu'il est utilisé pour surveiller et intercepter les réseaux. Certains cas requièrent de la surveillance, comme un réseau scolaire ou d'entreprise, mais Chrome vous le mentionne pour que vous sachiez que cette surveillance se produit, même si vous ne pouvez pas l'empêcher. La surveillance peut se produire dans tous les navigateurs et toutes les applications qui accèdent au Web.</translation>
 <translation id="7375532151824574023">{NUM_COOKIES,plural, =0{Aucun site autorisé}=1{1 site autorisé}one{# site autorisé}other{# sites autorisés}}</translation>
 <translation id="7375818412732305729">Un fichier est joint</translation>
+<translation id="7376031331622621328">Zone de contenu dans le bas de l'écran concernant le commerce</translation>
 <translation id="7377249249140280793"><ph name="RELATIVE_DATE" /> — <ph name="FULL_DATE" /></translation>
 <translation id="7377314930809374926">Industrie de l'accueil</translation>
 <translation id="7378594059915113390">Commandes multimédias</translation>
@@ -3691,6 +3702,7 @@ Détails supplémentaires :
 <translation id="7761701407923456692">Le certificat du serveur ne correspond pas à l'adresse URL.</translation>
 <translation id="7764225426217299476">Ajouter une adresse</translation>
 <translation id="7766518757692125295">Jupe</translation>
+<translation id="7766899888934244586">Applications Web</translation>
 <translation id="7767278989746220252">Patio, pelouse et jardin</translation>
 <translation id="776749070095465053">Tissu</translation>
 <translation id="7773005668374414287">Même ordre, face vers le haut</translation>

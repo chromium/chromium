@@ -497,6 +497,7 @@
 <translation id="1355088139103479645">سبھی ڈیٹا حذف کریں؟</translation>
 <translation id="1356376170199999104">اجازت دی گئی – <ph name="PERMISSION_DETAILS" />۔ فزیکل سوئچ کا استعمال کرتے ہوئے مائیکروفون آن کریں۔</translation>
 <translation id="1356959069439783953">غیر فعال ٹیبز کو ایک نئی شکل ملتی ہے</translation>
+<translation id="1357766361161708728">غیر استعمال شدہ ٹیبز کو بند کریں؟</translation>
 <translation id="1358741672408003399">املاء اور قواعد</translation>
 <translation id="1359923111303110318">‏Smart Lock کی مدد سے آپ کا آلہ غیر مقفل کیا جا سکتا ہے۔ غیر مقفل کرنے کے لیے Enter دبائیں۔</translation>
 <translation id="1361164813881551742">دستی طور پر شامل کریں</translation>
@@ -1108,7 +1109,6 @@
 <translation id="1780273119488802839">بک مارکس درآمد ہو رہے ہیں…</translation>
 <translation id="1780572199786401845">جارحانہ/غیر محفوظ کی اطلاع دیں۔</translation>
 <translation id="178092663238929451">اپنے آس پاس کے لوگوں سے فائلیں وصول کرنے اور انہیں بھیجنے کے لیے قریبی آلات کے ساتھ اشتراک سیٹ اپ کریں</translation>
-<translation id="1781164264587898620">شور کم کرنے اور آڈیو میں بہتریاں لاگو کریں۔</translation>
 <translation id="1781291988450150470">‏موجودہ PIN</translation>
 <translation id="1781502536226964113">نیا ٹیب صفحہ کھولیں</translation>
 <translation id="1781553166608855614">بول چال کی زبان</translation>
@@ -6556,6 +6556,7 @@
 <translation id="5750288053043553775">0</translation>
 <translation id="5751345516399502412">ٹیدرنگ کی تیاری چیک کریں</translation>
 <translation id="5753570386948603678">سرگزشت سے حذف کریں</translation>
+<translation id="5753652925946671505">یہ ٹیبز <ph name="COUNT" /> یا زیادہ دنوں سے غیر استعمال شدہ ہیں۔</translation>
 <translation id="5756163054456765343">امدادی &amp;مرکز</translation>
 <translation id="5757187557809630523">اگلا ٹریک</translation>
 <translation id="5758631781033351321">آپ اپنی پڑھنے کی فہرست یہاں پائیں گے</translation>

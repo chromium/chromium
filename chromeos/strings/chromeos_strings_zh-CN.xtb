@@ -284,7 +284,6 @@
 <translation id="2230624078793142213">创建更多壁纸</translation>
 <translation id="2236746079896696523">键盘背光切换开关</translation>
 <translation id="2240366984605217732">布局切换</translation>
-<translation id="2242381852034179222">此功能由您的管理员管理</translation>
 <translation id="2244834438220057800">绿色</translation>
 <translation id="225692081236532131">激活状态</translation>
 <translation id="2267285889943769271">添加屏幕截图</translation>
@@ -1043,6 +1042,8 @@
 <translation id="628726841779494414">在打印机设置中管理您的打印机</translation>
 <translation id="6292095526077353682">充电时的屏保显示时长</translation>
 <translation id="629550705077076970">将键盘调暗</translation>
+<translation id="6301193653204230066">安全重置会关闭 Chrome 浏览器扩展程序，并将网络和其他设置重置为安全的默认设置。
+          标签页、文件、Cookie 和历史记录不会更改。</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" />测试已被取消</translation>
 <translation id="631063167932043783">“探索”应用</translation>
 <translation id="6318437367327684789">不限时</translation>
@@ -1052,6 +1053,7 @@
 <translation id="6325525973963619867">失败</translation>
 <translation id="6327262166342360252">此壁纸是通过 AI 使用以下文字制作的：“<ph name="PROMPT" />”。</translation>
 <translation id="6331191339300272798">自动深色主题</translation>
+<translation id="6335228876613776082">模型下载完毕</translation>
 <translation id="6340526405444716530">个性化</translation>
 <translation id="6348252528297699679">您可依次前往“设置”&gt;“隐私和安全”&gt;“隐私控制”&gt;“位置信息使用权”，关闭位置信息服务。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">用户名和密码</translation>
@@ -1545,6 +1547,7 @@
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google 相册中的影集</translation>
 <translation id="8775713578693478175">调制解调器 APN</translation>
+<translation id="877735394245039557">正在下载模型</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">此网络可能有强制门户</translation>
 <translation id="8797082062139985406">使用 Google AI 创建名称</translation>

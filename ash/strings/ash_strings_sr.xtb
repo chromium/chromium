@@ -215,6 +215,7 @@
 <translation id="1703117532528082099">Активни прозор је фиксиран на левој страни.</translation>
 <translation id="1708345662127501511">Радна површина: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Подешавања мреже</translation>
+<translation id="171610090693716835">Останите на правом путу уз персонализоване фокусиране плејлисте. Набавите YouTube Music и YouTube без огласа уз 3 месеца YouTube Premium-а без накнаде.</translation>
 <translation id="1719094688023114093">Титл уживо је укључен.</translation>
 <translation id="1720011244392820496">Укључите WiFi синхронизацију</translation>
 <translation id="1720230731642245863">Хотспот је искључен</translation>
@@ -1415,6 +1416,7 @@
 <translation id="5777841717266010279">Желите ли да прекинете дељење екрана?</translation>
 <translation id="5779721926447984944">Закачени фајлови</translation>
 <translation id="5785221443435874078">Уклоните овај предлог</translation>
+<translation id="5787431783058088906">Остварите погодност</translation>
 <translation id="5788127256798019331">Play датотеке</translation>
 <translation id="5788535737706478207">Поново отвори картицу или прозор који је последњи затворен</translation>
 <translation id="5790085346892983794">Успешно</translation>
@@ -1516,7 +1518,6 @@
 <translation id="6119972796024789243">Корекција боја</translation>
 <translation id="6121838516699723042">Потврдите преузимање фајла <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">Google помоћник није доступан у сесији госта.</translation>
-<translation id="6127370444807669747">Ако желите персонализоване плејлисте и више фокусиране музике, испробајте YouTube Music Premium</translation>
 <translation id="6127395413317891856">Офлајн сте. Проверите везу и пробајте поново.</translation>
 <translation id="6129953537138746214">Размак</translation>
 <translation id="6137566720514957455">Отвара налог за уклањање за корисника <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -1647,6 +1648,7 @@
 <translation id="6574587113394758819">Обавештење апликације <ph name="APP_TITLE" /> је скривено јер је заштита од прегледа укључена</translation>
 <translation id="6574622320167699133">Откључан је телефоном. Додирните или кликните да бисте покренули Chromebook.</translation>
 <translation id="6578407462441924264">Без имена</translation>
+<translation id="6582012689384648647">За персонализоване фокусиране плејлисте дозволите приступ YouTube Music-у</translation>
 <translation id="6582034443359256692">Израчунава се ниво напуњености батерије.</translation>
 <translation id="6585808820553845416">Сесија се завршава за <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
@@ -1886,6 +1888,7 @@
 <translation id="7477793887173910789">Контролишите музику, видео снимке и друго</translation>
 <translation id="7488762544858401571">Измењено</translation>
 <translation id="7489261257412536105">Уђите или изађите из режима приказа преко целог екрана</translation>
+<translation id="7490157877815329797">Да бисте слушали музику без огласа и уживали у персонализованој фокусираној музици, испробајте YouTube Music Premium</translation>
 <translation id="7490360161041035804">Можете да закачите важне фајлове, укључујући фајлове Google диска. Да бисте закачили фајл, пређите курсором преко ставке или отворите Фајлови и кликните десним тастером на ставку.</translation>
 <translation id="7497767806359279797">Одаберите језик и тастатуру</translation>
 <translation id="7507162824403726948">Довршите верификацију идентитета</translation>
@@ -2161,6 +2164,7 @@
 <translation id="8380784334203145311">Лаку ноћ,</translation>
 <translation id="8382715499079447151">Заштита од прегледа</translation>
 <translation id="8383614331548401927">Резиме добродошлице</translation>
+<translation id="838540623579162843">Набавите Music Premium</translation>
 <translation id="8388750414311082622">Не можемо да уклонимо последњу радну површину.</translation>
 <translation id="8394567579869570560">Родитељ је закључао овај уређај</translation>
 <translation id="8401850874595457088">Уђите у мени за језике</translation>

@@ -42,6 +42,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1148499908455722006">Otevřít dialogové okno s informacemi o účtu <ph name="USER_NAME" /></translation>
 <translation id="1150989369772528668">Kalendář</translation>
 <translation id="1153356358378277386">Spárovaná zařízení</translation>
+<translation id="1153918444040990015">Ke zvukům k soustředění se nelze připojit</translation>
 <translation id="1155734730463845512">Aktuální stav baterie: <ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="1157514002898505378">Generativní umělá inteligence je experimentální a obsah může být nepřesný, zavádějící nebo nevhodný. Pokud chcete nahlásit problém, obraťte se na administrátora. <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="1160215328209699296">zapnutá a je používána</translation>
@@ -175,6 +176,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1550523713251050646">Kliknutím zobrazíte další možnosti</translation>
 <translation id="1555130319947370107">Modrá</translation>
 <translation id="1557622599341396706">Zobrazit název plochy</translation>
+<translation id="1567138500090284106">Tlačítko kláves pro myš</translation>
 <translation id="1569384531973824928">Tímto povolíte přístup všem aplikacím a webům, které mají oprávnění používat kameru a mikrofon. Možná budete muset obnovit webovou stránku nebo restartovat aplikaci.</translation>
 <translation id="1571697193564730395">Přepnout možnost Nerušit. <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">Oddálit, když je zapnutá lupa</translation>
@@ -242,6 +244,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1787955149152357925">Vyp</translation>
 <translation id="1796561540704213354">Weby, včetně navštívených a otevřených stránek</translation>
 <translation id="179842970735685253">smluvní podmínky společnosti Google</translation>
+<translation id="1805407494113167797">Zvuky k soustředění nelze přehrát</translation>
 <translation id="181103072419391116">Síla signálu: <ph name="SIGNAL_STRENGTH" />, spravováno vaším administrátorem</translation>
 <translation id="1816896987747843206">Umožňuje přístup k fotoaparátu všem aplikacím a webům s příslušným oprávněním</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
@@ -1354,6 +1357,7 @@ Nejsou připojena žádná zařízení.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Heslo se nepodařilo ověřit. Zkuste to znovu.</translation>
 <translation id="5632485077360054581">Ukázat postup</translation>
+<translation id="5633826232582408011">Když zapnete funkce Pomoz mi psát a Pomoz mi číst, zadaný text, obsah dokumentu a adresa URL webové stránky se odešlou na servery Google AI k vygenerování návrhů a shrnutí, zodpovězení otázek a zlepšování služby. Platí <ph name="LINK_TO_SERVICE_TERMS" />. Neuvádějte žádné osobní, citlivé ani důvěrné informace.</translation>
 <translation id="5648021990716966815">Konektor mikrofonu</translation>
 <translation id="5652575806481723716">Aplikace <ph name="FOCUSED_APP_NAME" /> vyžaduje vaši pozornost.</translation>
 <translation id="5662075790140998213">Plocha 10</translation>
@@ -1504,7 +1508,6 @@ Nejsou připojena žádná zařízení.</translation>
 <translation id="6119972796024789243">Korekce barev</translation>
 <translation id="6121838516699723042">Potvrzení stahování <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">Asistent Google v relaci hosta není k dispozici.</translation>
-<translation id="6127370444807669747">Pokud chcete získat přizpůsobené playlisty a další hudbu na soustředění, vyzkoušejte YouTube Music Premium</translation>
 <translation id="6127395413317891856">Jste offline. Zkontrolujte připojení a zkuste to znovu.</translation>
 <translation id="6129953537138746214">Mezera</translation>
 <translation id="6137566720514957455">Otevřít dialogové okno odstranění účtu <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -2280,6 +2283,7 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="8876661425082386199">Zkontrolujte připojení</translation>
 <translation id="8877788021141246043">Nastavit připomenutí</translation>
 <translation id="8878886163241303700">Rozšíření obrazovky</translation>
+<translation id="8885424115080869847">K YouTube Music se nepodařilo připojit</translation>
 <translation id="888982883502837004">Pro zařízení jsou k dispozici aktualizace firmwaru. Kliknutím je můžete zobrazit a provést aktualizaci.</translation>
 <translation id="8896630965521842259">Šablona <ph name="DESK_TEMPLATE_NAME" /> bude trvale smazána</translation>
 <translation id="889790758758811533">Stav baterie: <ph name="PERCENTAGE" /> % (přibližně na <ph name="TIME_LEFT" />). Připojte zařízení k napájení.</translation>

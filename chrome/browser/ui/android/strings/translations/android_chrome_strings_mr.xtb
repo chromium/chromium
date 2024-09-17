@@ -75,6 +75,7 @@
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - <ph name="DEVICE_NAME" /> वरून पाठवले</translation>
 <translation id="1320912611264252795">बुकमार्क सेव्ह करा फ्लो फोल्डर पूर्ण उंचीवर उघडली आहेत</translation>
 <translation id="1327257854815634930">नेव्हिगेशन इतिहास उघडलेला आहे</translation>
+<translation id="1328235593824723509"><ph name="TAB_TITLE" />, नवीन किंवा अपडेट केलेला टॅब</translation>
 <translation id="1331212799747679585">Chrome अपडेट होऊ शकत नाही. आणखी पर्याय</translation>
 <translation id="1332501820983677155">Google Chrome वैशिष्ट्य शॉर्टकट</translation>
 <translation id="1333491156693005331">अलीकडे तपासला आहे</translation>
@@ -1213,6 +1214,7 @@
 <translation id="6674571176963658787">सिंक सुरू करण्यासाठी तुमचा पासफ्रेझ एंटर करा</translation>
 <translation id="6676927815633975364">ही साइट आणि Chrome मध्ये साइन इन करा</translation>
 <translation id="6684809838922667136">Chrome मध्ये सुधारणा करा</translation>
+<translation id="6700279777779583398">निवडी सेव्ह केल्या आहेत</translation>
 <translation id="6704048624334633734">पासवर्ड एक्सपोर्ट करा आणि हटवा</translation>
 <translation id="670498945988402717">काल तपासले</translation>
 <translation id="6710213216561001401">मागील</translation>
@@ -1290,7 +1292,6 @@
 <translation id="6964300328304469089">सध्या <ph name="NAME" />, <ph name="EMAIL" /> ला निवडले आहे. खाते निवडा.</translation>
 <translation id="696447261358045621">गुप्त मोडमधून बाहेर पडा</translation>
 <translation id="6965382102122355670">ठीक आहे</translation>
-<translation id="6966660124354134532">उत्पादन ट्रॅक किंवा अनट्रॅक करण्यासाठी टॅप करा.</translation>
 <translation id="6971862865055170158">मंजुरी देऊ नका</translation>
 <translation id="6978717888677691380">तुम्ही ब्लॉक केलेल्या साइट</translation>
 <translation id="6979737339423435258">पूर्णवेळ</translation>
@@ -1426,6 +1427,7 @@
 <translation id="752731652852882757">गुप्त मोड वापरताना ब्लॉक करा</translation>
 <translation id="7554643625247105821">Chrome ची आवृत्ती तपासू शकत नाही</translation>
 <translation id="7557508262441527045">साइन आउट केले आहे</translation>
+<translation id="7573665567024262965">तुमची डीफॉल्ट ॲप्स निवडा</translation>
 <translation id="7577900504646297215">स्वारस्ये व्यवस्थापित करा</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> फाइल डाउनलोड केली}other{<ph name="FILES_DOWNLOADED_MANY" /> फाइल डाउनलोड केल्या}}</translation>
 <translation id="7581273696622423628">सर्वेक्षण घ्या</translation>
@@ -1468,6 +1470,7 @@
 <translation id="7764225426217299476">पत्ता जोडा</translation>
 <translation id="7772032839648071052">सांकेतिक पासफ्रेझ निश्चित करा</translation>
 <translation id="7772375229873196092"><ph name="APP_NAME" /> बंद करा</translation>
+<translation id="7774125747223422443">तुमच्या प्रदेशातील कायद्यानुसार, तुम्हाला तुमचा ब्राउझर आणि शोध इंजीन निवडावे लागेल</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 आणि <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> अधिक}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 आणि <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> अधिक}}</translation>
 <translation id="777637629667389858">तुम्ही साइन इन केलेले असते, तेव्हा संपूर्ण Google सेवांवर तुमचे संरक्षण करते.</translation>
 <translation id="7778840695157240389">नवीन बातम्यांसाठी नंतर पुन्हा भेट द्या</translation>
@@ -1592,6 +1595,7 @@
 <translation id="8265018477030547118">फक्त या डिव्हाइसवर</translation>
 <translation id="8266753737658117282"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> यासह पुढे सुरू ठेवा</translation>
 <translation id="8266862848225348053">डाउनलोड करण्याचे स्थान</translation>
+<translation id="8279945625179116733"><ph name="APP_NAME" /> द्वारे सुरक्षित</translation>
 <translation id="8281886186245836920">वगळा</translation>
 <translation id="8282297628636750033">शक्य असेल तेव्हा, साइटवर गडद थीम लागू करा</translation>
 <translation id="8282950411412455249">सुरक्षा सेटिंग्जवर जा</translation>
@@ -1736,6 +1740,7 @@
 <translation id="8982113230057126145">थंब्स डाउनवर क्लिक केल्यावर तुम्हाला हा सारांश आवडला नाही असा फीडबॅक सबमिट केला जातो</translation>
 <translation id="8992769679401294069">तुमचा डेटा हा तुमच्या पासफ्रेझसह एन्क्रिप्ट केला गेला आहे. तुमच्या Google खाते मधील Chrome डेटा वापरण्यासाठी आणि सेव्ह करण्यासाठी तो एंटर करा.</translation>
 <translation id="8993760627012879038">गुप्त मोडमध्ये एक नवीन टॅब उघडा</translation>
+<translation id="8995521496079646922">तुम्ही निवडलेली ॲप्स बाय डीफॉल्ट वापरली जातील. ॲप या डिव्हाइसवर आधीपासून नसल्यास, ते थोड्या वेळात डाउनलोड केले जाईल.</translation>
 <translation id="8996847606757455498">दुसरा पुरवठादार निवडा</translation>
 <translation id="8998289560386111590">तुमच्या डिव्हाइसवर उपलब्ध नाही</translation>
 <translation id="8998837250940831980">टॅब मिनिमाइझ करता आला नाही. नंतर पुन्हा प्रयत्न करा.</translation>

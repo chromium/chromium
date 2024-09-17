@@ -106,6 +106,7 @@
 <translation id="1413446866325418126">‏ذخیره کردن داده‌ها در «حساب Google»</translation>
 <translation id="1414981605391750300">‏درحال اتصال به Google. ممکن است یک دقیقه طول بکشد…</translation>
 <translation id="1416550906796893042">نسخه برنامه</translation>
+<translation id="1419753403124156396">‏‫Chrome بازراه‌اندازی شود؟</translation>
 <translation id="1428770807407000502">همگام‌سازی خاموش شود؟</translation>
 <translation id="1430915738399379752">چاپ</translation>
 <translation id="1435593198351412143">‏باز شدن خودکار فایل‌های PDF</translation>
@@ -229,6 +230,7 @@
 <translation id="2067805253194386918">نوشتار</translation>
 <translation id="2079545284768500474">لغو</translation>
 <translation id="2082238445998314030"><ph name="RESULT_NUMBER" /> نتیجه از <ph name="TOTAL_RESULTS" /></translation>
+<translation id="2088833076121753253">‏برای اتمام راه‌اندازی «تکمیل خودکار»، اکنون Chrome را بازراه‌اندازی کنید. برگه‌هایتان به‌طور خودکار دوباره باز خواهند شد.</translation>
 <translation id="2091863218454846791">نمای فشرده نشان داده می‌شود</translation>
 <translation id="2093731487903423814">۱۵ دقیقه گذشته</translation>
 <translation id="2096012225669085171">همگام‌سازی و شخصی‌سازی در همه دستگاه‌ها</translation>
@@ -666,6 +668,7 @@
 <translation id="4216511743389425832">خواندن این صفحه</translation>
 <translation id="4225725533026049334">دنبال می‌کنید</translation>
 <translation id="4225895483398857530">میان‌بر نوار ابزار</translation>
+<translation id="4232376164796433044">گذرواژه‌ها و تکمیل خودکار</translation>
 <translation id="4242533952199664413">باز کردن تنظیمات</translation>
 <translation id="4248098802131000011">گذرواژه خود را از نقض داده و سایر مسائل امنیتی ایمن نگه دارید</translation>
 <translation id="424864128008805179">‏از سیستم Chrome خارج می شوید؟</translation>
@@ -748,6 +751,7 @@
 <translation id="4609429330876432068">‏فهرست گذرواژه‌های ذخیره‌شده شما برای Chrome و <ph name="CHROME_CHANNEL" /> ادغام شدند. همچنان می‌توانید همه گذرواژه‌های ذخیره‌شده‌تان را در هردو برنامه به‌طور خودکار تکمیل کنید.</translation>
 <translation id="4616150815774728855">باز کردن <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">تأیید کنید این شمایید</translation>
+<translation id="4620032614425803188">سرویس‌های تکمیل خودکار</translation>
 <translation id="4624065194742029982">‏حالت ناشناس Chrome</translation>
 <translation id="4634124774493850572">استفاده از گذرواژه</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{۱ گذرواژه لورفته}one{# گذرواژه لورفته}other{# گذرواژه لورفته}}</translation>
@@ -900,6 +904,7 @@
 <translation id="5264813352784073502">۲۴ ساعت گذشته</translation>
 <translation id="5267572070504076962">برای محافظت دربرابر سایت‌های خطرناک، «مرور ایمن» را روشن کنید</translation>
 <translation id="5271967389191913893">دستگاه نمی‌تواند محتوا را برای بارگیری باز کند.</translation>
+<translation id="5273031377282080577">سرپرستتان این تنظیم را مدیریت می‌کند.</translation>
 <translation id="5292796745632149097">ارسال به</translation>
 <translation id="5301876394151419436">‏با <ph name="EMAIL" /> به سیستم وارد شده‌اید. هرزمان بخواهید می‌توانید همگام‌سازی را در تنظیمات متوقف کنید. ‫Google ممکن است «جستجو» و سرویس‌های دیگر را براساس سابقه‌تان شخصی‌سازی کند.</translation>
 <translation id="5304593522240415983">این قسمت باید پر شود</translation>
@@ -1234,6 +1239,7 @@
 <translation id="6775840696761158817">وقتی روی نوار نشانی یا چارگوش جستجو تک‌ضرب می‌زنید یا در آن‌ها تایپ می‌کنید، پیشنهادهایی از موتور جستجوی پیش‌فرض خواهید دید. این ویژگی در «حالت ناشناس» خاموش است.</translation>
 <translation id="6785476624617658922">‏شرایط خدمات تکمیلی Chrome و ChromeOS</translation>
 <translation id="6795633245022906657">به‌سرعت برگه جدیدی باز کنید. برای ویرایش این میان‌بر، به «تنظیمات» بروید.</translation>
+<translation id="679956319013005046">‏برای تنظیم کردن سرویس دلخواهتان برای تکمیل خودکار، ابتدا این سرویس را در <ph name="BEGIN_LINK" />تنظیمات Android<ph name="END_LINK" /> اضافه کنید .</translation>
 <translation id="6802555630140434547">این پنجره بسته خواهد شد</translation>
 <translation id="6803791793483522764">مرور اعلان‌ها</translation>
 <translation id="6811034713472274749">صفحه آماده مشاهده است</translation>
@@ -1292,7 +1298,6 @@
 <translation id="6964300328304469089">درحال‌حاضر <ph name="EMAIL" />، <ph name="NAME" /> انتخاب شده است. حسابی انتخاب کنید.</translation>
 <translation id="696447261358045621">خروج از «حالت ناشناس»</translation>
 <translation id="6965382102122355670">تأیید</translation>
-<translation id="6966660124354134532">برای پیگیری یا لغو پیگیری محصول، تک‌ضرب بزنید.</translation>
 <translation id="6971862865055170158">تأیید نکردن</translation>
 <translation id="6978717888677691380">سایت‌هایی که مسدود کرده‌اید</translation>
 <translation id="6979737339423435258">از ابتدا تا الآن</translation>
@@ -1466,6 +1471,7 @@
 <translation id="7707922173985738739">استفاده از داده تلفن همراه</translation>
 <translation id="7709918231054955894">همه برگه‌هایتان را مشاهده کنید</translation>
 <translation id="7733878270780732638">فضای کافی در دستگاه وجود ندارد.</translation>
+<translation id="774876555279732384">‏سرویس‌های تکمیل خودکار نیز در <ph name="BEGIN_LINK" />تنظیمات Android<ph name="END_LINK" /> مدیریت می‌شود.</translation>
 <translation id="7759809451544302770">اختیاری</translation>
 <translation id="7762668264895820836">‏کارت SD <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">افزودن آدرس</translation>

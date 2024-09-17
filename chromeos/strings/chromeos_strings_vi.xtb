@@ -35,6 +35,7 @@
 <translation id="1155154308031262006">Nhập câu lệnh</translation>
 <translation id="115705039208660697">quả dứa</translation>
 <translation id="1164939766849482256">Trình bảo vệ màn hình Sáng đến tối</translation>
+<translation id="1166688493741195933">Không tạo được tên bản ghi âm</translation>
 <translation id="1167755866710282443">Mở trình đơn để tuỳ chỉnh các phím. Kéo trình đơn để di chuyển.</translation>
 <translation id="1171349345463658120">đầm phá phủ cát</translation>
 <translation id="1173894706177603556">Đổi tên</translation>
@@ -284,7 +285,6 @@
 <translation id="2230624078793142213">Tạo thêm</translation>
 <translation id="2236746079896696523">Bật/tắt đèn nền bàn phím</translation>
 <translation id="2240366984605217732">Chuyển bố cục</translation>
-<translation id="2242381852034179222">Quản trị viên của bạn quản lý tính năng này</translation>
 <translation id="2244834438220057800">xanh lục</translation>
 <translation id="225692081236532131">Trạng thái kích hoạt</translation>
 <translation id="2267285889943769271">Thêm ảnh chụp màn hình</translation>
@@ -494,6 +494,7 @@
 <translation id="3502426834823382181">xem tất cả các ứng dụng</translation>
 <translation id="3510890413042482857">Gửi <ph name="BEGIN_LINK1" />dữ liệu theo dõi hiệu suất<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Bản cập nhật ChromeOS</translation>
+<translation id="3522508178835057262">Hiện tại, không hỗ trợ bản chép lời dài hơn <ph name="MAX_WORD_LENGTH" /> từ</translation>
 <translation id="3527036260304016759">Không thành công – Lỗi không xác định</translation>
 <translation id="353214771040290298">Hoàn tất chỉnh sửa</translation>
 <translation id="3532980081107202182">Còn khoảng <ph name="MIN_REMAINING" /> phút nữa</translation>
@@ -711,6 +712,7 @@
 <translation id="4602266091140407479">Micrô</translation>
 <translation id="4607282946861182308">Không tạo được hình ảnh cho nội dung này. Hãy thử một câu lệnh khác.</translation>
 <translation id="4609350030397390689">Giảm độ sáng đèn bàn phím</translation>
+<translation id="4623061655523261501">Đã tạo thành công tên bản ghi âm</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />/<ph name="TOTAL_PAGE_NUMBER" />. Hãy nhấn để hủy lệnh in.</translation>
 <translation id="463791356324567266">Đang hủy quá trình quét...</translation>
 <translation id="4644611440022666152">Bật và tải xuống</translation>
@@ -1043,6 +1045,8 @@
 <translation id="628726841779494414">Quản lý máy in của bạn trong phần cài đặt máy in</translation>
 <translation id="6292095526077353682">Trong khi sạc, hiển thị trình bảo vệ màn hình trong</translation>
 <translation id="629550705077076970">giảm độ sáng bàn phím</translation>
+<translation id="6301193653204230066">Tính năng đặt lại về chế độ an toàn sẽ tắt các tiện ích của trình duyệt Chrome và đặt lại mạng cũng như các chế độ cài đặt khác về chế độ mặc định, tức là chế độ an toàn.
+          Các thẻ, tệp, cookie và nhật ký của bạn sẽ không thay đổi.</translation>
 <translation id="6302401976930124515">Đã hủy quá trình kiểm tra <ph name="TEST_NAME" /></translation>
 <translation id="631063167932043783">Ứng dụng Explore</translation>
 <translation id="6318437367327684789">vĩnh viễn</translation>
@@ -1052,6 +1056,7 @@
 <translation id="6325525973963619867">Lỗi</translation>
 <translation id="6327262166342360252">Hình nền này do AI tạo dựa trên văn bản sau: "<ph name="PROMPT" />".</translation>
 <translation id="6331191339300272798">Giao diện tối tự động</translation>
+<translation id="6335228876613776082">Đã tải xong mô hình xuống</translation>
 <translation id="6340526405444716530">Cá nhân hóa</translation>
 <translation id="6348252528297699679">Bạn có thể tắt dịch vụ vị trí trong phần Cài đặt &gt; Quyền riêng tư và bảo mật &gt; Chế độ kiểm soát quyền riêng tư &gt; Quyền truy cập thông tin vị trí. <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">Tên người dùng và mật khẩu</translation>
@@ -1213,6 +1218,7 @@
 <translation id="708426984172631313">ĐÃ DỪNG</translation>
 <translation id="7086168019478250425">bãi biển phát quang sinh học</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="7086916854357021265">Đang tạo tên bản ghi âm</translation>
 <translation id="7097908713073775559">màu sắc sinh động</translation>
 <translation id="710028965487274708">Không thành công – Ủy quyền không thành công</translation>
 <translation id="7101959270679078188">Hãy mở khoá <ph name="DEVICE_NAME" /> để tiếp tục quá trình cập nhật</translation>
@@ -1545,6 +1551,7 @@ Hãy tải mô hình chép lời xuống (tối đa 100 MB) để nhận các b�
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Album trên Google Photos</translation>
 <translation id="8775713578693478175">APN Modem</translation>
+<translation id="877735394245039557">Đang tải mô hình xuống</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Mạng này có thể có một trang xác thực</translation>
 <translation id="8797082062139985406">Tạo tên bằng công nghệ AI của Google</translation>

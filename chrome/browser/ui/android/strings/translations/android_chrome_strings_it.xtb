@@ -106,6 +106,7 @@ Per altre impostazioni che utilizzano i dati per migliorare la tua esperienza co
 <translation id="1413446866325418126">Salva i dati nel tuo Account Google</translation>
 <translation id="1414981605391750300">Connessione a Google in corso. L'operazione potrebbe richiedere un minuto…</translation>
 <translation id="1416550906796893042">Versione applicazione</translation>
+<translation id="1419753403124156396">Vuoi riavviare Chrome?</translation>
 <translation id="1428770807407000502">Vuoi disattivare la sincronizzazione?</translation>
 <translation id="1430915738399379752">Stampa</translation>
 <translation id="1435593198351412143">Aprire automaticamente i PDF</translation>
@@ -229,6 +230,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="2067805253194386918">testo</translation>
 <translation id="2079545284768500474">Annulla</translation>
 <translation id="2082238445998314030">Risultato <ph name="RESULT_NUMBER" /> di <ph name="TOTAL_RESULTS" /></translation>
+<translation id="2088833076121753253">Per completare la configurazione della compilazione automatica, riavvia Chrome ora. Le schede verranno riaperte automaticamente.</translation>
 <translation id="2091863218454846791">Visualizzazione compatta selezionata</translation>
 <translation id="2093731487903423814">ultimi 15 minuti</translation>
 <translation id="2096012225669085171">Sincronizza e personalizza su tutti i dispositivi</translation>
@@ -666,6 +668,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="4216511743389425832">Ascolta questa pagina</translation>
 <translation id="4225725533026049334">Stai seguendo</translation>
 <translation id="4225895483398857530">Scorciatoia per la barra degli strumenti</translation>
+<translation id="4232376164796433044">Password e Compilazione automatica</translation>
 <translation id="4242533952199664413">Apri le impostazioni</translation>
 <translation id="4248098802131000011">Proteggi le tue password da violazioni dei dati e altri problemi di sicurezza</translation>
 <translation id="424864128008805179">Uscire da Chrome?</translation>
@@ -748,6 +751,7 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="4609429330876432068">Gli elenchi di password salvate per Chrome e <ph name="CHROME_CHANNEL" /> sono stati uniti. Puoi comunque compilare automaticamente tutte le password salvate in entrambe le app.</translation>
 <translation id="4616150815774728855">Apri <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Verifica la tua identità</translation>
+<translation id="4620032614425803188">Servizi di compilazione automatica</translation>
 <translation id="4624065194742029982">Navigazione in incognito di Chrome</translation>
 <translation id="4634124774493850572">Utilizza password</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 password compromessa}other{# password compromesse}}</translation>
@@ -900,6 +904,7 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="5264813352784073502">ultime 24 ore</translation>
 <translation id="5267572070504076962">Attiva Navigazione sicura per proteggerti da siti pericolosi</translation>
 <translation id="5271967389191913893">Non è possibile aprire i contenuti da scaricare sul dispositivo.</translation>
+<translation id="5273031377282080577">Questa impostazione è gestita dall'amministratore.</translation>
 <translation id="5292796745632149097">Invia a</translation>
 <translation id="5301876394151419436">Hai eseguito l'accesso come <ph name="EMAIL" />. Puoi interrompere la sincronizzazione in qualsiasi momento nelle Impostazioni. Google potrebbe personalizzare la Ricerca e altri servizi in base alla tua cronologia.</translation>
 <translation id="5304593522240415983">Questo campo non può essere vuoto</translation>
@@ -1234,6 +1239,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="6775840696761158817">Quando tocchi o digiti nella barra degli indirizzi o nella casella di ricerca, vengono visualizzati suggerimenti del tuo motore di ricerca predefinito. Questa funzionalità è disattivata in incognito</translation>
 <translation id="6785476624617658922">Termini di servizio aggiuntivi di Chrome e ChromeOS</translation>
 <translation id="6795633245022906657">Apri rapidamente una nuova scheda. Per modificare questa scorciatoia, vai a Impostazioni.</translation>
+<translation id="679956319013005046">Per impostare il servizio preferito per la compilazione automatica, devi prima aggiungerlo nelle <ph name="BEGIN_LINK" />Impostazioni di Android<ph name="END_LINK" /> .</translation>
 <translation id="6802555630140434547">La finestra verrà chiusa</translation>
 <translation id="6803791793483522764">Rivedi le notifiche</translation>
 <translation id="6811034713472274749">La pagina è pronta per essere visualizzata</translation>
@@ -1292,7 +1298,6 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="6964300328304469089">Selezione attuale: <ph name="NAME" />, <ph name="EMAIL" />. Scegli un account.</translation>
 <translation id="696447261358045621">Esci dalla modalità di navigazione in incognito</translation>
 <translation id="6965382102122355670">OK</translation>
-<translation id="6966660124354134532">Tocca per monitorare un prodotto o interromperne il monitoraggio.</translation>
 <translation id="6971862865055170158">Non approvare</translation>
 <translation id="6978717888677691380">Siti che hai bloccato</translation>
 <translation id="6979737339423435258">Dall'inizio</translation>
@@ -1466,6 +1471,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="7707922173985738739">Verranno utilizzati i dati mobili</translation>
 <translation id="7709918231054955894">Visualizza tutte le tue schede</translation>
 <translation id="7733878270780732638">Spazio sul dispositivo insufficiente.</translation>
+<translation id="774876555279732384">I servizi di compilazione automatica sono gestiti anche nelle <ph name="BEGIN_LINK" />Impostazioni di Android<ph name="END_LINK" />.</translation>
 <translation id="7759809451544302770">Facoltative</translation>
 <translation id="7762668264895820836">Scheda SD <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">Aggiungi indirizzo</translation>

@@ -116,6 +116,7 @@
 <translation id="1517166097004694782">Cuddio "Parhau gyda'r tab hwn"</translation>
 <translation id="1520027731907768768">Derbyn hysbysiadau gostyngiadau prisiau ar gyfer cynhyrchion rydych yn eu holrhain.</translation>
 <translation id="1521774566618522728">Yma heddiw</translation>
+<translation id="1524563461097350801">Dim diolch</translation>
 <translation id="1531038290222364269">Dangos tabiau</translation>
 <translation id="1536390784834419204">Cyfieithu'r dudalen</translation>
 <translation id="1540800554400757039">Cyfeiriad 1</translation>
@@ -1507,7 +1508,6 @@ Gall gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahanol 
 <translation id="8173034266693057059">Hyd</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8182037667962849780">{count,plural, =1{Ar gyfer {website_1}}=2{Ar gyfer {website_1}, {website_2}}=3{Ar gyfer {website_1}, {website_2}, ac 1 arall}zero{Ar gyfer {website_1}, {website_2}, a {more_count} arall}many{Ar gyfer {website_1}, {website_2}, a {more_count} arall}other{Ar gyfer {website_1}, {website_2}, a {more_count} arall}}</translation>
-<translation id="8189814768485665290">Rhannu URL llawn</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Eich dyfeisiau<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Ychwanegu cyfrinair</translation>
 <translation id="8202744799033457229">Dangos hanes</translation>
@@ -1541,6 +1541,7 @@ Gall gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahanol 
 <translation id="8349305172487531364">Bar nodau tudalen</translation>
 <translation id="8366466717204352506">Ni chynhaliwyd gwiriad erioed</translation>
 <translation id="8368001212524806591">Dilyn y pris</translation>
+<translation id="8370406443343902172">Mynd i'r Gosodiadau...</translation>
 <translation id="8372471489238799313">{count,plural, =1{Dileu cyfeiriad}zero{Dileu cyfeiriadau}two{Dileu cyfeiriadau}few{Dileu cyfeiriadau}many{Dileu cyfeiriadau}other{Dileu cyfeiriadau}}</translation>
 <translation id="8378714024927312812">Rheolir gan eich sefydliad</translation>
 <translation id="8386068868580335421">Ailosod</translation>
@@ -1603,6 +1604,7 @@ Gall gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahanol 
 <translation id="8637431369725868556">Cael amddiffyniad rhag gwefannau peryglus.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Nid oes unrhyw gyfrineiriau sydd wedi'u darganfod}=1{{COUNT} cyfrinair sydd wedi'i ddarganfod}two{{COUNT} gyfrinair sydd wedi'u darganfod}few{{COUNT} cyfrinair sydd wedi'u darganfod}many{{COUNT} cyfrinair sydd wedi'u darganfod}other{{COUNT} cyfrinair sydd wedi'u darganfod}}</translation>
 <translation id="8640575194957831802">Agorwyd ddiwethaf</translation>
+<translation id="8647280737650867362">Methu â dad-dracio'r pris.</translation>
 <translation id="8654802032646794042">Canslo</translation>
 <translation id="8660600697590740984">Llun Lens wedi'i gopïo</translation>
 <translation id="866266761389616183">O na!</translation>

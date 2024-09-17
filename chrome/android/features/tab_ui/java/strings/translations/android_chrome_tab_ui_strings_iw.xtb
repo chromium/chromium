@@ -104,6 +104,7 @@
 <translation id="5400836586163650660">אפור</translation>
 <translation id="5490235265819901748">קבוצת כרטיסיות הורחבה</translation>
 <translation id="5494920125229734069">בחירת הכול</translation>
+<translation id="5549653163690032080">פתיחה של תפריט הפעולות בקבוצת הכרטיסיות המשותפת <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{סגירה של קבוצת הכרטיסיות שמכילה כרטיסייה אחת (<ph name="TABS_COUNT_ONE" />), בצבע <ph name="COLOR_NAME" />.}one{סגירה של קבוצת הכרטיסיות שמכילה <ph name="TABS_COUNT_MANY" /> כרטיסיות, בצבע <ph name="COLOR_NAME" />.}two{סגירה של קבוצת הכרטיסיות שמכילה <ph name="TABS_COUNT_MANY" /> כרטיסיות, בצבע <ph name="COLOR_NAME" />.}other{סגירה של קבוצת הכרטיסיות שמכילה <ph name="TABS_COUNT_MANY" /> כרטיסיות, בצבע <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">ניתן להציג את פרטי החנות. האפשרות זמינה בחלק העליון של המסך</translation>
 <translation id="5627941783489838464">אף כרטיסייה לא התעדכנה</translation>
@@ -135,6 +136,7 @@
 <translation id="6694634756612002311">ניהול אפשרויות השיתוף</translation>
 <translation id="6744956528665271406">שינוי הצבע של הקבוצה</translation>
 <translation id="6856809498882026482">הסתרת מצב הבחירה המרובה</translation>
+<translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{הרחבה של קבוצת הכרטיסיות המשותפת <ph name="TITLE_OF_GROUP" /> שמכילה כרטיסייה אחת (<ph name="TABS_COUNT_ONE" />), בצבע <ph name="COLOR_NAME" />.}one{הרחבה של קבוצת הכרטיסיות המשותפת <ph name="TITLE_OF_GROUP" /> שמכילה <ph name="TABS_COUNT_MANY" /> כרטיסיות, בצבע <ph name="COLOR_NAME" />.}two{הרחבה של קבוצת הכרטיסיות המשותפת <ph name="TITLE_OF_GROUP" /> שמכילה <ph name="TABS_COUNT_MANY" /> כרטיסיות, בצבע <ph name="COLOR_NAME" />.}other{הרחבה של קבוצת הכרטיסיות המשותפת <ph name="TITLE_OF_GROUP" /> שמכילה <ph name="TABS_COUNT_MANY" /> כרטיסיות, בצבע <ph name="COLOR_NAME" />.}}</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{שיתוף הכרטיסייה}one{שיתוף הכרטיסיות}two{שיתוף הכרטיסיות}other{שיתוף הכרטיסיות}}</translation>
 <translation id="7129458170538955174">המידע על החנות הזו פתוח בחצי הגובה</translation>
 <translation id="7200189319044305940">{NUMBER_OF_TABS,plural, =1{סגירה של הקבוצה ’<ph name="TITLE_OF_GROUP" />‘ שמכילה כרטיסייה אחת (<ph name="TABS_COUNT_ONE" />).}one{סגירה של הקבוצה ’<ph name="TITLE_OF_GROUP" />‘ שמכילה <ph name="TABS_COUNT_MANY" /> כרטיסיות.}two{סגירה של הקבוצה ’<ph name="TITLE_OF_GROUP" />‘ שמכילה <ph name="TABS_COUNT_MANY" /> כרטיסיות.}other{סגירה של הקבוצה ’<ph name="TITLE_OF_GROUP" />‘ שמכילה <ph name="TABS_COUNT_MANY" /> כרטיסיות.}}</translation>
@@ -170,6 +172,7 @@
 <translation id="8205266828577616993">העברת הכרטיסייה למעלה</translation>
 <translation id="8261506727792406068">מחיקה</translation>
 <translation id="8338427544764842461">קבוצות הכרטיסיות שלך נשמרות כאן ומתעדכנות בכל המכשירים שמחוברים לחשבון</translation>
+<translation id="8344020191144794051">{NUMBER_OF_TABS,plural, =1{הרחבה של קבוצת הכרטיסיות המשותפת שמכילה כרטיסייה אחת (<ph name="TABS_COUNT_ONE" />), בצבע <ph name="COLOR_NAME" />.}one{הרחבה של קבוצת הכרטיסיות המשותפת שמכילה <ph name="TABS_COUNT_MANY" /> כרטיסיות, בצבע <ph name="COLOR_NAME" />.}two{הרחבה של קבוצת הכרטיסיות המשותפת שמכילה <ph name="TABS_COUNT_MANY" /> כרטיסיות, בצבע <ph name="COLOR_NAME" />.}other{הרחבה של קבוצת הכרטיסיות המשותפת שמכילה <ph name="TABS_COUNT_MANY" /> כרטיסיות, בצבע <ph name="COLOR_NAME" />.}}</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{סגירה של כרטיסייה אחת (<ph name="TABS_COUNT_ONE" />) שנבחרה}one{סגירה של <ph name="TABS_COUNT_MANY" /> כרטיסיות שנבחרו}two{סגירה של <ph name="TABS_COUNT_MANY" /> כרטיסיות שנבחרו}other{סגירה של <ph name="TABS_COUNT_MANY" /> כרטיסיות שנבחרו}}</translation>
 <translation id="8398929769197326728">תיקייה חדשה – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">הגדרות</translation>

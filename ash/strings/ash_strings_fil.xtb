@@ -42,6 +42,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1148499908455722006">Buksan ang dialog ng impormasyon para sa <ph name="USER_NAME" /></translation>
 <translation id="1150989369772528668">Kalendaryo</translation>
 <translation id="1153356358378277386">Mga nakapares na device</translation>
+<translation id="1153918444040990015">Hindi makakonekta sa Mga tunog para sa pag-focus</translation>
 <translation id="1155734730463845512">Kasalukuyang level ng baterya <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1157514002898505378">Pang-eksperimento ang Generative AI at posibleng hindi tumpak, nakakapanlinlang, o nakakapanakit ang content. Makipag-ugnayan sa iyong administrator para mag-ulat ng isyu. <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="1160215328209699296">naka-on at ginagamit</translation>
@@ -175,6 +176,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1550523713251050646">Mag-click para sa higit pang mga opsyon</translation>
 <translation id="1555130319947370107">Asul</translation>
 <translation id="1557622599341396706">Ipakita ang pangalan ng desk</translation>
+<translation id="1567138500090284106">Button ng mga mouse key</translation>
 <translation id="1569384531973824928">Pinapayagan nito ang access para sa lahat ng app at website na may mga pahintulot sa camera at mikropono. Posibleng kailanganin mong i-refresh ang web page o i-restart ang app.</translation>
 <translation id="1571697193564730395">I-toggle ang Huwag Istorbohin. <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">Mag-zoom out kapag naka-on ang magnifier</translation>
@@ -242,6 +244,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1787955149152357925">Naka-off</translation>
 <translation id="1796561540704213354">Mga website kasama ang mga page na binisita mo at nakabukas na page</translation>
 <translation id="179842970735685253">Mga Tuntunin ng Serbisyo ng Google</translation>
+<translation id="1805407494113167797">Hindi ma-play ang Mga tunog para sa pag-focus</translation>
 <translation id="181103072419391116">Lakas ng Signal <ph name="SIGNAL_STRENGTH" />, Pinapamahalaan ng iyong Administrator</translation>
 <translation id="1816896987747843206">Pinapayagan nito ang access sa camera para sa lahat ng app at website na may pahintulot sa camera</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
@@ -1505,7 +1508,6 @@ Walang nakakonektang device.</translation>
 <translation id="6119972796024789243">Pagtatama ng kulay</translation>
 <translation id="6121838516699723042">Kumpirmahin ang pag-download ng <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">Hindi available ang Google Assistant sa session ng bisita.</translation>
-<translation id="6127370444807669747">Para sa mga naka-personalize na playlist at higit pang musika para sa pag-focus, subukan ang YouTube Music Premium</translation>
 <translation id="6127395413317891856">Offline ka. Suriin ang iyong koneksyon at subukan ulit.</translation>
 <translation id="6129953537138746214">Puwang</translation>
 <translation id="6137566720514957455">Buksan ang alisin ang dialog para sa <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -2281,6 +2283,7 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="8876661425082386199">Suriin ang iyong koneksyon</translation>
 <translation id="8877788021141246043">Magtakda ng paalala</translation>
 <translation id="8878886163241303700">Pinapalawak ang screen</translation>
+<translation id="8885424115080869847">Hindi makakonekta sa YouTube Music</translation>
 <translation id="888982883502837004">May mga available na update sa firmware para sa iyong device. I-click para suriin at i-update.</translation>
 <translation id="8896630965521842259">Permanenteng ide-delete ang <ph name="DESK_TEMPLATE_NAME" /></translation>
 <translation id="889790758758811533"><ph name="PERCENTAGE" />% na lang ang baterya (humigit-kumulang <ph name="TIME_LEFT" />). Isaksak ang iyong device.</translation>

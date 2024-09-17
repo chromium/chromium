@@ -75,6 +75,7 @@
 <translation id="1303507811548703290"><ph name="DOMAIN" />: enviado de <ph name="DEVICE_NAME" /></translation>
 <translation id="1320912611264252795">Pastas do fluxo para adicionar aos favoritos abertas no tamanho máximo</translation>
 <translation id="1327257854815634930">O histórico de navegação está aberto</translation>
+<translation id="1328235593824723509"><ph name="TAB_TITLE" />, guia nova ou atualizada</translation>
 <translation id="1331212799747679585">Não é possível atualizar o Chrome. Mais opções</translation>
 <translation id="1332501820983677155">Atalhos de recursos do Google Chrome</translation>
 <translation id="1333491156693005331">Verificado recentemente</translation>
@@ -1214,6 +1215,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="6674571176963658787">Para iniciar a sincronização, digite a senha longa</translation>
 <translation id="6676927815633975364">Faça login neste site e no Chrome</translation>
 <translation id="6684809838922667136">Melhorar o Chrome</translation>
+<translation id="6700279777779583398">Opções salvas</translation>
 <translation id="6704048624334633734">Exportar e excluir as senhas</translation>
 <translation id="670498945988402717">Verificado ontem</translation>
 <translation id="6710213216561001401">Anterior</translation>
@@ -1291,7 +1293,6 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="6964300328304469089">Seleção atual: <ph name="NAME" />, <ph name="EMAIL" /> Escolha uma conta.</translation>
 <translation id="696447261358045621">Sair do modo de navegação anônima</translation>
 <translation id="6965382102122355670">OK</translation>
-<translation id="6966660124354134532">Toque para monitorar um produto ou para parar.</translation>
 <translation id="6971862865055170158">Não aprovar</translation>
 <translation id="6978717888677691380">Sites bloqueados</translation>
 <translation id="6979737339423435258">Todo o período</translation>
@@ -1427,6 +1428,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="752731652852882757">Bloquear na navegação anônima</translation>
 <translation id="7554643625247105821">Não é possível verificar a versão do Chrome</translation>
 <translation id="7557508262441527045">Saiu</translation>
+<translation id="7573665567024262965">Escolha seus apps padrão</translation>
 <translation id="7577900504646297215">Gerenciar interesses</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> arquivo baixado}one{<ph name="FILES_DOWNLOADED_MANY" /> arquivo baixado}other{<ph name="FILES_DOWNLOADED_MANY" /> arquivos baixados}}</translation>
 <translation id="7581273696622423628">Responder à pesquisa</translation>
@@ -1469,6 +1471,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="7764225426217299476">Adicionar endereço</translation>
 <translation id="7772032839648071052">Confirmar senha</translation>
 <translation id="7772375229873196092">Fechar <ph name="APP_NAME" /></translation>
+<translation id="7774125747223422443">Com base na legislação da sua região, é necessário definir um navegador e um mecanismo de pesquisa</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 e mais <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}one{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 e mais <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 e mais <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="777637629667389858">Quando sua conta está conectada, essa opção protege você nos Serviços do Google.</translation>
 <translation id="7778840695157240389">Volte mais tarde para ver novas matérias</translation>
@@ -1593,6 +1596,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="8265018477030547118">Somente neste dispositivo</translation>
 <translation id="8266753737658117282">Continuar com <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8266862848225348053">Local de download</translation>
+<translation id="8279945625179116733">Com a proteção do app <ph name="APP_NAME" /></translation>
 <translation id="8281886186245836920">Pular</translation>
 <translation id="8282297628636750033">Aplicar o tema escuro para sites</translation>
 <translation id="8282950411412455249">Acesse as configurações de segurança</translation>
@@ -1737,6 +1741,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="8982113230057126145">O botão "Não gostei" envia feedback informando que você não gostou desse resumo</translation>
 <translation id="8992769679401294069">Seus dados são criptografados com a senha longa. Digite-a para usar e salvar os dados do Chrome na sua Conta do Google.</translation>
 <translation id="8993760627012879038">Abrir uma nova guia no modo de navegação anônima</translation>
+<translation id="8995521496079646922">Os apps escolhidos serão usados por padrão. Se um app ainda não estiver no dispositivo, ele será baixado em breve.</translation>
 <translation id="8996847606757455498">Escolha outro provedor</translation>
 <translation id="8998289560386111590">Indisponível no seu dispositivo</translation>
 <translation id="8998837250940831980">Não foi possível minimizar a guia. Tente de novo mais tarde.</translation>

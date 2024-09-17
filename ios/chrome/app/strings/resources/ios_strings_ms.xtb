@@ -118,6 +118,7 @@
 <translation id="1517166097004694782">Sembunyikan "Teruskan dengan tab ini"</translation>
 <translation id="1520027731907768768">Terima makluman penurunan harga untuk produk yang anda jejaki.</translation>
 <translation id="1521774566618522728">Aktif hari ini</translation>
+<translation id="1524563461097350801">Tidak Perlu</translation>
 <translation id="1531038290222364269">Paparkan tab</translation>
 <translation id="1536390784834419204">Terjemahkan halaman</translation>
 <translation id="1540800554400757039">Alamat 1</translation>
@@ -1519,7 +1520,6 @@ Tapak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda merent
 <translation id="8173034266693057059">Panjang</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8182037667962849780">{count,plural, =1{Untuk {website_1}}=2{Untuk {website_1}, {website_2}}=3{Untuk {website_1}, {website_2} dan 1 lagi}other{Untuk {website_1}, {website_2} dan {more_count} lagi}}</translation>
-<translation id="8189814768485665290">Kongsi URL penuh</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Peranti anda<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Tambah kata laluan</translation>
 <translation id="8202744799033457229">Tunjukkan sejarah</translation>
@@ -1553,6 +1553,7 @@ Tapak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda merent
 <translation id="8349305172487531364">Bar penanda halaman</translation>
 <translation id="8366466717204352506">Penyemakan tidak pernah dijalankan</translation>
 <translation id="8368001212524806591">Jejak harga</translation>
+<translation id="8370406443343902172">Akses Tetapan...</translation>
 <translation id="8372471489238799313">{count,plural, =1{Padamkan alamat}other{Padamkan alamat}}</translation>
 <translation id="8378714024927312812">Diurus oleh organisasi anda</translation>
 <translation id="8386068868580335421">Tetapkan semula</translation>

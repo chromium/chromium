@@ -75,6 +75,7 @@
 <translation id="1303507811548703290"><ph name="DOMAIN" /> — nosūtīts no ierīces <ph name="DEVICE_NAME" /></translation>
 <translation id="1320912611264252795">Grāmatzīmes saglabāšanas plūsma ir atvērta pilna ekrāna augstumā</translation>
 <translation id="1327257854815634930">Navigācijas vēsture ir atvērta</translation>
+<translation id="1328235593824723509"><ph name="TAB_TITLE" />, jauna vai atjaunināta cilne</translation>
 <translation id="1331212799747679585">Nevar atjaunināt Chrome — citas opcijas</translation>
 <translation id="1332501820983677155">Google Chrome funkciju īsinājumtaustiņi</translation>
 <translation id="1333491156693005331">Nesen pārbaudīts</translation>
@@ -1290,7 +1291,6 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="6964300328304469089">Pašlaik ir atlasīts šāds konts: <ph name="NAME" />, <ph name="EMAIL" />. Izvēlieties kontu.</translation>
 <translation id="696447261358045621">Iziet no inkognito režīma</translation>
 <translation id="6965382102122355670">Labi</translation>
-<translation id="6966660124354134532">Lai sāktu vai beigtu izsekot produktam, pieskarieties šeit.</translation>
 <translation id="6971862865055170158">Neapstiprināt</translation>
 <translation id="6978717888677691380">Jūsu bloķētās vietnes</translation>
 <translation id="6979737339423435258">Visā periodā</translation>
@@ -1592,6 +1592,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />izdzēsiet Chrome datus s
 <translation id="8265018477030547118">Tikai šajā ierīcē</translation>
 <translation id="8266753737658117282">Turpināšana, izmantojot kontu <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8266862848225348053">Lejupielādes atrašanās vieta</translation>
+<translation id="8279945625179116733">Drošību garantē lietotne <ph name="APP_NAME" /></translation>
 <translation id="8281886186245836920">Izlaist</translation>
 <translation id="8282297628636750033">Tumšā motīva lietošana vietnēs, kad iespējams</translation>
 <translation id="8282950411412455249">Pāriet uz drošības iestatījumiem</translation>

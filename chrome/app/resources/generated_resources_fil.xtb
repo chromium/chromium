@@ -498,6 +498,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="1355088139103479645">I-delete ang lahat ng data?</translation>
 <translation id="1356376170199999104">Pinapayagan – <ph name="PERMISSION_DETAILS" />. I-on ang mikropono gamit ang pisikal na switch.</translation>
 <translation id="1356959069439783953">Magkakaroon ng bagong hitsura ang mga hindi aktibong tab</translation>
+<translation id="1357766361161708728">Isara ang mga hindi ginagamit na tab?</translation>
 <translation id="1358741672408003399">Spelling and Grammar</translation>
 <translation id="1359923111303110318">Puwedeng i-unlock ang iyong device gamit ang Smart Lock. Pindutin ang Enter para ma-unlock.</translation>
 <translation id="1361164813881551742">Idagdag nang Manual</translation>
@@ -1118,7 +1119,6 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="1780273119488802839">Mag pag-import ng bookmark?</translation>
 <translation id="1780572199786401845">Iulat bilang nakakapanakit/hindi ligtas.</translation>
 <translation id="178092663238929451">I-set up ang Nearby Share para tumanggap at magpadala ng mga file sa mga tao sa paligid mo</translation>
-<translation id="1781164264587898620">Mag-apply ng pagkakansela ng ingay at mga pagpapaganda ng audio.</translation>
 <translation id="1781291988450150470">Kasalukuyang PIN</translation>
 <translation id="1781502536226964113">Buksan ang page ng Bagong Tab</translation>
 <translation id="1781553166608855614">Sinasalitang wika</translation>
@@ -6573,6 +6573,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="5750288053043553775">0</translation>
 <translation id="5751345516399502412">Tingnan ang Kahandaan sa Pag-tether</translation>
 <translation id="5753570386948603678">I-delete sa history</translation>
+<translation id="5753652925946671505">Hindi ginamit ang mga tab na ito sa loob ng <ph name="COUNT" /> o higit pang araw.</translation>
 <translation id="5756163054456765343">Help center</translation>
 <translation id="5757187557809630523">susunod na track</translation>
 <translation id="5758631781033351321">Makikita mo rito ang iyong listahan ng babasahin</translation>

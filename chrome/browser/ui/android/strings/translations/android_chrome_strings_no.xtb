@@ -75,6 +75,7 @@
 <translation id="1303507811548703290"><ph name="DOMAIN" /> – sendt fra <ph name="DEVICE_NAME" /></translation>
 <translation id="1320912611264252795">Mapper med flyt for lagring av bokmerke er åpnet i full høyde</translation>
 <translation id="1327257854815634930">Navigasjonsloggen er åpnet</translation>
+<translation id="1328235593824723509"><ph name="TAB_TITLE" /> – ny eller oppdatert fane</translation>
 <translation id="1331212799747679585">Kan ikke oppdatere Chrome. Flere alternativer</translation>
 <translation id="1332501820983677155">Hurtigtaster for funksjoner i Google Chrome.</translation>
 <translation id="1333491156693005331">Sjekket nylig</translation>
@@ -1291,7 +1292,6 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="6964300328304469089"><ph name="NAME" /> (<ph name="EMAIL" />) er valgt. Velg en konto.</translation>
 <translation id="696447261358045621">Avslutt Inkognitomodus</translation>
 <translation id="6965382102122355670">OK</translation>
-<translation id="6966660124354134532">Trykk for å spore eller slutte å spore et produkt.</translation>
 <translation id="6971862865055170158">Ikke godkjenn</translation>
 <translation id="6978717888677691380">Nettsteder du har blokkert</translation>
 <translation id="6979737339423435258">Alle datoer</translation>
@@ -1595,6 +1595,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="8265018477030547118">Bare på denne enheten</translation>
 <translation id="8266753737658117282">Fortsett med <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8266862848225348053">Nedlastingssted</translation>
+<translation id="8279945625179116733">Sikret med <ph name="APP_NAME" /></translation>
 <translation id="8281886186245836920">Hopp over</translation>
 <translation id="8282297628636750033">Bruk mørkt tema på nettsteder når mulig</translation>
 <translation id="8282950411412455249">Gå til sikkerhetsinnstillingene</translation>

@@ -1110,13 +1110,6 @@ Chrome 앱은 ID(예: <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_CHRO
 
       이 정책은 지원 중단되었으므로 <ph name="DEVICE_USER_ALLOWLIST_POLICY_NAME" /> 정책을 대신 사용하세요.
       </translation>
-<translation id="1825583118566970564">외부 확장 프로그램 설치를 제어합니다.
-
-정책을 사용 설정하면 외부 확장 프로그램이 설치되지 않습니다.
-
-정책을 사용 중지하거나 설정하지 않은 상태로 두면 외부 확장 프로그램을 설치할 수 있습니다.
-
-외부 확장 프로그램 및 설치 관련 문서는 다음 페이지에서 확인하세요. https://developer.chrome.com/apps/external_extensions</translation>
 <translation id="1827523283178827583">고정 프록시 서버 사용</translation>
 <translation id="1829117241432374848">관리 계정은 기본 계정이어야 하고 보조 계정이 없어야 하며 사용자는 계정 생성 시 기존 데이터를 가져올 수 있음</translation>
 <translation id="1829839214911753838">정책을 사용 설정하면 원격 지원 호스트가 <ph name="UIACCESS_PERMISSION_NAME" /> 권한이 있는 프로세스로 실행됩니다. 이를 통해 원격 사용자는 로컬 사용자의 데스크톱에서 관리자 창과 상호작용할 수 있습니다.

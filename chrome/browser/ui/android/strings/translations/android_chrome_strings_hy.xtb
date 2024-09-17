@@ -1214,6 +1214,7 @@
 <translation id="6674571176963658787">Համաժամացումը սկսելու համար մուտքագրեք ձեր անցաբառը</translation>
 <translation id="6676927815633975364">Մուտք գործեք այս կայք և Chrome</translation>
 <translation id="6684809838922667136">Օգնեք բարելավել Chrome-ի աշխատանքը</translation>
+<translation id="6700279777779583398">Ընտրված կարգավորումները պահվել են</translation>
 <translation id="6704048624334633734">Գաղտնաբառերի արտահանում և ջնջում</translation>
 <translation id="670498945988402717">Ստուգվել է երեկ</translation>
 <translation id="6710213216561001401">Նախորդը</translation>
@@ -1291,7 +1292,6 @@
 <translation id="6964300328304469089">Ներկայումս ընտրված է <ph name="NAME" /> (<ph name="EMAIL" />) հաշիվը։ Ընտրեք հաշիվ։</translation>
 <translation id="696447261358045621">Դուրս գալ ինկոգնիտո ռեժիմից</translation>
 <translation id="6965382102122355670">Եղավ</translation>
-<translation id="6966660124354134532">Հպեք՝ ապրանքները հետագծելու կամ դրանց հետագծումը չեղարկելու համար։</translation>
 <translation id="6971862865055170158">Չհաստատել</translation>
 <translation id="6978717888677691380">Ձեր արգելափակած կայքերը</translation>
 <translation id="6979737339423435258">Ամբողջ ժամանակաշրջանի</translation>
@@ -1427,6 +1427,7 @@
 <translation id="752731652852882757">Արգելափակել ինկոգնիտո ռեժիմում</translation>
 <translation id="7554643625247105821">Հնարավոր չէ ստուգել Chrome-ի տարբերակը</translation>
 <translation id="7557508262441527045">Դուք դուրս եք գրվել հաշվից</translation>
+<translation id="7573665567024262965">Ընտրեք ձեր կանխադրված հավելվածները</translation>
 <translation id="7577900504646297215">Կառավարել հետաքրքրությունները</translation>
 <translation id="757855969265046257">{FILES,plural, =1{Ներբեռնվեց <ph name="FILES_DOWNLOADED_ONE" /> ֆայլ}one{Ներբեռնվեց <ph name="FILES_DOWNLOADED_MANY" /> ֆայլ}other{Ներբեռնվեց <ph name="FILES_DOWNLOADED_MANY" /> ֆայլ}}</translation>
 <translation id="7581273696622423628">Մասնակցել հարցմանը</translation>
@@ -1469,6 +1470,7 @@
 <translation id="7764225426217299476">Ավելացնել հասցե</translation>
 <translation id="7772032839648071052">Հաստատեք անցաբառը</translation>
 <translation id="7772375229873196092">Փակել <ph name="APP_NAME" />-ը</translation>
+<translation id="7774125747223422443">Ձեր տարածաշրջանում գործող օրենքների համաձայն՝ դուք պետք է ընտրեք ձեր դիտարկիչը և որոնողական համակարգը</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 ու վճարման ևս <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> եղանակ}one{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 ու վճարման ևս <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> եղանակ}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 ու վճարման ևս <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> եղանակ}}</translation>
 <translation id="777637629667389858">Երբ դուք մուտք եք գործած հաշիվ, գործառույթը պաշտպանում է ձեզ Google-ի ծառայություններում։</translation>
 <translation id="7778840695157240389">Վերադարձեք ավելի ուշ՝ նոր բովանդակություն տեսնելու համար</translation>
@@ -1738,6 +1740,7 @@
 <translation id="8982113230057126145">«Վատն է» կոճակի սեղմումը բացասական կարծիք է ուղարկում այս ամփոփագրի մասին</translation>
 <translation id="8992769679401294069">Ձեր տվյալները գաղտնագրված են անցաբառով։ Chrome-ի տվյալները ձեր Google հաշվում օգտագործելու և պահելու համար մուտքագրեք ձեր անցաբառը։</translation>
 <translation id="8993760627012879038">Բացել նոր ներդիր ինկոգնիտո ռեժիմում</translation>
+<translation id="8995521496079646922">Ձեր ընտրած հավելվածները կօգտագործվեն ըստ կանխադրման։ Եթե հավելվածը դեռ տեղադրված չէ, այն կներբեռնվի սարքում։</translation>
 <translation id="8996847606757455498">Ընտրել մեկ այլ մատակարար</translation>
 <translation id="8998289560386111590">Հասանելի չէ ձեր սարքում</translation>
 <translation id="8998837250940831980">Չհաջողվեց ծալել ներդիրը։ Փորձեք ավելի ուշ։</translation>

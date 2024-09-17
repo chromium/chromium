@@ -116,6 +116,7 @@
 <translation id="1517166097004694782">"Энэ табаар үргэлжлүүлэх"-ийг нуух</translation>
 <translation id="1520027731907768768">Мөшгөдөг бүтээгдэхүүнүүдийнхээ үнэ буурсан талаарх дохиог хүлээн авна уу.</translation>
 <translation id="1521774566618522728">Өнөөдөр идэвхтэй</translation>
+<translation id="1524563461097350801">Үгүй, баярлалаа</translation>
 <translation id="1531038290222364269">Табуудыг харуулах</translation>
 <translation id="1536390784834419204">Хуудсыг орчуулах</translation>
 <translation id="1540800554400757039">Хаяг 1</translation>
@@ -1507,7 +1508,6 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="8173034266693057059">Урт</translation>
 <translation id="8179976553408161302">Нэвтрэх</translation>
 <translation id="8182037667962849780">{count,plural, =1{{website_1}-д}=2{{website_1}, {website_2}-д}=3{{website_1}, {website_2} болон өөр 1 вебсайтад}other{{website_1}, {website_2} болон өөр {more_count} вебсайтад}}</translation>
-<translation id="8189814768485665290">Бүтэн URL-г хуваалцах</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Таны төхөөрөмжүүд<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Нууц үг нэмэх</translation>
 <translation id="8202744799033457229">Түүхийг харуулах</translation>
@@ -1541,6 +1541,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="8349305172487531364">Хайлтын жагсаалтын цонх</translation>
 <translation id="8366466717204352506">Шалгалтыг хэзээ ч явуулаагүй</translation>
 <translation id="8368001212524806591">Үнэ хянах</translation>
+<translation id="8370406443343902172">Тохиргоо руу очих...</translation>
 <translation id="8372471489238799313">{count,plural, =1{Хаягийг устгах}other{Хаягуудыг устгах}}</translation>
 <translation id="8378714024927312812">Танай байгууллагаас удирддаг</translation>
 <translation id="8386068868580335421">Шинэчлэх</translation>
@@ -1603,6 +1604,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="8637431369725868556">Аюултай сайтуудаас хамгаалалттай байгаарай.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Алдагдсан нууц үг алга}=1{Алдагдсан {COUNT} нууц үг}other{Алдагдсан {COUNT} нууц үг}}</translation>
 <translation id="8640575194957831802">Хамгийн сүүлд нээсэн</translation>
+<translation id="8647280737650867362">Үнийг мөшгөхөө больж чадсангүй.</translation>
 <translation id="8654802032646794042">Цуцлах</translation>
 <translation id="8660600697590740984">Таны хуулсан Lens-н зураг</translation>
 <translation id="866266761389616183">Өө, уучлаарай!</translation>

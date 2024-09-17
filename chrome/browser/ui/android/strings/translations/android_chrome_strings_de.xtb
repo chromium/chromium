@@ -491,6 +491,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="3282568296779691940">In Chrome anmelden</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> Tab}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> Tabs}}</translation>
 <translation id="3293181007446299124">Dein Browserverlauf wird sicher auf deinem Gerät gespeichert und Berichte werden mit einer Verzögerung gesendet, um deine Identität zu schützen</translation>
+<translation id="3302615849591357577">Tabgruppe <ph name="TITLE_OF_GROUP" /> mit der Farbe <ph name="COLOR_NAME" /> als neue Tabgruppe im Hintergrund wiederherstellen.</translation>
 <translation id="3303414029551471755">Inhalt herunterladen?</translation>
 <translation id="3303855915957856445">Keine Suchergebnisse gefunden</translation>
 <translation id="3305130791745726624">An Geräte senden</translation>
@@ -802,6 +803,7 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="4834007576107377210">Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deiner Suchmaschine</translation>
 <translation id="4834250788637067901">Zahlungsmethoden, Angebote und Adressen aus Google Pay</translation>
 <translation id="4835385943915508971">Chrome hat keinen Zugriff auf die angeforderte Ressource.</translation>
+<translation id="483742037940503070">{TAB_COUNT,plural, =1{Tabgruppe mit <ph name="TAB_COUNT_ONE" /> Tab und der Farbe <ph name="COLOR_NAME" /> als neue Tabgruppe im Hintergrund wiederherstellen.}other{Tabgruppe mit <ph name="TAB_COUNT_MANY" /> Tabs und der Farbe <ph name="COLOR_NAME" /> als neue Tabgruppe im Hintergrund wiederherstellen.}}</translation>
 <translation id="4837753911714442426">Optionen zum Drucken einer Seite öffnen</translation>
 <translation id="4842092870884894799">Pop-up-Fenster zur Passwortgenerierung wird angezeigt.</translation>
 <translation id="4844633725025837809">Für zusätzliche Sicherheit kannst du Passwörter auf deinem Gerät verschlüsseln lassen, bevor sie im Google Passwortmanager gespeichert werden</translation>
@@ -1187,6 +1189,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="6593061639179217415">Desktopwebsite</translation>
 <translation id="6594347733515723558">Sortier- &amp; Anseh-Optionen</translation>
 <translation id="6595046016124923392">Bilder werden an Google gesendet, um die Beschreibungen für dich zu verbessern.</translation>
+<translation id="6595634543029443878">{TAB_COUNT,plural, =1{Tabgruppe mit <ph name="TAB_COUNT_ONE" /> Tab als neue Tabgruppe im Hintergrund wiederherstellen.}other{Tabgruppe mit <ph name="TAB_COUNT_MANY" /> Tabs als neue Tabgruppe im Hintergrund wiederherstellen.}}</translation>
 <translation id="6604931690954120417">Wenn du in Chrome angemeldet bist, werden Passwörter, die du speicherst, in deinem Google-Konto gespeichert. <ph name="BEGIN_LINK" />Du kannst dies in den Einstellungen deaktivieren.<ph name="END_LINK" /></translation>
 <translation id="661266467055912436">Verbessert die Sicherheit für dich und alle im Internet.</translation>
 <translation id="6621391692573306628">Wenn du diesen Tab an ein anderes Gerät senden möchtest, melde dich auf beiden Geräten in Chrome an</translation>
@@ -1211,6 +1214,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="6674571176963658787">Gib deine Passphrase ein, um die Synchronisierung zu starten</translation>
 <translation id="6676927815633975364">Auf dieser Website und in Chrome anmelden</translation>
 <translation id="6684809838922667136">Chrome verbessern</translation>
+<translation id="6704048624334633734">Passwörter exportieren und löschen</translation>
 <translation id="670498945988402717">Gestern geprüft</translation>
 <translation id="6710213216561001401">Zurück</translation>
 <translation id="671481426037969117">Dein <ph name="FQDN" />-Timer ist abgelaufen. Morgen startet er neu.</translation>
@@ -1287,7 +1291,6 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="6964300328304469089">Aktuell ausgewählt: <ph name="NAME" />, <ph name="EMAIL" />. Wähle ein Konto aus.</translation>
 <translation id="696447261358045621">Inkognitomodus deaktivieren</translation>
 <translation id="6965382102122355670">Ok</translation>
-<translation id="6966660124354134532">Tippen, um ein Produkt zu beobachten oder die Beobachtung zu beenden.</translation>
 <translation id="6971862865055170158">Nicht genehmigen</translation>
 <translation id="6978717888677691380">Von dir blockierte Websites</translation>
 <translation id="6979737339423435258">Gesamte Zeit</translation>
@@ -1673,6 +1676,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="864544049772947936">Fenster verwalten (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="8664215986015753476">Chrome für dich anpassen</translation>
 <translation id="8664979001105139458">Dateiname schon vorhanden</translation>
+<translation id="8669290537472770919">{FILE_COUNT,plural, =1{Von deiner Organisation blockiert}other{# Elemente wurden von deiner Organisation blockiert}}</translation>
 <translation id="8672883760227492369">Einige Passwörter auf diesem Gerät funktionieren bald nicht mehr. Du kannst diese Passwörter in den Google Passwortmanager verschieben.</translation>
 <translation id="8676276370198826499">Bei <ph name="SITE_ETLD_PLUS_ONE" /> mit <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> anmelden</translation>
 <translation id="8676789164135894283">Anmeldebestätigungen</translation>

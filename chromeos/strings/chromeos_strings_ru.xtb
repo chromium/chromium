@@ -284,7 +284,6 @@
 <translation id="2230624078793142213">Создать ещё</translation>
 <translation id="2236746079896696523">Подсветка клавиатуры</translation>
 <translation id="2240366984605217732">Переключение раскладки клавиатуры</translation>
-<translation id="2242381852034179222">Этой функцией управляет администратор</translation>
 <translation id="2244834438220057800">зеленый</translation>
 <translation id="225692081236532131">Статус активации</translation>
 <translation id="2267285889943769271">Добавить скриншот</translation>
@@ -1043,6 +1042,8 @@
 <translation id="628726841779494414">Чтобы изменить параметры принтеров, перейдите в настройки</translation>
 <translation id="6292095526077353682">Во время зарядки показывать заставку</translation>
 <translation id="629550705077076970">затемнение подсветки клавиатуры</translation>
+<translation id="6301193653204230066">Расширения браузера Chrome будут отключены, а сетевые и другие настройки (в том числе поисковой системы по умолчанию) – сброшены.
+          На файлы cookie, вкладки, историю и ваши личные файлы это не повлияет.</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" />: тестирование отменено.</translation>
 <translation id="631063167932043783">Приложение "Возможности"</translation>
 <translation id="6318437367327684789">всегда</translation>
@@ -1052,6 +1053,7 @@
 <translation id="6325525973963619867">Ошибка</translation>
 <translation id="6327262166342360252">Обои созданы искусственным интеллектом на основании следующего запроса: "<ph name="PROMPT" />".</translation>
 <translation id="6331191339300272798">Автоматическая тёмная тема</translation>
+<translation id="6335228876613776082">Скачивание модели завершено</translation>
 <translation id="6340526405444716530">Персонализация</translation>
 <translation id="6348252528297699679">Чтобы отключить определение местоположения, откройте "Настройки &gt; Конфиденциальность и безопасность &gt; Настройки конфиденциальности &gt; Данные о местоположении". <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">Имя пользователя и пароль</translation>
@@ -1545,6 +1547,7 @@
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Альбом в Google Фото</translation>
 <translation id="8775713578693478175">Имя точки доступа для модема</translation>
+<translation id="877735394245039557">Выполняется скачивание модели</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">У этой сети может быть страница входа.</translation>
 <translation id="8797082062139985406">Создать название с помощью ИИ от Google</translation>

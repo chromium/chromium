@@ -497,6 +497,7 @@ Gaan jou wagwoorde enige tyd na in <ph name="GOOGLE_PASSWORD_MANAGER" />.</trans
 <translation id="1355088139103479645">Vee alle data uit?</translation>
 <translation id="1356376170199999104">Toegelaat – <ph name="PERMISSION_DETAILS" />. Skakel mikrofoon met die fisieke skakelaar aan.</translation>
 <translation id="1356959069439783953">Onaktiewe oortjies kry ’n nuwe voorkoms</translation>
+<translation id="1357766361161708728">Maak ongebruikte oortjies toe?</translation>
 <translation id="1358741672408003399">Spelling en grammatika</translation>
 <translation id="1359923111303110318">Jou toestel kan met Smart Lock ontsluit word. Druk Enter om te ontsluit.</translation>
 <translation id="1361164813881551742">Voeg self by</translation>
@@ -1117,7 +1118,6 @@ Toestemmings wat jy reeds aan programme gegee het, kan op hierdie rekening van t
 <translation id="1780273119488802839">Voer tans boekmerke in …</translation>
 <translation id="1780572199786401845">Gee as aanstootlik/onveilig aan.</translation>
 <translation id="178092663238929451">Stel Nabydeling op om lêers aan mense rondom jou te stuur en van hulle af te ontvang</translation>
-<translation id="1781164264587898620">Pas geraasvermindering en oudioverbeterings toe.</translation>
 <translation id="1781291988450150470">Huidige PIN</translation>
 <translation id="1781502536226964113">Maak nuwe oortjie-bladsy oop</translation>
 <translation id="1781553166608855614">Gesproke taal</translation>
@@ -2567,6 +2567,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2787354132612937472">–</translation>
 <translation id="2788135150614412178">+</translation>
 <translation id="2789486458103222910">OK</translation>
+<translation id="2790750268015892264">Geïsoleerde webapps kan nie slimkaartlesers beheer nie. Apps sal nie toegang kry tot enige slimkaart nie.</translation>
 <translation id="2791529110887957050">Verwyder Linux</translation>
 <translation id="2791952154587244007">'n Fout het voorgekom. Kioskprogram sal nie outomaties op hierdie toestel kan begin nie.</translation>
 <translation id="2792290659606763004">Verwyder Android-programme?</translation>
@@ -2598,6 +2599,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2806372837663997957">Die toestel waarmee jy probeer deel, het dit nie aanvaar nie</translation>
 <translation id="2806891468525657116">Kortpad bestaan reeds</translation>
 <translation id="2807517655263062534">Lêers wat jy aflaai, verskyn hier</translation>
+<translation id="2808481877345177494">Meld aan om jou werk- en persoonlike blaaidata veilig te skei. Verhoog jou produktiwiteit terwyl jy sensitiewe maatskappydata beskerm.</translation>
 <translation id="2811205483104563968">Rekeninge</translation>
 <translation id="2812049959647166806">Thunderbolt word nie gesteun nie</translation>
 <translation id="2812171980080389735">Gestoorde netwerke en wagwoorde sodat jy in ’n kits kan koppel</translation>
@@ -3445,6 +3447,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3450157232394774192">Rustoestand se besettingpersentasie</translation>
 <translation id="3450180775417907283"><ph name="MANAGER" /> vereis dat jy nou aan wi-fi koppel en 'n opdatering aflaai.</translation>
 <translation id="345078987193237421">Dit laat kameratoegang vir apps, webwerwe met die kameratoestemming en stelseldienste toe</translation>
+<translation id="3451362021220965191">Geïsoleerde webapps beheer slimkaartlesers om toegang te kry tot slimkaarte wat ingevoeg of aan hulle gebied word. Slimkaarte bevat gewoonlik identiteite wat gebruik word om bedrywighede te waarmerk of te magtig, by dienste aan te meld ens.</translation>
 <translation id="3452999110156026232">Ouertoegang</translation>
 <translation id="3453082738208775226">Maak vanlyn berging skoon?</translation>
 <translation id="3453597230179205517">Liggingtoegang is geblokkeer</translation>
@@ -4007,6 +4010,7 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier en die toes
 <translation id="3828953470056652895">Ek het <ph name="BEGIN_LINK1" />Google se diensbepalings<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Chrome en Chrome-bedryfstelsel se bykomende diensbepalings<ph name="END_LINK2" /> en <ph name="BEGIN_LINK3" />Play se diensbepalings<ph name="END_LINK3" /> gelees en stem daartoe in.</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> – hoë geheuegebruik – <ph name="MEMORY_VALUE" /></translation>
 <translation id="3829765597456725595">SMB-lêerdeling</translation>
+<translation id="38298897782945211">Geïsoleerde webapps volg hierdie instelling outomaties.</translation>
 <translation id="3830470485672984938">Gebruik ’n ander toegangsleutel</translation>
 <translation id="3830654885961023588">{NUM_EXTENSIONS,plural, =1{Jou administrateur het 1 potensieel skadelike uitbreiding weer aangeskakel}other{Jou administrateur het {NUM_EXTENSIONS} potensieel skadelike uitbreidings weer aangeskakel}}</translation>
 <translation id="3834728400518755610">Die verandering aan mikrofooninstelling vereis dat Linux afgeskakel moet word. Skakel Linux af om voort te gaan.</translation>
@@ -4020,6 +4024,7 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier en die toes
 <translation id="3839516600093027468">Blokkeer <ph name="HOST" /> altyd om die knipbord te sien</translation>
 <translation id="3841282988425489367">Kan nie Steam vir Chromebook (Beta) opstel nie</translation>
 <translation id="3841319830220785495">Verstek- natuurlike stem</translation>
+<translation id="3841356782900714251">Slimkaartlesers</translation>
 <translation id="3841964634449506551">Wagwoord is ongeldig</translation>
 <translation id="3842552989725514455">Serif-lettertipe</translation>
 <translation id="3843464315703645664">Intern toegelaat</translation>
@@ -5730,6 +5735,7 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="5120886753782992638">Klik hier om <ph name="APPROVED_URL" /> te besoek</translation>
 <translation id="5121052518313988218">Die bedryfstelsel in jour Linux-houer word nie meer gesteun nie. Dit sal ophou om sekuriteitopdaterings en foutoplossings te ontvang, en kenmerke wat tans werk kan dalk onverwags breek. Gradeer asseblief op na die jongste weergawe om voort te gaan om Linux te gebruik.</translation>
 <translation id="5121130586824819730">Jou hardeskyf is vol. Stoor asseblief na 'n ander ligging of maak plek op die hardeskyf.</translation>
+<translation id="5121803000325086087">Geïsoleerde webapps kan vra om slimkaartlesers te beheer. Apps sal toegang kry tot slimkaarte wat aan lesers onder hul beheer gebied word.</translation>
 <translation id="5123433949759960244">Basketbal</translation>
 <translation id="5125714798187802869">Aktiveer</translation>
 <translation id="5125751979347152379">Ongeldige URL.</translation>
@@ -6567,6 +6573,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="5750288053043553775">0</translation>
 <translation id="5751345516399502412">Gaan verbindinggereedheid na</translation>
 <translation id="5753570386948603678">Vee uit in geskiedenis</translation>
+<translation id="5753652925946671505">Hierdie oortjies is vir <ph name="COUNT" /> of meer dae nie gebruik nie.</translation>
 <translation id="5756163054456765343">Hulpsentrum</translation>
 <translation id="5757187557809630523">volgende snit</translation>
 <translation id="5758631781033351321">Jy sal jou leeslys hier kry</translation>
@@ -6990,6 +6997,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6064764629679333574">Verbeter die gehalte van Bluetooth se mikrofoonklank deur laeresolusie-oudio na hoë resolusie op te skaal.</translation>
 <translation id="6065289257230303064">Sertifikaatonderwerp se gidseienskappe</translation>
 <translation id="6066794465984119824">Prenthuts is nie gestel nie</translation>
+<translation id="6069027071882229820">Kopieer as prent</translation>
 <translation id="6069464830445383022">Jou Google-rekening is jou Chromebook-aanmelding</translation>
 <translation id="6069500411969514374">Werk</translation>
 <translation id="6071181508177083058">bevestig wagwoord</translation>
@@ -10088,6 +10096,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8319414634934645341">Uitgebreide sleutelgebruik</translation>
 <translation id="8321476692217554900">kennisgewings</translation>
 <translation id="8321837372750396788">Hierdie <ph name="DEVICE_TYPE" /> sal bestuur word deur <ph name="MANAGER" />.</translation>
+<translation id="8321888067342493336">Stoor as prent</translation>
 <translation id="8322814362483282060">Hierdie bladsy word geblokkeer om by jou mikrofoon in te gaan.</translation>
 <translation id="8323167517179506834">Tik URL</translation>
 <translation id="8323317289166663449">Lees en verander al jou data op jou rekenaar en alle webwerwe</translation>

@@ -677,6 +677,7 @@
 <translation id="2212735316055980242">ไม่พบนโยบาย</translation>
 <translation id="2213606439339815911">กำลังดึงรายการ...</translation>
 <translation id="2213612003795704869">พิมพ์หน้าแล้ว</translation>
+<translation id="2215368073167343359">ป้อนข้อความอัตโนมัติด้วย Google</translation>
 <translation id="2215539479425228550">ปีนเขาและไต่เขา</translation>
 <translation id="2215727959747642672">การแก้ไขไฟล์</translation>
 <translation id="2215963164070968490">สุนัข</translation>
@@ -709,6 +710,7 @@
 <translation id="2262243747453050782">ข้อผิดพลาดของ HTTP</translation>
 <translation id="2265192657948645752">งานในธุรกิจค้าปลีก</translation>
 <translation id="2265356434276802347">นโยบายนี้ต้องมีข้อมูลแนะนำไม่เกิน <ph name="MAX_ITEMS_LIMIT" /> รายการ</translation>
+<translation id="2266175583972138136">เป็นไปตามข้อกำหนดสำหรับสิทธิประโยชน์ของบัตร</translation>
 <translation id="2267047181501709434">กำลังยืนยันตัวตนของคุณ...</translation>
 <translation id="2268044343513325586">ปรับแต่ง</translation>
 <translation id="2268966938956566076">อัปโหลดในอีก <ph name="MINUTES" /> นาที</translation>
@@ -1796,6 +1798,7 @@
 <translation id="4269264543938335308">ชุดว่ายน้ำ</translation>
 <translation id="4269599248168651462">ใบรับรองเซิร์ฟเวอร์จะออกให้กับชื่อที่ซ้ำกัน</translation>
 <translation id="4270541775497538019">สแต็กเกอร์ 6</translation>
+<translation id="4271652479722040953">เมื่อเพิ่มส่วนขยายลงใน Chrome ระบบจะส่งข้อมูลที่เกี่ยวข้องซึ่งเกี่ยวกับส่วนขยายเหล่านี้ไปยังบุคคลที่สามเพื่อทำการวิเคราะห์ และข้อมูลเหล่านี้อาจปรากฏให้ผู้ดูแลระบบเห็น ข้อมูลดังกล่าวประกอบด้วยข้อมูลเกี่ยวกับส่วนขยาย เช่น ชื่อ เวลาติดตั้ง แหล่งที่มาของการติดตั้ง รวมถึงกิจกรรมที่เกี่ยวข้องกับส่วนขยายเหล่านี้ (เช่น การเปลี่ยนแท็บ การติดต่อเว็บไซต์ หรือการเข้าถึงคุกกี้) จะมีการรวบรวมข้อมูลนี้ไว้สำหรับส่วนขยายที่ติดตั้งจาก Chrome เว็บสโตร์ ตลอดจนส่วนขยายจากนอกสโตร์</translation>
 <translation id="4275830172053184480">รีสตาร์ทอุปกรณ์ของคุณ</translation>
 <translation id="4276974990916607331">ไม่เป็นไร</translation>
 <translation id="4277028893293644418">รีเซ็ตรหัสผ่าน</translation>
@@ -1877,6 +1880,7 @@
 <translation id="4406896451731180161">ผลการค้นหา</translation>
 <translation id="4408413947728134509">คุกกี้ <ph name="NUM_COOKIES" /></translation>
 <translation id="4412074349188076601">การกําหนดค่านี้ทําเครื่องหมายเป็น "ติดตั้งได้" แต่ไม่ได้ระบุอิมเมจสําหรับสถาปัตยกรรมนี้ จึงติดตั้งไม่ได้</translation>
+<translation id="4414452699610169758">ใช้เครื่องมือจัดการรหัสผ่านบน Google และการป้อนข้อความอัตโนมัติของ Chrome เพื่อบันทึกและป้อนรหัสผ่าน วิธีการชำระเงิน และที่อยู่</translation>
 <translation id="4414515549596849729">คุกกี้และข้อมูลเว็บไซต์</translation>
 <translation id="4415156962929755728">พลาสติก (เงามาก)</translation>
 <translation id="4415426530740016218">ที่อยู่ในการรับ</translation>
@@ -3377,6 +3381,7 @@
 <translation id="7232352818707016189">การดำเนินการเพิ่มเติมสำหรับตารางเปรียบเทียบ</translation>
 <translation id="7233592378249864828">พิมพ์แผ่นงานยืนยัน</translation>
 <translation id="7234112195906418665">การเดินทางและการขนส่ง</translation>
+<translation id="7234585564776614047">ป้อนข้อความอัตโนมัติโดยใช้บริการอื่น</translation>
 <translation id="7236417832106250253">เสร็จสมบูรณ์แล้ว <ph name="PROGRESS_PERCENT" />% | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
 <translation id="7237166092326447040">ของขวัญและสินค้าในโอกาสพิเศษ</translation>
 <translation id="7237454422623102448">การตั้งค่าระบบ</translation>
@@ -3728,6 +3733,7 @@
 <translation id="7831993212387676366">รายการช็อปปิ้งคืออะไร</translation>
 <translation id="7840103971441592723">เริ่มจับภาพหน้าจอแล้ว</translation>
 <translation id="784137052867620416">ข้อมูลเชิงลึกเกี่ยวกับ Shopping</translation>
+<translation id="7842611866969435396">ไปกันเลย</translation>
 <translation id="784404208867107517">ประวัติที่จัดกลุ่ม</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{ไม่มี}=1{1 แอป (<ph name="EXAMPLE_APP_1" />)}=2{2 แอป (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# แอป (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="785476343534277563">กีฬาวิทยาลัย</translation>
@@ -4037,6 +4043,7 @@
 <translation id="8409413588194360210">เครื่องจัดการการชำระเงิน</translation>
 <translation id="8412145213513410671">ข้อขัดข้อง (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">คุณต้องป้อนข้อความรหัสผ่านที่เหมือนกันสองครั้ง</translation>
+<translation id="8414322570408428950">เกิดเหตุการณ์ของส่วนขยาย</translation>
 <translation id="8416694386774425977">การกำหนดค่าเครือข่ายไม่ถูกต้องและนำเข้าไม่ได้
 รายละเอียดเพิ่มเติม:
 <ph name="DEBUG_INFO" /></translation>
@@ -4289,6 +4296,7 @@
 <translation id="8891031436559779793">คุณจะได้รับการแจ้งเตือนหากราคาลดลงในเว็บไซต์ใดก็ตาม</translation>
 <translation id="8891727572606052622">โหมดพร็อกซีไม่ถูกต้อง</translation>
 <translation id="8894794286471754040">ด้านขอบยาวก่อน</translation>
+<translation id="8895334001368918465">หากต้องการใช้บริการป้อนข้อความอัตโนมัติอื่นใน Chrome ให้เปิดบริการดังกล่าวในการตั้งค่า Android และที่นี่</translation>
 <translation id="8897428486789851669">ว่ายน้ำ</translation>
 <translation id="8899807382908246773">โฆษณาที่รบกวน</translation>
 <translation id="8903921497873541725">ขยาย</translation>

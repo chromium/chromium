@@ -78,6 +78,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="1240638468526743569">En app</translation>
 <translation id="1242198791279543032">Lyden er slået fra for notifikationer</translation>
 <translation id="1242883863226959074">enhed</translation>
+<translation id="1245476784081715330">Flot!</translation>
 <translation id="1245644940275736236">Gå til Assistent</translation>
 <translation id="124678866338384709">Luk aktuel fane</translation>
 <translation id="1246890715821376239">Apps, der ikke understøttes</translation>
@@ -842,6 +843,7 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="3958714870339660776">Hele dagen</translation>
 <translation id="3962859241508114581">Forrige nummer</translation>
 <translation id="3963124517343721543">Fortsæt nemt, hvor du slap, ved at åbne tidligere vinduer og faner. Du får også tilpassede forslag til ting, du kan foretage dig efterfølgende.</translation>
+<translation id="396506362088290977">Test din mikrofonlyd</translation>
 <translation id="3969043077941541451">Fra</translation>
 <translation id="3970324493235864154">Se din telefons notifikationer</translation>
 <translation id="397105322502079400">Beregner...</translation>
@@ -899,6 +901,7 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="4156293514828496577"><ph name="PERCENTAGE" /> % batteri tilbage (ca. <ph name="TIME_LEFT" />).
 Nogle funktioner er begrænset for at forlænge batteritiden.</translation>
 <translation id="4160919062868802509">Der blev registreret flere lydkilder</translation>
+<translation id="416245495747357243">Sådan!</translation>
 <translation id="4165275524535002941">Kablet understøtter muligvis ikke skærme</translation>
 <translation id="4177415338862979658">Klik for at få flere oplysninger</translation>
 <translation id="4177913004758410636">{0,plural, =1{Genstart enheden inden for en dag}one{Genstart enheden inden for # dag}other{Genstart enheden inden for # dage}}</translation>
@@ -984,6 +987,7 @@ Nogle funktioner er begrænset for at forlænge batteritiden.</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> er deaktiveret.</translation>
 <translation id="4417647906073317561">Indstillinger for fokus. Angiv en timer, opgave eller ringetone for at komme i gang.</translation>
 <translation id="4424159417645388645">Skrivebord 5</translation>
+<translation id="4426817706804363424">Godt klaret!</translation>
 <translation id="4430019312045809116">Lydstyrke</translation>
 <translation id="4441283832827406317">Apps er sorteret efter navn</translation>
 <translation id="4445159312344259901">Log ind for at låse op</translation>
@@ -1248,6 +1252,7 @@ Du kan også bruge tastaturgenvejen. Fremhæv først tekst, og tryk derefter på
 <translation id="5283198616748585639">Tilføj 1 minut</translation>
 <translation id="528468243742722775">Afslut</translation>
 <translation id="5286194356314741248">Søger</translation>
+<translation id="528641622273682395">Slå test af mikrofon til/fra</translation>
 <translation id="5297423144044956168">Der blev ikke fundet nogen mobilenheder</translation>
 <translation id="5297704307811127955">Fra</translation>
 <translation id="5300589172476337783">Vis</translation>
@@ -1275,6 +1280,7 @@ Ingen enheder er forbundet.</translation>
 <translation id="536019650977002321">Din administrator tillader ikke lydoptagelse. Kontakt din administrator for at få flere oplysninger.</translation>
 <translation id="5361524080961918551">Talefiler på <ph name="LANGUAGE" /> er delvist downloadet</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Gå til denne fane</translation>
+<translation id="5363835273551457276">Du kan teste din mikrofonlyd. Luk panelet for at stoppe.</translation>
 <translation id="5364693579536176785">lagerplads</translation>
 <translation id="5369573834963677938">Ansigtsstyring vil være tilgængelig for andre brugere på enheden</translation>
 <translation id="5369717264580061086">Se forhåndsvisning af filen i appen Filer</translation>
@@ -1357,6 +1363,7 @@ Ingen enheder er forbundet.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Din adgangskode kunne ikke verificeres. Prøv igen.</translation>
 <translation id="5632485077360054581">Vis mig hvordan</translation>
+<translation id="5633826232582408011">Når du aktiverer Hjælp mig med at skrive og Hjælp mig med at læse, sendes inputteksten, dokumentindholdet og websideadressen til Google AI-servere for at generere skriveforslag, generere opsummeringer, besvare spørgsmål og forbedre produktet i overensstemmelse med <ph name="LINK_TO_SERVICE_TERMS" />. Medtag ikke personlige, følsomme eller fortrolige oplysninger.</translation>
 <translation id="5648021990716966815">Stik til mikrofon</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> kræver din opmærksomhed.</translation>
 <translation id="5662075790140998213">Skrivebord 10</translation>
@@ -1507,7 +1514,6 @@ Ingen enheder er forbundet.</translation>
 <translation id="6119972796024789243">Farvekorrigering</translation>
 <translation id="6121838516699723042">Bekræft download af <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">Google Assistent er ikke tilgængelig i en gæstesession.</translation>
-<translation id="6127370444807669747">Prøv YouTube Music Premium for at få tilpassede playlister og mere fokusmusik</translation>
 <translation id="6127395413317891856">Du er offline. Tjek din forbindelse, og prøv igen.</translation>
 <translation id="6129953537138746214">Mellemrum</translation>
 <translation id="6137566720514957455">Åbn dialogboksen til fjernelse for <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -2125,6 +2131,7 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="8262312463845990408">Håndter afspilning</translation>
 <translation id="8268302343625273732">Se alle opgaver i Google Classroom</translation>
 <translation id="8277261673056602147">Fremhæv tekst på din skærm</translation>
+<translation id="8282784978194352587">Du klarede det!</translation>
 <translation id="8287009018010202411">Produktivitet</translation>
 <translation id="828708037801473432">Fra</translation>
 <translation id="8297006494302853456">Svag</translation>
@@ -2202,6 +2209,7 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="8609384513243082612">Åbn en ny fane</translation>
 <translation id="861045123704058818">Apps organiseres midlertidigt efter kategori</translation>
 <translation id="8612216344243590325">Opbevar vigtige filer i <ph name="HOLDING_SPACE_TITLE" /> i stedet for på skrivebordet. Du skal bare trække filerne til <ph name="HOLDING_SPACE_TITLE" />.</translation>
+<translation id="8612338981637220013">Det kører for dig!</translation>
 <translation id="8614517853887502247">Notifikationer fra <ph name="APP_1_TITLE" /> og <ph name="APP_2_TITLE" /> er skjult, fordi visningsbeskyttelse er aktiveret</translation>
 <translation id="8615778328722901791">Åbn værktøjslinje</translation>
 <translation id="8619000641825875669">OneDrive</translation>
@@ -2244,6 +2252,7 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />: Aktiverer…</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
+<translation id="8751299148074971734">Fortsæt i samme stil!</translation>
 <translation id="8753368202781196133">Dette sprog understøttes ikke i øjeblikket.</translation>
 <translation id="8755498163081687682">Verificer din identitet: <ph name="ORIGIN_NAME" /> ønsker, at du bekræfter din identitet</translation>
 <translation id="875593634123171288">Vis VPN-indstillinger</translation>

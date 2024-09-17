@@ -116,6 +116,7 @@
 <translation id="1517166097004694782">Скриване на „Продължаване с този раздел“</translation>
 <translation id="1520027731907768768">Получавайте сигнали за понижение на цената за продукти, които следите.</translation>
 <translation id="1521774566618522728">Активно днес</translation>
+<translation id="1524563461097350801">Не, благодаря</translation>
 <translation id="1531038290222364269">Показване на разделите</translation>
 <translation id="1536390784834419204">Превод на страницата</translation>
 <translation id="1540800554400757039">Адрес 1</translation>
@@ -1507,7 +1508,6 @@
 <translation id="8173034266693057059">Дължина</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8182037667962849780">{count,plural, =1{За {website_1}}=2{За {website_1} и {website_2}}=3{За {website_1}, {website_2} и още 1}other{За {website_1}, {website_2} и още {more_count}}}</translation>
-<translation id="8189814768485665290">Споделяне на пълния URL адрес</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Вашите устройства<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Добавяне на парола</translation>
 <translation id="8202744799033457229">Показване на историята</translation>
@@ -1541,6 +1541,7 @@
 <translation id="8349305172487531364">Лента на отметките</translation>
 <translation id="8366466717204352506">Проверката не се е изпълнявала</translation>
 <translation id="8368001212524806591">Проследяване на цената</translation>
+<translation id="8370406443343902172">Към настройките...</translation>
 <translation id="8372471489238799313">{count,plural, =1{Изтриване на адреса}other{Изтриване на адресите}}</translation>
 <translation id="8378714024927312812">Управлява се от организацията ви</translation>
 <translation id="8386068868580335421">Нулиране</translation>
@@ -1603,6 +1604,7 @@
 <translation id="8637431369725868556">Получете защита срещу опасни сайтове.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Няма компрометирани пароли}=1{{COUNT} компрометирана парола}other{{COUNT} компрометирани пароли}}</translation>
 <translation id="8640575194957831802">Последно отворени</translation>
+<translation id="8647280737650867362">Спирането на проследяването на цената не бе успешно.</translation>
 <translation id="8654802032646794042">Отказ</translation>
 <translation id="8660600697590740984">Търсене с Обектив на копираното изображение</translation>
 <translation id="866266761389616183">Ужас!</translation>

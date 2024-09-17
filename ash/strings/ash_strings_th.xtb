@@ -78,6 +78,7 @@
 <translation id="1240638468526743569">แอป</translation>
 <translation id="1242198791279543032">ปิดเสียงการแจ้งเตือนอยู่</translation>
 <translation id="1242883863226959074">อุปกรณ์</translation>
+<translation id="1245476784081715330">เก่งมาก</translation>
 <translation id="1245644940275736236">ไปที่ Assistant</translation>
 <translation id="124678866338384709">ปิดแท็บปัจจุบัน</translation>
 <translation id="1246890715821376239">แอปที่ไม่รองรับ</translation>
@@ -838,6 +839,7 @@
 <translation id="3958714870339660776">ตลอดวัน</translation>
 <translation id="3962859241508114581">แทร็กก่อนหน้า</translation>
 <translation id="3963124517343721543">ดำเนินการต่อจากที่ค้างไว้ได้ง่ายๆ ด้วยการเปิดหน้าต่างและแท็บก่อนหน้า นอกจากนี้ คุณยังจะเห็นคำแนะนำที่ปรับเปลี่ยนในแบบของคุณสำหรับสิ่งที่ต้องทำต่อไปด้วย</translation>
+<translation id="396506362088290977">ทดสอบเสียงไมโครโฟน</translation>
 <translation id="3969043077941541451">ปิด</translation>
 <translation id="3970324493235864154">ดูการแจ้งเตือนของโทรศัพท์</translation>
 <translation id="397105322502079400">กำลังคำนวณ...</translation>
@@ -894,6 +896,7 @@
 <translation id="4151054805501931758">ปรับแต่งภาพบุคคล</translation>
 <translation id="4156293514828496577">แบตเตอรี่เหลืออยู่ <ph name="PERCENTAGE" />% (ใช้ได้อีกประมาณ <ph name="TIME_LEFT" />) ระบบจำกัดฟีเจอร์บางอย่างเพื่อเพิ่มอายุการใช้งานแบตเตอรี่</translation>
 <translation id="4160919062868802509">ตรวจพบแหล่งที่มาของเสียงหลายแหล่ง</translation>
+<translation id="416245495747357243">เสร็จแล้ว</translation>
 <translation id="4165275524535002941">สายสัญญาณอาจไม่รองรับจอแสดงผล</translation>
 <translation id="4177415338862979658">คลิกเพื่อดูรายละเอียด</translation>
 <translation id="4177913004758410636">{0,plural, =1{อัปเดตอุปกรณ์ภายใน 1 วัน}other{อัปเดตอุปกรณ์ภายใน # วัน}}</translation>
@@ -979,6 +982,7 @@
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> ปิดอยู่</translation>
 <translation id="4417647906073317561">การตั้งค่าโหมดโฟกัส ตั้งตัวจับเวลา งาน และเพลงเพื่อโฟกัสกับงาน</translation>
 <translation id="4424159417645388645">เดสก์ 5</translation>
+<translation id="4426817706804363424">เยี่ยมเลย</translation>
 <translation id="4430019312045809116">ระดับเสียง</translation>
 <translation id="4441283832827406317">จัดเรียงแอปตามชื่อแล้ว</translation>
 <translation id="4445159312344259901">ลงชื่อเข้าใช้เพื่อปลดล็อก</translation>
@@ -1243,6 +1247,7 @@
 <translation id="5283198616748585639">เพิ่ม 1 นาที</translation>
 <translation id="528468243742722775">สิ้นสุด</translation>
 <translation id="5286194356314741248">กำลังสแกน</translation>
+<translation id="528641622273682395">เปิด/ปิดการทดสอบไมโครโฟน</translation>
 <translation id="5297423144044956168">ไม่พบอุปกรณ์เคลื่อนที่</translation>
 <translation id="5297704307811127955">ปิด</translation>
 <translation id="5300589172476337783">แสดง</translation>
@@ -1270,6 +1275,7 @@
 <translation id="536019650977002321">ผู้ดูแลระบบไม่อนุญาตให้บันทึกเสียง ติดต่อผู้ดูแลระบบเพื่อสอบถามข้อมูลเพิ่มเติม</translation>
 <translation id="5361524080961918551">ดาวน์โหลดไฟล์คําพูดภาษา<ph name="LANGUAGE" />แล้วบางส่วน</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> ไปที่แท็บนี้</translation>
+<translation id="5363835273551457276">คุณทดสอบเสียงไมโครโฟนได้ ปิดแผงเพื่อหยุด</translation>
 <translation id="5364693579536176785">พื้นที่เก็บข้อมูล</translation>
 <translation id="5369573834963677938">ผู้ใช้รายอื่นในอุปกรณ์จะใช้การควบคุมด้วยใบหน้าได้</translation>
 <translation id="5369717264580061086">แสดงตัวอย่างไฟล์ในแอป Files</translation>
@@ -1503,7 +1509,6 @@
 <translation id="6119972796024789243">การแก้สี</translation>
 <translation id="6121838516699723042">ยืนยันการดาวน์โหลด <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">ใช้ Google Assistant ในเซสชันผู้เยี่ยมชมไม่ได้</translation>
-<translation id="6127370444807669747">ลองใช้ YouTube Music Premium เพื่อรับเพลย์ลิสต์ที่ปรับเปลี่ยนในแบบของคุณและเพลงที่ช่วยให้โฟกัสได้มากขึ้น</translation>
 <translation id="6127395413317891856">คุณออฟไลน์อยู่ โปรดตรวจสอบการเชื่อมต่อแล้วลองอีกครั้ง</translation>
 <translation id="6129953537138746214">ช่องว่าง</translation>
 <translation id="6137566720514957455">เปิดกล่องโต้ตอบการนำออกของ <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -2121,6 +2126,7 @@
 <translation id="8262312463845990408">สลับการเล่น</translation>
 <translation id="8268302343625273732">ดูงานทั้งหมดใน Google Classroom</translation>
 <translation id="8277261673056602147">ไฮไลต์ข้อความในหน้าจอ</translation>
+<translation id="8282784978194352587">คุณทำได้</translation>
 <translation id="8287009018010202411">ประสิทธิภาพการทำงาน</translation>
 <translation id="828708037801473432">ปิด</translation>
 <translation id="8297006494302853456">อ่อน</translation>
@@ -2198,6 +2204,7 @@
 <translation id="8609384513243082612">เปิดแท็บใหม่</translation>
 <translation id="861045123704058818">แอปจัดเรียงตามหมวดหมู่ชั่วคราว</translation>
 <translation id="8612216344243590325">เก็บไฟล์สำคัญไว้ใน <ph name="HOLDING_SPACE_TITLE" /> แทนที่จะเก็บไฟล์บนเดสก์ท็อป เพียงลากไฟล์ไปที่ <ph name="HOLDING_SPACE_TITLE" /></translation>
+<translation id="8612338981637220013">ไปได้สวยเลย</translation>
 <translation id="8614517853887502247">การแจ้งเตือนของ <ph name="APP_1_TITLE" /> และ <ph name="APP_2_TITLE" /> ซ่อนอยู่เนื่องจากเปิดโหมดป้องกันการดูไว้</translation>
 <translation id="8615778328722901791">เปิดแถบเครื่องมือ</translation>
 <translation id="8619000641825875669">OneDrive</translation>
@@ -2240,6 +2247,7 @@
 <translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />: กำลังเปิดใช้งาน...</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
+<translation id="8751299148074971734">เยี่ยมมาก</translation>
 <translation id="8753368202781196133">ปัจจุบันระบบยังไม่รองรับภาษานี้</translation>
 <translation id="8755498163081687682">ยืนยันตัวตนของคุณ: <ph name="ORIGIN_NAME" /> ต้องการยืนยันว่าเป็นคุณ</translation>
 <translation id="875593634123171288">แสดงการตั้งค่า VPN</translation>

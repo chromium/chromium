@@ -116,6 +116,7 @@
 <translation id="1517166097004694782">Piilota "Jatka tällä välilehdellä"</translation>
 <translation id="1520027731907768768">Tilaa hinnanlaskuilmoitukset seuraamistasi tuotteista.</translation>
 <translation id="1521774566618522728">Aktiivinen tänään</translation>
+<translation id="1524563461097350801">Ei kiitos</translation>
 <translation id="1531038290222364269">Näytä välilehdet</translation>
 <translation id="1536390784834419204">Käännä sivu</translation>
 <translation id="1540800554400757039">Osoite 1</translation>
@@ -1507,7 +1508,6 @@ Sivustot voivat nähdä selaustoimintaasi eri sivustoilta evästeiden kautta esi
 <translation id="8173034266693057059">Pituus</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8182037667962849780">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} ja 1 muu}other{{website_1}, {website_2} ja {more_count} muuta}}</translation>
-<translation id="8189814768485665290">Jaa koko URL-osoite</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Omat laitteet<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Lisää salasana</translation>
 <translation id="8202744799033457229">Näytä historia</translation>
@@ -1541,6 +1541,7 @@ Sivustot voivat nähdä selaustoimintaasi eri sivustoilta evästeiden kautta esi
 <translation id="8349305172487531364">Kirjanmerkkipalkki</translation>
 <translation id="8366466717204352506">Tarkistusta ei tehty</translation>
 <translation id="8368001212524806591">Seuraa hintaa</translation>
+<translation id="8370406443343902172">Avaa Asetukset…</translation>
 <translation id="8372471489238799313">{count,plural, =1{Poista osoite}other{Poista osoitteet}}</translation>
 <translation id="8378714024927312812">Organisaatiosi ylläpitämä</translation>
 <translation id="8386068868580335421">Nollaa</translation>
@@ -1603,6 +1604,7 @@ Sivustot voivat nähdä selaustoimintaasi eri sivustoilta evästeiden kautta esi
 <translation id="8637431369725868556">Suojaudu vaarallisilta sivustoilta.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Ei vaarantuneita salasanoja}=1{{COUNT} vaarantunut salasana}other{{COUNT} vaarantunutta salasanaa}}</translation>
 <translation id="8640575194957831802">Avattu viimeksi</translation>
+<translation id="8647280737650867362">Hinnan seuraamisen lopettaminen epäonnistui.</translation>
 <translation id="8654802032646794042">Peru</translation>
 <translation id="8660600697590740984">Kopioitu Lens-kuva</translation>
 <translation id="866266761389616183">Harmin paikka!</translation>

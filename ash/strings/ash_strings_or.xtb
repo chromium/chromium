@@ -42,6 +42,7 @@
 <translation id="1148499908455722006"><ph name="USER_NAME" /> ପାଇଁ ସୂଚନା ଡାଏଲଗ୍ ଖୋଲନ୍ତୁ</translation>
 <translation id="1150989369772528668">କ୍ୟାଲେଣ୍ଡର୍</translation>
 <translation id="1153356358378277386">ପେୟାର୍ ହୋଇଥିବା ଡିଭାଇସ୍</translation>
+<translation id="1153918444040990015">ଫୋକସ ସାଉଣ୍ଡ ସହ କନେକ୍ଟ କରାଯାଇପାରିଲା ନାହିଁ</translation>
 <translation id="1155734730463845512">ବର୍ତ୍ତମାନର ବେଟେରୀ ଲେଭେଲ <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1157514002898505378">ଜେନେରେଟିଭ AI ପରୀକ୍ଷାମୂଳକ ଅଟେ ଏବଂ ବିଷୟବସ୍ତୁ ଭୁଲ, ବିଭ୍ରାନ୍ତିକର କିମ୍ବା ଅପମାନଜନକ ହୋଇପାରେ। ଏକ ସମସ୍ୟାର ରିପୋର୍ଟ କରିବାକୁ ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କ ସହ କଣ୍ଟାକ୍ଟ କରନ୍ତୁ। <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="1160215328209699296">ଚାଲୁ ଏବଂ ବ୍ୟବହାରରେ ଅଛି</translation>
@@ -175,6 +176,7 @@
 <translation id="1550523713251050646">ଅଧିକ ବିକଳ୍ପଗୁଡ଼ିକ ପାଇଁ କ୍ଲିକ୍ କରନ୍ତୁ</translation>
 <translation id="1555130319947370107">ନୀଳ</translation>
 <translation id="1557622599341396706">ଡେସ୍କର ନାମ ଦେଖାନ୍ତୁ</translation>
+<translation id="1567138500090284106">ମାଉସ କୀ ବଟନ</translation>
 <translation id="1569384531973824928">ଏହା କେମେରା ଏବଂ ମାଇକ୍ରୋଫୋନ ଅନୁମତି ସହିତ ସମସ୍ତ ଆପ୍ସ ଓ ୱେବସାଇଟ ଆକ୍ସେସ କରିବାକୁ ଅନୁମତି ଦିଏ। ଆପଣଙ୍କୁ ୱେବ ପୃଷ୍ଠାକୁ ରିଫ୍ରେସ କରିବା କିମ୍ବା ଆପକୁ ରିଷ୍ଟାର୍ଟ କରିବା ଆବଶ୍ୟକ ହୋଇପାରେ।</translation>
 <translation id="1571697193564730395">'ବିରକ୍ତ କରନ୍ତୁ ନାହିଁ' ଟୋଗଲ୍ କରନ୍ତୁ। <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">ମେଗ୍ନିଫାୟର ଚାଲୁ ଥିବା ସମୟରେ ଜୁମ ଆଉଟ କରନ୍ତୁ</translation>
@@ -242,6 +244,7 @@
 <translation id="1787955149152357925">ବନ୍ଦ ଅଛି</translation>
 <translation id="1796561540704213354">ଆପଣ ଭିଜିଟ କରିଥିବା ପୃଷ୍ଠା ଏବଂ ଖୋଲା ଥିବା ପୃଷ୍ଠା ସମେତ ୱେବସାଇଟଗୁଡ଼ିକ</translation>
 <translation id="179842970735685253">Googleର ସେବାର ସର୍ତ୍ତାବଳୀ</translation>
+<translation id="1805407494113167797">ଫୋକସ ସାଉଣ୍ଡ ପ୍ଲେ କରାଯାଇପାରିଲା ନାହିଁ</translation>
 <translation id="181103072419391116">ସିଗ୍‍ନାଲ୍‍ର କ୍ଷମତା <ph name="SIGNAL_STRENGTH" />, ଆପଣଙ୍କର ଆଡ୍‍ମିନିଷ୍ଟ୍ରେଟର୍‍ଙ୍କ ଦ୍ୱାରା ପରିଚାଳିତ</translation>
 <translation id="1816896987747843206">ଏହା କେମେରା ଅନୁମତି ଥିବା ସମସ୍ତ ଆପ୍ସ ଓ ୱେବସାଇଟ ପାଇଁ କେମେରା ଆକ୍ସେସକୁ ଅନୁମତି ଦିଏ</translation>
 <translation id="1823873187264960516">ଇଥର୍ନେଟ୍: <ph name="ADDRESS" /></translation>
@@ -1354,6 +1357,7 @@
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">ଆପଣଙ୍କ ପାସୱାର୍ଡକୁ ଯାଞ୍ଚ କରାଯାଇପାରିଲା ନାହିଁ। ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="5632485077360054581">କିପରି କରାଯାଏ ତାହା ମୋତେ ଦେଖାନ୍ତୁ</translation>
+<translation id="5633826232582408011">ଯେତେବେଳେ ଆପଣ 'ଲେଖିବାକୁ ମୋତେ ସାହାଯ୍ୟ କର' ଏବଂ 'ପଢ଼ିବାକୁ ମୋତେ ସାହାଯ୍ୟ କର'କୁ ଚାଲୁ କରନ୍ତି, <ph name="LINK_TO_SERVICE_TERMS" /> ଅନୁଯାୟୀ ଲେଖିବା ପରାମର୍ଶ ଜେନେରେଟ କରିବା, ସାରାଂଶ ଜେନେରେଟ କରିବା, ପ୍ରଶ୍ନଗୁଡ଼ିକର ଉତ୍ତର ଦେବା ଏବଂ ପ୍ରଡକ୍ଟକୁ ଉନ୍ନତ କରିବା ପାଇଁ Google AI ସର୍ଭରକୁ ଇନପୁଟ ଟେକ୍ସଟ, ଡକ୍ୟୁମେଣ୍ଟ ବିଷୟବସ୍ତୁ ଏବଂ ୱେବ ପୃଷ୍ଠା URL ପଠାଯାଏ। କୌଣସି ବ୍ୟକ୍ତିଗତ, ସମ୍ବେଦନଶୀଳ କିମ୍ବା ଗୋପନୀୟ ସୂଚନା ଅନ୍ତର୍ଭୁକ୍ତ କରନ୍ତୁ ନାହିଁ।</translation>
 <translation id="5648021990716966815">ମାଇକ୍ ଜ୍ୟାକ୍</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> ଆପଣଙ୍କୁ ଧ୍ୟାନ ଦେବା ପାଇଁ ଅନୁରୋଧ କରୁଛି।</translation>
 <translation id="5662075790140998213">ଡେସ୍କ 10</translation>
@@ -1504,7 +1508,6 @@
 <translation id="6119972796024789243">ରଙ୍ଗ ସଂଶୋଧନ</translation>
 <translation id="6121838516699723042"><ph name="FILENAME" />କୁ ଡାଉନଲୋଡ କରିବା ସୁନିଶ୍ଚିତ କରନ୍ତୁ</translation>
 <translation id="612734058257491180">ଏକ ଅତିଥି ସମୟ ଅବଧିରେ Google Assistant ଉପଲବ୍ଧ ନାହିଁ।</translation>
-<translation id="6127370444807669747">ପର୍ସନାଲାଇଜ କରାଯାଇଥିବା ପ୍ଲେଲିଷ୍ଟ ଏବଂ ଅଧିକ ଫୋକସ କରାଯାଇଥିବା ମ୍ୟୁଜିକ ପାଇଁ YouTube Music Premium ବ୍ୟବହାର କରି ଦେଖନ୍ତୁ</translation>
 <translation id="6127395413317891856">ଆପଣ ଅଫଲାଇନ ଅଛନ୍ତି। ଆପଣଙ୍କ କନେକ୍ସନ ଯାଞ୍ଚ କରି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="6129953537138746214">ସ୍ପେସ୍</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" /> ପାଇଁ କାଢ଼ି ଦିଅନ୍ତୁ ଡାଏଲଗ୍ ଖୋଲନ୍ତୁ</translation>
@@ -2281,6 +2284,7 @@
 <translation id="8876661425082386199">ଆପଣଙ୍କର ସଂଯୋଗ ଯାଞ୍ଚ କରନ୍ତୁ</translation>
 <translation id="8877788021141246043">ଗୋଟିଏ ରିମାଇଣ୍ଡର୍‌କୁ ସେଟ୍ କରନ୍ତୁ</translation>
 <translation id="8878886163241303700">ସ୍କ୍ରିନ୍‍ର ବିସ୍ତାର କରନ୍ତୁ</translation>
+<translation id="8885424115080869847">YouTube Music ସହ କନେକ୍ଟ କରାଯାଇପାରିଲା ନାହିଁ</translation>
 <translation id="888982883502837004">ଆପଣଙ୍କ ଡିଭାଇସ ପାଇଁ ଫାର୍ମୱେର ଅପଡେଟଗୁଡ଼ିକ ଉପଲବ୍ଧ ଅଛି। ସମୀକ୍ଷା କରି ଅପଡେଟ କରିବା ପାଇଁ କ୍ଲିକ କରନ୍ତୁ।</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> ସ୍ଥାୟୀ ଭାବେ ଡିଲିଟ ହୋଇଯିବ</translation>
 <translation id="889790758758811533"><ph name="PERCENTAGE" />% ବେଟେରୀ ଚାର୍ଜ ବାକି ଅଛି (ପ୍ରାୟ <ph name="TIME_LEFT" />)। ଆପଣଙ୍କ ଡିଭାଇସକୁ ପାୱାର ସହ କନେକ୍ଟ କରନ୍ତୁ।</translation>

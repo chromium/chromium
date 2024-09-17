@@ -78,6 +78,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1240638468526743569">Un'app</translation>
 <translation id="1242198791279543032">Le notifiche sono disattivate</translation>
 <translation id="1242883863226959074">dispositivo</translation>
+<translation id="1245476784081715330">Ottimo lavoro!</translation>
 <translation id="1245644940275736236">Vai all'Assistente</translation>
 <translation id="124678866338384709">Chiudi scheda corrente</translation>
 <translation id="1246890715821376239">App non supportate</translation>
@@ -839,6 +840,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="3958714870339660776">Tutto il giorno</translation>
 <translation id="3962859241508114581">Traccia precedente</translation>
 <translation id="3963124517343721543">Continua facilmente da dove avevi interrotto aprendo le finestre e le schede precedenti. Vedrai anche suggerimenti personalizzati su cosa fare dopo.</translation>
+<translation id="396506362088290977">Testa il suono del microfono</translation>
 <translation id="3969043077941541451">Off</translation>
 <translation id="3970324493235864154">Visualizza le notifiche dello smartphone</translation>
 <translation id="397105322502079400">Calcolo in corso...</translation>
@@ -896,6 +898,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="4156293514828496577">Batteria rimanente: <ph name="PERCENTAGE" />% (circa <ph name="TIME_LEFT" />).
 Alcune funzionalità sono limitate per aumentare la durata della batteria.</translation>
 <translation id="4160919062868802509">Più sorgenti audio rilevate</translation>
+<translation id="416245495747357243">Finito!</translation>
 <translation id="4165275524535002941">Il cavo potrebbe non supportare i display</translation>
 <translation id="4177415338862979658">Fai clic per verificare i dettagli</translation>
 <translation id="4177913004758410636">{0,plural, =1{Aggiorna il dispositivo entro 1 giorno}other{Aggiorna il dispositivo entro # giorni}}</translation>
@@ -981,6 +984,7 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="4412944820643904175">La funzionalità <ph name="FEATURE_NAME" /> è disattivata.</translation>
 <translation id="4417647906073317561">Impostazioni della modalità Niente distrazioni. Imposta un timer, un'attività e la musica per iniziare a concentrarti.</translation>
 <translation id="4424159417645388645">Scrivania 5</translation>
+<translation id="4426817706804363424">Complimenti!</translation>
 <translation id="4430019312045809116">Volume</translation>
 <translation id="4441283832827406317">Le app sono ordinate per nome</translation>
 <translation id="4445159312344259901">Accedi per sbloccare</translation>
@@ -1245,6 +1249,7 @@ Puoi anche utilizzare la scorciatoia da tastiera. Evidenzia il testo, quindi pre
 <translation id="5283198616748585639">Aggiungi 1 min</translation>
 <translation id="528468243742722775">Fine</translation>
 <translation id="5286194356314741248">Ricerca</translation>
+<translation id="528641622273682395">Attiva/disattiva il test del microfono</translation>
 <translation id="5297423144044956168">Nessun dispositivo mobile trovato</translation>
 <translation id="5297704307811127955">Off</translation>
 <translation id="5300589172476337783">Mostra</translation>
@@ -1272,6 +1277,7 @@ Nessun dispositivo connesso.</translation>
 <translation id="536019650977002321">L'amministratore non consente l'acquisizione dell'audio. Per ulteriori informazioni al riguardo rivolgiti all’amministratore.</translation>
 <translation id="5361524080961918551"><ph name="LANGUAGE" /> file vocali scaricati parzialmente</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Vai a questa scheda</translation>
+<translation id="5363835273551457276">Puoi testare il suono del microfono. Chiudi il riquadro per interrompere.</translation>
 <translation id="5364693579536176785">spazio di archiviazione</translation>
 <translation id="5369573834963677938">Il controllo del volto sarà disponibile per gli altri utenti sul dispositivo</translation>
 <translation id="5369717264580061086">Visualizza l'anteprima del file nell'app File</translation>
@@ -1412,6 +1418,7 @@ Nessun dispositivo connesso.</translation>
 <translation id="5802516411616338943">Apri le Impostazioni rapide</translation>
 <translation id="5804651031882187592">Disattiva l'impostazione "Blocca SIM"</translation>
 <translation id="5805809050170488595">Fai clic per attivare <ph name="NETWORK_NAME" /></translation>
+<translation id="5818796501620225415">Puoi aggiungere tempo o terminare la sessione in modalità Senza distrazioni</translation>
 <translation id="5819918159912280082">Chromebook si è riavviato in modo imprevisto. Apri le finestre e le app precedenti.</translation>
 <translation id="5823239091726045201">Google Tasks sul web</translation>
 <translation id="5825969630400862129">Impostazioni dispositivi connessi</translation>
@@ -1505,7 +1512,6 @@ Nessun dispositivo connesso.</translation>
 <translation id="6119972796024789243">Correzione del colore</translation>
 <translation id="6121838516699723042">Conferma download <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">L'Assistente Google non è disponibile in una sessione Ospite.</translation>
-<translation id="6127370444807669747">Per playlist personalizzate e altra musica per la concentrazione, prova YouTube Music Premium</translation>
 <translation id="6127395413317891856">Sei offline. Controlla la connessione e riprova.</translation>
 <translation id="6129953537138746214">Spazio</translation>
 <translation id="6137566720514957455">Apri la finestra di dialogo di rimozione per <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -2123,6 +2129,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="8262312463845990408">Attiva/disattiva riproduzione</translation>
 <translation id="8268302343625273732">Visualizza tutti i compiti in Google Classroom</translation>
 <translation id="8277261673056602147">Evidenzia il testo sullo schermo</translation>
+<translation id="8282784978194352587">Ce l'hai fatta!</translation>
 <translation id="8287009018010202411">Produttività</translation>
 <translation id="828708037801473432">Off</translation>
 <translation id="8297006494302853456">Debole</translation>
@@ -2200,6 +2207,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="8609384513243082612">Apre una nuova scheda</translation>
 <translation id="861045123704058818">Le app sono temporaneamente organizzate per categoria</translation>
 <translation id="8612216344243590325">Conserva i file importanti in <ph name="HOLDING_SPACE_TITLE" /> anziché sul desktop. Basta trascinare i file in <ph name="HOLDING_SPACE_TITLE" />.</translation>
+<translation id="8612338981637220013">Vai alla grande!</translation>
 <translation id="8614517853887502247">Le notifiche delle app <ph name="APP_1_TITLE" /> e <ph name="APP_2_TITLE" /> sono nascoste perché è attiva la visualizzazione protetta</translation>
 <translation id="8615778328722901791">Apri barra degli strumenti</translation>
 <translation id="8619000641825875669">OneDrive</translation>
@@ -2241,6 +2249,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="8735678380411481005">Colore della retroilluminazione della tastiera</translation>
 <translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />: attivazione in corso…</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />, <ph name="SCREEN_SHARE_STATUS" /></translation>
+<translation id="8751299148074971734">Continua così!</translation>
 <translation id="8753368202781196133">Al momento questa lingua non è supportata.</translation>
 <translation id="8755498163081687682">Verifica la tua identità come richiesto da <ph name="ORIGIN_NAME" /></translation>
 <translation id="875593634123171288">Mostra impostazioni VPN</translation>

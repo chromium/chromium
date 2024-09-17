@@ -42,6 +42,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="1148499908455722006">Infodialog für <ph name="USER_NAME" /> öffnen</translation>
 <translation id="1150989369772528668">Kalender</translation>
 <translation id="1153356358378277386">Gekoppelte Geräte</translation>
+<translation id="1153918444040990015">Verbindung zu den Sounds für mehr Konzentration konnte nicht hergestellt werden</translation>
 <translation id="1155734730463845512">Aktueller Akkustand: <ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="1157514002898505378">Generative KI ist experimentell und die Inhalte können fehlerhaft, irreführend oder anstößig sein. Wenn du ein Problem melden möchtest, wende dich an deinen Administrator. <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="1160215328209699296">eingeschaltet und wird verwendet</translation>
@@ -175,6 +176,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="1550523713251050646">Für weitere Optionen klicken</translation>
 <translation id="1555130319947370107">Blau</translation>
 <translation id="1557622599341396706">Desktopnamen anzeigen</translation>
+<translation id="1567138500090284106">Schaltfläche „Maustasten“</translation>
 <translation id="1569384531973824928">Dadurch erhalten alle Apps und Websites mit Kamera- und Mikrofonberechtigung Zugriff. Möglicherweise musst du die Webseite aktualisieren oder die App neu starten.</translation>
 <translation id="1571697193564730395">„Bitte nicht stören“ aktivieren/deaktivieren. <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">Herauszoomen, wenn die Lupe aktiviert ist</translation>
@@ -242,6 +244,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="1787955149152357925">Aus</translation>
 <translation id="1796561540704213354">Websites, einschließlich besuchter und derzeit geöffneter Seiten</translation>
 <translation id="179842970735685253">Google-Nutzungsbedingungen</translation>
+<translation id="1805407494113167797">Die Sounds für mehr Konzentration konnten nicht abgespielt werden</translation>
 <translation id="181103072419391116">Signalstärke bei <ph name="SIGNAL_STRENGTH" />, von deinem Administrator verwaltet</translation>
 <translation id="1816896987747843206">Dies erlaubt den Kamerazugriff für alle Apps und Websites mit Kameraberechtigung</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
@@ -373,6 +376,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="2359808026110333948">Weiter</translation>
 <translation id="2360398059912971776">Akku</translation>
 <translation id="2361210043495191221">WLAN aktivieren/deaktivieren. <ph name="STATE" />.</translation>
+<translation id="2364710166605611987">Darstellungseffekte</translation>
 <translation id="236574664504281623">Gesendet von <ph name="SESSION_NAME" /></translation>
 <translation id="2367186422933365202">Anmeldung auf dem Chromebook nicht möglich</translation>
 <translation id="2367972762794486313">Apps anzeigen</translation>
@@ -732,6 +736,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="3600061223661453002">Aus</translation>
 <translation id="3604801046548457007">Desktop <ph name="DESK_TITILE" /> erstellt</translation>
 <translation id="3606978283550408104">Verbindung zur Braillezeile hergestellt</translation>
+<translation id="3612634595000403645">Einstellungen für Darstellungseffekte</translation>
 <translation id="3615926715408477684">Bei Aktivierung der mobilen Daten wird auch Bluetooth aktiviert</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3616883743181209306">Menü wurde nach rechts oben auf dem Bildschirm verschoben.</translation>
@@ -890,6 +895,7 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="4146671046252289537">Ans Ende des nächsten Worts</translation>
 <translation id="4146833061457621061">Musik abspielen</translation>
 <translation id="4150201353443180367">Display</translation>
+<translation id="4151054805501931758">Porträtretusche</translation>
 <translation id="4156293514828496577">Der Akkustand beträgt noch <ph name="PERCENTAGE" /> % (noch ungefähr <ph name="TIME_LEFT" />).
 Einige Funktionen sind eingeschränkt, um die Akkulaufzeit zu verlängern.</translation>
 <translation id="4160919062868802509">Mehrere Audioquellen erkannt</translation>
@@ -1502,7 +1508,6 @@ Keine Geräte verbunden.</translation>
 <translation id="6119972796024789243">Farbkorrektur</translation>
 <translation id="6121838516699723042">Download bestätigen: <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">In Gastsitzungen ist Google Assistant nicht verfügbar.</translation>
-<translation id="6127370444807669747">Für personalisierte Playlists und mehr Musik zum Konzentieren, probiere YouTube Music Premium aus</translation>
 <translation id="6127395413317891856">Du bist offline. Prüfe deine Verbindung und versuche es dann noch einmal.</translation>
 <translation id="6129953537138746214">Leertaste</translation>
 <translation id="6137566720514957455">Dialog „Entfernen“ für <ph name="USER_EMAIL_ADDRESS" /> öffnen</translation>
@@ -1964,6 +1969,7 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="7768784765476638775">Vorlesen</translation>
 <translation id="7769299611924763557">Die GIF-Datei ist gleich bereit</translation>
 <translation id="7773536009433685931">Stattdessen WLAN aktivieren</translation>
+<translation id="77747521138552256">Zu viele PIN‑Eingabeversuche. Warte <ph name="TIME_LEFT" /> und versuch es noch einmal mit der PIN oder gib dein Passwort ein, um dich sofort anzumelden.</translation>
 <translation id="7780094051999721182">Verknüpfungen</translation>
 <translation id="7780159184141939021">Bildschirm drehen</translation>
 <translation id="7781829728241885113">Gestern</translation>
@@ -2279,6 +2285,7 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="8876661425082386199">Verbindung prüfen</translation>
 <translation id="8877788021141246043">Erinnerungen einrichten</translation>
 <translation id="8878886163241303700">Bildschirmerweiterung</translation>
+<translation id="8885424115080869847">Verbindung zu YouTube Music konnte nicht hergestellt werden</translation>
 <translation id="888982883502837004">Für dein Gerät sind Firmwareupdates verfügbar. Zum Prüfen und Herunterladen klicke hier.</translation>
 <translation id="8896630965521842259">„<ph name="DESK_TEMPLATE_NAME" />“ wird endgültig gelöscht</translation>
 <translation id="889790758758811533">Der Akkustand beträgt noch <ph name="PERCENTAGE" /> % (noch ungefähr <ph name="TIME_LEFT" />). Schließ dein Gerät an eine Steckdose an.</translation>

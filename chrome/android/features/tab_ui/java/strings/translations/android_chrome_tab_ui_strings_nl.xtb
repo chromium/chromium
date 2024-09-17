@@ -104,6 +104,7 @@
 <translation id="5400836586163650660">Grijs</translation>
 <translation id="5490235265819901748">Tabbladgroep uitgevouwen</translation>
 <translation id="5494920125229734069">Alles selecteren</translation>
+<translation id="5549653163690032080">Het actiemenu van de tabbladgroep openen voor de gedeelde tabbladgroep <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Tabbladgroep met <ph name="TABS_COUNT_ONE" /> tabblad sluiten, kleur <ph name="COLOR_NAME" />.}other{Tabbladgroep met <ph name="TABS_COUNT_MANY" /> tabbladen sluiten, kleur <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">Winkelinformatie bekijken, optie beschikbaar bovenaan het scherm</translation>
 <translation id="5627941783489838464">Geen tabbladupdates</translation>
@@ -135,6 +136,7 @@
 <translation id="6694634756612002311">Delen beheren</translation>
 <translation id="6744956528665271406">Groepskleur bewerken</translation>
 <translation id="6856809498882026482">Optie om meerdere tabbladen te selecteren verbergen</translation>
+<translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{Gedeelde tabbladgroep <ph name="TITLE_OF_GROUP" /> met <ph name="TABS_COUNT_ONE" /> tabblad uitvouwen, kleur <ph name="COLOR_NAME" />.}other{Gedeelde tabbladgroep <ph name="TITLE_OF_GROUP" /> met <ph name="TABS_COUNT_MANY" /> tabbladen uitvouwen, kleur <ph name="COLOR_NAME" />.}}</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Tabblad delen}other{Tabbladen delen}}</translation>
 <translation id="7129458170538955174">Informatie over deze winkel is op halve hoogte geopend</translation>
 <translation id="7200189319044305940">{NUMBER_OF_TABS,plural, =1{Groep <ph name="TITLE_OF_GROUP" /> met <ph name="TABS_COUNT_ONE" /> tabblad sluiten.}other{Groep <ph name="TITLE_OF_GROUP" /> met <ph name="TABS_COUNT_MANY" /> tabbladen sluiten.}}</translation>
@@ -170,6 +172,7 @@
 <translation id="8205266828577616993">Tabblad omhoog verplaatsen</translation>
 <translation id="8261506727792406068">Verwijderen</translation>
 <translation id="8338427544764842461">Je tabbladgroepen worden hier opgeslagen en worden geüpdatet op al je ingelogde apparaten</translation>
+<translation id="8344020191144794051">{NUMBER_OF_TABS,plural, =1{Gedeelde tabbladgroep met <ph name="TABS_COUNT_ONE" /> tabblad uitvouwen, kleur <ph name="COLOR_NAME" />.}other{Gedeelde tabbladgroep met <ph name="TABS_COUNT_MANY" /> tabbladen uitvouwen, kleur <ph name="COLOR_NAME" />.}}</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> geselecteerd tabblad sluiten}other{<ph name="TABS_COUNT_MANY" /> geselecteerde tabbladen sluiten}}</translation>
 <translation id="8398929769197326728">Nieuwe map - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">Instellingen</translation>

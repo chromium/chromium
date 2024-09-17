@@ -116,6 +116,7 @@
 <translation id="1517166097004694782">"આ ટૅબ સાથે ચાલુ રાખો" છુપાવો</translation>
 <translation id="1520027731907768768">તમે ટ્રૅક કરો છો તે પ્રોડક્ટની કિંમતમાં ઘટાડા વિશેના અલર્ટ મેળવો.</translation>
 <translation id="1521774566618522728">આજે સક્રિય છે</translation>
+<translation id="1524563461097350801">ના, આભાર</translation>
 <translation id="1531038290222364269">ટૅબ બતાવો</translation>
 <translation id="1536390784834419204">પેજનો અનુવાદ કરો</translation>
 <translation id="1540800554400757039">સરનામું 1</translation>
@@ -1507,7 +1508,6 @@
 <translation id="8173034266693057059">લંબાઈ</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8182037667962849780">{count,plural, =1{{website_1} માટે}=2{{website_1} અને {website_2} માટે}=3{{website_1}, {website_2} અને વધુ 1 માટે}one{{website_1}, {website_2} અને વધુ {more_count} માટે}other{{website_1}, {website_2} અને વધુ {more_count} માટે}}</translation>
-<translation id="8189814768485665290">સંપૂર્ણ URL શેર કરો</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />તમારા ડિવાઇસ<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">પાસવર્ડ ઉમેરો</translation>
 <translation id="8202744799033457229">ઇતિહાસ બતાવો</translation>
@@ -1541,6 +1541,7 @@
 <translation id="8349305172487531364">બુકમાર્ક બાર</translation>
 <translation id="8366466717204352506">તપાસ ક્યારેય ચાલી નથી</translation>
 <translation id="8368001212524806591">કિંમત ટ્રૅક કરો</translation>
+<translation id="8370406443343902172">સેટિંગ પર જાઓ...</translation>
 <translation id="8372471489238799313">{count,plural, =1{ઍડ્રેસ ડિલીટ કરો}one{ઍડ્રેસ ડિલીટ કરો}other{ઍડ્રેસ ડિલીટ કરો}}</translation>
 <translation id="8378714024927312812">તમારી સંસ્થા દ્વારા મેનેજ કરેલ</translation>
 <translation id="8386068868580335421">રીસેટ કરો</translation>

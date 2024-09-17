@@ -1356,6 +1356,7 @@ Aucun appareil n'est connecté.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Votre mot de passe n'a pas pu être vérifié. Réessayez.</translation>
 <translation id="5632485077360054581">Afficher la marche à suivre</translation>
+<translation id="5633826232582408011">Lorsque vous activez l'Aide à la rédaction et l'Aide à la lecture, le texte saisi, le contenu du document et l'URL de la page Web sont envoyés aux serveurs de l'IA de Google pour générer des suggestions de rédaction, générer des résumés, répondre aux questions et améliorer le produit, sous réserve des <ph name="LINK_TO_SERVICE_TERMS" />. N'incluez aucun élément personnel ni aucun élément confidentiel.</translation>
 <translation id="5648021990716966815">Prise du microphone</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> demande votre attention.</translation>
 <translation id="5662075790140998213">Bureau 10</translation>
@@ -1413,6 +1414,7 @@ Aucun appareil n'est connecté.</translation>
 <translation id="5802516411616338943">Ouvrir les Paramètres rapides</translation>
 <translation id="5804651031882187592">Désactiver le paramètre « Verrouiller la carte SIM »</translation>
 <translation id="5805809050170488595">Cliquez pour activer <ph name="NETWORK_NAME" /></translation>
+<translation id="5818796501620225415">Vous pouvez ajouter du temps ou mettre fin à votre séance</translation>
 <translation id="5819918159912280082">Votre Chromebook a redémarré de manière inattendue. Ouvrez vos fenêtres et vos applis précédentes.</translation>
 <translation id="5823239091726045201">Google Tâches sur le Web</translation>
 <translation id="5825969630400862129">Paramètres des appareils connectés</translation>
@@ -1506,7 +1508,6 @@ Aucun appareil n'est connecté.</translation>
 <translation id="6119972796024789243">Correction des couleurs</translation>
 <translation id="6121838516699723042">Confirmer le téléchargement de <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">L'Assistant Google n'est pas accessible dans une session d'invité.</translation>
-<translation id="6127370444807669747">Pour des listes de lecture personnalisées et plus de musique de concentration, essayez YouTube Music Premium</translation>
 <translation id="6127395413317891856">Vous êtes hors ligne. Vérifiez votre connexion, puis réessayez.</translation>
 <translation id="6129953537138746214">Espace</translation>
 <translation id="6137566720514957455">Ouvrir la boîte de dialogue de retrait pour <ph name="USER_EMAIL_ADDRESS" /></translation>

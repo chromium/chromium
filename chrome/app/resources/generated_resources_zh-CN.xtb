@@ -553,6 +553,7 @@
 <translation id="1401216725754314428">在新标签页中详细了解相关网站</translation>
 <translation id="1402426911829176748">正在连接到您的设备</translation>
 <translation id="1403222014593521787">无法连接到代理</translation>
+<translation id="1405336513195181336">这包括书签、扩展程序和网站浏览记录。</translation>
 <translation id="1405779994569073824">已崩溃。</translation>
 <translation id="1406500794671479665">正在验证...</translation>
 <translation id="1407069428457324124">深色主题</translation>
@@ -1104,7 +1105,6 @@
 <translation id="1780273119488802839">正在导入书签...</translation>
 <translation id="1780572199786401845">举报令人反感/不安全的内容。</translation>
 <translation id="178092663238929451">设置“附近分享”功能即可与附近的人互发文件</translation>
-<translation id="1781164264587898620">应用降噪和音频增强功能。</translation>
 <translation id="1781291988450150470">当前 PIN 码</translation>
 <translation id="1781502536226964113">打开新标签页</translation>
 <translation id="1781553166608855614">语音采用的语言</translation>
@@ -2492,6 +2492,7 @@
 <translation id="2749881179542288782">检查拼写和语法</translation>
 <translation id="2750020734439919571">更多 Chrome 应用设置和权限</translation>
 <translation id="2750602041558385535">已拦截未经验证的下载内容</translation>
+<translation id="2751883373055093745"><ph name="WEBSITE" /> 想知道您的安全密钥的 ID 编号。此网站将会确切地知道您正在使用哪个安全密钥。</translation>
 <translation id="275213133112113418">您的卡已保存</translation>
 <translation id="2753623023919742414">点击即可搜索</translation>
 <translation id="2754226775788136540">正在查找已保存到 <ph name="PRIMARY_EMAIL" /> 的快速配对设备</translation>
@@ -3717,6 +3718,7 @@
 <translation id="3665589677786828986">Chrome检测到您的部分设置被其他程序篡改了，因此已将这些设置重置为原始默认设置。</translation>
 <translation id="3665919494326051362">当前版本为 <ph name="CURRENT_VERSION" /></translation>
 <translation id="3666196264870170605">Intel Wi-Fi NIC 调试转储</translation>
+<translation id="3666529246018937077">现有的浏览数据将保留在旧个人资料中。工作资料将不包含任何之前的浏览数据。</translation>
 <translation id="3666971425390608309"><ph name="FILE_NAME" /> 已暂停下载。</translation>
 <translation id="3670113805793654926">来自任何供应商的设备</translation>
 <translation id="3670229581627177274">开启蓝牙</translation>
@@ -4457,6 +4459,7 @@
 <translation id="4181841719683918333">语言</translation>
 <translation id="4182339886482390129">“增强型安全浏览”功能有助于保护您免受危险的网站、下载内容和扩展程序的侵害</translation>
 <translation id="4184803915913850597">HID 设备 (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
+<translation id="418527077671811642"><ph name="WEBSITE" /> 将了解安全密钥的品牌和型号</translation>
 <translation id="4186749321808907788"><ph name="QUERY_NAME" /> - <ph name="DEFAULT_SEARCH_ENGINE_NAME" />搜索</translation>
 <translation id="4187424053537113647">正在设置 <ph name="APP_NAME" />…</translation>
 <translation id="4190446002599583608">利用 AI 搜索历史记录</translation>
@@ -4584,6 +4587,7 @@
 <translation id="4278779213160967034">此过程可能需要几分钟的时间。正在下载文件。</translation>
 <translation id="4279129444466079448">您最多可以在此设备上安装 <ph name="PROFILE_LIMIT" /> 个 SIM 卡配置文件。若要再添加一个配置文件，请先移除一个现有的配置文件。</translation>
 <translation id="4280325816108262082">已关闭或未被使用时，设备会自动断开连接</translation>
+<translation id="4281412694055934031">网站可以请求在设备上安装 Web 应用</translation>
 <translation id="4281789858103154731">创建</translation>
 <translation id="4281844954008187215">服务条款</translation>
 <translation id="4281849573951338030">自定义画笔按键</translation>
@@ -4791,6 +4795,7 @@
 <translation id="4426857487270413362">无法下载安装程序文件。请检查您的互联网连接，确保您有足够的可用磁盘空间，然后重试。错误代码为 <ph name="ERROR" />。</translation>
 <translation id="4427111270137140798">检测到 <ph name="COUNT" /> 次</translation>
 <translation id="4427365070557649936">正在验证确认码…</translation>
+<translation id="4428579202668721841">是否要将现有浏览数据与工作资料分开？</translation>
 <translation id="4429163740524851942">实体键盘布局</translation>
 <translation id="4430019312045809116">音量</translation>
 <translation id="443031431654216610">只能使用数字</translation>
@@ -5429,8 +5434,10 @@
 <translation id="490031510406860025">不允许在此网站上使用</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> 赫兹 - 隔行扫描</translation>
 <translation id="4900652253009739885">这是为“选择”操作分配的唯一开关键，因此无法移除。按任意键即可<ph name="RESPONSE" />。</translation>
+<translation id="4900908761825556116">不允许网站在设备上安装 Web 应用</translation>
 <translation id="4901154724271753917">展开“最近关闭的标签页”部分</translation>
 <translation id="4901309472892185668">请为实验“<ph name="EXPERIMENT_NAME" />”选择实验状态。</translation>
+<translation id="4902675024946078396">否，将其移至工作资料</translation>
 <translation id="49027928311173603">从服务器下载的策略无效：<ph name="VALIDATION_ERROR" />。</translation>
 <translation id="4903967893652864401">开启此设置后，系统会通过限制后台活动和视觉效果（例如流畅滚动）来节省电池电量。</translation>
 <translation id="4906490889887219338">设置或管理网络文件共享。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
@@ -7457,6 +7464,7 @@
 <translation id="6434104957329207050">点扫描速度</translation>
 <translation id="6434309073475700221">舍弃</translation>
 <translation id="6434325376267409267">您需要更新设备，才能使用 <ph name="APP_NAME" />。</translation>
+<translation id="6434690603850475457">是，单独保存（推荐）</translation>
 <translation id="6434755719322447931">混乱</translation>
 <translation id="6435339218366409950">选择要将字幕翻译成哪种语言</translation>
 <translation id="6436164536244065364">在 Chrome 应用商店中查看</translation>
@@ -8359,6 +8367,7 @@
 <translation id="708060913198414444">复制音频地址(&amp;O)</translation>
 <translation id="7082568314107259011">“<ph name="NETWORK_NAME" />”由您的管理员管理</translation>
 <translation id="7082850163410901674">通知在 Mac 系统设置中已关闭</translation>
+<translation id="7083729794572207131">网站通常会请求安装 Web 应用，以便提升您在该网站上的体验</translation>
 <translation id="7083774521940805477">您的 Chromebook 无法使用 Steam for Chromebook（Beta 版）。</translation>
 <translation id="708550780726587276">（未配置）</translation>
 <translation id="7086377898680121060">调高亮度</translation>
@@ -10461,6 +10470,7 @@
 <translation id="8617601976406256334">为 <ph name="SITE_NAME" /> 删除网站数据和权限？</translation>
 <translation id="8617748779076050570">安全配对号码：<ph name="CONNECTION_ID" /></translation>
 <translation id="8619000641825875669">OneDrive</translation>
+<translation id="8619369551122276044">不允许在设备上安装 Web 应用</translation>
 <translation id="8619803522055190423">阴影</translation>
 <translation id="8619892228487928601"><ph name="CERTIFICATE_NAME" />：<ph name="ERROR" /></translation>
 <translation id="8620206585293032550">闲置标签页外观</translation>
@@ -10936,7 +10946,7 @@
 
 您已向网站和应用授予的权限可能会应用于此账号。您可在<ph name="SETTINGS_LINK_BEGIN" />设置<ph name="SETTINGS_LINK_END" />部分中管理您的 Google 账号。</translation>
 <translation id="8945274638472141382">图标大小</translation>
-<translation id="8945508919180478719">录音室风麦克风</translation>
+<translation id="8945508919180478719">录音室级麦克风</translation>
 <translation id="8946359700442089734">此<ph name="IDS_SHORT_PRODUCT_NAME" />设备上未完全启用调试功能。</translation>
 <translation id="8946954897220903437">收起地址栏中的所有请求</translation>
 <translation id="894763922177556086">良好</translation>
@@ -11342,6 +11352,7 @@
 <translation id="93393615658292258">密码</translation>
 <translation id="934244546219308557">为此组命名</translation>
 <translation id="93480724622239549">问题或错误</translation>
+<translation id="9354763467503131">可以请求在设备上安装 Web 应用</translation>
 <translation id="936646668635477464">摄像头和麦克风</translation>
 <translation id="936801553271523408">系统诊断数据</translation>
 <translation id="93766956588638423">修复扩展程序</translation>

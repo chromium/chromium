@@ -1358,6 +1358,7 @@ No hay dispositivos conectados.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">No se ha podido verificar tu contraseña. Inténtalo de nuevo.</translation>
 <translation id="5632485077360054581">Muéstrame cómo</translation>
+<translation id="5633826232582408011">Cuando activas Ayúdame a escribir y Ayúdame a leer, el texto de entrada, el contenido del documento y la URL de la página web se envían a los servidores de la IA de Google para generar sugerencias de escritura y resúmenes, responder preguntas y mejorar el producto, de acuerdo con los <ph name="LINK_TO_SERVICE_TERMS" />. No incluyas información personal, sensible ni confidencial.</translation>
 <translation id="5648021990716966815">Conector jack para micrófono</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> solicita tu atención.</translation>
 <translation id="5662075790140998213">Escritorio 10</translation>
@@ -1508,7 +1509,6 @@ No hay dispositivos conectados.</translation>
 <translation id="6119972796024789243">Corrección de color</translation>
 <translation id="6121838516699723042">Confirmar descarga de <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">El Asistente de Google no está disponible en las sesiones de invitado.</translation>
-<translation id="6127370444807669747">Prueba YouTube Music Premium para disfrutar de listas de reproducción personalizadas y más música para concentrarte</translation>
 <translation id="6127395413317891856">No tienes conexión. Comprueba tu conexión y vuelve a intentarlo.</translation>
 <translation id="6129953537138746214">Espacio</translation>
 <translation id="6137566720514957455">Abre el cuadro de diálogo para quitar la cuenta de <ph name="USER_EMAIL_ADDRESS" /></translation>

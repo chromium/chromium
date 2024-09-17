@@ -104,6 +104,7 @@
 <translation id="5400836586163650660">අළු</translation>
 <translation id="5490235265819901748">ටැබ සමූහය දිග හරින ලදි</translation>
 <translation id="5494920125229734069">සියල්ල තෝරන්න</translation>
+<translation id="5549653163690032080"><ph name="TITLE_OF_GROUP" /> බෙදා ගත් පටිති සමූහය සඳහා පටිති සමූහ ක්‍රියා මෙනුව විවෘත කරන්න</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> පටිත්තක්, වර්ණය <ph name="COLOR_NAME" /> සමග පටිති සමූහය වසන්න.}one{පටිති <ph name="TABS_COUNT_MANY" />ක්, වර්ණය <ph name="COLOR_NAME" /> සමග පටිති සමූහය වසන්න.}other{පටිති <ph name="TABS_COUNT_MANY" />ක්, වර්ණය <ph name="COLOR_NAME" /> සමග පටිති සමූහය වසන්න.}}</translation>
 <translation id="5556417849629758491">අලෙවිසැල් තොරතුරු බලන්න, තිරයේ ඉහළින්ම ඇති විකල්පය</translation>
 <translation id="5627941783489838464">පටිති යාවත්කාලීන නැත</translation>
@@ -135,6 +136,7 @@
 <translation id="6694634756612002311">බෙදා ගැනීම කළමනාකරණය කරන්න</translation>
 <translation id="6744956528665271406">සමූහයේ වර්ණය සංස්කරණය කරන්න</translation>
 <translation id="6856809498882026482">බහු-තේරීම් ප්‍රකාරය සඟවන්න</translation>
+<translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> පටිත්තක්, වර්ණය <ph name="COLOR_NAME" /> සමග බෙදා ගත් <ph name="TITLE_OF_GROUP" /> පටිති සමූහය පුළුල් කරන්න.}one{පටිති <ph name="TABS_COUNT_MANY" />ක්, වර්ණය <ph name="COLOR_NAME" /> සමග බෙදා ගත් <ph name="TITLE_OF_GROUP" /> පටිති සමූහය පුළුල් කරන්න.}other{පටිති <ph name="TABS_COUNT_MANY" />ක්, වර්ණය <ph name="COLOR_NAME" /> සමග බෙදා ගත් <ph name="TITLE_OF_GROUP" /> පටිති සමූහය පුළුල් කරන්න.}}</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{පටිත්ත බෙදා ගන්න}one{පටිති බෙදා ගන්න}other{පටිති බෙදා ගන්න}}</translation>
 <translation id="7129458170538955174">මෙම වෙළඳසැල පිළිබඳ තොරතුරු අර්ධ උසෙහිදී විවෘත විය</translation>
 <translation id="7200189319044305940">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> පටිත්තක් සමග <ph name="TITLE_OF_GROUP" /> සමූහය වසන්න.}one{පටිති <ph name="TABS_COUNT_MANY" />ක් සමග <ph name="TITLE_OF_GROUP" /> සමූහය වසන්න.}other{පටිති <ph name="TABS_COUNT_MANY" />ක් සමග <ph name="TITLE_OF_GROUP" /> සමූහය වසන්න.}}</translation>
@@ -170,6 +172,7 @@
 <translation id="8205266828577616993">පටිත්ත ඉහළට ගෙන යන්න</translation>
 <translation id="8261506727792406068">මකන්න</translation>
 <translation id="8338427544764842461">ඔබේ පටිති සමූහය මෙහි සුරකිනු ලබන අතර ඔබේ පුරන ලද සියලුම උපාංග පුරා යාවත්කාලීන කරනු ලබයි</translation>
+<translation id="8344020191144794051">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> පටිත්තක්, වර්ණය <ph name="COLOR_NAME" /> සමග බෙදා ගත් පටිති සමූහය පුළුල් කරන්න.}one{පටිති <ph name="TABS_COUNT_MANY" />ක්, වර්ණය <ph name="COLOR_NAME" /> සමග බෙදා ගත් පටිති සමූහය පුළුල් කරන්න.}other{පටිති <ph name="TABS_COUNT_MANY" />ක්, වර්ණය <ph name="COLOR_NAME" /> සමග බෙදා ගත් පටිති සමූහය පුළුල් කරන්න.}}</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{තේරූ <ph name="TABS_COUNT_ONE" /> පටිත්ත වසන්න}one{තේරූ පටිති <ph name="TABS_COUNT_MANY" /> වසරන්න}other{තේරූ පටිති <ph name="TABS_COUNT_MANY" /> වසරන්න}}</translation>
 <translation id="8398929769197326728">නව ෆෝල්ඩරය - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">සැකසුම්</translation>

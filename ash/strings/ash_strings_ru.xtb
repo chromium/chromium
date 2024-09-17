@@ -42,6 +42,7 @@
 <translation id="1148499908455722006">Открыть диалоговое окно с информацией об аккаунте <ph name="USER_NAME" /></translation>
 <translation id="1150989369772528668">Календарь</translation>
 <translation id="1153356358378277386">Сопряженные устройства</translation>
+<translation id="1153918444040990015">Не удалось получить доступ к звукам режима "Концентрация".</translation>
 <translation id="1155734730463845512">Текущий уровень заряда батареи: <ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="1157514002898505378">Генеративный искусственный интеллект – экспериментальная функция. Созданный контент может быть неточным или неприемлемым. Чтобы сообщить о проблеме, обратитесь к администратору. <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="1160215328209699296">включена и используется</translation>
@@ -175,6 +176,7 @@
 <translation id="1550523713251050646">Чтобы изменить источник питания, нажмите здесь.</translation>
 <translation id="1555130319947370107">Синий</translation>
 <translation id="1557622599341396706">Показать название рабочего стола</translation>
+<translation id="1567138500090284106">Кнопка "Клавиши управления мышью"</translation>
 <translation id="1569384531973824928">Доступ будет предоставлен всем приложениям и сайтам с разрешениями "Камера" и "Микрофон". Возможно, потребуется обновить веб-страницу или перезапустить приложение.</translation>
 <translation id="1571697193564730395">Включить или отключить режим "Не беспокоить". <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">Уменьшить, когда включена лупа</translation>
@@ -242,6 +244,7 @@
 <translation id="1787955149152357925">Отключено</translation>
 <translation id="1796561540704213354">Сайты, включая открытые и посещенные вами страницы</translation>
 <translation id="179842970735685253">Условиями использования Google</translation>
+<translation id="1805407494113167797">Не удалось воспроизвести звуки режима "Концентрация".</translation>
 <translation id="181103072419391116">Уровень сигнала – <ph name="SIGNAL_STRENGTH" />, под управлением администратора</translation>
 <translation id="1816896987747843206">Доступ к камере получат все приложения и сайты с разрешением "Камера".</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
@@ -1412,6 +1415,7 @@
 <translation id="5802516411616338943">Открыть быстрые настройки</translation>
 <translation id="5804651031882187592">Отключите блокировку SIM-карты</translation>
 <translation id="5805809050170488595">Нажмите, чтобы активировать <ph name="NETWORK_NAME" /></translation>
+<translation id="5818796501620225415">Можно добавить время или выйти из режима концентрации внимания.</translation>
 <translation id="5819918159912280082">Устройство Chromebook было перезагружено. Откройте предыдущие окна и приложения.</translation>
 <translation id="5823239091726045201">Google Задачи (веб-версия)</translation>
 <translation id="5825969630400862129">Настройки подключенных устройств</translation>
@@ -1505,7 +1509,6 @@
 <translation id="6119972796024789243">Коррекция цвета</translation>
 <translation id="6121838516699723042">Подтвердите скачивание файла <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">В рамках гостевого сеанса Google Ассистент недоступен.</translation>
-<translation id="6127370444807669747">Слушайте персональные плейлисты и музыку для концентрации внимания с YouTube Music Premium.</translation>
 <translation id="6127395413317891856">Нет интернета. Проверьте подключение и повторите попытку.</translation>
 <translation id="6129953537138746214">Пробел</translation>
 <translation id="6137566720514957455">Открыть диалоговое окно удаления аккаунта <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -2283,6 +2286,7 @@
 <translation id="8876661425082386199">Проверьте подключение</translation>
 <translation id="8877788021141246043">Создать напоминание</translation>
 <translation id="8878886163241303700">Раскрытый экран</translation>
+<translation id="8885424115080869847">Не удалось подключиться к YouTube Music.</translation>
 <translation id="888982883502837004">Для вашего устройства доступны обновления встроенного ПО. Нажмите, чтобы посмотреть и установить их.</translation>
 <translation id="8896630965521842259">Шаблон "<ph name="DESK_TEMPLATE_NAME" />" будет удален без возможности восстановления.</translation>
 <translation id="889790758758811533">Уровень заряда батареи: <ph name="PERCENTAGE" /> %. Приблизительное оставшееся время работы: <ph name="TIME_LEFT" />. Подключите устройство к источнику питания.</translation>

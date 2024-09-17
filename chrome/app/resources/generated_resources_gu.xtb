@@ -498,6 +498,7 @@
 <translation id="1355088139103479645">તમામ ડેટા ડિલીટ કરીએ?</translation>
 <translation id="1356376170199999104">મંજૂરી છે – <ph name="PERMISSION_DETAILS" />. વાસ્તવિક સ્વિચનો ઉપયોગ કરીને માઇક્રોફોન ચાલુ કરો.</translation>
 <translation id="1356959069439783953">નિષ્ક્રિય ટૅબ, હવે નવા દેખાવમાં</translation>
+<translation id="1357766361161708728">ઉપયોગ થયા વિનાના ટૅબ કરીએ?</translation>
 <translation id="1358741672408003399">જોડણી અને વ્યાકરણ</translation>
 <translation id="1359923111303110318">તમારા ડિવાઇસને Smart Lock વડે અનલૉક કરવામાં આવી શકે છે. અનલૉક કરવા માટે Enter દબાવો.</translation>
 <translation id="1361164813881551742">મેન્યુઅલી ઉમેરો</translation>
@@ -1105,7 +1106,6 @@
 <translation id="1780273119488802839">બુકમાર્ક આયાત કરી રહ્યાં છીએ…</translation>
 <translation id="1780572199786401845">અપમાનજનક/અસુરક્ષિત તરીકે જાણ કરો.</translation>
 <translation id="178092663238929451">તમારી આસપાસના લોકો પાસેથી ફાઇલો મેળવવા અને મોકલવા માટે, 'નજીકના શેર'ની સુવિધાનું સેટઅપ કરો</translation>
-<translation id="1781164264587898620">અવાજ રદ્દીકરણ અને ઑડિયોમાં સુધારણાઓ લાગુ કરો.</translation>
 <translation id="1781291988450150470">વર્તમાન પિન</translation>
 <translation id="1781502536226964113">નવું ટૅબ પેજ ખોલો</translation>
 <translation id="1781553166608855614">બોલવામાં આવેલી ભાષા</translation>
@@ -6558,6 +6558,7 @@
 <translation id="5750288053043553775">0</translation>
 <translation id="5751345516399502412">ઇન્ટરનેટ શેર કરવાની સુવિધાની ઉપલબ્ધતા ચેક કરો</translation>
 <translation id="5753570386948603678">ઇતિહાસમાંથી ડિલીટ કરો</translation>
+<translation id="5753652925946671505"><ph name="COUNT" /> અથવા તેનાથી વધુ દિવસોથી આ ટૅબનો ઉપયોગ થયો નથી</translation>
 <translation id="5756163054456765343">સ&amp;હાય કેન્દ્ર</translation>
 <translation id="5757187557809630523">આગલો ટ્રૅક</translation>
 <translation id="5758631781033351321">તમને તમારી વાંચન સૂચિ અહીં મળશે</translation>

@@ -1108,7 +1108,6 @@
 <translation id="1780273119488802839">ブックマークをインポートしています...</translation>
 <translation id="1780572199786401845">不適切 / 安全でない内容を報告する。</translation>
 <translation id="178092663238929451">近くのユーザーとファイルを送受信するには、ニアバイシェアを設定してください</translation>
-<translation id="1781164264587898620">ノイズ キャンセリングと音声の補正を適用します。</translation>
 <translation id="1781291988450150470">現在の PIN</translation>
 <translation id="1781502536226964113">新しいタブ ページを開く</translation>
 <translation id="1781553166608855614">音声の言語</translation>
@@ -1592,6 +1591,7 @@
 <translation id="211803431539496924">セキュリティ アップデートの延長を確定しますか？</translation>
 <translation id="2118594521750010466">今すぐ修正</translation>
 <translation id="2119461801241504254">セーフ ブラウジングは有効で、有害なサイトやダウンロードから保護されています</translation>
+<translation id="2119602978828978573">自動字幕起こしに対応している言語</translation>
 <translation id="2120297377148151361">アクティビティと操作</translation>
 <translation id="2120639962942052471"><ph name="PERMISSION" />をブロック</translation>
 <translation id="2121055421682309734">{COUNT,plural, =0{Cookie がブロックされています}=1{Cookie がブロックされています（1 件の例外）}other{Cookie がブロックされています（{COUNT} 件の例外）}}</translation>
@@ -2655,6 +2655,7 @@
 <translation id="2864601841139725659">プロフィール画像の設定</translation>
 <translation id="2865057607286263192">キーボードのキーを長押しすると、アクセント記号と特殊文字が表示されますアルファベット キーのキー入力の繰り返しはオフになります。英語（米国）でのみご利用いただけます。</translation>
 <translation id="2865919525181940183">現在画面に表示されているプログラムのスクリーンショット</translation>
+<translation id="286643536820867504">対応している言語の字幕を自動的に作成します。音声がデバイスの外部に送信されることはありません。</translation>
 <translation id="286674810810214575">電源を確認しています...</translation>
 <translation id="2867768963760577682">固定されたタブとして開く</translation>
 <translation id="2868746137289129307">この拡張機能は古く、企業のポリシーによって無効にされました。新しいバージョンが利用可能になったときに自動的に有効になる可能性があります。</translation>
@@ -3272,6 +3273,7 @@
 <translation id="3337568642696914359">サイトにプロトコルの処理を許可しない</translation>
 <translation id="3340620525920140773"><ph name="FILE_NAME" /> のダウンロードが完了しました。</translation>
 <translation id="3340978935015468852">設定</translation>
+<translation id="3341091511696469129">ここに表示されている言語の字幕を作成および翻訳できます</translation>
 <translation id="3341699307020049241">PIN が正しくありません。あと <ph name="RETRIES" /> 回試行できます。</translation>
 <translation id="3341703758641437857">ファイルの URL へのアクセスを許可する</translation>
 <translation id="334171495789408663">トークンをコピーしました</translation>
@@ -3617,6 +3619,7 @@
 <translation id="3596414637720633074">シークレット モードでサードパーティの Cookie をブロックする</translation>
 <translation id="3599221874935822507">浮き彫り</translation>
 <translation id="3600051066689725006">ウェブ リクエスト情報</translation>
+<translation id="3600956933576601730">これらの機能を使用するには、利用規約を確認して同意する必要があります</translation>
 <translation id="3601374594714740284">音声の品質を高めるには、デバイスの空き容量を増やしてください</translation>
 <translation id="360180734785106144">新機能が利用可能になったときにメッセージを表示する</translation>
 <translation id="3602290021589620013">プレビュー</translation>
@@ -5840,6 +5843,7 @@
 <translation id="5214639857958972833">ブックマーク「<ph name="BOOKMARK_TITLE" />」が作成されました。</translation>
 <translation id="5215450412607891876">セキュリティ アップデートの延長を有効化</translation>
 <translation id="5215502535566372932">国を選択</translation>
+<translation id="5216674789212441076">自動字幕起こしを自動的に翻訳します。字幕は翻訳のために Google に送信されます。</translation>
 <translation id="5220011581825921581">検索+上矢印</translation>
 <translation id="5221516927483787768"><ph name="HOST_NAME" /> をキャストできません</translation>
 <translation id="5222403284441421673">安全でないダウンロードがブロックされました</translation>
@@ -5954,6 +5958,7 @@
 <translation id="5297984209202974345">最近の AI テーマ <ph name="INDEX" />/<ph name="SUBJECT" />、スタイル: <ph name="STYLE" /></translation>
 <translation id="5298219193514155779">テーマの作成者:</translation>
 <translation id="5298315677001348398">続行して、このソフトウェアがデバイスに変更を加えることを許可しますか？</translation>
+<translation id="5298611529917615393">この機能を使用するには、利用規約を確認して同意する必要があります</translation>
 <translation id="5299109548848736476">Do Not Track</translation>
 <translation id="5299558715747014286">タブグループの表示と管理</translation>
 <translation id="5300589172476337783">表示</translation>
@@ -7926,6 +7931,7 @@
 <translation id="6785739405821760313">保存したデスクを表示しています。Tab キーを押して移動できます。</translation>
 <translation id="6785915470941880363">逆スクロール（<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" />）</translation>
 <translation id="67862343314499040">バイオレット</translation>
+<translation id="6786480815699355166">自動字幕起こしに対応している言語のみ翻訳できます</translation>
 <translation id="6786747875388722282">拡張機能</translation>
 <translation id="6787097042755590313">その他のタブ</translation>
 <translation id="6787531944787756058">ユーザー名 <ph name="USER_EMAIL" /> はこのデバイスのみに保存されます。詳細</translation>
@@ -10516,6 +10522,7 @@
 <translation id="8656888282555543604">点字のログを有効にする</translation>
 <translation id="8657393004602556571">フィードバックを破棄してもよろしいですか？</translation>
 <translation id="8657542881463614516">スワイプ操作でページ間を移動する</translation>
+<translation id="865857184419171576">字幕の翻訳先</translation>
 <translation id="865936634714975126">ページ読み込み時にタイプを選択するには、URL にクエリ パラメータを追加します。例: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875"><ph name="FEATURE_NAME" /> の連絡先</translation>
 <translation id="8659609431223166673">ウィンドウを下に移動しました</translation>

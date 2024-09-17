@@ -86,6 +86,7 @@
 <translation id="1383876407941801731">Rechercher</translation>
 <translation id="138618066238211776">Continuer en tant que <ph name="USER_NAME" /></translation>
 <translation id="138692594145659985">Options d'enregistrement de la carte</translation>
+<translation id="1396260204083880024">Connecté en tant que <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Ouvrez le menu du compte.</translation>
 <translation id="1397144142234474689">Masquer l'historique</translation>
 <translation id="1407135791313364759">Tout ouvrir</translation>
 <translation id="1408847409015257906">Touchez « Confidentialité et sécurité ».</translation>
@@ -116,6 +117,7 @@
 <translation id="1517166097004694782">Masquez « Continuer avec cet onglet »</translation>
 <translation id="1520027731907768768">Recevez des alertes de réduction de prix pour les produits que vous suivez.</translation>
 <translation id="1521774566618522728">Actif aujourd'hui</translation>
+<translation id="1524563461097350801">Non, merci</translation>
 <translation id="1531038290222364269">Afficher les onglets</translation>
 <translation id="1536390784834419204">Traduire la page</translation>
 <translation id="1540800554400757039">Ligne adresse 1</translation>
@@ -595,6 +597,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="3967327056943561740">Favoris</translation>
 <translation id="3967822245660637423">Téléchargement terminé</translation>
 <translation id="3982893814825393515">Signaler un problème…</translation>
+<translation id="398604237578616937">Connecté en tant que <ph name="USER_EMAIL" />. Ouvrez le menu du compte.</translation>
 <translation id="3987993985790029246">Copier lien</translation>
 <translation id="3992684624889376114">À propos de cette page</translation>
 <translation id="3994422733891749358">Choisissez les notifications que vous souhaitez recevoir</translation>
@@ -732,6 +735,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="4636930964841734540">Renseignements</translation>
 <translation id="4642472735733036929">Suivi des prix arrêté</translation>
 <translation id="4645575059429386691">Géré par l’un de tes parents</translation>
+<translation id="4647758699119474035">Connecté en tant que <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Erreur de compte Google. Ouvrez le menu du compte.</translation>
 <translation id="4650125387981512669">Continuer comme <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4652817563047461855">Assurez-vous que vos mots de passe sont sûrs, découvrez s'ils ont été compromis et obtenez des conseils pour vous protéger en ligne. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="4658335131052370646">Enregistrer</translation>
@@ -914,6 +918,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 
 La fonction de transfert doit également être activée dans la section Général des paramètres, et vos appareils doivent utiliser le même compte iCloud.</translation>
 <translation id="5551825465462320939">Tenez-vous au courant des actualités, des sports et bien plus encore en fonction de vos centres d'intérêt.</translation>
+<translation id="5555008247722361784">Connecté en tant que <ph name="USER_EMAIL" />. Erreur de compte Google. Ouvrez le menu du compte.</translation>
 <translation id="5556459405103347317">Actualiser</translation>
 <translation id="555749644339804659">Vérif. mots de passe…</translation>
 <translation id="5559567453458728487">Convertir les unités de mesure trouvées sur le Web</translation>
@@ -1507,7 +1512,6 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="8173034266693057059">Mesure</translation>
 <translation id="8179976553408161302">Entrée</translation>
 <translation id="8182037667962849780">{count,plural, =1{Pour {website_1}}=2{Pour {website_1}, {website_2}}=3{Pour {website_1}, {website_2} et 1 autre}one{Pour {website_1}, {website_2} et {more_count} autre}other{Pour {website_1}, {website_2} et {more_count} autres}}</translation>
-<translation id="8189814768485665290">Partager l'URL complète</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Vos appareils<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Ajouter un mot de passe</translation>
 <translation id="8202744799033457229">Afficher l'historique</translation>
@@ -1541,6 +1545,7 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="8349305172487531364">Barre de favoris</translation>
 <translation id="8366466717204352506">Vérification jamais exécutée</translation>
 <translation id="8368001212524806591">Suivre le prix</translation>
+<translation id="8370406443343902172">Accéder aux réglages…</translation>
 <translation id="8372471489238799313">{count,plural, =1{Supprimer l'adresse}one{Supprimer l'adresse}other{Supprimer les adresses}}</translation>
 <translation id="8378714024927312812">Géré par votre organisation</translation>
 <translation id="8386068868580335421">Réinitialiser</translation>
@@ -1592,6 +1597,7 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="8571213806525832805">Quatre dernières semaines</translation>
 <translation id="8577056989960190117">Remplir automatiquement l'année d'expiration <ph name="YEAR" /></translation>
 <translation id="8588404856427128947">Désactivée</translation>
+<translation id="8590286732816598906">Groupe d'onglets, <ph name="GROUP_TITLE" />, menu.</translation>
 <translation id="8593565399399144771">Vous pouvez ouvrir un nouvel onglet ici.</translation>
 <translation id="8600272508328041907">Passer à la traduction de la page complète</translation>
 <translation id="860043288473659153">Nom du titulaire de la carte</translation>
@@ -1603,6 +1609,7 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="8637431369725868556">Protégez-vous contre les sites Web dangereux.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Aucun mot de passe compromis}=1{{COUNT} mot de passe compromis}one{{COUNT} mot de passe compromis}other{{COUNT} mots de passe compromis}}</translation>
 <translation id="8640575194957831802">Dernière ouverture</translation>
+<translation id="8647280737650867362">Impossible d'annuler le suivi du prix.</translation>
 <translation id="8654802032646794042">Annuler</translation>
 <translation id="8660600697590740984">Image copiée de Lentille</translation>
 <translation id="866266761389616183">Zut alors!</translation>
@@ -1727,6 +1734,7 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="9162432979321511934">Activer l'option de remplissage automatique des mots de passe</translation>
 <translation id="9165320910061267720">Pour recevoir des notifications d'alertes relatives à une baisse de prix, vous devez activer les notifications dans vos paramètres iOS.</translation>
 <translation id="9179151630575358778">Masque cet élément</translation>
+<translation id="918129721713827015">Afficher les onglets dans le groupe</translation>
 <translation id="9183733013282108610">Rechercher en mode Navigation privée</translation>
 <translation id="9186762474139509529">Commencer la journalisation</translation>
 <translation id="9191031968346938109">Ajouter à…</translation>

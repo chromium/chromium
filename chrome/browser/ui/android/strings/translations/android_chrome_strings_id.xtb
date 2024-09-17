@@ -106,6 +106,7 @@ Untuk setelan lainnya yang menggunakan data guna meningkatkan pengalaman Chrome 
 <translation id="1413446866325418126">Simpan data di Akun Google Anda</translation>
 <translation id="1414981605391750300">Menghubungi Google. Tindakan ini memerlukan waktu beberapa saat…</translation>
 <translation id="1416550906796893042">Versi aplikasi</translation>
+<translation id="1419753403124156396">Mulai ulang Chrome?</translation>
 <translation id="1428770807407000502">Nonaktifkan sinkronisasi?</translation>
 <translation id="1430915738399379752">Cetak</translation>
 <translation id="1435593198351412143">Buka PDF secara otomatis</translation>
@@ -229,6 +230,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="2067805253194386918">teks</translation>
 <translation id="2079545284768500474">Urungkan</translation>
 <translation id="2082238445998314030">Hasil <ph name="RESULT_NUMBER" /> dari <ph name="TOTAL_RESULTS" /></translation>
+<translation id="2088833076121753253">Untuk menyelesaikan penyiapan pengisian otomatis, mulai ulang Chrome sekarang. Tab Anda akan otomatis dibuka kembali.</translation>
 <translation id="2091863218454846791">Menampilkan tampilan ringkas</translation>
 <translation id="2093731487903423814">15 menit terakhir</translation>
 <translation id="2096012225669085171">Sinkronkan dan personalisasi di berbagai perangkat</translation>
@@ -666,6 +668,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="4216511743389425832">Dengarkan halaman ini</translation>
 <translation id="4225725533026049334">Mengikuti</translation>
 <translation id="4225895483398857530">Pintasan toolbar</translation>
+<translation id="4232376164796433044">Sandi dan Isi Otomatis</translation>
 <translation id="4242533952199664413">Buka setelan</translation>
 <translation id="4248098802131000011">Amankan sandi Anda dari pelanggaran data dan masalah keamanan lainnya</translation>
 <translation id="424864128008805179">Logout dari Chrome?</translation>
@@ -748,6 +751,7 @@ Akun Google Anda mungkin memiliki bentuk histori penjelajahan lain seperti penel
 <translation id="4609429330876432068">Daftar sandi tersimpan Anda untuk Chrome dan <ph name="CHROME_CHANNEL" /> telah digabungkan. Anda tetap dapat mengisi otomatis semua sandi tersimpan di kedua aplikasi.</translation>
 <translation id="4616150815774728855">Buka <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Verifikasi diri Anda</translation>
+<translation id="4620032614425803188">Layanan Isi Otomatis</translation>
 <translation id="4624065194742029982">Mode Samaran Chrome</translation>
 <translation id="4634124774493850572">Gunakan sandi</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 sandi telah dibobol}other{# sandi telah dibobol}}</translation>
@@ -900,6 +904,7 @@ Akun Google Anda mungkin memiliki bentuk histori penjelajahan lain seperti penel
 <translation id="5264813352784073502">24 jam terakhir</translation>
 <translation id="5267572070504076962">Aktifkan Safe Browsing untuk mendapatkan perlindungan terhadap situs berbahaya</translation>
 <translation id="5271967389191913893">Perangkat tidak dapat membuka konten untuk didownload.</translation>
+<translation id="5273031377282080577">Administrator Anda mengelola setelan ini.</translation>
 <translation id="5292796745632149097">Kirim ke</translation>
 <translation id="5301876394151419436">Anda login sebagai <ph name="EMAIL" />. Anda dapat berhenti menyinkronkan kapan saja di setelan. Google dapat mempersonalisasi Penelusuran dan layanan lainnya berdasarkan histori Anda.</translation>
 <translation id="5304593522240415983">Bidang ini tidak boleh kosong</translation>
@@ -1234,6 +1239,7 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="6775840696761158817">Saat Anda mengetuk atau mengetik di kolom URL atau kotak penelusuran, Anda akan melihat saran dari mesin telusur default. Fitur ini nonaktif dalam mode Samaran.</translation>
 <translation id="6785476624617658922">Persyaratan Layanan Tambahan Chrome &amp; ChromeOS</translation>
 <translation id="6795633245022906657">Buka tab baru dengan cepat. Untuk mengedit pintasan ini, buka Setelan.</translation>
+<translation id="679956319013005046">Untuk menyetel layanan pilihan Anda untuk isi otomatis, tambahkan layanan tersebut di <ph name="BEGIN_LINK" />Setelan Android<ph name="END_LINK" /> terlebih dahulu.</translation>
 <translation id="6802555630140434547">Jendela akan ditutup</translation>
 <translation id="6803791793483522764">Meninjau notifikasi</translation>
 <translation id="6811034713472274749">Halaman siap ditampilkan</translation>
@@ -1292,7 +1298,6 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="6964300328304469089">Saat ini <ph name="NAME" />, <ph name="EMAIL" />, dipilih. Pilih akun.</translation>
 <translation id="696447261358045621">Keluar dari mode Samaran</translation>
 <translation id="6965382102122355670">Oke</translation>
-<translation id="6966660124354134532">Ketuk untuk memantau atau membatalkan pemantauan produk.</translation>
 <translation id="6971862865055170158">Jangan setujui</translation>
 <translation id="6978717888677691380">Situs yang Anda blokir</translation>
 <translation id="6979737339423435258">Semua</translation>
@@ -1466,6 +1471,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="7707922173985738739">Gunakan data seluler</translation>
 <translation id="7709918231054955894">Akses semua tab Anda</translation>
 <translation id="7733878270780732638">Tidak ada cukup ruang pada perangkat.</translation>
+<translation id="774876555279732384">Layanan isi otomatis juga dikelola di <ph name="BEGIN_LINK" />Setelan Android<ph name="END_LINK" />.</translation>
 <translation id="7759809451544302770">Opsional</translation>
 <translation id="7762668264895820836">Kartu SD <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">Tambahkan alamat</translation>

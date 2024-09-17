@@ -116,6 +116,7 @@
 <translation id="1517166097004694782">Ascunde opțiunea Continuă cu această filă</translation>
 <translation id="1520027731907768768">Primește alerte privind scăderile de preț pentru produsele pe care le urmărești.</translation>
 <translation id="1521774566618522728">Activ astăzi</translation>
+<translation id="1524563461097350801">Nu, mulțumesc</translation>
 <translation id="1531038290222364269">Afișează filele</translation>
 <translation id="1536390784834419204">Tradu pagina</translation>
 <translation id="1540800554400757039">Adresă 1</translation>
@@ -1507,7 +1508,6 @@ Site-urile pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe
 <translation id="8173034266693057059">Lungime</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8182037667962849780">{count,plural, =1{Pentru {website_1}}=2{Pentru {website_1}, {website_2}}=3{Pentru {website_1}, {website_2} și încă unul}few{Pentru {website_1}, {website_2} și încă {more_count}}other{Pentru {website_1}, {website_2} și încă {more_count}}}</translation>
-<translation id="8189814768485665290">Trimite adresa URL completă</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Dispozitivele tale<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Adaugă parola</translation>
 <translation id="8202744799033457229">Afișează istoricul</translation>
@@ -1541,6 +1541,7 @@ Site-urile pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe
 <translation id="8349305172487531364">Bara de marcaje</translation>
 <translation id="8366466717204352506">Nu s-a făcut niciodată verificarea</translation>
 <translation id="8368001212524806591">Urmărește prețul</translation>
+<translation id="8370406443343902172">Accesează Setările...</translation>
 <translation id="8372471489238799313">{count,plural, =1{Șterge adresa}few{Șterge adresele}other{Șterge adresele}}</translation>
 <translation id="8378714024927312812">Gestionat de organizația ta</translation>
 <translation id="8386068868580335421">Resetează</translation>

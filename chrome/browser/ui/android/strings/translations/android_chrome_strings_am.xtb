@@ -75,6 +75,7 @@
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - ከ<ph name="DEVICE_NAME" /> የተላከ</translation>
 <translation id="1320912611264252795">የዕልባት ማስቀመጥ ፍሰት አቃፊዎች በሙሉ ቁመት ላይ ተከፍተዋል</translation>
 <translation id="1327257854815634930">የዳሰሳ ታሪክ ተከፍቷል</translation>
+<translation id="1328235593824723509"><ph name="TAB_TITLE" />፣ አዲስ ወይም የተዘመነ ትር</translation>
 <translation id="1331212799747679585">Chrome መዘመን አይችልም። ተጨማሪ አማራጮች</translation>
 <translation id="1332501820983677155">የGoogle Chrome ባህሪ አቋራጮች</translation>
 <translation id="1333491156693005331">በቅርቡ የተፈተሸ</translation>
@@ -1291,7 +1292,6 @@
 <translation id="6964300328304469089"><ph name="NAME" />፣ <ph name="EMAIL" /> አሁን ተመርጧል። መለያ ይምረጡ።</translation>
 <translation id="696447261358045621">ከማንነት የማያሳውቅ ሁነታ ይውጡ</translation>
 <translation id="6965382102122355670">እሺ</translation>
-<translation id="6966660124354134532">ምርት ላይ ክትትል ለማድረግ ወይም ክትትል ማድረግን ለማቆም መታ ያድርጉ።</translation>
 <translation id="6971862865055170158">አታጽድቅ</translation>
 <translation id="6978717888677691380">እርስዎ ያገዷቸው ጣቢያዎች</translation>
 <translation id="6979737339423435258">የምንጊዜም</translation>
@@ -1595,6 +1595,7 @@
 <translation id="8265018477030547118">በዚህ መሣሪያ ላይ ብቻ</translation>
 <translation id="8266753737658117282">በ<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ይቀጥሉ</translation>
 <translation id="8266862848225348053">የሚወርድበት ቦታ</translation>
+<translation id="8279945625179116733">በ<ph name="APP_NAME" /> ጥበቃ ይደረግለታል</translation>
 <translation id="8281886186245836920">ዝለል</translation>
 <translation id="8282297628636750033">በሚቻልበት ጊዜ ጠቆር ያለ ገጽታን ጣቢያዎች ላይ ተግብር</translation>
 <translation id="8282950411412455249">ወደ ደህንነት ቅንብሮች ሂድ</translation>

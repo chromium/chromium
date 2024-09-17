@@ -292,6 +292,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="8860548555286245440">Åbn webadresser i Chromium i inkognitotilstand</translation>
 <translation id="8866191443434488382">Chromium registrerer sporingsnumre på de websites, du besøger, og viser dig pakkeopdateringer på siden Ny fane. Pakkesporingsnummeret og websitets navn sendes til Chromium for at levere denne funktion og forbedre shoppingfunktioner for alle. Du kan til enhver tid opdatere dette i <ph name="BEGIN_LINK" />indstillingerne for pakkesporing<ph name="END_LINK" />.</translation>
 <translation id="8880024619507699923">Din organisation kræver, at du logger ind for at bruge Chromium. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
+<translation id="8900052431807804054">Få Chromiums stærkeste beskyttelse</translation>
 <translation id="894437814105052438">Når du er logget ud, synkroniserer Chromium ikke nye data med din Google-konto. De data, der tidligere er blevet synkroniseret, forbliver på din konto.</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{Dette sker, når Chromium ikke bruges i {THRESHOLD} minut}one{Dette sker, når Chromium ikke bruges i {THRESHOLD} minut}other{Dette sker, når Chromium ikke bruges i {THRESHOLD} minutter}}</translation>
 <translation id="8963279154877372067">Tillad Chromium-notifikationer for at få underretninger om prisfald</translation>

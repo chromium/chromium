@@ -42,6 +42,7 @@
 <translation id="1148499908455722006">Отворете го дијалогот со податоци за <ph name="USER_NAME" /></translation>
 <translation id="1150989369772528668">Календар</translation>
 <translation id="1153356358378277386">Спарени уреди</translation>
+<translation id="1153918444040990015">Не можеше да се поврзе со звуците за „Режим за концентрација“</translation>
 <translation id="1155734730463845512">Тековно ниво на батеријата: <ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="1157514002898505378">Генеративната AI е експериментална и содржините може да бидат неточни, лажни или навредливи. Контактирајте со администраторот за да пријавите проблем. <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="1160215328209699296">вклучен/а и се користи</translation>
@@ -175,6 +176,7 @@
 <translation id="1550523713251050646">Кликни за повеќе опции</translation>
 <translation id="1555130319947370107">Сина</translation>
 <translation id="1557622599341396706">Прикажи го името на работната површина</translation>
+<translation id="1567138500090284106">Копче за копчињата на глувчето</translation>
 <translation id="1569384531973824928">Ова овозможува пристап за сите апликации и веб-сајтови со дозволи за камерата и микрофонот. Можеби ќе треба да ја освежите веб-страницата или да ја рестартирате апликацијата.</translation>
 <translation id="1571697193564730395">Вклучи/исклучи „Не вознемирувај“. <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">Одзумирајте кога е вклучена лупата</translation>
@@ -242,6 +244,7 @@
 <translation id="1787955149152357925">Исклучено</translation>
 <translation id="1796561540704213354">Веб-сајтовите, заедно со страниците што сте ги посетиле, како и отворените страници</translation>
 <translation id="179842970735685253">Условите за користење на Google</translation>
+<translation id="1805407494113167797">Не можеше да ги пушти звуците за „Режим за концентрација“</translation>
 <translation id="181103072419391116">Јачина на сигналот: <ph name="SIGNAL_STRENGTH" />, управувана од администраторот</translation>
 <translation id="1816896987747843206">Ова дозволува пристап до камерата за сите апликации и веб-сајтови со дозвола за камерата</translation>
 <translation id="1823873187264960516">Етернет: <ph name="ADDRESS" /></translation>
@@ -1506,7 +1509,6 @@
 <translation id="6119972796024789243">Корекција на боите</translation>
 <translation id="6121838516699723042">Потврдете го преземањето на <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">„Помошникот на Google“ не е достапен во гостинска сесија.</translation>
-<translation id="6127370444807669747">За персонализирани плејлисти и повеќе музика за „Режим за концентрација“, испробајте YouTube Music Premium</translation>
 <translation id="6127395413317891856">Офлајн сте. Проверете ја интернет-врската и обидете се повторно.</translation>
 <translation id="6129953537138746214">Празно место</translation>
 <translation id="6137566720514957455">Отвори го дијалогот за отстранување за <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -2284,6 +2286,7 @@
 <translation id="8876661425082386199">Проверете ја врската</translation>
 <translation id="8877788021141246043">Потсетник</translation>
 <translation id="8878886163241303700">Проширување екран</translation>
+<translation id="8885424115080869847">Не можеше да се поврзе со YouTube Music</translation>
 <translation id="888982883502837004">Има ажурирања за фирмверот на уредот. Кликнете за да ги прегледате и да ажурирате.</translation>
 <translation id="8896630965521842259">Трајно ќе се избрише <ph name="DESK_TEMPLATE_NAME" /></translation>
 <translation id="889790758758811533">Престануваат уште <ph name="PERCENTAGE" /> % од батеријата (околу <ph name="TIME_LEFT" />). Приклучете го уредот во струја.</translation>

@@ -446,6 +446,7 @@
 <translation id="1771254328977666895">Посмотрите историю изменения цен</translation>
 <translation id="1777422078676229054">Фотобумага (архивная)</translation>
 <translation id="1778646502362731194">JIS B0</translation>
+<translation id="1785118555253503473">Установить веб-приложения?</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />. Чтобы управлять своими данными, конфиденциальностью и безопасностью в аккаунте Google, нажмите Tab, а затем Ввод.</translation>
 <translation id="1793631236004319016">Разрешение использовалось <ph name="NUM_HOURS_MINUTES_SECONDS" /> назад</translation>
@@ -1163,6 +1164,7 @@
 <translation id="3157931365184549694">Восстановить</translation>
 <translation id="3158539265159265653">Диск</translation>
 <translation id="3162559335345991374">Возможно, вам нужно перейти на страницу входа сети Wi-Fi.</translation>
+<translation id="316638481603975524">Может запрашивать разрешение на установку веб-приложений</translation>
 <translation id="3168744840365648658">Радиотехника</translation>
 <translation id="3168938241115725594">Классические транспортные средства</translation>
 <translation id="3169472444629675720">Рекомендации</translation>
@@ -2321,6 +2323,7 @@
 <translation id="5273658854610202413">Внимание! Это правило не объединено в соответствии с правилом PolicyDictionaryMultipleSourceMergeList, так как оно не относится к словарю.</translation>
 <translation id="5278778426231952189">Загрузить сейчас</translation>
 <translation id="5279286380302340275">Открыть список скачанных файлов</translation>
+<translation id="5280963125494874678">веб-приложения</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">Свойства документа</translation>
 <translation id="528468243742722775">Завершить</translation>
@@ -2823,6 +2826,7 @@
 <translation id="6221311046884916259">Сохранить эту карту в аккаунте Google?</translation>
 <translation id="6221892641068781024">Упрощенный просмотр</translation>
 <translation id="6222527803348563979">Бумага</translation>
+<translation id="62231116988543150">установку веб-приложений</translation>
 <translation id="6224281071334553713">Драгоценные камни и ювелирные украшения</translation>
 <translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />. Нажмите Tab, а затем Ввод, чтобы персонализировать инструменты специальных возможностей в настройках Chrome.</translation>
 <translation id="6228346913624365233">Транспортные средства класса люкс</translation>
@@ -3086,6 +3090,7 @@
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Нажмите Tab, а затем Ввод, чтобы перейти в раздел аккаунта Google "Поиск телефона".</translation>
 <translation id="6695428916538794739">Боевики и приключенческие фильмы</translation>
 <translation id="6696424331653607346">Туристические ресурсы</translation>
+<translation id="6696575039575740785">Установка веб-приложений запрещена</translation>
 <translation id="6698097747703777657">Не пришел код? <ph name="BEGIN_LINK" />Получить новый<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">Создано:</translation>
 <translation id="67007264085648978">Ползунок времени</translation>
@@ -3199,6 +3204,7 @@
 <translation id="6915804003454593391">Пользователь:</translation>
 <translation id="6916193791494646625">Укажите, зачем вы хотите скачать файл (обязательно)</translation>
 <translation id="6917795328362592458">Пароль, который вы только что использовали, был раскрыт в результате утечки данных. Чтобы защитить свои аккаунты, проверьте сохраненные пароли в Менеджере паролей.</translation>
+<translation id="6921197121276419421">Установка веб-приложений разрешена</translation>
 <translation id="6924013822850225188">Выберите, показывать ли преимущества карты при оформлении покупки (действуют условия банка)</translation>
 <translation id="6925267999184670015">North American B+</translation>
 <translation id="6926216138694948720">Боди-арт</translation>
@@ -3696,6 +3702,7 @@
 <translation id="7761701407923456692">Сертификат сервера не соответствует URL.</translation>
 <translation id="7764225426217299476">Добавить адрес</translation>
 <translation id="7766518757692125295">Юбка</translation>
+<translation id="7766899888934244586">Веб-приложения</translation>
 <translation id="7767278989746220252">Террасы, сады и газоны</translation>
 <translation id="776749070095465053">Ткань</translation>
 <translation id="7773005668374414287">В том же порядке лицевой стороной вверх</translation>

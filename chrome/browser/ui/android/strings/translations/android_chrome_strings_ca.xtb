@@ -1214,6 +1214,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="6674571176963658787">Per iniciar la sincronització, introdueix la frase de contrasenya</translation>
 <translation id="6676927815633975364">Inicia la sessió en aquest lloc web i a Chrome</translation>
 <translation id="6684809838922667136">Millora Chrome</translation>
+<translation id="6700279777779583398">S'han desat les opcions</translation>
 <translation id="6704048624334633734">Exporta i suprimeix les contrasenyes</translation>
 <translation id="670498945988402717">Es va comprovar ahir</translation>
 <translation id="6710213216561001401">Anterior</translation>
@@ -1291,7 +1292,6 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="6964300328304469089">Selecció actual: <ph name="NAME" />, <ph name="EMAIL" />. Tria un compte.</translation>
 <translation id="696447261358045621">Surt del mode d'incògnit</translation>
 <translation id="6965382102122355670">D'acord</translation>
-<translation id="6966660124354134532">Toca per fer o deixar de fer el seguiment d'un producte.</translation>
 <translation id="6971862865055170158">No aprovis</translation>
 <translation id="6978717888677691380">Llocs web que has bloquejat</translation>
 <translation id="6979737339423435258">Sempre</translation>
@@ -1427,6 +1427,7 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="752731652852882757">Bloqueja en mode d'incògnit</translation>
 <translation id="7554643625247105821">No es pot comprovar la versió de Chrome</translation>
 <translation id="7557508262441527045">S'ha tancat la sessió</translation>
+<translation id="7573665567024262965">Tria les aplicacions predeterminades</translation>
 <translation id="7577900504646297215">Gestiona els interessos</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> fitxer baixat}other{<ph name="FILES_DOWNLOADED_MANY" /> fitxers baixats}}</translation>
 <translation id="7581273696622423628">Ves a l'enquesta</translation>
@@ -1469,6 +1470,7 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="7764225426217299476">Afegeix una adreça</translation>
 <translation id="7772032839648071052">Confirmeu la frase de contrasenya</translation>
 <translation id="7772375229873196092">Tanca <ph name="APP_NAME" /></translation>
+<translation id="7774125747223422443">D'acord amb una llei de la teva regió, has de triar un navegador i un motor de cerca</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 i <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> més}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 i <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> més}}</translation>
 <translation id="777637629667389858">Quan tens la sessió iniciada, et protegeix en tots els serveis de Google.</translation>
 <translation id="7778840695157240389">Torna més tard per veure històries noves</translation>
@@ -1738,6 +1740,7 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="8982113230057126145">La icona No m'agrada indica que aquest resum no t'agrada</translation>
 <translation id="8992769679401294069">Les teves dades s'encripten amb la teva frase de contrasenya. Per utilitzar i desar les dades de Chrome al teu Compte de Google, introdueix la frase de contrasenya.</translation>
 <translation id="8993760627012879038">Obre una pestanya nova en mode d'incògnit</translation>
+<translation id="8995521496079646922">Les aplicacions que has triat s'utilitzaran de manera predeterminada. Si alguna de les aplicacions encara no és en aquest dispositiu, es baixarà aviat.</translation>
 <translation id="8996847606757455498">Tria un altre proveïdor</translation>
 <translation id="8998289560386111590">No disponible al teu dispositiu</translation>
 <translation id="8998837250940831980">No s'ha pogut minimitzar la pestanya. Torna-ho a provar més tard.</translation>

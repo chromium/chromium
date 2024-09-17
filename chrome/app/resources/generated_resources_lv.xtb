@@ -499,6 +499,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="1355088139103479645">Vai dzēst visus datus?</translation>
 <translation id="1356376170199999104">Piekļuve atļauta — <ph name="PERMISSION_DETAILS" />. Ieslēdziet mikrofonu, izmantojot fizisku slēdzi.</translation>
 <translation id="1356959069439783953">Jauns veidols neaktīvajām cilnēm</translation>
+<translation id="1357766361161708728">Vai aizvērt neizmantotās cilnes?</translation>
 <translation id="1358741672408003399">Pareizrakstība un gramatika</translation>
 <translation id="1359923111303110318">Jūsu ierīci var atbloķēt, izmantojot Smart Lock. Lai atbloķētu, nospiediet taustiņu Enter.</translation>
 <translation id="1361164813881551742">Pievienot manuāli</translation>
@@ -1110,7 +1111,6 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris lietotnēm. Vara
 <translation id="1780273119488802839">Grāmatzīmju importēšana...</translation>
 <translation id="1780572199786401845">Ziņot par aizvainojošu/nedrošu saturu.</translation>
 <translation id="178092663238929451">Iestatiet funkciju “Kopīgošana tuvumā”, lai varētu saņemt failus no cilvēkiem tuvumā un sūtīt viņiem failus.</translation>
-<translation id="1781164264587898620">Lietot trokšņu mazināšanu un audio uzlabojumus.</translation>
 <translation id="1781291988450150470">Pašreizējais PIN</translation>
 <translation id="1781502536226964113">Atvērt Jaunas cilnes lapu</translation>
 <translation id="1781553166608855614">Runas valoda</translation>
@@ -6550,6 +6550,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="5750288053043553775">0</translation>
 <translation id="5751345516399502412">Pārbaudīt piesaistes gatavību</translation>
 <translation id="5753570386948603678">Dzēst no vēstures</translation>
+<translation id="5753652925946671505">Šīs cilnes nav izmantotas vismaz <ph name="COUNT" /> dienas.</translation>
 <translation id="5756163054456765343">P&amp;alīdzības centrs</translation>
 <translation id="5757187557809630523">nākamais ieraksts</translation>
 <translation id="5758631781033351321">Šeit varēsiet skatīt savu lasīšanas sarakstu</translation>

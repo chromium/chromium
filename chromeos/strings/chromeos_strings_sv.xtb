@@ -146,6 +146,7 @@
 <translation id="1651925268237749928">Du har valt ett delat album. Andra personer kan lägga till eller ändra foton. Foton som för närvarande inte finns i det här albumet kan användas för bakgrunden.</translation>
 <translation id="1661512400125589646">Pausa</translation>
 <translation id="1661865805917886535">Vissa konto- och systemuppgifter kan skickas till Google. Med dessa uppgifter kan vi åtgärda tekniska problem och förbättra våra tjänster i enlighet med vår integritetspolicy (<ph name="PRIVACYPOLICYURL" />) och våra användarvillkor (<ph name="TERMSOFSERVICEURL" />). Om du vill begära innehållsändringar besöker du den juridiska hjälpen (<ph name="LEGALHELPPAGEURL" />).</translation>
+<translation id="1662699081856352167">Sammanfattningen har skapats</translation>
 <translation id="1662989795263954667">Har stoppats – slut på bläck</translation>
 <translation id="1664796644829245314">Förhandsgranska <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">Inbyggt VPN</translation>
@@ -255,6 +256,7 @@
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2148716181193084225">I dag</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> foton</translation>
+<translation id="2154460308960858308">Rensa sökning</translation>
 <translation id="2156072344042480449">Dina två senaste promptar. Du kan bara använda dessa promptar när du befinner dig på den här sidan.</translation>
 <translation id="2157660087437850958">emojiväljare</translation>
 <translation id="2157959690810728433">I KÖ</translation>
@@ -283,7 +285,6 @@
 <translation id="2230624078793142213">Skapa fler</translation>
 <translation id="2236746079896696523">Aktivera och inaktivera tangentbordets bakgrundsbelysning</translation>
 <translation id="2240366984605217732">Tangenten som byter tangentbordslayout</translation>
-<translation id="2242381852034179222">Den här inställningen hanteras av administratörerna</translation>
 <translation id="2244834438220057800">grön</translation>
 <translation id="225692081236532131">Aktiveringsstatus</translation>
 <translation id="2267285889943769271">Lägg till skärmdump</translation>
@@ -341,6 +342,7 @@
 <translation id="2560876255701405320">Lista över ljudinspelningar</translation>
 <translation id="2561093647892030937">citroner</translation>
 <translation id="2570743873672969996">Kör test av <ph name="TEST_NAME" /> …</translation>
+<translation id="2573178735329662769">Spela in allt ljud på Chromebook</translation>
 <translation id="2575552334616524665">Du kan aktivera detta i inställningarna eller i <ph name="THREE_DOTS_MENU_ICON" />-menyn</translation>
 <translation id="2576253868710695442">Detta kräver upp till 2 GB lagringsutrymme</translation>
 <translation id="2584547424703650812">Glödlandskap</translation>
@@ -502,12 +504,14 @@
 <translation id="3557205324756024651">Lokal identitet (valfritt)</translation>
 <translation id="3565064564551103223">Tillåtna IP-adresser</translation>
 <translation id="3569407787324516067">Skärmsläckare</translation>
+<translation id="3571184524500629183">Stäng sökrutan</translation>
 <translation id="3577473026931028326">Något gick fel. Försök igen.</translation>
 <translation id="357889014807611375">wifi med datapriser</translation>
 <translation id="3583278742022654445">Svag signalstyrka. Testa att gå närmare källan till wifi-signalen.</translation>
 <translation id="3588034708467091142">Kontrollera att enheten är ansluten till internet och försök igen.</translation>
 <translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> är det användarvänliga namnet på <ph name="APN_NAME" />.</translation>
 <translation id="3595596368722241419">Batteriet är fulladdat</translation>
+<translation id="3600063043775287169">När Chromebook-ljud är aktiverat spelar inspelaren in allt ljud som spelas upp på enheten. Kontrollera att du vill spela in alla ljud.</translation>
 <translation id="3600339377155080675">Tangenten för att spegla skärmen</translation>
 <translation id="3602290021589620013">Förhandsgranskning</translation>
 <translation id="3603829704940252505">Avatar</translation>
@@ -541,6 +545,7 @@
 <translation id="3780740315729837296">Tilldela en tangent</translation>
 <translation id="3784455785234192852">Lås</translation>
 <translation id="3785643128701396311">pixelkonst</translation>
+<translation id="3799381533888781854">AV – Den här inställningen hanteras av administratören.</translation>
 <translation id="380097101658023925">RGB-kontroller</translation>
 <translation id="38114475217616659">Rensa all historik</translation>
 <translation id="3820172043799983114">Ogiltig pinkod</translation>
@@ -745,6 +750,7 @@
 <translation id="4809927044794281115">Ljust tema</translation>
 <translation id="4813136279048157860">Mina bilder</translation>
 <translation id="4813345808229079766">Anslutning</translation>
+<translation id="4824527342590024245">För närvarande stöds inte transkriptioner med färre än <ph name="MIN_WORD_LENGTH" /> ord</translation>
 <translation id="4830894019733815633">en kanjon</translation>
 <translation id="4832079907277790330">Välj en fil i appen Filer</translation>
 <translation id="4835901797422965222">Inga aktiva nätverk</translation>
@@ -773,6 +779,7 @@
 <translation id="4921665434385737356">Har laddat <ph name="RATE" /> på <ph name="NUM_SECONDS" /> sekunder.</translation>
 <translation id="4930320165497208503">Öppna <ph name="BEGIN_LINK" />inställningarna<ph name="END_LINK" /> om du vill konfigurera eller uppdatera en anslutning.</translation>
 <translation id="4932733599132424254">Datum</translation>
+<translation id="4946927805998996217">Skapar sammanfattning</translation>
 <translation id="4950314376641394653">Firmware på <ph name="DEVICE_NAME" /> har uppdaterats till version <ph name="VERSION" /></translation>
 <translation id="4950893758552030541">trädtunnel</translation>
 <translation id="4965661459364092269">Säkerhetsåterställningen har slutförts</translation>
@@ -833,6 +840,7 @@
 <translation id="5229104491259541281">Konvertera <ph name="QUERY" /></translation>
 <translation id="5229344016299762883">Avsluta helskärm</translation>
 <translation id="5234764350956374838">Stäng</translation>
+<translation id="5236119614998611749">Det gick inte att generera en sammanfattning</translation>
 <translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{Administratören har ställt in <ph name="APP_NAME" /> på att starta automatiskt varje gång du loggar in.}=2{Administratören har ställt in <ph name="APP_NAME" /> och 1 app till på att starta automatiskt varje gång du loggar in.}other{Administratören har ställt in <ph name="APP_NAME" /> och # appar till på att starta automatiskt varje gång du loggar in.}}</translation>
 <translation id="5248419081947706722">blå</translation>
 <translation id="5252456968953390977">Roaming</translation>
@@ -948,6 +956,7 @@
 <translation id="5860033963881614850">Av</translation>
 <translation id="5860491529813859533">Aktivera</translation>
 <translation id="5876385649737594562">Aktivera för att välja alternativ</translation>
+<translation id="5877503382465267833">Pausa <ph name="RECORDING_NAME" /></translation>
 <translation id="588258955323874662">Helskärm</translation>
 <translation id="5893975327266416093">Tilldela genom att trycka på en tangent</translation>
 <translation id="5895138241574237353">Starta om</translation>
@@ -1168,6 +1177,7 @@
 <translation id="6910312834584889076">Skannerns lucka är öppen. Stäng luckan och försök igen.</translation>
 <translation id="6910845598686542904">Sammanställ modeller av rösterna som identifieras i inspelningen</translation>
 <translation id="6911383237894364323">Det gick inte att ansluta till medieservrarna</translation>
+<translation id="6927968682840110570">Inspelningsnamn</translation>
 <translation id="6930242544192836755">Varaktighet</translation>
 <translation id="6930597342185648547">Om bakgrunden</translation>
 <translation id="6939667434404433010">Sök efter inspelningsnamn</translation>
@@ -1281,6 +1291,7 @@
 <translation id="7378170410161264436">Med Ljudinspelare kan du skapa transkriptioner av tal.
 Ladda ned transkriptionsmodellen (upp till 100 MB) för att få transkriptioner.</translation>
 <translation id="7384004438856720753">palats</translation>
+<translation id="7388345524791662148">Fler alternativ för <ph name="RECORDING_NAME" /></translation>
 <translation id="7388959671917308825">Inbyggd styrplatta</translation>
 <translation id="7397270852490618635">Inaktivera ljust tema</translation>
 <translation id="7401543881546089382">Ta bort genväg</translation>
@@ -1302,6 +1313,7 @@ Ladda ned transkriptionsmodellen (upp till 100 MB) för att få transkriptioner
 <translation id="7513770521371759388">nederst</translation>
 <translation id="7514365320538308">Ladda ned</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7519481256236810334">Spela upp <ph name="RECORDING_NAME" /></translation>
 <translation id="7525067979554623046">Skapa</translation>
 <translation id="7528507600602050979">Hjälpinnehållet är inte tillgängligt</translation>
 <translation id="7535791657097741517">Aktivera ljust tema</translation>
@@ -1378,6 +1390,7 @@ Ladda ned transkriptionsmodellen (upp till 100 MB) för att få transkriptioner
 <translation id="7897043345768902965">gångväg</translation>
 <translation id="7902285181767404769">Stäng av aviseringsljud under inspelning</translation>
 <translation id="7903695460270716054">Välj handplockade konstverk och bilder</translation>
+<translation id="7912005977894000746">Tillbaka till huvudsidan</translation>
 <translation id="7915220255123750251">Hantera APN-inställningar för nätverket. APN upprättar en anslutning mellan ett mobilnätverk och internet.</translation>
 <translation id="7936303884198020182">Inga namnservrar hittades</translation>
 <translation id="7942349550061667556">Röd</translation>

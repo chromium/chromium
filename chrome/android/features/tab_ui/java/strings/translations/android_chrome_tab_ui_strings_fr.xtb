@@ -104,6 +104,7 @@
 <translation id="5400836586163650660">Gris</translation>
 <translation id="5490235265819901748">Groupe d'onglets développé</translation>
 <translation id="5494920125229734069">Tout sélectionner</translation>
+<translation id="5549653163690032080">Ouvrir le menu d'actions du groupe d'onglets partagé <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Fermer le groupe d'onglets de couleur <ph name="COLOR_NAME" /> comprenant <ph name="TABS_COUNT_ONE" /> onglet.}one{Fermer le groupe d'onglets de couleur <ph name="COLOR_NAME" /> comprenant <ph name="TABS_COUNT_MANY" /> onglet.}other{Fermer le groupe d'onglets de couleur <ph name="COLOR_NAME" /> comprenant <ph name="TABS_COUNT_MANY" /> onglets.}}</translation>
 <translation id="5556417849629758491">Afficher les infos sur le magasin, option disponible en haut de l'écran</translation>
 <translation id="5627941783489838464">Aucun onglet modifié</translation>
@@ -135,6 +136,7 @@
 <translation id="6694634756612002311">Gérer le partage</translation>
 <translation id="6744956528665271406">Modifier la couleur du groupe</translation>
 <translation id="6856809498882026482">Masquer le mode multi-sélection</translation>
+<translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{Développer le groupe d'onglets partagé <ph name="TITLE_OF_GROUP" /> de couleur <ph name="COLOR_NAME" /> comprenant <ph name="TABS_COUNT_ONE" /> onglet.}one{Développer le groupe d'onglets partagé <ph name="TITLE_OF_GROUP" /> de couleur <ph name="COLOR_NAME" /> comprenant <ph name="TABS_COUNT_MANY" /> onglet.}other{Développer le groupe d'onglets partagé <ph name="TITLE_OF_GROUP" /> de couleur <ph name="COLOR_NAME" /> comprenant <ph name="TABS_COUNT_MANY" /> onglets.}}</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Partager l'onglet}one{Partager l'onglet}other{Partager les onglets}}</translation>
 <translation id="7129458170538955174">Fiche d'infos sur ce magasin ouverte à mi-hauteur</translation>
 <translation id="7200189319044305940">{NUMBER_OF_TABS,plural, =1{Fermer le groupe <ph name="TITLE_OF_GROUP" /> qui contient <ph name="TABS_COUNT_ONE" /> onglet.}one{Fermer le groupe <ph name="TITLE_OF_GROUP" /> qui contient <ph name="TABS_COUNT_MANY" /> onglet.}other{Fermer le groupe <ph name="TITLE_OF_GROUP" /> qui contient <ph name="TABS_COUNT_MANY" /> onglets.}}</translation>
@@ -170,6 +172,7 @@
 <translation id="8205266828577616993">Déplacer l'onglet vers le haut</translation>
 <translation id="8261506727792406068">Supprimer</translation>
 <translation id="8338427544764842461">Vos groupes d'onglets sont enregistrés ici et mis à jour sur tous les appareils connectés à votre compte</translation>
+<translation id="8344020191144794051">{NUMBER_OF_TABS,plural, =1{Développer le groupe d'onglets partagé de couleur <ph name="COLOR_NAME" /> comprenant <ph name="TABS_COUNT_ONE" /> onglet.}one{Développer le groupe d'onglets partagé de couleur <ph name="COLOR_NAME" /> comprenant <ph name="TABS_COUNT_MANY" /> onglet.}other{Développer le groupe d'onglets partagé de couleur <ph name="COLOR_NAME" /> comprenant <ph name="TABS_COUNT_MANY" /> onglets.}}</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Fermer l'onglet sélectionné (<ph name="TABS_COUNT_ONE" />)}one{Fermer l'onglet sélectionné (<ph name="TABS_COUNT_MANY" />)}other{Fermer les onglets sélectionnés (<ph name="TABS_COUNT_MANY" />)}}</translation>
 <translation id="8398929769197326728">Nouveau dossier – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">Paramètres</translation>

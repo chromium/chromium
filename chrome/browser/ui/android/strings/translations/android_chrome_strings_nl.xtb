@@ -1214,6 +1214,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="6674571176963658787">Geef je wachtwoordzin op om de synchronisatie te starten</translation>
 <translation id="6676927815633975364">Log in bij deze site en Chrome</translation>
 <translation id="6684809838922667136">Chrome verbeteren</translation>
+<translation id="6700279777779583398">Keuzes opgeslagen</translation>
 <translation id="6704048624334633734">De wachtwoorden exporteren en verwijderen</translation>
 <translation id="670498945988402717">Gisteren gecheckt</translation>
 <translation id="6710213216561001401">Vorige</translation>
@@ -1291,7 +1292,6 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="6964300328304469089"><ph name="NAME" />, <ph name="EMAIL" /> is op dit moment geselecteerd. Kies een account.</translation>
 <translation id="696447261358045621">Incognitomodus verlaten</translation>
 <translation id="6965382102122355670">OK</translation>
-<translation id="6966660124354134532">Tik om een product te volgen of niet meer te volgen.</translation>
 <translation id="6971862865055170158">Niet goedkeuren</translation>
 <translation id="6978717888677691380">Sites die je hebt geblokkeerd</translation>
 <translation id="6979737339423435258">Alles</translation>
@@ -1427,6 +1427,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="752731652852882757">Blokkeren tijdens gebruik van incognitomodus</translation>
 <translation id="7554643625247105821">Kan Chrome-versie niet checken</translation>
 <translation id="7557508262441527045">Uitgelogd</translation>
+<translation id="7573665567024262965">Je standaard-apps kiezen</translation>
 <translation id="7577900504646297215">Interesses beheren</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> bestand gedownload}other{<ph name="FILES_DOWNLOADED_MANY" /> bestanden gedownload}}</translation>
 <translation id="7581273696622423628">Enquête invullen</translation>
@@ -1469,6 +1470,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="7764225426217299476">Adres toevoegen</translation>
 <translation id="7772032839648071052">Bevestig de wachtwoordzin</translation>
 <translation id="7772375229873196092"><ph name="APP_NAME" /> sluiten</translation>
+<translation id="7774125747223422443">Op basis van een wet in je regio moet je je browser en zoekmachine kiezen</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 en nog <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> andere}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 en nog <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> andere}}</translation>
 <translation id="777637629667389858">Als je bent ingelogd, word je beschermd in Google-services.</translation>
 <translation id="7778840695157240389">Kom later terug voor nieuwe artikelen</translation>
@@ -1738,6 +1740,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="8982113230057126145">Met Niet leuk stuur je feedback dat je dit overzicht niet leuk vindt.</translation>
 <translation id="8992769679401294069">Je gegevens zijn versleuteld met je wachtwoordzin. Voer deze in om Chrome-gegevens te gebruiken en op te slaan in je Google-account.</translation>
 <translation id="8993760627012879038">Een nieuw venster openen in de incognitomodus</translation>
+<translation id="8995521496079646922">De door jou gekozen apps worden standaard gebruikt. Als een app nog niet op dit apparaat staat, wordt deze binnenkort gedownload.</translation>
 <translation id="8996847606757455498">Een andere provider kiezen</translation>
 <translation id="8998289560386111590">Niet beschikbaar op je apparaat</translation>
 <translation id="8998837250940831980">Kan tabblad niet minimaliseren. Probeer het later opnieuw.</translation>

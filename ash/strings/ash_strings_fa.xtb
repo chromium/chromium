@@ -78,6 +78,7 @@
 <translation id="1240638468526743569">برنامه‌ای</translation>
 <translation id="1242198791279543032">اعلان‌ها بی‌صدا هستند</translation>
 <translation id="1242883863226959074">دستگاه</translation>
+<translation id="1245476784081715330">عالی است!</translation>
 <translation id="1245644940275736236">رفتن به «دستیار»</translation>
 <translation id="124678866338384709">بستن برگه کنونی</translation>
 <translation id="1246890715821376239">برنامه‌های پشتیبانی‌نشده</translation>
@@ -842,6 +843,7 @@
 <translation id="3958714870339660776">کل روز</translation>
 <translation id="3962859241508114581">آهنگ قبلی</translation>
 <translation id="3963124517343721543">با باز کردن پنجره‌ها و برگه‌های قبلی‌تان، به‌راحتی از جایی که کار را رها کردید ادامه دهید. همچنین پیشنهادهای شخصی‌سازی‌شده برای فعالیت‌های بعدی را خواهید دید.</translation>
+<translation id="396506362088290977">آزمایش کردن صدای میکروفون</translation>
 <translation id="3969043077941541451">خاموش</translation>
 <translation id="3970324493235864154">مشاهده اعلان‌های تلفن</translation>
 <translation id="397105322502079400">در حال محاسبه…</translation>
@@ -899,6 +901,7 @@
 <translation id="4156293514828496577">‫<ph name="PERCENTAGE" />٪ از شارژ باتری باقی مانده است (حدود <ph name="TIME_LEFT" />).
 برخی‌از ویژگی‌ها برای افزایش عمر باتری محدود شده‌اند.</translation>
 <translation id="4160919062868802509">چند منبع صوتی شناسایی شد</translation>
+<translation id="416245495747357243">بهتر از این نمی‌شود!</translation>
 <translation id="4165275524535002941">کابل از نمایشگر پشتیبانی نمی‌کند</translation>
 <translation id="4177415338862979658">برای بررسی جزئیات کلیک کنید</translation>
 <translation id="4177913004758410636">{0,plural, =1{دستگاه را تا یک روز دیگر به‌روزرسانی کنید}one{دستگاه را تا # روز دیگر به‌روزرسانی کنید}other{دستگاه را تا # روز دیگر به‌روزرسانی کنید}}</translation>
@@ -984,6 +987,7 @@
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> خاموش است.</translation>
 <translation id="4417647906073317561">تنظیمات «تمرکز». زمان‌سنج، تکلیف، و موسیقی تنظیم کنید تا وارد جریان شوید.</translation>
 <translation id="4424159417645388645">میزکار ۵</translation>
+<translation id="4426817706804363424">آفرین!</translation>
 <translation id="4430019312045809116">میزان صدا</translation>
 <translation id="4441283832827406317">برنامه‌ها براساس نام مرتب شده‌اند</translation>
 <translation id="4445159312344259901">قفل‌گشایی با ورود به سیستم</translation>
@@ -1248,6 +1252,7 @@
 <translation id="5283198616748585639">افزودن ۱ دقیقه</translation>
 <translation id="528468243742722775">پایان</translation>
 <translation id="5286194356314741248">اسکن کردن</translation>
+<translation id="528641622273682395">روشن/خاموش کردن آزمایش میکروفون</translation>
 <translation id="5297423144044956168">دستگاه همراهی پیدا نشد</translation>
 <translation id="5297704307811127955">خاموش</translation>
 <translation id="5300589172476337783">نمایش</translation>
@@ -1275,6 +1280,7 @@
 <translation id="536019650977002321">سرپرستتان ضبط صدا را غیرمجاز کرده است. برای اطلاعات بیشتر، با سرپرست تماس بگیرید.</translation>
 <translation id="5361524080961918551">فایل‌های گفتار <ph name="LANGUAGE" /> کامل بارگیری نشده‌اند</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> رفتن به این برگه</translation>
+<translation id="5363835273551457276">می‌توانید صدای میکروفونتان را آزمایش کنید. برای متوقف کردن بررسی، پانل را ببندید.</translation>
 <translation id="5364693579536176785">فضای ذخیره‌سازی</translation>
 <translation id="5369573834963677938">کنترل چهره برای دیگر کاربران دستگاه دردسترس خواهد بود</translation>
 <translation id="5369717264580061086">‏پیش‌دید کردن فایل در برنامه Files</translation>
@@ -1508,7 +1514,6 @@
 <translation id="6119972796024789243">تصحیح رنگ</translation>
 <translation id="6121838516699723042">تأیید بارگیری <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">‏«دستیار Google» در جلسه مهمان دردسترس نیست.</translation>
-<translation id="6127370444807669747">‏برای فهرست‌های پخش شخصی‌سازی‌شده و موسیقی تمرکز بیشتر، YouTube Music Premium را امتحان کنید</translation>
 <translation id="6127395413317891856">آفلاین هستید. اتصالتان را بررسی کنید و دوباره امتحان کنید.</translation>
 <translation id="6129953537138746214">فاصله</translation>
 <translation id="6137566720514957455">باز کردن کادر گفتگوی برداشتن <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -2126,6 +2131,7 @@
 <translation id="8262312463845990408">فعال/ غیرفعال کردن بازپخش</translation>
 <translation id="8268302343625273732">‏دیدن همه تکالیف در Google Classroom</translation>
 <translation id="8277261673056602147">برجسته کردن نوشتار روی صفحه</translation>
+<translation id="8282784978194352587">موفق شدید!</translation>
 <translation id="8287009018010202411">بهره‌وری</translation>
 <translation id="828708037801473432">خاموش</translation>
 <translation id="8297006494302853456">ضعیف</translation>
@@ -2203,6 +2209,7 @@
 <translation id="8609384513243082612">بازکردن برگه جدید</translation>
 <translation id="861045123704058818">برنامه‌ها موقتاً براساس دسته‌بندی سازمان‌دهی می‌شوند</translation>
 <translation id="8612216344243590325">فایل‌های مهم را به‌جای میز کار، در <ph name="HOLDING_SPACE_TITLE" /> نگه دارید. کافی است فایل‌ها را در <ph name="HOLDING_SPACE_TITLE" /> بکشید.</translation>
+<translation id="8612338981637220013">روی شانس هستید!</translation>
 <translation id="8614517853887502247">اعلان‌های <ph name="APP_1_TITLE" /> و <ph name="APP_2_TITLE" /> پنهان شده است زیرا «محافظت دربرابر مشاهده» روشن است</translation>
 <translation id="8615778328722901791">باز کردن نوارابزار</translation>
 <translation id="8619000641825875669">OneDrive</translation>
@@ -2244,6 +2251,7 @@
 <translation id="8735678380411481005">رنگ نور پس‌زمینه صفحه‌کلید</translation>
 <translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />: درحال فعال‌سازی...</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />، <ph name="SCREEN_SHARE_STATUS" /></translation>
+<translation id="8751299148074971734">همین‌طور ادامه دهید!</translation>
 <translation id="8753368202781196133">درحال‌حاضر این زبان پشتیبانی نمی‌شود.</translation>
 <translation id="8755498163081687682">هویتتان را به‌تأیید برسانید: <ph name="ORIGIN_NAME" /> می‌خواهید تأیید کند این فرد شما هستید</translation>
 <translation id="875593634123171288">‏نمایش تنظیمات VPN</translation>

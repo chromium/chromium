@@ -116,6 +116,7 @@
 <translation id="1517166097004694782">"या टॅबवर पुढे सुरू ठेवा" हे लपवा</translation>
 <translation id="1520027731907768768">तुम्ही ट्रॅक करत असलेल्या उत्पादनांसाठी किमतीमध्ये घट झाल्याच्या सूचना मिळवा.</translation>
 <translation id="1521774566618522728">आज ॲक्टिव्ह होते</translation>
+<translation id="1524563461097350801">नाही, नको</translation>
 <translation id="1531038290222364269">टॅब दाखवा</translation>
 <translation id="1536390784834419204">पेजचे भाषांतर करायचे आहे</translation>
 <translation id="1540800554400757039">पत्ता 1</translation>
@@ -1508,7 +1509,6 @@
 <translation id="8173034266693057059">लांबी</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8182037667962849780">{count,plural, =1{{website_1} साठी}=2{{website_1}, {website_2} साठी}=3{{website_1}, {website_2} आणि आणखी १ साठी}other{{website_1}, {website_2}, आणि आणखी {more_count} साठी}}</translation>
-<translation id="8189814768485665290">संपूर्ण URL शेअर करा</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />तुमची डिव्हाइस<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">पासवर्ड जोडा</translation>
 <translation id="8202744799033457229">इतिहास दाखवा</translation>
@@ -1542,6 +1542,7 @@
 <translation id="8349305172487531364">बुकमार्क बार</translation>
 <translation id="8366466717204352506">तपासणी कधीही रन केली गेली नाही</translation>
 <translation id="8368001212524806591">किंमत ट्रॅक करणे</translation>
+<translation id="8370406443343902172">सेटिंग्ज वर जा...</translation>
 <translation id="8372471489238799313">{count,plural, =1{पत्ता हटवा}other{पत्ते हटवा}}</translation>
 <translation id="8378714024927312812">तुमच्या संस्थेकडून व्यवस्थापित केलेले</translation>
 <translation id="8386068868580335421">रीसेट करा</translation>
@@ -1604,6 +1605,7 @@
 <translation id="8637431369725868556">धोकादायक साइटपासून संरक्षण मिळवा.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{No compromised passwords}=1{{COUNT} धोक्यात असलेला पासवर्ड}other{{COUNT} धोक्यात असलेले पासवर्ड}}</translation>
 <translation id="8640575194957831802">शेवटी उघडलेले</translation>
+<translation id="8647280737650867362">किंमत अनट्रॅक करता आली नाही.</translation>
 <translation id="8654802032646794042">रद्द करा</translation>
 <translation id="8660600697590740984">कॉपी केलेली Lens इमेज</translation>
 <translation id="866266761389616183">अरेरे!</translation>

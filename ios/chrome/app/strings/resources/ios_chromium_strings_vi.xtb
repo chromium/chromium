@@ -292,6 +292,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="8860548555286245440">Mở URL bằng chế độ Ẩn danh trong Chromium</translation>
 <translation id="8866191443434488382">Chromium sẽ phát hiện số vận đơn trên các trang web bạn truy cập và cho bạn thấy thông tin cập nhật về gói hàng trên trang Thẻ mới. Số vận đơn của gói hàng và tên trang web sẽ được gửi đến Chromium để cung cấp tính năng này và cải thiện các tính năng mua sắm cho mọi người. Bạn có thể cập nhật tuỳ chọn này bất cứ lúc nào trong phần <ph name="BEGIN_LINK" />Cài đặt theo dõi gói hàng<ph name="END_LINK" />.</translation>
 <translation id="8880024619507699923">Theo yêu cầu của tổ chức bạn, bạn phải đăng nhập thì mới có thể sử dụng Chromium. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
+<translation id="8900052431807804054">Sở hữu chế độ bảo mật mạnh nhất của Chromium</translation>
 <translation id="894437814105052438">Khi bạn đăng xuất, Chromium sẽ không đồng bộ hóa bất cứ dữ liệu mới nào với Tài khoản Google của bạn. Dữ liệu đã đồng bộ hóa trước đó sẽ vẫn có trong tài khoản này.</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{Thao tác này diễn ra sau {THRESHOLD} phút bạn không dùng đến Chromium}other{Thao tác này diễn ra sau {THRESHOLD} phút bạn không dùng đến Chromium}}</translation>
 <translation id="8963279154877372067">Cho phép thông báo của Chromium để nhận thông báo giảm giá</translation>

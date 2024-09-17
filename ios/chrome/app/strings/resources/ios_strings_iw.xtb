@@ -116,6 +116,7 @@
 <translation id="1517166097004694782">הסתרת האפשרות 'המשך הגלישה בכרטיסייה הזו'</translation>
 <translation id="1520027731907768768">קבלת התראות על ירידות במחיר של המוצרים שבמעקב.</translation>
 <translation id="1521774566618522728">סנכרון אחרון: היום</translation>
+<translation id="1524563461097350801">לא, תודה</translation>
 <translation id="1531038290222364269">הצגת כרטיסיות</translation>
 <translation id="1536390784834419204">תרגום הדף</translation>
 <translation id="1540800554400757039">כתובת, שורה 1</translation>
@@ -1507,7 +1508,6 @@
 <translation id="8173034266693057059">אורך</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8182037667962849780">{count,plural, =1{של {website_1}}=2{של {website_1},‏ {website_2}}=3{של {website_1},‏ {website_2} ועוד אתר אחד}one{‏של {website_1},‎ {website_2} ועוד {more_count} אתרים}other{‏של {website_1},‎ {website_2} ועוד {more_count} אתרים}}</translation>
-<translation id="8189814768485665290">‏שיתוף של כתובת ה-URL המלאה</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />המכשירים שלך<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">הוספת סיסמה</translation>
 <translation id="8202744799033457229">הצגת ההיסטוריה</translation>
@@ -1541,6 +1541,7 @@
 <translation id="8349305172487531364">סרגל סימניות</translation>
 <translation id="8366466717204352506">מעולם לא נעשתה בדיקה</translation>
 <translation id="8368001212524806591">מעקב אחר המחיר</translation>
+<translation id="8370406443343902172">מעבר להגדרות…</translation>
 <translation id="8372471489238799313">{count,plural, =1{מחיקת הכתובת}one{מחיקת הכתובות}two{מחיקת הכתובות}other{מחיקת הכתובות}}</translation>
 <translation id="8378714024927312812">מנוהל על-ידי הארגון</translation>
 <translation id="8386068868580335421">איפוס</translation>
@@ -1603,6 +1604,7 @@
 <translation id="8637431369725868556">הגנה מפני אתרים מסוכנים.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{אין סיסמאות שנחשפו}=1{יש סיסמה אחת ({COUNT}) שנחשפה}one{יש {COUNT} סיסמאות שנחשפו}two{יש {COUNT} סיסמאות שנחשפו}other{יש {COUNT} סיסמאות שנחשפו}}</translation>
 <translation id="8640575194957831802">נפתחו לאחרונה</translation>
+<translation id="8647280737650867362">לא ניתן לבטל את המעקב אחר המחירים.</translation>
 <translation id="8654802032646794042">ביטול</translation>
 <translation id="8660600697590740984">‏תמונה שהועתקה מ-Lens</translation>
 <translation id="866266761389616183">אוי, לא!</translation>

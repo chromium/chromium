@@ -677,6 +677,7 @@
 <translation id="2212735316055980242">خط‌مشی یافت نشد</translation>
 <translation id="2213606439339815911">در حال واکشی موارد...</translation>
 <translation id="2213612003795704869">صفحه چاپ شد</translation>
+<translation id="2215368073167343359">‏تکمیل خودکار با Google</translation>
 <translation id="2215539479425228550">صخره‌نوردی و کوهنوردی</translation>
 <translation id="2215727959747642672">ویرایش فایل</translation>
 <translation id="2215963164070968490">سگ</translation>
@@ -709,6 +710,7 @@
 <translation id="2262243747453050782">‏خطای HTTP</translation>
 <translation id="2265192657948645752">مشاغل خرده‌فروشی</translation>
 <translation id="2265356434276802347">این خط‌مشی نباید بیشتر از <ph name="MAX_ITEMS_LIMIT" /> ورودی ویژه داشته باشد.</translation>
+<translation id="2266175583972138136">شرایط بر مزایای کارت اعمال می‌شود</translation>
 <translation id="2267047181501709434">درحال فعال کردن هویت…</translation>
 <translation id="2268044343513325586">فیلتر</translation>
 <translation id="2268966938956566076">بارگذاری کردن تا <ph name="MINUTES" /> دقیقه دیگر</translation>
@@ -1797,6 +1799,7 @@
 <translation id="4269264543938335308">لباس شنا</translation>
 <translation id="4269599248168651462">گواهی سرور برای نام غیریکتایی صادر شده است.</translation>
 <translation id="4270541775497538019">پشته‌ساز ۶</translation>
+<translation id="4271652479722040953">‏وقتی افزونه‌ها به Chrome اضافه می‌شود، داده‌های مرتبط درباره این افزونه‌ها برای تجزیه‌وتحلیل به طرف‌های سوم ارسال می‌شود و ممکن است برای سرپرستتان قابل‌مشاهده باشد. داده‌ها شامل اطلاعاتی درباره افزونه‌ها مثل نام، زمان نصب، منبع نصب، و همچنین فعالیت مرتبط با این افزونه‌ها (مثل تغییر دادن برگه‌ها، تماس گرفتن با وب‌سایت‌ها، یا دسترسی یافتن به کوکی‌ها) است. این داده‌ها برای افزونه‌های نصب‌شده از «نت‌بازار Chrome» و همچنین افزونه‌های خارج از فروشگاه جمع‌آوری می‌شود.</translation>
 <translation id="4275830172053184480">راه‌اندازی دستگاه خود</translation>
 <translation id="4276974990916607331">نه متشکرم</translation>
 <translation id="4277028893293644418">بازنشانی گذرواژه</translation>
@@ -1878,6 +1881,7 @@
 <translation id="4406896451731180161">نتایج جستجو</translation>
 <translation id="4408413947728134509"><ph name="NUM_COOKIES" /> کوکی</translation>
 <translation id="4412074349188076601">این پیکربندی به‌عنوان نصب‌شدنی علامت‌گذاری شده است اما هیچ تصویری برای این معماری ارائه نشده است، بنابراین نمی‌توان آن را نصب کرد.</translation>
+<translation id="4414452699610169758">‏از «مدیر گذرواژه Google» و «تکمیل خودکار Chrome» برای ذخیره و درج کردن گذرواژه‌ها، روش‌های پرداخت، و نشانی‌ها استفاده کنید</translation>
 <translation id="4414515549596849729">کوکی‌ها و داده‌های سایت</translation>
 <translation id="4415156962929755728">پلاستیک (خیلی براق)</translation>
 <translation id="4415426530740016218">نشانی تحویل گرفتن</translation>
@@ -3117,7 +3121,7 @@
 <translation id="6740851646645036700">به سقف مجاز کمک در نوشتن رسیده‌اید. بعداً دوباره امتحان کنید.</translation>
 <translation id="674375294223700098">خطای ناشناس گواهی سرور.</translation>
 <translation id="6744009308914054259">وقتی درانتظار اتصال هستید، می‌توانید برای خواندن مقاله‌های آفلاین، «بارگیری‌ها» را مشاهده کنید.</translation>
-<translation id="6745592621698551453">اکنون به‌روز شود</translation>
+<translation id="6745592621698551453">اکنون به‌روز کردن</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">کنفرانس ازراه‌دور</translation>
 <translation id="6753269504797312559">مقدار خط‌‌مشی</translation>
@@ -3378,6 +3382,7 @@
 <translation id="7232352818707016189">کنش‌های بیشتر برای «مقایسه کردن جدول»</translation>
 <translation id="7233592378249864828">برگ تأیید چاپ</translation>
 <translation id="7234112195906418665">سفر و حمل‌ونقل</translation>
+<translation id="7234585564776614047">تکمیل خودکار بااستفاده از سرویسی دیگر</translation>
 <translation id="7236417832106250253"><ph name="PROGRESS_PERCENT" />٪ تکمیل شد | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
 <translation id="7237166092326447040">هدیه و وسایل رویدادهای ویژه</translation>
 <translation id="7237454422623102448">تنظیمات سیستم</translation>
@@ -3651,7 +3656,7 @@
 <translation id="7687305263118037187">پایان درنگ امتحان مجدد</translation>
 <translation id="7690647519407127574">کارت‌پستال اوفوکو هاگاکی</translation>
 <translation id="7693583928066320343">ترتیب صفحه دریافت شد</translation>
-<translation id="769424100851389104">به‌روزرسانی اکنون شروع شود</translation>
+<translation id="769424100851389104">اکنون به‌روزرسانی را شروع کردن</translation>
 <translation id="769721561045429135">درحال‌حاضر، کارت‌هایی دارید که فقط در این دستگاه قابل استفاده‌اند. برای ادامه مرور کارت‌ها، کلیک کنید.</translation>
 <translation id="7697837508203274589">رویدادهای زنده ورزشی</translation>
 <translation id="7698864304447945242">‏«خدمات Google Play ویژه واقعیت افزوده» به‌روزرسانی شود؟</translation>
@@ -4038,6 +4043,7 @@
 <translation id="8409413588194360210">کنترل‌کننده‌های پرداخت</translation>
 <translation id="8412145213513410671">خرابی‌ها (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">شما باید همان گذرعبارت را دوبار وارد کنید.</translation>
+<translation id="8414322570408428950">رویداد افزونه اتفاق می‌افتد</translation>
 <translation id="8416694386774425977">پیکربندی شبکه نامعتبر است و نمی‌توان آن را وارد کرد.
 توضیحات بیشتر:
 <ph name="DEBUG_INFO" /></translation>
@@ -4289,6 +4295,7 @@
 <translation id="8891031436559779793">اگر قیمت در هر سایتی کاهش پیدا کند، اعلان دریافت خواهید کرد.</translation>
 <translation id="8891727572606052622">حالت پروکسی نامعتبر است.</translation>
 <translation id="8894794286471754040">ابتدا لبه بلند</translation>
+<translation id="8895334001368918465">‏اگر می‌خواهید از سرویس تکمیل خودکار دیگری در Chrome استفاده کنید، آن را در تنظیمات Android و اینجا روشن کنید</translation>
 <translation id="8897428486789851669">شنا</translation>
 <translation id="8899807382908246773">آگهی‌های مزاحم</translation>
 <translation id="8903921497873541725">بزرگ‌نمایی</translation>

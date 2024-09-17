@@ -116,6 +116,7 @@
 <translation id="1517166097004694782">"यो ट्याब प्रयोग गरेर जारी राख्नुहोस्" लुकाउनुहोस्</translation>
 <translation id="1520027731907768768">आफूले ट्र्याक गरेका उत्पादनको मूल्य घट्दा पठाइने अलर्टहरू प्राप्त गर्नुहोस्।</translation>
 <translation id="1521774566618522728">आज सक्रिय गरिएको समय</translation>
+<translation id="1524563461097350801">पर्दैन, धन्यवाद</translation>
 <translation id="1531038290222364269">ट्याबहरू देखाउनुहोस्</translation>
 <translation id="1536390784834419204">यो पृष्ठ अनुवाद गर्नुहोस्</translation>
 <translation id="1540800554400757039">ठेगाना 1</translation>
@@ -1507,7 +1508,6 @@
 <translation id="8173034266693057059">लम्बाइ</translation>
 <translation id="8179976553408161302">प्रविष्टि गर्नुहोस्</translation>
 <translation id="8182037667962849780">{count,plural, =1{{website_1} का लागि}=2{{website_2} र {website_1} का लागि}=3{{website_1}, {website_2} र थप एउटा वेबसाइटका लागि}other{{website_1}, {website_2} र थप {more_count} वटा वेबसाइटका लागि}}</translation>
-<translation id="8189814768485665290">पूरा URL सेयर गर्नुहोस्</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />तपाईंका डिभाइसहरू<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">पासवर्ड थप्नुहोस्</translation>
 <translation id="8202744799033457229">हिस्ट्री देखाउनुहोस्</translation>
@@ -1541,6 +1541,7 @@
 <translation id="8349305172487531364">बुकमार्क पट्टी</translation>
 <translation id="8366466717204352506">कहिल्यै पनि जाँच गरिएको छैन</translation>
 <translation id="8368001212524806591">मूल्य ट्रयाक गर्नुहोस्</translation>
+<translation id="8370406443343902172">सेटिङमा जानुहोस्...</translation>
 <translation id="8372471489238799313">{count,plural, =1{ठेगाना मेटाउनुहोस्}other{ठेगानाहरू मेटाउनुहोस्}}</translation>
 <translation id="8378714024927312812">तपाईंको सङ्गठनले व्यवस्थापन गरेको</translation>
 <translation id="8386068868580335421">रिसेट गर्नुहोस्</translation>

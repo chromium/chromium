@@ -35,6 +35,7 @@
 <translation id="1155154308031262006">پیام‌واره‌ای وارد کنید</translation>
 <translation id="115705039208660697">آناناس</translation>
 <translation id="1164939766849482256">محافظ صفحه بامداد تا شامگاه</translation>
+<translation id="1166688493741195933">تولید کردن نام برای ضبط گفتار ناموفق بود</translation>
 <translation id="1167755866710282443">منو را برای سفارشی کردن کلیدها باز کنید. برای جابه‌جایی، منو را بکشید.</translation>
 <translation id="1171349345463658120">دریاچه شنی</translation>
 <translation id="1173894706177603556">تغییر نام</translation>
@@ -284,7 +285,6 @@
 <translation id="2230624078793142213">ایجاد موارد بیشتر</translation>
 <translation id="2236746079896696523">روشن/ خاموش کردن نور پس‌زمینه صفحه‌کلید</translation>
 <translation id="2240366984605217732">تغییر طرح‌بندی</translation>
-<translation id="2242381852034179222">این ویژگی را سرپرستان شما مدیریت می‌کنند</translation>
 <translation id="2244834438220057800">سبز</translation>
 <translation id="225692081236532131">وضعیت فعال‌سازی</translation>
 <translation id="2267285889943769271">افزودن نماگرفت</translation>
@@ -494,6 +494,7 @@
 <translation id="3502426834823382181">مشاهده همه برنامه‌ها</translation>
 <translation id="3510890413042482857">ارسال <ph name="BEGIN_LINK1" />داده‌های ردیابی عملکرد<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">‏به‌روزرسانی ChromeOS</translation>
+<translation id="3522508178835057262">درحال‌حاضر ترانویسی بیشتر از <ph name="MAX_WORD_LENGTH" /> کلمه پشتیبانی نمی‌شود</translation>
 <translation id="3527036260304016759">انجام نشد - خطای نامشخص</translation>
 <translation id="353214771040290298">اتمام ویرایش</translation>
 <translation id="3532980081107202182">تقریباً <ph name="MIN_REMAINING" /> دقیقه باقی مانده است</translation>
@@ -711,6 +712,7 @@
 <translation id="4602266091140407479">میکروفون</translation>
 <translation id="4607282946861182308">نمی‌توان تصویری از این مورد ایجاد کرد. پیام‌واره دیگری را امتحان کنید.</translation>
 <translation id="4609350030397390689">کاهش روشنایی صفحه‌کلید</translation>
+<translation id="4623061655523261501">نام برای ضبط گفتار باموفقیت تولید شد</translation>
 <translation id="4627232916386272576">‏<ph name="DOCUMENT_TITLE" />، <ph name="PRINTER_NAME" />، <ph name="CREATION_TIME" />، <ph name="PRINTED_PAGE_NUMBER" /> از مجموع <ph name="TOTAL_PAGE_NUMBER" />. برای لغو کار چاپ، Enter را فشار دهید.</translation>
 <translation id="463791356324567266">درحال لغو اسکن کردن…</translation>
 <translation id="4644611440022666152">روشن کردن و بارگیری</translation>
@@ -1213,6 +1215,7 @@
 <translation id="708426984172631313">متوقف شده است</translation>
 <translation id="7086168019478250425">ساحل زیست‌تاب</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /><ph name="DISPLAY_NAME" /></translation>
+<translation id="7086916854357021265">درحال تولید کردن نام برای ضبط گفتار</translation>
 <translation id="7097908713073775559">رنگارنگ</translation>
 <translation id="710028965487274708">ناموفق - مجوز صادر نشد</translation>
 <translation id="7101959270679078188">برای ادامه فرایند به‌روزرسانی، قفل <ph name="DEVICE_NAME" /> را باز کنید</translation>

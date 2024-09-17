@@ -1116,7 +1116,6 @@
 <translation id="1780273119488802839">وارد کردن نشانک‌ها…</translation>
 <translation id="1780572199786401845">گزارش محتوای توهین‌آمیز/ناامن.</translation>
 <translation id="178092663238929451">برای تبادل فایل با افرادی که در اطرافتان هستند، «هم‌رسانی با اطراف» را راه‌اندازی کنید</translation>
-<translation id="1781164264587898620">«حذف نوفه زمینه» اعمال می‌شود و صدا بهبود می‌یابد.</translation>
 <translation id="1781291988450150470">پین کنونی</translation>
 <translation id="1781502536226964113">باز کردن صفحه «برگه جدید»</translation>
 <translation id="1781553166608855614">زبان گفتار</translation>
@@ -3258,6 +3257,7 @@
 <translation id="3308852433423051161">‏درحال بارگیری «دستیار Google»…</translation>
 <translation id="3309124184713871355">سازه</translation>
 <translation id="3309330461362844500">شناسه نمایه گواهینامه</translation>
+<translation id="331080746368555063">سایت‌های خصوصی ممکن است شامل مواردی مثل اینترانت شرکت شما باشند</translation>
 <translation id="3311445899360743395">داده‌های مرتبط با این برنامه ممکن است از این دستگاه پاک شود.</translation>
 <translation id="3312470654018965389">‏درحال پیکربندی محتوی Linux</translation>
 <translation id="3312883087018430408">‏برای جستجوی بخش یا سایتی خاص در Chrome، میان‌بر آن را در نوار نشانی تایپ کنید و به‌دنبال آن میان‌بر ترجیحی صفحه‌کلید را فشار دهید. برای مثال، برای اینکه فقط Bookmarks (نشانک‌ها) را جستجو کنید، «‎@bookmarks» را تایپ کنید و سپس کلید «جهش» یا «فاصله» را فشار دهید.</translation>
@@ -3288,6 +3288,7 @@
 <translation id="3335947283844343239">باز کردن مجدد برگه بسته شده</translation>
 <translation id="3336855445806447827">مطمئن نیستم</translation>
 <translation id="3337568642696914359">به سایت‌ها اجازه داده نشود پروتکل‌ها را مدیریت کنند</translation>
+<translation id="333863344734218290">درباره سایت‌های عمومی و خصوصی ناامن به شما هشدار می‌دهد</translation>
 <translation id="3340620525920140773">بارگیری کامل شد: <ph name="FILE_NAME" />.</translation>
 <translation id="3340978935015468852">تنظیمات</translation>
 <translation id="3341699307020049241">پین اشتباه است. <ph name="RETRIES" /> بار دیگر می‌توانید امتحان کنید.</translation>
@@ -6895,6 +6896,7 @@
 <translation id="5983716913605894570">درحال تولید…</translation>
 <translation id="5984222099446776634">به‌تازگی بازدیدشده</translation>
 <translation id="5985458664595100876">‏قالب نشانی وب نامعتبر است. قالب‌های پشتیبانی‌شده عبارت‌اند از: \\server\share و smb://server/share.</translation>
+<translation id="5985556342298151179">‏برنامه Chrome را سرپرست دستگاهتان نصب کرده است.</translation>
 <translation id="598810097218913399">برداشتن تخصیص</translation>
 <translation id="5990266201903445068">‏فقط Wi-Fi</translation>
 <translation id="5990386583461751448">ترجمه‌شده</translation>
@@ -7899,7 +7901,7 @@
 <translation id="6741063444351041466"><ph name="BEGIN_LINK" />سرپرستتان<ph name="END_LINK" /> «مرور ایمن» را خاموش کرده است</translation>
 <translation id="6742629250739345159">‏به‌طور خودکار در مرورگر Chrome زیرنویس ناشنوایان برای رسانه‌ها ایجاد می‌کند. صداها و زیرنویس ناشنوایان در دستگاه پردازش می‌شوند و هرگز از دستگاه خارج نمی‌شوند.</translation>
 <translation id="6743841972744298686">تنظیمات همگام‌سازی</translation>
-<translation id="6745592621698551453">اکنون به‌روز شود</translation>
+<translation id="6745592621698551453">اکنون به‌روز کردن</translation>
 <translation id="6746124502594467657">انتقال به پایین</translation>
 <translation id="674632704103926902">فعال کردن کشیدن با ضربه</translation>
 <translation id="67465227497040338">نشان دادن گذرواژه <ph name="DOMAIN" /></translation>
@@ -8449,6 +8451,7 @@
 <translation id="7131431455372521159">‏همه دستگاه‌های TrackPoint قطع ارتباط شده است</translation>
 <translation id="7131896909366247105"><ph name="APP_NAME" />، درانتظار</translation>
 <translation id="7134098520442464001">متن را کوتاهتر کنید</translation>
+<translation id="713415364723069564">سایت می‌تواند متوجه شود آیا برنامه‌های وب مرتبط در دستگاهتان نصب شده است یا نه. این اطلاعات دردسترس سایت و زیردامنه‌های آن است.</translation>
 <translation id="7134951043985383439">فایل خطرناکی بارگیری شده است</translation>
 <translation id="7135729336746831607">بلوتوث روشن شود؟</translation>
 <translation id="7136694880210472378">پیش‌فرض قرار دادن</translation>
@@ -8571,6 +8574,7 @@
 <translation id="7232750842195536390">تغییر نام انجام نشد</translation>
 <translation id="723343421145275488">جستجوی تصویر با <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="7234010996000898150">‏درحال لغو بازیابی Linux</translation>
+<translation id="7235305658956131898">‏برنامه Android را سرپرست دستگاهتان نصب کرده است.</translation>
 <translation id="7235716375204803342">درحال واکشی فعالیت‌ها…</translation>
 <translation id="7235737137505019098">کلید امنیتی‌تان فضای آزاد کافی برای حساب دیگری ندارد.</translation>
 <translation id="7235873936132740888">وقتی روی انواع خاصی از پیوند‌ها (مثلاً ایجاد پیام جدید در کارخواه ایمیل یا افزودن رویداد‌های جدید در تقویم آنلاین) کلیک می‌کنید، سایت‌ها می‌توانند کارهای ویژه‌ای را انجام دهند.</translation>
@@ -8649,6 +8653,7 @@
 <translation id="7289386924227731009">‏<ph name="WINDOW_TITLE" /> - درخواست اجازه ارائه شده است؛ برای پاسخ دادن، کلید F6 را فشار دهید</translation>
 <translation id="7290005709287747471">غیرفعال کردن</translation>
 <translation id="7290242001003353852">این سرویس ورود به سیستم با میزبانی <ph name="SAML_DOMAIN" /> در حال دسترسی به دوربین شما است.</translation>
+<translation id="7290524928495200538">برنامه‌های نصب‌شده مرتبط</translation>
 <translation id="7292067737327289208"><ph name="BEGIN_LINK" />مرورگرتان تحت مدیریت<ph name="END_LINK" /> سازمانتان و <ph name="BEGIN_LINK" />نمایه‌تان تحت مدیریت<ph name="END_LINK" /> <ph name="PROFILE_DOMAIN" /> است</translation>
 <translation id="7292147651179697920">از ولی‌تان بخواهید دسترسی را در «تنظیمات» مجاز کند</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
@@ -9475,6 +9480,7 @@
 <translation id="7883792253546618164">هرزمان خواستید اشتراک را لغو کنید.</translation>
 <translation id="7884372232153418877">{NUM_SITES,plural, =1{مرور سایتی که تعداد زیادی اعلان ارسال کرده است}one{مرور {NUM_SITES} سایت که تعداد زیادی اعلان ارسال کرده‌اند}other{مرور {NUM_SITES} سایت که تعداد زیادی اعلان ارسال کرده‌اند}}</translation>
 <translation id="788453346724465748">درحال بار کردن اطلاعات حساب…</translation>
+<translation id="7886087451482920026">‏انتخاب نوشتار با «لنز Google»</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{یک مورد}one{# مورد}other{# مورد}}</translation>
 <translation id="7886605625338676841">سیم‌کارت داخلی</translation>
 <translation id="7887174313503389866">در گشت با راهنمای مربوط به کنترل‌های اصلی امنیت و حریم خصوصی شرکت کنید. برای گزینه‌های بیشتر، به‌طور جداگانه به هر تنظیم بروید.</translation>
@@ -11000,6 +11006,7 @@
 <translation id="8973263196882835828">&amp;فعال کردن زیرنویس ناشنوایان زنده</translation>
 <translation id="8973557916016709913">برداشتن سطح بزرگ‌نمایی</translation>
 <translation id="8973596347849323817">می‌توانید این دستگاه را متناسب با نیازهایتان سفارشی کنید. می‌توانید بعداً در «تنظیمات»، این ویژگی‌های دسترس‌پذیری را تغییر دهید.</translation>
+<translation id="8973648401056792381">برنامه وب را سرپرست دستگاهتان نصب کرده است.</translation>
 <translation id="897414447285476047">فایل مقصد به‌علت مشکل اتصال، ناقص بود.</translation>
 <translation id="8974261761101622391">پیدا کردن جایگزین برای <ph name="EXTENSION_NAME" /></translation>
 <translation id="897525204902889653">سرویس قرنطینه</translation>

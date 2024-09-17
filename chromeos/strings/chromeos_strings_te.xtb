@@ -35,6 +35,7 @@
 <translation id="1155154308031262006">ప్రాంప్ట్‌ను ఎంటర్ చేయండి</translation>
 <translation id="115705039208660697">పైనాపిల్స్</translation>
 <translation id="1164939766849482256">'ఉదయం నుండి సాయంత్రం' స్క్రీన్ సేవర్</translation>
+<translation id="1166688493741195933">రికార్డ్ చేసిన పేర్లను జెనరేట్ చేయడం విఫలమైంది</translation>
 <translation id="1167755866710282443">కీలను అనుకూలీకరించడానికి మెనూను తెరవండి. తరలించడానికి మెనూను లాగండి.</translation>
 <translation id="1171349345463658120">ఇసుక లాగూన్</translation>
 <translation id="1173894706177603556">పేరుమార్చు</translation>
@@ -284,7 +285,6 @@
 <translation id="2230624078793142213">మరిన్ని క్రియేట్ చేయండి</translation>
 <translation id="2236746079896696523">కీబోర్డ్ బ్యాక్‌లైట్‌ను టోగుల్ చేయండి</translation>
 <translation id="2240366984605217732">లేఅవుట్ స్విచ్</translation>
-<translation id="2242381852034179222">ఈ ఫీచర్‌ను మీ అడ్మినిస్ట్రేటర్‌లు మేనేజ్ చేస్తారు</translation>
 <translation id="2244834438220057800">ఆకుపచ్చ రంగు</translation>
 <translation id="225692081236532131">క్రియాశీలత స్థితి</translation>
 <translation id="2267285889943769271">స్క్రీన్‌షాట్‌ను జోడించండి</translation>
@@ -494,6 +494,7 @@
 <translation id="3502426834823382181">అన్ని యాప్‌లను చూడండి</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />పనితీరు ట్రేస్ డేటాను<ph name="END_LINK1" /> పంపండి</translation>
 <translation id="3517001332549868749">ChromeOS అప్‌డేట్</translation>
+<translation id="3522508178835057262">ప్రస్తుతానికి, <ph name="MAX_WORD_LENGTH" /> కంటే ఎక్కువ పదాలు ఉన్న టైప్ చేసిన మాటల ఫైల్‌కు సపోర్ట్ లేదు</translation>
 <translation id="3527036260304016759">విఫలమైంది - తెలియని ఎర్రర్</translation>
 <translation id="353214771040290298">ఎడిట్ చేయడం పూర్తయింది</translation>
 <translation id="3532980081107202182">సుమారు <ph name="MIN_REMAINING" /> నిమిషాలు మిగిలి ఉన్నాయి</translation>
@@ -711,6 +712,7 @@
 <translation id="4602266091140407479">మైక్</translation>
 <translation id="4607282946861182308">దీని ఇమేజ్‌లను క్రియేట్ చేయడం సాధ్యం కాదు. మరొక ప్రాంప్ట్‌ను ట్రై చేయండి.</translation>
 <translation id="4609350030397390689">కీబోర్డ్ బ్రైట్‌నెస్‌ను తగ్గించండి</translation>
+<translation id="4623061655523261501">రికార్డ్ చేసిన పేర్లను జెనరేట్ చేయడం విజయవంతమైంది</translation>
 <translation id="4627232916386272576"><ph name="TOTAL_PAGE_NUMBER" />లో <ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />. ప్రింట్ టాస్క్‌ను రద్దు చేయడానికి ఎంటర్ నొక్కండి.</translation>
 <translation id="463791356324567266">స్కానింగ్ రద్దు అవుతోంది...</translation>
 <translation id="4644611440022666152">ఆన్ చేసి డౌన్‌లోడ్ చేయండి</translation>
@@ -1216,6 +1218,7 @@
 <translation id="708426984172631313">ఆపివేయబడింది</translation>
 <translation id="7086168019478250425">బయోలుమినిసెంట్ బీచ్</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="7086916854357021265">రికార్డ్ చేసిన పేర్లను జెనరేట్ చేస్తోంది</translation>
 <translation id="7097908713073775559">రంగులమయం</translation>
 <translation id="710028965487274708">విఫలమైంది - ప్రామాణీకరణ విఫలమైంది</translation>
 <translation id="7101959270679078188">అప్‌డేట్ ప్రాసెస్‌ను కొనసాగించడానికి <ph name="DEVICE_NAME" />‌ను అన్‌లాక్ చేయండి</translation>

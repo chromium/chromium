@@ -42,6 +42,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="1148499908455722006">Odpri pogovorno okno z informacijami o uporabniku <ph name="USER_NAME" /></translation>
 <translation id="1150989369772528668">Koledar</translation>
 <translation id="1153356358378277386">Seznanjene naprave</translation>
+<translation id="1153918444040990015">Povezave z zvoki za način Osredotočenosti ni bilo mogoče vzpostaviti</translation>
 <translation id="1155734730463845512">Trenutna raven baterije: <ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="1157514002898505378">Generativna umetna inteligenca je preizkusna in vsebina je morda netočna, zavajajoča ali žaljiva. Obrnite se na skrbnika, če želite prijaviti težavo. <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="1160215328209699296">vklopljeno in v uporabi</translation>
@@ -175,6 +176,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="1550523713251050646">Kliknite za več možnosti</translation>
 <translation id="1555130319947370107">Modra</translation>
 <translation id="1557622599341396706">Pokaži ime namizja</translation>
+<translation id="1567138500090284106">Gumb za tipke miške</translation>
 <translation id="1569384531973824928">To omogoča dostop za vse aplikacije in spletna mesta, ki imajo dovoljenje za kamero in mikrofon. Morda boste morali osvežiti spletno stran ali znova zagnati aplikacijo.</translation>
 <translation id="1571697193564730395">Preklop načina »Ne moti«. <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">Pomanjšava, ko je lupa vklopljena</translation>
@@ -242,6 +244,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="1787955149152357925">Izklopljeno</translation>
 <translation id="1796561540704213354">Spletna mesta, vključno s stranmi, ki ste jih obiskali, in odprtimi stranmi</translation>
 <translation id="179842970735685253">Googlovimi pogoji storitve</translation>
+<translation id="1805407494113167797">Zvokov načina Osredotočenosti ni bilo mogoče predvajati</translation>
 <translation id="181103072419391116">Moč signala je <ph name="SIGNAL_STRENGTH" />, upravlja ga vaš skrbnik</translation>
 <translation id="1816896987747843206">To omogoča dostop do kamere za vse aplikacije in spletna mesta, ki imajo dovoljenje za kamero.</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
@@ -1505,7 +1508,6 @@ Nobena naprava ni povezana.</translation>
 <translation id="6119972796024789243">Popravljanje barv</translation>
 <translation id="6121838516699723042">Potrditev prenosa datoteke <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">Pomočnik Google ni na voljo v gostujoči seji.</translation>
-<translation id="6127370444807669747">Če želite osebno prilagojene sezname predvajanja in več glasbe za osredotočanje, preizkusite YouTube Music Premium</translation>
 <translation id="6127395413317891856">Nimate vzpostavljene povezave. Preverite povezavo in poskusite znova.</translation>
 <translation id="6129953537138746214">Presledek</translation>
 <translation id="6137566720514957455">Odpri pogovorno okno za odstranjevanje za <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -2283,6 +2285,7 @@ Nova namestitev</translation>
 <translation id="8876661425082386199">Preverjanje povezave</translation>
 <translation id="8877788021141246043">Nastavi opomnik</translation>
 <translation id="8878886163241303700">Razširjanje zaslona</translation>
+<translation id="8885424115080869847">Povezave s storitvijo YouTube Music ni bilo mogoče vzpostaviti</translation>
 <translation id="888982883502837004">Posodobitve vdelane programske opreme so na voljo za vašo napravo. Kliknite, če si želite ogledati in posodobiti.</translation>
 <translation id="8896630965521842259">Predloga <ph name="DESK_TEMPLATE_NAME" /> bo trajno izbrisana.</translation>
 <translation id="889790758758811533">Še <ph name="PERCENTAGE" /> % baterije (približno <ph name="TIME_LEFT" />). Napravo priklopite na napajanje.</translation>

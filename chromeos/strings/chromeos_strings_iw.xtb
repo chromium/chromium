@@ -145,6 +145,7 @@
 <translation id="1651925268237749928">בחרת אלבום משותף. אנשים אחרים יכולים להוסיף או לשנות תמונות. יכול להיות שתמונות שלא נמצאות כרגע באלבום יוגדרו כטפט שלך.</translation>
 <translation id="1661512400125589646">השהיה</translation>
 <translation id="1661865805917886535">‏פרטים מסוימים על החשבון והמערכת עשויים להישלח ל-Google. אנחנו משתמשים בפרטים האלה כדי לפתור בעיות טכניות ולשפר את השירותים שלנו, בכפוף למדיניות הפרטיות (<ph name="PRIVACYPOLICYURL" />) ולתנאים ולהגבלות (<ph name="TERMSOFSERVICEURL" />) שלנו. כדי לבקש שינויים בתוכן, צריך לעבור למרכז העזרה בנושאים משפטיים (<ph name="LEGALHELPPAGEURL" />).</translation>
+<translation id="1662699081856352167">הסיכום נוצר</translation>
 <translation id="1662989795263954667">הפסיקה – הדיו נגמר</translation>
 <translation id="1664796644829245314">תצוגה מקדימה של <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">‏רשתות VPN מובנות</translation>
@@ -283,7 +284,6 @@
 <translation id="2230624078793142213">יצירת טפטים נוספים</translation>
 <translation id="2236746079896696523">החלפת המצב של התאורה האחורית של המקלדת</translation>
 <translation id="2240366984605217732">מתג הפריסה</translation>
-<translation id="2242381852034179222">התכונה הזו מנוהלת על ידי האדמינים</translation>
 <translation id="2244834438220057800">ירוק</translation>
 <translation id="225692081236532131">סטטוס הפעלה</translation>
 <translation id="2267285889943769271">הוספה של צילום מסך</translation>
@@ -341,6 +341,7 @@
 <translation id="2560876255701405320">רשימת הקלטות האודיו</translation>
 <translation id="2561093647892030937">לימונים</translation>
 <translation id="2570743873672969996">הבדיקה של <ph name="TEST_NAME" /> בתהליך…</translation>
+<translation id="2573178735329662769">‏הקלטת כל האודיו ב-Chromebook</translation>
 <translation id="2575552334616524665">אפשר להפעיל את האפשרות הזו ב'הגדרות' או בתפריט <ph name="THREE_DOTS_MENU_ICON" /></translation>
 <translation id="2576253868710695442">‏הקובץ יתפוס עד 2GB מנפח האחסון</translation>
 <translation id="2584547424703650812">מרחבים זוהרים</translation>
@@ -508,6 +509,7 @@
 <translation id="3588034708467091142">צריך לוודא שיש חיבור לאינטרנט ולנסות שוב.</translation>
 <translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> הוא השם הידידותי-למשתמש של <ph name="APN_NAME" />.</translation>
 <translation id="3595596368722241419">סוללה מלאה</translation>
+<translation id="3600063043775287169">‏כשהאודיו של Chromebook מופעל, מכשיר ההקלטה מקליט את כל האודיו שמופעל במכשיר הזה. כדאי לוודא שרוצים להקליט את כל הצלילים.</translation>
 <translation id="3600339377155080675">שיקוף מסך</translation>
 <translation id="3602290021589620013">תצוגה מקדימה</translation>
 <translation id="3603829704940252505">דמות</translation>
@@ -541,6 +543,7 @@
 <translation id="3780740315729837296">הקצאת מקש במקלדת</translation>
 <translation id="3784455785234192852">נעילה</translation>
 <translation id="3785643128701396311">פיקסל ארט</translation>
+<translation id="3799381533888781854">מושבתת – ההגדרה הזו מנוהלת על ידי האדמין.</translation>
 <translation id="380097101658023925">‏פקדים לכוונון RGB</translation>
 <translation id="38114475217616659">ניקוי כל ההיסטוריה</translation>
 <translation id="3820172043799983114">‏PIN לא חוקי.</translation>
@@ -744,6 +747,7 @@
 <translation id="4809927044794281115">עיצוב בהיר</translation>
 <translation id="4813136279048157860">התמונות שלי</translation>
 <translation id="4813345808229079766">התקשרות</translation>
+<translation id="4824527342590024245">בשלב הזה אין תמיכה בתמליל שכולל פחות מ-<ph name="MIN_WORD_LENGTH" /> מילים</translation>
 <translation id="4830894019733815633">קניון</translation>
 <translation id="4832079907277790330">בחירת תיקייה מהאפליקציה 'קבצים'…</translation>
 <translation id="4835901797422965222">אין רשתות פעילות</translation>
@@ -772,6 +776,7 @@
 <translation id="4921665434385737356">התבצעה טעינה של <ph name="RATE" /> ב-<ph name="NUM_SECONDS" /> שניות.</translation>
 <translation id="4930320165497208503">כדי להגדיר או לעדכן חיבור, צריך לעבור ל<ph name="BEGIN_LINK" />הגדרות<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">תאריך</translation>
+<translation id="4946927805998996217">הסיכום בשלבי יצירה</translation>
 <translation id="4950314376641394653">הקושחה במכשיר <ph name="DEVICE_NAME" /> עודכנה לגרסה <ph name="VERSION" /></translation>
 <translation id="4950893758552030541">מנהרת עצים</translation>
 <translation id="4965661459364092269">האיפוס של הגדרות האבטחה הושלם</translation>
@@ -832,6 +837,7 @@
 <translation id="5229104491259541281">המרה של '<ph name="QUERY" />'</translation>
 <translation id="5229344016299762883">יציאה ממסך מלא</translation>
 <translation id="5234764350956374838">סגירה</translation>
+<translation id="5236119614998611749">יצירת הסיכום נכשלה</translation>
 <translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{האדמין הגדיר הפעלה אוטומטית של האפליקציה <ph name="APP_NAME" /> בכל התחברות שלך.}=2{האדמין הגדיר הפעלה אוטומטית של האפליקציה <ph name="APP_NAME" /> ועוד אפליקציה אחת בכל התחברות שלך.}one{האדמין הגדיר הפעלה אוטומטית של האפליקציה <ph name="APP_NAME" /> ועוד # אפליקציות בכל התחברות שלך.}other{האדמין הגדיר הפעלה אוטומטית של האפליקציה <ph name="APP_NAME" /> ועוד # אפליקציות בכל התחברות שלך.}}</translation>
 <translation id="5248419081947706722">כחול</translation>
 <translation id="5252456968953390977">נדידה</translation>

@@ -116,6 +116,7 @@
 <translation id="1517166097004694782">I-hide ang "Magpatuloy sa tab na ito"</translation>
 <translation id="1520027731907768768">Makatanggap ng mga alerto sa pagbaba ng presyo para sa mga produktong sinusubaybayan mo.</translation>
 <translation id="1521774566618522728">Aktibo ngayong araw</translation>
+<translation id="1524563461097350801">Hindi, Salamat na lang</translation>
 <translation id="1531038290222364269">Ipakita ang mga tab</translation>
 <translation id="1536390784834419204">Isalin ang page</translation>
 <translation id="1540800554400757039">Address 1</translation>
@@ -1507,7 +1508,6 @@ Puwedeng gumamit ng cookies ang mga site para makita ang iyong aktibidad sa pag-
 <translation id="8173034266693057059">Haba</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8182037667962849780">{count,plural, =1{Para sa {website_1}}=2{Para sa {website_1}, {website_2}}=3{Para sa {website_1}, {website_2}, at 1 pa}one{Para sa {website_1}, {website_2}, at {more_count} pa}other{Para sa {website_1}, {website_2}, at {more_count} pa}}</translation>
-<translation id="8189814768485665290">I-share ang buong URL</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Ang iyong mga device<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Magdagdag ng password</translation>
 <translation id="8202744799033457229">Ipakita ang history</translation>
@@ -1541,6 +1541,7 @@ Puwedeng gumamit ng cookies ang mga site para makita ang iyong aktibidad sa pag-
 <translation id="8349305172487531364">Bookmarks bar</translation>
 <translation id="8366466717204352506">Hindi kailanman nagpatakbo ng pagsusuri</translation>
 <translation id="8368001212524806591">Subaybayan ang presyo</translation>
+<translation id="8370406443343902172">Pumunta sa Mga Setting...</translation>
 <translation id="8372471489238799313">{count,plural, =1{I-delete ang address}one{I-delete ang mga address}other{I-delete ang mga address}}</translation>
 <translation id="8378714024927312812">Pinapamahalaan ng iyong organisasyon</translation>
 <translation id="8386068868580335421">I-reset</translation>

@@ -75,6 +75,7 @@
 <translation id="1303507811548703290"><ph name="DOMAIN" /> – Lähetetty laitteelta <ph name="DEVICE_NAME" /></translation>
 <translation id="1320912611264252795">Kirjanmerkin tallennusvaiheet avattu koko näytön kokoisena</translation>
 <translation id="1327257854815634930">Navigointihistoria avattu</translation>
+<translation id="1328235593824723509"><ph name="TAB_TITLE" />, uusi tai päivitetty välilehti</translation>
 <translation id="1331212799747679585">Chromea ei voi päivittää. Lisää vaihtoehtoja</translation>
 <translation id="1332501820983677155">Google Chromen ominaisuuksien pikanäppäimet</translation>
 <translation id="1333491156693005331">Tarkistettu äskettäin</translation>
@@ -1213,6 +1214,7 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="6674571176963658787">Aloita synkronointi lisäämällä tunnuslause</translation>
 <translation id="6676927815633975364">Kirjaudu tälle sivustolle ja Chromeen</translation>
 <translation id="6684809838922667136">Entistä parempi Chrome</translation>
+<translation id="6700279777779583398">Valinnat tallennettu</translation>
 <translation id="6704048624334633734">Vie ja poista salasanat</translation>
 <translation id="670498945988402717">Tarkistettu eilen</translation>
 <translation id="6710213216561001401">Edellinen</translation>
@@ -1290,7 +1292,6 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="6964300328304469089">Tällä hetkellä valittuna <ph name="NAME" />, <ph name="EMAIL" />. Valitse tili.</translation>
 <translation id="696447261358045621">Poistu incognito-tilasta</translation>
 <translation id="6965382102122355670">OK</translation>
-<translation id="6966660124354134532">Seuraa tuotetta tai lopeta sen seuranta napauttamalla.</translation>
 <translation id="6971862865055170158">Älä hyväksy</translation>
 <translation id="6978717888677691380">Estämäsi sivustot</translation>
 <translation id="6979737339423435258">Kaikki</translation>
@@ -1426,6 +1427,7 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />poista tilin Chrome-
 <translation id="752731652852882757">Estä incognito-tilassa</translation>
 <translation id="7554643625247105821">Chrome-version tarkistaminen ei onnistu</translation>
 <translation id="7557508262441527045">Kirjautunut ulos</translation>
+<translation id="7573665567024262965">Valitse oletussovellukset</translation>
 <translation id="7577900504646297215">Ylläpidä kiinnostuksen kohteita</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> tiedosto ladattu}other{<ph name="FILES_DOWNLOADED_MANY" /> tiedostoa ladattu}}</translation>
 <translation id="7581273696622423628">Vastaa kyselyyn</translation>
@@ -1468,6 +1470,7 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />poista tilin Chrome-
 <translation id="7764225426217299476">Lisää osoite</translation>
 <translation id="7772032839648071052">Vahvista tunnuslause</translation>
 <translation id="7772375229873196092">Sulje <ph name="APP_NAME" /></translation>
+<translation id="7774125747223422443">Alueesi lain perusteella sinun on valittava selain ja hakukone</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 ja <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> muu}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 ja <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> muuta}}</translation>
 <translation id="777637629667389858">Kun olet kirjautuneena sisään, se suojaa sinua kaikissa Googlen palveluissa.</translation>
 <translation id="7778840695157240389">Katso mahdolliset uudet tarinat myöhemmin</translation>
@@ -1592,6 +1595,7 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />poista tilin Chrome-
 <translation id="8265018477030547118">Vain tälle laitteelle</translation>
 <translation id="8266753737658117282">Jatka käyttäjänä <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8266862848225348053">Lataussijainti</translation>
+<translation id="8279945625179116733">Varmentaja: <ph name="APP_NAME" /></translation>
 <translation id="8281886186245836920">Ohita</translation>
 <translation id="8282297628636750033">Käytä tummaa teemaa sivustoilla</translation>
 <translation id="8282950411412455249">Siirry suojausasetuksiin</translation>
@@ -1736,6 +1740,7 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />poista tilin Chrome-
 <translation id="8982113230057126145">En tykkää ‑palaute kertoo, ettet pidä tästä yhteenvedosta</translation>
 <translation id="8992769679401294069">Datasi salataan tunnuslauseella. Lisää se, niin voit käyttää ja tallentaa Chrome-dataa Google-tililläsi.</translation>
 <translation id="8993760627012879038">Avaa uusi välilehti incognito-tilassa</translation>
+<translation id="8995521496079646922">Valitsemasi sovellukset ovat oletuksena käytössä. Jos sovellusta ei ole vielä laitteella, se ladataan pian.</translation>
 <translation id="8996847606757455498">Valitse toinen palvelu</translation>
 <translation id="8998289560386111590">Ei saatavilla laitteellasi</translation>
 <translation id="8998837250940831980">Välilehden pienentäminen epäonnistui. Yritä myöhemmin uudelleen.</translation>

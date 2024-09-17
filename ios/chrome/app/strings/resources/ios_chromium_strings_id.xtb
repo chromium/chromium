@@ -292,6 +292,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="8860548555286245440">Buka URL di Chromium dalam mode Samaran</translation>
 <translation id="8866191443434488382">Chromium akan mendeteksi nomor pelacakan di situs yang Anda buka dan menampilkan info terbaru terkait paket di halaman Tab Baru. Nomor pelacakan paket dan nama situs akan dikirim ke Chromium untuk menyediakan fitur ini dan meningkatkan kualitas fitur belanja bagi semua orang. Anda dapat memperbaruinya kapan saja di <ph name="BEGIN_LINK" />Setelan Pelacakan Paket<ph name="END_LINK" />.</translation>
 <translation id="8880024619507699923">Organisasi mengharuskan Anda login untuk menggunakan Chromium. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
+<translation id="8900052431807804054">Dapatkan Keamanan Terkuat Chromium</translation>
 <translation id="894437814105052438">Jika Anda logout, Chromium tidak akan menyinkronkan data baru apa pun ke Akun Google Anda. Data yang sebelumnya disinkronkan tetap tersimpan di akun.</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{Hal ini terjadi jika Chromium tidak digunakan selama {THRESHOLD} menit}other{Hal ini terjadi jika Chromium tidak digunakan selama {THRESHOLD} menit}}</translation>
 <translation id="8963279154877372067">Izinkan notifikasi Chromium mendapatkan notifikasi diskon</translation>

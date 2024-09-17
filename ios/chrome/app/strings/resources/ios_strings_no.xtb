@@ -116,6 +116,7 @@
 <translation id="1517166097004694782">Skjul «Fortsett med denne fanen»</translation>
 <translation id="1520027731907768768">Få varsler om avslag for produkter du sporer.</translation>
 <translation id="1521774566618522728">Aktiv i dag</translation>
+<translation id="1524563461097350801">Nei takk</translation>
 <translation id="1531038290222364269">Vis faner</translation>
 <translation id="1536390784834419204">Oversett siden</translation>
 <translation id="1540800554400757039">Adresse 1</translation>
@@ -1177,7 +1178,7 @@ Nettsteder kan ikke bruke informasjonskapsler til å se nettleseraktiviteten din
 <translation id="6640268266988685324">Åpne fane</translation>
 <translation id="6641465290890659327">Del en kopi av passordet ditt</translation>
 <translation id="6642362222295953972">Bytt til den eksisterende fanen</translation>
-<translation id="6644512095122093795">Tilby å lagre passord</translation>
+<translation id="6644512095122093795">Bli tilbudt å lagre passord</translation>
 <translation id="6645899968535965230">QR-kode: <ph name="PAGE_TITLE" /></translation>
 <translation id="6647441008198474441">Nettadresser du besøker, sendes til Google for å forutsi hvilke nettsteder du kanskje kommer til å besøke etterpå</translation>
 <translation id="6657585470893396449">Passord</translation>
@@ -1507,7 +1508,6 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="8173034266693057059">Lengde</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8182037667962849780">{count,plural, =1{For {website_1}}=2{For {website_1} og {website_2}}=3{For {website_1}, {website_2} og 1 til}other{For {website_1}, {website_2} og {more_count} til}}</translation>
-<translation id="8189814768485665290">Del hele nettadressen</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Enhetene dine<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Legg til passord</translation>
 <translation id="8202744799033457229">Vis logg</translation>
@@ -1541,6 +1541,7 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="8349305172487531364">Bokmerkerad</translation>
 <translation id="8366466717204352506">Sjekken har aldri vært kjørt</translation>
 <translation id="8368001212524806591">Spor prisen</translation>
+<translation id="8370406443343902172">Gå til Innstillinger…</translation>
 <translation id="8372471489238799313">{count,plural, =1{Slett adressen}other{Slett adressene}}</translation>
 <translation id="8378714024927312812">Administreres av organisasjonen din</translation>
 <translation id="8386068868580335421">Tilbakestill</translation>

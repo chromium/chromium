@@ -42,6 +42,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1148499908455722006">Avage konto <ph name="USER_NAME" /> teabedialoog</translation>
 <translation id="1150989369772528668">Kalender</translation>
 <translation id="1153356358378277386">Seotud seadmed</translation>
+<translation id="1153918444040990015">Ei saanud keskendumise funktsiooni helidega ühendada</translation>
 <translation id="1155734730463845512">Praegune aku laetuse tase <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1157514002898505378">Generatiivne AI on katsejärgus ja selle sisu võib olla ebatäpne, eksitav või solvav. Probleemist teatamiseks võtke ühendust administraatoriga. <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="1160215328209699296">sees ja kasutusel</translation>
@@ -175,6 +176,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1550523713251050646">Klõpsake lisavalikute nägemiseks</translation>
 <translation id="1555130319947370107">Sinine</translation>
 <translation id="1557622599341396706">Kuva töölaua nimi</translation>
+<translation id="1567138500090284106">Hiireklahvide nupp</translation>
 <translation id="1569384531973824928">Sisselülitamisel antakse juurdepääsuluba kõikidele kaamerale ja mikrofonile juurdepääsemise loaga rakendustele ning veebisaitidele. Võimalik, et peate veebilehte värskendama või rakenduse taaskäivitama.</translation>
 <translation id="1571697193564730395">Režiimi Mitte segada lülitamine. <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">Suumi välja, kui luup on sisse lülitatud</translation>
@@ -242,6 +244,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1787955149152357925">Väljas</translation>
 <translation id="1796561540704213354">Veebisaidid, mis hõlmavad teie külastatud lehti ja avatud lehti</translation>
 <translation id="179842970735685253">Google'i teenusetingimused</translation>
+<translation id="1805407494113167797">Ei saanud keskendumise funktsiooni helisid esitada</translation>
 <translation id="181103072419391116">Signaali tugevus: <ph name="SIGNAL_STRENGTH" />, võrku haldab teie administraator</translation>
 <translation id="1816896987747843206">See lubab kõikidel kaamerale juurdepääsemise loaga rakendustel ja veebisaitidel kaamerale juurde pääseda</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
@@ -1355,6 +1358,7 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Teie parooli ei õnnestunud kinnitada. Proovige uuesti.</translation>
 <translation id="5632485077360054581">Kuva juhised</translation>
+<translation id="5633826232582408011">Kui lülitate funktsioonid Aita mul kirjutada ja Aita mul lugeda sisse, saadetakse sisestatud tekst, dokumendi sisu ja veebilehe URL Google'i AI serveritesse, et genereerida kirjutamissoovitusi, kokkuvõtteid, vastata küsimustele ja täiustada toodet vastavalt dokumendile <ph name="LINK_TO_SERVICE_TERMS" />. Ärge lisage midagi isiklikku, delikaatset ega konfidentsiaalset.</translation>
 <translation id="5648021990716966815">Mikrofoni pistikupesa</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> vajab teie tähelepanu.</translation>
 <translation id="5662075790140998213">Töölaud 10</translation>
@@ -1412,6 +1416,7 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="5802516411616338943">Ava kiirseaded</translation>
 <translation id="5804651031882187592">Lülitage seade „SIM-i lukustamine“ välja</translation>
 <translation id="5805809050170488595">Klõpsake võrgu <ph name="NETWORK_NAME" /> aktiveerimiseks</translation>
+<translation id="5818796501620225415">Saate rohkem aega lisada või keskendumisseansi lõpetada</translation>
 <translation id="5819918159912280082">Teie Chromebook taaskäivitati ootamatult. Avage oma eelmised aknad ja rakendused.</translation>
 <translation id="5823239091726045201">Google Tasks veebis</translation>
 <translation id="5825969630400862129">Ühendatud seadmete seaded</translation>
@@ -1505,7 +1510,6 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="6119972796024789243">Värvide korrigeerimine</translation>
 <translation id="6121838516699723042">Allalaadimise kinnitamine (<ph name="FILENAME" />)</translation>
 <translation id="612734058257491180">Google'i assistent ei ole külastajaseansis saadaval.</translation>
-<translation id="6127370444807669747">Isikupärastatud esitusloendite ja keskendumise režiimi rohkema muusika jaoks proovige YouTube Music Premiumit</translation>
 <translation id="6127395413317891856">Võrguühendus puudub. Kontrollige ühendust ja proovige uuesti.</translation>
 <translation id="6129953537138746214">Tühik</translation>
 <translation id="6137566720514957455">Kasutaja <ph name="USER_EMAIL_ADDRESS" /> eemaldamise dialoogi avamine</translation>
@@ -2283,6 +2287,7 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="8876661425082386199">Kontrollige ühendust</translation>
 <translation id="8877788021141246043">Määra meeldetuletus</translation>
 <translation id="8878886163241303700">Ekraani laiendamine</translation>
+<translation id="8885424115080869847">Ei saanud YouTube Musicuga ühendada</translation>
 <translation id="888982883502837004">Teie seadme jaoks on saadaval püsivara värskendused. Klõpsake ülevaatamiseks ja värskendamiseks.</translation>
 <translation id="8896630965521842259">Mall <ph name="DESK_TEMPLATE_NAME" /> kustutatakse jäädavalt</translation>
 <translation id="889790758758811533">Akut on jäänud <ph name="PERCENTAGE" />% (umbes <ph name="TIME_LEFT" />). Ühendage seade toiteallikaga.</translation>

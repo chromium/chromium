@@ -75,6 +75,7 @@
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - <ph name="DEVICE_NAME" />-с илгээсэн</translation>
 <translation id="1320912611264252795">Хавчуурганы хадгалах урсгалын фолдеруудыг бүтэн өндөртэйгээр нээсэн</translation>
 <translation id="1327257854815634930">Навигацын түүх нээлттэй байна</translation>
+<translation id="1328235593824723509"><ph name="TAB_TITLE" />, шинэ эсвэл шинэчилсэн таб</translation>
 <translation id="1331212799747679585">Chrome-г шинэчлэх боломжгүй байна. Бусад сонголт</translation>
 <translation id="1332501820983677155">Google Chrome онцлогийн товчлол</translation>
 <translation id="1333491156693005331">Саяхан шалгасан</translation>
@@ -1213,6 +1214,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="6674571176963658787">Синк хийж эхлэхийн тулд нэвтрэх үгээ оруулна уу</translation>
 <translation id="6676927815633975364">Энэ сайт болон Chrome-д нэвтэрнэ үү</translation>
 <translation id="6684809838922667136">Chrome-г сайжруулаарай</translation>
+<translation id="6700279777779583398">Сонголтуудыг хадгалсан</translation>
 <translation id="6704048624334633734">Нууц үгнүүдийг экспортолж, устгах</translation>
 <translation id="670498945988402717">Өчигдөр шалгасан</translation>
 <translation id="6710213216561001401">Өмнөх</translation>
@@ -1290,7 +1292,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="6964300328304469089">Одоогоор <ph name="NAME" />, <ph name="EMAIL" />-г сонгосон. Бүртгэл сонгоно уу.</translation>
 <translation id="696447261358045621">Нууцлалтай горимоос гарах</translation>
 <translation id="6965382102122355670">OK</translation>
-<translation id="6966660124354134532">Бүтээгдэхүүнийг хянах эсвэл хянахаа болихын тулд товшино уу.</translation>
 <translation id="6971862865055170158">Бүү зөвшөөр</translation>
 <translation id="6978717888677691380">Таны блоклосон сайтууд</translation>
 <translation id="6979737339423435258">Бүх цаг</translation>
@@ -1426,6 +1427,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="752731652852882757">Нууцлалтай горимыг ашиглаж байх үед блоклох</translation>
 <translation id="7554643625247105821">Chrome-н хувилбарыг шалгаж чадахгүй байна</translation>
 <translation id="7557508262441527045">Гарсан</translation>
+<translation id="7573665567024262965">Өгөгдмөл апуудаа сонгоно уу</translation>
 <translation id="7577900504646297215">Сонирхлыг удирдах</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> файл татсан}other{<ph name="FILES_DOWNLOADED_MANY" /> файл татсан}}</translation>
 <translation id="7581273696622423628">Судалгаа бөглөх</translation>
@@ -1468,6 +1470,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="7764225426217299476">Хаяг нэмэх</translation>
 <translation id="7772032839648071052">Нэвтрэх үгүүдийг баталгаажуул</translation>
 <translation id="7772375229873196092"><ph name="APP_NAME" />-г хаах</translation>
+<translation id="7774125747223422443">Танай бүс нутгийн хуульд тулгуурлан та хөтөч болон хайлтын системээ сонгох шаардлагатай</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 болон бусад <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 болон бусад <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="777637629667389858">Таныг нэвтэрсэн үед Google-н үйлчилгээнүүдэд хамгаална.</translation>
 <translation id="7778840695157240389">Шинэ түүхийг дараа дахин шалгана уу</translation>
@@ -1592,6 +1595,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="8265018477030547118">Зөвхөн энэ төхөөрөмжид</translation>
 <translation id="8266753737658117282"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-р үргэлжлүүлэх</translation>
 <translation id="8266862848225348053">Байршлыг татах</translation>
+<translation id="8279945625179116733"><ph name="APP_NAME" />-р хамгаалсан</translation>
 <translation id="8281886186245836920">Алгасах</translation>
 <translation id="8282297628636750033">Боломжтой бол сайтуудад бараан загварыг ашиглах</translation>
 <translation id="8282950411412455249">Аюулгүй байдлын тохиргоо руу очих</translation>
@@ -1736,6 +1740,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="8982113230057126145">Муу тэмдэглэгээ нь танд таалагдаагүй энэ хураангуйн талаарх санал хүсэлтийг илгээнэ</translation>
 <translation id="8992769679401294069">Таны өгөгдлийг нэвтрэх үгээр тань шифрлэсэн. Google Бүртгэлийнхээ Chrome-н өгөгдлийг ашиглах болон хадгалахын тулд үүнийг оруулна уу.</translation>
 <translation id="8993760627012879038">Шинэ чихтэй хуудсыг нууцлалын горимд нээх</translation>
+<translation id="8995521496079646922">Таны сонгосон аппуудыг өгөгдмөлөөр ашиглана. Хэрэв аппыг энэ төхөөрөмж дээр хэдийн суулгаагүй бол тухайн аппыг удахгүй татна.</translation>
 <translation id="8996847606757455498">Өөр үйлчилгээ үзүүлэгч сонгох</translation>
 <translation id="8998289560386111590">Таны төхөөрөмжид боломжгүй</translation>
 <translation id="8998837250940831980">Табыг багасгаж чадсангүй. Дараа дахин оролдоно уу.</translation>

@@ -75,6 +75,7 @@
 <translation id="1303507811548703290"><ph name="DOMAIN" /> – Надіслано з пристрою "<ph name="DEVICE_NAME" />"</translation>
 <translation id="1320912611264252795">Вікно зберігання закладки, відкрите на всю висоту</translation>
 <translation id="1327257854815634930">Історію навігації відкрито</translation>
+<translation id="1328235593824723509"><ph name="TAB_TITLE" />, нова або оновлена вкладка</translation>
 <translation id="1331212799747679585">Неможливо оновити Chrome. Більше опцій</translation>
 <translation id="1332501820983677155">Комбінації клавіш для функцій Google Chrome</translation>
 <translation id="1333491156693005331">Перевірено нещодавно</translation>
@@ -1213,6 +1214,7 @@
 <translation id="6674571176963658787">Щоб почати синхронізацію, введіть парольну фразу</translation>
 <translation id="6676927815633975364">Увійдіть в обліковий запис на цьому сайті й у Chrome</translation>
 <translation id="6684809838922667136">Покращте Chrome</translation>
+<translation id="6700279777779583398">Вибрані налаштування збережено</translation>
 <translation id="6704048624334633734">Експортуйте й видаліть паролі</translation>
 <translation id="670498945988402717">Перевірено вчора</translation>
 <translation id="6710213216561001401">Назад</translation>
@@ -1290,7 +1292,6 @@
 <translation id="6964300328304469089">Зараз вибрано: <ph name="NAME" /> (<ph name="EMAIL" />). Виберіть обліковий запис.</translation>
 <translation id="696447261358045621">Вимкнути режим анонімного перегляду</translation>
 <translation id="6965382102122355670">OK</translation>
-<translation id="6966660124354134532">Натисніть, щоб почати або припинити відстежувати ціну на товар.</translation>
 <translation id="6971862865055170158">Не схвалювати</translation>
 <translation id="6978717888677691380">Сайти, які ви заблокували</translation>
 <translation id="6979737339423435258">Увесь час</translation>
@@ -1426,6 +1427,7 @@
 <translation id="752731652852882757">Блокувати в анонімному режимі</translation>
 <translation id="7554643625247105821">Не вдалося перевірити версію Chrome</translation>
 <translation id="7557508262441527045">Ви вийшли</translation>
+<translation id="7573665567024262965">Виберіть додатки за умовчанням</translation>
 <translation id="7577900504646297215">Керувати інтересами</translation>
 <translation id="757855969265046257">{FILES,plural, =1{Завантажено <ph name="FILES_DOWNLOADED_ONE" /> файл}one{Завантажено <ph name="FILES_DOWNLOADED_MANY" /> файл}few{Завантажено <ph name="FILES_DOWNLOADED_MANY" /> файли}many{Завантажено <ph name="FILES_DOWNLOADED_MANY" /> файлів}other{Завантажено <ph name="FILES_DOWNLOADED_MANY" /> файлу}}</translation>
 <translation id="7581273696622423628">Відповісти на запитання</translation>
@@ -1468,6 +1470,7 @@
 <translation id="7764225426217299476">Додати адресу</translation>
 <translation id="7772032839648071052">Підтвердити парольну фразу</translation>
 <translation id="7772375229873196092">Закрити додаток <ph name="APP_NAME" /></translation>
+<translation id="7774125747223422443">Відповідно до законодавства у вашому регіоні, ви маєте вибрати вебпереглядач і пошукову систему</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}one{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}few{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}many{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="777637629667389858">Якщо ви ввійшли в обліковий запис, ця функція захищає вас у всіх сервісах Google.</translation>
 <translation id="7778840695157240389">Повертайтеся пізніше, щоб переглянути останні новини</translation>
@@ -1592,6 +1595,7 @@
 <translation id="8265018477030547118">Лише на цьому пристрої</translation>
 <translation id="8266753737658117282">Продовжити з обліковим записом <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8266862848225348053">Папка для завантажень</translation>
+<translation id="8279945625179116733">Захищено додатком <ph name="APP_NAME" /></translation>
 <translation id="8281886186245836920">Пропустити</translation>
 <translation id="8282297628636750033">Застосовувати темну тему для сайтів</translation>
 <translation id="8282950411412455249">Перейти до налаштувань безпеки</translation>
@@ -1736,6 +1740,7 @@
 <translation id="8982113230057126145">За допомогою позначки "Не подобається" можна надіслати негативний відгук про цей короткий переказ</translation>
 <translation id="8992769679401294069">Ваші дані зашифровано за допомогою парольної фрази. Введіть її, щоб використовувати й зберігати дані Chrome в обліковому записі Google.</translation>
 <translation id="8993760627012879038">Відкрити нове вікно в режимі анонімного перегляду</translation>
+<translation id="8995521496079646922">Вибрані додатки використовуватимуться за умовчанням. Якщо додаток іще не встановлено на цьому пристрої, незабаром почнеться його завантаження.</translation>
 <translation id="8996847606757455498">Вибрати іншого постачальника</translation>
 <translation id="8998289560386111590">Недоступно на вашому пристрої</translation>
 <translation id="8998837250940831980">Не вдалося згорнути вкладку. Повторіть спробу пізніше.</translation>

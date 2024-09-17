@@ -1014,6 +1014,7 @@
 <translation id="2882949212241984732">ડબલ-ગેટ ફોલ્ડ</translation>
 <translation id="2891963978019740012">Chromeમાંનું તમારું શોધ એન્જિન</translation>
 <translation id="2893773853358652045">ચોથો રોલ</translation>
+<translation id="2894137550885451583"><ph name="PRODUCT" /> પ્રોડક્ટ માટે, <ph name="CURRENCY" />માં આ કિંમતો છે</translation>
 <translation id="2900528713135656174">ઇવેન્ટ બનાવો</translation>
 <translation id="2902312830803030883">વધુ ક્રિયાઓ</translation>
 <translation id="2903493209154104877">સરનામાંઓ</translation>
@@ -1611,6 +1612,7 @@
 <translation id="3949601375789751990">તમારો બ્રાઉઝિંગ ઇતિહાસ અહીં દેખાય છે</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">કોઈ ચુકવણી પદ્ધતિ સાચવેલી નથી</translation>
+<translation id="3950560191811267370">કૉમર્સ બોટમ શીટ બંધ કરવામાં આવી</translation>
 <translation id="3950574001630941635">ટ્યૂટૉરિઅલ ફરી શરૂ કરો</translation>
 <translation id="3950820424414687140">સાઇન ઇન</translation>
 <translation id="3953505489397572035">આ કિંમત સામાન્ય છે</translation>
@@ -2352,6 +2354,7 @@
 <translation id="5331585574693522196">ડિફૉલ્ટ તરીકે સેટ કરો</translation>
 <translation id="5332219387342487447">શિપિંગ પદ્ધતિ</translation>
 <translation id="5332769172018416402">મેસેજમાં પૂછો</translation>
+<translation id="533323551986281710">સંપૂર્ણ સ્ક્રીનમાં જોઈ શકાય એવી રીતે કૉમર્સ બોટમ શીટ ખોલવામાં આવી</translation>
 <translation id="5334013548165032829">વિગતવાર સિસ્ટમ લૉગ</translation>
 <translation id="5334145288572353250">સરનામું સાચવીએ?</translation>
 <translation id="5340250774223869109">ઍપ્લિકેશન બ્લૉક કરેલી છે</translation>
@@ -2534,6 +2537,7 @@
 <translation id="5675650730144413517">આ પેજ કામ કરી રહ્યું નથી</translation>
 <translation id="5675809467256309336">ડાન્સ અને ઇલેક્ટ્રોનિક મ્યુઝિક</translation>
 <translation id="5675959228867414813">તારીખ અનુસાર બતાવો</translation>
+<translation id="567604591393105935">અડધી સ્ક્રીનમાં જોઈ શકાય એવી રીતે કૉમર્સ બોટમ શીટ ખોલવામાં આવી</translation>
 <translation id="5677928146339483299">બ્લૉક કરેલ</translation>
 <translation id="5678007133659493065">ફૉઇલ</translation>
 <translation id="5680642791693447368">થ્રિલર, ક્રાઇમ અને મિસ્ટ્રી મૂવી</translation>
@@ -3440,6 +3444,7 @@
 <translation id="7374733840632556089">તમારા ડિવાઇસ પર તમે અથવા અન્ય કોઈ વ્યક્તિએ ઇન્સ્ટૉલ કરેલા પ્રમાણપત્રને કારણે આ સમસ્યા થાય છે. આ પ્રમાણપત્ર નેટવર્કને મોનિટર અને બંધ કરવા માટે ઉપયોગમાં લેવા માટે જાણીતું છે અને Chrome તેના પર વિશ્વાસ કરતું નથી. જો કે કેટલાક નિયમસર કિસ્સાઓમાં મોનિટર કરવાનું કાર્ય થતું હોય છે, જેમકે શાળા અથવા કંપનીના નેટવર્કમાં, પણ Chrome ખાતરી કરવા માગે છે કે તમે ભલે એ રોકી ન શકતા હો, પણ એ થવા વિશે તમને જાણકારી છે. વેબને ઍક્સેસ કરતા કોઈપણ બ્રાઉઝર અથવા ઍપ્લિકેશનમાં મોનિટર કરવાનું કાર્ય થઈ શકે છે.</translation>
 <translation id="7375532151824574023">{NUM_COOKIES,plural, =0{કોઈ સાઇટને મંજૂરી આપી નથી}=1{1 સાઇટને મંજૂરી આપી}one{# સાઇટને મંજૂરી આપી}other{# સાઇટને મંજૂરી આપી}}</translation>
 <translation id="7375818412732305729">ફાઇલ જોડવામાં આવે ત્યારે</translation>
+<translation id="7376031331622621328">કૉમર્સ બોટમ શીટ</translation>
 <translation id="7377249249140280793"><ph name="RELATIVE_DATE" /> - <ph name="FULL_DATE" /></translation>
 <translation id="7377314930809374926">આતિથ્યસત્કાર ઉદ્યોગ</translation>
 <translation id="7378594059915113390">મીડિયા નિયંત્રણો</translation>

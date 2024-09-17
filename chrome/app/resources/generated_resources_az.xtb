@@ -495,6 +495,7 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="1355088139103479645">Bütün data silinsin?</translation>
 <translation id="1356376170199999104">İcazə verilib – <ph name="PERMISSION_DETAILS" />. Fiziki dəyişdirici istifadə edərək mikrofonu yandırın.</translation>
 <translation id="1356959069439783953">Qeyri-aktiv tablar yeni görünüş əldə edir</translation>
+<translation id="1357766361161708728">İstifadə edilməyən tablar bağlansın?</translation>
 <translation id="1358741672408003399">Orfoqrafiya və Qrammatika</translation>
 <translation id="1359923111303110318">Cihazınız Smart Lock ilə kiliddən çıxarıla bilər. Kiliddən çıxarmaq üçün Enter düyməsinə basın.</translation>
 <translation id="1361164813881551742">Mexaniki Əlavə Edin</translation>
@@ -1104,7 +1105,6 @@ Hazırda tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna bilər. And
 <translation id="1780273119488802839">Əlfəcinlər import edilir...</translation>
 <translation id="1780572199786401845">Təhqiramiz/təhlükəli kontent barədə bildirin.</translation>
 <translation id="178092663238929451">Ətrafınızdakı insanlara fayllar göndərmək və almaq üçün Yaxındakılarla Paylaşmanı ayarlayın</translation>
-<translation id="1781164264587898620">Səs-küy ləğvi və audio təkmilləşdirmələrini tətbiq edin.</translation>
 <translation id="1781291988450150470">Cari PIN</translation>
 <translation id="1781502536226964113">Yeni Tab səhifəsini açın</translation>
 <translation id="1781553166608855614">Danışıq dili</translation>
@@ -6556,6 +6556,7 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="5750288053043553775">0</translation>
 <translation id="5751345516399502412">Modem Rejiminin Hazır Olub-Olmadığını Yoxlayın</translation>
 <translation id="5753570386948603678">Tarixçədən silin</translation>
+<translation id="5753652925946671505">Bu tablar <ph name="COUNT" /> gün və ya daha çox istifadə edilməyib.</translation>
 <translation id="5756163054456765343">Yardım mərkəzi</translation>
 <translation id="5757187557809630523">növbəti trek</translation>
 <translation id="5758631781033351321">Oxu siyahısını burada tapa bilərsiniz</translation>

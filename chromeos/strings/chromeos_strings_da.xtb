@@ -35,6 +35,7 @@
 <translation id="1155154308031262006">Indtast en prompt</translation>
 <translation id="115705039208660697">ananasser</translation>
 <translation id="1164939766849482256">Pauseskærmen Daggry til mørkets frembrud</translation>
+<translation id="1166688493741195933">Optagelsesnavne kunne ikke genereres</translation>
 <translation id="1167755866710282443">Åbn menuen for at tilpasse nøgler. Træk i menuen for at flytte den.</translation>
 <translation id="1171349345463658120">sandet lagune</translation>
 <translation id="1173894706177603556">Omdøb</translation>
@@ -255,6 +256,7 @@
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2148716181193084225">I dag</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> billeder</translation>
+<translation id="2154460308960858308">Ryd søgning</translation>
 <translation id="2156072344042480449">Dine 2 seneste prompter. Du kan kun bruge disse prompter, mens du er på denne side.</translation>
 <translation id="2157660087437850958">emojivælger</translation>
 <translation id="2157959690810728433">SAT I KØ</translation>
@@ -283,7 +285,6 @@
 <translation id="2230624078793142213">Opret flere</translation>
 <translation id="2236746079896696523">Skydeknap for tastaturets baggrundslys</translation>
 <translation id="2240366984605217732">Layoutskift</translation>
-<translation id="2242381852034179222">Denne funktion administreres af dine administratorer</translation>
 <translation id="2244834438220057800">grøn</translation>
 <translation id="225692081236532131">Aktiveringsstatus</translation>
 <translation id="2267285889943769271">Tilføj screenshot</translation>
@@ -493,6 +494,7 @@
 <translation id="3502426834823382181">se alle apps</translation>
 <translation id="3510890413042482857">Send <ph name="BEGIN_LINK1" />data om ydeevne<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">ChromeOS-opdatering</translation>
+<translation id="3522508178835057262">Indtil videre understøttes transskriptioner på mere end <ph name="MAX_WORD_LENGTH" /> ord ikke</translation>
 <translation id="3527036260304016759">Handlingen mislykkedes – Ukendt fejl</translation>
 <translation id="353214771040290298">Færdig med at redigere</translation>
 <translation id="3532980081107202182">Ca. <ph name="MIN_REMAINING" /> minutter tilbage</translation>
@@ -501,6 +503,7 @@
 <translation id="3557205324756024651">Lokal identitet (valgfrit)</translation>
 <translation id="3565064564551103223">Tilladte IP'er</translation>
 <translation id="3569407787324516067">Pauseskærm</translation>
+<translation id="3571184524500629183">Luk søgning</translation>
 <translation id="3577473026931028326">Der opstod en fejl. Prøv igen.</translation>
 <translation id="357889014807611375">forbrugsafregnet Wi-Fi</translation>
 <translation id="3583278742022654445">Svag signalstyrke. Prøv at rykke tættere på kilden til Wi-Fi-signalet.</translation>
@@ -709,6 +712,7 @@
 <translation id="4602266091140407479">Mikrofon</translation>
 <translation id="4607282946861182308">Der kan ikke oprettes billeder for denne forespørgsel. Prøv en anden prompt.</translation>
 <translation id="4609350030397390689">Reducer tastaturets lysstyrke</translation>
+<translation id="4623061655523261501">Optagelsesnavnene er genereret</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> ud af <ph name="TOTAL_PAGE_NUMBER" />. Tryk på Enter for at annullere udskriftsjobbet.</translation>
 <translation id="463791356324567266">Annullerer scanning...</translation>
 <translation id="4644611440022666152">Aktivér, og download</translation>
@@ -950,6 +954,7 @@
 <translation id="5860033963881614850">Fra</translation>
 <translation id="5860491529813859533">Aktivér</translation>
 <translation id="5876385649737594562">Aktivér for at vælge muligheder</translation>
+<translation id="5877503382465267833">Sæt <ph name="RECORDING_NAME" /> på pause</translation>
 <translation id="588258955323874662">Fuld skærm</translation>
 <translation id="5893975327266416093">Tryk på en tastaturtast for at tildele</translation>
 <translation id="5895138241574237353">Genstart</translation>
@@ -1167,6 +1172,7 @@
 <translation id="6910312834584889076">Scannerens er åben. Luk den, og prøv igen.</translation>
 <translation id="6910845598686542904">Skab modeller af de stemmer, der registreres i optagelsen</translation>
 <translation id="6911383237894364323">Der kunne ikke oprettes forbindelse til medieservere</translation>
+<translation id="6927968682840110570">Optagelsens navn</translation>
 <translation id="6930242544192836755">Varighed</translation>
 <translation id="6930597342185648547">Om baggrunden</translation>
 <translation id="6939667434404433010">Søg efter navnet på optagelsen</translation>
@@ -1209,6 +1215,7 @@
 <translation id="708426984172631313">STOPPET</translation>
 <translation id="7086168019478250425">bioluminescent strand</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="7086916854357021265">Genererer optagelsesnavne</translation>
 <translation id="7097908713073775559">farverige</translation>
 <translation id="710028965487274708">Handlingen mislykkedes – Godkendelse mislykkedes</translation>
 <translation id="7101959270679078188">Lås <ph name="DEVICE_NAME" /> op for at fortsætte opdateringsprocessen</translation>
@@ -1279,6 +1286,7 @@
 <translation id="7378170410161264436">Lydoptager kan oprette transskriptioner af optagelser med tale.
 Download transskriptionsmodellen (op til 100 MB) for at få disse transskriptioner.</translation>
 <translation id="7384004438856720753">et palads</translation>
+<translation id="7388345524791662148">Flere valgmuligheder for <ph name="RECORDING_NAME" /></translation>
 <translation id="7388959671917308825">Indbygget touchplade</translation>
 <translation id="7397270852490618635">Deaktiver Lyst tema</translation>
 <translation id="7401543881546089382">Slet genvej</translation>
@@ -1300,6 +1308,7 @@ Download transskriptionsmodellen (op til 100 MB) for at få disse transskription
 <translation id="7513770521371759388">nederst</translation>
 <translation id="7514365320538308">Download</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7519481256236810334">Afspil <ph name="RECORDING_NAME" /></translation>
 <translation id="7525067979554623046">Opret</translation>
 <translation id="7528507600602050979">Indholdet i Hjælp er ikke tilgængeligt</translation>
 <translation id="7535791657097741517">Aktivér Lyst tema</translation>
@@ -1376,6 +1385,7 @@ Download transskriptionsmodellen (op til 100 MB) for at få disse transskription
 <translation id="7897043345768902965">fortov</translation>
 <translation id="7902285181767404769">Sæt notifikationer på lydløs under optagelser</translation>
 <translation id="7903695460270716054">Vælg udvalgte illustrationer og billeder</translation>
+<translation id="7912005977894000746">Tilbage til hovedsiden</translation>
 <translation id="7915220255123750251">Administrer netværksindstillinger for APN. APN opretter forbindelse mellem et mobilnetværk og internettet.</translation>
 <translation id="7936303884198020182">Der blev ikke fundet nogen navneservere</translation>
 <translation id="7942349550061667556">Rød</translation>

@@ -446,6 +446,7 @@
 <translation id="1771254328977666895">الاطّلاع على سجلّ الأسعار</translation>
 <translation id="1777422078676229054">تصوير (أرشفة)</translation>
 <translation id="1778646502362731194">JIS B0</translation>
+<translation id="1785118555253503473">هل تريد تثبيت تطبيقات الويب؟</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507">‏<ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />: اضغط على مفتاح التبويب (Tab) ثم Enter لإدارة المعلومات والخصوصية والأمان في حسابك على Google.</translation>
 <translation id="1793631236004319016">آخر استخدام قبل <ph name="NUM_HOURS_MINUTES_SECONDS" /></translation>
@@ -1161,6 +1162,7 @@
 <translation id="3157931365184549694">استعادة</translation>
 <translation id="3158539265159265653">القرص</translation>
 <translation id="3162559335345991374">‏قد يتطلب Wi-Fi الذي تستخدمه زيارة صفحة تسجيل الدخول.</translation>
+<translation id="316638481603975524">يمكن للموقع الإلكتروني طلب تثبيت تطبيقات الويب</translation>
 <translation id="3168744840365648658">أجهزة معدات لاسلكية</translation>
 <translation id="3168938241115725594">مركبات كلاسيكية</translation>
 <translation id="3169472444629675720">اقتراحات</translation>
@@ -2317,6 +2319,7 @@
 <translation id="5271381225185906340">‫"<ph name="DATA_CONTROLS_ATTRIBUTE" />" ليس شرطًا متوافقًا مع "<ph name="DATA_CONTROLS_RESTRICTION" />"</translation>
 <translation id="5273658854610202413">‏تحذير: لم يتم دمج هذه السياسة كما هو موضح في سياسة PolicyDictionaryMultipleSourceMergeList؛ لأنها ليست جزءًا من سياسات المعجم التي يمكن دمجها.</translation>
 <translation id="5279286380302340275">إدارة عمليات التنزيل</translation>
+<translation id="5280963125494874678">تطبيقات الويب</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">خصائص المستند</translation>
 <translation id="528468243742722775">‏مفتاح End</translation>
@@ -2819,6 +2822,7 @@
 <translation id="6221311046884916259">‏هل تريد حفظ بيانات هذه البطاقة في حسابك على Google؟</translation>
 <translation id="6221892641068781024">العرض المبسَّط</translation>
 <translation id="6222527803348563979">أدوات مكتبية</translation>
+<translation id="62231116988543150">إمكانية تثبيت تطبيقات الويب</translation>
 <translation id="6224281071334553713">مجوهرات وحليّ</translation>
 <translation id="6226163402662242066">‏<ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />، اضغط على مفتاح Tab ثم مفتاح Enter لتخصيص أدوات تسهيل الاستخدام في إعدادات Chrome</translation>
 <translation id="6228346913624365233">مركبات فاخرة</translation>
@@ -3082,6 +3086,7 @@
 <translation id="6694681292321232194">‏<ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />، اضغط على مفتاح Tab ثم مفتاح Enter للانتقال إلى ميزة "العثور على جهازي" المتوفّرة في حسابك على Google.</translation>
 <translation id="6695428916538794739">أفلام حركة ومغامرة</translation>
 <translation id="6696424331653607346">أدلّة سفر وقصص رحلات</translation>
+<translation id="6696575039575740785">لا يُسمح بتثبيت تطبيقات الويب</translation>
 <translation id="6698097747703777657">إذا لم يصلك الرمز، يمكنك <ph name="BEGIN_LINK" />الحصول على رمز جديد<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">تاريخ الإنشاء:</translation>
 <translation id="67007264085648978">نقطة تقديم الوقت أو ترجيعه</translation>
@@ -3195,6 +3200,7 @@
 <translation id="6915804003454593391">المستخدم:</translation>
 <translation id="6916193791494646625">أدخِل سببًا للتنزيل (مطلوب).</translation>
 <translation id="6917795328362592458">‏استُخدمت كلمة المرور التي أدخلتها للتو في عملية اختراق للبيانات. لتأمين حساباتك، ينصح "مدير كلمات المرور" في Google بالتحقّق من كلمات المرور المحفوظة.</translation>
+<translation id="6921197121276419421">يُسمح بتثبيت تطبيقات الويب</translation>
 <translation id="6924013822850225188">يمكنك اختيار ما إذا كنت تريد عرض مزايا بطاقتك عند الدفع (تنطبق أحكام المصرف)</translation>
 <translation id="6925267999184670015">‏‫B+‎ شمال أمريكا</translation>
 <translation id="6926216138694948720">فن الجسد</translation>
@@ -3692,6 +3698,7 @@
 <translation id="7761701407923456692">‏لا تتطابق شهادة الخادم مع عنوان URL.</translation>
 <translation id="7764225426217299476">إضافة عنوان</translation>
 <translation id="7766518757692125295">Skirt</translation>
+<translation id="7766899888934244586">تطبيقات الويب</translation>
 <translation id="7767278989746220252">أفنية وبساتين وحدائق</translation>
 <translation id="776749070095465053">نسيج</translation>
 <translation id="7773005668374414287">نفس الترتيب والوجه للأعلى</translation>

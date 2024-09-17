@@ -1100,13 +1100,6 @@ Diese Richtlinie hat keine Auswirkungen, wenn die Option zum Beibehalten von bes
 
       Diese Richtlinie existiert nicht mehr. Bitte verwende stattdessen die Richtlinie <ph name="DEVICE_USER_ALLOWLIST_POLICY_NAME" />.
       </translation>
-<translation id="1825583118566970564">Hiermit kann die Installation externer Erweiterungen verwaltet werden.
-
-Wenn diese Richtlinie aktiviert ist, können externe Erweiterungen nicht installiert werden.
-
-Ist sie deaktiviert oder nicht konfiguriert, können externe Erweiterungen installiert werden.
-
-Informationen zu externen Erweiterungen und ihrer Installation sind unter https://developer.chrome.com/apps/external_extensions verfügbar.</translation>
 <translation id="1827523283178827583">Feste Proxyserver verwenden</translation>
 <translation id="1829117241432374848">Ein verwaltetes Konto muss ein primäres Konto sein und darf nicht mit sekundären Konten verknüpft sein; Nutzer können bestehende Daten bei seiner Erstellung importieren</translation>
 <translation id="1829839214911753838">Wenn diese Richtlinie aktiviert ist, läuft der Host für Remote-Unterstützung in einem Prozess mit <ph name="UIACCESS_PERMISSION_NAME" />-Berechtigungen. So kann der Remote-Nutzer mit geöffneten Fenstern auf dem Desktop des lokalen Nutzers arbeiten.

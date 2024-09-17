@@ -75,6 +75,7 @@
 <translation id="1303507811548703290"><ph name="DOMAIN" /> – <ph name="DEVICE_NAME" /> құрылғысынан жіберілген.</translation>
 <translation id="1320912611264252795">Бетбелгілерді сақтау ағыны толық ашылған.</translation>
 <translation id="1327257854815634930">Навигация тарихы ашылды.</translation>
+<translation id="1328235593824723509"><ph name="TAB_TITLE" />, жаңа немесе жаңартылған қойынды</translation>
 <translation id="1331212799747679585">Chrome браузерін жаңарту мүмкін емес. Басқа опциялар</translation>
 <translation id="1332501820983677155">Google Chrome функциясының пернелер тіркесімі</translation>
 <translation id="1333491156693005331">Жақында тексерілді.</translation>
@@ -1213,6 +1214,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="6674571176963658787">Синхрондауды бастау үшін құпия фразаны енгізіңіз.</translation>
 <translation id="6676927815633975364">Осы сайтта және Chrome-да аккаунтқа кіріңіз.</translation>
 <translation id="6684809838922667136">Chrome-ды жақсартуға үлес қосыңыз</translation>
+<translation id="6700279777779583398">Параметрлер сақталды</translation>
 <translation id="6704048624334633734">Құпия сөздерді экспорттау және жою</translation>
 <translation id="670498945988402717">Кеше тексерілді.</translation>
 <translation id="6710213216561001401">Алдыңғы</translation>
@@ -1290,7 +1292,6 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="6964300328304469089"><ph name="NAME" />, <ph name="EMAIL" /> таңдалды. Аккаунт таңдаңыз.</translation>
 <translation id="696447261358045621">Инкогнито режимінен шығу</translation>
 <translation id="6965382102122355670">Жарайды</translation>
-<translation id="6966660124354134532">Өнімді бақылау не бақылауды тоқтату үшін түртіңіз.</translation>
 <translation id="6971862865055170158">Мақұлдамау</translation>
 <translation id="6978717888677691380">Сіз блоктаған сайттар</translation>
 <translation id="6979737339423435258">Барлық уақыт</translation>
@@ -1426,6 +1427,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="752731652852882757">Инкогнито режимінде блоктау</translation>
 <translation id="7554643625247105821">Chrome нұсқасын тексеру мүмкін емес</translation>
 <translation id="7557508262441527045">Аккаунттан шыққансыз.</translation>
+<translation id="7573665567024262965">Әдепкі қолданбаларды таңдаңыз</translation>
 <translation id="7577900504646297215">Қызығушылықтарды басқару</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> файл жүктеп алынды.}other{<ph name="FILES_DOWNLOADED_MANY" /> файл жүктеп алынды.}}</translation>
 <translation id="7581273696622423628">Сауалнамаға қатысу</translation>
@@ -1468,6 +1470,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="7764225426217299476">Мекенжай қосу</translation>
 <translation id="7772032839648071052">Құпия фразаны растау</translation>
 <translation id="7772375229873196092"><ph name="APP_NAME" /> қолданбасын жабу</translation>
+<translation id="7774125747223422443">Аймағыңыздағы заң негізінде браузер мен іздеу жүйесін таңдауыңыз қажет.</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 және тағы <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 және тағы <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="777637629667389858">Аккаунтқа кірген кезде, сізді Google қызметтерінде қорғайды.</translation>
 <translation id="7778840695157240389">Жаңалықтарды кейінірек тексеріңіз.</translation>
@@ -1592,6 +1595,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="8265018477030547118">Тек осы құрылғыда</translation>
 <translation id="8266753737658117282"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> аккаунтымен жалғастыру</translation>
 <translation id="8266862848225348053">Жүктеп алынған файлдар орны</translation>
+<translation id="8279945625179116733"><ph name="APP_NAME" /> қолданбасымен қорғалған</translation>
 <translation id="8281886186245836920">Өткізіп жіберу</translation>
 <translation id="8282297628636750033">Сайттарға мүмкіндігінше қараңғы режим қолдану</translation>
 <translation id="8282950411412455249">Қауіпсіздік параметрлеріне өту</translation>
@@ -1736,6 +1740,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="8982113230057126145">"Ұнамайды" белгішесін бассаңыз, сізге қорытынды ұнамағанын білдіресіз.</translation>
 <translation id="8992769679401294069">Деректер құпия фразаңызбен шифрланды. Google аккаунтыңызда Chrome деректерін пайдалану және сақтау үшін оны енгізіңіз.</translation>
 <translation id="8993760627012879038">Жаңа қойындыны инкогнито режимінде ашу</translation>
+<translation id="8995521496079646922">Сіз таңдаған қолданбалар әдепкі бойынша пайдаланылады. Қолданба құрылғыңызға әлі орнатылмаған болса, ол жақын арада жүктеп алынады.</translation>
 <translation id="8996847606757455498">Басқа провайдер таңдау</translation>
 <translation id="8998289560386111590">Құрылғыңызда қолжетімсіз.</translation>
 <translation id="8998837250940831980">Қойындыны кішірейту мүмкін болмады. Кейінірек қайталап көріңіз.</translation>

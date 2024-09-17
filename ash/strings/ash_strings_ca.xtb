@@ -42,6 +42,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1148499908455722006">Obre el quadre de diàleg d'informació per a <ph name="USER_NAME" /></translation>
 <translation id="1150989369772528668">Calendari</translation>
 <translation id="1153356358378277386">Dispositius vinculats</translation>
+<translation id="1153918444040990015">No s'ha pogut connectar als sons de Concentració</translation>
 <translation id="1155734730463845512">Nivell de bateria actual: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1157514002898505378">La IA generativa és experimental i el contingut pot ser imprecís, enganyós o ofensiu. Per informar d'un problema, contacta amb l'administrador. <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="1160215328209699296">activat i en ús</translation>
@@ -175,6 +176,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1550523713251050646">Feu clic per veure més opcions</translation>
 <translation id="1555130319947370107">Blau</translation>
 <translation id="1557622599341396706">Mostra el nom de l'escriptori</translation>
+<translation id="1567138500090284106">Botó de les tecles del ratolí</translation>
 <translation id="1569384531973824928">Permet l'accés a tots els llocs web i totes les aplicacions amb permisos per accedir a la càmera i al micròfon. És possible que hagis d'actualitzar la pàgina web o reiniciar l'aplicació.</translation>
 <translation id="1571697193564730395">Commuta el mode No molestis. <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">Redueix quan la lupa estigui activada</translation>
@@ -242,6 +244,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1787955149152357925">Desactivat</translation>
 <translation id="1796561540704213354">Llocs web que inclouen les pàgines que has visitat i les pàgines obertes</translation>
 <translation id="179842970735685253">condicions del servei de Google</translation>
+<translation id="1805407494113167797">No s'han pogut reproduir els sons de Concentració</translation>
 <translation id="181103072419391116"><ph name="SIGNAL_STRENGTH" /> d'intensitat del senyal, xarxa gestionada per l'administrador</translation>
 <translation id="1816896987747843206">Permet l'accés a la càmera a totes les aplicacions i llocs web amb permís per accedir a la càmera</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
@@ -1505,7 +1508,6 @@ No hi ha cap dispositiu connectat.</translation>
 <translation id="6119972796024789243">Correcció de color</translation>
 <translation id="6121838516699723042">Confirma la baixada del fitxer <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">L'Assistent de Google no està disponible a les sessions de convidat.</translation>
-<translation id="6127370444807669747">Per gaudir de llistes de reproducció personalitzades i de més música per concentrar-se, prova YouTube Music Premium</translation>
 <translation id="6127395413317891856">No tens connexió. Comprova la connexió i torna-ho a provar.</translation>
 <translation id="6129953537138746214">Espai</translation>
 <translation id="6137566720514957455">Obre el quadre de diàleg per suprimir <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -2283,6 +2285,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="8876661425082386199">Comprova la connexió</translation>
 <translation id="8877788021141246043">Configura un recordatori</translation>
 <translation id="8878886163241303700">Ampliació de la pantalla</translation>
+<translation id="8885424115080869847">No s'ha pogut connectar a YouTube Music</translation>
 <translation id="888982883502837004">Hi ha actualitzacions de microprogramari disponibles per al teu dispositiu. Fes clic per consultar-les i actualitzar.</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> se suprimirà permanentment</translation>
 <translation id="889790758758811533">Queda un <ph name="PERCENTAGE" /> % de bateria (aproximadament <ph name="TIME_LEFT" />). Connecta el dispositiu a l'alimentació.</translation>

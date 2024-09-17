@@ -116,6 +116,7 @@
 <translation id="1517166097004694782">Skrij »Nadaljuj s tem zavihkom«</translation>
 <translation id="1520027731907768768">Prejemanje opozoril o znižanju cen za izdelke, ki jih spremljate.</translation>
 <translation id="1521774566618522728">Aktivno danes</translation>
+<translation id="1524563461097350801">Ne, hvala</translation>
 <translation id="1531038290222364269">Prikaz zavihkov</translation>
 <translation id="1536390784834419204">Prevedi stran</translation>
 <translation id="1540800554400757039">Naslov 1</translation>
@@ -1507,7 +1508,6 @@ Spletna mesta lahko uporabljajo piškotke za ogled dejavnosti brskanja na razli�
 <translation id="8173034266693057059">Dolžina</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8182037667962849780">{count,plural, =1{Za {website_1}}=2{Za {website_1}, {website_2}}=3{Za {website_1}, {website_2} in še 1}one{Za {website_1}, {website_2} in še {more_count}}two{Za {website_1}, {website_2} in še {more_count}}few{Za {website_1}, {website_2} in še {more_count}}other{Za {website_1}, {website_2} in še {more_count}}}</translation>
-<translation id="8189814768485665290">Deljenje celotnega URL-ja</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Vaše naprave<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Dodajanje gesla</translation>
 <translation id="8202744799033457229">Pokaži zgodovino</translation>
@@ -1541,6 +1541,7 @@ Spletna mesta lahko uporabljajo piškotke za ogled dejavnosti brskanja na razli�
 <translation id="8349305172487531364">Vrstica z zaznamki</translation>
 <translation id="8366466717204352506">Preverjanje še ni bilo izvedeno</translation>
 <translation id="8368001212524806591">Spremljanje cene</translation>
+<translation id="8370406443343902172">Odpri nastavitve …</translation>
 <translation id="8372471489238799313">{count,plural, =1{Izbriši naslov}one{Izbriši naslove}two{Izbriši naslove}few{Izbriši naslove}other{Izbriši naslove}}</translation>
 <translation id="8378714024927312812">Upravlja vaša organizacija</translation>
 <translation id="8386068868580335421">Ponastavi</translation>
@@ -1603,6 +1604,7 @@ Spletna mesta lahko uporabljajo piškotke za ogled dejavnosti brskanja na razli�
 <translation id="8637431369725868556">Zagotovite si zaščito pred nevarnimi spletnimi mesti.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Ni ogroženih gesel}=1{{COUNT} ogroženo geslo}one{{COUNT} ogroženo geslo}two{{COUNT} ogroženi gesli}few{{COUNT} ogrožena gesla}other{{COUNT} ogroženih gesel}}</translation>
 <translation id="8640575194957831802">Nazadnje odprti</translation>
+<translation id="8647280737650867362">Cene ni bilo mogoče prenehati spremljati.</translation>
 <translation id="8654802032646794042">Prekliči</translation>
 <translation id="8660600697590740984">Iskanje kopirane slike z Googlom Lens</translation>
 <translation id="866266761389616183">Ti šment!</translation>

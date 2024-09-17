@@ -497,6 +497,7 @@
 <translation id="1355088139103479645">要刪除所有資料嗎？</translation>
 <translation id="1356376170199999104">已允許 – <ph name="PERMISSION_DETAILS" />。請使用實體開關開啟麥克風。</translation>
 <translation id="1356959069439783953">閒置分頁新外觀登場</translation>
+<translation id="1357766361161708728">要關閉未使用的分頁嗎？</translation>
 <translation id="1358741672408003399">拼字與文法</translation>
 <translation id="1359923111303110318">可透過 Smart Lock 解鎖裝置。按下 Enter 鍵即可解鎖。</translation>
 <translation id="1361164813881551742">手動新增</translation>
@@ -1109,7 +1110,6 @@
 <translation id="1780273119488802839">正在匯入書籤...</translation>
 <translation id="1780572199786401845">檢舉令人反感/感到不安全的內容。</translation>
 <translation id="178092663238929451">設定鄰近分享功能，即可與附近的使用者互相傳送檔案</translation>
-<translation id="1781164264587898620">套用降噪功能並改善音訊。</translation>
 <translation id="1781291988450150470">目前的 PIN 碼</translation>
 <translation id="1781502536226964113">開啟新分頁</translation>
 <translation id="1781553166608855614">使用的語言</translation>
@@ -6559,6 +6559,7 @@
 <translation id="5750288053043553775">0</translation>
 <translation id="5751345516399502412">檢查網路共用完備性</translation>
 <translation id="5753570386948603678">從記錄中刪除</translation>
+<translation id="5753652925946671505">這些分頁已超過 <ph name="COUNT" /> 天未使用。</translation>
 <translation id="5756163054456765343">說明中心(&amp;E)</translation>
 <translation id="5757187557809630523">播放下一首曲目</translation>
 <translation id="5758631781033351321">這裡會顯示你的閱讀清單</translation>

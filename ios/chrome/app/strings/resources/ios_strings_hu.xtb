@@ -116,6 +116,7 @@
 <translation id="1517166097004694782">A „Folytatás ezen a lapon” beállítás elrejtése</translation>
 <translation id="1520027731907768768">Árcsökkenési értesítéseket kaphat az Ön által nyomon követett termékekkel kapcsolatban.</translation>
 <translation id="1521774566618522728">Ma volt aktív</translation>
+<translation id="1524563461097350801">Köszönöm, nem</translation>
 <translation id="1531038290222364269">Lapok megjelenítése</translation>
 <translation id="1536390784834419204">Oldal fordítása</translation>
 <translation id="1540800554400757039">Cím 1. sora</translation>
@@ -1507,7 +1508,6 @@ A webhelyek használhatnak cookie-kat arra, hogy megfigyeljék más webhelyekre 
 <translation id="8173034266693057059">Hossz</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8182037667962849780">{count,plural, =1{A következőhöz: {website_1}}=2{A következőkhöz: {website_1}, {website_2}}=3{A következőkhöz: {website_1}, {website_2} és további 1}other{A következőkhöz: {website_1}, {website_2} és további {more_count}}}</translation>
-<translation id="8189814768485665290">Teljes URL megosztása</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Saját eszközök<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Jelszó hozzáadása</translation>
 <translation id="8202744799033457229">Előzmények megjelenítése</translation>
@@ -1541,6 +1541,7 @@ A webhelyek használhatnak cookie-kat arra, hogy megfigyeljék más webhelyekre 
 <translation id="8349305172487531364">Könyvjelzősáv</translation>
 <translation id="8366466717204352506">Soha nem futtatott ellenőrzést</translation>
 <translation id="8368001212524806591">Ár nyomon követése</translation>
+<translation id="8370406443343902172">Ugrás a Beállításokhoz…</translation>
 <translation id="8372471489238799313">{count,plural, =1{Cím törlése}other{Címek törlése}}</translation>
 <translation id="8378714024927312812">Az Ön szervezete kezeli</translation>
 <translation id="8386068868580335421">Visszaállítás</translation>
@@ -1603,6 +1604,7 @@ A webhelyek használhatnak cookie-kat arra, hogy megfigyeljék más webhelyekre 
 <translation id="8637431369725868556">Védelmet élvezhet a veszélyes webhelyekkel szemben.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Nincsenek olyan jelszavak, amelyekhez illetéktelenül fértek hozzá}=1{{COUNT} olyan jelszó van, amelyhez illetéktelenül hozzáfértek}other{{COUNT} olyan jelszó van, amelyhez illetéktelenül hozzáfértek}}</translation>
 <translation id="8640575194957831802">Legutóbb megnyitva</translation>
+<translation id="8647280737650867362">Nem sikerült leállítani az ár nyomon követését.</translation>
 <translation id="8654802032646794042">Mégse</translation>
 <translation id="8660600697590740984">Lens-keresés a másolt képen</translation>
 <translation id="866266761389616183">A manóba!</translation>

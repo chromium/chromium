@@ -104,6 +104,7 @@
 <translation id="5400836586163650660">Մոխրագույն</translation>
 <translation id="5490235265819901748">Ներդիրների խումբը ծավալվեց</translation>
 <translation id="5494920125229734069">Ընտրել բոլորը</translation>
+<translation id="5549653163690032080">Բացել <ph name="TITLE_OF_GROUP" /> ներդիրների ընդհանուր խմբի գործողությունների ընտրացանկը</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Փակել ներդիրների խումբը, որին տրված է <ph name="COLOR_NAME" /> գույնը, այնտեղ կա <ph name="TABS_COUNT_ONE" /> ներդիր։}one{Փակել ներդիրների խումբը, որին տրված է <ph name="COLOR_NAME" /> գույնը, այնտեղ կա <ph name="TABS_COUNT_MANY" /> ներդիր։}other{Փակել ներդիրների խումբը, որին տրված է <ph name="COLOR_NAME" /> գույնը, այնտեղ կա <ph name="TABS_COUNT_MANY" /> ներդիր։}}</translation>
 <translation id="5556417849629758491">Դիտել խանութի մասին տեղեկությունները, գործողությունը հասանելի է էկրանի վերին մասում</translation>
 <translation id="5627941783489838464">Ներդիրների մասին թարմացումներ չկան</translation>
@@ -135,6 +136,7 @@
 <translation id="6694634756612002311">Կառավարել հասանելիության պարամետրերը</translation>
 <translation id="6744956528665271406">Փոփոխել խմբի գույնը</translation>
 <translation id="6856809498882026482">Թաքցնել մի քանի ներդիրի ընտրության ռեժիմը</translation>
+<translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{Ծավալել <ph name="TITLE_OF_GROUP" /> ներդիրների ընդհանուր խումբը, որին տրված է <ph name="COLOR_NAME" /> գույնը, այնտեղ կա <ph name="TABS_COUNT_ONE" /> ներդիր։}one{Ծավալել <ph name="TITLE_OF_GROUP" /> ներդիրների ընդհանուր խումբը, որին տրված է <ph name="COLOR_NAME" /> գույնը, այնտեղ կա <ph name="TABS_COUNT_MANY" /> ներդիր։}other{Ծավալել <ph name="TITLE_OF_GROUP" /> ներդիրների ընդհանուր խումբը, որին տրված է <ph name="COLOR_NAME" /> գույնը, այնտեղ կա <ph name="TABS_COUNT_MANY" /> ներդիր։}}</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Կիսվել ներդիրով}one{Կիսվել ներդիրով}other{Կիսվել ներդիրներով}}</translation>
 <translation id="7129458170538955174">Այս խանութի մասին տեղեկությունները բացված են կիսով չափ</translation>
 <translation id="7200189319044305940">{NUMBER_OF_TABS,plural, =1{Փակել <ph name="TABS_COUNT_ONE" /> ներդիրից բաղկացած «<ph name="TITLE_OF_GROUP" />» խումբը։}one{Փակել <ph name="TABS_COUNT_MANY" /> ներդիրից բաղկացած «<ph name="TITLE_OF_GROUP" />» խումբը։}other{Փակել <ph name="TABS_COUNT_MANY" /> ներդիրից բաղկացած «<ph name="TITLE_OF_GROUP" />» խումբը։}}</translation>
@@ -170,6 +172,7 @@
 <translation id="8205266828577616993">Տեղափոխել ներդիրը վերև</translation>
 <translation id="8261506727792406068">Ջնջել</translation>
 <translation id="8338427544764842461">Ձեր ներդիրների խմբերը պահվում են այստեղ և թարմացվում բոլոր սարքերում, որտեղ մտել եք հաշիվ</translation>
+<translation id="8344020191144794051">{NUMBER_OF_TABS,plural, =1{Ծավալել ներդիրների ընդհանուր խումբը, որին տրված է <ph name="COLOR_NAME" /> գույնը, այնտեղ կա <ph name="TABS_COUNT_ONE" /> ներդիր։}one{Ծավալել ներդիրների ընդհանուր խումբը, որին տրված է <ph name="COLOR_NAME" /> գույնը, այնտեղ կա <ph name="TABS_COUNT_MANY" /> ներդիր։}other{Ծավալել ներդիրների ընդհանուր խումբը, որին տրված է <ph name="COLOR_NAME" /> գույնը, այնտեղ կա <ph name="TABS_COUNT_MANY" /> ներդիր։}}</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Փակել ընտրված <ph name="TABS_COUNT_ONE" /> ներդիրը}one{Փակել ընտրված <ph name="TABS_COUNT_MANY" /> ներդիրը}other{Փակել ընտրված <ph name="TABS_COUNT_MANY" /> ներդիրները}}</translation>
 <translation id="8398929769197326728">Նոր պանակ – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">Կարգավորումներ</translation>

@@ -1097,13 +1097,6 @@ Esta política no tendrá efecto si la opción de conservar los datos de navegac
 
       Esta política está obsoleta. Usa la política <ph name="DEVICE_USER_ALLOWLIST_POLICY_NAME" /> en su lugar.
       </translation>
-<translation id="1825583118566970564">Controla la instalación de extensiones externas.
-
-Si se habilita esta política, se impedirá que se instalen extensiones externas.
-
-Si se inhabilita esta política o no se establece, se podrán instalar extensiones externas.
-
-La documentación sobre las extensiones externas y sobre cómo instalarlas está disponible en https://developer.chrome.com/apps/external_extensions.</translation>
 <translation id="1827523283178827583">Utilizar servidores proxy fijos</translation>
 <translation id="1829117241432374848">Una cuenta gestionada debe ser principal, no puede tener cuentas secundarias y el usuario puede importar datos previos al crearla</translation>
 <translation id="1829839214911753838">Si se habilita esta política, el host de asistencia remota se ejecutará en un proceso con permisos <ph name="UIACCESS_PERMISSION_NAME" />. Así, los usuarios remotos podrán interactuar con ventanas a las que se puede acceder con permisos de administrador en el ordenador del usuario local.
@@ -6104,6 +6097,29 @@ Cuando se define para <ph name="PRODUCT_OS_NAME" /> Kiosk, esta política habili
 <translation id="5622590774455244290">Las aplicaciones Android pueden aceptar esta lista voluntariamente y no se les puede forzar a que lo hagan.</translation>
 <translation id="5622924058222112599">Habilitar proceso de lanzamiento de CECPQ2 predeterminado</translation>
 <translation id="5623304306796942802">Pedir cuando varios certificados coincidan</translation>
+<translation id="5624334866248253262">Configura una lista de reglas de control de datos para evitar filtraciones de datos.
+
+      Cada regla consta de los siguientes elementos:
+      - Campos de condición para activar esa regla. Las reglas solo se activarán si la acción del usuario coincide con todos los campos rellenados en sus campos de <ph name="DATA_CONTROLS_SOURCES" />, <ph name="DATA_CONTROLS_DESTINATIONS" />, <ph name="DATA_CONTROLS_AND" />, <ph name="DATA_CONTROLS_OR" /> y <ph name="DATA_CONTROLS_NOT" />. En el caso de los subcampos de la lista, solo es necesario que coincida una entrada; por ejemplo, basta con que coincida un patrón de URL para activar la regla.
+      - Una lista de restricciones que deben aplicarse. En función de la restricción, puede que solo estén disponibles las condiciones <ph name="DATA_CONTROLS_SOURCES" /> o <ph name="DATA_CONTROLS_DESTINATIONS" />.
+
+      Se pueden añadir reglas para:
+      - Controlar los datos del portapapeles compartidos entre las fuentes y los destinos.
+      - Controlar el bloqueo de capturas de pantalla según las pestañas de origen.
+
+      Si se le asigna el valor True a la política <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" />, se informará al administrador de las reglas activadas.
+      Al nivel de restricción se le puede asignar uno de estos valores: BLOCK, WARN o REPORT.
+      - Si se asigna el valor BLOCK al nivel de restricción, la acción no se permitirá.
+      - Si se asigna el valor WARN al nivel de restricción, se advertirá al usuario, que podrá elegir si continúa con la acción o la cancela.
+      - Si se asigna el valor REPORT al nivel de restricción, la acción del usuario no se interrumpirá, pero se enviará un informe si la política <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" /> está habilitada.
+
+      Notas:
+      - Los patrones de URL deben tener el formato que se indica en esta página: https://support.google.com/chrome/a?p=url_blocklist_filter_format.
+      - Para ver las reglas de prevención de filtraciones de datos específicas de <ph name="PRODUCT_OS_NAME" />, consulta también la política <ph name="DATA_LEAK_PREVENTION_RULES_LIST" />.
+
+      Si no se asigna ningún valor a esta política, no se aplicará ninguna restricción.
+
+      Esta política solo está disponible para los usuarios con una licencia de Chrome Enterprise Premium asignada.</translation>
 <translation id="5625771176514429288">Se permitirá ejecutar aplicaciones de Chrome en estas plataformas.</translation>
 <translation id="5630352020869108293">Restaurar la última sesión</translation>
 <translation id="5633871703004128675">Habilitar la función de accesibilidad de resaltado del símbolo de intercalación de texto</translation>

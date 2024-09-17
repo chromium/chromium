@@ -284,7 +284,6 @@
 <translation id="2230624078793142213">さらに作成</translation>
 <translation id="2236746079896696523">キーボード バックライトの切り替え</translation>
 <translation id="2240366984605217732">レイアウトの切り替え</translation>
-<translation id="2242381852034179222">この機能は管理者によって管理されています</translation>
 <translation id="2244834438220057800">緑色</translation>
 <translation id="225692081236532131">起動状態</translation>
 <translation id="2267285889943769271">スクリーンショットを追加</translation>
@@ -342,6 +341,7 @@
 <translation id="2560876255701405320">音声録音のリスト</translation>
 <translation id="2561093647892030937">レモン</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> のテストを実行しています...</translation>
+<translation id="2573178735329662769">Chromebook オーディオをすべて録音</translation>
 <translation id="2575552334616524665">[設定] または <ph name="THREE_DOTS_MENU_ICON" /> メニューでこの機能をオンにできます</translation>
 <translation id="2576253868710695442">この処理には最大 2 GB の保存容量が必要です</translation>
 <translation id="2584547424703650812">グロースケープ</translation>
@@ -509,6 +509,7 @@
 <translation id="3588034708467091142">インターネットに接続していることを確認してから、もう一度お試しください。</translation>
 <translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> は、<ph name="APN_NAME" /> の名称をわかりやすくしたものです。</translation>
 <translation id="3595596368722241419">バッテリー残量: フル</translation>
+<translation id="3600063043775287169">Chromebook オーディオがオンの場合、レコーダーはこのデバイスで再生されるすべての音声を録音します。すべての音声を録音するかどうかを確認してください。</translation>
 <translation id="3600339377155080675">画面のミラーリング</translation>
 <translation id="3602290021589620013">プレビュー</translation>
 <translation id="3603829704940252505">アバター</translation>

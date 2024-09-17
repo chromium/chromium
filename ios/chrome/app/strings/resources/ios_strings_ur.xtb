@@ -116,6 +116,7 @@
 <translation id="1517166097004694782">"اس ٹیب کے ساتھ جاری رکھیں" کو چھپائیں</translation>
 <translation id="1520027731907768768">آپ جو پروڈکٹس ٹریک کرتے ہیں ان کے لیے قیمت میں کمی کے الرٹس وصول کریں۔</translation>
 <translation id="1521774566618522728">آج فعال کیا گیا</translation>
+<translation id="1524563461097350801">نہیں شکریہ</translation>
 <translation id="1531038290222364269">ٹیبز دکھائیں</translation>
 <translation id="1536390784834419204">صفحہ کا ترجمہ کریں</translation>
 <translation id="1540800554400757039">پتہ 1</translation>
@@ -1507,7 +1508,6 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8173034266693057059">لمبائی</translation>
 <translation id="8179976553408161302">انٹر</translation>
 <translation id="8182037667962849780">{count,plural, =1{{website_1} کیلئے}=2{{website_1}، {website_2} کیلئے}=3{{website_1}، {website_2} اور 1 مزید کیلئے}other{{website_1}، {website_2} اور {more_count} مزید کیلئے}}</translation>
-<translation id="8189814768485665290">‏مکمل URL کا اشتراک کریں</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />آپ کے آلات<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">پاس ورڈ شامل کریں</translation>
 <translation id="8202744799033457229">سرگزشت دکھائیں</translation>
@@ -1541,6 +1541,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8349305172487531364">بُک مارکس بار</translation>
 <translation id="8366466717204352506">چیک کبھی نہیں چلتا ہے</translation>
 <translation id="8368001212524806591">قیمت ٹریک کریں</translation>
+<translation id="8370406443343902172">ترتیبات پر جائیں...</translation>
 <translation id="8372471489238799313">{count,plural, =1{پتہ حذف کریں}other{پتوں کو حذف کریں}}</translation>
 <translation id="8378714024927312812">آپ کی تنظیم کے زیر نظم</translation>
 <translation id="8386068868580335421">ری سیٹ کریں</translation>

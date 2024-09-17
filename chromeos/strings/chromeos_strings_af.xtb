@@ -145,6 +145,7 @@
 <translation id="1651925268237749928">Jy het ’n gedeelde album gekies. Ander mense kan foto’s byvoeg of verander. Jou muurpapier kan foto’s gebruik wat nie tans in hierdie album is nie.</translation>
 <translation id="1661512400125589646">Onderbreek</translation>
 <translation id="1661865805917886535">Sekere rekening- en stelselinligting sal dalk na Google gestuur word. Ons gebruik hierdie inligting om tegniese kwessies te help hanteer en om ons dienste te verbeter, onderworpe aan ons Privaatheidsbeleid (<ph name="PRIVACYPOLICYURL" />) en Diensbepalings (<ph name="TERMSOFSERVICEURL" />). Gaan na Regshulp (<ph name="LEGALHELPPAGEURL" />) om inhoudveranderinge aan te vra.</translation>
+<translation id="1662699081856352167">Opsomming is suksesvol gegenereer</translation>
 <translation id="1662989795263954667">Gestop – ink is op</translation>
 <translation id="1664796644829245314">Voorbeskou <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">Ingeboude VPN</translation>
@@ -254,6 +255,7 @@
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2148716181193084225">Vandag</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> foto's</translation>
+<translation id="2154460308960858308">Vee soektog uit</translation>
 <translation id="2156072344042480449">Jou 2 mees onlangse portekste. Jy kan dié portekste net gebruik terwyl jy op hierdie bladsy is.</translation>
 <translation id="2157660087437850958">emosiekoon-kieser</translation>
 <translation id="2157959690810728433">OP WAGLYS</translation>
@@ -282,7 +284,6 @@
 <translation id="2230624078793142213">Skep meer</translation>
 <translation id="2236746079896696523">Sleutelbordagterligwisselaar</translation>
 <translation id="2240366984605217732">Uitlegomskakelaar</translation>
-<translation id="2242381852034179222">Jou administrateurs bestuur hierdie kenmerk</translation>
 <translation id="2244834438220057800">groen</translation>
 <translation id="225692081236532131">Aktiveringstatus</translation>
 <translation id="2267285889943769271">Voeg skermskoot by</translation>
@@ -500,6 +501,7 @@
 <translation id="3557205324756024651">Plaaslike identiteit (opsioneel)</translation>
 <translation id="3565064564551103223">Toegelate IP's</translation>
 <translation id="3569407787324516067">Sluimerskerm</translation>
+<translation id="3571184524500629183">Maak soekkassie toe</translation>
 <translation id="3577473026931028326">Iets was fout. Probeer weer.</translation>
 <translation id="357889014807611375">betaalde Wi-Fi</translation>
 <translation id="3583278742022654445">Swak seinsterkte. Probeer om nader aan die wi-fi-seinbron te kom.</translation>
@@ -539,6 +541,7 @@
 <translation id="3780740315729837296">Wys ’n sleutelbordsleutel toe</translation>
 <translation id="3784455785234192852">Sluit</translation>
 <translation id="3785643128701396311">piekselkuns</translation>
+<translation id="3799381533888781854">AF – Hierdie instelling word deur jou administrateur bestuur.</translation>
 <translation id="380097101658023925">rgb-kontroles</translation>
 <translation id="38114475217616659">Vee alle geskiedenis uit</translation>
 <translation id="3820172043799983114">Ongeldige PIN.</translation>
@@ -742,6 +745,7 @@
 <translation id="4809927044794281115">Ligtema</translation>
 <translation id="4813136279048157860">My prente</translation>
 <translation id="4813345808229079766">Verbinding</translation>
+<translation id="4824527342590024245">Transkripsie van minder as <ph name="MIN_WORD_LENGTH" /> woorde word nie tans gesteun nie.</translation>
 <translation id="4830894019733815633">canyon</translation>
 <translation id="4832079907277790330">Kies vouer in Lêers-program …</translation>
 <translation id="4835901797422965222">Geen aktiewe netwerke nie</translation>
@@ -770,6 +774,7 @@
 <translation id="4921665434385737356">Het <ph name="RATE" /> gelaai binne <ph name="NUM_SECONDS" /> sekondes.</translation>
 <translation id="4930320165497208503">Gaan na <ph name="BEGIN_LINK" />Instellings<ph name="END_LINK" /> om 'n verbinding op te stel of op te dateer.</translation>
 <translation id="4932733599132424254">Datum</translation>
+<translation id="4946927805998996217">Genereer tans opsomming</translation>
 <translation id="4950314376641394653">Fermware <ph name="DEVICE_NAME" /> is opgedateer na weergawe <ph name="VERSION" /></translation>
 <translation id="4950893758552030541">boomtonnel</translation>
 <translation id="4965661459364092269">Veiligheidterugstelling is voltooi</translation>
@@ -830,6 +835,7 @@
 <translation id="5229104491259541281">Skakel "<ph name="QUERY" />" om</translation>
 <translation id="5229344016299762883">Verlaat volskerm</translation>
 <translation id="5234764350956374838">Verwerp</translation>
+<translation id="5236119614998611749">Kon nie opsomming genereer nie</translation>
 <translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{Jou admin het “<ph name="APP_NAME" />” opgestel om elke keer as jy aanmeld outomaties te begin.}=2{Jou admin het “<ph name="APP_NAME" />” en 1 ander app opgestel om elke keer as jy aanmeld outomaties te begin.}other{Jou admin het “<ph name="APP_NAME" />” en # ander apps opgestel om elke keer as jy aanmeld outomaties te begin.}}</translation>
 <translation id="5248419081947706722">blou</translation>
 <translation id="5252456968953390977">Swerf tans</translation>
@@ -945,6 +951,7 @@
 <translation id="5860033963881614850">Af</translation>
 <translation id="5860491529813859533">Skakel aan</translation>
 <translation id="5876385649737594562">Skakel aan om opsies te kies</translation>
+<translation id="5877503382465267833">Onderbreek <ph name="RECORDING_NAME" /></translation>
 <translation id="588258955323874662">Volskerm</translation>
 <translation id="5893975327266416093">Tik op ’n sleutelbordsleutel om dit toe te wys</translation>
 <translation id="5895138241574237353">Herbegin</translation>
@@ -1162,6 +1169,7 @@
 <translation id="6910312834584889076">Die skandeerder se deksel is oop. Maak die deksel toe en probeer weer.</translation>
 <translation id="6910845598686542904">Bepaal modelle van die stemme wat in die opname bespeur word</translation>
 <translation id="6911383237894364323">Kan nie aan mediabedieners koppel nie</translation>
+<translation id="6927968682840110570">Opname se naam</translation>
 <translation id="6930242544192836755">Duur</translation>
 <translation id="6930597342185648547">Meer oor agtergrond</translation>
 <translation id="6939667434404433010">Soek na opnamenaam</translation>
@@ -1274,6 +1282,7 @@
 <translation id="7378170410161264436">Klankopnemer kan transkripsies vir opnames met spraak skep.
 Laai die transkripsiemodel (tot 100 MB) af om hierdie transkripsies te kry.</translation>
 <translation id="7384004438856720753">paleis</translation>
+<translation id="7388345524791662148">Meer opsies vir <ph name="RECORDING_NAME" /></translation>
 <translation id="7388959671917308825">Ingeboude raakpaneel</translation>
 <translation id="7397270852490618635">Skakel ligtema af</translation>
 <translation id="7401543881546089382">Vee kortpad uit</translation>
@@ -1295,6 +1304,7 @@ Laai die transkripsiemodel (tot 100 MB) af om hierdie transkripsies te kry.</tr
 <translation id="7513770521371759388">onder</translation>
 <translation id="7514365320538308">Laai af</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7519481256236810334">Speel <ph name="RECORDING_NAME" /></translation>
 <translation id="7525067979554623046">Skep</translation>
 <translation id="7528507600602050979">Hulpinhoud is nie beskikbaar nie</translation>
 <translation id="7535791657097741517">Skakel ligtema aan</translation>
@@ -1371,6 +1381,7 @@ Laai die transkripsiemodel (tot 100 MB) af om hierdie transkripsies te kry.</tr
 <translation id="7897043345768902965">wandelpad</translation>
 <translation id="7902285181767404769">Demp kennisgewings terwyl jy opneem</translation>
 <translation id="7903695460270716054">Kies saamgestelde kunswerke en prente</translation>
+<translation id="7912005977894000746">Terug na hoofbladsy</translation>
 <translation id="7915220255123750251">Bestuur netwerk-APN-instellings. APN’e vestig ’n verbinding tussen ’n selnetwerk en die internet.</translation>
 <translation id="7936303884198020182">Geen naambedieners gekry nie</translation>
 <translation id="7942349550061667556">Rooi</translation>

@@ -116,6 +116,7 @@
 <translation id="1517166097004694782">"ഈ ടാബിൽ തുടരുക" മറയ്ക്കുക</translation>
 <translation id="1520027731907768768">നിങ്ങൾ ട്രാക്ക് ചെയ്യുന്ന ഉൽപ്പന്നങ്ങളുടെ വിലക്കുറവുമായി ബന്ധപ്പെട്ട അലേർട്ടുകൾ നേടുക.</translation>
 <translation id="1521774566618522728">ഇന്ന് സജീവമായിരുന്നു</translation>
+<translation id="1524563461097350801">വേണ്ട</translation>
 <translation id="1531038290222364269">ടാബുകൾ കാണിക്കുക</translation>
 <translation id="1536390784834419204">പേജ് വിവർത്തനം ചെയ്യുക</translation>
 <translation id="1540800554400757039">വിലാസം 1</translation>
@@ -1507,7 +1508,6 @@
 <translation id="8173034266693057059">നീളം</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8182037667962849780">{count,plural, =1{{website_1} എന്നതിന്}=2{{website_2}, {website_1} എന്നിവയ്ക്ക്}=3{{website_1}, {website_2} എന്നിവയ്ക്കും മറ്റൊരെണ്ണത്തിനും}other{{website_1}, {website_2} എന്നിവയ്ക്കും മറ്റ് {more_count} എണ്ണത്തിനും}}</translation>
-<translation id="8189814768485665290">പൂർണ URL പങ്കിടുക</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />നിങ്ങളുടെ ഉപകരണങ്ങൾ<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">പാസ്‌വേഡ് ചേർക്കുക</translation>
 <translation id="8202744799033457229">ചരിത്രം കാണിക്കുക</translation>
@@ -1541,6 +1541,7 @@
 <translation id="8349305172487531364">ബുക്മാര്‍ക്ക് ബാര്‍</translation>
 <translation id="8366466717204352506">പരിശോധന ഒരിക്കലും റൺ ചെയ്യില്ല</translation>
 <translation id="8368001212524806591">നിരക്ക് ട്രാക്ക് ചെയ്യുക</translation>
+<translation id="8370406443343902172">ക്രമീകരണത്തിലേക്ക് പോകുക…</translation>
 <translation id="8372471489238799313">{count,plural, =1{വിലാസം ഇല്ലാതാക്കുക}other{വിലാസങ്ങൾ ഇല്ലാതാക്കുക}}</translation>
 <translation id="8378714024927312812">നിങ്ങളുടെ സ്ഥാപനം മാനേജ് ചെയ്യുന്നത്</translation>
 <translation id="8386068868580335421">റീസെറ്റ് ചെയ്യുക</translation>

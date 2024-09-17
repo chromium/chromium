@@ -1014,6 +1014,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2882949212241984732">Dubbeluitvoublad</translation>
 <translation id="2891963978019740012">Jou soekenjin in Chrome</translation>
 <translation id="2893773853358652045">Vierde rol</translation>
+<translation id="2894137550885451583">Dit is pryse in <ph name="CURRENCY" /> vir produk <ph name="PRODUCT" /></translation>
 <translation id="2900528713135656174">Skep geleentheid</translation>
 <translation id="2902312830803030883">Nog handelinge</translation>
 <translation id="2903493209154104877">Adresse</translation>
@@ -1611,6 +1612,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3949601375789751990">Jou blaaigeskiedenis verskyn hier</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">Geen gestoorde betaalmetodes nie</translation>
+<translation id="3950560191811267370">Handel se onderste blad is toegemaak</translation>
 <translation id="3950574001630941635">Herbegin tutoriaal</translation>
 <translation id="3950820424414687140">Meld aan</translation>
 <translation id="3953505489397572035">Hierdie prys is tipies</translation>
@@ -2352,6 +2354,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5331585574693522196">Stel as verstek</translation>
 <translation id="5332219387342487447">Versendingmetode</translation>
 <translation id="5332769172018416402">Vra in ’n boodskap</translation>
+<translation id="533323551986281710">Handel se onderste blad het teen volle hoogte oopgemaak</translation>
 <translation id="5334013548165032829">Gedetailleerde stelselloglêers</translation>
 <translation id="5334145288572353250">Stoor adres?</translation>
 <translation id="5340250774223869109">Program word geblokkeer</translation>
@@ -2534,6 +2537,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5675650730144413517">Hierdie bladsy werk nie</translation>
 <translation id="5675809467256309336">Dans- en elektroniese musiek</translation>
 <translation id="5675959228867414813">Wys volgens datum</translation>
+<translation id="567604591393105935">Handel se onderste blad het teen halwe hoogte oopgemaak</translation>
 <translation id="5677928146339483299">Geblokkeer</translation>
 <translation id="5678007133659493065">Foelie</translation>
 <translation id="5680642791693447368">Rillers, misdaad- en misterieflieks</translation>
@@ -3439,6 +3443,7 @@ Bykomende besonderhede:
 <translation id="7374733840632556089">Hierdie probleem word veroorsaak deur 'n sertifikaat wat jy of iemand anders op jou toestel geïnstalleer het. Dit is bekend dat hierdie sertifikaat gebruik word om netwerke te monitor en te onderskep, en dit word nie deur Chrome vertrou nie. Terwyl sommige wettige gevalle vir monitering wel bestaan, soos op 'n skool- of maatskappynetwerk, wil Chrome seker maak dat jy weet dit gebeur, selfs al kan jy dit nie keer nie. Monitering kan in enige blaaier of program met toegang tot die web plaasvind.</translation>
 <translation id="7375532151824574023">{NUM_COOKIES,plural, =0{Geen werwe toegelaat nie}=1{1 werf toegelaat}other{# werwe toegelaat}}</translation>
 <translation id="7375818412732305729">Lêer is aangeheg</translation>
+<translation id="7376031331622621328">Handel se onderste blad</translation>
 <translation id="7377249249140280793"><ph name="RELATIVE_DATE" /> – <ph name="FULL_DATE" /></translation>
 <translation id="7377314930809374926">Gasvryheidsbedryf</translation>
 <translation id="7378594059915113390">Media-kontroles</translation>

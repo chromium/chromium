@@ -35,6 +35,7 @@
 <translation id="1155154308031262006">ป้อนพรอมต์</translation>
 <translation id="115705039208660697">สับปะรด</translation>
 <translation id="1164939766849482256">ภาพพักหน้าจอรุ่งเช้าจนถึงกลางคืน</translation>
+<translation id="1166688493741195933">สร้างชื่อการบันทึกไม่สำเร็จ</translation>
 <translation id="1167755866710282443">เปิดเมนูเพื่อปรับแต่งคีย์ ลากเมนูเพื่อย้าย</translation>
 <translation id="1171349345463658120">ทะเลสาบที่เต็มไปด้วยทราย</translation>
 <translation id="1173894706177603556">เปลี่ยนชื่อ</translation>
@@ -284,7 +285,6 @@
 <translation id="2230624078793142213">สร้างเพิ่ม</translation>
 <translation id="2236746079896696523">ปุ่มเปิดปิดไฟแบ็กไลต์ของแป้นพิมพ์</translation>
 <translation id="2240366984605217732">สลับเลย์เอาต์</translation>
-<translation id="2242381852034179222">ฟีเจอร์นี้จัดการโดยผู้ดูแลระบบ</translation>
 <translation id="2244834438220057800">เขียว</translation>
 <translation id="225692081236532131">สถานะการเปิดใช้งาน</translation>
 <translation id="2267285889943769271">เพิ่มภาพหน้าจอ</translation>
@@ -342,6 +342,7 @@
 <translation id="2560876255701405320">รายการเสียงที่บันทึกไว้</translation>
 <translation id="2561093647892030937">เลมอน</translation>
 <translation id="2570743873672969996">กำลังทำการทดสอบ <ph name="TEST_NAME" />...</translation>
+<translation id="2573178735329662769">กำลังบันทึกเสียงทั้งหมดจาก Chromebook</translation>
 <translation id="2575552334616524665">คุณเปิดการดำเนินการนี้ได้ในการตั้งค่าหรือเมนู <ph name="THREE_DOTS_MENU_ICON" /></translation>
 <translation id="2576253868710695442">การดำเนินการนี้จะใช้พื้นที่เก็บข้อมูลสูงสุด 2 GB</translation>
 <translation id="2584547424703650812">แสงเงา</translation>
@@ -494,6 +495,7 @@
 <translation id="3502426834823382181">ดูแอปทั้งหมด</translation>
 <translation id="3510890413042482857">ส่ง<ph name="BEGIN_LINK1" />ข้อมูลการติดตามประสิทธิภาพ<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">การอัปเดต Chrome OS</translation>
+<translation id="3522508178835057262">ขณะนี้ระบบยังไม่รองรับข้อความถอดเสียงที่มีจำนวนคำมากกว่า <ph name="MAX_WORD_LENGTH" /> คำ</translation>
 <translation id="3527036260304016759">ไม่สำเร็จ - ข้อผิดพลาดที่ไม่รู้จัก</translation>
 <translation id="353214771040290298">เสร็จสิ้นการแก้ไข</translation>
 <translation id="3532980081107202182">เหลือเวลาอีกประมาณ <ph name="MIN_REMAINING" /> นาที</translation>
@@ -509,6 +511,7 @@
 <translation id="3588034708467091142">ตรวจสอบว่าคุณได้เชื่อมต่ออินเทอร์เน็ตแล้ว และลองอีกครั้ง</translation>
 <translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> คือชื่อที่เรียกง่ายของ <ph name="APN_NAME" /></translation>
 <translation id="3595596368722241419">แบตเตอรี่เต็ม</translation>
+<translation id="3600063043775287169">เมื่อเสียง Chromebook เปิดอยู่ โปรแกรมอัดเสียงจะบันทึกเสียงทั้งหมดที่เล่นในอุปกรณ์นี้ ตรวจสอบว่าคุณต้องการบันทึกเสียงทั้งหมด</translation>
 <translation id="3600339377155080675">มิเรอร์หน้าจอ</translation>
 <translation id="3602290021589620013">ดูตัวอย่าง</translation>
 <translation id="3603829704940252505">รูปโปรไฟล์</translation>
@@ -711,6 +714,7 @@
 <translation id="4602266091140407479">ไมค์</translation>
 <translation id="4607282946861182308">สร้างรูปภาพจากพรอมต์นี้ไม่ได้ โปรดลองใช้พรอมต์อื่น</translation>
 <translation id="4609350030397390689">ลดความสว่างของแป้นพิมพ์</translation>
+<translation id="4623061655523261501">สร้างชื่อการบันทึกเรียบร้อยแล้ว</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> จาก <ph name="TOTAL_PAGE_NUMBER" /> หน้า กด Enter เพื่อยกเลิกงานพิมพ์</translation>
 <translation id="463791356324567266">กำลังยกเลิกการสแกน...</translation>
 <translation id="4644611440022666152">เปิดและดาวน์โหลด</translation>
@@ -1213,6 +1217,7 @@
 <translation id="708426984172631313">หยุดแล้ว</translation>
 <translation id="7086168019478250425">ชายหาดที่มีสิ่งมีชีวิตเรืองแสง</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="7086916854357021265">กำลังสร้างชื่อการบันทึก</translation>
 <translation id="7097908713073775559">สีสันสดใส</translation>
 <translation id="710028965487274708">ไม่สำเร็จ - การให้สิทธิ์ไม่สำเร็จ</translation>
 <translation id="7101959270679078188">ปลดล็อก <ph name="DEVICE_NAME" /> เพื่ออัปเดตต่อ</translation>

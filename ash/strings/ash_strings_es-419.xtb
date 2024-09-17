@@ -42,6 +42,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1148499908455722006">Abrir el diálogo de información de <ph name="USER_NAME" /></translation>
 <translation id="1150989369772528668">Calendario</translation>
 <translation id="1153356358378277386">Dispositivos sincronizados</translation>
+<translation id="1153918444040990015">No se pudo establecer conexión con los sonidos de Concentración</translation>
 <translation id="1155734730463845512">Nivel de batería actual <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1157514002898505378">La IA generativa es experimental y el contenido puede ser impreciso, ofensivo o engañoso. Si quieres informar un problema, comunícate con tu administrador. <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="1160215328209699296">se activó y está en uso</translation>
@@ -175,6 +176,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1550523713251050646">Haz clic para obtener más opciones</translation>
 <translation id="1555130319947370107">Azul</translation>
 <translation id="1557622599341396706">Mostrar el nombre del escritorio</translation>
+<translation id="1567138500090284106">Botón de teclas del mouse</translation>
 <translation id="1569384531973824928">Esto permite el acceso a todas las apps y sitios web con los permisos de cámara y micrófono. Es posible que debas actualizar la página web o reiniciar la app.</translation>
 <translation id="1571697193564730395">Activa o desactiva la función No interrumpir. <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">Alejar cuando la lupa esté activada</translation>
@@ -242,6 +244,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1787955149152357925">No</translation>
 <translation id="1796561540704213354">Sitios web que incluyen las páginas que visitaste y las páginas abiertas</translation>
 <translation id="179842970735685253">Condiciones del Servicio de Google</translation>
+<translation id="1805407494113167797">No se pudo reproducir los sonidos de Concentración</translation>
 <translation id="181103072419391116">Intensidad de la señal: <ph name="SIGNAL_STRENGTH" />, administrada por tu administrador</translation>
 <translation id="1816896987747843206">Permite el acceso a la cámara para todas las apps y sitios web con el permiso correspondiente</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
@@ -1506,7 +1509,6 @@ No hay dispositivos conectados.</translation>
 <translation id="6119972796024789243">Corrección de colores</translation>
 <translation id="6121838516699723042">Confirmar la descarga de <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">El Asistente de Google no está disponible en las sesiones de invitado.</translation>
-<translation id="6127370444807669747">Para obtener playlists personalizadas y más música para concentrarse, prueba YouTube Music Premium</translation>
 <translation id="6127395413317891856">No tienes conexión. Verifica la conexión y vuelve a intentarlo.</translation>
 <translation id="6129953537138746214">Espacio</translation>
 <translation id="6137566720514957455">Abrir el diálogo para quitar la cuenta <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -2284,6 +2286,7 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="8876661425082386199">Revisa tu conexión</translation>
 <translation id="8877788021141246043">Establecer un recordatorio</translation>
 <translation id="8878886163241303700">Ampliando pantalla</translation>
+<translation id="8885424115080869847">No se pudo establecer conexión con YouTube Music</translation>
 <translation id="888982883502837004">Hay actualizaciones de firmware disponibles para tu dispositivo. Haz clic para revisarlas y aplicarlas.</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> se borrará de forma permanente.</translation>
 <translation id="889790758758811533">Queda <ph name="PERCENTAGE" />% de batería (aproximadamente <ph name="TIME_LEFT" />). Conecta tu dispositivo a la corriente.</translation>

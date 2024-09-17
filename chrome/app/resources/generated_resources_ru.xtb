@@ -500,6 +500,7 @@
 <translation id="1355088139103479645">Удалить все данные?</translation>
 <translation id="1356376170199999104">Разрешено (<ph name="PERMISSION_DETAILS" />). Включите микрофон, используя физический переключатель.</translation>
 <translation id="1356959069439783953">Неактивные вкладки выглядят по-новому</translation>
+<translation id="1357766361161708728">Закрыть неиспользуемые вкладки?</translation>
 <translation id="1358741672408003399">Правописание и грамматика</translation>
 <translation id="1359923111303110318">Ваше устройство можно разблокировать с помощью Smart Lock. Для этого нажмите Ввод.</translation>
 <translation id="1361164813881551742">Добавить вручную</translation>
@@ -555,6 +556,7 @@
 <translation id="1401216725754314428">Открыть сведения о связанных сайтах в новой вкладке</translation>
 <translation id="1402426911829176748">Подключение…</translation>
 <translation id="1403222014593521787">Не удалось подключиться к прокси-серверу.</translation>
+<translation id="1405336513195181336">Сюда входят закладки, расширения и история посещений сайтов</translation>
 <translation id="1405779994569073824">Произошел сбой</translation>
 <translation id="1406500794671479665">Проверка…</translation>
 <translation id="1407069428457324124">Тёмная тема</translation>
@@ -1110,7 +1112,6 @@
 <translation id="1780273119488802839">Импорт закладок...</translation>
 <translation id="1780572199786401845">Пожаловаться на неприемлемый или небезопасный контент</translation>
 <translation id="178092663238929451">Чтобы обмениваться файлами с пользователями поблизости, настройте функцию "Обмен с окружением".</translation>
-<translation id="1781164264587898620">Шумоподавление и более качественный звук</translation>
 <translation id="1781291988450150470">Текущий PIN-код</translation>
 <translation id="1781502536226964113">Новая вкладка</translation>
 <translation id="1781553166608855614">Язык озвучивания</translation>
@@ -2501,6 +2502,7 @@
 <translation id="2749881179542288782">Проверять грамматику и правописание</translation>
 <translation id="2750020734439919571">Дополнительные настройки и разрешения приложений Chrome</translation>
 <translation id="2750602041558385535">Скачивание непроверенного файла заблокировано.</translation>
+<translation id="2751883373055093745">Сайт <ph name="WEBSITE" /> запрашивает доступ к сведениям об идентификаторе ключа безопасности, чтобы знать, какой именно ключ вы используете.</translation>
 <translation id="275213133112113418">Карта сохранена</translation>
 <translation id="2753623023919742414">Нажмите на объект для поиска</translation>
 <translation id="2754226775788136540">Выполняется поиск устройств с Быстрым подключением, сохраненных в аккаунте <ph name="PRIMARY_EMAIL" />.</translation>
@@ -3728,6 +3730,7 @@
 <translation id="3665589677786828986">Некоторые настройки Chrome недавно были изменены посторонней программой. Браузер восстановил их значения по умолчанию.</translation>
 <translation id="3665919494326051362">Текущая версия: <ph name="CURRENT_VERSION" /></translation>
 <translation id="3666196264870170605">Дамп для отладки сетевых плат Intel Wi-Fi</translation>
+<translation id="3666529246018937077">Ваши данные о работе в браузере останутся в старом профиле и не попадут в рабочий</translation>
 <translation id="3666971425390608309">Скачивание файла "<ph name="FILE_NAME" />" приостановлено.</translation>
 <translation id="3670113805793654926">Устройства от любого поставщика</translation>
 <translation id="3670229581627177274">Включить Bluetooth</translation>
@@ -4469,6 +4472,7 @@
 <translation id="4181841719683918333">Языки</translation>
 <translation id="4182339886482390129">Улучшенный Безопасный просмотр дополнительно защищает вас от угроз на сайтах, а также от вредоносных расширений и загрузок.</translation>
 <translation id="4184803915913850597">HID-устройство (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
+<translation id="418527077671811642">Сайт <ph name="WEBSITE" /> получит доступ к сведениям о производителе и модели вашего электронного ключа.</translation>
 <translation id="4186749321808907788"><ph name="QUERY_NAME" /> – <ph name="DEFAULT_SEARCH_ENGINE_NAME" /> Поиск</translation>
 <translation id="4187424053537113647">Настройка <ph name="APP_NAME" />…</translation>
 <translation id="4190446002599583608">Поиск в истории браузера с помощью ИИ</translation>
@@ -4596,6 +4600,7 @@
 <translation id="4278779213160967034">Это может занять несколько минут. Скачивание файлов…</translation>
 <translation id="4279129444466079448">Максимально допустимое число профилей eSIM на этом устройстве: <ph name="PROFILE_LIMIT" />. Чтобы добавить новый профиль, удалите один из существующих.</translation>
 <translation id="4280325816108262082">Устройство отключится автоматически, если его выключат или не будут использовать.</translation>
+<translation id="4281412694055934031">Сайты могут запрашивать разрешение на установку веб-приложений на вашем устройстве</translation>
 <translation id="4281789858103154731">Создать</translation>
 <translation id="4281844954008187215">Условия использования</translation>
 <translation id="4281849573951338030">Настроить кнопки пера</translation>
@@ -4803,6 +4808,7 @@
 <translation id="4426857487270413362">Не удалось скачать установочные файлы. Убедитесь, что устройство подключено к интернету и на диске достаточно свободного места, а затем повторите попытку. Код ошибки: <ph name="ERROR" />.</translation>
 <translation id="4427111270137140798">Распознан несколько раз (<ph name="COUNT" />)</translation>
 <translation id="4427365070557649936">Проверка кода подтверждения…</translation>
+<translation id="4428579202668721841">Хранить данные о работе в браузере отдельно от рабочего профиля?</translation>
 <translation id="4429163740524851942">Раскладка физической клавиатуры</translation>
 <translation id="4430019312045809116">Объем</translation>
 <translation id="443031431654216610">Используйте только цифры.</translation>
@@ -4838,7 +4844,7 @@
 <translation id="4453946976636652378">Введите поисковый запрос в <ph name="SEARCH_ENGINE_NAME" /> или укажите URL</translation>
 <translation id="4457472090507035117">Голос:</translation>
 <translation id="4459169140545916303">Последние действия: <ph name="DEVICE_LAST_ACTIVATED_TIME" /> дн. назад</translation>
-<translation id="4460014764210899310">Отменить создание группы</translation>
+<translation id="4460014764210899310">Разгруппировать</translation>
 <translation id="4461483878391246134">Добавить языки, для которых никогда не предлагать перевод</translation>
 <translation id="4462159676511157176">Другие серверы имен</translation>
 <translation id="4465236939126352372">Для приложения "<ph name="APP_NAME" />" установлен лимит <ph name="TIME" />.</translation>
@@ -5441,8 +5447,10 @@
 <translation id="490031510406860025">Запрещено на этом сайте</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Гц – чересстрочная развертка</translation>
 <translation id="4900652253009739885">Нельзя отменить назначение единственного переключателя для действия "Выбрать". Нажмите любую клавишу, чтобы <ph name="RESPONSE" />.</translation>
+<translation id="4900908761825556116">Запретить сайтам устанавливать веб-приложения на вашем устройстве</translation>
 <translation id="4901154724271753917">Развернуть список недавно закрытых страниц</translation>
 <translation id="4901309472892185668">Выберите статус для эксперимента "<ph name="EXPERIMENT_NAME" />".</translation>
+<translation id="4902675024946078396">Нет, переместить данные в рабочий профиль</translation>
 <translation id="49027928311173603">Скачанная с сервера политика недействительна: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4903967893652864401">Этот режим продлевает время работы от батареи, ограничивая фоновую активность и визуальные эффекты, например плавную прокрутку страниц.</translation>
 <translation id="4906490889887219338">Настройте общие папки сети. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
@@ -6560,6 +6568,7 @@
 <translation id="5750288053043553775">0</translation>
 <translation id="5751345516399502412">Проверить готовность режима модема</translation>
 <translation id="5753570386948603678">Удалить из истории</translation>
+<translation id="5753652925946671505">Эти вкладки не использовались в течение <ph name="COUNT" /> или более дн.</translation>
 <translation id="5756163054456765343">Справочный &amp;центр</translation>
 <translation id="5757187557809630523">следующий трек</translation>
 <translation id="5758631781033351321">Здесь вы найдете свой список для чтения</translation>
@@ -7472,6 +7481,7 @@
 <translation id="6434104957329207050">Скорость точечного сканирования</translation>
 <translation id="6434309073475700221">Отменить</translation>
 <translation id="6434325376267409267">Чтобы использовать <ph name="APP_NAME" />, установите на устройство обновление системы.</translation>
+<translation id="6434690603850475457">Да, сохранить данные отдельно (рекомендуется)</translation>
 <translation id="6434755719322447931">Хаотичное</translation>
 <translation id="6435339218366409950">Выберите язык, на который нужно перевести субтитры</translation>
 <translation id="6436164536244065364">Просмотреть в Интернет-магазине</translation>
@@ -8380,6 +8390,7 @@
 <translation id="708060913198414444">&amp;Копировать URL аудио</translation>
 <translation id="7082568314107259011">Сетью <ph name="NETWORK_NAME" /> управляет ваш администратор</translation>
 <translation id="7082850163410901674">Уведомления отключены в системных настройках macOS</translation>
+<translation id="7083729794572207131">Сайты часто запрашивают разрешение на установку веб-приложений, которые делают использование сайта удобнее.</translation>
 <translation id="7083774521940805477">Сервис Steam для Chromebook (бета) недоступен на этом Chromebook.</translation>
 <translation id="708550780726587276">(не настроено)</translation>
 <translation id="7086377898680121060">Увеличить яркость</translation>
@@ -10481,6 +10492,7 @@
 <translation id="8617601976406256334">Удалить данные и разрешения сайта <ph name="SITE_NAME" />?</translation>
 <translation id="8617748779076050570">Код безопасного подключения: <ph name="CONNECTION_ID" />.</translation>
 <translation id="8619000641825875669">OneDrive</translation>
+<translation id="8619369551122276044">Не могут устанавливать веб-приложения на вашем устройстве</translation>
 <translation id="8619803522055190423">С тенью</translation>
 <translation id="8619892228487928601"><ph name="CERTIFICATE_NAME" />: <ph name="ERROR" /></translation>
 <translation id="8620206585293032550">Обозначение неактивных вкладок</translation>
@@ -11365,6 +11377,7 @@
 <translation id="93393615658292258">Только пароль</translation>
 <translation id="934244546219308557">Введите название группы вкладок</translation>
 <translation id="93480724622239549">Ошибка</translation>
+<translation id="9354763467503131">Могут запрашивать разрешение на установку веб-приложений на вашем устройстве</translation>
 <translation id="936646668635477464">Камера и микрофон</translation>
 <translation id="936801553271523408">Диагностические данные системы</translation>
 <translation id="93766956588638423">Восстановить расширение</translation>

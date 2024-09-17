@@ -116,6 +116,7 @@
 <translation id="1517166097004694782">Amaga l'opció Continua amb aquesta pestanya</translation>
 <translation id="1520027731907768768">Rep alertes de baixada de preu de productes que segueixes.</translation>
 <translation id="1521774566618522728">Actiu avui</translation>
+<translation id="1524563461097350801">No, gràcies</translation>
 <translation id="1531038290222364269">Mostra les pestanyes</translation>
 <translation id="1536390784834419204">Tradueix la pàgina</translation>
 <translation id="1540800554400757039">Adreça 1</translation>
@@ -1507,7 +1508,6 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 <translation id="8173034266693057059">Llargada</translation>
 <translation id="8179976553408161302">Retorn</translation>
 <translation id="8182037667962849780">{count,plural, =1{Per a {website_1}}=2{Per a {website_1} i {website_2}}=3{Per a {website_1}, {website_2} i 1 més}other{Per a {website_1}, {website_2} i {more_count} més}}</translation>
-<translation id="8189814768485665290">Comparteix l'URL complet</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Els teus dispositius<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Afegeix una contrasenya</translation>
 <translation id="8202744799033457229">Mostra l'historial</translation>
@@ -1541,6 +1541,7 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 <translation id="8349305172487531364">Barra d'adreces d'interès</translation>
 <translation id="8366466717204352506">No s'ha fet mai la comprovació</translation>
 <translation id="8368001212524806591">Fes un seguiment del preu</translation>
+<translation id="8370406443343902172">Ves a Configuració...</translation>
 <translation id="8372471489238799313">{count,plural, =1{Suprimeix l'adreça}other{Suprimeix les adreces}}</translation>
 <translation id="8378714024927312812">Gestionat per la teva organització</translation>
 <translation id="8386068868580335421">Restableix</translation>
@@ -1603,6 +1604,7 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 <translation id="8637431369725868556">Obtén protecció contra llocs web perillosos.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Cap contrasenya en perill}=1{{COUNT} contrasenya en perill}other{{COUNT} contrasenyes en perill}}</translation>
 <translation id="8640575194957831802">Oberta per darrera vegada</translation>
+<translation id="8647280737650867362">No s'ha pogut deixar de fer el seguiment del preu.</translation>
 <translation id="8654802032646794042">Cancel·la</translation>
 <translation id="8660600697590740984">Imatge de Lens copiada</translation>
 <translation id="866266761389616183">Vaja!</translation>

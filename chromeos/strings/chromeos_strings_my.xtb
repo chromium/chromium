@@ -284,7 +284,6 @@
 <translation id="2230624078793142213">နောက်ထပ် ပြုလုပ်ရန်</translation>
 <translation id="2236746079896696523">ကီးဘုတ်နောက်ခံမီး ခလုတ်</translation>
 <translation id="2240366984605217732">အပြင်အဆင် ပြောင်းရန်</translation>
-<translation id="2242381852034179222">ဤတူးလ်ကို သင်၏ ကြီးကြပ်သူများက စီမံသည်</translation>
 <translation id="2244834438220057800">အစိမ်းရောင်</translation>
 <translation id="225692081236532131">စဖွင့်ခြင်း အခြေအနေ</translation>
 <translation id="2267285889943769271">ဖန်သားပြင်ဓာတ်ပုံ ထည့်ရန်</translation>
@@ -1043,6 +1042,8 @@
 <translation id="628726841779494414">ပရင်တာဆက်တင်များတွင် သင့်ပရင်တာများကို စီမံနိုင်သည်</translation>
 <translation id="6292095526077353682">အားသွင်းနေစဉ် စခရင်နားချိန်ပုံပြပါ</translation>
 <translation id="629550705077076970">ကီးဘုတ် မှိန်သွားခြင်း</translation>
+<translation id="6301193653204230066">လုံခြုံမှု ပြင်ဆင်သတ်မှတ်ခြင်းက Chrome ဘရောင်ဇာနောက်ဆက်တွဲများကို ပိတ်ပြီး ကွန်ရက်နှင့် အခြားဆက်တင်များကို မူလသိမ်းထားသည်များသို့ ပြင်ဆင်သတ်မှတ်သည်။
+          သင်၏တဘ်၊ ဖိုင်၊ ကွတ်ကီး၊ မှတ်တမ်းတို့ကို ပြောင်းမည်မဟုတ်ပါ။</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> စစ်ဆေးမှုကို ပယ်ဖျက်လိုက်သည်</translation>
 <translation id="631063167932043783">Explore အက်ပ်</translation>
 <translation id="6318437367327684789">အမြဲတမ်း</translation>
@@ -1052,6 +1053,7 @@
 <translation id="6325525973963619867">အောင်မြင်ပါ</translation>
 <translation id="6327262166342360252">ဤနောက်ခံကို ဖော်ပြပါစာသားသုံး၍ AI ဖြင့် ပြုလုပ်ထားသည်- "<ph name="PROMPT" />။"</translation>
 <translation id="6331191339300272798">အလိုအလျောက် အမှောင်နောက်ခံ</translation>
+<translation id="6335228876613776082">မော်ဒယ်ကို ဒေါင်းလုဒ်လုပ်ပြီးပြီ</translation>
 <translation id="6340526405444716530">ပုဂ္ဂိုလ်ရေးသီးသန့်ပြုလုပ်ခြင်း</translation>
 <translation id="6348252528297699679">ဆက်တင်များ &gt; အချက်အလက်နှင့်စက်လုံခြုံရေး &gt; ကိုယ်ရေးအချက်အလက်လုံခြုံမှု ဆက်တင်များ &gt; တည်နေရာသုံးခွင့်တွင် တည်နေရာကို ပိတ်နိုင်သည်။ <ph name="LINK_BEGIN" />ပိုမိုလေ့လာရန်<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">အသုံးပြုသူအမည်နှင့် စကားဝှက်</translation>
@@ -1545,6 +1547,7 @@
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Photos အယ်လ်ဘမ်</translation>
 <translation id="8775713578693478175">မိုဒမ် APN</translation>
+<translation id="877735394245039557">မော်ဒယ်ကို ဒေါင်းလုဒ်လုပ်ဆဲဖြစ်သည်</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">ဤကွန်ရက်တွင် စတင်ဝင်ရန်စာမျက်နှာ ရှိနိုင်သည်</translation>
 <translation id="8797082062139985406">Google AI သုံး၍ အမည်ပြုလုပ်ရန်</translation>

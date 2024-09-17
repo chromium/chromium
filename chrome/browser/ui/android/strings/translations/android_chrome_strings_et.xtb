@@ -75,6 +75,7 @@
 <translation id="1303507811548703290"><ph name="DOMAIN" /> – saadetud seadmest <ph name="DEVICE_NAME" /></translation>
 <translation id="1320912611264252795">Järjehoidja salvestamise voo kaustad on avatud täiskõrgusel</translation>
 <translation id="1327257854815634930">Navigeerimisajalugu on avatud</translation>
+<translation id="1328235593824723509"><ph name="TAB_TITLE" />, uus või värskendatud vahekaart</translation>
 <translation id="1331212799747679585">Chrome'i ei saa värskendada. Rohkem valikuid</translation>
 <translation id="1332501820983677155">Google Chrome'i funktsioonide otseteed</translation>
 <translation id="1333491156693005331">Hiljuti kontrollitud</translation>
@@ -1213,6 +1214,7 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="6674571176963658787">Sünkroonimise alustamiseks sisestage oma parool</translation>
 <translation id="6676927815633975364">Logige sellele saidile ja Chrome'i sisse</translation>
 <translation id="6684809838922667136">Chrome'i täiustamine</translation>
+<translation id="6700279777779583398">Valikud on salvestatud</translation>
 <translation id="6704048624334633734">Eksportige ja kustutage paroolid</translation>
 <translation id="670498945988402717">Kontrolliti eile</translation>
 <translation id="6710213216561001401">Eelmine</translation>
@@ -1290,7 +1292,6 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="6964300328304469089"><ph name="NAME" />, <ph name="EMAIL" /> on praegu valitud. Valige konto.</translation>
 <translation id="696447261358045621">Lahkumine inkognito režiimist</translation>
 <translation id="6965382102122355670">OK</translation>
-<translation id="6966660124354134532">Puudutage toote jälgimiseks või jälgimise tühistamiseks.</translation>
 <translation id="6971862865055170158">Ära kiida heaks</translation>
 <translation id="6978717888677691380">Blokeeritud saidid</translation>
 <translation id="6979737339423435258">Algusest</translation>
@@ -1426,6 +1427,7 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="752731652852882757">Blokeeri inkognito režiimi kasutamise ajal</translation>
 <translation id="7554643625247105821">Chrome'i versiooni ei saa kontrollida</translation>
 <translation id="7557508262441527045">Välja logitud</translation>
+<translation id="7573665567024262965">Vaikerakenduste valimine</translation>
 <translation id="7577900504646297215">Huvide haldamine</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> fail laaditi alla}other{<ph name="FILES_DOWNLOADED_MANY" /> faili laaditi alla}}</translation>
 <translation id="7581273696622423628">Osalege küsitluses</translation>
@@ -1468,6 +1470,7 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="7764225426217299476">Lisage aadress</translation>
 <translation id="7772032839648071052">Kinnitage parool</translation>
 <translation id="7772375229873196092">Sule <ph name="APP_NAME" /></translation>
+<translation id="7774125747223422443">Teie piirkonna seaduste põhjal peate valima brauseri ja otsingumootori</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 ja veel <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 ja veel <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="777637629667389858">Kui olete sisse logitud, kaitseb see teid Google'i teenustes.</translation>
 <translation id="7778840695157240389">Uute lugude nägemiseks tulge hiljem tagasi</translation>
@@ -1592,6 +1595,7 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="8265018477030547118">Ainult selles seadmes</translation>
 <translation id="8266753737658117282">Jätkake pakkujaga <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8266862848225348053">Allalaadimise asukoht</translation>
+<translation id="8279945625179116733">Kaitseb: <ph name="APP_NAME" /></translation>
 <translation id="8281886186245836920">Jäta vahele</translation>
 <translation id="8282297628636750033">Kui võimalik, rakendatakse saitidele tume teema</translation>
 <translation id="8282950411412455249">Avage turvaseaded</translation>
@@ -1736,6 +1740,7 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="8982113230057126145">Mittemeeldivaks märkimine saadab tagasiside, et see kokkuvõte ei meeldi teile</translation>
 <translation id="8992769679401294069">Teie andmed on krüpteeritud teie parooliga. Chrome’i andmete kasutamiseks ja salvestamiseks oma Google’i kontole sisestage parool.</translation>
 <translation id="8993760627012879038">Uue vahelehe avamine inkognito režiimis</translation>
+<translation id="8995521496079646922">Teie valitud rakendusi kasutatakse vaikimisi. Kui rakendust selles seadmes veel pole, laaditakse see peagi alla.</translation>
 <translation id="8996847606757455498">Valige teine teenusepakkuja</translation>
 <translation id="8998289560386111590">Pole teie seadmes saadaval</translation>
 <translation id="8998837250940831980">Vahelehe minimeerimine ei õnnestunud. Proovige hiljem uuesti.</translation>

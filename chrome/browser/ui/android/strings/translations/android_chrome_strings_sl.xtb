@@ -1214,6 +1214,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="6674571176963658787">Če želite začeti sinhronizacijo, vnesite geslo.</translation>
 <translation id="6676927815633975364">Prijavite se na tem spletnem mestu in v Chrome.</translation>
 <translation id="6684809838922667136">Izboljšajte Chrome</translation>
+<translation id="6700279777779583398">Izbrane možnosti so shranjene</translation>
 <translation id="6704048624334633734">Izvoz in brisanje gesel</translation>
 <translation id="670498945988402717">Preverjeno včeraj</translation>
 <translation id="6710213216561001401">Prejšnji</translation>
@@ -1291,7 +1292,6 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="6964300328304469089">Trenutno izbrano: <ph name="NAME" />, <ph name="EMAIL" />. Izberite račun.</translation>
 <translation id="696447261358045621">Izklop anonimnega načina</translation>
 <translation id="6965382102122355670">V redu</translation>
-<translation id="6966660124354134532">Dotaknite se, če želite spremljati izdelek ali preklicati njegovo spremljanje.</translation>
 <translation id="6971862865055170158">Ne odobri</translation>
 <translation id="6978717888677691380">Spletna mesta, ki ste jih blokirali</translation>
 <translation id="6979737339423435258">Od začetka</translation>
@@ -1427,6 +1427,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="752731652852882757">Blokiraj v anonimnem načinu</translation>
 <translation id="7554643625247105821">Ni mogoče preveriti različice Chroma</translation>
 <translation id="7557508262441527045">Odjavljen</translation>
+<translation id="7573665567024262965">Izbira privzetih aplikacij</translation>
 <translation id="7577900504646297215">Upravljanje zanimanj</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> prenesena datoteka}one{<ph name="FILES_DOWNLOADED_MANY" /> prenesena datoteka}two{<ph name="FILES_DOWNLOADED_MANY" /> preneseni datoteki}few{<ph name="FILES_DOWNLOADED_MANY" /> prenesene datoteke}other{<ph name="FILES_DOWNLOADED_MANY" /> prenesenih datotek}}</translation>
 <translation id="7581273696622423628">Izpolnjevanje ankete</translation>
@@ -1469,6 +1470,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="7764225426217299476">Dodaj naslov</translation>
 <translation id="7772032839648071052">Potrdi geslo</translation>
 <translation id="7772375229873196092">Zapri aplikacijo <ph name="APP_NAME" /></translation>
+<translation id="7774125747223422443">Na podlagi zakonodaje na vašem območju morate izbrati brskalnik in iskalnik</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" /> \u2026 in še <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}one{<ph name="PAYMENT_METHOD_PREVIEW" /> \u2026 in še <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}two{<ph name="PAYMENT_METHOD_PREVIEW" /> \u2026 in še <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}few{<ph name="PAYMENT_METHOD_PREVIEW" /> \u2026 in še <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" /> \u2026 in še <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="777637629667389858">Ko ste prijavljeni, vas ščiti v Googlovih storitvah.</translation>
 <translation id="7778840695157240389">Vrnite se pozneje in preverite, ali so na voljo nove novice</translation>
@@ -1738,6 +1740,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="8982113230057126145">S palcem dol pošljete povratne informacije, da vam ni všeč ta povzetek</translation>
 <translation id="8992769679401294069">Podatki so šifrirani z vašim geslom. Vnesite ga, če želite podatke iz Chroma uporabljati in shranjevati v računu Google.</translation>
 <translation id="8993760627012879038">Odpiranje novega anonimnega zavihka</translation>
+<translation id="8995521496079646922">Izbrane aplikacije se bodo privzeto uporabljale. Če aplikacije še ni v tej napravi, bo kmalu prenesena.</translation>
 <translation id="8996847606757455498">Izberi drugega ponudnika:</translation>
 <translation id="8998289560386111590">Ni na voljo v vaši napravi</translation>
 <translation id="8998837250940831980">Zavihka ni bilo mogoče minimirati. Poskusite znova pozneje.</translation>

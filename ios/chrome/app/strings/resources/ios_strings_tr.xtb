@@ -116,6 +116,7 @@
 <translation id="1517166097004694782">"Bu sekmeyle devam et" seçeneğini gizle</translation>
 <translation id="1520027731907768768">Takip ettiğiniz ürünlerle ilgili fiyat düşüşü uyarıları alın.</translation>
 <translation id="1521774566618522728">Bugün etkindi</translation>
+<translation id="1524563461097350801">Hayır, Teşekkürler</translation>
 <translation id="1531038290222364269">Sekmeleri göster</translation>
 <translation id="1536390784834419204">Sayfayı çevir</translation>
 <translation id="1540800554400757039">Adres 1</translation>
@@ -1507,7 +1508,6 @@ Siteler, örneğin reklamları kişiselleştirmek amacıyla farklı sitelerde ta
 <translation id="8173034266693057059">Uzunluk</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8182037667962849780">{count,plural, =1{{website_1} için}=2{{website_1}, {website_2} için}=3{{website_1}, {website_2} ve 1 diğer site için}other{{website_1}, {website_2} ve {more_count} diğer site için}}</translation>
-<translation id="8189814768485665290">Tam URL'yi paylaş</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Cihazlarınız<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Şifre ekleyin</translation>
 <translation id="8202744799033457229">Geçmişi göster</translation>
@@ -1541,6 +1541,7 @@ Siteler, örneğin reklamları kişiselleştirmek amacıyla farklı sitelerde ta
 <translation id="8349305172487531364">Yer işaretleri çubuğu</translation>
 <translation id="8366466717204352506">Kontrol hiç yapılmadı</translation>
 <translation id="8368001212524806591">Fiyatı takip et</translation>
+<translation id="8370406443343902172">Ayarlar'a git...</translation>
 <translation id="8372471489238799313">{count,plural, =1{Adresi sil}other{Adresleri sil}}</translation>
 <translation id="8378714024927312812">Kuruluşunuz tarafından yönetiliyor</translation>
 <translation id="8386068868580335421">Sıfırla</translation>
@@ -1603,6 +1604,7 @@ Siteler, örneğin reklamları kişiselleştirmek amacıyla farklı sitelerde ta
 <translation id="8637431369725868556">Tehlikeli sitelere karşı korunun.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Sızdırılmış şifre yok}=1{Sızdırılmış {COUNT} şifre var}other{Sızdırılmış {COUNT} şifre var}}</translation>
 <translation id="8640575194957831802">En son açıldığı tarih</translation>
+<translation id="8647280737650867362">Fiyat takibini bırakılamadı.</translation>
 <translation id="8654802032646794042">İptal</translation>
 <translation id="8660600697590740984">Kopyaladığınız Lens resmi</translation>
 <translation id="866266761389616183">Hay aksi!</translation>

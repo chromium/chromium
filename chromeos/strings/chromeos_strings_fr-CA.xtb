@@ -145,6 +145,7 @@
 <translation id="1651925268237749928">Vous avez sélectionné un album partagé. D'autres personnes peuvent ajouter ou modifier des photos. Votre fond d'écran peut utiliser des photos qui ne figurent pas dans cet album à l'heure actuelle.</translation>
 <translation id="1661512400125589646">Mettre en pause</translation>
 <translation id="1661865805917886535">Certains renseignements sur le compte et le système peuvent être envoyés à Google. Nous utilisons ces renseignements pour résoudre des problèmes techniques et améliorer nos services, sous réserve de notre politique de confidentialité (<ph name="PRIVACYPOLICYURL" />) et de nos conditions d'utilisation (<ph name="TERMSOFSERVICEURL" />). Pour demander des modifications de contenu, accédez à l'aide juridique (<ph name="LEGALHELPPAGEURL" />).</translation>
+<translation id="1662699081856352167">Résumé généré</translation>
 <translation id="1662989795263954667">Tâchez arrêtée : à court d'encre</translation>
 <translation id="1664796644829245314">Aperçu de <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">RPV intégré</translation>
@@ -254,6 +255,7 @@
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2148716181193084225">Aujourd'hui</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> photos</translation>
+<translation id="2154460308960858308">Effacer les termes de recherche</translation>
 <translation id="2156072344042480449">Vos deux requêtes les plus récentes. Vous ne pouvez utiliser ces requêtes que lorsque vous êtes sur cette page.</translation>
 <translation id="2157660087437850958">sélecteur d'emoji</translation>
 <translation id="2157959690810728433">PLACÉ EN FILE D'ATTENTE</translation>
@@ -282,7 +284,6 @@
 <translation id="2230624078793142213">En créer plus</translation>
 <translation id="2236746079896696523">Commutateur de rétroéclairage du clavier</translation>
 <translation id="2240366984605217732">Commutateur de la disposition du clavier</translation>
-<translation id="2242381852034179222">Cette fonctionnalité est gérée par vos administrateurs</translation>
 <translation id="2244834438220057800">vert</translation>
 <translation id="225692081236532131">État de l'activation</translation>
 <translation id="2267285889943769271">Ajouter une capture d'écran</translation>
@@ -500,6 +501,7 @@
 <translation id="3557205324756024651">Identité locale (facultative)</translation>
 <translation id="3565064564551103223">Adresses IP autorisées</translation>
 <translation id="3569407787324516067">Écran de veille</translation>
+<translation id="3571184524500629183">Fermer le champ de recherche</translation>
 <translation id="3577473026931028326">Un problème est survenu. Réessayez.</translation>
 <translation id="357889014807611375">réseau Wi-Fi mesuré</translation>
 <translation id="3583278742022654445">Faible puissance du signal. Essayez de vous rapprocher de la source du signal Wi-Fi.</translation>
@@ -539,6 +541,7 @@
 <translation id="3780740315729837296">Attribuez une touche du clavier</translation>
 <translation id="3784455785234192852">Verrouiller</translation>
 <translation id="3785643128701396311">art du pixel</translation>
+<translation id="3799381533888781854">DÉSACTIVÉ – Ce paramètre est géré par votre administrateur.</translation>
 <translation id="380097101658023925">Commandes RVB</translation>
 <translation id="38114475217616659">Effacer tout l'historique</translation>
 <translation id="3820172043799983114">NIP erroné.</translation>
@@ -742,6 +745,7 @@
 <translation id="4809927044794281115">Thème clair</translation>
 <translation id="4813136279048157860">Mes images</translation>
 <translation id="4813345808229079766">Connexion</translation>
+<translation id="4824527342590024245">Pour l'instant, les transcriptions de moins de <ph name="MIN_WORD_LENGTH" /> mots ne sont pas prises en charge</translation>
 <translation id="4830894019733815633">canyon</translation>
 <translation id="4832079907277790330">Sélectionner un dossier dans l'application Fichiers…</translation>
 <translation id="4835901797422965222">Aucun réseau actif</translation>
@@ -770,6 +774,7 @@
 <translation id="4921665434385737356">L'appareil s'est rechargé de <ph name="RATE" /> en <ph name="NUM_SECONDS" /> secondes.</translation>
 <translation id="4930320165497208503">Pour configurer ou mettre à jour une connexion, accédez à <ph name="BEGIN_LINK" />Paramètres<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Date</translation>
+<translation id="4946927805998996217">Génération du résumé en cours…</translation>
 <translation id="4950314376641394653">Le micrologiciel <ph name="DEVICE_NAME" /> a été mis à jour vers la version <ph name="VERSION" /></translation>
 <translation id="4950893758552030541">tunnel d'arbre</translation>
 <translation id="4965661459364092269">La réinitialisation de sécurité a été effectuée</translation>
@@ -830,6 +835,7 @@
 <translation id="5229104491259541281">Convertir « <ph name="QUERY" /> »</translation>
 <translation id="5229344016299762883">Quitter le mode plein écran</translation>
 <translation id="5234764350956374838">Fermer</translation>
+<translation id="5236119614998611749">Impossible de générer le résumé</translation>
 <translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{Votre administrateur a configuré « <ph name="APP_NAME" /> » pour qu'elle démarre automatiquement chaque fois que vous vous connectez.}=2{Votre administrateur a configuré « <ph name="APP_NAME" /> » et 1 autre application pour qu'elles démarrent automatiquement chaque fois que vous vous connectez.}one{Votre administrateur a configuré « <ph name="APP_NAME" /> » et # autre application pour qu'elles démarrent automatiquement chaque fois que vous vous connectez.}other{Votre administrateur a configuré « <ph name="APP_NAME" /> » et # autres applications pour qu'elles démarrent automatiquement chaque fois que vous vous connectez.}}</translation>
 <translation id="5248419081947706722">bleu</translation>
 <translation id="5252456968953390977">Itinérance</translation>
@@ -945,6 +951,7 @@
 <translation id="5860033963881614850">Désactivé</translation>
 <translation id="5860491529813859533">Activer</translation>
 <translation id="5876385649737594562">Activez pour sélectionner les options</translation>
+<translation id="5877503382465267833">Suspendre <ph name="RECORDING_NAME" /></translation>
 <translation id="588258955323874662">Plein écran</translation>
 <translation id="5893975327266416093">Appuyer sur une touche du clavier pour l'attribuer</translation>
 <translation id="5895138241574237353">Redémarrer</translation>
@@ -1035,6 +1042,8 @@
 <translation id="628726841779494414">Gérez vos imprimantes dans les paramètres d'impression</translation>
 <translation id="6292095526077353682">Pendant le chargement, affichez l'écran de veille pour la période suivante :</translation>
 <translation id="629550705077076970">assombrissement du clavier</translation>
+<translation id="6301193653204230066">La réinitialisation de sécurité désactive les extensions du navigateur Chrome et réinitialise les paramètres réseau et d'autres paramètres à Sécurisé par défaut.
+          Vos onglets, vos fichiers, vos témoins et votre historique ne seront pas modifiés.</translation>
 <translation id="6302401976930124515">Le test <ph name="TEST_NAME" /> a été annulé</translation>
 <translation id="631063167932043783">Application Explorer</translation>
 <translation id="6318437367327684789">indéfiniment</translation>
@@ -1044,6 +1053,7 @@
 <translation id="6325525973963619867">Échec</translation>
 <translation id="6327262166342360252">Ce fond d'écran a été créé avec l'IA en utilisant le texte suivant : « <ph name="PROMPT" /> ».</translation>
 <translation id="6331191339300272798">Thème sombre automatique</translation>
+<translation id="6335228876613776082">Téléchargement du modèle terminé</translation>
 <translation id="6340526405444716530">Personnalisation</translation>
 <translation id="6348252528297699679">Vous pouvez désactiver la localisation dans Paramètres &gt; Confidentialité et sécurité &gt; Paramètres de confidentialité &gt; Accès à la position. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">Nom d'utilisateur et mot de passe</translation>
@@ -1162,6 +1172,7 @@
 <translation id="6910312834584889076">Le couvercle du numériseur est ouvert. Fermez le couvercle, puis réessayez.</translation>
 <translation id="6910845598686542904">Calculer les modèles des voix détectées dans l'enregistrement</translation>
 <translation id="6911383237894364323">Impossible de se connecter aux serveurs multimédias</translation>
+<translation id="6927968682840110570">Nom de l'enregistrement</translation>
 <translation id="6930242544192836755">Durée</translation>
 <translation id="6930597342185648547">À propos de l'arrière-plan</translation>
 <translation id="6939667434404433010">Rechercher le nom de l'enregistrement</translation>
@@ -1274,6 +1285,7 @@ L'IA générative est expérimentale, en début de développement et sa disponib
 <translation id="7378170410161264436">L'Enregistreur peut créer des transcriptions pour les enregistrements avec voix.
 Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces transcriptions.</translation>
 <translation id="7384004438856720753">palais</translation>
+<translation id="7388345524791662148">Plus d'options pour <ph name="RECORDING_NAME" /></translation>
 <translation id="7388959671917308825">Pavé tactile intégré</translation>
 <translation id="7397270852490618635">Désactiver le thème clair</translation>
 <translation id="7401543881546089382">Supprimer le raccourci</translation>
@@ -1295,6 +1307,7 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="7513770521371759388">bas</translation>
 <translation id="7514365320538308">Télécharger</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7519481256236810334">Faire jouer <ph name="RECORDING_NAME" /></translation>
 <translation id="7525067979554623046">Créer</translation>
 <translation id="7528507600602050979">Le contenu de l'aide n'est pas accessible</translation>
 <translation id="7535791657097741517">Activer le thème clair</translation>
@@ -1371,6 +1384,7 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="7897043345768902965">passerelle</translation>
 <translation id="7902285181767404769">Désactivez le son des notifications pendant l'enregistrement</translation>
 <translation id="7903695460270716054">Choisir parmi une sélection d'illustrations et d'images</translation>
+<translation id="7912005977894000746">Retour à la page principale</translation>
 <translation id="7915220255123750251">Gérez les paramètres de NPA du réseau. Les NPA établissent une connexion entre un réseau cellulaire et Internet.</translation>
 <translation id="7936303884198020182">Aucun serveur de nom n'a été trouvé</translation>
 <translation id="7942349550061667556">Rouge</translation>
@@ -1533,6 +1547,7 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Album Google Photos</translation>
 <translation id="8775713578693478175">Nom de point d'accès du modem</translation>
+<translation id="877735394245039557">Téléchargement du modèle en cours…</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Ce réseau peut présenter un portail captif</translation>
 <translation id="8797082062139985406">Créer un nom à l'aide de l'IA de Google</translation>

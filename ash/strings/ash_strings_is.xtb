@@ -42,6 +42,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="1148499908455722006">Opna upplýsingaglugga fyrir <ph name="USER_NAME" /></translation>
 <translation id="1150989369772528668">Dagatal</translation>
 <translation id="1153356358378277386">Pöruð tæki</translation>
+<translation id="1153918444040990015">Ekki tókst að tengjast einbeitingarhljóðum</translation>
 <translation id="1155734730463845512">Núverandi rafhleðsla: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1157514002898505378">Skapandi gervigreind er á tilraunastigi og efni kann að vera rangt, villandi eða móðgandi. Hafðu samband við stjórnanda til að tilkynna vandamál. <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="1160215328209699296">kveikt og í notkun</translation>
@@ -175,6 +176,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="1550523713251050646">Smelltu til að sjá fleiri valkosti</translation>
 <translation id="1555130319947370107">Blár</translation>
 <translation id="1557622599341396706">Sýna heiti skrifborðs</translation>
+<translation id="1567138500090284106">Músarhnappar</translation>
 <translation id="1569384531973824928">Þetta veitir öllum forritum og vefsvæðum með myndavélar- og hljóðnemaheimildir aðgang. Þú gætir þurft að endurnýja vefsíðuna eða endurræsa forritið.</translation>
 <translation id="1571697193564730395">Kveikja/slökkva á „Ónáðið ekki“. <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">Minnka þegar kveikt er á stækkunargleri</translation>
@@ -242,6 +244,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="1787955149152357925">Slökkt</translation>
 <translation id="1796561540704213354">Vefsvæði að meðtöldum síðum sem þú hefur heimsótt og opnar síður</translation>
 <translation id="179842970735685253">Þjónustuskilmálar Google</translation>
+<translation id="1805407494113167797">Ekki tókst að spila einbeitingarhljóð</translation>
 <translation id="181103072419391116"><ph name="SIGNAL_STRENGTH" /> sendistyrkur, stjórnað af kerfisstjóra</translation>
 <translation id="1816896987747843206">Þetta veitir öllum forritum og vefsvæðum með myndavélarheimild aðgang að myndavél</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
@@ -1354,6 +1357,7 @@ Engin tæki eru tengd.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Ekki var hægt að staðfesta auðkenni þitt. Reyndu aftur.</translation>
 <translation id="5632485077360054581">Fá leiðbeiningar</translation>
+<translation id="5633826232582408011">Þegar þú kveikir á „Hjálpaðu mér að skrifa“ og „Hjálpaðu mér að lesa“ er textinn, efni skjalsins og slóð vefsíðunnar send til gervigreindarþjóna Google í því skyni að búa til tillögur að skrifum, samantektir, svara spurningum og bæta vöruna í samræmi við <ph name="LINK_TO_SERVICE_TERMS" />. Ekki slá inn persónulegar upplýsingar, viðkvæmar upplýsingar eða trúnaðarupplýsingar.</translation>
 <translation id="5648021990716966815">Hljóðnematengi</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> vill ná athygli þinni.</translation>
 <translation id="5662075790140998213">Skrifborð 10</translation>
@@ -1504,7 +1508,6 @@ Engin tæki eru tengd.</translation>
 <translation id="6119972796024789243">Litaleiðrétting</translation>
 <translation id="6121838516699723042">Staðfesta niðurhal <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">Google-hjálparinn er ekki í boði í gestalotu.</translation>
-<translation id="6127370444807669747">Prófaðu YouTube Music Premium til að fá sérsniðna spilunarlista og tónlist sem auðveldar þér að einbeita þér</translation>
 <translation id="6127395413317891856">Þú ert ekki á netinu. Athugaðu nettenginguna og reyndu aftur.</translation>
 <translation id="6129953537138746214">Bil</translation>
 <translation id="6137566720514957455">Opna fjarlægingarglugga fyrir <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -2282,6 +2285,7 @@ Til að slökkva á tækinu skaltu halda aflrofa tækisins inni aftur.</translat
 <translation id="8876661425082386199">Athugaðu tenginguna</translation>
 <translation id="8877788021141246043">Stilla áminningu</translation>
 <translation id="8878886163241303700">Framlengir skjá</translation>
+<translation id="8885424115080869847">Ekki tókst að tengjast YouTube Music</translation>
 <translation id="888982883502837004">Fastbúnaðaruppfærslur eru tiltækar fyrir tækið þitt. Smelltu til að skoða og uppfæra.</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> verður eytt varanlega</translation>
 <translation id="889790758758811533"><ph name="PERCENTAGE" />% eftir af rafhlöðu (u.þ.b. <ph name="TIME_LEFT" />). Tengdu tækið við rafmagn til að hlaða.</translation>

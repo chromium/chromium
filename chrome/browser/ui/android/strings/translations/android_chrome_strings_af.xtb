@@ -75,6 +75,7 @@
 <translation id="1303507811548703290"><ph name="DOMAIN" /> – Gestuur vanaf <ph name="DEVICE_NAME" /></translation>
 <translation id="1320912611264252795">Boekmerkstoorvloei se vouers is teen volle hoogte oopgemaak</translation>
 <translation id="1327257854815634930">Navigasiegeskiedenis is oopgemaak</translation>
+<translation id="1328235593824723509"><ph name="TAB_TITLE" />, nuwe of opgedateerde oortjie</translation>
 <translation id="1331212799747679585">Chrome kan nie opdateer nie. Meer opsies</translation>
 <translation id="1332501820983677155">Google Chrome-kenmerkkortpaaie</translation>
 <translation id="1333491156693005331">Onlangs gekontroleer</translation>
@@ -1213,6 +1214,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="6674571176963658787">Voer jou wagfrase in om sinkronisering te begin</translation>
 <translation id="6676927815633975364">Meld by hierdie werf en Chrome aan</translation>
 <translation id="6684809838922667136">Maak Chrome beter</translation>
+<translation id="6700279777779583398">Keuses is gestoor</translation>
 <translation id="6704048624334633734">Voer die wagwoorde uit en vee hulle uit</translation>
 <translation id="670498945988402717">Gister nagegaan</translation>
 <translation id="6710213216561001401">Vorige</translation>
@@ -1290,7 +1292,6 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="6964300328304469089"><ph name="NAME" />, <ph name="EMAIL" /> is tans gekies. Kies ’n rekening.</translation>
 <translation id="696447261358045621">Verlaat Incognitomodus</translation>
 <translation id="6965382102122355670">OK</translation>
-<translation id="6966660124354134532">Tik om ’n produk na te spoor of om nasporing daarvan te stop.</translation>
 <translation id="6971862865055170158">Moenie goedkeur nie</translation>
 <translation id="6978717888677691380">Werwe wat jy geblokkeer het</translation>
 <translation id="6979737339423435258">Van die begin af</translation>
@@ -1426,6 +1427,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="752731652852882757">Blokkeer terwyl Incognitomodus gebruik word</translation>
 <translation id="7554643625247105821">Kan nie Chrome-weergawe kontroleer nie</translation>
 <translation id="7557508262441527045">Afgemeld</translation>
+<translation id="7573665567024262965">Kies jou verstekapps</translation>
 <translation id="7577900504646297215">Bestuur belangstellings</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> lêer is afgelaai}other{<ph name="FILES_DOWNLOADED_MANY" /> lêers is afgelaai}}</translation>
 <translation id="7581273696622423628">Voltooi die opname</translation>
@@ -1468,6 +1470,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="7764225426217299476">Voeg adres by</translation>
 <translation id="7772032839648071052">Bevestig wagfrase</translation>
 <translation id="7772375229873196092">Maak <ph name="APP_NAME" /> toe</translation>
+<translation id="7774125747223422443">Op grond van ’n wet in jou streek, moet jy jou blaaier en soekenjin kies</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" /> \u2026 en nog <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" /> \u2026 en nog <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="777637629667389858">Wanneer jy aangemeld is, beskerm dit jou oral in Google-dienste.</translation>
 <translation id="7778840695157240389">Loer later weer in vir nuwe stories</translation>
@@ -1592,6 +1595,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="8265018477030547118">Net op hierdie toestel</translation>
 <translation id="8266753737658117282">Gaan voort met <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8266862848225348053">Laai ligging af</translation>
+<translation id="8279945625179116733">Beveilig deur <ph name="APP_NAME" /></translation>
 <translation id="8281886186245836920">Slaan Oor</translation>
 <translation id="8282297628636750033">Pas donkertema op werwe toe, as jy kan</translation>
 <translation id="8282950411412455249">Gaan na sekuriteitinstellings</translation>
@@ -1736,6 +1740,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="8982113230057126145">Die afduim stuur terugvoer dat jy nie van hierdie opsomming hou nie</translation>
 <translation id="8992769679401294069">Jou data is met jou wagfrase geënkripteer. Voer dit in om Chrome-data in jou Google-rekening te gebruik en te stoor.</translation>
 <translation id="8993760627012879038">Maak 'n nuwe oortjie in incognitomodus oop</translation>
+<translation id="8995521496079646922">Die apps wat jy gekies het, sal by verstek gebruik word. As ’n app nie reeds op hierdie toestel is nie, sal dit binnekort afgelaai word.</translation>
 <translation id="8996847606757455498">Kies 'n ander verskaffer</translation>
 <translation id="8998289560386111590">Nie op jou toestel beskikbaar nie</translation>
 <translation id="8998837250940831980">Kon nie oortjie klein maak nie. Probeer later weer.</translation>

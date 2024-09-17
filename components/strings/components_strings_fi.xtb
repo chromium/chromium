@@ -1014,6 +1014,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2882949212241984732">Kaksoislehtitaite</translation>
 <translation id="2891963978019740012">Hakukone Chromessa</translation>
 <translation id="2893773853358652045">Neljäs rulla</translation>
+<translation id="2894137550885451583">Nämä ovat tuotteen <ph name="PRODUCT" /> hinnat valuutassa <ph name="CURRENCY" /></translation>
 <translation id="2900528713135656174">Luo tapahtuma</translation>
 <translation id="2902312830803030883">Lisää toimintoja</translation>
 <translation id="2903493209154104877">Osoitteet</translation>
@@ -1612,6 +1613,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="3949601375789751990">Selaushistoriasi näkyy tässä.</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">Ei tallennettuja maksutapoja</translation>
+<translation id="3950560191811267370">Kaupan alapaneeli suljettu</translation>
 <translation id="3950574001630941635">Katso ohje uudelleen</translation>
 <translation id="3950820424414687140">Kirjaudu sisään</translation>
 <translation id="3953505489397572035">Tämä on tyypillinen hinta</translation>
@@ -2353,6 +2355,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="5331585574693522196">Aseta oletukseksi</translation>
 <translation id="5332219387342487447">Toimitustapa</translation>
 <translation id="5332769172018416402">Kysy viestillä</translation>
+<translation id="533323551986281710">Kaupan alapaneeli avattu koko näytön kokoisena</translation>
 <translation id="5334013548165032829">Yksityiskohtaiset järjestelmälokit</translation>
 <translation id="5334145288572353250">Tallennetaanko osoite?</translation>
 <translation id="5340250774223869109">Sovellus on estetty</translation>
@@ -2535,6 +2538,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="5675650730144413517">Sivu ei toimi</translation>
 <translation id="5675809467256309336">Dance‑ ja elektroninen musiikki</translation>
 <translation id="5675959228867414813">Näytä päivämäärän mukaan</translation>
+<translation id="567604591393105935">Kaupan alapaneeli avattu puoliksi</translation>
 <translation id="5677928146339483299">Estetty</translation>
 <translation id="5678007133659493065">Folio</translation>
 <translation id="5680642791693447368">Trillerit, rikos‑ ja jännityselokuvat</translation>
@@ -3441,6 +3445,7 @@ Lisätietoja:
 <translation id="7374733840632556089">Tämän virheen syynä on varmenne, jonka sinä tai joku muu asensi laitteellesi. Varmennetta on aiemmin käytetty verkkojen valvontaan ja kaappaamiseen, eikä Chrome luota siihen. Valvomiselle voi olla oikea syy esimerkiksi oppilaitoksen tai yrityksen verkossa, mutta Chrome haluaa sinun tietävän valvonnasta, vaikket voi lopettaa sitä. Valvonta voi tapahtua missä tahansa selaimessa tai sovelluksessa, jolla on pääsy verkkoon.</translation>
 <translation id="7375532151824574023">{NUM_COOKIES,plural, =0{Ei sallittuja sivustoja}=1{1 sivusto sallittu}other{# sivustoa sallittu}}</translation>
 <translation id="7375818412732305729">Tiedosto on liitetty</translation>
+<translation id="7376031331622621328">Kaupan alapaneeli</translation>
 <translation id="7377249249140280793"><ph name="RELATIVE_DATE" /> - <ph name="FULL_DATE" /></translation>
 <translation id="7377314930809374926">Matkailu ja vapaa-ajan palvelut</translation>
 <translation id="7378594059915113390">Mediaohjaimet</translation>

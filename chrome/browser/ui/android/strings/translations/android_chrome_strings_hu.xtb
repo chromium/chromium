@@ -75,6 +75,7 @@
 <translation id="1303507811548703290"><ph name="DOMAIN" /> – A(z) <ph name="DEVICE_NAME" /> eszközről</translation>
 <translation id="1320912611264252795">A könyvjelzőmentési folyamat teljes magasságban van megnyitva</translation>
 <translation id="1327257854815634930">Megnyitotta a navigációs előzményeket</translation>
+<translation id="1328235593824723509"><ph name="TAB_TITLE" />, új vagy frissített lap</translation>
 <translation id="1331212799747679585">A Chrome frissítése nem lehetséges. További lehetőségek</translation>
 <translation id="1332501820983677155">A Google Chrome-funkciók billentyűparancsai</translation>
 <translation id="1333491156693005331">Nemrég ellenőrizve</translation>
@@ -1213,6 +1214,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="6674571176963658787">A szinkronizálás megkezdéséhez adja meg összetett jelszavát.</translation>
 <translation id="6676927815633975364">Bejelentkezés erre a webhelyre és a Chrome-ba</translation>
 <translation id="6684809838922667136">A Chrome fejlesztése</translation>
+<translation id="6700279777779583398">A választott beállításait mentettük</translation>
 <translation id="6704048624334633734">Jelszavak exportálása és törlése</translation>
 <translation id="670498945988402717">Tegnap volt ellenőrizve</translation>
 <translation id="6710213216561001401">Előző</translation>
@@ -1290,7 +1292,6 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="6964300328304469089">Jelenleg kiválasztva: <ph name="NAME" />, <ph name="EMAIL" />. Válasszon fiókot.</translation>
 <translation id="696447261358045621">Kilépés az inkognitó módból</translation>
 <translation id="6965382102122355670">OK</translation>
-<translation id="6966660124354134532">Koppintson a kívánt termék nyomon követéséhez vagy a nyomon követés visszavonásához.</translation>
 <translation id="6971862865055170158">Elutasítás</translation>
 <translation id="6978717888677691380">Az Ön által letiltott webhelyek</translation>
 <translation id="6979737339423435258">Mindenkori</translation>
@@ -1426,6 +1427,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="752731652852882757">Letiltás az Inkognitó mód használata közben</translation>
 <translation id="7554643625247105821">Nem sikerült ellenőrizni a Chrome-verziót</translation>
 <translation id="7557508262441527045">Kijelentkezve</translation>
+<translation id="7573665567024262965">Alapértelmezett alkalmazások kiválasztása</translation>
 <translation id="7577900504646297215">Érdeklődési körök kezelése</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> fájl letöltve}other{<ph name="FILES_DOWNLOADED_MANY" /> fájl letöltve}}</translation>
 <translation id="7581273696622423628">Kérdőív kitöltése</translation>
@@ -1468,6 +1470,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="7764225426217299476">Cím hozzáadása</translation>
 <translation id="7772032839648071052">Összetett jelszó megerősítése</translation>
 <translation id="7772375229873196092">A(z) <ph name="APP_NAME" /> bezárása</translation>
+<translation id="7774125747223422443">A régiójában hatályos jogszabály alapján ki kell választania a böngészőt és a keresőmotort</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 és további <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 és további <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="777637629667389858">Amikor be van jelentkezve, védi Önt a Google szolgáltatásaiban.</translation>
 <translation id="7778840695157240389">Új hírekért látogasson vissza később</translation>
@@ -1592,6 +1595,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="8265018477030547118">Csak erre az eszközre</translation>
 <translation id="8266753737658117282">Folytatás a következővel: <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8266862848225348053">Letöltés helye</translation>
+<translation id="8279945625179116733">A biztonságról gondoskodik: <ph name="APP_NAME" /></translation>
 <translation id="8281886186245836920">Kihagyás</translation>
 <translation id="8282297628636750033">Sötét téma a webhelyeken, ha lehet</translation>
 <translation id="8282950411412455249">Ugrás a biztonsági beállításokhoz</translation>
@@ -1736,6 +1740,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="8982113230057126145">A „Nem tetszik” értékeléssel azt a visszajelzést küldi, hogy ez az összefoglaló nem tetszik Önnek.</translation>
 <translation id="8992769679401294069">Adatai az összetett jelszavával vannak titkosítva. Adja meg, ha Google-fiókjában Chrome-adatokat szeretne használni és menteni.</translation>
 <translation id="8993760627012879038">Új lap megnyitása inkognitó módban</translation>
+<translation id="8995521496079646922">Alapértelmezés szerint a kiválasztott alkalmazások lesznek használva. Ha valamelyik alkalmazás még nincs az eszközön, hamarosan letöltődik.</translation>
 <translation id="8996847606757455498">Másik szolgáltató választása</translation>
 <translation id="8998289560386111590">Nem áll rendelkezésre az eszközén</translation>
 <translation id="8998837250940831980">Nem sikerült kis méretűre állítani a lapot. Próbálkozzon újra később.</translation>

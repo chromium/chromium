@@ -42,6 +42,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1148499908455722006"><ph name="USER_NAME" /> için bilgi iletişim kutusunu aç</translation>
 <translation id="1150989369772528668">Takvim</translation>
 <translation id="1153356358378277386">Eşlenen cihazlar</translation>
+<translation id="1153918444040990015">Odaklanma seslerine bağlanılamadı</translation>
 <translation id="1155734730463845512">Mevcut pil seviyesi %<ph name="BATTERY_PERCENTAGE" /></translation>
 <translation id="1157514002898505378">Üretken yapay zeka deneme aşamasında olduğundan içerikler hatalı, yanıltıcı veya rahatsız edici olabilir. Sorun bildirmek için yöneticinizle iletişime geçin. <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="1160215328209699296">şu anda açık ve kullanımda</translation>
@@ -175,6 +176,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1550523713251050646">Daha fazla seçenek için tıklayın</translation>
 <translation id="1555130319947370107">Mavi</translation>
 <translation id="1557622599341396706">Masa adını göster</translation>
+<translation id="1567138500090284106">Fare tuşları düğmesi</translation>
 <translation id="1569384531973824928">Bu işlem, kamera ve mikrofon izni olan tüm uygulamaların ve web sitelerinin erişmesine izin verir. Web sayfasını yenilemeniz veya uygulamayı yeniden başlatmanız gerekebilir.</translation>
 <translation id="1571697193564730395">Rahatsız Etmeyin modunu aç/kapat. <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">Büyüteç açıkken uzaklaştırın</translation>
@@ -242,6 +244,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1787955149152357925">Kapalı</translation>
 <translation id="1796561540704213354">Ziyaret ettiğiniz ve açık sayfaların da dahil olduğu web siteleri</translation>
 <translation id="179842970735685253">Google'ın Hizmet Şartları</translation>
+<translation id="1805407494113167797">Odaklanma sesleri çalınamadı</translation>
 <translation id="181103072419391116"><ph name="SIGNAL_STRENGTH" /> Sinyal Gücü, Yöneticiniz tarafından yönetiliyor</translation>
 <translation id="1816896987747843206">Bu işlem, kamera izni olan tüm uygulamaların ve web sitelerinin kameraya erişmesine izin verir</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
@@ -1354,6 +1357,7 @@ Bağlı cihaz yok.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Kimliğiniz doğrulanamadı. Tekrar deneyin.</translation>
 <translation id="5632485077360054581">Nasıl yapıldığını göster</translation>
+<translation id="5633826232582408011">"Yazmama yardım et" ve "Okumama yardım et" özelliklerini etkinleştirdiğinizde metin girişi, belge içeriği ve web sayfası URL'si, <ph name="LINK_TO_SERVICE_TERMS" /> uyarınca yazma önerileri oluşturmak, özet oluşturmak, soruları yanıtlamak ve ürünü iyileştirmek için Google Yapay Zeka sunucularına gönderilir. Kişisel, hassas veya gizli bilgiler eklemeyin.</translation>
 <translation id="5648021990716966815">Mikrofon jakı</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" />, ilgilenmenizi gerektiriyor.</translation>
 <translation id="5662075790140998213">Masa 10</translation>
@@ -1504,7 +1508,6 @@ Bağlı cihaz yok.</translation>
 <translation id="6119972796024789243">Renk düzeltme</translation>
 <translation id="6121838516699723042"><ph name="FILENAME" /> dosyasının indirilmesini onaylayın</translation>
 <translation id="612734058257491180">Google Asistan, misafir oturumunda kullanılamaz.</translation>
-<translation id="6127370444807669747">Kişiselleştirilmiş oynatma listeleri ve daha fazla odaklanma müziği için YouTube Music Premium'u deneyin.</translation>
 <translation id="6127395413317891856">İnternete bağlı değilsiniz. Bağlantınızı kontrol edip tekrar deneyin.</translation>
 <translation id="6129953537138746214">Boşluk</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" /> için kaldırma iletişim kutusunu aç</translation>
@@ -2282,6 +2285,7 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="8876661425082386199">Bağlantınızı denetleyin</translation>
 <translation id="8877788021141246043">Hatırlatıcı oluştur</translation>
 <translation id="8878886163241303700">Genişletilmiş ekran</translation>
+<translation id="8885424115080869847">YouTube Music'e bağlanılamadı</translation>
 <translation id="888982883502837004">Donanım yazılımı güncellemeleri cihazınızda kullanılabilir. İnceleyip güncellemek için tıklayın.</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> kalıcı olarak silinecek</translation>
 <translation id="889790758758811533">%<ph name="PERCENTAGE" /> pil kaldı (yaklaşık <ph name="TIME_LEFT" />). Cihazınızı güç kaynağına bağlayın.</translation>

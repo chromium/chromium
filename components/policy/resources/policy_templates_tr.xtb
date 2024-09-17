@@ -1122,13 +1122,6 @@ Kurumsal profil ayrımının katı bir şekilde zorunlu tutulması ya da ilgili 
 
       Bu politika kullanımdan kaldırıldı, bunun yerine lütfen <ph name="DEVICE_USER_ALLOWLIST_POLICY_NAME" /> politikasını kullanın.
       </translation>
-<translation id="1825583118566970564">Harici uzantıların yüklenmesini kontrol eder.
-
-Bu politika Etkin değerine ayarlanırsa harici uzantıların yüklenmesi engellenir.
-
-Bu politika Devre Dışı değerine ayarlanır veya ayarlanmadan bırakılırsa harici uzantılar yüklenebilir.
-
-Harici uzantılar ve yüklenmeleri hakkında bilgiyi https://developer.chrome.com/apps/external_extensions adresinde bulabilirsiniz.</translation>
 <translation id="1827523283178827583">Sabit proxy sunucuları kullan</translation>
 <translation id="1829117241432374848">Yönetilen hesapların birincil hesap olması ve ikincil hesaplarının bulunmaması zorunlu tutulur. Ayrıca hesap oluşturulurken kullanıcının mevcut verileri içe aktarmasına izin verilir.</translation>
 <translation id="1829839214911753838">Politika, Etkin değerine ayarlanırsa uzaktan yardım ana makinesi bir işlemde <ph name="UIACCESS_PERMISSION_NAME" /> izinleriyle çalıştırılır. Bu durum, uzak kullanıcıların yerel kullanıcının masaüstünde yükseltilmiş pencerelerle etkileşimde bulunmasına olanak tanır.
@@ -6199,6 +6192,29 @@ Bu ayarı etkinleştirirseniz veya yapılandırmazsanız kullanıcılar şifrele
 <translation id="5622590774455244290">Android uygulamaları kendi tercihleriyle bu listeye uymaya karar verebilir ve bunu yapmaya zorlanamaz.</translation>
 <translation id="5622924058222112599">Varsayılan CECPQ2 kullanıma sunma işlemini etkinleştir</translation>
 <translation id="5623304306796942802">Birden fazla sertifika eşleştiğinde istem görüntüle</translation>
+<translation id="5624334866248253262">Veri sızıntılarını önlemek için veri denetimi kural listesi yapılandırır.
+
+      Her kural aşağıdakilerden oluşur:
+      - Kuralı tetikleyen koşul alanları. Kuralın tetiklenmesi için kullanıcı işleminin; <ph name="DATA_CONTROLS_SOURCES" />, <ph name="DATA_CONTROLS_DESTINATIONS" />, <ph name="DATA_CONTROLS_AND" />, <ph name="DATA_CONTROLS_OR" /> ve <ph name="DATA_CONTROLS_NOT" /> alanlarındaki tüm dolu alanlarla eşleşmesi gerekir. Listenin alt alanları için yalnızca bir girişin eşleşmesi gerekir. Örneğin, kuralın tetiklenmesi için yalnızca bir URL kalıbının eşleşmesi yeterlidir.
+      - Uygulanan kısıtlamaların listesi. Kısıtlamaya bağlı olarak yalnızca <ph name="DATA_CONTROLS_SOURCES" /> veya <ph name="DATA_CONTROLS_DESTINATIONS" /> koşulları kullanılabilir.
+
+      Kurallar şunları yapmak için eklenebilir:
+      - Kaynaklar ve hedefler arasında paylaşılan pano verilerini kontrol etme.
+      - Kaynak sekmelere göre ekran görüntülerini engellemeyi kontrol etme.
+
+      <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" /> politikası Doğru değerine ayarlanırsa tetiklenen kurallar yöneticiye bildirilir.
+      Kısıtlama seviyesi; BLOCK (ENGELLE), WARN (UYAR) veya REPORT (BİLDİR) değerine ayarlanabilir.
+      - Kısıtlama seviyesi, BLOCK (ENGELLE) değerine ayarlanırsa işleme izin verilmez.
+      - Kısıtlama seviyesi WARN (UYAR) değerine ayarlanırsa kullanıcı uyarılır ve isterse işlemi sürdürebilir ya da iptal edebilir.
+      - Kısıtlama seviyesi REPORT (BİLDİR) değerine ayarlanırsa kullanıcı işlemi kesintiye uğramaz ancak <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" /> politikası etkinleştirilirse rapor gönderilir.
+
+      Notlar:
+      - URL kalıplarını şu biçime göre biçimlendirin ( https://support.google.com/chrome/a?p=url_blocklist_filter_format ).
+      - <ph name="PRODUCT_OS_NAME" /> ürününe özgü veri sızıntısı önleme kuralları için <ph name="DATA_LEAK_PREVENTION_RULES_LIST" /> politikasını da inceleyin.
+
+      Politika ayarlanmadan bırakılırsa hiçbir kısıtlama uygulanmaz.
+
+      Bu politika yalnızca Chrome Enterprise Premium lisansı atanmış kullanıcılar tarafından kullanılabilir.</translation>
 <translation id="5625771176514429288">Chrome Uygulamalarının bu platformlarda çalıştırılmasına izin verilir.</translation>
 <translation id="5630352020869108293">Son oturumu geri yükle</translation>
 <translation id="5633871703004128675">Metin imlecini vurgulama erişilebilirlik özelliğini etkinleştir</translation>

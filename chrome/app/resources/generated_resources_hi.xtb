@@ -554,6 +554,7 @@
 <translation id="1401216725754314428">मिलती-जुलती साइटों को नए टैब में देखने के बारे में ज़्यादा जानें</translation>
 <translation id="1402426911829176748">आपके डिवाइस से कनेक्ट किया जा रहा है</translation>
 <translation id="1403222014593521787">प्रॉक्सी सर्वर से कनेक्ट नहीं किया जा सका</translation>
+<translation id="1405336513195181336">इस डेटा में बुकमार्क, एक्सटेंशन, और साइटों के आपके ब्राउज़िंग इतिहास का डेटा शामिल होगा.</translation>
 <translation id="1405779994569073824">बंद हो गया.</translation>
 <translation id="1406500794671479665">सत्यापन हो रहा है...</translation>
 <translation id="1407069428457324124">गहरे रंग वाली थीम</translation>
@@ -1119,7 +1120,6 @@
 <translation id="1780273119488802839">बुकमार्क आयात कर रहा है ...</translation>
 <translation id="1780572199786401845">आपत्तिजनक/असुरक्षित कॉन्टेंट की शिकायत करें.</translation>
 <translation id="178092663238929451">अपने आस-पास के लोगों से फ़ाइलें पाने और भेजने के लिए, 'आस-पास शेयर करना' सेट अप करें</translation>
-<translation id="1781164264587898620">ग़ैर-ज़रूरी आवाज़ें कम करने की सुविधा और ऑडियो को बेहतर बनाने की सुविधा लागू करें.</translation>
 <translation id="1781291988450150470">मौजूदा पिन</translation>
 <translation id="1781502536226964113">'नया टैब' पेज खोलें</translation>
 <translation id="1781553166608855614">लिखाई को बोली में बदलने से जुड़ी सेटिंग पर जाएं</translation>
@@ -2514,6 +2514,7 @@
 <translation id="2749881179542288782">स्पेलिंग के साथ व्याकरण की जाँच करें</translation>
 <translation id="2750020734439919571">Chrome ऐप की ज़्यादा सेटिंग और अनुमतियां</translation>
 <translation id="2750602041558385535">बिना पुष्टि वाले डाउनलोड को ब्लॉक किया गया</translation>
+<translation id="2751883373055093745"><ph name="WEBSITE" /> को आपकी सुरक्षा कुंजी का आईडी नंबर जानना है. इससे साइट को उस सुरक्षा कुंजी का पता चल जाएगा जिसका इस्तेमाल किया जा रहा है.</translation>
 <translation id="275213133112113418">आपका कार्ड सेव किया गया</translation>
 <translation id="2753623023919742414">खोजने के लिए क्लिक करें</translation>
 <translation id="2754226775788136540"><ph name="PRIMARY_EMAIL" /> में सेव किए गए, फ़ास्ट पेयर की सुविधा वाले डिवाइसों को ढूंढा जा रहा है</translation>
@@ -3741,6 +3742,7 @@
 <translation id="3665589677786828986">Chrome को पता चला है कि आपकी कुछ सेटिंग किसी दूसरे प्रोग्राम के द्वारा दूषित कर दी गई हैं और उन्हें उनके मूल डिफ़ॉल्ट पर रीसेट कर दिया गया है.</translation>
 <translation id="3665919494326051362">मौजूदा वर्शन <ph name="CURRENT_VERSION" /> है</translation>
 <translation id="3666196264870170605">Intel के वाई-फ़ाई एनआईसी का डीबग डंप</translation>
+<translation id="3666529246018937077">आपका मौजूदा ब्राउज़िंग डेटा, पुरानी प्रोफ़ाइल में ही रहेगा. आपकी वर्क प्रोफ़ाइल में, कोई भी पुराना ब्राउज़िंग डेटा मौजूद नहीं रहेगा.</translation>
 <translation id="3666971425390608309">डाउनलोड रोका गया: <ph name="FILE_NAME" />.</translation>
 <translation id="3670113805793654926">किसी भी विक्रेता के डिवाइस</translation>
 <translation id="3670229581627177274">ब्लूटूथ चालू करें</translation>
@@ -4481,6 +4483,7 @@
 <translation id="4181841719683918333">भाषाएं</translation>
 <translation id="4182339886482390129">बेहतर सुरक्षित ब्राउज़िंग की सुविधा, आपको नुकसान पहुंचाने वाली वेबसाइटों, डाउनलोड, और एक्सटेंशन से बचाती है</translation>
 <translation id="4184803915913850597">एचआईडी डिवाइस (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
+<translation id="418527077671811642"><ph name="WEBSITE" /> को आपकी सुरक्षा कुंजी के मॉडल और उसके मैन्युफ़ैक्चरर के बारे में पता चल जाएगा</translation>
 <translation id="4186749321808907788"><ph name="QUERY_NAME" /> - <ph name="DEFAULT_SEARCH_ENGINE_NAME" /> Search</translation>
 <translation id="4187424053537113647"><ph name="APP_NAME" /> सेट अप किया जा रहा है...</translation>
 <translation id="4190446002599583608">एआई की मदद से, इतिहास खोजने की सुविधा</translation>
@@ -4608,6 +4611,7 @@
 <translation id="4278779213160967034">इस प्रोसेस को पूरा होने में कुछ मिनट लग सकते हैं. फ़ाइलें डाउनलोड हो रही हैं.</translation>
 <translation id="4279129444466079448">आप इस डिवाइस पर <ph name="PROFILE_LIMIT" /> ई-सिम प्रोफ़ाइलें इंस्टॉल कर सकते हैं. अन्य प्रोफ़ाइल जोड़ने के लिए, पहले किसी मौजूदा प्रोफ़ाइल को हटाएं.</translation>
 <translation id="4280325816108262082">बंद होने पर या इस्तेमाल नहीं किए जाने पर डिवाइस अपने-आप डिसकनेक्ट हो जाएगा</translation>
+<translation id="4281412694055934031">साइटें, आपके डिवाइस पर वेब ऐप्लिकेशन इंस्टॉल करने की अनुमति मांग सकती हैं</translation>
 <translation id="4281789858103154731">बनाएं</translation>
 <translation id="4281844954008187215">सेवा की शर्तें</translation>
 <translation id="4281849573951338030">पेन के बटनों को पसंद के मुताबिक बनाएं</translation>
@@ -4815,6 +4819,7 @@
 <translation id="4426857487270413362">इंस्टॉलर फ़ाइलें डाउनलोड नहीं की जा सकीं. कृपया अपने इंटरनेट कनेक्शन की जांच करें. साथ ही, यह पक्का करें कि आपके डिवाइस में ज़रूरत के मुताबिक स्टोरेज हो. इसके बाद, फिर से कोशिश करें. गड़बड़ी का कोड <ph name="ERROR" /> है.</translation>
 <translation id="4427111270137140798"><ph name="COUNT" /> बार पता चला</translation>
 <translation id="4427365070557649936">पुष्टिकरण कोड की पुष्टि की जा रही है...</translation>
+<translation id="4428579202668721841">क्या आपको मौजूदा ब्राउज़िंग डेटा को अपनी वर्क प्रोफ़ाइल से अलग रखना है?</translation>
 <translation id="4429163740524851942">फ़िज़िकल कीबोर्ड लेआउट</translation>
 <translation id="4430019312045809116">आवाज़</translation>
 <translation id="443031431654216610">सिर्फ़ अंक डालें</translation>
@@ -5453,8 +5458,10 @@
 <translation id="490031510406860025">इस साइट पर अनुमति नहीं है</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> हर्ट्ज़ - साथ में स्कैन किया गया</translation>
 <translation id="4900652253009739885">“चुनें” कार्रवाई के लिए असाइन किए गए एकमात्र स्विच को नहीं हटाया जा सकता. <ph name="RESPONSE" /> के लिए, कोई कुंजी दबाएं.</translation>
+<translation id="4900908761825556116">साइटों को अपने डिवाइस पर वेब ऐप्लिकेशन इंस्टॉल करने की अनुमति न दें</translation>
 <translation id="4901154724271753917">हाल ही में बंद किए गए टैब की सूची को बड़ा करें</translation>
 <translation id="4901309472892185668"><ph name="EXPERIMENT_NAME" /> एक्सपेरिमेंट के लिए, एक्सपेरिमेंट की स्थिति चुनें.</translation>
+<translation id="4902675024946078396">नहीं, इस डेटा को वर्क प्रोफ़ाइल में ट्रांसफ़र करें</translation>
 <translation id="49027928311173603">सर्वर से डाउनलोड की गई नीति अमान्य है: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4903967893652864401">इससे बैकग्राउंड में होने वाली गतिविधि और विज़ुअल इफ़ेक्ट, जैसे कि स्मूद स्क्रोलिंग को सीमित किया जाता है, ताकि बैटरी ज़्यादा देर तक काम करे.</translation>
 <translation id="4906490889887219338">नेटवर्क फ़ाइल शेयर सेट अप या प्रबंधित करें. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
@@ -7484,6 +7491,7 @@
 <translation id="6434104957329207050">पॉइंट स्कैनिंग कर्सर की स्पीड</translation>
 <translation id="6434309073475700221">खारिज करें</translation>
 <translation id="6434325376267409267"><ph name="APP_NAME" /> का इस्तेमाल करने से पहले अपने डिवाइस को अपडेट करें.</translation>
+<translation id="6434690603850475457">हां, इस डेटा को अलग रखें (सुझाया गया)</translation>
 <translation id="6434755719322447931">अस्त-व्यस्त</translation>
 <translation id="6435339218366409950">वह भाषा चुनें जिसमें आपको कैप्शन का अनुवाद करना है</translation>
 <translation id="6436164536244065364">वेब स्टोर में देखें</translation>
@@ -8388,6 +8396,7 @@
 <translation id="708060913198414444">ऑडियो के पते को कॉ&amp;पी करें</translation>
 <translation id="7082568314107259011"><ph name="NETWORK_NAME" /> को आपका एडमिन मैनेज करता है</translation>
 <translation id="7082850163410901674">Mac की System Settings में, Chrome ऐप्लिकेशन से सूचनाएं पाने की सुविधा बंद है</translation>
+<translation id="7083729794572207131">आम तौर पर साइटें, वेब ऐप्लिकेशन इंस्टॉल करने की अनुमति मांगती हैं. इससे आपको साइट पर बेहतर अनुभव मिलता है</translation>
 <translation id="7083774521940805477">आपके Chromebook पर, Steam for Chromebook (बीटा वर्शन) उपलब्ध नहीं है.</translation>
 <translation id="708550780726587276">(कॉन्फ़िगर नहीं की गई)</translation>
 <translation id="7086377898680121060">स्क्रीन की रोशनी बढ़ाएं</translation>
@@ -10488,6 +10497,7 @@
 <translation id="8617601976406256334">क्या आपको <ph name="SITE_NAME" /> के लिए, साइट डेटा और अनुमतियां मिटानी हैं?</translation>
 <translation id="8617748779076050570">सुरक्षित कनेक्शन आईडी: <ph name="CONNECTION_ID" /></translation>
 <translation id="8619000641825875669">OneDrive</translation>
+<translation id="8619369551122276044">आपके डिवाइस पर वेब ऐप्लिकेशन इंस्टॉल करने की अनुमति नहीं है</translation>
 <translation id="8619803522055190423">ड्रॉप शैडो</translation>
 <translation id="8619892228487928601"><ph name="CERTIFICATE_NAME" />: <ph name="ERROR" /></translation>
 <translation id="8620206585293032550">इस्तेमाल नहीं किए जा रहे टैब के दिखने का तरीका</translation>
@@ -11370,6 +11380,7 @@
 <translation id="93393615658292258">सिर्फ़ पासवर्ड</translation>
 <translation id="934244546219308557">इस ग्रुप को नाम दें</translation>
 <translation id="93480724622239549">बग या गड़बड़ी</translation>
+<translation id="9354763467503131">आपके डिवाइस पर वेब ऐप्लिकेशन इंस्टॉल करने की अनुमति है</translation>
 <translation id="936646668635477464">कैमरा और माइक्रोफ़ोन</translation>
 <translation id="936801553271523408">सिस्टम का गड़बड़ी संबंधी डेटा</translation>
 <translation id="93766956588638423">एक्‍सटेंशन को ठीक करें</translation>

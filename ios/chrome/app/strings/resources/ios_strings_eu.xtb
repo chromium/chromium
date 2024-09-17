@@ -116,6 +116,7 @@
 <translation id="1517166097004694782">Ezkutatu "Egin aurrera fitxa honekin"</translation>
 <translation id="1520027731907768768">Jaso alertak jarraitzen diezun produktuen prezioak jaisten direnean.</translation>
 <translation id="1521774566618522728">Aktibo gaur</translation>
+<translation id="1524563461097350801">Ez, eskerrik asko</translation>
 <translation id="1531038290222364269">Erakutsi fitxak</translation>
 <translation id="1536390784834419204">Itzuli orria</translation>
 <translation id="1540800554400757039">Helbidea (1)</translation>
@@ -1507,7 +1508,6 @@ Webguneek cookieak erabil ditzakete beste webguneetan egiten dituzun arakatze-ja
 <translation id="8173034266693057059">Luzera</translation>
 <translation id="8179976553408161302">Sartu</translation>
 <translation id="8182037667962849780">{count,plural, =1{Webgunea: {website_1}}=2{Webguneak: {website_1} eta {website_2}}=3{Webguneak: {website_1}, {website_2} eta beste bat}other{Webguneak: {website_1}, {website_2} eta beste {more_count}}}</translation>
-<translation id="8189814768485665290">Partekatu URL osoa</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Zure gailuak<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Gehitu pasahitz bat</translation>
 <translation id="8202744799033457229">Erakutsi historia</translation>
@@ -1541,6 +1541,7 @@ Webguneek cookieak erabil ditzakete beste webguneetan egiten dituzun arakatze-ja
 <translation id="8349305172487531364">Laster-marken barra</translation>
 <translation id="8366466717204352506">Ez da inoiz gauzatu egiaztapena</translation>
 <translation id="8368001212524806591">Egin prezioen jarraipena</translation>
+<translation id="8370406443343902172">Joan ezarpenetara…</translation>
 <translation id="8372471489238799313">{count,plural, =1{Ezabatu helbidea}other{Ezabatu helbideak}}</translation>
 <translation id="8378714024927312812">Erakundeak kudeatzen du</translation>
 <translation id="8386068868580335421">Berrezarri</translation>
@@ -1603,6 +1604,7 @@ Webguneek cookieak erabil ditzakete beste webguneetan egiten dituzun arakatze-ja
 <translation id="8637431369725868556">Babestu zeure burua webgune arriskutsuen aurrean.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Ez dago pasahitzik arriskuan}=1{{COUNT} pasahitz dago arriskuan}other{{COUNT} pasahitz daude arriskuan}}</translation>
 <translation id="8640575194957831802">Azken irekitze-data</translation>
+<translation id="8647280737650867362">Ezin izan zaio utzi prezioaren jarraipena egiteari.</translation>
 <translation id="8654802032646794042">Utzi</translation>
 <translation id="8660600697590740984">Lens-en kopiatu duzun irudia</translation>
 <translation id="866266761389616183">Hutsegite bat izan da.</translation>

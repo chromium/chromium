@@ -116,6 +116,7 @@
 <translation id="1517166097004694782">Skrýt možnost Pokračovat s touto kartou</translation>
 <translation id="1520027731907768768">Odebírat upozornění na pokles cen u produktů, které sledujete.</translation>
 <translation id="1521774566618522728">Aktivní dnes</translation>
+<translation id="1524563461097350801">Ne, díky</translation>
 <translation id="1531038290222364269">Zobrazit karty</translation>
 <translation id="1536390784834419204">Přeložit stránku</translation>
 <translation id="1540800554400757039">První řádek adresy</translation>
@@ -1507,7 +1508,6 @@ Weby pomocí souborů cookie mohou sledovat vaši aktivitu prohlížení na růz
 <translation id="8173034266693057059">Délka</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8182037667962849780">{count,plural, =1{Pro {website_1}}=2{Pro {website_1}, {website_2}}=3{Pro {website_1}, {website_2} a 1 další web}few{Pro {website_1}, {website_2} a {more_count} další weby}many{Pro {website_1}, {website_2} a {more_count} dalšího webu}other{Pro {website_1}, {website_2} a {more_count} dalších webů}}</translation>
-<translation id="8189814768485665290">Sdílet úplnou adresu URL</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Vaše zařízení<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Přidat heslo</translation>
 <translation id="8202744799033457229">Zobrazit historii</translation>
@@ -1541,6 +1541,7 @@ Weby pomocí souborů cookie mohou sledovat vaši aktivitu prohlížení na růz
 <translation id="8349305172487531364">Lišta záložek</translation>
 <translation id="8366466717204352506">Kontrola nikdy neproběhla</translation>
 <translation id="8368001212524806591">Sledovat cenu</translation>
+<translation id="8370406443343902172">Přejít do Nastavení…</translation>
 <translation id="8372471489238799313">{count,plural, =1{Smazat adresu}few{Smazat adresy}many{Smazat adresy}other{Smazat adresy}}</translation>
 <translation id="8378714024927312812">Spravováno vaší organizací</translation>
 <translation id="8386068868580335421">Obnovit</translation>
@@ -1603,6 +1604,7 @@ Weby pomocí souborů cookie mohou sledovat vaši aktivitu prohlížení na růz
 <translation id="8637431369725868556">Získejte ochranu před nebezpečnými weby.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Žádná prolomená hesla}=1{{COUNT} prolomené heslo}few{{COUNT} prolomená hesla}many{{COUNT} prolomeného hesla}other{{COUNT} prolomených hesel}}</translation>
 <translation id="8640575194957831802">Naposledy otevřeno</translation>
+<translation id="8647280737650867362">Sledování ceny se nepodařilo zrušit.</translation>
 <translation id="8654802032646794042">Zrušit</translation>
 <translation id="8660600697590740984">Obrázek zkopírovaný pomocí funkce Lens</translation>
 <translation id="866266761389616183">Aj, chyba!</translation>

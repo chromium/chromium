@@ -1214,6 +1214,7 @@
 <translation id="6674571176963658787">Каб пачаць сінхранізацыю, увядзіце фразу-пароль</translation>
 <translation id="6676927815633975364">Будзе выкананы ўваход на сайт і ў Chrome</translation>
 <translation id="6684809838922667136">Зрабіце браўзер Chrome лепшым</translation>
+<translation id="6700279777779583398">Выбраныя вамі налады захаваны</translation>
 <translation id="6704048624334633734">Экспартаваць і выдаліць паролі</translation>
 <translation id="670498945988402717">Праверка праводзілася ўчора</translation>
 <translation id="6710213216561001401">Назад</translation>
@@ -1291,7 +1292,6 @@
 <translation id="6964300328304469089">Зараз выбрана: <ph name="NAME" />, <ph name="EMAIL" />. Выберыце ўліковы запіс.</translation>
 <translation id="696447261358045621">Выйсці з рэжыму інкогніта</translation>
 <translation id="6965382102122355670">ОК</translation>
-<translation id="6966660124354134532">Націсніце, каб пачаць ці перастаць адсочваць тавар.</translation>
 <translation id="6971862865055170158">Не ўхваляць</translation>
 <translation id="6978717888677691380">Заблакіраваныя вамі сайты</translation>
 <translation id="6979737339423435258">За ўвесь час</translation>
@@ -1427,6 +1427,7 @@
 <translation id="752731652852882757">Блакіраваць у рэжыме інкогніта</translation>
 <translation id="7554643625247105821">Не ўдалося праверыць версію Chrome</translation>
 <translation id="7557508262441527045">Выкананы выхад</translation>
+<translation id="7573665567024262965">Выберыце стандартныя праграмы</translation>
 <translation id="7577900504646297215">Кіраваць інтарэсамі</translation>
 <translation id="757855969265046257">{FILES,plural, =1{Спампаваны <ph name="FILES_DOWNLOADED_ONE" /> файл}one{Спампаваны <ph name="FILES_DOWNLOADED_MANY" /> файл}few{Спампавана <ph name="FILES_DOWNLOADED_MANY" /> файлы}many{Спампавана <ph name="FILES_DOWNLOADED_MANY" /> файлаў}other{Спампавана <ph name="FILES_DOWNLOADED_MANY" /> файла}}</translation>
 <translation id="7581273696622423628">Прыняць удзел у апытанні</translation>
@@ -1469,6 +1470,7 @@
 <translation id="7764225426217299476">Дадаць адрас</translation>
 <translation id="7772032839648071052">Пацвердзіце фразу-пароль</translation>
 <translation id="7772375229873196092">Закрыццё праграмы "<ph name="APP_NAME" />"</translation>
+<translation id="7774125747223422443">Згодна з законам, які дзейнічае ў вашым рэгіёне, вам трэба выбраць браўзер і пошукавую сістэму</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 і яшчэ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}one{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 і яшчэ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}few{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 і яшчэ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}many{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 і яшчэ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 і яшчэ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="777637629667389858">Калі вы ўвайшлі ва ўліковы запіс, абараняе вас ва ўсіх сэрвісах Google.</translation>
 <translation id="7778840695157240389">Каб праверыць, ці з’явіліся новыя артыкулы, загляніце сюды пазней</translation>
@@ -1738,6 +1740,7 @@
 <translation id="8982113230057126145">Калі націснуць кнопку "Не падабаецца", будзе адпраўлены водгук аб тым, што вам не спадабалася гэта зводка.</translation>
 <translation id="8992769679401294069">Вашы даныя зашыфраваны фразай-паролем. Каб захоўваць даныя Chrome ва Уліковым запісе Google і выкарыстоўваць іх, увядзіце фразу-пароль.</translation>
 <translation id="8993760627012879038">Адкрыць новую ўкладку ў рэжыме інкогніта</translation>
+<translation id="8995521496079646922">Выбраныя вамі праграмы будуць выкарыстоўвацца ў якасці стандартных. Калі праграмы яшчэ няма на вашай прыладзе, яна будзе неўзабаве спампавана.</translation>
 <translation id="8996847606757455498">Выбраць іншага пастаўшчыка</translation>
 <translation id="8998289560386111590">Недаступна на вашай прыладзе</translation>
 <translation id="8998837250940831980">Не ўдалося згарнуць укладку. Паўтарыце спробу пазней.</translation>

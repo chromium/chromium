@@ -1071,13 +1071,6 @@ Virtual Tasks の場合は <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY
 
       このポリシーはサポートが終了しています。代わりに <ph name="DEVICE_USER_ALLOWLIST_POLICY_NAME" /> を使用してください。
       </translation>
-<translation id="1825583118566970564">外部拡張機能のインストールを管理します。
-
-このポリシーを有効に設定した場合は、外部拡張機能のインストールがブロックされます。
-
-このポリシーを無効に設定するか未設定のままにした場合は、外部拡張機能のインストールが許可されます。
-
-外部拡張機能とそのインストール方法については、https://developer.chrome.com/apps/external_extensions をご覧ください。</translation>
 <translation id="1827523283178827583">固定プロキシ サーバーを使用する</translation>
 <translation id="1829117241432374848">管理対象アカウントを予備のアカウントのないメイン アカウントのみとする（ユーザーはプロフィールの作成時に既存の閲覧データをインポートできる）</translation>
 <translation id="1829839214911753838">このポリシーを有効に設定した場合、リモート サポート ホストは <ph name="UIACCESS_PERMISSION_NAME" /> 権限付きのプロセスで実行されます。これにより、リモート ユーザーはローカル ユーザーのデスクトップ上の権限昇格ウィンドウとやり取りできるようになります。

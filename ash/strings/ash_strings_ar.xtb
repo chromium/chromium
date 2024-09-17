@@ -1417,6 +1417,7 @@
 <translation id="5802516411616338943">فتح "الإعدادات السريعة"</translation>
 <translation id="5804651031882187592">‏إيقاف الإعداد "قفل شريحة SIM"</translation>
 <translation id="5805809050170488595">انقر لتفعيل <ph name="NETWORK_NAME" />.</translation>
+<translation id="5818796501620225415">يمكنك إضافة المزيد من الوقت أو إنهاء جلسة التركيز</translation>
 <translation id="5819918159912280082">‏تمت إعادة تشغيل جهاز Chromebook بشكل غير متوقّع. يمكنك فتح النوافذ والتطبيقات السابقة.</translation>
 <translation id="5823239091726045201">‏"مهام Google" على الويب</translation>
 <translation id="5825969630400862129">إعدادات الأجهزة المتّصلة</translation>
@@ -1510,7 +1511,6 @@
 <translation id="6119972796024789243">تصحيح الألوان</translation>
 <translation id="6121838516699723042">تأكيد تنزيل <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">‏لا يتوفر "مساعد Google" في جلسة ضيف.</translation>
-<translation id="6127370444807669747">‏يمكنك تجربة YouTube Music Premium للاستماع إلى قوائم تشغيل مخصّصة وموسيقى تساعدك على التركيز</translation>
 <translation id="6127395413317891856">جهازك غير متصل بالإنترنت. يُرجى التحقّق من الاتصال والمحاولة مجددًا.</translation>
 <translation id="6129953537138746214">مسافة</translation>
 <translation id="6137566720514957455">فتح مربع الحوار لإزالة الحساب <ph name="USER_EMAIL_ADDRESS" /></translation>

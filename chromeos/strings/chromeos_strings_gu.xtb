@@ -255,6 +255,7 @@
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2148716181193084225">આજે</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> ફોટા</translation>
+<translation id="2154460308960858308">શોધ સાફ કરો</translation>
 <translation id="2156072344042480449">તમારા સૌથી તાજેતરના 2 પ્રૉમ્પ્ટ. તમે આ પેજ પર હો, માત્ર ત્યારે જ તમે આ પ્રૉમ્પ્ટનો ઉપયોગ કરી શકો છો.</translation>
 <translation id="2157660087437850958">ઇમોજી પિકર</translation>
 <translation id="2157959690810728433">કતારમાં</translation>
@@ -283,7 +284,6 @@
 <translation id="2230624078793142213">વધુ બનાવો</translation>
 <translation id="2236746079896696523">કીબોર્ડની બૅકલાઇટ માટે ટૉગલ કી</translation>
 <translation id="2240366984605217732">લેઆઉટ સ્વિચ કી</translation>
-<translation id="2242381852034179222">તમારા ઍડમિનિસ્ટ્રેટર દ્વારા આ સુવિધા મેનેજ કરવામાં આવે છે</translation>
 <translation id="2244834438220057800">લીલો</translation>
 <translation id="225692081236532131">સક્રિયતાની સ્થિતિ</translation>
 <translation id="2267285889943769271">સ્ક્રીનશૉટ ઉમેરો</translation>
@@ -501,6 +501,7 @@
 <translation id="3557205324756024651">સ્થાનિક ઓળખ (વૈકલ્પિક)</translation>
 <translation id="3565064564551103223">મંજૂર કરેલા IPs</translation>
 <translation id="3569407787324516067">સ્ક્રીન સેવર</translation>
+<translation id="3571184524500629183">શોધ બંધ કરો</translation>
 <translation id="3577473026931028326">કંઈક ખોટું થયું. ફરી પ્રયાસ કરો.</translation>
 <translation id="357889014807611375">મીટર્ડ (ડેટા નિયંત્રણ) વાઇ-ફાઇ</translation>
 <translation id="3583278742022654445">સિગ્નલની પ્રબળતા નબળી છે. વાઇ-ફાઇ સિગ્નલના સૉર્સની વધુ નજીક જઈને પ્રયાસ કરી જુઓ.</translation>
@@ -950,6 +951,7 @@
 <translation id="5860033963881614850">બંધ</translation>
 <translation id="5860491529813859533">ચાલુ કરો</translation>
 <translation id="5876385649737594562">વિકલ્પો પસંદ કરવાનું ચાલુ કરો</translation>
+<translation id="5877503382465267833"><ph name="RECORDING_NAME" /> થોભાવો</translation>
 <translation id="588258955323874662">પૂર્ણસ્ક્રીન</translation>
 <translation id="5893975327266416093">સોંપણી કરવા માટે, કોઈ કીબોર્ડ કી પર ટૅપ કરો</translation>
 <translation id="5895138241574237353">પુનઃપ્રારંભ કરો</translation>
@@ -1167,6 +1169,7 @@
 <translation id="6910312834584889076">સ્કૅનરનું કવર ખુલ્લું છે. કવર બંધ કરો અને ફરી પ્રયાસ કરો.</translation>
 <translation id="6910845598686542904">રેકોર્ડિંગમાં ભાળ મળેલા વૉઇસના મૉડલની ગણતરી કરે છે</translation>
 <translation id="6911383237894364323">મીડિયા સર્વર સાથે કનેક્ટ કરી શકાયું નથી</translation>
+<translation id="6927968682840110570">રેકોર્ડિંગનું નામ</translation>
 <translation id="6930242544192836755">અવધિ</translation>
 <translation id="6930597342185648547">બૅકગ્રાઉન્ડ વિશે</translation>
 <translation id="6939667434404433010">રેકોર્ડિંગનું નામ શોધો</translation>
@@ -1279,6 +1282,7 @@
 <translation id="7378170410161264436">Recorder, સ્પીચવાળા રેકોર્ડિંગ માટે ટ્રાન્સક્રિપ્શન બનાવી શકે છે.
 આ ટ્રાન્સક્રિપ્શન મેળવવા માટે, (100MB સુધીનું) ટ્રાન્સક્રિપ્શન મૉડલ ડાઉનલોડ કરો.</translation>
 <translation id="7384004438856720753">મહેલ</translation>
+<translation id="7388345524791662148"><ph name="RECORDING_NAME" /> માટે વધુ વિકલ્પો</translation>
 <translation id="7388959671917308825">બિલ્ટ-ઇન ટચપૅડ</translation>
 <translation id="7397270852490618635">ઝાંખી થીમ બંધ કરો</translation>
 <translation id="7401543881546089382">શોર્ટકટ ડિલીટ કરો</translation>
@@ -1300,6 +1304,7 @@
 <translation id="7513770521371759388">સૌથી નીચે</translation>
 <translation id="7514365320538308">ડાઉનલોડ કરો</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7519481256236810334"><ph name="RECORDING_NAME" /> વગાડો</translation>
 <translation id="7525067979554623046">બનાવો</translation>
 <translation id="7528507600602050979">સહાયક કન્ટેન્ટ ઉપલબ્ધ નથી</translation>
 <translation id="7535791657097741517">ઝાંખી થીમ ચાલુ કરો</translation>
@@ -1376,6 +1381,7 @@
 <translation id="7897043345768902965">પગપાળા ચાલવાનો રસ્તો</translation>
 <translation id="7902285181767404769">રેકોર્ડ કરતી વખતે, નોટિફિકેશનને સાઇલન્ટ કરો</translation>
 <translation id="7903695460270716054">ક્યુરેટ કરેલા આર્ટવર્ક અને છબીઓ પસંદ કરો</translation>
+<translation id="7912005977894000746">મુખ્ય પેજ પર પાછા ફરો</translation>
 <translation id="7915220255123750251">નેટવર્ક APN સેટિંગ મેનેજ કરો. APN સેલ્યુલર નેટવર્ક અને ઇન્ટરનેટ વચ્ચે કનેક્શન સ્થાપિત કરે છે.</translation>
 <translation id="7936303884198020182">IP કન્ફિગ્યુરેશનમાં કોઈ નામ સર્વર મળ્યા નથી</translation>
 <translation id="7942349550061667556">લાલ</translation>

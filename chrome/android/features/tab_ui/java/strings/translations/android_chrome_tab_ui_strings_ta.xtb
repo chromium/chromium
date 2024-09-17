@@ -104,6 +104,7 @@
 <translation id="5400836586163650660">கிரே</translation>
 <translation id="5490235265819901748">பக்கக் குழு விரிவாக்கப்பட்டது</translation>
 <translation id="5494920125229734069">எல்லாவற்றையும் தேர்ந்தெடு</translation>
+<translation id="5549653163690032080"><ph name="TITLE_OF_GROUP" /> என்ற பகிர்ந்த பக்கக் குழுவுக்கான பக்கக் குழு செயல் மெனுவைத் திறக்கும்</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{<ph name="COLOR_NAME" /> வண்ணத்தில் <ph name="TABS_COUNT_ONE" /> பக்கத்துடன் உள்ள பக்கக் குழுவை மூடும்.}other{<ph name="COLOR_NAME" /> வண்ணத்தில் <ph name="TABS_COUNT_MANY" /> பக்கங்களுடன் உள்ள பக்கக் குழுவை மூடும்.}}</translation>
 <translation id="5556417849629758491">ஸ்டோர் தகவலைப் பார்ப்பதற்கான விருப்பம் திரையின் மேற்பகுதிக்கு அருகில் உள்ளது</translation>
 <translation id="5627941783489838464">பக்க மாற்றங்கள் இல்லை</translation>
@@ -135,6 +136,7 @@
 <translation id="6694634756612002311">பகிர்தலை நிர்வகியுங்கள்</translation>
 <translation id="6744956528665271406">குழு வண்ணத்தை மாற்று</translation>
 <translation id="6856809498882026482">பல தேர்வுப் பயன்முறையை மறைக்கும்</translation>
+<translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{<ph name="COLOR_NAME" /> வண்ணத்தில் <ph name="TABS_COUNT_ONE" /> பக்கம் உள்ள <ph name="TITLE_OF_GROUP" /> என்ற பகிர்ந்த பக்கக் குழுவை விரிவாக்கும்.}other{<ph name="COLOR_NAME" /> வண்ணத்தில் <ph name="TABS_COUNT_MANY" /> பக்கங்கள் உள்ள <ph name="TITLE_OF_GROUP" /> என்ற பகிர்ந்த பக்கக் குழுவை விரிவாக்கும்.}}</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{பக்கத்தைப் பகிர்}other{பக்கங்களைப் பகிர்}}</translation>
 <translation id="7129458170538955174">இந்த ஸ்டோர் குறித்த தகவல்கள் பாதித் திரையில் காட்டப்பட்டுள்ளன</translation>
 <translation id="7200189319044305940">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> பக்கம் உள்ள <ph name="TITLE_OF_GROUP" /> குழுவை மூடும்.}other{<ph name="TABS_COUNT_MANY" /> பக்கங்கள் உள்ள <ph name="TITLE_OF_GROUP" /> குழுவை மூடும்.}}</translation>
@@ -170,6 +172,7 @@
 <translation id="8205266828577616993">தாவலை மேலே நகர்த்து</translation>
 <translation id="8261506727792406068">நீக்கு</translation>
 <translation id="8338427544764842461">உங்கள் பக்கக் குழுக்கள் இங்கே சேமிக்கப்படும், அத்துடன் நீங்கள் உள்நுழைந்துள்ள சாதனங்கள் அனைத்திலும் அவை சேர்க்கப்படும்.</translation>
+<translation id="8344020191144794051">{NUMBER_OF_TABS,plural, =1{<ph name="COLOR_NAME" /> வண்ணத்தில் <ph name="TABS_COUNT_ONE" /> பக்கம் உள்ள பகிர்ந்த பக்கக் குழுவை விரிவாக்கும்.}other{<ph name="COLOR_NAME" /> வண்ணத்தில் <ph name="TABS_COUNT_MANY" /> பக்கங்கள் உள்ள பகிர்ந்த பக்கக் குழுவை விரிவாக்கும்.}}</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{தேர்ந்தெடுத்த <ph name="TABS_COUNT_ONE" /> தாவலை மூடும்}other{தேர்ந்தெடுத்த <ph name="TABS_COUNT_MANY" /> தாவல்களை மூடும்}}</translation>
 <translation id="8398929769197326728">புதிய ஃபோல்டர் - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">அமைப்புகள்</translation>

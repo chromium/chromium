@@ -117,6 +117,7 @@
 <translation id="1517166097004694782">隱藏「繼續使用這個分頁」</translation>
 <translation id="1520027731907768768">接收追蹤產品的降價快訊。</translation>
 <translation id="1521774566618522728">上次使用時間：今天</translation>
+<translation id="1524563461097350801">不用了，謝謝</translation>
 <translation id="1531038290222364269">顯示分頁</translation>
 <translation id="1536390784834419204">翻譯網頁</translation>
 <translation id="1540800554400757039">地址 1</translation>
@@ -598,7 +599,7 @@
 <translation id="3982893814825393515">回報問題…</translation>
 <translation id="398604237578616937">目前登入的帳戶是<ph name="USER_EMAIL" />。開啟帳戶選單。</translation>
 <translation id="3987993985790029246">複製連結</translation>
-<translation id="3992684624889376114">為何顯示此頁</translation>
+<translation id="3992684624889376114">關於本頁</translation>
 <translation id="3994422733891749358">選擇要接收的通知</translation>
 <translation id="3995521777587992544">網頁載入進度列，已載入 <ph name="EMAIL" />。</translation>
 <translation id="3997522473364371632">系統管理員已停用分享密碼功能。</translation>
@@ -1511,7 +1512,6 @@
 <translation id="8173034266693057059">長度</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8182037667962849780">{count,plural, =1{適用於 {website_1}}=2{適用於 {website_1}、{website_2}}=3{適用於 {website_1}、{website_2} 和另外 1 個網站}other{適用於 {website_1}、{website_2} 和另外 {more_count} 個網站}}</translation>
-<translation id="8189814768485665290">分享完整網址</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />你的裝置<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">新增密碼</translation>
 <translation id="8202744799033457229">顯示歷史記錄</translation>
@@ -1545,6 +1545,7 @@
 <translation id="8349305172487531364">書籤列</translation>
 <translation id="8366466717204352506">未執行過檢查</translation>
 <translation id="8368001212524806591">追蹤價格</translation>
+<translation id="8370406443343902172">前往「設定」...</translation>
 <translation id="8372471489238799313">{count,plural, =1{刪除地址}other{刪除地址}}</translation>
 <translation id="8378714024927312812">由貴機構管理</translation>
 <translation id="8386068868580335421">重設</translation>

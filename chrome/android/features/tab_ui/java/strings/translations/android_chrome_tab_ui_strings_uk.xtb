@@ -104,6 +104,7 @@
 <translation id="5400836586163650660">Сірий</translation>
 <translation id="5490235265819901748">Групу вкладок розгорнуто</translation>
 <translation id="5494920125229734069">Вибрати все</translation>
+<translation id="5549653163690032080">Відкрити меню дій для спільної групи вкладок "<ph name="TITLE_OF_GROUP" />"</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Закрити групу з <ph name="TABS_COUNT_ONE" /> вкладкою; колір: <ph name="COLOR_NAME" />.}one{Закрити групу з <ph name="TABS_COUNT_MANY" /> вкладкою; колір: <ph name="COLOR_NAME" />.}few{Закрити групу з <ph name="TABS_COUNT_MANY" /> вкладками; колір: <ph name="COLOR_NAME" />.}many{Закрити групу з <ph name="TABS_COUNT_MANY" /> вкладками; колір: <ph name="COLOR_NAME" />.}other{Закрити групу з <ph name="TABS_COUNT_MANY" /> вкладки; колір: <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">Переглянути інформацію про магазин. Опція доступна вгорі екрана.</translation>
 <translation id="5627941783489838464">Немає оновлень щодо вкладок</translation>
@@ -135,6 +136,7 @@
 <translation id="6694634756612002311">Керувати параметрами спільного доступу</translation>
 <translation id="6744956528665271406">Змінити колір групи</translation>
 <translation id="6856809498882026482">Вийти з режиму вибору кількох вкладок</translation>
+<translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{Розгорнути спільну групу "<ph name="TITLE_OF_GROUP" />" з <ph name="TABS_COUNT_ONE" /> вкладкою; колір: <ph name="COLOR_NAME" />.}one{Розгорнути спільну групу "<ph name="TITLE_OF_GROUP" />" з <ph name="TABS_COUNT_MANY" /> вкладкою; колір: <ph name="COLOR_NAME" />.}few{Розгорнути спільну групу "<ph name="TITLE_OF_GROUP" />" з <ph name="TABS_COUNT_MANY" /> вкладками; колір: <ph name="COLOR_NAME" />.}many{Розгорнути спільну групу "<ph name="TITLE_OF_GROUP" />" з <ph name="TABS_COUNT_MANY" /> вкладками; колір: <ph name="COLOR_NAME" />.}other{Розгорнути спільну групу "<ph name="TITLE_OF_GROUP" />" з <ph name="TABS_COUNT_MANY" /> вкладки; колір: <ph name="COLOR_NAME" />.}}</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Поділитися вкладкою}one{Поділитися вкладками}few{Поділитися вкладками}many{Поділитися вкладками}other{Поділитися вкладками}}</translation>
 <translation id="7129458170538955174">Інформацію про цей магазин відкрито на половину висоти</translation>
 <translation id="7200189319044305940">{NUMBER_OF_TABS,plural, =1{Закрити групу "<ph name="TITLE_OF_GROUP" />" з <ph name="TABS_COUNT_ONE" /> вкладкою.}one{Закрити групу "<ph name="TITLE_OF_GROUP" />" з <ph name="TABS_COUNT_MANY" /> вкладкою.}few{Закрити групу "<ph name="TITLE_OF_GROUP" />" з <ph name="TABS_COUNT_MANY" /> вкладками.}many{Закрити групу "<ph name="TITLE_OF_GROUP" />" з <ph name="TABS_COUNT_MANY" /> вкладками.}other{Закрити групу "<ph name="TITLE_OF_GROUP" />" з <ph name="TABS_COUNT_MANY" /> вкладки.}}</translation>
@@ -170,6 +172,7 @@
 <translation id="8205266828577616993">Перемістити вкладку вгору</translation>
 <translation id="8261506727792406068">Видалити</translation>
 <translation id="8338427544764842461">Тут групи вкладок зберігаються й синхронізуються з усіма пристроями, на яких ви ввійшли в обліковий запис</translation>
+<translation id="8344020191144794051">{NUMBER_OF_TABS,plural, =1{Розгорнути спільну групу з <ph name="TABS_COUNT_ONE" /> вкладкою; колір: <ph name="COLOR_NAME" />.}one{Розгорнути спільну групу з <ph name="TABS_COUNT_MANY" /> вкладкою; колір: <ph name="COLOR_NAME" />.}few{Розгорнути спільну групу з <ph name="TABS_COUNT_MANY" /> вкладками; колір: <ph name="COLOR_NAME" />.}many{Розгорнути спільну групу з <ph name="TABS_COUNT_MANY" /> вкладками; колір: <ph name="COLOR_NAME" />.}other{Розгорнути спільну групу з <ph name="TABS_COUNT_MANY" /> вкладки; колір: <ph name="COLOR_NAME" />.}}</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Закрити <ph name="TABS_COUNT_ONE" /> вибрану вкладку}one{Закрити <ph name="TABS_COUNT_MANY" /> вибрану вкладку}few{Закрити <ph name="TABS_COUNT_MANY" /> вибрані вкладки}many{Закрити <ph name="TABS_COUNT_MANY" /> вибраних вкладок}other{Закрити <ph name="TABS_COUNT_MANY" /> вибраної вкладки}}</translation>
 <translation id="8398929769197326728">Нова папка – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">Налаштування</translation>

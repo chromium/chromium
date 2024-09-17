@@ -116,6 +116,7 @@
 <translation id="1517166097004694782">Doorgaan met dit tabblad verbergen</translation>
 <translation id="1520027731907768768">Krijg meldingen over prijsdalingen voor producten die je volgt.</translation>
 <translation id="1521774566618522728">Vandaag actief</translation>
+<translation id="1524563461097350801">Nee, bedankt</translation>
 <translation id="1531038290222364269">Tabbladen tonen</translation>
 <translation id="1536390784834419204">Pagina vertalen</translation>
 <translation id="1540800554400757039">Adres 1</translation>
@@ -1507,7 +1508,6 @@ Sites mogen cookies gebruiken om je browse-activiteit op verschillende sites te 
 <translation id="8173034266693057059">Lengte</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8182037667962849780">{count,plural, =1{Voor {website_1}}=2{Voor {website_1}, {website_2}}=3{Voor {website_1}, {website_2} en nog 1}other{Voor {website_1}, {website_2} en nog {more_count}}}</translation>
-<translation id="8189814768485665290">Hele URL delen</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Je apparaten<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Wachtwoord toevoegen</translation>
 <translation id="8202744799033457229">Geschiedenis weergeven</translation>
@@ -1541,6 +1541,7 @@ Sites mogen cookies gebruiken om je browse-activiteit op verschillende sites te 
 <translation id="8349305172487531364">Bookmarkbalk</translation>
 <translation id="8366466717204352506">Check nooit uitgevoerd</translation>
 <translation id="8368001212524806591">Prijs volgen</translation>
+<translation id="8370406443343902172">Naar Instellingen…</translation>
 <translation id="8372471489238799313">{count,plural, =1{Adres verwijderen}other{Adressen verwijderen}}</translation>
 <translation id="8378714024927312812">Beheerd door je organisatie</translation>
 <translation id="8386068868580335421">Resetten</translation>
@@ -1603,6 +1604,7 @@ Sites mogen cookies gebruiken om je browse-activiteit op verschillende sites te 
 <translation id="8637431369725868556">Krijg bescherming tegen gevaarlijke sites.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Geen gehackte wachtwoorden}=1{{COUNT} gehackt wachtwoord}other{{COUNT} gehackte wachtwoorden}}</translation>
 <translation id="8640575194957831802">Laatst geopend</translation>
+<translation id="8647280737650867362">Kan de prijs niet ontvolgen.</translation>
 <translation id="8654802032646794042">Annuleren</translation>
 <translation id="8660600697590740984">Afbeelding gekopieerd door Lens</translation>
 <translation id="866266761389616183">Helaas</translation>

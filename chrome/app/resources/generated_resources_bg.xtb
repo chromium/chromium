@@ -1114,7 +1114,6 @@
 <translation id="1780273119488802839">Отметките се импорти&amp;рат...</translation>
 <translation id="1780572199786401845">Подаване на сигнал за обидно/опасно съдържание.</translation>
 <translation id="178092663238929451">Настройте „Споделяне наблизо“, за да получавате и изпращате файлове на хора в района</translation>
-<translation id="1781164264587898620">Прилагане на потискане на шума и подобрения на звука.</translation>
 <translation id="1781291988450150470">Текущ ПИН код</translation>
 <translation id="1781502536226964113">Да се отваря нов раздел в браузъра</translation>
 <translation id="1781553166608855614">Език на говора</translation>
@@ -2564,6 +2563,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2787354132612937472">–</translation>
 <translation id="2788135150614412178">+</translation>
 <translation id="2789486458103222910">OK</translation>
+<translation id="2790750268015892264">Изолираните уеб приложения не могат да контролират четците на смарткарти. Приложенията няма да получат достъп до смарткартите.</translation>
 <translation id="2791529110887957050">Премахване на Linux</translation>
 <translation id="2791952154587244007">Възникна грешка. Павилионното приложение няма да може да стартира автоматично на това устройство.</translation>
 <translation id="2792290659606763004">Да се премахнат ли приложенията за Android?</translation>
@@ -2595,6 +2595,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2806372837663997957">Устройството, с което се опитвате да споделите файла, не го прие</translation>
 <translation id="2806891468525657116">Прекият път вече съществува</translation>
 <translation id="2807517655263062534">Тук се показват изтеглените от вас файлове</translation>
+<translation id="2808481877345177494">Влезте в профила си, за да разграничите по сигурен начин сърфирането си за служебни и лични цели. Повишете продуктивността си, като същевременно защитавате поверителните фирмени данни.</translation>
 <translation id="2811205483104563968">Профили</translation>
 <translation id="2812049959647166806">Thunderbolt не се поддържа</translation>
 <translation id="2812171980080389735">Запазени мрежи и пароли, за да можете да се свързвате незабавно</translation>
@@ -3442,6 +3443,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3450157232394774192">Процент на използване в състояние на неактивност</translation>
 <translation id="3450180775417907283"><ph name="MANAGER" /> изисква да се свържете с Wi-Fi сега и да изтеглите актуализация.</translation>
 <translation id="345078987193237421">Това разрешава достъп до камерата за приложенията и уебсайтовете със съответното разрешение и за системните услуги</translation>
+<translation id="3451362021220965191">Изолираните уеб приложения контролират четците на смарткарти, за да получат достъп до поставените или представените им смарткарти. Обикновено смарткартите съдържат идентификационни данни, които служат за удостоверяване или упълномощаване на операции, влизане в услуги и т.н.</translation>
 <translation id="3452999110156026232">Достъп на родител</translation>
 <translation id="3453082738208775226">Искате ли да изчистите офлайн хранилището?</translation>
 <translation id="3453597230179205517">Достъпът до местоположението е блокиран</translation>
@@ -4004,6 +4006,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3828953470056652895">Прочетох и приемам <ph name="BEGIN_LINK1" />Общите условия на Google<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Допълнителните общи условия на Chrome и Chrome OS<ph name="END_LINK2" /> и <ph name="BEGIN_LINK3" />Общите условия на Google Play<ph name="END_LINK3" />.</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> – голямо количество използвана памет: <ph name="MEMORY_VALUE" /></translation>
 <translation id="3829765597456725595">Споделено SMB хранилище</translation>
+<translation id="38298897782945211">Тази настройка се прилага автоматично за изолираните уеб приложения.</translation>
 <translation id="3830470485672984938">Използване на друг ключ за достъп</translation>
 <translation id="3830654885961023588">{NUM_EXTENSIONS,plural, =1{Администраторът ви включи 1 потенциално опасно разширение}other{Администраторът ви включи {NUM_EXTENSIONS} потенциално опасни разширения}}</translation>
 <translation id="3834728400518755610">Промяната в настройката за микрофона изисква изключване на Linux. Изключете Linux, за да продължите.</translation>
@@ -4017,6 +4020,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3839516600093027468">Забраняване винаги на <ph name="HOST" /> да преглежда буферната памет</translation>
 <translation id="3841282988425489367">Бета-версията на Steam за Chromebook не бе настроена</translation>
 <translation id="3841319830220785495">Естествен глас по подразбиране</translation>
+<translation id="3841356782900714251">Четци на смарткарти</translation>
 <translation id="3841964634449506551">Паролата е невалидна</translation>
 <translation id="3842552989725514455">Серифен шрифт</translation>
 <translation id="3843464315703645664">В списъка на разрешените вътрешно</translation>
@@ -5728,6 +5732,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="5120886753782992638">Кликнете тук, за да посетите <ph name="APPROVED_URL" /></translation>
 <translation id="5121052518313988218">Операционната система в контейнера ви за Linux вече не се поддържа. Тя ще престане да получава актуализации на сигурността и поправки на програмни грешки и функции, които сега работят, може неочаквано да престанат да функционират. За да продължите да използвате Linux, моля, надстройте до най-новата версия.</translation>
 <translation id="5121130586824819730">Твърдият ви диск е пълен.  Моля, запазете на друго място или освободете още пространство на диска.</translation>
+<translation id="5121803000325086087">Изолираните уеб приложения могат да поискат разрешение да контролират четците на смарткарти. Приложенията ще получат достъп до смарткартите, представени на контролираните от тях четци.</translation>
 <translation id="5123433949759960244">Баскетболна топка</translation>
 <translation id="5125714798187802869">Активиране</translation>
 <translation id="5125751979347152379">Невалиден URL адрес.</translation>
@@ -6989,6 +6994,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6064764629679333574">Подобрете качеството на звука от микрофона с Bluetooth, като увеличите разделителната способност на звука.</translation>
 <translation id="6065289257230303064">Атрибути за директорията на субекта на сертификата</translation>
 <translation id="6066794465984119824">Хеш стойността на изображението не е зададена</translation>
+<translation id="6069027071882229820">Копиране като изображение</translation>
 <translation id="6069464830445383022">Влизате в Chromebook с профила си в Google</translation>
 <translation id="6069500411969514374">Служебен</translation>
 <translation id="6071181508177083058">потвърждаване на паролата</translation>
@@ -10089,6 +10095,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="8319414634934645341">Удължена употреба на ключа</translation>
 <translation id="8321476692217554900">известия</translation>
 <translation id="8321837372750396788">Това устройство <ph name="DEVICE_TYPE" /> ще се управлява от <ph name="MANAGER" />.</translation>
+<translation id="8321888067342493336">Запазване като изображение</translation>
 <translation id="8322814362483282060">Достъпът на тази страница до микрофона ви е блокиран.</translation>
 <translation id="8323167517179506834">Въведете URL адрес</translation>
 <translation id="8323317289166663449">да чете и променя всичките ви данни на компютъра и в уебсайтовете</translation>

@@ -497,6 +497,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="1355088139103479645">Törli az összes adatot?</translation>
 <translation id="1356376170199999104">Engedélyezve – <ph name="PERMISSION_DETAILS" />. Kapcsolja be a mikrofont a fizikai kapcsolóval.</translation>
 <translation id="1356959069439783953">Az inaktív lapok új külsővel jelentkeznek</translation>
+<translation id="1357766361161708728">Bezárja a nem használt lapokat?</translation>
 <translation id="1358741672408003399">Helyesírás és nyelvhelyesség</translation>
 <translation id="1359923111303110318">Eszközét a Smart Lock segítségével is feloldhatja. A feloldáshoz nyomja meg az Enter billentyűt.</translation>
 <translation id="1361164813881551742">Hozzáadás manuálisan</translation>
@@ -1117,7 +1118,6 @@ Az alkalmazások számára már megadott engedélyek erre a fiókra is érvénye
 <translation id="1780273119488802839">Könyvjelzők importálása...</translation>
 <translation id="1780572199786401845">Sértő/nem biztonságos tartalom bejelentése.</translation>
 <translation id="178092663238929451">Állítsa be a Közeli megosztás funkciót, hogy fájlokat fogadhasson a környezetében lévő személyektől, illetve fájlokat küldhessen nekik</translation>
-<translation id="1781164264587898620">Zajszűrés és hangjavítások alkalmazása.</translation>
 <translation id="1781291988450150470">Jelenlegi PIN-kód</translation>
 <translation id="1781502536226964113">Új lap oldal megnyitása</translation>
 <translation id="1781553166608855614">Beszélt nyelv</translation>
@@ -2566,6 +2566,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2787354132612937472">–</translation>
 <translation id="2788135150614412178">+</translation>
 <translation id="2789486458103222910">OK</translation>
+<translation id="2790750268015892264">Az izolált internetes alkalmazások nem vezérelhetik az intelligenskártya-olvasókat. Az alkalmazások nem férnek hozzá egyetlen intelligens kártyához sem.</translation>
 <translation id="2791529110887957050">A Linux eltávolítása</translation>
 <translation id="2791952154587244007">Hiba történt. A kioszkalkalmazások nem fognak automatikusan elindulni ezen az eszközön.</translation>
 <translation id="2792290659606763004">Eltávolítja az Android-alkalmazásokat?</translation>
@@ -2597,6 +2598,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2806372837663997957">A másik eszköz nem fogadta el a megosztást</translation>
 <translation id="2806891468525657116">Ez a billentyűparancs már létezik</translation>
 <translation id="2807517655263062534">A letöltött fájlok itt jelennek meg</translation>
+<translation id="2808481877345177494">Jelentkezzen be, hogy biztonságosan különválaszthassa a munkahelyi és a személyes böngészést. Növelheti a hatékonyságot, miközben védi a bizalmas vállalati adatokat.</translation>
 <translation id="2811205483104563968">Fiókok</translation>
 <translation id="2812049959647166806">A Thunderbolt nem támogatott</translation>
 <translation id="2812171980080389735">Mentett hálózatokkal és jelszavakkal azonnal csatlakozhat</translation>
@@ -3444,6 +3446,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3450157232394774192">Tétlenségi állapot lefoglaltsága százalékban</translation>
 <translation id="3450180775417907283">A(z) <ph name="MANAGER" /> megköveteli, hogy eszközével most Wi-Fi-hálózathoz csatlakozzon, és letöltse a szükséges frissítést.</translation>
 <translation id="345078987193237421">Ez lehetővé teszi a kamerához való hozzáférést az alkalmazások, a kameraengedéllyel rendelkező webhelyek és a rendszerszolgáltatások számára.</translation>
+<translation id="3451362021220965191">Az izolált internetes alkalmazások vezérelhetik az intelligenskártya-olvasókat, hogy hozzáférjenek a behelyezett vagy bemutatott intelligens kártyákhoz. Az intelligens kártyák általában olyan személyazonosító adatokat tartalmaznak, amelyeket műveletek hitelesítésére vagy engedélyezésére, szolgáltatásokba való bejelentkezésre stb. használnak.</translation>
 <translation id="3452999110156026232">Szülői hozzáférés</translation>
 <translation id="3453082738208775226">Szeretne offline tárhelyet felszabadítani?</translation>
 <translation id="3453597230179205517">A helyadatokhoz való hozzáférés le van tiltva</translation>
@@ -4006,6 +4009,7 @@ Ide tartozhatnak a telepített szoftverekkel, valamint a fájlokkal, a böngész
 <translation id="3828953470056652895">Elolvastam és elfogadom a <ph name="BEGIN_LINK1" />Google Általános Szerződési Feltételeket<ph name="END_LINK1" />, a <ph name="BEGIN_LINK2" />Chrome és a Chrome OS Kiegészítő Általános Szerződési Feltételeit<ph name="END_LINK2" /> és a <ph name="BEGIN_LINK3" />Play Általános Szerződési Feltételeit<ph name="END_LINK3" />.</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> – Nagy memóriahasználat – <ph name="MEMORY_VALUE" /></translation>
 <translation id="3829765597456725595">SMB-fájlmegosztás</translation>
+<translation id="38298897782945211">Az izolált internetes alkalmazások automatikusan követik ezt a beállítást.</translation>
 <translation id="3830470485672984938">Másik azonosítókulcs használata</translation>
 <translation id="3830654885961023588">{NUM_EXTENSIONS,plural, =1{A rendszergazda 1 potenciálisan kártékony bővítményt visszakapcsolt}other{A rendszergazda {NUM_EXTENSIONS} potenciálisan kártékony bővítményt visszakapcsolt}}</translation>
 <translation id="3834728400518755610">A mikrofonbeállítások módosítása miatt a Linux leállítására van szükség. A folytatáshoz állítsa le a Linuxot.</translation>
@@ -4019,6 +4023,7 @@ Ide tartozhatnak a telepített szoftverekkel, valamint a fájlokkal, a böngész
 <translation id="3839516600093027468">A vágólap megtekintésének állandó tiltása a(z) <ph name="HOST" /> számára</translation>
 <translation id="3841282988425489367">Nem sikerült beállítani a Steam Chromebook-verzióját (béta)</translation>
 <translation id="3841319830220785495">Alapértelmezett természetes hang</translation>
+<translation id="3841356782900714251">Intelligenskártya-olvasók</translation>
 <translation id="3841964634449506551">A jelszó érvénytelen</translation>
 <translation id="3842552989725514455">Talpas betűtípus</translation>
 <translation id="3843464315703645664">Belső engedélyezőlistán</translation>
@@ -5728,6 +5733,7 @@ kicsinyítéshez pedig a Ctrl + Alt + Fényerő csökkentése billentyűpara
 <translation id="5120886753782992638">Kattints ide a következő megnyitásához: <ph name="APPROVED_URL" /></translation>
 <translation id="5121052518313988218">A Linux-tárolóban lévő operációs rendszer már nem támogatott. Többé nem kap biztonsági frissítéseket és programhiba-javításokat, a jelenlegi funkciók működése pedig váratlanul megszűnhet. A Linux használatának folytatásához frissítsen a legújabb verzióra.</translation>
 <translation id="5121130586824819730">A merevlemez megtelt. Kérjük, mentsen másik helyre, vagy szabadítson fel elegendő helyet a merevlemezen.</translation>
+<translation id="5121803000325086087">Az izolált internetes alkalmazások kérhetik az intelligenskártya-olvasók vezérlését. Az alkalmazások hozzáférést kapnak az általuk vezérelt olvasóknak bemutatott intelligens kártyákhoz.</translation>
 <translation id="5123433949759960244">Kosárlabda</translation>
 <translation id="5125714798187802869">Bekapcsolás</translation>
 <translation id="5125751979347152379">Érvénytelen URL</translation>
@@ -6565,6 +6571,7 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="5750288053043553775">0</translation>
 <translation id="5751345516399502412">Internetmegosztási készenlét ellenőrzése</translation>
 <translation id="5753570386948603678">Törlés az előzmények közül</translation>
+<translation id="5753652925946671505">Ezeket a lapokat legalább <ph name="COUNT" /> napig nem használta.</translation>
 <translation id="5756163054456765343">Súgó</translation>
 <translation id="5757187557809630523">következő szám</translation>
 <translation id="5758631781033351321">Itt láthatja majd az olvasólistáját</translation>
@@ -6988,6 +6995,7 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="6064764629679333574">Javíthatja a Bluetooth-mikrofon hangjának minőségét a kis felbontású hang nagy felbontásúra való feljavításával.</translation>
 <translation id="6065289257230303064">Tanúsítványtulajdonos könyvtárattribútumai</translation>
 <translation id="6066794465984119824">A kép kivonata nincs beállítva</translation>
+<translation id="6069027071882229820">Másolás képként</translation>
 <translation id="6069464830445383022">A Google-fiókjával jelentkezhet be Chromebookján</translation>
 <translation id="6069500411969514374">Munkahelyi</translation>
 <translation id="6071181508177083058">jelszó megerősítése</translation>
@@ -10087,6 +10095,7 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8319414634934645341">Bővített kulcshasználat</translation>
 <translation id="8321476692217554900">értesítések</translation>
 <translation id="8321837372750396788">Ezt a(z) <ph name="DEVICE_TYPE" /> eszközt a következő kezeli majd: <ph name="MANAGER" />.</translation>
+<translation id="8321888067342493336">Mentés képként</translation>
 <translation id="8322814362483282060">Az oldal nem férhet hozzá az Ön mikrofonjához.</translation>
 <translation id="8323167517179506834">Írjon be egy URL-t</translation>
 <translation id="8323317289166663449">A számítógépén és az összes webhelyen lévő adatainak olvasása és módosítása</translation>

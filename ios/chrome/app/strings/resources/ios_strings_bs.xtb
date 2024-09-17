@@ -80,12 +80,14 @@
 <translation id="1363028406613469049">Numera</translation>
 <translation id="1364367057792633742">Nova kartica</translation>
 <translation id="1365106417372288489">Vaš iPhone je nedavno vraćen u prethodno stanje, zbog čega vam je možda promijenjen zadani preglednik.</translation>
+<translation id="1366297852155605523">Dijeljeno sa mnom</translation>
 <translation id="136942498637440594">Možete pretraživati slike i ono što vidite.</translation>
 <translation id="1377508275003315939">Lozinke</translation>
 <translation id="1381022135873211423">{count,plural, =1{{position}. od {count} adrese}one{{position}. od {count} adrese}few{{position}. od {count} adrese}other{{position}. od {count} adresa}}</translation>
 <translation id="1383876407941801731">Traži</translation>
 <translation id="138618066238211776">Nastavite kao <ph name="USER_NAME" /></translation>
 <translation id="138692594145659985">Opcije pohranjivanja kartice</translation>
+<translation id="1396260204083880024">Prijavljeni ste kao <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Otvorite izbornik računa.</translation>
 <translation id="1397144142234474689">Sakrij historiju</translation>
 <translation id="1407135791313364759">Otvori sve</translation>
 <translation id="1408847409015257906">Dodirnite "Privatnost i sigurnost".</translation>
@@ -116,6 +118,7 @@
 <translation id="1517166097004694782">Sakrivanje "Nastavi s ovom karticom"</translation>
 <translation id="1520027731907768768">Primajte obavještenja o padu cijene za proizvode koje pratite.</translation>
 <translation id="1521774566618522728">Aktivan danas</translation>
+<translation id="1524563461097350801">Ne, hvala</translation>
 <translation id="1531038290222364269">Prikaz kartica</translation>
 <translation id="1536390784834419204">Prevedi stranicu</translation>
 <translation id="1540800554400757039">Adresa 1</translation>
@@ -331,6 +334,7 @@ Web lokacije ne mogu koristiti kolačiće da vide vašu aktivnost pregledanja na
 <translation id="2551153019974022505">Greška na računu</translation>
 <translation id="2559843230610279254">Grupa kartica, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> kartica/e.</translation>
 <translation id="2577522251608256362">Naselje</translation>
+<translation id="2579713773888829241">Dijeljeni diskovi</translation>
 <translation id="2597486707832946298">Na iPhoneu iskoristite najbolje prednosti preglednika na računaru koji poznajete i sviđa vam se.</translation>
 <translation id="260378315836159338">U gornjem dijelu ekrana dodirnite +</translation>
 <translation id="2612676031748830579">Broj kartice</translation>
@@ -488,6 +492,7 @@ Ako je primjenjivo, pogledajte uputstva pretraživača da saznate kako izbrisati
 <translation id="3435738964857648380">Sigurnost</translation>
 <translation id="3443810440409579745">Kartica je primljena.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
+<translation id="344589138074534176">Saznajte više o Google objektivu</translation>
 <translation id="345348365500626747">Pronađena je adresa</translation>
 <translation id="3464194322481586217">Praćenje cijene nije uspjelo.</translation>
 <translation id="3469117812148449995">Opcije pohranjivanja lozinke</translation>
@@ -526,6 +531,7 @@ Ako je primjenjivo, pogledajte uputstva pretraživača da saznate kako izbrisati
 <translation id="3591006724568464696">Nedavne kartice nisu dostupne</translation>
 <translation id="3595252146048399851">U <ph name="BEGIN_LINK" />postavkama<ph name="END_LINK" /> uvijek možete odabrati šta želite sinhronizirati. Google može personalizirati Pretraživanje i druge usluge na osnovu vaše historije.</translation>
 <translation id="3596414637720633074">Blokirajte kolačiće trećih strana u anonimnom načinu rada</translation>
+<translation id="3602260545951981695">Odaberite Poboljšana zaštita</translation>
 <translation id="3606746615845065096">Zatvori karticu</translation>
 <translation id="3622175633937495219">Historija pretraživanja (otkriveno: <ph name="COUNT" />)</translation>
 <translation id="3625008969091706597">Možete prevući po rubu da se vratite.</translation>
@@ -572,6 +578,7 @@ Ako je primjenjivo, pogledajte uputstva pretraživača da saznate kako izbrisati
 <translation id="3851938967634752633">Lozinke za <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> i još <ph name="NUMBER_OF_ACCOUNTS" /> račun/a će se izbrisati. Vaši računi se neće izbrisati.</translation>
 <translation id="3858860766373142691">Naziv</translation>
 <translation id="3861908220442487587">Adresa je sačuvana samo na ovom uređaju. Da je koristite na drugim uređajima, premjestite je na Google račun <ph name="USER_EMAIL" />.</translation>
+<translation id="3868495844258915202">Prikažite cijeli URL</translation>
 <translation id="3876833929577368454">Upitaj me svaki put</translation>
 <translation id="3885587018298784481">Pridružite se porodičnoj grupi</translation>
 <translation id="3888863481921783344">Ovo će se koristiti za prikazivanje potencijalnih pozvanih osoba na vaš događaj.</translation>
@@ -595,6 +602,7 @@ Ako je primjenjivo, pogledajte uputstva pretraživača da saznate kako izbrisati
 <translation id="3967327056943561740">Oznake</translation>
 <translation id="3967822245660637423">Preuzimanje je završeno</translation>
 <translation id="3982893814825393515">Prijava problema…</translation>
+<translation id="398604237578616937">Prijavljeni ste kao <ph name="USER_EMAIL" />. Otvorite izbornik računa.</translation>
 <translation id="3987993985790029246">Kopiraj link</translation>
 <translation id="3992684624889376114">O ovoj stranici</translation>
 <translation id="3994422733891749358">Odaberite koja obavještenja želite primati</translation>
@@ -665,6 +673,7 @@ Ako je primjenjivo, pogledajte uputstva pretraživača da saznate kako izbrisati
 <translation id="4304713468139749426">Upravitelj lozinki</translation>
 <translation id="4309403553630140242">Dodirnite dvaput za više informacija</translation>
 <translation id="4324735664183300693">Uključi obavještenja</translation>
+<translation id="4328843285884395590">Moj disk</translation>
 <translation id="4331177082088332784">Ovim možete upravljati u BEGIN_LINK Postavkama sadržaja END_LINK</translation>
 <translation id="4333100555184633720">Izbriši podatke pregledanja</translation>
 <translation id="4334428914252001502">Jedan nepročitani članak.</translation>
@@ -732,6 +741,7 @@ Ako je primjenjivo, pogledajte uputstva pretraživača da saznate kako izbrisati
 <translation id="4636930964841734540">Informacije</translation>
 <translation id="4642472735733036929">Praćenje cijene se zaustavilo</translation>
 <translation id="4645575059429386691">Upravlja roditelj</translation>
+<translation id="4647758699119474035">Prijavljeni ste kao <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Pogreška Google računa. Otvorite izbornik računa.</translation>
 <translation id="4650125387981512669">Nastavite kao <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4652817563047461855">Osigurajte da lozinke budu na sigurnom, saznajte ako su ugrožene i dobijte savjet o tome kako se zaštititi online. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="4658335131052370646">Sačuvaj</translation>
@@ -856,6 +866,7 @@ Ako je primjenjivo, pogledajte uputstva pretraživača da saznate kako izbrisati
 <translation id="5210365745912300556">Zatvorite karticu.</translation>
 <translation id="5211488077761630279">Dozvoliti web lokaciji "<ph name="SITE_NAME" />" da koristi <ph name="PERMISSION" />?</translation>
 <translation id="5217245356412073535">Da promijenite zadani prikaz web lokacije na prikaz za računar, idite u Postavke &gt; Postavke sadržaja</translation>
+<translation id="5217329997012062137">Kada upotrebljavate Google objektiv, snimka zaslona stranice šalje se Googleu.</translation>
 <translation id="5220945116117011963">Kreirajte događaje u kalendaru iz datuma</translation>
 <translation id="5222676887888702881">Odjava</translation>
 <translation id="5228579091201413441">Omogući sinhronizaciju</translation>
@@ -914,6 +925,7 @@ Ako je primjenjivo, pogledajte uputstva pretraživača da saznate kako izbrisati
 
 Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši uređaji moraju koristiti isti račun za iCloud.</translation>
 <translation id="5551825465462320939">Pratite vijesti, sportove i drugo na osnovu svojih interesovanja.</translation>
+<translation id="5555008247722361784">Prijavljeni ste kao <ph name="USER_EMAIL" />. Pogreška Google računa. Otvorite izbornik računa.</translation>
 <translation id="5556459405103347317">Učitaj ponovo</translation>
 <translation id="555749644339804659">Provjera lozinki…</translation>
 <translation id="5559567453458728487">Pretvorite mjerne jedinice pronađene na webu</translation>
@@ -1260,6 +1272,7 @@ U anonimnom načinu rada web lokacije ne mogu koristiti kolačiće da vide vašu
 <translation id="7026724612456523899">Uvijek prati pakete</translation>
 <translation id="7029809446516969842">Lozinke</translation>
 <translation id="7035825883570480307">Uključiti obavještenja?</translation>
+<translation id="7039345315346323556">Nedavno</translation>
 <translation id="7055240621761583113">Automatsko popunjavanje lozinke</translation>
 <translation id="7058455400288852416">Odlazak u prebacivač kartica</translation>
 <translation id="7063811929043357292">Tvojim računom upravlja roditelj.
@@ -1277,6 +1290,7 @@ U anonimnom načinu rada web lokacije ne mogu koristiti kolačiće da vide vašu
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">Kamera je nedostupna</translation>
 <translation id="7141960840225504692">Kartice će se zatvoriti i podaci o pregledanju izbrisati</translation>
+<translation id="714291438898585119">Sa zvjezdicom</translation>
 <translation id="7146301801400584641">Fajl kalendara je dostupan</translation>
 <translation id="7149893636342594995">Posljednja 24 sata</translation>
 <translation id="716059570521443369">Pretraži kopirani tekst</translation>
@@ -1331,6 +1345,7 @@ U anonimnom načinu rada web lokacije ne mogu koristiti kolačiće da vide vašu
 <translation id="7435356471928173109">Funkciju je isključio vaš administrator</translation>
 <translation id="7438481509621345350">Sada ćete vidjeti priče s web lokacije <ph name="CHANNEL_NAME" /> kada otvorite novu karticu.</translation>
 <translation id="7451023311965289370">{count,plural, =1{Oznaka je sačuvana u pregledniku "{title}"}one{Oznake su sačuvane u pregledniku "{title}"}few{Oznake su sačuvane u pregledniku "{title}"}other{Oznake su sačuvane u pregledniku "{title}"}}</translation>
+<translation id="7451404862887877229">Dodirnite Privatnost i sigurnost, a zatim Sigurno pregledavanje</translation>
 <translation id="7454057999980797137">Zemlja / Okrug</translation>
 <translation id="7458706065921255639">Personalizacija i povezivanje</translation>
 <translation id="745899714366929493">Cijeli dan</translation>
@@ -1409,6 +1424,7 @@ U anonimnom načinu rada web lokacije ne mogu koristiti kolačiće da vide vašu
 <translation id="7788868432173225918">Odbacivanje proširenog prikaza</translation>
 <translation id="7790954908631836016">Sakrij zahtjev za web lokaciju za računar</translation>
 <translation id="7791543448312431591">Dodaj</translation>
+<translation id="7801064017114765401">Računala</translation>
 <translation id="7802239711290932774">Koristite predloženu lozinku:</translation>
 <translation id="780301667611848630">Ne, hvala</translation>
 <translation id="7807060072011926525">Pruža Google</translation>
@@ -1507,7 +1523,6 @@ Web lokacije mogu koristiti kolačiće da vide vašu aktivnost pregledanja na ra
 <translation id="8173034266693057059">Dužina</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8182037667962849780">{count,plural, =1{Za web lokaciju {website_1}}=2{Za web lokacije {website_1} i {website_2}}=3{Za web lokacije {website_1} i {website_2} i još 1}one{Za web lokacije {website_1} i {website_2} i još {more_count}}few{Za web lokacije {website_1} i {website_2} i još {more_count}}other{Za web lokacije {website_1} i {website_2} i još {more_count}}}</translation>
-<translation id="8189814768485665290">Dijeljenje cijelog URL-a</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Vaši uređaji<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Dodajte lozinku</translation>
 <translation id="8202744799033457229">Prikazivanje historije</translation>
@@ -1541,6 +1556,7 @@ Web lokacije mogu koristiti kolačiće da vide vašu aktivnost pregledanja na ra
 <translation id="8349305172487531364">Traka oznaka</translation>
 <translation id="8366466717204352506">Provjera nikada nije pokrenuta</translation>
 <translation id="8368001212524806591">Praćenje cijene</translation>
+<translation id="8370406443343902172">Odlazak u Postavke…</translation>
 <translation id="8372471489238799313">{count,plural, =1{Izbriši adresu}one{Izbriši adrese}few{Izbriši adrese}other{Izbriši adrese}}</translation>
 <translation id="8378714024927312812">Ovim upravlja vaša organizacija</translation>
 <translation id="8386068868580335421">Vrati na zadano</translation>
@@ -1592,6 +1608,7 @@ Web lokacije mogu koristiti kolačiće da vide vašu aktivnost pregledanja na ra
 <translation id="8571213806525832805">Posljednje 4 sedmice</translation>
 <translation id="8577056989960190117">Automatski popunite godinu isteka <ph name="YEAR" /></translation>
 <translation id="8588404856427128947">Isključeno</translation>
+<translation id="8590286732816598906">Grupa kartica, <ph name="GROUP_TITLE" />, izbornik.</translation>
 <translation id="8593565399399144771">Ovdje možete otvoriti novu karticu.</translation>
 <translation id="8600272508328041907">Prebacite se na prevod cijele stranice</translation>
 <translation id="860043288473659153">Ime vlasnika kartice</translation>
@@ -1624,6 +1641,7 @@ Web lokacije mogu koristiti kolačiće da vide vašu aktivnost pregledanja na ra
 <translation id="8712534545803964353">Pronalaženje na stranici…</translation>
 <translation id="8712637175834984815">Razumijem</translation>
 <translation id="8722229818691036192">Računi na uređaju</translation>
+<translation id="8722649775263832315">Dodirnite ili istaknite da biste pretražili bilo što pomoću Google objektiva</translation>
 <translation id="8725066075913043281">Pokušaj ponovo</translation>
 <translation id="8728922029615312208">Zatvori sve</translation>
 <translation id="8730621377337864115">Gotovo</translation>
@@ -1728,6 +1746,7 @@ Web lokacije mogu koristiti kolačiće da vide vašu aktivnost pregledanja na ra
 <translation id="9162432979321511934">Uključite automatsko popunjavanje lozinki</translation>
 <translation id="9165320910061267720">Da primate obavještenja o padovima cijena, morate uključiti obavještenja u postavkama iOS-a.</translation>
 <translation id="9179151630575358778">Sakriva ovu stavku</translation>
+<translation id="918129721713827015">Prikaži kartice u grupi</translation>
 <translation id="9183733013282108610">Pretraživanje u anonimnom načinu rada</translation>
 <translation id="9186762474139509529">Pokreni zapisivanje</translation>
 <translation id="9191031968346938109">Dodaj u…</translation>

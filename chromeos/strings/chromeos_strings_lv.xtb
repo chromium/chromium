@@ -254,6 +254,7 @@
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2148716181193084225">Šodien</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> fotoattēli</translation>
+<translation id="2154460308960858308">Notīrīt meklēšanas vaicājumu</translation>
 <translation id="2156072344042480449">Jūsu divas jaunākās uzvednes. Varat izmantot šīs uzvednes tikai šajā lapā.</translation>
 <translation id="2157660087437850958">emocijzīmju atlasītājs</translation>
 <translation id="2157959690810728433">IEVIETOTS RINDĀ</translation>
@@ -282,7 +283,6 @@
 <translation id="2230624078793142213">Izveidot vēl</translation>
 <translation id="2236746079896696523">Tastatūras fona apgaismojuma slēdzis</translation>
 <translation id="2240366984605217732">Izkārtojuma slēdzis</translation>
-<translation id="2242381852034179222">Šo funkciju pārvalda jūsu administratori.</translation>
 <translation id="2244834438220057800">zaļa</translation>
 <translation id="225692081236532131">Aktivizācijas statuss</translation>
 <translation id="2267285889943769271">Pievienot ekrānuzņēmumu</translation>
@@ -500,6 +500,7 @@
 <translation id="3557205324756024651">Lokālā identitāte (neobligāti)</translation>
 <translation id="3565064564551103223">Atļautās IP adreses</translation>
 <translation id="3569407787324516067">Ekrānsaudzētājs</translation>
+<translation id="3571184524500629183">Aizvērt meklēšanas lodziņu</translation>
 <translation id="3577473026931028326">Radās kļūda. Mēģiniet vēlreiz.</translation>
 <translation id="357889014807611375">Maksas Wi-Fi tīkls</translation>
 <translation id="3583278742022654445">Vājš signāls. Pārvietojieties tuvāk Wi-Fi signāla avotam.</translation>
@@ -945,6 +946,7 @@
 <translation id="5860033963881614850">Izsl.</translation>
 <translation id="5860491529813859533">Ieslēgt</translation>
 <translation id="5876385649737594562">Ieslēdziet, lai atlasītu opcijas</translation>
+<translation id="5877503382465267833">Pārtraukt ieraksta “<ph name="RECORDING_NAME" />” atskaņošanu</translation>
 <translation id="588258955323874662">Pilnekrāna</translation>
 <translation id="5893975327266416093">Lai piešķirtu, pieskarieties tastatūras taustiņam</translation>
 <translation id="5895138241574237353">Restartēt</translation>
@@ -1162,6 +1164,7 @@
 <translation id="6910312834584889076">Skenera vāks ir atvērts. Aizveriet vāku un mēģiniet vēlreiz.</translation>
 <translation id="6910845598686542904">aprēķinātu ierakstā noteikto balsu modeļus;</translation>
 <translation id="6911383237894364323">Nevar izveidot savienojumu ar multivides satura serveriem.</translation>
+<translation id="6927968682840110570">Ieraksta nosaukums</translation>
 <translation id="6930242544192836755">Ilgums</translation>
 <translation id="6930597342185648547">Par fonu</translation>
 <translation id="6939667434404433010">Meklēt ieraksta nosaukumu</translation>
@@ -1270,6 +1273,7 @@
 <translation id="7378170410161264436">Lietotnē Ierakstītājs var izveidot transkripcijas ierakstiem, kuros ir dzirdama runa.
 Lai varētu izveidot šādas transkripcijas, lejupielādējiet transkribēšanas modeli (līdz 100 MB).</translation>
 <translation id="7384004438856720753">pils</translation>
+<translation id="7388345524791662148">Citas opcijas ierakstam “<ph name="RECORDING_NAME" />”</translation>
 <translation id="7388959671917308825">Iebūvētais skārienpaliktnis</translation>
 <translation id="7397270852490618635">Izslēgt gaišo motīvu</translation>
 <translation id="7401543881546089382">Dzēst saīsni</translation>
@@ -1291,6 +1295,7 @@ Lai varētu izveidot šādas transkripcijas, lejupielādējiet transkribēšanas
 <translation id="7513770521371759388">apakšā</translation>
 <translation id="7514365320538308">Lejupielādēt</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7519481256236810334">Atskaņot ierakstu “<ph name="RECORDING_NAME" />”</translation>
 <translation id="7525067979554623046">Izveidot</translation>
 <translation id="7528507600602050979">Palīdzības saturs nav pieejams</translation>
 <translation id="7535791657097741517">Ieslēgt gaišo motīvu</translation>
@@ -1367,6 +1372,7 @@ Lai varētu izveidot šādas transkripcijas, lejupielādējiet transkribēšanas
 <translation id="7897043345768902965">gājēju celiņš</translation>
 <translation id="7902285181767404769">Izslēdziet paziņojumu skaņu ierakstīšanas laikā.</translation>
 <translation id="7903695460270716054">Izvēlēties atlasītos mākslas darbus un attēlus</translation>
+<translation id="7912005977894000746">Atgriezties galvenajā lapā</translation>
 <translation id="7915220255123750251">Pārvaldiet tīkla APN iestatījumus. APN izveido savienojumu starp mobilo tīklu un internetu.</translation>
 <translation id="7936303884198020182">Netika atrasts neviens nosaukumu serveris</translation>
 <translation id="7942349550061667556">Sarkana</translation>

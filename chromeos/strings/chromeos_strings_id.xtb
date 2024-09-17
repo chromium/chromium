@@ -35,6 +35,7 @@
 <translation id="1155154308031262006">Masukkan perintah</translation>
 <translation id="115705039208660697">nanas</translation>
 <translation id="1164939766849482256">Screensaver Fajar ke petang</translation>
+<translation id="1166688493741195933">Gagal membuat nama rekaman</translation>
 <translation id="1167755866710282443">Buka menu untuk menyesuaikan tombol. Tarik menu untuk memindahkan.</translation>
 <translation id="1171349345463658120">laguna berpasir</translation>
 <translation id="1173894706177603556">Ganti nama</translation>
@@ -284,7 +285,6 @@
 <translation id="2230624078793142213">Buat lagi</translation>
 <translation id="2236746079896696523">Tombol lampu latar keyboard</translation>
 <translation id="2240366984605217732">Beralih tata letak</translation>
-<translation id="2242381852034179222">Fitur ini dikelola oleh administrator Anda</translation>
 <translation id="2244834438220057800">hijau</translation>
 <translation id="225692081236532131">Status aktivasi</translation>
 <translation id="2267285889943769271">Tambahkan screenshot</translation>
@@ -494,6 +494,7 @@
 <translation id="3502426834823382181">lihat semua aplikasi</translation>
 <translation id="3510890413042482857">Kirim <ph name="BEGIN_LINK1" />data trace performa<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Update Chrome OS</translation>
+<translation id="3522508178835057262">Untuk saat ini, transkrip yang lebih panjang dari <ph name="MAX_WORD_LENGTH" /> kata tidak didukung</translation>
 <translation id="3527036260304016759">Gagal - Error tidak diketahui</translation>
 <translation id="353214771040290298">Selesai mengedit</translation>
 <translation id="3532980081107202182">Sekitar <ph name="MIN_REMAINING" /> menit lagi</translation>
@@ -711,6 +712,7 @@
 <translation id="4602266091140407479">Mikrofon</translation>
 <translation id="4607282946861182308">Tidak dapat membuat gambar ini. Coba perintah lain.</translation>
 <translation id="4609350030397390689">Kurangi kecerahan keyboard</translation>
+<translation id="4623061655523261501">Nama rekaman berhasil dibuat</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> dari <ph name="TOTAL_PAGE_NUMBER" />. Tekan enter untuk membatalkan tugas pencetakan.</translation>
 <translation id="463791356324567266">Membatalkan pemindaian ...</translation>
 <translation id="4644611440022666152">Aktifkan dan download</translation>
@@ -1213,6 +1215,7 @@
 <translation id="708426984172631313">DIHENTIKAN</translation>
 <translation id="7086168019478250425">pantai bercahaya</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="7086916854357021265">Membuat nama rekaman</translation>
 <translation id="7097908713073775559">warna-warni</translation>
 <translation id="710028965487274708">Gagal - Otorisasi Gagal</translation>
 <translation id="7101959270679078188">Buka kunci <ph name="DEVICE_NAME" /> untuk melanjutkan proses update</translation>

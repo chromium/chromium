@@ -116,6 +116,7 @@
 <translation id="1517166097004694782">Fshih "Vazhdo me këtë skedë"</translation>
 <translation id="1520027731907768768">Merr sinjalizime për uljet e çmimeve për produktet që monitoron.</translation>
 <translation id="1521774566618522728">Aktiv sot</translation>
+<translation id="1524563461097350801">Jo, faleminderit</translation>
 <translation id="1531038290222364269">Shfaq skedat</translation>
 <translation id="1536390784834419204">Përkthe faqen</translation>
 <translation id="1540800554400757039">Adresa 1</translation>
@@ -1507,7 +1508,6 @@ Sajtet mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit 
 <translation id="8173034266693057059">Kohëzgjatja</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8182037667962849780">{count,plural, =1{Për {website_1}}=2{Për {website_1}, {website_2}}=3{Për {website_1}, {website_2} dhe 1 tjetër}other{Për {website_1}, {website_2} dhe {more_count} të tjerë}}</translation>
-<translation id="8189814768485665290">Ndaj URL-në e plotë</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Pajisjet e tua<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Shto fjalëkalim</translation>
 <translation id="8202744799033457229">Shfaq historikun</translation>
@@ -1541,6 +1541,7 @@ Sajtet mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit 
 <translation id="8349305172487531364">Shiriti i faqeshënuesve</translation>
 <translation id="8366466717204352506">Kontrolli nuk është ekzekutuar asnjëherë</translation>
 <translation id="8368001212524806591">Monitoro çmimin</translation>
+<translation id="8370406443343902172">Shko te "Cilësimet"...</translation>
 <translation id="8372471489238799313">{count,plural, =1{Fshi adresën}other{Fshi adresat}}</translation>
 <translation id="8378714024927312812">Menaxhohet nga organizata jote</translation>
 <translation id="8386068868580335421">Rivendos</translation>
@@ -1603,6 +1604,7 @@ Sajtet mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit 
 <translation id="8637431369725868556">Merr mbrojtjen nga sajtet e rrezikshme.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Asnjë fjalëkalim i komprometuar}=1{{COUNT} fjalëkalim i komprometuar}other{{COUNT} fjalëkalime të komprometuara}}</translation>
 <translation id="8640575194957831802">E fundit e hapur</translation>
+<translation id="8647280737650867362">Monitorimi i çmimeve nuk mund të anulohej.</translation>
 <translation id="8654802032646794042">Anulo</translation>
 <translation id="8660600697590740984">Imazhi i "Lentes" që kopjove</translation>
 <translation id="866266761389616183">Oh, mos!</translation>

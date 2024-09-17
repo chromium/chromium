@@ -677,6 +677,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="2212735316055980242">Sera haikupatikana</translation>
 <translation id="2213606439339815911">Inachukua viingizo...</translation>
 <translation id="2213612003795704869">Ukurasa umechapishwa</translation>
+<translation id="2215368073167343359">Kujaza kiotomatiki ukitumia Google</translation>
 <translation id="2215539479425228550">Kukwea na Kupanda Milima</translation>
 <translation id="2215727959747642672">Kubadilisha faili</translation>
 <translation id="2215963164070968490">Mbwa</translation>
@@ -709,6 +710,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="2262243747453050782">Hitilfau ya HTTP</translation>
 <translation id="2265192657948645752">Kazi za Kuuza Bidhaa za Rejareja</translation>
 <translation id="2265356434276802347">Hupaswi kuweka watoa huduma wa utafutaji wanaoangaziwa zaidi ya <ph name="MAX_ITEMS_LIMIT" /> katika sera hii.</translation>
+<translation id="2266175583972138136">Sheria na Masharti yanatumika kwa manufaa ya kadi</translation>
 <translation id="2267047181501709434">Inathibitisha utambulisho wako...</translation>
 <translation id="2268044343513325586">Chuja</translation>
 <translation id="2268966938956566076">Pakia baada ya dakika <ph name="MINUTES" /></translation>
@@ -1797,6 +1799,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="4269264543938335308">Mavazi ya Kuogelea</translation>
 <translation id="4269599248168651462">Cheti hiki cha seva kinatolewa kwa jina lisilo maalum.</translation>
 <translation id="4270541775497538019">Tupio la kutoa la printa la sita</translation>
+<translation id="4271652479722040953">Viendelezi vinapowekwa kwenye Chrome, data inayofaa inayohusu viendelezi hivi hutumwa kwa washirika wengine ili ifanyiwe uchambuzi na inaweza kuonwa na msimamizi wako. Data hii inajumuisha maelezo kuhusu viendelezi kama vile jina, muda wa kukiweka, chanzo cha kukiweka pamoja na shughuli zinazohusiana na viendelezi hivi (kama vile kubadilisha vichupo, kuwasiliana na tovuti au kufikia vidakuzi). Data hii inakusanywa kwa viendelezi vilivyowekwa kutoka Duka la Chrome kwenye Wavuti na pia viendelezi kutoka nje ya duka.</translation>
 <translation id="4275830172053184480">Washa upya kifaa chako</translation>
 <translation id="4276974990916607331">Hapana</translation>
 <translation id="4277028893293644418">Badilisha nenosiri</translation>
@@ -1878,6 +1881,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="4406896451731180161">matokeo ya utafutaji</translation>
 <translation id="4408413947728134509">Vidakuzi <ph name="NUM_COOKIES" /></translation>
 <translation id="4412074349188076601">Uwekaji mipangilio huu umetiwa alama kuwa unaweza kusakinishwa lakini hakuna picha iliyotolewa kwa ajili ya usanifu huu, kwa hivyo hauwezi kusakinishwa.</translation>
+<translation id="4414452699610169758">Tumia Kidhibiti cha Manenosiri cha Google na kipengele cha Kujaza Kiotomatiki cha Chrome kujaza na kuhifadhi manenosiri, njia za kulipa na anwani</translation>
 <translation id="4414515549596849729">data ya tovuti na vidakuzi</translation>
 <translation id="4415156962929755728">Plastiki (Iliyong'aa Zaidi)</translation>
 <translation id="4415426530740016218">Anwani ya Mahali pa Kuchukulia Bidhaa</translation>
@@ -3378,6 +3382,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="7232352818707016189">Vitendo zaidi vya jedwali la Ulinganifu</translation>
 <translation id="7233592378249864828">Laha la uthibitishaji wa kuchapisha</translation>
 <translation id="7234112195906418665">Safari na Usafirishaji</translation>
+<translation id="7234585564776614047">Kujaza kiotomatiki ukitumia huduma nyingine</translation>
 <translation id="7236417832106250253">Asilimia <ph name="PROGRESS_PERCENT" /> imekamilika | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
 <translation id="7237166092326447040">Zawadi na Bidhaa za Tukio Maalum</translation>
 <translation id="7237454422623102448">Mipangilio ya Mfumo</translation>
@@ -4036,6 +4041,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="8409413588194360210">vidhibiti vya malipo</translation>
 <translation id="8412145213513410671">Mivurugo ( <ph name="CRASH_COUNT" /> )</translation>
 <translation id="8412392972487953978">Lazima uingize kaulisiri ile ile mara mbili.</translation>
+<translation id="8414322570408428950">Tukio la kiendelezi linapotokea</translation>
 <translation id="8416694386774425977">Mipangilio ya mtandao si sahihi na haikuweza kupakiwa. Maelezo ya ziada: <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">Maikrofoni inaruhusiwa wakati huu</translation>
 <translation id="8421158157346464398">Maelezo ya wasifu wa kazini (kama vile jina la mtumiaji kwenye wasifu wako wa kazini)</translation>
@@ -4286,6 +4292,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="8891031436559779793">Utaarifiwa iwapo bei itapungua katika tovuti yoyote.</translation>
 <translation id="8891727572606052622">Modi batili ya proksi.</translation>
 <translation id="8894794286471754040">Upande wa pembe ndefu kwanza</translation>
+<translation id="8895334001368918465">Ili utumie huduma nyingine ya kujaza kiotomatiki katika Chrome, iwashe hapa na katika mipangilio ya Android</translation>
 <translation id="8897428486789851669">Kuogelea</translation>
 <translation id="8899807382908246773">Matangazo yanayokatiza matumizi</translation>
 <translation id="8903921497873541725">Kuza karibu</translation>

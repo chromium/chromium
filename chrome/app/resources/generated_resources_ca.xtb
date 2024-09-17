@@ -497,6 +497,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1355088139103479645">Vols suprimir totes les dades?</translation>
 <translation id="1356376170199999104">Concedit: <ph name="PERMISSION_DETAILS" />. Activa el micròfon amb l'interruptor físic.</translation>
 <translation id="1356959069439783953">Les pestanyes inactives tenen un aspecte nou</translation>
+<translation id="1357766361161708728">Vols tancar les pestanyes sense utilitzar?</translation>
 <translation id="1358741672408003399">Ortografia i gramàtica</translation>
 <translation id="1359923111303110318">El dispositiu es pot desbloquejar amb Smart Lock. Prem Retorn per desbloquejar-lo.</translation>
 <translation id="1361164813881551742">Afegeix manualment</translation>
@@ -1108,7 +1109,6 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1780273119488802839">S'estan important les adreces d'interès...</translation>
 <translation id="1780572199786401845">Informa de contingut ofensiu o no segur.</translation>
 <translation id="178092663238929451">Configura Compartició Nearby tant per rebre fitxers de les persones que t'envolten com per enviar-los-en</translation>
-<translation id="1781164264587898620">Aplica la cancel·lació de soroll i les millores d'àudio.</translation>
 <translation id="1781291988450150470">PIN actual</translation>
 <translation id="1781502536226964113">Obre la pàgina Pestanya nova</translation>
 <translation id="1781553166608855614">Idioma parlat</translation>
@@ -2554,6 +2554,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2787354132612937472">—</translation>
 <translation id="2788135150614412178">+</translation>
 <translation id="2789486458103222910">D'acord</translation>
+<translation id="2790750268015892264">Les aplicacions web aïllades no poden controlar els lectors de targetes intel·ligents. Aquestes aplicacions no tindran accés a cap targeta intel·ligent.</translation>
 <translation id="2791529110887957050">Suprimeix Linux</translation>
 <translation id="2791952154587244007">S'ha produït un error. L'aplicació de quiosc no es podrà iniciar automàticament en aquest dispositiu.</translation>
 <translation id="2792290659606763004">Vols suprimir les aplicacions per a Android?</translation>
@@ -2585,6 +2586,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2806372837663997957">El dispositiu amb què proves de compartir el fitxer no ha acceptat</translation>
 <translation id="2806891468525657116">Aquesta drecera ja existeix</translation>
 <translation id="2807517655263062534">Aquí es mostren els fitxers baixats</translation>
+<translation id="2808481877345177494">Inicia la sessió per separar de manera segura la navegació laboral de la personal. Augmenta la teva productivitat mentre protegeixes les dades sensibles de l'empresa.</translation>
 <translation id="2811205483104563968">Comptes</translation>
 <translation id="2812049959647166806">Els connectors Thunderbolt no s'admeten</translation>
 <translation id="2812171980080389735">Xarxes i contrasenyes desades perquè puguis connectar-te a l'instant</translation>
@@ -3430,6 +3432,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3450157232394774192">Percentatge d'ocupació de l'estat d'inactivitat</translation>
 <translation id="3450180775417907283"><ph name="MANAGER" /> requereix que et connectis a la Wi-Fi ara i que baixis una actualització.</translation>
 <translation id="345078987193237421">Permet l'accés a la càmera per a les aplicacions, per als llocs web que tenen permís per accedir a la càmera i per als serveis del sistema</translation>
+<translation id="3451362021220965191">Les aplicacions web aïllades controlen els lectors de targetes intel·ligents per obtenir accés a les targetes intel·ligents que s'hi insereixen o se'ls mostren. Les targetes intel·ligents solen contenir identitats que s'utilitzen per autenticar o autoritzar operacions, iniciar la sessió en serveis, etc.</translation>
 <translation id="3452999110156026232">Accés parental</translation>
 <translation id="3453082738208775226">Vols netejar l'emmagatzematge sense connexió?</translation>
 <translation id="3453597230179205517">L'accés a la ubicació està bloquejat</translation>
@@ -3992,6 +3995,7 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador i d
 <translation id="3828953470056652895">He llegit i accepto les <ph name="BEGIN_LINK1" />condicions del servei de Google<ph name="END_LINK1" />, les <ph name="BEGIN_LINK2" />condicions del servei addicionals de Chrome i Chrome OS<ph name="END_LINK2" /> i les <ph name="BEGIN_LINK3" />condicions del servei de Play<ph name="END_LINK3" />.</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> - Ús elevat de memòria - <ph name="MEMORY_VALUE" /></translation>
 <translation id="3829765597456725595">Compartició de fitxers d'SMB</translation>
+<translation id="38298897782945211">Les aplicacions web aïllades segueixen aquesta opció de configuració automàticament.</translation>
 <translation id="3830470485672984938">Utilitza una altra clau d'accés</translation>
 <translation id="3830654885961023588">{NUM_EXTENSIONS,plural, =1{L'administrador ha tornat a activar 1 extensió potencialment perjudicial}other{L'administrador ha tornat a activar {NUM_EXTENSIONS} extensions potencialment perjudicials}}</translation>
 <translation id="3834728400518755610">El canvi en la configuració del micròfon requereix apagar Linux. Apaga'l per continuar.</translation>
@@ -4005,6 +4009,7 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador i d
 <translation id="3839516600093027468">No permetis mai que <ph name="HOST" /> vegi el porta-retalls</translation>
 <translation id="3841282988425489367">No es pot configurar Steam per a Chromebook (beta)</translation>
 <translation id="3841319830220785495">Veu natural predeterminada</translation>
+<translation id="3841356782900714251">Lectors de targetes intel·ligents</translation>
 <translation id="3841964634449506551">La contrasenya no és vàlida</translation>
 <translation id="3842552989725514455">Tipus de lletra Serif</translation>
 <translation id="3843464315703645664">Inclòs internament a la llista d'accés permès</translation>
@@ -5713,6 +5718,7 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="5120886753782992638">Fes clic aquí per visitar <ph name="APPROVED_URL" /></translation>
 <translation id="5121052518313988218">El sistema operatiu del teu contenidor de Linux ja no s'admet. Deixarà de rebre actualitzacions de seguretat i correccions d'errors, i pot ser que les funcions actuals deixin de funcionar de manera inesperada. Actualitza'l a la versió més recent per continuar utilitzant Linux.</translation>
 <translation id="5121130586824819730">El vostre disc dur és ple. Deseu-ho en una altra ubicació o allibereu espai del disc dur.</translation>
+<translation id="5121803000325086087">Les aplicacions web aïllades poden sol·licitar controlar els lectors de targetes intel·ligents. Les aplicacions obtindran accés a les targetes intel·ligents que es presentin als lectors sota el seu control.</translation>
 <translation id="5123433949759960244">Pilota de bàsquet</translation>
 <translation id="5125714798187802869">Activa</translation>
 <translation id="5125751979347152379">URL no vàlid.</translation>
@@ -6548,6 +6554,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="5750288053043553775">0</translation>
 <translation id="5751345516399502412">Comprova la preparació de la compartició de xarxa</translation>
 <translation id="5753570386948603678">Suprimeix de l'historial</translation>
+<translation id="5753652925946671505">Aquestes pestanyes no s'han utilitzat durant <ph name="COUNT" /> dies o més.</translation>
 <translation id="5756163054456765343">C&amp;entre d'ajuda</translation>
 <translation id="5757187557809630523">pista següent</translation>
 <translation id="5758631781033351321">Trobaràs la llista de lectura aquí</translation>
@@ -6970,6 +6977,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6064764629679333574">Millora la qualitat del so del micròfon Bluetooth augmentant a alta resolució l'àudio de baixa resolució.</translation>
 <translation id="6065289257230303064">Atributs del directori del subjecte del certificat</translation>
 <translation id="6066794465984119824">La funció resum de la imatge no està definida</translation>
+<translation id="6069027071882229820">Copia com a imatge</translation>
 <translation id="6069464830445383022">El Compte de Google és el teu inici de sessió al Chromebook</translation>
 <translation id="6069500411969514374">Treball</translation>
 <translation id="6071181508177083058">confirmeu la contrasenya</translation>
@@ -10071,6 +10079,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8319414634934645341">Ús ampliat de claus</translation>
 <translation id="8321476692217554900">notificacions</translation>
 <translation id="8321837372750396788">Aquest dispositiu <ph name="DEVICE_TYPE" /> estarà gestionat per <ph name="MANAGER" />.</translation>
+<translation id="8321888067342493336">Desa com a imatge</translation>
 <translation id="8322814362483282060">Aquesta pàgina no té permís per accedir al micròfon.</translation>
 <translation id="8323167517179506834">Escriviu l'URL</translation>
 <translation id="8323317289166663449">Llegir i canviar totes les dades de l'ordinador i de tots els llocs web</translation>

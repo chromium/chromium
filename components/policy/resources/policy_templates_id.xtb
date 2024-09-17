@@ -1172,13 +1172,6 @@ Kebijakan ini tidak akan berpengaruh jika opsi untuk menyimpan data penjelajahan
 
       Kebijakan ini tidak digunakan lagi. Sebagai gantinya, gunakan <ph name="DEVICE_USER_ALLOWLIST_POLICY_NAME" />.
       </translation>
-<translation id="1825583118566970564">Mengontrol penginstalan ekstensi eksternal.
-
-Jika kebijakan ini disetel ke Aktif, ekstensi eksternal tidak akan dapat diinstal.
-
-Jika kebijakan ini disetel ke Nonaktif atau tidak disetel, ekstensi eksternal akan dapat diinstal.
-
-Ekstensi eksternal dan penginstalannya didokumentasikan di https://developer.chrome.com/apps/external_extensions.</translation>
 <translation id="1827523283178827583">Gunakan server proxy tetap</translation>
 <translation id="1829117241432374848">Akun terkelola harus berupa akun utama yang tidak memiliki akun sekunder dan pengguna dapat mengimpor data penjelajahan yang ada pada saat pembuatannya</translation>
 <translation id="1829839214911753838">Jika kebijakan disetel ke Aktif, host bantuan jarak jauh akan berjalan dalam proses dengan izin <ph name="UIACCESS_PERMISSION_NAME" />. Ini memungkinkan pengguna jarak jauh berinteraksi dengan jendela administrator di desktop pengguna lokal.
@@ -3066,6 +3059,13 @@ Jika kebijakan tidak disetel, JavaScript akan diizinkan, tetapi pengguna dapat m
 
       Jika kebijakan tidak disetel, <ph name="PRODUCT_NAME" /> akan memuat semua host pesan native yang terinstal.</translation>
 <translation id="3211426942294667684">Setelan login browser</translation>
+<translation id="3213872023700948990">Kebijakan ini menyediakan pilihan penonaktifan sementara untuk perilaku scroller baru yang dapat difokuskan keyboard.
+
+Jika kebijakan ini disetel ke Aktif atau tidak disetel, scroller tanpa turunan yang dapat difokuskan secara default dapat difokuskan oleh keyboard.
+
+Jika kebijakan ini disetel ke Nonaktif, scroller tidak akan dapat difokuskan keyboard secara default.
+
+Kebijakan ini adalah solusi sementara, dan akan dihapus di M135.</translation>
 <translation id="3217774577897351942"><ph name="OFFSET_PARENT" /> API diubah di <ph name="PRODUCT_NAME" /> untuk mematuhi perubahan yang telah dibuat di <ph name="FIREFOX_PRODUCT_NAME" /> dan <ph name="SAFARI_PRODUCT_NAME" />. Kebijakan ini mengembalikan perilaku lama hingga M120.
 
 Perilaku baru dapat menyebabkan error pada beberapa situs khusus <ph name="PRODUCT_NAME" /> yang menggunakan <ph name="OFFSET_PARENT" />, <ph name="OFFSET_TOP" />, atau <ph name="OFFSET_LEFT" /> bersama Shadow DOM.
@@ -7603,6 +7603,9 @@ CATATAN: Perilaku default bagi perangkat konsumen dan perusahaan berbeda: P2P ak
           Cara yang direkomendasikan untuk mengunci layar saat tidak ada aktivitas adalah dengan mengaktifkan penguncian layar selama penangguhan dan menangguhkan <ph name="PRODUCT_OS_NAME" /> setelah penundaan waktu tidak ada aktivitas. Kebijakan ini sebaiknya hanya digunakan jika penguncian layar terjadi pada waktu yang jauh lebih awal daripada penangguhan, atau saat penangguhan pada waktu tidak ada aktivitas tidak diinginkan sama sekali.
 
           Nilai kebijakan harus ditentukan dalam milidetik. Nilai dikunci agar kurang dari penundaan waktu tidak ada aktivitas.</translation>
+<translation id="6496139622896320246">Jika kebijakan ini disetel ke Aktif, <ph name="PRODUCT_OS_NAME" /> akan otomatis menyimpan kredensial Wi-Fi kios yang aktif di tingkat perangkat: Wi-Fi yang aktif dapat digunakan oleh aplikasi kios atau pengguna lain di perangkat.
+Jika kebijakan ini tidak disetel atau disetel ke Nonaktif, kredensial WiFi aktif kios akan disimpan di tingkat kios: WiFi yang dikonfigurasi di aplikasi kios hanya dapat digunakan di aplikasi kios yang sama.
+Kebijakan ini tidak disarankan dan harus digunakan jika tidak ada opsi lain yang tersedia (misalnya, kebijakan OpenNetworkConfiguration).</translation>
 <translation id="6497085755801788141">Gunakan pemverifikasi sertifikat bawaan</translation>
 <translation id="6499579502664610993">Mengganti Set Situs Terkait.</translation>
 <translation id="6504720469162323184">Jika kebijakan disetel, jumlah waktu dalam milidetik tanpa aktivitas pengguna sebelum login otomatis ke akun lokal perangkat akan ditetapkan sebagaimana ditentukan oleh kebijakan <ph name="DEVICE_LOCAL_ACCOUNT_AUTO_LOGIN_ID_POLICY_NAME" />.

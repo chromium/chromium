@@ -498,6 +498,7 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1355088139103479645">Eyða öllum gögnum?</translation>
 <translation id="1356376170199999104">Leyft – <ph name="PERMISSION_DETAILS" />. Kveiktu á hljóðnemanum með rofanum.</translation>
 <translation id="1356959069439783953">Óvirkir flipar fá nýtt útlit</translation>
+<translation id="1357766361161708728">Loka óvirkum flipum?</translation>
 <translation id="1358741672408003399">Stafsetning og málfræði</translation>
 <translation id="1359923111303110318">Hægt er að taka tækið þitt úr lás með Smart Lock. Ýttu á Enter til að opna.</translation>
 <translation id="1361164813881551742">Bæta við handvirkt</translation>
@@ -1118,7 +1119,6 @@ Heimildir sem þú hefur þegar veitt forritum kunna að gilda á þessum reikni
 <translation id="1780273119488802839">Flytur bókamerki inn...</translation>
 <translation id="1780572199786401845">Tilkynna móðgandi/óöruggt.</translation>
 <translation id="178092663238929451">Settu upp nærdeilingu til að móttaka skrár frá og senda skrár til fólks í kringum þig</translation>
-<translation id="1781164264587898620">Felur í sér hávaðavörn og betri hljómgæði</translation>
 <translation id="1781291988450150470">Núverandi PIN-númer</translation>
 <translation id="1781502536226964113">Opna síðu nýrra flipa</translation>
 <translation id="1781553166608855614">Talað tungumál</translation>
@@ -2568,6 +2568,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2787354132612937472">—</translation>
 <translation id="2788135150614412178">+</translation>
 <translation id="2789486458103222910">Í lagi</translation>
+<translation id="2790750268015892264">Einangruð vefforrit geta ekki stjórnað snjallkortalesurum. Forrit fá ekki aðgang að snjallkortum.</translation>
 <translation id="2791529110887957050">Fjarlægja Linux</translation>
 <translation id="2791952154587244007">Villa kom upp. Sjálfsalaforrit mun ekki geta ræst sig sjálfkrafa á þessu tæki.</translation>
 <translation id="2792290659606763004">Fjarlægja Android forrit?</translation>
@@ -2599,6 +2600,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2806372837663997957">Tækið sem þú reynir að deila með samþykkti það ekki</translation>
 <translation id="2806891468525657116">Flýtileið er þegar til</translation>
 <translation id="2807517655263062534">Skrár sem þú hleður niður birtast hér</translation>
+<translation id="2808481877345177494">Skráðu þig inn til að aðskilja persónulega vefskoðun og vefskoðun fyrir vinnu á öruggan hátt. Auktu afköst á sama tíma og þú verndar viðkvæm gögn fyrirtækisins þíns.</translation>
 <translation id="2811205483104563968">Reikningar</translation>
 <translation id="2812049959647166806">Ekki er stuðningur við Thunderbolt-tengi</translation>
 <translation id="2812171980080389735">Vistuð net og aðgangsorð svo þú getir tengst samstundis</translation>
@@ -3446,6 +3448,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3450157232394774192">Nýtingarhlutfall biðstöðu</translation>
 <translation id="3450180775417907283"><ph name="MANAGER" /> fer fram á að þú tengist Wi-Fi núna og sækir uppfærslu.</translation>
 <translation id="345078987193237421">Þetta veitir forritum, vefsvæðum með myndavélarheimild og kerfisþjónustu aðgang að myndavélinni</translation>
+<translation id="3451362021220965191">Einangruð vefforrit stjórna snjallkortalesurum til að fá aðgang að snjallkortum sem eru sett í eða haldið upp að þeim. Snjallkort innihalda iðulega auðkennisupplýsingar sem notaðar eru til að auðkenna eða heimila aðgerðir, skrá þig inn í þjónustur og fleira.</translation>
 <translation id="3452999110156026232">Foreldraaðgangur</translation>
 <translation id="3453082738208775226">Hreinsa til í geymslurými án nettengingar?</translation>
 <translation id="3453597230179205517">Lokað er fyrir aðgang að staðsetningu</translation>
@@ -4008,6 +4011,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3828953470056652895">Ég hef lesið og samþykki <ph name="BEGIN_LINK1" />þjónustuskilmála Google<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />viðbótarskilmála Chrome og ChromeOS<ph name="END_LINK2" /> og <ph name="BEGIN_LINK3" />þjónustuskilmála Play<ph name="END_LINK3" />.</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> - Mikil minnisnotkun - <ph name="MEMORY_VALUE" /></translation>
 <translation id="3829765597456725595">Skráageymsla lítilla og meðalstórra fyrirtækja</translation>
+<translation id="38298897782945211">Einangruð vefforrit fylgja þessari stillingu sjálfkrafa.</translation>
 <translation id="3830470485672984938">Nota annan aðgangslykil</translation>
 <translation id="3830654885961023588">{NUM_EXTENSIONS,plural, =1{Kerfisstjórinn þinn virkjaði aftur 1 viðbót sem er hugsanlega hættuleg}one{Kerfisstjórinn þinn virkjaði aftur {NUM_EXTENSIONS} viðbót sem eru hugsanlega hættuleg}other{Kerfisstjórinn þinn virkjaði aftur {NUM_EXTENSIONS} viðbætur sem eru hugsanlega hættulegar}}</translation>
 <translation id="3834728400518755610">Breytingin á hljóðnemastillingu krefst þess að slökkt sé á Linux. Slökktu á Linux til að halda áfram.</translation>
@@ -4021,6 +4025,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3839516600093027468">Koma alltaf í veg fyrir að <ph name="HOST" /> sjái klippiborðið</translation>
 <translation id="3841282988425489367">Ekki er hægt að setja upp Steam fyrir Chromebook (beta)</translation>
 <translation id="3841319830220785495">Sjálfgefin venjuleg rödd</translation>
+<translation id="3841356782900714251">Snjallkortalesarar</translation>
 <translation id="3841964634449506551">Rangt aðgangsorð</translation>
 <translation id="3842552989725514455">Serif-letur</translation>
 <translation id="3843464315703645664">Innri hvítur listi</translation>
@@ -5731,6 +5736,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5120886753782992638">Smelltu hér til að opna <ph name="APPROVED_URL" /></translation>
 <translation id="5121052518313988218">Stýrikerfi Linux-geymisins er ekki lengur stutt. Stýrikerfið fær ekki lengur öryggisuppfærslur og villuleiðréttingar og eiginleikar sem virka núna kunna óvænt að bila. Uppfærðu í nýjustu útgáfuna til að halda áfram að nota Linux.</translation>
 <translation id="5121130586824819730">Harði diskurinn er fullur. Vistaðu á öðrum stað eða búðu til pláss á harða diskinum.</translation>
+<translation id="5121803000325086087">Einangruð vefforrit geta beðið um að stjórna snjallkortalesurum. Forrit fá aðgang að snjallkortum sem haldið er upp að lesurum sem þau stjórna.</translation>
 <translation id="5123433949759960244">Körfubolti</translation>
 <translation id="5125714798187802869">Virkja</translation>
 <translation id="5125751979347152379">Ógild vefslóð.</translation>
@@ -6567,6 +6573,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="5750288053043553775">0</translation>
 <translation id="5751345516399502412">Athuga stöðu tjóðrunar</translation>
 <translation id="5753570386948603678">Eyða úr ferli</translation>
+<translation id="5753652925946671505">Þessir flipar hafa verið óvirkir í <ph name="COUNT" /> daga eða lengur.</translation>
 <translation id="5756163054456765343">Hjálparmiðstöð</translation>
 <translation id="5757187557809630523">næsta lag</translation>
 <translation id="5758631781033351321">Þú finnur leslistann þinn hér</translation>
@@ -6990,6 +6997,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="6064764629679333574">Auktu hljómgæði Bluetooth-hljóðnemans með því að skipta úr lágri upplausn í háa upplausn.</translation>
 <translation id="6065289257230303064">Skráasafnseigindir vottorðsviðfangs</translation>
 <translation id="6066794465984119824">Tæti myndar er ekki stillt</translation>
+<translation id="6069027071882229820">Afrita sem mynd</translation>
 <translation id="6069464830445383022">Google reikningurinn þinn er notaður fyrir innskráningu á Chromebook</translation>
 <translation id="6069500411969514374">Vinna</translation>
 <translation id="6071181508177083058">staðfestu aðgangsorð</translation>
@@ -10090,6 +10098,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8319414634934645341">Útvíkkuð lyklanotkun</translation>
 <translation id="8321476692217554900">tilkynningar</translation>
 <translation id="8321837372750396788"><ph name="MANAGER" /> mun hafa umsjón með þessu <ph name="DEVICE_TYPE" /> tæki.</translation>
+<translation id="8321888067342493336">Vista sem mynd</translation>
 <translation id="8322814362483282060">Þessari síðu var bannað að fá aðgang að hljóðnemanum þínum.</translation>
 <translation id="8323167517179506834">Sláðu inn vefslóð</translation>
 <translation id="8323317289166663449">Lesa og breyta öllum gögnum í tölvunni þinni og á öllum vefsvæðum</translation>

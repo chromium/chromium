@@ -75,6 +75,7 @@
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - Envoyé par <ph name="DEVICE_NAME" /></translation>
 <translation id="1320912611264252795">Dossiers de flux d'enregistrement des favoris ouverts à pleine hauteur</translation>
 <translation id="1327257854815634930">L'historique de navigation est ouvert</translation>
+<translation id="1328235593824723509"><ph name="TAB_TITLE" />, nouvel onglet ou onglet mis à jour</translation>
 <translation id="1331212799747679585">Impossible de mettre à jour Chrome. Autres options</translation>
 <translation id="1332501820983677155">Raccourcis relatifs aux fonctionnalités Google Chrome</translation>
 <translation id="1333491156693005331">Vérification récente</translation>
@@ -1213,6 +1214,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6674571176963658787">Pour lancer la synchronisation, entrez votre phrase de passe</translation>
 <translation id="6676927815633975364">Connectez-vous à ce site et à Chrome</translation>
 <translation id="6684809838922667136">Améliorer Chrome</translation>
+<translation id="6700279777779583398">Choix enregistrés</translation>
 <translation id="6704048624334633734">Exporter et supprimer les mots de passe</translation>
 <translation id="670498945988402717">Dernière vérification : hier</translation>
 <translation id="6710213216561001401">Précédent</translation>
@@ -1290,7 +1292,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6964300328304469089">Actuellement sélectionnés : <ph name="NAME" />, <ph name="EMAIL" /> Sélectionnez un compte.</translation>
 <translation id="696447261358045621">Désactiver le mode de navigation privée</translation>
 <translation id="6965382102122355670">OK</translation>
-<translation id="6966660124354134532">Toucher le bouton pour suivre ou annuler le suivi d'un produit.</translation>
 <translation id="6971862865055170158">Ne pas approuver</translation>
 <translation id="6978717888677691380">Les sites que vous avez bloqués</translation>
 <translation id="6979737339423435258">Toutes les périodes</translation>
@@ -1426,6 +1427,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="752731652852882757">Bloquer les témoins tiers seulement durant l'utilisation du mode de navigation privée</translation>
 <translation id="7554643625247105821">Impossible de vérifier la version de Chrome</translation>
 <translation id="7557508262441527045">Déconnecté</translation>
+<translation id="7573665567024262965">Choisir vos applis par défaut</translation>
 <translation id="7577900504646297215">Gérer les centres d'intérêt</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> fichier téléchargé}one{<ph name="FILES_DOWNLOADED_MANY" /> fichier téléchargé}other{<ph name="FILES_DOWNLOADED_MANY" /> fichiers téléchargés}}</translation>
 <translation id="7581273696622423628">Répondre au sondage</translation>
@@ -1468,6 +1470,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="7764225426217299476">Ajouter une adresse</translation>
 <translation id="7772032839648071052">Confirmer la phrase de passe</translation>
 <translation id="7772375229873196092">Fermer <ph name="APP_NAME" /></translation>
+<translation id="7774125747223422443">Conformément à la loi en vigueur dans votre région, vous devez choisir votre navigateur et votre moteur de recherche.</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 et <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> autre mode de paiement}one{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 et <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> autre mode de paiement}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 et <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> autres modes de paiement}}</translation>
 <translation id="777637629667389858">Vous protège dans l'ensemble des services Google lorsque vous êtes connecté.</translation>
 <translation id="7778840695157240389">Revenez plus tard lorsque de nouveaux articles seront proposés</translation>
@@ -1592,6 +1595,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="8265018477030547118">Uniquement sur cet appareil</translation>
 <translation id="8266753737658117282">Continuer avec <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8266862848225348053">Dossier de téléchargement</translation>
+<translation id="8279945625179116733">Sécurisé par <ph name="APP_NAME" /></translation>
 <translation id="8281886186245836920">Ignorer</translation>
 <translation id="8282297628636750033">Si possible, appliquer un thème sombre aux sites</translation>
 <translation id="8282950411412455249">Accéder aux paramètres de sécurité</translation>
@@ -1736,6 +1740,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="8982113230057126145">La mention Je n'aime pas indique que vous n'aimez pas ce résumé</translation>
 <translation id="8992769679401294069">Vos données sont chiffrées avec votre phrase de passe. Saisissez-la pour utiliser et enregistrer les données Chrome dans votre compte Google.</translation>
 <translation id="8993760627012879038">Ouvrir un nouvel onglet en mode de nav. privée</translation>
+<translation id="8995521496079646922">Les applis que vous choisissez seront utilisées par défaut. Si une appli n'est pas déjà sur cet appareil, elle sera téléchargée sous peu.</translation>
 <translation id="8996847606757455498">Choisir un autre fournisseur</translation>
 <translation id="8998289560386111590">Non accessible sur votre appareil</translation>
 <translation id="8998837250940831980">Impossible de réduire l'onglet. Réessayez plus tard.</translation>

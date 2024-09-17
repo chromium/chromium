@@ -116,6 +116,7 @@
 <translation id="1517166097004694782">Masquer "Continuer avec cet onglet"</translation>
 <translation id="1520027731907768768">Recevoir des alertes en cas de baisse de prix des produits que vous suivez.</translation>
 <translation id="1521774566618522728">Actif aujourd'hui</translation>
+<translation id="1524563461097350801">Non, merci</translation>
 <translation id="1531038290222364269">Afficher les onglets</translation>
 <translation id="1536390784834419204">Traduire la page</translation>
 <translation id="1540800554400757039">Adresse 1</translation>
@@ -1507,7 +1508,6 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="8173034266693057059">Longueur</translation>
 <translation id="8179976553408161302">Entrée</translation>
 <translation id="8182037667962849780">{count,plural, =1{Pour {website_1}}=2{Pour {website_1}, {website_2}}=3{Pour {website_1}, {website_2} et 1 de plus}one{Pour {website_1}, {website_2} et {more_count} de plus}other{Pour {website_1}, {website_2} et {more_count} de plus}}</translation>
-<translation id="8189814768485665290">Partager l'URL complète</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Vos appareils<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Ajouter un mot de passe</translation>
 <translation id="8202744799033457229">Afficher l'historique</translation>
@@ -1541,6 +1541,7 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="8349305172487531364">Barre de favoris</translation>
 <translation id="8366466717204352506">Aucune vérification jusqu'à présent</translation>
 <translation id="8368001212524806591">Effectuer le suivi du prix</translation>
+<translation id="8370406443343902172">Accéder aux paramètres</translation>
 <translation id="8372471489238799313">{count,plural, =1{Supprimer l'adresse}one{Supprimer l'adresse}other{Supprimer les adresses}}</translation>
 <translation id="8378714024927312812">Géré par votre organisation</translation>
 <translation id="8386068868580335421">Réinitialiser</translation>
@@ -1603,6 +1604,7 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="8637431369725868556">Protégez-vous contre les sites dangereux.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Aucun mot de passe compromis}=1{{COUNT} mot de passe compromis}one{{COUNT} mot de passe compromis}other{{COUNT} mots de passe compromis}}</translation>
 <translation id="8640575194957831802">Dernier ouvert</translation>
+<translation id="8647280737650867362">Impossible de désactiver le suivi du prix.</translation>
 <translation id="8654802032646794042">Annuler</translation>
 <translation id="8660600697590740984">Image Lens copiée</translation>
 <translation id="866266761389616183">Aïe aïe aïe</translation>

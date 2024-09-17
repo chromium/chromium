@@ -116,6 +116,7 @@
 <translation id="1517166097004694782">Hide 'Continue with this tab'</translation>
 <translation id="1520027731907768768">Receive price drop alerts for products that you track.</translation>
 <translation id="1521774566618522728">Active today</translation>
+<translation id="1524563461097350801">No, thanks</translation>
 <translation id="1531038290222364269">Show tabs</translation>
 <translation id="1536390784834419204">Translate page</translation>
 <translation id="1540800554400757039">Address 1</translation>
@@ -1507,7 +1508,6 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8173034266693057059">Length</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8182037667962849780">{count,plural, =1{For {website_1}}=2{For {website_1}, {website_2}}=3{For {website_1}, {website_2}, and one more}other{For {website_1}, {website_2}, and {more_count} more}}</translation>
-<translation id="8189814768485665290">Share full URL</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Your devices<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Add password</translation>
 <translation id="8202744799033457229">Show history</translation>
@@ -1541,6 +1541,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8349305172487531364">Bookmarks bar</translation>
 <translation id="8366466717204352506">Check never run</translation>
 <translation id="8368001212524806591">Track price</translation>
+<translation id="8370406443343902172">Go to Settings...</translation>
 <translation id="8372471489238799313">{count,plural, =1{Delete address}other{Delete addresses}}</translation>
 <translation id="8378714024927312812">Managed by your organisation</translation>
 <translation id="8386068868580335421">Reset</translation>

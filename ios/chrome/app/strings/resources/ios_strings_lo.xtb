@@ -116,6 +116,7 @@
 <translation id="1517166097004694782">ເຊື່ອງ "ສືບຕໍ່ໃຊ້ແຖບນີ້"</translation>
 <translation id="1520027731907768768">ຮັບການແຈ້ງເຕືອນເມື່ອລາຄາຜະລິດຕະພັນທີ່ທ່ານຕິດຕາມຕ່ຳລົງ.</translation>
 <translation id="1521774566618522728">ເປີດນຳໃຊ້ມື້ນີ້</translation>
+<translation id="1524563461097350801">ບໍ່, ຂອບໃຈ</translation>
 <translation id="1531038290222364269">ສະແດງແຖບ</translation>
 <translation id="1536390784834419204">ແປໜ້າ</translation>
 <translation id="1540800554400757039">ທີ່ຢູ່ 1</translation>
@@ -1507,7 +1508,6 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="8173034266693057059">ຄວາມຍາວ</translation>
 <translation id="8179976553408161302">ປ້ອນເຂົ້າ</translation>
 <translation id="8182037667962849780">{count,plural, =1{ສຳລັບ {website_1}}=2{ສຳລັບ {website_1}, {website_2}}=3{ສຳລັບ {website_1}, {website_2} ແລະ ອີກ 1 ເວັບໄຊ}other{ສຳລັບ {website_1}, {website_2} ແລະ ອີກ {more_count} ເວັບໄຊ}}</translation>
-<translation id="8189814768485665290">ແບ່ງປັນ URL ແບບເຕັມ</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />ອຸປະກອນຂອງທ່ານ<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">ເພີ່ມ​ລະ​ຫັດ​ຜ່ານ</translation>
 <translation id="8202744799033457229">ສະແດງປະຫວັດ</translation>
@@ -1541,6 +1541,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="8349305172487531364">ແຖບບຸກມາກສ໌</translation>
 <translation id="8366466717204352506">ບໍ່ເຄີຍກວດສອບ</translation>
 <translation id="8368001212524806591">ຕິດຕາມລາຄາ</translation>
+<translation id="8370406443343902172">ເຂົ້າໄປການຕັ້ງຄ່າ...</translation>
 <translation id="8372471489238799313">{count,plural, =1{ລຶບທີ່ຢູ່}other{ລຶບທີ່ຢູ່}}</translation>
 <translation id="8378714024927312812">ຈັດການໂດຍອົງການຂອງທ່ານ</translation>
 <translation id="8386068868580335421">ຣີເຊັດ</translation>

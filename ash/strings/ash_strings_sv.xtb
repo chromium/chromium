@@ -42,6 +42,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1148499908455722006">Öppna dialogrutan med information om <ph name="USER_NAME" /></translation>
 <translation id="1150989369772528668">Kalender</translation>
 <translation id="1153356358378277386">Kopplade enheter</translation>
+<translation id="1153918444040990015">Det gick inte att ansluta till fokusljud</translation>
 <translation id="1155734730463845512">Aktuell batterinivå: <ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="1157514002898505378">Generativ AI är experimentell, och innehållet kan vara felaktigt, vilseledande eller stötande. Kontakta administratören om du vill rapportera ett problem. <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="1160215328209699296">på och används</translation>
@@ -176,6 +177,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1550523713251050646">Klicka här för fler alternativ</translation>
 <translation id="1555130319947370107">Blå</translation>
 <translation id="1557622599341396706">Visa skrivbordets namn</translation>
+<translation id="1567138500090284106">Knapp för musknappar</translation>
 <translation id="1569384531973824928">Detta ger åtkomst för alla appar och webbplatser med kamera- och mikrofonbehörighet. Du kan behöva uppdatera webbsidan eller starta om appen.</translation>
 <translation id="1571697193564730395">Aktivera och inaktivera Stör ej. <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">Zooma ut när skärmförstoring är aktiverat</translation>
@@ -243,6 +245,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1787955149152357925">Av</translation>
 <translation id="1796561540704213354">Webbplatser, inklusive sidor som du har besökt och öppna sidor</translation>
 <translation id="179842970735685253">Googles användarvillkor</translation>
+<translation id="1805407494113167797">Det gick inte att spela upp fokusljud</translation>
 <translation id="181103072419391116">Signalstyrka <ph name="SIGNAL_STRENGTH" />, hanteras av administratören</translation>
 <translation id="1816896987747843206">Detta ger kameraåtkomst för alla appar och webbplatser med kamerabehörighet</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
@@ -1360,6 +1363,7 @@ Inga enheter är anslutna.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Det gick inte att verifiera lösenordet. Försök igen.</translation>
 <translation id="5632485077360054581">Visa hur man gör</translation>
+<translation id="5633826232582408011">När du aktiverar Hjälp mig skriva och Hjälp mig läsa skickas textinput, dokumentinnehåll och sidans webbadress till Google AI-servrar för att generera skrivförslag, generera sammanfattningar, svara på frågor och förbättra produkten, i enlighet med <ph name="LINK_TO_SERVICE_TERMS" />. Ange inget som är personligt, känsligt eller konfidentiellt.</translation>
 <translation id="5648021990716966815">Mikrofonuttag</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> begär din uppmärksamhet.</translation>
 <translation id="5662075790140998213">Skrivbord 10</translation>
@@ -1511,7 +1515,6 @@ Inga enheter är anslutna.</translation>
 <translation id="6119972796024789243">Färgkorrigering</translation>
 <translation id="6121838516699723042">Bekräfta nedladdning <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">Google-assistenten är inte tillgänglig i en gästsession.</translation>
-<translation id="6127370444807669747">Prova YouTube Music Premium för personliga spellistor och mer fokuseringsmusik</translation>
 <translation id="6127395413317891856">Du är offline. Kontrollera anslutningen och försök igen.</translation>
 <translation id="6129953537138746214">Blanksteg</translation>
 <translation id="6137566720514957455">Öppna dialogrutan för borttagning av <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -2292,6 +2295,7 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="8876661425082386199">Kontrollera anslutningen</translation>
 <translation id="8877788021141246043">Ställ in en påminnelse</translation>
 <translation id="8878886163241303700">Utökad skärm</translation>
+<translation id="8885424115080869847">Det gick inte att ansluta till YouTube Music</translation>
 <translation id="888982883502837004">Det finns firmware-uppdateringar för enheten. Klicka här om du vill granska dem och uppdatera.</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> raderas permanent</translation>
 <translation id="889790758758811533"><ph name="PERCENTAGE" /> % av batteriet återstår (ungefär <ph name="TIME_LEFT" />). Anslut enheten till en strömkälla.</translation>

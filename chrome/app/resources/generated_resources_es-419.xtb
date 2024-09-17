@@ -497,6 +497,7 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1355088139103479645">¿Quieres borrar todos los datos?</translation>
 <translation id="1356376170199999104">Permiso habilitado: <ph name="PERMISSION_DETAILS" />. Activa el micrófono con el interruptor físico.</translation>
 <translation id="1356959069439783953">Las pestañas inactivas tienen un nuevo aspecto</translation>
+<translation id="1357766361161708728">¿Quieres cerrar las pestañas sin usar?</translation>
 <translation id="1358741672408003399">Ortografía y gramática</translation>
 <translation id="1359923111303110318">Puedes desbloquear tu dispositivo mediante Smart Lock. Presiona Intro para permitir el acceso.</translation>
 <translation id="1361164813881551742">Agregar manualmente</translation>
@@ -1105,7 +1106,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1780273119488802839">Importando favoritos...</translation>
 <translation id="1780572199786401845">Denunciar contenido ofensivo o inseguro</translation>
 <translation id="178092663238929451">Configura Compartir con Nearby para recibir archivos de las personas que tienes cerca o enviarles contenido.</translation>
-<translation id="1781164264587898620">Aplica la cancelación de ruido y las mejoras de audio.</translation>
 <translation id="1781291988450150470">PIN actual</translation>
 <translation id="1781502536226964113">Abrir la página Nueva pestaña</translation>
 <translation id="1781553166608855614">Idioma de voz</translation>
@@ -2551,6 +2551,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2787354132612937472">—</translation>
 <translation id="2788135150614412178">+</translation>
 <translation id="2789486458103222910">Aceptar</translation>
+<translation id="2790750268015892264">Las apps web aisladas no pueden controlar lectores de tarjetas inteligentes. Las apps no tendrán acceso a ninguna tarjeta inteligente.</translation>
 <translation id="2791529110887957050">Quitar Linux</translation>
 <translation id="2791952154587244007">Se produjo un error. La aplicación del kiosco no podrá iniciarse automáticamente en este dispositivo.</translation>
 <translation id="2792290659606763004">¿Quitar las apps de Android?</translation>
@@ -2582,6 +2583,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2806372837663997957">El dispositivo con el que quieres compartir contenido no lo aceptó.</translation>
 <translation id="2806891468525657116">El acceso directo ya existe</translation>
 <translation id="2807517655263062534">Los archivos que descargas aparecen aquí</translation>
+<translation id="2808481877345177494">Accede para separar de forma segura la navegación personal de la del trabajo. Aumenta tu productividad y protege los datos sensibles de la empresa.</translation>
 <translation id="2811205483104563968">Cuentas</translation>
 <translation id="2812049959647166806">No se admite Thunderbolt</translation>
 <translation id="2812171980080389735">Redes y contraseñas guardadas para que puedas conectarte al instante</translation>
@@ -3429,6 +3431,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3450157232394774192">Porcentaje de ocupación de estado de inactividad</translation>
 <translation id="3450180775417907283"><ph name="MANAGER" /> requiere que te conectes a una red Wi-Fi ahora y descargues una actualización.</translation>
 <translation id="345078987193237421">Esta opción permite el acceso a la cámara para las apps, los sitios web con el permiso correspondiente y los servicios del sistema</translation>
+<translation id="3451362021220965191">Las apps web aisladas controlan los lectores de tarjetas inteligentes para acceder a las que se insertan o se les presentan. Por lo general, las tarjetas inteligentes contienen identidades que se usan para autenticar o autorizar operaciones, acceder a servicios, etcétera.</translation>
 <translation id="3452999110156026232">Acceso parental</translation>
 <translation id="3453082738208775226">¿Deseas liberar espacio de almacenamiento sin conexión?</translation>
 <translation id="3453597230179205517">Se bloqueó el acceso a la ubicación</translation>
@@ -3991,6 +3994,7 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="3828953470056652895">Leí y acepté las <ph name="BEGIN_LINK1" />Condiciones del Servicio de Google<ph name="END_LINK1" />, las <ph name="BEGIN_LINK2" />Condiciones del Servicio Adicionales de Chrome y ChromeOS<ph name="END_LINK2" /> y las <ph name="BEGIN_LINK3" />Condiciones del Servicio de Play<ph name="END_LINK3" />.</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" />: Uso elevado de memoria: <ph name="MEMORY_VALUE" /></translation>
 <translation id="3829765597456725595">Archivos compartidos SMB</translation>
+<translation id="38298897782945211">Las apps web aisladas siguen automáticamente esta configuración.</translation>
 <translation id="3830470485672984938">Usar una llave de acceso diferente</translation>
 <translation id="3830654885961023588">{NUM_EXTENSIONS,plural, =1{El administrador volvió a activar 1 extensión potencialmente dañina}other{El administrador volvió a activar {NUM_EXTENSIONS} extensiones potencialmente dañinas}}</translation>
 <translation id="3834728400518755610">Es necesario que cierres Linux para aplicar los cambios de la configuración del micrófono. Cierra Linux para continuar.</translation>
@@ -4004,6 +4008,7 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="3839516600093027468">Nunca permitir que <ph name="HOST" /> vea el portapapeles</translation>
 <translation id="3841282988425489367">No se puede configurar Steam for Chromebook (beta)</translation>
 <translation id="3841319830220785495">Voz natural predeterminada</translation>
+<translation id="3841356782900714251">Lectores de tarjetas inteligentes</translation>
 <translation id="3841964634449506551">La contraseña no es válida</translation>
 <translation id="3842552989725514455">Fuente Serif</translation>
 <translation id="3843464315703645664">Permiso otorgado de manera interna</translation>
@@ -5714,6 +5719,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5120886753782992638">Haz clic aquí para visitar <ph name="APPROVED_URL" />.</translation>
 <translation id="5121052518313988218">Ya no se admite el sistema operativo del contenedor de Linux. Dejará de recibir actualizaciones de seguridad y correcciones de errores. Es posible que las funciones actualmente en uso presenten errores inesperados. Para continuar usando Linux, actualiza a la versión más reciente.</translation>
 <translation id="5121130586824819730">Tu disco duro está lleno. Guarda en otra ubicación o libera espacio en el disco duro.</translation>
+<translation id="5121803000325086087">Las apps web aisladas pueden solicitar permiso para controlar lectores de tarjetas inteligentes. Las apps tendrán acceso a las tarjetas inteligentes que se presenten a los lectores bajo su control.</translation>
 <translation id="5123433949759960244">Básquet</translation>
 <translation id="5125714798187802869">Activar</translation>
 <translation id="5125751979347152379">URL no válido.</translation>
@@ -6550,6 +6556,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="5750288053043553775">0</translation>
 <translation id="5751345516399502412">Comprobar la disponibilidad de la conexión mediante dispositivo móvil</translation>
 <translation id="5753570386948603678">Borrar del historial</translation>
+<translation id="5753652925946671505">No se usaron estas pestañas durante <ph name="COUNT" /> días o más.</translation>
 <translation id="5756163054456765343">C&amp;entro de ayuda</translation>
 <translation id="5757187557809630523">siguiente pista</translation>
 <translation id="5758631781033351321">Aquí encontrarás tu lista de lectura</translation>
@@ -6973,6 +6980,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="6064764629679333574">Aumenta el audio de baja resolución a alta resolución para mejorar la calidad de sonido del micrófono Bluetooth.</translation>
 <translation id="6065289257230303064">Atributos de directorio del sujeto del certificado</translation>
 <translation id="6066794465984119824">No se estableció un hash de imagen</translation>
+<translation id="6069027071882229820">Copiar como imagen</translation>
 <translation id="6069464830445383022">Accede a la Chromebook con tu Cuenta de Google</translation>
 <translation id="6069500411969514374">Trabajo</translation>
 <translation id="6071181508177083058">confirmar contraseña</translation>
@@ -10073,6 +10081,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8319414634934645341">Uso extendido de la clave</translation>
 <translation id="8321476692217554900">notificaciones</translation>
 <translation id="8321837372750396788"><ph name="MANAGER" /> administrará este dispositivo <ph name="DEVICE_TYPE" />.</translation>
+<translation id="8321888067342493336">Guardar como imagen</translation>
 <translation id="8322814362483282060">Esta página no tiene permiso para acceder al micrófono.</translation>
 <translation id="8323167517179506834">Ingresar URL</translation>
 <translation id="8323317289166663449">Leer y cambiar todos tus datos de tu computadora y todos los sitios web</translation>

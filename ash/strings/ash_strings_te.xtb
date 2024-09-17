@@ -78,6 +78,7 @@
 <translation id="1240638468526743569">ఒక యాప్</translation>
 <translation id="1242198791279543032">నోటిఫికేషన్‌లు మ్యూట్ చేయబడ్డాయి</translation>
 <translation id="1242883863226959074">పరికరం</translation>
+<translation id="1245476784081715330">చక్కగా పూర్తి చేశారు!</translation>
 <translation id="1245644940275736236">అసిస్టెంట్ పేజీకి వెళ్ళండి</translation>
 <translation id="124678866338384709">ప్రస్తుత ట్యాబ్‌ను మూసివేయండి</translation>
 <translation id="1246890715821376239">సపోర్ట్ చేయని యాప్‌లు</translation>
@@ -843,6 +844,7 @@
 <translation id="3958714870339660776">రోజు మొత్తం</translation>
 <translation id="3962859241508114581">మునుపటి ట్రాక్</translation>
 <translation id="3963124517343721543">మీ మునుపటి విండోలు, ట్యాబ్‌లను తెరవడం ద్వారా మీరు ఎక్కడ ఆపారో అక్కడి నుండి సులభంగా కొనసాగించండి. మీరు తర్వాత చేయవలసిన పనుల కోసం వ్యక్తిగతీకరించిన సూచనలను కూడా చూస్తారు.</translation>
+<translation id="396506362088290977">మీ మైక్ సౌండ్‌ను టెస్ట్ చేయండి</translation>
 <translation id="3969043077941541451">ఆఫ్</translation>
 <translation id="3970324493235864154">మీ ఫోన్‌లోని నోటిఫికేషన్‌లను చూడండి</translation>
 <translation id="397105322502079400">గణిస్తోంది...</translation>
@@ -900,6 +902,7 @@
 <translation id="4156293514828496577">బ్యాటరీ <ph name="PERCENTAGE" />% మిగిలి ఉంది (<ph name="TIME_LEFT" /> సమయం మిగిలి ఉంది).
 కొన్ని ఫీచర్‌లు బ్యాటరీ లైఫ్‌ను పొడిగించడానికి పరిమితం చేయబడ్డాయి.</translation>
 <translation id="4160919062868802509">పలు ఆడియో సోర్స్‌లు గుర్తించబడ్డాయి</translation>
+<translation id="416245495747357243">పూర్తయింది!</translation>
 <translation id="4165275524535002941">డిస్‌ప్లేలను కేబుల్ సపోర్ట్ చేయకపోవచ్చు</translation>
 <translation id="4177415338862979658">వివరాల కోసం చెక్ చేయడానికి క్లిక్ చేయండి</translation>
 <translation id="4177913004758410636">{0,plural, =1{ఒక రోజు లోపు పరికరాన్ని అప్‌డేట్ చేయండి}other{# రోజులలోపు పరికరాన్ని అప్‌డేట్ చేయండి}}</translation>
@@ -985,6 +988,7 @@
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> ఆఫ్‌లో ఉంది.</translation>
 <translation id="4417647906073317561">సెట్టింగ్‌లను ఫోకస్ చేయండి. ఫ్లోలో పొందడానికి టైమర్, టాస్క్, అలాగే మ్యూజిక్‌ను సెట్ చేయండి.</translation>
 <translation id="4424159417645388645">డెస్క్ 5</translation>
+<translation id="4426817706804363424">ఇలాగే కొనసాగించండి!</translation>
 <translation id="4430019312045809116">వాల్యూమ్</translation>
 <translation id="4441283832827406317">పేరు ఆధారంగా యాప్‌లు క్రమపద్ధతిలో అమర్చబడ్డాయి</translation>
 <translation id="4445159312344259901">అన్‌లాక్ కోసం సైన్ ఇన్ చేయండి</translation>
@@ -1249,6 +1253,7 @@
 <translation id="5283198616748585639">1 నిమి జోడించండి</translation>
 <translation id="528468243742722775">ముగించు</translation>
 <translation id="5286194356314741248">స్కాన్ చేస్తోంది</translation>
+<translation id="528641622273682395">మైక్ టెస్ట్‌ను టోగుల్ చేయండి</translation>
 <translation id="5297423144044956168">మొబైల్ పరికరాలేవీ కనుగొనబడలేదు</translation>
 <translation id="5297704307811127955">ఆఫ్</translation>
 <translation id="5300589172476337783">చూపించు</translation>
@@ -1276,6 +1281,7 @@
 <translation id="536019650977002321">మీ అడ్మినిస్ట్రేటర్ ఆడియో క్యాప్చర్‌ను అనుమతించలేదు. మరింత సమాచారం కోసం మీ అడ్మినిస్ట్రేటర్‌ను సంప్రదించండి.</translation>
 <translation id="5361524080961918551"><ph name="LANGUAGE" /> స్పీచ్ ఫైల్స్ పాక్షికంగా డౌన్‌లోడ్ చేయబడ్డాయి</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> ఈ ట్యాబ్‌కు వెళ్లండి</translation>
+<translation id="5363835273551457276">మీ మైక్రోఫోన్ సౌండ్‌ను మీరు టెస్ట్ చేయవచ్చు. ఆపడానికి ప్యానెల్‌ను మూసివేయండి.</translation>
 <translation id="5364693579536176785">స్టోరేజ్ స్పేస్</translation>
 <translation id="5369573834963677938">ఫేస్ కంట్రోల్ పరికరంలోని ఇతర యూజర్‌లకు అందుబాటులో ఉంటుంది</translation>
 <translation id="5369717264580061086">Files యాప్‌లో ఫైల్ ప్రివ్యూను చూడండి</translation>
@@ -1510,7 +1516,6 @@
 <translation id="6119972796024789243">కలర్ కరెక్షన్</translation>
 <translation id="6121838516699723042"><ph name="FILENAME" /> డౌన్‌లోడ్‌ను నిర్ధారించండి</translation>
 <translation id="612734058257491180">గెస్ట్ సెషన్‌లో Google Assistant పని చేయదు.</translation>
-<translation id="6127370444807669747">వ్యక్తిగతీకరించిన ప్లేలిస్ట్‌లు, మరింత ఫోకస్ చేసిన మ్యూజిక్ కోసం, YouTube Music Premiumను ట్రై చేయండి</translation>
 <translation id="6127395413317891856">మీరు ఆఫ్‌లైన్‌లో ఉన్నారు. మీ కనెక్షన్‌ను చెక్ చేసి, మళ్లీ ట్రై చేయండి.</translation>
 <translation id="6129953537138746214">ఖాళీ</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" /> కోసం 'డైలాగ్‌ను తీసివేయండి'ని తెరవండి</translation>
@@ -2128,6 +2133,7 @@
 <translation id="8262312463845990408">ప్లేబ్యాక్‌ను టోగుల్ చేయండి</translation>
 <translation id="8268302343625273732">Google Classroomలో అసైన్‌మెంట్‌లన్నింటినీ చూడండి</translation>
 <translation id="8277261673056602147">మీ స్క్రీన్‌పై ఉన్న టెక్స్ట్‌ను హైలైట్ చేయండి</translation>
+<translation id="8282784978194352587">మీరు పూర్తి చేశారు!</translation>
 <translation id="8287009018010202411">ప్రొడక్టివిటీ</translation>
 <translation id="828708037801473432">ఆఫ్</translation>
 <translation id="8297006494302853456">బలహీనం</translation>
@@ -2205,6 +2211,7 @@
 <translation id="8609384513243082612">కొత్త ట్యాబ్‌ను తెరవండి</translation>
 <translation id="861045123704058818">యాప్‌లు తాత్కాలికంగా కేటగిరీ వారీగా ఆర్గనైజ్ చేయబడతాయి</translation>
 <translation id="8612216344243590325">ముఖ్యమైన ఫైల్స్‌ను డెస్క్‌టాప్‌లో కాకుండా <ph name="HOLDING_SPACE_TITLE" />‌లో ఉంచండి. ఫైల్స్‌ను <ph name="HOLDING_SPACE_TITLE" />‌కు లాగండి.</translation>
+<translation id="8612338981637220013">కొనసాగండి!</translation>
 <translation id="8614517853887502247">వీక్షణ ప్రొటెక్షన్ ఆన్‌లో ఉంది కాబట్టి <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> నోటిఫికేషన్‌లు దాచబడ్డాయి</translation>
 <translation id="8615778328722901791">టూల్‌బార్‌ను తెరవండి</translation>
 <translation id="8619000641825875669">OneDrive</translation>
@@ -2247,6 +2254,7 @@
 <translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />: యాక్టివేట్ అవుతోంది...</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
+<translation id="8751299148074971734">ఇలాగే ముందుకు సాగండి!</translation>
 <translation id="8753368202781196133">ప్రస్తుతం ఈ భాషకు సపోర్ట్ లేదు.</translation>
 <translation id="8755498163081687682">మీ గుర్తింపును వెరిఫై చేయండి: <ph name="ORIGIN_NAME" /> అది మీరేనని నిర్ధారించాలనుకుంటుంది</translation>
 <translation id="875593634123171288">VPN సెట్టింగ్‌లను చూపుతుంది</translation>

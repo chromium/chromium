@@ -1109,7 +1109,6 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1780273119488802839">Bookmarks importeren...</translation>
 <translation id="1780572199786401845">Melden als aanstootgevend/onveilig</translation>
 <translation id="178092663238929451">Stel Dichtbij delen in om bestanden te krijgen van en te sturen naar mensen bij jou in de buurt</translation>
-<translation id="1781164264587898620">Pas ruisonderdrukking en audioverbeteringen toe.</translation>
 <translation id="1781291988450150470">Huidige pincode</translation>
 <translation id="1781502536226964113">De pagina 'Nieuw tabblad' openen</translation>
 <translation id="1781553166608855614">Gesproken taal</translation>
@@ -2555,6 +2554,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2787354132612937472">—</translation>
 <translation id="2788135150614412178">+</translation>
 <translation id="2789486458103222910">OK</translation>
+<translation id="2790750268015892264">Geïsoleerde web-apps kunnen geen smartcardlezers beheren. Apps krijgen geen toegang tot smartcards.</translation>
 <translation id="2791529110887957050">Linux verwijderen</translation>
 <translation id="2791952154587244007">Er is een fout opgetreden. Kiosk-app kan niet automatisch worden gestart op dit apparaat.</translation>
 <translation id="2792290659606763004">Android-apps verwijderen?</translation>
@@ -2586,6 +2586,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2806372837663997957">Het apparaat waarmee je probeert te delen, accepteert dit niet</translation>
 <translation id="2806891468525657116">Snelkoppeling bestaat al</translation>
 <translation id="2807517655263062534">Gedownloade bestanden zie je hier</translation>
+<translation id="2808481877345177494">Log in om browsen voor werk en privé beveiligd van elkaar te scheiden. Verhoog je productiviteit en bescherm gevoelige bedrijfsgegevens.</translation>
 <translation id="2811205483104563968">Accounts</translation>
 <translation id="2812049959647166806">Thunderbolt wordt niet ondersteund</translation>
 <translation id="2812171980080389735">Opgeslagen netwerken en wachtwoorden zodat je meteen verbinding kunt maken</translation>
@@ -3431,6 +3432,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3450157232394774192">Bezettingspercentage van inactieve status</translation>
 <translation id="3450180775417907283"><ph name="MANAGER" /> vereist dat je nu verbinding maakt met wifi en een update downloadt.</translation>
 <translation id="345078987193237421">Zo geef je cameratoegang aan apps, websites met camerarechten en systeemservices.</translation>
+<translation id="3451362021220965191">Geïsoleerde web-apps beheren smartcardlezers om toegang te krijgen tot smartcards die worden ingevoerd of aan hen worden gepresenteerd. Smartcards bevatten meestal identiteiten die worden gebruikt om bewerkingen te verifiëren of te autoriseren, in te loggen bij services, enzovoort.</translation>
 <translation id="3452999110156026232">Toegang door ouders</translation>
 <translation id="3453082738208775226">Offline opslag opschonen?</translation>
 <translation id="3453597230179205517">Locatietoegang is geblokkeerd</translation>
@@ -3993,6 +3995,7 @@ Dit kan informatie zijn over de geïnstalleerde software, bestanden, je browser 
 <translation id="3828953470056652895">Ik heb de <ph name="BEGIN_LINK1" />Servicevoorwaarden van Google<ph name="END_LINK1" />, de <ph name="BEGIN_LINK2" />Aanvullende servicevoorwaarden van Chrome en Chrome OS<ph name="END_LINK2" /> en de <ph name="BEGIN_LINK3" />Servicevoorwaarden van Play<ph name="END_LINK3" /> gelezen en ga ermee akkoord.</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> - Intensief geheugengebruik - <ph name="MEMORY_VALUE" /></translation>
 <translation id="3829765597456725595">SMB-fileshare</translation>
+<translation id="38298897782945211">Geïsoleerde web-apps volgen deze instelling automatisch.</translation>
 <translation id="3830470485672984938">Een andere toegangssleutel gebruiken</translation>
 <translation id="3830654885961023588">{NUM_EXTENSIONS,plural, =1{Je beheerder heeft 1 potentieel schadelijke extensie weer aangezet}other{Je beheerder heeft {NUM_EXTENSIONS} potentieel schadelijke extensies weer aangezet}}</translation>
 <translation id="3834728400518755610">Linux moeten worden afgesloten om de microfooninstelling te wijzigen. Sluit Linux af om door te gaan.</translation>
@@ -4006,6 +4009,7 @@ Dit kan informatie zijn over de geïnstalleerde software, bestanden, je browser 
 <translation id="3839516600093027468"><ph name="HOST" /> altijd blokkeren voor het klembord</translation>
 <translation id="3841282988425489367">Kan Steam voor Chromebook (bèta) niet instellen</translation>
 <translation id="3841319830220785495">Standaard natuurlijke stem</translation>
+<translation id="3841356782900714251">Smartcardlezers</translation>
 <translation id="3841964634449506551">Wachtwoord ongeldig</translation>
 <translation id="3842552989725514455">Serif-lettertype</translation>
 <translation id="3843464315703645664">Intern op de toelatingslijst gezet</translation>
@@ -5714,6 +5718,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="5120886753782992638">Klik hier om naar <ph name="APPROVED_URL" /> te gaan</translation>
 <translation id="5121052518313988218">Het besturingssysteem in je Linux-container wordt niet meer ondersteund. Het besturingssysteem krijgt geen beveiligingsupdates en bugfixes meer, en functies die nu nog werken kunnen onverwacht stoppen met werken. Upgrade naar de nieuwste versie om Linux te blijven gebruiken.</translation>
 <translation id="5121130586824819730">Je vaste schijf is vol. Sla op een andere locatie op of maak ruimte vrij op de vaste schijf.</translation>
+<translation id="5121803000325086087">Geïsoleerde web-apps kunnen vragen om smartcardlezers te beheren. Apps krijgen toegang tot smartcards die worden gepresenteerd aan lezers die onder hun beheer staan.</translation>
 <translation id="5123433949759960244">Basketbal</translation>
 <translation id="5125714798187802869">Activeren</translation>
 <translation id="5125751979347152379">Ongeldige URL.</translation>
@@ -6970,6 +6975,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="6064764629679333574">Verbeter de kwaliteit van het geluid van de bluetooth-microfoon door audio met lage resolutie op te schalen naar hoge resolutie.</translation>
 <translation id="6065289257230303064">Directorykenmerken van certificaatonderwerp</translation>
 <translation id="6066794465984119824">Image-hash is niet ingesteld</translation>
+<translation id="6069027071882229820">Kopiëren als afbeelding</translation>
 <translation id="6069464830445383022">Je Google-account is je Chromebook-login</translation>
 <translation id="6069500411969514374">Werk</translation>
 <translation id="6071181508177083058">wachtwoord bevestigen</translation>
@@ -10068,6 +10074,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8319414634934645341">Uitgebreid sleutelgebruik</translation>
 <translation id="8321476692217554900">meldingen</translation>
 <translation id="8321837372750396788">Deze <ph name="DEVICE_TYPE" /> wordt beheerd door <ph name="MANAGER" />.</translation>
+<translation id="8321888067342493336">Opslaan als afbeelding</translation>
 <translation id="8322814362483282060">Deze pagina heeft geen toegang tot je microfoon.</translation>
 <translation id="8323167517179506834">Typ een URL</translation>
 <translation id="8323317289166663449">Al je gegevens op je computer en alle websites lezen en wijzigen</translation>

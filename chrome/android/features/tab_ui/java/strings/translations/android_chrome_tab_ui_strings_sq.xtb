@@ -104,6 +104,7 @@
 <translation id="5400836586163650660">Gri</translation>
 <translation id="5490235265819901748">Grupi i skedave u zgjerua</translation>
 <translation id="5494920125229734069">Zgjidh të gjitha</translation>
+<translation id="5549653163690032080">Hap menynë e veprimeve të grupit të skedave për grupin e ndarë të skedave "<ph name="TITLE_OF_GROUP" />"</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Mbyll grupin e skedave me <ph name="TABS_COUNT_ONE" /> skedë, ngjyrë <ph name="COLOR_NAME" />.}other{Mbyll grupin e skedave me <ph name="TABS_COUNT_MANY" /> skeda, ngjyrë <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">Shiko informacionet e dyqanit. Opsioni ofrohet pranë kreut të ekranit</translation>
 <translation id="5627941783489838464">Nuk ka përditësime për skedat</translation>
@@ -135,6 +136,7 @@
 <translation id="6694634756612002311">Menaxho ndarjen</translation>
 <translation id="6744956528665271406">Modifiko ngjyrën e grupit</translation>
 <translation id="6856809498882026482">Fshih modalitetin e zgjedhjes së shumëfishtë</translation>
+<translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{Zgjero grupin e ndarë të skedave "<ph name="TITLE_OF_GROUP" />" me <ph name="TABS_COUNT_ONE" /> skedë, ngjyrë <ph name="COLOR_NAME" />.}other{Zgjero grupin e ndarë të skedave "<ph name="TITLE_OF_GROUP" />" me <ph name="TABS_COUNT_MANY" /> skeda, ngjyrë <ph name="COLOR_NAME" />.}}</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Ndaj skedën}other{Ndaj skedat}}</translation>
 <translation id="7129458170538955174">Informacioni për këtë dyqan është hapur në gjysmë të lartësisë</translation>
 <translation id="7200189319044305940">{NUMBER_OF_TABS,plural, =1{Mbyll grupin "<ph name="TITLE_OF_GROUP" />" me <ph name="TABS_COUNT_ONE" /> skedë.}other{Mbyll grupin "<ph name="TITLE_OF_GROUP" />" me <ph name="TABS_COUNT_MANY" /> skeda.}}</translation>
@@ -170,6 +172,7 @@
 <translation id="8205266828577616993">Lëviz skedën lart</translation>
 <translation id="8261506727792406068">Fshi</translation>
 <translation id="8338427544764842461">Grupet e tua të skedave ruhen këtu dhe përditësohen në të gjitha pajisjet ku je identifikuar</translation>
+<translation id="8344020191144794051">{NUMBER_OF_TABS,plural, =1{Zgjero grupin e ndarë të skedave me <ph name="TABS_COUNT_ONE" /> skedë, ngjyrë <ph name="COLOR_NAME" />.}other{Zgjero grupin e ndarë të skedave me <ph name="TABS_COUNT_MANY" /> skeda, ngjyrë <ph name="COLOR_NAME" />.}}</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Mbyll <ph name="TABS_COUNT_ONE" /> skedë të zgjedhur}other{Mbyll <ph name="TABS_COUNT_MANY" /> skeda të zgjedhura}}</translation>
 <translation id="8398929769197326728">Dosje e re - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">Cilësimet</translation>

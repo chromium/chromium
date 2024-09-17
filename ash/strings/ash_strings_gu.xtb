@@ -42,6 +42,7 @@
 <translation id="1148499908455722006"><ph name="USER_NAME" /> માટે માહિતી સંવાદ ખોલો</translation>
 <translation id="1150989369772528668">કૅલેન્ડર</translation>
 <translation id="1153356358378277386">જોડી કરેલા ઉપકરણો</translation>
+<translation id="1153918444040990015">ફોકસના સાઉન્ડ સાથે કનેક્ટ કરી શક્યાં નથી</translation>
 <translation id="1155734730463845512">બૅટરીનું તાજેતરનું લેવલ <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1157514002898505378">જનરેટિવ AI પ્રાયોગિક છે અને કન્ટેન્ટ અચોક્કસ, ભ્રામક અથવા અપમાનજનક હોઈ શકે છે. સમસ્યાની જાણ કરવા માટે, તમારા ઍડમિનિસ્ટ્રેટરનો સંપર્ક કરો. <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="1160215328209699296">ચાલુ અને ઉપયોગમાં</translation>
@@ -175,6 +176,7 @@
 <translation id="1550523713251050646">વધુ વિકલ્પો માટે ક્લિક કરો</translation>
 <translation id="1555130319947370107">વાદળી</translation>
 <translation id="1557622599341396706">ડેસ્કનું નામ બતાવો</translation>
+<translation id="1567138500090284106">માઉસ કીના બટન</translation>
 <translation id="1569384531973824928">આમ કરવાથી કૅમેરા અને માઇક્રોફોનની પરવાનગીઓ ધરાવતી બધી ઍપ તથા વેબસાઇટ માટે, ઍક્સેસની મંજૂરી આપવામાં આવે છે. તમારે વેેબપેજ રિફ્રેશ કરવાની અથવા ઍપ ફરી શરૂ કરવાની જરૂર પડી શકે છે.</translation>
 <translation id="1571697193564730395">'ખલેલ પાડશો નહીં' બટનને ટૉગલ કરો. <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">મેગ્નિફાયર ચાલુ હોય, ત્યારે નાનું કરો</translation>
@@ -242,6 +244,7 @@
 <translation id="1787955149152357925">બંધ છે</translation>
 <translation id="1796561540704213354">વેબસાઇટ જેમાં તમે મુલાકાત લીધેલા પેજ અને ખોલેલા પેજ શામેલ છે</translation>
 <translation id="179842970735685253">Googleની સેવાની શરતો</translation>
+<translation id="1805407494113167797">ફોકસના સાઉન્ડ ચલાવી શક્યાં નથી</translation>
 <translation id="181103072419391116">સિગ્નલની સશક્તતા <ph name="SIGNAL_STRENGTH" />, તમારા વ્યવસ્થાપક દ્વારા મેનેજ કરવામાં આવે છે</translation>
 <translation id="1816896987747843206">આમ કરવાથી કૅમેરાની પરવાનગી ધરાવતી બધી ઍપ અને વેબસાઇટ માટે, કૅમેરાના ઍક્સેસની મંજૂરી આપવામાં આવે છે</translation>
 <translation id="1823873187264960516">ઇથરનેટ: <ph name="ADDRESS" /></translation>
@@ -1354,6 +1357,7 @@
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">તમારો પાસવર્ડ ચકાસી શકાયો નથી. ફરી પ્રયાસ કરો.</translation>
 <translation id="5632485077360054581">મને બતાવો કે કેવી રીતે</translation>
+<translation id="5633826232582408011">જ્યારે તમે 'લખવામાં મારી સહાય કરો' અને 'વાંચવામાં મારી સહાય કરો' સુવિધા ચાલુ કરો, ત્યારે ઇનપુટ કરેલી ટેક્સ્ટ, દસ્તાવેજનું કન્ટેન્ટ અને વેબપેજ URLમાં લેખન સંબંધિત સૂચનો જનરેટ કરવા, સારાંશો જનરેટ કરવા, પ્રશ્નોના જવાબ આપવા તેમજ પ્રોડક્ટ બહેતર બનાવવા માટે, <ph name="LINK_TO_SERVICE_TERMS" />ની શરતોને આધીન રહીને Google AIના સર્વરને મોકલવામાં આવે છે. વ્યક્તિગત, સંવેદનશીલ કે ગોપનીય હોય તેવી કોઈપણ માહિતી શામેલ કરશો નહીં.</translation>
 <translation id="5648021990716966815">માઇક જેક</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> તમને ધ્યાન આપવાની વિનંતી કરે છે.</translation>
 <translation id="5662075790140998213">ડેસ્ક 10</translation>
@@ -1504,7 +1508,6 @@
 <translation id="6119972796024789243">રંગ સુધારણા</translation>
 <translation id="6121838516699723042"><ph name="FILENAME" /> માટે ડાઉનલોડ કરવું કન્ફર્મ કરો</translation>
 <translation id="612734058257491180">અતિથિ સત્રમાં Google Assistant ઉપલબ્ધ હોતું નથી.</translation>
-<translation id="6127370444807669747">મનગમતા બનાવેલા પ્લેલિસ્ટ અને વધુ ફોકસ મ્યુઝિક માટે, YouTube Music Premium અજમાવો</translation>
 <translation id="6127395413317891856">તમે ઑફલાઇન છો. તમારું ઇન્ટરનેટ કનેક્શન ચેક કરો અને ફરી પ્રયાસ કરો.</translation>
 <translation id="6129953537138746214">જગ્યા</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" /> માટે કાઢી નાખવાનો સંવાદ ખોલો</translation>
@@ -2282,6 +2285,7 @@
 <translation id="8876661425082386199">તમારું કનેક્શન ચેક કરો</translation>
 <translation id="8877788021141246043">રિમાઇન્ડર સેટ કરો</translation>
 <translation id="8878886163241303700">સ્ક્રીનને વિસ્તૃત કરી રહ્યું છે</translation>
+<translation id="8885424115080869847">YouTube Music સાથે કનેક્ટ કરી શક્યાં નથી</translation>
 <translation id="888982883502837004">તમારા ડિવાઇસ માટે ફર્મવેયર અપડેટ ઉપલબ્ધ છે. રિવ્યૂ અને અપડેટ કરવા માટે ક્લિક કરો.</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" />ને કાયમ માટે ડિલીટ કરવામાં આવશે</translation>
 <translation id="889790758758811533"><ph name="PERCENTAGE" />% બૅટરી બાકી છે (લગભગ <ph name="TIME_LEFT" />). તમારા ડિવાઇસને પાવર સૉર્સ સાથે કનેક્ટ કરો.</translation>

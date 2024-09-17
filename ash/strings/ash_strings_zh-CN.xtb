@@ -1413,6 +1413,7 @@
 <translation id="5802516411616338943">打开“快捷设置”</translation>
 <translation id="5804651031882187592">关闭“锁定 SIM 卡”设置</translation>
 <translation id="5805809050170488595">点击即可激活“<ph name="NETWORK_NAME" />”</translation>
+<translation id="5818796501620225415">您可以增加时间，也可以结束专注模式</translation>
 <translation id="5819918159912280082">Chromebook 意外重启了。打开之前的窗口和应用。</translation>
 <translation id="5823239091726045201">Google Tasks 网页版</translation>
 <translation id="5825969630400862129">设置已连接的设备</translation>
@@ -1506,7 +1507,6 @@
 <translation id="6119972796024789243">色彩校正</translation>
 <translation id="6121838516699723042">确认下载“<ph name="FILENAME" />”</translation>
 <translation id="612734058257491180">无法在访客会话中使用 Google 助理。</translation>
-<translation id="6127370444807669747">如需聆听个性化播放列表和更多专注模式音乐，请试用 YouTube Music Premium</translation>
 <translation id="6127395413317891856">您处于离线状态。请检查连接，然后重试。</translation>
 <translation id="6129953537138746214">空格</translation>
 <translation id="6137566720514957455">打开与 <ph name="USER_EMAIL_ADDRESS" /> 对应的“移除账号”对话框</translation>
@@ -2300,7 +2300,7 @@
 <translation id="8938800817013097409">USB-C 设备（背面右侧端口）</translation>
 <translation id="8939855324412367560">音频输入设备为“<ph name="INPUT_DEVICE_NAME" />”，音频输出设备为“<ph name="OUTPUT_DEVICE_NAME" />”。如需更改，请前往“设置”。</translation>
 <translation id="8940956008527784070">电池电量不足 (<ph name="PERCENTAGE" />%)</translation>
-<translation id="8945508919180478719">录音室风麦克风</translation>
+<translation id="8945508919180478719">录音室级麦克风</translation>
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> 复选框未选中。</translation>
 <translation id="8949925099261528566">已连接，但无法访问互联网</translation>
 <translation id="8951539504029375108">只有已获批准的 Thunderbolt 设备能与您的 Chromebook 兼容</translation>

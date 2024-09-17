@@ -145,6 +145,7 @@
 <translation id="1651925268237749928">Избрахте споделен албум. Другите хора могат да добавят или променят снимки. Тапетът ви може да използва снимки, които понастоящем не са в този албум.</translation>
 <translation id="1661512400125589646">Пауза</translation>
 <translation id="1661865805917886535">Част от информацията за профила и системата може да бъде изпратена до Google. Използваме тази информация за отстраняване на технически проблеми и за подобряване на услугите ни в съответствие с Декларацията ни за поверителност (<ph name="PRIVACYPOLICYURL" />) и Общите ни условия (<ph name="TERMSOFSERVICEURL" />). За да поискате промени в съдържанието, отворете Помощния център за правни въпроси (<ph name="LEGALHELPPAGEURL" />).</translation>
+<translation id="1662699081856352167">Обобщението бе генерирано успешно</translation>
 <translation id="1662989795263954667">Спряло – няма мастило</translation>
 <translation id="1664796644829245314">Визуализация на „<ph name="PREVIEW_OBJECT" />“</translation>
 <translation id="1668469839109562275">Вградена VPN</translation>
@@ -254,6 +255,7 @@
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2148716181193084225">днес</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> снимки</translation>
+<translation id="2154460308960858308">Изчистване на търсенето</translation>
 <translation id="2156072344042480449">Двете ви най-скорошни подкани. Можете да ги използвате само докато сте на тази страница.</translation>
 <translation id="2157660087437850958">инструмент за избор на емоджи</translation>
 <translation id="2157959690810728433">В ОПАШКАТА</translation>
@@ -282,7 +284,6 @@
 <translation id="2230624078793142213">Създаване на още</translation>
 <translation id="2236746079896696523">Превключвател за фоновото осветление на клавиатурата</translation>
 <translation id="2240366984605217732">Превключване на подредбата</translation>
-<translation id="2242381852034179222">Тази функция се управлява от администраторите ви</translation>
 <translation id="2244834438220057800">зелен</translation>
 <translation id="225692081236532131">Състояние на активирането</translation>
 <translation id="2267285889943769271">Добавяне на екранна снимка</translation>
@@ -500,6 +501,7 @@
 <translation id="3557205324756024651">Локална самоличност (по избор)</translation>
 <translation id="3565064564551103223">Разрешени IP адреси</translation>
 <translation id="3569407787324516067">Скрийнсейвър</translation>
+<translation id="3571184524500629183">Затваряне на търсенето</translation>
 <translation id="3577473026931028326">Нещо се обърка. Опитайте отново.</translation>
 <translation id="357889014807611375">Wi-Fi мрежа с отчитане</translation>
 <translation id="3583278742022654445">Сигналът е слаб. Приближете се до източника на Wi-Fi сигнал.</translation>
@@ -539,6 +541,7 @@
 <translation id="3780740315729837296">Задаване на клавиш на клавиатурата</translation>
 <translation id="3784455785234192852">Заключване</translation>
 <translation id="3785643128701396311">изкуство с пиксели</translation>
+<translation id="3799381533888781854">ИЗКЛЮЧЕНО – тази настройка се управлява от администратора ви.</translation>
 <translation id="380097101658023925">контроли за rgb</translation>
 <translation id="38114475217616659">Изчистване на цялата история</translation>
 <translation id="3820172043799983114">Невалиден ПИН код.</translation>
@@ -742,6 +745,7 @@
 <translation id="4809927044794281115">Светла тема</translation>
 <translation id="4813136279048157860">Моите изображения</translation>
 <translation id="4813345808229079766">Връзка</translation>
+<translation id="4824527342590024245">Засега не се поддържат преписи с по-малко от <ph name="MIN_WORD_LENGTH" /> думи</translation>
 <translation id="4830894019733815633">каньон</translation>
 <translation id="4832079907277790330">Избиране на папка в приложението Файлове…</translation>
 <translation id="4835901797422965222">Няма активни мрежи</translation>
@@ -770,6 +774,7 @@
 <translation id="4921665434385737356">За <ph name="NUM_SECONDS" /> секунди се заредиха <ph name="RATE" />.</translation>
 <translation id="4930320165497208503">За настройване или актуализиране на дадена връзка отворете <ph name="BEGIN_LINK" />Настройки<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Дата</translation>
+<translation id="4946927805998996217">Генерира се обобщение</translation>
 <translation id="4950314376641394653">Фърмуерът на <ph name="DEVICE_NAME" /> е актуализиран до версия <ph name="VERSION" /></translation>
 <translation id="4950893758552030541">тунел от дървета</translation>
 <translation id="4965661459364092269">Повторното задаване на безопасността завърши</translation>
@@ -830,6 +835,7 @@
 <translation id="5229104491259541281">Преобразуване на „<ph name="QUERY" />“</translation>
 <translation id="5229344016299762883">Изход от режима на цял екран</translation>
 <translation id="5234764350956374838">Отхвърляне</translation>
+<translation id="5236119614998611749">Генерирането на обобщение не бе успешно</translation>
 <translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{Администраторът ви е настроил <ph name="APP_NAME" /> така, че да се стартира автоматично всеки път, когато влезете в профила си.}=2{Администраторът ви е настроил <ph name="APP_NAME" /> и още 1 приложение така, че да се стартират автоматично всеки път, когато влезете в профила си.}other{Администраторът ви е настроил <ph name="APP_NAME" /> и още # приложения така, че да се стартират автоматично всеки път, когато влезете в профила си.}}</translation>
 <translation id="5248419081947706722">син</translation>
 <translation id="5252456968953390977">Роуминг</translation>
@@ -945,6 +951,7 @@
 <translation id="5860033963881614850">Изключено</translation>
 <translation id="5860491529813859533">Включване</translation>
 <translation id="5876385649737594562">Включете, за да изберете опции</translation>
+<translation id="5877503382465267833">Поставяне на пауза на <ph name="RECORDING_NAME" /></translation>
 <translation id="588258955323874662">Цял екран</translation>
 <translation id="5893975327266416093">Докоснете клавиш на клавиатурата, за да го зададете</translation>
 <translation id="5895138241574237353">Рестартиране</translation>
@@ -1162,6 +1169,7 @@
 <translation id="6910312834584889076">Капакът на скенера е отворен. Затворете го и опитайте отново.</translation>
 <translation id="6910845598686542904">изчисляване на моделите на гласовете, разпознати в записа;</translation>
 <translation id="6911383237894364323">Не може да се установи връзка с мултимедийните сървъри</translation>
+<translation id="6927968682840110570">Име на записа</translation>
 <translation id="6930242544192836755">Продължителност</translation>
 <translation id="6930597342185648547">Всичко за фона</translation>
 <translation id="6939667434404433010">Търсете по име на записа</translation>
@@ -1274,6 +1282,7 @@
 <translation id="7378170410161264436">„Рекордер“ може да създава преписи за записите с говор.
 За целта трябва да изтеглите модела за преписи (до 100 MB).</translation>
 <translation id="7384004438856720753">дворец</translation>
+<translation id="7388345524791662148">Още опции за <ph name="RECORDING_NAME" /></translation>
 <translation id="7388959671917308825">Вграден сензорен панел</translation>
 <translation id="7397270852490618635">Изключване на светлата тема</translation>
 <translation id="7401543881546089382">Изтриване на прекия път</translation>
@@ -1295,6 +1304,7 @@
 <translation id="7513770521371759388">долна част</translation>
 <translation id="7514365320538308">Изтегляне</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7519481256236810334">Пускане на <ph name="RECORDING_NAME" /></translation>
 <translation id="7525067979554623046">Създаване</translation>
 <translation id="7528507600602050979">Помощното съдържание не е налично</translation>
 <translation id="7535791657097741517">Включване на светлата тема</translation>
@@ -1371,6 +1381,7 @@
 <translation id="7897043345768902965">пешеходна пътека</translation>
 <translation id="7902285181767404769">Заглушаване на известията по време на запис</translation>
 <translation id="7903695460270716054">Изберете подбрани произведения на изкуството и изображения</translation>
+<translation id="7912005977894000746">Назад към основната страница</translation>
 <translation id="7915220255123750251">Управление на настройките за името на точката за достъп (APN) за мрежата. Чрез APN се установява връзка между мобилна мрежа и интернет.</translation>
 <translation id="7936303884198020182">Не са намерени сървъри за имена</translation>
 <translation id="7942349550061667556">Червено</translation>

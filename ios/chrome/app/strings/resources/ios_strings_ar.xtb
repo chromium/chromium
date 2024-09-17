@@ -71,6 +71,7 @@
 <translation id="1377508275003315939">كلمات المرور</translation>
 <translation id="1383876407941801731">البحث</translation>
 <translation id="138618066238211776">المتابعة بحساب "<ph name="USER_NAME" />"</translation>
+<translation id="1396260204083880024">تم تسجيل الدخول باسم "<ph name="USER_NAME" />". عنوان البريد الإلكتروني المستخدَم هو <ph name="USER_EMAIL" />. يؤدي النقر على هذا الزر إلى فتح قائمة الحسابات.</translation>
 <translation id="1407135791313364759">فتح الكل</translation>
 <translation id="1408847409015257906">انقر على "الخصوصية والأمان".</translation>
 <translation id="1430915738399379752">طباعة</translation>
@@ -95,6 +96,7 @@
 <translation id="1513858653616922153">حذف كلمة المرور</translation>
 <translation id="1520027731907768768">تلقّي تنبيهات بشأن انخفاض أسعار المنتجات التي تتتبّعها</translation>
 <translation id="1521774566618522728">نشط اليوم</translation>
+<translation id="1524563461097350801">لا، شكرًا</translation>
 <translation id="1536390784834419204">ترجمة الصفحة</translation>
 <translation id="1540800554400757039">العنوان 1</translation>
 <translation id="1580715474678097352">الحماية من المواقع الإلكترونية الضارّة</translation>
@@ -477,6 +479,7 @@
 <translation id="3958312024468322930">اسحب رمز التطبيق إلى شريط التطبيقات في أسفل شاشتك الرئيسية</translation>
 <translation id="3962326069546168954">حفظ</translation>
 <translation id="3967822245660637423">اكتمل التنزيل</translation>
+<translation id="398604237578616937">تم تسجيل الدخول باسم "<ph name="USER_EMAIL" />". يؤدي النقر على هذا الزر إلى فتح قائمة الحسابات.</translation>
 <translation id="3987993985790029246">نسخ الرابط</translation>
 <translation id="3992684624889376114">لمحة حول هذه الصفحة</translation>
 <translation id="3994422733891749358">اختيار الإشعارات التي تريد تلقّيها</translation>
@@ -582,6 +585,7 @@
 <translation id="4636930964841734540">معلومات</translation>
 <translation id="4642472735733036929">توقّفت عملية تتبُّع السعر.</translation>
 <translation id="4645575059429386691">يديره والداك</translation>
+<translation id="4647758699119474035">‏تم تسجيل الدخول باسم "<ph name="USER_NAME" />". عنوان البريد الإلكتروني المستخدَم هو <ph name="USER_EMAIL" />. حدث خطأ في حساب Google. يؤدي النقر على هذا الزر إلى فتح قائمة الحسابات.</translation>
 <translation id="4650125387981512669">المتابعة بحساب "<ph name="FIRST_RUN_ACCOUNT_NAME" />"</translation>
 <translation id="4652817563047461855">يُرجى التأكّد من أنّ كلمات المرور الخاصة بك آمنة، وتحديد ما إذا تم اختراقها، والحصول على نصائح للمساعدة في حماية نفسك على الإنترنت. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="4658335131052370646">حفظ</translation>
@@ -727,6 +731,7 @@
 
 لابد من تفعيل Handoff كذلك في القسم العام من الإعدادات، ولابد من استخدام أجهزتك لنفس حساب iCloud.</translation>
 <translation id="5551825465462320939">تابِع الأخبار والرياضة وغير ذلك حسب اهتماماتك.</translation>
+<translation id="5555008247722361784">‏تم تسجيل الدخول باسم "<ph name="USER_EMAIL" />". حدث خطأ في حساب Google. يؤدي النقر على هذا الزر إلى فتح قائمة الحسابات.</translation>
 <translation id="5556459405103347317">إعادة التحميل</translation>
 <translation id="555749644339804659">جارٍ التحقّق من كلمات المرور…</translation>
 <translation id="5559567453458728487">تحويل وحدات القياس التي تم العثور عليها على الويب</translation>
@@ -1238,6 +1243,7 @@
 <translation id="8349305172487531364">شريط الإشارات</translation>
 <translation id="8366466717204352506">تعذّر التحقُّق من كلمات المرور</translation>
 <translation id="8368001212524806591">تتبُّع السعر</translation>
+<translation id="8370406443343902172">جارٍ الانتقال إلى الإعدادات...</translation>
 <translation id="8378714024927312812">بإدارة مؤسستك</translation>
 <translation id="8386068868580335421">إعادة ضبط</translation>
 <translation id="8393700583063109961">إرسال رسالة</translation>
@@ -1278,6 +1284,7 @@
 <translation id="8571213806525832805">الأسابيع الـ4 الأخيرة</translation>
 <translation id="8577056989960190117">الملء التلقائي لسنة انتهاء الصلاحية <ph name="YEAR" /></translation>
 <translation id="8588404856427128947">غير مفعَّل</translation>
+<translation id="8590286732816598906">مجموعة علامات التبويب "<ph name="GROUP_TITLE" />"، القائمة.</translation>
 <translation id="8593565399399144771">يمكنك فتح علامة تبويب جديدة هنا.</translation>
 <translation id="860043288473659153">اسم حامل البطاقة</translation>
 <translation id="8605219856220328675">إغلاق علامة التبويب.</translation>
@@ -1377,6 +1384,7 @@
 <translation id="9162432979321511934">‏فعِّل AutoFill Passwords (الملء التلقائي لكلمات المرور).</translation>
 <translation id="9165320910061267720">‏لتلقِّي تنبيهات بشأن انخفاض الأسعار، عليك تفعيل الإشعارات من إعدادات iOS.</translation>
 <translation id="9179151630575358778">يؤدي هذا الإجراء إلى إخفاء هذا العنصر</translation>
+<translation id="918129721713827015">عرض علامات التبويب في مجموعة</translation>
 <translation id="9191031968346938109">إضافة إلى…</translation>
 <translation id="9200875785104711666">قبل <ph name="TIME" /> يوم</translation>
 <translation id="9203116392574189331">Handoff</translation>
