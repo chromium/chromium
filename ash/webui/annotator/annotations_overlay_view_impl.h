@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_ASH_ANNOTATOR_ANNOTATIONS_OVERLAY_VIEW_IMPL_H_
-#define CHROME_BROWSER_UI_ASH_ANNOTATOR_ANNOTATIONS_OVERLAY_VIEW_IMPL_H_
+#ifndef ASH_WEBUI_ANNOTATOR_ANNOTATIONS_OVERLAY_VIEW_IMPL_H_
+#define ASH_WEBUI_ANNOTATOR_ANNOTATIONS_OVERLAY_VIEW_IMPL_H_
 
 #include "ash/public/cpp/annotator/annotations_overlay_view.h"
 #include "base/memory/raw_ptr.h"
@@ -42,4 +42,4 @@ class AnnotationsOverlayViewImpl : public ash::AnnotationsOverlayView {
   base::WeakPtrFactory<AnnotationsOverlayViewImpl> weak_ptr_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_UI_ASH_ANNOTATOR_ANNOTATIONS_OVERLAY_VIEW_IMPL_H_
+#endif  // ASH_WEBUI_ANNOTATOR_ANNOTATIONS_OVERLAY_VIEW_IMPL_H_

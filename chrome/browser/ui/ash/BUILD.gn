@@ -113,7 +113,6 @@ static_library("ash") {
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/ash/accelerator",
     "//chrome/browser/ui/ash/accessibility",
-    "//chrome/browser/ui/ash/annotator",
     "//chrome/browser/ui/ash/app_access",
     "//chrome/browser/ui/ash/arc",
     "//chrome/browser/ui/ash/back_gesture",

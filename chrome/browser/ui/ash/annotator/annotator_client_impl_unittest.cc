@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/ash/annotator/annotator_client_impl.h"
+#include "ash/webui/annotator/annotator_client_impl.h"
 
 #include "ash/public/cpp/annotator/annotator_tool.h"
 #include "ash/public/cpp/test/mock_annotator_controller.h"

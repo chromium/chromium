@@ -6,40 +6,14 @@ import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos_ash)
 
-static_library("annotator") {
-  sources = [
-    "annotations_overlay_view_impl.cc",
-    "annotations_overlay_view_impl.h",
-    "annotator_client_impl.cc",
-    "annotator_client_impl.h",
-  ]
-
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
-  deps = [
-    "//ash",
-    "//ash/public/cpp",
-    "//ash/webui/annotator",
-    "//ash/webui/projector_app/public/cpp",
-    "//base",
-    "//chromeos/ash/components/browser_context_helper",
-    "//components/user_manager",
-    "//ui/base/metadata",
-    "//ui/views/controls/webview",
-    "//url",
-  ]
-}
-
 source_set("unit_tests") {
   testonly = true
 
   sources = [ "annotator_client_impl_unittest.cc" ]
 
   deps = [
-    ":annotator",
     "//ash/public/cpp",
     "//ash/public/cpp:test_support",
-    "//ash/webui/annotator",
     "//ash/webui/annotator",
     "//ash/webui/annotator:test_support",
     "//ash/webui/annotator/public/cpp",
@@ -58,9 +32,9 @@ source_set("browser_tests") {
   sources = [ "annotator_client_impl_browsertest.cc" ]
 
   deps = [
-    ":annotator",
     "//ash",
     "//ash/public/cpp",
+    "//ash/webui/annotator",
     "//ash/webui/annotator/public/cpp",
     "//ash/webui/media_app_ui:buildflags",
     "//ash/webui/projector_app:buildflags",

@@ -38,7 +38,6 @@ include_rules = [
   "+chrome/browser/exo_parts.h",
   "+chrome/browser/profiles/profile.h",
   "+chrome/browser/ui/ash/accessibility",
-  "+chrome/browser/ui/ash/annotator",
   "+chrome/browser/ui/ash/app_access",
   "+chrome/browser/ui/ash/arc",
   "+chrome/browser/ui/ash/cast_config",

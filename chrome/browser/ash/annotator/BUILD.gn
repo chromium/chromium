@@ -37,11 +37,11 @@ source_set("browser_tests") {
     sources = [ "annotator_ui_integration_browsertest.cc" ]
 
     deps = [
+      "//ash/webui/annotator",
       "//ash/webui/annotator/public/cpp",
       "//ash/webui/media_app_ui:browser_test_support",
       "//ash/webui/projector_app/public/cpp",
       "//base",
-      "//chrome/browser/ui/ash/annotator",
       "//chrome/test:test_support",
       "//content/public/browser",
       "//content/public/common",

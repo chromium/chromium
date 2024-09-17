@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_ASH_ANNOTATOR_ANNOTATOR_CLIENT_IMPL_H_
-#define CHROME_BROWSER_UI_ASH_ANNOTATOR_ANNOTATOR_CLIENT_IMPL_H_
+#ifndef ASH_WEBUI_ANNOTATOR_ANNOTATOR_CLIENT_IMPL_H_
+#define ASH_WEBUI_ANNOTATOR_ANNOTATOR_CLIENT_IMPL_H_
 
 #include "ash/public/cpp/annotator/annotator_controller_base.h"
 #include "ash/public/cpp/annotator/annotator_tool.h"
@@ -40,4 +40,4 @@ class AnnotatorClientImpl : public ash::AnnotatorClient {
   raw_ptr<ash::UntrustedAnnotatorPageHandlerImpl> annotator_handler_ = nullptr;
 };
 
-#endif  // CHROME_BROWSER_UI_ASH_ANNOTATOR_ANNOTATOR_CLIENT_IMPL_H_
+#endif  // ASH_WEBUI_ANNOTATOR_ANNOTATOR_CLIENT_IMPL_H_

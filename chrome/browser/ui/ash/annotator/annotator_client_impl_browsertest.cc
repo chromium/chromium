@@ -2,20 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/ash/annotator/annotator_client_impl.h"
+#include "ash/webui/annotator/annotator_client_impl.h"
 
 #include <string>
 
 #include "ash/annotator/annotator_controller.h"
 #include "ash/public/cpp/annotator/annotations_overlay_view.h"
 #include "ash/shell.h"
+#include "ash/webui/annotator/annotations_overlay_view_impl.h"
 #include "ash/webui/annotator/public/cpp/annotator_client.h"
 #include "ash/webui/media_app_ui/buildflags.h"
 #include "ash/webui/projector_app/buildflags.h"
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
 #include "base/functional/callback_forward.h"
 #include "base/run_loop.h"
-#include "chrome/browser/ui/ash/annotator/annotations_overlay_view_impl.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/ash/annotator/annotations_overlay_view_impl.h"
+#include "ash/webui/annotator/annotations_overlay_view_impl.h"
 
 #include <memory>
 
@@ -32,8 +32,9 @@ AnnotationsOverlayViewImpl::AnnotationsOverlayViewImpl(
   // to avoid stalling the initialization of recording, we will do this
   // asynchronously.
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-    FROM_HERE, base::BindOnce(&AnnotationsOverlayViewImpl::InitializeAnnotator,
-                                weak_ptr_factory_.GetWeakPtr()));
+      FROM_HERE,
+      base::BindOnce(&AnnotationsOverlayViewImpl::InitializeAnnotator,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 AnnotationsOverlayViewImpl::~AnnotationsOverlayViewImpl() = default;

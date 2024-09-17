@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/ash/annotator/annotator_client_impl.h"
+#include "ash/webui/annotator/annotator_client_impl.h"
 
 #include "ash/annotator/annotator_controller.h"
 #include "ash/public/cpp/annotator/annotator_tool.h"
 #include "ash/shell.h"
+#include "ash/webui/annotator/annotations_overlay_view_impl.h"
 #include "ash/webui/annotator/untrusted_annotator_page_handler_impl.h"
-#include "chrome/browser/ui/ash/annotator/annotations_overlay_view_impl.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/user_manager/user_manager.h"
 

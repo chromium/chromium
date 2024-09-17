@@ -7,7 +7,6 @@ include_rules = [
   # refactor //chrome/browser/ash to break these dependencies; see b/332804822.
   # Whenever possible, avoid adding new //chrome dependencies to this list.
   "+chrome/browser/ash/annotator",
-  "+chrome/browser/ui/ash/annotator",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/browser.h",
   "+chrome/browser/ui/tabs",
