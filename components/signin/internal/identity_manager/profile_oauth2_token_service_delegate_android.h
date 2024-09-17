@@ -53,14 +53,6 @@ class ProfileOAuth2TokenServiceDelegateAndroid
       const std::vector<CoreAccountInfo>& core_account_infos,
       const std::optional<CoreAccountId>& primary_account_id) override;
 
-  // Resumes the reload of accounts once the account seeding is complete.
-  // TODO(crbug.com/40615112) Once ProfileOAuth2TokenServiceDelegate.java is
-  // internalized, use CoreAccountId instead of String.
-  void ReloadAllAccountsWithPrimaryAccountAfterSeeding(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jstring>& j_primary_account_id,
-      const base::android::JavaParamRef<jobjectArray>& j_device_account_names);
-
   // Takes a the signed in sync account as well as all the other
   // android account ids and check the token status of each.
   // NOTE: TokenAvailable notifications will be sent for all accounts, even if

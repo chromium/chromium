@@ -5,7 +5,6 @@
 package org.chromium.components.signin.identitymanager;
 
 import androidx.annotation.MainThread;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
@@ -132,23 +131,19 @@ final class ProfileOAuth2TokenServiceDelegate {
     interface Natives {
         /**
          * Called to C++ when fetching of an OAuth2 token is finished.
+         *
          * @param authToken The string value of the OAuth2 token.
          * @param expirationTimeSecs The number of seconds after the Unix epoch when the token is
-         *         scheduled to expire. It is set to 0 if there's no known expiration time.
-         * @param isTransientError Indicates if the error is transient (network timeout or
-         *          * unavailable, etc) or persistent (bad credentials, permission denied, etc).
+         *     scheduled to expire. It is set to 0 if there's no known expiration time.
+         * @param isTransientError Indicates if the error is transient (network timeout or *
+         *     unavailable, etc) or persistent (bad credentials, permission denied, etc).
          * @param nativeCallback the pointer to the native callback that should be run upon
-         *         completion.
+         *     completion.
          */
         void onOAuth2TokenFetched(
                 String authToken,
                 long expirationTimeSecs,
                 boolean isTransientError,
                 long nativeCallback);
-
-        void reloadAllAccountsWithPrimaryAccountAfterSeeding(
-                long nativeProfileOAuth2TokenServiceDelegateAndroid,
-                @Nullable String accountId,
-                String[] deviceAccountEmails);
     }
 }

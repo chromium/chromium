@@ -273,29 +273,6 @@ void ProfileOAuth2TokenServiceDelegateAndroid::
       /*should_remove_stale_accounts=*/true);
 }
 
-void ProfileOAuth2TokenServiceDelegateAndroid::
-    ReloadAllAccountsWithPrimaryAccountAfterSeeding(
-        JNIEnv* env,
-        const base::android::JavaParamRef<jstring>& j_primary_account_id,
-        const base::android::JavaParamRef<jobjectArray>&
-            j_device_account_names) {
-  std::optional<CoreAccountId> primary_account_id;
-  if (j_primary_account_id) {
-    primary_account_id = CoreAccountId::FromString(
-        ConvertJavaStringToUTF8(env, j_primary_account_id));
-  }
-  std::vector<std::string> device_account_names;
-  base::android::AppendJavaStringArrayToStringVector(
-      env, j_device_account_names, &device_account_names);
-  std::vector<CoreAccountId> account_ids;
-  for (const std::string& name : device_account_names) {
-    CoreAccountId id(MapAccountNameToAccountId(name));
-    if (!id.empty())
-      account_ids.push_back(std::move(id));
-  }
-  UpdateAccountList(primary_account_id, GetValidAccounts(), account_ids);
-}
-
 void ProfileOAuth2TokenServiceDelegateAndroid::UpdateAccountList(
     const std::optional<CoreAccountId>& signed_in_account_id,
     const std::vector<CoreAccountId>& prev_ids,
