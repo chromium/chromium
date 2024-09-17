@@ -1564,7 +1564,7 @@ static bool SnappedMediaFeatureEval(const MediaQueryExpValue& value,
   }
   switch (value.Id()) {
     case CSSValueID::kNone:
-      return media_values.Snapped();
+      return !media_values.Snapped();
     case CSSValueID::kX:
       return media_values.SnappedX();
     case CSSValueID::kY:
