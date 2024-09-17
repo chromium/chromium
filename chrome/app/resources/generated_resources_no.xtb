@@ -4797,7 +4797,7 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren og e
 <translation id="4434611816075088065">Det er ikke noe mer du trenger å ta stilling til akkurat nå</translation>
 <translation id="443475966875174318">Oppdater eller fjern inkompatible programmer</translation>
 <translation id="443503224864902151">Logger deg av de fleste nettsteder. Du forblir pålogget Google-kontoen din, slik at de synkroniserte dataene dine kan slettes.</translation>
-<translation id="4437879751057074691">Tilby å lagre passord og passnøkler</translation>
+<translation id="4437879751057074691">Bli tilbudt å lagre passord og passnøkler</translation>
 <translation id="4437947179446780764">Legg til en egendefinert DNS-tjenesteleverandør</translation>
 <translation id="4438043733494739848">Gjennomsiktig</translation>
 <translation id="4441124369922430666">Vil du starte denne appen automatisk når maskinen slås på?</translation>
@@ -7733,7 +7733,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="6642720633335369752">For å se alle åpne appvinduer, sveip opp fra bunnen og hold inne.</translation>
 <translation id="664290675870910564">Nettverksvalg</translation>
 <translation id="6643016212128521049">Tøm</translation>
-<translation id="6644512095122093795">Tilby å lagre passord</translation>
+<translation id="6644512095122093795">Bli tilbudt å lagre passord</translation>
 <translation id="6644513150317163574">Ugyldig nettadresseformat. Tjeneren må spesifiseres med vertsnavn når autentisering via global pålogging brukes.</translation>
 <translation id="6644846457769259194">Oppdaterer enheten din (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6646476869708241165">Slå av rask sammenkobling</translation>

@@ -67,7 +67,7 @@
 <translation id="427987768447457592">Новая группа вкладок</translation>
 <translation id="4338724047016295066">Неактивные вкладки будут закрываться автоматически. Их всегда можно найти в разделе "История".</translation>
 <translation id="4371591986692297148">неактивно</translation>
-<translation id="4460014764210899310">Отменить создание группы</translation>
+<translation id="4460014764210899310">Разгруппировать</translation>
 <translation id="4648718555153979859">Вкладки сгруппированы здесь</translation>
 <translation id="4686942373615810936">Создано только что</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{Закрывать через 1 день}one{Закрывать через <ph name="DAY_COUNT_MANY" /> день}few{Закрывать через <ph name="DAY_COUNT_MANY" /> дня}many{Закрывать через <ph name="DAY_COUNT_MANY" /> дней}other{Закрывать через <ph name="DAY_COUNT_MANY" /> дня}}</translation>

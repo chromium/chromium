@@ -497,7 +497,7 @@
 <translation id="1876116428946561107">您尚未保存任何地址。请添加地址，以便在 Chrome 中使用。</translation>
 <translation id="1876399092304384674">按日期</translation>
 <translation id="187918866476621466">打开启动页</translation>
-<translation id="1880901968112404879">如果想在下次购物时更快捷地付款，请将您的付款卡信息、已加密的安全码以及账单邮寄地址保存到您的 Google 账号中</translation>
+<translation id="1880901968112404879">将银行卡、加密的安全码和账单邮寄地址保存到 Google 账号，下次就能更快捷地付款</translation>
 <translation id="1883255238294161206">收起列表</translation>
 <translation id="1884843295353628214">爵士乐</translation>
 <translation id="1890171020361705182">恐龙游戏。在这款游戏中，您要协助一头正在荒野中奔跑的像素化恐龙躲避仙人掌和翼手龙。您只需在听到提示音时点按一下空格键，即可让恐龙跃过障碍物。</translation>
@@ -2588,7 +2588,7 @@
 <translation id="5919090499915321845">B10</translation>
 <translation id="5920262536204764679">{NUM_COOKIES,plural, =1{正在使用 1 个}other{正在使用 # 个}}</translation>
 <translation id="5921185718311485855">已开启</translation>
-<translation id="5921639886840618607">将银行卡信息保存到 Google 账号中？</translation>
+<translation id="5921639886840618607">要将银行卡保存到 Google 账号吗？</translation>
 <translation id="5921952831792678223">皮卡车</translation>
 <translation id="5922853866070715753">即将完成</translation>
 <translation id="5923492272538889093">要使用设备解锁来取代银行卡验证码 (CVC)吗？</translation>

@@ -167,7 +167,7 @@
 <translation id="2305020378527873881">Kanporatu da <ph name="VOLUME_NAME" />.</translation>
 <translation id="2307462900900812319">Konfiguratu sarea</translation>
 <translation id="2312704192806647271">{COUNT,plural, =1{Ezin da aurkitu <ph name="BEGIN_LIST" /><ph name="END_LIST" /> identifikatzailearekin lotutako luzapenik. Jarri administratzailearekin harremanetan.}other{Ezin da aurkitu <ph name="BEGIN_LIST" /><ph name="END_LIST" /> identifikatzaileekin lotutako luzapenik. Jarri administratzailearekin harremanetan.}}</translation>
-<translation id="2325650632570794183">Ez dira mota horretako fitxategiak onartzen. Horrelako fitxategiak ireki ditzaketen aplikazioak aurkitzeko, zoaz Chrome Web Store dendara.</translation>
+<translation id="2325650632570794183">Ez dira mota horretako fitxategiak onartzen. Horrelako fitxategiak ireki ditzaketen aplikazioak aurkitzeko, zoaz Chrome Web Store-ra.</translation>
 <translation id="2326539130272988168">Bulgariarra</translation>
 <translation id="233822363739146957">Ez dago fitxategi guztiak sinkronizatzeko behar adina toki biltegian</translation>
 <translation id="23721837607121582">Deskargatu mugikorreko profila, <ph name="NETWORK_INDEX" /> / <ph name="NETWORK_COUNT" /> sare, <ph name="NETWORK_NAME" /></translation>
