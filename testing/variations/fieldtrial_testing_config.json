@@ -22514,6 +22514,38 @@
             ]
         }
     ],
+    "SplitCacheByNavigationInitiatorSite": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "CrossSiteMainFrameNavigationBoolean_CANARY_DEV_20240916",
+                    "enable_features": [
+                        "SplitCacheByCrossSiteMainFrameNavigationBoolean"
+                    ]
+                },
+                {
+                    "name": "MainFrameNavigationInitiator_CANARY_DEV_20240916",
+                    "enable_features": [
+                        "SplitCacheByMainFrameNavigationInitiator"
+                    ]
+                },
+                {
+                    "name": "NavigationInitiator_CANARY_DEV_20240916",
+                    "enable_features": [
+                        "SplitCacheByNavigationInitiator"
+                    ]
+                }
+            ]
+        }
+    ],
     "SplitCacheByNetworkIsolationKey": [
         {
             "platforms": [
