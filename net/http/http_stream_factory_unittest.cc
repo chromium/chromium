@@ -2029,6 +2029,13 @@ TEST_F(HttpStreamFactoryTest,
 // Tests that when a new SpdySession is established, duplicated idle H2 sockets
 // to the same server are closed.
 TEST_F(HttpStreamFactoryTest, NewSpdySessionCloseIdleH2Sockets) {
+  // Explicitly disable the HappyEyeballsV3 feature because this test relies on
+  // ClientSocketPool. When HappyEyeballsV3 is enabled we immediately create
+  // a SpdySession after negotiating to use HTTP/2 so there would be no idle
+  // HTTP/2 sockets when the feature is enabled.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(features::kHappyEyeballsV3);
+
   SpdySessionDependencies session_deps(
       ConfiguredProxyResolutionService::CreateDirect());
 
