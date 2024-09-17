@@ -21,7 +21,7 @@
 
 namespace {
 
-using IteratorResult = AccountProfileMapper::IteratorResult;
+using IteratorResult = SystemIdentityManager::IteratorResult;
 
 // Filter class skipping restricted account.
 class SkipRestricted {
@@ -140,14 +140,11 @@ class Iterator {
 
 // Helper function to iterator over ChromeIdentityService identities.
 template <typename T, typename F>
-typename T::ResultType IterateOverIdentities(T t,
-                                             F f,
-                                             std::string_view profile_name) {
+typename T::ResultType IterateOverIdentities(T t, F f) {
   using Iter = Iterator<T, F>;
   Iter iterator(std::move(t), std::move(f));
-  GetApplicationContext()->GetAccountProfileMapper()->IterateOverIdentities(
-      base::BindRepeating(&Iter::Run, base::Unretained(&iterator)),
-      profile_name);
+  GetApplicationContext()->GetSystemIdentityManager()->IterateOverIdentities(
+      base::BindRepeating(&Iter::Run, base::Unretained(&iterator)));
   return iterator.Result();
 }
 
@@ -162,9 +159,8 @@ PatternAccountRestriction PatternAccountRestrictionFromPreference(
 }  // anonymous namespace.
 
 ChromeAccountManagerService::ChromeAccountManagerService(
-    PrefService* pref_service,
-    std::string_view profile_name)
-    : pref_service_(pref_service), profile_name_(profile_name) {
+    PrefService* pref_service)
+    : pref_service_(pref_service) {
   // pref_service is null in test environment. In prod environment pref_service
   // comes from GetApplicationContext()->GetLocalState() and couldn't be null.
   if (pref_service_) {
@@ -177,25 +173,21 @@ ChromeAccountManagerService::ChromeAccountManagerService(
     // Force initialisation of `restriction_`.
     UpdateRestriction();
   }
-  GetApplicationContext()->GetAccountProfileMapper()->AddObserver(
-      this, profile_name_);
+  GetApplicationContext()->GetSystemIdentityManager()->AddObserver(this);
 }
 
 ChromeAccountManagerService::~ChromeAccountManagerService() {
-  GetApplicationContext()->GetAccountProfileMapper()->RemoveObserver(
-      this, profile_name_);
+  GetApplicationContext()->GetSystemIdentityManager()->RemoveObserver(this);
 }
 
 bool ChromeAccountManagerService::HasIdentities() const {
   return IterateOverIdentities(FindFirstIdentity{},
-                               SkipRestricted{restriction_},
-                               profile_name_) != nil;
+                               SkipRestricted{restriction_}) != nil;
 }
 
 bool ChromeAccountManagerService::HasRestrictedIdentities() const {
   return IterateOverIdentities(FindFirstIdentity{},
-                               KeepRestricted{restriction_},
-                               profile_name_) != nil;
+                               KeepRestricted{restriction_}) != nil;
 }
 
 bool ChromeAccountManagerService::IsValidIdentity(
@@ -216,8 +208,7 @@ id<SystemIdentity> ChromeAccountManagerService::GetIdentityWithGaiaID(
 
   return IterateOverIdentities(
       FindFirstIdentity{},
-      CombineOr{SkipRestricted{restriction_}, KeepGaiaID{gaia_id}},
-      profile_name_);
+      CombineOr{SkipRestricted{restriction_}, KeepGaiaID{gaia_id}});
 }
 
 id<SystemIdentity> ChromeAccountManagerService::GetIdentityWithGaiaID(
@@ -234,12 +225,12 @@ id<SystemIdentity> ChromeAccountManagerService::GetIdentityWithGaiaID(
 NSArray<id<SystemIdentity>>* ChromeAccountManagerService::GetAllIdentities()
     const {
   return IterateOverIdentities(CollectIdentities{},
-                               SkipRestricted{restriction_}, profile_name_);
+                               SkipRestricted{restriction_});
 }
 
 id<SystemIdentity> ChromeAccountManagerService::GetDefaultIdentity() const {
   return IterateOverIdentities(FindFirstIdentity{},
-                               SkipRestricted{restriction_}, profile_name_);
+                               SkipRestricted{restriction_});
 }
 
 UIImage* ChromeAccountManagerService::GetIdentityAvatarWithIdentity(
@@ -253,7 +244,7 @@ UIImage* ChromeAccountManagerService::GetIdentityAvatarWithIdentity(
 
 bool ChromeAccountManagerService::IsServiceSupported() const {
   return GetApplicationContext()
-      ->GetAccountProfileMapper()
+      ->GetSystemIdentityManager()
       ->IsSigninSupported();
 }
 

@@ -7,6 +7,8 @@
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/ui/settings/multi_identity/switch_profile_settings_mediator.h"
 #import "ios/chrome/browser/ui/settings/multi_identity/switch_profile_settings_view_controller.h"
 
@@ -35,8 +37,11 @@
 - (void)start {
   NSString* activeProfileName =
       base::SysUTF8ToNSString(_profile->GetProfileName());
+  ChromeAccountManagerService* accountManagerService =
+      ChromeAccountManagerServiceFactory::GetForProfile(_profile);
   _mediator = [[SwitchProfileSettingsMediator alloc]
-      initWithActiveProfileName:activeProfileName];
+      initWithChromeAccountManagerService:accountManagerService
+                        activeProfileName:activeProfileName];
   _viewController = [[SwitchProfileSettingsTableViewController alloc] init];
   _viewController.delegate = _mediator;
   _mediator.consumer = _viewController;

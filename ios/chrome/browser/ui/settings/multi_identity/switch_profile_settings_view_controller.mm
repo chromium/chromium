@@ -87,7 +87,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
     TableViewAccountItem* accountItemDetail =
         [[TableViewAccountItem alloc] initWithType:ItemTypeAccount];
     accountItemDetail.image = item.avatar;
-    accountItemDetail.text = item.profileName;
+    accountItemDetail.text = item.displayName;
+    accountItemDetail.detailText = item.profileName;
     // This is a hack to store `SwitchProfileSettingsItem` into
     // `TableViewAccountItem`.
     // `SwitchProfileSettingsItem` does not implement `SystemIdentity` protocol.

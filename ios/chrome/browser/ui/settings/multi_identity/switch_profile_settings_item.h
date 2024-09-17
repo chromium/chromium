@@ -11,9 +11,13 @@
 
 @interface SwitchProfileSettingsItem : NSObject
 
+@property(nonatomic, strong) NSString* displayName;
 @property(nonatomic, strong) NSString* profileName;
 @property(nonatomic, strong) UIImage* avatar;
 @property(nonatomic, assign) BOOL active;
+// `attachedGaiaId` is the first identity if multiple identities are attached to
+// the profile.
+@property(nonatomic, strong) NSString* attachedGaiaId;
 
 @end
 

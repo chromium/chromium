@@ -12,6 +12,7 @@ source_set("multi_identity") {
   deps = [
     ":multi_identity_ui",
     "//components/prefs",
+    "//ios/chrome/browser/profile/model:constants",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/application_context",
@@ -19,6 +20,7 @@ source_set("multi_identity") {
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:system_identity_manager",
     "//ios/public/provider/chrome/browser/signin:signin_resources_api",
   ]
 }
