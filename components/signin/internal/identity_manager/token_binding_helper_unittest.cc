@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/signin/public/base/session_binding_test_utils.h"
@@ -30,6 +31,9 @@ constexpr crypto::SignatureVerifier::SignatureAlgorithm
     kAcceptableAlgorithms[] = {crypto::SignatureVerifier::ECDSA_SHA256};
 constexpr unexportable_keys::BackgroundTaskPriority kTaskPriority =
     unexportable_keys::BackgroundTaskPriority::kUserVisible;
+
+constexpr char kGenerateAssertionResultHistogram[] =
+    "Signin.TokenBinding.GenerateAssertionResult";
 }  // namespace
 
 class TokenBindingHelperTest : public testing::Test {
@@ -45,6 +49,8 @@ class TokenBindingHelperTest : public testing::Test {
   unexportable_keys::UnexportableKeyService& unexportable_key_service() {
     return unexportable_key_service_;
   }
+
+  base::HistogramTester& histogram_tester() { return histogram_tester_; }
 
   unexportable_keys::UnexportableKeyId GenerateNewKey() {
     base::test::TestFuture<
@@ -77,6 +83,7 @@ class TokenBindingHelperTest : public testing::Test {
       crypto::UnexportableKeyProvider::Config()};
   unexportable_keys::UnexportableKeyServiceImpl unexportable_key_service_;
   TokenBindingHelper helper_;
+  base::HistogramTester histogram_tester_;
 };
 
 TEST_F(TokenBindingHelperTest, SetBindingKey) {
@@ -130,6 +137,9 @@ TEST_F(TokenBindingHelperTest, GenerateBindingKeyAssertion) {
   EXPECT_TRUE(signin::VerifyJwtSignature(
       assertion, *unexportable_key_service().GetAlgorithm(key_id),
       *unexportable_key_service().GetSubjectPublicKeyInfo(key_id)));
+  histogram_tester().ExpectUniqueSample(kGenerateAssertionResultHistogram,
+                                        TokenBindingHelper::kNoErrorForMetrics,
+                                        /*expected_bucket_count=*/1);
 }
 
 TEST_F(TokenBindingHelperTest, GenerateBindingKeyAssertionNoBindingKey) {
@@ -143,6 +153,9 @@ TEST_F(TokenBindingHelperTest, GenerateBindingKeyAssertionNoBindingKey) {
   std::string assertion = sign_future.Get<0>();
   EXPECT_TRUE(assertion.empty());
   EXPECT_EQ(sign_future.Get<1>(), std::nullopt);
+  histogram_tester().ExpectUniqueSample(kGenerateAssertionResultHistogram,
+                                        TokenBindingHelper::Error::kKeyNotFound,
+                                        /*expected_bucket_count=*/1);
 }
 
 TEST_F(TokenBindingHelperTest, GenerateBindingKeyAssertionInvalidBindingKey) {
@@ -158,4 +171,8 @@ TEST_F(TokenBindingHelperTest, GenerateBindingKeyAssertionInvalidBindingKey) {
   std::string assertion = sign_future.Get<0>();
   EXPECT_TRUE(assertion.empty());
   EXPECT_EQ(sign_future.Get<1>(), std::nullopt);
+  histogram_tester().ExpectUniqueSample(
+      kGenerateAssertionResultHistogram,
+      TokenBindingHelper::Error::kLoadKeyFailure,
+      /*expected_bucket_count=*/1);
 }

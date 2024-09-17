@@ -2544,6 +2544,17 @@ kept as long as profile signout is possible -->
   </summary>
 </histogram>
 
+<histogram name="Signin.TokenBinding.GenerateAssertionResult"
+    enum="TokenBindingGenerateAssertionResult" expires_after="2025-02-10">
+  <owner>alexilin@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records the result of the assertion generation for a bound token exchange
+    request. Recorded at the assertion generation completion, whenever a bound
+    refresh token is exchanged for an access token or authentication cookies.
+  </summary>
+</histogram>
+
 <histogram name="Signin.TokenTable.GetAllTokensSqlStatementValidity"
     enum="BooleanValid" expires_after="never">
 <!-- expires-never: This reports SQL validity statements for loading
