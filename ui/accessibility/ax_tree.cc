@@ -7,13 +7,16 @@
 #include <stddef.h>
 
 #include <numeric>
+#include <tuple>
 #include <utility>
 
 #include "base/auto_reset.h"
+#include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
+#include "base/containers/flat_set.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
@@ -30,6 +33,7 @@
 #include "ui/accessibility/ax_event.h"
 #include "ui/accessibility/ax_language_detection.h"
 #include "ui/accessibility/ax_node.h"
+#include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/accessibility/ax_node_position.h"
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/ax_selection.h"
@@ -321,8 +325,8 @@ struct AXTreeUpdateState {
       : pending_tree_update(pending_tree_update), tree(tree) {}
 
   // Returns whether this update removes |node|.
-  bool IsRemovedNode(const AXNode* node) const {
-    return base::Contains(removed_node_ids, node->id());
+  bool IsRemovedNode(const AXNodeID node_id) const {
+    return base::Contains(removed_node_ids, node_id);
   }
   // Returns whether this update creates a node marked by |node_id|.
   bool IsCreatedNode(AXNodeID node_id) const {
@@ -342,14 +346,26 @@ struct AXTreeUpdateState {
     PendingStructureChanges* data = GetPendingStructureChanges(node->id());
     if (!data)
       return false;
+
+    return IsReparentedNode(node->id(), data);
+  }
+
+  // Returns whether this update reparents the node represented by `node_data`.
+  bool IsReparentedNode(const AXNodeID node_id,
+                        const PendingStructureChanges* node_data) const {
+    if (!node_data) {
+      return false;
+    }
+
     // In order to know if the node will be reparented during the update,
     // we check if either the node will be destroyed or has been destroyed at
     // least once during the update.
     // Since this method is only allowed to be called after calculating all
-    // pending structure changes, |node_exists| tells us if the node should
-    // exist after all updates have been applied.
-    return (data->DoesNodeExpectNodeWillBeDestroyed() || IsRemovedNode(node)) &&
-           data->node_exists;
+    // pending structure changes, `node_exists` in `node_data` tells us if the
+    // node should exist after all updates have been applied.
+    return (node_data->DoesNodeExpectNodeWillBeDestroyed() ||
+            IsRemovedNode(node_id)) &&
+           node_data->node_exists;
   }
 
   // Returns true if the node should exist in the tree but doesn't have
@@ -564,6 +580,31 @@ struct AXTreeUpdateState {
     }
   }
 
+  // Returns (`deleting_node_ids`, `reparenting_node_ids`) that will happen as a
+  // result of the next pending update.
+  std::tuple<base::flat_set<AXNodeID>, base::flat_set<AXNodeID>>
+  GetDeletingAndReparentingNodes() const {
+    // TODO(crbug.com/367363880): Compute deleting | reparenting node ids during
+    // AXTree::ComputePendingChanges.
+    std::vector<AXNodeID> deleting_node_ids;
+    std::vector<AXNodeID> reparenting_node_ids;
+    for (auto& [node_id, pending_node_data] : node_id_to_pending_data) {
+      if (!pending_node_data->DoesNodeExpectNodeWillBeDestroyed()) {
+        continue;
+      }
+      if (IsReparentedNode(node_id, pending_node_data.get())) {
+        reparenting_node_ids.push_back(node_id);
+        continue;
+      }
+
+      deleting_node_ids.push_back(node_id);
+    }
+
+    return std::forward_as_tuple(
+        base::flat_set<AXNodeID>(std::move(deleting_node_ids)),
+        base::flat_set<AXNodeID>(std::move(reparenting_node_ids)));
+  }
+
   // Indicates the status for calculating what changes will occur during
   // an update before the update applies changes.
   AXTreePendingStructureStatus pending_update_status =
@@ -604,7 +645,7 @@ struct AXTreeUpdateState {
 
   // Keeps track of any nodes removed. Nodes are removed when their AXID no
   // longer exist in the parent |child_ids| list, or the node is part of to the
-  // subtree of the AXID that was explicitally cleared with |node_id_to_clear|.
+  // subtree of the AXID that was explicitly cleared with |node_id_to_clear|.
   // Used to identify re-parented nodes. A re-parented occurs when any AXID
   // is first removed from the tree then added to the tree again.
   std::set<AXNodeID> removed_node_ids;
@@ -845,7 +886,15 @@ void AXTree::Destroy() {
   if (!root_)
     return;
 
-  RecursivelyNotifyNodeDeletedForTreeTeardown(root_);
+  std::vector<AXNodeID> deleting_node_ids;
+  deleting_node_ids.reserve(size());
+  RecursivelyNotifyNodeWillBeDeletedForTreeTeardown(*root_, deleting_node_ids);
+
+  base::flat_set<AXNodeID> deleting_node_ids_unique(
+      std::move(deleting_node_ids));
+  for (AXTreeObserver& observer : observers_) {
+    observer.OnAtomicUpdateStarting(this, deleting_node_ids_unique, {});
+  }
 
   {
     ScopedTreeUpdateInProgressStateSetter tree_update_in_progress(*this);
@@ -1126,7 +1175,7 @@ bool AXTree::Unserialize(const AXTreeUpdate& update) {
           NotifySubtreeWillBeReparentedOrDeleted(node, &update_state);
         }
         if (data->DoesNodeExpectNodeWillBeDestroyed()) {
-          NotifyNodeWillBeReparentedOrDeleted(node, &update_state);
+          NotifyNodeWillBeReparentedOrDeleted(*node, update_state);
         }
       }
     }
@@ -1194,6 +1243,13 @@ bool AXTree::Unserialize(const AXTreeUpdate& update) {
                                      is_root_of_ignored_change);
       }
     }
+  }
+
+  auto [deleting_node_ids, reparenting_node_ids] =
+      update_state.GetDeletingAndReparentingNodes();
+  for (AXTreeObserver& observer : observers_) {
+    observer.OnAtomicUpdateStarting(this, deleting_node_ids,
+                                    reparenting_node_ids);
   }
 
   // Now that we have finished sending events for changes that will  happen,
@@ -1342,7 +1398,7 @@ bool AXTree::Unserialize(const AXTreeUpdate& update) {
           // the root without replacing it.
           bool is_subtree = !node->parent() ||
                             !update_state.IsCreatedNode(node->parent()) ||
-                            update_state.IsRemovedNode(node->parent()) ||
+                            update_state.IsRemovedNode(node->parent()->id()) ||
                             (node->parent() == root_ && root_updated);
           change = is_subtree ? AXTreeObserver::SUBTREE_CREATED
                               : AXTreeObserver::NODE_CREATED;
@@ -1922,38 +1978,47 @@ void AXTree::NotifySubtreeWillBeReparentedOrDeleted(
 }
 
 void AXTree::NotifyNodeWillBeReparentedOrDeleted(
-    AXNode* node,
-    const AXTreeUpdateState* update_state) {
+    AXNode& node,
+    const AXTreeUpdateState& update_state) {
   DCHECK(!GetTreeUpdateInProgressState());
 
-  AXNodeID id = node->id();
+  AXNodeID id = node.id();
   if (id == kInvalidAXNodeID)
     return;
 
   table_info_map_.erase(id);
 
-  bool notify_reparented = update_state->IsReparentedNode(node);
+  bool notify_reparented = update_state.IsReparentedNode(&node);
 
   for (AXTreeObserver& observer : observers_) {
-    if (notify_reparented)
-      observer.OnNodeWillBeReparented(this, node);
-    else
-      observer.OnNodeWillBeDeleted(this, node);
+    if (notify_reparented) {
+      observer.OnNodeWillBeReparented(this, &node);
+    } else {
+      observer.OnNodeWillBeDeleted(this, &node);
+    }
   }
 
   DCHECK(table_info_map_.find(id) == table_info_map_.end())
       << "Table info should never be recreated during node deletion";
 }
 
-void AXTree::RecursivelyNotifyNodeDeletedForTreeTeardown(AXNode* node) {
+void AXTree::RecursivelyNotifyNodeWillBeDeletedForTreeTeardown(
+    AXNode& node,
+    std::vector<AXNodeID>& deleted_nodes) {
+  // TODO(crbug.com/366332767): Migrate tree observers to listen for tree
+  // teardown by observing AXTreeManager.
   DCHECK(!GetTreeUpdateInProgressState());
-  if (node->id() == kInvalidAXNodeID)
+  if (node.id() == kInvalidAXNodeID) {
     return;
+  }
+
+  deleted_nodes.push_back(node.id());
 
   for (AXTreeObserver& observer : observers_)
-    observer.OnNodeDeleted(this, node->id());
-  for (AXNode* child : node->children()) {
-    RecursivelyNotifyNodeDeletedForTreeTeardown(child);
+    observer.OnNodeWillBeDeleted(this, &node);
+  for (ui::AXNode* child : node.children()) {
+    RecursivelyNotifyNodeWillBeDeletedForTreeTeardown(CHECK_DEREF(child),
+                                                      deleted_nodes);
   }
 }
 
@@ -2296,7 +2361,15 @@ void AXTree::DestroyNodeAndSubtree(AXNode* node,
   id_map_.erase(iter);
   node = nullptr;
 
-  for (AXNode* child : node_to_delete->children()) {
+  if (!update_state) {
+    // `update_state` will only be nullptr when destroying the entire tree. This
+    // is then our last chance to notify that the nodes were deleted.
+    for (AXTreeObserver& observer : observers_) {
+      observer.OnNodeDeleted(this, id);
+    }
+  }
+
+  for (ui::AXNode* child : node_to_delete->children()) {
     DestroyNodeAndSubtree(child, update_state);
   }
   if (update_state) {

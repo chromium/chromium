@@ -311,12 +311,14 @@ class AX_EXPORT AXTree {
 
   // Notify the delegate that |node| will be destroyed or reparented.
   void NotifyNodeWillBeReparentedOrDeleted(
-      AXNode* node,
-      const AXTreeUpdateState* update_state);
+      AXNode& node,
+      const AXTreeUpdateState& update_state);
 
   // Notify the delegate that |node| and all of its descendants will be
   // destroyed. This function is called during AXTree teardown.
-  void RecursivelyNotifyNodeDeletedForTreeTeardown(AXNode* node);
+  void RecursivelyNotifyNodeWillBeDeletedForTreeTeardown(
+      AXNode& node,
+      std::vector<AXNodeID>& deleted_nodes);
 
   // Notify the delegate that the node marked by |node_id| has been deleted.
   // We are passing the node id instead of ax node is because by the time this

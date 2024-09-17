@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check_deref.h"
 #include "base/debug/stack_trace.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/metrics_hashes.h"
@@ -428,6 +429,8 @@ ReadAnythingAppController::ReadAnythingAppController(
     model_.SetDataCollectionForScreen2xCallback(base::BindRepeating(
         &ReadAnythingAppController::Distill, base::Unretained(this)));
   }
+
+  model_observer_.Observe(&model_);
 }
 
 ReadAnythingAppController::~ReadAnythingAppController() {
@@ -453,7 +456,7 @@ void ReadAnythingAppController::OnNodeDataChanged(
 
 void ReadAnythingAppController::OnNodeWillBeDeleted(ui::AXTree* tree,
                                                     ui::AXNode* node) {
-  ui::AXNodeID node_id = node->id();
+  ui::AXNodeID node_id = CHECK_DEREF(node).id();
   if (model_.display_node_ids().contains(node_id)) {
     displayed_nodes_pending_deletion_.insert(node_id);
   }
@@ -484,11 +487,6 @@ void ReadAnythingAppController::AccessibilityEventReceived(
     const ui::AXTreeID& tree_id,
     const std::vector<ui::AXTreeUpdate>& updates,
     const std::vector<ui::AXEvent>& events) {
-  // We will need to observe the tree which is added only after the model
-  // processes an accessibility event. So check to see if the tree exists or not
-  // yet.
-  bool had_tree = model_.ContainsTree(tree_id);
-
   // Remove the const-ness of the data here so that subsequent methods can move
   // the data.
   model_.AccessibilityEventReceived(
@@ -499,13 +497,6 @@ void ReadAnythingAppController::AccessibilityEventReceived(
 
   if (tree_id != model_.active_tree_id()) {
     return;
-  }
-
-  // If the tree was added, start observing.
-  if (!had_tree && model_.ContainsTree(tree_id)) {
-    // Observe the tree.
-    ui::AXSerializableTree* tree = model_.GetTreeFromId(tree_id);
-    tree->AddObserver(this);
   }
 
   if (model_.requires_distillation()) {
@@ -1881,4 +1872,22 @@ void ReadAnythingAppController::UpdateDependencyParserModel(
 DependencyParserModel&
 ReadAnythingAppController::GetDependencyParserModelForTesting() {
   return GetDependencyParserModel();
+}
+
+void ReadAnythingAppController::OnTreeAdded(ui::AXTree* tree) {
+  auto observation =
+      std::make_unique<base::ScopedObservation<ui::AXTree, ui::AXTreeObserver>>(
+          this);
+  observation->Observe(tree);
+  tree_observers_.push_back(std::move(observation));
+}
+
+void ReadAnythingAppController::OnTreeRemoved(ui::AXTree* tree) {
+  auto it = base::ranges::find_if(tree_observers_,
+                                  [tree](const auto& observation) -> bool {
+                                    return observation->GetSource() == tree;
+                                  });
+  if (it != tree_observers_.end()) {
+    tree_observers_.erase(it);
+  }
 }

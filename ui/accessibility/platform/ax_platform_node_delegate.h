@@ -86,6 +86,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeDelegate {
   const AXNode* node() const { return node_; }
   AXNode* node() { return node_; }
   void SetNode(AXNode& node);
+  void reset_node() { node_ = nullptr; }
   AXTreeManager* GetTreeManager() const;
 
   // Returns the AXNodeID of the AXNode that this delegate encapsulates (if
@@ -669,7 +670,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeDelegate {
   // however reuse the same `AXNodeID`.
   //
   // Weak, `AXTree` owns this.
-  raw_ptr<AXNode, DanglingUntriaged> node_;
+  raw_ptr<AXNode> node_;
 };
 
 }  // namespace ui

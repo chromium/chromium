@@ -5,6 +5,7 @@
 #ifndef CHROME_RENDERER_ACCESSIBILITY_READ_ANYTHING_APP_CONTROLLER_H_
 #define CHROME_RENDERER_ACCESSIBILITY_READ_ANYTHING_APP_CONTROLLER_H_
 
+#include <deque>
 #include <map>
 #include <memory>
 #include <set>
@@ -13,6 +14,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/safe_ref.h"
+#include "base/scoped_observation.h"
 #include "chrome/common/accessibility/read_anything.mojom.h"
 #include "chrome/renderer/accessibility/read_aloud_app_model.h"
 #include "chrome/renderer/accessibility/read_anything_app_model.h"
@@ -72,6 +74,7 @@ class ReadAnythingAppControllerScreen2xDataCollectionModeTest;
 class ReadAnythingAppController
     : public content::RenderFrameObserver,
       public gin::Wrappable<ReadAnythingAppController>,
+      public ReadAnythingAppModel::ModelObserver,
       public read_anything::mojom::UntrustedPage,
       public ui::AXTreeObserver {
  public:
@@ -87,6 +90,10 @@ class ReadAnythingAppController
 
   // content::RenderFrameObserver:
   void OnDestruct() override;
+
+  // ReadAnythingAppModel::ModelObserver:
+  void OnTreeAdded(ui::AXTree* tree) override;
+  void OnTreeRemoved(ui::AXTree* tree) override;
 
  private:
   friend ReadAnythingAppControllerTest;
@@ -385,6 +392,17 @@ class ReadAnythingAppController
 
   // Model that holds Reading mode state for this controller.
   ReadAnythingAppModel model_;
+
+  // Observer of `model_`, which gets notified when trees are added / removed.
+  base::ScopedObservation<ReadAnythingAppModel,
+                          ReadAnythingAppModel::ModelObserver>
+      model_observer_{this};
+
+  // Observers of AXTrees, which are added / removed  as the `model_` changes
+  // state.
+  std::deque<
+      std::unique_ptr<base::ScopedObservation<ui::AXTree, ui::AXTreeObserver>>>
+      tree_observers_;
 
   // For metrics logging
   std::unique_ptr<ukm::MojoUkmRecorder> ukm_recorder_;
