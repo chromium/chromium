@@ -111,6 +111,7 @@ export {SettingsLiveTranslateElement} from './a11y_page/live_translate_section.j
 // </if>
 
 export {SettingsAiTabOrganizationSubpageElement} from './ai_page/ai_tab_organization_subpage.js';
+export {FeatureOptInState, SettingsAiPageFeaturePrefName} from './ai_page/constants.js';
 export {SettingsAppearanceFontsPageElement} from './appearance_page/appearance_fonts_page.js';
 export {CountryDetailManager, CountryDetailManagerImpl, SettingsAddressEditDialogElement} from './autofill_page/address_edit_dialog.js';
 export {SettingsAddressRemoveConfirmationDialogElement} from './autofill_page/address_remove_confirmation_dialog.js';

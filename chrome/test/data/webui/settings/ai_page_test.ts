@@ -5,8 +5,9 @@
 'chrome://settings/settings.js';
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {FeatureOptInState, SettingsAiPageFeaturePrefName as PrefName} from 'chrome://settings/lazy_load.js';
 import type {SettingsToggleButtonElement, SettingsAiPageElement, SettingsPrefsElement} from 'chrome://settings/settings.js';
-import {SettingsAiPageFeaturePrefName as PrefName, CrSettingsPrefs, loadTimeData, FeatureOptInState, resetRouterForTesting, Router, routes} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs, loadTimeData, resetRouterForTesting, Router, routes} from 'chrome://settings/settings.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {assertEquals, assertTrue, assertFalse} from 'chrome://webui-test/chai_assert.js';

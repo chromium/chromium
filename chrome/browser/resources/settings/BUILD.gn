@@ -275,6 +275,7 @@ build_webui("build") {
   non_web_component_files = [
     "a11y_page/a11y_browser_proxy.ts",
     "about_page/about_page_browser_proxy.ts",
+    "ai_page/constants.ts",
     "appearance_page/appearance_browser_proxy.ts",
     "autofill_page/address_edit_dialog_components.ts",
     "autofill_page/autofill_manager_proxy.ts",

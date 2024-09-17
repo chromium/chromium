@@ -176,6 +176,11 @@ IN_PROC_BROWSER_TEST_F(SettingsAiPageTest,
           "runMochaSuite('ExperimentalAdvancedPageRefreshDisabled')");
 }
 
+IN_PROC_BROWSER_TEST_F(SettingsTest, TabOrganizationSubpage) {
+  RunTest("settings/ai_subpage_test.js",
+          "runMochaSuite('TabOrganizationSubpage')");
+}
+
 IN_PROC_BROWSER_TEST_F(SettingsTest, ExtensionControlledIndicator) {
   RunTest("settings/extension_controlled_indicator_test.js", "mocha.run()");
 }
