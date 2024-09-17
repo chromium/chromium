@@ -49,6 +49,18 @@ class OverviewGridTest : public AshTestBase {
 
   ~OverviewGridTest() override = default;
 
+  // testing::Test:
+  void TearDown() override {
+    // The `grid_` must be destroyed before `WindowTreeHostManager` (which is
+    // destroyed within `AshTestBase::TearDown()`), or there are dangling
+    // `raw_ptr` failures to the root window(s). This also reflects the
+    // real-world destruction order, since `OverviewController` (which owns the
+    // grid) is destroyed before `WindowTreeHostManager` when the `Shell` is
+    // shut down.
+    grid_.reset();
+    AshTestBase::TearDown();
+  }
+
   void InitializeGrid(
       const std::vector<raw_ptr<aura::Window, VectorExperimental>>& windows) {
     aura::Window* root = Shell::GetPrimaryRootWindow();

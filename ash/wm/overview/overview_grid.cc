@@ -584,7 +584,11 @@ OverviewGrid::OverviewGrid(
               ? std::make_unique<SplitViewDragIndicators>(root_window)
               : nullptr),
       bounds_(GetGridBoundsInScreen(root_window)),
-      window_occlusion_calculator_(window_occlusion_calculator) {
+      window_occlusion_calculator_(window_occlusion_calculator),
+      enter_animation_task_pool_(root_window_->layer()->GetCompositor(),
+                                 // A rough estimate for how long the UI thread
+                                 // is congested. Can be adjusted if needed.
+                                 /*initial_blackout_period=*/kTransition / 3) {
   TRACE_EVENT0("ui", "OverviewGrid::OverviewGrid");
 
   for (aura::Window* window : windows) {
@@ -607,6 +611,19 @@ OverviewGrid::OverviewGrid(
     UpdateNumSavedDeskUnsupportedWindows(overview_item_base->GetWindows(),
                                          /*increment=*/true);
     item_list_.push_back(std::move(overview_item_base));
+  }
+
+  if (split_view_drag_indicators_) {
+    if (chromeos::features::AreOverviewSessionInitOptimizationsEnabled()) {
+      // Initializing the widget before it's visible is not required but can
+      // save a couple milliseconds when rendering the first frame of
+      // `SplitViewDragIndicators`.
+      enter_animation_task_pool_.AddTask(
+          base::BindOnce(&SplitViewDragIndicators::InitWidget,
+                         base::Unretained(split_view_drag_indicators_.get())));
+    } else {
+      split_view_drag_indicators_->InitWidget();
+    }
   }
 }
 
@@ -1382,6 +1399,8 @@ void OverviewGrid::OnStartingAnimationComplete(bool canceled) {
   metrics_tracker_.reset();
   if (canceled)
     return;
+
+  enter_animation_task_pool_.Flush();
 
   if (ShouldInitDesksWidget()) {
     auto presentation_time_recorder = CreatePresentationTimeHistogramRecorder(

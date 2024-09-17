@@ -199,7 +199,11 @@ void WaitForShowAnimation(aura::Window* window) {
 
 }  // namespace
 
-using OverviewControllerTest = AshTestBase;
+class OverviewControllerTest : public AshTestBase {
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      chromeos::features::kOverviewSessionInitOptimizations};
+};
 
 // Tests that press the overview key in keyboard when a window is being dragged
 // in clamshell mode should not toggle overview.

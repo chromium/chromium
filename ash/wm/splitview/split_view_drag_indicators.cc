@@ -656,15 +656,13 @@ class SplitViewDragIndicators::SplitViewDragIndicatorsView
 BEGIN_METADATA(SplitViewDragIndicators, SplitViewDragIndicatorsView)
 END_METADATA
 
-SplitViewDragIndicators::SplitViewDragIndicators(aura::Window* root_window) {
-  widget_ = CreateWidget(root_window);
-  widget_->SetBounds(GetWorkAreaBoundsNoOverlapWithShelf(root_window));
-  indicators_view_ =
-      widget_->SetContentsView(std::make_unique<SplitViewDragIndicatorsView>());
-  widget_->Show();
-}
+SplitViewDragIndicators::SplitViewDragIndicators(aura::Window* root_window)
+    : root_window_(root_window) {}
 
 SplitViewDragIndicators::~SplitViewDragIndicators() {
+  if (!widget_) {
+    return;
+  }
   // Allow some extra time for animations to finish.
   aura::Window* window = widget_->GetNativeWindow();
   if (window == nullptr)
@@ -676,7 +674,7 @@ SplitViewDragIndicators::~SplitViewDragIndicators() {
 
 void SplitViewDragIndicators::SetDraggedWindow(aura::Window* dragged_window) {
   DCHECK_EQ(WindowDraggingState::kNoDrag, current_window_dragging_state_);
-  indicators_view_->SetDraggedWindow(dragged_window);
+  GetOrCreateIndicatorsView().SetDraggedWindow(dragged_window);
 }
 
 void SplitViewDragIndicators::SetWindowDraggingState(
@@ -700,27 +698,51 @@ void SplitViewDragIndicators::SetWindowDraggingState(
   }
 
   current_window_dragging_state_ = window_dragging_state;
-  indicators_view_->OnWindowDraggingStateChanged(window_dragging_state);
+  GetOrCreateIndicatorsView().OnWindowDraggingStateChanged(
+      window_dragging_state);
 }
 
 void SplitViewDragIndicators::OnDisplayBoundsChanged() {
-  aura::Window* root_window = widget_->GetNativeView()->GetRootWindow();
-  widget_->SetBounds(GetWorkAreaBoundsNoOverlapWithShelf(root_window));
+  if (widget_) {
+    widget_->SetBounds(GetWorkAreaBoundsNoOverlapWithShelf(root_window_));
+  }
 }
 
 gfx::Rect SplitViewDragIndicators::GetLeftHighlightViewBounds() const {
-  return indicators_view_->left_highlight_view()->bounds();
+  return indicators_view_ ? indicators_view_->left_highlight_view()->bounds()
+                          : gfx::Rect();
+}
+
+void SplitViewDragIndicators::InitWidget() {
+  if (widget_) {
+    return;
+  }
+  widget_ = CreateWidget(root_window_);
+  widget_->SetBounds(GetWorkAreaBoundsNoOverlapWithShelf(root_window_));
+  CHECK(!indicators_view_);
+  indicators_view_ =
+      widget_->SetContentsView(std::make_unique<SplitViewDragIndicatorsView>());
+  widget_->Show();
 }
 
 gfx::Rect SplitViewDragIndicators::GetRightHighlightViewBoundsForTesting()
     const {
-  return indicators_view_->right_highlight_view()->bounds();
+  return indicators_view_ ? indicators_view_->right_highlight_view()->bounds()
+                          : gfx::Rect();
 }
 
 bool SplitViewDragIndicators::GetIndicatorTypeVisibilityForTesting(
     IndicatorType type) const {
-  return indicators_view_->GetViewForIndicatorType(type)->layer()->opacity() >
-         0.f;
+  return indicators_view_ ? indicators_view_->GetViewForIndicatorType(type)
+                                    ->layer()
+                                    ->opacity() > 0.f
+                          : false;
+}
+
+SplitViewDragIndicators::SplitViewDragIndicatorsView&
+SplitViewDragIndicators::GetOrCreateIndicatorsView() {
+  InitWidget();
+  return *indicators_view_;
 }
 
 }  // namespace ash

@@ -20,6 +20,8 @@
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/env.h"
 #include "ui/aura/test/test_window_delegate.h"
@@ -100,6 +102,8 @@ class SplitViewDragIndicatorsTest : public AshTestBase {
   }
 
  protected:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      chromeos::features::kOverviewSessionInitOptimizations};
   raw_ptr<OverviewSession, DanglingUntriaged> overview_session_ = nullptr;
 };
 
