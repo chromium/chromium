@@ -42,7 +42,9 @@ class CORE_EXPORT FindResults {
     using reference = BufferMatchResult&;
 
     Iterator() = default;
-    Iterator(const FindBuffer& find_buffer, TextSearcherICU* text_searcher);
+    Iterator(const FindBuffer& find_buffer,
+             TextSearcherICU* text_searcher,
+             const Vector<std::unique_ptr<TextSearcherICU>>& extra_searchers);
 
     bool operator==(const Iterator& other) const {
       return IsAtEnd() == other.IsAtEnd();
@@ -58,14 +60,15 @@ class CORE_EXPORT FindResults {
 
    private:
     bool IsAtEnd() const;
+    std::optional<MatchResultICU> EarliestMatch() const;
 
-    const FindBuffer* find_buffer_;
-    TextSearcherICU* text_searcher_;
-    std::optional<MatchResultICU> match_;
+    const FindBuffer* find_buffer_ = nullptr;
+    Vector<TextSearcherICU*, 1> text_searcher_list_;
+    Vector<std::optional<MatchResultICU>, 1> match_list_;
   };
 
   FindResults();
-  FindResults(const FindBuffer& find_buffer,
+  FindResults(const FindBuffer* find_buffer,
               TextSearcherICU* text_searcher,
               const Vector<UChar>& buffer,
               const Vector<Vector<UChar>>* extra_buffers,

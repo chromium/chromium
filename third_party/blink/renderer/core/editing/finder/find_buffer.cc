@@ -365,7 +365,7 @@ FindResults FindBuffer::FindMatches(const WebString& search_text,
   search_text_16_bit.Ensure16Bit();
   FoldQuoteMarksAndSoftHyphens(search_text_16_bit);
   // TODO(crbug.com/40755728): Provide additional text buffers.
-  return FindResults(*this, &text_searcher_, buffer_,
+  return FindResults(this, &text_searcher_, buffer_,
                      /* extra_buffers */ nullptr, search_text_16_bit, options);
 }
 
