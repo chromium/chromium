@@ -27,6 +27,7 @@
 #include "base/metrics/histogram_base.h"
 #include "base/notreached.h"
 #include "base/pending_task.h"
+#include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -1905,6 +1906,64 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   EXPECT_FALSE(box->NeedsPaintPropertyUpdate());
   EXPECT_EQ(features::IsCanvas2DHibernationEnabled(),
             painting_layer->SelfNeedsRepaint());
+}
+
+TEST_P(CanvasRenderingContext2DTestAccelerated,
+       CanvasDrawInBackgroundEndsHibernation) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({features::kCanvas2DHibernation}, {});
+
+  CreateContext(kNonOpaque);
+  CanvasElement().GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU);
+
+  auto* bridge = CanvasElement().GetCanvas2DLayerBridge();
+  auto& handler = bridge->GetHibernationHandlerForTesting();
+  base::RunLoop run_loop;
+
+  // Install a minimal delay for testing to ensure that the test remains fast
+  // to execute.
+  handler.SetBeforeCompressionDelayForTesting(base::Microseconds(10));
+
+  // NOTE: It is necessary to install the quit closure before running tasks
+  // below in order to avoid test flake, as it is possible that encoding occurs
+  // on a background thread *before* we run the run loop to wait for encoding.
+  // As long as the quit closure has been invoked as part of encoding in that
+  // case, the run loop will immediately exit out when Run() is invoked
+  // (otherwise it would spin until timing out).
+  handler.SetOnEncodedCallbackForTesting(run_loop.QuitClosure());
+
+  EXPECT_FALSE(handler.is_encoded());
+  EXPECT_FALSE(bridge->IsHibernating());
+
+  // Hide the page to trigger the hibernation task.
+  GetDocument().GetPage()->SetVisibilityState(
+      mojom::blink::PageVisibilityState::kHidden,
+      /*is_initial_state=*/false);
+
+  // Hibernation is triggered asynchronously.
+  EXPECT_FALSE(handler.is_encoded());
+  EXPECT_FALSE(bridge->IsHibernating());
+
+  // Run the task that initiates hibernation, which has been posted as an idle
+  // task.
+  ThreadScheduler::Current()
+      ->ToMainThreadScheduler()
+      ->StartIdlePeriodForTesting();
+  blink::test::RunPendingTasks();
+  EXPECT_FALSE(CanvasElement().ResourceProvider());
+  EXPECT_TRUE(bridge->IsHibernating());
+
+  // Wait for encoding to complete on a background thread.
+  run_loop.Run();
+  EXPECT_TRUE(handler.is_encoded());
+
+  // Draw into the canvas while the page is backgrounded.
+  Context2D()->fillRect(0, 0, 1, 1);
+
+  // That draw should have caused hibernation to end and the encoded canvas to
+  // be dropped.
+  EXPECT_FALSE(bridge->IsHibernating());
+  EXPECT_FALSE(handler.is_encoded());
 }
 
 sk_sp<SkImage> CreateSkImage(int width, int height, SkColor color) {

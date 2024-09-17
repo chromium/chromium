@@ -409,7 +409,7 @@ TEST_P(CanvasHibernationHandlerTest, CanvasSnapshottedInBackground) {
   EXPECT_TRUE(handler.is_encoded());
 }
 
-TEST_P(CanvasHibernationHandlerTest, CanvasWriteInBackground) {
+TEST_P(CanvasHibernationHandlerTest, ClearEndsHibernation) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures({features::kCanvas2DHibernation}, {});
 
@@ -426,9 +426,10 @@ TEST_P(CanvasHibernationHandlerTest, CanvasWriteInBackground) {
   // Wait for the canvas to be encoded.
   EXPECT_EQ(1u, TestSingleThreadTaskRunner::RunAll(task_runner->delayed()));
   EXPECT_EQ(2u, TestSingleThreadTaskRunner::RunAll(task_runner->immediate()));
+  EXPECT_TRUE(bridge->IsHibernating());
   EXPECT_TRUE(handler.is_encoded());
 
-  bridge->WritePixels(SkImageInfo::MakeN32Premul(10, 10), nullptr, 10, 0, 0);
+  handler.Clear();
 
   EXPECT_FALSE(bridge->IsHibernating());
   EXPECT_FALSE(handler.is_encoded());
