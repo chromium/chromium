@@ -4,10 +4,45 @@
 """Code for interacting with the test spec files in //testing/buildbot."""
 
 import ast
+import collections
+import copy
 import os
-from typing import Any, List
+from typing import Any, Dict, Generator, List, Tuple
 
 import gpu_path_util
+
+
+class DimensionSet:
+  """Represents a set of Swarming dimensions pulled from the test spec files.
+
+  Handles the Swarming OR operator (|) and guarantees a consistent order when
+  iterating over dimension key/value pairs.
+  """
+
+  def __init__(self, dimensions: Dict[str, str]):
+    """
+    Args:
+      dimensions: A dict mapping dimension keys to values.
+    """
+    self._dimensions = collections.OrderedDict()
+    for key in sorted(dimensions.keys()):
+      value = dimensions[key]
+      self._dimensions[key] = value.split('|')
+
+  def Pairs(self) -> Generator[Tuple[str, List[str]], None, None]:
+    """Iterates over the key/value pairs stored internally.
+
+    Yields:
+      (dimension_name, valid_values). |dimension_name| is a string containing
+      the name of the dimension. |valid_values| is a list of one or more strings
+      where each element is a valid value for |dimension_name|.
+    """
+    for dimension_name, valid_values in self._dimensions.items():
+      yield dimension_name, valid_values
+
+  def AsDict(self) -> Dict[str, List[str]]:
+    """Returns a copy of the stored information as a dict."""
+    return copy.deepcopy(self._dimensions)
 
 
 def _LoadPylFile(filepath: str) -> Any:
@@ -15,22 +50,21 @@ def _LoadPylFile(filepath: str) -> Any:
     return ast.literal_eval(infile.read())
 
 
-def GetBuildersWithMixin(mixin: str) -> List[str]:
-  """Gets all publicly defined builders that use the specified mixin.
+def GetMixinDimensions(mixin: str) -> 'DimensionSet':
+  """Gets the dimensions provided by |mixin|.
 
   Args:
-    mixin: The mixin name to search for.
+    mixin: The name of the mixin to look up.
 
   Returns:
-    A list of builder names have use |mixin| as a mixin.
+    A dict mapping dimension names to values that |mixin| specifies.
   """
-  builders_of_interest = []
-  waterfalls_content = _LoadPylFile(
+  mixin_content = _LoadPylFile(
       os.path.join(gpu_path_util.CHROMIUM_SRC_DIR, 'testing', 'buildbot',
-                   'waterfalls.pyl'))
-  for waterfall in waterfalls_content:
-    for builder_name, configuration in waterfall['machines'].items():
-      builder_mixins = configuration.get('mixins', [])
-      if mixin in builder_mixins:
-        builders_of_interest.append(builder_name)
-  return builders_of_interest
+                   'mixins.pyl'))
+  dimensions = mixin_content.get(mixin, {}).get('swarming',
+                                                {}).get('dimensions')
+  if not dimensions:
+    raise RuntimeError(
+        f'Specified mixin {mixin} does not contain Swarming dimensions')
+  return DimensionSet(dimensions)

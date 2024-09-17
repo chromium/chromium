@@ -8,36 +8,78 @@ from unittest import mock
 from bad_machine_finder import test_specs
 
 
-class GetBuildersWithMixinUnittest(unittest.TestCase):
+class GetMixinDimensionsUnittest(unittest.TestCase):
 
   def testBasic(self):
     """Tests behavior along the basic/happy path."""
-    waterfalls = [
-        {
-            'name': 'chromium.dawn',
-            'machines': {
-                'Dawn Mac AMD': {
-                    'mixins': [
-                        'mac_amd',
-                    ],
+    mixins = {
+        'linux_amd': {
+            'swarming': {
+                'dimensions': {
+                    'os': 'linux',
+                    'gpu': '1002:1234',
                 },
-                'Dawn Builder': {},
             },
         },
-        {
-            'name': 'chromium.gpu.fyi',
-            'machines': {
-                'Mac AMD': {
-                    'mixins': ['mac_amd'],
+        'mac_amd': {
+            'swarming': {
+                'dimensions': {
+                    'os': 'mac',
+                    'gpu': '1002:2345',
                 },
-                'Mac Intel': {
-                    'mixins': [
-                        'mac_intel',
-                    ],
+            },
+        },
+    }
+    with mock.patch.object(test_specs, '_LoadPylFile', return_value=mixins):
+      dimensions = test_specs.GetMixinDimensions('mac_amd')
+    self.assertEqual(dimensions.AsDict(), {'os': ['mac'], 'gpu': ['1002:2345']})
+
+  def testSwarmingOrOperator(self):
+    """Tests behavior when dimensions contain |."""
+    mixins = {
+        'mac_amd': {
+            'swarming': {
+                'dimensions': {
+                    'os': 'Mac-14.5|Mac-15.0',
+                    'gpu': '1002:2345',
+                },
+            },
+        },
+    }
+    with mock.patch.object(test_specs, '_LoadPylFile', return_value=mixins):
+      dimensions = test_specs.GetMixinDimensions('mac_amd')
+    self.assertEqual(dimensions.AsDict(), {
+        'os': ['Mac-14.5', 'Mac-15.0'],
+        'gpu': ['1002:2345']
+    })
+
+  def testNoDimensions(self):
+    """Tests behavior when dimensions can not be found."""
+    cases = [
+        # No matching mixin.
+        {},
+        # No swarming key.
+        {
+            'mac_amd': {},
+        },
+        # No dimensions key.
+        {
+            'mac_amd': {
+                'swarming': {},
+            },
+        },
+        # Empty dimensions.
+        {
+            'mac_amd': {
+                'swarming': {
+                    'dimensions': {},
                 },
             },
         },
     ]
-    with mock.patch.object(test_specs, '_LoadPylFile', return_value=waterfalls):
-      builders = test_specs.GetBuildersWithMixin('mac_amd')
-    self.assertEqual(builders, ['Dawn Mac AMD', 'Mac AMD'])
+    for c in cases:
+      with mock.patch.object(test_specs, '_LoadPylFile', return_value=c):
+        with self.assertRaisesRegex(
+            RuntimeError,
+            'Specified mixin mac_amd does not contain Swarming dimensions'):
+          test_specs.GetMixinDimensions('mac_amd')
