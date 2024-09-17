@@ -60,6 +60,7 @@ namespace {
 
 constexpr int kMinPermissionRowHeight = 40;
 constexpr float kMaxPermissionRowCount = 10.5;
+constexpr int kContainerExtraRightMargin = 2;
 
 // Used to experiment with different icons through a finch parameter.
 enum class AboutThisSiteSeconaryIcon {
@@ -76,8 +77,11 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PageInfoMainView, kMainLayoutElementId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PageInfoMainView, kPermissionsElementId);
 
 PageInfoMainView::ContainerView::ContainerView() {
-  SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical));
+  auto box_layout = std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical);
+  box_layout->set_inside_border_insets(
+      gfx::Insets::TLBR(0, 0, 0, kContainerExtraRightMargin));
+  SetLayoutManager(std::move(box_layout));
 }
 
 void PageInfoMainView::ContainerView::Update() {
@@ -142,6 +146,9 @@ PageInfoMainView::PageInfoMainView(
         std::u16string(), PageInfoViewFactory::GetLaunchIcon()));
     site_settings_link_->SetID(
         PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_SITE_SETTINGS);
+    site_settings_link_->SetProperty(
+        views::kMarginsKey,
+        gfx::Insets::TLBR(0, 0, 0, kContainerExtraRightMargin));
   }
 
   if (base::FeatureList::IsEnabled(page_info::kPageInfoHistoryDesktop)) {
