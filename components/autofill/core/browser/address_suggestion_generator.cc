@@ -1025,8 +1025,7 @@ ProfilesToSuggestOptions GetProfilesToSuggestOptions(
   bool should_prefix_match_suggestions =
       trigger_source !=
           AutofillSuggestionTriggerSource::kManualFallbackAddress &&
-      (!trigger_field_is_autofilled ||
-       !base::FeatureList::IsEnabled(features::kAutofillAddressFieldSwapping));
+      (!trigger_field_is_autofilled || !IsAddressFieldSwappingEnabled());
   // By default, suggestions should be deduplicated in order to not offer
   // redundant suggestions. However, triggering suggestions via manual fallback
   // should allow the user to access all their profiles, which is why this

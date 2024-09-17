@@ -51,6 +51,7 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/form_data_importer_test_api.h"
+#include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/form_structure_test_api.h"
 #include "components/autofill/core/browser/geo/alternative_state_name_map_test_utils.h"
 #include "components/autofill/core/browser/metrics/form_events/form_events.h"
@@ -2037,8 +2038,8 @@ TEST_P(SuggestionMatchingTest,
        CreateSeparator(), CreateManageAddressesSuggestion()});
 }
 
-// Tests that we return address profile suggestions values when the section
-// is already autofilled, and that they have no label.
+// Tests that we return address field swapping suggestions when the field
+// is already autofilled.
 TEST_P(SuggestionMatchingTest,
        GetProfileSuggestions_AlreadyAutofilledNoLabels) {
   // Set up our form data.
@@ -2051,7 +2052,26 @@ TEST_P(SuggestionMatchingTest,
   firstname_field.set_value(u"E");
   FormsSeen({form});
 
+  FormStructure* form_structure =
+      browser_autofill_manager_->FindCachedFormById(form.global_id());
+  ASSERT_TRUE(form_structure);
+  AutofillField* autofill_field = form_structure->field(0);
+  ASSERT_TRUE(autofill_field);
+  ASSERT_TRUE(firstname_field.global_id() == autofill_field->global_id());
+  autofill_field->set_autofilled_type(autofill_field->Type().GetStorableType());
+
   GetAutofillSuggestions(form, firstname_field);
+#if !BUILDFLAG(IS_IOS)
+  // Test that we sent the right values to the external delegate.
+  external_delegate()->CheckSuggestions(
+      firstname_field.global_id(),
+      {Suggestion("Charles", "", Suggestion::Icon::kNoIcon,
+                  SuggestionType::kAddressFieldByFieldFilling),
+       Suggestion("Elvis", "", Suggestion::Icon::kNoIcon,
+                  SuggestionType::kAddressFieldByFieldFilling),
+       CreateSeparator(), CreateUndoOrClearFormSuggestion(),
+       CreateManageAddressesSuggestion()});
+#else
   // Test that we sent the right values to the external delegate.
   external_delegate()->CheckSuggestions(
       firstname_field.global_id(),
@@ -2059,6 +2079,7 @@ TEST_P(SuggestionMatchingTest,
                   SuggestionType::kAddressEntry),
        CreateSeparator(), CreateUndoOrClearFormSuggestion(),
        CreateManageAddressesSuggestion()});
+#endif  // !BUILDFLAG(IS_IOS)
 }
 
 // Test that we return no suggestions when the form has no relevant fields.
@@ -3384,10 +3405,29 @@ TEST_P(SuggestionMatchingTest, GetFieldSuggestionsWithDuplicateValues) {
   profile.set_guid(MakeGuid(101));
   personal_data().address_data_manager().AddProfile(profile);
 
+  FormStructure* form_structure =
+      browser_autofill_manager_->FindCachedFormById(form.global_id());
+  ASSERT_TRUE(form_structure);
+
   FormFieldData& field = test_api(form).field(0);
+  AutofillField* autofill_field = form_structure->field(0);
+  ASSERT_TRUE(autofill_field);
+  ASSERT_TRUE(field.global_id() == autofill_field->global_id());
   field.set_is_autofilled(true);
+  autofill_field->set_autofilled_type(autofill_field->Type().GetStorableType());
   field.set_value(u"Elvis");
   GetAutofillSuggestions(form, field);
+#if !BUILDFLAG(IS_IOS)
+  // Test that we sent the right values to the external delegate.
+  external_delegate()->CheckSuggestions(
+      field.global_id(),
+      {Suggestion("Elvis", "", Suggestion::Icon::kNoIcon,
+                  SuggestionType::kAddressFieldByFieldFilling),
+       Suggestion("Charles", "", Suggestion::Icon::kNoIcon,
+                  SuggestionType::kAddressFieldByFieldFilling),
+       CreateSeparator(), CreateUndoOrClearFormSuggestion(),
+       CreateManageAddressesSuggestion()});
+#else
   // Test that we sent the right values to the external delegate.
   external_delegate()->CheckSuggestions(
       field.global_id(),
@@ -3395,8 +3435,9 @@ TEST_P(SuggestionMatchingTest, GetFieldSuggestionsWithDuplicateValues) {
                   SuggestionType::kAddressEntry),
        CreateSeparator(), CreateUndoOrClearFormSuggestion(),
        CreateManageAddressesSuggestion()});
+#endif  // !BUILDFLAG(IS_IOS)
 }
-#endif
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Tests that we return email profile suggestions values
 // when the email field with username autocomplete attribute exist.

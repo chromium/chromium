@@ -2744,7 +2744,6 @@ std::vector<Suggestion> BrowserAutofillManager::GetProfileSuggestions(
   const FieldType trigger_field_type =
       trigger_autofill_field ? trigger_autofill_field->Type().GetStorableType()
                              : UNKNOWN_TYPE;
-
   // Given the current `trigger_field` and previous suggestions shown (if any),
   // compute what type of address suggestions granularity shall be currently
   // offered.
@@ -2758,7 +2757,7 @@ std::vector<Suggestion> BrowserAutofillManager::GetProfileSuggestions(
     if (trigger_field.is_autofilled() &&
         trigger_autofill_field->autofilled_type() ==
             trigger_autofill_field->Type().GetStorableType() &&
-        base::FeatureList::IsEnabled(features::kAutofillAddressFieldSwapping)) {
+        IsAddressFieldSwappingEnabled()) {
       // If the user triggers suggestions on an autofilled field filled
       // traditionally with data matching its classification, field-by-field
       // filling suggestions should be shown so that the user could easily
