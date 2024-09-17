@@ -447,7 +447,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.FirstPartySets.ContextDelayedQueriesCount"
-    units="queries" expires_after="2024-09-15">
+    units="queries" expires_after="M140">
   <owner>shuuran@chromium.org</owner>
   <owner>kaustubhag@chromium.org</owner>
   <summary>
@@ -455,12 +455,13 @@ chromium-metrics-reviews@google.com.
     asynchronously instead of synchronously).
 
     Recorded once per profile during log-in when the First-Party Sets info is
-    ready for the network context. If the feature was disabled, 0 is recorded.
+    ready for the network context if feature WaitForFirstPartySetsInit was
+    enabled.
   </summary>
 </histogram>
 
 <histogram name="Cookie.FirstPartySets.ContextMostDelayedQueryDelta" units="ms"
-    expires_after="2024-09-15">
+    expires_after="M140">
   <owner>shuuran@chromium.org</owner>
   <owner>kaustubhag@chromium.org</owner>
   <summary>
@@ -468,8 +469,8 @@ chromium-metrics-reviews@google.com.
     and when asynchronous queries started to be answered for a browser context.
 
     Recorded once per profile profile during log-in when the First-Party Sets
-    info is ready in the network context. Recorded for all clients, even those
-    with low-resolution clocks. If the feature was disabled, 0 is recorded.
+    info is ready in the network context if feature WaitForFirstPartySetsInit
+    was enabled.
   </summary>
 </histogram>
 
