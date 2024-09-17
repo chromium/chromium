@@ -33,7 +33,7 @@ class HeartbeatServiceClient {
       base::OnceCallback<void(const ProtobufHttpStatus& status,
                               base::TimeDelta wait_interval)>;
 
-  explicit HeartbeatServiceClient(const std::string& directory_id);
+  HeartbeatServiceClient();
 
   HeartbeatServiceClient(const HeartbeatServiceClient&) = delete;
   HeartbeatServiceClient& operator=(const HeartbeatServiceClient&) = delete;
@@ -55,13 +55,6 @@ class HeartbeatServiceClient {
 
   // Cancels any pending service requests.
   virtual void CancelPendingRequests() = 0;
-
- protected:
-  const std::string& directory_id() { return directory_id_; }
-
- private:
-  // The entity to update in Directory service.
-  std::string directory_id_;
 };
 
 }  // namespace remoting

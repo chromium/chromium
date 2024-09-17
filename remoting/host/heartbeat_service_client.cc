@@ -6,9 +6,7 @@
 
 namespace remoting {
 
-HeartbeatServiceClient::HeartbeatServiceClient(const std::string& directory_id)
-    : directory_id_(directory_id) {}
-
+HeartbeatServiceClient::HeartbeatServiceClient() = default;
 HeartbeatServiceClient::~HeartbeatServiceClient() = default;
 
 }  // namespace remoting
