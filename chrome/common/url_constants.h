@@ -849,6 +849,11 @@ inline constexpr char kSuggestedContentLearnMoreURL[] =
 inline constexpr char kTabletModeGesturesLearnMoreURL[] =
     "https://support.google.com/chromebook?p=tablet_mode_gestures";
 
+// The URL for the help center article about video chat enhanced features.
+inline constexpr char kVcLearnMoreURL[] =
+    "https://support.google.com/chromebook/answer/10264237"
+    "#zippy=enhanced-features-available-on-chromebook-plus";
+
 // The URL for the help center article about Wi-Fi sync.
 inline constexpr char kWifiSyncLearnMoreURL[] =
     "https://support.google.com/chromebook?p=wifisync";
