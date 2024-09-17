@@ -28,6 +28,7 @@
 #include "chrome/test/interaction/interactive_browser_test_internal.h"
 #include "chrome/test/interaction/tracked_element_webcontents.h"
 #include "chrome/test/interaction/webcontents_interaction_test_util.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/update_user_activation_state_interceptor.h"
@@ -499,14 +500,32 @@ InteractiveBrowserTestApi::FocusWebContents(
           seq->FailForTesting();
           return;
         }
+
+        // If the surface is in a window it needs to be brought to the front.
         const auto result = test_util().ActivateSurface(el);
         test_impl().HandleActionResult(seq, el, "ActivateSurface", result);
         if (result != ui::test::ActionResult::kSucceeded) {
           return;
         }
+
         auto* const contents = tracked_el->web_contents();
-        if (!contents || !contents->GetPrimaryMainFrame()) {
-          LOG(ERROR) << "WebContents not present or no main frame.";
+        if (!contents) {
+          LOG(ERROR) << "WebContents not present.";
+          seq->FailForTesting();
+          return;
+        }
+
+        // Focus the renderer.
+        if (!contents->GetRenderWidgetHostView()) {
+          LOG(ERROR) << "No render widget host.";
+          seq->FailForTesting();
+          return;
+        }
+        contents->GetRenderWidgetHostView()->Focus();
+
+        // Prepare the renderer for input.
+        if (!contents->GetPrimaryMainFrame()) {
+          LOG(ERROR) << "No main frame.";
           seq->FailForTesting();
           return;
         }

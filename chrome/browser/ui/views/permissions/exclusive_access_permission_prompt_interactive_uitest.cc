@@ -64,7 +64,7 @@ class ExclusiveAccessPermissionPromptInteractiveTest
   MultiStep ShowPrompt(TestContentSettings test_content_settings) {
     return Steps(InstrumentTab(kWebContentsElementId),
                  NavigateWebContents(kWebContentsElementId, GetURL()),
-                 FocusOnPage(kWebContentsElementId),
+                 FocusWebContents(kWebContentsElementId),
                  ExecuteJsAt(kWebContentsElementId,
                              DeepQuery{GetHtmlElementId(test_content_settings)},
                              "click"));
@@ -92,30 +92,6 @@ class ExclusiveAccessPermissionPromptInteractiveTest
           return true;
         },
         true));
-  }
-
-  StepBuilder FocusOnPage(ui::ElementIdentifier webcontents_id) {
-    StepBuilder builder;
-    builder.SetElementID(webcontents_id);
-    builder.SetDescription("FocusOnPage()");
-    builder.SetStartCallback(base::BindLambdaForTesting(
-        [](ui::InteractionSequence* seq, ui::TrackedElement* el) {
-          auto* const tracked_el = AsInstrumentedWebContents(el);
-          if (!tracked_el) {
-            LOG(ERROR) << "Element is not an instrumented WebContents.";
-            seq->FailForTesting();
-            return;
-          }
-          auto* const contents = tracked_el->web_contents();
-          if (!contents || !contents->GetRenderWidgetHostView()) {
-            LOG(ERROR)
-                << "WebContents not present or no render widget host view.";
-            seq->FailForTesting();
-            return;
-          }
-          contents->GetRenderWidgetHostView()->Focus();
-        }));
-    return builder;
   }
 
   ui::ElementIdentifier GetButtonViewId(ContentSetting expected_value) {
