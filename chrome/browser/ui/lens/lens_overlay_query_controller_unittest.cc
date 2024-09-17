@@ -51,8 +51,8 @@ constexpr char kLocale[] = "en-US";
 constexpr char kTestPageUrl[] = "https://www.google.com";
 constexpr char kTestPageTitle[] = "Page Title";
 
-// The url parameter key for the search context.
-constexpr char kSearchContextParamKey[] = "mactx";
+// The url parameter key for the video context.
+constexpr char kVideoContextParamKey[] = "vidcip";
 
 // The timestamp param.
 constexpr char kStartTimeQueryParam[] = "qsubts";
@@ -66,9 +66,9 @@ inline constexpr char kRequestIdParameterKey[] = "vsrid";
 // Query parameter for the visual input type.
 inline constexpr char kVisualInputTypeParameterKey[] = "vit";
 
-// The encoded search context for the test page and title.
-constexpr char kTestEncodedSearchContext[] =
-    "ChdodHRwczovL3d3dy5nb29nbGUuY29tLxIKUGFnZSBUaXRsZQ";
+// The encoded video context for the test page.
+constexpr char kTestEncodedVideoContext[] =
+    "ChkKF2h0dHBzOi8vd3d3Lmdvb2dsZS5jb20v";
 
 // The region.
 constexpr char kRegion[] = "US";
@@ -599,7 +599,7 @@ TEST_F(LensOverlayQueryControllerTest,
        FetchTextOnlyInteraction_ReturnsResponse) {
   feature_list_.InitAndEnableFeatureWithParameters(
       lens::features::kLensOverlay,
-      {{"use-search-context-for-text-only-requests", "true"}});
+      {{"use-video-context-for-text-only-requests", "true"}});
   base::test::TestFuture<std::vector<lens::mojom::OverlayObjectPtr>,
                          lens::mojom::TextPtr, bool>
       full_image_response_future;
@@ -631,10 +631,10 @@ TEST_F(LensOverlayQueryControllerTest,
   task_environment_.RunUntilIdle();
   query_controller.EndQuery();
 
-  std::string actual_encoded_search_context;
+  std::string actual_encoded_video_context;
   net::GetValueForKeyInQuery(GURL(url_response_future.Get().url()),
-                             kSearchContextParamKey,
-                             &actual_encoded_search_context);
+                             kVideoContextParamKey,
+                             &actual_encoded_video_context);
 
   std::string unused_start_time;
   bool has_start_time =
@@ -646,7 +646,7 @@ TEST_F(LensOverlayQueryControllerTest,
   ASSERT_FALSE(interaction_data_response_future.IsReady());
   ASSERT_EQ(GetSelectionTypeFromUrl(url_response_future.Get().url()),
             lens::SELECT_TEXT_HIGHLIGHT);
-  ASSERT_EQ(actual_encoded_search_context, kTestEncodedSearchContext);
+  ASSERT_EQ(actual_encoded_video_context, kTestEncodedVideoContext);
   ASSERT_TRUE(has_start_time);
   ASSERT_EQ(query_controller.num_gen204_pings_sent_, 0);
 }

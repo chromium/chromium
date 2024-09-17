@@ -328,14 +328,14 @@ COMPONENT_EXPORT(LENS_FEATURES)
 extern int GetLensOverlayClusterInfoLifetimeSeconds();
 
 // Returns whether to include the search context with text-only Lens Overlay
-// requests.
+// requests. This is sent in the video params urlparam.
 COMPONENT_EXPORT(LENS_FEATURES)
-extern bool UseSearchContextForTextOnlyLensOverlayRequests();
+extern bool UseVideoContextForTextOnlyLensOverlayRequests();
 
 // Returns whether to include the search context with text-only Lens Overlay
-// requests.
+// requests. This is sent in the video params urlparam.
 COMPONENT_EXPORT(LENS_FEATURES)
-extern bool UseSearchContextForMultimodalLensOverlayRequests();
+extern bool UseVideoContextForMultimodalLensOverlayRequests();
 
 // Returns whether to include PDFs from the underlying page in the request to be
 // used as page context.

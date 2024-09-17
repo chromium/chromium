@@ -179,12 +179,12 @@ constexpr base::FeatureParam<int> kLensOverlayClusterInfoLifetimeSeconds{
     &kLensOverlay, "cluster-info-lifetime-seconds", 600};
 
 constexpr base::FeatureParam<bool>
-    kUseSearchContextForTextOnlyLensOverlayRequests{
-        &kLensOverlay, "use-search-context-for-text-only-requests", false};
+    kUseVideoContextForTextOnlyLensOverlayRequests{
+        &kLensOverlay, "use-video-context-for-text-only-requests", false};
 
 constexpr base::FeatureParam<bool>
-    kUseSearchContextForMultimodalLensOverlayRequests{
-        &kLensOverlay, "use-search-context-for-multimodal-requests", false};
+    kUseVideoContextForMultimodalLensOverlayRequests{
+        &kLensOverlay, "use-video-context-for-multimodal-requests", false};
 
 constexpr base::FeatureParam<bool> kUsePdfsAsContext{
     &kLensOverlay, "use-pdfs-as-context", false};
@@ -477,12 +477,12 @@ int GetLensOverlayClusterInfoLifetimeSeconds() {
   return kLensOverlayClusterInfoLifetimeSeconds.Get();
 }
 
-bool UseSearchContextForTextOnlyLensOverlayRequests() {
-  return kUseSearchContextForTextOnlyLensOverlayRequests.Get();
+bool UseVideoContextForTextOnlyLensOverlayRequests() {
+  return kUseVideoContextForTextOnlyLensOverlayRequests.Get();
 }
 
-bool UseSearchContextForMultimodalLensOverlayRequests() {
-  return kUseSearchContextForMultimodalLensOverlayRequests.Get();
+bool UseVideoContextForMultimodalLensOverlayRequests() {
+  return kUseVideoContextForMultimodalLensOverlayRequests.Get();
 }
 
 bool UsePdfsAsContext() {
