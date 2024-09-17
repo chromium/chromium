@@ -5005,6 +5005,9 @@ extern const char kSupervisedProfileReauthForYouTubeDescription[];
 extern const char kSupervisedProfileReauthForBlockedSiteName[];
 extern const char kSupervisedProfileReauthForBlockedSiteDescription[];
 
+extern const char kSupervisedProfileSubframeReauthName[];
+extern const char kSupervisedProfileSubframeReauthDescription[];
+
 extern const char kSupervisedProfileFilteringFallbackName[];
 extern const char kSupervisedProfileFilteringFallbackDescription[];
 #endif  // #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)

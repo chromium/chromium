@@ -8570,6 +8570,14 @@ const char kSupervisedProfileReauthForBlockedSiteDescription[] =
     "Ask supervised users to re-authenticate when attempting to navigate to a "
     "site blocked by parental controls.";
 
+const char kSupervisedProfileSubframeReauthName[] =
+    "Supervised Profile reauth in subframes";
+const char kSupervisedProfileSubframeReauthDescription[] =
+    "If \"Supervised Profile YouTube reauth\" or \"Supervised Profile blocked "
+    "site reauth\" is enabled, require supervised users to re-authenticate "
+    "before accessing embedded YouTube videos or blocked sites in subframes, "
+    "respectively.";
+
 const char kSupervisedProfileFilteringFallbackName[] =
     "Supervised Profile filtering fallback";
 const char kSupervisedProfileFilteringFallbackDescription[] =
