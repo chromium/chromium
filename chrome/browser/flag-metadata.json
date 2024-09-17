@@ -6267,7 +6267,7 @@
   {
     "name": "ntp-calendar-module",
     "owners": [ "rtatum@google.com", "tiborg@chromium.org", "ftirelo@chromium.org" ],
-    "expiry_milestone": 130
+    "expiry_milestone": 150
   },
   {
     "name": "ntp-chrome-cart-in-journeys-module",
@@ -6347,7 +6347,7 @@
   {
     "name": "ntp-outlook-calendar-module",
     "owners": [ "rtatum@google.com", "tiborg@chromium.org", "ftirelo@chromium.org" ],
-    "expiry_milestone": 130
+    "expiry_milestone": 150
   },
   {
     "name": "ntp-photos-module",
