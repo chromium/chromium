@@ -19,6 +19,7 @@ CHROMIUM_SRC_DIR = os.path.abspath(os.path.join(THIS_DIR, '../../../..'))
 sys.path.append(
     os.path.abspath(os.path.join(CHROMIUM_SRC_DIR, 'build/util/lib/proto')))
 import measures
+import exception_recorder
 
 from google.protobuf import json_format
 from google.protobuf import any_pb2
@@ -254,7 +255,11 @@ class UnitTest(unittest.TestCase):
   @mock.patch('%s.open' % 'result_sink_util',
               mock.mock_open(read_data=LUCI_CONTEXT_FILE_DATA))
   @mock.patch('os.environ.get', return_value='filename')
-  def test_post_extended_properties(self, mock_open_file, mock_session_post):
+  @mock.patch('exception_recorder._record_time')
+  def test_post_extended_properties(self, _, mock_open_file, mock_session_post):
+    test_exception = test_runner.XcodeVersionNotFoundError("15abcd")
+    exception_recorder.register(test_exception)
+
     count = measures.count('test_count')
     count.record()
     count.record()
@@ -263,18 +268,33 @@ class UnitTest(unittest.TestCase):
         {
             "invocation": {
                 "extended_properties": {
+                    "exception_occurrences": {
+                        "@type": "type.googleapis.com/build.util.lib.proto.ExceptionOccurrences",
+                        "datapoints": [
+                            {
+                                "name": "test_runner.XcodeVersionNotFoundError",
+                                "stacktrace": [
+                                    f"test_runner.XcodeVersionNotFoundError: Xcode version not found: 15abcd\n"
+                                ]
+                            }
+                        ]
+                    },
                     "test_script_metrics": {
-                        "@type":
-                            "type.googleapis.com/build.util.lib.proto.TestScriptMetrics",
-                        "metrics": [{
-                            "name": "test_count",
-                            "value": 2.0
-                        }]
+                        "@type": "type.googleapis.com/build.util.lib.proto.TestScriptMetrics",
+                        "metrics": [
+                            {
+                                "name": "test_count",
+                                "value": 2.0
+                            }
+                        ]
                     }
                 }
             },
             "update_mask": {
-                "paths": ["extended_properties.test_script_metrics"]
+                "paths": [
+                    "extended_properties.exception_occurrences",
+                    "extended_properties.test_script_metrics"
+                ]
             }
         },
         sort_keys=True)

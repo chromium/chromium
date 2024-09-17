@@ -245,8 +245,8 @@ class ResultSinkClient(object):
       invocation[EXTENDED_PROPERTIES_KEY][
           exception_recorder.EXCEPTION_OCCURRENCES_KEY] = \
             exception_recorder.to_dict()
-      paths.append('%s.%s' % EXTENDED_PROPERTIES_KEY,
-                   exception_recorder.EXCEPTION_OCCURRENCES_KEY)
+      paths.append('%s.%s' % (EXTENDED_PROPERTIES_KEY,
+                              exception_recorder.EXCEPTION_OCCURRENCES_KEY))
 
     if measures.size() > 0:
       invocation[EXTENDED_PROPERTIES_KEY][measures.TEST_SCRIPT_METRICS_KEY] = \
