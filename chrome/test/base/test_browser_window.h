@@ -246,7 +246,10 @@ class TestBrowserWindow : public BrowserWindow {
 
   void SetCloseCallback(base::OnceClosure close_callback);
 
-  void CreateTabSearchBubble(int tab_index = -1) override {}
+  void CreateTabSearchBubble(
+      int tab_index = -1,
+      tab_search::mojom::TabOrganizationFeature feature =
+          tab_search::mojom::TabOrganizationFeature::kNone) override {}
   void CloseTabSearchBubble() override {}
 
   user_education::FeaturePromoController* GetFeaturePromoController() override;

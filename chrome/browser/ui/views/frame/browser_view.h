@@ -41,6 +41,7 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_closer.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/user_education/browser_feature_promo_controller.h"
+#include "chrome/browser/ui/webui/tab_search/tab_search.mojom.h"
 #include "chrome/common/buildflags.h"
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/infobars/core/infobar_container.h"
@@ -791,7 +792,10 @@ class BrowserView : public BrowserWindow,
   std::vector<views::NativeViewHost*> GetNativeViewHostsForTopControlsSlide()
       const;
 
-  void CreateTabSearchBubble(int tab_index = -1) override;
+  void CreateTabSearchBubble(
+      int tab_index = -1,
+      tab_search::mojom::TabOrganizationFeature organization_feature =
+          tab_search::mojom::TabOrganizationFeature::kNone) override;
   // Closes the tab search bubble if open for the given browser instance.
   void CloseTabSearchBubble() override;
 

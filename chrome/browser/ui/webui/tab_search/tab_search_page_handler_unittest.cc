@@ -92,6 +92,9 @@ class MockPage : public tab_search::mojom::Page {
   MOCK_METHOD(void, TabUpdated, (tab_search::mojom::TabUpdateInfoPtr));
   MOCK_METHOD(void, TabsRemoved, (tab_search::mojom::TabsRemovedInfoPtr));
   MOCK_METHOD(void, TabSearchTabIndexChanged, (int32_t));
+  MOCK_METHOD(void,
+              TabOrganizationFeatureChanged,
+              (tab_search::mojom::TabOrganizationFeature));
   MOCK_METHOD(void, ShowFREChanged, (bool));
   MOCK_METHOD(void, TabOrganizationEnabledChanged, (bool));
   MOCK_METHOD(void, StaleTabsChanged, (std::vector<tab_search::mojom::TabPtr>));

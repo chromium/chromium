@@ -12,14 +12,9 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {getCss} from './tab_organization_selector.css.js';
 import {getHtml} from './tab_organization_selector.html.js';
 import type {Tab} from './tab_search.mojom-webui.js';
+import {TabOrganizationFeature} from './tab_search.mojom-webui.js';
 import type {TabSearchApiProxy} from './tab_search_api_proxy.js';
 import {TabSearchApiProxyImpl} from './tab_search_api_proxy.js';
-
-export enum OrganizationFeature {
-  NONE = 0,
-  AUTO_TAB_GROUPS = 1,
-  DECLUTTER = 2,
-}
 
 export class TabOrganizationSelectorElement extends CrLitElement {
   static get is() {
@@ -42,7 +37,8 @@ export class TabOrganizationSelectorElement extends CrLitElement {
     };
   }
 
-  protected selectedState_: OrganizationFeature = OrganizationFeature.NONE;
+  protected selectedState_: TabOrganizationFeature =
+      TabOrganizationFeature.kSelector;
   protected declutterHeading_: string = '';
   protected disableDeclutter_: boolean = false;
   private apiProxy_: TabSearchApiProxy = TabSearchApiProxyImpl.getInstance();
@@ -52,9 +48,14 @@ export class TabOrganizationSelectorElement extends CrLitElement {
     super.connectedCallback();
     this.apiProxy_.getStaleTabs().then(
         ({tabs}) => this.updateDeclutterTabs_(tabs));
+    this.apiProxy_.getTabOrganizationFeature().then(
+        ({feature}) => this.updateSelectedFeature_(feature));
     const callbackRouter = this.apiProxy_.getCallbackRouter();
     this.listenerIds_.push(callbackRouter.staleTabsChanged.addListener(
         this.updateDeclutterTabs_.bind(this)));
+    this.listenerIds_.push(
+        callbackRouter.tabOrganizationFeatureChanged.addListener(
+            this.updateSelectedFeature_.bind(this)));
   }
 
   override disconnectedCallback() {
@@ -64,18 +65,21 @@ export class TabOrganizationSelectorElement extends CrLitElement {
   }
 
   protected onAutoTabGroupsClick_(): void {
-    this.selectedState_ = OrganizationFeature.AUTO_TAB_GROUPS;
+    this.selectedState_ = TabOrganizationFeature.kAutoTabGroups;
+    this.apiProxy_.setOrganizationFeature(this.selectedState_);
     const autoTabGroupsPage =
         this.shadowRoot!.querySelector('auto-tab-groups-page')!;
     autoTabGroupsPage.classList.toggle('changed-state', false);
   }
 
   protected onDeclutterClick_(): void {
-    this.selectedState_ = OrganizationFeature.DECLUTTER;
+    this.selectedState_ = TabOrganizationFeature.kDeclutter;
+    this.apiProxy_.setOrganizationFeature(this.selectedState_);
   }
 
   protected onBackClick_(): void {
-    this.selectedState_ = OrganizationFeature.NONE;
+    this.selectedState_ = TabOrganizationFeature.kSelector;
+    this.apiProxy_.setOrganizationFeature(this.selectedState_);
   }
 
   private async updateDeclutterTabs_(tabs: Tab[]): Promise<void> {
@@ -84,6 +88,12 @@ export class TabOrganizationSelectorElement extends CrLitElement {
     this.declutterHeading_ =
         await PluralStringProxyImpl.getInstance().getPluralString(
             'declutterSelectorHeading', declutterTabCount);
+  }
+
+  private updateSelectedFeature_(feature: TabOrganizationFeature) {
+    if (feature !== TabOrganizationFeature.kNone) {
+      this.selectedState_ = feature;
+    }
   }
 }
 

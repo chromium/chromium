@@ -4,8 +4,8 @@
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {AutoTabGroupsPageElement, DeclutterPageElement, Tab, TabOrganizationSelectorButtonElement, TabOrganizationSelectorElement} from 'chrome://tab-search.top-chrome/tab_search.js';
-import {TabOrganizationState, TabSearchApiProxyImpl} from 'chrome://tab-search.top-chrome/tab_search.js';
-import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {TabOrganizationFeature, TabOrganizationState, TabSearchApiProxyImpl} from 'chrome://tab-search.top-chrome/tab_search.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {createTab, createTabOrganizationSession} from './tab_search_test_data.js';
@@ -179,5 +179,39 @@ suite('TabOrganizationSelectorTest', () => {
     await microtasksFinished();
 
     assertFalse(declutterButton.disabled);
+  });
+
+  test('Navigation calls setOrganizationFeature', async () => {
+    await selectorSetup();
+    assertEquals(0, testApiProxy.getCallCount('setOrganizationFeature'));
+
+    const declutterButton =
+        selector.shadowRoot!.querySelector<HTMLElement>('#declutterButton');
+    assertTrue(!!declutterButton);
+    declutterButton.click();
+
+    const [declutterFeature] =
+        await testApiProxy.whenCalled('setOrganizationFeature');
+    assertEquals(TabOrganizationFeature.kDeclutter, declutterFeature);
+    testApiProxy.resetResolver('setOrganizationFeature');
+
+    const declutterBackButton =
+        declutterState.shadowRoot!.querySelector('cr-icon-button');
+    assertTrue(!!declutterBackButton);
+    declutterBackButton.click();
+
+    const [selectorFeature] =
+        await testApiProxy.whenCalled('setOrganizationFeature');
+    assertEquals(TabOrganizationFeature.kSelector, selectorFeature);
+    testApiProxy.resetResolver('setOrganizationFeature');
+
+    const autoTabGroupsButton =
+        selector.shadowRoot!.querySelector<HTMLElement>('#autoTabGroupsButton');
+    assertTrue(!!autoTabGroupsButton);
+    autoTabGroupsButton.click();
+
+    const [autoTabGroupsFeature] =
+        await testApiProxy.whenCalled('setOrganizationFeature');
+    assertEquals(TabOrganizationFeature.kAutoTabGroups, autoTabGroupsFeature);
   });
 });

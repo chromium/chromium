@@ -107,6 +107,7 @@
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_tabbed_utils.h"
 #include "chrome/browser/ui/webui/commerce/product_specifications_disclosure_dialog.h"
+#include "chrome/browser/ui/webui/tab_search/tab_search.mojom.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -1870,7 +1871,8 @@ void FindInPage(Browser* browser, bool find_next, bool forward_direction) {
 
 void ShowTabSearch(Browser* browser) {
   const int tab_search_tab_index = 0;
-  browser->window()->CreateTabSearchBubble(tab_search_tab_index);
+  browser->window()->CreateTabSearchBubble(
+      tab_search_tab_index, tab_search::mojom::TabOrganizationFeature::kNone);
 }
 
 void CloseTabSearch(Browser* browser) {

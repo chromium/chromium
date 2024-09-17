@@ -15,6 +15,7 @@
 
 #include "base/base64.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
@@ -208,6 +209,11 @@ TabSearchPageHandler::TabSearchPageHandler(
       base::BindRepeating(&TabSearchPageHandler::NotifyTabIndexPrefChanged,
                           base::Unretained(this), profile));
   pref_change_registrar_.Add(
+      tab_search_prefs::kTabOrganizationFeature,
+      base::BindRepeating(
+          &TabSearchPageHandler::NotifyOrganizationFeaturePrefChanged,
+          base::Unretained(this), profile));
+  pref_change_registrar_.Add(
       tab_search_prefs::kTabOrganizationShowFRE,
       base::BindRepeating(&TabSearchPageHandler::NotifyShowFREPrefChanged,
                           base::Unretained(this), profile));
@@ -372,6 +378,15 @@ void TabSearchPageHandler::GetProfileData(GetProfileDataCallback callback) {
 
 void TabSearchPageHandler::GetStaleTabs(GetStaleTabsCallback callback) {
   std::move(callback).Run(FindStaleTabs());
+}
+
+void TabSearchPageHandler::GetTabOrganizationFeature(
+    GetTabOrganizationFeatureCallback callback) {
+  PrefService* prefs = Profile::FromWebUI(web_ui_)->GetPrefs();
+  const tab_search::mojom::TabOrganizationFeature feature =
+      tab_search_prefs::GetTabOrganizationFeatureFromInt(
+          prefs->GetInteger(tab_search_prefs::kTabOrganizationFeature));
+  std::move(callback).Run(feature);
 }
 
 void TabSearchPageHandler::GetTabOrganizationSession(
@@ -596,6 +611,13 @@ void TabSearchPageHandler::SaveRecentlyClosedExpandedPref(bool expanded) {
 void TabSearchPageHandler::SetTabIndex(int32_t index) {
   Profile::FromWebUI(web_ui_)->GetPrefs()->SetInteger(
       tab_search_prefs::kTabSearchTabIndex, index);
+}
+
+void TabSearchPageHandler::SetOrganizationFeature(
+    tab_search::mojom::TabOrganizationFeature feature) {
+  Profile::FromWebUI(web_ui_)->GetPrefs()->SetInteger(
+      tab_search_prefs::kTabOrganizationFeature,
+      tab_search_prefs::GetIntFromTabOrganizationFeature(feature));
 }
 
 void TabSearchPageHandler::StartTabGroupTutorial() {
@@ -1184,6 +1206,14 @@ void TabSearchPageHandler::NotifyTabIndexPrefChanged(const Profile* profile) {
   const int32_t index =
       profile->GetPrefs()->GetInteger(tab_search_prefs::kTabSearchTabIndex);
   page_->TabSearchTabIndexChanged(index);
+}
+
+void TabSearchPageHandler::NotifyOrganizationFeaturePrefChanged(
+    const Profile* profile) {
+  const int32_t feature_int = profile->GetPrefs()->GetInteger(
+      tab_search_prefs::kTabOrganizationFeature);
+  page_->TabOrganizationFeatureChanged(
+      tab_search_prefs::GetTabOrganizationFeatureFromInt(feature_int));
 }
 
 void TabSearchPageHandler::NotifyShowFREPrefChanged(const Profile* profile) {

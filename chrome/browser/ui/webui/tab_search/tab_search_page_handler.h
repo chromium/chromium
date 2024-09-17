@@ -87,6 +87,8 @@ class TabSearchPageHandler
   void ExcludeFromStaleTabs(int32_t tab_id) override;
   void GetProfileData(GetProfileDataCallback callback) override;
   void GetStaleTabs(GetStaleTabsCallback callback) override;
+  void GetTabOrganizationFeature(
+      GetTabOrganizationFeatureCallback callback) override;
   void GetTabOrganizationSession(
       GetTabOrganizationSessionCallback callback) override;
   void GetTabOrganizationModelStrategy(
@@ -102,6 +104,8 @@ class TabSearchPageHandler
   void RestartSession() override;
   void SaveRecentlyClosedExpandedPref(bool expanded) override;
   void SetTabIndex(int32_t index) override;
+  void SetOrganizationFeature(
+      tab_search::mojom::TabOrganizationFeature feature) override;
   void StartTabGroupTutorial() override;
   void TriggerFeedback(int32_t session_id) override;
   void TriggerSignIn() override;
@@ -224,6 +228,8 @@ class TabSearchPageHandler
   void NotifyTabsChanged();
 
   void NotifyTabIndexPrefChanged(const Profile* profile);
+
+  void NotifyOrganizationFeaturePrefChanged(const Profile* profile);
 
   void NotifyShowFREPrefChanged(const Profile* profile);
 

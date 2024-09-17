@@ -149,7 +149,9 @@ void TabSearchBubbleHost::OnOrganizationAccepted(const Browser* browser) {
 void TabSearchBubbleHost::OnUserInvokedFeature(const Browser* browser) {
   if (browser == GetBrowser()) {
     const int tab_organization_tab_index = 1;
-    ShowTabSearchBubble(false, tab_organization_tab_index);
+    ShowTabSearchBubble(
+        false, tab_organization_tab_index,
+        tab_search::mojom::TabOrganizationFeature::kAutoTabGroups);
   }
 }
 
@@ -191,12 +193,21 @@ void TabSearchBubbleHost::BeforeBubbleWidgetShowed(views::Widget* widget) {
 
 bool TabSearchBubbleHost::ShowTabSearchBubble(
     bool triggered_by_keyboard_shortcut,
-    int tab_index) {
+    int tab_index,
+    tab_search::mojom::TabOrganizationFeature organization_feature) {
   TRACE_EVENT0("ui", "TabSearchBubbleHost::ShowTabSearchBubble");
   base::trace_event::EmitNamedTrigger("show-tab-search-bubble");
   if (tab_index >= 0) {
     profile_->GetPrefs()->SetInteger(tab_search_prefs::kTabSearchTabIndex,
                                      tab_index);
+  }
+
+  if (organization_feature !=
+      tab_search::mojom::TabOrganizationFeature::kNone) {
+    profile_->GetPrefs()->SetInteger(
+        tab_search_prefs::kTabOrganizationFeature,
+        tab_search_prefs::GetIntFromTabOrganizationFeature(
+            organization_feature));
   }
 
   if (webui_bubble_manager_->GetBubbleWidget()) {

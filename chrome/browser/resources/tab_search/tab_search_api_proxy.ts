@@ -4,7 +4,7 @@
 
 import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
 
-import type {ProfileData, SwitchToTabInfo, Tab, TabOrganizationModelStrategy, TabOrganizationSession, UserFeedback} from './tab_search.mojom-webui.js';
+import type {ProfileData, SwitchToTabInfo, Tab, TabOrganizationFeature, TabOrganizationModelStrategy, TabOrganizationSession, UserFeedback} from './tab_search.mojom-webui.js';
 import {PageCallbackRouter, PageHandlerFactory, PageHandlerRemote} from './tab_search.mojom-webui.js';
 
 /**
@@ -35,6 +35,8 @@ export interface TabSearchApiProxy {
 
   getStaleTabs(): Promise<{tabs: Tab[]}>;
 
+  getTabOrganizationFeature(): Promise<{feature: TabOrganizationFeature}>;
+
   getTabOrganizationSession(): Promise<{session: TabOrganizationSession}>;
 
   getTabOrganizationModelStrategy():
@@ -59,6 +61,8 @@ export interface TabSearchApiProxy {
   saveRecentlyClosedExpandedPref(expanded: boolean): void;
 
   setTabIndex(index: number): void;
+
+  setOrganizationFeature(feature: TabOrganizationFeature): void;
 
   startTabGroupTutorial(): void;
 
@@ -124,6 +128,10 @@ export class TabSearchApiProxyImpl implements TabSearchApiProxy {
     return this.handler.getStaleTabs();
   }
 
+  getTabOrganizationFeature() {
+    return this.handler.getTabOrganizationFeature();
+  }
+
   getTabOrganizationSession() {
     return this.handler.getTabOrganizationSession();
   }
@@ -179,6 +187,10 @@ export class TabSearchApiProxyImpl implements TabSearchApiProxy {
 
   setTabIndex(index: number) {
     this.handler.setTabIndex(index);
+  }
+
+  setOrganizationFeature(feature: TabOrganizationFeature) {
+    this.handler.setOrganizationFeature(feature);
   }
 
   startTabGroupTutorial() {

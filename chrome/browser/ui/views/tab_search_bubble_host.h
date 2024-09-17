@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/tabs/organization/tab_organization_observer.h"
 #include "chrome/browser/ui/views/bubble/webui_bubble_manager.h"
 #include "chrome/browser/ui/views/bubble/webui_bubble_manager_observer.h"
+#include "chrome/browser/ui/webui/tab_search/tab_search.mojom.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search_ui.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/menu_button_controller.h"
@@ -51,8 +52,11 @@ class TabSearchBubbleHost : public views::WidgetObserver,
   // given tab, even if the bubble is already showing.
   // TODO(emshack): Either use an enum for tab_index here or break this out
   // into multiple methods for improved readability.
-  bool ShowTabSearchBubble(bool triggered_by_keyboard_shortcut = false,
-                           int tab_index = -1);
+  bool ShowTabSearchBubble(
+      bool triggered_by_keyboard_shortcut = false,
+      int tab_index = -1,
+      tab_search::mojom::TabOrganizationFeature organization_feature =
+          tab_search::mojom::TabOrganizationFeature::kNone);
   void CloseTabSearchBubble();
 
   Browser* GetBrowser();
