@@ -37,17 +37,28 @@ ShoppingServiceFactory* ShoppingServiceFactory::GetInstance() {
 }
 
 // static
-ShoppingService* ShoppingServiceFactory::GetForBrowserState(
-    web::BrowserState* state) {
+ShoppingService* ShoppingServiceFactory::GetForProfile(ProfileIOS* profile) {
   return static_cast<ShoppingService*>(
-      GetInstance()->GetServiceForBrowserState(state, true));
+      GetInstance()->GetServiceForBrowserState(profile, true));
+}
+
+// static
+ShoppingService* ShoppingServiceFactory::GetForProfileIfExists(
+    ProfileIOS* profile) {
+  return static_cast<ShoppingService*>(
+      GetInstance()->GetServiceForBrowserState(profile, false));
+}
+
+// static
+ShoppingService* ShoppingServiceFactory::GetForBrowserState(
+    ProfileIOS* profile) {
+  return GetForProfile(profile);
 }
 
 // static
 ShoppingService* ShoppingServiceFactory::GetForBrowserStateIfExists(
-    web::BrowserState* state) {
-  return static_cast<ShoppingService*>(
-      GetInstance()->GetServiceForBrowserState(state, false));
+    ProfileIOS* profile) {
+  return GetForProfileIfExists(profile);
 }
 
 ShoppingServiceFactory::ShoppingServiceFactory()

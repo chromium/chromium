@@ -2954,7 +2954,7 @@ enum class ToolbarKind {
       }
       commerce::ShoppingService* shoppingService =
           commerce::ShoppingServiceFactory::GetForBrowserState(
-              activeWebState->GetBrowserState());
+              ProfileIOS::FromBrowserState(activeWebState->GetBrowserState()));
       // Track parcels and display infobar if successful.
       TrackParcels(
           shoppingService, parcels, std::string(),

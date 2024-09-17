@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/parcel_tracking/metrics.h"
 #import "ios/chrome/browser/parcel_tracking/parcel_tracking_util.h"
 #import "ios/chrome/browser/parcel_tracking/tracking_source.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 
@@ -25,7 +26,7 @@ ParcelTrackingInfobarDelegate::ParcelTrackingInfobarDelegate(
       application_commands_handler_(application_commands_handler),
       parcel_tracking_commands_handler_(parcel_tracking_commands_handler) {
   shopping_service_ = commerce::ShoppingServiceFactory::GetForBrowserState(
-      web_state->GetBrowserState());
+      ProfileIOS::FromBrowserState(web_state->GetBrowserState()));
 }
 
 ParcelTrackingInfobarDelegate::~ParcelTrackingInfobarDelegate() = default;

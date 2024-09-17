@@ -32,6 +32,7 @@ source_set("infobar_delegate") {
     "//components/commerce/core:shopping_service",
     "//components/infobars/core",
     "//ios/chrome/browser/commerce/model:shopping_service",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/web/model/annotations",
     "//ios/web/public",
