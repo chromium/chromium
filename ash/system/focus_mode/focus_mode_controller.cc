@@ -254,6 +254,20 @@ void FocusModeController::OnActiveUserSessionChanged(
                                 weak_factory_.GetWeakPtr()));
 }
 
+void FocusModeController::OnSessionStateChanged(
+    session_manager::SessionState state) {
+  // Make the tray consistent with other pods for when it should be shown (i.e.
+  // not in the login screen).
+  if (Shell::Get()->session_controller()->IsUserSessionBlocked()) {
+    SetFocusTrayVisibility(false);
+    return;
+  }
+
+  if (in_focus_session() || in_ending_moment()) {
+    SetFocusTrayVisibility(true);
+  }
+}
+
 void FocusModeController::OnSelectedPlaylistChanged() {
   // If a user swaps playlists or deselects the playlist, we should close the
   // previous media widget. The reason we don't just reuse the existing widget
@@ -763,6 +777,10 @@ void FocusModeController::CloseSystemTrayBubble() {
 }
 
 void FocusModeController::SetFocusTrayVisibility(bool visible) {
+  if (visible && Shell::Get()->session_controller()->IsUserSessionBlocked()) {
+    return;
+  }
+
   for (auto* root_window_controller : Shell::GetAllRootWindowControllers()) {
     if (auto* status_area_widget =
             root_window_controller->GetStatusAreaWidget()) {
