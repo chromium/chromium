@@ -917,6 +917,31 @@ TEST_F(SendTabToSelfBridgeTest, NotifyRemoteSendTabToSelfEntryOpened) {
   EXPECT_EQ(2ul, bridge()->GetAllGuids().size());
 }
 
+TEST_F(SendTabToSelfBridgeTest, SendTabToSelfEntryOpened_QueueUnknownGuid) {
+  InitializeBridge();
+  SetLocalDeviceCacheGuid("Device1");
+
+  // Call MarkEntryOpened before entry is added.
+  bridge()->MarkEntryOpened("guid1");
+
+  // Add an entry targeting this device.
+  syncer::EntityChangeList remote_input;
+  SendTabToSelfEntry entry1("guid1", GURL("http://www.example.com/"), "title",
+                            AdvanceAndGetTime(), "device", "Device1");
+  remote_input.push_back(
+      syncer::EntityChange::CreateAdd("guid1", MakeEntityData(entry1)));
+
+  auto metadata_change_list =
+      std::make_unique<syncer::InMemoryMetadataChangeList>();
+
+  EXPECT_CALL(*processor(), Put("guid1", _, _)).Times(1);
+
+  bridge()->MergeFullSyncData(std::move(metadata_change_list),
+                              std::move(remote_input));
+
+  EXPECT_TRUE(bridge()->GetEntryByGUID("guid1")->IsOpened());
+}
+
 TEST_F(SendTabToSelfBridgeTest,
        ShouldHaveEmptyTargetDeviceInfoListWhileEmptyDeviceInfo) {
   InitializeBridgeWithoutDevice();

@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -153,8 +154,17 @@ class SendTabToSelfBridge : public syncer::DataTypeSyncBridge,
 
   void DeleteAllEntries();
 
+  void EraseEntryInBatch(const std::string& guid,
+                         syncer::DataTypeStore::WriteBatch* batch);
+
   // |entries_| is keyed by GUIDs.
   SendTabToSelfEntries entries_;
+
+  // Stores guids of entries that have been opened from a layer other than
+  // SendTabToSelfModel. Once the bridge receives the respective entries, they
+  // will be marked opened. Entries are in-memory only and will be lost on
+  // browser restart.
+  base::flat_set<std::string> unknown_opened_entries_;
 
   // |clock_| isn't owned.
   const raw_ptr<const base::Clock> clock_;
