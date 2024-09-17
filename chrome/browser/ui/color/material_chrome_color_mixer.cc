@@ -119,6 +119,11 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorChromeSigninBubbleInfoBackground] = {
       kColorProfileMenuSyncInfoBackground};
 
+  // Batch upload colors. Uses the same colors as the profile menu.
+  mixer[kColorBatchUploadBackground] = {kColorProfileMenuBackground};
+  mixer[kColorBatchUploadDataBackground] = {
+      kColorProfileMenuSyncInfoBackground};
+
   // Tab Search colors.
   mixer[kColorTabSearchButtonBackground] = {ui::kColorSysSurface2};
   mixer[kColorTabSearchCardBackground] = {ui::kColorSysSurface5};

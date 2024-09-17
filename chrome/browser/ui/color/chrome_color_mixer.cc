@@ -157,6 +157,9 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorChromeSigninBubbleBackground] = {kColorProfileMenuBackground};
   mixer[kColorChromeSigninBubbleInfoBackground] = {
       kColorProfileMenuSyncInfoBackground};
+  mixer[kColorBatchUploadBackground] = {kColorProfileMenuBackground};
+  mixer[kColorBatchUploadDataBackground] = {
+      kColorProfileMenuSyncInfoBackground};
   mixer[kColorDesktopMediaTabListBorder] = {ui::kColorMidground};
   mixer[kColorDesktopMediaTabListPreviewBackground] = {ui::kColorMidground};
   mixer[kColorDownloadItemForeground] = {kColorDownloadShelfForeground};

@@ -78,6 +78,7 @@ source_set("browser_tests") {
 
   if (enable_dice_support) {
     sources += [ "welcome/welcome_browsertest.cc" ]
+    sources += [ "signin/batch_upload_view_browsertest.cc" ]
   }
 
   if (enable_extensions) {
