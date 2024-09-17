@@ -26,12 +26,12 @@ bool IsURLAllowedInIncognito(const GURL& url) {
 }
 
 void LoadJavaScriptURL(const GURL& url,
-                       ChromeBrowserState* browser_state,
+                       ProfileIOS* profile,
                        web::WebState* web_state) {
   DCHECK(url.SchemeIs(url::kJavaScriptScheme));
   DCHECK(web_state);
   PrerenderService* prerenderService =
-      PrerenderServiceFactory::GetForBrowserState(browser_state);
+      PrerenderServiceFactory::GetForProfile(profile);
   if (prerenderService) {
     prerenderService->CancelPrerender();
   }
@@ -54,9 +54,8 @@ void RestoreTab(const SessionID session_id,
   // service requesting a new window. This is unsupported on iOS (see above
   // TODO).
   DCHECK(context);
-  ChromeBrowserState* browser_state =
-      browser->GetBrowserState()->GetOriginalChromeBrowserState();
+  ProfileIOS* profile = browser->GetProfile()->GetOriginalProfile();
   sessions::TabRestoreService* restoreService =
-      IOSChromeTabRestoreServiceFactory::GetForBrowserState(browser_state);
+      IOSChromeTabRestoreServiceFactory::GetForProfile(profile);
   restoreService->RestoreEntryById(context, session_id, disposition);
 }

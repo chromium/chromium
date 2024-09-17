@@ -24,7 +24,6 @@ class SyncServiceFactory : public BrowserStateKeyedServiceFactory {
   static syncer::SyncService* GetForBrowserState(ProfileIOS* profile);
 
   static syncer::SyncService* GetForProfile(ProfileIOS* profile);
-
   static syncer::SyncService* GetForProfileIfExists(ProfileIOS* profile);
 
   static syncer::SyncServiceImpl* GetAsSyncServiceImplForBrowserStateForTesting(

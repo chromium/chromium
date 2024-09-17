@@ -25,8 +25,8 @@ const char kTestUrl[] = "https://chromium.test/";
 class UrlLoadingObserverBridgeTest : public PlatformTest {
  protected:
   UrlLoadingObserverBridgeTest() {
-    chrome_browser_state_ = TestChromeBrowserState::Builder().Build();
-    browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get());
+    profile_ = TestProfileIOS::Builder().Build();
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
     UrlLoadingNotifierBrowserAgent::CreateForBrowser(browser_.get());
 
     url_loading_notifier_ =
@@ -51,7 +51,7 @@ class UrlLoadingObserverBridgeTest : public PlatformTest {
  private:
   // Environment dependencies.
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   // Test dependencies.
   raw_ptr<UrlLoadingNotifierBrowserAgent> url_loading_notifier_;

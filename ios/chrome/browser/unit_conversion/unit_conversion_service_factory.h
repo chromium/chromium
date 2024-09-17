@@ -13,12 +13,9 @@
 class UnitConversionService;
 
 // Singleton that owns all UnitConversionServices and associates them with
-// ChromeBrowserState.
+// ProfileIOS.
 class UnitConversionServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static UnitConversionService* GetForBrowserState(ProfileIOS* profile);
-
   static UnitConversionService* GetForProfile(ProfileIOS* profile);
   static UnitConversionServiceFactory* GetInstance();
 

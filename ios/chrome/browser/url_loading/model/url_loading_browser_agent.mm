@@ -159,7 +159,7 @@ void UrlLoadingBrowserAgent::Dispatch(const UrlLoadParams& params) {
 void UrlLoadingBrowserAgent::LoadUrlInCurrentTab(const UrlLoadParams& params) {
   web::NavigationManager::WebLoadParams web_params = params.web_params;
 
-  ChromeBrowserState* browser_state = browser_->GetBrowserState();
+  ProfileIOS* profile = browser_->GetProfile();
 
   notifier_->TabWillLoadUrl(web_params.url, web_params.transition_type);
 
@@ -180,14 +180,14 @@ void UrlLoadingBrowserAgent::LoadUrlInCurrentTab(const UrlLoadParams& params) {
   }
 
   PrerenderService* prerender_service =
-      PrerenderServiceFactory::GetForBrowserState(browser_state);
+      PrerenderServiceFactory::GetForProfile(profile);
 
   // Some URLs are not allowed while in incognito.  If we are in incognito and
   // load a disallowed URL, instead create a new tab not in the incognito state.
   // Also if there's no current web state, that means there is no current tab
   // to open in, so this also redirects to a new tab.
-  if (!current_web_state || (browser_state->IsOffTheRecord() &&
-                             !IsURLAllowedInIncognito(web_params.url))) {
+  if (!current_web_state ||
+      (profile->IsOffTheRecord() && !IsURLAllowedInIncognito(web_params.url))) {
     if (prerender_service) {
       prerender_service->CancelPrerender();
     }
@@ -196,7 +196,7 @@ void UrlLoadingBrowserAgent::LoadUrlInCurrentTab(const UrlLoadParams& params) {
     if (!current_web_state) {
       UrlLoadParams fixed_params = params;
       fixed_params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
-      fixed_params.in_incognito = browser_state->IsOffTheRecord();
+      fixed_params.in_incognito = profile->IsOffTheRecord();
       Load(fixed_params);
     } else {
       UrlLoadParams fixed_params = UrlLoadParams::InNewTab(web_params);
@@ -259,11 +259,11 @@ void UrlLoadingBrowserAgent::SwitchToTab(const UrlLoadParams& params) {
       Load(UrlLoadParams::InCurrentTab(web_params));
     } else {
       // Load the URL in foreground.
-      ChromeBrowserState* browser_state = browser_->GetBrowserState();
+      ProfileIOS* profile = browser_->GetProfile();
       UrlLoadParams new_tab_params =
           UrlLoadParams::InNewTab(web_params.url, web_params.virtual_url);
       new_tab_params.web_params.referrer = web::Referrer();
-      new_tab_params.in_incognito = browser_state->IsOffTheRecord();
+      new_tab_params.in_incognito = profile->IsOffTheRecord();
       new_tab_params.append_to = OpenPosition::kCurrentTab;
       scene_service_->LoadUrlInNewTab(new_tab_params);
     }
@@ -296,9 +296,9 @@ void UrlLoadingBrowserAgent::LoadUrlInNewTab(const UrlLoadParams& params) {
     DCHECK(!reauth_agent.authenticationRequired);
   }
 
-  ChromeBrowserState* browser_state = browser_->GetBrowserState();
-  ChromeBrowserState* active_browser_state =
-      scene_service_->GetCurrentBrowser()->GetBrowserState();
+  ProfileIOS* profile = browser_->GetProfile();
+  ProfileIOS* active_profile =
+      scene_service_->GetCurrentBrowser()->GetProfile();
 
   // Two UrlLoadingServices exist per scene, normal and incognito.  Handle two
   // special cases that need to be sent up to the SceneUrlLoadingService: 1) The
@@ -306,9 +306,9 @@ void UrlLoadingBrowserAgent::LoadUrlInNewTab(const UrlLoadParams& params) {
   // URL will be loaded in a foreground tab by this UrlLoadingService, but the
   // UI associated with this UrlLoadingService is not currently visible, so the
   // SceneUrlLoadingService needs to switch modes before loading the URL.
-  if (params.in_incognito != browser_state->IsOffTheRecord() ||
+  if (params.in_incognito != profile->IsOffTheRecord() ||
       (!params.in_background() &&
-       params.in_incognito != active_browser_state->IsOffTheRecord())) {
+       params.in_incognito != active_profile->IsOffTheRecord())) {
     // When sending a load request that switches modes, ensure the tab
     // ends up appended to the end of the model, not just next to what is
     // currently selected in the other mode. This is done with the `append_to`

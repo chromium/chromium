@@ -59,7 +59,7 @@ UnifiedConsentServiceFactory::BuildServiceInstanceFor(
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
   syncer::SyncService* sync_service =
-      SyncServiceFactory::GetForBrowserState(profile);
+      SyncServiceFactory::GetForProfile(profile);
 
   // Record settings for pre- and post-UnifiedConsent users.
   unified_consent::metrics::RecordSettingsHistogram(user_pref_service);
