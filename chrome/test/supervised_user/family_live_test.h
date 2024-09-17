@@ -72,6 +72,7 @@ class FamilyLiveTest : public signin::test::LiveTest {
   void SetUp() override;
   void SetUpOnMainThread() override;
   void SetUpInProcessBrowserTestFixture() override;
+  void TearDownOnMainThread() override;
 
   // Creates the GURL from the `url_spec` and ensures that the host part was
   // explicitly added to `extra_enabled_hosts`.

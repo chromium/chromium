@@ -215,6 +215,11 @@ void FamilyLiveTest::SetUpOnMainThread() {
                << kHeadOfHouseholdCredentialsSwitch << " and "
                << kChildCredentialsSwitch << ".";
 }
+void FamilyLiveTest::TearDownOnMainThread() {
+  head_of_household_.reset();
+  child_.reset();
+  signin::test::LiveTest::TearDownOnMainThread();
+}
 
 void FamilyLiveTest::SetHeadOfHousehold(
     const ::signin::test::TestAccount& account) {

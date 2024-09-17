@@ -62,9 +62,7 @@ class FamilyMember {
 
  private:
   signin::test::TestAccount account_;
-  // Reference emphasizes that the browser always exists. The browser_ becomes
-  // dangling here because it is managed in external lifecycle.
-  raw_ref<Browser, DisableDanglingPtrDetection> browser_;
+  raw_ref<Browser> browser_;
   signin::test::SignInFunctions sign_in_functions_;
 };
 }  // namespace supervised_user
