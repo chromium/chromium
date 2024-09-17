@@ -137,7 +137,7 @@ FilteringRanker::FilteringRanker() = default;
 FilteringRanker::~FilteringRanker() = default;
 
 void FilteringRanker::Start(const std::u16string& query,
-                            CategoriesList& categories) {
+                            const CategoriesList& categories) {
   last_query_ = query;
 }
 

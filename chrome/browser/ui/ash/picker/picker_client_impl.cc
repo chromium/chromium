@@ -226,12 +226,6 @@ std::vector<ash::PickerSearchResult> GetEditorResultsFromPanelContext(
   return results;
 }
 
-app_list::CategoriesList CreateRankerCategories() {
-  app_list::CategoriesList res({{.category = app_list::Category::kWeb},
-                                {.category = app_list::Category::kFiles}});
-  return res;
-}
-
 }  // namespace
 
 PickerClientImpl::PickerClientImpl(ash::PickerController* controller,
@@ -257,8 +251,8 @@ void PickerClientImpl::StartCrosSearch(
     const std::u16string& query,
     std::optional<ash::PickerCategory> category,
     CrosSearchResultsCallback callback) {
-  ranker_categories_ = CreateRankerCategories();
-  ranker_manager_->Start(query, ranker_categories_);
+  ranker_manager_->Start(query, {{.category = app_list::Category::kWeb},
+                                 {.category = app_list::Category::kFiles}});
   if (!category.has_value()) {
     CHECK(search_engine_);
     search_engine_->StartSearch(

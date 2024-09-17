@@ -34,7 +34,6 @@ class PickerThumbnailLoader;
 namespace app_list {
 class SearchEngine;
 class SearchProvider;
-struct CategoryMetadata;
 }
 
 namespace ash {
@@ -152,7 +151,6 @@ class PickerClientImpl
   std::optional<ash::PickerCategory> current_filter_category_;
 
   std::unique_ptr<app_list::RankerManager> ranker_manager_;
-  std::vector<app_list::CategoryMetadata> ranker_categories_;
 
   std::unique_ptr<PickerFileSuggester> file_suggester_;
   std::unique_ptr<PickerLinkSuggester> link_suggester_;

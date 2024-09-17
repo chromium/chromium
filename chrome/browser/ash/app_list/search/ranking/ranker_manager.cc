@@ -120,7 +120,7 @@ RankerManager::RankerManager(Profile* profile) {
 RankerManager::~RankerManager() {}
 
 void RankerManager::Start(const std::u16string& query,
-                          CategoriesList& categories) {
+                          const CategoriesList& categories) {
   for (auto& ranker : rankers_) {
     ranker->Start(query, categories);
   }
