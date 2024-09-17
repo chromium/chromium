@@ -73,7 +73,7 @@ void TestSecretPortal::RetrieveSecret(
   }
   auto* exported_response = bus_->GetExportedObject(response_path);
 
-  EXPECT_EQ(pre_test_, !token.has_value());
+  EXPECT_TRUE(!pre_test_ || !token.has_value());
 
   auto response = dbus::Response::FromMethodCall(method_call);
   dbus::MessageWriter writer(response.get());

@@ -138,7 +138,7 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="NoResponse"/>
   <int value="8" label="SignalReadFailed"/>
   <int value="9" label="UserCancelledUnlock"/>
-  <int value="10" label="DestructedBeforeComplete"/>
+  <int value="10" label="(Obsolete) DestructedBeforeComplete"/>
   <int value="11" label="SignalConnectFailed"/>
   <int value="12" label="SignalParseFailed"/>
 </enum>

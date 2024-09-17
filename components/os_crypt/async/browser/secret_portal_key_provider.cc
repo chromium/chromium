@@ -61,7 +61,6 @@ SecretPortalKeyProvider::SecretPortalKeyProvider(PrefService* local_state,
 
 SecretPortalKeyProvider::~SecretPortalKeyProvider() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  Finalize(InitStatus::kDestructedBeforeComplete);
   bus_->GetDBusTaskRunner()->PostTask(
       FROM_HERE, base::BindOnce(&dbus::Bus::ShutdownAndBlock, bus_));
 }

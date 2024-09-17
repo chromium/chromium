@@ -52,7 +52,7 @@ class SecretPortalKeyProvider : public KeyProvider {
     kNoResponse = 7,
     kSignalReadFailed = 8,
     kUserCancelledUnlock = 9,
-    kDestructedBeforeComplete = 10,
+    // kDestructedBeforeComplete = 10,
     kSignalConnectFailed = 11,
     kSignalParseFailed = 12,
     kMaxValue = kSignalParseFailed,
