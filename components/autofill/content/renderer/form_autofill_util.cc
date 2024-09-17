@@ -2384,17 +2384,17 @@ FindFormAndFieldForFormControlElement(
   }
 
   WebDocument document = element.GetDocument();
-  WebFormElement form_element = GetOwningForm(element);
+  WebFormElement owning_form = GetOwningForm(element);
   std::optional<FormData> form = ExtractFormData(
-      document, form_element, field_data_manager, timer_state, extract_options);
+      document, owning_form, field_data_manager, timer_state, extract_options);
   const bool extract_form_data_succeeded = form.has_value();
 
   if (!form) {
     // If we couldn't extract the form, ignore the fields other than `element`.
     // This gives Autocomplete and other handlers the chance to handle it.
     FormFieldData field;
-    WebFormControlElementToFormField(form_util::GetOwningForm(element), element,
-                                     nullptr, extract_options, &field,
+    WebFormControlElementToFormField(owning_form, element, nullptr,
+                                     extract_options, &field,
                                      /*shadow_data=*/nullptr);
     form.emplace();
     form->set_fields({std::move(field)});
@@ -2470,7 +2470,7 @@ FindFormAndFieldForFormControlElement(
   SCOPED_CRASH_KEY_NUMBER("Autofill", #prefix "_form_size", get_form_size(f));                                           \
   SCOPED_CRASH_KEY_STRING64("Autofill", #prefix "_form_id", get_id(f));
   SCOPED_CRASH_KEYS_FOR_FORM(assoc, assoc_form_element);
-  SCOPED_CRASH_KEYS_FOR_FORM(owng, form_element);
+  SCOPED_CRASH_KEYS_FOR_FORM(owng, owning_form);
 #undef FORM_CRASH_KEYS
   // clang-format on
   NOTREACHED(base::NotFatalUntil::M131);
