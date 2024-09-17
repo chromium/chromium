@@ -102,6 +102,8 @@ class ThemeSyncableService final : public syncer::SyncableService,
   static const char kSyncEntityTitle[];
 
  private:
+  class PrefServiceSyncableObserver;
+
   static bool AreThemeSpecificsEquivalent(
       const sync_pb::ThemeSpecifics& a,
       const sync_pb::ThemeSpecifics& b,
@@ -144,6 +146,8 @@ class ThemeSyncableService final : public syncer::SyncableService,
   std::optional<ThemeSyncState> startup_state_;
 
   base::ThreadChecker thread_checker_;
+
+  std::unique_ptr<PrefServiceSyncableObserver> pref_service_syncable_observer_;
 
   base::WeakPtrFactory<ThemeSyncableService> weak_ptr_factory_{this};
 
