@@ -17,6 +17,17 @@ import org.chromium.url.GURL;
 
 /** Defines the data that is exposed to properly render the Toolbar. */
 public interface ToolbarDataProvider {
+    /** Observer interface for consumers who wish to subscribe to updates of ToolbarData. */
+    interface Observer {
+        default void onIncognitoStateChanged() {}
+    }
+
+    /** Adds an observer of changes to ToolbarDataProvider's data. */
+    void addToolbarDataProviderObserver(Observer observer);
+
+    /** Removes an observer of changes to ToolbarDataProvider's data. */
+    void removeToolbarDataProviderObserver(Observer observer);
+
     /**
      * @return The tab that contains the information currently displayed in the toolbar.
      */

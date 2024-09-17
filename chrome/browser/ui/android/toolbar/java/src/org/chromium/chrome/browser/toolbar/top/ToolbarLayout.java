@@ -412,6 +412,14 @@ public abstract class ToolbarLayout extends FrameLayout
                     public boolean isPaintPreview() {
                         return false;
                     }
+
+                    @Override
+                    public void addToolbarDataProviderObserver(
+                            ToolbarDataProvider.Observer observer) {}
+
+                    @Override
+                    public void removeToolbarDataProviderObserver(
+                            ToolbarDataProvider.Observer observer) {}
                 };
     }
 
