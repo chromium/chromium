@@ -11,7 +11,7 @@ import compile_java
 
 
 def _CreateData(class_annotation='',
-                class_prefix='',
+                class_prefix='public ',
                 nested_annotation='',
                 suffix=''):
   return f"""\
@@ -80,6 +80,13 @@ class CompileJavaTests(unittest.TestCase):
                                    suffix='\nprivate class Extra {}')
     self.assertEqual(['Foo', 'Extra'], classes)
 
+  def testErrorOnNonPublic(self):
+
+    def inner():
+      self.do_classes_test(class_annotation='@ServiceImpl(Local.class)',
+                           class_prefix='')
+
+    self.assertRaises(Exception, inner)
 
 if __name__ == '__main__':
   unittest.main()

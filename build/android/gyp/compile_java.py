@@ -336,7 +336,7 @@ def CreateJarFile(jar_path,
 _PACKAGE_RE = re.compile(r'^package\s+(.*?)(;|\s*$)', flags=re.MULTILINE)
 
 _SERVICE_IMPL_RE = re.compile(
-    r'^([\t ]*)@ServiceImpl\(\s*(.+?)\.class\).*?\sclass\s+(\w+)',
+    r'^([\t ]*)@ServiceImpl\(\s*(.+?)\.class\)(.*?)\sclass\s+(\w+)',
     flags=re.MULTILINE | re.DOTALL)
 
 # Finds all top-level classes (by looking for those that are not indented).
@@ -352,7 +352,7 @@ _TOP_LEVEL_CLASSES_RE = re.compile(
     flags=re.MULTILINE)
 
 
-def ParseJavaSource(data, services_map):
+def ParseJavaSource(data, services_map, path=None):
   """This should support both Java and Kotlin files."""
   package_name = ''
   if m := _PACKAGE_RE.search(data):
@@ -362,7 +362,11 @@ def ParseJavaSource(data, services_map):
 
   # Very rare, so worth an upfront check.
   if '@ServiceImpl' in data:
-    for indent, service_class, impl_class in _SERVICE_IMPL_RE.findall(data):
+    for indent, service_class, modifiers, impl_class in (
+        _SERVICE_IMPL_RE.findall(data)):
+      if 'public' not in modifiers:
+        raise Exception(f'@ServiceImpl can be used only on public classes '
+                        f'(when parsing {path})')
       # Assume indent means nested class that is one level deep.
       if indent:
         impl_class = f'{class_names[0]}${impl_class}'
@@ -446,7 +450,9 @@ class _MetadataParser:
     entries = {}
     for path in itertools.chain(java_files, kt_files or []):
       data = pathlib.Path(path).read_text()
-      package_name, class_names = ParseJavaSource(data, self.services_map)
+      package_name, class_names = ParseJavaSource(data,
+                                                  self.services_map,
+                                                  path=path)
       source = self._srcjar_files.get(path, path)
       for fully_qualified_name in self._ProcessInfo(path, package_name,
                                                     class_names, source):
