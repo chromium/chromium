@@ -862,9 +862,8 @@ def process_json_file(json_filepath, list_tag,
                           True)
   data_exception_file.write('namespace gpu {\n')
   data_file.write('namespace gpu {\n\n')
-  data_file.write('const GpuControlList::Entry k%sEntries[] = {\n' % list_tag)
-  ids = []
   entry_count = 0
+  ids = []
   for index in range(len(json_data['entries'])):
     entry = json_data['entries'][index]
     entry_id = entry['id']
@@ -879,11 +878,19 @@ def process_json_file(json_filepath, list_tag,
       if os_filter not in (None, os_type):
         continue
     entry_count += 1
+  data_file.write(
+      'const std::array<GpuControlList::Entry, %d> k%sEntries = {{\n' %
+      (entry_count, list_tag))
+  for index in range(len(json_data['entries'])):
+    entry = json_data['entries'][index]
+    entry_id = entry['id']
+    if 'os' in entry:
+      os_type = entry['os']['type']
+      if os_filter not in (None, os_type):
+        continue
     write_entry(entry, total_features, feature_tag, unique_symbol_id,
                 data_file, data_helper_file, data_exception_file)
-  data_file.write('};\n')
-  data_file.write('const size_t k%sEntryCount = %d;\n' %
-                  (list_tag, entry_count))
+  data_file.write('}};\n')
   data_file.write('}  // namespace gpu\n')
   data_file.close()
   data_helper_file.write('}  // namespace gpu\n')
@@ -897,16 +904,14 @@ def process_json_file(json_filepath, list_tag,
   data_header_file.write(_LICENSE)
   data_header_file.write(_DO_NOT_EDIT_WARNING)
   write_header_file_guard(data_header_file, output_header_filename, path, True)
+  data_header_file.write('#include <array>\n\n')
   if export_tag == 'CONTENT_EXPORT ':
     data_header_file.write('#include "content/common/content_export.h"\n')
   data_header_file.write('#include "gpu/config/gpu_control_list.h"\n\n')
-  data_header_file.write('\n')
   data_header_file.write('namespace gpu {\n')
-  data_header_file.write('%sextern const size_t k%sEntryCount;\n' %
-                         (export_tag, list_tag))
   data_header_file.write(
-      '%sextern const GpuControlList::Entry k%sEntries[];\n' %
-      (export_tag, list_tag))
+      '%sextern const std::array<GpuControlList::Entry, %d> k%sEntries;\n' %
+      (export_tag, entry_count, list_tag))
   data_header_file.write('}  // namespace gpu\n')
   write_header_file_guard(data_header_file, output_header_filename, path, False)
   data_header_file.close()

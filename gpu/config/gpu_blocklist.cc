@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "gpu/config/gpu_blocklist.h"
 
 #include "gpu/config/gpu_feature_type.h"
@@ -21,8 +16,7 @@ GpuBlocklist::~GpuBlocklist() = default;
 
 // static
 std::unique_ptr<GpuBlocklist> GpuBlocklist::Create() {
-  return Create(base::make_span(kSoftwareRenderingListEntries,
-                                kSoftwareRenderingListEntryCount));
+  return Create(kSoftwareRenderingListEntries);
 }
 
 // static
@@ -57,8 +51,8 @@ std::unique_ptr<GpuBlocklist> GpuBlocklist::Create(
 // static
 bool GpuBlocklist::AreEntryIndicesValid(
     const std::vector<uint32_t>& entry_indices) {
-  return GpuControlList::AreEntryIndicesValid(entry_indices,
-                                              kSoftwareRenderingListEntryCount);
+  return GpuControlList::AreEntryIndicesValid(
+      entry_indices, kSoftwareRenderingListEntries.size());
 }
 
 }  // namespace gpu
