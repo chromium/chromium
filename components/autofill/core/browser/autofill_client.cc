@@ -155,7 +155,11 @@ void AutofillClient::HideAutofillFieldIphForManualFallbackFeature() {}
 
 void AutofillClient::NotifyAutofillManualFallbackUsed() {}
 
-void AutofillClient::ShowSaveAutofillPredictionImprovementsBubble() {}
+void AutofillClient::ShowSaveAutofillPredictionImprovementsBubble(
+    const std::vector<optimization_guide::proto::UserAnnotationsEntry>&
+        to_be_upserted_entries,
+    base::OnceCallback<void(bool prompt_was_accepted)>
+        prompt_acceptance_callback) {}
 
 std::optional<AutofillClient::PopupScreenLocation>
 AutofillClient::GetPopupScreenLocation() const {

@@ -4,10 +4,12 @@
 
 #include "chrome/browser/ui/views/autofill/autofill_prediction_improvements/save_autofill_prediction_improvements_bubble_view.h"
 
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/autofill/autofill_prediction_improvements/save_autofill_prediction_improvements_controller.h"
 #include "chrome/browser/ui/views/accessibility/theme_tracking_non_accessible_image_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/theme_resources.h"
+#include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -25,19 +27,18 @@ constexpr int kBubbleWidth = 320;
 constexpr gfx::Size kHeaderImageSize(kHeaderImageWidthAndHeight,
                                      kHeaderImageWidthAndHeight);
 
-std::unique_ptr<views::View> BuildPredictedValueRow(
-    const std::u16string key,
-    const std::u16string value) {
+std::unique_ptr<views::View> BuildPredictedValueRow(const std::string key,
+                                                    const std::string value) {
   return views::Builder<views::BoxLayoutView>()
       .SetOrientation(views::BoxLayout::Orientation::kVertical)
       .SetMainAxisAlignment(views::LayoutAlignment::kStart)
       .AddChildren(
           views::Builder<views::Label>()
-              .SetText(key)
+              .SetText(base::UTF8ToUTF16(key))
               .SetTextStyle(views::style::STYLE_BODY_4)
               .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT),
           views::Builder<views::Label>()
-              .SetText(value)
+              .SetText(base::UTF8ToUTF16(value))
               .SetTextStyle(views::style::STYLE_BODY_4_BOLD)
               .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT))
       .Build();
@@ -97,11 +98,10 @@ SaveAutofillPredictionImprovementsBubbleView::
                        .SetCrossAxisAlignment(views::LayoutAlignment::kStart)
                        .Build());
 
-  for (const SaveAutofillPredictionImprovementsController::
-           PredictionImprovement& prediction_improvement :
-       controller_->GetPredictionImprovements()) {
+  for (const optimization_guide::proto::UserAnnotationsEntry&
+           prediction_improvement : controller_->GetPredictionImprovements()) {
     improved_predicted_values_container->AddChildView(BuildPredictedValueRow(
-        prediction_improvement.key, prediction_improvement.value));
+        prediction_improvement.key(), prediction_improvement.value()));
   }
 
   DialogDelegate::SetButtonLabel(

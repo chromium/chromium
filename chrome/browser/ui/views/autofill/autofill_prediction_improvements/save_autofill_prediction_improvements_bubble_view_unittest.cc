@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/autofill/autofill_prediction_improvements/save_autofill_prediction_improvements_controller.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
@@ -25,12 +26,13 @@ class MockSaveAutofillPredictionImprovementsController
   MockSaveAutofillPredictionImprovementsController() = default;
   MOCK_METHOD(void,
               OfferSave,
-              (std::vector<PredictionImprovement>),
+              (std::vector<optimization_guide::proto::UserAnnotationsEntry>),
               (override));
-  MOCK_METHOD(const std::vector<PredictionImprovement>&,
-              GetPredictionImprovements,
-              (),
-              (const override));
+  MOCK_METHOD(
+      const std::vector<optimization_guide::proto::UserAnnotationsEntry>&,
+      GetPredictionImprovements,
+      (),
+      (const override));
   MOCK_METHOD(void, OnSaveButtonClicked, (), (override));
   MOCK_METHOD(void,
               OnBubbleClosed,
@@ -93,8 +95,7 @@ void SaveAutofillPredictionImprovementsBubbleViewTest::CreateViewAndShow() {
 
   ON_CALL(mock_controller(), GetPredictionImprovements())
       .WillByDefault(testing::ReturnRefOfCopy(
-          std::vector<SaveAutofillPredictionImprovementsController::
-                          PredictionImprovement>()));
+          std::vector<optimization_guide::proto::UserAnnotationsEntry>()));
 
   auto view_unique =
       std::make_unique<SaveAutofillPredictionImprovementsBubbleView>(

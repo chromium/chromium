@@ -10,6 +10,10 @@
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/web_contents.h"
 
+namespace optimization_guide::proto {
+class UserAnnotationsEntry;
+}
+
 namespace autofill {
 
 // Interface that exposes controller functionality to save prediction
@@ -30,12 +34,6 @@ class SaveAutofillPredictionImprovementsController {
     // The bubble lost focus and was closed.
     kLostFocus,
   };
-  struct PredictionImprovement {
-    // The prediction key displayed to the user and also used to identify it.
-    std::u16string key;
-    // The value of the prediction.
-    std::u16string value;
-  };
 
   SaveAutofillPredictionImprovementsController() = default;
   SaveAutofillPredictionImprovementsController(
@@ -50,14 +48,15 @@ class SaveAutofillPredictionImprovementsController {
   // Shows a save improved predictions bubble which the user can accept or
   // decline.
   virtual void OfferSave(
-      std::vector<PredictionImprovement> prediction_improvements) = 0;
+      std::vector<optimization_guide::proto::UserAnnotationsEntry>
+          prediction_improvements) = 0;
 
   // Called when the user accepts to save prediction improvements.
   virtual void OnSaveButtonClicked() = 0;
 
   // Returns the prediction improvements to be displayed in the UI.
-  virtual const std::vector<PredictionImprovement>& GetPredictionImprovements()
-      const = 0;
+  virtual const std::vector<optimization_guide::proto::UserAnnotationsEntry>&
+  GetPredictionImprovements() const = 0;
 
   // Called when the prediction improvements bubble is closed.
   virtual void OnBubbleClosed(

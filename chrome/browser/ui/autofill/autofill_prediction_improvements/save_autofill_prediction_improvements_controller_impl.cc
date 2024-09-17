@@ -41,7 +41,8 @@ SaveAutofillPredictionImprovementsController::GetOrCreate(
 }
 
 void SaveAutofillPredictionImprovementsControllerImpl::OfferSave(
-    std::vector<PredictionImprovement> new_prediction_improvements) {
+    std::vector<optimization_guide::proto::UserAnnotationsEntry>
+        new_prediction_improvements) {
   // Don't show the bubble if it's already visible.
   if (bubble_view()) {
     return;
@@ -79,8 +80,7 @@ SaveAutofillPredictionImprovementsControllerImpl::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-const std::vector<
-    SaveAutofillPredictionImprovementsController::PredictionImprovement>&
+const std::vector<optimization_guide::proto::UserAnnotationsEntry>&
 SaveAutofillPredictionImprovementsControllerImpl::GetPredictionImprovements()
     const {
   return prediction_improvements_;

@@ -560,6 +560,14 @@ class MockAutofillClient : public TestAutofillClient {
               GetAutofillPredictionImprovementsDelegate,
               (),
               (override));
+  MOCK_METHOD(
+      void,
+      ShowSaveAutofillPredictionImprovementsBubble,
+      (const std::vector<optimization_guide::proto::UserAnnotationsEntry>&
+           to_be_upserted_entries,
+       base::OnceCallback<void(bool prompt_was_accepted)>
+           prompt_acceptance_callback),
+      (override));
 };
 
 class MockTouchToFillDelegate : public TouchToFillDelegate {
@@ -7247,6 +7255,7 @@ TEST_F(BrowserAutofillManagerTest, ShowPredictionImprovementsSuggestions) {
 // when the submitted form was imported into user annotations successfully.
 TEST_F(BrowserAutofillManagerTest,
        ProfileNotImportedOnSuccessfulUserAnnotationsImport) {
+  using optimization_guide::proto::UserAnnotationsEntry;
   TestAddressDataManager& adm = personal_data().test_address_data_manager();
   FormData form = CreateTestAddressFormData();
   FormsSeen({form});
@@ -7272,10 +7281,18 @@ TEST_F(BrowserAutofillManagerTest,
   adm.ClearProfiles();
   EXPECT_TRUE(adm.GetProfiles().empty());
   FormSubmitted(response_data);
-  optimization_guide::proto::UserAnnotationsEntry entry;
+  UserAnnotationsEntry entry;
   entry.set_entry_id(1LL);
   entry.set_key("key");
   entry.set_value("value");
+  EXPECT_CALL(
+      autofill_client_,
+      ShowSaveAutofillPredictionImprovementsBubble(
+          ElementsAre(AllOf(
+              Property(&UserAnnotationsEntry::entry_id, Eq(entry.entry_id())),
+              Property(&UserAnnotationsEntry::key, Eq(entry.key())),
+              Property(&UserAnnotationsEntry::value, Eq(entry.value())))),
+          _));
   std::move(import_form_callback)
       .Run(std::make_unique<FormStructure>(response_data),
            /*to_be_upserted_entries=*/{std::move(entry)},

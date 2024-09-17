@@ -1081,10 +1081,9 @@ void BrowserAutofillManager::OnUserAnnotationsMaybeImportableFormFound(
   const bool should_show_prediction_improvements_bubble =
       !to_be_upserted_entries.empty();
   if (should_show_prediction_improvements_bubble) {
-    // TODO(crbug.com/366132304): Pass `to_be_upserted_entries` and
-    // `prompt_acceptance_callback` to
-    // `ShowSaveAutofillPredictionImprovementsBubble()`.
-    client().ShowSaveAutofillPredictionImprovementsBubble();
+    client().ShowSaveAutofillPredictionImprovementsBubble(
+        std::move(to_be_upserted_entries),
+        std::move(prompt_acceptance_callback));
   }
   MaybeImportFromSubmittedForm(form, submitted_form.get(),
                                /*attempt_to_import_into_form_data_importer=*/

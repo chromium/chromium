@@ -39,6 +39,7 @@ source_set("autofill") {
     "//components/autofill/core/common",
     "//components/input",
     "//components/keyed_service/core",
+    "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/signin/public/identity_manager",
     "//components/zoom",
     "//content/public/browser",

@@ -59,6 +59,10 @@ namespace ukm {
 class UkmRecorder;
 }
 
+namespace optimization_guide::proto {
+class UserAnnotationsEntry;
+}
+
 namespace version_info {
 enum class Channel;
 }
@@ -492,7 +496,11 @@ class AutofillClient {
 
   // Shows a bubble asking whether the user wants to save prediction
   // improvements data.
-  virtual void ShowSaveAutofillPredictionImprovementsBubble();
+  virtual void ShowSaveAutofillPredictionImprovementsBubble(
+      const std::vector<optimization_guide::proto::UserAnnotationsEntry>&
+          to_be_upserted_entries,
+      base::OnceCallback<void(bool prompt_was_accepted)>
+          prompt_acceptance_callback);
 
   // Stores test addresses provided by devtools and used to help developers
   // debug their forms with a list of well formatted addresses. Differently from

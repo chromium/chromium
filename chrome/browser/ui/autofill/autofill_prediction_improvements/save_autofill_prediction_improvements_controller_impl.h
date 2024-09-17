@@ -10,6 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_controller_base.h"
 #include "chrome/browser/ui/autofill/autofill_prediction_improvements/save_autofill_prediction_improvements_controller.h"
+#include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -30,11 +31,11 @@ class SaveAutofillPredictionImprovementsControllerImpl
   ~SaveAutofillPredictionImprovementsControllerImpl() override;
 
   // SaveAutofillPredictionImprovementsController:
-  void OfferSave(
-      std::vector<PredictionImprovement> prediction_improvements) override;
+  void OfferSave(std::vector<optimization_guide::proto::UserAnnotationsEntry>
+                     prediction_improvements) override;
   void OnSaveButtonClicked() override;
-  const std::vector<PredictionImprovement>& GetPredictionImprovements()
-      const override;
+  const std::vector<optimization_guide::proto::UserAnnotationsEntry>&
+  GetPredictionImprovements() const override;
   void OnBubbleClosed(
 
       PredictionImprovementsBubbleClosedReason closed_reason) override;
@@ -58,7 +59,8 @@ class SaveAutofillPredictionImprovementsControllerImpl
 
   // A list of prediction improvements keys and values that the user can accept
   // to save.
-  std::vector<PredictionImprovement> prediction_improvements_;
+  std::vector<optimization_guide::proto::UserAnnotationsEntry>
+      prediction_improvements_;
 
   // Weak pointer factory for this save prediction improvements bubble
   // controller.
