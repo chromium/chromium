@@ -28,6 +28,7 @@ source_set("lib") {
     "//device/base",
     "//device/vr:vr",
     "//device/vr:vr_base",
+    "//device/vr:vr_test_hook",
     "//device/vr/public/mojom:isolated_xr_service",
     "//device/vr/public/mojom:test_mojom",
     "//services/viz/public/cpp/gpu",

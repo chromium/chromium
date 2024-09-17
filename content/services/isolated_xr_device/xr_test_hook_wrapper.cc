@@ -173,6 +173,21 @@ ControllerFrameData XRTestHookWrapper::WaitGetControllerData(
         ret.axis_data[i].y = data->axis_data[i]->y;
         ret.axis_data[i].axis_type = data->axis_data[i]->axis_type;
       }
+      if (data->hand_data) {
+        ret.hand_data = {};
+        auto& joint_data = ret.hand_data;
+
+        // We need to use `resize` here to create default data fields so we can
+        // use [] indexing to ensure things are added to the right spot.
+        joint_data.resize(data->hand_data->hand_joint_data.size());
+        for (const auto& joint_entry : data->hand_data->hand_joint_data) {
+          uint32_t joint_index = static_cast<uint32_t>(joint_entry->joint);
+
+          joint_data[joint_index] = {joint_entry->joint,
+                                     joint_entry->mojo_from_joint,
+                                     joint_entry->radius};
+        }
+      }
       return ret;
     }
   }

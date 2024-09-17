@@ -53,6 +53,27 @@ device_test::mojom::ControllerFrameDataPtr DeviceToMojoControllerFrameData(
           row, col, data.pose_data.device_to_origin[row + col * 4]);
     }
   }
+
+  if (!data.hand_data.empty()) {
+    device::mojom::XRHandTrackingDataPtr hand_tracking_data =
+        device::mojom::XRHandTrackingData::New();
+    hand_tracking_data->hand_joint_data =
+        std::vector<device::mojom::XRHandJointDataPtr>{};
+    auto& joint_data = hand_tracking_data->hand_joint_data;
+
+    // We need to use `resize` here to create default data fields so we can use
+    // [] indexing to ensure things are added to the right spot.
+    joint_data.resize(data.hand_data.size());
+    for (const auto& joint_entry : data.hand_data) {
+      uint32_t joint_index = static_cast<uint32_t>(joint_entry.joint);
+
+      joint_data[joint_index] = device::mojom::XRHandJointData::New(
+          joint_entry.joint, joint_entry.mojo_from_joint, joint_entry.radius);
+    }
+
+    ret->hand_data = std::move(hand_tracking_data);
+  }
+
   return ret;
 }
 

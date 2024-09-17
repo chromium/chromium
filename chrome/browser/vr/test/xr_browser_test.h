@@ -17,7 +17,6 @@
 #include "chrome/browser/vr/test/conditional_skipping.h"
 #include "chrome/test/base/platform_browser_test.h"
 #include "device/vr/public/cpp/features.h"
-#include "device/vr/test/test_hook.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "url/gurl.h"
 
