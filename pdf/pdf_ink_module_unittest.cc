@@ -551,10 +551,11 @@ TEST_F(PdfInkModuleStrokeTest, DrawRenderTransform) {
       }));
   SkCanvas canvas;
   ink_module().Draw(canvas);
-  const InkAffineTransform kDrawTransform = {-1.0f, 0.0f,  54.0f,
-                                             0.0f,  -1.0f, 44.0f};
+
   // Just one transform provided, to match the captured stroke.
-  EXPECT_THAT(draw_render_transforms, ElementsAre(kDrawTransform));
+  EXPECT_THAT(draw_render_transforms,
+              ElementsAre(InkAffineTransformEq(-1.0f, 0.0f, 54.0f, 0.0f, -1.0f,
+                                               44.0f)));
 
   // But if the one and only page is not visible, then Draw() does no transform
   // calculations.

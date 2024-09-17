@@ -25,8 +25,6 @@ struct InkAffineTransform {
   float f;
 };
 
-bool operator==(const InkAffineTransform& lhs, const InkAffineTransform& rhs);
-
 // Supports pretty-printing transforms for test failures.
 void PrintTo(const InkAffineTransform& transform, std::ostream* os);
 
