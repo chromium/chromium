@@ -100,10 +100,6 @@ tast_disabled_tests_from_chrome_all = [
   "security.SELinuxFilesDataDir.arcvm_user@jacuzzi",
   "security.SELinuxFilesDataDir.arcvm_user@trogdor",
 
-  # b/358087592, re-enable once the test is updated to handle the new
-  # PWA change.
-  "apps.Sharesheet",
-
   # b/358376069, b/359411206: These lacros tests are failing at this
   # moment but they will be removed soon.
   "lacros.Activate.keep_alive",
