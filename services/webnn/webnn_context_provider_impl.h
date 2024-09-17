@@ -31,10 +31,6 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
 
   ~WebNNContextProviderImpl() override;
 
-#if BUILDFLAG(IS_CHROMEOS)
-  static void Create(
-      mojo::PendingReceiver<mojom::WebNNContextProvider> receiver);
-#else
   // Called when the `WebNNContextProviderImpl` instance will be owned by
   // in the GPU service and used to add additional WebNNContextProvider
   // receivers.
@@ -47,7 +43,6 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
   // existing `WebNNContextProviderImpl` instance.
   void BindWebNNContextProvider(
       mojo::PendingReceiver<mojom::WebNNContextProvider> receiver);
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
   enum class WebNNStatus {
     kWebNNGpuDisabled = 0,
@@ -81,14 +76,10 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
   static void SetBackendForTesting(BackendForTesting* backend_for_testing);
 
  private:
-#if BUILDFLAG(IS_CHROMEOS)
-  WebNNContextProviderImpl();
-#else
   WebNNContextProviderImpl(
       scoped_refptr<gpu::SharedContextState> shared_context_state,
       gpu::GpuFeatureInfo gpu_feature_info,
       gpu::GPUInfo gpu_info);
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // mojom::WebNNContextProvider
   void CreateWebNNContext(mojom::CreateContextOptionsPtr options,
@@ -98,9 +89,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
   const gpu::GpuFeatureInfo gpu_feature_info_;
   const gpu::GPUInfo gpu_info_;
 
-#if !BUILDFLAG(IS_CHROMEOS)
   mojo::ReceiverSet<mojom::WebNNContextProvider> provider_receivers_;
-#endif  // !BUILDFLAG(IS_CHROMEOS)
 
   // Contexts created by this provider. When a context disconnects,
   // it will destroy itself by removing itself from this set.

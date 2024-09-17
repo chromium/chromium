@@ -35,11 +35,6 @@
 #include "base/mac/mac_util.h"
 #endif  // BUILDFLAG(IS_MAC)
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chromeos/services/machine_learning/public/cpp/fake_service_connection.h"
-#include "chromeos/services/machine_learning/public/cpp/service_connection.h"
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 namespace webnn::test {
 
 namespace {
@@ -150,12 +145,6 @@ class WebNNTensorImplBackendTest : public testing::Test {
   WebNNTensorImplBackendTest()
       : scoped_feature_list_(
             webnn::mojom::features::kWebMachineLearningNeuralNetwork) {
-#if BUILDFLAG(IS_CHROMEOS)
-    chromeos::machine_learning::ServiceConnection::
-        UseFakeServiceConnectionForTesting(&fake_service_connection_);
-    chromeos::machine_learning::ServiceConnection::GetInstance()->Initialize();
-#endif
-
     WebNNContextProviderImpl::CreateForTesting(
         webnn_provider_remote_.BindNewPipeAndPassReceiver());
   }
@@ -169,10 +158,6 @@ class WebNNTensorImplBackendTest : public testing::Test {
   base::test::ScopedFeatureList scoped_feature_list_;
   base::test::TaskEnvironment task_environment_;
   mojo::Remote<mojom::WebNNContextProvider> webnn_provider_remote_;
-#if BUILDFLAG(IS_CHROMEOS)
-  chromeos::machine_learning::FakeServiceConnectionImpl
-      fake_service_connection_;
-#endif
 };
 #endif  // BUILDFLAG(WEBNN_USE_TFLITE)
 

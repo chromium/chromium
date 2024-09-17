@@ -20,10 +20,6 @@
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "services/viz/privileged/mojom/gl/gpu_service.mojom.h"
 
-#if !BUILDFLAG(IS_CHROMEOS)
-#include "base/feature_list.h"
-#endif  // !BUILDFLAG(IS_CHROMEOS)
-
 namespace viz {
 
 GpuClient::GpuClient(std::unique_ptr<GpuClientDelegate> delegate,
@@ -108,7 +104,6 @@ base::WeakPtr<GpuClient> GpuClient::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
-#if !BUILDFLAG(IS_CHROMEOS)
 void GpuClient::BindWebNNContextProvider(
     mojo::PendingReceiver<webnn::mojom::WebNNContextProvider> receiver) {
   if (auto* gpu_host = delegate_->EnsureGpuHost()) {
@@ -116,7 +111,6 @@ void GpuClient::BindWebNNContextProvider(
                                                       client_id_);
   }
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 void GpuClient::OnEstablishGpuChannel(
     mojo::ScopedMessagePipeHandle channel_handle,

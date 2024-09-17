@@ -16,6 +16,7 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "cc/base/switches.h"
+#include "components/viz/host/gpu_client.h"
 #include "content/browser/attribution_reporting/attribution_internals.mojom.h"
 #include "content/browser/attribution_reporting/attribution_internals_ui.h"
 #include "content/browser/background_fetch/background_fetch_service_impl.h"
@@ -249,12 +250,6 @@
 #include "media/mojo/mojom/fuchsia_media.mojom.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "services/webnn/webnn_context_provider_impl.h"
-#else
-#include "components/viz/host/gpu_client.h"
-#endif
-
 namespace blink {
 class StorageKey;
 }  // namespace blink
@@ -306,24 +301,16 @@ void BindTextDetection(
 void BindWebNNContextProviderForRenderFrame(
     RenderFrameHost* host,
     mojo::PendingReceiver<webnn::mojom::WebNNContextProvider> receiver) {
-#if BUILDFLAG(IS_CHROMEOS)
-  webnn::WebNNContextProviderImpl::Create(std::move(receiver));
-#else
   auto* process_host = static_cast<RenderProcessHostImpl*>(host->GetProcess());
   process_host->GetGpuClient()->BindWebNNContextProvider(std::move(receiver));
-#endif
 }
 
 void BindWebNNContextProviderForDedicatedWorker(
     DedicatedWorkerHost* host,
     mojo::PendingReceiver<webnn::mojom::WebNNContextProvider> receiver) {
-#if BUILDFLAG(IS_CHROMEOS)
-  webnn::WebNNContextProviderImpl::Create(std::move(receiver));
-#else
   auto* process_host =
       static_cast<RenderProcessHostImpl*>(host->GetProcessHost());
   process_host->GetGpuClient()->BindWebNNContextProvider(std::move(receiver));
-#endif
 }
 
 #if BUILDFLAG(IS_MAC)

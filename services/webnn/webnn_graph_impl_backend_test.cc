@@ -52,11 +52,6 @@
 #include "base/mac/mac_util.h"
 #endif  // BUILDFLAG(IS_MAC)
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chromeos/services/machine_learning/public/cpp/fake_service_connection.h"
-#include "chromeos/services/machine_learning/public/cpp/service_connection.h"
-#endif
-
 namespace webnn::test {
 
 namespace {
@@ -360,36 +355,13 @@ class WebNNGraphImplBackendTest : public testing::Test {
   WebNNGraphImplBackendTest()
       : scoped_feature_list_(
             webnn::mojom::features::kWebMachineLearningNeuralNetwork) {
-#if BUILDFLAG(IS_CHROMEOS)
-    chromeos::machine_learning::ServiceConnection::
-        UseFakeServiceConnectionForTesting(&fake_service_connection_);
-    chromeos::machine_learning::ServiceConnection::GetInstance()->Initialize();
-#endif
   }
 
   void SetUp() override;
 
-#if BUILDFLAG(IS_CHROMEOS)
-  template <typename DataType>
-  void SetComputeResult(
-      base::flat_map<std::string, std::vector<DataType>> name_to_data_map) {
-    base::flat_map<std::string, std::vector<uint8_t>> output_tensors;
-    for (auto& [output_name, output_data] : name_to_data_map) {
-      auto output_data_in_byte = base::as_bytes(base::make_span(output_data));
-      output_tensors[output_name] = std::vector<uint8_t>(
-          output_data_in_byte.begin(), output_data_in_byte.end());
-    }
-    fake_service_connection_.SetOutputWebPlatformModelCompute(output_tensors);
-  }
-#endif
-
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
   base::test::TaskEnvironment task_environment_;
-#if BUILDFLAG(IS_CHROMEOS)
-  chromeos::machine_learning::FakeServiceConnectionImpl
-      fake_service_connection_;
-#endif
 };
 
 void WebNNGraphImplBackendTest::SetUp() {
@@ -933,10 +905,6 @@ struct ElementWiseBinaryTester {
   mojom::ElementWiseBinary::Kind kind;
   OperandInfo<O> output;
   void Test(WebNNGraphImplBackendTest& helper) {
-#if BUILDFLAG(IS_CHROMEOS)
-    helper.SetComputeResult(base::flat_map<std::string, std::vector<O>>(
-        {{"output", output.values}}));
-#endif
 
     // Build the graph with mojo type.
     GraphInfoBuilder builder;
@@ -1546,16 +1514,6 @@ struct GruTester {
   void Test(WebNNGraphImplBackendTest& helper,
             BuildAndComputeExpectation expectation =
                 BuildAndComputeExpectation::kSuccess) {
-#if BUILDFLAG(IS_CHROMEOS)
-    base::flat_map<std::string, std::vector<T>> name_to_data_map;
-    for (size_t i = 0; i < outputs.size(); ++i) {
-      std::string output_name =
-          base::StrCat({"output", base::NumberToString(i)});
-      name_to_data_map[std::move(output_name)] = outputs[i].values;
-    }
-
-    helper.SetComputeResult(std::move(name_to_data_map));
-#endif
     // Build the graph with mojo type.
     GraphInfoBuilder builder;
     uint64_t input_operand_id =
@@ -1897,11 +1855,6 @@ struct GruCellTester {
   void Test(WebNNGraphImplBackendTest& helper,
             BuildAndComputeExpectation expectation =
                 BuildAndComputeExpectation::kSuccess) {
-#if BUILDFLAG(IS_CHROMEOS)
-    helper.SetComputeResult(base::flat_map<std::string, std::vector<T>>(
-        {{"output", output.values}}));
-#endif
-
     // Build the graph with mojo type.
     GraphInfoBuilder builder;
     uint64_t input_operand_id =
@@ -2467,16 +2420,6 @@ struct LstmTester {
   void Test(WebNNGraphImplBackendTest& helper,
             BuildAndComputeExpectation expectation =
                 BuildAndComputeExpectation::kSuccess) {
-#if BUILDFLAG(IS_CHROMEOS)
-    base::flat_map<std::string, std::vector<T>> name_to_data_map;
-    for (size_t i = 0; i < outputs.size(); ++i) {
-      std::string output_name =
-          base::StrCat({"output", base::NumberToString(i)});
-      name_to_data_map[std::move(output_name)] = outputs[i].values;
-    }
-
-    helper.SetComputeResult(std::move(name_to_data_map));
-#endif
     // Build the graph with mojo type.
     GraphInfoBuilder builder;
     uint64_t input_operand_id =
@@ -2661,11 +2604,6 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorLstm) {
     std::array<float, 4> initial_cell_state_data = {1, 1, 1, 1};
     std::vector<float> expected_data = {0, 0, 2, 2};
 
-#if BUILDFLAG(IS_CHROMEOS)
-    SetComputeResult(base::flat_map<std::string, std::vector<float>>(
-        {{"output0", expected_data}, {"output1", expected_data}}));
-#endif
-
     GraphInfoBuilder builder;
     uint64_t input_operand_id = builder.BuildConstant(
         {steps, batch_size, input_size}, OperandDataType::kFloat32,
@@ -2735,10 +2673,6 @@ struct LstmCellAttributes {
 TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorLstmCell) {
   std::vector<float> expected_output0 = {150, 150, 810, 810};
   std::vector<float> expected_output1 = {30, 30, 90, 90};
-#if BUILDFLAG(IS_CHROMEOS)
-  SetComputeResult(base::flat_map<std::string, std::vector<float>>(
-      {{"output0", expected_output0}, {"output1", expected_output1}}));
-#endif
   uint32_t batch_size = 2;
   uint32_t input_size = 2;
   uint32_t hidden_size = 2;
@@ -3480,10 +3414,6 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeReshapeConcatAndClamp) {
 TEST_F(WebNNGraphImplBackendTest, BuildAndComputeConcatWithConstants) {
   std::vector<float> expected_output = {0,  0,  0,  1,  2,  3,
                                         -1, -2, -3, -4, -5, -6};
-#if BUILDFLAG(IS_CHROMEOS)
-  SetComputeResult(base::flat_map<std::string, std::vector<float>>(
-      {{"output", expected_output}}));
-#endif
 
   // Build the mojom graph info.
   GraphInfoBuilder builder;

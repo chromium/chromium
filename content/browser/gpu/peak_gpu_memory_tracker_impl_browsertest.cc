@@ -112,11 +112,9 @@ class TestGpuService : public viz::mojom::GpuService {
       mojo::PendingReceiver<media::mojom::VideoEncodeAcceleratorProvider>
           receiver) override {}
 
-#if !BUILDFLAG(IS_CHROMEOS)
   void BindWebNNContextProvider(
       mojo::PendingReceiver<webnn::mojom::WebNNContextProvider> receiver,
       int32_t client_id) override {}
-#endif  // !BUILDFLAG(IS_CHROMEOS)
 
   void CreateGpuMemoryBuffer(gfx::GpuMemoryBufferId id,
                              const gfx::Size& size,
