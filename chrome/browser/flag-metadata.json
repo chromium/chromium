@@ -6427,7 +6427,7 @@
   {
     "name": "ntp-sharepoint-module",
     "owners": [ "rtatum@google.com", "tiborg@chromium.org", "ftirelo@chromium.org" ],
-    "expiry_milestone": 130
+    "expiry_milestone": 150
   },
   {
     "name": "ntp-single-row-shortcuts",
