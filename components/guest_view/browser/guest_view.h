@@ -9,8 +9,13 @@
 #include "components/guest_view/browser/guest_view_base.h"
 #include "components/guest_view/browser/guest_view_histogram_value.h"
 #include "components/guest_view/browser/guest_view_manager.h"
+#include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
+
+namespace content {
+class NavigationHandle;
+}  // namespace content
 
 namespace guest_view {
 
@@ -40,6 +45,16 @@ class GuestView : public GuestViewBase {
   static T* FromRenderFrameHostId(
       const content::GlobalRenderFrameHostId& rfh_id) {
     return AsDerivedGuest(GuestViewBase::FromRenderFrameHostId(rfh_id));
+  }
+
+  static T* FromNavigationHandle(content::NavigationHandle* navigation_handle) {
+    return AsDerivedGuest(
+        GuestViewBase::FromNavigationHandle(navigation_handle));
+  }
+
+  static T* FromFrameTreeNodeId(content::FrameTreeNodeId frame_tree_node_id) {
+    return AsDerivedGuest(
+        GuestViewBase::FromFrameTreeNodeId(frame_tree_node_id));
   }
 
   GuestView(const GuestView&) = delete;

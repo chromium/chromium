@@ -3404,8 +3404,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTestWithoutOopifOverride,
 
   // Look up the PDF stream URL to which the navigation will take place.
   extensions::MimeHandlerViewGuest* guest =
-      extensions::MimeHandlerViewGuest::FromWebContents(
-          guest_view->web_contents());
+      extensions::MimeHandlerViewGuest::FromGuestViewBase(guest_view);
   ASSERT_TRUE(guest);
   base::WeakPtr<extensions::StreamContainer> stream = guest->GetStreamWeakPtr();
   EXPECT_TRUE(stream);

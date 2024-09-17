@@ -1089,16 +1089,17 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, AudioMutesOnAttach) {
   EXPECT_TRUE(embedder->IsAudioMuted());
 
   SendMessageToEmbedder("create-guest");
-  content::WebContents* guest =
-      GetGuestViewManager()->DeprecatedWaitForSingleGuestCreated();
+  auto* guest_view = GetGuestViewManager()->WaitForSingleGuestViewCreated();
+  content::WebContents* guest_contents = guest_view->web_contents();
 
   EXPECT_TRUE(embedder->IsAudioMuted());
-  WebContentsAudioMutedObserver observer(guest);
+  WebContentsAudioMutedObserver observer(guest_contents);
   // If the guest hasn't attached yet, it may not have received the muting
   // update, in which case we should wait until it does.
-  if (!guest->IsAudioMuted())
+  if (!guest_contents->IsAudioMuted()) {
     observer.WaitForUpdate();
-  EXPECT_TRUE(guest->IsAudioMuted());
+  }
+  EXPECT_TRUE(guest_contents->IsAudioMuted());
 }
 
 IN_PROC_BROWSER_TEST_F(WebViewTest, AudioStateJavascriptAPI) {
@@ -2785,13 +2786,12 @@ IN_PROC_BROWSER_TEST_F(WebViewNewWindowTest, OpenURLFromTab_NewWindow_Abort) {
   ASSERT_TRUE(new_window_listener.WaitUntilSatisfied());
 
   // Verify that a new guest was created.
-  content::WebContents* new_guest_web_contents =
-      GetGuestViewManager()->DeprecatedGetLastGuestCreated();
-  EXPECT_NE(GetGuestWebContents(), new_guest_web_contents);
+  content::RenderFrameHost* new_guest_rfh =
+      GetGuestViewManager()->GetLastGuestRenderFrameHostCreated();
+  EXPECT_NE(GetGuestRenderFrameHost(), new_guest_rfh);
 
   // Verify that the new <webview> guest ends up at about:blank.
-  EXPECT_EQ(GURL(url::kAboutBlankURL),
-            new_guest_web_contents->GetLastCommittedURL());
+  EXPECT_EQ(GURL(url::kAboutBlankURL), new_guest_rfh->GetLastCommittedURL());
 }
 
 // Verify that we handle gracefully having two webviews in the same
@@ -3978,12 +3978,11 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, SendMessageToComponentExtensionFromGuest) {
                       "window.guestRenderFrameRoutingId")
           .ExtractInt();
 
-  auto* guest_rfh = content::RenderFrameHost::FromID(
-      guest_process_id, guest_render_frame_routing_id);
   // Verify that the guest related info (guest_process_id and
   // guest_render_frame_routing_id) actually points to a WebViewGuest.
-  ASSERT_TRUE(extensions::WebViewGuest::FromWebContents(
-      content::WebContents::FromRenderFrameHost(guest_rfh)));
+  ASSERT_TRUE(extensions::WebViewGuest::FromRenderFrameHostId(
+      content::GlobalRenderFrameHostId(guest_process_id,
+                                       guest_render_frame_routing_id)));
 }
 
 IN_PROC_BROWSER_TEST_F(WebViewTest, SetPropertyOnDocumentReady) {

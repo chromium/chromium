@@ -6249,7 +6249,8 @@ ChromeContentBrowserClient::CreateNonNetworkNavigationURLLoaderFactory(
             AreExtensionsDisabledForProfile(browser_context)) {
       bool is_guest = false;
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
-      is_guest = !!extensions::WebViewGuest::FromWebContents(web_contents);
+      is_guest =
+          !!extensions::WebViewGuest::FromFrameTreeNodeId(frame_tree_node_id);
 #endif
 
       return extensions::CreateExtensionNavigationURLLoaderFactory(

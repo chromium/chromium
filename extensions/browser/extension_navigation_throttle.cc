@@ -95,15 +95,18 @@ bool ShouldBlockNavigationToPlatformAppResource(
 
     // Platform apps can be embedded by other platform apps using an <appview>
     // tag.
-    AppViewGuest* app_view = AppViewGuest::FromWebContents(web_contents);
-    if (app_view)
+    auto* app_view = AppViewGuest::FromNavigationHandle(&navigation_handle);
+    if (app_view) {
       return false;
+    }
 
     // Webviews owned by the platform app can embed platform app resources via
     // "accessible_resources".
-    WebViewGuest* web_view_guest = WebViewGuest::FromWebContents(web_contents);
-    if (web_view_guest)
+    auto* web_view_guest =
+        WebViewGuest::FromNavigationHandle(&navigation_handle);
+    if (web_view_guest) {
       return web_view_guest->owner_host() != platform_app->id();
+    }
 
     // Otherwise, it's a guest view that's neither a webview nor an appview
     // (such as an extensionoptions view). Disallow.
@@ -159,8 +162,8 @@ ExtensionNavigationThrottle::WillStartOrRedirectRequest() {
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
   // Some checks below will need to know whether this navigation is in a
   // <webview> guest.
-  guest_view::GuestViewBase* guest =
-      guest_view::GuestViewBase::FromWebContents(web_contents);
+  auto* guest =
+      guest_view::GuestViewBase::FromNavigationHandle(navigation_handle());
 #endif
 
   // Is this navigation targeting an extension resource?

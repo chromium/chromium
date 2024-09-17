@@ -32,7 +32,7 @@ bool WebContentsUsesInterstitials(content::NavigationHandle* handle) {
   return false;
 #else
   guest_view::GuestViewBase* guest =
-      guest_view::GuestViewBase::FromWebContents(web_contents);
+      guest_view::GuestViewBase::FromNavigationHandle(handle);
   if (!guest) {
     // Non-guest view inner WebContents should always show error pages instead
     // of interstitials.
@@ -77,7 +77,7 @@ SSLErrorNavigationThrottle::WillFailRequest() {
   }
 
   // Do not set special error page HTML for non-primary pages (e.g. regular
-  // subframe, prerendering, fenced-frame, portal). Those are handled as normal
+  // subframe, prerendering, fenced-frame). Those are handled as normal
   // network errors.
   if (!handle->IsInPrimaryMainFrame() ||
       !WebContentsUsesInterstitials(handle)) {
@@ -114,7 +114,7 @@ SSLErrorNavigationThrottle::WillProcessResponse() {
   }
 
   // Do not set special error page HTML for non-primary pages (e.g. regular
-  // subframe, prerendering, fenced-frame, portal). Those are handled as normal
+  // subframe, prerendering, fenced-frame). Those are handled as normal
   // network errors.
   if (!handle->IsInPrimaryMainFrame() ||
       !WebContentsUsesInterstitials(handle)) {
@@ -172,7 +172,7 @@ void SSLErrorNavigationThrottle::ShowInterstitial(
   content::NavigationHandle* handle = navigation_handle();
 
   // Do not display insterstitials for SSL errors from non-primary pages (e.g.
-  // prerendering, fenced-frame, portal). For prerendering specifically, we
+  // prerendering, fenced-frame). For prerendering specifically, we
   // should already have canceled the prerender from OnSSLCertificateError
   // before the throttle runs.
   DCHECK(handle->IsInPrimaryMainFrame());
