@@ -304,8 +304,7 @@ void TextResourceDecoder::CheckForMetaCharset(base::span<const char> data) {
   if (!charset_parser_)
     charset_parser_ = std::make_unique<HTMLMetaCharsetParser>();
 
-  if (!charset_parser_->CheckForMetaCharset(
-          data.data(), base::checked_cast<wtf_size_t>(data.size()))) {
+  if (!charset_parser_->CheckForMetaCharset(data)) {
     return;
   }
 
