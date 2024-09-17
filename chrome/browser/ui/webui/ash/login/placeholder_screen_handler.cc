@@ -14,7 +14,7 @@ PlaceholderScreenHandler::PlaceholderScreenHandler()
 
 PlaceholderScreenHandler::~PlaceholderScreenHandler() = default;
 
-// Add localized values that you want to propagate to the JS side here.
+// Add localized values that you want to propagate to the TS side here.
 void PlaceholderScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {}
 
