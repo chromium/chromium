@@ -1057,25 +1057,6 @@ void AudioContext::NotifySetSinkIdIsDone(
 
   sink_descriptor_ = pending_sink_descriptor;
 
-  // Use flag guard to revert to old AEC SetSinkId behavior if necessary. Remove
-  // this entire block when kWebAudioContextConstructorEchoCancellation is
-  // removed.
-  if (!base::FeatureList::IsEnabled(
-          features::kWebAudioContextConstructorEchoCancellation) &&
-      sink_descriptor_.Type() ==
-          WebAudioSinkDescriptor::AudioSinkType::kAudible) {
-    // Note: in order to not break echo cancellation of PeerConnection audio, we
-    // are heavily relying on the fact that setSinkId() path of AudioContext is
-    // not triggered unless the sink ID is explicitly specified. It assumes we
-    // don't end up here when AudioContext is being created with the default
-    // device.
-    if (auto* execution_context = GetExecutionContext()) {
-      PeerConnectionDependencyFactory::From(*execution_context)
-          .GetWebRtcAudioDevice()
-          ->SetOutputDeviceForAec(sink_descriptor_.SinkId());
-    }
-  }
-
   // This performs steps 11 and 12 from the second part of the setSinkId()
   // algorithm:
   // https://webaudio.github.io/web-audio-api/#dom-audiocontext-setsinkid-domstring-or-audiosinkoptions-sinkid

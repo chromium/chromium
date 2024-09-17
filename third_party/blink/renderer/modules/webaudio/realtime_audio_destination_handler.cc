@@ -402,10 +402,8 @@ void RealtimeAudioDestinationHandler::StartPlatformDestination() {
 
   if (update_echo_cancellation_on_next_start_) {
     update_echo_cancellation_on_next_start_ = false;
-    if (base::FeatureList::IsEnabled(
-            features::kWebAudioContextConstructorEchoCancellation) &&
-        sink_descriptor_.Type() ==
-            WebAudioSinkDescriptor::AudioSinkType::kAudible) {
+    if (sink_descriptor_.Type() ==
+        WebAudioSinkDescriptor::AudioSinkType::kAudible) {
       const media::OutputDeviceStatus output_device_status =
           platform_destination_->MaybeCreateSinkAndGetStatus();
       if (output_device_status ==
