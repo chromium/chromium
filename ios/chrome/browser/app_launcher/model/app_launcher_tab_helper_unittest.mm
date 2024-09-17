@@ -158,12 +158,12 @@ class AppLauncherTabHelperTest : public PlatformTest {
  protected:
   void SetUp() override {
     PlatformTest::SetUp();
-    TestChromeBrowserState::Builder builder;
+    TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         ReadingListModelFactory::GetInstance(),
         base::BindRepeating(&BuildReadingListModelWithFakeStorage,
                             std::vector<scoped_refptr<ReadingListEntry>>()));
-    browser_state_ = std::move(builder).Build();
+    profile_ = std::move(builder).Build();
     abuse_detector_ = [[FakeAppLauncherAbuseDetector alloc] init];
     AppLauncherTabHelper::CreateForWebState(&web_state_, abuse_detector_,
                                             /*incognito*/ incognito_);
@@ -173,7 +173,7 @@ class AppLauncherTabHelperTest : public PlatformTest {
     navigation_manager_ = navigation_manager.get();
     web_state_.SetNavigationManager(std::move(navigation_manager));
     web_state_.SetCurrentURL(GURL("https://chromium.org"));
-    web_state_.SetBrowserState(browser_state_.get());
+    web_state_.SetBrowserState(profile_.get());
     web_state_.WasShown();
     browser_presentation_provider_ =
         [[FakeAppLauncherTabHelperBrowserPresentationProvider alloc] init];
@@ -223,7 +223,7 @@ class AppLauncherTabHelperTest : public PlatformTest {
     item->SetOriginalRequestURL(pending_url);
 
     ReadingListModel* model =
-        ReadingListModelFactory::GetForBrowserState(browser_state_.get());
+        ReadingListModelFactory::GetForProfile(profile_.get());
     EXPECT_TRUE(model->DeleteAllEntries(FROM_HERE));
     model->AddOrReplaceEntry(pending_url, "unread",
                              reading_list::ADDED_VIA_CURRENT_APP,
@@ -260,7 +260,7 @@ class AppLauncherTabHelperTest : public PlatformTest {
   }
 
   base::test::TaskEnvironment task_environment;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   web::FakeWebState web_state_;
   bool incognito_ = false;
   raw_ptr<FakeNavigationManager> navigation_manager_ = nullptr;
@@ -980,9 +980,9 @@ class BlockedUrlPolicyAppLauncherTabHelperTest
     ASSERT_TRUE(state_directory_.CreateUniqueTempDir());
     enterprise_policy_helper_ = std::make_unique<EnterprisePolicyTestHelper>(
         state_directory_.GetPath());
-    ASSERT_TRUE(enterprise_policy_helper_->GetBrowserState());
+    ASSERT_TRUE(enterprise_policy_helper_->GetProfile());
 
-    web_state_.SetBrowserState(enterprise_policy_helper_->GetBrowserState());
+    web_state_.SetBrowserState(enterprise_policy_helper_->GetProfile());
 
     policy::PolicyMap policy_map;
     base::Value::List value;
@@ -995,7 +995,7 @@ class BlockedUrlPolicyAppLauncherTabHelperTest
 
     policy_blocklist_service_ = static_cast<PolicyBlocklistService*>(
         PolicyBlocklistServiceFactory::GetForProfile(
-            enterprise_policy_helper_->GetBrowserState()));
+            enterprise_policy_helper_->GetProfile()));
   }
 
   // Temporary directory to hold preference files.

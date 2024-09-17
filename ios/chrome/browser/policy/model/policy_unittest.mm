@@ -34,7 +34,7 @@ class PolicyTest : public PlatformTest {
     ASSERT_TRUE(state_directory_.CreateUniqueTempDir());
     enterprise_policy_helper_ = std::make_unique<EnterprisePolicyTestHelper>(
         state_directory_.GetPath());
-    ASSERT_TRUE(enterprise_policy_helper_->GetBrowserState());
+    ASSERT_TRUE(enterprise_policy_helper_->GetProfile());
 
     // Multiple tests use policy/pref_mapping, so compute its path
     // once.
@@ -68,7 +68,7 @@ TEST_F(PolicyTest, AllPoliciesHaveATestCase) {
 TEST_F(PolicyTest, PolicyToPrefMappings) {
   policy::VerifyPolicyToPrefMappings(
       test_case_dir_, enterprise_policy_helper_->GetLocalState(),
-      enterprise_policy_helper_->GetBrowserState()->GetPrefs(),
+      enterprise_policy_helper_->GetProfile()->GetPrefs(),
       /* signin_profile_prefs= */ nullptr,
       enterprise_policy_helper_->GetPolicyProvider());
 }

@@ -69,12 +69,11 @@ class FakeAppLauncherTabHelper : public AppLauncherTabHelper {
 class AppLauncherBrowserAgentTest : public PlatformTest {
  protected:
   AppLauncherBrowserAgentTest() {
-    browser_state_ = TestChromeBrowserState::Builder().Build();
+    profile_ = TestProfileIOS::Builder().Build();
     app_state_ = [[AppState alloc] initWithStartupInformation:nil];
     scene_state_ = [[SceneState alloc] initWithAppState:app_state_];
     scene_state_.activationLevel = SceneActivationLevelForegroundActive;
-    browser_ =
-        std::make_unique<TestBrowser>(browser_state_.get(), scene_state_);
+    browser_ = std::make_unique<TestBrowser>(profile_.get(), scene_state_);
     browser_->GetSceneState().activationLevel =
         SceneActivationLevelForegroundActive;
     AppLauncherBrowserAgent::CreateForBrowser(browser_.get());
@@ -161,7 +160,7 @@ class AppLauncherBrowserAgentTest : public PlatformTest {
   }
 
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   AppState* app_state_;
   SceneState* scene_state_;
   std::unique_ptr<TestBrowser> browser_;
