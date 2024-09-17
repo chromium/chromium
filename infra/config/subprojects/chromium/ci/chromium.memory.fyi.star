@@ -51,6 +51,7 @@ ci.builder(
     gn_args = gn_args.config(
         configs = [
             "ubsan_no_recover",
+            "fail_on_san_warnings",
             "release_builder",
             "remoteexec",
             "linux",
