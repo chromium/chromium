@@ -758,6 +758,11 @@ void ValidateAndConvertPaymentMethodData(
 
     method_names.insert(payment_method_data->supportedMethod());
 
+    if (payment_method_data->supportedMethod() == kAndroidPayMethod) {
+      UseCounter::Count(&execution_context,
+                        WebFeature::kPaymentRequestDeprecatedPaymentMethod);
+    }
+
     output.push_back(payments::mojom::blink::PaymentMethodData::New());
     output.back()->supported_method = payment_method_data->supportedMethod();
 
