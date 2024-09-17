@@ -211,7 +211,7 @@ TEST_F(BookmarkIOSUtilsUnitTest, TestCreateBookmarkPath) {
   NSMutableArray<NSNumber*>* expectedPath = [NSMutableArray array];
   [expectedPath addObject:[NSNumber numberWithLongLong:mobileNode->id()]];
   [expectedPath addObject:[NSNumber numberWithLongLong:f1->id()]];
-  EXPECT_TRUE([expectedPath isEqualToArray:path]);
+  EXPECT_NSEQ(expectedPath, path);
 }
 
 TEST_F(BookmarkIOSUtilsUnitTest, TestCreateNilBookmarkPath) {

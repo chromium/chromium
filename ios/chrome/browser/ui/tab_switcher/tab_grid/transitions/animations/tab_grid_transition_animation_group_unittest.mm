@@ -65,7 +65,7 @@ TEST_F(TabGridTransitionAnimationGroupTest, testSerialAnimations) {
   // Check that all animations and the completion block have been executed.
   EXPECT_TRUE(completion_block_called);
   for (FakeTransitionAnimation* animation in animations) {
-    EXPECT_TRUE(animation.animationCount == 1);
+    EXPECT_EQ(animation.animationCount, 1ul);
   }
 }
 
@@ -92,6 +92,6 @@ TEST_F(TabGridTransitionAnimationGroupTest, testConcurrentAnimations) {
   // Check that all animations and the completion block have been executed.
   EXPECT_TRUE(completion_block_called);
   for (FakeTransitionAnimation* animation in animations) {
-    EXPECT_TRUE(animation.animationCount == 1);
+    EXPECT_EQ(animation.animationCount, 1ul);
   }
 }

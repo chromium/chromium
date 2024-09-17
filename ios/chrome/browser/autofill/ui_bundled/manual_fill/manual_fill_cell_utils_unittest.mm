@@ -4,11 +4,12 @@
 
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_cell_utils.h"
 
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/chip_button.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_labeled_chip.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "testing/gmock/include/gmock/gmock.h"
+#import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 
 // Button whose intrinsic content size mathes that of its frame. Used for
@@ -145,8 +146,7 @@ TEST_F(ManualFillTestUtilsTest, TestLayViewsHorizontallyWhenPossible) {
     row_width += GetHorizontalSpacingBetweenChips();
   }
 
-  EXPECT_TRUE(
-      [vertical_lead_views isEqualToArray:expected_vertical_lead_views]);
+  EXPECT_NSEQ(vertical_lead_views, expected_vertical_lead_views);
 }
 
 // Tests that `LayViewsHorizontallyWhenPossible` leaves `constraints` and

@@ -365,7 +365,7 @@ class PasswordDetailsTableViewControllerTest
         static_cast<TableViewStackedDetailsItem*>(
             GetTableViewItem(section, item));
 
-    EXPECT_TRUE([expected_details isEqualToArray:cell_item.detailTexts]);
+    EXPECT_NSEQ(expected_details, cell_item.detailTexts);
   }
 
   void SetEditCellText(NSString* text, int section, int item) {
