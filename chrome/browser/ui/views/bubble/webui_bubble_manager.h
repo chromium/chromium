@@ -88,16 +88,16 @@ class WebUIBubbleManager : public views::WidgetObserver {
   void ResetContentsWrapperForTesting();
   void DisableCloseBubbleHelperForTesting();
 
+  // Gets the WebUIContentsWrapper. This is available after calling
+  // ShowBubble().
+  virtual WebUIContentsWrapper* GetContentsWrapper() = 0;
+
  protected:
   WebUIBubbleManager();
 
   virtual base::WeakPtr<WebUIBubbleDialogView> CreateWebUIBubbleDialog(
       const std::optional<gfx::Rect>& anchor,
       views::BubbleBorder::Arrow arrow) = 0;
-
-  // Gets the WebUIContentsWrapper. This is available after calling
-  // ShowBubble().
-  virtual WebUIContentsWrapper* GetContentsWrapper() = 0;
 
   WebUIContentsWrapper* cached_contents_wrapper() {
     return cached_contents_wrapper_.get();
@@ -160,12 +160,14 @@ class WebUIBubbleManagerImpl : public WebUIBubbleManager {
         force_load_on_create_(force_load_on_create) {}
   ~WebUIBubbleManagerImpl() override = default;
 
+  // WebUIBubbleManager:
+  WebUIContentsWrapper* GetContentsWrapper() override;
+
  private:
   // WebUIBubbleManager:
   base::WeakPtr<WebUIBubbleDialogView> CreateWebUIBubbleDialog(
       const std::optional<gfx::Rect>& anchor,
       views::BubbleBorder::Arrow arrow) override;
-  WebUIContentsWrapper* GetContentsWrapper() override;
 
   const raw_ptr<views::View> anchor_view_;
   const raw_ptr<Profile, DanglingUntriaged> profile_;

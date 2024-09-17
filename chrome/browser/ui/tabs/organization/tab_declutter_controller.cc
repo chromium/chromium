@@ -63,6 +63,27 @@ void TabDeclutterController::StartDeclutterTimer() {
 
 void TabDeclutterController::ProcessStaleTabs() {
   CHECK(features::IsTabstripDeclutterEnabled());
+  std::vector<tabs::TabModel*> tabs = GetStaleTabs();
+
+  for (auto& observer : observers_) {
+    observer.OnStaleTabsProcessed(tabs);
+  }
+
+  if (DeclutterNudgeCriteriaMet(tabs)) {
+    next_nudge_valid_time_ticks_ =
+        usage_tick_clock_->NowTicks() + nudge_timer_interval_minutes_;
+
+    for (auto& observer : observers_) {
+      observer.OnTriggerDeclutterUIVisibility(!tabs.empty());
+    }
+
+    stale_tabs_previous_nudge_.clear();
+    stale_tabs_previous_nudge_.insert(tabs.begin(), tabs.end());
+  }
+}
+
+std::vector<tabs::TabModel*> TabDeclutterController::GetStaleTabs() {
+  CHECK(features::IsTabstripDeclutterEnabled());
   std::vector<tabs::TabModel*> tabs;
 
   const base::Time now = base::Time::Now();
@@ -88,20 +109,7 @@ void TabDeclutterController::ProcessStaleTabs() {
     }
   }
 
-  for (auto& observer : observers_) {
-    observer.OnStaleTabsProcessed(tabs);
-  }
-
-  if (DeclutterNudgeCriteriaMet(tabs)) {
-    next_nudge_valid_time_ticks_ =
-        usage_tick_clock_->NowTicks() + nudge_timer_interval_minutes_;
-    for (auto& observer : observers_) {
-      observer.OnTriggerDeclutterUIVisibility(!tabs.empty());
-    }
-
-    stale_tabs_previous_nudge_.clear();
-    stale_tabs_previous_nudge_.insert(tabs.begin(), tabs.end());
-  }
+  return tabs;
 }
 
 bool TabDeclutterController::DeclutterNudgeCriteriaMet(

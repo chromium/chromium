@@ -32,6 +32,11 @@ class Browser;
 class MetricsReporter;
 class TabOrganizationService;
 class OptimizationGuideKeyedService;
+class TabSearchUI;
+
+namespace tabs {
+class TabDeclutterController;
+}
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -61,7 +66,7 @@ class TabSearchPageHandler
       mojo::PendingReceiver<tab_search::mojom::PageHandler> receiver,
       mojo::PendingRemote<tab_search::mojom::Page> page,
       content::WebUI* web_ui,
-      TopChromeWebUIController* webui_controller,
+      TabSearchUI* webui_controller,
       MetricsReporter* metrics_reporter);
   TabSearchPageHandler(const TabSearchPageHandler&) = delete;
   TabSearchPageHandler& operator=(const TabSearchPageHandler&) = delete;
@@ -121,6 +126,8 @@ class TabSearchPageHandler
   // BrowserTabStripTrackerDelegate:
   bool ShouldTrackBrowser(Browser* browser) override;
 
+  void TabDeclutterControllerInstalled();
+
   // Returns true if the WebContents hosting the WebUI is visible to the user
   // (in either a fully visible or partially occluded state).
   bool IsWebContentsVisible();
@@ -176,6 +183,8 @@ class TabSearchPageHandler
   std::vector<tab_search::mojom::TabPtr> FindStaleTabs(
       int32_t excluded_id = -1);
 
+  tabs::TabDeclutterController* GetTabDeclutterController();
+
   // Adds recently closed tabs and tab groups.
   void AddRecentlyClosedEntries(
       std::vector<tab_search::mojom::RecentlyClosedTabPtr>&
@@ -221,7 +230,7 @@ class TabSearchPageHandler
   mojo::Receiver<tab_search::mojom::PageHandler> receiver_;
   mojo::Remote<tab_search::mojom::Page> page_;
   const raw_ptr<content::WebUI> web_ui_;
-  const raw_ptr<TopChromeWebUIController, DanglingUntriaged> webui_controller_;
+  const raw_ptr<TabSearchUI, DanglingUntriaged> webui_controller_;
   const raw_ptr<MetricsReporter> metrics_reporter_;
   BrowserTabStripTracker browser_tab_strip_tracker_{this, this};
   std::unique_ptr<base::RetainingOneShotTimer> debounce_timer_;

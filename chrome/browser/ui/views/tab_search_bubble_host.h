@@ -55,7 +55,7 @@ class TabSearchBubbleHost : public views::WidgetObserver,
                            int tab_index = -1);
   void CloseTabSearchBubble();
 
-  const Browser* GetBrowser() const;
+  Browser* GetBrowser();
 
   views::View* button() { return button_; }
 
@@ -75,6 +75,8 @@ class TabSearchBubbleHost : public views::WidgetObserver,
 
   const raw_ptr<Profile> profile_;
 
+  // TODO(b/366254790) : Look into removing this dependency or simplify
+  // interaction.
   std::unique_ptr<WebUIBubbleManager> webui_bubble_manager_;
 
   views::WidgetOpenTimer widget_open_timer_;

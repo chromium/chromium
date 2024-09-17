@@ -15,7 +15,9 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/tabs/organization/tab_declutter_controller.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service_factory.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_utils.h"
@@ -26,6 +28,7 @@
 #include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
 #include "chrome/browser/ui/views/user_education/browser_feature_promo_controller.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search_prefs.h"
+#include "chrome/browser/ui/webui/tab_search/tab_search_ui.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/event_constants.h"
@@ -36,7 +39,6 @@
 #include "ui/compositor/compositor.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/widget/widget.h"
-
 namespace {
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -159,6 +161,20 @@ void TabSearchBubbleHost::BeforeBubbleWidgetShowed(views::Widget* widget) {
   bubble_widget_observation_.Observe(widget);
   widget_open_timer_.Reset(widget);
 
+  // The declutter controller is set in the WebUI controller, which notifies the
+  // page handler. This works because the contents wrapper is created by the
+  // `webui_bubble_manager_` during `webui_bubble_manager_->ShowBubble()`.
+  // TODO (b/360724768): Refactor how WebUI page handlers can access specific
+  // contexts more efficiently.
+  CHECK(webui_bubble_manager_->GetContentsWrapper());
+  CHECK(webui_bubble_manager_->GetContentsWrapper()->web_contents());
+  content::WebUI* web_ui =
+      webui_bubble_manager_->GetContentsWrapper()->web_contents()->GetWebUI();
+
+  CHECK(web_ui);
+  web_ui->GetController()->GetAs<TabSearchUI>()->InstallTabDeclutterController(
+      GetBrowser()->GetFeatures().tab_declutter_controller());
+
   widget->GetCompositor()->RequestSuccessfulPresentationTimeForNextFrame(
       base::BindOnce(
           [](base::TimeTicks button_pressed_time,
@@ -244,8 +260,8 @@ void TabSearchBubbleHost::CloseTabSearchBubble() {
   webui_bubble_manager_->CloseBubble();
 }
 
-const Browser* TabSearchBubbleHost::GetBrowser() const {
-  for (const Browser* browser : chrome::FindAllBrowsersWithProfile(profile_)) {
+Browser* TabSearchBubbleHost::GetBrowser() {
+  for (Browser* browser : chrome::FindAllBrowsersWithProfile(profile_)) {
     BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
     if (browser_view->GetTabSearchBubbleHost() == this) {
       return browser;

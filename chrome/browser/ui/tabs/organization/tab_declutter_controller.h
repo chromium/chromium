@@ -28,7 +28,7 @@ class TabDeclutterController {
   TabDeclutterController(const TabDeclutterController&) = delete;
   TabDeclutterController& operator=(const TabDeclutterController& other) =
       delete;
-  ~TabDeclutterController();
+  virtual ~TabDeclutterController();
 
   void AddObserver(TabDeclutterObserver* observer) {
     observers_.AddObserver(observer);
@@ -60,6 +60,9 @@ class TabDeclutterController {
 
   void SetTimerForTesting(const base::TickClock* tick_clock,
                           scoped_refptr<base::SequencedTaskRunner> task_runner);
+
+  virtual std::vector<tabs::TabModel*> GetStaleTabs();
+  TabStripModel* tab_strip_model() { return tab_strip_model_; }
 
  private:
   void StartDeclutterTimer();

@@ -16,6 +16,7 @@
 #include "build/branding_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/tabs/organization/tab_declutter_controller.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service_factory.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_utils.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -274,6 +275,19 @@ void TabSearchUI::CreatePageHandler(
 bool TabSearchUI::ShowTabOrganizationFRE() {
   PrefService* prefs = Profile::FromWebUI(web_ui())->GetPrefs();
   return prefs->GetBoolean(tab_search_prefs::kTabOrganizationShowFRE);
+}
+
+void TabSearchUI::InstallTabDeclutterController(
+    tabs::TabDeclutterController* tab_declutter_controller) {
+  if (tab_declutter_controller_ == tab_declutter_controller) {
+    return;
+  }
+
+  tab_declutter_controller_ = tab_declutter_controller;
+
+  if (page_handler_) {
+    page_handler_->TabDeclutterControllerInstalled();
+  }
 }
 
 int TabSearchUI::TabIndex() {

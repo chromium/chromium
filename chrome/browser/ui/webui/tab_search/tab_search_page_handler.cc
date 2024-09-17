@@ -39,7 +39,9 @@
 #include "chrome/browser/ui/browser_live_tab_context.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/tabs/organization/tab_declutter_controller.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_request.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service_factory.h"
@@ -52,6 +54,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search_prefs.h"
+#include "chrome/browser/ui/webui/tab_search/tab_search_ui.h"
 #include "chrome/browser/ui/webui/util/image_util.h"
 #include "chrome/browser/user_education/tutorial_identifiers.h"
 #include "chrome/browser/user_education/user_education_service.h"
@@ -183,7 +186,7 @@ TabSearchPageHandler::TabSearchPageHandler(
     mojo::PendingReceiver<tab_search::mojom::PageHandler> receiver,
     mojo::PendingRemote<tab_search::mojom::Page> page,
     content::WebUI* web_ui,
-    TopChromeWebUIController* webui_controller,
+    TabSearchUI* webui_controller,
     MetricsReporter* metrics_reporter)
     : optimization_guide::SettingsEnabledObserver(
           optimization_guide::UserVisibleFeatureKey::kTabOrganization),
@@ -805,20 +808,53 @@ tab_search::mojom::ProfileDataPtr TabSearchPageHandler::CreateProfileData() {
 
 std::vector<tab_search::mojom::TabPtr> TabSearchPageHandler::FindStaleTabs(
     int32_t excluded_id) {
-  // TODO(crbug.com/358381117): Replace with actual stale tab data as provided
-  // by TabDeclutterService. This is a placeholder for now, returning all tabs
-  // from the current window regardless of last active time.
   std::vector<tab_search::mojom::TabPtr> tabs;
-  Browser* browser = chrome::FindLastActive();
-  if (!browser || !browser->tab_strip_model()) {
+  tabs::TabDeclutterController* controller = GetTabDeclutterController();
+  if (!controller) {
     return tabs;
   }
-  TabStripModel* tab_strip_model = browser->tab_strip_model();
-  for (int i = 0; i < tab_strip_model->count(); ++i) {
-    auto* web_contents = tab_strip_model->GetWebContentsAt(i);
-    tabs.push_back(GetTab(tab_strip_model, web_contents, i));
+  std::vector<tabs::TabModel*> stale_tabs = controller->GetStaleTabs();
+  TabStripModel* tab_strip_model = controller->tab_strip_model();
+
+  for (tabs::TabModel* tab_model : stale_tabs) {
+    const int tab_index =
+        tab_strip_model->GetIndexOfWebContents(tab_model->contents());
+    tabs.push_back(GetTab(tab_strip_model, tab_model->contents(), tab_index));
   }
+
   return tabs;
+}
+
+void TabSearchPageHandler::TabDeclutterControllerInstalled() {
+  page_->StaleTabsChanged(FindStaleTabs());
+}
+
+tabs::TabDeclutterController*
+TabSearchPageHandler::GetTabDeclutterController() {
+  // There are multiple cases to consider here -
+  // 1. The declutter controller may not be installed in the webui controller at
+  // this time. This is because the webcontents can be preloaded ahead of time
+  // before the TabSearchBubbleHost is aware of its creation.
+  // 2. The declutter controller may be nullptr in cases like guest or incognito
+  // mode.
+  // 3. The webui may be hosted in other contexts like tab.
+  if (webui_controller_->tab_declutter_controller()) {
+    return webui_controller_->tab_declutter_controller();
+  }
+
+  // TODO(b/366467114): Look into installing the declutter controller in the
+  // webui controller instead.
+  tabs::TabInterface* tab =
+      tabs::TabInterface::MaybeGetFromContents(web_ui_->GetWebContents());
+
+  if (tab) {
+    CHECK(tab->GetBrowserWindowInterface());
+    return tab->GetBrowserWindowInterface()
+        ->GetFeatures()
+        .tab_declutter_controller();
+  }
+
+  return nullptr;
 }
 
 void TabSearchPageHandler::AddRecentlyClosedEntries(
@@ -1060,11 +1096,7 @@ void TabSearchPageHandler::OnTabStripModelChanged(
       browser_tab_strip_tracker_.is_processing_initial_browsers()) {
     return;
   }
-  // TODO(crbug.com/358382876): Ensure this is called whenever stale tabs may
-  // have changed, once there is a method of observing this information. This
-  // call is here only as a placeholder approximation until such a method
-  // exists.
-  page_->StaleTabsChanged(FindStaleTabs());
+
   if (change.type() == TabStripModelChange::kRemoved) {
     std::vector<int> tab_ids;
     std::set<SessionID> tab_restore_ids;
