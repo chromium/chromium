@@ -173,8 +173,6 @@ if (!is_official_build) {
 
 if (is_cfi) {
   # b/350872890: pending investigation and fixes for is_cfi builders on betty.
-  tast_disabled_tests_from_chrome_all += [
-    "crostini.BackupRestore.bookworm_stable@betty",
-    "crostini.FsCorruption.bookworm_stable@betty",
-  ]
+  tast_disabled_tests_from_chrome_all +=
+      [ "crostini.FsCorruption.bookworm_stable@betty" ]
 }
