@@ -21,7 +21,6 @@ HistoryClustersInternalsUI::HistoryClustersInternalsUI(
     : MojoWebUIController(web_ui, /*enable_chrome_send=*/true),
       history_clusters_service_(history_clusters_service),
       history_service_(history_service) {
-  // TODO(crbug.com/354691088): Explicit use of size when making span is unsafe.
   std::move(set_up_data_source_callback)
       .Run(base::make_span(kHistoryClustersInternalsResources),
            IDR_HISTORY_CLUSTERS_INTERNALS_HISTORY_CLUSTERS_INTERNALS_HTML);
