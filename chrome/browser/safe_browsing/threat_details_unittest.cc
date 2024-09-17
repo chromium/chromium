@@ -528,6 +528,8 @@ TEST_F(ThreatDetailsTest, ThreatResource) {
 
   ClientSafeBrowsingReportRequest expected;
   expected.set_type(ClientSafeBrowsingReportRequest::URL_CLIENT_SIDE_PHISHING);
+  expected.mutable_client_properties()->set_url_api_type(
+      ClientSafeBrowsingReportRequest::CLIENT_SIDE_DETECTION);
   expected.set_url(kThreatURL);
   expected.set_url_request_destination(
       ClientSafeBrowsingReportRequest::DOCUMENT);
@@ -1062,6 +1064,8 @@ TEST_F(ThreatDetailsTest, ThreatDOMDetails_AmbiguousDOM) {
 
   ClientSafeBrowsingReportRequest expected;
   expected.set_type(ClientSafeBrowsingReportRequest::URL_CLIENT_SIDE_PHISHING);
+  expected.mutable_client_properties()->set_url_api_type(
+      ClientSafeBrowsingReportRequest::CLIENT_SIDE_DETECTION);
   expected.set_url(kThreatURL);
   expected.set_url_request_destination(
       ClientSafeBrowsingReportRequest::DOCUMENT);
@@ -1515,10 +1519,8 @@ TEST_F(ThreatDetailsTest, ThreatWithRedirectUrl) {
 
   ClientSafeBrowsingReportRequest expected;
   expected.set_type(ClientSafeBrowsingReportRequest::URL_CLIENT_SIDE_PHISHING);
-  // TODO(crbug.com/361008606): Create a new SafeBrowsingUrlApiType for
-  // ThreatSource::CLIENT_SIDE_DETECTION.
   expected.mutable_client_properties()->set_url_api_type(
-      ClientSafeBrowsingReportRequest::SAFE_BROWSING_URL_API_TYPE_UNSPECIFIED);
+      ClientSafeBrowsingReportRequest::CLIENT_SIDE_DETECTION);
   expected.mutable_client_properties()->set_is_async_check(false);
   expected.set_url(kThreatURL);
   expected.set_url_request_destination(
@@ -1714,6 +1716,8 @@ TEST_F(ThreatDetailsTest, ThreatOnFreshTab) {
 
   ClientSafeBrowsingReportRequest expected;
   expected.set_type(ClientSafeBrowsingReportRequest::URL_MALWARE);
+  expected.mutable_client_properties()->set_url_api_type(
+      ClientSafeBrowsingReportRequest::CLIENT_SIDE_DETECTION);
   expected.set_url(kThreatURL);
   expected.set_url_request_destination(
       ClientSafeBrowsingReportRequest::DOCUMENT);
@@ -1762,6 +1766,8 @@ TEST_F(ThreatDetailsTest, HTTPCache) {
 
   ClientSafeBrowsingReportRequest expected;
   expected.set_type(ClientSafeBrowsingReportRequest::URL_CLIENT_SIDE_PHISHING);
+  expected.mutable_client_properties()->set_url_api_type(
+      ClientSafeBrowsingReportRequest::CLIENT_SIDE_DETECTION);
   expected.set_url(kThreatURL);
   expected.set_url_request_destination(
       ClientSafeBrowsingReportRequest::DOCUMENT);
@@ -1845,6 +1851,8 @@ TEST_F(ThreatDetailsTest, HttpsResourceSanitization) {
 
   ClientSafeBrowsingReportRequest expected;
   expected.set_type(ClientSafeBrowsingReportRequest::URL_CLIENT_SIDE_PHISHING);
+  expected.mutable_client_properties()->set_url_api_type(
+      ClientSafeBrowsingReportRequest::CLIENT_SIDE_DETECTION);
   expected.set_url(kThreatURLHttps);
   expected.set_url_request_destination(
       ClientSafeBrowsingReportRequest::DOCUMENT);

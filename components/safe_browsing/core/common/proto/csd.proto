@@ -1672,6 +1672,8 @@ message ClientSafeBrowsingReportRequest {
     ANDROID_SAFEBROWSING_REAL_TIME = 7;
     // The Android Safe Browsing API hit in local blocklist.
     ANDROID_SAFEBROWSING = 8;
+    // Client-side phishing.
+    CLIENT_SIDE_DETECTION = 9;
   }
 
   // The information propagated from the client about various environment
