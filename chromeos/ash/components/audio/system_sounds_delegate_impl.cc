@@ -4,9 +4,9 @@
 
 #include "chromeos/ash/components/audio/system_sounds_delegate_impl.h"
 
+#include "chromeos/ash/components/audio/public/cpp/sounds/sounds_manager.h"
 #include "chromeos/ash/components/audio/sounds.h"
 #include "chromeos/ash/grit/ash_resources.h"
-#include "services/audio/public/cpp/sounds/sounds_manager.h"
 #include "ui/base/resource/resource_bundle.h"
 
 SystemSoundsDelegateImpl::SystemSoundsDelegateImpl() = default;

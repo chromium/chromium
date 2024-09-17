@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/audio/public/cpp/sounds/test_data.h"
+#include "chromeos/ash/components/audio/public/cpp/sounds/test_data.h"
+
 #include "base/task/single_thread_task_runner.h"
 
 namespace audio {
@@ -30,8 +31,9 @@ void TestObserver::OnPlay() {
 }
 
 void TestObserver::Render() {
-  if (!is_playing)
+  if (!is_playing) {
     return;
+  }
   if (callback_->Render(base::Seconds(0), base::TimeTicks::Now(), {},
                         bus_.get())) {
     task_runner_->PostTask(FROM_HERE, base::BindOnce(&TestObserver::Render,

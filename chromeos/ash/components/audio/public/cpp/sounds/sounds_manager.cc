@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/audio/public/cpp/sounds/sounds_manager.h"
+#include "chromeos/ash/components/audio/public/cpp/sounds/sounds_manager.h"
 
 #include <memory>
 #include <string_view>
@@ -11,8 +11,8 @@
 
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
+#include "chromeos/ash/components/audio/public/cpp/sounds/audio_stream_handler.h"
 #include "media/base/audio_codecs.h"
-#include "services/audio/public/cpp/sounds/audio_stream_handler.h"
 
 namespace audio {
 
@@ -83,8 +83,9 @@ bool SoundsManagerImpl::Play(SoundKey key) {
 bool SoundsManagerImpl::Stop(SoundKey key) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   AudioStreamHandler* handler = GetHandler(key);
-  if (!handler)
+  if (!handler) {
     return false;
+  }
   handler->Stop();
   return true;
 }
@@ -97,8 +98,9 @@ base::TimeDelta SoundsManagerImpl::GetDuration(SoundKey key) {
 
 AudioStreamHandler* SoundsManagerImpl::GetHandler(SoundKey key) {
   for (auto& entry : handlers_) {
-    if (entry.key == key)
+    if (entry.key == key) {
       return entry.handler.get();
+    }
   }
   return nullptr;
 }
@@ -115,8 +117,9 @@ SoundsManager::~SoundsManager() {
 void SoundsManager::Create(StreamFactoryBinder stream_factory_binder) {
   CHECK(!g_instance || g_initialized_for_testing)
       << "SoundsManager::Create() is called twice";
-  if (g_initialized_for_testing)
+  if (g_initialized_for_testing) {
     return;
+  }
   g_instance = new SoundsManagerImpl(std::move(stream_factory_binder));
 }
 

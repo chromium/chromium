@@ -12,7 +12,6 @@ include_rules = [
   "+device/bluetooth",
   "+media",
   "+mojo/public/cpp/bindings",
-  "+services/audio/public/cpp/sounds",
   "+services/media_session/public",
   "+ui/events/devices",
   "+ui/base",

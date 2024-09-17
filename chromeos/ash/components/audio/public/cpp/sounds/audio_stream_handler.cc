@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/audio/public/cpp/sounds/audio_stream_handler.h"
+#include "chromeos/ash/components/audio/public/cpp/sounds/audio_stream_handler.h"
 
 #include <stdint.h>
+
 #include <memory>
 #include <string>
 #include <string_view>
@@ -96,18 +97,20 @@ class AudioStreamHandler::AudioStreamContainer
         }
         return;
       } else {
-        if (!g_observer_for_testing)
+        if (!g_observer_for_testing) {
           device_->SetVolume(kOutputVolumePercent);
+        }
       }
 
       audio_handler_->Reset();
     }
 
     started_ = true;
-    if (g_observer_for_testing)
+    if (g_observer_for_testing) {
       g_observer_for_testing->OnPlay();
-    else
+    } else {
       device_->Play();
+    }
   }
 
   void Stop() {
@@ -138,8 +141,9 @@ class AudioStreamHandler::AudioStreamContainer
     size_t frames_written = 0;
     if (audio_handler_->AtEnd() ||
         !audio_handler_->CopyTo(dest, &frames_written)) {
-      if (delayed_stop_posted_)
+      if (delayed_stop_posted_) {
         return 0;
+      }
       delayed_stop_posted_ = true;
       task_runner_->PostDelayedTask(FROM_HERE, stop_closure_.callback(),
                                     base::Milliseconds(kKeepAliveMs));
@@ -232,8 +236,9 @@ bool AudioStreamHandler::IsInitialized() const {
 
 bool AudioStreamHandler::Play() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!IsInitialized())
+  if (!IsInitialized()) {
     return false;
+  }
 
   stream_.AsyncCall(&AudioStreamContainer::Play);
   return true;
@@ -241,8 +246,9 @@ bool AudioStreamHandler::Play() {
 
 void AudioStreamHandler::Stop() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!IsInitialized())
+  if (!IsInitialized()) {
     return;
+  }
 
   stream_.AsyncCall(&AudioStreamContainer::Stop);
 }
