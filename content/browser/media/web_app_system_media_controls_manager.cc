@@ -112,9 +112,6 @@ void WebAppSystemMediaControlsManager::OnFocusGained(
   }
 
   base::UnguessableToken request_id = maybe_id.value();
-  DVLOG(1) << "WebAppSystemMediaControlsManager::OnFocusGained, "
-              "request id = "
-           << request_id;
 
   // Get the web contents associated with the request_id
   content::WebContents* web_contents =
@@ -125,8 +122,6 @@ void WebAppSystemMediaControlsManager::OnFocusGained(
   // It's possible no web contents is returned if the web contents
   // has been destroyed.
   if (!web_contents) {
-    DVLOG(1) << "WebAppSystemMediaControlsManager::OnFocusGained received "
-                "destroyed web contents";
     return;
   }
 
@@ -183,8 +178,6 @@ void WebAppSystemMediaControlsManager::OnFocusGained(
 #endif  // BUILDFLAG(IS_WIN)
 
     if (!system_media_controls) {
-      DVLOG(1) << "WebAppSystemMediaControlsManager::OnFocusGained, "
-               << "failed to create smc.";
       return;
     }
 
@@ -193,13 +186,15 @@ void WebAppSystemMediaControlsManager::OnFocusGained(
     system_media_controls->AddObserver(
         BrowserMainLoop::GetInstance()->media_keys_listener_manager());
 
-    controls_map_.emplace(
-        request_id,
-        std::make_unique<WebAppSystemMediaControls>(
-            request_id, std::move(system_media_controls),
-            std::make_unique<SystemMediaControlsNotifier>(
-                system_media_controls.get(), request_id),
-            std::make_unique<ActiveMediaSessionController>(request_id)));
+    auto notifier = std::make_unique<SystemMediaControlsNotifier>(
+        system_media_controls.get(), request_id);
+    auto controller =
+        std::make_unique<ActiveMediaSessionController>(request_id);
+
+    controls_map_.emplace(request_id,
+                          std::make_unique<WebAppSystemMediaControls>(
+                              request_id, std::move(system_media_controls),
+                              std::move(notifier), std::move(controller)));
 
     if (test_observer_) {
       test_observer_->OnWebAppAdded(request_id);
@@ -312,34 +307,6 @@ void WebAppSystemMediaControlsManager::
         base::RepeatingCallback<void()> callback) {
   on_system_media_controls_bridge_created_callback_for_testing_ =
       std::move(callback);
-}
-
-void WebAppSystemMediaControlsManager::LogDataForDebugging() {
-  DVLOG(1) << "WebAppSystemMediaControlsManager::LogDataForDebugging";
-  int i = 0;
-  for (auto& it : controls_map_) {
-    DVLOG(1) << "Entry " << ++i << " "
-             << "Request ID: " << it.first;
-
-    if (it.second->GetSystemMediaControls()) {
-      DVLOG(1) << "SystemMediaControls: "
-               << it.second->GetSystemMediaControls();
-    } else {
-      DVLOG(1) << "SystemMediaControls: nullptr";
-    }
-
-    if (it.second->GetNotifier()) {
-      DVLOG(1) << "Notifier: " << it.second->GetNotifier();
-    } else {
-      DVLOG(1) << "Notifier: nullptr";
-    }
-
-    if (it.second->GetController()) {
-      DVLOG(1) << "Controller: " << it.second->GetController();
-    } else {
-      DVLOG(1) << "Controller: nullptr";
-    }
-  }
 }
 
 }  // namespace content

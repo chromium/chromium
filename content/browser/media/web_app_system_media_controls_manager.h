@@ -105,9 +105,6 @@ class CONTENT_EXPORT WebAppSystemMediaControlsManager
   void SetOnSystemMediaControlsBridgeCreatedCallbackForTesting(
       base::RepeatingCallback<void()> callback);
 
-  // Dumps the stored metadata via DVLOG(1) for debugging.
-  void LogDataForDebugging();
-
  private:
   void SkipMojoConnectionForTesting() {
     skip_mojo_connection_for_testing_ = true;
