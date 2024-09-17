@@ -8,6 +8,7 @@
 #include "base/feature_list.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "chrome/browser/ui/android/plus_addresses/plus_address_creation_controller_android.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "components/plus_addresses/features.h"
@@ -85,21 +86,50 @@ ScopedJavaLocalRef<jobject> GetNormatStateUiInfo(
       error_report_url);
 }
 
-ScopedJavaLocalRef<jobject> GetReserveErrorStateInfo() {
+ScopedJavaLocalRef<jobject> GetReserveErrorStateInfo(
+    const PlusAddressRequestError& error) {
   if (!base::FeatureList::IsEnabled(
           features::kPlusAddressAndroidErrorStatesEnabled)) {
     return ScopedJavaLocalRef<jobject>();
   }
+  PlusAddressCreationBottomSheetErrorType error_type;
+  std::u16string title;
+  std::u16string description;
+  std::u16string ok_text;
+  std::u16string cancel_text;
+  if (error.IsTimeoutError()) {
+    error_type = PlusAddressCreationBottomSheetErrorType::kReserveTimeout;
+    title = l10n_util::GetStringUTF16(
+        IDS_PLUS_ADDRESS_BOTTOMSHEET_RESERVE_TIMEOUT_ERROR_TITLE_ANDROID);
+    description = l10n_util::GetStringUTF16(
+        IDS_PLUS_ADDRESS_BOTTOMSHEET_RESERVE_TIMEOUT_ERROR_DESCRIPTION_ANDROID);
+    ok_text = l10n_util::GetStringUTF16(
+        IDS_PLUS_ADDRESS_BOTTOMSHEET_ERROR_TRY_AGAIN_BUTTON_TEXT_ANDROID);
+    cancel_text = l10n_util::GetStringUTF16(
+        IDS_PLUS_ADDRESS_BOTTOMSHEET_ERROR_CANCEL_BUTTON_TEXT_ANDROID);
+  } else if (error.IsQuotaError()) {
+    error_type = PlusAddressCreationBottomSheetErrorType::kReserveQuota;
+    title = l10n_util::GetStringUTF16(
+        IDS_PLUS_ADDRESS_BOTTOMSHEET_RESERVE_QUOTA_ERROR_TITLE_ANDROID);
+    description = l10n_util::GetStringUTF16(
+        IDS_PLUS_ADDRESS_BOTTOMSHEET_RESERVE_QUOTA_ERROR_DESCRIPTION_ANDROID);
+    ok_text = l10n_util::GetStringUTF16(
+        IDS_PLUS_ADDRESS_BOTTOMSHEET_ERROR_OK_BUTTON_TEXT_ANDROID);
+    // Cancel text is empty in this case.
+  } else {
+    error_type = PlusAddressCreationBottomSheetErrorType::kReserveGeneric;
+    title = l10n_util::GetStringUTF16(
+        IDS_PLUS_ADDRESS_BOTTOMSHEET_RESERVE_GENERIC_ERROR_TITLE_ANDROID);
+    description = l10n_util::GetStringUTF16(
+        IDS_PLUS_ADDRESS_BOTTOMSHEET_RESERVE_GENERIC_ERROR_DESCRIPTION_ANDROID);
+    ok_text = l10n_util::GetStringUTF16(
+        IDS_PLUS_ADDRESS_BOTTOMSHEET_ERROR_TRY_AGAIN_BUTTON_TEXT_ANDROID);
+    cancel_text = l10n_util::GetStringUTF16(
+        IDS_PLUS_ADDRESS_BOTTOMSHEET_ERROR_CANCEL_BUTTON_TEXT_ANDROID);
+  }
   return Java_PlusAddressCreationErrorStateInfo_Constructor(
-      base::android::AttachCurrentThread(),
-      l10n_util::GetStringUTF16(
-          IDS_PLUS_ADDRESS_BOTTOMSHEET_RESERVE_ERROR_TITLE_ANDROID),
-      l10n_util::GetStringUTF16(
-          IDS_PLUS_ADDRESS_BOTTOMSHEET_RESERVE_ERROR_DESCRIPTION_ANDROID),
-      l10n_util::GetStringUTF16(
-          IDS_PLUS_ADDRESS_BOTTOMSHEET_RESERVE_ERROR_OK_BUTTON_ANDROID),
-      l10n_util::GetStringUTF16(
-          IDS_PLUS_ADDRESS_BOTTOMSHEET_RESERVE_ERROR_CANCEL_BUTTON_ANDROID));
+      base::android::AttachCurrentThread(), base::to_underlying(error_type),
+      title, description, ok_text, cancel_text);
 }
 
 }  // namespace
@@ -131,6 +161,12 @@ void PlusAddressCreationViewAndroid::ShowInit(
       base::android::AttachCurrentThread(), java_object_,
       GetNormatStateUiInfo(primary_email_address, has_accepted_notice),
       refresh_supported);
+}
+
+void PlusAddressCreationViewAndroid::TryAgainToReservePlusAddress(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& obj) {
+  controller_->TryAgainToReservePlusAddress();
 }
 
 void PlusAddressCreationViewAndroid::OnRefreshClicked(
@@ -170,8 +206,9 @@ void PlusAddressCreationViewAndroid::ShowReserveResult(
     Java_PlusAddressCreationViewBridge_updateProposedPlusAddress(
         env, java_object_, j_proposed_plus_address);
   } else {
-    Java_PlusAddressCreationViewBridge_showError(env, java_object_,
-                                                 GetReserveErrorStateInfo());
+    Java_PlusAddressCreationViewBridge_showError(
+        env, java_object_,
+        GetReserveErrorStateInfo(maybe_plus_profile.error()));
   }
 }
 

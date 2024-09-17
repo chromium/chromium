@@ -51,7 +51,12 @@ public class PlusAddressCreationViewBridgeTest {
     private static final String MODAL_PROPOSED_PLUS_ADDRESS = "plus+1@plus.plus";
     private static final boolean REFRESH_SUPPORTED = true;
     private static final PlusAddressCreationErrorStateInfo ERROR_STATE =
-            new PlusAddressCreationErrorStateInfo("Title", "Description", "Ok", "Cancel");
+            new PlusAddressCreationErrorStateInfo(
+                    PlusAddressCreationBottomSheetErrorType.RESERVE_TIMEOUT,
+                    "Title",
+                    "Description",
+                    "Ok",
+                    "Cancel");
 
     @Rule public JniMocker mJniMocker = new JniMocker();
     @Mock private Profile mProfile;

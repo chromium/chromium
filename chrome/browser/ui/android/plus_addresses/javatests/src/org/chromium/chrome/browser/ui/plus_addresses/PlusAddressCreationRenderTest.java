@@ -59,7 +59,12 @@ public class PlusAddressCreationRenderTest {
     private static final String MANAGE_PLUS_ADDRESSES_DESCRIPTION = "For example@gmail.com.";
     private static final String PROPOSED_PLUS_ADDRESS = "example.foo@gmail.com";
     private static final PlusAddressCreationErrorStateInfo ERROR_STATE =
-            new PlusAddressCreationErrorStateInfo("Title", "Description", "Ok", "Cancel");
+            new PlusAddressCreationErrorStateInfo(
+                    PlusAddressCreationBottomSheetErrorType.RESERVE_TIMEOUT,
+                    "Title",
+                    "Description",
+                    "Ok",
+                    "Cancel");
 
     @ParameterAnnotations.ClassParameter
     private static List<ParameterSet> sClassParams =

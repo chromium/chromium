@@ -19,8 +19,11 @@ import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationP
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.VISIBLE;
 
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+
+import androidx.annotation.Nullable;
 
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -71,26 +74,65 @@ class PlusAddressCreationViewBinder {
         } else if (propertyKey == LOADING_INDICATOR_VISIBLE) {
             view.setLoadingIndicatorVisible(model.get(LOADING_INDICATOR_VISIBLE));
         } else if (propertyKey == ERROR_STATE_INFO) {
-            // Hide the normal state content.
-            view.mPlusAddressContent.setVisibility(View.GONE);
-            // Show the error state content.
-            view.mErrorContentStub.setLayoutResource(R.layout.plus_address_creation_error_state);
-            view.mErrorContentStub.inflate();
-
-            TextView errorTitle = view.mContentView.findViewById(R.id.plus_address_error_title);
-            TextView errorDescription =
-                    view.mContentView.findViewById(R.id.plus_address_error_description);
-            Button okButton = view.mContentView.findViewById(R.id.plus_address_error_ok_button);
-            Button cancelButton =
-                    view.mContentView.findViewById(R.id.plus_address_error_cancel_button);
-
-            PlusAddressCreationErrorStateInfo info = model.get(ERROR_STATE_INFO);
-            errorTitle.setText(info.getTitle());
-            errorDescription.setText(info.getDescription());
-            okButton.setText(info.getOkText());
-            cancelButton.setText(info.getCancelText());
+            bindErrorState(view, model.get(DELEGATE), model.get(ERROR_STATE_INFO));
         } else {
             assert false : "Every possible property update needs to be handled!";
+        }
+    }
+
+    private static void bindErrorState(
+            PlusAddressCreationBottomSheetContent view,
+            PlusAddressCreationDelegate delegate,
+            @Nullable PlusAddressCreationErrorStateInfo info) {
+        if (info == null) {
+            view.mPlusAddressContent.setVisibility(View.VISIBLE);
+            View errorContainer = view.mContentView.findViewById(R.id.plus_address_error_container);
+            // Error screen views are not inflated before the error screen is shown for the
+            // first time.
+            if (errorContainer != null) {
+                errorContainer.setVisibility(View.GONE);
+            }
+            return;
+        }
+        // Hide the normal state content.
+        view.mPlusAddressContent.setVisibility(View.GONE);
+
+        // Inflate the {@link ViewStub} in case this wasn't done before.
+        if (view.mContentView.findViewById(R.id.plus_address_error_container) == null) {
+            view.mErrorContentStub.setLayoutResource(R.layout.plus_address_creation_error_state);
+            view.mErrorContentStub.inflate();
+        }
+
+        // Show the error state container.
+        ViewGroup errorStateContainer =
+                view.mContentView.findViewById(R.id.plus_address_error_container);
+        errorStateContainer.setVisibility(View.VISIBLE);
+
+        // Bind individual views to the data model.
+        TextView errorTitle = view.mContentView.findViewById(R.id.plus_address_error_title);
+        TextView errorDescription =
+                view.mContentView.findViewById(R.id.plus_address_error_description);
+        Button okButton = view.mContentView.findViewById(R.id.plus_address_error_ok_button);
+        Button cancelButton = view.mContentView.findViewById(R.id.plus_address_error_cancel_button);
+
+        errorTitle.setText(info.getTitle());
+        errorDescription.setText(info.getDescription());
+        okButton.setText(info.getOkText());
+        switch (info.getErrorType()) {
+            case PlusAddressCreationBottomSheetErrorType.RESERVE_TIMEOUT:
+            case PlusAddressCreationBottomSheetErrorType.RESERVE_GENERIC:
+                okButton.setOnClickListener(unused -> delegate.onTryAgain());
+                break;
+            case PlusAddressCreationBottomSheetErrorType.RESERVE_QUOTA:
+                okButton.setOnClickListener(unused -> delegate.onCanceled());
+                break;
+        }
+        if (info.getCancelText().isEmpty()) {
+            cancelButton.setVisibility(View.GONE);
+        } else {
+            cancelButton.setText(info.getCancelText());
+            cancelButton.setOnClickListener(unused -> delegate.onCanceled());
+            cancelButton.setVisibility(View.VISIBLE);
         }
     }
 

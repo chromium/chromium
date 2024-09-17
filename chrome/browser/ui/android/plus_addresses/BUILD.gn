@@ -16,7 +16,10 @@ android_library("plus_addresses_helper_java") {
 }
 
 android_library("java") {
-  srcjar_deps = [ ":jni_headers" ]
+  srcjar_deps = [
+    ":jni_headers",
+    ":plus_address_browser_java_enums",
+  ]
   sources = [
     "java/src/org/chromium/chrome/browser/ui/plus_addresses/AllPlusAddressesBottomSheetBridge.java",
     "java/src/org/chromium/chrome/browser/ui/plus_addresses/AllPlusAddressesBottomSheetCoordinator.java",
@@ -89,6 +92,10 @@ generate_jni("jni_headers") {
     "java/src/org/chromium/chrome/browser/ui/plus_addresses/PlusProfile.java",
     "java/src/org/chromium/chrome/browser/ui/plus_addresses/utils/PlusAddressesHelper.java",
   ]
+}
+
+java_cpp_enum("plus_address_browser_java_enums") {
+  sources = [ "plus_address_creation_view_android.h" ]
 }
 
 robolectric_library("junit") {

@@ -30,6 +30,7 @@ class PlusAddressCreationControllerDesktop
   // PlusAddressCreationController implementation:
   void OfferCreation(const url::Origin& main_frame_origin,
                      PlusAddressCallback callback) override;
+  void TryAgainToReservePlusAddress() override;
   void OnRefreshClicked() override;
   void OnConfirmed() override;
   void OnCanceled() override;

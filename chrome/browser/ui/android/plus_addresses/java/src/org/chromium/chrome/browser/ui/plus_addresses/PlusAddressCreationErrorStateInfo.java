@@ -13,6 +13,7 @@ import org.jni_zero.JniType;
 @JNINamespace("plus_addresses")
 /** Contains necessary information to show a meaningful error message to the user. */
 class PlusAddressCreationErrorStateInfo {
+    private final @PlusAddressCreationBottomSheetErrorType int mErrorType;
     private final String mTitle;
     private final String mDescription;
     private final String mOkText;
@@ -21,14 +22,21 @@ class PlusAddressCreationErrorStateInfo {
     @VisibleForTesting
     @CalledByNative
     PlusAddressCreationErrorStateInfo(
+            @PlusAddressCreationBottomSheetErrorType @JniType("int") int errorType,
             @JniType("std::u16string") String title,
             @JniType("std::u16string") String description,
             @JniType("std::u16string") String okText,
             @JniType("std::u16string") String cancelText) {
+        mErrorType = errorType;
         mTitle = title;
         mDescription = description;
         mOkText = okText;
         mCancelText = cancelText;
+    }
+
+    @PlusAddressCreationBottomSheetErrorType
+    int getErrorType() {
+        return mErrorType;
     }
 
     String getTitle() {

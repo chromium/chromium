@@ -151,6 +151,12 @@ import org.chromium.url.GURL;
     }
 
     @Override
+    public void onTryAgain() {
+        mModel.set(ERROR_STATE_INFO, null);
+        mBridge.tryAgainToReservePlusAddress();
+    }
+
+    @Override
     public void onCanceled() {
         mModel.set(VISIBLE, false);
         mBridge.onCanceled();

@@ -58,7 +58,12 @@ public final class PlusAddressCreationMediatorTest {
     private static final int TAB2_ID = 2;
     private static final String PLUS_ADDRESS = "foo@bar.com";
     private static final PlusAddressCreationErrorStateInfo ERROR_STATE =
-            new PlusAddressCreationErrorStateInfo("Title", "Description", "Ok", "Cancel");
+            new PlusAddressCreationErrorStateInfo(
+                    PlusAddressCreationBottomSheetErrorType.RESERVE_TIMEOUT,
+                    "Title",
+                    "Description",
+                    "Ok",
+                    "Cancel");
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

@@ -77,6 +77,18 @@ void PlusAddressCreationControllerAndroid::OfferCreation(
           GetWeakPtr()));
 }
 
+void PlusAddressCreationControllerAndroid::TryAgainToReservePlusAddress() {
+  PlusAddressService* plus_address_service = GetPlusAddressService();
+  if (!plus_address_service) {
+    return;
+  }
+  plus_address_service->ReservePlusAddress(
+      relevant_origin_,
+      base::BindOnce(
+          &PlusAddressCreationControllerAndroid::OnPlusAddressReserved,
+          GetWeakPtr()));
+}
+
 void PlusAddressCreationControllerAndroid::OnRefreshClicked() {
   PlusAddressService* plus_address_service = GetPlusAddressService();
   if (!plus_address_service) {

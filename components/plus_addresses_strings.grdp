@@ -48,17 +48,33 @@
     <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_NOTICE_ANDROID" desc="The notice text on the creation dialog for plus addresses on Android when the dialog is shown for the first time." translateable="false">
       First time usage notice placeholder (<ph name="GAIA_EMAIL">$1<ex>foo@gmail.com</ex></ph>), which includes the redirection link <ph name="BEGIN_LINK">&lt;link&gt;</ph>link placeholder<ph name="END_LINK">&lt;/link&gt;</ph>.
     </message>
-    <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_RESERVE_ERROR_TITLE_ANDROID" desc="Title shown in the plus address creation bottom sheet when the backend fails to reserve the plus address after the user click the confirm button" translateable="false">
-      Reserve error title placeholder
+    <!-- Android reserve error strings -->
+    <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_RESERVE_TIMEOUT_ERROR_TITLE_ANDROID" desc="Title shown in the plus address creation bottom sheet when the backend fails to reserve the plus address after the user click the confirm button due to the network request timeout." translateable="false">
+      Something went wrong
     </message>
-    <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_RESERVE_ERROR_DESCRIPTION_ANDROID" desc="Description message shown in the plus address creation bottom sheet when the backend fails to reserve the plus address after the user click the confirm button" translateable="false">
-      Reserve error description placeholder.
+    <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_RESERVE_TIMEOUT_ERROR_DESCRIPTION_ANDROID" desc="Description message shown in the plus address creation bottom sheet when the backend fails to reserve the plus address after the user click the confirm button due to the network request timeout." translateable="false">
+      Make sure you are online and try again.
     </message>
-    <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_RESERVE_ERROR_OK_BUTTON_ANDROID" desc="The user clicked confirm on the plus address creation bottom sheet and received and error. The text of the button that restarts the process." translateable="false">
-      Reserve ok button placeholder
+    <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_RESERVE_QUOTA_ERROR_TITLE_ANDROID" desc="Title shown in the plus address creation bottom sheet when the backend fails to reserve the plus address after the user click the confirm button due to the plus address quota limit exceeded." translateable="false">
+      Too many plus addresses
     </message>
-    <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_RESERVE_ERROR_CANCEL_BUTTON_ANDROID" desc="The user clicked confirm on the plus address creation bottom sheet and received and error. The text of the button that closes the current error message." translateable="false">
-      Reserver cancel button placeholder
+    <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_RESERVE_QUOTA_ERROR_DESCRIPTION_ANDROID" desc="Description message shown in the plus address creation bottom sheet when the backend fails to reserve the plus address after the user click the confirm button due to the plus address quota limit exceeded." translateable="false">
+      Can't create any more plus addresses.
+    </message>
+    <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_RESERVE_GENERIC_ERROR_TITLE_ANDROID" desc="Title shown in the plus address creation bottom sheet when the backend fails to reserve the plus address after the user click the confirm button due to an unknown error." translateable="false">
+      Something went wrong
+    </message>
+    <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_RESERVE_GENERIC_ERROR_DESCRIPTION_ANDROID" desc="Description message shown in the plus address creation bottom sheet when the backend fails to reserve the plus address after the user click the confirm button due to an unknown error." translateable="false">
+      Can't create plus address right now.
+    </message>
+    <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_ERROR_OK_BUTTON_TEXT_ANDROID" desc="Confirm button text in the plus address creation bottom sheet that closes the bottom sheet." translateable="false">
+      OK
+    </message>
+    <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_ERROR_TRY_AGAIN_BUTTON_TEXT_ANDROID" desc="Confirm button text in the plus address creation bottom sheet that retries the previously failed action." translateable="false">
+      Try again
+    </message>
+    <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_ERROR_CANCEL_BUTTON_TEXT_ANDROID" desc="Cancel button text in the plus address creation bottom sheet that closes the bottom sheet." translateable="false">
+      Cancel
     </message>
 
     <!-- iOS strings -->

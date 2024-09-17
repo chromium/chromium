@@ -14,6 +14,15 @@ class TabModel;
 
 namespace plus_addresses {
 
+// Possible error types during the plus address creation flow.
+//
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.ui.plus_addresses
+enum class PlusAddressCreationBottomSheetErrorType {
+  kReserveTimeout = 0,
+  kReserveQuota = 1,
+  kReserveGeneric = 2,
+};
+
 class PlusAddressCreationController;
 
 // A class intended as a thin wrapper around a Java object, which calls out to
@@ -33,6 +42,9 @@ class PlusAddressCreationViewAndroid {
                 const std::string& primary_email_address,
                 bool refresh_supported,
                 bool has_accepted_notice);
+  void TryAgainToReservePlusAddress(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& obj);
   void OnRefreshClicked(JNIEnv* env,
                         const base::android::JavaParamRef<jobject>& obj);
   void OnConfirmRequested(JNIEnv* env,

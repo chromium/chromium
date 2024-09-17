@@ -26,6 +26,10 @@ class PlusAddressCreationController {
   virtual void OfferCreation(const url::Origin& main_frame_origin,
                              PlusAddressCallback callback) = 0;
 
+  // Sends a request to the server to obtain a plus address after the previous
+  // request failed for whatever reason.
+  virtual void TryAgainToReservePlusAddress() = 0;
+
   // Queries the server for a new suggested plus address.
   virtual void OnRefreshClicked() = 0;
 

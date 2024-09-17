@@ -74,6 +74,7 @@ public class PlusAddressCreationBottomSheetContentTest {
                     /* errorReportUrl= */ new GURL("second.time.error.com"));
     private static final PlusAddressCreationErrorStateInfo RESERVE_ERROR_STATE =
             new PlusAddressCreationErrorStateInfo(
+                    PlusAddressCreationBottomSheetErrorType.RESERVE_TIMEOUT,
                     /* title= */ "Error title",
                     /* description= */ "Error description",
                     /* okText= */ "Error ok",

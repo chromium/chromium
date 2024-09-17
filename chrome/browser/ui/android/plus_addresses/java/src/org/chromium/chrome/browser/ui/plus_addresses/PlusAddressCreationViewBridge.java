@@ -154,6 +154,15 @@ public class PlusAddressCreationViewBridge {
         }
     }
 
+    public void tryAgainToReservePlusAddress() {
+        if (mNativePlusAddressCreationPromptAndroid != 0) {
+            PlusAddressCreationViewBridgeJni.get()
+                    .tryAgainToReservePlusAddress(
+                            mNativePlusAddressCreationPromptAndroid,
+                            PlusAddressCreationViewBridge.this);
+        }
+    }
+
     public void onConfirmRequested() {
         if (mNativePlusAddressCreationPromptAndroid != 0) {
             PlusAddressCreationViewBridgeJni.get()
@@ -185,6 +194,9 @@ public class PlusAddressCreationViewBridge {
     @NativeMethods
     interface Natives {
         void onRefreshClicked(
+                long nativePlusAddressCreationViewAndroid, PlusAddressCreationViewBridge caller);
+
+        void tryAgainToReservePlusAddress(
                 long nativePlusAddressCreationViewAndroid, PlusAddressCreationViewBridge caller);
 
         void onConfirmRequested(
