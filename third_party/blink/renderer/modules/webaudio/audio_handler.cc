@@ -583,13 +583,14 @@ unsigned AudioHandler::NumberOfOutputChannels() const {
   return 1;
 }
 
-void AudioHandler::SendLogMessage(const char* const func,
+void AudioHandler::SendLogMessage(const char* const function_name,
                                   const String& message) {
-  WebRtcLogMessage(
-      String::Format("[WA]AH::%s %s [type=%s, this=0x%" PRIXPTR "]", func,
-                     message.Utf8().c_str(), NodeTypeName().Utf8().c_str(),
-                     reinterpret_cast<uintptr_t>(this))
-          .Utf8());
+  WebRtcLogMessage(String::Format("[WA]AH::%s %s [type=%s, this=0x%" PRIXPTR
+                                  "]",
+                                  function_name, message.Utf8().c_str(),
+                                  NodeTypeName().Utf8().c_str(),
+                                  reinterpret_cast<uintptr_t>(this))
+                       .Utf8());
 }
 
 }  // namespace blink

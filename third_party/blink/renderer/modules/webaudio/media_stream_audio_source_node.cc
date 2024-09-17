@@ -151,10 +151,11 @@ MediaStreamAudioSourceNode::GetMediaStreamAudioSourceHandler() const {
   return static_cast<MediaStreamAudioSourceHandler&>(Handler());
 }
 
-void MediaStreamAudioSourceNode::SendLogMessage(const char* const func,
+void MediaStreamAudioSourceNode::SendLogMessage(const char* const function_name,
                                                 const String& message) {
   WebRtcLogMessage(
-      String::Format("[WA]MSASN::%s %s", func, message.Utf8().c_str()).Utf8());
+      String::Format("[WA]MSASN::%s %s", function_name, message.Utf8().c_str())
+          .Utf8());
 }
 
 }  // namespace blink

@@ -151,10 +151,12 @@ void MediaStreamAudioDestinationNode::ReportWillBeDestroyed() {
   GraphTracer().WillDestroyAudioNode(this);
 }
 
-void MediaStreamAudioDestinationNode::SendLogMessage(const char* const func,
-                                                     const String& message) {
+void MediaStreamAudioDestinationNode::SendLogMessage(
+    const char* const function_name,
+    const String& message) {
   WebRtcLogMessage(
-      String::Format("[WA]MSADN::%s %s", func, message.Utf8().c_str()).Utf8());
+      String::Format("[WA]MSADN::%s %s", function_name, message.Utf8().c_str())
+          .Utf8());
 }
 
 }  // namespace blink

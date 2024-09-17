@@ -61,7 +61,7 @@ class MediaStreamAudioDestinationNode final : public AudioNode {
 
  private:
   // https://chromium.googlesource.com/chromium/src/+/refs/heads/main/docs/media/capture/README.md#logs
-  void SendLogMessage(const char* const func, const String& message);
+  void SendLogMessage(const char* const function_name, const String& message);
 
   const Member<MediaStreamSource> source_;
   const Member<MediaStream> stream_;

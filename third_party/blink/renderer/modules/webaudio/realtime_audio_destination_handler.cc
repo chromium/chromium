@@ -539,10 +539,10 @@ bool RealtimeAudioDestinationHandler::
 }
 
 void RealtimeAudioDestinationHandler::SendLogMessage(
-    const char* const func,
+    const char* const function_name,
     const String& message) const {
-  WebRtcLogMessage(String::Format("[WA]RADH::%s %s (sink_descriptor_=%s)", func,
-                                  message.Utf8().c_str(),
+  WebRtcLogMessage(String::Format("[WA]RADH::%s %s (sink_descriptor_=%s)",
+                                  function_name, message.Utf8().c_str(),
                                   sink_descriptor_.SinkId().Utf8().c_str())
                        .Utf8()
                        .c_str());

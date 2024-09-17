@@ -133,7 +133,7 @@ class MODULES_EXPORT AudioNode : public EventTarget,
   bool DisconnectFromOutputIfConnected(unsigned output_index, AudioParam&);
 
   // https://chromium.googlesource.com/chromium/src/+/refs/heads/main/docs/media/capture/README.md#logs
-  void SendLogMessage(const char* const func, const String& message);
+  void SendLogMessage(const char* const function_name, const String& message);
 
   Member<BaseAudioContext> context_;
   scoped_refptr<DeferredTaskHandler> deferred_task_handler_;

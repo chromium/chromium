@@ -604,9 +604,11 @@ void AudioNode::DidAddOutput(unsigned number_of_outputs) {
   DCHECK_EQ(number_of_outputs, connected_params_.size());
 }
 
-void AudioNode::SendLogMessage(const char* const func, const String& message) {
+void AudioNode::SendLogMessage(const char* const function_name,
+                               const String& message) {
   WebRtcLogMessage(
-      String::Format("[WA]AN::%s %s", func, message.Utf8().c_str()).Utf8());
+      String::Format("[WA]AN::%s %s", function_name, message.Utf8().c_str())
+          .Utf8());
 }
 
 }  // namespace blink

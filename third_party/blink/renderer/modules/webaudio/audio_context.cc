@@ -1290,12 +1290,12 @@ void AudioContext::invoke_onrendererror_from_platform_for_testing() {
       .invoke_onrendererror_from_platform_for_testing();
 }
 
-void AudioContext::SendLogMessage(const char* const func,
+void AudioContext::SendLogMessage(const char* const function_name,
                                   const String& message) {
   WebRtcLogMessage(
       String::Format(
           "[WA]AC::%s %s [state=%s sink_descriptor_=%s, sink_id_given_=%s]",
-          func, message.Utf8().c_str(), state().Utf8().c_str(),
+          function_name, message.Utf8().c_str(), state().Utf8().c_str(),
           sink_descriptor_.SinkId().Utf8().c_str(),
           is_sink_id_given_ ? "true" : "false")
           .Utf8());

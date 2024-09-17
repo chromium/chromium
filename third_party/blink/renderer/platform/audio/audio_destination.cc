@@ -597,9 +597,9 @@ media::OutputDeviceStatus AudioDestination::MaybeCreateSinkAndGetStatus() {
   return web_audio_device_->MaybeCreateSinkAndGetStatus();
 }
 
-void AudioDestination::SendLogMessage(const char* const func,
+void AudioDestination::SendLogMessage(const char* const function_name,
                                       const String& message) const {
-  WebRtcLogMessage(String::Format("[WA]AD::%s %s [state=%s]", func,
+  WebRtcLogMessage(String::Format("[WA]AD::%s %s [state=%s]", function_name,
                                   message.Utf8().c_str(),
                                   DeviceStateToString(device_state_))
                        .Utf8());
