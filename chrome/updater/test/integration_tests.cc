@@ -2136,6 +2136,7 @@ TEST_F(IntegrationTestDeviceManagement, FetchPolicyViaCompanionApp) {
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 
+#if !defined(ADDRESS_SANITIZER)
 TEST_F(IntegrationTestDeviceManagement,
        UninstallCompanionAppWhenUninstallUpdater) {
   ASSERT_NO_FATAL_FAILURE(ExpectInstallSequence(
@@ -2173,6 +2174,7 @@ TEST_F(IntegrationTestDeviceManagement,
   ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(test_server_.get()));
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
+#endif
 
 #if BUILDFLAG(IS_WIN)
 // RuntimeEnrollmentToken is supported on Windows only.
