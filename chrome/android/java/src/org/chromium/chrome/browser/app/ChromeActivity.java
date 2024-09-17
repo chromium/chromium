@@ -125,6 +125,7 @@ import org.chromium.chrome.browser.layouts.LayoutManagerAppUtils;
 import org.chromium.chrome.browser.media.FullscreenVideoPictureInPictureController;
 import org.chromium.chrome.browser.metrics.LaunchMetrics;
 import org.chromium.chrome.browser.metrics.LegacyTabStartupMetricsTracker;
+import org.chromium.chrome.browser.metrics.SimpleStartupForegroundSessionDetector;
 import org.chromium.chrome.browser.metrics.StartupMetricsTracker;
 import org.chromium.chrome.browser.metrics.UmaActivityObserver;
 import org.chromium.chrome.browser.modaldialog.TabModalLifetimeHandler;
@@ -1196,7 +1197,9 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         if (isMainIntentLaunch) {
             RecordHistogram.recordBooleanHistogram(
                     "Startup.Android.MainIntentIsColdStart",
-                    ColdStartTracker.wasColdOnFirstActivityCreationOrNow());
+                    ColdStartTracker.wasColdOnFirstActivityCreationOrNow()
+                            && SimpleStartupForegroundSessionDetector
+                                    .runningCleanForegroundSession());
         }
 
         Tab tab = getActivityTab();
