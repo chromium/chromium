@@ -323,7 +323,6 @@ source_set("unit_tests") {
 
     # Gather unit tests from subdirectories.
     "//chrome/browser/ui/ash/accessibility:unit_tests",
-    "//chrome/browser/ui/ash/annotator:unit_tests",
     "//chrome/browser/ui/ash/app_access:unit_tests",
     "//chrome/browser/ui/ash/app_icon_color_cache:unit_tests",
     "//chrome/browser/ui/ash/arc:unit_tests",
@@ -362,7 +361,6 @@ group("browser_tests") {
   testonly = true
 
   deps = [
-    "//chrome/browser/ui/ash/annotator:browser_tests",
     "//chrome/browser/ui/ash/app_list:browser_tests",
     "//chrome/browser/ui/ash/arc:browser_tests",
     "//chrome/browser/ui/ash/back_gesture:browser_tests",

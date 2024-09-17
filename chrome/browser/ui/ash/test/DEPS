@@ -20,6 +20,7 @@ include_rules = [
   "+chrome/browser/ui/browser.h",
   "+chrome/browser/ui/browser_list.h",
   "+chrome/browser/ui/browser_window.h",
+  "+chrome/browser/ui/tabs/tab_strip_model.h",
   "+chrome/browser/ui/views/accelerator_table.h",
   "+chrome/browser/ui/views/frame",
   "+chrome/common",

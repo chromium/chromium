@@ -31,6 +31,7 @@ source_set("browser_tests") {
 
   sources = [
     "accelerator_commands_browsertest.cc",
+    "annotator_client_impl_browsertest.cc",
     "event_latency_metrics_browsertest.cc",
     "feature_discovery_duration_reporter_browsertest.cc",
     "float_controller_browsertest.cc",
@@ -40,6 +41,10 @@ source_set("browser_tests") {
     "//ash",
     "//ash:test_support",
     "//ash/public/cpp",
+    "//ash/webui/annotator",
+    "//ash/webui/media_app_ui:buildflags",
+    "//ash/webui/projector_app:buildflags",
+    "//ash/webui/projector_app/public/cpp",
     "//ash/webui/system_apps/public:system_web_app_type",
     "//base",
     "//base/test:test_support",
