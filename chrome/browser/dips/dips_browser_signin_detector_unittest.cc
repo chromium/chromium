@@ -17,6 +17,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_file_util.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/dips/dips_browser_signin_detector_factory.h"
 #include "chrome/browser/dips/dips_service.h"
 #include "chrome/browser/dips/dips_test_utils.h"
 #include "chrome/browser/dips/dips_utils.h"
@@ -81,8 +82,12 @@ class BrowserSigninDetectorServiceTest : public testing::Test {
   // This initialization of the DIPS service will instantiate a copy of the
   // detector under test.
   void InitDIPSService() {
+    DIPSBrowserSigninDetectorFactory::GetInstance()
+        ->EnableWaitForServiceForTesting();
     dips_service_ = DIPSService::Get(profile_.get());
     EXPECT_NE(dips_service_, nullptr);
+    DIPSBrowserSigninDetectorFactory::GetInstance()->WaitForServiceForTesting(
+        profile_.get());
   }
 
   TestingProfile* profile() { return profile_.get(); }

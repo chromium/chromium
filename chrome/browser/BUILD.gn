@@ -388,6 +388,8 @@ static_library("browser") {
     "dips/dips_bounce_detector.h",
     "dips/dips_browser_signin_detector.cc",
     "dips/dips_browser_signin_detector.h",
+    "dips/dips_browser_signin_detector_factory.cc",
+    "dips/dips_browser_signin_detector_factory.h",
     "dips/dips_cleanup_service.cc",
     "dips/dips_cleanup_service.h",
     "dips/dips_cleanup_service_factory.cc",

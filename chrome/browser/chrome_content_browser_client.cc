@@ -8639,7 +8639,7 @@ void ChromeContentBrowserClient::NotifyMultiCaptureStateChanged(
 
 std::unique_ptr<content::DipsDelegate>
 ChromeContentBrowserClient::CreateDipsDelegate() {
-  return std::make_unique<ChromeDipsDelegate>();
+  return ChromeDipsDelegate::Create();
 }
 
 bool ChromeContentBrowserClient::ShouldSuppressAXLoadComplete(

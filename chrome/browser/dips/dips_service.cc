@@ -24,18 +24,18 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "base/types/pass_key.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/dips/chrome_dips_delegate.h"
-#include "chrome/browser/dips/dips_browser_signin_detector.h"
 #include "chrome/browser/dips/dips_redirect_info.h"
 #include "chrome/browser/dips/dips_service_factory.h"
 #include "chrome/browser/dips/dips_storage.h"
 #include "chrome/browser/dips/dips_utils.h"
 #include "chrome/browser/dips/persistent_repeating_timer.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/tpcd/experiment/tpcd_experiment_features.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
@@ -265,7 +265,8 @@ DIPSService* DIPSService::Get(content::BrowserContext* context) {
   return DIPSServiceImpl::Get(context);
 }
 
-DIPSServiceImpl::DIPSServiceImpl(content::BrowserContext* context)
+DIPSServiceImpl::DIPSServiceImpl(base::PassKey<DIPSServiceFactory>,
+                                 content::BrowserContext* context)
     : browser_context_(context), dips_delegate_(ChromeDipsDelegate::Create()) {
   DCHECK(base::FeatureList::IsEnabled(features::kDIPS));
   std::optional<base::FilePath> path_to_use;
@@ -294,11 +295,6 @@ DIPSServiceImpl::DIPSServiceImpl(content::BrowserContext* context)
 
   repeating_timer_ = CreateTimer();
   repeating_timer_->Start();
-
-  if (auto* identity_manager = IdentityManagerFactory::GetForProfile(
-          Profile::FromBrowserContext(context))) {
-    dips_browser_signin_detector_.emplace(this, identity_manager);
-  }
 }
 
 std::unique_ptr<dips::PersistentRepeatingTimer> DIPSServiceImpl::CreateTimer() {
@@ -677,4 +673,13 @@ void DIPSServiceImpl::RecordBrowserSignIn(std::string_view domain) {
       ->AsyncCall(&DIPSStorage::RecordInteraction)
       .WithArgs(url::SchemeHostPort("http", domain, 80).GetURL(),
                 base::Time::Now(), GetCookieMode());
+}
+
+void DIPSServiceImpl::MaybeNotifyCreated(base::PassKey<DIPSServiceFactory>) {
+  if (delegate_notified_) {
+    return;
+  }
+
+  delegate_notified_ = true;  // Set this first to prevent infinite recursion.
+  ChromeDipsDelegate::Create()->OnDipsServiceCreated(browser_context_, this);
 }

@@ -15,12 +15,13 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequence_bound.h"
 #include "base/types/pass_key.h"
-#include "chrome/browser/dips/dips_browser_signin_detector.h"
 #include "chrome/browser/dips/dips_redirect_info.h"
 #include "chrome/browser/dips/dips_storage.h"
 #include "chrome/browser/dips/dips_utils.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
+
+class DIPSServiceFactory;
 
 namespace content {
 class BrowserContext;
@@ -65,7 +66,7 @@ class DIPSService {
 // When DIPS moves to //content, DIPSServiceImpl will *not* be exposed in the
 // Content API. Only other code in //content (such as the DIPS implementation)
 // will be allowed to access it.
-class DIPSServiceImpl : public DIPSService, KeyedService {
+class DIPSServiceImpl : public DIPSService, public KeyedService {
  public:
   using RecordBounceCallback = base::RepeatingCallback<void(
       const GURL& url,
@@ -75,6 +76,8 @@ class DIPSServiceImpl : public DIPSService, KeyedService {
       bool stateful,
       base::RepeatingCallback<void(const GURL&)> content_settings_callback)>;
 
+  DIPSServiceImpl(base::PassKey<DIPSServiceFactory>,
+                  content::BrowserContext* context);
   ~DIPSServiceImpl() override;
 
   static DIPSServiceImpl* Get(content::BrowserContext* context);
@@ -154,10 +157,11 @@ class DIPSServiceImpl : public DIPSService, KeyedService {
     }
   }
 
+  // The first time this method is called, it calls
+  // DipsDelegate::OnDipsServiceCreated(). On subsequent calls, it does nothing.
+  void MaybeNotifyCreated(base::PassKey<DIPSServiceFactory>);
+
  private:
-  // So DIPSServiceFactory::BuildServiceInstanceFor can call the constructor.
-  friend class DIPSServiceFactory;
-  explicit DIPSServiceImpl(content::BrowserContext* context);
   std::unique_ptr<dips::PersistentRepeatingTimer> CreateTimer();
 
   void GotState(
@@ -199,8 +203,8 @@ class DIPSServiceImpl : public DIPSService, KeyedService {
   std::unique_ptr<dips::PersistentRepeatingTimer> repeating_timer_;
   base::SequenceBound<DIPSStorage> storage_;
   base::ObserverList<Observer> observers_;
-  std::optional<DIPSBrowserSigninDetector> dips_browser_signin_detector_;
   std::unique_ptr<content::DipsDelegate> dips_delegate_;
+  bool delegate_notified_ = false;
 
   std::map<std::string, int> open_sites_;
 

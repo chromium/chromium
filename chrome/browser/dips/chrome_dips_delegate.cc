@@ -7,6 +7,8 @@
 #include <memory>
 
 #include "base/check.h"
+#include "base/types/pass_key.h"
+#include "chrome/browser/dips/dips_browser_signin_detector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
 #include "content/public/browser/dips_delegate.h"
@@ -24,9 +26,11 @@ ProfileSelections GetHumanProfileSelections() {
 
 }  // namespace
 
+ChromeDipsDelegate::ChromeDipsDelegate(PassKey) {}
+
 // static
 std::unique_ptr<content::DipsDelegate> ChromeDipsDelegate::Create() {
-  return std::make_unique<ChromeDipsDelegate>();
+  return std::make_unique<ChromeDipsDelegate>(PassKey());
 }
 
 bool ChromeDipsDelegate::ShouldEnableDips(
@@ -37,4 +41,11 @@ bool ChromeDipsDelegate::ShouldEnableDips(
   DUMP_WILL_BE_CHECK(!result || result == profile)
       << "ApplyProfileSelection() returned a different profile";
   return result == profile;
+}
+
+void ChromeDipsDelegate::OnDipsServiceCreated(
+    content::BrowserContext* browser_context,
+    DIPSService* dips_service) {
+  // Create DIPSBrowserSigninDetector.
+  CHECK(DIPSBrowserSigninDetector::Get(browser_context));
 }
