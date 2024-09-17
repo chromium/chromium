@@ -21,12 +21,9 @@
 #include "pdf/buildflags.h"
 #include "pdf/ink/ink_affine_transform.h"
 #include "pdf/ink/ink_stroke_input.h"
-#include "pdf/page_orientation.h"
 #include "pdf/pdf_ink_undo_redo_model.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
-#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/point_f.h"
-#include "ui/gfx/geometry/rect.h"
 
 static_assert(BUILDFLAG(ENABLE_PDF_INK2), "ENABLE_PDF_INK2 not set to true");
 
@@ -42,6 +39,7 @@ namespace chrome_pdf {
 class InkInProgressStroke;
 class InkStroke;
 class PdfInkBrush;
+class PdfInkModuleClient;
 
 class PdfInkModule {
  public:
@@ -58,54 +56,7 @@ class PdfInkModule {
   using RenderTransformCallback =
       base::RepeatingCallback<void(const InkAffineTransform& transform)>;
 
-  class Client {
-   public:
-    virtual ~Client() = default;
-
-    // Gets the current page orientation.
-    virtual PageOrientation GetOrientation() const = 0;
-
-    // Gets the current scaled and rotated rectangle area of the page in CSS
-    // screen coordinates for the 0-based page index.  Must be non-empty for any
-    // non-negative index returned from `VisiblePageIndexFromPoint()`.
-    virtual gfx::Rect GetPageContentsRect(int index) = 0;
-
-    // Gets the offset within the rendering viewport to where the page images
-    // will be drawn.  Since the offset is a location within the viewport, it
-    // must always contain non-negative values.  Values are in scaled CSS
-    // screen coordinates, where the amount of scaling matches that of
-    // `GetZoom()`.  The page orientation does not apply to the viewport.
-    virtual gfx::Vector2dF GetViewportOriginOffset() = 0;
-
-    // Gets current zoom factor.
-    virtual float GetZoom() const = 0;
-
-    // Notifies the client to invalidate the `rect`.  Coordinates are
-    // screen-based, based on the same viewport origin that was used to specify
-    // the `blink::WebMouseEvent` positions during stroking.
-    virtual void Invalidate(const gfx::Rect& rect) {}
-
-    // Returns whether the page at `page_index` is visible or not.
-    virtual bool IsPageVisible(int page_index) = 0;
-
-    // Notifies the client whether annotation mode is enabled or not.
-    virtual void OnAnnotationModeToggled(bool enable) {}
-
-    // Notifies the client that a stroke has finished drawing or erasing.
-    virtual void StrokeFinished() {}
-
-    // Asks the client to change the cursor to `bitmap`.
-    virtual void UpdateInkCursorImage(SkBitmap bitmap) {}
-
-    // Asks the client to update the thumbnail for `page_index`.
-    virtual void UpdateThumbnail(int page_index) {}
-
-    // Returns the 0-based page index for the given `point` if it is on a
-    // visible page, or -1 if `point` is not on a visible page.
-    virtual int VisiblePageIndexFromPoint(const gfx::PointF& point) = 0;
-  };
-
-  explicit PdfInkModule(Client& client);
+  explicit PdfInkModule(PdfInkModuleClient& client);
   PdfInkModule(const PdfInkModule&) = delete;
   PdfInkModule& operator=(const PdfInkModule&) = delete;
   ~PdfInkModule();
@@ -303,7 +254,7 @@ class PdfInkModule {
 
   void MaybeSetCursor();
 
-  const raw_ref<Client> client_;
+  const raw_ref<PdfInkModuleClient> client_;
 
   bool enabled_ = false;
 

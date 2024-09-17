@@ -38,6 +38,7 @@
 #include "pdf/pdf_features.h"
 #include "pdf/pdf_ink_brush.h"
 #include "pdf/pdf_ink_cursor.h"
+#include "pdf/pdf_ink_module_client.h"
 #include "pdf/pdf_ink_transform.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
@@ -118,7 +119,7 @@ SkRect GetDrawPageClipRect(const gfx::Rect& content_rect,
 
 }  // namespace
 
-PdfInkModule::PdfInkModule(Client& client) : client_(client) {
+PdfInkModule::PdfInkModule(PdfInkModuleClient& client) : client_(client) {
   CHECK(base::FeatureList::IsEnabled(features::kPdfInk2));
   CHECK(is_drawing_stroke());
   drawing_stroke_state().brush = CreateDefaultBrush();

@@ -19,6 +19,7 @@
 #include "pdf/ink/ink_brush.h"
 #include "pdf/pdf_features.h"
 #include "pdf/pdf_ink_brush.h"
+#include "pdf/pdf_ink_module_client.h"
 #include "pdf/pdf_ink_transform.h"
 #include "pdf/test/mouse_event_builder.h"
 #include "pdf/test/pdf_ink_test_helpers.h"
@@ -80,14 +81,14 @@ constexpr gfx::PointF kTwoPageVerticalLayoutPageExitAndReentrySegment2[] = {
     gfx::PointF(10.0f, 0.0f), gfx::PointF(10.0f, 5.0f),
     gfx::PointF(15.0f, 10.0f)};
 
-class FakeClient : public PdfInkModule::Client {
+class FakeClient : public PdfInkModuleClient {
  public:
   FakeClient() = default;
   FakeClient(const FakeClient&) = delete;
   FakeClient& operator=(const FakeClient&) = delete;
   ~FakeClient() override = default;
 
-  // PdfInkModule::Client:
+  // PdfInkModuleClient:
   PageOrientation GetOrientation() const override { return orientation_; }
 
   gfx::Vector2dF GetViewportOriginOffset() override {
@@ -516,7 +517,7 @@ TEST_F(PdfInkModuleStrokeTest, CanonicalAnnotationPoints) {
 
   // There should be 3 points collected, for the mouse down, move, and up
   // events. Verify that the collected points match a canonical position for
-  // the PdfInkModule::Client setup.
+  // the PdfInkModuleClient setup.
   constexpr gfx::PointF kCanonicalMouseDownPosition(47.0f, 44.5f);
   constexpr gfx::PointF kCanonicalMouseMovePosition(42.0f, 39.5f);
   constexpr gfx::PointF kCanonicalMouseUpPosition(37.0f, 43.5f);

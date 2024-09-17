@@ -275,7 +275,7 @@ bool IsSaveDataSizeValid(size_t size) {
 
 #if BUILDFLAG(ENABLE_PDF_INK2)
 std::unique_ptr<PdfInkModule> MaybeCreatePdfInkModule(
-    PdfInkModule::Client& client) {
+    PdfInkModuleClient& client) {
   if (!base::FeatureList::IsEnabled(features::kPdfInk2)) {
     return nullptr;
   }

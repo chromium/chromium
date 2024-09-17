@@ -220,6 +220,7 @@ if (enable_pdf) {
         "pdf_ink_cursor.h",
         "pdf_ink_module.cc",
         "pdf_ink_module.h",
+        "pdf_ink_module_client.h",
         "pdf_ink_transform.cc",
         "pdf_ink_transform.h",
         "pdf_ink_undo_redo_model.cc",
@@ -350,10 +351,6 @@ if (enable_pdf) {
       "//ui/gfx/range",
       "//v8",
     ]
-
-    if (enable_pdf_ink2) {
-      deps += [ "//pdf/ink" ]
-    }
   }
 
   source_set("pdf_test_utils") {
