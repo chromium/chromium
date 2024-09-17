@@ -190,9 +190,12 @@ std::unique_ptr<views::FlexLayoutView> CreateDetailsRow(
 
   detail_view->SetProperty(
       views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+      views::FlexSpecification(views::LayoutOrientation::kHorizontal,
+                               views::MinimumFlexSizeRule::kScaleToZero,
                                views::MaximumFlexSizeRule::kUnbounded)
           .WithWeight(1));
+  detail_view->SetProperty(views::kCrossAxisAlignmentKey,
+                           views::LayoutAlignment::kStretch);
   row->AddChildView(std::move(detail_view));
   return row;
 }
