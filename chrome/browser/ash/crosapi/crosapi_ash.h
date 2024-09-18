@@ -141,7 +141,6 @@ class RemotingAsh;
 class ResourceManagerAsh;
 class ScreenAIDownloaderAsh;
 class ScreenManagerAsh;
-class SearchControllerFactoryAsh;
 class SearchProviderAsh;
 class SelectFileAsh;
 class SharesheetAsh;
@@ -643,10 +642,6 @@ class CrosapiAsh : public mojom::Crosapi {
 
   ScreenManagerAsh* screen_manager_ash() { return screen_manager_ash_.get(); }
 
-  SearchControllerFactoryAsh* search_controller_factory_ash() {
-    return search_controller_factory_ash_.get();
-  }
-
   SearchProviderAsh* search_provider_ash() {
     return search_provider_ash_.get();
   }
@@ -809,7 +804,6 @@ class CrosapiAsh : public mojom::Crosapi {
       print_preview_webcontents_adapter_ash_;
   std::unique_ptr<ScreenAIDownloaderAsh> screen_ai_downloader_ash_;
   std::unique_ptr<ScreenManagerAsh> screen_manager_ash_;
-  std::unique_ptr<SearchControllerFactoryAsh> search_controller_factory_ash_;
   std::unique_ptr<SearchProviderAsh> search_provider_ash_;
   std::unique_ptr<SelectFileAsh> select_file_ash_;
   std::unique_ptr<SharesheetAsh> sharesheet_ash_;

@@ -103,7 +103,6 @@
 #include "chrome/browser/ash/crosapi/resource_manager_ash.h"
 #include "chrome/browser/ash/crosapi/screen_ai_downloader_ash.h"
 #include "chrome/browser/ash/crosapi/screen_manager_ash.h"
-#include "chrome/browser/ash/crosapi/search_controller_factory_ash.h"
 #include "chrome/browser/ash/crosapi/search_provider_ash.h"
 #include "chrome/browser/ash/crosapi/select_file_ash.h"
 #include "chrome/browser/ash/crosapi/sharesheet_ash.h"
@@ -342,8 +341,6 @@ CrosapiAsh::CrosapiAsh(CrosapiDependencyRegistry* registry)
           std::make_unique<ash::printing::PrintPreviewWebcontentsAdapterAsh>()),
       screen_ai_downloader_ash_(std::make_unique<ScreenAIDownloaderAsh>()),
       screen_manager_ash_(std::make_unique<ScreenManagerAsh>()),
-      search_controller_factory_ash_(
-          std::make_unique<SearchControllerFactoryAsh>()),
       search_provider_ash_(std::make_unique<SearchProviderAsh>()),
       select_file_ash_(std::make_unique<SelectFileAsh>()),
       sharesheet_ash_(std::make_unique<SharesheetAsh>()),
@@ -999,7 +996,7 @@ void CrosapiAsh::BindScreenManager(
 
 void CrosapiAsh::BindSearchControllerFactory(
     mojo::PendingRemote<mojom::SearchControllerFactory> remote) {
-  search_controller_factory_ash_->BindRemote(std::move(remote));
+  NOTREACHED();
 }
 
 void CrosapiAsh::BindSearchControllerRegistry(

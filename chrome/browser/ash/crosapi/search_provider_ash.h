@@ -18,7 +18,6 @@ namespace crosapi {
 
 // IMPORTANT: This search API should only be used by the launcher, because
 // in-flight queries will be cancelled whenever a new query is issued.
-// Use `SearchControllerFactoryAsh` instead to create a new dedicated instance.
 //
 // This class is the crosapi entry-point for launcher omnibox search. It lives
 // in ash-chrome on the UI thread. Omnibox results are obtained as follows:
