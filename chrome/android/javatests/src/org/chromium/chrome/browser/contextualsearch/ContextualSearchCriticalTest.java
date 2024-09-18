@@ -8,16 +8,24 @@ import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_E
 
 import androidx.test.filters.SmallTest;
 
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -33,10 +41,22 @@ import org.chromium.ui.test.util.UiRestriction;
 @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
 @Batch(Batch.PER_CLASS)
 public class ContextualSearchCriticalTest extends ContextualSearchInstrumentationBase {
+    @Rule public JniMocker mocker = new JniMocker();
+
+    // Needed to avoid issues on Release builds where Natives is made final and can not be Spy'd
+    // below.
+    @Mock ContextualSearchManagerJni mUnusedContextualSearchManagerJni;
+
+    private ContextualSearchManager.Natives mContextualSearchManagerNatives;
+
     @Override
     @Before
     public void setUp() throws Exception {
+        MockitoAnnotations.initMocks(this);
+
         mTestPage = "/chrome/test/data/android/contextualsearch/tap_test.html";
+        mContextualSearchManagerNatives = Mockito.spy(new ContextualSearchManagerJni());
+        mocker.mock(ContextualSearchManagerJni.TEST_HOOKS, mContextualSearchManagerNatives);
         super.setUp();
     }
 
@@ -423,7 +443,11 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
         closePanel();
 
         // Now check that the URL has been removed from history.
-        Assert.assertTrue(mFakeServer.hasRemovedUrl(url));
+        ArgumentCaptor<String> urlCaptor = ArgumentCaptor.forClass(String.class);
+        Mockito.verify(mContextualSearchManagerNatives)
+                .removeLastHistoryEntry(
+                        Mockito.anyLong(), Mockito.any(), urlCaptor.capture(), Mockito.anyLong());
+        Assert.assertEquals(url, urlCaptor.getValue());
     }
 
     /**
@@ -437,7 +461,7 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
         // Simulate a resolving search and make sure a URL was loaded.
         simulateResolveSearch();
         Assert.assertEquals(1, mFakeServer.getLoadedUrlCount());
-        String url = mFakeServer.getLoadedUrl();
+        mFakeServer.getLoadedUrl();
 
         // Expand Panel so that the Content becomes visible.
         expandPanelAndAssert();
@@ -446,7 +470,9 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
         tapBasePageToClosePanel();
 
         // Now check that the URL has not been removed from history, since the Content was seen.
-        Assert.assertFalse(mFakeServer.hasRemovedUrl(url));
+        Mockito.verify(mContextualSearchManagerNatives, Mockito.never())
+                .removeLastHistoryEntry(
+                        Mockito.anyLong(), Mockito.any(), Mockito.any(), Mockito.anyLong());
     }
 
     /**
@@ -481,8 +507,12 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
 
         // Now check that all three URLs have been removed from history.
         Assert.assertEquals(3, mFakeServer.getLoadedUrlCount());
-        Assert.assertTrue(mFakeServer.hasRemovedUrl(url1));
-        Assert.assertTrue(mFakeServer.hasRemovedUrl(url2));
-        Assert.assertTrue(mFakeServer.hasRemovedUrl(url3));
+
+        ArgumentCaptor<String> urlCaptor = ArgumentCaptor.forClass(String.class);
+        Mockito.verify(mContextualSearchManagerNatives, Mockito.times(3))
+                .removeLastHistoryEntry(
+                        Mockito.anyLong(), Mockito.any(), urlCaptor.capture(), Mockito.anyLong());
+        MatcherAssert.assertThat(
+                urlCaptor.getAllValues(), Matchers.containsInAnyOrder(url1, url2, url3));
     }
 }

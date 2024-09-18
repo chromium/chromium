@@ -614,20 +614,6 @@ public class OverlayPanelContent {
         mWebContents.setSize(mContentViewWidth, viewHeight);
     }
 
-    /**
-     * Remove the list history entry from this panel if it was within a certain timeframe.
-     * @param historyUrl The URL to remove.
-     * @param urlTimeMs The time the URL was navigated to.
-     */
-    public void removeLastHistoryEntry(String historyUrl, long urlTimeMs) {
-        OverlayPanelContentJni.get()
-                .removeLastHistoryEntry(
-                        mNativeOverlayPanelContentPtr,
-                        OverlayPanelContent.this,
-                        historyUrl,
-                        urlTimeMs);
-    }
-
     /** Destroy the native component of this class. */
     @VisibleForTesting
     public void destroy() {
@@ -651,12 +637,6 @@ public class OverlayPanelContent {
         long init(OverlayPanelContent caller);
 
         void destroy(long nativeOverlayPanelContent, OverlayPanelContent caller);
-
-        void removeLastHistoryEntry(
-                long nativeOverlayPanelContent,
-                OverlayPanelContent caller,
-                String historyUrl,
-                long urlTimeMs);
 
         void onPhysicalBackingSizeChanged(
                 long nativeOverlayPanelContent,

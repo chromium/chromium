@@ -639,17 +639,6 @@ public class OverlayPanel extends OverlayPanelAnimation
     }
 
     /**
-     * Remove the last entry from history provided it is in a given time frame.
-     * @param historyUrl The URL to remove.
-     * @param urlTimeMs The time that the URL was visited.
-     */
-    public void removeLastHistoryEntry(String historyUrl, long urlTimeMs) {
-        if (mContent == null) return;
-        // Expose OverlayPanelContent method.
-        mContent.removeLastHistoryEntry(historyUrl, urlTimeMs);
-    }
-
-    /**
      * @return The vertical scroll position of the content.
      */
     public float getContentVerticalScroll() {

@@ -24,7 +24,6 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.url.GURL;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
@@ -45,8 +44,6 @@ class ContextualSearchFakeServer
     private final OverlayPanelContentDelegate mContentDelegate;
     private final OverlayPanelContentProgressObserver mProgressObserver;
     private final ChromeActivity mActivity;
-
-    private final ArrayList<String> mRemovedUrls = new ArrayList<String>();
 
     private final Map<String, FakeResolveSearch> mFakeResolveSearches = new HashMap<>();
     private final Map<String, FakeNonResolveSearch> mFakeNonResolveSearches = new HashMap<>();
@@ -440,12 +437,6 @@ class ContextualSearchFakeServer
             super.loadUrl(url, shouldLoadImmediately);
             mContentsObserver = new ContentsObserver(getWebContents());
         }
-
-        @Override
-        public void removeLastHistoryEntry(String url, long timeInMs) {
-            // Override to prevent call to native code.
-            mRemovedUrls.add(url);
-        }
     }
 
     // ============================================================================================
@@ -546,18 +537,6 @@ class ContextualSearchFakeServer
      */
     void setExpectations(String nodeId, ResolvedSearchTerm resolvedSearchTermResponse) {
         mExpectedFakeResolveSearch = new FakeResolveSearch(nodeId, resolvedSearchTermResponse);
-    }
-
-    // ============================================================================================
-    // History Removal Helpers
-    // ============================================================================================
-
-    /**
-     * @param url The URL to be checked.
-     * @return Whether the given URL was removed from history.
-     */
-    public boolean hasRemovedUrl(String url) {
-        return mRemovedUrls.contains(url);
     }
 
     // ============================================================================================

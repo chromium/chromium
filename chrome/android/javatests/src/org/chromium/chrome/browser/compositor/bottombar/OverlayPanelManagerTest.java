@@ -155,9 +155,6 @@ public class OverlayPanelManagerTest {
             public MockOverlayPanelContent() {
                 super(null, null, null, null, 0, null, null, null);
             }
-
-            @Override
-            public void removeLastHistoryEntry(String url, long timeInMs) {}
         }
     }
 

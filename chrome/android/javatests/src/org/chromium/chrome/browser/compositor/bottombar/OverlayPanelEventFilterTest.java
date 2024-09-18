@@ -177,9 +177,6 @@ public class OverlayPanelEventFilterTest {
                         mWindowAndroid,
                         () -> mTab);
             }
-
-            @Override
-            public void removeLastHistoryEntry(String url, long timeInMs) {}
         }
 
         @Override

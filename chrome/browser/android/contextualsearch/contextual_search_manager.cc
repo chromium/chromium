@@ -15,10 +15,12 @@
 #include "base/supports_user_data.h"
 #include "base/time/time.h"
 #include "chrome/browser/android/contextualsearch/native_contextual_search_context.h"
+#include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "components/contextual_search/core/browser/contextual_search_delegate_impl.h"
 #include "components/contextual_search/core/browser/resolved_search_term.h"
+#include "components/history/core/browser/history_service.h"
 #include "components/navigation_interception/intercept_navigation_delegate.h"
 #include "components/search_engines/search_terms_data.h"
 #include "components/search_engines/template_url_service.h"
@@ -36,13 +38,18 @@ using base::android::JavaParamRef;
 using base::android::JavaRef;
 using content::WebContents;
 
+namespace {
+const int kHistoryDeletionWindowSeconds = 2;
+}  // namespace
+
 // This class manages the native behavior of the Contextual Search feature.
 // Instances of this class are owned by the Java ContextualSearchManager.
 // Most of the work is actually done in an associated delegate to this class:
 // the ContextualSearchDelegate.
 ContextualSearchManager::ContextualSearchManager(JNIEnv* env,
                                                  const JavaRef<jobject>& obj,
-                                                 Profile* profile) {
+                                                 Profile* profile)
+    : profile_(profile) {
   java_manager_.Reset(obj);
   Java_ContextualSearchManager_setNativeManager(
       env, obj, reinterpret_cast<intptr_t>(this));
@@ -96,6 +103,33 @@ void ContextualSearchManager::GatherSurroundingText(
       base::BindRepeating(
           &ContextualSearchManager::OnTextSurroundingSelectionAvailable,
           base::Unretained(this)));
+}
+
+void ContextualSearchManager::RemoveLastHistoryEntry(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj,
+    const JavaParamRef<jstring>& search_url,
+    jlong search_start_time_ms) {
+  // The deletion window is from the time a search URL was put in history, up
+  // to a short amount of time later.
+  base::Time begin_time =
+      base::Time::FromMillisecondsSinceUnixEpoch(search_start_time_ms);
+  base::Time end_time =
+      begin_time + base::Seconds(kHistoryDeletionWindowSeconds);
+
+  history::HistoryService* service = HistoryServiceFactory::GetForProfile(
+      profile_, ServiceAccessType::EXPLICIT_ACCESS);
+  if (service) {
+    // NOTE(mathp): We are only removing |search_url| from the local history
+    // because search results that are not promoted to a Tab do not make it to
+    // the web history, only local.
+    std::set<GURL> restrict_set;
+    restrict_set.insert(
+        GURL(base::android::ConvertJavaStringToUTF8(env, search_url)));
+    service->ExpireHistoryBetween(
+        restrict_set, history::kNoAppIdFilter, begin_time, end_time,
+        /*user_initiated*/ false, base::DoNothing(), &history_task_tracker_);
+  }
 }
 
 void ContextualSearchManager::OnSearchTermResolutionResponse(
