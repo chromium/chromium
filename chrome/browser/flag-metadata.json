@@ -3032,8 +3032,8 @@
   },
   {
     "name": "enable-disco-feed-endpoint",
-    "owners": [ "tinazwang@chromium.org", "sczs@chromium.org" ],
-    "expiry_milestone": 130
+    "owners": [ "tinazwang@chromium.org", "sczs@chromium.org", "bling-get-set-up@google.com" ],
+    "expiry_milestone": 140
   },
   {
     "name": "enable-discount-consent-v2",
@@ -3043,7 +3043,7 @@
   {
     "name": "enable-discover-feed-top-sync-promo",
     "owners": [ "adamta@chromium.org", "guiperez@chromium.org", "sczs@chromium.org"],
-    "expiry_milestone": 130
+    "expiry_milestone": 140
   },
   {
     "name": "enable-display-performance-mode",
@@ -3229,8 +3229,9 @@
   },
   {
     "name": "enable-feed-ablation",
-    "owners": [ "adamta@chromium.org", "chrome-feed-fundamentals@google.com" ],
-    "expiry_milestone": 130
+    "owners": [ "adamta@chromium.org", "bling-get-set-up@google.com" ],
+    // Long expiry to allow us to disable Discover remotely.
+    "expiry_milestone": 150
   },
   {
     "name": "enable-feed-position-on-ntp",
@@ -3272,8 +3273,8 @@
   },
   {
     "name": "enable-follow-ui-update",
-    "owners": [ "sczs@chromium.org", "adamta@chromium.org", "guiperez@chromium.org" ],
-    "expiry_milestone": 130
+    "owners": [ "huitingyu@chromium.org", "bling-get-set-up@google.com" ],
+    "expiry_milestone": 140
   },
   {
       "name": "enable-fontations-backend",
@@ -3435,7 +3436,7 @@
   },
   {
     "name": "enable-ipad-feed-ghost-cards",
-    "owners": [ "adamta@google.com", "chrome-feed-fundamentals@google.com" ],
+    "owners": [ "adamta@google.com", "bling-get-set-up@google.com" ],
     "expiry_milestone": 140
   },
   {
@@ -4711,7 +4712,7 @@
   },
   {
     "name": "feed-background-refresh-ios",
-    "owners": ["//ios/chrome/browser/discover_feed/model/OWNERS", "adamta@google.com"],
+    "owners": [ "adamta@google.com", "bling-get-set-up@google.com" ],
     "expiry_milestone": 140
   },
   {
@@ -6420,7 +6421,7 @@
   {
     "name": "ntp-view-hierarchy-repair",
     "owners": [ "adamta@chromium.org", "sczs@chromium.org" ],
-    "expiry_milestone": 130
+    "expiry_milestone": 140
   },
   {
     "name": "ntp-wallpaper-search-button",
@@ -9447,8 +9448,9 @@
   },
   {
     "name": "web-feed-ios",
-    "owners": [ "adamta@chromium.org", "sczs@chromium.org", "tinazwang@chromium.org" ],
-    "expiry_milestone": 130
+    "owners": [ "adamta@chromium.org", "bling-get-set-up@google.com" ],
+    // Long expiry to allow us to disable Follow remotely.
+    "expiry_milestone": 150
   },
   {
     "name": "web-feed-onboarding",
