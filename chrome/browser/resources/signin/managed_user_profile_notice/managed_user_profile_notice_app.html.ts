@@ -54,7 +54,7 @@ ${this.useUpdatedUi_ ? html`
       ${this.showUserDataHandling_ ? html`
         <managed-user-profile-notice-data-handling id="user-data-handling"
             title="$i18n{separateBrowsingDataTitle}"
-            .selected-data-handling="${this.selectedDataHandling_}"
+            .selectedDataHandling="${this.selectedDataHandling_}"
             @selected-data-handling-changed="${this.onDataHandlingChanged_}">
         </managed-user-profile-notice-data-handling>
       ` : ''}

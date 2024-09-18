@@ -23,9 +23,16 @@
   position: relative;
 }
 
+:host([use-updated-ui_]:not([is-modal-dialog_])) .main-container {
+  margin-block-start: auto;
+}
+
+:host([use-updated-ui_][is-modal-dialog_]) .main-container {
+  flex: 1 1 auto;
+}
+
 .main-container {
   box-sizing: border-box;
-  flex: 1 1 auto;
   overflow: hidden;
   padding-block-start: 40px;
   width: 100vw;

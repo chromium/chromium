@@ -185,7 +185,7 @@ ManagedUserProfileNoticeUI::ManagedUserProfileNoticeUI(content::WebUI* web_ui)
   source->AddBoolean("isModalDialog", false);
   source->AddBoolean("enforcedByPolicy", false);
   source->AddInteger("initialState",
-                     ManagedUserProfileNoticeHandler::State::kValueProposition);
+                     ManagedUserProfileNoticeHandler::State::kDisclosure);
 }
 
 ManagedUserProfileNoticeUI::~ManagedUserProfileNoticeUI() = default;
