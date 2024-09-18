@@ -5888,7 +5888,7 @@
       "rainhard@chromium.org",
       "chrome-privacy-controls@google.com"
     ],
-    "expiry_milestone": 131
+    "expiry_milestone": 134
   },
   {
     "name": "linked-services-setting-ios",
@@ -5897,7 +5897,7 @@
       "chrome-privacy-controls@google.com",
       "bling-flags@google.com"
     ],
-    "expiry_milestone": 131
+    "expiry_milestone": 134
   },
   {
     "name": "list-all-display-modes",
