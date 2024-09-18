@@ -6,7 +6,6 @@ Object: {
 	args: {
 		data: {
 			cancelable: boolean
-			commitFinishTime: number
 			duration: number
 			enqueuedToMainThreadTime: number
 			frame: string

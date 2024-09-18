@@ -179,8 +179,7 @@ class CORE_EXPORT WindowPerformance final : public Performance,
   // order; stop as soon as seeing an event with pending presentation promise.
   void ReportEventTimings();
   void ReportEvent(InteractiveDetector* interactive_detector,
-                   Member<PerformanceEventTiming> event_timing_entry,
-                   base::TimeTicks presentation_timestamp);
+                   Member<PerformanceEventTiming> event_timing_entry);
 
   void DispatchFirstInputTiming(PerformanceEventTiming* entry);
 
@@ -211,10 +210,6 @@ class CORE_EXPORT WindowPerformance final : public Performance,
   // Counts the total number of presentation promises we've registered for
   // events' presentation feedback since the beginning.
   uint64_t event_presentation_promise_count_ = 0;
-  // Map from presentation promise index to pending event presentation
-  // timestamp. It gets emptied consistently once corresponding entries are
-  // reported.
-  HashMap<uint64_t, base::TimeTicks> pending_event_presentation_time_map_;
   // Store all event timing and latency related data, including
   // PerformanceEventTiming, presentation_index, keycode and pointerId.
   // We use the data to calculate events latencies.

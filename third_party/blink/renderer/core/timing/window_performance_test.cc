@@ -108,7 +108,7 @@ class WindowPerformanceTest : public testing::Test {
         base::TimeTicks(),
         entry->GetEventTimingReportingInfo()->fallback_time.has_value()
             ? entry->GetEventTimingReportingInfo()->fallback_time.value()
-            : entry->GetEventTimingReportingInfo()->presentation_time};
+            : entry->GetEventTimingReportingInfo()->presentation_time.value()};
     performance_->SetInteractionIdAndRecordLatency(entry, event_timestamps);
   }
 
@@ -464,14 +464,17 @@ TEST_F(WindowPerformanceTest,
   auto* event_timing_entries = GetWindowPerformanceEventTimingEntries();
   EXPECT_EQ(event_timing_entries->size(), 3u);
   for (const auto event_data : *event_timing_entries) {
-    EXPECT_EQ(event_data->GetEventTimingReportingInfo()->commit_finish_time,
-              base::TimeTicks());
+    EXPECT_FALSE(event_data->GetEventTimingReportingInfo()
+                     ->commit_finish_time.has_value());
   }
   base::TimeTicks commit_finish_time = GetTimeOrigin() + base::Seconds(2);
   performance_->SetCommitFinishTimeStampForPendingEvents(commit_finish_time);
   for (const auto event_data : *event_timing_entries) {
-    EXPECT_EQ(event_data->GetEventTimingReportingInfo()->commit_finish_time,
-              commit_finish_time);
+    EXPECT_TRUE(event_data->GetEventTimingReportingInfo()
+                    ->commit_finish_time.has_value());
+    EXPECT_EQ(
+        event_data->GetEventTimingReportingInfo()->commit_finish_time.value(),
+        commit_finish_time);
   }
 }
 
