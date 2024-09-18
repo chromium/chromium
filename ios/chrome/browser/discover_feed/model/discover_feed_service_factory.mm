@@ -57,6 +57,7 @@ DiscoverFeedServiceFactory::BuildServiceInstanceFor(
   DiscoverFeedConfiguration* configuration =
       [[DiscoverFeedConfiguration alloc] init];
   configuration.browserStatePrefService = profile->GetPrefs();
+  configuration.profilePrefService = profile->GetPrefs();
   configuration.localStatePrefService =
       GetApplicationContext()->GetLocalState();
   configuration.authService =

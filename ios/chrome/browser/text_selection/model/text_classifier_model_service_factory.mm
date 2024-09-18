@@ -27,6 +27,7 @@ TextClassifierModelServiceFactory::GetForBrowserState(ProfileIOS* profile) {
   return GetForProfile(profile);
 }
 
+// static
 TextClassifierModelService* TextClassifierModelServiceFactory::GetForProfile(
     ProfileIOS* profile) {
   return static_cast<TextClassifierModelService*>(

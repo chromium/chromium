@@ -13,7 +13,7 @@
 #include "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
 // Singleton that owns all HttpsUpgradeService and associates them with
-// ChromeBrowserState.
+// ProfileIOS.
 class HttpsUpgradeServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
   static HttpsUpgradeService* GetForProfile(ProfileIOS* profile);

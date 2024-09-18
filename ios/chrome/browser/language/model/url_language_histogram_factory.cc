@@ -19,13 +19,13 @@ UrlLanguageHistogramFactory* UrlLanguageHistogramFactory::GetInstance() {
 
 // static
 language::UrlLanguageHistogram* UrlLanguageHistogramFactory::GetForBrowserState(
-    ProfileIOS* profile) {
+    ProfileIOS* const profile) {
   return GetForProfile(profile);
 }
 
 // static
 language::UrlLanguageHistogram* UrlLanguageHistogramFactory::GetForProfile(
-    ProfileIOS* profile) {
+    ProfileIOS* const profile) {
   return static_cast<language::UrlLanguageHistogram*>(
       GetInstance()->GetServiceForBrowserState(profile, true));
 }

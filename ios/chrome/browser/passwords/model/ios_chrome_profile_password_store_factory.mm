@@ -53,18 +53,26 @@ GetWipeModelUponSyncDisabledBehaviorForProfileStore() {
 // static
 scoped_refptr<password_manager::PasswordStoreInterface>
 IOSChromeProfilePasswordStoreFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state,
+    ProfileIOS* profile,
+    ServiceAccessType access_type) {
+  return GetForProfile(profile, access_type);
+}
+
+// static
+scoped_refptr<password_manager::PasswordStoreInterface>
+IOSChromeProfilePasswordStoreFactory::GetForProfile(
+    ProfileIOS* profile,
     ServiceAccessType access_type) {
   // `profile` gets always redirected to a non-Incognito profile below, so
   // Incognito & IMPLICIT_ACCESS means that incognito browsing session would
   // result in traces in the normal profile without the user knowing it.
   if (access_type == ServiceAccessType::IMPLICIT_ACCESS &&
-      browser_state->IsOffTheRecord()) {
+      profile->IsOffTheRecord()) {
     return nullptr;
   }
   return base::WrapRefCounted(
       static_cast<password_manager::PasswordStoreInterface*>(
-          GetInstance()->GetServiceForBrowserState(browser_state, true).get()));
+          GetInstance()->GetServiceForBrowserState(profile, true).get()));
 }
 
 // static
