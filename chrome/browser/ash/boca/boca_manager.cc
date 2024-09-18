@@ -55,7 +55,9 @@ void BocaManager::AddObservers() {
 }
 
 BocaManager::~BocaManager() {
-  boca_session_manager_->RemoveObserver(on_task_session_manager_.get());
+  if (ash::boca_util::IsConsumer()) {
+    boca_session_manager_->RemoveObserver(on_task_session_manager_.get());
+  }
 }
 
 }  // namespace ash
