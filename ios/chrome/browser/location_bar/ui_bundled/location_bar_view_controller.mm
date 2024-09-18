@@ -9,11 +9,14 @@
 #import "base/ios/ios_util.h"
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/feature_engagement/public/event_constants.h"
+#import "components/feature_engagement/public/tracker.h"
 #import "components/omnibox/browser/omnibox_field_trial.h"
 #import "components/open_from_clipboard/clipboard_recent_content.h"
 #import "components/prefs/pref_service.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
+#import "ios/chrome/browser/lens_overlay/ui/lens_overlay_entrypoint_view.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/badges_container_view.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_constants.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_steady_view.h"
@@ -23,6 +26,7 @@
 #import "ios/chrome/browser/shared/public/commands/activity_service_commands.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
+#import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
 #import "ios/chrome/browser/shared/public/commands/load_query_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -98,6 +102,9 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
 // edit menu option to do an image search.
 @property(nonatomic, assign) BOOL lensImageEnabled;
 
+// Type of the current placeholder view.
+@property(nonatomic, assign) LocationBarPlaceholderType placeholderType;
+
 // Starts voice search, updating the layout guide to be constrained to the
 // trailing button.
 - (void)startVoiceSearch;
@@ -106,6 +113,8 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
 
 @implementation LocationBarViewController {
   BOOL _isNTP;
+
+  UIButton* _lensOverlayPlaceholderView;
 }
 
 #pragma mark - public
@@ -135,10 +144,15 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
   _contextualPanelEntrypointView = contextualPanelEntrypointView;
 }
 
-- (void)setPlaceholderView:(UIView*)placeholderView {
+- (void)setPlaceholderType:(LocationBarPlaceholderType)placeholderType {
   CHECK(IsLensOverlayAvailable());
-  CHECK(!self.placeholderView);
-  _placeholderView = placeholderView;
+  if (placeholderType == _placeholderType) {
+    return;
+  }
+  _placeholderType = placeholderType;
+  if (self.isViewLoaded) {
+    [self updatePlaceholderView];
+  }
 }
 
 - (void)switchToEditing:(BOOL)editing {
@@ -218,7 +232,12 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
   [self.locationBarSteadyView setBadgeView:self.badgeView];
 
   if (IsLensOverlayAvailable()) {
-    [self.locationBarSteadyView setPlaceholderView:self.placeholderView];
+    _lensOverlayPlaceholderView = LensOverlay::NewEntrypointButton();
+    [self.layoutGuideCenter referenceView:_lensOverlayPlaceholderView
+                                underName:kLensOverlayEntrypointGuide];
+    [_lensOverlayPlaceholderView addTarget:self
+                                    action:@selector(openLensOverlay)
+                          forControlEvents:UIControlEventTouchUpInside];
   }
 
   [_locationBarSteadyView.locationButton
@@ -243,6 +262,7 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
   self.locationBarSteadyView.translatesAutoresizingMaskIntoConstraints = NO;
   AddSameConstraints(self.locationBarSteadyView, self.view);
 
+  [self updatePlaceholderView];
   [self updateTrailingButtonState];
   [self switchToEditing:NO];
 }
@@ -834,6 +854,28 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
   } else {
     RecordAction(
         UserMetricsAction("Mobile.OmniboxContextMenu.MoveAddressBarToBottom"));
+  }
+}
+
+// Creates and shows the lens overlay UI.
+- (void)openLensOverlay {
+  if (self.tracker) {
+    self.tracker->NotifyEvent(
+        feature_engagement::events::kLensOverlayEntrypointUsed);
+  }
+  [self.dispatcher createAndShowLensUI:YES
+                            entrypoint:LensOverlayEntrypoint::kLocationBar
+                            completion:nil];
+}
+
+- (void)updatePlaceholderView {
+  switch (_placeholderType) {
+    case LocationBarPlaceholderType::kNone:
+      self.locationBarSteadyView.placeholderView = nil;
+      break;
+    case LocationBarPlaceholderType::kLensOverlay:
+      self.locationBarSteadyView.placeholderView = _lensOverlayPlaceholderView;
+      break;
   }
 }
 

@@ -16,7 +16,9 @@ class WebStateList;
 // WebState.
 @interface LocationBarMediator : NSObject
 
-- (instancetype)init;
+- (instancetype)initWithIsIncognito:(BOOL)isIncognito NS_DESIGNATED_INITIALIZER;
+- (instancetype)init NS_UNAVAILABLE;
+;
 
 // The templateURLService used by this mediator to extract whether the default
 // search engine supports search-by-image.

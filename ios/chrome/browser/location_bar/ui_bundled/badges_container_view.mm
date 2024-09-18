@@ -101,16 +101,25 @@
 }
 
 - (void)setPlaceholderView:(UIView*)placeholderView {
-  _placeholderView = placeholderView;
-  _placeholderView.translatesAutoresizingMaskIntoConstraints = NO;
-  _placeholderView.isAccessibilityElement = NO;
-  _placeholderView.hidden = YES;
-  [_containerStackView addArrangedSubview:_placeholderView];
+  if (_placeholderView == placeholderView) {
+    return;
+  }
 
-  [NSLayoutConstraint activateConstraints:@[
-    [_badgeView.heightAnchor
-        constraintEqualToAnchor:_placeholderView.heightAnchor],
-  ]];
+  if ([_placeholderView superview] == _containerStackView) {
+    [_placeholderView removeFromSuperview];
+  }
+
+  _placeholderView = placeholderView;
+  if (_placeholderView) {
+    _placeholderView.translatesAutoresizingMaskIntoConstraints = NO;
+    _placeholderView.isAccessibilityElement = NO;
+    _placeholderView.hidden = YES;
+    [_containerStackView addArrangedSubview:_placeholderView];
+    [NSLayoutConstraint activateConstraints:@[
+      [_badgeView.heightAnchor
+          constraintEqualToAnchor:_placeholderView.heightAnchor]
+    ]];
+  }
   [self updatePlaceholderVisibility];
 }
 

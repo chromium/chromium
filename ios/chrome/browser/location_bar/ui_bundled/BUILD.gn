@@ -12,6 +12,7 @@ source_set("ui_bundled") {
     "location_bar_generic_coordinator.h",
     "location_bar_mediator.h",
     "location_bar_mediator.mm",
+    "location_bar_placeholder_type.h",
     "location_bar_steady_view.h",
     "location_bar_steady_view.mm",
     "location_bar_steady_view_consumer.h",

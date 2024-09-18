@@ -25,6 +25,7 @@
 // The injected view displaying the Contextual Panel's entrypoint.
 @property(nonatomic, strong) UIView* contextualPanelEntrypointView;
 // A placeholder to be displayed by default when there are no visible badges.
+// Set to nil to remove the view.
 @property(nonatomic, strong) UIView* placeholderView;
 // A help commands handler to display the iph bubble.
 @property(nonatomic, weak) id<HelpCommands> helpCommandsHandler;

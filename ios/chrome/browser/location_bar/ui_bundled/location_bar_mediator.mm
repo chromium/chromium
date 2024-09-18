@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_mediator.h"
 
 #import "base/memory/ptr_util.h"
+#import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_consumer.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
 #import "ios/chrome/browser/search_engines/model/search_engine_observer_bridge.h"
@@ -31,13 +32,15 @@
 @implementation LocationBarMediator {
   std::unique_ptr<SearchEngineObserverBridge> _searchEngineObserver;
   std::unique_ptr<WebStateListObserverBridge> _webStateListObserver;
+  BOOL _isIncognito;
 }
 
-- (instancetype)init {
+- (instancetype)initWithIsIncognito:(BOOL)isIncognito {
   self = [super init];
   if (self) {
     _searchEngineSupportsSearchByImage = NO;
     _searchEngineSupportsLens = NO;
+    _isIncognito = isIncognito;
     _webStateListObserver = std::make_unique<WebStateListObserverBridge>(self);
   }
   return self;
@@ -71,6 +74,7 @@
   _consumer = consumer;
   [consumer setSearchByImageEnabled:self.searchEngineSupportsSearchByImage];
   [consumer setLensImageEnabled:self.searchEngineSupportsLens];
+  [self updatePlaceholderType];
 }
 
 - (void)setTemplateURLService:(TemplateURLService*)templateURLService {
@@ -101,6 +105,7 @@
   _searchEngineSupportsLens = searchEngineSupportsLens;
   if (supportChanged) {
     [self.consumer setLensImageEnabled:searchEngineSupportsLens];
+    [self updatePlaceholderType];
   }
 }
 
@@ -124,6 +129,21 @@
   DCHECK_EQ(_webStateList, webStateList);
   if (status.active_web_state_change()) {
     [self.consumer defocusOmnibox];
+  }
+}
+
+#pragma mark - Private
+
+/// Updates the placeholder.
+- (void)updatePlaceholderType {
+  if (!IsLensOverlayAvailable()) {
+    return;
+  }
+  if (!_isIncognito &&
+      search_engines::SupportsSearchImageWithLens(self.templateURLService)) {
+    [self.consumer setPlaceholderType:LocationBarPlaceholderType::kLensOverlay];
+  } else {
+    [self.consumer setPlaceholderType:LocationBarPlaceholderType::kNone];
   }
 }
 

@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_LOCATION_BAR_UI_BUNDLED_LOCATION_BAR_CONSUMER_H_
 #define IOS_CHROME_BROWSER_LOCATION_BAR_UI_BUNDLED_LOCATION_BAR_CONSUMER_H_
 
+#import "ios/chrome/browser/location_bar/ui_bundled/location_bar_placeholder_type.h"
+
 // Consumer for the location bar mediator.
 @protocol LocationBarConsumer
 
@@ -19,6 +21,9 @@
 // changes. (This is usually when the default search engine changes).
 - (void)setLensImageEnabled:(BOOL)lensImageSupported;
 
+// Set the placeholder view type to be displayed in case there is no badge view
+// nor contextual panel entrypoint.
+- (void)setPlaceholderType:(LocationBarPlaceholderType)placeholderType;
 @end
 
 #endif  // IOS_CHROME_BROWSER_LOCATION_BAR_UI_BUNDLED_LOCATION_BAR_CONSUMER_H_
