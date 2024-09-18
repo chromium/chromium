@@ -20,6 +20,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -28,15 +29,11 @@ import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Shadows;
 import org.robolectric.android.controller.ActivityController;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.Implementation;
-import org.robolectric.annotation.Implements;
 import org.robolectric.shadows.ShadowApplication;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
-import org.chromium.chrome.browser.init.BrowserParts;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.searchwidget.SearchActivity;
 import org.chromium.chrome.browser.webapps.WebApkIntentDataProviderFactory;
@@ -52,22 +49,12 @@ import java.util.List;
 
 /** JUnit tests for first run triggering code. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        manifest = Config.NONE,
-        shadows = {FirstRunIntegrationUnitTest.MockChromeBrowserInitializer.class})
-@DisabledTest(message = "https://crbug.com/358543444")
+@Config(manifest = Config.NONE)
 public final class FirstRunIntegrationUnitTest {
-    /** Do nothing version of {@link ChromeBrowserInitializer}. */
-    @Implements(ChromeBrowserInitializer.class)
-    public static class MockChromeBrowserInitializer {
-        @Implementation
-        public void __constructor__() {}
-
-        @Implementation
-        public void handlePreNativeStartupAndLoadLibraries(final BrowserParts parts) {}
-    }
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Mock private ChromeBrowserInitializer mChromeBrowserInitializer;
 
     private final List<ActivityController> mActivityControllerList = new ArrayList<>();
 
@@ -82,6 +69,7 @@ public final class FirstRunIntegrationUnitTest {
         UserManager userManager = Mockito.mock(UserManager.class);
         Mockito.when(userManager.isDemoUser()).thenReturn(false);
         mShadowApplication.setSystemService(Context.USER_SERVICE, userManager);
+        ChromeBrowserInitializer.setForTesting(mChromeBrowserInitializer);
 
         FirstRunStatus.setFirstRunFlowComplete(false);
         WebApkValidator.setDisableValidationForTesting(true);
