@@ -10,6 +10,7 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "components/browsing_data/core/browsing_data_utils.h"
+#import "ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/ui/bottom_sheet/table_view_bottom_sheet_view_controller+subclassing.h"
@@ -687,6 +688,24 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
       NSDirectionalEdgeInsetsMake(kTrashIconContainerViewTopPadding, 0, 0, 0));
 
   return outerView;
+}
+
+#pragma mark - UIResponder
+
+// To always be able to register key commands via -keyCommands, the VC must be
+// able to become first responder.
+- (BOOL)canBecomeFirstResponder {
+  return YES;
+}
+
+- (NSArray*)keyCommands {
+  return @[ UIKeyCommand.cr_close ];
+}
+
+#pragma mark - KeyCommandActions
+
+- (void)keyCommand_close {
+  [self dismissQuickDelete];
 }
 
 @end
