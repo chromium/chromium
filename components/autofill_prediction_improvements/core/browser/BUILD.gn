@@ -40,6 +40,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "autofill_prediction_improvements_filling_engine_impl_unittest.cc",
+    "autofill_prediction_improvements_manager_test_api.h",
     "autofill_prediction_improvements_manager_unittest.cc",
     "autofill_prediction_improvements_utils_unittest.cc",
     "autofill_prediction_improvements_value_filter_unittest.cc",

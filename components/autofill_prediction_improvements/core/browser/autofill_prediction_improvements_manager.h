@@ -66,6 +66,8 @@ class AutofillPredictionImprovementsManager
   void RemoveStrikesForImportFromForm(const autofill::FormStructure& form);
 
  private:
+  friend class AutofillPredictionImprovementsManagerTestApi;
+
   // Receives prediction improvements for all fields in `form`, then calls
   // `update_suggestions_callback_`.
   void ExtractPredictionImprovementsForFormFields(
@@ -97,13 +99,13 @@ class AutofillPredictionImprovementsManager
       ImportFormCallback callback,
       optimization_guide::proto::AXTreeUpdate ax_tree_update);
 
-  // Creates a suggestion that calls `ExtractImprovedPredictionsForFormFields()`
-  // when invoked.
-  std::vector<autofill::Suggestion> CreateTriggerSuggestion(bool add_separator);
+  // Creates a suggestion that calls `OnClickedTriggerSuggestion()` when
+  // invoked.
+  std::vector<autofill::Suggestion> CreateTriggerSuggestion();
 
-  // Returns the prediction improvements suggestions if available for the
-  // `field`.
-  std::vector<autofill::Suggestion> CreateFillingSuggestion(
+  // Creates filling suggestions listing the ones for prediction improvements
+  // first and `address_suggestions_` afterwards.
+  std::vector<autofill::Suggestion> CreateFillingSuggestions(
       const autofill::FormFieldData& field);
 
   // Returns values to fill based on the `cache_`.
@@ -117,6 +119,10 @@ class AutofillPredictionImprovementsManager
   // improvements.
   // TODO(crbug.com/361414075): Set `cache_` and manage its lifecycle.
   std::optional<autofill::FormData> cache_ = std::nullopt;
+
+  // Address suggestions that will be shown as defined in
+  // `CreateFillingSuggestions()` after prediction improvements was triggered.
+  std::vector<autofill::Suggestion> address_suggestions_;
 
   // Updates currently shown suggestions if their
   // `AutofillClient::SuggestionUiSessionId` hasn't changed since the trigger

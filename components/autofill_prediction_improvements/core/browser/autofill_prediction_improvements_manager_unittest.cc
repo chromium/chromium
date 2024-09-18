@@ -15,6 +15,7 @@
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_client.h"
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_features.h"
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_filling_engine.h"
+#include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_manager_test_api.h"
 #include "components/optimization_guide/core/optimization_guide_decider.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/user_annotations/test_user_annotations_service.h"
@@ -266,56 +267,72 @@ TEST_F(AutofillPredictionImprovementsManagerTest,
                   HasType(SuggestionType::kPredictionImprovementsDetails)));
 }
 
-// Tests that `address_suggestions` contains the
-// triggering improved prediction suggestions (incl. a separator) if
-// `address_suggestions` contained entries before calling
-// `MaybeUpdateSuggestions()`. The pre-existing entries contained a
-// `kUndoOrClear` suggestion which is the case for autofilled fields.
-TEST_F(
-    AutofillPredictionImprovementsManagerTest,
-    MaybeUpdateSuggestionsOnAddressSuggestionsIncludingUndoOrClearAddsTriggerSuggestion) {
-  std::vector<Suggestion> address_suggestions = {
+// Tests address suggestions will be replaced by the trigger suggestion if the
+// field is not cached.
+TEST_F(AutofillPredictionImprovementsManagerTest,
+       MaybeUpdateSuggestionsReplacesAddressSuggestionsWithTrigger) {
+  std::vector<Suggestion> suggestions_to_show = {
       Suggestion(SuggestionType::kAddressEntry),
       Suggestion(SuggestionType::kSeparator),
-      Suggestion(SuggestionType::kUndoOrClear),
       Suggestion(SuggestionType::kManageAddress)};
-  autofill::FormFieldData field;
+  autofill::test::FormDescription form_description = {
+      .fields = {{.role = autofill::NAME_FIRST,
+                  .heuristic_type = autofill::NAME_FIRST}}};
+  autofill::FormData form = autofill::test::GetFormData(form_description);
   EXPECT_TRUE(manager_->MaybeUpdateSuggestions(
-      address_suggestions, field, /*should_add_trigger_suggestion=*/true));
+      suggestions_to_show, form.fields().front(),
+      /*should_add_trigger_suggestion=*/true));
   EXPECT_THAT(
-      address_suggestions,
-      ElementsAre(HasType(SuggestionType::kAddressEntry),
+      suggestions_to_show,
+      ElementsAre(HasType(SuggestionType::kRetrievePredictionImprovements),
+                  HasType(SuggestionType::kPredictionImprovementsDetails)));
+}
+
+// Tests that cached filling suggestions for prediction improvements are shown
+// before address suggestions.
+TEST_F(AutofillPredictionImprovementsManagerTest, MaybeUpdateSuggestionsShows) {
+  std::vector<Suggestion> suggestions_to_show = {
+      Suggestion(SuggestionType::kAddressEntry),
+      Suggestion(SuggestionType::kSeparator),
+      Suggestion(SuggestionType::kManageAddress)};
+  autofill::test::FormDescription form_description = {
+      .fields = {{.role = autofill::NAME_FIRST,
+                  .heuristic_type = autofill::NAME_FIRST}}};
+  autofill::FormData form = autofill::test::GetFormData(form_description);
+  AutofillPredictionImprovementsManagerTestApi test_api(manager_.get());
+  test_api.SetAddressSuggestions(suggestions_to_show);
+  test_api.SetCache(form);
+  EXPECT_TRUE(manager_->MaybeUpdateSuggestions(
+      suggestions_to_show, form.fields().front(),
+      /*should_add_trigger_suggestion=*/true));
+  EXPECT_THAT(
+      suggestions_to_show,
+      ElementsAre(HasType(SuggestionType::kFillPredictionImprovements),
+                  HasType(SuggestionType::kPredictionImprovementsFeedback),
+                  HasType(SuggestionType::kAddressEntry),
                   HasType(SuggestionType::kSeparator),
-                  HasType(SuggestionType::kRetrievePredictionImprovements),
-                  HasType(SuggestionType::kPredictionImprovementsDetails),
-                  HasType(SuggestionType::kSeparator),
-                  HasType(SuggestionType::kUndoOrClear),
                   HasType(SuggestionType::kManageAddress)));
 }
 
-// Tests that `address_suggestions` contains the
-// improved prediction suggestions (incl. a separator) if
-// `address_suggestions` contained entries before calling
-// `MaybeUpdateSuggestions()`. The pre-existing entries did not contain a
-// `kUndoOrClear` suggestion which is the case for fields that aren't
-// autofilled.
-TEST_F(AutofillPredictionImprovementsManagerTest,
-       MaybeUpdateSuggestionsOnAddressSuggestionsAddsTriggerSuggestion) {
-  std::vector<Suggestion> address_suggestions = {
-      Suggestion(SuggestionType::kAddressEntry),
-      Suggestion(SuggestionType::kSeparator),
-      Suggestion(SuggestionType::kManageAddress)};
-  autofill::FormFieldData field;
+// Tests that filling predictions will be added to the empty
+// `address_suggestions` for a cached field.
+TEST_F(
+    AutofillPredictionImprovementsManagerTest,
+    MaybeUpdateSuggestionsAddsFillPredictionsWhenAutofillSuggestionsAreEmpty) {
+  std::vector<Suggestion> address_suggestions;
+  autofill::test::FormDescription form_description = {
+      .fields = {{.role = autofill::NAME_FIRST,
+                  .heuristic_type = autofill::NAME_FIRST}}};
+  autofill::FormData form = autofill::test::GetFormData(form_description);
+  AutofillPredictionImprovementsManagerTestApi test_api(manager_.get());
+  test_api.SetCache(form);
   EXPECT_TRUE(manager_->MaybeUpdateSuggestions(
-      address_suggestions, field, /*should_add_trigger_suggestion=*/true));
+      address_suggestions, form.fields().front(),
+      /*should_add_trigger_suggestion=*/true));
   EXPECT_THAT(
       address_suggestions,
-      ElementsAre(HasType(SuggestionType::kAddressEntry),
-                  HasType(SuggestionType::kSeparator),
-                  HasType(SuggestionType::kRetrievePredictionImprovements),
-                  HasType(SuggestionType::kPredictionImprovementsDetails),
-                  HasType(SuggestionType::kSeparator),
-                  HasType(SuggestionType::kManageAddress)));
+      ElementsAre(HasType(SuggestionType::kFillPredictionImprovements),
+                  HasType(SuggestionType::kPredictionImprovementsFeedback)));
 }
 
 class AutofillPredictionImprovementsManagerImportFormTest

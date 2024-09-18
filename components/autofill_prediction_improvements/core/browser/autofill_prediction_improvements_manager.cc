@@ -163,7 +163,7 @@ AutofillPredictionImprovementsManager::
     ~AutofillPredictionImprovementsManager() = default;
 
 std::vector<autofill::Suggestion>
-AutofillPredictionImprovementsManager::CreateFillingSuggestion(
+AutofillPredictionImprovementsManager::CreateFillingSuggestions(
     const autofill::FormFieldData& field) {
   if (!cache_) {
     return {};
@@ -211,16 +211,19 @@ AutofillPredictionImprovementsManager::CreateFillingSuggestion(
     suggestion.labels.back().emplace_back(u"& more");
   }
   suggestion.payload = payload;
-  return {suggestion, CreateFeedbackSuggestion()};
+  suggestion.icon = autofill::Suggestion::Icon::kAccount;
+
+  std::vector<autofill::Suggestion> filling_suggestions = {
+      suggestion, CreateFeedbackSuggestion()};
+  filling_suggestions.insert(filling_suggestions.end(),
+                             address_suggestions_.begin(),
+                             address_suggestions_.end());
+  return filling_suggestions;
 }
 
 std::vector<autofill::Suggestion>
-AutofillPredictionImprovementsManager::CreateTriggerSuggestion(
-    bool add_separator) {
+AutofillPredictionImprovementsManager::CreateTriggerSuggestion() {
   std::vector<autofill::Suggestion> suggestions;
-  if (add_separator) {
-    suggestions.emplace_back(autofill::SuggestionType::kSeparator);
-  }
   // TODO(crbug.com/361434879): Add hardcoded string to an appropriate grd file.
   autofill::Suggestion retrieve_suggestion(
       u"Autocomplete",
@@ -262,35 +265,17 @@ bool AutofillPredictionImprovementsManager::MaybeUpdateSuggestions(
   // Show a cached prediction improvements filling suggestion for `field` if
   // it exists.
   if (HasImprovedPredictionsForField(field)) {
-    address_suggestions = CreateFillingSuggestion(field);
+    address_suggestions = CreateFillingSuggestions(field);
     return true;
   }
   // Add prediction improvements trigger suggestion.
   else if (should_add_trigger_suggestion) {
-    if (address_suggestions.empty()) {
-      // Set `address_suggestions` to the trigger suggestion.
-      address_suggestions = CreateTriggerSuggestion(/*add_separator=*/false);
-      return true;
-    } else {
-      // Expect that there's an `kUndoOrClear` or `kManageAddress` suggestion
-      // in `address_suggestions` if `address_suggestions` is not empty. Insert
-      // the trigger suggestion for prediction improvements before.
-      for (size_t i = 1; i < address_suggestions.size() - 1; ++i) {
-        if (address_suggestions[i].type ==
-                autofill::SuggestionType::kSeparator &&
-            (address_suggestions[i + 1].type ==
-                 autofill::SuggestionType::kUndoOrClear ||
-             address_suggestions[i + 1].type ==
-                 autofill::SuggestionType::kManageAddress)) {
-          const std::vector<autofill::Suggestion> trigger_suggestion =
-              CreateTriggerSuggestion(/*add_separator=*/true);
-          address_suggestions.insert(address_suggestions.begin() + i,
-                                     trigger_suggestion.begin(),
-                                     trigger_suggestion.end());
-          return true;
-        }
-      }
-    }
+    // Store `address_suggestions` to show them with prediction improvements
+    // later if the trigger was accepted.
+    address_suggestions_ = address_suggestions;
+    // Set `address_suggestions` to the trigger suggestion.
+    address_suggestions = CreateTriggerSuggestion();
+    return true;
   }
   return false;
 }
@@ -330,7 +315,7 @@ void AutofillPredictionImprovementsManager::OnReceivedPredictions(
 
   cache_ = improved_predictions.value();
 
-  UpdateSuggestions(CreateFillingSuggestion(trigger_field));
+  UpdateSuggestions(CreateFillingSuggestions(trigger_field));
 }
 
 void AutofillPredictionImprovementsManager::UserFeedbackReceived(
