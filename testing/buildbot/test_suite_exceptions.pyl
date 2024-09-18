@@ -66,13 +66,6 @@
           '--gtest_filter=-OfferNotificationControllerAndroidBrowserTestForMessagesUi.MessageShown',
         ],
       },
-      'android-13-x64-rel': {
-        'ci_only': True,
-        'args': [
-          # https://crbug.com/1414886
-          '--gtest_filter=-OfferNotificationControllerAndroidBrowserTestForMessagesUi.MessageShown',
-        ],
-      },
       'android-14-arm64-rel': {
         'swarming': {
           'shards': 4,
@@ -152,11 +145,6 @@
   },
   'android_sync_integration_tests': {
    'modifications': {
-      'android-13-x64-rel': {
-        'swarming': {
-          'shards': 2,
-        },
-      },
       'android-14-x64-rel': {
         'args': [
           '--emulator-debug-tags=all,-qemud,-sensors',
@@ -229,11 +217,6 @@
         ],
       },
       'android-13-x64-fyi-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.base_unittests.filter',
-        ],
-      },
-      'android-13-x64-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.base_unittests.filter',
         ],
@@ -1244,14 +1227,6 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_13.chrome_public_test_apk.filter',
         ],
       },
-      'android-13-x64-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_13.chrome_public_test_apk.filter',
-        ],
-        'swarming': {
-          'shards': 40,
-        },
-      },
       'android-14-arm64-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.device_14.chrome_public_test_apk.filter',
@@ -1350,11 +1325,6 @@
         ],
       },
       'android-13-x64-fyi-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_13.chrome_public_unit_test_apk.filter',
-        ],
-      },
-      'android-13-x64-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_13.chrome_public_unit_test_apk.filter',
         ],
@@ -1675,15 +1645,6 @@
           'shards': 40,
         },
       },
-      'android-13-x64-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_13.content_browsertests.filter',
-        ],
-        'ci_only': True,
-        'swarming': {
-          'shards': 40,
-        },
-      },
       'android-14-arm64-rel': {
         'args': [
           '--gtest-also-run-pre-tests',
@@ -1923,12 +1884,6 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_13.content_shell_test_apk.filter',
         ],
       },
-      'android-13-x64-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_13.content_shell_test_apk.filter',
-        ],
-        'ci_only': True,
-      },
       'android-14-x64-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_14_15.content_shell_test_apk.filter',
@@ -2119,13 +2074,6 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.crashpad_tests.filter',
         ],
       },
-      'android-13-x64-rel': {
-        # TODO(crbug.com/337935399): Remove experiment after the bug is fixed.
-        'experiment_percentage': 100,
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.crashpad_tests.filter',
-        ],
-      },
       'android-14-x64-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.crashpad_tests.filter',
@@ -2272,11 +2220,6 @@
         ],
       },
       'android-13-x64-fyi-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.device_unittests.filter',
-        ],
-      },
-      'android-13-x64-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.device_unittests.filter',
         ],
@@ -2619,11 +2562,6 @@
         ],
       },
       'android-13-x64-fyi-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12_12l_13.gl_tests.filter',
-        ],
-      },
-      'android-13-x64-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12_12l_13.gl_tests.filter',
         ],
@@ -3172,11 +3110,6 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.media_unittests.filter',
         ],
       },
-      'android-13-x64-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.media_unittests.filter',
-        ],
-      },
       'android-14-x64-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.media_unittests.filter',
@@ -3460,12 +3393,6 @@
         ],
       },
       'android-13-x64-fyi-rel': {
-        'args': [
-          # TODO(crbug.com/40201873): Fix the failed test
-          '--gtest_filter=-ScopedDirTest.CloseOutOfScope',
-        ],
-      },
-      'android-13-x64-rel': {
         'args': [
           # TODO(crbug.com/40201873): Fix the failed test
           '--gtest_filter=-ScopedDirTest.CloseOutOfScope',
@@ -3794,11 +3721,6 @@
           # TODO(crbug.com/40203477): Fix the failed tests
           '--gtest_filter=-PacLibraryTest.ActualPacMyIpAddress*'
         ],
-      },
-      'android-13-x64-rel': {
-        'swarming': {
-          'shards': 2,
-        },
       },
       # If you change this, make similar changes in android-x86-code-coverage below
       'android-oreo-x86-rel': {
@@ -5071,11 +4993,6 @@
           'shards': 9,
         },
       },
-      'android-13-x64-rel': {
-        'swarming': {
-          'shards': 12,
-        },
-      },
       'android-14-arm64-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.14.webview_instrumentation_test_apk.filter',
@@ -5223,15 +5140,6 @@
         },
       },
     }
-  },
-  'webview_trichrome_64_cts_hostside_tests full_mode': {
-    'modifications': {
-      'android-webview-13-x64-hostside-rel': {
-        'swarming': {
-          'shards': 1,
-        },
-      },
-    },
   },
    "webview_trichrome_64_cts_tests full_mode": {
     'remove_from': [

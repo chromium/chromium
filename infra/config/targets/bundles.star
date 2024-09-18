@@ -143,6 +143,33 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "android_rel_isolated_scripts",
+    targets = [
+        "private_code_failure_test",
+        "android_blink_wpt_tests",
+        "webview_blink_wpt_tests",
+    ],
+    per_test_modifications = {
+        "android_blink_wpt_tests": targets.mixin(
+            swarming = targets.swarming(
+                shards = 4,
+            ),
+            # TODO(crbug.com/40279492): Remove experimental status once this
+            # suite is stable on CQ and gardened CI.
+            experiment_percentage = 100,
+        ),
+        "webview_blink_wpt_tests": targets.mixin(
+            swarming = targets.swarming(
+                shards = 4,
+            ),
+            # TODO(crbug.com/40279492): Remove experimental status once this
+            # suite is stable on CQ and gardened CI.
+            experiment_percentage = 100,
+        ),
+    },
+)
+
+targets.bundle(
     name = "bfcache_android_gtests",
     targets = [
         "bf_cache_android_browsertests",
@@ -500,5 +527,16 @@ targets.bundle(
         "webview_cts_tests_gtest_no_field_trial",
         "webview_ui_instrumentation_tests",
         "webview_ui_instrumentation_tests_no_field_trial",
+    ],
+)
+
+targets.bundle(
+    name = "webview_trichrome_64_cts_hostside_gtests",
+    targets = [
+        "webview_trichrome_64_cts_hostside_tests",
+    ],
+    variants = [
+        "WEBVIEW_TRICHROME_FULL_CTS_TESTS",
+        "WEBVIEW_TRICHROME_INSTANT_CTS_TESTS",
     ],
 )

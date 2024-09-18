@@ -148,38 +148,6 @@
       },
     },
 
-    'android_rel_isolated_scripts': {
-      'android_blink_wpt_tests': {
-        'test': 'chrome_public_wpt',
-        'results_handler': 'layout tests',
-        'swarming': {
-          'shards': 4,
-        },
-        'merge': {
-          'script': '//third_party/blink/tools/merge_web_test_results.py',
-          'args': [
-            '--verbose',
-          ],
-        },
-        'experiment_percentage': 100,
-      },
-      'private_code_failure_test': {},
-      'webview_blink_wpt_tests': {
-        'test': 'trichrome_webview_wpt_64',
-        'results_handler': 'layout tests',
-        'swarming': {
-          'shards': 4,
-        },
-        'merge': {
-          'script': '//third_party/blink/tools/merge_web_test_results.py',
-          'args': [
-            '--verbose',
-          ],
-        },
-        'experiment_percentage': 100,
-      },
-    },
-
     'android_smoke_tests': {
       'chrome_public_smoke_test': {},
     },
@@ -5570,14 +5538,6 @@
       },
     },
 
-    'webview_trichrome_64_cts_hostside_tests_suite': {
-      'webview_trichrome_64_cts_hostside_tests': {
-        'mixins': [
-          'webview_cts_archive',
-        ],
-      },
-    },
-
     'webview_trichrome_64_cts_tests_no_field_trial_suite': {
       'webview_trichrome_64_cts_tests_no_field_trial': {
         'test': 'webview_trichrome_64_cts_tests',
@@ -7936,15 +7896,6 @@
 
     'webview_trichrome_10_cts_tests_gtest': {
       'webview_trichrome_cts_tests_suite': {
-        'variants': [
-          'WEBVIEW_TRICHROME_FULL_CTS_TESTS',
-          'WEBVIEW_TRICHROME_INSTANT_CTS_TESTS',
-        ],
-      },
-    },
-
-    'webview_trichrome_64_cts_hostside_gtests': {
-      'webview_trichrome_64_cts_hostside_tests_suite': {
         'variants': [
           'WEBVIEW_TRICHROME_FULL_CTS_TESTS',
           'WEBVIEW_TRICHROME_INSTANT_CTS_TESTS',

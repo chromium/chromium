@@ -454,6 +454,7 @@
     #   Oreo Phone Tester
     #   android-10-arm64-rel
     #   android-12-x64-rel
+    #   android-13-x64-rel
     #   android-arm64-proguard-rel
     #   android-cronet-arm-dbg
     #   android-cronet-arm-rel
@@ -484,6 +485,7 @@
     #   android-cronet-x86-rel
     #   android-bfcache-rel
     #   android-pie-arm64-dbg
+    #   android-webview-13-x64-hostside-rel
     'name': 'chromium.android',
     'mixins': ['chromium-tester-service-account'],
     'machines': {
@@ -525,20 +527,6 @@
         'os_type': 'android',
         'test_suites': {
           'gtest_tests': 'android_12l_emulator_gtests',
-        }
-      },
-      'android-13-x64-rel': {
-        'mixins': [
-          '13-x64-emulator',
-          'emulator-8-cores',
-          'has_native_resultdb_integration',
-          'linux-jammy',
-          'x86-64',
-        ],
-        'os_type': 'android',
-        'test_suites': {
-          'gtest_tests': 'android_13_emulator_gtests',
-          'isolated_scripts': 'android_rel_isolated_scripts',
         }
       },
       'android-14-arm64-rel': {
@@ -649,19 +637,6 @@
         'test_suites': {
           'gtest_tests': 'webview_trichrome_10_cts_tests_gtest',
         },
-      },
-      'android-webview-13-x64-hostside-rel': {
-        'mixins': [
-          '13-x64-emulator',
-          'emulator-8-cores',
-          'has_native_resultdb_integration',
-          'linux-jammy',
-          'x86-64',
-        ],
-        'os_type': 'android',
-        'test_suites': {
-          'gtest_tests': 'webview_trichrome_64_cts_hostside_gtests',
-        }
       },
     },
   },

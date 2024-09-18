@@ -56,8 +56,10 @@ SKIP_GN_ISOLATE_MAP_TARGETS = {
     'cronet_package_ci',
     'cronet_sizes',
     'monochrome_public_test_ar_apk',
+    'private_code_failure_test',
     'resource_sizes_cronet_sample_apk',
     'telemetry_gpu_integration_test_fuchsia',
+    'webview_trichrome_64_cts_hostside_tests',
 
     # These targets are listed only in build-side recipes.
     'captured_sites_interactive_tests',
