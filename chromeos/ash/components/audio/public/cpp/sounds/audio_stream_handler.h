@@ -22,7 +22,8 @@
 namespace audio {
 
 // This class sends a sound to the audio output device.
-class COMPONENT_EXPORT(AUDIO_PUBLIC_CPP) AudioStreamHandler {
+class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO_PUBLIC_CPP_SOUNDS)
+    AudioStreamHandler {
  public:
   class TestObserver {
    public:

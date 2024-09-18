@@ -20,7 +20,8 @@ namespace audio {
 
 // This class is used for reproduction of system sounds. All methods
 // should be accessed from the Audio thread.
-class COMPONENT_EXPORT(AUDIO_PUBLIC_CPP) SoundsManager {
+class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO_PUBLIC_CPP_SOUNDS)
+    SoundsManager {
  public:
   typedef int SoundKey;
 

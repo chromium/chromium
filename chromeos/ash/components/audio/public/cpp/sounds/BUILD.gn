@@ -6,7 +6,9 @@ import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos_ash, "Non-Chrome-OS builds must not depend on //ash")
 
-static_library("sounds") {
+component("sounds") {
+  defines = [ "IS_CHROMEOS_ASH_COMPONENTS_AUDIO_PUBLIC_CPP_SOUNDS_IMPL" ]
+
   sources = [
     "audio_stream_handler.cc",
     "audio_stream_handler.h",
