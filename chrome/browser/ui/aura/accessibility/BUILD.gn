@@ -23,7 +23,6 @@ source_set("impl") {
   deps = [
     ":accessibility",
     "//base",
-    "//build:chromeos_buildflags",
     "//extensions/browser/api",
     "//ui/accessibility",
     "//ui/aura",
