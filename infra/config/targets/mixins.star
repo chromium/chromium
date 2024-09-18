@@ -489,6 +489,32 @@ targets.mixin(
 )
 
 targets.mixin(
+    name = "chromium_nexus_5x_oreo",
+    swarming = targets.swarming(
+        dimensions = {
+            "device_os": "OPR4.170623.020",
+            "device_os_flavor": "google",
+            "device_type": "bullhead",
+            "os": "Android",
+            "pool": "chromium.tests",
+        },
+    ),
+)
+
+targets.mixin(
+    name = "chromium_pixel_2_pie",
+    swarming = targets.swarming(
+        dimensions = {
+            "device_os": "PQ3A.190801.002",
+            "device_os_flavor": "google",
+            "device_type": "walleye",
+            "os": "Android",
+            "pool": "chromium.tests",
+        },
+    ),
+)
+
+targets.mixin(
     name = "chromium-tester-dev-service-account",
     swarming = targets.swarming(
         service_account = "chromium-tester-dev@chops-service-accounts.iam.gserviceaccount.com",
@@ -1533,16 +1559,6 @@ targets.mixin(
 )
 
 targets.mixin(
-    name = "oreo_fleet",
-    swarming = targets.swarming(
-        dimensions = {
-            "device_os": "OPR4.170623.020",
-            "device_os_flavor": "google",
-        },
-    ),
-)
-
-targets.mixin(
     name = "oreo_mr1_fleet",
     generate_pyl_entry = False,
     swarming = targets.swarming(
@@ -1601,16 +1617,6 @@ targets.mixin(
                 path = ".android_emulator/android_28_google_apis_x86",
             ),
         ],
-    ),
-)
-
-targets.mixin(
-    name = "pie_fleet",
-    swarming = targets.swarming(
-        dimensions = {
-            "device_os": "PQ3A.190801.002",
-            "device_os_flavor": "google",
-        },
     ),
 )
 

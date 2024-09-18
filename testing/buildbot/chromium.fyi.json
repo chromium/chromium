@@ -1614,7 +1614,8 @@
             "device_os": "PQ3A.190801.002",
             "device_os_flavor": "google",
             "device_type": "walleye",
-            "os": "Android"
+            "os": "Android",
+            "pool": "chromium.tests"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -1644,7 +1645,8 @@
             "device_os": "PQ3A.190801.002",
             "device_os_flavor": "google",
             "device_type": "walleye",
-            "os": "Android"
+            "os": "Android",
+            "pool": "chromium.tests"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 20
@@ -1675,7 +1677,8 @@
             "device_os": "PQ3A.190801.002",
             "device_os_flavor": "google",
             "device_type": "walleye",
-            "os": "Android"
+            "os": "Android",
+            "pool": "chromium.tests"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -1699,7 +1702,8 @@
             "device_os": "PQ3A.190801.002",
             "device_os_flavor": "google",
             "device_type": "walleye",
-            "os": "Android"
+            "os": "Android",
+            "pool": "chromium.tests"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -1723,7 +1727,8 @@
             "device_os": "PQ3A.190801.002",
             "device_os_flavor": "google",
             "device_type": "walleye",
-            "os": "Android"
+            "os": "Android",
+            "pool": "chromium.tests"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 5
@@ -1749,7 +1754,8 @@
             "device_os": "PQ3A.190801.002",
             "device_os_flavor": "google",
             "device_type": "walleye",
-            "os": "Android"
+            "os": "Android",
+            "pool": "chromium.tests"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 10
@@ -1774,7 +1780,8 @@
             "device_os": "PQ3A.190801.002",
             "device_os_flavor": "google",
             "device_type": "walleye",
-            "os": "Android"
+            "os": "Android",
+            "pool": "chromium.tests"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 3
@@ -1799,7 +1806,8 @@
             "device_os": "PQ3A.190801.002",
             "device_os_flavor": "google",
             "device_type": "walleye",
-            "os": "Android"
+            "os": "Android",
+            "pool": "chromium.tests"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -1823,7 +1831,8 @@
             "device_os": "PQ3A.190801.002",
             "device_os_flavor": "google",
             "device_type": "walleye",
-            "os": "Android"
+            "os": "Android",
+            "pool": "chromium.tests"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 10

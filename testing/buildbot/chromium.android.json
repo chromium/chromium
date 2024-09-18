@@ -17208,7 +17208,8 @@
             "device_os_flavor": "google",
             "device_os_type": "userdebug",
             "device_type": "crosshatch",
-            "os": "Android"
+            "os": "Android",
+            "pool": "chromium.tests"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 5
@@ -17250,7 +17251,8 @@
             "device_os_flavor": "google",
             "device_os_type": "userdebug",
             "device_type": "crosshatch",
-            "os": "Android"
+            "os": "Android",
+            "pool": "chromium.tests"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -17285,7 +17287,8 @@
             "device_os_flavor": "google",
             "device_os_type": "userdebug",
             "device_type": "walleye",
-            "os": "Android"
+            "os": "Android",
+            "pool": "chromium.tests"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -17320,7 +17323,8 @@
             "device_os_flavor": "google",
             "device_os_type": "userdebug",
             "device_type": "walleye",
-            "os": "Android"
+            "os": "Android",
+            "pool": "chromium.tests"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -17363,7 +17367,8 @@
             "device_os_flavor": "google",
             "device_os_type": "userdebug",
             "device_type": "walleye",
-            "os": "Android"
+            "os": "Android",
+            "pool": "chromium.tests"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 19
@@ -17404,7 +17409,8 @@
             "device_os_flavor": "google",
             "device_os_type": "userdebug",
             "device_type": "crosshatch",
-            "os": "Android"
+            "os": "Android",
+            "pool": "chromium.tests"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 5
@@ -17442,7 +17448,8 @@
             "device_os_flavor": "google",
             "device_os_type": "userdebug",
             "device_type": "walleye",
-            "os": "Android"
+            "os": "Android",
+            "pool": "chromium.tests"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 25
@@ -17478,7 +17485,8 @@
             "device_os_flavor": "google",
             "device_os_type": "userdebug",
             "device_type": "walleye",
-            "os": "Android"
+            "os": "Android",
+            "pool": "chromium.tests"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -17513,7 +17521,8 @@
             "device_os_flavor": "google",
             "device_os_type": "userdebug",
             "device_type": "walleye",
-            "os": "Android"
+            "os": "Android",
+            "pool": "chromium.tests"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -17547,7 +17556,8 @@
             "device_os_flavor": "google",
             "device_os_type": "userdebug",
             "device_type": "walleye",
-            "os": "Android"
+            "os": "Android",
+            "pool": "chromium.tests"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -17582,7 +17592,8 @@
             "device_os_flavor": "google",
             "device_os_type": "userdebug",
             "device_type": "walleye",
-            "os": "Android"
+            "os": "Android",
+            "pool": "chromium.tests"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -17624,7 +17635,8 @@
             "device_os_flavor": "google",
             "device_os_type": "userdebug",
             "device_type": "crosshatch",
-            "os": "Android"
+            "os": "Android",
+            "pool": "chromium.tests"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 2
@@ -17662,7 +17674,8 @@
             "device_os_flavor": "google",
             "device_os_type": "userdebug",
             "device_type": "walleye",
-            "os": "Android"
+            "os": "Android",
+            "pool": "chromium.tests"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 6
@@ -17700,7 +17713,8 @@
             "device_os_flavor": "google",
             "device_os_type": "userdebug",
             "device_type": "walleye",
-            "os": "Android"
+            "os": "Android",
+            "pool": "chromium.tests"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 3
@@ -17735,7 +17749,8 @@
             "device_os_flavor": "google",
             "device_os_type": "userdebug",
             "device_type": "walleye",
-            "os": "Android"
+            "os": "Android",
+            "pool": "chromium.tests"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },

@@ -28,7 +28,8 @@
             "device_os_flavor": "google",
             "device_os_type": "userdebug",
             "device_type": "walleye",
-            "os": "Android"
+            "os": "Android",
+            "pool": "chromium.tests"
           },
           "expiration": 10800,
           "service_account": "chromium-tester-dev@chops-service-accounts.iam.gserviceaccount.com"

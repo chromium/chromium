@@ -386,12 +386,10 @@ targets.legacy_basic_suite(
     tests = {
         "chrome_sizes": targets.legacy_test_config(
             remove_mixins = [
-                "bullhead",
+                "chromium_nexus_5x_oreo",
+                "chromium_pixel_2_pie",
                 "marshmallow",
-                "oreo_fleet",
                 "oreo_mr1_fleet",
-                "pie_fleet",
-                "walleye",
             ],
             args = [
                 "--platform=android",
@@ -1145,11 +1143,10 @@ targets.legacy_basic_suite(
                 "junit-swarming-emulator",
             ],
             remove_mixins = [
+                "chromium_pixel_2_pie",
                 "emulator-4-cores",
                 "nougat-x86-emulator",
                 "oreo-x86-emulator",
-                "walleye",
-                "pie_fleet",
             ],
         ),
         "base_junit_tests": targets.legacy_test_config(
@@ -1159,11 +1156,10 @@ targets.legacy_basic_suite(
                 "junit-swarming-emulator",
             ],
             remove_mixins = [
+                "chromium_pixel_2_pie",
                 "emulator-4-cores",
                 "nougat-x86-emulator",
                 "oreo-x86-emulator",
-                "walleye",
-                "pie_fleet",
             ],
         ),
         "build_junit_tests": targets.legacy_test_config(
@@ -1173,11 +1169,10 @@ targets.legacy_basic_suite(
                 "junit-swarming-emulator",
             ],
             remove_mixins = [
+                "chromium_pixel_2_pie",
                 "emulator-4-cores",
                 "nougat-x86-emulator",
                 "oreo-x86-emulator",
-                "walleye",
-                "pie_fleet",
             ],
         ),
         "chrome_java_test_pagecontroller_junit_tests": targets.legacy_test_config(
@@ -1187,11 +1182,10 @@ targets.legacy_basic_suite(
                 "junit-swarming-emulator",
             ],
             remove_mixins = [
+                "chromium_pixel_2_pie",
                 "emulator-4-cores",
                 "nougat-x86-emulator",
                 "oreo-x86-emulator",
-                "walleye",
-                "pie_fleet",
             ],
         ),
         "chrome_junit_tests": targets.legacy_test_config(
@@ -1201,11 +1195,10 @@ targets.legacy_basic_suite(
                 "junit-swarming-emulator",
             ],
             remove_mixins = [
+                "chromium_pixel_2_pie",
                 "emulator-4-cores",
                 "nougat-x86-emulator",
                 "oreo-x86-emulator",
-                "walleye",
-                "pie_fleet",
             ],
         ),
         "components_junit_tests": targets.legacy_test_config(
@@ -1215,11 +1208,10 @@ targets.legacy_basic_suite(
                 "junit-swarming-emulator",
             ],
             remove_mixins = [
+                "chromium_pixel_2_pie",
                 "emulator-4-cores",
                 "nougat-x86-emulator",
                 "oreo-x86-emulator",
-                "walleye",
-                "pie_fleet",
             ],
         ),
         "content_junit_tests": targets.legacy_test_config(
@@ -1229,11 +1221,10 @@ targets.legacy_basic_suite(
                 "junit-swarming-emulator",
             ],
             remove_mixins = [
+                "chromium_pixel_2_pie",
                 "emulator-4-cores",
                 "nougat-x86-emulator",
                 "oreo-x86-emulator",
-                "walleye",
-                "pie_fleet",
             ],
         ),
         "device_junit_tests": targets.legacy_test_config(
@@ -1243,11 +1234,10 @@ targets.legacy_basic_suite(
                 "junit-swarming-emulator",
             ],
             remove_mixins = [
+                "chromium_pixel_2_pie",
                 "emulator-4-cores",
                 "nougat-x86-emulator",
                 "oreo-x86-emulator",
-                "walleye",
-                "pie_fleet",
             ],
         ),
         "junit_unit_tests": targets.legacy_test_config(
@@ -1257,11 +1247,10 @@ targets.legacy_basic_suite(
                 "junit-swarming-emulator",
             ],
             remove_mixins = [
+                "chromium_pixel_2_pie",
                 "emulator-4-cores",
                 "nougat-x86-emulator",
                 "oreo-x86-emulator",
-                "walleye",
-                "pie_fleet",
             ],
         ),
         "keyboard_accessory_junit_tests": targets.legacy_test_config(
@@ -1271,11 +1260,10 @@ targets.legacy_basic_suite(
                 "junit-swarming-emulator",
             ],
             remove_mixins = [
+                "chromium_pixel_2_pie",
                 "emulator-4-cores",
                 "nougat-x86-emulator",
                 "oreo-x86-emulator",
-                "walleye",
-                "pie_fleet",
             ],
         ),
         "media_base_junit_tests": targets.legacy_test_config(
@@ -1285,11 +1273,10 @@ targets.legacy_basic_suite(
                 "junit-swarming-emulator",
             ],
             remove_mixins = [
+                "chromium_pixel_2_pie",
                 "emulator-4-cores",
                 "nougat-x86-emulator",
                 "oreo-x86-emulator",
-                "walleye",
-                "pie_fleet",
             ],
         ),
         "module_installer_junit_tests": targets.legacy_test_config(
@@ -1299,11 +1286,10 @@ targets.legacy_basic_suite(
                 "junit-swarming-emulator",
             ],
             remove_mixins = [
+                "chromium_pixel_2_pie",
                 "emulator-4-cores",
                 "nougat-x86-emulator",
                 "oreo-x86-emulator",
-                "walleye",
-                "pie_fleet",
             ],
         ),
         "net_junit_tests": targets.legacy_test_config(
@@ -1313,11 +1299,10 @@ targets.legacy_basic_suite(
                 "junit-swarming-emulator",
             ],
             remove_mixins = [
+                "chromium_pixel_2_pie",
                 "emulator-4-cores",
                 "nougat-x86-emulator",
                 "oreo-x86-emulator",
-                "walleye",
-                "pie_fleet",
             ],
         ),
         "paint_preview_junit_tests": targets.legacy_test_config(
@@ -1327,11 +1312,10 @@ targets.legacy_basic_suite(
                 "junit-swarming-emulator",
             ],
             remove_mixins = [
+                "chromium_pixel_2_pie",
                 "emulator-4-cores",
                 "nougat-x86-emulator",
                 "oreo-x86-emulator",
-                "walleye",
-                "pie_fleet",
             ],
         ),
         "password_check_junit_tests": targets.legacy_test_config(
@@ -1341,11 +1325,10 @@ targets.legacy_basic_suite(
                 "junit-swarming-emulator",
             ],
             remove_mixins = [
+                "chromium_pixel_2_pie",
                 "emulator-4-cores",
                 "nougat-x86-emulator",
                 "oreo-x86-emulator",
-                "walleye",
-                "pie_fleet",
             ],
         ),
         "password_manager_junit_tests": targets.legacy_test_config(
@@ -1355,11 +1338,10 @@ targets.legacy_basic_suite(
                 "junit-swarming-emulator",
             ],
             remove_mixins = [
+                "chromium_pixel_2_pie",
                 "emulator-4-cores",
                 "nougat-x86-emulator",
                 "oreo-x86-emulator",
-                "walleye",
-                "pie_fleet",
             ],
         ),
         "services_junit_tests": targets.legacy_test_config(
@@ -1369,11 +1351,10 @@ targets.legacy_basic_suite(
                 "junit-swarming-emulator",
             ],
             remove_mixins = [
+                "chromium_pixel_2_pie",
                 "emulator-4-cores",
                 "nougat-x86-emulator",
                 "oreo-x86-emulator",
-                "walleye",
-                "pie_fleet",
             ],
         ),
         "touch_to_fill_junit_tests": targets.legacy_test_config(
@@ -1383,11 +1364,10 @@ targets.legacy_basic_suite(
                 "junit-swarming-emulator",
             ],
             remove_mixins = [
+                "chromium_pixel_2_pie",
                 "emulator-4-cores",
                 "nougat-x86-emulator",
                 "oreo-x86-emulator",
-                "walleye",
-                "pie_fleet",
             ],
         ),
         "ui_junit_tests": targets.legacy_test_config(
@@ -1397,11 +1377,10 @@ targets.legacy_basic_suite(
                 "junit-swarming-emulator",
             ],
             remove_mixins = [
+                "chromium_pixel_2_pie",
                 "emulator-4-cores",
                 "nougat-x86-emulator",
                 "oreo-x86-emulator",
-                "walleye",
-                "pie_fleet",
             ],
         ),
         "webapk_client_junit_tests": targets.legacy_test_config(
@@ -1411,11 +1390,10 @@ targets.legacy_basic_suite(
                 "junit-swarming-emulator",
             ],
             remove_mixins = [
+                "chromium_pixel_2_pie",
                 "emulator-4-cores",
                 "nougat-x86-emulator",
                 "oreo-x86-emulator",
-                "walleye",
-                "pie_fleet",
             ],
         ),
         "webapk_shell_apk_h2o_junit_tests": targets.legacy_test_config(
@@ -1425,11 +1403,10 @@ targets.legacy_basic_suite(
                 "junit-swarming-emulator",
             ],
             remove_mixins = [
+                "chromium_pixel_2_pie",
                 "emulator-4-cores",
                 "nougat-x86-emulator",
                 "oreo-x86-emulator",
-                "walleye",
-                "pie_fleet",
             ],
         ),
         "webapk_shell_apk_junit_tests": targets.legacy_test_config(
@@ -1439,11 +1416,10 @@ targets.legacy_basic_suite(
                 "junit-swarming-emulator",
             ],
             remove_mixins = [
+                "chromium_pixel_2_pie",
                 "emulator-4-cores",
                 "nougat-x86-emulator",
                 "oreo-x86-emulator",
-                "walleye",
-                "pie_fleet",
             ],
         ),
     },
@@ -4181,12 +4157,10 @@ targets.legacy_basic_suite(
     tests = {
         "monochrome_public_apk_checker": targets.legacy_test_config(
             remove_mixins = [
-                "bullhead",
+                "chromium_nexus_5x_oreo",
+                "chromium_pixel_2_pie",
                 "marshmallow",
-                "oreo_fleet",
                 "oreo_mr1_fleet",
-                "pie_fleet",
-                "walleye",
             ],
             swarming = targets.swarming(
                 dimensions = {

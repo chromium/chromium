@@ -195,9 +195,8 @@ ci.thin_tester(
     targets = targets.bundle(
         targets = "webview_bot_all_gtests",
         mixins = [
+            "chromium_pixel_2_pie",
             "has_native_resultdb_integration",
-            "pie_fleet",
-            "walleye",
         ],
     ),
     console_view_entry = consoles.console_view_entry(
@@ -940,9 +939,8 @@ ci.builder(
             "all",
         ],
         mixins = [
+            "chromium_pixel_2_pie",
             "has_native_resultdb_integration",
-            "pie_fleet",
-            "walleye",
         ],
         per_test_modifications = {
             "android_browsertests": targets.mixin(
@@ -2560,9 +2558,8 @@ ci.thin_tester(
     targets = targets.bundle(
         targets = "android_pie_gtests",
         mixins = [
+            "chromium_pixel_2_pie",
             "has_native_resultdb_integration",
-            "pie_fleet",
-            "walleye",
         ],
     ),
     console_view_entry = consoles.console_view_entry(

@@ -357,6 +357,28 @@
       },
     },
   },
+  'chromium_nexus_5x_oreo': {
+    'swarming': {
+      'dimensions': {
+        'device_os': 'OPR4.170623.020',
+        'device_os_flavor': 'google',
+        'device_type': 'bullhead',
+        'os': 'Android',
+        'pool': 'chromium.tests',
+      },
+    },
+  },
+  'chromium_pixel_2_pie': {
+    'swarming': {
+      'dimensions': {
+        'device_os': 'PQ3A.190801.002',
+        'device_os_flavor': 'google',
+        'device_type': 'walleye',
+        'os': 'Android',
+        'pool': 'chromium.tests',
+      },
+    },
+  },
   'ci_only': {
     'ci_only': True,
   },
@@ -1099,14 +1121,6 @@
       ],
     },
   },
-  'oreo_fleet': {
-    'swarming': {
-      'dimensions': {
-        'device_os': 'OPR4.170623.020',
-        'device_os_flavor': 'google',
-      },
-    },
-  },
   'out_dir_arg': {
     'args': [
       '--out-dir',
@@ -1138,14 +1152,6 @@
           'path': '.android_emulator/android_28_google_apis_x86',
         },
       ],
-    },
-  },
-  'pie_fleet': {
-    'swarming': {
-      'dimensions': {
-        'device_os': 'PQ3A.190801.002',
-        'device_os_flavor': 'google',
-      },
     },
   },
   'puppet_production': {
