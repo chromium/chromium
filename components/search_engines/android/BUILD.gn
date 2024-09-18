@@ -119,7 +119,10 @@ android_library("junit") {
   # Skip platform checks since Robolectric depends on requires_android targets.
   bypass_platform_checks = true
   testonly = true
-  sources = [ "java/src/org/chromium/components/search_engines/SearchEngineChoiceServiceUnitTest.java" ]
+  sources = [
+    "java/src/org/chromium/components/search_engines/SearchEngineChoiceServiceUnitTest.java",
+    "java/src/org/chromium/components/search_engines/SearchEnginesFeatureUtilsUnitTest.java",
+  ]
   deps = [
     ":delegate_java",
     ":java",

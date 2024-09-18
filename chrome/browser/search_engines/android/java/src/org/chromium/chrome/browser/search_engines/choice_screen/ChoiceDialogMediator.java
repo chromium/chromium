@@ -5,24 +5,33 @@
 package org.chromium.chrome.browser.search_engines.choice_screen;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.components.search_engines.SearchEngineChoiceService;
+import org.chromium.components.search_engines.SearchEnginesFeatureUtils;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 class ChoiceDialogMediator {
-    @IntDef({DialogType.UNKNOWN, DialogType.CHOICE_LAUNCH, DialogType.CHOICE_CONFIRM})
+    @IntDef({
+        DialogType.UNKNOWN,
+        DialogType.LOADING,
+        DialogType.CHOICE_LAUNCH,
+        DialogType.CHOICE_CONFIRM
+    })
     @Retention(RetentionPolicy.SOURCE)
     @interface DialogType {
         int UNKNOWN = 0;
-        int CHOICE_LAUNCH = 1;
-        int CHOICE_CONFIRM = 2;
+        int LOADING = 1;
+        int CHOICE_LAUNCH = 2;
+        int CHOICE_CONFIRM = 3;
     }
 
     /** See {@link #startObserving}. */
@@ -50,7 +59,25 @@ class ChoiceDialogMediator {
     private final Callback<Boolean> mIsDeviceChoiceRequiredObserver;
 
     private @DialogType int mDialogType = DialogType.UNKNOWN;
-    private boolean mIsDialogShown;
+
+    /**
+     * Either the time at which the blocking dialog was shown, {@code null} indicating that the
+     * dialog was not shown yet, or {@link Long#MIN_VALUE} indicating that the dialog has been
+     * dismissed.
+     */
+    private @Nullable Long mDialogAddedTimeMillis;
+
+    /**
+     * Either the time at which observing the service started, or {@code null} if it didn't happen
+     * yet.
+     */
+    private @Nullable Long mObservationStartedTimeMillis;
+
+    /**
+     * Either the time at which the first service event was received, or {@code null} if it didn't
+     * happen yet.
+     */
+    private @Nullable Long mFirstServiceEventTimeMillis;
 
     private @Nullable Delegate mDelegate;
 
@@ -81,6 +108,20 @@ class ChoiceDialogMediator {
         assert mDelegate == null;
         mDelegate = delegate;
 
+        mObservationStartedTimeMillis = System.currentTimeMillis();
+        mDialogType = DialogType.LOADING;
+
+        if (!mIsDeviceChoiceRequiredSupplier.hasValue()) {
+            // An initial response from the supplier is still pending, so it won't call the observer
+            // on registration by itself. It's unclear how long it would take. We proactively
+            // trigger the blocking dialog, but if it takes too long we will unblock the user.
+            // We do it asynchronously to match how it is done via the supplier when it has a value.
+            ThreadUtils.postOnUiThread(
+                    () -> {
+                        mDelegate.updateDialogType(DialogType.LOADING);
+                        mDelegate.showDialog();
+                    });
+        }
         mIsDeviceChoiceRequiredSupplier.addObserver(mIsDeviceChoiceRequiredObserver);
     }
 
@@ -108,67 +149,129 @@ class ChoiceDialogMediator {
         switch (dialogType) {
             case DialogType.CHOICE_LAUNCH -> mSearchEngineChoiceService.launchDeviceChoiceScreens();
             case DialogType.CHOICE_CONFIRM -> mDelegate.dismissDialog();
-            case DialogType.UNKNOWN -> throw new IllegalStateException();
+            case DialogType.LOADING, DialogType.UNKNOWN -> throw new IllegalStateException();
         }
     }
 
     /** Method to call when the dialog is actually shown. */
     void onDialogAdded() {
-        mIsDialogShown = true;
+        assert mDialogAddedTimeMillis == null
+                : "The dialog is not expected to have already been shown";
+        assert mDialogType != DialogType.UNKNOWN;
+        assert mObservationStartedTimeMillis != null;
+        mDialogAddedTimeMillis = System.currentTimeMillis();
         mSearchEngineChoiceService.notifyDeviceChoiceBlockShown();
+
+        // TODO(b/355201070): Replace this after e2e testing with UMA recording.
+        Log.i(
+                TAG,
+                "onDialogAdded(), time since observation start: %s millis",
+                mDialogAddedTimeMillis - mObservationStartedTimeMillis);
+        scheduleDismissOnDeviceChoiceRequiredUpdateTimeout();
     }
 
     void onDialogDismissed() {
-        mIsDialogShown = false;
         destroy();
     }
 
+    @MainThread
     private void onIsDeviceChoiceRequiredChanged(@Nullable Boolean isDeviceChoiceRequired) {
-        assert mDelegate != null;
+        ThreadUtils.checkUiThread();
 
-        if (Boolean.TRUE.equals(isDeviceChoiceRequired)) {
-            // We expect it to happen only as the very first notification we get. Other values as
-            // first notification lead to skipping the dialog entirely.
-            assert !mIsDialogShown;
+        assert mDelegate != null;
+        boolean wasDialogShown = mDialogAddedTimeMillis != null;
+        boolean wasDialogDismissed = wasDialogShown && mDialogType == DialogType.UNKNOWN;
+
+        if (mFirstServiceEventTimeMillis == null) {
+            mFirstServiceEventTimeMillis = System.currentTimeMillis();
+            // TODO(b/355201070): Replace this after e2e testing with UMA recording.
+            Log.i(
+                    TAG,
+                    "onIsDeviceChoiceRequiredChanged(%s), time since dialog added: %s millis, "
+                            + "time since observation started: %s millis",
+                    isDeviceChoiceRequired,
+                    wasDialogShown
+                            ? mFirstServiceEventTimeMillis - mDialogAddedTimeMillis
+                            : "<N/A>",
+                    mObservationStartedTimeMillis != null
+                            ? mFirstServiceEventTimeMillis - mObservationStartedTimeMillis
+                            : "<N/A>");
+        }
+
+        if (Boolean.TRUE.equals(isDeviceChoiceRequired) && !wasDialogDismissed) {
             mDialogType = DialogType.CHOICE_LAUNCH;
             mDelegate.updateDialogType(DialogType.CHOICE_LAUNCH);
-            mDelegate.showDialog();
+
+            if (!wasDialogShown) {
+                mDelegate.showDialog();
+            }
             return;
         }
 
         // `isDeviceChoiceRequired` being null indicates that the backend was disconnected, and
-        // false indicates that blocking the user is not necessary anymore. In both cases we'll want
-        // to unblock the user, but based on which state the UI is in, we may show some confirmation
-        // message or not.
+        // false indicates that blocking the user is not necessary anymore. In both cases we'll
+        // want to unblock the user, but based on which state the UI is in, we may show some
+        // confirmation message or not.
 
-        if (mIsDialogShown
-                && Boolean.FALSE.equals(isDeviceChoiceRequired)
-                && mDialogType == DialogType.CHOICE_LAUNCH) {
-            // This is the normal flow, showing confirmation after the choice has been made.
-            mDialogType = DialogType.CHOICE_CONFIRM;
-            mDelegate.updateDialogType(DialogType.CHOICE_CONFIRM);
-            mSearchEngineChoiceService.notifyDeviceChoiceBlockCleared();
-            return;
-        }
+        if (wasDialogShown && !wasDialogDismissed) {
+            if (Boolean.FALSE.equals(isDeviceChoiceRequired)
+                    && (mDialogType == DialogType.LOADING
+                            || mDialogType == DialogType.CHOICE_LAUNCH)) {
+                // This is the normal flow, showing confirmation after the choice has been made.
+                mDialogType = DialogType.CHOICE_CONFIRM;
+                mDelegate.updateDialogType(DialogType.CHOICE_CONFIRM);
+                mSearchEngineChoiceService.notifyDeviceChoiceBlockCleared();
+                return;
+            }
 
-        if (mIsDialogShown && mDialogType == DialogType.CHOICE_CONFIRM) {
-            // The backend is sending us some updates while we are showing the confirmation UI. We
-            // are not blocking anyway and the user can proceed, so don't do anything about it.
-            return;
+            if (mDialogType == DialogType.CHOICE_CONFIRM) {
+                // The backend is sending us some updates while we are showing the confirmation UI.
+                // We are not blocking and the user can proceed, so don't do anything about it.
+                return;
+            }
         }
 
         // If we get here, this is some sort of error state. Shutdown everything.
-        // Indicates that the backend was disconnected. This would make the dialog
-        // non-functional, so let's dismiss it and let the user proceed to Chrome.
-        // TODO(b/355201070): Add UMA recording.
+        // Indicates that the backend was disconnected. This would make the dialog non-functional if
+        // it is still shown, so let's dismiss it and let the user proceed to Chrome.
+        // TODO(b/355201070): Add UMA recording, remove or update the log below.
         Log.w(
                 TAG,
                 "Unexpected backend update received. State: "
-                        + "{mIsDialogShown=%b, mDialogType=%s, isDeviceChoiceRequired=%s}",
-                mIsDialogShown,
+                        + "{wasDialogShown=%b, wasDialogDismissed=%b, mDialogType=%s, "
+                        + "isDeviceChoiceRequired=%s}",
+                wasDialogShown,
+                wasDialogDismissed,
                 mDialogType,
                 isDeviceChoiceRequired);
         mDelegate.dismissDialog();
         destroy();
+    }
+
+    private void scheduleDismissOnDeviceChoiceRequiredUpdateTimeout() {
+        if (mDialogType != DialogType.LOADING) {
+            return;
+        }
+
+        int dialogTimeoutMillis = SearchEnginesFeatureUtils.clayBlockingDialogTimeoutMillis();
+        if (dialogTimeoutMillis > 0) {
+            ThreadUtils.postOnUiThreadDelayed(
+                    () -> {
+                        if (mDialogType != DialogType.LOADING) {
+                            return; // No-op, we got an update.
+                        }
+
+                        assert mDelegate != null; // Unexpected if the type is still "loading".
+
+                        Log.w(
+                                TAG,
+                                "Timeout waiting for backend block confirmation. Deadline: %s ms",
+                                dialogTimeoutMillis);
+
+                        mDelegate.dismissDialog();
+                        destroy();
+                    },
+                    dialogTimeoutMillis);
+        }
     }
 }

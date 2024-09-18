@@ -12,7 +12,9 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.robolectric.Shadows.shadowOf;
 
 import android.os.Looper;
@@ -29,6 +31,7 @@ import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 
 import org.chromium.base.Callback;
+import org.chromium.base.FeatureList;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
@@ -41,6 +44,8 @@ import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogManagerObserver
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogPriority;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.modelutil.PropertyModel;
+
+import java.time.Duration;
 
 @RunWith(BaseRobolectricTestRunner.class)
 @Features.EnableFeatures({SearchEnginesFeatures.CLAY_BLOCKING})
@@ -60,17 +65,33 @@ public class ChoiceDialogCoordinatorUnitTest {
 
     @Test
     public void testMaybeShow() {
-        doReturn(true).when(mSearchEngineChoiceService).isDeviceChoiceDialogEligible();
-        doReturn(new ObservableSupplierImpl<>(true))
+        var shouldShowSupplier = new ObservableSupplierImpl<>(true);
+        doReturn(shouldShowSupplier)
                 .when(mSearchEngineChoiceService)
                 .getIsDeviceChoiceRequiredSupplier();
+        doReturn(true).when(mSearchEngineChoiceService).isDeviceChoiceDialogEligible();
 
         assertTrue(ChoiceDialogCoordinator.maybeShowInternal(this::createCoordinatorWithMocks));
+        assertTrue(shouldShowSupplier.hasObservers()); // The dialog started observing.
 
         shadowOf(Looper.getMainLooper()).idle();
         verify(mModalDialogManager)
                 .showDialog(any(), eq(ModalDialogType.APP), eq(ModalDialogPriority.VERY_HIGH));
         verify(mSearchEngineChoiceService).notifyDeviceChoiceBlockShown();
+        verify(mViewHolder).updateViewForType(eq(DialogType.CHOICE_LAUNCH), any());
+
+        shouldShowSupplier.set(false);
+
+        shadowOf(Looper.getMainLooper()).idle();
+        verify(mSearchEngineChoiceService).notifyDeviceChoiceBlockCleared();
+        verify(mViewHolder)
+                .updateViewForType(
+                        eq(DialogType.CHOICE_CONFIRM), mActionButtonCallbackCaptor.capture());
+
+        mActionButtonCallbackCaptor.getValue().onResult(DialogType.CHOICE_CONFIRM);
+
+        verify(mModalDialogManager).dismissDialog(any(), eq(DialogDismissalCause.UNKNOWN));
+        assertFalse(shouldShowSupplier.hasObservers()); // The dialog stopped observing.
     }
 
     @Test
@@ -86,22 +107,7 @@ public class ChoiceDialogCoordinatorUnitTest {
     }
 
     @Test
-    public void testMaybeShow_doesNotShowWhenNotRequired() {
-        doReturn(true).when(mSearchEngineChoiceService).isDeviceChoiceDialogEligible();
-        doReturn(new ObservableSupplierImpl<>(false))
-                .when(mSearchEngineChoiceService)
-                .getIsDeviceChoiceRequiredSupplier();
-
-        assertTrue(ChoiceDialogCoordinator.maybeShowInternal(this::createCoordinatorWithMocks));
-
-        shadowOf(Looper.getMainLooper()).idle();
-        verify(mModalDialogManager, never()).showDialog(any(), anyInt(), anyInt());
-        verify(mSearchEngineChoiceService, never()).notifyDeviceChoiceBlockShown();
-        verify(mSearchEngineChoiceService, never()).notifyDeviceChoiceBlockCleared();
-    }
-
-    @Test
-    public void testMaybeShow_showsAfterDelayedApproval() {
+    public void testMaybeShow_showsAndBlocksAfterDelayedApproval() {
         var pendingSupplier = new ObservableSupplierImpl<Boolean>(null);
         doReturn(pendingSupplier)
                 .when(mSearchEngineChoiceService)
@@ -110,22 +116,23 @@ public class ChoiceDialogCoordinatorUnitTest {
 
         assertTrue(ChoiceDialogCoordinator.maybeShowInternal(this::createCoordinatorWithMocks));
         assertTrue(pendingSupplier.hasObservers()); // The dialog started observing.
+        verify(mModalDialogManager, never()).showDialog(any(), anyInt(), anyInt());
 
         shadowOf(Looper.getMainLooper()).idle();
-        verify(mModalDialogManager, never()).showDialog(any(), anyInt(), anyInt());
-        verify(mSearchEngineChoiceService, never()).notifyDeviceChoiceBlockShown();
+        verify(mModalDialogManager)
+                .showDialog(any(), eq(ModalDialogType.APP), eq(ModalDialogPriority.VERY_HIGH));
+        verify(mSearchEngineChoiceService).notifyDeviceChoiceBlockShown();
+        verify(mViewHolder).updateViewForType(eq(DialogType.LOADING), any());
 
         pendingSupplier.set(true);
-
         shadowOf(Looper.getMainLooper()).idle();
-        verify(mModalDialogManager)
-                .showDialog(any(), eq(ModalDialogType.APP), eq(ModalDialogPriority.VERY_HIGH));
-        verify(mSearchEngineChoiceService).notifyDeviceChoiceBlockShown();
+
+        verify(mViewHolder).updateViewForType(eq(DialogType.CHOICE_LAUNCH), any());
         verify(mSearchEngineChoiceService, never()).notifyDeviceChoiceBlockCleared();
     }
 
     @Test
-    public void testMaybeShow_doesNotShowAfterDelayedDisapproval() {
+    public void testMaybeShow_showsAndUnblocksAfterDelayedDisapproval() {
         var pendingSupplier = new ObservableSupplierImpl<Boolean>(null);
         doReturn(pendingSupplier)
                 .when(mSearchEngineChoiceService)
@@ -134,53 +141,77 @@ public class ChoiceDialogCoordinatorUnitTest {
 
         assertTrue(ChoiceDialogCoordinator.maybeShowInternal(this::createCoordinatorWithMocks));
         assertTrue(pendingSupplier.hasObservers()); // The dialog started observing.
-
-        shadowOf(Looper.getMainLooper()).idle();
         verify(mModalDialogManager, never()).showDialog(any(), anyInt(), anyInt());
-
-        pendingSupplier.set(false);
-
-        shadowOf(Looper.getMainLooper()).idle();
-        verify(mModalDialogManager, never()).showDialog(any(), anyInt(), anyInt());
-        verify(mSearchEngineChoiceService, never()).notifyDeviceChoiceBlockShown();
-        verify(mSearchEngineChoiceService, never()).notifyDeviceChoiceBlockCleared();
-        assertFalse(pendingSupplier.hasObservers()); // The dialog stopped observing.
-    }
-
-    @Test
-    public void testMaybeShow_unblocksDialogAfterFalseReceived() {
-        var pendingSupplier = new ObservableSupplierImpl<>(true);
-        doReturn(pendingSupplier)
-                .when(mSearchEngineChoiceService)
-                .getIsDeviceChoiceRequiredSupplier();
-        doReturn(true).when(mSearchEngineChoiceService).isDeviceChoiceDialogEligible();
-
-        assertTrue(ChoiceDialogCoordinator.maybeShowInternal(this::createCoordinatorWithMocks));
-        assertTrue(pendingSupplier.hasObservers()); // The dialog started observing.
 
         shadowOf(Looper.getMainLooper()).idle();
         verify(mModalDialogManager)
                 .showDialog(any(), eq(ModalDialogType.APP), eq(ModalDialogPriority.VERY_HIGH));
         verify(mSearchEngineChoiceService).notifyDeviceChoiceBlockShown();
-        verify(mViewHolder).updateViewForType(eq(DialogType.CHOICE_LAUNCH), any());
+        verify(mViewHolder).updateViewForType(eq(DialogType.LOADING), any());
 
         pendingSupplier.set(false);
 
         shadowOf(Looper.getMainLooper()).idle();
         verify(mSearchEngineChoiceService).notifyDeviceChoiceBlockCleared();
-        verify(mViewHolder)
-                .updateViewForType(
-                        eq(DialogType.CHOICE_CONFIRM), mActionButtonCallbackCaptor.capture());
-
-        mActionButtonCallbackCaptor.getValue().onResult(DialogType.CHOICE_CONFIRM);
-
-        verify(mModalDialogManager).dismissDialog(any(), eq(DialogDismissalCause.UNKNOWN));
-        assertFalse(pendingSupplier.hasObservers()); // The dialog stopped observing.
+        verify(mViewHolder).updateViewForType(eq(DialogType.CHOICE_CONFIRM), any());
     }
 
     @Test
-    public void testMaybeShow_dismissesDialogAfterNullReceived() {
-        var pendingSupplier = new ObservableSupplierImpl<>(true);
+    public void testMaybeShow_doesNotShowWithImmediateDisapproval() {
+        var disapprovingSupplier = new ObservableSupplierImpl<>(false);
+        doReturn(true).when(mSearchEngineChoiceService).isDeviceChoiceDialogEligible();
+        doReturn(disapprovingSupplier)
+                .when(mSearchEngineChoiceService)
+                .getIsDeviceChoiceRequiredSupplier();
+
+        assertTrue(ChoiceDialogCoordinator.maybeShowInternal(this::createCoordinatorWithMocks));
+        assertTrue(disapprovingSupplier.hasObservers()); // The dialog started observing.
+        verify(mModalDialogManager, never()).showDialog(any(), anyInt(), anyInt());
+
+        shadowOf(Looper.getMainLooper()).idle();
+        verify(mModalDialogManager, never()).showDialog(any(), anyInt(), anyInt());
+        verify(mSearchEngineChoiceService, never()).notifyDeviceChoiceBlockShown();
+        verify(mSearchEngineChoiceService, never()).notifyDeviceChoiceBlockCleared();
+        assertFalse(disapprovingSupplier.hasObservers()); // The dialog stopped observing.
+    }
+
+    @Test
+    public void testMaybeShow_dismissesDialogAfterDisconnection() {
+        var shouldShowSupplier = new ObservableSupplierImpl<>(true);
+        doReturn(shouldShowSupplier)
+                .when(mSearchEngineChoiceService)
+                .getIsDeviceChoiceRequiredSupplier();
+        doReturn(true).when(mSearchEngineChoiceService).isDeviceChoiceDialogEligible();
+
+        assertTrue(ChoiceDialogCoordinator.maybeShowInternal(this::createCoordinatorWithMocks));
+        assertTrue(shouldShowSupplier.hasObservers()); // The dialog started observing.
+
+        shadowOf(Looper.getMainLooper()).idle();
+        verify(mModalDialogManager)
+                .showDialog(any(), eq(ModalDialogType.APP), eq(ModalDialogPriority.VERY_HIGH));
+        verify(mSearchEngineChoiceService).notifyDeviceChoiceBlockShown();
+        verify(mViewHolder).updateViewForType(eq(DialogType.CHOICE_LAUNCH), any());
+
+        shouldShowSupplier.set(null);
+
+        shadowOf(Looper.getMainLooper()).idle();
+        verify(mModalDialogManager).dismissDialog(any(), eq(DialogDismissalCause.UNKNOWN));
+        verify(mSearchEngineChoiceService, never()).notifyDeviceChoiceBlockCleared();
+        assertFalse(shouldShowSupplier.hasObservers()); // The dialog stopped observing.
+    }
+
+    @Test
+    public void testMaybeShow_dismissesDialogAfterTimeout() {
+        long timeoutDuration = 24_000;
+        var testFeatures = new FeatureList.TestValues();
+        testFeatures.addFeatureFlagOverride(SearchEnginesFeatures.CLAY_BLOCKING, true);
+        testFeatures.addFieldTrialParamOverride(
+                SearchEnginesFeatures.CLAY_BLOCKING,
+                "dialog_timeout_millis",
+                Long.toString(timeoutDuration));
+        FeatureList.setTestValues(testFeatures);
+
+        var pendingSupplier = new ObservableSupplierImpl<>();
         doReturn(pendingSupplier)
                 .when(mSearchEngineChoiceService)
                 .getIsDeviceChoiceRequiredSupplier();
@@ -193,11 +224,14 @@ public class ChoiceDialogCoordinatorUnitTest {
         verify(mModalDialogManager)
                 .showDialog(any(), eq(ModalDialogType.APP), eq(ModalDialogPriority.VERY_HIGH));
         verify(mSearchEngineChoiceService).notifyDeviceChoiceBlockShown();
-        verify(mViewHolder).updateViewForType(eq(DialogType.CHOICE_LAUNCH), any());
+        verify(mViewHolder).updateViewForType(eq(DialogType.LOADING), any());
 
-        pendingSupplier.set(null);
+        // Verify that we don't get misc updates before the timeout duration is reached
+        reset(mModalDialogManager, mViewHolder);
+        shadowOf(Looper.getMainLooper()).idleFor(Duration.ofMillis(timeoutDuration / 2));
+        verifyNoMoreInteractions(mModalDialogManager, mViewHolder);
 
-        shadowOf(Looper.getMainLooper()).idle();
+        shadowOf(Looper.getMainLooper()).idleFor(Duration.ofMillis(timeoutDuration));
         verify(mModalDialogManager).dismissDialog(any(), eq(DialogDismissalCause.UNKNOWN));
         verify(mSearchEngineChoiceService, never()).notifyDeviceChoiceBlockCleared();
         assertFalse(pendingSupplier.hasObservers()); // The dialog stopped observing.

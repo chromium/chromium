@@ -5,6 +5,8 @@
 package org.chromium.components.search_engines;
 
 import androidx.annotation.MainThread;
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
 import org.chromium.base.Promise;
@@ -18,9 +20,17 @@ public class FakeSearchEngineCountryDelegate extends SearchEngineCountryDelegate
     private static final String TAG = "FakeChoiceDelegate";
 
     private final Boolean mEnableLogging;
-    private final ObservableSupplierImpl<Boolean> mIsChoiceRequired =
-            new ObservableSupplierImpl<>(true);
+    private @Nullable ObservableSupplierImpl<Boolean> mIsChoiceRequired;
 
+    /**
+     * Supplier used as the main way to mock the search engine choice device backend.
+     *
+     * <p>Makes {@link #getIsDeviceChoiceRequiredSupplier()}'s supplier return {@code true} on
+     * start, indicating that the blocking dialog should be shown, and updates it to {@code false}
+     * when {@link #launchDeviceChoiceScreens()} is called. If a timeout is configured (see {@link
+     * SearchEnginesFeatureUtils#clayBlockingDialogTimeoutMillis()}, the initial value will be
+     * emitted at half of the timeout duration instead, to exercise the delayed response path.
+     */
     @MainThread
     public FakeSearchEngineCountryDelegate(boolean enableLogging) {
         super(/* context= */ null);
@@ -30,8 +40,6 @@ public class FakeSearchEngineCountryDelegate extends SearchEngineCountryDelegate
         if (mEnableLogging) {
             if (SearchEnginesFeatures.isEnabled(SearchEnginesFeatures.CLAY_BLOCKING)) {
                 Log.i(TAG, "Initialising with ClayBlocking enabled");
-                mIsChoiceRequired.addObserver(
-                        value -> Log.i(TAG, "supplier value changed to %s", value));
             } else {
                 Log.i(
                         TAG,
@@ -39,6 +47,11 @@ public class FakeSearchEngineCountryDelegate extends SearchEngineCountryDelegate
                                 + " base implementation.");
             }
         }
+    }
+
+    @VisibleForTesting
+    public void setIsDeviceChoiceRequired(Boolean isRequired) {
+        getSupplier().set(isRequired);
     }
 
     @Override
@@ -82,9 +95,9 @@ public class FakeSearchEngineCountryDelegate extends SearchEngineCountryDelegate
             Log.i(
                     TAG,
                     "getIsDeviceChoiceRequiredSupplier() -> current value: %s",
-                    mIsChoiceRequired.get());
+                    getSupplier().get());
         }
-        return mIsChoiceRequired;
+        return getSupplier();
     }
 
     @Override
@@ -98,7 +111,7 @@ public class FakeSearchEngineCountryDelegate extends SearchEngineCountryDelegate
         if (mEnableLogging) {
             Log.i(TAG, "launchDeviceChoiceScreens() -> updating supplier");
         }
-        mIsChoiceRequired.set(false);
+        getSupplier().set(false);
     }
 
     @Override
@@ -112,5 +125,30 @@ public class FakeSearchEngineCountryDelegate extends SearchEngineCountryDelegate
         if (mEnableLogging) {
             Log.i(TAG, "notifyDeviceChoiceEvent(%d)", eventType);
         }
+    }
+
+    private ObservableSupplierImpl<Boolean> getSupplier() {
+        // The supplier is lazily initialized, to more closely match the behaviour of the real
+        // implementation, which does not trigger connections and queries unless the supplier is
+        // needed.
+        if (mIsChoiceRequired == null) {
+            int dialogTimeoutMillis = SearchEnginesFeatureUtils.clayBlockingDialogTimeoutMillis();
+            if (dialogTimeoutMillis > 0) {
+                // A dialog timeout is configured, so make the fake delegate exercise it: Start with
+                // no provided response, but emit the `true` value halfway to the deadline.
+                mIsChoiceRequired = new ObservableSupplierImpl<>();
+                ThreadUtils.postOnUiThreadDelayed(
+                        () -> mIsChoiceRequired.set(true), dialogTimeoutMillis / 2);
+            } else {
+                mIsChoiceRequired = new ObservableSupplierImpl<>(true);
+            }
+
+            if (mEnableLogging) {
+                mIsChoiceRequired.addObserver(
+                        value -> Log.i(TAG, "supplier value changed to %s", value));
+            }
+        }
+
+        return mIsChoiceRequired;
     }
 }
