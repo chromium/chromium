@@ -447,6 +447,15 @@ bool IsScreenAITestModeEnabled() {
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_MAC)
+// Enables the switchover to the newer NSAccessibility property-based API.
+BASE_FEATURE(kMacAccessibilityAPIMigration,
+             "MacAccessibilityAPIMigration",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+bool IsMacAccessibilityAPIMigrationEnabled() {
+  return base::FeatureList::IsEnabled(
+      ::features::kMacAccessibilityAPIMigration);
+}
+
 BASE_FEATURE(kAccessibilityRemoteUIApp,
              "AccessibilityRemoteUIApp",
              base::FEATURE_ENABLED_BY_DEFAULT);

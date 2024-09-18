@@ -310,6 +310,9 @@ AX_BASE_EXPORT bool IsScreenAITestModeEnabled();
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_MAC)
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(kMacAccessibilityAPIMigration);
+AX_BASE_EXPORT bool IsMacAccessibilityAPIMigrationEnabled();
+
 // Set NSAccessibilityRemoteUIElement's RemoteUIApp to YES to fix
 // some accessibility bugs in PWA Mac. (Note: When enabling
 // NSAccessibilityRemoteUIElement's RemoteUIApp previously, chromium would hang.

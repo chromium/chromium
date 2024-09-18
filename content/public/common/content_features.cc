@@ -1356,11 +1356,6 @@ BASE_FEATURE(kMacAllowBackgroundingRenderProcesses,
              "MacAllowBackgroundingRenderProcesses",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables the switchover to the newer NSAccessibility property-based API.
-BASE_FEATURE(kMacAccessibilityAPIMigration,
-             "MacAccessibilityAPIMigration",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables a fix for a macOS IME Live Conversion issue. crbug.com/40226470 and
 // crbug.com/40060200
 BASE_FEATURE(kMacImeLiveConversionFix,
