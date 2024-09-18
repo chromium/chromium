@@ -6567,7 +6567,6 @@
       default_value: "space-around",
       valid_for_permission_element: true,
       invalidate: ["layout", "paint"],
-      runtime_flag: "CssRubyAlign",
     },
     {
       name: "-webkit-ruby-position",
