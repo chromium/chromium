@@ -205,10 +205,22 @@ std::string ComputeUrlEncodedTokenPostData(
                    /*use_plus=*/true);
     }
 
-    for (const auto& pair : params) {
-      query += "&param_" +
-               base::EscapeUrlEncodedData(pair.first, /*use_plus=*/true) + "=" +
-               base::EscapeUrlEncodedData(pair.second, /*use_plus=*/true);
+    if (!params.empty()) {
+      base::Value::Dict param_dict;
+      for (const auto& pair : params) {
+        // TODO(crbug.com/368087170): Remove before shipping this.
+        query += "&param_" +
+                 base::EscapeUrlEncodedData(pair.first, /*use_plus=*/true) +
+                 "=" +
+                 base::EscapeUrlEncodedData(pair.second, /*use_plus=*/true);
+        // For JSON serialization
+        param_dict.Set(pair.first, pair.second);
+      }
+      std::optional<std::string> json = base::WriteJson(param_dict);
+      if (json) {
+        query +=
+            "&params=" + base::EscapeUrlEncodedData(*json, /*use_plus=*/true);
+      }
     }
   }
 

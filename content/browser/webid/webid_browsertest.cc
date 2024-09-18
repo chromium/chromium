@@ -1426,7 +1426,11 @@ IN_PROC_BROWSER_TEST_F(WebIdAuthzBrowserTest, Authz_noPopUpWindow) {
             content += "fields=name,email,picture&";
             content += "param_%3F+gets+://=%26+escaped+!&";
             content += "param_foo=bar&";
-            content += "param_hello=world";
+            content += "param_hello=world&";
+            content +=
+                "params=%7B%22%3F+gets+://"
+                "%22:%22%26+escaped+!%22,%22foo%22:%22bar%22,%22hello%22:%"
+                "22world%22%7D";
 
             EXPECT_EQ(request.content, content);
 
