@@ -12,6 +12,7 @@
 #include "remoting/base/corp_logging_service_client.h"
 #include "remoting/base/logging.h"
 #include "remoting/base/protobuf_http_status.h"
+#include "remoting/base/session_policies.h"
 #include "remoting/protocol/authenticator.h"
 #include "remoting/protocol/credentials_type.h"
 #include "remoting/protocol/session.h"
@@ -23,17 +24,21 @@ namespace remoting {
 
 CorpHostStatusLogger::CorpHostStatusLogger(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    const LocalSessionPoliciesProvider* local_session_policies_provider,
     const std::string& service_account_email,
     const std::string& refresh_token)
     : CorpHostStatusLogger(std::make_unique<CorpLoggingServiceClient>(
-          url_loader_factory,
-          CreateCorpTokenGetter(url_loader_factory,
-                                service_account_email,
-                                refresh_token))) {}
+                               url_loader_factory,
+                               CreateCorpTokenGetter(url_loader_factory,
+                                                     service_account_email,
+                                                     refresh_token)),
+                           local_session_policies_provider) {}
 
 CorpHostStatusLogger::CorpHostStatusLogger(
-    std::unique_ptr<LoggingServiceClient> service_client)
-    : service_client_(std::move(service_client)) {}
+    std::unique_ptr<LoggingServiceClient> service_client,
+    const LocalSessionPoliciesProvider* local_session_policies_provider)
+    : service_client_(std::move(service_client)),
+      local_session_policies_provider_(local_session_policies_provider) {}
 
 CorpHostStatusLogger::~CorpHostStatusLogger() = default;
 
@@ -71,6 +76,20 @@ void CorpHostStatusLogger::OnSessionStateChange(
               ? authenticator.reauthorizer()->session_reauth_token()
               : "",
       .error_code = session.error(),
+  };
+  // The effective session policies are technically held by ClientSession, but
+  // it's difficult to plumb it through multiple layers of abstraction, so we
+  // just figure out the effective session policies ourselves here.
+  // If the authenticator state is not `ACCEPTED`, then we don't know whether
+  // the effective policies come from SessionAuthz or the local store, so we
+  // keep it unset.
+  if (session.authenticator().state() == protocol::Authenticator::ACCEPTED) {
+    const SessionPolicies* session_policies_from_authenticator =
+        session.authenticator().GetSessionPolicies();
+    request.effective_session_policies =
+        session_policies_from_authenticator
+            ? *session_policies_from_authenticator
+            : local_session_policies_provider_->get_local_policies();
   };
   service_client_->ReportSessionDisconnected(
       request, base::BindOnce([](const ProtobufHttpStatus& status) {

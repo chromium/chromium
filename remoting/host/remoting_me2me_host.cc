@@ -1830,8 +1830,8 @@ void HostProcess::StartHost() {
     desktop_environment_options_.set_enable_user_interface(
         enable_user_interface_);
     corp_host_status_logger_ = std::make_unique<CorpHostStatusLogger>(
-        context_->url_loader_factory(), service_account_email_,
-        oauth_refresh_token_);
+        context_->url_loader_factory(), &local_session_policies_provider_,
+        service_account_email_, oauth_refresh_token_);
     corp_host_status_logger_->StartObserving(*session_manager);
   }
 

@@ -5,9 +5,11 @@
 #ifndef REMOTING_PROTO_LOGGING_SERVICE_H_
 #define REMOTING_PROTO_LOGGING_SERVICE_H_
 
+#include <optional>
 #include <string>
 
 #include "remoting/base/errors.h"
+#include "remoting/base/session_policies.h"
 
 namespace remoting::internal {
 
@@ -18,6 +20,7 @@ struct ReportSessionDisconnectedRequestStruct {
   std::string session_authz_id;
   std::string session_authz_reauth_token;
   ErrorCode error_code;
+  std::optional<SessionPolicies> effective_session_policies;
 };
 
 }  // namespace remoting::internal
