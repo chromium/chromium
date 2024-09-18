@@ -156,14 +156,7 @@ void FindAndSetPossibleFieldTypesForField(
     card.GetMatchingTypesWithProfileSources(value, app_locale, &matching_types,
                                             nullptr);
   }
-  // If the input's content matches a valid email format, include email
-  // address as one of the possible matching types.
-  if (field.IsTextInputElement() &&
-      base::FeatureList::IsEnabled(
-          features::kAutofillUploadVotesForFieldsWithEmail) &&
-      !matching_types.contains(EMAIL_ADDRESS) && IsValidEmailAddress(value)) {
-    matching_types.insert(EMAIL_ADDRESS);
-  }
+
   if (field.state_is_a_matching_type()) {
     matching_types.insert(ADDRESS_HOME_STATE);
   }

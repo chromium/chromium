@@ -152,17 +152,6 @@ FieldType FirstNonCapturedType(const FormStructure& form,
                                const FieldTypeSet& contained_types) {
   for (const auto& field : form) {
     for (auto type : field->possible_types()) {
-      // EMAIL_ADDRESS is exempt from the contained_types requirement, if the
-      // possible_type was determined by a valid email address found within the
-      // field's content. The kAutofillUploadVotesForFieldsWithEmail feature
-      // handles this scenario.
-      if (type == EMAIL_ADDRESS &&
-          IsValidEmailAddress(field->value(ValueSemantics::kCurrent)) &&
-          base::FeatureList::IsEnabled(
-              features::kAutofillUploadVotesForFieldsWithEmail)) {
-        continue;
-      }
-
       if (type != UNKNOWN_TYPE && type != EMPTY_TYPE &&
           !contained_types.count(type)) {
         return type;

@@ -398,12 +398,6 @@ BASE_FEATURE(kAutofillUsePLAddressModel,
              "AutofillUsePLAddressModel",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, Autofill will issues votes for EMAIL_ADDRESS field types on
-// fields where the content matches a valid email format.
-BASE_FEATURE(kAutofillUploadVotesForFieldsWithEmail,
-             "AutofillUploadVotesForFieldsWithEmail",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // When enabled, all behaviours related to the on-device machine learning
 // model for field type predictions will be guarded.
 // TODO(crbug.com/40276177): Remove when launched.
