@@ -180,6 +180,8 @@ AutofillPredictionImprovementsManager::CreateFillingSuggestions(
       predicted_value, autofill::SuggestionType::kFillPredictionImprovements);
   auto payload = autofill::Suggestion::PredictionImprovementsPayload(
       GetValuesToFill(), GetFieldTypesToFill(), kIgnoreableSkipReasons);
+  suggestion.payload = payload;
+  suggestion.icon = autofill::Suggestion::Icon::kAccount;
   // Add a `kFillPredictionImprovements` suggestion with a separator to
   // `suggestion.children` before the field-by-field filling entries.
   {
@@ -213,11 +215,10 @@ AutofillPredictionImprovementsManager::CreateFillingSuggestions(
     // file.
     suggestion.labels.back().emplace_back(u"& more");
   }
-  suggestion.payload = payload;
-  suggestion.icon = autofill::Suggestion::Icon::kAccount;
+  suggestion.children.emplace_back(autofill::SuggestionType::kSeparator);
+  suggestion.children.emplace_back(CreateFeedbackSuggestion());
 
-  std::vector<autofill::Suggestion> filling_suggestions = {
-      suggestion, CreateFeedbackSuggestion()};
+  std::vector<autofill::Suggestion> filling_suggestions = {suggestion};
   filling_suggestions.insert(filling_suggestions.end(),
                              address_suggestions_.begin(),
                              address_suggestions_.end());
