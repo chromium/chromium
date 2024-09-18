@@ -3,15 +3,16 @@
 # found in the LICENSE file.
 
 import("//build/buildflag_header.gni")
+import("//build/config/android/channel.gni")
 import("//build/config/chrome_build.gni")
 import("//build/config/chromeos/ui_mode.gni")
 
 declare_args() {
   # Set to true make a build that disables activation of field trial tests
   # specified in testing/variations/fieldtrial_testing_config.json.
-  # Note: For Chrome-branded Android builds, this is always considered as set to
-  # true (see below). This is done to avoid the binary size impact (~40 KiB) on
-  # Android.
+  # Note: For Chrome-branded non-default-channel Android builds, this is always
+  # considered as set to true (see below). This is done to avoid the binary
+  # size impact (~112KiB) on Android official builds (stable/beta/dev etc).
   disable_fieldtrial_testing_config = false
 
   # Set to true to make a build that force enables activation of field trial
@@ -25,7 +26,8 @@ assert(!(disable_fieldtrial_testing_config &&
 
 fieldtrial_testing_enabled =
     force_enable_fieldtrial_testing_config ||
-    (!disable_fieldtrial_testing_config && !(is_android && is_chrome_branded))
+    (!disable_fieldtrial_testing_config &&
+     !(is_android && is_chrome_branded && android_channel != "default"))
 
 buildflag_header("buildflags") {
   header = "buildflags.h"

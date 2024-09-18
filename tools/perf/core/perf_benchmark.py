@@ -5,16 +5,10 @@
 import itertools
 import json
 import os
-import sys
 
 from telemetry import benchmark
 from telemetry.internal.browser import browser_finder
 from telemetry.internal.util import path as path_module
-
-
-sys.path.append(os.path.join(os.path.dirname(__file__), '..',
-                             '..', 'variations'))
-import fieldtrial_util  # pylint: disable=import-error
 
 
 # This function returns a list of two-tuples designed to extend
@@ -96,8 +90,8 @@ class PerfBenchmark(benchmark.Benchmark):
     # binary format that an older build does not expect.
     if (browser_options.browser_type != 'reference' and
         'no-field-trials' not in browser_options.compatibility_mode):
-      variations = self._GetVariationsBrowserArgs(
-          finder_options, browser_options.extra_browser_args, possible_browser)
+      variations = self._GetVariationsBrowserArgs(finder_options,
+                                                  possible_browser)
       browser_options.AppendExtraBrowserArgs(variations)
 
       browser_options.profile_files_to_copy.extend(
@@ -141,31 +135,12 @@ class PerfBenchmark(benchmark.Benchmark):
       return 'chromeos_lacros'
     return target_os
 
-  def _GetVariationsBrowserArgs(self,
-                                finder_options,
-                                current_args,
-                                possible_browser=None):
+  def _GetVariationsBrowserArgs(self, finder_options, possible_browser=None):
     if possible_browser is None:
       possible_browser = browser_finder.FindBrowser(finder_options)
     if not possible_browser:
       return []
-
-    # Because of binary size constraints, Android cannot use the
-    # "--enable-field-trial-config" flag. For Android, we instead generate
-    # browser args from the fieldtrial_testing_config.json config file. For
-    # other OSes, we simply pass the "--enable-field-trial-config" flag. See the
-    # FIELDTRIAL_TESTING_ENABLED buildflag definition in
-    # components/variations/service/BUILD.gn for more details.
-    if not self.IsAndroid(possible_browser):
-      return '--enable-field-trial-config'
-
-    variations_dir = os.path.join(path_module.GetChromiumSrcDir(), 'testing',
-                                  'variations')
-
-    return fieldtrial_util.GenerateArgs(
-        os.path.join(variations_dir, 'fieldtrial_testing_config.json'),
-        self.FixupTargetOS(possible_browser.target_os),
-        current_args)
+    return '--enable-field-trial-config'
 
   @staticmethod
   def _GetPossibleBuildDirectories(chrome_src_dir, browser_type):
