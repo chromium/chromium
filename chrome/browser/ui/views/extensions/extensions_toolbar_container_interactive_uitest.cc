@@ -22,7 +22,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_coordinator.h"
@@ -36,7 +35,6 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
-#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/disable_reason.h"
@@ -1312,13 +1310,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarContainerFeatureUITest,
   // Open two tabs.
   int tab1_index = 0;
   int tab2_index = 1;
-  GURL url1 = embedded_test_server()->GetURL("one.com", "/title1.html");
-  GURL url2 = embedded_test_server()->GetURL("two.com", "/title1.html");
-  content::WebContents* tab1_web_contents =
-      chrome::AddAndReturnTabAt(browser(), url1, tab1_index,
-                                /*foreground=*/true);
+  content::WebContents* tab1_web_contents = chrome::AddAndReturnTabAt(
+      browser(), GURL("https://cero.com/"), tab1_index,
+      /*foreground=*/true);
   content::WebContents* tab2_web_contents =
-      chrome::AddAndReturnTabAt(browser(), url2, tab2_index,
+      chrome::AddAndReturnTabAt(browser(), GURL("https://one.com/"), tab2_index,
                                 /*foreground=*/false);
   int tab1_id = extensions::ExtensionTabUtil::GetTabId(tab1_web_contents);
   int tab2_id = extensions::ExtensionTabUtil::GetTabId(tab2_web_contents);
@@ -1326,11 +1322,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarContainerFeatureUITest,
   // Activate the first tab. Verify request access button is not visible
   // since no extension has added a request for such tab.
   browser()->tab_strip_model()->ActivateTabAt(tab1_index);
-  EXPECT_TRUE(content::WaitForLoadStop(tab1_web_contents));
   EXPECT_FALSE(request_access_button()->GetVisible());
 
-  // Add a site access request for extension A on the (active) first tab.
-  // Verify extension A is visible on the request access button.
+  // Add a site access request for extension A on the (active) first tab. Verify
+  // extension A is visible on the request access button.
   auto* permissions_manager = PermissionsManager::Get(browser()->profile());
   permissions_manager->AddSiteAccessRequest(tab1_web_contents, tab1_id,
                                             *extensionA);
@@ -1349,21 +1344,18 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarContainerFeatureUITest,
   // Activate the second tab. Verify extension B is visible on the request
   // access button.
   browser()->tab_strip_model()->ActivateTabAt(tab2_index);
-  EXPECT_TRUE(content::WaitForLoadStop(tab2_web_contents));
   EXPECT_TRUE(request_access_button()->GetVisible());
   EXPECT_THAT(request_access_button()->GetExtensionIdsForTesting(),
               testing::ElementsAre(extensionB->id()));
 
   // Remove site access request from the second tab. Verify request access
-  // button is no longer visible since no extension have a request for such
-  // tab.
+  // button is no longer visible since no extension have a request for such tab.
   permissions_manager->RemoveSiteAccessRequest(tab2_id, extensionB->id());
   EXPECT_FALSE(request_access_button()->GetVisible());
 
   // Activate the first tab. Verify request access button is visible because
   // Extension A request wasn't removed from that tab.
   browser()->tab_strip_model()->ActivateTabAt(tab1_index);
-  EXPECT_TRUE(content::WaitForLoadStop(tab1_web_contents));
   EXPECT_TRUE(request_access_button()->GetVisible());
   EXPECT_THAT(request_access_button()->GetExtensionIdsForTesting(),
               testing::ElementsAre(extensionA->id()));

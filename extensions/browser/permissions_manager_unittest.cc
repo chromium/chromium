@@ -524,23 +524,6 @@ TEST_F(PermissionsManagerUnittest, HasActiveTabAndCanAccess_PolicyUrl) {
       manager_->HasActiveTabAndCanAccess(*enterprise_extension, policy_url));
 }
 
-// Tests that HasRequestedHostPermissions returns true only for extensions
-// that explicitly requested host permissions.
-TEST_F(PermissionsManagerUnittest, HasRequestedHostPermissions) {
-  auto no_permissions_extension = AddExtension("Extension");
-  auto requested_site_extension = AddExtensionWithHostPermission(
-      "RequestedUrl Extension", "*://*.requested.com/*");
-  auto all_urls_extension = AddExtensionWithHostPermission(
-      "RequestedUrl Extension", "*://*.requested.com/*");
-  auto active_tab_extension = AddExtensionWithActiveTab("ActiveTab Extension");
-
-  EXPECT_FALSE(
-      manager_->HasRequestedHostPermissions(*no_permissions_extension));
-  EXPECT_TRUE(manager_->HasRequestedHostPermissions(*requested_site_extension));
-  EXPECT_TRUE(manager_->HasRequestedHostPermissions(*all_urls_extension));
-  EXPECT_FALSE(manager_->HasRequestedHostPermissions(*active_tab_extension));
-}
-
 TEST_F(PermissionsManagerUnittest,
        ExtensionRequestsHostPermissionsOrActiveTab) {
   auto no_permissions_extension = AddExtension("Extension");
