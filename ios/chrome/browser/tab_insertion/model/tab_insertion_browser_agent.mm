@@ -60,10 +60,10 @@ web::WebState* TabInsertionBrowserAgent::InsertWebState(
   DCHECK(IsIndexValidForBrowser(browser_.get(), tab_insertion_params.index));
 
   WebStateList* const web_state_list = browser_->GetWebStateList();
-  ChromeBrowserState* const browser_state = browser_->GetBrowserState();
+  ProfileIOS* const profile = browser_->GetProfile();
 
   std::unique_ptr<web::WebState> web_state;
-  web::WebState::CreateParams create_params(browser_state);
+  web::WebState::CreateParams create_params(profile);
   create_params.created_with_opener = tab_insertion_params.opened_by_dom;
 
   // Check whether the tab must be created as realized or not.
@@ -78,7 +78,7 @@ web::WebState* TabInsertionBrowserAgent::InsertWebState(
     // Ask the SessionRestorationService to create an unrealized WebState
     // that can be inserted into the WebStateList of `browser_`.
     web_state =
-        SessionRestorationServiceFactory::GetForBrowserState(browser_state)
+        SessionRestorationServiceFactory::GetForProfile(profile)
             ->CreateUnrealizedWebState(browser_.get(), std::move(storage));
   }
   DCHECK(web_state);
@@ -131,7 +131,7 @@ web::WebState* TabInsertionBrowserAgent::InsertWebState(
 
 web::WebState* TabInsertionBrowserAgent::InsertWebStateOpenedByDOM(
     web::WebState* parent) {
-  web::WebState::CreateParams create_params(browser_->GetBrowserState());
+  web::WebState::CreateParams create_params(browser_->GetProfile());
   create_params.created_with_opener = YES;
 #if BUILDFLAG(USE_BLINK)
   create_params.opener_web_state = parent;

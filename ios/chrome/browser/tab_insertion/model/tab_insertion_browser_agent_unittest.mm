@@ -27,22 +27,22 @@ const char kURL1[] = "https://www.some.url.com";
 class TabInsertionBrowserAgentTest : public PlatformTest {
  public:
   TabInsertionBrowserAgentTest() {
-    browser_state_ = TestChromeBrowserState::Builder().Build();
+    profile_ = TestProfileIOS::Builder().Build();
     browser_ = std::make_unique<TestBrowser>(
-        browser_state_.get(), std::make_unique<FakeWebStateListDelegate>(
-                                  /*force_realization_on_activation=*/true));
+        profile_.get(), std::make_unique<FakeWebStateListDelegate>(
+                            /*force_realization_on_activation=*/true));
     TabInsertionBrowserAgent::CreateForBrowser(browser_.get());
     agent_ = TabInsertionBrowserAgent::FromBrowser(browser_.get());
   }
 
   void SetUp() override {
     PlatformTest::SetUp();
-    SessionRestorationServiceFactory::GetForBrowserState(browser_state_.get())
+    SessionRestorationServiceFactory::GetForProfile(profile_.get())
         ->SetSessionID(browser_.get(), "browser");
   }
 
   void TearDown() override {
-    SessionRestorationServiceFactory::GetForBrowserState(browser_state_.get())
+    SessionRestorationServiceFactory::GetForProfile(profile_.get())
         ->Disconnect(browser_.get());
     PlatformTest::TearDown();
   }
@@ -62,7 +62,7 @@ class TabInsertionBrowserAgentTest : public PlatformTest {
 
  protected:
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   raw_ptr<TabInsertionBrowserAgent> agent_;
 };
