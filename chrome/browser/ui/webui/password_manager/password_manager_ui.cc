@@ -380,7 +380,7 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
       {"save", IDS_SAVE},
       {"savePasswordsLabel",
        IDS_PASSWORD_MANAGER_UI_SAVE_PASSWORDS_TOGGLE_LABEL},
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
       {"screenlockReauthPromoConfirmation",
        IDS_PASSWORD_MANAGER_UI_SCREENLOCK_REAUTH_PROMO_CARD_CONFIRMATION},
 #endif

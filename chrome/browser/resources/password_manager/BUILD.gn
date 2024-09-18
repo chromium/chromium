@@ -46,7 +46,7 @@ build_webui("build") {
     ]
   }
 
-  if (is_mac || is_win) {
+  if (is_mac || is_win || is_chromeos) {
     if (is_chrome_branded) {
       static_files += [
         "images/screenlock_reauth_promo.svg",
