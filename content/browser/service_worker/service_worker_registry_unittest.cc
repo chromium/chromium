@@ -1450,11 +1450,16 @@ TEST_F(ServiceWorkerScopeAndRegistrationCacheTest,
        RegistrationCacheSizeAndScopeCacheLimitPerKey) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeaturesAndParameters(
-      {{storage::kServiceWorkerScopeCache,
-        {{storage::kServiceWorkerScopeCacheLimitPerKey.name, "2"}}},
+      {{storage::kServiceWorkerScopeCache, {}},
        {kServiceWorkerRegistrationCache,
         {{kServiceWorkerRegistrationCacheSize.name, "1"}}}},
       {});
+  const size_t kMaxScopeUrlCount = 2;
+  storage::OverrideMaxServiceWorkerScopeUrlCountForTesting(kMaxScopeUrlCount);
+  base::ScopedClosureRunner reset(base::BindOnce([]() {
+    storage::OverrideMaxServiceWorkerScopeUrlCountForTesting(std::nullopt);
+  }));
+
   // Restart to apply the above feature params.
   SimulateRestart();
   EXPECT_EQ(1U, registration_id_cache().max_size());
@@ -1565,7 +1570,7 @@ TEST_F(ServiceWorkerScopeAndRegistrationCacheTest,
                     /*expected_registration_id_cache_size=*/1);
 
   // Register kScope3. This time, even if the scope count exceeds the
-  // kServiceWorkerScopeCacheLimitPerKey, the scope must be cached because this
+  // kMaxScopeUrlCount, the scope must be cached because this
   // operation doesn't involve mojo call that send a large size of data.
   scoped_refptr<ServiceWorkerRegistration> registration3 =
       RegisterServiceWorker(kScope3, kScript, /*resource_id=*/3,
@@ -1584,7 +1589,7 @@ TEST_F(ServiceWorkerScopeAndRegistrationCacheTest,
                     /*expected_registration_id_cache_size=*/1);
 
   // Check registration for kScope3. This time, the scope count exceeds
-  // the kServiceWorkerScopeCacheLimitPerKey, and the scope_cache will be
+  // the kMaxScopeUrlCount, and the scope_cache will be
   // cleared.
   CheckRegistration(kScope3, blink::ServiceWorkerStatusCode::kOk, registration3,
                     /*expected_inflight_call_count=*/1,
@@ -1593,7 +1598,7 @@ TEST_F(ServiceWorkerScopeAndRegistrationCacheTest,
 
   // Confirm that finding kOutOfScope trigger mojo call. The scope
   // cache must be empty because the scope count exceeds the
-  // kServiceWorkerScopeCacheLimitPerKey.
+  // kMaxScopeUrlCount.
   CheckRegistration(kOutOfScope, blink::ServiceWorkerStatusCode::kErrorNotFound,
                     /*expected_registration=*/nullptr,
                     /*expected_inflight_call_count=*/1,

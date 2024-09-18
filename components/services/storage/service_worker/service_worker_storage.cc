@@ -44,6 +44,15 @@ const base::FilePath::CharType kDatabaseName[] = FILE_PATH_LITERAL("Database");
 const base::FilePath::CharType kDiskCacheName[] =
     FILE_PATH_LITERAL("ScriptCache");
 
+std::optional<size_t> g_override_max_service_worker_scope_url_count_for_testing;
+
+size_t GetMaxServiceWorkerScopeUrlCountPerStorageKey() {
+  if (g_override_max_service_worker_scope_url_count_for_testing) {
+    return *g_override_max_service_worker_scope_url_count_for_testing;
+  }
+  return kMaxServiceWorkerScopeUrlCountPerStorageKey;
+}
+
 // Used for UMA. Append-only.
 enum class DeleteAndStartOverResult {
   kDeleteOk = 0,
@@ -114,10 +123,11 @@ BASE_FEATURE(kServiceWorkerScopeCache,
              "ServiceWorkerScopeCache",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// The scope URL count limit per the storage key. This must be set less than or
-// equal to 'kServiceWorkerScopeCacheHardLimitPerKey'.
-const base::FeatureParam<int> kServiceWorkerScopeCacheLimitPerKey{
-    &kServiceWorkerScopeCache, "ServiceWorkerScopeCacheLimitPerKey", 100};
+void OverrideMaxServiceWorkerScopeUrlCountForTesting(  // IN-TEST
+    std::optional<size_t> max_count) {
+  g_override_max_service_worker_scope_url_count_for_testing =
+      std::move(max_count);
+}
 
 ServiceWorkerStorage::InitialData::InitialData()
     : next_registration_id(blink::mojom::kInvalidServiceWorkerRegistrationId),
@@ -1840,7 +1850,7 @@ void ServiceWorkerStorage::FindForClientUrlInDB(
   bool enable_scope_cache =
       base::FeatureList::IsEnabled(kServiceWorkerScopeCache) &&
       (registration_data_list.size() <=
-       static_cast<size_t>(kServiceWorkerScopeCacheLimitPerKey.Get()));
+       GetMaxServiceWorkerScopeUrlCountPerStorageKey());
   // `scopes` should contain all of the service worker's registration
   // scopes that are relevant to the `key` so that we can cache scope
   // URLs in the UI thread. The 'scopes' is valid only when the status

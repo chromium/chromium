@@ -20,6 +20,7 @@
 #include "components/services/storage/public/cpp/buckets/constants.h"
 #include "components/services/storage/public/cpp/quota_error_or.h"
 #include "components/services/storage/public/mojom/storage_policy_update.mojom.h"
+#include "components/services/storage/service_worker/service_worker_storage.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/service_worker/service_worker_info.h"
@@ -47,10 +48,6 @@ namespace {
 BASE_FEATURE(kServiceWorkerStorageControlResponseQueue,
              "ServiceWorkerStorageControlResponseQueue",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-// A hard limit of the ServiceWorkerScopeCacheLimitPerKey feature param.
-// (https://crbug.com/1411197)
-const int kServiceWorkerScopeCacheHardLimitPerKey = 100;
 
 blink::ServiceWorkerStatusCode DatabaseStatusToStatusCode(
     storage::mojom::ServiceWorkerDatabaseStatus status) {
@@ -1584,7 +1581,7 @@ void ServiceWorkerRegistry::NotifyRegistrationStored(
   if (iter != registration_scope_cache_.end()) {
     std::set<GURL>& scopes = iter->second;
     scopes.insert(stored_scope);
-    if (scopes.size() > kServiceWorkerScopeCacheHardLimitPerKey) {
+    if (scopes.size() > storage::kMaxServiceWorkerScopeUrlCountPerStorageKey) {
       registration_scope_cache_.Erase(iter);
     }
   }
