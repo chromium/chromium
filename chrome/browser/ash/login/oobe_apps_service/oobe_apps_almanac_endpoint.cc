@@ -6,7 +6,8 @@
 
 #include "base/functional/callback.h"
 #include "chrome/browser/apps/almanac_api_client/almanac_api_util.h"
-#include "chrome/browser/apps/almanac_api_client/device_info_manager.h"
+#include "chrome/browser/ash/login/oobe_apps_service/proto/oobe.pb.h"
+#include "chrome/browser/profiles/profile.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -58,15 +59,6 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
       }
     )");
 
-// Builds the OOBE List request from the given device info.
-std::string BuildRequestBody(const apps::DeviceInfo& info) {
-  oobe::proto::OOBEListRequest request_proto;
-  *request_proto.mutable_device_context() = info.ToDeviceContext();
-  *request_proto.mutable_user_context() = info.ToUserContext();
-
-  return request_proto.SerializeAsString();
-}
-
 std::optional<oobe::proto::OOBEListResponse> MakeResponseOptional(
     base::expected<oobe::proto::OOBEListResponse, apps::QueryError>
         query_response) {
@@ -79,14 +71,12 @@ std::optional<oobe::proto::OOBEListResponse> MakeResponseOptional(
 
 }  // namespace
 
-void GetAppsAndUseCases(
-    const apps::DeviceInfo& device_info,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    GetAppsCallback callback) {
-  QueryAlmanacApi<oobe::proto::OOBEListResponse>(
-      url_loader_factory, kTrafficAnnotation, BuildRequestBody(device_info),
-      kAlmanacOobeAppsEndpoint, kMaxResponseSizeInBytes,
-      kServerErrorHistogramName,
+void GetAppsAndUseCases(Profile* profile, GetAppsCallback callback) {
+  oobe::proto::OOBEListRequest request;
+  apps::QueryAlmanacApiWithContext<oobe::proto::OOBEListRequest,
+                                   oobe::proto::OOBEListResponse>(
+      profile, kAlmanacOobeAppsEndpoint, request, kTrafficAnnotation,
+      kMaxResponseSizeInBytes, kServerErrorHistogramName,
       base::BindOnce(&MakeResponseOptional).Then(std::move(callback)));
 }
 

@@ -60,7 +60,6 @@ class OobeAppsDiscoveryService : public KeyedService {
   void OnServerResponse(std::optional<oobe::proto::OOBEListResponse> response);
 
   raw_ptr<Profile> profile_;
-  std::unique_ptr<apps::DeviceInfoManager> device_info_manager_;
   std::vector<OOBEAppDefinition> apps_list_;
   std::vector<OOBEDeviceUseCase> use_cases_;
   ResultCallbackAppsAndUseCases callback_;

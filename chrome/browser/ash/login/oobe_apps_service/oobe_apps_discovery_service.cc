@@ -10,9 +10,7 @@
 namespace ash {
 
 OobeAppsDiscoveryService::OobeAppsDiscoveryService(Profile* profile)
-    : profile_(profile),
-      device_info_manager_(std::make_unique<apps::DeviceInfoManager>(profile)) {
-}
+    : profile_(profile) {}
 
 OobeAppsDiscoveryService::~OobeAppsDiscoveryService() = default;
 
@@ -40,15 +38,9 @@ void OobeAppsDiscoveryService::PropagateResult(
 }
 
 void OobeAppsDiscoveryService::DownloadAppsAndUseCases() {
-  device_info_manager_->GetDeviceInfo(base::BindOnce(
-      &OobeAppsDiscoveryService::OnGetDeviceInfo, weak_factory_.GetWeakPtr()));
-}
-
-void OobeAppsDiscoveryService::OnGetDeviceInfo(apps::DeviceInfo device_info) {
   oobe_apps_almanac_endpoint::GetAppsAndUseCases(
-      device_info, profile_->GetURLLoaderFactory(),
-      base::BindOnce(&OobeAppsDiscoveryService::OnServerResponse,
-                     weak_factory_.GetWeakPtr()));
+      profile_, base::BindOnce(&OobeAppsDiscoveryService::OnServerResponse,
+                               weak_factory_.GetWeakPtr()));
 }
 
 void OobeAppsDiscoveryService::OnServerResponse(
