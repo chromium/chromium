@@ -1060,7 +1060,7 @@ See your search engine’s instructions for deleting your search history, if app
         Rename group
       </message>
       <message name="IDS_IOS_CONTENT_CONTEXT_SAVEIMAGE" desc="The name of the Save Image As command in the content area context menu">
-        Save in photos
+        Save in Photos
       </message>
       <message name="IDS_IOS_CONTENT_CONTEXT_SELECTTABS" desc="The iOS context menu item for entering into the selection mode, where users can select tabs to perform bulk actions on them.[iOS only]">
         Select tabs
