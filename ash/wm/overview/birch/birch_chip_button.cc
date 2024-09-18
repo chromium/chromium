@@ -369,7 +369,11 @@ void BirchChipButton::StylizeIconForItemType(
         background_color_id.value(), rounded_corners));
   }
 
-  if (secondary_icon_type == SecondaryIconType::kNoIcon) {
+  // Due to https://b/364912772, self share items are created with `kNoIcon`
+  // when no form factor is found. We still want to show a generic self share
+  // icon in this case.
+  if (secondary_icon_type == SecondaryIconType::kNoIcon &&
+      item_->GetType() != BirchItemType::kSelfShare) {
     secondary_icon_view_->SetVisible(false);
     return;
   }
@@ -424,6 +428,15 @@ void BirchChipButton::SetIconImage(const ui::ImageModel& icon_image,
         break;
     }
     secondary_icon_view_->SetImage(secondary_icon_image);
+  }
+
+  // TODO(https://b/364912772): Remove temporary fix by adding sender's device
+  // form_factor to `SelfTabToSelfEntry`.
+  if (item_->GetType() == BirchItemType::kSelfShare) {
+    // All Self Share Birch Items will utilize a generic share secondary icon as
+    // part of a temporary fix.
+    secondary_icon_view_->SetImage(ui::ImageModel::FromVectorIcon(
+        kBirchSecondaryIconGenericShareIcon, kSecondaryIconColorId));
   }
 
   bool use_smaller_dimension = icon_image.Size().width() <= kAppIconSize ||

@@ -47,6 +47,7 @@ aggregate_vector_icons("ash_vector_icons") {
     "birch_chrome_backup.icon",
     "birch_secondary_icon_audio.icon",
     "birch_secondary_icon_desktop.icon",
+    "birch_secondary_icon_generic_share.icon",
     "birch_secondary_icon_landscape.icon",
     "birch_secondary_icon_portrait.icon",
     "birch_secondary_icon_unknown.icon",
