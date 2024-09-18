@@ -40,6 +40,8 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
 #include "crypto/sha2.h"
+#include "device/bluetooth/bluetooth_adapter.h"
+#include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/fido/attestation_statement.h"
 #include "device/fido/authenticator_data.h"
 #include "device/fido/authenticator_get_assertion_response.h"
@@ -1699,12 +1701,13 @@ void AuthenticatorCommonImpl::GetClientCapabilities(
       base::BarrierCallback<blink::mojom::WebAuthnClientCapabilityPtr>(
           kNumberOfComputedCapabilities, std::move(completion_callback));
 
-  // TODO(crbug.com/360327828): Implement `isHybridTransportAvailable()`.
-  barrier_callback.Run(
-      MakeCapability(client_capabilities::kHybridTransport, false));
   barrier_callback.Run(MakeCapability(
       client_capabilities::kRelatedOrigins,
       base::FeatureList::IsEnabled(device::kWebAuthnRelatedOrigin)));
+
+  IsHybridTransportSupported(
+      base::BindOnce(&MakeCapability, client_capabilities::kHybridTransport)
+          .Then(barrier_callback));
 
   IsUvpaaAvailableInternal(
       caller_origin,
@@ -1716,6 +1719,27 @@ void AuthenticatorCommonImpl::GetClientCapabilities(
       caller_origin,
       base::BindOnce(&MakeCapability, client_capabilities::kConditionalGet)
           .Then(barrier_callback));
+}
+
+void AuthenticatorCommonImpl::IsHybridTransportSupported(
+    base::OnceCallback<void(bool)> callback) {
+  // Similar to Web Bluetooth API (`navigator.bluetooth.getAvailability()`) we
+  // want respect the policy and return `false` if the policy is enforced.
+  if (!GetRenderFrameHost()->IsFeatureEnabled(
+          blink::mojom::PermissionsPolicyFeature::kBluetooth)) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  if (!device::BluetoothAdapterFactory::Get()->IsLowEnergySupported()) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  device::BluetoothAdapterFactory::Get()->GetAdapter(
+      base::BindOnce([](scoped_refptr<device::BluetoothAdapter> adapter) {
+        return adapter && adapter->IsPresent();
+      }).Then(std::move(callback)));
 }
 
 void AuthenticatorCommonImpl::IsUvpaaAvailableInternal(

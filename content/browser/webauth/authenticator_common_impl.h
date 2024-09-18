@@ -291,6 +291,12 @@ class CONTENT_EXPORT AuthenticatorCommonImpl : public AuthenticatorCommon {
 
   bool IsFocused() const;
 
+  // Checks if hybrid transport is supported on this device, i.e. if it has a
+  // Bluetooth adapter that supports BLE. If so, runs |callback| with `true`.
+  // Otherwise, or if Bluetooth is disabled by Permissions Policy, runs
+  // |callback| with `false`.
+  void IsHybridTransportSupported(base::OnceCallback<void(bool)> callback);
+
   // `is_get_client_capabilities_call` is true if this call originated from the
   // `GetClientCapabilities` method. The UMA metric is only recorded if this is
   // false, i.e. the call came directly from

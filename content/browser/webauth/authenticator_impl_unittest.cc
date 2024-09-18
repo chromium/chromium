@@ -75,6 +75,7 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "crypto/sha2.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
@@ -710,8 +711,12 @@ class AuthenticatorImplTest : public AuthenticatorTestBase {
 
   void SetUp() override {
     AuthenticatorTestBase::SetUp();
-    bluetooth_global_values_->SetLESupported(true);
+    SetBluetoothLESupported(true);
     device::BluetoothAdapterFactory::SetAdapterForTesting(mock_adapter_);
+  }
+
+  void SetBluetoothLESupported(bool supported) {
+    bluetooth_global_values_->SetLESupported(supported);
   }
 
   void NavigateAndCommit(const GURL& url) {
@@ -1110,8 +1115,43 @@ TEST_F(AuthenticatorImplTest, GetClientCapabilities) {
   }
 }
 
-TEST_F(AuthenticatorImplTest, GetClientCapabilities_HybridTransport) {
+TEST_F(AuthenticatorImplTest, GetClientCapabilities_HybridTransportSupported) {
   NavigateAndCommit(GURL(kTestOrigin1));
+  EXPECT_CALL(*mock_adapter_, IsPresent()).WillOnce(::testing::Return(true));
+  ClientCapabilitiesList capabilities = AuthenticatorGetClientCapabilities();
+  ExpectCapability(capabilities, client_capabilities::kHybridTransport, true);
+}
+
+TEST_F(AuthenticatorImplTest,
+       GetClientCapabilities_HybridTransport_NoBluetoothAdapter) {
+  NavigateAndCommit(GURL(kTestOrigin1));
+  EXPECT_CALL(*mock_adapter_, IsPresent()).WillOnce(::testing::Return(false));
+  ClientCapabilitiesList capabilities = AuthenticatorGetClientCapabilities();
+  ExpectCapability(capabilities, client_capabilities::kHybridTransport, false);
+}
+
+TEST_F(AuthenticatorImplTest,
+       GetClientCapabilities_HybridTransport_BluetoothDisabled) {
+  blink::ParsedPermissionsPolicy permissions_policy(1);
+  permissions_policy[0].feature =
+      blink::mojom::PermissionsPolicyFeature::kBluetooth;
+  // Simulate navigating to a page with this Permissions Policy.
+  auto navigation_simulator = NavigationSimulator::CreateRendererInitiated(
+      GURL(kTestOrigin1), main_rfh());
+  navigation_simulator->SetPermissionsPolicyHeader(permissions_policy);
+  navigation_simulator->Commit();
+
+  EXPECT_CALL(*mock_adapter_, IsPresent()).Times(0);
+  ClientCapabilitiesList capabilities = AuthenticatorGetClientCapabilities();
+  ExpectCapability(capabilities, client_capabilities::kHybridTransport, false);
+}
+
+TEST_F(AuthenticatorImplTest,
+       GetClientCapabilities_HybridTransport_LowEnergyNotSupported) {
+  SetBluetoothLESupported(false);
+
+  NavigateAndCommit(GURL(kTestOrigin1));
+  EXPECT_CALL(*mock_adapter_, IsPresent).Times(0);
   ClientCapabilitiesList capabilities = AuthenticatorGetClientCapabilities();
   ExpectCapability(capabilities, client_capabilities::kHybridTransport, false);
 }
@@ -3429,13 +3469,41 @@ TEST_F(AuthenticatorContentBrowserClientTest,
     ExpectCapability(capabilities,
                      client_capabilities::kUserVerifyingPlatformAuthenticator,
                      is_uvpaa);
+  }
+}
 
-    // TODO(crbug.com/360327828): Test PPAA separately. Given that the value of
-    // "hybridTransport" is currently hardcoded to "false", it's safe to assume
-    // that "passkeyPlatformAuthenticator" matches the value of "is_uvpaa".
+TEST_F(AuthenticatorContentBrowserClientTest,
+       GetClientCapabilities_CheckPPAAPlumbing) {
+  NavigateAndCommit(GURL(kTestOrigin1));
+
+  // Verify: PPAA == `is_uvpaa` || HybridTransport (false).
+  for (const bool is_uvpaa : {false, true}) {
+    SCOPED_TRACE(::testing::Message() << "is_uvpaa=" << is_uvpaa);
+    test_client_.GetTestWebAuthenticationDelegate()->is_uvpaa_override =
+        is_uvpaa;
+    // Simulate `hybrid_transport = false`.
+    EXPECT_CALL(*mock_adapter_, IsPresent()).WillOnce(::testing::Return(false));
+
+    ClientCapabilitiesList capabilities = AuthenticatorGetClientCapabilities();
     ExpectCapability(capabilities,
                      client_capabilities::kPasskeyPlatformAuthenticator,
                      is_uvpaa);
+  }
+
+  // Verify: PPAA == isUVPAA (false) || `hybrid_transport`.
+  for (const bool hybrid_transport : {false, true}) {
+    SCOPED_TRACE(::testing::Message()
+                 << "hybrid_transport=" << hybrid_transport);
+    // Simulate `isUVPAA = false`.
+    test_client_.GetTestWebAuthenticationDelegate()->is_uvpaa_override = false;
+
+    EXPECT_CALL(*mock_adapter_, IsPresent())
+        .WillOnce(::testing::Return(hybrid_transport));
+
+    ClientCapabilitiesList capabilities = AuthenticatorGetClientCapabilities();
+    ExpectCapability(capabilities,
+                     client_capabilities::kPasskeyPlatformAuthenticator,
+                     hybrid_transport);
   }
 }
 
