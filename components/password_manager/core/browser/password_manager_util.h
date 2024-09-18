@@ -136,8 +136,7 @@ password_manager::PasswordForm MakeNormalizedBlocklistedForm(
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
 bool ShouldBiometricAuthenticationForFillingToggleBeVisible(
     const PrefService* local_state);
-#endif
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+
 bool ShouldShowBiometricAuthenticationBeforeFillingPromo(
     password_manager::PasswordManagerClient* client);
 #endif
