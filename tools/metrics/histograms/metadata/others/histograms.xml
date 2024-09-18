@@ -515,7 +515,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ads.InterestGroup.AtAuctionTotalSize.{Type}" units="bytes"
+<histogram name="Ads.InterestGroup.AtAuctionTotalSize.{Type}" units="KB"
     expires_after="2024-11-17">
   <owner>caraitto@chromium.org</owner>
   <owner>pauljensen@chromium.org</owner>
