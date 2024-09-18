@@ -197,7 +197,8 @@ void AnimationFrameTimingMonitor::OnTaskCompleted(
         ScriptTimingInfo::InvokerType::kPromiseResolve) ||
        (pending_script_info_->invoker_type ==
         ScriptTimingInfo::InvokerType::kPromiseReject))) {
-    if (frame && frame->DomWindow()) {
+    if (frame && !frame->IsDetached()) {
+      DCHECK(frame->DomWindow());
       PopScriptEntryPoint(ToScriptStateForMainWorld(frame),
                           /*probe_data=*/nullptr, end_time);
     }
