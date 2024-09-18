@@ -55,7 +55,7 @@ class COMPONENT_EXPORT(MANTA) SparkyProvider : virtual public BaseProvider {
   ~SparkyProvider() override;
 
   using SparkyShowAnswerCallback =
-      base::OnceCallback<void(MantaStatus, DialogTurn*)>;
+      base::OnceCallback<void(MantaStatus, proto::Turn*)>;
 
   using SparkyProtoResponseCallback =
       base::OnceCallback<void(std::unique_ptr<manta::proto::SparkyResponse>,
@@ -76,6 +76,8 @@ class COMPONENT_EXPORT(MANTA) SparkyProvider : virtual public BaseProvider {
   int consecutive_assistant_turn_count() {
     return consecutive_assistant_turn_count_;
   }
+
+  bool is_additional_call_expected() { return is_additional_call_expected_; }
 
  protected:
   SparkyProvider(
@@ -136,6 +138,11 @@ class COMPONENT_EXPORT(MANTA) SparkyProvider : virtual public BaseProvider {
 
   // Number of consecutive assistant turns at the end of `request_`.
   int consecutive_assistant_turn_count_ = 0;
+
+  // Boolean indicate if an extra server request is required. It's updated
+  // whenever a new agent response is received, the turn limit is reached or a
+  // new conversation is started.
+  bool is_additional_call_expected_ = false;
 
   std::unique_ptr<SparkyDelegate> sparky_delegate_;
   std::unique_ptr<SystemInfoDelegate> system_info_delegate_;

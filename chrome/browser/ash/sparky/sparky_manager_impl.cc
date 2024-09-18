@@ -154,7 +154,8 @@ void SparkyManagerImpl::AnswerQuestionRepeating(
     MahiAnswerQuestionCallbackRepeating callback) {
   if (current_panel_content) {
     // Creates a new turn for the current question.
-    manta::DialogTurn new_turn(base::UTF16ToUTF8(question), manta::Role::kUser);
+    manta::proto::Turn new_turn = manta::CreateTurn(
+        base::UTF16ToUTF8(question), manta::proto::Role::ROLE_USER);
 
     auto sparky_context = std::make_unique<manta::SparkyContext>(
         new_turn, base::UTF16ToUTF8(current_panel_content_->page_content));
@@ -282,7 +283,7 @@ void SparkyManagerImpl::RequestProviderWithQuestion(
 void SparkyManagerImpl::OnSparkyProviderQAResponse(
     MahiAnswerQuestionCallbackRepeating callback,
     manta::MantaStatus status,
-    manta::DialogTurn* latest_turn) {
+    manta::proto::Turn* latest_turn) {
   // Currently the history of dialogs will only refresh if the user closes the
   // UI and then reopens it again.
   // TODO (b/352651459): Add a refresh button to reset the dialog.
@@ -292,14 +293,14 @@ void SparkyManagerImpl::OnSparkyProviderQAResponse(
     // Instead of relying the mahi's `MahiUiController::HandleError()`, displays
     // customized message in the dialog.
     std::move(callback).Run(
-        GenerateErrorMessage(latest_turn->message, status.status_code),
+        GenerateErrorMessage(latest_turn->message(), status.status_code),
         MahiResponseStatus::kSuccess);
     return;
   }
 
   if (latest_turn) {
     latest_response_status_ = MahiResponseStatus::kSuccess;
-    callback.Run(base::UTF8ToUTF16(latest_turn->message),
+    callback.Run(base::UTF8ToUTF16(latest_turn->message()),
                  latest_response_status_);
 
     auto sparky_context = std::make_unique<manta::SparkyContext>(
@@ -307,14 +308,11 @@ void SparkyManagerImpl::OnSparkyProviderQAResponse(
     sparky_context->server_url = ash::switches::ObtainSparkyServerUrl();
     sparky_context->page_url = current_page_info_->url.spec();
     sparky_context->files = sparky_provider_->GetFilesSummary();
-    CheckTurnLimit(*latest_turn);
+    CheckTurnLimit();
 
-    // If the latest action is not the final action from the server, then an
-    // additional request is made to the server. The last action must be of type
-    // kAllDone to prevent an additional call.
-    if (!latest_turn->actions.empty() &&
-        (latest_turn->actions.back().type != manta::ActionType::kAllDone ||
-         !latest_turn->actions.back().all_done)) {
+    // If additional call is expected, then an additional request is made to the
+    // server.
+    if (sparky_provider_->is_additional_call_expected()) {
       timer_->Start(
           FROM_HERE, kWaitBeforeAdditionalCall,
           base::BindOnce(&SparkyManagerImpl::RequestProviderWithQuestion,
@@ -333,18 +331,15 @@ void SparkyManagerImpl::OnSparkyProviderQAResponse(
   }
 }
 
-void SparkyManagerImpl::CheckTurnLimit(const manta::DialogTurn& latest_turn) {
+void SparkyManagerImpl::CheckTurnLimit() {
   // If the size of consecutive assistant turns at the end does not exceed the
   // turn limit then return.
   if (sparky_provider_->consecutive_assistant_turn_count() <
       kMaxConsecutiveTurns) {
     return;
   }
-  // If the last action is already set to not made an additional server call
-  // then return.
-  if (latest_turn.actions.empty() ||
-      latest_turn.actions.back().type != manta::ActionType::kAllDone ||
-      latest_turn.actions.back().all_done == true) {
+  // If additional call is already unexpected then return.
+  if (!sparky_provider_->is_additional_call_expected()) {
     return;
   }
   // Assign the last action as all done to prevent any additional calls to the
@@ -368,7 +363,8 @@ void SparkyManagerImpl::OnGetPageContentForQA(
   current_panel_content_ = std::move(mahi_content_ptr);
 
   // Creates a new turn for the current question.
-  manta::DialogTurn new_turn(base::UTF16ToUTF8(question), manta::Role::kUser);
+  manta::proto::Turn new_turn = manta::CreateTurn(
+      base::UTF16ToUTF8(question), manta::proto::Role::ROLE_USER);
 
   auto sparky_context = std::make_unique<manta::SparkyContext>(
       new_turn, base::UTF16ToUTF8(current_panel_content_->page_content));

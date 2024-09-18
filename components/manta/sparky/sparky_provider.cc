@@ -102,6 +102,7 @@ std::vector<manta::FileData> SparkyProvider::GetFilesSummary() {
 void SparkyProvider::ClearDialog() {
   request_.Clear();
   consecutive_assistant_turn_count_ = 0;
+  is_additional_call_expected_ = false;
 }
 
 void SparkyProvider::MarkLastActionAllDone() {
@@ -118,12 +119,10 @@ void SparkyProvider::MarkLastActionAllDone() {
   auto* last_conversation = sparky_context_data->mutable_conversation(
       sparky_context_data->conversation_size() - 1);
 
-  if (last_conversation->action_size() == 0) {
-    return;
-  }
-  auto* last_action =
-      last_conversation->mutable_action(last_conversation->action_size() - 1);
+  // Keeps the last action. Adds a new `all_done` action at the end instead.
+  auto* last_action = last_conversation->add_action();
   last_action->set_all_done(true);
+  is_additional_call_expected_ = false;
 }
 
 void SparkyProvider::QuestionAndAnswer(
@@ -153,9 +152,8 @@ void SparkyProvider::OnScreenshotObtained(
   // Only adds the latest turn to the request if it is from the user. If the
   // turn comes from the assistant, it has been added when the response is
   // received from the assistant.
-  if (sparky_context->latest_turn.role == manta::Role::kUser) {
-    AddDialogTurnToSparkyContext(sparky_context->latest_turn,
-                                 sparky_context_data);
+  if (sparky_context->latest_turn.role() == proto::ROLE_USER) {
+    *sparky_context_data->add_conversation() = sparky_context->latest_turn;
     consecutive_assistant_turn_count_ = 0;
   }
 
@@ -398,6 +396,14 @@ void SparkyProvider::OnDialogResponse(std::unique_ptr<SparkyContext>,
         sparky_delegate_->LaunchFile(action.file_action().launch_file_path());
       }
     }
+
+    // Checks if additional server call is expected.
+    auto last_action = latest_reply.action(latest_reply.action_size() - 1);
+    if (last_action.has_all_done()) {
+      is_additional_call_expected_ = !last_action.all_done();
+    } else {
+      is_additional_call_expected_ = false;
+    }
   }
 
   // Attaches the response to the cache.
@@ -407,8 +413,7 @@ void SparkyProvider::OnDialogResponse(std::unique_ptr<SparkyContext>,
   *sparky_context_data->add_conversation() = latest_reply;
   consecutive_assistant_turn_count_++;
 
-  DialogTurn latest_dialog_struct = ConvertDialogToStruct(&latest_reply);
-  std::move(done_callback).Run(status, &latest_dialog_struct);
+  std::move(done_callback).Run(status, &latest_reply);
 }
 
 void SparkyProvider::OnFilesObtained(

@@ -12,6 +12,7 @@
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
 #include "components/manta/mahi_provider.h"
 #include "components/manta/manta_service.h"
+#include "components/manta/proto/sparky.pb.h"
 #include "components/manta/sparky/sparky_provider.h"
 #include "components/manta/sparky/sparky_util.h"
 #include "ui/gfx/image/image_skia.h"
@@ -81,14 +82,14 @@ class SparkyManagerImpl : public chromeos::MahiManager, public KeyedService {
 
   void OnSparkyProviderQAResponse(MahiAnswerQuestionCallbackRepeating callback,
                                   manta::MantaStatus status,
-                                  manta::DialogTurn* latest_turn);
+                                  manta::proto::Turn* latest_turn);
 
   // There is a maximum limit of consecutive calls which can be made from the
   // client with no additional request from the user. If the response from the
-  // server is trying to exceed this limit, there is a manual override and the
-  // last action for the latest turn will be set to done, so that no additional
+  // server is trying to exceed this limit, there is a manual override and a
+  // done action will added to the end of the latest turn, so that no additional
   // calls to the server are made.
-  void CheckTurnLimit(const manta::DialogTurn& latest_turn);
+  void CheckTurnLimit();
 
   void RequestProviderWithQuestion(
       std::unique_ptr<manta::SparkyContext> sparky_context,
