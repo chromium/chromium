@@ -40,10 +40,13 @@ class FileSearchProvider : public SearchProvider {
           last_accessed(last_accessed) {}
   };
 
+  // If `allowed_extensions` is not empty, then only results that have an
+  // extension in `allowed_extensions` will be returned.
   explicit FileSearchProvider(
       Profile* profile,
       int file_type = base::FileEnumerator::FileType::FILES |
-                      base::FileEnumerator::FileType::DIRECTORIES);
+                      base::FileEnumerator::FileType::DIRECTORIES,
+      std::vector<std::string> allowed_extensions = {});
   ~FileSearchProvider() override;
 
   FileSearchProvider(const FileSearchProvider&) = delete;
@@ -58,6 +61,10 @@ class FileSearchProvider : public SearchProvider {
     root_path_ = root_path;
   }
   void SetFileTypeForTesting(int file_type) { file_type_ = file_type; }
+  void SetAllowedExtensionsForTesting(
+      std::vector<std::string> allowed_extensions) {
+    allowed_extensions_ = allowed_extensions;
+  }
 
  private:
   void OnSearchComplete(std::vector<FileSearchProvider::FileInfo> paths);
@@ -75,6 +82,7 @@ class FileSearchProvider : public SearchProvider {
   int file_type_;
 
   std::vector<base::FilePath> trash_paths_;
+  std::vector<std::string> allowed_extensions_;
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<FileSearchProvider> weak_factory_{this};

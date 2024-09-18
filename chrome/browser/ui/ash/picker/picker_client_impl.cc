@@ -66,16 +66,6 @@ namespace {
 // TODO: b/345303965 - Finalize this string.
 constexpr std::u16string_view kAnnouncementViewName = u"Picker";
 
-bool IsSupportedLocalFileFormat(const base::FilePath& file_path) {
-  for (std::string_view extension :
-       {".jpg", ".jpeg", ".png", ".gif", ".webp"}) {
-    if (file_path.MatchesFinalExtension(extension)) {
-      return true;
-    }
-  }
-  return false;
-}
-
 std::vector<ash::PickerSearchResult> CreateSearchResultsForRecentLocalImages(
     std::vector<PickerFileSuggester::LocalFile> files) {
   std::vector<ash::PickerSearchResult> results;
@@ -114,7 +104,8 @@ std::unique_ptr<app_list::SearchProvider> CreateDriveSearchProvider(
 std::unique_ptr<app_list::SearchProvider> CreateFileSearchProvider(
     Profile* profile) {
   return std::make_unique<app_list::FileSearchProvider>(
-      profile, base::FileEnumerator::FileType::FILES);
+      profile, base::FileEnumerator::FileType::FILES,
+      std::vector<std::string>{".jpg", ".jpeg", ".png", ".gif", ".webp"});
 }
 
 std::vector<ash::PickerSearchResult> ConvertSearchResults(
@@ -151,11 +142,8 @@ std::vector<ash::PickerSearchResult> ConvertSearchResults(
         break;
       }
       case ash::AppListSearchResultType::kFileSearch: {
-        // TODO: b/322926411 - Move this filtering to the search provider.
-        if (IsSupportedLocalFileFormat(result->filePath())) {
           picker_results.push_back(ash::PickerLocalFileResult(
               result->title(), result->filePath(), result->best_match()));
-        }
         break;
       }
       case ash::AppListSearchResultType::kDriveSearch:

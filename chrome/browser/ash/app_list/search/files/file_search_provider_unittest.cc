@@ -174,6 +174,32 @@ TEST_F(FileSearchProviderTest, DoesNotSearchDirectoriesIfTurnedOff) {
   EXPECT_THAT(LastResults(), IsEmpty());
 }
 
+TEST_F(FileSearchProviderTest, ReturnsFilesWithAnyExtension) {
+  WriteFile("file.txt");
+  WriteFile("file.png");
+  WriteFile("file.jpg");
+
+  StartSearch(u"file");
+  Wait();
+
+  EXPECT_THAT(LastResults(),
+              UnorderedElementsAre(Title("file.txt"), Title("file.png"),
+                                   Title("file.jpg")));
+}
+
+TEST_F(FileSearchProviderTest, ReturnsOnlyFilesWithAllowedExtensions) {
+  provider_->SetAllowedExtensionsForTesting({".png", ".jpg"});
+  WriteFile("file.txt");
+  WriteFile("file.png");
+  WriteFile("file.jpg");
+
+  StartSearch(u"file");
+  Wait();
+
+  EXPECT_THAT(LastResults(),
+              UnorderedElementsAre(Title("file.png"), Title("file.jpg")));
+}
+
 TEST_F(FileSearchProviderTest, ResultMetadataTest) {
   WriteFile("file.txt");
 
