@@ -9719,9 +9719,7 @@ test("unit_tests") {
       "../browser/ui/tab_contents/chrome_web_contents_view_handle_drop_unittest.cc",
       "../browser/ui/webui/management/management_ui_handler_unittest.cc",
     ]
-    deps += [
-      "../browser/enterprise/connectors/test:test_support",
-    ]
+    deps += [ "../browser/enterprise/connectors/test:test_support" ]
     if (is_chromeos) {
       deps += [ "//chromeos/components/mgs" ]
     }
@@ -9955,8 +9953,10 @@ test("unit_tests") {
     ldflags = [ "-Wl,--strip-debug" ]
   }
   if (is_win || is_mac) {
+    sources += [ "../browser/component_updater/updater_state_unittest.cc" ]
+  }
+  if (is_win || is_mac || is_chromeos_ash) {
     sources += [
-      "../browser/component_updater/updater_state_unittest.cc",
       "../browser/ui/passwords/bubble_controllers/biometric_authentication_confirmation_bubble_controller_unittest.cc",
       "../browser/ui/passwords/bubble_controllers/biometric_authentication_for_filling_bubble_controller_unittest.cc",
     ]

@@ -450,7 +450,7 @@ void ManagePasswordsUIController::OnBiometricAuthenticationForFilling(
       GetState() == password_manager::ui::INACTIVE_STATE) {
     return;
   }
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
   const std::string promo_shown_counter =
       password_manager::prefs::kBiometricAuthBeforeFillingPromoShownCounter;
   // Checking GetIfBiometricAuthenticationPromoWasShown() prevents from

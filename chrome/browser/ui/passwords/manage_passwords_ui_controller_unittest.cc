@@ -2086,7 +2086,7 @@ TEST_F(ManagePasswordsUIControllerTest, OpenPasskeyNotAcceptedBubble) {
       password_manager::ui::PASSKEY_NOT_ACCEPTED_STATE);
 }
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(ManagePasswordsUIControllerTest,
        ShouldShowBiometricAuthenticationForFillingPromo) {
   std::vector<PasswordForm> best_matches;

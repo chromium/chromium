@@ -41,6 +41,9 @@ std::u16string BiometricAuthenticationConfirmationBubbleController::GetTitle()
 #elif BUILDFLAG(IS_WIN)
   return l10n_util::GetStringUTF16(
       IDS_PASSWORD_MANAGER_BIOMETRIC_AUTHENTICATION_CONFIRMATION_TITLE_WIN);
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
+  return l10n_util::GetStringUTF16(
+      IDS_PASSWORD_MANAGER_BIOMETRIC_AUTHENTICATION_CONFIRMATION_TITLE_CHROMEOS);
 #else
   NOTIMPLEMENTED();
 #endif
