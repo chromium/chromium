@@ -59,6 +59,7 @@ class VisitedUrlRankingBackend {
   raw_ptr<Profile> profile_;  // weak
 
   base::CallbackListSubscription foreign_session_updated_subscription_;
+  visited_url_ranking::DecorationType decoration_type_override_;
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
   base::WeakPtrFactory<VisitedUrlRankingBackend> weak_ptr_factory_{this};
