@@ -2237,6 +2237,71 @@ void CreateOperatorNodeForPrelu(const ContextProperties context_properties,
   CHECK(id_to_node_output_map.try_emplace(output_id, node_output).second);
 }
 
+void CreateOperatorNodeForScatterND(const ContextProperties& context_properties,
+                                    const IdToOperandMap& id_to_operand_map,
+                                    const mojom::ScatterNDPtr& scatter_nd,
+                                    GraphBuilderDml& graph_builder,
+                                    IdToNodeOutputMap& id_to_node_output_map) {
+  const NodeOutput* input = GetNodeOutputForOperand(
+      id_to_node_output_map, scatter_nd->input_operand_id);
+  TensorDesc input_tensor_desc = input->GetTensorDesc();
+  CHECK(context_properties.data_type_limits.scatter_nd_input.Has(
+      DmlDataTypeToOperand(input_tensor_desc.GetDataType())));
+
+  const NodeOutput* indices = GetNodeOutputForOperand(
+      id_to_node_output_map, scatter_nd->indices_operand_id);
+  TensorDesc indices_tensor_desc = indices->GetTensorDesc();
+  CHECK(context_properties.data_type_limits.scatter_nd_indices.Has(
+      DmlDataTypeToOperand(indices_tensor_desc.GetDataType())));
+
+  const NodeOutput* updates = GetNodeOutputForOperand(
+      id_to_node_output_map, scatter_nd->updates_operand_id);
+  TensorDesc updates_tensor_desc = updates->GetTensorDesc();
+  CHECK(context_properties.data_type_limits.scatter_nd_input.Has(
+      DmlDataTypeToOperand(updates_tensor_desc.GetDataType())));
+
+  uint64_t output_id = scatter_nd->output_operand_id;
+  const TensorDesc original_output_tensor_desc =
+      CreateOutputTensorDesc(id_to_operand_map, output_id);
+
+  size_t input_rank = input_tensor_desc.GetDimensions().size();
+  size_t indices_rank = indices_tensor_desc.GetDimensions().size();
+  size_t updates_rank = updates_tensor_desc.GetDimensions().size();
+  size_t output_rank = original_output_tensor_desc.GetDimensions().size();
+  size_t maximum_rank =
+      std::max({input_rank, indices_rank, updates_rank, output_rank});
+
+  // DML_SCATTER_ND_OPERATOR_DESC requires IndicesTensor, InputTensor,
+  // OutputTensor, and UpdatesTensor must have the same DimensionCount.
+  input_tensor_desc.EnsureMinimumRank(maximum_rank,
+                                      TensorDesc::Alignment::kTrailing);
+  indices_tensor_desc.EnsureMinimumRank(maximum_rank,
+                                        TensorDesc::Alignment::kTrailing);
+  updates_tensor_desc.EnsureMinimumRank(maximum_rank,
+                                        TensorDesc::Alignment::kTrailing);
+
+  TensorDesc output_tensor_desc = original_output_tensor_desc;
+  output_tensor_desc.EnsureMinimumRank(maximum_rank,
+                                       TensorDesc::Alignment::kTrailing);
+
+  DML_SCATTER_ND_OPERATOR_DESC scatter_nd_desc{
+      .InputTensor = &input_tensor_desc.GetDMLTensorDesc(),
+      .IndicesTensor = &indices_tensor_desc.GetDMLTensorDesc(),
+      .UpdatesTensor = &updates_tensor_desc.GetDMLTensorDesc(),
+      .OutputTensor = &output_tensor_desc.GetDMLTensorDesc(),
+      .InputDimensionCount = base::checked_cast<uint32_t>(input_rank),
+      .IndicesDimensionCount = base::checked_cast<uint32_t>(indices_rank)};
+
+  std::array<const NodeOutput*, 3> inputs = {input, indices, updates};
+  const OperatorNode* node = graph_builder.CreateOperatorNode(
+      DML_OPERATOR_SCATTER_ND, &scatter_nd_desc, inputs, scatter_nd->label);
+
+  const NodeOutput* output = graph_builder.CreateNodeOutput(
+      node, std::move(original_output_tensor_desc), 0);
+  // The output id must be unique in the map.
+  CHECK(id_to_node_output_map.try_emplace(output_id, output).second);
+}
+
 void CreateOperatorNodeForSlice(const IdToOperandMap& id_to_operand_map,
                                 const mojom::SlicePtr& slice,
                                 GraphBuilderDml& graph_builder,
@@ -6036,6 +6101,12 @@ base::expected<void, mojom::ErrorPtr> GraphImplDml::CreateAndBuildInternal(
         CreateOperatorNodeForReshape(context_properties, id_to_operand_map,
                                      operation->get_reshape(), graph_builder,
                                      id_to_node_output_map);
+        break;
+      }
+      case mojom::Operation::Tag::kScatterNd: {
+        CreateOperatorNodeForScatterND(context_properties, id_to_operand_map,
+                                       operation->get_scatter_nd(),
+                                       graph_builder, id_to_node_output_map);
         break;
       }
       case Operation::Tag::kSigmoid: {

@@ -80,7 +80,7 @@ ContextProperties ContextImplDml::GetProperties(
   static constexpr SupportedDataTypes kUint8To32{OperandDataType::kUint8,
                                                  OperandDataType::kUint32};
 
-  static constexpr SupportedDataTypes kGatherIndicesSupportedDataTypes{
+  static constexpr SupportedDataTypes kGatherScatterIndicesSupportedDataTypes{
       OperandDataType::kInt32, OperandDataType::kUint32,
       OperandDataType::kInt64, OperandDataType::kUint64};
 
@@ -211,11 +211,11 @@ ContextProperties ContextImplDml::GetProperties(
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_gather_operator_desc#tensor-support
        /*gather_input=*/kFloat16To32Ints8To32,
-       /*gather_indices=*/kGatherIndicesSupportedDataTypes,
+       /*gather_indices=*/kGatherScatterIndicesSupportedDataTypes,
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_gather_elements_operator_desc#tensor-support
        /*gather_elements_input=*/kFloat16To32Ints8To32,
-       /*gather_elements_indices=*/kGatherIndicesSupportedDataTypes,
+       /*gather_elements_indices=*/kGatherScatterIndicesSupportedDataTypes,
 
        // Gelu is emulated when the feature level is less than 5.1.
        // https://learn.microsoft.com/en-us/windows/ai/directml/api/ns-directml-dml_activation_gelu_operator_desc
@@ -292,9 +292,9 @@ ContextProperties ContextImplDml::GetProperties(
        // Reshape is emulated by identity.
        /*reshape_input=*/kFloat16To32Ints8To32,
 
-       // TODO(crbug.com/363761938): Implement ScatterND.
-       /*scatter_nd_input=*/{},
-       /*scatter_nd_indices=*/{},
+       // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_scatter_nd_operator_desc#tensor-support
+       /*scatter_nd_input=*/kFloat16To32Ints8To32,
+       /*scatter_nd_indices=*/kGatherScatterIndicesSupportedDataTypes,
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_activation_sigmoid_operator_desc#tensor-support
        /*sigmoid_input=*/DataTypeConstraint::kFloat16To32,
@@ -359,6 +359,7 @@ ContextProperties ContextImplDml::GetProperties(
     properties.data_type_limits.gather_elements_input =
         SupportedDataTypes::All();
     properties.data_type_limits.reshape_input = SupportedDataTypes::All();
+    properties.data_type_limits.scatter_nd_input = SupportedDataTypes::All();
     properties.data_type_limits.sign_input =
         DataTypeConstraint::kFloat16To32Int8To64;
     properties.data_type_limits.slice_input = SupportedDataTypes::All();

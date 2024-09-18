@@ -981,9 +981,8 @@ struct Reshape {
 
 // Represents ScatterND operation that first copies the values of `input` to
 // `output` tensor, and then overwrites the values of `output` tensor to values
-// specified
-// by `updates` tensor at specific index positions specified by `indices`
-// tensor.
+// specified by `updates` tensor at specific index positions specified by
+// `indices` tensor.
 //
 // Its calculation follows the pseudocode:
 // ```
