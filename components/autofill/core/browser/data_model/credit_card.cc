@@ -488,6 +488,7 @@ std::u16string CreditCard::GetRawInfo(FieldType type) const {
       return number_;
 
     case CREDIT_CARD_VERIFICATION_CODE:
+    case CREDIT_CARD_STANDALONE_VERIFICATION_CODE:
       return cvc_;
 
     default:

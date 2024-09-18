@@ -1609,6 +1609,9 @@ TEST(CreditCardTest, CreditCardVerificationCode) {
   card.SetRawInfo(CREDIT_CARD_VERIFICATION_CODE, u"999");
   EXPECT_EQ(u"999", card.GetRawInfo(CREDIT_CARD_VERIFICATION_CODE));
   EXPECT_EQ(u"999", card.cvc());
+  card.SetRawInfo(CREDIT_CARD_STANDALONE_VERIFICATION_CODE, u"999");
+  EXPECT_EQ(u"999", card.GetRawInfo(CREDIT_CARD_STANDALONE_VERIFICATION_CODE));
+  EXPECT_EQ(u"999", card.cvc());
 }
 
 // Tests that the card in only deletable if it is expired before the threshold.
