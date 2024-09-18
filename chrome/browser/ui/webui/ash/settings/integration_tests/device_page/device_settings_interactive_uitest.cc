@@ -373,7 +373,7 @@ IN_PROC_BROWSER_TEST_F(DeviceSettingsInteractiveUiTest, AddNewMouse) {
       WaitForElementTextContains(webcontents_id_, kMouseNameQuery, "mouse"));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) && defined(MEMORY_SANITIZER)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_SixPackKeys DISABLED_SixPackKeys
 #else
 #define MAYBE_SixPackKeys SixPackKeys
