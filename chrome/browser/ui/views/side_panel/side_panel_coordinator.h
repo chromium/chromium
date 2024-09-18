@@ -159,9 +159,6 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
   SidePanelEntry* GetActiveContextualEntryForKey(
       const SidePanelEntry::Key& entry_key) const;
 
-  // Creates header and SidePanelEntry content container within the side panel.
-  void InitializeSidePanel();
-
   // Removes existing SidePanelEntry contents from the side panel if any exist
   // and populates the side panel with the provided SidePanelEntry and
   // `content_view` if provided, otherwise get the content_view from the

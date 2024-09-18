@@ -73,8 +73,6 @@
 
 namespace {
 
-constexpr int kSidePanelContentWrapperViewId = 43;
-
 void ConfigureControlButton(views::ImageButton* button) {
   button->SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
   views::InstallCircleHighlightPathGenerator(button);
@@ -179,29 +177,6 @@ std::unique_ptr<views::Label> CreateTitle() {
 using PopulateSidePanelCallback = base::OnceCallback<void(
     SidePanelEntry* entry,
     std::optional<std::unique_ptr<views::View>> content_view)>;
-
-// SidePanelContentSwappingContainer is the parent view for views hosted in the
-// side panel.
-class SidePanelContentSwappingContainer : public views::View {
-  METADATA_HEADER(SidePanelContentSwappingContainer, views::View)
-
- public:
-  SidePanelContentSwappingContainer() {
-    SetUseDefaultFillLayout(true);
-    SetBackground(
-        views::CreateThemedSolidBackground(kColorSidePanelBackground));
-    SetProperty(
-        views::kFlexBehaviorKey,
-        views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
-                                 views::MaximumFlexSizeRule::kUnbounded));
-    SetID(kSidePanelContentWrapperViewId);
-  }
-
-  ~SidePanelContentSwappingContainer() override = default;
-};
-
-BEGIN_METADATA(SidePanelContentSwappingContainer)
-END_METADATA
 
 }  // namespace
 
@@ -504,11 +479,6 @@ void SidePanelCoordinator::Show(
 
   SidePanelEntry* entry = GetEntryForUniqueKey(input);
 
-  if (browser_view_->unified_side_panel()->GetViewByID(
-          kSidePanelContentWrapperViewId) == nullptr) {
-    InitializeSidePanel();
-  }
-
   if (!IsSidePanelShowing()) {
     opened_timestamp_ = base::TimeTicks::Now();
     SidePanelUtil::RecordSidePanelOpen(open_trigger);
@@ -593,11 +563,8 @@ void SidePanelCoordinator::Close(bool suppress_animations) {
       entry->OnEntryWillHide(SidePanelEntryHideReason::kSidePanelClosed);
     }
   }
-  if (browser_view_->unified_side_panel()->GetViewByID(
-          kSidePanelContentWrapperViewId)) {
-    browser_view_->unified_side_panel()->Close(
-        /*animated=*/!suppress_animations);
-  }
+  browser_view_->unified_side_panel()->Close(
+      /*animated=*/!suppress_animations);
 
   MaybeEndPinPromo(/*pinned=*/false);
 }
@@ -634,15 +601,6 @@ SidePanelEntry* SidePanelCoordinator::GetActiveContextualEntryForKey(
              : nullptr;
 }
 
-void SidePanelCoordinator::InitializeSidePanel() {
-  auto content_wrapper = std::make_unique<SidePanelContentSwappingContainer>();
-  // Set to not visible so that the side panel is not shown until content is
-  // ready to be shown.
-  content_wrapper->SetVisible(false);
-
-  browser_view_->unified_side_panel()->AddChildView(std::move(content_wrapper));
-}
-
 void SidePanelCoordinator::PopulateSidePanel(
     bool suppress_animations,
     const UniqueKey& unique_key,
@@ -654,8 +612,8 @@ void SidePanelCoordinator::PopulateSidePanel(
       entry->GetProperty(kShouldShowTitleInSidePanelHeaderKey),
       (entry->key().id() == SidePanelEntryId::kExtension));
 
-  auto* content_wrapper = browser_view_->unified_side_panel()->GetViewByID(
-      kSidePanelContentWrapperViewId);
+  auto* content_wrapper =
+      browser_view_->unified_side_panel()->GetContentParentView();
   DCHECK(content_wrapper);
   // |content_wrapper| should have either no child views or one child view for
   // the currently hosted SidePanelEntry.
@@ -1015,9 +973,8 @@ void SidePanelCoordinator::OnEntryWillDeregister(SidePanelRegistry* registry,
     }
 
     // Fetch the entry's view from the side panel container if it is shown.
-    auto* content_wrapper = browser_view_->unified_side_panel()->GetViewByID(
-        kSidePanelContentWrapperViewId);
-    DCHECK(content_wrapper);
+    auto* content_wrapper =
+        browser_view_->unified_side_panel()->GetContentParentView();
     if (content_wrapper->children().size() == 1) {
       entry_view = content_wrapper->RemoveChildViewT(
           content_wrapper->children().front());
@@ -1120,9 +1077,7 @@ void SidePanelCoordinator::OnTabStripModelChanged(
               current_key_->key &&
           current_key_->tab_handle) {
         auto* content_wrapper =
-            browser_view_->unified_side_panel()->GetViewByID(
-                kSidePanelContentWrapperViewId);
-        DCHECK(content_wrapper);
+            browser_view_->unified_side_panel()->GetContentParentView();
         DCHECK(content_wrapper->children().size() == 1);
         auto current_entry_view = content_wrapper->RemoveChildViewT(
             content_wrapper->children().front());
@@ -1261,11 +1216,10 @@ void SidePanelCoordinator::OnViewVisibilityChanged(views::View* observed_view,
   // `OnEntryWillDeregister` (triggered by calling `OnEntryHidden`) may
   // already have deleted the content container, so check that it still
   // exists.
-  if (auto* content_wrapper = browser_view_->unified_side_panel()->GetViewByID(
-          kSidePanelContentWrapperViewId)) {
-    if (!content_wrapper->children().empty()) {
-      content_wrapper->RemoveChildViewT(content_wrapper->children().front());
-    }
+  auto* content_wrapper =
+      browser_view_->unified_side_panel()->GetContentParentView();
+  if (!content_wrapper->children().empty()) {
+    content_wrapper->RemoveChildViewT(content_wrapper->children().front());
   }
   SidePanelUtil::RecordSidePanelClosed(opened_timestamp_);
 

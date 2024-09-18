@@ -80,6 +80,9 @@ class SidePanel : public views::AccessiblePaneView,
   void Open(bool animated);
   void Close(bool animated);
 
+  // This is the parent view for the contents of the side panel.
+  views::View* GetContentParentView();
+
  private:
   class VisibleBoundsViewClipper;
 
@@ -142,6 +145,9 @@ class SidePanel : public views::AccessiblePaneView,
 
   // Observes and listens to side panel alignment changes.
   PrefChangeRegistrar pref_change_registrar_;
+
+  // Owned by `this` indirectly through the views tree.
+  raw_ptr<views::View> content_parent_view_;
 
   State state_ = State::kClosed;
 };

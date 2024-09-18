@@ -227,6 +227,28 @@ class BorderView : public views::View {
 BEGIN_METADATA(BorderView)
 END_METADATA
 
+// ContentParentView is the parent view for views hosted in the
+// side panel.
+class ContentParentView : public views::View {
+  METADATA_HEADER(ContentParentView, views::View)
+
+ public:
+  ContentParentView() {
+    SetUseDefaultFillLayout(true);
+    SetBackground(
+        views::CreateThemedSolidBackground(kColorSidePanelBackground));
+    SetProperty(
+        views::kFlexBehaviorKey,
+        views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+                                 views::MaximumFlexSizeRule::kUnbounded));
+  }
+
+  ~ContentParentView() override = default;
+};
+
+BEGIN_METADATA(ContentParentView)
+END_METADATA
+
 }  // namespace
 
 // Ensures immediate children of the SidePanel have their layers clipped to
@@ -320,6 +342,9 @@ SidePanel::SidePanel(BrowserView* browser_view,
   SetBorder(views::CreateEmptyBorder(GetBorderInsets()));
 
   SetProperty(views::kElementIdentifierKey, kSidePanelElementId);
+
+  content_parent_view_ = AddChildView(std::make_unique<ContentParentView>());
+  content_parent_view_->SetVisible(false);
 }
 
 SidePanel::~SidePanel() = default;
@@ -541,6 +566,10 @@ void SidePanel::Open(bool animated) {
 
 void SidePanel::Close(bool animated) {
   UpdateVisibility(/*should_be_open=*/false, animated);
+}
+
+views::View* SidePanel::GetContentParentView() {
+  return content_parent_view_;
 }
 
 void SidePanel::UpdateVisibility(bool should_be_open, bool animate_transition) {
