@@ -6746,7 +6746,7 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledEarlyDiscard_20240802",
+                    "name": "EnabledEarlyDiscard_20240918",
                     "params": {
                         "CompleteStallMs": "700",
                         "PartialStallMs": "20",
@@ -6757,88 +6757,12 @@
                         "CrOSLateBootOverrideLmkdPsiDefaults"
                     ],
                     "disable_features": [
-                        "CrOSLateBootPsiAdjustAvailable",
                         "CrOSLockMainProgramText"
                     ]
                 },
                 {
-                    "name": "EnabledAvailableAdjustmentPsi_20240802",
-                    "params": {
-                        "PsiTopThreshold": "80.0"
-                    },
+                    "name": "EnabledMlockChrome_20240918",
                     "enable_features": [
-                        "CrOSLateBootPsiAdjustAvailable"
-                    ],
-                    "disable_features": [
-                        "CrOSLateBootDiscardStaleAtModeratePressure",
-                        "CrOSLateBootOverrideLmkdPsiDefaults",
-                        "CrOSLockMainProgramText"
-                    ]
-                },
-                {
-                    "name": "EnabledAvailableAdjustmentPsiTopThreshold60_20240802",
-                    "params": {
-                        "PsiTopThreshold": "60.0"
-                    },
-                    "enable_features": [
-                        "CrOSLateBootPsiAdjustAvailable"
-                    ],
-                    "disable_features": [
-                        "CrOSLateBootDiscardStaleAtModeratePressure",
-                        "CrOSLateBootOverrideLmkdPsiDefaults",
-                        "CrOSLockMainProgramText"
-                    ]
-                },
-                {
-                    "name": "EnabledAvailableAdjustmentPsiFull_20240802",
-                    "params": {
-                        "PsiTopThreshold": "40.0",
-                        "PsiUseFull": "true"
-                    },
-                    "enable_features": [
-                        "CrOSLateBootPsiAdjustAvailable"
-                    ],
-                    "disable_features": [
-                        "CrOSLateBootDiscardStaleAtModeratePressure",
-                        "CrOSLateBootOverrideLmkdPsiDefaults",
-                        "CrOSLockMainProgramText"
-                    ]
-                },
-                {
-                    "name": "EnabledAvailableAdjustmentPsiWithEarlyDiscard_20240802",
-                    "params": {
-                        "CompleteStallMs": "700",
-                        "PartialStallMs": "20",
-                        "PsiTopThreshold": "80.0",
-                        "VmmmsReclaimProportion": "0"
-                    },
-                    "enable_features": [
-                        "CrOSLateBootDiscardStaleAtModeratePressure",
-                        "CrOSLateBootOverrideLmkdPsiDefaults",
-                        "CrOSLateBootPsiAdjustAvailable"
-                    ],
-                    "disable_features": [
-                        "CrOSLockMainProgramText"
-                    ]
-                },
-                {
-                    "name": "EnabledMlockChrome_20240802",
-                    "enable_features": [
-                        "CrOSLockMainProgramText"
-                    ],
-                    "disable_features": [
-                        "CrOSLateBootDiscardStaleAtModeratePressure",
-                        "CrOSLateBootOverrideLmkdPsiDefaults",
-                        "CrOSLateBootPsiAdjustAvailable"
-                    ]
-                },
-                {
-                    "name": "EnabledMlockChromeWithAvailableAdjustmentPsi_20240802",
-                    "params": {
-                        "PsiTopThreshold": "80.0"
-                    },
-                    "enable_features": [
-                        "CrOSLateBootPsiAdjustAvailable",
                         "CrOSLockMainProgramText"
                     ],
                     "disable_features": [
@@ -6847,7 +6771,7 @@
                     ]
                 },
                 {
-                    "name": "EnabledAvailableAdjustmentPsiWithEarlyDiscardAndMlockChrome_20240802",
+                    "name": "EnabledEarlyDiscardAndMlockChrome_20240918",
                     "params": {
                         "CompleteStallMs": "700",
                         "PartialStallMs": "20",
@@ -6857,7 +6781,6 @@
                     "enable_features": [
                         "CrOSLateBootDiscardStaleAtModeratePressure",
                         "CrOSLateBootOverrideLmkdPsiDefaults",
-                        "CrOSLateBootPsiAdjustAvailable",
                         "CrOSLockMainProgramText"
                     ]
                 }
