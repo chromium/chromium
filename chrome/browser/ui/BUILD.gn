@@ -1941,6 +1941,7 @@ static_library("ui") {
       "//chrome/browser/media/router",
       "//chrome/browser/media/router/discovery:discovery",
       "//chrome/browser/media/router/discovery/access_code:access_code_sink_service",
+      "//chrome/browser/metrics/desktop_session_duration",
       "//chrome/browser/new_tab_page/chrome_colors",
       "//chrome/browser/safe_browsing",
       "//chrome/browser/safe_browsing:advanced_protection",

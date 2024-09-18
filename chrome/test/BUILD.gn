@@ -5169,6 +5169,7 @@ if (!is_android) {
         "../renderer/safe_browsing/threat_dom_details_browsertest.cc",
       ]
       deps += [
+        "//chrome/browser/metrics/desktop_session_duration",
         "//chrome/browser/safe_browsing:metrics_collector",
         "//chrome/browser/ui/exclusive_access:test_support",
         "//components/safe_browsing/content/browser:safe_browsing_blocking_page",
@@ -8260,6 +8261,7 @@ test("unit_tests") {
       "//chrome/browser/media/router/discovery:discovery",
       "//chrome/browser/media/router/discovery/access_code:access_code_sink_service",
       "//chrome/browser/media/webrtc:test_support",
+      "//chrome/browser/metrics/desktop_session_duration",
       "//chrome/browser/new_tab_page/chrome_colors",
       "//chrome/browser/new_tab_page/modules/v2/calendar:mojo_bindings",
       "//chrome/browser/new_tab_page/modules/v2/most_relevant_tab_resumption:mojo_bindings",
@@ -11686,6 +11688,7 @@ if (!is_android && !is_chromeos_device) {
       ]
     } else {
       sources += [ "../browser/metrics/desktop_session_duration/chrome_visibility_observer_interactive_uitest.cc" ]
+      deps += [ "//chrome/browser/metrics/desktop_session_duration" ]
     }
 
     if (use_atk && toolkit_views) {
