@@ -47,14 +47,14 @@ class IncognitoModeInSupervisedContextUiTest
 IN_PROC_BROWSER_TEST_F(IncognitoModeInSupervisedContextUiTest,
                        DISABLED_IncognitoModeIsNotAvailableToSupervisedUser) {
   ASSERT_TRUE(
-      IncognitoModePrefs::IsIncognitoAllowed(child().browser()->profile()));
+      IncognitoModePrefs::IsIncognitoAllowed(child().browser().profile()));
   TurnOnSyncFor(child());
 
   ASSERT_FALSE(
-      IncognitoModePrefs::IsIncognitoAllowed(child().browser()->profile()));
+      IncognitoModePrefs::IsIncognitoAllowed(child().browser().profile()));
 
   RunTestSequenceInContext(
-      child().browser()->window()->GetElementContext(),
+      child().browser().window()->GetElementContext(),
       InstrumentTab(kWebContentsElementId),
       CheckCountOfIncognitoBrowsers(/*expected_count=*/0),
       PressButton(kToolbarAppMenuButtonElementId),
@@ -69,10 +69,10 @@ IN_PROC_BROWSER_TEST_F(IncognitoModeInSupervisedContextUiTest,
                        DISABLED_IncognitoModeIsAvailableToHeadOfHousehold) {
   TurnOnSyncFor(head_of_household());
   ASSERT_TRUE(IncognitoModePrefs::IsIncognitoAllowed(
-      head_of_household().browser()->profile()));
+      head_of_household().browser().profile()));
 
   RunTestSequenceInContext(
-      head_of_household().browser()->window()->GetElementContext(),
+      head_of_household().browser().window()->GetElementContext(),
       CheckCountOfIncognitoBrowsers(/*expected_count=*/0),
       PressButton(kToolbarAppMenuButtonElementId),
       CheckViewProperty(AppMenuModel::kIncognitoMenuItem,

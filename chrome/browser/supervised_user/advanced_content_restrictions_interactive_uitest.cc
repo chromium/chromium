@@ -16,13 +16,13 @@
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/supervised_user/family_live_test.h"
 #include "chrome/test/supervised_user/family_member.h"
-#include "chrome/test/supervised_user/test_state_seeded_observer.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/prefs/pref_service.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
+#include "components/supervised_user/test_support/browser_state_management.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -60,7 +60,7 @@ class SupervisedUserFamilyLinkSwitchTest
 // Family Link parental controls.
 IN_PROC_BROWSER_TEST_P(SupervisedUserFamilyLinkSwitchTest,
                        SwitchToggleReceivedByChromeTest) {
-  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(BrowserState::Observer,
+  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(InIntendedStateObserver,
                                       kDefineStateObserverId);
   TurnOnSync();
 

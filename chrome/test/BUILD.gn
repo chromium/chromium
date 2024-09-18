@@ -3286,8 +3286,6 @@ if (!is_android) {
       "supervised_user/family_live_test.h",
       "supervised_user/family_member.cc",
       "supervised_user/family_member.h",
-      "supervised_user/test_state_seeded_observer.cc",
-      "supervised_user/test_state_seeded_observer.h",
       "v8/wasm_trap_handler_browsertest.cc",
     ]
 

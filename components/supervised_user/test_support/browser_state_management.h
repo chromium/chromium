@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_TEST_SUPERVISED_USER_TEST_STATE_SEEDED_OBSERVER_H_
-#define CHROME_TEST_SUPERVISED_USER_TEST_STATE_SEEDED_OBSERVER_H_
+#ifndef COMPONENTS_SUPERVISED_USER_TEST_SUPPORT_BROWSER_STATE_MANAGEMENT_H_
+#define COMPONENTS_SUPERVISED_USER_TEST_SUPPORT_BROWSER_STATE_MANAGEMENT_H_
 
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
@@ -16,17 +17,15 @@
 #include "base/test/bind.h"
 #include "base/time/time.h"
 #include "base/types/strong_alias.h"
-#include "chrome/test/supervised_user/family_member.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/prefs/pref_service.h"
 #include "components/supervised_user/core/browser/fetcher_config.h"
 #include "components/supervised_user/core/browser/proto/kidsmanagement_messages.pb.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/browser/supervised_user_service_observer.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
-#include "ui/base/interaction/polling_state_observer.h"
 
 namespace supervised_user {
-
-SupervisedUserService* GetSupervisedUserService(const FamilyMember& member);
 
 // State of a Family Link toggle.
 enum class FamilyLinkToggleState : bool {
@@ -47,10 +46,21 @@ struct FamilyLinkToggleConfiguration {
   const FamilyLinkToggleState state;
 };
 
-// Creates requests and conditions associated with given state.
+// Utility that can seed (request) the browser state, and check if the browser
+// is in that state. Under the hood, seeding is done by sending an RPC to Google
+// backend that modifies the internal sync state, and the change is propagated
+// via sync service.
 class BrowserState {
  public:
-  using Observer = ui::test::PollingStateObserver<bool>;
+  // Groups services that might be used to verify the browser state.
+  struct Services {
+    Services(const SupervisedUserService& supervised_user_service,
+             const PrefService& pref_service,
+             const HostContentSettingsMap& host_content_settings_map);
+    raw_ref<const SupervisedUserService> supervised_user_service;
+    raw_ref<const PrefService> pref_service;
+    raw_ref<const HostContentSettingsMap> host_content_settings_map;
+  };
 
   // Represents intended state of the supervised user service to achieve.
   // It both knows what request to send to get to that state (::GetRequest()),
@@ -71,7 +81,7 @@ class BrowserState {
 
     // Function that is checking `browser_user`'s browser whether it is in the
     // intended state.
-    virtual bool Check(const FamilyMember& browser_user) const = 0;
+    virtual bool Check(const Services& services) const = 0;
   };
 
   // Resets the state to defaults.
@@ -83,7 +93,7 @@ class BrowserState {
     std::string GetRequest() const override;
     const FetcherConfig& GetConfig() const override;
     std::string ToString() const override;
-    bool Check(const FamilyMember& browser_user) const override;
+    bool Check(const Services& services) const override;
   };
 
   // Defines safe sites configuration.
@@ -101,7 +111,7 @@ class BrowserState {
     std::string GetRequest() const override;
     const FetcherConfig& GetConfig() const override;
     std::string ToString() const override;
-    bool Check(const FamilyMember& browser_user) const override;
+    bool Check(const Services& services) const override;
 
    private:
     std::optional<GURL> allowed_url_;
@@ -118,7 +128,7 @@ class BrowserState {
     std::string GetRequest() const override;
     const FetcherConfig& GetConfig() const override;
     std::string ToString() const override;
-    bool Check(const FamilyMember& browser_user) const override;
+    bool Check(const Services& services) const override;
 
    private:
     std::list<FamilyLinkToggleConfiguration> toggle_list_;
@@ -148,11 +158,18 @@ class BrowserState {
 
   // Tests whether the browser is in the intended state. The state is checked
   // for `member`'s browser, which typically should be the child.
-  bool Check(const FamilyMember& browser_user) const;
+  bool Check(const Services& services) const;
 
   // Seeds the `target_state_` by issuing a RPC.
-  void Seed(const FamilyMember& supervising_user,
-            const FamilyMember& browser_user) const;
+  // `caller_identity_manager` and `caller_url_loader_factory` are associated
+  // with the browser making the rpc call. They might origin from the parent's
+  // browser directly, or a child browser impersonating the parent for testing
+  // purposes. `subject_account_id` is the account id of the user that will have
+  // their settings changed, typicall the child.
+  void Seed(
+      signin::IdentityManager& caller_identity_manager,
+      scoped_refptr<network::SharedURLLoaderFactory> caller_url_loader_factory,
+      std::string_view subject_account_id) const;
 
   // Textual representation of this instance (for logging).
   std::string ToString() const;
@@ -164,4 +181,4 @@ class BrowserState {
 
 }  // namespace supervised_user
 
-#endif  // CHROME_TEST_SUPERVISED_USER_TEST_STATE_SEEDED_OBSERVER_H_
+#endif  // COMPONENTS_SUPERVISED_USER_TEST_SUPPORT_BROWSER_STATE_MANAGEMENT_H_

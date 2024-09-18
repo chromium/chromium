@@ -4,35 +4,34 @@
 
 #include "chrome/test/supervised_user/family_live_test.h"
 
-#include <memory>
-#include <optional>
+#include <ostream>
 #include <string>
 #include <string_view>
 #include <vector>
 
-#include "base/check.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
-#include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/notreached.h"
-#include "base/strings/strcat.h"
-#include "base/test/bind.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_test_util.h"
-#include "chrome/browser/signin/e2e_tests/live_test.h"
 #include "chrome/browser/signin/e2e_tests/test_accounts_util.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/sync/test/integration/invalidations/invalidations_status_checker.h"
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/test/supervised_user/family_member.h"
-#include "chrome/test/supervised_user/test_state_seeded_observer.h"
+#include "components/supervised_user/test_support/browser_state_management.h"
+#include "content/public/browser/storage_partition.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/dns/mock_host_resolver.h"
-#include "ui/base/page_transition_types.h"
+#include "ui/base/interaction/interactive_test_internal.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "url/gurl.h"
 
 namespace supervised_user {
 namespace {
@@ -153,13 +152,13 @@ void FamilyLiveTest::TurnOnSync() {
 
 void FamilyLiveTest::TurnOnSyncFor(FamilyMember& member) {
   member.TurnOnSync();
-  member.browser()->tab_strip_model()->CloseWebContentsAt(
+  member.browser().tab_strip_model()->CloseWebContentsAt(
       2, TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
-  member.browser()->tab_strip_model()->CloseWebContentsAt(
+  member.browser().tab_strip_model()->CloseWebContentsAt(
       1, TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
 
   if (IsSwitchEnabled(kDebugSwitch)) {
-    CHECK(AddTabAtIndexToBrowser(member.browser(), 1,
+    CHECK(AddTabAtIndexToBrowser(&member.browser(), 1,
                                  GURL("chrome://sync-internals"),
                                  ui::PAGE_TRANSITION_AUTO_TOPLEVEL));
   }
@@ -169,7 +168,7 @@ void FamilyLiveTest::TurnOnSyncFor(FamilyMember& member) {
     LOG(INFO) << "Waiting for sync service to set up invalidations.";
     syncer::SyncServiceImpl* service =
         SyncServiceFactory::GetAsSyncServiceImplForProfileForTesting(
-            member.browser()->profile());
+            &member.profile());
     service->SetInvalidationsForSessionsEnabled(true);
     CHECK(SyncSetupChecker(service).Wait()) << "SyncSetupChecker timed out.";
     CHECK(InvalidationsStatusChecker(service, /*expected_status=*/true).Wait())
@@ -259,7 +258,12 @@ std::unique_ptr<FamilyMember> FamilyLiveTest::MakeSignedInBrowser(
         return this->AddTabAtIndexToBrowser(browser, index, url, transition);
       });
 
-  return std::make_unique<FamilyMember>(account, *browser, new_tab_callback);
+  return std::make_unique<FamilyMember>(
+      account,
+      profile.GetDefaultStoragePartition()
+          ->GetURLLoaderFactoryForBrowserProcess(),
+      *IdentityManagerFactory::GetForProfile(&profile), *browser, profile,
+      new_tab_callback);
 }
 
 GURL FamilyLiveTest::GetRoutedUrl(std::string_view url_spec) const {
@@ -283,18 +287,23 @@ InteractiveFamilyLiveTest::InteractiveFamilyLiveTest(
 
 ui::test::internal::InteractiveTestPrivate::MultiStep
 InteractiveFamilyLiveTest::WaitForStateSeeding(
-    ui::test::StateIdentifier<BrowserState::Observer> id,
+    ui::test::StateIdentifier<InIntendedStateObserver> id,
     const FamilyMember& browser_user,
     const BrowserState& state) {
   return Steps(
       Log(base::StrCat({"WaitForState[", state.ToString(), "]: start"})),
-      If([&]() { return !state.Check(browser_user); },
+      If([&]() { return !state.Check(browser_user.GetServices()); },
          /*then_steps=*/
-         Steps(Do([&]() { state.Seed(rpc_issuer(), browser_user); }),
-               PollState(
-                   id, [&]() { return state.Check(browser_user); },
-                   /*polling_interval=*/base::Seconds(2)),
-               WaitForState(id, true), StopObservingState(id)),
+         Steps(
+             Do([&]() {
+               state.Seed(rpc_issuer().identity_manager(),
+                          rpc_issuer().url_loader_factory(),
+                          browser_user.GetAccountId().ToString());
+             }),
+             PollState(
+                 id, [&]() { return state.Check(browser_user.GetServices()); },
+                 /*polling_interval=*/base::Seconds(2)),
+             WaitForState(id, true), StopObservingState(id)),
          /*else_steps=*/
          Steps(Log(base::StrCat(
              {"WaitForState[", state.ToString(), "]: seeding skipped"})))),

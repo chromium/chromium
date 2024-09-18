@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/test/supervised_user/test_state_seeded_observer.h"
+#include "components/supervised_user/test_support/browser_state_management.h"
 
 #include <memory>
 #include <optional>
@@ -15,10 +15,6 @@
 #include "base/task/task_traits.h"
 #include "base/test/bind.h"
 #include "base/version_info/channel.h"
-#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/supervised_user/supervised_user_service_factory.h"
-#include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/test/supervised_user/family_member.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/prefs/pref_service.h"
@@ -141,37 +137,13 @@ inline void AddWebsiteException(
   exception->set_exception_type(exception_type);
 }
 
-void WaitForRequestToComplete(const FamilyMember& supervising_user,
-                              const FamilyMember& browser_user,
-                              const FetcherConfig& config,
-                              std::string_view serialized_request) {
-  // Start fetching and wait for the response.
-  base::RunLoop run_loop{base::RunLoop::Type::kNestableTasksAllowed};
-  ProtoFetcher<std::string> fetcher(
-      *supervising_user.identity_manager(),
-      supervising_user.url_loader_factory(),
-      {.request_body = std::string(serialized_request)},
-      base::BindLambdaForTesting([&](const ProtoFetcherStatus& status,
-                                     std::unique_ptr<std::string> response) {
-        CHECK(status.IsOk()) << "WaitForRequestToComplete failed";
-        run_loop.Quit();
-      }),
-
-      config, {browser_user.GetAccountId().ToString()},
-      version_info::Channel::UNKNOWN);
-  run_loop.Run();
-}
-
-bool AreSafeSitesConfigured(const FamilyMember& member) {
-  PrefService* pref_service = member.browser()->profile()->GetPrefs();
-  CHECK(pref_service);
-
-  if (!IsSafeSitesEnabled(*pref_service)) {
+bool AreSafeSitesConfigured(const BrowserState::Services& services) {
+  if (!IsSafeSitesEnabled(services.pref_service.get())) {
     return false;
   }
 
   SupervisedUserURLFilter* url_filter =
-      member.supervised_user_service()->GetURLFilter();
+      services.supervised_user_service->GetURLFilter();
   CHECK(url_filter);
 
   return url_filter->GetDefaultFilteringBehavior() == FilteringBehavior::kAllow;
@@ -197,14 +169,14 @@ bool IsUrlConfigured(SupervisedUserURLFilter& url_filter,
   return true;
 }
 
-bool UrlFiltersAreConfigured(const FamilyMember& family_member,
+bool UrlFiltersAreConfigured(const BrowserState::Services& services,
                              const std::optional<GURL>& allowed_url,
                              const std::optional<GURL>& blocked_url) {
   SupervisedUserURLFilter* url_filter =
-      family_member.supervised_user_service()->GetURLFilter();
+      services.supervised_user_service->GetURLFilter();
   CHECK(url_filter);
 
-  if (!AreSafeSitesConfigured(family_member)) {
+  if (!AreSafeSitesConfigured(services)) {
     return false;
   }
 
@@ -228,23 +200,18 @@ bool UrlFiltersAreConfigured(const FamilyMember& family_member,
   return true;
 }
 
-bool UrlFiltersAreEmpty(const FamilyMember& family_member) {
-  return family_member.supervised_user_service()
-      ->GetURLFilter()
-      ->IsManualHostsEmpty();
+bool UrlFiltersAreEmpty(const BrowserState::Services& services) {
+  return services.supervised_user_service->GetURLFilter()->IsManualHostsEmpty();
 }
 
-bool ToggleHasExpectedValue(const FamilyMember& browser_user,
+bool ToggleHasExpectedValue(const BrowserState::Services& services,
                             FamilyLinkToggleConfiguration toggle) {
   content_settings::ProviderType provider_type;
-  const HostContentSettingsMap& map =
-      *HostContentSettingsMapFactory::GetForProfile(
-          browser_user.browser()->profile());
-  PrefService& prefs = *browser_user.browser()->profile()->GetPrefs();
 
   if (toggle.type == FamilyLinkToggleType::kCookiesToggle) {
     bool can_block_cookies = static_cast<bool>(toggle.state);
-    map.GetDefaultContentSetting(ContentSettingsType::COOKIES, &provider_type);
+    services.host_content_settings_map->GetDefaultContentSetting(
+        ContentSettingsType::COOKIES, &provider_type);
     // The supervised user can block the cookies if the corresponding content
     // provider is not supervised.
     return can_block_cookies ==
@@ -253,7 +220,7 @@ bool ToggleHasExpectedValue(const FamilyMember& browser_user,
   }
   if (toggle.type == FamilyLinkToggleType::kPermissionsToggle) {
     bool permission_pref_has_expected_value =
-        prefs.GetBoolean(
+        services.pref_service->GetBoolean(
             prefs::kSupervisedUserExtensionsMayRequestPermissions) ==
         static_cast<bool>(toggle.state);
 
@@ -266,14 +233,15 @@ bool ToggleHasExpectedValue(const FamilyMember& browser_user,
     // content setting is blocked.
     bool is_geolocation_configured =
         is_geolocation_blocked ==
-        (map.GetDefaultContentSetting(ContentSettingsType::GEOLOCATION,
-                                      &provider_type) ==
+        (services.host_content_settings_map->GetDefaultContentSetting(
+             ContentSettingsType::GEOLOCATION, &provider_type) ==
          ContentSetting::CONTENT_SETTING_BLOCK);
 
     return permission_pref_has_expected_value && is_geolocation_configured;
   }
   CHECK(toggle.type == FamilyLinkToggleType::kExtensionsToggle);
-  return prefs.GetBoolean(prefs::kSkipParentApprovalToInstallExtensions) ==
+  return services.pref_service->GetBoolean(
+             prefs::kSkipParentApprovalToInstallExtensions) ==
          static_cast<bool>(toggle.state);
 }
 }  // namespace
@@ -314,14 +282,28 @@ BrowserState BrowserState::SetAdvancedSettingsDefault() {
       {extensions_toggle, permissions_toggle, cookies_toggle});
 }
 
-void BrowserState::Seed(const FamilyMember& supervising_user,
-                        const FamilyMember& browser_user) const {
-  WaitForRequestToComplete(supervising_user, browser_user, intent_->GetConfig(),
-                           intent_->GetRequest());
+void BrowserState::Seed(
+    signin::IdentityManager& caller_identity_manager,
+    scoped_refptr<network::SharedURLLoaderFactory> caller_url_loader_factory,
+    std::string_view subject_account_id) const {
+  // Start fetching and wait for the response.
+  base::RunLoop run_loop{base::RunLoop::Type::kNestableTasksAllowed};
+  ProtoFetcher<std::string> fetcher(
+      caller_identity_manager, caller_url_loader_factory,
+      {.request_body = intent_->GetRequest()},
+      base::BindLambdaForTesting([&](const ProtoFetcherStatus& status,
+                                     std::unique_ptr<std::string> response) {
+        CHECK(status.IsOk()) << "WaitForRequestToComplete failed";
+        run_loop.Quit();
+      }),
+
+      intent_->GetConfig(), {std::string(subject_account_id)},
+      version_info::Channel::UNKNOWN);
+  run_loop.Run();
 }
 
-bool BrowserState::Check(const FamilyMember& browser_user) const {
-  return intent_->Check(browser_user);
+bool BrowserState::Check(const Services& services) const {
+  return intent_->Check(services);
 }
 
 std::string BrowserState::ToString() const {
@@ -340,8 +322,9 @@ const FetcherConfig& BrowserState::ResetIntent::GetConfig() const {
 std::string BrowserState::ResetIntent::ToString() const {
   return "Reset";
 }
-bool BrowserState::ResetIntent::Check(const FamilyMember& browser_user) const {
-  bool result = UrlFiltersAreEmpty(browser_user);
+bool BrowserState::ResetIntent::Check(
+    const BrowserState::Services& services) const {
+  bool result = UrlFiltersAreEmpty(services);
   LOG(WARNING) << "BrowserState::ResetIntent = " << (result ? "true" : "false");
   return result;
 }
@@ -389,9 +372,8 @@ std::string BrowserState::DefineManualSiteListIntent::ToString() const {
   return base::StrCat(bits);
 }
 bool BrowserState::DefineManualSiteListIntent::Check(
-    const FamilyMember& browser_user) const {
-  bool result =
-      UrlFiltersAreConfigured(browser_user, allowed_url_, blocked_url_);
+    const BrowserState::Services& services) const {
+  bool result = UrlFiltersAreConfigured(services, allowed_url_, blocked_url_);
   LOG(WARNING) << "BrowserState::DefineManualSiteListIntent = "
                << (result ? "true" : "false");
   return result;
@@ -439,11 +421,11 @@ std::string BrowserState::ToggleIntent::ToString() const {
   return base::StrCat(bits);
 }
 
-bool BrowserState::ToggleIntent::Check(const FamilyMember& browser_user) const {
+bool BrowserState::ToggleIntent::Check(
+    const BrowserState::Services& services) const {
   bool result = true;
   for (const auto& toggle : toggle_list_) {
-    bool toggle_has_expected_value =
-        ToggleHasExpectedValue(browser_user, toggle);
+    bool toggle_has_expected_value = ToggleHasExpectedValue(services, toggle);
     // Note: we do not exit the loop early on a false condition as we want
     // to print all the false conditions for debugging purposes.
     if (!toggle_has_expected_value) {
@@ -455,5 +437,13 @@ bool BrowserState::ToggleIntent::Check(const FamilyMember& browser_user) const {
   }
   return result;
 }
+
+BrowserState::Services::Services(
+    const SupervisedUserService& supervised_user_service,
+    const PrefService& pref_service,
+    const HostContentSettingsMap& host_content_settings_map)
+    : supervised_user_service(supervised_user_service),
+      pref_service(pref_service),
+      host_content_settings_map(host_content_settings_map) {}
 
 }  // namespace supervised_user

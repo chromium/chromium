@@ -13,8 +13,8 @@
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/supervised_user/family_live_test.h"
 #include "chrome/test/supervised_user/family_member.h"
-#include "chrome/test/supervised_user/test_state_seeded_observer.h"
 #include "components/supervised_user/core/common/features.h"
+#include "components/supervised_user/test_support/browser_state_management.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -197,11 +197,11 @@ class UrlFilterUiTest
 
 IN_PROC_BROWSER_TEST_P(UrlFilterUiTest, ParentBlocksPage) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kChildElementId);
-  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(BrowserState::Observer,
+  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(InIntendedStateObserver,
                                       kSetSafeSitesStateObserverId);
-  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(BrowserState::Observer,
+  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(InIntendedStateObserver,
                                       kDefineStateObserverId);
-  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(BrowserState::Observer,
+  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(InIntendedStateObserver,
                                       kResetStateObserverId);
 
   TurnOnSync();
@@ -217,7 +217,7 @@ IN_PROC_BROWSER_TEST_P(UrlFilterUiTest, ParentBlocksPage) {
                           BrowserState::EnableSafeSites()),
 
       // Supervised user navigates to any page.
-      InstrumentTab(kChildElementId, tab_index, child().browser()),
+      InstrumentTab(kChildElementId, tab_index, &child().browser()),
       NavigateWebContents(kChildElementId, all_audiences_site_url),
       WaitForStateChange(kChildElementId,
                          PageWithMatchingTitle("Example Domain")),
@@ -231,7 +231,7 @@ IN_PROC_BROWSER_TEST_P(UrlFilterUiTest, ParentBlocksPage) {
 // Sanity test, if it fails it means that resetting the test state is not
 // functioning properly.
 IN_PROC_BROWSER_TEST_P(UrlFilterUiTest, ClearFamilyLinkSettings) {
-  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(BrowserState::Observer, kObserverId);
+  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(InIntendedStateObserver, kObserverId);
 
   TurnOnSync();
 
@@ -242,9 +242,9 @@ IN_PROC_BROWSER_TEST_P(UrlFilterUiTest, ClearFamilyLinkSettings) {
 
 IN_PROC_BROWSER_TEST_P(UrlFilterUiTest, ParentAllowsPageBlockedBySafeSites) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kChildElementId);
-  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(BrowserState::Observer,
+  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(InIntendedStateObserver,
                                       kDefineStateObserverId);
-  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(BrowserState::Observer,
+  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(InIntendedStateObserver,
                                       kResetStateObserverId);
 
   TurnOnSync();
@@ -258,7 +258,7 @@ IN_PROC_BROWSER_TEST_P(UrlFilterUiTest, ParentAllowsPageBlockedBySafeSites) {
                           BrowserState::Reset()),
 
       // Supervised user navigates to inappropriate page and is blocked.
-      InstrumentTab(kChildElementId, tab_index, child().browser()),
+      InstrumentTab(kChildElementId, tab_index, &child().browser()),
       NavigateWebContents(kChildElementId, mature_site_url),
       WaitForStateChange(kChildElementId, RemoteApprovalButtonAppeared()),
 
@@ -272,7 +272,7 @@ IN_PROC_BROWSER_TEST_P(UrlFilterUiTest,
                        ParentApprovesPermissionRequestForBlockedSite) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kChildElementId);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kParentApprovalTab);
-  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(BrowserState::Observer,
+  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(InIntendedStateObserver,
                                       kResetStateObserverId);
 
   TurnOnSync();
@@ -286,7 +286,7 @@ IN_PROC_BROWSER_TEST_P(UrlFilterUiTest,
                           BrowserState::Reset()),
       // Supervised user navigates to inappropriate page and is blocked, and
       // makes approval request.
-      InstrumentTab(kChildElementId, child_tab_index, child().browser()),
+      InstrumentTab(kChildElementId, child_tab_index, &child().browser()),
       Log("When child navigates to blocked url"),
       NavigateWebContents(kChildElementId,
                           GetRoutedUrl("https://bestgore.com")),
@@ -298,7 +298,7 @@ IN_PROC_BROWSER_TEST_P(UrlFilterUiTest,
       // Link.
       Log("When parent receives approval request"),
       InstrumentTab(kParentApprovalTab, parent_tab_index,
-                    /*in_browser=*/head_of_household().browser()),
+                    /*in_browser=*/&head_of_household().browser()),
       ParentOpensControlListPage(kParentApprovalTab,
                                  GURL(kPermissionRequestUrl)),
       WaitForStateChange(kParentApprovalTab, RemotePermissionRequestAppeared()),
@@ -316,7 +316,7 @@ IN_PROC_BROWSER_TEST_P(UrlFilterUiTest,
                        ChildInPendingStateIsShownVerificationInterstitial) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kChildElementId);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kChildSignInElementId);
-  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(BrowserState::Observer,
+  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(InIntendedStateObserver,
                                       kResetStateObserverId);
 
   TurnOnSync();
@@ -332,7 +332,7 @@ IN_PROC_BROWSER_TEST_P(UrlFilterUiTest,
   RunTestSequence(
       // Child in pending state navigates to explicit website.
       Log("Test sequence starting"),
-      InstrumentTab(kChildElementId, tab_index, child().browser()),
+      InstrumentTab(kChildElementId, tab_index, &child().browser()),
       NavigateWebContents(kChildElementId,
                           GetRoutedUrl("https://bestgore.com")),
       Log("When child in pending state navigates to blocked url"),
@@ -344,7 +344,7 @@ IN_PROC_BROWSER_TEST_P(UrlFilterUiTest,
       Log("Then child is shown the re-authentication interstitial"),
       ChildProceedsToSignIn(kChildElementId),
       Log("When child clicks the 'Next' button on interstitial"),
-      InstrumentTab(kChildSignInElementId, tab_index + 1, child().browser()),
+      InstrumentTab(kChildSignInElementId, tab_index + 1, &child().browser()),
       WaitForStateChange(kChildSignInElementId,
                          PageWithMatchingTitle("Sign in - Google Accounts")),
       Log("The child is redirected to Sing-in page"),
