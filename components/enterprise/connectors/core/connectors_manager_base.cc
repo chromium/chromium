@@ -48,15 +48,7 @@ std::optional<ReportingSettings> ConnectorsManagerBase::GetReportingSettings(
 
   // While multiple services can be set by the connector policies, only the
   // first one is considered for now.
-  auto reporting_settings =
-      reporting_connector_settings_[connector][0].GetReportingSettings();
-
-  std::optional<GURL> url_override = GetReportingConnectorUrlOverride();
-  if (reporting_settings && url_override) {
-    reporting_settings->reporting_url = std::move(*url_override);
-  }
-
-  return reporting_settings;
+  return reporting_connector_settings_[connector][0].GetReportingSettings();
 }
 
 void ConnectorsManagerBase::OnPrefChanged(ReportingConnector connector) {
@@ -102,10 +94,6 @@ void ConnectorsManagerBase::CacheReportingConnectorPolicy(
     reporting_connector_settings_[connector].emplace_back(
         service_settings, *service_provider_config_);
   }
-}
-
-std::optional<GURL> ConnectorsManagerBase::GetReportingConnectorUrlOverride() {
-  return std::nullopt;
 }
 
 void ConnectorsManagerBase::StartObservingPrefs(PrefService* pref_service) {

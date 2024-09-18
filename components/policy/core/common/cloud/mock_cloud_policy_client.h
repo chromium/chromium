@@ -129,11 +129,10 @@ class MockCloudPolicyClient : public CloudPolicyClient {
               (std::unique_ptr<enterprise_management::UploadEuiccInfoRequest>,
                StatusCallback),
               (override));
-  MOCK_METHOD(
-      void,
-      UploadSecurityEventReport,
-      (content::BrowserContext*, bool, base::Value::Dict, ResultCallback),
-      (override));
+  MOCK_METHOD(void,
+              UploadSecurityEventReport,
+              (bool, base::Value::Dict, ResultCallback),
+              (override));
   MOCK_METHOD(void,
               UploadAppInstallReport,
               (base::Value::Dict value, ResultCallback callback),

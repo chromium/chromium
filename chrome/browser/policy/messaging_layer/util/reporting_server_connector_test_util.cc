@@ -86,7 +86,8 @@ ReportingServerConnector::TestEnvironment::TestEnvironment()
   device_management_service_ =
       std::make_unique<policy::DeviceManagementService>(
           std::make_unique<policy::DeviceManagementServiceConfiguration>(
-              "", "", kServerUrl));
+              /*dm_server_url=*/"", /*realtime_reporting_server_url=*/"",
+              /*encrypted_reporting_server_url=*/kServerUrl));
   device_management_service_->ScheduleInitialization(0);
   TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(
       url_loader_factory_.GetSafeWeakWrapper());

@@ -7,6 +7,10 @@
 
 #include "chrome/browser/policy/cloud/user_policy_signin_service.h"
 
+namespace content {
+class BrowserContext;
+}
+
 namespace policy {
 
 // Fake user policy signin service immediately invoking the callbacks. Choose

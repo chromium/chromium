@@ -68,12 +68,6 @@ MockDeviceManagementServiceConfiguration::GetEncryptedReportingServerUrl()
   return server_url_;
 }
 
-std::string
-MockDeviceManagementServiceConfiguration::GetReportingConnectorServerUrl(
-    content::BrowserContext* context) const {
-  return server_url_;
-}
-
 MockJobCreationHandler::MockJobCreationHandler() = default;
 MockJobCreationHandler::~MockJobCreationHandler() = default;
 

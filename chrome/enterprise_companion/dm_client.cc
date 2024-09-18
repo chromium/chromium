@@ -99,10 +99,6 @@ class DMConfiguration : public policy::DeviceManagementService::Configuration {
   std::string GetEncryptedReportingServerUrl() const override {
     return GetGlobalConstants()->DeviceManagementEncryptedReportingURL().spec();
   }
-  std::string GetReportingConnectorServerUrl(
-      content::BrowserContext* context) const override {
-    return std::string();
-  }
 };
 
 class ClientDataDelegate : public policy::ClientDataDelegate {

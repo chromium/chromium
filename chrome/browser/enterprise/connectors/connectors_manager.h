@@ -137,7 +137,6 @@ class ConnectorsManager : public ConnectorsManagerBase {
 
   // ConnectorsManagerBase overrides:
   void StartObservingPrefs(PrefService* pref_service) override;
-  std::optional<GURL> GetReportingConnectorUrlOverride() override;
 
   // Cached values of the connector policies. Updated when a connector is first
   // used or when a policy is updated.  Analysis connectors settings are

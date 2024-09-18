@@ -89,16 +89,6 @@ constexpr char kDlpAndMalwareUrl[] = "https://foo.com";
 constexpr char kOnlyDlpUrl[] = "https://no.malware.com";
 constexpr char kOnlyMalwareUrl[] = "https://no.dlp.com";
 constexpr char kNoTagsUrl[] = "https://no.dlp.or.malware.ca";
-
-constexpr char kNoProviderReportingSettings[] = "[{}]";
-
-constexpr char kNormalReportingSettingsWithoutEvents[] =
-    R"([{ "service_provider": "google" }])";
-
-constexpr char kNormalReportingSettingsWithEvents[] =
-    R"([{ "service_provider": "google",
-         "enabled_event_names" : ["event 1", "event 2", "event 3"]
-       }])";
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace
@@ -167,13 +157,6 @@ class ConnectorsManagerTest : public testing::Test {
     raw_ptr<PrefService> pref_service_;
     const char* pref_;
   };
-
-  void SetUpTestCommandLine() {
-    base::CommandLine* cmd = base::CommandLine::ForCurrentProcess();
-    cmd->AppendSwitchASCII("reporting-connector-url",
-                           "https://test.com/reports");
-    policy::ChromeBrowserPolicyConnector::EnableCommandLineSupportForTesting();
-  }
 
   std::optional<ReportingSettings> GetReportingSettings(
       const char* settings_value) {
@@ -1008,61 +991,4 @@ INSTANTIATE_TEST_SUITE_P(
                                      DataRegion::UNITED_STATES,
                                      DataRegion::EUROPE)));
 #endif  // !BUILDFLAG(IS_ANDROID)
-
-TEST_F(ConnectorsManagerTest, ReportingUrlFlagOverrideNoProviderSettings) {
-  // TODO(b/344593927): Re-enable this test for Android.
-#if BUILDFLAG(IS_ANDROID)
-  ASSERT_FALSE(pref_service()->FindPreference(
-      "enterprise_connectors.on_security_event"));
-#else
-  ScopedConnectorPref scoped_pref(pref_service(), kOnSecurityEventPref,
-                                  kNoProviderReportingSettings);
-  SetUpTestCommandLine();
-  ConnectorsManager manager(pref_service(), GetServiceProviderConfig());
-  std::optional<ReportingSettings> reporting_settings =
-      manager.GetReportingSettings(ReportingConnector::SECURITY_EVENT);
-  ASSERT_FALSE(reporting_settings.has_value());
-#endif
-}
-
-TEST_F(ConnectorsManagerTest,
-       ReportingUrlFlagOverrideNormalSettingsWithoutEvents) {
-  // TODO(b/344593927): Re-enable this test for Android.
-#if BUILDFLAG(IS_ANDROID)
-  ASSERT_FALSE(pref_service()->FindPreference(
-      "enterprise_connectors.on_security_event"));
-#else
-  ScopedConnectorPref scoped_pref(pref_service(), kOnSecurityEventPref,
-                                  kNormalReportingSettingsWithoutEvents);
-  SetUpTestCommandLine();
-  ConnectorsManager manager(pref_service(), GetServiceProviderConfig());
-  std::optional<ReportingSettings> reporting_settings =
-      manager.GetReportingSettings(ReportingConnector::SECURITY_EVENT);
-  ASSERT_TRUE(reporting_settings.has_value());
-
-  ASSERT_TRUE(reporting_settings->reporting_url.is_valid());
-  ASSERT_EQ(reporting_settings->reporting_url, "https://test.com/reports");
-#endif
-}
-
-TEST_F(ConnectorsManagerTest,
-       ReportingUrlFlagOverrideNormalSettingsWithEvents) {
-  // TODO(b/344593927): Re-enable this test for Android.
-#if BUILDFLAG(IS_ANDROID)
-  ASSERT_FALSE(pref_service()->FindPreference(
-      "enterprise_connectors.on_security_event"));
-#else
-  ScopedConnectorPref scoped_pref(pref_service(), kOnSecurityEventPref,
-                                  kNormalReportingSettingsWithEvents);
-  SetUpTestCommandLine();
-  ConnectorsManager manager(pref_service(), GetServiceProviderConfig());
-  std::optional<ReportingSettings> reporting_settings =
-      manager.GetReportingSettings(ReportingConnector::SECURITY_EVENT);
-  ASSERT_TRUE(reporting_settings.has_value());
-
-  ASSERT_TRUE(reporting_settings->reporting_url.is_valid());
-  ASSERT_EQ(reporting_settings->reporting_url, "https://test.com/reports");
-#endif
-}
-
 }  // namespace enterprise_connectors

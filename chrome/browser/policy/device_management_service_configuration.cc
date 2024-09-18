@@ -16,7 +16,6 @@
 #include "build/chromeos_buildflags.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/version_info/version_info.h"
-#include "content/public/browser/browser_context.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/ash/components/system/statistics_provider.h"
@@ -95,26 +94,6 @@ DeviceManagementServiceConfiguration::GetRealtimeReportingServerUrl() const {
 std::string
 DeviceManagementServiceConfiguration::GetEncryptedReportingServerUrl() const {
   return encrypted_reporting_server_url_;
-}
-
-std::string
-DeviceManagementServiceConfiguration::GetReportingConnectorServerUrl(
-    content::BrowserContext* context) const {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) ||           \
-    ((BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && \
-     !BUILDFLAG(IS_ANDROID))
-  auto* service =
-      enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(
-          context);
-  if (!service)
-    return std::string();
-
-  auto settings = service->GetReportingSettings(
-      enterprise_connectors::ReportingConnector::SECURITY_EVENT);
-  return settings ? settings->reporting_url.spec() : std::string();
-#else
-  return std::string();
-#endif
 }
 
 }  // namespace policy

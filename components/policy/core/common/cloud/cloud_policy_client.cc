@@ -976,7 +976,6 @@ void CloudPolicyClient::UploadChromeProfileReport(
 }
 
 void CloudPolicyClient::UploadSecurityEventReport(
-    content::BrowserContext* context,
     bool include_device_info,
     base::Value::Dict report,
     ResultCallback callback) {
@@ -989,7 +988,7 @@ void CloudPolicyClient::UploadSecurityEventReport(
 
   CreateNewRealtimeReportingJob(
       std::move(report),
-      service()->configuration()->GetReportingConnectorServerUrl(context),
+      service()->configuration()->GetRealtimeReportingServerUrl(),
       include_device_info, std::move(callback));
 }
 

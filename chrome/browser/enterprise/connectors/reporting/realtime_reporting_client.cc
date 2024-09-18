@@ -140,8 +140,8 @@ void UploadSecurityEventReport(base::Value::Dict event,
       enterprise_connectors::GetUmaEnumFromEventName(name));
 
   client->UploadSecurityEventReport(
-      context, IncludeDeviceInfo(profile, settings.per_profile),
-      std::move(report), std::move(upload_callback));
+      IncludeDeviceInfo(profile, settings.per_profile), std::move(report),
+      std::move(upload_callback));
 }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)

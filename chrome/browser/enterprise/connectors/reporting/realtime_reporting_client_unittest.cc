@@ -228,8 +228,8 @@ TEST_F(RealtimeReportingClientUmaTest, TestUmaEventUploadSucceeds) {
   ReportingSettings settings;
   base::Value::Dict event;
 
-  EXPECT_CALL(*client_.get(), UploadSecurityEventReport(_, _, _, _))
-      .WillOnce(MoveArg<3>(&upload_callback));
+  EXPECT_CALL(*client_.get(), UploadSecurityEventReport(_, _, _))
+      .WillOnce(MoveArg<2>(&upload_callback));
 
   reporting_client_->ReportRealtimeEvent(kExtensionInstallEvent,
                                          std::move(settings), std::move(event));
@@ -247,8 +247,8 @@ TEST_F(RealtimeReportingClientUmaTest, TestUmaEventUploadFails) {
   ReportingSettings settings;
   base::Value::Dict event;
 
-  EXPECT_CALL(*client_.get(), UploadSecurityEventReport(_, _, _, _))
-      .WillOnce(MoveArg<3>(&upload_callback));
+  EXPECT_CALL(*client_.get(), UploadSecurityEventReport(_, _, _))
+      .WillOnce(MoveArg<2>(&upload_callback));
 
   reporting_client_->ReportRealtimeEvent(kExtensionInstallEvent,
                                          std::move(settings), std::move(event));

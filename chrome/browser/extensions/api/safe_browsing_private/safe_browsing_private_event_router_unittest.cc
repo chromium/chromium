@@ -71,7 +71,7 @@ namespace extensions {
 namespace {
 
 ACTION_P(CaptureArg, wrapper) {
-  *wrapper = arg2.Clone();
+  *wrapper = arg1.Clone();
 }
 
 constexpr char kConnectorsPrefValue[] = R"([

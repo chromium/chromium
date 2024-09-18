@@ -39,7 +39,6 @@ static constexpr enterprise_connectors::AnalysisConnector
 };
 #endif  // BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
 
-constexpr char kReportingConnectorUrlFlag[] = "reporting-connector-url";
 }  // namespace
 
 ConnectorsManager::ConnectorsManager(PrefService* pref_service,
@@ -353,26 +352,6 @@ void ConnectorsManager::StartObservingPref(AnalysisConnector connector) {
   }
 }
 
-std::optional<GURL> ConnectorsManager::GetReportingConnectorUrlOverride() {
-  // Ignore this flag on Stable and Beta to avoid abuse.
-  if (!g_browser_process || !g_browser_process->browser_policy_connector()
-                                 ->IsCommandLineSwitchSupported()) {
-    return std::nullopt;
-  }
-
-  base::CommandLine* cmd = base::CommandLine::ForCurrentProcess();
-  if (cmd->HasSwitch(kReportingConnectorUrlFlag)) {
-    GURL url = GURL(cmd->GetSwitchValueASCII(kReportingConnectorUrlFlag));
-    if (url.is_valid()) {
-      return url;
-    } else {
-      VLOG(1) << "--" << kReportingConnectorUrlFlag
-              << " is set to an invalid URL";
-    }
-  }
-
-  return std::nullopt;
-}
 
 const ConnectorsManager::AnalysisConnectorsSettings&
 ConnectorsManager::GetAnalysisConnectorsSettingsForTesting() const {

@@ -78,8 +78,7 @@ void EventReportValidator::ExpectUnscannedFileEvent(
   content_transfer_method_ = expected_content_transfer_method;
   EXPECT_CALL(*client_, UploadSecurityEventReport)
       .WillOnce(
-          [this](content::BrowserContext* context, bool include_device_info,
-                 base::Value::Dict report,
+          [this](bool include_device_info, base::Value::Dict report,
                  base::OnceCallback<void(policy::CloudPolicyClient::Result)>
                      callback) {
             ValidateReport(&report);
@@ -125,8 +124,7 @@ void EventReportValidator::ExpectUnscannedFileEvents(
   EXPECT_CALL(*client_, UploadSecurityEventReport)
       .Times(expected_filenames.size())
       .WillRepeatedly(
-          [this](content::BrowserContext* context, bool include_device_info,
-                 base::Value::Dict report,
+          [this](bool include_device_info, base::Value::Dict report,
                  base::OnceCallback<void(policy::CloudPolicyClient::Result)>
                      callback) { ValidateReport(&report); });
 }
@@ -164,8 +162,7 @@ void EventReportValidator::ExpectDangerousDeepScanningResult(
   }
   EXPECT_CALL(*client_, UploadSecurityEventReport)
       .WillOnce(
-          [this](content::BrowserContext* context, bool include_device_info,
-                 base::Value::Dict report,
+          [this](bool include_device_info, base::Value::Dict report,
                  base::OnceCallback<void(policy::CloudPolicyClient::Result)>
                      callback) {
             ValidateReport(&report);
@@ -210,8 +207,7 @@ void EventReportValidator::ExpectSensitiveDataEvent(
   user_justification_ = expected_user_justification;
   EXPECT_CALL(*client_, UploadSecurityEventReport)
       .WillOnce(
-          [this](content::BrowserContext* context, bool include_device_info,
-                 base::Value::Dict report,
+          [this](bool include_device_info, base::Value::Dict report,
                  base::OnceCallback<void(policy::CloudPolicyClient::Result)>
                      callback) {
             ValidateReport(&report);
@@ -247,8 +243,7 @@ void EventReportValidator::ExpectDataControlsSensitiveDataEvent(
   profile_identifier_ = expected_profile_identifier;
   EXPECT_CALL(*client_, UploadSecurityEventReport)
       .WillOnce(
-          [this](content::BrowserContext* context, bool include_device_info,
-                 base::Value::Dict report,
+          [this](bool include_device_info, base::Value::Dict report,
                  base::OnceCallback<void(policy::CloudPolicyClient::Result)>
                      callback) {
             ValidateReport(&report);
@@ -275,8 +270,7 @@ void EventReportValidator::ExpectDataMaskingEvent(
       std::move(expected_event));
   EXPECT_CALL(*client_, UploadSecurityEventReport)
       .WillOnce(
-          [this](content::BrowserContext* context, bool include_device_info,
-                 base::Value::Dict report,
+          [this](bool include_device_info, base::Value::Dict report,
                  base::OnceCallback<void(policy::CloudPolicyClient::Result)>
                      callback) {
             ValidateReport(&report);
@@ -327,8 +321,7 @@ void EventReportValidator::ExpectSensitiveDataEvents(
   EXPECT_CALL(*client_, UploadSecurityEventReport)
       .Times(expected_filenames.size())
       .WillRepeatedly(
-          [this](content::BrowserContext* context, bool include_device_info,
-                 base::Value::Dict report,
+          [this](bool include_device_info, base::Value::Dict report,
                  base::OnceCallback<void(policy::CloudPolicyClient::Result)>
                      callback) { ValidateReport(&report); });
 }
@@ -368,13 +361,11 @@ void EventReportValidator::
   content_transfer_method_ = expected_content_transfer_method;
   EXPECT_CALL(*client_, UploadSecurityEventReport)
       .WillOnce(
-          [this](content::BrowserContext* context, bool include_device_info,
-                 base::Value::Dict report,
+          [this](bool include_device_info, base::Value::Dict report,
                  base::OnceCallback<void(policy::CloudPolicyClient::Result)>
                      callback) { ValidateReport(&report); })
       .WillOnce([this, expected_filename, expected_dlp_verdict](
-                    content::BrowserContext* context, bool include_device_info,
-                    base::Value::Dict report,
+                    bool include_device_info, base::Value::Dict report,
                     base::OnceCallback<void(policy::CloudPolicyClient::Result)>
                         callback) {
         event_key_ = enterprise_connectors::kKeySensitiveDataEvent;
@@ -420,13 +411,11 @@ void EventReportValidator::
   scan_ids_[expected_filename] = expected_scan_id;
   EXPECT_CALL(*client_, UploadSecurityEventReport)
       .WillOnce(
-          [this](content::BrowserContext* context, bool include_device_info,
-                 base::Value::Dict report,
+          [this](bool include_device_info, base::Value::Dict report,
                  base::OnceCallback<void(policy::CloudPolicyClient::Result)>
                      callback) { ValidateReport(&report); })
       .WillOnce([this, expected_filename, expected_threat_type](
-                    content::BrowserContext* context, bool include_device_info,
-                    base::Value::Dict report,
+                    bool include_device_info, base::Value::Dict report,
                     base::OnceCallback<void(policy::CloudPolicyClient::Result)>
                         callback) {
         event_key_ = enterprise_connectors::kKeyDangerousDownloadEvent;
@@ -464,8 +453,7 @@ void EventReportValidator::ExpectDangerousDownloadEvent(
   profile_identifier_ = expected_profile_identifier;
   EXPECT_CALL(*client_, UploadSecurityEventReport)
       .WillOnce(
-          [this](content::BrowserContext* context, bool include_device_info,
-                 base::Value::Dict report,
+          [this](bool include_device_info, base::Value::Dict report,
                  base::OnceCallback<void(policy::CloudPolicyClient::Result)>
                      callback) {
             ValidateReport(&report);
@@ -491,8 +479,7 @@ void EventReportValidator::ExpectLoginEvent(
   login_user_name_ = expected_login_username;
   EXPECT_CALL(*client_, UploadSecurityEventReport)
       .WillOnce(
-          [this](content::BrowserContext* context, bool include_device_info,
-                 base::Value::Dict report,
+          [this](bool include_device_info, base::Value::Dict report,
                  base::OnceCallback<void(policy::CloudPolicyClient::Result)>
                      callback) {
             ValidateReport(&report);
@@ -515,8 +502,7 @@ void EventReportValidator::ExpectPasswordBreachEvent(
   profile_identifier_ = expected_profile_identifier;
   EXPECT_CALL(*client_, UploadSecurityEventReport)
       .WillOnce(
-          [this](content::BrowserContext* context, bool include_device_info,
-                 base::Value::Dict report,
+          [this](bool include_device_info, base::Value::Dict report,
                  base::OnceCallback<void(policy::CloudPolicyClient::Result)>
                      callback) {
             ValidateReport(&report);
@@ -540,8 +526,7 @@ void EventReportValidator::ExpectURLFilteringInterstitialEvent(
   rt_lookup_response_ = expected_rt_lookup_response;
   EXPECT_CALL(*client_, UploadSecurityEventReport)
       .WillOnce(
-          [this](content::BrowserContext* context, bool include_device_info,
-                 base::Value::Dict report,
+          [this](bool include_device_info, base::Value::Dict report,
                  base::OnceCallback<void(policy::CloudPolicyClient::Result)>
                      callback) {
             ValidateReport(&report);

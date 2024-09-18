@@ -2302,7 +2302,7 @@ TEST_F(CloudPolicyClientTest, UploadSecurityEventReportNotRegistered) {
 
   base::test::TestFuture<CloudPolicyClient::Result> result_future;
 
-  client_->UploadSecurityEventReport(nullptr, /*include_device_info=*/false,
+  client_->UploadSecurityEventReport(/*include_device_info=*/false,
                                      MakeDefaultRealtimeReport(),
                                      result_future.GetCallback());
 
@@ -2322,9 +2322,8 @@ TEST_P(CloudPolicyClientUploadSecurityEventTest, Test) {
       base::BindOnce(&MockResultCallbackObserver::OnCallbackComplete,
                      base::Unretained(&result_callback_observer_));
 
-  client_->UploadSecurityEventReport(nullptr, include_device_info(),
-                                     MakeDefaultRealtimeReport(),
-                                     std::move(callback));
+  client_->UploadSecurityEventReport(
+      include_device_info(), MakeDefaultRealtimeReport(), std::move(callback));
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(
       DeviceManagementService::JobConfiguration::TYPE_UPLOAD_REAL_TIME_REPORT,
