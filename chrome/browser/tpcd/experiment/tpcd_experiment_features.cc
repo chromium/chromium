@@ -153,7 +153,7 @@ const base::FeatureParam<EnableForIframeTypes>
 
 const base::FeatureParam<base::TimeDelta> kTpcdWriteRedirectHeuristicGrants{
     &content_settings::features::kTpcdHeuristicsGrants,
-    kTpcdWriteRedirectHeuristicGrantsName, base::Minutes(30)};
+    kTpcdWriteRedirectHeuristicGrantsName, base::Minutes(15)};
 
 const base::FeatureParam<bool> kTpcdRedirectHeuristicRequireABAFlow{
     &content_settings::features::kTpcdHeuristicsGrants,
