@@ -27,7 +27,6 @@ chromium-m128/try/chromeos-arm-generic-rel
 chromium-m128/try/chromeos-arm64-generic-rel
 chromium-m128/try/chromeos-jacuzzi-rel
 chromium-m128/try/chromeos-octopus-rel
-chromium-m128/try/dawn-linux-x64-deps-rel
 chromium-m128/try/dawn-mac-arm64-deps-rel
 chromium-m128/try/dawn-mac-x64-deps-rel
 chromium-m128/try/dawn-win10-x64-deps-rel
@@ -36,8 +35,6 @@ chromium-m128/try/fuchsia-arm64-cast-receiver-rel
 chromium-m128/try/fuchsia-x64-cast-receiver-dbg
 chromium-m128/try/fuchsia-x64-cast-receiver-rel
 chromium-m128/try/gpu-fyi-cq-android-arm64
-chromium-m128/try/ios-simulator
-chromium-m128/try/ios-simulator-full-configs
 chromium-m128/try/lacros-amd64-generic-rel-gtest
 chromium-m128/try/lacros-amd64-generic-rel-gtest-and-tast
 chromium-m128/try/lacros-amd64-generic-rel-non-skylab
@@ -45,20 +42,11 @@ chromium-m128/try/lacros-arm-generic-rel
 chromium-m128/try/lacros-arm-generic-rel-skylab
 chromium-m128/try/lacros-arm64-generic-rel
 chromium-m128/try/lacros-arm64-generic-rel-skylab
-chromium-m128/try/linux-centipede-asan-rel
 chromium-m128/try/linux-chromeos-compile-dbg
 chromium-m128/try/linux-chromeos-dbg
 chromium-m128/try/linux-chromeos-rel
 chromium-m128/try/linux-lacros-dbg
 chromium-m128/try/linux-lacros-rel
-chromium-m128/try/linux-libfuzzer-asan-rel
-chromium-m128/try/linux-official
-chromium-m128/try/linux-rel
-chromium-m128/try/linux-wayland-rel
-chromium-m128/try/linux_chromium_asan_rel_ng
-chromium-m128/try/linux_chromium_compile_dbg_ng
-chromium-m128/try/linux_chromium_dbg_ng
-chromium-m128/try/linux_chromium_tsan_rel_ng
 chromium-m128/try/mac-official
 chromium-m128/try/mac-rel
 chromium-m128/try/mac11-arm64-rel
