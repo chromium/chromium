@@ -45,6 +45,10 @@ void ControlledFrameExtensionsRendererAPIProvider::RequireWebViewModules(
     // of it.
     CHECK(context->GetAvailability("chromeWebViewInternal").is_available());
     context->module_system()->Require("controlledFrame");
+
+    // CHECK that the Chrome WebView and Controlled Frame features aren't both
+    // enabled in the same context.
+    CHECK(!context->GetAvailability("chromeWebViewTag").is_available());
   }
 }
 
