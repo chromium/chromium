@@ -15,7 +15,7 @@
 #include "base/check_op.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_base.h"
-#include "base/metrics/histogram_functions_internal_overloads.h"
+#include "base/metrics/histogram_functions_internal_overloads.h"  // IWYU pragma: export
 #include "base/time/time.h"
 
 // TODO(crbug.com/40801421): Update this file's function comments to provide
