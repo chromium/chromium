@@ -13,7 +13,11 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.FrameLayout;
 import android.widget.ScrollView;
 
+import androidx.annotation.ColorInt;
+
 import org.chromium.chrome.R;
+import org.chromium.components.browser_ui.widget.FadingShadow;
+import org.chromium.components.browser_ui.widget.FadingShadowView;
 import org.chromium.components.content_settings.CookieControlsEnforcement;
 import org.chromium.ui.base.ViewUtils;
 
@@ -21,6 +25,7 @@ import org.chromium.ui.base.ViewUtils;
 public class IncognitoNewTabPageView extends FrameLayout {
     private IncognitoNewTabPageManager mManager;
     private boolean mFirstShow = true;
+    private FadingShadowView mFadingShadowBottom;
     private NewTabPageScrollView mScrollView;
     private IncognitoDescriptionView mDescriptionView;
 
@@ -63,14 +68,26 @@ public class IncognitoNewTabPageView extends FrameLayout {
     protected void onFinishInflate() {
         super.onFinishInflate();
 
+        @ColorInt int bgColor = getContext().getColor(R.color.ntp_bg_incognito);
         mScrollView = findViewById(R.id.ntp_scrollview);
-        mScrollView.setBackgroundColor(getContext().getColor(R.color.ntp_bg_incognito));
+        mScrollView.setBackgroundColor(bgColor);
         setContentDescription(
                 getResources().getText(R.string.accessibility_new_incognito_tab_page));
 
         // FOCUS_BEFORE_DESCENDANTS is needed to support keyboard shortcuts. Otherwise, pressing
         // any shortcut causes the UrlBar to be focused. See ViewRootImpl.leaveTouchMode().
         mScrollView.setDescendantFocusability(FOCUS_BEFORE_DESCENDANTS);
+        mFadingShadowBottom = findViewById(R.id.shadow_bottom);
+        mFadingShadowBottom.init(bgColor, FadingShadow.POSITION_BOTTOM);
+        mScrollView.setOnScrollChangeListener(
+                new OnScrollChangeListener() {
+                    @Override
+                    public void onScrollChange(
+                            View v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+                        mFadingShadowBottom.setVisibility(
+                                mScrollView.canScrollVertically(1) ? View.VISIBLE : View.GONE);
+                    }
+                });
     }
 
     private void inflateConditionalLayouts() {
