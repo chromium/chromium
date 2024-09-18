@@ -1076,30 +1076,14 @@ void FlexLayoutAlgorithm::PlaceFlexItems(
                                   : Phase::kLayout,
                               oof_children);
 
-  LayoutUnit main_axis_start_offset;
-  LayoutUnit main_axis_end_offset;
-  LayoutUnit cross_axis_offset = BorderScrollbarPadding().block_start;
-  if (is_column_) {
-    const bool is_column_reverse =
-        Style().ResolvedIsColumnReverseFlexDirection();
-    main_axis_start_offset =
-        is_column_reverse ? LayoutUnit() : BorderScrollbarPadding().block_start;
-    main_axis_end_offset =
-        is_column_reverse ? LayoutUnit() : BorderScrollbarPadding().block_end;
-    cross_axis_offset = BorderScrollbarPadding().inline_start;
-  } else if (Style().ResolvedIsRowReverseFlexDirection()) {
-    main_axis_start_offset = BorderScrollbarPadding().inline_end;
-    main_axis_end_offset = BorderScrollbarPadding().inline_start;
-  } else {
-    main_axis_start_offset = BorderScrollbarPadding().inline_start;
-    main_axis_end_offset = BorderScrollbarPadding().inline_end;
-  }
+  LayoutUnit cross_axis_offset = is_column_
+                                     ? BorderScrollbarPadding().inline_start
+                                     : BorderScrollbarPadding().block_start;
 
   flex_line_outputs->reserve(algorithm_.NumItems());
 
   FlexLine* line;
-  while ((
-      line = algorithm_.ComputeNextFlexLine(container_builder_.InlineSize()))) {
+  while ((line = algorithm_.ComputeNextFlexLine())) {
     line->SetContainerMainInnerSize(
         MainAxisContentExtent(line->sum_hypothetical_main_size_));
     line->FreezeInflexibleItems();
@@ -1169,8 +1153,9 @@ void FlexLayoutAlgorithm::PlaceFlexItems(
     }
     // cross_axis_offset is updated in each iteration of the loop, for passing
     // in to the next iteration.
-    line->ComputeLineItemsPosition(main_axis_start_offset, main_axis_end_offset,
-                                   cross_axis_offset);
+    line->ComputeLineItemsPosition(cross_axis_offset);
+    flex_line_outputs->back().main_axis_free_space =
+        line->remaining_free_space_;
     flex_line_outputs->back().line_cross_size = line->cross_axis_extent_;
     flex_line_outputs->back().cross_axis_offset = line->cross_axis_offset_;
     flex_line_outputs->back().major_baseline = line->max_major_ascent_;
@@ -1224,34 +1209,89 @@ void FlexLayoutAlgorithm::ApplyFinalAlignmentAndReversals(
     flex_line_outputs->Reverse();
   }
 
-  if (Style().ResolvedIsColumnReverseFlexDirection()) {
-    algorithm_.LayoutColumnReverse(final_content_main_size,
-                                   BorderScrollbarPadding().block_start);
-  }
   if (Style().ResolvedIsReverseFlexDirection()) {
     for (auto& flex_line : *flex_line_outputs)
       flex_line.line_items.Reverse();
   }
 }
 
+namespace {
+
+LayoutUnit InitialContentPositionOffset(const StyleContentAlignmentData& data,
+                                        ContentPosition safe_position,
+                                        LayoutUnit free_space,
+                                        unsigned number_of_items,
+                                        bool is_reverse) {
+  switch (data.Distribution()) {
+    case ContentDistributionType::kDefault:
+      break;
+    case ContentDistributionType::kSpaceBetween:
+      if (number_of_items > 1) {
+        return LayoutUnit();
+      }
+      return is_reverse ? free_space : LayoutUnit();
+    case ContentDistributionType::kSpaceAround:
+      if (free_space > LayoutUnit() && number_of_items) {
+        return free_space / (2 * number_of_items);
+      }
+      // Fallback to 'safe center'
+      return (free_space / 2).ClampNegativeToZero();
+    case ContentDistributionType::kSpaceEvenly:
+      if (free_space > LayoutUnit() && number_of_items) {
+        return free_space / (number_of_items + 1);
+      }
+      // Fallback to 'safe center'
+      return (free_space / 2).ClampNegativeToZero();
+    case ContentDistributionType::kStretch:
+      return LayoutUnit();
+  }
+
+  ContentPosition position = data.GetPosition();
+  if (free_space <= LayoutUnit() &&
+      data.Overflow() == OverflowAlignment::kSafe) {
+    position = safe_position;
+  }
+
+  switch (position) {
+    case ContentPosition::kCenter:
+      return free_space / 2;
+    case ContentPosition::kStart:
+      return LayoutUnit();
+    case ContentPosition::kEnd:
+      return free_space;
+    case ContentPosition::kFlexEnd:
+      return is_reverse ? LayoutUnit() : free_space;
+    case ContentPosition::kFlexStart:
+    case ContentPosition::kNormal:
+    case ContentPosition::kBaseline:
+    case ContentPosition::kLastBaseline:
+      return is_reverse ? free_space : LayoutUnit();
+    case ContentPosition::kLeft:
+    case ContentPosition::kRight:
+      NOTREACHED_NORETURN();
+  }
+}
+
+}  // namespace
+
 LayoutResult::EStatus FlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
     HeapVector<NGFlexLine>* flex_line_outputs,
     Vector<EBreakBetween>* row_break_between_outputs) {
   DCHECK(!IsBreakInside(GetBreakToken()));
 
+  const auto& style = Style();
   const WritingDirectionMode writing_direction =
       GetConstraintSpace().GetWritingDirection();
+  const StyleContentAlignmentData justify_content =
+      FlexibleBoxAlgorithm::ResolvedJustifyContent(style);
+  const bool is_reverse = style.ResolvedIsReverseFlexDirection();
 
-  LayoutUnit final_content_cross_size;
-  if (is_column_) {
-    final_content_cross_size =
-        (container_builder_.InlineSize() - BorderScrollbarPadding().InlineSum())
-            .ClampNegativeToZero();
-  } else {
-    final_content_cross_size =
-        (total_block_size_ - BorderScrollbarPadding().BlockSum())
-            .ClampNegativeToZero();
-  }
+  // -webkit-box has a weird quirk - an RTL box will overflow as if it was LTR.
+  const ContentPosition safe_justify_position =
+      style.IsDeprecatedWebkitBox() && !is_column_ &&
+              style.Direction() == TextDirection::kRtl
+          ? ContentPosition::kEnd
+          : ContentPosition::kStart;
 
   bool should_propagate_row_break_values =
       GetConstraintSpace().ShouldPropagateChildBreakValues();
@@ -1271,7 +1311,7 @@ LayoutResult::EStatus FlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
     }
   }
 
-  BaselineAccumulator baseline_accumulator(Style());
+  BaselineAccumulator baseline_accumulator(style);
   LayoutResult::EStatus status = LayoutResult::kSuccess;
 
   for (wtf_size_t flex_line_idx = 0; flex_line_idx < flex_line_outputs->size();
@@ -1284,6 +1324,17 @@ LayoutResult::EStatus FlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
       baseline_accumulator.AccumulateLine(line_output, is_first_line,
                                           is_last_line);
     }
+
+    const wtf_size_t line_items_size = line_output.line_items.size();
+    const LayoutUnit space_between_items =
+        FlexibleBoxAlgorithm::ContentDistributionSpaceBetweenChildren(
+            line_output.main_axis_free_space, justify_content, line_items_size);
+    LayoutUnit main_axis_offset =
+        (is_column_ ? BorderScrollbarPadding().block_start
+                    : BorderScrollbarPadding().inline_start) +
+        InitialContentPositionOffset(justify_content, safe_justify_position,
+                                     line_output.main_axis_free_space,
+                                     line_items_size, is_reverse);
 
     for (wtf_size_t flex_item_idx = 0;
          flex_item_idx < line_output.line_items.size(); ++flex_item_idx) {
@@ -1352,11 +1403,17 @@ LayoutResult::EStatus FlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
       const LayoutUnit cross_axis_size =
           is_column_ ? fragment.InlineSize() : fragment.BlockSize();
 
+      main_axis_offset += item->FlowAwareMarginStart();
+
       flex_item.offset =
-          FlexOffset(item->main_axis_offset_,
+          FlexOffset(main_axis_offset,
                      line_output.cross_axis_offset +
                          item->CrossAxisOffset(line_output, cross_axis_size));
       const LogicalOffset offset = flex_item.offset.ToLogicalOffset(is_column_);
+
+      main_axis_offset += item->FlexedBorderBoxSize() +
+                          item->FlowAwareMarginEnd() + space_between_items +
+                          algorithm_.gap_between_items_;
 
       if (!InvolvedInBlockFragmentation(container_builder_)) {
         container_builder_.AddResult(

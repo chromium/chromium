@@ -503,11 +503,8 @@ LayoutUnit FlexLine::ApplyMainAxisAutoMarginAdjustment() {
   return size_of_auto_margin;
 }
 
-void FlexLine::ComputeLineItemsPosition(LayoutUnit main_axis_start_offset,
-                                        LayoutUnit main_axis_end_offset,
-                                        LayoutUnit& cross_axis_offset) {
+void FlexLine::ComputeLineItemsPosition(LayoutUnit& cross_axis_offset) {
   const auto& style = algorithm_->StyleRef();
-  const bool is_webkit_box = style.IsDeprecatedWebkitBox();
   const bool is_wrap_reverse = style.FlexWrap() == EFlexWrap::kWrapReverse;
 
   // Recalculate the remaining free space. The adjustment for flex factors
@@ -519,27 +516,7 @@ void FlexLine::ComputeLineItemsPosition(LayoutUnit main_axis_start_offset,
       container_main_inner_size_ - total_item_size -
       (line_items_.size() - 1) * algorithm_->gap_between_items_;
 
-  const StyleContentAlignmentData justify_content =
-      FlexibleBoxAlgorithm::ResolvedJustifyContent(style);
-
   const LayoutUnit auto_margin_offset = ApplyMainAxisAutoMarginAdjustment();
-  const LayoutUnit available_free_space = remaining_free_space_;
-  const bool is_reversed = style.ResolvedIsReverseFlexDirection();
-  const LayoutUnit initial_position =
-      FlexibleBoxAlgorithm::InitialContentPositionOffset(
-          style, available_free_space, justify_content, line_items_.size(),
-          is_reversed);
-  LayoutUnit main_axis_offset = initial_position + main_axis_start_offset;
-
-  // When a -webkit-box has negative available-space it always places that
-  // overflow to the line-right. (Even if we have "direction: rtl" or
-  // "-webkit-box-direction: reverse"). In the future it will hopefully be
-  // possible to remove this quirk.
-  if (is_webkit_box && available_free_space < 0 &&
-      (style.ResolvedIsRowReverseFlexDirection() ==
-       style.IsLeftToRightDirection())) {
-    main_axis_offset += available_free_space;
-  }
 
   LayoutUnit max_major_descent;
   LayoutUnit max_minor_descent;
@@ -580,24 +557,6 @@ void FlexLine::ComputeLineItemsPosition(LayoutUnit main_axis_start_offset,
     }
     max_child_cross_axis_extent = std::max(max_child_cross_axis_extent,
                                            child_cross_axis_margin_box_extent);
-
-    main_axis_offset += flex_item.FlowAwareMarginStart();
-
-    LayoutUnit child_main_extent = flex_item.FlexedBorderBoxSize();
-
-    // In an RTL column situation, this will apply the margin-right/margin-end
-    // on the left. This will be fixed later in
-    // LayoutFlexibleBox::FlipForRightToLeftColumn.
-    flex_item.main_axis_offset_ =
-        style.ResolvedIsRowReverseFlexDirection()
-            ? container_logical_width_ - main_axis_offset - child_main_extent
-            : main_axis_offset;
-    main_axis_offset += child_main_extent + flex_item.FlowAwareMarginEnd();
-
-    const LayoutUnit space_between =
-        FlexibleBoxAlgorithm::ContentDistributionSpaceBetweenChildren(
-            available_free_space, justify_content, line_items_.size());
-    main_axis_offset += space_between + algorithm_->gap_between_items_;
   }
 
   cross_axis_offset_ = cross_axis_offset;
@@ -672,8 +631,7 @@ FlexibleBoxAlgorithm::FlexibleBoxAlgorithm(const ComputedStyle* style,
   }
 }
 
-FlexLine* FlexibleBoxAlgorithm::ComputeNextFlexLine(
-    LayoutUnit container_logical_width) {
+FlexLine* FlexibleBoxAlgorithm::ComputeNextFlexLine() {
   LayoutUnit sum_flex_base_size;
   double total_flex_grow = 0;
   double total_flex_shrink = 0;
@@ -717,9 +675,8 @@ FlexLine* FlexibleBoxAlgorithm::ComputeNextFlexLine(
   if (next_item_index_ > start_index) {
     return &flex_lines_.emplace_back(
         this, FlexItemVectorView(&all_items_, start_index, next_item_index_),
-        container_logical_width, sum_flex_base_size, total_flex_grow,
-        total_flex_shrink, total_weighted_flex_shrink,
-        sum_hypothetical_main_size);
+        sum_flex_base_size, total_flex_grow, total_flex_shrink,
+        total_weighted_flex_shrink, sum_hypothetical_main_size);
   }
   return nullptr;
 }
@@ -865,9 +822,7 @@ void FlexibleBoxAlgorithm::FlipForWrapReverse(
 
 PhysicalDirection FlexibleBoxAlgorithm::MainAxisDirection() const {
   WritingDirectionMode writing_direction = style_->GetWritingDirection();
-  if (style_->ResolvedIsRowReverseFlexDirection()) {
-    return writing_direction.InlineStart();
-  } else if (style_->ResolvedIsRowFlexDirection()) {
+  if (style_->ResolvedIsRowFlexDirection()) {
     return writing_direction.InlineEnd();
   }
   DCHECK(style_->ResolvedIsColumnFlexDirection());
@@ -936,9 +891,11 @@ StyleContentAlignmentData FlexibleBoxAlgorithm::ResolvedJustifyContent(
                     : style.ResolvedJustifyContentDistribution(
                           ContentAlignmentNormalBehavior());
   OverflowAlignment overflow = style.JustifyContent().Overflow();
-  // For flex, justify-content: stretch behaves as flex-start:
-  // https://drafts.csswg.org/css-align/#distribution-flex
-  if (!is_webkit_box && distribution == ContentDistributionType::kStretch) {
+  if (is_webkit_box) {
+    overflow = OverflowAlignment::kSafe;
+  } else if (distribution == ContentDistributionType::kStretch) {
+    // For flex, justify-content: stretch behaves as flex-start:
+    // https://drafts.csswg.org/css-align/#distribution-flex
     position = ContentPosition::kFlexStart;
     distribution = ContentDistributionType::kDefault;
   }
@@ -1077,34 +1034,6 @@ LayoutUnit FlexibleBoxAlgorithm::ContentDistributionSpaceBetweenChildren(
       return available_free_space / (number_of_items + 1);
   }
   return LayoutUnit();
-}
-
-// Above, we calculated the positions of items in a column reverse container as
-// if they were in a column. Now that we know the block size of the container we
-// can flip the position of every item.
-void FlexibleBoxAlgorithm::LayoutColumnReverse(
-    LayoutUnit main_axis_content_size,
-    LayoutUnit border_scrollbar_padding_before) {
-  DCHECK(IsColumnFlow());
-  DCHECK(Style()->ResolvedIsColumnReverseFlexDirection());
-  for (FlexLine& line_context : FlexLines()) {
-    for (wtf_size_t child_number = 0;
-         child_number < line_context.line_items_.size(); ++child_number) {
-      FlexItem& flex_item = line_context.line_items_[child_number];
-      LayoutUnit item_main_size = flex_item.FlexedBorderBoxSize();
-
-      BoxStrut margins = flex_item.physical_margins_.ConvertToLogical(
-          Style()->GetWritingDirection());
-
-      // We passed 0 as the initial main_axis offset to ComputeLineItemsPosition
-      // for ColumnReverse containers so here we have to add the
-      // border_scrollbar_padding of the container.
-      flex_item.main_axis_offset_ =
-          main_axis_content_size + border_scrollbar_padding_before -
-          flex_item.main_axis_offset_ - item_main_size - margins.block_end +
-          margins.block_start;
-    }
-  }
 }
 
 FlexItem* FlexibleBoxAlgorithm::FlexItemAtIndex(wtf_size_t line_index,

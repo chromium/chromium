@@ -157,7 +157,6 @@ class FlexItem {
   const BaselineGroup baseline_group_;
 
   LayoutUnit flexed_content_size_;
-  LayoutUnit main_axis_offset_;
 
   // When set by the caller, this should be the size pre-stretching.
   LayoutUnit cross_axis_size_;
@@ -212,7 +211,6 @@ class FlexLine {
   // This will std::move the passed-in line_items.
   FlexLine(FlexibleBoxAlgorithm* algorithm,
            FlexItemVectorView line_items,
-           LayoutUnit container_logical_width,
            LayoutUnit sum_flex_base_size,
            double total_flex_grow,
            double total_flex_shrink,
@@ -220,7 +218,6 @@ class FlexLine {
            LayoutUnit sum_hypothetical_main_size)
       : algorithm_(algorithm),
         line_items_(std::move(line_items)),
-        container_logical_width_(container_logical_width),
         sum_flex_base_size_(sum_flex_base_size),
         total_flex_grow_(total_flex_grow),
         total_flex_shrink_(total_flex_shrink),
@@ -257,13 +254,10 @@ class FlexLine {
   // flexed_content_size set as the override main axis size, and
   // cross_axis_size needs to be set correctly on each flex item (to the size
   // the item has without stretching).
-  void ComputeLineItemsPosition(LayoutUnit main_axis_offset,
-                                LayoutUnit main_axis_end_offset,
-                                LayoutUnit& cross_axis_offset);
+  void ComputeLineItemsPosition(LayoutUnit& cross_axis_offset);
 
   FlexibleBoxAlgorithm* algorithm_;
   FlexItemVectorView line_items_;
-  const LayoutUnit container_logical_width_;
   const LayoutUnit sum_flex_base_size_;
   double total_flex_grow_;
   double total_flex_shrink_;
@@ -309,8 +303,7 @@ class FlexLine {
 //        while (!current_line->ResolveFlexibleLengths()) { continue; }
 //        // Now, lay out the items, forcing their main axis size to
 //        // item.flexed_content_size
-//        LayoutUnit main_axis_offset = border + padding + scrollbar;
-//        line->ComputeLineItemsPosition(main_axis_offset, cross_axis_offset);
+//        line->ComputeLineItemsPosition(cross_axis_offset);
 //     }
 // The final position of each flex item is in item.offset
 class CORE_EXPORT FlexibleBoxAlgorithm {
@@ -341,8 +334,7 @@ class CORE_EXPORT FlexibleBoxAlgorithm {
 
   // Computes the next flex line, stores it in FlexLines(), and returns a
   // pointer to it. Returns nullptr if there are no more lines.
-  // container_logical_width is the border box width.
-  FlexLine* ComputeNextFlexLine(LayoutUnit container_logical_width);
+  FlexLine* ComputeNextFlexLine();
 
   bool IsHorizontalFlow() const;
   bool IsColumnFlow() const;
@@ -396,9 +388,6 @@ class CORE_EXPORT FlexibleBoxAlgorithm {
       LayoutUnit available_free_space,
       const StyleContentAlignmentData&,
       unsigned number_of_items);
-
-  void LayoutColumnReverse(LayoutUnit main_axis_content_size,
-                           LayoutUnit border_scrollbar_padding_before);
 
   FlexItem* FlexItemAtIndex(wtf_size_t line_index, wtf_size_t item_index) const;
 
