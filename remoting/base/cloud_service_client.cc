@@ -5,12 +5,15 @@
 #include "remoting/base/cloud_service_client.h"
 
 #include "base/functional/bind.h"
+#include "base/strings/string_split.h"
 #include "base/strings/stringize_macros.h"
 #include "google_apis/google_api_keys.h"
 #include "remoting/base/protobuf_http_request.h"
 #include "remoting/base/protobuf_http_request_config.h"
 #include "remoting/base/service_urls.h"
 #include "remoting/base/version.h"
+#include "remoting/proto/google/internal/remoting/cloud/v1alpha/empty.pb.h"
+#include "remoting/proto/google/internal/remoting/cloud/v1alpha/remote_access_host.pb.h"
 #include "remoting/proto/google/internal/remoting/cloud/v1alpha/remote_access_service.pb.h"
 #include "remoting/proto/remoting/v1/cloud_messages.pb.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -55,15 +58,36 @@ constexpr net::NetworkTrafficAnnotationTag
 
 using LegacyProvisionGceInstanceRequest =
     remoting::apis::v1::ProvisionGceInstanceRequest;
+
+using Empty = google::internal::remoting::cloud::v1alpha::Empty;
 using ProvisionGceInstanceRequest =
     google::internal::remoting::cloud::v1alpha::ProvisionGceInstanceRequest;
+using SendHeartbeatRequest =
+    google::internal::remoting::cloud::v1alpha::SendHeartbeatRequest;
+using UpdateRemoteAccessHostRequest =
+    google::internal::remoting::cloud::v1alpha::UpdateRemoteAccessHostRequest;
+
+constexpr char kFtlResourceSeparator[] = "/chromoting_ftl_";
 }  // namespace
 
 namespace remoting {
 
 CloudServiceClient::CloudServiceClient(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-    : url_loader_factory_(url_loader_factory) {}
+    : http_client_(ServiceUrls::GetInstance()->remoting_server_endpoint(),
+                   /*oauth_token_getter=*/nullptr,
+                   url_loader_factory) {
+  LOG(WARNING) << "CloudServiceClient configured to call legacy service API.";
+}
+
+CloudServiceClient::CloudServiceClient(
+    const std::string& api_key,
+    OAuthTokenGetter* oauth_token_getter,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+    : api_key_(api_key),
+      http_client_(ServiceUrls::GetInstance()->remoting_cloud_endpoint(),
+                   oauth_token_getter,
+                   url_loader_factory) {}
 
 CloudServiceClient::~CloudServiceClient() = default;
 
@@ -84,10 +108,6 @@ void CloudServiceClient::LegacyProvisionGceInstance(
     request->set_existing_directory_id(*existing_directory_id);
   }
 
-  CHECK(!http_client_.has_value());
-  http_client_.emplace(ServiceUrls::GetInstance()->remoting_server_endpoint(),
-                       /*token_getter=*/nullptr, url_loader_factory_);
-
   ExecuteRequest(kProvisionGceInstanceTrafficAnnotation, path,
                  google_apis::GetRemotingAPIKey(), std::move(request),
                  std::move(callback));
@@ -98,7 +118,6 @@ void CloudServiceClient::ProvisionGceInstance(
     const std::string& display_name,
     const std::string& public_key,
     const std::optional<std::string>& existing_directory_id,
-    const std::string& api_key,
     ProvisionGceInstanceCallback callback) {
   constexpr char path[] = "/v1alpha/access:provisionGceInstance";
 
@@ -111,18 +130,63 @@ void CloudServiceClient::ProvisionGceInstance(
     request->set_existing_directory_id(*existing_directory_id);
   }
 
-  CHECK(!http_client_.has_value());
-  http_client_.emplace(ServiceUrls::GetInstance()->remoting_cloud_endpoint(),
-                       /*token_getter=*/nullptr, url_loader_factory_);
+  ExecuteRequest(kProvisionGceInstanceTrafficAnnotation, path, api_key_,
+                 std::move(request), std::move(callback));
+}
 
-  ExecuteRequest(kProvisionGceInstanceTrafficAnnotation, path, api_key,
+void CloudServiceClient::SendHeartbeat(const std::string& directory_id,
+                                       SendHeartbeatCallback callback) {
+  constexpr char path[] = "/v1alpha/access:sendHeartbeat";
+
+  auto request = std::make_unique<SendHeartbeatRequest>();
+  request->set_directory_id(directory_id);
+
+  // TODO: joedow - Fix the traffic annotation here.
+  ExecuteRequest(kProvisionGceInstanceTrafficAnnotation, path, api_key_,
+                 std::move(request), std::move(callback));
+}
+
+void CloudServiceClient::UpdateRemoteAccessHost(
+    const std::string& directory_id,
+    std::optional<std::string> host_version,
+    std::optional<std::string> signaling_id,
+    std::optional<std::string> offline_reason,
+    std::optional<std::string> os_name,
+    std::optional<std::string> os_version,
+    UpdateRemoteAccessHostCallback callback) {
+  constexpr char path[] = "/v1alpha/access:updateRemoteAccessHost";
+
+  auto request = std::make_unique<UpdateRemoteAccessHostRequest>();
+  auto* host = request->mutable_remote_access_host();
+
+  host->set_directory_id(directory_id);
+  if (host_version.has_value()) {
+    host->set_version(*host_version);
+  }
+  if (signaling_id.has_value()) {
+    auto parts = base::SplitStringOnce(*signaling_id, kFtlResourceSeparator);
+    if (parts) {
+      host->mutable_tachyon_account_info()->set_account_id(
+          std::string(parts->first));
+      host->mutable_tachyon_account_info()->set_registration_id(
+          std::string(parts->second));
+    }
+  }
+  if (offline_reason.has_value()) {
+    host->set_offline_reason(*offline_reason);
+  }
+  if (os_name.has_value() && os_version.has_value()) {
+    host->mutable_operating_system_info()->set_name(*os_name);
+    host->mutable_operating_system_info()->set_version(*os_version);
+  }
+
+  // TODO: joedow - Fix the traffic annotation here.
+  ExecuteRequest(kProvisionGceInstanceTrafficAnnotation, path, api_key_,
                  std::move(request), std::move(callback));
 }
 
 void CloudServiceClient::CancelPendingRequests() {
-  if (http_client_.has_value()) {
-    http_client_->CancelPendingRequests();
-  }
+  http_client_.CancelPendingRequests();
 }
 
 template <typename CallbackType>
@@ -141,7 +205,7 @@ void CloudServiceClient::ExecuteRequest(
   auto request =
       std::make_unique<ProtobufHttpRequest>(std::move(request_config));
   request->SetResponseCallback(std::move(callback));
-  http_client_->ExecuteRequest(std::move(request));
+  http_client_.ExecuteRequest(std::move(request));
 }
 
 }  // namespace remoting

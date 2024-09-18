@@ -470,8 +470,8 @@ int StartHostMain(int argc, char** argv) {
     fprintf(stdout,
             "*** Warning: This workflow is experimental and not fully "
             "supported at this time ***\n");
-    host_starter =
-        ProvisionCloudInstance(url_loader_factory_owner.GetURLLoaderFactory());
+    host_starter = ProvisionCloudInstance(
+        params.api_key, url_loader_factory_owner.GetURLLoaderFactory());
   } else {
     host_starter =
         CreateOAuthHostStarter(url_loader_factory_owner.GetURLLoaderFactory());

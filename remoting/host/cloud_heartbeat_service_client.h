@@ -9,7 +9,16 @@
 #include <string>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
+#include "remoting/base/cloud_service_client.h"
+#include "remoting/base/protobuf_http_status.h"
 #include "remoting/host/heartbeat_service_client.h"
+
+namespace google::internal::remoting::cloud::v1alpha {
+class Empty;
+class RemoteAccessHost;
+}  // namespace google::internal::remoting::cloud::v1alpha
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -43,11 +52,39 @@ class CloudHeartbeatServiceClient : public HeartbeatServiceClient {
   void CancelPendingRequests() override;
 
  private:
+  void OnSendHeartbeatResponse(
+      HeartbeatResponseCallback callback,
+      const ProtobufHttpStatus& status,
+      std::unique_ptr<::google::internal::remoting::cloud::v1alpha::Empty>);
+
+  void OnUpdateRemoteAccessHostResponse(
+      HeartbeatResponseCallback callback,
+      const ProtobufHttpStatus& status,
+      std::unique_ptr<
+          ::google::internal::remoting::cloud::v1alpha::RemoteAccessHost>);
+
+  void OnReportHostOffline(
+      HeartbeatResponseCallback callback,
+      const ProtobufHttpStatus& status,
+      std::unique_ptr<
+          ::google::internal::remoting::cloud::v1alpha::RemoteAccessHost>);
+
+  void MakeUpdateRemoteAccessHostCall(
+      std::optional<std::string> signaling_id,
+      std::optional<std::string> offline_reason,
+      CloudServiceClient::UpdateRemoteAccessHostCallback callback);
+
+  void RunHeartbeatResponseCallback(HeartbeatResponseCallback callback,
+                                    const ProtobufHttpStatus& status);
+
   // The entity to update in Directory service.
   std::string directory_id_;
 
-  // The customer API_KEY to use for calling the Cloud API.
-  std::string api_key_;
+  CloudServiceClient client_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
+
+  base::WeakPtrFactory<CloudHeartbeatServiceClient> weak_factory_{this};
 };
 
 }  // namespace remoting

@@ -37,6 +37,9 @@ class CloudHostStarter : public HostStarterBase {
  public:
   explicit CloudHostStarter(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+  CloudHostStarter(
+      const std::string& api_key,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
   CloudHostStarter(const CloudHostStarter&) = delete;
   CloudHostStarter& operator=(const CloudHostStarter&) = delete;
@@ -71,6 +74,15 @@ CloudHostStarter::CloudHostStarter(
       cloud_service_client_(
           std::make_unique<CloudServiceClient>(url_loader_factory)) {}
 
+CloudHostStarter::CloudHostStarter(
+    const std::string& api_key,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+    : HostStarterBase(url_loader_factory),
+      cloud_service_client_(
+          std::make_unique<CloudServiceClient>(api_key,
+                                               /*oauth_token_getter=*/nullptr,
+                                               url_loader_factory)) {}
+
 CloudHostStarter::~CloudHostStarter() = default;
 
 void CloudHostStarter::RegisterNewHost(
@@ -86,7 +98,6 @@ void CloudHostStarter::RegisterNewHost(
   if (!params().api_key.empty()) {
     cloud_service_client_->ProvisionGceInstance(
         params().owner_email, params().name, public_key, existing_host_id(),
-        params().api_key,
         base::BindOnce(&CloudHostStarter::OnProvisionGceInstanceResponse,
                        weak_ptr_factory_.GetWeakPtr()));
   } else {
@@ -162,8 +173,15 @@ void CloudHostStarter::ApplyConfigValues(base::Value::Dict& config) {
 }  // namespace
 
 std::unique_ptr<HostStarter> ProvisionCloudInstance(
+    const std::string& api_key,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
-  return std::make_unique<CloudHostStarter>(url_loader_factory);
+  // TODO: joedow - Remove this bit when we no longer support the legacy
+  // provisioning code path.
+  if (api_key.empty()) {
+    return std::make_unique<CloudHostStarter>(url_loader_factory);
+  }
+
+  return std::make_unique<CloudHostStarter>(api_key, url_loader_factory);
 }
 
 }  // namespace remoting

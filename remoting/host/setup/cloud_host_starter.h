@@ -6,6 +6,7 @@
 #define REMOTING_HOST_SETUP_CLOUD_HOST_STARTER_H_
 
 #include <memory>
+#include <string>
 
 #include "base/memory/scoped_refptr.h"
 
@@ -18,6 +19,7 @@ namespace remoting {
 class HostStarter;
 
 extern std::unique_ptr<HostStarter> ProvisionCloudInstance(
+    const std::string& api_key,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
 }  // namespace remoting

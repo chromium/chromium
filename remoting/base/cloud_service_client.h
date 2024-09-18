@@ -12,7 +12,9 @@
 #include "remoting/base/protobuf_http_client.h"
 
 namespace google::internal::remoting::cloud::v1alpha {
+class Empty;
 class ProvisionGceInstanceResponse;
+class RemoteAccessHost;
 }  // namespace google::internal::remoting::cloud::v1alpha
 
 namespace google::protobuf {
@@ -41,9 +43,23 @@ class CloudServiceClient {
       const ProtobufHttpStatus&,
       std::unique_ptr<::google::internal::remoting::cloud::v1alpha::
                           ProvisionGceInstanceResponse>)>;
+  using SendHeartbeatCallback = base::OnceCallback<void(
+      const ProtobufHttpStatus&,
+      std::unique_ptr<::google::internal::remoting::cloud::v1alpha::Empty>)>;
+  using UpdateRemoteAccessHostCallback = base::OnceCallback<void(
+      const ProtobufHttpStatus&,
+      std::unique_ptr<
+          ::google::internal::remoting::cloud::v1alpha::RemoteAccessHost>)>;
 
+  // TODO: joedow - Remove the single param c'tor when we no longer support the
+  // legacy provisioning path.
   explicit CloudServiceClient(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+  CloudServiceClient(
+      const std::string& api_key,
+      OAuthTokenGetter* oauth_token_getter,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+
   virtual ~CloudServiceClient();
 
   CloudServiceClient(const CloudServiceClient&) = delete;
@@ -62,8 +78,18 @@ class CloudServiceClient {
       const std::string& display_name,
       const std::string& public_key,
       const std::optional<std::string>& existing_directory_id,
-      const std::string& api_key,
       ProvisionGceInstanceCallback callback);
+
+  void SendHeartbeat(const std::string& directory_id,
+                     SendHeartbeatCallback callback);
+
+  void UpdateRemoteAccessHost(const std::string& directory_id,
+                              std::optional<std::string> host_version,
+                              std::optional<std::string> signaling_id,
+                              std::optional<std::string> offline_reason,
+                              std::optional<std::string> os_name,
+                              std::optional<std::string> os_version,
+                              UpdateRemoteAccessHostCallback callback);
 
   void CancelPendingRequests();
 
@@ -76,10 +102,10 @@ class CloudServiceClient {
       std::unique_ptr<google::protobuf::MessageLite> request_message,
       CallbackType callback);
 
-  // TODO: joedow - Revert back to using a plain member when we no longer need
-  // to support both legacy and new provisioning flows.
-  std::optional<ProtobufHttpClient> http_client_;
-  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
+  // The customer API_KEY to use for calling the Cloud API.
+  std::string api_key_;
+
+  ProtobufHttpClient http_client_;
 };
 
 }  // namespace remoting
