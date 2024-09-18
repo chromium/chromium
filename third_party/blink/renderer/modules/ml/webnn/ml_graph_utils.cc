@@ -7,9 +7,12 @@
 #include <numeric>
 
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_gemm_options.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_operand.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_operator.h"
+#include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_deque.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 
@@ -384,6 +387,43 @@ bool IsLogicalBinaryOperator(
     case webnn::mojom::blink::ElementWiseBinary::Kind::kLesserOrEqual:
       return true;
   }
+}
+
+// Allows a tensor's shape to be specified through either the
+// `MLOperandDescriptor`'s `shape` or `dimensions` fields. This code exists for
+// now to give callers the opportunity to migrate their code to use `shape`.
+//
+// TODO(crbug.com/365813262): Remove this function after about a milestone.
+base::expected<Vector<uint32_t>, std::string> GetShapeFromDescriptor(
+    ScriptState* script_state,
+    const MLOperandDescriptor& desc) {
+  if (!desc.hasDimensions()) {
+    return desc.shape();
+  }
+
+  if (desc.shape() != desc.dimensions()) {
+    if (!desc.shape().empty()) {
+      return base::unexpected(
+          "Invalid operand descriptor: shape and dimensions do not match.");
+    } else {
+      LogConsoleWarning(
+          script_state,
+          "WARNING: MLOperandDescriptor.dimensions is deprecated. "
+          "Use MLOperandDescriptor.shape instead.");
+    }
+  }
+
+  return desc.dimensions();
+}
+
+void LogConsoleWarning(ScriptState* script_state, const String& message) {
+  ExecutionContext* execution_context = ExecutionContext::From(script_state);
+  if (!execution_context) {
+    return;
+  }
+  execution_context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+      mojom::blink::ConsoleMessageSource::kJavaScript,
+      mojom::blink::ConsoleMessageLevel::kWarning, message));
 }
 
 }  // namespace blink

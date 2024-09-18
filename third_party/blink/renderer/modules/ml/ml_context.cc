@@ -923,14 +923,21 @@ ScriptPromise<MLTensor> MLContext::createTensor(
     return EmptyPromise();
   }
 
-  ASSIGN_OR_RETURN(webnn::OperandDescriptor validated_descriptor,
-                   webnn::OperandDescriptor::Create(
-                       FromBlinkDataType(descriptor->dataType().AsEnum()),
-                       descriptor->shape()),
-                   [&exception_state](std::string error) {
-                     exception_state.ThrowTypeError(String(error));
-                     return ScriptPromise<MLTensor>();
-                   });
+  ASSIGN_OR_RETURN(
+      Vector<uint32_t> shape, GetShapeFromDescriptor(script_state, *descriptor),
+      [&exception_state](std::string error) -> ScriptPromise<MLTensor> {
+        exception_state.ThrowTypeError(String::FromUTF8(error));
+        return EmptyPromise();
+      });
+
+  ASSIGN_OR_RETURN(
+      webnn::OperandDescriptor validated_descriptor,
+      webnn::OperandDescriptor::Create(
+          FromBlinkDataType(descriptor->dataType().AsEnum()), shape),
+      [&exception_state](std::string error) {
+        exception_state.ThrowTypeError(String(error));
+        return ScriptPromise<MLTensor>();
+      });
 
   RETURN_IF_ERROR(webnn::ValidateTensor(properties_, validated_descriptor),
                   [&exception_state](std::string error) {

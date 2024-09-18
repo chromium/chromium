@@ -1413,6 +1413,46 @@ TEST_F(MLGraphTest, CreateWebNNTensorTest) {
   EXPECT_EQ(ml_tensor->shape(), desc->shape());
 }
 
+// Test that callers specifying `MLOperandDescriptor.dimensions` in place of
+// `MLOperandDescriptor.shape` will not break.
+//
+// TODO(crbug.com/365813262): Remove this test once
+// `MLOperandDescriptor.dimensions` is no longer supported.
+TEST_F(MLGraphTest, CreateWebNNTensorWithDimensionsTest) {
+  V8TestingScope scope;
+  // Bind fake WebNN Context in the service for testing.
+  ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
+
+  auto* options = MLContextOptions::Create();
+  // Create WebNN Context with GPU device type.
+  options->setDeviceType(V8MLDeviceType::Enum::kGpu);
+  auto* script_state = scope.GetScriptState();
+
+  MLContext* ml_context = CreateContext(scope, options);
+
+  auto* desc = MLTensorDescriptor::Create();
+  desc->setDataType(V8MLOperandDataType::Enum::kFloat32);
+  // Set `dimensions` rather than `shape`.
+  desc->setDimensions({2, 2});
+
+  ScriptPromiseTester tensor_tester(
+      script_state,
+      ml_context->createTensor(script_state, desc, scope.GetExceptionState()));
+  tensor_tester.WaitUntilSettled();
+  EXPECT_TRUE(tensor_tester.IsFulfilled());
+
+  if (scope.GetExceptionState().Code() ==
+      ToExceptionCode(DOMExceptionCode::kNotSupportedError)) {
+    GTEST_SKIP() << "MLTensor has not been implemented on this platform.";
+  }
+
+  MLTensor* ml_tensor = V8ToObject<MLTensor>(&scope, tensor_tester.Value());
+
+  ASSERT_THAT(ml_tensor, testing::NotNull());
+  EXPECT_EQ(ml_tensor->dataType(), desc->dataType());
+  EXPECT_THAT(ml_tensor->shape(), testing::ElementsAre(2, 2));
+}
+
 TEST_F(MLGraphTest, WriteWebNNTensorTest) {
   V8TestingScope scope;
   // Bind fake WebNN Context in the service for testing.

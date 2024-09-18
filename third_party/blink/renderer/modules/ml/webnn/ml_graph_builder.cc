@@ -50,7 +50,6 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_transpose_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_triangular_options.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_view.h"
 #include "third_party/blink/renderer/modules/ml/ml_context.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_constant_operand.h"
@@ -92,16 +91,6 @@ namespace {
 
 constexpr char kGraphAlreadyBuiltError[] =
     "This MLGraphBuilder has already built a graph.";
-
-void LogConsoleWarning(ScriptState* script_state, const String& message) {
-  ExecutionContext* execution_context = ExecutionContext::From(script_state);
-  if (!execution_context) {
-    return;
-  }
-  execution_context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-      mojom::blink::ConsoleMessageSource::kJavaScript,
-      mojom::blink::ConsoleMessageLevel::kWarning, message));
-}
 
 webnn::InputOperandLayout BlinkInputOperandLayoutToComponent(
     blink::V8MLInputOperandLayout::Enum type) {
@@ -992,33 +981,6 @@ base::expected<webnn::mojom::blink::GraphInfoPtr, String> BuildWebNNGraphInfo(
   }
 
   return graph_info;
-}
-
-// Allows a tensor's shape to be specified through either the
-// `MLOperandDescriptor`'s `shape` or `dimensions` fields. This code exists for
-// now to give callers the opportunity to migrate their code to use `shape`.
-//
-// TODO(crbug.com/365813262): Remove this function after about a milestone.
-base::expected<Vector<uint32_t>, std::string> GetShapeFromDescriptor(
-    ScriptState* script_state,
-    const MLOperandDescriptor& desc) {
-  if (!desc.hasDimensions()) {
-    return desc.shape();
-  }
-
-  if (desc.shape() != desc.dimensions()) {
-    if (!desc.shape().empty()) {
-      return base::unexpected(
-          "Invalid operand descriptor: shape and dimensions do not match.");
-    } else {
-      LogConsoleWarning(
-          script_state,
-          "WARNING: MLOperandDescriptor.dimensions is deprecated. "
-          "Use MLOperandDescriptor.shape instead.");
-    }
-  }
-
-  return desc.dimensions();
 }
 
 }  // namespace
