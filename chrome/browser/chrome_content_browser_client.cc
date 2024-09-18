@@ -7211,7 +7211,9 @@ bool ChromeContentBrowserClient::HandleWebUI(
   Profile* profile = Profile::FromBrowserContext(browser_context);
   auto* tracking_protection_settings =
       TrackingProtectionSettingsFactory::GetForProfile(profile);
-  if (tracking_protection_settings &&
+  if (base::FeatureList::IsEnabled(
+          privacy_sandbox::kTrackingProtection3pcdUx) &&
+      tracking_protection_settings &&
       tracking_protection_settings->IsTrackingProtection3pcdEnabled()) {
     // Redirect from cookies to trackingProtection in experiment.
     if (url->SchemeIs(content::kChromeUIScheme) &&
