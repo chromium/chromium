@@ -83,6 +83,10 @@ const CGFloat kAccountBadgeOffsetFromDiscCenter = 10.0;
 // The size of the account error badge that is on top the ADP.
 const CGFloat kErrorSymbolPointSize = 16.0;
 
+// The offset from the center of the customization button for where to show the
+// new feature badge.
+const CGFloat kCustomizationNewBadgeOffset = 14.0;
+
 // The leading space / padding in the unscrolled fakebox.
 CGFloat HintLabelFakeboxLeadingSpace() {
   return kHintLabelFakeboxLeadingSpace;
@@ -284,9 +288,8 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
     [self.identityDiscView.trailingAnchor
         constraintEqualToAnchor:self.safeAreaLayoutGuide.trailingAnchor
                        constant:-ntp_home::kIdentityAvatarPadding],
-    [self.identityDiscView.topAnchor
-        constraintEqualToAnchor:self.toolBarView.topAnchor
-                       constant:ntp_home::kIdentityAvatarPadding],
+    [self.identityDiscView.centerYAnchor
+        constraintEqualToAnchor:self.toolBarView.centerYAnchor],
   ]];
 }
 
@@ -756,10 +759,10 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
                                  ntp_home::kHeaderIconMargin)],
     [newBadgeView.centerXAnchor
         constraintEqualToAnchor:customizationMenuButton.centerXAnchor
-                       constant:14],
+                       constant:kCustomizationNewBadgeOffset],
     [newBadgeView.centerYAnchor
         constraintEqualToAnchor:customizationMenuButton.centerYAnchor
-                       constant:-14],
+                       constant:-kCustomizationNewBadgeOffset],
   ]];
 
   _customizationMenuButton = customizationMenuButton;

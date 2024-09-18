@@ -1477,13 +1477,16 @@ const CGFloat kFeedContainerExtraHeight = 500;
     }
   }
 
-  // Content suggestions header will sometimes glitch when swiping quickly from
-  // inside the feed to the top of the NTP. This check safeguards this action to
-  // make sure the header is properly positioned. (crbug.com/1261458)
-  if ([self isNTPScrolledToTop]) {
-    [self setInitialFakeOmniboxConstraints];
-    if ([self.NTPContentDelegate isContentHeaderSticky]) {
-      [self setInitialFeedHeaderConstraints];
+  if (!IsHomeCustomizationEnabled()) {
+    // Content suggestions header will sometimes glitch when swiping quickly
+    // from inside the feed to the top of the NTP. This check safeguards this
+    // action to make sure the header is properly positioned.
+    // (crbug.com/1261458)
+    if ([self isNTPScrolledToTop]) {
+      [self setInitialFakeOmniboxConstraints];
+      if ([self.NTPContentDelegate isContentHeaderSticky]) {
+        [self setInitialFeedHeaderConstraints];
+      }
     }
   }
 }
