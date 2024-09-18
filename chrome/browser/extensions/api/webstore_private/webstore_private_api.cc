@@ -1385,9 +1385,8 @@ WebstorePrivateGetMV2DeprecationStatusFunction::Run() {
       api_status = api::webstore_private::MV2DeprecationStatus::kSoftDisable;
       break;
     case MV2ExperimentStage::kUnsupported:
-      // TODO(https://crbug.com/367395349): Add a new enum for the
-      // kUnsupported experiment stage.
-      NOTREACHED();
+      api_status = api::webstore_private::MV2DeprecationStatus::kHardDisable;
+      break;
   }
 
   return RespondNow(ArgumentList(

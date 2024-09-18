@@ -844,9 +844,13 @@ WebstorePrivateManifestV2DeprecationUnitTest::
           extensions_features::kExtensionManifestV2Unsupported);
       break;
     case MV2ExperimentStage::kUnsupported:
-      // TODO(https://crbug.com/367395349): Add tests for the kUnsupported
-      // experiment stage.
-      NOTREACHED();
+      enabled_features.push_back(
+          extensions_features::kExtensionManifestV2Unsupported);
+      disabled_features.push_back(
+          extensions_features::kExtensionManifestV2Disabled);
+      disabled_features.push_back(
+          extensions_features::kExtensionManifestV2DeprecationWarning);
+      break;
   }
 
   feature_list_.InitWithFeatures(enabled_features, disabled_features);
@@ -857,7 +861,8 @@ INSTANTIATE_TEST_SUITE_P(
     WebstorePrivateManifestV2DeprecationUnitTest,
     testing::Values(MV2ExperimentStage::kNone,
                     MV2ExperimentStage::kWarning,
-                    MV2ExperimentStage::kDisableWithReEnable),
+                    MV2ExperimentStage::kDisableWithReEnable,
+                    MV2ExperimentStage::kUnsupported),
     [](const testing::TestParamInfo<MV2ExperimentStage>& info) {
       switch (info.param) {
         case MV2ExperimentStage::kNone:
@@ -893,7 +898,8 @@ TEST_P(WebstorePrivateManifestV2DeprecationUnitTest,
       expected = "soft_disable";
       break;
     case MV2ExperimentStage::kUnsupported:
-      NOTREACHED();
+      expected = "hard_disable";
+      break;
   }
 
   EXPECT_EQ(expected, *response);
