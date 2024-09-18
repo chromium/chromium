@@ -191,11 +191,6 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
             Account account, Activity activity, @Nullable Callback<Boolean> callback) {}
 
     @Override
-    public String getAccountGaiaId(String accountEmail) {
-        return toGaiaId(accountEmail);
-    }
-
-    @Override
     public void confirmCredentials(Account account, Activity activity, Callback<Bundle> callback) {
         callback.onResult(new Bundle());
     }

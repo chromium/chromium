@@ -13,7 +13,6 @@ import android.os.Bundle;
 import androidx.annotation.AnyThread;
 import androidx.annotation.MainThread;
 import androidx.annotation.Nullable;
-import androidx.annotation.WorkerThread;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Promise;
@@ -132,25 +131,12 @@ public interface AccountManagerFacade {
     void createAddAccountIntent(Callback<Intent> callback);
 
     /**
-     * Asks the user to enter a new password for an account, updating the saved credentials for
-     * the account.
+     * Asks the user to enter a new password for an account, updating the saved credentials for the
+     * account.
      */
     @MainThread
     void updateCredentials(
             Account account, Activity activity, @Nullable Callback<Boolean> callback);
-
-    /**
-     * Returns the Gaia id for the account associated with the given email address.
-     * If an account with the given email address is not installed on the device
-     * then null is returned.
-     *
-     * This method will throw IllegalStateException if called on the main thread.
-     *
-     * @param accountEmail The email address of a Google account.
-     */
-    @WorkerThread
-    @Nullable
-    String getAccountGaiaId(String accountEmail);
 
     /**
      * Asks the user to confirm their knowledge of the password to the given account.

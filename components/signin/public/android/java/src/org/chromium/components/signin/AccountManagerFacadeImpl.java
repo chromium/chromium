@@ -266,20 +266,6 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
         mDelegate.updateCredentials(account, activity, callback);
     }
 
-    /**
-     * Returns the Gaia id for the account associated with the given email address.
-     * If an account with the given email address is not installed on the device
-     * then null is returned.
-     *
-     * This method will throw IllegalStateException if called on the main thread.
-     *
-     * @param accountEmail The email address of a Google account.
-     */
-    @Override
-    public String getAccountGaiaId(String accountEmail) {
-        return mDelegate.getAccountGaiaId(accountEmail);
-    }
-
     @Override
     public void confirmCredentials(Account account, Activity activity, Callback<Bundle> callback) {
         mDelegate.confirmCredentials(account, activity, callback);
@@ -314,7 +300,7 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
                             if (isCancelled()) {
                                 return null;
                             }
-                            final String gaiaId = getAccountGaiaId(email);
+                            final String gaiaId = mDelegate.getAccountGaiaId(email);
                             if (gaiaId == null) {
                                 // TODO(crbug.com/40275966): Add metrics to check how often we get a
                                 // null gaiaId.

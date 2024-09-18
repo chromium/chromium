@@ -341,7 +341,7 @@ public class AccountManagerTestRule implements TestRule {
 
     /** Converts an account email to its corresponding CoreAccountInfo object. */
     public CoreAccountInfo toCoreAccountInfo(String accountEmail) {
-        String accountGaiaId = mFakeAccountManagerFacade.getAccountGaiaId(accountEmail);
+        String accountGaiaId = FakeAccountManagerFacade.toGaiaId(accountEmail);
         return CoreAccountInfo.createFromEmailAndGaiaId(accountEmail, accountGaiaId);
     }
 
