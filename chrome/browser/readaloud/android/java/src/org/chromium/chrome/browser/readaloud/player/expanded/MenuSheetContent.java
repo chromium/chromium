@@ -39,7 +39,7 @@ abstract class MenuSheetContent implements BottomSheetContent {
             // If this sheet is closing for any reason besides showing a child menu, bring back the
             // parent.
             if (!mOpeningSubmenu) {
-                mBottomSheetController.requestShowContent(mParent, /* animate= */ true);
+                mBottomSheetController.requestShowContent(mParent, /* animate= */ false);
             }
         }
     }
@@ -49,7 +49,6 @@ abstract class MenuSheetContent implements BottomSheetContent {
             mOpeningSubmenu = true;
         }
         mBottomSheetController.hideContent(this, /* animate= */ false);
-        mBottomSheetController.requestShowContent(sheet, /* animate= */ true);
         mOpeningSubmenu = false;
     }
 
