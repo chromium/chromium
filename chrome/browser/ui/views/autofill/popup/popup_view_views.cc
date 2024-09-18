@@ -1151,8 +1151,12 @@ gfx::Size PopupViewViews::CalculatePreferredSize(
     // TODO(crbug.com/40232718): When we set the vertical axis to stretch,
     // BoxLayout will occupy the entire vertical axis size. Two calculations are
     // needed to correct this.
-    return views::View::CalculatePreferredSize(
+    //
+    // Following crrev.com/c/5828724, the dialog box will fit the text more
+    // closely. But this will break the pixel test, so make it a fixed size.
+    size = views::View::CalculatePreferredSize(
         views::SizeBounds(kAutofillPopupMaxWidth, {}));
+    size.set_width(kAutofillPopupMaxWidth);
   }
 
   return size;
