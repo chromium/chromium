@@ -8,6 +8,7 @@
 #include "components/saved_tab_groups/saved_tab_group.h"
 #include "components/saved_tab_groups/saved_tab_group_model.h"
 #include "components/saved_tab_groups/saved_tab_group_tab.h"
+#include "components/saved_tab_groups/tab_group_sync_service.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/protocol/shared_tab_group_data_specifics.pb.h"
 #include "components/sync/protocol/sync_entity.pb.h"
@@ -29,20 +30,18 @@ SyncEntitiesToSharedTabGroupSpecifics(
   return shared_tab_groups;
 }
 
-bool CompareSavedTabGroups(const SavedTabGroup* a, const SavedTabGroup* b) {
-  return a->saved_guid() < b->saved_guid();
+bool CompareSavedTabGroups(SavedTabGroup& a, SavedTabGroup& b) {
+  return a.saved_guid() < b.saved_guid();
 }
 
 // Compares the given models to contain exactly the same shared tab groups. Note
 // that the order of groups is not verified while the order of tabs within
 // groups is important.
-bool AreSharedTabGroupModelsEqual(const SavedTabGroupModel& model_1,
-                                  const SavedTabGroupModel& model_2,
-                                  std::ostream* os) {
-  std::vector<const SavedTabGroup*> shared_tab_groups_1 =
-      model_1.GetSharedTabGroupsOnly();
-  std::vector<const SavedTabGroup*> shared_tab_groups_2 =
-      model_2.GetSharedTabGroupsOnly();
+bool AreServicesEqual(TabGroupSyncService* service_1,
+                      TabGroupSyncService* service_2,
+                      std::ostream* os) {
+  std::vector<SavedTabGroup> shared_tab_groups_1 = service_1->GetAllGroups();
+  std::vector<SavedTabGroup> shared_tab_groups_2 = service_2->GetAllGroups();
   if (shared_tab_groups_1.size() != shared_tab_groups_2.size()) {
     *os << "Model 1 size: " << shared_tab_groups_1.size()
         << ", model 2 size: " << shared_tab_groups_2.size();
@@ -54,34 +53,34 @@ bool AreSharedTabGroupModelsEqual(const SavedTabGroupModel& model_1,
 
   for (size_t group_index = 0; group_index < shared_tab_groups_1.size();
        ++group_index) {
-    const SavedTabGroup* group_1 = shared_tab_groups_1[group_index];
-    const SavedTabGroup* group_2 = shared_tab_groups_2[group_index];
-    if (group_1->saved_guid() != group_2->saved_guid()) {
-      *os << "Different groups, model 1: " << group_1->saved_guid()
-          << ", model 2: " << group_2->saved_guid();
+    const SavedTabGroup& group_1 = shared_tab_groups_1[group_index];
+    const SavedTabGroup& group_2 = shared_tab_groups_2[group_index];
+    if (group_1.saved_guid() != group_2.saved_guid()) {
+      *os << "Different groups, model 1: " << group_1.saved_guid()
+          << ", model 2: " << group_2.saved_guid();
       return false;
     }
-    if (group_1->title() != group_2->title()) {
-      *os << "Different group titles, model 1: " << group_1->title()
-          << ", model 2: " << group_2->title();
+    if (group_1.title() != group_2.title()) {
+      *os << "Different group titles, model 1: " << group_1.title()
+          << ", model 2: " << group_2.title();
       return false;
     }
-    if (group_1->color() != group_2->color()) {
+    if (group_1.color() != group_2.color()) {
       *os << "Different group colors, model 1: "
-          << static_cast<int>(group_1->color())
-          << ", model 2: " << static_cast<int>(group_2->color());
+          << static_cast<int>(group_1.color())
+          << ", model 2: " << static_cast<int>(group_2.color());
       return false;
     }
-    if (group_1->saved_tabs().size() != group_2->saved_tabs().size()) {
-      *os << "Different group sizes, model 1: " << group_1->saved_tabs().size()
-          << ", model 2: " << group_2->saved_tabs().size();
+    if (group_1.saved_tabs().size() != group_2.saved_tabs().size()) {
+      *os << "Different group sizes, model 1: " << group_1.saved_tabs().size()
+          << ", model 2: " << group_2.saved_tabs().size();
       return false;
     }
 
-    for (size_t tab_index = 0; tab_index < group_1->saved_tabs().size();
+    for (size_t tab_index = 0; tab_index < group_1.saved_tabs().size();
          ++tab_index) {
-      const SavedTabGroupTab& tab_1 = group_1->saved_tabs()[tab_index];
-      const SavedTabGroupTab& tab_2 = group_2->saved_tabs()[tab_index];
+      const SavedTabGroupTab& tab_1 = group_1.saved_tabs()[tab_index];
+      const SavedTabGroupTab& tab_2 = group_2.saved_tabs()[tab_index];
 
       if (tab_1.saved_tab_guid() != tab_2.saved_tab_guid()) {
         *os << "Different tabs, model 1: " << tab_1.saved_tab_guid()
@@ -129,11 +128,11 @@ bool ServerSharedTabGroupMatchChecker::IsExitConditionSatisfied(
 }
 
 SharedTabGroupsMatchChecker::SharedTabGroupsMatchChecker(
-    SavedTabGroupModel& model_1,
-    SavedTabGroupModel& model_2)
-    : model_1_(model_1), model_2_(model_2) {
-  observation_1_.Observe(&model_1_.get());
-  observation_2_.Observe(&model_2_.get());
+    TabGroupSyncService* service_1,
+    TabGroupSyncService* service_2)
+    : service_1_(service_1), service_2_(service_2) {
+  observation_1_.Observe(service_1_.get());
+  observation_2_.Observe(service_2_.get());
 }
 
 SharedTabGroupsMatchChecker::~SharedTabGroupsMatchChecker() = default;
@@ -141,22 +140,27 @@ SharedTabGroupsMatchChecker::~SharedTabGroupsMatchChecker() = default;
 bool SharedTabGroupsMatchChecker::IsExitConditionSatisfied(std::ostream* os) {
   *os << "Waiting for shared tab group matching models. ";
 
-  return AreSharedTabGroupModelsEqual(model_1_.get(), model_2_.get(), os);
+  return AreServicesEqual(service_1_.get(), service_2_.get(), os);
 }
 
-void SharedTabGroupsMatchChecker::SavedTabGroupAddedFromSync(
-    const base::Uuid& guid) {
+void SharedTabGroupsMatchChecker::OnTabGroupAdded(const SavedTabGroup& group,
+                                                  TriggerSource source) {
   CheckExitCondition();
 }
 
-void SharedTabGroupsMatchChecker::SavedTabGroupRemovedFromSync(
-    const SavedTabGroup& removed_group) {
+void SharedTabGroupsMatchChecker::OnTabGroupUpdated(const SavedTabGroup& group,
+                                                    TriggerSource source) {
   CheckExitCondition();
 }
 
-void SharedTabGroupsMatchChecker::SavedTabGroupUpdatedFromSync(
-    const base::Uuid& group_guid,
-    const std::optional<base::Uuid>& tab_guid) {
+void SharedTabGroupsMatchChecker::OnTabGroupRemoved(
+    const LocalTabGroupID& local_id,
+    TriggerSource source) {
+  CheckExitCondition();
+}
+
+void SharedTabGroupsMatchChecker::OnTabGroupRemoved(const base::Uuid& sync_id,
+                                                    TriggerSource source) {
   CheckExitCondition();
 }
 

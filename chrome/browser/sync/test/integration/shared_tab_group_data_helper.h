@@ -13,13 +13,12 @@
 #include "chrome/browser/sync/test/integration/fake_server_match_status_checker.h"
 #include "chrome/browser/sync/test/integration/status_change_checker.h"
 #include "components/saved_tab_groups/saved_tab_group_model_observer.h"
+#include "components/saved_tab_groups/tab_group_sync_service.h"
 #include "components/sync/protocol/shared_tab_group_data_specifics.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "url/gurl.h"
 
 namespace tab_groups {
-
-class SavedTabGroupModel;
 
 MATCHER_P2(HasSpecificsSharedTabGroup, title, color, "") {
   return arg.tab_group().title() == title && arg.tab_group().color() == color;
@@ -56,31 +55,36 @@ class ServerSharedTabGroupMatchChecker
   const Matcher matcher_;
 };
 
-class SharedTabGroupsMatchChecker : public SavedTabGroupModelObserver,
+class SharedTabGroupsMatchChecker : public TabGroupSyncService::Observer,
                                     public StatusChangeChecker {
  public:
-  SharedTabGroupsMatchChecker(SavedTabGroupModel& model_1,
-                              SavedTabGroupModel& model_2);
+  SharedTabGroupsMatchChecker(TabGroupSyncService* service_1,
+                              TabGroupSyncService* service_2);
   ~SharedTabGroupsMatchChecker() override;
 
   // StatusChangeChecker overrides.
   bool IsExitConditionSatisfied(std::ostream* os) override;
 
-  // SavedTabGroupModelObserver overrides.
-  void SavedTabGroupAddedFromSync(const base::Uuid& guid) override;
-  void SavedTabGroupRemovedFromSync(
-      const SavedTabGroup& removed_group) override;
-  void SavedTabGroupUpdatedFromSync(
-      const base::Uuid& group_guid,
-      const std::optional<base::Uuid>& tab_guid) override;
+  // TabGroupSyncServiceObserver overrides.
+  void OnTabGroupAdded(const SavedTabGroup& group,
+                       TriggerSource source) override;
+
+  void OnTabGroupRemoved(const LocalTabGroupID& local_id,
+                         TriggerSource source) override;
+
+  void OnTabGroupRemoved(const base::Uuid& sync_id,
+                         TriggerSource source) override;
+
+  void OnTabGroupUpdated(const SavedTabGroup& group,
+                         TriggerSource source) override;
 
  private:
-  raw_ref<SavedTabGroupModel> model_1_;
-  raw_ref<SavedTabGroupModel> model_2_;
+  raw_ptr<TabGroupSyncService> service_1_;
+  raw_ptr<TabGroupSyncService> service_2_;
 
-  base::ScopedObservation<SavedTabGroupModel, SharedTabGroupsMatchChecker>
+  base::ScopedObservation<TabGroupSyncService, SharedTabGroupsMatchChecker>
       observation_1_{this};
-  base::ScopedObservation<SavedTabGroupModel, SharedTabGroupsMatchChecker>
+  base::ScopedObservation<TabGroupSyncService, SharedTabGroupsMatchChecker>
       observation_2_{this};
 };
 

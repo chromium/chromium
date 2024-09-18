@@ -159,14 +159,19 @@ void TabGroupSyncServiceImpl::AddGroup(SavedTabGroup group) {
 
   VLOG(2) << __func__;
   base::Uuid group_id = group.saved_guid();
-  LocalTabGroupID local_group_id = group.local_group_id().value();
   group.SetCreatedBeforeSyncingTabGroups(
       !sync_bridge_mediator_->IsSavedBridgeSyncing());
   group.SetCreatorCacheGuid(
       sync_bridge_mediator_->GetLocalCacheGuidForSavedBridge());
+
+  std::optional<LocalTabGroupID> local_group_id = group.local_group_id();
+
   model_->Add(std::move(group));
 
-  LogEvent(TabGroupEvent::kTabGroupCreated, local_group_id);
+  // Local group id can be null for tests.
+  if (local_group_id.has_value()) {
+    LogEvent(TabGroupEvent::kTabGroupCreated, local_group_id.value());
+  }
 }
 
 void TabGroupSyncServiceImpl::RemoveGroup(const LocalTabGroupID& local_id) {

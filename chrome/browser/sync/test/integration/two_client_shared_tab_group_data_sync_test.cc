@@ -8,13 +8,15 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/sync/test/integration/shared_tab_group_data_helper.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
+#include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "components/data_sharing/public/features.h"
+#include "components/saved_tab_groups/features.h"
 #include "components/saved_tab_groups/saved_tab_group.h"
 #include "components/saved_tab_groups/saved_tab_group_model.h"
 #include "components/saved_tab_groups/saved_tab_group_tab.h"
 #include "components/saved_tab_groups/saved_tab_group_test_utils.h"
+#include "components/saved_tab_groups/tab_group_sync_service.h"
+#include "components/saved_tab_groups/types.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -29,8 +31,11 @@ constexpr char kCollaborationId[] = "collaboration";
 class TwoClientSharedTabGroupDataSyncTest : public SyncTest {
  public:
   TwoClientSharedTabGroupDataSyncTest() : SyncTest(TWO_CLIENT) {
-    feature_overrides_.InitAndEnableFeature(
-        data_sharing::features::kDataSharingFeature);
+    feature_overrides_.InitWithFeatures(
+        {data_sharing::features::kDataSharingFeature,
+         tab_groups::kTabGroupsSaveUIUpdate, tab_groups::kTabGroupsSaveV2,
+         tab_groups::kTabGroupSyncServiceDesktopMigration},
+        {});
   }
 
   void SetUpOnMainThread() override {
@@ -43,33 +48,49 @@ class TwoClientSharedTabGroupDataSyncTest : public SyncTest {
   }
   ~TwoClientSharedTabGroupDataSyncTest() override = default;
 
-  SavedTabGroupModel* GetSavedTabGroupModel(int profile_index) const {
-    return SavedTabGroupServiceFactory::GetForProfile(GetProfile(profile_index))
-        ->model();
+  TabGroupSyncService* GetTabGroupSyncService(int profile_index) const {
+    return TabGroupSyncServiceFactory::GetForProfile(GetProfile(profile_index));
   }
 
   // Returns both saved and shared tab groups.
   std::vector<SavedTabGroup> GetAllTabGroups(int profile_index) const {
-    return GetSavedTabGroupModel(profile_index)->saved_tab_groups();
+    return GetTabGroupSyncService(profile_index)->GetAllGroups();
   }
 
   void AddTabGroup(int profile_index, SavedTabGroup group) {
-    GetSavedTabGroupModel(profile_index)->Add(std::move(group));
+    GetTabGroupSyncService(profile_index)->AddGroup(std::move(group));
   }
 
   void MoveTab(int profile_index,
                const SavedTabGroup& group,
                const SavedTabGroupTab& tab,
                size_t new_index) {
-    GetSavedTabGroupModel(profile_index)
-        ->MoveTabInGroupTo(group.saved_guid(), tab.saved_tab_guid(), new_index);
+    GetTabGroupSyncService(profile_index)
+        ->MoveTab(group.local_group_id().value(), tab.local_tab_id().value(),
+                  new_index);
   }
 
   // Blocks the caller until both profiles have the same shared tab groups.
   bool WaitForMatchingModels() {
-    return SharedTabGroupsMatchChecker(*GetSavedTabGroupModel(0),
-                                       *GetSavedTabGroupModel(1))
+    return SharedTabGroupsMatchChecker(GetTabGroupSyncService(0),
+                                       GetTabGroupSyncService(1))
         .Wait();
+  }
+
+  void FakeLocalOpeningOfGroup(SavedTabGroup& group_to_edit) {
+#if BUILDFLAG(IS_ANDROID)
+    group_to_edit.SetLocalGroupId(base::Token::CreateRandom());
+#else
+    group_to_edit.SetLocalGroupId(tab_groups::TabGroupId::GenerateNew());
+#endif
+  }
+  void FakeLocalOpeningOfTab(SavedTabGroupTab& tab_to_edit) {
+#if BUILDFLAG(IS_ANDROID)
+    static int next_value = 1;
+    tab_to_edit.SetLocalTabID(++next_value);
+#else
+    tab_to_edit.SetLocalTabID(base::Token::CreateRandom());
+#endif
   }
 
  private:
@@ -107,13 +128,18 @@ IN_PROC_BROWSER_TEST_F(TwoClientSharedTabGroupDataSyncTest,
 
   SavedTabGroup group(u"title", TabGroupColorId::kBlue,
                       /*urls=*/{}, /*position=*/std::nullopt);
+  FakeLocalOpeningOfGroup(group);
+
   group.SetCollaborationId(kCollaborationId);
   SavedTabGroupTab tab_1(GURL("http://google.com/1"), u"tab 1",
                          group.saved_guid(), /*position=*/std::nullopt);
+  FakeLocalOpeningOfTab(tab_1);
   SavedTabGroupTab tab_2(GURL("http://google.com/2"), u"tab 2",
                          group.saved_guid(), /*position=*/std::nullopt);
+  FakeLocalOpeningOfTab(tab_2);
   SavedTabGroupTab tab_3(GURL("http://google.com/3"), u"tab 3",
                          group.saved_guid(), /*position=*/std::nullopt);
+  FakeLocalOpeningOfTab(tab_3);
   group.AddTabLocally(tab_1);
   group.AddTabLocally(tab_2);
   group.AddTabLocally(tab_3);

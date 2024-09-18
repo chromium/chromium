@@ -66,7 +66,7 @@ class SingleClientSharedTabGroupDataSyncTest : public SyncTest {
   SingleClientSharedTabGroupDataSyncTest() : SyncTest(SINGLE_CLIENT) {
     feature_overrides_.InitWithFeatures(
         {data_sharing::features::kDataSharingFeature,
-         tab_groups::kTabGroupsSaveUIUpdate,
+         tab_groups::kTabGroupsSaveUIUpdate, tab_groups::kTabGroupsSaveV2,
          tab_groups::kTabGroupSyncServiceDesktopMigration},
         {});
   }
