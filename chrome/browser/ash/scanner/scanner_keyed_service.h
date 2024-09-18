@@ -5,7 +5,10 @@
 #ifndef CHROME_BROWSER_ASH_SCANNER_SCANNER_KEYED_SERVICE_H_
 #define CHROME_BROWSER_ASH_SCANNER_SCANNER_KEYED_SERVICE_H_
 
+#include "ash/public/cpp/scanner/scanner_action.h"
 #include "ash/public/cpp/scanner/scanner_profile_scoped_delegate.h"
+#include "base/functional/callback.h"
+#include "chrome/browser/ash/scanner/scanner_action_provider.h"
 #include "chrome/browser/ash/scanner/scanner_system_state_provider.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -28,11 +31,14 @@ class ScannerKeyedService : public ash::ScannerProfileScopedDelegate,
 
   // ash::ScannerProfileScopedDelegate:
   ash::ScannerSystemState GetSystemState() const override;
+  void FetchActions(
+      base::OnceCallback<void(ash::ScannerActionsResponse)> callback) override;
 
   // KeyedService:
   void Shutdown() override;
 
  private:
+  ScannerActionProvider action_provider_;
   ScannerSystemStateProvider system_state_provider_;
 };
 

@@ -8,10 +8,16 @@
 #include <vector>
 
 #include "ash/ash_export.h"
+#include "ash/public/cpp/scanner/scanner_action.h"
+#include "ash/public/cpp/scanner/scanner_enums.h"
+#include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
+#include "base/types/expected.h"
 
 namespace ash {
 
-class ScannerAction;
+class ScannerProfileScopedDelegate;
 
 // A ScannerSession represents a single "use" of the Scanner feature. A session
 // will be created when the feature is first triggered, until the feature is
@@ -21,14 +27,29 @@ class ScannerAction;
 // SunfishSession.
 class ASH_EXPORT ScannerSession {
  public:
-  ScannerSession();
+  // Callback used to receive the actions returned from a FetchActions call.
+  using FetchActionsCallback =
+      base::OnceCallback<void(std::vector<ScannerAction>)>;
+
+  ScannerSession(ScannerProfileScopedDelegate* delegate);
   ScannerSession(const ScannerSession&) = delete;
   ScannerSession& operator=(const ScannerSession&) = delete;
   ~ScannerSession();
 
-  // Returns the actions that are currently available for this session.
+  // Returns the actions that are currently available for this session. The
+  // method will return the actions via the callback given as a param.
+  //
   // TODO(b/363100868): Pass the required params here.
-  std::vector<ScannerAction> ResolveActions();
+  void FetchActions(FetchActionsCallback callback);
+
+ private:
+  void OnActionsReturned(
+      FetchActionsCallback callback,
+      base::expected<std::vector<ScannerAction>, ScannerError> returned);
+
+  const raw_ptr<ScannerProfileScopedDelegate> delegate_;
+
+  base::WeakPtrFactory<ScannerSession> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

@@ -303,6 +303,7 @@ component("cpp") {
     "saved_desk_delegate.h",
     "scale_utility.cc",
     "scale_utility.h",
+    "scanner/scanner_action.cc",
     "scanner/scanner_action.h",
     "scanner/scanner_delegate.h",
     "scanner/scanner_enums.h",

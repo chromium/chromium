@@ -48,7 +48,7 @@ std::unique_ptr<ScannerSession> ScannerController::StartNewSession() {
   return profile_scoped_delegate &&
                  profile_scoped_delegate->GetSystemState().status ==
                      ScannerStatus::kEnabled
-             ? std::make_unique<ScannerSession>()
+             ? std::make_unique<ScannerSession>(profile_scoped_delegate)
              : nullptr;
 }
 

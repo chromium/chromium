@@ -4,19 +4,34 @@
 
 #include "ash/scanner/scanner_session.h"
 
+#include <memory>
 #include <vector>
 
 #include "ash/public/cpp/scanner/scanner_action.h"
+#include "ash/public/cpp/scanner/scanner_enums.h"
+#include "ash/public/cpp/scanner/scanner_profile_scoped_delegate.h"
+#include "base/functional/callback.h"
+#include "base/types/expected.h"
 
 namespace ash {
 
-ScannerSession::ScannerSession() = default;
+ScannerSession::ScannerSession(ScannerProfileScopedDelegate* delegate)
+    : delegate_(delegate) {}
 
 ScannerSession::~ScannerSession() = default;
 
-std::vector<ScannerAction> ScannerSession::ResolveActions() {
-  // TODO(b/363100868): Fetch actions available from the service.
-  return {};
+void ScannerSession::FetchActions(FetchActionsCallback callback) {
+  delegate_->FetchActions(base::BindOnce(&ScannerSession::OnActionsReturned,
+                                         weak_ptr_factory_.GetWeakPtr(),
+                                         std::move(callback)));
+}
+
+void ScannerSession::OnActionsReturned(
+    FetchActionsCallback callback,
+    base::expected<std::vector<ScannerAction>, ScannerError> returned) {
+  // TODO(b/363100868): Handle error case
+  std::move(callback).Run(returned.has_value() ? std::move(returned.value())
+                                               : std::vector<ScannerAction>{});
 }
 
 }  // namespace ash

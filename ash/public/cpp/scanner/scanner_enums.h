@@ -9,6 +9,11 @@
 
 namespace ash {
 
+// Specifies any errors returned from the scanner server.
+enum class ASH_PUBLIC_EXPORT ScannerError {
+  kUnknownError,
+};
+
 // Specifies the enabled / disabled state of the feature.
 enum class ASH_PUBLIC_EXPORT ScannerStatus {
   kEnabled,
