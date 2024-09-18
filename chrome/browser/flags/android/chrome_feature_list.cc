@@ -306,7 +306,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kTabStateFlatBuffer,
     &kTabStripGroupCollapseAndroid,
     &kTabStripGroupContextMenuAndroid,
-    &kTabStripGroupIndicatorsAndroid,
     &kTabStripIncognitoMigration,
     &kTabStripLayoutOptimization,
     &kTabStripStartupRefactoring,
@@ -943,10 +942,6 @@ BASE_FEATURE(kTabStripGroupCollapseAndroid,
 BASE_FEATURE(kTabStripGroupContextMenuAndroid,
              "TabStripGroupContextMenuAndroid",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kTabStripGroupIndicatorsAndroid,
-             "TabStripGroupIndicatorsAndroid",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTabStripLayoutOptimization,
              "TabStripLayoutOptimization",

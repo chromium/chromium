@@ -166,7 +166,6 @@ BASE_DECLARE_FEATURE(kTabletToolbarReordering);
 BASE_DECLARE_FEATURE(kTabStateFlatBuffer);
 BASE_DECLARE_FEATURE(kTabStripGroupCollapseAndroid);
 BASE_DECLARE_FEATURE(kTabStripGroupContextMenuAndroid);
-BASE_DECLARE_FEATURE(kTabStripGroupIndicatorsAndroid);
 BASE_DECLARE_FEATURE(kTabStripIncognitoMigration);
 BASE_DECLARE_FEATURE(kTabStripLayoutOptimization);
 BASE_DECLARE_FEATURE(kTabStripStartupRefactoring);

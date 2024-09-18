@@ -10180,11 +10180,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kTabStripGroupContextMenuAndroidDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kTabStripGroupContextMenuAndroid)},
 
-    {"tab-strip-group-indicators-android",
-     flag_descriptions::kTabStripGroupIndicatorsAndroidName,
-     flag_descriptions::kTabStripGroupIndicatorsAndroidDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kTabStripGroupIndicatorsAndroid)},
-
     {"tab-strip-incognito-migration",
      flag_descriptions::kTabStripIncognitoMigrationName,
      flag_descriptions::kTabStripIncognitoMigrationDescription, kOsAndroid,
