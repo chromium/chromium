@@ -5356,6 +5356,44 @@
             ]
         }
     ],
+    "ClankMostVisitedTilesNewScoring": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_DecayStairCase_Cap10",
+                    "params": {
+                        "daily_visit_count_cap": "10",
+                        "recency_factor": "decay_staircase"
+                    },
+                    "enable_features": [
+                        "MostVisitedTilesNewScoring"
+                    ]
+                },
+                {
+                    "name": "Disabled_RepeatableQueries",
+                    "disable_features": [
+                        "OrganicRepeatableQueries"
+                    ]
+                },
+                {
+                    "name": "Enabled_DecayStairCase_Cap10_Disabled_RepeatableQueries",
+                    "params": {
+                        "daily_visit_count_cap": "10",
+                        "recency_factor": "decay_staircase"
+                    },
+                    "enable_features": [
+                        "MostVisitedTilesNewScoring"
+                    ],
+                    "disable_features": [
+                        "OrganicRepeatableQueries"
+                    ]
+                }
+            ]
+        }
+    ],
     "ClankMostVisitedTilesReselect": [
         {
             "platforms": [
