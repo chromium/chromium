@@ -653,6 +653,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="SafeBrowsing.ClientSafeBrowsingReport.SendDownloadReportResult"
+    enum="ClientReportSendDownloadReportResult" expires_after="2025-02-16">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the result of the call to send a download report to the backend.
+    Logged each time a download report needs to be sent.
+  </summary>
+</histogram>
+
 <histogram name="SafeBrowsing.ClientSidePhishingDetection.AllowlistMatchResult"
     enum="SafeBrowsingAllowlistAsyncMatch" expires_after="2025-02-16">
   <owner>thefrog@chromium.org</owner>

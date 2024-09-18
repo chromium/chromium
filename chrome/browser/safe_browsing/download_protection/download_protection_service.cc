@@ -547,10 +547,9 @@ void DownloadProtectionService::MaybeSendDangerousDownloadOpenedReport(
   if (sb_service_ && ShouldSendDangerousDownloadReport(item)) {
     // If the download is opened, it indicates the user has bypassed the warning
     // and decided to proceed, so setting did_proceed to true.
-    bool is_successful = sb_service_->SendDownloadReport(
+    sb_service_->SendDownloadReport(
         item, ClientSafeBrowsingReportRequest::DANGEROUS_DOWNLOAD_OPENED,
         /*did_proceed=*/true, show_download_in_folder);
-    DCHECK(is_successful);
   }
 }
 

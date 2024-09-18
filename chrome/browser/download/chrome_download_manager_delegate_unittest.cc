@@ -1959,24 +1959,24 @@ class FakeSafeBrowsingService : public safe_browsing::TestSafeBrowsingService {
   FakeSafeBrowsingService(const FakeSafeBrowsingService&) = delete;
   FakeSafeBrowsingService& operator=(const FakeSafeBrowsingService&) = delete;
 
-  bool SendDownloadReport(
+  void SendDownloadReport(
       download::DownloadItem* download,
       ReportType report_type,
       bool did_proceed,
       std::optional<bool> show_download_in_folder) override {
     actual_sent_report_type_ = report_type;
     actual_sent_did_proceed_ = did_proceed;
-    return true;
+    return;
   }
 
-  bool PersistDownloadReportAndSendOnNextStartup(
+  void PersistDownloadReportAndSendOnNextStartup(
       download::DownloadItem* download,
       ReportType report_type,
       bool did_proceed,
       std::optional<bool> show_download_in_folder) override {
     actual_persisted_report_type_ = report_type;
     actual_persisted_did_proceed_ = did_proceed;
-    return true;
+    return;
   }
 
   std::optional<ReportType> GetActualSentReportType() {

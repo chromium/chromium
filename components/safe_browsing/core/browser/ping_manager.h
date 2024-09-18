@@ -34,12 +34,15 @@ namespace safe_browsing {
 
 class PingManager : public KeyedService {
  public:
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
   enum class ReportThreatDetailsResult {
     SUCCESS = 0,
     // There was a problem serializing the report to a string.
     SERIALIZATION_ERROR = 1,
     // The report is empty, so it is not sent.
     EMPTY_REPORT = 2,
+    kMaxValue = EMPTY_REPORT,
   };
 
   // These values are persisted to logs. Entries should not be renumbered and

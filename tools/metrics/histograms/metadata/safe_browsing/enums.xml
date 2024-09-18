@@ -160,6 +160,12 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="kFailedWriteFile"/>
 </enum>
 
+<enum name="ClientReportSendDownloadReportResult">
+  <int value="0" label="SUCCESS"/>
+  <int value="1" label="SERIALIZATION_ERROR"/>
+  <int value="2" label="EMPTY_REPORT"/>
+</enum>
+
 <enum name="ClientSafeBrowsingReportType">
   <int value="0" label="Unknown"/>
   <int value="1" label="URL phishing"/>

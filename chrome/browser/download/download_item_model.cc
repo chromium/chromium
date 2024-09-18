@@ -201,12 +201,11 @@ void MaybeSendDownloadReport(const GURL& url,
     safe_browsing::SafeBrowsingService* sb_service =
         g_browser_process->safe_browsing_service();
     if (sb_service) {
-      bool is_successful = sb_service->SendDownloadReport(
+      sb_service->SendDownloadReport(
           download,
           safe_browsing::ClientSafeBrowsingReportRequest::
               DANGEROUS_DOWNLOAD_WARNING,
           did_proceed, /*show_download_in_folder=*/std::nullopt);
-      DCHECK(is_successful);
     }
   }
 }
