@@ -35,6 +35,12 @@ suite('OverlayTranslateButton', function() {
     shadow.adoptedStyleSheets = [sheet];
   }
 
+  // Check if the element is rendered by checking if it is visible and its
+  // opacity is not hiding it.
+  function isRendered(el: HTMLElement) {
+    return isVisible(el) && getComputedStyle(el).opacity !== '0';
+  }
+
   setup(async () => {
     // Resetting the HTML needs to be the first thing we do in setup to
     // guarantee that any singleton instances don't change while any UI is still
@@ -56,7 +62,7 @@ suite('OverlayTranslateButton', function() {
   });
 
   test('TranslateButtonClick', async () => {
-    assertFalse(isVisible(overlayTranslateButtonElement.$.languagePicker));
+    assertFalse(isRendered(overlayTranslateButtonElement.$.languagePicker));
 
     const focusRegionEventPromise =
         eventToPromise('focus-region', document.body);
@@ -80,7 +86,7 @@ suite('OverlayTranslateButton', function() {
     assertEquals(targetLanguage, expectedTargetLanguage);
 
     // Language picker should now be visible.
-    assertTrue(isVisible(overlayTranslateButtonElement.$.languagePicker));
+    assertTrue(isRendered(overlayTranslateButtonElement.$.languagePicker));
 
     // Clicking again should toggle the language picker and send a end
     // translate mode request.
@@ -120,7 +126,7 @@ suite('OverlayTranslateButton', function() {
             UserAction.kTranslateButtonDisableAction));
 
     // Language picker should be hidden again.
-    assertFalse(isVisible(overlayTranslateButtonElement.$.languagePicker));
+    assertFalse(isRendered(overlayTranslateButtonElement.$.languagePicker));
   });
 
   test('SourceLanguageButtonClick', () => {
