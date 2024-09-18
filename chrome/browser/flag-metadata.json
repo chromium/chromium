@@ -2270,7 +2270,7 @@
   {
     "name": "download-warning-improvements",
     "owners": [ "chlily@chromium.org", "chrome-counter-abuse-alerts@google.com" ],
-    "expiry_milestone": 130
+    "expiry_milestone": 135
   },
   {
     "name": "downloaded-pdf-opening-ios",
