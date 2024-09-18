@@ -34,6 +34,7 @@ class Rect;
 
 namespace gpu {
 class ClientSharedImage;
+class SharedImageInterface;
 }
 
 namespace viz {
@@ -183,6 +184,8 @@ class CONTENT_EXPORT PepperGraphics2DHost final
   void ReleaseSoftwareCallback(
       scoped_refptr<cc::CrossThreadSharedBitmap> bitmap,
       cc::SharedBitmapIdRegistration registration,
+      scoped_refptr<gpu::ClientSharedImage> shared_image,
+      scoped_refptr<gpu::SharedImageInterface> shared_image_interface,
       const gpu::SyncToken& sync_token,
       bool lost_resource);
   // Callback when compositor is done with a gpu resource given to it. Static
@@ -259,6 +262,11 @@ class CONTENT_EXPORT PepperGraphics2DHost final
   // to give the bitmap to the compositor.
   scoped_refptr<cc::CrossThreadSharedBitmap> cached_bitmap_;
   cc::SharedBitmapIdRegistration cached_bitmap_registration_;
+  scoped_refptr<gpu::ClientSharedImage> cached_bitmap_shared_image_;
+  // Used for tracking whether the shared_image_interface has changed due to
+  // context lost.
+  scoped_refptr<gpu::SharedImageInterface>
+      cached_bitmap_shared_image_interface_;
 
   // Whether to use gpu memory for compositor resources.
   const bool enable_gpu_memory_buffer_;

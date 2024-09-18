@@ -189,7 +189,7 @@ void PostContextProviderToCallback(
                                         media::kMediaSharedBitmapToSharedImage);
             if (is_gpu_composition_disabled && use_shared_image) {
               shared_image_interface =
-                  rti->GetVideoFrameCompositorSharedImageInterface();
+                  rti->GetRenderThreadSharedImageInterface();
               if (!shared_image_interface) {
                 // Delay for 150 ms and retry.
                 base::OnceClosure task =
