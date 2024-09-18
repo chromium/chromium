@@ -764,6 +764,19 @@ class PermissionsAPISiteAccessRequestsUnitTest : public PermissionsAPIUnitTest {
     web_contents_tester_->NavigateAndCommit(GURL(url));
   }
 
+  // Returns the function params for permissions.add|removeSiteAccessRequest for
+  // a tab.
+  std::string GetFunctionParams(int tab_id,
+                                const std::string& pattern = std::string()) {
+    if (pattern.empty()) {
+      return base::StringPrintf(R"([{"tabId": %s}])",
+                                base::NumberToString(tab_id).c_str());
+    }
+    return base::StringPrintf(R"([{"tabId": %s, "pattern": "%s"}])",
+                              base::NumberToString(tab_id).c_str(),
+                              pattern.c_str());
+  }
+
  protected:
   // PermissionsAPIUnitTest:
   void SetUp() override {
@@ -806,10 +819,6 @@ TEST_F(PermissionsAPISiteAccessRequestsUnitTest,
       browser()->tab_strip_model()->GetActiveWebContents());
 
   auto* permissions_manager = PermissionsManager::Get(profile());
-  auto function_params = [](int tab_id) {
-    return base::StringPrintf(R"([{"tabId": %s}])",
-                              base::NumberToString(tab_id).c_str());
-  };
 
   // Add site access request when extension has granted site access.
   {
@@ -818,7 +827,7 @@ TEST_F(PermissionsAPISiteAccessRequestsUnitTest,
         base::MakeRefCounted<PermissionsAddSiteAccessRequestFunction>();
     function->set_extension(extension.get());
     std::string error = api_test_utils::RunFunctionAndReturnError(
-        function.get(), function_params(tab_id), profile());
+        function.get(), GetFunctionParams(tab_id), profile());
     EXPECT_EQ(
         "Extension cannot add a site access request for a site it already has "
         "access to.",
@@ -838,7 +847,7 @@ TEST_F(PermissionsAPISiteAccessRequestsUnitTest,
         base::MakeRefCounted<PermissionsAddSiteAccessRequestFunction>();
     function->set_extension(extension.get());
     EXPECT_TRUE(api_test_utils::RunFunction(
-        function.get(), function_params(tab_id), profile(),
+        function.get(), GetFunctionParams(tab_id), profile(),
         api_test_utils::FunctionMode::kNone));
 
     // Verify site access request is active.
@@ -846,8 +855,62 @@ TEST_F(PermissionsAPISiteAccessRequestsUnitTest,
         tab_id, extension->id()));
   }
 
-  // TODO(crbug.com/330588494): Add tests with `pattern` once parameter is
-  // added.
+  // Add site access request for a pattern that does not match the current site.
+  {
+    // Function should succeed since we don't want to reveal information
+    // about the current site to the extension, but request is not added.
+    auto function =
+        base::MakeRefCounted<PermissionsAddSiteAccessRequestFunction>();
+    function->set_extension(extension.get());
+    EXPECT_TRUE(api_test_utils::RunFunction(
+        function.get(),
+        GetFunctionParams(tab_id, "*://www.not-requested.com/*"), profile(),
+        api_test_utils::FunctionMode::kNone));
+
+    // Verify site access request was not added.
+    EXPECT_FALSE(permissions_manager->HasActiveSiteAccessRequest(
+        tab_id, extension->id()));
+  }
+
+  // Add site access request for a pattern that matches the current site, and
+  // extension has withheld site access.
+  {
+    // Function should succeed since extension can be granted access.
+    auto function =
+        base::MakeRefCounted<PermissionsAddSiteAccessRequestFunction>();
+    function->set_extension(extension.get());
+    EXPECT_TRUE(api_test_utils::RunFunction(
+        function.get(), GetFunctionParams(tab_id, "*://www.requested.com/*"),
+        profile(), api_test_utils::FunctionMode::kNone));
+
+    // Verify site access request was not added.
+    EXPECT_TRUE(permissions_manager->HasActiveSiteAccessRequest(
+        tab_id, extension->id()));
+  }
+
+  // Add site access request for a pattern that does not match the current site
+  // but will match on a cross-origin navigation, and extension has withheld
+  // site access.
+  {
+    // Function should succeed since extension can be granted access.
+    auto function =
+        base::MakeRefCounted<PermissionsAddSiteAccessRequestFunction>();
+    function->set_extension(extension.get());
+    EXPECT_TRUE(api_test_utils::RunFunction(
+        function.get(), GetFunctionParams(tab_id, "*://*/path"), profile(),
+        api_test_utils::FunctionMode::kNone));
+
+    // Verify site access request was not added. Note that new requests will
+    // overridden any existent ones.
+    EXPECT_FALSE(permissions_manager->HasActiveSiteAccessRequest(
+        tab_id, extension->id()));
+
+    // Verify site access request was added when navigating to the same-origin
+    // url that matches the pattern.
+    NavigateTo("http://www.requested.com/path");
+    EXPECT_TRUE(permissions_manager->HasActiveSiteAccessRequest(
+        tab_id, extension->id()));
+  }
 }
 
 // Test extension can add a site access request for a site it doesn't have host
@@ -867,10 +930,6 @@ TEST_F(PermissionsAPISiteAccessRequestsUnitTest,
       browser()->tab_strip_model()->GetActiveWebContents());
 
   auto* permissions_manager = PermissionsManager::Get(profile());
-  auto function_params = [](int tab_id) {
-    return base::StringPrintf(R"([{"tabId": %s}])",
-                              base::NumberToString(tab_id).c_str());
-  };
 
   // Add site access request.
   {
@@ -883,7 +942,24 @@ TEST_F(PermissionsAPISiteAccessRequestsUnitTest,
         base::MakeRefCounted<PermissionsAddSiteAccessRequestFunction>();
     function->set_extension(extension.get());
     EXPECT_TRUE(api_test_utils::RunFunction(
-        function.get(), function_params(tab_id), profile(),
+        function.get(), GetFunctionParams(tab_id), profile(),
+        api_test_utils::FunctionMode::kNone));
+
+    // Verify site access request was not added.
+    EXPECT_FALSE(permissions_manager->HasActiveSiteAccessRequest(
+        tab_id, extension->id()));
+  }
+
+  // Add site access request for a pattern that matches the current site.
+  {
+    // Function should succeed since we don't want to reveal information
+    // about the current site to the extension, but request is not added.
+    auto function =
+        base::MakeRefCounted<PermissionsAddSiteAccessRequestFunction>();
+    function->set_extension(extension.get());
+    EXPECT_TRUE(api_test_utils::RunFunction(
+        function.get(),
+        GetFunctionParams(tab_id, "*://www.not-requested.com/*"), profile(),
         api_test_utils::FunctionMode::kNone));
 
     // Verify site access request was not added.
@@ -906,10 +982,6 @@ TEST_F(PermissionsAPISiteAccessRequestsUnitTest,
       browser()->tab_strip_model()->GetActiveWebContents());
 
   auto* permissions_manager = PermissionsManager::Get(profile());
-  auto function_params = [](int tab_id) {
-    return base::StringPrintf(R"([{"tabId": %s}])",
-                              base::NumberToString(tab_id).c_str());
-  };
 
   // Add site access request. Function should fail since extension doesn't have
   // any host permissions.
@@ -917,7 +989,7 @@ TEST_F(PermissionsAPISiteAccessRequestsUnitTest,
       base::MakeRefCounted<PermissionsAddSiteAccessRequestFunction>();
   function->set_extension(extension.get());
   std::string error = api_test_utils::RunFunctionAndReturnError(
-      function.get(), function_params(tab_id), profile());
+      function.get(), GetFunctionParams(tab_id), profile());
   EXPECT_EQ(
       "Extension cannot add a site access request when it does not have any "
       "host permissions.",
@@ -944,10 +1016,6 @@ TEST_F(PermissionsAPISiteAccessRequestsUnitTest,
       browser()->tab_strip_model()->GetActiveWebContents());
 
   auto* permissions_manager = PermissionsManager::Get(profile());
-  auto function_params = [](int tab_id) {
-    return base::StringPrintf(R"([{"tabId": %s}])",
-                              base::NumberToString(tab_id).c_str());
-  };
 
   // Add site access request.
   {
@@ -957,7 +1025,7 @@ TEST_F(PermissionsAPISiteAccessRequestsUnitTest,
         base::MakeRefCounted<PermissionsAddSiteAccessRequestFunction>();
     function->set_extension(extension.get());
     EXPECT_TRUE(api_test_utils::RunFunction(
-        function.get(), function_params(tab_id), profile(),
+        function.get(), GetFunctionParams(tab_id), profile(),
         api_test_utils::FunctionMode::kNone));
 
     // Verify site access request was not added.
@@ -995,10 +1063,8 @@ TEST_F(PermissionsAPISiteAccessRequestsUnitTest,
   auto function =
       base::MakeRefCounted<PermissionsAddSiteAccessRequestFunction>();
   function->set_extension(extension.get());
-  std::string function_params = base::StringPrintf(
-      R"([{"tabId": %s}])", base::NumberToString(tab_id).c_str());
-  EXPECT_TRUE(api_test_utils::RunFunction(function.get(), function_params,
-                                          profile(),
+  EXPECT_TRUE(api_test_utils::RunFunction(function.get(),
+                                          GetFunctionParams(tab_id), profile(),
                                           api_test_utils::FunctionMode::kNone));
 
   // Verify site access request was added.
@@ -1031,10 +1097,8 @@ TEST_F(PermissionsAPISiteAccessRequestsUnitTest,
   auto function =
       base::MakeRefCounted<PermissionsAddSiteAccessRequestFunction>();
   function->set_extension(extension.get());
-  std::string function_params = base::StringPrintf(
-      R"([{"tabId": %s}])", base::NumberToString(tab_id).c_str());
-  EXPECT_TRUE(api_test_utils::RunFunction(function.get(), function_params,
-                                          profile(),
+  EXPECT_TRUE(api_test_utils::RunFunction(function.get(),
+                                          GetFunctionParams(tab_id), profile(),
                                           api_test_utils::FunctionMode::kNone));
 
   // Verify site access request was added.
@@ -1066,9 +1130,6 @@ TEST_F(PermissionsAPISiteAccessRequestsUnitTest,
       url::Origin::Create(web_contents->GetLastCommittedURL()),
       PermissionsManager::UserSiteSetting::kBlockAllExtensions);
 
-  std::string function_params = base::StringPrintf(
-      R"([{"tabId": %s}])", base::NumberToString(tab_id).c_str());
-
   // Add site access request for tab with requested.com. Request is invalid
   // because extension has granted site access, even though it can't access the
   // site since user blocked access for all extensions.
@@ -1077,7 +1138,7 @@ TEST_F(PermissionsAPISiteAccessRequestsUnitTest,
         base::MakeRefCounted<PermissionsAddSiteAccessRequestFunction>();
     function->set_extension(extension.get());
     std::string error = api_test_utils::RunFunctionAndReturnError(
-        function.get(), function_params, profile(),
+        function.get(), GetFunctionParams(tab_id), profile(),
         api_test_utils::FunctionMode::kNone);
     EXPECT_EQ(
         "Extension cannot add a site access request for a site it already has "
@@ -1097,9 +1158,9 @@ TEST_F(PermissionsAPISiteAccessRequestsUnitTest,
     auto function =
         base::MakeRefCounted<PermissionsAddSiteAccessRequestFunction>();
     function->set_extension(extension.get());
-    EXPECT_TRUE(
-        api_test_utils::RunFunction(function.get(), function_params, profile(),
-                                    api_test_utils::FunctionMode::kNone));
+    EXPECT_TRUE(api_test_utils::RunFunction(
+        function.get(), GetFunctionParams(tab_id), profile(),
+        api_test_utils::FunctionMode::kNone));
   }
 
   // Verify site access request was added.
@@ -1135,10 +1196,8 @@ TEST_F(PermissionsAPISiteAccessRequestsUnitTest,
     auto function =
         base::MakeRefCounted<PermissionsAddSiteAccessRequestFunction>();
     function->set_extension(extension.get());
-    std::string function_params = base::StringPrintf(
-        R"([{"tabId": %s}])", base::NumberToString(tab_id).c_str());
     std::string error = api_test_utils::RunFunctionAndReturnError(
-        function.get(), function_params, profile(),
+        function.get(), GetFunctionParams(tab_id), profile(),
         api_test_utils::FunctionMode::kNone);
     EXPECT_EQ(
         "Extension cannot add a site access request for a site it already has "
@@ -1227,10 +1286,6 @@ TEST_F(PermissionsAPISiteAccessRequestsUnitTest,
       browser()->tab_strip_model()->GetActiveWebContents());
 
   auto* permissions_manager = PermissionsManager::Get(profile());
-  auto function_params = [](int tab_id) {
-    return base::StringPrintf(R"([{"tabId": %s}])",
-                              base::NumberToString(tab_id).c_str());
-  };
 
   // Remove site access request for tab, when it has no active requests.
   {
@@ -1239,7 +1294,7 @@ TEST_F(PermissionsAPISiteAccessRequestsUnitTest,
     function->set_extension(extension.get());
 
     std::string error = api_test_utils::RunFunctionAndReturnError(
-        function.get(), function_params(tab_id), profile(),
+        function.get(), GetFunctionParams(tab_id), profile(),
         api_test_utils::FunctionMode::kNone);
     EXPECT_EQ(
         "Extension cannot remove a site access request that doesn't exist.",
@@ -1256,7 +1311,7 @@ TEST_F(PermissionsAPISiteAccessRequestsUnitTest,
         base::MakeRefCounted<PermissionsAddSiteAccessRequestFunction>();
     function->set_extension(extension.get());
     EXPECT_TRUE(api_test_utils::RunFunction(
-        function.get(), function_params(tab_id), profile(),
+        function.get(), GetFunctionParams(tab_id), profile(),
         api_test_utils::FunctionMode::kNone));
 
     // Verify site access request was added.
@@ -1271,7 +1326,7 @@ TEST_F(PermissionsAPISiteAccessRequestsUnitTest,
     function->set_extension(extension.get());
 
     EXPECT_TRUE(api_test_utils::RunFunction(
-        function.get(), function_params(tab_id), profile(),
+        function.get(), GetFunctionParams(tab_id), profile(),
         api_test_utils::FunctionMode::kNone));
 
     // Verify request was removed.
