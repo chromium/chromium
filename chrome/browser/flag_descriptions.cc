@@ -1521,12 +1521,6 @@ const char kExperimentalRgbKeyboardPatternsName[] =
 const char kExperimentalRgbKeyboardPatternsDescription[] =
     "Enable experimental RGB Keyboard patterns support on supported devices.";
 
-const char kEnableGooglePlayProtectPromptName[] =
-    "Enable Google Play Protect prompts on Android dangerous downloads";
-const char kEnableGooglePlayProtectPromptDescription[] =
-    "Users with Google Play Protect disabled will be prompted on dangerous "
-    "downloads to re-enable the feature.";
-
 const char kClayBlockingDialogName[] = "Clay blocking dialog";
 const char kClayBlockingDialogDescription[] =
     "Enables the blocking dialog that directs users to complete their choice of"

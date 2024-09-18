@@ -8988,11 +8988,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAnimatedImageResumeDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kAnimatedImageResume)},
 
-    {"enable-google-play-protect-prompts",
-     flag_descriptions::kEnableGooglePlayProtectPromptName,
-     flag_descriptions::kEnableGooglePlayProtectPromptDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(safe_browsing::kGooglePlayProtectPrompt)},
-
 #if !BUILDFLAG(IS_ANDROID)
     {"sct-auditing", flag_descriptions::kSCTAuditingName,
      flag_descriptions::kSCTAuditingDescription, kOsDesktop,

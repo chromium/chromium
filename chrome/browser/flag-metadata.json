@@ -3334,13 +3334,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "enable-google-play-protect-prompts",
-    "owners": [
-      "drubery@chromium.org",
-      "chrome-counter-abuse-alerts@google.com"],
-    "expiry_milestone": 131
-  },
-  {
     "name": "enable-gpu-rasterization",
     "owners": [ "enne@chromium.org", "vmiura@chromium.org", "ericrk@chromium.org" ],
     // A debugging flag intended for end-users where there may not be any other
