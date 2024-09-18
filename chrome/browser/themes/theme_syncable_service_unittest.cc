@@ -11,6 +11,7 @@
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/json/json_string_value_serializer.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
@@ -2145,4 +2146,279 @@ TEST_F(ThemePrefsMigrationTest,
   // Flag gets cleared to allow re-migration.
   EXPECT_FALSE(
       pref_service_.GetBoolean(prefs::kSyncingThemePrefsMigratedToNonSyncing));
+}
+
+class ThemePrefsMigrationShouldReadPrefsTest : public ::testing::Test {
+ public:
+  syncer::SyncDataList InitialPrefsSyncData() {
+    syncer::SyncDataList initial_data;
+    initial_data.push_back(CreateRemotePrefsSyncData(
+        prefs::kBrowserColorSchemeDoNotUse,
+        base::Value(
+            static_cast<int>(ThemeService::BrowserColorScheme::kLight))));
+    initial_data.push_back(CreateRemotePrefsSyncData(
+        prefs::kUserColorDoNotUse, base::Value(static_cast<int>(SK_ColorRED))));
+    initial_data.push_back(CreateRemotePrefsSyncData(
+        prefs::kBrowserColorVariantDoNotUse,
+        base::Value(
+            static_cast<int>(ui::mojom::BrowserColorVariant::kTonalSpot))));
+    return initial_data;
+  }
+
+ protected:
+  syncer::SyncData CreateRemotePrefsSyncData(const std::string& name,
+                                             const base::Value& value) {
+    std::string serialized;
+    JSONStringValueSerializer json(&serialized);
+    EXPECT_TRUE(json.Serialize(value));
+    sync_pb::EntitySpecifics entity_specifics;
+    sync_pb::PreferenceSpecifics* specifics =
+        entity_specifics.mutable_preference();
+    specifics->set_name(name);
+    specifics->set_value(serialized);
+    return syncer::SyncData::CreateRemoteData(
+        entity_specifics, syncer::ClientTagHash::FromUnhashed(
+                              syncer::DataType::PREFERENCES, name));
+  }
+
+  content::BrowserTaskEnvironment task_environment_;
+  TestingProfile profile_;
+  ThemeService theme_service_{&profile_, GetThemeHelper()};
+  raw_ptr<sync_preferences::TestingPrefServiceSyncable> prefs_ =
+      profile_.GetTestingPrefService();
+  std::unique_ptr<syncer::FakeSyncChangeProcessor> fake_change_processor_ =
+      std::make_unique<syncer::FakeSyncChangeProcessor>();
+};
+
+// Verifies that if kMoveThemePrefsToSpecifics feature flag is not set, the
+// migration flag is marked unset to allow migration again once the feature flag
+// is enabled again.
+TEST_F(ThemePrefsMigrationShouldReadPrefsTest,
+       ClearShouldReadPrefFlagIfFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(syncer::kMoveThemePrefsToSpecifics);
+
+  // Migration has run before.
+  prefs_->SetBoolean(prefs::kShouldReadIncomingSyncingThemePrefs, false);
+
+  ThemeSyncableService theme_syncable_service(&profile_, &theme_service_);
+
+  // Flag gets cleared to allow re-migration.
+  EXPECT_TRUE(prefs_->GetBoolean(prefs::kShouldReadIncomingSyncingThemePrefs));
+}
+
+// Verifies that syncing prefs are read upon construction of
+// ThemeSyncableService if prefs sync has already started.
+TEST_F(ThemePrefsMigrationShouldReadPrefsTest,
+       ShouldReadThemePrefsOnContructionIfPrefsAlreadySyncing) {
+  base::test::ScopedFeatureList feature_list(
+      syncer::kMoveThemePrefsToSpecifics);
+
+  ASSERT_TRUE(prefs_->GetBoolean(prefs::kShouldReadIncomingSyncingThemePrefs));
+
+  // Start prefs sync.
+  syncer::SyncableService* pref_sync_service =
+      prefs_->GetSyncableService(syncer::PREFERENCES);
+  ASSERT_FALSE(pref_sync_service->MergeDataAndStartSyncing(
+      syncer::PREFERENCES, InitialPrefsSyncData(),
+      std::make_unique<syncer::SyncChangeProcessorWrapperForTest>(
+          fake_change_processor_.get())));
+
+  ASSERT_TRUE(prefs_->IsSyncing());
+  ThemeSyncableService theme_syncable_service(&profile_, &theme_service_);
+
+  // Syncing prefs were copied.
+  EXPECT_FALSE(prefs_->GetBoolean(prefs::kShouldReadIncomingSyncingThemePrefs));
+  EXPECT_EQ(prefs_->GetInteger(prefs::kNonSyncingBrowserColorSchemeDoNotUse),
+            static_cast<int>(ThemeService::BrowserColorScheme::kLight));
+  EXPECT_EQ(prefs_->GetInteger(prefs::kNonSyncingUserColorDoNotUse),
+            static_cast<int>(SK_ColorRED));
+  EXPECT_EQ(prefs_->GetInteger(prefs::kNonSyncingBrowserColorVariantDoNotUse),
+            static_cast<int>(ui::mojom::BrowserColorVariant::kTonalSpot));
+}
+
+// Verifies that syncing theme prefs are read when prefs sync starts.
+TEST_F(ThemePrefsMigrationShouldReadPrefsTest,
+       ShouldReadThemePrefsWhenPrefsStartSyncing) {
+  base::test::ScopedFeatureList feature_list(
+      syncer::kMoveThemePrefsToSpecifics);
+
+  ASSERT_TRUE(prefs_->GetBoolean(prefs::kShouldReadIncomingSyncingThemePrefs));
+
+  ASSERT_FALSE(prefs_->IsSyncing());
+  ThemeSyncableService theme_syncable_service(&profile_, &theme_service_);
+
+  // Start prefs sync.
+  syncer::SyncableService* pref_sync_service =
+      prefs_->GetSyncableService(syncer::PREFERENCES);
+  ASSERT_FALSE(pref_sync_service->MergeDataAndStartSyncing(
+      syncer::PREFERENCES, InitialPrefsSyncData(),
+      std::make_unique<syncer::SyncChangeProcessorWrapperForTest>(
+          fake_change_processor_.get())));
+
+  // Syncing prefs have been copied.
+  EXPECT_FALSE(prefs_->GetBoolean(prefs::kShouldReadIncomingSyncingThemePrefs));
+  EXPECT_EQ(prefs_->GetInteger(prefs::kNonSyncingBrowserColorSchemeDoNotUse),
+            static_cast<int>(ThemeService::BrowserColorScheme::kLight));
+  EXPECT_EQ(prefs_->GetInteger(prefs::kNonSyncingUserColorDoNotUse),
+            static_cast<int>(SK_ColorRED));
+  EXPECT_EQ(prefs_->GetInteger(prefs::kNonSyncingBrowserColorVariantDoNotUse),
+            static_cast<int>(ui::mojom::BrowserColorVariant::kTonalSpot));
+}
+
+// Verifies that syncing theme prefs are not read if they have already been read
+// before or if the migration flag has already been set.
+TEST_F(ThemePrefsMigrationShouldReadPrefsTest,
+       ShouldNotReadThemePrefsIfAlreadyRead) {
+  base::test::ScopedFeatureList feature_list(
+      syncer::kMoveThemePrefsToSpecifics);
+
+  // Mark as already read.
+  prefs_->SetBoolean(prefs::kShouldReadIncomingSyncingThemePrefs, false);
+
+  ThemeSyncableService theme_syncable_service(&profile_, &theme_service_);
+
+  // Start prefs sync.
+  syncer::SyncableService* pref_sync_service =
+      prefs_->GetSyncableService(syncer::PREFERENCES);
+  ASSERT_FALSE(pref_sync_service->MergeDataAndStartSyncing(
+      syncer::PREFERENCES, InitialPrefsSyncData(),
+      std::make_unique<syncer::SyncChangeProcessorWrapperForTest>(
+          fake_change_processor_.get())));
+
+  // Prefs are unchanged.
+  EXPECT_FALSE(prefs_->GetBoolean(prefs::kShouldReadIncomingSyncingThemePrefs));
+  EXPECT_NE(prefs_->GetInteger(prefs::kNonSyncingBrowserColorSchemeDoNotUse),
+            static_cast<int>(ThemeService::BrowserColorScheme::kLight));
+  EXPECT_NE(prefs_->GetInteger(prefs::kNonSyncingUserColorDoNotUse),
+            static_cast<int>(SK_ColorRED));
+  EXPECT_NE(prefs_->GetInteger(prefs::kNonSyncingBrowserColorVariantDoNotUse),
+            static_cast<int>(ui::mojom::BrowserColorVariant::kTonalSpot));
+}
+
+// Verifies that the migration flag is set and (thus) syncing prefs are not read
+// if the incoming ThemeSpecifics contains the new fields.
+TEST_F(ThemePrefsMigrationShouldReadPrefsTest,
+       ShouldNotReadThemePrefsIfReadViaThemeSpecifics) {
+  base::test::ScopedFeatureList feature_list(
+      syncer::kMoveThemePrefsToSpecifics);
+
+  ASSERT_TRUE(prefs_->GetBoolean(prefs::kShouldReadIncomingSyncingThemePrefs));
+
+  ASSERT_FALSE(prefs_->IsSyncing());
+  ThemeSyncableService theme_syncable_service(&profile_, &theme_service_);
+
+  sync_pb::ThemeSpecifics theme_specifics;
+  theme_specifics.set_browser_color_scheme(
+      sync_pb::ThemeSpecifics_BrowserColorScheme_DARK);
+
+  // Start themes sync with specifics containing new field.
+  std::optional<syncer::ModelError> error =
+      theme_syncable_service.MergeDataAndStartSyncing(
+          syncer::THEMES, MakeThemeDataList(theme_specifics),
+          std::make_unique<syncer::SyncChangeProcessorWrapperForTest>(
+              fake_change_processor_.get()));
+  ASSERT_FALSE(error.has_value()) << error.value().message();
+
+  // Migration flag is already set.
+  EXPECT_FALSE(prefs_->GetBoolean(prefs::kShouldReadIncomingSyncingThemePrefs));
+  EXPECT_EQ(prefs_->GetInteger(prefs::kNonSyncingBrowserColorSchemeDoNotUse),
+            static_cast<int>(ThemeService::BrowserColorScheme::kDark));
+
+  // Start prefs sync.
+  syncer::SyncableService* pref_sync_service =
+      prefs_->GetSyncableService(syncer::PREFERENCES);
+  ASSERT_FALSE(pref_sync_service->MergeDataAndStartSyncing(
+      syncer::PREFERENCES, InitialPrefsSyncData(),
+      std::make_unique<syncer::SyncChangeProcessorWrapperForTest>(
+          fake_change_processor_.get())));
+
+  // Syncing prefs have not been copied since ThemeSpecifics had the new fields.
+  EXPECT_FALSE(prefs_->GetBoolean(prefs::kShouldReadIncomingSyncingThemePrefs));
+  EXPECT_NE(prefs_->GetInteger(prefs::kNonSyncingBrowserColorSchemeDoNotUse),
+            static_cast<int>(ThemeService::BrowserColorScheme::kLight));
+  EXPECT_NE(prefs_->GetInteger(prefs::kNonSyncingUserColorDoNotUse),
+            static_cast<int>(SK_ColorRED));
+  EXPECT_NE(prefs_->GetInteger(prefs::kNonSyncingBrowserColorVariantDoNotUse),
+            static_cast<int>(ui::mojom::BrowserColorVariant::kTonalSpot));
+}
+
+// Verifies that syncing theme prefs are read if the incoming ThemeSpecifics
+// didn't have the new fields.
+TEST_F(ThemePrefsMigrationShouldReadPrefsTest,
+       ShouldReadThemePrefsIfThemeSpecificsDoesNotHaveNewFields) {
+  base::test::ScopedFeatureList feature_list(
+      syncer::kMoveThemePrefsToSpecifics);
+
+  ASSERT_TRUE(prefs_->GetBoolean(prefs::kShouldReadIncomingSyncingThemePrefs));
+
+  ASSERT_FALSE(prefs_->IsSyncing());
+  ThemeSyncableService theme_syncable_service(&profile_, &theme_service_);
+
+  sync_pb::ThemeSpecifics theme_specifics;
+  theme_specifics.mutable_autogenerated_theme()->set_color(SK_ColorBLUE);
+
+  // Start themes sync with specifics containing new field.
+  ASSERT_FALSE(theme_syncable_service.MergeDataAndStartSyncing(
+      syncer::THEMES, MakeThemeDataList(theme_specifics),
+      std::make_unique<syncer::SyncChangeProcessorWrapperForTest>(
+          fake_change_processor_.get())));
+
+  EXPECT_TRUE(prefs_->GetBoolean(prefs::kShouldReadIncomingSyncingThemePrefs));
+
+  // Start prefs sync.
+  syncer::SyncableService* pref_sync_service =
+      prefs_->GetSyncableService(syncer::PREFERENCES);
+  ASSERT_FALSE(pref_sync_service->MergeDataAndStartSyncing(
+      syncer::PREFERENCES, InitialPrefsSyncData(),
+      std::make_unique<syncer::SyncChangeProcessorWrapperForTest>(
+          fake_change_processor_.get())));
+
+  // Syncing prefs copied since ThemeSpecifics didn't have the new fields.
+  EXPECT_FALSE(prefs_->GetBoolean(prefs::kShouldReadIncomingSyncingThemePrefs));
+  EXPECT_EQ(prefs_->GetInteger(prefs::kNonSyncingBrowserColorSchemeDoNotUse),
+            static_cast<int>(ThemeService::BrowserColorScheme::kLight));
+  EXPECT_EQ(prefs_->GetInteger(prefs::kNonSyncingUserColorDoNotUse),
+            static_cast<int>(SK_ColorRED));
+  EXPECT_EQ(prefs_->GetInteger(prefs::kNonSyncingBrowserColorVariantDoNotUse),
+            static_cast<int>(ui::mojom::BrowserColorVariant::kTonalSpot));
+}
+
+// Verifies that the incoming ThemeSpecifics overwrites the value copied from
+// the syncing theme prefs.
+TEST_F(ThemePrefsMigrationShouldReadPrefsTest, ShouldPrioritizeThemeSpecifics) {
+  base::test::ScopedFeatureList feature_list(
+      syncer::kMoveThemePrefsToSpecifics);
+
+  ASSERT_TRUE(prefs_->GetBoolean(prefs::kShouldReadIncomingSyncingThemePrefs));
+
+  ASSERT_FALSE(prefs_->IsSyncing());
+  ThemeSyncableService theme_syncable_service(&profile_, &theme_service_);
+
+  // Start prefs sync.
+  syncer::SyncableService* pref_sync_service =
+      prefs_->GetSyncableService(syncer::PREFERENCES);
+  ASSERT_FALSE(pref_sync_service->MergeDataAndStartSyncing(
+      syncer::PREFERENCES, InitialPrefsSyncData(),
+      std::make_unique<syncer::SyncChangeProcessorWrapperForTest>(
+          fake_change_processor_.get())));
+
+  EXPECT_FALSE(prefs_->GetBoolean(prefs::kShouldReadIncomingSyncingThemePrefs));
+  EXPECT_EQ(prefs_->GetInteger(prefs::kNonSyncingBrowserColorSchemeDoNotUse),
+            static_cast<int>(ThemeService::BrowserColorScheme::kLight));
+
+  sync_pb::ThemeSpecifics theme_specifics;
+  theme_specifics.set_browser_color_scheme(
+      sync_pb::ThemeSpecifics_BrowserColorScheme_DARK);
+
+  // Start themes sync with specifics containing new field.
+  ASSERT_FALSE(theme_syncable_service.MergeDataAndStartSyncing(
+      syncer::THEMES, MakeThemeDataList(theme_specifics),
+      std::make_unique<syncer::SyncChangeProcessorWrapperForTest>(
+          fake_change_processor_.get())));
+
+  EXPECT_FALSE(prefs_->GetBoolean(prefs::kShouldReadIncomingSyncingThemePrefs));
+  // Overwrites the theme set by prefs.
+  EXPECT_EQ(prefs_->GetInteger(prefs::kNonSyncingBrowserColorSchemeDoNotUse),
+            static_cast<int>(ThemeService::BrowserColorScheme::kDark));
 }
