@@ -9,7 +9,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/digital_credentials/digital_identity_interstitial_closed_reason.h"
-#include "chrome/browser/ui/digital_credentials/digital_identity_safety_interstitial_controller.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/url_formatter/elide_url.h"

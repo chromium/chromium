@@ -12,7 +12,6 @@
 #include "base/values.h"
 #include "chrome/browser/digital_credentials/digital_identity_low_risk_origins.h"
 #include "chrome/browser/ui/digital_credentials/digital_identity_safety_interstitial_bridge_android.h"
-#include "chrome/browser/ui/digital_credentials/digital_identity_safety_interstitial_controller.h"
 #include "content/public/browser/digital_identity_provider.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/window_android.h"

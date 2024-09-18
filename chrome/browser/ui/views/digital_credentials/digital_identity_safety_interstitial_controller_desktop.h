@@ -8,7 +8,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/digital_credentials/digital_identity_interstitial_closed_reason.h"
-#include "chrome/browser/ui/digital_credentials/digital_identity_safety_interstitial_controller.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/digital_identity_interstitial_type.h"
 #include "content/public/browser/digital_identity_provider.h"
@@ -19,11 +18,10 @@ namespace views {
 class Widget;
 }  // namespace views
 
-class DigitalIdentitySafetyInterstitialControllerDesktop
-    : public DigitalIdentitySafetyInterstitialController {
+class DigitalIdentitySafetyInterstitialControllerDesktop {
  public:
   DigitalIdentitySafetyInterstitialControllerDesktop();
-  ~DigitalIdentitySafetyInterstitialControllerDesktop() override;
+  ~DigitalIdentitySafetyInterstitialControllerDesktop();
 
   content::DigitalIdentityProvider::DigitalIdentityInterstitialAbortCallback
   ShowInterstitial(
@@ -31,7 +29,7 @@ class DigitalIdentitySafetyInterstitialControllerDesktop
       const url::Origin& rp_origin,
       content::DigitalIdentityInterstitialType,
       content::DigitalIdentityProvider::DigitalIdentityInterstitialCallback
-          callback) override;
+          callback);
 
  private:
   class CloseOnNavigationObserver

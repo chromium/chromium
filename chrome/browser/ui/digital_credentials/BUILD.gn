@@ -5,7 +5,7 @@
 assert(is_win || is_mac || is_linux || is_chromeos || is_android)
 
 source_set("digital_credentials") {
-  sources = [ "digital_identity_safety_interstitial_controller.h" ]
+  sources = []
   deps = []
   public_deps = [ "//content/public/browser" ]
 
