@@ -364,6 +364,8 @@ build_webui("build") {
     "site_settings/all_sites_icons.html",
   ]
 
+  html_to_wrapper_template = "detect"
+
   if (is_chrome_branded) {
     icons_html_files += [ "internal/icons.html" ]
   }
