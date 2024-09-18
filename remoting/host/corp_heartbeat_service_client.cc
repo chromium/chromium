@@ -19,16 +19,16 @@ CorpHeartbeatServiceClient::CorpHeartbeatServiceClient(
 
 CorpHeartbeatServiceClient::~CorpHeartbeatServiceClient() = default;
 
-void CorpHeartbeatServiceClient::UpdateRemoteAccessHost(
+void CorpHeartbeatServiceClient::SendFullHeartbeat(
     bool is_initial_heartbeat,
-    std::optional<std::string> ftl_signaling_id,
+    std::optional<std::string> signaling_id,
     std::optional<std::string> offline_reason,
-    UpdateRemoteAccessHostResponseCallback callback) {
+    HeartbeatResponseCallback callback) {
   NOTIMPLEMENTED();
 }
 
-void CorpHeartbeatServiceClient::SendHeartbeat(
-    SendHeartbeatResponseCallback callback) {
+void CorpHeartbeatServiceClient::SendLiteHeartbeat(
+    HeartbeatResponseCallback callback) {
   NOTIMPLEMENTED();
 }
 

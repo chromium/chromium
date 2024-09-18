@@ -35,12 +35,11 @@ class CloudHeartbeatServiceClient : public HeartbeatServiceClient {
   ~CloudHeartbeatServiceClient() override;
 
   // HeartbeatServiceClient implementation.
-  void UpdateRemoteAccessHost(
-      bool is_initial_heartbeat,
-      std::optional<std::string> ftl_signaling_id,
-      std::optional<std::string> offline_reason,
-      UpdateRemoteAccessHostResponseCallback callback) override;
-  void SendHeartbeat(SendHeartbeatResponseCallback callback) override;
+  void SendFullHeartbeat(bool is_initial_heartbeat,
+                         std::optional<std::string> signaling_id,
+                         std::optional<std::string> offline_reason,
+                         HeartbeatResponseCallback callback) override;
+  void SendLiteHeartbeat(HeartbeatResponseCallback callback) override;
   void CancelPendingRequests() override;
 
  private:

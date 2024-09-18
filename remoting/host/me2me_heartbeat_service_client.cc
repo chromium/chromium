@@ -20,16 +20,16 @@ Me2MeHeartbeatServiceClient::Me2MeHeartbeatServiceClient(
 
 Me2MeHeartbeatServiceClient::~Me2MeHeartbeatServiceClient() = default;
 
-void Me2MeHeartbeatServiceClient::UpdateRemoteAccessHost(
+void Me2MeHeartbeatServiceClient::SendFullHeartbeat(
     bool is_initial_heartbeat,
-    std::optional<std::string> ftl_signaling_id,
+    std::optional<std::string> signaling_id,
     std::optional<std::string> offline_reason,
-    UpdateRemoteAccessHostResponseCallback callback) {
+    HeartbeatResponseCallback callback) {
   NOTIMPLEMENTED();
 }
 
-void Me2MeHeartbeatServiceClient::SendHeartbeat(
-    SendHeartbeatResponseCallback callback) {
+void Me2MeHeartbeatServiceClient::SendLiteHeartbeat(
+    HeartbeatResponseCallback callback) {
   NOTIMPLEMENTED();
 }
 

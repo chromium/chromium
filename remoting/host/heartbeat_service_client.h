@@ -23,15 +23,14 @@ class ProtobufHttpStatus;
 // from the HeartbeatSender class.
 class HeartbeatServiceClient {
  public:
-  using UpdateRemoteAccessHostResponseCallback =
+  // |status| will be valid for all invocations, the other args must be checked
+  // as they may not be populated for all APIs.
+  using HeartbeatResponseCallback =
       base::OnceCallback<void(const ProtobufHttpStatus& status,
-                              base::TimeDelta wait_interval,
+                              std::optional<base::TimeDelta> wait_interval,
                               const std::string& primary_user_email,
-                              bool require_session_authorization,
-                              bool use_lite_heartbeat)>;
-  using SendHeartbeatResponseCallback =
-      base::OnceCallback<void(const ProtobufHttpStatus& status,
-                              base::TimeDelta wait_interval)>;
+                              std::optional<bool> require_session_authorization,
+                              std::optional<bool> use_lite_heartbeat)>;
 
   HeartbeatServiceClient();
 
@@ -40,18 +39,18 @@ class HeartbeatServiceClient {
 
   virtual ~HeartbeatServiceClient();
 
-  // Updates a set of attributes for |directory_id_| and the last_seen_time in
-  // the Directory service.
-  // TODO: joedow - Remove |is_initial_heartbeat| once SendHeartbeat is used for
-  // public Me2Me hosts.
-  virtual void UpdateRemoteAccessHost(
-      bool is_initial_heartbeat,
-      std::optional<std::string> ftl_signaling_id,
-      std::optional<std::string> offline_reason,
-      UpdateRemoteAccessHostResponseCallback callback) = 0;
+  // Updates a set of attributes for |directory_id_| based on the args provided
+  // as well as inherent properties (e.g. host version) when
+  // |is_initial_heartbeat| is set.
+  // TODO: joedow - Refactor this when we no longer support the LegacyHeartbeat
+  // service API.
+  virtual void SendFullHeartbeat(bool is_initial_heartbeat,
+                                 std::optional<std::string> signaling_id,
+                                 std::optional<std::string> offline_reason,
+                                 HeartbeatResponseCallback callback) = 0;
 
   // Updates the last_seen_time for |directory_id_| in the Directory service.
-  virtual void SendHeartbeat(SendHeartbeatResponseCallback callback) = 0;
+  virtual void SendLiteHeartbeat(HeartbeatResponseCallback callback) = 0;
 
   // Cancels any pending service requests.
   virtual void CancelPendingRequests() = 0;

@@ -20,16 +20,16 @@ CloudHeartbeatServiceClient::CloudHeartbeatServiceClient(
 
 CloudHeartbeatServiceClient::~CloudHeartbeatServiceClient() = default;
 
-void CloudHeartbeatServiceClient::UpdateRemoteAccessHost(
+void CloudHeartbeatServiceClient::SendFullHeartbeat(
     bool is_initial_heartbeat,
-    std::optional<std::string> ftl_signaling_id,
+    std::optional<std::string> signaling_id,
     std::optional<std::string> offline_reason,
-    UpdateRemoteAccessHostResponseCallback callback) {
+    HeartbeatResponseCallback callback) {
   NOTIMPLEMENTED();
 }
 
-void CloudHeartbeatServiceClient::SendHeartbeat(
-    SendHeartbeatResponseCallback callback) {
+void CloudHeartbeatServiceClient::SendLiteHeartbeat(
+    HeartbeatResponseCallback callback) {
   NOTIMPLEMENTED();
 }
 
