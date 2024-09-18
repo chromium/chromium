@@ -186,6 +186,11 @@ void SharingService::EntryAddedLocally(
 
   std::optional<SharingTargetDeviceInfo> target_device_info =
       GetDeviceByGuid(entry->GetTargetDeviceSyncCacheGuid());
+
+  if (!target_device_info.has_value()) {
+    return;
+  }
+
   if (target_device_info.value().platform() != SharingDevicePlatform::kIOS) {
     return;
   }
