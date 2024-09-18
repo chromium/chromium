@@ -499,11 +499,6 @@ template("chrome_common_apk_or_module_tmpl") {
         asset_deps += [ "//chrome/android:chrome_public_non_pak_assets" ]
       }
       if (_is_bundle) {
-        deps += [
-          # deps in delegate_public_impl_java are put into the Chrome module, but the language deps
-          # are needed by the base module.
-          "//components/language/android:ulp_delegate_public_java",
-        ]
         if (_is_monochrome) {
           # WebView needs these in the base module.
           deps += [

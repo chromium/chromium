@@ -4,7 +4,6 @@
 
 #include "chrome/browser/language/android/language_bridge.h"
 
-#include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "chrome/browser/language/language_model_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -15,45 +14,17 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/language/android/jni_headers/LanguageBridge_jni.h"
 
-using base::android::ConvertJavaStringToUTF8;
-using base::android::ConvertUTF8ToJavaString;
-using base::android::ScopedJavaLocalRef;
-using base::android::ToJavaArrayOfStrings;
-
-namespace {
-
-PrefService* GetPrefService(const base::android::JavaRef<jobject>& j_profile) {
-  return Profile::FromJavaObject(j_profile)->GetPrefs();
-}
-
-}  // namespace
-
 namespace language {
 std::vector<std::string> LanguageBridge::GetULPLanguagesFromDevice(
     std::string account_name) {
   JNIEnv* env = jni_zero::AttachCurrentThread();
-  ScopedJavaLocalRef<jstring> account_name_java =
-      ConvertUTF8ToJavaString(env, account_name);
-  ScopedJavaLocalRef<jobjectArray> languages_java =
-      Java_LanguageBridge_getULPLanguagesFromDevice(env, account_name_java);
-
-  const int num_langs = (*env).GetArrayLength(languages_java.obj());
-  std::vector<std::string> languages;
-  for (int i = 0; i < num_langs; i++) {
-    jstring language_name_java =
-        (jstring)(*env).GetObjectArrayElement(languages_java.obj(), i);
-    languages.emplace_back(ConvertJavaStringToUTF8(env, language_name_java));
-  }
-
-  return languages;
+  return Java_LanguageBridge_getULPLanguagesFromDevice(env, account_name);
 }
 }  // namespace language
 
 // Gets the ULP languages from the Android only preference.
-static ScopedJavaLocalRef<jobjectArray> JNI_LanguageBridge_GetULPFromPreference(
+static std::vector<std::string> JNI_LanguageBridge_GetULPFromPreference(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_profile) {
-  return ToJavaArrayOfStrings(
-      env,
-      language::LanguagePrefs(GetPrefService(j_profile)).GetULPLanguages());
+    Profile* profile) {
+  return language::LanguagePrefs(profile->GetPrefs()).GetULPLanguages();
 }
