@@ -210,9 +210,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kCCTMinimizedEnabledByDefault,
     &kCCTNavigationalPrefetch,
     &kCCTNestedSecurityIcon,
-    &kCCTPageInsightsHub,
-    &kCCTPageInsightsHubPeek,
-    &kCCTPageInsightsHubBetterScroll,
     &kCCTGoogleBottomBar,
     &kCCTGoogleBottomBarVariantLayouts,
     &kCCTPrewarmTab,
@@ -568,18 +565,6 @@ BASE_FEATURE(kCCTNavigationalPrefetch,
 
 BASE_FEATURE(kCCTNestedSecurityIcon,
              "CCTNestedSecurityIcon",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kCCTPageInsightsHub,
-             "CCTPageInsightsHub",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kCCTPageInsightsHubPeek,
-             "CCTPageInsightsHubPeek",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kCCTPageInsightsHubBetterScroll,
-             "CCTPageInsightsHubBetterScroll",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCCTGoogleBottomBar,

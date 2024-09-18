@@ -4403,19 +4403,6 @@ const char kCCTNestedSecurityIconDescription[] =
     "When enabled, the CCT toolbar security icon will be nested under the "
     "title.";
 
-const char kCCTPageInsightsHubName[] = "Page Insights Hub";
-const char kCCTPageInsightsHubDescription[] =
-    "Show Page Insights Hub on Chrome Custom Tabs.";
-
-const char kCCTPageInsightsHubPeekName[] = "Page Insights Hub Peek";
-const char kCCTPageInsightsHubPeekDescription[] =
-    "Enable peek for Page Insights Hub on Chrome Custom Tabs.";
-
-const char kCCTPageInsightsHubBetterScrollName[] =
-    "Page Insights Hub Scroll improvement";
-const char kCCTPageInsightsHubBetterScrollDescription[] =
-    "Resize Web content in sync with Page Insights sheet.";
-
 const char kCCTGoogleBottomBarName[] = "Google Bottom Bar";
 const char kCCTGoogleBottomBarDescription[] =
     "Show bottom bar on Custom Tabs opened by the Android Google App.";
