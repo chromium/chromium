@@ -27,7 +27,6 @@
 #include "base/containers/dynamic_extent.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/types/to_address.h"
-#include "third_party/abseil-cpp/absl/base/attributes.h"
 
 namespace base {
 
@@ -1521,8 +1520,7 @@ constexpr auto make_span(Container&& container) noexcept {
 // non-std helper that is inspired by the `std::slice::from_ref()` function from
 // Rust.
 template <typename T>
-constexpr span<T, 1u> span_from_ref(
-    T& single_object ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept {
+constexpr span<T, 1u> span_from_ref(T& single_object LIFETIME_BOUND) noexcept {
   // SAFETY: Given a valid reference to `single_object` the span of size 1 will
   // be a valid span that points to the `single_object`.
   return UNSAFE_BUFFERS(span<T, 1u>(std::addressof(single_object), 1u));
@@ -1536,12 +1534,12 @@ constexpr span<T, 1u> span_from_ref(
 // references are turned into a `span<T, sizeof(T)>`.
 template <typename T>
 constexpr span<const uint8_t, sizeof(T)> byte_span_from_ref(
-    const T& single_object ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept {
+    const T& single_object LIFETIME_BOUND) noexcept {
   return as_bytes(span_from_ref(single_object));
 }
 template <typename T>
 constexpr span<uint8_t, sizeof(T)> byte_span_from_ref(
-    T& single_object ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept {
+    T& single_object LIFETIME_BOUND) noexcept {
   return as_writable_bytes(span_from_ref(single_object));
 }
 
@@ -1559,7 +1557,7 @@ constexpr span<uint8_t, sizeof(T)> byte_span_from_ref(
 // always preserved.
 template <class CharT, size_t N>
 constexpr span<const CharT, N - 1> span_from_cstring(
-    const CharT (&lit ABSL_ATTRIBUTE_LIFETIME_BOUND)[N])
+    const CharT (&lit LIFETIME_BOUND)[N])
     ENABLE_IF_ATTR(lit[N - 1u] == CharT{0},
                    "requires string literal as input") {
   return span(lit).template first<N - 1>();
@@ -1582,7 +1580,7 @@ constexpr span<const CharT, N - 1> span_from_cstring(
 // always preserved.
 template <class CharT, size_t N>
 constexpr span<const CharT, N> span_with_nul_from_cstring(
-    const CharT (&lit ABSL_ATTRIBUTE_LIFETIME_BOUND)[N])
+    const CharT (&lit LIFETIME_BOUND)[N])
     ENABLE_IF_ATTR(lit[N - 1u] == CharT{0},
                    "requires string literal as input") {
   return span(lit);
@@ -1602,7 +1600,7 @@ constexpr span<const CharT, N> span_with_nul_from_cstring(
 // always preserved.
 template <size_t N>
 constexpr span<const uint8_t, N - 1> byte_span_from_cstring(
-    const char (&lit ABSL_ATTRIBUTE_LIFETIME_BOUND)[N])
+    const char (&lit LIFETIME_BOUND)[N])
     ENABLE_IF_ATTR(lit[N - 1u] == '\0', "requires string literal as input") {
   return as_bytes(span(lit).template first<N - 1>());
 }
@@ -1624,7 +1622,7 @@ constexpr span<const uint8_t, N - 1> byte_span_from_cstring(
 // always preserved.
 template <size_t N>
 constexpr span<const uint8_t, N> byte_span_with_nul_from_cstring(
-    const char (&lit ABSL_ATTRIBUTE_LIFETIME_BOUND)[N])
+    const char (&lit LIFETIME_BOUND)[N])
     ENABLE_IF_ATTR(lit[N - 1u] == '\0', "requires string literal as input") {
   return as_bytes(span(lit));
 }
@@ -1642,7 +1640,7 @@ constexpr auto as_byte_span(const Spannable& arg) {
 
 template <int&... ExplicitArgumentBarrier, typename T, size_t N>
 constexpr span<const uint8_t, N * sizeof(T)> as_byte_span(
-    const T (&arr ABSL_ATTRIBUTE_LIFETIME_BOUND)[N]) {
+    const T (&arr LIFETIME_BOUND)[N]) {
   return as_bytes(make_span(arr));
 }
 
@@ -1664,13 +1662,13 @@ constexpr auto as_writable_byte_span(Spannable&& arg) {
 // the span type signature span<uint8_t, N>.
 template <int&... ExplicitArgumentBarrier, typename T, size_t N>
 constexpr span<uint8_t, N * sizeof(T)> as_writable_byte_span(
-    T (&arr ABSL_ATTRIBUTE_LIFETIME_BOUND)[N]) {
+    T (&arr LIFETIME_BOUND)[N]) {
   return as_writable_bytes(make_span(arr));
 }
 
 template <int&... ExplicitArgumentBarrier, typename T, size_t N>
 constexpr span<uint8_t, N * sizeof(T)> as_writable_byte_span(
-    T (&&arr ABSL_ATTRIBUTE_LIFETIME_BOUND)[N]) {
+    T (&&arr LIFETIME_BOUND)[N]) {
   return as_writable_bytes(make_span(arr));
 }
 

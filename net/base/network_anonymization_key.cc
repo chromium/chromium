@@ -25,7 +25,7 @@ bool g_partition_by_default = false;
 
 // True if NAK::IsPartitioningEnabled has been called, and the value of
 // `g_partition_by_default` cannot be changed.
-ABSL_CONST_INIT std::atomic<bool> g_partition_by_default_locked = false;
+constinit std::atomic<bool> g_partition_by_default_locked = false;
 
 }  // namespace
 

@@ -40,7 +40,6 @@
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/quota_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/base/attributes.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "base/test/test_reg_util_win.h"
@@ -49,8 +48,7 @@
 namespace {
 
 class TestIncidentReportingService;
-ABSL_CONST_INIT thread_local TestIncidentReportingService* test_instance =
-    nullptr;
+constinit thread_local TestIncidentReportingService* test_instance = nullptr;
 
 constexpr char kFakeOsName[] = "fakedows";
 constexpr char kFakeDownloadToken[] = "fakedlt";

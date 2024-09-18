@@ -6,7 +6,6 @@
 
 #include "base/check.h"
 #include "base/notreached.h"
-#include "third_party/abseil-cpp/absl/base/attributes.h"
 #include "ui/gfx/swap_result.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_surface_format.h"
@@ -15,7 +14,7 @@ namespace gl {
 
 namespace {
 
-ABSL_CONST_INIT thread_local GLSurface* current_surface = nullptr;
+constinit thread_local GLSurface* current_surface = nullptr;
 
 }  // namespace
 

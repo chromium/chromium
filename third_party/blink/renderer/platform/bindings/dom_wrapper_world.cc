@@ -35,7 +35,6 @@
 #include <utility>
 
 #include "base/notreached.h"
-#include "third_party/abseil-cpp/absl/base/attributes.h"
 #include "third_party/blink/public/platform/web_isolated_world_info.h"
 #include "third_party/blink/renderer/platform/bindings/dom_data_store.h"
 #include "third_party/blink/renderer/platform/bindings/v8_object_data_store.h"
@@ -253,7 +252,7 @@ void DOMWrapperWorld::SetNonMainWorldHumanReadableName(
   IsolatedWorldHumanReadableNames().Set(world_id, human_readable_name);
 }
 
-ABSL_CONST_INIT thread_local int next_world_id =
+constinit thread_local int next_world_id =
     DOMWrapperWorld::kUnspecifiedWorldIdStart;
 
 // static

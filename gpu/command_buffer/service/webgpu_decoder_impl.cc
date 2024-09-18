@@ -61,7 +61,6 @@
 #include "gpu/config/gpu_preferences.h"
 #include "gpu/config/webgpu_blocklist.h"
 #include "gpu/webgpu/callback.h"
-#include "third_party/abseil-cpp/absl/base/attributes.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/gpu/ganesh/GrBackendSemaphore.h"
@@ -1005,7 +1004,7 @@ constexpr WebGPUDecoderImpl::CommandInfo WebGPUDecoderImpl::command_info[] = {
 
 // This variable is set to DawnWireServer's parent decoder during execution of
 // HandleCommands. It is cleared to nullptr after.
-ABSL_CONST_INIT thread_local WebGPUDecoderImpl* parent_decoder = nullptr;
+constinit thread_local WebGPUDecoderImpl* parent_decoder = nullptr;
 
 // DawnWireServer is a wrapper around dawn::wire::WireServer which allows
 // overriding some of the WGPU procs the server delegates calls to.

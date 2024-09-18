@@ -10,8 +10,8 @@
 #include <type_traits>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
-#include "third_party/abseil-cpp/absl/base/attributes.h"
 
 namespace base {
 
@@ -100,13 +100,12 @@ class optional_ref {
   template <typename U>
     requires(std::is_const_v<T> && IsCompatibleV<U>)
   // NOLINTNEXTLINE(google-explicit-constructor)
-  constexpr optional_ref(
-      const std::optional<U>& o ABSL_ATTRIBUTE_LIFETIME_BOUND)
+  constexpr optional_ref(const std::optional<U>& o LIFETIME_BOUND)
       : ptr_(o ? &*o : nullptr) {}
   template <typename U>
     requires(IsCompatibleV<U>)
   // NOLINTNEXTLINE(google-explicit-constructor)
-  constexpr optional_ref(std::optional<U>& o ABSL_ATTRIBUTE_LIFETIME_BOUND)
+  constexpr optional_ref(std::optional<U>& o LIFETIME_BOUND)
       : ptr_(o ? &*o : nullptr) {}
 
   // Constructs an `optional_ref` from a pointer; the resulting `optional_ref`
@@ -118,7 +117,7 @@ class optional_ref {
   template <typename U>
     requires(IsCompatibleV<U>)
   // NOLINTNEXTLINE(google-explicit-constructor)
-  constexpr optional_ref(U* p ABSL_ATTRIBUTE_LIFETIME_BOUND) : ptr_(p) {}
+  constexpr optional_ref(U* p LIFETIME_BOUND) : ptr_(p) {}
 
   // Constructs an `optional_ref` from a reference; the resulting `optional_ref`
   // is never empty.
@@ -129,13 +128,11 @@ class optional_ref {
   template <typename U>
     requires(IsCompatibleV<const U>)
   // NOLINTNEXTLINE(google-explicit-constructor)
-  constexpr optional_ref(const U& r ABSL_ATTRIBUTE_LIFETIME_BOUND)
-      : ptr_(std::addressof(r)) {}
+  constexpr optional_ref(const U& r LIFETIME_BOUND) : ptr_(std::addressof(r)) {}
   template <typename U>
     requires(IsCompatibleV<U>)
   // NOLINTNEXTLINE(google-explicit-constructor)
-  constexpr optional_ref(U& r ABSL_ATTRIBUTE_LIFETIME_BOUND)
-      : ptr_(std::addressof(r)) {}
+  constexpr optional_ref(U& r LIFETIME_BOUND) : ptr_(std::addressof(r)) {}
 
   // An empty `optional_ref` must be constructed with `std::nullopt`, not
   // `nullptr`. Otherwise, `optional_ref<T*>` constructed with `nullptr` would

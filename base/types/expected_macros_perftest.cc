@@ -14,9 +14,9 @@
 #include <string>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/types/expected.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/base/attributes.h"
 #include "third_party/google_benchmark/src/include/benchmark/benchmark.h"
 
 namespace base {
@@ -32,7 +32,7 @@ class ReturnLoop {
       : value_(std::move(return_value)) {}
   virtual ~ReturnLoop() = default;
 
-  ABSL_ATTRIBUTE_NO_TAIL_CALL ReturnType Loop(size_t* ops) {
+  DISABLE_TAIL_CALLS ReturnType Loop(size_t* ops) {
     if (!*ops) {
       return value_;
     }

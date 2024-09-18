@@ -155,8 +155,7 @@ inline char* CheckOpValueStr(const T& v) {
 // use with CheckOpValueStr() which allocates these strings using strdup().
 // Returns allocated string (with strdup) for passing into
 // ::logging::CheckError::(D)CheckOp methods.
-// TODO(pbos): Annotate this ABSL_ATTRIBUTE_RETURNS_NONNULL after solving
-// compile failure.
+// TODO(pbos): Annotate this RETURNS_NONNULL after solving compile failure.
 BASE_EXPORT char* CreateCheckOpLogMessageString(const char* expr_str,
                                                 char* v1_str,
                                                 char* v2_str);

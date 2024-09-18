@@ -45,7 +45,6 @@
 #include "base/time/tick_clock.h"
 #include "base/trace_event/base_tracing.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/base/attributes.h"
 
 namespace base {
 namespace sequence_manager {
@@ -57,7 +56,7 @@ BASE_FEATURE(kRecordSequenceManagerCrashKeys,
              "RecordSequenceManagerCrashKeys",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-ABSL_CONST_INIT thread_local internal::SequenceManagerImpl*
+constinit thread_local internal::SequenceManagerImpl*
     thread_local_sequence_manager = nullptr;
 
 class TracedBaseValue : public trace_event::ConvertableToTraceFormat {

@@ -107,10 +107,10 @@ bool g_perfetto_initialized_by_tracelog = false;
 
 TraceLog* g_trace_log_for_testing = nullptr;
 
-ABSL_CONST_INIT thread_local TraceLog::ThreadLocalEventBuffer*
+constinit thread_local TraceLog::ThreadLocalEventBuffer*
     thread_local_event_buffer = nullptr;
-ABSL_CONST_INIT thread_local bool thread_blocks_message_loop = false;
-ABSL_CONST_INIT thread_local bool thread_is_in_trace_event = false;
+constinit thread_local bool thread_blocks_message_loop = false;
+constinit thread_local bool thread_is_in_trace_event = false;
 
 ThreadTicks ThreadNow() {
   return ThreadTicks::IsSupported()

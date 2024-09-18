@@ -11,7 +11,6 @@
 #include "components/web_package/signed_web_bundles/signature_entry_parser.h"
 #include "components/web_package/signed_web_bundles/types.h"
 #include "components/web_package/web_bundle_parser.h"
-#include "third_party/abseil-cpp/absl/base/attributes.h"
 
 namespace web_package {
 

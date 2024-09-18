@@ -16,7 +16,6 @@
 
 #if DCHECK_IS_ON()
 #include "base/check_op.h"
-#include "third_party/abseil-cpp/absl/base/attributes.h"
 #endif
 
 namespace mojo {
@@ -26,7 +25,7 @@ namespace ports {
 #if DCHECK_IS_ON()
 namespace {
 
-ABSL_CONST_INIT thread_local const PortLocker* port_locker = nullptr;
+constinit thread_local const PortLocker* port_locker = nullptr;
 
 }  // namespace
 #endif

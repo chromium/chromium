@@ -123,7 +123,7 @@ footers.
 - Make the symbol read-only (usually by adding "const").
 - If you can't make it const, then rename it.
 - If the symbol is logically const, and you really don't want to rename it to
-  reveal that it is not actually mutable, you can annotate it with the
+  reveal that it is actually mutable, you can annotate it with the
   [LOGICALLY_CONST] macro.
 - To check what section a symbol is in for a local build:
   ```sh

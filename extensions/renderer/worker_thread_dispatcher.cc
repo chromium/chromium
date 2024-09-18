@@ -28,14 +28,13 @@
 #include "extensions/renderer/service_worker_data.h"
 #include "extensions/renderer/worker_script_context_set.h"
 #include "extensions/renderer/worker_thread_util.h"
-#include "third_party/abseil-cpp/absl/base/attributes.h"
 
 namespace extensions {
 
 namespace {
 
-ABSL_CONST_INIT thread_local extensions::ServiceWorkerData*
-    service_worker_data = nullptr;
+constinit thread_local extensions::ServiceWorkerData* service_worker_data =
+    nullptr;
 
 ServiceWorkerData* GetServiceWorkerDataChecked() {
   ServiceWorkerData* data = WorkerThreadDispatcher::GetServiceWorkerData();

@@ -12,14 +12,12 @@
 #include "base/functional/bind.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/command_buffer/service/scheduler.h"
-#include "third_party/abseil-cpp/absl/base/attributes.h"
 
 namespace gpu {
 
 namespace {
 
-ABSL_CONST_INIT thread_local const SchedulerTaskRunner* current_task_runner =
-    nullptr;
+constinit thread_local const SchedulerTaskRunner* current_task_runner = nullptr;
 
 }  // namespace
 

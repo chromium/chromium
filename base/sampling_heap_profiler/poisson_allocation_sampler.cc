@@ -17,7 +17,6 @@
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/base/attributes.h"
 
 namespace base {
 
@@ -33,12 +32,10 @@ const intptr_t kAccumulatedBytesOffset = 1 << 29;
 bool g_deterministic = false;
 
 // Pointer to the current |LockFreeAddressHashSet|.
-ABSL_CONST_INIT std::atomic<LockFreeAddressHashSet*> g_sampled_addresses_set{
-    nullptr};
+constinit std::atomic<LockFreeAddressHashSet*> g_sampled_addresses_set{nullptr};
 
 // Sampling interval parameter, the mean value for intervals between samples.
-ABSL_CONST_INIT std::atomic_size_t g_sampling_interval{
-    kDefaultSamplingIntervalBytes};
+constinit std::atomic_size_t g_sampling_interval{kDefaultSamplingIntervalBytes};
 
 struct ThreadLocalData {
   // Accumulated bytes towards sample.
@@ -180,7 +177,7 @@ PoissonAllocationSampler::ScopedMuteHookedSamplesForTesting::operator=(
     ScopedMuteHookedSamplesForTesting&&) = default;
 
 // static
-ABSL_CONST_INIT std::atomic<PoissonAllocationSampler::ProfilingStateFlagMask>
+constinit std::atomic<PoissonAllocationSampler::ProfilingStateFlagMask>
     PoissonAllocationSampler::profiling_state_{0};
 
 PoissonAllocationSampler::PoissonAllocationSampler() {

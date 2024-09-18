@@ -51,7 +51,6 @@
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
 #include "net/log/net_log_source.h"
-#include "third_party/abseil-cpp/absl/base/attributes.h"
 
 namespace {
 
@@ -120,8 +119,8 @@ void HandleRequestOnIOThread(
                               send_response_func)));
 }
 
-ABSL_CONST_INIT thread_local HttpServer* server_ipv4 = nullptr;
-ABSL_CONST_INIT thread_local HttpServer* server_ipv6 = nullptr;
+constinit thread_local HttpServer* server_ipv4 = nullptr;
+constinit thread_local HttpServer* server_ipv6 = nullptr;
 
 void StopServerOnIOThread() {
   delete server_ipv4;

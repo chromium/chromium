@@ -25,18 +25,17 @@
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/base/attributes.h"
 
 namespace base {
 namespace internal {
 
 namespace {
 
-ABSL_CONST_INIT thread_local BlockingObserver* blocking_observer = nullptr;
+constinit thread_local BlockingObserver* blocking_observer = nullptr;
 
 // Last ScopedBlockingCall instantiated on this thread.
-ABSL_CONST_INIT thread_local UncheckedScopedBlockingCall*
-    last_scoped_blocking_call = nullptr;
+constinit thread_local UncheckedScopedBlockingCall* last_scoped_blocking_call =
+    nullptr;
 
 // These functions can be removed, and the calls below replaced with direct
 // variable accesses, once the MSAN workaround is not necessary.

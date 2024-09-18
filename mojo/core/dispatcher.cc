@@ -12,14 +12,13 @@
 #include "mojo/core/platform_handle_dispatcher.h"
 #include "mojo/core/ports/event.h"
 #include "mojo/core/shared_buffer_dispatcher.h"
-#include "third_party/abseil-cpp/absl/base/attributes.h"
 
 namespace mojo {
 namespace core {
 
 namespace {
 
-ABSL_CONST_INIT thread_local bool is_extracting_handles_from_message = false;
+constinit thread_local bool is_extracting_handles_from_message = false;
 
 }  // namespace
 

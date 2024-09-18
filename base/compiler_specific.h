@@ -725,6 +725,155 @@ inline constexpr bool AnalyzerAssumeTrue(bool arg) {
 #define LIFETIME_BOUND
 #endif
 
+// Annotates a function or variable to indicate that it should have weak
+// linkage. Useful for library code that wants code linking against it to be
+// able to override its functionality; inside a single target, this is better
+// accomplished via virtual methods and other more standard mechanisms.
+//
+// Any weak definition of a symbol will be overridden at link time by a non-weak
+// definition. Marking a `const` or `constexpr` variable weak makes it no longer
+// be considered a compile-time constant, since its value may be different after
+// linking.
+//
+// Multiple weak definitions of a symbol may exist, in which case the linker is
+// free to select any when there are no non-weak definitions. Like with symbols
+// marked `inline`, this can lead to subtle, difficult-to-diagnose bugs if not
+// all definitions are identical.
+//
+// A weak declaration that has no definitions at link time will be linked as if
+// the corresponding address is null. Therefore library code can use weak
+// declarations and conditionals to allow consumers to provide optional
+// customizations.
+//
+// See also:
+//   https://clang.llvm.org/docs/AttributeReference.html#weak
+//
+// Usage:
+// ```
+//   // The following definition defaults `x` to 10, but allows other object
+//   // files to override its value. Thus, despite `constexpr`, `x` is not
+//   // considered a compile-time constant (and cannot be used in a `constexpr`
+//   // context).
+//   extern const int x;
+//   WEAK_SYMBOL constexpr int x = 10;
+//
+//   // The following declaration allows linking to occur whether a definition
+//   // of `Func()` is provided or not; if none is present, `&Func` will
+//   // evaluate to `nullptr` at runtime.
+//   WEAK_SYMBOL void Func();
+//
+//   // The following definition provides a default implementation of `Func2()`,
+//   // but allows other object files to override.
+//   WEAK_SYMBOL void Func2() { ... }
+// ```
+#if __has_cpp_attribute(gnu::weak)
+#define WEAK_SYMBOL [[gnu::weak]]
+#else
+#define WEAK_SYMBOL
+#endif
+
+// Annotates a function indicating that the compiler should not convert calls
+// within it to tail calls.
+//
+// For a callee-side version of this, see `NOT_TAIL_CALLED`.
+//
+// See also:
+//   https://clang.llvm.org/docs/AttributeReference.html#disable-tail-calls
+// Usage:
+// ```
+//   DISABLE_TAIL_CALLS void Func() {
+//     // Function calls in this body will not be tail calls.
+//   }
+// ```
+#if __has_cpp_attribute(clang::disable_tail_calls)
+#define DISABLE_TAIL_CALLS [[clang::disable_tail_calls]]
+#else
+#define DISABLE_TAIL_CALLS
+#endif
+
+// Annotates a type or member indicating the minimum possible alignment (one bit
+// for bitfields, one byte otherwise) should be used. This can be used to
+// eliminate padding inside objects, at the cost of potentially pessimizing
+// code, or even generating invalid code (depending on platform restrictions) if
+// underaligned objects have their addresses taken and passed elsewhere.
+//
+// This is similar to the more-broadly-supported `#pragma pack(1)`.
+//
+// See also:
+//   https://gcc.gnu.org/onlinedocs/gcc/Common-Variable-Attributes.html#index-packed-variable-attribute
+//
+// Usage:
+// ```
+//   struct PACKED_OBJ S1 {
+//     int8_t a;   // Alignment 1, offset 0, size 1
+//     int32_t b;  // Alignment 1, offset 1 (0 bytes padding), size 4
+//   };  // Overall alignment 1, 0 bytes trailing padding, overall size 5
+//
+//   struct S2 {
+//     int8_t a;              // Alignment 1, offset 0, size 1
+//     int32_t b;             // Alignment 4, offset 4 (3 bytes padding), size 4
+//     int8_t c;              // Alignment 1, offset 8 (0 bytes padding), size 1
+//     PACKED_OBJ int32_t d;  // Alignment 1, offset 9 (0 bytes padding), size 4
+//   };  // Overall alignment 4, 3 bytes trailing padding, overall size 16
+// ```
+#if __has_cpp_attribute(gnu::packed)
+#define PACKED_OBJ [[gnu::packed]]
+#else
+#define PACKED_OBJ
+#endif
+
+// Annotates a function indicating that the returned pointer will never be null.
+// This may allow the compiler to assume null checks on the caller side are
+// unnecessary.
+//
+// In practice, this is usually better-handled by returning a value or
+// reference, which enforce such guarantees at the type level.
+//
+// See also:
+//   https://gcc.gnu.org/onlinedocs/gcc/Common-Function-Attributes.html#index-returns_005fnonnull-function-attribute
+//   https://clang.llvm.org/docs/AttributeReference.html#nullability-attributes
+//
+// Usage:
+// ```
+//   // The following function will never return `nullptr`.
+//   RETURNS_NONNULL int* Func();
+// ```
+#if __has_cpp_attribute(gnu::returns_nonnull)
+#define RETURNS_NONNULL [[gnu::returns_nonnull]]
+#else
+#define RETURNS_NONNULL
+#endif
+
+// Annotates a function indicating it is const, meaning that it has no
+// observable side effects and its return value depends only on its arguments.
+// Const functions may not read external memory other than unchanging objects
+// (e.g. non-volatile constants), and the compiler is free to replace calls to
+// them with the return values of earlier calls with the same arguments no
+// matter what other state might have changed in the meantime.
+//
+// This is a much stronger restriction than `const`-qualified functions, and is
+// rarely appropriate outside small local helpers, which are frequently
+// inlineable anyway and would not really benefit.
+//
+// WARNING: Misusing this attribute can lead to silent miscompilation, UB, and
+// difficult-to-diagnose bugs. For this and the above reason, usage should be
+// very rare.
+//
+// See also:
+//   https://gcc.gnu.org/onlinedocs/gcc/Common-Function-Attributes.html#index-const-function-attribute
+//
+// Usage:
+// ```
+//   // The compiler may replace calls to this function with values returned
+//   // from earlier calls, assuming the args match.
+//   CONST_FUNCTION int Func(int);
+// ```
+#if __has_cpp_attribute(gnu::const)
+#define CONST_FUNCTION [[gnu::const]]
+#else
+#define CONST_FUNCTION
+#endif
+
 // Annotates a function indicating it is pure, meaning that it has no observable
 // side effects. Unlike functions annotated `CONST_FUNCTION`, pure functions may
 // still read external memory, and thus their return values may change between

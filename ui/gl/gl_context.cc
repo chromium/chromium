@@ -16,7 +16,6 @@
 #include "base/strings/string_util.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/base/attributes.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_fence.h"
 #include "ui/gl/gl_gl_api_implementation.h"
@@ -47,8 +46,8 @@ enum class MaximumGLESVersion {
 };
 #endif
 
-ABSL_CONST_INIT thread_local GLContext* current_context = nullptr;
-ABSL_CONST_INIT thread_local GLContext* current_real_context = nullptr;
+constinit thread_local GLContext* current_context = nullptr;
+constinit thread_local GLContext* current_real_context = nullptr;
 
 }  // namespace
 

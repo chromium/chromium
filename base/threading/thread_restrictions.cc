@@ -8,7 +8,6 @@
 #include "base/threading/hang_watcher.h"
 #include "base/trace_event/base_tracing.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/base/attributes.h"
 
 namespace base {
 
@@ -39,11 +38,11 @@ std::ostream& operator<<(std::ostream& out,
 
 namespace {
 
-ABSL_CONST_INIT thread_local BooleanWithOptionalStack tls_blocking_disallowed;
-ABSL_CONST_INIT thread_local BooleanWithOptionalStack tls_singleton_disallowed;
-ABSL_CONST_INIT thread_local BooleanWithOptionalStack
+constinit thread_local BooleanWithOptionalStack tls_blocking_disallowed;
+constinit thread_local BooleanWithOptionalStack tls_singleton_disallowed;
+constinit thread_local BooleanWithOptionalStack
     tls_base_sync_primitives_disallowed;
-ABSL_CONST_INIT thread_local BooleanWithOptionalStack
+constinit thread_local BooleanWithOptionalStack
     tls_cpu_intensive_work_disallowed;
 
 }  // namespace

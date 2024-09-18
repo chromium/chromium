@@ -27,7 +27,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/sync/base/pref_names.h"
 #include "components/version_info/android/channel_getter.h"
-#include "third_party/abseil-cpp/absl/base/attributes.h"
 
 using password_manager::prefs::kCurrentMigrationVersionToGoogleMobileServices;
 using password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores;

@@ -10,7 +10,6 @@
 #include "base/threading/platform_thread.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/interface_endpoint_client.h"
-#include "third_party/abseil-cpp/absl/base/attributes.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/scheduler/public/main_thread.h"
@@ -31,7 +30,7 @@ namespace blink {
 
 namespace {
 
-ABSL_CONST_INIT thread_local Thread* current_thread = nullptr;
+constinit thread_local Thread* current_thread = nullptr;
 
 std::unique_ptr<MainThread>& GetMainThread() {
   DEFINE_STATIC_LOCAL(std::unique_ptr<MainThread>, main_thread, ());

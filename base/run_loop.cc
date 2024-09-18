@@ -13,14 +13,13 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/base_tracing.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/base/attributes.h"
 
 namespace base {
 
 namespace {
 
-ABSL_CONST_INIT thread_local RunLoop::Delegate* delegate = nullptr;
-ABSL_CONST_INIT thread_local const RunLoop::RunLoopTimeout* run_loop_timeout =
+constinit thread_local RunLoop::Delegate* delegate = nullptr;
+constinit thread_local const RunLoop::RunLoopTimeout* run_loop_timeout =
     nullptr;
 
 // Runs |closure| immediately if this is called on |task_runner|, otherwise

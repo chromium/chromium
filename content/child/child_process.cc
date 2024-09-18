@@ -21,7 +21,6 @@
 #include "mojo/public/cpp/bindings/interface_endpoint_client.h"
 #include "sandbox/policy/sandbox_type.h"
 #include "services/tracing/public/cpp/trace_startup.h"
-#include "third_party/abseil-cpp/absl/base/attributes.h"
 #include "third_party/blink/public/common/features.h"
 
 #if BUILDFLAG(CLANG_PROFILING_INSIDE_SANDBOX)
@@ -40,7 +39,7 @@ namespace content {
 
 namespace {
 
-ABSL_CONST_INIT thread_local ChildProcess* child_process = nullptr;
+constinit thread_local ChildProcess* child_process = nullptr;
 
 class ChildIOThread : public base::Thread {
  public:

@@ -24,6 +24,7 @@ include_rules = [
   # Please keep this section in sync with //DEPS.
   '+third_party/abseil-cpp',
   '-third_party/abseil-cpp/absl/algorithm/container.h',
+  '-third_party/abseil-cpp/absl/base/attributes.h',
   '-third_party/abseil-cpp/absl/base/nullability.h',
   '-third_party/abseil-cpp/absl/container',
   '+third_party/abseil-cpp/absl/container/inlined_vector.h',

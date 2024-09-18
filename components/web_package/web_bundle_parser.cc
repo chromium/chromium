@@ -9,6 +9,7 @@
 #include <string_view>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -203,7 +204,7 @@ class WebBundleParser::MetadataParser
     : public WebBundleParser::WebBundleSectionParser {
  public:
   MetadataParser(mojo::Remote<mojom::BundleDataSource>& data_source
-                     ABSL_ATTRIBUTE_LIFETIME_BOUND,
+                     LIFETIME_BOUND,
                  GURL base_url,
                  std::optional<uint64_t> offset,
                  ParseMetadataCallback callback)
@@ -720,7 +721,7 @@ class WebBundleParser::ResponseParser
     : public WebBundleParser::WebBundleSectionParser {
  public:
   ResponseParser(mojo::Remote<mojom::BundleDataSource>& data_source
-                     ABSL_ATTRIBUTE_LIFETIME_BOUND,
+                     LIFETIME_BOUND,
                  uint64_t response_offset,
                  uint64_t response_length,
                  WebBundleParser::ParseResponseCallback callback)

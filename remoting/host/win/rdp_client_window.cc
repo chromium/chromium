@@ -15,7 +15,6 @@
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/scoped_bstr.h"
-#include "third_party/abseil-cpp/absl/base/attributes.h"
 
 namespace remoting {
 
@@ -58,7 +57,7 @@ enum RdpAudioMode {
 };
 
 // Points to a per-thread instance of the window activation hook handle.
-ABSL_CONST_INIT thread_local RdpClientWindow::WindowHook* window_hook = nullptr;
+constinit thread_local RdpClientWindow::WindowHook* window_hook = nullptr;
 
 // Finds a child window with the class name matching |class_name|. Unlike
 // FindWindowEx() this function walks the tree of windows recursively. The walk

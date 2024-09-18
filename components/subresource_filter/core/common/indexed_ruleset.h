@@ -20,7 +20,6 @@
 #include "components/subresource_filter/core/common/flat/indexed_ruleset_generated.h"
 #include "components/subresource_filter/core/common/load_policy.h"
 #include "components/url_pattern_index/url_pattern_index.h"
-#include "third_party/abseil-cpp/absl/base/attributes.h"
 #include "third_party/flatbuffers/src/include/flatbuffers/flatbuffers.h"
 
 class GURL;
@@ -86,7 +85,7 @@ class RulesetIndexer {
 
   // Returns a pointer to the buffer containing the serialized flat data
   // structures. Should only be called after Finish().
-  base::span<const uint8_t> data() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  base::span<const uint8_t> data() const LIFETIME_BOUND {
     return base::span(builder_.GetBufferPointer(), builder_.GetSize());
   }
 
