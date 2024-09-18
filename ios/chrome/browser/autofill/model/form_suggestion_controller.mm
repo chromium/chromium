@@ -421,14 +421,15 @@ UIImage* defaultIconForType(autofill::SuggestionType type) {
       CHECK(!suggestion.metadata.is_single_username_form);
 
       FormSuggestion* suggestionCopy = [FormSuggestion
-                 suggestionWithValue:suggestion.value
-                          minorValue:suggestion.minorValue
-                  displayDescription:suggestion.displayDescription
-                                icon:defaultIcon
-                                type:suggestion.type
-                   backendIdentifier:suggestion.backendIdentifier
-                      requiresReauth:suggestion.requiresReauth
-          acceptanceA11yAnnouncement:suggestion.acceptanceA11yAnnouncement];
+                  suggestionWithValue:suggestion.value
+                           minorValue:suggestion.minorValue
+                   displayDescription:suggestion.displayDescription
+                                 icon:defaultIcon
+                                 type:suggestion.type
+                    backendIdentifier:suggestion.backendIdentifier
+          fieldByFieldFillingTypeUsed:suggestion.fieldByFieldFillingTypeUsed
+                       requiresReauth:suggestion.requiresReauth
+           acceptanceA11yAnnouncement:suggestion.acceptanceA11yAnnouncement];
       // TODO(crbug.com/353663764): Include `featureForIPH` in the
       // `FormSuggestion` constructor.
       suggestionCopy.featureForIPH = suggestion.featureForIPH;

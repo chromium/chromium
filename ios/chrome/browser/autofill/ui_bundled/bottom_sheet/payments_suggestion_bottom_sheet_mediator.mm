@@ -271,25 +271,26 @@ base::TimeDelta kSelectSuggestionDelay = base::Milliseconds(500);
   // Create a form suggestion containing the selected credit card's backend id
   // so that the suggestion provider can properly fill the form.
   FormSuggestion* suggestion = [FormSuggestion
-             suggestionWithValue:nil
-                      minorValue:nil
-              displayDescription:nil
-                            icon:nil
-                            type:((base::FeatureList::IsEnabled(
-                                       autofill::features::
-                                           kAutofillEnableVirtualCards) &&
-                                   ([creditCardData recordType] ==
-                                    autofill::CreditCard::RecordType::
-                                        kVirtualCard))
-                                      ? autofill::SuggestionType::
-                                            kVirtualCreditCardEntry
-                                      : autofill::SuggestionType::
-                                            kCreditCardEntry)
-               backendIdentifier:[creditCardData backendIdentifier]
-                  requiresReauth:NO
-      acceptanceA11yAnnouncement:
-          base::SysUTF16ToNSString(l10n_util::GetStringUTF16(
-              IDS_AUTOFILL_A11Y_ANNOUNCE_FILLED_FORM))];
+              suggestionWithValue:nil
+                       minorValue:nil
+               displayDescription:nil
+                             icon:nil
+                             type:((base::FeatureList::IsEnabled(
+                                        autofill::features::
+                                            kAutofillEnableVirtualCards) &&
+                                    ([creditCardData recordType] ==
+                                     autofill::CreditCard::RecordType::
+                                         kVirtualCard))
+                                       ? autofill::SuggestionType::
+                                             kVirtualCreditCardEntry
+                                       : autofill::SuggestionType::
+                                             kCreditCardEntry)
+                backendIdentifier:[creditCardData backendIdentifier]
+      fieldByFieldFillingTypeUsed:autofill::EMPTY_TYPE
+                   requiresReauth:NO
+       acceptanceA11yAnnouncement:
+           base::SysUTF16ToNSString(l10n_util::GetStringUTF16(
+               IDS_AUTOFILL_A11Y_ANNOUNCE_FILLED_FORM))];
 
   [provider didSelectSuggestion:suggestion atIndex:index params:_params];
 }

@@ -7,14 +7,15 @@
 @implementation FormSuggestion
 
 - (instancetype)initWithValue:(NSString*)value
-                    minorValue:(NSString*)minorValue
-            displayDescription:(NSString*)displayDescription
-                          icon:(UIImage*)icon
-                          type:(autofill::SuggestionType)type
-             backendIdentifier:(NSString*)backendIdentifier
-                requiresReauth:(BOOL)requiresReauth
-    acceptanceA11yAnnouncement:(NSString*)acceptanceA11yAnnouncement
-                      metadata:(FormSuggestionMetadata)metadata {
+                     minorValue:(NSString*)minorValue
+             displayDescription:(NSString*)displayDescription
+                           icon:(UIImage*)icon
+                           type:(autofill::SuggestionType)type
+              backendIdentifier:(NSString*)backendIdentifier
+    fieldByFieldFillingTypeUsed:(autofill::FieldType)fieldByFieldFillingTypeUsed
+                 requiresReauth:(BOOL)requiresReauth
+     acceptanceA11yAnnouncement:(NSString*)acceptanceA11yAnnouncement
+                       metadata:(FormSuggestionMetadata)metadata {
   self = [super init];
   if (self) {
     _value = [value copy];
@@ -23,6 +24,7 @@
     _icon = [icon copy];
     _type = type;
     _backendIdentifier = backendIdentifier;
+    _fieldByFieldFillingTypeUsed = fieldByFieldFillingTypeUsed;
     _requiresReauth = requiresReauth;
     _acceptanceA11yAnnouncement = [acceptanceA11yAnnouncement copy];
     _metadata = metadata;
@@ -44,6 +46,7 @@
                                           icon:icon
                                           type:type
                              backendIdentifier:backendIdentifier
+                   fieldByFieldFillingTypeUsed:autofill::FieldType::EMPTY_TYPE
                                 requiresReauth:requiresReauth
                     acceptanceA11yAnnouncement:acceptanceA11yAnnouncement
                                       metadata:metadata];
@@ -55,6 +58,8 @@
                                   icon:(UIImage*)icon
                                   type:(autofill::SuggestionType)type
                      backendIdentifier:(NSString*)backendIdentifier
+           fieldByFieldFillingTypeUsed:
+               (autofill::FieldType)fieldByFieldFillingTypeUsed
                         requiresReauth:(BOOL)requiresReauth
             acceptanceA11yAnnouncement:(NSString*)acceptanceA11yAnnouncement {
   return [[FormSuggestion alloc] initWithValue:value
@@ -63,6 +68,7 @@
                                           icon:icon
                                           type:type
                              backendIdentifier:backendIdentifier
+                   fieldByFieldFillingTypeUsed:fieldByFieldFillingTypeUsed
                                 requiresReauth:requiresReauth
                     acceptanceA11yAnnouncement:acceptanceA11yAnnouncement
                                       metadata:FormSuggestionMetadata()];
@@ -80,6 +86,7 @@
                                           icon:icon
                                           type:type
                              backendIdentifier:backendIdentifier
+                   fieldByFieldFillingTypeUsed:autofill::FieldType::EMPTY_TYPE
                                 requiresReauth:requiresReauth
                     acceptanceA11yAnnouncement:nil
                                       metadata:FormSuggestionMetadata()];

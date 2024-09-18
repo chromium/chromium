@@ -841,6 +841,7 @@ CGFloat GPayIconTopAnchorOffset() {
                                      icon:nil
                                      type:type
                         backendIdentifier:[self.card GUID]
+              fieldByFieldFillingTypeUsed:autofill::EMPTY_TYPE
                            requiresReauth:NO
                acceptanceA11yAnnouncement:
                    base::SysUTF16ToNSString(l10n_util::GetStringUTF16(
