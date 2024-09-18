@@ -89,9 +89,6 @@ struct DeviceInfo {
 // to populate the device context for requests to the Almanac API server.
 class DeviceInfoManager : public KeyedService {
  public:
-  // Prefer using DeviceInfoManagerFactory to access a shared Manager instance.
-  // TODO(b/364107415): Migrate all usage to the KeyedService.
-  explicit DeviceInfoManager(Profile* profile);
   DeviceInfoManager(const DeviceInfoManager&) = delete;
   DeviceInfoManager& operator=(const DeviceInfoManager&) = delete;
   ~DeviceInfoManager() override;
@@ -103,6 +100,11 @@ class DeviceInfoManager : public KeyedService {
   void GetDeviceInfo(base::OnceCallback<void(DeviceInfo)> callback);
 
  private:
+  friend class DeviceInfoManagerFactory;
+  friend class DeviceInfoManagerTest;
+
+  explicit DeviceInfoManager(Profile* profile);
+
   void OnLoadedVersionAndCustomLabel(DeviceInfo device_info);
   void OnModelInfo(DeviceInfo device_info,
                    base::SysInfo::HardwareInfo hardware_info);

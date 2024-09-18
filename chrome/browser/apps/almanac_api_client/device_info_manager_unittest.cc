@@ -26,7 +26,7 @@ namespace apps {
 class DeviceInfoManagerTest : public testing::Test {
  public:
   void SetUp() override {
-    device_info_manager_ = std::make_unique<DeviceInfoManager>(&profile_);
+    device_info_manager_ = base::WrapUnique(new DeviceInfoManager(profile()));
   }
 
   Profile* profile() { return &profile_; }

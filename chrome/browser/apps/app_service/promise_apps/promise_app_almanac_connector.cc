@@ -7,6 +7,7 @@
 #include "base/functional/callback.h"
 #include "chrome/browser/apps/almanac_api_client/almanac_api_util.h"
 #include "chrome/browser/apps/almanac_api_client/device_info_manager.h"
+#include "chrome/browser/apps/almanac_api_client/device_info_manager_factory.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_wrapper.h"
 #include "chrome/browser/apps/app_service/promise_apps/proto/promise_app.pb.h"
 #include "chrome/browser/profiles/profile.h"
@@ -74,8 +75,7 @@ std::optional<PromiseAppWrapper> ConvertPromiseAppResponseProto(
 }  // namespace
 
 PromiseAppAlmanacConnector::PromiseAppAlmanacConnector(Profile* profile)
-    : url_loader_factory_(profile->GetURLLoaderFactory()),
-      device_info_manager_(std::make_unique<DeviceInfoManager>(profile)) {}
+    : profile_(profile) {}
 
 PromiseAppAlmanacConnector::~PromiseAppAlmanacConnector() = default;
 
@@ -89,7 +89,9 @@ void PromiseAppAlmanacConnector::GetPromiseAppInfo(
     return;
   }
   if (locale_.empty()) {
-    device_info_manager_->GetDeviceInfo(base::BindOnce(
+    DeviceInfoManager* device_info_manager =
+        DeviceInfoManagerFactory::GetForProfile(profile_);
+    device_info_manager->GetDeviceInfo(base::BindOnce(
         &PromiseAppAlmanacConnector::SetLocale, weak_ptr_factory_.GetWeakPtr(),
         package_id, std::move(callback)));
   } else {
@@ -111,7 +113,7 @@ void PromiseAppAlmanacConnector::GetPromiseAppInfoImpl(
     const PackageId& package_id,
     GetPromiseAppCallback callback) {
   QueryAlmanacApi<proto::PromiseAppResponse>(
-      url_loader_factory_, kTrafficAnnotation,
+      profile_->GetURLLoaderFactory(), kTrafficAnnotation,
       BuildGetPromiseAppRequestBody(package_id), kPromiseAppAlmanacEndpoint,
       kMaxResponseSizeInBytes,
       /*error_histogram_name=*/std::nullopt,
