@@ -262,9 +262,12 @@ void LogSelectedSuggestionIndexMetric(SuggestionType suggestion_type,
     return;
   }
 
-  // Make sure all the subview layouts are done before computing frame offsets.
-  for (UIView* view in self.stackView.arrangedSubviews) {
-    [view layoutIfNeeded];
+  // Check if the view is in the current hierarchy before performing layouts.
+  if (self.stackView.window) {
+    // Make sure all subview layouts are done before computing frame offsets.
+    for (UIView* view in self.stackView.arrangedSubviews) {
+      [view layoutIfNeeded];
+    }
   }
 
   // This creates an animation where suggestions fly in from the right.
