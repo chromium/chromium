@@ -1451,8 +1451,7 @@ TEST_F(ServiceWorkerScopeAndRegistrationCacheTest,
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeaturesAndParameters(
       {{storage::kServiceWorkerScopeCache, {}},
-       {kServiceWorkerRegistrationCache,
-        {{kServiceWorkerRegistrationCacheSize.name, "1"}}}},
+       {kServiceWorkerRegistrationCache, {}}},
       {});
   const size_t kMaxScopeUrlCount = 2;
   storage::OverrideMaxServiceWorkerScopeUrlCountForTesting(kMaxScopeUrlCount);
@@ -1462,6 +1461,16 @@ TEST_F(ServiceWorkerScopeAndRegistrationCacheTest,
 
   // Restart to apply the above feature params.
   SimulateRestart();
+  {
+    base::LRUCache<blink::StorageKey, std::set<GURL>>
+        registration_scope_cache_for_testing(/*max_size=*/2);
+    registration_scope_cache().Swap(registration_scope_cache_for_testing);
+
+    base::LRUCache<std::tuple<GURL, blink::StorageKey>, int64_t>
+        registration_id_cache_for_testing(/*max_size=*/1);
+    registration_id_cache().Swap(registration_id_cache_for_testing);
+  }
+  EXPECT_EQ(2U, registration_scope_cache().max_size());
   EXPECT_EQ(1U, registration_id_cache().max_size());
 
   const GURL kScript("http://www.example.com/script.js");
