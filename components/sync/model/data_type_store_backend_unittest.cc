@@ -20,6 +20,7 @@
 #include "third_party/leveldatabase/src/include/leveldb/status.h"
 #include "third_party/leveldatabase/src/include/leveldb/write_batch.h"
 
+using testing::IsEmpty;
 using testing::UnorderedElementsAre;
 
 namespace syncer {
@@ -358,6 +359,47 @@ TEST_F(DataTypeStoreBackendTest,
             DataTypeStore::Record{"dt-id1", "rl_data1"},
             DataTypeStore::Record{"md-id1", "rl_metadata1"},
             DataTypeStore::Record{"GlobalMetadata", "rl_global_metadata"}));
+  }
+}
+
+TEST_F(DataTypeStoreBackendTest, PrefixesToDelete) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  // Setup: Put some data into the persisted storage.
+  {
+    scoped_refptr<DataTypeStoreBackend> backend =
+        DataTypeStoreBackend::CreateUninitialized();
+    std::optional<ModelError> error =
+        backend->Init(temp_dir.GetPath(),
+                      /*prefixes_to_update_or_delete=*/{});
+    ASSERT_FALSE(error) << error->ToString();
+
+    auto write_batch = std::make_unique<leveldb::WriteBatch>();
+    write_batch->Put("deleted-prefix-deleted-suffix", "deleted-value");
+    write_batch->Put("kept-prefix-kept-suffix", "kept-value");
+    error = backend->WriteModifications(std::move(write_batch));
+    ASSERT_FALSE(error) << error->ToString();
+  }
+
+  // Recreate the backend and trigger the migration.
+  {
+    scoped_refptr<DataTypeStoreBackend> backend =
+        DataTypeStoreBackend::CreateUninitialized();
+    std::optional<ModelError> error = backend->Init(
+        temp_dir.GetPath(),
+        /*prefixes_to_update_or_delete=*/{{"deleted-prefix-", std::nullopt}});
+    ASSERT_FALSE(error) << error->ToString();
+
+    DataTypeStore::RecordList record_list;
+    error = backend->ReadAllRecordsWithPrefix("deleted-prefix-", &record_list);
+    ASSERT_FALSE(error) << error->ToString();
+    EXPECT_THAT(record_list, IsEmpty());
+
+    error = backend->ReadAllRecordsWithPrefix("kept-prefix-", &record_list);
+    ASSERT_FALSE(error) << error->ToString();
+    EXPECT_THAT(record_list, UnorderedElementsAre(DataTypeStore::Record{
+                                 "kept-suffix", "kept-value"}));
   }
 }
 
