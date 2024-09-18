@@ -280,6 +280,9 @@ chromium-metrics-reviews@google.com.
     Latino Artists Collection
   </int>
   <int value="1395980614" label="underwater">Seascapes</int>
+  <int value="1829058549" label="rising_artists_collection">
+    Rising Artists Collection
+  </int>
 </enum>
 
 <enum name="NTPCustomizeChromeBackgroundAction">
