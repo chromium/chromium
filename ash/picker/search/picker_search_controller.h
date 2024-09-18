@@ -12,10 +12,10 @@
 #include <vector>
 
 #include "ash/ash_export.h"
+#include "ash/picker/picker_category.h"
 #include "ash/picker/search/picker_search_aggregator.h"
 #include "ash/picker/search/picker_search_request.h"
 #include "ash/picker/views/picker_view_delegate.h"
-#include "ash/public/cpp/picker/picker_category.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"

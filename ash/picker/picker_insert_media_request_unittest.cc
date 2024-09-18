@@ -13,7 +13,7 @@
 #include <vector>
 
 #include "ash/picker/picker_rich_media.h"
-#include "ash/public/cpp/picker/picker_web_paste_target.h"
+#include "ash/picker/picker_web_paste_target.h"
 #include "ash/test/ash_test_base.h"
 #include "base/base64.h"
 #include "base/check.h"

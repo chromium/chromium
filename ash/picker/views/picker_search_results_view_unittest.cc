@@ -9,6 +9,7 @@
 
 #include "ash/picker/mock_picker_asset_fetcher.h"
 #include "ash/picker/model/picker_search_results_section.h"
+#include "ash/picker/picker_search_result.h"
 #include "ash/picker/picker_test_util.h"
 #include "ash/picker/views/mock_picker_search_results_view_delegate.h"
 #include "ash/picker/views/picker_item_view.h"
@@ -22,7 +23,6 @@
 #include "ash/picker/views/picker_strings.h"
 #include "ash/picker/views/picker_submenu_controller.h"
 #include "ash/picker/views/picker_traversable_item_container.h"
-#include "ash/public/cpp/picker/picker_search_result.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/test/view_drawn_waiter.h"

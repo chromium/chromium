@@ -7,7 +7,7 @@
 #include <utility>
 #include <vector>
 
-#include "ash/public/cpp/picker/picker_search_result.h"
+#include "ash/picker/picker_search_result.h"
 #include "base/containers/span.h"
 
 namespace ash {

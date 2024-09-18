@@ -8,8 +8,8 @@
 #include <memory>
 
 #include "ash/ash_export.h"
+#include "ash/picker/picker_search_result.h"
 #include "ash/picker/views/picker_traversable_item_container.h"
-#include "ash/public/cpp/picker/picker_search_result.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"

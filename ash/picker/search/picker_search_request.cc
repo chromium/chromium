@@ -16,16 +16,16 @@
 #include <variant>
 #include <vector>
 
+#include "ash/picker/picker_category.h"
+#include "ash/picker/picker_client.h"
 #include "ash/picker/picker_clipboard_history_provider.h"
+#include "ash/picker/picker_search_result.h"
 #include "ash/picker/search/picker_action_search.h"
 #include "ash/picker/search/picker_date_search.h"
 #include "ash/picker/search/picker_editor_search.h"
 #include "ash/picker/search/picker_math_search.h"
 #include "ash/picker/search/picker_search_source.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
-#include "ash/public/cpp/picker/picker_category.h"
-#include "ash/public/cpp/picker/picker_client.h"
-#include "ash/public/cpp/picker/picker_search_result.h"
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/containers/contains.h"

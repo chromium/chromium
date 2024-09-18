@@ -9,7 +9,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/picker/picker_clipboard_history_provider.h"
-#include "ash/public/cpp/picker/picker_search_result.h"
+#include "ash/picker/picker_search_result.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 

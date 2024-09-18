@@ -5,8 +5,8 @@
 #include "chrome/browser/ui/ash/picker/picker_link_suggester.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/picker/picker_search_result.h"
 #include "ash/public/cpp/app_list/vector_icons/vector_icons.h"
-#include "ash/public/cpp/picker/picker_search_result.h"
 #include "base/barrier_callback.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"

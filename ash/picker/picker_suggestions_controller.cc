@@ -7,13 +7,13 @@
 #include "ash/constants/ash_features.h"
 #include "ash/picker/model/picker_mode_type.h"
 #include "ash/picker/model/picker_model.h"
+#include "ash/picker/picker_category.h"
+#include "ash/picker/picker_client.h"
 #include "ash/picker/picker_clipboard_history_provider.h"
+#include "ash/picker/picker_search_result.h"
 #include "ash/picker/picker_shortcuts.h"
 #include "ash/picker/search/picker_date_search.h"
 #include "ash/picker/search/picker_math_search.h"
-#include "ash/public/cpp/picker/picker_category.h"
-#include "ash/public/cpp/picker/picker_client.h"
-#include "ash/public/cpp/picker/picker_search_result.h"
 #include "base/feature_list.h"
 
 namespace ash {

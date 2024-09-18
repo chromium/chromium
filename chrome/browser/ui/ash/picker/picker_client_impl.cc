@@ -14,8 +14,8 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/picker/picker_controller.h"
-#include "ash/public/cpp/picker/picker_search_result.h"
-#include "ash/public/cpp/picker/picker_web_paste_target.h"
+#include "ash/picker/picker_search_result.h"
+#include "ash/picker/picker_web_paste_target.h"
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/containers/span.h"

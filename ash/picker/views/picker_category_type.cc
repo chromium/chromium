@@ -4,7 +4,7 @@
 
 #include "ash/picker/views/picker_category_type.h"
 
-#include "ash/public/cpp/picker/picker_category.h"
+#include "ash/picker/picker_category.h"
 
 namespace ash {
 

@@ -7,7 +7,7 @@
 #include <optional>
 #include <string_view>
 
-#include "ash/public/cpp/picker/picker_search_result.h"
+#include "ash/picker/picker_search_result.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "base/strings/utf_string_conversions.h"
 #include "third_party/rust/fend_core/v1/wrapper/fend_core.h"

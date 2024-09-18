@@ -13,11 +13,11 @@
 
 #include "ash/constants/ash_pref_names.h"
 #include "ash/picker/model/picker_search_results_section.h"
+#include "ash/picker/picker_category.h"
+#include "ash/picker/picker_client.h"
 #include "ash/picker/search/picker_search_aggregator.h"
 #include "ash/picker/search/picker_search_request.h"
 #include "ash/picker/views/picker_view_delegate.h"
-#include "ash/public/cpp/picker/picker_category.h"
-#include "ash/public/cpp/picker/picker_client.h"
 #include "base/check_deref.h"
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_PUBLIC_CPP_PICKER_PICKER_CLIENT_H_
-#define ASH_PUBLIC_CPP_PICKER_PICKER_CLIENT_H_
+#ifndef ASH_PICKER_PICKER_CLIENT_H_
+#define ASH_PICKER_PICKER_CLIENT_H_
 
 #include <memory>
 #include <optional>
@@ -11,11 +11,11 @@
 #include <string_view>
 #include <vector>
 
+#include "ash/ash_export.h"
+#include "ash/picker/picker_category.h"
+#include "ash/picker/picker_search_result.h"
+#include "ash/picker/picker_web_paste_target.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
-#include "ash/public/cpp/ash_public_export.h"
-#include "ash/public/cpp/picker/picker_category.h"
-#include "ash/public/cpp/picker/picker_search_result.h"
-#include "ash/public/cpp/picker/picker_web_paste_target.h"
 #include "base/files/file.h"
 #include "base/functional/callback_forward.h"
 #include "url/gurl.h"
@@ -30,7 +30,7 @@ class Size;
 namespace ash {
 
 // Lets PickerController in Ash to communicate with the browser.
-class ASH_PUBLIC_EXPORT PickerClient {
+class ASH_EXPORT PickerClient {
  public:
   using CrosSearchResultsCallback =
       base::RepeatingCallback<void(ash::AppListSearchResultType result_type,
@@ -97,4 +97,4 @@ class ASH_PUBLIC_EXPORT PickerClient {
 
 }  // namespace ash
 
-#endif  // ASH_PUBLIC_CPP_PICKER_PICKER_CLIENT_H_
+#endif  // ASH_PICKER_PICKER_CLIENT_H_

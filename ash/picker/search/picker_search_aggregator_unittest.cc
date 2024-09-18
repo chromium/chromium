@@ -7,9 +7,9 @@
 #include <optional>
 
 #include "ash/picker/model/picker_search_results_section.h"
+#include "ash/picker/picker_search_result.h"
 #include "ash/picker/search/picker_search_source.h"
 #include "ash/picker/views/picker_view_delegate.h"
-#include "ash/public/cpp/picker/picker_search_result.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/test/task_environment.h"

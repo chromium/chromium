@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "ash/picker/model/picker_emoji_history_model.h"
-#include "ash/public/cpp/picker/picker_search_result.h"
+#include "ash/picker/picker_search_result.h"
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/notreached.h"

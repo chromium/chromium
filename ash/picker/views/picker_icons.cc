@@ -4,7 +4,7 @@
 
 #include "ash/picker/views/picker_icons.h"
 
-#include "ash/public/cpp/picker/picker_category.h"
+#include "ash/picker/picker_category.h"
 #include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/vector_icon_types.h"

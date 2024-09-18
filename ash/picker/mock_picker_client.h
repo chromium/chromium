@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_PUBLIC_CPP_PICKER_MOCK_PICKER_CLIENT_H_
-#define ASH_PUBLIC_CPP_PICKER_MOCK_PICKER_CLIENT_H_
+#ifndef ASH_PICKER_MOCK_PICKER_CLIENT_H_
+#define ASH_PICKER_MOCK_PICKER_CLIENT_H_
 
 #include <optional>
 #include <string>
 
-#include "ash/public/cpp/ash_public_export.h"
-#include "ash/public/cpp/picker/picker_category.h"
-#include "ash/public/cpp/picker/picker_client.h"
+#include "ash/ash_export.h"
+#include "ash/picker/picker_category.h"
+#include "ash/picker/picker_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 class PrefService;
@@ -19,7 +19,7 @@ namespace ash {
 
 struct PickerWebPasteTarget;
 
-class ASH_PUBLIC_EXPORT MockPickerClient : public PickerClient {
+class ASH_EXPORT MockPickerClient : public PickerClient {
  public:
   MockPickerClient();
   ~MockPickerClient() override;
@@ -66,4 +66,4 @@ class ASH_PUBLIC_EXPORT MockPickerClient : public PickerClient {
 
 }  // namespace ash
 
-#endif  // ASH_PUBLIC_CPP_PICKER_MOCK_PICKER_CLIENT_H_
+#endif  // ASH_PICKER_MOCK_PICKER_CLIENT_H_

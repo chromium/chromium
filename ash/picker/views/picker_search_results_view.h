@@ -7,9 +7,9 @@
 
 #include "ash/ash_export.h"
 #include "ash/picker/model/picker_search_results_section.h"
+#include "ash/picker/picker_search_result.h"
 #include "ash/picker/views/picker_page_view.h"
 #include "ash/picker/views/picker_submenu_controller.h"
-#include "ash/public/cpp/picker/picker_search_result.h"
 #include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"

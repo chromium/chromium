@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_PUBLIC_CPP_PICKER_PICKER_WEB_PASTE_TARGET_H_
-#define ASH_PUBLIC_CPP_PICKER_PICKER_WEB_PASTE_TARGET_H_
+#ifndef ASH_PICKER_PICKER_WEB_PASTE_TARGET_H_
+#define ASH_PICKER_PICKER_WEB_PASTE_TARGET_H_
 
-#include "ash/public/cpp/ash_public_export.h"
+#include "ash/ash_export.h"
 #include "base/functional/callback.h"
 #include "url/gurl.h"
 
@@ -14,7 +14,7 @@ namespace ash {
 // Wrapper around a `content::WebContents` for pasting directly, as well as
 // containing information about the `content::WebContents` used for determining
 // what contents to paste.
-struct ASH_PUBLIC_EXPORT PickerWebPasteTarget {
+struct ASH_EXPORT PickerWebPasteTarget {
   explicit PickerWebPasteTarget(GURL url, base::OnceClosure do_paste);
   PickerWebPasteTarget(const PickerWebPasteTarget&) = delete;
   PickerWebPasteTarget& operator=(const PickerWebPasteTarget&) = delete;
@@ -31,4 +31,4 @@ struct ASH_PUBLIC_EXPORT PickerWebPasteTarget {
 
 }  // namespace ash
 
-#endif  // ASH_PUBLIC_CPP_PICKER_PICKER_WEB_PASTE_TARGET_H_
+#endif  // ASH_PICKER_PICKER_WEB_PASTE_TARGET_H_

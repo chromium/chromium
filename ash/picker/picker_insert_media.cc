@@ -12,7 +12,7 @@
 #include "ash/picker/picker_clipboard_insertion.h"
 #include "ash/picker/picker_copy_media.h"
 #include "ash/picker/picker_rich_media.h"
-#include "ash/public/cpp/picker/picker_web_paste_target.h"
+#include "ash/picker/picker_web_paste_target.h"
 #include "base/base64.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"

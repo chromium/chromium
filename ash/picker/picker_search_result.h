@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_PUBLIC_CPP_PICKER_PICKER_SEARCH_RESULT_H_
-#define ASH_PUBLIC_CPP_PICKER_PICKER_SEARCH_RESULT_H_
+#ifndef ASH_PICKER_PICKER_SEARCH_RESULT_H_
+#define ASH_PICKER_PICKER_SEARCH_RESULT_H_
 
 #include <cstddef>
 #include <optional>
@@ -12,8 +12,8 @@
 #include <variant>
 #include <vector>
 
-#include "ash/public/cpp/ash_public_export.h"
-#include "ash/public/cpp/picker/picker_category.h"
+#include "ash/ash_export.h"
+#include "ash/picker/picker_category.h"
 #include "base/files/file_path.h"
 #include "base/unguessable_token.h"
 #include "ui/base/models/image_model.h"
@@ -25,7 +25,7 @@ enum class PresetQueryCategory;
 
 namespace ash {
 
-struct ASH_PUBLIC_EXPORT PickerTextResult {
+struct ASH_EXPORT PickerTextResult {
   enum class Source {
     kUnknown,  // This should only be used for tests.
     kDate,
@@ -53,7 +53,7 @@ struct ASH_PUBLIC_EXPORT PickerTextResult {
   bool operator==(const PickerTextResult&) const;
 };
 
-struct ASH_PUBLIC_EXPORT PickerSearchRequestResult {
+struct ASH_EXPORT PickerSearchRequestResult {
   std::u16string primary_text;
   std::u16string secondary_text;
   ui::ImageModel icon;
@@ -68,7 +68,7 @@ struct ASH_PUBLIC_EXPORT PickerSearchRequestResult {
   bool operator==(const PickerSearchRequestResult&) const;
 };
 
-struct ASH_PUBLIC_EXPORT PickerEmojiResult {
+struct ASH_EXPORT PickerEmojiResult {
   enum class Type { kEmoji, kSymbol, kEmoticon };
 
   Type type;
@@ -92,7 +92,7 @@ struct ASH_PUBLIC_EXPORT PickerEmojiResult {
   bool operator==(const PickerEmojiResult&) const;
 };
 
-struct ASH_PUBLIC_EXPORT PickerClipboardResult {
+struct ASH_EXPORT PickerClipboardResult {
   enum class DisplayFormat {
     kFile,
     kText,
@@ -123,7 +123,7 @@ struct ASH_PUBLIC_EXPORT PickerClipboardResult {
   bool operator==(const PickerClipboardResult&) const;
 };
 
-struct ASH_PUBLIC_EXPORT PickerBrowsingHistoryResult {
+struct ASH_EXPORT PickerBrowsingHistoryResult {
   GURL url;
   std::u16string title;
   ui::ImageModel icon;
@@ -140,7 +140,7 @@ struct ASH_PUBLIC_EXPORT PickerBrowsingHistoryResult {
   bool operator==(const PickerBrowsingHistoryResult&) const;
 };
 
-struct ASH_PUBLIC_EXPORT PickerLocalFileResult {
+struct ASH_EXPORT PickerLocalFileResult {
   std::u16string title;
   base::FilePath file_path;
   bool best_match;
@@ -155,7 +155,7 @@ struct ASH_PUBLIC_EXPORT PickerLocalFileResult {
   bool operator==(const PickerLocalFileResult&) const;
 };
 
-struct ASH_PUBLIC_EXPORT PickerDriveFileResult {
+struct ASH_EXPORT PickerDriveFileResult {
   std::optional<std::string> id;
   std::u16string title;
   GURL url;
@@ -174,7 +174,7 @@ struct ASH_PUBLIC_EXPORT PickerDriveFileResult {
   bool operator==(const PickerDriveFileResult&) const;
 };
 
-struct ASH_PUBLIC_EXPORT PickerCategoryResult {
+struct ASH_EXPORT PickerCategoryResult {
   PickerCategory category;
 
   explicit PickerCategoryResult(PickerCategory category);
@@ -185,7 +185,7 @@ struct ASH_PUBLIC_EXPORT PickerCategoryResult {
   bool operator==(const PickerCategoryResult&) const;
 };
 
-struct ASH_PUBLIC_EXPORT PickerEditorResult {
+struct ASH_EXPORT PickerEditorResult {
   enum class Mode { kWrite, kRewrite };
 
   Mode mode;
@@ -205,7 +205,7 @@ struct ASH_PUBLIC_EXPORT PickerEditorResult {
   bool operator==(const PickerEditorResult&) const;
 };
 
-struct ASH_PUBLIC_EXPORT PickerNewWindowResult {
+struct ASH_EXPORT PickerNewWindowResult {
   enum Type {
     kDoc,
     kSheet,
@@ -223,7 +223,7 @@ struct ASH_PUBLIC_EXPORT PickerNewWindowResult {
   bool operator==(const PickerNewWindowResult&) const;
 };
 
-struct ASH_PUBLIC_EXPORT PickerCapsLockResult {
+struct ASH_EXPORT PickerCapsLockResult {
   enum class Shortcut {
     kAltLauncher,
     kAltSearch,
@@ -241,7 +241,7 @@ struct ASH_PUBLIC_EXPORT PickerCapsLockResult {
   bool operator==(const PickerCapsLockResult&) const;
 };
 
-struct ASH_PUBLIC_EXPORT PickerCaseTransformResult {
+struct ASH_EXPORT PickerCaseTransformResult {
   enum Type {
     kUpperCase,
     kLowerCase,
@@ -273,4 +273,4 @@ using PickerSearchResult = std::variant<PickerTextResult,
 
 }  // namespace ash
 
-#endif  // ASH_PUBLIC_CPP_PICKER_PICKER_SEARCH_RESULT_H_
+#endif  // ASH_PICKER_PICKER_SEARCH_RESULT_H_

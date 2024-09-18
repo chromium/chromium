@@ -4,7 +4,7 @@
 
 #include "ash/picker/picker_shortcuts.h"
 
-#include "ash/public/cpp/picker/picker_search_result.h"
+#include "ash/picker/picker_search_result.h"
 #include "ash/shell.h"
 #include "base/notreached.h"
 #include "ui/events/ash/keyboard_capability.h"

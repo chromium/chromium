@@ -8,11 +8,11 @@
 #include <string>
 
 #include "ash/picker/model/picker_action_type.h"
+#include "ash/picker/picker_search_result.h"
 #include "ash/picker/picker_test_util.h"
 #include "ash/picker/views/picker_emoji_bar_view_delegate.h"
 #include "ash/picker/views/picker_emoji_item_view.h"
 #include "ash/picker/views/picker_pseudo_focus.h"
-#include "ash/public/cpp/picker/picker_search_result.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/icon_button.h"

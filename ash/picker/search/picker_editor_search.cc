@@ -8,7 +8,7 @@
 #include <string>
 #include <string_view>
 
-#include "ash/public/cpp/picker/picker_search_result.h"
+#include "ash/picker/picker_search_result.h"
 #include "base/check.h"
 #include "base/i18n/char_iterator.h"
 

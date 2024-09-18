@@ -6,7 +6,7 @@
 #define ASH_PICKER_SEARCH_MOCK_SEARCH_PICKER_CLIENT_H_
 
 #include "ash/ash_export.h"
-#include "ash/public/cpp/picker/mock_picker_client.h"
+#include "ash/picker/mock_picker_client.h"
 
 namespace ash {
 

@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "ash/ash_export.h"
-#include "ash/public/cpp/picker/picker_category.h"
+#include "ash/picker/picker_category.h"
 #include "ui/base/ime/text_input_type.h"
 #include "ui/gfx/range/range.h"
 

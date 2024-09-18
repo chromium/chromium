@@ -6,7 +6,7 @@
 #define ASH_PICKER_PICKER_SHORTCUTS_H_
 
 #include "ash/ash_export.h"
-#include "ash/public/cpp/picker/picker_search_result.h"
+#include "ash/picker/picker_search_result.h"
 
 namespace ash {
 
