@@ -607,10 +607,6 @@ extern const char kMostVisitedTilesHorizontalRenderGroupDescription[];
 extern const char kNativeFindInPageName[];
 extern const char kNativeFindInPageDescription[];
 
-// Title and description for the flag to enable the new NTP omnibox layout.
-extern const char kNewNTPOmniboxLayoutName[];
-extern const char kNewNTPOmniboxLayoutDescription[];
-
 // Title and description for the new illustration in the sync opt-in promotion
 // view.
 extern const char kNewSyncOptInIllustrationName[];

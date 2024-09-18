@@ -314,9 +314,6 @@ extern const base::FeatureParam<int>
 // Flag to enable push notification settings menu item.
 BASE_DECLARE_FEATURE(kNotificationSettingsMenuItem);
 
-// Feature flag to enable the new layout of the NTP omnibox.
-BASE_DECLARE_FEATURE(kNewNTPOmniboxLayout);
-
 // Feature param under kBottomOmniboxDefaultSetting to select the default
 // setting.
 extern const char kBottomOmniboxDefaultSettingParam[];

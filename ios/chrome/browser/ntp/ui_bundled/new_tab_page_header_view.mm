@@ -87,16 +87,6 @@ const CGFloat kErrorSymbolPointSize = 16.0;
 // new feature badge.
 const CGFloat kCustomizationNewBadgeOffset = 14.0;
 
-// The leading space / padding in the unscrolled fakebox.
-CGFloat HintLabelFakeboxLeadingSpace() {
-  return kHintLabelFakeboxLeadingSpace;
-}
-
-// The leading space / padding in the scrolled fakebox.
-CGFloat HintLabelOmniboxLeadingSpace() {
-  return kHintLabelOmniboxLeadingSpace;
-}
-
 // The amount to inset the Fakebox from the rest of the modules on Home.
 CGFloat FakeboxHorizontalMargin(id<UITraitEnvironment> environment) {
   if (IsSplitToolbarMode(environment) && IsIOSLargeFakeboxEnabled()) {
@@ -196,17 +186,6 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
     NSLayoutConstraint* fakeLocationBarHeightConstraint;
 @property(nonatomic, strong) NSLayoutConstraint* hintLabelLeadingConstraint;
 @property(nonatomic, strong) NSLayoutConstraint* hintLabelTrailingConstraint;
-// In the new layout, the hint label should always be at least inside the fake
-// omnibox. When the fake omnibox is shrunk, the position from the leading side
-// of the search field should yield. This constraint is not defined for the old
-// layout.
-@property(nonatomic, strong)
-    NSLayoutConstraint* hintLabelLeadingMarginConstraint;
-// The end button should always be at least inside the fake omnibox.
-// When the fake omnibox is shrunk, the position from the trailing side of
-// the search field should yield.
-@property(nonatomic, strong)
-    NSLayoutConstraint* endButtonTrailingMarginConstraint;
 // Constraint for positioning the end button away from the fake box rounded
 // rectangle.
 @property(nonatomic, strong) NSLayoutConstraint* endButtonTrailingConstraint;
@@ -340,27 +319,9 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
                                                 searchField);
   [self updateHintLabelFonts];
 
-  if (base::FeatureList::IsEnabled(kNewNTPOmniboxLayout)) {
-    // Enable the leading-edge-alignment hint label constraints.
-    self.hintLabelLeadingMarginConstraint = [self.searchHintLabel.leadingAnchor
-        constraintEqualToAnchor:[searchField leadingAnchor]];
-    self.hintLabelLeadingMarginConstraint.priority =
-        UILayoutPriorityDefaultHigh + 1;
-    self.hintLabelLeadingConstraint = [self.searchHintLabel.leadingAnchor
-        constraintGreaterThanOrEqualToAnchor:self.fakeLocationBar.leadingAnchor
-                                    constant:HintLabelFakeboxLeadingSpace()];
-    [self.hintLabelLeadingMarginConstraint setActive:YES];
-  } else {
-    // The old omnibox layout has the label centered horizontally in the
-    // fakebox.
-    self.hintLabelLeadingConstraint = [self.searchHintLabel.leadingAnchor
-        constraintGreaterThanOrEqualToAnchor:[searchField leadingAnchor]
-                                    constant:ntp_header::
-                                                 kCenteredHintLabelSidePadding];
-    [[self.searchHintLabel.centerXAnchor
-        constraintEqualToAnchor:self.fakeLocationBar.centerXAnchor]
-        setActive:YES];
-  }
+  self.hintLabelLeadingConstraint = [self.searchHintLabel.leadingAnchor
+      constraintEqualToAnchor:self.fakeLocationBar.leadingAnchor
+                     constant:kHintLabelFakeboxLeadingSpace];
   [NSLayoutConstraint activateConstraints:@[
     self.hintLabelLeadingConstraint,
     [self.searchHintLabel.heightAnchor
@@ -438,13 +399,9 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
     ]];
   }
 
-  self.endButtonTrailingMarginConstraint = [endButton.trailingAnchor
-      constraintEqualToAnchor:[searchField trailingAnchor]];
-  self.endButtonTrailingMarginConstraint.priority =
-      UILayoutPriorityDefaultHigh + 1;
   self.endButtonTrailingConstraint = [endButton.trailingAnchor
-      constraintLessThanOrEqualToAnchor:self.fakeLocationBar.trailingAnchor
-                               constant:-[self endButtonFakeboxTrailingSpace]];
+      constraintEqualToAnchor:self.fakeLocationBar.trailingAnchor
+                     constant:-[self endButtonFakeboxTrailingSpace]];
 
   // The voice search button is always on the leading side, even if the Lens
   // button is visible.
@@ -455,7 +412,6 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
     [self.voiceSearchButton.centerYAnchor
         constraintEqualToAnchor:self.fakeLocationBar.centerYAnchor],
     self.hintLabelTrailingConstraint,
-    self.endButtonTrailingMarginConstraint,
     self.endButtonTrailingConstraint,
   ]];
 }
@@ -575,14 +531,8 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
     self.fakeLocationBarTopConstraint.constant = 0;
 
     // Reset the view horizontal constraints.
-    if (base::FeatureList::IsEnabled(kNewNTPOmniboxLayout)) {
-      self.hintLabelLeadingMarginConstraint.constant =
-          HintLabelFakeboxLeadingSpace() + hintLabelScalingExtraOffset;
-    } else {
-      self.hintLabelLeadingConstraint.constant =
-          ntp_header::kCenteredHintLabelSidePadding;
-    }
-    self.endButtonTrailingMarginConstraint.constant = 0;
+    self.hintLabelLeadingConstraint.constant =
+        kHintLabelFakeboxLeadingSpace + hintLabelScalingExtraOffset;
 
     self.separator.alpha = 0;
 
@@ -596,8 +546,6 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   // Calculate the amount to grow the width and height of searchField so that
   // its frame covers the entire toolbar area.
   CGFloat maxWidth = self.bounds.size.width;
-  CGFloat maxXInset =
-      ui::AlignValueToUpperPixel((searchFieldNormalWidth - maxWidth) / 2);
   widthConstraint.constant =
       Interpolate(searchFieldNormalWidth, maxWidth, percent);
   CGFloat maxTopMarginDiff = fakeOmniboxHeight - locationBarHeight -
@@ -630,27 +578,13 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
 
   // Adjust the position of the search field's subviews by adjusting their
   // constraint constant value.
-  CGFloat subviewsDiff = -maxXInset * percent;
-  self.endButtonTrailingMarginConstraint.constant = 0;
-  // The trailing space wanted is a linear scale between the two states of the
-  // fakebox: 1) when centered in the NTP and 2) when pinned to the top,
-  // emulating the the omnibox.
   self.endButtonTrailingConstraint.constant =
       -Interpolate([self endButtonFakeboxTrailingSpace],
                    kEndButtonOmniboxTrailingSpace, percent);
-
-  if (base::FeatureList::IsEnabled(kNewNTPOmniboxLayout)) {
-    // A similar positioning scheme is applied to the leading-edge-aligned
-    // hint label as the trailing-edge-aligned buttons.
-    self.hintLabelLeadingMarginConstraint.constant = 0;
-    self.hintLabelLeadingConstraint.constant =
-        hintLabelScalingExtraOffset +
-        Interpolate(HintLabelFakeboxLeadingSpace(),
-                    HintLabelOmniboxLeadingSpace(), percent);
-  } else {
-    self.hintLabelLeadingConstraint.constant =
-        subviewsDiff + ntp_header::kCenteredHintLabelSidePadding;
-  }
+  self.hintLabelLeadingConstraint.constant =
+      hintLabelScalingExtraOffset + Interpolate(kHintLabelFakeboxLeadingSpace,
+                                                kHintLabelOmniboxLeadingSpace,
+                                                percent);
 
   // Fade N badge treatment when scrolled.
   if (_useNewBadgeForLensButton && !_lensButtonWithNewBadgeTapped &&

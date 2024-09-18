@@ -290,10 +290,6 @@ BASE_FEATURE(kNotificationSettingsMenuItem,
              "NotificationSettingsMenuItem",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kNewNTPOmniboxLayout,
-             "kNewNTPOmniboxLayout",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 const char kBottomOmniboxDefaultSettingParam[] =
     "BottomOmniboxDefaultSettingParam";
 const char kBottomOmniboxDefaultSettingParamTop[] = "Top";
