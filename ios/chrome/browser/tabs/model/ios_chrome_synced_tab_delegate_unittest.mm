@@ -147,14 +147,12 @@ TEST_F(IOSChromeSyncedTabDelegateTest,
   IOSChromeScopedTestingLocalState scoped_testing_local_state;
 
   // Create a BrowserState with the necessary services.
-  TestChromeBrowserState::Builder builder;
+  TestProfileIOS::Builder builder;
   builder.AddTestingFactory(AuthenticationServiceFactory::GetInstance(),
                             AuthenticationServiceFactory::GetDefaultFactory());
-  std::unique_ptr<TestChromeBrowserState> browser_state =
-      std::move(builder).Build();
+  std::unique_ptr<TestProfileIOS> profile = std::move(builder).Build();
   AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
-      browser_state.get(),
-      std::make_unique<FakeAuthenticationServiceDelegate>());
+      profile.get(), std::make_unique<FakeAuthenticationServiceDelegate>());
 
   const base::Time pre_signin_time = base::Time::Now();
 
@@ -165,7 +163,7 @@ TEST_F(IOSChromeSyncedTabDelegateTest,
           GetApplicationContext()->GetSystemIdentityManager());
   system_identity_manager->AddIdentity(identity);
   AuthenticationService* authentication_service =
-      AuthenticationServiceFactory::GetForBrowserState(browser_state.get());
+      AuthenticationServiceFactory::GetForProfile(profile.get());
   authentication_service->SignIn(
       identity, signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
 
@@ -179,7 +177,7 @@ TEST_F(IOSChromeSyncedTabDelegateTest,
 
   // Create a WebState aka "a tab" plus the necessary helpers.
   web::FakeWebState web_state;
-  web_state.SetBrowserState(browser_state.get());
+  web_state.SetBrowserState(profile.get());
   web_state.SetNavigationManager(std::move(navigation_manager));
   web_state.SetNavigationItemCount(1);
   IOSChromeSessionTabHelper::CreateForWebState(&web_state);

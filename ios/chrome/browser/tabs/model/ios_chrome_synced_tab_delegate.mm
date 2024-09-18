@@ -169,14 +169,14 @@ bool IOSChromeSyncedTabDelegate::ShouldSync(
     // If fast account switching via the account particle disk on the NTP is
     // enabled, then for managed accounts, only sync tabs that have been updated
     // after the signin.
-    ChromeBrowserState* browser_state =
-        ChromeBrowserState::FromBrowserState(web_state_->GetBrowserState());
+    ProfileIOS* profile =
+        ProfileIOS::FromBrowserState(web_state_->GetBrowserState());
     AuthenticationService* auth_service =
-        AuthenticationServiceFactory::GetForBrowserState(browser_state);
+        AuthenticationServiceFactory::GetForProfile(profile);
     if (auth_service && auth_service->HasPrimaryIdentityManaged(
                             signin::ConsentLevel::kSignin)) {
       base::Time signin_time =
-          browser_state->GetPrefs()->GetTime(prefs::kLastSigninTimestamp);
+          profile->GetPrefs()->GetTime(prefs::kLastSigninTimestamp);
       // Note: Don't use GetLastActiveTime() here: (a) it only tracks when the
       // tab was last made visible (not when it was last used), and (b) it
       // intentionally caches outdated values for a few minutes. Instead, query
