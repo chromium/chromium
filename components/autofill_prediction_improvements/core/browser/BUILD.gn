@@ -4,6 +4,8 @@
 
 import("//mojo/public/tools/bindings/mojom.gni")
 
+assert(is_win || is_mac || is_linux || is_chromeos)
+
 static_library("browser") {
   sources = [
     "autofill_prediction_improvements_annotation_prompt_strike_database.h",
@@ -28,6 +30,7 @@ static_library("browser") {
     "//components/keyed_service/core",
     "//components/optimization_guide/core",
     "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/strings",
     "//components/user_annotations",
     "//components/user_annotations:user_annotations",
   ]

@@ -101,6 +101,7 @@ bool IsFooterSuggestionType(SuggestionType type) {
     case SuggestionType::kWebauthnSignInWithAnotherDevice:
     case SuggestionType::kFillPredictionImprovements:
     case SuggestionType::kPredictionImprovementsDetails:
+    case SuggestionType::kPredictionImprovementsError:
     case SuggestionType::kRetrievePredictionImprovements:
     case SuggestionType::kPredictionImprovementsLoadingState:
       return false;

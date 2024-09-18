@@ -446,14 +446,14 @@ TEST_F(ShouldProvideAutofillPredictionImprovementsTest,
                          UpdateSuggestionsCallback>
       update_suggestions_callback;
   std::vector<Suggestion> loading_suggestion;
-  std::vector<Suggestion> error_suggestion;
+  std::vector<Suggestion> error_suggestions;
   EXPECT_CALL(client_, GetAXTree).Times(0);
   {
     InSequence s;
     EXPECT_CALL(update_suggestions_callback, Run)
         .WillOnce(SaveArg<0>(&loading_suggestion));
     EXPECT_CALL(update_suggestions_callback, Run)
-        .WillOnce(SaveArg<0>(&error_suggestion));
+        .WillOnce(SaveArg<0>(&error_suggestions));
   }
 
   manager.OnClickedTriggerSuggestion(form_, form_.fields().front(),
@@ -462,8 +462,10 @@ TEST_F(ShouldProvideAutofillPredictionImprovementsTest,
   EXPECT_THAT(loading_suggestion,
               ElementsAre(HasType(
                   SuggestionType::kPredictionImprovementsLoadingState)));
-  EXPECT_THAT(error_suggestion,
-              ElementsAre(HasType(SuggestionType::kAutocompleteEntry)));
+  EXPECT_THAT(
+      error_suggestions,
+      ElementsAre(HasType(SuggestionType::kPredictionImprovementsError),
+                  HasType(SuggestionType::kPredictionImprovementsFeedback)));
 }
 
 TEST_F(ShouldProvideAutofillPredictionImprovementsTest,
@@ -476,14 +478,14 @@ TEST_F(ShouldProvideAutofillPredictionImprovementsTest,
                          UpdateSuggestionsCallback>
       update_suggestions_callback;
   std::vector<Suggestion> loading_suggestion;
-  std::vector<Suggestion> error_suggestion;
+  std::vector<Suggestion> error_suggestions;
   EXPECT_CALL(client_, GetAXTree).Times(0);
   {
     InSequence s;
     EXPECT_CALL(update_suggestions_callback, Run)
         .WillOnce(SaveArg<0>(&loading_suggestion));
     EXPECT_CALL(update_suggestions_callback, Run)
-        .WillOnce(SaveArg<0>(&error_suggestion));
+        .WillOnce(SaveArg<0>(&error_suggestions));
   }
 
   manager.OnClickedTriggerSuggestion(form_, form_.fields().front(),
@@ -492,8 +494,10 @@ TEST_F(ShouldProvideAutofillPredictionImprovementsTest,
   EXPECT_THAT(loading_suggestion,
               ElementsAre(HasType(
                   SuggestionType::kPredictionImprovementsLoadingState)));
-  EXPECT_THAT(error_suggestion,
-              ElementsAre(HasType(SuggestionType::kAutocompleteEntry)));
+  EXPECT_THAT(
+      error_suggestions,
+      ElementsAre(HasType(SuggestionType::kPredictionImprovementsError),
+                  HasType(SuggestionType::kPredictionImprovementsFeedback)));
 }
 
 TEST_F(ShouldProvideAutofillPredictionImprovementsTest,
@@ -531,14 +535,14 @@ TEST_F(ShouldProvideAutofillPredictionImprovementsTest,
                          UpdateSuggestionsCallback>
       update_suggestions_callback;
   std::vector<Suggestion> loading_suggestion;
-  std::vector<Suggestion> error_suggestion;
+  std::vector<Suggestion> error_suggestions;
   EXPECT_CALL(client_, GetAXTree).Times(0);
   {
     InSequence s;
     EXPECT_CALL(update_suggestions_callback, Run)
         .WillOnce(SaveArg<0>(&loading_suggestion));
     EXPECT_CALL(update_suggestions_callback, Run)
-        .WillOnce(SaveArg<0>(&error_suggestion));
+        .WillOnce(SaveArg<0>(&error_suggestions));
   }
 
   manager.OnClickedTriggerSuggestion(form_, form_.fields().front(),
@@ -547,8 +551,10 @@ TEST_F(ShouldProvideAutofillPredictionImprovementsTest,
   EXPECT_THAT(loading_suggestion,
               ElementsAre(HasType(
                   SuggestionType::kPredictionImprovementsLoadingState)));
-  EXPECT_THAT(error_suggestion,
-              ElementsAre(HasType(SuggestionType::kAutocompleteEntry)));
+  EXPECT_THAT(
+      error_suggestions,
+      ElementsAre(HasType(SuggestionType::kPredictionImprovementsError),
+                  HasType(SuggestionType::kPredictionImprovementsFeedback)));
 }
 
 TEST_F(ShouldProvideAutofillPredictionImprovementsTest,

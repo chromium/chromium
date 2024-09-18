@@ -247,6 +247,7 @@ bool AutofillExternalDelegate::IsAutofillAndFirstLayerSuggestionId(
     case SuggestionType::kPredictionImprovementsLoadingState:
     case SuggestionType::kFillPredictionImprovements:
     case SuggestionType::kPredictionImprovementsDetails:
+    case SuggestionType::kPredictionImprovementsError:
       return false;
   }
 }
@@ -686,6 +687,7 @@ void AutofillExternalDelegate::DidSelectSuggestion(
     case SuggestionType::kDevtoolsTestAddresses:
     case SuggestionType::kEditAddressProfile:
     case SuggestionType::kPredictionImprovementsDetails:
+    case SuggestionType::kPredictionImprovementsError:
     case SuggestionType::kInsecureContextPaymentDisabledMessage:
     case SuggestionType::kManageAddress:
     case SuggestionType::kManageCreditCard:
@@ -876,6 +878,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
     case SuggestionType::kViewPasswordDetails:
     case SuggestionType::kPredictionImprovementsLoadingState:
     case SuggestionType::kPredictionImprovementsDetails:
+    case SuggestionType::kPredictionImprovementsError:
       NOTREACHED();  // Should be handled elsewhere.
   }
   // Note that some suggestion types return early.
@@ -1025,6 +1028,7 @@ bool AutofillExternalDelegate::RemoveSuggestion(const Suggestion& suggestion) {
     case SuggestionType::kPredictionImprovementsLoadingState:
     case SuggestionType::kFillPredictionImprovements:
     case SuggestionType::kPredictionImprovementsDetails:
+    case SuggestionType::kPredictionImprovementsError:
       return false;
   }
 }

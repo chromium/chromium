@@ -130,7 +130,6 @@
 #include "chrome/browser/ui/android/autofill/save_update_address_profile_flow_manager.h"
 #include "chrome/browser/ui/autofill/payments/autofill_snackbar_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/offer_notification_controller_android.h"
-#include "components/autofill/core/browser/autofill_prediction_improvements_delegate.h"
 #include "components/autofill/core/browser/payments/autofill_save_card_infobar_delegate_mobile.h"
 #include "components/autofill/core/browser/payments/autofill_save_card_infobar_mobile.h"
 #include "components/infobars/content/content_infobar_manager.h"
@@ -148,8 +147,9 @@
 #include "chrome/browser/ui/plus_addresses/plus_address_error_dialog.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"  // nogncheck
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
-#include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_features.h"
-#include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_manager.h"
+#include "components/autofill/core/browser/autofill_prediction_improvements_delegate.h"
+#include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_features.h"  // nogncheck
+#include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_manager.h"  // nogncheck
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_COMPOSE)

@@ -22,8 +22,10 @@
 #include "components/optimization_guide/core/optimization_guide_decider.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/optimization_guide/proto/hints.pb.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/user_annotations/user_annotations_features.h"
 #include "components/user_annotations/user_annotations_service.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace autofill_prediction_improvements {
 
@@ -80,14 +82,28 @@ std::vector<autofill::Suggestion> CreateLoadingSuggestion() {
   return {loading_suggestion};
 }
 
+autofill::Suggestion CreateFeedbackSuggestion() {
+  autofill::Suggestion feedback_suggestion(
+      autofill::SuggestionType::kPredictionImprovementsFeedback);
+  feedback_suggestion.is_acceptable = false;
+  feedback_suggestion.voice_over = u"give us feedback";
+  feedback_suggestion.highlight_on_select = false;
+  return feedback_suggestion;
+}
+
 // Creates a suggestion shown when retrieving prediction improvements wasn't
 // successful.
 std::vector<autofill::Suggestion> CreateErrorSuggestion() {
   // TODO(crbug.com/361434879): Add hardcoded string to an appropriate grd file.
   autofill::Suggestion error_suggestion(
-      u"Error", autofill::SuggestionType::kAutocompleteEntry);
-  error_suggestion.is_acceptable = false;
-  return {error_suggestion};
+      autofill::SuggestionType::kPredictionImprovementsError);
+  error_suggestion.main_text = autofill::Suggestion::Text(
+      l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_ERROR_POPUP_MAIN_TEXT),
+      autofill::Suggestion::Text::IsPrimary(true),
+      autofill::Suggestion::Text::ShouldTruncate(true));
+  error_suggestion.highlight_on_select = false;
+  return {error_suggestion, CreateFeedbackSuggestion()};
 }
 
 }  // namespace
@@ -194,11 +210,8 @@ AutofillPredictionImprovementsManager::CreateFillingSuggestion(
     // file.
     suggestion.labels.back().emplace_back(u"& more");
   }
-  autofill::Suggestion feedback_suggestion(
-      autofill::SuggestionType::kPredictionImprovementsFeedback);
-  feedback_suggestion.is_acceptable = false;
   suggestion.payload = payload;
-  return {suggestion, feedback_suggestion};
+  return {suggestion, CreateFeedbackSuggestion()};
 }
 
 std::vector<autofill::Suggestion>

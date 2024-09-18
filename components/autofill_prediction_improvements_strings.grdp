@@ -11,6 +11,11 @@
     Save
   </message>
 
+  <!-- Error state-->
+    <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_ERROR_POPUP_MAIN_TEXT" desc="Text displayed on the prediction improvements error suggestions" translateable="false">
+    There was a problem filling your prediction improvements
+  </message>
+
   <!-- General -->
   <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_FEEDBACK_ROW_LEARN_MORE" desc="Text displayed on prediction improvements feedback suggestion." translateable="false">
     Learn more

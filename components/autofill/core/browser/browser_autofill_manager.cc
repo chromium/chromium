@@ -348,6 +348,7 @@ FillDataType GetEventTypeFromSingleFieldSuggestionType(SuggestionType type) {
     case SuggestionType::kFillPredictionImprovements:
     case SuggestionType::kPredictionImprovementsFeedback:
     case SuggestionType::kPredictionImprovementsDetails:
+    case SuggestionType::kPredictionImprovementsError:
       NOTREACHED_IN_MIGRATION();
   }
   NOTREACHED_IN_MIGRATION();
@@ -580,6 +581,7 @@ FieldTypeSet GetTargetFieldsForAddressFillingSuggestionType(
     case SuggestionType::kFillPredictionImprovements:
     case SuggestionType::kPredictionImprovementsFeedback:
     case SuggestionType::kPredictionImprovementsDetails:
+    case SuggestionType::kPredictionImprovementsError:
       NOTREACHED();
   }
   NOTREACHED();
