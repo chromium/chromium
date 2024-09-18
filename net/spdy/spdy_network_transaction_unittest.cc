@@ -25,6 +25,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_file_util.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "net/base/auth.h"
 #include "net/base/chunked_upload_data_stream.h"
@@ -7488,6 +7489,9 @@ TEST_P(SpdyNetworkTransactionTest,
 
   TestCompletionCallback callback1;
   int rv = helper.trans()->Start(&request_, callback1.callback(), log_);
+  // This fast forward makes sure that the transaction switches to the
+  // HttpStreamPool when HappyEyeballsV3 is enabled.
+  FastForwardBy(base::Milliseconds(1));
   ASSERT_THAT(rv, IsError(ERR_IO_PENDING));
 
   HttpRequestInfo request2;
@@ -7637,6 +7641,9 @@ TEST_P(SpdyNetworkTransactionTest,
 
   TestCompletionCallback callback1;
   int rv = helper.trans()->Start(&request_, callback1.callback(), log_);
+  // This fast forward makes sure that the transaction switches to the
+  // HttpStreamPool when HappyEyeballsV3 is enabled.
+  FastForwardBy(base::Milliseconds(1));
   ASSERT_THAT(rv, IsError(ERR_IO_PENDING));
 
   HttpRequestInfo request2;
