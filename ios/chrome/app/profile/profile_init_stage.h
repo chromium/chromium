@@ -56,7 +56,7 @@ enum class ProfileInitStage {
   InitStageNormalUI,
 
   // Final stage, no transition until the profile is shut down.
-  InitStageFinal
+  InitStageFinal,
 };
 
 // Returns the equivalent ProfileInitStage from application InitStage.

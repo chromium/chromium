@@ -2,30 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/profile_metrics/model/profile_activity_app_agent.h"
+#import "ios/chrome/browser/profile_metrics/model/profile_activity_profile_agent.h"
 
 #import "base/time/time.h"
 #import "components/signin/core/browser/active_primary_accounts_metrics_recorder.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
-#import "ios/chrome/app/application_delegate/app_state.h"
+#import "ios/chrome/app/profile/profile_init_stage.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
-#import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 
-@implementation ProfileActivityAppAgent
+@implementation ProfileActivityProfileAgent
 
 #pragma mark - Private methods
 
 - (void)recordActivationForSceneState:(SceneState*)sceneState {
-  ProfileIOS* profile = sceneState.appState.mainProfile.browserState;
+  ProfileIOS* profile = sceneState.profileState.browserState;
 
   // Update the ProfileIOS's last-active time stored in the preferences.
   GetApplicationContext()
@@ -53,35 +50,11 @@
   }
 }
 
-#pragma mark - AppStateObserver
-
-- (void)appState:(AppState*)appState
-    didTransitionFromInitStage:(InitStage)previousInitStage {
-  [super appState:appState didTransitionFromInitStage:previousInitStage];
-
-  if (appState.initStage != InitStageBrowserObjectsForUI) {
-    return;
-  }
-
-  // Check if any scene has already reached foreground active state.
-  for (SceneState* sceneState in appState.connectedScenes) {
-    if (sceneState.activationLevel == SceneActivationLevelForegroundActive) {
-      [self recordActivationForSceneState:sceneState];
-    }
-  }
-}
-
 #pragma mark - SceneStateObserver
 
 - (void)sceneState:(SceneState*)sceneState
     transitionedToActivationLevel:(SceneActivationLevel)level {
-  [super sceneState:sceneState transitionedToActivationLevel:level];
-
-  // Ignore if the app has not loaded the Profile yet.
-  if (sceneState.appState.initStage < InitStageBrowserObjectsForUI) {
-    return;
-  }
-
+  DCHECK_GE(self.profileState.initStage, ProfileInitStage::InitStageUIReady);
   if (level == SceneActivationLevelForegroundActive) {
     [self recordActivationForSceneState:sceneState];
   }
