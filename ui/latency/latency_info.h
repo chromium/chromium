@@ -104,10 +104,13 @@ class LatencyInfo {
       const std::vector<LatencyInfo>& latency_info,
       perfetto::protos::pbzero::ChromeLatencyInfo::Step step);
 
-  // Populates fields for a `LatencyInfo.Flow` event with `ctx`
-  // from `latency`.
-  static void FillTraceEvent(const LatencyInfo& latency,
-                             const perfetto::EventContext& ctx);
+  // Populates fields for a `LatencyInfo.Flow` event for `latency_trace_id` with
+  // `ctx`.
+  static void EmitLatencyInfoStep(
+      perfetto::EventContext& ctx,
+      int64_t latency_trace_id,
+      perfetto::protos::pbzero::ChromeLatencyInfo2::Step step,
+      perfetto::protos::pbzero::ChromeLatencyInfo2::InputType input_type);
 
   // Add timestamps for components that are in |other| but not in |this|.
   void AddNewLatencyFrom(const LatencyInfo& other);

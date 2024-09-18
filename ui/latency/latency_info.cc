@@ -122,15 +122,20 @@ void LatencyInfo::TraceIntermediateFlowEvents(
   }
 }
 
-void LatencyInfo::FillTraceEvent(const LatencyInfo& latency,
-                                 const perfetto::EventContext& ctx) {
-  perfetto::protos::pbzero::ChromeLatencyInfo* info =
-      ctx.event()->set_chrome_latency_info();
-  info->set_trace_id(latency.trace_id());
+void LatencyInfo::EmitLatencyInfoStep(
+    perfetto::EventContext& ctx,
+    int64_t latency_trace_id,
+    perfetto::protos::pbzero::ChromeLatencyInfo2::Step step,
+    perfetto::protos::pbzero::ChromeLatencyInfo2::InputType input_type) {
+  auto* info = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>()
+                   ->set_chrome_latency_info();
+  info->set_trace_id(latency_trace_id);
+  info->set_step(step);
+  info->set_input_type(input_type);
 
   tracing::FillFlowEvent(
       ctx, perfetto::protos::pbzero::TrackEvent::LegacyEvent::FLOW_OUT,
-      latency.trace_id());
+      latency_trace_id);
 }
 
 void LatencyInfo::AddNewLatencyFrom(const LatencyInfo& other) {

@@ -6,10 +6,15 @@
 #define COMPONENTS_INPUT_UTILS_H_
 
 #include "base/component_export.h"
+#include "base/tracing/protos/chrome_track_event.pbzero.h"
+#include "third_party/blink/public/common/input/web_input_event.h"
 
 namespace input {
 
 COMPONENT_EXPORT(INPUT) bool TransferInputToViz();
+
+perfetto::protos::pbzero::ChromeLatencyInfo2::InputType InputEventTypeToProto(
+    blink::WebInputEvent::Type event_type);
 
 }  // namespace input
 
