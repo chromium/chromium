@@ -197,8 +197,10 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
 
       is3pcdRedesignEnabled_: {
         type: Boolean,
-        value: () =>
-            loadTimeData.getBoolean('is3pcdCookieSettingsRedesignEnabled'),
+        value() {
+            return loadTimeData.getBoolean('is3pcdCookieSettingsRedesignEnabled')
+             && loadTimeData.getBoolean('isTrackingProtectionUxEnabled');
+        },
       },
 
       privateStateTokensEnabled_: {
