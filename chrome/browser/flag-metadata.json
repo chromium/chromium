@@ -7067,7 +7067,7 @@
   {
     "name": "password-manual-fallback-available",
     "owners": ["tchudakov@google.com", "vasilii@google.com", "chrome-password-manager-team@google.com"],
-    "expiry_milestone": 131
+    "expiry_milestone": 134
   },
   {
     "name": "password-suggestion-bottom-sheet-v2",
