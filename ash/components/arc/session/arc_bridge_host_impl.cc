@@ -50,7 +50,6 @@
 #include "ash/components/arc/mojom/process.mojom.h"
 #include "ash/components/arc/mojom/screen_capture.mojom.h"
 #include "ash/components/arc/mojom/sharesheet.mojom.h"
-#include "ash/components/arc/mojom/storage_manager.mojom.h"
 #include "ash/components/arc/mojom/system_state.mojom.h"
 #include "ash/components/arc/mojom/system_ui.mojom.h"
 #include "ash/components/arc/mojom/timer.mojom.h"
@@ -372,12 +371,6 @@ void ArcBridgeHostImpl::OnSharesheetInstanceReady(
     mojo::PendingRemote<mojom::SharesheetInstance> sharesheet_remote) {
   OnInstanceReady(arc_bridge_service_->sharesheet(),
                   std::move(sharesheet_remote));
-}
-
-void ArcBridgeHostImpl::OnStorageManagerInstanceReady(
-    mojo::PendingRemote<mojom::StorageManagerInstance> storage_manager_remote) {
-  OnInstanceReady(arc_bridge_service_->storage_manager(),
-                  std::move(storage_manager_remote));
 }
 
 void ArcBridgeHostImpl::OnSystemStateInstanceReady(

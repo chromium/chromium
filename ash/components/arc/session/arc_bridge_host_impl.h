@@ -162,9 +162,6 @@ class ArcBridgeHostImpl
       override;
   void OnSharesheetInstanceReady(mojo::PendingRemote<mojom::SharesheetInstance>
                                      sharesheet_remote) override;
-  void OnStorageManagerInstanceReady(
-      mojo::PendingRemote<mojom::StorageManagerInstance> storage_manager_remote)
-      override;
   void OnSystemStateInstanceReady(
       mojo::PendingRemote<mojom::SystemStateInstance> system_state_remote)
       override;
