@@ -31,6 +31,7 @@
 #include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/time/time.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -98,18 +99,29 @@ constexpr net::NetworkTrafficAnnotationTag kFocusModeSoundsThumbnailTag =
 // null image if the download attempt from the url failed. A simple retry will
 // be applied until `attempt_counter` reaches the maximum.
 void OnOneThumbnailDownloaded(
+    const base::Time start_time,
     base::OnceCallback<void(
         std::unique_ptr<FocusModeSoundsController::Playlist>)> barrier_callback,
     const FocusModeSoundsDelegate::Playlist& playlist,
     const size_t attempt_counter,
     const gfx::ImageSkia& thumbnail) {
+  const std::string method = "ImageDownload.PlaylistThumbnail";
+  focus_mode_util::RecordHistogramForApiLatency(method,
+                                                base::Time::Now() - start_time);
+
   if (thumbnail.isNull() && attempt_counter < kMaxAttemptToDownloadThumbnail) {
     FocusModeSoundsController::DownloadTrackThumbnail(
-        playlist.thumbnail_url,
-        base::BindOnce(&OnOneThumbnailDownloaded, std::move(barrier_callback),
-                       playlist, attempt_counter + 1));
+        playlist.thumbnail_url, base::BindOnce(&OnOneThumbnailDownloaded,
+                                               /*start_time=*/base::Time::Now(),
+                                               std::move(barrier_callback),
+                                               playlist, attempt_counter + 1));
     return;
   }
+
+  focus_mode_util::RecordHistogramForApiResult(
+      method, /*successful=*/!thumbnail.isNull());
+  focus_mode_util::RecordHistogramForApiRetryCount(
+      method, static_cast<int>(attempt_counter) - 1);
 
   std::move(barrier_callback)
       .Run(std::make_unique<FocusModeSoundsController::Playlist>(
@@ -172,7 +184,8 @@ void DispatchRequests(
   for (const auto& item : data) {
     FocusModeSoundsController::DownloadTrackThumbnail(
         item.thumbnail_url,
-        base::BindOnce(&OnOneThumbnailDownloaded, barrier_callback, item,
+        base::BindOnce(&OnOneThumbnailDownloaded,
+                       /*start_time=*/base::Time::Now(), barrier_callback, item,
                        /*attempt_counter=*/1));
   }
 }

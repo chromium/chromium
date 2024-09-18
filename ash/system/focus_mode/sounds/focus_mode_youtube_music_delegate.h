@@ -19,6 +19,7 @@
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "google_apis/common/api_error_codes.h"
 #include "url/gurl.h"
 
@@ -128,7 +129,8 @@ class ASH_EXPORT FocusModeYouTubeMusicDelegate
   void GetPlaylistInternal(const GetPlaylistsRequestState::PlaylistType type);
 
   // Called when get playlists request is done.
-  void OnGetPlaylistDone(const GetPlaylistsRequestState::PlaylistType type,
+  void OnGetPlaylistDone(const base::Time start_time,
+                         const GetPlaylistsRequestState::PlaylistType type,
                          google_apis::ApiErrorCode http_error_code,
                          std::optional<youtube_music::Playlist> playlist);
 
@@ -137,6 +139,7 @@ class ASH_EXPORT FocusModeYouTubeMusicDelegate
 
   // Called when get music section request is done.
   void OnGetMusicSectionDone(
+      const base::Time start_time,
       google_apis::ApiErrorCode http_error_code,
       std::optional<const std::vector<youtube_music::Playlist>> playlists);
 
@@ -150,6 +153,8 @@ class ASH_EXPORT FocusModeYouTubeMusicDelegate
 
   // Called when switching to next track is done.
   void OnNextTrackDone(
+      const base::Time start_time,
+      const bool prepare,
       const std::string& playlist_id,
       google_apis::ApiErrorCode http_error_code,
       std::optional<const youtube_music::PlaybackContext> playback_context);
@@ -158,6 +163,7 @@ class ASH_EXPORT FocusModeYouTubeMusicDelegate
 
   // Called when report playback request is done.
   void OnReportPlaybackDone(
+      const base::Time start_time,
       const GURL& url,
       google_apis::ApiErrorCode http_error_code,
       std::optional<const std::string> new_playback_reporting_token);

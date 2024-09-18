@@ -128,17 +128,20 @@ class ASH_EXPORT FocusModeTasksProvider {
  private:
   void OnTasksFetched();
   void OnTasksFetchedForTask(
+      const base::Time start_time,
       const std::string& task_list_id,
       const std::string& task_id,
       OnGetTaskCallback callback,
       bool success,
       std::optional<google_apis::ApiErrorCode> http_error,
       const ui::ListModel<api::Task>* api_tasks);
-  void OnTaskAdded(const std::string& title,
+  void OnTaskAdded(const base::Time start_time,
+                   const std::string& title,
                    OnTaskSavedCallback callback,
                    google_apis::ApiErrorCode http_error,
                    const api::Task* api_task);
-  void OnTaskUpdated(const std::string& task_list_id,
+  void OnTaskUpdated(const base::Time start_time,
+                     const std::string& task_list_id,
                      const std::string& task_id,
                      const std::string& title,
                      bool completed,
