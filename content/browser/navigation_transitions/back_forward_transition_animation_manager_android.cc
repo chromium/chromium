@@ -78,6 +78,9 @@ void BackForwardTransitionAnimationManagerAndroid::OnGestureStarted(
   // - TODO(https://crbug.com/346979589): Screenshot is captured in a landscape
   // / portrait mode but used for transition in the different mode.
   if (!ShouldAnimateNavigationTransition(navigation_direction, edge)) {
+    TRACE_EVENT(
+        "browser,navigation",
+        "BackForwardTransitionAnimationManagerAndroid::OnGestureStarted");
     return;
   }
 

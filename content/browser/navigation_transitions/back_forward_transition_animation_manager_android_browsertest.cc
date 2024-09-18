@@ -90,10 +90,11 @@ static constexpr float kFloatTolerance = 0.001f;
   EXPECT_TRANSFORM_NEAR(ViewportTranslationX(expected), (actual), \
                         kFloatTolerance)
 
-#define EXPECT_STATE_EQ(expected, actual)                                  \
-  EXPECT_EQ(expected, actual)                                              \
-      << "Expected: " << BackForwardTransitionAnimator::ToString(expected) \
-      << " but got " << BackForwardTransitionAnimator::ToString(actual);
+#define EXPECT_STATE_EQ(expected, actual)                                      \
+  EXPECT_EQ(expected, actual)                                                  \
+      << "Expected: "                                                          \
+      << BackForwardTransitionAnimator::StateToString(expected) << " but got " \
+      << BackForwardTransitionAnimator::StateToString(actual);
 
 // TODO(liuwilliam): 99 seconds seems arbitrary. Pick a meaningful constant
 // instead.
