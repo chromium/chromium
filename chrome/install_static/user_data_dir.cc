@@ -63,9 +63,8 @@ bool GetUserDataDirectoryUsingProcessCommandLine(
     const InstallConstants& mode,
     std::wstring* result,
     std::wstring* invalid_supplied_directory) {
-  return GetUserDataDirectoryImpl(
-      GetSwitchValueFromCommandLine(::GetCommandLine(), kUserDataDirSwitch),
-      mode, result, invalid_supplied_directory);
+  return GetUserDataDirectoryImpl(GetCommandLineSwitchValue(kUserDataDirSwitch),
+                                  mode, result, invalid_supplied_directory);
 }
 
 // Populates |result| with the default User Data directory for the current

@@ -44,8 +44,9 @@ void ChromeCrashReporterClient::InitializeCrashReportingForProcess() {
   instance = new ChromeCrashReporterClient();
   ANNOTATE_LEAKING_OBJECT_PTR(instance);
 
-  std::wstring process_type = install_static::GetSwitchValueFromCommandLine(
-      ::GetCommandLine(), install_static::kProcessType);
+  std::wstring process_type =
+      install_static::GetCommandLineSwitchValue(install_static::kProcessType);
+
   // Don't set up Crashpad crash reporting in the Crashpad handler itself, nor
   // in the fallback crash handler for the Crashpad handler process.
   if (process_type != install_static::kCrashpadHandler &&
