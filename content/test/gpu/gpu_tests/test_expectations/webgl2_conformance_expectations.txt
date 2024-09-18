@@ -972,8 +972,6 @@ crbug.com/1223542 [ chromeos chromeos-board-amd64-generic ] deqp/functional/gles
 
 crbug.com/326755442 [ chromeos intel mesa_ge_21.0 passthrough ] conformance2/extensions/ext-render-snorm.html [ Failure ]
 
-crbug.com/365033313 [ chromeos cros-chrome chromeos-board-amd64-generic ] conformance2/textures/image_bitmap_from_video/* [ RetryOnFailure ]
-crbug.com/365033313 [ chromeos cros-chrome chromeos-board-amd64-generic ] conformance/textures/image_bitmap_from_video/* [ RetryOnFailure ]
 
 # Suspected i915 image uprev
 crbug.com/1498990 [ chromeos chromeos-board-octopus ] conformance2/rendering/blitframebuffer-filter-outofbounds.html [ Failure ]
