@@ -49,8 +49,6 @@ FORWARD_DECLARE_TEST(ServiceWorkerStorageDiskTest,
 FORWARD_DECLARE_TEST(ServiceWorkerStorageTest, DisabledStorage);
 }  // namespace service_worker_storage_unittest
 
-BASE_DECLARE_FEATURE(kServiceWorkerScopeCache);
-
 // The maximum scope URL count for cache per the storage key.
 inline constexpr size_t kMaxServiceWorkerScopeUrlCountPerStorageKey = 100;
 

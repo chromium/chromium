@@ -1319,8 +1319,6 @@ class ServiceWorkerScopeAndRegistrationCacheTest
 };
 
 TEST_F(ServiceWorkerScopeAndRegistrationCacheTest, SkipMojoCallIfPossible) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({storage::kServiceWorkerScopeCache}, {});
   const GURL kScript("http://www.example.com/script.js");
   const GURL kScope1("http://www.example.com/scope1/");
   const GURL kScope2("http://www.example.com/scope2/");
@@ -1447,9 +1445,6 @@ TEST_F(ServiceWorkerScopeAndRegistrationCacheTest, SkipMojoCallIfPossible) {
 
 TEST_F(ServiceWorkerScopeAndRegistrationCacheTest,
        RegistrationCacheSizeAndScopeCacheLimitPerKey) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeaturesAndParameters(
-      {{storage::kServiceWorkerScopeCache, {}}}, {});
   const size_t kMaxScopeUrlCount = 2;
   storage::OverrideMaxServiceWorkerScopeUrlCountForTesting(kMaxScopeUrlCount);
   base::ScopedClosureRunner reset(base::BindOnce([]() {
@@ -1613,8 +1608,6 @@ TEST_F(ServiceWorkerScopeAndRegistrationCacheTest,
 }
 
 TEST_F(ServiceWorkerScopeAndRegistrationCacheTest, CanHandleNewRegistration) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({storage::kServiceWorkerScopeCache}, {});
   const GURL kScript("http://www.example.com/script.js");
   const GURL kScope1("http://www.example.com/scope/");
   const GURL kScope2("http://www.example.com/");
@@ -1686,9 +1679,6 @@ TEST_F(ServiceWorkerScopeAndRegistrationCacheTest, CanHandleNewRegistration) {
 
 TEST_F(ServiceWorkerScopeAndRegistrationCacheTest,
        ServiceWorkerScopeCacheLimit) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeaturesAndParameters(
-      {{storage::kServiceWorkerScopeCache, {}}}, {});
   // Restart to apply the above feature params.
   SimulateRestart();
   {
