@@ -3034,6 +3034,11 @@ TEST_F(HttpStreamFactoryTest, RequestBidirectionalStreamImplFailure) {
 // SpdySessions have unique socket tags (e.g. one sessions should not be shared
 // amongst streams with different socket tags).
 TEST_F(HttpStreamFactoryTest, Tag) {
+  // SocketTag is not supported yet for HappyEyeballsV3.
+  // TODO(crbug.com/346835898): Support SocketTag.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(features::kHappyEyeballsV3);
+
   SpdySessionDependencies session_deps;
   auto socket_factory = std::make_unique<MockTaggingClientSocketFactory>();
   auto* socket_factory_ptr = socket_factory.get();
@@ -3149,6 +3154,11 @@ TEST_F(HttpStreamFactoryTest, Tag) {
 // sessions and that QuicSessions have unique socket tags (e.g. one sessions
 // should not be shared amongst streams with different socket tags).
 TEST_P(HttpStreamFactoryBidirectionalQuicTest, Tag) {
+  // SocketTag is not supported yet for HappyEyeballsV3.
+  // TODO(crbug.com/346835898): Support SocketTag.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(features::kHappyEyeballsV3);
+
   // Prepare mock QUIC data for a first session establishment.
   MockQuicData mock_quic_data(version());
   spdy::SpdyPriority priority =
@@ -3277,6 +3287,11 @@ TEST_P(HttpStreamFactoryBidirectionalQuicTest, Tag) {
 }
 
 TEST_F(HttpStreamFactoryTest, ChangeSocketTag) {
+  // SocketTag is not supported yet for HappyEyeballsV3.
+  // TODO(crbug.com/346835898): Support SocketTag.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(features::kHappyEyeballsV3);
+
   SpdySessionDependencies session_deps;
   auto socket_factory = std::make_unique<MockTaggingClientSocketFactory>();
   auto* socket_factory_ptr = socket_factory.get();
@@ -3451,6 +3466,11 @@ TEST_F(HttpStreamFactoryTest, ChangeSocketTag) {
 
 // Regression test for https://crbug.com/954503.
 TEST_F(HttpStreamFactoryTest, ChangeSocketTagAvoidOverwrite) {
+  // SocketTag is not supported yet for HappyEyeballsV3.
+  // TODO(crbug.com/346835898): Support SocketTag.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(features::kHappyEyeballsV3);
+
   SpdySessionDependencies session_deps;
   auto socket_factory = std::make_unique<MockTaggingClientSocketFactory>();
   auto* socket_factory_ptr = socket_factory.get();
@@ -3615,7 +3635,8 @@ TEST_F(HttpStreamFactoryTest, ChangeSocketTagAvoidOverwrite) {
   // Verify no new sockets created.
   EXPECT_EQ(socket2, socket_factory_ptr->GetLastProducedTCPSocket());
 }
-#endif
+
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // Test that when creating a stream all sessions that alias an IP are tried,
 // not just one.  This is important because there can be multiple sessions
