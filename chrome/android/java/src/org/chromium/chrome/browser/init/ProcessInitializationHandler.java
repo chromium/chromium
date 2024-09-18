@@ -30,7 +30,6 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.memory.MemoryPressureUma;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
-import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.ChainedTasks;
 import org.chromium.base.task.PostTask;
@@ -451,15 +450,7 @@ public class ProcessInitializationHandler {
         }
 
         // Initialize UMA settings for survey component.
-        // TODO(crbug.com/40281638): Observe PrivacyPreferencesManagerImpl from SurveyClientFactory.
-        ObservableSupplierImpl<Boolean> crashUploadPermissionSupplier =
-                new ObservableSupplierImpl<>();
-        crashUploadPermissionSupplier.set(
-                PrivacyPreferencesManagerImpl.getInstance().isUsageAndCrashReportingPermitted());
-        PrivacyPreferencesManagerImpl.getInstance()
-                .getUsageAndCrashReportingPermittedObservableSupplier()
-                .addObserver(crashUploadPermissionSupplier::set);
-        SurveyClientFactory.initialize(crashUploadPermissionSupplier);
+        SurveyClientFactory.initialize(PrivacyPreferencesManagerImpl.getInstance());
 
         AppHooks.get().registerPolicyProviders(CombinedPolicyProvider.get());
         SpeechRecognition.initialize();

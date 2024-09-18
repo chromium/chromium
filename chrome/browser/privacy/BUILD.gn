@@ -19,7 +19,6 @@ if (is_android) {
       "java/src/org/chromium/chrome/browser/privacy/secure_dns/SecureDnsBridge.java",
       "java/src/org/chromium/chrome/browser/privacy/secure_dns/SecureDnsProviderPreference.java",
       "java/src/org/chromium/chrome/browser/privacy/secure_dns/SecureDnsSettings.java",
-      "settings/java/src/org/chromium/chrome/browser/privacy/settings/PrivacyPreferencesManager.java",
     ]
     deps = [
       ":java_resources",
@@ -41,6 +40,7 @@ if (is_android) {
       "//third_party/androidx:androidx_preference_preference_java",
       "//third_party/jni_zero:jni_zero_java",
     ]
+    public_deps = [ ":privacy_preference_manager_java" ]
     srcjar_deps = [
       ":jni_headers",
       "//chrome/browser/net:secure_dns_management_mode_generated_enum",
@@ -48,6 +48,25 @@ if (is_android) {
     ]
 
     resources_package = "org.chromium.chrome.browser.privacy.secure_dns"
+  }
+
+  android_library("privacy_preference_manager_java") {
+    visibility = [
+      ":*",
+      "//chrome/android:*",
+      "//chrome/browser/feed/android:*",
+      "//chrome/browser/ui/android/hats:*",
+      "//chrome/browser/ui/android/hats/*:*",
+      "//chrome/browser/ui/android/omnibox:*",
+      "//chrome/browser/ui/android/signin:*",
+      "//chrome/browser/xsurface_provider:*",
+    ]
+    sources = [ "settings/java/src/org/chromium/chrome/browser/privacy/settings/PrivacyPreferencesManager.java" ]
+    deps = [
+      "//base:base_java",
+      "//components/minidump_uploader:minidump_uploader_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+    ]
   }
 
   android_resources("java_resources") {
