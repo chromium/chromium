@@ -151,8 +151,16 @@ if (toolchain_has_rust) {
     }
 
     # From rust/library/std/src/sys/unix/mod.rs.
-    # TODO(danakj): We should generate this list somehow when building or rolling
-    # the Rust toolchain?
+    #
+    # libs = [ "System" ] (meaning /usr/lib/libSystem.B.dylib) is intentionally
+    # omitted here on Apple platforms, because the linker driver is responsible
+    # for adding it, much like libc on most other POSIX platforms. It can be
+    # ordering-sensitive, and including it here can alter its order relative to
+    # other libraries. https://crbug.com/367764848 is an example of a bug caused
+    # by specifying libSystem too early.
+    #
+    # TODO(danakj): We should generate this list somehow when building or
+    # rolling the Rust toolchain?
     if (is_android) {
       libs = [ "dl" ]
     } else if (target_os == "freebsd") {
@@ -165,13 +173,8 @@ if (toolchain_has_rust) {
         "rt",
         "pthread",
       ]
-    } else if (is_mac) {
-      libs = [ "System" ]
     } else if (is_ios) {
-      libs = [
-        "System",
-        "objc",
-      ]
+      libs = [ "objc" ]
       frameworks = [
         "Security.framework",
         "Foundation.framework",
