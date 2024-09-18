@@ -20196,6 +20196,7 @@ from previous Chrome versions.
   <int value="-23804418"
       label="NTPArticleSuggestionsExpandableHeader:disabled"/>
   <int value="-23772747" label="NoWakeUpsForCanceledTasks:enabled"/>
+  <int value="-23659994" label="SafetyHubHaTSOneOffSurvey:enabled"/>
   <int value="-23090520" label="disable-search-button-in-omnibox"/>
   <int value="-22544408" label="enable-video-player-chromecast-support"/>
   <int value="-22506564" label="OptimizeDataUrls:disabled"/>
@@ -21794,6 +21795,7 @@ from previous Chrome versions.
       label="SegmentationPlatformAndroidHomeModuleRankerV2:enabled"/>
   <int value="644084236" label="CloseButtonsInactiveTabs:enabled"/>
   <int value="644189071" label="PermissionsBlacklist:enabled"/>
+  <int value="644367202" label="SafetyHubHaTSOneOffSurvey:disabled"/>
   <int value="644526367" label="TerminalMultiProfile:disabled"/>
   <int value="645518695" label="EolIncentive:enabled"/>
   <int value="646163532" label="CameraAppPreviewOcr:enabled"/>

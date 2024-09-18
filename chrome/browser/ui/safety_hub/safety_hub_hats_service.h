@@ -44,6 +44,10 @@ class SafetyHubHatsService : public KeyedService {
   void TriggerTrustSafetySentimentSurvey(
       TrustSafetySentimentService::FeatureArea area);
 
+  // Triggers a Safety Hub survey for the long-term Trust & Safety sentiment
+  // tracking.
+  void TriggerOneOffSurvey(const std::string& trigger);
+
   const raw_ref<Profile> profile_;
   const raw_ptr<TrustSafetySentimentService> tss_service_;
   const raw_ref<SafetyHubMenuNotificationService> menu_notification_service_;
