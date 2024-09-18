@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/video/av1_video_encoder.h"
 
 #include <algorithm>
+#include <array>
 #include <cmath>
 #include <iterator>
 
@@ -33,12 +29,12 @@ namespace media {
 namespace {
 
 // Map externally visible buffer ids [0, 1, 2] to ids used by libaom.
-constexpr int kExternalToLibAomBufMap[] = {
+constexpr std::array<int, 3> kExternalToLibAomBufMap = {
     0,  // LAST
     3,  // GOLDEN
     6,  // ALTREF
 };
-constexpr size_t kNumberOfReferenceBuffers = std::size(kExternalToLibAomBufMap);
+constexpr size_t kNumberOfReferenceBuffers = kExternalToLibAomBufMap.size();
 
 void FreeCodecCtx(aom_codec_ctx_t* codec_ctx) {
   if (codec_ctx->name) {
@@ -91,15 +87,17 @@ aom_img_fmt GetAomImgFormat(VideoPixelFormat format) {
 // Sets up a standard 3-plane image_t from `frame`.
 void SetupStandardYuvPlanes(const VideoFrame& frame, aom_image_t* aom_image) {
   DCHECK_EQ(VideoFrame::NumPlanes(frame.format()), 3u);
-  aom_image->planes[AOM_PLANE_Y] =
+  auto planes = base::span(aom_image->planes);
+  auto stride = base::span(aom_image->stride);
+  planes[AOM_PLANE_Y] =
       const_cast<uint8_t*>(frame.visible_data(VideoFrame::Plane::kY));
-  aom_image->planes[AOM_PLANE_U] =
+  planes[AOM_PLANE_U] =
       const_cast<uint8_t*>(frame.visible_data(VideoFrame::Plane::kU));
-  aom_image->planes[AOM_PLANE_V] =
+  planes[AOM_PLANE_V] =
       const_cast<uint8_t*>(frame.visible_data(VideoFrame::Plane::kV));
-  aom_image->stride[AOM_PLANE_Y] = frame.stride(VideoFrame::Plane::kY);
-  aom_image->stride[AOM_PLANE_U] = frame.stride(VideoFrame::Plane::kU);
-  aom_image->stride[AOM_PLANE_V] = frame.stride(VideoFrame::Plane::kV);
+  stride[AOM_PLANE_Y] = frame.stride(VideoFrame::Plane::kY);
+  stride[AOM_PLANE_U] = frame.stride(VideoFrame::Plane::kU);
+  stride[AOM_PLANE_V] = frame.stride(VideoFrame::Plane::kV);
 }
 
 EncoderStatus SetUpAomConfig(VideoCodecProfile profile,
@@ -218,7 +216,9 @@ EncoderStatus SetUpAomConfig(VideoCodecProfile profile,
 
   // Setting up SVC parameters
   svc_params = {};
-  svc_params.framerate_factor[0] = 1;
+  auto framerate_factor = base::span(svc_params.framerate_factor);
+  auto layer_target_bitrate = base::span(svc_params.layer_target_bitrate);
+  framerate_factor[0] = 1;
   svc_params.number_spatial_layers = 1;
   svc_params.number_temporal_layers = 1;
   if (opts.scalability_mode.has_value()) {
@@ -227,26 +227,23 @@ EncoderStatus SetUpAomConfig(VideoCodecProfile profile,
         // Nothing to do
         break;
       case SVCScalabilityMode::kL1T2:
-        svc_params.framerate_factor[0] = 2;
-        svc_params.framerate_factor[1] = 1;
+        framerate_factor[0] = 2;
+        framerate_factor[1] = 1;
         svc_params.number_temporal_layers = 2;
         // Bitrate allocation L0: 60% L1: 40%
-        svc_params.layer_target_bitrate[0] =
-            60 * config.rc_target_bitrate / 100;
-        svc_params.layer_target_bitrate[1] = config.rc_target_bitrate;
+        layer_target_bitrate[0] = 60 * config.rc_target_bitrate / 100;
+        layer_target_bitrate[1] = config.rc_target_bitrate;
         break;
       case SVCScalabilityMode::kL1T3:
-        svc_params.framerate_factor[0] = 4;
-        svc_params.framerate_factor[1] = 2;
-        svc_params.framerate_factor[2] = 1;
+        framerate_factor[0] = 4;
+        framerate_factor[1] = 2;
+        framerate_factor[2] = 1;
         svc_params.number_temporal_layers = 3;
 
         // Bitrate allocation L0: 50% L1: 20% L2: 30%
-        svc_params.layer_target_bitrate[0] =
-            50 * config.rc_target_bitrate / 100;
-        svc_params.layer_target_bitrate[1] =
-            70 * config.rc_target_bitrate / 100;
-        svc_params.layer_target_bitrate[2] = config.rc_target_bitrate;
+        layer_target_bitrate[0] = 50 * config.rc_target_bitrate / 100;
+        layer_target_bitrate[1] = 70 * config.rc_target_bitrate / 100;
+        layer_target_bitrate[2] = config.rc_target_bitrate;
 
         break;
       default:
@@ -256,11 +253,15 @@ EncoderStatus SetUpAomConfig(VideoCodecProfile profile,
     }
   }
 
+  auto scaling_factor_num = base::span(svc_params.scaling_factor_num);
+  auto scaling_factor_den = base::span(svc_params.scaling_factor_den);
+  auto max_quantizers = base::span(svc_params.max_quantizers);
+  auto min_quantizers = base::span(svc_params.min_quantizers);
   for (int i = 0; i < svc_params.number_temporal_layers; ++i) {
-    svc_params.scaling_factor_num[i] = 1;
-    svc_params.scaling_factor_den[i] = 1;
-    svc_params.max_quantizers[i] = config.rc_max_quantizer;
-    svc_params.min_quantizers[i] = config.rc_min_quantizer;
+    scaling_factor_num[i] = 1;
+    scaling_factor_den[i] = 1;
+    max_quantizers[i] = config.rc_max_quantizer;
+    min_quantizers[i] = config.rc_min_quantizer;
   }
 
   return EncoderStatus::Codes::kOk;
@@ -497,19 +498,21 @@ void Av1VideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
 
   // Resizing should have been taken care of above.
   DCHECK_EQ(frame->visible_rect().size(), options_.frame_size);
+  auto planes = base::span(image_.planes);
+  auto stride = base::span(image_.stride);
   switch (profile_) {
     case AV1PROFILE_PROFILE_MAIN: {
       DCHECK(frame->format() == PIXEL_FORMAT_NV12 ||
              frame->format() == PIXEL_FORMAT_I420);
       if (frame->format() == PIXEL_FORMAT_NV12) {
-        image_.planes[AOM_PLANE_Y] =
+        planes[AOM_PLANE_Y] =
             const_cast<uint8_t*>(frame->visible_data(VideoFrame::Plane::kY));
-        image_.planes[AOM_PLANE_U] =
+        planes[AOM_PLANE_U] =
             const_cast<uint8_t*>(frame->visible_data(VideoFrame::Plane::kUV));
-        image_.planes[AOM_PLANE_V] = nullptr;
-        image_.stride[AOM_PLANE_Y] = frame->stride(VideoFrame::Plane::kY);
-        image_.stride[AOM_PLANE_U] = frame->stride(VideoFrame::Plane::kUV);
-        image_.stride[AOM_PLANE_V] = 0;
+        planes[AOM_PLANE_V] = nullptr;
+        stride[AOM_PLANE_Y] = frame->stride(VideoFrame::Plane::kY);
+        stride[AOM_PLANE_U] = frame->stride(VideoFrame::Plane::kUV);
+        stride[AOM_PLANE_V] = 0;
       } else {
         SetupStandardYuvPlanes(*frame, &image_);
       }
@@ -552,7 +555,7 @@ void Av1VideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
   if (options_.manual_reference_buffer_control) {
     aom_svc_ref_frame_config_t ref_frame_config = {};
     for (size_t i = 0; i < kNumberOfReferenceBuffers; i++) {
-      ref_frame_config.ref_idx[kExternalToLibAomBufMap[i]] = i;
+      base::span(ref_frame_config.ref_idx)[kExternalToLibAomBufMap[i]] = i;
     }
 
     if (encode_options.update_buffer.has_value()) {
@@ -563,7 +566,7 @@ void Av1VideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
                           "update_buffer is out of bounds"));
         return;
       }
-      ref_frame_config.refresh[update_buffer_idx] = 1;
+      base::span(ref_frame_config.refresh)[update_buffer_idx] = 1;
     }
     for (uint8_t ref : encode_options.reference_buffers) {
       if (ref >= kNumberOfReferenceBuffers) {
@@ -572,7 +575,7 @@ void Av1VideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
                           "reference_buffer is out of bounds"));
         return;
       }
-      ref_frame_config.reference[kExternalToLibAomBufMap[ref]] = 1;
+      base::span(ref_frame_config.reference)[kExternalToLibAomBufMap[ref]] = 1;
     }
 
     auto error = aom_codec_control(codec_.get(), AV1E_SET_SVC_REF_FRAME_CONFIG,
@@ -703,9 +706,11 @@ VideoEncoderOutput Av1VideoEncoder::GetEncoderOutput(
     if (pkt->kind == AOM_CODEC_CX_FRAME_PKT) {
       // The encoder is operating synchronously. There should be exactly one
       // encoded packet, or the frame is dropped.
+      // SAFETY: It's libaom documented behaviour that pkt->data.frame.buf
+      // has size of pkt->data.frame.sz.
       output.data = base::HeapArray<uint8_t>::CopiedFrom(
-          {reinterpret_cast<uint8_t*>(pkt->data.frame.buf),
-           pkt->data.frame.sz});
+          UNSAFE_BUFFERS({reinterpret_cast<uint8_t*>(pkt->data.frame.buf),
+                          pkt->data.frame.sz}));
       output.key_frame = (pkt->data.frame.flags & AOM_FRAME_IS_KEY) != 0;
       output.temporal_id = output.key_frame ? 0 : temporal_id;
       output.color_space = color_space;
