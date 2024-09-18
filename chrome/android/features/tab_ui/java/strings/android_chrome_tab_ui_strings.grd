@@ -837,11 +837,11 @@
       <message name="IDS_RENAME_TAB_GROUP_MENU_ITEM" desc="Menu item text which will prompt a confirmation dialog to rename a tab group.">
         Rename
       </message>
-      <message name="IDS_ACCESSIBILITY_OPEN_TAB_GROUP_OVERFLOW_MENU_WITH_GROUP_NAME" desc="Accessibility string for opening the overflow menu on a tab group, which will allow the user to perform several actions on the tab group. TITLE_OF_GROUP is the title of the group.">
-        Open the tab group action menu for tab group <ph name="TITLE_OF_GROUP">%1$s<ex>Shopping cart</ex></ph>
+      <message name="IDS_ACCESSIBILITY_OPEN_TAB_GROUP_OVERFLOW_MENU_WITH_GROUP_NAME_WITH_COLOR" desc="Accessibility string for opening the overflow menu on a tab group, which will allow the user to perform several actions on the tab group. TITLE_OF_GROUP is the title of the group. COLOR_NAME is the color of the group.">
+        Open the tab group action menu for tab group <ph name="TITLE_OF_GROUP">%1$s<ex>Shopping cart</ex></ph>, color <ph name="COLOR_NAME">%2$s<ex>Blue</ex></ph>.
       </message>
-      <message name="IDS_ACCESSIBILITY_OPEN_SHARED_TAB_GROUP_OVERFLOW_MENU_WITH_GROUP_NAME" desc="Accessibility string for opening the overflow menu on a shared tab group, which will allow the user to perform several actions on the tab group. TITLE_OF_GROUP is the title of the group.">
-        Open the tab group action menu for shared tab group <ph name="TITLE_OF_GROUP">%1$s<ex>Shopping cart</ex></ph>
+      <message name="IDS_ACCESSIBILITY_OPEN_SHARED_TAB_GROUP_OVERFLOW_MENU_WITH_GROUP_NAME_WITH_COLOR" desc="Accessibility string for opening the overflow menu on a shared tab group, which will allow the user to perform several actions on the tab group. TITLE_OF_GROUP is the title of the group. COLOR_NAME is the color of the group.">
+        Open the tab group action menu for shared tab group <ph name="TITLE_OF_GROUP">%1$s<ex>Shopping cart</ex></ph>, color <ph name="COLOR_NAME">%2$s<ex>Blue</ex></ph>.
       </message>
       <message name="IDS_CLOSE_FROM_GROUP_DESCRIPTION" desc="Description of the action of deleting a tab and a group, shown in a confirmation dialog.">
         This will delete the group from all devices signed into <ph name="USER_EMAIL">%1$s<ex>test@gmail.com</ex></ph>

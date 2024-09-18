@@ -3789,7 +3789,13 @@ public class TabListMediatorUnitTest {
         Tab tab3 = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
         List<Tab> group1 = new ArrayList<>(Arrays.asList(mTab1, tab3));
         createTabGroup(group1, TAB1_ID, TAB_GROUP_ID);
-        String targetString = "Open the tab group action menu for tab group 2 tabs";
+        final @TabGroupColorId int defaultColor = TabGroupColorId.GREY;
+        final @StringRes int colorDesc =
+                ColorPickerUtils.getTabGroupColorPickerItemColorAccessibilityString(defaultColor);
+        String targetString =
+                String.format(
+                        "Open the tab group action menu for tab group 2 tabs, color %s.",
+                        mResources.getString(colorDesc));
 
         mMediator.resetWithListOfTabs(group1, false);
         assertThat(
@@ -3799,8 +3805,8 @@ public class TabListMediatorUnitTest {
         // Set group name.
         targetString =
                 String.format(
-                        "Open the tab group action menu for tab group %s",
-                        CUSTOMIZED_DIALOG_TITLE1);
+                        "Open the tab group action menu for tab group %s, color %s.",
+                        CUSTOMIZED_DIALOG_TITLE1, mResources.getString(colorDesc));
         mMediator.getTabGroupTitleEditor().storeTabGroupTitle(TAB1_ID, CUSTOMIZED_DIALOG_TITLE1);
         mMediator.getTabGroupTitleEditor().updateTabGroupTitle(mTab1, CUSTOMIZED_DIALOG_TITLE1);
         assertThat(
@@ -3809,7 +3815,11 @@ public class TabListMediatorUnitTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.TAB_GROUP_PANE_ANDROID, ChromeFeatureList.DATA_SHARING})
+    @EnableFeatures({
+        ChromeFeatureList.TAB_GROUP_PANE_ANDROID,
+        ChromeFeatureList.TAB_GROUP_PARITY_ANDROID,
+        ChromeFeatureList.DATA_SHARING
+    })
     public void testActionButtonDescriptionStringGroupOverflowMenu_TabSwitcherSharedGroup() {
         when(mProfile.isOffTheRecord()).thenReturn(false);
         when(mTabGroupSyncFeaturesJniMock.isTabGroupSyncEnabled(mProfile)).thenReturn(true);
@@ -3821,10 +3831,15 @@ public class TabListMediatorUnitTest {
         setupSyncedGroup(/* isShared= */ true);
 
         String defaultTitle = TabGroupTitleEditor.getDefaultTitle(mActivity, group1.size());
+        final @TabGroupColorId int defaultColor = TabGroupColorId.GREY;
+        final @StringRes int colorDesc =
+                ColorPickerUtils.getTabGroupColorPickerItemColorAccessibilityString(defaultColor);
         String emptyTitleTargetString =
                 mResources.getString(
-                        R.string.accessibility_open_shared_tab_group_overflow_menu_with_group_name,
-                        defaultTitle);
+                        R.string
+                                .accessibility_open_shared_tab_group_overflow_menu_with_group_name_with_color,
+                        defaultTitle,
+                        mResources.getString(colorDesc));
 
         // Check that a base group with no title has the correct content description.
         mMediator.resetWithListOfTabs(group1, false);

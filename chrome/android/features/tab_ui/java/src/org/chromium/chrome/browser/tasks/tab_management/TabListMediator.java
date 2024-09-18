@@ -2892,6 +2892,11 @@ class TabListMediator implements TabListNotificationHandler {
                         numOfRelatedTabs);
             }
         } else {
+            TabGroupModelFilter filter = (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get();
+            @TabGroupColorId int colorId = filter.getTabGroupColorWithFallback(tab.getRootId());
+            final @StringRes int colorDescRes =
+                    ColorPickerUtils.getTabGroupColorPickerItemColorAccessibilityString(colorId);
+            String colorDesc = res.getString(colorDescRes);
             if (ChromeFeatureList.sTabGroupPaneAndroid.isEnabled()) {
                 String descriptionTitle = title;
                 if (descriptionTitle.isEmpty()) {
@@ -2901,22 +2906,18 @@ class TabListMediator implements TabListNotificationHandler {
                 if (!ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING)
                         || !hasCollaboration(tab)) {
                     return res.getString(
-                            R.string.accessibility_open_tab_group_overflow_menu_with_group_name,
-                            descriptionTitle);
+                            R.string
+                                    .accessibility_open_tab_group_overflow_menu_with_group_name_with_color,
+                            descriptionTitle,
+                            colorDesc);
                 } else {
                     return res.getString(
                             R.string
-                                    .accessibility_open_shared_tab_group_overflow_menu_with_group_name,
-                            descriptionTitle);
+                                    .accessibility_open_shared_tab_group_overflow_menu_with_group_name_with_color,
+                            descriptionTitle,
+                            colorDesc);
                 }
             } else {
-                TabGroupModelFilter filter =
-                        (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get();
-                @TabGroupColorId int colorId = filter.getTabGroupColorWithFallback(tab.getRootId());
-                final @StringRes int colorDescRes =
-                        ColorPickerUtils.getTabGroupColorPickerItemColorAccessibilityString(
-                                colorId);
-                String colorDesc = res.getString(colorDescRes);
                 if (title.isEmpty()) {
                     return res.getQuantityString(
                             R.plurals.accessibility_close_tab_group_button_with_color,
