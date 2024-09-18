@@ -1106,31 +1106,55 @@ void AutocompleteMatch::LogSearchEngineUsed(
   UMA_HISTOGRAM_ENUMERATION("Omnibox.SearchEngineType", search_engine_type,
                             SEARCH_ENGINE_MAX);
 
-  if (template_url->created_by_policy() ==
+  if (template_url->created_by_policy() !=
       TemplateURLData::CreatedByPolicy::kNoPolicy) {
-    return;
-  }
+    UMA_HISTOGRAM_ENUMERATION("Omnibox.SearchEngineType.SetByEnterprisePolicy",
+                              search_engine_type, SEARCH_ENGINE_MAX);
 
-  UMA_HISTOGRAM_ENUMERATION("Omnibox.SearchEngineType.SetByEnterprisePolicy",
-                            search_engine_type, SEARCH_ENGINE_MAX);
+    switch (template_url->created_by_policy()) {
+      case TemplateURLData::CreatedByPolicy::kDefaultSearchProvider:
+        UMA_HISTOGRAM_ENUMERATION(
+            "Omnibox.SearchEngineType.SetByEnterprisePolicy."
+            "DefaultSearchProvider",
+            search_engine_type, SEARCH_ENGINE_MAX);
+        break;
 
-  switch (template_url->created_by_policy()) {
-    case TemplateURLData::CreatedByPolicy::kDefaultSearchProvider:
+      case TemplateURLData::CreatedByPolicy::kSiteSearch:
+        UMA_HISTOGRAM_ENUMERATION(
+            "Omnibox.SearchEngineType.SetByEnterprisePolicy."
+            "SiteSearchSettings",
+            search_engine_type, SEARCH_ENGINE_MAX);
+        break;
+
+      default:
+        NOTREACHED_IN_MIGRATION();
+    }
+  } else if (template_url->type() ==
+             TemplateURL::NORMAL_CONTROLLED_BY_EXTENSION) {
+    if (template_url_service->GetDefaultSearchProvider() == template_url) {
       UMA_HISTOGRAM_ENUMERATION(
-          "Omnibox.SearchEngineType.SetByEnterprisePolicy."
-          "DefaultSearchProvider",
+          "Omnibox.SearchEngineType.SetByExtension."
+          "SettingsOverrideDefaultSearchProvider",
           search_engine_type, SEARCH_ENGINE_MAX);
-      break;
-
-    case TemplateURLData::CreatedByPolicy::kSiteSearch:
+    } else {
+      // TODO(crbug.com/367330704): Find an extension that uses the Chrome
+      //   Settings override to add an engine but that doesn't set is_default to
+      //   true in order to manually test this code path.
       UMA_HISTOGRAM_ENUMERATION(
-          "Omnibox.SearchEngineType.SetByEnterprisePolicy."
-          "SiteSearchSettings",
+          "Omnibox.SearchEngineType.SetByExtension."
+          "SettingsOverrideNonDefaultSearchProvider",
           search_engine_type, SEARCH_ENGINE_MAX);
-      break;
-
-    default:
-      NOTREACHED_IN_MIGRATION();
+    }
+  } else if (template_url->type() == TemplateURL::OMNIBOX_API_EXTENSION) {
+    // The omnibox API only allows for keyword/site search entries, not default
+    // search engines so only one type of histogram needs to be recorded here.
+    //
+    // TODO(crbug.com/367330704): Figure out why this code path isn't being
+    //   reached when issuing an omnibox API extension search. Tested with
+    //   https://chromewebstore.google.com/detail/github-omnibox/pdifemobhgmmnjlfjigebjkkbhllgcgp
+    UMA_HISTOGRAM_ENUMERATION(
+        "Omnibox.SearchEngineType.SetByExtension.OmniboxAPI",
+        search_engine_type, SEARCH_ENGINE_MAX);
   }
 }
 
