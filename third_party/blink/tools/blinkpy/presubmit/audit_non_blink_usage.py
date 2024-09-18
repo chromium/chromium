@@ -140,7 +140,6 @@ _CONFIG = [
             'base::Span(OrSize|Reader|Writer)',
             'base::StringPiece',
             'base::SubstringSetMatcher',
-            'base::SupportsWeakPtr',
             'base::SysInfo',
             'base::ThreadChecker',
             'base::ThreadTicks',

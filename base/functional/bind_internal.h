@@ -1909,7 +1909,7 @@ struct BindHelper {
 // If `IsWeakReceiver<T>::value` is `true` and `T` is used as a method receiver,
 // `Bind()` cancels the method invocation if the receiver tests as false.
 // ```
-//   struct S : SupportsWeakPtr<S> {
+//   struct S {
 //     void f() {}
 //   };
 //
