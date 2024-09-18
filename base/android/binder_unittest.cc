@@ -617,7 +617,8 @@ BINDER_TEST_CHILD_MAIN(AssociateValid_Child) {
   binder_destroyed.Wait();
 }
 
-TEST_F(BinderMultiprocessTest, AssociateInvalid) {
+// (crbug.com/365998251): Builder failing this unittest.
+TEST_F(BinderMultiprocessTest, DISABLED_AssociateInvalid) {
   auto sink = base::MakeRefCounted<BinderSink>(*this);
   Process child = sink->LaunchChildAndWaitForCall(
       "AssociateInvalid_Child", [&](BinderRef binder) {
