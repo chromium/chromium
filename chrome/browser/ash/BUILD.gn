@@ -25,8 +25,6 @@ static_library("ash") {
   sources = [
     "browser_context_keyed_service_factories.cc",
     "browser_context_keyed_service_factories.h",
-    "chrome_browser_main_parts_ash.cc",
-    "chrome_browser_main_parts_ash.h",
   ]
 
   allow_circular_includes_from = [
