@@ -617,12 +617,6 @@ void ServiceWorkerContextCore::DeleteForStorageKey(const blink::StorageKey& key,
           AsWeakPtr(), key, std::move(callback)));
 }
 
-void ServiceWorkerContextCore::PerformStorageCleanup(
-    base::OnceClosure callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  registry()->PerformStorageCleanup(std::move(callback));
-}
-
 void ServiceWorkerContextCore::DidGetRegistrationsForDeleteForStorageKey(
     const blink::StorageKey& key,
     base::OnceCallback<void(blink::ServiceWorkerStatusCode)> callback,
