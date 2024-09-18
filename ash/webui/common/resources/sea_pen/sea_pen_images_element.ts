@@ -37,6 +37,28 @@ import {isNonEmptyArray, isPersonalizationApp, isSeaPenImageId} from './sea_pen_
 const kFreeformLoadingPlaceholderCount = 4;
 const kTemplateLoadingPlaceholderCount = 8;
 
+export class SeaPenHistoryPromptSelectedEvent extends CustomEvent<string> {
+  static readonly EVENT_NAME = 'sea-pen-history-prompt-selected';
+
+  constructor(prompt: string) {
+    super(
+        SeaPenHistoryPromptSelectedEvent.EVENT_NAME,
+        {
+          bubbles: true,
+          composed: true,
+          detail: prompt,
+        },
+    );
+  }
+}
+
+declare global {
+  interface HTMLElementEventMap {
+    [SeaPenHistoryPromptSelectedEvent.EVENT_NAME]:
+        SeaPenHistoryPromptSelectedEvent;
+  }
+}
+
 type Tile = 'loading'|SeaPenThumbnail;
 
 let cameraAspectRatio: number|null = null;
@@ -511,6 +533,12 @@ export class SeaPenImagesElement extends WithSeaPenStore {
       textQueryHistory: TextQueryHistoryEntry[]): boolean {
     return !thumbnailsLoading && !!seaPenQuery?.textQuery &&
         isNonEmptyArray(textQueryHistory);
+  }
+
+  private onHistoryPromptClicked_(e: Event&
+                                  {model: {item: TextQueryHistoryEntry}}) {
+    this.dispatchEvent(
+        new SeaPenHistoryPromptSelectedEvent(e.model.item.query));
   }
 }
 

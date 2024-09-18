@@ -5,7 +5,7 @@
 import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
-import {SeaPenErrorElement, SeaPenImageLoadingElement, SeaPenImagesElement, SeaPenRouterElement, SeaPenZeroStateSvgElement, setSeaPenThumbnailsAction, setSelectedRecentSeaPenImageAction, setTransitionsEnabled, SparklePlaceholderElement, WallpaperGridItemElement} from 'chrome://personalization/js/personalization_app.js';
+import {SeaPenErrorElement, SeaPenHistoryPromptSelectedEvent, SeaPenImageLoadingElement, SeaPenImagesElement, SeaPenRouterElement, SeaPenZeroStateSvgElement, setSeaPenThumbnailsAction, setSelectedRecentSeaPenImageAction, setTransitionsEnabled, SparklePlaceholderElement, WallpaperGridItemElement} from 'chrome://personalization/js/personalization_app.js';
 import {CrIconButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_icon_button/cr_icon_button.js';
 import {PromiseResolver} from 'chrome://resources/ash/common/promise_resolver.js';
 import {MantaStatusCode, SeaPenThumbnail} from 'chrome://resources/ash/common/sea_pen/sea_pen.mojom-webui.js';
@@ -14,7 +14,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PaperSpinnerLiteElement} from 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
-import {isVisible} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {baseSetup, initElement, teardownElement} from './personalization_app_test_utils.js';
 import {TestPersonalizationStore} from './test_personalization_store.js';
@@ -178,6 +178,44 @@ suite('SeaPenImagesElementTest', function() {
         'div:not([hidden]).thumbnail-item-container.history-item');
     assertEquals(8, thumbnails!.length, 'should be 8 images available.');
   });
+
+  test(
+      'sends history prompt selected event when history prompt is clicked',
+      async () => {
+        personalizationStore.data.wallpaper.seaPen.loading.thumbnails = false;
+        personalizationStore.data.wallpaper.seaPen.thumbnails =
+            seaPenProvider.thumbnails;
+        personalizationStore.data.wallpaper.seaPen.currentSeaPenQuery = {
+          textQuery: 'test freeform query',
+        };
+        personalizationStore.data.wallpaper.seaPen.textQueryHistory = [
+          {
+            query: 'test freeform query',
+            thumbnails: personalizationStore.data.wallpaper.seaPen.thumbnails =
+                seaPenProvider.thumbnails,
+          },
+          {
+            query: 'test freeform query 1',
+            thumbnails: personalizationStore.data.wallpaper.seaPen.thumbnails =
+                seaPenProvider.thumbnails,
+          },
+        ];
+
+        // Initialize |seaPenImagesElement|.
+        seaPenImagesElement = initElement(SeaPenImagesElement);
+        await waitAfterNextRender(seaPenImagesElement);
+
+        const lastQuery = seaPenImagesElement.shadowRoot!.getElementById(
+            'queryHistoryHeading0');
+        assertTrue(!!lastQuery, 'last query is available');
+
+        const historyPromptSelectedEvent = eventToPromise(
+            SeaPenHistoryPromptSelectedEvent.EVENT_NAME, seaPenImagesElement);
+
+        lastQuery.click();
+
+        await historyPromptSelectedEvent;
+      });
 
   test('manages loading and selected when thumbnail clicked', async () => {
     personalizationStore.setReducersEnabled(true);

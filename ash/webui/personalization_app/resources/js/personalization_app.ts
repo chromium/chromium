@@ -123,7 +123,7 @@ export {getRecentSeaPenImageIds, selectRecentSeaPenImage, getSeaPenThumbnails, s
 export {SeaPenErrorElement} from 'chrome://resources/ash/common/sea_pen/sea_pen_error_element.js';
 export {SeaPenFeedbackElement} from 'chrome://resources/ash/common/sea_pen/sea_pen_feedback_element.js';
 export {SeaPenImageLoadingElement} from 'chrome://resources/ash/common/sea_pen/sea_pen_image_loading_element.js';
-export {SeaPenImagesElement} from 'chrome://resources/ash/common/sea_pen/sea_pen_images_element.js';
+export {SeaPenHistoryPromptSelectedEvent, SeaPenImagesElement} from 'chrome://resources/ash/common/sea_pen/sea_pen_images_element.js';
 export {SeaPenInputQueryElement} from 'chrome://resources/ash/common/sea_pen/sea_pen_input_query_element.js';
 export {SeaPenOptionsElement} from 'chrome://resources/ash/common/sea_pen/sea_pen_options_element.js';
 export {SeaPenSamplesElement, SeaPenSampleSelectedEvent} from 'chrome://resources/ash/common/sea_pen/sea_pen_samples_element.js';

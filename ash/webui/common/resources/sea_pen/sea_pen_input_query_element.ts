@@ -32,6 +32,7 @@ import {isSeaPenTextInputEnabled} from './load_time_booleans.js';
 import {MantaStatusCode, MAXIMUM_GET_SEA_PEN_THUMBNAILS_TEXT_BYTES, SeaPenQuery, SeaPenThumbnail} from './sea_pen.mojom-webui.js';
 import {setThumbnailResponseStatusCodeAction} from './sea_pen_actions.js';
 import {getSeaPenThumbnails} from './sea_pen_controller.js';
+import {SeaPenHistoryPromptSelectedEvent} from './sea_pen_images_element.js';
 import {getTemplate} from './sea_pen_input_query_element.html.js';
 import {getSeaPenProvider} from './sea_pen_interface_provider.js';
 import {logGenerateSeaPenWallpaper, logNumWordsInTextQuery} from './sea_pen_metrics_logger.js';
@@ -110,7 +111,8 @@ export class SeaPenInputQueryElement extends WithSeaPenStore {
   private shouldShowSuggestions_: boolean;
   private innerContainerOriginalHeight_: number;
   private resizeObserver_: ResizeObserver;
-  private sampleSelectedListener_: (e: SeaPenSampleSelectedEvent) => void;
+  private replacePromptListener_: (e: SeaPenSampleSelectedEvent|
+                                   SeaPenHistoryPromptSelectedEvent) => void;
   private deleteRecentImageListener_: EventListener;
 
   static get observers() {
@@ -122,7 +124,7 @@ export class SeaPenInputQueryElement extends WithSeaPenStore {
 
   constructor() {
     super();
-    this.sampleSelectedListener_ = this.onSampleSelected_.bind(this);
+    this.replacePromptListener_ = this.replacePrompt_.bind(this);
     this.deleteRecentImageListener_ = this.focusInput_.bind(this);
   }
 
@@ -138,10 +140,13 @@ export class SeaPenInputQueryElement extends WithSeaPenStore {
     this.updateFromStore();
 
     document.body.addEventListener(
-        SeaPenSampleSelectedEvent.EVENT_NAME, this.sampleSelectedListener_);
+        SeaPenSampleSelectedEvent.EVENT_NAME, this.replacePromptListener_);
     document.body.addEventListener(
         SeaPenRecentImageDeleteEvent.EVENT_NAME,
         this.deleteRecentImageListener_);
+    document.body.addEventListener(
+        SeaPenHistoryPromptSelectedEvent.EVENT_NAME,
+        this.replacePromptListener_);
 
     this.focusInput_();
 
@@ -165,15 +170,20 @@ export class SeaPenInputQueryElement extends WithSeaPenStore {
     this.resizeObserver_.disconnect();
 
     document.body.removeEventListener(
-        SeaPenSampleSelectedEvent.EVENT_NAME, this.sampleSelectedListener_);
+        SeaPenSampleSelectedEvent.EVENT_NAME, this.replacePromptListener_);
     document.body.removeEventListener(
         SeaPenRecentImageDeleteEvent.EVENT_NAME,
         this.deleteRecentImageListener_);
+    document.body.removeEventListener(
+        SeaPenHistoryPromptSelectedEvent.EVENT_NAME,
+        this.replacePromptListener_);
   }
 
-  private onSampleSelected_(e: SeaPenSampleSelectedEvent) {
+  private replacePrompt_(e: SeaPenSampleSelectedEvent|
+                         SeaPenHistoryPromptSelectedEvent) {
     this.textValue_ = e.detail;
     this.showCreateButton_();
+    this.focusInput_();
   }
 
   private focusInput_() {
