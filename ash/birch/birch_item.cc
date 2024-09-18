@@ -17,6 +17,8 @@
 #include "ash/public/cpp/image_downloader.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
+#include "ash/public/cpp/saved_desk_delegate.h"
+#include "ash/public/cpp/style/color_provider.h"
 #include "ash/public/cpp/style/dark_light_mode_controller.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
@@ -82,6 +84,8 @@ constexpr net::NetworkTrafficAnnotationTag kIconDownloaderTrafficTag =
         })");
 
 constexpr int kCoralIconSize = 14;
+
+constexpr int kCoralAppIconDesiredSize = 64;
 
 // Handles when an `image` is downloaded, by converting it to a ui::ImageModel
 // and running `callback`.
@@ -219,6 +223,19 @@ void OnGotFaviconImageCoral(
     // We need to use this method because the `ui::ImageModel` is constructed
     // from a `gfx::ImageSkia` and not a vector icon.
     std::move(barrier_callback).Run(client->GetChromeBackupIcon());
+  }
+}
+
+// Callback for the app icon load request in `GetAppIconCoral()`. If the
+// load fails, passes an empty `ui::ImageModel` to the `barrier_callback`.
+void OnGotAppIconCoral(
+    base::OnceCallback<void(const ui::ImageModel&)> barrier_callback,
+    const gfx::ImageSkia& image) {
+  if (!image.isNull()) {
+    std::move(barrier_callback)
+        .Run(std::move(ui::ImageModel::FromImageSkia(image)));
+  } else {
+    std::move(barrier_callback).Run(ui::ImageModel());
   }
 }
 
@@ -1049,8 +1066,11 @@ std::u16string BirchLostMediaItem::GetSubtitle(SecondaryIconType type) {
 
 BirchCoralItem::BirchCoralItem(const std::u16string& coral_title,
                                const std::u16string& coral_text,
-                               const std::vector<GURL>& page_urls)
-    : BirchItem(coral_title, coral_text), page_urls_(page_urls) {
+                               const std::vector<GURL> page_urls,
+                               const std::vector<std::string>& app_ids)
+    : BirchItem(coral_title, coral_text),
+      page_urls_(page_urls),
+      app_ids_(app_ids) {
   set_addon_label(u"Show");
 }
 
@@ -1103,16 +1123,22 @@ void BirchCoralItem::PerformAction() {
 // `CoralGroupedIconImage`.
 void BirchCoralItem::LoadIcon(LoadIconCallback original_callback) const {
   // Barrier callback that collects the results of multiple favicon loads and
-  // runs the original load_icon callback
+  // runs the original load_icon callback.
   const auto barrier_callback = base::BarrierCallback<const ui::ImageModel&>(
-      /*num_callbacks=*/page_urls_.size(),
+      /*num_callbacks=*/page_urls_.size() + app_ids_.size(),
       /*done_callback=*/base::BindOnce(OnAllFaviconsRetrievedCoral,
                                        std::move(original_callback)));
 
   for (const auto& url : page_urls_) {
-    // For each icon_url, retrieve the icon using favicon_service, and run the
+    // For each `url`, retrieve the icon using favicon_service, and run the
     // `barrier_callback` with the image result.
     GetFaviconImageCoral(url, barrier_callback);
+  }
+
+  for (const auto& id : app_ids_) {
+    // For each `id`, retrieve the icon using `saved_desk_delegate`, and run the
+    // `barrier_callback` with the image result.
+    GetAppIconCoral(id, barrier_callback);
   }
 }
 
@@ -1131,6 +1157,14 @@ void BirchCoralItem::GetFaviconImageCoral(
   client->GetFaviconImage(
       url, /*is_page_url=*/true,
       base::BindOnce(OnGotFaviconImageCoral, std::move(barrier_callback)));
+}
+
+void BirchCoralItem::GetAppIconCoral(
+    const std::string& app_id,
+    base::OnceCallback<void(const ui::ImageModel&)> barrier_callback) const {
+  Shell::Get()->saved_desk_delegate()->GetIconForAppId(
+      app_id, kCoralAppIconDesiredSize,
+      base::BindOnce(OnGotAppIconCoral, std::move(barrier_callback)));
 }
 
 ////////////////////////////////////////////////////////////////////////////////

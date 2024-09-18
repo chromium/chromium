@@ -490,7 +490,8 @@ class ASH_EXPORT BirchCoralItem : public BirchItem {
  public:
   BirchCoralItem(const std::u16string& coral_title,
                  const std::u16string& coral_text,
-                 const std::vector<GURL>& page_urls);
+                 const std::vector<GURL> page_urls,
+                 const std::vector<std::string>& app_ids);
   BirchCoralItem(BirchCoralItem&&);
   BirchCoralItem(const BirchCoralItem&);
   BirchCoralItem& operator=(const BirchCoralItem&);
@@ -507,13 +508,23 @@ class ASH_EXPORT BirchCoralItem : public BirchItem {
 
  private:
   // Helper method that calls `birch_client` to retrieve the image from
-  // `favicon_service`.
+  // `favicon_service`, and passes the result back to `barrier_callback`.
   void GetFaviconImageCoral(
       const GURL& url,
       base::OnceCallback<void(const ui::ImageModel&)> barrier_callback) const;
 
+  // Helper method that uses `saved_desk_delegate` to retrieve the app icon
+  // image, and passes the result back to `barrier_callback`.
+  void GetAppIconCoral(
+      const std::string& app_id,
+      base::OnceCallback<void(const ui::ImageModel&)> barrier_callback) const;
+
   // A vector of urls representing the tabs received from coral provider.
   std::vector<GURL> page_urls_;
+
+  // A vector of app ids representing the apps received from coral provider.
+  std::vector<std::string> app_ids_;
+
   // TODO(yulunwu):Add coral data to `BirchCoralItem`
 };
 

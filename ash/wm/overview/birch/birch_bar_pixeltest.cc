@@ -119,10 +119,15 @@ std::vector<std::unique_ptr<BirchItem>> CreateItems(BirchItemType type) {
       page_urls.emplace_back(("https://www.reddit.com/"));
       page_urls.emplace_back(("https://www.figma.com/"));
       page_urls.emplace_back(("https://www.notion.so/"));
+
+      std::vector<std::string> app_ids;
+      app_ids.emplace_back("lgnggepjiihbfdbedefdhcffnmhcahbm");
+
       items.push_back(std::make_unique<BirchCoralItem>(
           /*coral_title=*/u"coral_title",
           /*coral_text=*/u"coral_text",
-          /*page_urls=*/page_urls));
+          /*page_urls=*/page_urls,
+          /*app_ids=*/app_ids));
       break;
     }
     case BirchItemType::kTest:

@@ -50,7 +50,12 @@ class TabAppSelectionViewTest : public AshTestBase {
     page_urls.emplace_back(("https://www.reddit.com/"));
     page_urls.emplace_back(("https://www.figma.com/"));
     page_urls.emplace_back(("https://www.notion.so/"));
-    coral_provider_->set_items({BirchCoralItem(u"Title", u"Text", page_urls)});
+
+    std::vector<std::string> app_ids;
+    app_ids.emplace_back("lgnggepjiihbfdbedefdhcffnmhcahbm");
+
+    coral_provider_->set_items({BirchCoralItem(
+        u"Title", u"Text", /*page_urls=*/page_urls, /*app_ids=*/app_ids)});
   }
 
   void TearDown() override {

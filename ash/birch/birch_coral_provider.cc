@@ -162,8 +162,12 @@ void BirchCoralProvider::RequestBirchDataFetch() {
     page_urls.emplace_back(("https://www.reddit.com/"));
     page_urls.emplace_back(("https://www.figma.com/"));
     page_urls.emplace_back(("https://www.notion.so/"));
+
+    std::vector<std::string> app_ids;
+    app_ids.emplace_back("lgnggepjiihbfdbedefdhcffnmhcahbm");
+
     Shell::Get()->birch_model()->SetCoralItems(
-        {BirchCoralItem(u"CoralTitle", u"CoralText", page_urls)});
+        {BirchCoralItem(u"CoralTitle", u"CoralText", page_urls, app_ids)});
     return;
   }
 
@@ -210,9 +214,15 @@ void BirchCoralProvider::HandleCoralResponse(
   page_urls.emplace_back(("https://chromeunboxed.com/"));
   page_urls.emplace_back(("https://www.unrealengine.com/"));
   page_urls.emplace_back(("https://godotengine.org/"));
+
+  std::vector<std::string> app_ids;
+  app_ids.emplace_back("lgnggepjiihbfdbedefdhcffnmhcahbm");
+  app_ids.emplace_back("lgnggepjiihbfdbedefdhcffnmhcahbm");
+  app_ids.emplace_back("lgnggepjiihbfdbedefdhcffnmhcahbm");
+
   for (auto& cluster : response_->clusters()) {
     items.emplace_back(cluster.title(), /*subtitle=*/std::u16string(),
-                       page_urls);
+                       page_urls, app_ids);
   }
   Shell::Get()->birch_model()->SetCoralItems(items);
 }
