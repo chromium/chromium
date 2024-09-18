@@ -377,7 +377,7 @@ std::string BirchCalendarItem::ToString() const {
   return ss.str();
 }
 
-void BirchCalendarItem::PerformAction() {
+void BirchCalendarItem::PerformAction(bool is_post_login) {
   if (!calendar_url_.is_valid()) {
     LOG(ERROR) << "No valid URL for calendar item";
     return;
@@ -510,7 +510,7 @@ std::string BirchAttachmentItem::ToString() const {
   return ss.str();
 }
 
-void BirchAttachmentItem::PerformAction() {
+void BirchAttachmentItem::PerformAction(bool is_post_login) {
   if (!file_url_.is_valid()) {
     LOG(ERROR) << "No valid URL for attachment item";
   }
@@ -579,7 +579,7 @@ std::string BirchFileItem::ToString() const {
   return ss.str();
 }
 
-void BirchFileItem::PerformAction() {
+void BirchFileItem::PerformAction(bool is_post_login) {
   RecordActionMetrics();
   NewWindowDelegate::GetPrimary()->OpenFile(file_path_);
 }
@@ -638,7 +638,7 @@ std::string BirchWeatherItem::ToString() const {
   return ss.str();
 }
 
-void BirchWeatherItem::PerformAction() {
+void BirchWeatherItem::PerformAction(bool is_post_login) {
   RecordActionMetrics();
   // TODO(jamescook): Localize the query string.
   GURL url("https://google.com/search?q=weather");
@@ -665,7 +665,7 @@ std::u16string BirchWeatherItem::GetAccessibleName() const {
 
 void BirchWeatherItem::PerformAddonAction() {
   // Perform same action as the item.
-  PerformAction();
+  PerformAction(/*is_post_login=*/false);
 }
 
 BirchAddonType BirchWeatherItem::GetAddonType() const {
@@ -746,7 +746,7 @@ std::string BirchTabItem::ToString() const {
   return ss.str();
 }
 
-void BirchTabItem::PerformAction() {
+void BirchTabItem::PerformAction(bool is_post_login) {
   if (!url_.is_valid()) {
     LOG(ERROR) << "No valid URL for tab item";
     return;
@@ -817,7 +817,7 @@ std::string BirchLastActiveItem::ToString() const {
   return ss.str();
 }
 
-void BirchLastActiveItem::PerformAction() {
+void BirchLastActiveItem::PerformAction(bool is_post_login) {
   if (!page_url_.is_valid()) {
     LOG(ERROR) << "No valid URL for last active item";
     return;
@@ -890,7 +890,7 @@ std::string BirchMostVisitedItem::ToString() const {
   return ss.str();
 }
 
-void BirchMostVisitedItem::PerformAction() {
+void BirchMostVisitedItem::PerformAction(bool is_post_login) {
   if (!page_url_.is_valid()) {
     LOG(ERROR) << "No valid URL for most visited item";
     return;
@@ -955,7 +955,7 @@ std::string BirchSelfShareItem::ToString() const {
   return ss.str();
 }
 
-void BirchSelfShareItem::PerformAction() {
+void BirchSelfShareItem::PerformAction(bool is_post_login) {
   if (!url_.is_valid()) {
     LOG(ERROR) << "No valid URL for self "
                   "share item";
@@ -1039,7 +1039,7 @@ std::string BirchLostMediaItem::ToString() const {
   return ss.str();
 }
 
-void BirchLostMediaItem::PerformAction() {
+void BirchLostMediaItem::PerformAction(bool is_post_login) {
   // This needs to be called before running `activation_callback_` because
   // running the callback may cause the item to be deleted.
   RecordActionMetrics();
@@ -1095,13 +1095,16 @@ std::string BirchCoralItem::ToString() const {
   return base::WriteJson(root).value_or(std::string());
 }
 
-void BirchCoralItem::PerformAction() {
+void BirchCoralItem::PerformAction(bool is_post_login) {
   // TODO(yulunwu) restore all applicable items in group to active desk.
   // Open all related tabs in the same window with the default window bounds.
   // Open related app(s) in its last used window state.
 
   // TODO(http://b/365839465): Handle post-login case.
-  // TODO(http://b/365839564): Handle save for later case.
+  if (is_post_login) {
+    return;
+  }
+
   // TODO(sammiequon): Remove hardcoded cluster.
   coral_util::CoralCluster temp_cluster;
   temp_cluster.set_title(u"Coral desk");
@@ -1193,7 +1196,7 @@ std::string BirchReleaseNotesItem::ToString() const {
   return ss.str();
 }
 
-void BirchReleaseNotesItem::PerformAction() {
+void BirchReleaseNotesItem::PerformAction(bool is_post_login) {
   if (!url_.is_valid()) {
     LOG(ERROR) << "No valid URL for release notes item";
     return;

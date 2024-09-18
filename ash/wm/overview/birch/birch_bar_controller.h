@@ -45,6 +45,8 @@ class ASH_EXPORT BirchBarController : public BirchModel::Observer,
 
   std::vector<raw_ptr<BirchBarView>>& bar_views() { return bar_views_; }
 
+  bool is_informed_restore() const { return is_informed_restore_; }
+
   // Register a bar view.
   void RegisterBar(BirchBarView* bar_view);
 

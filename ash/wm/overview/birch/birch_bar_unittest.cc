@@ -94,7 +94,7 @@ class TestBirchItem : public BirchItem {
   std::string ToString() const override {
     return std::string("Test item ") + base::UTF16ToUTF8(title());
   }
-  void PerformAction() override {}
+  void PerformAction(bool is_post_login) override {}
   void LoadIcon(LoadIconCallback callback) const override {
     std::move(callback).Run(
         ui::ImageModel::FromVectorIcon(kSettingsIcon, SK_ColorBLACK, 20),
