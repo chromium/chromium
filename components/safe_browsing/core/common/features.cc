@@ -159,10 +159,6 @@ BASE_FEATURE(kExtensionTelemetryDisableOffstoreExtensions,
              "SafeBrowsingExtensionTelemetryDisableOffstoreExtensions",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kGooglePlayProtectPrompt,
-             "SafeBrowsingGooglePlayProtectPrompt",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kGooglePlayProtectInApkTelemetry,
              "SafeBrowsingGooglePlayProtectInApkTelemetry",
              base::FEATURE_ENABLED_BY_DEFAULT);

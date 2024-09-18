@@ -682,10 +682,6 @@ ProfileKey* DownloadController::GetProfileKey(DownloadItem* download_item) {
 
 bool DownloadController::ShouldShowAppVerificationPrompt(
     download::DownloadItem* item) {
-  if (!base::FeatureList::IsEnabled(safe_browsing::kGooglePlayProtectPrompt)) {
-    return false;
-  }
-
   if (item->GetDangerType() != download::DOWNLOAD_DANGER_TYPE_USER_VALIDATED) {
     return false;
   }

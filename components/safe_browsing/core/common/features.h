@@ -150,9 +150,6 @@ BASE_DECLARE_FEATURE(kExtensionTelemetryPotentialPasswordTheft);
 // Extension Telemetry service reports.
 BASE_DECLARE_FEATURE(kExtensionTelemetryDisableOffstoreExtensions);
 
-// Prompt users to re-enable Android app verification on APK download.
-BASE_DECLARE_FEATURE(kGooglePlayProtectPrompt);
-
 // Whether to provide Google Play Protect status in APK telemetry pings
 BASE_DECLARE_FEATURE(kGooglePlayProtectInApkTelemetry);
 
