@@ -6802,6 +6802,43 @@
             ]
         }
     ],
+    "CrOSLateBootPsiAdjustAvailable": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_TopThreshold80",
+                    "params": {
+                        "PsiTopThreshold": "80.0"
+                    },
+                    "enable_features": [
+                        "CrOSLateBootPsiAdjustAvailable"
+                    ]
+                },
+                {
+                    "name": "Enabled_TopThreshold60",
+                    "params": {
+                        "PsiTopThreshold": "60.0"
+                    },
+                    "enable_features": [
+                        "CrOSLateBootPsiAdjustAvailable"
+                    ]
+                },
+                {
+                    "name": "Enabled_Full40",
+                    "params": {
+                        "PsiTopThreshold": "40.0",
+                        "PsiUseFull": "true"
+                    },
+                    "enable_features": [
+                        "CrOSLateBootPsiAdjustAvailable"
+                    ]
+                }
+            ]
+        }
+    ],
     "CrOSLateBootResourcedVariableTimeMemorySignal": [
         {
             "platforms": [
