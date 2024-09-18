@@ -189,7 +189,7 @@ FindBuffer::FindBuffer(const EphemeralRangeInFlatTree& range,
 
 bool FindBuffer::IsInvalidMatch(MatchResultICU match) const {
   // Invalid matches are a result of accidentally matching elements that are
-  // replaced with the max code point, and may lead to crashes. To avoid
+  // replaced with the kNonCharacter, and may lead to crashes. To avoid
   // crashing, we should skip the matches that are invalid - they would have
   // either an empty position or a non-offset-in-anchor position.
   const unsigned start_index = match.start;
@@ -472,7 +472,7 @@ void FindBuffer::ReplaceNodeWithCharConstants(const Node& node) {
     return;
   }
 
-  buffer_.push_back(kMaxCodepoint);
+  buffer_.push_back(kNonCharacter);
 }
 
 EphemeralRangeInFlatTree FindBuffer::RangeFromBufferIndex(
