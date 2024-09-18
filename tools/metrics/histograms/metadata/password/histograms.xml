@@ -851,7 +851,7 @@ chromium-metrics-reviews@google.com.
   <owner>vasilii@chromium.org</owner>
   <summary>
     The state of the windows hello authentication. Recorded before prompting the
-    OS dialog, and after result is recieved.
+    OS dialog, and after result is received.
   </summary>
 </histogram>
 
