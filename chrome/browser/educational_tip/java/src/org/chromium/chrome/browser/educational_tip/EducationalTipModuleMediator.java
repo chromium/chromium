@@ -52,7 +52,7 @@ public class EducationalTipModuleMediator {
 
         mEducationalTipCardProvider =
                 EducationalTipCardProviderFactory.createInstance(
-                        cardType, this::removeModule, mCallbackController, mActionDelegate);
+                        cardType, this::onCardClicked, mCallbackController, mActionDelegate);
 
         mModel.set(
                 EducationalTipModuleProperties.MODULE_CONTENT_TITLE_STRING,
@@ -104,11 +104,8 @@ public class EducationalTipModuleMediator {
         mCallbackController.destroy();
     }
 
-    /**
-     * Called when the user has viewed the card information to remove the educational tip module
-     * from the magic stack.
-     */
-    private void removeModule() {
-        mModuleDelegate.removeModule(mModuleType);
+    /** Called when user clicks the card. */
+    private void onCardClicked() {
+        // TODO(b/): Records metrics for clicking the card.
     }
 }
