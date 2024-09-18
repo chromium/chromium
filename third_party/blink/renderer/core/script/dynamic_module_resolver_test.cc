@@ -81,7 +81,7 @@ class DynamicModuleResolverTestModulator final : public DummyModulator {
 
   KURL ResolveModuleSpecifier(const String& module_request,
                               const KURL& base_url,
-                              String* failure_reason) final {
+                              String*) final {
     if (module_request == "invalid-specifier")
       return KURL();
 
