@@ -22,6 +22,10 @@ android_library("java") {
 
 android_resources("java_resources") {
   sources = [
+    "java/res/anim/shared_x_axis_close_enter.xml",
+    "java/res/anim/shared_x_axis_close_exit.xml",
+    "java/res/anim/shared_x_axis_open_enter.xml",
+    "java/res/anim/shared_x_axis_open_exit.xml",
     "java/res/color/chip_text_color_secondary_list.xml",
     "java/res/color/color_on_surface_with_alpha_10.xml",
     "java/res/color/color_primary_with_alpha_10.xml",

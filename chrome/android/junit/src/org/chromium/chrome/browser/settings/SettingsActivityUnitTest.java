@@ -125,7 +125,11 @@ public class SettingsActivityUnitTest {
         Intent intent =
                 SettingsIntentUtil.createIntent(
                         mSettingsActivity, TestSettingsFragment.class.getName(), args);
+
+        // Android temporarily pauses an activity while delivering a new intent.
+        mActivityScenario.moveToState(State.STARTED);
         mSettingsActivity.onNewIntent(intent);
+        mActivityScenario.moveToState(State.RESUMED);
 
         // Wait for the UI update.
         ShadowLooper.runUiThreadTasks();

@@ -106,6 +106,11 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
     private final OneshotSupplierImpl<SnackbarManager> mSnackbarManagerSupplier =
             new OneshotSupplierImpl<>();
 
+    // An intent that was received in onNewIntent and would cause fragment transactions, but is
+    // pending for processing in the next onResume call. See onNewIntent for why we can not directly
+    // process those intents in onNewIntent.
+    private Intent mPendingNewIntent;
+
     // This is only used on automotive.
     private @Nullable MissingDeviceLockLauncher mMissingDeviceLockLauncher;
 
@@ -163,6 +168,11 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
             fragmentManager
                     .beginTransaction()
                     .replace(R.id.content, fragment, MAIN_FRAGMENT_TAG)
+                    .setCustomAnimations(
+                            R.anim.shared_x_axis_open_enter,
+                            R.anim.shared_x_axis_open_exit,
+                            R.anim.shared_x_axis_close_enter,
+                            R.anim.shared_x_axis_close_exit)
                     .commit();
         }
 
@@ -192,14 +202,11 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
             return;
         }
 
-        Fragment fragment = instantiateMainFragment(intent);
-        // TODO(b/356743945): Enable transition.
-        getSupportFragmentManager()
-                .beginTransaction()
-                .setReorderingAllowed(true)
-                .replace(R.id.content, fragment, MAIN_FRAGMENT_TAG)
-                .addToBackStack(null)
-                .commit();
+        // Android system briefly pauses an activity before calling its onNewIntent, then resume it
+        // soon. We defer making a fragment transaction to onResume because doing it here breaks
+        // fragment animations as all pending animations are cleared when an activity is resumed.
+        assert mPendingNewIntent == null;
+        mPendingNewIntent = intent;
     }
 
     private Fragment instantiateMainFragment(Intent intent) {
@@ -294,6 +301,23 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         }
 
         checkForMissingDeviceLockOnAutomotive();
+
+        // If there is a pending intent to process from onNewIntent, process it now.
+        if (mPendingNewIntent != null) {
+            Fragment fragment = instantiateMainFragment(mPendingNewIntent);
+            mPendingNewIntent = null;
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .setReorderingAllowed(true)
+                    .setCustomAnimations(
+                            R.anim.shared_x_axis_open_enter,
+                            R.anim.shared_x_axis_open_exit,
+                            R.anim.shared_x_axis_close_enter,
+                            R.anim.shared_x_axis_close_exit)
+                    .replace(R.id.content, fragment, MAIN_FRAGMENT_TAG)
+                    .addToBackStack(null)
+                    .commit();
+        }
     }
 
     private void checkForMissingDeviceLockOnAutomotive() {
