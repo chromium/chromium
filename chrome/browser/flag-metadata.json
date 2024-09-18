@@ -146,7 +146,7 @@
   {
     "name": "android-app-integration",
     "owners": [ "gangwu@chromium.org", "chrome-mobile-search@google.com" ],
-    "expiry_milestone": 130
+    "expiry_milestone": 150
   },
   {
     "name": "android-bottom-toolbar",
