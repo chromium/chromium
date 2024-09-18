@@ -547,4 +547,14 @@
   }
 }
 
+#pragma mark - Setters
+
+- (void)setHideScrolledToEdgeBackground:(BOOL)hideScrolledToEdgeBackground {
+  if (_hideScrolledToEdgeBackground == hideScrolledToEdgeBackground) {
+    return;
+  }
+  _hideScrolledToEdgeBackground = hideScrolledToEdgeBackground;
+  [self updateBackgroundVisibility];
+}
+
 @end
