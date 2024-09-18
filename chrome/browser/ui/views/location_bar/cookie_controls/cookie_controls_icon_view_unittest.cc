@@ -12,6 +12,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/content_settings/core/common/cookie_blocking_3pcd_status.h"
 #include "components/content_settings/core/common/features.h"
+#include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "cookie_controls_bubble_coordinator.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/views/accessibility/ax_event_manager.h"
@@ -33,10 +34,6 @@ std::u16string BlockedLabel() {
 std::u16string LimitedLabel() {
   return l10n_util::GetStringUTF16(
       IDS_COOKIE_CONTROLS_PAGE_ACTION_COOKIES_LIMITED_LABEL);
-}
-
-std::u16string TrackingProtectionLabel() {
-  return l10n_util::GetStringUTF16(IDS_TRACKING_PROTECTION_PAGE_ACTION_LABEL);
 }
 
 std::u16string SiteNotWorkingLabel() {
@@ -73,7 +70,11 @@ class CookieControlsIconViewUnitTest
       public testing::WithParamInterface<CookieBlocking3pcdStatus> {
  protected:
   CookieControlsIconViewUnitTest()
-      : a11y_counter_(views::AXEventManager::Get()) {}
+      : a11y_counter_(views::AXEventManager::Get()) {
+    feature_list_.InitAndDisableFeature(
+        privacy_sandbox::kTrackingProtection3pcdUx);
+  }
+
   void SetUp() override {
     TestWithBrowserView::SetUp();
 
@@ -98,8 +99,11 @@ class CookieControlsIconViewUnitTest
 
   bool In3pcd() { return GetParam() != CookieBlocking3pcdStatus::kNotIn3pcd; }
 
-  bool CookiesLimited3pcd() {
-    return GetParam() == CookieBlocking3pcdStatus::kLimited;
+  std::u16string TrackingProtectionLabel() {
+    if (GetParam() == CookieBlocking3pcdStatus::kLimited) {
+      return LimitedLabel();
+    }
+    return BlockedLabel();
   }
 
   bool LabelShown() { return view_->ShouldShowLabel(); }
@@ -175,8 +179,9 @@ TEST_P(CookieControlsIconViewUnitTest,
   EXPECT_TRUE(LabelShown());
   EXPECT_EQ(TooltipText(),
             In3pcd() ? TrackingProtectionLabel() : BlockedLabel());
-  EXPECT_EQ(LabelText(),
-            CookiesLimited3pcd() ? LimitedLabel() : BlockedLabel());
+  EXPECT_EQ(LabelText(), GetParam() == CookieBlocking3pcdStatus::kLimited
+                             ? LimitedLabel()
+                             : BlockedLabel());
 }
 
 TEST_P(CookieControlsIconViewUnitTest, IconAnimationIsResetOnWebContentChange) {
@@ -271,9 +276,8 @@ TEST_P(CookieControlsIconViewUnitTest,
                                            /*protections_on=*/false, GetParam(),
                                            /*should_highlight=*/false);
   EXPECT_TRUE(Visible());
-  EXPECT_EQ(TooltipText(),
-            In3pcd() ? TrackingProtectionLabel() : AllowedLabel());
-  EXPECT_EQ(LabelText(), In3pcd() ? TrackingProtectionLabel() : AllowedLabel());
+  EXPECT_EQ(TooltipText(), AllowedLabel());
+  EXPECT_EQ(LabelText(), AllowedLabel());
   ExecuteIcon();
   EXPECT_EQ(user_actions_.GetActionCount(kUMAIconShown), 1);
   EXPECT_EQ(user_actions_.GetActionCount(kUMAIconOpened), 1);

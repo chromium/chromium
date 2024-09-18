@@ -141,10 +141,12 @@ void CookieControlsBubbleViewController::ApplyThirdPartyCookiesAllowedState(
     label_description =
         IDS_TRACKING_PROTECTION_BUBBLE_BLOCKING_RESTART_DESCRIPTION;
   }
-  if (blocking_status_ == CookieBlocking3pcdStatus::kNotIn3pcd) {
-    bubble_title = IDS_COOKIE_CONTROLS_BUBBLE_COOKIES_ALLOWED_TITLE;
-  } else {
+  if (base::FeatureList::IsEnabled(
+          privacy_sandbox::kTrackingProtection3pcdUx) &&
+      blocking_status_ != CookieBlocking3pcdStatus::kNotIn3pcd) {
     bubble_title = IDS_TRACKING_PROTECTION_BUBBLE_TITLE;
+  } else {
+    bubble_title = IDS_COOKIE_CONTROLS_BUBBLE_COOKIES_ALLOWED_TITLE;
   }
 
   bubble_view_->UpdateTitle(l10n_util::GetStringUTF16(bubble_title));
@@ -156,9 +158,14 @@ void CookieControlsBubbleViewController::ApplyThirdPartyCookiesAllowedState(
 }
 
 void CookieControlsBubbleViewController::ApplyThirdPartyCookiesBlockedState() {
-  int label_title = blocking_status_ == CookieBlocking3pcdStatus::kNotIn3pcd
-                        ? IDS_COOKIE_CONTROLS_BUBBLE_COOKIES_BLOCKED_TITLE
-                        : IDS_TRACKING_PROTECTION_BUBBLE_TITLE;
+  int label_title = IDS_COOKIE_CONTROLS_BUBBLE_COOKIES_BLOCKED_TITLE;
+  if (base::FeatureList::IsEnabled(
+          privacy_sandbox::kTrackingProtection3pcdUx) &&
+      blocking_status_ != CookieBlocking3pcdStatus::kNotIn3pcd) {
+    label_title = IDS_TRACKING_PROTECTION_BUBBLE_TITLE;
+  } else if (blocking_status_ == CookieBlocking3pcdStatus::kLimited) {
+    label_title = IDS_COOKIE_CONTROLS_BUBBLE_COOKIES_LIMITED_TITLE;
+  }
   bubble_view_->UpdateTitle(l10n_util::GetStringUTF16(label_title));
   bubble_view_->GetContentView()->UpdateContentLabels(
       l10n_util::GetStringUTF16(

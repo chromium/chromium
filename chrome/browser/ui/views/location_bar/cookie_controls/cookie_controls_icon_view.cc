@@ -21,6 +21,7 @@
 #include "components/content_settings/core/common/cookie_blocking_3pcd_status.h"
 #include "components/feature_engagement/public/event_constants.h"
 #include "components/omnibox/browser/vector_icons.h"
+#include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "content/public/browser/web_contents.h"
 #include "cookie_controls_bubble_coordinator.h"
@@ -146,7 +147,9 @@ void CookieControlsIconView::SetLabelAndTooltip() {
   int icon_label = GetLabelForStatus();
   // Only use "Tracking Protection" and verbose accessibility description if the
   // label is hidden.
-  if (blocking_status_ != CookieBlocking3pcdStatus::kNotIn3pcd &&
+  if (base::FeatureList::IsEnabled(
+          privacy_sandbox::kTrackingProtection3pcdUx) &&
+      blocking_status_ != CookieBlocking3pcdStatus::kNotIn3pcd &&
       !label()->GetVisible()) {
     // Set the accessible description to whatever the 3PC blocking state is.
     GetViewAccessibility().SetDescription(
