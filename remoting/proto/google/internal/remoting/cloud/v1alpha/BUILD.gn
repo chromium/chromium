@@ -6,7 +6,13 @@ import("//third_party/protobuf/proto_library.gni")
 
 proto_library("messages") {
   sources = [
+    "empty.proto",
+    "field_mask.proto",
+    "operating_system_info.proto",
+    "remote_access_host.proto",
     "remote_access_service.proto",
     "service_account_info.proto",
+    "tachyon_account_info.proto",
+    "timestamp.proto",
   ]
 }
