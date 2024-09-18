@@ -2579,9 +2579,6 @@ BASE_FEATURE(kPickerAlwaysShowFeatureTour,
              "PickerAlwaysShowFeatureTour",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Uses cloud search instead of local search.
-BASE_FEATURE(kPickerCloud, "PickerCloud", base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables Dogfood for picker.
 BASE_FEATURE(kPickerDogfood,
              "PickerDogfood",
