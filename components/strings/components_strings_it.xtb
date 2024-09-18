@@ -2794,7 +2794,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="629730747756840877">Account</translation>
 <translation id="6298456705131259420">Sono interessati i siti elencati qui. Inserire "[*.]" prima di un nome di dominio crea un'eccezione per l'intero dominio. Ad esempio, aggiungere "[*.]google.com" significa che i cookie di terze parti possono essere attivi anche per mail.google.com, perché fa parte di google.com.</translation>
 <translation id="6300452962057769623">{0,plural, =0{Il tuo dispositivo verrà riavviato adesso}=1{Il tuo dispositivo verrà riavviato tra 1 secondo}other{Il tuo dispositivo verrà riavviato tra # secondi}}</translation>
-<translation id="6301104306974789820">Ricevi notifiche per il monitoraggio dei prezzi</translation>
+<translation id="6301104306974789820">Ricevi notifiche per il monitoraggio del prezzo</translation>
 <translation id="6302546952464230349">Mostra i dettagli dell'autorizzazione <ph name="PERMISSION_NAME" /></translation>
 <translation id="6304398603974202180">Software multimediale</translation>
 <translation id="6305205051461490394"><ph name="URL" /> non è raggiungibile.</translation>

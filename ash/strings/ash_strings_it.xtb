@@ -124,7 +124,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1391102559483454063">On</translation>
 <translation id="1394698770495054737">Sfocatura completa</translation>
 <translation id="1395878931462960119">{DAYS,plural, =1{1 giorno fa}other{# giorni fa}}</translation>
-<translation id="1404963891829069586">Suoni della modalità Senza distrazioni</translation>
+<translation id="1404963891829069586">Suoni della modalità Niente distrazioni</translation>
 <translation id="1407069428457324124">Tema scuro</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Usa i tasti Freccia per spostarti tra le date.</translation>
 <translation id="141170878022560212">Pulsante centrale</translation>
@@ -1770,7 +1770,7 @@ Nuova installazione</translation>
 <translation id="7386767620098596324">Attiva/disattiva la connessione di rete. <ph name="STATE_TEXT" />.</translation>
 <translation id="7392563512730092880">Puoi sempre effettuare la configurazione in un secondo momento dalle Impostazioni.</translation>
 <translation id="7401222354741467707">Acquisisci registrazione dello schermo o screenshot completi</translation>
-<translation id="7401788553834047908">Non disturbare finché è attiva la modalità Non disturbare</translation>
+<translation id="7401788553834047908">Non disturbare finché è attiva la modalità Niente distrazioni</translation>
 <translation id="7405710164030118432">Per sbloccare il dispositivo, inserisci il codice di accesso genitore di Family Link</translation>
 <translation id="7406608787870898861">Completa la configurazione della rete mobile</translation>
 <translation id="7406854842098869085">Tieni premuto <ph name="MODIFIER_1" />, tocca <ph name="KEY" /> finché non arrivi alla finestra che vuoi aprire, quindi rilascia</translation>
