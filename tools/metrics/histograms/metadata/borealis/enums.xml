@@ -89,8 +89,8 @@ chromium-metrics-reviews@google.com.
   <int value="16" label="Borealis DLC is not supported"/>
   <int value="17" label="DLC faced an unknown error"/>
   <int value="18" label="Concierge was unavailable"/>
-  <int value="19" label="Recieved an empty disk response from Concierge"/>
-  <int value="20" label="Recieved an empty startup response from Concierge"/>
+  <int value="19" label="Received an empty disk response from Concierge"/>
+  <int value="20" label="Received an empty startup response from Concierge"/>
 </enum>
 
 </enums>
