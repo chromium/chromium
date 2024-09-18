@@ -5840,8 +5840,6 @@ static_library("browser") {
       "lacros/multitask_menu_nudge_delegate_lacros.h",
       "lacros/net/lacros_extension_proxy_tracker.cc",
       "lacros/net/lacros_extension_proxy_tracker.h",
-      "lacros/net/network_change_manager_bridge.cc",
-      "lacros/net/network_change_manager_bridge.h",
       "lacros/net/network_settings_observer.cc",
       "lacros/net/network_settings_observer.h",
       "lacros/net/network_settings_translation.h",

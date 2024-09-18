@@ -121,7 +121,6 @@ class MetricsAsh;
 class MetricsReportingAsh;
 class MultiCaptureServiceAsh;
 class NativeThemeServiceAsh;
-class NetworkChangeAsh;
 class NetworkSettingsServiceAsh;
 class NetworkingAttributesAsh;
 class NetworkingPrivateAsh;
@@ -607,8 +606,6 @@ class CrosapiAsh : public mojom::Crosapi {
     return multi_capture_service_ash_.get();
   }
 
-  NetworkChangeAsh* network_change_ash() { return network_change_ash_.get(); }
-
   NetworkingAttributesAsh* networking_attributes_ash() {
     return networking_attributes_ash_.get();
   }
@@ -774,7 +771,6 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<MetricsReportingAsh> metrics_reporting_ash_;
   std::unique_ptr<MultiCaptureServiceAsh> multi_capture_service_ash_;
   std::unique_ptr<NativeThemeServiceAsh> native_theme_service_ash_;
-  std::unique_ptr<NetworkChangeAsh> network_change_ash_;
   std::unique_ptr<NetworkingAttributesAsh> networking_attributes_ash_;
   std::unique_ptr<NetworkingPrivateAsh> networking_private_ash_;
   std::unique_ptr<NetworkSettingsServiceAsh> network_settings_service_ash_;
