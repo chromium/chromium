@@ -65,9 +65,10 @@ TEST_F(SigninPromoViewTest, AccessibilityLabel) {
   SigninPromoView* view =
       [[SigninPromoView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
   [currentWindow.rootViewController.view addSubview:view];
+  UIButtonConfiguration* buttonConfigutation = view.primaryButton.configuration;
   NSString* primaryButtonTitle = @"Primary Button Title";
-  [view.primaryButton setTitle:primaryButtonTitle
-                      forState:UIControlStateNormal];
+  buttonConfigutation.title = primaryButtonTitle;
+  view.primaryButton.configuration = buttonConfigutation;
   NSString* promoText = @"This is the promo text.";
   view.textLabel.text = promoText;
   NSString* expectedAccessibilityLabel =

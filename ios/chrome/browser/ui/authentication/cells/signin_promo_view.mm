@@ -375,6 +375,7 @@ constexpr CGFloat kNonProfileBackgroundImageCompactHeightWidth = 54.0;
 
 // Configures primary button with a standard font.
 - (void)configurePrimaryButtonWithTitle:(NSString*)title {
+  CHECK_GT(title.length, 0ul, base::NotFatalUntil::M135);
   // Declaring variables that are used throughout different switch cases.
   UIFont* font;
   NSAttributedString* attributedTitle;
@@ -410,10 +411,8 @@ constexpr CGFloat kNonProfileBackgroundImageCompactHeightWidth = 54.0;
 }
 
 - (NSString*)accessibilityLabel {
-  return [NSString
-      stringWithFormat:@"%@ %@", self.textLabel.text,
-                       [self.primaryButton titleForState:UIControlStateNormal]];
-  ;
+  return [NSString stringWithFormat:@"%@ %@", self.textLabel.text,
+                                    [self primaryButtonTitle]];
 }
 
 - (BOOL)accessibilityActivate {
@@ -453,11 +452,15 @@ constexpr CGFloat kNonProfileBackgroundImageCompactHeightWidth = 54.0;
 - (NSArray<NSString*>*)accessibilityUserInputLabels {
   // The name for Voice Control includes only
   // `self.primaryButton.titleLabel.text`.
-  NSString* primaryButtonLabelText = self.primaryButton.titleLabel.text;
-  if (!primaryButtonLabelText) {
+  NSString* buttonTitle = [self primaryButtonTitle];
+  if (!buttonTitle) {
+    // TODO(crbug.com/365995361): At M135, this `if` can be removed.
+    // Before M135, the CHECK in `-[SigninPromoView primaryButtonTitle]` is
+    // non fatal if the title was not set. So to avoid a fatal exception,
+    // this `if` is required.
     return @[];
   }
-  return @[ primaryButtonLabelText ];
+  return @[ buttonTitle ];
 }
 
 #pragma mark - Setters
@@ -578,6 +581,14 @@ constexpr CGFloat kNonProfileBackgroundImageCompactHeightWidth = 54.0;
 }
 
 #pragma mark - Private
+
+// Returns the primary button title.
+- (NSString*)primaryButtonTitle {
+  NSString* buttonTitle = self.primaryButton.configuration.title;
+  // The primary button should always be set.
+  CHECK_GT(buttonTitle.length, 0ul, base::NotFatalUntil::M135);
+  return buttonTitle;
+}
 
 // Updates layout for current layout style.
 - (void)updateLayoutForStyle {
