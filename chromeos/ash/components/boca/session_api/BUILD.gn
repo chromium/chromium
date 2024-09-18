@@ -14,6 +14,8 @@ source_set("session_api") {
     "get_session_request.h",
     "session_client_impl.cc",
     "session_client_impl.h",
+    "session_parser.cc",
+    "session_parser.h",
     "upload_token_request.cc",
     "upload_token_request.h",
   ]
@@ -35,6 +37,7 @@ source_set("unit_tests") {
   sources = [
     "create_session_request_unittest.cc",
     "get_session_request_unittest.cc",
+    "session_parser_unittest.cc",
     "upload_token_request_unittest.cc",
   ]
 

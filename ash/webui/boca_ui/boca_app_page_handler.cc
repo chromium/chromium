@@ -14,10 +14,12 @@
 #include "ash/webui/boca_ui/mojom/boca.mojom.h"
 #include "ash/webui/boca_ui/provider/classroom_page_handler_impl.h"
 #include "ash/webui/boca_ui/provider/tab_info_collector.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/boca/boca_app_client.h"
 #include "chromeos/ash/components/boca/boca_session_util.h"
 #include "chromeos/ash/components/boca/proto/bundle.pb.h"
+#include "chromeos/ash/components/boca/proto/roster.pb.h"
 #include "chromeos/ash/components/boca/proto/session.pb.h"
 #include "chromeos/ash/components/boca/session_api/create_session_request.h"
 #include "chromeos/ash/components/boca/session_api/session_client_impl.h"
@@ -45,8 +47,10 @@ BocaAppHandler::BocaAppHandler(
       receiver_(this, std::move(receiver)),
       remote_(std::move(remote)),
       boca_ui_(boca_ui) {
-  user_identity_ =
-      user_manager::UserManager::Get()->GetActiveUser()->GetAccountId();
+  auto* user = user_manager::UserManager::Get()->GetActiveUser();
+  user_identity_.set_email(user->GetAccountId().GetUserEmail());
+  user_identity_.set_gaia_id(user->GetAccountId().GetGaiaId());
+  user_identity_.set_full_name(base::UTF16ToUTF8(user->GetDisplayName()));
 }
 
 BocaAppHandler::~BocaAppHandler() = default;
@@ -69,7 +73,7 @@ void BocaAppHandler::CreateSession(mojom::ConfigPtr config,
                                    CreateSessionCallback callback) {
   std::unique_ptr<CreateSessionRequest> request =
       std::make_unique<CreateSessionRequest>(
-          session_client_impl_->sender(), user_identity_.GetGaiaId(),
+          session_client_impl_->sender(), user_identity_,
           config->session_duration,
           // User will always start session as active state.
           ::boca::Session::SessionState::Session_SessionState_ACTIVE,
@@ -85,17 +89,18 @@ void BocaAppHandler::CreateSession(mojom::ConfigPtr config,
               },
               std::move(callback)));
   if (!config->students.empty()) {
+    auto roster = std::make_unique<::boca::Roster>();
+    auto* student_groups = roster->mutable_student_groups()->Add();
     std::vector<::boca::UserIdentity> identities;
     for (auto& item : config->students) {
-      ::boca::UserIdentity student;
-      student.set_gaia_id(item->id);
-      student.set_email(item->email);
-      student.set_full_name(item->name);
+      auto* student = student_groups->mutable_students()->Add();
+      student->set_gaia_id(item->id);
+      student->set_email(item->email);
+      student->set_full_name(item->name);
       // TODO(b/359045874): Set photo url.
-      student.set_photo_url("");
-      identities.push_back(std::move(student));
+      student->set_photo_url("");
     }
-    request->set_student_groups(std::move(identities));
+    request->set_roster(std::move(roster));
   }
   if (config->caption_config) {
     auto captions_config = std::make_unique<::boca::CaptionsConfig>();
@@ -132,7 +137,7 @@ void BocaAppHandler::CreateSession(mojom::ConfigPtr config,
 
 void BocaAppHandler::GetSession(GetSessionCallback callback) {
   auto get_session_request = std::make_unique<GetSessionRequest>(
-      session_client_impl_->sender(), user_identity_.GetGaiaId(),
+      session_client_impl_->sender(), user_identity_.gaia_id(),
       base::BindOnce(
           [](GetSessionCallback callback,
              base::expected<std::unique_ptr<::boca::Session>,

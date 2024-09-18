@@ -112,36 +112,36 @@ TEST_F(SessionApiRequestsTest, CreateSessionWithFullInputAndSucceed) {
   EXPECT_CALL(request_handler(), HandleRequest(_))
       .WillOnce(DoAll(SaveArg<0>(&http_request),
                       Return(MockRequestHandler::CreateSuccessfulResponse())));
-  std::string gaia_id = "1";
+  ::boca::UserIdentity teacher;
+  teacher.set_gaia_id("1");
+  teacher.set_email("teacher@gmail.com");
+  teacher.set_full_name("teacher");
   base::TimeDelta session_duration = base::Seconds(120);
-
   base::test::TestFuture<base::expected<bool, google_apis::ApiErrorCode>>
       future;
 
   std::unique_ptr<CreateSessionRequest> request =
       std::make_unique<CreateSessionRequest>(
-          request_sender(), gaia_id, session_duration,
+          request_sender(), teacher, session_duration,
           ::boca::Session::SessionState::Session_SessionState_ACTIVE,
           future.GetCallback());
 
   request->OverrideURLForTesting(test_server_.base_url().spec());
 
-  std::vector<::boca::UserIdentity> student_groups;
-  ::boca::UserIdentity student_1;
-  student_1.set_gaia_id("2");
-  student_1.set_email("cat@gmail.com");
-  student_1.set_full_name("cat");
-  student_1.set_photo_url("data:image/123");
+  auto roster = std::make_unique<::boca::Roster>();
+  auto* student_groups = roster->mutable_student_groups()->Add();
+  auto* student_1 = student_groups->mutable_students()->Add();
+  student_1->set_gaia_id("2");
+  student_1->set_email("cat@gmail.com");
+  student_1->set_full_name("cat");
+  student_1->set_photo_url("data:image/123");
+  auto* student_2 = student_groups->mutable_students()->Add();
+  student_2->set_gaia_id("3");
+  student_2->set_email("dog@gmail.com");
+  student_2->set_full_name("dog");
+  student_2->set_photo_url("data:image/123");
 
-  ::boca::UserIdentity student_2;
-  student_2.set_gaia_id("3");
-  student_2.set_email("dog@gmail.com");
-  student_2.set_full_name("dog");
-  student_2.set_photo_url("data:image/123");
-  student_groups.push_back(student_1);
-  student_groups.push_back(student_2);
-
-  request->set_student_groups(std::move(student_groups));
+  request->set_roster(std::move(roster));
 
   auto on_task_config = std::make_unique<::boca::OnTaskConfig>();
   auto* active_bundle = on_task_config->mutable_active_bundle();
@@ -181,24 +181,21 @@ TEST_F(SessionApiRequestsTest, CreateSessionWithFullInputAndSucceed) {
   EXPECT_EQ("/v1/teachers/1/sessions", http_request.relative_url);
   EXPECT_EQ("application/json", http_request.headers["Content-Type"]);
   auto* contentData =
-      "{\"duration\":{\"seconds\":120},\"roster\":"
-      "{\"student_groups\":{"
-      "\"students\":[{\"email\":\"cat@gmail.com\","
-      "\"full_name\":\"cat\",\"gaia_id\":\"2\",\"photo_url\":"
-      "\"data:image/"
-      "123\"},{\"email\":\"dog@gmail.com\",\"full_name\":\"dog\","
-      "\"gaia_id\":\"3\",\"photo_url\":\"data:image/123\"}],\"title\":"
-      "\"main\"}},\"session_state\":2,\"student_group_configs\":{\"main\":"
-      "{\"captions_config\":{\"captions_enabled\":true,"
-      "\"translations_enabled\":true},\"on_task_config\":{\"active_bundle\":"
-      "{\"content_configs\":[{\"favicon_url\":\"data:image/123\","
-      "\"locked_navigation_options\":{\"navigation_type\":1},\"title\":"
-      "\"google\","
-      "\"url\":\"https://google.com\"},{\"favicon_url\":\"data:image/123\","
-      "\"locked_navigation_options\":{\"navigation_type\":2},\"title\":"
-      "\"youtube\","
-      "\"url\":\"https://youtube.com\"}],\"locked\":true}}}},\"teacher\":"
-      "{\"gaia_id\":\"1\"}}";
+      "{\"duration\":{\"seconds\":120},\"roster\":{\"studentGroups\":{"
+      "\"students\":[{\"email\":\"cat@gmail.com\",\"fullName\":\"cat\","
+      "\"gaiaId\":\"2\",\"photoUrl\":\"data:image/"
+      "123\"},{\"email\":\"dog@gmail.com\",\"fullName\":\"dog\",\"gaiaId\":"
+      "\"3\",\"photoUrl\":\"data:image/"
+      "123\"}],\"title\":\"main\"}},\"sessionState\":2,\"studentGroupConfigs\":"
+      "{\"main\":{\"captionsConfig\":{\"captionsEnabled\":true,"
+      "\"translationsEnabled\":true},\"onTaskConfig\":{\"activeBundle\":{"
+      "\"contentConfigs\":[{\"faviconUrl\":\"data:image/"
+      "123\",\"lockedNavigationOptions\":{\"navigationType\":1},\"title\":"
+      "\"google\",\"url\":\"https://google.com\"},{\"faviconUrl\":\"data:image/"
+      "123\",\"lockedNavigationOptions\":{\"navigationType\":2},\"title\":"
+      "\"youtube\",\"url\":\"https://"
+      "youtube.com\"}],\"locked\":true}}}},\"teacher\":{\"email\":\"teacher@"
+      "gmail.com\",\"fullName\":\"teacher\",\"gaiaId\":\"1\"}}";
   ASSERT_TRUE(http_request.has_content);
   EXPECT_EQ(contentData, http_request.content);
   EXPECT_EQ(true, result.value());
@@ -216,9 +213,11 @@ TEST_F(SessionApiRequestsTest, CreateSessionWithCriticalInputAndSucceed) {
   base::test::TestFuture<base::expected<bool, google_apis::ApiErrorCode>>
       future;
 
+  ::boca::UserIdentity teacher;
+  teacher.set_gaia_id("1");
   std::unique_ptr<CreateSessionRequest> request =
       std::make_unique<CreateSessionRequest>(
-          request_sender(), gaia_id, session_duration,
+          request_sender(), teacher, session_duration,
           ::boca::Session::SessionState::Session_SessionState_ACTIVE,
           future.GetCallback());
 
@@ -233,9 +232,9 @@ TEST_F(SessionApiRequestsTest, CreateSessionWithCriticalInputAndSucceed) {
   EXPECT_EQ("/v1/teachers/1/sessions", http_request.relative_url);
   EXPECT_EQ("application/json", http_request.headers["Content-Type"]);
   auto* contentData =
-      "{\"duration\":{\"seconds\":120},\"session_state\":2,\"student_group_"
-      "configs\":{\"main\":{}},\"teacher\":{\"gaia_id\":\"1\"}"
-      "}";
+      "{\"duration\":{\"seconds\":120},\"sessionState\":2,\"studentGroup"
+      "Configs\":{\"main\":{}},\"teacher\":{\"email\":\"\",\"fullName\":\"\","
+      "\"gaiaId\":\"1\"}}";
   ASSERT_TRUE(http_request.has_content);
   EXPECT_EQ(contentData, http_request.content);
   EXPECT_EQ(true, result.value());
@@ -252,10 +251,11 @@ TEST_F(SessionApiRequestsTest, CreateSessionWithCriticalInputAndFail) {
 
   base::test::TestFuture<base::expected<bool, google_apis::ApiErrorCode>>
       future;
-
+  ::boca::UserIdentity teacher;
+  teacher.set_gaia_id("1");
   std::unique_ptr<CreateSessionRequest> request =
       std::make_unique<CreateSessionRequest>(
-          request_sender(), gaia_id, session_duration,
+          request_sender(), teacher, session_duration,
           ::boca::Session::SessionState::Session_SessionState_ACTIVE,
           future.GetCallback());
 
@@ -270,9 +270,9 @@ TEST_F(SessionApiRequestsTest, CreateSessionWithCriticalInputAndFail) {
   EXPECT_EQ("/v1/teachers/1/sessions", http_request.relative_url);
   EXPECT_EQ("application/json", http_request.headers["Content-Type"]);
   auto* contentData =
-      "{\"duration\":{\"seconds\":120},\"session_state\":2,\"student_group_"
-      "configs\":{\"main\":{}},\"teacher\":{\"gaia_id\":\"1\"}"
-      "}";
+      "{\"duration\":{\"seconds\":120},\"sessionState\":2,\"studentGroup"
+      "Configs\":{\"main\":{}},\"teacher\":{\"email\":\"\",\"fullName\":\"\","
+      "\"gaiaId\":\"1\"}}";
   ASSERT_TRUE(http_request.has_content);
   EXPECT_EQ(contentData, http_request.content);
   EXPECT_EQ(google_apis::HTTP_INTERNAL_SERVER_ERROR, result.error());

@@ -161,8 +161,10 @@ TEST_F(BocaAppPageHandlerTest, CreateSessionWithFullInput) {
   // API callback.
   base::test::TestFuture<bool> future_1;
 
+  ::boca::UserIdentity teacher;
+  teacher.set_gaia_id(kGaiaId);
   CreateSessionRequest request(
-      nullptr, kGaiaId, config->session_duration,
+      nullptr, teacher, config->session_duration,
       ::boca::Session::SessionState::Session_SessionState_ACTIVE,
       future.GetCallback());
   EXPECT_CALL(*session_client_impl(), CreateSession(_))
@@ -170,21 +172,37 @@ TEST_F(BocaAppPageHandlerTest, CreateSessionWithFullInput) {
           // Unique pointer have ownership issue, have to do manual deep copy
           // here instead of using SaveArg.
           Invoke([&](auto request) {
-            ASSERT_EQ(kGaiaId, request->teacher_gaia_id());
+            ASSERT_EQ(kGaiaId, request->teacher().gaia_id());
             ASSERT_EQ(session_duration, request->duration());
             ASSERT_EQ(
                 ::boca::Session::SessionState::Session_SessionState_ACTIVE,
                 request->session_state());
 
             // Optional attribute.
-            ASSERT_EQ(2u, request->student_groups().size());
-            EXPECT_EQ("1", request->student_groups()[0].gaia_id());
-            EXPECT_EQ("a", request->student_groups()[0].full_name());
-            EXPECT_EQ("a@gmail.com", request->student_groups()[0].email());
+            ASSERT_EQ(1, request->roster()->student_groups().size());
+            ASSERT_EQ(2,
+                      request->roster()->student_groups()[0].students().size());
+            EXPECT_EQ(
+                "1",
+                request->roster()->student_groups()[0].students()[0].gaia_id());
+            EXPECT_EQ("a", request->roster()
+                               ->student_groups()[0]
+                               .students()[0]
+                               .full_name());
+            EXPECT_EQ(
+                "a@gmail.com",
+                request->roster()->student_groups()[0].students()[0].email());
 
-            EXPECT_EQ("2", request->student_groups()[1].gaia_id());
-            EXPECT_EQ("b", request->student_groups()[1].full_name());
-            EXPECT_EQ("b@gmail.com", request->student_groups()[1].email());
+            EXPECT_EQ(
+                "2",
+                request->roster()->student_groups()[0].students()[1].gaia_id());
+            EXPECT_EQ("b", request->roster()
+                               ->student_groups()[0]
+                               .students()[1]
+                               .full_name());
+            EXPECT_EQ(
+                "b@gmail.com",
+                request->roster()->student_groups()[0].students()[1].email());
 
             ASSERT_TRUE(request->on_task_config());
             EXPECT_TRUE(request->on_task_config()->active_bundle().locked());
@@ -263,8 +281,10 @@ TEST_F(BocaAppPageHandlerTest, CreateSessionWithCritialInputOnly) {
       session_duration, std::vector<mojom::IdentityPtr>{},
       mojom::OnTaskConfigPtr(nullptr), mojom::CaptionConfigPtr(nullptr));
 
+  ::boca::UserIdentity teacher;
+  teacher.set_gaia_id(kGaiaId);
   CreateSessionRequest request(
-      nullptr, kGaiaId, config->session_duration,
+      nullptr, teacher, config->session_duration,
       ::boca::Session::SessionState::Session_SessionState_ACTIVE,
       future.GetCallback());
   EXPECT_CALL(*session_client_impl(), CreateSession(_))
@@ -272,7 +292,7 @@ TEST_F(BocaAppPageHandlerTest, CreateSessionWithCritialInputOnly) {
           // Unique pointer have ownership issue, have to do manual deep copy
           // here instead of using SaveArg.
           Invoke([&](auto request) {
-            ASSERT_EQ(kGaiaId, request->teacher_gaia_id());
+            ASSERT_EQ(kGaiaId, request->teacher().gaia_id());
             ASSERT_EQ(session_duration, request->duration());
             ASSERT_EQ(
                 ::boca::Session::SessionState::Session_SessionState_ACTIVE,
@@ -280,7 +300,7 @@ TEST_F(BocaAppPageHandlerTest, CreateSessionWithCritialInputOnly) {
 
             ASSERT_FALSE(request->captions_config());
             ASSERT_FALSE(request->on_task_config());
-            ASSERT_TRUE(request->student_groups().empty());
+            ASSERT_FALSE(request->roster());
 
             request->callback().Run("success");
           })));
