@@ -4489,8 +4489,8 @@
   },
   {
     "name": "enterprise-reporting-ui",
-    "owners": ["tylergarrett@google.com", "cros-reporting-team@google.com"],
-    "expiry_milestone": 130
+    "owners": ["cros-reporting-team@google.com"],
+    "expiry_milestone": 150
   },
   {
     "name": "eol-incentive",
