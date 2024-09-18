@@ -14075,6 +14075,22 @@
             ]
         }
     ],
+    "MetricsClusteringSurvey": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_CANARY_DEV_50_20240918",
+                    "enable_features": [
+                        "SegmentationPlatformMetricsClustering",
+                        "SegmentationSurveyPage"
+                    ]
+                }
+            ]
+        }
+    ],
     "MetricsLogTrimming": [
         {
             "platforms": [
