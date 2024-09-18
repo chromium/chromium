@@ -23,6 +23,7 @@
 #include "net/base/host_port_pair.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
+#include "net/base/net_errors.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/simple_host_resolver.h"
@@ -75,6 +76,14 @@ constexpr net::NetworkTrafficAnnotationTag kDirectSocketsTrafficAnnotation =
 network::mojom::NetworkContext*& GetNetworkContextForTesting() {
   static network::mojom::NetworkContext* network_context = nullptr;
   return network_context;
+}
+
+// Runs the supplied `callback` with `net_error` and default params for other
+// args.
+template <typename... Args>
+void FulfillWithError(base::OnceCallback<void(int32_t, Args...)> callback,
+                      int32_t net_error) {
+  std::move(callback).Run(net_error, std::remove_cvref_t<Args>()...);
 }
 
 bool IsAPIAccessAllowed(RenderFrameHost& rfh) {
@@ -136,7 +145,7 @@ class DirectSocketsServiceImpl::FirewallHoleDelegate
       int32_t result,
       const std::optional<net::IPEndPoint>& local_addr) {
     if (result != net::OK) {
-      std::move(callback).Run(result, /*local_addr=*/std::nullopt);
+      FulfillWithError(std::move(callback), result);
       return;
     }
     if (!ShouldOpenFirewallHole(local_addr->address())) {
@@ -165,7 +174,7 @@ class DirectSocketsServiceImpl::FirewallHoleDelegate
       int32_t result,
       const std::optional<net::IPEndPoint>& local_addr) {
     if (result != net::OK) {
-      std::move(callback).Run(result, /*local_addr=*/std::nullopt);
+      FulfillWithError(std::move(callback), result);
       return;
     }
     if (!ShouldOpenFirewallHole(local_addr->address())) {
@@ -264,9 +273,7 @@ void DirectSocketsServiceImpl::OpenTCPSocket(
   if (!IsAPIAccessAllowed(render_frame_host()) ||
       !ValidateAddressAndPort(render_frame_host(), remote_addr,
                               DirectSocketsDelegate::ProtocolType::kTcp)) {
-    std::move(callback).Run(net::ERR_ACCESS_DENIED, std::nullopt, std::nullopt,
-                            mojo::ScopedDataPipeConsumerHandle(),
-                            mojo::ScopedDataPipeProducerHandle());
+    FulfillWithError(std::move(callback), net::ERR_ACCESS_DENIED);
     return;
   }
 
@@ -298,7 +305,7 @@ void DirectSocketsServiceImpl::OpenConnectedUDPSocket(
       !ValidateAddressAndPort(
           render_frame_host(), remote_addr,
           DirectSocketsDelegate::ProtocolType::kConnectedUdp)) {
-    std::move(callback).Run(net::ERR_ACCESS_DENIED, std::nullopt, std::nullopt);
+    FulfillWithError(std::move(callback), net::ERR_ACCESS_DENIED);
     return;
   }
 
@@ -327,8 +334,7 @@ void DirectSocketsServiceImpl::OpenBoundUDPSocket(
   if (!IsAPIAccessAllowed(render_frame_host()) ||
       !ValidateAddressAndPort(render_frame_host(), options->local_addr,
                               DirectSocketsDelegate::ProtocolType::kBoundUdp)) {
-    std::move(callback).Run(net::ERR_ACCESS_DENIED,
-                            /*local_addr=*/std::nullopt);
+    FulfillWithError(std::move(callback), net::ERR_ACCESS_DENIED);
     return;
   }
 
@@ -381,8 +387,7 @@ void DirectSocketsServiceImpl::OpenTCPServerSocket(
       !ValidateAddressAndPort(
           render_frame_host(), options->local_addr,
           DirectSocketsDelegate::ProtocolType::kTcpServer)) {
-    std::move(callback).Run(net::ERR_ACCESS_DENIED,
-                            /*local_addr=*/std::nullopt);
+    FulfillWithError(std::move(callback), net::ERR_ACCESS_DENIED);
     return;
   }
 
@@ -451,9 +456,7 @@ void DirectSocketsServiceImpl::OnResolveCompleteForTCPSocket(
     const std::optional<net::AddressList>& resolved_addresses,
     const std::optional<net::HostResolverEndpointResults>&) {
   if (result != net::OK) {
-    std::move(callback).Run(result, std::nullopt, std::nullopt,
-                            mojo::ScopedDataPipeConsumerHandle(),
-                            mojo::ScopedDataPipeProducerHandle());
+    FulfillWithError(std::move(callback), result);
     return;
   }
 
@@ -490,8 +493,7 @@ void DirectSocketsServiceImpl::OnResolveCompleteForUDPSocket(
     const std::optional<net::AddressList>& resolved_addresses,
     const std::optional<net::HostResolverEndpointResults>&) {
   if (result != net::OK) {
-    std::move(callback).Run(result, /*local_addr=*/std::nullopt,
-                            /*peer_addr=*/std::nullopt);
+    FulfillWithError(std::move(callback), result);
     return;
   }
 
@@ -508,7 +510,7 @@ void DirectSocketsServiceImpl::OnResolveCompleteForUDPSocket(
   auto params = network::mojom::RestrictedUDPSocketParams::New();
   params->socket_options = std::move(socket_options);
 
-  const net::IPEndPoint& peer_addr = resolved_addresses->front();
+  const auto& peer_addr = resolved_addresses->front();
   GetNetworkContext()->CreateRestrictedUDPSocket(
       peer_addr,
       /*mode=*/network::mojom::RestrictedUDPSocketMode::CONNECTED,
