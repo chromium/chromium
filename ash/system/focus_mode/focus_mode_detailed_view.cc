@@ -23,6 +23,7 @@
 #include "ash/system/focus_mode/focus_mode_animations.h"
 #include "ash/system/focus_mode/focus_mode_controller.h"
 #include "ash/system/focus_mode/focus_mode_countdown_view.h"
+#include "ash/system/focus_mode/focus_mode_session.h"
 #include "ash/system/focus_mode/focus_mode_task_view.h"
 #include "ash/system/focus_mode/focus_mode_util.h"
 #include "ash/system/focus_mode/sounds/focus_mode_sounds_view.h"
@@ -453,7 +454,9 @@ void FocusModeDetailedView::AddedToWidget() {
   }
 }
 
-void FocusModeDetailedView::OnFocusModeChanged(bool in_focus_session) {
+void FocusModeDetailedView::OnFocusModeChanged(
+    FocusModeSession::State session_state) {
+  const bool in_focus_session = session_state == FocusModeSession::State::kOn;
   if (in_focus_session) {
     // The system tray bubble is closed by the `FocusModeController` whenever
     // we toggle focus mode on, so do nothing here.

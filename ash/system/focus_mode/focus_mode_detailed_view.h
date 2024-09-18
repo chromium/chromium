@@ -71,7 +71,7 @@ class ASH_EXPORT FocusModeDetailedView : public TrayDetailedView,
   void AddedToWidget() override;
 
   // FocusModeController::Observer:
-  void OnFocusModeChanged(bool in_focus_session) override;
+  void OnFocusModeChanged(FocusModeSession::State session_state) override;
   void OnTimerTick(const FocusModeSession::Snapshot& session_snapshot) override;
   void OnActiveSessionDurationChanged(
       const FocusModeSession::Snapshot& session_snapshot) override;
