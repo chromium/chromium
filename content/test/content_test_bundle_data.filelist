@@ -7281,6 +7281,10 @@ data/media/webrtc_codec_utils.js
 data/media/webrtc_test_audio.js
 data/media/webrtc_test_common.js
 data/media/webrtc_test_utilities.js
+data/mhtml/custom_element_defined.html
+data/mhtml/custom_element_defined_in_frame.html
+data/mhtml/style.css
+data/mhtml/styles.html
 data/midi/request_midi_access.html
 data/midi/subscribe_all.html
 data/mixed-content/basic-active-in-iframe.html

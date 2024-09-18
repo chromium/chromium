@@ -57,10 +57,27 @@ class CORE_EXPORT MarkupAccumulator {
   CORE_EXPORT String SerializeNodes(const Node&, ChildrenOnly);
 
  protected:
+  // Determines whether an element or attribute is emitted as markup.
+  enum class EmitChoice {
+    // Emit it as markup.
+    kEmit,
+    // Do not emit it or any children (for elements).
+    kIgnore,
+  };
+
   // Returns serialized prefix. It should be passed to AppendEndTag().
   virtual AtomicString AppendElement(const Element&);
+  virtual void AppendEndTag(const Element&, const AtomicString& prefix);
   virtual void AppendAttribute(const Element&, const Attribute&);
-  virtual bool ShouldIgnoreElement(const Element&) const;
+
+  // This is called just before emitting markup for `element`. Derived classes
+  // may emit markup here, i.e., if they want to provide a substitute for this
+  // element.
+  virtual EmitChoice WillProcessElement(const Element& element);
+  // Called just before closing a <template> element used to serialize a
+  // shadow root. `auxiliary_tree` is the shadow root that has just been
+  // serialized into the <template> element.
+  virtual void WillCloseSyntheticTemplateElement(ShadowRoot& auxiliary_tree) {}
 
   MarkupFormatter formatter_;
   StringBuilder markup_;
@@ -90,8 +107,6 @@ class CORE_EXPORT MarkupAccumulator {
   bool ShouldAddNamespaceAttribute(const Attribute& attribute,
                                    const AtomicString& candidate_prefix);
 
-  void AppendEndTag(const Element&, const AtomicString& prefix);
-
   EntityMask EntityMaskForText(const Text&) const;
 
   void PushNamespaces(const Element& element);
@@ -104,7 +119,8 @@ class CORE_EXPORT MarkupAccumulator {
   AtomicString GeneratePrefix(const AtomicString& new_namespace);
 
   virtual void AppendCustomAttributes(const Element&);
-  virtual bool ShouldIgnoreAttribute(const Element&, const Attribute&) const;
+  virtual EmitChoice WillProcessAttribute(const Element&,
+                                          const Attribute&) const;
 
   // Returns a shadow tree that needs also to be serialized. The ShadowRoot is
   // returned as the 1st element in the pair, and can be null if no shadow tree

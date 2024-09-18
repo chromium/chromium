@@ -63,6 +63,7 @@
 #include "third_party/blink/renderer/core/html/html_frame_element_base.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/html/html_head_element.h"
+#include "third_party/blink/renderer/core/html/html_html_element.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/html/html_image_loader.h"
@@ -112,6 +113,20 @@ const char kShadowModeAttributeName[] = "shadowmode";
 const char kShadowDelegatesFocusAttributeName[] = "shadowdelegatesfocus";
 
 using mojom::blink::FormControlType;
+
+KURL MakePseudoCSSUrl() {
+  StringBuilder pseudo_sheet_url_builder;
+  pseudo_sheet_url_builder.Append("cid:css-");
+  pseudo_sheet_url_builder.Append(WTF::CreateCanonicalUUIDString());
+  pseudo_sheet_url_builder.Append("@mhtml.blink");
+  return KURL(pseudo_sheet_url_builder.ToString());
+}
+
+void AppendLinkElement(StringBuilder& markup, const KURL& url) {
+  markup.Append(R"html(<link rel="stylesheet" type="text/css" href=")html");
+  markup.Append(url.GetString());
+  markup.Append("\" />");
+}
 
 }  // namespace
 
@@ -288,8 +303,8 @@ class SerializerMarkupAccumulator : public MarkupAccumulator {
     return true;
   }
 
-  bool ShouldIgnoreAttribute(const Element& element,
-                             const Attribute& attribute) const override {
+  EmitChoice WillProcessAttribute(const Element& element,
+                                  const Attribute& attribute) const override {
     // TODO(fgorski): Presence of srcset attribute causes MHTML to not display
     // images, as only the value of src is pulled into the archive. Discarding
     // srcset prevents the problem. Long term we should make sure to MHTML plays
@@ -297,14 +312,14 @@ class SerializerMarkupAccumulator : public MarkupAccumulator {
     if (IsA<HTMLImageElement>(element) &&
         (attribute.LocalName() == html_names::kSrcsetAttr ||
          attribute.LocalName() == html_names::kSizesAttr)) {
-      return true;
+      return EmitChoice::kIgnore;
     }
 
     // Do not save ping attribute since anyway the ping will be blocked from
     // MHTML.
     if (IsA<HTMLAnchorElement>(element) &&
         attribute.LocalName() == html_names::kPingAttr) {
-      return true;
+      return EmitChoice::kIgnore;
     }
 
     // The special attribute in a template element to denote the shadow DOM
@@ -314,7 +329,7 @@ class SerializerMarkupAccumulator : public MarkupAccumulator {
         (attribute.LocalName() == kShadowModeAttributeName ||
          attribute.LocalName() == kShadowDelegatesFocusAttributeName) &&
         !shadow_template_elements_.Contains(&element)) {
-      return true;
+      return EmitChoice::kIgnore;
     }
 
     // If srcdoc attribute for frame elements will be rewritten as src attribute
@@ -325,19 +340,22 @@ class SerializerMarkupAccumulator : public MarkupAccumulator {
     String new_link_for_the_element;
     if (is_src_doc_attribute &&
         RewriteLink(element, new_link_for_the_element)) {
-      return false;
+      return EmitChoice::kEmit;
     }
 
     //  Drop integrity attribute for those links with subresource loaded.
     auto* html_link_element = DynamicTo<HTMLLinkElement>(element);
     if (attribute.LocalName() == html_names::kIntegrityAttr &&
         html_link_element && html_link_element->sheet()) {
-      return true;
+      return EmitChoice::kIgnore;
     }
 
     // Do not include attributes that contain javascript. This is because the
     // script will not be executed when a MHTML page is being loaded.
-    return element.IsScriptingAttribute(attribute);
+    if (element.IsScriptingAttribute(attribute)) {
+      return EmitChoice::kIgnore;
+    }
+    return EmitChoice::kEmit;
   }
 
   bool RewriteLink(const Element& element, String& rewritten_link) const {
@@ -440,39 +458,60 @@ class SerializerMarkupAccumulator : public MarkupAccumulator {
     }
   }
 
-  bool ShouldIgnoreElement(const Element& element) const override {
+  EmitChoice WillProcessElement(const Element& element) override {
     if (IsA<HTMLScriptElement>(element)) {
-      return true;
+      return EmitChoice::kIgnore;
     }
     if (IsA<HTMLNoScriptElement>(element)) {
-      return true;
+      return EmitChoice::kIgnore;
     }
     auto* meta = DynamicTo<HTMLMetaElement>(element);
     if (meta && meta->ComputeEncoding().IsValid()) {
-      return true;
+      return EmitChoice::kIgnore;
     }
-    // This is done in serializing document.StyleSheets.
-    if (IsA<HTMLStyleElement>(element)) {
-      return true;
+
+    if (MHTMLImprovementsEnabled()) {
+      // When `MHTMLImprovementsEnabled()`, we replace <style> with a <link> to
+      // the serialized style sheet.
+      if (const HTMLStyleElement* style_element =
+              DynamicTo<HTMLStyleElement>(element)) {
+        CSSStyleSheet* sheet = style_element->sheet();
+        if (sheet) {
+          AppendStylesheet(*sheet);
+          return EmitChoice::kIgnore;
+        }
+      }
+    } else {
+      // A <link> element is inserted in `AppendExtraForHeadElement()` as a
+      // substitute for this element.
+      if (IsA<HTMLStyleElement>(element)) {
+        return EmitChoice::kIgnore;
+      }
     }
 
     if (ShouldIgnoreHiddenElement(element)) {
-      return true;
+      return EmitChoice::kIgnore;
     }
     if (ShouldIgnoreMetaElement(element)) {
-      return true;
+      return EmitChoice::kIgnore;
     }
     if (web_delegate_->RemovePopupOverlay() &&
         ShouldIgnorePopupOverlayElement(element)) {
-      return true;
+      return EmitChoice::kIgnore;
     }
     // Remove <link> for stylesheets that do not load.
     auto* html_link_element = DynamicTo<HTMLLinkElement>(element);
     if (html_link_element && html_link_element->RelAttribute().IsStyleSheet() &&
         !html_link_element->sheet()) {
-      return true;
+      return EmitChoice::kIgnore;
     }
-    return false;
+    return MarkupAccumulator::WillProcessElement(element);
+  }
+
+  void WillCloseSyntheticTemplateElement(ShadowRoot& auxiliary_tree) override {
+    if (MHTMLImprovementsEnabled()) {
+      AppendAdoptedStyleSheets(&auxiliary_tree);
+    }
   }
 
   AtomicString AppendElement(const Element& element) override {
@@ -487,6 +526,18 @@ class SerializerMarkupAccumulator : public MarkupAccumulator {
     // an image of their current contents.
 
     return prefix;
+  }
+
+  void AppendEndTag(const Element& element,
+                    const AtomicString& prefix) override {
+    if (MHTMLImprovementsEnabled()) {
+      // Add adopted stylesheets to the very end of the document, so they
+      // processed after other stylesheets.
+      if (IsA<HTMLHtmlElement>(element)) {
+        AppendAdoptedStyleSheets(document_);
+      }
+    }
+    MarkupAccumulator::AppendEndTag(element, prefix);
   }
 
   void AppendExtraForHeadElement(const Element& element) {
@@ -507,8 +558,59 @@ class SerializerMarkupAccumulator : public MarkupAccumulator {
     // The CSS rules of a style element can be updated dynamically independent
     // of the CSS text included in the style element. So we can't use the inline
     // CSS text defined in the style element. To solve this, we serialize the
-    // working CSS rules in document.stylesheets and wrap them in link elements.
-    AppendStylesheets(document_, true /*style_element_only*/);
+    // working CSS rules in document.stylesheets and document.adoptedStyleSheets
+    // and wrap them in link elements.
+    // Adopted stylesheets are evaluated last, so we append them last.
+    if (!MHTMLImprovementsEnabled()) {
+      AppendStylesheets(document_->StyleSheets(), true /*style_element_only*/);
+    }
+  }
+
+  // Add `sheet` as a new resource and emit a <link> element to load it.
+  void AppendStylesheet(StyleSheet& sheet) {
+    if (!sheet.IsCSSStyleSheet() || sheet.disabled()) {
+      return;
+    }
+
+    KURL pseudo_sheet_url = MakePseudoCSSUrl();
+    AppendLinkElement(markup_, pseudo_sheet_url);
+    SerializeCSSStyleSheet(static_cast<CSSStyleSheet&>(sheet),
+                           pseudo_sheet_url);
+  }
+
+  void AppendStylesheets(StyleSheetList& sheets, bool style_element_only) {
+    for (unsigned i = 0; i < sheets.length(); ++i) {
+      StyleSheet* sheet = sheets.item(i);
+      if (style_element_only && !IsA<HTMLStyleElement>(sheet->ownerNode())) {
+        continue;
+      }
+      AppendStylesheet(*sheet);
+    }
+  }
+
+  // Appends <link> elements to construct the same styles from `root`'s
+  // `AdoptedStyleSheets()`.
+  void AppendAdoptedStyleSheets(TreeScope* root) {
+    auto* sheets = root->AdoptedStyleSheets();
+    if (!sheets) {
+      return;
+    }
+
+    for (blink::CSSStyleSheet* sheet : *sheets) {
+      // Serialize the stylesheet only the first time it's visited.
+      KURL pseudo_sheet_url;
+      auto iter = stylesheet_pseudo_urls_.find(sheet);
+      if (iter != stylesheet_pseudo_urls_.end()) {
+        pseudo_sheet_url = iter->value;
+      } else {
+        pseudo_sheet_url = MakePseudoCSSUrl();
+        SerializeCSSStyleSheet(static_cast<CSSStyleSheet&>(*sheet),
+                               pseudo_sheet_url);
+        stylesheet_pseudo_urls_.insert(sheet, pseudo_sheet_url);
+      }
+
+      AppendLinkElement(markup_, pseudo_sheet_url);
+    }
   }
 
   void AppendStylesheets(Document* document, bool style_element_only) {
@@ -522,16 +624,8 @@ class SerializerMarkupAccumulator : public MarkupAccumulator {
         continue;
       }
 
-      StringBuilder pseudo_sheet_url_builder;
-      pseudo_sheet_url_builder.Append("cid:css-");
-      pseudo_sheet_url_builder.Append(WTF::CreateCanonicalUUIDString());
-      pseudo_sheet_url_builder.Append("@mhtml.blink");
-      KURL pseudo_sheet_url = KURL(pseudo_sheet_url_builder.ToString());
-
-      markup_.Append("<link rel=\"stylesheet\" type=\"text/css\" href=\"");
-      markup_.Append(pseudo_sheet_url.GetString());
-      markup_.Append("\" />");
-
+      KURL pseudo_sheet_url = MakePseudoCSSUrl();
+      AppendLinkElement(markup_, pseudo_sheet_url);
       SerializeCSSStyleSheet(static_cast<CSSStyleSheet&>(*sheet),
                              pseudo_sheet_url);
     }
@@ -657,17 +751,19 @@ class SerializerMarkupAccumulator : public MarkupAccumulator {
                  "FrameSerializer::serializeCSSStyleSheet", "type", "CSS",
                  "url", url.ElidedString().Utf8());
 
+    const auto& charset = style_sheet.Contents()->Charset();
+
     // If this CSS is inlined its definition was already serialized with the
     // frame HTML code that was previously generated. No need to regenerate it
     // here.
     if (!is_inline_css) {
       StringBuilder css_text;
+      // Adopted stylesheets may not have a defined charset, so use UTF-8 in
+      // that case.
       css_text.Append("@charset \"");
-      css_text.Append(style_sheet.Contents()
-                          ->Charset()
-                          .GetName()
-                          .GetString()
-                          .DeprecatedLower());
+      css_text.Append(charset.IsValid()
+                          ? charset.GetName().GetString().DeprecatedLower()
+                          : "utf-8");
       css_text.Append("\";\n\n");
 
       for (unsigned i = 0; i < style_sheet.length(); ++i) {
@@ -681,11 +777,17 @@ class SerializerMarkupAccumulator : public MarkupAccumulator {
         }
       }
 
-      WTF::TextEncoding text_encoding(style_sheet.Contents()->Charset());
-      DCHECK(text_encoding.IsValid());
       String text_string = css_text.ToString();
-      std::string text = text_encoding.Encode(
-          text_string, WTF::kCSSEncodedEntitiesForUnencodables);
+      std::string text;
+      if (charset.IsValid()) {
+        WTF::TextEncoding text_encoding(charset);
+        text = text_encoding.Encode(text_string,
+                                    WTF::kCSSEncodedEntitiesForUnencodables);
+      } else {
+        text = WTF::UTF8Encoding().Encode(
+            text_string, WTF::kCSSEncodedEntitiesForUnencodables);
+      }
+
       resource_serializer_->AddToResources(
           String("text/css"), SharedBuffer::Create(text.c_str(), text.length()),
           url);
@@ -818,6 +920,16 @@ class SerializerMarkupAccumulator : public MarkupAccumulator {
     }
   }
 
+  // There are several improvements being added behind this flag. So far, it
+  // covers:
+  // * Serialize adopted stylesheets
+  // * Serialize styleSheets on shadow roots
+  // * Retain stylesheet order, previously order of stylesheets
+  //   was sometimes wrong.
+  bool MHTMLImprovementsEnabled() const {
+    return base::FeatureList::IsEnabled(blink::features::kMHTML_Improvements);
+  }
+
   MultiResourcePacker* resource_serializer_;
   WebFrameSerializer::MHTMLPartsGenerationDelegate* web_delegate_;
   Document* document_;
@@ -827,6 +939,9 @@ class SerializerMarkupAccumulator : public MarkupAccumulator {
 
   // Elements with links rewritten via appendAttribute method.
   HeapHashSet<Member<const Element>> elements_with_rewritten_links_;
+  // Adopted stylesheets can be reused. This stores the set of stylesheets
+  // already serialized as resources, along with their URL.
+  HeapHashMap<Member<blink::CSSStyleSheet>, KURL> stylesheet_pseudo_urls_;
 };
 
 // TODO(tiger): Right now there is no support for rewriting URLs inside CSS

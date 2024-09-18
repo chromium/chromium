@@ -16,6 +16,7 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "components/download/public/common/download_task_runner.h"
@@ -48,6 +49,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/frame/find_in_page.mojom.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -504,6 +506,16 @@ class MHTMLGenerationTest : public ContentBrowserTest,
   std::unique_ptr<base::HistogramTester> histogram_tester_;
 };
 
+class MHTMLGenerationImprovedTest : public MHTMLGenerationTest {
+ public:
+  MHTMLGenerationImprovedTest() {
+    feature_list_.InitAndEnableFeature(blink::features::kMHTML_Improvements);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
 // Tests that generating a MHTML does create contents.
 // Note that the actual content of the file is not tested, the purpose of this
 // test is to ensure we were successful in creating the MHTML data from the
@@ -859,6 +871,75 @@ IN_PROC_BROWSER_TEST_P(MHTMLGenerationTest, GenerateMHTMLWithMultipleFrames) {
     EXPECT_THAT(mhtml, ContainsRegex(regex));
 }
 
+IN_PROC_BROWSER_TEST_P(MHTMLGenerationImprovedTest, CustomElement) {
+  MHTMLGenerationParams params(
+      temp_dir_.GetPath().Append(FILE_PATH_LITERAL("test.mht")));
+
+  TestOriginalVsSavedPage(
+      embedded_test_server()->GetURL("/mhtml/custom_element_defined.html"),
+      params, 1 /* expected number of frames */,
+      /*expected_substrings=*/
+      {
+          // If this isn't show, the custom element is either not created, or
+          // not defined through customElements.define.
+          "Inside Custom Element",
+      },
+      /*forbidden_substrings_in_saved_page=*/
+      {
+          "Hidden with adopted stylesheet on shadowRoot",
+          // TODO(crbug.com/363289333): Fix and uncomment.
+          // "Hidden because undefined-test-element is not defined.",
+          "Hidden with adopted stylesheet on document",
+          "Hidden with stylesheet on shadowRoot",
+      });
+}
+
+IN_PROC_BROWSER_TEST_P(MHTMLGenerationImprovedTest, CustomElementInFrame) {
+  MHTMLGenerationParams params(
+      temp_dir_.GetPath().Append(FILE_PATH_LITERAL("test.mht")));
+
+  // Note this has all the same string assertions from
+  // `GenerateMHTMLWithCustomElement`.
+  TestOriginalVsSavedPage(
+      embedded_test_server()->GetURL(
+          "/mhtml/custom_element_defined_in_frame.html"),
+      params, 2 /* expected number of frames */,
+      /*expected_substrings=*/
+      {
+          "Inside Custom Element",
+      },
+      /*forbidden_substrings_in_saved_page=*/
+      {
+          "Hidden with adopted stylesheet on shadowRoot",
+          // TODO(crbug.com/363289333): Fix and uncomment.
+          // "Hidden because undefined-test-element is not defined.",
+          "Hidden with adopted stylesheet on document",
+          "Hidden with stylesheet on shadowRoot",
+
+          // Verify <test-element> isn't accidentally defined outside of the
+          // frame.
+          "Hidden because not defined outside of frame.",
+      });
+}
+
+IN_PROC_BROWSER_TEST_P(MHTMLGenerationImprovedTest, Styles) {
+  MHTMLGenerationParams params(
+      temp_dir_.GetPath().Append(FILE_PATH_LITERAL("test.mht")));
+
+  TestOriginalVsSavedPage(embedded_test_server()->GetURL("/mhtml/styles.html"),
+                          params, 1 /* expected number of frames */,
+                          /*expected_substrings=*/
+                          {
+                              "hidden1",
+                              "hidden4",
+                          },
+                          /*forbidden_substrings_in_saved_page=*/
+                          {
+                              "hidden2",
+                              "hidden3",
+                          });
+}
+
 // We instantiate the MHTML Generation Tests both using and not using the
 // GenerateMHTMLWithResults callback.
 INSTANTIATE_TEST_SUITE_P(MHTMLGenerationTest,
@@ -868,4 +949,7 @@ INSTANTIATE_TEST_SUITE_P(MHTMLGenerationSitePerProcessTest,
                          MHTMLGenerationSitePerProcessTest,
                          testing::Bool());
 
+INSTANTIATE_TEST_SUITE_P(MHTMLGenerationImprovedTest,
+                         MHTMLGenerationImprovedTest,
+                         testing::Bool());
 }  // namespace content
