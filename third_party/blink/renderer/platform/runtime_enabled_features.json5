@@ -966,11 +966,6 @@
       status: "stable",
     },
     {
-      // crbug.com/345562934
-      name: "CssDecoratingBoxFirstLine",
-      status: "stable",
-    },
-    {
       // crbug.com/353228153
       name: "CssDisplaySerialziationFix",
       status: "stable",
