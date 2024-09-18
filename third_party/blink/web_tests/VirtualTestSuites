@@ -3540,18 +3540,18 @@
     ]
   },
   {
-    "prefix": "expect-no-embedded-resources",
+    "prefix": "expect-no-linked-resources",
     "platforms": [
       "Linux",
       "Mac",
       "Win"
     ],
     "bases": [
-      "http/tests/expect-no-embedded-resources"
+      "http/tests/expect-no-linked-resources"
     ],
     "exclusive_tests": "ALL",
     "args": [
-      "--enable-features=DocumentPolicyExpectNoEmbeddedResources"
+      "--enable-features=DocumentPolicyExpectNoLinkedResources"
     ],
     "expires": "Jan 14, 2025",
     "owners": [

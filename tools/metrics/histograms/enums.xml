@@ -4598,7 +4598,7 @@ Called by update_document_policy_enum.py.-->
   <int value="12" label="SyncXHR"/>
   <int value="13" label="DocumentDomain"/>
   <int value="14" label="IncludeJSCallStacksInCrashReports"/>
-  <int value="15" label="ExpectNoEmbeddedResources"/>
+  <int value="15" label="ExpectNoLinkedResources"/>
 </enum>
 
 <enum name="DocumentScanSaneBackend">
@@ -10971,7 +10971,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5097" label="V8Window_PopinContextType_Method"/>
   <int value="5098" label="WebAuthentication_AttestationFormats"/>
   <int value="5099" label="CssDisplayPropertyMultipleValues"/>
-  <int value="5100" label="DocumentPolicyExpectNoEmbeddedResources"/>
+  <int value="5100" label="DocumentPolicyExpectNoLinkedResources"/>
   <int value="5101" label="SelectionIsCollapsedBehaviorChange"/>
   <int value="5102" label="TopicsAPIAll"/>
   <int value="5103" label="PaymentRequestDeprecatedPaymentMethod"/>

@@ -1753,13 +1753,13 @@ ALWAYS_INLINE bool HTMLDocumentParser::ShouldCheckTimeBudget(
 }
 
 bool HTMLDocumentParser::ShouldSkipPreloadScan() {
-  // Check if Document-Policy has Expect-No-Embedded-Resources hint.
+  // Check if Document-Policy has Expect-No-Linked-Resources hint.
   auto* document = GetDocument();
   if (const auto* context = document->GetExecutionContext()) {
     if (context->IsFeatureEnabled(
-            mojom::blink::DocumentPolicyFeature::kExpectNoEmbeddedResources)) {
+            mojom::blink::DocumentPolicyFeature::kExpectNoLinkedResources)) {
       UseCounter::Count(document,
-                        WebFeature::kDocumentPolicyExpectNoEmbeddedResources);
+                        WebFeature::kDocumentPolicyExpectNoLinkedResources);
       return true;
     }
   }
