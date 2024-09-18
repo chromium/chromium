@@ -59,6 +59,7 @@ enum class Version {
   WIN11 = 22,        // Win11 21H2: Build 22000.
   WIN11_22H2 = 23,   // Win11 22H2: Build 22621.
   WIN11_23H2 = 24,   // Win11 23H2: Build 22631.
+  WIN11_24H2 = 25,   // Win11 24H2: Build 26100.
   WIN_LAST,          // Indicates error condition.
 };
 
