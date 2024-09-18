@@ -44,11 +44,15 @@ chromium-metrics-reviews@google.com.
   <int value="11" label="Browser went into fullscreen"/>
   <int value="12" label="Tab dragged into new window"/>
   <int value="13" label="Tab closed"/>
-  <int value="14" label="Error: Renderer exited"/>
+  <int value="14" label="Error: Renderer exited (obsolete after M130)"/>
   <int value="15" label="Find in page invoked"/>
   <int value="16" label="Preselection toast exit button"/>
   <int value="17" label="Side panel entry replaced"/>
   <int value="18" label="Search bubble close button"/>
+  <int value="19" label="Overlay renderer exited normally"/>
+  <int value="20" label="Error: Overlay renderer exited unexpectedly"/>
+  <int value="21" label="Underlying page renderer exited normally"/>
+  <int value="22" label="Error: Underlying page renderer exited unexpectedly"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/ui/lens/lens_overlay_dismissal_source.h:LensOverlayDismissalSource) -->

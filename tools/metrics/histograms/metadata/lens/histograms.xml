@@ -137,6 +137,11 @@ chromium-metrics-reviews@google.com.
     UI entry point used or the event that triggered the dimissal. In general, it
     should not be possible to attempt to dismiss the feature if the overlay is
     not currently showing but if this happens, nothing will be recorded.
+
+    In M130 and later, the &quot;Error: Renderer exited&quot; bucket is no
+    longer recorded, replaced by the more fine-grained &quot;overlay renderer
+    exited&quot; and &quot;page renderer exited&quot; buckets (two each for
+    normal and unexpected shutdown).
   </summary>
 </histogram>
 

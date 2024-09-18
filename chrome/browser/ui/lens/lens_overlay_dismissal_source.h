@@ -60,8 +60,10 @@ enum class LensOverlayDismissalSource {
   // The tab was closed.
   kTabClosed = 13,
 
-  // Renderer closed unexpected (ex. renderer crashed).
-  kRendererClosed = 14,
+  // Obsolete: Renderer closed unexpectedly (ex. renderer crashed).
+  // Unused, replaced by the kOverlayRendererClosed* and
+  // kPageRendererClosed* values below.
+  kRendererClosedObsolete = 14,
 
   // The user started finding text on the page underneath.
   kFindInPageInvoked = 15,
@@ -76,7 +78,19 @@ enum class LensOverlayDismissalSource {
   // The close button in the search bubble.
   kSearchBubbleCloseButton = 18,
 
-  kMaxValue = kSearchBubbleCloseButton
+  // The overlay's renderer process closed normally.
+  kOverlayRendererClosedNormally = 19,
+
+  // The overlay's renderer process closed due to some error.
+  kOverlayRendererClosedUnexpectedly = 20,
+
+  // The underlying page's renderer process closed normally.
+  kPageRendererClosedNormally = 21,
+
+  // The underlying page's renderer process closed due to some error.
+  kPageRendererClosedUnexpectedly = 22,
+
+  kMaxValue = kPageRendererClosedUnexpectedly
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/lens/enums.xml:LensOverlayDismissalSource)
 

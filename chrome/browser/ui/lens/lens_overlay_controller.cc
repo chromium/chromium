@@ -8,6 +8,7 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
+#include "base/process/kill.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/task/bind_post_task.h"
@@ -52,6 +53,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/viz/common/frame_timing_details.h"
 #include "components/zoom/zoom_controller.h"
+#include "content/public/browser/child_process_termination_info.h"
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/download_request_utils.h"
 #include "content/public/browser/render_frame_host.h"
@@ -1151,7 +1153,10 @@ class LensOverlayController::UnderlyingWebContentsObserver
   void PrimaryMainFrameRenderProcessGone(
       base::TerminationStatus status) override {
     lens_overlay_controller_->CloseUISync(
-        lens::LensOverlayDismissalSource::kRendererClosed);
+        status == base::TERMINATION_STATUS_NORMAL_TERMINATION
+            ? lens::LensOverlayDismissalSource::kPageRendererClosedNormally
+            : lens::LensOverlayDismissalSource::
+                  kPageRendererClosedUnexpectedly);
   }
 
  private:
@@ -1899,9 +1904,13 @@ void LensOverlayController::RenderProcessExited(
   if (IsOverlayClosing()) {
     return;
   }
-  // The renderer has exited unexpectedly. Close the overlay so the user does
-  // not get into a broken state.
-  CloseUISync(lens::LensOverlayDismissalSource::kRendererClosed);
+  // The renderer has exited. Close the overlay so the user does not get into a
+  // broken state.
+  CloseUISync(
+      info.status == base::TERMINATION_STATUS_NORMAL_TERMINATION
+          ? lens::LensOverlayDismissalSource::kOverlayRendererClosedNormally
+          : lens::LensOverlayDismissalSource::
+                kOverlayRendererClosedUnexpectedly);
 }
 
 void LensOverlayController::TabForegrounded(tabs::TabInterface* tab) {
