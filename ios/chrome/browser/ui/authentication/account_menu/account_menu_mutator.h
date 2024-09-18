@@ -16,10 +16,8 @@
 - (void)viewControllerWantsToBeClosed:
     (AccountMenuViewController*)viewController;
 
-// Sign out, display a toast, and call `callback` with argument stating whether
-// it’s a success.
-- (void)signOutFromTargetRect:(CGRect)targetRect
-                     callback:(void (^)(BOOL))callback;
+// Sign out, display a toast.
+- (void)signOutFromTargetRect:(CGRect)targetRect;
 
 // The user tapped on the `index`-th account.
 - (void)accountTappedWithGaiaID:(NSString*)index targetRect:(CGRect)targetRect;
