@@ -33894,6 +33894,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="116" label="KeyboardMap"/>
   <int value="117" label="HiddenUntilFoundAttribute"/>
   <int value="118" label="Scheduler"/>
+  <int value="119" label="KeyboardLock"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->

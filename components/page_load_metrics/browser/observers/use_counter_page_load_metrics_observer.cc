@@ -452,6 +452,7 @@ UseCounterMetricsRecorder::GetWebFeatureToWebDXFeatureMap() {
           {WebFeature::kTaskControllerConstructor, WebDXFeature::kScheduler},
           {WebFeature::kTaskControllerSetPriority, WebDXFeature::kScheduler},
           {WebFeature::kTaskSignalPriority, WebDXFeature::kScheduler},
+          {WebFeature::kKeyboardApiLock, WebDXFeature::kKeyboardLock},
       }};
 
   return *kMap;
