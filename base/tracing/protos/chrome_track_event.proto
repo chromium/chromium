@@ -1401,6 +1401,7 @@ message ChromeGraphicsPipeline {
     STEP_RECEIVE_BEGIN_FRAME_DISCARD = 7;
     STEP_SEND_BEGIN_MAIN_FRAME = 8 [deprecated = true];
     STEP_SUBMIT_COMPOSITOR_FRAME = 9;
+    STEP_DRAW_AND_SWAP = 21;
     STEP_SURFACE_AGGREGATION = 10;
     STEP_SEND_BUFFER_SWAP = 11;
     STEP_BUFFER_SWAP_POST_SUBMIT = 12;
@@ -1461,6 +1462,10 @@ message ChromeGraphicsPipeline {
 
   // Optional variable that can be set together with STEP_BACKEND*.
   optional int64 backend_frame_id = 7;
+
+  // `viz::BeginFrameAck.trace_id`s for frames aggregated at this step.
+  // Used with `STEP_SURFACE_AGGREGATION` only.
+  repeated int64 aggregated_frames_ids = 8;
 };
 
 message LibunwindstackUnwinder {
