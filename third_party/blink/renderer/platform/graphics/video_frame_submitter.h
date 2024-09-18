@@ -151,6 +151,22 @@ class PLATFORM_EXPORT VideoFrameSubmitter
       scoped_refptr<media::VideoFrame> video_frame,
       media::VideoTransformation transform);
 
+  // Opacity state with respect to what we've told `surface_embedder_`.
+  enum class Opacity {
+    // We have not told the embedder anything yet.
+    kNotReported,
+
+    // We told the embedder that we have submitted an opaque frame.
+    kIsOpaque,
+
+    // We told the embedder that we have submitted a non-opaque frame.
+    kIsNotOpaque
+  };
+
+  // Notify `surface_embedder_` if the opacity of the most recent video frame
+  // has changed.
+  void NotifyOpacityIfNeeded(Opacity new_opacity);
+
   raw_ptr<cc::VideoFrameProvider> video_frame_provider_ = nullptr;
   bool is_media_stream_ = false;
   scoped_refptr<viz::RasterContextProvider> context_provider_;
@@ -240,6 +256,8 @@ class PLATFORM_EXPORT VideoFrameSubmitter
   // The average delta between receiving a frame and presenting it. Can be used
   // to estimate the expected display time of a frame.
   base::TimeDelta average_delta_between_receive_and_present_;
+
+  Opacity opacity_ = Opacity::kNotReported;
 
   THREAD_CHECKER(thread_checker_);
 
