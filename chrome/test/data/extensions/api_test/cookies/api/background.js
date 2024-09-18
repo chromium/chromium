@@ -859,8 +859,8 @@ chrome.test.runTests([
           });
         }));
 
-    // Confirm that setting a cookie with an no `hasCrossSiteAncestor` but a
-    // `url` and `toplevel` site that are first party results in the value being
+    // Confirm that setting a cookie with no `hasCrossSiteAncestor` but a `url`
+    // and `toplevel` site that are first party, results in the value being
     // correctly populated by the browser.
     const firstPartyAncestor =
         structuredClone(TEST_FIRST_PARTY_PARTITIONED_COOKIE);
@@ -883,6 +883,24 @@ chrome.test.runTests([
           });
         }));
 
+    // Confirm that setting a partitioned cookie with an invalid `partitionKey`
+    // that contains a `hasCrossSiteAncestor` value but no `topLevelSite`
+    // results in an error.
+    const invalid = structuredClone(TEST_PARTITIONED_COOKIE);
+    invalid.partitionKey = {hasCrossSiteAncestor: false};
+    chrome.cookies.set(
+        invalid,
+        fail(
+            'CookiePartitionKey.topLevelSite is not present when ' +
+            'CookiePartitionKey.hasCrossSiteAncestor is present.'));
+    // Confirm that value of `hasCrossSiteAncestor` doesn't impact return with
+    // an invalid `partitionKey`
+    invalid.partitionKey = {hasCrossSiteAncestor: true};
+    chrome.cookies.set(
+        invalid,
+        fail(
+            'CookiePartitionKey.topLevelSite is not present when ' +
+            'CookiePartitionKey.hasCrossSiteAncestor is present.'));
   },
   function getAllPartitionedCookies() {
     removeTestCookies();
