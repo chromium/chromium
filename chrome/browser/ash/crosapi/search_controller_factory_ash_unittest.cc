@@ -19,7 +19,6 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/crosapi/search_controller_ash.h"
-#include "chrome/browser/ui/ash/picker/picker_lacros_omnibox_search_provider.h"
 #include "chromeos/crosapi/mojom/launcher_search.mojom-forward.h"
 #include "chromeos/crosapi/mojom/launcher_search.mojom-shared.h"
 #include "chromeos/crosapi/mojom/launcher_search.mojom.h"

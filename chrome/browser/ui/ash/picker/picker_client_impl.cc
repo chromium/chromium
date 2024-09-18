@@ -31,18 +31,15 @@
 #include "chrome/browser/ash/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ash/app_list/search/files/drive_search_provider.h"
 #include "chrome/browser/ash/app_list/search/files/file_search_provider.h"
-#include "chrome/browser/ash/app_list/search/omnibox/omnibox_lacros_provider.h"
 #include "chrome/browser/ash/app_list/search/omnibox/omnibox_provider.h"
 #include "chrome/browser/ash/app_list/search/ranking/ranker_manager.h"
 #include "chrome/browser/ash/app_list/search/search_engine.h"
 #include "chrome/browser/ash/app_list/search/types.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/input_method/editor_mediator_factory.h"
 #include "chrome/browser/chromeos/launcher_search/search_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/picker/picker_file_suggester.h"
-#include "chrome/browser/ui/ash/picker/picker_lacros_omnibox_search_provider.h"
 #include "chrome/browser/ui/ash/picker/picker_link_suggester.h"
 #include "chrome/browser/ui/ash/picker/picker_thumbnail_loader.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
@@ -494,16 +491,9 @@ std::unique_ptr<app_list::SearchProvider>
 PickerClientImpl::CreateOmniboxProvider(bool bookmarks,
                                         bool history,
                                         bool open_tabs) {
-  if (crosapi::browser_util::IsLacrosEnabled()) {
-    return std::make_unique<app_list::OmniboxLacrosProvider>(
-        profile_, &app_list_controller_delegate_,
-        PickerLacrosOmniboxSearchProvider::CreateControllerCallback(
-            bookmarks, history, open_tabs));
-  } else {
-    return std::make_unique<app_list::OmniboxProvider>(
-        profile_, &app_list_controller_delegate_,
-        crosapi::ProviderTypesPicker(bookmarks, history, open_tabs));
-  }
+  return std::make_unique<app_list::OmniboxProvider>(
+      profile_, &app_list_controller_delegate_,
+      crosapi::ProviderTypesPicker(bookmarks, history, open_tabs));
 }
 
 std::unique_ptr<app_list::SearchProvider>
