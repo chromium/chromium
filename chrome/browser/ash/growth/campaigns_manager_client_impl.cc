@@ -171,8 +171,9 @@ growth::ActionMap CampaignsManagerClientImpl::GetCampaignsActions() {
 void CampaignsManagerClientImpl::RegisterSyntheticFieldTrial(
     const std::string& trial_name,
     const std::string& group_name) const {
-  ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(trial_name,
-                                                            group_name);
+  ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
+      trial_name, group_name,
+      variations::SyntheticTrialAnnotationMode::kCurrentLog);
 }
 
 void CampaignsManagerClientImpl::RecordEvent(const std::string& event_name) {
