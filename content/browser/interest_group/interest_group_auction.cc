@@ -1777,11 +1777,14 @@ class InterestGroupAuction::BuyerHelper
     }
 
     for (const auto& ad_component_descriptor : ad_component_descriptors) {
-      const blink::InterestGroup::Ad* matching_ad_component = FindMatchingAd(
-          *interest_group.ad_components, bid_state->kanon_keys, interest_group,
-          bid_role,
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*is_component_ad=*/true, ad_component_descriptor);
+      const blink::InterestGroup::Ad* matching_ad_component = nullptr;
+      if (interest_group.ad_components.has_value()) {
+        matching_ad_component = FindMatchingAd(
+            *interest_group.ad_components, bid_state->kanon_keys,
+            interest_group, bid_role,
+            /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
+            /*is_component_ad=*/true, ad_component_descriptor);
+      }
       if (!matching_ad_component) {
         // Bid ad components must match the interest group.
         return nullptr;
