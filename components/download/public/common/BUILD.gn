@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//components/enterprise/buildflags/buildflags.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 
 if (is_android) {
@@ -94,6 +95,7 @@ component("public") {
   deps = [
     "//components/download/database",
     "//components/download/internal/common:internal",
+    "//components/enterprise/buildflags",
     "//components/services/quarantine:quarantine",
     "//crypto",
     "//mojo/public/c/system",
@@ -102,6 +104,11 @@ component("public") {
     "//services/network/public/cpp",
     "//ui/base",
   ]
+
+  if (enterprise_cloud_content_analysis) {
+    deps +=
+        [ "//components/enterprise/obfuscation/core:enterprise_obfuscation" ]
+  }
 
   allow_circular_includes_from = [
     "//components/download/internal/common:internal",
