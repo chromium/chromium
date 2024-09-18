@@ -118,6 +118,8 @@ void GroupDataStore::StoreGroupData(const VersionToken& version_token,
                                     const GroupData& group_data) {
   CHECK_EQ(db_init_status_, DBInitStatus::kSuccess);
 
+  // TODO(crbug.com/301390275): support batching StoreGroupData() (by setting
+  // `flush_delay`?).
   data_sharing_pb::GroupEntity entity;
   entity.mutable_metadata()->set_last_processed_version_token(
       version_token.value());

@@ -6,6 +6,7 @@
 #define COMPONENTS_DATA_SHARING_INTERNAL_COLLABORATION_GROUP_SYNC_BRIDGE_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <unordered_map>
 
@@ -74,6 +75,10 @@ class CollaborationGroupSyncBridge : public syncer::DataTypeSyncBridge {
   // Own methods.
   // Returns ids of all synced (not deleted) collaboration groups.
   std::vector<GroupId> GetCollaborationGroupIds() const;
+  std::optional<sync_pb::CollaborationGroupSpecifics> GetSpecifics(
+      const GroupId& group_id) const;
+  bool IsDataLoaded() const;
+
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
@@ -92,6 +97,10 @@ class CollaborationGroupSyncBridge : public syncer::DataTypeSyncBridge {
 
   // In charge of actually persisting data to disk, or loading previous data.
   std::unique_ptr<syncer::DataTypeStore> data_type_store_;
+
+  // Set to true once data is loaded from disk and `ids_to_specifics_` contains
+  // the actual data.
+  bool is_data_loaded_ = false;
 
   // Maps `collaboration_id` (also known as group id) to specifics. Used as
   // in-memory cache of the data.

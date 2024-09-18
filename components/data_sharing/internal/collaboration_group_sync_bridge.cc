@@ -212,6 +212,7 @@ void CollaborationGroupSyncBridge::OnReadAllData(
     ids_to_specifics_[specifics.collaboration_id()] = std::move(specifics);
   }
 
+  is_data_loaded_ = true;
   for (auto& observer : observers_) {
     observer.OnDataLoaded();
   }
@@ -250,6 +251,20 @@ std::vector<GroupId> CollaborationGroupSyncBridge::GetCollaborationGroupIds()
     ids.emplace_back(id);
   }
   return ids;
+}
+
+std::optional<sync_pb::CollaborationGroupSpecifics>
+CollaborationGroupSyncBridge::GetSpecifics(const GroupId& group_id) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto it = ids_to_specifics_.find(group_id.value());
+  if (it != ids_to_specifics_.end()) {
+    return it->second;
+  }
+  return std::nullopt;
+}
+
+bool CollaborationGroupSyncBridge::IsDataLoaded() const {
+  return is_data_loaded_;
 }
 
 void CollaborationGroupSyncBridge::AddObserver(Observer* observer) {
