@@ -80,8 +80,9 @@ void UpdateDataProvider::GetData(
     const Extension* extension = registry->GetInstalledExtension(id);
     data.push_back(extension ? std::make_optional<update_client::CrxComponent>()
                              : std::nullopt);
-    if (!extension)
+    if (!extension) {
       continue;
+    }
     DCHECK_NE(0u, update_crx_component.count(id));
     const ExtensionUpdateData& extension_data = update_crx_component.at(id);
     auto& crx_component = data.back();
@@ -121,8 +122,9 @@ void UpdateDataProvider::GetData(
       for (int enum_value = 1;
            enum_value < extensions::disable_reason::DISABLE_REASON_LAST;
            enum_value <<= 1) {
-        if (disabled_reasons & enum_value)
+        if (disabled_reasons & enum_value) {
           crx_component->disabled_reasons.push_back(enum_value);
+        }
       }
     }
     crx_component->install_source = extension_data.is_corrupt_reinstall

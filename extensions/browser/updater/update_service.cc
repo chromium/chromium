@@ -167,8 +167,9 @@ void UpdateService::StartUpdateCheck(
 
   if (!ExtensionsBrowserClient::Get()->IsBackgroundUpdateAllowed()) {
     VLOG(1) << "UpdateService - Extension update not allowed.";
-    if (!callback.is_null())
+    if (!callback.is_null()) {
       std::move(callback).Run();
+    }
     return;
   }
 
@@ -242,20 +243,23 @@ void UpdateService::UpdateCheckComplete(InProgressUpdate update) {
     }
   }
 
-  if (!update.callback.is_null())
+  if (!update.callback.is_null()) {
     std::move(update.callback).Run();
+  }
 }
 
 void UpdateService::AddUpdateClientObserver(
     update_client::UpdateClient::Observer* observer) {
-  if (update_client_)
+  if (update_client_) {
     update_client_->AddObserver(observer);
+  }
 }
 
 void UpdateService::RemoveUpdateClientObserver(
     update_client::UpdateClient::Observer* observer) {
-  if (update_client_)
+  if (update_client_) {
     update_client_->RemoveObserver(observer);
+  }
 }
 
 base::Value::Dict UpdateService::GetExtensionOmahaAttributes(
@@ -268,8 +272,9 @@ base::Value::Dict UpdateService::GetExtensionOmahaAttributes(
     // or does not exist.
     // Only create the attribute if it's defined in the custom update check
     // data. We want to distinguish true, false and undefined values.
-    if (iter != update_item.custom_updatecheck_data.end())
+    if (iter != update_item.custom_updatecheck_data.end()) {
       attributes.Set(key, iter->second == "true");
+    }
   }
   return attributes;
 }
