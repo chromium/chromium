@@ -92,9 +92,9 @@ export class ToolbarElement extends ToolbarElementBase {
     this.handler_.resetToDefault();
   }
 
-  protected getActionToggleHandler_(actionId: number) {
-    return (event: CustomEvent<boolean>) =>
-               this.handler_.pinAction(actionId, event.detail);
+  protected getActionToggleHandler_(actionId: number, nextValue: boolean) {
+    return (_event: CustomEvent<boolean>) =>
+               this.handler_.pinAction(actionId, nextValue);
   }
 
   private setActionPinned_(actionId: number, pinned: boolean) {

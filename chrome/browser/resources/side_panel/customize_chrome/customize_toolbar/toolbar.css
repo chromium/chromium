@@ -20,7 +20,10 @@
 }
 
 #pinningSelectionCard {
-  padding: 16px 16px;
+  /* Remove horizontal padding for highlight */
+  padding: 16px 0px 0px 0px;
+  max-width: calc(360px - 2 * var(--sp-body-padding));
+  overflow: hidden;
 }
 
 .sp-card sp-heading {
@@ -34,11 +37,27 @@
   justify-content: flex-start;
 }
 
+.toggle-container:hover {
+  background-color: var(--cr-hover-background-color);
+  cursor: pointer;
+}
+
+.toggle-container:focus {
+  background-color: var(--cr-menu-background-focus-color);
+  outline: none;
+}
+
+.sp-hr {
+  width: auto;
+  margin: 8px 16px;
+}
+
 .choose-icons-row {
-  margin: 16px 0;
+  padding: 8px 16px;
 }
 
 .category-title {
+  padding: 0px 16px;
   font-size: 12px;
   font-weight: 500;
 }
