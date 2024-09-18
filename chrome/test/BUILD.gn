@@ -9721,7 +9721,6 @@ test("unit_tests") {
     ]
     deps += [
       "../browser/enterprise/connectors/test:test_support",
-      "//components/enterprise/connectors/core:unit_tests",
     ]
     if (is_chromeos) {
       deps += [ "//chromeos/components/mgs" ]
