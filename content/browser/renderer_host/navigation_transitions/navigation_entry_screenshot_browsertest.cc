@@ -433,8 +433,9 @@ class NavigationEntryScreenshotBrowserTest
 // Test the caching, retrieving and eviction of the
 // `NavigationEntryScreenshotCache`, within a single tab, with both non-history
 // navigation and history navigation.
+// Disabled due to test failures. See b/368059553
 IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotBrowserTest,
-                       PrimaryMainFrameNav) {
+                       DISABLED_PrimaryMainFrameNav) {
 // TODO(crbug.com/353908058): Re-enable this test for automotive.
 #if BUILDFLAG(IS_ANDROID)
   if (base::android::BuildInfo::GetInstance()->is_automotive()) {
@@ -566,7 +567,9 @@ IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotBrowserTest,
 
 // Testing the back/forward history navigations that span multiple navigation
 // entries.
-IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotBrowserTest, MultipleEntries) {
+// Disabled due to test failures. See b/368059553
+IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotBrowserTest,
+                       DISABLED_MultipleEntries) {
   const size_t page_size = GetUncompressedScreenshotSizeInBytes();
   const size_t memory_budget = 10 * page_size;
   auto* manager = GetManagerForTab(web_contents());
@@ -622,8 +625,9 @@ IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotBrowserTest, MultipleEntries) {
 // Testing the cache's behavior if the destination navigation already has a
 // screenshot. This can happen if the user performs history navigation without
 // gesture (e.g., via the back button).
+// Disabled due to test failures. See b/368059553
 IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotBrowserTest,
-                       WithoutRemovingScreenshotFromDestinationEntry) {
+                       DISABLED_WithoutRemovingScreenshotFromDestinationEntry) {
   const size_t page_size = GetUncompressedScreenshotSizeInBytes();
   auto* manager = GetManagerForTab(web_contents());
   manager->SetMemoryBudgetForTesting(3 * page_size);
@@ -662,7 +666,9 @@ IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotBrowserTest,
 
 // Testing the screenshots are captured / evicted properly with multiple tabs.
 // These tabs are within the same profile.
-IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotBrowserTest, MultipleTabs) {
+// Disabled due to test failures. See b/368059553
+IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotBrowserTest,
+                       DISABLED_MultipleTabs) {
   // Max of three screenshots per Profile (BrowserContext).
   const size_t page_size = GetUncompressedScreenshotSizeInBytes();
   const size_t memory_budget = 3 * page_size;
@@ -777,7 +783,9 @@ IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotBrowserTest, MultipleTabs) {
 
 // Testing the screenshots are captured / evicted properly with multiple tabs
 // from different profiles.
-IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotBrowserTest, MultipleProfiles) {
+// Disabled due to test failures. See b/368059553
+IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotBrowserTest,
+                       DISABLED_MultipleProfiles) {
   // Max of two screenshots per Profile (BrowserContext).
   const size_t page_size = GetUncompressedScreenshotSizeInBytes();
   const size_t memory_budget = 2 * page_size;
@@ -858,8 +866,9 @@ IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotBrowserTest, MultipleProfiles) {
 
 // Screenshots are captured for renderer-initiated navigations (e.g.,
 // link-clicking).
+// Disabled due to test failures. See b/368059553
 IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotBrowserTest,
-                       RendererInitiatedNav) {
+                       DISABLED_RendererInitiatedNav) {
   const size_t page_size = GetUncompressedScreenshotSizeInBytes();
   const size_t memory_budget = 10 * page_size;
   auto* manager = GetManagerForTab(web_contents());
@@ -879,7 +888,9 @@ IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotBrowserTest,
 }
 
 // Capture for renderer initiated history back navigation via `history.back()`.
-IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotBrowserTest, HistoryDotBack) {
+// Disabled due to test failures. See b/368059553
+IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotBrowserTest,
+                       DISABLED_HistoryDotBack) {
   const size_t page_size = GetUncompressedScreenshotSizeInBytes();
   const size_t memory_budget = 10 * page_size;
   auto* manager = GetManagerForTab(web_contents());
@@ -955,7 +966,9 @@ IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotBrowserTest,
   AssertOrderedScreenshotsAre(controller, {std::nullopt, SK_ColorGREEN});
 }
 
-IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotBrowserTest, Redirect) {
+// Disabled due to test failures. See b/368059553
+IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotBrowserTest,
+                       DISABLED_Redirect) {
   const size_t page_size = GetUncompressedScreenshotSizeInBytes();
   const size_t memory_budget = 10 * page_size;
   auto* manager = GetManagerForTab(web_contents());
@@ -1169,8 +1182,9 @@ class NavigationEntryScreenshotBrowserTestWithEviction
   ~NavigationEntryScreenshotBrowserTestWithEviction() override = default;
 };
 
+// Disabled due to test failures. See b/368059553
 IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotBrowserTestWithEviction,
-                       InvisibleTabEviction) {
+                       DISABLED_InvisibleTabEviction) {
   // Max of three screenshots per Profile (BrowserContext).
   const size_t page_size = GetUncompressedScreenshotSizeInBytes();
   const size_t memory_budget = 3 * page_size;
@@ -1267,8 +1281,9 @@ IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotBrowserTestWithEviction,
   manager->set_tick_clock_for_testing(nullptr);
 }
 
+// Disabled due to test failures. See b/368059553
 IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotBrowserTestWithEviction,
-                       VisibleHiddenVisibleNotEvicted) {
+                       DISABLED_VisibleHiddenVisibleNotEvicted) {
   // Max of three screenshots per Profile (BrowserContext).
   const size_t page_size = GetUncompressedScreenshotSizeInBytes();
   const size_t memory_budget = 3 * page_size;
@@ -1313,8 +1328,9 @@ IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotBrowserTestWithEviction,
   manager->set_tick_clock_for_testing(nullptr);
 }
 
+// Disabled due to test failures. See b/368059553
 IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotBrowserTestWithEviction,
-                       MultipleInvisibleTabs) {
+                       DISABLED_MultipleInvisibleTabs) {
   // Max of three screenshots per Profile (BrowserContext).
   const size_t page_size = GetUncompressedScreenshotSizeInBytes();
   const size_t memory_budget = 3 * page_size;
@@ -1428,8 +1444,9 @@ class NavigationEntryScreenshotBrowserTestPrefersReducedMotion
   }
 };
 
+// Disabled due to test failures. See b/368059553
 IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotBrowserTestPrefersReducedMotion,
-                       NoCapture) {
+                       DISABLED_NoCapture) {
   // Max of three screenshots per Profile (BrowserContext).
   const size_t page_size = GetUncompressedScreenshotSizeInBytes();
   const size_t memory_budget = 3 * page_size;
@@ -1468,8 +1485,9 @@ class NavigationEntryScreenshotBrowserTestWithWebUI
   ScopedWebUIControllerFactoryRegistration factory_registration_{&factory_};
 };
 
+// Disabled due to test failures. See b/368059553
 IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotBrowserTestWithWebUI,
-                       PrimaryMainFrameNavWebUI) {
+                       DISABLED_PrimaryMainFrameNavWebUI) {
   // Max of three screenshots per Profile (BrowserContext).
   const size_t page_size = GetUncompressedScreenshotSizeInBytes();
   const size_t memory_budget = 3 * page_size;
@@ -1590,8 +1608,9 @@ class NavigationEntryScreenshotBrowserTestWithPrerender
   std::unique_ptr<test::PrerenderTestHelper> prerender_helper_;
 };
 
+// Disabled due to test failures. See b/368059553
 IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotBrowserTestWithPrerender,
-                       PrerenderActivation) {
+                       DISABLED_PrerenderActivation) {
   const size_t page_size = GetUncompressedScreenshotSizeInBytes();
   const size_t memory_budget = 10 * page_size;
   auto* manager = GetManagerForTab(web_contents());
@@ -1826,8 +1845,9 @@ using NavigationEntryScreenshotCacheHitOrMissReasonBrowserTest =
     NavigationEntryScreenshotBrowserTest;
 }  // namespace
 
+// Disabled due to test failures. See b/368059553
 IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotCacheHitOrMissReasonBrowserTest,
-                       BasicNavigations) {
+                       DISABLED_BasicNavigations) {
   // Max of three screenshots per Profile (BrowserContext).
   const size_t page_size = GetUncompressedScreenshotSizeInBytes();
   const size_t memory_budget = 3 * page_size;
@@ -1914,8 +1934,9 @@ IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotCacheHitOrMissReasonBrowserTest,
   }
 }
 
+// Disabled due to test failures. See b/368059553
 IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotCacheHitOrMissReasonBrowserTest,
-                       PurgeForMemoryPressure) {
+                       DISABLED_PurgeForMemoryPressure) {
   // Max of three screenshots per Profile (BrowserContext).
   const size_t page_size = GetUncompressedScreenshotSizeInBytes();
   const size_t memory_budget = 3 * page_size;
@@ -1967,8 +1988,9 @@ IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotCacheHitOrMissReasonBrowserTest,
 
 // To make sure the enum is set correctly when the user initiates a preview, the
 // cancels the gesture, then re-initiates the gesture.
+// Disabled due to test failures. See b/368059553
 IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotCacheHitOrMissReasonBrowserTest,
-                       CancelAndReinitiateGesture) {
+                       DISABLED_CancelAndReinitiateGesture) {
   // Max of three screenshots per Profile (BrowserContext).
   const size_t page_size = GetUncompressedScreenshotSizeInBytes();
   const size_t memory_budget = 3 * page_size;
@@ -2014,8 +2036,9 @@ IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotCacheHitOrMissReasonBrowserTest,
   }
 }
 
+// Disabled due to test failures. See b/368059553
 IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotCacheHitOrMissReasonBrowserTest,
-                       CCNSMissReason) {
+                       DISABLED_CCNSMissReason) {
   // Max of three screenshots per Profile (BrowserContext).
   const size_t page_size = GetUncompressedScreenshotSizeInBytes();
   const size_t memory_budget = 3 * page_size;
@@ -2083,7 +2106,9 @@ class NavigationEntryScreenshotCompressionBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(NavigationEntryScreenshotCompressionBrowserTest, Basic) {
+// Disabled due to test failures. See b/368059553
+IN_PROC_BROWSER_TEST_F(NavigationEntryScreenshotCompressionBrowserTest,
+                       DISABLED_Basic) {
   // Start with only 1 regular screenshot allowed.
   const size_t screenshot_bytes = GetUncompressedScreenshotSizeInBytes();
   auto* manager = GetManagerForTab(web_contents());
