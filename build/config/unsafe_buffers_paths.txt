@@ -110,7 +110,6 @@
 -gpu/ipc/service/
 -ios/
 -ios_internal/
--media/
 -native_client/
 -net/third_party/
 -printing/
@@ -143,6 +142,9 @@
 # Removing this directory may fail on the bot CI bot:
 # https://luci-milo.appspot.com/ui/p/chrome/builders/official/win-arm64-clang
 -chrome/installer/
+
+# Please check 'linux-v4l2-codec-rel' bot before removing this opt-out.
+-media/gpu/v4l2/
 
 # //codelabs is a directory that contains examples for developers to modify as
 # they learn about chromium development. This is indefinitely opt-out because
