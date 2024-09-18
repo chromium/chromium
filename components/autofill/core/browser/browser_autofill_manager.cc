@@ -1482,11 +1482,7 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUI(
   // these exist. Otherwise, plus address suggestions will be queried and shown
   // alongside single field form fill suggestions.
   const bool should_offer_plus_addresses_with_profiles =
-      field_is_relevant_for_plus_addresses &&
-      (!suggestions.empty() ||
-       !client()
-            .GetPlusAddressDelegate()
-            ->ShouldMixWithSingleFieldFormFillSuggestions());
+      field_is_relevant_for_plus_addresses && !suggestions.empty();
 
   // Try to show plus address suggestions. If the user specifically requested
   // plus addresses, disregard any other requirements (like having profile
@@ -1558,17 +1554,9 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUI(
       ShouldOfferSingleFieldFormFill(field, autofill_field, trigger_source,
                                      context.suppress_reason);
 
-  // Whether or not to request plus address suggestions and mix them with single
-  // field form fill suggestions.
-  const bool should_offer_plus_addresses_with_sfff =
-      field_is_relevant_for_plus_addresses &&
-      client()
-          .GetPlusAddressDelegate()
-          ->ShouldMixWithSingleFieldFormFillSuggestions();
-
   const size_t barrier_calls =
       static_cast<size_t>(should_offer_single_field_form_fill) +
-      static_cast<size_t>(should_offer_plus_addresses_with_sfff);
+      static_cast<size_t>(field_is_relevant_for_plus_addresses);
   if (barrier_calls == 0) {
     std::move(callback).Run(/*show_suggestions=*/true, std::move(suggestions),
                             std::nullopt);
@@ -1589,7 +1577,7 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUI(
           AutofillPlusAddressDelegate::SuggestionContext::kAutocomplete,
           password_form_classification.type, form, field, std::move(callback)));
 
-  if (should_offer_plus_addresses_with_sfff) {
+  if (field_is_relevant_for_plus_addresses) {
     client().GetPlusAddressDelegate()->GetSuggestions(
         client().GetLastCommittedPrimaryMainFrameOrigin(),
         client().IsOffTheRecord(), password_form_classification, field,

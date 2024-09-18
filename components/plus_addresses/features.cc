@@ -36,13 +36,6 @@ BASE_FEATURE(kPlusAddressAndroidManualFallbackEnabled,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
-// When enabled, autofill stops overriding single field form fill suggestions
-// with plus address suggestions. Instead, it shows them together in the same
-// context menu.
-BASE_FEATURE(kPlusAddressAndSingleFieldFormFill,
-             "PlusAddressAndSingleFieldFormFill",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, Chrome will fetch the blocklist data using the Component
 // Updater and employ that for blocking Plus Addresses. Otherwise, the blocklist
 // information is sourced from a Finch parameter.

@@ -8047,8 +8047,6 @@ class BrowserAutofillManagerPlusAddressTest
         std::make_unique<NiceMock<MockAutofillPlusAddressDelegate>>();
     ON_CALL(*plus_address_delegate, GetManagePlusAddressSuggestion)
         .WillByDefault(Return(Suggestion(SuggestionType::kManagePlusAddress)));
-    ON_CALL(*plus_address_delegate, ShouldMixWithSingleFieldFormFillSuggestions)
-        .WillByDefault(Return(true));
     autofill_client_.set_plus_address_delegate(
         std::move(plus_address_delegate));
   }

@@ -309,11 +309,6 @@ Suggestion PlusAddressService::GetManagePlusAddressSuggestion() const {
   return PlusAddressSuggestionGenerator::GetManagePlusAddressSuggestion();
 }
 
-bool PlusAddressService::ShouldMixWithSingleFieldFormFillSuggestions() const {
-  return base::FeatureList::IsEnabled(
-      features::kPlusAddressAndSingleFieldFormFill);
-}
-
 void PlusAddressService::OnGetAffiliatedPlusProfiles(
     url::Origin origin,
     const PasswordFormClassification& focused_form_classification,

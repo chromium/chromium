@@ -108,7 +108,6 @@ class PlusAddressService : public KeyedService,
       autofill::AutofillSuggestionTriggerSource trigger_source,
       GetSuggestionsCallback callback) override;
   autofill::Suggestion GetManagePlusAddressSuggestion() const override;
-  bool ShouldMixWithSingleFieldFormFillSuggestions() const override;
   void RecordAutofillSuggestionEvent(SuggestionEvent suggestion_event) override;
   void OnPlusAddressSuggestionShown(
       autofill::AutofillManager& manager,

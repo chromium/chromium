@@ -85,11 +85,6 @@ class AutofillPlusAddressDelegate {
   // to the plus address management page.
   virtual Suggestion GetManagePlusAddressSuggestion() const = 0;
 
-  // Returns whether plus address suggestions should be mixed with single field
-  // form fill suggestions instead of override them.
-  // TODO(crbug.com/324557560): Remove once feature flag is not needed.
-  virtual bool ShouldMixWithSingleFieldFormFillSuggestions() const = 0;
-
   // Logs Autofill suggestion events related to plus addresses.
   virtual void RecordAutofillSuggestionEvent(
       SuggestionEvent suggestion_event) = 0;
