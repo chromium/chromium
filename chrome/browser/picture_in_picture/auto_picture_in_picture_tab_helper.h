@@ -164,6 +164,10 @@ class AutoPictureInPictureTabHelper
   // Returns true if the tab is currently using the camera or microphone.
   bool IsUsingCameraOrMicrophone() const;
 
+  // Returns true if the tab is currently audible, or was audible
+  // recently.
+  bool WasRecentlyAudible() const;
+
   // Returns the current state of the 'Auto Picture-in-Picture' content
   // setting for the current website of the observed WebContents.
   ContentSetting GetCurrentContentSetting() const;

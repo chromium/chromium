@@ -18,6 +18,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/recently_audible_helper.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/picture_in_picture_browser_frame_view.h"
@@ -108,6 +109,51 @@ class MockAutoBlocker : public permissions::PermissionDecisionAutoBlockerBase {
                ContentSettingsType permission,
                bool ignored_prompt_was_quiet),
               (override));
+};
+
+// Helper class to wait for "recently audible" callbacks.
+class WasRecentlyAudibleWaiter {
+ public:
+  using RecentlyAudibleCallback = base::RepeatingCallback<void(bool)>;
+
+  WasRecentlyAudibleWaiter() = default;
+  WasRecentlyAudibleWaiter(const WasRecentlyAudibleWaiter&) = delete;
+  WasRecentlyAudibleWaiter(WasRecentlyAudibleWaiter&&) = delete;
+  WasRecentlyAudibleWaiter& operator=(const WasRecentlyAudibleWaiter&) = delete;
+
+  RecentlyAudibleCallback GetRecentlyAudibleCallback() {
+    was_recently_audible_ = std::nullopt;
+
+    // base::Unretained() is safe since no further tasks can run after
+    // RunLoop::Run() returns.
+    return base::BindRepeating(
+        &WasRecentlyAudibleWaiter::OnRecentlyAudibleCallback,
+        base::Unretained(this));
+  }
+
+  void WaitUntilDone() {
+    if (was_recently_audible_) {
+      return;
+    }
+    run_loop_ = std::make_unique<base::RunLoop>();
+    run_loop_->Run();
+  }
+
+  bool WasRecentlyAudible() {
+    DCHECK(was_recently_audible_);
+    return was_recently_audible_.value();
+  }
+
+ private:
+  void OnRecentlyAudibleCallback(bool was_recently_audible) {
+    was_recently_audible_ = was_recently_audible;
+    if (run_loop_) {
+      run_loop_->Quit();
+    }
+  }
+
+  std::unique_ptr<base::RunLoop> run_loop_;
+  std::optional<bool> was_recently_audible_;
 };
 
 class AutoPictureInPictureTabHelperBrowserTest : public WebRtcTestBase {
@@ -253,6 +299,13 @@ class AutoPictureInPictureTabHelperBrowserTest : public WebRtcTestBase {
     ASSERT_TRUE(EvalJsAfterLifecycleUpdate(web_contents, "", "").error.empty());
   }
 
+  void MuteVideo(content::WebContents* web_contents) {
+    web_contents->GetPrimaryMainFrame()
+        ->ExecuteJavaScriptWithUserGestureForTests(
+            u"muteVideo()", base::NullCallback(),
+            content::ISOLATED_WORLD_ID_GLOBAL);
+  }
+
   void WaitForMediaSessionActionRegistered(content::WebContents* web_contents) {
     media_session::test::MockMediaSessionMojoObserver observer(
         *content::MediaSession::Get(web_contents));
@@ -289,6 +342,21 @@ class AutoPictureInPictureTabHelperBrowserTest : public WebRtcTestBase {
 
   void WaitForAudioFocusGained() {
     audio_focus_observer_->WaitForGainedEvent();
+  }
+
+  void WaitForWasRecentlyAudible(content::WebContents* web_contents,
+                                 bool expected_recently_audible = true) {
+    auto* audible_helper = RecentlyAudibleHelper::FromWebContents(web_contents);
+    if (audible_helper->WasRecentlyAudible() == expected_recently_audible) {
+      return;
+    }
+
+    WasRecentlyAudibleWaiter audible_waiter;
+    base::CallbackListSubscription subscription =
+        audible_helper->RegisterCallbackForTesting(
+            audible_waiter.GetRecentlyAudibleCallback());
+    audible_waiter.WaitUntilDone();
+    DCHECK_EQ(expected_recently_audible, audible_waiter.WasRecentlyAudible());
   }
 
   void ResetAudioFocusObserver() {
@@ -534,6 +602,7 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
   WaitForAudioFocusGained();
   WaitForMediaSessionPlaying(web_contents);
   ForceLifecycleUpdate(web_contents);
+  WaitForWasRecentlyAudible(web_contents);
 
   SwitchToNewTabAndBackAndExpectAutopip(/*should_video_pip=*/true,
                                         /*should_document_pip=*/false);
@@ -549,6 +618,7 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
   WaitForAudioFocusGained();
   WaitForMediaSessionPlaying(web_contents);
   ForceLifecycleUpdate(web_contents);
+  WaitForWasRecentlyAudible(web_contents);
 
   SwitchToNewTabAndBackAndExpectAutopip(/*should_video_pip=*/false,
                                         /*should_document_pip=*/true);
@@ -565,6 +635,7 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
 
   AddOverlayToVideo(web_contents, /*should_occlude*/ true);
   ForceLifecycleUpdate(web_contents);
+  WaitForWasRecentlyAudible(web_contents);
   SwitchToNewTabAndDontExpectAutopip();
 }
 
@@ -579,6 +650,7 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
 
   AddOverlayToVideo(web_contents, /*should_occlude*/ true);
   ForceLifecycleUpdate(web_contents);
+  WaitForWasRecentlyAudible(web_contents);
   SwitchToNewTabAndDontExpectAutopip();
 }
 
@@ -607,6 +679,7 @@ IN_PROC_BROWSER_TEST_F(
   // There should not be a picture-in-picture window, since the video element is
   // inside an iframe.
   ForceLifecycleUpdate(web_contents);
+  WaitForWasRecentlyAudible(web_contents);
   SwitchToNewTabAndDontExpectAutopip();
 }
 
@@ -621,6 +694,7 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
 
   AddOverlayToVideo(web_contents, /*should_occlude*/ false);
   ForceLifecycleUpdate(web_contents);
+  WaitForWasRecentlyAudible(web_contents);
   SwitchToNewTabAndBackAndExpectAutopip(/*should_video_pip=*/true,
                                         /*should_document_pip=*/false);
 }
@@ -642,8 +716,28 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
       content::ISOLATED_WORLD_ID_GLOBAL);
 
   ForceLifecycleUpdate(web_contents);
+  WaitForWasRecentlyAudible(web_contents);
   SwitchToNewTabAndBackAndExpectAutopip(/*should_video_pip=*/true,
                                         /*should_document_pip=*/false);
+}
+
+IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
+                       DoesNotVideoAutopip_NotRecentlyAudible) {
+  // Load a page that registers for autopip and start video playback.
+  LoadAutoVideoPipPage(browser());
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  PlayVideo(web_contents);
+  WaitForAudioFocusGained();
+  WaitForMediaSessionPlaying(web_contents);
+  ForceLifecycleUpdate(web_contents);
+
+  // Wait for video to be recently audible, to ensure we start from a known
+  // state. Then mute audio and wait for video to not be recently audible.
+  WaitForWasRecentlyAudible(web_contents, /*expected_recently_audible=*/true);
+  MuteVideo(web_contents);
+  WaitForWasRecentlyAudible(web_contents, /*expected_recently_audible=*/false);
+
+  SwitchToNewTabAndDontExpectAutopip();
 }
 
 // TODO(crbug.com/40923043): Flaky on "Linux ASan LSan Tests (1)"
@@ -666,6 +760,7 @@ IN_PROC_BROWSER_TEST_F(
 
   AddOverlayToVideo(web_contents, /*should_occlude*/ false);
   ForceLifecycleUpdate(web_contents);
+  WaitForWasRecentlyAudible(web_contents);
   SwitchToNewTabAndBackAndExpectAutopip(/*should_video_pip=*/false,
                                         /*should_document_pip=*/true);
 }
@@ -783,6 +878,7 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
   WaitForAudioFocusGained();
   LOG(ERROR) << "DEBUG: waiting for playing";
   WaitForMediaSessionPlaying(original_web_contents);
+  WaitForWasRecentlyAudible(original_web_contents);
 
   // Pause the video.
   LOG(ERROR) << "DEBUG: pausing playback";
@@ -821,6 +917,7 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
   WaitForAudioFocusGained();
   WaitForMediaSessionPlaying(web_contents);
   ForceLifecycleUpdate(web_contents);
+  WaitForWasRecentlyAudible(web_contents);
 
   {
     // Open and switch to a new tab.
@@ -844,6 +941,7 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
   WaitForAudioFocusGained();
   WaitForMediaSessionPlaying(web_contents);
   ForceLifecycleUpdate(web_contents);
+  WaitForWasRecentlyAudible(web_contents);
 
   // Set content setting to CONTENT_SETTING_ASK.
   auto* original_web_contents =
@@ -1377,6 +1475,7 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
 
   AddOverlayToVideo(web_contents, /*should_occlude*/ true);
   ForceLifecycleUpdate(web_contents);
+  WaitForWasRecentlyAudible(web_contents);
   SwitchToNewTabAndDontExpectAutopip();
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();

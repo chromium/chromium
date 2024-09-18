@@ -21,6 +21,10 @@ function pauseVideo() {
   navigator.mediaSession.playbackState = "paused";
 }
 
+function muteVideo() {
+  video.muted = true;
+}
+
 function openPip(details) {
   video.requestPictureInPicture();
 }
