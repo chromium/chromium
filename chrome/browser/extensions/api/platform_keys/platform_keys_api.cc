@@ -57,9 +57,7 @@ const char kErrorInvalidSigningAlgorithm[] = "Invalid signing algorithm.";
 const char kErrorInteractiveCallFromBackground[] =
     "Interactive calls must happen in the context of a browser tab or a "
     "window.";
-
-const char kTokenIdUser[] = "user";
-const char kTokenIdSystem[] = "system";
+const char kErrorInvalidSpki[] = "The SubjectPublicKeyInfo is not valid.";
 
 // Skip checking for interactive calls coming from a non-interactive
 // context.
@@ -130,26 +128,6 @@ std::optional<SigningAlgorithmName> SigningAlgorithmNameFromString(
 }
 
 }  // namespace
-
-namespace platform_keys {
-
-const char kErrorInvalidSpki[] = "The SubjectPublicKeyInfo is not valid.";
-const char kErrorInvalidToken[] = "The token is not valid.";
-const char kErrorInvalidX509Cert[] =
-    "Certificate is not a valid X.509 certificate.";
-
-std::optional<chromeos::platform_keys::TokenId> ApiIdToPlatformKeysTokenId(
-    const std::string& token_id) {
-  if (token_id == kTokenIdUser)
-    return chromeos::platform_keys::TokenId::kUser;
-
-  if (token_id == kTokenIdSystem)
-    return chromeos::platform_keys::TokenId::kSystem;
-
-  return std::nullopt;
-}
-
-}  // namespace platform_keys
 
 //------------------------------------------------------------------------------
 PlatformKeysInternalSelectClientCertificatesFunction::
@@ -358,7 +336,7 @@ PlatformKeysInternalGetPublicKeyBySpkiFunction::Run() {
 
   const auto& public_key_spki_der = params->public_key_spki_der;
   if (public_key_spki_der.empty())
-    return RespondNow(Error(platform_keys::kErrorInvalidSpki));
+    return RespondNow(Error(kErrorInvalidSpki));
 
   PublicKeyInfo key_info;
   key_info.public_key_spki_der.assign(std::begin(public_key_spki_der),

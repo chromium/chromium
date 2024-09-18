@@ -62,6 +62,7 @@ group("api_implementations") {
     public_deps += [
       "//chrome/browser/chromeos/extensions/smart_card_provider_private",
       "//chrome/browser/extensions/api/document_scan",
+      "//chrome/browser/extensions/api/platform_keys",
     ]
   }
 

@@ -1028,10 +1028,8 @@ source_set("extensions") {
       "api/messaging/native_message_echo_host.h",
       "api/passwords_private/passwords_private_utils_chromeos.cc",
       "api/passwords_private/passwords_private_utils_chromeos.h",
-      "api/platform_keys/platform_keys_api.cc",
-      "api/platform_keys/platform_keys_api.h",
-      "api/platform_keys/verify_trust_api.cc",
-      "api/platform_keys/verify_trust_api.h",
+      "api/platform_keys_core/platform_keys_utils.cc",
+      "api/platform_keys_core/platform_keys_utils.h",
       "api/shared_storage/shared_storage_private_api.h",
 
       # TODO(crbug.com/40230380): Find an appropriate spot for this.
