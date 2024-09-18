@@ -56,11 +56,6 @@
       "5107DE9024C329EEA9C9A72D94C16723790C6422"   // Apps Developer Tool Dev.
     ]
   },
-  "experimentalAiData": {
-    "extension_types": ["extension"],
-    "channel": "dev",
-    "command_line_switch": "extension-ai-data-collection"
-  },
   "autofillPrivate": {
     "channel": "trunk",
     "extension_types": ["extension", "platform_app"],
@@ -373,6 +368,11 @@
     "extension_types": [
       "extension", "legacy_packaged_app", "hosted_app", "platform_app"
     ]
+  },
+  "experimentalAiData": {
+    "extension_types": ["extension"],
+    "channel": "dev",
+    "command_line_switch": "extension-ai-data-collection"
   },
   "favicon": {
     "channel": "stable",
