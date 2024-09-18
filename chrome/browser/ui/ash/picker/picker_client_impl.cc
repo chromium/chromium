@@ -471,7 +471,8 @@ void PickerClientImpl::SetProfile(Profile* profile) {
   thumbnail_loader_ = std::make_unique<PickerThumbnailLoader>(profile_);
 
   if (controller_ != nullptr) {
-    controller_->OnClientProfileSet();
+    controller_->OnClientPrefsSet(profile == nullptr ? nullptr
+                                                     : profile->GetPrefs());
   }
 }
 

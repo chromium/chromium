@@ -23,6 +23,8 @@
 #include "chromeos/ash/components/emoji/emoji_search.h"
 #include "components/prefs/pref_change_registrar.h"
 
+class PrefService;
+
 namespace ash {
 
 class PickerClient;
@@ -35,7 +37,11 @@ class ASH_EXPORT PickerSearchController {
   PickerSearchController& operator=(const PickerSearchController&) = delete;
   ~PickerSearchController();
 
-  void LoadEmojiLanguagesFromPrefs();
+  // Adds emoji keywords for enabled languages in `prefs` and whenever the
+  // enabled languages change. This does not unload any keywords loaded
+  // previously. `prefs` can be null, which stops this class from listening to
+  // changes to prefs.
+  void LoadEmojiLanguagesFromPrefs(PrefService* prefs);
 
   void StartSearch(std::u16string_view query,
                    std::optional<PickerCategory> category,

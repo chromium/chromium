@@ -1005,7 +1005,7 @@ TEST_F(PickerSearchControllerTest, LoadsEmojiDataInAllLanguages) {
 
   PickerSearchController controller(&client(),
                                     /*burn_in_period=*/base::Milliseconds(100));
-  controller.LoadEmojiLanguagesFromPrefs();
+  controller.LoadEmojiLanguagesFromPrefs(&prefs_service());
   controller.StartEmojiSearch(
       u"smile", base::BindRepeating(&MockEmojiSearchResultsCallback::Call,
                                     base::Unretained(&results_callback)));
@@ -1049,7 +1049,7 @@ TEST_F(PickerSearchControllerTest,
 
   PickerSearchController controller(&client(),
                                     /*burn_in_period=*/base::Milliseconds(100));
-  controller.LoadEmojiLanguagesFromPrefs();
+  controller.LoadEmojiLanguagesFromPrefs(&prefs_service());
   controller.StartEmojiSearch(
       u"smile", base::BindRepeating(&MockEmojiSearchResultsCallback::Call,
                                     base::Unretained(&results_callback)));
@@ -1095,7 +1095,7 @@ TEST_F(PickerSearchControllerTest, LoadsEmojiDataOnPrefsChange) {
                                     /*burn_in_period=*/base::Milliseconds(100));
 
   // First search, only English results
-  controller.LoadEmojiLanguagesFromPrefs();
+  controller.LoadEmojiLanguagesFromPrefs(&prefs_service());
   MockEmojiSearchResultsCallback results_callback;
   EXPECT_CALL(results_callback,
               Call(ElementsAre(
@@ -1163,7 +1163,7 @@ TEST_F(PickerSearchControllerTest, LoadsEmojiDataForJapaneseUiLocale) {
   PickerSearchController controller(&client(),
                                     /*burn_in_period=*/base::Milliseconds(100));
 
-  controller.LoadEmojiLanguagesFromPrefs();
+  controller.LoadEmojiLanguagesFromPrefs(&prefs_service());
   MockEmojiSearchResultsCallback results_callback_jp;
   EXPECT_CALL(
       results_callback_jp,

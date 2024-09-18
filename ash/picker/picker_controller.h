@@ -93,8 +93,8 @@ class ASH_EXPORT PickerController : public PickerViewDelegate,
   // this method on a destructed class instance to avoid a use after free.
   void SetClient(PickerClient* client);
 
-  // This should be run when the Profile from the client is ready.
-  void OnClientProfileSet();
+  // This should be run when the Prefs from the client is ready.
+  void OnClientPrefsSet(PrefService* prefs);
 
   // Toggles the visibility of the Picker widget.
   // This must only be called after `SetClient` is called with a valid client.

@@ -132,8 +132,7 @@ PickerSearchController::PickerSearchController(PickerClient* client,
 
 PickerSearchController::~PickerSearchController() = default;
 
-void PickerSearchController::LoadEmojiLanguagesFromPrefs() {
-  PrefService* prefs = client_->GetPrefs();
+void PickerSearchController::LoadEmojiLanguagesFromPrefs(PrefService* prefs) {
   pref_change_registrar_.Reset();
   if (prefs == nullptr) {
     return;

@@ -333,12 +333,12 @@ void PickerController::SetClient(PickerClient* client) {
   }
 }
 
-void PickerController::OnClientProfileSet() {
+void PickerController::OnClientPrefsSet(PrefService* prefs) {
   if (client_ == nullptr || search_controller_ == nullptr) {
     return;
   }
 
-  search_controller_->LoadEmojiLanguagesFromPrefs();
+  search_controller_->LoadEmojiLanguagesFromPrefs(prefs);
 }
 
 void PickerController::ToggleWidget(
