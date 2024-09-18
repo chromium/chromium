@@ -547,10 +547,24 @@ void ChromeOmniboxClient::OnAutocompleteAccept(
 
 void ChromeOmniboxClient::OnInputInProgress(bool in_progress) {
   location_bar_->UpdateWithoutTabRestore();
+  content::WebContents* const web_contents = location_bar_->GetWebContents();
+  if (web_contents) {
+    auto* const helper =
+        OmniboxTabHelper::FromWebContents(location_bar_->GetWebContents());
+    CHECK(helper);
+    helper->OnInputInProgress(in_progress);
+  }
 }
 
-void ChromeOmniboxClient::OnPopupVisibilityChanged() {
+void ChromeOmniboxClient::OnPopupVisibilityChanged(bool popup_is_open) {
   location_bar_->OnPopupVisibilityChanged();
+  content::WebContents* const web_contents = location_bar_->GetWebContents();
+  if (web_contents) {
+    auto* const helper =
+        OmniboxTabHelper::FromWebContents(location_bar_->GetWebContents());
+    CHECK(helper);
+    helper->OnPopupVisibilityChanged(popup_is_open);
+  }
 }
 
 void ChromeOmniboxClient::OpenIphLink(GURL gurl) {

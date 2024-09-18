@@ -217,10 +217,15 @@ void ToastView::Close(ToastCloseReason reason) {
     default:
       break;
   }
-  AnimateOut(
-      base::BindOnce(&views::Widget::CloseWithReason,
-                     base::Unretained(GetWidget()), widget_closed_reason),
-      reason != ToastCloseReason::kPreempted);
+
+  if (GetWidget()->IsVisible()) {
+    AnimateOut(
+        base::BindOnce(&views::Widget::CloseWithReason,
+                       base::Unretained(GetWidget()), widget_closed_reason),
+        reason != ToastCloseReason::kPreempted);
+  } else {
+    GetWidget()->CloseWithReason(widget_closed_reason);
+  }
 }
 
 void ToastView::UpdateRenderToastOverWebContentsAndPaint(

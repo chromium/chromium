@@ -263,7 +263,7 @@ class OmniboxClient {
   virtual void OnInputInProgress(bool in_progress) {}
 
   // Called when the omnibox popup is shown or hidden.
-  virtual void OnPopupVisibilityChanged() {}
+  virtual void OnPopupVisibilityChanged(bool popup_is_open) {}
 
   // Called when the thumbnail image has been removed.
   virtual void OnThumbnailRemoved() {}

@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_observer.h"
+#include "chrome/browser/ui/omnibox/omnibox_tab_helper.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/views/widget/widget_observer.h"
@@ -35,6 +36,10 @@ enum class ToastCloseReason;
 class ToastView;
 }
 
+namespace views {
+class Widget;
+}
+
 struct ToastParams {
   explicit ToastParams(ToastId id);
   ToastParams(ToastParams&& other) noexcept;
@@ -50,6 +55,7 @@ class ToastController : public views::WidgetObserver,
                         public BrowserListObserver,
                         public FullscreenObserver,
                         public TabStripModelObserver,
+                        public OmniboxTabHelper::Observer,
                         public content::WebContentsObserver {
  public:
   explicit ToastController(BrowserWindowInterface* browser_window_interface,
@@ -74,17 +80,29 @@ class ToastController : public views::WidgetObserver,
 #endif
   void OnWidgetDestroyed(views::Widget* widget) override;
 
-  // BrowserListObserver::
+  // BrowserListObserver:
   void OnBrowserClosing(Browser* browser) override;
 
-  // TabStripModelObserver::
+  // TabStripModelObserver:
   void OnTabStripModelChanged(
       TabStripModel* tab_strip_model,
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override;
 
-  // content::WebContentsObserver::
+  // content::WebContentsObserver:
   void PrimaryPageChanged(content::Page& page) override;
+
+  // OmniboxTabHelper::Observer:
+  void OnOmniboxInputStateChanged() override {}
+  void OnOmniboxInputInProgress(bool in_progress) override;
+  void OnOmniboxFocusChanged(OmniboxFocusState state,
+                             OmniboxFocusChangeReason reason) override;
+  void OnOmniboxPopupVisibilityChanged(bool popup_is_open) override;
+
+  // content::WebContentsObserver:
+  void WebContentsDestroyed() override;
+
+  views::Widget* GetToastWidgetForTesting() { return toast_widget_; }
 
   base::OneShotTimer* GetToastCloseTimerForTesting();
 
@@ -97,6 +115,7 @@ class ToastController : public views::WidgetObserver,
   std::u16string FormatString(int string_id,
                               std::vector<std::u16string> replacement);
   void ClearTabScopedToasts();
+  void UpdateToastWidgetVisibility(bool show_toast_widget);
 
   // FullscreenObserver:
   void OnFullscreenStateChanged() override;
@@ -108,6 +127,7 @@ class ToastController : public views::WidgetObserver,
   std::optional<ToastParams> persistent_params_;
   std::optional<ToastId> currently_showing_toast_id_;
   base::OneShotTimer toast_close_timer_;
+  bool is_omnibox_popup_showing_ = false;
 
   // Observer to check for browser window entering fullscreen.
   base::ScopedObservation<FullscreenController, FullscreenObserver>
@@ -116,8 +136,11 @@ class ToastController : public views::WidgetObserver,
   // Observer to check when the toast is destroyed.
   base::ScopedObservation<views::Widget, views::WidgetObserver> toast_observer_{
       this};
+  base::ScopedObservation<OmniboxTabHelper, OmniboxTabHelper::Observer>
+      omnibox_helper_observer_{this};
 
-  raw_ptr<toasts::ToastView> toast_;
+  raw_ptr<toasts::ToastView> toast_view_;
+  raw_ptr<views::Widget> toast_widget_;
   raw_ptr<TabStripModel> tab_strip_model_;
 };
 
