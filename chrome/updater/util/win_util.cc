@@ -496,16 +496,12 @@ std::string GetUACState() {
 }
 
 std::wstring GetServiceName(bool is_internal_service) {
-  std::wstring service_name = GetServiceDisplayName(is_internal_service);
-  std::erase_if(service_name, base::IsAsciiWhitespace<wchar_t>);
-  return service_name;
-}
-
-std::wstring GetServiceDisplayName(bool is_internal_service) {
-  return base::StrCat(
+  std::wstring service_name = base::StrCat(
       {base::ASCIIToWide(PRODUCT_FULLNAME_STRING), L" ",
        is_internal_service ? kWindowsInternalServiceName : kWindowsServiceName,
        L" ", kUpdaterVersionUtf16});
+  std::erase_if(service_name, base::IsAsciiWhitespace<wchar_t>);
+  return service_name;
 }
 
 REGSAM Wow6432(REGSAM access) {

@@ -2619,7 +2619,22 @@ Permissions you've already given to websites and apps may apply to this account.
         <message name="IDS_FAILED_TO_ELEVATE_METAINSTALLER" desc="Error displayed if the metainstaller could not be run with elevated privileges for a system install">
           Failed to run setup with elevated privileges. <ph name="METAINSTALLER_ERROR">$1<ex>error-internal</ex></ph>
         </message>
+
+        <!--Windows service strings.-->
+        <message name="IDS_UPDATER_SERVICE_DISPLAY_NAME"
+                 desc="The name of the Windows service. Displayed in the Windows Services management console.">
+          Google Updater Service
+        </message>
+        <message name="IDS_INTERNAL_UPDATER_SERVICE_DISPLAY_NAME"
+                 desc="The name of the internal Windows service. Displayed in the Windows Services management console.">
+          Google Updater Internal Service
+        </message>
+        <message name="IDS_UPDATER_SERVICE_DESCRIPTION"
+                 desc="The description of the Windows service. Displayed in the Windows Services management console.">
+          Keeps your Google software up to date. If this service is disabled or stopped, your Google software will not be kept up to date, meaning security vulnerabilities that may arise cannot be fixed and features may not work. This service uninstalls itself when there is no Google software using it.
+        </message>
       </if>
+
       <!-- Memory Saver Chip strings -->
       <if expr="not is_android">
         <message name="IDS_MEMORY_SAVER_DIALOG_BODY" desc="Body text for a dialog describing that Memory Saver mode will use less memory.">

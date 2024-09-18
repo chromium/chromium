@@ -259,11 +259,6 @@ std::string GetUACState();
 // For instance: "ChromiumUpdaterInternalService92.0.0.1".
 std::wstring GetServiceName(bool is_internal_service);
 
-// Returns the versioned service name in the following format:
-// "{ProductName} {InternalService/Service} {UpdaterVersion}".
-// For instance: "ChromiumUpdater InternalService 92.0.0.1".
-std::wstring GetServiceDisplayName(bool is_internal_service);
-
 // Returns `KEY_WOW64_32KEY | access`. All registry access under the Updater key
 // should use `Wow6432(access)` as the `REGSAM`.
 REGSAM Wow6432(REGSAM access);
