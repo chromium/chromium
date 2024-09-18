@@ -8107,11 +8107,6 @@
     "expiry_milestone" : 115
   },
   {
-    "name" : "seed-accounts-revamp",
-    "owners": ["chrome-signin-mobile@google.com", "samarchehade@google.com"],
-    "expiry_milestone":130
-  },
-  {
     "name": "segmented-default-browser-promo",
     "owners": ["hiramahmood@google.com", "bling-get-set-up@google.com"],
     "expiry_milestone": 135
