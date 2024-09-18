@@ -414,16 +414,6 @@
       <message name="IDS_EXTENSION_PACKAGE_INSTALL_ERROR" desc="Error message in case package fails to install because of some problem with the filesystem.">
         Could not install package: '<ph name="ERROR_CODE">$1<ex>error</ex></ph>'
       </message>
-      <if expr="is_win">
-        <message name="IDS_EXTENSION_UNPACK_FAILED" desc="On windows, it is possible to mount a disk without the root of that disk having a drive letter.  The sandbox does not support this. See crbug/49530 .">
-          Can not unpack extension.  To safely unpack an extension, there must be a path to your profile directory that starts with a drive letter and does not contain a junction, mount point, or symlink.  No such path exists for your profile.
-        </message>
-      </if>
-      <if expr="not is_win">
-        <message name="IDS_EXTENSION_UNPACK_FAILED" desc="">
-          Can not unpack extension.  To safely unpack an extension, there must be a path to your profile directory that does not contain a symlink.  No such path exists for your profile.
-        </message>
-      </if>
       <message name="IDS_EXTENSION_WEBGL_NOT_SUPPORTED" desc="Error message when an extension has a requirement for WebGL that the system does not support.">
         WebGL is not supported.
       </message>
