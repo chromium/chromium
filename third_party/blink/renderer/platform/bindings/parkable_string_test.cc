@@ -1338,11 +1338,8 @@ TEST_P(ParkableStringTest, EncodingAndDeduplication) {
   ASSERT_TRUE(parkable_8.Impl()->digest());
   ASSERT_TRUE(parkable_8.may_be_parked());
 
-  // Same content, but the hash must be differnt because the encoding is.
-  EXPECT_EQ(0, memcmp(large_string_16.Bytes(), large_string_8.Bytes(),
-                      large_string_8.CharactersSizeInBytes()));
-  EXPECT_EQ(parkable_16.CharactersSizeInBytes(),
-            parkable_8.CharactersSizeInBytes());
+  // Same content, but the hash must be different because the encoding is.
+  EXPECT_EQ(large_string_16.RawByteSpan(), large_string_8.RawByteSpan());
   EXPECT_NE(*parkable_16.Impl()->digest(), *parkable_8.Impl()->digest());
 }
 

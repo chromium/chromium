@@ -259,8 +259,7 @@ ParkableStringImpl::HashString(StringImpl* string) {
   DigestValue digest_result;
 
   Digestor digestor(kHashAlgorithmSha256);
-  digestor.Update(base::make_span(static_cast<const uint8_t*>(string->Bytes()),
-                                  string->CharactersSizeInBytes()));
+  digestor.Update(string->RawByteSpan());
   // Also include encoding in the digest, otherwise two strings with identical
   // byte content but different encoding will be assumed equal, leading to
   // crashes when one is replaced by the other one.

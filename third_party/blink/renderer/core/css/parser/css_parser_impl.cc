@@ -2584,8 +2584,6 @@ static bool MayContainNestedRules(const String& text,
     return false;
   }
 
-  size_t char_size = text.Is8Bit() ? sizeof(LChar) : sizeof(UChar);
-
   // Strip away the outer {} pair (the { would always give us a false positive).
   DCHECK_EQ(text[offset], '{');
   if (text[offset + length - 1] != '}') {
@@ -2596,9 +2594,10 @@ static bool MayContainNestedRules(const String& text,
   ++offset;
   length -= 2;
 
-  return memchr(
-             reinterpret_cast<const char*>(text.Bytes()) + offset * char_size,
-             '{', length * char_size) != nullptr;
+  size_t char_size = text.Is8Bit() ? sizeof(LChar) : sizeof(UChar);
+  auto text_bytes = base::as_chars(
+      text.RawByteSpan().subspan(offset * char_size, length * char_size));
+  return memchr(text_bytes.data(), '{', text_bytes.size()) != nullptr;
 }
 
 StyleRule* CSSParserImpl::ConsumeStyleRule(

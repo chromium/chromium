@@ -154,6 +154,16 @@ class WTF_EXPORT String {
     return impl_->Span16();
   }
 
+  // This exposes the underlying representation of the string. Use with
+  // care. When interpreting the string as a sequence of code units
+  // Span8()/Span16() should be used.
+  base::span<const uint8_t> RawByteSpan() const {
+    if (!impl_) {
+      return {};
+    }
+    return impl_->RawByteSpan();
+  }
+
   const LChar* Characters8() const {
     if (!impl_)
       return nullptr;

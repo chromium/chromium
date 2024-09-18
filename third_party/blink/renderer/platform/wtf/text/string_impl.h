@@ -223,6 +223,10 @@ class WTF_EXPORT StringImpl {
   ALWAYS_INLINE const void* Bytes() const {
     return reinterpret_cast<const void*>(this + 1);
   }
+  ALWAYS_INLINE base::span<const uint8_t> RawByteSpan() const {
+    return {reinterpret_cast<const uint8_t*>(this + 1),
+            CharactersSizeInBytes()};
+  }
 
   template <typename CharType>
   ALWAYS_INLINE const CharType* GetCharacters() const;

@@ -1057,9 +1057,7 @@ CSSStyleSheet* StyleEngine::CreateSheet(
   // that keeps it alive.
   AtomicString key;
   if (text.length() >= 1024) {
-    size_t digest = FastHash(base::span<const uint8_t>(
-        reinterpret_cast<const uint8_t*>(text.Bytes()),
-        text.CharactersSizeInBytes()));
+    size_t digest = FastHash(text.RawByteSpan());
     LChar digest_as_char[sizeof(digest)];
     memcpy(digest_as_char, &digest, sizeof(digest));
     key = AtomicString(digest_as_char, sizeof(digest));

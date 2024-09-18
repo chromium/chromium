@@ -110,8 +110,7 @@ void ScriptDecoder::Delete() const {
 }
 
 void ScriptDecoder::AppendData(const String& data) {
-  digestor_.Update(base::as_bytes(base::make_span(
-      static_cast<const char*>(data.Bytes()), data.CharactersSizeInBytes())));
+  digestor_.Update(data.RawByteSpan());
   builder_.Append(data);
 }
 
@@ -174,8 +173,7 @@ void DataPipeScriptDecoder::OnDataComplete() {
 }
 
 void DataPipeScriptDecoder::AppendData(const String& data) {
-  digestor_.Update(base::as_bytes(base::make_span(
-      static_cast<const char*>(data.Bytes()), data.CharactersSizeInBytes())));
+  digestor_.Update(data.RawByteSpan());
   builder_.Append(data);
 }
 
@@ -284,8 +282,7 @@ void ScriptDecoderWithClient::Delete() const {
 }
 
 void ScriptDecoderWithClient::AppendData(const String& data) {
-  digestor_.Update(base::as_bytes(base::make_span(
-      static_cast<const char*>(data.Bytes()), data.CharactersSizeInBytes())));
+  digestor_.Update(data.RawByteSpan());
   builder_.Append(data);
 }
 
