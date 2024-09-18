@@ -36,6 +36,7 @@
 #include "chrome/browser/web_applications/os_integration/web_app_protocol_handler_manager.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/preinstalled_web_app_manager.h"
+#include "chrome/browser/web_applications/visited_manifest_manager.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_audio_focus_id_map.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
@@ -296,6 +297,11 @@ AbstractWebAppDatabaseFactory& WebAppProvider::database_factory() {
   return *database_factory_;
 }
 
+VisitedManifestManager& WebAppProvider::visited_manifest_manager() {
+  CheckIsConnected();
+  return *visited_manifest_manager_;
+}
+
 void WebAppProvider::Shutdown() {
   command_scheduler_->Shutdown();
   command_manager_->Shutdown();
@@ -374,6 +380,8 @@ void WebAppProvider::CreateSubsystems(Profile* profile) {
 
   web_contents_manager_ = std::make_unique<WebContentsManager>();
   ui_state_manager_ = std::make_unique<WebAppUiStateManager>();
+
+  visited_manifest_manager_ = std::make_unique<VisitedManifestManager>();
 }
 
 void WebAppProvider::ConnectSubsystems() {

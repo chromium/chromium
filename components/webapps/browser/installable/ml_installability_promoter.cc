@@ -341,6 +341,12 @@ void MLInstallabilityPromoter::RequestMlClassification() {
     state_ = MLPipelineState::kComplete;
     return;
   }
+  if ((!manifest_ || !manifest_->has_valid_specified_start_url) &&
+      WebappsClient::Get()->IsUrlControlledBySeenManifest(
+          web_contents()->GetBrowserContext(), site_url_)) {
+    state_ = MLPipelineState::kComplete;
+    return;
+  }
 
   auto input_context =
       base::MakeRefCounted<segmentation_platform::InputContext>();

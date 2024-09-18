@@ -14,6 +14,7 @@
 #include "chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
+#include "chrome/browser/web_applications/visited_manifest_manager.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_pref_guardrails.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -127,6 +128,27 @@ bool WebappsClientDesktop::IsAppFullyInstalledForSiteUrl(
   return web_app::FindInstalledAppWithUrlInScope(
              Profile::FromBrowserContext(browser_context), site_url)
       .has_value();
+}
+
+bool WebappsClientDesktop::IsUrlControlledBySeenManifest(
+    content::BrowserContext* browsing_context,
+    const GURL& site_url) const {
+  auto* provider = web_app::WebAppProvider::GetForWebApps(
+      Profile::FromBrowserContext(browsing_context));
+  return provider && provider->is_registry_ready()
+             ? provider->visited_manifest_manager()
+                   .IsUrlControlledBySeenManifest(site_url)
+             : false;
+}
+
+void WebappsClientDesktop::OnManifestSeen(
+    content::BrowserContext* browsing_context,
+    const blink::mojom::Manifest& manifest) const {
+  auto* provider = web_app::WebAppProvider::GetForWebApps(
+      Profile::FromBrowserContext(browsing_context));
+  if (provider && provider->is_registry_ready()) {
+    provider->visited_manifest_manager().OnManifestSeen(manifest);
+  }
 }
 
 void WebappsClientDesktop::SaveInstallationDismissedForMl(
