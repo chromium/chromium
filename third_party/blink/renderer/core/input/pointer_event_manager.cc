@@ -1222,17 +1222,13 @@ void PointerEventManager::ProcessPendingPointerCapture(
   }
 
   if (pending_pointer_capture_target &&
-      (!RuntimeEnabledFeatures::
-           PointerCaptureLostOnRemovalDuringCaptureEnabled() ||
-       pending_pointer_capture_target->isConnected())) {
+      pending_pointer_capture_target->isConnected()) {
     SetElementUnderPointer(pointer_event, pending_pointer_capture_target);
     DispatchPointerEvent(
         pending_pointer_capture_target,
         pointer_event_factory_.CreatePointerCaptureEvent(
             pointer_event, event_type_names::kGotpointercapture));
-    if (!RuntimeEnabledFeatures::
-            PointerCaptureLostOnRemovalDuringCaptureEnabled() ||
-        pending_pointer_capture_target->isConnected()) {
+    if (pending_pointer_capture_target->isConnected()) {
       pointer_capture_target_.Set(pointer_id, pending_pointer_capture_target);
     } else {
       // As a result of dispatching gotpointercapture the capture node was
