@@ -20,7 +20,7 @@ from functools import partial
 from http.server import SimpleHTTPRequestHandler
 from threading import Thread
 
-from pkg_resources import packaging
+import packaging.version
 
 from selenium import webdriver
 from selenium.webdriver import ChromeOptions

@@ -9,7 +9,7 @@ import os
 import subprocess
 import sys
 
-from pkg_resources import packaging
+import packaging
 from typing import List, Optional
 
 from chrome.test.variations.test_utils import SRC_DIR

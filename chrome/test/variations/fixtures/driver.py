@@ -4,10 +4,10 @@
 
 import os
 import shutil
-from pkg_resources import packaging
 from typing import Optional
 
 import logging
+import packaging
 import pytest
 
 from chrome.test.variations import test_utils
