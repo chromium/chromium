@@ -33,6 +33,12 @@ class HubToolbarProperties {
     public static final WritableBooleanPropertyKey MENU_BUTTON_VISIBLE =
             new WritableBooleanPropertyKey();
 
+    public static final WritableBooleanPropertyKey SEARCH_BOX_VISIBLE =
+            new WritableBooleanPropertyKey();
+
+    public static final WritableObjectPropertyKey<Runnable> SEARCH_BOX_LISTENER =
+            new WritableObjectPropertyKey<>();
+
     @FunctionalInterface
     public interface PaneButtonLookup {
         View get(int index);
@@ -49,5 +55,7 @@ class HubToolbarProperties {
         COLOR_SCHEME,
         MENU_BUTTON_VISIBLE,
         PANE_BUTTON_LOOKUP_CALLBACK,
+        SEARCH_BOX_VISIBLE,
+        SEARCH_BOX_LISTENER,
     };
 }

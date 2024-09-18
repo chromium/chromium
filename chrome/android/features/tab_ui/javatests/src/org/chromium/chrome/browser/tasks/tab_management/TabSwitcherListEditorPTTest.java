@@ -35,6 +35,7 @@ import org.chromium.components.tab_groups.TabGroupColorId;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
+@DisableFeatures(ChromeFeatureList.ANDROID_HUB_SEARCH)
 public class TabSwitcherListEditorPTTest {
     @ClassRule
     public static ChromeTabbedActivityTestRule sActivityTestRule =

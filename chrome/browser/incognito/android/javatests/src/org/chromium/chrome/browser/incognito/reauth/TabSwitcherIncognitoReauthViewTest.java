@@ -58,6 +58,7 @@ import java.io.IOException;
     ChromeFeatureList.INCOGNITO_REAUTHENTICATION_FOR_ANDROID,
     ChromeFeatureList.INCOGNITO_SCREENSHOT
 })
+@DisableFeatures(ChromeFeatureList.ANDROID_HUB_SEARCH)
 @Batch(Batch.PER_CLASS)
 public class TabSwitcherIncognitoReauthViewTest {
     @Rule
