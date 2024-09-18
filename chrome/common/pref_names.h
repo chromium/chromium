@@ -2033,6 +2033,11 @@ inline constexpr char kNetworkAnnotationBlocklist[] =
 inline constexpr char kReportingEndpoints[] =
     "enterprise_reporting.reporting_endpoints";
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// The state of the SkyVault migration of local files to the cloud.
+inline constexpr char kSkyVaultMigrationState[] = "skyvault.migration_state";
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+
 // *************** LOCAL STATE ***************
 // These are attached to the machine/installation
 

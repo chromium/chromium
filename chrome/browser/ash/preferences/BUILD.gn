@@ -38,6 +38,7 @@ static_library("preferences") {
     "//chrome/browser/ash/input_method",
     "//chrome/browser/ash/login",
     "//chrome/browser/ash/login/session",
+    "//chrome/browser/ash/policy/skyvault",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/ash/system",
     "//chrome/browser/ui/ash/system",
