@@ -685,11 +685,11 @@ void PDFiumEngine::Paint(const gfx::Rect& rect,
     }
 
     if (pages_[index]->available()) {
-      int progressive = GetProgressiveIndex(index);
-      if (progressive != -1) {
-        DCHECK_GE(progressive, 0);
-        DCHECK_LT(static_cast<size_t>(progressive), progressive_paints_.size());
-        if (progressive_paints_[progressive].rect() != dirty_in_screen) {
+      std::optional<size_t> progressive_index = GetProgressiveIndex(index);
+      if (progressive_index.has_value()) {
+        CHECK_LT(progressive_index.value(), progressive_paints_.size());
+        if (progressive_paints_[progressive_index.value()].rect() !=
+            dirty_in_screen) {
           // The PDFium code can only handle one progressive paint at a time, so
           // queue this up. Previously we used to merge the rects when this
           // happened, but it made scrolling up on complex PDFs very slow since
@@ -700,16 +700,16 @@ void PDFiumEngine::Paint(const gfx::Rect& rect,
         }
       }
 
-      if (progressive == -1) {
-        progressive = StartPaint(index, dirty_in_screen);
-        progressive_paint_timeout_ = kMaxInitialProgressivePaintTime;
-      } else {
+      if (progressive_index.has_value()) {
         progressive_paint_timeout_ = kMaxProgressivePaintTime;
+      } else {
+        progressive_index = StartPaint(index, dirty_in_screen);
+        progressive_paint_timeout_ = kMaxInitialProgressivePaintTime;
       }
 
-      progressive_paints_[progressive].set_painted(true);
-      if (ContinuePaint(progressive, image_data)) {
-        FinishPaint(progressive, image_data);
+      progressive_paints_[progressive_index.value()].set_painted(true);
+      if (ContinuePaint(progressive_index.value(), image_data)) {
+        FinishPaint(progressive_index.value(), image_data);
         ready.push_back(dirty_in_screen);
       } else {
         pending.push_back(dirty_in_screen);
@@ -3168,7 +3168,7 @@ std::optional<size_t> PDFiumEngine::GetAdjacentPageIndexForTwoUpView(
   return adjacent_page_index;
 }
 
-int PDFiumEngine::StartPaint(int page_index, const gfx::Rect& dirty) {
+size_t PDFiumEngine::StartPaint(int page_index, const gfx::Rect& dirty) {
   // For the first time we hit paint, do nothing and just record the paint for
   // the next callback.  This keeps the UI responsive in case the user is doing
   // a lot of scrolling.
@@ -3176,44 +3176,42 @@ int PDFiumEngine::StartPaint(int page_index, const gfx::Rect& dirty) {
   return progressive_paints_.size() - 1;
 }
 
-bool PDFiumEngine::ContinuePaint(int progressive_index, SkBitmap& image_data) {
-  DCHECK_GE(progressive_index, 0);
-  DCHECK_LT(static_cast<size_t>(progressive_index), progressive_paints_.size());
+bool PDFiumEngine::ContinuePaint(size_t progressive_index,
+                                 SkBitmap& image_data) {
+  CHECK_LT(progressive_index, progressive_paints_.size());
 
   last_progressive_start_time_ = base::Time::Now();
 
   int page_index = progressive_paints_[progressive_index].page_index();
-  DCHECK(PageIndexInBounds(page_index));
+  CHECK(PageIndexInBounds(page_index));
 
-  int rv;
   FPDF_PAGE page = pages_[page_index]->GetPage();
   if (progressive_paints_[progressive_index].bitmap()) {
-    rv = FPDF_RenderPage_Continue(page, this);
-  } else {
-    int start_x;
-    int start_y;
-    int size_x;
-    int size_y;
-    gfx::Rect dirty = progressive_paints_[progressive_index].rect();
-    GetPDFiumRect(page_index, dirty, &start_x, &start_y, &size_x, &size_y);
-
-    bool has_alpha = !!FPDFPage_HasTransparency(page);
-    ScopedFPDFBitmap new_bitmap = CreateBitmap(dirty, has_alpha, image_data);
-    FPDFBitmap_FillRect(new_bitmap.get(), start_x, start_y, size_x, size_y,
-                        0xFFFFFFFF);
-    rv = FPDF_RenderPageBitmap_Start(
-        new_bitmap.get(), page, start_x, start_y, size_x, size_y,
-        ToPDFiumRotation(layout_.options().default_page_orientation()),
-        GetRenderingFlags(), this);
-    progressive_paints_[progressive_index].SetBitmapAndImageData(
-        std::move(new_bitmap), image_data);
+    return FPDF_RenderPage_Continue(page, this) != FPDF_RENDER_TOBECONTINUED;
   }
+
+  int start_x;
+  int start_y;
+  int size_x;
+  int size_y;
+  gfx::Rect dirty = progressive_paints_[progressive_index].rect();
+  GetPDFiumRect(page_index, dirty, &start_x, &start_y, &size_x, &size_y);
+
+  bool has_alpha = !!FPDFPage_HasTransparency(page);
+  ScopedFPDFBitmap new_bitmap = CreateBitmap(dirty, has_alpha, image_data);
+  FPDFBitmap_FillRect(new_bitmap.get(), start_x, start_y, size_x, size_y,
+                      0xFFFFFFFF);
+  int rv = FPDF_RenderPageBitmap_Start(
+      new_bitmap.get(), page, start_x, start_y, size_x, size_y,
+      ToPDFiumRotation(layout_.options().default_page_orientation()),
+      GetRenderingFlags(), this);
+  progressive_paints_[progressive_index].SetBitmapAndImageData(
+      std::move(new_bitmap), image_data);
   return rv != FPDF_RENDER_TOBECONTINUED;
 }
 
-void PDFiumEngine::FinishPaint(int progressive_index, SkBitmap& image_data) {
-  DCHECK_GE(progressive_index, 0);
-  DCHECK_LT(static_cast<size_t>(progressive_index), progressive_paints_.size());
+void PDFiumEngine::FinishPaint(size_t progressive_index, SkBitmap& image_data) {
+  CHECK_LT(progressive_index, progressive_paints_.size());
 
   int page_index = progressive_paints_[progressive_index].page_index();
   gfx::Rect dirty_in_screen = progressive_paints_[progressive_index].rect();
@@ -3315,10 +3313,9 @@ void PDFiumEngine::FillPageSides(int progressive_index) {
                       client_->GetBackgroundColor());
 }
 
-void PDFiumEngine::PaintPageShadow(int progressive_index,
+void PDFiumEngine::PaintPageShadow(size_t progressive_index,
                                    SkBitmap& image_data) {
-  DCHECK_GE(progressive_index, 0);
-  DCHECK_LT(static_cast<size_t>(progressive_index), progressive_paints_.size());
+  CHECK_LT(progressive_index, progressive_paints_.size());
 
   int page_index = progressive_paints_[progressive_index].page_index();
   gfx::Rect dirty_in_screen = progressive_paints_[progressive_index].rect();
@@ -3337,10 +3334,9 @@ void PDFiumEngine::PaintPageShadow(int progressive_index,
   DrawPageShadow(page_rect, shadow_rect, dirty_in_screen, image_data);
 }
 
-void PDFiumEngine::DrawSelections(int progressive_index,
+void PDFiumEngine::DrawSelections(size_t progressive_index,
                                   SkBitmap& image_data) const {
-  DCHECK_GE(progressive_index, 0);
-  DCHECK_LT(static_cast<size_t>(progressive_index), progressive_paints_.size());
+  CHECK_LT(progressive_index, progressive_paints_.size());
 
   int page_index = progressive_paints_[progressive_index].page_index();
   gfx::Rect dirty_in_screen = progressive_paints_[progressive_index].rect();
@@ -3403,12 +3399,12 @@ void PDFiumEngine::PaintUnavailablePage(int page_index,
   loading_text_in_screen = GetScreenRect(loading_text_in_screen);
 }
 
-int PDFiumEngine::GetProgressiveIndex(int page_index) const {
+std::optional<size_t> PDFiumEngine::GetProgressiveIndex(int page_index) const {
   for (size_t i = 0; i < progressive_paints_.size(); ++i) {
     if (progressive_paints_[i].page_index() == page_index)
       return i;
   }
-  return -1;
+  return std::nullopt;
 }
 
 ScopedFPDFBitmap PDFiumEngine::CreateBitmap(const gfx::Rect& rect,
@@ -4298,8 +4294,7 @@ void PDFiumEngine::RequestThumbnail(int page_index,
   // page. Generate the thumbnail immediately only if the page is not currently
   // being progressively painted. Otherwise, wait for progressive painting to
   // finish.
-  const int progressive_index = GetProgressiveIndex(page_index);
-  if (progressive_index == -1) {
+  if (!GetProgressiveIndex(page_index).has_value()) {
     pages_[page_index]->RequestThumbnail(device_pixel_ratio,
                                          std::move(send_callback));
     return;
@@ -4313,7 +4308,7 @@ void PDFiumEngine::RequestThumbnail(int page_index,
 }
 
 void PDFiumEngine::MaybeRequestPendingThumbnail(int page_index) {
-  DCHECK_EQ(GetProgressiveIndex(page_index), -1);
+  CHECK(!GetProgressiveIndex(page_index).has_value());
 
   auto it = pending_thumbnails_.find(page_index);
   if (it == pending_thumbnails_.end())

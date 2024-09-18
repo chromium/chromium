@@ -661,16 +661,16 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
   bool OnRightMouseDown(const blink::WebMouseEvent& event);
 
   // Starts a progressive paint operation given a rectangle in screen
-  // coordinates. Returns the index in progressive_rects_.
-  int StartPaint(int page_index, const gfx::Rect& dirty);
+  // coordinates. Returns the index in `progressive_paints_`.
+  size_t StartPaint(int page_index, const gfx::Rect& dirty);
 
   // Continues a paint operation that was started earlier.  Returns true if the
   // paint is done, or false if it needs to be continued.
-  bool ContinuePaint(int progressive_index, SkBitmap& image_data);
+  bool ContinuePaint(size_t progressive_index, SkBitmap& image_data);
 
   // Called once PDFium is finished rendering a page so that we draw our
   // borders, highlighting etc.
-  void FinishPaint(int progressive_index, SkBitmap& image_data);
+  void FinishPaint(size_t progressive_index, SkBitmap& image_data);
 
   // Stops any paints that are in progress.
   void CancelPaints();
@@ -683,19 +683,19 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
   // with the page background.
   void FillPageSides(int progressive_index);
 
-  void PaintPageShadow(int progressive_index, SkBitmap& image_data);
+  void PaintPageShadow(size_t progressive_index, SkBitmap& image_data);
 
   // Highlight visible find results and selections.
-  void DrawSelections(int progressive_index, SkBitmap& image_data) const;
+  void DrawSelections(size_t progressive_index, SkBitmap& image_data) const;
 
   // Paints an page that hasn't finished downloading.
   void PaintUnavailablePage(int page_index,
                             const gfx::Rect& dirty,
                             SkBitmap& image_data);
 
-  // Given a page index, returns the corresponding index in progressive_rects_,
-  // or -1 if it doesn't exist.
-  int GetProgressiveIndex(int page_index) const;
+  // Given a page index, returns the corresponding index in
+  // `progressive_paints_`, or nullopt if it does not exist.
+  std::optional<size_t> GetProgressiveIndex(int page_index) const;
 
   // Creates a FPDF_BITMAP from a rectangle in screen coordinates.
   ScopedFPDFBitmap CreateBitmap(const gfx::Rect& rect,
