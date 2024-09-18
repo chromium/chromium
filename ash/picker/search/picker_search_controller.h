@@ -31,8 +31,7 @@ class PickerClient;
 
 class ASH_EXPORT PickerSearchController {
  public:
-  explicit PickerSearchController(PickerClient* client,
-                                  base::TimeDelta burn_in_period);
+  explicit PickerSearchController(base::TimeDelta burn_in_period);
   PickerSearchController(const PickerSearchController&) = delete;
   PickerSearchController& operator=(const PickerSearchController&) = delete;
   ~PickerSearchController();
@@ -43,7 +42,10 @@ class ASH_EXPORT PickerSearchController {
   // changes to prefs.
   void LoadEmojiLanguagesFromPrefs(PrefService* prefs);
 
-  void StartSearch(std::u16string_view query,
+  // `client` must remain valid until `StopSearch` is called or until this
+  // object is destroyed.
+  void StartSearch(PickerClient* client,
+                   std::u16string_view query,
                    std::optional<PickerCategory> category,
                    PickerSearchRequest::Options search_options,
                    PickerViewDelegate::SearchResultsCallback callback);
@@ -63,8 +65,6 @@ class ASH_EXPORT PickerSearchController {
 
  private:
   void LoadEmojiLanguages(PrefService* pref);
-
-  const raw_ref<PickerClient> client_;
 
   PrefChangeRegistrar pref_change_registrar_;
 

@@ -329,7 +329,7 @@ void PickerController::SetClient(PickerClient* client) {
     search_controller_ = nullptr;
   } else {
     search_controller_ =
-        std::make_unique<PickerSearchController>(client_, kBurnInPeriod);
+        std::make_unique<PickerSearchController>(kBurnInPeriod);
   }
 }
 
@@ -400,8 +400,9 @@ void PickerController::StartSearch(std::u16string_view query,
                                    SearchResultsCallback callback) {
   CHECK(search_controller_);
   CHECK(session_);
+  CHECK(client_);
   search_controller_->StartSearch(
-      query, std::move(category),
+      client_, query, std::move(category),
       {
           .available_categories = GetAvailableCategories(),
           .caps_lock_state_to_search = !session_->model.is_caps_lock_enabled(),

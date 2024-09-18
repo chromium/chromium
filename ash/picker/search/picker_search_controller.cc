@@ -126,9 +126,8 @@ std::vector<std::string> GetLanguageCodesFromPrefs(PrefService* prefs) {
 
 }  // namespace
 
-PickerSearchController::PickerSearchController(PickerClient* client,
-                                               base::TimeDelta burn_in_period)
-    : client_(CHECK_DEREF(client)), burn_in_period_(burn_in_period) {}
+PickerSearchController::PickerSearchController(base::TimeDelta burn_in_period)
+    : burn_in_period_(burn_in_period) {}
 
 PickerSearchController::~PickerSearchController() = default;
 
@@ -155,6 +154,7 @@ void PickerSearchController::LoadEmojiLanguages(PrefService* prefs) {
 }
 
 void PickerSearchController::StartSearch(
+    PickerClient* client,
     std::u16string_view query,
     std::optional<PickerCategory> category,
     PickerSearchRequest::Options search_options,
@@ -170,7 +170,7 @@ void PickerSearchController::StartSearch(
                           aggregator_->GetWeakPtr()),
       base::BindOnce(&PickerSearchAggregator::HandleNoMoreResults,
                      aggregator_->GetWeakPtr()),
-      &client_.get(), std::move(search_options));
+      client, std::move(search_options));
 }
 
 void PickerSearchController::StopSearch() {
