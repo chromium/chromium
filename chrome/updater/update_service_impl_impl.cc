@@ -992,9 +992,8 @@ void UpdateServiceImplImpl::Install(
 void UpdateServiceImplImpl::CancelInstalls(const std::string& app_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << __func__;
-  auto range = cancellation_callbacks_.equal_range(app_id);
-  base::ranges::for_each(range.first, range.second,
-                         [](const auto& i) { i.second.Run(); });
+  auto [first, last] = cancellation_callbacks_.equal_range(app_id);
+  base::ranges::for_each(first, last, [](const auto& i) { i.second.Run(); });
 }
 
 void UpdateServiceImplImpl::RunInstaller(

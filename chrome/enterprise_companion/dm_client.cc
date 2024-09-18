@@ -64,9 +64,9 @@ device_management_storage::DMPolicyMap ToDMPolicyMap(
   base::ranges::transform(
       in, std::inserter(out, out.end()),
       [](const std::pair<std::pair<std::string, std::string>,
-                         enterprise_management::PolicyFetchResponse> pair) {
-        return std::make_pair(pair.first.first,
-                              pair.second.SerializeAsString());
+                         enterprise_management::PolicyFetchResponse> response) {
+        return std::make_pair(response.first.first,
+                              response.second.SerializeAsString());
       });
   return out;
 }
@@ -322,7 +322,6 @@ class DMClientImpl : public DMClient, policy::CloudPolicyClient::Observer {
     FetchedPolicyValidator::Status last_result =
         FetchedPolicyValidator::VALIDATION_OK;
     for (auto const& [key, response] : responses) {
-      const std::string& policy_type = key.first;
       std::unique_ptr<FetchedPolicyValidator::ValidationResult>
           validation_result = policy_fetch_response_validator_.Run(
               dm_storage_->GetDmToken(), dm_storage_->GetDeviceID(),
@@ -330,7 +329,7 @@ class DMClientImpl : public DMClient, policy::CloudPolicyClient::Observer {
               cached_policy_info_->timestamp(), response);
       CHECK(validation_result) << "Policy validation result cannot be null";
       if (validation_result->status != FetchedPolicyValidator::VALIDATION_OK) {
-        LOG(ERROR) << "Policy validation failed for " << policy_type
+        LOG(ERROR) << "Policy validation failed for " << key.first
                    << " response: "
                    << FetchedPolicyValidator::StatusToString(
                           validation_result->status);

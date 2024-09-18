@@ -486,10 +486,10 @@ void AppTestHelper::FirstTaskRun() {
 
   const base::CommandLine* command_line =
       base::CommandLine::ForCurrentProcess();
-  for (const auto& entry : commands) {
-    if (command_line->HasSwitch(entry.first)) {
+  for (const auto& [command, callback] : commands) {
+    if (command_line->HasSwitch(command)) {
       base::ScopedAllowBlockingForTesting allow_blocking;
-      if (!entry.second.Run(base::BindOnce(&AppTestHelper::Shutdown, this))) {
+      if (!callback.Run(base::BindOnce(&AppTestHelper::Shutdown, this))) {
         Shutdown(kBadCommand);
       }
       return;

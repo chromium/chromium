@@ -268,9 +268,9 @@ void NetworkFetcher::ContinueFetch(
       additional_headers.insert({"Content-Type", content_type_});
     }
 
-    for (const auto& header : additional_headers) {
-      const auto raw_header = base::SysUTF8ToWide(
-          base::StrCat({header.first, ": ", header.second, "\r\n"}));
+    for (const auto& [name, value] : additional_headers) {
+      const std::wstring raw_header =
+          base::SysUTF8ToWide(base::StrCat({name, ": ", value, "\r\n"}));
       if (!::WinHttpAddRequestHeaders(
               request_handle_.get(), raw_header.c_str(), raw_header.size(),
               WINHTTP_ADDREQ_FLAG_ADD | WINHTTP_ADDREQ_FLAG_REPLACE)) {

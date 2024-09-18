@@ -119,8 +119,8 @@ void NetworkFetcherImpl::PostRequest(
   resource_request->method = "POST";
   resource_request->load_flags = net::LOAD_DISABLE_CACHE;
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
-  for (const auto& header : post_additional_headers) {
-    resource_request->headers.SetHeader(header.first, header.second);
+  for (const auto& [name, value] : post_additional_headers) {
+    resource_request->headers.SetHeader(name, value);
   }
   std::unique_ptr<network::SimpleURLLoader> simple_url_loader =
       network::SimpleURLLoader::Create(std::move(resource_request),

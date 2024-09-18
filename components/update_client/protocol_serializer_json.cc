@@ -26,8 +26,8 @@ std::string ProtocolSerializerJSON::Serialize(
   request_node.Set("dedup", "cr");
   request_node.Set("acceptformat", "crx3,puff");
   if (!request.additional_attributes.empty()) {
-    for (const auto& attr : request.additional_attributes) {
-      request_node.Set(attr.first, attr.second);
+    for (const auto& [name, value] : request.additional_attributes) {
+      request_node.Set(name, value);
     }
   }
   request_node.Set("sessionid", request.session_id);
@@ -153,8 +153,8 @@ std::string ProtocolSerializerJSON::Serialize(
       app_node.Set("disabled", std::move(disabled_nodes));
     }
 
-    for (const auto& attr : app.installer_attributes) {
-      app_node.Set(attr.first, attr.second);
+    for (const auto& [name, value] : app.installer_attributes) {
+      app_node.Set(name, value);
     }
 
     if (app.update_check) {

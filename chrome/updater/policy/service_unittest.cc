@@ -47,20 +47,25 @@ class FakePolicyManager : public PolicyManagerInterface {
         source_(source) {}
 
   std::string source() const override { return source_; }
+
   bool HasActiveDevicePolicies() const override {
     return has_active_device_policies_;
   }
+
   void SetCloudPolicyOverridesPlatformPolicy(
       bool cloud_policy_overrides_platform_policy) {
     cloud_policy_overrides_platform_policy_ =
         cloud_policy_overrides_platform_policy;
   }
+
   std::optional<bool> CloudPolicyOverridesPlatformPolicy() const override {
     return cloud_policy_overrides_platform_policy_;
   }
+
   std::optional<base::TimeDelta> GetLastCheckPeriod() const override {
     return std::nullopt;
   }
+
   std::optional<UpdatesSuppressedTimes> GetUpdatesSuppressedTimes()
       const override {
     if (!suppressed_times_.valid()) {
@@ -69,79 +74,100 @@ class FakePolicyManager : public PolicyManagerInterface {
 
     return suppressed_times_;
   }
+
   void SetUpdatesSuppressedTimes(
       const UpdatesSuppressedTimes& suppressed_times) {
     suppressed_times_ = suppressed_times;
   }
+
   std::optional<std::string> GetDownloadPreference() const override {
     return download_preference_.empty()
                ? std::nullopt
                : std::make_optional(download_preference_);
   }
+
   void SetDownloadPreference(const std::string& preference) {
     download_preference_ = preference;
   }
+
   std::optional<int> GetPackageCacheSizeLimitMBytes() const override {
     return cache_size_limit_;
   }
+
   void SetPackageCacheSizeLimitMBytes(int size_limit) {
     cache_size_limit_ = std::make_optional(size_limit);
   }
+
   std::optional<int> GetPackageCacheExpirationTimeDays() const override {
     return cache_expiration_time_;
   }
+
   void SetPackageCacheExpirationTimeDays(int expiration_time) {
     cache_expiration_time_ = std::make_optional(expiration_time);
   }
+
   void SetInstallPolicy(const std::string& app_id, int install_policy) {
     install_policies_[app_id] = install_policy;
   }
+
   std::optional<int> GetEffectivePolicyForAppInstalls(
       const std::string& app_id) const override {
     auto value = install_policies_.find(app_id);
     return value == install_policies_.end() ? std::nullopt
                                             : std::make_optional(value->second);
   }
+
   std::optional<int> GetEffectivePolicyForAppUpdates(
       const std::string& app_id) const override {
     auto value = update_policies_.find(app_id);
     return value == update_policies_.end() ? std::nullopt
                                            : std::make_optional(value->second);
   }
+
   void SetUpdatePolicy(const std::string& app_id, int update_policy) {
     update_policies_[app_id] = update_policy;
   }
+
   std::optional<std::string> GetProxyMode() const override {
     return proxy_mode_.empty() ? std::nullopt : std::make_optional(proxy_mode_);
   }
+
   void SetProxyMode(const std::string& proxy_mode) { proxy_mode_ = proxy_mode; }
+
   std::optional<std::string> GetProxyPacUrl() const override {
     return proxy_pac_url_.empty() ? std::nullopt
                                   : std::make_optional(proxy_pac_url_);
   }
+
   void SetProxyPacUrl(const std::string& proxy_pac_url) {
     proxy_pac_url_ = proxy_pac_url;
   }
+
   std::optional<std::string> GetProxyServer() const override {
     return proxy_server_.empty() ? std::nullopt
                                  : std::make_optional(proxy_server_);
   }
+
   void SetProxyServer(const std::string& proxy_server) {
     proxy_server_ = proxy_server;
   }
+
   std::optional<bool> IsRollbackToTargetVersionAllowed(
       const std::string& app_id) const override {
     return std::nullopt;
   }
+
   std::optional<std::string> GetTargetChannel(
       const std::string& app_id) const override {
     auto value = channels_.find(app_id);
     return value == channels_.end() ? std::nullopt
                                     : std::make_optional(value->second);
   }
+
   void SetChannel(const std::string& app_id, std::string channel) {
     channels_[app_id] = std::move(channel);
   }
+
   std::optional<std::string> GetTargetVersionPrefix(
       const std::string& app_id) const override {
     auto value = target_version_prefixes_.find(app_id);
@@ -149,26 +175,29 @@ class FakePolicyManager : public PolicyManagerInterface {
                ? std::nullopt
                : std::make_optional(value->second);
   }
+
   void SetTargetVersionPrefix(const std::string& app_id,
                               std::string target_version_prefix) {
     target_version_prefixes_[app_id] = std::move(target_version_prefix);
   }
+
   std::optional<std::vector<std::string>> GetForceInstallApps() const override {
     return std::nullopt;
   }
+
   std::optional<std::vector<std::string>> GetAppsWithPolicy() const override {
     std::set<std::string> apps_with_policy;
     base::ranges::transform(
         install_policies_,
         std::inserter(apps_with_policy, apps_with_policy.end()),
-        [](const auto& pair) { return pair.first; });
+        [](const auto& kv) { return kv.first; });
     base::ranges::transform(
         update_policies_,
         std::inserter(apps_with_policy, apps_with_policy.end()),
-        [](const auto& pair) { return pair.first; });
+        [](const auto& kv) { return kv.first; });
     base::ranges::transform(
         channels_, std::inserter(apps_with_policy, apps_with_policy.end()),
-        [](const auto& pair) { return pair.first; });
+        [](const auto& kv) { return kv.first; });
     return std::vector<std::string>(apps_with_policy.begin(),
                                     apps_with_policy.end());
   }

@@ -808,9 +808,9 @@ void KSAdminApp::FirstTaskRun() {
       {kCommandPrintTickets, &KSAdminApp::PrintTickets},
       {kCommandRegister, &KSAdminApp::Register},
   };
-  for (const auto& entry : commands) {
-    if (HasSwitch(entry.first)) {
-      (this->*entry.second)();
+  for (const auto& [command, method] : commands) {
+    if (HasSwitch(command)) {
+      (this->*method)();
       return;
     }
   }

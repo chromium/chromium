@@ -471,9 +471,9 @@ void NetworkFetcher::PostRequest(
 
   // Post additional headers could overwrite existing headers with the same key,
   // such as "Content-Type" above.
-  for (const auto& header : post_additional_headers) {
-    [urlRequest setValue:base::SysUTF8ToNSString(header.second)
-        forHTTPHeaderField:base::SysUTF8ToNSString(header.first)];
+  for (const auto& [name, value] : post_additional_headers) {
+    [urlRequest setValue:base::SysUTF8ToNSString(value)
+        forHTTPHeaderField:base::SysUTF8ToNSString(name)];
   }
   VLOG(1) << "Posting data: " << post_data.c_str();
 
