@@ -37,6 +37,7 @@ static_library("safe_browsing") {
     "//components/enterprise:enterprise",
     "//components/enterprise/buildflags",
     "//components/enterprise/common:strings",
+    "//components/enterprise/obfuscation/core:enterprise_obfuscation",
     "//components/keyed_service/content",
     "//components/language/core/browser",
     "//components/no_state_prefetch/browser",

@@ -41,6 +41,26 @@ base::expected<std::vector<uint8_t>, Error> DownloadObfuscator::ObfuscateChunk(
   return result;
 }
 
+base::expected<base::span<const uint8_t>, Error>
+DownloadObfuscator::GetNextDeobfuscatedChunk(
+    base::span<const uint8_t> obfuscated_data) {
+  if (deobfuscated_chunk_position_ == deobfuscated_chunk_.size()) {
+    // Deobfuscate the next chunk, as we are at the start or we've reached the
+    // end of the current deobfuscated chunk.
+    next_chunk_offset_ = 0;
+    auto deobfuscated_result =
+        DeobfuscateChunk(obfuscated_data, next_chunk_offset_);
+    if (!deobfuscated_result.has_value()) {
+      return base::unexpected(deobfuscated_result.error());
+    }
+    deobfuscated_chunk_ = std::move(deobfuscated_result.value());
+    deobfuscated_chunk_position_ = 0;
+  }
+
+  return base::span<const uint8_t>(deobfuscated_chunk_)
+      .subspan(deobfuscated_chunk_position_);
+}
+
 base::expected<std::vector<uint8_t>, Error>
 DownloadObfuscator::DeobfuscateChunk(base::span<const uint8_t> data,
                                      size_t& obfuscated_file_offset) {
@@ -110,6 +130,10 @@ DownloadObfuscator::CalculateDeobfuscationOverhead(
 
 std::unique_ptr<crypto::SecureHash> DownloadObfuscator::GetUnobfuscatedHash() {
   return std::move(unobfuscated_hash_);
+}
+
+void DownloadObfuscator::UpdateDeobfuscatedChunkPosition(size_t bytes_written) {
+  deobfuscated_chunk_position_ += bytes_written;
 }
 
 }  // namespace enterprise_obfuscation

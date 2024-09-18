@@ -16,6 +16,7 @@
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/time/time.h"
+#include "components/enterprise/obfuscation/core/download_obfuscator.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/network/public/mojom/data_pipe_getter.mojom.h"
 
@@ -187,6 +188,8 @@ class ConnectorDataPipeGetter : public network::mojom::DataPipeGetter {
 
   // Indicates if this data pipe streams a pipe. If false, it streams a page.
   bool file_data_pipe_;
+
+  std::unique_ptr<enterprise_obfuscation::DownloadObfuscator> deobfuscator_;
 
   mojo::ScopedDataPipeProducerHandle pipe_;
   std::unique_ptr<mojo::SimpleWatcher> watcher_;

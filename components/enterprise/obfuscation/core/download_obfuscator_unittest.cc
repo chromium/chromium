@@ -165,4 +165,36 @@ TEST_F(DownloadObfuscatorEnabledTest, InvalidData) {
   EXPECT_EQ(overhead_result.error(), Error::kDeobfuscationFailed);
 }
 
+// Test partial writes for deobfuscation.
+TEST_F(DownloadObfuscatorEnabledTest, PartialDeobfuscation) {
+  DownloadObfuscator obfuscator;
+  std::string test_data = "This is a test for partial deobfuscation.";
+  auto obfuscated = obfuscator.ObfuscateChunk(StringToVector(test_data), true);
+  ASSERT_TRUE(obfuscated.has_value());
+
+  DownloadObfuscator deobfuscator;
+  std::vector<uint8_t> deobfuscated_content;
+  size_t total_deobfuscated_size = 0;
+  size_t partial_read_size = 5;  // Read in only 5 bytes at a time
+
+  while (total_deobfuscated_size < test_data.size()) {
+    // Test that for partial writes, it reads the same obfuscated chunk.
+    auto deobfuscated_chunk = deobfuscator.GetNextDeobfuscatedChunk(
+        base::make_span(obfuscated.value()));
+    ASSERT_TRUE(deobfuscated_chunk.has_value());
+
+    size_t bytes_to_read =
+        std::min(partial_read_size, deobfuscated_chunk->size());
+    deobfuscated_content.insert(deobfuscated_content.end(),
+                                deobfuscated_chunk->begin(),
+                                deobfuscated_chunk->begin() + bytes_to_read);
+
+    total_deobfuscated_size += bytes_to_read;
+    deobfuscator.UpdateDeobfuscatedChunkPosition(bytes_to_read);
+  }
+
+  EXPECT_EQ(deobfuscated_content, StringToVector(test_data));
+  EXPECT_EQ(deobfuscator.GetNextChunkOffset(), obfuscated->size());
+}
+
 }  // namespace enterprise_obfuscation

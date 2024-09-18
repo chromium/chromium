@@ -30,6 +30,17 @@ class DownloadObfuscator {
       base::span<const uint8_t> data,
       bool is_last_chunk);
 
+  // Returns a span of the next available deobfuscated data, allowing for
+  // incremental processing of obfuscated data. It is used when there is no
+  // guarantee that the current deobfuscated chunk will be entirely written and
+  // avoids deobfuscating the same chunk multiple times. For cases without
+  // partial writes, prefer using DeobfuscateChunk function for performance.
+  //
+  // Note: This method maintains internal state across calls. Subsequent calls
+  // will continue from where the previous call left off.
+  base::expected<base::span<const uint8_t>, Error> GetNextDeobfuscatedChunk(
+      base::span<const uint8_t> obfuscated_data);
+
   // Deobfuscates the next obfuscated chunk of data. If it's the first chunk,
   // retrieves the header and extracts derived key and nonce prefix. If
   // successful, returns the deobfuscated data, and updates the obfuscated file
@@ -49,12 +60,26 @@ class DownloadObfuscator {
   // obfuscation as it invalidates the obfuscator.
   std::unique_ptr<crypto::SecureHash> GetUnobfuscatedHash();
 
+  // Updates the offset within the current obfuscated chunk with the bytes that
+  // were actually processed.
+  void UpdateDeobfuscatedChunkPosition(size_t bytes_written);
+
+  // Returns the offset of the next obfuscated chunk from the start of the
+  // current one.
+  size_t GetNextChunkOffset() const { return next_chunk_offset_; }
+
  private:
+  // Shared members.
   std::vector<uint8_t> nonce_prefix_;
   std::vector<uint8_t> derived_key_;
   uint32_t chunk_counter_ = 0;
   int64_t total_overhead_ = 0;
   std::unique_ptr<crypto::SecureHash> unobfuscated_hash_;
+
+  // Members used for partial deobfuscation.
+  std::vector<uint8_t> deobfuscated_chunk_;
+  size_t deobfuscated_chunk_position_ = 0;
+  size_t next_chunk_offset_ = 0;
 };
 
 }  // namespace enterprise_obfuscation
