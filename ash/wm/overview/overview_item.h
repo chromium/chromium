@@ -83,9 +83,6 @@ class ASH_EXPORT OverviewItem : public OverviewItemBase,
   void OnFocusedViewActivated();
   void OnFocusedViewClosed();
 
-  // If the window item represents a minimized window, update its contents view.
-  void UpdateItemContentViewForMinimizedWindow();
-
   // Updates the rounded corners on `this` only.
   void UpdateRoundedCorners();
 
