@@ -257,7 +257,7 @@ class FCMNetworkHandlerTestWithTTL : public FCMNetworkHandlerTest {
   base::test::ScopedFeatureList override_features_;
 };
 
-TEST_F(FCMNetworkHandlerTest, ShouldPassTheTokenOnceRecieved) {
+TEST_F(FCMNetworkHandlerTest, ShouldPassTheTokenOnceReceived) {
   std::unique_ptr<FCMNetworkHandler> handler = MakeHandler();
 
   MockOnTokenCallback mock_on_token_callback;
