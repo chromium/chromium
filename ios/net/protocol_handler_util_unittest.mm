@@ -207,7 +207,7 @@ TEST_F(ProtocolHandlerUtilTest, AddMissingHeaders) {
   auto reader = std::make_unique<UploadBytesElementReader>(
       base::byte_span_from_cstring(""));
   out_request->set_upload(
-      ElementsUploadDataStream::CreateWithReader(std::move(reader), 0));
+      ElementsUploadDataStream::CreateWithReader(std::move(reader)));
   CopyHttpHeaders(in_request, out_request.get());
 
   // Some headers are added by default if missing.

@@ -782,8 +782,7 @@ TEST_P(EmbeddedTestServerTest, LargePost) {
 
   auto reader = std::make_unique<UploadBytesElementReader>(
       base::as_byte_span(large_post_body));
-  auto stream = ElementsUploadDataStream::CreateWithReader(std::move(reader),
-                                                           /*identifier=*/0);
+  auto stream = ElementsUploadDataStream::CreateWithReader(std::move(reader));
 
   TestDelegate delegate;
   std::unique_ptr<URLRequest> request(

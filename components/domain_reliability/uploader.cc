@@ -148,7 +148,7 @@ class DomainReliabilityUploaderImpl : public DomainReliabilityUploader,
     auto upload_reader =
         std::make_unique<net::UploadOwnedBytesElementReader>(&report_data);
     request->set_upload(net::ElementsUploadDataStream::CreateWithReader(
-        std::move(upload_reader), 0 /* identifier */));
+        std::move(upload_reader)));
     request->SetUserData(
         UploadDepthData::kUserDataKey,
         std::make_unique<UploadDepthData>(max_upload_depth + 1));

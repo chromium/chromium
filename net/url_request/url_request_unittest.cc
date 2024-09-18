@@ -349,7 +349,7 @@ bool ContainsString(const std::string& haystack, const char* needle) {
 std::unique_ptr<UploadDataStream> CreateSimpleUploadData(
     base::span<const uint8_t> data) {
   auto reader = std::make_unique<UploadBytesElementReader>(data);
-  return ElementsUploadDataStream::CreateWithReader(std::move(reader), 0);
+  return ElementsUploadDataStream::CreateWithReader(std::move(reader));
 }
 
 // Verify that the SSLInfo of a successful SSL connection has valid values.

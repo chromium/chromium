@@ -178,7 +178,7 @@ std::unique_ptr<net::URLRequest> CreateSimpleRequest(
     auto reader = std::make_unique<net::UploadBytesElementReader>(
         base::as_byte_span(form_data));
     request->set_upload(
-        net::ElementsUploadDataStream::CreateWithReader(std::move(reader), 0));
+        net::ElementsUploadDataStream::CreateWithReader(std::move(reader)));
   }
   return request;
 }

@@ -214,7 +214,7 @@ class ReportingUploaderImpl : public ReportingUploader, URLRequest::Delegate {
         HttpRequestHeaders::kContentType, kUploadContentType, true);
 
     upload->request->set_upload(ElementsUploadDataStream::CreateWithReader(
-        std::move(upload->payload_reader), 0));
+        std::move(upload->payload_reader)));
 
     // Set the max_depth for this request, to cap how deep a stack of "reports
     // about reports" can get.  (Without this, a Reporting policy that uploads
