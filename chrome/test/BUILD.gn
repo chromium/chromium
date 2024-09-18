@@ -164,8 +164,6 @@ static_library("test_support") {
     "../browser/notifications/notification_display_service_tester.h",
     "../browser/notifications/stub_notification_platform_bridge.cc",
     "../browser/notifications/stub_notification_platform_bridge.h",
-    "../browser/optimization_guide/mock_optimization_guide_keyed_service.cc",
-    "../browser/optimization_guide/mock_optimization_guide_keyed_service.h",
     "../browser/password_manager/password_manager_test_util.cc",
     "../browser/password_manager/password_manager_test_util.h",
     "../browser/permissions/crowd_deny_fake_safe_browsing_database_manager.cc",
@@ -1328,6 +1326,7 @@ source_set("platform_browser_tests") {
     "//build:chromeos_buildflags",
     "//chrome/browser",
     "//chrome/browser:browser_process",
+    "//chrome/browser/optimization_guide",
     "//chrome/browser/policy:test_support",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/search_engines",
@@ -1466,6 +1465,7 @@ if (is_android) {
       "//chrome/browser/flags:flags_android",
       "//chrome/browser/ip_protection:browser_tests",
       "//chrome/browser/metrics:test_support",
+      "//chrome/browser/optimization_guide:optimization_guide",
       "//chrome/browser/payments:browser_tests",
       "//chrome/browser/policy:browser_tests",
       "//chrome/browser/policy:test_support",
@@ -1930,9 +1930,11 @@ if (!is_android) {
       "//chrome/browser/media/webrtc:test_support",
       "//chrome/browser/metrics:test_support",
       "//chrome/browser/metrics/structured:test_support",
+      "//chrome/browser/navigation_predictor:navigation_predictor",
       "//chrome/browser/notifications/scheduler:factory",
       "//chrome/browser/notifications/scheduler/public",
       "//chrome/browser/notifications/scheduler/test:test_support",
+      "//chrome/browser/optimization_guide:browser_tests",
       "//chrome/browser/optimization_guide:test_support",
       "//chrome/browser/payments:browser_tests",
       "//chrome/browser/permissions",
@@ -2374,7 +2376,8 @@ if (!is_android) {
       "//v8",
     ]
 
-    allow_circular_includes_from = []
+    allow_circular_includes_from =
+        [ "//chrome/browser/optimization_guide:browser_tests" ]
 
     if (is_chromeos) {
       deps += [
@@ -2836,11 +2839,9 @@ if (!is_android) {
       "../browser/notifications/notification_permission_browsertest.cc",
       "../browser/notifications/scheduler/notification_schedule_service_browsertest.cc",
       "../browser/ntp_tiles/ntp_tiles_browsertest.cc",
-      "../browser/optimization_guide/hints_fetcher_browsertest.cc",
       "../browser/optimization_guide/model_execution/model_execution_browsertest.cc",
       "../browser/optimization_guide/model_execution/model_execution_live_test.cc",
       "../browser/optimization_guide/model_execution/model_execution_validation_browsertest.cc",
-      "../browser/optimization_guide/optimization_guide_keyed_service_browsertest.cc",
       "../browser/origin_trials/origin_trials_browsertest.cc",
       "../browser/os_crypt/os_crypt_async_browsertest.cc",
       "../browser/page_content_annotations/page_content_annotations_service_browsertest.cc",
@@ -6191,8 +6192,6 @@ test("unit_tests") {
     "../browser/notifications/notification_trigger_scheduler_unittest.cc",
     "../browser/notifications/persistent_notification_handler_unittest.cc",
     "../browser/notifications/platform_notification_service_unittest.cc",
-    "../browser/optimization_guide/chrome_hints_manager_unittest.cc",
-    "../browser/optimization_guide/chrome_model_quality_logs_uploader_service_unittest.cc",
     "../browser/page_content_annotations/page_content_annotations_web_contents_observer_unittest.cc",
     "../browser/page_load_metrics/metrics_web_contents_observer_unittest.cc",
     "../browser/page_load_metrics/observers/core/amp_page_load_metrics_observer_unittest.cc",
@@ -6646,6 +6645,7 @@ test("unit_tests") {
     "//chrome/browser/new_tab_page/chrome_colors:generate_chrome_colors_info",
     "//chrome/browser/new_tab_page/chrome_colors:generate_colors_info",
     "//chrome/browser/notifications:unit_tests",
+    "//chrome/browser/optimization_guide:unit_tests",
     "//chrome/browser/payments:unittests",
     "//chrome/browser/permissions",
     "//chrome/browser/permissions:unit_tests",
@@ -8206,11 +8206,6 @@ test("unit_tests") {
       "../browser/new_tab_page/modules/v2/calendar/outlook_calendar_page_handler_unittest.cc",
       "../browser/new_tab_page/modules/v2/most_relevant_tab_resumption/most_relevant_tab_resumption_page_handler_unittest.cc",
       "../browser/search/ntp_features_unittest.cc",
-    ]
-
-    sources += [
-      # Android uses a different way of showing browser windows.
-      "../browser/optimization_guide/optimization_guide_tab_url_provider_unittest.cc",
     ]
 
     if (!is_mac) {

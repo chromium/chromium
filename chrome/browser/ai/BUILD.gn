@@ -43,7 +43,10 @@ source_set("impl") {
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/content_extraction:content_extraction",
   ]
-  deps = [ ":ai" ]
+  deps = [
+    ":ai",
+    "//chrome/browser/optimization_guide",
+  ]
 }
 
 source_set("test_support") {
@@ -53,6 +56,7 @@ source_set("test_support") {
     "ai_test_utils.h",
   ]
   public_deps = [
+    "//chrome/browser/optimization_guide",
     "//chrome/browser/optimization_guide:test_support",
     "//chrome/test:test_support",
     "//testing/gmock:gmock",

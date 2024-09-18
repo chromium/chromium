@@ -27,6 +27,7 @@ static_library("safe_browsing") {
     "//chrome/app:generated_resources",
     "//chrome/browser:browser_process",
     "//chrome/browser/google",
+    "//chrome/browser/optimization_guide",
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/sync",
