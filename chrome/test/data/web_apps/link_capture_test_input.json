@@ -10094,7 +10094,7 @@
          }
       },
       "CaptureOn_AppWnd_ScopeA2A_Direct_ViaButton_LeftClick_WithoutOpener_TargetFrame": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -10126,7 +10126,7 @@
          }
       },
       "CaptureOn_AppWnd_ScopeA2A_Direct_ViaButton_LeftClick_WithoutOpener_TargetNoFrame": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -10172,7 +10172,7 @@
          }
       },
       "CaptureOn_AppWnd_ScopeA2A_Direct_ViaButton_LeftClick_WithoutOpener_TargetSelf": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -11018,7 +11018,7 @@
          }
       },
       "CaptureOn_AppWnd_ScopeA2A_Direct_ViaLink_LeftClick_WithoutOpener_TargetFrame": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -11050,7 +11050,7 @@
          }
       },
       "CaptureOn_AppWnd_ScopeA2A_Direct_ViaLink_LeftClick_WithoutOpener_TargetNoFrame": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -11096,7 +11096,7 @@
          }
       },
       "CaptureOn_AppWnd_ScopeA2A_Direct_ViaLink_LeftClick_WithoutOpener_TargetSelf": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -12090,7 +12090,7 @@
          }
       },
       "CaptureOn_AppWnd_ScopeA2B_Direct_ViaButton_LeftClick_WithoutOpener_TargetFrame": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -12122,7 +12122,7 @@
          }
       },
       "CaptureOn_AppWnd_ScopeA2B_Direct_ViaButton_LeftClick_WithoutOpener_TargetNoFrame": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -12168,7 +12168,7 @@
          }
       },
       "CaptureOn_AppWnd_ScopeA2B_Direct_ViaButton_LeftClick_WithoutOpener_TargetSelf": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -13002,7 +13002,7 @@
          }
       },
       "CaptureOn_AppWnd_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetFrame": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -13034,7 +13034,7 @@
          }
       },
       "CaptureOn_AppWnd_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetNoFrame": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -13080,7 +13080,7 @@
          }
       },
       "CaptureOn_AppWnd_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetSelf": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -13872,7 +13872,7 @@
          }
       },
       "CaptureOn_AppWnd_ScopeA2X_Direct_ViaButton_LeftClick_WithOpener_TargetFrame": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -14020,7 +14020,7 @@
          }
       },
       "CaptureOn_AppWnd_ScopeA2X_Direct_ViaButton_LeftClick_WithoutOpener_TargetFrame": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -14052,7 +14052,7 @@
          }
       },
       "CaptureOn_AppWnd_ScopeA2X_Direct_ViaButton_LeftClick_WithoutOpener_TargetNoFrame": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -14168,7 +14168,7 @@
          }
       },
       "CaptureOn_AppWnd_ScopeA2X_Direct_ViaButton_MiddleClick_WithOpener_TargetFrame": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -14277,7 +14277,7 @@
          }
       },
       "CaptureOn_AppWnd_ScopeA2X_Direct_ViaButton_MiddleClick_WithoutOpener_TargetBlank": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -14316,7 +14316,7 @@
          }
       },
       "CaptureOn_AppWnd_ScopeA2X_Direct_ViaButton_MiddleClick_WithoutOpener_TargetFrame": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -14348,7 +14348,7 @@
          }
       },
       "CaptureOn_AppWnd_ScopeA2X_Direct_ViaButton_MiddleClick_WithoutOpener_TargetNoFrame": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -14464,7 +14464,7 @@
          }
       },
       "CaptureOn_AppWnd_ScopeA2X_Direct_ViaButton_ShiftClick_WithOpener_TargetFrame": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -14573,7 +14573,7 @@
          }
       },
       "CaptureOn_AppWnd_ScopeA2X_Direct_ViaButton_ShiftClick_WithoutOpener_TargetBlank": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -14616,7 +14616,7 @@
          }
       },
       "CaptureOn_AppWnd_ScopeA2X_Direct_ViaButton_ShiftClick_WithoutOpener_TargetFrame": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -14648,7 +14648,7 @@
          }
       },
       "CaptureOn_AppWnd_ScopeA2X_Direct_ViaButton_ShiftClick_WithoutOpener_TargetNoFrame": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -14768,7 +14768,7 @@
          }
       },
       "CaptureOn_AppWnd_ScopeA2X_Direct_ViaLink_LeftClick_WithOpener_TargetFrame": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -14877,7 +14877,7 @@
          }
       },
       "CaptureOn_AppWnd_ScopeA2X_Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -14916,7 +14916,7 @@
          }
       },
       "CaptureOn_AppWnd_ScopeA2X_Direct_ViaLink_LeftClick_WithoutOpener_TargetFrame": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -14948,7 +14948,7 @@
          }
       },
       "CaptureOn_AppWnd_ScopeA2X_Direct_ViaLink_LeftClick_WithoutOpener_TargetNoFrame": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
