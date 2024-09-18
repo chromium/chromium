@@ -5,21 +5,8 @@
     "chrome_project": "chrome-m126",
     "is_main": false,
     "platforms": {
-        "cros": {
-            "description": "LTS",
-            "sheriff_rotation": "chrome_browser_release"
-        },
-        "fuchsia": {
-            "description": "keep active when mac & windows are",
-            "sheriff_rotation": "chrome_browser_release"
-        },
-        "mac": {
-            "description": "extended stable",
-            "sheriff_rotation": "chrome_browser_release"
-        },
-        "windows": {
-            "description": "extended stable",
-            "sheriff_rotation": "chrome_browser_release"
+        "cros-lts": {
+            "description": "LTS"
         }
     }
 }
