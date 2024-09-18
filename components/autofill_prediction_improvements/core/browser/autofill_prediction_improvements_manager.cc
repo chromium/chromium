@@ -343,7 +343,7 @@ bool AutofillPredictionImprovementsManager::ShouldProvidePredictionImprovements(
   if (!decider_ || !IsAutofillPredictionImprovementsEnabled()) {
     return false;
   }
-  if (ShouldSkipAllowlist()) {
+  if (kSkipAllowlist.Get()) {
     return true;
   }
   optimization_guide::OptimizationGuideDecision decision =

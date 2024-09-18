@@ -6,6 +6,7 @@
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_features.h"
 
 namespace autofill_prediction_improvements {
 
@@ -76,7 +77,8 @@ bool IsFormEligibleForFillingByFieldCriteria(
     }
   }
 
-  return total_number_of_fillable_fields > 0;
+  return total_number_of_fillable_fields >=
+         kMinimumNumberOfEligibleFieldsForFilling.Get();
 }
 
 bool IsFormEligibleForImportByFieldCriteria(
@@ -92,7 +94,8 @@ bool IsFormEligibleForImportByFieldCriteria(
     }
   }
 
-  return total_number_of_importable_fields > 0;
+  return total_number_of_importable_fields >=
+         kMinimumNumberOfEligibleFieldsForImport.Get();
 }
 
 }  // namespace autofill_prediction_improvements

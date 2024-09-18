@@ -6,18 +6,28 @@
 #define COMPONENTS_AUTOFILL_PREDICTION_IMPROVEMENTS_CORE_BROWSER_AUTOFILL_PREDICTION_IMPROVEMENTS_FEATURES_H_
 
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 
 namespace autofill_prediction_improvements {
 
 BASE_DECLARE_FEATURE(kAutofillPredictionImprovements);
 
-bool IsAutofillPredictionImprovementsEnabled();
+// TODO(crbug.com/362659272): Change default value to `false`.
+constexpr base::FeatureParam<bool> kSkipAllowlist{
+    &kAutofillPredictionImprovements, /*name=*/"skip_allowlist",
+    /*default_value=*/true};
 
-// Returns `true` if field trial parameter "skip_allowlist" for feature
-// `kAutofillPredictionImprovements` is set to "true". If `true`, optimization
-// guide `AUTOFILL_PREDICTION_IMPROVEMENTS_ALLOWLIST` will not be checked for
-// possible application on the main frame's last committed URL.
-bool ShouldSkipAllowlist();
+constexpr base::FeatureParam<int> kMinimumNumberOfEligibleFieldsForFilling{
+    &kAutofillPredictionImprovements,
+    /*name=*/"minimum_number_of_eligible_fields_for_filling",
+    /*default_value=*/1};
+
+constexpr base::FeatureParam<int> kMinimumNumberOfEligibleFieldsForImport{
+    &kAutofillPredictionImprovements,
+    /*name=*/"minimum_number_of_eligible_fields_for_import",
+    /*default_value=*/1};
+
+bool IsAutofillPredictionImprovementsEnabled();
 
 }  // namespace autofill_prediction_improvements
 
