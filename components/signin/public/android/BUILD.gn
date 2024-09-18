@@ -194,7 +194,6 @@ robolectric_library("junit") {
     "//base:base_java_test_support",
     "//base:base_java_test_support_uncommon",
     "//base:base_junit_test_support",
-    "//components/externalauth/android:google_delegate_public_impl_java",
     "//components/externalauth/android:java",
     "//testing/android/junit:junit_test_support",
     "//third_party/android_deps:guava_android_java",

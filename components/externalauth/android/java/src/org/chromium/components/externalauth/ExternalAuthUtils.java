@@ -12,6 +12,7 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Binder;
 import android.text.TextUtils;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 
@@ -21,6 +22,7 @@ import com.google.android.gms.common.GoogleApiAvailability;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.task.PostTask;
@@ -39,13 +41,12 @@ public class ExternalAuthUtils {
     private static final String TAG = "ExternalAuthUtils";
     private static ExternalAuthUtils sInstance = new ExternalAuthUtils();
 
-    private final ExternalAuthGoogleDelegate mGoogleDelegate;
+    private final @Nullable ExternalAuthGoogleDelegate mGoogleDelegate =
+            ServiceLoaderUtil.maybeCreate(ExternalAuthGoogleDelegate.class);
 
-    public ExternalAuthUtils() {
-        mGoogleDelegate = new ExternalAuthGoogleDelegateImpl();
-    }
-
-    /** @return The singleton instance of ExternalAuthUtils. */
+    /**
+     * @return The singleton instance of ExternalAuthUtils.
+     */
     public static ExternalAuthUtils getInstance() {
         return sInstance;
     }
@@ -95,14 +96,16 @@ public class ExternalAuthUtils {
 
     /**
      * Returns whether the call is originating from a Google-signed package.
+     *
      * @param packageName The package name to inquire about.
      */
     public boolean isGoogleSigned(String packageName) {
-        return mGoogleDelegate.isGoogleSigned(packageName);
+        return mGoogleDelegate == null ? false : mGoogleDelegate.isGoogleSigned(packageName);
     }
 
     /**
      * Returns whether the package can bypass TWA verification.
+     *
      * @param packageName The package name to inquire about.
      * @param origin The origin of the TWA.
      */
@@ -242,11 +245,6 @@ public class ExternalAuthUtils {
      */
     public boolean canUseFirstPartyGooglePlayServices() {
         return canUseFirstPartyGooglePlayServices(new UserRecoverableErrorHandler.Silent());
-    }
-
-    /** @return this object's {@link ExternalAuthGoogleDelegate} instance. */
-    public ExternalAuthGoogleDelegate getGoogleDelegateForTesting() {
-        return mGoogleDelegate;
     }
 
     /**
