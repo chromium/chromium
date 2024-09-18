@@ -191,10 +191,8 @@ void LogLensButtonNewBadgeShownHistogram(IOSNTPNewBadgeShownResult result) {
                                        feedViewController:feedViewController];
 }
 
-- (FeedHeaderViewController*)feedHeaderViewControllerWithFollowingDotVisible:
-    (BOOL)followingDotVisible {
-  return [[FeedHeaderViewController alloc]
-      initWithFollowingDotVisible:followingDotVisible];
+- (FeedHeaderViewController*)feedHeaderViewController {
+  return [[FeedHeaderViewController alloc] init];
 }
 
 @end

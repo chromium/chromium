@@ -62,10 +62,6 @@ extern const char kDiscoverFeedSRSPreloadTemplatesEnabled[];
 // Parameter for the feed top sync promo's style.
 extern const char kDiscoverFeedTopSyncPromoStyle[];
 
-// Feature parameters for the feed header settings.
-extern const char kDisableStickyHeaderForFollowingFeed[];
-extern const char kOverrideFeedHeaderHeight[];
-
 // A parameter value for the feed's refresh threshold when the feed has already
 // been seen by the user.
 extern const char kFeedSettingRefreshThresholdInSeconds[];
@@ -103,17 +99,6 @@ int FeedSyncPromoAutodismissCount();
 
 // Whether content suggestions are enabled for supervised users.
 bool IsContentSuggestionsForSupervisedUserEnabled(PrefService* pref_service);
-
-// YES if the Following feed header should not be sticky.
-bool IsStickyHeaderDisabledForFollowingFeed();
-
-// YES if a dot should appear to indicate that there is new content in the
-// Following feed.
-bool IsDotEnabledForNewFollowedContent();
-
-// Returns a custom height for the Following feed header if it is overridden
-// from the server, or returns the default value.
-int FollowingFeedHeaderHeight();
 
 // YES if discover feedback is going to be sent to the updated target.
 bool IsWebFeedFeedbackRerouteEnabled();

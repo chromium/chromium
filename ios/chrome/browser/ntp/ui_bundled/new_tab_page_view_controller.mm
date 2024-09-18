@@ -624,9 +624,6 @@ const CGFloat kFeedContainerExtraHeight = 500;
   // TODO(crbug.com/40252945): Constraint updating should not be necessary since
   // scrollViewDidScroll: calls this if needed.
   [self setInitialFakeOmniboxConstraints];
-  if ([self.NTPContentDelegate isContentHeaderSticky]) {
-    [self setInitialFeedHeaderConstraints];
-  }
   // Reset here since none of the view lifecycle callbacks (e.g.
   // viewDidDisappear) can be reliably used (it seems) (i.e. switching between
   // NTPs where there is saved scroll state in the destination tab). If the
@@ -1310,74 +1307,6 @@ const CGFloat kFeedContainerExtraHeight = 500;
   }
 }
 
-// Pins feed header to top of the NTP when scrolled into the feed, below the
-// omnibox.
-- (void)stickFeedHeaderToTop {
-  DCHECK(self.feedHeaderViewController);
-  DCHECK(IsWebChannelsEnabled());
-
-  [NSLayoutConstraint deactivateConstraints:self.feedHeaderConstraints];
-
-  NSMutableArray* constraints = [NSMutableArray array];
-  [constraints
-      addObject:[self.collectionView.topAnchor
-                    constraintEqualToAnchor:self.magicStackCollectionView.view
-                                                .bottomAnchor
-                                   constant:kBottomMagicStackPadding]];
-
-  // If the fake omnibox is pinned to the top, we pin the feed header below it.
-  // Otherwise, the feed header gets pinned to the top.
-  if ([self shouldPinFakeOmnibox]) {
-    [constraints
-        addObject:
-            [self.feedHeaderViewController.view.topAnchor
-                constraintEqualToAnchor:self.headerViewController.view
-                                            .bottomAnchor
-                               constant:
-                                   -(content_suggestions::
-                                         HeaderBottomPadding() +
-                                     [self.feedHeaderViewController
-                                             customSearchEngineViewHeight])]];
-  } else {
-    [constraints
-        addObject:
-            [self.feedHeaderViewController.view.topAnchor
-                constraintEqualToAnchor:self.view.topAnchor
-                               constant:-[self.feedHeaderViewController
-                                                customSearchEngineViewHeight]]];
-  }
-  self.feedHeaderConstraints = constraints;
-  [self.feedHeaderViewController
-      toggleBackgroundBlur:[self.NTPContentDelegate isContentHeaderSticky]
-                  animated:YES];
-  [NSLayoutConstraint activateConstraints:self.feedHeaderConstraints];
-}
-
-// Sets initial feed header constraints, between content suggestions and feed.
-- (void)setInitialFeedHeaderConstraints {
-  DCHECK(self.feedHeaderViewController);
-  [NSLayoutConstraint deactivateConstraints:self.feedHeaderConstraints];
-
-  // If Feed top section is enabled, the header bottom anchor should be set to
-  // its top anchor instead of the feed collection's top anchor.
-  UIView* bottomView = self.collectionView;
-  if (self.feedTopSectionViewController) {
-    bottomView = self.feedTopSectionViewController.view;
-  }
-
-  NSLayoutConstraint* feedHeaderTopAnchor;
-  feedHeaderTopAnchor = [self.feedHeaderViewController.view.topAnchor
-      constraintEqualToAnchor:self.magicStackCollectionView.view.bottomAnchor
-                     constant:kBottomMagicStackPadding];
-  self.feedHeaderConstraints = @[
-    feedHeaderTopAnchor,
-    [bottomView.topAnchor constraintEqualToAnchor:self.feedHeaderViewController
-                                                      .view.bottomAnchor],
-  ];
-  [self.feedHeaderViewController toggleBackgroundBlur:NO animated:YES];
-  [NSLayoutConstraint activateConstraints:self.feedHeaderConstraints];
-}
-
 // Sets an top inset to the feed collection view to fit the content above it.
 - (void)updateFeedInsetsForContentAbove {
   // Setting the contentInset will cause a scroll, which will call
@@ -1407,7 +1336,7 @@ const CGFloat kFeedContainerExtraHeight = 500;
   BOOL isFeedSigninPromoVisible =
       (visibleContentStartingPoint > -([self feedTopSectionHeight] * 2) / 3 &&
        ([self scrollPosition] <
-        -([self stickyContentHeight] + [self feedTopSectionHeight] / 3))) &&
+        -([self stickyOmniboxHeight] + [self feedTopSectionHeight] / 3))) &&
       !self.omniboxFocused;
 
   [self.NTPContentDelegate
@@ -1461,33 +1390,6 @@ const CGFloat kFeedContainerExtraHeight = 500;
     }
   } else if (self.isFakeboxPinned) {
     [self resetFakeOmniboxConstraints];
-  }
-
-  // Handles the sticky feed header.
-  if ([self.NTPContentDelegate isContentHeaderSticky] &&
-      self.feedHeaderViewController) {
-    if ((!self.isScrolledIntoFeed || force) &&
-        scrollPosition > [self offsetWhenScrolledIntoFeed]) {
-      [self setIsScrolledIntoFeed:YES];
-      [self stickFeedHeaderToTop];
-    } else if ((self.isScrolledIntoFeed || force) &&
-               scrollPosition <= [self offsetWhenScrolledIntoFeed]) {
-      [self setIsScrolledIntoFeed:NO];
-      [self setInitialFeedHeaderConstraints];
-    }
-  }
-
-  if (!IsHomeCustomizationEnabled()) {
-    // Content suggestions header will sometimes glitch when swiping quickly
-    // from inside the feed to the top of the NTP. This check safeguards this
-    // action to make sure the header is properly positioned.
-    // (crbug.com/1261458)
-    if ([self isNTPScrolledToTop]) {
-      [self setInitialFakeOmniboxConstraints];
-      if ([self.NTPContentDelegate isContentHeaderSticky]) {
-        [self setInitialFeedHeaderConstraints];
-      }
-    }
   }
 }
 
@@ -1557,7 +1459,21 @@ const CGFloat kFeedContainerExtraHeight = 500;
           constraintEqualToAnchor:self.moduleLayoutGuide.widthAnchor],
     ]];
     if (!IsHomeCustomizationEnabled()) {
-      [self setInitialFeedHeaderConstraints];
+      // If Feed top section is enabled, the header bottom anchor should be set
+      // to its top anchor instead of the feed collection's top anchor.
+      UIView* bottomView = self.collectionView;
+      if (self.feedTopSectionViewController) {
+        bottomView = self.feedTopSectionViewController.view;
+      }
+      [NSLayoutConstraint activateConstraints:@[
+        [self.feedHeaderViewController.view.topAnchor
+            constraintEqualToAnchor:self.magicStackCollectionView.view
+                                        .bottomAnchor
+                           constant:kBottomMagicStackPadding],
+        [bottomView.topAnchor
+            constraintEqualToAnchor:self.feedHeaderViewController.view
+                                        .bottomAnchor],
+      ]];
     }
     if (self.feedTopSectionViewController) {
       [NSLayoutConstraint activateConstraints:@[
@@ -1675,15 +1591,6 @@ const CGFloat kFeedContainerExtraHeight = 500;
 // Sets the content offset to the top of the feed.
 - (void)scrollIntoFeed {
   [self setContentOffset:[self offsetWhenScrolledIntoFeed]];
-}
-
-// The total height of all sticky content.
-- (CGFloat)stickyContentHeight {
-  CGFloat stickyContentHeight = [self stickyOmniboxHeight];
-  if ([self.NTPContentDelegate isContentHeaderSticky]) {
-    stickyContentHeight += [self feedHeaderHeight];
-  }
-  return stickyContentHeight;
 }
 
 // Returns y-offset compensated for any content insets that might be set for the
@@ -2049,12 +1956,6 @@ const CGFloat kFeedContainerExtraHeight = 500;
   collectionView.contentOffset = CGPointMake(0, offset);
   self.scrolledIntoFeed = offset > [self offsetWhenScrolledIntoFeed];
   [self handleStickyElementsForScrollPosition:offset force:YES];
-  if (self.feedHeaderViewController) {
-    [self.feedHeaderViewController
-        toggleBackgroundBlur:(self.scrolledIntoFeed &&
-                              [self.NTPContentDelegate isContentHeaderSticky])
-                    animated:NO];
-  }
   [self updateScrollPositionToSave];
 }
 

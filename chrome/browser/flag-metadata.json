@@ -4735,11 +4735,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "feed-header-settings",
-    "owners": ["//ios/chrome/browser/discover_feed/model/OWNERS", "adamta@google.com"],
-    "expiry_milestone": 140
-  },
-  {
     "name": "feed-header-stick-to-top",
     "owners": [ "//chrome/android/feed/OWNERS", "chili@chromium.org" ],
     "expiry_milestone": 115

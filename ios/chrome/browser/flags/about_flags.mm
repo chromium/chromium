@@ -249,22 +249,6 @@ const FeatureEntry::FeatureVariation kContentPushNotificationsVariations[] = {
      kContentPushNotificationsSetUpListRegistrationOnly,
      std::size(kContentPushNotificationsSetUpListRegistrationOnly), nullptr}};
 
-const FeatureEntry::FeatureParam kFeedHeaderSettingDisabledStickyHeader[] = {
-    {kDisableStickyHeaderForFollowingFeed, "true"}};
-const FeatureEntry::FeatureParam kFeedHeaderSettingReducedHeight[] = {
-    {kOverrideFeedHeaderHeight, "30"}};
-const FeatureEntry::FeatureParam kFeedHeaderSettingAllImprovements[] = {
-    {kDisableStickyHeaderForFollowingFeed, "true"},
-    {kOverrideFeedHeaderHeight, "30"}};
-
-const FeatureEntry::FeatureVariation kFeedHeaderSettingsVariations[] = {
-    {"Disable sticky header", kFeedHeaderSettingDisabledStickyHeader,
-     std::size(kFeedHeaderSettingDisabledStickyHeader), nullptr},
-    {"Reduced header height", kFeedHeaderSettingReducedHeight,
-     std::size(kFeedHeaderSettingReducedHeight), nullptr},
-    {"All improvements", kFeedHeaderSettingAllImprovements,
-     std::size(kFeedHeaderSettingAllImprovements), nullptr}};
-
 const FeatureEntry::FeatureParam kStartSurfaceTenSeconds[] = {
     {kReturnToStartSurfaceInactiveDurationInSeconds, "10"}};
 const FeatureEntry::FeatureParam kStartSurfaceOneHour[] = {
@@ -1161,11 +1145,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(kEnableDiscoverFeedTopSyncPromo,
                                     kDiscoverFeedTopSyncPromoVariations,
                                     "EnableDiscoverFeedTopSyncPromo")},
-    {"feed-header-settings", flag_descriptions::kEnableFeedHeaderSettingsName,
-     flag_descriptions::kEnableFeedHeaderSettingsDescription, flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(kFeedHeaderSettings,
-                                    kFeedHeaderSettingsVariations,
-                                    "FeedHeaderSettings")},
     {"shared-highlighting-amp",
      flag_descriptions::kIOSSharedHighlightingAmpName,
      flag_descriptions::kIOSSharedHighlightingAmpDescription, flags_ui::kOsIos,

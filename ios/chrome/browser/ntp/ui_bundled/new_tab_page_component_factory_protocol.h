@@ -59,10 +59,8 @@ typedef NS_ENUM(NSInteger, FollowingFeedSortType);
         (id<FeedWrapperViewControllerDelegate>)delegate
                        feedViewController:(UIViewController*)feedViewController;
 
-// The header of the feed with the Following feed segment dot visibility as
-// `followingDotVisible`.
-- (FeedHeaderViewController*)feedHeaderViewControllerWithFollowingDotVisible:
-    (BOOL)followingDotVisible;
+// The header of the feed with the Following feed.
+- (FeedHeaderViewController*)feedHeaderViewController;
 
 @end
 

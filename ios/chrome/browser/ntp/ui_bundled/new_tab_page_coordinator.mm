@@ -549,14 +549,7 @@
 }
 
 - (void)updateFollowingFeedHasUnseenContent:(BOOL)hasUnseenContent {
-  if (![self isFollowingFeedAvailable] ||
-      !IsDotEnabledForNewFollowedContent()) {
-    return;
-  }
-  if ([self doesFollowingFeedHaveContent]) {
-    [self.feedHeaderViewController
-        updateFollowingDotForUnseenContent:hasUnseenContent];
-  }
+  // No-op.
 }
 
 - (void)handleFeedModelOfType:(FeedType)feedType
@@ -700,17 +693,8 @@
   CHECK(self.NTPViewController);
 
   if (!self.feedHeaderViewController) {
-    BOOL followingDotVisible = NO;
-    if (IsDotEnabledForNewFollowedContent() && IsWebChannelsEnabled()) {
-      // Only show the dot if the user follows available publishers.
-      followingDotVisible =
-          [self doesFollowingFeedHaveContent] &&
-          self.discoverFeedService->GetFollowingFeedHasUnseenContent() &&
-          self.selectedFeed != FeedTypeFollowing;
-    }
-
-    self.feedHeaderViewController = [self.componentFactory
-        feedHeaderViewControllerWithFollowingDotVisible:followingDotVisible];
+    self.feedHeaderViewController =
+        [self.componentFactory feedHeaderViewController];
     self.feedMenuCoordinator = [[FeedMenuCoordinator alloc]
         initWithBaseViewController:self.NTPViewController
                            browser:self.browser];
@@ -1046,13 +1030,6 @@
   // Saves scroll position before changing feed.
   CGFloat scrollPosition = [self.NTPViewController scrollPosition];
 
-  if (feedType == FeedTypeFollowing && IsDotEnabledForNewFollowedContent()) {
-    // Clears dot and notifies service that the Following feed content has
-    // been seen.
-    [self.feedHeaderViewController updateFollowingDotForUnseenContent:NO];
-    self.discoverFeedService->SetFollowingFeedContentSeen();
-  }
-
   [self handleChangeInModules];
 
   // Scroll position resets when changing the feed, so we set it back to what it
@@ -1225,12 +1202,6 @@
 }
 
 #pragma mark - NewTabPageContentDelegate
-
-- (BOOL)isContentHeaderSticky {
-  return [self isFollowingFeedAvailable] &&
-         self.NTPMediator.feedHeaderVisible &&
-         !IsStickyHeaderDisabledForFollowingFeed();
-}
 
 - (void)signinPromoHasChangedVisibility:(BOOL)visible {
   [self.feedTopSectionCoordinator signinPromoHasChangedVisibility:visible];
