@@ -6419,10 +6419,6 @@ const char kComponentUpdaterTestRequestDescription[] =
     " Overrides any other component updater check request parameters that may "
     "have been specified.";
 
-const char kCrosOnDeviceGrammarCheckName[] = "On-device Grammar Check";
-const char kCrosOnDeviceGrammarCheckDescription[] =
-    "Enable new on-device grammar check component.";
-
 const char kEnableServiceWorkersForChromeUntrustedName[] =
     "Enable chrome-untrusted:// Service Workers";
 const char kEnableServiceWorkersForChromeUntrustedDescription[] =

@@ -3701,9 +3701,6 @@ extern const char kComponentUpdaterTestRequestDescription[];
 extern const char kCroshSWAName[];
 extern const char kCroshSWADescription[];
 
-extern const char kCrosOnDeviceGrammarCheckName[];
-extern const char kCrosOnDeviceGrammarCheckDescription[];
-
 extern const char kEnableServiceWorkersForChromeUntrustedName[];
 extern const char kEnableServiceWorkersForChromeUntrustedDescription[];
 
