@@ -27,6 +27,9 @@ BatchUploadUI::BatchUploadUI(content::WebUI* web_ui)
   webui::SetupWebUIDataSource(
       source, base::make_span(kBatchUploadResources, kBatchUploadResourcesSize),
       IDR_BATCH_UPLOAD_BATCH_UPLOAD_HTML);
+
+  // Temporary code.
+  source->AddString("message", "Hello World!");
 }
 
 BatchUploadUI::~BatchUploadUI() = default;

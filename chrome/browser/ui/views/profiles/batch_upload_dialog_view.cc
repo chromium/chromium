@@ -13,7 +13,6 @@
 #include "chrome/common/webui_url_constants.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/fill_layout.h"
@@ -64,12 +63,13 @@ BatchUploadDialogView::BatchUploadDialogView(
         data_providers_list,
     SelectedDataTypeItemsCallback complete_callback)
     : complete_callback_(std::move(complete_callback)) {
+  // Temporary hardcoded name - to be moved to webui implementation.
+  SetTitle(u"Save data to account");
   SetModalType(ui::mojom::ModalType::kWindow);
   // No native buttons.
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   // No close (x) top right button.
   SetShowCloseButton(false);
-  set_margins(gfx::Insets());
 
   // Setting a close callback to make sure every time the view is being closed,
   // that all necessary data are cleared. The view and underlying child views
@@ -137,11 +137,6 @@ void BatchUploadDialogView::SetHeightAndShowWidget(int height) {
                 std::min(height, kBatchUploadDialogMaxHeight)));
   GetWidget()->SetSize(GetWidget()->non_client_view()->GetPreferredSize());
   GetWidget()->Show();
-
-  // Enforce the web view round corners to match the native view. Since we set
-  // the view margin to 0 in the constructor, it leads to the webview
-  // overlapping on the native view in the corners.
-  web_view_->holder()->SetCornerRadii(gfx::RoundedCornersF(GetCornerRadius()));
 }
 
 // BatchUploadUIDelegate -------------------------------------------------------

@@ -24,6 +24,8 @@ constexpr base::flat_map<BatchUploadDataType,
                          std::vector<BatchUploadDataItemModel::Id>>
     kEmptySelectedMap;
 
+const std::u16string kBatchUploadTitle = u"Save data to account";
+
 class BatchUploadDataProviderFake : public BatchUploadDataProvider {
  public:
   explicit BatchUploadDataProviderFake(BatchUploadDataType type)
@@ -92,6 +94,7 @@ IN_PROC_BROWSER_TEST_F(BatchUploadDialogViewBrowserTest,
   fake_provider.SetHasLocalData(true);
   BatchUploadDialogView* dialog_view = CreateBatchUploadDialogView(
       browser()->profile(), {&fake_provider}, mock_callback.Get());
+  EXPECT_EQ(dialog_view->GetWindowTitle(), kBatchUploadTitle);
 
   EXPECT_CALL(mock_callback, Run(kEmptySelectedMap)).Times(1);
   dialog_view->OnDialogSelectionMade({});
@@ -107,6 +110,7 @@ IN_PROC_BROWSER_TEST_F(BatchUploadDialogViewBrowserTest,
     fake_provider.SetHasLocalData(true);
     BatchUploadDialogView* dialog_view = CreateBatchUploadDialogView(
         browser()->profile(), {&fake_provider}, mock_callback.Get());
+    EXPECT_EQ(dialog_view->GetWindowTitle(), kBatchUploadTitle);
 
     // Simulate the widget closing without user action.
     views::Widget* widget = dialog_view->GetWidget();

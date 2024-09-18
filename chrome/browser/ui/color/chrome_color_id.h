@@ -67,12 +67,9 @@
   E_CPONLY(kColorCapturedTabContentsBorder) \
   /* Cast dialog colors. */ \
   E_CPONLY(kColorCastDialogHelpIcon) \
-  /* Signin bubble colors. */ \
+   /* Signin bubble colors. */ \
   E_CPONLY(kColorChromeSigninBubbleBackground) \
   E_CPONLY(kColorChromeSigninBubbleInfoBackground) \
-  /* Batch Upload colors. */ \
-  E_CPONLY(kColorBatchUploadBackground) \
-  E_CPONLY(kColorBatchUploadDataBackground) \
   /* Compose colors */ \
   E_CPONLY(kColorComposeDialogBackground) \
   E_CPONLY(kColorComposeDialogDivider) \

@@ -28,11 +28,9 @@ build_webui_tests("build") {
 
   if (enable_dice_support) {
     files += [
-      "batch_upload_view_test.ts",
       "dice_web_signin_intercept_test.ts",
       "dice_web_signin_intercept_chrome_signin_test.ts",
       "test_dice_web_signin_intercept_browser_proxy.ts",
-      "test_batch_upload_browser_proxy.ts",
     ]
   }
 
@@ -62,14 +60,10 @@ build_webui_tests("build") {
     "chrome://signin-reauth/*|" + rebase_path(
             "$root_gen_dir/chrome/browser/resources/signin/tsc/signin_reauth/*",
             target_gen_dir),
-    "chrome://batch-upload/batch_upload.js|" + rebase_path(
-            "$root_gen_dir/chrome/browser/resources/signin/batch_upload/tsc/batch_upload.d.ts",
-            target_gen_dir),
   ]
 
   ts_deps = [
     "//chrome/browser/resources/signin:build_ts",
-    "//chrome/browser/resources/signin/batch_upload:build_ts",
     "//chrome/browser/resources/signin/profile_picker:build_ts",
     "//third_party/lit/v3_0:build_ts",
     "//third_party/polymer/v3_0:library",
