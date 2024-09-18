@@ -58,7 +58,7 @@ class COMPONENT_EXPORT(MOJO_BASE_PROTOBUF_SUPPORT) ProtoWrapper {
                         base::PassKey<ProtoWrapperBytes> passkey);
 
   template <IsProtoMessage ProtoMessage>
-  std::optional<ProtoMessage> As() {
+  std::optional<ProtoMessage> As() const {
     ProtoMessage message;
     if (DeserializeToMessage(message)) {
       return message;
@@ -71,7 +71,7 @@ class COMPONENT_EXPORT(MOJO_BASE_PROTOBUF_SUPPORT) ProtoWrapper {
   // cannot change, the contents might. If you want to unpack the contained
   // protobuf Message, use As<T>();
   std::optional<base::span<const uint8_t>> byte_span(
-      base::PassKey<ProtoWrapperBytes> passkey) {
+      base::PassKey<ProtoWrapperBytes> passkey) const {
     if (!is_valid()) {
       return std::nullopt;
     }
@@ -94,7 +94,7 @@ class COMPONENT_EXPORT(MOJO_BASE_PROTOBUF_SUPPORT) ProtoWrapper {
   // bytes will deserialize to a valid message.
   bool is_valid() const { return bytes_.has_value(); }
 
-  bool DeserializeToMessage(google::protobuf::MessageLite& message);
+  bool DeserializeToMessage(google::protobuf::MessageLite& message) const;
 
   std::string proto_name_;
   std::optional<BigBuffer> bytes_;

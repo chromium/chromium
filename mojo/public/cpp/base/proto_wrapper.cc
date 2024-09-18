@@ -42,7 +42,7 @@ ProtoWrapper::ProtoWrapper(base::span<const uint8_t> data,
 }
 
 bool ProtoWrapper::DeserializeToMessage(
-    google::protobuf::MessageLite& message) {
+    google::protobuf::MessageLite& message) const {
   if (!bytes_.has_value()) {
     return false;
   }
