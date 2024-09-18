@@ -2256,7 +2256,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Net.NetworkTransaction.Create{StreamType}Time.{HostType}.{Protocol}"
+    name="Net.NetworkTransaction.Create{StreamType}Time{HostType}.{Protocol}"
     units="ms" expires_after="2025-03-08">
   <owner>bashi@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
@@ -2269,7 +2269,10 @@ chromium-metrics-reviews@google.com.
     <variant name="HttpStream"/>
     <variant name="WebSocketStream"/>
   </token>
-  <token key="HostType" variants="NetworkTransactionBlockedHostType"/>
+  <token key="HostType">
+    <variant name=""/>
+    <variant name=".GoogleHost"/>
+  </token>
   <token key="Protocol" variants="NetworkTransactionBlockedProtocol"/>
 </histogram>
 
