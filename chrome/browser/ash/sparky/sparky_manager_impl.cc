@@ -62,6 +62,54 @@ ash::MahiBrowserDelegateAsh* GetMahiBrowserDelgateAsh() {
 }  // namespace
 namespace ash {
 
+namespace {
+
+std::u16string GenerateErrorMessage(const std::string& existing_message,
+                                    manta::MantaStatusCode status_code) {
+  std::u16string message = base::UTF8ToUTF16(existing_message);
+  message += u"\nManta Error Status:";
+  switch (status_code) {
+    case manta::MantaStatusCode::kOk:
+      message += u"OK";
+      break;
+    case manta::MantaStatusCode::kGenericError:
+      message += u"Generic Error";
+      break;
+    case manta::MantaStatusCode::kInvalidInput:
+      message += u"Invalid Input";
+      break;
+    case manta::MantaStatusCode::kResourceExhausted:
+      message += u"Resource Exhausted";
+      break;
+    case manta::MantaStatusCode::kBackendFailure:
+      message += u"Backend Failure";
+      break;
+    case manta::MantaStatusCode::kMalformedResponse:
+      message += u"Malformed Response";
+      break;
+    case manta::MantaStatusCode::kNoInternetConnection:
+      message += u"No Internet Connection";
+      break;
+    case manta::MantaStatusCode::kUnsupportedLanguage:
+      message += u"Unsupported Language";
+      break;
+    case manta::MantaStatusCode::kBlockedOutputs:
+      message += u"Blocked Outputs";
+      break;
+    case manta::MantaStatusCode::kRestrictedCountry:
+      message += u"Restricted Country";
+      break;
+    case manta::MantaStatusCode::kNoIdentityManager:
+      message += u"No Identity Manager";
+      break;
+    case manta::MantaStatusCode::kPerUserQuotaExceeded:
+      message += u"Per-User Quota Exceeded";
+      break;
+  }
+  return message;
+}
+}  // namespace
+
 SparkyManagerImpl::SparkyManagerImpl(Profile* profile,
                                      manta::MantaService* manta_service)
     : profile_(profile),
@@ -239,9 +287,13 @@ void SparkyManagerImpl::OnSparkyProviderQAResponse(
   // UI and then reopens it again.
   // TODO (b/352651459): Add a refresh button to reset the dialog.
 
-  if (status.status_code != manta::MantaStatusCode::kOk) {
+  if (status.status_code != manta::MantaStatusCode::kOk && latest_turn) {
     latest_response_status_ = MahiResponseStatus::kUnknownError;
-    std::move(callback).Run(std::nullopt, latest_response_status_);
+    // Instead of relying the mahi's `MahiUiController::HandleError()`, displays
+    // customized message in the dialog.
+    std::move(callback).Run(
+        GenerateErrorMessage(latest_turn->message, status.status_code),
+        MahiResponseStatus::kSuccess);
     return;
   }
 
@@ -272,7 +324,12 @@ void SparkyManagerImpl::OnSparkyProviderQAResponse(
 
   } else {
     latest_response_status_ = MahiResponseStatus::kCantFindOutputData;
-    std::move(callback).Run(std::nullopt, latest_response_status_);
+    // Instead of relying the mahi's `MahiUiController::HandleError()`, displays
+    // customized message in the dialog.
+    std::move(callback).Run(
+        GenerateErrorMessage("Sparky Manager Error: can't find output data.",
+                             status.status_code),
+        MahiResponseStatus::kSuccess);
   }
 }
 
@@ -300,8 +357,10 @@ void SparkyManagerImpl::OnGetPageContentForQA(
     MahiAnswerQuestionCallbackRepeating callback,
     crosapi::mojom::MahiPageContentPtr mahi_content_ptr) {
   if (!mahi_content_ptr) {
-    std::move(callback).Run(std::nullopt,
-                            MahiResponseStatus::kContentExtractionError);
+    // Instead of relying the mahi's `MahiUiController::HandleError()`, displays
+    // customized message in the dialog.
+    std::move(callback).Run(u"Sparky Manager Error: content extraction error.",
+                            MahiResponseStatus::kSuccess);
     return;
   }
 
