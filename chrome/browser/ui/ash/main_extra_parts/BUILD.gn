@@ -31,7 +31,6 @@ static_library("main_extra_parts") {
     "//chrome/browser/ash/app_list",
     "//chrome/browser/ash/arc/util",
     "//chrome/browser/ash/boca",
-    "//chrome/browser/ash/crosapi:browser_util",
     "//chrome/browser/ash/geolocation",
     "//chrome/browser/ash/growth",
     "//chrome/browser/ash/input_device_settings",

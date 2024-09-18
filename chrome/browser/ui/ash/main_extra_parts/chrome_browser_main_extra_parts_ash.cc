@@ -31,7 +31,6 @@
 #include "chrome/browser/ash/arc/util/arc_window_watcher.h"
 #include "chrome/browser/ash/auth/active_session_fingerprint_client_impl.h"
 #include "chrome/browser/ash/boca/boca_app_client_impl.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/geolocation/system_geolocation_source.h"
 #include "chrome/browser/ash/growth/campaigns_manager_client_impl.h"
 #include "chrome/browser/ash/growth/campaigns_manager_session.h"
@@ -60,7 +59,6 @@
 #include "chrome/browser/ui/ash/app_access/app_access_notifier.h"
 #include "chrome/browser/ui/ash/arc/arc_open_url_delegate_impl.h"
 #include "chrome/browser/ui/ash/cast_config/cast_config_controller_media_router.h"
-#include "chrome/browser/ui/ash/crosapi_new_window_delegate.h"
 #include "chrome/browser/ui/ash/desks/desks_client.h"
 #include "chrome/browser/ui/ash/graduation/graduation_manager.h"
 #include "chrome/browser/ui/ash/in_session_auth/in_session_auth_dialog_client.h"
@@ -237,13 +235,9 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
 
   {
     auto chrome_new_window_client = std::make_unique<ChromeNewWindowClient>();
-    auto crosapi_new_window_delegate =
-        std::make_unique<CrosapiNewWindowDelegate>(
-            chrome_new_window_client.get());
     new_window_delegate_provider_ =
         std::make_unique<ChromeNewWindowDelegateProvider>(
-            std::move(chrome_new_window_client),
-            std::move(crosapi_new_window_delegate));
+            std::move(chrome_new_window_client));
     arc_open_url_delegate_impl_ = std::make_unique<ArcOpenUrlDelegateImpl>();
   }
 

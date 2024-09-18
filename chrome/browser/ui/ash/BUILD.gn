@@ -10,8 +10,6 @@ assert(is_chromeos_ash)
 
 static_library("ash") {
   sources = [
-    "crosapi_new_window_delegate.cc",
-    "crosapi_new_window_delegate.h",
     "screen_orientation_delegate_chromeos.cc",
     "screen_orientation_delegate_chromeos.h",
     "window_pin_util_ash.cc",

@@ -6,13 +6,9 @@
 
 #include <utility>
 
-#include "chrome/browser/ash/crosapi/browser_util.h"
-
 ChromeNewWindowDelegateProvider::ChromeNewWindowDelegateProvider(
-    std::unique_ptr<ash::NewWindowDelegate> ash_new_window_delegate,
-    std::unique_ptr<ash::NewWindowDelegate> crosapi_new_window_delegate)
-    : ash_new_window_delegate_(std::move(ash_new_window_delegate)),
-      crosapi_new_window_delegate_(std::move(crosapi_new_window_delegate)) {}
+    std::unique_ptr<ash::NewWindowDelegate> ash_new_window_delegate)
+    : ash_new_window_delegate_(std::move(ash_new_window_delegate)) {}
 
 ChromeNewWindowDelegateProvider::~ChromeNewWindowDelegateProvider() = default;
 
@@ -21,8 +17,5 @@ ash::NewWindowDelegate* ChromeNewWindowDelegateProvider::GetInstance() {
 }
 
 ash::NewWindowDelegate* ChromeNewWindowDelegateProvider::GetPrimary() {
-  if (crosapi::browser_util::IsLacrosEnabled()) {
-    return crosapi_new_window_delegate_.get();
-  }
   return ash_new_window_delegate_.get();
 }
