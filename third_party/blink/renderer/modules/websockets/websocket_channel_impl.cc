@@ -84,6 +84,7 @@
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_impl.h"
 #include "v8/include/v8.h"
@@ -1207,17 +1208,15 @@ String WebSocketChannelImpl::GetTextMessage(
   // We can skip UTF8 encoding if received text contains only ASCII.
   // We do this in order to avoid constructing a temporary buffer.
   if (received_text_is_all_ascii_) {
-    LChar* buffer;
-    scoped_refptr<StringImpl> string_impl =
-        StringImpl::CreateUninitialized(size, buffer);
-    size_t index = 0;
+    StringBuffer<LChar> ascii_string_buffer(size);
+    auto ascii_buffer = base::as_writable_chars(ascii_string_buffer.Span());
     for (const auto& chunk : chunks) {
-      DCHECK_LE(index + chunk.size(), size);
-      memcpy(buffer + index, chunk.data(), chunk.size());
-      index += chunk.size();
+      auto [copy_dest, rest] = ascii_buffer.split_at(chunk.size());
+      copy_dest.copy_from(chunk);
+      ascii_buffer = rest;
     }
-    DCHECK_EQ(index, size);
-    return String(std::move(string_impl));
+    DCHECK(ascii_buffer.empty());
+    return String(ascii_string_buffer.Release());
   }
 
   Vector<char> flatten;
