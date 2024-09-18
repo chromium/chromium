@@ -4,6 +4,9 @@
 
 source_set("coordinator") {
   sources = [
+    "base_history_coordinator+subclassing.h",
+    "base_history_coordinator.h",
+    "base_history_coordinator.mm",
     "history_coordinator.h",
     "history_coordinator.mm",
     "history_coordinator_delegate.h",
@@ -51,6 +54,9 @@ source_set("constants") {
 
 source_set("ui") {
   sources = [
+    "base_history_view_controller+subclassing.h",
+    "base_history_view_controller.h",
+    "base_history_view_controller.mm",
     "history_consumer.h",
     "history_entries_status_item.h",
     "history_entries_status_item.mm",
