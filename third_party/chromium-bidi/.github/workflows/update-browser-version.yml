@@ -29,6 +29,7 @@ jobs:
       - name: Install and build npm dependencies
         run: npm ci
       - name: Update browser pin and devtools-protocol
+        id: update
         run: node tools/update_chrome_revision.mjs
       - name: Create Pull Request
         if: ${{ steps.update.outputs.commit }}
