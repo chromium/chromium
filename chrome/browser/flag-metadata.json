@@ -4229,12 +4229,12 @@
   {
     "name": "enable-user-link-capturing-scope-extensions-pwa",
     "owners": [ "dmurph@chromium.org", "pwa-team@google.com" ],
-    "expiry_milestone": 131
+    "expiry_milestone": 135
   },
   {
     "name": "enable-user-navigation-capturing-pwa",
     "owners": [ "dibyapal@chromium.org", "pwa-team@google.com" ],
-    "expiry_milestone": 131
+    "expiry_milestone": 135
   },
   {
     "name": "enable-variable-refresh-rate",
