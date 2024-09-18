@@ -21640,6 +21640,46 @@
             ]
         }
     ],
+    "SecureTimeCertificateVerification": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "FetchBehavior": "background-and-on-demand"
+                    },
+                    "enable_features": [
+                        "CertVerificationNetworkTime",
+                        "NetworkTimeServiceQuerying"
+                    ]
+                }
+            ]
+        }
+    ],
+    "SecureTimeCertificateVerificationAndroid": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "FetchBehavior": "background-and-on-demand"
+                    },
+                    "enable_features": [
+                        "CertVerificationNetworkTime",
+                        "NetworkTimeServiceQuerying"
+                    ]
+                }
+            ]
+        }
+    ],
     "SegmentationCompactionFix": [
         {
             "platforms": [
