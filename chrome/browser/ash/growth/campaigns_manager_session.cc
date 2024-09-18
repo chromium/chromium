@@ -45,8 +45,36 @@ namespace {
 
 CampaignsManagerSession* g_instance = nullptr;
 
+Profile* g_profile_for_testing = nullptr;
+
 // The time to trigger delayed campaigns.
 constexpr base::TimeDelta kTimeToTriggerDelayedCampaigns = base::Minutes(5);
+
+Profile* GetProfile() {
+  if (g_profile_for_testing) {
+    return g_profile_for_testing;
+  }
+
+  return ProfileManager::GetActiveUserProfile();
+}
+
+bool IsEligible() {
+  Profile* profile = GetProfile();
+  CHECK(profile);
+  // TODO(b/320789239): Enable for unicorn users.
+  if (profile->GetProfilePolicyConnector()->IsManaged()) {
+    // Only enabled for consumer session for now.
+    // Demo Mode session is handled separately at `DemoSession`.
+    return false;
+  }
+
+  // TODO: b/341328441 - Enable Growth Framework on guest mode.
+  if (profile->IsGuestSession()) {
+    return false;
+  }
+
+  return true;
+}
 
 bool IsWebBrowserAppId(std::string_view app_id) {
   return app_id == app_constants::kChromeAppId ||
@@ -134,30 +162,35 @@ void MaybeTriggerSlot(growth::Slot slot) {
                                    action_type.value(), payload);
 }
 
-void MaybeTriggerCampaignsWhenCampaignsLoaded() {
-  if (!ash::features::IsGrowthCampaignsTriggerAtLoadComplete()) {
+void MaybeTriggerRuntimeCampaigns(growth::TriggerType type,
+                                  std::string_view event = std::string_view()) {
+  // We need this for trigger points that are not managed by
+  // `CampaignsManagerSession`, e.g: `MaybeTriggerCampaignsOnEvent()`.
+  if (!IsEligible()) {
     return;
   }
 
   auto* campaigns_manager = growth::CampaignsManager::Get();
   CHECK(campaigns_manager);
 
-  growth::Trigger trigger(growth::TriggerType::kCampaignsLoaded);
+  growth::Trigger trigger(type);
+  trigger.event = std::string(event);
   campaigns_manager->SetTrigger(std::move(trigger));
 
   MaybeTriggerSlot(growth::Slot::kNudge);
   MaybeTriggerSlot(growth::Slot::kNotification);
 }
 
+void MaybeTriggerCampaignsWhenCampaignsLoaded() {
+  if (!ash::features::IsGrowthCampaignsTriggerAtLoadComplete()) {
+    return;
+  }
+
+  MaybeTriggerRuntimeCampaigns(growth::TriggerType::kCampaignsLoaded);
+}
+
 void MaybeTriggerDelayedCampaigns() {
-  auto* campaigns_manager = growth::CampaignsManager::Get();
-  CHECK(campaigns_manager);
-
-  growth::Trigger trigger(growth::TriggerType::kDelayedOneShotTimer);
-  campaigns_manager->SetTrigger(std::move(trigger));
-
-  MaybeTriggerSlot(growth::Slot::kNudge);
-  MaybeTriggerSlot(growth::Slot::kNotification);
+  MaybeTriggerRuntimeCampaigns(growth::TriggerType::kDelayedOneShotTimer);
 }
 
 // The app_id is optional and only required if the browser type is app.
@@ -301,6 +334,7 @@ CampaignsManagerSession::CampaignsManagerSession() {
 CampaignsManagerSession::~CampaignsManagerSession() {
   CHECK_EQ(g_instance, this);
   g_instance = nullptr;
+  g_profile_for_testing = nullptr;
   SetCampaignManagerPrefService(nullptr);
 }
 
@@ -402,15 +436,7 @@ void CampaignsManagerSession::MaybeTriggerCampaignsOnEvent(
     return;
   }
 
-  auto* campaigns_manager = growth::CampaignsManager::Get();
-  CHECK(campaigns_manager);
-
-  growth::Trigger trigger(growth::TriggerType::kEvent);
-  trigger.event = std::string(event);
-  campaigns_manager->SetTrigger(std::move(trigger));
-
-  MaybeTriggerSlot(growth::Slot::kNudge);
-  MaybeTriggerSlot(growth::Slot::kNotification);
+  MaybeTriggerRuntimeCampaigns(growth::TriggerType::kEvent, event);
 }
 
 void CampaignsManagerSession::PrimaryPageChanged(
@@ -441,33 +467,7 @@ void CampaignsManagerSession::PrimaryPageChanged(
 }
 
 void CampaignsManagerSession::SetProfileForTesting(Profile* profile) {
-  profile_for_testing_ = profile;
-}
-
-Profile* CampaignsManagerSession::GetProfile() {
-  if (profile_for_testing_) {
-    return profile_for_testing_;
-  }
-
-  return ProfileManager::GetActiveUserProfile();
-}
-
-bool CampaignsManagerSession::IsEligible() {
-  Profile* profile = GetProfile();
-  CHECK(profile);
-  // TODO(b/320789239): Enable for unicorn users.
-  if (profile->GetProfilePolicyConnector()->IsManaged()) {
-    // Only enabled for consumer session for now.
-    // Demo Mode session is handled separately at `DemoSession`.
-    return false;
-  }
-
-  // TODO: b/341328441 - Enable Growth Framework on guest mode.
-  if (profile->IsGuestSession()) {
-    return false;
-  }
-
-  return true;
+  g_profile_for_testing = profile;
 }
 
 void CampaignsManagerSession::SetupWindowObserver() {
@@ -641,9 +641,5 @@ void CampaignsManagerSession::MaybeTriggerCampaignsWhenAppOpened() {
     return;
   }
 
-  growth::Trigger trigger(growth::TriggerType::kAppOpened);
-  campaigns_manager->SetTrigger(std::move(trigger));
-
-  MaybeTriggerSlot(growth::Slot::kNudge);
-  MaybeTriggerSlot(growth::Slot::kNotification);
+  MaybeTriggerRuntimeCampaigns(growth::TriggerType::kAppOpened);
 }
