@@ -342,11 +342,6 @@ BASE_FEATURE(kWebAssemblyLiftoffCodeFlushing,
              ("WebAssemblyLiftoffCodeFlushing"),
              kFeatureDefaultStateControlledByV8);
 
-// Enable the generic wasm-to-js wrapper.
-BASE_FEATURE(kWebAssemblyGenericWrapper,
-             ("WebAssemblyGenericWrapper"),
-             kFeatureDefaultStateControlledByV8);
-
 // Enable support for multiple memories according to the multi-memory proposal:
 // https://github.com/WebAssembly/multi-memory. See
 // https://chromestatus.com/feature/5106389887746048.

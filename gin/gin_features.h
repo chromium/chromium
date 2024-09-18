@@ -98,7 +98,6 @@ GIN_EXPORT BASE_DECLARE_FEATURE(kWebAssemblyDeopt);
 GIN_EXPORT BASE_DECLARE_FEATURE(kWebAssemblyInlining);
 GIN_EXPORT BASE_DECLARE_FEATURE(kWebAssemblyInliningCallIndirect);
 GIN_EXPORT BASE_DECLARE_FEATURE(kWebAssemblyLiftoffCodeFlushing);
-GIN_EXPORT BASE_DECLARE_FEATURE(kWebAssemblyGenericWrapper);
 GIN_EXPORT BASE_DECLARE_FEATURE(kWebAssemblyMultipleMemories);
 GIN_EXPORT BASE_DECLARE_FEATURE(kWebAssemblyTurboshaft);
 GIN_EXPORT BASE_DECLARE_FEATURE(kWebAssemblyTurboshaftInstructionSelection);
