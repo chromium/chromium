@@ -12,29 +12,22 @@
 #include <utility>
 
 #include "base/check_op.h"
-#include "base/containers/id_map.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/memory/weak_ptr.h"
-#include "base/notreached.h"
 #include "base/strings/string_util.h"
-#include "base/time/time.h"
-#include "base/timer/elapsed_timer.h"
 #include "base/types/expected.h"
 #include "base/version_info/channel.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/supervised_user/core/browser/api_access_token_fetcher.h"
 #include "components/supervised_user/core/browser/fetcher_config.h"
-#include "components/supervised_user/core/browser/proto/permissions_common.pb.h"
+#include "components/supervised_user/core/browser/proto_fetcher_metrics.h"
 #include "components/supervised_user/core/browser/proto_fetcher_status.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/base/backoff_entry.h"
-#include "net/base/request_priority.h"
-#include "net/http/http_status_code.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -62,87 +55,6 @@ namespace supervised_user {
 // and must reference a static configuration.
 //
 // The static configuration should be placed in the fetcher_config.h module.
-
-// Encapsulates metric functionalities.
-class Metrics {
- public:
-  enum class MetricType {
-    kStatus,
-    kLatency,
-    kHttpStatusOrNetError,
-    kRetryCount,
-    kAuthError,
-  };
-
-  Metrics() = delete;
-  static std::optional<Metrics> FromConfig(const FetcherConfig& config);
-
-  void RecordStatus(const ProtoFetcherStatus& status) const;
-  void RecordLatency() const;
-  void RecordAccessTokenLatency(GoogleServiceAuthError::State auth_error_state);
-  void RecordApiLatency(
-      ProtoFetcherStatus::HttpStatusOrNetErrorType http_status_or_net_error);
-  virtual void RecordStatusLatency(const ProtoFetcherStatus& status) const;
-  void RecordAuthError(const GoogleServiceAuthError& auth_error) const;
-  void RecordHttpStatusOrNetError(const ProtoFetcherStatus& status) const;
-
- protected:
-  // Translates top-level metric type into a string. ::ToMetricEnumLabel
-  // translates statuses for per-status latency tracking.
-  virtual std::string GetMetricKey(MetricType metric_type) const;
-
-  // Returns fully-qualified name of histogram for specified metric_type.
-  std::string GetFullHistogramName(MetricType metric_type) const;
-
-  // Returns fully-qualified name of histogram for specified metric_type with
-  // per-status values.
-  std::string GetFullHistogramName(MetricType metric_type,
-                                   ProtoFetcherStatus status) const;
-
-  // Returns fully-qualified name of histogram for specified metric_type with
-  // per-authentication status values.
-  std::string GetFullHistogramName(
-      MetricType metric_type,
-      GoogleServiceAuthError::State auth_error_state) const;
-
-  // Returns fully-qualified name of histogram for specified metric_type with
-  // per-net-or-http error values.
-  std::string GetFullHistogramName(MetricType metric_type,
-                                   ProtoFetcherStatus::HttpStatusOrNetErrorType
-                                       http_status_or_net_error) const;
-
- protected:
-  explicit Metrics(std::string_view basename);
-
- private:
-  // The returned value must match one of the labels in
-  // chromium/src/tools/metrics/histograms/enums.xml://enum[@name='ProtoFetcherStatus'],
-  // and should be reflected in tokens in histogram defined for this fetcher.
-  // See example at
-  // tools/metrics/histograms/metadata/signin/histograms.xml://histogram[@name='Signin.ListFamilyMembersRequest.{Status}.*']
-  static std::string ToMetricEnumLabel(const ProtoFetcherStatus& status);
-
-  std::string_view basename_;
-  base::ElapsedTimer elapsed_timer_;
-};
-
-// Metrics for retrying fetchers, which are aggregating individual
-// fetchers.
-class OverallMetrics final : public Metrics {
- public:
-  OverallMetrics() = delete;
-  static std::optional<OverallMetrics> FromConfig(const FetcherConfig& config);
-
-  // Per-status latency is not defined for OverallMetrics.
-  void RecordStatusLatency(const ProtoFetcherStatus& status) const override;
-  void RecordRetryCount(int count) const;
-
- protected:
-  std::string GetMetricKey(MetricType metric_type) const override;
-
- private:
-  explicit OverallMetrics(std::string_view basename);
-};
 
 // Uses network::SharedURLLoaderFactory to issue network requests.
 // Internally, it's a two-phase process: first the access token is fetched, and
@@ -174,10 +86,9 @@ class FetchProcess {
   FetchProcess& operator=(const FetchProcess&) = delete;
 
   virtual ~FetchProcess();
-  bool IsMetricsRecordingEnabled() const;
 
  protected:
-  void RecordMetrics(const ProtoFetcherStatus& status);
+  void RecordMetrics(const ProtoFetcherStatus& status) const;
 
  private:
   // First phase of fetching: the access token response is ready.
@@ -198,7 +109,7 @@ class FetchProcess {
   const raw_ref<const FetcherConfig> config_;
   const FetcherConfig::PathArgs args_;
   std::optional<version_info::Channel> channel_;
-  std::optional<Metrics> metrics_;
+  std::optional<ProtoFetcherMetrics> metrics_;
 
   // Entrypoint of the fetch process, which starts with ApiAccessToken access
   // followed by a request made with SimpleURLLoader. Purposely made last field
@@ -295,7 +206,7 @@ class ProtoFetcher final {
                                      args,
                                      channel)),
         backoff_entry_(fetcher_config.BackoffEntry()),
-        overall_metrics_(OverallMetrics::FromConfig(fetcher_config)) {
+        metrics_(CumulativeProtoFetcherMetrics::FromConfig(fetcher_config)) {
     Fetch();
   }
 
@@ -350,19 +261,16 @@ class ProtoFetcher final {
 
     if (HasRetrySupportEnabled()) {
       backoff_entry_->InformOfRequest(/*succeeded=*/true);
-      if (IsOverallMetricsRecordingEnabled()) {
-        overall_metrics_->RecordLatency();
-        overall_metrics_->RecordStatus(status);
-        overall_metrics_->RecordRetryCount(retry_count_);
+      if (IsMetricsRecordingEnabled()) {
+        metrics_->RecordMetrics(status);
+        metrics_->RecordRetryCount(retry_count_);
       }
     }
 
     std::move(callback_).Run(status, std::move(response));
   }
 
-  inline bool IsOverallMetricsRecordingEnabled() const {
-    return overall_metrics_.has_value();
-  }
+  inline bool IsMetricsRecordingEnabled() const { return metrics_.has_value(); }
 
   // Client callback.
   TypedFetchProcess<Response>::Callback callback_;
@@ -374,7 +282,7 @@ class ProtoFetcher final {
   base::OneShotTimer timer_;
   std::unique_ptr<net::BackoffEntry> backoff_entry_;
   int retry_count_{0};
-  const std::optional<OverallMetrics> overall_metrics_;
+  const std::optional<CumulativeProtoFetcherMetrics> metrics_;
 };
 
 // Constructs a launched fetcher. The fetcher will be either one shot or

@@ -41,6 +41,8 @@ static_library("fetcher") {
     "parallel_fetch_manager.h",
     "proto_fetcher.cc",
     "proto_fetcher.h",
+    "proto_fetcher_metrics.cc",
+    "proto_fetcher_metrics.h",
     "proto_fetcher_status.cc",
     "proto_fetcher_status.h",
   ]
@@ -156,6 +158,7 @@ source_set("unit_tests") {
     "kids_chrome_management_url_checker_client_unittest.cc",
     "list_family_members_service_unittest.cc",
     "parallel_fetch_manager_unittest.cc",
+    "proto_fetcher_metrics_unittest.cc",
     "proto_fetcher_status_unittest.cc",
     "proto_fetcher_unittest.cc",
     "remote_web_approvals_manager_unittest.cc",

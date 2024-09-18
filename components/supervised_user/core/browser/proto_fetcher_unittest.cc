@@ -781,9 +781,15 @@ TEST_F(BestEffortProtoFetcherTest, NoAccessToken) {
 
   // Check that both the overall Status, and the detailed AuthError metrics
   // are recorded.
-  histogram_tester.ExpectUniqueSample(
-      base::StrCat({*GetConfig().histogram_basename, ".Status"}),
-      ProtoFetcherStatus::State::OK, 1);
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          base::StrCat({*GetConfig().histogram_basename, ".Status"})),
+      base::BucketsInclude(
+          base::Bucket(ProtoFetcherStatus::State::GOOGLE_SERVICE_AUTH_ERROR,
+                       /*count=*/1),
+          base::Bucket(ProtoFetcherStatus::State::OK,
+                       /*count=*/1)));
+
   histogram_tester.ExpectUniqueSample(
       base::StrCat({*GetConfig().histogram_basename, ".AuthError"}),
       GoogleServiceAuthError::State::INVALID_GAIA_CREDENTIALS, 1);

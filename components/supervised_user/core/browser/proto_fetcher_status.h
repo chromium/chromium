@@ -65,6 +65,7 @@ class ProtoFetcherStatus {
 
   State state() const;
   HttpStatusOrNetErrorType http_status_or_net_error() const;
+  class GoogleServiceAuthError google_service_auth_error() const;
 
  private:
   // Disallows impossible states.

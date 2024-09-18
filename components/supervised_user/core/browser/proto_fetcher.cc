@@ -14,12 +14,8 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
-#include "base/time/time.h"
-#include "base/timer/elapsed_timer.h"
 #include "base/types/expected.h"
 #include "base/types/optional_util.h"
 #include "base/version_info/channel.h"
@@ -29,7 +25,6 @@
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "google_apis/common/api_key_request_util.h"
 #include "google_apis/gaia/google_service_auth_error.h"
-#include "net/base/request_priority.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -143,145 +138,6 @@ std::unique_ptr<network::SimpleURLLoader> InitializeSimpleUrlLoader(
 
 }  // namespace
 
-Metrics::Metrics(std::string_view basename) : basename_(basename) {}
-/* static */ std::optional<Metrics> Metrics::FromConfig(
-    const FetcherConfig& config) {
-  if (config.histogram_basename.has_value()) {
-    return Metrics(*config.histogram_basename);
-  }
-  return std::nullopt;
-}
-
-void Metrics::RecordStatus(const ProtoFetcherStatus& status) const {
-  base::UmaHistogramEnumeration(GetFullHistogramName(MetricType::kStatus),
-                                status.state());
-}
-
-void Metrics::RecordLatency() const {
-  base::UmaHistogramTimes(GetFullHistogramName(MetricType::kLatency),
-                          elapsed_timer_.Elapsed());
-}
-
-void Metrics::RecordStatusLatency(const ProtoFetcherStatus& status) const {
-  base::UmaHistogramTimes(GetFullHistogramName(MetricType::kLatency, status),
-                          elapsed_timer_.Elapsed());
-}
-
-void Metrics::RecordAuthError(const GoogleServiceAuthError& auth_error) const {
-  base::UmaHistogramEnumeration(GetFullHistogramName(MetricType::kAuthError),
-                                auth_error.state(),
-                                GoogleServiceAuthError::NUM_STATES);
-}
-
-void Metrics::RecordHttpStatusOrNetError(
-    const ProtoFetcherStatus& status) const {
-  CHECK_EQ(status.state(), ProtoFetcherStatus::State::HTTP_STATUS_OR_NET_ERROR);
-  base::UmaHistogramSparse(
-      GetFullHistogramName(MetricType::kHttpStatusOrNetError),
-      status.http_status_or_net_error().value());
-}
-
-std::string Metrics::GetMetricKey(MetricType metric_type) const {
-  switch (metric_type) {
-    case MetricType::kStatus:
-      return "Status";
-    case MetricType::kLatency:
-      return "Latency";
-    case MetricType::kHttpStatusOrNetError:
-      return "HttpStatusOrNetError";
-    case MetricType::kAuthError:
-      return "AuthError";
-    case MetricType::kRetryCount:
-      NOTREACHED();
-    default:
-      NOTREACHED();
-  }
-}
-
-std::string Metrics::GetFullHistogramName(MetricType metric_type) const {
-  return base::JoinString({basename_, GetMetricKey(metric_type)}, ".");
-}
-
-std::string Metrics::GetFullHistogramName(MetricType metric_type,
-                                          ProtoFetcherStatus status) const {
-  return base::JoinString(
-      {basename_, ToMetricEnumLabel(status), GetMetricKey(metric_type)}, ".");
-}
-
-std::string Metrics::GetFullHistogramName(
-    MetricType metric_type,
-    GoogleServiceAuthError::State auth_error_state) const {
-  CHECK_EQ(auth_error_state, GoogleServiceAuthError::State::NONE)
-      << "Only authenticated case is supported.";
-  return base::JoinString({basename_, "NONE", GetMetricKey(metric_type)}, ".");
-}
-
-std::string Metrics::GetFullHistogramName(
-    MetricType metric_type,
-    ProtoFetcherStatus::HttpStatusOrNetErrorType http_status_or_net_error)
-    const {
-  CHECK_EQ(http_status_or_net_error,
-           ProtoFetcherStatus::HttpStatusOrNetErrorType(net::HTTP_OK))
-      << "Only successful api call case is supported.";
-  return base::JoinString({basename_, "HTTP_OK", GetMetricKey(metric_type)},
-                          ".");
-}
-
-std::string Metrics::ToMetricEnumLabel(const ProtoFetcherStatus& status) {
-  switch (status.state()) {
-    case ProtoFetcherStatus::State::OK:
-      return "NoError";
-    case ProtoFetcherStatus::State::GOOGLE_SERVICE_AUTH_ERROR:
-      return "AuthError";
-    case ProtoFetcherStatus::State::HTTP_STATUS_OR_NET_ERROR:
-      return "HttpStatusOrNetError";
-    case ProtoFetcherStatus::State::INVALID_RESPONSE:
-      return "ParseError";
-    case ProtoFetcherStatus::State::DATA_ERROR:
-      return "DataError";
-    default:
-      NOTREACHED();
-  }
-}
-
-OverallMetrics::OverallMetrics(std::string_view basename) : Metrics(basename) {}
-/* static */ std::optional<OverallMetrics> OverallMetrics::FromConfig(
-    const FetcherConfig& config) {
-  if (config.histogram_basename.has_value()) {
-    return OverallMetrics(*config.histogram_basename);
-  }
-  return std::nullopt;
-}
-
-// Per-status latency is not defined for OverallMetrics.
-void OverallMetrics::RecordStatusLatency(
-    const ProtoFetcherStatus& status) const {
-  NOTIMPLEMENTED();
-}
-
-std::string OverallMetrics::GetMetricKey(MetricType metric_type) const {
-  switch (metric_type) {
-    case MetricType::kStatus:
-      return "OverallStatus";
-    case MetricType::kLatency:
-      return "OverallLatency";
-    case MetricType::kHttpStatusOrNetError:
-      NOTREACHED();
-    case MetricType::kRetryCount:
-      return "RetryCount";
-    default:
-      NOTREACHED();
-  }
-}
-
-void OverallMetrics::RecordRetryCount(int count) const {
-  // It's a prediction that it will take less than 100 retries to get a
-  // decisive response. Double exponential backoff set at 4 hour limit
-  // shouldn't exhaust this limit too soon.
-  base::UmaHistogramCounts100(GetFullHistogramName(MetricType::kRetryCount),
-                              count);
-}
-
 FetchProcess::FetchProcess(
     signin::IdentityManager& identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
@@ -293,7 +149,7 @@ FetchProcess::FetchProcess(
       config_(fetcher_config),
       args_(args),
       channel_(channel),
-      metrics_(Metrics::FromConfig(fetcher_config)),
+      metrics_(ProtoFetcherMetrics::FromConfig(fetcher_config)),
       fetcher_(identity_manager,
                fetcher_config.access_token_config,
                base::BindOnce(
@@ -306,26 +162,14 @@ FetchProcess::FetchProcess(
         payload.request_body.empty())
       << "GET requests cannot set request_body in payload.";
 }
-FetchProcess::~FetchProcess() = default;
-bool FetchProcess::IsMetricsRecordingEnabled() const {
-  return metrics_.has_value();
-}
 
-void FetchProcess::RecordMetrics(const ProtoFetcherStatus& status) {
-  if (!IsMetricsRecordingEnabled()) {
+FetchProcess::~FetchProcess() = default;
+
+void FetchProcess::RecordMetrics(const ProtoFetcherStatus& status) const {
+  if (!metrics_.has_value()) {
     return;
   }
-  metrics_->RecordStatus(status);
-  metrics_->RecordLatency();
-  metrics_->RecordStatusLatency(status);
-
-  if (access_token_auth_error_) {
-    metrics_->RecordAuthError(access_token_auth_error_.value());
-  }
-
-  if (status.state() == ProtoFetcherStatus::State::HTTP_STATUS_OR_NET_ERROR) {
-    metrics_->RecordHttpStatusOrNetError(status);
-  }
+  metrics_->RecordMetrics(status);
 }
 
 void FetchProcess::OnAccessTokenFetchComplete(
@@ -334,11 +178,14 @@ void FetchProcess::OnAccessTokenFetchComplete(
         access_token) {
   if (!access_token.has_value()) {
     access_token_auth_error_ = access_token.error();
+    ProtoFetcherStatus auth_error_status =
+        ProtoFetcherStatus::GoogleServiceAuthError(access_token.error());
     if (config_->access_token_config.credentials_requirement ==
         AccessTokenConfig::CredentialsRequirement::kStrict) {
-      OnError(ProtoFetcherStatus::GoogleServiceAuthError(access_token.error()));
+      OnError(auth_error_status);
       return;
     }
+    RecordMetrics(auth_error_status);
   }
 
   simple_url_loader_ =

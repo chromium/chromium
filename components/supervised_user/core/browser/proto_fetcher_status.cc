@@ -108,4 +108,9 @@ ProtoFetcherStatus::http_status_or_net_error() const {
   return http_status_or_net_error_;
 }
 
+class GoogleServiceAuthError ProtoFetcherStatus::google_service_auth_error()
+    const {
+  return google_service_auth_error_;
+}
+
 }  // namespace supervised_user
