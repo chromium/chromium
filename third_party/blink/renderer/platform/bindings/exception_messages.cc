@@ -104,11 +104,7 @@ String ExceptionMessages::FailedToConvertJSValue(const char* type) {
 
 String ExceptionMessages::FailedToConstruct(const char* type,
                                             const String& detail) {
-  String type_string = String(type);
-  if (type_string.empty()) {
-    return detail;
-  }
-  return "Failed to construct '" + type_string +
+  return "Failed to construct '" + String(type) +
          (!detail.empty() ? String("': " + detail) : String("'"));
 }
 

@@ -2957,10 +2957,6 @@ ScriptValue NavigatorAuction::AuctionHandle::AuctionHandleFunction::Call(
                                  v8::ExceptionContext::kOperation,
                                  "NavigatorAuction", "runAdAuction");
   CallImpl(script_state, value, exception_state);
-  if (exception_state.HadException()) {
-    ApplyContextToException(script_state, exception_state.GetException(),
-                            exception_state.GetContext());
-  }
   return ScriptValue();
 }
 

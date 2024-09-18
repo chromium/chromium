@@ -803,8 +803,6 @@ class OperatorCatchSubscribeDelegate final
       Observable* inner_observable = Observable::from(
           script_state_, mapped_value.ToChecked(), exception_state);
       if (exception_state.HadException()) {
-        ApplyContextToException(script_state_, exception_state.GetException(),
-                                exception_state.GetContext());
         outer_subscriber_->error(script_state_,
                                  ScriptValue(script_state_->GetIsolate(),
                                              exception_state.GetException()));

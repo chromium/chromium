@@ -28,8 +28,7 @@ chrome.test.getConfig(function(config) {
         chrome.test.assertEq('script', registered[0].id);
       } else {
         const expectedError =
-            `Failed to read the 'userScripts' property from 'Object': The ` +
-            `'userScripts' API is only available for users ` +
+            `The 'userScripts' API is only available for users ` +
             'in developer mode.';
         // Trying to access the API should throw an error outside of developer
         // mode.

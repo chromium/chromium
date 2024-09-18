@@ -1181,9 +1181,6 @@ void PaymentRequest::OnUpdatePaymentDetails(
       NativeValueTraits<PaymentDetailsUpdate>::NativeValue(
           isolate, details_script_value.V8Value(), exception_state);
   if (exception_state.HadException()) {
-    ApplyContextToException(resolver->GetScriptState(),
-                            exception_state.GetException(),
-                            exception_state.GetContext());
     resolver->Reject(exception_state.GetException());
     ClearResolversAndCloseMojoConnection();
     return;
@@ -1195,9 +1192,6 @@ void PaymentRequest::OnUpdatePaymentDetails(
       details, options_, validated_details, shipping_option_, ignore_total_,
       *GetExecutionContext(), exception_state);
   if (exception_state.HadException()) {
-    ApplyContextToException(resolver->GetScriptState(),
-                            exception_state.GetException(),
-                            exception_state.GetContext());
     resolver->Reject(exception_state.GetException());
     ClearResolversAndCloseMojoConnection();
     return;

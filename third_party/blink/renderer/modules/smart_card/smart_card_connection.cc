@@ -109,8 +109,6 @@ class TransactionFulfilledFunction : public ScriptFunction::Callable {
             script_state->GetIsolate(), value.V8Value(), exception_state);
 
     if (exception_state.HadException()) {
-      ApplyContextToException(script_state, exception_state.GetException(),
-                              exception_state.GetContext());
       ScriptValue exception_value(script_state->GetIsolate(),
                                   exception_state.GetException());
       connection_->OnTransactionCallbackFailed(exception_value);
