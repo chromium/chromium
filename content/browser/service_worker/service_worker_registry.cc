@@ -118,10 +118,6 @@ void EraseRegistrationIdCacheEntry(
         registration_id_cache,
     const GURL& scope,
     const blink::StorageKey& key) {
-  if (!base::FeatureList::IsEnabled(kServiceWorkerRegistrationCache)) {
-    return;
-  }
-
   auto iter = registration_id_cache.Get(std::make_pair(scope, key));
   if (iter != registration_id_cache.end()) {
     registration_id_cache.Erase(iter);
@@ -179,12 +175,6 @@ constexpr size_t kServiceWorkerRegistrationCacheSize = 100;
 // Enables merging duplicate calls of FindRegistrationForClientUrl.
 BASE_FEATURE(kServiceWorkerMergeFindRegistrationForClientUrl,
              "ServiceWorkerMergeFindRegistrationForClientUrl",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enable registration cache to skip calling FindRegistrationForClientUrl while
-// there is a live registration. (https://crbug.com/1446216)
-BASE_FEATURE(kServiceWorkerRegistrationCache,
-             "ServiceWorkerRegistrationCache",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 template <typename... ReplyArgs>
@@ -363,8 +353,7 @@ void ServiceWorkerRegistry::FindRegistrationForClientUrl(
       "ServiceWorker", "ServiceWorkerRegistry::FindRegistrationForClientUrl",
       TRACE_ID_WITH_SCOPE("ServiceWorkerRegistry", trace_event_id),
       TRACE_EVENT_FLAG_FLOW_OUT, "URL", client_url.spec());
-  if (base::FeatureList::IsEnabled(kServiceWorkerRegistrationCache) &&
-      matched_scope) {
+  if (matched_scope) {
     auto it = registration_id_cache_.Get(std::make_pair(*matched_scope, key));
     if (it != registration_id_cache_.end()) {
       int64_t registration_id = it->second;
@@ -1241,11 +1230,8 @@ void ServiceWorkerRegistry::DidFindRegistrationForClientUrl(
     registration =
         GetOrCreateRegistration(*(result->registration), result->resources,
                                 std::move(result->version_reference));
-    if (base::FeatureList::IsEnabled(kServiceWorkerRegistrationCache)) {
-      registration_id_cache_.Put(
-          std::make_pair(result->registration->scope, key),
-          result->registration->registration_id);
-    }
+    registration_id_cache_.Put(std::make_pair(result->registration->scope, key),
+                               result->registration->registration_id);
 
     if (quota_manager_proxy_) {
       // Can be nullptr in tests.
