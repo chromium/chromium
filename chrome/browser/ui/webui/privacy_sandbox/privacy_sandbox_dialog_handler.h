@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_PRIVACY_SANDBOX_PRIVACY_SANDBOX_DIALOG_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_PRIVACY_SANDBOX_PRIVACY_SANDBOX_DIALOG_HANDLER_H_
 
-#include "base/gtest_prod_util.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_message_handler.h"
@@ -26,40 +25,13 @@ class PrivacySandboxDialogHandler : public content::WebUIMessageHandler {
   void OnJavascriptAllowed() override;
   void OnJavascriptDisallowed() override;
 
- protected:
+ private:
   friend class PrivacySandboxDialogHandlerTest;
-  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxConsentDialogHandlerTest,
-                           HandleResizeDialog);
-  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxConsentDialogHandlerTest,
-                           HandleShowDialog);
-  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxConsentDialogHandlerTest,
-                           HandleClickLearnMore);
-  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxConsentDialogHandlerTest,
-                           HandleClickPrivacyPolicy);
-  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxConsentDialogHandlerTest,
-                           HandleConsentAccepted);
-  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxConsentDialogHandlerTest,
-                           HandleConsentDeclined);
-  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxNoticeDialogHandlerTest,
-                           HandleResizeDialog);
-  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxNoticeDialogHandlerTest,
-                           HandleShowDialog);
-  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxNoticeDialogHandlerTest,
-                           HandleOpenSettings);
-  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxNoticeDialogHandlerTest,
-                           HandleNoticeAcknowledge);
-  FRIEND_TEST_ALL_PREFIXES(
-      PrivacySandboxConsentDialogHandlerTest,
-      NotifyServiceAboutPromptAction_Invokes_PromptActionOccured);
-  FRIEND_TEST_ALL_PREFIXES(
-      PrivacySandboxNoticeDialogHandlerTest,
-      NotifyServiceAboutPromptAction_Invokes_PromptActionOccured);
 
   void HandlePromptActionOccurred(const base::Value::List& args);
   void HandleResizeDialog(const base::Value::List& args);
   void HandleShowDialog(const base::Value::List& args);
-  void NotifyServiceAboutPromptAction(
-      PrivacySandboxService::PromptAction action);
+  void HandleRecordPrivacyPolicyLoadTime(const base::Value::List& args);
   void CloseDialog();
 
   base::OnceClosure close_callback_;
@@ -74,9 +46,6 @@ class PrivacySandboxDialogHandler : public content::WebUIMessageHandler {
   // Whether the user has clicked on one of the buttons: accept consent, decline
   // consent, acknowledge notice or open settings.
   bool did_user_make_decision_ = false;
-
- private:
-  void HandleRecordPrivacyPolicyLoadTime(const base::Value::List& args);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_PRIVACY_SANDBOX_PRIVACY_SANDBOX_DIALOG_HANDLER_H_

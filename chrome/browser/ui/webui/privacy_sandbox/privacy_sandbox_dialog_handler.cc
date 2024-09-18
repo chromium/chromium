@@ -19,6 +19,14 @@ bool IsRestrictedNotice(PrivacySandboxService::PromptType prompt_type) {
   return prompt_type == PrivacySandboxService::PromptType::kM1NoticeRestricted;
 }
 
+void NotifyServiceAboutPromptAction(
+    PrivacySandboxService::PromptAction action,
+    PrivacySandboxService* privacy_sandbox_service) {
+  DCHECK(privacy_sandbox_service);
+  privacy_sandbox_service->PromptActionOccurred(
+      action, PrivacySandboxService::SurfaceType::kDesktop);
+}
+
 }  // namespace
 
 PrivacySandboxDialogHandler::PrivacySandboxDialogHandler(
@@ -98,13 +106,16 @@ void PrivacySandboxDialogHandler::OnJavascriptDisallowed() {
   // If user hasn't made a decision, notify the service.
   if (IsConsent(prompt_type_)) {
     NotifyServiceAboutPromptAction(
-        PrivacySandboxService::PromptAction::kConsentClosedNoDecision);
+        PrivacySandboxService::PromptAction::kConsentClosedNoDecision,
+        privacy_sandbox_service_);
   } else if (IsRestrictedNotice(prompt_type_)) {
     NotifyServiceAboutPromptAction(PrivacySandboxService::PromptAction::
-                                       kRestrictedNoticeClosedNoInteraction);
+                                       kRestrictedNoticeClosedNoInteraction,
+                                   privacy_sandbox_service_);
   } else {
     NotifyServiceAboutPromptAction(
-        PrivacySandboxService::PromptAction::kNoticeClosedNoInteraction);
+        PrivacySandboxService::PromptAction::kNoticeClosedNoInteraction,
+        privacy_sandbox_service_);
   }
 }
 
@@ -143,7 +154,7 @@ void PrivacySandboxDialogHandler::HandlePromptActionOccurred(
       break;
   }
 
-  NotifyServiceAboutPromptAction(action);
+  NotifyServiceAboutPromptAction(action, privacy_sandbox_service_);
 }
 
 void PrivacySandboxDialogHandler::HandleResizeDialog(
@@ -164,13 +175,6 @@ void PrivacySandboxDialogHandler::HandleShowDialog(
 
   DCHECK(show_dialog_callback_);
   std::move(show_dialog_callback_).Run();
-}
-
-void PrivacySandboxDialogHandler::NotifyServiceAboutPromptAction(
-    PrivacySandboxService::PromptAction action) {
-  DCHECK(privacy_sandbox_service_);
-  privacy_sandbox_service_->PromptActionOccurred(
-      action, PrivacySandboxService::SurfaceType::kDesktop);
 }
 
 void PrivacySandboxDialogHandler::CloseDialog() {
