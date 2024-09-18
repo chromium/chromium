@@ -1771,6 +1771,252 @@ Permissions you've already given to websites and apps may apply to this account.
     </message>
       </if>
 
+      <!-- Lens Overlay Strings -->
+      <if expr="not is_android">
+        <!-- Side Panel Pinnable Entrypoint Strings -->
+        <message name="IDS_SIDE_PANEL_LENS_OVERLAY_PINNABLE_IPH"
+          desc="The body text of the IPH describing that the Lens Overlay panel is pinnable.">
+          You can pin Google Lens for easy access
+        </message>
+        <message name="IDS_SIDE_PANEL_LENS_OVERLAY_PINNABLE_IPH_SCREENREADER"
+          desc="The screen reader text of the IPH describing that the Lens Overlay panel is pinnable."
+          is_accessibility_with_no_ui="true">
+          You can pin Google Lens for easy access; click the Pin button at the top of the side panel
+        </message>
+        <message name="IDS_SIDE_PANEL_LENS_OVERLAY_PINNABLE_FOLLOWUP_IPH"
+          desc="The body text of the IPH describing that the Lens Overlay panel has been pinned.">
+          Pinned! Use Google Lens again from the toolbar
+        </message>
+        <message name="IDS_SIDE_PANEL_LENS_OVERLAY_PINNABLE_FOLLOWUP_IPH_SCREENREADER"
+          desc="The screen reader text of the IPH describing that the Lens Overlay panel has been pinned."
+          is_accessibility_with_no_ui="true">
+          Pinned! You can access Google Lens again from the new button on the toolbar
+        </message>
+
+        <!-- Search Bubble Strings -->
+        <message name="IDS_LENS_SEARCH_BUBBLE_DIALOG_TITLE"
+          desc="The name of the lens search bubble dialog.">
+          Google Lens Search Bubble
+        </message>
+
+        <!-- Overlay WebUI Strings -->
+        <message name="IDS_LENS_OVERLAY_COPY"
+          desc="Command in the Lens Overlay context menu to copy text.">
+          Copy
+        </message>
+        <message name="IDS_LENS_OVERLAY_COPY_TOAST_MESSAGE"
+          desc="Notification shown in the Lens Overlay when the user has copied selected text to the clipboard.">
+          Text copied
+        </message>
+        <message name="IDS_LENS_OVERLAY_COPY_AS_IMAGE_TOAST_MESSAGE"
+          desc="Notification shown in the Lens Overlay when the user has copied the selected image to the clipboard.">
+          Image copied
+        </message>
+        <message name="IDS_LENS_OVERLAY_MORE_OPTIONS_BUTTON_LABEL"
+          desc="Text that is shown in the tooltip of the more options button in the Lens Overlay.">
+          More options
+        </message>
+        <message name="IDS_LENS_OVERLAY_MY_ACTIVITY"
+          desc="Text that is shown in the more options menu to open the user's activity page.">
+          My Activity
+        </message>
+        <message name="IDS_LENS_OVERLAY_TOAST_DISMISS_MESSAGE"
+          desc="The label for the button that dismisses the toast message">
+          Dismiss
+        </message>
+        <message name="IDS_LENS_OVERLAY_TRANSLATE"
+          desc="Command in the Lens Overlay context menu to translate text.">
+          Translate
+        </message>
+        <message name="IDS_LENS_OVERLAY_SELECT_TEXT"
+          desc="Command in the Lens Overlay context menu to select text.">
+          Select text
+        </message>
+        <message name="IDS_LENS_OVERLAY_COPY_AS_IMAGE"
+          desc="Command in the Lens Overlay context menu to copy the selected screen region to the clipboard as an image.">
+          Copy as image
+        </message>
+        <message name="IDS_LENS_OVERLAY_SAVE_AS_IMAGE"
+          desc="Command in the Lens Overlay context menu to save the selected screen region to disk as an image file.">
+          Save as image
+        </message>
+        <message name="IDS_LENS_OVERLAY_LEARN_MORE"
+          desc="Text that is shown in the more options menu to open the help center article.">
+          Learn more
+        </message>
+        <message name="IDS_LENS_OVERLAY_INITIAL_TOAST_LABEL"
+          desc="Accessibility label for the initial user eduction bubble that appears at the top of the screen after the user invokes the Lens Overlay feature. Informs the user to select an object to search with Google Lens, or use the escape key to exit the feature.">
+          Select anything to search with Google Lens or press escape to exit Google Lens
+        </message>
+        <message name="IDS_LENS_OVERLAY_INITIAL_TOAST_MESSAGE"
+          desc="Text that is shown in the Lens Overlay education bubble when starting the feature. Informs the user to tap an object or drag over the screen to select a region to search with Google Lens.">
+          Select anything to search with Google Lens
+        </message>
+        <message name="IDS_LENS_OVERLAY_INITIAL_TOAST_MESSAGE_SELECT_TEXT"
+          desc="Text that is shown in the Lens Overlay education bubble when starting the feature. Informs the user to drag over the screen to select text to search with Google Lens.">
+          Select text with Google Lens
+        </message>
+        <message name="IDS_LENS_OVERLAY_INITIAL_TOAST_ERROR_MESSAGE"
+          desc="Text that is shown in the Lens Overlay education bubble when starting the feature in an offline state. Informs the user that Lens is not currently available.">
+          Google Lens is not available. Try again later.
+        </message>
+        <message name="IDS_LENS_OVERLAY_INITIAL_TOAST_ERROR_EXIT_BUTTON_TEXT"
+          desc="Text that is shown in the Lens Overlay education bubble exit button when starting the feature in an offline state.">
+          Exit
+        </message>
+        <message name="IDS_LENS_OVERLAY_CURSOR_TOOLTIP_DRAG_MESSAGE"
+          desc="Text that is shown in the Lens Overlay tooltip that appears beneath the cursor. Informs the user to drag over the screen to select a region to search it.">
+          Drag to search
+        </message>
+        <message name="IDS_LENS_OVERLAY_CURSOR_TOOLTIP_TEXT_HIGHLIGHT_MESSAGE"
+          desc="Text that is shown in the Lens Overlay tooltip that appears beneath the cursor. Informs the user to highlight text to search it.">
+          Select text to search
+        </message>
+        <message name="IDS_LENS_OVERLAY_CURSOR_TOOLTIP_CLICK_MESSAGE"
+          desc="Text that is shown in the Lens Overlay tooltip that appears beneath the cursor. Informs the user to click on an object to search it.">
+          Click to search
+        </message>
+        <message name="IDS_LENS_OVERLAY_CURSOR_TOOLTIP_LIVE_PAGE_MESSAGE"
+          desc="Text that is shown in the Lens Overlay tooltip that appears beneath the cursor. Informs the user to click to exit Google Lens.">
+          Click to exit Google Lens
+        </message>
+        <message name="IDS_LENS_OVERLAY_AUTO_DETECT_LANGUAGE_LABEL"
+          desc="Label for the language picker button denoting that source language of the page will be automatically detected.">
+          Auto-detect
+        </message>
+        <message name="IDS_LENS_OVERLAY_TRANSLATE_BUTTON_LABEL"
+          desc="Label for the translate button. Informs the user that the entire screen will be translated when clicked.">
+          Translate screen
+        </message>
+        <message name="IDS_LENS_OVERLAY_SOURCE_LANGUAGE_PICKER_MENU_TITLE"
+          desc="Label for the source language picker menu title denoting that the user can select a language for the screen to be translated to.">
+          Translate from
+        </message>
+        <message name="IDS_LENS_OVERLAY_TARGET_LANGUAGE_PICKER_MENU_TITLE"
+          desc="Label for the target language picker menu title denoting that the user can select a language for the screen to be translated to.">
+          Translate to
+        </message>
+        <message name="IDS_LENS_OVERLAY_RECENT_LANGUAGES_LABEL"
+          desc="Label in the language picker menu denoting that the following language menu items are ones that have been selected recently by the user.">
+          Recent languages
+        </message>
+        <message name="IDS_LENS_OVERLAY_ALL_LANGUAGES_LABEL"
+          desc="Label in the language picker menu denoting that the following language menu items are all of the possible selections that can be made.">
+          All languages
+        </message>
+        <message name="IDS_LENS_OVERLAY_DETECTED_LABEL"
+          desc="Label in the language picker menu denoting that the following language is the one that has been detected.">
+          Detected
+        </message>
+        <message name="IDS_LENS_OVERLAY_DETECT_LANGUAGE_LABEL"
+          desc="Label in the language picker menu denoting that the following language is the one that has been detected.">
+          Detect language
+        </message>
+        <message name="IDS_LENS_SEND_FEEDBACK"
+          desc="Text that is shown in the more options menu to open the feedback dialog.">
+          Send feedback
+        </message>
+        <message name="IDS_LENS_SEND_FEEDBACK_PLACEHOLDER"
+          desc="Placeholder text that is shown in the feedback dialog to send feedback for the Lens Overlay.">
+          Send feedback for search with Lens
+        </message>
+        <message name="IDS_LENS_OVERLAY_RENDERER_LABEL"
+          desc="The label for the renderer process housing the Lens overlay.">
+          Google Lens
+        </message>
+
+        <!-- Entrypoint Strings -->
+        <message name="IDS_LENS_OVERLAY_FIND_IN_PAGE_ENTRYPOINT_MESSAGE"
+          desc="Text
+    that is shown in the CTRL+F dialog next to the Google Lens button. Informs the user to click
+    to search anything on the page via Google Lens.">
+          Search anything on this page
+        </message>
+        <message name="IDS_LENS_OVERLAY_FIND_IN_PAGE_ENTRYPOINT_MESSAGE_1"
+          desc="Text
+    that is shown in the CTRL+F dialog next to the Google Lens button. Informs the user to click
+    to search any image or text via Google Lens.">
+          Search any image or text with Lens
+        </message>
+        <message name="IDS_LENS_OVERLAY_FIND_IN_PAGE_ENTRYPOINT_MESSAGE_2"
+          desc="Text
+    that is shown in the CTRL+F dialog next to the Google Lens button. Informs the user to click
+    to select images or text to search with Google Lens.">
+          Select images/text to search with Lens
+        </message>
+        <message name="IDS_LENS_OVERLAY_FIND_IN_PAGE_ENTRYPOINT_LABEL"
+          desc="Label
+    for the Google Lens button in the CTRL+F dialog.">
+          Google Lens
+        </message>
+        <message name="IDS_LENS_OVERLAY_FIND_IN_PAGE_ENTRYPOINT_LABEL_1"
+          desc="Label
+    for the button in the CTRL+F dialog to open Google Lens.">
+          Open Lens
+        </message>
+        <message name="IDS_LENS_OVERLAY_FIND_IN_PAGE_ENTRYPOINT_LABEL_2"
+          desc="Label
+    for the button in the CTRL+F dialog inviting the user to try Google Lens.">
+          Try Lens
+        </message>
+        <message name="IDS_CONTENT_CONTEXT_LENS_OVERLAY"
+          desc="The name of the Lens overlay command in the content area context menu">
+          Search with Google Lens
+        </message>
+        <message name="IDS_CONTENT_LENS_OVERLAY_ENTRYPOINT_LABEL"
+          desc="The label of the Lens overlay entrypoint in the omnibox">
+          Google Lens
+        </message>
+        <message name="IDS_SIDE_PANEL_LENS_OVERLAY_TOOLBAR_TOOLTIP"
+          desc="The tooltip for the Lens overlay toolbar button.">
+          Search with Google Lens
+        </message>
+
+        <!-- Lens Permission Bubble Dialog-->
+        <message name="IDS_LENS_PERMISSION_BUBBLE_DIALOG_CANCEL_BUTTON"
+          desc="Text on the cancel button in the dialog for choosing not to allow the sending of the Lens screenshot to Google.">
+          Cancel
+        </message>
+        <message name="IDS_LENS_PERMISSION_BUBBLE_DIALOG_CONTINUE_BUTTON"
+          desc="Text on the continue button in the dialog for choosing to allow the sending of the Lens screenshot to Google.">
+          OK
+        </message>
+        <message name="IDS_LENS_PERMISSION_BUBBLE_DIALOG_DESCRIPTION"
+          desc="Text that is shown in the Lens permission bubble, giving examples of what Lens can do and informing users that their screenshot will be sent to Google. Includes placeholder for learn more link.">
+          Identify things or places and copy or translate text. When you use Google Lens, a
+          screenshot of the page is sent to Google. <ph name="LEARN_MORE">$1<ex>Learn more</ex></ph>
+        </message>
+        <message name="IDS_LENS_PERMISSION_BUBBLE_DIALOG_LEARN_MORE_LINK"
+          desc="Text link that is shown to users to learn more about privacy in relation to Google Lens.">
+          Learn more
+        </message>
+        <message name="IDS_LENS_PERMISSION_BUBBLE_DIALOG_TITLE"
+          desc="The title of the lens permission search bubble dialog, introducing Lens as a way to search what's on their screen.">
+          New! An easy way to search what's on your screen
+        </message>
+
+        <!-- Title Case Dependent -->
+        <if expr="use_titlecase">
+          <message name="IDS_CONTEXT_MENU_SHOW_GOOGLE_LENS_SHORTCUT"
+            desc="In Title Case: The text label of the omnibox context menu option to show the 'Search with Google Lens' shortcut button">
+            Always Show Google Lens Shortcut
+          </message>
+          <message name="IDS_SHOW_LENS_OVERLAY"
+            desc="In Title Case: The text label of the Lens overlay menu item">
+            Search with Google Lens
+          </message>
+        </if>
+        <if expr="not use_titlecase">
+          <message name="IDS_SHOW_LENS_OVERLAY" desc="The text label of the Lens overlay menu item">
+            Search with Google Lens
+          </message>
+          <message name="IDS_CONTEXT_MENU_SHOW_GOOGLE_LENS_SHORTCUT"
+            desc="The text label of the omnibox context menu option to show the 'Search with Google Lens' shortcut button">
+            Always show Google Lens shortcut
+          </message>
+        </if>
+      </if>
+
       <!-- OOBE -->
       <if expr="chromeos_ash">
         <message name="IDS_INSTALLING_UPDATE" desc="Label shown on the updates installation screen during OOBE">

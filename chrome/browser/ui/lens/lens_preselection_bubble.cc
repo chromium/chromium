@@ -11,7 +11,7 @@
 #include "build/branding_buildflags.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
-#include "chrome/grit/generated_resources.h"
+#include "chrome/grit/branded_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "lens_preselection_bubble.h"
 #include "ui/base/l10n/l10n_util.h"

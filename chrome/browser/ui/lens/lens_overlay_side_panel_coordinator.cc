@@ -21,7 +21,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_util.h"
 #include "chrome/common/webui_url_constants.h"
-#include "chrome/grit/generated_resources.h"
+#include "chrome/grit/branded_strings.h"
 #include "components/google/core/common/google_util.h"
 #include "components/lens/lens_features.h"
 #include "components/vector_icons/vector_icons.h"
