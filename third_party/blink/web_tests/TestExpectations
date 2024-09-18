@@ -2595,9 +2595,9 @@ crbug.com/364700192 external/wpt/css/css-fonts/parsing/font-feature-settings-com
 crbug.com/364677549 external/wpt/css/css-properties-values-api/register-property-syntax-parsing.html [ Crash Pass Timeout ]
 
 # ====== New tests from wpt-importer added here ======
-external/wpt/css/css-inline/text-box-trim/text-box-trim-accumulation-001.html [ Failure ]
-external/wpt/css/css-inline/text-box-trim/text-box-trim-half-leading-block-box-001.html [ Failure ]
-external/wpt/css/css-inline/text-box-trim/text-box-trim-initial-letter-start-001.html [ Failure ]
+crbug.com/367766472 external/wpt/css/css-inline/text-box-trim/text-box-trim-accumulation-001.html [ Failure ]
+crbug.com/367766472 external/wpt/css/css-inline/text-box-trim/text-box-trim-half-leading-block-box-001.html [ Failure ]
+crbug.com/367766472 external/wpt/css/css-inline/text-box-trim/text-box-trim-initial-letter-start-001.html [ Failure ]
 crbug.com/367497041 [ Win11-arm64 ] external/wpt/digital-credentials/allow-attribute.https.html [ Failure Timeout ]
 crbug.com/367497041 [ Mac13 ] external/wpt/digital-credentials/allow-attribute.https.html [ Failure Timeout ]
 crbug.com/367497041 [ Mac11-arm64 ] external/wpt/digital-credentials/allow-attribute.https.html [ Failure Timeout ]
