@@ -55,6 +55,7 @@ export class MouseController {
   private spdUp_ = MouseController.DEFAULT_MOUSE_SPEED;
   private spdDown_ = MouseController.DEFAULT_MOUSE_SPEED;
   private velocityThreshold_ = 0;
+  private velocityThresholdFactor_ = 0.3;
   private useVelocityThreshold_ = true;
 
   /** The most recent raw face landmark mouse locations. */
@@ -657,6 +658,14 @@ export class MouseController {
             this.useMouseAcceleration_ = pref.value;
           }
           break;
+        case MouseController.PREF_VELOCITY_THRESHOLD:
+          if (pref.value !== undefined) {
+            // Ensure threshold factor is a decimal value.
+            this.velocityThresholdFactor_ =
+                pref.value / MouseController.MAX_VELOCITY_THRESHOLD_PREF_VALUE;
+            this.calcVelocityThreshold_();
+          }
+          break;
         default:
           return;
       }
@@ -666,9 +675,10 @@ export class MouseController {
   private calcVelocityThreshold_(): void {
     // Threshold is a function of speed. Threshold increases as speed increases
     // because it's easier to move the mouse accidentally at high mouse speeds.
+    // The velocity threshold factor can be tuned by the user.
     const averageSpeed =
         (this.spdUp_ + this.spdDown_ + this.spdLeft_ + this.spdRight_) / 4;
-    this.velocityThreshold_ = averageSpeed * 0.3;
+    this.velocityThreshold_ = averageSpeed * this.velocityThresholdFactor_;
   }
 
   private exceedsVelocityThreshold_(velocity: number): boolean {
@@ -723,6 +733,12 @@ export namespace MouseController {
     {name: LandmarkType.ROTATION, index: -1},
   ];
 
+  /**
+   * The maximum value for the velocity threshold pref. We use this to ensure
+   * this.velocityThresholdFactor_ is a decimal.
+   */
+  export const MAX_VELOCITY_THRESHOLD_PREF_VALUE = 20;
+
   /** How frequently to run the mouse movement logic. */
   export const MOUSE_INTERVAL_MS = 16;
 
@@ -741,6 +757,8 @@ export namespace MouseController {
       'settings.a11y.face_gaze.cursor_smoothing';
   export const PREF_CURSOR_USE_ACCELERATION =
       'settings.a11y.face_gaze.cursor_use_acceleration';
+  export const PREF_VELOCITY_THRESHOLD =
+      'settings.a11y.face_gaze.velocity_threshold';
 
   // Default values. Will be overwritten by prefs.
   export const DEFAULT_MOUSE_SPEED = 20;

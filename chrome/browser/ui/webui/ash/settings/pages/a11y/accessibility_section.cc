@@ -1347,6 +1347,8 @@ void AccessibilitySection::AddLoadTimeData(
                           ash::kDefaultFaceGazeCursorSmoothing);
   html_source->AddBoolean("defaultFaceGazeCursorUseAcceleration",
                           ash::kDefaultFaceGazeCursorUseAcceleration);
+  html_source->AddInteger("defaultFaceGazeVelocityThreshold",
+                          ash::kDefaultFaceGazeVelocityThreshold);
 
   html_source->AddBoolean(
       "showExperimentalAccessibilitySwitchAccessImprovedTextInput",

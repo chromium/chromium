@@ -2883,7 +2883,6 @@ void AccessibilityController::UpdateFaceGazeFromPrefs() {
   if (!::features::IsAccessibilityFaceGazeEnabled()) {
     return;
   }
-  // TODO(b/309121742): Start getting camera data.
 }
 
 void AccessibilityController::UpdateFlashNotificationsFromPrefs() {
