@@ -380,6 +380,7 @@ NSURL* GenerateDownloadFileURL(NSString* download_file_name) {
   }
   _identity = selectedIdentity;
   [_consumer setSelectedUserIdentityEmail:_identity.userEmail];
+  [self clearSelection];
   [self configureConsumerIdentitiesMenu];
 }
 
@@ -404,12 +405,7 @@ NSURL* GenerateDownloadFileURL(NSString* download_file_name) {
   // already selected, show an alert to ask for confirmation to clear the
   // selection.
   if (_selectedIdentifier != nil) {
-    __weak __typeof(self) weakSelf = self;
-    [self.consumer showInterruptionAlertWithBlock:^{
-      [weakSelf clearSelection];
-      [weakSelf selectDriveItem:driveItemIdentifier];
-    }];
-    return;
+    [self clearSelection];
   }
 
   DriveListQuery itemQuery;
@@ -556,20 +552,12 @@ NSURL* GenerateDownloadFileURL(NSString* download_file_name) {
 }
 
 - (void)browseToParent {
-  if (_selectedIdentifier) {
-    __weak __typeof(self) weakSelf = self;
-    [self.consumer showInterruptionAlertWithBlock:^{
-      [weakSelf clearSelection];
-      [weakSelf browseToParent];
-    }];
-    return;
-  }
-
   [self.delegate browseToParentWithMediator:self];
 }
 
 #pragma mark - Private
 
+// Clears the selected identifier and updates the consumer accordingly.
 - (void)clearSelection {
   [self.consumer setDownloadStatus:DriveFileDownloadStatus::kNotStarted];
   [self.consumer setSelectedItemIdentifier:nil];
@@ -643,21 +631,9 @@ NSURL* GenerateDownloadFileURL(NSString* download_file_name) {
 
 - (void)identityUpdatedWithSelectedIdentity:
     (id<SystemIdentity>)selectedIdentity {
-  if (_identity == selectedIdentity) {
+  if ([_identity isEqual:selectedIdentity]) {
     return;
   }
-
-  // If the user tries to select a different identity while the selection is not
-  // empty, ask for confirmation first with an alert.
-  if (_selectedIdentifier != nil) {
-    __weak __typeof(self) weakSelf = self;
-    [self.consumer showInterruptionAlertWithBlock:^{
-      [weakSelf clearSelection];
-      [weakSelf identityUpdatedWithSelectedIdentity:selectedIdentity];
-    }];
-    return;
-  }
-
   [self.driveFilePickerHandler
       setDriveFilePickerSelectedIdentity:selectedIdentity];
 }

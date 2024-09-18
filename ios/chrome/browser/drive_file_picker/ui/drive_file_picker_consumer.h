@@ -47,8 +47,6 @@
 - (void)setSortingCriteria:(DriveItemsSortingType)criteria
                  direction:(DriveItemsSortingOrder)direction;
 
-- (void)showInterruptionAlertWithBlock:(ProceduralBlock)block;
-
 - (void)setSelectedItemIdentifier:(NSString*)selectedIdentifier;
 
 @end

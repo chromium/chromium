@@ -9,9 +9,6 @@
 
 #import "base/ios/block_types.h"
 
-// Returns an alert informing the user of an upload interruption.
-UIAlertController* InterruptionAlertController(ProceduralBlock cancel_block);
-
 // Returns an alert informing the user of a failed upload.
 UIAlertController* FailAlertController(ProceduralBlock retry_block,
                                        ProceduralBlock cancel_block);

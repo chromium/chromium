@@ -309,9 +309,6 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
                  direction:(DriveItemsSortingOrder)direction {
 }
 
-- (void)showInterruptionAlertWithBlock:(ProceduralBlock)block {
-}
-
 - (void)setSelectedItemIdentifier:(NSString*)selectedIdentifier {
 }
 

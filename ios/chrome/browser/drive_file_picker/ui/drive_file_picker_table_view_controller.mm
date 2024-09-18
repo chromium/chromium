@@ -190,17 +190,7 @@ DriveFilePickerItem* FindDriveFilePickerItem(
   self.navigationItem.titleView = titleLabel;
 }
 
-- (void)showInterruptionAlertWithBlock:(ProceduralBlock)block {
-  [self presentViewController:InterruptionAlertController(block)
-                     animated:YES
-                   completion:nil];
-}
-
 #pragma mark - UI actions
-
-- (void)confirmSelection {
-  [self.mutator submitFileSelection];
-}
 
 - (void)didSelectSortingCriteria:(DriveItemsSortingType)sortingCriteria {
   UIAction* selectedSortingAction =
@@ -296,8 +286,8 @@ DriveFilePickerItem* FindDriveFilePickerItem(
   UIBarButtonItem* confirmButton = [[UIBarButtonItem alloc]
       initWithTitle:l10n_util::GetNSString(IDS_IOS_DRIVE_FILE_PICKER_CONFIRM)
               style:UIBarButtonItemStyleDone
-             target:self
-             action:@selector(confirmSelection)];
+             target:self.mutator
+             action:@selector(submitFileSelection)];
   return confirmButton;
 }
 

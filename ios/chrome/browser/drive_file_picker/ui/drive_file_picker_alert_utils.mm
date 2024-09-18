@@ -4,38 +4,6 @@
 
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_alert_utils.h"
 
-UIAlertController* InterruptionAlertController(ProceduralBlock cancel_block) {
-  // TODO(crbug.com/344812548): Add a11y title.
-  UIAlertController* alert = [UIAlertController
-      alertControllerWithTitle:@"TODO Upload in Progress"
-                       message:
-                           @"TODO Your upload will be canceled if you leave "
-                           @"this folder."
-                preferredStyle:UIAlertControllerStyleAlert];
-
-  void (^cancelHandler)(UIAlertAction*) = ^(UIAlertAction* action) {
-    if (cancel_block) {
-      cancel_block();
-    }
-  };
-
-  // TODO(crbug.com/344812548): Add a11y title.
-  UIAlertAction* cancelUploadAction =
-      [UIAlertAction actionWithTitle:@"TODO Cancel Upload"
-                               style:UIAlertActionStyleDestructive
-                             handler:cancelHandler];
-
-  // TODO(crbug.com/344812548): Add a11y title.
-  UIAlertAction* continueUploadAction =
-      [UIAlertAction actionWithTitle:@"TODO Continue Upload"
-                               style:UIAlertActionStyleDefault
-                             handler:nil];
-  [alert addAction:cancelUploadAction];
-  [alert addAction:continueUploadAction];
-
-  return alert;
-}
-
 UIAlertController* FailAlertController(ProceduralBlock retry_block,
                                        ProceduralBlock cancel_block) {
   // TODO(crbug.com/344812548): Add a11y title.
