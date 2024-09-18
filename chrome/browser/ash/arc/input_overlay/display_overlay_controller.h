@@ -134,12 +134,11 @@ class DisplayOverlayController : public ui::EventHandler,
   // `action`'s view.
   void HideActionHighlightWidgetForAction(Action* action);
 
-  // Update widget bounds if the view content is changed or the app window
-  // bounds are changed.
-  void UpdateButtonOptionsMenuWidgetBounds();
-  void UpdateInputMappingWidgetBounds();
-  void UpdateEditingListWidgetBounds();
-  void UpdateTargetWidgetBounds();
+  // `widget` bounds is in screen coordinate. `bounds_in_root_window` is the
+  // window bounds in associated game window's root window. Convert
+  // `bounds_in_root_window` in screen coordinates to set `widget` bounds.
+  void UpdateWidgetBoundsInRootWindow(views::Widget* widget,
+                                      const gfx::Rect& bounds_in_root_window);
 
   ActionViewListItem* GetEditingListItemForAction(Action* action);
 
@@ -277,11 +276,12 @@ class DisplayOverlayController : public ui::EventHandler,
 
   DeleteEditShortcut* GetDeleteEditShortcut() const;
 
-  // `widget` bounds is in screen coordinate. `bounds_in_root_window` is the
-  // window bounds in root window. Convert `bounds_in_root_window` in screen
-  // coordinates to set `widget` bounds.
-  void UpdateWidgetBoundsInRootWindow(views::Widget* widget,
-                                      const gfx::Rect& bounds_in_root_window);
+  // Update widget bounds if the view content is changed or the app window
+  // bounds are changed.
+  void UpdateButtonOptionsMenuWidgetBounds();
+  void UpdateInputMappingWidgetBounds();
+  void UpdateEditingListWidgetBounds();
+  void UpdateTargetWidgetBounds();
 
   // `TouchInjector` only rewrite events in `kView` mode. When changing between
   // edit mode and view mode or the feature is disabled from menu or if the game
