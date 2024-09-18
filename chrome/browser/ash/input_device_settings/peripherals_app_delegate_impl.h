@@ -22,8 +22,6 @@ class SharedURLLoaderFactory;
 namespace apps {
 class AlmanacAppIconLoader;
 struct QueryError;
-class DeviceInfoManager;
-struct DeviceInfo;
 }  // namespace apps
 
 class GURL;
@@ -64,11 +62,6 @@ class PeripheralsAppDelegateImpl : public PeripheralsAppDelegate {
                        mojom::CompanionAppInfo info,
                        apps::IconValuePtr icon_value);
 
-  void OnDeviceInfoFetched(base::WeakPtr<Profile> active_user_profile_weak_ptr,
-                           GetCompanionAppInfoCallback callback,
-                           const std::string& device_key,
-                           apps::DeviceInfo device_info);
-
   // Retrieves the active user profile, considering testing scenarios.
   // Returns:
   //   - A pointer to the active user profile.
@@ -78,7 +71,6 @@ class PeripheralsAppDelegateImpl : public PeripheralsAppDelegate {
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   std::unique_ptr<apps::AlmanacAppIconLoader> icon_loader_;
-  std::unique_ptr<apps::DeviceInfoManager> device_info_manager_;
   raw_ptr<Profile> profile_for_testing_ = nullptr;
   bool is_testing_ = false;
   base::WeakPtrFactory<PeripheralsAppDelegateImpl> weak_factory_{this};
