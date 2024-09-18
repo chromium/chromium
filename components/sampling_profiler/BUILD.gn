@@ -12,6 +12,7 @@ source_set("sampling_profiler") {
 
   deps = [
     "//base",
+    "//build:blink_buildflags",
     "//components/metrics:child_call_stack_profile_builder",
   ]
 }

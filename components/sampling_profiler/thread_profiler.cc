@@ -24,13 +24,14 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/sequence_local_storage_slot.h"
+#include "build/blink_buildflags.h"
 #include "build/build_config.h"
 #include "components/metrics/call_stacks/call_stack_profile_builder.h"
 #include "components/sampling_profiler/thread_profiler_client.h"
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_IOS) && BUILDFLAG(USE_BLINK))
 #include "base/process/port_provider_mac.h"
-#endif  // BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_IOS) && BUILDFLAG(USE_BLINK))
 
 using CallStackProfileParams = base::CallStackProfileParams;
 
@@ -50,14 +51,14 @@ ThreadProfilerClient* g_thread_profiler_client = nullptr;
 constexpr double kFractionOfExecutionTimeToSample = 0.02;
 
 bool IsCurrentProcessBackgrounded() {
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_IOS) && BUILDFLAG(USE_BLINK))
   base::SelfPortProvider provider;
   return base::Process::Current().GetPriority(&provider) ==
          base::Process::Priority::kBestEffort;
-#else   // BUILDFLAG(IS_MAC)
+#else   // BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_IOS) && BUILDFLAG(USE_BLINK))
   return base::Process::Current().GetPriority() ==
          base::Process::Priority::kBestEffort;
-#endif  // BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_IOS) && BUILDFLAG(USE_BLINK))
 }
 
 const base::RepeatingClosure GetApplyPerSampleMetadataCallback(
