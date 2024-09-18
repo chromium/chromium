@@ -103,6 +103,15 @@ const char kBackgroundResourceFetchName[] = "Background Resource Fetch";
 const char kBackgroundResourceFetchDescription[] =
     "Process resource requests in a background thread inside Blink.";
 
+#if BUILDFLAG(IS_ANDROID)
+const char kBiometricAuthIdentityCheckName[] =
+    "Enables android identity check for eligible features";
+const char kBiometricAuthIdentityCheckDescription[] =
+    "The feature makes biometric reauthentication mandatory before passwords "
+    "filling or before other actions that are or should be protected by "
+    "biometric checks.";
+#endif  // BUILDFLAG(IS_ANDROID)
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 const char kBirchWeatherName[] = "Birch weather";
 const char kBirchWeatherDescription[] =

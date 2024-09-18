@@ -137,10 +137,14 @@ inline constexpr base::FeatureParam<bool> kSimulateFailedMigration = {
     &kUnifiedPasswordManagerLocalPasswordsAndroidAccessLossWarning,
     "simulate_failed_migration", false};
 
+// The feature flag for the Identity Check feature. The feature makes biometric
+// authentication mandatory before password filling in untrusted locations.
+BASE_DECLARE_FEATURE(kBiometricAuthIdentityCheck);
+
 // Enables clearing the login database for the users who already migrated their
 // credentials to GMS Core.
 BASE_DECLARE_FEATURE(kClearLoginDatabaseForAllMigratedUPMUsers);
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // Improves PSL matching capabilities by utilizing PSL-extension list from
 // affiliation service. It fixes problem with incorrect password suggestions on

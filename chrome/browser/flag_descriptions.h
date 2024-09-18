@@ -800,6 +800,11 @@ extern const char kAccessibilitySelectToSpeakShortcutDescription[];
 extern const char kAccessibilitySelectToSpeakPrefsMigrationName[];
 extern const char kAccessibilitySelectToSpeakPrefsMigrationDescription[];
 
+#if BUILDFLAG(IS_ANDROID)
+extern const char kBiometricAuthIdentityCheckName[];
+extern const char kBiometricAuthIdentityCheckDescription[];
+#endif  // BUILDFLAG(IS_ANDROID)
+
 extern const char kNewMacNotificationAPIName[];
 extern const char kNewMacNotificationAPIDescription[];
 

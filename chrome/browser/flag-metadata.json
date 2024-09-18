@@ -1022,6 +1022,14 @@
     "expiry_milestone": 132
   },
   {
+    "name": "biometric-auth-identity-check",
+    "owners": [
+      "atsvirchkova@google.com",
+      "ioanap@chromium.org"
+    ],
+    "expiry_milestone": 133
+  },
+  {
     "name": "biometric-reauth-password-filling",
     "owners": [ "ioanap@chromium.org", "izuzic@google.com"],
     "expiry_milestone": 125
