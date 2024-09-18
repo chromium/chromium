@@ -874,8 +874,16 @@ bool LayoutObject::IsScrollMarkerGroupBefore() const {
 
 LayoutObject* LayoutObject::GetScrollMarkerGroup() const {
   NOT_DESTROYED();
-  if (Style()->ScrollMarkerGroup() == EScrollMarkerGroup::kNone ||
-      !IsScrollContainer()) {
+  if (Style()->ScrollMarkerGroup() == EScrollMarkerGroup::kNone) {
+    return nullptr;
+  }
+  if (IsFieldset()) {
+    const LayoutBlock* fieldset_content =
+        To<LayoutFieldset>(this)->FindAnonymousFieldsetContentBox();
+    if (!fieldset_content || !fieldset_content->IsScrollContainer()) {
+      return nullptr;
+    }
+  } else if (!IsScrollContainer()) {
     return nullptr;
   }
   if (auto* element = DynamicTo<Element>(GetNode())) {
