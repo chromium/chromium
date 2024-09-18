@@ -346,9 +346,6 @@
         <part file="external_intents_strings.grdp" />
         <part file="facilitated_payments_strings.grdp" />
       </if>
-      <if expr="is_ios">
-        <part file="management_ios_strings.grdp" />
-      </if>
       <if expr="enable_vr">
         <part file="webxr_strings.grdp" />
       </if>

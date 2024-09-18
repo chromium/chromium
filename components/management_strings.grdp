@@ -420,6 +420,21 @@
     </message>
   </if>
 
+  <if expr="is_ios">
+    <message name="IDS_IOS_MANAGEMENT_UI_DESC" desc="The descriptive text on chrome://management page when the browser is managed.">
+      Your administrator can change your browser setup remotely. Activity on this device may also be managed outside of Chrome.
+    </message>
+    <message name="IDS_IOS_MANAGEMENT_UI_LEARN_MORE_LINK" desc="The clickable text on chrome://management.">
+      Learn more
+    </message>
+    <message name="IDS_IOS_MANAGEMENT_UI_MESSAGE" desc="The main message at the top of chrome://management page when the browser is managed.">
+      Your browser is managed by your administrator.
+    </message>
+    <message name="IDS_IOS_MANAGEMENT_UI_UNMANAGED_DESC" desc="The descriptive text on chrome://management page when the browser is not managed.">
+      Your browser is not managed.
+    </message>
+  </if>
+
   <!-- Strings related to Chrome Enterprise Device Signals Sharing -->
   <if expr="is_win or is_linux or is_macosx">
     <message name="IDS_MANAGEMENT_DEVICE_SIGNALS_DISCLOSURE" desc="Disclosure message explaining that device signals can be shared.">

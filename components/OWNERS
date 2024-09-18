@@ -28,7 +28,6 @@ per-file history_strings.grdp=file://components/history/OWNERS
 per-file history_clusters_strings.grdp=file://components/history_clusters/OWNERS
 per-file javascript_dialogs_strings.grdp=file://components/javascript_dialogs/OWNERS
 per-file live_caption_strings.grdp=file://components/live_caption/OWNERS
-per-file management_mobile_strings.grdp=file://components/management/OWNERS
 per-file management_strings.grdp=file://docs/privacy/OWNERS
 per-file media_message_center_strings.grdp=file://components/media_message_center/OWNERS
 per-file new_or_sad_tab_strings.grdp=file://chrome/browser/ui/webui/ntp/OWNERS
