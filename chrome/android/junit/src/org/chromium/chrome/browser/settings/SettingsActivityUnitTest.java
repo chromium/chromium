@@ -162,15 +162,15 @@ public class SettingsActivityUnitTest {
 
     @Test
     public void testBackPress() throws TimeoutException {
-        launchSettingsActivity(TestSettingsFragment.class.getName());
+        launchSettingsActivity(TestStandaloneFragment.class.getName());
         assertTrue(
                 "SettingsActivity is using a wrong fragment.",
-                mSettingsActivity.getMainFragment() instanceof TestSettingsFragment);
-        TestSettingsFragment mainFragment =
-                (TestSettingsFragment) mSettingsActivity.getMainFragment();
+                mSettingsActivity.getMainFragment() instanceof TestStandaloneFragment);
+        TestStandaloneFragment mainFragment =
+                (TestStandaloneFragment) mSettingsActivity.getMainFragment();
         mainFragment.getHandleBackPressChangedSupplier().set(true);
         Assert.assertTrue(
-                "TestSettingsFragment will handle back press",
+                "TestStandaloneFragment will handle back press",
                 mSettingsActivity.getOnBackPressedDispatcher().hasEnabledCallbacks());
 
         // Simulate back press.
@@ -180,7 +180,7 @@ public class SettingsActivityUnitTest {
 
         mainFragment.getHandleBackPressChangedSupplier().set(false);
         Assert.assertFalse(
-                "TestSettingsFragment will not handle back press",
+                "TestStandaloneFragment will not handle back press",
                 mSettingsActivity.getOnBackPressedDispatcher().hasEnabledCallbacks());
     }
 
@@ -284,9 +284,9 @@ public class SettingsActivityUnitTest {
 
     private void launchSettingsActivity(String fragmentName) {
         assert mActivityScenario == null : "Should be called once per test.";
-        Intent intent = new Intent();
-        intent.setClass(ContextUtils.getApplicationContext(), SettingsActivity.class);
-        intent.putExtra(SettingsActivity.EXTRA_SHOW_FRAGMENT, fragmentName);
+        Intent intent =
+                SettingsIntentUtil.createIntent(
+                        ContextUtils.getApplicationContext(), fragmentName, null);
         mActivityScenario = ActivityScenario.launch(intent);
         mActivityScenario.onActivity(activity -> mSettingsActivity = activity);
     }

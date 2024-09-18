@@ -419,6 +419,9 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
     private void registerMainFragmentBackPressHandler() {
         Fragment activeFragment = getMainFragment();
         if (activeFragment instanceof BackPressHandler) {
+            // We do not support embeddable fragments to implement BackPressHandler as it requires
+            // keeping track of the main fragment while there is no real use case for it.
+            assert !ChromeFeatureList.sSettingsSingleActivity.isEnabled() || mStandalone;
             BackPressHelper.create(
                     activeFragment.getViewLifecycleOwner(),
                     getOnBackPressedDispatcher(),
