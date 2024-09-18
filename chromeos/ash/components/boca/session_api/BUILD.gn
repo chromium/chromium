@@ -16,6 +16,8 @@ source_set("session_api") {
     "session_client_impl.h",
     "session_parser.cc",
     "session_parser.h",
+    "update_session_request.cc",
+    "update_session_request.h",
     "upload_token_request.cc",
     "upload_token_request.h",
   ]
@@ -38,6 +40,7 @@ source_set("unit_tests") {
     "create_session_request_unittest.cc",
     "get_session_request_unittest.cc",
     "session_parser_unittest.cc",
+    "update_session_unittest.cc",
     "upload_token_request_unittest.cc",
   ]
 

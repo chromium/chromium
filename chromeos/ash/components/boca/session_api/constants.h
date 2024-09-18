@@ -26,6 +26,9 @@ inline constexpr char kGetSessionUrlTemplate[] =
 
 inline constexpr char kUploadFCMTokenTemplate[] = "v1/users/$1";
 
+inline constexpr char kUpdateSessionUrlTemplate[] =
+    "v1/teachers/$1/sessions/$2?updateMask=$3";
+
 inline constexpr char kSessionId[] = "sessionId";
 inline constexpr char kTeacher[] = "teacher";
 inline constexpr char kRoster[] = "roster";
