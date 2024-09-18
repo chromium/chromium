@@ -9,6 +9,21 @@
 
 #import "base/time/time.h"
 
+// Enum for the `IOS.Notifications.SafetyCheck.Interaction` histogram.
+//
+// Must be in sync with `IOSSafetyCheckNotificationType` enum in
+// `tools/metrics/histograms/metadata/ios/enums.xml`.
+//
+// LINT.IfChange(SafetyCheckNotificationType)
+enum class SafetyCheckNotificationType {
+  kUpdateChrome = 0,
+  kPasswords = 1,
+  kSafeBrowsing = 2,
+  kError = 3,
+  kMaxValue = kError,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:IOSSafetyCheckNotificationType)
+
 // The default duration of user inactivity required before displaying a Safety
 // Check push notification.
 inline constexpr base::TimeDelta kSafetyCheckNotificationDefaultDelay =

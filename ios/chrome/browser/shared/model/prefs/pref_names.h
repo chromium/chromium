@@ -331,6 +331,16 @@ inline constexpr char kIosSafetyCheckManagerSafeBrowsingCheckResult[] =
 inline constexpr char kIosSafetyCheckManagerInsecurePasswordCounts[] =
     "ios.safety_check_manager.insecure_password_counts";
 
+// Integer preference containing which Safety Check notification type was sent
+// last.
+inline constexpr char kIosSafetyCheckNotificationsLastSent[] =
+    "ios.safety_check_notifications.last_sent";
+
+// Integer preference containing which Safety Check notification type was
+// triggered last.
+inline constexpr char kIosSafetyCheckNotificationsLastTriggered[] =
+    "ios.safety_check_notifications.last_triggered";
+
 // String preference containing the default account to use for saving files to
 // Google Drive.
 inline constexpr char kIosSaveToDriveDefaultGaiaId[] =

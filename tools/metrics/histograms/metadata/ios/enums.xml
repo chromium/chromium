@@ -673,6 +673,17 @@ the generic promo launch. -->
   <int value="1" label="No issues"/>
 </enum>
 
+<!-- LINT.IfChange(IOSSafetyCheckNotificationType) -->
+
+<enum name="IOSSafetyCheckNotificationType">
+  <int value="0" label="Update Chrome"/>
+  <int value="1" label="Passwords"/>
+  <int value="2" label="Safe Browsing"/>
+  <int value="3" label="Error"/>
+</enum>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/safety_check_notifications/utils/constants.h:SafetyCheckNotificationType) -->
+
 <enum name="IOSSaveToDriveOutcomeType">
   <int value="0" label="Failure - WebState Hidden"/>
   <int value="1" label="Failure - WebState Destroyed"/>

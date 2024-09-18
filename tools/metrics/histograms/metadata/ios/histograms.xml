@@ -2490,6 +2490,52 @@ the generic promo launch. -->
   <summary>Logs a user's action on the Notifications Opt-In Prompt.</summary>
 </histogram>
 
+<histogram name="IOS.Notifications.SafetyCheck.Dismissed"
+    enum="IOSSafetyCheckNotificationType" expires_after="2025-09-17">
+  <owner>bwwilliams@google.com</owner>
+  <owner>scottyoder@google.com</owner>
+  <owner>bling-get-set-up@google.com</owner>
+  <summary>
+    Logs when a Safety Check notification that was triggered appears to have
+    dismissed or cleared from the notification center. Will be logged when or if
+    the app starts again, after the notification has dismissed.
+  </summary>
+</histogram>
+
+<histogram name="IOS.Notifications.SafetyCheck.Interaction"
+    enum="IOSSafetyCheckNotificationType" expires_after="2025-09-17">
+  <owner>bwwilliams@google.com</owner>
+  <owner>scottyoder@google.com</owner>
+  <owner>bling-get-set-up@google.com</owner>
+  <summary>
+    Logs when the user interacts with a Safety Check notification.
+  </summary>
+</histogram>
+
+<histogram name="IOS.Notifications.SafetyCheck.Requested"
+    enum="IOSSafetyCheckNotificationType" expires_after="2025-09-17">
+  <owner>bwwilliams@google.com</owner>
+  <owner>scottyoder@google.com</owner>
+  <owner>bling-get-set-up@google.com</owner>
+  <summary>
+    Logs when a Safety Check notification is requested to be sent to the user.
+    Note: this does not indicate that the notification was received by the user,
+    only that the notification was requested to be sent.
+  </summary>
+</histogram>
+
+<histogram name="IOS.Notifications.SafetyCheck.Triggered"
+    enum="IOSSafetyCheckNotificationType" expires_after="2025-09-17">
+  <owner>bwwilliams@google.com</owner>
+  <owner>scottyoder@google.com</owner>
+  <owner>bling-get-set-up@google.com</owner>
+  <summary>
+    Logs when a Safety Check notification that was requested appears to have
+    triggered. Will be logged when or if the app starts again, after the
+    notification has triggered.
+  </summary>
+</histogram>
+
 <histogram name="IOS.Notifications.SendTab.Received"
     enum="PushNotificationSettingsAuthorizationStatus"
     expires_after="2025-09-13">
