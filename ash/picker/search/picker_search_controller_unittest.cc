@@ -1007,8 +1007,9 @@ TEST_F(PickerSearchControllerTest, LoadsEmojiDataInAllLanguages) {
                                     /*burn_in_period=*/base::Milliseconds(100));
   controller.LoadEmojiLanguagesFromPrefs(&prefs_service());
   controller.StartEmojiSearch(
-      u"smile", base::BindRepeating(&MockEmojiSearchResultsCallback::Call,
-                                    base::Unretained(&results_callback)));
+      &prefs_service(), u"smile",
+      base::BindRepeating(&MockEmojiSearchResultsCallback::Call,
+                          base::Unretained(&results_callback)));
 }
 
 TEST_F(PickerSearchControllerTest,
@@ -1051,8 +1052,9 @@ TEST_F(PickerSearchControllerTest,
                                     /*burn_in_period=*/base::Milliseconds(100));
   controller.LoadEmojiLanguagesFromPrefs(&prefs_service());
   controller.StartEmojiSearch(
-      u"smile", base::BindRepeating(&MockEmojiSearchResultsCallback::Call,
-                                    base::Unretained(&results_callback)));
+      &prefs_service(), u"smile",
+      base::BindRepeating(&MockEmojiSearchResultsCallback::Call,
+                          base::Unretained(&results_callback)));
 }
 
 TEST_F(PickerSearchControllerTest, LoadsEmojiDataOnPrefsChange) {
@@ -1104,8 +1106,9 @@ TEST_F(PickerSearchControllerTest, LoadsEmojiDataOnPrefsChange) {
                   Field("text", &PickerEmojiResult::text, Eq(u":-)")))))
       .Times(1);
   controller.StartEmojiSearch(
-      u"smile", base::BindRepeating(&MockEmojiSearchResultsCallback::Call,
-                                    base::Unretained(&results_callback)));
+      &prefs_service(), u"smile",
+      base::BindRepeating(&MockEmojiSearchResultsCallback::Call,
+                          base::Unretained(&results_callback)));
 
   // Second search after adding a Japanese IME should include Japanese results
   prefs_service().SetUserPref(
@@ -1120,8 +1123,9 @@ TEST_F(PickerSearchControllerTest, LoadsEmojiDataOnPrefsChange) {
                        Field("text", &PickerEmojiResult::text, Eq(u":-)")))))
       .Times(1);
   controller.StartEmojiSearch(
-      u"smile", base::BindRepeating(&MockEmojiSearchResultsCallback::Call,
-                                    base::Unretained(&results_callback_jp)));
+      &prefs_service(), u"smile",
+      base::BindRepeating(&MockEmojiSearchResultsCallback::Call,
+                          base::Unretained(&results_callback_jp)));
 }
 
 TEST_F(PickerSearchControllerTest, LoadsEmojiDataForJapaneseUiLocale) {
@@ -1172,8 +1176,9 @@ TEST_F(PickerSearchControllerTest, LoadsEmojiDataForJapaneseUiLocale) {
                        Field("text", &PickerEmojiResult::text, Eq(u":-)")))))
       .Times(1);
   controller.StartEmojiSearch(
-      u"smile", base::BindRepeating(&MockEmojiSearchResultsCallback::Call,
-                                    base::Unretained(&results_callback_jp)));
+      &prefs_service(), u"smile",
+      base::BindRepeating(&MockEmojiSearchResultsCallback::Call,
+                          base::Unretained(&results_callback_jp)));
 }
 
 }  // namespace

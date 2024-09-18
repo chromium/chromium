@@ -418,7 +418,7 @@ void PickerController::StopSearch() {
 
 void PickerController::StartEmojiSearch(std::u16string_view query,
                                         EmojiSearchResultsCallback callback) {
-  search_controller_->StartEmojiSearch(query, std::move(callback));
+  search_controller_->StartEmojiSearch(GetPrefs(), query, std::move(callback));
 }
 
 void PickerController::CloseWidgetThenInsertResultOnNextFocus(

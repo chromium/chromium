@@ -181,12 +181,13 @@ void PickerSearchController::StopSearch() {
 }
 
 void PickerSearchController::StartEmojiSearch(
+    PrefService* prefs,
     std::u16string_view query,
     PickerViewDelegate::EmojiSearchResultsCallback callback) {
   const base::TimeTicks search_start = base::TimeTicks::Now();
 
   emoji::EmojiSearchResult results = emoji_search_.SearchEmoji(
-      query, GetLanguageCodesFromPrefs(client_->GetPrefs()), kMaxEmojiResults,
+      query, GetLanguageCodesFromPrefs(prefs), kMaxEmojiResults,
       kMaxSymbolResults, kMaxEmoticonResults);
 
   base::TimeDelta elapsed = base::TimeTicks::Now() - search_start;
@@ -196,8 +197,7 @@ void PickerSearchController::StartEmojiSearch(
   emoji_results.reserve(kMaxEmojiResults + kMaxSymbolResults +
                         kMaxEmoticonResults);
 
-  const base::Value::Dict* emoji_variants =
-      LoadEmojiVariantsFromPrefs(client_->GetPrefs());
+  const base::Value::Dict* emoji_variants = LoadEmojiVariantsFromPrefs(prefs);
 
   for (const emoji::EmojiSearchEntry& result :
        FirstNOrLessElements(results.emojis, kMaxEmojiResults)) {

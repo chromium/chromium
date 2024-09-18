@@ -51,6 +51,7 @@ class ASH_EXPORT PickerSearchController {
   void StopSearch();
 
   void StartEmojiSearch(
+      PrefService* prefs,
       std::u16string_view query,
       PickerViewDelegate::EmojiSearchResultsCallback callback);
 
