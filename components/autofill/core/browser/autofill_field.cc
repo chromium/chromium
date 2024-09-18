@@ -425,29 +425,8 @@ AutofillType AutofillField::Type() const {
   return ComputedType();
 }
 
-const std::u16string& AutofillField::value(ValueSemantics s) const {
-  switch (s) {
-    case ValueSemantics::kCurrent:
-      return FormFieldData::value();
-    case ValueSemantics::kInitial:
-      return initial_value_;
-  }
-}
-
-void AutofillField::set_initial_value(std::u16string initial_value,
-                                      base::PassKey<FormStructure> pass_key) {
-  if (!base::FeatureList::IsEnabled(features::kAutofillFixValueSemantics)) {
-    FormFieldData::set_value(std::move(initial_value));
-    return;
-  }
-  initial_value_ = std::move(initial_value);
-}
-
 bool AutofillField::IsEmpty() const {
-  // TODO: crbug.com/40227496 - Called in both submission and non-submission
-  // contexts, so the semantics is ambiguous if `kAutofillFixValueSemantics` is
-  // disabled. The desired semantics appears to be `kCurrent` in all cases.
-  return value(ValueSemantics::kCurrent).empty();
+  return value().empty();
 }
 
 FieldSignature AutofillField::GetFieldSignature() const {

@@ -26,8 +26,7 @@ AutofillField* FindFirstFieldWithValue(const FormStructure& form_structure,
                                        const std::u16string& value) {
   for (const auto& field : form_structure) {
     std::u16string trimmed_value;
-    base::TrimWhitespace(field->value(ValueSemantics::kCurrent), base::TRIM_ALL,
-                         &trimmed_value);
+    base::TrimWhitespace(field->value(), base::TRIM_ALL, &trimmed_value);
     if (trimmed_value == value) {
       return field.get();
     }
@@ -83,8 +82,7 @@ AutofillField* HeuristicallyFindCVCFieldForUpload(
     DCHECK_EQ(1u, type_set.size());
 
     std::u16string trimmed_value;
-    base::TrimWhitespace(field->value(ValueSemantics::kCurrent), base::TRIM_ALL,
-                         &trimmed_value);
+    base::TrimWhitespace(field->value(), base::TRIM_ALL, &trimmed_value);
 
     // Skip the field if it can be confused with a expiration year.
     if (!found_explicit_expiration_year_field &&
@@ -143,9 +141,8 @@ void FindAndSetPossibleFieldTypesForField(
   // Currently, only <select> elements may have a selected option.
   base::optional_ref<const SelectOption> selected_option =
       field.selected_option();
-  std::u16string value = selected_option
-                             ? selected_option->text
-                             : field.value(ValueSemantics::kCurrent);
+  std::u16string value =
+      selected_option ? selected_option->text : field.value();
   base::TrimWhitespace(value, base::TRIM_ALL, &value);
 
   for (const AutofillProfile& profile : profiles) {

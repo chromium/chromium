@@ -1055,9 +1055,8 @@ void BrowserAutofillManager::ProcessPendingFormForUpload() {
     return;
   }
 
-  // We get the FormStructure corresponding to `pending_form_data_`, used in the
-  // upload process. As a result, `pending_form_data_`'s field values are the
-  // current values. `pending_form_data_` is reset.
+  // We get the FormStructure corresponding to |pending_form_data_|, used in the
+  // upload process. |pending_form_data_| is reset.
   std::unique_ptr<FormStructure> upload_form =
       ValidateSubmittedForm(*pending_form_data_);
   pending_form_data_.reset();
@@ -1127,8 +1126,8 @@ void BrowserAutofillManager::MaybeImportFromSubmittedForm(
       fields_for_autocomplete.back().set_should_autocomplete(false);
     }
     if (plus_address_delegate &&
-        plus_address_delegate->IsPlusAddress(base::UTF16ToUTF8(
-            autofill_field->value(ValueSemantics::kCurrent)))) {
+        plus_address_delegate->IsPlusAddress(
+            base::UTF16ToUTF8(autofill_field->value()))) {
       // Similarly to CVC, any plus addresses needn't be saved to autocomplete.
       // Note that the feature is experimental, and `plus_address_delegate`
       // will be null if the feature is not enabled (it's disabled by default).
@@ -3173,8 +3172,7 @@ void BrowserAutofillManager::PreProcessStateMatchingTypes(
       base::optional_ref<const SelectOption> selected_option =
           field->selected_option();
       const std::u16string& value =
-          selected_option ? selected_option->text
-                          : field->value(ValueSemantics::kCurrent);
+          selected_option ? selected_option->text : field->value();
       std::optional<AlternativeStateNameMap::CanonicalStateName>
           canonical_state_name_from_text =
               AlternativeStateNameMap::GetCanonicalStateName(

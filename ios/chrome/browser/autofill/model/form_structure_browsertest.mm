@@ -338,11 +338,10 @@ std::string FormStructureBrowserTest::FormStructuresToString(
               section_index);
         }
       }
-      form_string += base::StrCat(
-          {field->Type().ToStringView(), " | ", name, " | ",
-           base::UTF16ToUTF8(field->label()), " | ",
-           base::UTF16ToUTF8(field->value(ValueSemantics::kCurrent)), " | ",
-           section, "\n"});
+      form_string += base::StrCat({field->Type().ToStringView(), " | ", name,
+                                   " | ", base::UTF16ToUTF8(field->label()),
+                                   " | ", base::UTF16ToUTF8(field->value()),
+                                   " | ", section, "\n"});
     }
     forms_string.push_back(form_string);
   }

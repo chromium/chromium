@@ -14,7 +14,6 @@
 #include <vector>
 
 #include "base/types/optional_ref.h"
-#include "base/types/pass_key.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/profile_value_source.h"
@@ -40,16 +39,6 @@ enum class IsMostRecentSingleUsernameCandidate {
   // Field is candidate for username in Username First Flow and has intermediate
   // fields between candidate and password form.
   kHasIntermediateValuesInBetween = 2,
-};
-
-// Specifies which type of field value is desired from AutofillField::value().
-// TODO: crbug.com/40227496 - Remove together with `value(ValueSemantics)`.
-enum class ValueSemantics {
-  // The field's last known value or the field's value to be filled:
-  // FormFieldData::value().
-  kCurrent,
-  // The field's first known value.
-  kInitial,
 };
 
 class AutofillField : public FormFieldData {
@@ -226,31 +215,9 @@ class AutofillField : public FormFieldData {
   // should be suppressed for this field (independently of the predicted type).
   bool ShouldSuppressSuggestionsAndFillingByDefault() const;
 
-  // Returns the requested current or initial value depending on the
-  // `ValueSemantics`, if `features::kAutofillFixValueSemantics` is enabled.
-  // Otherwise just forwards to `FormFieldData::value().
-  //
-  // Currently, `value(ValueSemantics::kInitial)` is the empty string for fields
-  // of FormControlType::kSelect*.
-  // TODO: crbug.com/40227496 - Let `value(kInitial)` for select elements behave
-  // the same as for non-select elements.
-  //
-  // TODO: crbug.com/40227496 - When kAutofillFixValueSemantics is cleaned up,
-  // replace
-  // - `value(ValueSemantics::kCurrent)` with `FormFieldData::value()`
-  // - `value(ValueSemantics::kInitial)` with `AutofillField::initial_value()`
-  const std::u16string& value(ValueSemantics s) const;
-
-  // Sets the field's current value, if `features::kAutofillFixValueSemantics`
-  // is enabled. Otherwise just forwards to FormFieldData::set_value().
-  void set_initial_value(std::u16string initial_value,
-                         base::PassKey<FormStructure> pass_key);
-
   void set_initial_value_hash(uint32_t value) { initial_value_hash_ = value; }
   std::optional<uint32_t> initial_value_hash() { return initial_value_hash_; }
 
-  // TODO: crbug.com/40227496 - Remove when kAutofillFixValueSemantics is
-  // cleaned up.
   void set_initial_value_changed(std::optional<bool> initial_value_changed) {
     initial_value_changed_ = initial_value_changed;
   }
@@ -457,10 +424,6 @@ class AutofillField : public FormFieldData {
   // contained in `possible_types_` with the additional information in which
   // profile the matching type was detected.
   PossibleProfileValueSources possible_profile_value_sources_;
-
-  // The field's initial value. By default, it's the same as the field's
-  // `value()`, but FormStructure::RetrieveFromCache() may override it.
-  std::u16string initial_value_ = value(ValueSemantics::kCurrent);
 
   // A low-entropy hash of the field's initial value before user-interactions or
   // automatic fillings. This field is used to detect static placeholders.

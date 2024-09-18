@@ -486,29 +486,16 @@ void FormStructure::RetrieveFromCache(const FormStructure& cached_form,
     if (!cached_field)
       continue;
 
-    // TODO: crbug.com/40227496 - Simplify the `switch` statement once
-    // kAutofillFixValueSemantics is launched.
-    // TODO: crbug.com/40227496 - Remove the IsSelectOrSelectListElement()
-    // checks once kAutofillFixValueSemantics is launched.
     switch (reason) {
       case RetrieveFromCacheReason::kFormParsing:
         // During form parsing (as in "assigning field types to fields")
         // the `value` represents the initial value found at page load and needs
         // to be preserved.
         if (!field->IsSelectOrSelectListElement()) {
-          field->set_initial_value(
-              cached_field->value(ValueSemantics::kInitial), /*pass_key=*/{});
+          field->set_value(cached_field->value());
         }
         break;
       case RetrieveFromCacheReason::kFormImport:
-        // TODO: crbug.com/40227496 - Group IsSelectOrSelectListElement()
-        // checks.
-        if (!field->IsSelectOrSelectListElement() &&
-            base::FeatureList::IsEnabled(
-                features::kAutofillFixValueSemantics)) {
-          field->set_initial_value(
-              cached_field->value(ValueSemantics::kInitial), /*pass_key=*/{});
-        }
         // From the perspective of learning user data, text fields containing
         // default values are equivalent to empty fields. So if the value of
         // a submitted form corresponds to the initial value of the field, we
@@ -516,12 +503,11 @@ void FormStructure::RetrieveFromCache(const FormStructure& cached_form,
         // Since a website can prefill country and state values based on
         // GeoIP, we want to hold on to these values.
         const bool same_value_as_on_page_load =
-            field->value(ValueSemantics::kCurrent) ==
-            cached_field->value(ValueSemantics::kInitial);
+            field->value() == cached_field->value();
         const bool had_type =
             cached_field->Type().GetStorableType() > FieldType::UNKNOWN_TYPE ||
             !cached_field->possible_types().empty();
-        if (!cached_field->value(ValueSemantics::kInitial).empty() &&
+        if (!cached_field->value().empty() &&
             !field->IsSelectOrSelectListElement() && had_type) {
           field->set_initial_value_changed(!same_value_as_on_page_load);
         }

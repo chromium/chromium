@@ -282,14 +282,14 @@ void CreditCardSaveManager::AttemptToOfferCardUploadSave(
 
   for (const auto& field : submitted_form) {
     const bool is_valid_cvc = IsValidCreditCardSecurityCode(
-        field->value(ValueSemantics::kCurrent), upload_request_.card.network());
+        field->value(), upload_request_.card.network());
     if (field->Type().GetStorableType() == CREDIT_CARD_VERIFICATION_CODE) {
       found_cvc_field_ = true;
-      if (!field->value(ValueSemantics::kCurrent).empty()) {
+      if (!field->value().empty()) {
         found_value_in_cvc_field_ = true;
       }
       if (is_valid_cvc) {
-        upload_request_.cvc = field->value(ValueSemantics::kCurrent);
+        upload_request_.cvc = field->value();
         break;
       }
     } else if (is_valid_cvc &&
