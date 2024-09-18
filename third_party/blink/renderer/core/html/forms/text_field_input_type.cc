@@ -143,10 +143,6 @@ bool TextFieldInputType::MayTriggerVirtualKeyboard() const {
   return true;
 }
 
-bool TextFieldInputType::IsTextField() const {
-  return true;
-}
-
 bool TextFieldInputType::ValueMissing(const String& value) const {
   // For text-mode input elements, the value is missing only if it is mutable.
   // https://html.spec.whatwg.org/multipage/input.html#the-required-attribute

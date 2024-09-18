@@ -1055,7 +1055,7 @@ void HTMLInputElement::ResetImpl() {
 }
 
 bool HTMLInputElement::IsTextField() const {
-  return input_type_->IsTextField();
+  return input_type_->IsTextFieldInputType();
 }
 
 bool HTMLInputElement::IsTelephone() const {

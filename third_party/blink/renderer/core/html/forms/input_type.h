@@ -127,7 +127,6 @@ class CORE_EXPORT InputType : public GarbageCollected<InputType> {
   virtual bool IsInteractiveContent() const;
   virtual bool IsButton() const;
   virtual bool IsTextButton() const;
-  virtual bool IsTextField() const;
   virtual bool IsAutoDirectionalityFormAssociated() const;
 
   bool IsButtonInputType() const { return type_ == Type::kButton; }

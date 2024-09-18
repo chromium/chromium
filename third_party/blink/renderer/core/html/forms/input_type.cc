@@ -196,10 +196,6 @@ const AtomicString& InputType::FormControlTypeAsString() const {
   return TypeToString(type_);
 }
 
-bool InputType::IsTextField() const {
-  return false;
-}
-
 bool InputType::IsAutoDirectionalityFormAssociated() const {
   return false;
 }
