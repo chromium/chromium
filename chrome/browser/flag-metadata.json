@@ -1833,7 +1833,7 @@
       "tsergeant@chromium.org",
       "crosdev-commerce-eng@google.com"
     ],
-    "expiry_milestone": 131
+    "expiry_milestone": 136
   },
   {
     "name": "cros-mall-swa",
@@ -1841,7 +1841,7 @@
       "tsergeant@chromium.org",
       "crosdev-commerce-eng@google.com"
     ],
-    "expiry_milestone": 131
+    "expiry_milestone": 132
   },
   {
     "name": "cros-privacy-hub-app-permissions",
