@@ -7721,6 +7721,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_GOOGLE_SEARCH_BOX_EMPTY_HINT_MULTIMODAL" desc="The text displayed in the multimodal searchbox when it is empty. It is meant to invite the user to add a text query to the existing image query in order to issue a 'multimodal' (image + text) query.">
         Add to your search
       </message>
+      <message name="IDS_GOOGLE_SEARCH_BOX_EMPTY_HINT_CONTEXTUAL" desc="The text displayed in the overlay contextual searchbox when it is empty. It is meant to invite the user to ask a question about their current page and inform them that this is a contextual searchbox.">
+        Ask using this page
+      </message>
       <message name="IDS_GOOGLE_SEARCH_BOX_MULTIMODAL_IMAGE_THUMBNAIL" desc="Aria label for the Lens image selection thumbnail in the multimodal searchbox. Spoken by screen readers when the thumbnail is highlighted, and instructs the user to press enter or backspace to delete the selection.">
         Your Google Lens selection. Press enter or backspace to delete your Google Lens selection
       </message>

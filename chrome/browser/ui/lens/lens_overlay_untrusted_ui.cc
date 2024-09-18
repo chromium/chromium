@@ -209,9 +209,7 @@ LensOverlayUntrustedUI::LensOverlayUntrustedUI(content::WebUI* web_ui)
       "//resources/cr_components/searchbox/icons/google_g.svg");
   html_source->AddBoolean("reportMetrics", false);
   html_source->AddLocalizedString("searchBoxHint",
-                                  IDS_GOOGLE_LENS_SEARCH_BOX_EMPTY_HINT);
-  html_source->AddLocalizedString("searchBoxHintMultimodal",
-                                  IDS_GOOGLE_SEARCH_BOX_EMPTY_HINT_MULTIMODAL);
+                                  IDS_GOOGLE_SEARCH_BOX_EMPTY_HINT_CONTEXTUAL);
   html_source->AddBoolean("isLensSearchbox", true);
 
   // Determine if the cursor tooltip should appear.
