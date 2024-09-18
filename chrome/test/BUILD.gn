@@ -58,6 +58,7 @@ assert(!is_fuchsia, "Fuchsia shouldn't use anything in //chrome")
 assert(enable_supervised_users)
 
 if (is_android) {
+  import("//build/android/test_wrapper/logdog_wrapper.gni")
   import("//build/config/android/rules.gni")
   import("//chrome/android/features/dev_ui/dev_ui_module.gni")
   import("//third_party/jni_zero/jni_zero.gni")
@@ -1129,20 +1130,13 @@ if (is_android) {
   template("telemetry_gpu_integration_test_android_template") {
     forward_variables_from(invoker, [ "telemetry_target_suffix" ])
 
-    # For Android tests, prepend the logdog_wrapper.py tool to the command,
-    # which will automatically stream the device's logcats to logdog.
-    generate_wrapper(target_name) {
-      executable = "../../build/android/test_wrapper/logdog_wrapper.py"
-      wrapper_script = "$root_out_dir/bin/run_${target_name}"
-      executable_args = [
+    logdog_wrapper_script_test(target_name) {
+      args = [
         "../../testing/scripts/run_gpu_integration_test_as_googletest.py",
         "../../content/test/gpu/run_gpu_integration_test.py",
         "--chromium-output-directory=@WrappedPath(.)",
       ]
-
-      testonly = true
       data_deps = [
-        "//build/android:logdog_wrapper_py",
         "//content/test:telemetry_gpu_integration_test_support",
         "//tools/perf/chrome_telemetry_build:telemetry_chrome_test${telemetry_target_suffix}",
       ]
@@ -5751,38 +5745,40 @@ group("telemetry_perf_unittests_base") {
   data_deps = [ "//testing:test_scripts_shared" ]
 }
 
+_telemetry_perf_args = [
+  "../../tools/perf/run_tests",
+  "-v",
+  "--chromium-output-directory=@WrappedPath(.)",
+]
+if (is_debug) {
+  _telemetry_perf_args += [ "--browser=debug" ]
+} else {
+  _telemetry_perf_args += [ "--browser=release" ]
+}
 if (!is_android) {
-  _args = [
-    "../../tools/perf/run_tests",
-    "-v",
-    "--chromium-output-directory=@WrappedPath(.)",
-  ]
-  if (is_debug) {
-    _args += [ "--browser=debug" ]
-  } else {
-    _args += [ "--browser=release" ]
-  }
   _data_deps = [
     ":telemetry_perf_unittests_base",
     "//tools/perf:perf",
   ]
   if (is_chromeos_ash && is_chromeos_device) {
     cros_test_wrapper_script_test("telemetry_perf_unittests") {
-      args = [ "../../testing/scripts/run_telemetry_as_googletest.py" ] + _args
+      args = [ "../../testing/scripts/run_telemetry_as_googletest.py" ] +
+             _telemetry_perf_args
       data_deps = _data_deps
     }
   } else {
     script_test("telemetry_perf_unittests") {
       script = "//testing/scripts/run_telemetry_as_googletest.py"
-      args = _args
+      args = _telemetry_perf_args
       data_deps = _data_deps
     }
   }
 } else {
   template("telemetry_perf_unittests_android_template") {
     forward_variables_from(invoker, [ "telemetry_target_suffix" ])
-    group(target_name) {
-      testonly = true
+    logdog_wrapper_script_test(target_name) {
+      args = [ "../../testing/scripts/run_telemetry_as_googletest.py" ] +
+             _telemetry_perf_args
       data_deps = [
         ":telemetry_perf_unittests_base",
         "//tools/perf:perf${telemetry_target_suffix}",

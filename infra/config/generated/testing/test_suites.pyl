@@ -5095,9 +5095,6 @@
           '--passthrough',
           '--retry-limit=2',
         ],
-        'resultdb': {
-          'enable': True,
-        },
       },
       'telemetry_monochrome_minidump_unittests': {
         'test': 'telemetry_perf_unittests_android_monochrome',
@@ -5108,9 +5105,6 @@
           '--passthrough',
           '--retry-limit=2',
         ],
-        'resultdb': {
-          'enable': True,
-        },
       },
     },
 
@@ -5152,9 +5146,6 @@
         'swarming': {
           'shards': 12,
           'idempotent': False,
-        },
-        'resultdb': {
-          'enable': True,
         },
       },
     },

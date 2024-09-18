@@ -1736,30 +1736,14 @@ targets.binaries.generated_script(
     label = "//chrome/test:telemetry_perf_unittests",
 )
 
-targets.binaries.script(
+targets.binaries.generated_script(
     name = "telemetry_perf_unittests_android_chrome",
     label = "//chrome/test:telemetry_perf_unittests_android_chrome",
-    script = "//testing/scripts/run_telemetry_as_googletest.py",
-    args = [
-        "../../tools/perf/run_tests",
-        "-v",
-    ],
-    resultdb = targets.resultdb(
-        enable = True,
-    ),
 )
 
-targets.binaries.script(
+targets.binaries.generated_script(
     name = "telemetry_perf_unittests_android_monochrome",
     label = "//chrome/test:telemetry_perf_unittests_android_monochrome",
-    script = "//testing/scripts/run_telemetry_as_googletest.py",
-    args = [
-        "../../tools/perf/run_tests",
-        "-v",
-    ],
-    resultdb = targets.resultdb(
-        enable = True,
-    ),
 )
 
 targets.binaries.script(
