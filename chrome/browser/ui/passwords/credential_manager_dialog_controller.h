@@ -29,7 +29,7 @@ class CredentialManagerDialogController : public PasswordBaseDialogController {
   virtual const FormsVector& GetLocalForms() const = 0;
 
   // Returns a title of the account chooser.
-  virtual std::u16string GetAccoutChooserTitle() const = 0;
+  virtual std::u16string GetAccountChooserTitle() const = 0;
 
   // Whether the account chooser should display the "Sign in" button.
   virtual bool ShouldShowSignInButton() const = 0;
