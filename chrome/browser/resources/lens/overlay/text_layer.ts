@@ -41,6 +41,33 @@ const FONT_SIZE_OPAQUE_BOUND = 10;
 // Lowest font size where the opacity of the background should be transparent
 const FONT_SIZE_TRANSPARENT_BOUND = 18;
 
+// The language codes that are considered RTL languages as used in Lens.
+const RTL_LANGUAGES = new Set([
+  'ar' /* Arabic */,
+  'bal' /* Baluchi */,
+  'bm-Nkoo' /* Nko */,
+  'ckb' /* Kurdish (Sorani) */,
+  'dv' /* Divehi */,
+  'fa' /* Persian */,
+  'fa-AF' /* Dari */,
+  'he' /* Hebrew */,
+  'iw' /* Hebrew synonym */,
+  'ji' /* Yiddish synonym */,
+  'ms-Arab' /* Malay (Jawi) */,
+  'ks' /* Kashmiri */,
+  'pa-Arab', /* Punjabi (Shahmukhi) */
+  'ps' /* Pashto */,
+  'sd' /* Sindhi */,
+  'ug' /* Uighur */,
+  'ur' /* Urdu */,
+  'yi' /* Yiddish */,
+]);
+
+// Returns whether the provided language code is an RTL language.
+function isRtlLanguage(languageCode: string) {
+  return RTL_LANGUAGES.has(languageCode);
+}
+
 // Rotates the target coordinates to be in relation to the line rotation.
 function rotateCoordinateAroundOrigin(
     pointToRotate: PointF, angle: number): PointF {
@@ -996,6 +1023,10 @@ export class TextLayerElement extends PolymerElement {
       `background-color: ${
           this.getBackgroundColorForLine(translatedLine, lineFontSizePixels)}`,
       `color: ${skColorToHexColor(translatedLine.textColor)}`,
+      `direction: ${
+          this.getTranslateLanguageDirection(
+              this.renderedTranslateParagraphs[translatedLineData
+                                                   .paragraphIndex])}`,
       `justify-content: ${this.getLineAlignment(translatedLineData.alignment)}`,
       `font-size: ${lineFontSizePixels}px`,
       `width: ${toPercent(lineBoundingBox.box.width)}`,
@@ -1228,6 +1259,17 @@ export class TextLayerElement extends PolymerElement {
             this.selectionStartIndex !== -1 && this.selectionEndIndex !== -1,
       },
     }));
+  }
+
+  private getTranslateLanguageDirection(translatedParagraph:
+                                            TranslatedParagraph) {
+    const language = translatedParagraph.contentLanguage ?
+        translatedParagraph.contentLanguage :
+        this.currentTranslateLanguage;
+    if (!language) {
+      return 'ltr';
+    }
+    return isRtlLanguage(language) ? 'rtl' : 'ltr';
   }
 
   // Testing method to get the words on the page.
