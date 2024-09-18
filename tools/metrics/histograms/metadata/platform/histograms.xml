@@ -1500,13 +1500,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Modemfwd.FWInstallTime" units="seconds"
-    expires_after="2023-06-17">
+    expires_after="2025-09-17">
   <owner>ujjwalpande@google.com</owner>
   <owner>cros-connectivity@google.com</owner>
   <summary>
     Metric to track time taken by modemfwd helpers in seconds to flash the
     firmwares to modem. Values will be reported only for successful flashing
-    cases as flashing times in case of failures could be misleading.
+    cases as flashing times in case of failures could be misleading. Warning:
+    this histogram was expired from 2023-06-17 to 2024-09-17, data may be
+    missing.
   </summary>
 </histogram>
 
