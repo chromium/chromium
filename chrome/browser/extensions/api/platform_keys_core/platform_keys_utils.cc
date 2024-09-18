@@ -4,6 +4,14 @@
 
 #include "chrome/browser/extensions/api/platform_keys_core/platform_keys_utils.h"
 
+#include "base/containers/contains.h"
+#include "base/values.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/common/pref_names.h"
+#include "components/prefs/pref_service.h"
+#include "extensions/common/extension.h"
+#include "extensions/common/manifest.h"
+
 namespace extensions::platform_keys {
 
 namespace {
@@ -13,8 +21,6 @@ constexpr char kTokenIdSystem[] = "system";
 
 }  // anonymous namespace
 
-// Returns a known token if |token_id| is valid and returns nullopt for both
-// empty or unknown |token_id|.
 std::optional<chromeos::platform_keys::TokenId> ApiIdToPlatformKeysTokenId(
     const std::string& token_id) {
   if (token_id == kTokenIdUser) {
@@ -26,6 +32,18 @@ std::optional<chromeos::platform_keys::TokenId> ApiIdToPlatformKeysTokenId(
   }
 
   return std::nullopt;
+}
+
+bool IsExtensionAllowed(Profile* profile, const Extension* extension) {
+  if (Manifest::IsComponentLocation(extension->location())) {
+    // Note: For this to even be called, the component extension must also be
+    // allowed in chrome/common/extensions/api/_permission_features.json
+    return true;
+  }
+  const base::Value::List& list =
+      profile->GetPrefs()->GetList(prefs::kAttestationExtensionAllowlist);
+  base::Value value(extension->id());
+  return base::Contains(list, value);
 }
 
 }  // namespace extensions::platform_keys

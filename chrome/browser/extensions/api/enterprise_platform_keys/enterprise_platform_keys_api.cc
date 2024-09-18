@@ -21,10 +21,7 @@
 #include "chrome/common/pref_names.h"
 #include "chromeos/crosapi/mojom/keystore_service.mojom.h"
 #include "components/pref_registry/pref_registry_syncable.h"
-#include "components/prefs/pref_service.h"
 #include "extensions/browser/extension_function.h"
-#include "extensions/common/extension.h"
-#include "extensions/common/manifest.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/lacros/lacros_service.h"
@@ -124,18 +121,6 @@ namespace platform_keys {
 
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterListPref(prefs::kAttestationExtensionAllowlist);
-}
-
-bool IsExtensionAllowed(Profile* profile, const Extension* extension) {
-  if (Manifest::IsComponentLocation(extension->location())) {
-    // Note: For this to even be called, the component extension must also be
-    // allowed in chrome/common/extensions/api/_permission_features.json
-    return true;
-  }
-  const base::Value::List& list =
-      profile->GetPrefs()->GetList(prefs::kAttestationExtensionAllowlist);
-  base::Value value(extension->id());
-  return base::Contains(list, value);
 }
 
 }  // namespace platform_keys

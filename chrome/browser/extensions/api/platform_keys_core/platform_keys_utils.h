@@ -10,6 +10,9 @@
 
 #include "chrome/browser/chromeos/platform_keys/platform_keys.h"
 
+class Extension;
+class Profile;
+
 namespace extensions::platform_keys {
 
 inline constexpr char kErrorInvalidToken[] = "The token is not valid.";
@@ -20,6 +23,8 @@ inline constexpr char kErrorInvalidX509Cert[] =
 // empty or invalid values of `token_id`.
 std::optional<chromeos::platform_keys::TokenId> ApiIdToPlatformKeysTokenId(
     const std::string& token_id);
+
+bool IsExtensionAllowed(Profile* profile, const Extension* extension);
 
 }  // namespace extensions::platform_keys
 
