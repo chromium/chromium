@@ -26,6 +26,8 @@ jobs:
         with:
           node-version-file: '.nvmrc'
           cache: npm
+      - name: Install and build npm dependencies
+        run: npm ci
       - name: Update browser pin and devtools-protocol
         run: node tools/update_chrome_revision.mjs
       - name: Create Pull Request
