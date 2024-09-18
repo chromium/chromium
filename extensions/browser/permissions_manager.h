@@ -218,6 +218,10 @@ class PermissionsManager : public KeyedService {
                                const GURL& gurl,
                                UserSiteAccess site_access) const;
 
+  // Returns whether the `extension` has requested host permissions, either
+  // required or optional.
+  bool HasRequestedHostPermissions(const Extension& extension) const;
+
   // Returns true if the extension has been explicitly granted permission to run
   // on the origin of `url`. This will return true if any permission includes
   // access to the origin of |url|, even if the permission includes others
