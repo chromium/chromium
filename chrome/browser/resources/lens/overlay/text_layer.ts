@@ -1050,6 +1050,7 @@ export class TextLayerElement extends PolymerElement {
           toPercent(
               lineBoundingBox.box.x - (lineBoundingBox.box.width / 2) -
               (0.5 * horizontalPadding))}`,
+      `transform: rotate(${lineBoundingBox.rotation}rad)`,
     ];
     return styles.join(';');
   }
