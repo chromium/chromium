@@ -98,10 +98,10 @@ bool TailoredSecurityServiceInfobarDelegate::Accept() {
         base::UmaHistogramEnumeration(
             "SafeBrowsing.TailoredSecurityUnconsentedInFlowMessageOutcome",
             TailoredSecurityOutcome::kAccepted);
-        ChromeBrowserState* browser_state =
-            ChromeBrowserState::FromBrowserState(web_state_->GetBrowserState());
+        ProfileIOS* profile =
+            ProfileIOS::FromBrowserState(web_state_->GetBrowserState());
         SetSafeBrowsingState(
-            browser_state->GetPrefs(),
+            profile->GetPrefs(),
             safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION,
             /*is_esb_enabled_in_sync=*/false);
         break;

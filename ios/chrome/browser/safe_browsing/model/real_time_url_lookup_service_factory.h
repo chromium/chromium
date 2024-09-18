@@ -26,7 +26,7 @@ class RealTimeUrlLookupServiceFactory : public BrowserStateKeyedServiceFactory {
   // TODO(crbug.com/358301380): remove this method.
   static safe_browsing::RealTimeUrlLookupService* GetForBrowserState(
       ProfileIOS* profile);
-  // Returns null if `browser_state` is in Incognito mode.
+  // Returns null if `profile` is in Incognito mode.
   static safe_browsing::RealTimeUrlLookupService* GetForProfile(
       ProfileIOS* profile);
   static RealTimeUrlLookupServiceFactory* GetInstance();

@@ -48,14 +48,14 @@ UnsafeResource CreateResource(web::WebState* web_state, const GURL& url) {
 class SafeBrowsingBlockingPageTest : public PlatformTest {
  public:
   SafeBrowsingBlockingPageTest()
-      : browser_state_(TestChromeBrowserState::Builder().Build()),
+      : profile_(TestProfileIOS::Builder().Build()),
         url_("http://www.chromium.test"),
         resource_(CreateResource(&web_state_, url_)) {
     auto navigation_manager = std::make_unique<web::FakeNavigationManager>();
-    navigation_manager->SetBrowserState(browser_state_.get());
+    navigation_manager->SetBrowserState(profile_.get());
     navigation_manager_ = navigation_manager.get();
     web_state_.SetNavigationManager(std::move(navigation_manager));
-    web_state_.SetBrowserState(browser_state_.get());
+    web_state_.SetBrowserState(profile_.get());
     page_ = SafeBrowsingBlockingPage::Create(resource_);
     SafeBrowsingUrlAllowList::CreateForWebState(&web_state_);
     SafeBrowsingUrlAllowList::FromWebState(&web_state_)
@@ -69,7 +69,7 @@ class SafeBrowsingBlockingPageTest : public PlatformTest {
  protected:
   web::WebTaskEnvironment task_environment_{
       web::WebTaskEnvironment::MainThreadType::IO};
-  std::unique_ptr<ChromeBrowserState> browser_state_;
+  std::unique_ptr<ProfileIOS> profile_;
   web::FakeWebState web_state_;
   raw_ptr<web::FakeNavigationManager> navigation_manager_ = nullptr;
   GURL url_;

@@ -23,10 +23,6 @@ class BrowserState;
 // profile.
 class VerdictCacheManagerFactory : public BrowserStateKeyedServiceFactory {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static safe_browsing::VerdictCacheManager* GetForBrowserState(
-      ProfileIOS* profile);
-
   static safe_browsing::VerdictCacheManager* GetForProfile(ProfileIOS* profile);
   // Returns the singleton instance of VerdictCacheManagerFactory.
   static VerdictCacheManagerFactory* GetInstance();

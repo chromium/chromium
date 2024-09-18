@@ -13,24 +13,23 @@
 class HashRealTimeServiceFactoryTest : public PlatformTest {
  protected:
   HashRealTimeServiceFactoryTest()
-      : browser_state_(TestChromeBrowserState::Builder().Build()) {}
+      : profile_(TestProfileIOS::Builder().Build()) {}
 
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<ChromeBrowserState> browser_state_;
+  std::unique_ptr<ProfileIOS> profile_;
 };
 
 // Checks that HashRealTimeServiceFactory returns null for an
-// off-the-record browser state.
+// off-the-record profile.
 TEST_F(HashRealTimeServiceFactoryTest, DisabledForIncognitoMode) {
-  // The factory should return null for an off-the-record browser state.
-  EXPECT_FALSE(HashRealTimeServiceFactory::GetForBrowserState(
-      browser_state_->GetOffTheRecordChromeBrowserState()));
+  // The factory should return null for an off-the-record profile.
+  EXPECT_FALSE(HashRealTimeServiceFactory::GetForProfile(
+      profile_->GetOffTheRecordProfile()));
 }
 
 // Checks that HashRealTimeServiceFactory returns a non-null instance for a
-// regular browser state.
+// regular profile.
 TEST_F(HashRealTimeServiceFactoryTest, EnabledForRegularMode) {
-  // There should be a non-null instance for a regular browser state.
-  EXPECT_TRUE(
-      HashRealTimeServiceFactory::GetForBrowserState(browser_state_.get()));
+  // There should be a non-null instance for a regular profile.
+  EXPECT_TRUE(HashRealTimeServiceFactory::GetForProfile(profile_.get()));
 }

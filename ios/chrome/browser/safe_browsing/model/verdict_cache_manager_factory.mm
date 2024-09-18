@@ -17,12 +17,6 @@
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 
 // static
-safe_browsing::VerdictCacheManager*
-VerdictCacheManagerFactory::GetForBrowserState(ProfileIOS* profile) {
-  return GetForProfile(profile);
-}
-
-// static
 safe_browsing::VerdictCacheManager* VerdictCacheManagerFactory::GetForProfile(
     ProfileIOS* profile) {
   return static_cast<safe_browsing::VerdictCacheManager*>(
@@ -46,16 +40,14 @@ VerdictCacheManagerFactory::VerdictCacheManagerFactory()
 std::unique_ptr<KeyedService>
 VerdictCacheManagerFactory::BuildServiceInstanceFor(
     web::BrowserState* browser_state) const {
-  ChromeBrowserState* chrome_browser_state =
-      ChromeBrowserState::FromBrowserState(browser_state);
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(browser_state);
   return std::make_unique<safe_browsing::VerdictCacheManager>(
-      ios::HistoryServiceFactory::GetForBrowserState(
-          chrome_browser_state, ServiceAccessType::EXPLICIT_ACCESS),
-      ios::HostContentSettingsMapFactory::GetForBrowserState(
-          chrome_browser_state),
-      chrome_browser_state->GetPrefs(),
+      ios::HistoryServiceFactory::GetForProfile(
+          profile, ServiceAccessType::EXPLICIT_ACCESS),
+      ios::HostContentSettingsMapFactory::GetForProfile(profile),
+      profile->GetPrefs(),
       std::make_unique<safe_browsing::SafeBrowsingSyncObserverImpl>(
-          SyncServiceFactory::GetForBrowserState(chrome_browser_state)));
+          SyncServiceFactory::GetForProfile(profile)));
 }
 
 web::BrowserState* VerdictCacheManagerFactory::GetBrowserStateToUse(

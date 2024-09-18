@@ -25,12 +25,12 @@ TEST_F(OhttpKeyServiceFactoryTest, GetForProfile) {
                             OhttpKeyServiceFactory::GetDefaultFactory());
   std::unique_ptr<TestProfileIOS> profile = std::move(builder).Build();
 
-  // The factory should return null for an off-the-record browser state.
-  EXPECT_FALSE(OhttpKeyServiceFactory::GetForBrowserState(
-      profile->GetOffTheRecordChromeBrowserState()));
+  // The factory should return null for an off-the-record profile.
+  EXPECT_FALSE(
+      OhttpKeyServiceFactory::GetForProfile(profile->GetOffTheRecordProfile()));
 
-  // There should be a non-null instance for a regular browser state.
-  EXPECT_TRUE(OhttpKeyServiceFactory::GetForBrowserState(profile.get()));
+  // There should be a non-null instance for a regular profile.
+  EXPECT_TRUE(OhttpKeyServiceFactory::GetForProfile(profile.get()));
 }
 
 // Checks that by default OhttpKeyServiceFactory returns null for both regular
@@ -39,10 +39,10 @@ TEST_F(OhttpKeyServiceFactoryTest, GetForProfile) {
 TEST_F(OhttpKeyServiceFactoryTest, GetForProfile_NoTestingFactory) {
   std::unique_ptr<TestProfileIOS> profile = TestProfileIOS::Builder().Build();
 
-  // The factory should return null for an off-the-record browser state.
-  EXPECT_FALSE(OhttpKeyServiceFactory::GetForBrowserState(
-      profile->GetOffTheRecordChromeBrowserState()));
+  // The factory should return null for an off-the-record profile.
+  EXPECT_FALSE(
+      OhttpKeyServiceFactory::GetForProfile(profile->GetOffTheRecordProfile()));
 
-  // There should be a non-null instance for a regular browser state.
-  EXPECT_FALSE(OhttpKeyServiceFactory::GetForBrowserState(profile.get()));
+  // There should be a non-null instance for a regular profile.
+  EXPECT_FALSE(OhttpKeyServiceFactory::GetForProfile(profile.get()));
 }

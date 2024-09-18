@@ -14,7 +14,7 @@
 class SafeBrowsingClient;
 
 // Singleton that owns all SafeBrowsingClients and associates them with
-// a browser state.
+// a profile.
 class SafeBrowsingClientFactory : public BrowserStateKeyedServiceFactory {
  public:
   static SafeBrowsingClient* GetForProfile(ProfileIOS* profile);

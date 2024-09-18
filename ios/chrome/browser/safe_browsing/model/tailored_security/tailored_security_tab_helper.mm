@@ -57,18 +57,18 @@ void TailoredSecurityTabHelper::OnTailoredSecurityBitChanged(
   if (!enabled || !web_state_->IsVisible()) {
     return;
   }
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(web_state_->GetBrowserState());
+  ProfileIOS* profile =
+      ProfileIOS::FromBrowserState(web_state_->GetBrowserState());
   syncer::SyncService* sync_service =
-      SyncServiceFactory::GetForBrowserState(browser_state);
+      SyncServiceFactory::GetForProfile(profile);
   if (!safe_browsing::CanShowUnconsentedTailoredSecurityDialog(
-          sync_service, browser_state->GetPrefs())) {
+          sync_service, profile->GetPrefs())) {
     return;
   }
 
   if (base::Time::Now() - previous_update <=
       safe_browsing::kThresholdForInFlowNotification) {
-    browser_state->GetPrefs()->SetBoolean(
+    profile->GetPrefs()->SetBoolean(
         prefs::kAccountTailoredSecurityShownNotification, true);
     ShowInfoBar(safe_browsing::TailoredSecurityServiceMessageState::
                     kUnconsentedAndFlowEnabled);
@@ -87,10 +87,10 @@ void TailoredSecurityTabHelper::OnSyncNotificationMessageRequest(
     return;
   }
 
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(web_state_->GetBrowserState());
+  ProfileIOS* profile =
+      ProfileIOS::FromBrowserState(web_state_->GetBrowserState());
   SetSafeBrowsingState(
-      browser_state->GetPrefs(),
+      profile->GetPrefs(),
       is_enabled ? safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION
                  : safe_browsing::SafeBrowsingState::STANDARD_PROTECTION,
       /*is_esb_enabled_in_sync=*/is_enabled);
@@ -147,12 +147,12 @@ void TailoredSecurityTabHelper::OnInfoBarRemoved(infobars::InfoBar* infobar,
 void TailoredSecurityTabHelper::UpdateFocusAndURL(bool focused,
                                                   const GURL& url) {
   DCHECK(web_state_);
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(web_state_->GetBrowserState());
+  ProfileIOS* profile =
+      ProfileIOS::FromBrowserState(web_state_->GetBrowserState());
   syncer::SyncService* sync_service =
-      SyncServiceFactory::GetForBrowserState(browser_state);
+      SyncServiceFactory::GetForProfile(profile);
   if (!safe_browsing::CanShowUnconsentedTailoredSecurityDialog(
-          sync_service, browser_state->GetPrefs())) {
+          sync_service, profile->GetPrefs())) {
     return;
   }
 

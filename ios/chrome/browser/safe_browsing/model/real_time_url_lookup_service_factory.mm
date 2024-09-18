@@ -58,21 +58,19 @@ RealTimeUrlLookupServiceFactory::BuildServiceInstanceFor(
   if (!safe_browsing_service) {
     return nullptr;
   }
-  ChromeBrowserState* chrome_browser_state =
-      ChromeBrowserState::FromBrowserState(browser_state);
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(browser_state);
   return std::make_unique<safe_browsing::RealTimeUrlLookupService>(
       safe_browsing_service->GetURLLoaderFactory(),
-      VerdictCacheManagerFactory::GetForBrowserState(chrome_browser_state),
-      base::BindRepeating(&GetUserPopulationForProfile, chrome_browser_state),
-      chrome_browser_state->GetPrefs(),
+      VerdictCacheManagerFactory::GetForProfile(profile),
+      base::BindRepeating(&GetUserPopulationForProfile, profile),
+      profile->GetPrefs(),
       std::make_unique<safe_browsing::SafeBrowsingPrimaryAccountTokenFetcher>(
-          IdentityManagerFactory::GetForProfile(chrome_browser_state)),
-      base::BindRepeating(
-          &safe_browsing::SyncUtils::
-              AreSigninAndSyncSetUpForSafeBrowsingTokenFetches,
-          SyncServiceFactory::GetForBrowserState(chrome_browser_state),
-          IdentityManagerFactory::GetForProfile(chrome_browser_state)),
-      chrome_browser_state->IsOffTheRecord(),
+          IdentityManagerFactory::GetForProfile(profile)),
+      base::BindRepeating(&safe_browsing::SyncUtils::
+                              AreSigninAndSyncSetUpForSafeBrowsingTokenFetches,
+                          SyncServiceFactory::GetForProfile(profile),
+                          IdentityManagerFactory::GetForProfile(profile)),
+      profile->IsOffTheRecord(),
       GetApplicationContext()->GetVariationsService(),
       // Referrer chain provider is currently not available on iOS. Once it
       // is implemented, inject it to enable referrer chain in real time

@@ -52,7 +52,7 @@ class ChromePasswordProtectionService
       const password_manager::MatchingReusedCredential&)>;
   ChromePasswordProtectionService(
       SafeBrowsingService* sb_service,
-      ChromeBrowserState* browser_state,
+      ProfileIOS* profile,
       history::HistoryService* history_service,
       safe_browsing::SafeBrowsingMetricsCollector*
           safe_browsing_metrics_collector,
@@ -258,10 +258,10 @@ class ChromePasswordProtectionService
   // account and is accessible only when the user is signed in and non syncing.
   password_manager::PasswordStoreInterface* GetAccountPasswordStore() const;
 
-  // Gets prefs associated with `browser_state_`.
+  // Gets prefs associated with `profile_`.
   PrefService* GetPrefs() const;
 
-  // Returns whether `browser_state_` has safe browsing service enabled.
+  // Returns whether `profile_` has safe browsing service enabled.
   bool IsSafeBrowsingEnabled();
 
   // Lookup for a callback for showing a warning for a given request.
@@ -269,7 +269,7 @@ class ChromePasswordProtectionService
            safe_browsing::PasswordProtectionService::ShowWarningCallback>
       show_warning_callbacks_;
 
-  raw_ptr<ChromeBrowserState> browser_state_;
+  raw_ptr<ProfileIOS> profile_;
 
   // Calls `password_manager::AddPhishedCredentials`. Used to facilitate
   // testing.
