@@ -72,6 +72,26 @@ chromium-metrics-reviews@google.com.
   <summary>iOS location permission state, recorded at startup.</summary>
 </histogram>
 
+<histogram name="Geolocation.LocationProviderManager.Mode"
+    enum="LocationProviderManagerMode" expires_after="2026-09-10">
+  <owner>chengweih@chromium.org</owner>
+  <owner>deviceapi-team@google.com</owner>
+  <summary>
+    Records the mode of the LocationProviderManager that acquires a valid
+    Geoposition.
+  </summary>
+</histogram>
+
+<histogram name="Geolocation.LocationProviderManager.Source"
+    enum="LocationProviderManagerSource" expires_after="2026-09-10">
+  <owner>chengweih@chromium.org</owner>
+  <owner>deviceapi-team@google.com</owner>
+  <summary>
+    Records the location provider source of the LocationProviderManager that
+    acquires a valid Geoposition.
+  </summary>
+</histogram>
+
 <histogram name="Geolocation.LocationProviderWinrt.CreateGeoposition"
     enum="Hresult" expires_after="2026-08-05">
   <owner>chengweih@chromium.org</owner>

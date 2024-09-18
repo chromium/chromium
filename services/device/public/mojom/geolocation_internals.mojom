@@ -137,11 +137,16 @@ struct NetworkLocationResponse {
 // Determines which type of location provider LocationProviderManager should
 // create and use for geolocation.
 enum LocationProviderManagerMode {
-  kNetworkOnly,
-  kPlatformOnly,
-  kCustomOnly,
-  kHybridPlatform,
-  kHybridFallbackNetwork,
+  kNetworkOnly = 0,
+  kPlatformOnly = 1,
+  kCustomOnly = 2,
+  kHybridPlatform = 3,
+  kHybridFallbackNetwork = 4,
+
+  // NOTE: Do not renumber these as that would confuse interpretation of
+  // previously logged data. When making changes, also update the enum list
+  // in tools/metrics/histograms/metadata/geolocation/enums.xml to keep it in
+  // sync.
 };
 
 // Interface for chrome://location-internals to be notified when the debug data
