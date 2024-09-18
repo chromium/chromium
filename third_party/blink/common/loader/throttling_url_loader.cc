@@ -718,12 +718,17 @@ void ThrottlingURLLoader::OnReceiveResponse(
       auto* throttle = entry.throttle.get();
       bool throttle_deferred = false;
       base::Time start = base::Time::Now();
+      auto weak_ptr = weak_factory_.GetWeakPtr();
       throttle->BeforeWillProcessResponse(response_url_, *response_head,
                                           &throttle_deferred);
+      if (!weak_ptr) {
+        return;
+      }
       RecordExecutionTimeHistogram(
           GetStageNameForHistogram(DEFERRED_BEFORE_RESPONSE), start);
-      if (!HandleThrottleResult(throttle, throttle_deferred, &deferred))
+      if (!HandleThrottleResult(throttle, throttle_deferred, &deferred)) {
         return;
+      }
     }
 
     if (deferred) {
@@ -745,8 +750,12 @@ void ThrottlingURLLoader::OnReceiveResponse(
       auto* throttle = entry.throttle.get();
       bool throttle_deferred = false;
       base::Time start = base::Time::Now();
+      auto weak_ptr = weak_factory_.GetWeakPtr();
       throttle->WillProcessResponse(response_url_, response_head.get(),
                                     &throttle_deferred);
+      if (!weak_ptr) {
+        return;
+      }
       RecordExecutionTimeHistogram(GetStageNameForHistogram(DEFERRED_RESPONSE),
                                    start);
       if (!HandleThrottleResult(throttle, throttle_deferred, &deferred))
@@ -910,11 +919,17 @@ void ThrottlingURLLoader::OnComplete(
       auto* throttle = entry.throttle.get();
       bool throttle_deferred = false;
       base::Time start = base::Time::Now();
+      auto weak_ptr = weak_factory_.GetWeakPtr();
       throttle->WillOnCompleteWithError(status, &throttle_deferred);
+      if (!weak_ptr) {
+        return;
+      }
+
       RecordExecutionTimeHistogram(GetStageNameForHistogram(DEFERRED_COMPLETE),
                                    start);
-      if (!HandleThrottleResult(throttle, throttle_deferred, &deferred))
+      if (!HandleThrottleResult(throttle, throttle_deferred, &deferred)) {
         return;
+      }
     }
 
     if (deferred) {
