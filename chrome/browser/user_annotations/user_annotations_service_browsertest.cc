@@ -166,7 +166,9 @@ IN_PROC_BROWSER_TEST_P(UserAnnotationsServiceBrowserTest,
                          otr_browser->profile()));
 }
 
-IN_PROC_BROWSER_TEST_P(UserAnnotationsServiceBrowserTest, FormSubmissionFlow) {
+// Flakily times out b/366323026
+IN_PROC_BROWSER_TEST_P(UserAnnotationsServiceBrowserTest,
+                       DISABLED_FormSubmissionFlow) {
   base::HistogramTester histogram_tester;
 
   GURL url(
