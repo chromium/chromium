@@ -159,13 +159,7 @@ void GameDashboardContext::EnableFeatures(
     SetToolbarVisibility(/*visible=*/true);
   } else {
     CloseWelcomeDialogIfAny();
-    // Hide the toolbar if the system is in tablet mode or if the window
-    // is undergoing a resize animation. The toolbar is still visible in
-    // clamshell, overview mode.
-    SetToolbarVisibility(
-        /*visible=*/!(display::Screen::GetScreen()->InTabletMode() ||
-                      main_menu_toggle_method ==
-                          GameDashboardMainMenuToggleMethod::kAnimation));
+    SetToolbarVisibility(/*visible=*/false);
     if (main_menu_widget_) {
       CloseMainMenu(main_menu_toggle_method);
     }
@@ -778,6 +772,7 @@ void GameDashboardContext::AnimateToolbarWidgetBoundsChange(
 
 void GameDashboardContext::MaybeShowToolbar() {
   if (game_dashboard_utils::ShouldShowToolbar() && !toolbar_widget_ &&
+      !OverviewController::Get()->InOverviewSession() &&
       !display::Screen::GetScreen()->InTabletMode()) {
     // Show the toolbar, if it's not already showing.
     ToggleToolbar();

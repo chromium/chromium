@@ -270,8 +270,13 @@ void GameDashboardController::OnDisplayTabletStateChanged(
     case display::TabletState::kInClamshellMode:
       // Cancel the tablet toast if it is still shown.
       Shell::Get()->toast_manager()->Cancel(game_dashboard::kTabletToastId);
-      MaybeEnableFeatures(/*enable=*/true,
-                          GameDashboardMainMenuToggleMethod::kTabletMode);
+      // Enable the Game Dashboard features if the display is not in Overview
+      // Mode.
+      OverviewController::Get()->InOverviewSession()
+          ? MaybeEnableFeatures(/*enable=*/false,
+                                GameDashboardMainMenuToggleMethod::kOverview)
+          : MaybeEnableFeatures(/*enable=*/true,
+                                GameDashboardMainMenuToggleMethod::kTabletMode);
       break;
     case display::TabletState::kEnteringTabletMode: {
       const int toast_text_id =
