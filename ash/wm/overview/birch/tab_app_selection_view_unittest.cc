@@ -17,7 +17,6 @@
 #include "ash/wm/overview/birch/tab_app_selection_host.h"
 #include "ash/wm/overview/birch/tab_app_selection_view.h"
 #include "ash/wm/overview/overview_grid_test_api.h"
-#include "ash/wm/overview/overview_utils.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/views/view_utils.h"
 
@@ -91,21 +90,12 @@ TEST_F(TabAppSelectionViewTest, ToggleMenu) {
   ASSERT_TRUE(menu);
   EXPECT_TRUE(menu->IsVisible());
 
+  // Activation change on the menu has a post task.
   LeftClickOn(menu->owner_for_testing()->addon_view_for_testing());
   EXPECT_FALSE(menu->IsVisible());
 
   LeftClickOn(menu->owner_for_testing()->addon_view_for_testing());
   EXPECT_TRUE(menu->IsVisible());
-}
-
-TEST_F(TabAppSelectionViewTest, EscapeHidesMenu) {
-  TabAppSelectionHost* menu = ShowAndGetSelectorMenu();
-  ASSERT_TRUE(menu);
-  EXPECT_TRUE(menu->IsVisible());
-
-  PressAndReleaseKey(ui::VKEY_ESCAPE);
-  EXPECT_FALSE(menu->IsVisible());
-  EXPECT_TRUE(IsInOverviewSession());
 }
 
 // Tests clicking the close buttons on the selector menu.
@@ -121,16 +111,17 @@ TEST_F(TabAppSelectionViewTest, CloseSelectorItems) {
   // be 2 subtitles.
   ASSERT_TRUE(selection_view->GetViewByID(TabAppSelectionView::kTabSubtitleID));
   ASSERT_TRUE(selection_view->GetViewByID(TabAppSelectionView::kAppSubtitleID));
-  EXPECT_EQ(5u, selection_view->item_views_.size());
+  EXPECT_EQ(3u, selection_view->tab_item_views_.size());
+  EXPECT_EQ(2u, selection_view->app_item_views_.size());
 
   // Simulate clicking the close button on the 3 tab items. We do this since
   // `TabAppSelectionItemView` is not exposed. Verify that the tab items are
   // gone, the tab subtitle is also gone, and all the close buttons are gone
   // since we need at least 2 items.
-  selection_view->OnCloseButtonPressed(selection_view->item_views_.front());
-  selection_view->OnCloseButtonPressed(selection_view->item_views_.front());
-  selection_view->OnCloseButtonPressed(selection_view->item_views_.front());
-  EXPECT_EQ(2u, selection_view->item_views_.size());
+  selection_view->OnCloseButtonPressed(selection_view->tab_item_views_.front());
+  selection_view->OnCloseButtonPressed(selection_view->tab_item_views_.front());
+  selection_view->OnCloseButtonPressed(selection_view->tab_item_views_.front());
+  EXPECT_TRUE(selection_view->tab_item_views_.empty());
   EXPECT_FALSE(
       selection_view->GetViewByID(TabAppSelectionView::kTabSubtitleID));
   EXPECT_FALSE(

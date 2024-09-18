@@ -8,7 +8,6 @@
 #include <string>
 
 #include "ash/wm/overview/birch/birch_bar_constants.h"
-#include "ash/wm/overview/birch/tab_app_selection_host.h"
 #include "ui/views/controls/button/button.h"
 
 namespace ash::birch_bar_util {
@@ -28,9 +27,6 @@ std::unique_ptr<views::View> CreateWeatherTemperatureView(
 
 // Gets suggestion type from the given command Id.
 BirchSuggestionType CommandIdToSuggestionType(int command_id);
-
-// Returns the visible tab app selection host if there is one.
-TabAppSelectionHost* GetVisibleTabAppSelectionHost();
 
 }  // namespace ash::birch_bar_util
 

@@ -38,10 +38,6 @@ class ASH_EXPORT BirchChipButton : public BirchChipButtonBase,
   BirchChipButton& operator=(const BirchChipButton&) = delete;
   ~BirchChipButton() override;
 
-  TabAppSelectionHost* tab_app_selection_widget() {
-    return tab_app_selection_widget_.get();
-  }
-
   // BirchChipButtonBase:
   void Init(BirchItem* item) override;
   const BirchItem* GetItem() const override;
