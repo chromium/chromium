@@ -300532,7 +300532,7 @@
     ],
     "BlobURL": {
      "cross-partition-navigation.tentative.https-expected.txt": [
-      "9691e9ec2a231b1b73e9438056dd2ad7d2b6df0f",
+      "be6224306362a44432f9800c5f0ab3b217f2cbb8",
       []
      ],
      "cross-partition.tentative.https-expected.txt": [
@@ -416985,7 +416985,7 @@
     ],
     "BlobURL": {
      "cross-partition-navigation.tentative.https.html": [
-      "cdfa145a838c1529adc8a557e0cb84f54cd99ccf",
+      "80d3f6818b4d8286285589addc6baadd2331ed0b",
       [
        null,
        {
@@ -460438,7 +460438,7 @@
        ]
       ],
       "color-valid-relative-color.html": [
-       "f7ee41410ea91eda290bd6ede019695de38d73c4",
+       "2c4dc0f8e60bf0df1668f9f840b379fda18bd786",
        [
         null,
         {}
