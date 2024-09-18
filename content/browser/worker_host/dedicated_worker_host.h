@@ -51,6 +51,7 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "third_party/blink/public/mojom/direct_sockets/direct_sockets.mojom-forward.h"
+#include "third_party/blink/public/mojom/hid/hid.mojom-forward.h"
 #include "third_party/blink/public/mojom/serial/serial.mojom-forward.h"
 #endif
 
@@ -174,6 +175,7 @@ class CONTENT_EXPORT DedicatedWorkerHost final
 #if !BUILDFLAG(IS_ANDROID)
   void BindSerialService(
       mojo::PendingReceiver<blink::mojom::SerialService> receiver);
+  void BindHidService(mojo::PendingReceiver<blink::mojom::HidService> receiver);
 #endif
 
   // PlzDedicatedWorker:

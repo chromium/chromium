@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/core/execution_context/navigator_base.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/modules/hid/hid_connection_event.h"
 #include "third_party/blink/renderer/modules/hid/hid_device.h"
@@ -33,6 +34,25 @@ const char kContextGone[] = "Script context has shut down.";
 const char kFeaturePolicyBlocked[] =
     "Access to the feature \"hid\" is disallowed by permissions policy.";
 
+bool IsContextSupported(ExecutionContext* context) {
+  // Since WebHID on Web Workers is in the process of being implemented, we
+  // check here if the runtime flag for the appropriate worker is enabled.
+  // TODO(https://crbug.com/365932453): Remove this check once the feature has
+  // shipped.
+  if (!context) {
+    return false;
+  }
+
+  DCHECK(context->IsWindow() || context->IsDedicatedWorkerGlobalScope() ||
+         context->IsServiceWorkerGlobalScope());
+  DCHECK(!context->IsDedicatedWorkerGlobalScope() ||
+         RuntimeEnabledFeatures::WebHIDOnDedicatedWorkersEnabled());
+  DCHECK(!context->IsServiceWorkerGlobalScope() ||
+         RuntimeEnabledFeatures::WebHIDOnServiceWorkersEnabled());
+
+  return true;
+}
+
 // Carries out basic checks for the web-exposed APIs, to make sure the minimum
 // requirements for them to be served are met. Returns true if any conditions
 // fail to be met, generating an appropriate exception as well. Otherwise,
@@ -40,7 +60,7 @@ const char kFeaturePolicyBlocked[] =
 bool ShouldBlockHidServiceCall(LocalDOMWindow* window,
                                ExecutionContext* context,
                                ExceptionState* exception_state) {
-  if (!context) {
+  if (!IsContextSupported(context)) {
     if (exception_state) {
       exception_state->ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                          kContextGone);
@@ -48,14 +68,21 @@ bool ShouldBlockHidServiceCall(LocalDOMWindow* window,
     return true;
   }
 
-  // The security origin must match the one checked by the browser process.
-  // Service Workers do not use delegated permissions so we use their security
-  // origin directly.
-  DCHECK(context->IsWindow() || context->IsServiceWorkerGlobalScope());
-  auto* security_origin =
-      window
-          ? window->GetFrame()->Top()->GetSecurityContext()->GetSecurityOrigin()
-          : context->GetSecurityOrigin();
+  // For window and dedicated workers, reject the request if the top-level frame
+  // has an opaque origin. For Service Workers, we use their security origin
+  // directly as they do not use delegated permissions.
+  const SecurityOrigin* security_origin = nullptr;
+  if (context->IsWindow()) {
+    security_origin =
+        window->GetFrame()->Top()->GetSecurityContext()->GetSecurityOrigin();
+  } else if (context->IsDedicatedWorkerGlobalScope()) {
+    security_origin = static_cast<WorkerGlobalScope*>(context)
+                          ->top_level_frame_security_origin();
+  } else if (context->IsServiceWorkerGlobalScope()) {
+    security_origin = context->GetSecurityOrigin();
+  } else {
+    NOTREACHED();
+  }
   if (security_origin->IsOpaque()) {
     if (exception_state) {
       exception_state->ThrowSecurityError(
@@ -332,6 +359,8 @@ void HID::EnsureServiceConnection() {
 
   if (service_.is_bound())
     return;
+
+  DCHECK(IsContextSupported(GetExecutionContext()));
 
   auto task_runner =
       GetExecutionContext()->GetTaskRunner(TaskType::kMiscPlatformAPI);

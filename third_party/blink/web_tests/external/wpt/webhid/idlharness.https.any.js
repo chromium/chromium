@@ -9,9 +9,14 @@ idl_test(
   ['webhid'],
   ['html', 'dom'],
   idl_array => {
+    if (self.GLOBAL.isWindow()) {
+      idl_array.add_objects({ Navigator: ['navigator'] });
+    } else if (self.GLOBAL.isWorker()) {
+      idl_array.add_objects({ WorkerNavigator: ['navigator'] });
+    }
+
     idl_array.add_objects({
       HID: ['navigator.hid'],
-      Navigator: ['navigator'],
       // TODO: HIDConnectionEvent
       // TODO: HIDInputReportEvent
       // TODO: HIDDevice

@@ -5,7 +5,8 @@
 // https://wicg.github.io/webhid/index.html#enumeration
 
 [
-    Exposed(ServiceWorker WebHIDOnServiceWorkers),
+    Exposed(ServiceWorker WebHIDOnServiceWorkers,
+            DedicatedWorker WebHIDOnDedicatedWorkers),
     ImplementedAs=HID,
     RuntimeEnabled=WebHID,
     SecureContext
