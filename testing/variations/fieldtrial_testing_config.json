@@ -19574,6 +19574,21 @@
             ]
         }
     ],
+    "RemoveSearchEngineChoiceAttribution": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "RemoveSearchEngineChoiceAttribution"
+                    ]
+                }
+            ]
+        }
+    ],
     "RenderArcNotificationsByChrome": [
         {
             "platforms": [
@@ -21421,27 +21436,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "SeamlessRenderFrameSwap"
-                    ]
-                }
-            ]
-        }
-    ],
-    "SearchEngineChoiceAttribution": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Disabled",
-                    "disable_features": [
-                        "SearchEngineChoiceAttribution"
-                    ]
-                },
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SearchEngineChoiceAttribution"
                     ]
                 }
             ]

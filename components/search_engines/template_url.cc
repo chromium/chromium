@@ -469,7 +469,8 @@ std::string TemplateURLRef::ReplaceSearchTerms(
   if (!gurl.query().empty())
     query_params.push_back(gurl.query());
 #if BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(switches::kSearchEngineChoiceAttribution) &&
+  if (!base::FeatureList::IsEnabled(
+          switches::kRemoveSearchEngineChoiceAttribution) &&
       owner_->created_from_play_api()) {
     // Append attribution parameter to query originating from Play API search
     // engine.

@@ -53,9 +53,9 @@ BASE_FEATURE(kSearchEngineChoiceTrigger,
 
 #if BUILDFLAG(IS_ANDROID)
 COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
-BASE_FEATURE(kSearchEngineChoiceAttribution,
-             "SearchEngineChoiceAttribution",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kRemoveSearchEngineChoiceAttribution,
+             "RemoveSearchEngineChoiceAttribution",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 // Use an explicit "NO_REPROMPT" value as default to avoid reprompting users

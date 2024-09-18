@@ -1163,8 +1163,6 @@ TEST_F(TemplateURLTest, ReplaceCurrentPageUrl) {
 // Tests appending attribution parameter to queries originating from Play API
 // search engine.
 TEST_F(TemplateURLTest, PlayAPIAttributionEnabled) {
-  base::test::ScopedFeatureList feature_list{
-      switches::kSearchEngineChoiceAttribution};
   const struct TestData {
     const char* url;
     std::u16string terms;
@@ -1190,7 +1188,8 @@ TEST_F(TemplateURLTest, PlayAPIAttributionEnabled) {
 
 TEST_F(TemplateURLTest, PlayAPIAttributionDisabled) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(switches::kSearchEngineChoiceAttribution);
+  feature_list.InitAndEnableFeature(
+      switches::kRemoveSearchEngineChoiceAttribution);
   const struct TestData {
     const char* url;
     std::u16string terms;
