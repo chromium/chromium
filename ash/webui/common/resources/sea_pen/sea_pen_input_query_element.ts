@@ -184,6 +184,9 @@ export class SeaPenInputQueryElement extends WithSeaPenStore {
     this.textValue_ = e.detail;
     this.showCreateButton_();
     this.focusInput_();
+    if (e.type === SeaPenSampleSelectedEvent.EVENT_NAME) {
+      this.searchInputQuery_();
+    }
   }
 
   private focusInput_() {
@@ -227,6 +230,7 @@ export class SeaPenInputQueryElement extends WithSeaPenStore {
     const index = Math.floor(Math.random() * SEA_PEN_SAMPLES.length);
     this.textValue_ = SEA_PEN_SAMPLES[index].prompt;
     this.showCreateButton_();
+    this.searchInputQuery_();
   }
 
   private onSeaPenQueryChanged_(seaPenQuery: SeaPenQuery|null) {
@@ -242,6 +246,14 @@ export class SeaPenInputQueryElement extends WithSeaPenStore {
     if (!isSelectionEvent(event)) {
       return;
     }
+    this.searchInputQuery_();
+    // Stop the event propagation, otherwise, the event will be passed to parent
+    // element, this.onClick_ will be triggered improperly.
+    event.preventDefault();
+    event.stopPropagation();
+  }
+
+  private searchInputQuery_() {
     assert(this.textValue_, 'input query should not be empty.');
     try {
       // Throws an error if the textValue_ contains insecure HTML/javascript.
@@ -259,10 +271,6 @@ export class SeaPenInputQueryElement extends WithSeaPenStore {
     };
     getSeaPenThumbnails(query, getSeaPenProvider(), this.getStore());
     logGenerateSeaPenWallpaper(QUERY);
-    // Stop the event propagation, otherwise, the event will be passed to parent
-    // element, this.onClick_ will be triggered improperly.
-    event.preventDefault();
-    event.stopPropagation();
   }
 
   private onSuggestionSelected_(event: SeaPenSuggestionSelectedEvent) {
