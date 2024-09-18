@@ -481,8 +481,9 @@ IN_PROC_BROWSER_TEST_F(StorageAccessHeaderServiceBrowserTest,
                   net::HttpRequestHeaders::kSecFetchStorageAccess, "active")));
 }
 
+// TODO(crbug.com/367771187): Fix flaky test.
 IN_PROC_BROWSER_TEST_F(StorageAccessHeaderServiceBrowserTest,
-                       TrialHeader_LoadTokenIsSupported) {
+                       DISABLED_TrialHeader_LoadTokenIsSupported) {
   EnsureUserInteractionOn(kDomainEnabledForTrial);
   prompt_factory()->set_response_type(
       permissions::PermissionRequestManager::ACCEPT_ALL);
