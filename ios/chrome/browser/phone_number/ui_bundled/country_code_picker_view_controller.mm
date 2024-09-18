@@ -5,10 +5,11 @@
 #import "ios/chrome/browser/phone_number/ui_bundled/country_code_picker_view_controller.h"
 
 #import "base/strings/sys_string_conversions.h"
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
-#import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller_constants.h"
 #import "ios/chrome/browser/phone_number/ui_bundled/phone_number_actions_view_controller.h"
 #import "ios/chrome/browser/phone_number/ui_bundled/phone_number_constants.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller_constants.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -155,6 +156,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
   self.tableView.accessibilityIdentifier =
       kCountryCodePickerTableViewIdentifier;
   [self loadModel];
+
+  if (@available(iOS 17, *)) {
+    NSArray<UITrait>* traits =
+        TraitCollectionSetForTraits(@[ UITraitVerticalSizeClass.self ]);
+    [self registerForTraitChanges:traits withAction:@selector(updateTitle)];
+  }
 }
 
 #pragma mark - LegacyChromeTableViewController
@@ -220,10 +227,15 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 #pragma mark - UIView
 
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
+  if (@available(iOS 17, *)) {
+    return;
+  }
   [self updateTitle];
 }
+#endif
 
 #pragma mark - UISearchResultsUpdating
 
