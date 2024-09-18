@@ -221,6 +221,9 @@ class PrivacySandboxSettingsImpl : public PrivacySandboxSettings,
   // `interest_group_api_operation` is `kJoin`.
   bool IsFledgeJoiningAllowed(const url::Origin& top_frame_origin) const;
 
+  // Whether fenced frame local unpartitioned data access is enabled.
+  Status GetLocalUnpartitionedDataAccessEnabledStatus() const;
+
   // From TrackingProtectionSettingsObserver.
   void OnBlockAllThirdPartyCookiesChanged() override;
 
