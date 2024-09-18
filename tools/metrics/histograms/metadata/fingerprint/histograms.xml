@@ -400,7 +400,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Fingerprint.Unlock.{Outcome}.Duration.{Interval}" units="ms"
     expires_after="2025-01-26">
-  <owner>bobbycasey@google.com</owner>
+  <owner>dawidn@google.com</owner>
   <owner>chromeos-fingerprint@google.com</owner>
   <summary>
     Measures the time it took {Interval} in the '{Outcome}' case.
