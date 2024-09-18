@@ -60,7 +60,7 @@ async function updateDevToolsProtocolVersion(revision) {
   await writeFile('./package.json', update);
 }
 
-const currentVersion = (await readFile('./browser', 'utf8')).split('@').pop();
+const currentVersion = (await readFile('./.browser', 'utf8')).split('@').pop();
 console.log(`Current pinned version is: ${currentVersion}`);
 
 const {version, revision} = await getVersionAndRevisionForCanary();
