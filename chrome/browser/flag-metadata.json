@@ -3964,11 +3964,6 @@
     "expiry_milestone": 110
   },
   {
-    "name": "enable-session-serialization-optimizations",
-    "owners": [ "fedegermi@chromium.org", "sdefresne@chromium.org", "bling-flags@google.com" ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "enable-share-custom-actions-in-cct",
     "owners": [ "haileywang@google.com", "wychen@chromium.org" ],
     "expiry_milestone": 135

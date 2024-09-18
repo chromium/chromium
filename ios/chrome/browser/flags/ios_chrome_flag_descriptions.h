@@ -975,11 +975,6 @@ extern const char kEnableLensInOmniboxCopiedImageDescription[];
 extern const char kEnableLensOverlayName[];
 extern const char kEnableLensOverlayDescription[];
 
-// Title and description for the flag to enable session serialization
-// optimizations (go/bling-session-restoration).
-extern const char kEnableSessionSerializationOptimizationsName[];
-extern const char kEnableSessionSerializationOptimizationsDescription[];
-
 // Title and description for the flag to enable the new transitions in the
 // TabGrid.
 extern const char kTabGridNewTransitionsName[];

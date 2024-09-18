@@ -13,12 +13,6 @@ namespace session::features {
 // lower than the next SessionID.
 BASE_DECLARE_FEATURE(kSessionRestorationSessionIDCheck);
 
-// Feature flag to enable the session serialization optimizations.
-BASE_DECLARE_FEATURE(kEnableSessionSerializationOptimizations);
-
-// When true, session serialization optimizations should be enabled.
-bool UseSessionSerializationOptimizations();
-
 }  // namespace session::features
 
 #endif  // IOS_CHROME_BROWSER_SESSIONS_MODEL_FEATURES_H_

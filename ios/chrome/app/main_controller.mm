@@ -106,7 +106,6 @@
 #import "ios/chrome/browser/search_engines/model/extension_search_engine_data_updater.h"
 #import "ios/chrome/browser/search_engines/model/search_engines_util.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
-#import "ios/chrome/browser/sessions/model/features.h"
 #import "ios/chrome/browser/sessions/model/session_restoration_service.h"
 #import "ios/chrome/browser/sessions/model/session_restoration_service_factory.h"
 #import "ios/chrome/browser/sessions/model/session_util.h"
@@ -600,12 +599,6 @@ SEQUENCE_CHECKER(_sequenceChecker);
 }
 
 - (void)performBrowserBackgroundInitialisation:(ProceduralBlock)completion {
-  // Migrate the session storage based on the feature.
-  const SessionRestorationServiceFactory::StorageFormat requested_format =
-      session::features::UseSessionSerializationOptimizations()
-          ? SessionRestorationServiceFactory::kOptimized
-          : SessionRestorationServiceFactory::kLegacy;
-
   const std::vector<ChromeBrowserState*> loadedProfiles =
       GetApplicationContext()->GetProfileManager()->GetLoadedProfiles();
 
@@ -619,7 +612,9 @@ SEQUENCE_CHECKER(_sequenceChecker);
   // startup.
   for (ChromeBrowserState* browserState : loadedProfiles) {
     SessionRestorationServiceFactory::GetInstance()
-        ->MigrateSessionStorageFormat(browserState, requested_format, closure);
+        ->MigrateSessionStorageFormat(
+            browserState, SessionRestorationServiceFactory::kOptimized,
+            closure);
   }
 }
 
