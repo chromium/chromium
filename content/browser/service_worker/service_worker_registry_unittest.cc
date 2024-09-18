@@ -1684,8 +1684,7 @@ TEST_F(ServiceWorkerScopeAndRegistrationCacheTest,
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeaturesAndParameters(
       {{storage::kServiceWorkerScopeCache, {}},
-       {kServiceWorkerRegistrationCache, {}},
-       {kServiceWorkerScopeCacheLimit, {}}},
+       {kServiceWorkerRegistrationCache, {}}},
       {});
   // Restart to apply the above feature params.
   SimulateRestart();

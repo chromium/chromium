@@ -187,10 +187,6 @@ const base::FeatureParam<int> kServiceWorkerRegistrationCacheSize{
     &kServiceWorkerRegistrationCache, "service_worker_registration_cache_size",
     100};
 
-BASE_FEATURE(kServiceWorkerScopeCacheLimit,
-             "ServiceWorkerScopeCacheLimit",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 template <typename... ReplyArgs>
 class InflightCallWithInvoker final
     : public ServiceWorkerRegistry::InflightCall {
