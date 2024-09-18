@@ -1,5 +1,6 @@
 <style include="cr-hidden-style">
   :host {
+    --table-min-width: 726px;
     align-items: flex-start;
     display: flex;
     flex-direction: column;
@@ -17,7 +18,7 @@
     border-radius: 12px;
     display: flex;
     min-height: 50px;
-    min-width: 726px;
+    min-width: var(--table-min-width);
     padding: 16px;
     width: fit-content;
   }
@@ -87,7 +88,7 @@
     justify-content: flex-start;
     line-height: 16px;
     margin-top: 20px;
-    max-width: 566px;
+    max-width: var(--table-min-width);
   }
 
   #footer a {
