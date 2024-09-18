@@ -6080,7 +6080,7 @@
   {
     "name": "migrate-syncing-user-to-signed-in",
     "owners": [ "victorvianna@google.com", "chrome-sync-client-team+flags@google.com"],
-    "expiry_milestone": 132
+    "expiry_milestone": 134
   },
   {
     "name": "minor-mode-restrictions-for-history-sync-opt-in",
@@ -7834,7 +7834,7 @@
   {
       "name": "replace-sync-promos-with-sign-in-promos",
       "owners": [ "mastiz@chromium.org", "bsazonov@chromium.org", "chrome-sync-dev@google.com", "chrome-signin-team@google.com" ],
-      "expiry_milestone": 130
+      "expiry_milestone": 131
   },
   {
     "name": "reset-audio-selection-improvement-pref",
