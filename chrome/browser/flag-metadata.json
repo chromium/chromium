@@ -992,7 +992,7 @@
   {
     "name": "background-resource-fetch",
     "owners": ["horo@chromium.org"],
-    "expiry_milestone": 130
+    "expiry_milestone": 133
   },
   {
     "name": "backlight-ocr",
