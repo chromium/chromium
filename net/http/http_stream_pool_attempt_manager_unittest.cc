@@ -3313,6 +3313,9 @@ TEST_F(HttpStreamPoolAttemptManagerTest, AlternativeSerivcesDisabled) {
 // Tests that QUIC attempt fails when there is no known QUIC version and the
 // DNS resolution indicates that the endpoint doesn't support QUIC.
 TEST_F(HttpStreamPoolAttemptManagerTest, QuicEndpointNotFoundNoDnsAlpn) {
+  // Set that QUIC is working on the current network.
+  quic_session_pool()->set_is_quic_known_to_work_on_current_network(true);
+
   FakeServiceEndpointRequest* endpoint_request = resolver()->AddFakeRequest();
   endpoint_request
       ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
@@ -3334,7 +3337,10 @@ TEST_F(HttpStreamPoolAttemptManagerTest, QuicEndpointNotFoundNoDnsAlpn) {
                   .GetOrCreateGroupForTesting(requester.GetStreamKey())
                   .GetAttemptManagerForTesting()
                   ->GetQuicTaskResultForTesting(),
-              Optional(IsError(ERR_FAILED)));
+              Optional(IsError(ERR_DNS_NO_MATCHING_SUPPORTED_ALPN)));
+  // No matching ALPN should not update
+  // `is_quic_known_to_work_on_current_network()`.
+  EXPECT_TRUE(quic_session_pool()->is_quic_known_to_work_on_current_network());
 }
 
 TEST_F(HttpStreamPoolAttemptManagerTest, QuicPreconnect) {
