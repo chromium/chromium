@@ -35,6 +35,7 @@
 <translation id="1155154308031262006">Ingresa una instrucción</translation>
 <translation id="115705039208660697">piñas</translation>
 <translation id="1164939766849482256">Protector de pantalla Del amanecer a la noche</translation>
+<translation id="1166688493741195933">No se pudieron generar los nombres de las grabaciones</translation>
 <translation id="1167755866710282443">Abre el menú para personalizar las teclas. Arrastra el menú para moverlo.</translation>
 <translation id="1171349345463658120">laguna de arena</translation>
 <translation id="1173894706177603556">Cambiar nombre</translation>
@@ -126,6 +127,7 @@
 <translation id="1567064801249837505">Álbumes</translation>
 <translation id="1572585716423026576">Establecer como fondo de pantalla</translation>
 <translation id="1578784163189013834">Elegir el fondo del protector de pantalla</translation>
+<translation id="1587031308639983732">Es posible que los cambios basados en la hora no sean precisos. El administrador controla este parámetro de configuración.</translation>
 <translation id="1588438908519853928">Normal</translation>
 <translation id="1591562245178063882">Este mes</translation>
 <translation id="1593528591614229756">Asegúrate de seleccionar los APN que proporcione tu administrador o proveedor de telefonía celular. Si seleccionas un APN, se inhabilitará cualquier APN personalizado. Los APN no válidos pueden interrumpir tu conexión móvil. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
@@ -341,6 +343,7 @@
 <translation id="2560876255701405320">Lista de grabaciones de audio</translation>
 <translation id="2561093647892030937">limones</translation>
 <translation id="2570743873672969996">Ejecutando la prueba <ph name="TEST_NAME" />…</translation>
+<translation id="2573178735329662769">Se está grabando todo el audio de la Chromebook</translation>
 <translation id="2575552334616524665">Puedes activar esta opción en Configuración o en el menú <ph name="THREE_DOTS_MENU_ICON" /></translation>
 <translation id="2576253868710695442">Esto ocupará hasta 2 GB de almacenamiento</translation>
 <translation id="2584547424703650812">Paisajes brillantes</translation>
@@ -493,6 +496,7 @@
 <translation id="3502426834823382181">ver todas las apps</translation>
 <translation id="3510890413042482857">Enviar <ph name="BEGIN_LINK1" />datos de registro del rendimiento<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Actualización del SO</translation>
+<translation id="3522508178835057262">Por el momento, no se puede utilizar una transcripción con más de <ph name="MAX_WORD_LENGTH" /> palabras</translation>
 <translation id="3527036260304016759">Error: Problema desconocido</translation>
 <translation id="353214771040290298">Finalizar edición</translation>
 <translation id="3532980081107202182">Quedan aproximadamente <ph name="MIN_REMAINING" /> minutos</translation>
@@ -508,6 +512,7 @@
 <translation id="3588034708467091142">Asegúrate de tener conexión a Internet y vuelve a intentarlo.</translation>
 <translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> es el nombre fácil de usar para <ph name="APN_NAME" />.</translation>
 <translation id="3595596368722241419">Batería completa</translation>
+<translation id="3600063043775287169">Cuando el audio de la Chromebook está activado, la Grabadora captura todo el audio que se reproduce en este dispositivo. Asegúrate de que quieras grabar todos los sonidos.</translation>
 <translation id="3600339377155080675">Espejo de pantalla</translation>
 <translation id="3602290021589620013">Vista previa</translation>
 <translation id="3603829704940252505">Avatar</translation>
@@ -710,6 +715,7 @@
 <translation id="4602266091140407479">Micrófono</translation>
 <translation id="4607282946861182308">No se pueden crear imágenes con esta instrucción. Prueba otra.</translation>
 <translation id="4609350030397390689">Disminuir el brillo del teclado</translation>
+<translation id="4623061655523261501">Se generaron correctamente los nombres de las grabaciones</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> de un total de <ph name="TOTAL_PAGE_NUMBER" />. Presiona Intro para cancelar el trabajo de impresión.</translation>
 <translation id="463791356324567266">Cancelando el escaneo…</translation>
 <translation id="4644611440022666152">Activar y descargar</translation>
@@ -1042,6 +1048,8 @@
 <translation id="628726841779494414">Administra tus impresoras en la configuración de impresoras</translation>
 <translation id="6292095526077353682">Mientras se carga, mostrar el protector de pantalla por</translation>
 <translation id="629550705077076970">atenuación del teclado</translation>
+<translation id="6301193653204230066">El restablecimiento de seguridad desactiva las extensiones del navegador Chrome y restablece la configuración de red y otros parámetros a los valores predeterminados seguros.
+          No se modificarán las pestañas, los archivos, las cookies ni el historial.</translation>
 <translation id="6302401976930124515">Se canceló la prueba de <ph name="TEST_NAME" /></translation>
 <translation id="631063167932043783">App Explorar</translation>
 <translation id="6318437367327684789">siempre</translation>
@@ -1051,6 +1059,7 @@
 <translation id="6325525973963619867">Se ha producido un error.</translation>
 <translation id="6327262166342360252">Este fondo de pantalla se creó con IA con el siguiente texto: "<ph name="PROMPT" />".</translation>
 <translation id="6331191339300272798">Tema oscuro automático</translation>
+<translation id="6335228876613776082">Se completó la descarga del modelo</translation>
 <translation id="6340526405444716530">Personalización</translation>
 <translation id="6348252528297699679">Puedes desactivar la ubicación en Configuración &gt; Privacidad y seguridad &gt; Controles de privacidad &gt; Acceso a la ubicación. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">Nombre de usuario y contraseña</translation>
@@ -1212,6 +1221,7 @@
 <translation id="708426984172631313">DETENIDA</translation>
 <translation id="7086168019478250425">playa bioluminiscente</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="7086916854357021265">Generando nombres de grabaciones</translation>
 <translation id="7097908713073775559">coloridos</translation>
 <translation id="710028965487274708">Se produjo un error de autorización</translation>
 <translation id="7101959270679078188">Desbloquea el dispositivo <ph name="DEVICE_NAME" /> para continuar con el proceso de actualización</translation>
@@ -1544,6 +1554,7 @@ Descarga el modelo de transcripción (hasta 100 MB) para obtener estas transcri
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Álbum de Google Fotos</translation>
 <translation id="8775713578693478175">APN del módem</translation>
+<translation id="877735394245039557">Descarga del modelo en curso</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Es posible que esta red tenga un portal cautivo</translation>
 <translation id="8797082062139985406">Crea un nombre con la IA de Google</translation>

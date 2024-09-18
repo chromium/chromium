@@ -341,6 +341,7 @@
 <translation id="2560876255701405320">Llista de gravacions d'àudio</translation>
 <translation id="2561093647892030937">llimones</translation>
 <translation id="2570743873672969996">S'està executant la prova <ph name="TEST_NAME" />...</translation>
+<translation id="2573178735329662769">S'està gravant tot l'àudio del Chromebook</translation>
 <translation id="2575552334616524665">Pots activar aquesta opció a Configuració o al menú <ph name="THREE_DOTS_MENU_ICON" /></translation>
 <translation id="2576253868710695442">Ocuparà fins a 2 GB d'emmagatzematge</translation>
 <translation id="2584547424703650812">Paisatges brillants</translation>
@@ -508,6 +509,7 @@
 <translation id="3588034708467091142">Comprova que tinguis connexió a Internet i torna-ho a provar.</translation>
 <translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> és el nom fàcil d'utilitzar de <ph name="APN_NAME" />.</translation>
 <translation id="3595596368722241419">Bateria carregada.</translation>
+<translation id="3600063043775287169">Quan l'àudio del Chromebook està activat, la gravadora captura tot l'àudio que es reprodueix en aquest dispositiu. Assegura't que vols gravar tots els sons.</translation>
 <translation id="3600339377155080675">Projecta la pantalla</translation>
 <translation id="3602290021589620013">Previsualitza</translation>
 <translation id="3603829704940252505">Avatar</translation>

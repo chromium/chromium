@@ -78,6 +78,7 @@
 <translation id="1240638468526743569">ಆ್ಯಪ್</translation>
 <translation id="1242198791279543032">ನೋಟಿಫಿಕೇಶನ್‌ಗಳನ್ನು ಮ್ಯೂಟ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="1242883863226959074">ಸಾಧನ</translation>
+<translation id="1245476784081715330">ಭೇಷ್!</translation>
 <translation id="1245644940275736236">Assistant ಗೆ ಹೋಗಿ</translation>
 <translation id="124678866338384709">ಪ್ರಸ್ತುತ ಟ್ಯಾಬ್ ಮುಚ್ಚಿ</translation>
 <translation id="1246890715821376239">ಬೆಂಬಲಿಸದ ಆ್ಯಪ್‌ಗಳು</translation>
@@ -842,6 +843,7 @@
 <translation id="3958714870339660776">ಇಡೀ ದಿನ</translation>
 <translation id="3962859241508114581">ಹಿಂದಿನ ಟ್ರ್ಯಾಕ್</translation>
 <translation id="3963124517343721543">ನಿಮ್ಮ ಹಿಂದಿನ ವಿಂಡೋಗಳು ಮತ್ತು ಟ್ಯಾಬ್‌ಗಳನ್ನು ತೆರೆಯುವ ಮೂಲಕ ನೀವು ಎಲ್ಲಿ ನಿಲ್ಲಿಸಿದ್ದೀರೋ ಅಲ್ಲಿಂದ ಸುಲಭವಾಗಿ ಮುಂದುವರಿಸಿ. ಮುಂದೆ ಮಾಡಬೇಕಾದ ಕೆಲಸಗಳಿಗಾಗಿ ನೀವು ವೈಯಕ್ತೀಕರಣಗೊಳಿಸಲಾದ ಸಲಹೆಗಳನ್ನು ಸಹ ನೋಡುತ್ತೀರಿ.</translation>
+<translation id="396506362088290977">ನಿಮ್ಮ ಮೈಕ್ ಸೌಂಡ್‌ ಅನ್ನು ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="3969043077941541451">ಆಫ್</translation>
 <translation id="3970324493235864154">ನಿಮ್ಮ ಫೋನ್‌ನ ನೋಟಿಫಿಕೇಶನ್‌ಗಳನ್ನು ವೀಕ್ಷಿಸಿ</translation>
 <translation id="397105322502079400">ಎಣಿಸಲಾಗುತ್ತಿದೆ...</translation>
@@ -899,6 +901,7 @@
 <translation id="4156293514828496577">ಬ್ಯಾಟರಿ ಮಟ್ಟ <ph name="PERCENTAGE" />% ರಷ್ಟಿದೆ (ಸುಮಾರು <ph name="TIME_LEFT" /> ಬಾಳಿಕೆ ಬರಬಹುದು).
 ಬ್ಯಾಟರಿ ಬಾಳಿಕೆಯನ್ನು ಹೆಚ್ಚಿಸುವುದಕ್ಕಾಗಿ ಕೆಲವು ಫೀಚರ್‌ಗಳನ್ನು ಸೀಮಿತಗೊಳಿಸಲಾಗಿದೆ.</translation>
 <translation id="4160919062868802509">ಹಲವು ಆಡಿಯೋ ಮೂಲಗಳು ಪತ್ತೆಯಾಗಿವೆ</translation>
+<translation id="416245495747357243">ಮುಗಿದಿದೆ!</translation>
 <translation id="4165275524535002941">ಡಿಸ್‌ಪ್ಲೇಗಳನ್ನು ಕೇಬಲ್ ಬೆಂಬಲಿಸದಿರಬಹುದು</translation>
 <translation id="4177415338862979658">ವಿವರಗಳನ್ನು ಪರಿಶೀಲಿಸಲು ಕ್ಲಿಕ್ ಮಾಡಿ</translation>
 <translation id="4177913004758410636">{0,plural, =1{ಒಂದು ದಿನದೊಳಗೆ ಸಾಧನವನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಿ}one{# ದಿನಗಳೊಳಗೆ ಸಾಧನವನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಿ}other{# ದಿನಗಳೊಳಗೆ ಸಾಧನವನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಿ}}</translation>
@@ -984,6 +987,7 @@
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> ಆಫ್ ಆಗಿದೆ.</translation>
 <translation id="4417647906073317561">ಫೋಕಸ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳು. ಪ್ರಕ್ರಿಯೆಯಲ್ಲಿ ಪಾಲ್ಗೊಳ್ಳಲು ಟೈಮರ್, ಕಾರ್ಯ ಮತ್ತು ಸಂಗೀತವನ್ನು ಸೆಟ್ ಮಾಡಿ.</translation>
 <translation id="4424159417645388645">ಡೆಸ್ಕ್ 5</translation>
+<translation id="4426817706804363424">ಹೀಗೆಯೇ ಮುಂದುವರಿಸಿ!</translation>
 <translation id="4430019312045809116">ವಾಲ್ಯೂಮ್</translation>
 <translation id="4441283832827406317">ಆ್ಯಪ್‌ಗಳನ್ನು ಹೆಸರಿನ ಪ್ರಕಾರವಾಗಿ ವಿಂಗಡಿಸಲಾಗಿದೆ</translation>
 <translation id="4445159312344259901">ಅನ್‌ಲಾಕ್ ಮಾಡಲು ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
@@ -1248,6 +1252,7 @@
 <translation id="5283198616748585639">1 ನಿಮಿಷ ಸೇರಿಸಿ</translation>
 <translation id="528468243742722775">ಅಂತ್ಯ</translation>
 <translation id="5286194356314741248">ಸ್ಕ್ಯಾನಿಂಗ್</translation>
+<translation id="528641622273682395">ಮೈಕ್ ಪರೀಕ್ಷೆಯನ್ನು ಟಾಗಲ್ ಮಾಡಿ</translation>
 <translation id="5297423144044956168">ಯಾವುದೇ ಮೊಬೈಲ್ ಸಾಧನಗಳು ಕಂಡುಬಂದಿಲ್ಲ</translation>
 <translation id="5297704307811127955">ಆಫ್</translation>
 <translation id="5300589172476337783">ತೋರಿಸಿ</translation>
@@ -1275,6 +1280,7 @@
 <translation id="536019650977002321">ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ಆಡಿಯೋ ಕ್ಯಾಪ್ಚರ್ ಮಾಡಲು ಅನುಮತಿಸುವುದಿಲ್ಲ. ಹೆಚ್ಚಿನ ಮಾಹಿತಿಗಾಗಿ ನಿಮ್ಮ ನಿರ್ವಾಹಕರನ್ನು ಸಂಪರ್ಕಿಸಿ.</translation>
 <translation id="5361524080961918551"><ph name="LANGUAGE" /> ಧ್ವನಿ ಫೈಲ್‌ಗಳನ್ನು ಭಾಗಶಃ ಡೌನ್‌ಲೋಡ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> ಈ ಟ್ಯಾಬ್‌ಗೆ ಹೋಗಿ</translation>
+<translation id="5363835273551457276">ನಿಮ್ಮ ಮೈಕ್ರೊಫೋನ್ ಧ್ವನಿಯನ್ನು ನೀವು ಪರೀಕ್ಷಿಸಬಹುದು. ನಿಲ್ಲಿಸಲು ಪ್ಯಾನೆಲ್‌ ಅನ್ನು ಮುಚ್ಚಿರಿ.</translation>
 <translation id="5364693579536176785">ಸಂಗ್ರಹಣೆಯ ಸ್ಥಳ</translation>
 <translation id="5369573834963677938">ಇತರ ಬಳಕೆದಾರರಿಗೆ ಸಾಧನದಲ್ಲಿ ಫೇಸ್ ಕಂಟ್ರೋಲ್ ಲಭ್ಯವಿರುತ್ತದೆ</translation>
 <translation id="5369717264580061086">Files ಆ್ಯಪ್‌ನಲ್ಲಿ ಫೈಲ್ ಅನ್ನು ಪೂರ್ವವೀಕ್ಷಿಸಿ</translation>
@@ -2126,6 +2132,7 @@
 <translation id="8262312463845990408">ಪ್ಲೇಬ್ಯಾಕ್ ಅನ್ನು ಟಾಗಲ್ ಮಾಡಿ</translation>
 <translation id="8268302343625273732">Google Classroom ನಲ್ಲಿ ಎಲ್ಲಾ ಕಾರ್ಯಯೋಜನೆಗಳನ್ನು ನೋಡಿ</translation>
 <translation id="8277261673056602147">ನಿಮ್ಮ ಸ್ಕ್ರೀನ್‌ನಲ್ಲಿ ಪಠ್ಯವನ್ನು ಹೈಲೈಟ್ ಮಾಡಿ</translation>
+<translation id="8282784978194352587">ನೀವು ಇದು ಸಾಧಿಸಿದ್ದೀರಿ!</translation>
 <translation id="8287009018010202411">ಉತ್ಪಾದಕತೆ</translation>
 <translation id="828708037801473432">ಆಫ್</translation>
 <translation id="8297006494302853456">ದುರ್ಬಲ</translation>
@@ -2203,6 +2210,7 @@
 <translation id="8609384513243082612">ಹೊಸ ಟ್ಯಾಬ್ ತೆರೆಯಿರಿ</translation>
 <translation id="861045123704058818">ಆ್ಯಪ್‌ಗಳನ್ನು ತಾತ್ಕಾಲಿಕವಾಗಿ ವರ್ಗದ ಪ್ರಕಾರವಾಗಿ ವ್ಯವಸ್ಥಿತಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="8612216344243590325">ಪ್ರಮುಖ ಫೈಲ್‌ಗಳನ್ನು ಡೆಸ್ಕ್‌ಟಾಪ್‌ನಲ್ಲಿ ಇರಿಸುವ ಬದಲು <ph name="HOLDING_SPACE_TITLE" /> ನಲ್ಲಿ ಇರಿಸಿ. <ph name="HOLDING_SPACE_TITLE" /> ಗೆ ಫೈಲ್‌ಗಳನ್ನು ಡ್ರ್ಯಾಗ್ ಮಾಡಿ.</translation>
+<translation id="8612338981637220013">ಮುಂದುವರಿಸಿ!</translation>
 <translation id="8614517853887502247">ವೀಕ್ಷಣೆ ರಕ್ಷಣೆ ಆನ್ ಆಗಿರುವ ಕಾರಣದಿಂದಾಗಿ <ph name="APP_1_TITLE" /> ಮತ್ತು <ph name="APP_2_TITLE" /> ಅಧಿಸೂಚನೆಗಳನ್ನು ಮರೆಮಾಡಲಾಗಿದೆ</translation>
 <translation id="8615778328722901791">ಟೂಲ್‌ಬಾರ್ ತೆರೆಯಿರಿ</translation>
 <translation id="8619000641825875669">OneDrive</translation>
@@ -2245,6 +2253,7 @@
 <translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />: ಸಕ್ರಿಯಗೊಳಿಸಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
+<translation id="8751299148074971734">ಇದೇ ರೀತಿ ಮುಂದುವರಿಸಿ!</translation>
 <translation id="8753368202781196133">ಈ ಸಮಯದಲ್ಲಿ ಈ ಭಾಷೆ ಬೆಂಬಲಿತವಾಗಿಲ್ಲ.</translation>
 <translation id="8755498163081687682">ನಿಮ್ಮ ಗುರುತನ್ನು ಖಚಿತಪಡಿಸಿ: ಇದು ನೀವೇ ಎಂಬುದನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಲು <ph name="ORIGIN_NAME" /> ಬಯಸುತ್ತದೆ</translation>
 <translation id="875593634123171288">VPN ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೋರಿಸಿ</translation>

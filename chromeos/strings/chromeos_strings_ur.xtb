@@ -35,6 +35,7 @@
 <translation id="1155154308031262006">پرامپٹ درج کریں</translation>
 <translation id="115705039208660697">انناس</translation>
 <translation id="1164939766849482256">ڈاؤن ٹو ڈارک اسکرین سیور</translation>
+<translation id="1166688493741195933">ریکارڈنگ کے نام تخلیق نہیں ہو سکے</translation>
 <translation id="1167755866710282443">کلیدوں کو حسب ضرورت بنانے کے لیے مینیو کھولیں۔ منتقل کرنے کے لیے مینیو کو گھسیٹیں۔</translation>
 <translation id="1171349345463658120">ریتیلی جھیل</translation>
 <translation id="1173894706177603556">نام بدلیں</translation>
@@ -493,6 +494,7 @@
 <translation id="3502426834823382181">سبھی ایپس دیکھیں</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />کارکردگی کا پتا لگانے کا ڈیٹا<ph name="END_LINK1" /> بھیجیں</translation>
 <translation id="3517001332549868749">‏Chrome OS اپ ڈیٹ</translation>
+<translation id="3522508178835057262">فی الحال، <ph name="MAX_WORD_LENGTH" /> الفاظ سے زیادہ کی ٹرانسکرپٹ تعاون یافتہ نہیں ہے</translation>
 <translation id="3527036260304016759">ناکام ہو گیا - نامعلوم خرابی</translation>
 <translation id="353214771040290298">ترمیم ہو گئی</translation>
 <translation id="3532980081107202182">تقریباً <ph name="MIN_REMAINING" /> منٹ باقی ہیں</translation>
@@ -710,6 +712,7 @@
 <translation id="4602266091140407479">مائیک</translation>
 <translation id="4607282946861182308">اس کی تصاویر نہیں بنا سکتے۔ کوئی اور پرامپٹ آزمائیں۔</translation>
 <translation id="4609350030397390689">کی بورڈ کی چمک کم کرنے کی کلید</translation>
+<translation id="4623061655523261501">ریکارڈنگ کے نام کامیابی کے ساتھ تخلیق ہو گئے</translation>
 <translation id="4627232916386272576">‏<ph name="DOCUMENT_TITLE" />، <ph name="PRINTER_NAME" />، <ph name="CREATION_TIME" />، <ph name="TOTAL_PAGE_NUMBER" /> میں سے <ph name="PRINTED_PAGE_NUMBER" />۔ براہ کرم پرنٹ جاب منسوخ کرنے کے لیے enter دبائیں۔</translation>
 <translation id="463791356324567266">اسکین کا عمل منسوخ کیا جا رہا ہے...</translation>
 <translation id="4644611440022666152">آن کریں اور ڈاؤن لوڈ کریں</translation>
@@ -1042,6 +1045,8 @@
 <translation id="628726841779494414">پرنٹر کی ترتیبات میں اپنے پرنٹرز کا نظم کریں</translation>
 <translation id="6292095526077353682">چارج کرتے وقت، اس کیلئے اسکرین سیور دکھائیں</translation>
 <translation id="629550705077076970">مدھم کی بورڈ</translation>
+<translation id="6301193653204230066">‏سیفٹی ری سیٹ Chrome براؤزر کی ایکسٹینشنز کو آف کر دیتا ہے اور نیٹ ورک اور دیگر ترتیبات کو محفوظ ڈیفالٹس پر ری سیٹ کرتا ہے۔
+          آپ کے ٹیبز، فائلز، کوکیز اور سرگزشت کو تبدیل نہیں کیا جائے گا۔</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> ٹیسٹ منسوخ کر دیا گیا ہے</translation>
 <translation id="631063167932043783">ایکسپلور ایپ</translation>
 <translation id="6318437367327684789">ہمیشہ کے لیے</translation>
@@ -1051,6 +1056,7 @@
 <translation id="6325525973963619867">ناکام</translation>
 <translation id="6327262166342360252">‏یہ وال پیپر درج ذیل ٹیکسٹ کا استعمال کرتے ہوئے AI کے ساتھ بنایا گیا: "<ph name="PROMPT" />۔"</translation>
 <translation id="6331191339300272798">خودکار گہری تھیم</translation>
+<translation id="6335228876613776082">ماڈل کا ڈاؤن لوڈ مکمل ہو گیا</translation>
 <translation id="6340526405444716530">ذاتی نوعیت سازی</translation>
 <translation id="6348252528297699679">آپ ترتیبات &gt; رازداری اور سیکیورٹی &gt; رازداری سے متعلق کنٹرولز &gt; مقام تک رسائی میں مقام کو آف کر سکتے ہیں۔ <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">صارف نام اور پاس ورڈ</translation>
@@ -1212,6 +1218,7 @@
 <translation id="708426984172631313">روک دیا گیا</translation>
 <translation id="7086168019478250425">بائیو لیومی نیسینٹ ساحل</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="7086916854357021265">ریکارڈنگ کے نام تخلیق کئے جا رہے ہیں</translation>
 <translation id="7097908713073775559">رنگین</translation>
 <translation id="710028965487274708">ناکام ہو گئی - اجازت دہندگی ناکام ہو گئی</translation>
 <translation id="7101959270679078188">اپ ڈیٹ ہونے کے عمل کو جاری رکھنے کے لیے <ph name="DEVICE_NAME" /> کو غیر مقفل کریں</translation>
@@ -1544,6 +1551,7 @@
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">‏Google تصاویر کا البم</translation>
 <translation id="8775713578693478175">‏موڈم APN</translation>
+<translation id="877735394245039557">ماڈل کا ڈاؤن لوڈ پیش رفت میں ہے</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">اس نیٹ ورک میں ایک کیپٹو پورٹل ہو سکتا ہے</translation>
 <translation id="8797082062139985406">‏‫Google AI کے ذریعے نام تخلیق کریں</translation>

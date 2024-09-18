@@ -489,6 +489,7 @@
 <translation id="3435738964857648380">אבטחה</translation>
 <translation id="3443810440409579745">כרטיסייה התקבלה.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> דק'</translation>
+<translation id="344589138074534176">‏מידע נוסף על Google Lens</translation>
 <translation id="345348365500626747">הכתובת נמצאה</translation>
 <translation id="3464194322481586217">לא ניתן היה לעקוב אחר המחיר.</translation>
 <translation id="3469117812148449995">אפשרויות לשמירת סיסמה</translation>
@@ -573,6 +574,7 @@
 <translation id="3851938967634752633">הסיסמאות של <ph name="WEBSITE" />, של <ph name="SECOND_WEBSITE" /> ושל <ph name="NUMBER_OF_ACCOUNTS" /> אתרים נוספים יימחקו. החשבונות שלך לא יימחקו.</translation>
 <translation id="3858860766373142691">שם</translation>
 <translation id="3861908220442487587">‏הכתובת הזו שמורה רק במכשיר הזה. כדי להשתמש בה במכשירים אחרים, צריך להעביר אותה לחשבון Google, ‏<ph name="USER_EMAIL" /></translation>
+<translation id="3868495844258915202">‏הצגת כתובת ה-URL המלאה</translation>
 <translation id="3876833929577368454">שאל אותי בכל פעם</translation>
 <translation id="3885587018298784481">הצטרפות לקבוצה משפחתית</translation>
 <translation id="3888863481921783344">הפרטים האלה ישמשו להצגת מוזמנים אפשריים לאירוע.</translation>
@@ -857,6 +859,7 @@
 <translation id="5210365745912300556">סגירת כרטיסייה</translation>
 <translation id="5211488077761630279">לאפשר לאתר <ph name="SITE_NAME" /> להשתמש ב<ph name="PERMISSION" />?</translation>
 <translation id="5217245356412073535">אפשר לשנות את תצוגת האתר שמוגדרת כברירת מחדל לגרסה הייעודית למחשב ב'הגדרות' &gt; 'הגדרות תוכן'</translation>
+<translation id="5217329997012062137">‏כשמשתמשים ב-Google Lens, צילום מסך של הדף נשלח אל Google.</translation>
 <translation id="5220945116117011963">יצירת אירועים ביומן דרך תאריכים</translation>
 <translation id="5222676887888702881">יציאה</translation>
 <translation id="5228579091201413441">הפעלת סנכרון</translation>
@@ -1625,6 +1628,7 @@
 <translation id="8712534545803964353">חיפוש בדף…</translation>
 <translation id="8712637175834984815">הבנתי</translation>
 <translation id="8722229818691036192">החשבונות במכשיר הזה</translation>
+<translation id="8722649775263832315">‏אפשר להקיש או לסמן כדי לחפש כל דבר באמצעות Google Lens</translation>
 <translation id="8725066075913043281">ניסיון חוזר</translation>
 <translation id="8728922029615312208">סגירת הכול</translation>
 <translation id="8730621377337864115">בוצע</translation>

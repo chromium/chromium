@@ -35,6 +35,7 @@
 <translation id="1155154308031262006">Maglagay ng prompt</translation>
 <translation id="115705039208660697">mga pinya</translation>
 <translation id="1164939766849482256">Screen saver na pagtakipsilim</translation>
+<translation id="1166688493741195933">Hindi nakabuo ng mga pangalan ng recording</translation>
 <translation id="1167755866710282443">Buksan ang menu para mag-customize ng mga key. I-drag ang menu para maglipat.</translation>
 <translation id="1171349345463658120">mabuhanging lagoon</translation>
 <translation id="1173894706177603556">Pangalanang muli</translation>
@@ -341,6 +342,7 @@
 <translation id="2560876255701405320">Listahan ng mga recording ng audio</translation>
 <translation id="2561093647892030937">mga lemon</translation>
 <translation id="2570743873672969996">Nagpapatakbo ng test sa <ph name="TEST_NAME" />...</translation>
+<translation id="2573178735329662769">Pag-record sa lahat ng audio ng Chromebook</translation>
 <translation id="2575552334616524665">Puwede mo itong i-on sa Mga Setting o sa <ph name="THREE_DOTS_MENU_ICON" /> menu</translation>
 <translation id="2576253868710695442">Aabot ito ng hanggang 2GB na storage</translation>
 <translation id="2584547424703650812">Glowscapes</translation>
@@ -493,6 +495,7 @@
 <translation id="3502426834823382181">tingnan ang lahat ng app</translation>
 <translation id="3510890413042482857">Ipadala ang <ph name="BEGIN_LINK1" />data ng pagte-trace sa performance<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Update sa Chrome OS</translation>
+<translation id="3522508178835057262">Sa ngayon, hindi sinusuportahan ang transcript na mas mahaba sa <ph name="MAX_WORD_LENGTH" /> (na) salita</translation>
 <translation id="3527036260304016759">Hindi na-print - Hindi kilalang error</translation>
 <translation id="353214771040290298">Tapos nang mag-edit</translation>
 <translation id="3532980081107202182">Humigit-kumulang <ph name="MIN_REMAINING" /> (na) minuto ang natitira</translation>
@@ -508,6 +511,7 @@
 <translation id="3588034708467091142">Tiyaking nakakonekta ka sa internet at subukan ulit.</translation>
 <translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> ang user-friendly na pangalan ng <ph name="APN_NAME" />.</translation>
 <translation id="3595596368722241419">Puno na ang baterya</translation>
+<translation id="3600063043775287169">Kapag naka-on ang audio ng Chromebook, kina-capture ng Recorder ang lahat ng nagpe-play na audio sa device na ito. Tiyaking gusto mong i-record ang lahat ng tunog.</translation>
 <translation id="3600339377155080675">Mirror ng screen</translation>
 <translation id="3602290021589620013">I-preview</translation>
 <translation id="3603829704940252505">Avatar</translation>
@@ -710,6 +714,7 @@
 <translation id="4602266091140407479">Mic</translation>
 <translation id="4607282946861182308">Hindi makagawa ng mga larawan nito. Sumubok ng ibang prompt.</translation>
 <translation id="4609350030397390689">Babaan ang liwanag ng keyboard</translation>
+<translation id="4623061655523261501">Matagumpay na nakabuo ng mga pangalan ng recording</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> sa <ph name="TOTAL_PAGE_NUMBER" />. Pindutin ang enter para kanselahin ang pag-print.</translation>
 <translation id="463791356324567266">Kinakansela ang pag-scan...</translation>
 <translation id="4644611440022666152">I-on at i-download</translation>
@@ -1042,6 +1047,8 @@
 <translation id="628726841779494414">Pamahalaan ang iyong mga printer sa mga setting ng printer</translation>
 <translation id="6292095526077353682">Habang nagcha-charge, ipakita ang screen saver sa loob ng</translation>
 <translation id="629550705077076970">pag-dim ng keyboard</translation>
+<translation id="6301193653204230066">Sa pangkaligtasang pag-reset, io-off ang mga extension ng Chrome browser at ire-reset ang network at iba pang setting sa mga ligtas na default.
+          Hindi mababago ang iyong mga tab, mga file, cookies, at history.</translation>
 <translation id="6302401976930124515">Nakansela ang pagsubok na <ph name="TEST_NAME" /></translation>
 <translation id="631063167932043783">Explore app</translation>
 <translation id="6318437367327684789">habambuhay</translation>
@@ -1051,6 +1058,7 @@
 <translation id="6325525973963619867">Nabigo</translation>
 <translation id="6327262166342360252">Ginawa ang wallpaper na ito sa pamamagitan ng AI gamit ang sumusunod na text: "<ph name="PROMPT" />."</translation>
 <translation id="6331191339300272798">Awtomatikong madilim na tema</translation>
+<translation id="6335228876613776082">Tapos nang i-download ang modelo</translation>
 <translation id="6340526405444716530">Pag-personalize</translation>
 <translation id="6348252528297699679">Puwede mong i-off ang lokasyon sa Mga Setting &gt; Privacy at seguridad &gt; Mga kontrol sa privacy &gt; Access sa lokasyon. <ph name="LINK_BEGIN" />Matuto pa<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">Username at password</translation>
@@ -1212,6 +1220,7 @@
 <translation id="708426984172631313">INIHINTO</translation>
 <translation id="7086168019478250425">bioluminescent beach</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="7086916854357021265">Bumubuo ng mga pangalan ng recording</translation>
 <translation id="7097908713073775559">makulay</translation>
 <translation id="710028965487274708">Nabigo - Hindi Nabigyan ng Pahintulot</translation>
 <translation id="7101959270679078188">I-unlock ang <ph name="DEVICE_NAME" /> para ituloy ang proseso ng pag-update</translation>
@@ -1544,6 +1553,7 @@ I-download ang modelo ng transcription (hanggang 100MB) para makuha ang mga tran
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Album sa Google Photos</translation>
 <translation id="8775713578693478175">Modem APN</translation>
+<translation id="877735394245039557">Kasalukuyang dina-download ang modelo</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Posibleng may captive portal ang network na ito</translation>
 <translation id="8797082062139985406">Gumawa ng pangalan gamit ang Google AI</translation>

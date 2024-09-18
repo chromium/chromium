@@ -35,6 +35,7 @@
 <translation id="1155154308031262006">أدخِل طلبًا</translation>
 <translation id="115705039208660697">أناناس</translation>
 <translation id="1164939766849482256">شاشة استراحة تعرض منظرًا من الفجر إلى الليل</translation>
+<translation id="1166688493741195933">تعذّر إنشاء أسماء التسجيلات</translation>
 <translation id="1167755866710282443">افتح القائمة لتخصيص المفاتيح. اسحب القائمة لنقلها.</translation>
 <translation id="1171349345463658120">بحيرة ساحلية رملية</translation>
 <translation id="1173894706177603556">إعادة تسمية</translation>
@@ -492,6 +493,7 @@
 <translation id="3502426834823382181">عرض جميع التطبيقات</translation>
 <translation id="3510890413042482857">إرسال <ph name="BEGIN_LINK1" />بيانات تتبُّع مستوى الأداء<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">‏تحديث نظام التشغيل Chrome</translation>
+<translation id="3522508178835057262">الطلبات النصية التي يزيد عدد كلماتها عن <ph name="MAX_WORD_LENGTH" /> كلمة غير متاحة حاليًا</translation>
 <translation id="3527036260304016759">تعذَّرت الطباعة - خطأ غير معروف</translation>
 <translation id="353214771040290298">تم التعديل</translation>
 <translation id="3532980081107202182">يتبقّى حوالي <ph name="MIN_REMAINING" /> دقيقة.</translation>
@@ -708,6 +710,7 @@
 <translation id="4594021849294327751">إنشاء نص</translation>
 <translation id="4607282946861182308">يتعذّر إنشاء صور استنادًا إلى الطلب الذي أدخلته. جرِّب طلبًا آخر.</translation>
 <translation id="4609350030397390689">تقليل سطوع لوحة المفاتيح</translation>
+<translation id="4623061655523261501">تمّ إنشاء أسماء التسجيلات بنجاح</translation>
 <translation id="4627232916386272576">‏<ph name="DOCUMENT_TITLE" />، <ph name="PRINTER_NAME" />، <ph name="CREATION_TIME" />، <ph name="PRINTED_PAGE_NUMBER" /> من أصل <ph name="TOTAL_PAGE_NUMBER" />. يمكنك الضغط على enter لإلغاء مهمة الطباعة.</translation>
 <translation id="463791356324567266">جارٍ إلغاء المسح الضوئي...</translation>
 <translation id="4644611440022666152">التفعيل والتنزيل</translation>
@@ -1212,6 +1215,7 @@
 <translation id="708426984172631313">متوقّف</translation>
 <translation id="7086168019478250425">شاطئ متلألئ حيويًا</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="7086916854357021265">جارٍ إنشاء أسماء التسجيلات</translation>
 <translation id="7097908713073775559">غنية بالألوان</translation>
 <translation id="710028965487274708">تعذَّر التفويض: تعذَّر إتمام عملية التفويض.</translation>
 <translation id="7101959270679078188">يجب فتح قفل "<ph name="DEVICE_NAME" />" لمواصلة عملية التحديث</translation>

@@ -678,6 +678,7 @@
 <translation id="2212735316055980242">Règle introuvable</translation>
 <translation id="2213606439339815911">Récupération des entrées...</translation>
 <translation id="2213612003795704869">La page est imprimée</translation>
+<translation id="2215368073167343359">Remplissage automatique avec Google</translation>
 <translation id="2215539479425228550">Escalade et alpinisme</translation>
 <translation id="2215727959747642672">Modification des fichiers</translation>
 <translation id="2215963164070968490">Chiens</translation>
@@ -710,6 +711,7 @@
 <translation id="2262243747453050782">Erreur HTTP</translation>
 <translation id="2265192657948645752">Emplois dans le domaine de la vente au détail</translation>
 <translation id="2265356434276802347">Cette politique ne peut pas contenir plus de <ph name="MAX_ITEMS_LIMIT" /> entrées en vedette.</translation>
+<translation id="2266175583972138136">Des conditions s'appliquent pour les avantages de la carte</translation>
 <translation id="2267047181501709434">Vérification de votre identité en cours…</translation>
 <translation id="2268044343513325586">Affiner</translation>
 <translation id="2268966938956566076">Téléversement dans <ph name="MINUTES" /> min</translation>
@@ -1799,6 +1801,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="4269264543938335308">Maillots de bain</translation>
 <translation id="4269599248168651462">Le certificat de serveur est émis sous un nom qui n'est pas unique.</translation>
 <translation id="4270541775497538019">Empileur 6</translation>
+<translation id="4271652479722040953">Lorsque des extensions sont ajoutées à Chrome, les données pertinentes sur ces extensions sont envoyées à des tiers pour analyse et peuvent être visibles par votre administrateur. Les données incluent des informations sur les extensions comme le nom, l'heure d'installation, la source d'installation ainsi que l'activité associée à ces extensions (comme le changement d'onglets, la prise de contact avec des sites Web ou l'accès aux témoins). Ces données sont collectées pour les extensions installées à partir de la boutique en ligne Chrome Web Store ainsi que pour les extensions en dehors de la boutique.</translation>
 <translation id="4275830172053184480">Redémarrer l'appareil</translation>
 <translation id="4276974990916607331">Non merci</translation>
 <translation id="4277028893293644418">Réinitialiser le mot de passe</translation>
@@ -1880,6 +1883,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="4406896451731180161">résultats de recherche</translation>
 <translation id="4408413947728134509">Témoins <ph name="NUM_COOKIES" /></translation>
 <translation id="4412074349188076601">Cette configuration est marquée comme installable, mais aucune image n'est fournie pour cette architecture, elle ne peut donc pas être installée.</translation>
+<translation id="4414452699610169758">Utilisez le gestionnaire de mots de passe Google et le remplissage automatique de Chrome pour enregistrer et remplir les mots de passe, les modes de paiement et les adresses</translation>
 <translation id="4414515549596849729">Témoins et données des sites</translation>
 <translation id="4415156962929755728">Plastique (haute brillance)</translation>
 <translation id="4415426530740016218">Adresse de ramassage</translation>
@@ -3383,6 +3387,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="7232352818707016189">Plus d'actions pour le tableau de comparaison</translation>
 <translation id="7233592378249864828">Imprimer la feuille de confirmation</translation>
 <translation id="7234112195906418665">Voyages et transports</translation>
+<translation id="7234585564776614047">Remplissage automatique à l'aide d'un autre service</translation>
 <translation id="7236417832106250253"><ph name="PROGRESS_PERCENT" /> % effectué | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
 <translation id="7237166092326447040">Cadeaux et articles pour événements spéciaux</translation>
 <translation id="7237454422623102448">paramètres système</translation>
@@ -4044,6 +4049,7 @@ Détails supplémentaires :
 <translation id="8409413588194360210">Modules de traitement des paiements</translation>
 <translation id="8412145213513410671">Plantages (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">Vous devez entrer deux fois la même phrase de passe.</translation>
+<translation id="8414322570408428950">L'événement de l'extension se produit</translation>
 <translation id="8416694386774425977">La configuration du réseau n'est pas valide et ne peut être importée.
 Détails supplémentaires :
 <ph name="DEBUG_INFO" /></translation>
@@ -4295,6 +4301,7 @@ Détails supplémentaires :
 <translation id="8891031436559779793">Vous serez averti si le prix baisse sur n'importe quel site.</translation>
 <translation id="8891727572606052622">Mode mandataire non valide.</translation>
 <translation id="8894794286471754040">Bord long en premier</translation>
+<translation id="8895334001368918465">Pour utiliser un autre service de remplissage automatique dans Chrome, activez-le dans les paramètres Android et ici</translation>
 <translation id="8897428486789851669">Natation</translation>
 <translation id="8899807382908246773">Annonces intrusives</translation>
 <translation id="8903921497873541725">Zoom avant</translation>

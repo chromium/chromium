@@ -78,6 +78,7 @@
 <translation id="1240638468526743569">有應用程式</translation>
 <translation id="1242198791279543032">已忽略通知</translation>
 <translation id="1242883863226959074">裝置</translation>
+<translation id="1245476784081715330">太好了！</translation>
 <translation id="1245644940275736236">前往「Google 助理」</translation>
 <translation id="124678866338384709">關閉目前分頁</translation>
 <translation id="1246890715821376239">不支援的應用程式</translation>
@@ -842,6 +843,7 @@
 <translation id="3958714870339660776">全日</translation>
 <translation id="3962859241508114581">上一首曲目</translation>
 <translation id="3963124517343721543">開啟之前使用的視窗和分頁，輕鬆繼續未完成的操作。你也可以查看個人化的後續步驟建議。</translation>
+<translation id="396506362088290977">測試麥克風音訊</translation>
 <translation id="3969043077941541451">關閉</translation>
 <translation id="3970324493235864154">查看手機的通知</translation>
 <translation id="397105322502079400">計算中…</translation>
@@ -899,6 +901,7 @@
 <translation id="4156293514828496577">剩餘電量：<ph name="PERCENTAGE" />% (大約 <ph name="TIME_LEFT" />)。
 為延長電池壽命，部分功能會受限制。</translation>
 <translation id="4160919062868802509">偵測到多個音訊來源</translation>
+<translation id="416245495747357243">順利完成！</translation>
 <translation id="4165275524535002941">連接線可能不支援顯示屏</translation>
 <translation id="4177415338862979658">按一下即可瞭解詳情</translation>
 <translation id="4177913004758410636">{0,plural, =1{請在 1 天內更新裝置}other{請在 # 天內更新裝置}}</translation>
@@ -984,6 +987,7 @@
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" />功能已關閉。</translation>
 <translation id="4417647906073317561">「專注模式」設定。你可設定計時器、工作和音樂來提升效率。</translation>
 <translation id="4424159417645388645">桌面 5</translation>
+<translation id="4426817706804363424">做得好！</translation>
 <translation id="4430019312045809116">音量</translation>
 <translation id="4441283832827406317">應用程式已按名稱排序</translation>
 <translation id="4445159312344259901">登入即可解鎖</translation>
@@ -1247,6 +1251,7 @@
 <translation id="5283198616748585639">增加 1 分鐘</translation>
 <translation id="528468243742722775">結束</translation>
 <translation id="5286194356314741248">正在掃瞄</translation>
+<translation id="528641622273682395">切換麥克風測試</translation>
 <translation id="5297423144044956168">找不到流動裝置</translation>
 <translation id="5297704307811127955">已關閉</translation>
 <translation id="5300589172476337783">顯示</translation>
@@ -1274,6 +1279,7 @@
 <translation id="536019650977002321">管理員禁止擷取音訊。如需更多資訊，請聯絡管理員。</translation>
 <translation id="5361524080961918551">已下載部分<ph name="LANGUAGE" />語音檔案</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> 前往此分頁</translation>
+<translation id="5363835273551457276">你可以測試麥克風音訊，關閉面板即可停止。</translation>
 <translation id="5364693579536176785">儲存空間</translation>
 <translation id="5369573834963677938">面部控制功能將可供裝置的其他使用者取用</translation>
 <translation id="5369717264580061086">在「檔案」應用程式中預覽檔案</translation>
@@ -1414,7 +1420,7 @@
 <translation id="5802516411616338943">開啟「快速設定」</translation>
 <translation id="5804651031882187592">關閉「鎖定 SIM 卡」設定</translation>
 <translation id="5805809050170488595">按一下即可啟用 <ph name="NETWORK_NAME" /></translation>
-<translation id="5818796501620225415">你可以延長時間，也可以結束專注模式</translation>
+<translation id="5818796501620225415">你可延長時間，亦可結束專注模式</translation>
 <translation id="5819918159912280082">Chromebook 意外重新開機。你可開啟之前使用的視窗和應用程式。</translation>
 <translation id="5823239091726045201">Google Tasks 網頁版</translation>
 <translation id="5825969630400862129">已連接裝置設定</translation>
@@ -2124,6 +2130,7 @@
 <translation id="8262312463845990408">切換播放</translation>
 <translation id="8268302343625273732">查看 Google Classroom 的所有作業</translation>
 <translation id="8277261673056602147">突顯畫面上的文字</translation>
+<translation id="8282784978194352587">大功告成！</translation>
 <translation id="8287009018010202411">生產力</translation>
 <translation id="828708037801473432">已關閉</translation>
 <translation id="8297006494302853456">弱</translation>
@@ -2201,6 +2208,7 @@
 <translation id="8609384513243082612">開啟新分頁</translation>
 <translation id="861045123704058818">應用程式會暫時按類別整理</translation>
 <translation id="8612216344243590325">請勿將重要檔案放在桌面上，而是要放在「<ph name="HOLDING_SPACE_TITLE" />」(只需將檔案拖曳至「<ph name="HOLDING_SPACE_TITLE" />」即可)。</translation>
+<translation id="8612338981637220013">再接再厲！</translation>
 <translation id="8614517853887502247">檢視保護功能已開啟，因此系統已隱藏 <ph name="APP_1_TITLE" /> 和 <ph name="APP_2_TITLE" /> 的通知</translation>
 <translation id="8615778328722901791">開啟工具列</translation>
 <translation id="8619000641825875669">OneDrive</translation>
@@ -2243,6 +2251,7 @@
 <translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />：正在啟用…</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />，
         <ph name="SCREEN_SHARE_STATUS" /></translation>
+<translation id="8751299148074971734">繼續努力！</translation>
 <translation id="8753368202781196133">目前不支援此語言。</translation>
 <translation id="8755498163081687682">驗證你嘅身份：<ph name="ORIGIN_NAME" /> 要求確認你嘅身分</translation>
 <translation id="875593634123171288">顯示 VPN 設定</translation>

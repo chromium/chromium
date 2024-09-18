@@ -342,6 +342,7 @@
 <translation id="2560876255701405320">Liste over lydoptagelser</translation>
 <translation id="2561093647892030937">citroner</translation>
 <translation id="2570743873672969996">Kører testen <ph name="TEST_NAME" />...</translation>
+<translation id="2573178735329662769">Optagelse af al Chromebook-lyd</translation>
 <translation id="2575552334616524665">Du kan aktivere denne funktion under Indstillinger eller i <ph name="THREE_DOTS_MENU_ICON" />-menuen</translation>
 <translation id="2576253868710695442">Dette kræver op til 2 GB lagerplads</translation>
 <translation id="2584547424703650812">Lysende landskaber</translation>
@@ -510,6 +511,7 @@
 <translation id="3588034708467091142">Sørg for, at du har forbindelse til internettet, og prøv igen.</translation>
 <translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> er det brugervenlige navn til <ph name="APN_NAME" />.</translation>
 <translation id="3595596368722241419">Batteri helt opladet</translation>
+<translation id="3600063043775287169">Når Chromebook-lyd er aktiveret, optager Lydoptager al lyd, der afspilles på denne enhed. Vær sikker på, at du vil optage alle lyde.</translation>
 <translation id="3600339377155080675">Spejling af skærm</translation>
 <translation id="3602290021589620013">Forhåndsvisning</translation>
 <translation id="3603829704940252505">Avatar</translation>
@@ -1045,6 +1047,8 @@
 <translation id="628726841779494414">Administrer dine printere i printerindstillingerne</translation>
 <translation id="6292095526077353682">Vis pauseskærmen under opladningen</translation>
 <translation id="629550705077076970">dæmp tastaturlys</translation>
+<translation id="6301193653204230066">En sikkerhedsnulstilling deaktiverer Chrome-browserudvidelser samt nulstiller netværk og andre indstillinger til sikre standardindstillinger.
+          Dine faner, filer, cookies og historik ændres ikke.</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" />-testen er annulleret</translation>
 <translation id="631063167932043783">Appen Udforsk</translation>
 <translation id="6318437367327684789">hele tiden</translation>
@@ -1054,6 +1058,7 @@
 <translation id="6325525973963619867">Mislykket</translation>
 <translation id="6327262166342360252">Denne baggrund blev oprettet med AI ved hjælp af følgende tekst: "<ph name="PROMPT" />".</translation>
 <translation id="6331191339300272798">Automatisk Mørkt tema</translation>
+<translation id="6335228876613776082">Download af model er gennemført</translation>
 <translation id="6340526405444716530">Personlig tilpasning</translation>
 <translation id="6348252528297699679">Du kan deaktivere lokation i Indstillinger &gt; Sikkerhed og privatliv &gt; Privatlivsindstillinger &gt; Lokationsadgang. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">Brugernavn og adgangskode</translation>
@@ -1548,6 +1553,7 @@ Download transskriptionsmodellen (op til 100 MB) for at få disse transskription
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Fotos-album</translation>
 <translation id="8775713578693478175">Modem-APN</translation>
+<translation id="877735394245039557">Download af model er i gang</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Dette netværk har muligvis en loginportal</translation>
 <translation id="8797082062139985406">Opret et navn ved hjælp af Google AI</translation>

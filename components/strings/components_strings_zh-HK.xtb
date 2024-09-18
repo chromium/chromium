@@ -446,7 +446,7 @@
 <translation id="1771254328977666895">查看價格記錄</translation>
 <translation id="1777422078676229054">相紙 (封存用)</translation>
 <translation id="1778646502362731194">JIS B0</translation>
-<translation id="1785118555253503473">要安裝網頁應用程式嗎？</translation>
+<translation id="1785118555253503473">要安裝網絡應用程式嗎？</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以喺 Google 帳戶度管理你嘅資料、私隱權同埋安全設定</translation>
 <translation id="1793631236004319016">上次使用時間：<ph name="NUM_HOURS_MINUTES_SECONDS" />前</translation>
@@ -678,6 +678,7 @@
 <translation id="2212735316055980242">找不到政策</translation>
 <translation id="2213606439339815911">正在擷取項目…</translation>
 <translation id="2213612003795704869">已列印頁面</translation>
+<translation id="2215368073167343359">Google 自動填入</translation>
 <translation id="2215539479425228550">攀岩和登山運動</translation>
 <translation id="2215727959747642672">檔案編輯</translation>
 <translation id="2215963164070968490">狗</translation>
@@ -710,6 +711,7 @@
 <translation id="2262243747453050782">HTTP 錯誤</translation>
 <translation id="2265192657948645752">零售職位</translation>
 <translation id="2265356434276802347">此政策只能包含最多 <ph name="MAX_ITEMS_LIMIT" /> 個精選項目。</translation>
+<translation id="2266175583972138136">付款卡禮遇受條款約束</translation>
 <translation id="2267047181501709434">正在驗證您的身分…</translation>
 <translation id="2268044343513325586">修正搜尋</translation>
 <translation id="2268966938956566076"><ph name="MINUTES" /> 分鐘後上載</translation>
@@ -1164,7 +1166,7 @@
 <translation id="3157931365184549694">還原</translation>
 <translation id="3158539265159265653">光碟</translation>
 <translation id="3162559335345991374">目前使用的 Wi-Fi 可能要求您前往其登入頁面。</translation>
-<translation id="316638481603975524">可以要求安裝網頁應用程式</translation>
+<translation id="316638481603975524">可要求安裝網絡應用程式</translation>
 <translation id="3168744840365648658">無線電設備</translation>
 <translation id="3168938241115725594">古典車</translation>
 <translation id="3169472444629675720">探索</translation>
@@ -1798,6 +1800,7 @@
 <translation id="4269264543938335308">泳衣</translation>
 <translation id="4269599248168651462">伺服器憑證的核發名稱重複。</translation>
 <translation id="4270541775497538019">堆疊器 6</translation>
+<translation id="4271652479722040953">在 Chrome 中新增擴充程式時，系統會將擴充程式相關資料傳送給第三方進行分析，管理員亦可能會看到這些資料。這類資料包括擴充程式相關資料，例如名稱、安裝時間、安裝來源，以及與擴充程式相關活動 (例如變更分頁、聯絡網站或存取 Cookie)。無論擴充程式是否透過「Chrome 網上應用程式商店」安裝，系統都會收集上述資料。</translation>
 <translation id="4275830172053184480">重新啟動裝置</translation>
 <translation id="4276974990916607331">不用了，謝謝</translation>
 <translation id="4277028893293644418">重設密碼</translation>
@@ -1879,6 +1882,7 @@
 <translation id="4406896451731180161">搜尋結果</translation>
 <translation id="4408413947728134509">Cookie <ph name="NUM_COOKIES" /></translation>
 <translation id="4412074349188076601">此設定已標記為可安裝，但沒有映像可供此架構使用，因此無法安裝。</translation>
+<translation id="4414452699610169758">使用「Google 密碼管理工具」和「Chrome 自動填入」功能，儲存及填入密碼、付款方法和地址</translation>
 <translation id="4414515549596849729">Cookie 和網站數據</translation>
 <translation id="4415156962929755728">塑膠 (高光面)</translation>
 <translation id="4415426530740016218">取貨地址</translation>
@@ -2323,7 +2327,7 @@
 <translation id="5273658854610202413">警告：此政策並非可合併的字典政策，因此未有按PolicyDictionaryMultipleSourceMergeList 政策中指定的方式合併。</translation>
 <translation id="5278778426231952189">立即上載</translation>
 <translation id="5279286380302340275">管理下載檔案</translation>
-<translation id="5280963125494874678">網頁應用程式</translation>
+<translation id="5280963125494874678">網絡軟件</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">文件屬性</translation>
 <translation id="528468243742722775">結束</translation>
@@ -2826,7 +2830,7 @@
 <translation id="6221311046884916259">要將此付款卡儲存至 Google 帳戶嗎？</translation>
 <translation id="6221892641068781024">簡化檢視</translation>
 <translation id="6222527803348563979">信紙</translation>
-<translation id="62231116988543150">你允許網頁應用程式</translation>
+<translation id="62231116988543150">可以安裝網絡應用程式</translation>
 <translation id="6224281071334553713">珠寶和首飾</translation>
 <translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以喺 Chrome 設定度個人化您嘅無障礙工具</translation>
 <translation id="6228346913624365233">豪華房車</translation>
@@ -3090,7 +3094,7 @@
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以搵你登入 Google 帳戶嘅裝置</translation>
 <translation id="6695428916538794739">動作和冒險電影</translation>
 <translation id="6696424331653607346">旅遊指南和遊記</translation>
-<translation id="6696575039575740785">禁止安裝網頁應用程式</translation>
+<translation id="6696575039575740785">不允許安裝網絡應用程式</translation>
 <translation id="6698097747703777657">沒有收到驗證碼嗎？<ph name="BEGIN_LINK" />取得新的驗證碼<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">已建立：</translation>
 <translation id="67007264085648978">時間拖曳點</translation>
@@ -3204,7 +3208,7 @@
 <translation id="6915804003454593391">使用者：</translation>
 <translation id="6916193791494646625">請提供下載的原因 (必填)</translation>
 <translation id="6917795328362592458">系統發現您剛才使用的密碼因資料外洩而被洩露。為確保帳戶安全，「密碼管理工具」建議您檢查已儲存的密碼。</translation>
-<translation id="6921197121276419421">已允許安裝網頁應用程式</translation>
+<translation id="6921197121276419421">允許安裝網絡應用程式</translation>
 <translation id="6924013822850225188">選擇是否在結帳時查看付款卡禮遇 (根據銀行條款規定)</translation>
 <translation id="6925267999184670015">North American B+</translation>
 <translation id="6926216138694948720">人體藝術</translation>
@@ -3383,6 +3387,7 @@
 <translation id="7232352818707016189">其他比較表格嘅操作</translation>
 <translation id="7233592378249864828">列印確認工作表</translation>
 <translation id="7234112195906418665">旅遊和交通</translation>
+<translation id="7234585564776614047">使用其他自動填入服務</translation>
 <translation id="7236417832106250253">已完成 <ph name="PROGRESS_PERCENT" />% | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
 <translation id="7237166092326447040">禮品及特別節日商品</translation>
 <translation id="7237454422623102448">系統設定</translation>
@@ -3702,7 +3707,7 @@
 <translation id="7761701407923456692">伺服器憑證與網址不符。</translation>
 <translation id="7764225426217299476">新增地址</translation>
 <translation id="7766518757692125295">預印</translation>
-<translation id="7766899888934244586">網頁應用程式</translation>
+<translation id="7766899888934244586">網絡軟件</translation>
 <translation id="7767278989746220252">露台、草坪和園藝</translation>
 <translation id="776749070095465053">布料</translation>
 <translation id="7773005668374414287">相同順序 (正面朝上)</translation>
@@ -3735,6 +3740,7 @@
 <translation id="7831993212387676366">什麼是購物清單？</translation>
 <translation id="7840103971441592723">已開始擷取螢幕截圖</translation>
 <translation id="784137052867620416">購物分析資料</translation>
+<translation id="7842611866969435396">開始</translation>
 <translation id="784404208867107517">分類記錄</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{無}=1{1 個應用程式 (<ph name="EXAMPLE_APP_1" />)}=2{2 個應用程式 (<ph name="EXAMPLE_APP_1" />、<ph name="EXAMPLE_APP_2" />)}other{# 個應用程式 (<ph name="EXAMPLE_APP_1" />、<ph name="EXAMPLE_APP_2" />、<ph name="AND_MORE" />)}}</translation>
 <translation id="785476343534277563">大專院校運動</translation>
@@ -4044,6 +4050,7 @@
 <translation id="8409413588194360210">付款處理常式</translation>
 <translation id="8412145213513410671">當機次數 (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">您必須輸入兩次相同的複雜密碼。</translation>
+<translation id="8414322570408428950">發生擴充程式事件</translation>
 <translation id="8416694386774425977">網絡設定無效，無法匯入。
 其他詳細資料：
 <ph name="DEBUG_INFO" /></translation>
@@ -4295,6 +4302,7 @@
 <translation id="8891031436559779793">如果產品在任何網站上降價，你會收到通知。</translation>
 <translation id="8891727572606052622">Proxy 模式無效。</translation>
 <translation id="8894794286471754040">先從長邊開始</translation>
+<translation id="8895334001368918465">如要在 Chrome 中使用其他自動填入服務，請在 Android 設定和此處開啟該項服務</translation>
 <translation id="8897428486789851669">游泳</translation>
 <translation id="8899807382908246773">滋擾性廣告</translation>
 <translation id="8903921497873541725">放大</translation>

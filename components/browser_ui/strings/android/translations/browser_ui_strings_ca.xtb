@@ -93,7 +93,6 @@
 <translation id="2498359688066513246">Ajuda i suggeriments </translation>
 <translation id="2501278716633472235">Torna</translation>
 <translation id="2546283357679194313">Dades de llocs web i galetes</translation>
-<translation id="2550150772722917524">Els grups de pestanyes mantenen l'espai endreçat</translation>
 <translation id="2570922361219980984">L'accés a la ubicació també està desactivat en aquest dispositiu. Activa'l a la <ph name="BEGIN_LINK" />configuració d'Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Vista desplegada (feu clic per replegar-la)</translation>
 <translation id="2586657967955657006">Porta-retalls</translation>
@@ -168,7 +167,6 @@
 <translation id="3744111561329211289">Sincronització en segon pla</translation>
 <translation id="3763247130972274048">Fes doble toc a l'esquerra o a la dreta del vídeo per saltar 10 s</translation>
 <translation id="3779154269823594982">Canvia les contrasenyes</translation>
-<translation id="3788473868867338588">Pots agrupar pàgines relacionades. Els grups es desaran i s'actualitzaran en tots els teus dispositius.</translation>
 <translation id="3797520601150691162">No apliquis el tema fosc a un lloc web concret</translation>
 <translation id="3803367742635802571">És possible que els llocs web que visites deixin de funcionar de la manera prevista</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" /> i <ph name="TYPE_2" />.</translation>
@@ -370,7 +368,6 @@
 <translation id="6697925417670533197">Baixades actives</translation>
 <translation id="6709432001666529933">Pregunta abans de permetre que els llocs web facin un seguiment de les teves mans (opció recomanada)</translation>
 <translation id="6722828510648505498">Bloqueja les sol·licituds d'inici de sessió procedents de serveis d'identitat.</translation>
-<translation id="6729704574271585059">Els grups que has creat es desen a la secció de grups de pestanyes i s'actualitzen en tots els teus dispositius</translation>
 <translation id="6746124502594467657">Mou avall</translation>
 <translation id="6749077623962119521">Vols restablir els permisos?</translation>
 <translation id="6766622839693428701">Llisca cap avall per tancar el full.</translation>

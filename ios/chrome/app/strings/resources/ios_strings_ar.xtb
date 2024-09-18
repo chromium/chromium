@@ -67,6 +67,7 @@
 <translation id="1363028406613469049">تتبّع</translation>
 <translation id="1364367057792633742">علامة تبويب جديدة</translation>
 <translation id="1365106417372288489">‏تمّت استعادة بيانات هاتف iPhone مؤخرًا، وبالتالي هناك احتمالية أن يكون المتصفِّح التلقائي تغيّر.</translation>
+<translation id="1366297852155605523">تمت مشاركتها معي</translation>
 <translation id="136942498637440594">يمكنك البحث عن الصور وما تراه فيها.</translation>
 <translation id="1377508275003315939">كلمات المرور</translation>
 <translation id="1383876407941801731">البحث</translation>
@@ -270,6 +271,7 @@
 <translation id="2547458583188611426">المزامنة غير مفعَّلة. يجب إدخال عبارة المرور لبدء المزامنة.</translation>
 <translation id="2551153019974022505">خطأ في الحساب</translation>
 <translation id="2577522251608256362">الحي</translation>
+<translation id="2579713773888829241">مساحات التخزين السحابي المشتركة</translation>
 <translation id="2597486707832946298">‏يمكنك الاستفادة إلى أقصى حد من المتصفّح المتوافق مع أجهزة الكمبيوتر المكتبي والمفضّل لديك على هاتف iPhone.</translation>
 <translation id="260378315836159338">في أعلى الشاشة، انقر على رمز "+"</translation>
 <translation id="2612676031748830579">رقم البطاقة</translation>
@@ -427,6 +429,7 @@
 <translation id="3587885837929752825">‏تفرض مؤسستك قيودًا على ما يمكنك حفظه في حسابك على Google.</translation>
 <translation id="3595252146048399851">‏يمكنك متى شئت اختيار البيانات التي تريد مزامنتها، وذلك من خلال <ph name="BEGIN_LINK" />الإعدادات<ph name="END_LINK" />. وقد تستخدم Google السجلّ لتخصيص "بحث Google" والخدمات الأخرى.</translation>
 <translation id="3596414637720633074">حظر ملفات تعريف الارتباط التابعة لجهات خارجية في وضع التصفّح المتخفي</translation>
+<translation id="3602260545951981695">اختَر "الحماية المحسَّنة"</translation>
 <translation id="3606746615845065096">إغلاق علامة التبويب</translation>
 <translation id="3625008969091706597">يمكنك التمرير سريعًا من الحافة للرجوع للخلف.</translation>
 <translation id="362709345066740529">يمكنك تخصيص البطاقات والخلاصة والمزيد هنا</translation>
@@ -536,6 +539,7 @@
 <translation id="4293080268407233932">بحث</translation>
 <translation id="4304713468139749426">مدير كلمات المرور</translation>
 <translation id="4309403553630140242">يُرجى النقر مرّتَين للحصول على المزيد من المعلومات.</translation>
+<translation id="4328843285884395590">ملفاتي</translation>
 <translation id="4331177082088332784">‏يمكنك إدارة هذه المعلومات من خلال BEGIN_LINK إعدادات المحتوى END_LINK.</translation>
 <translation id="4334428914252001502">مقالة واحدة غير مقروءة</translation>
 <translation id="4338650699862464074">‏إرسال عناوين URL للصفحات التي تزورها إلى Google</translation>
@@ -1013,6 +1017,7 @@
 <translation id="7015418667643980944">تقسيم العرض</translation>
 <translation id="7016070607649558507">لديك كلمة مرور واحدة ضعيفة. عليك تغييرها الآن للحفاظ على أمانك.</translation>
 <translation id="7029809446516969842">كلمات المرور</translation>
+<translation id="7039345315346323556">الأحدث</translation>
 <translation id="7055240621761583113">ملء كلمة المرور تلقائيًا</translation>
 <translation id="7063811929043357292">يدير أحد والدَيك حسابك.
 <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
@@ -1027,6 +1032,7 @@
 <translation id="713215255510512027">‫<ph name="FILENAME" />‏ (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">الكاميرا غير متاحة</translation>
 <translation id="7141960840225504692">سيتم إغلاق علامات التبويب وحذف بيانات التصفُّح</translation>
+<translation id="714291438898585119">مميّزة بنجمة</translation>
 <translation id="7149893636342594995">آخر 24 ساعة</translation>
 <translation id="716059570521443369">البحث عن النص الذي نسخته</translation>
 <translation id="7161230316646448869">مزامنة الإشارات المرجعية والسجلّ وغير ذلك على جميع الأجهزة</translation>
@@ -1069,6 +1075,7 @@
 <translation id="7435356471928173109">أوقَف المشرف وضع "التصفُّح الآمن".</translation>
 <translation id="7438481509621345350">ستظهر لك قصص من <ph name="CHANNEL_NAME" /> عند فتح علامة تبويب جديدة</translation>
 <translation id="7451023311965289370">{count,plural, =1{تم حفظ الإشارة المرجعية في "{title}".}zero{تم حفظ الإشارات المرجعية في "{title}".}two{تم حفظ الإشارتَين المرجعيتَين في "{title}".}few{تم حفظ الإشارات المرجعية في "{title}".}many{تم حفظ الإشارات المرجعية في "{title}".}other{تم حفظ الإشارات المرجعية في "{title}".}}</translation>
+<translation id="7451404862887877229">انقر على "الخصوصية والأمان" ثمّ على "التصفُّح الآمن"</translation>
 <translation id="7454057999980797137">الولاية/المقاطعة</translation>
 <translation id="7458706065921255639">الخيارات المخصَّصة والربط</translation>
 <translation id="745899714366929493">اليوم كله</translation>
@@ -1133,6 +1140,7 @@
 <translation id="7781829728241885113">أمس</translation>
 <translation id="7788868432173225918">إغلاق العرض الموسَّع</translation>
 <translation id="7791543448312431591">إضافة</translation>
+<translation id="7801064017114765401">أجهزة الكمبيوتر</translation>
 <translation id="7802239711290932774">استخدِم كلمة المرور المقترَحة:</translation>
 <translation id="780301667611848630">لا، شكرًا</translation>
 <translation id="7807060072011926525">‏خلاصة مقدَّمة من Google</translation>

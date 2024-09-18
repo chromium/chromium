@@ -130,7 +130,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1391102559483454063">On</translation>
 <translation id="1394698770495054737">Sfocatura completa</translation>
 <translation id="1395878931462960119">{DAYS,plural, =1{1 giorno fa}other{# giorni fa}}</translation>
-<translation id="1404963891829069586">Suoni della modalità Senza distrazioni</translation>
+<translation id="1404963891829069586">Suoni della modalità Niente distrazioni</translation>
 <translation id="1407069428457324124">Tema scuro</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Usa i tasti Freccia per spostarti tra le date.</translation>
 <translation id="141170878022560212">Pulsante centrale</translation>
@@ -215,6 +215,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1703117532528082099">Finestra attiva agganciata a sinistra.</translation>
 <translation id="1708345662127501511">Scrivania: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Impostazioni di rete</translation>
+<translation id="171610090693716835">Tieni tutto sotto controllo con playlist personalizzate per la concentrazione. YouTube Music e YouTube senza annunci con 3 mesi di YouTube Premium senza costi.</translation>
 <translation id="1719094688023114093">La funzionalità Sottotitoli in tempo reale è attiva.</translation>
 <translation id="1720011244392820496">Attiva Sync Wi-Fi</translation>
 <translation id="1720230731642245863">L'hotspot è disattivato</translation>
@@ -1411,6 +1412,7 @@ Nessun dispositivo connesso.</translation>
 <translation id="5777841717266010279">Interrompere la condivisione dello schermo?</translation>
 <translation id="5779721926447984944">File bloccati</translation>
 <translation id="5785221443435874078">Rimuovi questo suggerimento</translation>
+<translation id="5787431783058088906">Ricevi vantaggio</translation>
 <translation id="5788127256798019331">File Google Play</translation>
 <translation id="5788535737706478207">Riapri l'ultima scheda o finestra chiusa</translation>
 <translation id="5790085346892983794">Completato</translation>
@@ -1642,6 +1644,7 @@ Nuova installazione</translation>
 <translation id="6574587113394758819">Le notifiche di <ph name="APP_TITLE" /> sono nascoste perché è attiva la visualizzazione protetta</translation>
 <translation id="6574622320167699133">Sbloccato dal tuo telefono. Tocca o fai clic per accedere.</translation>
 <translation id="6578407462441924264">Senza nome</translation>
+<translation id="6582012689384648647">Per playlist personalizzate per la concentrazione, consenti l'accesso a YouTube Music</translation>
 <translation id="6582034443359256692">Calcolo del livello di carica della batteria in corso…</translation>
 <translation id="6585808820553845416">La sessione terminerà tra <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
@@ -1861,7 +1864,7 @@ Nuova installazione</translation>
 <translation id="7386767620098596324">Attiva/disattiva la connessione di rete. <ph name="STATE_TEXT" />.</translation>
 <translation id="7392563512730092880">Puoi sempre effettuare la configurazione in un secondo momento dalle Impostazioni.</translation>
 <translation id="7401222354741467707">Acquisisci registrazione dello schermo o screenshot completi</translation>
-<translation id="7401788553834047908">Non disturbare finché è attiva la modalità Non disturbare</translation>
+<translation id="7401788553834047908">Non disturbare finché è attiva la modalità Niente distrazioni</translation>
 <translation id="7405710164030118432">Per sbloccare il dispositivo, inserisci il codice di accesso genitore di Family Link</translation>
 <translation id="7406608787870898861">Completa la configurazione della rete mobile</translation>
 <translation id="7406854842098869085">Tieni premuto <ph name="MODIFIER_1" />, tocca <ph name="KEY" /> finché non arrivi alla finestra che vuoi aprire, quindi rilascia</translation>
@@ -1880,6 +1883,7 @@ Nuova installazione</translation>
 <translation id="7477793887173910789">Gestisci la tua musica, i tuoi video e altro ancora</translation>
 <translation id="7488762544858401571">Modificato</translation>
 <translation id="7489261257412536105">Attiva o esci da schermo intero</translation>
+<translation id="7490157877815329797">Per ascoltare musica senza annunci e goderti musica personalizzata per la concentrazione, prova YouTube Music Premium</translation>
 <translation id="7490360161041035804">Puoi bloccare i file importanti, inclusi i file di Google Drive. Per bloccare l'elemento, passa il mouse sopra un elemento o apri File e fai clic con il tasto destro del mouse su un elemento.</translation>
 <translation id="7497767806359279797">Scegli la lingua e la tastiera</translation>
 <translation id="7507162824403726948">Completa la verifica dell'identità</translation>
@@ -2155,6 +2159,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="8380784334203145311">Buonanotte,</translation>
 <translation id="8382715499079447151">Visualizzazione protetta</translation>
 <translation id="8383614331548401927">Riepilogo di benvenuto</translation>
+<translation id="838540623579162843">Scopri Music Premium</translation>
 <translation id="8388750414311082622">Impossibile rimuovere l'ultima scrivania.</translation>
 <translation id="8394567579869570560">Uno dei tuoi genitori ha bloccato questo dispositivo</translation>
 <translation id="8401850874595457088">Menu per impostare la lingua</translation>

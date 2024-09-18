@@ -35,6 +35,7 @@
 <translation id="1155154308031262006">တိုက်တွန်းချက် ထည့်ရန်</translation>
 <translation id="115705039208660697">နာနတ်သီး</translation>
 <translation id="1164939766849482256">မိုးသောက်ချိန်မှ မှောင်မိုက်ချိန်အထိ စခရင်နားချိန်ပုံ</translation>
+<translation id="1166688493741195933">အသံဖိုင်အမည်များ ထုတ်လုပ်၍ မရလိုက်ပါ</translation>
 <translation id="1167755866710282443">ကီးများ စိတ်ကြိုက်လုပ်ရန် မီနူးဖွင့်ပါ။ ရွှေ့ရန် မီနူးကို ဖိဆွဲပါ။</translation>
 <translation id="1171349345463658120">သဲထူသောထုံးအိုင်</translation>
 <translation id="1173894706177603556">အမည်ပြောင်းရန်</translation>
@@ -341,6 +342,7 @@
 <translation id="2560876255701405320">အသံသွင်းချက်စာရင်း</translation>
 <translation id="2561093647892030937">သံပရိုသီး</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> စစ်ဆေးမှု လုပ်ဆောင်နေသည်...</translation>
+<translation id="2573178735329662769">Chromebook အသံအားလုံးကို ဖမ်းယူခြင်း</translation>
 <translation id="2575552334616524665">၎င်းကို ဆက်တင်များ (သို့) <ph name="THREE_DOTS_MENU_ICON" /> မီနူးတွင် ဖွင့်နိုင်သည်</translation>
 <translation id="2576253868710695442">၎င်းက သိုလှောင်ခန်း 2GB အထိ နေရာယူမည်</translation>
 <translation id="2584547424703650812">တောက်ပသောမြင်ကွင်း</translation>
@@ -493,6 +495,7 @@
 <translation id="3502426834823382181">အက်ပ်အားလုံး ကြည့်ရန်</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />စွမ်းဆောင်ရည် မှတ်တမ်းဒေတာ<ph name="END_LINK1" /> ပို့ရန်</translation>
 <translation id="3517001332549868749">ChromeOS အပ်ဒိတ်</translation>
+<translation id="3522508178835057262">စာလုံး <ph name="MAX_WORD_LENGTH" /> လုံးထက်ရှည်သော စာသားမှတ်တမ်းကို လောလောဆယ် မပံ့ပိုးပါ</translation>
 <translation id="3527036260304016759">မအောင်မြင်ပါ - အမည်မသိ အမှား</translation>
 <translation id="353214771040290298">တည်းဖြတ်ပြီးပါပြီ</translation>
 <translation id="3532980081107202182"><ph name="MIN_REMAINING" /> မိနစ်ခန့် ကျန်သည်</translation>
@@ -508,6 +511,7 @@
 <translation id="3588034708467091142">အင်တာနက်နှင့် ချိတ်ဆက်ထားခြင်း ရှိ၊ မရှိ စစ်ဆေးပြီး ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> သည် <ph name="APN_NAME" /> အတွက် အသုံးပြုရ လွယ်ကူသော အမည်ဖြစ်သည်။</translation>
 <translation id="3595596368722241419">ဘက်ထရီ အားပြည့်နေ</translation>
+<translation id="3600063043775287169">Chromebook အသံဖွင့်ထားပါက Recorder သည် ဤစက်တွင်ဖွင့်ထားသော အသံအားလုံးကို ဖမ်းယူပါသည်။ အသံအားလုံးကို ဖမ်းယူလိုကြောင်း သေချာပါစေ။</translation>
 <translation id="3600339377155080675">စကရင်ပွားရန်</translation>
 <translation id="3602290021589620013">ကြိုကြည့်ရန်</translation>
 <translation id="3603829704940252505">အယ်ဗတာ</translation>
@@ -710,6 +714,7 @@
 <translation id="4602266091140407479">မိုက်</translation>
 <translation id="4607282946861182308">၎င်း၏ပုံများ ပြုလုပ်၍မရပါ။ အခြားတိုက်တွန်းချက်ဖြင့် စမ်းကြည့်ပါ။</translation>
 <translation id="4609350030397390689">ကီးဘုတ်တောက်ပမှု လျှော့ရန်</translation>
+<translation id="4623061655523261501">အသံဖိုင်အမည်များ ထုတ်လုပ်ပြီးပါပြီ</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />၊ <ph name="PRINTER_NAME" />၊ <ph name="CREATION_TIME" />၊ စာမျက်နှာ <ph name="TOTAL_PAGE_NUMBER" /> မျက်နှာအနက် <ph name="PRINTED_PAGE_NUMBER" /> မျက်နှာ။ ပရင့်ထုတ်ရန်ဖိုင် ပယ်ဖျက်ရန် enter နှိပ်ပါ။</translation>
 <translation id="463791356324567266">စကင်ဖတ်ခြင်းကို ပယ်ဖျက်နေသည်…</translation>
 <translation id="4644611440022666152">ဖွင့်ပြီး ဒေါင်းလုဒ်လုပ်ရန်</translation>
@@ -1215,6 +1220,7 @@
 <translation id="708426984172631313">ရပ်ထားသည်</translation>
 <translation id="7086168019478250425">အလင်းဖြာထွက် ကမ်းခြေ</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="7086916854357021265">အသံဖိုင်အမည်များ ထုတ်လုပ်နေသည်</translation>
 <translation id="7097908713073775559">အရောင်စုံ</translation>
 <translation id="710028965487274708">မအောင်မြင်ပါ - ခွင့်ပြုချက်ပေး၍ မရပါ</translation>
 <translation id="7101959270679078188">အပ်ဒိတ်လုပ်ငန်းစဉ် ရှေ့ဆက်ရန် <ph name="DEVICE_NAME" /> ကို ဖွင့်ပါ</translation>

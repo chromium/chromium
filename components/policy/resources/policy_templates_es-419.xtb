@@ -3051,6 +3051,13 @@ Si no la estableces, se podrá ejecutar JavaScript, pero los usuarios podrán ca
 
       Si no estableces la política, <ph name="PRODUCT_NAME" /> cargará todos los hosts de mensajería nativa instalados.</translation>
 <translation id="3211426942294667684">Configuración de acceso en el navegador</translation>
+<translation id="3213872023700948990">Esta política ofrece una inhabilitación temporal para el nuevo comportamiento de los desplazadores enfocables del teclado.
+
+Si habilitas esta política o no la estableces, los desplazadores sin elementos secundarios enfocables se enfocarán con el teclado de forma predeterminada.
+
+Si la inhabilitas, no se podrán enfocar los desplazadores de forma predeterminada con el teclado.
+
+Esta política es una solución temporal y se quitará en la versión M135.</translation>
 <translation id="3217774577897351942">La API de <ph name="OFFSET_PARENT" /> se modificará en <ph name="PRODUCT_NAME" /> a fin de cumplir con los cambios realizados en <ph name="FIREFOX_PRODUCT_NAME" /> y <ph name="SAFARI_PRODUCT_NAME" />. Esta política recupera el comportamiento anterior hasta la versión M120.
 
 El comportamiento nuevo puede generar fallas en algunos sitios web exclusivos de <ph name="PRODUCT_NAME" /> que usan <ph name="OFFSET_PARENT" />, <ph name="OFFSET_TOP" /> o <ph name="OFFSET_LEFT" /> junto con Shadow DOM.
@@ -7045,6 +7052,13 @@ Si no estableces la política, se usará el valor predeterminado global para tod
 <translation id="6207607210601267301">Inhabilitar la autenticación sin PIN para el host de acceso remoto</translation>
 <translation id="6208896993204286313">Enviar la información de la política de <ph name="PRODUCT_NAME" /></translation>
 <translation id="6210259502936598222">Enviar la información del SO y de la versión de <ph name="PRODUCT_NAME" /></translation>
+<translation id="6215023506958127056">Controla la instalación de extensiones externas.
+
+Si habilitas esta política, no se podrán instalar extensiones externas.
+
+Si inhabilitas esta política o no la estableces, se podrán instalar extensiones externas.
+
+Las extensiones externas y su instalación están documentadas en https://developer.chrome.com/docs/extensions/how-to/distribute/install-extensions.</translation>
 <translation id="6220835555850906733">Si habilitas la política o no la estableces, se permitirán todas las salidas de audio compatibles en los dispositivos de los usuarios.
 
       Si la inhabilitas, no se permitirá ninguna salida de audio cuando los usuarios acceden a su cuenta.
@@ -7582,6 +7596,9 @@ NOTA: El comportamiento predeterminado de los dispositivos de usuario y empresar
           Para bloquear la pantalla cuando está inactiva, se recomienda habilitar el bloqueo de pantalla en la suspensión y que se suspenda <ph name="PRODUCT_OS_NAME" /> después de la demora de inactividad. Esta política solo debe usarse si el bloqueo de pantalla ocurre mucho antes que la suspensión o si no se desea la suspensión por inactividad.
 
           El valor de la política debe especificarse en milisegundos. Se establecerán los valores de modo que sean inferiores a la demora de inactividad.</translation>
+<translation id="6496139622896320246">Si habilitas la política, <ph name="PRODUCT_OS_NAME" /> guardará automáticamente las credenciales de Wi-Fi activo del kiosco a nivel del dispositivo. Esto significa que cualquier otro usuario o aplicación de kiosco puede usar el Wi-Fi activo.
+Si no estableces esta política o la inhabilitas, las credenciales de Wi-Fi activo del kiosco se almacenarán a nivel del kiosco. Por lo tanto, el Wi-Fi configurado en una aplicación de kiosco solo se puede usar en esa misma aplicación de kiosco.
+No se recomienda esta política y se debe usar cuando no haya otras opciones disponibles (p. ej., la política OpenNetworkConfiguration).</translation>
 <translation id="6497085755801788141">Usar el verificador de certificados integrado</translation>
 <translation id="6499579502664610993">Anular conjuntos de sitios web relacionados</translation>
 <translation id="6504720469162323184">Si estableces la política, se determinará la cantidad de tiempo (expresado en milisegundos) sin actividad del usuario antes de acceder automáticamente a la cuenta local del dispositivo especificada en la política <ph name="DEVICE_LOCAL_ACCOUNT_AUTO_LOGIN_ID_POLICY_NAME" />.

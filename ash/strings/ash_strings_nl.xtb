@@ -78,6 +78,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1240638468526743569">Een app</translation>
 <translation id="1242198791279543032">Meldingen worden gedempt</translation>
 <translation id="1242883863226959074">apparaat</translation>
+<translation id="1245476784081715330">Goed werk!</translation>
 <translation id="1245644940275736236">Naar de Assistent</translation>
 <translation id="124678866338384709">Huidig tabblad sluiten</translation>
 <translation id="1246890715821376239">Niet-ondersteunde apps</translation>
@@ -842,6 +843,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="3958714870339660776">Hele dag</translation>
 <translation id="3962859241508114581">Vorig nummer</translation>
 <translation id="3963124517343721543">Ga makkelijk verder waar je gebleven was door je vorige vensters en tabbladen te openen. Je ziet ook gepersonaliseerde suggesties voor wat je daarna kunt doen.</translation>
+<translation id="396506362088290977">Je microfoongeluid testen</translation>
 <translation id="3969043077941541451">Uit</translation>
 <translation id="3970324493235864154">Meldingen van je telefoon bekijken</translation>
 <translation id="397105322502079400">Berekenen...</translation>
@@ -899,6 +901,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="4156293514828496577">Nog <ph name="PERCENTAGE" />% batterijlading (ongeveer <ph name="TIME_LEFT" />).
 Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="4160919062868802509">Meerdere audiobronnen gevonden</translation>
+<translation id="416245495747357243">Klaar!</translation>
 <translation id="4165275524535002941">De kabel ondersteunt misschien geen schermen</translation>
 <translation id="4177415338862979658">Klik voor details</translation>
 <translation id="4177913004758410636">{0,plural, =1{Apparaat binnen een dag updaten}other{Apparaat binnen # dagen updaten}}</translation>
@@ -984,6 +987,7 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> staat uit.</translation>
 <translation id="4417647906073317561">Focusinstellingen. Stel een timer, taak en muziek in om in de flow te komen.</translation>
 <translation id="4424159417645388645">Bureau 5</translation>
+<translation id="4426817706804363424">Goed zo!</translation>
 <translation id="4430019312045809116">Volume</translation>
 <translation id="4441283832827406317">Apps zijn gesorteerd op naam</translation>
 <translation id="4445159312344259901">Log in om te ontgrendelen</translation>
@@ -1248,6 +1252,7 @@ Je kunt ook de sneltoets gebruiken. Markeer eerst de tekst en druk dan op <ph na
 <translation id="5283198616748585639">1 min toevoegen</translation>
 <translation id="528468243742722775">Beëindigen</translation>
 <translation id="5286194356314741248">Scannen</translation>
+<translation id="528641622273682395">Microfoontest aan-/uitzetten</translation>
 <translation id="5297423144044956168">Geen mobiele apparaten gevonden</translation>
 <translation id="5297704307811127955">Uit</translation>
 <translation id="5300589172476337783">Tonen</translation>
@@ -1275,6 +1280,7 @@ Geen apparaten verbonden.</translation>
 <translation id="536019650977002321">Je beheerder staat geen audio-opnamen toe. Neem contact op met je beheerder voor meer informatie.</translation>
 <translation id="5361524080961918551">Spraakbestanden voor <ph name="LANGUAGE" /> gedeeltelijk gedownload</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Naar dit tabblad gaan</translation>
+<translation id="5363835273551457276">Je kunt het microfoongeluid testen. Sluit het deelvenster om te stoppen.</translation>
 <translation id="5364693579536176785">opslagruimte</translation>
 <translation id="5369573834963677938">Gezichtsbediening is beschikbaar voor andere gebruikers op het apparaat</translation>
 <translation id="5369717264580061086">Voorbeeld van bestand bekijken in de app Bestanden</translation>
@@ -2126,6 +2132,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="8262312463845990408">Afspelen aan-/uitzetten</translation>
 <translation id="8268302343625273732">Alle opdrachten in Google Classroom bekijken</translation>
 <translation id="8277261673056602147">Tekst op je scherm markeren</translation>
+<translation id="8282784978194352587">Gelukt!</translation>
 <translation id="8287009018010202411">Productiviteit</translation>
 <translation id="828708037801473432">Uit</translation>
 <translation id="8297006494302853456">Zwak</translation>
@@ -2203,6 +2210,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="8609384513243082612">Nieuw tabblad openen</translation>
 <translation id="861045123704058818">Apps worden tijdelijk ingedeeld op categorie</translation>
 <translation id="8612216344243590325">Bewaar belangrijke bestanden in <ph name="HOLDING_SPACE_TITLE" /> in plaats van op het bureaublad. Sleep bestanden naar <ph name="HOLDING_SPACE_TITLE" />.</translation>
+<translation id="8612338981637220013">Goed bezig!</translation>
 <translation id="8614517853887502247">Meldingen van <ph name="APP_1_TITLE" /> en <ph name="APP_2_TITLE" /> zijn verborgen omdat weergavebeveiliging aanstaat</translation>
 <translation id="8615778328722901791">Werkbalk openen</translation>
 <translation id="8619000641825875669">OneDrive</translation>
@@ -2245,6 +2253,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />: activeren...</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
 <ph name="SCREEN_SHARE_STATUS" /></translation>
+<translation id="8751299148074971734">Ga zo door!</translation>
 <translation id="8753368202781196133">Deze taal wordt op dit moment niet ondersteund.</translation>
 <translation id="8755498163081687682">Je identiteit verifiëren: <ph name="ORIGIN_NAME" /> wil bevestigen dat jij het bent</translation>
 <translation id="875593634123171288">VPN-instellingen bekijken</translation>

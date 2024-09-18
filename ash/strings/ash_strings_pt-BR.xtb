@@ -78,6 +78,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1240638468526743569">Um app</translation>
 <translation id="1242198791279543032">As notificações estão desativadas</translation>
 <translation id="1242883863226959074">dispositivo</translation>
+<translation id="1245476784081715330">Muito bem!</translation>
 <translation id="1245644940275736236">Ir para o Assistente</translation>
 <translation id="124678866338384709">Fechar a guia atual</translation>
 <translation id="1246890715821376239">Apps sem suporte</translation>
@@ -842,6 +843,7 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="3958714870339660776">O dia todo</translation>
 <translation id="3962859241508114581">Faixa anterior</translation>
 <translation id="3963124517343721543">Abra as janelas e guias anteriores para continuar de onde parou. Você também verá sugestões personalizadas do que fazer em seguida.</translation>
+<translation id="396506362088290977">Teste o som do microfone</translation>
 <translation id="3969043077941541451">Desativado</translation>
 <translation id="3970324493235864154">Visualize as notificações do smartphone</translation>
 <translation id="397105322502079400">Calculando...</translation>
@@ -899,6 +901,7 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="4156293514828496577"><ph name="PERCENTAGE" />% de bateria (cerca de <ph name="TIME_LEFT" />).
 Alguns recursos estão limitados para aumentar a duração da bateria.</translation>
 <translation id="4160919062868802509">Várias fontes de áudio detectadas</translation>
+<translation id="416245495747357243">Pronto!</translation>
 <translation id="4165275524535002941">Talvez o cabo não transmita sinal de vídeo</translation>
 <translation id="4177415338862979658">Clique para verificar os detalhes</translation>
 <translation id="4177913004758410636">{0,plural, =1{Atualize o dispositivo em 1 dia}one{Atualize o dispositivo em # dia}other{Atualize o dispositivo em # dias}}</translation>
@@ -984,6 +987,7 @@ Alguns recursos estão limitados para aumentar a duração da bateria.</translat
 <translation id="4412944820643904175">O recurso <ph name="FEATURE_NAME" /> está desativado.</translation>
 <translation id="4417647906073317561">Configurações de foco. Defina um timer, uma tarefa e uma música para entrar no ritmo.</translation>
 <translation id="4424159417645388645">Espaço de trabalho 5</translation>
+<translation id="4426817706804363424">Parabéns!</translation>
 <translation id="4430019312045809116">Volume</translation>
 <translation id="4441283832827406317">Os apps estão ordenados por nome</translation>
 <translation id="4445159312344259901">Faça login para desbloquear</translation>
@@ -1248,6 +1252,7 @@ Também é possível usar o atalho do teclado. Primeiro, destaque o texto e depo
 <translation id="5283198616748585639">Adicionar 1 min</translation>
 <translation id="528468243742722775">Fim</translation>
 <translation id="5286194356314741248">Verificando</translation>
+<translation id="528641622273682395">Ativar/desativar o teste do microfone</translation>
 <translation id="5297423144044956168">Nenhum dispositivo móvel encontrado</translation>
 <translation id="5297704307811127955">Desativado</translation>
 <translation id="5300589172476337783">Mostrar</translation>
@@ -1275,6 +1280,7 @@ Nenhum dispositivo conectado.</translation>
 <translation id="536019650977002321">O administrador não permite a captura de áudio. Entre em contato com ele para saber mais.</translation>
 <translation id="5361524080961918551">Arquivos de fala em <ph name="LANGUAGE" /> parcialmente baixados</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Ir para essa guia</translation>
+<translation id="5363835273551457276">Você pode testar o som do microfone. Feche o painel para interromper o recurso.</translation>
 <translation id="5364693579536176785">espaço de armazenamento</translation>
 <translation id="5369573834963677938">O controle facial vai ficar disponível para outros usuários no dispositivo</translation>
 <translation id="5369717264580061086">Visualizar arquivo no app Arquivos</translation>
@@ -2126,6 +2132,7 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="8262312463845990408">Pausar/continuar a reprodução</translation>
 <translation id="8268302343625273732">Mostrar todas as atividades no Google Sala de Aula</translation>
 <translation id="8277261673056602147">Destacar texto na tela</translation>
+<translation id="8282784978194352587">Você conseguiu!</translation>
 <translation id="8287009018010202411">Produtividade</translation>
 <translation id="828708037801473432">Desativada</translation>
 <translation id="8297006494302853456">Fraco</translation>
@@ -2203,6 +2210,7 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="8609384513243082612">Abrir nova guia</translation>
 <translation id="861045123704058818">Os apps estão temporariamente organizados por categoria</translation>
 <translation id="8612216344243590325">Deixe arquivos importantes no espaço <ph name="HOLDING_SPACE_TITLE" /> em vez da área de trabalho. Basta arrastá-los para <ph name="HOLDING_SPACE_TITLE" />.</translation>
+<translation id="8612338981637220013">Você está indo bem!</translation>
 <translation id="8614517853887502247">As notificações dos apps <ph name="APP_1_TITLE" /> e <ph name="APP_2_TITLE" /> estão ocultas porque a proteção de visualização está ativada</translation>
 <translation id="8615778328722901791">Abrir a barra de ferramentas</translation>
 <translation id="8619000641825875669">OneDrive</translation>
@@ -2245,6 +2253,7 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />: ativando…</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
+<translation id="8751299148074971734">Continue assim!</translation>
 <translation id="8753368202781196133">Esse idioma não está disponível no momento</translation>
 <translation id="8755498163081687682">Confirme sua identidade: <ph name="ORIGIN_NAME" /> quer confirmar que é você</translation>
 <translation id="875593634123171288">Mostrar configurações de VPN</translation>

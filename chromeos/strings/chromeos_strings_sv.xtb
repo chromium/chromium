@@ -127,6 +127,7 @@
 <translation id="1567064801249837505">Album</translation>
 <translation id="1572585716423026576">Använd som bakgrund</translation>
 <translation id="1578784163189013834">Välj bakgrund för skärmsläckare</translation>
+<translation id="1587031308639983732">Tidsbaserade ändringar kanske inte är korrekta. Den här inställningen hanteras av administratören.</translation>
 <translation id="1588438908519853928">Normal</translation>
 <translation id="1591562245178063882">Den här månaden</translation>
 <translation id="1593528591614229756">Välj endast APN:er som tillhandahålls av mobiloperatören eller administratören. När du väljer en APN inaktiveras eventuella anpassade APN:er. Ogiltiga APN:er kan störa mobilanslutningen. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>

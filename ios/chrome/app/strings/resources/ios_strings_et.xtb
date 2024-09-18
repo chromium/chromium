@@ -80,6 +80,7 @@
 <translation id="1363028406613469049">Rada</translation>
 <translation id="1364367057792633742">Uus vaheleht</translation>
 <translation id="1365106417372288489">Teie iPhone taastati hiljuti, mistõttu võis teie vaikebrauseri muutuda.</translation>
+<translation id="1366297852155605523">Minuga jagatud</translation>
 <translation id="136942498637440594">Saate otsida pilte ja seda, mida näete.</translation>
 <translation id="1377508275003315939">Paroolid</translation>
 <translation id="1381022135873211423">{count,plural, =1{{position}. aadress {count}-st}other{{count}. aadress {position}-st}}</translation>
@@ -333,6 +334,7 @@ Saidid ei saa küpsisefailide abil eri saitidel teie sirvimistegevust jälgida (
 <translation id="2551153019974022505">Konto viga</translation>
 <translation id="2559843230610279254">Vahelehegrupp <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> vahelehte.</translation>
 <translation id="2577522251608256362">Naabruskond</translation>
+<translation id="2579713773888829241">Jagatud kettad</translation>
 <translation id="2597486707832946298">Võtke oma lemmikust arvutibrauserist iPhone'is maksimum.</translation>
 <translation id="260378315836159338">Puudutage ekraanikuva ülaosas nuppu +</translation>
 <translation id="2612676031748830579">Kaardi number</translation>
@@ -528,6 +530,7 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="3591006724568464696">Hiljutised vahelehed pole saadaval</translation>
 <translation id="3595252146048399851">Jaotises <ph name="BEGIN_LINK" />Seaded<ph name="END_LINK" /> saate igal ajal valida, mida sünkroonida. Google võib Otsingut ja muid teenuseid teie ajaloo alusel isikupärastada.</translation>
 <translation id="3596414637720633074">Blokeeri kolmanda osapoole küpsisefailid inkognito režiimis</translation>
+<translation id="3602260545951981695">Valige „Täiustatud kaitse“</translation>
 <translation id="3606746615845065096">Sulge vaheleht</translation>
 <translation id="3622175633937495219">Otsinguajalugu (leiti <ph name="COUNT" />)</translation>
 <translation id="3625008969091706597">Tagasiliikumiseks saate pühkida serva.</translation>
@@ -668,6 +671,7 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="4304713468139749426">Paroolihaldur</translation>
 <translation id="4309403553630140242">Topeltpuudutage lisateabe saamiseks</translation>
 <translation id="4324735664183300693">Lülita märguanded sisse</translation>
+<translation id="4328843285884395590">Minu ketas</translation>
 <translation id="4331177082088332784">Saate seda hallata menüüs BEGIN_LINK Sisu seaded END_LINK</translation>
 <translation id="4333100555184633720">Sirvimisandmete kustutamine</translation>
 <translation id="4334428914252001502">1 lugemata artikkel.</translation>
@@ -1265,6 +1269,7 @@ Inkognito režiimis ei saa saidid küpsisefailide abil eri saitidel teie sirvimi
 <translation id="7026724612456523899">Jälgi saadetisi alati</translation>
 <translation id="7029809446516969842">Paroolid</translation>
 <translation id="7035825883570480307">Kas lülitada märguanded sisse?</translation>
+<translation id="7039345315346323556">Hiljutised</translation>
 <translation id="7055240621761583113">Parooli automaatselt täitmine</translation>
 <translation id="7058455400288852416">Ava vahelehtede vaheti</translation>
 <translation id="7063811929043357292">Sinu kontot haldab vanem.
@@ -1282,6 +1287,7 @@ Inkognito režiimis ei saa saidid küpsisefailide abil eri saitidel teie sirvimi
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">Kaamera pole saadaval</translation>
 <translation id="7141960840225504692">Teie vahelehed suletakse ja sirvimisandmed kustutatakse</translation>
+<translation id="714291438898585119">Tärniga tähistatud</translation>
 <translation id="7146301801400584641">Saadaval on kalendrifail</translation>
 <translation id="7149893636342594995">Viimased 24 tundi</translation>
 <translation id="716059570521443369">Otsi kopeeritud teksti</translation>
@@ -1336,6 +1342,7 @@ Inkognito režiimis ei saa saidid küpsisefailide abil eri saitidel teie sirvimi
 <translation id="7435356471928173109">Administraator on välja lülitanud</translation>
 <translation id="7438481509621345350">Uue vahelehe avamisel näete nüüd lugusid kanalist <ph name="CHANNEL_NAME" />.</translation>
 <translation id="7451023311965289370">{count,plural, =1{Järjehoidja salvestati kohta „{title}“}other{Järjehoidjad salvestati kohta „{title}“}}</translation>
+<translation id="7451404862887877229">Puudutage valikut „Privaatsus ja turvalisus“ ning seejärel valikut „Google'i ohutu sirvimine“</translation>
 <translation id="7454057999980797137">Osariik/maakond</translation>
 <translation id="7458706065921255639">Isikupärastamine ja linkimine</translation>
 <translation id="745899714366929493">Kogu päev</translation>
@@ -1414,6 +1421,7 @@ Inkognito režiimis ei saa saidid küpsisefailide abil eri saitidel teie sirvimi
 <translation id="7788868432173225918">Laiendatud vaatest loobumine</translation>
 <translation id="7790954908631836016">Peida valik Taotle arvutisaiti</translation>
 <translation id="7791543448312431591">Lisa</translation>
+<translation id="7801064017114765401">Arvutid</translation>
 <translation id="7802239711290932774">Kasutage soovitatud parooli:</translation>
 <translation id="780301667611848630">Tänan, ei</translation>
 <translation id="7807060072011926525">Pakub Google</translation>

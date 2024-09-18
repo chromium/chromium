@@ -677,6 +677,7 @@
 <translation id="2212735316055980242">Саясат табылмады</translation>
 <translation id="2213606439339815911">Жазбалар алынуда…</translation>
 <translation id="2213612003795704869">Бет басып шығарылды.</translation>
+<translation id="2215368073167343359">Google-мен автотолтыру</translation>
 <translation id="2215539479425228550">Альпинизм және құзға өрмелеу</translation>
 <translation id="2215727959747642672">Файлды өңдеу</translation>
 <translation id="2215963164070968490">Иттер</translation>
@@ -709,6 +710,7 @@
 <translation id="2262243747453050782">HTTP қатесі</translation>
 <translation id="2265192657948645752">Бөлшек сауда жұмыстары</translation>
 <translation id="2265356434276802347">Бұл саясаттағы таңдаулы жазбалардың максималды саны: <ph name="MAX_ITEMS_LIMIT" />.</translation>
+<translation id="2266175583972138136">Карта бонустарының шарттары бар</translation>
 <translation id="2267047181501709434">Жеке басыңыз расталуда...</translation>
 <translation id="2268044343513325586">Нақтылау</translation>
 <translation id="2268966938956566076"><ph name="MINUTES" /> минутта жүктеп салу</translation>
@@ -1796,6 +1798,7 @@
 <translation id="4269264543938335308">Жүзуге арналған киім</translation>
 <translation id="4269599248168651462">Сервер сертификаты бірегей емес атқа берілді.</translation>
 <translation id="4270541775497538019">6-жинастырушы</translation>
+<translation id="4271652479722040953">Chrome браузеріне кеңейтімдер қосылғанда, бұл кеңейтімдер туралы тиісті деректер талдау мақсатында үшінші тараптарға жіберіліп, әкімшіңізге көрінуі мүмкін. Деректерге атауы, орнату уақыты, орнату көзі сияқты кеңейтімдер туралы ақпарат, сондай-ақ осы кеңейтімдерге қатысты әрекеттер (мысалы, қойындыларды өзгерту, веб-сайттарға жүгіну немесе cookie файлдарына кіру) кіреді. Бұл деректер Chrome Web Store дүкенінен орнатылған кеңейтімдер, сондай-ақ дүкеннен тыс жүктеп алынған кеңейтімдер үшін жиналады.</translation>
 <translation id="4275830172053184480">Құрылғыңызды қайта іске қосу</translation>
 <translation id="4276974990916607331">Жоқ, рақмет</translation>
 <translation id="4277028893293644418">Құпия сөзді қайта орнату</translation>
@@ -1877,6 +1880,7 @@
 <translation id="4406896451731180161">іздеу нәтижелері</translation>
 <translation id="4408413947728134509">Cookie файлдары: <ph name="NUM_COOKIES" /></translation>
 <translation id="4412074349188076601">Бұл конфигурация орнатуға болады деп белгіленген, бірақ бұл архитектура үшін образ берілмеген, сондықтан оны орнату мүмкін емес.</translation>
+<translation id="4414452699610169758">Құпия сөздерді, төлеу әдістерін және мекенжайларды сақтау және толтыру үшін Google Password Manager және Chrome браузерінің автотолтыру функциясын пайдаланыңыз.</translation>
 <translation id="4414515549596849729">cookie файлдары және сайт деректері</translation>
 <translation id="4415156962929755728">Пластик (жылтырлығы жоғары)</translation>
 <translation id="4415426530740016218">Алып кету мекенжайы</translation>
@@ -3376,6 +3380,7 @@
 <translation id="7232352818707016189">Салыстыру кестесіне арналған басқа әрекеттер</translation>
 <translation id="7233592378249864828">Растау парағын басып шығару</translation>
 <translation id="7234112195906418665">Саяхат және тасымалдау</translation>
+<translation id="7234585564776614047">Басқа қызметпен автотолтыру</translation>
 <translation id="7236417832106250253"><ph name="PROGRESS_PERCENT" />% аяқталды | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
 <translation id="7237166092326447040">Сыйлықтар және арнайы іс-шара элементтері</translation>
 <translation id="7237454422623102448">Жүйе параметрлері</translation>
@@ -4036,6 +4041,7 @@
 <translation id="8409413588194360210">төлем өңдегіштері</translation>
 <translation id="8412145213513410671">Бұзылу (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">Бірдей құпия фразаны екі рет енгізу керек.</translation>
+<translation id="8414322570408428950">Кеңейтім оқиғасы орын алады</translation>
 <translation id="8416694386774425977">Желі конфигурациясы жарамсыз және импорттау мүмкін емес.
 Қосымша мәліметтер:
 <ph name="DEBUG_INFO" /></translation>
@@ -4287,6 +4293,7 @@
 <translation id="8891031436559779793">Қандай да бір сайтта баға төмендесе, сізге хабарланады.</translation>
 <translation id="8891727572606052622">Жарамсыз прокси режимі.</translation>
 <translation id="8894794286471754040">Алдымен ұзын шеті</translation>
+<translation id="8895334001368918465">Chrome браузерінде басқа автотолтыру қызметін пайдалану үшін оны Android параметрлерінде және осы жерден қосыңыз</translation>
 <translation id="8897428486789851669">Жүзу</translation>
 <translation id="8899807382908246773">Мазалайтын жарнамалар</translation>
 <translation id="8903921497873541725">Үлкейту</translation>

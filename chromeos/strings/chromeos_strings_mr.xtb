@@ -35,6 +35,7 @@
 <translation id="1155154308031262006">प्रॉम्प्ट एंटर करा</translation>
 <translation id="115705039208660697">अननस</translation>
 <translation id="1164939766849482256">डॉन टू डार्क स्क्रीन सेव्हर</translation>
+<translation id="1166688493741195933">रेकॉर्डिंगची नावे जनरेट करता आली नाहीत</translation>
 <translation id="1167755866710282443">की कस्टमाइझ करण्यासाठी मेनू उघडा. हलवण्यासाठी मेनू ड्रॅग करा.</translation>
 <translation id="1171349345463658120">वाळूचे सरोवर</translation>
 <translation id="1173894706177603556">नाव बदला</translation>
@@ -494,6 +495,7 @@
 <translation id="3502426834823382181">सर्व अ‍ॅप्स पहा</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />परफॉर्मन्स माग डेटा<ph name="END_LINK1" /> पाठवा</translation>
 <translation id="3517001332549868749">ChromeOS अपडेट</translation>
+<translation id="3522508178835057262">सध्या, <ph name="MAX_WORD_LENGTH" /> हून अधिक शब्दांच्या ट्रान्स्क्रिप्टला सपोर्ट नाही</translation>
 <translation id="3527036260304016759">अयशस्वी झाले - अज्ञात एरर</translation>
 <translation id="353214771040290298">संपादन पूर्ण झाले</translation>
 <translation id="3532980081107202182">जवळपास <ph name="MIN_REMAINING" /> मिनिटे शिल्‍लक आहेत</translation>
@@ -712,6 +714,7 @@
 <translation id="4602266091140407479">माइक</translation>
 <translation id="4607282946861182308">याच्या इमेज तयार करू शकत नाही. दुसरा प्रॉम्प्ट वापरून पहा.</translation>
 <translation id="4609350030397390689">कीबोर्डचा ब्राइटनेस कमी करा</translation>
+<translation id="4623061655523261501">रेकॉर्डिंगची नावे यशस्वीरीत्या जनरेट केली आहेत</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="TOTAL_PAGE_NUMBER" /> पैकी <ph name="PRINTED_PAGE_NUMBER" />. प्रिंट कार्य रद्द करण्यासाठी एंटर प्रेस करा.</translation>
 <translation id="463791356324567266">स्कॅनिंग रद्द करत आहे...</translation>
 <translation id="4644611440022666152">सुरू करा आणि डाउनलोड करा</translation>
@@ -1044,6 +1047,8 @@
 <translation id="628726841779494414">प्रिंटर सेटिंग्जमध्ये तुमचे प्रिंटर व्यवस्थापित करा</translation>
 <translation id="6292095526077353682">चार्ज करताना, इतक्या वेळेसाठी स्क्रीन सेव्हर दाखवा</translation>
 <translation id="629550705077076970">कीबोर्ड मंद करणे</translation>
+<translation id="6301193653204230066">सुरक्षितता रीसेट केल्यामुळे Chrome ब्राउझर एक्स्टेंशन बंद होतात आणि नेटवर्क व इतर सेटिंग्ज सुरक्षित डीफॉल्टवर रीसेट होतात.
+          तुमचे टॅब, फाइल, कुकी आणि इतिहास बदलणार नाही.</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> चाचणी रद्द करण्यात आली आहे</translation>
 <translation id="631063167932043783">अ‍ॅप एक्सप्लोर करा</translation>
 <translation id="6318437367327684789">कायमचे</translation>
@@ -1053,6 +1058,7 @@
 <translation id="6325525973963619867">अयशस्वी</translation>
 <translation id="6327262166342360252">हा वॉलपेपर AI सह खालील मजकूर वापरून तयार केला आहे: "<ph name="PROMPT" />."</translation>
 <translation id="6331191339300272798">ऑटोमॅटिक गडद थीम</translation>
+<translation id="6335228876613776082">मॉडेल डाउनलोड करणे पूर्ण झाले आहे</translation>
 <translation id="6340526405444716530">पर्सनलायझेशन</translation>
 <translation id="6348252528297699679">तुम्ही सेटिंग्ज &gt; गोपनीयता आणि सुरक्षा &gt; गोपनीयता नियंत्रणे &gt; स्थान अ‍ॅक्सेस यामध्ये स्थान बंद करू शकता. <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">वापरकर्ता नाव आणि पासवर्ड</translation>
@@ -1214,6 +1220,7 @@
 <translation id="708426984172631313">थांबवली</translation>
 <translation id="7086168019478250425">बायोल्युमिसेंट समुद्रकिनारा</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="7086916854357021265">रेकॉर्डिंगची नावे जनरेट करत आहे</translation>
 <translation id="7097908713073775559">रंगीत</translation>
 <translation id="710028965487274708">अयशस्वी झाले - ऑथोरायझेशन करता आले नाही</translation>
 <translation id="7101959270679078188">अपडेट करण्याची प्रक्रिया पुढे सुरू ठेवण्यासाठी, <ph name="DEVICE_NAME" /> अनलॉक करा</translation>
@@ -1546,6 +1553,7 @@
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Photos अल्बम</translation>
 <translation id="8775713578693478175">मोडेम APN</translation>
+<translation id="877735394245039557">मॉडेल डाउनलोड करणे प्रगतीपथावर आहे</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">या नेटवर्कवर कॅप्टिव्ह पोर्टल असू शकते</translation>
 <translation id="8797082062139985406">Google AI वापरून नाव तयार करा</translation>

@@ -78,6 +78,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="1240638468526743569">Ilova</translation>
 <translation id="1242198791279543032">Bildirishnomalar sukut qilingan</translation>
 <translation id="1242883863226959074">qurilma</translation>
+<translation id="1245476784081715330">Barakalla!</translation>
 <translation id="1245644940275736236">Assistentni ochish</translation>
 <translation id="124678866338384709">Joriy varaqni yopish</translation>
 <translation id="1246890715821376239">Ishlamaydigan ilovalar</translation>
@@ -842,6 +843,7 @@ Qurilmani quvvat manbaiga ulang.</translation>
 <translation id="3958714870339660776">Butun kun</translation>
 <translation id="3962859241508114581">Avvalgi trek</translation>
 <translation id="3963124517343721543">Avvalgi oynalar va varaqlarni ochish orqali ishni qolgan joydan oson davom ettiring. Shuningdek, keyingi qadamlar haqidagi moslangan tavsiyalar chiqadi.</translation>
+<translation id="396506362088290977">Mikrofon tovushini sinash</translation>
 <translation id="3969043077941541451">Oʻchiq</translation>
 <translation id="3970324493235864154">Telefondagi bildirishnomalarni koʻring</translation>
 <translation id="397105322502079400">Hisoblanmoqda...</translation>
@@ -899,6 +901,7 @@ Qurilmani quvvat manbaiga ulang.</translation>
 <translation id="4156293514828496577">Batareyada <ph name="PERCENTAGE" />% quvvat qoldi (taxminan: <ph name="TIME_LEFT" />).
 Quvvatni tejash uchun ayrim funksiyalar ishlashi cheklandi.</translation>
 <translation id="4160919062868802509">Bir nechta audio manba aniqlandi</translation>
+<translation id="416245495747357243">Rostdan tugadi.</translation>
 <translation id="4165275524535002941">Kabel displeylar bilan ishlamasligi mumkin</translation>
 <translation id="4177415338862979658">Batafsil axborot olish uchun bosing</translation>
 <translation id="4177913004758410636">{0,plural, =1{Qurilmani bir kun ichida oʻchirib yoqish kerak}other{Qurilmani # kun ichida yangilang}}</translation>
@@ -984,6 +987,7 @@ Quvvatni tejash uchun ayrim funksiyalar ishlashi cheklandi.</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> yoqilmagan</translation>
 <translation id="4417647906073317561">Fokus sozlamalari. Oqimga kirish uchun taymer, vazifa va musiqani sozlang.</translation>
 <translation id="4424159417645388645">Desk 5</translation>
+<translation id="4426817706804363424">Qoyil!</translation>
 <translation id="4430019312045809116">Hajmi</translation>
 <translation id="4441283832827406317">Ilovalar nomi asosida saralandi</translation>
 <translation id="4445159312344259901">Ochish uchun hisobga kiring</translation>
@@ -1248,6 +1252,7 @@ Klaviatura tezkor tugmalaridan foydalanishingiz ham mumkin. Avval matnni belgila
 <translation id="5283198616748585639">1 daqiqa qoʻshish</translation>
 <translation id="528468243742722775">Tugatish</translation>
 <translation id="5286194356314741248">Qidiruv</translation>
+<translation id="528641622273682395">Mikrofon sinovi tugmasi</translation>
 <translation id="5297423144044956168">Mobil qurilmalar topilmadi</translation>
 <translation id="5297704307811127955">Oʻchiq</translation>
 <translation id="5300589172476337783">Ko‘rsatish</translation>
@@ -1275,6 +1280,7 @@ Hech qanday qurilma ulanmagan.</translation>
 <translation id="536019650977002321">Administrator audio yozib olishni taqiqlagan. Batafsil axborot uchun administratorga murojaat qiling.</translation>
 <translation id="5361524080961918551"><ph name="LANGUAGE" /> tilidagi nutq fayllari qisman yuklab olindi</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Bu varaqni ochish</translation>
+<translation id="5363835273551457276">Mikrofon tovushini sinash mumkin. Toʻxtatish uchun panelni yoping.</translation>
 <translation id="5364693579536176785">xotiradagi joy</translation>
 <translation id="5369573834963677938">Qurilmaning barcha foydalanuvchilari yuz nazorati funksiyasidan foydalanishi mumkin</translation>
 <translation id="5369717264580061086">Faylni Fayllar ilovasida koʻrish</translation>
@@ -1415,6 +1421,7 @@ Hech qanday qurilma ulanmagan.</translation>
 <translation id="5802516411616338943">Tezkor sozlamalarni ochish</translation>
 <translation id="5804651031882187592">“SIM kartani qulflash” sozlamasini faolsizlantirish</translation>
 <translation id="5805809050170488595"><ph name="NETWORK_NAME" /> nomli tarmoqni faollashtirish uchun bosing</translation>
+<translation id="5818796501620225415">Qoʻshimcha vaqt kiritish yoki fokus seansini yakunlash mumkin</translation>
 <translation id="5819918159912280082">Chromebook kutilmaganda qaytadan ishga tushdi. Avvalgi oynalar va ilovalarni oching.</translation>
 <translation id="5823239091726045201">Google Tasks veb versiyasi</translation>
 <translation id="5825969630400862129">Ulangan qurilmalar sozlamalari</translation>
@@ -2125,6 +2132,7 @@ Qurilmani oʻchirish uchun uning quvvat tugmasini biroz bosib turing.</translati
 <translation id="8262312463845990408">Ijro tugmasi</translation>
 <translation id="8268302343625273732">Google Classroom xizmatidagi barcha vazifalarni koʻrish</translation>
 <translation id="8277261673056602147">Ekrandagi matnni tanlash</translation>
+<translation id="8282784978194352587">Qoyil qildingiz!</translation>
 <translation id="8287009018010202411">Unumdorlik</translation>
 <translation id="828708037801473432">Oʻchiq</translation>
 <translation id="8297006494302853456">Zaif</translation>
@@ -2202,6 +2210,7 @@ Qurilmani oʻchirish uchun uning quvvat tugmasini biroz bosib turing.</translati
 <translation id="8609384513243082612">Yangi varaq ochish</translation>
 <translation id="861045123704058818">Ilovalar vaqtincha turkum asosida tartiblangan</translation>
 <translation id="8612216344243590325">Muhim fayllarni ish stolida emas, <ph name="HOLDING_SPACE_TITLE" /> panelida saqlang. Ularni <ph name="HOLDING_SPACE_TITLE" /> paneliga tashlang.</translation>
+<translation id="8612338981637220013">Barakalla!</translation>
 <translation id="8614517853887502247">Xavfsiz koʻrish rejimi yoniqligi uchun <ph name="APP_1_TITLE" /> va <ph name="APP_2_TITLE" /> bildirishnomalari yashirildi</translation>
 <translation id="8615778328722901791">Asboblar panelini ochish</translation>
 <translation id="8619000641825875669">OneDrive</translation>
@@ -2244,6 +2253,7 @@ Qurilmani oʻchirish uchun uning quvvat tugmasini biroz bosib turing.</translati
 <translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />: Faollashtirilmoqda...</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
+<translation id="8751299148074971734">Shunday davom eting!</translation>
 <translation id="8753368202781196133">Bu til hozirda dastaklanmaydi.</translation>
 <translation id="8755498163081687682">Shaxsingizni tasdiqlang: <ph name="ORIGIN_NAME" /> bu siz ekanligingizni tasdiqlamoqchi</translation>
 <translation id="875593634123171288">VPN sozlamalarini ochish</translation>

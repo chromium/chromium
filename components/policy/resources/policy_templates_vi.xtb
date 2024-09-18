@@ -6914,6 +6914,13 @@ Nếu bạn không đặt chính sách này, một giá trị mặc định chun
 <translation id="6207607210601267301">Tắt chế độ xác thực không cần mã PIN đối với máy chủ truy cập từ xa</translation>
 <translation id="6208896993204286313">Báo cáo thông tin chính sách của <ph name="PRODUCT_NAME" /></translation>
 <translation id="6210259502936598222">Báo cáo thông tin hệ điều hành và phiên bản của <ph name="PRODUCT_NAME" /></translation>
+<translation id="6215023506958127056">Kiểm soát quá trình cài đặt tiện ích bên ngoài.
+
+Nếu bạn đặt chính sách này thành Bật, thì hệ thống sẽ không cho phép cài đặt tiện ích bên ngoài.
+
+Nếu bạn đặt chính sách này thành Tắt hoặc chưa đặt, thì hệ thống sẽ cho phép cài đặt tiện ích bên ngoài.
+
+Các tiện ích bên ngoài và trạng thái cài đặt tiện ích được ghi lại tại https://developer.chrome.com/docs/extensions/how-to/distribute/install-extensions.</translation>
 <translation id="6220835555850906733">Nếu bạn đặt chính sách này thành Bật hoặc không đặt chính sách này, thì tất cả thiết bị đầu ra âm thanh được hỗ trợ đều có thể hoạt động trên thiết bị của người dùng.
 
       Nếu bạn đặt chính sách này thành Tắt, thì mọi thiết bị đầu ra âm thanh đều không thể hoạt động khi người dùng đăng nhập.

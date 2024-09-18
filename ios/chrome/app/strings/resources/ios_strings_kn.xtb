@@ -80,6 +80,7 @@
 <translation id="1363028406613469049">ಟ್ರ್ಯಾಕ್</translation>
 <translation id="1364367057792633742">ಹೊಸ ಟ್ಯಾಬ್</translation>
 <translation id="1365106417372288489">ನಿಮ್ಮ iPhone ಅನ್ನು ಇತ್ತೀಚೆಗೆ ಮರುಸ್ಥಾಪಿಸಲಾಗಿದೆ, ಅದು ನಿಮ್ಮ ಡೀಫಾಲ್ಟ್ ಬ್ರೌಸರ್ ಅನ್ನು ಬದಲಾಯಿಸಿರಬಹುದು.</translation>
+<translation id="1366297852155605523">ನನ್ನೊಂದಿಗೆ ಹಂಚಿಕೊಳ್ಳಲಾಗಿದೆ</translation>
 <translation id="136942498637440594">ನೀವು ಚಿತ್ರಗಳನ್ನು ಮತ್ತು ನೀವು ನೋಡುವುದನ್ನು ಹುಡುಕಬಹುದು.</translation>
 <translation id="1377508275003315939">ಪಾಸ್‌ವರ್ಡ್‌ಗಳು</translation>
 <translation id="1381022135873211423">{count,plural, =1{{count} ರಲ್ಲಿ {position} ವಿಳಾಸ}one{{count} ರಲ್ಲಿ {position} ವಿಳಾಸಗಳು}other{{count} ರಲ್ಲಿ {position} ವಿಳಾಸಗಳು}}</translation>
@@ -333,6 +334,7 @@
 <translation id="2551153019974022505">ಖಾತೆ ದೋಷ</translation>
 <translation id="2559843230610279254">ಟ್ಯಾಬ್‌ ಗುಂಪು, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> ಟ್ಯಾಬ್‌ಗಳು.</translation>
 <translation id="2577522251608256362">ನೆರೆಹೊರೆ</translation>
+<translation id="2579713773888829241">ಹಂಚಿಕೊಂಡ ಡ್ರೈವ್‌ಗಳು</translation>
 <translation id="2597486707832946298">ನಿಮ್ಮ iPhone ನಲ್ಲಿ ನಿಮಗೆ ತಿಳಿದಿರುವ ಮತ್ತು ಇಷ್ಟಪಡುವ ಡೆಸ್ಕ್‌ಟಾಪ್ ಬ್ರೌಸರ್‌ನಿಂದ ಅತ್ಯುತ್ತಮವಾದದ್ದನ್ನು ಪಡೆಯಿರಿ.</translation>
 <translation id="260378315836159338">ಸ್ಕ್ರೀನ್‌ನ ಮೇಲ್ಭಾಗದಲ್ಲಿ, + ಅನ್ನು ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
 <translation id="2612676031748830579">ಕಾರ್ಡ್ ಸಂಖ್ಯೆ</translation>
@@ -528,6 +530,7 @@
 <translation id="3591006724568464696">ಇತ್ತೀಚಿನ ಟ್ಯಾಬ್‌ಗಳು ಲಭ್ಯವಿಲ್ಲ</translation>
 <translation id="3595252146048399851">ಏನನ್ನು ಸಿಂಕ್ ಮಾಡಬೇಕು ಎಂಬುದನ್ನು <ph name="BEGIN_LINK" />ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ<ph name="END_LINK" /> ಯಾವಾಗ ಬೇಕಾದರೂ ನೀವು ಆಯ್ಕೆ ಮಾಡಬಹುದು. Google, ನಿಮ್ಮ ಇತಿಹಾಸವನ್ನು ಆಧರಿಸಿ, Search ಮತ್ತು ಇತರ ಸೇವೆಗಳನ್ನು ವೈಯಕ್ತೀಕರಿಸಬಹುದು.</translation>
 <translation id="3596414637720633074">ಅಜ್ಞಾತ ಮೋಡ್‌ನಲ್ಲಿ ಥರ್ಡ್-ಪಾರ್ಟಿ ಕುಕೀಗಳನ್ನು ನಿರ್ಬಂಧಿಸಿ</translation>
+<translation id="3602260545951981695">"ವರ್ಧಿತ ಸುರಕ್ಷತೆ" ಯನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="3606746615845065096">ಟ್ಯಾಬ್ ಅನ್ನು ಮುಚ್ಚಿರಿ</translation>
 <translation id="3622175633937495219">ಹುಡುಕಾಟದ ಇತಿಹಾಸ (<ph name="COUNT" /> ಕಂಡುಬಂದಿದೆ)</translation>
 <translation id="3625008969091706597">ಹಿಂತಿರುಗಲು ನೀವು ಅಂಚನ್ನು ಸ್ವೈಪ್ ಮಾಡಬಹುದು.</translation>
@@ -668,6 +671,7 @@
 <translation id="4304713468139749426">ಪಾಸ್‌ವರ್ಡ್ ನಿರ್ವಾಹಕ</translation>
 <translation id="4309403553630140242">ಹೆಚ್ಚಿನ ಮಾಹಿತಿಗಾಗಿ ಡಬಲ್ ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
 <translation id="4324735664183300693">ನೋಟಿಫಿಕೇಶನ್‌ಗಳನ್ನು ಆನ್‌ ಮಾಡಿ</translation>
+<translation id="4328843285884395590">ನನ್ನ ಡ್ರೈವ್</translation>
 <translation id="4331177082088332784">ನೀವು ಇದನ್ನು BEGIN_LINK ಕಂಟೆಂಟ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ END_LINK ನಿರ್ವಹಿಸಬಹುದು</translation>
 <translation id="4333100555184633720">ಬ್ರೌಸಿಂಗ್ ಡೇಟಾವನ್ನು ಅಳಿಸಿ</translation>
 <translation id="4334428914252001502">1 ಓದದಿರುವ ಲೇಖನ.</translation>
@@ -1265,6 +1269,7 @@
 <translation id="7026724612456523899">ಪ್ಯಾಕೇಜುಗಳನ್ನು ಯಾವಾಗಲೂ ಟ್ರ್ಯಾಕ್‌ ಮಾಡಿ</translation>
 <translation id="7029809446516969842">ಪಾಸ್‌ವರ್ಡ್‌ಗಳು</translation>
 <translation id="7035825883570480307">ನೋಟಿಫಿಕೇಶನ್‌ಗಳನ್ನು ಆನ್ ಮಾಡಬೇಕೇ?</translation>
+<translation id="7039345315346323556">ಇತ್ತೀಚಿನದು</translation>
 <translation id="7055240621761583113">ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಆಟೋಫಿಲ್ ಮಾಡಿ</translation>
 <translation id="7058455400288852416">ಟ್ಯಾಬ್ ಸ್ವಿಚರ್‌ಗೆ ಹೋಗಿ</translation>
 <translation id="7063811929043357292">ನಿಮ್ಮ ಖಾತೆಯನ್ನು ನಿಮ್ಮ ಪೋಷಕರು ನಿರ್ವಹಿಸುತ್ತಿದ್ದಾರೆ.
@@ -1282,6 +1287,7 @@
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">ಕ್ಯಾಮರಾ ಲಭ್ಯವಿಲ್ಲ</translation>
 <translation id="7141960840225504692">ನಿಮ್ಮ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಲಾಗುತ್ತದೆ ಮತ್ತು ಬ್ರೌಸಿಂಗ್ ಡೇಟಾವನ್ನು ಅಳಿಸಲಾಗುತ್ತದೆ</translation>
+<translation id="714291438898585119">ನಕ್ಷತ್ರ ಹಾಕಿರುವುದು</translation>
 <translation id="7146301801400584641">ಕ್ಯಾಲೆಂಡರ್ ಫೈಲ್ ಲಭ್ಯವಿದೆ</translation>
 <translation id="7149893636342594995">ಕಳೆದ 24 ಗಂಟೆಗಳು</translation>
 <translation id="716059570521443369">ನೀವು ಕಾಪಿ ಮಾಡಿದ ಪಠ್ಯವನ್ನು ಹುಡುಕಿ</translation>
@@ -1336,6 +1342,7 @@
 <translation id="7435356471928173109">ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ಆಫ್ ಮಾಡಿದ್ದಾರೆ</translation>
 <translation id="7438481509621345350">ನೀವು ಹೊಸ ಟ್ಯಾಬ್ ಅನ್ನು ತೆರೆದಾಗ, ನಿಮಗೆ <ph name="CHANNEL_NAME" /> ನಲ್ಲಿ ಸ್ಟೋರಿಗಳು ಕಾಣಿಸುತ್ತವೆ.</translation>
 <translation id="7451023311965289370">{count,plural, =1{"{title}" ಗೆ ಬುಕ್‌ಮಾರ್ಕ್ ಅನ್ನು ಸೇವ್ ಮಾಡಲಾಗಿದೆ}one{"{title}" ಗೆ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳನ್ನು ಸೇವ್ ಮಾಡಲಾಗಿದೆ}other{"{title}" ಗೆ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳನ್ನು ಸೇವ್ ಮಾಡಲಾಗಿದೆ}}</translation>
+<translation id="7451404862887877229">"ಗೌಪ್ಯತೆ ಮತ್ತು ಭದ್ರತೆ" ಮತ್ತು ನಂತರ "ಸುರಕ್ಷಿತ ಬ್ರೌಸಿಂಗ್" ಅನ್ನು ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
 <translation id="7454057999980797137">ರಾಜ್ಯ / ಕೌಂಟಿ</translation>
 <translation id="7458706065921255639">ವೈಯಕ್ತೀಕರಣ ಹಾಗೂ ಲಿಂಕ್ ಮಾಡುವಿಕೆ</translation>
 <translation id="745899714366929493">ಇಡೀ ದಿನ</translation>
@@ -1414,6 +1421,7 @@
 <translation id="7788868432173225918">ವಿಸ್ತೃತ ವೀಕ್ಷಣೆಯನ್ನು ವಜಾಗೊಳಿಸಿ</translation>
 <translation id="7790954908631836016">ವಿನಂತಿ ಡೆಸ್ಕ್‌ಟಾಪ್‌ ಸೈಟ್‌ ಅನ್ನು ಮರೆಮಾಡಿ</translation>
 <translation id="7791543448312431591">ಸೇರಿಸು</translation>
+<translation id="7801064017114765401">ಕಂಪ್ಯೂಟರ್‌ಗಳು</translation>
 <translation id="7802239711290932774">ಸೂಚಿಸಿರುವ ಪಾಸ್‌ವರ್ಡ್ ಬಳಸಿ:</translation>
 <translation id="780301667611848630">ಬೇಡ</translation>
 <translation id="7807060072011926525">Google ಮೂಲಕ ಒದಗಿಸಲಾಗಿದೆ</translation>

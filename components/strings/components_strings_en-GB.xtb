@@ -446,6 +446,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1771254328977666895">See price history</translation>
 <translation id="1777422078676229054">Photo (archival)</translation>
 <translation id="1778646502362731194">JIS B0</translation>
+<translation id="1785118555253503473">Install web apps?</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />: press Tab then Enter to manage your info, privacy and security in your Google Account</translation>
 <translation id="1793631236004319016">Last used <ph name="NUM_HOURS_MINUTES_SECONDS" /> ago</translation>
@@ -677,6 +678,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2212735316055980242">Policy not found</translation>
 <translation id="2213606439339815911">Fetching entries...</translation>
 <translation id="2213612003795704869">Page is printed</translation>
+<translation id="2215368073167343359">Autofill with Google</translation>
 <translation id="2215539479425228550">Climbing and mountaineering</translation>
 <translation id="2215727959747642672">File editing</translation>
 <translation id="2215963164070968490">Dogs</translation>
@@ -709,6 +711,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2262243747453050782">HTTP error</translation>
 <translation id="2265192657948645752">Retail Jobs</translation>
 <translation id="2265356434276802347">This policy should not have more than <ph name="MAX_ITEMS_LIMIT" /> featured entries.</translation>
+<translation id="2266175583972138136">Terms apply for card benefits</translation>
 <translation id="2267047181501709434">Verifying your identity...</translation>
 <translation id="2268044343513325586">Refine</translation>
 <translation id="2268966938956566076">Upload in <ph name="MINUTES" /> min</translation>
@@ -1163,6 +1166,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3157931365184549694">Restore</translation>
 <translation id="3158539265159265653">Disc</translation>
 <translation id="3162559335345991374">The Wi-Fi that you are using may require you to visit its login page.</translation>
+<translation id="316638481603975524">Can ask to install web apps</translation>
 <translation id="3168744840365648658">Radio Equipment</translation>
 <translation id="3168938241115725594">Classic vehicles</translation>
 <translation id="3169472444629675720">Discover</translation>
@@ -1797,6 +1801,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4269264543938335308">Swimwear</translation>
 <translation id="4269599248168651462">The server certificate is issued to a non-unique name.</translation>
 <translation id="4270541775497538019">Stacker 6</translation>
+<translation id="4271652479722040953">When extensions are added to Chrome, relevant data about these extensions is sent to third parties for analysis and may be visible to your administrator. The data includes information about the extensions such as its name, install time, source of install as well as activity associated with these extensions (like changing tabs, contacting websites or accessing cookies). This data is collected for extensions installed from the Chrome Web Store as well as off-store extensions.</translation>
 <translation id="4275830172053184480">Restart your device</translation>
 <translation id="4276974990916607331">No thanks</translation>
 <translation id="4277028893293644418">Reset password</translation>
@@ -1878,6 +1883,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4406896451731180161">search results</translation>
 <translation id="4408413947728134509">Cookies <ph name="NUM_COOKIES" /></translation>
 <translation id="4412074349188076601">This configuration is marked as installable, but no image is provided for this architecture, so it cannot be installed.</translation>
+<translation id="4414452699610169758">Use Google Password Manager and Chrome autofill to save and fill passwords, payment methods and addresses</translation>
 <translation id="4414515549596849729">cookies and site data</translation>
 <translation id="4415156962929755728">Plastic (high gloss)</translation>
 <translation id="4415426530740016218">Pickup Address</translation>
@@ -2322,6 +2328,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5273658854610202413">Warning: This policy was not merged as specified in PolicyDictionaryMultipleSourceMergeList policy because it is not part of the dictionary policies that can be merged.</translation>
 <translation id="5278778426231952189">Upload now</translation>
 <translation id="5279286380302340275">Manage downloads</translation>
+<translation id="5280963125494874678">web applications</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">Document properties</translation>
 <translation id="528468243742722775">End</translation>
@@ -2824,6 +2831,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6221311046884916259">Do you want to save this card in your Google Account?</translation>
 <translation id="6221892641068781024">Simplified View</translation>
 <translation id="6222527803348563979">Stationery</translation>
+<translation id="62231116988543150">Be able to install web apps</translation>
 <translation id="6224281071334553713">Gems and Jewellery</translation>
 <translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />; press tab and then Enter to personalise your accessibility tools in Chrome settings</translation>
 <translation id="6228346913624365233">Luxury vehicles</translation>
@@ -3087,6 +3095,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Press Tab then Enter to find your device in the Google Account</translation>
 <translation id="6695428916538794739">Action and adventure films</translation>
 <translation id="6696424331653607346">Travel guides and travelogues</translation>
+<translation id="6696575039575740785">Install web apps not allowed</translation>
 <translation id="6698097747703777657">Didn't receive your code? <ph name="BEGIN_LINK" />Get new code<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">Created:</translation>
 <translation id="67007264085648978">Time scrubber</translation>
@@ -3128,6 +3137,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6767985426384634228">Update Address?</translation>
 <translation id="6770747695101757579">Paper (cotton)</translation>
 <translation id="677257480647123231">Child Internet safety</translation>
+<translation id="6772959465807028761">To use YouTube, continue with your Google Account</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">Use YouTube with your parent's choices</translation>
 <translation id="6779348349813025131">Google Password Manager needs access to MacOS Keychain</translation>
@@ -3200,6 +3210,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6915804003454593391">User:</translation>
 <translation id="6916193791494646625">Provide reason for downloading (required)</translation>
 <translation id="6917795328362592458">The password that you just used was found in a data breach. To secure your accounts, Password Manager recommends checking your saved passwords.</translation>
+<translation id="6921197121276419421">Install web apps allowed</translation>
 <translation id="6924013822850225188">Choose whether you see your card benefits at checkout (bank terms apply)</translation>
 <translation id="6925267999184670015">North American B+</translation>
 <translation id="6926216138694948720">Body art</translation>
@@ -3378,6 +3389,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="7232352818707016189">More actions for Compare table</translation>
 <translation id="7233592378249864828">Print confirmation sheet</translation>
 <translation id="7234112195906418665">Travel and transportation</translation>
+<translation id="7234585564776614047">Autofill using another service</translation>
 <translation id="7236417832106250253"><ph name="PROGRESS_PERCENT" />% completed | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
 <translation id="7237166092326447040">Gifts and Special Event Items</translation>
 <translation id="7237454422623102448">System settings</translation>
@@ -3697,6 +3709,7 @@ Additional details:
 <translation id="7761701407923456692">Server's certificate does not match the URL.</translation>
 <translation id="7764225426217299476">Add address</translation>
 <translation id="7766518757692125295">Skirt</translation>
+<translation id="7766899888934244586">Web applications</translation>
 <translation id="7767278989746220252">Patio, Lawn and Garden</translation>
 <translation id="776749070095465053">Fabric</translation>
 <translation id="7773005668374414287">Same order face up</translation>
@@ -3729,6 +3742,7 @@ Additional details:
 <translation id="7831993212387676366">What is the Shopping list?</translation>
 <translation id="7840103971441592723">Screen capture has started</translation>
 <translation id="784137052867620416">Shopping insights</translation>
+<translation id="7842611866969435396">Let's go</translation>
 <translation id="784404208867107517">Grouped history</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{None}=1{1 app (<ph name="EXAMPLE_APP_1" />)}=2{2 apps (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# apps (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}}</translation>
 <translation id="785476343534277563">College sports</translation>
@@ -4038,6 +4052,7 @@ Additional details:
 <translation id="8409413588194360210">payment handlers</translation>
 <translation id="8412145213513410671">Crashes (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">You must enter the same passphrase twice.</translation>
+<translation id="8414322570408428950">Extension event occurs</translation>
 <translation id="8416694386774425977">The network configuration is invalid and couldn't be imported.
 Additional details:
 <ph name="DEBUG_INFO" /></translation>
@@ -4289,6 +4304,8 @@ Additional details:
 <translation id="8891031436559779793">You'll get notified if the price drops on any site.</translation>
 <translation id="8891727572606052622">Invalid proxy mode.</translation>
 <translation id="8894794286471754040">Long edge first</translation>
+<translation id="8895334001368918465">To use another autofill service in Chrome, turn it on in Android settings and here</translation>
+<translation id="8897221284075091877">To ask to see this content, continue with your Google Account</translation>
 <translation id="8897428486789851669">Swimming</translation>
 <translation id="8899807382908246773">Intrusive ads</translation>
 <translation id="8903921497873541725">Zoom in</translation>

@@ -1044,6 +1044,8 @@
 <translation id="628726841779494414">Hallinnoi tulostimia tulostinasetuksista</translation>
 <translation id="6292095526077353682">Näytä näytönsäästäjä näin kauan, kun lataus on käynnissä:</translation>
 <translation id="629550705077076970">näppäimistön himmennys</translation>
+<translation id="6301193653204230066">Turvallinen nollaus laittaa Chrome-selaimen laajennukset pois päältä ja palauttaa verkkoasetukset ja muut asetukset turvallisiin oletusasetuksiin.
+          Välilehdet, tiedostot, evästeet ja historia eivät muutu.</translation>
 <translation id="6302401976930124515">Testi on peruttu: <ph name="TEST_NAME" /></translation>
 <translation id="631063167932043783">Tutustu sovellukseen</translation>
 <translation id="6318437367327684789">ikuisesti</translation>
@@ -1053,6 +1055,7 @@
 <translation id="6325525973963619867">Epäonnistui</translation>
 <translation id="6327262166342360252">Tämä taustakuva on luotu tekoälyllä seuraavalla tekstillä: "<ph name="PROMPT" />".</translation>
 <translation id="6331191339300272798">Automaattinen tumma teema</translation>
+<translation id="6335228876613776082">Mallin lataus valmis</translation>
 <translation id="6340526405444716530">Personointi</translation>
 <translation id="6348252528297699679">Voit laittaa sijainnin pois päältä valitsemalla Asetukset &gt; Tietosuoja ja turvallisuus &gt; Yksityisyysasetukset &gt; Sijainnin käyttöoikeus. <ph name="LINK_BEGIN" />Lue lisää<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">Käyttäjätunnus ja salasana</translation>
@@ -1546,6 +1549,7 @@ Lataa transkriptiomalli (enintään 100 Mt), niin saat nämä transkriptiot.</t
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Kuvat ‑albumi</translation>
 <translation id="8775713578693478175">Modeemin APN</translation>
+<translation id="877735394245039557">Mallia ladataan</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Tällä sivustolla saattaa olla captive portal</translation>
 <translation id="8797082062139985406">Luo nimi Googlen tekoälyn avulla</translation>

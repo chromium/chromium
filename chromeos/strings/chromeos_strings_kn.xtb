@@ -35,6 +35,7 @@
 <translation id="1155154308031262006">ಪ್ರಾಂಪ್ಟ್ ಅನ್ನು ನಮೂದಿಸಿ</translation>
 <translation id="115705039208660697">ಅನಾನಸ್ ಹಣ್ಣುಗಳು</translation>
 <translation id="1164939766849482256">ಮುಂಜಾನೆಯಿಂದ ಮುಸ್ಸಂಜೆಯಾಗುವ ಸ್ಕ್ರೀನ್ ಸೇವರ್</translation>
+<translation id="1166688493741195933">ರೆಕಾರ್ಡಿಂಗ್ ಹೆಸರುಗಳನ್ನು ರಚಿಸಲು ವಿಫಲವಾಗಿದೆ</translation>
 <translation id="1167755866710282443">ಕೀಗಳನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡಲು ಮೆನು ತೆರೆಯಿರಿ. ಸರಿಸಲು ಮೆನುವನ್ನು ಡ್ರ್ಯಾಗ್ ಮಾಡಿ.</translation>
 <translation id="1171349345463658120">ಮರಳಿನ ಆವೃತ ಪ್ರದೇಶ</translation>
 <translation id="1173894706177603556">ಮರುಹೆಸರಿಸು</translation>
@@ -493,6 +494,7 @@
 <translation id="3502426834823382181">ಎಲ್ಲಾ ಆ್ಯಪ್‌ಗಳನ್ನು ವೀಕ್ಷಿಸಿ</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />ಕಾರ್ಯಕ್ಷಮತೆ ಟ್ರೇಸ್ ಡೇಟಾ<ph name="END_LINK1" /> ಕಳುಹಿಸಿ</translation>
 <translation id="3517001332549868749">ChromeOS ಅಪ್‌ಡೇಟ್</translation>
+<translation id="3522508178835057262">ಸದ್ಯಕ್ಕೆ, <ph name="MAX_WORD_LENGTH" /> ಕ್ಕಿಂತ ಹೆಚ್ಚಿನ ಪದಗಳನ್ನು ಟ್ರಾನ್ಸ್‌ಕ್ರಿಪ್ಟ್ ಮಾಡುವುದು ಬೆಂಬಲಿತವಾಗಿಲ್ಲ</translation>
 <translation id="3527036260304016759">ವಿಫಲವಾಗಿದೆ - ಅಪರಿಚಿತ ದೋಷ</translation>
 <translation id="353214771040290298">ಎಡಿಟ್ ಮಾಡುವುದು ಮುಗಿದಿದೆ</translation>
 <translation id="3532980081107202182">ಸುಮಾರು <ph name="MIN_REMAINING" /> ಬಾಕಿ ಉಳಿದಿದೆ</translation>
@@ -710,6 +712,7 @@
 <translation id="4602266091140407479">ಮೈಕ್‌</translation>
 <translation id="4607282946861182308">ಇದರ ಚಿತ್ರಗಳನ್ನು ರಚಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ. ಬೇರೆ ಪ್ರಾಂಪ್ಟ್ ಬಳಸಿ ನೋಡಿ.</translation>
 <translation id="4609350030397390689">ಕೀಬೋರ್ಡ್ ಹೊಳಪನ್ನು ಕಡಿಮೆ ಮಾಡಿ</translation>
+<translation id="4623061655523261501">ರೆಕಾರ್ಡಿಂಗ್ ಹೆಸರುಗಳನ್ನು ಯಶಸ್ವಿಯಾಗಿ ರಚಿಸಲಾಗಿದೆ</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="TOTAL_PAGE_NUMBER" /> ರಲ್ಲಿ <ph name="PRINTED_PAGE_NUMBER" /> ಮುದ್ರಣ ಕಾರ್ಯವನ್ನು ರದ್ದುಮಾಡಲು enter ಒತ್ತಿರಿ.</translation>
 <translation id="463791356324567266">ಸ್ಕ್ಯಾನಿಂಗ್ ಮಾಡುವಿಕೆಯನ್ನು ರದ್ದುಗೊಳಿಸಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="4644611440022666152">ಆನ್ ಮಾಡಿ ಮತ್ತು ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ</translation>
@@ -1215,6 +1218,7 @@
 <translation id="708426984172631313">ನಿಲ್ಲಿಸಲಾಗಿದೆ</translation>
 <translation id="7086168019478250425">ಬಯೋಲುಮಿನೆಸೆಂಟ್ ಬೀಚ್</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="7086916854357021265">ರೆಕಾರ್ಡಿಂಗ್ ಹೆಸರುಗಳನ್ನು ರಚಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="7097908713073775559">ವರ್ಣರಂಜಿತ</translation>
 <translation id="710028965487274708">ವಿಫಲವಾಗಿದೆ - ದೃಢೀಕರಣ ವಿಫಲವಾಗಿದೆ</translation>
 <translation id="7101959270679078188">ಅಪ್‌ಡೇಟ್ ಪ್ರಕ್ರಿಯೆಯನ್ನು ಮುಂದುವರಿಸಲು <ph name="DEVICE_NAME" /> ಅನ್‌ಲಾಕ್ ಮಾಡಿ</translation>

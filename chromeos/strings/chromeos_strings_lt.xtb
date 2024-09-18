@@ -342,6 +342,7 @@
 <translation id="2560876255701405320">Garso įrašų sąrašas</translation>
 <translation id="2561093647892030937">citrinos</translation>
 <translation id="2570743873672969996">Vykdomas „<ph name="TEST_NAME" />“ bandymas...</translation>
+<translation id="2573178735329662769">Visų „Chromebook“ garsų įrašymas</translation>
 <translation id="2575552334616524665">Šią funkciją galite įjungti skiltyje „Nustatymai“ arba <ph name="THREE_DOTS_MENU_ICON" /> meniu</translation>
 <translation id="2576253868710695442">Ji užims iki 2 GB vietos saugykloje</translation>
 <translation id="2584547424703650812">Švytintys peizažai</translation>
@@ -510,6 +511,7 @@
 <translation id="3588034708467091142">Įsitikinkite, kad esate prisijungę prie interneto, ir bandykite dar kartą.</translation>
 <translation id="3594280220611906414">„<ph name="USER_FRIENDLY_APN_NAME" />“ yra patogus naudoti „<ph name="APN_NAME" />“ pavadinimas.</translation>
 <translation id="3595596368722241419">Akumuliatorius įkrautas</translation>
+<translation id="3600063043775287169">Kai „Chromebook“ įrenginyje garso išvestis įjungta, garso įrašytuvas užfiksuoja visus šiame įrenginyje leidžiamus garsus. Todėl pagalvokite, ar norite įrašyti visus garsus.</translation>
 <translation id="3600339377155080675">Ekrano vaizdo bendrinimas</translation>
 <translation id="3602290021589620013">Peržiūra</translation>
 <translation id="3603829704940252505">Pseudoportretas</translation>
@@ -1164,6 +1166,7 @@
 <translation id="6831043979455480757">Vertėjas</translation>
 <translation id="6846843854964504403">Saugumo programos nustatymas iš naujo</translation>
 <translation id="6853312040151791195">Išsikrovimo rodiklis</translation>
+<translation id="6862228900689076919">Šią funkciją tvarko jūsų administratorius</translation>
 <translation id="6862416241246624313">Atsiliepimas pateiktas</translation>
 <translation id="6866732840889595464">ramunė</translation>
 <translation id="6871256179359663621">šviesiai violetinės spalvos</translation>

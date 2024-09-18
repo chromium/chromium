@@ -341,6 +341,7 @@
 <translation id="2560876255701405320">ऑडियो रिकॉर्डिंग की सूची</translation>
 <translation id="2561093647892030937">नींबू</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> की जांच की जा रही है...</translation>
+<translation id="2573178735329662769">Chromebook का पूरा ऑडियो रिकॉर्ड किया जा रहा है</translation>
 <translation id="2575552334616524665">इस सुविधा को सेटिंग या <ph name="THREE_DOTS_MENU_ICON" /> मेन्यू में जाकर चालू किया जा सकता है</translation>
 <translation id="2576253868710695442">इसमें 2 जीबी तक का स्टोरेज इस्तेमाल होगा</translation>
 <translation id="2584547424703650812">ग्लोस्केप्स</translation>
@@ -508,6 +509,7 @@
 <translation id="3588034708467091142">पक्का करें कि आपका डिवाइस, इंटरनेट से कनेक्ट हो. इसके बाद, फिर से कोशिश करें.</translation>
 <translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" />, उपयोगकर्ता के लिए <ph name="APN_NAME" /> का आसान नाम है.</translation>
 <translation id="3595596368722241419">बैटरी पूरी चार्ज है</translation>
+<translation id="3600063043775287169">Chromebook का ऑडियो चालू होने पर, रिकॉर्डर इस डिवाइस पर चल रहे सभी ऑडियो रिकॉर्ड करता है. पक्का करें कि सभी आवाज़ें रिकॉर्ड करनी हैं.</translation>
 <translation id="3600339377155080675">स्क्रीन शेयर करने वाला बटन</translation>
 <translation id="3602290021589620013">झलक देखें</translation>
 <translation id="3603829704940252505">अवतार</translation>
@@ -1161,6 +1163,7 @@
 <translation id="6831043979455480757">Translate</translation>
 <translation id="6846843854964504403">सुरक्षा के लिए सेटिंग रीसेट करने की सुविधा</translation>
 <translation id="6853312040151791195">डिस्चार्ज होने की दर</translation>
+<translation id="6862228900689076919">इस सुविधा को आपका एडमिन मैनेज करता है</translation>
 <translation id="6862416241246624313">सुझाव, शिकायत या राय सबमिट की गई</translation>
 <translation id="6866732840889595464">डेज़ी</translation>
 <translation id="6871256179359663621">हल्के बैंगनी</translation>

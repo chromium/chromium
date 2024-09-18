@@ -78,6 +78,7 @@
 <translation id="1240638468526743569">ایک ایپ</translation>
 <translation id="1242198791279543032">اطلاعات خاموش کردہ ہیں</translation>
 <translation id="1242883863226959074">آلہ</translation>
+<translation id="1245476784081715330">بہترین!</translation>
 <translation id="1245644940275736236">اسسٹنٹ پر جائیں</translation>
 <translation id="124678866338384709">موجودہ ٹیب بند کریں</translation>
 <translation id="1246890715821376239">غیر تعاون یافتہ ایپس</translation>
@@ -842,6 +843,7 @@
 <translation id="3958714870339660776">پورا دن</translation>
 <translation id="3962859241508114581">پچھلا ٹریک</translation>
 <translation id="3963124517343721543">اپنی پچھلی ونڈوز اور ٹیبز کو کھول کر آسانی سے وہیں سے جاری رکھیں جہاں آپ نے چھوڑا تھا۔ آپ کو آگے کرنے کی چیزوں کے لیے ذاتی نوعیت کی تجاویز بھی نظر آئیں گی۔</translation>
+<translation id="396506362088290977">اپنے مائیک کی آواز کی جانچ کریں</translation>
 <translation id="3969043077941541451">آف</translation>
 <translation id="3970324493235864154">اپنے فون کی اطلاعات دیکھیں</translation>
 <translation id="397105322502079400">حساب لگایا جا رہا ہے…</translation>
@@ -899,6 +901,7 @@
 <translation id="4156293514828496577">‏<ph name="PERCENTAGE" />فیصد بیٹری باقی ہے left (تقریباََ <ph name="TIME_LEFT" />)۔
 کچھ خصوصیات بیٹری لائف میں اضافہ کے لیے محدود ہیں۔</translation>
 <translation id="4160919062868802509">متعدد آڈیو ذرائع کا پتہ چلا</translation>
+<translation id="416245495747357243">مکمل ہو گیا!</translation>
 <translation id="4165275524535002941">ہو سکتا ہے کہ کیبل ڈسپلیز کو سپورٹ نہ کرے</translation>
 <translation id="4177415338862979658">تفصیلات کے لیے کلک کریں</translation>
 <translation id="4177913004758410636">{0,plural, =1{ایک دن کے اندر آلہ کو اپ ڈیٹ کریں}other{# دن کے اندر آلہ کو اپ ڈیٹ کریں}}</translation>
@@ -984,6 +987,7 @@
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> آف ہے۔</translation>
 <translation id="4417647906073317561">فوکس کی ترتیبات۔ توجہ مرکوز کرنے کے لیے ٹائمر، ٹاسک اور موسیقی سیٹ کریں۔</translation>
 <translation id="4424159417645388645">ڈیسک 5</translation>
+<translation id="4426817706804363424">بہت خوب!</translation>
 <translation id="4430019312045809116">والیوم</translation>
 <translation id="4441283832827406317">ایپس نام کے لحاظ سے ترتیب دی گئی ہیں</translation>
 <translation id="4445159312344259901">غیر مقفل کیلئے سائن ان کریں</translation>
@@ -1248,6 +1252,7 @@
 <translation id="5283198616748585639">1 منٹ شامل کریں</translation>
 <translation id="528468243742722775">اختتام</translation>
 <translation id="5286194356314741248">اسکین کی جا رہی ہیں</translation>
+<translation id="528641622273682395">مائیک ٹیسٹ ٹوگل کریں</translation>
 <translation id="5297423144044956168">کوئی موبائل آلہ نہیں ملا</translation>
 <translation id="5297704307811127955">آف</translation>
 <translation id="5300589172476337783">دکھائیں</translation>
@@ -1275,6 +1280,7 @@
 <translation id="536019650977002321">آپ کا منتظم آڈیو کیپچر کی اجازت نہیں دیتا ہے۔ مزید معلومات کیلئے اپنے منتظم سے رابطہ کریں۔</translation>
 <translation id="5361524080961918551"><ph name="LANGUAGE" /> اسپیچ کی فائلز جزوی طور پر ڈاؤن لوڈ کی گئیں</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> اس ٹیب پر جائیں</translation>
+<translation id="5363835273551457276">آپ اپنے مائیکروفون کی آواز کی جانچ کر سکتے ہیں۔ رکنے کے لیے پینل بند کریں۔</translation>
 <translation id="5364693579536176785">اسٹوریج کی جگہ</translation>
 <translation id="5369573834963677938">فیس کنٹرول آلے پر دوسرے صارفین کے لیے دستیاب ہوگا</translation>
 <translation id="5369717264580061086">فائلز ایپ میں فائل کا پیش منظر دیکھیں</translation>
@@ -1415,6 +1421,7 @@
 <translation id="5802516411616338943">فوری ترتیبات کھولیں</translation>
 <translation id="5804651031882187592">‏"SIM کو مقفل کریں" کی ترتیب آف کریں</translation>
 <translation id="5805809050170488595"><ph name="NETWORK_NAME" /> کو فعال کرنے کیلئے کلک کریں</translation>
+<translation id="5818796501620225415">آپ مزید وقت شامل کر سکتے ہیں یا اپنا فوکس سیشن ختم کر سکتے ہیں</translation>
 <translation id="5819918159912280082">‏آپ کی Chromebook غیر متوقع طور پر ری اسٹارٹ ہو گئی۔ اپنی پچھلی ونڈوز اور ایپس کھولیں۔</translation>
 <translation id="5823239091726045201">‏ویب پر Google ٹاسکس</translation>
 <translation id="5825969630400862129">منسلک کردہ آلات کی ترتیبات</translation>
@@ -2124,6 +2131,7 @@
 <translation id="8262312463845990408">پلے بیک ٹوگل کریں</translation>
 <translation id="8268302343625273732">‏‫Google کلاس روم میں تمام اسائنمنٹس دیکھیں</translation>
 <translation id="8277261673056602147">اپنی اسکرین پر ٹیکسٹ کو نمایاں کریں</translation>
+<translation id="8282784978194352587">آپ نے کر دکھایا!</translation>
 <translation id="8287009018010202411">پروڈکٹیوٹی</translation>
 <translation id="828708037801473432">آف</translation>
 <translation id="8297006494302853456">کمزور</translation>
@@ -2201,6 +2209,7 @@
 <translation id="8609384513243082612">نیا ٹیب کھولیں</translation>
 <translation id="861045123704058818">ایپس کو زمرہ کے لحاظ سے عارضی طور پر منظم کیا جاتا ہے</translation>
 <translation id="8612216344243590325">اہم فائلز کو ڈیسک ٹاپ کے بجائے <ph name="HOLDING_SPACE_TITLE" /> کے اندر رکھیں۔ بس فائلز کو <ph name="HOLDING_SPACE_TITLE" /> پر گھسیٹیں۔</translation>
+<translation id="8612338981637220013">آپ مسلسل کامیاب ہو رہے ہیں!</translation>
 <translation id="8614517853887502247"><ph name="APP_1_TITLE" /> اور <ph name="APP_2_TITLE" /> اطلاعات پوشیدہ ہیں کیونکہ دیکھنے کا تحفظ آن ہے</translation>
 <translation id="8615778328722901791">ٹول بار کھولیں</translation>
 <translation id="8619000641825875669">OneDrive</translation>
@@ -2243,6 +2252,7 @@
 <translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />: فعال کیا جا رہا ہے...</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />،
         <ph name="SCREEN_SHARE_STATUS" /></translation>
+<translation id="8751299148074971734">اسے برقرار رکھیں!</translation>
 <translation id="8753368202781196133">اس وقت یہ زبان تعاون یافتہ نہیں ہے۔</translation>
 <translation id="8755498163081687682">اپنی شناخت کی توثیق کریں: <ph name="ORIGIN_NAME" /> اس بات کی تصدیق کرنا چاہتی ہے کہ یہ آپ ہی ہیں</translation>
 <translation id="875593634123171288">‏VPN کی ترتیبات دکھائیں</translation>

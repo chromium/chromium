@@ -35,6 +35,7 @@
 <translation id="1155154308031262006">Insira um comando</translation>
 <translation id="115705039208660697">abacaxis</translation>
 <translation id="1164939766849482256">Protetor de tela Do amanhecer à escuridão</translation>
+<translation id="1166688493741195933">Falha ao gerar nomes de gravações</translation>
 <translation id="1167755866710282443">Abra o menu para personalizar as teclas. Arraste o menu para mover.</translation>
 <translation id="1171349345463658120">lagoa arenosa</translation>
 <translation id="1173894706177603556">Renomear</translation>
@@ -493,6 +494,7 @@
 <translation id="3502426834823382181">mostrar todos os apps</translation>
 <translation id="3510890413042482857">Enviar <ph name="BEGIN_LINK1" />dados de rastreamento de performance<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Atualização do ChromeOS</translation>
+<translation id="3522508178835057262">Por enquanto, não é possível gerar transcrições com mais de <ph name="MAX_WORD_LENGTH" /> palavras</translation>
 <translation id="3527036260304016759">Falha - Erro desconhecido</translation>
 <translation id="353214771040290298">Concluído</translation>
 <translation id="3532980081107202182">Aproximadamente <ph name="MIN_REMAINING" /> minutos restantes</translation>
@@ -710,6 +712,7 @@
 <translation id="4602266091140407479">Microfone</translation>
 <translation id="4607282946861182308">Não é possível criar imagens desse comando. Tente outro comando.</translation>
 <translation id="4609350030397390689">Diminuir o brilho do teclado</translation>
+<translation id="4623061655523261501">Os nomes das gravações foram gerados</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> de <ph name="TOTAL_PAGE_NUMBER" />. Pressione "Enter" para cancelar o trabalho de impressão.</translation>
 <translation id="463791356324567266">Cancelando a digitalização…</translation>
 <translation id="4644611440022666152">Ativar e baixar</translation>
@@ -1215,6 +1218,7 @@
 <translation id="708426984172631313">PARADO</translation>
 <translation id="7086168019478250425">praia bioluminescente</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="7086916854357021265">Gerando nomes de gravações</translation>
 <translation id="7097908713073775559">coloridos</translation>
 <translation id="710028965487274708">Falha: a autorização falhou</translation>
 <translation id="7101959270679078188">Desbloqueie o <ph name="DEVICE_NAME" /> para continuar o processo de atualização</translation>

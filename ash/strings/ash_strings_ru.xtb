@@ -78,6 +78,7 @@
 <translation id="1240638468526743569">приложение</translation>
 <translation id="1242198791279543032">Звук уведомлений отключен</translation>
 <translation id="1242883863226959074">устройстве</translation>
+<translation id="1245476784081715330">Вы молодец!</translation>
 <translation id="1245644940275736236">Перейти к Ассистенту</translation>
 <translation id="124678866338384709">Закрыть вкладку</translation>
 <translation id="1246890715821376239">Неподдерживаемые приложения</translation>
@@ -842,6 +843,7 @@
 <translation id="3958714870339660776">Весь день</translation>
 <translation id="3962859241508114581">Предыдущий трек</translation>
 <translation id="3963124517343721543">Легко продолжайте с того места, где остановились, в ранее открытых окнах и вкладках. Вы также увидите персональные советы о том, что можно сделать.</translation>
+<translation id="396506362088290977">Проверка микрофона</translation>
 <translation id="3969043077941541451">Отключен</translation>
 <translation id="3970324493235864154">Просматривайте уведомления с телефона.</translation>
 <translation id="397105322502079400">Вычисление…</translation>
@@ -899,6 +901,7 @@
 <translation id="4156293514828496577">Уровень заряда батареи: <ph name="PERCENTAGE" /> %. Приблизительное оставшееся время работы: <ph name="TIME_LEFT" />.
 Чтобы увеличить это время, использование некоторых функций было ограничено.</translation>
 <translation id="4160919062868802509">Обнаружено несколько источников звука</translation>
+<translation id="416245495747357243">Готово!</translation>
 <translation id="4165275524535002941">Кабель несовместим с экраном</translation>
 <translation id="4177415338862979658">Нажмите, чтобы узнать больше.</translation>
 <translation id="4177913004758410636">{0,plural, =1{Перезагрузите устройство в течение 1 дня}one{Перезагрузите устройство в течение # дня}few{Перезагрузите устройство в течение # дней}many{Перезагрузите устройство в течение # дней}other{Перезагрузите устройство в течение # дня}}</translation>
@@ -984,6 +987,7 @@
 <translation id="4412944820643904175">Функция "<ph name="FEATURE_NAME" />" отключена</translation>
 <translation id="4417647906073317561">Настройки режима концентрации внимания. Установите таймер, задачу и музыку, чтобы погрузиться в процесс.</translation>
 <translation id="4424159417645388645">Рабочий стол 5</translation>
+<translation id="4426817706804363424">Отлично!</translation>
 <translation id="4430019312045809116">Объем</translation>
 <translation id="4441283832827406317">Приложения упорядочены по названию.</translation>
 <translation id="4445159312344259901">Войти, чтобы разблокировать</translation>
@@ -1248,6 +1252,7 @@
 <translation id="5283198616748585639">Добавить 1 мин.</translation>
 <translation id="528468243742722775">Завершить</translation>
 <translation id="5286194356314741248">Сканирование...</translation>
+<translation id="528641622273682395">Включить/отключить проверку микрофона</translation>
 <translation id="5297423144044956168">Мобильные устройства не найдены.</translation>
 <translation id="5297704307811127955">Отключено</translation>
 <translation id="5300589172476337783">Показать</translation>
@@ -1275,6 +1280,7 @@
 <translation id="536019650977002321">Администратор запретил запись аудио. Обратитесь к нему за подробной информацией.</translation>
 <translation id="5361524080961918551"><ph name="LANGUAGE" />: файлы для распознавания речи частично скачаны</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> перейти на эту вкладку</translation>
+<translation id="5363835273551457276">Протестируйте работу микрофона. Для завершения закройте панель.</translation>
 <translation id="5364693579536176785">хранилище</translation>
 <translation id="5369573834963677938">Функция отслеживания лица будет доступна другим пользователям устройства</translation>
 <translation id="5369717264580061086">Посмотреть файл в приложении "Файлы"</translation>
@@ -2126,6 +2132,7 @@
 <translation id="8262312463845990408">Воспроизвести/приостановить</translation>
 <translation id="8268302343625273732">Посмотреть все задания в Google Классе</translation>
 <translation id="8277261673056602147">Выделите текст на экране</translation>
+<translation id="8282784978194352587">Получилось!</translation>
 <translation id="8287009018010202411">Работа</translation>
 <translation id="828708037801473432">Отключено</translation>
 <translation id="8297006494302853456">Слабый</translation>
@@ -2203,6 +2210,7 @@
 <translation id="8609384513243082612">Открыть новую вкладку</translation>
 <translation id="861045123704058818">Приложения отсортированы по категориям временно.</translation>
 <translation id="8612216344243590325">Храните важные файлы в разделе "<ph name="HOLDING_SPACE_TITLE" />". Для этого просто перетащите их в раздел "<ph name="HOLDING_SPACE_TITLE" />".</translation>
+<translation id="8612338981637220013">Вам всё по плечу!</translation>
 <translation id="8614517853887502247">Уведомления "<ph name="APP_1_TITLE" />" и "<ph name="APP_2_TITLE" />" скрыты, потому что включен режим безопасного просмотра.</translation>
 <translation id="8615778328722901791">Открыть панель инструментов</translation>
 <translation id="8619000641825875669">OneDrive</translation>
@@ -2245,6 +2253,7 @@
 <translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />: активация…</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
+<translation id="8751299148074971734">Так держать!</translation>
 <translation id="8753368202781196133">Пока этот язык не поддерживается.</translation>
 <translation id="8755498163081687682"><ph name="ORIGIN_NAME" /> запрашивает подтверждение вашей личности</translation>
 <translation id="875593634123171288">Показать настройки VPN</translation>

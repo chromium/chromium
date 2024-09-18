@@ -215,6 +215,7 @@
 <translation id="1703117532528082099">ตรึงหน้าต่างที่ใช้งานไว้ทางด้านซ้ายแล้ว</translation>
 <translation id="1708345662127501511">เดสก์: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">การตั้งค่าเครือข่าย</translation>
+<translation id="171610090693716835">ทำสิ่งต่างๆ ได้ตามแผนที่วางไว้ด้วยเพลย์ลิสต์เพื่อการโฟกัสที่ปรับเปลี่ยนในแบบของคุณ รับ YouTube Music และ YouTube แบบไม่มีโฆษณาด้วย YouTube Premium ฟรี 3 เดือน</translation>
 <translation id="1719094688023114093">คำบรรยายสดเปิดอยู่</translation>
 <translation id="1720011244392820496">เปิดการซิงค์ Wi-Fi</translation>
 <translation id="1720230731642245863">ฮอตสปอตปิดอยู่</translation>
@@ -1409,6 +1410,7 @@
 <translation id="5777841717266010279">ต้องการหยุดแชร์หน้าจอไหม</translation>
 <translation id="5779721926447984944">ไฟล์ที่ปักหมุดไว้</translation>
 <translation id="5785221443435874078">นำคำแนะนำนี้ออก</translation>
+<translation id="5787431783058088906">รับสิทธิพิเศษ</translation>
 <translation id="5788127256798019331">ไฟล์ Play</translation>
 <translation id="5788535737706478207">เปิดแท็บหรือหน้าต่างที่ปิดล่าสุดขึ้นมาอีกครั้ง</translation>
 <translation id="5790085346892983794">สำเร็จ</translation>
@@ -1640,6 +1642,7 @@
 <translation id="6574587113394758819">การแจ้งเตือนของ <ph name="APP_TITLE" /> ซ่อนอยู่เนื่องจากเปิดโหมดป้องกันการดูไว้</translation>
 <translation id="6574622320167699133">ปลดล็อกแล้วด้วยโทรศัพท์ แตะหรือคลิกเพื่อเข้าใช้งาน</translation>
 <translation id="6578407462441924264">ไม่ได้ตั้งชื่อ</translation>
+<translation id="6582012689384648647">อนุญาตให้เข้าถึง YouTube Music เพื่อรับเพลย์ลิสต์เพื่อการโฟกัสที่ปรับเปลี่ยนในแบบของคุณ</translation>
 <translation id="6582034443359256692">กําลังคํานวณระดับการชาร์จแบตเตอรี่</translation>
 <translation id="6585808820553845416">เซสชันจะสิ้นสุดใน <ph name="SESSION_TIME_REMAINING" /></translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
@@ -1878,6 +1881,7 @@
 <translation id="7477793887173910789">ควบคุมเพลง วิดีโอ และอื่นๆ</translation>
 <translation id="7488762544858401571">แก้ไขแล้ว</translation>
 <translation id="7489261257412536105">เข้าหรือออกจากโหมดเต็มหน้าจอ</translation>
+<translation id="7490157877815329797">ลองใช้ YouTube Music Premium เพื่อฟังเพลงแบบไม่มีโฆษณาและเพลิดเพลินไปกับเพลงที่ปรับเปลี่ยนในแบบของคุณ</translation>
 <translation id="7490360161041035804">คุณปักหมุดไฟล์ที่สำคัญ รวมถึงไฟล์ใน Google ไดรฟ์ได้ หากต้องการปักหมุด ให้วางเมาส์เหนือรายการหรือเปิด Files และคลิกขวาที่รายการ</translation>
 <translation id="7497767806359279797">เลือกภาษาและแป้นพิมพ์</translation>
 <translation id="7507162824403726948">ยืนยันตัวตนให้เสร็จสิ้น</translation>
@@ -2153,6 +2157,7 @@
 <translation id="8380784334203145311">ราตรีสวัสดิ์</translation>
 <translation id="8382715499079447151">การป้องกันการดู</translation>
 <translation id="8383614331548401927">สรุปจากการใช้ครั้งล่าสุด</translation>
+<translation id="838540623579162843">สมัคร Music Premium</translation>
 <translation id="8388750414311082622">นำพื้นที่ทำงานสุดท้ายออกไม่ได้</translation>
 <translation id="8394567579869570560">ผู้ปกครองของคุณล็อกอุปกรณ์นี้ไว้</translation>
 <translation id="8401850874595457088">ป้อนเมนูภาษา</translation>

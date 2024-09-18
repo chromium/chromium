@@ -35,6 +35,7 @@
 <translation id="1155154308031262006">Voer ’n porboodskap in</translation>
 <translation id="115705039208660697">pynappels</translation>
 <translation id="1164939766849482256">Oggend-tot-die-aand-sluimerskerm</translation>
+<translation id="1166688493741195933">Kon nie name vir opnames genereer nie</translation>
 <translation id="1167755866710282443">Maak kieslys oop om sleutels te pasmaak. Sleep kieslys om te skuif.</translation>
 <translation id="1171349345463658120">sanderige strandmeer</translation>
 <translation id="1173894706177603556">Hernoem</translation>
@@ -493,6 +494,7 @@
 <translation id="3502426834823382181">bekyk alle apps</translation>
 <translation id="3510890413042482857">Stuur <ph name="BEGIN_LINK1" />werkverrigtingnasporingdata<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Chrome OS-opdatering</translation>
+<translation id="3522508178835057262">’n Transkripsie van meer as <ph name="MAX_WORD_LENGTH" /> woorde word nie tans gesteun nie</translation>
 <translation id="3527036260304016759">Misluk – Onbekende fout</translation>
 <translation id="353214771040290298">Klaar gewysig</translation>
 <translation id="3532980081107202182">Ongeveer <ph name="MIN_REMAINING" /> minute oor</translation>
@@ -710,6 +712,7 @@
 <translation id="4602266091140407479">Mikrofoon</translation>
 <translation id="4607282946861182308">Kan nie prente hiervan skep nie. Probeer ’n ander porboodskap.</translation>
 <translation id="4609350030397390689">Verlaag sleutelbordhelderheid</translation>
+<translation id="4623061655523261501">Name vir opnames is suksesvol gegenereer</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> van <ph name="TOTAL_PAGE_NUMBER" />. Druk om die druktaak te kanselleer.</translation>
 <translation id="463791356324567266">Kanselleer tans skandering …</translation>
 <translation id="4644611440022666152">Skakel aan en laai af</translation>
@@ -1212,6 +1215,7 @@
 <translation id="708426984172631313">GESTOP</translation>
 <translation id="7086168019478250425">bioluminessensie strand</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="7086916854357021265">Name vir opnames word tans gegenereer</translation>
 <translation id="7097908713073775559">kleurryk</translation>
 <translation id="710028965487274708">Misluk – kon nie magtig nie</translation>
 <translation id="7101959270679078188">Ontsluit die <ph name="DEVICE_NAME" /> om met die opdateringproses voort te gaan</translation>

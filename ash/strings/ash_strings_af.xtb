@@ -78,6 +78,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="1240638468526743569">’n Program</translation>
 <translation id="1242198791279543032">Kennisgewings is gedemp</translation>
 <translation id="1242883863226959074">toestel</translation>
+<translation id="1245476784081715330">Uitstekende werk!</translation>
 <translation id="1245644940275736236">Gaan na Assistent</translation>
 <translation id="124678866338384709">Maak huidige oortjie toe</translation>
 <translation id="1246890715821376239">Ongesteunde programme</translation>
@@ -843,6 +844,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="3958714870339660776">Heeldag</translation>
 <translation id="3962859241508114581">Vorige snit</translation>
 <translation id="3963124517343721543">Gaan maklik voort waar jy opgehou het deur jou vorige vensters en oortjies oop te maak. Jy sal ook gepersonaliseerde voorstelle sien vir dinge om volgende te doen.</translation>
+<translation id="396506362088290977">Toets jou mikrofoonklank</translation>
 <translation id="3969043077941541451">Af</translation>
 <translation id="3970324493235864154">Bekyk jou foon se kennisgewings</translation>
 <translation id="397105322502079400">Bereken tans …</translation>
@@ -900,6 +902,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="4156293514828496577"><ph name="PERCENTAGE" />% batterykrag oor (ongeveer <ph name="TIME_LEFT" />).
 Sommige kenmerke is beperk om die batterylewe te verleng.</translation>
 <translation id="4160919062868802509">Veelvuldige oudiobronne is bespeur</translation>
+<translation id="416245495747357243">Als klaar!</translation>
 <translation id="4165275524535002941">Kabel steun dalk nie skerms nie</translation>
 <translation id="4177415338862979658">Klik om besonderhede te soek</translation>
 <translation id="4177913004758410636">{0,plural, =1{Dateer toestel binne 'n dag op}other{Dateer toestel binne # dae op}}</translation>
@@ -985,6 +988,7 @@ Sommige kenmerke is beperk om die batterylewe te verleng.</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> is af.</translation>
 <translation id="4417647906073317561">Fokusinstellings Stel ’n afteller, taak en musiek om aan die gang te kom.</translation>
 <translation id="4424159417645388645">Lessenaar 5</translation>
+<translation id="4426817706804363424">Goeie werk!</translation>
 <translation id="4430019312045809116">Volume</translation>
 <translation id="4441283832827406317">Programme word volgens naam gerangskik</translation>
 <translation id="4445159312344259901">Meld aan om te ontsluit</translation>
@@ -1249,6 +1253,7 @@ Jy kan ook die kortpadsleutels gebruik. Merk eers die teks en druk dan <ph name=
 <translation id="5283198616748585639">Voeg 1 min. by</translation>
 <translation id="528468243742722775">Einde</translation>
 <translation id="5286194356314741248">Skandeer tans</translation>
+<translation id="528641622273682395">Wissel mikrofoontoets</translation>
 <translation id="5297423144044956168">Geen mobiele toestelle gekry nie</translation>
 <translation id="5297704307811127955">Af</translation>
 <translation id="5300589172476337783">Wys</translation>
@@ -1276,6 +1281,7 @@ Geen toestelle is gekoppel nie.</translation>
 <translation id="536019650977002321">Jou admin laat nie die vasvang van oudio toe nie. Kontak jou admin vir meer inligting.</translation>
 <translation id="5361524080961918551"><ph name="LANGUAGE" /> spraaklêers is gedeeltelik afgelaai</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Gaan na hierdie oortjie</translation>
+<translation id="5363835273551457276">Jy kan jou mikrofoonklank toets. Maak paneel toe om te stop.</translation>
 <translation id="5364693579536176785">bergingspasie</translation>
 <translation id="5369573834963677938">Gesigbeheer sal vir ander gebruikers op die toestel beskikbaar wees</translation>
 <translation id="5369717264580061086">Voorbeskou lêer in Lêers-app</translation>
@@ -2126,6 +2132,7 @@ Druk en hou weer die aan/af-skakelaar op die toestel om dit af te skakel.</trans
 <translation id="8262312463845990408">Wissel terugspeel</translation>
 <translation id="8268302343625273732">Sien alle opdragte in Google Klaskamer</translation>
 <translation id="8277261673056602147">Kleurmerk teks op jou skerm</translation>
+<translation id="8282784978194352587">Jy het dit reggekry!</translation>
 <translation id="8287009018010202411">Produktiwiteit</translation>
 <translation id="828708037801473432">Af</translation>
 <translation id="8297006494302853456">Swak</translation>
@@ -2203,6 +2210,7 @@ Druk en hou weer die aan/af-skakelaar op die toestel om dit af te skakel.</trans
 <translation id="8609384513243082612">Maak nuwe oortjie oop</translation>
 <translation id="861045123704058818">Apps word tydelik volgens kategorie georganiseer</translation>
 <translation id="8612216344243590325">Hou belangrike lêers in <ph name="HOLDING_SPACE_TITLE" /> in plaas van op die werkskerm. Sleep net lêers na <ph name="HOLDING_SPACE_TITLE" />.</translation>
+<translation id="8612338981637220013">Jy’s op dreef!</translation>
 <translation id="8614517853887502247"><ph name="APP_1_TITLE" />- en <ph name="APP_2_TITLE" />-kennisgewings word versteek omdat kykbeskerming aan is</translation>
 <translation id="8615778328722901791">Maak nutsbalk oop</translation>
 <translation id="8619000641825875669">OneDrive</translation>
@@ -2245,6 +2253,7 @@ Druk en hou weer die aan/af-skakelaar op die toestel om dit af te skakel.</trans
 <translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />: Aktiveer tans …</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
+<translation id="8751299148074971734">Hou so aan!</translation>
 <translation id="8753368202781196133">Hierdie taal word nie tans gesteun nie.</translation>
 <translation id="8755498163081687682">Verifieer jou identiteit: <ph name="ORIGIN_NAME" /> wil bevestig dat dit jy is</translation>
 <translation id="875593634123171288">Wys VPN-instellings</translation>

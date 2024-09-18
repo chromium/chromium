@@ -553,6 +553,7 @@
 <translation id="1401216725754314428">Научете повече за сродните сайтове в нов раздел</translation>
 <translation id="1402426911829176748">Установява се връзка с устройството ви</translation>
 <translation id="1403222014593521787">Не може да се установи връзка с прокси сървъра</translation>
+<translation id="1405336513195181336">Това включва отметките, разширенията и историята на сърфирането ви в сайтовете.</translation>
 <translation id="1405779994569073824">Възникна срив.</translation>
 <translation id="1406500794671479665">Потвърждава се...</translation>
 <translation id="1407069428457324124">Тъмна тема</translation>
@@ -2508,6 +2509,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2749881179542288782">Проверка на граматиката заедно с правописа</translation>
 <translation id="2750020734439919571">Още настройки и разрешения за приложението Chrome</translation>
 <translation id="2750602041558385535">Непотвърденото изтегляне е блокирано</translation>
+<translation id="2751883373055093745"><ph name="WEBSITE" /> иска да научи идентификационния номер на ключа ви за сигурност. Сайтът ще знае точно кой ключ използвате.</translation>
 <translation id="275213133112113418">Картата ви е запазена</translation>
 <translation id="2753623023919742414">Кликнете, за да търсите</translation>
 <translation id="2754226775788136540">Търсят се устройства за бързо сдвояване, запазени в(ъв) <ph name="PRIMARY_EMAIL" /></translation>
@@ -3735,6 +3737,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3665589677786828986">Chrome установи, че някои от настройките ви са повредени от друга програма, и възстанови първоначалните им стандартни стойности.</translation>
 <translation id="3665919494326051362">Текущата версия е <ph name="CURRENT_VERSION" /></translation>
 <translation id="3666196264870170605">Файлове за отстраняване на грешки с Wi-Fi картата от Intel</translation>
+<translation id="3666529246018937077">Съществуващите ви данни за сърфирането ще останат в стария потребителски профил. Служебният ви потребителски профил няма да съдържа данни за предишно сърфиране.</translation>
 <translation id="3666971425390608309">Изтеглянето на <ph name="FILE_NAME" /> е на пауза.</translation>
 <translation id="3670113805793654926">Устройства от който и да е доставчик</translation>
 <translation id="3670229581627177274">Включване на Bluetooth</translation>
@@ -4477,6 +4480,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4181841719683918333">Езици</translation>
 <translation id="4182339886482390129">Функцията за подобрена защита от Безопасно сърфиране прави повече, за да ви защитава от опасни уебсайтове, изтегляния и разширения</translation>
 <translation id="4184803915913850597">HID устройство (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
+<translation id="418527077671811642"><ph name="WEBSITE" /> ще разбере марката и модела на ключа ви за сигурност</translation>
 <translation id="4186749321808907788"><ph name="QUERY_NAME" /> – <ph name="DEFAULT_SEARCH_ENGINE_NAME" /> Търсене</translation>
 <translation id="4187424053537113647"><ph name="APP_NAME" /> се настройва...</translation>
 <translation id="4190446002599583608">Търсене в историята, базирано на AI</translation>
@@ -4604,6 +4608,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4278779213160967034">Този процес може да отнеме няколко минути. Файловете се изтеглят.</translation>
 <translation id="4279129444466079448">На това устройство можете да инсталирате до <ph name="PROFILE_LIMIT" /> профила на електронната SIM карта. За да добавите друг такъв профил, първо премахнете съществуващ.</translation>
 <translation id="4280325816108262082">Връзката на устройството ще бъде прекратена автоматично, когато бъде изключено или не се използва</translation>
+<translation id="4281412694055934031">Сайтовете могат да извеждат запитвания за инсталиране на уеб приложения на устройството ви</translation>
 <translation id="4281789858103154731">Създаване</translation>
 <translation id="4281844954008187215">Условия за ползване</translation>
 <translation id="4281849573951338030">Персонализиране на бутоните на писалката</translation>
@@ -4811,6 +4816,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4426857487270413362">Инсталационните файлове не могат да се изтеглят. Моля, проверете връзката си с интернет и дали имате достатъчно свободно място на диска и опитайте отново. Кодът на грешката е <ph name="ERROR" />.</translation>
 <translation id="4427111270137140798">Засечено е <ph name="COUNT" /> пъти</translation>
 <translation id="4427365070557649936">Кодът за потвърждение се проверява...</translation>
+<translation id="4428579202668721841">Искате ли съществуващите данни за сърфирането да се съхраняват отделно от служебния ви потребителски профил?</translation>
 <translation id="4429163740524851942">Подредба на физическата клавиатура</translation>
 <translation id="4430019312045809116">Звук</translation>
 <translation id="443031431654216610">Използвайте само цифри</translation>
@@ -5450,8 +5456,10 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="490031510406860025">Не е разрешено на този сайт</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Хц – презредова развивка</translation>
 <translation id="4900652253009739885">Единственият превключвател, за който е зададено „Избиране“, не може да бъде премахнат. Натиснете който и да е клавиш за <ph name="RESPONSE" />.</translation>
+<translation id="4900908761825556116">Да не се разрешава на сайтовете да инсталират уеб приложения на устройството ви</translation>
 <translation id="4901154724271753917">Разгъване на наскоро затворените</translation>
 <translation id="4901309472892185668">Изберете състояние за експеримента „<ph name="EXPERIMENT_NAME" />“.</translation>
+<translation id="4902675024946078396">Не, преместване в служебния ви потребителски профил</translation>
 <translation id="49027928311173603">Изтегленото от сървъра правило е невалидно: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4903967893652864401">Това удължава живота на батерията, като ограничава активността на заден план и визуалните ефекти, като например гладкото превъртане.</translation>
 <translation id="4906490889887219338">Настройване или управление на споделени хранилища в мрежата. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
@@ -7483,6 +7491,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6434104957329207050">Скорост на точковото сканиране</translation>
 <translation id="6434309073475700221">Отхвърляне</translation>
 <translation id="6434325376267409267">Устройството ви трябва да бъде актуализирано, преди да можете да използвате <ph name="APP_NAME" />.</translation>
+<translation id="6434690603850475457">Да, запазване отделно (препоръчва се)</translation>
 <translation id="6434755719322447931">Хаотично</translation>
 <translation id="6435339218366409950">Изберете езика, на който да бъдат преведени надписите</translation>
 <translation id="6436164536244065364">Преглед в уеб магазина</translation>
@@ -8385,6 +8394,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="708060913198414444">К&amp;опиране на адреса на аудиозаписа</translation>
 <translation id="7082568314107259011"><ph name="NETWORK_NAME" /> се управлява от администратора ви</translation>
 <translation id="7082850163410901674">Известията са изключени в системните настройки на Mac</translation>
+<translation id="7083729794572207131">Сайтовете обикновено искат да инсталират уеб приложения, за да подобрят практическата ви работа на сайта</translation>
 <translation id="7083774521940805477">Бета-версията на Steam за Chromebook не е налице за вашия Chromebook.</translation>
 <translation id="708550780726587276">(не е конфигурирано)</translation>
 <translation id="7086377898680121060">увеличаване на яркостта</translation>
@@ -10487,6 +10497,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="8617601976406256334">Да се изтрият ли данните и разрешенията за <ph name="SITE_NAME" />?</translation>
 <translation id="8617748779076050570">Идентификатор на защитената връзка: <ph name="CONNECTION_ID" /></translation>
 <translation id="8619000641825875669">OneDrive</translation>
+<translation id="8619369551122276044">Без разрешение за инсталиране на уеб приложения на устройството ви</translation>
 <translation id="8619803522055190423">Сянка</translation>
 <translation id="8619892228487928601"><ph name="CERTIFICATE_NAME" />: <ph name="ERROR" /></translation>
 <translation id="8620206585293032550">Облик на неактивните раздели</translation>
@@ -11368,6 +11379,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="93393615658292258">Само парола</translation>
 <translation id="934244546219308557">Наименувайте тази група</translation>
 <translation id="93480724622239549">Програмен дефект или грешка</translation>
+<translation id="9354763467503131">С разрешение да извеждат запитване за инсталиране на уеб приложения на устройството ви</translation>
 <translation id="936646668635477464">Камера и микрофон</translation>
 <translation id="936801553271523408">Диагностични данни за системата</translation>
 <translation id="93766956588638423">Поправяне на разширението</translation>
@@ -11392,6 +11404,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="949807244219288032">Този раздел е свързан с HID устройство</translation>
 <translation id="950079950995628542">От <ph name="PHONE_NAME" /></translation>
 <translation id="950307215746360464">Ръководство за настройване</translation>
+<translation id="950728747178241190">Прилагане на потискане на шума и подобрения на звука. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
 <translation id="951273949038779544"><ph name="SITE_ACCESS" />. Инсталирано от администратора ви</translation>
 <translation id="951991426597076286">Отхвърляне</translation>
 <translation id="952471655966876828">Устройството ще се свърже автоматично, когато бъде включено и се използва</translation>

@@ -127,6 +127,7 @@
 <translation id="1567064801249837505">Album</translation>
 <translation id="1572585716423026576">Đặt làm hình nền</translation>
 <translation id="1578784163189013834">Chọn nền cho trình bảo vệ màn hình</translation>
+<translation id="1587031308639983732">Các thay đổi dựa trên thời gian có thể không chính xác. Chế độ cài đặt này do quản trị viên của bạn quản lý.</translation>
 <translation id="1588438908519853928">Bình thường</translation>
 <translation id="1591562245178063882">Tháng này</translation>
 <translation id="1593528591614229756">Hãy nhớ chọn APN do nhà cung cấp mạng di động hoặc quản trị viên của bạn cung cấp. Nếu bạn chọn một APN thì mọi APN tuỳ chỉnh sẽ bị tắt. APN không hợp lệ có thể làm gián đoạn kết nối di động. <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
@@ -342,6 +343,7 @@
 <translation id="2560876255701405320">Danh sách bản ghi âm</translation>
 <translation id="2561093647892030937">quả chanh vàng</translation>
 <translation id="2570743873672969996">Đang chạy kiểm tra <ph name="TEST_NAME" />...</translation>
+<translation id="2573178735329662769">Ghi lại toàn bộ âm thanh trên Chromebook</translation>
 <translation id="2575552334616524665">Bạn có thể bật lựa chọn này trong phần Cài đặt hoặc trình đơn <ph name="THREE_DOTS_MENU_ICON" /></translation>
 <translation id="2576253868710695442">Mô hình này sẽ chiếm tối đa 2 GB dung lượng lưu trữ</translation>
 <translation id="2584547424703650812">Khung cảnh lung linh</translation>
@@ -510,6 +512,7 @@
 <translation id="3588034708467091142">Hãy kiểm tra để chắc chắn rằng bạn đã kết nối Internet, rồi thử lại.</translation>
 <translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> là tên thân thiện với người dùng của <ph name="APN_NAME" />.</translation>
 <translation id="3595596368722241419">Pin đầy</translation>
+<translation id="3600063043775287169">Khi âm thanh trên Chromebook được bật, Máy ghi âm sẽ ghi lại tất cả âm thanh đang phát trên thiết bị này. Hãy chắc chắn rằng bạn muốn ghi lại tất cả âm thanh.</translation>
 <translation id="3600339377155080675">Phản chiếu lên màn hình</translation>
 <translation id="3602290021589620013">Xem trước</translation>
 <translation id="3603829704940252505">Hình đại diện</translation>

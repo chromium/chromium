@@ -78,6 +78,7 @@
 <translation id="1240638468526743569">အက်ပ်တစ်ခု</translation>
 <translation id="1242198791279543032">အကြောင်းကြားချက်များ ပိတ်ထားသည်</translation>
 <translation id="1242883863226959074">စက်</translation>
+<translation id="1245476784081715330">တော်ပါပေသည်။</translation>
 <translation id="1245644940275736236">Assistant သို့ သွားပါ</translation>
 <translation id="124678866338384709">လက်ရှိတဘ်ကို ပိတ်ရန်</translation>
 <translation id="1246890715821376239">ထောက်ပံ့ပေးမထားသော အက်ပ်များ</translation>
@@ -842,6 +843,7 @@
 <translation id="3958714870339660776">တစ်နေ့လုံး</translation>
 <translation id="3962859241508114581">ယခင်တစ်ပုဒ်</translation>
 <translation id="3963124517343721543">သင်၏ ယခင်ဝင်းဒိုးနှင့် တဘ်များကို ဖွင့်ခြင်းဖြင့် ရပ်ထားသည့်နေရာမှ လွယ်ကူစွာ ရှေ့ဆက်နိုင်သည်။ နောက်ထပ်လုပ်ဆောင်ရမည့်အရာများအတွက် ပုဂ္ဂိုလ်ရေးသီးသန့် အကြံပြုချက်များကိုလည်း မြင်ရပါမည်။</translation>
+<translation id="396506362088290977">မိုက်အသံစမ်းခြင်း</translation>
 <translation id="3969043077941541451">ပိတ်ရန်</translation>
 <translation id="3970324493235864154">သင့်ဖုန်းရှိ အကြောင်းကြားချက်များကို ကြည့်ရန်</translation>
 <translation id="397105322502079400">တွက်ချက်နေ...</translation>
@@ -899,6 +901,7 @@
 <translation id="4156293514828496577">ဘက်ထရီ <ph name="PERCENTAGE" />% ကျန်သည် (<ph name="TIME_LEFT" /> ခန့်)။
 ဘက်ထရီသက်တမ်းကြာစေရန် ဝန်ဆောင်မှုအချို့ကို ကန့်သတ်ထားသည်။</translation>
 <translation id="4160919062868802509">အသံရင်းမြစ်များစွာ တွေ့ရှိထားသည်</translation>
+<translation id="416245495747357243">ပြီးပါပြီ။</translation>
 <translation id="4165275524535002941">ကေဘယ်ကြိုးက ဖန်သားပြင်များကို ပံ့ပိုးမှုမရှိနိုင်ပါ</translation>
 <translation id="4177415338862979658">အသေးစိတ်ကြည့်ရန် နှိပ်ပါ</translation>
 <translation id="4177913004758410636">{0,plural, =1{စက်ကို တစ်ရက်အတွင်း အပ်ဒိတ်လုပ်ပါ}other{စက်ကို # ရက်အတွင်း အပ်ဒိတ်လုပ်ပါ}}</translation>
@@ -984,6 +987,7 @@
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> ပိတ်ထားသည်။</translation>
 <translation id="4417647906073317561">အထူးပြသမှု ဆက်တင်များ။ အာရုံစူးစိုက်မှု ရရှိရန် တိုင်မာ၊ လုပ်ဆောင်စရာနှင့် တေးဂီတတို့ကို သတ်မှတ်ပါ။</translation>
 <translation id="4424159417645388645">မျက်နှာပြင်နေရာ ၅</translation>
+<translation id="4426817706804363424">အလွန်တော်ပါသည်။</translation>
 <translation id="4430019312045809116">ပမာဏ</translation>
 <translation id="4441283832827406317">အက်ပ်များကို အမည်ဖြင့်စီထားသည်</translation>
 <translation id="4445159312344259901">ဖွင့်ရန် လက်မှတ်ထိုးဝင်ပါ</translation>
@@ -1248,6 +1252,7 @@
 <translation id="5283198616748585639">၁ မိနစ် တိုးရန်</translation>
 <translation id="528468243742722775">အဆုံး</translation>
 <translation id="5286194356314741248">ရှာဖွေနေသည်</translation>
+<translation id="528641622273682395">မိုက်စမ်းရန်</translation>
 <translation id="5297423144044956168">မိုဘိုင်းစက်ကိရိယာများ မတွေ့ပါ</translation>
 <translation id="5297704307811127955">ပိတ်ရန်</translation>
 <translation id="5300589172476337783">ပြရန်</translation>
@@ -1275,6 +1280,7 @@
 <translation id="536019650977002321">သင့်စီမံခန့်ခွဲသူက အသံဖမ်းယူခြင်းကို ခွင့်မပြုပါ။ နောက်ထပ် အချက်အလက်အတွက် သင်၏စီမံခန့်ခွဲသူကို ဆက်သွယ်ပါ။</translation>
 <translation id="5361524080961918551"><ph name="LANGUAGE" /> စကားသံဖိုင်များ တစ်ဝက်တစ်ပျက် ဒေါင်းလုဒ်လုပ်ထားသည်</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> ဤတဘ်သို့သွားရန်</translation>
+<translation id="5363835273551457276">သင့်မိုက်ခရိုဖုန်းအသံကို စမ်းသပ်နိုင်သည်။ ရပ်ရန် အကန့်ကိုပိတ်ပါ။</translation>
 <translation id="5364693579536176785">သိုလှောင်ခန်း နေရာ</translation>
 <translation id="5369573834963677938">မျက်နှာထိန်းချုပ်မှုကို ဤစက်ရှိ အခြားအသုံးပြုသူများအတွက် ရနိုင်ပါမည်</translation>
 <translation id="5369717264580061086">Files အက်ပ်ရှိ ဖိုင်ကို အစမ်းကြည့်ရှုရန်</translation>
@@ -2126,6 +2132,7 @@
 <translation id="8262312463845990408">ဖွင့်ရန် ခလုတ်</translation>
 <translation id="8268302343625273732">Google Classroom တွင် အတန်းစာအားလုံး ကြည့်ရန်</translation>
 <translation id="8277261673056602147">သင့်ဖန်သားပြင်ပေါ်ရှိ စာသားကို မြင်သာအောင်လုပ်ရန်</translation>
+<translation id="8282784978194352587">အောင်မြင်သွားပါပြီ။</translation>
 <translation id="8287009018010202411">အလုပ်ပြီးမြောက်မှု</translation>
 <translation id="828708037801473432">ပိတ်ရန်</translation>
 <translation id="8297006494302853456">အားမကောင်းပါ</translation>
@@ -2203,6 +2210,7 @@
 <translation id="8609384513243082612">တဘ်အသစ် ဖွင့်ရန်</translation>
 <translation id="861045123704058818">အက်ပ်များကို အမျိုးအစားအလိုက် ယာယီစုစည်းထားသည်</translation>
 <translation id="8612216344243590325">အရေးကြီးဖိုင်များကို ဒက်စ်တော့ပေါ်တွင် ထားမည့်အစား <ph name="HOLDING_SPACE_TITLE" /> တွင် သိမ်းပါ။ ဖိုင်များကို <ph name="HOLDING_SPACE_TITLE" /> သို့ ဆွဲထည့်ပါ။</translation>
+<translation id="8612338981637220013">အလုပ်ကောင်းမွန်သည်။</translation>
 <translation id="8614517853887502247">ကြည့်ရှုမှုဆိုင်ရာ အကာအကွယ်ကို ဖွင့်ထားသောကြောင့် <ph name="APP_1_TITLE" /> နှင့် <ph name="APP_2_TITLE" /> အကြောင်းကြားချက်များကို ဖျောက်ထားသည်</translation>
 <translation id="8615778328722901791">ကိရိယာဘား ဖွင့်ရန်</translation>
 <translation id="8619000641825875669">OneDrive</translation>
@@ -2245,6 +2253,7 @@
 <translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />- စတင်နေသည်...</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />၊
         <ph name="SCREEN_SHARE_STATUS" /></translation>
+<translation id="8751299148074971734">ဆက်ထိန်းထားပါ။</translation>
 <translation id="8753368202781196133">ဤဘာသာစကားကို လောလောဆယ် မပံ့ပိုးပါ။</translation>
 <translation id="8755498163081687682">သင်၏အထောက်အထားကို အတည်ပြုပါ- သင်ဖြစ်ကြောင်း <ph name="ORIGIN_NAME" /> က အတည်ပြုလိုသည်</translation>
 <translation id="875593634123171288">VPN ဆက်တင်များကို ပြရန်</translation>

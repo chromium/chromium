@@ -214,6 +214,7 @@
 <translation id="1703117532528082099">将活动窗口停靠在左侧。</translation>
 <translation id="1708345662127501511">桌面：<ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">网络设置</translation>
+<translation id="171610090693716835">使用个性化专注播放列表保持专注。免费试用 YouTube Premium 3 个月，畅享无广告干扰的 YouTube Music 和 YouTube。</translation>
 <translation id="1719094688023114093">“实时字幕”功能已开启。</translation>
 <translation id="1720011244392820496">开启 Wi-Fi 同步</translation>
 <translation id="1720230731642245863">热点已关闭</translation>
@@ -1406,6 +1407,7 @@
 <translation id="5777841717266010279">要停止屏幕共享吗？</translation>
 <translation id="5779721926447984944">已固定的文件</translation>
 <translation id="5785221443435874078">移除此项推荐内容</translation>
+<translation id="5787431783058088906">获取福利</translation>
 <translation id="5788127256798019331">Play 文件</translation>
 <translation id="5788535737706478207">重新打开上次关闭的标签页或窗口</translation>
 <translation id="5790085346892983794">成功</translation>
@@ -1637,6 +1639,7 @@
 <translation id="6574587113394758819">由于防窥探功能已开启，因此系统隐藏了<ph name="APP_TITLE" />通知</translation>
 <translation id="6574622320167699133">已通过手机解锁。点按或点击即可继续使用。</translation>
 <translation id="6578407462441924264">未命名</translation>
+<translation id="6582012689384648647">如需使用个性化专注模式播放列表，请允许访问 YouTube Music</translation>
 <translation id="6582034443359256692">正在计算电池充电电量。</translation>
 <translation id="6585808820553845416">会话将在<ph name="SESSION_TIME_REMAINING" />后结束。</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />，<ph name="SECONDARY_TEXT" /></translation>
@@ -1875,6 +1878,7 @@
 <translation id="7477793887173910789">控制您的音乐、视频等媒体内容</translation>
 <translation id="7488762544858401571">已修改</translation>
 <translation id="7489261257412536105">进入或退出全屏模式</translation>
+<translation id="7490157877815329797">如需畅听无广告干扰的音乐和个性化的专注模式音乐，请试用 YouTube Music Premium</translation>
 <translation id="7490360161041035804">您可以固定重要文件，包括 Google 云端硬盘文件。如需固定某个文件，请将鼠标指针悬停在该文件上，或者打开“文件”应用并从中右键点击相应文件。</translation>
 <translation id="7497767806359279797">选择语言和键盘布局</translation>
 <translation id="7507162824403726948">完成身份验证</translation>
@@ -2149,6 +2153,7 @@
 <translation id="8380784334203145311">晚安！</translation>
 <translation id="8382715499079447151">防窥探功能</translation>
 <translation id="8383614331548401927">欢迎来到 Recap</translation>
+<translation id="838540623579162843">订阅 Music Premium</translation>
 <translation id="8388750414311082622">无法移除最后一个桌面。</translation>
 <translation id="8394567579869570560">您的家长锁定了此设备</translation>
 <translation id="8401850874595457088">进入语言菜单</translation>

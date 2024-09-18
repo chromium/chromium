@@ -80,6 +80,7 @@
 <translation id="1363028406613469049">Отслеживать</translation>
 <translation id="1364367057792633742">Новая вкладка</translation>
 <translation id="1365106417372288489">Устройство iPhone было недавно восстановлено, поэтому браузер по умолчанию мог измениться.</translation>
+<translation id="1366297852155605523">Доступные мне</translation>
 <translation id="136942498637440594">Выполняйте поиск по изображениям и ищите то, что видите.</translation>
 <translation id="1377508275003315939">Пароли</translation>
 <translation id="1381022135873211423">{count,plural, =1{Адрес {position} из {count}}one{Адрес {position} из {count}}few{Адрес {position} из {count}}many{Адрес {position} из {count}}other{Адрес {position} из {count}}}</translation>
@@ -333,6 +334,7 @@
 <translation id="2551153019974022505">Ошибка в аккаунте</translation>
 <translation id="2559843230610279254">Группа вкладок "<ph name="GROUP_TITLE" />" (вкладок: <ph name="TABS_NUMBER" />).</translation>
 <translation id="2577522251608256362">Район</translation>
+<translation id="2579713773888829241">Общие диски</translation>
 <translation id="2597486707832946298">Пользуйтесь всеми преимуществами привычного браузера для компьютера на iPhone.</translation>
 <translation id="260378315836159338">В верхней части экрана нажмите на значок "+".</translation>
 <translation id="2612676031748830579">Номер карты</translation>
@@ -528,6 +530,7 @@
 <translation id="3591006724568464696">Недавние вкладки недоступны</translation>
 <translation id="3595252146048399851">Вы всегда можете выбрать, что синхронизировать, в <ph name="BEGIN_LINK" />настройках<ph name="END_LINK" />. Google может персонально настраивать Поиск и другие сервисы на основе вашей истории.</translation>
 <translation id="3596414637720633074">Блокировать файлы cookie сторонних сайтов в режиме инкогнито</translation>
+<translation id="3602260545951981695">Выберите параметр "Улучшенная защита".</translation>
 <translation id="3606746615845065096">Закрыть вкладку</translation>
 <translation id="3622175633937495219">Поиск в истории (совпадений: <ph name="COUNT" />)</translation>
 <translation id="3625008969091706597">Чтобы перейти назад, проведите пальцем по краю экрана</translation>
@@ -668,6 +671,7 @@
 <translation id="4304713468139749426">Менеджер паролей</translation>
 <translation id="4309403553630140242">Чтобы узнать больше, нажмите дважды</translation>
 <translation id="4324735664183300693">Включить уведомления</translation>
+<translation id="4328843285884395590">Мой диск</translation>
 <translation id="4331177082088332784">Изменить выбор можно в BEGIN_LINKНастройках контентаEND_LINK.</translation>
 <translation id="4333100555184633720">Удалить данные о работе в браузере</translation>
 <translation id="4334428914252001502">1 непрочитанная статья.</translation>
@@ -1265,6 +1269,7 @@
 <translation id="7026724612456523899">Всегда отслеживать посылки</translation>
 <translation id="7029809446516969842">Пароли</translation>
 <translation id="7035825883570480307">Включить уведомления?</translation>
+<translation id="7039345315346323556">Недавние</translation>
 <translation id="7055240621761583113">Автозаполнение пароля</translation>
 <translation id="7058455400288852416">Открыть переключатель вкладок</translation>
 <translation id="7063811929043357292">Твоим аккаунтом управляет твой родитель.
@@ -1282,6 +1287,7 @@
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">Камера недоступна</translation>
 <translation id="7141960840225504692">Вкладки будут закрыты, а данные о работе в браузере удалены</translation>
+<translation id="714291438898585119">Помеченные</translation>
 <translation id="7146301801400584641">Доступен файл календаря</translation>
 <translation id="7149893636342594995">Последние 24 часа</translation>
 <translation id="716059570521443369">Поиск скопированного текста</translation>
@@ -1336,6 +1342,7 @@
 <translation id="7435356471928173109">Функцию отключил администратор.</translation>
 <translation id="7438481509621345350">Открыв новую вкладку, вы увидите статьи с сайта "<ph name="CHANNEL_NAME" />".</translation>
 <translation id="7451023311965289370">{count,plural, =1{Закладка сохранена в {title}.}one{Закладки сохранены в {title}.}few{Закладки сохранены в {title}.}many{Закладки сохранены в {title}.}other{Закладки сохранены в {title}.}}</translation>
+<translation id="7451404862887877229">Нажмите "Конфиденциальность и безопасность", а затем "Безопасный просмотр".</translation>
 <translation id="7454057999980797137">Регион</translation>
 <translation id="7458706065921255639">Персонализация и связывание</translation>
 <translation id="745899714366929493">Весь день</translation>
@@ -1414,6 +1421,7 @@
 <translation id="7788868432173225918">Свернуть раздел</translation>
 <translation id="7790954908631836016">Скрыть пункт "Версия для компьютера"</translation>
 <translation id="7791543448312431591">Добавить</translation>
+<translation id="7801064017114765401">Компьютеры</translation>
 <translation id="7802239711290932774">Используйте предложенный пароль:</translation>
 <translation id="780301667611848630">Нет, спасибо</translation>
 <translation id="7807060072011926525">Данные от Google</translation>

@@ -35,6 +35,7 @@
 <translation id="1155154308031262006">પ્રૉમ્પ્ટ દાખલ કરો</translation>
 <translation id="115705039208660697">અનાનસ</translation>
 <translation id="1164939766849482256">ડૉન ટુ ડાર્ક સ્ક્રીન સેવર</translation>
+<translation id="1166688493741195933">રેકોર્ડિંગના નામ જનરેટ કરવામાં નિષ્ફળ રહ્યાં</translation>
 <translation id="1167755866710282443">કી કસ્ટમાઇઝ કરવા માટે મેનૂ ખોલો. ખસેડવા માટે મેનૂ ખેંચો.</translation>
 <translation id="1171349345463658120">રેતી જેવો લગૂન</translation>
 <translation id="1173894706177603556">નામ બદલો</translation>
@@ -341,6 +342,7 @@
 <translation id="2560876255701405320">ઑડિયો રેકોર્ડિંગની સૂચિ</translation>
 <translation id="2561093647892030937">લીંબુ</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> પરીક્ષણ ચલાવી રહ્યાં છીએ…</translation>
+<translation id="2573178735329662769">Chromebookનો તમામ ઑડિયો રેકોર્ડ કરવો</translation>
 <translation id="2575552334616524665">તમે સેટિંગમાં કે <ph name="THREE_DOTS_MENU_ICON" /> મેનૂમાં જઈને આને ચાલુ કરી શકો છો</translation>
 <translation id="2576253868710695442">આમાં 2GB જેટલો સ્ટોરેજ જોશે</translation>
 <translation id="2584547424703650812">ગ્લોસ્કેપ</translation>
@@ -493,6 +495,7 @@
 <translation id="3502426834823382181">બધી ઍપ જુઓ</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />પર્ફોર્મન્સ ટ્રેસ ડેટા<ph name="END_LINK1" /> મોકલો</translation>
 <translation id="3517001332549868749">ChromeOSની અપડેટ</translation>
+<translation id="3522508178835057262">હાલ પૂરતું, <ph name="MAX_WORD_LENGTH" />થી વધુ શબ્દોની ટ્રાન્સક્રિપ્ટને સપોર્ટ આપવામાં આવતો નથી</translation>
 <translation id="3527036260304016759">નિષ્ફળ થયું - અજાણી ભૂલ</translation>
 <translation id="353214771040290298">ફેરફાર કરવાનું પૂર્ણ થયું</translation>
 <translation id="3532980081107202182">લગભગ <ph name="MIN_REMAINING" /> મિનિટ બાકી છે</translation>
@@ -508,6 +511,7 @@
 <translation id="3588034708467091142">તમે ઇન્ટરનેટથી કનેક્ટેડ હોવાની ખાતરી કરો અને ફરી પ્રયાસ કરો.</translation>
 <translation id="3594280220611906414"><ph name="APN_NAME" /> માટેનું વપરાશકર્તા માટે ઉપયુક્ત નામ <ph name="USER_FRIENDLY_APN_NAME" /> છે.</translation>
 <translation id="3595596368722241419">બૅટરી પૂર્ણ ચાર્જ</translation>
+<translation id="3600063043775287169">જ્યારે Chromebook ઑડિયો ચાલુ હોય, ત્યારે Recorder આ ડિવાઇસ પર ચાલતો તમામ ઑડિયો કૅપ્ચર કરે છે. ખાતરી કરો કે તમે તમામ સાઉન્ડ રેકોર્ડ કરવા માગો છો.</translation>
 <translation id="3600339377155080675">સ્ક્રીન મિરર કરો</translation>
 <translation id="3602290021589620013">પ્રીવ્યૂ કરો</translation>
 <translation id="3603829704940252505">અવતાર</translation>
@@ -710,6 +714,7 @@
 <translation id="4602266091140407479">માઇક</translation>
 <translation id="4607282946861182308">આની છબીઓ બનાવી શકતા નથી. કોઈ અન્ય પ્રૉમ્પ્ટ અજમાવી જુઓ.</translation>
 <translation id="4609350030397390689">કીબોર્ડનું બ્રાઇટનેસ ઘટાડવાની કી</translation>
+<translation id="4623061655523261501">રેકોર્ડિંગના નામ સફળતાપૂર્વક જનરેટ કર્યા</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="TOTAL_PAGE_NUMBER" />માંથી <ph name="PRINTED_PAGE_NUMBER" />. પ્રિન્ટ કરવાનું અટકાવવા માટે, Enter કી દબાવો.</translation>
 <translation id="463791356324567266">સ્કૅન કરવાનું કાર્ય રદ કરી રહ્યાં છીએ...</translation>
 <translation id="4644611440022666152">ચાલુ કરો અને ડાઉનલોડ કરો</translation>
@@ -1212,6 +1217,7 @@
 <translation id="708426984172631313">રોકવામાં આવ્યું</translation>
 <translation id="7086168019478250425">બાયોલ્યુમિનેસન્ટ દરિયા કિનારો</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="7086916854357021265">રેકોર્ડિંગના નામ જનરેટ કરી રહ્યાં છીએ</translation>
 <translation id="7097908713073775559">કલરફૂલ</translation>
 <translation id="710028965487274708">નિષ્ફળ રહ્યું - અધિકરણ નિષ્ફળ</translation>
 <translation id="7101959270679078188">અપડેટની પ્રક્રિયા ચાલુ રાખવા માટે <ph name="DEVICE_NAME" />ને અનલૉક કરો</translation>

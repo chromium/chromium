@@ -35,6 +35,7 @@
 <translation id="1155154308031262006">Voer een prompt in</translation>
 <translation id="115705039208660697">ananassen</translation>
 <translation id="1164939766849482256">Screensaver Van dageraad tot donker</translation>
+<translation id="1166688493741195933">Kan geen namen voor opnamen genereren</translation>
 <translation id="1167755866710282443">Open het menu om sleutels aan te passen. Sleep het menu om te verplaatsen.</translation>
 <translation id="1171349345463658120">lagune met zandstrand</translation>
 <translation id="1173894706177603556">Naam wijzigen</translation>
@@ -494,6 +495,7 @@
 <translation id="3502426834823382181">alle apps bekijken</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />Gegevens over prestatietracering<ph name="END_LINK1" /> sturen</translation>
 <translation id="3517001332549868749">Chrome OS-update</translation>
+<translation id="3522508178835057262">Op dit moment worden transcripten van meer dan <ph name="MAX_WORD_LENGTH" /> woorden niet ondersteund</translation>
 <translation id="3527036260304016759">Mislukt - Onbekende fout</translation>
 <translation id="353214771040290298">Klaar met bewerken</translation>
 <translation id="3532980081107202182">Nog ongeveer <ph name="MIN_REMAINING" /> minuten</translation>
@@ -712,6 +714,7 @@
 <translation id="4602266091140407479">Microfoon</translation>
 <translation id="4607282946861182308">Kan geen afbeeldingen hiervan maken. Probeer een andere prompt.</translation>
 <translation id="4609350030397390689">Helderheid van toetsenbord verlagen</translation>
+<translation id="4623061655523261501">Namen voor opnamen gegenereerd</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> van <ph name="TOTAL_PAGE_NUMBER" />. Druk op Enter om de afdruktaak te annuleren.</translation>
 <translation id="463791356324567266">Scannen annuleren…</translation>
 <translation id="4644611440022666152">Aanzetten en downloaden</translation>
@@ -1217,6 +1220,7 @@ Generatieve AI is experimenteel, in vroege ontwikkeling en op dit moment beperkt
 <translation id="708426984172631313">GESTOPT</translation>
 <translation id="7086168019478250425">strand met zeevonk</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="7086916854357021265">Namen voor opnamen genereren</translation>
 <translation id="7097908713073775559">kleurrijk</translation>
 <translation id="710028965487274708">Mislukt: autorisatie mislukt</translation>
 <translation id="7101959270679078188">Ontgrendel je <ph name="DEVICE_NAME" /> om door te gaan met het updateproces</translation>

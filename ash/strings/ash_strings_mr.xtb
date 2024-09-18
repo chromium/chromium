@@ -78,6 +78,7 @@
 <translation id="1240638468526743569">ॲप</translation>
 <translation id="1242198791279543032">नोटिफिकेशन म्यूट केली आहेत</translation>
 <translation id="1242883863226959074">डिव्हाइस</translation>
+<translation id="1245476784081715330">उत्तम कामगिरी!</translation>
 <translation id="1245644940275736236">Assistant वर जा</translation>
 <translation id="124678866338384709">वर्तमान टॅब बंद करा</translation>
 <translation id="1246890715821376239">सपोर्ट नसलेली ॲप्स</translation>
@@ -842,6 +843,7 @@
 <translation id="3958714870339660776">पूर्ण दिवस</translation>
 <translation id="3962859241508114581">मागील ट्रॅक</translation>
 <translation id="3963124517343721543">तुमच्या याआधीच्या विंडो आणि टॅब उघडून तुम्ही सोडले होते तिथून पुढे सहज सुरू करा. तुम्हाला यानंतर करण्यासारख्या गोष्टींसाठी पर्सनलाइझ केलेल्या सूचनादेखील दिसतील.</translation>
+<translation id="396506362088290977">तुमच्या माइकच्या आवाजाची चाचणी करा</translation>
 <translation id="3969043077941541451">बंद आहे</translation>
 <translation id="3970324493235864154">तुमच्या फोनमधील सूचना पहा</translation>
 <translation id="397105322502079400">गणना करत आहे...</translation>
@@ -899,6 +901,7 @@
 <translation id="4156293514828496577"><ph name="PERCENTAGE" />% बॅटरी शिल्लक आहे (सुमारे <ph name="TIME_LEFT" />).
 बॅटरी लाइफ वाढवण्यासाठी काही वैशिष्ट्ये मर्यादित केलेली आहेत.</translation>
 <translation id="4160919062868802509">एकाहून अधिक ऑडिओ स्रोत डिटेक्ट केले आहेत</translation>
+<translation id="416245495747357243">पूर्ण झाले!</translation>
 <translation id="4165275524535002941">केबल कदाचित डिस्प्लेला सपोर्ट करणार नाही</translation>
 <translation id="4177415338862979658">तपशील तपासण्यासाठी क्लिक करा</translation>
 <translation id="4177913004758410636">{0,plural, =1{डिव्हाइस एका दिवसाच्या आत अपडेट करा}other{डिव्हाइस # दिवसांच्या आत अपडेट करा}}</translation>
@@ -984,6 +987,7 @@
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> बंद आहे.</translation>
 <translation id="4417647906073317561">फोकस सेटिंग्ज. फ्लोमध्ये येण्यासाठी टायमर, टास्क आणि संगीत सेट करा.</translation>
 <translation id="4424159417645388645">डेस्‍क ५</translation>
+<translation id="4426817706804363424">शाब्बास!</translation>
 <translation id="4430019312045809116">व्हॉल्यूम</translation>
 <translation id="4441283832827406317">अ‍ॅप्स नावानुसार क्रमाने लावली जातात</translation>
 <translation id="4445159312344259901">अनलॉक करण्यासाठी साइन इन करा</translation>
@@ -1248,6 +1252,7 @@
 <translation id="5283198616748585639">एक मिनिट जोडा</translation>
 <translation id="528468243742722775">बंद करा</translation>
 <translation id="5286194356314741248">स्‍कॅन करीत आहे</translation>
+<translation id="528641622273682395">माइकची चाचणी करण्यासाठी टॉगल करा</translation>
 <translation id="5297423144044956168">कोणतीही मोबाइल डिव्हाइस आढळली नाहीत</translation>
 <translation id="5297704307811127955">बंद</translation>
 <translation id="5300589172476337783">दर्शवा</translation>
@@ -1275,6 +1280,7 @@
 <translation id="536019650977002321">तुमचा अ‍ॅडमिनिस्ट्रेटर ऑडिओ कॅप्चरला अनुमती देत नाही. अधिक माहितीसाठी तुमच्या अ‍ॅडमिनिस्ट्रेटरशी संपर्क साधा.</translation>
 <translation id="5361524080961918551"><ph name="LANGUAGE" /> स्पीच फाइल अंशतः डाउनलोड केल्या</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> या टॅबवर जा</translation>
+<translation id="5363835273551457276">तुम्ही तुमच्या मायक्रोफोनच्या आवाजाची चाचणी करू शकता. थांबवण्यासाठी पॅनल बंद करा.</translation>
 <translation id="5364693579536176785">स्टोरेज जागा</translation>
 <translation id="5369573834963677938">डिव्हाइसवरील इतर वापरकर्त्यांसाठी फेस नियंत्रण उपलब्ध असेल</translation>
 <translation id="5369717264580061086">Files अ‍ॅपमध्ये फाइलचे पूर्वावलोकन करा</translation>
@@ -1415,6 +1421,7 @@
 <translation id="5802516411616338943">क्विक सेटिंग्ज उघडा</translation>
 <translation id="5804651031882187592">"सिम लॉक करा" सेटिंग बंद करा</translation>
 <translation id="5805809050170488595"><ph name="NETWORK_NAME" /> अ‍ॅक्टिव्हेट करण्यासाठी क्लिक करा</translation>
+<translation id="5818796501620225415">तुम्ही अधिक वेळ जोडू शकता किंवा तुमचे फोकस सेशन संपवू शकता</translation>
 <translation id="5819918159912280082">तुमचे Chromebook अनपेक्षितपणे रीस्टार्ट झाले आहे. तुमच्या मागील विंडो आणि अ‍ॅप्स उघडा.</translation>
 <translation id="5823239091726045201">वेबवर Google कार्ये</translation>
 <translation id="5825969630400862129">कनेक्‍ट केलेली डिव्हाइस सेटिंग्ज</translation>
@@ -2125,6 +2132,7 @@
 <translation id="8262312463845990408">प्लेबॅक टॉगल करा</translation>
 <translation id="8268302343625273732">Google Classroom मधील सर्व असाइनमेंट पहा</translation>
 <translation id="8277261673056602147">तुमच्या स्क्रीनवरील मजकूर हायलाइट करा</translation>
+<translation id="8282784978194352587">तुम्ही करून दाखवले!</translation>
 <translation id="8287009018010202411">उत्पादनक्षमता</translation>
 <translation id="828708037801473432">बंद</translation>
 <translation id="8297006494302853456">कमकुवत</translation>
@@ -2202,6 +2210,7 @@
 <translation id="8609384513243082612">नवीन टॅब उघडा</translation>
 <translation id="861045123704058818">अ‍ॅप्स वर्गवारीनुसार तात्पुरती संगतवार लावली आहेत</translation>
 <translation id="8612216344243590325">महत्त्वाच्या फाइल डेस्कटॉपवर ठेवण्याऐवजी <ph name="HOLDING_SPACE_TITLE" /> वर ठेवा. फाइल फक्त <ph name="HOLDING_SPACE_TITLE" /> वर ड्रॅग करा.</translation>
+<translation id="8612338981637220013">यश मिळाले!</translation>
 <translation id="8614517853887502247">पाहण्यासंबंधित संरक्षण सुरू असल्याने, <ph name="APP_1_TITLE" /> आणि <ph name="APP_2_TITLE" /> सूचना लपवल्या आहेत</translation>
 <translation id="8615778328722901791">टूलबार उघडा</translation>
 <translation id="8619000641825875669">OneDrive</translation>
@@ -2244,6 +2253,7 @@
 <translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />: अ‍ॅक्टिव्हेट करत आहे...</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
+<translation id="8751299148074971734">सुरू ठेवा!</translation>
 <translation id="8753368202781196133">या वेळी या भाषेला सपोर्ट नाही.</translation>
 <translation id="8755498163081687682">तुमच्या ओळखीची पडताळणी करा: हे तुम्हीच असल्याची <ph name="ORIGIN_NAME" /> ला खात्री करायची आहे</translation>
 <translation id="875593634123171288">VPN सेटिंग्ज दाखवा</translation>

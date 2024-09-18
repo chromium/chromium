@@ -78,6 +78,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1240638468526743569">An app</translation>
 <translation id="1242198791279543032">Notifications are muted</translation>
 <translation id="1242883863226959074">device</translation>
+<translation id="1245476784081715330">Great work!</translation>
 <translation id="1245644940275736236">Go to Assistant</translation>
 <translation id="124678866338384709">Close current tab</translation>
 <translation id="1246890715821376239">Unsupported apps</translation>
@@ -214,6 +215,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1703117532528082099">Active window docked on left.</translation>
 <translation id="1708345662127501511">Desk: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Network settings</translation>
+<translation id="171610090693716835">Stay on track with personalised Focus playlists. Get YouTube Music and YouTube, ad-free, with three months of YouTube Premium at no cost.</translation>
 <translation id="1719094688023114093">Live Caption is on.</translation>
 <translation id="1720011244392820496">Turn on Wi-Fi Sync</translation>
 <translation id="1720230731642245863">Hotspot is off</translation>
@@ -842,6 +844,7 @@ Connect your device to power.</translation>
 <translation id="3958714870339660776">All day</translation>
 <translation id="3962859241508114581">Previous track</translation>
 <translation id="3963124517343721543">Easily continue where you left off by opening your previous windows and tabs. You'll also see personalised suggestions for things to do next.</translation>
+<translation id="396506362088290977">Test your mic sound</translation>
 <translation id="3969043077941541451">Off</translation>
 <translation id="3970324493235864154">View your phone's notifications</translation>
 <translation id="397105322502079400">Calculating...</translation>
@@ -899,6 +902,7 @@ Connect your device to power.</translation>
 <translation id="4156293514828496577"><ph name="PERCENTAGE" />% battery left (about <ph name="TIME_LEFT" />).
 Some features are limited to increase battery life.</translation>
 <translation id="4160919062868802509">Multiple audio sources detected</translation>
+<translation id="416245495747357243">Done and done!</translation>
 <translation id="4165275524535002941">Cable may not support displays</translation>
 <translation id="4177415338862979658">Click to check for details</translation>
 <translation id="4177913004758410636">{0,plural, =1{Update device within a day}other{Update device within # days}}</translation>
@@ -984,6 +988,7 @@ Some features are limited to increase battery life.</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> is off.</translation>
 <translation id="4417647906073317561">Focus settings. Set a timer, task and music to get in the flow.</translation>
 <translation id="4424159417645388645">Desk 5</translation>
+<translation id="4426817706804363424">Well done!</translation>
 <translation id="4430019312045809116">Volume</translation>
 <translation id="4441283832827406317">Apps are sorted by name</translation>
 <translation id="4445159312344259901">Sign in to unlock</translation>
@@ -1248,6 +1253,7 @@ You can also use the keyboard shortcut. First, highlight text, then press <ph na
 <translation id="5283198616748585639">Add 1 min</translation>
 <translation id="528468243742722775">End</translation>
 <translation id="5286194356314741248">Scanning</translation>
+<translation id="528641622273682395">Toggle mic test</translation>
 <translation id="5297423144044956168">No mobile devices found</translation>
 <translation id="5297704307811127955">Off</translation>
 <translation id="5300589172476337783">Show</translation>
@@ -1275,6 +1281,7 @@ No devices connected.</translation>
 <translation id="536019650977002321">Your administrator doesn’t allow audio capture. Contact your administrator for more info.</translation>
 <translation id="5361524080961918551"><ph name="LANGUAGE" /> speech files partially downloaded</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Go to this tab</translation>
+<translation id="5363835273551457276">You can test your microphone sound. Close panel to stop.</translation>
 <translation id="5364693579536176785">storage space</translation>
 <translation id="5369573834963677938">Face control will be available to other users on the device</translation>
 <translation id="5369717264580061086">Preview file in Files app</translation>
@@ -1408,6 +1415,7 @@ No devices connected.</translation>
 <translation id="5777841717266010279">Stop screen sharing?</translation>
 <translation id="5779721926447984944">Pinned files</translation>
 <translation id="5785221443435874078">Remove this suggestion</translation>
+<translation id="5787431783058088906">Get perk</translation>
 <translation id="5788127256798019331">Play files</translation>
 <translation id="5788535737706478207">Reopen the last tab or window closed</translation>
 <translation id="5790085346892983794">Success</translation>
@@ -1415,6 +1423,7 @@ No devices connected.</translation>
 <translation id="5802516411616338943">Open Quick Settings</translation>
 <translation id="5804651031882187592">Turn off 'Lock SIM' setting</translation>
 <translation id="5805809050170488595">Click to activate <ph name="NETWORK_NAME" /></translation>
+<translation id="5818796501620225415">You can add more time, or end your focus session</translation>
 <translation id="5819918159912280082">Your Chromebook restarted unexpectedly. Open your previous windows and apps.</translation>
 <translation id="5823239091726045201">Google tasks on web</translation>
 <translation id="5825969630400862129">Connected devices settings</translation>
@@ -1638,6 +1647,7 @@ New install</translation>
 <translation id="6574587113394758819"><ph name="APP_TITLE" /> notification is hidden because viewing protection is on</translation>
 <translation id="6574622320167699133">Unlocked by your phone. Tap or click to enter.</translation>
 <translation id="6578407462441924264">Unnamed</translation>
+<translation id="6582012689384648647">For personalised Focus playlists, allow access to YouTube Music</translation>
 <translation id="6582034443359256692">Calculating battery charge level.</translation>
 <translation id="6585808820553845416">Session ends in <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" /> <ph name="SECONDARY_TEXT" /></translation>
@@ -1876,6 +1886,7 @@ New install</translation>
 <translation id="7477793887173910789">Control your music, videos and more</translation>
 <translation id="7488762544858401571">Edited</translation>
 <translation id="7489261257412536105">Enter or exit fullscreen</translation>
+<translation id="7490157877815329797">To listen to music ad-free and enjoy personalised Focus music, try YouTube Music Premium</translation>
 <translation id="7490360161041035804">You can pin important files, including Google Drive files. To pin, hover over an item or open Files and right-click an item.</translation>
 <translation id="7497767806359279797">Choose language and keyboard</translation>
 <translation id="7507162824403726948">Finish verifying your identity</translation>
@@ -2125,6 +2136,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="8262312463845990408">Toggle -playback</translation>
 <translation id="8268302343625273732">See all assignments in Google Classroom</translation>
 <translation id="8277261673056602147">Highlight text on your screen</translation>
+<translation id="8282784978194352587">You did it!</translation>
 <translation id="8287009018010202411">Productivity</translation>
 <translation id="828708037801473432">Off</translation>
 <translation id="8297006494302853456">Weak</translation>
@@ -2150,6 +2162,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="8380784334203145311">Good night,</translation>
 <translation id="8382715499079447151">Viewing protection</translation>
 <translation id="8383614331548401927">Welcome recap</translation>
+<translation id="838540623579162843">Get Music Premium</translation>
 <translation id="8388750414311082622">Last desk can't be removed.</translation>
 <translation id="8394567579869570560">Your parent has locked this device</translation>
 <translation id="8401850874595457088">Enter language menu</translation>
@@ -2202,6 +2215,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="8609384513243082612">Open new tab</translation>
 <translation id="861045123704058818">Apps are organised by category temporarily</translation>
 <translation id="8612216344243590325">Keep important files in <ph name="HOLDING_SPACE_TITLE" /> instead of on the desktop. Just drag files to <ph name="HOLDING_SPACE_TITLE" />.</translation>
+<translation id="8612338981637220013">You're on a roll!</translation>
 <translation id="8614517853887502247"><ph name="APP_1_TITLE" /> and <ph name="APP_2_TITLE" /> notifications are hidden because viewing protection is on</translation>
 <translation id="8615778328722901791">Open toolbar</translation>
 <translation id="8619000641825875669">OneDrive</translation>
@@ -2244,6 +2258,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />: Activating</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
+<translation id="8751299148074971734">Keep it up!</translation>
 <translation id="8753368202781196133">This language isn't supported at this time.</translation>
 <translation id="8755498163081687682">Verify your identity: <ph name="ORIGIN_NAME" /> would like to confirm that it's you</translation>
 <translation id="875593634123171288">Show VPN settings</translation>

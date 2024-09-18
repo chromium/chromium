@@ -35,6 +35,7 @@
 <translation id="1155154308031262006">プロンプトを入力</translation>
 <translation id="115705039208660697">パイナップル</translation>
 <translation id="1164939766849482256">「夜明けから夜更けまで」のスクリーン セーバー</translation>
+<translation id="1166688493741195933">録音の名前を生成できませんでした</translation>
 <translation id="1167755866710282443">メニューを開いてキーをカスタマイズします。メニューをドラッグして移動します。</translation>
 <translation id="1171349345463658120">砂のラグーン</translation>
 <translation id="1173894706177603556">名前を変更</translation>
@@ -126,6 +127,7 @@
 <translation id="1567064801249837505">アルバム</translation>
 <translation id="1572585716423026576">壁紙に設定</translation>
 <translation id="1578784163189013834">スクリーン セーバーの背景を選択する</translation>
+<translation id="1587031308639983732">時刻に基づく変更は正確でない場合があります。この設定は管理者によって管理されています。</translation>
 <translation id="1588438908519853928">ノーマル</translation>
 <translation id="1591562245178063882">今月</translation>
 <translation id="1593528591614229756">携帯通信会社または管理者から提供された APN を選択してください。APN を選択すると、カスタム APN はすべて無効になります。APN が無効な場合、モバイル接続が中断される可能性があります。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
@@ -494,6 +496,7 @@
 <translation id="3502426834823382181">すべてのアプリを表示</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />パフォーマンス追跡データ<ph name="END_LINK1" />を送信する</translation>
 <translation id="3517001332549868749">ChromeOS の更新</translation>
+<translation id="3522508178835057262">現時点では、<ph name="MAX_WORD_LENGTH" /> 単語を超える文字起こしはサポートされていません</translation>
 <translation id="3527036260304016759">失敗 - 不明なエラー</translation>
 <translation id="353214771040290298">編集を終了</translation>
 <translation id="3532980081107202182">残り時間: 約 <ph name="MIN_REMAINING" /> 分</translation>
@@ -712,6 +715,7 @@
 <translation id="4602266091140407479">マイク</translation>
 <translation id="4607282946861182308">この画像を作成できません。別のプロンプトをお試しください。</translation>
 <translation id="4609350030397390689">キーボードの明るさを下げる</translation>
+<translation id="4623061655523261501">録音の名前を生成しました</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />、<ph name="PRINTER_NAME" />、<ph name="CREATION_TIME" />、<ph name="PRINTED_PAGE_NUMBER" />/<ph name="TOTAL_PAGE_NUMBER" />。印刷ジョブをキャンセルするには、Enter キーを押します。</translation>
 <translation id="463791356324567266">スキャンをキャンセルしています...</translation>
 <translation id="4644611440022666152">オンにしてダウンロード</translation>
@@ -1044,6 +1048,8 @@
 <translation id="628726841779494414">プリンタ設定でプリンタを管理</translation>
 <translation id="6292095526077353682">充電時にスクリーン セーバーを表示する時間:</translation>
 <translation id="629550705077076970">キーボードを薄暗くする</translation>
+<translation id="6301193653204230066">セーフティ リセットでは、Chrome ブラウザの拡張機能を無効にして、ネットワークなどの設定を安全なデフォルトにリセットします。
+          タブ、ファイル、Cookie、履歴は変更されません。</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> テストがキャンセルされました</translation>
 <translation id="631063167932043783">アプリについてもっと知る</translation>
 <translation id="6318437367327684789">ずっと</translation>
@@ -1053,6 +1059,7 @@
 <translation id="6325525973963619867">失敗しました</translation>
 <translation id="6327262166342360252">この壁紙は「<ph name="PROMPT" />」というテキストを使用して AI で作成されました。</translation>
 <translation id="6331191339300272798">ダークモードを自動的に設定する</translation>
+<translation id="6335228876613776082">モデルのダウンロードが完了しました</translation>
 <translation id="6340526405444716530">カスタマイズ</translation>
 <translation id="6348252528297699679">位置情報は、[設定] &gt; [プライバシーとセキュリティ] &gt; [プライバシー管理] &gt; [位置情報へのアクセス] でオフにできます。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">ユーザー名とパスワード</translation>
@@ -1160,6 +1167,7 @@
 <translation id="6831043979455480757">翻訳</translation>
 <translation id="6846843854964504403">セーフティ リセット</translation>
 <translation id="6853312040151791195">放電率</translation>
+<translation id="6862228900689076919">この機能は管理者によって管理されています</translation>
 <translation id="6862416241246624313">フィードバックを送信しました</translation>
 <translation id="6866732840889595464">デイジー</translation>
 <translation id="6871256179359663621">ライトパープル</translation>
@@ -1214,6 +1222,7 @@
 <translation id="708426984172631313">停止中</translation>
 <translation id="7086168019478250425">生物発光ビーチ</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="7086916854357021265">録画の名前を生成しています</translation>
 <translation id="7097908713073775559">カラフル</translation>
 <translation id="710028965487274708">失敗 - 認証に失敗しました</translation>
 <translation id="7101959270679078188">更新プロセスを続行するには、<ph name="DEVICE_NAME" /> のロックを解除してください</translation>
@@ -1546,6 +1555,7 @@
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google フォトのアルバム</translation>
 <translation id="8775713578693478175">モデムの APN</translation>
+<translation id="877735394245039557">モデルをダウンロードしています</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">このネットワークにはキャプティブ ポータルがある可能性があります</translation>
 <translation id="8797082062139985406">Google AI を使って名前を作成</translation>

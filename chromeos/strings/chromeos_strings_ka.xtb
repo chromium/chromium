@@ -1047,6 +1047,8 @@
 <translation id="628726841779494414">პრინტერების მართვა შეგიძლიათ პრინტერების პარამეტრებიდან</translation>
 <translation id="6292095526077353682">დატენისას ეკრანმზოგის ჩვენება:</translation>
 <translation id="629550705077076970">კლავიატურის დაბნელება</translation>
+<translation id="6301193653204230066">უსაფრთხოების გადაყენება გათიშავს Chrome ბრაუზერის გაფართოებებს და დააბრუნებს ქსელისა და სხვა პარამეტრებს უსაფრთხო, ნაგულისხმევ მნიშვნელობებზე.
+          თქვენი ჩანართები, ფაილები, ქუქი-ჩანაწერები და ისტორია არ შეიცვლება.</translation>
 <translation id="6302401976930124515">ტესტი „<ph name="TEST_NAME" />“ გაუქმდა</translation>
 <translation id="631063167932043783">გაცნობის აპი</translation>
 <translation id="6318437367327684789">ყოველთვის</translation>
@@ -1056,6 +1058,7 @@
 <translation id="6325525973963619867">ვერ შესრულდა</translation>
 <translation id="6327262166342360252">ეს ფონი შეიქმნა ხელოვნური ინტელექტით, შემდეგი ტექსტის გამოყენებით: „<ph name="PROMPT" />“.</translation>
 <translation id="6331191339300272798">ავტომატური მუქი თემა</translation>
+<translation id="6335228876613776082">მოდელის ჩამოტვირთვა დასრულდა</translation>
 <translation id="6340526405444716530">პერსონალიზება</translation>
 <translation id="6348252528297699679">მდებარეობის გამორთვა შეგიძლიათ აქ: პარამეტრები &gt; კონფიდენციალურობა და უსაფრთხოება &gt; კონფიდენციალურობის მართვის პარამეტრები &gt; მდებარეობაზე წვდომა. <ph name="LINK_BEGIN" />შეიტყვეთ მეტი<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">მომხმარებლის სახელი და პაროლი</translation>
@@ -1163,6 +1166,7 @@
 <translation id="6831043979455480757">თარგმნა</translation>
 <translation id="6846843854964504403">უსაფრთხოების გადაყენება</translation>
 <translation id="6853312040151791195">განმუხტვის სიჩქარე</translation>
+<translation id="6862228900689076919">ამ ფუნქციას მართავენ თქვენი ადმინისტრატორები</translation>
 <translation id="6862416241246624313">გამოხმაურება გაიგზავნა</translation>
 <translation id="6866732840889595464">გვირილა</translation>
 <translation id="6871256179359663621">ღია მეწამული</translation>
@@ -1550,6 +1554,7 @@
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Photos ალბომი</translation>
 <translation id="8775713578693478175">მოდემის APN</translation>
+<translation id="877735394245039557">მიმდინარეობს მოდელის ჩამოტვირთვა</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">ამ ქსელს, შესაძლოა, ავტორიზაციის პორტალი ჰქონდეს</translation>
 <translation id="8797082062139985406">სახელის შექმნა Google-ის ხელოვნური ინტელექტის მეშვეობით</translation>

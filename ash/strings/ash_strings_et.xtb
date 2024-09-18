@@ -78,6 +78,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1240638468526743569">Rakendus</translation>
 <translation id="1242198791279543032">Märguanded on vaigistatud</translation>
 <translation id="1242883863226959074">seadmes</translation>
+<translation id="1245476784081715330">Väga hea!</translation>
 <translation id="1245644940275736236">Ava Assistent</translation>
 <translation id="124678866338384709">Aktiivse vahelehe sulgemine</translation>
 <translation id="1246890715821376239">Toetamata rakendused</translation>
@@ -843,6 +844,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="3958714870339660776">Terve päev</translation>
 <translation id="3962859241508114581">Eelmine lugu</translation>
 <translation id="3963124517343721543">Jätkake sealt, kus pooleli jäite, avades oma eelmise seansi aknad ja vahelehed. Samuti näete isikupärastatud soovitusi järgmiste tegevuste kohta.</translation>
+<translation id="396506362088290977">Mikrofoni heli testimine</translation>
 <translation id="3969043077941541451">Väljas</translation>
 <translation id="3970324493235864154">Teie telefoni märguannete kuvamine</translation>
 <translation id="397105322502079400">Arvutamine ...</translation>
@@ -900,6 +902,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="4156293514828496577">Akut on jäänud <ph name="PERCENTAGE" />% (umbes <ph name="TIME_LEFT" />).
 Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="4160919062868802509">Tuvastatud on mitu heliallikat</translation>
+<translation id="416245495747357243">Tehtud!</translation>
 <translation id="4165275524535002941">Kaabel ei pruugi ekraane toetada</translation>
 <translation id="4177415338862979658">Klõpsake üksikasjade vaatamiseks</translation>
 <translation id="4177913004758410636">{0,plural, =1{Värskendage seadet päeva jooksul}other{Värskendage seadet # päeva jooksul}}</translation>
@@ -985,6 +988,7 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> on väljas.</translation>
 <translation id="4417647906073317561">Keskendumise režiimi seaded. Määrake keskendumiseks taimer, ülesanne ja muusika.</translation>
 <translation id="4424159417645388645">Töölaud 5</translation>
+<translation id="4426817706804363424">Tubli!</translation>
 <translation id="4430019312045809116">Helitugevus</translation>
 <translation id="4441283832827406317">Rakendused on sorditud nime järgi</translation>
 <translation id="4445159312344259901">Logige avamiseks sisse</translation>
@@ -1249,6 +1253,7 @@ Kasutada saate ka klaviatuuri otseteed. Esmalt tõstke tekst esile, seejärel va
 <translation id="5283198616748585639">Lisa 1 min</translation>
 <translation id="528468243742722775">Lõpeta</translation>
 <translation id="5286194356314741248">Skaneering</translation>
+<translation id="528641622273682395">Mikrofoni testi sisse-/väljalülitamine</translation>
 <translation id="5297423144044956168">Mobiilseadmeid ei leitud</translation>
 <translation id="5297704307811127955">Väljas</translation>
 <translation id="5300589172476337783">Kuva</translation>
@@ -1276,6 +1281,7 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="536019650977002321">Teie administraator ei luba heli jäädvustada. Lisateabe saamiseks võtke ühendust administraatoriga.</translation>
 <translation id="5361524080961918551"><ph name="LANGUAGE" /> keele kõnefailid on osaliselt alla laaditud</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Ava see vaheleht</translation>
+<translation id="5363835273551457276">Saate testida oma mikrofoni heli. Lõpetamiseks sulgege paneel.</translation>
 <translation id="5364693579536176785">salvestusruum</translation>
 <translation id="5369573834963677938">Näoga juhtimine on saadaval seadme teistele kasutajatele</translation>
 <translation id="5369717264580061086">Faili eelvaate kuvamine rakenduses Failid</translation>
@@ -2127,6 +2133,7 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="8262312463845990408">Taasesituse käivitamine/peatamine</translation>
 <translation id="8268302343625273732">Vaadake kõiki ülesandeid Google Classroomis</translation>
 <translation id="8277261673056602147">Tõstke tekst oma ekraanikuval esile</translation>
+<translation id="8282784978194352587">Korras!</translation>
 <translation id="8287009018010202411">Produktiivsus</translation>
 <translation id="828708037801473432">Väljas</translation>
 <translation id="8297006494302853456">Nõrk</translation>
@@ -2204,6 +2211,7 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="8609384513243082612">Uue vahelehe avamine</translation>
 <translation id="861045123704058818">Rakendused on ajutiselt kategooriate järgi korrastatud</translation>
 <translation id="8612216344243590325">Hoidke oma tähtsad failid töölaua asemel asukohas <ph name="HOLDING_SPACE_TITLE" />. Lihtsalt lohistage failid asukohta <ph name="HOLDING_SPACE_TITLE" />.</translation>
+<translation id="8612338981637220013">Teil läheb hästi!</translation>
 <translation id="8614517853887502247">Rakenduste <ph name="APP_1_TITLE" /> ja <ph name="APP_2_TITLE" /> märguanded on peidetud, kuna vaatamiskaitse on sisse lülitatud</translation>
 <translation id="8615778328722901791">Ava tööriistariba</translation>
 <translation id="8619000641825875669">OneDrive</translation>
@@ -2246,6 +2254,7 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />: aktiveerimine ...</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
+<translation id="8751299148074971734">Jätkake samas vaimus!</translation>
 <translation id="8753368202781196133">Seda keelt praegu ei toetata</translation>
 <translation id="8755498163081687682">Kinnitage oma isik: <ph name="ORIGIN_NAME" /> soovib teie isiku kinnitada</translation>
 <translation id="875593634123171288">Kuvab VPN-i seaded</translation>

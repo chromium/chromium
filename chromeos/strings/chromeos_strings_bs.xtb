@@ -35,7 +35,7 @@
 <translation id="1155154308031262006">Unesite upit</translation>
 <translation id="115705039208660697">Ananasi</translation>
 <translation id="1164939766849482256">Čuvar ekrana od zore do mraka</translation>
-<translation id="1166688493741195933">Generiranje naziva snimki nije uspjelo</translation>
+<translation id="1166688493741195933">Generiranje naziva snimaka nije uspjelo</translation>
 <translation id="1167755866710282443">Otvorite meni da prilagodite tipke. Prevucite meni da ga premjestite.</translation>
 <translation id="1171349345463658120">pješčana laguna</translation>
 <translation id="1173894706177603556">Promijeni naziv</translation>
@@ -127,7 +127,7 @@
 <translation id="1567064801249837505">Albumi</translation>
 <translation id="1572585716423026576">Postavi kao pozadinsku sliku</translation>
 <translation id="1578784163189013834">Odaberite pozadinu čuvara ekrana</translation>
-<translation id="1587031308639983732">Promjene temeljene na vremenu možda nisu točne. Tom postavkom upravlja vaš administrator.</translation>
+<translation id="1587031308639983732">Promjene koje se zasnivaju na vremenu možda neće biti tačne. Ovom postavkom upravlja vaš administrator.</translation>
 <translation id="1588438908519853928">Normalno</translation>
 <translation id="1591562245178063882">Ovaj mjesec</translation>
 <translation id="1593528591614229756">Obavezno odaberite APN-ove koje pruža mobilni operater ili administrator. Odabirom APN-a će se onemogućiti prilagođeni APN-ovi. Nevažeći APN-ovi mogu poremetiti mobilnu mrežu. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
@@ -496,7 +496,7 @@
 <translation id="3502426834823382181">prikaz svih aplikacija</translation>
 <translation id="3510890413042482857">Pošalji <ph name="BEGIN_LINK1" />podatke o praćenju performansi<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Ažuriranje ChromeOS-a</translation>
-<translation id="3522508178835057262">Prijepis dulji od <ph name="MAX_WORD_LENGTH" /> riječi trenutačno nije podržan.</translation>
+<translation id="3522508178835057262">Transkript koji sadržava više od <ph name="MAX_WORD_LENGTH" /> riječi zasad nije podržan</translation>
 <translation id="3527036260304016759">Nije uspjelo – nepoznata greška</translation>
 <translation id="353214771040290298">Uređivanje je završeno</translation>
 <translation id="3532980081107202182">Preostalo je oko <ph name="MIN_REMAINING" /> min</translation>
@@ -512,7 +512,7 @@
 <translation id="3588034708467091142">Provjerite jeste li povezani s internetom i pokušajte ponovo.</translation>
 <translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> je naziv pogodan za korisnike za aplikaciju <ph name="APN_NAME" />.</translation>
 <translation id="3595596368722241419">Baterija je puna</translation>
-<translation id="3600063043775287169">Kad je zvuk Chromebooka uključen, Snimač bilježi sve zvukove koji se reproduciraju na ovom uređaju. Provjerite želite li snimiti sve zvukove.</translation>
+<translation id="3600063043775287169">Kada je zvuk Chromebooka uključen, Diktafon snima sve zvukove koji se reproduciraju na uređaju. Odlučite želite li snimati sve zvukove.</translation>
 <translation id="3600339377155080675">Preslikavanje ekrana</translation>
 <translation id="3602290021589620013">Pregled</translation>
 <translation id="3603829704940252505">Avatar</translation>
@@ -715,7 +715,7 @@
 <translation id="4602266091140407479">Mikrofon</translation>
 <translation id="4607282946861182308">Nije moguće kreirati slike toga. Pokušajte s drugim upitom.</translation>
 <translation id="4609350030397390689">Smanjivanje osvjetljenja tastature</translation>
-<translation id="4623061655523261501">Nazivi snimki uspješno su generirani</translation>
+<translation id="4623061655523261501">Nazivi snimaka su uspješno generirani</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> od <ph name="TOTAL_PAGE_NUMBER" />. Pritisnite enter da otkažete zadatak štampanja.</translation>
 <translation id="463791356324567266">Otkazivanje skeniranja...</translation>
 <translation id="4644611440022666152">Uključi i preuzmi</translation>
@@ -1048,8 +1048,8 @@
 <translation id="628726841779494414">Upravljajte štampačima u postavkama štampača</translation>
 <translation id="6292095526077353682">Prilikom punjenja prikazuj čuvar ekrana</translation>
 <translation id="629550705077076970">zatamnjenje tastature</translation>
-<translation id="6301193653204230066">Sigurnosno vraćanje na zadano isključuje proširenja preglednika Chrome i vraća mrežne i druge postavke na sigurne zadane postavke.
-          Vaše kartice, datoteke, kolačići i povijest neće se promijeniti.</translation>
+<translation id="6301193653204230066">Vraćanje sigurnosti na zadano isključuje ekstenzije preglednika Chrome te vraća mrežu i druge postavke na sigurne zadane postavke.
+          Kartice, fajlovi, kolačići i historija se neće promijeniti.</translation>
 <translation id="6302401976930124515">Test "<ph name="TEST_NAME" />" je otkazan</translation>
 <translation id="631063167932043783">Aplikacija Istraži</translation>
 <translation id="6318437367327684789">zauvijek</translation>
@@ -1059,7 +1059,7 @@
 <translation id="6325525973963619867">Neuspješno</translation>
 <translation id="6327262166342360252">Pozadinska slika je kreirana putem AI-ja koristeći tekst "<ph name="PROMPT" />".</translation>
 <translation id="6331191339300272798">Automatska tamna tema</translation>
-<translation id="6335228876613776082">Preuzimanje modela dovršeno</translation>
+<translation id="6335228876613776082">Preuzimanje modela je završeno</translation>
 <translation id="6340526405444716530">Personalizacija</translation>
 <translation id="6348252528297699679">Da isključite lokaciju, idite u Postavke &gt; Privatnost i sigurnost &gt; Kontrole privatnosti &gt; Pristup lokaciji. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">Korisničko ime i lozinka</translation>
@@ -1221,7 +1221,7 @@
 <translation id="708426984172631313">ZAUSTAVLJENO</translation>
 <translation id="7086168019478250425">bioluminiscentna plaža</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
-<translation id="7086916854357021265">Generiranje naziva snimki</translation>
+<translation id="7086916854357021265">Generiranje naziva snimaka</translation>
 <translation id="7097908713073775559">šareno</translation>
 <translation id="710028965487274708">Nije uspjelo – autorizacija nije uspjela</translation>
 <translation id="7101959270679078188">Otključajte uređaj <ph name="DEVICE_NAME" /> da nastavite postupak ažuriranja</translation>
@@ -1554,7 +1554,7 @@ Preuzmite model transkripcija (do 100 MB) da dobijete ove transkripcije.</trans
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Album Google Fotografija</translation>
 <translation id="8775713578693478175">APN modema</translation>
-<translation id="877735394245039557">U tijeku je preuzimanje modela</translation>
+<translation id="877735394245039557">Preuzimanje modela je u toku</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Ova mreža možda sadrži zaštitni portal</translation>
 <translation id="8797082062139985406">Kreiranje naziva pomoću Google AI-ja</translation>

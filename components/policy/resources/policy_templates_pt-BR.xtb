@@ -3055,6 +3055,13 @@ Se ela não for definida, o JavaScript será executado, mas os usuários poderã
 
       Se a política for deixada sem definição, o <ph name="PRODUCT_NAME" /> carregará todos os hosts de mensagens nativas instalados.</translation>
 <translation id="3211426942294667684">Configurações de login no navegador</translation>
+<translation id="3213872023700948990">Esta política oferece uma recusa temporária para o novo comportamento de rolagem focalizável do teclado.
+
+Quando ela está ativada ou sem definição, os controles de rolagem que não têm filhos focalizáveis podem ser focalizados pelo teclado por padrão.
+
+Quando esta política está desativada, os controles de rolagem não podem ser focalizados pelo teclado por padrão.
+
+Esta política é uma solução temporária e será removida na versão M135.</translation>
 <translation id="3217774577897351942">A API <ph name="OFFSET_PARENT" /> está sendo modificada no <ph name="PRODUCT_NAME" /> para obedecer às mudanças que foram feitas no <ph name="FIREFOX_PRODUCT_NAME" /> e no <ph name="SAFARI_PRODUCT_NAME" />. Esta política retorna o comportamento antigo até a versão M120.
 
 O novo comportamento pode causar falhas em alguns sites exclusivos do <ph name="PRODUCT_NAME" /> que usam <ph name="OFFSET_PARENT" />, <ph name="OFFSET_TOP" /> ou <ph name="OFFSET_LEFT" /> com o Shadow DOM.
@@ -7575,6 +7582,9 @@ Se esta configuração estiver desativada ou se nenhum valor for definido, o Mod
           A maneira recomendada de bloquear a tela depois de um período de inatividade é ativar o bloqueio de tela quando o dispositivo estiver suspenso e suspender o <ph name="PRODUCT_OS_NAME" /> depois do intervalo de inatividade. Esta política só será usada quando o bloqueio de tela ocorrer muito antes da suspensão ou quando a suspensão devido à inatividade não for desejada.
 
           O valor da política precisa ser especificado em milissegundos. Os valores são ajustados para serem menores que o intervalo de inatividade.</translation>
+<translation id="6496139622896320246">Se a política for ativada, o <ph name="PRODUCT_OS_NAME" /> vai salvar automaticamente as credenciais do Wi-Fi ativo do quiosque no nível do dispositivo. O Wi-Fi ativo pode ser usado por outros aplicativos de quiosque ou usuários no dispositivo.
+Se a política for deixada sem definição ou desativada, as credenciais do Wi-Fi ativo serão armazenadas no nível do quiosque: o Wi-Fi configurado em um aplicativo de quiosque só poderá ser usado nesse mesmo app.
+Essa política não é recomendada e deve ser usada quando não há outras opções disponíveis (por exemplo, a política OpenNetworkConfiguration).</translation>
 <translation id="6497085755801788141">Usar o verificador de certificados integrado</translation>
 <translation id="6499579502664610993">Substitui conjuntos de sites relacionados.</translation>
 <translation id="6504720469162323184">A definição da política determina o tempo (em milissegundos) sem atividade do usuário até o login automático na conta local do dispositivo especificada pela <ph name="DEVICE_LOCAL_ACCOUNT_AUTO_LOGIN_ID_POLICY_NAME" />.

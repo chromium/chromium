@@ -35,6 +35,7 @@
 <translation id="1155154308031262006">ጥያቄ ያስገቡ</translation>
 <translation id="115705039208660697">አናናሶች</translation>
 <translation id="1164939766849482256">ከንጋት ወደ ጨለማ የማያ ገፅ ቆጣቢ</translation>
+<translation id="1166688493741195933">የመቅጃ ስሞችን ማመንጨት አልተሳካም።</translation>
 <translation id="1167755866710282443">ቁልፎችን ብጁ ለማድረግ ምናሌን ይክፈቱ። ለማንቀሳቀስ ምናሌን ይጎትቱ።</translation>
 <translation id="1171349345463658120">አሸዋማ ሐይቅ</translation>
 <translation id="1173894706177603556">ዳግም ሰይም</translation>
@@ -341,6 +342,7 @@
 <translation id="2560876255701405320">የኦዲዮ ቀረጻዎች ዝርዝር</translation>
 <translation id="2561093647892030937">ሎሚዎች</translation>
 <translation id="2570743873672969996">የ<ph name="TEST_NAME" /> ሙከራን በማሄድ ላይ...</translation>
+<translation id="2573178735329662769">ሁሉንም የChromebook ኦዲዮ በመቅዳት ላይ</translation>
 <translation id="2575552334616524665">ይህን በቅንብሮች ወይም<ph name="THREE_DOTS_MENU_ICON" /> ምናሌ ውስጥ ማብራት ይችላሉ</translation>
 <translation id="2576253868710695442">ይህ እስከ 2ጊባ ማከማቻ ይወስዳል</translation>
 <translation id="2584547424703650812">የሚያብረቀርቅ እይታ</translation>
@@ -493,6 +495,7 @@
 <translation id="3502426834823382181">ሁሉንም መተግበሪያዎች ይመልከቱ</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />የአፈጻጸም መከታተያ ውሂብ<ph name="END_LINK1" />ን ይላኩ</translation>
 <translation id="3517001332549868749">የChromeOS ዝማኔ</translation>
+<translation id="3522508178835057262">ለአሁን ከ<ph name="MAX_WORD_LENGTH" /> ቃላት ረዘም ያለ ጽሁፍ ግልባጭ አይደገፍም</translation>
 <translation id="3527036260304016759">አልተሳካም - ያልታወቀ ስህተት</translation>
 <translation id="353214771040290298">አርትዖት ተከናውኗል</translation>
 <translation id="3532980081107202182"><ph name="MIN_REMAINING" /> ደቂቃዎች ገደማ ይቀራል</translation>
@@ -508,6 +511,7 @@
 <translation id="3588034708467091142">ከበይነመረብ ጋር መገናኘትዎን ያረጋግጡ እና እንደገና ይሞክሩ።</translation>
 <translation id="3594280220611906414">ለተጠቃሚ <ph name="USER_FRIENDLY_APN_NAME" /> የ <ph name="APN_NAME" /> ምቹ ስም ነው።</translation>
 <translation id="3595596368722241419">ባትሪ ሙሉ ነው</translation>
+<translation id="3600063043775287169">Chromebook ኦዲዮ በሚበራበት ጊዜ መቅጃ በዚህ መሣሪያ ላይ እየተጫወተ ያለን ሁሉም ኦዲዮ ይቀዳል። ሁሉንም ድምፆች መቅዳት እንደሚፈልጉ ያረጋግጡ።</translation>
 <translation id="3600339377155080675">የማያ ገፅ ግልባጭ</translation>
 <translation id="3602290021589620013">ቅድመ-ዕይታ</translation>
 <translation id="3603829704940252505">አምሳያ</translation>
@@ -710,6 +714,7 @@
 <translation id="4602266091140407479">ማይክሮፎን</translation>
 <translation id="4607282946861182308">የዚህን ምስል መፍጠር አልተቻለም። ሌላ ጥያቄ ይሞክሩ።</translation>
 <translation id="4609350030397390689">የቁልፍ ሰሌዳ ብሩህነት መቀነሻ</translation>
+<translation id="4623061655523261501">የመቅጃ ስሞች በተሳካ ሁኔታ መንጭተዋል</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />፣ <ph name="PRINTER_NAME" />፣ <ph name="CREATION_TIME" />፣ <ph name="PRINTED_PAGE_NUMBER" /> ከ<ph name="TOTAL_PAGE_NUMBER" /> ዉስጥ የሕትመት ሥራን ለመሰረዝ እባክዎ ያስገቡ።</translation>
 <translation id="463791356324567266">መቃኘትን በመሰረዝ ላይ...</translation>
 <translation id="4644611440022666152">አብራ እና አውርድ</translation>
@@ -1042,6 +1047,8 @@
 <translation id="628726841779494414">በአታሚ ቅንብሮች ውስጥ የእርስዎን አታሚዎች ያስተዳድሩ</translation>
 <translation id="6292095526077353682">ኃይል እየሞላ ሳለ፣ ማያ ገፅ ቆጣቢ አሳይ ለ</translation>
 <translation id="629550705077076970">የቁልፍ ሰሌዛ መፍዘዝ</translation>
+<translation id="6301193653204230066">የደህንነት ዳግም አስጀምር የChrome አሳሽ ቅጥያዎችን ያጠፋል እና የአውታረ መረብ እና ሌሎች ቅንብሮችን ወደ ደህንነታቸው የተጠበቀ ነባሪዎች ዳግም ያስጀምራቸዋል።
+          የእርስዎ ትሮች፣ ፋይሎች፣ ኩኪዎች እና ታሪክ አይለወጡም።</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> ሙከራ ተሰርዟል</translation>
 <translation id="631063167932043783">መተግበሪያን አስስ</translation>
 <translation id="6318437367327684789">ለዘለዓለም</translation>
@@ -1051,6 +1058,7 @@
 <translation id="6325525973963619867">አልተሳካም</translation>
 <translation id="6327262166342360252">ይህ ልጣፍ የተፈጠረው የሚከተለውን ጽሑፍ በመጠቀም በAI ነው፦ «<ph name="PROMPT" />»።</translation>
 <translation id="6331191339300272798">ራስሰር ጠቆር ያለ ገጽታ</translation>
+<translation id="6335228876613776082">ሞዴል ማውረድ ተጠናቋል</translation>
 <translation id="6340526405444716530">ግላዊነት ማላበስ</translation>
 <translation id="6348252528297699679">አካባቢን በቅንብሮች &gt; ግላዊነት እና ደህንነት &gt; የግላዊነት ቁጥጥሮች &gt; የአካባቢ መዳረሻ ውስጥ ማጥፋት ይችላሉ። <ph name="LINK_BEGIN" />የበለጠ ለመረዳት<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">የተጠቃሚ ስም እና የይለፍ ቃል</translation>
@@ -1212,6 +1220,7 @@
 <translation id="708426984172631313">ቆሟል</translation>
 <translation id="7086168019478250425">ባዮሉሚኒስት የባህር ዳርቻ</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="7086916854357021265">የመቅጃ ስሞችን በማመንጨት ላይ</translation>
 <translation id="7097908713073775559">በቀለማት ያሸበረቀ</translation>
 <translation id="710028965487274708">አልተሳካም - ማረጋግጥ አልተሳካም</translation>
 <translation id="7101959270679078188">የማዘመን ሂደቱን ለመቀጠል <ph name="DEVICE_NAME" />ን ይክፈቱ</translation>
@@ -1544,6 +1553,7 @@
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">የGoogle ፎቶዎች አልበም</translation>
 <translation id="8775713578693478175">ዘመናዊ ኤፒኤን</translation>
+<translation id="877735394245039557">ሞዴል ማውረድ በሂደት ላይ</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">ይህ አውታረ መረብ ተያዥ መግቢያ ሊኖረው ይችላል</translation>
 <translation id="8797082062139985406">Google ሰው ሠራሽ አስተውሎት በመጠቀም ስም ይፍጠሩ</translation>

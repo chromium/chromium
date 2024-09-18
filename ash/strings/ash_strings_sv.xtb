@@ -215,6 +215,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1703117532528082099">Det aktiva fönstret har dockats till vänster.</translation>
 <translation id="1708345662127501511">Skrivbord: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Nätverksinställningar</translation>
+<translation id="171610090693716835">Håll fokus med anpassade spellistor för fokus. Få YouTube Music och YouTube utan annonser med YouTube Premium i tre månader utan kostnad.</translation>
 <translation id="1719094688023114093">Live Caption är aktiverat.</translation>
 <translation id="1720011244392820496">Aktivera wifi-synkronisering</translation>
 <translation id="1720230731642245863">Surfzonen är inaktiverad</translation>
@@ -1414,6 +1415,7 @@ Inga enheter är anslutna.</translation>
 <translation id="5777841717266010279">Vill du avbryta skärmdelningen?</translation>
 <translation id="5779721926447984944">Filer som har fästs</translation>
 <translation id="5785221443435874078">Ta bort förslaget</translation>
+<translation id="5787431783058088906">Ta del av förmånen</translation>
 <translation id="5788127256798019331">Play-filer</translation>
 <translation id="5788535737706478207">Öppna den senast stängda fliken eller det senast stängda fönstret igen</translation>
 <translation id="5790085346892983794">Klart</translation>
@@ -1645,6 +1647,7 @@ Nyligen installerad</translation>
 <translation id="6574587113394758819">Aviseringar från <ph name="APP_TITLE" /> har dolts eftersom skyddet mot smygtittare har aktiverats</translation>
 <translation id="6574622320167699133">Upplåst av telefonen. Tryck eller klicka för att öppna.</translation>
 <translation id="6578407462441924264">Namnlös</translation>
+<translation id="6582012689384648647">Tillåt åtkomst till YouTube Music för anpassade fokuseringsspellistor</translation>
 <translation id="6582034443359256692">Beräknar batteriladdningsnivå.</translation>
 <translation id="6585808820553845416">Sessionen upphör om <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
@@ -1883,6 +1886,7 @@ Nyligen installerad</translation>
 <translation id="7477793887173910789">Styr uppspelningen av musik, videor med mera</translation>
 <translation id="7488762544858401571">Redigerad</translation>
 <translation id="7489261257412536105">Aktivera eller inaktivera helskärm</translation>
+<translation id="7490157877815329797">Prova YouTube Music Premium om du vill lyssna på musik utan annonser och få anpassad fokuseringsmusik</translation>
 <translation id="7490360161041035804">Du kan fästa viktiga filer, till exempel Google Drive-filer. Håll muspekaren över ett objekt eller öppna Filer och högerklicka på ett objekt för att fästa det.</translation>
 <translation id="7497767806359279797">Välj språk och tangentbord</translation>
 <translation id="7507162824403726948">Slutför verifieringen av din identitet</translation>
@@ -2158,6 +2162,7 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="8380784334203145311">Hej!</translation>
 <translation id="8382715499079447151">Skydd mot smygtittare</translation>
 <translation id="8383614331548401927">Välkommen tillbaka</translation>
+<translation id="838540623579162843">Skaffa Music Premium</translation>
 <translation id="8388750414311082622">Det sista skrivbordet går inte att ta bort.</translation>
 <translation id="8394567579869570560">Din förälder har låst enheten</translation>
 <translation id="8401850874595457088">Språkmeny</translation>

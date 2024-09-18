@@ -341,6 +341,7 @@
 <translation id="2560876255701405320">Аудио бичлэгүүдийн жагсаалт</translation>
 <translation id="2561093647892030937">нимбэгүүд</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> тестийг ажиллуулж байна...</translation>
+<translation id="2573178735329662769">Chromebook-н бүх аудиог бичиж байна</translation>
 <translation id="2575552334616524665">Та үүнийг Тохиргоонд эсвэл <ph name="THREE_DOTS_MENU_ICON" /> цэсэд асаах боломжтой</translation>
 <translation id="2576253868710695442">Энэ нь 2ГБ-ын хадгалах санг эзэлнэ</translation>
 <translation id="2584547424703650812">Гялалзсан дүр зураг</translation>
@@ -508,6 +509,7 @@
 <translation id="3588034708467091142">Та интернэтэд холбогдсон эсэхээ шалгаад, дахин оролдоно уу.</translation>
 <translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> нь <ph name="APN_NAME" />-д зориулсан хэрэглэгчид-ээлтэй нэр юм.</translation>
 <translation id="3595596368722241419">Цэнэг дүүрсэн.</translation>
+<translation id="3600063043775287169">Chromebook-н аудио асаалттай байхад Дуу хураагуур энэ төхөөрөмж дээр тоглуулж буй бүх аудиог бичнэ. Та бүх дуу чимээг бичих хүсэлтэй байгаа эсэхээ баталгаажуулна уу.</translation>
 <translation id="3600339377155080675">Screen mirror</translation>
 <translation id="3602290021589620013">Мэдээллийг урьдчилж харах</translation>
 <translation id="3603829704940252505">Аватар</translation>
@@ -1042,6 +1044,8 @@
 <translation id="628726841779494414">Хэвлэгчийн тохиргоонд хэвлэгчдээ удирдана уу</translation>
 <translation id="6292095526077353682">Цэнэглэх үед дараахад дэлгэц амраагчийг харуулах</translation>
 <translation id="629550705077076970">гарыг бүдгэрүүлэх</translation>
+<translation id="6301193653204230066">Аюулгүй байдлын шинэчлэлт Chrome хөтчийн өргөтгөлүүдийг унтрааж, сүлжээ болон бусад тохиргоог аюулгүй өгөгдмөл рүү шинэчилнэ.
+          Таны таб, файл, күүки, түүхийг өөрчлөхгүй.</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> тестийг цуцалсан байна</translation>
 <translation id="631063167932043783">Аппыг судлах</translation>
 <translation id="6318437367327684789">үүрд</translation>
@@ -1051,6 +1055,7 @@
 <translation id="6325525973963619867">Амжилтгүй боллоо</translation>
 <translation id="6327262166342360252">Энэ дэлгэцийн зургийг дараах текстийг ашиглан ХОУ-аар үүсгэсэн: "<ph name="PROMPT" />."</translation>
 <translation id="6331191339300272798">Автомат бараан загвар</translation>
+<translation id="6335228876613776082">Загварыг татаж дууслаа</translation>
 <translation id="6340526405444716530">Хувийн тохиргоо</translation>
 <translation id="6348252528297699679">Та байршлыг Тохиргоо &gt; Нууцлал, аюулгүй байдал &gt; Нууцлалын тохиргоо &gt; Байршлын хандалтад унтраах боломжтой. <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">Хэрэглэгчийн нэр болон нууц үг</translation>
@@ -1544,6 +1549,7 @@
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Зургийн цомог</translation>
 <translation id="8775713578693478175">Modem APN</translation>
+<translation id="877735394245039557">Загварыг татаж байна</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Энэ сүлжээнд дамжих портал байж болзошгүй</translation>
 <translation id="8797082062139985406">Google-н ХОУ-ыг ашиглан нэр үүсгэнэ үү</translation>

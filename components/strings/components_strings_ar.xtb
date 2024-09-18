@@ -678,6 +678,7 @@
 <translation id="2212735316055980242">تعذر العثور على السياسة</translation>
 <translation id="2213606439339815911">جارٍ جلب الإدخالات...</translation>
 <translation id="2213612003795704869">تمت طباعة الصفحة.</translation>
+<translation id="2215368073167343359">‏الملء التلقائي من Google</translation>
 <translation id="2215539479425228550">تسلُّق جبال</translation>
 <translation id="2215727959747642672">تعديل الملف</translation>
 <translation id="2215963164070968490">كلاب</translation>
@@ -710,6 +711,7 @@
 <translation id="2262243747453050782">‏خطأ HTTP</translation>
 <translation id="2265192657948645752">وظائف في مجال البيع بالتجزئة</translation>
 <translation id="2265356434276802347">يجب ألا تحتوي هذه السياسة على أكثر من <ph name="MAX_ITEMS_LIMIT" /> إدخال ممَّيز.</translation>
+<translation id="2266175583972138136">تنطبق الأحكام على مزايا البطاقة</translation>
 <translation id="2267047181501709434">جارٍ إثبات هويتك...</translation>
 <translation id="2268044343513325586">تحسين</translation>
 <translation id="2270484714375784793">رقم الهاتف</translation>
@@ -1797,6 +1799,7 @@
 <translation id="4269264543938335308">ملابس سباحة</translation>
 <translation id="4269599248168651462">تم إصدار شهادة الخادم لمضيف اسمه غير فريد.</translation>
 <translation id="4270541775497538019">المكدِّس 6</translation>
+<translation id="4271652479722040953">‏عند تثبيت الإضافات في Chrome، يتم إرسال البيانات ذات الصلة بها إلى جهات خارجية لتحليلها، وقد تكون البيانات مرئية للمشرف. وتتضمّن هذه البيانات معلومات عن الإضافات، مثل الاسم ووقت التثبيت ومصدر التثبيت، بالإضافة إلى النشاط المرتبط بهذه الإضافات (مثل تغيير علامات التبويب أو الاتصال بمواقع إلكترونية أو الوصول إلى ملفات تعريف الارتباط). ويتم جمع هذه البيانات للإضافات المثبّتة من "سوق Chrome الإلكتروني" والإضافات التي تمّ تثبيتها من خارج السوق.</translation>
 <translation id="4275830172053184480">إعادة تشغيل جهازك</translation>
 <translation id="4276974990916607331">لا، شكرًا</translation>
 <translation id="4277028893293644418">إعادة ضبط كلمة المرور</translation>
@@ -1878,6 +1881,7 @@
 <translation id="4406896451731180161">نتائج البحث</translation>
 <translation id="4408413947728134509"><ph name="NUM_COOKIES" /> من ملفات تعريف الارتباط</translation>
 <translation id="4412074349188076601">تم وضع علامة على هذه الإعدادات تشير إلى أنّها قابلة للتثبيت، إلا أنّه لم يتم تقديم أي نسخة لهذه البنية، لذا لا يمكن تثبيتها.</translation>
+<translation id="4414452699610169758">‏يمكنك استخدام "مدير كلمات المرور في Google" وميزة "الملء التلقائي" في Chrome لحفظ كلمات المرور وطرق الدفع والعناوين وملئها تلقائيًا</translation>
 <translation id="4414515549596849729">ملفات تعريف الارتباط وبيانات المواقع الإلكترونية
 </translation>
 <translation id="4415156962929755728">بلاستيك (شديد اللمعان)</translation>
@@ -3379,6 +3383,7 @@
 <translation id="7232352818707016189">مزيد من الإجراءات في جدول المقارنة</translation>
 <translation id="7233592378249864828">طباعة ورقة التأكيد</translation>
 <translation id="7234112195906418665">سفر ووسائل نقل</translation>
+<translation id="7234585564776614047">الملء التلقائي باستخدام خدمة أخرى</translation>
 <translation id="7236417832106250253">اكتمل التحديث بنسبة %<ph name="PROGRESS_PERCENT" /> | يتبقى <ph name="ESTIMATED_REMAINING_TIME" /> لاكتماله.</translation>
 <translation id="7237166092326447040">هدايا ومستلزمات مناسبات خاصة</translation>
 <translation id="7237454422623102448">إعدادات النظام</translation>
@@ -4041,6 +4046,7 @@
 <translation id="8409413588194360210">معالجات الدفع</translation>
 <translation id="8412145213513410671">الأعطال (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">يجب إدخال عبارة المرور نفسها مرتين.</translation>
+<translation id="8414322570408428950">يقع حدث الإضافة</translation>
 <translation id="8416694386774425977">إعداد الشبكة غير صالحة ويتعذّر استيرادها.
 التفاصيل الإضافية:
 <ph name="DEBUG_INFO" /></translation>
@@ -4291,6 +4297,7 @@
 <translation id="8891031436559779793">سيتم إرسال إشعار إليك في حال انخفاض السعر على أي موقع إلكتروني.</translation>
 <translation id="8891727572606052622">وضع الخادم الوكيل غير صالح.</translation>
 <translation id="8894794286471754040">الحافة الطويلة أولًا</translation>
+<translation id="8895334001368918465">‏لاستخدام خدمة ملء تلقائي أخرى في Chrome، يُرجى تفعيلها في "إعدادات Android" وفي هذا القسم</translation>
 <translation id="8897428486789851669">سباحة</translation>
 <translation id="8899807382908246773">الإعلانات المتداخلة</translation>
 <translation id="8903921497873541725">تكبير</translation>

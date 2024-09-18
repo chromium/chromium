@@ -93,7 +93,6 @@
 <translation id="2498359688066513246">Súgó és visszajelzés</translation>
 <translation id="2501278716633472235">Visszalépés</translation>
 <translation id="2546283357679194313">Cookie-k és webhelyadatok</translation>
-<translation id="2550150772722917524">A lapcsoportok rendezetten tartják a lapokat</translation>
 <translation id="2570922361219980984">A helyhozzáférés is ki van kapcsolva ennél az eszköznél. A funkciót az <ph name="BEGIN_LINK" />Android-beállításokban<ph name="END_LINK" /> tudja bekapcsolni.</translation>
 <translation id="257931822824936280">Kibontva – kattintson az összecsukáshoz.</translation>
 <translation id="2586657967955657006">Vágólap</translation>
@@ -168,7 +167,6 @@
 <translation id="3744111561329211289">Szinkronizálás a háttérben</translation>
 <translation id="3763247130972274048">A videó jobb vagy bal oldalán duplán koppintva ugorhat előre vagy vissza 10 másodpercet</translation>
 <translation id="3779154269823594982">Jelszavak módosítása</translation>
-<translation id="3788473868867338588">A kapcsolódó oldalakat összevonhatja egy csoportba, a rendszer pedig menti és frissíti a csoportokat az összes eszközén</translation>
 <translation id="3797520601150691162">Ne használjon sötét témát bizonyos webhelyeknél</translation>
 <translation id="3803367742635802571">Előfordulhat, hogy az Ön által felkeresett webhelyek nem rendeltetésszerűen működnek</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" />. <ph name="TYPE_2" />.</translation>
@@ -370,7 +368,6 @@
 <translation id="6697925417670533197">Aktív letöltések</translation>
 <translation id="6709432001666529933">Rákérdezés, mielőtt engedélyezi a webhelyek számára a kézmozgás nyomon követését (ajánlott)</translation>
 <translation id="6722828510648505498">Letilthatja az identitásszolgáltatásoktól származó bejelentkezési értesítéseket.</translation>
-<translation id="6729704574271585059">Az Ön által létrehozott csoportok a lapcsoportok szakaszban vannak elmentve, és az összes eszközén frissülnek</translation>
 <translation id="6746124502594467657">Mozgatás lefelé</translation>
 <translation id="6749077623962119521">Visszaállítja az engedélyeket?</translation>
 <translation id="6766622839693428701">A bezáráshoz csúsztasson lefelé.</translation>

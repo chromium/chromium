@@ -35,6 +35,7 @@
 <translation id="1155154308031262006">프롬프트 입력</translation>
 <translation id="115705039208660697">파인애플</translation>
 <translation id="1164939766849482256">새벽부터 밤까지 화면 보호기</translation>
+<translation id="1166688493741195933">녹화 이름을 생성할 수 없음</translation>
 <translation id="1167755866710282443">메뉴를 열어 키를 맞춤설정하세요. 이동하려면 메뉴를 드래그하세요.</translation>
 <translation id="1171349345463658120">모래 석호</translation>
 <translation id="1173894706177603556">이름 바꾸기</translation>
@@ -341,6 +342,7 @@
 <translation id="2560876255701405320">오디오 녹음 파일 목록</translation>
 <translation id="2561093647892030937">레몬</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> 테스트 실행 중…</translation>
+<translation id="2573178735329662769">모든 Chromebook 오디오 녹음</translation>
 <translation id="2575552334616524665">설정 또는 <ph name="THREE_DOTS_MENU_ICON" /> 메뉴에서 이 기능을 사용 설정할 수 있습니다.</translation>
 <translation id="2576253868710695442">최대 2GB의 저장용량이 사용됩니다.</translation>
 <translation id="2584547424703650812">글로우스케이프</translation>
@@ -493,6 +495,7 @@
 <translation id="3502426834823382181">모든 앱 보기</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />성능 추적 데이터<ph name="END_LINK1" /> 전송</translation>
 <translation id="3517001332549868749">Chrome OS 업데이트</translation>
+<translation id="3522508178835057262">현재는 단어가 <ph name="MAX_WORD_LENGTH" />개(영문 기준)를 초과하는 스크립트가 지원되지 않습니다.</translation>
 <translation id="3527036260304016759">실패 - 알 수 없는 오류</translation>
 <translation id="353214771040290298">수정 완료</translation>
 <translation id="3532980081107202182">약 <ph name="MIN_REMAINING" />분 남음</translation>
@@ -508,6 +511,7 @@
 <translation id="3588034708467091142">인터넷에 연결되어 있는지 확인한 후 다시 시도하세요.</translation>
 <translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" />은(는) <ph name="APN_NAME" />의 사용자 친화적인 이름입니다.</translation>
 <translation id="3595596368722241419">배터리 충전 완료</translation>
+<translation id="3600063043775287169">Chromebook 오디오가 켜져 있으면 녹음기가 이 기기에서 재생되는 모든 오디오를 캡처합니다. 모든 소리를 녹음하시겠습니까?</translation>
 <translation id="3600339377155080675">화면 미러링</translation>
 <translation id="3602290021589620013">미리보기</translation>
 <translation id="3603829704940252505">아바타</translation>
@@ -710,6 +714,7 @@
 <translation id="4602266091140407479">마이크</translation>
 <translation id="4607282946861182308">이미지를 만들 수 없습니다. 다른 프롬프트를 사용해 보세요.</translation>
 <translation id="4609350030397390689">키보드 밝기 낮추기</translation>
+<translation id="4623061655523261501">녹화 이름이 생성됨</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />/<ph name="TOTAL_PAGE_NUMBER" /> 인쇄 작업을 취소하려면 Enter를 누릅니다.</translation>
 <translation id="463791356324567266">스캔 취소 중…</translation>
 <translation id="4644611440022666152">사용 설정 및 다운로드</translation>
@@ -1042,6 +1047,8 @@
 <translation id="628726841779494414">프린터 설정에서 프린터 관리</translation>
 <translation id="6292095526077353682">충전하는 동안 화면 보호기 표시 시간:</translation>
 <translation id="629550705077076970">키보드 밝기 낮추기</translation>
+<translation id="6301193653204230066">안전 재설정을 실행하면 Chrome 브라우저 확장 프로그램을 사용 중지하고 네트워크 및 기타 설정을 안전한 기본값으로 재설정합니다.
+          탭, 파일, 쿠키, 기록은 변경되지 않습니다.</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> 테스트가 취소됨</translation>
 <translation id="631063167932043783">탐색 앱</translation>
 <translation id="6318437367327684789">계속</translation>
@@ -1051,6 +1058,7 @@
 <translation id="6325525973963619867">실패</translation>
 <translation id="6327262166342360252">이 배경화면은 다음 텍스트를 사용하여 AI로 생성되었습니다. "<ph name="PROMPT" />"</translation>
 <translation id="6331191339300272798">자동 어두운 테마</translation>
+<translation id="6335228876613776082">모델 다운로드 완료</translation>
 <translation id="6340526405444716530">맞춤설정</translation>
 <translation id="6348252528297699679">설정 &gt; 개인 정보 보호 및 보안 &gt; 개인 정보 보호 설정 &gt; 위치 정보 액세스에서 위치를 사용 중지할 수 있습니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">사용자 이름 및 비밀번호</translation>
@@ -1212,6 +1220,7 @@
 <translation id="708426984172631313">중지됨</translation>
 <translation id="7086168019478250425">발광 생물이 있는 해변</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /><ph name="DISPLAY_NAME" /></translation>
+<translation id="7086916854357021265">녹화 이름 생성 중</translation>
 <translation id="7097908713073775559">다채로운</translation>
 <translation id="710028965487274708">실패 - 승인 실패</translation>
 <translation id="7101959270679078188">업데이트를 계속하려면 <ph name="DEVICE_NAME" />의 잠금을 해제하세요.</translation>
@@ -1544,6 +1553,7 @@
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google 포토 앨범</translation>
 <translation id="8775713578693478175">모뎀 APN</translation>
+<translation id="877735394245039557">모델 다운로드 중</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">네트워크에 종속 포털이 있을 수 있습니다.</translation>
 <translation id="8797082062139985406">Google AI를 사용하여 이름 만들기</translation>

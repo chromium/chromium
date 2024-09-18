@@ -35,6 +35,7 @@
 <translation id="1155154308031262006">Sisestage päring</translation>
 <translation id="115705039208660697">ananassid</translation>
 <translation id="1164939766849482256">Päikesetõusust päikeseloojanguni ekraanisäästja</translation>
+<translation id="1166688493741195933">Salvestiste nimede genereerimine ebaõnnestus</translation>
 <translation id="1167755866710282443">Klahvide kohandamiseks avage menüü. Teisaldamiseks lohistage menüüd.</translation>
 <translation id="1171349345463658120">liivane laguun</translation>
 <translation id="1173894706177603556">Muuda nime</translation>
@@ -493,6 +494,7 @@
 <translation id="3502426834823382181">kõikide rakenduste kuvamine</translation>
 <translation id="3510890413042482857">Saada <ph name="BEGIN_LINK1" />toimivuse jälgimiseandmeid<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Chrome OS-i värsken.</translation>
+<translation id="3522508178835057262">Praegu ei toetata üle <ph name="MAX_WORD_LENGTH" />-sõnalist transkriptsiooni.</translation>
 <translation id="3527036260304016759">Ebaõnnestus – tundmatu viga</translation>
 <translation id="353214771040290298">Muudetud</translation>
 <translation id="3532980081107202182">Jäänud on ligikaudu <ph name="MIN_REMAINING" /> minutit</translation>
@@ -710,6 +712,7 @@
 <translation id="4602266091140407479">Mikrofon</translation>
 <translation id="4607282946861182308">Ei saa selle kohta pilte luua. Proovige muud päringut.</translation>
 <translation id="4609350030397390689">Klaviatuuri ereduse vähendamine</translation>
+<translation id="4623061655523261501">Salvestiste nimede genereerimine õnnestus</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />/<ph name="TOTAL_PAGE_NUMBER" />. Prinditöö tühistamiseks vajutage sisestusklahvi.</translation>
 <translation id="463791356324567266">Skannimise tühistamine …</translation>
 <translation id="4644611440022666152">Lülita sisse ja laadi alla</translation>
@@ -1215,6 +1218,7 @@
 <translation id="708426984172631313">PEATATUD</translation>
 <translation id="7086168019478250425">helendav rand</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="7086916854357021265">Salvestiste nimede genereerimine</translation>
 <translation id="7097908713073775559">värviline</translation>
 <translation id="710028965487274708">Ebaõnnestus – volitamine ebaõnnestus</translation>
 <translation id="7101959270679078188">Avage <ph name="DEVICE_NAME" />, et värskendamist jätkata</translation>

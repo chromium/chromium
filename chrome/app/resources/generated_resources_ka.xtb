@@ -553,6 +553,7 @@
 <translation id="1401216725754314428">შეიტყვეთ მეტი დაკავშირებული საიტების შესახებ ახალ ჩანართში</translation>
 <translation id="1402426911829176748">მიმდინარეობს თქვენს მოწყობილობასთან დაკავშირება</translation>
 <translation id="1403222014593521787">პროქსი-სერვერთან დაკავშირება ვერ მოხერხდა</translation>
+<translation id="1405336513195181336">ეს მოიცავს სანიშნეებს, გაფართოებებსა და საიტების დათვალიერების ისტორიას.</translation>
 <translation id="1405779994569073824">ავარიულად გათიშული.</translation>
 <translation id="1406500794671479665">გადამოწმება…</translation>
 <translation id="1407069428457324124">მუქი თემა</translation>
@@ -2500,6 +2501,7 @@
 <translation id="2749881179542288782">გრამატიკისა და მართლწერის შემოწმება</translation>
 <translation id="2750020734439919571">Chrome-ის აპის მეტი პარამეტრი და ნებართვა</translation>
 <translation id="2750602041558385535">დაუდასტურებელი ჩამოტვირთვა დაიბლოკა</translation>
+<translation id="2751883373055093745"><ph name="WEBSITE" />-ს აინტერესებს თქვენი უსაფრთხოების გასაღების ID ნომერი. საიტი შეიტყობს, უსაფრთხოების ზუსტად რომელ გასაღებს იყენებთ.</translation>
 <translation id="275213133112113418">თქვენი ბარათი შენახულია</translation>
 <translation id="2753623023919742414">დააწკაპუნეთ ძიებისთვის</translation>
 <translation id="2754226775788136540">მიმდინარეობს <ph name="PRIMARY_EMAIL" />-ში შენახული სწრაფი დაწყვილების მოწყობილობების ძიება</translation>
@@ -3732,6 +3734,7 @@
 <translation id="3665589677786828986">Chrome-მა აღმოაჩინა, რომ თქვენი ბრაუზერის ზოგიერთი პარამეტრი დაზიანდა სხვა პროგრამის მიერ და აღდგენილ იქნა ორიგინალი ნაგულისხმევი პარამეტრები.</translation>
 <translation id="3665919494326051362">მიმდინარე ვერსიაა <ph name="CURRENT_VERSION" /></translation>
 <translation id="3666196264870170605">Intel Wi-Fi NIC-ების გამართვის მონაცემების გროვა</translation>
+<translation id="3666529246018937077">თქვენი დათვალიერების არსებული მონაცემები ძველ პროფილში დარჩება. თქვენს სამსახურის პროფილში არ იქნება დათვალიერების წინა მონაცემები.</translation>
 <translation id="3666971425390608309">ჩამოტვირთვა დაპაუზდა: <ph name="FILE_NAME" />.</translation>
 <translation id="3670113805793654926">ნებისმიერი მომწოდებლის მოწყობილობები</translation>
 <translation id="3670229581627177274">Bluetooth-ის ჩართვა</translation>
@@ -4473,6 +4476,7 @@
 <translation id="4181841719683918333">ენები</translation>
 <translation id="4182339886482390129">გაძლიერებული Safe Browsing მეტად გიცავთ სახიფათო ვებსაიტებისგან, ჩამოტვირთვებისა და გაფართოებებისგან</translation>
 <translation id="4184803915913850597">HID მოწყობილობა (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
+<translation id="418527077671811642"><ph name="WEBSITE" /> შეისწავლის თქვენი უსაფრთხოების გასაღების მარკასა და მოდელს</translation>
 <translation id="4186749321808907788"><ph name="QUERY_NAME" /> — <ph name="DEFAULT_SEARCH_ENGINE_NAME" />-ით ძიება</translation>
 <translation id="4187424053537113647">მიმდინარეობს <ph name="APP_NAME" />-ის დაყენება...</translation>
 <translation id="4190446002599583608">ისტორიაში ძიება, შექმნილია AI-ს დახმარებით</translation>
@@ -4600,6 +4604,7 @@
 <translation id="4278779213160967034">ამას შეიძლება რამდენიმე წუთი დასჭირდეს. მიმდინარეობს ფაილების ჩამოტვირთვა.</translation>
 <translation id="4279129444466079448">ამ მოწყობილობაზე შეგიძლიათ <ph name="PROFILE_LIMIT" />-მდე eSIM პროფილის ინსტალაცია. სხვა პროფილის დასამატებლად, პირველ რიგში, ამოშალეთ ერთ-ერთი არსებული.</translation>
 <translation id="4280325816108262082">მოწყობილობის კავშირი ავტომატურად გაწყდება, როდესაც გამოირთვება ან არ გამოიყენება</translation>
+<translation id="4281412694055934031">საიტებმა შეიძლება ითხოვოს თქვენს მოწყობილობაში ვებ-აპების ინსტალაცია</translation>
 <translation id="4281789858103154731">შექმნა</translation>
 <translation id="4281844954008187215">მომსახურების პირობები</translation>
 <translation id="4281849573951338030">კალმის ღილაკების მორგება</translation>
@@ -4807,6 +4812,7 @@
 <translation id="4426857487270413362">ინსტალატორის ფაილების ჩამოტვირთვა ვერ მოხერხდა. შეამოწმეთ კავშირი ინტერნეტთან და დისკზე ხელმისაწვდომი სივრცე, შემდეგ კი ცადეთ ხელახლა. შეცდომის კოდია <ph name="ERROR" />.</translation>
 <translation id="4427111270137140798">აღმოჩენილია <ph name="COUNT" />-ჯერ</translation>
 <translation id="4427365070557649936">მიმდინარეობს დადასტურების კოდის შემოწმება…</translation>
+<translation id="4428579202668721841">გსურთ დათვალიერების არსებული მონაცემების სამსახურის პროფილისგან განცალკევებით შენახვა?</translation>
 <translation id="4429163740524851942">ფიზიკური კლავიატურის განლაგება</translation>
 <translation id="4430019312045809116">ხმა</translation>
 <translation id="443031431654216610">გამოიყენეთ მხოლოდ ციფრები</translation>
@@ -5446,8 +5452,10 @@
 <translation id="490031510406860025">არ არის დაშვებული ამ საიტზე</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> ჰც — ინტერლეისით</translation>
 <translation id="4900652253009739885">„არჩევისთვის“ მიკუთვნებული ერთადერთი გადამრთველის გაუქმება ვერ მოხერხდება. <ph name="RESPONSE" /> რომ შესრულდეს, დააჭირეთ ნებისმიერ კლავიშს.</translation>
+<translation id="4900908761825556116">საიტებისთვის თქვენს მოწყობილობაში ვებ-აპების ინსტალაციის აკრძალვა</translation>
 <translation id="4901154724271753917">ბოლო დროს დახურულის გაფართოება</translation>
 <translation id="4901309472892185668">აირჩიეთ მდგომარეობა ექსპერიმენტისთვის „<ph name="EXPERIMENT_NAME" />“.</translation>
+<translation id="4902675024946078396">არა, თქვენს სამსახურის პროფილში გადატანა</translation>
 <translation id="49027928311173603">სერვერზე გადმოწერილი პოლიტიკა არასწორია: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4903967893652864401">ეს ფუნქცია ახანგრძლივებს ბატარეის მუშაობას ვიზუალური ეფექტებისა (მაგალითად, ლივლივა გადაადგილების) და ფონური აქტივობის შეზღუდვის გზით.</translation>
 <translation id="4906490889887219338">ქსელში ფაილების გაზიარების დაყენება ან მართვა. <ph name="LINK_BEGIN" />შეიტყვეთ მეტი<ph name="LINK_END" /></translation>
@@ -7481,6 +7489,7 @@
 <translation id="6434104957329207050">წერტილოვანი სკანირების სიჩქარე</translation>
 <translation id="6434309073475700221">გაუქმება</translation>
 <translation id="6434325376267409267"><ph name="APP_NAME" />-ის გამოსაყენებლად საჭიროა თქვენი მოწყობილობის განახლება.</translation>
+<translation id="6434690603850475457">დიახ, ცალკე იყოს შენახული (რეკომენდებული)</translation>
 <translation id="6434755719322447931">ქაოსური</translation>
 <translation id="6435339218366409950">აირჩიეთ, რა ენაზე ითარგმნოს სუბტიტრები</translation>
 <translation id="6436164536244065364">იხილეთ ვებ მაღაზიაში</translation>
@@ -8383,6 +8392,7 @@
 <translation id="708060913198414444">აუდიოს მისამართის კ&amp;ოპირება</translation>
 <translation id="7082568314107259011"><ph name="NETWORK_NAME" /> იმართება თქვენი ადმინისტრატორის მიერ</translation>
 <translation id="7082850163410901674">შეტყობინებები გამორთულია Mac-ის სისტემის პარამეტრებში</translation>
+<translation id="7083729794572207131">საიტები, ჩვეულებრივ, მოგთხოვთ ვებ-აპების ინსტალაციას, რომ გააუმჯობესოს საიტზე თქვენი გამოცდილება</translation>
 <translation id="7083774521940805477">Steam for Chromebook (ბეტა) მიუწვდომელია თქვენს Chromebook-ზე.</translation>
 <translation id="708550780726587276">(არ არის კონფიგურირებული)</translation>
 <translation id="7086377898680121060">სიკაშკაშის მომატება</translation>
@@ -10487,6 +10497,7 @@
 <translation id="8617601976406256334">გსურთ, წაშალოთ საიტების მონაცემები და ნებართვები <ph name="SITE_NAME" />-ისთვის?</translation>
 <translation id="8617748779076050570">დაცული კავშირის ID: <ph name="CONNECTION_ID" /></translation>
 <translation id="8619000641825875669">OneDrive</translation>
+<translation id="8619369551122276044">არ არის ნებადართული თქვენს მოწყობილობაში ვებ-აპების ინსტალაციის მოთხოვნა</translation>
 <translation id="8619803522055190423">დაშვებული ჩრდილი</translation>
 <translation id="8619892228487928601"><ph name="CERTIFICATE_NAME" />: <ph name="ERROR" /></translation>
 <translation id="8620206585293032550">არააქტიური ჩანართების იერსახე</translation>
@@ -11370,6 +11381,7 @@
 <translation id="93393615658292258">მხოლოდ პაროლი</translation>
 <translation id="934244546219308557">დაარქვით სახელი ამ ჯგუფს</translation>
 <translation id="93480724622239549">ხარვეზი ან შეცდომა</translation>
+<translation id="9354763467503131">ნებადართულია თქვენს მოწყობილობაში ვებ-აპების ინსტალაციის მოთხოვნა</translation>
 <translation id="936646668635477464">კამერა და მიკროფონი</translation>
 <translation id="936801553271523408">სისტემის დიაგნოსტიკის მონაცემები</translation>
 <translation id="93766956588638423">გაფართოების აღდგენა</translation>
@@ -11394,6 +11406,7 @@
 <translation id="949807244219288032">ეს ჩანართი დაკავშირებულია HID მოწყობილობასთან</translation>
 <translation id="950079950995628542">„<ph name="PHONE_NAME" />“-ის</translation>
 <translation id="950307215746360464">დაყენების სახელმძღვანელო</translation>
+<translation id="950728747178241190">გაააქტიურეთ ხმაურის შემცირება და აუდიო გაუმჯობესებები. <ph name="LINK_BEGIN" />შეიტყვეთ მეტი<ph name="LINK_END" /></translation>
 <translation id="951273949038779544"><ph name="SITE_ACCESS" />. დაინსტალირებულია თქვენი ადმინისტრატორის მიერ</translation>
 <translation id="951991426597076286">უარყოფა</translation>
 <translation id="952471655966876828">მოწყობილობა ავტომატურად დაკავშირდება, როდესაც ჩაირთვება ან გამოიყენება</translation>

@@ -35,6 +35,7 @@
 <translation id="1155154308031262006">Нұсқау енгізіңіз.</translation>
 <translation id="115705039208660697">ананастар</translation>
 <translation id="1164939766849482256">Таң атқаннан күн батқанға дейінгі кезең бейнеленген скринсейвер</translation>
+<translation id="1166688493741195933">Жазба атаулары жасалмады</translation>
 <translation id="1167755866710282443">Пернелерді бейімдеу үшін мәзірді ашыңыз. Жылжыту үшін мәзірді сүйреңіз.</translation>
 <translation id="1171349345463658120">құмды мүйіс</translation>
 <translation id="1173894706177603556">Атын өзгерту</translation>
@@ -493,6 +494,7 @@
 <translation id="3502426834823382181">барлық қолданбаны көру</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />Өнімділікті бақылау деректерін<ph name="END_LINK1" /> жіберу</translation>
 <translation id="3517001332549868749">Chrome OS жаңарту</translation>
+<translation id="3522508178835057262"><ph name="MAX_WORD_LENGTH" /> сөзден ұзағырақ мәтінді транскрипциялауға қолдау көрсетілмейді.</translation>
 <translation id="3527036260304016759">Сәтсіз: белгісіз қате шықты</translation>
 <translation id="353214771040290298">Өңдеу аяқталды</translation>
 <translation id="3532980081107202182">Шамамен <ph name="MIN_REMAINING" /> минут қалды.</translation>
@@ -710,6 +712,7 @@
 <translation id="4602266091140407479">Микрофон</translation>
 <translation id="4607282946861182308">Мұндай сурет жасау мүмкін емес. Басқа нұсқау жазып көріңіз.</translation>
 <translation id="4609350030397390689">Пернетақта жарықтығын азайту</translation>
+<translation id="4623061655523261501">Жазба атаулары сәтті жасалды</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />/<ph name="TOTAL_PAGE_NUMBER" />. Басып шығарудан бас тарту үшін "Enter" пернесін басыңыз.</translation>
 <translation id="463791356324567266">Сканерлеу тоқтатылуда…</translation>
 <translation id="4644611440022666152">Қосу және жүктеп алу</translation>
@@ -1212,6 +1215,7 @@
 <translation id="708426984172631313">ТОҚТАТЫЛДЫ</translation>
 <translation id="7086168019478250425">биолюминесцентті жағажай</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="7086916854357021265">Жазба атаулары жасалып жатыр</translation>
 <translation id="7097908713073775559">түрлі түсті</translation>
 <translation id="710028965487274708">Орындалмады – авторизация жасалмады</translation>
 <translation id="7101959270679078188">Жаңарту процесін жалғастыру үшін <ph name="DEVICE_NAME" /> құлпын ашыңыз.</translation>

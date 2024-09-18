@@ -340,6 +340,7 @@
 <translation id="2560876255701405320">Liste der Audioaufnahmen</translation>
 <translation id="2561093647892030937">Zitronen</translation>
 <translation id="2570743873672969996">Test für <ph name="TEST_NAME" /> wird ausgeführt…</translation>
+<translation id="2573178735329662769">Alle Chromebook-Audiodaten werden aufgezeichnet</translation>
 <translation id="2575552334616524665">Du kannst diese Funktion in den Einstellungen oder über das <ph name="THREE_DOTS_MENU_ICON" />‑Menü aktivieren</translation>
 <translation id="2576253868710695442">Das erfordert bis zu 2 GB Speicherplatz</translation>
 <translation id="2584547424703650812">Leuchtende Landschaften</translation>
@@ -507,6 +508,7 @@
 <translation id="3588034708467091142">Achte darauf, dass du mit dem Internet verbunden bist, und versuche es noch einmal.</translation>
 <translation id="3594280220611906414">„<ph name="USER_FRIENDLY_APN_NAME" />“ ist der nutzerfreundliche Name für „<ph name="APN_NAME" />“.</translation>
 <translation id="3595596368722241419">Akku voll</translation>
+<translation id="3600063043775287169">Wenn Chromebook-Audio aktiviert ist, werden alle auf diesem Gerät wiedergegebenen Audioinhalte von der Rekorder App aufgezeichnet. Prüfe, ob du alle Audioinhalte aufzeichnen möchtest.</translation>
 <translation id="3600339377155080675">Display spiegeln</translation>
 <translation id="3602290021589620013">Vorschau</translation>
 <translation id="3603829704940252505">Avatar</translation>

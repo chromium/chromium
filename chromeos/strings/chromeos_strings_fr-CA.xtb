@@ -35,6 +35,7 @@
 <translation id="1155154308031262006">Saisissez une requête</translation>
 <translation id="115705039208660697">ananas</translation>
 <translation id="1164939766849482256">Écran de veille de l'aube à l'obscurité</translation>
+<translation id="1166688493741195933">Impossible de générer les noms d'enregistrement</translation>
 <translation id="1167755866710282443">Ouvrez le menu pour personnaliser les clés. Faites glisser le menu pour le déplacer.</translation>
 <translation id="1171349345463658120">lagune sablonneuse</translation>
 <translation id="1173894706177603556">Renommer</translation>
@@ -493,6 +494,7 @@
 <translation id="3502426834823382181">afficher toutes les applications</translation>
 <translation id="3510890413042482857">Envoyer des <ph name="BEGIN_LINK1" />données de suivi des performances<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Mise à jour Chrome OS</translation>
+<translation id="3522508178835057262">Pour l'instant, les transcriptions de plus de <ph name="MAX_WORD_LENGTH" /> mots ne sont pas prises en charge</translation>
 <translation id="3527036260304016759">Échec : erreur inconnue</translation>
 <translation id="353214771040290298">Modification terminée</translation>
 <translation id="3532980081107202182">Il reste environ <ph name="MIN_REMAINING" /> minutes</translation>
@@ -710,6 +712,7 @@
 <translation id="4602266091140407479">Micro</translation>
 <translation id="4607282946861182308">Impossible de créer des images de cette requête. Essayez une autre requête.</translation>
 <translation id="4609350030397390689">Diminuer la luminosité du clavier</translation>
+<translation id="4623061655523261501">Les noms d'enregistrement ont été générés</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> sur <ph name="TOTAL_PAGE_NUMBER" />. Appuyez sur Entrée pour annuler la tâche d'impression.</translation>
 <translation id="463791356324567266">Annulation de la numérisation en cours…</translation>
 <translation id="4644611440022666152">Activer et télécharger</translation>
@@ -1215,6 +1218,7 @@ L'IA générative est expérimentale, en début de développement et sa disponib
 <translation id="708426984172631313">ARRÊTÉ</translation>
 <translation id="7086168019478250425">plage bioluminescente</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="7086916854357021265">Générer des noms d'enregistrement</translation>
 <translation id="7097908713073775559">colorés</translation>
 <translation id="710028965487274708">Échec – Échec de l'autorisation</translation>
 <translation id="7101959270679078188">Déverrouillez l'appareil <ph name="DEVICE_NAME" /> pour poursuivre le processus de mise à jour</translation>

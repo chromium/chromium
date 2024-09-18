@@ -93,7 +93,6 @@
 <translation id="2498359688066513246">Pomoć i povratne informacije</translation>
 <translation id="2501278716633472235">Natrag</translation>
 <translation id="2546283357679194313">Kolačići i podaci o web-lokacijama</translation>
-<translation id="2550150772722917524">Grupe kartica održavaju red</translation>
 <translation id="2570922361219980984">Pristup lokaciji isključen je i za ovaj uređaj. Uključite ga u <ph name="BEGIN_LINK" />postavkama Androida<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Prošireno – kliknite za sažimanje.</translation>
 <translation id="2586657967955657006">Međuspremnik</translation>
@@ -168,7 +167,6 @@
 <translation id="3744111561329211289">Sinkronizacija u pozadini</translation>
 <translation id="3763247130972274048">Dvaput dodirnite videozapis lijevo ili desno da biste preskočili 10 s</translation>
 <translation id="3779154269823594982">Promijeni zaporke</translation>
-<translation id="3788473868867338588">Možete grupirati povezane stranice, a vaše se grupe spremaju i ažuriraju na svim vašim uređajima</translation>
 <translation id="3797520601150691162">Ne primjenjuj tamnu temu za određenu web-lokaciju</translation>
 <translation id="3803367742635802571">Web-lokacije koje posjećujete mogu prestati funkcionirati kao što je predviđeno</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" />. <ph name="TYPE_2" />.</translation>
@@ -370,7 +368,6 @@
 <translation id="6697925417670533197">Aktivna preuzimanja</translation>
 <translation id="6709432001666529933">Pitaj prije omogućavanja web-lokacijama praćenje ruku (preporučeno)</translation>
 <translation id="6722828510648505498">Blokiraj upite za prijavu s usluga za provjeru identiteta.</translation>
-<translation id="6729704574271585059">Grupe koje ste izradili spremaju se u odjeljak grupe kartica i ažuriraju na svim vašim uređajima</translation>
 <translation id="6746124502594467657">Pomakni dolje</translation>
 <translation id="6749077623962119521">Poništiti dopuštenja?</translation>
 <translation id="6766622839693428701">Prijeđite prstom prema dolje da biste zatvorili.</translation>

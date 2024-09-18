@@ -6746,6 +6746,13 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 <translation id="6207607210601267301">针对远程访问主机停用无 PIN 码身份验证</translation>
 <translation id="6208896993204286313">报告 <ph name="PRODUCT_NAME" /> 政策信息</translation>
 <translation id="6210259502936598222">报告操作系统和 <ph name="PRODUCT_NAME" /> 版本信息</translation>
+<translation id="6215023506958127056">控制外部扩展程序的安装。
+
+如果此政策已启用，系统会阻止安装外部扩展程序；
+
+如果此政策已停用或未设置，则系统会允许安装外部扩展程序。
+
+如需查看外部扩展程序及其安装方法，请参阅 https://developer.chrome.com/docs/extensions/how-to/distribute/install-extensions 上的文档。</translation>
 <translation id="6220835555850906733">如果此政策已启用或未设置，用户将能在其设备上使用所有受支持的音频输出。
 
       如果此政策已停用，用户在登录后将无法使用任何音频输出。
