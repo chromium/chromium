@@ -280,7 +280,8 @@ ui::EmojiPickerCategory EmojiResultTypeToCategory(
 
 PickerController::PickerController()
     : caps_lock_bubble_controller_(&GetImeKeyboard()),
-      asset_fetcher_(std::make_unique<PickerAssetFetcherImpl>(this)) {}
+      asset_fetcher_(std::make_unique<PickerAssetFetcherImpl>(this)),
+      search_controller_(kBurnInPeriod) {}
 
 PickerController::~PickerController() {
   // `widget_` depends on `this`. Destroy the widget synchronously to avoid a
@@ -322,23 +323,19 @@ void PickerController::DisableFeatureTourForTesting() {
 }
 
 void PickerController::SetClient(PickerClient* client) {
+  // `PickerSearchController` may depend on the current client via
+  // `StartSearch`. Stop the search before changing the `client`. This may send
+  // a `StopSearch` call to the current `client_`.
+  search_controller_.StopSearch();
   client_ = client;
-  // The destructor of `PickerSearchRequest` inside `PickerSearchController` may
-  // result in "stop search" calls to the PREVIOUS `PickerClient`.
-  if (client_ == nullptr) {
-    search_controller_ = nullptr;
-  } else {
-    search_controller_ =
-        std::make_unique<PickerSearchController>(kBurnInPeriod);
-  }
 }
 
 void PickerController::OnClientPrefsSet(PrefService* prefs) {
-  if (client_ == nullptr || search_controller_ == nullptr) {
+  if (client_ == nullptr) {
     return;
   }
 
-  search_controller_->LoadEmojiLanguagesFromPrefs(prefs);
+  search_controller_.LoadEmojiLanguagesFromPrefs(prefs);
 }
 
 void PickerController::ToggleWidget(
@@ -398,10 +395,9 @@ void PickerController::GetResultsForCategory(PickerCategory category,
 void PickerController::StartSearch(std::u16string_view query,
                                    std::optional<PickerCategory> category,
                                    SearchResultsCallback callback) {
-  CHECK(search_controller_);
   CHECK(session_);
   CHECK(client_);
-  search_controller_->StartSearch(
+  search_controller_.StartSearch(
       client_, query, std::move(category),
       {
           .available_categories = GetAvailableCategories(),
@@ -413,13 +409,12 @@ void PickerController::StartSearch(std::u16string_view query,
 }
 
 void PickerController::StopSearch() {
-  CHECK(search_controller_);
-  search_controller_->StopSearch();
+  search_controller_.StopSearch();
 }
 
 void PickerController::StartEmojiSearch(std::u16string_view query,
                                         EmojiSearchResultsCallback callback) {
-  search_controller_->StartEmojiSearch(GetPrefs(), query, std::move(callback));
+  search_controller_.StartEmojiSearch(GetPrefs(), query, std::move(callback));
 }
 
 void PickerController::CloseWidgetThenInsertResultOnNextFocus(
@@ -642,7 +637,7 @@ void PickerController::ShowWidget(base::TimeTicks trigger_event_timestamp,
             if (weak_controller == nullptr) {
               return "";
             }
-            return weak_controller->search_controller_->GetEmojiName(emoji);
+            return weak_controller->search_controller_.GetEmojiName(emoji);
           },
           weak_ptr_factory_.GetWeakPtr()));
 
