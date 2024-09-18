@@ -39,13 +39,59 @@
 
 #define ENDIANNESS_BIG 0
 
+#define HAVE_ALIGNED_ALLOC 0
+
 #define HAVE_ASM 1
+
+#define HAVE_AS_ARCHEXT_DOTPROD_DIRECTIVE 0
+
+#define HAVE_AS_ARCHEXT_I8MM_DIRECTIVE 0
+
+#define HAVE_AS_ARCHEXT_SVE2_DIRECTIVE 0
+
+#define HAVE_AS_ARCHEXT_SVE_DIRECTIVE 0
+
+#define HAVE_AS_ARCH_DIRECTIVE 0
+
+#define HAVE_AS_FUNC 0
 
 #define HAVE_C11_GENERIC 1
 
+#define HAVE_CLOCK_GETTIME 0
+
+#define HAVE_DLSYM 0
+
+#define HAVE_DOTPROD 0
+
+#define HAVE_ELF_AUX_INFO 0
+
+#define HAVE_GETAUXVAL 0
+
+#define HAVE_I8MM 0
+
 #define HAVE_IO_H 1
 
+#define HAVE_MEMALIGN 0
+
+#define HAVE_POSIX_MEMALIGN 0
+
+// #define HAVE_PTHREAD_GETAFFINITY_NP 0 -- Controlled by Chomium
+
+#define HAVE_PTHREAD_NP_H 0
+
+// #define HAVE_PTHREAD_SETAFFINITY_NP 0 -- Controlled by Chomium
+
+#define HAVE_PTHREAD_SETNAME_NP 0
+
+#define HAVE_PTHREAD_SET_NAME_NP 0
+
+#define HAVE_SVE 0
+
+#define HAVE_SVE2 0
+
 #define HAVE_SYS_TYPES_H 1
+
+#define HAVE_UNISTD_H 0
 
 #define TRIM_DSP_FUNCTIONS 1
 

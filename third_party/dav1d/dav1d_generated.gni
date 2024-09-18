@@ -161,6 +161,7 @@ c_headers = [
 c_sources = [
   "libdav1d/src/cdf.c",
   "libdav1d/src/cpu.c",
+  "libdav1d/src/ctx.c",
   "libdav1d/src/data.c",
   "libdav1d/src/decode.c",
   "libdav1d/src/dequant_tables.c",
