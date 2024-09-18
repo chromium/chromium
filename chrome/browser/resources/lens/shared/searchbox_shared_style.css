@@ -10,7 +10,6 @@
  #searchboxContainer {
   display: flex;
   font-family: Roboto, Arial, sans-serif;
-  width: 100%;
   z-index: 2;  /* Searchbox should render in front of the results iframe. */
   /* TODO(jdonnelly): Specify these in a color mixer and consider moving this
    * import from polymer to the top level HTML file. */
@@ -45,7 +44,6 @@
   --cr-searchbox-icon-left-position: 10px;
   --cr-searchbox-icon-top-position: 1px;
   --cr-searchbox-match-font-weight: 400;
-  --cr-searchbox-min-width: min(calc(100vw - 16px), 768px);
   --cr-searchbox-icon-size-in-searchbox: 24px;
 }
 
