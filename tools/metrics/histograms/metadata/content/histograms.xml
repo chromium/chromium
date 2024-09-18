@@ -1349,6 +1349,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ContentSuggestions.Feed.UniformityFlag" enum="Boolean"
+    expires_after="2025-02-17">
+  <owner>ginnyhuang@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <summary>
+    Records the value of Discover uniformity flag each time on app start up,
+    when the Feed is initialized. iOS only.
+  </summary>
+</histogram>
+
 <histogram
     name="ContentSuggestions.Feed.UnsignedUserPersonalization.CountValuesDuringStoreInitialization"
     units="count" expires_after="2023-03-01">

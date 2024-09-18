@@ -297,6 +297,9 @@ extern const char kDiscoverFeedBrokenNTPHierarchy[];
 // Histogram name for triggers causing feed refreshes.
 extern const char kDiscoverFeedRefreshTrigger[];
 
+// Histogram name for the value of Discover uniformity flag.
+extern const char kDiscoverUniformityFlag[];
+
 // Histogram name for the Feed settings when the App is being start.
 extern const char kFeedUserSettingsOnStart[];
 

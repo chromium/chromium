@@ -8,7 +8,6 @@
 #import "base/debug/dump_without_crashing.h"
 #import "base/json/values_util.h"
 #import "base/metrics/histogram_functions.h"
-#import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/time/time.h"
@@ -122,23 +121,23 @@ using feed::FeedUserActionType;
 
   // If neither feed has been scrolled into, log "AllFeeds" scrolled.
   if (!self.scrolledReportedDiscover && !self.scrolledReportedFollowing) {
-    UMA_HISTOGRAM_ENUMERATION(kAllFeedsEngagementTypeHistogram,
-                              FeedEngagementType::kFeedScrolled);
+    base::UmaHistogramEnumeration(kAllFeedsEngagementTypeHistogram,
+                                  FeedEngagementType::kFeedScrolled);
   }
 
   // Log scrolled into Discover feed.
   if (self.NTPState.selectedFeed == FeedTypeDiscover &&
       !self.scrolledReportedDiscover) {
-    UMA_HISTOGRAM_ENUMERATION(kDiscoverFeedEngagementTypeHistogram,
-                              FeedEngagementType::kFeedScrolled);
+    base::UmaHistogramEnumeration(kDiscoverFeedEngagementTypeHistogram,
+                                  FeedEngagementType::kFeedScrolled);
     self.scrolledReportedDiscover = YES;
   }
 
   // Log scrolled into Following feed.
   if (self.NTPState.selectedFeed == FeedTypeFollowing &&
       !self.scrolledReportedFollowing) {
-    UMA_HISTOGRAM_ENUMERATION(kFollowingFeedEngagementTypeHistogram,
-                              FeedEngagementType::kFeedScrolled);
+    base::UmaHistogramEnumeration(kFollowingFeedEngagementTypeHistogram,
+                                  FeedEngagementType::kFeedScrolled);
     self.scrolledReportedFollowing = YES;
   }
 
@@ -445,22 +444,22 @@ using feed::FeedUserActionType;
 - (void)recordCardShownAtIndex:(NSUInteger)index {
   switch (self.NTPState.selectedFeed) {
     case FeedTypeDiscover:
-      UMA_HISTOGRAM_EXACT_LINEAR(kDiscoverFeedCardShownAtIndex, index,
-                                 kMaxCardsInFeed);
+      base::UmaHistogramExactLinear(kDiscoverFeedCardShownAtIndex, index,
+                                    kMaxCardsInFeed);
       break;
     case FeedTypeFollowing:
-      UMA_HISTOGRAM_EXACT_LINEAR(kFollowingFeedCardShownAtIndex, index,
-                                 kMaxCardsInFeed);
+      base::UmaHistogramExactLinear(kFollowingFeedCardShownAtIndex, index,
+                                    kMaxCardsInFeed);
   }
 }
 
 - (void)recordCardTappedAtIndex:(NSUInteger)index {
   switch (self.NTPState.selectedFeed) {
     case FeedTypeDiscover:
-      UMA_HISTOGRAM_EXACT_LINEAR(kDiscoverFeedURLOpened, 0, 1);
+      base::UmaHistogramExactLinear(kDiscoverFeedURLOpened, 0, 1);
       break;
     case FeedTypeFollowing:
-      UMA_HISTOGRAM_EXACT_LINEAR(kFollowingFeedURLOpened, 0, 1);
+      base::UmaHistogramExactLinear(kFollowingFeedURLOpened, 0, 1);
   }
 }
 
@@ -479,11 +478,11 @@ using feed::FeedUserActionType;
 - (void)recordFeedArticlesFetchDuration:(base::TimeDelta)duration
                                 success:(BOOL)success {
   if (success) {
-    UMA_HISTOGRAM_MEDIUM_TIMES(kDiscoverFeedArticlesFetchNetworkDurationSuccess,
-                               duration);
+    base::UmaHistogramMediumTimes(
+        kDiscoverFeedArticlesFetchNetworkDurationSuccess, duration);
   } else {
-    UMA_HISTOGRAM_MEDIUM_TIMES(kDiscoverFeedArticlesFetchNetworkDurationFailure,
-                               duration);
+    base::UmaHistogramMediumTimes(
+        kDiscoverFeedArticlesFetchNetworkDurationFailure, duration);
   }
   [self recordNetworkRequestDuration:duration];
 }
@@ -498,10 +497,10 @@ using feed::FeedUserActionType;
 - (void)recordFeedMoreArticlesFetchDuration:(base::TimeDelta)duration
                                     success:(BOOL)success {
   if (success) {
-    UMA_HISTOGRAM_MEDIUM_TIMES(
+    base::UmaHistogramMediumTimes(
         kDiscoverFeedMoreArticlesFetchNetworkDurationSuccess, duration);
   } else {
-    UMA_HISTOGRAM_MEDIUM_TIMES(
+    base::UmaHistogramMediumTimes(
         kDiscoverFeedMoreArticlesFetchNetworkDurationFailure, duration);
   }
   [self recordNetworkRequestDuration:duration];
@@ -517,11 +516,11 @@ using feed::FeedUserActionType;
 - (void)recordFeedUploadActionsDuration:(base::TimeDelta)duration
                                 success:(BOOL)success {
   if (success) {
-    UMA_HISTOGRAM_MEDIUM_TIMES(kDiscoverFeedUploadActionsNetworkDurationSuccess,
-                               duration);
+    base::UmaHistogramMediumTimes(
+        kDiscoverFeedUploadActionsNetworkDurationSuccess, duration);
   } else {
-    UMA_HISTOGRAM_MEDIUM_TIMES(kDiscoverFeedUploadActionsNetworkDurationFailure,
-                               duration);
+    base::UmaHistogramMediumTimes(
+        kDiscoverFeedUploadActionsNetworkDurationFailure, duration);
   }
   [self recordNetworkRequestDuration:duration];
 }
@@ -589,16 +588,16 @@ using feed::FeedUserActionType;
                                                       kDiscoverFeedSelected
                                     asInteraction:NO];
       base::RecordAction(base::UserMetricsAction(kDiscoverFeedSelected));
-      UMA_HISTOGRAM_EXACT_LINEAR(kFollowingIndexWhenSwitchingFeed, index,
-                                 kMaxCardsInFeed);
+      base::UmaHistogramExactLinear(kFollowingIndexWhenSwitchingFeed, index,
+                                    kMaxCardsInFeed);
       break;
     case FeedTypeFollowing:
       [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::
                                                       kFollowingFeedSelected
                                     asInteraction:NO];
       base::RecordAction(base::UserMetricsAction(kFollowingFeedSelected));
-      UMA_HISTOGRAM_EXACT_LINEAR(kDiscoverIndexWhenSwitchingFeed, index,
-                                 kMaxCardsInFeed);
+      base::UmaHistogramExactLinear(kDiscoverIndexWhenSwitchingFeed, index,
+                                    kMaxCardsInFeed);
       NSUInteger followCount = [self.followDelegate followedPublisherCount];
       if (followCount > 0 &&
           [self.followDelegate doesFollowingFeedHaveContent]) {
@@ -653,21 +652,25 @@ using feed::FeedUserActionType;
 - (void)recordFollowingFeedSortTypeSelected:(FollowingFeedSortType)sortType {
   switch (sortType) {
     case FollowingFeedSortTypeByPublisher:
-      UMA_HISTOGRAM_ENUMERATION(kFollowingFeedSortType,
-                                FeedSortType::kGroupedByPublisher);
+      base::UmaHistogramEnumeration(kFollowingFeedSortType,
+                                    FeedSortType::kGroupedByPublisher);
       base::RecordAction(
           base::UserMetricsAction(kFollowingFeedGroupByPublisher));
       return;
     case FollowingFeedSortTypeByLatest:
-      UMA_HISTOGRAM_ENUMERATION(kFollowingFeedSortType,
-                                FeedSortType::kSortedByLatest);
+      base::UmaHistogramEnumeration(kFollowingFeedSortType,
+                                    FeedSortType::kSortedByLatest);
       base::RecordAction(base::UserMetricsAction(kFollowingFeedSortByLatest));
       return;
     case FollowingFeedSortTypeUnspecified:
-      UMA_HISTOGRAM_ENUMERATION(kFollowingFeedSortType,
-                                FeedSortType::kUnspecifiedSortType);
+      base::UmaHistogramEnumeration(kFollowingFeedSortType,
+                                    FeedSortType::kUnspecifiedSortType);
       return;
   }
+}
+
+- (void)recordUniformityFlagValue:(BOOL)flag {
+  base::UmaHistogramBoolean(kDiscoverUniformityFlag, flag);
 }
 
 #pragma mark - Follow
@@ -699,24 +702,26 @@ using feed::FeedUserActionType;
 
 - (void)recordFollowConfirmationShownWithType:
     (FollowConfirmationType)followConfirmationType {
-  UMA_HISTOGRAM_ENUMERATION(kDiscoverFeedUserActionHistogram,
-                            FeedUserActionType::kShowSnackbar);
+  base::UmaHistogramEnumeration(kDiscoverFeedUserActionHistogram,
+                                FeedUserActionType::kShowSnackbar);
   switch (followConfirmationType) {
     case FollowConfirmationType::kFollowSucceedSnackbarShown:
-      UMA_HISTOGRAM_ENUMERATION(kDiscoverFeedUserActionHistogram,
-                                FeedUserActionType::kShowFollowSucceedSnackbar);
+      base::UmaHistogramEnumeration(
+          kDiscoverFeedUserActionHistogram,
+          FeedUserActionType::kShowFollowSucceedSnackbar);
       break;
     case FollowConfirmationType::kFollowErrorSnackbarShown:
-      UMA_HISTOGRAM_ENUMERATION(kDiscoverFeedUserActionHistogram,
-                                FeedUserActionType::kShowFollowFailedSnackbar);
+      base::UmaHistogramEnumeration(
+          kDiscoverFeedUserActionHistogram,
+          FeedUserActionType::kShowFollowFailedSnackbar);
       break;
     case FollowConfirmationType::kUnfollowSucceedSnackbarShown:
-      UMA_HISTOGRAM_ENUMERATION(
+      base::UmaHistogramEnumeration(
           kDiscoverFeedUserActionHistogram,
           FeedUserActionType::kShowUnfollowSucceedSnackbar);
       break;
     case FollowConfirmationType::kUnfollowErrorSnackbarShown:
-      UMA_HISTOGRAM_ENUMERATION(
+      base::UmaHistogramEnumeration(
           kDiscoverFeedUserActionHistogram,
           FeedUserActionType::kShowUnfollowFailedSnackbar);
       break;
@@ -877,7 +882,7 @@ using feed::FeedUserActionType;
 // also logs an interaction to the visible feed.
 - (void)recordDiscoverFeedUserActionHistogram:(FeedUserActionType)actionType
                                 asInteraction:(BOOL)isInteraction {
-  UMA_HISTOGRAM_ENUMERATION(kDiscoverFeedUserActionHistogram, actionType);
+  base::UmaHistogramEnumeration(kDiscoverFeedUserActionHistogram, actionType);
   if (isInteraction) {
     [self recordInteraction];
   }
@@ -991,7 +996,8 @@ using feed::FeedUserActionType;
 
 // Records the engagement buckets.
 - (void)recordActivityBuckets:(FeedActivityBucket)activityBucket {
-  UMA_HISTOGRAM_ENUMERATION(kAllFeedsActivityBucketsHistogram, activityBucket);
+  base::UmaHistogramEnumeration(kAllFeedsActivityBucketsHistogram,
+                                activityBucket);
 }
 
 // Records Feed engagement.
@@ -1098,19 +1104,19 @@ using feed::FeedUserActionType;
 - (void)recordInteraction {
   [self recordEngagement:0 interacted:YES];
   // Log interaction for all feeds
-  UMA_HISTOGRAM_ENUMERATION(kAllFeedsEngagementTypeHistogram,
-                            FeedEngagementType::kFeedInteracted);
+  base::UmaHistogramEnumeration(kAllFeedsEngagementTypeHistogram,
+                                FeedEngagementType::kFeedInteracted);
 
   // Log interaction for Discover feed.
   if (self.NTPState.selectedFeed == FeedTypeDiscover) {
-    UMA_HISTOGRAM_ENUMERATION(kDiscoverFeedEngagementTypeHistogram,
-                              FeedEngagementType::kFeedInteracted);
+    base::UmaHistogramEnumeration(kDiscoverFeedEngagementTypeHistogram,
+                                  FeedEngagementType::kFeedInteracted);
   }
 
   // Log interaction for Following feed.
   if (self.NTPState.selectedFeed == FeedTypeFollowing) {
-    UMA_HISTOGRAM_ENUMERATION(kFollowingFeedEngagementTypeHistogram,
-                              FeedEngagementType::kFeedInteracted);
+    base::UmaHistogramEnumeration(kFollowingFeedEngagementTypeHistogram,
+                                  FeedEngagementType::kFeedInteracted);
   }
 }
 
@@ -1119,23 +1125,23 @@ using feed::FeedUserActionType;
   // If neither feed has been engaged with, log "AllFeeds" simple engagement.
   if (!self.engagedSimpleReportedDiscover &&
       !self.engagedSimpleReportedFollowing) {
-    UMA_HISTOGRAM_ENUMERATION(kAllFeedsEngagementTypeHistogram,
-                              FeedEngagementType::kFeedEngagedSimple);
+    base::UmaHistogramEnumeration(kAllFeedsEngagementTypeHistogram,
+                                  FeedEngagementType::kFeedEngagedSimple);
   }
 
   // Log simple engagment for Discover feed.
   if (self.NTPState.selectedFeed == FeedTypeDiscover &&
       !self.engagedSimpleReportedDiscover) {
-    UMA_HISTOGRAM_ENUMERATION(kDiscoverFeedEngagementTypeHistogram,
-                              FeedEngagementType::kFeedEngagedSimple);
+    base::UmaHistogramEnumeration(kDiscoverFeedEngagementTypeHistogram,
+                                  FeedEngagementType::kFeedEngagedSimple);
     self.engagedSimpleReportedDiscover = YES;
   }
 
   // Log simple engagement for Following feed.
   if (self.NTPState.selectedFeed == FeedTypeFollowing &&
       !self.engagedSimpleReportedFollowing) {
-    UMA_HISTOGRAM_ENUMERATION(kFollowingFeedEngagementTypeHistogram,
-                              FeedEngagementType::kFeedEngagedSimple);
+    base::UmaHistogramEnumeration(kFollowingFeedEngagementTypeHistogram,
+                                  FeedEngagementType::kFeedEngagedSimple);
     self.engagedSimpleReportedFollowing = YES;
   }
 }
@@ -1153,26 +1159,27 @@ using feed::FeedUserActionType;
     // Log engagement for Activity Buckets.
     [self logDailyActivity];
 
-    UMA_HISTOGRAM_ENUMERATION(kAllFeedsEngagementTypeHistogram,
-                              FeedEngagementType::kFeedEngaged);
+    base::UmaHistogramEnumeration(kAllFeedsEngagementTypeHistogram,
+                                  FeedEngagementType::kFeedEngaged);
   }
 
   // Log engagment for Discover feed.
   if (self.NTPState.selectedFeed == FeedTypeDiscover &&
       !self.engagedReportedDiscover) {
-    UMA_HISTOGRAM_ENUMERATION(kDiscoverFeedEngagementTypeHistogram,
-                              FeedEngagementType::kFeedEngaged);
+    base::UmaHistogramEnumeration(kDiscoverFeedEngagementTypeHistogram,
+                                  FeedEngagementType::kFeedEngaged);
     self.engagedReportedDiscover = YES;
   }
 
   // Log engagement for Following feed.
   if (self.NTPState.selectedFeed == FeedTypeFollowing &&
       !self.engagedReportedFollowing) {
-    UMA_HISTOGRAM_ENUMERATION(kFollowingFeedEngagementTypeHistogram,
-                              FeedEngagementType::kFeedEngaged);
-    UMA_HISTOGRAM_ENUMERATION(kFollowingFeedSortTypeWhenEngaged,
-                              [self convertFollowingFeedSortTypeForHistogram:
-                                        self.NTPState.followingFeedSortType]);
+    base::UmaHistogramEnumeration(kFollowingFeedEngagementTypeHistogram,
+                                  FeedEngagementType::kFeedEngaged);
+    base::UmaHistogramEnumeration(
+        kFollowingFeedSortTypeWhenEngaged,
+        [self convertFollowingFeedSortTypeForHistogram:
+                  self.NTPState.followingFeedSortType]);
     self.engagedReportedFollowing = YES;
 
     // Log follow count when engaging with Following feed.
@@ -1195,8 +1202,8 @@ using feed::FeedUserActionType;
   // If neither feed has been engaged with, log "AllFeeds" engagement.
   if (!self.goodVisitReportedAllFeeds) {
     // Log for the all feeds aggregate.
-    UMA_HISTOGRAM_ENUMERATION(kAllFeedsEngagementTypeHistogram,
-                              FeedEngagementType::kGoodVisit);
+    base::UmaHistogramEnumeration(kAllFeedsEngagementTypeHistogram,
+                                  FeedEngagementType::kGoodVisit);
     self.goodVisitReportedAllFeeds = YES;
   }
   if (allFeedsOnly) {
@@ -1207,15 +1214,15 @@ using feed::FeedUserActionType;
   DCHECK(self.goodVisitReportedAllFeeds);
   // Log interaction for Discover feed.
   if (feedType == FeedTypeDiscover && !self.goodVisitReportedDiscover) {
-    UMA_HISTOGRAM_ENUMERATION(kDiscoverFeedEngagementTypeHistogram,
-                              FeedEngagementType::kGoodVisit);
+    base::UmaHistogramEnumeration(kDiscoverFeedEngagementTypeHistogram,
+                                  FeedEngagementType::kGoodVisit);
     self.goodVisitReportedDiscover = YES;
   }
 
   // Log interaction for Following feed.
   if (feedType == FeedTypeFollowing && !self.goodVisitReportedFollowing) {
-    UMA_HISTOGRAM_ENUMERATION(kFollowingFeedEngagementTypeHistogram,
-                              FeedEngagementType::kGoodVisit);
+    base::UmaHistogramEnumeration(kFollowingFeedEngagementTypeHistogram,
+                                  FeedEngagementType::kGoodVisit);
     self.goodVisitReportedFollowing = YES;
   }
 }
@@ -1341,8 +1348,8 @@ using feed::FeedUserActionType;
     if (sinceDayStart >= base::Days(1)) {
       // Check if the user has spent any time in the feed.
       if (self.timeSpentInFeed > base::Seconds(0)) {
-        UMA_HISTOGRAM_LONG_TIMES(kTimeSpentInFeedHistogram,
-                                 self.timeSpentInFeed);
+        base::UmaHistogramLongTimes(kTimeSpentInFeedHistogram,
+                                    self.timeSpentInFeed);
       }
       shouldResetData = YES;
     }
@@ -1363,7 +1370,7 @@ using feed::FeedUserActionType;
 // Records the `duration` it took to Discover feed to perform any
 // network operation.
 - (void)recordNetworkRequestDuration:(base::TimeDelta)duration {
-  UMA_HISTOGRAM_MEDIUM_TIMES(kDiscoverFeedNetworkDuration, duration);
+  base::UmaHistogramMediumTimes(kDiscoverFeedNetworkDuration, duration);
 }
 
 // Called when a URL was opened regardless of the target surface (e.g. New Tab,
