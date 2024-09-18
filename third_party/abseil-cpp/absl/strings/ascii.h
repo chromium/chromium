@@ -76,10 +76,10 @@ ABSL_DLL extern const char kToUpper[256];
 // Declaration for the array of characters to lower-case characters.
 ABSL_DLL extern const char kToLower[256];
 
-void AsciiStrToLower(absl::Nonnull<char*> dst, absl::Nonnull<const char*> src,
+void AsciiStrToLower(absl::Nonnull<char*> dst, absl::Nullable<const char*> src,
                      size_t n);
 
-void AsciiStrToUpper(absl::Nonnull<char*> dst, absl::Nonnull<const char*> src,
+void AsciiStrToUpper(absl::Nonnull<char*> dst, absl::Nullable<const char*> src,
                      size_t n);
 
 }  // namespace ascii_internal
