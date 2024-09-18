@@ -485,9 +485,9 @@ void CampaignsManager::RegisterTrialForCampaign(
 
   client_->RegisterSyntheticFieldTrial(trial_name, group_name);
 
-  std::optional<bool> register_with_app_id =
+  std::optional<bool> register_with_trigger_event =
       ShouldRegisterTrialWithTriggerEventName(campaign);
-  if (!register_with_app_id.value_or(false)) {
+  if (!register_with_trigger_event.value_or(false)) {
     return;
   }
 
@@ -499,7 +499,12 @@ void CampaignsManager::RegisterTrialForCampaign(
     return;
   }
 
-  group_name += GetTrigger().event;
+  // The first event name is used to register the synthetic field trail.
+  // TODO: b/367838684 - Currently, this is only used for the G1 campaigns,
+  // where it triggers at app open and has only one event. Extend this to
+  // support multiple events.
+  CHECK(!GetTrigger().events.empty());
+  group_name += GetTrigger().events[0];
   client_->RegisterSyntheticFieldTrial(trial_name, group_name);
 }
 

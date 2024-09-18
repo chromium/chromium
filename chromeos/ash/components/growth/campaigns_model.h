@@ -82,12 +82,14 @@ enum class TriggerType {
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH) Trigger {
  public:
   explicit Trigger(TriggerType type);
+  ~Trigger();
 
   TriggerType type;
 
-  // `event` is only used for `kEvent` trigger, which needs to be matched with
-  // one of the event name in the `triggerEvents` in the `TriggerTargeting`.
-  std::string event;
+  // A list of `events` used for `kEvent` trigger. It is considered matched if
+  // any of the `events` matches with any of the event name in the
+  // `triggerEvents` in the `TriggerTargeting`.
+  std::vector<std::string> events;
 };
 
 // Dictionary of supported targetings. For example:

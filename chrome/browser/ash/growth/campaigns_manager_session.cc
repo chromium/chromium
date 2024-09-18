@@ -174,7 +174,7 @@ void MaybeTriggerRuntimeCampaigns(growth::TriggerType type,
   CHECK(campaigns_manager);
 
   growth::Trigger trigger(type);
-  trigger.event = std::string(event);
+  trigger.events = {std::string(event)};
   campaigns_manager->SetTrigger(std::move(trigger));
 
   MaybeTriggerSlot(growth::Slot::kNudge);

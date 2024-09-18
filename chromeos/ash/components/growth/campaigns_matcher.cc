@@ -177,6 +177,17 @@ bool HasOverlapEntries(const base::Value::List& pref_values,
   return false;
 }
 
+// Match if the values in the List and Vector has any overlap entries.
+bool HasOverlapEntries(const base::Value::List& list_values,
+                       const std::vector<std::string>& vector_values) {
+  for (const auto& value : vector_values) {
+    if (base::Contains(list_values, value)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 // Match if any value in the target is found in user pref.
 bool MatchUserPref(const PrefService& pref_service,
                    const std::string* pref_name,
@@ -643,7 +654,7 @@ bool CampaignsMatcher::MatchTriggerTargeting(
       continue;
     }
 
-    if (Contains(*trigger_events, trigger_.event)) {
+    if (HasOverlapEntries(*trigger_events, trigger_.events)) {
       return true;
     }
   }

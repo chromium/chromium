@@ -2023,7 +2023,20 @@ TEST_F(CampaignsManagerTest, GetCampaignTriggersOrRelationship) {
 
 TEST_F(CampaignsManagerTest, GetCampaignTriggersWithEvent) {
   growth::Trigger trigger(growth::TriggerType::kEvent);
-  trigger.event = "event_1";
+  trigger.events = {"event_1"};
+  campaigns_manager_->SetTrigger(std::move(trigger));
+
+  LoadComponentWithTriggerTargeting(R"([
+    {"triggerType": 2, "triggerEvents": ["event_0", "event_1"]}
+  ])");
+
+  VerifyDemoModePayload(
+      campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
+TEST_F(CampaignsManagerTest, GetCampaignTriggersWithEvents) {
+  growth::Trigger trigger(growth::TriggerType::kEvent);
+  trigger.events = {"event_2", "event_1"};
   campaigns_manager_->SetTrigger(std::move(trigger));
 
   LoadComponentWithTriggerTargeting(R"([
@@ -2308,7 +2321,7 @@ TEST_F(CampaignsManagerTest, RegisterSyntheticFieldTrialWithTriggerEventName) {
   constexpr char kCampaignEventName[] = "GmailOpened";
 
   growth::Trigger trigger(growth::TriggerType::kEvent);
-  trigger.event = kCampaignEventName;
+  trigger.events = {kCampaignEventName, "AnotherEvent"};
   campaigns_manager_->SetTrigger(std::move(trigger));
   campaigns_manager_->SetOpenedApp(kGmailAppIdWeb);
 
@@ -2344,7 +2357,7 @@ TEST_F(CampaignsManagerTest,
   constexpr char kCampaignEventName[] = "GmailOpened";
 
   growth::Trigger trigger(growth::TriggerType::kEvent);
-  trigger.event = kCampaignEventName;
+  trigger.events = {kCampaignEventName};
   campaigns_manager_->SetTrigger(std::move(trigger));
   campaigns_manager_->SetOpenedApp(kGmailAppIdWeb);
 
