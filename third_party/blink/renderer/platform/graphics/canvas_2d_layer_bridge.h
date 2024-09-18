@@ -40,8 +40,6 @@
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
 
-struct SkImageInfo;
-
 namespace blink {
 
 class StaticBitmapImage;
@@ -56,12 +54,6 @@ class PLATFORM_EXPORT Canvas2DLayerBridge {
 
   void FinalizeFrame(FlushReason);
   void PageVisibilityChanged();
-
-  bool WritePixels(const SkImageInfo&,
-                   const void* pixels,
-                   size_t row_bytes,
-                   int x,
-                   int y);
 
   bool IsHibernating() const { return hibernation_handler_.IsHibernating(); }
 

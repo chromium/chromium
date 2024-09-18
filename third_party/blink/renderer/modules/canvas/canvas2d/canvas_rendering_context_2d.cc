@@ -335,8 +335,41 @@ bool CanvasRenderingContext2D::WritePixels(const SkImageInfo& orig_info,
                                            int x,
                                            int y) {
   DCHECK(IsPaintable());
-  return canvas()->GetCanvas2DLayerBridge()->WritePixels(orig_info, pixels,
-                                                         row_bytes, x, y);
+  CanvasRenderingContextHost* host = Host();
+  CHECK(host);
+
+  CanvasResourceProvider* provider =
+      canvas()->GetCanvas2DLayerBridge()->GetOrCreateResourceProvider();
+  if (provider == nullptr) {
+    return false;
+  }
+
+  if (x <= 0 && y <= 0 && x + orig_info.width() >= host->Size().width() &&
+      y + orig_info.height() >= host->Size().height()) {
+    MemoryManagedPaintRecorder& recorder = provider->Recorder();
+    if (recorder.HasSideRecording()) {
+      // Even with opened layers, WritePixels would write to the main canvas
+      // surface under the layers. We can therefore clear the paint ops recorded
+      // before the first `beginLayer`, but the layers themselves must be kept
+      // untouched. Note that this operation makes little sense and is actually
+      // disabled in `putImageData` by raising an exception if layers are
+      // opened. Still, it's preferable to handle this scenario here because the
+      // alternative would be to crash or leave the canvas in an invalid state.
+      recorder.ReleaseMainRecording();
+    } else {
+      recorder.RestartRecording();
+    }
+  } else {
+    host->FlushRecording(FlushReason::kWritePixels);
+
+    // Short-circuit out if an error occurred while flushing the recording.
+    if (!host->ResourceProvider()->IsValid()) {
+      return false;
+    }
+  }
+
+  return host->ResourceProvider()->WritePixels(orig_info, pixels, row_bytes, x,
+                                               y);
 }
 
 void CanvasRenderingContext2D::Reset() {

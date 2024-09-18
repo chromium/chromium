@@ -286,45 +286,6 @@ void Canvas2DLayerBridge::PageVisibilityChanged() {
   }
 }
 
-bool Canvas2DLayerBridge::WritePixels(const SkImageInfo& orig_info,
-                                      const void* pixels,
-                                      size_t row_bytes,
-                                      int x,
-                                      int y) {
-  CanvasResourceProvider* provider = GetOrCreateResourceProvider();
-  if (provider == nullptr) {
-    return false;
-  }
-
-  if (x <= 0 && y <= 0 &&
-      x + orig_info.width() >= resource_host_->Size().width() &&
-      y + orig_info.height() >= resource_host_->Size().height()) {
-    MemoryManagedPaintRecorder& recorder = provider->Recorder();
-    if (recorder.HasSideRecording()) {
-      // Even with opened layers, WritePixels would write to the main canvas
-      // surface under the layers. We can therefore clear the paint ops recorded
-      // before the first `beginLayer`, but the layers themselves must be kept
-      // untouched. Note that this operation makes little sense and is actually
-      // disabled in `putImageData` by raising an exception if layers are
-      // opened. Still, it's preferable to handle this scenario here because the
-      // alternative would be to crash or leave the canvas in an invalid state.
-      recorder.ReleaseMainRecording();
-    } else {
-      recorder.RestartRecording();
-    }
-  } else {
-    resource_host_->FlushRecording(FlushReason::kWritePixels);
-
-    // Short-circuit out if an error occurred while flushing the recording.
-    if (!resource_host_->ResourceProvider()->IsValid()) {
-      return false;
-    }
-  }
-
-  return resource_host_->ResourceProvider()->WritePixels(orig_info, pixels,
-                                                         row_bytes, x, y);
-}
-
 void Canvas2DLayerBridge::FinalizeFrame(FlushReason reason) {
   TRACE_EVENT0("blink", "Canvas2DLayerBridge::FinalizeFrame");
 
