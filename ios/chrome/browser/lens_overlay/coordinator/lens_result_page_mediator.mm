@@ -39,7 +39,8 @@ namespace {
 BOOL IsValidURLToOpenInResultsPage(const GURL& URL) {
   std::string_view host = URL.host_piece();
   return base::EqualsCaseInsensitiveASCII(host, "google.com") ||
-         base::EqualsCaseInsensitiveASCII(host, "www.google.com");
+         base::EqualsCaseInsensitiveASCII(host, "www.google.com") ||
+         base::EqualsCaseInsensitiveASCII(host, "translate.google.com");
 }
 
 /// Detect special URL that requests the bottom sheet resize.

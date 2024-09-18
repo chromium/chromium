@@ -223,6 +223,11 @@
   // TODO(crbug.com/366156296): Implement.
 }
 
+- (void)lensOverlay:(id<ChromeLensOverlay>)lensOverlay
+    didRequestToOpenURL:(GURL)URL {
+  [self.resultConsumer loadResultsURL:URL];
+}
+
 #pragma mark - Private
 
 /// Adds the URL navigation to the `historyStack`.
