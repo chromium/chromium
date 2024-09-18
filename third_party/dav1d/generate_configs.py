@@ -138,12 +138,13 @@ def GenerateConfig(config_dir, env, special_args=[]):
 
     config_asm_path = os.path.join(temp_dir, 'config.asm')
     if (os.path.exists(config_asm_path)):
-        RewriteFile(config_asm_path,
-                    # Clang LTO doesn't respect stack alignment, so we must use
-                    # the platform's default stack alignment;
-                    # https://crbug.com/928743.
-                    [(r'(%define STACK_ALIGNMENT \d{1,2})',
-                      r'; \1 -- Stack alignment is controlled by Chromium')])
+        RewriteFile(
+            config_asm_path,
+            # Clang LTO doesn't respect stack alignment, so we must use
+            # the platform's default stack alignment;
+            # https://crbug.com/928743.
+            [(r'(%define STACK_ALIGNMENT \d{1,2})',
+              r'; \1 -- Stack alignment is controlled by Chromium')])
 
     CopyConfigs(temp_dir, config_dir)
 
