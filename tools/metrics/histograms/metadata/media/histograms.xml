@@ -6329,7 +6329,7 @@ chromium-metrics-reviews@google.com.
   <owner>ilnik@google.com</owner>
   <owner>video-cmi-mpp@google.com</owner>
   <summary>
-    Counts the difference between consecutive capture begin times recieved from
+    Counts the difference between consecutive capture begin times received from
     MFSamples. Recorded on each received sample. Offset by +150ms to allow
     recording of negative values.
   </summary>
