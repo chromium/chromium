@@ -4,7 +4,7 @@
 
 /** @fileoverview Test implementation of PasswordManagerProxy. */
 
-import type {AccountStorageOptInStateChangedListener, BlockedSite, BlockedSitesListChangedListener, CredentialsChangedListener, PasswordCheckInteraction, PasswordCheckStatusChangedListener, PasswordManagerAuthTimeoutListener, PasswordManagerProxy, PasswordsFileExportProgressListener, PasswordViewPageInteractions} from 'chrome://password-manager/password_manager.js';
+import type {AccountStorageEnabledStateChangedListener, BlockedSite, BlockedSitesListChangedListener, CredentialsChangedListener, PasswordCheckInteraction, PasswordCheckStatusChangedListener, PasswordManagerAuthTimeoutListener, PasswordManagerProxy, PasswordsFileExportProgressListener, PasswordViewPageInteractions} from 'chrome://password-manager/password_manager.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 import {makeFamilyFetchResults, makePasswordCheckStatus} from './test_util.js';
@@ -21,7 +21,7 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
     familyFetchResults: chrome.passwordsPrivate.FamilyFetchResults,
     groups: chrome.passwordsPrivate.CredentialGroup[],
     insecureCredentials: chrome.passwordsPrivate.PasswordUiEntry[],
-    isOptedInAccountStorage: boolean,
+    isAccountStorageEnabled: boolean,
     isAccountStorageDefault: boolean,
     passwords: chrome.passwordsPrivate.PasswordUiEntry[],
     isPasswordManagerPinAvailable: boolean,
@@ -33,8 +33,8 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
   };
 
   listeners: {
-    accountStorageOptInStateListener: AccountStorageOptInStateChangedListener|
-    null,
+    accountStorageEnabledStateListener:
+        AccountStorageEnabledStateChangedListener|null,
     blockedSitesListChangedListener: BlockedSitesListChangedListener|null,
     savedPasswordListChangedListener: CredentialsChangedListener|null,
     passwordCheckStatusListener: PasswordCheckStatusChangedListener|null,
@@ -79,11 +79,11 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
       'importPasswords',
       'isAccountStoreDefault',
       'isConnectedToCloudAuthenticator',
-      'isOptedInForAccountStorage',
+      'isAccountStorageEnabled',
       'isPasswordManagerPinAvailable',
       'movePasswordsToAccount',
       'muteInsecureCredential',
-      'optInForAccountStorage',
+      'setAccountStorageEnabled',
       'recordPasswordCheckInteraction',
       'recordPasswordViewInteraction',
       'removeBlockedSite',
@@ -109,7 +109,7 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
       familyFetchResults: makeFamilyFetchResults(),
       groups: [],
       insecureCredentials: [],
-      isOptedInAccountStorage: false,
+      isAccountStorageEnabled: false,
       isAccountStorageDefault: false,
       passwords: [],
       isPasswordManagerPinAvailable: false,
@@ -122,7 +122,7 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
 
     // Holds listeners so they can be called when needed.
     this.listeners = {
-      accountStorageOptInStateListener: null,
+      accountStorageEnabledStateListener: null,
       blockedSitesListChangedListener: null,
       insecureCredentialsListener: null,
       passwordCheckStatusListener: null,
@@ -336,14 +336,14 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
     this.methodCalled('extendAuthValidity');
   }
 
-  addAccountStorageOptInStateListener(
-      listener: AccountStorageOptInStateChangedListener) {
-    this.listeners.accountStorageOptInStateListener = listener;
+  addAccountStorageEnabledStateListener(
+      listener: AccountStorageEnabledStateChangedListener) {
+    this.listeners.accountStorageEnabledStateListener = listener;
   }
 
-  removeAccountStorageOptInStateListener(
-      _listener: AccountStorageOptInStateChangedListener) {
-    this.listeners.accountStorageOptInStateListener = null;
+  removeAccountStorageEnabledStateListener(
+      _listener: AccountStorageEnabledStateChangedListener) {
+    this.listeners.accountStorageEnabledStateListener = null;
   }
 
   fetchFamilyMembers() {
@@ -378,14 +378,14 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
     return Promise.resolve();
   }
 
-  isOptedInForAccountStorage() {
-    this.methodCalled('isOptedInForAccountStorage');
-    return Promise.resolve(this.data.isOptedInAccountStorage);
+  isAccountStorageEnabled() {
+    this.methodCalled('isAccountStorageEnabled');
+    return Promise.resolve(this.data.isAccountStorageEnabled);
   }
 
-  optInForAccountStorage(optIn: boolean) {
-    this.methodCalled('optInForAccountStorage');
-    this.data.isOptedInAccountStorage = optIn;
+  setAccountStorageEnabled(enabled: boolean) {
+    this.methodCalled('setAccountStorageEnabled');
+    this.data.isAccountStorageEnabled = enabled;
   }
 
   isAccountStoreDefault() {

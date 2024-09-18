@@ -378,7 +378,7 @@ suite('PasswordDetailsCardTest', function() {
       isSyncingPasswords: false,
     };
 
-    passwordManager.data.isOptedInAccountStorage = true;
+    passwordManager.data.isAccountStorageEnabled = true;
 
     const card = await createCardElement();
 
@@ -442,7 +442,7 @@ suite('PasswordDetailsCardTest', function() {
   test(
       'clicking save password in account opens move password dialog',
       async function() {
-        passwordManager.data.isOptedInAccountStorage = true;
+        passwordManager.data.isAccountStorageEnabled = true;
         syncProxy.syncInfo = {
           isEligibleForAccountStorage: true,
           isSyncingPasswords: false,

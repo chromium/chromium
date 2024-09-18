@@ -1058,12 +1058,12 @@ TEST_F(PasswordsPrivateDelegateImplTest,
       .Times(0);
 
   auto delegate = CreateDelegate();
-  delegate->SetAccountStorageOptIn(true, web_contents.get());
+  delegate->SetAccountStorageEnabled(true, web_contents.get());
 
   profile()->GetPrefs()->SetBoolean(prefs::kExplicitBrowserSignin, true);
 
   // Implicit and explicit sign-ins are treated alike.
-  delegate->SetAccountStorageOptIn(true, web_contents.get());
+  delegate->SetAccountStorageEnabled(true, web_contents.get());
 }
 
 TEST_F(PasswordsPrivateDelegateImplTest,
@@ -1083,7 +1083,7 @@ TEST_F(PasswordsPrivateDelegateImplTest,
   EXPECT_CALL(*feature_manager, OptOutOfAccountStorage);
 
   auto delegate = CreateDelegate();
-  delegate->SetAccountStorageOptIn(false, web_contents.get());
+  delegate->SetAccountStorageEnabled(false, web_contents.get());
 }
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)

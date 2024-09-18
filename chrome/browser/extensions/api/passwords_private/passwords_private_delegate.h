@@ -72,14 +72,14 @@ class PasswordsPrivateDelegate
 
   // Returns whether the account store is a default location for saving
   // passwords. False means the device store is a default one. Must be called
-  // when the current user has already opted-in for account storage.
+  // when account storage is enabled.
   virtual bool IsAccountStoreDefault(content::WebContents* web_contents) = 0;
 
   // Adds the |username| and |password| corresponding to the |url| to the
   // specified store and returns true if the operation succeeded. Fails and
   // returns false if the data is invalid or an entry with such origin and
   // username already exists. Updates the default store to the used one on
-  // success if the user has opted-in for account storage.
+  // success if account storage is enabled.
   // |url|: The url of the password entry, must be a valid http(s) ip/web
   //        address as is or after adding http(s) scheme.
   // |username|: The username to save, can be empty.
@@ -196,15 +196,14 @@ class PasswordsPrivateDelegate
   GetExportProgressStatus() = 0;
 
   // Whether the current signed-in user (aka unconsented primary account) has
-  // opted in to use the Google account storage for passwords (as opposed to
+  // the Google account storage for passwords is enabled (as opposed to
   // local/profile storage).
-  virtual bool IsOptedInForAccountStorage() = 0;
+  virtual bool IsAccountStorageEnabled() = 0;
 
-  // Sets whether the user is opted in to use the Google account storage for
-  // passwords. If |opt_in| is true and the user is not currently opted in,
-  // will trigger a reauth flow.
-  virtual void SetAccountStorageOptIn(bool opt_in,
-                                      content::WebContents* web_contents) = 0;
+  // Enables/disables use of the Google account storage for passwords. If
+  // ExplicitBrowserSigninUIOnDesktop is off, enabling triggers a reauth flow.
+  virtual void SetAccountStorageEnabled(bool enabled,
+                                        content::WebContents* web_contents) = 0;
 
   // Obtains information about insecure credentials. This includes the last
   // time a check was run, as well as all insecure credentials that are present

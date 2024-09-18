@@ -836,32 +836,32 @@ PasswordsPrivateDelegateImpl::GetExportProgressStatus() {
   return ConvertStatus(password_manager_porter_->GetExportProgressStatus());
 }
 
-bool PasswordsPrivateDelegateImpl::IsOptedInForAccountStorage() {
+bool PasswordsPrivateDelegateImpl::IsAccountStorageEnabled() {
   return password_manager::features_util::IsOptedInForAccountStorage(
       profile_->GetPrefs(), SyncServiceFactory::GetForProfile(profile_));
 }
 
-void PasswordsPrivateDelegateImpl::SetAccountStorageOptIn(
-    bool opt_in,
+void PasswordsPrivateDelegateImpl::SetAccountStorageEnabled(
+    bool enabled,
     content::WebContents* web_contents) {
   auto* client = ChromePasswordManagerClient::FromWebContents(web_contents);
   DCHECK(client);
-  if (opt_in ==
+  if (enabled ==
       client->GetPasswordFeatureManager()->IsOptedInForAccountStorage()) {
     return;
   }
-  if (!opt_in) {
+  if (!enabled) {
     client->GetPasswordFeatureManager()->OptOutOfAccountStorage();
     return;
   }
 
   if (!password_manager::features_util::AreAccountStorageOptInPromosAllowed()) {
-    // No need to show a reauth dialog in this case, just opt-in directly.
+    // No need to show a reauth dialog in this case, just enable directly.
     client->GetPasswordFeatureManager()->OptInToAccountStorage();
     return;
   }
 
-  // The opt in pref is automatically set upon successful reauth.
+  // The enabled pref is automatically set upon successful reauth.
   client->TriggerReauthForPrimaryAccount(
       signin_metrics::ReauthAccessPoint::kPasswordSettings, base::DoNothing());
 }
@@ -1176,7 +1176,7 @@ void PasswordsPrivateDelegateImpl::OnStateChanged(
   PasswordsPrivateEventRouter* router =
       PasswordsPrivateEventRouterFactory::GetForProfile(profile_);
   if (router) {
-    router->OnAccountStorageOptInStateChanged(IsOptedInForAccountStorage());
+    router->OnAccountStorageEnabledStateChanged(IsAccountStorageEnabled());
   }
 }
 

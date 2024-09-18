@@ -9,8 +9,8 @@
 
 export type BlockedSite = chrome.passwordsPrivate.ExceptionEntry;
 
-export type AccountStorageOptInStateChangedListener = (optInState: boolean) =>
-    void;
+export type AccountStorageEnabledStateChangedListener =
+    (enabledState: boolean) => void;
 export type CredentialsChangedListener =
     (credentials: chrome.passwordsPrivate.PasswordUiEntry[]) => void;
 export type PasswordCheckStatusChangedListener =
@@ -342,33 +342,33 @@ export interface PasswordManagerProxy {
   extendAuthValidity(): void;
 
   /**
-   * Add an observer to the account storage opt-in state.
+   * Add an observer to the account storage enabled state.
    */
-  addAccountStorageOptInStateListener(
-      listener: AccountStorageOptInStateChangedListener): void;
+  addAccountStorageEnabledStateListener(
+      listener: AccountStorageEnabledStateChangedListener): void;
 
   /**
-   * Remove an observer to the account storage opt-in state.
+   * Remove an observer to the account storage enabled state.
    */
-  removeAccountStorageOptInStateListener(
-      listener: AccountStorageOptInStateChangedListener): void;
+  removeAccountStorageEnabledStateListener(
+      listener: AccountStorageEnabledStateChangedListener): void;
 
   /**
-   * Requests the account-storage opt-in state of the current user.
-   * @return A promise that resolves to the opt-in state.
+   * Requests the account-storage enabled state of the current user.
+   * @return A promise that resolves to the enabled state.
    */
-  isOptedInForAccountStorage(): Promise<boolean>;
+  isAccountStorageEnabled(): Promise<boolean>;
 
   /**
-   * Triggers the opt-in or opt-out flow for the account storage.
-   * @param optIn Whether the user wants to opt in or opt out.
+   * Triggers the enabling/disabling flow for the account storage.
+   * @param enabled Whether the user wants to enable or disable.
    */
-  optInForAccountStorage(optIn: boolean): void;
+  setAccountStorageEnabled(enabled: boolean): void;
 
   /**
    * Requests whether the account store is a default location for saving
    * passwords. False means the device store is a default one. Must be called
-   * when the current user has already opted-in for account storage.
+   * when account storage is enabled.
    * @return A promise that resolves to whether the account store is default.
    */
   isAccountStoreDefault(): Promise<boolean>;
@@ -601,24 +601,24 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
     chrome.passwordsPrivate.extendAuthValidity();
   }
 
-  addAccountStorageOptInStateListener(
-      listener: AccountStorageOptInStateChangedListener) {
-    chrome.passwordsPrivate.onAccountStorageOptInStateChanged.addListener(
+  addAccountStorageEnabledStateListener(
+      listener: AccountStorageEnabledStateChangedListener) {
+    chrome.passwordsPrivate.onAccountStorageEnabledStateChanged.addListener(
         listener);
   }
 
-  removeAccountStorageOptInStateListener(
-      listener: AccountStorageOptInStateChangedListener) {
-    chrome.passwordsPrivate.onAccountStorageOptInStateChanged.removeListener(
+  removeAccountStorageEnabledStateListener(
+      listener: AccountStorageEnabledStateChangedListener) {
+    chrome.passwordsPrivate.onAccountStorageEnabledStateChanged.removeListener(
         listener);
   }
 
-  isOptedInForAccountStorage() {
-    return chrome.passwordsPrivate.isOptedInForAccountStorage();
+  isAccountStorageEnabled() {
+    return chrome.passwordsPrivate.isAccountStorageEnabled();
   }
 
-  optInForAccountStorage(optIn: boolean) {
-    chrome.passwordsPrivate.optInForAccountStorage(optIn);
+  setAccountStorageEnabled(enabled: boolean) {
+    chrome.passwordsPrivate.setAccountStorageEnabled(enabled);
   }
 
   isAccountStoreDefault() {

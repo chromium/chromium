@@ -394,7 +394,7 @@ suite('SettingsSectionTest', function() {
   });
 
   test('account storage toggle when feature is available', async function() {
-    passwordManager.data.isOptedInAccountStorage = false;
+    passwordManager.data.isAccountStorageEnabled = false;
     syncProxy.accountInfo = {
       email: 'testemail@gmail.com',
     };
@@ -415,16 +415,16 @@ suite('SettingsSectionTest', function() {
     assertFalse(accountStorageToggle.hasAttribute('checked'));
     accountStorageToggle.click();
 
-    // Toggle should not change until authentication succeeds.
-    await passwordManager.whenCalled('optInForAccountStorage');
+    // Toggle should not change until the backend confirms the enabling.
+    await passwordManager.whenCalled('setAccountStorageEnabled');
     assertFalse(accountStorageToggle.hasAttribute('checked'));
 
-    // Assert that password section subscribed as a listener to opt in state and
-    // opt out from account storage.
-    assertTrue(!!passwordManager.listeners.accountStorageOptInStateListener);
-    passwordManager.data.isOptedInAccountStorage = true;
+    // Assert that password section subscribed as a listener to enabled state
+    // and enable account storage.
+    assertTrue(!!passwordManager.listeners.accountStorageEnabledStateListener);
+    passwordManager.data.isAccountStorageEnabled = true;
     // Imitate listener notification after successful identification.
-    passwordManager.listeners.accountStorageOptInStateListener(true);
+    passwordManager.listeners.accountStorageEnabledStateListener(true);
     await flushTasks();
 
     assertTrue(accountStorageToggle.checked);
@@ -482,7 +482,7 @@ suite('SettingsSectionTest', function() {
   });
 
   test('Move passwords to account button is visible', async function() {
-    passwordManager.data.isOptedInAccountStorage = true;
+    passwordManager.data.isAccountStorageEnabled = true;
     syncProxy.syncInfo = {
       isEligibleForAccountStorage: true,
       isSyncingPasswords: false,
@@ -510,7 +510,7 @@ suite('SettingsSectionTest', function() {
   });
 
   test('Move passwords to account button is not visible', async function() {
-    passwordManager.data.isOptedInAccountStorage = true;
+    passwordManager.data.isAccountStorageEnabled = true;
     syncProxy.syncInfo = {
       isEligibleForAccountStorage: true,
       isSyncingPasswords: false,
@@ -540,7 +540,7 @@ suite('SettingsSectionTest', function() {
   test(
       'clicking save passwords in account opens move passwords dialog',
       async function() {
-        passwordManager.data.isOptedInAccountStorage = true;
+        passwordManager.data.isAccountStorageEnabled = true;
         syncProxy.syncInfo = {
           isEligibleForAccountStorage: true,
           isSyncingPasswords: false,
@@ -584,7 +584,7 @@ suite('SettingsSectionTest', function() {
 
   test('Account storage iph', async function() {
     loadTimeData.overrideValues({canAddShortcut: false});
-    passwordManager.data.isOptedInAccountStorage = false;
+    passwordManager.data.isAccountStorageEnabled = false;
     syncProxy.accountInfo = {
       email: 'testemail@gmail.com',
     };

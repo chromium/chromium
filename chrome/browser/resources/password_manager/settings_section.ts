@@ -347,16 +347,15 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
     return this.i18n('removeBlockedAriaDescription', blockedSite.urls.shown);
   }
 
-  private changeAccountStorageOptIn_() {
-    if (this.isOptedInForAccountStorage) {
-      this.optOutFromAccountStorage();
+  private changeAccountStorageEnabled_() {
+    if (this.isAccountStorageEnabled) {
+      this.disableAccountStorage();
     } else {
-      this.optInForAccountStorage();
+      this.enableAccountStorage();
     }
   }
 
-  private getToggleSubLabelForAccountStorageOptIn_(accountEmail: string):
-      string {
+  private getAccountStorageSubLabel_(accountEmail: string): string {
     return this.i18n('accountStorageToggleSubLabel', accountEmail);
   }
 
