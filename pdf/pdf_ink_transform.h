@@ -6,8 +6,8 @@
 #define PDF_PDF_INK_TRANSFORM_H_
 
 #include "pdf/buildflags.h"
-#include "pdf/ink/ink_affine_transform.h"
 #include "pdf/page_orientation.h"
+#include "third_party/ink/src/ink/geometry/affine_transform.h"
 #include "ui/gfx/geometry/point_f.h"
 
 static_assert(BUILDFLAG(ENABLE_PDF_INK2), "ENABLE_PDF_INK2 not set to true");
@@ -89,7 +89,7 @@ gfx::PointF EventPositionToCanonicalPosition(const gfx::PointF& event_position,
 //                       |             | |            +
 //                       +-------------+ +------------+
 //
-InkAffineTransform GetInkRenderTransform(
+ink::AffineTransform GetInkRenderTransform(
     const gfx::Vector2dF& viewport_origin_offset,
     PageOrientation orientation,
     const gfx::Rect& page_content_rect,

@@ -19,10 +19,11 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "pdf/buildflags.h"
-#include "pdf/ink/ink_affine_transform.h"
-#include "pdf/ink/ink_stroke_input.h"
 #include "pdf/pdf_ink_undo_redo_model.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
+#include "third_party/ink/src/ink/strokes/in_progress_stroke.h"
+#include "third_party/ink/src/ink/strokes/input/stroke_input.h"
+#include "third_party/ink/src/ink/strokes/stroke.h"
 #include "ui/gfx/geometry/point_f.h"
 
 static_assert(BUILDFLAG(ENABLE_PDF_INK2), "ENABLE_PDF_INK2 not set to true");
@@ -34,10 +35,12 @@ class WebInputEvent;
 class WebMouseEvent;
 }  // namespace blink
 
+namespace ink {
+class AffineTransform;
+}
+
 namespace chrome_pdf {
 
-class InkInProgressStroke;
-class InkStroke;
 class PdfInkBrush;
 class PdfInkModuleClient;
 
@@ -54,7 +57,7 @@ class PdfInkModule {
   using DocumentStrokeInputPointsMap = std::map<int, PageStrokeInputPoints>;
 
   using RenderTransformCallback =
-      base::RepeatingCallback<void(const InkAffineTransform& transform)>;
+      base::RepeatingCallback<void(const ink::AffineTransform& transform)>;
 
   explicit PdfInkModule(PdfInkModuleClient& client);
   PdfInkModule(const PdfInkModule&) = delete;
@@ -101,7 +104,7 @@ class PdfInkModule {
       RenderTransformCallback callback);
 
  private:
-  using StrokeInputSegment = std::vector<InkStrokeInput>;
+  using StrokeInputSegment = std::vector<ink::StrokeInput>;
 
   struct DrawingStrokeState {
     DrawingStrokeState();
@@ -135,7 +138,7 @@ class PdfInkModule {
   // A stroke that has been completed, its ID, and whether it should be drawn
   // or not.
   struct FinishedStrokeState {
-    FinishedStrokeState(std::unique_ptr<InkStroke> stroke, size_t id);
+    FinishedStrokeState(ink::Stroke stroke, size_t id);
     FinishedStrokeState(const FinishedStrokeState&) = delete;
     FinishedStrokeState& operator=(const FinishedStrokeState&) = delete;
     FinishedStrokeState(FinishedStrokeState&&) noexcept;
@@ -144,7 +147,7 @@ class PdfInkModule {
 
     // Coordinates for each stroke are stored in a canonical format specified in
     // pdf_ink_transform.h.
-    std::unique_ptr<InkStroke> stroke;
+    ink::Stroke stroke;
 
     // A unique ID to identify this stroke.
     size_t id;
@@ -229,12 +232,12 @@ class PdfInkModule {
     return absl::get<EraserState>(current_tool_state_);
   }
 
-  // Converts `current_tool_state_` into segments of `InkInProgressStroke`.
+  // Converts `current_tool_state_` into segments of `ink::InProgressStroke`.
   // Requires `current_tool_state_` to hold a `DrawingStrokeState`. If there is
   // no `DrawingStrokeState`, or the state currently has no inputs, then the
   // segments will be empty.
-  std::vector<std::unique_ptr<InkInProgressStroke>>
-  CreateInProgressStrokeSegmentsFromInputs() const;
+  std::vector<ink::InProgressStroke> CreateInProgressStrokeSegmentsFromInputs()
+      const;
 
   // Wrapper around EventPositionToCanonicalPosition(). `page_index` is the page
   // that `position` is on. The page must be visible.

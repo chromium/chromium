@@ -6,11 +6,11 @@
 
 #include <array>
 
-#include "pdf/ink/ink_affine_transform.h"
 #include "pdf/page_orientation.h"
 #include "pdf/test/pdf_ink_test_helpers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/ink/src/ink/geometry/affine_transform.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -204,7 +204,7 @@ TEST(PdfInkTransformTest,
 }
 
 TEST(PdfInkTransformTest, RenderTransformIdentity) {
-  InkAffineTransform transform = GetInkRenderTransform(
+  ink::AffineTransform transform = GetInkRenderTransform(
       kViewportOriginOffsetNone, PageOrientation::kOriginal,
       kPageContentAreaPortraitNoOffset, kScaleFactor1x);
   EXPECT_THAT(transform,
@@ -212,7 +212,7 @@ TEST(PdfInkTransformTest, RenderTransformIdentity) {
 }
 
 TEST(PdfInkTransformTest, RenderTransformZoom) {
-  InkAffineTransform transform = GetInkRenderTransform(
+  ink::AffineTransform transform = GetInkRenderTransform(
       kViewportOriginOffsetNone, PageOrientation::kOriginal,
       kPageContentAreaPortraitNoOffset2x, kScaleFactor2x);
   EXPECT_THAT(transform,
@@ -220,7 +220,7 @@ TEST(PdfInkTransformTest, RenderTransformZoom) {
 }
 
 TEST(PdfInkTransformTest, RenderTransformRotateClockwise90) {
-  InkAffineTransform transform = GetInkRenderTransform(
+  ink::AffineTransform transform = GetInkRenderTransform(
       kViewportOriginOffsetNone, PageOrientation::kClockwise90,
       kPageContentAreaLandscapeNoOffset, kScaleFactor1x);
   EXPECT_THAT(transform,
@@ -228,7 +228,7 @@ TEST(PdfInkTransformTest, RenderTransformRotateClockwise90) {
 }
 
 TEST(PdfInkTransformTest, RenderTransformRotateClockwise180) {
-  InkAffineTransform transform = GetInkRenderTransform(
+  ink::AffineTransform transform = GetInkRenderTransform(
       kViewportOriginOffsetNone, PageOrientation::kClockwise180,
       kPageContentAreaPortraitNoOffset, kScaleFactor1x);
   EXPECT_THAT(transform,
@@ -236,7 +236,7 @@ TEST(PdfInkTransformTest, RenderTransformRotateClockwise180) {
 }
 
 TEST(PdfInkTransformTest, RenderTransformRotateClockwise270) {
-  InkAffineTransform transform = GetInkRenderTransform(
+  ink::AffineTransform transform = GetInkRenderTransform(
       kViewportOriginOffsetNone, PageOrientation::kClockwise270,
       kPageContentAreaLandscapeNoOffset, kScaleFactor1x);
   EXPECT_THAT(transform,
@@ -244,7 +244,7 @@ TEST(PdfInkTransformTest, RenderTransformRotateClockwise270) {
 }
 
 TEST(PdfInkTransformTest, RenderTransformScrolled) {
-  InkAffineTransform transform = GetInkRenderTransform(
+  ink::AffineTransform transform = GetInkRenderTransform(
       kViewportOriginOffsetNone, PageOrientation::kOriginal,
       /*page_content_rect=*/gfx::Rect(gfx::Point(-8, -14), kPageSizePortrait),
       kScaleFactor1x);
@@ -253,7 +253,7 @@ TEST(PdfInkTransformTest, RenderTransformScrolled) {
 }
 
 TEST(PdfInkTransformTest, RenderTransformOffsetScrolled) {
-  InkAffineTransform transform = GetInkRenderTransform(
+  ink::AffineTransform transform = GetInkRenderTransform(
       /*viewport_origin_offset=*/gfx::Vector2dF(18.0f, 24.0f),
       PageOrientation::kOriginal,
       /*page_content_rect=*/gfx::Rect(gfx::Point(0, -14), kPageSizePortrait),
@@ -263,7 +263,7 @@ TEST(PdfInkTransformTest, RenderTransformOffsetScrolled) {
 }
 
 TEST(PdfInkTransformTest, RenderTransformZoomScrolledClockwise90) {
-  InkAffineTransform transform = GetInkRenderTransform(
+  ink::AffineTransform transform = GetInkRenderTransform(
       kViewportOriginOffsetNone, PageOrientation::kClockwise90,
       /*page_content_rect=*/
       gfx::Rect(gfx::Point(-16, -28), kPageSizeLandscape2x), kScaleFactor2x);
@@ -272,7 +272,7 @@ TEST(PdfInkTransformTest, RenderTransformZoomScrolledClockwise90) {
 }
 
 TEST(PdfInkTransformTest, RenderTransformOffsetZoomScrolledClockwise90) {
-  InkAffineTransform transform = GetInkRenderTransform(
+  ink::AffineTransform transform = GetInkRenderTransform(
       /*viewport_origin_offset=*/gfx::Vector2dF(18.0f, 24.0f),
       PageOrientation::kClockwise90,
       /*page_content_rect=*/gfx::Rect(gfx::Point(0, -28), kPageSizeLandscape2x),

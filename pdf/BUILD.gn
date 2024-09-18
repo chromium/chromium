@@ -227,7 +227,7 @@ if (enable_pdf) {
         "pdf_ink_undo_redo_model.h",
       ]
 
-      public_deps += [ "//pdf/ink" ]
+      public_deps += [ "//third_party/ink" ]
     }
 
     if (enable_screen_ai_service) {

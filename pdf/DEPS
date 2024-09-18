@@ -10,6 +10,7 @@ include_rules = [
   "+services/screen_ai/public/mojom/screen_ai_service.mojom.h",
   "+services/screen_ai/public/mojom/screen_ai_service.mojom-forward.h",
   "+third_party/blink/public",
+  "+third_party/ink",
   "+third_party/skia/include/core",
   "+ui/base",
   "+ui/events",

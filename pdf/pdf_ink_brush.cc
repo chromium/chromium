@@ -10,10 +10,10 @@
 
 #include "base/check_op.h"
 #include "base/notreached.h"
-#include "pdf/ink/ink_brush.h"
-#include "pdf/ink/ink_brush_family.h"
-#include "pdf/ink/ink_brush_paint.h"
-#include "pdf/ink/ink_brush_tip.h"
+#include "third_party/ink/src/ink/brush/brush.h"
+#include "third_party/ink/src/ink/brush/brush_family.h"
+#include "third_party/ink/src/ink/brush/brush_paint.h"
+#include "third_party/ink/src/ink/brush/brush_tip.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 
@@ -21,9 +21,11 @@ namespace chrome_pdf {
 
 namespace {
 
-std::string CreateBrushUri() {
+ink::Uri CreateBrushUri() {
   // TODO(crbug.com/353942923): Use real value here.
-  return "ink://ink/texture:test-texture";
+  auto uri = ink::Uri::Parse("ink://ink/texture:test-texture");
+  CHECK(uri.ok());
+  return *uri;
 }
 
 float GetCornerRounding(PdfInkBrush::Type type) {
@@ -48,36 +50,42 @@ float GetOpacity(PdfInkBrush::Type type) {
   NOTREACHED();
 }
 
-std::unique_ptr<InkBrush> CreateInkBrush(PdfInkBrush::Type type,
-                                         PdfInkBrush::Params params) {
+ink::Brush CreateInkBrush(PdfInkBrush::Type type, PdfInkBrush::Params params) {
   CHECK_GT(params.size, 0);
 
   // TODO(crbug.com/353942923): Use real values here.
-  InkBrushTip tip;
+  ink::BrushTip tip;
   tip.corner_rounding = GetCornerRounding(type);
   tip.opacity_multiplier = GetOpacity(type);
 
-  InkBrushPaint::TextureLayer layer;
+  // TODO(crbug.com/353942923): Use real value here.
+  ink::BrushPaint::TextureLayer layer;
   layer.color_texture_uri = CreateBrushUri();
-  layer.mapping = InkBrushPaint::TextureMapping::kWinding;
-  layer.size_unit = InkBrushPaint::TextureSizeUnit::kBrushSize;
-  layer.size_x = 3;
-  layer.size_y = 5;
-  layer.size_jitter_x = 0.1;
-  layer.size_jitter_y = 2;
+  layer.mapping = ink::BrushPaint::TextureMapping::kWinding;
+  layer.size_unit = ink::BrushPaint::TextureSizeUnit::kBrushSize;
+  layer.size = {3, 5};
+  layer.size_jitter = {0.1, 2};
   layer.keyframes = {
-      {.progress = 0.1, .rotation_in_radians = std::numbers::pi_v<float> / 4}};
-  layer.blend_mode = InkBrushPaint::BlendMode::kSrcIn;
+      {.progress = 0.1,
+       .rotation = ink::Angle::Radians(std::numbers::pi_v<float> / 4)}};
+  layer.blend_mode = ink::BrushPaint::BlendMode::kSrcIn;
 
-  InkBrushPaint paint;
+  ink::BrushPaint paint;
   paint.texture_layers.push_back(layer);
-  auto family = InkBrushFamily::Create(std::move(tip), std::move(paint), "");
-  CHECK(family);
+  auto family = ink::BrushFamily::Create(std::move(tip), std::move(paint), "");
+  CHECK(family.ok());
 
-  return InkBrush::Create(std::move(family),
-                          /*color=*/params.color,
-                          /*size=*/params.size,
-                          /*epsilon=*/0.1f);
+  auto brush = ink::Brush::Create(*family,
+                                  /*color=*/
+                                  ink::Color::FromUint8(
+                                      /*red=*/SkColorGetR(params.color),
+                                      /*green=*/SkColorGetG(params.color),
+                                      /*blue=*/SkColorGetB(params.color),
+                                      /*alpha=*/SkColorGetA(params.color)),
+                                  /*size=*/params.size,
+                                  /*epsilon=*/0.1f);
+  CHECK(brush.ok());
+  return *brush;
 }
 
 // Determine the area to invalidate centered around a point where a brush is
@@ -113,20 +121,19 @@ void PdfInkBrush::CheckToolSizeIsInRange(float size) {
 
 PdfInkBrush::PdfInkBrush(Type brush_type, Params brush_params)
     : ink_brush_(CreateInkBrush(brush_type, brush_params)) {
-  CHECK(ink_brush_);
 }
 
 PdfInkBrush::~PdfInkBrush() = default;
 
-const InkBrush& PdfInkBrush::GetInkBrush() const {
-  return *ink_brush_;
+const ink::Brush& PdfInkBrush::GetInkBrush() const {
+  return ink_brush_;
 }
 
 gfx::Rect PdfInkBrush::GetInvalidateArea(const gfx::PointF& center1,
                                          const gfx::PointF& center2) const {
   // For a line connecting `center1` to `center2`, the invalidate
   // region is the union between the areas affected by them both.
-  float brush_diameter = ink_brush_->GetSize();
+  float brush_diameter = ink_brush_.GetSize();
   gfx::Rect area1 = GetPointInvalidateArea(brush_diameter, center1);
   gfx::Rect area2 = GetPointInvalidateArea(brush_diameter, center2);
   area2.Union(area1);

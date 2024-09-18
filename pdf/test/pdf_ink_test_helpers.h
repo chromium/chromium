@@ -8,8 +8,8 @@
 #include <string>
 
 #include "base/values.h"
-#include "pdf/ink/ink_affine_transform.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/ink/src/ink/geometry/affine_transform.h"
 
 namespace chrome_pdf {
 
@@ -38,12 +38,12 @@ MATCHER_P6(InkAffineTransformEq,
            "") {
   using testing::FloatEq;
   using testing::Matches;
-  return Matches(FloatEq(expected_a))(arg.a) &&
-         Matches(FloatEq(expected_b))(arg.b) &&
-         Matches(FloatEq(expected_c))(arg.c) &&
-         Matches(FloatEq(expected_d))(arg.d) &&
-         Matches(FloatEq(expected_e))(arg.e) &&
-         Matches(FloatEq(expected_f))(arg.f);
+  return Matches(FloatEq(expected_a))(arg.A()) &&
+         Matches(FloatEq(expected_b))(arg.B()) &&
+         Matches(FloatEq(expected_c))(arg.C()) &&
+         Matches(FloatEq(expected_d))(arg.D()) &&
+         Matches(FloatEq(expected_e))(arg.E()) &&
+         Matches(FloatEq(expected_f))(arg.F());
 }
 
 }  // namespace chrome_pdf
