@@ -4,7 +4,7 @@
 
 module metrics.mojom;
 
-import "mojo/public/mojom/base/byte_string.mojom";
+import "mojo/public/mojom/base/proto_wrapper.mojom";
 import "mojo/public/mojom/base/time.mojom";
 
 // |contents| is a serialized protobuf from
@@ -13,7 +13,7 @@ import "mojo/public/mojom/base/time.mojom";
 // We pass this state via serialized protobuf because that is the ultimate
 // metrics upload format.
 struct SampledProfile {
-  mojo_base.mojom.ByteString contents;
+  mojo_base.mojom.ProtoWrapper contents;
 };
 
 // The type of data that's sampled in a profile.

@@ -6,13 +6,13 @@
 #define COMPONENTS_METRICS_CALL_STACKS_CALL_STACK_PROFILE_METRICS_PROVIDER_H_
 
 #include <map>
-#include <string>
 
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "build/buildflag.h"
 #include "components/metrics/metrics_provider.h"
+#include "components/metrics/public/mojom/call_stack_profile_collector.mojom-forward.h"
 #include "third_party/metrics_proto/execution_context.pb.h"
 #include "third_party/metrics_proto/sampled_profile.pb.h"
 
@@ -54,12 +54,11 @@ class CallStackProfileMetricsProvider : public MetricsProvider {
   // Receives serialized SampledProfile protobuf instances. May be called on any
   // thread.  Note that receiving serialized profiles is supported separately so
   // that profiles received in serialized form can be kept in that form until
-  // upload. This significantly reduces memory costs. Serialized profile strings
-  // may be large, so the caller must use std::move() to provide them to this
-  // API rather than copying by value.
-  static void ReceiveSerializedProfile(base::TimeTicks profile_start_time,
-                                       bool is_heap_profile,
-                                       std::string&& serialized_profile);
+  // upload. This significantly reduces memory costs.
+  static void ReceiveSerializedProfile(
+      base::TimeTicks profile_start_time,
+      bool is_heap_profile,
+      mojom::SampledProfilePtr serialized_profile);
 
   // Allows tests to intercept received CPU profiles, to validate that the
   // expected profiles are received. This function must be invoked prior to

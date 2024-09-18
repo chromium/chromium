@@ -4,11 +4,12 @@
 
 #include "components/metrics/call_stacks/call_stack_profile_metrics_provider.h"
 
-#include <string>
 #include <utility>
 
 #include "base/test/scoped_feature_list.h"
+#include "components/metrics/public/mojom/call_stack_profile_collector.mojom.h"
 #include "execution_context.pb.h"
+#include "mojo/public/cpp/base/proto_wrapper.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
@@ -18,6 +19,16 @@ namespace metrics {
 using ::testing::Eq;
 using ::testing::Pair;
 using ::testing::UnorderedElementsAre;
+
+namespace {
+
+mojom::SampledProfilePtr SerializeProfile(const SampledProfile& profile) {
+  mojom::SampledProfilePtr serialized_profile = mojom::SampledProfile::New();
+  serialized_profile->contents = mojo_base::ProtoWrapper(profile);
+  return serialized_profile;
+}
+
+}  // namespace
 
 // This test fixture enables the feature that
 // CallStackProfileMetricsProvider depends on to report a profile.
@@ -65,14 +76,11 @@ TEST_F(CallStackProfileMetricsProviderTest,
        ProvideCurrentSessionDataSerialized) {
   CallStackProfileMetricsProvider provider;
   provider.OnRecordingEnabled();
-  std::string contents;
-  {
-    SampledProfile profile;
-    profile.set_trigger_event(SampledProfile::PERIODIC_COLLECTION);
-    profile.SerializeToString(&contents);
-  }
+  SampledProfile profile;
+  profile.set_trigger_event(SampledProfile::PERIODIC_COLLECTION);
   CallStackProfileMetricsProvider::ReceiveSerializedProfile(
-      base::TimeTicks::Now(), /*is_heap_profile=*/false, std::move(contents));
+      base::TimeTicks::Now(), /*is_heap_profile=*/false,
+      SerializeProfile(profile));
   ChromeUserMetricsExtension uma_proto;
   provider.ProvideCurrentSessionData(&uma_proto);
   ASSERT_EQ(1, uma_proto.sampled_profile().size());
@@ -94,14 +102,11 @@ TEST_F(CallStackProfileMetricsProviderTest,
                                                   std::move(profile));
 
   // Receive a serialized profile.
-  std::string contents;
-  {
-    SampledProfile serialized_profile;
-    serialized_profile.set_trigger_event(SampledProfile::PERIODIC_COLLECTION);
-    serialized_profile.SerializeToString(&contents);
-  }
+  SampledProfile serialized_profile;
+  serialized_profile.set_trigger_event(SampledProfile::PERIODIC_COLLECTION);
   CallStackProfileMetricsProvider::ReceiveSerializedProfile(
-      base::TimeTicks::Now(), /*is_heap_profile=*/false, std::move(contents));
+      base::TimeTicks::Now(), /*is_heap_profile=*/false,
+      SerializeProfile(serialized_profile));
 
   ChromeUserMetricsExtension uma_proto;
   provider.ProvideCurrentSessionData(&uma_proto);
@@ -227,10 +232,8 @@ TEST_F(CallStackProfileMetricsProviderTest,
   CallStackProfileMetricsProvider::ReceiveProfile(profile_start_time, profile);
 
   // Serialized profile.
-  std::string contents;
-  profile.SerializeToString(&contents);
   CallStackProfileMetricsProvider::ReceiveSerializedProfile(
-      profile_start_time, /*is_heap_profile=*/true, std::move(contents));
+      profile_start_time, /*is_heap_profile=*/true, SerializeProfile(profile));
 
   ChromeUserMetricsExtension uma_proto;
   provider.ProvideCurrentSessionData(&uma_proto);
@@ -250,10 +253,8 @@ TEST_F(CallStackProfileMetricsProviderTest, HeapProfileProvidedWhenEnabled) {
   CallStackProfileMetricsProvider::ReceiveProfile(profile_start_time, profile);
 
   // Serialized profile.
-  std::string contents;
-  profile.SerializeToString(&contents);
   CallStackProfileMetricsProvider::ReceiveSerializedProfile(
-      profile_start_time, /*is_heap_profile=*/true, std::move(contents));
+      profile_start_time, /*is_heap_profile=*/true, SerializeProfile(profile));
 
   ChromeUserMetricsExtension uma_proto;
   provider.ProvideCurrentSessionData(&uma_proto);
@@ -279,15 +280,12 @@ TEST_F(CallStackProfileMetricsProviderTest, CpuProfileNotProvidedWithoutFinch) {
                                                   heap_profile);
 
   // Serialized profiles.
-  std::string contents;
-  profile.SerializeToString(&contents);
   CallStackProfileMetricsProvider::ReceiveSerializedProfile(
-      profile_start_time, /*is_heap_profile=*/false, std::move(contents));
+      profile_start_time, /*is_heap_profile=*/false, SerializeProfile(profile));
 
-  std::string heap_contents;
-  heap_profile.SerializeToString(&heap_contents);
   CallStackProfileMetricsProvider::ReceiveSerializedProfile(
-      profile_start_time, /*is_heap_profile=*/true, std::move(heap_contents));
+      profile_start_time, /*is_heap_profile=*/true,
+      SerializeProfile(heap_profile));
 
   ChromeUserMetricsExtension uma_proto;
   provider.ProvideCurrentSessionData(&uma_proto);
@@ -334,11 +332,9 @@ void ReceiveSerializedProfile(metrics::Process process,
   profile.set_process(process);
   profile.set_thread(thread);
   MakeMinimallySuccessfulCallStackProfile(profile.mutable_call_stack_profile());
-  std::string serialized_profile;
-  profile.SerializeToString(&serialized_profile);
   CallStackProfileMetricsProvider::ReceiveSerializedProfile(
       base::TimeTicks::Now(), /*is_heap_profile=*/false,
-      std::move(serialized_profile));
+      SerializeProfile(profile));
 }
 
 }  // namespace
@@ -424,11 +420,9 @@ TEST_F(CallStackProfileMetricsProviderTest,
     no_stack_profile.set_thread(metrics::MAIN_THREAD);
     CallStackProfileMetricsProvider::ReceiveProfile(base::TimeTicks::Now(),
                                                     no_stack_profile);
-    std::string serialized_no_stack_profile;
-    no_stack_profile.SerializeToString(&serialized_no_stack_profile);
     CallStackProfileMetricsProvider::ReceiveSerializedProfile(
         base::TimeTicks::Now(), /*is_heap_profile=*/false,
-        std::move(serialized_no_stack_profile));
+        SerializeProfile(no_stack_profile));
   }
 
   {
@@ -443,11 +437,9 @@ TEST_F(CallStackProfileMetricsProviderTest,
     frame->set_module_id_index(1);
     CallStackProfileMetricsProvider::ReceiveProfile(base::TimeTicks::Now(),
                                                     one_frame_profile);
-    std::string serialized_one_frame_profile;
-    one_frame_profile.SerializeToString(&serialized_one_frame_profile);
     CallStackProfileMetricsProvider::ReceiveSerializedProfile(
         base::TimeTicks::Now(), /*is_heap_profile=*/false,
-        std::move(serialized_one_frame_profile));
+        SerializeProfile(one_frame_profile));
   }
 
   // All the BROWSER_PROCESS profiles were unsuccessful, so only the GPU_PROCESS
