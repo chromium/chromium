@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap_source.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
+#include "third_party/blink/renderer/platform/timer.h"
 
 namespace blink {
 
@@ -230,6 +231,8 @@ class CORE_EXPORT HTMLVideoElement final
 
   void ReportVisibility(bool meets_visibility_threshold);
 
+  void ResetCache(TimerBase*);
+
   Member<HTMLImageLoader> image_loader_;
   Member<MediaCustomControlsFullscreenDetector>
       custom_controls_fullscreen_detector_;
@@ -269,6 +272,9 @@ class CORE_EXPORT HTMLVideoElement final
   // Used to fulfill blink::Image requests (CreateImage(),
   // GetSourceImageForCanvas(), etc). Created on demand.
   std::unique_ptr<CanvasResourceProvider> resource_provider_;
+  SkImageInfo resource_provider_info_;
+  bool allow_accelerated_images_ = true;
+  HeapTaskRunnerTimer<HTMLVideoElement> cache_deleting_timer_;
 };
 
 }  // namespace blink

@@ -82,6 +82,8 @@ namespace {
 // measured in square CSS pixels (`kVisibilityThreshold`) is considered visible,
 // and not visible otherwise.
 constexpr int kVisibilityThreshold = 10000;
+
+constexpr base::TimeDelta kTemporaryResourceDeletionDelay = base::Seconds(3);
 }  // namespace
 
 HTMLVideoElement::HTMLVideoElement(Document& document)
@@ -92,7 +94,11 @@ HTMLVideoElement::HTMLVideoElement(Document& document)
       is_auto_picture_in_picture_(false),
       is_effectively_fullscreen_(false),
       video_has_played_(false),
-      mostly_filling_viewport_(false) {
+      mostly_filling_viewport_(false),
+      cache_deleting_timer_(
+          GetDocument().GetTaskRunner(TaskType::kInternalMedia),
+          this,
+          &HTMLVideoElement::ResetCache) {
   if (document.GetSettings()) {
     default_poster_url_ =
         AtomicString(document.GetSettings()->GetDefaultVideoPosterURL());
@@ -114,6 +120,7 @@ void HTMLVideoElement::Trace(Visitor* visitor) const {
   visitor->Trace(wake_lock_);
   visitor->Trace(remoting_interstitial_);
   visitor->Trace(picture_in_picture_interstitial_);
+  visitor->Trace(cache_deleting_timer_);
   Supplementable<HTMLVideoElement>::Trace(visitor);
   HTMLMediaElement::Trace(visitor);
 }
@@ -338,6 +345,10 @@ void HTMLVideoElement::ReportVisibility(bool meets_visibility_threshold) {
       observer->OnVideoVisibilityChanged(meets_visibility_threshold);
     }
   }
+}
+
+void HTMLVideoElement::ResetCache(TimerBase*) {
+  resource_provider_.reset();
 }
 
 bool HTMLVideoElement::IsPersistent() const {
@@ -586,8 +597,10 @@ scoped_refptr<StaticBitmapImage> HTMLVideoElement::CreateStaticBitmapImage(
       gfx::SizeToSkISize(dest_size), kN32_SkColorType, kPremul_SkAlphaType,
       media_video_frame->CompatRGBColorSpace().ToSkColorSpace());
   if (!resource_provider_ ||
-      allow_accelerated_images != resource_provider_->IsAccelerated() ||
-      resource_provider_info != resource_provider_->GetSkImageInfo()) {
+      (resource_provider_->IsAccelerated() &&
+       resource_provider_->IsGpuContextLost()) ||
+      allow_accelerated_images != allow_accelerated_images_ ||
+      resource_provider_info != resource_provider_info_) {
     viz::RasterContextProvider* raster_context_provider = nullptr;
     if (allow_accelerated_images) {
       if (auto wrapper = SharedGpuContext::ContextProviderWrapper()) {
@@ -595,12 +608,17 @@ scoped_refptr<StaticBitmapImage> HTMLVideoElement::CreateStaticBitmapImage(
           raster_context_provider = context_provider->RasterContextProvider();
       }
     }
+    resource_provider_.reset();
     // Providing a null |raster_context_provider| creates a software provider.
     resource_provider_ = CreateResourceProviderForVideoFrame(
         resource_provider_info, raster_context_provider);
     if (!resource_provider_)
       return nullptr;
+    resource_provider_info_ = resource_provider_info;
+    allow_accelerated_images_ = allow_accelerated_images;
   }
+  cache_deleting_timer_.StartOneShot(kTemporaryResourceDeletionDelay,
+                                     FROM_HERE);
 
   auto image = CreateImageFromVideoFrame(std::move(media_video_frame),
                                          /*allow_zero_copy_images=*/true,
