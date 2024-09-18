@@ -570,7 +570,7 @@ SEQUENCE_CHECKER(_sequenceChecker);
   [NSURLCache setSharedURLCache:[EmptyNSURLCache emptyNSURLCache]];
 
   // TODO(crbug.com/325616341): Update PostRestoreAppAgent for multi-identity.
-  ProfileIOS* profile = defaultProfile.state.browserState;
+  ProfileIOS* profile = defaultProfile.state.profile;
   [self.appState
       addAgent:[[PostRestoreAppAgent alloc]
                    initWithPromosManager:PromosManagerFactory::
@@ -735,7 +735,7 @@ SEQUENCE_CHECKER(_sequenceChecker);
   DCHECK(!browserState->IsOffTheRecord());
 
   ProfileController* controller = [[ProfileController alloc] init];
-  controller.state.browserState = browserState;
+  controller.state.profile = browserState;
   auto insertion_result = _profileControllers.insert(
       std::make_pair(browserState->GetProfileName(), controller));
   DCHECK(insertion_result.second);
@@ -1317,7 +1317,7 @@ SEQUENCE_CHECKER(_sequenceChecker);
   [self scheduleMemoryDebuggingTools];
   [StartupTasks
       scheduleDeferredBrowserStateInitialization:self.appState.mainProfile
-                                                     .browserState];
+                                                     .profile];
   [self sendQueuedFeedback];
   [self scheduleSpotlightResync];
   [self scheduleDeleteTempDownloadsDirectory];

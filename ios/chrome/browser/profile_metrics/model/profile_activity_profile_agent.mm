@@ -22,7 +22,7 @@
 #pragma mark - Private methods
 
 - (void)recordActivationForSceneState:(SceneState*)sceneState {
-  ProfileIOS* profile = sceneState.profileState.browserState;
+  ProfileIOS* profile = sceneState.profileState.profile;
 
   // Update the ProfileIOS's last-active time stored in the preferences.
   GetApplicationContext()

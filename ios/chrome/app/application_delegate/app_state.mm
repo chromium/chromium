@@ -322,10 +322,10 @@ void FlushCookieStoreOnIOThread(
         // Saving the cookies needs to happen on the IO thread.
         web::GetIOThreadTaskRunner({})->PostTask(
             FROM_HERE,
-            base::BindOnce(&FlushCookieStoreOnIOThread,
-                           base::WrapRefCounted(
-                               profileState.browserState->GetRequestContext()),
-                           closure));
+            base::BindOnce(
+                &FlushCookieStoreOnIOThread,
+                base::WrapRefCounted(profileState.profile->GetRequestContext()),
+                closure));
       }
     }
   }

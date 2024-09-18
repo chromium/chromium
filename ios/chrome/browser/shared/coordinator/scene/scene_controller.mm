@@ -1008,10 +1008,10 @@ void OnListFamilyMembersResponse(
 - (void)startUpChromeUI {
   DCHECK(!self.browserViewWrangler);
   DCHECK(_sceneURLLoadingService.get());
-  DCHECK(self.sceneState.profileState.browserState);
+  DCHECK(self.sceneState.profileState.profile);
 
   SceneState* sceneState = self.sceneState;
-  ProfileIOS* profile = sceneState.profileState.browserState;
+  ProfileIOS* profile = sceneState.profileState.profile;
 
   self.browserViewWrangler =
       [[BrowserViewWrangler alloc] initWithBrowserState:profile
