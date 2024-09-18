@@ -226,26 +226,23 @@ ExtensionInfo::InstallLocation GetInstallLocation(ManifestLocation location) {
   return ExtensionInfo::UNKNOWN_LOCATION;
 }
 
-static_assert(
-    static_cast<int>(policy::ManagementAuthorityTrustworthiness::kMaxValue) ==
-        static_cast<int>(ExtensionTelemetryReportRequest::FULLY_TRUSTED),
-    "ExtensionTelemetryReportRequest::ManagementAuthorityTrustworthiness "
-    "needs to match policy::ManagementAuthorityTrustworthiness.");
-ExtensionTelemetryReportRequest::ManagementAuthorityTrustworthiness
-GetManagementAuthorityTrustworthiness(
+// Converts a policy::ManagementAuthorityTrustworthiness to
+// ExtensionTelemetryReportRequest::ManagementAuthority.
+ExtensionTelemetryReportRequest::ManagementAuthority GetManagementAuthority(
     policy::ManagementAuthorityTrustworthiness
         management_authority_trustworthiness) {
   switch (management_authority_trustworthiness) {
     case policy::ManagementAuthorityTrustworthiness::NONE:
-      return ExtensionTelemetryReportRequest::NONE;
+      return ExtensionTelemetryReportRequest::MANAGEMENT_AUTHORITY_NONE;
     case policy::ManagementAuthorityTrustworthiness::LOW:
-      return ExtensionTelemetryReportRequest::LOW;
+      return ExtensionTelemetryReportRequest::MANAGEMENT_AUTHORITY_LOW;
     case policy::ManagementAuthorityTrustworthiness::TRUSTED:
-      return ExtensionTelemetryReportRequest::TRUSTED;
+      return ExtensionTelemetryReportRequest::MANAGEMENT_AUTHORITY_TRUSTED;
     case policy::ManagementAuthorityTrustworthiness::FULLY_TRUSTED:
-      return ExtensionTelemetryReportRequest::FULLY_TRUSTED;
+      return ExtensionTelemetryReportRequest::
+          MANAGEMENT_AUTHORITY_FULLY_TRUSTED;
     default:
-      return ExtensionTelemetryReportRequest::NONE;
+      return ExtensionTelemetryReportRequest::MANAGEMENT_AUTHORITY_UNSPECIFIED;
   }
 }
 
@@ -656,7 +653,12 @@ ExtensionTelemetryService::CreateReportWithCommonFieldsPopulated() {
   telemetry_report_pb->set_creation_timestamp_msec(
       base::Time::Now().InMillisecondsSinceUnixEpoch());
 
-  if (base::FeatureList::IsEnabled(kExtensionTelemetryIncludePolicyData)) {
+  // Only collect if `is_shutdown_` is false, since BrowserContextHelper can be
+  // destroyed already and cause a crash on ChromeOS.
+  // TODO(crbug.com/367327319): Investigate keyed service dependency order to
+  // guarantee BrowserContextHelper lifetime during shutdown.
+  if (base::FeatureList::IsEnabled(kExtensionTelemetryIncludePolicyData) &&
+      !is_shutdown_) {
     // The highest level of ManagementAuthorityTrustworthiness of either
     // platform or browser are taken into account.
     policy::ManagementAuthorityTrustworthiness platform_trustworthiness =
@@ -667,8 +669,8 @@ ExtensionTelemetryService::CreateReportWithCommonFieldsPopulated() {
             ->GetManagementAuthorityTrustworthiness();
     policy::ManagementAuthorityTrustworthiness highest_trustworthiness =
         std::max(platform_trustworthiness, browser_trustworthiness);
-    telemetry_report_pb->set_management_authority_trustworthiness(
-        GetManagementAuthorityTrustworthiness(highest_trustworthiness));
+    telemetry_report_pb->set_management_authority(
+        GetManagementAuthority(highest_trustworthiness));
   }
 
   return telemetry_report_pb;
@@ -957,8 +959,7 @@ void ExtensionTelemetryService::DumpReportForTesting(
      << base::UTF16ToUTF8(TimeFormatShortDateAndTimeWithTimeZone(creation_time))
      << "\n";
   ss << "Developer mode enabled: " << report.developer_mode_enabled() << "\n";
-  ss << "Management authority trustworthiness: "
-     << report.management_authority_trustworthiness() << "\n";
+  ss << "Management authority: " << report.management_authority() << "\n";
 
   const RepeatedPtrField<ExtensionTelemetryReportRequest_Report>& reports =
       report.reports();
