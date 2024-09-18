@@ -108,6 +108,10 @@ XRProjectionLayer* XRGPUBinding::createProjectionLayer(
     ExceptionState& exception_state) {
   // TODO(crbug.com/5818595): Validate the colorFormat and depthStencilFormat.
 
+  if (!CanCreateLayer(exception_state)) {
+    return nullptr;
+  }
+
   // The max size will be either the native resolution or the default
   // if that happens to be larger than the native res. (That can happen on
   // desktop systems.)
@@ -200,6 +204,24 @@ XRGPUSubImage* XRGPUBinding::getViewSubImage(XRProjectionLayer* layer,
 
 String XRGPUBinding::getPreferredColorFormat() {
   return FromDawnEnum(GPU::preferred_canvas_format());
+}
+
+bool XRGPUBinding::CanCreateLayer(ExceptionState& exception_state) {
+  if (session()->ended()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "Cannot create a new layer for an "
+                                      "XRSession which has already ended.");
+    return false;
+  }
+
+  if (device_->destroyed()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "Cannot create a new layer with a "
+                                      "destroyed WebGPU device.");
+    return false;
+  }
+
+  return true;
 }
 
 void XRGPUBinding::Trace(Visitor* visitor) const {
