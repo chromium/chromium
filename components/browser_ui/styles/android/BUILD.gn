@@ -217,6 +217,8 @@ android_resources("java_resources") {
     "java/res/drawable/ic_play_circle_filled_24dp_on_light_bg.xml",
     "java/res/drawable/ic_remove.xml",
     "java/res/drawable/ic_replay_white_24dp.xml",
+    "java/res/drawable/ic_rule_folder_24dp.xml",
+    "java/res/drawable/ic_security_24dp.xml",
     "java/res/drawable/ic_security_grey.xml",
     "java/res/drawable/ic_select_window_24dp.xml",
     "java/res/drawable/ic_settings_black.xml",
