@@ -190,7 +190,9 @@ PasswordAutofillManager::GetDriver() {
 void PasswordAutofillManager::OnSuggestionsShown(
     base::span<const Suggestion> suggestions) {}
 
-void PasswordAutofillManager::OnSuggestionsHidden() {}
+void PasswordAutofillManager::OnSuggestionsHidden() {
+  metrics_util::LogPasswordDropdownHidden();
+}
 
 void PasswordAutofillManager::DidSelectSuggestion(
     const Suggestion& suggestion) {

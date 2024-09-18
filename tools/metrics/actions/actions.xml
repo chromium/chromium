@@ -30694,6 +30694,109 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="PasswordManager.PasswordDropdownHidden" not_user_triggered="true">
+  <owner>derinel@google.com</owner>
+  <owner>markusheintz@google.com</owner>
+  <description>
+    Recorded when the password dropdown is hidden. This can be triggered if the
+    user has selected an entry in the dropdown, or focused somewhere else.
+  </description>
+</action>
+
+<action name="PasswordManager.PasswordDropdownSelected.Others">
+  <owner>derinel@google.com</owner>
+  <owner>markusheintz@google.com</owner>
+  <description>
+    Recorded when the user selected an entry in the password dropdown, that is
+    not a password, passkey nor a passkey from another device option.
+  </description>
+</action>
+
+<action name="PasswordManager.PasswordDropdownSelected.Passkey">
+  <owner>derinel@google.com</owner>
+  <owner>markusheintz@google.com</owner>
+  <description>
+    Recorded when the user selected a passkey entry in the password dropdown.
+  </description>
+</action>
+
+<action name="PasswordManager.PasswordDropdownSelected.Password">
+  <owner>derinel@google.com</owner>
+  <owner>markusheintz@google.com</owner>
+  <description>
+    Recorded when the user selected a password entry in the password dropdown.
+  </description>
+</action>
+
+<action name="PasswordManager.PasswordDropdownSelected.UseAnotherDevice">
+  <owner>derinel@google.com</owner>
+  <owner>markusheintz@google.com</owner>
+  <description>
+    Recorded when the user selected the entry to use a passkey from another
+    device (e.g. phone or a security key) in the password dropdown.
+  </description>
+</action>
+
+<action name="PasswordManager.PasswordDropdownShown.NonWebAuthnRequest"
+    not_user_triggered="true">
+  <owner>derinel@google.com</owner>
+  <owner>markusheintz@google.com</owner>
+  <description>
+    Recorded when the password dropdown is displayed for a password form that
+    does not support passkeys, that is without
+    autocomplete=&quot;webauthn&quot;.
+  </description>
+</action>
+
+<action
+    name="PasswordManager.PasswordDropdownShown.WebAuthnRequest.OnlyPasskeys"
+    not_user_triggered="true">
+  <owner>derinel@google.com</owner>
+  <owner>markusheintz@google.com</owner>
+  <description>
+    Recorded when the password dropdown is displayed for a password form that
+    supports passkeys, that is with autocomplete=&quot;webauthn&quot;. The
+    dropdown includes only passkeys.
+  </description>
+</action>
+
+<action
+    name="PasswordManager.PasswordDropdownShown.WebAuthnRequest.OnlyPasswords"
+    not_user_triggered="true">
+  <owner>derinel@google.com</owner>
+  <owner>markusheintz@google.com</owner>
+  <description>
+    Recorded when the password dropdown is displayed for a password form that
+    supports passkeys, that is with autocomplete=&quot;webauthn&quot;. The
+    dropdown includes only passwords.
+  </description>
+</action>
+
+<action
+    name="PasswordManager.PasswordDropdownShown.WebAuthnRequest.OnlyUseAnotherDevice"
+    not_user_triggered="true">
+  <owner>derinel@google.com</owner>
+  <owner>markusheintz@google.com</owner>
+  <description>
+    Recorded when the password dropdown is displayed for a password form that
+    supports passkeys, that is with autocomplete=&quot;webauthn&quot;. The
+    dropdown includes only an entry point to use passkeys from another device
+    (e.g. a phone).
+  </description>
+</action>
+
+<action
+    name="PasswordManager.PasswordDropdownShown.WebAuthnRequest.PasswordsAndPasskeys"
+    not_user_triggered="true">
+  <owner>derinel@google.com</owner>
+  <owner>markusheintz@google.com</owner>
+  <description>
+    Recorded when the password dropdown is displayed for a password form that
+    supports passkeys, that is with autocomplete=&quot;webauthn&quot;. The
+    dropdown includes passwords and passkeys.
+  </description>
+</action>
+
 <action name="PasswordManager_Autofilled">
   <owner>vasilii@chromium.org</owner>
   <description>Username/password were autofilled on pageload.</description>

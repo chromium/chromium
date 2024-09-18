@@ -969,10 +969,14 @@ void AddPasswordRemovalReason(
     PasswordManagerCredentialRemovalReason removal_reason);
 
 // Emits histograms for the number of password and webauthn credentials in the
-// passwords popup / dropdown.
+// passwords popup / dropdown. Also emits a user action for the displayed
+// dropdown.
 void MaybeLogMetricsForPasswordAndWebauthnCounts(
     const std::vector<autofill::Suggestion>& suggestions,
     bool is_for_webauthn_request);
+
+// Emits a user action that the dropdown was hidden.
+void LogPasswordDropdownHidden();
 
 }  // namespace password_manager::metrics_util
 

@@ -289,6 +289,30 @@ void LogPasswordDropdownItemSelected(PasswordDropdownSelectedOption type,
                                 type);
   base::UmaHistogramBoolean("PasswordManager.ItemSelected.OffTheRecord",
                             off_the_record);
+
+  switch (type) {
+    case PasswordDropdownSelectedOption::kPassword:
+      base::RecordAction(base::UserMetricsAction(
+          "PasswordManager.PasswordDropdownSelected.Password"));
+      break;
+    case PasswordDropdownSelectedOption::kWebAuthn:
+      base::RecordAction(base::UserMetricsAction(
+          "PasswordManager.PasswordDropdownSelected.Passkey"));
+      break;
+    case PasswordDropdownSelectedOption::kWebAuthnSignInWithAnotherDevice:
+      base::RecordAction(base::UserMetricsAction(
+          "PasswordManager.PasswordDropdownSelected.UseAnotherDevice"));
+      break;
+    case PasswordDropdownSelectedOption::kShowAll:
+    case PasswordDropdownSelectedOption::kGenerate:
+    case PasswordDropdownSelectedOption::kUnlockAccountStorePasswords:
+    case PasswordDropdownSelectedOption::kResigninToUnlockAccountStore:
+    case PasswordDropdownSelectedOption::kUnlockAccountStoreGeneration:
+    default:
+      base::RecordAction(base::UserMetricsAction(
+          "PasswordManager.PasswordDropdownSelected.Others"));
+      break;
+  }
 }
 
 void LogPasswordSuccessfulSubmissionIndicatorEvent(
@@ -535,13 +559,36 @@ void MaybeLogMetricsForPasswordAndWebauthnCounts(
     base::UmaHistogramBoolean(
         base::StrCat({prefix, webauthn_request, "UseAnotherDeviceShown"}),
         counts.has_another_device);
-    // TODO(crbug.com/358277466): Add user actions for webauthn.
+    if (counts.password_count > 0 && counts.passkey_count > 0) {
+      base::RecordAction(
+          base::UserMetricsAction("PasswordManager.PasswordDropdownShown."
+                                  "WebAuthnRequest.PasswordsAndPasskeys"));
+    } else if (counts.password_count > 0) {
+      base::RecordAction(
+          base::UserMetricsAction("PasswordManager.PasswordDropdownShown."
+                                  "WebAuthnRequest.OnlyPasswords"));
+    } else if (counts.passkey_count > 0) {
+      base::RecordAction(
+          base::UserMetricsAction("PasswordManager.PasswordDropdownShown."
+                                  "WebAuthnRequest.OnlyPasskeys"));
+    } else {
+      base::RecordAction(
+          base::UserMetricsAction("PasswordManager.PasswordDropdownShown."
+                                  "WebAuthnRequest.OnlyUseAnotherDevice"));
+    }
   } else {
     std::string_view non_webauthn_request = "NonWebAuthnRequest.";
     base::UmaHistogramCounts100(
         base::StrCat({prefix, non_webauthn_request, "TotalCount"}),
         counts.password_count);
+    base::RecordAction(base::UserMetricsAction(
+        "PasswordManager.PasswordDropdownShown.NonWebAuthnRequest"));
     // Non-WebAuthn requests cannot have passkeys or use another device options.
   }
+}
+
+void LogPasswordDropdownHidden() {
+  base::RecordAction(
+      base::UserMetricsAction("PasswordManager.PasswordDropdownHidden"));
 }
 }  // namespace password_manager::metrics_util
