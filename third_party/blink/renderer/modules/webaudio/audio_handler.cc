@@ -37,8 +37,7 @@ AudioHandler::AudioHandler(NodeType node_type,
 #endif
   InstanceCounters::IncrementCounter(InstanceCounters::kAudioHandlerCounter);
 
-  SendLogMessage(
-      String::Format("%s({sample_rate=%0.f})", __func__, sample_rate));
+  SendLogMessage(__func__, String::Format("({sample_rate=%0.f})", sample_rate));
 #if DEBUG_AUDIONODE_REFERENCES
   fprintf(
       stderr,
@@ -357,8 +356,9 @@ void AudioHandler::ProcessIfNecessary(uint32_t frames_to_process) {
     }
 
     if (!is_processing_) {
-      SendLogMessage(String::Format("%s => (processing is alive [frames=%u])",
-                                    __func__, frames_to_process));
+      SendLogMessage(__func__,
+                     String::Format("=> (processing is alive [frames=%u])",
+                                    frames_to_process));
       is_processing_ = true;
     }
   }
@@ -583,12 +583,13 @@ unsigned AudioHandler::NumberOfOutputChannels() const {
   return 1;
 }
 
-void AudioHandler::SendLogMessage(const String& message) {
-  WebRtcLogMessage(String::Format("[WA]AH::%s [type=%s, this=0x%" PRIXPTR "]",
-                                  message.Utf8().c_str(),
-                                  NodeTypeName().Utf8().c_str(),
-                                  reinterpret_cast<uintptr_t>(this))
-                       .Utf8());
+void AudioHandler::SendLogMessage(const char* const func,
+                                  const String& message) {
+  WebRtcLogMessage(
+      String::Format("[WA]AH::%s %s [type=%s, this=0x%" PRIXPTR "]", func,
+                     message.Utf8().c_str(), NodeTypeName().Utf8().c_str(),
+                     reinterpret_cast<uintptr_t>(this))
+          .Utf8());
 }
 
 }  // namespace blink

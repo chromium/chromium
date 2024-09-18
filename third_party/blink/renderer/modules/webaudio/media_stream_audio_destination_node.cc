@@ -86,15 +86,13 @@ MediaStreamAudioDestinationNode::MediaStreamAudioDestinationNode(
   SetHandler(
       MediaStreamAudioDestinationHandler::Create(*this, number_of_channels));
   SendLogMessage(
-      String::Format("%s({context.state=%s}, {context.sampleRate=%.0f}, "
-                     "{number_of_channels=%u}, {handler=0x%" PRIXPTR
-                     "}, [this=0x%" PRIXPTR "])",
-                     __func__, context.state().Utf8().c_str(),
-                     context.sampleRate(), number_of_channels,
-                     reinterpret_cast<uintptr_t>(&Handler()),
-                     reinterpret_cast<uintptr_t>(this))
-          .Utf8()
-          .c_str());
+      __func__, String::Format(
+                    "({context.state=%s}, {context.sampleRate=%.0f}, "
+                    "{number_of_channels=%u}, {handler=0x%" PRIXPTR
+                    "}, [this=0x%" PRIXPTR "])",
+                    context.state().Utf8().c_str(), context.sampleRate(),
+                    number_of_channels, reinterpret_cast<uintptr_t>(&Handler()),
+                    reinterpret_cast<uintptr_t>(this)));
 }
 
 MediaStreamAudioDestinationNode* MediaStreamAudioDestinationNode::Create(
@@ -153,9 +151,10 @@ void MediaStreamAudioDestinationNode::ReportWillBeDestroyed() {
   GraphTracer().WillDestroyAudioNode(this);
 }
 
-void MediaStreamAudioDestinationNode::SendLogMessage(const String& message) {
+void MediaStreamAudioDestinationNode::SendLogMessage(const char* const func,
+                                                     const String& message) {
   WebRtcLogMessage(
-      String::Format("[WA]MSADN::%s", message.Utf8().c_str()).Utf8());
+      String::Format("[WA]MSADN::%s %s", func, message.Utf8().c_str()).Utf8());
 }
 
 }  // namespace blink

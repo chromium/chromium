@@ -104,6 +104,9 @@ void RealtimeAudioDestinationHandler::SetChannelCount(
     ExceptionState& exception_state) {
   DCHECK(IsMainThread());
 
+  SendLogMessage(__func__,
+                 String::Format("({channel_count=%u})", channel_count));
+
   // TODO(crbug.com/1307461): Currently creating a platform destination requires
   // a valid frame/document. This assumption is incorrect.
   if (!blink::WebLocalFrame::FrameForCurrentContext()) {
@@ -403,17 +406,28 @@ void RealtimeAudioDestinationHandler::StartPlatformDestination() {
             features::kWebAudioContextConstructorEchoCancellation) &&
         sink_descriptor_.Type() ==
             WebAudioSinkDescriptor::AudioSinkType::kAudible) {
-      if (platform_destination_->MaybeCreateSinkAndGetStatus() ==
+      const media::OutputDeviceStatus output_device_status =
+          platform_destination_->MaybeCreateSinkAndGetStatus();
+      if (output_device_status ==
           media::OutputDeviceStatus::OUTPUT_DEVICE_STATUS_OK) {
-        SendLogMessage(String::Format("%s => (sink_descriptor_=%s)", __func__,
-                                      sink_descriptor_.SinkId().Utf8().c_str())
-                           .Utf8()
-                           .c_str());
         if (auto* execution_context = Context()->GetExecutionContext()) {
           PeerConnectionDependencyFactory::From(*execution_context)
               .GetWebRtcAudioDevice()
               ->SetOutputDeviceForAec(sink_descriptor_.SinkId());
+          SendLogMessage(
+              __func__,
+              "=> sink is OK and echo cancellation reference was updated.");
+        } else {
+          SendLogMessage(
+              __func__,
+              String::Format("=> sink is OK but execution_context was null, "
+                             "echo cancellation reference was not updated."));
         }
+      } else {
+        SendLogMessage(
+            __func__,
+            String::Format("=> sink is not OK. (output_device_status=%i)",
+                           output_device_status));
       }
     }
   }
@@ -502,9 +516,13 @@ void RealtimeAudioDestinationHandler::SetSinkDescriptor(
         update_echo_cancellation_on_next_start_ ||
         (sink_descriptor_ != sink_descriptor);
     sink_descriptor_ = sink_descriptor;
+    SendLogMessage(__func__, "=> sink is OK.");
     if (was_playing) {
       StartPlatformDestination();
     }
+  } else {
+    SendLogMessage(__func__,
+                   String::Format("=> sink is not OK. (status=%i)", status));
   }
 
   std::move(callback).Run(status);
@@ -521,9 +539,13 @@ bool RealtimeAudioDestinationHandler::
 }
 
 void RealtimeAudioDestinationHandler::SendLogMessage(
+    const char* const func,
     const String& message) const {
-  WebRtcLogMessage(
-      String::Format("[WA]RADH::%s ", message.Utf8().c_str()).Utf8());
+  WebRtcLogMessage(String::Format("[WA]RADH::%s %s (sink_descriptor_=%s)", func,
+                                  message.Utf8().c_str(),
+                                  sink_descriptor_.SinkId().Utf8().c_str())
+                       .Utf8()
+                       .c_str());
 }
 
 }  // namespace blink

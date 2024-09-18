@@ -244,7 +244,7 @@ class MODULES_EXPORT AudioHandler : public ThreadSafeRefCounted<AudioHandler> {
   void SetNodeType(NodeType);
 
   // https://chromium.googlesource.com/chromium/src/+/refs/heads/main/docs/media/capture/README.md#logs
-  void SendLogMessage(const String& message);
+  void SendLogMessage(const char* const func, const String& message);
 
   bool is_initialized_ = false;
   NodeType node_type_ = kNodeTypeUnknown;

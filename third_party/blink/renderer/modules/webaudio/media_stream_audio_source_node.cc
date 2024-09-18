@@ -46,18 +46,16 @@ MediaStreamAudioSourceNode::MediaStreamAudioSourceNode(
       media_stream_(media_stream) {
   SetHandler(MediaStreamAudioSourceHandler::Create(
       *this, std::move(audio_source_provider)));
-  SendLogMessage(String::Format("%s({audio_track=[kind: %s, id: "
-                                "%s, label: %s, enabled: "
-                                "%d, muted: %d]}, {handler=0x%" PRIXPTR
-                                "}, [this=0x%" PRIXPTR "])",
-                                __func__, audio_track->kind().Utf8().c_str(),
-                                audio_track->id().Utf8().c_str(),
-                                audio_track->label().Utf8().c_str(),
-                                audio_track->enabled(), audio_track->muted(),
-                                reinterpret_cast<uintptr_t>(&Handler()),
-                                reinterpret_cast<uintptr_t>(this))
-                     .Utf8()
-                     .c_str());
+  SendLogMessage(
+      __func__,
+      String::Format(
+          "({audio_track=[kind: %s, id: "
+          "%s, label: %s, enabled: "
+          "%d, muted: %d]}, {handler=0x%" PRIXPTR "}, [this=0x%" PRIXPTR "])",
+          audio_track->kind().Utf8().c_str(), audio_track->id().Utf8().c_str(),
+          audio_track->label().Utf8().c_str(), audio_track->enabled(),
+          audio_track->muted(), reinterpret_cast<uintptr_t>(&Handler()),
+          reinterpret_cast<uintptr_t>(this)));
 }
 
 MediaStreamAudioSourceNode* MediaStreamAudioSourceNode::Create(
@@ -153,9 +151,10 @@ MediaStreamAudioSourceNode::GetMediaStreamAudioSourceHandler() const {
   return static_cast<MediaStreamAudioSourceHandler&>(Handler());
 }
 
-void MediaStreamAudioSourceNode::SendLogMessage(const String& message) {
+void MediaStreamAudioSourceNode::SendLogMessage(const char* const func,
+                                                const String& message) {
   WebRtcLogMessage(
-      String::Format("[WA]MSASN::%s", message.Utf8().c_str()).Utf8());
+      String::Format("[WA]MSASN::%s %s", func, message.Utf8().c_str()).Utf8());
 }
 
 }  // namespace blink

@@ -196,14 +196,14 @@ AudioNode* AudioNode::connect(AudioNode* destination,
     return nullptr;
   }
 
-  SendLogMessage(String::Format(
-      "%s({output=[index:%u, type:%s, handler:0x%" PRIXPTR
-      "]} --> "
-      "{input=[index:%u, type:%s, handler:0x%" PRIXPTR "]})",
-      __func__, output_index, Handler().NodeTypeName().Utf8().c_str(),
-      reinterpret_cast<uintptr_t>(&Handler()), input_index,
-      destination->Handler().NodeTypeName().Utf8().c_str(),
-      reinterpret_cast<uintptr_t>(&destination->Handler())));
+  SendLogMessage(
+      __func__, String::Format(
+                    "({output=[index:%u, type:%s, handler:0x%" PRIXPTR "]} --> "
+                    "{input=[index:%u, type:%s, handler:0x%" PRIXPTR "]})",
+                    output_index, Handler().NodeTypeName().Utf8().c_str(),
+                    reinterpret_cast<uintptr_t>(&Handler()), input_index,
+                    destination->Handler().NodeTypeName().Utf8().c_str(),
+                    reinterpret_cast<uintptr_t>(&destination->Handler())));
 
   AudioNodeWiring::Connect(Handler().Output(output_index),
                            destination->Handler().Input(input_index));
@@ -604,8 +604,9 @@ void AudioNode::DidAddOutput(unsigned number_of_outputs) {
   DCHECK_EQ(number_of_outputs, connected_params_.size());
 }
 
-void AudioNode::SendLogMessage(const String& message) {
-  WebRtcLogMessage(String::Format("[WA]AN::%s", message.Utf8().c_str()).Utf8());
+void AudioNode::SendLogMessage(const char* const func, const String& message) {
+  WebRtcLogMessage(
+      String::Format("[WA]AN::%s %s", func, message.Utf8().c_str()).Utf8());
 }
 
 }  // namespace blink
