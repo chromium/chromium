@@ -118,6 +118,14 @@ export abstract class Realm {
       delete deepSerializedValue['weakLocalObjectReference'];
     }
 
+    if (
+      (deepSerializedValue as any).type === 'node' &&
+      Object.hasOwn(deepSerializedValue?.value, 'frameId')
+    ) {
+      // `frameId` is not needed in BiDi as it is not yet specified.
+      delete deepSerializedValue.value['frameId'];
+    }
+
     // Platform object is a special case. It should have only `{type: object}`
     // without `value` field.
     if ((deepSerializedValue as any).type === 'platformobject') {
