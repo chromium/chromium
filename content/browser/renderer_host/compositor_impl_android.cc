@@ -350,9 +350,8 @@ void CompositorImpl::SetSurface(const base::android::JavaRef<jobject>& surface,
   if (window) {
     window_ = std::move(window);
     // Register first, SetVisible() might create a LayerTreeFrameSink.
-    surface_handle_ = tracker->AddSurfaceForNativeWidget(
-        gpu::GpuSurfaceTracker::SurfaceRecord(
-            std::move(scoped_surface), can_be_used_with_surface_control));
+    surface_handle_ = tracker->AddSurfaceForNativeWidget(gpu::SurfaceRecord(
+        std::move(scoped_surface), can_be_used_with_surface_control));
     SetVisible(true);
   }
 }

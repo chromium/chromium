@@ -116,14 +116,14 @@ bool SkiaOutputDeviceDawn::Initialize(gpu::SurfaceHandle surface_handle) {
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-  bool can_be_used_with_surface_control = false;
-  auto surface_variant =
-      gpu::GpuSurfaceLookup::GetInstance()->AcquireJavaSurface(
-          surface_handle, &can_be_used_with_surface_control);
+  auto surface_record =
+      gpu::GpuSurfaceLookup::GetInstance()->AcquireJavaSurface(surface_handle);
   // Should only reach here if surface control is disabled. In which case
   // browser should not be sending ScopedJavaSurfaceControl variant.
-  CHECK(absl::holds_alternative<gl::ScopedJavaSurface>(surface_variant));
-  auto& scoped_java_surface = absl::get<gl::ScopedJavaSurface>(surface_variant);
+  CHECK(absl::holds_alternative<gl::ScopedJavaSurface>(
+      surface_record.surface_variant));
+  auto& scoped_java_surface =
+      absl::get<gl::ScopedJavaSurface>(surface_record.surface_variant);
   android_native_window_ = gl::ScopedANativeWindow(scoped_java_surface);
 
   wgpu::SurfaceSourceAndroidNativeWindow android_native_window_desc;

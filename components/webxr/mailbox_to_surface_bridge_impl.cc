@@ -217,10 +217,9 @@ void MailboxToSurfaceBridgeImpl::BindContextProviderToCurrentThread() {
 void MailboxToSurfaceBridgeImpl::CreateSurface(
     gl::SurfaceTexture* surface_texture) {
   gpu::GpuSurfaceTracker* tracker = gpu::GpuSurfaceTracker::Get();
-  surface_handle_ =
-      tracker->AddSurfaceForNativeWidget(gpu::GpuSurfaceTracker::SurfaceRecord(
-          gl::ScopedJavaSurface(surface_texture),
-          false /* can_be_used_with_surface_control */));
+  surface_handle_ = tracker->AddSurfaceForNativeWidget(
+      gpu::SurfaceRecord(gl::ScopedJavaSurface(surface_texture),
+                         false /* can_be_used_with_surface_control */));
   // Unregistering happens in the destructor.
 }
 

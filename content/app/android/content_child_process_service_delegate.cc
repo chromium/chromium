@@ -66,17 +66,16 @@ class ChildProcessSurfaceManager : public gpu::ScopedSurfaceRequestConduit,
   }
 
   // Overridden from GpuSurfaceLookup:
-  JavaSurfaceVariant AcquireJavaSurface(
-      int surface_id,
-      bool* can_be_used_with_surface_control) override {
+  gpu::SurfaceRecord AcquireJavaSurface(int surface_id) override {
     JNIEnv* env = base::android::AttachCurrentThread();
     base::android::ScopedJavaLocalRef<jobject> surface_wrapper =
         content::Java_ContentChildProcessServiceDelegate_getViewSurface(
             env, service_impl_, surface_id);
     if (!surface_wrapper)
-      return gl::ScopedJavaSurface();
+      return gpu::SurfaceRecord(gl::ScopedJavaSurface(),
+                                /*can_be_used_with_surface_control=*/false);
 
-    *can_be_used_with_surface_control =
+    bool can_be_used_with_surface_control =
         JNI_SurfaceWrapper_canBeUsedWithSurfaceControl(env, surface_wrapper);
     bool wraps_surface =
         JNI_SurfaceWrapper_getWrapsSurface(env, surface_wrapper);
@@ -86,11 +85,13 @@ class ChildProcessSurfaceManager : public gpu::ScopedSurfaceRequestConduit,
           content::JNI_SurfaceWrapper_takeSurface(env, surface_wrapper),
           /*auto_release=*/true);
       DCHECK(!surface.j_surface().is_null());
-      return surface;
+      return gpu::SurfaceRecord(std::move(surface),
+                                can_be_used_with_surface_control);
     } else {
-      return gl::ScopedJavaSurfaceControl(
+      gl::ScopedJavaSurfaceControl surface_control(
           JNI_SurfaceWrapper_takeSurfaceControl(env, surface_wrapper),
           /*release_on_destroy=*/true);
+      return gpu::SurfaceRecord(std::move(surface_control));
     }
   }
 
