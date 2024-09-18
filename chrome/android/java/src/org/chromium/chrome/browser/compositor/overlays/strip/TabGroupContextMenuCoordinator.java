@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
+import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterObserver;
 import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager;
 import org.chromium.chrome.browser.tasks.tab_management.ColorPickerCoordinator;
 import org.chromium.chrome.browser.tasks.tab_management.ColorPickerCoordinator.ColorPickerLayoutType;
@@ -68,7 +69,24 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
     private String mCurrentModifiedTitle;
     private boolean mIsPresetTitleUsed;
     private WindowAndroid mWindowAndroid;
+    private boolean mIsMenuShowing;
     private KeyboardVisibilityDelegate.KeyboardVisibilityListener mKeyboardVisibilityListener;
+    private final TabGroupModelFilterObserver mTabGroupModelFilterObserver =
+            new TabGroupModelFilterObserver() {
+                @Override
+                public void didChangeTabGroupTitle(int rootId, String newTitle) {
+                    if (mIsMenuShowing && rootId == mGroupRootId) {
+                        setExistingOrDefaultTitle(newTitle);
+                    }
+                }
+
+                @Override
+                public void didChangeTabGroupColor(int rootId, @TabGroupColorId int newColor) {
+                    if (mIsMenuShowing && rootId == mGroupRootId) {
+                        setSelectedColorItem(newColor);
+                    }
+                }
+            };
 
     /**
      * @param tabModelSupplier The supplier of the tab model.
@@ -102,6 +120,7 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
                 isShowing -> {
                     if (!isShowing) updateTabGroupTitle();
                 };
+        mTabGroupModelFilter.addTabGroupObserver(mTabGroupModelFilterObserver);
     }
 
     @VisibleForTesting
@@ -161,6 +180,7 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
                 /* animStyle= */ ResourcesCompat.ID_NULL,
                 HorizontalOrientation.LAYOUT_DIRECTION,
                 mWindowAndroid.getActivity().get());
+        mIsMenuShowing = true;
         recordUserAction("Shown");
     }
 
@@ -276,6 +296,7 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
         mWindowAndroid
                 .getKeyboardDelegate()
                 .removeKeyboardVisibilityListener(mKeyboardVisibilityListener);
+        mIsMenuShowing = false;
     }
 
     @Override
@@ -288,6 +309,10 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
         if (TabUiUtils.updateTabGroupColor(mTabGroupModelFilter, mGroupRootId, newColor)) {
             recordUserAction("ColorChanged");
         }
+    }
+
+    private void setSelectedColorItem(@TabGroupColorId int newColor) {
+        mColorPickerCoordinator.setSelectedColorItem(newColor);
     }
 
     @VisibleForTesting
@@ -385,6 +410,13 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
         @TabGroupColorId
         int curGroupColor = mTabGroupModelFilter.getTabGroupColorWithFallback(mGroupRootId);
         mColorPickerCoordinator.setSelectedColorItem(curGroupColor);
+    }
+
+    public void destroy() {
+        if (mTabGroupModelFilter != null) {
+            mTabGroupModelFilter.removeTabGroupObserver(mTabGroupModelFilterObserver);
+            mTabGroupModelFilter = null;
+        }
     }
 
     private static void recordUserAction(String action) {

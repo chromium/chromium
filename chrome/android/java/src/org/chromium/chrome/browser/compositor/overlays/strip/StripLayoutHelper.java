@@ -661,6 +661,9 @@ public class StripLayoutHelper
             mTabGroupModelFilter.removeTabGroupObserver(mTabGroupModelFilterObserver);
             mTabGroupModelFilter = null;
         }
+        if (mTabGroupContextMenuCoordinator != null) {
+            mTabGroupContextMenuCoordinator.destroy();
+        }
     }
 
     /**
