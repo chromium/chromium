@@ -784,19 +784,13 @@ TEST_F(ReadAnythingAppControllerTest,
 #endif  // !IS_CHROMEOS_ASH
 
 TEST_F(ReadAnythingAppControllerTest, GetStoredVoice_NoVoices_ReturnsEmpty) {
-  scoped_feature_list_.InitWithFeatures(
-      {features::kReadAnythingReadAloud,
-       features::kReadAloudAutoVoiceSwitching},
-      {});
+  scoped_feature_list_.InitWithFeatures({features::kReadAnythingReadAloud}, {});
   ASSERT_EQ(GetStoredVoice(), "");
 }
 
 TEST_F(ReadAnythingAppControllerTest,
        GetStoredVoice_CurrentBaseLangStored_ReturnsExpectedVoice) {
-  scoped_feature_list_.InitWithFeatures(
-      {features::kReadAnythingReadAloud,
-       features::kReadAloudAutoVoiceSwitching},
-      {});
+  scoped_feature_list_.InitWithFeatures({features::kReadAnythingReadAloud}, {});
   std::string base_lang = "fr";
   std::string expected_voice_name = "French voice 1";
 
@@ -809,10 +803,7 @@ TEST_F(ReadAnythingAppControllerTest,
 
 TEST_F(ReadAnythingAppControllerTest,
        GetStoredVoice_CurrentFullLangStored_ReturnsExpectedVoice) {
-  scoped_feature_list_.InitWithFeatures(
-      {features::kReadAnythingReadAloud,
-       features::kReadAloudAutoVoiceSwitching},
-      {});
+  scoped_feature_list_.InitWithFeatures({features::kReadAnythingReadAloud}, {});
   std::string full_lang = "en-UK";
   std::string expected_voice_name = "British voice 45";
 
@@ -826,10 +817,7 @@ TEST_F(ReadAnythingAppControllerTest,
 TEST_F(
     ReadAnythingAppControllerTest,
     GetStoredVoice_BaseLangStoredButCurrentLangIsFull_ReturnsStoredBaseLang) {
-  scoped_feature_list_.InitWithFeatures(
-      {features::kReadAnythingReadAloud,
-       features::kReadAloudAutoVoiceSwitching},
-      {});
+  scoped_feature_list_.InitWithFeatures({features::kReadAnythingReadAloud}, {});
   std::string base_lang = "zh";
   std::string full_lang = "zh-TW";
   std::string expected_voice_name = "Chinese voice";
@@ -843,10 +831,7 @@ TEST_F(
 
 TEST_F(ReadAnythingAppControllerTest,
        GetStoredVoice_CurrentLangNotStored_ReturnsEmpty) {
-  scoped_feature_list_.InitWithFeatures(
-      {features::kReadAnythingReadAloud,
-       features::kReadAloudAutoVoiceSwitching},
-      {});
+  scoped_feature_list_.InitWithFeatures({features::kReadAnythingReadAloud}, {});
   std::string current_lang = "de-DE";
   std::string stored_lang = "it-IT";
 

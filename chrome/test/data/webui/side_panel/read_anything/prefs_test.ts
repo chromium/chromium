@@ -42,7 +42,6 @@ suite('PrefsTest', () => {
 
     suite('with no initial voices', () => {
       setup(() => {
-        chrome.readingMode.isAutoVoiceSwitchingEnabled = false;
         chrome.readingMode.baseLanguageForSpeech = 'en';
 
         // Set synthesis to have no available voices
