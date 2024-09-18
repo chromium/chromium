@@ -730,24 +730,6 @@ void WidgetBase::RequestNewLayerTreeFrameSink(
       viz::mojom::blink::CompositorFrameSinkClientInterfaceBase>(
       compositor_frame_sink_client.InitWithNewPipeAndPassReceiver());
 
-  static const bool gpu_channel_always_allowed =
-      base::FeatureList::IsEnabled(::features::kSharedBitmapToSharedImage);
-  if (Platform::Current()->IsGpuCompositingDisabled() &&
-      !gpu_channel_always_allowed) {
-    DCHECK(!for_web_tests);
-    widget_host_->CreateFrameSink(std::move(compositor_frame_sink_receiver),
-                                  std::move(compositor_frame_sink_client));
-    widget_host_->RegisterRenderFrameMetadataObserver(
-        std::move(render_frame_metadata_observer_client_receiver),
-        std::move(render_frame_metadata_observer_remote));
-    std::move(callback).Run(
-        std::make_unique<cc::mojo_embedder::AsyncLayerTreeFrameSink>(
-            /*context_provider=*/nullptr, /*worker_context_provider=*/nullptr,
-            /*shared_image_interface=*/nullptr, params.get()),
-        std::move(render_frame_metadata_observer));
-    return;
-  }
-
   Platform::EstablishGpuChannelCallback finish_callback =
       base::BindOnce(&WidgetBase::FinishRequestNewLayerTreeFrameSink,
                      weak_ptr_factory_.GetWeakPtr(), url,
@@ -792,10 +774,7 @@ void WidgetBase::FinishRequestNewLayerTreeFrameSink(
     return;
   }
 
-  static const bool gpu_channel_always_allowed =
-      base::FeatureList::IsEnabled(::features::kSharedBitmapToSharedImage);
-  if (Platform::Current()->IsGpuCompositingDisabled() &&
-      gpu_channel_always_allowed) {
+  if (Platform::Current()->IsGpuCompositingDisabled()) {
     widget_host_->CreateFrameSink(std::move(compositor_frame_sink_receiver),
                                   std::move(compositor_frame_sink_client));
     widget_host_->RegisterRenderFrameMetadataObserver(

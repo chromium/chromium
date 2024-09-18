@@ -579,15 +579,11 @@ void GpuServiceImpl::InitializeWithHost(
     // corresponding to a mailbox.
     const bool display_context_on_another_thread =
         features::IsDrDcEnabled() && !gpu_driver_bug_workarounds_.disable_drdc;
-    bool thread_safe_manager = display_context_on_another_thread;
-    // Raw draw needs to access shared image backing on the compositor thread.
-    thread_safe_manager |= features::IsUsingRawDraw();
-#if BUILDFLAG(IS_OZONE)
-    constexpr bool kAlwaysUseRealBufferTestingOnOzone = true;
-    thread_safe_manager |= kAlwaysUseRealBufferTestingOnOzone;
-#endif
-    thread_safe_manager |=
-        base::FeatureList::IsEnabled(features::kSharedBitmapToSharedImage);
+
+    // |display_context_on_another_thread|, features::IsUsingRawDraw(),
+    // kAlwaysUseRealBufferTestingOnOzone, and kSharedBitmapToSharedImage
+    // requires |thread_safe_manager| to be true.
+    bool thread_safe_manager = true;
     owned_shared_image_manager_ = std::make_unique<gpu::SharedImageManager>(
         thread_safe_manager, display_context_on_another_thread);
     shared_image_manager = owned_shared_image_manager_.get();
