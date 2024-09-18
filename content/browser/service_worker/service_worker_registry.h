@@ -44,9 +44,6 @@ class ServiceWorkerVersion;
 class ServiceWorkerRegistryTest;
 FORWARD_DECLARE_TEST(ServiceWorkerRegistryTest, StoragePolicyChange);
 
-CONTENT_EXPORT BASE_DECLARE_FEATURE(
-    kServiceWorkerMergeFindRegistrationForClientUrl);
-
 // Manages in-memory representation of service worker registrations
 // (i.e., ServiceWorkerRegistration) including installing and uninstalling
 // registrations. Owned by ServiceWorkerContextCore and has the same lifetime of

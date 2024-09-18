@@ -172,11 +172,6 @@ constexpr size_t kServiceWorkerRegistrationCacheSize = 100;
 
 }  // namespace
 
-// Enables merging duplicate calls of FindRegistrationForClientUrl.
-BASE_FEATURE(kServiceWorkerMergeFindRegistrationForClientUrl,
-             "ServiceWorkerMergeFindRegistrationForClientUrl",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 template <typename... ReplyArgs>
 class InflightCallWithInvoker final
     : public ServiceWorkerRegistry::InflightCall {
@@ -370,53 +365,34 @@ void ServiceWorkerRegistry::FindRegistrationForClientUrl(
       }
     }
   }
-  if (base::FeatureList::IsEnabled(
-          kServiceWorkerMergeFindRegistrationForClientUrl)) {
-    std::vector<FindRegistrationCallback>& callbacks =
-        find_registration_callbacks_[std::make_pair(client_url, key)];
-    callbacks.push_back(std::move(callback));
-    if (callbacks.size() >= 2) {
-      // Merges duplicate requests into the preceding in-flight request.
-      return;
-    }
-    FindRegistrationForClientUrlTraceEventBegin(trace_event_id, client_url);
-    if (no_registration) {
-      DidFindRegistrationForClientUrl(
-          client_url, key, trace_event_id,
-          // Pass a fake callback here as the proper callback will
-          // be invoked via find_registration_callbacks_
-          /*callback=*/base::DoNothing(),
-          storage::mojom::ServiceWorkerDatabaseStatus::kErrorNotFound, nullptr,
-          std::vector(scopes->begin(), scopes->end()));
-      return;
-    }
-    CreateInvokerAndStartRemoteCall(
-        &storage::mojom::ServiceWorkerStorageControl::
-            FindRegistrationForClientUrl,
-        base::BindOnce(&ServiceWorkerRegistry::DidFindRegistrationForClientUrl,
-                       weak_factory_.GetWeakPtr(), client_url, key,
-                       trace_event_id,
-                       // Pass a fake callback here as the proper callback will
-                       // be invoked via find_registration_callbacks_
-                       /*callback=*/base::DoNothing()),
-        client_url, key);
-  } else {
-    FindRegistrationForClientUrlTraceEventBegin(trace_event_id, client_url);
-    if (no_registration) {
-      DidFindRegistrationForClientUrl(
-          client_url, key, trace_event_id, std::move(callback),
-          storage::mojom::ServiceWorkerDatabaseStatus::kErrorNotFound, nullptr,
-          std::vector(scopes->begin(), scopes->end()));
-      return;
-    }
-    CreateInvokerAndStartRemoteCall(
-        &storage::mojom::ServiceWorkerStorageControl::
-            FindRegistrationForClientUrl,
-        base::BindOnce(&ServiceWorkerRegistry::DidFindRegistrationForClientUrl,
-                       weak_factory_.GetWeakPtr(), client_url, key,
-                       trace_event_id, std::move(callback)),
-        client_url, key);
+  std::vector<FindRegistrationCallback>& callbacks =
+      find_registration_callbacks_[std::make_pair(client_url, key)];
+  callbacks.push_back(std::move(callback));
+  if (callbacks.size() >= 2) {
+    // Merges duplicate requests into the preceding in-flight request.
+    return;
   }
+  FindRegistrationForClientUrlTraceEventBegin(trace_event_id, client_url);
+  if (no_registration) {
+    DidFindRegistrationForClientUrl(
+        client_url, key, trace_event_id,
+        // Pass a fake callback here as the proper callback will
+        // be invoked via find_registration_callbacks_
+        /*callback=*/base::DoNothing(),
+        storage::mojom::ServiceWorkerDatabaseStatus::kErrorNotFound, nullptr,
+        std::vector(scopes->begin(), scopes->end()));
+    return;
+  }
+  CreateInvokerAndStartRemoteCall(
+      &storage::mojom::ServiceWorkerStorageControl::
+          FindRegistrationForClientUrl,
+      base::BindOnce(&ServiceWorkerRegistry::DidFindRegistrationForClientUrl,
+                     weak_factory_.GetWeakPtr(), client_url, key,
+                     trace_event_id,
+                     // Pass a fake callback here as the proper callback will
+                     // be invoked via find_registration_callbacks_
+                     /*callback=*/base::DoNothing()),
+      client_url, key);
 }
 
 void ServiceWorkerRegistry::FindRegistrationForScope(
@@ -1209,15 +1185,9 @@ void ServiceWorkerRegistry::DidFindRegistrationForClientUrl(
           (installing_status == blink::ServiceWorkerStatusCode::kOk)
               ? "Installing registration is found"
               : "Any registrations are not found");
-      if (base::FeatureList::IsEnabled(
-              kServiceWorkerMergeFindRegistrationForClientUrl)) {
-        RunFindRegistrationCallbacks(client_url, key,
-                                     std::move(installing_registration),
-                                     installing_status);
-      } else {
-        CompleteFindNow(std::move(installing_registration), installing_status,
-                        std::move(callback));
-      }
+      RunFindRegistrationCallbacks(client_url, key,
+                                   std::move(installing_registration),
+                                   installing_status);
       return;
     }
   }
@@ -1243,13 +1213,8 @@ void ServiceWorkerRegistry::DidFindRegistrationForClientUrl(
 
   FindRegistrationForClientUrlTraceEventEnd(trace_event_id, status,
                                             std::nullopt);
-  if (base::FeatureList::IsEnabled(
-          kServiceWorkerMergeFindRegistrationForClientUrl)) {
-    RunFindRegistrationCallbacks(client_url, key, std::move(registration),
-                                 status);
-  } else {
-    CompleteFindNow(std::move(registration), status, std::move(callback));
-  }
+  RunFindRegistrationCallbacks(client_url, key, std::move(registration),
+                               status);
 }
 
 void ServiceWorkerRegistry::RunFindRegistrationCallbacks(

@@ -2057,21 +2057,18 @@ NavigationRequest::NavigationRequest(
     // requests will be merged into this preflight request in
     // `ServiceWorkerRegistry::FindRegistrationForClientUrl()` and
     // `ServiceWorkerRegistry::RunFindRegistrationCallbacks()` later.
-    if (base::FeatureList::IsEnabled(
-            kServiceWorkerMergeFindRegistrationForClientUrl)) {
-      if (ServiceWorkerContext* context =
-              frame_tree_node_->navigator()
-                  .controller()
-                  .GetBrowserContext()
-                  ->GetStoragePartition(site_info_.storage_partition_config())
-                  ->GetServiceWorkerContext()) {
-        const blink::StorageKey key = blink::StorageKey::CreateFirstParty(
-            GetTentativeOriginAtRequestTime());
-        if (context->MaybeHasRegistrationForStorageKey(key)) {
-          // `CheckHasServiceWorker` calls `FindRegistrationForClientUrl`
-          // internally.
-          context->CheckHasServiceWorker(GetURL(), key, base::DoNothing());
-        }
+    if (ServiceWorkerContext* context =
+            frame_tree_node_->navigator()
+                .controller()
+                .GetBrowserContext()
+                ->GetStoragePartition(site_info_.storage_partition_config())
+                ->GetServiceWorkerContext()) {
+      const blink::StorageKey key = blink::StorageKey::CreateFirstParty(
+          GetTentativeOriginAtRequestTime());
+      if (context->MaybeHasRegistrationForStorageKey(key)) {
+        // `CheckHasServiceWorker` calls `FindRegistrationForClientUrl`
+        // internally.
+        context->CheckHasServiceWorker(GetURL(), key, base::DoNothing());
       }
     }
 
