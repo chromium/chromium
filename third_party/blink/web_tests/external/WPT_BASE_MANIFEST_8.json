@@ -147334,7 +147334,7 @@
      },
      "text-box-trim": {
       "text-box-trim-accumulation-001.html": [
-       "2429640f284459341d1494856386fd8a3013de54",
+       "ae6765f6f64dafcd038eb584a18f677d82bb97c0",
        [
         null,
         [
@@ -147736,7 +147736,7 @@
        ]
       ],
       "text-box-trim-height-002.html": [
-       "a3743e4bf9fac7b7938bb8dcb90795e93c9e941a",
+       "d2d59d46d037b7433fbcf9fc2730622b67b9a889",
        [
         null,
         [
@@ -259086,12 +259086,12 @@
       ]
      ],
      "table-progression-htb-002.html": [
-      "4007e0400f892dcd591a54197f59a5a03a874f97",
+      "4e875054f85af479a36eb1e0c2321ee059d939be",
       [
        null,
        [
         [
-         "/css/css-writing-modes/table-progression-002-ref.html",
+         "/css/css-writing-modes/table-progression-htb-002-ref.html",
          "=="
         ]
        ],
@@ -283783,19 +283783,6 @@
           {}
          ]
         ],
-        "border-rendering.tentative.html": [
-         "3265143624b3feb89d723acd4819917c63518219",
-         [
-          null,
-          [
-           [
-            "/html/semantics/forms/the-select-element/customizable-select/border-rendering-ref.html",
-            "=="
-           ]
-          ],
-          {}
-         ]
-        ],
         "closed-listbox-rendering.tentative.html": [
          "4d46aba2281a057405a534e747a6e736be7b5719",
          [
@@ -306549,6 +306536,14 @@
     },
     "partitioned-cookies": {
      "resources": {
+      "ancestor-chain-cross-site-embed.html": [
+       "fbe2906737d5c4bf543022e2c443908e4a5159b5",
+       []
+      ],
+      "ancestor-chain-same-site-embed.html": [
+       "f40364379514854a7acb5d56a9e85b2c7200e4c3",
+       []
+      ],
       "partitioned-cookies-cross-site-embed.html": [
        "05a99626dc4211c64b9e092366e0e3ed4933ab39",
        []
@@ -334458,7 +334453,7 @@
        []
       ],
       "text-box-trim-half-leading-block-box-001-ref.html": [
-       "403eee5f842542f336ae2fff9e2640bc1cd811b9",
+       "4aaf3375abbdfcd9c79738d63285486011e2ffcc",
        []
       ],
       "text-box-trim-half-leading-block-box-002-ref.html": [
@@ -334474,7 +334469,7 @@
        []
       ],
       "text-box-trim-height-002-ref.html": [
-       "ae6a271312f04f0cce103ea593a3396de5049626",
+       "dc9855663c61014a6bcec611cd33a1f0645635b6",
        []
       ],
       "text-box-trim-ignore-nested-text-box-edge-ref.html": [
@@ -334486,7 +334481,7 @@
        []
       ],
       "text-box-trim-initial-letter-start-001-ref.html": [
-       "c1baf7957f7aa3b5b1fa3599f9d9807f235a667b",
+       "7a3adc8b7e2082ab9c3fc3ef7abf2e4cb3996cc7",
        []
       ],
       "text-box-trim-line-clamp-001-ref.html": [
@@ -383295,10 +383290,6 @@
          "72abb8843f6dab611347c60a5c3ab06860f3a33b",
          []
         ],
-        "border-rendering-ref.html": [
-         "61c68160585f80cc04569334421ee5f70ad5e7b8",
-         []
-        ],
         "closed-listbox-rendering-ref.html": [
          "d1a1f1bb61ff377679eac4c19efe0f8c4071a4ba",
          []
@@ -406293,10 +406284,6 @@
      "6ce2110d82390fcf559e572c70e83a74a90b0555",
      []
     ],
-    "default-policy-callback-arguments-expected.txt": [
-     "83c833d496b2f0bdd6070a8254e40094d54dc5f5",
-     []
-    ],
     "default-policy-report-only.html.headers": [
      "4c1ff15e167a9581839c64532078440689ca741c",
      []
@@ -406327,10 +406314,6 @@
     ],
     "no-require-trusted-types-for-report-only.html.headers": [
      "aa00fcc15a30ef1f8968be44abc1a9e934a31979",
-     []
-    ],
-    "require-trusted-types-for-expected.txt": [
-     "29180ace9913dcf6ff0b83f46c0f3f2d399db2e7",
      []
     ],
     "require-trusted-types-for-report-only.html.headers": [
@@ -409034,7 +409017,7 @@
      []
     ],
     "OWNERS": [
-     "32f919a5312cdacd356c3e59b4fbaa170a84e7f0",
+     "68dad0cea82466eb42ef21c2b1f4a76b74752777",
      []
     ],
     "README.md": [
@@ -452307,6 +452290,15 @@
      ]
     },
     "partitioned-cookies": {
+     "partitioned-cookies-a-b-a-embed.tentative.https.html": [
+      "512c17f5fb7dee6e8fc5b09a213c875b59b3a210",
+      [
+       null,
+       {
+        "timeout": "long"
+       }
+      ]
+     ],
      "partitioned-cookies-cross-site-subresource-to-same-site-redirect.tentative.https.html": [
       "3a0afcec692f35d7b61ea88089e6ac7550af0dd4",
       [
