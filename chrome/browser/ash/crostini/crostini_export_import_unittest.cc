@@ -107,7 +107,7 @@ class CrostiniExportImportTest : public testing::Test {
     signal.set_total_input_bytes(arguments.total_bytes);
     signal.set_input_files_streamed(arguments.files_streamed);
     signal.set_input_bytes_streamed(arguments.bytes_streamed);
-    fake_cicerone_client_->NotifyExportLxdContainerProgress(signal);
+    ash::FakeCiceroneClient::Get()->NotifyExportLxdContainerProgress(signal);
   }
 
   void SendDiskImageProgress(const guest_os::GuestId& container_id,
@@ -116,7 +116,7 @@ class CrostiniExportImportTest : public testing::Test {
     vm_tools::concierge::DiskImageStatusResponse signal;
     signal.set_status(status);
     signal.set_progress(progress);
-    fake_concierge_client_->NotifyDiskImageProgress(signal);
+    ash::FakeConciergeClient::Get()->NotifyDiskImageProgress(signal);
   }
 
   void SendImportProgress(
@@ -133,7 +133,7 @@ class CrostiniExportImportTest : public testing::Test {
     signal.set_architecture_container("arch_con");
     signal.set_available_space(arguments.available_space);
     signal.set_min_required_space(arguments.min_required_space);
-    fake_cicerone_client_->NotifyImportLxdContainerProgress(signal);
+    ash::FakeCiceroneClient::Get()->NotifyImportLxdContainerProgress(signal);
   }
 
   CrostiniExportImportTest()
@@ -143,9 +143,6 @@ class CrostiniExportImportTest : public testing::Test {
     ash::CiceroneClient::InitializeFake();
     ash::ConciergeClient::InitializeFake();
     ash::SeneschalClient::InitializeFake();
-    fake_seneschal_client_ = ash::FakeSeneschalClient::Get();
-    fake_cicerone_client_ = ash::FakeCiceroneClient::Get();
-    fake_concierge_client_ = ash::FakeConciergeClient::Get();
   }
 
   CrostiniExportImportTest(const CrostiniExportImportTest&) = delete;
@@ -200,10 +197,6 @@ class CrostiniExportImportTest : public testing::Test {
 
  protected:
   Profile* profile() { return profile_.get(); }
-
-  raw_ptr<ash::FakeCiceroneClient, DanglingUntriaged> fake_cicerone_client_;
-  raw_ptr<ash::FakeSeneschalClient, DanglingUntriaged> fake_seneschal_client_;
-  raw_ptr<ash::FakeConciergeClient, DanglingUntriaged> fake_concierge_client_;
 
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<CrostiniExportImport> crostini_export_import_;
@@ -408,7 +401,7 @@ TEST_F(CrostiniExportImportTest, TestExportSuccess) {
   crostini_export_import_->FillOperationData(ExportImportType::EXPORT);
   crostini_export_import_->FileSelected(ui::SelectedFileInfo(tarball_), 0);
   task_environment_.RunUntilIdle();
-  EXPECT_TRUE(fake_seneschal_client_->share_path_called());
+  EXPECT_TRUE(ash::FakeSeneschalClient::Get()->share_path_called());
   base::WeakPtr<CrostiniExportImportNotificationController> controller =
       GetController(default_container_id_);
   ASSERT_NE(controller, nullptr);
@@ -509,7 +502,7 @@ TEST_F(CrostiniExportImportTest, TestExportCustomVmContainerSuccess) {
                                              custom_container_id_);
   crostini_export_import_->FileSelected(ui::SelectedFileInfo(tarball_), 0);
   task_environment_.RunUntilIdle();
-  EXPECT_TRUE(fake_seneschal_client_->share_path_called());
+  EXPECT_TRUE(ash::FakeSeneschalClient::Get()->share_path_called());
   base::WeakPtr<CrostiniExportImportNotificationController> controller =
       GetController(custom_container_id_);
   ASSERT_NE(controller, nullptr);
@@ -747,7 +740,7 @@ TEST_F(CrostiniExportImportTest, TestImportSuccess) {
   crostini_export_import_->FillOperationData(ExportImportType::IMPORT);
   crostini_export_import_->FileSelected(ui::SelectedFileInfo(tarball_), 0);
   task_environment_.RunUntilIdle();
-  EXPECT_TRUE(fake_seneschal_client_->share_path_called());
+  EXPECT_TRUE(ash::FakeSeneschalClient::Get()->share_path_called());
   base::WeakPtr<CrostiniExportImportNotificationController> controller =
       GetController(default_container_id_);
   ASSERT_NE(controller, nullptr);
@@ -835,7 +828,7 @@ TEST_F(CrostiniExportImportTest, TestImportCustomVmContainerSuccess) {
                                              custom_container_id_);
   crostini_export_import_->FileSelected(ui::SelectedFileInfo(tarball_), 0);
   task_environment_.RunUntilIdle();
-  EXPECT_TRUE(fake_seneschal_client_->share_path_called());
+  EXPECT_TRUE(ash::FakeSeneschalClient::Get()->share_path_called());
   base::WeakPtr<CrostiniExportImportNotificationController> controller =
       GetController(custom_container_id_);
   ASSERT_NE(controller, nullptr);
