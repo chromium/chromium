@@ -43,9 +43,7 @@ class ASH_EXPORT BirchBarController : public BirchModel::Observer,
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
-  // TODO(http://b/361326120): Temporary getter for the first bar view before
-  // the menu ownership is defined.
-  BirchBarView* primary_birch_bar_view() { return bar_views_.front(); }
+  std::vector<raw_ptr<BirchBarView>>& bar_views() { return bar_views_; }
 
   // Register a bar view.
   void RegisterBar(BirchBarView* bar_view);
