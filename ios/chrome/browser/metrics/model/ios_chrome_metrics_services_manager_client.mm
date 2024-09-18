@@ -95,12 +95,9 @@ IOSChromeMetricsServicesManagerClient::GetURLLoaderFactory() {
   return GetApplicationContext()->GetSharedURLLoaderFactory();
 }
 
-bool IOSChromeMetricsServicesManagerClient::IsMetricsReportingEnabled() {
-  return enabled_state_provider_->IsReportingEnabled();
-}
-
-bool IOSChromeMetricsServicesManagerClient::IsMetricsConsentGiven() {
-  return enabled_state_provider_->IsConsentGiven();
+const metrics::EnabledStateProvider&
+IOSChromeMetricsServicesManagerClient::GetEnabledStateProvider() {
+  return *enabled_state_provider_;
 }
 
 bool IOSChromeMetricsServicesManagerClient::IsOffTheRecordSessionActive() {

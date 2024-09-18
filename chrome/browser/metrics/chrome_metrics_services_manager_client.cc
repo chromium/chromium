@@ -307,11 +307,6 @@ void ChromeMetricsServicesManagerClient::OnCrosSettingsCreated() {
 }
 #endif
 
-const metrics::EnabledStateProvider&
-ChromeMetricsServicesManagerClient::GetEnabledStateProviderForTesting() {
-  return *enabled_state_provider_;
-}
-
 std::unique_ptr<variations::VariationsService>
 ChromeMetricsServicesManagerClient::CreateVariationsService(
     variations::SyntheticTrialRegistry* synthetic_trial_registry) {
@@ -416,12 +411,9 @@ ChromeMetricsServicesManagerClient::GetURLLoaderFactory() {
       ->GetSharedURLLoaderFactory();
 }
 
-bool ChromeMetricsServicesManagerClient::IsMetricsReportingEnabled() {
-  return enabled_state_provider_->IsReportingEnabled();
-}
-
-bool ChromeMetricsServicesManagerClient::IsMetricsConsentGiven() {
-  return enabled_state_provider_->IsConsentGiven();
+const metrics::EnabledStateProvider&
+ChromeMetricsServicesManagerClient::GetEnabledStateProvider() {
+  return *enabled_state_provider_;
 }
 
 bool ChromeMetricsServicesManagerClient::IsOffTheRecordSessionActive() {
