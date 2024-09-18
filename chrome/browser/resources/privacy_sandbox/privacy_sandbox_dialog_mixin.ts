@@ -41,9 +41,9 @@ export const PrivacySandboxDialogMixin = dedupingMixin(
                 PrivacySandboxPromptAction.CONSENT_MORE_INFO_OPENED);
             // If the iframe hasn't been loaded yet, load it the first time the
             // learn more expand section is clicked.
-            if (this.shadowRoot!
-                    .querySelector<HTMLIFrameElement>('#privacyPolicy')!.src ===
-                '') {
+            const iframe = this.shadowRoot!.querySelector<HTMLIFrameElement>(
+                '#privacyPolicy');
+            if (iframe && iframe!.src === '') {
               this.shadowRoot!.querySelector<HTMLElement>(
                                   '.iframe-container')!.style.display = 'block';
               this.shadowRoot!

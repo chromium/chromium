@@ -10,6 +10,7 @@ import './strings.m.js';
 import './shared_style.css.js';
 import './privacy_sandbox_dialog_learn_more.js';
 
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {PrivacySandboxPromptAction} from './privacy_sandbox_dialog_browser_proxy.js';
@@ -35,14 +36,41 @@ export class PrivacySandboxDialogConsentStepElement extends
         type: Boolean,
         observer: 'onConsentLearnMoreExpandedChanged',
       },
+      isPrivacySandboxPrivacyPolicyEnabled_: {
+        type: Boolean,
+        value: () =>
+            loadTimeData.getBoolean('isPrivacySandboxPrivacyPolicyEnabled'),
+      },
     };
   }
 
   private privacyPolicyPageClickStartTime_: number;
   private privacyPolicyPageLoadEndTime_: number;
+  private isPrivacySandboxPrivacyPolicyEnabled_: boolean;
 
   override ready() {
     super.ready();
+
+    // Hide pre-loading the privacy policy page behind a flag.
+    if (this.isPrivacySandboxPrivacyPolicyEnabled_) {
+      const button = document.createElement('cr-icon-button');
+      button.id = 'backButton';
+      button.className = 'icon-arrow-back back-button hidden';
+      button.onclick = () => {
+        this.onBackToNotice_();
+      };
+
+      const iframe = document.createElement('iframe');
+      iframe.id = 'privacyPolicy';
+      iframe.className = 'iframe hidden';
+      iframe.tabIndex = -1;
+      iframe.setAttribute('frameBorder', '0');
+
+      this.shadowRoot!.querySelector<HTMLElement>(
+                          '.iframe-container')!.appendChild(button);
+      this.shadowRoot!.querySelector<HTMLElement>(
+                          '.iframe-container')!.appendChild(iframe);
+    }
 
     window.addEventListener('message', event => {
       if (event.data.id === 'privacy-policy-loaded') {
