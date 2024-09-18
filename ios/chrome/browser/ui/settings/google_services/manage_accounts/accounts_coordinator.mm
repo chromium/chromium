@@ -187,8 +187,14 @@ using signin_metrics::PromoAction;
   if ([_viewController respondsToSelector:@selector(settingsWillBeDismissed)]) {
     [_viewController performSelector:@selector(settingsWillBeDismissed)];
   }
-  [_viewController.navigationController dismissViewControllerAnimated:YES
-                                                           completion:nil];
+  if (_closeSettingsOnAddAccount) {
+    [base::apple::ObjCCastStrict<SettingsNavigationController>(
+        _viewController.navigationController)
+        popViewControllerOrCloseSettingsAnimated:YES];
+  } else {
+    [_viewController.navigationController dismissViewControllerAnimated:YES
+                                                             completion:nil];
+  }
   [self stop];
 }
 
@@ -366,9 +372,6 @@ using signin_metrics::PromoAction;
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
   CHECK(!AuthenticationServiceFactory::GetForBrowserState(browserState)
              ->HasPrimaryIdentity(signin::ConsentLevel::kSignin));
-  [base::apple::ObjCCastStrict<SettingsNavigationController>(
-      _viewController.navigationController)
-      popViewControllerOrCloseSettingsAnimated:YES];
   [self closeSettings];
 }
 
