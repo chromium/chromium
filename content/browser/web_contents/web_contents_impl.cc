@@ -11350,12 +11350,11 @@ void WebContentsImpl::WarmUpAndroidSpareRenderer() {
   int renderer_timeout_seconds =
       features::kAndroidSpareRendererTimeoutSeconds.Get();
   if (renderer_timeout_seconds < 0) {
-    SpareRenderProcessHostManager::GetInstance().WarmupSpareRenderProcessHost(
-        GetBrowserContext());
+    SpareRenderProcessHostManager::Get().WarmupSpare(GetBrowserContext());
   } else {
     base::TimeDelta timeout = base::Seconds(renderer_timeout_seconds);
-    SpareRenderProcessHostManager::GetInstance().WarmupSpareRenderProcessHost(
-        GetBrowserContext(), timeout);
+    SpareRenderProcessHostManager::Get().WarmupSpare(GetBrowserContext(),
+                                                     timeout);
   }
 }
 

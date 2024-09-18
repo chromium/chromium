@@ -1365,8 +1365,7 @@ void RenderProcessHost::SetMaxRendererProcessCount(size_t count) {
   g_max_renderer_count_override = count;
 
   if (RenderProcessHostImpl::GetProcessCount() > count) {
-    SpareRenderProcessHostManager::GetInstance()
-        .CleanupSpareRenderProcessHost();
+    SpareRenderProcessHostManager::Get().CleanupSpare();
   }
 }
 
@@ -3030,7 +3029,7 @@ void RenderProcessHostImpl::RemoveExpectedNavigationToSite(
 // static
 void RenderProcessHostImpl::NotifySpareManagerAboutRecentlyUsedSiteInstance(
     SiteInstance* site_instance) {
-  SpareRenderProcessHostManager::GetInstance().PrepareForFutureRequests(
+  SpareRenderProcessHostManager::Get().PrepareForFutureRequests(
       site_instance->GetBrowserContext(),
       GetContentClient()->browser()->GetSpareRendererDelayForSiteURL(
           site_instance->GetSiteURL()));
@@ -3038,8 +3037,7 @@ void RenderProcessHostImpl::NotifySpareManagerAboutRecentlyUsedSiteInstance(
 
 // static
 RenderProcessHost* RenderProcessHost::GetSpareRenderProcessHost() {
-  return SpareRenderProcessHostManager::GetInstance()
-      .spare_render_process_host();
+  return SpareRenderProcessHostManager::Get().spare();
 }
 
 // static
@@ -3051,13 +3049,12 @@ RenderProcessHost* RenderProcessHost::GetSpareRenderProcessHostForTesting() {
 base::CallbackListSubscription
 RenderProcessHost::RegisterSpareRenderProcessHostChangedCallback(
     const base::RepeatingCallback<void(RenderProcessHost*)>& cb) {
-  return SpareRenderProcessHostManager::GetInstance()
-      .RegisterSpareRenderProcessHostChangedCallback(cb);
+  return SpareRenderProcessHostManager::Get().RegisterSpareChangedCallback(cb);
 }
 
 // static
 void RenderProcessHostImpl::DiscardSpareRenderProcessHostForTesting() {
-  SpareRenderProcessHostManager::GetInstance().CleanupSpareRenderProcessHost();
+  SpareRenderProcessHostManager::Get().CleanupSpare();
 }
 
 // static
@@ -3103,8 +3100,7 @@ bool RenderProcessHostImpl::HostHasNotBeenUsed() {
 }
 
 bool RenderProcessHostImpl::IsSpare() const {
-  return this == SpareRenderProcessHostManager::GetInstance()
-                     .spare_render_process_host();
+  return this == SpareRenderProcessHostManager::Get().spare();
 }
 
 void RenderProcessHostImpl::SetProcessLock(
@@ -4499,8 +4495,7 @@ bool RenderProcessHostImpl::ShouldDelayProcessShutdown() {
 // static
 void RenderProcessHost::WarmupSpareRenderProcessHost(
     content::BrowserContext* browser_context) {
-  SpareRenderProcessHostManager::GetInstance().WarmupSpareRenderProcessHost(
-      browser_context);
+  SpareRenderProcessHostManager::Get().WarmupSpare(browser_context);
 }
 
 // static
@@ -4595,8 +4590,7 @@ RenderProcessHost* RenderProcessHostImpl::GetExistingProcessHost(
   for (iterator iter(AllHostsIterator()); !iter.IsAtEnd(); iter.Advance()) {
     // The spare RenderProcessHost will have been considered by this point.
     // Ensure it is not added to the collection of suitable renderers.
-    if (iter.GetCurrentValue() == SpareRenderProcessHostManager::GetInstance()
-                                      .spare_render_process_host()) {
+    if (iter.GetCurrentValue()->IsSpare()) {
       continue;
     }
     if (MayReuseAndIsSuitable(iter.GetCurrentValue(), site_instance))
@@ -4753,11 +4747,11 @@ RenderProcessHost* RenderProcessHostImpl::GetProcessHostForSiteInstance(
   }
 
   // If not (or if none found), see if the spare RenderProcessHost can be used.
-  auto& spare_process_manager = SpareRenderProcessHostManager::GetInstance();
+  auto& spare_process_manager = SpareRenderProcessHostManager::Get();
   bool spare_was_taken = false;
   if (!render_process_host) {
-    render_process_host = spare_process_manager.MaybeTakeSpareRenderProcessHost(
-        browser_context, site_instance);
+    render_process_host =
+        spare_process_manager.MaybeTakeSpare(browser_context, site_instance);
     if (render_process_host) {
       site_instance->set_process_assignment(
           SiteInstanceProcessAssignment::USED_SPARE_PROCESS);

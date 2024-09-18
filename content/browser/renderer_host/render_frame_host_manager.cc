@@ -1693,9 +1693,8 @@ RenderFrameHostManager::GetFrameHostForNavigation(
             frame_tree_node_)) {
       if (features::kWarmupSpareProcessCreationWhenDeferRFH.Get() &&
           !dest_site_instance->HasProcess()) {
-        SpareRenderProcessHostManager::GetInstance()
-            .WarmupSpareRenderProcessHost(
-                dest_site_instance->GetBrowserContext());
+        SpareRenderProcessHostManager::Get().WarmupSpare(
+            dest_site_instance->GetBrowserContext());
         defer_action =
             DeferSpeculativeRFHAction::kDeferredWithRenderProcessWarmUp;
       } else {
