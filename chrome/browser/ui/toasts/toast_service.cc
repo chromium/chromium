@@ -73,4 +73,14 @@ void ToastService::RegisterToasts(
                                   IDS_LENS_OVERLAY_INITIAL_TOAST_MESSAGE)
           .AddPersistance()
           .Build());
+
+  // TODO(crbug.com/357930023): This registration only partially implements the
+  // non-milestone update toast for testing purposes and will need to be
+  // updated.
+  toast_registry_->RegisterToast(
+      ToastId::kNonMilestoneUpdate,
+      ToastSpecification::Builder(kLinkChromeRefreshIcon,
+                                  IDS_LINK_COPIED_TOAST_BODY)
+          .AddGlobalScoped()
+          .Build());
 }

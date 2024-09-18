@@ -64,6 +64,26 @@ an action button:
 1. A toast with an action button must also have a "X" close button.
 2. A toast with an action button cannot have a three dot menu.
 
+#### Registering Global Toast
+```
+void ToastService::RegisterToast(BrowserWindowInterface* interface) {
+  ...
+  toast_registry_->RegisterToast(
+    ToastId,
+    ToastSpecification::Builder(vector_icon, string_id)
+        .AddGlobalScope()
+        .Build());
+}
+```
+
+Toasts are not global scoped by default because most toasts are only relevant
+for the active page and should hide when the user switches tabs or navigates
+to another page.
+
+However, toasts can be globally scoped so that they will not automatically
+dismiss due to tab switch or page navigation. The toast will automatically
+dismiss after showing for a certain duration similar to tab scoped toasts.
+
 ### 3. Trigger your Toast
 When you want to trigger your toast to show, you will need to retrieve the
 [ToastController](toast_controller.h) through
