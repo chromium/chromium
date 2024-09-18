@@ -114,7 +114,9 @@ void AudioWorkletHandler::Process(uint32_t frames_to_process) {
   // state. If so, silence the connected outputs and return.
   if (!processor_ || processor_->hasErrorOccurred()) {
     for (unsigned i = 0; i < NumberOfOutputs(); ++i) {
-      Output(i).Bus()->Zero();
+      if (Output(i).IsConnectedDuringRendering()) {
+        Output(i).Bus()->Zero();
+      }
     }
     return;
   }
