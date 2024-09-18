@@ -1595,6 +1595,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="211803431539496924">Confirmar as atualizações de segurança alargadas?</translation>
 <translation id="2118594521750010466">Corrigir agora</translation>
 <translation id="2119461801241504254">A Navegação segura está ativada e a oferecer-lhe proteção contra transferências e sites prejudiciais.</translation>
+<translation id="2119602978828978573">Idiomas das Legendas instantâneas suportados</translation>
 <translation id="2120297377148151361">Atividade e interações</translation>
 <translation id="2120639962942052471">Bloqueou <ph name="PERMISSION" /></translation>
 <translation id="2121055421682309734">{COUNT,plural, =0{Os cookies estão bloqueados.}=1{Os cookies estão bloqueados, com 1 exceção.}other{Os cookies estão bloqueados, com {COUNT} exceções.}}</translation>
@@ -2661,6 +2662,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2864601841139725659">Definir a sua imagem do perfil</translation>
 <translation id="2865057607286263192">Prima sem soltar as teclas do teclado para ver acentos e carateres especiais. Isto desativa a pressão repetida para as teclas do alfabeto. Disponível apenas em inglês (EUA).</translation>
 <translation id="2865919525181940183">Captura de ecrã dos programas atualmente no ecrã</translation>
+<translation id="286643536820867504">Cria automaticamente legendas para os idiomas suportados. O áudio nunca sai do seu dispositivo.</translation>
 <translation id="286674810810214575">A verificar as fontes alimentação…</translation>
 <translation id="2867768963760577682">Abrir como Separador Fixo</translation>
 <translation id="2868746137289129307">Esta extensão está desatualizada e foi desativada por uma política empresarial; pode ser ativada automaticamente quando estiver disponível uma versão mais recente.</translation>
@@ -3281,6 +3283,7 @@ Quer pará-lo?</translation>
 <translation id="3337568642696914359">Não permitir que os sites processem protocolos</translation>
 <translation id="3340620525920140773">Transferência concluída: <ph name="FILE_NAME" />.</translation>
 <translation id="3340978935015468852">definições</translation>
+<translation id="3341091511696469129">O Chrome pode criar e traduzir legendas para os idiomas apresentados aqui</translation>
 <translation id="3341699307020049241">PIN incorreto. Tem mais <ph name="RETRIES" /> tentativas.</translation>
 <translation id="3341703758641437857">Permitir acesso a URLs de ficheiro</translation>
 <translation id="334171495789408663">Token copiado</translation>
@@ -5854,6 +5857,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="5214639857958972833">Foi criado o marcador "<ph name="BOOKMARK_TITLE" />".</translation>
 <translation id="5215450412607891876">Ative as atualizações de segurança alargadas</translation>
 <translation id="5215502535566372932">Selecionar país</translation>
+<translation id="5216674789212441076">Traduz automaticamente as legendas instantâneas. As legendas são enviadas para a Google para tradução.</translation>
 <translation id="5220011581825921581">pesquisa + seta para cima</translation>
 <translation id="5221516927483787768">Não é possível transmitir <ph name="HOST_NAME" /></translation>
 <translation id="5222403284441421673">Transferência insegura bloqueada</translation>
@@ -7303,6 +7307,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="628726841779494414">Faça a gestão das suas impressoras nas definições da impressora</translation>
 <translation id="6287828400772161253">Telemóvel Android (<ph name="HOST_DEVICE_NAME" />)</translation>
 <translation id="6290613030083731160">Nenhum dispositivo disponível a partilhar nas proximidades. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
+<translation id="6291580570300353047">Não é possível restaurar devido à falta de espaço de armazenamento.</translation>
 <translation id="6291741848715722067">Código de validação</translation>
 <translation id="6291953229176937411">Mo&amp;strar no Finder</translation>
 <translation id="6292699686837272722">Os separadores são reduzidos para uma largura média</translation>
@@ -7945,6 +7950,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="6785739405821760313">A ver os espaços de trabalho guardados. Prima Tab para navegar.</translation>
 <translation id="6785915470941880363">Deslocamento invertido <ph name="LINK_BEGIN" />Saber mais<ph name="LINK_END" /></translation>
 <translation id="67862343314499040">Violeta</translation>
+<translation id="6786480815699355166">Apenas os idiomas das Legendas instantâneas suportados podem ser traduzidos</translation>
 <translation id="6786747875388722282">Extensões</translation>
 <translation id="6787097042755590313">Outro separador</translation>
 <translation id="6787531944787756058">O nome de utilizador <ph name="USER_EMAIL" /> está guardado apenas neste dispositivo. Ver detalhes</translation>
@@ -10537,6 +10543,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8656888282555543604">Ativar o registo de braille</translation>
 <translation id="8657393004602556571">Quer rejeitar o feedback?</translation>
 <translation id="8657542881463614516">Use um gesto de deslizar rapidamente para navegar entre páginas</translation>
+<translation id="865857184419171576">Traduzir as legendas para</translation>
 <translation id="865936634714975126">Adicione um parâmetro de consulta ao URL para selecionar tipos no carregamento de página. Exemplo: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875">Contactos da funcionalidade <ph name="FEATURE_NAME" /></translation>
 <translation id="8659609431223166673">Janela movida para baixo</translation>

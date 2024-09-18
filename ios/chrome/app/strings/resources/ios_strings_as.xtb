@@ -116,6 +116,7 @@
 <translation id="1517166097004694782">"এই টেবটোৰ জৰিয়তে অব্যাহত ৰাখক" সুবিধাটো লুকুৱাওক</translation>
 <translation id="1520027731907768768">আপুনি ট্ৰেক কৰা প্ৰ’ডাক্টসমূহৰ মূল্য কমিলে সতৰ্কবাৰ্তা লাভ কৰক</translation>
 <translation id="1521774566618522728">আজি সক্ৰিয় হৈছে</translation>
+<translation id="1524563461097350801">নালাগে, ধন্যবাদ</translation>
 <translation id="1531038290222364269">টেব দেখুৱাওক</translation>
 <translation id="1536390784834419204">পৃষ্ঠাখন অনুবাদ কৰক</translation>
 <translation id="1540800554400757039">ঠিকনা ১</translation>
@@ -1507,7 +1508,6 @@
 <translation id="8173034266693057059">দৈৰ্ঘ্য</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8182037667962849780">{count,plural, =1{{website_1}ৰ বাবে}=2{{website_2}, {website_1}ৰ বাবে}=3{{website_1}, {website_2} আৰু ১ টাৰ বাবে}one{{website_1}, {website_2} আৰু {more_count} টাৰ বাবে}other{{website_1}, {website_2} আৰু {more_count} টাৰ বাবে}}</translation>
-<translation id="8189814768485665290">সম্পূৰ্ণ URLটো শ্বেয়াৰ কৰক</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />আপোনাৰ ডিভাইচ<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">পাছৱৰ্ড যোগ দিয়ক</translation>
 <translation id="8202744799033457229">ইতিহাস দেখুৱাওক</translation>
@@ -1541,6 +1541,7 @@
 <translation id="8349305172487531364">বুকমাৰ্কৰ বাৰ</translation>
 <translation id="8366466717204352506">কেতিয়াও পৰীক্ষা কৰা হোৱা নাই</translation>
 <translation id="8368001212524806591">মূল্য ট্ৰেক কৰক</translation>
+<translation id="8370406443343902172">ছেটিঙলৈ যাওক...</translation>
 <translation id="8372471489238799313">{count,plural, =1{ঠিকনা মচক}one{ঠিকনাসমূহ মচক}other{ঠিকনাসমূহ মচক}}</translation>
 <translation id="8378714024927312812">আপোনাৰ প্ৰতিষ্ঠানৰ দ্বাৰা পৰিচালিত</translation>
 <translation id="8386068868580335421">ৰিছেট কৰক</translation>

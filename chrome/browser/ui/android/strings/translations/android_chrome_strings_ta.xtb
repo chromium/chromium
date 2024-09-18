@@ -75,6 +75,7 @@
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - <ph name="DEVICE_NAME" /> சாதனத்திலிருந்து அனுப்பப்பட்டது</translation>
 <translation id="1320912611264252795">புக்மார்க் சேமிப்புச் செயல்முறை முழுத் திரையில் காட்டப்பட்டுள்ளது</translation>
 <translation id="1327257854815634930">வழிசெலுத்தல் வரலாறு திறக்கப்பட்டுள்ளது</translation>
+<translation id="1328235593824723509"><ph name="TAB_TITLE" />, இது ஒரு புதிய அல்லது புதுப்பிக்கப்பட்ட பக்கம்</translation>
 <translation id="1331212799747679585">Chromeமைப் புதுப்பிக்க முடியாது. கூடுதல் விருப்பங்கள்</translation>
 <translation id="1332501820983677155">Google Chrome அம்சத்திற்கான ஷார்ட்கட்கள்</translation>
 <translation id="1333491156693005331">சமீபத்தில் சரிபார்க்கப்பட்டது</translation>
@@ -1212,6 +1213,7 @@
 <translation id="6674571176963658787">ஒத்திசைவைத் தொடங்க, கடவுச்சொற்றொடரை உள்ளிடவும்</translation>
 <translation id="6676927815633975364">இந்த தளத்திலும் Chromeமிலும் உள்நுழையும்</translation>
 <translation id="6684809838922667136">Chromeமைச் சிறந்ததாக்குங்கள்</translation>
+<translation id="6700279777779583398">தேர்வுகள் சேமிக்கப்பட்டன</translation>
 <translation id="6704048624334633734">கடவுச்சொற்களைப் பதிவேற்றிவிட்டு நீக்குங்கள்</translation>
 <translation id="670498945988402717">சரிபார்த்தது: நேற்று</translation>
 <translation id="6710213216561001401">முந்தையது</translation>
@@ -1289,7 +1291,6 @@
 <translation id="6964300328304469089">தற்போது தேர்ந்தெடுக்கப்பட்டுள்ளது: <ph name="NAME" />, <ph name="EMAIL" />. கணக்கைத் தேர்வுசெய்யும்.</translation>
 <translation id="696447261358045621">மறைநிலைப் பயன்முறையில் இருந்து வெளியேறும்</translation>
 <translation id="6965382102122355670">சரி</translation>
-<translation id="6966660124354134532">தயாரிப்பைக் கண்காணிக்கவோ அதைக் கண்காணிப்பதை நிறுத்தவோ தட்டலாம்.</translation>
 <translation id="6971862865055170158">அனுமதிக்காதே</translation>
 <translation id="6978717888677691380">நீங்கள் தடுத்துள்ள தளங்கள்</translation>
 <translation id="6979737339423435258">இதுவரை அனைத்தும்</translation>
@@ -1425,6 +1426,7 @@
 <translation id="752731652852882757">மறைநிலையைப் பயன்படுத்தும்போது தடு</translation>
 <translation id="7554643625247105821">Chrome பதிப்பைச் சரிபார்க்க முடியவில்லை</translation>
 <translation id="7557508262441527045">வெளியேறிவிட்டீர்கள்</translation>
+<translation id="7573665567024262965">இயல்பு ஆப்ஸைத் தேர்வுசெய்யுங்கள்</translation>
 <translation id="7577900504646297215">ஆர்வங்களை நிர்வகிக்கும்</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> ஃபைல் பதிவிறக்கப்பட்டது}other{<ph name="FILES_DOWNLOADED_MANY" /> ஃபைல்கள்  பதிவிறக்கப்பட்டன}}</translation>
 <translation id="7581273696622423628">கருத்துக்கணிப்பைத் தொடங்கு</translation>
@@ -1467,6 +1469,7 @@
 <translation id="7764225426217299476">முகவரியைச் சேர்</translation>
 <translation id="7772032839648071052">கடவுச்சொற்றொடரை உறுதி செய்க</translation>
 <translation id="7772375229873196092"><ph name="APP_NAME" />ஐ மூடு</translation>
+<translation id="7774125747223422443">உங்கள் பிராந்தியத்தில் உள்ள சட்டத்தின்படி பிரவுசரையும் தேடல் இன்ஜினையும் நீங்கள் தேர்வுசெய்ய வேண்டும்</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 மற்றும் <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> கட்டண முறை}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 மற்றும் <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> கட்டண முறைகள்}}</translation>
 <translation id="777637629667389858">நீங்கள் உள்நுழைந்திருக்கும்போது Google சேவைகள் முழுவதிலும் உங்களைப் பாதுகாப்பாக வைத்திருக்கிறது.</translation>
 <translation id="7778840695157240389">புதிய கட்டுரைகளைப் பார்க்க பின்னர் வந்து பாருங்கள்</translation>
@@ -1591,6 +1594,7 @@
 <translation id="8265018477030547118">இந்தச் சாதனத்தில் மட்டும்</translation>
 <translation id="8266753737658117282"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> மூலம் தொடருங்கள்</translation>
 <translation id="8266862848225348053">பதிவிறக்க இருப்பிடம்</translation>
+<translation id="8279945625179116733"><ph name="APP_NAME" /> மூலம் பாதுகாக்கப்படுகிறது</translation>
 <translation id="8281886186245836920">தவிர்</translation>
 <translation id="8282297628636750033">சாத்தியமானால், தளங்களுக்கு டார்க் தீமினைப் பயன்படுத்து</translation>
 <translation id="8282950411412455249">பாதுகாப்பு அமைப்புகளைக் காட்டு</translation>
@@ -1735,6 +1739,7 @@
 <translation id="8982113230057126145">தம்ஸ்-டவுன் வழங்குவதால் இந்தச் சுருக்கவிவரத்தை நீங்கள் விரும்பவில்லை என்று கருத்து தெரிவிக்கப்படும்</translation>
 <translation id="8992769679401294069">உங்கள் தரவு உங்கள் கடவுச்சொற்றொடர் மூலம் என்க்ரிப்ட் செய்யப்பட்டுள்ளது. உங்கள் Google கணக்கில் உள்ள Chrome தரவைப் பயன்படுத்தவும் சேமிக்கவும் அதை டைப் செய்யவும்.</translation>
 <translation id="8993760627012879038">புதிய தாவலை மறைநிலையில் திறக்கும்</translation>
+<translation id="8995521496079646922">நீங்கள் தேர்வுசெய்யும் ஆப்ஸ் இயல்பாகப் பயன்படுத்தப்படும். இந்தச் சாதனத்தில் ஆப்ஸ் இல்லையென்றால் அது விரைவில் பதிவிறக்கப்படும்.</translation>
 <translation id="8996847606757455498">மற்றொரு வழங்குநரைத் தேர்வுசெய்க</translation>
 <translation id="8998289560386111590">உங்கள் சாதனத்தில் இல்லை</translation>
 <translation id="8998837250940831980">பக்கத்தைச் சிறிதாக்க முடியவில்லை. பிறகு முயலவும்.</translation>

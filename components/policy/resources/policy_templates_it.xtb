@@ -1146,13 +1146,6 @@ Questo criterio non ha effetto se l'opzione per mantenere i dati di navigazione 
 
       Questo criterio è deprecato. Usa il criterio <ph name="DEVICE_USER_ALLOWLIST_POLICY_NAME" />.
       </translation>
-<translation id="1825583118566970564">Consente di controllare l'installazione delle estensioni esterne.
-
-Se questo criterio viene attivato, le estensioni esterne non possono essere installate.
-
-Se questo criterio viene disattivato o se non viene configurato, le estensioni esterne possono essere installate.
-
-Le estensioni esterne e la relativa installazione sono illustrate all'indirizzo https://developer.chrome.com/apps/external_extensions.</translation>
 <translation id="1827523283178827583">Utilizza server proxy definiti</translation>
 <translation id="1829117241432374848">Un account gestito deve essere un account principale, non deve avere account secondari e l'utente può importare i dati esistenti al momento della sua creazione</translation>
 <translation id="1829839214911753838">Se il criterio viene impostato su Attivato, l'host di assistenza remota viene eseguito in un processo con autorizzazioni <ph name="UIACCESS_PERMISSION_NAME" />. In questo modo gli utenti remoti possono interagire con finestre con privilegi più elevati sul desktop dell'utente locale.
@@ -2997,6 +2990,13 @@ Se non viene configurato, JavaScript è consentito, ma gli utenti possono modifi
 
       Se il criterio non viene configurato, <ph name="PRODUCT_NAME" /> carica tutti gli host di messaggistica nativi installati.</translation>
 <translation id="3211426942294667684">Impostazioni di accesso al browser</translation>
+<translation id="3213872023700948990">Questo criterio consente di disattivare temporaneamente il nuovo comportamento delle barre di scorrimento attivabili da tastiera.
+
+Se viene attivato o se non viene configurato, le barre di scorrimento senza elementi secondari attivabili sono attivabili con la tastiera per impostazione predefinita.
+
+Se questo criterio viene disattivato, le barre di scorrimento non saranno attivabili con la tastiera per impostazione predefinita.
+
+Questo criterio è una soluzione alternativa temporanea e verrà rimosso nella versione M135.</translation>
 <translation id="3217774577897351942">L'API <ph name="OFFSET_PARENT" /> verrà modificata in <ph name="PRODUCT_NAME" /> per conformarla alle modifiche apportate in <ph name="FIREFOX_PRODUCT_NAME" /> e <ph name="SAFARI_PRODUCT_NAME" />. Questo criterio ripristina il comportamento precedente fino alla versione M120.
 
 Il nuovo comportamento potrebbe rendere inaccessibili alcuni siti web solo di <ph name="PRODUCT_NAME" /> che usano <ph name="OFFSET_PARENT" />, <ph name="OFFSET_TOP" /> o <ph name="OFFSET_LEFT" /> in combinazione con il DOM Shadow.
@@ -6886,6 +6886,13 @@ Se il criterio non viene configurato, viene utilizzato il valore predefinito glo
 <translation id="6207607210601267301">Disattiva l'autenticazione senza PIN per l'host di accesso remoto</translation>
 <translation id="6208896993204286313">Segnala informazioni sulle norme di <ph name="PRODUCT_NAME" /></translation>
 <translation id="6210259502936598222">Segnala informazioni sulla versione del sistema operativo e di <ph name="PRODUCT_NAME" /></translation>
+<translation id="6215023506958127056">Consente di controllare l'installazione delle estensioni esterne.
+
+Se questo criterio viene attivato, le estensioni esterne non possono essere installate.
+
+Se questo criterio viene disattivato o se non viene configurato, le estensioni esterne possono essere installate.
+
+Le estensioni esterne e la relativa installazione sono illustrate all'indirizzo https://developer.chrome.com/docs/extensions/how-to/distribute/install-extensions.</translation>
 <translation id="6220835555850906733">Se il criterio viene attivato o se non viene configurato, tutti gli output audio supportati sono consentiti sui dispositivi degli utenti.
 
       Se il criterio viene disattivato, nessun output audio è consentito se gli utenti hanno effettuato l'accesso.
@@ -7380,6 +7387,9 @@ NOTA: il comportamento predefinito per i dispositivi di consumatori e aziende è
           Il metodo consigliato per bloccare lo schermo in caso di inattività consiste nell'attivare il blocco dello schermo in caso di sospensione e fare in modo che <ph name="PRODUCT_OS_NAME" /> entri in sospensione dopo il ritardo di inattività. Questo criterio dovrebbe essere usato soltanto quando il blocco dello schermo dovrebbe avvenire molto tempo prima della sospensione o quando non si vuole affatto la sospensione in caso di inattività.
 
           Il valore del criterio deve essere specificato in millisecondi. I valori devono essere inferiori al ritardo di inattività.</translation>
+<translation id="6496139622896320246">Se il criterio viene attivato, <ph name="PRODUCT_OS_NAME" /> salverà automaticamente le credenziali Wi-Fi attive del kiosk a livello di dispositivo: il Wi-Fi attivo può essere utilizzato da qualsiasi altra app kiosk o qualsiasi altro relativo utente sul dispositivo.
+Se questo criterio non viene configurato o se viene disattivato, le credenziali Wi-Fi attive del kiosk vengono memorizzate a livello di kiosk: il Wi-Fi configurato in un'app kiosk può essere utilizzato solo all'interno di quell'app.
+Questo criterio non è consigliato e deve essere utilizzato quando non sono disponibili altre opzioni, come il criterio OpenNetworkConfiguration.</translation>
 <translation id="6497085755801788141">Utilizza lo strumento di verifica dei certificati integrato</translation>
 <translation id="6499579502664610993">Esegui l'override degli insiemi di siti web correlati.</translation>
 <translation id="6504720469162323184">La configurazione del criterio consente di determinare la quantità di tempo in millisecondi trascorsa senza attività utente prima che venga effettuato l'accesso automatico all'account locale del dispositivo specificato dal criterio <ph name="DEVICE_LOCAL_ACCOUNT_AUTO_LOGIN_ID_POLICY_NAME" />.

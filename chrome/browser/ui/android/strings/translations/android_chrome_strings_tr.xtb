@@ -75,6 +75,7 @@
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - <ph name="DEVICE_NAME" /> cihazından gönderildi</translation>
 <translation id="1320912611264252795">Yer işareti kaydetme akışı klasörleri tam ekranda açıldı</translation>
 <translation id="1327257854815634930">Gezinme geçmişi açık</translation>
+<translation id="1328235593824723509"><ph name="TAB_TITLE" />, yeni veya güncellenmiş sekme</translation>
 <translation id="1331212799747679585">Chrome güncellenemiyor. Diğer seçenekler</translation>
 <translation id="1332501820983677155">Google Chrome'un özellik kısayolları</translation>
 <translation id="1333491156693005331">Yakın zamanda kontrol edildi</translation>
@@ -1213,6 +1214,7 @@ Diğer Google hizmetlerinden yapılan aramalar ve etkinlikler gibi Google hesab�
 <translation id="6674571176963658787">Senkronizasyonu başlatmak için parolanızı girin</translation>
 <translation id="6676927815633975364">Bu sitede ve Chrome'da oturum açın</translation>
 <translation id="6684809838922667136">Chrome'u daha iyi hale getirin</translation>
+<translation id="6700279777779583398">Seçimler kaydedildi</translation>
 <translation id="6704048624334633734">Şifreleri dışa aktarın ve silin</translation>
 <translation id="670498945988402717">Dün kontrol edildi</translation>
 <translation id="6710213216561001401">Önceki</translation>
@@ -1290,7 +1292,6 @@ Diğer Google hizmetlerinden yapılan aramalar ve etkinlikler gibi Google hesab�
 <translation id="6964300328304469089">Şu anda <ph name="NAME" />, <ph name="EMAIL" /> seçili. Bir hesap seçin.</translation>
 <translation id="696447261358045621">Gizli moddan çık</translation>
 <translation id="6965382102122355670">Tamam</translation>
-<translation id="6966660124354134532">Bir ürünü takip etmek veya takip etmeyi bırakmak için dokunun.</translation>
 <translation id="6971862865055170158">Onaylama</translation>
 <translation id="6978717888677691380">Engellediğiniz siteler</translation>
 <translation id="6979737339423435258">Tüm zamanlar</translation>
@@ -1426,6 +1427,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chrome ver
 <translation id="752731652852882757">Gizli mod kullanılırken engelle</translation>
 <translation id="7554643625247105821">Chrome sürümü kontrol edilemiyor</translation>
 <translation id="7557508262441527045">Oturum kapatıldı</translation>
+<translation id="7573665567024262965">Varsayılan uygulamalarınızı seçin</translation>
 <translation id="7577900504646297215">İlgi alanlarını yönet</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> dosya indirildi}other{<ph name="FILES_DOWNLOADED_MANY" /> dosya indirildi}}</translation>
 <translation id="7581273696622423628">Ankete katıl</translation>
@@ -1468,6 +1470,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chrome ver
 <translation id="7764225426217299476">Adres ekle</translation>
 <translation id="7772032839648071052">Parolayı onayla</translation>
 <translation id="7772375229873196092"><ph name="APP_NAME" /> penceresini kapat</translation>
+<translation id="7774125747223422443">Bölgenizde geçerli yasa uyarınca tarayıcınızı ve arama motorunuzu seçmeniz gerekir</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 ve <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ödeme yöntemi daha}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 ve <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ödeme yöntemi daha}}</translation>
 <translation id="777637629667389858">Oturum açtığınızda Google hizmetlerinde korunmanızı sağlar.</translation>
 <translation id="7778840695157240389">Yeni haberler için sonra yine gelin</translation>
@@ -1592,6 +1595,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chrome ver
 <translation id="8265018477030547118">Yalnızca bu cihazda</translation>
 <translation id="8266753737658117282"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ile devam edin</translation>
 <translation id="8266862848225348053">İndirme konumu</translation>
+<translation id="8279945625179116733">Güvenliği sağlayan: <ph name="APP_NAME" /></translation>
 <translation id="8281886186245836920">Atla</translation>
 <translation id="8282297628636750033">Sitelere koyu tema uygulayın</translation>
 <translation id="8282950411412455249">Güvenlik Ayarları'na gidin</translation>
@@ -1736,6 +1740,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chrome ver
 <translation id="8982113230057126145">Beğenmeme düğmesini tıkladığınızda bu özetin hoşunuza gitmediğine dair geri bildirim gönderilir.</translation>
 <translation id="8992769679401294069">Verileriniz parolanızla şifrelenir. Chrome verilerini kullanmak ve Google Hesabınıza kaydetmek için bu kodu girin.</translation>
 <translation id="8993760627012879038">Gizli modda yeni bir sekme açar</translation>
+<translation id="8995521496079646922">Seçtiğiniz uygulamalar varsayılan olarak kullanılır. Bir uygulama bu cihazda yoksa kısa süre içinde indirilir.</translation>
 <translation id="8996847606757455498">Başka bir sağlayıcı seçin:</translation>
 <translation id="8998289560386111590">Cihazınızda kullanılamıyor</translation>
 <translation id="8998837250940831980">Sekme küçültülemedi. Daha sonra tekrar deneyin.</translation>

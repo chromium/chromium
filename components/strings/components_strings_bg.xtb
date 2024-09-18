@@ -446,6 +446,7 @@
 <translation id="1771254328977666895">Вижте историята на цените</translation>
 <translation id="1777422078676229054">Снимка (архивна)</translation>
 <translation id="1778646502362731194">JIS B0</translation>
+<translation id="1785118555253503473">Да се инсталират ли уеб приложения?</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това Enter, за да управлявате информацията си и настройките за поверителност и сигурност в профила си в Google</translation>
 <translation id="1793631236004319016">Последно използване преди <ph name="NUM_HOURS_MINUTES_SECONDS" /></translation>
@@ -1014,6 +1015,7 @@
 <translation id="2882949212241984732">Сгъване на двата края навътре и прегъване в средата</translation>
 <translation id="2891963978019740012">Вашата търсеща машина в Chrome</translation>
 <translation id="2893773853358652045">Четвърта ролка</translation>
+<translation id="2894137550885451583">Това са цените в(ъв) <ph name="CURRENCY" /> за продукта <ph name="PRODUCT" /></translation>
 <translation id="2900528713135656174">Създайте събитие</translation>
 <translation id="2902312830803030883">Още действия</translation>
 <translation id="2903493209154104877">Адреси</translation>
@@ -1162,6 +1164,7 @@
 <translation id="3157931365184549694">Възстановяване</translation>
 <translation id="3158539265159265653">Диск</translation>
 <translation id="3162559335345991374">Използваната от вас Wi-Fi мрежа може да изисква да посетите страницата й за вход.</translation>
+<translation id="316638481603975524">Може да извежда запитвания за инсталиране на уеб приложения</translation>
 <translation id="3168744840365648658">Радиоапаратура</translation>
 <translation id="3168938241115725594">Класически превозни средства</translation>
 <translation id="3169472444629675720">Discover</translation>
@@ -1611,6 +1614,7 @@
 <translation id="3949601375789751990">Тук се показва историята ви на сърфиране</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">Няма запазени начини на плащане</translation>
+<translation id="3950560191811267370">Долният лист с информация за цените е затворен</translation>
 <translation id="3950574001630941635">Рестартиране на урока</translation>
 <translation id="3950820424414687140">Вход</translation>
 <translation id="3953505489397572035">Тази цена е обичайна</translation>
@@ -2320,6 +2324,7 @@
 <translation id="5273658854610202413">Предупреждение: Това правило не бе обединено според посоченото в правилото PolicyDictionaryMultipleSourceMergeList, тъй като не е част от правилата речници с възможност за обединяване.</translation>
 <translation id="5278778426231952189">Качване сега</translation>
 <translation id="5279286380302340275">Управление на изтеглянията</translation>
+<translation id="5280963125494874678">уеб приложения</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">Свойства на документа</translation>
 <translation id="528468243742722775">Край</translation>
@@ -2352,6 +2357,7 @@
 <translation id="5331585574693522196">Задаване като основен избор</translation>
 <translation id="5332219387342487447">Начин за доставка</translation>
 <translation id="5332769172018416402">Запитване в съобщение</translation>
+<translation id="533323551986281710">Долният лист с информация за цените е отворен на пълната височина</translation>
 <translation id="5334013548165032829">Подробните системни регистрационни файлове</translation>
 <translation id="5334145288572353250">Да се запази ли адресът?</translation>
 <translation id="5340250774223869109">Приложението е блокирано</translation>
@@ -2534,6 +2540,7 @@
 <translation id="5675650730144413517">Тази страница не работи</translation>
 <translation id="5675809467256309336">Денс и електронна музика</translation>
 <translation id="5675959228867414813">Показване по дата</translation>
+<translation id="567604591393105935">Долният лист с информация за цените е отворен на половината височина</translation>
 <translation id="5677928146339483299">Блокирано</translation>
 <translation id="5678007133659493065">Фолио</translation>
 <translation id="5680642791693447368">Трилъри, криминални и детективски филми</translation>
@@ -2820,6 +2827,7 @@
 <translation id="6221311046884916259">Искате ли тази карта да се запази в профила ви в Google?</translation>
 <translation id="6221892641068781024">Опростен изглед</translation>
 <translation id="6222527803348563979">Листове</translation>
+<translation id="62231116988543150">Има възможност да инсталира уеб приложения</translation>
 <translation id="6224281071334553713">Бижутерия и скъпоценни камъни</translation>
 <translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това Enter, за да персонализирате инструментите за достъпност в настройките на Chrome</translation>
 <translation id="6228346913624365233">Луксозни превозни средства</translation>
@@ -3083,6 +3091,7 @@
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това Enter, за да преминете към „Намиране на устройството ми“ в профила ви Google</translation>
 <translation id="6695428916538794739">Екшън и приключенски филми</translation>
 <translation id="6696424331653607346">Туристически справочници и пътеводители</translation>
+<translation id="6696575039575740785">Инсталирането на уеб приложения не е разрешено</translation>
 <translation id="6698097747703777657">Не получихте кода си? <ph name="BEGIN_LINK" />Получаване на нов код<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">Създадено:</translation>
 <translation id="67007264085648978">Времеви плъзгач</translation>
@@ -3196,6 +3205,7 @@
 <translation id="6915804003454593391">Потребител:</translation>
 <translation id="6916193791494646625">Посочете причина за изтеглянето (задължително)</translation>
 <translation id="6917795328362592458">Паролата, която току-що използвахте, е разкрита при нарушение на сигурността на данните. За да защитите профилите си, мениджърът на паролите ви препоръчва да проверите запазените си пароли.</translation>
+<translation id="6921197121276419421">Инсталирането на уеб приложения е разрешено</translation>
 <translation id="6924013822850225188">Изберете дали да виждате предимствата на картата си при плащане (прилагат се условията на банката)</translation>
 <translation id="6925267999184670015">North American B+</translation>
 <translation id="6926216138694948720">Бодиарт</translation>
@@ -3440,6 +3450,7 @@
 <translation id="7374733840632556089">Причината за този проблем е сертификат, инсталиран на устройството ви от вас или от друг потребител. Сертификатът е известен с това, че се използва за наблюдение и прехващане на мрежи и Chrome му няма доверие. Въпреки че съществуват някои легитимни случаи за наблюдение, като например училищна или фирмена мрежа, Chrome иска да се увери, че знаете, че това се случва, дори ако не можете да го спрете. Наблюдението може да става във всеки браузър или приложение, които осъществяват достъп до мрежата.</translation>
 <translation id="7375532151824574023">{NUM_COOKIES,plural, =0{Няма разрешени сайтове}=1{Разрешен е 1 сайт}other{Разрешени са # сайта}}</translation>
 <translation id="7375818412732305729">Прикачване на файл</translation>
+<translation id="7376031331622621328">Долен лист с информация за цените</translation>
 <translation id="7377249249140280793"><ph name="RELATIVE_DATE" /> - <ph name="FULL_DATE" /></translation>
 <translation id="7377314930809374926">Туристически отрасъл</translation>
 <translation id="7378594059915113390">Контроли за мултимедия</translation>
@@ -3692,6 +3703,7 @@
 <translation id="7761701407923456692">Сертификатът на сървъра не съответства на URL адреса.</translation>
 <translation id="7764225426217299476">Добавяне на адрес</translation>
 <translation id="7766518757692125295">Пола</translation>
+<translation id="7766899888934244586">Уеб приложения</translation>
 <translation id="7767278989746220252">Дворове, градини и морави</translation>
 <translation id="776749070095465053">Текстил</translation>
 <translation id="7773005668374414287">В същия ред с отпечатаната страна нагоре</translation>

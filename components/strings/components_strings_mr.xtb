@@ -446,6 +446,7 @@
 <translation id="1771254328977666895">किमतीचा इतिहास</translation>
 <translation id="1777422078676229054">फोटो (आर्कायव्हल)</translation>
 <translation id="1778646502362731194">JIS B0</translation>
+<translation id="1785118555253503473">वेब अ‍ॅप्स इंस्टॉल करायची आहेत का?</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, तुमच्या Google खाते मध्ये तुमची माहिती, गोपनीयता आणि सुरक्षा व्यवस्थापित करण्यासाठी टॅब व त्यानंतर एंटर प्रेस करा</translation>
 <translation id="1793631236004319016"><ph name="NUM_HOURS_MINUTES_SECONDS" /> पूर्वी शेवटचे वापरले</translation>
@@ -677,6 +678,7 @@
 <translation id="2212735316055980242">धोरण आढळले नाही</translation>
 <translation id="2213606439339815911">एंट्री आणत आहे...</translation>
 <translation id="2213612003795704869">पेज प्रिंट केले आहे</translation>
+<translation id="2215368073167343359">Autofill with Google</translation>
 <translation id="2215539479425228550">आरोहण आणि पर्वतारोहण</translation>
 <translation id="2215727959747642672">फाइलचे संपादन</translation>
 <translation id="2215963164070968490">कुत्रे</translation>
@@ -709,6 +711,7 @@
 <translation id="2262243747453050782">HTTP एरर</translation>
 <translation id="2265192657948645752">रिटेल उद्योगातील नोकऱ्या</translation>
 <translation id="2265356434276802347">या धोरणामध्ये <ph name="MAX_ITEMS_LIMIT" /> पेक्षा जास्त वैशिष्ट्यीकृत नोंदी असू शकत नाहीत.</translation>
+<translation id="2266175583972138136">कार्डच्या फायद्यांना अटी लागू होतात</translation>
 <translation id="2267047181501709434">तुमची ओळख पडताळत आहे...</translation>
 <translation id="2268044343513325586">सुधारित करा</translation>
 <translation id="2268966938956566076"><ph name="MINUTES" /> मिनिटांनी अपलोड करा</translation>
@@ -1014,6 +1017,7 @@
 <translation id="2882949212241984732">डबल-गेट फोल्ड</translation>
 <translation id="2891963978019740012">Chrome मधील तुमचे शोध इंजीन</translation>
 <translation id="2893773853358652045">चौथा रोल</translation>
+<translation id="2894137550885451583">या <ph name="PRODUCT" /> उत्पादनासाठीच्या <ph name="CURRENCY" /> किमती आहेत</translation>
 <translation id="2900528713135656174">इव्हेंट तयार करा</translation>
 <translation id="2902312830803030883">आणखी क्रिया</translation>
 <translation id="2903493209154104877">पत्ते</translation>
@@ -1162,6 +1166,7 @@
 <translation id="3157931365184549694">पुनर्संचयित करा</translation>
 <translation id="3158539265159265653">डिस्क</translation>
 <translation id="3162559335345991374">तुम्ही वापरत असलेल्या वाय-फाय च्या लॉग इन पेजला तुम्हाला भेट देण्याची आवश्यकता असू शकते.</translation>
+<translation id="316638481603975524">वेब अ‍ॅप्स इंस्टॉल करण्याची विनंती करता येईल</translation>
 <translation id="3168744840365648658">रेडिओ उपकरणे</translation>
 <translation id="3168938241115725594">क्लासिक वाहने</translation>
 <translation id="3169472444629675720">Discover</translation>
@@ -1610,6 +1615,7 @@
 <translation id="3949601375789751990">तुमचा ब्राउझिंग इतिहास येथे दिसतो</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">सेव्ह केलेल्या पेमेंट पद्धती नाहीत</translation>
+<translation id="3950560191811267370">वाणिज्य तळाशी असलेली शीट बंद केली</translation>
 <translation id="3950574001630941635">ट्यूटोरियल रीस्टार्ट करा</translation>
 <translation id="3950820424414687140">साइन इन करा</translation>
 <translation id="3953505489397572035">ही सामान्य किंमत आहे</translation>
@@ -1794,6 +1800,7 @@
 <translation id="4269264543938335308">पोहताना घालायचे कपडे</translation>
 <translation id="4269599248168651462">युनिक नसलेल्या नावासाठी सर्व्हर सर्टिफिकेट जारी केले आहे.</translation>
 <translation id="4270541775497538019">स्टॅकर ६</translation>
+<translation id="4271652479722040953">Chrome मध्ये एक्स्टेंशन जोडली जातात, तेव्हा विश्लेषण करण्यासाठी या एक्स्टेंशनबद्दलचा सुसंबद्ध डेटा तृतीय पक्षांना पाठवला जातो आणि तो तुमच्या अ‍ॅडमिनिस्ट्रेटरला दृश्यमान असू शकतो. या डेटामध्ये एक्स्टेंशनबद्दलच्या माहितीचा समावेश असतो, जसे की इंस्टॉल करण्याची वेळ, इंस्टॉलचा स्रोत, तसेच या एक्स्टेंशनशी संबंधित अ‍ॅक्टिव्हिटी (जसे की टॅब बदलणे, वेबसाइटशी संपर्क साधणे किंवा कुकी अ‍ॅक्सेस करणे). हा डेटा Chrome वेब स्टोअर, तसेच स्टोअरच्या बाहेरील एक्स्टेंशनवरून इंस्टॉल केलेल्या एक्स्टेंशनसाठी गोळा केला जातो.</translation>
 <translation id="4275830172053184480">तुमचा डिव्हाइस रीस्टार्ट करा</translation>
 <translation id="4276974990916607331">नाही, नको</translation>
 <translation id="4277028893293644418">पासवर्ड रीसेट करा</translation>
@@ -1875,6 +1882,7 @@
 <translation id="4406896451731180161">शोध परिणाम</translation>
 <translation id="4408413947728134509">कुकीज <ph name="NUM_COOKIES" /></translation>
 <translation id="4412074349188076601">हे कॉन्फिगरेशन इंस्टॉल करण्यायोग्य म्हणून मार्क केले आहे, पण या आर्किटेक्चरसाठी कोणतीही इमेज पुरवलेली नाही, म्हणून ते इंस्टॉल केली जाऊ शकत नाही.</translation>
+<translation id="4414452699610169758">पासवर्ड, पेमेंट पद्धती आणि पत्ते सेव्ह करण्यासाठी व भरण्यासाठी Google Password Manager आणि Chrome ऑटोफिल वापरा</translation>
 <translation id="4414515549596849729">कुकी आणि साइट डेटा</translation>
 <translation id="4415156962929755728">प्लॅस्टिक (हाय ग्लॉस)</translation>
 <translation id="4415426530740016218">घेण्याचा पत्ता</translation>
@@ -2319,6 +2327,7 @@
 <translation id="5273658854610202413">चेतावणी: PolicyListMultipleSourceMergeList मध्ये नमूद केल्याप्रमाणे हे धोरण विलीन केले नाही कारण ते शब्दकोश धोरणांचा भाग नाही जो विलीन केला जाऊ शकतो.</translation>
 <translation id="5278778426231952189">आता अपलोड करा</translation>
 <translation id="5279286380302340275">डाउनलोड व्यवस्थापित करा</translation>
+<translation id="5280963125494874678">वेब अ‍ॅप्लिकेशन</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">दस्तऐवज गुणधर्म</translation>
 <translation id="528468243742722775">बंद करा</translation>
@@ -2351,6 +2360,7 @@
 <translation id="5331585574693522196">डीफॉल्ट म्हणून सेट करा</translation>
 <translation id="5332219387342487447">पाठविण्‍याची पद्धत</translation>
 <translation id="5332769172018416402">मेसेज पाठवून विचारा</translation>
+<translation id="533323551986281710">वाणिज्य तळाशी असलेली शीट संपूर्ण उंचीवर उघडली</translation>
 <translation id="5334013548165032829">तपशीलवार सिस्टम लॉग</translation>
 <translation id="5334145288572353250">पत्ता सेव्ह करायचा आहे का?</translation>
 <translation id="5340250774223869109">अ‍ॅप्लिकेशन ब्लॉक केले आहे</translation>
@@ -2533,6 +2543,7 @@
 <translation id="5675650730144413517">हे पेज काम करत नाही</translation>
 <translation id="5675809467256309336">नृत्य आणि इलेक्ट्रॉनिक संगीत</translation>
 <translation id="5675959228867414813">तारखेनुसार दाखवा</translation>
+<translation id="567604591393105935">वाणिज्य तळाशी असलेली शीट अर्ध्या उंचीवर उघडली</translation>
 <translation id="5677928146339483299">ब्लॉक केले</translation>
 <translation id="5678007133659493065">फॉइल</translation>
 <translation id="5680642791693447368">रोमांचक, गुन्हेविषयक आणि गूढ चित्रपट</translation>
@@ -2820,6 +2831,7 @@
 <translation id="6221311046884916259">तुम्हाला तुमच्या Google खाते मध्ये हे कार्ड सेव्ह करायचे आहे का?</translation>
 <translation id="6221892641068781024">सिंप्लिफाइड व्ह्यू</translation>
 <translation id="6222527803348563979">स्टेशनरी</translation>
+<translation id="62231116988543150">वेब अ‍ॅप्स इंस्टॉल करता येतील</translation>
 <translation id="6224281071334553713">रत्ने आणि दागिने</translation>
 <translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome सेटिंग्जमध्ये तुमची अ‍ॅक्सेसिबिलिटी टूल पर्सनलाइझ करण्यासाठी, टॅब आणि त्यानंतर एंटर प्रेस करा</translation>
 <translation id="6228346913624365233">लक्झरी वाहने</translation>
@@ -3083,6 +3095,7 @@
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google खाते मध्ये तुमचे डिव्हाइस शोधण्यासाठी टॅब आणि त्यानंतर एंटर प्रेस करा</translation>
 <translation id="6695428916538794739">अ‍ॅक्शन आणि साहसपर चित्रपट</translation>
 <translation id="6696424331653607346">प्रवास मार्गदर्शक आणि प्रवासवर्णन</translation>
+<translation id="6696575039575740785">वेब अ‍ॅप्स इंस्टॉल करण्याची अनुमती नाही</translation>
 <translation id="6698097747703777657">तुमचा कोड मिळाला नाही का? <ph name="BEGIN_LINK" />नवीन कोड मिळवा<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">तयार केलेले:</translation>
 <translation id="67007264085648978">टाइम स्क्रबर</translation>
@@ -3196,6 +3209,7 @@
 <translation id="6915804003454593391">वापरकर्ता:</translation>
 <translation id="6916193791494646625">डाउनलोड करण्याचे कारण द्या (आवश्यक)</translation>
 <translation id="6917795328362592458">तुम्ही नुकताच वापरलेला पासवर्ड डेटा भंगामध्ये आढळला होता. तुमची खाती सुरक्षित करण्यासाठी, पासवर्ड व्यवस्थापक तुमचे सेव्ह केलेले पासवर्ड तपासण्याची शिफारस करतो.</translation>
+<translation id="6921197121276419421">वेब अ‍ॅप्स इंस्टॉल करण्याची अनुमती दिली आहे</translation>
 <translation id="6924013822850225188">चेकआउट करताना तुम्हाला कार्डचे फायदे दिसणार की नाही हे निवडा (बँकच्या अटी लागू)</translation>
 <translation id="6925267999184670015">North American B+</translation>
 <translation id="6926216138694948720">बॉडी आर्ट</translation>
@@ -3374,6 +3388,7 @@
 <translation id="7232352818707016189">तुलना सारणीसाठी आणखी कृती</translation>
 <translation id="7233592378249864828">खात्री केलेले शीट प्रिंट करा</translation>
 <translation id="7234112195906418665">प्रवास आणि परिवहन</translation>
+<translation id="7234585564776614047">दुसरी सेवा वापरून ऑटोफिल करा</translation>
 <translation id="7236417832106250253"><ph name="PROGRESS_PERCENT" />% पूर्ण झाले | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
 <translation id="7237166092326447040">भेटवस्‍तू आणि विशिष्‍ट इव्‍हेंटसंबंधित आयटम</translation>
 <translation id="7237454422623102448">सिस्‍टीम सेटिंग्‍ज</translation>
@@ -3440,6 +3455,7 @@
 <translation id="7374733840632556089">तुम्ही किंवा इतर कोणीतरी तुमच्या डिव्हाइसवर इंस्टॉल केलेल्या सर्टिफिकेटमुळे ही समस्या येते. हे सर्टिफिकेट नेटवर्कचे नियंत्रण करण्यासाठी आणि व्यत्यय आणण्यासाठी वापरले जाते आणि Chrome ला यावर विश्वास नाही. दरम्यान नियंत्रण करण्यासाठी काही कायदेशीर प्रकरणे अस्तित्त्वात आहेत, जसे की शाळा किंवा कंपनीच्या नेटवर्कवर, तुम्ही हे थांबवू शकत नसलात तरीही तुम्हाला याची जाणीव आहे याची Chrome ला खात्री करायची आहे. वेबचा ॲक्सेस असणाऱ्या कोणत्याही ब्राउझर किंवा ॲप्लिकेशनचे नियंत्रण केले जाऊ शकते.</translation>
 <translation id="7375532151824574023">{NUM_COOKIES,plural, =0{No sites allowed}=1{एका साइटला अनुमती दिली आहे}other{# साइटना अनुमती दिली आहे}}</translation>
 <translation id="7375818412732305729">फाइल अटॅच केली आहे</translation>
+<translation id="7376031331622621328">वाणिज्य तळाशी असलेली शीट</translation>
 <translation id="7377249249140280793"><ph name="RELATIVE_DATE" /> - <ph name="FULL_DATE" /></translation>
 <translation id="7377314930809374926">आदरातिथ्याशी संबंधित उद्योग</translation>
 <translation id="7378594059915113390">मीडिया नियंत्रणे</translation>
@@ -3692,6 +3708,7 @@
 <translation id="7761701407923456692">सर्व्हरचे सर्टिफिकेट URL शी जुळत नाही.</translation>
 <translation id="7764225426217299476">पत्ता जोडा</translation>
 <translation id="7766518757692125295">स्कर्ट</translation>
+<translation id="7766899888934244586">वेब अ‍ॅप्लिकेशन</translation>
 <translation id="7767278989746220252">पॅशिओ, लॉन आणि बाग</translation>
 <translation id="776749070095465053">फॅब्रिक</translation>
 <translation id="7773005668374414287">तोच क्रम ठेवून फेस अप</translation>
@@ -3724,6 +3741,7 @@
 <translation id="7831993212387676366">खरेदीची सूची काय आहे?</translation>
 <translation id="7840103971441592723">स्क्रीन कॅप्चर सुरू झाले आहे</translation>
 <translation id="784137052867620416">खरेदीशी संबंधित इनसाइट</translation>
+<translation id="7842611866969435396">चला सुरुवात करू या</translation>
 <translation id="784404208867107517">गटबद्ध केलेला इतिहास</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{काहीही नाही}=1{एक अ‍ॅप <ph name="EXAMPLE_APP_1" />}=2{२ अ‍ॅप्स <ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />}other{# अ‍ॅप्स <ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />}}</translation>
 <translation id="785476343534277563">महाविद्यालयीन क्रीडा</translation>
@@ -4033,6 +4051,7 @@
 <translation id="8409413588194360210">पेमेंट हँडलर</translation>
 <translation id="8412145213513410671">क्रॅश (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">समान सांकेतिक पासफ्रेझ दोनदा एंटर करणे आवश्यक आहे.</translation>
+<translation id="8414322570408428950">एक्स्टेंशनसंबंधित इव्‍हेंट आढळला आहे</translation>
 <translation id="8416694386774425977">नेटवर्क कॉन्फिगरेशन चुकीचे आहे आणि इंपोर्ट केले जाऊ शकत नाही.
 अतिरिक्त तपशील:
 <ph name="DEBUG_INFO" /></translation>
@@ -4284,6 +4303,7 @@
 <translation id="8891031436559779793">कोणत्याही साइटवर किंमत कमी झाल्यास, तुम्हाला सूचित केले जाईल.</translation>
 <translation id="8891727572606052622">चुकीचे प्रॉक्सी मोड.</translation>
 <translation id="8894794286471754040">सर्वात प्रथम लॉंग एज</translation>
+<translation id="8895334001368918465">Chrome मध्ये दुसरी ऑटोफिल सेवा वापरण्यासाठी, ती Android सेटिंग्ज आणि इथे सुरू करा</translation>
 <translation id="8897428486789851669">पोहणे</translation>
 <translation id="8899807382908246773">नको असलेल्या जाहिराती</translation>
 <translation id="8903921497873541725">झूम इन करा</translation>

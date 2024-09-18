@@ -497,6 +497,7 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1355088139103479645">Të fshihen të gjitha të dhënat?</translation>
 <translation id="1356376170199999104">Lejohet - <ph name="PERMISSION_DETAILS" />. Aktivizo mikrofonin duke përdorur çelësin fizik.</translation>
 <translation id="1356959069439783953">Skedat joaktive marrin një pamje të re</translation>
+<translation id="1357766361161708728">Të mbyllen skedat e papërdorura?</translation>
 <translation id="1358741672408003399">Drejtshkrimi dhe gramatika</translation>
 <translation id="1359923111303110318">Pajisja jote mund të shkyçet me Smart Lock. Shtyp "Enter" për ta shkyçur.</translation>
 <translation id="1361164813881551742">Shto manualisht</translation>
@@ -2552,6 +2553,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2787354132612937472">-</translation>
 <translation id="2788135150614412178">+</translation>
 <translation id="2789486458103222910">Në rregull</translation>
+<translation id="2790750268015892264">Aplikacionet e izoluara të uebit nuk mund të kontrollojnë lexuesit e kartave inteligjente. Aplikacionet nuk do të marrin qasje në asnjë kartë inteligjente.</translation>
 <translation id="2791529110887957050">Hiq Linux</translation>
 <translation id="2791952154587244007">Ndodhi një gabim. Aplikacioni kioskë nuk do të jetë në gjendje të niset automatikisht në këtë pajisje.</translation>
 <translation id="2792290659606763004">Të hiqen aplikacionet e Android?</translation>
@@ -2583,6 +2585,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2806372837663997957">Pajisja me të cilën po përpiqesh të ndash nuk pranoi</translation>
 <translation id="2806891468525657116">Shkurtorja ekziston tashmë</translation>
 <translation id="2807517655263062534">Skedarët që shkarkon shfaqen këtu</translation>
+<translation id="2808481877345177494">Identifikohu për të ndarë në mënyrë të sigurt shfletimin personal nga ai i punës. Rrit produktivitetin tënd ndërkohë që mbron të dhënat delikate të kompanisë.</translation>
 <translation id="2811205483104563968">Llogaritë</translation>
 <translation id="2812049959647166806">Thunderbolt nuk mbështetet</translation>
 <translation id="2812171980080389735">Ruaj rrjetet dhe fjalëkalimet që të mund të lidhesh në çast</translation>
@@ -3428,6 +3431,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3450157232394774192">Përqindja e shfrytëzimit në gjendje të qetë</translation>
 <translation id="3450180775417907283"><ph name="MANAGER" /> kërkon që të lidhesh me Wi-Fi tani dhe të shkarkosh një përditësim.</translation>
 <translation id="345078987193237421">Kjo lejon qasjen te kamera për aplikacionet, uebsajtet me lejen për kamerën, si dhe shërbimet e sistemit</translation>
+<translation id="3451362021220965191">Aplikacionet e izoluara të uebit kontrollojnë lexuesit e kartave inteligjente për të marrë qasje te kartat inteligjente që paraqiten ose futen tek ata. Kartat inteligjente zakonisht përfshijnë identitete që përdoren për të vërtetuar ose autorizuar veprime, për t'u identifikuar te shërbimet etj.</translation>
 <translation id="3452999110156026232">Qasja e prindit</translation>
 <translation id="3453082738208775226">Të pastrohet hapësira ruajtëse offline?</translation>
 <translation id="3453597230179205517">Qasja te vendndodhja është bllokuar</translation>
@@ -3990,6 +3994,7 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="3828953470056652895">Kam lexuar dhe pranoj <ph name="BEGIN_LINK1" />"Kushtet e shërbimit" të Google<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />"Kushtet shtesë të shërbimit" të Chrome dhe ChromeOS<ph name="END_LINK2" /> dhe <ph name="BEGIN_LINK3" />"Kushtet e shërbimit" të Play<ph name="END_LINK3" />.</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> - Përdorim i lartë i memories - <ph name="MEMORY_VALUE" /></translation>
 <translation id="3829765597456725595">Ndarja e skedarit SMB</translation>
+<translation id="38298897782945211">Aplikacionet e izoluara të uebit ndjekin automatikisht këtë cilësim.</translation>
 <translation id="3830470485672984938">Përdor një çelës tjetër kalimi</translation>
 <translation id="3830654885961023588">{NUM_EXTENSIONS,plural, =1{Administratori yt aktivizoi përsëri 1 shtesë që mund të jetë e dëmshme}other{Administratori yt aktivizoi përsëri {NUM_EXTENSIONS} shtesa që mund të jenë të dëmshme}}</translation>
 <translation id="3834728400518755610">Ndryshimi në cilësimin e mikrofonit kërkon që të fiket sistemi Linux. Fike sistemin Linux për të vazhduar.</translation>
@@ -4003,6 +4008,7 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="3839516600093027468">Blloko gjithmonë <ph name="HOST" /> që të mos shikojë kujtesën e fragmenteve</translation>
 <translation id="3841282988425489367">Nuk mund të konfigurohet Steam për Chromebook (Beta)</translation>
 <translation id="3841319830220785495">Zëri i parazgjedhur natyral</translation>
+<translation id="3841356782900714251">Lexuesit e kartave inteligjente</translation>
 <translation id="3841964634449506551">Fjalëkalimi është i pavlefshëm</translation>
 <translation id="3842552989725514455">Shkrimi serif</translation>
 <translation id="3843464315703645664">Lista e lejimeve në nivel të brendshëm</translation>
@@ -5712,6 +5718,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="5120886753782992638">Kliko këtu për të vizituar <ph name="APPROVED_URL" /></translation>
 <translation id="5121052518313988218">Sistemi operativ në kontejnerin e Linux nuk mbështetet më. Ai nuk do të marrë më përditësime sigurie dhe rregullime të defekteve në kod, dhe veçoritë që punojnë aktualisht mund të ndalojnë së funksionuari papritur. Përmirësoje me versionin më të fundit për të vazhduar të përdorësh Linux.</translation>
 <translation id="5121130586824819730">Disku është plot. Ruaje në një vend tjetër ose liro pak vend në disk.</translation>
+<translation id="5121803000325086087">Aplikacionet e izoluara të uebit mund të kërkojnë që të kontrollojnë lexuesit e kartave inteligjente. Aplikacionet do të marrin qasje te kartat e paraqitura te lexuesit nën kontrollin e tyre.</translation>
 <translation id="5123433949759960244">Basketboll</translation>
 <translation id="5125714798187802869">Aktivizo</translation>
 <translation id="5125751979347152379">URL e pavlefshme.</translation>
@@ -6547,6 +6554,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="5750288053043553775">0</translation>
 <translation id="5751345516399502412">Kontrollo gatishmërinë e ndarjes së internetit</translation>
 <translation id="5753570386948603678">Fshije nga historiku</translation>
+<translation id="5753652925946671505">Këto skeda nuk janë përdorur për <ph name="COUNT" /> ditë ose më shumë.</translation>
 <translation id="5756163054456765343">Qendra e n&amp;dihmës</translation>
 <translation id="5757187557809630523">pjesa tjetër muzikore</translation>
 <translation id="5758631781033351321">Këtu do të gjesh listën tënde të leximit</translation>
@@ -6970,6 +6978,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="6064764629679333574">Përmirëso cilësinë e tingullit të mikrofonit me Bluetooth duke e përmirësuar audion me rezolucion të ulët në audio me rezolucion të lartë.</translation>
 <translation id="6065289257230303064">Atributet e direktorisë së subjektit të certifikatës</translation>
 <translation id="6066794465984119824">Hash-i i imazhit nuk është caktuar</translation>
+<translation id="6069027071882229820">Kopjo si imazh</translation>
 <translation id="6069464830445383022">Identifikohu në pajisjen Chromebook me "Llogarinë tënde të Google"</translation>
 <translation id="6069500411969514374">Puna</translation>
 <translation id="6071181508177083058">konfirmo fjalëkalimin</translation>
@@ -10067,6 +10076,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8319414634934645341">Përdorimi i zgjeruar i çelësit</translation>
 <translation id="8321476692217554900">njoftimet</translation>
 <translation id="8321837372750396788">Kjo pajisje <ph name="DEVICE_TYPE" /> do të menaxhohet nga <ph name="MANAGER" />.</translation>
+<translation id="8321888067342493336">Ruaje si imazh</translation>
 <translation id="8322814362483282060">Për këtë faqe është bllokuar qasja te mikrofoni.</translation>
 <translation id="8323167517179506834">Shkruaj URL-në</translation>
 <translation id="8323317289166663449">Lexo dhe ndrysho të gjitha të dhënat në kompjuterin tënd dhe të gjitha uebsajtet</translation>

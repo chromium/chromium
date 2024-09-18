@@ -116,6 +116,7 @@
 <translation id="1517166097004694782">Ocultar Continuar con esta pestaña</translation>
 <translation id="1520027731907768768">Recibe alertas si los productos que sigues bajan de precio.</translation>
 <translation id="1521774566618522728">Activo hoy</translation>
+<translation id="1524563461097350801">No, gracias</translation>
 <translation id="1531038290222364269">Mostrar pestañas</translation>
 <translation id="1536390784834419204">Traducir página</translation>
 <translation id="1540800554400757039">Dirección 1</translation>
@@ -1507,7 +1508,6 @@ Los sitios pueden usar cookies para ver tu actividad de navegación en otros sit
 <translation id="8173034266693057059">Longitud</translation>
 <translation id="8179976553408161302">Intro</translation>
 <translation id="8182037667962849780">{count,plural, =1{Para {website_1}}=2{Para {website_1} y {website_2}}=3{Para {website_1}, {website_2} y 1 más}other{Para {website_1}, {website_2} y {more_count} más}}</translation>
-<translation id="8189814768485665290">Compartir URL completa</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Tus dispositivos<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Añade una contraseña</translation>
 <translation id="8202744799033457229">Mostrar historial</translation>
@@ -1541,6 +1541,7 @@ Los sitios pueden usar cookies para ver tu actividad de navegación en otros sit
 <translation id="8349305172487531364">Barra de marcadores</translation>
 <translation id="8366466717204352506">Comprobación no ejecutada</translation>
 <translation id="8368001212524806591">Seguir precio</translation>
+<translation id="8370406443343902172">Ir a Configuración…</translation>
 <translation id="8372471489238799313">{count,plural, =1{Eliminar dirección}other{Eliminar direcciones}}</translation>
 <translation id="8378714024927312812">Gestionado por tu organización</translation>
 <translation id="8386068868580335421">Restablecer</translation>
@@ -1603,6 +1604,7 @@ Los sitios pueden usar cookies para ver tu actividad de navegación en otros sit
 <translation id="8637431369725868556">Protégete frente a sitios peligrosos.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{No hay contraseñas vulneradas}=1{{COUNT} contraseña vulnerada}other{{COUNT} contraseñas vulneradas}}</translation>
 <translation id="8640575194957831802">Abiertos por última vez</translation>
+<translation id="8647280737650867362">No se ha podido dejar de seguir el precio.</translation>
 <translation id="8654802032646794042">Cancelar</translation>
 <translation id="8660600697590740984">Imagen copiada de Lens</translation>
 <translation id="866266761389616183">¡Oh, no!</translation>

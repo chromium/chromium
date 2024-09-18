@@ -75,6 +75,7 @@
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - Sent úr <ph name="DEVICE_NAME" /></translation>
 <translation id="1320912611264252795">Möppur vistunar bókamerkja opnaðar á öllum skjánum</translation>
 <translation id="1327257854815634930">Ferill er opinn</translation>
+<translation id="1328235593824723509"><ph name="TAB_TITLE" />, nýr eða uppfærður flipi</translation>
 <translation id="1331212799747679585">Ekki er hægt að uppfæra Chrome. Fleiri valkostir.</translation>
 <translation id="1332501820983677155">Flýtilyklar eiginleika Google Chrome</translation>
 <translation id="1333491156693005331">Athugað nýlega</translation>
@@ -1213,6 +1214,7 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="6674571176963658787">Sláðu inn aðgangsorðið þitt til að hefja samstillingu</translation>
 <translation id="6676927815633975364">Skráðu þig inn á þetta vefsvæði og Chrome</translation>
 <translation id="6684809838922667136">Bættu Chrome</translation>
+<translation id="6700279777779583398">Valið var vistað</translation>
 <translation id="6704048624334633734">Flyttu aðgangsorðin út og eyddu þeim</translation>
 <translation id="670498945988402717">Athugað í gær</translation>
 <translation id="6710213216561001401">Til baka</translation>
@@ -1290,7 +1292,6 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="6964300328304469089">Núverandi val: <ph name="NAME" />, <ph name="EMAIL" /> Veldu reikning.</translation>
 <translation id="696447261358045621">Slökkva á huliðsstillingu</translation>
 <translation id="6965382102122355670">Í lagi</translation>
-<translation id="6966660124354134532">Ýttu til að kveikja eða slökkva á rakningu á vöru.</translation>
 <translation id="6971862865055170158">Ekki samþykkja</translation>
 <translation id="6978717888677691380">Vefsvæði á bannlista</translation>
 <translation id="6979737339423435258">Frá upphafi</translation>
@@ -1426,6 +1427,7 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />eyða Chrome-g�
 <translation id="752731652852882757">Útiloka þegar huliðsstilling er notuð</translation>
 <translation id="7554643625247105821">Ekki er hægt að athuga Chrome-útgáfu</translation>
 <translation id="7557508262441527045">Útskráð(ur)</translation>
+<translation id="7573665567024262965">Veldu sjálfgefin forrit</translation>
 <translation id="7577900504646297215">Stjórna áhugamálum</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> skrá sótt}one{<ph name="FILES_DOWNLOADED_MANY" /> skrá sótt}other{<ph name="FILES_DOWNLOADED_MANY" /> skrár sóttar}}</translation>
 <translation id="7581273696622423628">Svara könnun</translation>
@@ -1468,6 +1470,7 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />eyða Chrome-g�
 <translation id="7764225426217299476">Bæta við heimilisfangi</translation>
 <translation id="7772032839648071052">Staðfestu aðgangsorðið</translation>
 <translation id="7772375229873196092">Loka <ph name="APP_NAME" /></translation>
+<translation id="7774125747223422443">Samkvæmt lögum á þínu svæði þarftu að velja vafra og leitarvél</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 og <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> í viðbót}one{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 og <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> í viðbót}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 og <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> í viðbót}}</translation>
 <translation id="777637629667389858">Verndar þig í Google-þjónustum þegar þú ert innskráð(ur).</translation>
 <translation id="7778840695157240389">Kíktu aftur síðar til að fá nýjar sögur</translation>
@@ -1592,6 +1595,7 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />eyða Chrome-g�
 <translation id="8265018477030547118">Aðeins í þessu tæki</translation>
 <translation id="8266753737658117282">Halda áfram sem <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8266862848225348053">Niðurhalsmappa</translation>
+<translation id="8279945625179116733">Varið af <ph name="APP_NAME" /></translation>
 <translation id="8281886186245836920">Sleppa</translation>
 <translation id="8282297628636750033">Nota dökkt þema fyrir vefsvæði</translation>
 <translation id="8282950411412455249">Opna öryggisstillingar</translation>
@@ -1736,6 +1740,7 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />eyða Chrome-g�
 <translation id="8982113230057126145">Með því að ýta á þumal niður sendirðu ábendingu um að þér líki ekki samantektin</translation>
 <translation id="8992769679401294069">Gögnin þín eru dulkóðuð með aðgangsorði. Sláðu það inn til að nota og vista Chrome-gögn á Google-reikningnum þínum.</translation>
 <translation id="8993760627012879038">Opna nýjan flipa í huliðsstillingu</translation>
+<translation id="8995521496079646922">Forritin sem þú velur verða notuð sjálfkrafa. Ef forrit er ekki þegar í tækinu verður það sótt innan skamms.</translation>
 <translation id="8996847606757455498">Velja aðra veitu</translation>
 <translation id="8998289560386111590">Ekki í boði í tækinu þínu</translation>
 <translation id="8998837250940831980">Ekki tókst að minnka flipa. Reyndu aftur síðar.</translation>

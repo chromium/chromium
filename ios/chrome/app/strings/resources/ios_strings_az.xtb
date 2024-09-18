@@ -116,6 +116,7 @@
 <translation id="1517166097004694782">"Bu tab ilə davam edin" seçimini gizlədin</translation>
 <translation id="1520027731907768768">İzlədiyiniz məhsullar ilə bağlı qiymət endirimi xəbərdarlıqları alın.</translation>
 <translation id="1521774566618522728">Bu gün aktivdir</translation>
+<translation id="1524563461097350801">Xeyr, təşəkkürlər</translation>
 <translation id="1531038290222364269">Tabları göstərin</translation>
 <translation id="1536390784834419204">Səhifəni tərcümə edin</translation>
 <translation id="1540800554400757039">Ünvan 1</translation>
@@ -1507,7 +1508,6 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukilərd
 <translation id="8173034266693057059">Uzunluq</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8182037667962849780">{count,plural, =1{{website_1} üçün}=2{{website_1}, {website_2} üçün}=3{{website_1}, {website_2} və digər 1 veb-sayt üçün}other{{website_1}, {website_2} və digər {more_count} veb-sayt üçün}}</translation>
-<translation id="8189814768485665290">Tam URL paylaşın</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Cihazlarınız<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Parol əlavə edin</translation>
 <translation id="8202744799033457229">Tarixçəni göstərin</translation>
@@ -1541,6 +1541,7 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukilərd
 <translation id="8349305172487531364">Əlfəcin paneli</translation>
 <translation id="8366466717204352506">Yoxlama icra edilməyib</translation>
 <translation id="8368001212524806591">Qiyməti izləyin</translation>
+<translation id="8370406443343902172">Ayarlara keçin...</translation>
 <translation id="8372471489238799313">{count,plural, =1{Ünvanı silin}other{Ünvanları silin}}</translation>
 <translation id="8378714024927312812">Təşkilatınız tərəfindən idarə olunur</translation>
 <translation id="8386068868580335421">Sıfırlayın</translation>

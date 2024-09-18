@@ -75,6 +75,7 @@
 <translation id="1303507811548703290"><ph name="DOMAIN" /> – Skickades från <ph name="DEVICE_NAME" /></translation>
 <translation id="1320912611264252795">Mappar i flöde för att spara bokmärken har öppnats över hela skärmen</translation>
 <translation id="1327257854815634930">Navigeringshistoriken har öppnats</translation>
+<translation id="1328235593824723509"><ph name="TAB_TITLE" />, ny eller uppdaterad flik</translation>
 <translation id="1331212799747679585">Det går inte att uppdatera Chrome. Fler alternativ</translation>
 <translation id="1332501820983677155">Kortkommandon för funktioner i Google Chrome</translation>
 <translation id="1333491156693005331">Kontrollerades nyligen</translation>
@@ -595,6 +596,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="38243391581572867">Lens är inte tillgängligt i det här kontot.</translation>
 <translation id="3830886834687455630">Uppdatera Google Play-tjänster för att kontrollera dina lösenord</translation>
+<translation id="3843603704176567761">Lösenorden kan snart sluta att fungera på den här enheten. Uppdatera Google Play-tjänsterna om du vill fortsätta att använda dina lösenord.</translation>
 <translation id="3845098929839618392">Öppna i inkognitoflik
 </translation>
 <translation id="3847319713229060696">Hjälp till att förbättra säkerheten på webben för alla</translation>
@@ -677,6 +679,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="4257230861809842349">Vill du radera lösenord från Google Lösenordshantering?</translation>
 <translation id="426652736638196239">Detta IBAN-nummer sparas enbart på den här enheten</translation>
 <translation id="4269820728363426813">Kopiera länkadress</translation>
+<translation id="4270730597186910506">Bevaka eller sluta bevaka en produkt.</translation>
 <translation id="4277529130885813215">Använd en annan enhet</translation>
 <translation id="4282440837784183472">Din organisation, <ph name="MANAGED_DOMAIN" />, hanterar kontot du loggar in på och hur Chrome kan användas. Administratören kan konfigurera eller begränsa vissa funktioner.</translation>
 <translation id="4285846616383034558">Cookies, cacheminne och annan webbplatsdata</translation>
@@ -1219,6 +1222,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="6674571176963658787">Ange din lösenfras för att starta synkroniseringen</translation>
 <translation id="6676927815633975364">Logga in på den här webbplatsen och i Chrome</translation>
 <translation id="6684809838922667136">Gör Chrome bättre</translation>
+<translation id="6700279777779583398">Dina val har sparats</translation>
 <translation id="6704048624334633734">Exportera och radera lösenorden</translation>
 <translation id="670498945988402717">Genomsöktes i går</translation>
 <translation id="6710213216561001401">Föregående</translation>
@@ -1297,7 +1301,6 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="6964300328304469089"><ph name="NAME" />, <ph name="EMAIL" /> är valt just nu. Välj ett konto.</translation>
 <translation id="696447261358045621">Inaktivera inkognitoläge</translation>
 <translation id="6965382102122355670">OK</translation>
-<translation id="6966660124354134532">Tryck för att spåra eller sluta spåra en produkt.</translation>
 <translation id="6971862865055170158">Godkänn inte</translation>
 <translation id="6978717888677691380">Webbplatser du har blockerat</translation>
 <translation id="6979737339423435258">Sedan start</translation>
@@ -1433,6 +1436,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="752731652852882757">Blockera i inkognitoläget</translation>
 <translation id="7554643625247105821">Det går inte att kontrollera Chrome-versionen</translation>
 <translation id="7557508262441527045">Utloggad</translation>
+<translation id="7573665567024262965">Välj standardappar</translation>
 <translation id="7577900504646297215">Hantera intressen</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> fil har laddats ned}other{<ph name="FILES_DOWNLOADED_MANY" /> filer har laddats ned}}</translation>
 <translation id="7581273696622423628">Svara på enkäten</translation>
@@ -1476,6 +1480,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="7764225426217299476">Lägg till adress</translation>
 <translation id="7772032839648071052">Bekräfta lösenfras</translation>
 <translation id="7772375229873196092">Stäng <ph name="APP_NAME" /></translation>
+<translation id="7774125747223422443">På grund av en lag i din region måste du välja webbläsare och sökmotor</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 och <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> till}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 och <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> till}}</translation>
 <translation id="777637629667389858">När du är inloggad skyddas du i alla Googles tjänster.</translation>
 <translation id="7778840695157240389">Återkom senare för nya berättelser</translation>
@@ -1600,6 +1605,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="8265018477030547118">Bara på den här enheten</translation>
 <translation id="8266753737658117282">Fortsätt med <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8266862848225348053">Nedladdningsplats</translation>
+<translation id="8279945625179116733">Skyddas av <ph name="APP_NAME" /></translation>
 <translation id="8281886186245836920">Hoppa över</translation>
 <translation id="8282297628636750033">Använd mörkt tema på webbplatser när det är möjligt</translation>
 <translation id="8282950411412455249">Öppna säkerhetsinställningarna</translation>
@@ -1744,6 +1750,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="8982113230057126145">Gilla-markera för att visa att du inte gillar översikten</translation>
 <translation id="8992769679401294069">Din data krypteras med lösenfrasen. Ange den om du vill använda och spara Chrome-data i Google-kontot.</translation>
 <translation id="8993760627012879038">Öppna en ny flik i inkognitoläge</translation>
+<translation id="8995521496079646922">Apparna du valde används som standard. Om en app inte redan finns på enheten laddas den ned inom kort.</translation>
 <translation id="8996847606757455498">Välj en annan leverantör</translation>
 <translation id="8998289560386111590">Inte tillgängligt på din enhet</translation>
 <translation id="8998837250940831980">Det gick inte att minimera fliken. Försök igen senare.</translation>

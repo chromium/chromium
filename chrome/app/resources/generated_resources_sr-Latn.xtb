@@ -1594,6 +1594,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="211803431539496924">Želite da potvrdite dodatna bezbednosna ažuriranja?</translation>
 <translation id="2118594521750010466">Reši problem</translation>
 <translation id="2119461801241504254">Bezbedno pregledanje je uključeno i štiti vas od štetnih sajtova i preuzimanja</translation>
+<translation id="2119602978828978573">Podržani jezici za titl uživo</translation>
 <translation id="2120297377148151361">Aktivnosti i interakcije</translation>
 <translation id="2120639962942052471">Funkcija <ph name="PERMISSION" /> je blokirana</translation>
 <translation id="2121055421682309734">{COUNT,plural, =0{Kolačići su blokirani}=1{Kolačići su blokirani, 1 izuzetak}one{Kolačići su blokirani, {COUNT} izuzetak}few{Kolačići su blokirani, {COUNT} izuzetka}other{Kolačići su blokirani, {COUNT} izuzetaka}}</translation>
@@ -2661,6 +2662,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2864601841139725659">Podesite sliku profila</translation>
 <translation id="2865057607286263192">Pritisnite i zadržite tastere na tastaturi da biste videli oznake akcenta i specijalne znakove. Time isključujete ponavljanje pritiska na taster za tastere abecede. Dostupno je samo za engleski (SAD).</translation>
 <translation id="2865919525181940183">Snimak ekrana programa koji su trenutno na ekranu</translation>
+<translation id="286643536820867504">Automatski pravi titl za podržane jezike. Zvuk ostaje na uređaju.</translation>
 <translation id="286674810810214575">Proveravaju se izvori napajanja...</translation>
 <translation id="2867768963760577682">Otvori kao zakačenu karticu</translation>
 <translation id="2868746137289129307">Ovaj dodatak je zastareo i smernice za preduzeća ga onemogućavaju. Možda će automatski postati omogućen kada novija verzija postane dostupna.</translation>
@@ -3282,6 +3284,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="333863344734218290">Upozorava vas na nebezbedne javne i privatne sajtove</translation>
 <translation id="3340620525920140773">Preuzimanje je završeno: <ph name="FILE_NAME" />.</translation>
 <translation id="3340978935015468852">podešavanja</translation>
+<translation id="3341091511696469129">Chrome može da pravi i prevodi titlove za jezike prikazane ovde</translation>
 <translation id="3341699307020049241">Netačan PIN. Imate još <ph name="RETRIES" /> pokušaja.</translation>
 <translation id="3341703758641437857">Dozvoli pristup URL adresama datoteka</translation>
 <translation id="334171495789408663">Token je kopiran</translation>
@@ -5861,6 +5864,7 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="5214639857958972833">Napravljen je obeleživač <ph name="BOOKMARK_TITLE" />.</translation>
 <translation id="5215450412607891876">Uključite dodatna bezbednosna ažuriranja</translation>
 <translation id="5215502535566372932">Izaberite zemlju</translation>
+<translation id="5216674789212441076">Automatski prevodi titl uživo. Titl se šalje Google-u na prevod.</translation>
 <translation id="5220011581825921581">taster za pretragu + strelica nagore</translation>
 <translation id="5221516927483787768">Prebacivanje sa sajta <ph name="HOST_NAME" /> nije uspelo</translation>
 <translation id="5222403284441421673">Nebezbedno preuzimanje je blokirano</translation>
@@ -7309,6 +7313,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="628726841779494414">Upravljajte štampačima u podešavanjima štampača</translation>
 <translation id="6287828400772161253">Android telefon (<ph name="HOST_DEVICE_NAME" />)</translation>
 <translation id="6290613030083731160">Nema dostupnih uređaja koji dele u blizini. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
+<translation id="6291580570300353047">Vraćanje nije uspelo zbog nedostatka memorijskog prostora.</translation>
 <translation id="6291741848715722067">Kôd za potvrdu</translation>
 <translation id="6291953229176937411">&amp;Prikaži u Finder-u</translation>
 <translation id="6292699686837272722">Kartice se skupljaju do srednje širine</translation>
@@ -7956,6 +7961,7 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="6785739405821760313">Prikazuju se sačuvane radne površine. Pritisnite karticu da biste se kretali.</translation>
 <translation id="6785915470941880363">Obrnuto pomeranje <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="67862343314499040">Ljubičasta</translation>
+<translation id="6786480815699355166">Mogu da se prevode samo podržani jezici titla uživo</translation>
 <translation id="6786747875388722282">Dodaci</translation>
 <translation id="6787097042755590313">Druge kartice</translation>
 <translation id="6787531944787756058">korisničko ime <ph name="USER_EMAIL" /> je sačuvano samo na ovom uređaju. Prikaži detalje</translation>
@@ -10554,6 +10560,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8656888282555543604">Omogući evidentiranje Brajeve azbuke</translation>
 <translation id="8657393004602556571">Želite da odbacite povratne informacije?</translation>
 <translation id="8657542881463614516">Koristite pokret prevlačenja da biste se kretali između stranica</translation>
+<translation id="865857184419171576">Prevedite titlove na:</translation>
 <translation id="865936634714975126">Dodajte parametar upita u URL da biste izabrali tipove pri učitavanju stranice. Primer: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875">Kontakti za <ph name="FEATURE_NAME" /></translation>
 <translation id="8659609431223166673">Prozor je pomeren nadole</translation>

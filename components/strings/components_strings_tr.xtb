@@ -1014,6 +1014,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2882949212241984732">İki kırımlı katlama</translation>
 <translation id="2891963978019740012">Chrome'daki Arama Motorunuz</translation>
 <translation id="2893773853358652045">Dördüncü Rulo</translation>
+<translation id="2894137550885451583">Bunlar, <ph name="PRODUCT" /> ürününün <ph name="CURRENCY" /> fiyatlarıdır</translation>
 <translation id="2900528713135656174">Etkinlik oluştur</translation>
 <translation id="2902312830803030883">Diğer işlemler</translation>
 <translation id="2903493209154104877">Adresler</translation>
@@ -1611,6 +1612,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3949601375789751990">Göz atma geçmişiniz burada görünür</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">Kayıtlı ödeme yöntemi yok</translation>
+<translation id="3950560191811267370">Ticari alt sayfa kapatıldı</translation>
 <translation id="3950574001630941635">Eğitimi Yeniden Başlat</translation>
 <translation id="3950820424414687140">Oturum açın</translation>
 <translation id="3953505489397572035">Bu fiyat normal</translation>
@@ -2352,6 +2354,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="5331585574693522196">Varsayılan olarak ayarla</translation>
 <translation id="5332219387342487447">Gönderim Yöntemi</translation>
 <translation id="5332769172018416402">Mesajla sor</translation>
+<translation id="533323551986281710">Ticari alt sayfa tam ekranda açıldı</translation>
 <translation id="5334013548165032829">Ayrıntılı sistem günlükleri</translation>
 <translation id="5334145288572353250">Adres Kaydedilsin mi?</translation>
 <translation id="5340250774223869109">Uygulama engellendi</translation>
@@ -2534,6 +2537,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="5675650730144413517">Bu sayfa çalışmıyor</translation>
 <translation id="5675809467256309336">Dans Müziği ve Elektronik Müzik</translation>
 <translation id="5675959228867414813">Tarihe göre göster</translation>
+<translation id="567604591393105935">Ticari alt sayfa ekranın yarısına kadar açıldı</translation>
 <translation id="5677928146339483299">Engelleniyor</translation>
 <translation id="5678007133659493065">Folyo</translation>
 <translation id="5680642791693447368">Gerilim, Suç ve Gizem Filmleri</translation>
@@ -3440,6 +3444,7 @@ Ek ayrıntılar:
 <translation id="7374733840632556089">Bu sorunun nedeni sizin veya başka birinin cihazınıza yüklediği bir sertifika olabilir. Sertifikanın ağa müdahale etmek ve izlemek amacıyla kullanıldığı bilindiğinden, Chrome bu sertifikaya güvenmez. Okul veya şirket ağı gibi izlemenin meşru olduğu durumlar vardır. İzlemeyi durduramasanız bile Chrome yine de farkında olmanızı sağlamak ister. Web’e erişen her tarayıcı ve uygulamada izleme yapılabilir.</translation>
 <translation id="7375532151824574023">{NUM_COOKIES,plural, =0{Hiçbir siteye izin verilmiyor}=1{1 siteye izin veriliyor}other{# siteye izin veriliyor}}</translation>
 <translation id="7375818412732305729">Dosya ekleme</translation>
+<translation id="7376031331622621328">Ticari alt sayfa</translation>
 <translation id="7377249249140280793"><ph name="RELATIVE_DATE" /> - <ph name="FULL_DATE" /></translation>
 <translation id="7377314930809374926">Konaklama Sektörü</translation>
 <translation id="7378594059915113390">Medya Denetimleri</translation>

@@ -42,6 +42,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="1148499908455722006">Atvērt lietotāja <ph name="USER_NAME" /> informācijas dialoglodziņu</translation>
 <translation id="1150989369772528668">Kalendārs</translation>
 <translation id="1153356358378277386">Pārī savienotās ierīces</translation>
+<translation id="1153918444040990015">Nevarēja izveidot savienojumu ar funkcijas Fokuss skaņām.</translation>
 <translation id="1155734730463845512">Pašreizējais akumulatora uzlādes līmenis: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1157514002898505378">Ģeneratīvais MI ir eksperimentāls, un saturs var būt neprecīzs, maldinošs vai aizvainojošs. Sazinieties ar savu administratoru, lai ziņotu par problēmu. <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="1160215328209699296">ieslēgta un tiek izmantota</translation>
@@ -175,6 +176,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="1550523713251050646">Noklikšķiniet, lai skatītu citas iespējas.</translation>
 <translation id="1555130319947370107">Zila</translation>
 <translation id="1557622599341396706">Rādīt darbvietas nosaukumu</translation>
+<translation id="1567138500090284106">Poga Peles taustiņi</translation>
 <translation id="1569384531973824928">Tādējādi piekļuve tiek atļauta visām lietotnēm un vietnēm, kurām ir kameras un mikrofona atļauja. Iespējams, jums būs jāatsvaidzina tīmekļa lapa vai jārestartē lietotne.</translation>
 <translation id="1571697193564730395">Pārslēgt režīmu “Netraucēt”. <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">Tālināt, kad ieslēgta lupa</translation>
@@ -242,6 +244,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="1787955149152357925">Izslēgts</translation>
 <translation id="1796561540704213354">Tīmekļa vietnes, tostarp iepriekš apmeklētās un pašlaik atvērtās lapas</translation>
 <translation id="179842970735685253">Google pakalpojumu sniegšanas noteikumus</translation>
+<translation id="1805407494113167797">Nevarēja atskaņot funkcijas Fokuss skaņas.</translation>
 <translation id="181103072419391116">Signāla stiprums: <ph name="SIGNAL_STRENGTH" />, pārvalda jūsu administrators</translation>
 <translation id="1816896987747843206">Atļauj piekļuvi kamerai visām lietotnēm un vietnēm, kurām ir kameras atļauja.</translation>
 <translation id="1823873187264960516">Ethernet adrese: <ph name="ADDRESS" /></translation>
@@ -1354,6 +1357,7 @@ Nav pievienota neviena ierīce.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Nevarēja verificēt jūsu paroli. Mēģiniet vēlreiz.</translation>
 <translation id="5632485077360054581">Parādīt, kā</translation>
+<translation id="5633826232582408011">Kad ieslēdzat funkcijas “Palīdziet man uzrakstīt” un “Palīdziet man lasīt”, ievadītais teksts, dokumenta saturs un tīmekļa lapas URL tiek nosūtīts uz Google MI serveriem, lai ģenerētu rakstīšanas ieteikumus, ģenerētu apkopojumus, atbildētu uz jautājumiem un uzlabotu produktu, ievērojot šos noteikumus: <ph name="LINK_TO_SERVICE_TERMS" />. Neiekļaujiet nekādu personas, sensitīvu vai konfidenciālu informāciju.</translation>
 <translation id="5648021990716966815">Mikrofona ligzda</translation>
 <translation id="5652575806481723716">Lietotne <ph name="FOCUSED_APP_NAME" /> aicina pievērst tai uzmanību.</translation>
 <translation id="5662075790140998213">10. darbvieta</translation>
@@ -1504,7 +1508,6 @@ Nav pievienota neviena ierīce.</translation>
 <translation id="6119972796024789243">Krāsu korekcija</translation>
 <translation id="6121838516699723042">Faila <ph name="FILENAME" /> lejupielādes apstiprināšana</translation>
 <translation id="612734058257491180">Google asistents nav pieejams viesa sesijā.</translation>
-<translation id="6127370444807669747">Lai iegūtu personalizētus atskaņošanas sarakstus un mūziku uzmanības koncentrēšanai, izmēģiniet pakalpojumu YouTube Music Premium.</translation>
 <translation id="6127395413317891856">Jūs esat bezsaistē. Pārbaudiet savienojumu un mēģiniet vēlreiz.</translation>
 <translation id="6129953537138746214">Atstarpe</translation>
 <translation id="6137566720514957455">Atvērt lietotāja <ph name="USER_EMAIL_ADDRESS" /> noņemšanas dialoglodziņu</translation>
@@ -2282,6 +2285,7 @@ Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</
 <translation id="8876661425082386199">Savienojuma pārbaude</translation>
 <translation id="8877788021141246043">Iestatīt atgādinājumu</translation>
 <translation id="8878886163241303700">Notiek ekrāna izvēršana</translation>
+<translation id="8885424115080869847">Nevarēja izveidot savienojumu ar pakalpojumu YouTube Music.</translation>
 <translation id="888982883502837004">Jūsu ierīcei ir pieejami aparātprogrammatūras atjauninājumi. Noklikšķiniet, lai tos izskatītu un veiktu atjaunināšanu.</translation>
 <translation id="8896630965521842259">Veidne “<ph name="DESK_TEMPLATE_NAME" />” tiks neatgriezeniski dzēsta.</translation>
 <translation id="889790758758811533">Atlikušais akumulatora uzlādes līmenis ir <ph name="PERCENTAGE" />% (aptuveni <ph name="TIME_LEFT" />). Pievienojiet ierīci barošanas avotam.</translation>

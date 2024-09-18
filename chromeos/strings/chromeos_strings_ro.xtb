@@ -35,6 +35,7 @@
 <translation id="1155154308031262006">Introdu o solicitare</translation>
 <translation id="115705039208660697">ananași</translation>
 <translation id="1164939766849482256">Screensaver din zori până seara</translation>
+<translation id="1166688493741195933">Nu s-au putut genera numele înregistrărilor</translation>
 <translation id="1167755866710282443">Deschide meniul pentru a personaliza tastele. Trage meniul pentru a muta.</translation>
 <translation id="1171349345463658120">lagună cu nisip</translation>
 <translation id="1173894706177603556">Redenumește</translation>
@@ -342,6 +343,7 @@
 <translation id="2560876255701405320">Listă de înregistrări audio</translation>
 <translation id="2561093647892030937">lămâi</translation>
 <translation id="2570743873672969996">Se rulează testul <ph name="TEST_NAME" />...</translation>
+<translation id="2573178735329662769">Înregistrarea tuturor elementelor audio de pe Chromebook</translation>
 <translation id="2575552334616524665">Poți activa această opțiune din Setări sau din meniul <ph name="THREE_DOTS_MENU_ICON" /></translation>
 <translation id="2576253868710695442">Acesta va ocupa un spațiu de stocare de până la 2 GB</translation>
 <translation id="2584547424703650812">Peisaje strălucitoare</translation>
@@ -494,6 +496,7 @@
 <translation id="3502426834823382181">vezi toate aplicațiile</translation>
 <translation id="3510890413042482857">Trimite <ph name="BEGIN_LINK1" />datele privind urmărirea performanței<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Actualizare SO Chrome</translation>
+<translation id="3522508178835057262">Momentan, nu se acceptă transcrierile cu mai mult de <ph name="MAX_WORD_LENGTH" /> cuvinte</translation>
 <translation id="3527036260304016759">Nereușită – Eroare necunoscută</translation>
 <translation id="353214771040290298">Editarea s-a încheiat</translation>
 <translation id="3532980081107202182">Au mai rămas aproximativ <ph name="MIN_REMAINING" /> minute</translation>
@@ -509,6 +512,7 @@
 <translation id="3588034708467091142">Verifică dacă te-ai conectat la internet și încearcă din nou.</translation>
 <translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> este numele ușor de folosit pentru <ph name="APN_NAME" />.</translation>
 <translation id="3595596368722241419">Baterie încărcată</translation>
+<translation id="3600063043775287169">Când Conținutul audio de pe Chromebook este activat, Recorder înregistrează tot conținutul audio redat pe acest dispozitiv. Asigură-te că vrei să înregistrezi toate sunetele.</translation>
 <translation id="3600339377155080675">Oglindirea ecranului</translation>
 <translation id="3602290021589620013">Previzualizare</translation>
 <translation id="3603829704940252505">Avatar</translation>
@@ -711,6 +715,7 @@
 <translation id="4602266091140407479">Microfon</translation>
 <translation id="4607282946861182308">Nu se pot crea imagini pe baza acestei solicitări. Încearcă alta.</translation>
 <translation id="4609350030397390689">Reducerea luminozității tastaturii</translation>
+<translation id="4623061655523261501">Numele înregistrărilor au fost generate</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> din <ph name="TOTAL_PAGE_NUMBER" />. Apasă pe Enter pentru a anula sarcina de printare.</translation>
 <translation id="463791356324567266">Se anulează scanarea...</translation>
 <translation id="4644611440022666152">Activează și descarcă</translation>
@@ -1043,6 +1048,8 @@
 <translation id="628726841779494414">Gestionează imprimantele din setările pentru imprimantă</translation>
 <translation id="6292095526077353682">În timpul încărcării, afișează screensaverul</translation>
 <translation id="629550705077076970">reducerea luminozității tastaturii</translation>
+<translation id="6301193653204230066">Resetarea de siguranță dezactivează extensiile browserului Chrome și resetează rețeaua și alte setări la valorile prestabilite sigure.
+          Filele, fișierele, cookie-urile și istoricul nu vor fi modificate.</translation>
 <translation id="6302401976930124515">Testul <ph name="TEST_NAME" /> a fost anulat</translation>
 <translation id="631063167932043783">Explorează aplicația</translation>
 <translation id="6318437367327684789">întotdeauna</translation>
@@ -1052,6 +1059,7 @@
 <translation id="6325525973963619867">Eșuat</translation>
 <translation id="6327262166342360252">Această imagine de fundal a fost creată cu AI folosind următorul text: <ph name="PROMPT" />.</translation>
 <translation id="6331191339300272798">Tema întunecată automată</translation>
+<translation id="6335228876613776082">Descărcarea modelului s-a finalizat</translation>
 <translation id="6340526405444716530">Personalizare</translation>
 <translation id="6348252528297699679">Poți dezactiva locația în Setări &gt; Confidențialitate și securitate &gt; Opțiuni de confidențialitate &gt; Accesul la locație. <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">Nume de utilizator și parolă</translation>
@@ -1213,6 +1221,7 @@
 <translation id="708426984172631313">OPRIT</translation>
 <translation id="7086168019478250425">plajă cu bioluminiscență</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="7086916854357021265">Se generează numele înregistrărilor</translation>
 <translation id="7097908713073775559">colorate</translation>
 <translation id="710028965487274708">Nu a reușit – Autorizarea nu a reușit</translation>
 <translation id="7101959270679078188">Deblochează <ph name="DEVICE_NAME" /> pentru a continua procesul de actualizare</translation>
@@ -1545,6 +1554,7 @@ Descarcă modelul de transcriere (până la 100 MB) pentru a obține aceste tran
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Album Google Foto</translation>
 <translation id="8775713578693478175">APN-ul modemului</translation>
+<translation id="877735394245039557">Se descarcă modelul</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Această rețea poate să aibă un portal captiv</translation>
 <translation id="8797082062139985406">Creează un nume folosind Google AI</translation>

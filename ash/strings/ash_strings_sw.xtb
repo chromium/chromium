@@ -78,6 +78,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="1240638468526743569">Programu</translation>
 <translation id="1242198791279543032">Sauti ya arifa imezimwa</translation>
 <translation id="1242883863226959074">kifaa</translation>
+<translation id="1245476784081715330">Kazi nzuri!</translation>
 <translation id="1245644940275736236">Nenda kwenye programu ya Mratibu</translation>
 <translation id="124678866338384709">Funga kichupo kilichofunguka</translation>
 <translation id="1246890715821376239">Programu ambazo haziwezi kutumika</translation>
@@ -842,6 +843,7 @@ Chomeka kifaa chako kwenye umeme.</translation>
 <translation id="3958714870339660776">Siku Nzima</translation>
 <translation id="3962859241508114581">Wimbo Uliotangulia</translation>
 <translation id="3963124517343721543">Endelea kwa urahisi pale ulipoachia kwa kufungua madirisha na vichupo vyako vya awali. Pia, utaona mapendekezo ya mambo ya kufanya baadaye yaliyowekewa mapendeleo.</translation>
+<translation id="396506362088290977">Kujaribu sauti ya maikrofoni yako</translation>
 <translation id="3969043077941541451">Zima</translation>
 <translation id="3970324493235864154">Angalia arifa za simu yako</translation>
 <translation id="397105322502079400">Inakokotoa...</translation>
@@ -899,6 +901,7 @@ Chomeka kifaa chako kwenye umeme.</translation>
 <translation id="4156293514828496577">Zimesalia asilimia <ph name="PERCENTAGE" /> za chaji ya betri (takribani <ph name="TIME_LEFT" />).
 Baadhi ya vipengele vimedhibitiwa ili kuongeza muda wa matumizi ya betri.</translation>
 <translation id="4160919062868802509">Vyanzo vingi vya sauti vimetambuliwa</translation>
+<translation id="416245495747357243">Umemaliza!</translation>
 <translation id="4165275524535002941">Huenda kebo haijaoana na skrini</translation>
 <translation id="4177415338862979658">Bofya ili uangalie maelezo</translation>
 <translation id="4177913004758410636">{0,plural, =1{Sasisha kifaa ndani ya siku moja}other{Sasisha kifaa ndani ya siku #}}</translation>
@@ -984,6 +987,7 @@ Baadhi ya vipengele vimedhibitiwa ili kuongeza muda wa matumizi ya betri.</trans
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> kimezimwa.</translation>
 <translation id="4417647906073317561">Mipangilio ya hali ya kumakinika. Weka kipima muda, jukumu na muziki ili uongeze ufanisi.</translation>
 <translation id="4424159417645388645">Eneokazi la tano</translation>
+<translation id="4426817706804363424">Endelea vivyo hivyo!</translation>
 <translation id="4430019312045809116">Kiwango cha sauti</translation>
 <translation id="4441283832827406317">Programu zimepangwa kwa majina</translation>
 <translation id="4445159312344259901">Ingia katika akaunti ili ufungue</translation>
@@ -1248,6 +1252,7 @@ Unaweza pia kutumia mikato ya kibodi. Kwanza, angazia maandishi, kisha ubonyeze 
 <translation id="5283198616748585639">Ongeza dakika 1</translation>
 <translation id="528468243742722775">Mwisho</translation>
 <translation id="5286194356314741248">Inachanganua</translation>
+<translation id="528641622273682395">Washa au uzime kipengele cha kujaribu sauti ya maikrofoni</translation>
 <translation id="5297423144044956168">Hakuna vifaa vya mkononi vilivyopatikana</translation>
 <translation id="5297704307811127955">Umezimwa</translation>
 <translation id="5300589172476337783">Onyesha</translation>
@@ -1275,6 +1280,7 @@ Hakuna vifaa vilivyounganishwa.</translation>
 <translation id="536019650977002321">Msimamizi wako haruhusu unasaji wa sauti. Wasiliana na msimamizi wako ili upate maelezo zaidi.</translation>
 <translation id="5361524080961918551">Faili za matamshi ya <ph name="LANGUAGE" /> zimepakuliwa kiasi fulani</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Nenda kwenye kichupo hiki</translation>
+<translation id="5363835273551457276">Unaweza kujaribu sauti ya maikrofoni yako. Funga kidirisha ili uache.</translation>
 <translation id="5364693579536176785">nafasi ya kuhifadhi</translation>
 <translation id="5369573834963677938">Kipengele cha udhibiti wa uso kitapatikana kwa watumiaji wengine kwenye kifaa hiki</translation>
 <translation id="5369717264580061086">Kagua kwanza faili kwenye programu ya Faili</translation>
@@ -1508,7 +1514,6 @@ Hakuna vifaa vilivyounganishwa.</translation>
 <translation id="6119972796024789243">Usahihishaji wa rangi</translation>
 <translation id="6121838516699723042">Thibitisha upakuaji <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">Programu ya Mratibu wa Google haipatikani katika kipindi cha mgeni.</translation>
-<translation id="6127370444807669747">Ili upate orodha zinazokufaa na muziki zaidi wa kuangazia, jaribu YouTube Music Premium</translation>
 <translation id="6127395413317891856">Uko nje ya mtandao. Kagua muunganisho wako kisha ujaribu tena.</translation>
 <translation id="6129953537138746214">Nafasi</translation>
 <translation id="6137566720514957455">Fungua kidirisha cha kuondoa <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -2127,6 +2132,7 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="8262312463845990408">Kipengele cha kuwasha uchezaji</translation>
 <translation id="8268302343625273732">Angalia mazoezi yote kwenye Google Darasani</translation>
 <translation id="8277261673056602147">Angazia maandishi kwenye skrini yako</translation>
+<translation id="8282784978194352587">Hongera!</translation>
 <translation id="8287009018010202411">Tija</translation>
 <translation id="828708037801473432">Imezimwa</translation>
 <translation id="8297006494302853456">Dhaifu</translation>
@@ -2204,6 +2210,7 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="8609384513243082612">Fungua kichupo kipya</translation>
 <translation id="861045123704058818">Programu hupangwa kulingana na aina kwa muda</translation>
 <translation id="8612216344243590325">Weka faili muhimu kwenye <ph name="HOLDING_SPACE_TITLE" /> badala ya eneokazi. Buruta tu faili kwenye <ph name="HOLDING_SPACE_TITLE" />.</translation>
+<translation id="8612338981637220013">Unaendelea vyema!</translation>
 <translation id="8614517853887502247">Arifa za <ph name="APP_1_TITLE" /> na <ph name="APP_2_TITLE" /> zimefichwa kwa sababu ulinzi wa utazamaji umewashwa</translation>
 <translation id="8615778328722901791">Fungua upau wa vidhibiti</translation>
 <translation id="8619000641825875669">OneDrive</translation>
@@ -2246,6 +2253,7 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />: Unawashwa...</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
 <ph name="SCREEN_SHARE_STATUS" /></translation>
+<translation id="8751299148074971734">Vizuri sana!</translation>
 <translation id="8753368202781196133">Lugha hii haitumiki kwa sasa.</translation>
 <translation id="8755498163081687682">Thibitisha utambulisho wako: <ph name="ORIGIN_NAME" /> ingependa kuthibitisha kwamba ni wewe</translation>
 <translation id="875593634123171288">Onyesha mipangilio ya VPN</translation>

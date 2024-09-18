@@ -35,6 +35,7 @@
 <translation id="1155154308031262006">Нұсқау енгізіңіз.</translation>
 <translation id="115705039208660697">ананастар</translation>
 <translation id="1164939766849482256">Таң атқаннан күн батқанға дейінгі кезең бейнеленген скринсейвер</translation>
+<translation id="1166688493741195933">Жазба атаулары жасалмады</translation>
 <translation id="1167755866710282443">Пернелерді бейімдеу үшін мәзірді ашыңыз. Жылжыту үшін мәзірді сүйреңіз.</translation>
 <translation id="1171349345463658120">құмды мүйіс</translation>
 <translation id="1173894706177603556">Атын өзгерту</translation>
@@ -145,6 +146,7 @@
 <translation id="1651925268237749928">Ортақ альбомды таңдадыңыз. Басқа адамдар фотосуреттерді қоса немесе өзгерте алады. Тұсқағазыңыз қазіргі уақытта осы альбомда жоқ фотосуреттерді пайдалануы мүмкін.</translation>
 <translation id="1661512400125589646">Кідірту</translation>
 <translation id="1661865805917886535">Аккаунт және жүйе туралы кейбір ақпарат Google-ға жіберілуі мүмкін. Бұл ақпарат Құпиялық саясаты (<ph name="PRIVACYPOLICYURL" />) мен Қызмет көрсету шарттарына (<ph name="TERMSOFSERVICEURL" />) сәйкес техникалық мәселелерді шешу және қызметтерімізді жақсарту үшін пайдаланылады. Контентті өзгертуді сұрау үшін Құқықтық анықтамаға (<ph name="LEGALHELPPAGEURL" />) өтіңіз.</translation>
+<translation id="1662699081856352167">Қорытынды сәтті жасалды</translation>
 <translation id="1662989795263954667">Тоқтатылды: сия бітіп қалды</translation>
 <translation id="1664796644829245314"><ph name="PREVIEW_OBJECT" /> файлын алдын ала көру</translation>
 <translation id="1668469839109562275">Ендірілген VPN</translation>
@@ -254,6 +256,7 @@
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2148716181193084225">Бүгін</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> фотосурет</translation>
+<translation id="2154460308960858308">Іздеу жолын тазалау</translation>
 <translation id="2156072344042480449">Ең соңғы 2 нұсқауыңыз. Бұл нұсқауларды осы бетте болған кезде ғана пайдалануға болады.</translation>
 <translation id="2157660087437850958">эмоджи таңдағыш</translation>
 <translation id="2157959690810728433">КЕЗЕКТЕ</translation>
@@ -492,6 +495,7 @@
 <translation id="3502426834823382181">барлық қолданбаны көру</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />Өнімділікті бақылау деректерін<ph name="END_LINK1" /> жіберу</translation>
 <translation id="3517001332549868749">Chrome OS жаңарту</translation>
+<translation id="3522508178835057262"><ph name="MAX_WORD_LENGTH" /> сөзден ұзағырақ мәтінді транскрипциялауға қолдау көрсетілмейді.</translation>
 <translation id="3527036260304016759">Сәтсіз: белгісіз қате шықты</translation>
 <translation id="353214771040290298">Өңдеу аяқталды</translation>
 <translation id="3532980081107202182">Шамамен <ph name="MIN_REMAINING" /> минут қалды.</translation>
@@ -500,6 +504,7 @@
 <translation id="3557205324756024651">Жергілікті идентификация (қосымша)</translation>
 <translation id="3565064564551103223">Рұқсат етілген IP мекенжайлары</translation>
 <translation id="3569407787324516067">Скринсейвер</translation>
+<translation id="3571184524500629183">Іздеуді жабу</translation>
 <translation id="3577473026931028326">Бірдеңе дұрыс болмады. Қайталап көріңіз.</translation>
 <translation id="357889014807611375">шектелген Wi-Fi</translation>
 <translation id="3583278742022654445">Сигнал күші аз. Wi-Fi сигнал көзіне жақындап көріңіз.</translation>
@@ -539,6 +544,7 @@
 <translation id="3780740315729837296">Пернетақта пернесін тағайындау</translation>
 <translation id="3784455785234192852">Құлыптау</translation>
 <translation id="3785643128701396311">пиксельмен жасалған өнер туындысы</translation>
+<translation id="3799381533888781854">ӨШІРУЛІ – бұл параметрді әкімшіңіз басқарады.</translation>
 <translation id="380097101658023925">rgb басқару элементтері</translation>
 <translation id="38114475217616659">Тарихты толығымен тазалау</translation>
 <translation id="3820172043799983114">PIN коды жарамсыз.</translation>
@@ -707,6 +713,7 @@
 <translation id="4602266091140407479">Микрофон</translation>
 <translation id="4607282946861182308">Мұндай сурет жасау мүмкін емес. Басқа нұсқау жазып көріңіз.</translation>
 <translation id="4609350030397390689">Пернетақта жарықтығын азайту</translation>
+<translation id="4623061655523261501">Жазба атаулары сәтті жасалды</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />/<ph name="TOTAL_PAGE_NUMBER" />. Басып шығарудан бас тарту үшін "Enter" пернесін басыңыз.</translation>
 <translation id="463791356324567266">Сканерлеу тоқтатылуда…</translation>
 <translation id="4644611440022666152">Қосу және жүктеп алу</translation>
@@ -742,6 +749,7 @@
 <translation id="4809927044794281115">Жарық режим</translation>
 <translation id="4813136279048157860">Суреттерім</translation>
 <translation id="4813345808229079766">Байланыс</translation>
+<translation id="4824527342590024245"><ph name="MIN_WORD_LENGTH" /> сөзден аз мәтінді транскрипциялауға қолдау көрсетілмейді.</translation>
 <translation id="4830894019733815633">шатқал</translation>
 <translation id="4832079907277790330">Files қолданбасында қалта таңдау...</translation>
 <translation id="4835901797422965222">Ешқандай белсенді желі жоқ.</translation>
@@ -770,6 +778,7 @@
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> секундта <ph name="RATE" /> зарядталды.</translation>
 <translation id="4930320165497208503">Байланысты реттеу немесе жаңарту үшін <ph name="BEGIN_LINK" />Параметрлерге<ph name="END_LINK" /> өтіңіз.</translation>
 <translation id="4932733599132424254">Күні</translation>
+<translation id="4946927805998996217">Қорытынды жасалып жатыр</translation>
 <translation id="4950314376641394653"><ph name="DEVICE_NAME" /> микробағдарламасы <ph name="VERSION" /> нұсқасына жаңартылды.</translation>
 <translation id="4950893758552030541">ағаш туннель</translation>
 <translation id="4965661459364092269">Қауіпсіздікті бастапқы қалпына келтіру аяқталды</translation>
@@ -830,6 +839,7 @@
 <translation id="5229104491259541281">"<ph name="QUERY" />" сұрауын түрлендіру</translation>
 <translation id="5229344016299762883">Толық күйден шығу</translation>
 <translation id="5234764350956374838">Жабу</translation>
+<translation id="5236119614998611749">Қорытынды жасалмады</translation>
 <translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{Сіз аккаунтқа кірген сайын, әкімші "<ph name="APP_NAME" />" қолданбасын автоматты түрде іске қосылатын етіп орнатты.}=2{Сіз аккаунтқа кірген сайын, әкімші "<ph name="APP_NAME" />" және тағы 1 қолданбаны автоматты түрде іске қосылатын етіп орнатты.}other{Сіз аккаунтқа кірген сайын, әкімші "<ph name="APP_NAME" />" және тағы # қолданбаны автоматты түрде іске қосылатын етіп орнатты.}}</translation>
 <translation id="5248419081947706722">көк</translation>
 <translation id="5252456968953390977">Роуминг</translation>
@@ -945,6 +955,7 @@
 <translation id="5860033963881614850">Өшірулі</translation>
 <translation id="5860491529813859533">Қосу</translation>
 <translation id="5876385649737594562">Опцияларды таңдау үшін қосыңыз</translation>
+<translation id="5877503382465267833"><ph name="RECORDING_NAME" /> жазбасын кідірту</translation>
 <translation id="588258955323874662">Толық экран</translation>
 <translation id="5893975327266416093">Тағайындау үшін пернетақта пернесін түртіңіз</translation>
 <translation id="5895138241574237353">Қайта іске қосу</translation>
@@ -1162,6 +1173,7 @@
 <translation id="6910312834584889076">Сканердің жапқышы ашық. Оның жапқышын жауып, әрекетті қайталаңыз.</translation>
 <translation id="6910845598686542904">жазбада анықталған дауыстардың үлгілерін есептеу;</translation>
 <translation id="6911383237894364323">Медиасерверлерге қосылмады.</translation>
+<translation id="6927968682840110570">Жазба аты</translation>
 <translation id="6930242544192836755">Ұзақтық</translation>
 <translation id="6930597342185648547">Фон туралы ақпарат</translation>
 <translation id="6939667434404433010">Жазба атауын іздеу</translation>
@@ -1204,6 +1216,7 @@
 <translation id="708426984172631313">ТОҚТАТЫЛДЫ</translation>
 <translation id="7086168019478250425">биолюминесцентті жағажай</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="7086916854357021265">Жазба атаулары жасалып жатыр</translation>
 <translation id="7097908713073775559">түрлі түсті</translation>
 <translation id="710028965487274708">Орындалмады – авторизация жасалмады</translation>
 <translation id="7101959270679078188">Жаңарту процесін жалғастыру үшін <ph name="DEVICE_NAME" /> құлпын ашыңыз.</translation>
@@ -1274,6 +1287,7 @@
 <translation id="7378170410161264436">Диктофон сөйлесім жазбаларының транскрипцияларын жасай алады.
 Осы транскрипцияларды алу үшін транскрипция үлгісін (100 МБ-қа дейін) жүктеп алыңыз.</translation>
 <translation id="7384004438856720753">сарай</translation>
+<translation id="7388345524791662148"><ph name="RECORDING_NAME" />: басқа опциялар</translation>
 <translation id="7388959671917308825">Ендірілген сенсорлық тақта</translation>
 <translation id="7397270852490618635">Жарық режимді өшіру</translation>
 <translation id="7401543881546089382">Таңбашаны жою</translation>
@@ -1295,6 +1309,7 @@
 <translation id="7513770521371759388">төменгі жақ</translation>
 <translation id="7514365320538308">Жүктеу</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7519481256236810334"><ph name="RECORDING_NAME" /> жазбасын ойнату</translation>
 <translation id="7525067979554623046">Жасау</translation>
 <translation id="7528507600602050979">Анықтамалық контент қолжетімсіз</translation>
 <translation id="7535791657097741517">Жарық режимді қосу</translation>
@@ -1371,6 +1386,7 @@
 <translation id="7897043345768902965">жаяужол</translation>
 <translation id="7902285181767404769">Жазған кезде хабарландырулар дыбысын өшіру</translation>
 <translation id="7903695460270716054">Сұрыпталған афиша мен суреттерді таңдаңыз.</translation>
+<translation id="7912005977894000746">Негізгі бетке оралу</translation>
 <translation id="7915220255123750251">Желінің APN параметрлерін басқарыңыз. APN аттары ұялы желі мен интернет арасында байланыс орнатады.</translation>
 <translation id="7936303884198020182">Атау серверлері табылмады.</translation>
 <translation id="7942349550061667556">Қызыл</translation>

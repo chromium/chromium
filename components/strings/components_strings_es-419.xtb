@@ -446,6 +446,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1771254328977666895">Ver el historial de precios</translation>
 <translation id="1777422078676229054">Foto (archivo)</translation>
 <translation id="1778646502362731194">JIS B0</translation>
+<translation id="1785118555253503473">¿Quieres instalar apps web?</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, presiona Tab y, luego, Intro para administrar la información, privacidad y seguridad de tu Cuenta de Google</translation>
 <translation id="1793631236004319016">Se usó por última vez hace <ph name="NUM_HOURS_MINUTES_SECONDS" /></translation>
@@ -677,6 +678,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2212735316055980242">No se encontró la política.</translation>
 <translation id="2213606439339815911">Recuperando entradas…</translation>
 <translation id="2213612003795704869">Se imprime la página</translation>
+<translation id="2215368073167343359">Autocompletar con Google</translation>
 <translation id="2215539479425228550">Alpinismo y montañismo</translation>
 <translation id="2215727959747642672">Edición de archivos</translation>
 <translation id="2215963164070968490">Perros</translation>
@@ -709,6 +711,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2262243747453050782">Error de HTTP</translation>
 <translation id="2265192657948645752">Trabajos en el sector minorista</translation>
 <translation id="2265356434276802347">Esta política no debe tener más de <ph name="MAX_ITEMS_LIMIT" /> entradas destacadas.</translation>
+<translation id="2266175583972138136">Se aplican condiciones para los beneficios de la tarjeta</translation>
 <translation id="2267047181501709434">Verificando identidad…</translation>
 <translation id="2268044343513325586">Definir mejor</translation>
 <translation id="2268966938956566076">Subir dentro de <ph name="MINUTES" /> min</translation>
@@ -1163,6 +1166,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3157931365184549694">Restaurar</translation>
 <translation id="3158539265159265653">Disco</translation>
 <translation id="3162559335345991374">Es posible que la red Wi-Fi que estás usando requiera que visites la página de acceso.</translation>
+<translation id="316638481603975524">Puede solicitar permiso para instalar apps web</translation>
 <translation id="3168744840365648658">Equipos de radio</translation>
 <translation id="3168938241115725594">Vehículos clásicos</translation>
 <translation id="3169472444629675720">Descubre</translation>
@@ -1798,6 +1802,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4269264543938335308">Trajes de baño</translation>
 <translation id="4269599248168651462">El certificado del servidor se emite con un nombre que no es único.</translation>
 <translation id="4270541775497538019">Apilador 6</translation>
+<translation id="4271652479722040953">Cuando se agregan extensiones a Chrome, se envían datos pertinentes sobre ellas a terceros para su análisis, y es posible que tu administrador pueda verlos. Los datos incluyen información sobre las extensiones, como el nombre, la hora de instalación, la fuente de la instalación y la actividad asociada a estas extensiones (como cambiar de pestaña, comunicarse con sitios web o acceder a cookies). Estos datos se recopilan para las extensiones instaladas desde Chrome Web Store y las extensiones que no pertenecen a la tienda.</translation>
 <translation id="4275830172053184480">Reiniciar tu dispositivo</translation>
 <translation id="4276974990916607331">No, gracias</translation>
 <translation id="4277028893293644418">Restablecer contraseña</translation>
@@ -1879,6 +1884,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4406896451731180161">resultados de búsqueda</translation>
 <translation id="4408413947728134509">Cookies <ph name="NUM_COOKIES" /></translation>
 <translation id="4412074349188076601">Esta configuración está marcada como instalable, pero no se proporciona ninguna imagen para esta arquitectura, por lo que no se puede instalar.</translation>
+<translation id="4414452699610169758">Usa el Administrador de contraseñas de Google y la función Autocompletar de Chrome para guardar y completar contraseñas, formas de pago y direcciones</translation>
 <translation id="4414515549596849729">datos de sitios y cookies</translation>
 <translation id="4415156962929755728">Plástico (brillo intenso)</translation>
 <translation id="4415426530740016218">Dirección de retiro</translation>
@@ -2323,6 +2329,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5273658854610202413">Advertencia: Esta política no se combinó según la política PolicyDictionaryMultipleSourceMergeList porque no es parte de las políticas del diccionario que se pueden combinar.</translation>
 <translation id="5278778426231952189">Subir ahora</translation>
 <translation id="5279286380302340275">Administrar las descargas</translation>
+<translation id="5280963125494874678">aplicaciones web</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">Propiedades del documento</translation>
 <translation id="528468243742722775">Finalizar</translation>
@@ -2825,6 +2832,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6221311046884916259">¿Quieres guardar esta tarjeta en tu Cuenta de Google?</translation>
 <translation id="6221892641068781024">Vista simplificada</translation>
 <translation id="6222527803348563979">Papelería</translation>
+<translation id="62231116988543150">Instalar apps web</translation>
 <translation id="6224281071334553713">Piedras preciosas y joyas</translation>
 <translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, presiona Tab y, luego, Intro para personalizar tus herramientas de accesibilidad en la configuración de Chrome</translation>
 <translation id="6228346913624365233">Vehículos de lujo</translation>
@@ -3088,6 +3096,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />, presiona Tab y, luego, Intro para encontrar tu dispositivo en la Cuenta de Google</translation>
 <translation id="6695428916538794739">Películas de acción y aventura</translation>
 <translation id="6696424331653607346">Guías y documentales de viajes</translation>
+<translation id="6696575039575740785">No se permite instalar apps web</translation>
 <translation id="6698097747703777657">¿No recibiste el código? <ph name="BEGIN_LINK" />Obtener uno nuevo<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">Creado:</translation>
 <translation id="67007264085648978">Punto de arrastre de tiempo</translation>
@@ -3129,6 +3138,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6767985426384634228">¿Deseas actualizar la dirección?</translation>
 <translation id="6770747695101757579">Papel (algodón)</translation>
 <translation id="677257480647123231">Seguridad infantil en Internet</translation>
+<translation id="6772959465807028761">Para usar YouTube, continúa con tu Cuenta de Google</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">Usa YouTube con las opciones de tu madre o padre</translation>
 <translation id="6779348349813025131">El Administrador de contraseñas de Google necesita acceso al llavero de macOS</translation>
@@ -3201,6 +3211,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6915804003454593391">Usuario:</translation>
 <translation id="6916193791494646625">Proporciona el motivo de la descarga (obligatorio)</translation>
 <translation id="6917795328362592458">La contraseña que acabas de usar se encontró en una violación de la seguridad de los datos. A fin de asegurar tu cuenta, el Administrador de contraseñas te recomienda revisar las contraseñas guardadas.</translation>
+<translation id="6921197121276419421">Se permite instalar apps web</translation>
 <translation id="6924013822850225188">Elige si quieres ver los beneficios de tu tarjeta durante la confirmación de la compra (se aplican las condiciones del banco)</translation>
 <translation id="6925267999184670015">B+ norteamericano</translation>
 <translation id="6926216138694948720">Arte corporal</translation>
@@ -3379,6 +3390,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="7232352818707016189">Más acciones para la tabla de Compare</translation>
 <translation id="7233592378249864828">Imprimir hoja de confirmación</translation>
 <translation id="7234112195906418665">Viajes y transporte</translation>
+<translation id="7234585564776614047">Autocompletar con otro servicio</translation>
 <translation id="7236417832106250253"><ph name="PROGRESS_PERCENT" />% completado | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
 <translation id="7237166092326447040">Regalos y artículos para eventos especiales</translation>
 <translation id="7237454422623102448">Configuración del sistema</translation>
@@ -3698,6 +3710,7 @@ Detalles adicionales:
 <translation id="7761701407923456692">El certificado del servidor no coincide con la dirección URL.</translation>
 <translation id="7764225426217299476">Agregar dirección</translation>
 <translation id="7766518757692125295">Contorno</translation>
+<translation id="7766899888934244586">Aplicaciones web</translation>
 <translation id="7767278989746220252">Mantenimiento de césped y jardines</translation>
 <translation id="776749070095465053">Tela</translation>
 <translation id="7773005668374414287">Mismo orden hacia arriba</translation>
@@ -3730,6 +3743,7 @@ Detalles adicionales:
 <translation id="7831993212387676366">¿Qué es la lista de compras?</translation>
 <translation id="7840103971441592723">Comenzó la captura de pantalla</translation>
 <translation id="784137052867620416">Shopping Insights</translation>
+<translation id="7842611866969435396">Comencemos</translation>
 <translation id="784404208867107517">Historial agrupado</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Ninguna}=1{1 app (<ph name="EXAMPLE_APP_1" />)}=2{2 apps (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# apps (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="785476343534277563">Deportes universitarios</translation>
@@ -4039,6 +4053,7 @@ Detalles adicionales:
 <translation id="8409413588194360210">controladores de pago</translation>
 <translation id="8412145213513410671">Fallas (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">Debes ingresar la misma frase de contraseña dos veces.</translation>
+<translation id="8414322570408428950">Se produce un evento de extensión</translation>
 <translation id="8416694386774425977">La configuración de red no es válida y no se pudo importar.
 Detalles adicionales:
 <ph name="DEBUG_INFO" /></translation>
@@ -4291,6 +4306,8 @@ Detalles adicionales:
 <translation id="8891031436559779793">Recibirás una notificación si el precio disminuye en algún sitio.</translation>
 <translation id="8891727572606052622">Modo proxy no válido</translation>
 <translation id="8894794286471754040">El borde más largo primero</translation>
+<translation id="8895334001368918465">Para usar otro servicio de Autocompletar en Chrome, actívalo en la configuración de Android y aquí</translation>
+<translation id="8897221284075091877">Para solicitar ver este contenido, continúa con tu Cuenta de Google</translation>
 <translation id="8897428486789851669">Natación</translation>
 <translation id="8899807382908246773">Anuncios intrusivos</translation>
 <translation id="8903921497873541725">Acercar</translation>

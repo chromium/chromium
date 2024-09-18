@@ -116,6 +116,7 @@
 <translation id="1517166097004694782">Oculte a opção "Continuar com este separador"</translation>
 <translation id="1520027731907768768">Receba alertas de descida do preço de produtos que acompanha.</translation>
 <translation id="1521774566618522728">Ativo hoje</translation>
+<translation id="1524563461097350801">Não</translation>
 <translation id="1531038290222364269">Mostrar separadores</translation>
 <translation id="1536390784834419204">Traduzir página</translation>
 <translation id="1540800554400757039">Morada 1</translation>
@@ -572,6 +573,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="3851938967634752633">As palavras-passe de <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> e outros <ph name="NUMBER_OF_ACCOUNTS" /> URLs vão ser apagadas. As suas contas não vão ser apagadas.</translation>
 <translation id="3858860766373142691">Nome</translation>
 <translation id="3861908220442487587">Este endereço só é guardado neste dispositivo. Para usá-lo nos seus outros dispositivos, mova-o para a sua Conta Google, <ph name="USER_EMAIL" /></translation>
+<translation id="3868495844258915202">Mostrar URL completo</translation>
 <translation id="3876833929577368454">Perguntar-me sempre</translation>
 <translation id="3885587018298784481">Adira a um grupo familiar</translation>
 <translation id="3888863481921783344">Isto vai ser usado para lhe mostrar possíveis convidados para o seu evento.</translation>
@@ -856,6 +858,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="5210365745912300556">Fechar separador</translation>
 <translation id="5211488077761630279">Permitir que "<ph name="SITE_NAME" />" use a autorização <ph name="PERMISSION" />?</translation>
 <translation id="5217245356412073535">Pode alterar a vista do site predefinida para o computador em Definições &gt; Definições de conteúdo</translation>
+<translation id="5217329997012062137">Quando usa o Google Lens, é enviada uma captura de ecrã da página para a Google.</translation>
 <translation id="5220945116117011963">Crie eventos de calendário a partir de datas</translation>
 <translation id="5222676887888702881">Terminar sessão</translation>
 <translation id="5228579091201413441">Ativar a sincronização</translation>
@@ -1507,7 +1510,6 @@ Os sites podem utilizar cookies para ver a sua atividade de navegação em difer
 <translation id="8173034266693057059">Comprimento</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8182037667962849780">{count,plural, =1{De {website_1}}=2{De {website_1}, {website_2}}=3{De {website_1}, {website_2} e mais 1}other{De {website_1}, {website_2} e mais {more_count}}}</translation>
-<translation id="8189814768485665290">Partilhar URL completo</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Os seus dispositivos<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Adicione uma palavra-passe</translation>
 <translation id="8202744799033457229">Mostrar histórico</translation>
@@ -1541,6 +1543,7 @@ Os sites podem utilizar cookies para ver a sua atividade de navegação em difer
 <translation id="8349305172487531364">Barra de marcadores</translation>
 <translation id="8366466717204352506">Verificação nunca executada</translation>
 <translation id="8368001212524806591">Monitorizar preço</translation>
+<translation id="8370406443343902172">Aceder às Definições…</translation>
 <translation id="8372471489238799313">{count,plural, =1{Eliminar morada}other{Eliminar moradas}}</translation>
 <translation id="8378714024927312812">Gerido pela sua entidade</translation>
 <translation id="8386068868580335421">Repor</translation>
@@ -1624,6 +1627,7 @@ Os sites podem utilizar cookies para ver a sua atividade de navegação em difer
 <translation id="8712534545803964353">Localizar na página…</translation>
 <translation id="8712637175834984815">OK</translation>
 <translation id="8722229818691036192">Contas neste dispositivo</translation>
+<translation id="8722649775263832315">Toque ou realce para pesquisar qualquer coisa com o Google Lens</translation>
 <translation id="8725066075913043281">Tentar novamente</translation>
 <translation id="8728922029615312208">Fechar tudo</translation>
 <translation id="8730621377337864115">Concluído</translation>

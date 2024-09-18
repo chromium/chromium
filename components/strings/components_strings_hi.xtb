@@ -447,6 +447,7 @@
 <translation id="1771254328977666895">कीमत का इतिहास देखें</translation>
 <translation id="1777422078676229054">फ़ोटो (आर्काइवल)</translation>
 <translation id="1778646502362731194">JIS B0</translation>
+<translation id="1785118555253503473">क्या वेब ऐप्लिकेशन इंस्टॉल करने हैं?</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google खाते में अपनी जानकारी, निजता, और सुरक्षा को मैनेज करने के लिए, पहले Tab दबाएं और फिर Enter दबाएं</translation>
 <translation id="1793631236004319016">आखिरी बार <ph name="NUM_HOURS_MINUTES_SECONDS" /> पहले इस्तेमाल किया गया</translation>
@@ -1164,6 +1165,7 @@
 <translation id="3157931365184549694">वापस लाएं</translation>
 <translation id="3158539265159265653">डिस्क</translation>
 <translation id="3162559335345991374">आप जिस वाई-फ़ाई का उपयोग कर रहे हैं, आपको उसके लॉगिन पेज पर जाने की ज़रूरत पड़ सकती है.</translation>
+<translation id="316638481603975524">साइट, वेब ऐप्लिकेशन इंस्टॉल करने की अनुमति मांग सकती है</translation>
 <translation id="3168744840365648658">रेडियो इक्विपमेंट</translation>
 <translation id="3168938241115725594">पुराने स्टाइल वाले वाहन</translation>
 <translation id="3169472444629675720">डिस्कवर</translation>
@@ -2322,6 +2324,7 @@
 <translation id="5273658854610202413">चेतावनी: इस नीति को PolicyDictionaryMultipleSourceMergeList नीति में बताए अनुसार नहीं मिलाया जा सकता, क्योंकि यह शब्दकोश की उन नीतियों का हिस्सा नहीं है जिन्हें मिलाया जा सकता है.</translation>
 <translation id="5278778426231952189">अभी अपलोड करें</translation>
 <translation id="5279286380302340275">डाउनलोड मैनेज करें</translation>
+<translation id="5280963125494874678">वेब ऐप्लिकेशन</translation>
 <translation id="5283044957620376778">बी1</translation>
 <translation id="5284295735376057059">दस्तावेज़ की जानकारी</translation>
 <translation id="528468243742722775">खत्म</translation>
@@ -2824,6 +2827,7 @@
 <translation id="6221311046884916259">क्या आपको इस कार्ड की जानकारी अपने Google खाते में सेव करनी है?</translation>
 <translation id="6221892641068781024">सरल बनाया गया व्यू</translation>
 <translation id="6222527803348563979">स्टेशनरी</translation>
+<translation id="62231116988543150">वेब ऐप्लिकेशन इंस्टॉल करने की अनुमति चाहिए</translation>
 <translation id="6224281071334553713">जेम्स और गहने</translation>
 <translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome की सेटिंग में सुलभता टूल को अपने हिसाब से बनाने के लिए, पहले Tab और फिर Enter दबाएं</translation>
 <translation id="6228346913624365233">लग्ज़री वाहन</translation>
@@ -3087,6 +3091,7 @@
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google खाते में अपना डिवाइस ढूंढने के लिए, पहले Tab और फिर Enter दबाएं</translation>
 <translation id="6695428916538794739">ऐक्शन और एडवेंचर वाली फ़िल्में</translation>
 <translation id="6696424331653607346">ट्रैवल गाइड और ट्रैवल से जुड़ी जानकारी</translation>
+<translation id="6696575039575740785">वेब ऐप्लिकेशन इंस्टॉल करने की अनुमति नहीं है</translation>
 <translation id="6698097747703777657">क्या आपको कोड नहीं मिला? <ph name="BEGIN_LINK" />नया कोड पाएं<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">निर्मित:</translation>
 <translation id="67007264085648978">टाइम स्क्रबर</translation>
@@ -3200,6 +3205,7 @@
 <translation id="6915804003454593391">उपयोगकर्ता:</translation>
 <translation id="6916193791494646625">डाउनलोड करने की वजह बताएं (ज़रूरी है)</translation>
 <translation id="6917795328362592458">आपने अभी जो पासवर्ड इस्तेमाल किया है वह डेटा के गलत इस्तेमाल की वजह से लीक हो चुका है. Google के पासवर्ड मैनेजर का सुझाव है कि आप सेव किए गए पासवर्ड की जांच करें. इस तरह, आपके खाते सुरक्षित रहेंगे.</translation>
+<translation id="6921197121276419421">वेब ऐप्लिकेशन इंस्टॉल करने की अनुमति दी गई</translation>
 <translation id="6924013822850225188">चुनें कि चेकआउट करते समय आपको कार्ड के फ़ायदे दिखे या नहीं (बैंक की शर्तें लागू)</translation>
 <translation id="6925267999184670015">नॉर्थ अमेरिकन B+</translation>
 <translation id="6926216138694948720">बॉडी आर्ट</translation>
@@ -3697,6 +3703,7 @@
 <translation id="7761701407923456692">सर्वर का प्रमाणपत्र यूआरएल से मेल नहीं खाता.</translation>
 <translation id="7764225426217299476">पता जोड़ें</translation>
 <translation id="7766518757692125295">स्कर्ट</translation>
+<translation id="7766899888934244586">वेब ऐप्लिकेशन</translation>
 <translation id="7767278989746220252">पैटियो, लॉन, और गार्डन</translation>
 <translation id="776749070095465053">फ़ैब्रिक</translation>
 <translation id="7773005668374414287">इसी तरह सीधा करके रखें</translation>
@@ -3729,6 +3736,7 @@
 <translation id="7831993212387676366">खरीदारी की सूची क्या है?</translation>
 <translation id="7840103971441592723">स्क्रीन कैप्चर करने की सुविधा चालू हो गई है</translation>
 <translation id="784137052867620416">खरीदारी के बारे में अहम जानकारी</translation>
+<translation id="7842611866969435396">शुरू करें</translation>
 <translation id="784404208867107517">ग्रुप किया गया इतिहास</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{कोई नहीं}=1{एक ऐप्लिकेशन (<ph name="EXAMPLE_APP_1" />)}=2{दो ऐप्लिकेशन (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# ऐप्लिकेशन (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}other{# ऐप्लिकेशन (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="785476343534277563">कॉलेज स्पोर्ट्स</translation>

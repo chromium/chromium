@@ -50,6 +50,7 @@
 <translation id="1219674500290482172">Не може да се установи връзка с интернет.</translation>
 <translation id="1227113644794103810">Неактивни раздели</translation>
 <translation id="1231733316453485619">Да се включи ли синхронизирането?</translation>
+<translation id="1253032109800629289">Скриване на „Получаване на известия за проследяване на цената“</translation>
 <translation id="1258491128795710625">Новите неща</translation>
 <translation id="1263231323834454256">Списък за четене</translation>
 <translation id="1263433075299269530">Последно отвореният ви раздел</translation>
@@ -86,6 +87,7 @@
 <translation id="1383876407941801731">Търсене</translation>
 <translation id="138618066238211776">Продължаване като <ph name="USER_NAME" /></translation>
 <translation id="138692594145659985">Опции за запазване на картата</translation>
+<translation id="1396260204083880024">Влезли сте като <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Отваряне на менюто на профила.</translation>
 <translation id="1397144142234474689">Скриване на „История“</translation>
 <translation id="1407135791313364759">Отваряне на всички</translation>
 <translation id="1408847409015257906">Докоснете „Поверителност и сигурност“.</translation>
@@ -116,6 +118,7 @@
 <translation id="1517166097004694782">Скриване на „Продължаване с този раздел“</translation>
 <translation id="1520027731907768768">Получавайте сигнали за понижение на цената за продукти, които следите.</translation>
 <translation id="1521774566618522728">Активно днес</translation>
+<translation id="1524563461097350801">Не, благодаря</translation>
 <translation id="1531038290222364269">Показване на разделите</translation>
 <translation id="1536390784834419204">Превод на страницата</translation>
 <translation id="1540800554400757039">Адрес 1</translation>
@@ -391,6 +394,7 @@
 <translation id="2870560284913253234">Сайт</translation>
 <translation id="2876369937070532032">Когато сигурността ви е застрашена, изпраща до Google URL адресите на някои от страниците, които посещавате.</translation>
 <translation id="2883151425485251736">Преглеждайте и редактирайте темите, които сте скрили от профила си</translation>
+<translation id="2888631381369839306">Известията за проследяване на цената са включени</translation>
 <translation id="288902476966286676">Връщане към подателя</translation>
 <translation id="2894757982205307093">Нов раздел в групата</translation>
 <translation id="2905479111267140204">Имате <ph name="NUMBER_OF_PASSWORDS" /> повторно използвани пароли, които могат да представляват риск за сигурността ви.</translation>
@@ -595,6 +599,7 @@
 <translation id="3967327056943561740">Отметки</translation>
 <translation id="3967822245660637423">Изтеглянето завърши</translation>
 <translation id="3982893814825393515">Подаване на сигнал за проблем…</translation>
+<translation id="398604237578616937">Влезли сте като <ph name="USER_EMAIL" />. Отваряне на менюто на профила.</translation>
 <translation id="3987993985790029246">Връзка: Коп.</translation>
 <translation id="3992684624889376114">Всичко за тази страница</translation>
 <translation id="3994422733891749358">Изберете известията, които искате да получавате</translation>
@@ -732,6 +737,7 @@
 <translation id="4636930964841734540">Информация</translation>
 <translation id="4642472735733036929">Проследяването на цената спря</translation>
 <translation id="4645575059429386691">Управлява се от ваш родител</translation>
+<translation id="4647758699119474035">Влезли сте като <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Грешка в профила в Google. Отваряне на менюто на профила.</translation>
 <translation id="4650125387981512669">Продължаване като <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4652817563047461855">Уверете се, че паролите ви са защитени, разберете дали са били компрометирани и получете съвет за това как да се предпазите онлайн. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="4658335131052370646">Запазване</translation>
@@ -868,6 +874,7 @@
 <translation id="5271265092610673171">{count,plural, =1{Едно от задължителните полета е празно. Попълнете го, преди да запазите.}other{Някои от задължителните полета са празни. Попълнете ги, преди да запазите.}}</translation>
 <translation id="5271549068863921519">Запазване на паролата</translation>
 <translation id="5279600392753459966">Блокиране на всички</translation>
+<translation id="5282340693022193851">За да получавате известия за проследяване на цената, включете ги от настройките на iOS.</translation>
 <translation id="5294624619177114121">Известия за мобилни устройства</translation>
 <translation id="5295239312320826323">Да се премахне ли профилът <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Показване</translation>
@@ -914,6 +921,7 @@
 
 Трябва да активирате Handoff и в секцията „General“ на Settings, както и да използвате един и същ профил в iCloud на устройствата си.</translation>
 <translation id="5551825465462320939">Бъдете в крак с новини, спорт и др. въз основа на интересите си.</translation>
+<translation id="5555008247722361784">Влезли сте като <ph name="USER_EMAIL" />. Грешка в профила в Google. Отваряне на менюто на профила.</translation>
 <translation id="5556459405103347317">Повторно зареждане</translation>
 <translation id="555749644339804659">Паролите се проверяват…</translation>
 <translation id="5559567453458728487">Преобразуване на мерни единици, намерени в мрежата</translation>
@@ -1507,7 +1515,6 @@
 <translation id="8173034266693057059">Дължина</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8182037667962849780">{count,plural, =1{За {website_1}}=2{За {website_1} и {website_2}}=3{За {website_1}, {website_2} и още 1}other{За {website_1}, {website_2} и още {more_count}}}</translation>
-<translation id="8189814768485665290">Споделяне на пълния URL адрес</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Вашите устройства<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Добавяне на парола</translation>
 <translation id="8202744799033457229">Показване на историята</translation>
@@ -1541,6 +1548,7 @@
 <translation id="8349305172487531364">Лента на отметките</translation>
 <translation id="8366466717204352506">Проверката не се е изпълнявала</translation>
 <translation id="8368001212524806591">Проследяване на цената</translation>
+<translation id="8370406443343902172">Към настройките...</translation>
 <translation id="8372471489238799313">{count,plural, =1{Изтриване на адреса}other{Изтриване на адресите}}</translation>
 <translation id="8378714024927312812">Управлява се от организацията ви</translation>
 <translation id="8386068868580335421">Нулиране</translation>
@@ -1592,6 +1600,7 @@
 <translation id="8571213806525832805">Последните 4 седмици</translation>
 <translation id="8577056989960190117">Автоматично попълване на годината на валидност: <ph name="YEAR" /></translation>
 <translation id="8588404856427128947">Изключено</translation>
+<translation id="8590286732816598906">Група раздели, <ph name="GROUP_TITLE" />, меню.</translation>
 <translation id="8593565399399144771">Можете да отворите нов раздел оттук.</translation>
 <translation id="8600272508328041907">Превключване към превод на цяла страница</translation>
 <translation id="860043288473659153">Име на титуляря на картата</translation>
@@ -1603,6 +1612,7 @@
 <translation id="8637431369725868556">Получете защита срещу опасни сайтове.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Няма компрометирани пароли}=1{{COUNT} компрометирана парола}other{{COUNT} компрометирани пароли}}</translation>
 <translation id="8640575194957831802">Последно отворени</translation>
+<translation id="8647280737650867362">Спирането на проследяването на цената не бе успешно.</translation>
 <translation id="8654802032646794042">Отказ</translation>
 <translation id="8660600697590740984">Търсене с Обектив на копираното изображение</translation>
 <translation id="866266761389616183">Ужас!</translation>
@@ -1727,6 +1737,7 @@
 <translation id="9162432979321511934">Включете AutoFill Passwords</translation>
 <translation id="9165320910061267720">За да получавате известия за сигнали за понижение на цената, трябва да включите известията от настройките на iOS.</translation>
 <translation id="9179151630575358778">Този елемент ще бъде скрит</translation>
+<translation id="918129721713827015">Показване на разделите в група</translation>
 <translation id="9183733013282108610">Търсене в режим „инкогнито“</translation>
 <translation id="9186762474139509529">Стартиране на регистрирането</translation>
 <translation id="9191031968346938109">Добавяне към…</translation>

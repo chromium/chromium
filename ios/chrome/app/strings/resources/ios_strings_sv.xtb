@@ -118,6 +118,7 @@
 <translation id="1517166097004694782">Dölj Fortsätt med den här fliken</translation>
 <translation id="1520027731907768768">Få aviseringar om prissänkningar för produkter du bevakar.</translation>
 <translation id="1521774566618522728">Aktiv idag</translation>
+<translation id="1524563461097350801">Nej tack</translation>
 <translation id="1531038290222364269">Visa flikar</translation>
 <translation id="1536390784834419204">Översätt sidan</translation>
 <translation id="1540800554400757039">Adressrad 1</translation>
@@ -576,6 +577,7 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="3851938967634752633">Lösenorden för <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> och <ph name="NUMBER_OF_ACCOUNTS" /> till raderas. Dina konton raderas inte.</translation>
 <translation id="3858860766373142691">Namn</translation>
 <translation id="3861908220442487587">Adressen sparas endast på den här enheten. Om du vill använda den på dina andra enheter flyttar du den till Google-kontot <ph name="USER_EMAIL" /></translation>
+<translation id="3868495844258915202">Visa fullständig webbadress</translation>
 <translation id="3876833929577368454">Fråga mig varje gång</translation>
 <translation id="3885587018298784481">Gå med i en familjegrupp</translation>
 <translation id="3888863481921783344">Detta används för att visa möjliga användare att bjuda in till händelser.</translation>
@@ -863,6 +865,7 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="5210365745912300556">Stäng flik</translation>
 <translation id="5211488077761630279">Vill du tillåta att <ph name="SITE_NAME" /> använder din <ph name="PERMISSION" />?</translation>
 <translation id="5217245356412073535">Du kan ändra till datorvyn som standardvy för webbplatsen under Inställningar &gt; Innehållsinställningar</translation>
+<translation id="5217329997012062137">När du använder Google Lens skickas en skärmbild av sidan till Google.</translation>
 <translation id="5220945116117011963">Skapa kalenderhändelser från datum</translation>
 <translation id="5222676887888702881">Logga ut</translation>
 <translation id="5228579091201413441">Aktivera synkronisering</translation>
@@ -1519,7 +1522,6 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="8173034266693057059">Längd</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8182037667962849780">{count,plural, =1{För {website_1}}=2{För {website_1}, {website_2}}=3{För {website_1}, {website_2} och 1 till}other{För {website_1}, {website_2} och {more_count} till}}</translation>
-<translation id="8189814768485665290">Dela fullständig webbadress</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Dina enheter<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Lägg till lösenord</translation>
 <translation id="8202744799033457229">Visa historik</translation>
@@ -1553,6 +1555,7 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="8349305172487531364">Bokmärkesfältet</translation>
 <translation id="8366466717204352506">Kontrollen har aldrig körts</translation>
 <translation id="8368001212524806591">Bevaka pris</translation>
+<translation id="8370406443343902172">Öppna inställningarna …</translation>
 <translation id="8372471489238799313">{count,plural, =1{Radera adress}other{Radera adresser}}</translation>
 <translation id="8378714024927312812">Hanteras av organisationen</translation>
 <translation id="8386068868580335421">Återställ</translation>
@@ -1616,6 +1619,7 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="8637431369725868556">Få skydd mot farliga webbplatser.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Inga utsatta lösenord}=1{{COUNT} utsatt lösenord}other{{COUNT} utsatta lösenord}}</translation>
 <translation id="8640575194957831802">Öppnades senast</translation>
+<translation id="8647280737650867362">Det gick inte att avsluta prisbevakningen.</translation>
 <translation id="8654802032646794042">Avbryt</translation>
 <translation id="8660600697590740984">Sök efter kopierad bild med Lens</translation>
 <translation id="866266761389616183">Åh, nej!</translation>
@@ -1636,6 +1640,7 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="8712534545803964353">Sök på sidan …</translation>
 <translation id="8712637175834984815">Uppfattat</translation>
 <translation id="8722229818691036192">Konton på den här enheten</translation>
+<translation id="8722649775263832315">Tryck eller markera för att söka efter något med Google Lens</translation>
 <translation id="8725066075913043281">Försök igen</translation>
 <translation id="8728922029615312208">Stäng alla</translation>
 <translation id="8730621377337864115">Klart</translation>

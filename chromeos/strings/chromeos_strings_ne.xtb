@@ -35,6 +35,7 @@
 <translation id="1155154308031262006">प्रम्प्ट हाल्नुहोस्</translation>
 <translation id="115705039208660697">भुईंकटहरहरू</translation>
 <translation id="1164939766849482256">डन टु डार्क स्क्रिन सेभर</translation>
+<translation id="1166688493741195933">रेकर्डिङका नाम सिर्जना गर्न सकिएन</translation>
 <translation id="1167755866710282443">कीहरू कस्टमाइज गर्न मेनु खोल्नुहोस्। मेनु सार्न मेनु ड्र्याग गर्नुहोस्।</translation>
 <translation id="1171349345463658120">स्यान्डी लगुन</translation>
 <translation id="1173894706177603556">पुन: नामाकरण गर्नुहोस्</translation>
@@ -494,6 +495,7 @@
 <translation id="3502426834823382181">सबै एपहरू हेर्नुहोस्</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />पर्फर्मेन्स ट्रेस डेटा<ph name="END_LINK1" /> पठाउनुहोस्</translation>
 <translation id="3517001332549868749">ChromeOS को अपडेट</translation>
+<translation id="3522508178835057262">हाल <ph name="MAX_WORD_LENGTH" /> भन्दा बढी शब्द भएको ट्रान्स्क्रिप्ट बनाउन सकिँदैन</translation>
 <translation id="3527036260304016759">प्रिन्ट गर्न सकिएन - अज्ञात त्रुटि भयो</translation>
 <translation id="353214771040290298">सम्पादन गर्ने कार्य पूरा भयो</translation>
 <translation id="3532980081107202182"><ph name="MIN_REMAINING" /> मिनेट जति बाँकी छ</translation>
@@ -711,6 +713,7 @@
 <translation id="4602266091140407479">माइक</translation>
 <translation id="4607282946861182308">यो प्रम्प्टअनुसारका फोटोहरू बनाउन सकिएन। अर्कै प्रम्प्ट प्रयोग गरी हेर्नुहोस्।</translation>
 <translation id="4609350030397390689">किबोर्डको चमक घटाउने की</translation>
+<translation id="4623061655523261501">रेकर्डिङका नाम सिर्जना गरिए</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="TOTAL_PAGE_NUMBER" /> मध्ये <ph name="PRINTED_PAGE_NUMBER" />। प्रिन्ट गर्ने कार्य रद्द गर्न enter थिच्नुहोस्।</translation>
 <translation id="463791356324567266">स्क्यान गर्ने कार्य रद्द गरिँदै छ...</translation>
 <translation id="4644611440022666152">अन गर्नुहोस् र डाउनलोड गर्नुहोस्</translation>
@@ -1043,6 +1046,8 @@
 <translation id="628726841779494414">प्रिन्टरसम्बन्धी सेटिङमा गई आफ्ना प्रिन्टरहरू व्यवस्थापन गर्नुहोस्</translation>
 <translation id="6292095526077353682">चार्ज भइरहेका बेला निम्न अवधिका लागि स्क्रिनसेभर देखाउनुहोस्</translation>
 <translation id="629550705077076970">किबोर्डको ब्याकलाइटको चमक कम गर्नुहोस्</translation>
+<translation id="6301193653204230066">सुरक्षाका निम्ति सेटिङ रिसेट गरियो भने Chrome को ब्राउजर एक्स्टेन्सन अफ हुन्छ र नेटवर्क तथा अन्य सेटिङ रिसेट गरी सुरक्षित डिफल्ट सेटिङ हुन्छ।
+          तपाईंका ट्याब, फाइल, कुकी र हिस्ट्री परिवर्तन गरिने छैनन्।</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> परीक्षण रद्द गरिएको छ</translation>
 <translation id="631063167932043783">एक्स्प्लोर एप</translation>
 <translation id="6318437367327684789">सधैँ</translation>
@@ -1052,6 +1057,7 @@
 <translation id="6325525973963619867">चलाउन सकिएन</translation>
 <translation id="6327262166342360252">यो वालपेपर "<ph name="PROMPT" />" टेक्स्ट प्रयोग गरी AI मार्फत बनाइएको हो।</translation>
 <translation id="6331191339300272798">स्वचालित अँध्यारो थिम</translation>
+<translation id="6335228876613776082">मोडेल डाउनलोड गरियो</translation>
 <translation id="6340526405444716530">वैयक्तीकरण</translation>
 <translation id="6348252528297699679">तपाईं सेटिङ &gt; गोपनीयता तथा सुरक्षा &gt; गोपनीयतासम्बन्धी सेटिङ &gt; लोकेसन एक्सेसमा गई लोकेसन अफ गर्न सक्नुहुन्छ। <ph name="LINK_BEGIN" />थप जान्नुहोस्<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">युजरनेम र पासवर्ड</translation>
@@ -1213,6 +1219,7 @@
 <translation id="708426984172631313">रोकिएको छ</translation>
 <translation id="7086168019478250425">बायोल्युमिनेसेन्ट बिच</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="7086916854357021265">रेकर्डिङका नाम सिर्जना गरिँदै छ</translation>
 <translation id="7097908713073775559">रङ्गीन</translation>
 <translation id="710028965487274708">विफल भयो - अनुमति दिइएको छैन</translation>
 <translation id="7101959270679078188">अपडेट गर्ने प्रक्रिया जारी राख्न <ph name="DEVICE_NAME" /> अनलक गर्नुहोस्</translation>
@@ -1545,6 +1552,7 @@
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Photos को एल्बम</translation>
 <translation id="8775713578693478175">मोडेम APN</translation>
+<translation id="877735394245039557">मोडेल डाउनलोड गरिँदै छ</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">यो नेटवर्कमा कुनै क्याप्टिभ पोर्टल हुन सक्छ</translation>
 <translation id="8797082062139985406">Google AI प्रयोग गरी नाम राख्नुहोस्</translation>

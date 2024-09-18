@@ -1357,6 +1357,7 @@ Ingen enheter er tilkoblet.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Passordet ditt kunne ikke verifiseres. Prøv på nytt.</translation>
 <translation id="5632485077360054581">Vis meg hvordan</translation>
+<translation id="5633826232582408011">Når du slår på Hjelp meg å skrive og Hjelp meg å lese, sendes inndatateksten, dokumentinnholdet og nettadressen til Googles AI-tjenere for å generere skriveforslag, generere sammendrag, svare på spørsmål og forbedre produktet, i henhold til <ph name="LINK_TO_SERVICE_TERMS" />. Ikke ta med noe som er personlig, sensitivt eller konfidensielt.</translation>
 <translation id="5648021990716966815">Mikrofonkontakt</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> ber om din oppmerksomhet.</translation>
 <translation id="5662075790140998213">Skrivebord 10</translation>
@@ -1507,7 +1508,6 @@ Ingen enheter er tilkoblet.</translation>
 <translation id="6119972796024789243">Fargekorrigering</translation>
 <translation id="6121838516699723042">Bekreft nedlastingen <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">Google-assistenten er ikke tilgjengelig i gjesteøkter.</translation>
-<translation id="6127370444807669747">Prøv YouTube Music Premium for å få personlige spillelister og mer fokusmusikk</translation>
 <translation id="6127395413317891856">Du er uten nett. Kontroller tilkoblingen, og prøv igjen.</translation>
 <translation id="6129953537138746214">Mellomrom</translation>
 <translation id="6137566720514957455">Åpne dialogboksen for fjerning av <ph name="USER_EMAIL_ADDRESS" /></translation>

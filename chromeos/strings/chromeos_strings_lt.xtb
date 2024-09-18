@@ -35,6 +35,7 @@
 <translation id="1155154308031262006">Įveskite užklausą</translation>
 <translation id="115705039208660697">ananasai</translation>
 <translation id="1164939766849482256">Nuo aušros iki sutemų ekrano užsklanda</translation>
+<translation id="1166688493741195933">Nepavyko sugeneruoti įrašų pavadinimų</translation>
 <translation id="1167755866710282443">Atidarykite meniu, kad galėtumėte tinkinti raktus. Vilkite meniu, jei norite perkelti.</translation>
 <translation id="1171349345463658120">smėlio lagūna</translation>
 <translation id="1173894706177603556">Pervadinti</translation>
@@ -342,6 +343,7 @@
 <translation id="2560876255701405320">Garso įrašų sąrašas</translation>
 <translation id="2561093647892030937">citrinos</translation>
 <translation id="2570743873672969996">Vykdomas „<ph name="TEST_NAME" />“ bandymas...</translation>
+<translation id="2573178735329662769">Visų „Chromebook“ garsų įrašymas</translation>
 <translation id="2575552334616524665">Šią funkciją galite įjungti skiltyje „Nustatymai“ arba <ph name="THREE_DOTS_MENU_ICON" /> meniu</translation>
 <translation id="2576253868710695442">Ji užims iki 2 GB vietos saugykloje</translation>
 <translation id="2584547424703650812">Švytintys peizažai</translation>
@@ -494,6 +496,7 @@
 <translation id="3502426834823382181">žr. visas programas</translation>
 <translation id="3510890413042482857">Siųsti <ph name="BEGIN_LINK1" />našumo stebėjimo duomenis<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">„Chrome“ OS naujinys</translation>
+<translation id="3522508178835057262">Kol kas nepalaikomi transkribuoti tekstai, kuriuose yra daugiau nei <ph name="MAX_WORD_LENGTH" /> žodž.</translation>
 <translation id="3527036260304016759">Nepavyko – nežinoma klaida</translation>
 <translation id="353214771040290298">Suredaguota</translation>
 <translation id="3532980081107202182">Liko apie <ph name="MIN_REMAINING" /> min.</translation>
@@ -509,6 +512,7 @@
 <translation id="3588034708467091142">Įsitikinkite, kad esate prisijungę prie interneto, ir bandykite dar kartą.</translation>
 <translation id="3594280220611906414">„<ph name="USER_FRIENDLY_APN_NAME" />“ yra patogus naudoti „<ph name="APN_NAME" />“ pavadinimas.</translation>
 <translation id="3595596368722241419">Akumuliatorius įkrautas</translation>
+<translation id="3600063043775287169">Kai „Chromebook“ įrenginyje garso išvestis įjungta, garso įrašytuvas užfiksuoja visus šiame įrenginyje leidžiamus garsus. Todėl pagalvokite, ar norite įrašyti visus garsus.</translation>
 <translation id="3600339377155080675">Ekrano vaizdo bendrinimas</translation>
 <translation id="3602290021589620013">Peržiūra</translation>
 <translation id="3603829704940252505">Pseudoportretas</translation>
@@ -711,6 +715,7 @@
 <translation id="4602266091140407479">Mikrofonas</translation>
 <translation id="4607282946861182308">Negalima sukurti vaizdų. Bandykite kitą užklausą.</translation>
 <translation id="4609350030397390689">Sumažinti klaviatūros šviesumą</translation>
+<translation id="4623061655523261501">Įrašų pavadinimai sėkmingai sugeneruoti</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, „<ph name="PRINTER_NAME" />“, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> iš <ph name="TOTAL_PAGE_NUMBER" /> psl. Paspauskite „Enter“, jei norite atšaukti spausdinimo užduotį.</translation>
 <translation id="463791356324567266">Atšaukiamas nuskaitymas...</translation>
 <translation id="4644611440022666152">Įjungti ir atsisiųsti</translation>
@@ -1043,6 +1048,8 @@
 <translation id="628726841779494414">Tvarkykite spausdintuvus spausdintuvų nustatymuose</translation>
 <translation id="6292095526077353682">Kol kraunama, rodyti ekrano užsklandą</translation>
 <translation id="629550705077076970">klaviatūros pritemdymas</translation>
+<translation id="6301193653204230066">Iš naujo nustatant Saugumo programą išjungiami naršyklės „Chrome“ plėtiniai ir iš naujo nustatomi tinklo bei kiti nustatymai į saugius numatytuosius.
+          Skirtukai, failai, slapukai ir istorija nebus pakeisti.</translation>
 <translation id="6302401976930124515">Bandymas „<ph name="TEST_NAME" />“ atšauktas</translation>
 <translation id="631063167932043783">Programa „Explore“</translation>
 <translation id="6318437367327684789">visada</translation>
@@ -1052,6 +1059,7 @@
 <translation id="6325525973963619867">Nepavyko</translation>
 <translation id="6327262166342360252">Šis ekrano fonas sukurtas naudojant DI ir šį tekstą: „<ph name="PROMPT" />“.</translation>
 <translation id="6331191339300272798">Automatinė tamsioji tema</translation>
+<translation id="6335228876613776082">Modelis atsisiųstas</translation>
 <translation id="6340526405444716530">Suasmeninimas</translation>
 <translation id="6348252528297699679">Vietovės informaciją galite išjungti skiltyje „Nustatymai“ &gt; „Privatumas ir sauga“ &gt; „Privatumo valdikliai“ &gt; „Prieiga prie vietovės informacijos“. <ph name="LINK_BEGIN" />Sužinokite daugiau<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">Naudotojo vardas ir slaptažodis</translation>
@@ -1213,6 +1221,7 @@
 <translation id="708426984172631313">SUSTABDYTA</translation>
 <translation id="7086168019478250425">švytintis paplūdimys</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="7086916854357021265">Generuojami įrašų pavadinimai</translation>
 <translation id="7097908713073775559">spalvota</translation>
 <translation id="710028965487274708">Nepavyko – patvirtinti nepavyko</translation>
 <translation id="7101959270679078188">Atrakinkite „<ph name="DEVICE_NAME" />“, kad galėtumėte tęsti atnaujinimo procesą</translation>
@@ -1545,6 +1554,7 @@ Atsisiųskite transkribavimo modelį (iki 100 MB), kad gautumėte transkribuotus
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">„Google“ nuotraukų albumas</translation>
 <translation id="8775713578693478175">Modemo APN</translation>
+<translation id="877735394245039557">Atsisiunčiamas modelis</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Šiame tinkle gali būti fiksuotasis portalas</translation>
 <translation id="8797082062139985406">Kurti pavadinimą naudojantis „Google“ DI</translation>

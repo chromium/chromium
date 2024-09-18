@@ -342,6 +342,7 @@
 <translation id="2560876255701405320">ऑडियो रिकॉर्डिंग की सूची</translation>
 <translation id="2561093647892030937">नींबू</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> की जांच की जा रही है...</translation>
+<translation id="2573178735329662769">Chromebook का पूरा ऑडियो रिकॉर्ड किया जा रहा है</translation>
 <translation id="2575552334616524665">इस सुविधा को सेटिंग या <ph name="THREE_DOTS_MENU_ICON" /> मेन्यू में जाकर चालू किया जा सकता है</translation>
 <translation id="2576253868710695442">इसमें 2 जीबी तक का स्टोरेज इस्तेमाल होगा</translation>
 <translation id="2584547424703650812">ग्लोस्केप्स</translation>
@@ -509,6 +510,7 @@
 <translation id="3588034708467091142">पक्का करें कि आपका डिवाइस, इंटरनेट से कनेक्ट हो. इसके बाद, फिर से कोशिश करें.</translation>
 <translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" />, उपयोगकर्ता के लिए <ph name="APN_NAME" /> का आसान नाम है.</translation>
 <translation id="3595596368722241419">बैटरी पूरी चार्ज है</translation>
+<translation id="3600063043775287169">Chromebook का ऑडियो चालू होने पर, रिकॉर्डर इस डिवाइस पर चल रहे सभी ऑडियो रिकॉर्ड करता है. पक्का करें कि सभी आवाज़ें रिकॉर्ड करनी हैं.</translation>
 <translation id="3600339377155080675">स्क्रीन शेयर करने वाला बटन</translation>
 <translation id="3602290021589620013">झलक देखें</translation>
 <translation id="3603829704940252505">अवतार</translation>
@@ -1043,6 +1045,8 @@
 <translation id="628726841779494414">प्रिंटर की सेटिंग में जाकर, अपने प्रिंटर मैनेज करें</translation>
 <translation id="6292095526077353682">चार्ज करते समय, स्क्रीन सेवर इतने समय तक दिखाएं</translation>
 <translation id="629550705077076970">कीबोर्ड की रोशनी कम करें</translation>
+<translation id="6301193653204230066">सुरक्षा के लिए सेटिंग रीसेट करने से, Chrome ब्राउज़र के एक्सटेंशन बंद हो जाते हैं. साथ ही, नेटवर्क और अन्य सेटिंग को रीसेट करके सुरक्षित डिफ़ॉल्ट सेटिंग पर सेट कर दिया जाता है.
+          ऐसा होने से, आपके टैब, फ़ाइलें, कुकी, और इतिहास में कोई बदलाव नहीं होगा.</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> टेस्ट को रद्द कर दिया गया है</translation>
 <translation id="631063167932043783">Explore ऐप्लिकेशन</translation>
 <translation id="6318437367327684789">हमेशा के लिए</translation>
@@ -1052,6 +1056,7 @@
 <translation id="6325525973963619867">विफल</translation>
 <translation id="6327262166342360252">इस वॉलपेपर को एआई की मदद से बनाया गया है. इसके लिए, यह टेक्स्ट इस्तेमाल किया गया: "<ph name="PROMPT" />."</translation>
 <translation id="6331191339300272798">अपने-आप गहरे रंग वाली थीम</translation>
+<translation id="6335228876613776082">मॉडल डाउनलोड हो गया</translation>
 <translation id="6340526405444716530">मनमुताबिक बनाना</translation>
 <translation id="6348252528297699679">सेटिंग &gt; निजता और सुरक्षा &gt; निजता सेटिंग &gt; जगह की जानकारी का ऐक्सेस पर जाकर, जगह की जानकारी शेयर करने की सुविधा को बंद किया जा सकता है. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">उपयोगकर्ता नाम और पासवर्ड</translation>
@@ -1544,6 +1549,7 @@
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Photos की एल्बम</translation>
 <translation id="8775713578693478175">मॉडम एपीएन</translation>
+<translation id="877735394245039557">मॉडल डाउनलोड हो रहा है</translation>
 <translation id="877985182522063539">ए4</translation>
 <translation id="879568662008399081">इस नेटवर्क में कैप्टिव पोर्टल हो सकता है</translation>
 <translation id="8797082062139985406">Google के एआई का इस्तेमाल करके रिकॉर्डिंग का नाम तय करें</translation>

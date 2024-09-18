@@ -77,7 +77,7 @@
 <translation id="427987768447457592">Новая группа вкладок</translation>
 <translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{Вкладок изменено: <ph name="ONE_CHANGED" />, закрыто: <ph name="ANY_CLOSED" />.}one{Вкладок изменено: <ph name="MANY_CHANGED" />, закрыто: <ph name="ANY_CLOSED" />.}few{Вкладок изменено: <ph name="MANY_CHANGED" />, закрыто: <ph name="ANY_CLOSED" />.}many{Вкладок изменено: <ph name="MANY_CHANGED" />, закрыто: <ph name="ANY_CLOSED" />.}other{Вкладок изменено: <ph name="MANY_CHANGED" />, закрыто: <ph name="ANY_CLOSED" />.}}</translation>
 <translation id="4371591986692297148">неактивно</translation>
-<translation id="4460014764210899310">Отменить создание группы</translation>
+<translation id="4460014764210899310">Разгруппировать</translation>
 <translation id="4590027107044272416">Открыть новую вкладку теперь можно этой кнопкой</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{Закрыть 1 неактивную вкладку?}one{Закрыть <ph name="TAB_COUNT_MANY" /> неактивную вкладку?}few{Закрыть <ph name="TAB_COUNT_MANY" /> неактивные вкладки?}many{Закрыть <ph name="TAB_COUNT_MANY" /> неактивных вкладок?}other{Закрыть <ph name="TAB_COUNT_MANY" /> неактивной вкладки?}}</translation>
 <translation id="4686942373615810936">Создано только что</translation>

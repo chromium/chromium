@@ -35,6 +35,7 @@
 <translation id="1155154308031262006">ਉਤਪ੍ਰੇਰਕ ਦਾਖਲ ਕਰੋ</translation>
 <translation id="115705039208660697">ਅਨਾਨਾਸ</translation>
 <translation id="1164939766849482256">ਸਵੇਰ ਤੋਂ ਰਾਤ ਤੱਕ ਦਾ ਸਕ੍ਰੀਨ ਸੇਵਰ</translation>
+<translation id="1166688493741195933">ਰਿਕਾਰਡਿੰਗ ਨਾਮ ਸਿਰਜਣਾ ਅਸਫਲ ਰਿਹਾ</translation>
 <translation id="1167755866710282443">ਕੁੰਜੀਆਂ ਨੂੰ ਵਿਉਂਤਬੱਧ ਕਰਨ ਲਈ ਮੀਨੂ ਖੋਲ੍ਹੋ। ਲਿਜਾਉਣ ਲਈ ਮੀਨੂ ਨੂੰ ਘਸੀਟੋ।</translation>
 <translation id="1171349345463658120">ਰੇਤੀਲਾ ਲੈਗੂਨ</translation>
 <translation id="1173894706177603556">ਮੁੜ-ਨਾਮਕਰਨ ਕਰੋ</translation>
@@ -145,6 +146,7 @@
 <translation id="1651925268237749928">ਤੁਸੀਂ ਸਾਂਝੀ ਐਲਬਮ ਨੂੰ ਚੁਣਿਆ ਹੈ। ਹੋਰ ਲੋਕ ਫ਼ੋਟੋਆਂ ਸ਼ਾਮਲ ਕਰ ਜਾਂ ਬਦਲ ਸਕਦੇ ਹਨ। ਤੁਹਾਡਾ ਵਾਲਪੇਪਰ ਅਜਿਹੀਆਂ ਫ਼ੋਟੋਆਂ ਨੂੰ ਵਰਤ ਸਕਦਾ ਹੈ ਜੋ ਫ਼ਿਲਹਾਲ ਇਸ ਐਲਬਮ ਵਿੱਚ ਮੌਜੂਦ ਨਹੀਂ ਹਨ।</translation>
 <translation id="1661512400125589646">ਰੋਕੋ</translation>
 <translation id="1661865805917886535">ਖਾਤੇ ਅਤੇ ਸਿਸਟਮ ਦੀ ਕੁਝ ਜਾਣਕਾਰੀ Google ਨੂੰ ਭੇਜੀ ਜਾ ਸਕਦੀ ਹੈ। ਅਸੀਂ ਇਸ ਜਾਣਕਾਰੀ ਦੀ ਵਰਤੋਂ ਸਾਡੀ ਪਰਦੇਦਾਰੀ ਨੀਤੀ (<ph name="PRIVACYPOLICYURL" />) ਅਤੇ ਸੇਵਾ ਦੇ ਨਿਯਮਾਂ (<ph name="TERMSOFSERVICEURL" />) ਦੇ ਅਧੀਨ, ਤਕਨੀਕੀ ਸਮੱਸਿਆਵਾਂ ਨੂੰ ਹੱਲ ਕਰਨ ਅਤੇ ਸਾਡੀਆਂ ਸੇਵਾਵਾਂ ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਲਈ ਕਰਦੇ ਹਾਂ। ਸਮੱਗਰੀ ਵਿੱਚ ਤਬਦੀਲੀਆਂ ਦੀ ਬੇਨਤੀ ਕਰਨ ਵਾਸਤੇ, ਕਨੂੰਨੀ ਮਦਦ (<ph name="LEGALHELPPAGEURL" />) 'ਤੇ ਜਾਓ।</translation>
+<translation id="1662699081856352167">ਸਾਰਾਂਸ਼ ਸਿਰਜਣਾ ਸਫਲ ਰਿਹਾ</translation>
 <translation id="1662989795263954667">ਬੰਦ ਹੋ ਗਿਆ - ਸਿਆਹੀ ਖਤਮ ਹੋ ਗਈ ਹੈ</translation>
 <translation id="1664796644829245314"><ph name="PREVIEW_OBJECT" /> ਦੀ ਪੂਰਵ-ਝਲਕ ਦੇਖੋ</translation>
 <translation id="1668469839109562275">ਅੰਦਰ-ਮੌਜੂਦ VPN</translation>
@@ -493,6 +495,7 @@
 <translation id="3502426834823382181">ਸਾਰੀਆਂ ਐਪਾਂ ਦੇਖੋ</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />ਕਾਰਗੁਜ਼ਾਰੀ ਟ੍ਰੇਸ ਡਾਟਾ<ph name="END_LINK1" /> ਭੇਜੋ</translation>
 <translation id="3517001332549868749">ChromeOS ਸੰਬੰਧੀ ਅੱਪਡੇਟ</translation>
+<translation id="3522508178835057262">ਫ਼ਿਲਹਾਲ, <ph name="MAX_WORD_LENGTH" /> ਤੋਂ ਵੱਧ ਸ਼ਬਦਾਂ ਵਾਲੀ ਪ੍ਰਤੀਲਿਪੀ ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ</translation>
 <translation id="3527036260304016759">ਅਸਫਲ ਰਹੀ - ਅਗਿਆਤ ਗੜਬੜ</translation>
 <translation id="353214771040290298">ਸੰਪਾਦਨ ਪੂਰਾ ਹੋਇਆ</translation>
 <translation id="3532980081107202182">ਲਗਭਗ <ph name="MIN_REMAINING" /> ਮਿੰਟ ਬਾਕੀ</translation>
@@ -541,6 +544,7 @@
 <translation id="3780740315729837296">ਕੋਈ ਕੀ-ਬੋਰਡ ਕੁੰਜੀ ਜ਼ਿੰਮੇ ਲਗਾਓ</translation>
 <translation id="3784455785234192852">ਲਾਕ ਕਰੋ</translation>
 <translation id="3785643128701396311">ਪਿਕਸਲ ਆਰਟ</translation>
+<translation id="3799381533888781854">ਬੰਦ - ਇਸ ਸੈਟਿੰਗ ਦਾ ਪ੍ਰਬੰਧਨ ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਵੱਲੋਂ ਕੀਤਾ ਜਾਂਦਾ ਹੈ।</translation>
 <translation id="380097101658023925">RGB ਕੰਟਰੋਲ</translation>
 <translation id="38114475217616659">ਸਾਰਾ ਇਤਿਹਾਸ ਕਲੀਅਰ ਕਰੋ</translation>
 <translation id="3820172043799983114">ਅਵੈਧ ਪਿੰਨ।</translation>
@@ -709,6 +713,7 @@
 <translation id="4602266091140407479">ਮਾਈਕ</translation>
 <translation id="4607282946861182308">ਇਸਦੇ ਚਿੱਤਰ ਨਹੀਂ ਬਣਾ ਸਕਦੇ। ਕੋਈ ਹੋਰ ਉਤਪ੍ਰੇਰਕ ਅਜ਼ਮਾਓ।</translation>
 <translation id="4609350030397390689">ਕੀ-ਬੋਰਡ ਦੀ ਚਮਕ ਘਟਾਉਣ ਵਾਲੀ ਕੁੰਜੀ</translation>
+<translation id="4623061655523261501">ਰਿਕਾਰਡਿੰਗ ਨਾਮ ਸਫਲਤਾਪੂਰਵਕ ਸਿਰਜੇ ਗਏ</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="TOTAL_PAGE_NUMBER" /> ਵਿੱਚੋਂ <ph name="PRINTED_PAGE_NUMBER" />। ਪ੍ਰਿੰਟ ਜੌਬ ਨੂੰ ਰੱਦ ਕਰਨ ਲਈ Enter ਦਬਾਓ।</translation>
 <translation id="463791356324567266">ਸਕੈਨਿੰਗ ਰੱਦ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ...</translation>
 <translation id="4644611440022666152">ਚਾਲੂ ਕਰ ਕੇ ਡਾਊਨਲੋਡ ਕਰੋ</translation>
@@ -744,6 +749,7 @@
 <translation id="4809927044794281115">ਹਲਕਾ ਥੀਮ</translation>
 <translation id="4813136279048157860">ਮੇਰੇ ਚਿੱਤਰ</translation>
 <translation id="4813345808229079766">ਕਨੈਕਸ਼ਨ</translation>
+<translation id="4824527342590024245">ਫ਼ਿਲਹਾਲ, <ph name="MIN_WORD_LENGTH" /> ਤੋਂ ਘੱਟ ਸ਼ਬਦਾਂ ਵਾਲੀ ਪ੍ਰਤੀਲਿਪੀ ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ</translation>
 <translation id="4830894019733815633">ਘਾਟੀ</translation>
 <translation id="4832079907277790330">Files ਐਪ ਵਿੱਚ ਫੋਲਡਰ ਨੂੰ ਚੁਣੋ...</translation>
 <translation id="4835901797422965222">ਕੋਈ ਕਿਰਿਆਸ਼ੀਲ ਨੈੱਟਵਰਕ ਨਹੀਂ ਹਨ</translation>
@@ -772,6 +778,7 @@
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> ਸਕਿੰਟਾਂ ਵਿੱਚ <ph name="RATE" /> ਚਾਰਜ ਹੋਈ।</translation>
 <translation id="4930320165497208503">ਕਿਸੇ ਕਨੈਕਸ਼ਨ ਦਾ ਸੈੱਟਅੱਪ ਕਰਨ ਜਾਂ ਉਸਨੂੰ ਅੱਪਡੇਟ ਕਰਨ ਲਈ, <ph name="BEGIN_LINK" />ਸੈਟਿੰਗਾਂ<ph name="END_LINK" /> 'ਤੇ ਜਾਓ।</translation>
 <translation id="4932733599132424254">ਤਾਰੀਖ</translation>
+<translation id="4946927805998996217">ਸਾਰਾਂਸ਼ ਸਿਰਜਿਆ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="4950314376641394653">ਫ਼ਰਮਵੇਅਰ <ph name="DEVICE_NAME" /> ਨੂੰ ਵਰਜਨ <ph name="VERSION" /> 'ਤੇ ਅੱਪਡੇਟ ਕਰ ਦਿੱਤਾ ਗਿਆ ਹੈ</translation>
 <translation id="4950893758552030541">ਰੁੱਖਾਂ ਨਾਲ ਬਣਾਈ ਗਈ ਸੁਰੰਗ</translation>
 <translation id="4965661459364092269">ਸੁਰੱਖਿਆ ਰੀਸੈੱਟ ਦੀ ਪ੍ਰਕਿਰਿਆ ਪੂਰੀ ਹੋ ਗਈ ਹੈ</translation>
@@ -832,6 +839,7 @@
 <translation id="5229104491259541281">"<ph name="QUERY" />" ਨੂੰ ਬਦਲੋ</translation>
 <translation id="5229344016299762883">ਪੂਰੀ ਸਕ੍ਰੀਨ ਤੋਂ ਬਾਹਰ ਆਓ</translation>
 <translation id="5234764350956374838">ਬਰਖ਼ਾਸਤ ਕਰੋ</translation>
+<translation id="5236119614998611749">ਸਾਰਾਂਸ਼ ਸਿਰਜਣਾ ਅਸਫਲ ਰਿਹਾ</translation>
 <translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਨੇ ਤੁਹਾਡੇ ਹਰ ਵਾਰ ਲੌਗ-ਇਨ ਕਰਨ 'ਤੇ "<ph name="APP_NAME" />" ਨੂੰ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਸ਼ੁਰੂ ਕਰਨ ਲਈ ਸੈੱਟਅੱਪ ਕਰ ਦਿੱਤਾ ਹੈ।}=2{ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਨੇ ਤੁਹਾਡੇ ਹਰ ਵਾਰ ਲੌਗ-ਇਨ ਕਰਨ 'ਤੇ "<ph name="APP_NAME" />" ਅਤੇ 1 ਹੋਰ ਐਪ ਨੂੰ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਸ਼ੁਰੂ ਕਰਨ ਲਈ ਸੈੱਟਅੱਪ ਕਰ ਦਿੱਤਾ ਹੈ।}one{ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਨੇ ਤੁਹਾਡੇ ਹਰ ਵਾਰ ਲੌਗ-ਇਨ ਕਰਨ 'ਤੇ "<ph name="APP_NAME" />" ਅਤੇ # ਹੋਰ ਐਪ ਨੂੰ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਸ਼ੁਰੂ ਕਰਨ ਲਈ ਸੈੱਟਅੱਪ ਕਰ ਦਿੱਤਾ ਹੈ।}other{ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਨੇ ਤੁਹਾਡੇ ਹਰ ਵਾਰ ਲੌਗ-ਇਨ ਕਰਨ 'ਤੇ "<ph name="APP_NAME" />" ਅਤੇ # ਹੋਰ ਐਪਾਂ ਨੂੰ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਸ਼ੁਰੂ ਕਰਨ ਲਈ ਸੈੱਟਅੱਪ ਕਰ ਦਿੱਤਾ ਹੈ।}}</translation>
 <translation id="5248419081947706722">ਨੀਲਾ</translation>
 <translation id="5252456968953390977">ਰੋਮਿੰਗ</translation>
@@ -1038,6 +1046,8 @@
 <translation id="628726841779494414">ਪ੍ਰਿੰਟਰ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਆਪਣੇ ਪ੍ਰਿੰਟਰਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="6292095526077353682">ਚਾਰਜ ਕਰਨ ਦੌਰਾਨ, ਇਸ ਮਿਆਦ ਤੱਕ ਸਕ੍ਰੀਨ ਸੇਵਰ ਦਿਖਾਓ</translation>
 <translation id="629550705077076970">ਕੀ-ਬੋਰਡ ਦੀ ਰੋਸ਼ਨੀ ਘੱਟ ਕਰੋ</translation>
+<translation id="6301193653204230066">ਸੁਰੱਖਿਆ ਰੀਸੈੱਟ ਕਰਨ ਨਾਲ Chrome ਬ੍ਰਾਊਜ਼ਰ ਐਕਸਟੈਂਸ਼ਨਾਂ ਬੰਦ ਹੋ ਜਾਂਦੀਆਂ ਹਨ, ਨੈੱਟਵਰਕ ਅਤੇ ਹੋਰ ਸੈਟਿੰਗਾਂ ਸੁਰੱਖਿਅਤ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਸੈਟਿੰਗਾਂ 'ਤੇ ਰੀਸੈੱਟ ਹੋ ਜਾਂਦੀਆਂ ਹਨ।
+          ਤੁਹਾਡੀਆਂ ਟੈਬਾਂ, ਫ਼ਾਈਲਾਂ, ਕੁਕੀਜ਼ ਅਤੇ ਇਤਿਹਾਸ ਵਿੱਚ ਕੋਈ ਤਬਦੀਲੀ ਨਹੀਂ ਹੋਵੇਗੀ।</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> ਟੈਸਟ ਨੂੰ ਰੱਦ ਕਰ ਦਿੱਤਾ ਗਿਆ ਹੈ</translation>
 <translation id="631063167932043783">Explore ਐਪ</translation>
 <translation id="6318437367327684789">ਹਮੇਸ਼ਾਂ</translation>
@@ -1047,6 +1057,7 @@
 <translation id="6325525973963619867">ਅਸਫਲ ਰਿਹਾ</translation>
 <translation id="6327262166342360252">ਇਹ ਵਾਲਪੇਪਰ ਅੱਗੇ ਦਿੱਤੀ ਲਿਖਤ ਦੀ ਵਰਤੋਂ ਕਰ ਕੇ AI ਨਾਲ ਬਣਾਇਆ ਗਿਆ: "<ph name="PROMPT" />।"</translation>
 <translation id="6331191339300272798">ਸਵੈਚਲਿਤ ਗੂੜ੍ਹਾ ਥੀਮ</translation>
+<translation id="6335228876613776082">ਮਾਡਲ ਨੂੰ ਡਾਊਨਲੋਡ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="6340526405444716530">ਵਿਅਕਤੀਗਤਕਰਨ</translation>
 <translation id="6348252528297699679">ਤੁਸੀਂ ਸੈਟਿੰਗਾਂ &gt; ਪਰਦੇਦਾਰੀ ਅਤੇ ਸੁਰੱਖਿਆ &gt; ਪਰਦੇਦਾਰੀ ਕੰਟਰੋਲ &gt; ਟਿਕਾਣਾ ਪਹੁੰਚ ਵਿੱਚ ਜਾ ਕੇ ਟਿਕਾਣੇ ਨੂੰ ਬੰਦ ਕਰ ਸਕਦੇ ਹੋ। <ph name="LINK_BEGIN" />ਹੋਰ ਜਾਣੋ<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">ਵਰਤੋਂਕਾਰ ਨਾਮ ਅਤੇ ਪਾਸਵਰਡ</translation>
@@ -1208,6 +1219,7 @@
 <translation id="708426984172631313">ਬੰਦ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="7086168019478250425">ਹਨੇਰੇ ਵਿੱਚ ਚਮਕਦਾ ਬੀਚ</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="7086916854357021265">ਰਿਕਾਰਡਿੰਗ ਨਾਮ ਸਿਰਜੇ ਜਾ ਰਹੇ ਹਨ</translation>
 <translation id="7097908713073775559">ਕਲਰਫੁਲ</translation>
 <translation id="710028965487274708">ਅਸਫਲ ਰਿਹਾ - ਇਖਤਿਆਰੀਕਰਨ ਅਸਫਲ ਰਿਹਾ</translation>
 <translation id="7101959270679078188">ਅੱਪਡੇਟ ਦੀ ਪ੍ਰਕਿਰਿਆ ਜਾਰੀ ਰੱਖਣ ਲਈ <ph name="DEVICE_NAME" /> ਨੂੰ ਅਣਲਾਕ ਕਰੋ</translation>
@@ -1540,6 +1552,7 @@
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Photos ਐਲਬਮ</translation>
 <translation id="8775713578693478175">ਮੋਡੈਮ APN</translation>
+<translation id="877735394245039557">ਮਾਡਲ ਨੂੰ ਡਾਊਨਲੋਡ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">ਇਸ ਨੈੱਟਵਰਕ ਕੋਲ ਕੈਪਟਿਵ ਪੋਰਟਲ ਹੋ ਸਕਦਾ ਹੈ</translation>
 <translation id="8797082062139985406">Google AI ਦੀ ਵਰਤੋਂ ਕਰ ਕੇ ਨਾਮ ਬਣਾਓ</translation>

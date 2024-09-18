@@ -106,6 +106,7 @@
 <translation id="1413446866325418126">Lưu dữ liệu vào Tài khoản Google của bạn</translation>
 <translation id="1414981605391750300">Đang liên hệ với Google. Quá trình này có thể mất ít phút…</translation>
 <translation id="1416550906796893042">Phiên bản ứng dụng</translation>
+<translation id="1419753403124156396">Khởi động lại Chrome?</translation>
 <translation id="1428770807407000502">Tắt tính năng đồng bộ hoá?</translation>
 <translation id="1430915738399379752">In</translation>
 <translation id="1435593198351412143">Tự động mở tệp PDF</translation>
@@ -229,6 +230,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="2067805253194386918">văn bản</translation>
 <translation id="2079545284768500474">Hoàn tác</translation>
 <translation id="2082238445998314030">Kết quả <ph name="RESULT_NUMBER" /> trong tổng số <ph name="TOTAL_RESULTS" /></translation>
+<translation id="2088833076121753253">Để hoàn tất quy trình thiết lập tính năng tự động điền, hãy khởi động lại Chrome ngay. Các thẻ của bạn sẽ tự động mở lại.</translation>
 <translation id="2091863218454846791">Đang hiển thị chế độ xem thu gọn</translation>
 <translation id="2093731487903423814">15 phút qua</translation>
 <translation id="2096012225669085171">Đồng bộ hóa và cá nhân hóa trên các thiết bị</translation>
@@ -594,6 +596,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="38243391581572867">Không dùng được tính năng Ống kính trên tài khoản này.</translation>
 <translation id="3830886834687455630">Cập nhật Dịch vụ Google Play để kiểm tra mật khẩu của bạn</translation>
+<translation id="3843603704176567761">Các mật khẩu có thể sắp ngừng hoạt động trên thiết bị này. Hãy cập nhật Dịch vụ Google Play để tiếp tục sử dụng mật khẩu.</translation>
 <translation id="3845098929839618392">Mở trong thẻ Ẩn danh</translation>
 <translation id="3847319713229060696">Giúp tăng cường bảo mật cho mọi người trên web</translation>
 <translation id="3856096718352044181">Vui lòng xác minh rằng đây là nhà cung cấp hợp lệ hoặc thử lại sau</translation>
@@ -666,6 +669,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="4216511743389425832">Đọc trang này</translation>
 <translation id="4225725533026049334">Đang theo dõi</translation>
 <translation id="4225895483398857530">Lối tắt trên thanh công cụ</translation>
+<translation id="4232376164796433044">Mật khẩu và tính năng tự động điền</translation>
 <translation id="4242533952199664413">Mở phần cài đặt</translation>
 <translation id="4248098802131000011">Bảo vệ mật khẩu của bạn trước việc bị rò rỉ dữ liệu và các vấn đề bảo mật khác</translation>
 <translation id="424864128008805179">Đăng xuất khỏi Chrome?</translation>
@@ -674,6 +678,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="4257230861809842349">Xoá mật khẩu khỏi Trình quản lý mật khẩu của Google?</translation>
 <translation id="426652736638196239">Số IBAN này sẽ chỉ được lưu vào thiết bị này</translation>
 <translation id="4269820728363426813">Sao chép địa chỉ liên kết</translation>
+<translation id="4270730597186910506">Theo dõi hoặc bỏ theo dõi một sản phẩm.</translation>
 <translation id="4277529130885813215">Sử dụng thiết bị khác</translation>
 <translation id="4282440837784183472">Tổ chức <ph name="MANAGED_DOMAIN" /> của bạn quản lý tài khoản mà bạn hiện đang đăng nhập và cách bạn sử dụng Chrome. Quản trị viên có thể thiết lập hoặc hạn chế một số tính năng.</translation>
 <translation id="4285846616383034558">Cookie, bộ nhớ đệm và dữ liệu trang web khác</translation>
@@ -748,6 +753,7 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="4609429330876432068">Danh sách mật khẩu mà bạn lưu cho Chrome và <ph name="CHROME_CHANNEL" /> đã được hợp nhất. Bạn vẫn có thể chọn tự động điền tất cả mật khẩu đã lưu trên cả hai ứng dụng.</translation>
 <translation id="4616150815774728855">Mở <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Xác minh danh tính của bạn</translation>
+<translation id="4620032614425803188">Dịch vụ tự động điền</translation>
 <translation id="4624065194742029982">Chế độ ẩn danh trên Chrome</translation>
 <translation id="4634124774493850572">Sử dụng mật khẩu</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 mật khẩu bị lộ}other{# mật khẩu bị lộ}}</translation>
@@ -900,6 +906,7 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="5264813352784073502">24 giờ qua</translation>
 <translation id="5267572070504076962">Bật tính năng Duyệt web an toàn để được bảo vệ khỏi các trang web nguy hiểm</translation>
 <translation id="5271967389191913893">Thiết bị không thể mở nội dung được tải xuống.</translation>
+<translation id="5273031377282080577">Quản trị viên của bạn quản lý chế độ cài đặt này.</translation>
 <translation id="5292796745632149097">Gửi đến</translation>
 <translation id="5301876394151419436">Bạn đã đăng nhập bằng <ph name="EMAIL" />. Bạn có thể dừng đồng bộ hoá bất cứ lúc nào trong phần cài đặt. Google có thể cá nhân hoá dịch vụ Tìm kiếm và các dịch vụ khác dựa trên nhật ký của bạn.</translation>
 <translation id="5304593522240415983">Không được để trống trường này</translation>
@@ -1234,6 +1241,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="6775840696761158817">Khi nhập nội dung hoặc nhấn vào thanh địa chỉ hay hộp tìm kiếm, bạn sẽ thấy nội dung do công cụ tìm kiếm mặc định đề xuất. Tính năng này bị tắt trong chế độ Ẩn danh.</translation>
 <translation id="6785476624617658922">Điều khoản dịch vụ bổ sung của Chrome và ChromeOS</translation>
 <translation id="6795633245022906657">Mở nhanh một thẻ mới. Để chỉnh sửa lối tắt này, hãy chuyển đến phần Cài đặt.</translation>
+<translation id="679956319013005046">Để thiết lập dịch vụ tự động điền mà bạn ưu tiên, trước tiên, hãy thêm dịch vụ đó trong <ph name="BEGIN_LINK" />Cài đặt Android<ph name="END_LINK" /> .</translation>
 <translation id="6802555630140434547">Cửa sổ này sẽ đóng</translation>
 <translation id="6803791793483522764">Xem xét thông báo</translation>
 <translation id="6811034713472274749">Trang hiện đã sẵn sàng cho bạn xem</translation>
@@ -1292,7 +1300,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="6964300328304469089">Bạn hiện đang chọn <ph name="NAME" />, <ph name="EMAIL" />. Chọn một tài khoản.</translation>
 <translation id="696447261358045621">Thoát khỏi chế độ Ẩn danh</translation>
 <translation id="6965382102122355670">OK</translation>
-<translation id="6966660124354134532">Nhấn để theo dõi hoặc bỏ theo dõi một sản phẩm.</translation>
 <translation id="6971862865055170158">Không phê duyệt</translation>
 <translation id="6978717888677691380">Các trang web bạn đã chặn</translation>
 <translation id="6979737339423435258">Từ trước đến nay</translation>
@@ -1466,6 +1473,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="7707922173985738739">Sử dụng dữ liệu di động</translation>
 <translation id="7709918231054955894">Xem tất cả thẻ của bạn</translation>
 <translation id="7733878270780732638">Không đủ dung lượng trên thiết bị.</translation>
+<translation id="774876555279732384">Bạn cũng có thể quản lý các dịch vụ tự động điền trong phần <ph name="BEGIN_LINK" />Cài đặt Android<ph name="END_LINK" />.</translation>
 <translation id="7759809451544302770">Không bắt buộc</translation>
 <translation id="7762668264895820836">Thẻ SD <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">Thêm địa chỉ</translation>

@@ -497,6 +497,7 @@
 <translation id="1355088139103479645">要刪除所有資料嗎？</translation>
 <translation id="1356376170199999104">已允許 – <ph name="PERMISSION_DETAILS" />。請使用實體開關開啟麥克風。</translation>
 <translation id="1356959069439783953">閒置分頁新外觀登場</translation>
+<translation id="1357766361161708728">要關閉未使用的分頁嗎？</translation>
 <translation id="1358741672408003399">拼字與文法</translation>
 <translation id="1359923111303110318">可透過 Smart Lock 解鎖裝置。按下 Enter 鍵即可解鎖。</translation>
 <translation id="1361164813881551742">手動新增</translation>
@@ -1595,6 +1596,7 @@
 <translation id="211803431539496924">確認延長安全性更新嗎？</translation>
 <translation id="2118594521750010466">立即修正</translation>
 <translation id="2119461801241504254">安全瀏覽功能已啟用，可封鎖有害的網站和下載內容</translation>
+<translation id="2119602978828978573">支援的即時字幕語言</translation>
 <translation id="2120297377148151361">活動與互動行為</translation>
 <translation id="2120639962942052471">已封鎖<ph name="PERMISSION" /></translation>
 <translation id="2121055421682309734">{COUNT,plural, =0{已封鎖 Cookie}=1{已封鎖 Cookie，有 1 個例外狀況}other{已封鎖 Cookie，有 {COUNT} 個例外狀況}}</translation>
@@ -2662,6 +2664,7 @@
 <translation id="2864601841139725659">設定你的個人資料圖片</translation>
 <translation id="2865057607286263192">按住鍵盤按鍵可查看重音符號和特殊字元。這項設定會關閉字母按鍵的重複按鍵動作。目前僅支援英文 (美國)。</translation>
 <translation id="2865919525181940183">目前畫面上程式的螢幕截圖</translation>
+<translation id="286643536820867504">自動為支援語言產生字幕。音訊只會儲存在裝置上，不會傳送到他處。</translation>
 <translation id="286674810810214575">正在檢查電源...</translation>
 <translation id="2867768963760577682">在固定分頁中開啟</translation>
 <translation id="2868746137289129307">這項過舊的擴充功能現已依企業政策停用。如有可用的新版本，則可能會自動重新啟用。</translation>
@@ -3278,6 +3281,7 @@
 <translation id="3337568642696914359">禁止網站處理通訊協定</translation>
 <translation id="3340620525920140773">下載完成：<ph name="FILE_NAME" />。</translation>
 <translation id="3340978935015468852">設定</translation>
+<translation id="3341091511696469129">Chrome 可產生並翻譯以下語言的字幕</translation>
 <translation id="3341699307020049241">PIN 碼不正確。你還可以再試 <ph name="RETRIES" /> 次。</translation>
 <translation id="3341703758641437857">允許存取檔案網址</translation>
 <translation id="334171495789408663">已複製權杖</translation>
@@ -5855,6 +5859,7 @@
 <translation id="5214639857958972833">已建立「<ph name="BOOKMARK_TITLE" />」書籤。</translation>
 <translation id="5215450412607891876">啟用延長安全性更新</translation>
 <translation id="5215502535566372932">選取國家/地區</translation>
+<translation id="5216674789212441076">自動翻譯即時字幕 (送給 Google 進行翻譯)。</translation>
 <translation id="5220011581825921581">搜尋鍵 + 向上鍵</translation>
 <translation id="5221516927483787768">無法投放 <ph name="HOST_NAME" />。</translation>
 <translation id="5222403284441421673">已封鎖不安全的下載內容</translation>
@@ -6559,6 +6564,7 @@
 <translation id="5750288053043553775">0</translation>
 <translation id="5751345516399502412">檢查網路共用完備性</translation>
 <translation id="5753570386948603678">從記錄中刪除</translation>
+<translation id="5753652925946671505">這些分頁已超過 <ph name="COUNT" /> 天未使用。</translation>
 <translation id="5756163054456765343">說明中心(&amp;E)</translation>
 <translation id="5757187557809630523">播放下一首曲目</translation>
 <translation id="5758631781033351321">這裡會顯示你的閱讀清單</translation>
@@ -7940,6 +7946,7 @@
 <translation id="6785739405821760313">正在查看已儲存的桌面，按下 Tab 鍵即可瀏覽。</translation>
 <translation id="6785915470941880363">反向捲動。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="67862343314499040">紫羅蘭色</translation>
+<translation id="6786480815699355166">只能翻譯支援的即時字幕語言</translation>
 <translation id="6786747875388722282">擴充功能</translation>
 <translation id="6787097042755590313">其他分頁</translation>
 <translation id="6787531944787756058">使用者名稱 <ph name="USER_EMAIL" /> 只會儲存到這部裝置。查看詳細資料</translation>
@@ -10534,6 +10541,7 @@
 <translation id="8656888282555543604">啟用點字記錄功能</translation>
 <translation id="8657393004602556571">你要捨棄這則意見嗎？</translation>
 <translation id="8657542881463614516">使用滑動手勢瀏覽不同頁面</translation>
+<translation id="865857184419171576">將字幕翻譯為</translation>
 <translation id="865936634714975126">在網址中新增查詢參數，以便在網頁載入時選取類型，例如 chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875"><ph name="FEATURE_NAME" />的聯絡人</translation>
 <translation id="8659609431223166673">視窗已向下移動</translation>

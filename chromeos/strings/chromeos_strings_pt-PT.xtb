@@ -106,7 +106,7 @@
 <translation id="1463084054301832672">casa de campo</translation>
 <translation id="1468664791493211953">Ofertas</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> gere este dispositivo e pode conseguir monitorizar a sua atividade.</translation>
-<translation id="1478594628797167447">Scanner</translation>
+<translation id="1478594628797167447">Leitor</translation>
 <translation id="1483493594462132177">Enviar</translation>
 <translation id="1488850966314959671">Não é possível estabelecer ligação a esta rede através de APNs (Nomes dos Pontos de Acesso) personalizados ativados. Contacte o seu operador móvel para obter mais informações.</translation>
 <translation id="1499041187027566160">aumentar o volume</translation>
@@ -342,6 +342,7 @@
 <translation id="2560876255701405320">Lista de gravações de áudio</translation>
 <translation id="2561093647892030937">limões</translation>
 <translation id="2570743873672969996">A executar o teste <ph name="TEST_NAME" />…</translation>
+<translation id="2573178735329662769">A gravar todo o áudio do Chromebook</translation>
 <translation id="2575552334616524665">Pode ativar esta opção nas Definições ou no menu <ph name="THREE_DOTS_MENU_ICON" /></translation>
 <translation id="2576253868710695442">Isto vai ocupar até 2 GB de armazenamento</translation>
 <translation id="2584547424703650812">Paisagens brilhantes</translation>
@@ -509,6 +510,7 @@
 <translation id="3588034708467091142">Certifique-se de que tem ligação à Internet e tente novamente.</translation>
 <translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> é o nome intuitivo de <ph name="APN_NAME" />.</translation>
 <translation id="3595596368722241419">Bateria carregada</translation>
+<translation id="3600063043775287169">Quando o áudio do Chromebook está ativado, o Gravador captura todo o áudio a tocar neste dispositivo. Certifique-se de que quer gravar todos os sons.</translation>
 <translation id="3600339377155080675">Espelhamento do ecrã</translation>
 <translation id="3602290021589620013">Pré-visualizar</translation>
 <translation id="3603829704940252505">Avatar</translation>
@@ -617,7 +619,7 @@
 <translation id="4145784616224233563">Firewall HTTP</translation>
 <translation id="4147897805161313378">Google Fotos</translation>
 <translation id="4150201353443180367">Visualização</translation>
-<translation id="4155551848414053977">Certifique-se de que o lscannerestá ativado e disponível através da sua rede ou de uma ligação direta.</translation>
+<translation id="4155551848414053977">Certifique-se de que o leitor está ativado e disponível através da sua rede ou de uma ligação direta.</translation>
 <translation id="4159238217853743776">Parcial</translation>
 <translation id="4159784952369912983">Roxo</translation>
 <translation id="4170180284036919717">Tirar uma foto</translation>
@@ -898,7 +900,7 @@
 <translation id="5559898619118303662">Mude automaticamente para o tema escuro ao pôr do sol</translation>
 <translation id="556042886152191864">Botão</translation>
 <translation id="5562551811867441927"><ph name="TERRAIN_FEATURE" /> em tons de <ph name="TERRAIN_COLOR" /></translation>
-<translation id="5572169899491758844">Analise</translation>
+<translation id="5572169899491758844">Digitalizar</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Ler novamente</translation>
 <translation id="5583640892426849032">Retrocesso</translation>
@@ -1180,7 +1182,7 @@
 <translation id="6957231940976260713">Nome do serviço</translation>
 <translation id="695776212669661671">seta para a direita</translation>
 <translation id="6957792699151067488">flor</translation>
-<translation id="6961170852793647506">Para começar, coloque o documento no scanner</translation>
+<translation id="6961170852793647506">Para começar, coloque o documento no leitor</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6965978654500191972">Dispositivo</translation>
 <translation id="6975620886940770104"><ph name="GLOWSCAPES_LANDSCAPE" /> com <ph name="GLOWSCAPES_FEATURE" /> brilhante</translation>

@@ -75,6 +75,7 @@
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - Enviado desde <ph name="DEVICE_NAME" /></translation>
 <translation id="1320912611264252795">Flujo para guardar marcador abierto a altura completa</translation>
 <translation id="1327257854815634930">El historial de navegación está abierto</translation>
+<translation id="1328235593824723509"><ph name="TAB_TITLE" />, pestaña nueva o actualizada</translation>
 <translation id="1331212799747679585">No se ha podido actualizar Chrome. Más opciones</translation>
 <translation id="1332501820983677155">Combinaciones de teclas de funciones de Google Chrome</translation>
 <translation id="1333491156693005331">Comprobado recientemente</translation>
@@ -1213,6 +1214,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="6674571176963658787">Para iniciar la sincronización, escribe tu frase de contraseña</translation>
 <translation id="6676927815633975364">Inicia sesión en este sitio y en Chrome</translation>
 <translation id="6684809838922667136">Mejorar Chrome</translation>
+<translation id="6700279777779583398">Opciones guardadas</translation>
 <translation id="6704048624334633734">Exportar y eliminar las contraseñas</translation>
 <translation id="670498945988402717">Comprobado ayer</translation>
 <translation id="6710213216561001401">Anterior</translation>
@@ -1290,7 +1292,6 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="6964300328304469089">Se ha seleccionado <ph name="NAME" />, <ph name="EMAIL" />. Elige una cuenta.</translation>
 <translation id="696447261358045621">Salir del modo Incógnito</translation>
 <translation id="6965382102122355670">Aceptar</translation>
-<translation id="6966660124354134532">Toca para seguir o dejar de seguir un producto.</translation>
 <translation id="6971862865055170158">No aprobar</translation>
 <translation id="6978717888677691380">Sitios que has bloqueado</translation>
 <translation id="6979737339423435258">Desde siempre</translation>
@@ -1426,6 +1427,7 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chrome de
 <translation id="752731652852882757">Bloquear en modo Incógnito</translation>
 <translation id="7554643625247105821">No se puede comprobar la versión de Chrome</translation>
 <translation id="7557508262441527045">Se ha cerrado la sesión</translation>
+<translation id="7573665567024262965">Elige tus aplicaciones predeterminadas</translation>
 <translation id="7577900504646297215">Gestionar intereses</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> archivo descargado}other{<ph name="FILES_DOWNLOADED_MANY" /> archivos descargados}}</translation>
 <translation id="7581273696622423628">Responder encuesta</translation>
@@ -1468,6 +1470,7 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chrome de
 <translation id="7764225426217299476">Añadir dirección</translation>
 <translation id="7772032839648071052">Repite la frase de contraseña</translation>
 <translation id="7772375229873196092">Cerrar <ph name="APP_NAME" /></translation>
+<translation id="7774125747223422443">De acuerdo con una ley de tu territorio, debes elegir tu navegador y buscador</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 y <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> más}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 y <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> más}}</translation>
 <translation id="777637629667389858">Cuando inicias sesión, te protege en los servicios de Google.</translation>
 <translation id="7778840695157240389">Vuelve en otro momento para descubrir más historias</translation>
@@ -1592,6 +1595,7 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chrome de
 <translation id="8265018477030547118">Solo en este dispositivo</translation>
 <translation id="8266753737658117282">Continuar con <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8266862848225348053">Ubicación de las descargas</translation>
+<translation id="8279945625179116733">Con la protección de <ph name="APP_NAME" /></translation>
 <translation id="8281886186245836920">Saltar</translation>
 <translation id="8282297628636750033">Aplicar tema oscuro a sitios, siempre que sea posible</translation>
 <translation id="8282950411412455249">Ir a la configuración de seguridad</translation>
@@ -1736,6 +1740,7 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chrome de
 <translation id="8982113230057126145">No me gusta indica que este resumen no te ha gustado</translation>
 <translation id="8992769679401294069">Tus datos se han cifrado con tu frase de contraseña. Introdúcela para usar y guardar datos de Chrome en tu cuenta de Google.</translation>
 <translation id="8993760627012879038">Abre una nueva pestaña en modo Incógnito</translation>
+<translation id="8995521496079646922">Las aplicaciones que has elegido se usarán de forma predeterminada. Si una aplicación no está ya en este dispositivo, se descargará en breve.</translation>
 <translation id="8996847606757455498">Elegir otro proveedor</translation>
 <translation id="8998289560386111590">No disponible en tu dispositivo</translation>
 <translation id="8998837250940831980">No se ha podido minimizar la pestaña. Inténtalo de nuevo más tarde.</translation>

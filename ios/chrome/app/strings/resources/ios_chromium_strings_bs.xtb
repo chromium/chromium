@@ -292,6 +292,7 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="8860548555286245440">Otvorite URL-ove u Chromiumu u anonimnom načinu rada</translation>
 <translation id="8866191443434488382">Chromium će otkrivati brojeve za praćenje na web lokacijama koje posjetite i prikazivat će vam novosti o paketima na stranici Nova kartica. Broj za praćenje paketa i naziv web lokacije će se slati Chromiumu radi pružanja ove funkcije i poboljšanja funkcija kupovine za sve. Možete ažurirati ovo bilo kada u <ph name="BEGIN_LINK" />Postavkama praćenja paketa<ph name="END_LINK" />.</translation>
 <translation id="8880024619507699923">Vaša organizacija zahtijeva da se prijavite da koristite Chromium. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
+<translation id="8900052431807804054">Dobijte Chromiumovu najjaču zaštitu</translation>
 <translation id="894437814105052438">Kada se odjavite Chromium neće sinhronizirati nove podatke s vašim Google računom. Prethodno sinhronizirani podaci ostaju na računu.</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{Ovo se dešava kad se Chromium ne koristi {THRESHOLD} minutu}one{Ovo se dešava kad se Chromium ne koristi {THRESHOLD} minutu}few{Ovo se dešava kad se Chromium ne koristi {THRESHOLD} minute}other{Ovo se dešava kad se Chromium ne koristi {THRESHOLD} minuta}}</translation>
 <translation id="8963279154877372067">Dozvolite obavještenja Chromiuma da dobijate obavještenja o padu cijena</translation>

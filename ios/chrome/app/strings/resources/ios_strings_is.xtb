@@ -116,6 +116,7 @@
 <translation id="1517166097004694782">Fela „Halda áfram á þessum flipa“</translation>
 <translation id="1520027731907768768">Fáðu tilkynningar um lækkað verð á vörum sem þú fylgist með.</translation>
 <translation id="1521774566618522728">Virkt í dag</translation>
+<translation id="1524563461097350801">Nei, takk</translation>
 <translation id="1531038290222364269">Sýna flipa</translation>
 <translation id="1536390784834419204">Þýða síðu</translation>
 <translation id="1540800554400757039">Heimilisfang 1</translation>
@@ -1507,7 +1508,6 @@ Vefsvæði geta notað fótspor til að sjá vafranotkun þína á mismunandi ve
 <translation id="8173034266693057059">Lengd</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8182037667962849780">{count,plural, =1{Fyrir {website_1}}=2{Fyrir {website_1}, {website_2}}=3{Fyrir {website_1}, {website_2} og 1 í viðbót}one{Fyrir {website_1}, {website_2} og {more_count} í viðbót}other{Fyrir {website_1}, {website_2} og {more_count} í viðbót}}</translation>
-<translation id="8189814768485665290">Deila allri vefslóðinni</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Tækin þín<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Bæta við aðgangsorði</translation>
 <translation id="8202744799033457229">Sýna feril</translation>
@@ -1541,6 +1541,7 @@ Vefsvæði geta notað fótspor til að sjá vafranotkun þína á mismunandi ve
 <translation id="8349305172487531364">Bókamerkjastika</translation>
 <translation id="8366466717204352506">Athugun aldrei keyrð</translation>
 <translation id="8368001212524806591">Vakta verð</translation>
+<translation id="8370406443343902172">Opnaðu stillingarnar...</translation>
 <translation id="8372471489238799313">{count,plural, =1{Eyða heimilisfangi}one{Eyða heimilisföngum}other{Eyða heimilisföngum}}</translation>
 <translation id="8378714024927312812">Stjórnað af fyrirtækinu þínu</translation>
 <translation id="8386068868580335421">Endurstilla</translation>
@@ -1603,6 +1604,7 @@ Vefsvæði geta notað fótspor til að sjá vafranotkun þína á mismunandi ve
 <translation id="8637431369725868556">Verðu þig fyrir hættulegum vefsvæðum.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Engin aðgangsorð í hættu}=1{{COUNT} aðgangsorð í hættu}one{{COUNT} aðgangsorð í hættu}other{{COUNT} aðgangsorð í hættu}}</translation>
 <translation id="8640575194957831802">Síðast opnað</translation>
+<translation id="8647280737650867362">Ekki tókst að stöðva verðrakningu.</translation>
 <translation id="8654802032646794042">Hætta við</translation>
 <translation id="8660600697590740984">Linsumynd sem þú afritaðir</translation>
 <translation id="866266761389616183">Ansans!</translation>

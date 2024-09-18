@@ -214,6 +214,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1703117532528082099">Janela ativa ancorada à esquerda.</translation>
 <translation id="1708345662127501511">Espaço de trabalho: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Definições de rede</translation>
+<translation id="171610090693716835">Mantenha o foco com playlists de concentração personalizadas. Usufrua do YouTube Music e do YouTube sem anúncios com 3 meses de YouTube Premium sem custo financeiro.</translation>
 <translation id="1719094688023114093">As Legendas instantâneas estão ativadas.</translation>
 <translation id="1720011244392820496">Desative o Sync Wi-Fi</translation>
 <translation id="1720230731642245863">A zona Wi-Fi está desativada</translation>
@@ -1408,6 +1409,7 @@ Nenhum dispositivo ligado.</translation>
 <translation id="5777841717266010279">Parar partilha do ecrã?</translation>
 <translation id="5779721926447984944">Ficheiros fixados</translation>
 <translation id="5785221443435874078">Remover esta sugestão</translation>
+<translation id="5787431783058088906">Receber benefício</translation>
 <translation id="5788127256798019331">Ficheiros do Google Play</translation>
 <translation id="5788535737706478207">Reabrir o último separador ou janela fechados</translation>
 <translation id="5790085346892983794">Sucesso</translation>
@@ -1508,7 +1510,6 @@ Nenhum dispositivo ligado.</translation>
 <translation id="6119972796024789243">Correção da cor</translation>
 <translation id="6121838516699723042">Confirmar transferência de <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">O Assistente Google não está disponível em sessões de convidado.</translation>
-<translation id="6127370444807669747">Para playlists personalizadas e mais música de concentração, experimente o YouTube Music Premium</translation>
 <translation id="6127395413317891856">Está offline. Verifique a ligação e tente novamente.</translation>
 <translation id="6129953537138746214">Espaço</translation>
 <translation id="6137566720514957455">Abrir caixa de diálogo de remoção para <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -1639,6 +1640,7 @@ Nova instalação</translation>
 <translation id="6574587113394758819">A notificação da app <ph name="APP_TITLE" /> está oculta porque a proteção da visualização está ativada</translation>
 <translation id="6574622320167699133">Desbloqueado pelo telemóvel. Toque ou clique para entrar.</translation>
 <translation id="6578407462441924264">Sem nome</translation>
+<translation id="6582012689384648647">Para playlists de concentração personalizadas, permita o acesso ao YouTube Music</translation>
 <translation id="6582034443359256692">A calcular o nível de carga da bateria.</translation>
 <translation id="6585808820553845416">A sessão termina em <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
@@ -1877,6 +1879,7 @@ Nova instalação</translation>
 <translation id="7477793887173910789">Controle a sua música, vídeos e muito mais.</translation>
 <translation id="7488762544858401571">Editado</translation>
 <translation id="7489261257412536105">Entrar ou sair do ecrã inteiro</translation>
+<translation id="7490157877815329797">Para ouvir música sem anúncios e desfrutar de música de concentração personalizada, experimente o YouTube Music Premium</translation>
 <translation id="7490360161041035804">Pode afixar ficheiros importantes, incluindo ficheiros do Google Drive. Para afixar, passe o cursor do rato sobre um item ou abra o Files e clique com o botão direito do rato num item.</translation>
 <translation id="7497767806359279797">Escolher idioma e teclado</translation>
 <translation id="7507162824403726948">Termine a validação da sua identidade</translation>
@@ -2151,6 +2154,7 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="8380784334203145311">Boa noite,</translation>
 <translation id="8382715499079447151">Proteção da visualização</translation>
 <translation id="8383614331548401927">Recapitulação de boas-vindas</translation>
+<translation id="838540623579162843">Subscrever Music Premium</translation>
 <translation id="8388750414311082622">Não é possível remover o último espaço de trabalho.</translation>
 <translation id="8394567579869570560">Os teus pais bloquearam este dispositivo</translation>
 <translation id="8401850874595457088">Aceder ao menu de idioma</translation>

@@ -594,6 +594,7 @@
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="38243391581572867">‏‫Lens לא זמין בחשבון הזה.</translation>
 <translation id="3830886834687455630">‏כדי לבדוק את הסיסמאות, יש לעדכן את Google Play Services</translation>
+<translation id="3843603704176567761">‏יכול להיות שהסיסמאות יפסיקו לפעול במכשיר הזה בקרוב. כדי להמשיך להשתמש בסיסמאות, צריך לעדכן את Google Play Services.</translation>
 <translation id="3845098929839618392">לפתיחה בכרטיסיית מצב אנונימי</translation>
 <translation id="3847319713229060696">סיוע לשיפור האבטחה באינטרנט לטובת כולם</translation>
 <translation id="3856096718352044181">יש לאמת שהספק הזה חוקי או לנסות שוב מאוחר יותר</translation>
@@ -674,6 +675,7 @@
 <translation id="4257230861809842349">‏למחוק את הסיסמאות ממנהל הסיסמאות של Google?</translation>
 <translation id="426652736638196239">‏ה-IBAN הזה יישמר רק במכשיר הזה</translation>
 <translation id="4269820728363426813">העתקת כתובת של קישור</translation>
+<translation id="4270730597186910506">מעקב אחרי מוצר או ביטול המעקב אחריו.</translation>
 <translation id="4277529130885813215">שימוש במכשיר אחר</translation>
 <translation id="4282440837784183472">‏הארגון שלך, <ph name="MANAGED_DOMAIN" />, מנהל את החשבון שבחרת להיכנס אליו ואת אופן השימוש ב-Chrome. לאדמין יש אפשרות להגדיר תכונות מסוימות או להגביל אותן.</translation>
 <translation id="4285846616383034558">‏קובצי cookie, מטמון ונתונים נוספים מאתרים</translation>
@@ -1214,6 +1216,7 @@
 <translation id="6674571176963658787">כדי להתחיל לסנכרן צריך להזין את ביטוי הסיסמה</translation>
 <translation id="6676927815633975364">‏כניסה לאתר הזה ול-Chrome</translation>
 <translation id="6684809838922667136">‏משפרים את Chrome</translation>
+<translation id="6700279777779583398">הבחירות נשמרו</translation>
 <translation id="6704048624334633734">ייצוא ומחיקה של הסיסמאות</translation>
 <translation id="670498945988402717">התבצעה בדיקה אתמול</translation>
 <translation id="6710213216561001401">הקודם</translation>
@@ -1291,7 +1294,6 @@
 <translation id="6964300328304469089">החשבון הנוכחי: <ph name="NAME" />, <ph name="EMAIL" />. עליך לבחור חשבון.</translation>
 <translation id="696447261358045621">לצאת מהמצב האנונימי?</translation>
 <translation id="6965382102122355670">אישור</translation>
-<translation id="6966660124354134532">צריך להקיש כדי לעקוב אחרי מוצר או לבטל את המעקב אחריו.</translation>
 <translation id="6971862865055170158">לא לאשר</translation>
 <translation id="6978717888677691380">אתרים שחסמת</translation>
 <translation id="6979737339423435258">משחר ההיסטוריה</translation>
@@ -1427,6 +1429,7 @@
 <translation id="752731652852882757">חסימה במהלך גלישה במצב פרטי</translation>
 <translation id="7554643625247105821">‏לא ניתן לבדוק את הגרסה של Chrome</translation>
 <translation id="7557508262441527045">החשבון לא מחובר</translation>
+<translation id="7573665567024262965">בחירת האפליקציות שיוגדרו כברירות המחדל</translation>
 <translation id="7577900504646297215">ניהול תחומי עניין</translation>
 <translation id="757855969265046257">{FILES,plural, =1{הורדת קובץ אחד (<ph name="FILES_DOWNLOADED_ONE" />)}one{הורדת <ph name="FILES_DOWNLOADED_MANY" /> קבצים}two{הורדת <ph name="FILES_DOWNLOADED_MANY" /> קבצים}other{הורדת <ph name="FILES_DOWNLOADED_MANY" /> קבצים}}</translation>
 <translation id="7581273696622423628">השתתף בסקר</translation>
@@ -1469,6 +1472,7 @@
 <translation id="7764225426217299476">הוספת כתובת</translation>
 <translation id="7772032839648071052">אישור משפט-סיסמה</translation>
 <translation id="7772375229873196092">סגירת <ph name="APP_NAME" /></translation>
+<translation id="7774125747223422443">בהתאם לחוק באזור שלך, צריך לבחור את הדפדפן ואת מנוע החיפוש</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{‏<ph name="PAYMENT_METHOD_PREVIEW" />‎\u2026‎ ו-<ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> נוסף}one{‏<ph name="PAYMENT_METHOD_PREVIEW" />‎\u2026‎ ו-<ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> נוספים}two{‏<ph name="PAYMENT_METHOD_PREVIEW" />‎\u2026‎ ו-<ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> נוספים}other{‏<ph name="PAYMENT_METHOD_PREVIEW" />‎\u2026‎ ו-<ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> נוספים}}</translation>
 <translation id="777637629667389858">‏אחרי שנכנסת לחשבון, המערכת מגינה עליך בשירותי Google.</translation>
 <translation id="7778840695157240389">בהמשך יהיו פה סיפורים חדשים</translation>
@@ -1738,6 +1742,7 @@
 <translation id="8982113230057126145">אם סימנת 'לא אהבתי', יישלח אלינו משוב שלא אהבת את הסיכום הזה</translation>
 <translation id="8992769679401294069">‏הנתונים שלך מוצפנים באמצעות ביטוי הסיסמה. כדי להשתמש בנתוני Chrome ולשמור אותם בחשבון Google, עליך להזין את ביטוי הסיסמה.</translation>
 <translation id="8993760627012879038">פתיחת חלון חדש במצב אנונימי</translation>
+<translation id="8995521496079646922">האפליקציות שבחרת ישמשו כברירת מחדל. אם האפליקציה לא מותקנת במכשיר הזה, המערכת תוריד אותה בקרוב.</translation>
 <translation id="8996847606757455498">בחירת ספק אחר</translation>
 <translation id="8998289560386111590">לא זמין במכשיר שלך</translation>
 <translation id="8998837250940831980">לא ניתן למזער את הכרטיסייה. אפשר לנסות שוב אחר כך.</translation>

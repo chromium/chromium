@@ -106,6 +106,7 @@
 <translation id="1413446866325418126">將資料儲存至 Google 帳戶</translation>
 <translation id="1414981605391750300">正在連線至 Google。可能需要一分鐘的時間…</translation>
 <translation id="1416550906796893042">應用程式版本</translation>
+<translation id="1419753403124156396">重新啟動 Chrome 嗎？</translation>
 <translation id="1428770807407000502">要關閉同步功能嗎？</translation>
 <translation id="1430915738399379752">列印</translation>
 <translation id="1435593198351412143">自動開啟 PDF</translation>
@@ -229,6 +230,7 @@
 <translation id="2067805253194386918">文字</translation>
 <translation id="2079545284768500474">復原</translation>
 <translation id="2082238445998314030">第 <ph name="RESULT_NUMBER" /> 項結果 (共 <ph name="TOTAL_RESULTS" /> 項)</translation>
+<translation id="2088833076121753253">立即重新啟動 Chrome 以完成自動填入設定。你的分頁會自動重新開啟。</translation>
 <translation id="2091863218454846791">顯示緊密集檢視</translation>
 <translation id="2093731487903423814">過去 15 分鐘</translation>
 <translation id="2096012225669085171">在不同裝置上同步與個人化</translation>
@@ -666,6 +668,7 @@
 <translation id="4216511743389425832">朗讀此頁面內容</translation>
 <translation id="4225725533026049334">追蹤中</translation>
 <translation id="4225895483398857530">工具列捷徑</translation>
+<translation id="4232376164796433044">密碼和自動填入</translation>
 <translation id="4242533952199664413">開啟設定</translation>
 <translation id="4248098802131000011">確保密碼安全，避免發生資料外洩或其他安全性問題</translation>
 <translation id="424864128008805179">要登出 Chrome 嗎？</translation>
@@ -748,6 +751,7 @@
 <translation id="4609429330876432068">Chrome 和 <ph name="CHROME_CHANNEL" />的已儲存密碼清單已合併。你仍可在兩個應用程式中自動填入所有已儲存的密碼。</translation>
 <translation id="4616150815774728855">開啟 <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">驗證身分</translation>
+<translation id="4620032614425803188">自動填入服務</translation>
 <translation id="4624065194742029982">Chrome 無痕模式</translation>
 <translation id="4634124774493850572">使用密碼</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 個密碼被盜用}other{# 個密碼被盜用}}</translation>
@@ -900,6 +904,7 @@
 <translation id="5264813352784073502">過去 24 小時</translation>
 <translation id="5267572070504076962">開啟「安全瀏覽」功能可避免受危險網站的攻擊</translation>
 <translation id="5271967389191913893">裝置無法開啟下載的檔案。</translation>
+<translation id="5273031377282080577">此設定由管理員管理。</translation>
 <translation id="5292796745632149097">傳送至</translation>
 <translation id="5301876394151419436">目前登入的帳戶是 <ph name="EMAIL" />。你可在設定中隨時停止同步。Google 可能會根據你的記錄，提供個人化「搜尋」和其他服務。</translation>
 <translation id="5304593522240415983">這個欄位不得留空</translation>
@@ -1234,6 +1239,7 @@
 <translation id="6775840696761158817">輕按或在網址列或搜尋框中輸入文字時，系統將會顯示預設搜尋引擎提供的建議。此功能不會在無痕模式下啟用。</translation>
 <translation id="6785476624617658922">Chrome 和 Chrome OS 的《附加服務條款》</translation>
 <translation id="6795633245022906657">快速開啟新分頁。如要編輯此捷徑，請前往「設定」。</translation>
+<translation id="679956319013005046">如要設定偏好的自動填入服務，請先在「<ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />」中加入該服務。</translation>
 <translation id="6802555630140434547">視窗即將關閉</translation>
 <translation id="6803791793483522764">檢查通知</translation>
 <translation id="6811034713472274749">網頁已準備就緒，可供查看</translation>
@@ -1292,7 +1298,6 @@
 <translation id="6964300328304469089">目前已選取<ph name="NAME" />，<ph name="EMAIL" />。請選擇帳戶。</translation>
 <translation id="696447261358045621">退出無痕模式</translation>
 <translation id="6965382102122355670">確定</translation>
-<translation id="6966660124354134532">㩒一下就可以追蹤或者取消追蹤產品。</translation>
 <translation id="6971862865055170158">不核准</translation>
 <translation id="6978717888677691380">您已封鎖的網站</translation>
 <translation id="6979737339423435258">所有時間</translation>
@@ -1466,6 +1471,7 @@
 <translation id="7707922173985738739">使用流動數據</translation>
 <translation id="7709918231054955894">取得您所有的分頁</translation>
 <translation id="7733878270780732638">裝置空間不足。</translation>
+<translation id="774876555279732384">自動填入服務也可以在「<ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />」中管理。</translation>
 <translation id="7759809451544302770">選填</translation>
 <translation id="7762668264895820836">SD 卡 <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">新增地址</translation>

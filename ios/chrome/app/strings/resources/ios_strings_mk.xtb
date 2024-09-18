@@ -95,6 +95,7 @@
 <translation id="1513858653616922153">Избриши ја лозинката</translation>
 <translation id="1520027731907768768">Добивање известувања за намалување на цените за производите што ги следите.</translation>
 <translation id="1521774566618522728">Активен денес</translation>
+<translation id="1524563461097350801">Не, фала</translation>
 <translation id="1536390784834419204">Преведи ја страницата</translation>
 <translation id="1540800554400757039">Адреса 1</translation>
 <translation id="1580715474678097352">Заштитете се од опасни веб-сајтови</translation>
@@ -1234,6 +1235,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="8349305172487531364">Лента со обележувачи</translation>
 <translation id="8366466717204352506">Никогаш не е извршена проверка</translation>
 <translation id="8368001212524806591">Следи ја цената</translation>
+<translation id="8370406443343902172">Одете во „Поставки“…</translation>
 <translation id="8378714024927312812">Управувано од вашата организација</translation>
 <translation id="8386068868580335421">Ресетирај</translation>
 <translation id="8393700583063109961">Испрати порака</translation>
@@ -1284,6 +1286,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="8637431369725868556">Заштитете се од опасни сајтови.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Нема компромитирани лозинки}=1{{COUNT} компромитирана лозинка}one{{COUNT} компромитирана лозинка}other{{COUNT} компромитирани лозинки}}</translation>
 <translation id="8640575194957831802">Последно отворен</translation>
+<translation id="8647280737650867362">Не можеше да се сопре со следење на цената.</translation>
 <translation id="8654802032646794042">Откажи</translation>
 <translation id="8660600697590740984">Копирана слика на Lens</translation>
 <translation id="8663764600409216912">Користите лозинки што се тешки за погаѓање</translation>

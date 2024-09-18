@@ -50,6 +50,7 @@
 <translation id="1219674500290482172">Повезивање са интернетом није могуће.</translation>
 <translation id="1227113644794103810">Неактивне картице</translation>
 <translation id="1231733316453485619">Желите ли да укључите синхронизацију?</translation>
+<translation id="1253032109800629289">Сакриј опцију Добијај обавештења о праћењу цена</translation>
 <translation id="1258491128795710625">Шта је ново</translation>
 <translation id="1263231323834454256">Листа за читање</translation>
 <translation id="1263433075299269530">Последња отворена картица</translation>
@@ -118,6 +119,7 @@
 <translation id="1517166097004694782">Сакриј опцију Настави да користиш ову картицу</translation>
 <translation id="1520027731907768768">Добијајте обавештења о снижењима за производе које пратите.</translation>
 <translation id="1521774566618522728">Активан је данас</translation>
+<translation id="1524563461097350801">Не, хвала</translation>
 <translation id="1531038290222364269">Прикажите картице</translation>
 <translation id="1536390784834419204">Преведи страницу</translation>
 <translation id="1540800554400757039">1. ред за адресу</translation>
@@ -394,6 +396,7 @@
 <translation id="2870560284913253234">Сајт</translation>
 <translation id="2876369937070532032">Шаље URL-ове неких страница које посећујете Google-у када је безбедност угрожена</translation>
 <translation id="2883151425485251736">Прегледајте и мењајте теме које сте сакрили са налога</translation>
+<translation id="2888631381369839306">Обавештења о праћењу цена су укључена</translation>
 <translation id="288902476966286676">Враћено пошиљаоцу</translation>
 <translation id="2894757982205307093">Нова картица у групи</translation>
 <translation id="2905479111267140204">Број лозинки које користите више пута и које могу да угрозе безбедност је<ph name="NUMBER_OF_PASSWORDS" />.</translation>
@@ -576,6 +579,7 @@
 <translation id="3851938967634752633">Лозинке за <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> и још <ph name="NUMBER_OF_ACCOUNTS" /> ће бити избрисане. Ваши налози неће бити избрисани.</translation>
 <translation id="3858860766373142691">Назив</translation>
 <translation id="3861908220442487587">Ова адреса је сачувана само на овом уређају. Да бисте је користили на другим уређајима, преместите је на Google налог, <ph name="USER_EMAIL" /></translation>
+<translation id="3868495844258915202">Прегледајте комплетан URL</translation>
 <translation id="3876833929577368454">Питај ме сваки пут</translation>
 <translation id="3885587018298784481">Придружите се групи за породицу</translation>
 <translation id="3888863481921783344">То ће се користити да би вам се приказивале особе које можете да позовете на догађај.</translation>
@@ -863,6 +867,7 @@
 <translation id="5210365745912300556">Затвори картицу</translation>
 <translation id="5211488077761630279">Желите да дозволите да <ph name="SITE_NAME" /> користи дозволу <ph name="PERMISSION" />?</translation>
 <translation id="5217245356412073535">Можете да промените подразумевани приказ сајта на рачунар у одељку Подешавања &gt; Подешавања садржаја</translation>
+<translation id="5217329997012062137">Када користите Google објектив, снимак екрана странице се шаље Google-у.</translation>
 <translation id="5220945116117011963">Правите догађаје у календару од датума</translation>
 <translation id="5222676887888702881">Одјави ме</translation>
 <translation id="5228579091201413441">Омогући синхронизацију</translation>
@@ -875,6 +880,7 @@
 <translation id="5271265092610673171">{count,plural, =1{Обавезно поље је празно. Попуните га пре чувања.}one{Нека обавезна поља су празна. Попуните их пре чувања.}few{Нека обавезна поља су празна. Попуните их пре чувања.}other{Нека обавезна поља су празна. Попуните их пре чувања.}}</translation>
 <translation id="5271549068863921519">Сачувај лозинку</translation>
 <translation id="5279600392753459966">Блокирај све</translation>
+<translation id="5282340693022193851">Да бисте добијали обавештења о праћењу цена, укључите обавештења у подешавањима iOS-а.</translation>
 <translation id="5294624619177114121">Мобилна обавештења</translation>
 <translation id="5295239312320826323">Желите да уклоните налог <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Прикажи</translation>
@@ -1519,7 +1525,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8173034266693057059">Дужина</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8182037667962849780">{count,plural, =1{За {website_1}}=2{За {website_1} и {website_2}}=3{За {website_1}, {website_2} и још 1}one{За {website_1}, {website_2} и још {more_count}}few{За {website_1}, {website_2} и још {more_count}}other{За {website_1}, {website_2} и још {more_count}}}</translation>
-<translation id="8189814768485665290">Делите цео URL</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Уређаји<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Додајте лозинку</translation>
 <translation id="8202744799033457229">Приказивање историје</translation>
@@ -1553,6 +1558,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8349305172487531364">Трака са обележивачима</translation>
 <translation id="8366466717204352506">Провера никада није рађена</translation>
 <translation id="8368001212524806591">Прати цену</translation>
+<translation id="8370406443343902172">Иди у подешавања…</translation>
 <translation id="8372471489238799313">{count,plural, =1{Избриши адресу}one{Избриши адресе}few{Избриши адресе}other{Избриши адресе}}</translation>
 <translation id="8378714024927312812">Овим управља организација</translation>
 <translation id="8386068868580335421">Ресетуј</translation>
@@ -1637,6 +1643,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8712534545803964353">Проналажење на страници…</translation>
 <translation id="8712637175834984815">Важи</translation>
 <translation id="8722229818691036192">Налози на овом уређају</translation>
+<translation id="8722649775263832315">Додирните или истакните да бисте претраживали помоћу Google објектива</translation>
 <translation id="8725066075913043281">Пробајте поново</translation>
 <translation id="8728922029615312208">Затвори све</translation>
 <translation id="8730621377337864115">Готово</translation>

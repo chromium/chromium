@@ -1604,6 +1604,7 @@
 <translation id="211803431539496924">להפעיל את עדכוני האבטחה המורחבים?</translation>
 <translation id="2118594521750010466">לפתרון הבעיה</translation>
 <translation id="2119461801241504254">הגלישה הבטוחה פועלת ומגינה עליך מפני אתרים והורדות שעלולים לגרום נזק.</translation>
+<translation id="2119602978828978573">שפות נתמכות לכתוביות מיידיות</translation>
 <translation id="2120297377148151361">פעילות ואינטראקציות</translation>
 <translation id="2120639962942052471">ההרשאה <ph name="PERMISSION" /> נחסמה</translation>
 <translation id="2121055421682309734">{COUNT,plural, =0{‏קובצי cookie חסומים}=1{‏קובצי cookie חסומים, חריג אחד}one{‏קובצי cookie חסומים, {COUNT} חריגים}two{‏קובצי cookie חסומים, {COUNT} חריגים}other{‏קובצי cookie חסומים, {COUNT} חריגים}}</translation>
@@ -2567,6 +2568,7 @@
 <translation id="2787354132612937472">—</translation>
 <translation id="2788135150614412178">+</translation>
 <translation id="2789486458103222910">אישור</translation>
+<translation id="2790750268015892264">‏אפליקציות אינטרנט מבודדות (IWA) לא יכולות לשלוט בקוראי כרטיסים חכמים. לאפליקציות לא תהיה גישה לכרטיסים חכמים.</translation>
 <translation id="2791529110887957050">‏הסרה של Linux</translation>
 <translation id="2791952154587244007">אירעה שגיאה. הפעלה אוטומטית של אפליקציית "קיוסק" במכשיר הזה תיכשל.</translation>
 <translation id="2792290659606763004">‏האם להסיר אפליקציות Android?</translation>
@@ -2598,6 +2600,7 @@
 <translation id="2806372837663997957">המכשיר שעמו ניסית לשתף לא אישר</translation>
 <translation id="2806891468525657116">קיצור הדרך כבר קיים</translation>
 <translation id="2807517655263062534">קבצים שמורידים יופיעו כאן</translation>
+<translation id="2808481877345177494">אפשר להיכנס לחשבון כדי להפריד באופן מאובטח בין הגלישה לצורכי עבודה לבין הגלישה לצרכים אישיים. זו דרך מעולה לשפר את הפרודוקטיביות תוך הגנה על נתונים רגישים של החברה.</translation>
 <translation id="2811205483104563968">חשבונות</translation>
 <translation id="2812049959647166806">‏Thunderbolt אינו נתמך</translation>
 <translation id="2812171980080389735">הרשתות והסיסמאות נשמרות כדי שניתן יהיה להתחבר אליהן באופן מיידי</translation>
@@ -2671,6 +2674,7 @@
 <translation id="2864601841139725659">הגדרת תמונת הפרופיל</translation>
 <translation id="2865057607286263192">כדי לראות סימנים הטעמה ותווים מיוחדים, יש להקיש הקשה ארוכה על מקשי המקלדת. הפעולה הזו משביתה את ההקשה החוזרת על מקשים עם אותיות. האפשרות זמינה רק באנגלית (ארה"ב).</translation>
 <translation id="2865919525181940183">צילום מסך של התוכנות שמוצגות כרגע במסך</translation>
+<translation id="286643536820867504">יצירה אוטומטית של כתוביות בשפות נתמכות. האודיו אף פעם לא נשלח מהמכשיר.</translation>
 <translation id="286674810810214575">מקורות החשמל בבדיקה…</translation>
 <translation id="2867768963760577682">פתיחה ככרטיסייה מוצמדת</translation>
 <translation id="2868746137289129307">תוסף זה הוא מיושן והושבת בהתאם למדיניות הארגון. ייתכן שהוא יופעל באופן אוטומטי כשתצא גרסה חדשה יותר.</translation>
@@ -3290,6 +3294,7 @@
 <translation id="3337568642696914359">לא לאפשר לאתרים לטפל בפרוטוקולים</translation>
 <translation id="3340620525920140773">ההורדה הושלמה: <ph name="FILE_NAME" />.</translation>
 <translation id="3340978935015468852">הגדרות</translation>
+<translation id="3341091511696469129">‏‫Chrome יכול ליצור ולתרגם כתוביות בשפות שמוצגות כאן</translation>
 <translation id="3341699307020049241">קוד אימות שגוי. נשארו לך עוד <ph name="RETRIES" /> ניסיונות.</translation>
 <translation id="3341703758641437857">התרת גישה לכתובות אתרים של קבצים</translation>
 <translation id="334171495789408663">הטוקן הועתק</translation>
@@ -3445,6 +3450,7 @@
 <translation id="3450157232394774192">אחוז תפוסה במצב לא פעיל</translation>
 <translation id="3450180775417907283">‏כדי להיכנס אל <ph name="MANAGER" />, מתחברים עכשיו לרשת Wi-Fi ומורידים עדכון.</translation>
 <translation id="345078987193237421">הפעולה הזו מאפשרת גישה למצלמה לאפליקציות ולאתרים עם הרשאת גישה למצלמה ולשירותי המערכת</translation>
+<translation id="3451362021220965191">אפליקציות אינטרנט מבודדות יכולות לשלוט בקוראי כרטיסים חכמים כדי לקבל גישה לכרטיסים חכמים שמוזנים או מוצגים להן. כרטיסים חכמים בדרך כלל מכילים זהויות שמשמשות לאימות או לאישור פעולות, לכניסה לשירותים וכו'.</translation>
 <translation id="3452999110156026232">גישה של הורה</translation>
 <translation id="3453082738208775226">לפנות מקום אחסון אופליין?</translation>
 <translation id="3453597230179205517">הגישה למיקום חסומה</translation>
@@ -4007,6 +4013,7 @@
 <translation id="3828953470056652895">‏קראתי את <ph name="BEGIN_LINK1" />התנאים וההגבלות של Google<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />התנאים וההגבלות הנוספים של Chrome ושל ChromeOS<ph name="END_LINK2" /> ו<ph name="BEGIN_LINK3" />התנאים וההגבלות של Google Play<ph name="END_LINK3" /> ואני מאשר/ת אותם.</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> – שימוש בנפח גדול מהזיכרון – <ph name="MEMORY_VALUE" /></translation>
 <translation id="3829765597456725595">‏התקנת רשת לשיתוף קבצים ב-SMB</translation>
+<translation id="38298897782945211">‏אפליקציות אינטרנט מבודדות (IWA) יפעלו לפי ההגדרה הזו באופן אוטומטי.</translation>
 <translation id="3830470485672984938">שימוש במפתח גישה אחר</translation>
 <translation id="3830654885961023588">{NUM_EXTENSIONS,plural, =1{מנהל המערכת הפעיל מחדש תוסף אחד שעשוי להיות מזיק}one{מנהל המערכת הפעיל מחדש {NUM_EXTENSIONS} תוספים שעשויים להיות מזיקים}two{מנהל המערכת הפעיל מחדש {NUM_EXTENSIONS} תוספים שעשויים להיות מזיקים}other{מנהל המערכת הפעיל מחדש {NUM_EXTENSIONS} תוספים שעשויים להיות מזיקים}}</translation>
 <translation id="3834728400518755610">‏השינוי בהגדרת המיקרופון מחייב את הכיבוי של Linux. יש לכבות את Linux כדי להמשיך.</translation>
@@ -4020,6 +4027,7 @@
 <translation id="3839516600093027468">יש למנוע תמיד מ-<ph name="HOST" /> לגשת אל הלוח</translation>
 <translation id="3841282988425489367">‏לא ניתן להתקין את Steam ל-Chromebook (בטא)</translation>
 <translation id="3841319830220785495">קול טבעי בברירת מחדל</translation>
+<translation id="3841356782900714251">קוראי כרטיסים חכמים</translation>
 <translation id="3841964634449506551">הסיסמה לא חוקית</translation>
 <translation id="3842552989725514455">‏גופן Serif</translation>
 <translation id="3843464315703645664">ברשימת ההיתרים הפנימית</translation>
@@ -5731,6 +5739,7 @@
 <translation id="5120886753782992638">אפשר ללחוץ כאן כדי לעבור אל <ph name="APPROVED_URL" /></translation>
 <translation id="5121052518313988218">‏מערכת ההפעלה בקונטיינר של Linux לא נתמכת יותר. לא יתקבלו יותר עדכוני אבטחה ותיקוני באגים, ויכול להיות שתכונות שפועלות כרגע יפסיקו לפעול באופן בלתי צפוי. צריך לשדרג לגרסה האחרונה כדי להמשיך להשתמש ב-Linux.</translation>
 <translation id="5121130586824819730">הדיסק הקשיח מלא. יש לשמור במיקום אחר או לפנות מקום בדיסק הקשיח.</translation>
+<translation id="5121803000325086087">אפליקציות אינטרנט מבודדות יכולות לבקש לשלוט בקוראי כרטיסים חכמים. לאפליקציות תהיה גישה לכרטיסים החכמים שהוצגו לקוראי הכרטיסים שבשליטתן.</translation>
 <translation id="5123433949759960244">כדורסל</translation>
 <translation id="5125714798187802869">הפעלה</translation>
 <translation id="5125751979347152379">כתובת אתר לא חוקית.</translation>
@@ -5860,6 +5869,7 @@
 <translation id="5214639857958972833">הסימניה '<ph name="BOOKMARK_TITLE" />' נוצרה.</translation>
 <translation id="5215450412607891876">הפעלה של עדכוני האבטחה המורחבים</translation>
 <translation id="5215502535566372932">יש לבחור מדינה</translation>
+<translation id="5216674789212441076">‏התכונה מתרגמת באופן אוטומטי כתוביות מיידיות. הכתוביות נשלחות אל Google לתרגום.</translation>
 <translation id="5220011581825921581">חיפוש + חץ למעלה</translation>
 <translation id="5221516927483787768">‏אי אפשר להפעיל Cast של <ph name="HOST_NAME" /></translation>
 <translation id="5222403284441421673">נחסמה הורדה לא מאובטחת</translation>
@@ -6991,6 +7001,7 @@
 <translation id="6064764629679333574">‏אפשר לשפר את איכות הצליל של מיקרופון ה-Bluetooth באמצעות שינוי הרזולוציה מנמוכה לגבוהה.</translation>
 <translation id="6065289257230303064">תכונות ספרייה של נושא אישור</translation>
 <translation id="6066794465984119824">‏לא הוגדר גיבוב (hash) של תמונה</translation>
+<translation id="6069027071882229820">העתקה כתמונה</translation>
 <translation id="6069464830445383022">‏הכניסה ל-Chromebook תתבצע באמצעות חשבון Google</translation>
 <translation id="6069500411969514374">עבודה</translation>
 <translation id="6071181508177083058">אישור סיסמה</translation>
@@ -7307,6 +7318,7 @@
 <translation id="628726841779494414">ניתן לנהל את המדפסות בהגדרות המדפסת</translation>
 <translation id="6287828400772161253">‏טלפון Android ‏(<ph name="HOST_DEVICE_NAME" />)</translation>
 <translation id="6290613030083731160">אין מכשירים זמינים שמשתפים בקרבת מקום. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
+<translation id="6291580570300353047">לא ניתן לשחזר מפני שאין מספיק מקום אחסון.</translation>
 <translation id="6291741848715722067">קוד אישור</translation>
 <translation id="6291953229176937411">‏&amp;הצגה ב-Finder</translation>
 <translation id="6292699686837272722">הכרטיסיות יתכווצו לתצוגה בינונית</translation>
@@ -7953,6 +7965,7 @@
 <translation id="6785739405821760313">‏מוצגים שולחנות העבודה הווירטואליים ששמרת. צריך להקיש על Tab כדי לנווט.</translation>
 <translation id="6785915470941880363">גלילה הפוכה <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="67862343314499040">סגול סיגלית</translation>
+<translation id="6786480815699355166">אפשר לתרגם כתוביות מיידיות רק לשפות נתמכות</translation>
 <translation id="6786747875388722282">תוספים</translation>
 <translation id="6787097042755590313">כרטיסייה אחרת</translation>
 <translation id="6787531944787756058">שם המשתמש <ph name="USER_EMAIL" /> שמור רק במכשיר הזה. לפרטים</translation>
@@ -10096,6 +10109,7 @@
 <translation id="8319414634934645341">שימוש מורחב במפתח</translation>
 <translation id="8321476692217554900">התראות</translation>
 <translation id="8321837372750396788">מכשיר <ph name="DEVICE_TYPE" /> זה ינוהל על ידי <ph name="MANAGER" />.</translation>
+<translation id="8321888067342493336">שמירה כתמונה</translation>
 <translation id="8322814362483282060">דף זה נחסם לגישה למיקרופון שלך.</translation>
 <translation id="8323167517179506834">הקלדת כתובת אתר</translation>
 <translation id="8323317289166663449">קריאה ושינוי של כל הנתונים שלך במחשב ובכל האתרים</translation>
@@ -10545,6 +10559,7 @@
 <translation id="8656888282555543604">הפעלת רישום ברייל ביומן</translation>
 <translation id="8657393004602556571">רוצה למחוק את המשוב?</translation>
 <translation id="8657542881463614516">אפשר להשתמש בתנועת החלקה כדי לעבור בין דפים</translation>
+<translation id="865857184419171576">תרגום הכתוביות לשפה</translation>
 <translation id="865936634714975126">‏צריך להוסיף פרמטר שאילתה בכתובת ה-URL כדי לבחור סוגים של טעינת דף. לדוגמה: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875">אנשי קשר ל<ph name="FEATURE_NAME" /></translation>
 <translation id="8659609431223166673">החלון הועבר למטה</translation>

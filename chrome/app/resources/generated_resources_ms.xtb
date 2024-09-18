@@ -1606,6 +1606,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="211803431539496924">Sahkan kemaskinian keselamatan lanjutan?</translation>
 <translation id="2118594521750010466">Betulkan Sekarang</translation>
 <translation id="2119461801241504254">Penyemakan Imbas Selamat dihidupkan dan melindungi anda daripada tapak dan muat turun berbahaya</translation>
+<translation id="2119602978828978573">Bahasa Sari Kata Langsung yang disokong</translation>
 <translation id="2120297377148151361">Aktiviti dan interaksi</translation>
 <translation id="2120639962942052471"><ph name="PERMISSION" /> disekat</translation>
 <translation id="2121055421682309734">{COUNT,plural, =0{Kuki disekat}=1{Kuki disekat, 1 pengecualian}other{Kuki disekat, {COUNT} pengecualian}}</translation>
@@ -2676,6 +2677,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2864601841139725659">Tetapkan gambar profil anda</translation>
 <translation id="2865057607286263192">Tekan &amp; tahan kunci papan kekunci untuk melihat tanda aksen dan aksara khas. Tindakan ini akan mematikan tekan kekunci berulang untuk kekunci abjad. Hanya tersedia untuk bahasa Inggeris (AS).</translation>
 <translation id="2865919525181940183">Tangkapan skrin atur cara yang sedang dipaparkan pada skrin</translation>
+<translation id="286643536820867504">Membuat sari kata secara automatik untuk bahasa yang disokong. Peranti anda tidak menghasilkan audio.</translation>
 <translation id="286674810810214575">Menyemak sumber kuasa...</translation>
 <translation id="2867768963760577682">Buka sebagai Tab Disemat</translation>
 <translation id="2868746137289129307">Sambungan ini sudah lapuk dan dilumpuhkan oleh dasar perusahaan. Ia mungkin menjadi aktif secara automatik apabila versi yang lebih baharu tersedia.</translation>
@@ -3297,6 +3299,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="333863344734218290">Memberi anda amaran untuk laman awam &amp; peribadi yang tidak selamat</translation>
 <translation id="3340620525920140773">Muat turun selesai: <ph name="FILE_NAME" />.</translation>
 <translation id="3340978935015468852">tetapan</translation>
+<translation id="3341091511696469129">Chrome boleh membuat dan menterjemahkan sari kata untuk bahasa yang dipaparkan di sini</translation>
 <translation id="3341699307020049241">PIN salah. Anda mempunyai <ph name="RETRIES" /> percubaan lagi.</translation>
 <translation id="3341703758641437857">Membenarkan akses ke URL fail</translation>
 <translation id="334171495789408663">Token disalin</translation>
@@ -5876,6 +5879,7 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="5214639857958972833">Penanda halaman '<ph name="BOOKMARK_TITLE" />' dibuat.</translation>
 <translation id="5215450412607891876">Hidupkan kemaskinian keselamatan lanjutan</translation>
 <translation id="5215502535566372932">Pilih negara</translation>
+<translation id="5216674789212441076">Menterjemahkan sari kata langsung secara automatik. Sari kata akan dihantar kepada Google untuk diterjemahkan.</translation>
 <translation id="5220011581825921581">Search + anak panah ke atas</translation>
 <translation id="5221516927483787768">Tidak dapat menghantar <ph name="HOST_NAME" /></translation>
 <translation id="5222403284441421673">Sekatan untuk muat turun tidak selamat</translation>
@@ -7325,6 +7329,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="628726841779494414">Urus pencetak anda dalam tetapan pencetak</translation>
 <translation id="6287828400772161253">Telefon Android (<ph name="HOST_DEVICE_NAME" />)</translation>
 <translation id="6290613030083731160">Tiada peranti yang tersedia berkongsi berdekatan. <ph name="LINK_BEGIN" />Ketahui lebih lanjut<ph name="LINK_END" /></translation>
+<translation id="6291580570300353047">Tidak dapat dipulihkan kerana ruang storan tidak mencukupi.</translation>
 <translation id="6291741848715722067">Kod pengesahan</translation>
 <translation id="6291953229176937411">&amp;Paparkan dalam Pencari</translation>
 <translation id="6292699686837272722">Tab mengecil kepada lebar sederhana</translation>
@@ -7968,6 +7973,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="6785739405821760313">Melihat meja yang disimpan. Tekan tab untuk menavigasi.</translation>
 <translation id="6785915470941880363">Penatalan songsang <ph name="LINK_BEGIN" />Ketahui lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="67862343314499040">Ungu Lembayung</translation>
+<translation id="6786480815699355166">Hanya bahasa Sari Kata Langsung yang disokong boleh diterjemahkan</translation>
 <translation id="6786747875388722282">Pelanjutan</translation>
 <translation id="6787097042755590313">Tab Lain</translation>
 <translation id="6787531944787756058">nama pengguna <ph name="USER_EMAIL" /> disimpan pada peranti ini sahaja. Lihat butiran</translation>
@@ -10567,6 +10573,7 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8656888282555543604">Dayakan pengelogan braille</translation>
 <translation id="8657393004602556571">Adakah anda ingin membuang maklum balas?</translation>
 <translation id="8657542881463614516">Gunakan gerak isyarat meleret untuk menavigasi antara halaman</translation>
+<translation id="865857184419171576">Terjemahkan sari kata kepada</translation>
 <translation id="865936634714975126">Tambahkan parameter pertanyaan dalam URL untuk memilih jenis semasa pemuatan halaman. Contoh: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875">Kenalan <ph name="FEATURE_NAME" /></translation>
 <translation id="8659609431223166673">Tetingkap dialihkan ke bawah</translation>

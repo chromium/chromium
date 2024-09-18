@@ -1014,6 +1014,7 @@
 <translation id="2882949212241984732">ଡବଲ୍-ଗେଟ୍ ଫୋଲ୍ଡ</translation>
 <translation id="2891963978019740012">Chromeରେ ଆପଣଙ୍କ ସର୍ଚ୍ଚ ଇଞ୍ଜିନ</translation>
 <translation id="2893773853358652045">ଚତୁର୍ଥ ରୋଲ୍</translation>
+<translation id="2894137550885451583"><ph name="PRODUCT" /> ପାଇଁ <ph name="CURRENCY" />ରେ ଏହି ମୂଲ୍ୟ ଅଛି</translation>
 <translation id="2900528713135656174">ଇଭେଣ୍ଟ ତିଆରି କରନ୍ତୁ</translation>
 <translation id="2902312830803030883">ଅଧିକ କାର୍ଯ୍ୟ</translation>
 <translation id="2903493209154104877">ଠିକଣାଗୁଡ଼ିକ</translation>
@@ -1608,6 +1609,7 @@
 <translation id="3949601375789751990">ଆପଣଙ୍କର ବ୍ରାଉଜିଂ ଇତିବୃତ୍ତି ଏଠାରେ ଦେଖାଦିଏ</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">କୌଣସି ସେଭ୍ ହୋଇଥିବା ପେମେଣ୍ଟ ପଦ୍ଧତି ନାହିଁ</translation>
+<translation id="3950560191811267370">କମର୍ସର ବଟମ ସିଟ ବନ୍ଦ କରାଯାଇଛି</translation>
 <translation id="3950574001630941635">ଟ୍ୟୁଟୋରିଆଲ ରିଷ୍ଟାର୍ଟ କରନ୍ତୁ</translation>
 <translation id="3950820424414687140">ସାଇନ୍ ଇନ୍ କରନ୍ତୁ</translation>
 <translation id="3953505489397572035">ଏହି ମୂଲ୍ୟ ସାଧାରଣ ଅଟେ</translation>
@@ -2349,6 +2351,7 @@
 <translation id="5331585574693522196">ଡିଫଲ୍ଟ ଭାବେ ସେଟ କରନ୍ତୁ</translation>
 <translation id="5332219387342487447">ସିପିଂ ପଦ୍ଧତି</translation>
 <translation id="5332769172018416402">ଏକ ମେସେଜ ପଠାଇ ପଚାରନ୍ତୁ</translation>
+<translation id="533323551986281710">କମର୍ସର ବଟମ ସିଟ ସମ୍ପୂର୍ଣ୍ଣ ଭାବେ ଖୋଲାଯାଇଛି</translation>
 <translation id="5334013548165032829">ବିସ୍ତୃତ ବିବରଣୀ ସହ ସିଷ୍ଟମ୍ ଲଗ୍‌ଗୁଡ଼ିକ</translation>
 <translation id="5334145288572353250">ଠିକଣା ସେଭ୍ କରିବେ?</translation>
 <translation id="5340250774223869109">ଆପ୍ଲିକେସନ୍ ବ୍ଲକ୍ କରାଯାଇଛି</translation>
@@ -2531,6 +2534,7 @@
 <translation id="5675650730144413517">ଏହି ପୃଷ୍ଠା କାମ କରୁନାହିଁ</translation>
 <translation id="5675809467256309336">ଡ୍ୟାନ୍ସ ଏବଂ ଇଲେକ୍ଟ୍ରୋନିକ ମ୍ୟୁଜିକ</translation>
 <translation id="5675959228867414813">ତାରିଖ ଅନୁସାରେ ଦେଖାନ୍ତୁ</translation>
+<translation id="567604591393105935">କମର୍ସର ବଟମ ସିଟ ଅଧା ଖୋଲାଯାଇଛି</translation>
 <translation id="5677928146339483299">ବ୍ଲକ୍ କରାଯାଇଛି</translation>
 <translation id="5678007133659493065">ଫଏଲ</translation>
 <translation id="5680642791693447368">ଥ୍ରିଲର, ଅପରାଧ ଏବଂ ରହସ୍ୟ ମୁଭିଗୁଡ଼ିକ</translation>
@@ -3435,6 +3439,7 @@
 <translation id="7374733840632556089">ଆପଣ କିମ୍ବା ଅନ୍ୟ କେହି ଜଣେ ଆପଣଙ୍କ ଡିଭାଇସ୍‌ରେ ଇନଷ୍ଟଲ୍ କରିଥିବା ଏକ ସାର୍ଟିଫିକେଟ୍ ଯୋଗୁଁ ଏହି ସମସ୍ୟାଟି ହୋଇଥାଏ। ସାର୍ଟିଫିକେଟ୍‍ଟି ନେଟ୍‍ୱାର୍କଗୁଡ଼ିକର ନିରୀକ୍ଷଣ ଏବଂ ଗତିରୋଧ ନିମନ୍ତେ ବ୍ୟବହାର କରାଯାଇଥାଏ ବୋଲି ଜଣାଯାଏ ଏବଂ Chrome ଏହାକୁ ବିଶ୍ୱାସ କରେ ନାହିଁ। ଯଦିଓ କୌଣସି ସ୍କୁଲ୍ କିମ୍ବା କମ୍ପାନୀ ନେଟ୍‍ୱାର୍କ ପରି ନିରୀକ୍ଷଣ ପାଇଁ କିଛି ବୈଧ ଉଦାହରଣ ବିଦ୍ୟମାନ ଅଛି, Chrome ଏହା ସୁନିଶ୍ଚିତ କରିବାକୁ ଚାହେଁ ଯେ, ଆପଣ ଏହାକୁ ବନ୍ଦ ନକରିପାରିଲେ ମଧ୍ୟ ଆପଣ ଏହା ହେଉଥିବା ବିଷୟରେ ଅବଗତ ରୁହନ୍ତୁ। ୱେବ୍ ଆକ୍ସେସ୍ କରିପାରୁଥିବା ଯେ କୌଣସି ବ୍ରାଉଜର୍ କିମ୍ବା ଆପ୍ଲିକେସନ୍‍‍ରେ ନିରୀକ୍ଷଣ ହୋଇପାରେ।</translation>
 <translation id="7375532151824574023">{NUM_COOKIES,plural, =0{କୌଣସି ସାଇଟକୁ ଅନୁମତି ଦିଆଯାଇନାହିଁ}=1{1ଟି ସାଇଟକୁ ଅନୁମତି ଦିଆଯାଇଛି}other{#ଟି ସାଇଟକୁ ଅନୁମତି ଦିଆଯାଇଛି}}</translation>
 <translation id="7375818412732305729">ଫାଇଲ୍ ଆଟାଚ୍ କରାଯାଇଛି</translation>
+<translation id="7376031331622621328">କମର୍ସର ବଟମ ସିଟ</translation>
 <translation id="7377249249140280793"><ph name="RELATIVE_DATE" /> - <ph name="FULL_DATE" /></translation>
 <translation id="7377314930809374926">ହସ୍ପିଟାଲିଟି ଇଣ୍ଡଷ୍ଟ୍ରି</translation>
 <translation id="7378594059915113390">ମିଡିଆକୁ ନିୟନ୍ତ୍ରଣ କରୁଛି</translation>

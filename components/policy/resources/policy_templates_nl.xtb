@@ -1097,13 +1097,6 @@ Dit beleid heeft geen effect als de optie om bestaande browsegegevens te behoude
 
       Dit beleid is verouderd. Gebruik in plaats daarvan <ph name="DEVICE_USER_ALLOWLIST_POLICY_NAME" />.
       </translation>
-<translation id="1825583118566970564">Beheert de installatie van externe extensies.
-
-Als je dit beleid toepast, kunnen externe extensies niet worden geïnstalleerd.
-
-Als je dit beleid niet toepast of niet instelt, kunnen externe extensies worden geïnstalleerd.
-
-Externe extensies en de installatie daarvan worden beschreven op https://developer.chrome.com/apps/external_extensions.</translation>
 <translation id="1827523283178827583">Vaste proxyservers gebruiken</translation>
 <translation id="1829117241432374848">Een beheerd account moet een primair account zijn, mag geen secundaire accounts hebben en de gebruiker kan bestaande gegevens importeren bij het maken van een profiel</translation>
 <translation id="1829839214911753838">Als je dit beleid toepast, wordt de host voor hulp op afstand uitgevoerd met <ph name="UIACCESS_PERMISSION_NAME" />-rechten. Hierdoor kunnen externe gebruikers vensters met verhoogde bevoegdheid gebruiken op de lokale desktop van de gebruiker.
@@ -2936,6 +2929,13 @@ Als je het beleid niet instelt, is JavaScript toegestaan maar kunnen gebruikers 
 
       Als je het beleid niet instelt, laadt <ph name="PRODUCT_NAME" /> alle geïnstalleerde hosts voor systeemeigen berichten.</translation>
 <translation id="3211426942294667684">Instellingen voor inloggen bij browser</translation>
+<translation id="3213872023700948990">Dit beleid biedt een tijdelijke afmelding voor het nieuwe gedrag van focusbare scrollers voor het toetsenbord.
+
+Als je dit beleid toepast of niet instelt, kunnen scrollers zonder onderliggende focusbare items standaard worden gefocust met het toetsenbord.
+
+Als je dit beleid niet toepast, zijn scrollers niet standaard focusbaar met het toetsenbord.
+
+Dit beleid is een tijdelijke oplossing en wordt verwijderd in M135.</translation>
 <translation id="3217774577897351942">De <ph name="OFFSET_PARENT" /> API wordt gewijzigd in <ph name="PRODUCT_NAME" /> om te voldoen aan wijzigingen die zijn aangebracht in <ph name="FIREFOX_PRODUCT_NAME" /> en <ph name="SAFARI_PRODUCT_NAME" />. Met dit beleid wordt het oude gedrag hersteld tot M120.
 
 Het nieuwe gedrag kan tot gevolg hebben dat sommige websites die alleen voor <ph name="PRODUCT_NAME" /> werken en die <ph name="OFFSET_PARENT" />, <ph name="OFFSET_TOP" /> of <ph name="OFFSET_LEFT" /> gebruiken in combinatie met Shadow DOM, niet meer werken.
@@ -6067,6 +6067,29 @@ Als dit beleid is ingesteld voor de <ph name="PRODUCT_OS_NAME" />-kiosk, wordt d
 <translation id="5622590774455244290">Android-apps kunnen deze lijst op vrijwillige basis respecteren, maar dit kan niet worden afgedwongen.</translation>
 <translation id="5622924058222112599">Standaard CECPQ2-uitrolproces aanzetten</translation>
 <translation id="5623304306796942802">Prompt als meerdere certificaten overeenkomen</translation>
+<translation id="5624334866248253262">Hiermee stel je een lijst in met regels voor gegevensbeheer om datalekken te voorkomen.
+
+      Elke regel bestaat uit het volgende:
+- Voorwaardevelden die die regel activeren. Een regel wordt alleen geactiveerd als een gebruikersactie overeenkomt met alle ingevulde velden in de velden <ph name="DATA_CONTROLS_SOURCES" />, <ph name="DATA_CONTROLS_DESTINATIONS" />, <ph name="DATA_CONTROLS_AND" />, <ph name="DATA_CONTROLS_OR" /> en <ph name="DATA_CONTROLS_NOT" />. Voor subvelden van een lijst hoeft er maar één item overeen te komen. Zo hoeft er maar één URL-patroon overeen te komen om de regel te activeren.
+      - Een lijst met beperkingen die moeten worden toegepast. Afhankelijk van de beperking zijn misschien alleen <ph name="DATA_CONTROLS_SOURCES" />- of <ph name="DATA_CONTROLS_DESTINATIONS" />-voorwaarden beschikbaar.
+
+      Regels kunnen om deze redenen worden toegevoegd:
+- Bepalen welke klembordgegevens mogen worden gedeeld tussen de bronnen en de bestemmingen.
+      - Bepalen of screenshots worden geblokkeerd op basis van de brontabbladen.
+
+      Als het beleid <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" /> is ingesteld op Waar, worden geactiveerde regels gemeld aan de beheerder.
+      Het beperkingsniveau kan worden ingesteld op BLOCK, WARN of REPORT.
+      - Als het beperkingsniveau is ingesteld op BLOCK, is de actie niet toegestaan.
+      - Als het beperkingsniveau is ingesteld op WARN, krijgt de gebruiker een waarschuwing en kan die ervoor kiezen door te gaan met de actie of deze te annuleren.
+      - Als het beperkingsniveau is ingesteld op REPORT, wordt de gebruikersactie niet onderbroken maar wordt er een melding gestuurd als het beleid <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" /> aanstaat.
+
+      Opmerkingen:
+- Gebruik de volgende indeling voor de URL-patronen (https://support.google.com/chrome/a?p=url_blocklist_filter_format).
+- Zie ook het beleid <ph name="DATA_LEAK_PREVENTION_RULES_LIST" /> voor regels om datalekken te voorkomen die specifiek zijn voor <ph name="PRODUCT_OS_NAME" />.
+
+      Als je het beleid niet instelt, worden er geen beperkingen toegepast.
+
+      Dit beleid is alleen beschikbaar voor gebruikers die een Chrome Enterprise Premium-licentie hebben.</translation>
 <translation id="5625771176514429288">Chrome-apps kunnen op deze platforms worden uitgevoerd.</translation>
 <translation id="5630352020869108293">De laatste sessie herstellen</translation>
 <translation id="5633871703004128675">Toegankelijkheidsfunctie voor markering van het caret-teken aanzetten</translation>
@@ -7213,6 +7236,9 @@ OPMERKING: Het standaardgedrag voor consumenten- en zakelijke apparaten verschil
           De aanbevolen manier om het scherm te vergrendelen bij inactiviteit is de schermvergrendeling bij opschorting aanzetten en <ph name="PRODUCT_OS_NAME" /> opschorten na een inactieve vertraging. Dit beleid moet uitsluitend worden gebruikt als het scherm aanzienlijk sneller moet worden vergrendeld dan de opschortingstijd of als opschorting bij inactiviteit helemaal niet gewenst is.
 
           De beleidswaarde moet worden gespecificeerd in milliseconden. De opgegeven waarden moeten kleiner zijn dan de inactieve vertraging.</translation>
+<translation id="6496139622896320246">Als je het beleid toepast, slaat <ph name="PRODUCT_OS_NAME" /> de actieve wifi-inloggegevens van de kiosk automatisch op apparaatniveau op. De actieve wifi kan worden gebruikt door andere kiosk-apps of gebruikers op het apparaat.
+Als je dit beleid niet instelt of niet toepast, worden de actieve wifi-inloggegevens van de kiosk opgeslagen op kioskniveau. Wifi die is ingesteld in een kiosk-app kan alleen worden gebruikt in diezelfde kiosk-app.
+Dit beleid wordt niet aanbevolen en moet worden gebruikt als er geen andere opties beschikbaar zijn (bijv. het beleid OpenNetworkConfiguration).</translation>
 <translation id="6497085755801788141">De ingebouwde certificaatverificatie gebruiken</translation>
 <translation id="6499579502664610993">Overschrijf gehelen van gerelateerde websites.</translation>
 <translation id="6504720469162323184">Als je het beleid instelt, geef je de hoeveelheid tijd in milliseconden zonder gebruikersactiviteit aan voordat er automatisch wordt ingelogd op het lokale account op het apparaat dat wordt gespecificeerd door het beleid <ph name="DEVICE_LOCAL_ACCOUNT_AUTO_LOGIN_ID_POLICY_NAME" />.

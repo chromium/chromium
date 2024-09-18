@@ -145,6 +145,7 @@
 <translation id="1651925268237749928">Has seleccionat un àlbum compartit. Altres persones poden afegir o canviar fotos. És possible que el fons de pantalla faci servir fotos que no siguin en aquest àlbum.</translation>
 <translation id="1661512400125589646">Posa en pausa</translation>
 <translation id="1661865805917886535">És possible que algunes dades del compte i del sistema s'enviïn a Google. Farem servir aquesta informació per ajudar a resoldre problemes tècnics i millorar els nostres serveis de conformitat amb la política de privadesa (<ph name="PRIVACYPOLICYURL" />) i les condicions del servei (<ph name="TERMSOFSERVICEURL" />). Per sol·licitar canvis de contingut, ves a Ajuda legal (<ph name="LEGALHELPPAGEURL" />).</translation>
+<translation id="1662699081856352167">El resum s'ha generat correctament</translation>
 <translation id="1662989795263954667">S'ha aturat: no hi ha tinta</translation>
 <translation id="1664796644829245314">Previsualitza <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">VPN integrada</translation>
@@ -341,6 +342,7 @@
 <translation id="2560876255701405320">Llista de gravacions d'àudio</translation>
 <translation id="2561093647892030937">llimones</translation>
 <translation id="2570743873672969996">S'està executant la prova <ph name="TEST_NAME" />...</translation>
+<translation id="2573178735329662769">S'està gravant tot l'àudio del Chromebook</translation>
 <translation id="2575552334616524665">Pots activar aquesta opció a Configuració o al menú <ph name="THREE_DOTS_MENU_ICON" /></translation>
 <translation id="2576253868710695442">Ocuparà fins a 2 GB d'emmagatzematge</translation>
 <translation id="2584547424703650812">Paisatges brillants</translation>
@@ -508,6 +510,7 @@
 <translation id="3588034708467091142">Comprova que tinguis connexió a Internet i torna-ho a provar.</translation>
 <translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> és el nom fàcil d'utilitzar de <ph name="APN_NAME" />.</translation>
 <translation id="3595596368722241419">Bateria carregada.</translation>
+<translation id="3600063043775287169">Quan l'àudio del Chromebook està activat, la gravadora captura tot l'àudio que es reprodueix en aquest dispositiu. Assegura't que vols gravar tots els sons.</translation>
 <translation id="3600339377155080675">Projecta la pantalla</translation>
 <translation id="3602290021589620013">Previsualitza</translation>
 <translation id="3603829704940252505">Avatar</translation>
@@ -541,6 +544,7 @@
 <translation id="3780740315729837296">Assigna una tecla del teclat</translation>
 <translation id="3784455785234192852">Bloqueja</translation>
 <translation id="3785643128701396311">pixel art</translation>
+<translation id="3799381533888781854">DESACTIVAT. El teu administrador gestiona aquesta opció de configuració.</translation>
 <translation id="380097101658023925">controls RGB</translation>
 <translation id="38114475217616659">Esborra tot l'historial</translation>
 <translation id="3820172043799983114">El PIN no és vàlid.</translation>
@@ -744,6 +748,7 @@
 <translation id="4809927044794281115">Tema clar</translation>
 <translation id="4813136279048157860">Les meves imatges</translation>
 <translation id="4813345808229079766">Connexió</translation>
+<translation id="4824527342590024245">De moment, no s'admeten les transcripcions de menys de <ph name="MIN_WORD_LENGTH" /> paraules.</translation>
 <translation id="4830894019733815633">un canyó</translation>
 <translation id="4832079907277790330">Selecciona una carpeta a l'aplicació Fitxers...</translation>
 <translation id="4835901797422965222">No hi ha cap xarxa activa</translation>
@@ -772,6 +777,7 @@
 <translation id="4921665434385737356">S'ha carregat un <ph name="RATE" /> en <ph name="NUM_SECONDS" /> segons.</translation>
 <translation id="4930320165497208503">Per configurar o actualitzar una connexió, ves a <ph name="BEGIN_LINK" />Configuració<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Data</translation>
+<translation id="4946927805998996217">S'està generant el resum</translation>
 <translation id="4950314376641394653">El microprogramari del dispositiu <ph name="DEVICE_NAME" /> s'ha actualitzat a la versió <ph name="VERSION" /></translation>
 <translation id="4950893758552030541">túnel d'arbres</translation>
 <translation id="4965661459364092269">El restabliment de seguretat s'ha completat</translation>
@@ -832,6 +838,7 @@
 <translation id="5229104491259541281">Converteix "<ph name="QUERY" />"</translation>
 <translation id="5229344016299762883">Surt del mode complet</translation>
 <translation id="5234764350956374838">Ignora</translation>
+<translation id="5236119614998611749">No s'ha pogut generar el resum</translation>
 <translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{L'administrador ha configurat <ph name="APP_NAME" /> perquè s'iniciï automàticament cada vegada que iniciïs la sessió.}=2{L'administrador ha configurat <ph name="APP_NAME" /> i 1 aplicació més perquè s'iniciïn automàticament cada vegada que iniciïs la sessió.}other{L'administrador ha configurat <ph name="APP_NAME" /> i # aplicacions més perquè s'iniciïn automàticament cada vegada que iniciïs la sessió.}}</translation>
 <translation id="5248419081947706722">blau</translation>
 <translation id="5252456968953390977">Itinerància</translation>

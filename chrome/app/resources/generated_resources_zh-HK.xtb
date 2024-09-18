@@ -553,7 +553,7 @@
 <translation id="1401216725754314428">喺新分頁度進一步了解相關網站</translation>
 <translation id="1402426911829176748">正在連接您的裝置</translation>
 <translation id="1403222014593521787">無法連線至 Proxy</translation>
-<translation id="1405336513195181336">包括書籤、擴充功能和網站瀏覽記錄。</translation>
+<translation id="1405336513195181336">這包括網站書籤、擴充程式及瀏覽記錄。</translation>
 <translation id="1405779994569073824">已當機。</translation>
 <translation id="1406500794671479665">驗證中…</translation>
 <translation id="1407069428457324124">深色主題背景</translation>
@@ -1606,6 +1606,7 @@
 <translation id="211803431539496924">確認延長安全更新嗎？</translation>
 <translation id="2118594521750010466">立即修正</translation>
 <translation id="2119461801241504254">「安全瀏覽」功能已啟動，可保護您免受有害的網站和下載內容影響</translation>
+<translation id="2119602978828978573">支援的「即時字幕」語言</translation>
 <translation id="2120297377148151361">活動和互動</translation>
 <translation id="2120639962942052471">已封鎖<ph name="PERMISSION" /></translation>
 <translation id="2121055421682309734">{COUNT,plural, =0{已封鎖 Cookie}=1{已封鎖 Cookie，有 1 個例外情況}other{已封鎖 Cookie，有 {COUNT} 個例外情況}}</translation>
@@ -2513,7 +2514,7 @@
 <translation id="2749881179542288782">檢查拼字及文法</translation>
 <translation id="2750020734439919571">更多 Chrome 應用程式設定和權限</translation>
 <translation id="2750602041558385535">已封鎖未經驗證的下載內容</translation>
-<translation id="2751883373055093745"><ph name="WEBSITE" /> 想取得安全金鑰的 ID，該網站將可完全瞭解你正在使用的安全金鑰。</translation>
+<translation id="2751883373055093745"><ph name="WEBSITE" /> 想取得安全密鑰的 ID 編號。該網站將明確得知你正在使用哪一組安全密鑰。</translation>
 <translation id="275213133112113418">已儲存付款卡</translation>
 <translation id="2753623023919742414">按一下即可搜尋</translation>
 <translation id="2754226775788136540">正在尋找已儲存至 <ph name="PRIMARY_EMAIL" /> 的「快速配對」裝置</translation>
@@ -2675,6 +2676,7 @@
 <translation id="2864601841139725659">設定您的個人檔案相片</translation>
 <translation id="2865057607286263192">按住鍵盤按鍵以查看重音標記和特殊字元。此設定會關閉字母按鍵的重複按鍵效果。只適用於英文 (美國)。</translation>
 <translation id="2865919525181940183">目前畫面上面嘅程式螢幕截圖</translation>
+<translation id="286643536820867504">自動為支援的語言建立字幕。音訊資料只會儲存在裝置上。</translation>
 <translation id="286674810810214575">正在檢查電源…</translation>
 <translation id="2867768963760577682">在固定分頁中開啟</translation>
 <translation id="2868746137289129307">這項擴充功能已過時，並根據企業政策停用。當日後有更新版本可用，系統可能會自動啟用該功能。</translation>
@@ -3260,6 +3262,7 @@
 <translation id="3308852433423051161">正在載入「Google 助理」…</translation>
 <translation id="3309124184713871355">結構</translation>
 <translation id="3309330461362844500">憑證設定檔 ID</translation>
+<translation id="331080746368555063">私人網站可能包括公司內部網絡等項目</translation>
 <translation id="3311445899360743395">系統可能會從裝置中移除與此應用程式相關的資料。</translation>
 <translation id="3312470654018965389">正在設定 Linux 容器</translation>
 <translation id="3312883087018430408">如要搜尋特定網站或 Chrome，請在網址列中輸入相關的快捷字詞，然後按下您偏好的鍵盤快速鍵。舉例來說，如果只要搜尋書籤，請輸入「@bookmarks」，然後按下 Tab 鍵或空白鍵。</translation>
@@ -3290,8 +3293,10 @@
 <translation id="3335947283844343239">重新開啟先前關閉的分頁</translation>
 <translation id="3336855445806447827">不確定</translation>
 <translation id="3337568642696914359">不允許網站處理通訊協定</translation>
+<translation id="333863344734218290">在你瀏覽不安全的公開和私人網站時發出警告</translation>
 <translation id="3340620525920140773">下載完成：<ph name="FILE_NAME" />。</translation>
 <translation id="3340978935015468852">設定</translation>
+<translation id="3341091511696469129">Chrome 可產生並翻譯以下語言的字幕</translation>
 <translation id="3341699307020049241">PIN 不正確。您還可再試 <ph name="RETRIES" /> 次。</translation>
 <translation id="3341703758641437857">允許存取檔案網址</translation>
 <translation id="334171495789408663">已複製憑證</translation>
@@ -3739,7 +3744,7 @@
 <translation id="3665589677786828986">Chrome 偵測到另一個程式破壞了部分設定，並且將這些設定重設為原始預設值。</translation>
 <translation id="3665919494326051362">目前的版本是 <ph name="CURRENT_VERSION" /></translation>
 <translation id="3666196264870170605">Intel Wi-Fi NIC 偵錯傾印</translation>
-<translation id="3666529246018937077">現有的瀏覽資料會保留在舊設定檔，工作資料夾不會有任何先前的瀏覽資料。</translation>
+<translation id="3666529246018937077">現有瀏覽資料會保留在舊設定檔中。工作設定檔不會載有任何之前的瀏覽資料。</translation>
 <translation id="3666971425390608309">暫停咗下載 <ph name="FILE_NAME" />。</translation>
 <translation id="3670113805793654926">來自任何供應商的裝置</translation>
 <translation id="3670229581627177274">開啟藍牙功能</translation>
@@ -4474,7 +4479,7 @@
 <translation id="4181841719683918333">語言</translation>
 <translation id="4182339886482390129">「強化安全瀏覽」可進一步保護您免受危險網站、下載檔案和擴充程式威脅</translation>
 <translation id="4184803915913850597">HID 裝置 (<ph name="VENDOR_ID" />：<ph name="PRODUCT_ID" />)</translation>
-<translation id="418527077671811642"><ph name="WEBSITE" /> 將知道安全金鑰的製造商和型號</translation>
+<translation id="418527077671811642"><ph name="WEBSITE" /> 將會得知安全密鑰的製造商和型號</translation>
 <translation id="4186749321808907788"><ph name="QUERY_NAME" /> - <ph name="DEFAULT_SEARCH_ENGINE_NAME" /> 搜尋</translation>
 <translation id="4187424053537113647">正在設定 <ph name="APP_NAME" />…</translation>
 <translation id="4190446002599583608">利用 AI 技術搜尋記錄</translation>
@@ -4602,7 +4607,7 @@
 <translation id="4278779213160967034">此程序可能需時幾分鐘。正在下載檔案。</translation>
 <translation id="4279129444466079448">您在此裝置上最多可安裝 <ph name="PROFILE_LIMIT" /> 個 eSIM 卡設定檔。如要新增其他設定檔，請先移除現有的設定檔。</translation>
 <translation id="4280325816108262082">當裝置關閉或處於閒置狀態時，裝置將會自動中斷連線</translation>
-<translation id="4281412694055934031">網站可以要求在裝置上安裝網頁應用程式</translation>
+<translation id="4281412694055934031">網站可以要求在你的裝置上安裝網絡應用程式</translation>
 <translation id="4281789858103154731">建立</translation>
 <translation id="4281844954008187215">服務條款</translation>
 <translation id="4281849573951338030">自訂觸控筆按鈕</translation>
@@ -4810,7 +4815,7 @@
 <translation id="4426857487270413362">無法下載安裝程式檔案。請檢查互聯網連線，並確保磁碟空間足夠，然後再試一次。錯誤代碼：<ph name="ERROR" />。</translation>
 <translation id="4427111270137140798">偵測到 <ph name="COUNT" /> 次</translation>
 <translation id="4427365070557649936">正在驗證確認碼…</translation>
-<translation id="4428579202668721841">要保留現有瀏覽資料，不要移到工作資料夾嗎？</translation>
+<translation id="4428579202668721841">要將現有瀏覽資料與工作設定檔分開嗎？</translation>
 <translation id="4429163740524851942">實體鍵盤配置</translation>
 <translation id="4430019312045809116">音量</translation>
 <translation id="443031431654216610">只使用數字</translation>
@@ -5449,10 +5454,10 @@
 <translation id="490031510406860025">不允許在此網站執行</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz - 交錯顯示</translation>
 <translation id="4900652253009739885">這是為「選取」動作指派的唯一按鍵，因此無法移除。按任何鍵即可<ph name="RESPONSE" />。</translation>
-<translation id="4900908761825556116">不允許網站在裝置上安裝網頁應用程式</translation>
+<translation id="4900908761825556116">不允許網站在你的裝置上安裝網絡應用程式</translation>
 <translation id="4901154724271753917">展開最近關閉的分頁</translation>
 <translation id="4901309472892185668">選取「<ph name="EXPERIMENT_NAME" />」的實驗狀態。</translation>
-<translation id="4902675024946078396">否，移到工作資料夾</translation>
+<translation id="4902675024946078396">不，移至工作設定檔</translation>
 <translation id="49027928311173603">從伺服器下載的政策無效：<ph name="VALIDATION_ERROR" />。</translation>
 <translation id="4903967893652864401">在此模式下，系統會限制背景活動和視覺效果 (例如平滑捲動) 以延長電池電量</translation>
 <translation id="4906490889887219338">設定或管理網絡檔案共用功能。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
@@ -5863,6 +5868,7 @@
 <translation id="5214639857958972833">建立咗「<ph name="BOOKMARK_TITLE" />」書籤。</translation>
 <translation id="5215450412607891876">開啟延長安全更新</translation>
 <translation id="5215502535566372932">選取國家/地區</translation>
+<translation id="5216674789212441076">自動翻譯即時字幕。字幕會傳送至 Google 進行翻譯。</translation>
 <translation id="5220011581825921581">搜尋鍵 + 向上箭咀鍵</translation>
 <translation id="5221516927483787768">無法投放 <ph name="HOST_NAME" /></translation>
 <translation id="5222403284441421673">已封鎖不安全的下載</translation>
@@ -6891,6 +6897,7 @@
 <translation id="5983716913605894570">生成緊…</translation>
 <translation id="5984222099446776634">最近瀏覽的網站</translation>
 <translation id="5985458664595100876">網址格式無效。支援的格式為 \\server\share 和 smb://server/share。</translation>
+<translation id="5985556342298151179">由裝置管理員安裝的 Chrome 應用程式。</translation>
 <translation id="598810097218913399">移除指派</translation>
 <translation id="5990266201903445068">只限 Wi-Fi</translation>
 <translation id="5990386583461751448">已翻譯</translation>
@@ -7479,7 +7486,7 @@
 <translation id="6434104957329207050">點掃瞄速度</translation>
 <translation id="6434309073475700221">捨棄</translation>
 <translation id="6434325376267409267">您需要先更新裝置，才能使用 <ph name="APP_NAME" />。</translation>
-<translation id="6434690603850475457">是，請保留 (建議)</translation>
+<translation id="6434690603850475457">是，請分開保存 (建議設定)</translation>
 <translation id="6434755719322447931">混亂</translation>
 <translation id="6435339218366409950">揀要將字幕翻譯成邊種語言</translation>
 <translation id="6436164536244065364">在網上商店中檢視</translation>
@@ -7950,6 +7957,7 @@
 <translation id="6785739405821760313">睇緊儲存咗嘅桌面。㩒一下 Tab 鍵就可以瀏覽。</translation>
 <translation id="6785915470941880363">反向捲動<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="67862343314499040">紫羅蘭色</translation>
+<translation id="6786480815699355166">只能翻譯支援的「即時字幕」語言</translation>
 <translation id="6786747875388722282">擴充功能</translation>
 <translation id="6787097042755590313">其他分頁</translation>
 <translation id="6787531944787756058">使用者名稱 <ph name="USER_EMAIL" /> 淨係會儲存去呢部裝置。睇下詳細資料</translation>
@@ -8382,7 +8390,7 @@
 <translation id="708060913198414444">複製音效檔案位址(&amp;O)</translation>
 <translation id="7082568314107259011"><ph name="NETWORK_NAME" /> 由管理員管理</translation>
 <translation id="7082850163410901674">已在 Mac 系統設定中關閉通知</translation>
-<translation id="7083729794572207131">網站通常會要求安裝網頁應用程式，以提升使用體驗</translation>
+<translation id="7083729794572207131">網站通常會要求安裝網絡應用程式，以提升你的網站使用體驗</translation>
 <translation id="7083774521940805477">Chromebook 版 Steam (Beta 版本) 不適用於您的 Chromebook。</translation>
 <translation id="708550780726587276">(未設定)</translation>
 <translation id="7086377898680121060">調高亮度</translation>
@@ -8445,6 +8453,7 @@
 <translation id="7131431455372521159">已經解除連接所有 TrackPoint</translation>
 <translation id="7131896909366247105"><ph name="APP_NAME" /> 等緊</translation>
 <translation id="7134098520442464001">縮小文字</translation>
+<translation id="713415364723069564">網站可判斷你的機器是否已安裝相關網絡軟件，而該網站及其子網域都能存取這類資料。</translation>
 <translation id="7134951043985383439">下載咗危險嘅檔案</translation>
 <translation id="7135729336746831607">要開啟藍牙嗎？</translation>
 <translation id="7136694880210472378">設定為預設</translation>
@@ -8567,6 +8576,7 @@
 <translation id="7232750842195536390">無法重新命名</translation>
 <translation id="723343421145275488">使用「<ph name="VISUAL_SEARCH_PROVIDER" />」搜尋圖片</translation>
 <translation id="7234010996000898150">正在取消 Linux 還原</translation>
+<translation id="7235305658956131898">由裝置管理員安裝的 Android 應用程式。</translation>
 <translation id="7235716375204803342">正在擷取活動…</translation>
 <translation id="7235737137505019098">安全密鑰的空間不足，無法建立帳戶。</translation>
 <translation id="7235873936132740888">網站可在您點擊特定類型的連結時處理特殊工作，例如在電子郵件用戶端建立新郵件，或在線上日曆中新增活動</translation>
@@ -8645,6 +8655,7 @@
 <translation id="7289386924227731009"><ph name="WINDOW_TITLE" /> - 要求咗權限，㩒 F6 掣就可以回覆</translation>
 <translation id="7290005709287747471">停用</translation>
 <translation id="7290242001003353852">此登入服務商 (由 <ph name="SAML_DOMAIN" /> 代管) 正在存取您的相機。</translation>
+<translation id="7290524928495200538">已安裝的相關應用程式</translation>
 <translation id="7292067737327289208">你的<ph name="BEGIN_LINK" />瀏覽器<ph name="END_LINK" />由機構管理，<ph name="BEGIN_LINK" />個人檔案<ph name="END_LINK" />則由 <ph name="PROFILE_DOMAIN" /> 管理</translation>
 <translation id="7292147651179697920">請家長前往「設定」授予存取權</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
@@ -9471,6 +9482,7 @@
 <translation id="7883792253546618164">您可隨時取消訂閱。</translation>
 <translation id="7884372232153418877">{NUM_SITES,plural, =1{審核曾傳送大量通知的 1 個網站}other{審核曾傳送大量通知的 {NUM_SITES} 個網站}}</translation>
 <translation id="788453346724465748">正在載入帳戶資料…</translation>
+<translation id="7886087451482920026">使用「Google 智能鏡頭」選取文字</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{1 個項目}other{# 個項目}}</translation>
 <translation id="7886605625338676841">eSIM 卡</translation>
 <translation id="7887174313503389866">導覽重要的私隱和安全控制項。如要查看更多選項，請前往個別設定。</translation>
@@ -10484,7 +10496,7 @@
 <translation id="8617601976406256334">要刪除 <ph name="SITE_NAME" /> 的網站資料和權限嗎？</translation>
 <translation id="8617748779076050570">安全連線 ID：<ph name="CONNECTION_ID" /></translation>
 <translation id="8619000641825875669">OneDrive</translation>
-<translation id="8619369551122276044">禁止在裝置上安裝網頁應用程式</translation>
+<translation id="8619369551122276044">不允許在你的裝置上安裝網絡應用程式</translation>
 <translation id="8619803522055190423">投射陰影</translation>
 <translation id="8619892228487928601"><ph name="CERTIFICATE_NAME" />：<ph name="ERROR" /></translation>
 <translation id="8620206585293032550">閒置分頁外觀</translation>
@@ -10543,6 +10555,7 @@
 <translation id="8656888282555543604">啟用點字記錄</translation>
 <translation id="8657393004602556571">您要捨棄這則意見嗎？</translation>
 <translation id="8657542881463614516">使用滑動手勢瀏覽不同頁面</translation>
+<translation id="865857184419171576">將字幕翻譯成</translation>
 <translation id="865936634714975126">在網址中新增查詢參數以選擇網頁載入類型。範例：chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875">「<ph name="FEATURE_NAME" />」聯絡人</translation>
 <translation id="8659609431223166673">視窗移咗去下面</translation>
@@ -10994,6 +11007,7 @@
 <translation id="8973263196882835828">&amp;啟用即時字幕</translation>
 <translation id="8973557916016709913">移除縮放級別</translation>
 <translation id="8973596347849323817">您可以根據個人需要自訂此裝置，日後也可以在「設定」中變更這些無障礙功能。</translation>
+<translation id="8973648401056792381">由裝置管理員安裝的網絡應用程式。</translation>
 <translation id="897414447285476047">由於發生連線問題，因此目標檔案並未下載完成。</translation>
 <translation id="8974261761101622391">尋找「<ph name="EXTENSION_NAME" />」的替代擴充程式</translation>
 <translation id="897525204902889653">隔離服務</translation>
@@ -11364,7 +11378,7 @@
 <translation id="93393615658292258">只限密碼</translation>
 <translation id="934244546219308557">為此群組命名</translation>
 <translation id="93480724622239549">問題或錯誤</translation>
-<translation id="9354763467503131">可要求在裝置上安裝網頁應用程式</translation>
+<translation id="9354763467503131">允許要求在你的裝置上安裝網絡應用程式</translation>
 <translation id="936646668635477464">攝錄機和麥克風</translation>
 <translation id="936801553271523408">系統診斷數據</translation>
 <translation id="93766956588638423">修復擴充程式</translation>

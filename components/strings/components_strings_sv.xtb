@@ -1017,6 +1017,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2882949212241984732">Altarskåpsfalsning</translation>
 <translation id="2891963978019740012">Din sökmotor i Chrome</translation>
 <translation id="2893773853358652045">Fjärde rullen</translation>
+<translation id="2894137550885451583">Det här är priser i <ph name="CURRENCY" /> för produkten <ph name="PRODUCT" /></translation>
 <translation id="2900528713135656174">Skapa händelse</translation>
 <translation id="2902312830803030883">Fler åtgärder</translation>
 <translation id="2903493209154104877">Adresser</translation>
@@ -1615,6 +1616,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3949601375789751990">Webbhistoriken visas här</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">Inga sparade betalningsmetoder</translation>
+<translation id="3950560191811267370">Ark för handel på nedre delen av skärmen har stängts</translation>
 <translation id="3950574001630941635">Starta om guiden</translation>
 <translation id="3950820424414687140">Logga in</translation>
 <translation id="3953505489397572035">Det här är normalpris</translation>
@@ -2359,6 +2361,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="5331585574693522196">Ange som standard</translation>
 <translation id="5332219387342487447">Fraktmetod</translation>
 <translation id="5332769172018416402">Ställ frågan i ett meddelande</translation>
+<translation id="533323551986281710">Ark för handel på nedre delen av skärmen har öppnats över hela skärmen</translation>
 <translation id="5334013548165032829">Detaljerade systemloggar</translation>
 <translation id="5334145288572353250">Vill du spara adressen?</translation>
 <translation id="5340250774223869109">Appen blockeras</translation>
@@ -2541,6 +2544,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="5675650730144413517">Sidan fungerar inte</translation>
 <translation id="5675809467256309336">Dansmusik och elektronisk musik</translation>
 <translation id="5675959228867414813">Visa efter datum</translation>
+<translation id="567604591393105935">Ark för handel på nedre delen av skärmen har öppnats över halva skärmen</translation>
 <translation id="5677928146339483299">Blockerat</translation>
 <translation id="5678007133659493065">Folie</translation>
 <translation id="5680642791693447368">Thriller- och kriminalfilmer</translation>
@@ -3133,6 +3137,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="6767985426384634228">Vill du uppdatera adressen?</translation>
 <translation id="6770747695101757579">Papper (bomull)</translation>
 <translation id="677257480647123231">Säkerhet för barn på internet</translation>
+<translation id="6772959465807028761">Fortsätt med ditt Google-konto om du vill använda YouTube</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">Använd YouTube med din förälders val</translation>
 <translation id="6779348349813025131">Google Lösenordshantering behöver åtkomst till MacOS-nyckelringen</translation>
@@ -3451,6 +3456,7 @@ Mer information.
 <translation id="7374733840632556089">Det här problemet uppstår på grund av ett certifikat som du eller någon annan har installerat på enheten. Certifikatet är känt för att användas för att övervaka och fånga upp nätverkstrafik och är inte betrott i Chrome. Även om det kan vara berättigat med övervakning i vissa fall, t.ex. i ett skol- eller företagsnätverk, vill vi göra dig medveten om vad som pågår även om du inte kan göra något åt det. Alla webbläsare och appar som använder internet omfattas av övervakningen.</translation>
 <translation id="7375532151824574023">{NUM_COOKIES,plural, =0{Inga webbplatser tillåts}=1{1 webbplats tillåts}other{# webbplatser tillåts}}</translation>
 <translation id="7375818412732305729">Fil bifogas</translation>
+<translation id="7376031331622621328">Ark för handel på nedre delen av skärmen</translation>
 <translation id="7377249249140280793"><ph name="RELATIVE_DATE" /> - <ph name="FULL_DATE" /></translation>
 <translation id="7377314930809374926">Hotellbranschen</translation>
 <translation id="7378594059915113390">Mediereglage</translation>
@@ -3736,6 +3742,7 @@ Mer information.
 <translation id="7831993212387676366">Vad är inköpslistan?</translation>
 <translation id="7840103971441592723">Skärmbild/skärminspelning har startats</translation>
 <translation id="784137052867620416">Shopping Insights</translation>
+<translation id="7842611866969435396">Då kör vi!</translation>
 <translation id="784404208867107517">Grupperad historik</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Inga}=1{1 app (<ph name="EXAMPLE_APP_1" />)}=2{2 appar (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# appar (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="785476343534277563">Skolsport</translation>
@@ -4299,6 +4306,7 @@ Mer information:
 <translation id="8891727572606052622">Ogiltigt proxyläge.</translation>
 <translation id="8894794286471754040">Långsidan först</translation>
 <translation id="8895334001368918465">Om du vill använda en annan autofyllningstjänst i Chrome aktiverar du den i Android-inställningarna och här</translation>
+<translation id="8897221284075091877">Fortsätt med ditt Google-konto om du vill be om att få se det här innehållet</translation>
 <translation id="8897428486789851669">Simning</translation>
 <translation id="8899807382908246773">Påträngande annonser</translation>
 <translation id="8903921497873541725">Zooma in</translation>

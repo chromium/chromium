@@ -1070,13 +1070,6 @@
 
       這項政策已遭淘汰，請改用 <ph name="DEVICE_USER_ALLOWLIST_POLICY_NAME" />。
       </translation>
-<translation id="1825583118566970564">控管能否安裝外部擴充功能。
-
-如果將這項政策設為啟用，使用者就無法安裝外部擴充功能。
-
-如果將這項政策設為停用或不設定，使用者將可安裝外部擴充功能。
-
-外部擴充功能及其安裝方式請參閱 https://developer.chrome.com/apps/external_extensions。</translation>
 <translation id="1827523283178827583">使用固定的 Proxy 伺服器</translation>
 <translation id="1829117241432374848">受管理帳戶必須是主要帳戶，不可包含任何次要帳戶。此外，使用者在建立該帳戶時，可以匯入現有資料</translation>
 <translation id="1829839214911753838">如果將這項政策設為啟用，遠端協助主機會透過具備 <ph name="UIACCESS_PERMISSION_NAME" /> 權限的處理程序執行，這樣遠端使用者就能在本機使用者的桌面上，與權限層級較高的視窗互動。

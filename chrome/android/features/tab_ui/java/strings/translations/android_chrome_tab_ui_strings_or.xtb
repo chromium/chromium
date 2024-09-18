@@ -104,6 +104,7 @@
 <translation id="5400836586163650660">ଧୂସର</translation>
 <translation id="5490235265819901748">ଟାବ୍ ଗ୍ରୁପର ବିସ୍ତାର କରାଯାଇଛି</translation>
 <translation id="5494920125229734069">ସମସ୍ତ ଚୟନ କରନ୍ତୁ</translation>
+<translation id="5549653163690032080">ସେୟାର କରାଯାଇଥିବା <ph name="TITLE_OF_GROUP" /> ଟାବ ଗ୍ରୁପ ପାଇଁ ଟାବ ଗ୍ରୁପ ଆକ୍ସନ ମେନୁ ଖୋଲନ୍ତୁ</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{<ph name="COLOR_NAME" /> ରଙ୍ଗର <ph name="TABS_COUNT_ONE" /> ଟାବ ଥିବା ଟାବ ଗ୍ରୁପକୁ ବନ୍ଦ କରନ୍ତୁ।}other{<ph name="COLOR_NAME" /> ରଙ୍ଗର <ph name="TABS_COUNT_MANY" /> ଟାବ ଥିବା ଟାବ ଗ୍ରୁପକୁ ବନ୍ଦ କରନ୍ତୁ।}}</translation>
 <translation id="5556417849629758491">ଷ୍ଟୋରର ସୂଚନା ଦେଖନ୍ତୁ, ସ୍କ୍ରିନର ଶୀର୍ଷଭାଗର ନିକଟରେ ବିକଳ୍ପ ଉପଲବ୍ଧ ଅଛି</translation>
 <translation id="5627941783489838464">କୌଣସି ଟାବ ଅପଡେଟ ନାହିଁ</translation>
@@ -135,6 +136,7 @@
 <translation id="6694634756612002311">ସେୟାର କରିବା ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="6744956528665271406">ଗୋଷ୍ଠୀର ରଙ୍ଗ ଏଡିଟ କରନ୍ତୁ</translation>
 <translation id="6856809498882026482">ଏକାଧିକ-ଚୟନ ମୋଡକୁ ଲୁଚାନ୍ତୁ</translation>
+<translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{<ph name="COLOR_NAME" /> ରଙ୍ଗର <ph name="TABS_COUNT_ONE" /> ଟାବ ଥିବା ସେୟାର କରାଯାଇଥିବା <ph name="TITLE_OF_GROUP" /> ଟାବ ଗ୍ରୁପକୁ ବିସ୍ତାର କରନ୍ତୁ।}other{<ph name="COLOR_NAME" /> ରଙ୍ଗର <ph name="TABS_COUNT_MANY" /> ଟାବ ଥିବା ସେୟାର କରାଯାଇଥିବା <ph name="TITLE_OF_GROUP" /> ଟାବ ଗ୍ରୁପକୁ ବିସ୍ତାର କରନ୍ତୁ।}}</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{ଟାବକୁ ସେୟାର କରନ୍ତୁ}other{ଟାବଗୁଡ଼ିକୁ ସେୟାର କରନ୍ତୁ}}</translation>
 <translation id="7129458170538955174">ଅଧା ସ୍କ୍ରିନରେ ଖୋଲାଯାଇଥିବା ଏହି ଷ୍ଟୋର ବିଷୟରେ ସୂଚନା</translation>
 <translation id="7200189319044305940">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ଟାବ ଥିବା <ph name="TITLE_OF_GROUP" /> ଗ୍ରୁପକୁ ବନ୍ଦ କରନ୍ତୁ।}other{<ph name="TABS_COUNT_MANY" /> ଟାବ ଥିବା <ph name="TITLE_OF_GROUP" /> ଗ୍ରୁପକୁ ବନ୍ଦ କରନ୍ତୁ।}}</translation>
@@ -170,6 +172,7 @@
 <translation id="8205266828577616993">ଟାବ୍‌କୁ ଉପରକୁ ମୁଭ୍ କରନ୍ତୁ</translation>
 <translation id="8261506727792406068">ଡିଲିଟ</translation>
 <translation id="8338427544764842461">ଆପଣଙ୍କ ଟାବ ଗ୍ରୁପକୁ ଏଠାରେ ସେଭ କରାଯାଇଛି ଏବଂ ଆପଣ ସାଇନ-ଇନ କରିଥିବା ସମସ୍ତ ଡିଭାଇସରେ ଏହାକୁ ଅପଡେଟ କରାଯାଇଛି</translation>
+<translation id="8344020191144794051">{NUMBER_OF_TABS,plural, =1{<ph name="COLOR_NAME" /> ରଙ୍ଗର <ph name="TABS_COUNT_ONE" /> ଟାବ ଥିବା ସେୟାର କରାଯାଇଥିବା ଟାବ ଗ୍ରୁପକୁ ବିସ୍ତାର କରନ୍ତୁ।}other{<ph name="COLOR_NAME" /> ରଙ୍ଗର <ph name="TABS_COUNT_MANY" /> ଟାବ ଥିବା ସେୟାର କରାଯାଇଥିବା ଟାବ ଗ୍ରୁପକୁ ବିସ୍ତାର କରନ୍ତୁ।}}</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" />ଟି ଚୟନିତ ଟାବ୍ ବନ୍ଦ କରନ୍ତୁ}other{<ph name="TABS_COUNT_MANY" />ଟି ଚୟନିତ ଟାବ୍ ବନ୍ଦ କରନ୍ତୁ}}</translation>
 <translation id="8398929769197326728">ନୂଆ ଫୋଲ୍ଡର - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">ସେଟିଂସ୍</translation>

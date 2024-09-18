@@ -673,6 +673,7 @@
 <translation id="2212735316055980242">విధానం కనుగొనబడలేదు</translation>
 <translation id="2213606439339815911">నమోదులను పొందుతోంది...</translation>
 <translation id="2213612003795704869">పేజీ ప్రింట్ చేయబడింది</translation>
+<translation id="2215368073167343359">Googleతో ఆటోఫిల్</translation>
 <translation id="2215539479425228550">అధిరోహణ &amp; పర్వతారోహణ</translation>
 <translation id="2215727959747642672">ఫైల్‌ను ఎడిట్ చేయడం</translation>
 <translation id="2215963164070968490">కుక్కలు</translation>
@@ -705,6 +706,7 @@
 <translation id="2262243747453050782">HTTP ఎర్రర్</translation>
 <translation id="2265192657948645752">రిటైల్ ఉద్యోగాలు</translation>
 <translation id="2265356434276802347">ఈ పాలసీలో <ph name="MAX_ITEMS_LIMIT" /> కంటే ఎక్కువ ఫీచర్ చేయబడిన ఎంట్రీలు ఉండకూడదు.</translation>
+<translation id="2266175583972138136">కార్డ్ ప్రయోజనాల కోసం నియమాలు వర్తిస్తాయి</translation>
 <translation id="2267047181501709434">మీ గుర్తింపును ధృవీకరిస్తోంది...</translation>
 <translation id="2268044343513325586">మరింత మెరుగుపరచండి</translation>
 <translation id="2268966938956566076">అప్‌లోడ్ <ph name="MINUTES" /> నిమిషాల్లో</translation>
@@ -1794,6 +1796,7 @@
 <translation id="4269264543938335308">ఈత దుస్తులు</translation>
 <translation id="4269599248168651462">నాన్-యూనిక్ పేరుకు సర్వర్ సర్టిఫికెట్ జారీ చేయబడింది.</translation>
 <translation id="4270541775497538019">స్టాకర్ 6</translation>
+<translation id="4271652479722040953">Chromeకు ఎక్స్‌టెన్షన్‌లను జోడించినప్పుడు, ఈ ఎక్స్‌టెన్షన్‌ల గురించిన సంబంధిత డేటాను విశ్లేషణ కోసం థర్డ్-పార్టీలకు పంపడం జరుగుతుంది, ఇంకా ఇది మీ అడ్మినిస్ట్రేటర్‌కు కనిపించే అవకాశం ఉంది. ఈ డేటా పేరు, ఇన్‌స్టాల్ చేయడానికి పట్టిన సమయం, ఇన్‌స్టాల్ చేసిన సోర్స్, ఇంకా ఈ ఎక్స్‌టెన్షన్‌లతో అనుబంధించబడిన యాక్టివిటీ (ఉదా., ట్యాబ్‌లను మార్చడం, వెబ్‌సైట్‌లను సంప్రదించడం, లేదా కుక్కీలను యాక్సెస్ చేయడం) వంటి ఎక్స్‌టెన్షన్‌ల గురించిన సమాచారాన్ని కలిగి ఉంటుంది. ఈ డేటా Chrome వెబ్ స్టోర్ నుండి ఇన్‌స్టాల్ చేసిన ఎక్స్‌టెన్షన్‌ల కోసం, ఇంకా ఆఫ్-స్టోర్ ఎక్స్‌టెన్షన్‌ల కోసం సేకరించబడుతుంది.</translation>
 <translation id="4275830172053184480">మీ పరికరాన్ని పునఃప్రారంభించండి</translation>
 <translation id="4276974990916607331">వద్దు, థ్యాంక్స్</translation>
 <translation id="4277028893293644418">పాస్‌వర్డ్‌ను రీసెట్ చేయండి</translation>
@@ -1875,6 +1878,7 @@
 <translation id="4406896451731180161">శోధన ఫలితాలు</translation>
 <translation id="4408413947728134509">కుక్కీలు <ph name="NUM_COOKIES" /></translation>
 <translation id="4412074349188076601">ఈ కాన్ఫిగరేషన్ ఇన్‌స్టాల్ చేయదగినదిగా మార్క్ చేయబడింది, కానీ ఈ ఆర్కిటెక్చర్‌కు ఇమేజ్ ఏదీ అందించబడలేదు, కాబట్టి దీనిని ఇన్‌స్టాల్ చేయడం సాధ్యం కాదు.</translation>
+<translation id="4414452699610169758">పాస్‌వర్డ్‌లను, పేమెంట్ ఆప్షన్‌లను, అడ్రస్‌లను సేవ్ చేసి, పూరించడానికి Google Password Managerను, ఇంకా Chrome ఆటోఫిల్‌ను ఉపయోగించండి</translation>
 <translation id="4414515549596849729">కుక్కీలు, సైట్ డేటా</translation>
 <translation id="4415156962929755728">ప్లాస్టిక్ (హై గ్లాస్)</translation>
 <translation id="4415426530740016218">పికప్ అడ్రస్‌</translation>
@@ -3128,6 +3132,7 @@
 <translation id="6767985426384634228">అడ్రస్‌ను అప్‌డేట్ చేయాలా?</translation>
 <translation id="6770747695101757579">పేపర్ (కాటన్)</translation>
 <translation id="677257480647123231">పిల్లలకు సంబంధించిన ఇంటర్నెట్ భద్రత</translation>
+<translation id="6772959465807028761">YouTubeను ఉపయోగించడానికి, మీ Google ఖాతాతో కొనసాగించండి</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">మీ తల్లి/తండ్రి ఎంపికలతో YouTubeను ఉపయోగించండి</translation>
 <translation id="6779348349813025131">Google Password Managerకి MacOS కీచెయిన్ యాక్సెస్ అవసరం</translation>
@@ -3379,6 +3384,7 @@
 <translation id="7232352818707016189">కంపార్ టేబుల్ కోసం మరిన్ని చర్యలు</translation>
 <translation id="7233592378249864828">ప్రింట్ చేయడాన్ని నిర్ధారించే షీట్</translation>
 <translation id="7234112195906418665">ట్రావెల్ &amp; ట్రాన్స్‌పోర్టేషన్</translation>
+<translation id="7234585564776614047">వేరొక సర్వీసును ఉపయోగించి ఆటోఫిల్</translation>
 <translation id="7236417832106250253"><ph name="PROGRESS_PERCENT" />% పూర్తయింది | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
 <translation id="7237166092326447040">గిఫ్ట్‌లు &amp; ప్రత్యేక ఈవెంట్ ఐటెమ్‌లు</translation>
 <translation id="7237454422623102448">సిస్టమ్ సెట్టింగ్‌లు</translation>
@@ -4040,6 +4046,7 @@
 <translation id="8409413588194360210">పేమెంట్ హ్యాండ్లర్‌లు</translation>
 <translation id="8412145213513410671">క్రాష్‌లు (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">అదే రహస్య పదబంధాన్ని రెండుసార్లు ఖచ్చితంగా మీరు నమోదు చేయాలి.</translation>
+<translation id="8414322570408428950">ఎక్స్‌టెన్షన్ ఈవెంట్ రంగులు</translation>
 <translation id="8416694386774425977">నెట్‌వర్క్ కాన్ఫిగరేషన్ చెల్లదు, కాబట్టి దిగుమతి చేయడం సాధ్యం కాదు.
 అదనపు వివరాలు:
 <ph name="DEBUG_INFO" /></translation>
@@ -4291,6 +4298,8 @@
 <translation id="8891031436559779793">ఏదైనా సైట్‌లో ధర తగ్గితే మీరు నోటిఫికేషన్‌ను పొందుతారు.</translation>
 <translation id="8891727572606052622">చెల్లని ప్రాక్సీ మోడ్.</translation>
 <translation id="8894794286471754040">పేజీని సాధారణంగా ప్రింట్ చేయి</translation>
+<translation id="8895334001368918465">Chromeలో వేరొక ఆటోఫిల్ సర్వీసును ఉపయోగించడానికి, దాన్ని Android సెట్టింగ్‌లలో, ఇంకా ఇక్కడ ఆన్ చేయండి</translation>
+<translation id="8897221284075091877">ఈ కంటెంట్‌ను చూడమని అడగడానికి, మీ Google ఖాతాతో కొనసాగించండి</translation>
 <translation id="8897428486789851669">ఈత</translation>
 <translation id="8899807382908246773">అనుచితమైన యాడ్‌లు</translation>
 <translation id="8903921497873541725">దగ్గరికి జూమ్ చేయి</translation>

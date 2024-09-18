@@ -116,6 +116,7 @@
 <translation id="1517166097004694782">Ocultar Continuar con esta pestana</translation>
 <translation id="1520027731907768768">Recibe alertas se os produtos que segues baixan de prezo.</translation>
 <translation id="1521774566618522728">Dispositivo activo hoxe</translation>
+<translation id="1524563461097350801">Non, grazas</translation>
 <translation id="1531038290222364269">Mostrar as pestanas</translation>
 <translation id="1536390784834419204">Traducir páxina</translation>
 <translation id="1540800554400757039">Enderezo 1</translation>
@@ -1507,7 +1508,6 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="8173034266693057059">Lonxitude</translation>
 <translation id="8179976553408161302">Intro</translation>
 <translation id="8182037667962849780">{count,plural, =1{Para {website_1}}=2{Para {website_1} e {website_2}}=3{Para {website_1}, {website_2} e 1 sitio máis}other{Para {website_1}, {website_2} e {more_count} sitios máis}}</translation>
-<translation id="8189814768485665290">Compartir o URL completo</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Os teus dispositivos<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Engadir un contrasinal</translation>
 <translation id="8202744799033457229">Mostrar historial</translation>
@@ -1541,6 +1541,7 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="8349305172487531364">Barra de marcadores</translation>
 <translation id="8366466717204352506">Ningunha comprobación realizada</translation>
 <translation id="8368001212524806591">Facer seguimento do prezo</translation>
+<translation id="8370406443343902172">Ir a Configuración...</translation>
 <translation id="8372471489238799313">{count,plural, =1{Eliminar enderezo}other{Eliminar enderezos}}</translation>
 <translation id="8378714024927312812">Xestionado pola túa organización</translation>
 <translation id="8386068868580335421">Restablecer</translation>

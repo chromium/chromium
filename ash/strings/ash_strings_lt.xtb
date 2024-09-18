@@ -78,6 +78,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="1240638468526743569">Programa</translation>
 <translation id="1242198791279543032">Pranešimai paslėpti</translation>
 <translation id="1242883863226959074">įrenginyje</translation>
+<translation id="1245476784081715330">Puiku!</translation>
 <translation id="1245644940275736236">Eiti į Padėjėjo programą</translation>
 <translation id="124678866338384709">Uždaryti dabartinį skirtuką</translation>
 <translation id="1246890715821376239">Nepalaikomos programos</translation>
@@ -842,6 +843,7 @@ Prijunkite įrenginį prie maitinimo šaltinio.</translation>
 <translation id="3958714870339660776">Visą dieną</translation>
 <translation id="3962859241508114581">Ankstesnis takelis</translation>
 <translation id="3963124517343721543">Lengvai tęskite ten, kur baigėte, atidarę ankstesnius langus ir skirtukus. Taip pat matysite suasmenintus dalykų, kuriuos galima nuveikti paskui, pasiūlymus.</translation>
+<translation id="396506362088290977">Išbandykite mikrofono garsą</translation>
 <translation id="3969043077941541451">Išjungta</translation>
 <translation id="3970324493235864154">Peržiūrėkite telefono pranešimus</translation>
 <translation id="397105322502079400">Skaičiuojama...</translation>
@@ -899,6 +901,7 @@ Prijunkite įrenginį prie maitinimo šaltinio.</translation>
 <translation id="4156293514828496577">Liko <ph name="PERCENTAGE" /> proc. akumuliatoriaus energijos (apie <ph name="TIME_LEFT" />).
 Kai kurios funkcijos ribojamos, kad būtų galima pailginti akumuliatoriaus veikimo laiką.</translation>
 <translation id="4160919062868802509">Aptikti keli garso šaltiniai</translation>
+<translation id="416245495747357243">Viskas.</translation>
 <translation id="4165275524535002941">Laidas gali nepalaikyti ekranų</translation>
 <translation id="4177415338862979658">Spustelėkite, kad patikrintumėte išsamią informaciją</translation>
 <translation id="4177913004758410636">{0,plural, =1{Atnaujinkite įrenginį per dieną}one{Atnaujinkite įrenginį per # dieną}few{Atnaujinkite įrenginį per # dienas}many{Atnaujinkite įrenginį per # dienos}other{Atnaujinkite įrenginį per # dienų}}</translation>
@@ -984,6 +987,7 @@ Kai kurios funkcijos ribojamos, kad būtų galima pailginti akumuliatoriaus veik
 <translation id="4412944820643904175">„<ph name="FEATURE_NAME" />“ išjungta.</translation>
 <translation id="4417647906073317561">Fokusavimo nustatymai. Nustatykite laikmatį, užduotį ir muziką, kad įsitrauktumėte į srautą.</translation>
 <translation id="4424159417645388645">5 darbalaukis</translation>
+<translation id="4426817706804363424">Šaunu!</translation>
 <translation id="4430019312045809116">Apimtis</translation>
 <translation id="4441283832827406317">Programos rūšiuojamos pagal pavadinimą</translation>
 <translation id="4445159312344259901">Atrakinti prisijungus</translation>
@@ -1248,6 +1252,7 @@ Taip pat galite naudoti spartųjį klavišą. Pirmiausia paryškinkite tekstą, 
 <translation id="5283198616748585639">Pridėti 1 min.</translation>
 <translation id="528468243742722775">Baigti</translation>
 <translation id="5286194356314741248">Nuskaitoma</translation>
+<translation id="528641622273682395">Perjungti mikrofono bandymą</translation>
 <translation id="5297423144044956168">Nerasta jokių mobiliųjų įrenginių</translation>
 <translation id="5297704307811127955">Išjungta</translation>
 <translation id="5300589172476337783">Rodyti</translation>
@@ -1275,6 +1280,7 @@ Nėra jokių prijungtų įrenginių.</translation>
 <translation id="536019650977002321">Jūsų administratorius neleidžia fiksuoti garso įrašų. Susisiekite su administratoriumi, jei reikia daugiau informacijos.</translation>
 <translation id="5361524080961918551">Iš dalies atsisiųsti <ph name="LANGUAGE" /> kalbos failai</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Eiti į šį skirtuką</translation>
+<translation id="5363835273551457276">Galite išbandyti mikrofono garsą. Jei norite sustabdyti, uždarykite skydelį.</translation>
 <translation id="5364693579536176785">saugyklos vieta</translation>
 <translation id="5369573834963677938">Valdymo pagal veidą funkcija bus pasiekiama kitiems įrenginio naudotojams</translation>
 <translation id="5369717264580061086">Peržiūrėti failą Failų programoje</translation>
@@ -1415,6 +1421,7 @@ Nėra jokių prijungtų įrenginių.</translation>
 <translation id="5802516411616338943">Atidaryti sparčiuosius nustatymus</translation>
 <translation id="5804651031882187592">Nustatymo „Užrakinti SIM kortelę“ išjungimas</translation>
 <translation id="5805809050170488595">Spustelėkite, kad suaktyvintumėte „<ph name="NETWORK_NAME" />“</translation>
+<translation id="5818796501620225415">Galite pridėti daugiau laiko arba užbaigti dėmesio sutelkimo seansą</translation>
 <translation id="5819918159912280082">„Chromebook“ buvo netikėtai paleistas iš naujo. Atidarykite ankstesnius langus ir programas.</translation>
 <translation id="5823239091726045201">„Google Tasks“ žiniatinklyje</translation>
 <translation id="5825969630400862129">Susietų įrenginių nustatymai</translation>
@@ -1508,7 +1515,6 @@ Nėra jokių prijungtų įrenginių.</translation>
 <translation id="6119972796024789243">Spalvų taisymas</translation>
 <translation id="6121838516699723042">„<ph name="FILENAME" />“ atsisiuntimo patvirtinimas</translation>
 <translation id="612734058257491180">„Google Assistant“ nepasiekiamas svečio sesijoje.</translation>
-<translation id="6127370444807669747">Suasmeninti grojaraščiai ir daugiau muzikos, padedančios sutelkti dėmesį, – išbandykite „YouTube Music Premium“</translation>
 <translation id="6127395413317891856">Esate neprisijungę. Patikrinkite ryšį ir bandykite dar kartą.</translation>
 <translation id="6129953537138746214">Tarpas</translation>
 <translation id="6137566720514957455">Atidaryti <ph name="USER_EMAIL_ADDRESS" /> pašalinimo dialogo langą</translation>
@@ -2126,6 +2132,7 @@ Jei norite išjungti įrenginį, dar kartą paspauskite ir palaikykite įrengini
 <translation id="8262312463845990408">Perjungti atkūrimą</translation>
 <translation id="8268302343625273732">Žr. visas užduotis sistemoje „Google Classroom“</translation>
 <translation id="8277261673056602147">Teksto paryškinimas ekrane</translation>
+<translation id="8282784978194352587">Jums pavyko!</translation>
 <translation id="8287009018010202411">Produktyvumas</translation>
 <translation id="828708037801473432">Išjungta</translation>
 <translation id="8297006494302853456">Silpnas</translation>
@@ -2203,6 +2210,7 @@ Jei norite išjungti įrenginį, dar kartą paspauskite ir palaikykite įrengini
 <translation id="8609384513243082612">Atidaryti naują skirtuką</translation>
 <translation id="861045123704058818">Programos laikinai sutvarkytos pagal kategoriją</translation>
 <translation id="8612216344243590325">Laikykite svarbius failus „<ph name="HOLDING_SPACE_TITLE" />“, o ne darbalaukyje. Tiesiog nuvilkite failus į „<ph name="HOLDING_SPACE_TITLE" />“.</translation>
+<translation id="8612338981637220013">Jums sekasi!</translation>
 <translation id="8614517853887502247">„<ph name="APP_1_TITLE" />“ ir „<ph name="APP_2_TITLE" />“ pranešimai paslėpti, nes įjungta peržiūros apsauga</translation>
 <translation id="8615778328722901791">Atidaryti įrankių juostą</translation>
 <translation id="8619000641825875669">OneDrive</translation>
@@ -2245,6 +2253,7 @@ Jei norite išjungti įrenginį, dar kartą paspauskite ir palaikykite įrengini
 <translation id="8742057891287715849"><ph name="NAME" /> · „<ph name="SERVICE_PROVIDER" />“: suaktyvinama..</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
+<translation id="8751299148074971734">Taip ir toliau!</translation>
 <translation id="8753368202781196133">Ši kalba šiuo metu nepalaikoma.</translation>
 <translation id="8755498163081687682">Patvirtinkite savo tapatybę: <ph name="ORIGIN_NAME" /> norėtų patvirtinti, kad tai jūs</translation>
 <translation id="875593634123171288">Rodyti VPN nustatymus</translation>

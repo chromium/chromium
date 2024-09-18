@@ -116,6 +116,7 @@
 <translation id="1517166097004694782">Сховати опцію "Продовжити на цій вкладці"</translation>
 <translation id="1520027731907768768">Отримуйте сповіщення про зниження цін на товари, які відстежуєте.</translation>
 <translation id="1521774566618522728">У мережі сьогодні</translation>
+<translation id="1524563461097350801">Ні, дякую</translation>
 <translation id="1531038290222364269">Показати вкладки</translation>
 <translation id="1536390784834419204">Перекласти сторінку</translation>
 <translation id="1540800554400757039">Адреса 1</translation>
@@ -1507,7 +1508,6 @@
 <translation id="8173034266693057059">Довжина</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8182037667962849780">{count,plural, =1{Для веб-сайту {website_1}}=2{Для веб-сайтів {website_1} і {website_2}}=3{Для {website_1}, {website_2} і ще 1 веб-сайту}one{Для {website_1}, {website_2} і ще {more_count} веб-сайту}few{Для {website_1}, {website_2} і ще {more_count} веб-сайтів}many{Для {website_1}, {website_2} і ще {more_count} веб-сайтів}other{Для {website_1}, {website_2} і ще {more_count} веб-сайту}}</translation>
-<translation id="8189814768485665290">Поділитися повною URL-адресою</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Ваші пристрої<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Додати пароль</translation>
 <translation id="8202744799033457229">Показати історію</translation>
@@ -1541,6 +1541,7 @@
 <translation id="8349305172487531364">Панель закладок</translation>
 <translation id="8366466717204352506">Паролі ніколи не перевірялися</translation>
 <translation id="8368001212524806591">Відстеження цін</translation>
+<translation id="8370406443343902172">Перейти до налаштувань…</translation>
 <translation id="8372471489238799313">{count,plural, =1{Видалити адресу}one{Видалити адреси}few{Видалити адреси}many{Видалити адреси}other{Видалити адреси}}</translation>
 <translation id="8378714024927312812">Профілем керує ваша організація</translation>
 <translation id="8386068868580335421">Скинути</translation>
@@ -1603,6 +1604,7 @@
 <translation id="8637431369725868556">Захистіть себе від небезпечних сайтів.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Немає зламаних паролів}=1{{COUNT} зламаний пароль}one{{COUNT} зламаний пароль}few{{COUNT} зламані паролі}many{{COUNT} зламаних паролів}other{{COUNT} зламаного пароля}}</translation>
 <translation id="8640575194957831802">Востаннє відкриті</translation>
+<translation id="8647280737650867362">Не вдалося скасувати відстеження ціни.</translation>
 <translation id="8654802032646794042">Скасувати</translation>
 <translation id="8660600697590740984">Шукати скопійоване зображення через Об’єктив</translation>
 <translation id="866266761389616183">От халепа!</translation>

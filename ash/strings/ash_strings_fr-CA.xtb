@@ -78,6 +78,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="1240638468526743569">Une application</translation>
 <translation id="1242198791279543032">Le son des notifications est désactivé</translation>
 <translation id="1242883863226959074">appareil</translation>
+<translation id="1245476784081715330">Bon travail!</translation>
 <translation id="1245644940275736236">Accéder à l'Assistant</translation>
 <translation id="124678866338384709">Fermer l'onglet actuel</translation>
 <translation id="1246890715821376239">Applications non prises en charge</translation>
@@ -842,6 +843,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="3958714870339660776">Toute la journée</translation>
 <translation id="3962859241508114581">Chanson précédente</translation>
 <translation id="3963124517343721543">Reprenez facilement là où vous vous étiez arrêté en ouvrant vos fenêtres et onglets précédents. Vous obtiendrez également des suggestions personnalisées sur d'autres choses à faire.</translation>
+<translation id="396506362088290977">Tester le son de votre micro</translation>
 <translation id="3969043077941541451">Désactivé</translation>
 <translation id="3970324493235864154">Affichez les notifications de votre téléphone</translation>
 <translation id="397105322502079400">Calcul en cours...</translation>
@@ -898,6 +900,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="4151054805501931758">Retouche de portrait</translation>
 <translation id="4156293514828496577">Il reste <ph name="PERCENTAGE" /> % de pile (environ <ph name="TIME_LEFT" />). Certaines fonctionnalités sont limitées afin d'augmenter l'autonomie de la pile.</translation>
 <translation id="4160919062868802509">Plusieurs sources audio détectées</translation>
+<translation id="416245495747357243">Terminé!</translation>
 <translation id="4165275524535002941">Le câble peut ne pas être compatible avec les écrans</translation>
 <translation id="4177415338862979658">Cliquez ici pour vérifier les détails</translation>
 <translation id="4177913004758410636">{0,plural, =1{Mettez à jour l'appareil d'ici un jour}one{Mettez à jour l'appareil d'ici # jour}other{Mettez à jour l'appareil d'ici # jours}}</translation>
@@ -983,6 +986,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="4412944820643904175">La fonctionnalité <ph name="FEATURE_NAME" /> est désactivée.</translation>
 <translation id="4417647906073317561">Paramètres du mode Sans distractions. Réglez une minuterie, une tâche et de la musique pour vous mettre dans l'ambiance.</translation>
 <translation id="4424159417645388645">Bureau 5</translation>
+<translation id="4426817706804363424">Félicitations!</translation>
 <translation id="4430019312045809116">Volume</translation>
 <translation id="4441283832827406317">Les applications sont triées par nom</translation>
 <translation id="4445159312344259901">Connectez-vous pour le déverrouiller</translation>
@@ -1247,6 +1251,7 @@ Vous pouvez également utiliser le raccourci-clavier. Tout d'abord, mettez le te
 <translation id="5283198616748585639">Ajouter 1 minute</translation>
 <translation id="528468243742722775">Fin</translation>
 <translation id="5286194356314741248">Recherche en cours…</translation>
+<translation id="528641622273682395">Activer ou désactiver le test du micro</translation>
 <translation id="5297423144044956168">Aucun appareil mobile trouvé</translation>
 <translation id="5297704307811127955">Désactivé</translation>
 <translation id="5300589172476337783">Afficher</translation>
@@ -1274,6 +1279,7 @@ Aucun appareil n'est connecté.</translation>
 <translation id="536019650977002321">Votre administrateur n'autorise pas la capture audio. Pour en savoir plus, communiquez avec votre administrateur.</translation>
 <translation id="5361524080961918551">Fichiers vocaux en <ph name="LANGUAGE" /> partiellement téléchargés</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Accéder à cet onglet</translation>
+<translation id="5363835273551457276">Vous pouvez tester le son de votre microphone. Fermez le panneau pour arrêter le test.</translation>
 <translation id="5364693579536176785">espace de stockage</translation>
 <translation id="5369573834963677938">Le contrôle par le visage sera accessible pour les autres utilisateurs sur l'appareil</translation>
 <translation id="5369717264580061086">Consulter l'aperçu du fichier dans l'application Fichiers</translation>
@@ -1356,6 +1362,7 @@ Aucun appareil n'est connecté.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Votre mot de passe n'a pas pu être vérifié. Réessayez.</translation>
 <translation id="5632485077360054581">Afficher la marche à suivre</translation>
+<translation id="5633826232582408011">Lorsque vous activez l'Aide à la rédaction et l'Aide à la lecture, le texte saisi, le contenu du document et l'URL de la page Web sont envoyés aux serveurs de l'IA de Google pour générer des suggestions de rédaction, générer des résumés, répondre aux questions et améliorer le produit, sous réserve des <ph name="LINK_TO_SERVICE_TERMS" />. N'incluez aucun élément personnel ni aucun élément confidentiel.</translation>
 <translation id="5648021990716966815">Prise du microphone</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> demande votre attention.</translation>
 <translation id="5662075790140998213">Bureau 10</translation>
@@ -1413,6 +1420,7 @@ Aucun appareil n'est connecté.</translation>
 <translation id="5802516411616338943">Ouvrir les Paramètres rapides</translation>
 <translation id="5804651031882187592">Désactiver le paramètre « Verrouiller la carte SIM »</translation>
 <translation id="5805809050170488595">Cliquez pour activer <ph name="NETWORK_NAME" /></translation>
+<translation id="5818796501620225415">Vous pouvez ajouter du temps ou mettre fin à votre séance</translation>
 <translation id="5819918159912280082">Votre Chromebook a redémarré de manière inattendue. Ouvrez vos fenêtres et vos applis précédentes.</translation>
 <translation id="5823239091726045201">Google Tâches sur le Web</translation>
 <translation id="5825969630400862129">Paramètres des appareils connectés</translation>
@@ -1506,7 +1514,6 @@ Aucun appareil n'est connecté.</translation>
 <translation id="6119972796024789243">Correction des couleurs</translation>
 <translation id="6121838516699723042">Confirmer le téléchargement de <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">L'Assistant Google n'est pas accessible dans une session d'invité.</translation>
-<translation id="6127370444807669747">Pour des listes de lecture personnalisées et plus de musique de concentration, essayez YouTube Music Premium</translation>
 <translation id="6127395413317891856">Vous êtes hors ligne. Vérifiez votre connexion, puis réessayez.</translation>
 <translation id="6129953537138746214">Espace</translation>
 <translation id="6137566720514957455">Ouvrir la boîte de dialogue de retrait pour <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -2124,6 +2131,7 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="8262312463845990408">Activer/Désactiver la lecture</translation>
 <translation id="8268302343625273732">Voir tous les devoirs dans Google Classroom</translation>
 <translation id="8277261673056602147">Mettre du texte en évidence sur votre écran</translation>
+<translation id="8282784978194352587">Vous avez réussi!</translation>
 <translation id="8287009018010202411">Productivité</translation>
 <translation id="828708037801473432">Désactivé</translation>
 <translation id="8297006494302853456">Faible</translation>
@@ -2201,6 +2209,7 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="8609384513243082612">Ouvrir un nouvel onglet</translation>
 <translation id="861045123704058818">Les applications sont temporairement organisées par catégorie</translation>
 <translation id="8612216344243590325">Conservez les fichiers importants dans <ph name="HOLDING_SPACE_TITLE" /> plutôt que sur le bureau. Faites simplement glisser les fichiers vers <ph name="HOLDING_SPACE_TITLE" />.</translation>
+<translation id="8612338981637220013">Bravo!</translation>
 <translation id="8614517853887502247">Les notifications de <ph name="APP_1_TITLE" /> et de <ph name="APP_2_TITLE" /> sont masquées parce que la protection de l'affichage est activée</translation>
 <translation id="8615778328722901791">Ouvrir la barre d'outils</translation>
 <translation id="8619000641825875669">OneDrive</translation>
@@ -2242,6 +2251,7 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="8735678380411481005">Couleur du rétroéclairage du clavier</translation>
 <translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" /> : Activation en cours…</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />, <ph name="SCREEN_SHARE_STATUS" /></translation>
+<translation id="8751299148074971734">On continue!</translation>
 <translation id="8753368202781196133">Cette langue n'est pas prise en charge pour le moment.</translation>
 <translation id="8755498163081687682">Vérifiez votre identité : <ph name="ORIGIN_NAME" /> souhaite confirmer qu'il s'agit bien de vous</translation>
 <translation id="875593634123171288">Afficher les paramètres RPV</translation>

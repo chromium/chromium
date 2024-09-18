@@ -1213,6 +1213,7 @@
 <translation id="6674571176963658787">За да започне синхронизацијата, внесете ја лозинката</translation>
 <translation id="6676927815633975364">Најавете се на сајтов и на Chrome</translation>
 <translation id="6684809838922667136">Подобрете го Chrome</translation>
+<translation id="6700279777779583398">Изборот е зачуван</translation>
 <translation id="6704048624334633734">Извезете и избришете ги лозинките</translation>
 <translation id="670498945988402717">Проверено вчера</translation>
 <translation id="6710213216561001401">Претходно</translation>
@@ -1290,7 +1291,6 @@
 <translation id="6964300328304469089">Тековно избрана: <ph name="NAME" />, <ph name="EMAIL" />. Изберете сметка.</translation>
 <translation id="696447261358045621">Излезете од режимот „Инкогнито“</translation>
 <translation id="6965382102122355670">Во ред</translation>
-<translation id="6966660124354134532">Допрете за да следите или да сопрете со следење конкретен производ.</translation>
 <translation id="6971862865055170158">Не одобрувај</translation>
 <translation id="6978717888677691380">Сајтови што сте ги блокирале</translation>
 <translation id="6979737339423435258">Целосната историја</translation>
@@ -1426,6 +1426,7 @@
 <translation id="752731652852882757">Блокирај додека се користи „Инкогнито“</translation>
 <translation id="7554643625247105821">Не може да се провери верзијата на Chrome</translation>
 <translation id="7557508262441527045">Одјавени сте</translation>
+<translation id="7573665567024262965">Изберете ги вашите стандардни апликации</translation>
 <translation id="7577900504646297215">Управувајте со она што ве интересира</translation>
 <translation id="757855969265046257">{FILES,plural, =1{Преземена е <ph name="FILES_DOWNLOADED_ONE" /> датотека}one{Преземена е <ph name="FILES_DOWNLOADED_MANY" /> датотека}other{Преземени се <ph name="FILES_DOWNLOADED_MANY" /> датотеки}}</translation>
 <translation id="7581273696622423628">Пополнете ја анкетата</translation>
@@ -1468,6 +1469,7 @@
 <translation id="7764225426217299476">Додај адреса</translation>
 <translation id="7772032839648071052">Потврди лозинка</translation>
 <translation id="7772375229873196092">Затвори <ph name="APP_NAME" /></translation>
+<translation id="7774125747223422443">Согласно со конкретен закон во вашиот регион, треба да ги изберете вашиот прелистувач и пребарувач</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />… и уште <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}one{<ph name="PAYMENT_METHOD_PREVIEW" />… и уште <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />… и уште <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="777637629667389858">Кога сте најавени, ве штити на услугите на Google.</translation>
 <translation id="7778840695157240389">Проверете подоцна дали има нови статии</translation>
@@ -1737,6 +1739,7 @@
 <translation id="8982113230057126145">„Не ми се допаѓа“ испраќа повратни информации дека не ви се допаѓа ова резиме</translation>
 <translation id="8992769679401294069">Вашите податоци се шифрирани со вашата лозинка. Внесете ја за да користите и зачувувате податоци од Chrome во вашата сметка на Google.</translation>
 <translation id="8993760627012879038">Отворете нова картичка во режим инкогнито</translation>
+<translation id="8995521496079646922">Апликациите што ги избравте ќе се користат стандардно. Ако некоја апликација не е веќе на уредов, ќе се преземе наскоро.</translation>
 <translation id="8996847606757455498">Изберете друг одредувач</translation>
 <translation id="8998289560386111590">Не е достапен на вашиот уред</translation>
 <translation id="8998837250940831980">Картичката не можеше да се минимизира. Обидете се повторно подоцна.</translation>

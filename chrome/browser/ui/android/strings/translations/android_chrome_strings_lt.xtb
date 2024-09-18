@@ -106,6 +106,7 @@ Jei reikia daugiau nustatymų, pagal kuriuos duomenys naudojami „Chrome“ fun
 <translation id="1413446866325418126">Duomenų išsaugojimas „Google“ paskyroje</translation>
 <translation id="1414981605391750300">Susisiekiama su „Google“. Tai gali šiek tiek užtrukti…</translation>
 <translation id="1416550906796893042">Programos versija</translation>
+<translation id="1419753403124156396">Iš naujo paleisti „Chrome“?</translation>
 <translation id="1428770807407000502">Išjungti sinchronizavimą?</translation>
 <translation id="1430915738399379752">Spausdinti</translation>
 <translation id="1435593198351412143">Automatinis PDF failų atidarymas</translation>
@@ -229,6 +230,7 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="2067805253194386918">teksto pranešimas</translation>
 <translation id="2079545284768500474">Anuliuoti</translation>
 <translation id="2082238445998314030">Rezultatų: <ph name="RESULT_NUMBER" /> iš <ph name="TOTAL_RESULTS" /></translation>
+<translation id="2088833076121753253">Jei norite užbaigti automatinio pildymo nustatymą, dabar iš naujo paleiskite „Chrome“. Skirtukai bus automatiškai atidaryti iš naujo.</translation>
 <translation id="2091863218454846791">Rodomas kompaktiškas rodinys</translation>
 <translation id="2093731487903423814">pastarosios penkiolika minučių</translation>
 <translation id="2096012225669085171">Sinchronizuoti ir suasmeninti įrenginiuose</translation>
@@ -666,6 +668,7 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="4216511743389425832">Klausytis šio puslapio</translation>
 <translation id="4225725533026049334">Stebima</translation>
 <translation id="4225895483398857530">Įrankių juostos spartusis klavišas</translation>
+<translation id="4232376164796433044">Slaptažodžiai ir autom. pildymas</translation>
 <translation id="4242533952199664413">Atidaryti nustatymus</translation>
 <translation id="4248098802131000011">Apsaugokite slaptažodžius nuo duomenų saugos pažeidimų ir kitų saugos problemų</translation>
 <translation id="424864128008805179">Atsijungti nuo „Chrome“?</translation>
@@ -748,6 +751,7 @@ Adresu <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> gali 
 <translation id="4609429330876432068">Išsaugotų „Chrome“ ir „<ph name="CHROME_CHANNEL" />“ slaptažodžių sąrašai buvo sujungti. Vis tiek galite automatiškai užpildyti visus išsaugotus slaptažodžius abiejose programose.</translation>
 <translation id="4616150815774728855">Atidaryti „<ph name="WEBAPK_NAME" />“</translation>
 <translation id="4619564267100705184">Patvirtinti tapatybę</translation>
+<translation id="4620032614425803188">Automatinio pildymo paslaugos</translation>
 <translation id="4624065194742029982">„Chrome“ inkognito režimas</translation>
 <translation id="4634124774493850572">Naudoti slaptažodį</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 pažeistas slaptažodis}one{# pažeistas slaptažodis}few{# pažeisti slaptažodžiai}many{# pažeisto slaptažodžio}other{# pažeistų slaptažodžių}}</translation>
@@ -900,6 +904,7 @@ Adresu <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> gali 
 <translation id="5264813352784073502">pastarosios dvidešimt keturios valandos</translation>
 <translation id="5267572070504076962">Įjunkite Saugų naršymą, kad būtumėte apsaugoti nuo pavojingų svetainių</translation>
 <translation id="5271967389191913893">Įrenginyje nepavyksta atidaryti norimo atsisiųsti turinio.</translation>
+<translation id="5273031377282080577">Šį nustatymą tvarko administratorius.</translation>
 <translation id="5292796745632149097">Siųsti į</translation>
 <translation id="5301876394151419436">Esate prisijungę kaip <ph name="EMAIL" />. Galite bet kada sustabdyti sinchronizavimą skiltyje „Nustatymai“. „Google“ gali suasmeninti Paiešką ir kitas paslaugas pagal jūsų istoriją.</translation>
 <translation id="5304593522240415983">Šis laukas negali būti tuščias</translation>
@@ -1234,6 +1239,7 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="6775840696761158817">Kai palieskite ar vesite tekstą adreso juostoje ar paieškos laukelyje, bus rodomi numatytojo paieškos variklio pasiūlymai. Ši funkcija inkognito režimu išjungta.</translation>
 <translation id="6785476624617658922">„Chrome“ ir „Chrome“ OS papildomos paslaugų teikimo sąlygos</translation>
 <translation id="6795633245022906657">Sparčiai atidarykite naują skirtuką. Jei norite redaguoti šį spartųjį klavišą, eikite į skiltį „Nustatymai“.</translation>
+<translation id="679956319013005046">Jei norite nustatyti pageidaujamą automatinio pildymo paslaugą, pirmiausia pridėkite paslaugą <ph name="BEGIN_LINK" />„Android“ nustatymuose<ph name="END_LINK" />.</translation>
 <translation id="6802555630140434547">Langas bus uždarytas</translation>
 <translation id="6803791793483522764">Pranešimų peržiūra</translation>
 <translation id="6811034713472274749">Puslapis paruoštas peržiūrėti</translation>
@@ -1292,7 +1298,6 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="6964300328304469089">Šiuo metu pasirinkta: <ph name="NAME" />, <ph name="EMAIL" />. Pasirinkite paskyrą.</translation>
 <translation id="696447261358045621">Išjungti inkognito režimą</translation>
 <translation id="6965382102122355670">Gerai</translation>
-<translation id="6966660124354134532">Palieskite, jei norite stebėti produktą arba nebestebėti jo.</translation>
 <translation id="6971862865055170158">Nepatvirtinti</translation>
 <translation id="6978717888677691380">Svetainės, kurias užblokavote</translation>
 <translation id="6979737339423435258">Visas laikotarpis</translation>
@@ -1466,6 +1471,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />ištrinkite „Chro
 <translation id="7707922173985738739">Naudoti mobiliojo ryšio duomenis</translation>
 <translation id="7709918231054955894">Gaukite visus savo skirtukus</translation>
 <translation id="7733878270780732638">Nepakanka vietos įrenginyje.</translation>
+<translation id="774876555279732384">Automatinio pildymo paslaugas taip pat galima tvarkyti <ph name="BEGIN_LINK" />„Android“ nustatymuose<ph name="END_LINK" />.</translation>
 <translation id="7759809451544302770">Pasirenkama</translation>
 <translation id="7762668264895820836">SD kortelė Nr. <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">Pridėti adresą</translation>

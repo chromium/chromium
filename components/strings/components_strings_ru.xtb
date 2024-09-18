@@ -446,6 +446,7 @@
 <translation id="1771254328977666895">Посмотрите историю изменения цен</translation>
 <translation id="1777422078676229054">Фотобумага (архивная)</translation>
 <translation id="1778646502362731194">JIS B0</translation>
+<translation id="1785118555253503473">Установить веб-приложения?</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />. Чтобы управлять своими данными, конфиденциальностью и безопасностью в аккаунте Google, нажмите Tab, а затем Ввод.</translation>
 <translation id="1793631236004319016">Разрешение использовалось <ph name="NUM_HOURS_MINUTES_SECONDS" /> назад</translation>
@@ -677,6 +678,7 @@
 <translation id="2212735316055980242">Политика для устройства не найдена</translation>
 <translation id="2213606439339815911">Извлечение записей…</translation>
 <translation id="2213612003795704869">Страница напечатана.</translation>
+<translation id="2215368073167343359">Автозаполнение от Google</translation>
 <translation id="2215539479425228550">Альпинизм и скалолазание</translation>
 <translation id="2215727959747642672">Редактирование файлов</translation>
 <translation id="2215963164070968490">Собаки</translation>
@@ -709,6 +711,7 @@
 <translation id="2262243747453050782">Ошибка HTTP</translation>
 <translation id="2265192657948645752">Вакансии в сфере розничной торговли</translation>
 <translation id="2265356434276802347">Число рекомендуемых записей для этого правила должно быть не больше <ph name="MAX_ITEMS_LIMIT" />.</translation>
+<translation id="2266175583972138136">На преимущества карт распространяются условия</translation>
 <translation id="2267047181501709434">Проверка данных…</translation>
 <translation id="2268044343513325586">Уточнить</translation>
 <translation id="2268966938956566076">Загрузить через <ph name="MINUTES" /> мин.</translation>
@@ -1163,6 +1166,7 @@
 <translation id="3157931365184549694">Восстановить</translation>
 <translation id="3158539265159265653">Диск</translation>
 <translation id="3162559335345991374">Возможно, вам нужно перейти на страницу входа сети Wi-Fi.</translation>
+<translation id="316638481603975524">Может запрашивать разрешение на установку веб-приложений</translation>
 <translation id="3168744840365648658">Радиотехника</translation>
 <translation id="3168938241115725594">Классические транспортные средства</translation>
 <translation id="3169472444629675720">Рекомендации</translation>
@@ -1796,6 +1800,7 @@
 <translation id="4269264543938335308">Купальные костюмы</translation>
 <translation id="4269599248168651462">Сертификат сервера выдан на неуникальное имя.</translation>
 <translation id="4270541775497538019">Укладчик 6</translation>
+<translation id="4271652479722040953">При добавлении расширений в Chrome данные о них отправляются третьим лицам для анализа и могут быть видны вашему администратору. В данные входят такие сведения, как название расширения, время и источник установки, а также информация о действиях, связанных с этим расширением, например смена вкладок, обращение к сайтам или получение доступа к файлам cookie. Эти данные собираются для расширений, установленных из интернет-магазина Chrome и других источников.</translation>
 <translation id="4275830172053184480">Перезапуск устройства</translation>
 <translation id="4276974990916607331">Нет, спасибо</translation>
 <translation id="4277028893293644418">Сбросить пароль</translation>
@@ -1877,6 +1882,7 @@
 <translation id="4406896451731180161">Результаты поиска</translation>
 <translation id="4408413947728134509">Настройки файлов cookie <ph name="NUM_COOKIES" /></translation>
 <translation id="4412074349188076601">Установка ВМ в этой конфигурации допустима, однако это невозможно сделать, так как для данной архитектуры отсутствует необходимый образ.</translation>
+<translation id="4414452699610169758">Использовать Google Менеджер паролей и автозаполнение в Chrome, чтобы сохранять и вставлять пароли, адреса и данные способов оплаты</translation>
 <translation id="4414515549596849729">Файлы cookie и данные сайтов</translation>
 <translation id="4415156962929755728">Пластик (глянцевый)</translation>
 <translation id="4415426530740016218">Адрес получения</translation>
@@ -2321,6 +2327,7 @@
 <translation id="5273658854610202413">Внимание! Это правило не объединено в соответствии с правилом PolicyDictionaryMultipleSourceMergeList, так как оно не относится к словарю.</translation>
 <translation id="5278778426231952189">Загрузить сейчас</translation>
 <translation id="5279286380302340275">Открыть список скачанных файлов</translation>
+<translation id="5280963125494874678">веб-приложения</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">Свойства документа</translation>
 <translation id="528468243742722775">Завершить</translation>
@@ -2823,6 +2830,7 @@
 <translation id="6221311046884916259">Сохранить эту карту в аккаунте Google?</translation>
 <translation id="6221892641068781024">Упрощенный просмотр</translation>
 <translation id="6222527803348563979">Бумага</translation>
+<translation id="62231116988543150">установку веб-приложений</translation>
 <translation id="6224281071334553713">Драгоценные камни и ювелирные украшения</translation>
 <translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />. Нажмите Tab, а затем Ввод, чтобы персонализировать инструменты специальных возможностей в настройках Chrome.</translation>
 <translation id="6228346913624365233">Транспортные средства класса люкс</translation>
@@ -3086,6 +3094,7 @@
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Нажмите Tab, а затем Ввод, чтобы перейти в раздел аккаунта Google "Поиск телефона".</translation>
 <translation id="6695428916538794739">Боевики и приключенческие фильмы</translation>
 <translation id="6696424331653607346">Туристические ресурсы</translation>
+<translation id="6696575039575740785">Установка веб-приложений запрещена</translation>
 <translation id="6698097747703777657">Не пришел код? <ph name="BEGIN_LINK" />Получить новый<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">Создано:</translation>
 <translation id="67007264085648978">Ползунок времени</translation>
@@ -3199,6 +3208,7 @@
 <translation id="6915804003454593391">Пользователь:</translation>
 <translation id="6916193791494646625">Укажите, зачем вы хотите скачать файл (обязательно)</translation>
 <translation id="6917795328362592458">Пароль, который вы только что использовали, был раскрыт в результате утечки данных. Чтобы защитить свои аккаунты, проверьте сохраненные пароли в Менеджере паролей.</translation>
+<translation id="6921197121276419421">Установка веб-приложений разрешена</translation>
 <translation id="6924013822850225188">Выберите, показывать ли преимущества карты при оформлении покупки (действуют условия банка)</translation>
 <translation id="6925267999184670015">North American B+</translation>
 <translation id="6926216138694948720">Боди-арт</translation>
@@ -3377,6 +3387,7 @@
 <translation id="7232352818707016189">Ещё действия для сравнительной таблицы</translation>
 <translation id="7233592378249864828">Распечатать лист для подтверждения</translation>
 <translation id="7234112195906418665">Путешествия и перевозки</translation>
+<translation id="7234585564776614047">Автозаполнение с помощью другого сервиса</translation>
 <translation id="7236417832106250253">Выполнено <ph name="PROGRESS_PERCENT" /> % | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
 <translation id="7237166092326447040">Подарки и товары для особых случаев</translation>
 <translation id="7237454422623102448">Открыть настройки системы</translation>
@@ -3696,6 +3707,7 @@
 <translation id="7761701407923456692">Сертификат сервера не соответствует URL.</translation>
 <translation id="7764225426217299476">Добавить адрес</translation>
 <translation id="7766518757692125295">Юбка</translation>
+<translation id="7766899888934244586">Веб-приложения</translation>
 <translation id="7767278989746220252">Террасы, сады и газоны</translation>
 <translation id="776749070095465053">Ткань</translation>
 <translation id="7773005668374414287">В том же порядке лицевой стороной вверх</translation>
@@ -3728,6 +3740,7 @@
 <translation id="7831993212387676366">Что такое список покупок</translation>
 <translation id="7840103971441592723">Запись экрана начата</translation>
 <translation id="784137052867620416">Shopping Insights</translation>
+<translation id="7842611866969435396">Начать</translation>
 <translation id="784404208867107517">История с распределением по группам</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Нет}=1{1 приложение (<ph name="EXAMPLE_APP_1" />)}=2{2 приложения (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# приложение (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}few{# приложения (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}many{# приложений (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}other{# приложения (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}}</translation>
 <translation id="785476343534277563">Студенческий спорт</translation>
@@ -4037,6 +4050,7 @@
 <translation id="8409413588194360210">обработчики платежей</translation>
 <translation id="8412145213513410671">Сбои (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">Необходимо дважды ввести одну и ту же кодовую фразу.</translation>
+<translation id="8414322570408428950">Зарегистрировано событие расширения</translation>
 <translation id="8416694386774425977">Импорт невозможен: недопустимая конфигурация сети.
 Подробнее:
 <ph name="DEBUG_INFO" /></translation>
@@ -4288,6 +4302,7 @@
 <translation id="8891031436559779793">Если на одном из сайтов цена снизится, вы получите оповещение</translation>
 <translation id="8891727572606052622">Недопустимый режим работы прокси-сервера.</translation>
 <translation id="8894794286471754040">Начиная с длинного края</translation>
+<translation id="8895334001368918465">Чтобы использовать в Chrome другой сервис автозаполнения, включите этот сервис в настройках Android и здесь</translation>
 <translation id="8897428486789851669">Плавание</translation>
 <translation id="8899807382908246773">Навязчивая реклама</translation>
 <translation id="8903921497873541725">Увеличить</translation>

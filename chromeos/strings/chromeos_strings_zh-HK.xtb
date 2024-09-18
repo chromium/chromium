@@ -35,6 +35,7 @@
 <translation id="1155154308031262006">輸入提示</translation>
 <translation id="115705039208660697">菠蘿</translation>
 <translation id="1164939766849482256">黎明到黑夜螢幕保護程式</translation>
+<translation id="1166688493741195933">無法生成錄製名稱</translation>
 <translation id="1167755866710282443">開啟選單以自訂按鍵。拖曳選單以移動。</translation>
 <translation id="1171349345463658120">沙湖</translation>
 <translation id="1173894706177603556">重新命名</translation>
@@ -342,6 +343,7 @@
 <translation id="2560876255701405320">錄音清單</translation>
 <translation id="2561093647892030937">檸檬</translation>
 <translation id="2570743873672969996">正在執行<ph name="TEST_NAME" />測試…</translation>
+<translation id="2573178735329662769">錄下所有 Chromebook 音訊</translation>
 <translation id="2575552334616524665">你可以在「設定」或 <ph name="THREE_DOTS_MENU_ICON" /> 選單中關閉此功能</translation>
 <translation id="2576253868710695442">最多可能需要 2 GB 的儲存空間</translation>
 <translation id="2584547424703650812">發光景觀</translation>
@@ -494,6 +496,7 @@
 <translation id="3502426834823382181">睇所有應用程式</translation>
 <translation id="3510890413042482857">傳送<ph name="BEGIN_LINK1" />效能追蹤資料<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Chrome OS 更新</translation>
+<translation id="3522508178835057262">目前的轉錄文字數上限為 <ph name="MAX_WORD_LENGTH" /> 個字</translation>
 <translation id="3527036260304016759">失敗 - 不明錯誤</translation>
 <translation id="353214771040290298">完成編輯</translation>
 <translation id="3532980081107202182">大約尚餘 <ph name="MIN_REMAINING" /> 分鐘</translation>
@@ -509,6 +512,7 @@
 <translation id="3588034708467091142">請確保已連接互聯網，然後再試一次。</translation>
 <translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> 係 <ph name="APN_NAME" /> 較多人認識嘅名稱。</translation>
 <translation id="3595596368722241419">電池已滿</translation>
+<translation id="3600063043775287169">開啟 Chromebook 音訊後，「錄音機」會錄下此裝置播放的所有音訊。請確保你想錄下所有聲音。</translation>
 <translation id="3600339377155080675">螢幕鏡像</translation>
 <translation id="3602290021589620013">預覽</translation>
 <translation id="3603829704940252505">顯示圖片</translation>
@@ -609,7 +613,7 @@
 <translation id="4111761024568264522">USB 觸控板</translation>
 <translation id="4113067922640381334">您現可使用全新<ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />桌布<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>
 <translation id="4117637339509843559">暗光模式</translation>
-<translation id="4126551873361000548">向後 10 秒</translation>
+<translation id="4126551873361000548">倒回 10 秒</translation>
 <translation id="4130035430755296270">將滑鼠游標懸停在上方，即可查看更多版面配置選項</translation>
 <translation id="4130750466177569591">我同意</translation>
 <translation id="4131410914670010031">黑白</translation>
@@ -711,6 +715,7 @@
 <translation id="4602266091140407479">麥克風</translation>
 <translation id="4607282946861182308">無法製作相應的圖像，請嘗試其他提示。</translation>
 <translation id="4609350030397390689">鍵盤校暗亮度</translation>
+<translation id="4623061655523261501">已順利生成錄製名稱</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />、<ph name="PRINTER_NAME" />、<ph name="CREATION_TIME" />，印咗 <ph name="PRINTED_PAGE_NUMBER" /> 頁，總共有 <ph name="TOTAL_PAGE_NUMBER" /> 頁。㩒一下 Enter 鍵就可以取消列印工作。</translation>
 <translation id="463791356324567266">正在取消掃瞄…</translation>
 <translation id="4644611440022666152">開啟並下載</translation>
@@ -1043,8 +1048,8 @@
 <translation id="628726841779494414">在打印機設定中管理你的打印機</translation>
 <translation id="6292095526077353682">裝置充電時，螢幕保護程式的顯示時間長度：</translation>
 <translation id="629550705077076970">將鍵盤調暗</translation>
-<translation id="6301193653204230066">「安全重設」會關閉 Chrome 瀏覽器擴充功能，並將網路和其他設定重設為安全預設值。
-          這項功能不會變更你的分頁、檔案、Cookie 和歷史記錄。</translation>
+<translation id="6301193653204230066">「安全重設」會關閉 Chrome 瀏覽器擴充程式，並將網絡和其他設定重設為安全預設值。
+          你的分頁、檔案、Cookie 和記錄會保持不變。</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" />測試已取消</translation>
 <translation id="631063167932043783">探索應用程式</translation>
 <translation id="6318437367327684789">不限時間</translation>
@@ -1216,6 +1221,7 @@
 <translation id="708426984172631313">已停止</translation>
 <translation id="7086168019478250425">生物發光的海灘</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="7086916854357021265">正在生成錄製名稱</translation>
 <translation id="7097908713073775559">彩色</translation>
 <translation id="710028965487274708">失敗 - 授權失敗</translation>
 <translation id="7101959270679078188">請解鎖「<ph name="DEVICE_NAME" />」，以繼續更新程序</translation>

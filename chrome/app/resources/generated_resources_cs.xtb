@@ -499,6 +499,7 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1355088139103479645">Smazat všechna data?</translation>
 <translation id="1356376170199999104">Povoleno – <ph name="PERMISSION_DETAILS" />. Zapněte mikrofon pomocí fyzického vypínače.</translation>
 <translation id="1356959069439783953">Neaktivní karty mají nový vzhled</translation>
+<translation id="1357766361161708728">Zavřít nepoužívané karty?</translation>
 <translation id="1358741672408003399">Pravopis a gramatika</translation>
 <translation id="1359923111303110318">Vaše zařízení lze odemknout pomocí funkce Smart Lock. Odemknete ho stisknutím klávesy Enter.</translation>
 <translation id="1361164813881551742">Přidat ručně</translation>
@@ -2556,6 +2557,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2787354132612937472">–</translation>
 <translation id="2788135150614412178">+</translation>
 <translation id="2789486458103222910">OK</translation>
+<translation id="2790750268015892264">Izolované webové aplikace nemohou ovládat čtečky čipových karet. Aplikace nezískají přístup k žádné čipové kartě.</translation>
 <translation id="2791529110887957050">Odstranit Linux</translation>
 <translation id="2791952154587244007">Došlo k chybě. Aplikace veřejného terminálu se v tomto zařízení nebude moci automaticky spustit.</translation>
 <translation id="2792290659606763004">Odstranit aplikace Android?</translation>
@@ -2587,6 +2589,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2806372837663997957">Cílové zařízení sdílený soubor nepřijalo</translation>
 <translation id="2806891468525657116">Zkratka už existuje</translation>
 <translation id="2807517655263062534">Zde se zobrazují stažené soubory</translation>
+<translation id="2808481877345177494">Přihlaste se, abyste bezpečně oddělili své pracovní a osobní prohlížení. Zvyšte svou produktivitu a zároveň chraňte citlivá firemní data.</translation>
 <translation id="2811205483104563968">Účty</translation>
 <translation id="2812049959647166806">Rozhraní Thunderbolt není podporováno</translation>
 <translation id="2812171980080389735">Uložené sítě a hesla k okamžitému připojení</translation>
@@ -3432,6 +3435,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3450157232394774192">Procentuální zastoupení stavu nečinnosti</translation>
 <translation id="3450180775417907283">Doména <ph name="MANAGER" /> vyžaduje, abyste se připojili k síti Wi-Fi a stáhli aktualizaci.</translation>
 <translation id="345078987193237421">Povolíte tím přístup ke kameře aplikacím a webům s oprávněním pro přístup ke kameře a systémovým službám.</translation>
+<translation id="3451362021220965191">Izolované webové aplikace ovládají čtečky čipových karet, aby získaly přístup k vloženým nebo přiloženým čipovým kartám. Čipové karty obvykle obsahují identity, které se používají k ověřování nebo autorizaci operací, přihlašování do služeb a podobně.</translation>
 <translation id="3452999110156026232">Rodičovský přístup</translation>
 <translation id="3453082738208775226">Vymazat offline úložiště?</translation>
 <translation id="3453597230179205517">Přístup k poloze je blokován</translation>
@@ -3994,6 +3998,7 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="3828953470056652895">Přečetl(a) jsem si <ph name="BEGIN_LINK1" />smluvní podmínky společnosti Google<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />dodatečné smluvní podmínky prohlížeče Chrome a systému ChromeOS<ph name="END_LINK2" /> a <ph name="BEGIN_LINK3" />smluvní podmínky služby Play<ph name="END_LINK3" /> a souhlasím s nimi.</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> – Vysoké využití paměti – <ph name="MEMORY_VALUE" /></translation>
 <translation id="3829765597456725595">Sdílené úložiště SMB</translation>
+<translation id="38298897782945211">Izolované webové aplikace se automaticky řídí tímto nastavením.</translation>
 <translation id="3830470485672984938">Použít jiný přístupový klíč</translation>
 <translation id="3830654885961023588">{NUM_EXTENSIONS,plural, =1{Administrátor znovu zapnul jedno potenciálně škodlivé rozšíření}few{Administrátor znovu zapnul {NUM_EXTENSIONS} potenciálně škodlivá rozšíření}many{Administrátor znovu zapnul {NUM_EXTENSIONS} potenciálně škodlivého rozšíření}other{Administrátor znovu zapnul {NUM_EXTENSIONS} potenciálně škodlivých rozšíření}}</translation>
 <translation id="3834728400518755610">Ke změně nastavení přístupu k mikrofonu je Linux potřeba ukončit. Chcete-li pokračovat, ukončete Linux.</translation>
@@ -4007,6 +4012,7 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="3839516600093027468">Webu <ph name="HOST" /> přístup ke schránce vždy blokovat</translation>
 <translation id="3841282988425489367">Steam pro Chromebook (Beta) nelze nastavit</translation>
 <translation id="3841319830220785495">Výchozí přirozený hlas</translation>
+<translation id="3841356782900714251">Čtečky čipových karet</translation>
 <translation id="3841964634449506551">Neplatné heslo</translation>
 <translation id="3842552989725514455">Patkové písmo</translation>
 <translation id="3843464315703645664">Na interním seznamu povolených</translation>
@@ -5715,6 +5721,7 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="5120886753782992638">Kliknutím sem navštívíte adresu <ph name="APPROVED_URL" /></translation>
 <translation id="5121052518313988218">Operační systém ve vašem kontejneru systému Linux již není podporován. Nebude již dostávat aktualizace zabezpečení a opravy chyb a funkce, které aktuálně fungují, mohou nečekaně přestat fungovat. Pokud chcete Linux používat i nadále, upgradujte na nejnovější verzi.</translation>
 <translation id="5121130586824819730">Pevný disk je plný. Uložte prosím soubor do jiného umístění nebo uvolněte místo na disku.</translation>
+<translation id="5121803000325086087">Izolované webové aplikace mohou žádat o ovládání čteček čipových karet. Aplikace získají přístup k čipovým kartám v příslušných čtečkách.</translation>
 <translation id="5123433949759960244">Basketbal</translation>
 <translation id="5125714798187802869">Aktivovat</translation>
 <translation id="5125751979347152379">Neplatná adresa URL.</translation>
@@ -6548,6 +6555,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="5750288053043553775">0</translation>
 <translation id="5751345516399502412">Zkontrolovat připravenost tetheringu</translation>
 <translation id="5753570386948603678">Vymazat z historie</translation>
+<translation id="5753652925946671505">Tyto karty jste <ph name="COUNT" /> nebo více dní nepoužili.</translation>
 <translation id="5756163054456765343">C&amp;entrum nápovědy</translation>
 <translation id="5757187557809630523">další skladba</translation>
 <translation id="5758631781033351321">Zde najdete svůj seznam četby</translation>
@@ -6970,6 +6978,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="6064764629679333574">Zlepšit kvalitu zvuku mikrofonu připojeného přes Bluetooth převzorkováním zvuku s nízkým rozlišením na zvuk s vysokým rozlišením.</translation>
 <translation id="6065289257230303064">Atributy adresáře subjektu certifikátu</translation>
 <translation id="6066794465984119824">Není nastaven hash obrazu</translation>
+<translation id="6069027071882229820">Kopírovat jako obrázek</translation>
 <translation id="6069464830445383022">K přihlašování do Chromebooku slouží účet Google</translation>
 <translation id="6069500411969514374">Pracovní</translation>
 <translation id="6071181508177083058">potvrzení hesla</translation>
@@ -10073,6 +10082,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8319414634934645341">Rozšířené použití klíče</translation>
 <translation id="8321476692217554900">oznámení</translation>
 <translation id="8321837372750396788">Toto zařízení <ph name="DEVICE_TYPE" /> bude spravováno doménou <ph name="MANAGER" />.</translation>
+<translation id="8321888067342493336">Uložit jako obrázek</translation>
 <translation id="8322814362483282060">Přístup této stránky k vašemu mikrofonu je zablokován.</translation>
 <translation id="8323167517179506834">Zadejte adresu URL.</translation>
 <translation id="8323317289166663449">Číst a měnit veškerá vaše data na počítači a všech webech</translation>

@@ -292,6 +292,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="8860548555286245440">Apri gli URL in Chromium in incognito</translation>
 <translation id="8866191443434488382">Chromium rileverà i numeri di riferimento sui siti che visiti e mostrerà gli aggiornamenti relativi ai pacchetti nella pagina Nuova scheda. Il numero di tracciamento della spedizione e il nome del sito web verranno inviati a Chromium per fornire questa funzionalità e migliorare le funzionalità di acquisto per tutti. Puoi aggiornarli in qualsiasi momento nelle <ph name="BEGIN_LINK" />impostazioni di tracciamento della spedizione<ph name="END_LINK" />.</translation>
 <translation id="8880024619507699923">La tua organizzazione richiede l'accesso per usare Chromium. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
+<translation id="8900052431807804054">Usa la funzionalità di sicurezza più efficace di Chromium</translation>
 <translation id="894437814105052438">Se esci, Chromium non sincronizzerà gli eventuali nuovi dati con il tuo Account Google. I dati sincronizzati in precedenza rimangono memorizzati nell'account.</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{Questo accade quando Chromium non viene utilizzato per {THRESHOLD} minuto}other{Questo accade quando Chromium non viene utilizzato per {THRESHOLD} minuti}}</translation>
 <translation id="8963279154877372067">Consenti le notifiche di Chromium per ricevere avvisi relativi ai cali di prezzo</translation>

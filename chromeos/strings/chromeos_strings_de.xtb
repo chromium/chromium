@@ -52,6 +52,7 @@
 <translation id="1204296502688602597">DNS-Latenz</translation>
 <translation id="1207734034680156868">Vorschläge basieren auf deiner Beschreibung</translation>
 <translation id="121090498480012229">Medien wiedergeben oder pausieren</translation>
+<translation id="1216675364136048456">Schließen</translation>
 <translation id="1223498995510244364">Zusammenfassen</translation>
 <translation id="123124571410524056">Verdacht auf Portal</translation>
 <translation id="1232610416724362657">Wasserfall</translation>
@@ -128,6 +129,7 @@
 <translation id="1588438908519853928">Normal</translation>
 <translation id="1591562245178063882">Aktueller Monat</translation>
 <translation id="1593528591614229756">Lege nur APNs fest, die von deinem Mobilfunkanbieter oder Administrator bereitgestellt wurden. Wenn du einen APN festlegst, werden alle benutzerdefinierten APNs deaktiviert. Ungültige APNs können dazu führen, dass deine Mobilfunkverbindung unterbrochen wird. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
+<translation id="1604959087182679653">Transkript ausblenden</translation>
 <translation id="160633243685262989">Bild in der Vorschau anzeigen</translation>
 <translation id="1611649489706141841">Weiter</translation>
 <translation id="1615335640928990664">Datennutzung seit <ph name="FRIENDLY_DATE" /></translation>
@@ -141,6 +143,7 @@
 <translation id="1643449475550628585">Hintergrundbild täglich ändern</translation>
 <translation id="1644574205037202324">Verlauf</translation>
 <translation id="1651925268237749928">Du hast ein geteiltes Album ausgewählt. Andere Personen können Fotos hinzufügen oder ändern. Für deinen Hintergrund können Fotos verwendet werden, die sich derzeit nicht in diesem Album befinden.</translation>
+<translation id="1661512400125589646">Pausieren</translation>
 <translation id="1661865805917886535">Einige Konto- und Systeminformationen werden möglicherweise an Google gesendet. Wir verwenden diese Daten unter Einhaltung unserer Datenschutzerklärung (<ph name="PRIVACYPOLICYURL" />) und Nutzungsbedingungen (<ph name="TERMSOFSERVICEURL" />) dazu, technische Probleme zu beheben und unsere Dienste zu optimieren. Inhaltsänderungen kannst du in der Rechtliche Hinweise-Hilfe (<ph name="LEGALHELPPAGEURL" />) anfragen.</translation>
 <translation id="1662989795263954667">Angehalten – Keine Tinte</translation>
 <translation id="1664796644829245314">Vorschau anzeigen für „<ph name="PREVIEW_OBJECT" />“</translation>
@@ -173,6 +176,7 @@
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1762483337755424125">Transkript</translation>
 <translation id="1765169783255151332">Schnell die Tasten wechseln</translation>
 <translation id="1768959921651994223">Authentifizierungstyp</translation>
 <translation id="1776228893584526149">Farbton für Hintergrund</translation>
@@ -217,6 +221,7 @@
 <translation id="1954818433534793392">Gebäude</translation>
 <translation id="1962550982027027473">Ein Standard-APN ist erforderlich</translation>
 <translation id="1967860190218310525">Neuen APN erstellen</translation>
+<translation id="1967917622327567355">Transkript anzeigen</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977973007732255293">traditionell</translation>
 <translation id="1977994649430373166">Google-Profilfoto</translation>
@@ -336,6 +341,7 @@
 <translation id="2560876255701405320">Liste der Audioaufnahmen</translation>
 <translation id="2561093647892030937">Zitronen</translation>
 <translation id="2570743873672969996">Test für <ph name="TEST_NAME" /> wird ausgeführt…</translation>
+<translation id="2573178735329662769">Alle Chromebook-Audiodaten werden aufgezeichnet</translation>
 <translation id="2575552334616524665">Du kannst diese Funktion in den Einstellungen oder über das <ph name="THREE_DOTS_MENU_ICON" />‑Menü aktivieren</translation>
 <translation id="2576253868710695442">Das erfordert bis zu 2 GB Speicherplatz</translation>
 <translation id="2584547424703650812">Leuchtende Landschaften</translation>
@@ -503,6 +509,7 @@
 <translation id="3588034708467091142">Achte darauf, dass du mit dem Internet verbunden bist, und versuche es noch einmal.</translation>
 <translation id="3594280220611906414">„<ph name="USER_FRIENDLY_APN_NAME" />“ ist der nutzerfreundliche Name für „<ph name="APN_NAME" />“.</translation>
 <translation id="3595596368722241419">Akku voll</translation>
+<translation id="3600063043775287169">Wenn Chromebook-Audio aktiviert ist, werden alle auf diesem Gerät wiedergegebenen Audioinhalte von der Rekorder App aufgezeichnet. Prüfe, ob du alle Audioinhalte aufzeichnen möchtest.</translation>
 <translation id="3600339377155080675">Display spiegeln</translation>
 <translation id="3602290021589620013">Vorschau</translation>
 <translation id="3603829704940252505">Avatar</translation>
@@ -602,6 +609,7 @@
 <translation id="4111761024568264522">USB-Touchpad</translation>
 <translation id="4113067922640381334">Neue <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />Hintergründe<ph name="END_LINK_WALLPAPER_SUBPAGE" /> jetzt verfügbar</translation>
 <translation id="4117637339509843559">Dunkler Modus</translation>
+<translation id="4126551873361000548">10 Sekunden zurückspulen</translation>
 <translation id="4130035430755296270">Für weitere Layoutoptionen Mauszeiger weiter darauf halten</translation>
 <translation id="4130750466177569591">Ich stimme zu</translation>
 <translation id="4131410914670010031">Schwarz-Weiß</translation>
@@ -683,6 +691,7 @@
 <translation id="4507392511610824664">Helligkeit erhöhen</translation>
 <translation id="4511264077854731334">Portal</translation>
 <translation id="4513946894732546136">Feedback</translation>
+<translation id="4516323842122524821">Lautstärke</translation>
 <translation id="4521826082652183069">Alternativer Name für Betreff stimmt überein</translation>
 <translation id="4522570452068850558">Details</translation>
 <translation id="4536864596629708641">IP-Konfiguration</translation>
@@ -788,6 +797,7 @@
 <translation id="5049856988445523908">SIM-Karte gesperrt (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Gruppenname</translation>
 <translation id="5051044138948155788">Das ist die einzige Seite. Du gelangst dann zum Startbildschirm für den Scanvorgang.</translation>
+<translation id="5053233795640754917">Pausieren</translation>
 <translation id="5078711626843651677">Sprachmodelle werden vorübergehend auf dem Gerät gespeichert, bis die Sprecherlabels erstellt sind. Du kannst diese Funktion jederzeit wieder in den Einstellungen deaktivieren.</translation>
 <translation id="5078983345702708852">futuristisch</translation>
 <translation id="5087864757604726239">zurück</translation>
@@ -795,6 +805,7 @@
 <translation id="5089810972385038852">Bundesstaat</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
 <translation id="5095761549884461003">Ziehe das USB-Kabel von <ph name="DEVICE_NAME" /> ab und schließe es dann wieder an, um das Update fortzusetzen</translation>
+<translation id="5095864667399748231">Stummschaltung ein/aus</translation>
 <translation id="5099354524039520280">Nach oben</translation>
 <translation id="5107243100836678918">Eine Tastenkombination ohne <ph name="META_KEY" />-Taste kann einen Konflikt mit der Tastenkombination einer App verursachen. Wenn du diese Tastenkombination weiter verwenden möchtest, drück sie noch einmal. Anderenfalls kannst du eine neue Tastenkombination mit der <ph name="KEY" />-Taste eingeben. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">Ähnlich:</translation>
@@ -942,6 +953,7 @@
 <translation id="588258955323874662">Vollbild</translation>
 <translation id="5893975327266416093">Zum Zuweisen auf eine Taste drücken</translation>
 <translation id="5895138241574237353">Neu starten</translation>
+<translation id="5896602941605730551">Wiedergeben</translation>
 <translation id="5901630391730855834">Gelb</translation>
 <translation id="5903200662178656908">Das Gerät ist eine Kombination aus Maus und Tastatur.</translation>
 <translation id="5904994456462260490">Neuen APN hinzufügen</translation>
@@ -1334,6 +1346,7 @@ Wenn du das möchtest, lade das Transkriptmodell (bis zu 100 MB) herunter.</tra
 <translation id="7762130827864645708">Du hast dein Passwort geändert. Bitte verwende ab jetzt das neue Passwort.</translation>
 <translation id="7763470514545477072">Domain-Suffix stimmt überein</translation>
 <translation id="7769672763586021400">Modell-ID</translation>
+<translation id="7774759755755950354">Zurück</translation>
 <translation id="7778717409420828014">Dein Feedback wird von unserem Team gelesen und hilft uns dabei, Chromebooks noch weiter zu verbessern. Da wir sehr viele Rückmeldungen erhalten, können wir dir nicht persönlich antworten.</translation>
 <translation id="7781829728241885113">Gestern</translation>
 <translation id="7784116172884276937">Es sind keine DNS-Server eingerichtet</translation>
@@ -1427,6 +1440,7 @@ Wenn du das möchtest, lade das Transkriptmodell (bis zu 100 MB) herunter.</tra
 <translation id="8227119283605456246">Datei anhängen</translation>
 <translation id="8227488649450500937">Probiere einen dieser Prompts aus oder sieh dir die <ph name="BEGIN_LINK_PROMPTING_GUIDE" />Anleitung zu Prompts<ph name="END_LINK_PROMPTING_GUIDE" /> an</translation>
 <translation id="8230672074305416752">Das standardmäßige Netzwerk-Gateway konnte nicht kontaktiert werden</translation>
+<translation id="8236972776513018241">Transkript</translation>
 <translation id="8238771987802558562">APN festlegen</translation>
 <translation id="8246209727385807362">Unbekannter Mobilfunkanbieter</translation>
 <translation id="8250926778281121244">rostbraunen</translation>
@@ -1530,6 +1544,7 @@ Wenn du das möchtest, lade das Transkriptmodell (bis zu 100 MB) herunter.</tra
 <translation id="8775713578693478175">Modem‑APN</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Dieses Netzwerk hat möglicherweise ein Captive Portal</translation>
+<translation id="8797082062139985406">Name mit Google AI erstellen</translation>
 <translation id="8798099450830957504">Standard</translation>
 <translation id="8798441408945964110">Name des Anbieters</translation>
 <translation id="8808828119384186784">Chrome-Einstellungen</translation>
@@ -1550,6 +1565,7 @@ Wenn du das möchtest, lade das Transkriptmodell (bis zu 100 MB) herunter.</tra
 <translation id="8864415976656252616">Keine vorgeschlagenen Artikel. Du kannst dir häufig gelesene Hilfeartikel ansehen.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Das Gerät ist ein Tablet.</translation>
+<translation id="8878117140814294155">Mikrofonstummschalten ein/aus</translation>
 <translation id="8881098542468797602">Test abgeschlossen</translation>
 <translation id="8882789155418924367">Eulen</translation>
 <translation id="8892443466059986410">Bearbeiten der Verknüpfung abbrechen</translation>

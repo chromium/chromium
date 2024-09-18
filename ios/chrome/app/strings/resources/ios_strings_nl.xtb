@@ -80,12 +80,14 @@
 <translation id="1363028406613469049">Track</translation>
 <translation id="1364367057792633742">Nieuw tabblad</translation>
 <translation id="1365106417372288489">Je iPhone is recent hersteld, waardoor je standaardbrowser misschien is veranderd.</translation>
+<translation id="1366297852155605523">Gedeeld met mij</translation>
 <translation id="136942498637440594">Je kunt zoeken naar afbeeldingen en wat je ziet.</translation>
 <translation id="1377508275003315939">Wachtwoorden</translation>
 <translation id="1381022135873211423">{count,plural, =1{{position} van {count} adres}other{{position} van {count} adressen}}</translation>
 <translation id="1383876407941801731">Zoeken</translation>
 <translation id="138618066238211776">Doorgaan als <ph name="USER_NAME" /></translation>
 <translation id="138692594145659985">Opties om een kaart op te slaan</translation>
+<translation id="1396260204083880024">Ingelogd als <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Accountmenu openen.</translation>
 <translation id="1397144142234474689">Geschiedenis verbergen</translation>
 <translation id="1407135791313364759">Alles openen</translation>
 <translation id="1408847409015257906">Tik op Privacy en beveiliging.</translation>
@@ -116,6 +118,7 @@
 <translation id="1517166097004694782">Doorgaan met dit tabblad verbergen</translation>
 <translation id="1520027731907768768">Krijg meldingen over prijsdalingen voor producten die je volgt.</translation>
 <translation id="1521774566618522728">Vandaag actief</translation>
+<translation id="1524563461097350801">Nee, bedankt</translation>
 <translation id="1531038290222364269">Tabbladen tonen</translation>
 <translation id="1536390784834419204">Pagina vertalen</translation>
 <translation id="1540800554400757039">Adres 1</translation>
@@ -331,6 +334,7 @@ Sites mogen geen cookies gebruiken om je browse-activiteit op verschillende site
 <translation id="2551153019974022505">Accountfout</translation>
 <translation id="2559843230610279254">Tabbladgroep, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> tabbladen.</translation>
 <translation id="2577522251608256362">Buurt</translation>
+<translation id="2579713773888829241">Gedeelde Drives</translation>
 <translation id="2597486707832946298">Gebruik het beste van de desktopbrowser die je kent en leuk vindt nu op je iPhone.</translation>
 <translation id="260378315836159338">Tik bovenaan het scherm op +</translation>
 <translation id="2612676031748830579">Kaartnummer</translation>
@@ -526,6 +530,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="3591006724568464696">Recente tabbladen zijn niet beschikbaar</translation>
 <translation id="3595252146048399851">Je kunt altijd in de <ph name="BEGIN_LINK" />instellingen<ph name="END_LINK" /> bepalen wat je wilt synchroniseren. Google kan Zoeken en andere services personaliseren op basis van je geschiedenis.</translation>
 <translation id="3596414637720633074">Cookies van derden blokkeren in incognitomodus</translation>
+<translation id="3602260545951981695">Kies Geoptimaliseerde beveiliging</translation>
 <translation id="3606746615845065096">Tabblad sluiten</translation>
 <translation id="3622175633937495219">Zoekgeschiedenis (<ph name="COUNT" /> gevonden)</translation>
 <translation id="3625008969091706597">Je kunt over de rand swipen om terug te gaan.</translation>
@@ -572,7 +577,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="3851938967634752633">Wachtwoorden voor <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> en <ph name="NUMBER_OF_ACCOUNTS" /> andere accounts worden verwijderd. Je accounts zelf worden niet verwijderd.</translation>
 <translation id="3858860766373142691">Naam</translation>
 <translation id="3861908220442487587">Dit adres wordt alleen opgeslagen op dit apparaat. Verplaats het naar je Google-account <ph name="USER_EMAIL" /> om het op je andere apparaten te gebruiken</translation>
-<translation id="3876833929577368454">Mij altijd vragen</translation>
+<translation id="3876833929577368454">Altijd vragen</translation>
 <translation id="3885587018298784481">Lid worden van een gezinsgroep</translation>
 <translation id="3888863481921783344">Dit wordt gebruikt om je mogelijke genodigden voor je evenement te tonen.</translation>
 <translation id="3891414008432200754">Prijs</translation>
@@ -595,6 +600,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="3967327056943561740">Bookmarks</translation>
 <translation id="3967822245660637423">Downloaden voltooid</translation>
 <translation id="3982893814825393515">Een probleem melden…</translation>
+<translation id="398604237578616937">Ingelogd als <ph name="USER_EMAIL" />. Accountmenu openen.</translation>
 <translation id="3987993985790029246">Link kopiëren</translation>
 <translation id="3992684624889376114">Over deze pagina</translation>
 <translation id="3994422733891749358">Kies welke meldingen je wilt krijgen</translation>
@@ -665,6 +671,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="4304713468139749426">Wachtwoordmanager</translation>
 <translation id="4309403553630140242">Dubbeltik voor meer informatie</translation>
 <translation id="4324735664183300693">Meldingen aanzetten</translation>
+<translation id="4328843285884395590">Mijn Drive</translation>
 <translation id="4331177082088332784">Je kunt dit beheren via de BEGIN_LINK contentinstellingen END_LINK</translation>
 <translation id="4333100555184633720">Browsegegevens verwijderen</translation>
 <translation id="4334428914252001502">1 ongelezen artikel.</translation>
@@ -732,6 +739,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="4636930964841734540">Info</translation>
 <translation id="4642472735733036929">Prijs volgen gestopt</translation>
 <translation id="4645575059429386691">Beheerd door je ouder</translation>
+<translation id="4647758699119474035">Ingelogd als <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Fout in Google-account. Accountmenu openen.</translation>
 <translation id="4650125387981512669">Doorgaan als <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4652817563047461855">Zorg dat je wachtwoorden veilig zijn, ga na of ze zijn gehackt en krijg advies om je online te beschermen. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="4658335131052370646">Opslaan</translation>
@@ -914,6 +922,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 
 Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je apparaten moeten hetzelfde iCloud-account gebruiken.</translation>
 <translation id="5551825465462320939">Blijf op de hoogte van onder meer nieuws en sport op basis van je interesses.</translation>
+<translation id="5555008247722361784">Ingelogd als <ph name="USER_EMAIL" />. Fout in Google-account. Accountmenu openen.</translation>
 <translation id="5556459405103347317">Opnieuw laden</translation>
 <translation id="555749644339804659">Wachtwoorden checken…</translation>
 <translation id="5559567453458728487">Converteer meeteenheden die op internet zijn gevonden</translation>
@@ -1260,6 +1269,7 @@ Als je de incognitomodus gebruikt, kunnen sites geen cookies gebruiken om je bro
 <translation id="7026724612456523899">Pakketten altijd volgen</translation>
 <translation id="7029809446516969842">Wachtwoorden</translation>
 <translation id="7035825883570480307">Meldingen aanzetten?</translation>
+<translation id="7039345315346323556">Recent</translation>
 <translation id="7055240621761583113">Het wachtwoord automatisch invullen</translation>
 <translation id="7058455400288852416">Naar tabbladschakelaar</translation>
 <translation id="7063811929043357292">Je account wordt beheerd door je ouder.
@@ -1277,6 +1287,7 @@ Als je de incognitomodus gebruikt, kunnen sites geen cookies gebruiken om je bro
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">Camera is niet beschikbaar</translation>
 <translation id="7141960840225504692">Je tabbladen worden gesloten en browsegegevens worden verwijderd</translation>
+<translation id="714291438898585119">Met ster</translation>
 <translation id="7146301801400584641">Agendabestand beschikbaar</translation>
 <translation id="7149893636342594995">Afgelopen 24 uur</translation>
 <translation id="716059570521443369">Tekst zoeken die je hebt gekopieerd</translation>
@@ -1331,6 +1342,7 @@ Als je de incognitomodus gebruikt, kunnen sites geen cookies gebruiken om je bro
 <translation id="7435356471928173109">Uitgezet door je beheerder</translation>
 <translation id="7438481509621345350">Je ziet nu artikelen van <ph name="CHANNEL_NAME" /> als je een nieuw tabblad opent.</translation>
 <translation id="7451023311965289370">{count,plural, =1{Bookmark opgeslagen in {title}}other{Bookmarks opgeslagen in {title}}}</translation>
+<translation id="7451404862887877229">Tik op Privacy en beveiliging en dan op Safe Browsing</translation>
 <translation id="7454057999980797137">Provincie</translation>
 <translation id="7458706065921255639">Personalisatie en koppelen</translation>
 <translation id="745899714366929493">Hele dag</translation>
@@ -1409,6 +1421,7 @@ Als je de incognitomodus gebruikt, kunnen sites geen cookies gebruiken om je bro
 <translation id="7788868432173225918">Uitgevouwen weergave sluiten</translation>
 <translation id="7790954908631836016">Desktopsite opvragen verbergen</translation>
 <translation id="7791543448312431591">Toevoegen</translation>
+<translation id="7801064017114765401">Computers</translation>
 <translation id="7802239711290932774">Voorgesteld wachtwoord gebruiken:</translation>
 <translation id="780301667611848630">Nee, bedankt</translation>
 <translation id="7807060072011926525">Geleverd door Google</translation>
@@ -1507,7 +1520,6 @@ Sites mogen cookies gebruiken om je browse-activiteit op verschillende sites te 
 <translation id="8173034266693057059">Lengte</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8182037667962849780">{count,plural, =1{Voor {website_1}}=2{Voor {website_1}, {website_2}}=3{Voor {website_1}, {website_2} en nog 1}other{Voor {website_1}, {website_2} en nog {more_count}}}</translation>
-<translation id="8189814768485665290">Hele URL delen</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Je apparaten<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Wachtwoord toevoegen</translation>
 <translation id="8202744799033457229">Geschiedenis weergeven</translation>
@@ -1541,6 +1553,7 @@ Sites mogen cookies gebruiken om je browse-activiteit op verschillende sites te 
 <translation id="8349305172487531364">Bookmarkbalk</translation>
 <translation id="8366466717204352506">Check nooit uitgevoerd</translation>
 <translation id="8368001212524806591">Prijs volgen</translation>
+<translation id="8370406443343902172">Naar Instellingen…</translation>
 <translation id="8372471489238799313">{count,plural, =1{Adres verwijderen}other{Adressen verwijderen}}</translation>
 <translation id="8378714024927312812">Beheerd door je organisatie</translation>
 <translation id="8386068868580335421">Resetten</translation>
@@ -1592,6 +1605,7 @@ Sites mogen cookies gebruiken om je browse-activiteit op verschillende sites te 
 <translation id="8571213806525832805">Afgelopen 4 weken</translation>
 <translation id="8577056989960190117">Het vervaljaar <ph name="YEAR" /> automatisch invullen</translation>
 <translation id="8588404856427128947">Uit</translation>
+<translation id="8590286732816598906">Tabbladgroep, <ph name="GROUP_TITLE" />, menu.</translation>
 <translation id="8593565399399144771">Je kunt hier een nieuw tabblad openen.</translation>
 <translation id="8600272508328041907">Overschakelen naar vertaling van volledige pagina</translation>
 <translation id="860043288473659153">Naam kaarthouder</translation>
@@ -1603,6 +1617,7 @@ Sites mogen cookies gebruiken om je browse-activiteit op verschillende sites te 
 <translation id="8637431369725868556">Krijg bescherming tegen gevaarlijke sites.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Geen gehackte wachtwoorden}=1{{COUNT} gehackt wachtwoord}other{{COUNT} gehackte wachtwoorden}}</translation>
 <translation id="8640575194957831802">Laatst geopend</translation>
+<translation id="8647280737650867362">Kan de prijs niet ontvolgen.</translation>
 <translation id="8654802032646794042">Annuleren</translation>
 <translation id="8660600697590740984">Afbeelding gekopieerd door Lens</translation>
 <translation id="866266761389616183">Helaas</translation>
@@ -1727,6 +1742,7 @@ Sites mogen cookies gebruiken om je browse-activiteit op verschillende sites te 
 <translation id="9162432979321511934">Zet Wachtwoorden automatisch invullen aan</translation>
 <translation id="9165320910061267720">Als je meldingen wilt krijgen over prijsdalingen, moet je meldingen aanzetten in de iOS-instellingen.</translation>
 <translation id="9179151630575358778">Verbergt dit item</translation>
+<translation id="918129721713827015">Tabbladen in groep tonen</translation>
 <translation id="9183733013282108610">Incognito zoeken</translation>
 <translation id="9186762474139509529">Logboekregistratie starten</translation>
 <translation id="9191031968346938109">Toevoegen aan…</translation>

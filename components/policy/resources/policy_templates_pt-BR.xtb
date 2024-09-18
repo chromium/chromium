@@ -1171,13 +1171,6 @@ Esta política não vai ter efeito se a opção de manter os dados de navegaçã
 
       Esta política está obsoleta. Use a <ph name="DEVICE_USER_ALLOWLIST_POLICY_NAME" />.
       </translation>
-<translation id="1825583118566970564">Controla a instalação de extensões externas.
-
-Se a política for ativada, as extensões externas não poderão ser instaladas.
-
-Se ela for desativada ou for deixada sem definição, extensões externas poderão ser instaladas.
-
-As extensões externas e a instalação estão documentadas em https://developer.chrome.com/apps/external_extensions.</translation>
 <translation id="1827523283178827583">Usar servidores proxy fixos</translation>
 <translation id="1829117241432374848">Uma conta gerenciada precisa ser a principal e não pode ter contas secundárias. O usuário pode importar dados existentes no momento da criação da conta</translation>
 <translation id="1829839214911753838">Se a política for definida como "Ativada", o host de assistência remota será executado em um processo com permissões <ph name="UIACCESS_PERMISSION_NAME" />. Isso permitirá que usuários remotos interajam com janelas elevadas no computador do usuário local.
@@ -3062,6 +3055,13 @@ Se ela não for definida, o JavaScript será executado, mas os usuários poderã
 
       Se a política for deixada sem definição, o <ph name="PRODUCT_NAME" /> carregará todos os hosts de mensagens nativas instalados.</translation>
 <translation id="3211426942294667684">Configurações de login no navegador</translation>
+<translation id="3213872023700948990">Esta política oferece uma recusa temporária para o novo comportamento de rolagem focalizável do teclado.
+
+Quando ela está ativada ou sem definição, os controles de rolagem que não têm filhos focalizáveis podem ser focalizados pelo teclado por padrão.
+
+Quando esta política está desativada, os controles de rolagem não podem ser focalizados pelo teclado por padrão.
+
+Esta política é uma solução temporária e será removida na versão M135.</translation>
 <translation id="3217774577897351942">A API <ph name="OFFSET_PARENT" /> está sendo modificada no <ph name="PRODUCT_NAME" /> para obedecer às mudanças que foram feitas no <ph name="FIREFOX_PRODUCT_NAME" /> e no <ph name="SAFARI_PRODUCT_NAME" />. Esta política retorna o comportamento antigo até a versão M120.
 
 O novo comportamento pode causar falhas em alguns sites exclusivos do <ph name="PRODUCT_NAME" /> que usam <ph name="OFFSET_PARENT" />, <ph name="OFFSET_TOP" /> ou <ph name="OFFSET_LEFT" /> com o Shadow DOM.
@@ -6323,6 +6323,29 @@ Quando definida para o quiosque do <ph name="PRODUCT_OS_NAME" />, esta política
 <translation id="5622590774455244290">Os apps Android podem escolher respeitar essa lista voluntariamente. Eles não podem ser obrigados a fazer isso.</translation>
 <translation id="5622924058222112599">Ativar o processo de lançamento padrão do CECPQ2</translation>
 <translation id="5623304306796942802">Solicitar quando houver várias correspondências de certificado</translation>
+<translation id="5624334866248253262">Configura uma lista com regras de controle de dados para evitar vazamentos.
+
+      Cada regra consiste no seguinte:
+      - Campos de condição que acionam essa regra. Uma regra só será acionada se uma ação do usuário corresponder a todos os campos preenchidos em <ph name="DATA_CONTROLS_SOURCES" />, <ph name="DATA_CONTROLS_DESTINATIONS" />, <ph name="DATA_CONTROLS_AND" />, <ph name="DATA_CONTROLS_OR" /> e <ph name="DATA_CONTROLS_NOT" />. Para subcampos da lista, precisa haver correspondência de apenas uma entrada. Por exemplo, apenas um padrão de URL precisa ser correspondente para acionar a regra.
+      - Uma lista de restrições a serem aplicadas. Dependendo da restrição, apenas as condições <ph name="DATA_CONTROLS_SOURCES" /> ou <ph name="DATA_CONTROLS_DESTINATIONS" /> podem estar disponíveis.
+
+      As regras podem ser aplicadas para:
+      - Controlar os dados na área de transferência compartilhados entre as origens e os destinos.
+      - Controlar o bloqueio de capturas de tela com base nas guias de origem.
+
+      Se a política <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" /> for definida como "true" (verdadeira), as regras acionadas serão informadas ao administrador.
+      O nível de restrição pode ser definido como "BLOCK", "WARN" ou "REPORT" (bloquear, alertar ou informar).
+      - Se a restrição for definida como BLOCK, a ação não será autorizada.
+      - Se a restrição for definida como WARN, o usuário será avisado e poderá escolher entre continuar ou cancelar a ação.
+      - Se a restrição for definida como "REPORT", a ação do usuário não será interrompida, mas um relatório será enviado se a política <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" /> estiver ativada.
+
+      Observações:
+      - Formate os padrões de URL da maneira descrita em https://support.google.com/chrome/a?p=url_blocklist_filter_format.
+      - Para regras de prevenção contra vazamento de dados específicas do <ph name="PRODUCT_OS_NAME" />, consulte também a política <ph name="DATA_LEAK_PREVENTION_RULES_LIST" />.
+
+      Se a política for deixada sem definição, nenhuma restrição será aplicada.
+
+      Esta política está disponível apenas para usuários que receberam uma licença do Chrome Enterprise Premium.</translation>
 <translation id="5625771176514429288">A execução de apps do Chrome será permitida nestas plataformas.</translation>
 <translation id="5630352020869108293">Restaurar a última sessão</translation>
 <translation id="5633871703004128675">Ativar o recurso de acessibilidade que destaca o cursor</translation>
@@ -7559,6 +7582,9 @@ Se esta configuração estiver desativada ou se nenhum valor for definido, o Mod
           A maneira recomendada de bloquear a tela depois de um período de inatividade é ativar o bloqueio de tela quando o dispositivo estiver suspenso e suspender o <ph name="PRODUCT_OS_NAME" /> depois do intervalo de inatividade. Esta política só será usada quando o bloqueio de tela ocorrer muito antes da suspensão ou quando a suspensão devido à inatividade não for desejada.
 
           O valor da política precisa ser especificado em milissegundos. Os valores são ajustados para serem menores que o intervalo de inatividade.</translation>
+<translation id="6496139622896320246">Se a política for ativada, o <ph name="PRODUCT_OS_NAME" /> vai salvar automaticamente as credenciais do Wi-Fi ativo do quiosque no nível do dispositivo. O Wi-Fi ativo pode ser usado por outros aplicativos de quiosque ou usuários no dispositivo.
+Se a política for deixada sem definição ou desativada, as credenciais do Wi-Fi ativo serão armazenadas no nível do quiosque: o Wi-Fi configurado em um aplicativo de quiosque só poderá ser usado nesse mesmo app.
+Essa política não é recomendada e deve ser usada quando não há outras opções disponíveis (por exemplo, a política OpenNetworkConfiguration).</translation>
 <translation id="6497085755801788141">Usar o verificador de certificados integrado</translation>
 <translation id="6499579502664610993">Substitui conjuntos de sites relacionados.</translation>
 <translation id="6504720469162323184">A definição da política determina o tempo (em milissegundos) sem atividade do usuário até o login automático na conta local do dispositivo especificada pela <ph name="DEVICE_LOCAL_ACCOUNT_AUTO_LOGIN_ID_POLICY_NAME" />.

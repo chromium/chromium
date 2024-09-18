@@ -78,6 +78,7 @@
 <translation id="1240638468526743569">تطبيق</translation>
 <translation id="1242198791279543032">تم كتم صوت الإشعارات</translation>
 <translation id="1242883863226959074">جهاز</translation>
+<translation id="1245476784081715330">أحسنت صنعًا.</translation>
 <translation id="1245644940275736236">‏الانتقال إلى "مساعد Google"</translation>
 <translation id="124678866338384709">إغلاق علامة التبويب الحالية</translation>
 <translation id="1246890715821376239">تطبيقات غير متوافقة</translation>
@@ -844,6 +845,7 @@
 <translation id="3958714870339660776">طوال اليوم</translation>
 <translation id="3962859241508114581">المقطع الصوتي السابق</translation>
 <translation id="3963124517343721543">يمكنك المتابعة بسهولة من حيث توقفت من خلال فتح النوافذ وعلامات التبويب السابقة. ستظهر لك أيضًا اقتراحات مخصّصة للأنشطة التي يمكنك تنفيذها بعد ذلك.</translation>
+<translation id="396506362088290977">اختبار صوت الميكروفون</translation>
 <translation id="3969043077941541451">متوقفة</translation>
 <translation id="3970324493235864154">عرض الإشعارات في هاتفك</translation>
 <translation id="397105322502079400">جارٍ الحساب...</translation>
@@ -901,6 +903,7 @@
 <translation id="4156293514828496577">‏يتبقّى ‎<ph name="PERCENTAGE" />% من شحن البطارية (حوالي <ph name="TIME_LEFT" />).
 لإطالة عمر البطارية، تم حصر وظائف بعض الميزات.</translation>
 <translation id="4160919062868802509">تم رصد مصادر صوتية متعددة</translation>
+<translation id="416245495747357243">أحسنت!</translation>
 <translation id="4165275524535002941">قد يكون الكابل غير متوافق مع الشاشات</translation>
 <translation id="4177415338862979658">انقر للاطّلاع على التفاصيل.</translation>
 <translation id="4177913004758410636">{0,plural, =1{تحديث الجهاز خلال يوم واحد}zero{تحديث الجهاز خلال # يوم}two{تحديث الجهاز خلال يومين}few{تحديث الجهاز خلال # أيام}many{تحديث الجهاز خلال # يومًا}other{تحديث الجهاز خلال # يوم}}</translation>
@@ -986,6 +989,7 @@
 <translation id="4412944820643904175">ميزة <ph name="FEATURE_NAME" /> غير مُفعَّلة.</translation>
 <translation id="4417647906073317561">إعدادات "وضع التركيز" لضبط موقّت ومَهمّة وموسيقى ومساعدتك في التركيز على مهامك</translation>
 <translation id="4424159417645388645">سطح المكتب 5</translation>
+<translation id="4426817706804363424">حسنًا!</translation>
 <translation id="4430019312045809116">مستوى الصوت</translation>
 <translation id="4441283832827406317">تم ترتيب التطبيقات حسب الاسم.</translation>
 <translation id="4445159312344259901">سجِّل الدخول لفتح قفل الشبكة.</translation>
@@ -1250,6 +1254,7 @@
 <translation id="5283198616748585639">إضافة دقيقة واحدة</translation>
 <translation id="528468243742722775">‏مفتاح End</translation>
 <translation id="5286194356314741248">جارٍ البحث</translation>
+<translation id="528641622273682395">إيقاف أو تفعيل اختبار صوت الميكروفون</translation>
 <translation id="5297423144044956168">لم يتم العثور على أي أجهزة جوّالة.</translation>
 <translation id="5297704307811127955">غير مُفعَّلة</translation>
 <translation id="5300589172476337783">عرض</translation>
@@ -1277,6 +1282,7 @@
 <translation id="536019650977002321">لا يسمح المشرف بتسجيل الصوت. يمكنك التواصل مع المشرف للحصول على مزيد من المعلومات.</translation>
 <translation id="5361524080961918551">تم تنزيل ملفات اللغة <ph name="LANGUAGE" /> جزئيًا</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> الانتقال إلى علامة التبويب هذه</translation>
+<translation id="5363835273551457276">يمكنك اختبار صوت الميكروفون. أغلِق اللوحة للإيقاف.</translation>
 <translation id="5364693579536176785">مساحة التخزين</translation>
 <translation id="5369573834963677938">‏سيتمكّن المستخدمون الآخرون من التحكّم في ميزة FaceGaze على الجهاز</translation>
 <translation id="5369717264580061086">معاينة ملف في تطبيق "الملفات"</translation>
@@ -1417,6 +1423,7 @@
 <translation id="5802516411616338943">فتح "الإعدادات السريعة"</translation>
 <translation id="5804651031882187592">‏إيقاف الإعداد "قفل شريحة SIM"</translation>
 <translation id="5805809050170488595">انقر لتفعيل <ph name="NETWORK_NAME" />.</translation>
+<translation id="5818796501620225415">يمكنك إضافة المزيد من الوقت أو إنهاء جلسة التركيز</translation>
 <translation id="5819918159912280082">‏تمت إعادة تشغيل جهاز Chromebook بشكل غير متوقّع. يمكنك فتح النوافذ والتطبيقات السابقة.</translation>
 <translation id="5823239091726045201">‏"مهام Google" على الويب</translation>
 <translation id="5825969630400862129">إعدادات الأجهزة المتّصلة</translation>
@@ -1510,7 +1517,6 @@
 <translation id="6119972796024789243">تصحيح الألوان</translation>
 <translation id="6121838516699723042">تأكيد تنزيل <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">‏لا يتوفر "مساعد Google" في جلسة ضيف.</translation>
-<translation id="6127370444807669747">‏يمكنك تجربة YouTube Music Premium للاستماع إلى قوائم تشغيل مخصّصة وموسيقى تساعدك على التركيز</translation>
 <translation id="6127395413317891856">جهازك غير متصل بالإنترنت. يُرجى التحقّق من الاتصال والمحاولة مجددًا.</translation>
 <translation id="6129953537138746214">مسافة</translation>
 <translation id="6137566720514957455">فتح مربع الحوار لإزالة الحساب <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -2129,6 +2135,7 @@
 <translation id="8262312463845990408">استئناف التشغيل أو إيقافه مؤقتًا</translation>
 <translation id="8268302343625273732">‏الاطّلاع على كل المهام في Google Classroom</translation>
 <translation id="8277261673056602147">تمييز النص على الشاشة</translation>
+<translation id="8282784978194352587">أنجزت كل المطلوب!</translation>
 <translation id="8287009018010202411">تطبيقات الإنتاجية</translation>
 <translation id="828708037801473432">غير مُفعَّلة</translation>
 <translation id="8297006494302853456">ضعيفة</translation>
@@ -2206,6 +2213,7 @@
 <translation id="8609384513243082612">فتح علامة تبويب جديدة</translation>
 <translation id="861045123704058818">يتم تنظيم التطبيقات حسب الفئة مؤقتًا</translation>
 <translation id="8612216344243590325">احتفِظ بالملفات المهمة في "<ph name="HOLDING_SPACE_TITLE" />" بدلاً من وضعها على سطح المكتب. ما عليك سوى سحب الملفات إلى "<ph name="HOLDING_SPACE_TITLE" />".</translation>
+<translation id="8612338981637220013">رائع!</translation>
 <translation id="8614517853887502247">‏تم حجب إشعارات التطبيقين <ph name="APP_1_TITLE" /> و<ph name="APP_2_TITLE" /> بسبب تفعيل ميزة Viewing Protection.</translation>
 <translation id="8615778328722901791">فتح شريط الأدوات</translation>
 <translation id="8619000641825875669">OneDrive</translation>
@@ -2248,6 +2256,7 @@
 <translation id="8742057891287715849">‫"<ph name="NAME" />" ·‏ "<ph name="SERVICE_PROVIDER" />": جارٍ التفعيل…</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />،
         <ph name="SCREEN_SHARE_STATUS" /></translation>
+<translation id="8751299148074971734">واصِل التقدُّم!</translation>
 <translation id="8753368202781196133">هذه اللغة غير متاحة في الوقت الحالي.</translation>
 <translation id="8755498163081687682">إثبات هويتك: يريد النطاق <ph name="ORIGIN_NAME" /> تأكيد هويتك.</translation>
 <translation id="875593634123171288">‏عرض إعدادات شبكة VPN</translation>

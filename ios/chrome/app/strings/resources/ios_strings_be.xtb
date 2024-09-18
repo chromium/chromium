@@ -116,6 +116,7 @@
 <translation id="1517166097004694782">Схаваць параметр "Працягнуць працу з гэтай укладкай"</translation>
 <translation id="1520027731907768768">Атрымліваць абвесткі пра скідкі на тавары, якія вы адсочваеце.</translation>
 <translation id="1521774566618522728">Апошнія дзеянні адбываліся сёння</translation>
+<translation id="1524563461097350801">Не, дзякуй</translation>
 <translation id="1531038290222364269">Паказваць укладкі</translation>
 <translation id="1536390784834419204">Перакласці старонку</translation>
 <translation id="1540800554400757039">Радок адраса 1</translation>
@@ -1507,7 +1508,6 @@
 <translation id="8173034266693057059">Даўжыня</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8182037667962849780">{count,plural, =1{Для {website_1}}=2{Для {website_1}, {website_2}}=3{Для {website_1}, {website_2} і яшчэ 1}one{Для {website_1}, {website_2} і яшчэ {more_count}}few{Для {website_1}, {website_2} і яшчэ {more_count}}many{Для {website_1}, {website_2} і яшчэ {more_count}}other{Для {website_1}, {website_2} і яшчэ {more_count}}}</translation>
-<translation id="8189814768485665290">Абагуліць поўны URL-адрас</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Вашы прылады<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Дадайце пароль</translation>
 <translation id="8202744799033457229">Паказаць гісторыю</translation>
@@ -1541,6 +1541,7 @@
 <translation id="8349305172487531364">Панэль закладак</translation>
 <translation id="8366466717204352506">Праверка ніколі не праводзілася</translation>
 <translation id="8368001212524806591">Адсочваць цану</translation>
+<translation id="8370406443343902172">Перайсці ў налады...</translation>
 <translation id="8372471489238799313">{count,plural, =1{Выдаліць адрас}one{Выдаліць адрасы}few{Выдаліць адрасы}many{Выдаліць адрасы}other{Выдаліць адрасы}}</translation>
 <translation id="8378714024927312812">Пад кіраваннем вашай арганізацыі</translation>
 <translation id="8386068868580335421">Скінуць</translation>
@@ -1603,6 +1604,7 @@
 <translation id="8637431369725868556">Абараніцеся ад небяспечных сайтаў.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Раскрытых пароляў няма}=1{{COUNT} раскрыты пароль}one{{COUNT} раскрыты пароль}few{{COUNT} раскрытыя паролі}many{{COUNT} раскрытых пароляў}other{{COUNT} раскрытага пароля}}</translation>
 <translation id="8640575194957831802">Час апошняга адкрыцця</translation>
+<translation id="8647280737650867362">Не ўдалося скасаваць адсочванне цаны.</translation>
 <translation id="8654802032646794042">Скасаваць</translation>
 <translation id="8660600697590740984">Пошук скапіраванага відарыса праз Аб’ектыў</translation>
 <translation id="866266761389616183">Якая неспадзяванка!</translation>

@@ -145,6 +145,7 @@
 <translation id="1651925268237749928">Jūs esat atlasījis kopīgotu albumu. Citi lietotāji var pievienot vai mainīt fotoattēlus. Jūsu fona tapetē var tikt izmantoti fotoattēli, kas pašlaik nav šajā albumā.</translation>
 <translation id="1661512400125589646">Pārtraukt</translation>
 <translation id="1661865805917886535">Noteikta konta un sistēmas informācija var tikt nosūtīta uzņēmumam Google. Mēs izmantojam šo informāciju tehnisku problēmu novēršanai un savu pakalpojumu uzlabošanai saskaņā ar savu konfidencialitātes politiku (<ph name="PRIVACYPOLICYURL" />) un pakalpojumu sniegšanas noteikumiem (<ph name="TERMSOFSERVICEURL" />). Lai pieprasītu satura izmaiņas, pārejiet uz juridiskās palīdzības lapu (<ph name="LEGALHELPPAGEURL" />).</translation>
+<translation id="1662699081856352167">Apkopojums tika sekmīgi ģenerēts.</translation>
 <translation id="1662989795263954667">Apturēts — beigusies tinte</translation>
 <translation id="1664796644829245314">Priekšskatīt attēlu <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">Iebūvēts VPN</translation>
@@ -254,6 +255,7 @@
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2148716181193084225">Šodien</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> fotoattēli</translation>
+<translation id="2154460308960858308">Notīrīt meklēšanas vaicājumu</translation>
 <translation id="2156072344042480449">Jūsu divas jaunākās uzvednes. Varat izmantot šīs uzvednes tikai šajā lapā.</translation>
 <translation id="2157660087437850958">emocijzīmju atlasītājs</translation>
 <translation id="2157959690810728433">IEVIETOTS RINDĀ</translation>
@@ -500,6 +502,7 @@
 <translation id="3557205324756024651">Lokālā identitāte (neobligāti)</translation>
 <translation id="3565064564551103223">Atļautās IP adreses</translation>
 <translation id="3569407787324516067">Ekrānsaudzētājs</translation>
+<translation id="3571184524500629183">Aizvērt meklēšanas lodziņu</translation>
 <translation id="3577473026931028326">Radās kļūda. Mēģiniet vēlreiz.</translation>
 <translation id="357889014807611375">Maksas Wi-Fi tīkls</translation>
 <translation id="3583278742022654445">Vājš signāls. Pārvietojieties tuvāk Wi-Fi signāla avotam.</translation>
@@ -539,6 +542,7 @@
 <translation id="3780740315729837296">Piešķiriet tastatūras taustiņu.</translation>
 <translation id="3784455785234192852">Bloķēt</translation>
 <translation id="3785643128701396311">pikselizēts stils</translation>
+<translation id="3799381533888781854">IZSLĒGTS — šo iestatījumu pārvalda jūsu administrators.</translation>
 <translation id="380097101658023925">RGB vadīklas</translation>
 <translation id="38114475217616659">Notīrīt visu vēsturi</translation>
 <translation id="3820172043799983114">PIN nav derīgs.</translation>
@@ -742,6 +746,7 @@
 <translation id="4809927044794281115">Gaišais motīvs</translation>
 <translation id="4813136279048157860">Mani attēli</translation>
 <translation id="4813345808229079766">Savienojums</translation>
+<translation id="4824527342590024245">Pagaidām netiek atbalstīta transkripcija, kurā ir mazāk nekā <ph name="MIN_WORD_LENGTH" /> vārds(-i).</translation>
 <translation id="4830894019733815633">kanjons</translation>
 <translation id="4832079907277790330">Atlasīt mapi lietotnē Faili…</translation>
 <translation id="4835901797422965222">Nav aktīvu tīklu</translation>
@@ -770,6 +775,7 @@
 <translation id="4921665434385737356">Uzlādes apjoms: <ph name="RATE" /> <ph name="NUM_SECONDS" /> sekundēs.</translation>
 <translation id="4930320165497208503">Lai iestatītu vai atjauninātu savienojumu, pārejiet uz <ph name="BEGIN_LINK" />iestatījumiem<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Datums</translation>
+<translation id="4946927805998996217">Notiek apkopojuma ģenerēšana…</translation>
 <translation id="4950314376641394653">Ierīces <ph name="DEVICE_NAME" /> aparātprogrammatūra tika atjaunināta uz versiju <ph name="VERSION" /></translation>
 <translation id="4950893758552030541">koku tunelis</translation>
 <translation id="4965661459364092269">Drošības atiestatīšana ir pabeigta</translation>
@@ -830,6 +836,7 @@
 <translation id="5229104491259541281">Vaicājuma “<ph name="QUERY" />” konvertēšana</translation>
 <translation id="5229344016299762883">Iziet no pilnekrāna režīma</translation>
 <translation id="5234764350956374838">Nerādīt</translation>
+<translation id="5236119614998611749">Neizdevās ģenerēt apkopojumu.</translation>
 <translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{Administrators ir iestatījis lietotnes <ph name="APP_NAME" /> automātisku palaišanu katru reizi, kad piesakāties.}=2{Administrators ir iestatījis lietotnes <ph name="APP_NAME" /> un vēl 1 lietotnes automātisku palaišanu katru reizi, kad piesakāties.}zero{Administrators ir iestatījis lietotnes <ph name="APP_NAME" /> un vēl # lietotņu automātisku palaišanu katru reizi, kad piesakāties.}one{Administrators ir iestatījis lietotnes <ph name="APP_NAME" /> un vēl # lietotnes automātisku palaišanu katru reizi, kad piesakāties.}other{Administrators ir iestatījis lietotnes <ph name="APP_NAME" /> un vēl # lietotņu automātisku palaišanu katru reizi, kad piesakāties.}}</translation>
 <translation id="5248419081947706722">zila</translation>
 <translation id="5252456968953390977">Viesabonēšana</translation>
@@ -945,6 +952,7 @@
 <translation id="5860033963881614850">Izsl.</translation>
 <translation id="5860491529813859533">Ieslēgt</translation>
 <translation id="5876385649737594562">Ieslēdziet, lai atlasītu opcijas</translation>
+<translation id="5877503382465267833">Pārtraukt ieraksta “<ph name="RECORDING_NAME" />” atskaņošanu</translation>
 <translation id="588258955323874662">Pilnekrāna</translation>
 <translation id="5893975327266416093">Lai piešķirtu, pieskarieties tastatūras taustiņam</translation>
 <translation id="5895138241574237353">Restartēt</translation>
@@ -1162,6 +1170,7 @@
 <translation id="6910312834584889076">Skenera vāks ir atvērts. Aizveriet vāku un mēģiniet vēlreiz.</translation>
 <translation id="6910845598686542904">aprēķinātu ierakstā noteikto balsu modeļus;</translation>
 <translation id="6911383237894364323">Nevar izveidot savienojumu ar multivides satura serveriem.</translation>
+<translation id="6927968682840110570">Ieraksta nosaukums</translation>
 <translation id="6930242544192836755">Ilgums</translation>
 <translation id="6930597342185648547">Par fonu</translation>
 <translation id="6939667434404433010">Meklēt ieraksta nosaukumu</translation>
@@ -1270,6 +1279,7 @@
 <translation id="7378170410161264436">Lietotnē Ierakstītājs var izveidot transkripcijas ierakstiem, kuros ir dzirdama runa.
 Lai varētu izveidot šādas transkripcijas, lejupielādējiet transkribēšanas modeli (līdz 100 MB).</translation>
 <translation id="7384004438856720753">pils</translation>
+<translation id="7388345524791662148">Citas opcijas ierakstam “<ph name="RECORDING_NAME" />”</translation>
 <translation id="7388959671917308825">Iebūvētais skārienpaliktnis</translation>
 <translation id="7397270852490618635">Izslēgt gaišo motīvu</translation>
 <translation id="7401543881546089382">Dzēst saīsni</translation>
@@ -1291,6 +1301,7 @@ Lai varētu izveidot šādas transkripcijas, lejupielādējiet transkribēšanas
 <translation id="7513770521371759388">apakšā</translation>
 <translation id="7514365320538308">Lejupielādēt</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7519481256236810334">Atskaņot ierakstu “<ph name="RECORDING_NAME" />”</translation>
 <translation id="7525067979554623046">Izveidot</translation>
 <translation id="7528507600602050979">Palīdzības saturs nav pieejams</translation>
 <translation id="7535791657097741517">Ieslēgt gaišo motīvu</translation>
@@ -1367,6 +1378,7 @@ Lai varētu izveidot šādas transkripcijas, lejupielādējiet transkribēšanas
 <translation id="7897043345768902965">gājēju celiņš</translation>
 <translation id="7902285181767404769">Izslēdziet paziņojumu skaņu ierakstīšanas laikā.</translation>
 <translation id="7903695460270716054">Izvēlēties atlasītos mākslas darbus un attēlus</translation>
+<translation id="7912005977894000746">Atgriezties galvenajā lapā</translation>
 <translation id="7915220255123750251">Pārvaldiet tīkla APN iestatījumus. APN izveido savienojumu starp mobilo tīklu un internetu.</translation>
 <translation id="7936303884198020182">Netika atrasts neviens nosaukumu serveris</translation>
 <translation id="7942349550061667556">Sarkana</translation>

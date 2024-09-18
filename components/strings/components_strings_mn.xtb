@@ -446,6 +446,7 @@
 <translation id="1771254328977666895">Үнийн түүхийг харах</translation>
 <translation id="1777422078676229054">Гэрэл зураг (архивын)</translation>
 <translation id="1778646502362731194">JIS B0</translation>
+<translation id="1785118555253503473">Веб аппликэйшнүүдийг суулгах уу?</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Бүртгэлийнхээ мэдээлэл, нууцлал болон аюулгүй байдлыг удирдахын тулд эхлээд Tab, дараа нь Enter дээр дарна уу</translation>
 <translation id="1793631236004319016">Хамгийн сүүлд <ph name="NUM_HOURS_MINUTES_SECONDS" />-н өмнө ашигласан</translation>
@@ -1014,6 +1015,7 @@
 <translation id="2882949212241984732">Давхар хаалган нугалаа</translation>
 <translation id="2891963978019740012">Таны Chrome-н хайлтын систем</translation>
 <translation id="2893773853358652045">Дөрөв дэх хуйлмал</translation>
+<translation id="2894137550885451583">Эдгээр нь <ph name="PRODUCT" /> бүтээгдэхүүний <ph name="CURRENCY" />-н үнэ юм</translation>
 <translation id="2900528713135656174">Арга хэмжээ үүсгэх</translation>
 <translation id="2902312830803030883">Бусад үйлдэл</translation>
 <translation id="2903493209154104877">Хаягууд</translation>
@@ -1162,6 +1164,7 @@
 <translation id="3157931365184549694">Дахин сэргээх</translation>
 <translation id="3158539265159265653">Диск</translation>
 <translation id="3162559335345991374">Таны ашиглаж буй Wi-Fi сүлжээ таныг нэвтрэх хуудаст орохыг шаардах магадлалтай.</translation>
+<translation id="316638481603975524">Веб аппликэйшнүүдийг суулгахыг хүсэх боломжтой</translation>
 <translation id="3168744840365648658">Радио тоног төхөөрөмж</translation>
 <translation id="3168938241115725594">Сонгодог тээврийн хэрэгслүүд</translation>
 <translation id="3169472444629675720">Олох</translation>
@@ -1612,6 +1615,7 @@
 <translation id="3949601375789751990">Таны хайлтын түүх энд харагдана</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">Хадгалсан төлбөрийн хэрэгсэл байхгүй</translation>
+<translation id="3950560191811267370">Худалдааны доод хүснэгтийг хаасан</translation>
 <translation id="3950574001630941635">Практик хичээлийг дахин эхлүүлэх</translation>
 <translation id="3950820424414687140">Нэвтрэх</translation>
 <translation id="3953505489397572035">Энэ нь дундаж үнэ юм</translation>
@@ -2321,6 +2325,7 @@
 <translation id="5273658854610202413">Анхааруулга: Энэ удирдамж нь нэгтгэж болдог толь бичгийн удирдамжийн нэг хэсэг биш тул үүнийг PolicyDictionaryMultipleSourceMergeList удирдамжид тодорхойлсны дагуу нэгтгэж чадсангүй.</translation>
 <translation id="5278778426231952189">Одоо байршуулах</translation>
 <translation id="5279286380302340275">Таталтуудыг удирдах</translation>
+<translation id="5280963125494874678">веб аппликэйшнүүд</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">Документын төлөв байдал</translation>
 <translation id="528468243742722775">Төгсгөл</translation>
@@ -2353,6 +2358,7 @@
 <translation id="5331585574693522196">Өгөгдмөлөөр тохируулах</translation>
 <translation id="5332219387342487447">Хүргэлтийн арга</translation>
 <translation id="5332769172018416402">Мессежээр асуух</translation>
+<translation id="533323551986281710">Худалдааны доод хүснэгтийг бүтэн өндрөөр нээсэн</translation>
 <translation id="5334013548165032829">Системийн дэлгэрэнгүй лог</translation>
 <translation id="5334145288572353250">Хаягийг хадгалах уу?</translation>
 <translation id="5340250774223869109">Аппликэйшнийг блоклосон</translation>
@@ -2535,6 +2541,7 @@
 <translation id="5675650730144413517">Энэ хуудас ажиллахгүй байна</translation>
 <translation id="5675809467256309336">Бүжиг, электрон хөгжим</translation>
 <translation id="5675959228867414813">Огноогоор харуулах</translation>
+<translation id="567604591393105935">Худалдааны доод хүснэгтийг тал өндрөөр нээсэн</translation>
 <translation id="5677928146339483299">Хаагдсан</translation>
 <translation id="5678007133659493065">Тугалган цаас</translation>
 <translation id="5680642791693447368">Онц сонирхолтой, гэмт хэргийн болон нууцлаг кинонууд</translation>
@@ -2820,6 +2827,7 @@
 <translation id="6221311046884916259">Та энэ картыг Google Бүртгэлд хадгалахыг хүсэж байна уу?</translation>
 <translation id="6221892641068781024">Хялбаршуулсан харагдац</translation>
 <translation id="6222527803348563979">Бичгийн цаас</translation>
+<translation id="62231116988543150">Веб аппликэйшнүүдийг суулгах боломжтой байх</translation>
 <translation id="6224281071334553713">Үнэт чулуу болон үнэт эдлэл</translation>
 <translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome-н тохиргоонд хандалтын хэрэгслээ хувийн болгохын тулд эхлээд tab, дараа нь Enter дээр дарна уу</translation>
 <translation id="6228346913624365233">Тансаг зэрэглэлийн тээврийн хэрэгслүүд</translation>
@@ -3083,6 +3091,7 @@
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Бүртгэлээс төхөөрөмжөө олохын тулд Tab, дараа нь Enter дээр дарна уу</translation>
 <translation id="6695428916538794739">Тулаант, адал явдалт кинонууд</translation>
 <translation id="6696424331653607346">Аяллын хөтөч, аяллын тэмдэглэлүүд</translation>
+<translation id="6696575039575740785">Веб аппликэйшнүүдийг суулгахыг зөвшөөрөөгүй</translation>
 <translation id="6698097747703777657">Кодоо хүлээн аваагүй юү? <ph name="BEGIN_LINK" />Шинэ код авах<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">Үүсгэсэн:</translation>
 <translation id="67007264085648978">Хугацаа гүйлгэгч</translation>
@@ -3196,6 +3205,7 @@
 <translation id="6915804003454593391">Хэрэглэгч:</translation>
 <translation id="6916193791494646625">Татаж буй шалтгааныг өгнө үү (шаардлагатай)</translation>
 <translation id="6917795328362592458">Таны дөнгөж сая ашигласан нууц үгийг өгөгдлийн зөрчлөөс оллоо. Таны бүртгэлүүдийг хамгаалахын тулд Нууц үгний менежер хадгалсан нууц үгнүүдээ шалгахыг зөвлөж байна.</translation>
+<translation id="6921197121276419421">Веб аппликэйшнүүдийг суулгахыг зөвшөөрсөн</translation>
 <translation id="6924013822850225188">Та тооцоо хийх үедээ картынхаа үр өгөөжийг харах эсэхийг сонгоно уу (банкны нөхцөл хэрэгжинэ)</translation>
 <translation id="6925267999184670015">Хойд Америкийн B+</translation>
 <translation id="6926216138694948720">Боди арт</translation>
@@ -3439,6 +3449,7 @@
 <translation id="7374733840632556089">Та эсвэл өөр хэн нэгэн таны төхөөрөмж дээр суулгасан сертификатын улмаас ийм асуудал гардаг. Сертификатыг сүлжээнд хяналт хийх болон дундаас нь өгөгдөл цуглуулахад ашигладаг гэж мэдэгдсэн бөгөөд Chrome түүнд итгэхгүй байна. Сургууль эсвэл компанийн сүлжээнд хяналт хийх зэрэг хууль ёсны зарим тохиолдол байдаг бөгөөд Chrome нь та хяналтыг зогсоож чадахгүй байсан ч хяналт хийгдэж байгаа тухай таныг мэдэж байгаа эсэхийг шалгах хүсэлтэй байна. Вэбэд ханддаг аливаа хөтөч эсвэл аппликэйшн дээр хяналт хийж болзошгүй.</translation>
 <translation id="7375532151824574023">{NUM_COOKIES,plural, =0{Ямар ч сайтад зөвшөөрөөгүй}=1{1 сайтад зөвшөөрсөн}other{# сайтад зөвшөөрсөн}}</translation>
 <translation id="7375818412732305729">Файлыг хавсаргадаг</translation>
+<translation id="7376031331622621328">Худалдааны доод хүснэгт</translation>
 <translation id="7377249249140280793"><ph name="RELATIVE_DATE" /> - <ph name="FULL_DATE" /></translation>
 <translation id="7377314930809374926">Зочлох үйлчилгээний салбар</translation>
 <translation id="7378594059915113390">Медиа хяналт</translation>
@@ -3691,6 +3702,7 @@
 <translation id="7761701407923456692">Серверийн гэрчилгээ нь холбоостой таарахгүй байна.</translation>
 <translation id="7764225426217299476">Хаяг нэмэх</translation>
 <translation id="7766518757692125295">Хормой</translation>
+<translation id="7766899888934244586">Веб аппликэйшнүүд</translation>
 <translation id="7767278989746220252">Доторх хашаа, зүлэг болон цэцэрлэг</translation>
 <translation id="776749070095465053">Даавуу</translation>
 <translation id="7773005668374414287">Нүүрээр нь дээш харуулж, хуудасны дарааллын дагуу</translation>
@@ -3723,6 +3735,7 @@
 <translation id="7831993212387676366">Авах зүйлийн жагсаалт гэж юу вэ?</translation>
 <translation id="7840103971441592723">Дэлгэцийн зураг авч эхэллээ</translation>
 <translation id="784137052867620416">Shopping Insights</translation>
+<translation id="7842611866969435396">Эхэлцгээе</translation>
 <translation id="784404208867107517">Бүлэглэсэн түүх</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Байхгүй}=1{1 апп (<ph name="EXAMPLE_APP_1" />)}=2{2 апп (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# апп (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="785476343534277563">Коллежийн спортууд</translation>

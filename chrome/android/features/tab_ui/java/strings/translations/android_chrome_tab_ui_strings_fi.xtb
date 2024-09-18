@@ -104,6 +104,7 @@
 <translation id="5400836586163650660">Harmaa</translation>
 <translation id="5490235265819901748">Välilehtiryhmä laajennettu</translation>
 <translation id="5494920125229734069">Valitse kaikki</translation>
+<translation id="5549653163690032080">Avaa välilehtiryhmän toimintovalikko jaetulle välilehtiryhmälle <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Sulje välilehtiryhmä, jossa on <ph name="TABS_COUNT_ONE" /> välilehti, väri <ph name="COLOR_NAME" />.}other{Sulje välilehtiryhmä, jossa on <ph name="TABS_COUNT_MANY" /> välilehteä, väri <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">Näytä kaupan tiedot, vaihtoehto lähellä näytön yläreunaa</translation>
 <translation id="5627941783489838464">Ei välilehtipäivityksiä</translation>
@@ -135,6 +136,7 @@
 <translation id="6694634756612002311">Muuta jakamisvalintoja</translation>
 <translation id="6744956528665271406">Muokkaa ryhmän väriä</translation>
 <translation id="6856809498882026482">Piilota monivalintatila</translation>
+<translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{Laajenna jaettu välilehtiryhmä (<ph name="TITLE_OF_GROUP" />), jossa on <ph name="TABS_COUNT_ONE" /> välilehti, väri <ph name="COLOR_NAME" />.}other{Laajenna jaettu välilehtiryhmä (<ph name="TITLE_OF_GROUP" />), jossa on <ph name="TABS_COUNT_MANY" /> välilehteä, väri <ph name="COLOR_NAME" />.}}</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Jaa välilehti}other{Jaa välilehdet}}</translation>
 <translation id="7129458170538955174">"Tietoja tästä kaupasta" avattu puolen näytön kokoisena</translation>
 <translation id="7200189319044305940">{NUMBER_OF_TABS,plural, =1{Sulje ryhmä <ph name="TITLE_OF_GROUP" />, jossa on <ph name="TABS_COUNT_ONE" /> välilehti.}other{Sulje ryhmä <ph name="TITLE_OF_GROUP" />, jossa on <ph name="TABS_COUNT_MANY" /> välilehteä.}}</translation>
@@ -170,6 +172,7 @@
 <translation id="8205266828577616993">Siirrä välilehti ylöspäin</translation>
 <translation id="8261506727792406068">Poista</translation>
 <translation id="8338427544764842461">Välilehtiryhmäsi tallennetaan tänne, ja ne päivittyvät kaikilla sisäänkirjautuneilla laitteilla</translation>
+<translation id="8344020191144794051">{NUMBER_OF_TABS,plural, =1{Laajenna välilehtiryhmä, jossa on <ph name="TABS_COUNT_ONE" /> välilehti, väri <ph name="COLOR_NAME" />.}other{Laajenna välilehtiryhmä, jossa on <ph name="TABS_COUNT_MANY" /> välilehteä, väri <ph name="COLOR_NAME" />.}}</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Sulje <ph name="TABS_COUNT_ONE" /> valittu välilehti}other{Sulje <ph name="TABS_COUNT_MANY" /> valittua välilehteä}}</translation>
 <translation id="8398929769197326728">Uusi kansio – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">Asetukset</translation>

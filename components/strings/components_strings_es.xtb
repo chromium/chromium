@@ -1014,6 +1014,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2882949212241984732">Plegado en ventana doble</translation>
 <translation id="2891963978019740012">Tu buscador en Chrome</translation>
 <translation id="2893773853358652045">Cuarto rollo</translation>
+<translation id="2894137550885451583">Estos son los precios en <ph name="CURRENCY" /> del producto <ph name="PRODUCT" /></translation>
 <translation id="2900528713135656174">Crear evento</translation>
 <translation id="2902312830803030883">Más acciones</translation>
 <translation id="2903493209154104877">Direcciones</translation>
@@ -1611,6 +1612,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3949601375789751990">Tu historial de navegación aparece aquí</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">No hay ningún método de pago guardado</translation>
+<translation id="3950560191811267370">Hoja inferior de comercio cerrada</translation>
 <translation id="3950574001630941635">Reiniciar tutorial</translation>
 <translation id="3950820424414687140">Iniciar sesión</translation>
 <translation id="3953505489397572035">Este precio es el habitual</translation>
@@ -2352,6 +2354,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="5331585574693522196">Establecer como predeterminado</translation>
 <translation id="5332219387342487447">Método de envío</translation>
 <translation id="5332769172018416402">Preguntar por mensaje</translation>
+<translation id="533323551986281710">Hoja inferior de comercio abierta a altura completa</translation>
 <translation id="5334013548165032829">Registros detallados del sistema</translation>
 <translation id="5334145288572353250">¿Guardar dirección?</translation>
 <translation id="5340250774223869109">Se ha bloqueado la aplicación</translation>
@@ -2534,6 +2537,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="5675650730144413517">Esta página no funciona</translation>
 <translation id="5675809467256309336">Música dance y electrónica</translation>
 <translation id="5675959228867414813">Mostrar por fecha</translation>
+<translation id="567604591393105935">Hoja inferior de comercio abierta a media altura</translation>
 <translation id="5677928146339483299">Bloqueado</translation>
 <translation id="5678007133659493065">Papel de aluminio</translation>
 <translation id="5680642791693447368">Películas de intriga, policíacas y suspense</translation>
@@ -3440,6 +3444,7 @@ Más información:
 <translation id="7374733840632556089">Este problema se debe a un certificado que tú u otra persona habéis instalado en el dispositivo. Chrome no confía en este certificado porque hay constancia de que se utiliza para interceptar y vigilar redes. En algunos casos, dicha vigilancia es legítima (por ejemplo, en las redes de centros educativos o empresas), pero Chrome quiere asegurarse de que estás al corriente de ello, aunque no puedas evitarlo. La vigilancia puede afectar a todos los navegadores y las aplicaciones que accedan a Internet.</translation>
 <translation id="7375532151824574023">{NUM_COOKIES,plural, =0{Ningún sitio permitido}=1{1 sitio permitido}other{# sitios permitidos}}</translation>
 <translation id="7375818412732305729">Se ha adjuntado un archivo</translation>
+<translation id="7376031331622621328">Hoja inferior de comercio</translation>
 <translation id="7377249249140280793"><ph name="RELATIVE_DATE" /> - <ph name="FULL_DATE" /></translation>
 <translation id="7377314930809374926">Industria hotelera</translation>
 <translation id="7378594059915113390">Controles multimedia</translation>

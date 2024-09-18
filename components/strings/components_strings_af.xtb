@@ -677,6 +677,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2212735316055980242">Beleid nie gevind nie</translation>
 <translation id="2213606439339815911">Gaan haal tans inskrywings …</translation>
 <translation id="2213612003795704869">Bladsy is gedruk</translation>
+<translation id="2215368073167343359">Outovul met Google</translation>
 <translation id="2215539479425228550">Klim en bergklim</translation>
 <translation id="2215727959747642672">Lêerwysiging</translation>
 <translation id="2215963164070968490">Honde</translation>
@@ -709,6 +710,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2262243747453050782">HTTP-fout</translation>
 <translation id="2265192657948645752">Kleinhandelposte</translation>
 <translation id="2265356434276802347">Hierdie beleid moenie meer as <ph name="MAX_ITEMS_LIMIT" /> uitstalinskrywings hê nie.</translation>
+<translation id="2266175583972138136">Bepalings geld vir kaartvoordele</translation>
 <translation id="2267047181501709434">Verifieer tans jou identiteit …</translation>
 <translation id="2268044343513325586">Verfyn</translation>
 <translation id="2268966938956566076">Oplaai begin oor <ph name="MINUTES" /> min.</translation>
@@ -1014,6 +1016,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2882949212241984732">Dubbeluitvoublad</translation>
 <translation id="2891963978019740012">Jou soekenjin in Chrome</translation>
 <translation id="2893773853358652045">Vierde rol</translation>
+<translation id="2894137550885451583">Dit is pryse in <ph name="CURRENCY" /> vir produk <ph name="PRODUCT" /></translation>
 <translation id="2900528713135656174">Skep geleentheid</translation>
 <translation id="2902312830803030883">Nog handelinge</translation>
 <translation id="2903493209154104877">Adresse</translation>
@@ -1611,6 +1614,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3949601375789751990">Jou blaaigeskiedenis verskyn hier</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">Geen gestoorde betaalmetodes nie</translation>
+<translation id="3950560191811267370">Handel se onderste blad is toegemaak</translation>
 <translation id="3950574001630941635">Herbegin tutoriaal</translation>
 <translation id="3950820424414687140">Meld aan</translation>
 <translation id="3953505489397572035">Hierdie prys is tipies</translation>
@@ -1795,6 +1799,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="4269264543938335308">Swemdrag</translation>
 <translation id="4269599248168651462">Die bedienersertifikaat is aan ’n nie-unieke naam uitgereik.</translation>
 <translation id="4270541775497538019">Stapelaar 6</translation>
+<translation id="4271652479722040953">Wanneer uitbreidings by Chrome gevoeg word, word relevante data oor hierdie uitbreidings na derde partye vir ontleding gestuur, en kan dit vir jou admin sigbaar wees. Die data sluit inligting oor die uitbreidings in, soos naam, installeertyd, bron van installasie asook aktiwiteit in verband met hierdie uitbreidings (soos oortjies wat verander word, webwerwe wat gekontak word of toegang wat tot webkoekies verkry word). Hierdie data word ingesamel vanaf die Chrome Webwinkel- en buitewinkeluitbreidings.</translation>
 <translation id="4275830172053184480">Herbegin jou toestel</translation>
 <translation id="4276974990916607331">Nee, dankie</translation>
 <translation id="4277028893293644418">Stel wagwoord terug</translation>
@@ -1876,6 +1881,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="4406896451731180161">soekresultate</translation>
 <translation id="4408413947728134509">Webkoekies <ph name="NUM_COOKIES" /></translation>
 <translation id="4412074349188076601">Hierdie opstelling is as installeerbaar gemerk, maar geen prent is vir hierdie argitektuur verskaf nie en daarom kan dit nie geïnstalleer word nie.</translation>
+<translation id="4414452699610169758">Gebruik Google Wagwoordbestuurder en Chrome-outovul om wagwoorde, betaalmetodes en adresse te stoor en in te vul</translation>
 <translation id="4414515549596849729">webkoekies en werfdata</translation>
 <translation id="4415156962929755728">Plastiek (glansryk)</translation>
 <translation id="4415426530740016218">Oplaaiadres</translation>
@@ -2352,6 +2358,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5331585574693522196">Stel as verstek</translation>
 <translation id="5332219387342487447">Versendingmetode</translation>
 <translation id="5332769172018416402">Vra in ’n boodskap</translation>
+<translation id="533323551986281710">Handel se onderste blad het teen volle hoogte oopgemaak</translation>
 <translation id="5334013548165032829">Gedetailleerde stelselloglêers</translation>
 <translation id="5334145288572353250">Stoor adres?</translation>
 <translation id="5340250774223869109">Program word geblokkeer</translation>
@@ -2534,6 +2541,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5675650730144413517">Hierdie bladsy werk nie</translation>
 <translation id="5675809467256309336">Dans- en elektroniese musiek</translation>
 <translation id="5675959228867414813">Wys volgens datum</translation>
+<translation id="567604591393105935">Handel se onderste blad het teen halwe hoogte oopgemaak</translation>
 <translation id="5677928146339483299">Geblokkeer</translation>
 <translation id="5678007133659493065">Foelie</translation>
 <translation id="5680642791693447368">Rillers, misdaad- en misterieflieks</translation>
@@ -3373,6 +3381,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="7232352818707016189">Meer handeling vir Vergelyktabel</translation>
 <translation id="7233592378249864828">Drukbevestigingbladsy</translation>
 <translation id="7234112195906418665">Reis en vervoer</translation>
+<translation id="7234585564776614047">Outovul met ’n ander diens</translation>
 <translation id="7236417832106250253"><ph name="PROGRESS_PERCENT" />% voltooi | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
 <translation id="7237166092326447040">Geskenke en items vir spesiale geleenthede</translation>
 <translation id="7237454422623102448">Stelselinstellings</translation>
@@ -3439,6 +3448,7 @@ Bykomende besonderhede:
 <translation id="7374733840632556089">Hierdie probleem word veroorsaak deur 'n sertifikaat wat jy of iemand anders op jou toestel geïnstalleer het. Dit is bekend dat hierdie sertifikaat gebruik word om netwerke te monitor en te onderskep, en dit word nie deur Chrome vertrou nie. Terwyl sommige wettige gevalle vir monitering wel bestaan, soos op 'n skool- of maatskappynetwerk, wil Chrome seker maak dat jy weet dit gebeur, selfs al kan jy dit nie keer nie. Monitering kan in enige blaaier of program met toegang tot die web plaasvind.</translation>
 <translation id="7375532151824574023">{NUM_COOKIES,plural, =0{Geen werwe toegelaat nie}=1{1 werf toegelaat}other{# werwe toegelaat}}</translation>
 <translation id="7375818412732305729">Lêer is aangeheg</translation>
+<translation id="7376031331622621328">Handel se onderste blad</translation>
 <translation id="7377249249140280793"><ph name="RELATIVE_DATE" /> – <ph name="FULL_DATE" /></translation>
 <translation id="7377314930809374926">Gasvryheidsbedryf</translation>
 <translation id="7378594059915113390">Media-kontroles</translation>
@@ -4032,6 +4042,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="8409413588194360210">betalinghanteerders</translation>
 <translation id="8412145213513410671">Omvalle (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">Jy moet dieselfde wagfrase twee keer invoer.</translation>
+<translation id="8414322570408428950">Uitbreidingsgeval vind plaas</translation>
 <translation id="8416694386774425977">Die netwerkopstelling is ongeldig en kon nie ingevoer word nie.
 Bykomende besonderhede:
 <ph name="DEBUG_INFO" /></translation>
@@ -4283,6 +4294,7 @@ Bykomende besonderhede:
 <translation id="8891031436559779793">Jy sal in kennis gestel word as die prys op enige werf daal.</translation>
 <translation id="8891727572606052622">Ongeldige instaanbedienermodus.</translation>
 <translation id="8894794286471754040">Lang kant eerste</translation>
+<translation id="8895334001368918465">As jy ’n ander outovuldiens in Chrome wil gebruik, moet jy dit in Android-instellings en hier aanskakel</translation>
 <translation id="8897428486789851669">Swem</translation>
 <translation id="8899807382908246773">Indringerige advertensies</translation>
 <translation id="8903921497873541725">Zoem in</translation>

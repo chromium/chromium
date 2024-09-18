@@ -86,6 +86,7 @@
 <translation id="1383876407941801731">搜索</translation>
 <translation id="138618066238211776">继续以<ph name="USER_NAME" />的身份登录</translation>
 <translation id="138692594145659985">卡片保存选项</translation>
+<translation id="1396260204083880024">目前登录的用户名是<ph name="USER_NAME" />，账号是 <ph name="USER_EMAIL" />。打开账号菜单。</translation>
 <translation id="1397144142234474689">隐藏历史记录</translation>
 <translation id="1407135791313364759">全部打开</translation>
 <translation id="1408847409015257906">点按“隐私与安全”。</translation>
@@ -116,6 +117,7 @@
 <translation id="1517166097004694782">隐藏“继续使用此标签页”</translation>
 <translation id="1520027731907768768">接收所跟踪商品的降价提醒。</translation>
 <translation id="1521774566618522728">今天曾有活动</translation>
+<translation id="1524563461097350801">不用了</translation>
 <translation id="1531038290222364269">显示标签页</translation>
 <translation id="1536390784834419204">翻译网页</translation>
 <translation id="1540800554400757039">地址第1行</translation>
@@ -572,6 +574,7 @@
 <translation id="3851938967634752633">用于登录 <ph name="WEBSITE" />、<ph name="SECOND_WEBSITE" /> 和另外 <ph name="NUMBER_OF_ACCOUNTS" /> 个网站的密码将被删除。您的相关账号不会被删除。</translation>
 <translation id="3858860766373142691">名称</translation>
 <translation id="3861908220442487587">该地址仅在此设备上保存。若要在其他设备上使用它，请将它迁移到您的 Google 账号 <ph name="USER_EMAIL" /></translation>
+<translation id="3868495844258915202">显示完整网址</translation>
 <translation id="3876833929577368454">每次都向我询问</translation>
 <translation id="3885587018298784481">加入家人群组</translation>
 <translation id="3888863481921783344">这是为了向您显示有望邀请哪些人来参加您的活动。</translation>
@@ -595,6 +598,7 @@
 <translation id="3967327056943561740">书签</translation>
 <translation id="3967822245660637423">下载完毕</translation>
 <translation id="3982893814825393515">报告问题…</translation>
+<translation id="398604237578616937">目前登录的账号是 <ph name="USER_EMAIL" />。打开账号菜单。</translation>
 <translation id="3987993985790029246">复制链接</translation>
 <translation id="3992684624889376114">关于此页面</translation>
 <translation id="3994422733891749358">选择要接收的通知</translation>
@@ -732,6 +736,7 @@
 <translation id="4636930964841734540">信息</translation>
 <translation id="4642472735733036929">已停止跟踪价格</translation>
 <translation id="4645575059429386691">由您父母管理</translation>
+<translation id="4647758699119474035">目前登录的用户名是<ph name="USER_NAME" />，账号是 <ph name="USER_EMAIL" />。Google 账号错误，打开账号菜单。</translation>
 <translation id="4650125387981512669">继续以<ph name="FIRST_RUN_ACCOUNT_NAME" />的身份登录</translation>
 <translation id="4652817563047461855">确保密码安全，检查密码是否遭到泄露，并了解安全上网的建议。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="4658335131052370646">保存</translation>
@@ -856,6 +861,7 @@
 <translation id="5210365745912300556">关闭标签页</translation>
 <translation id="5211488077761630279">允许“<ph name="SITE_NAME" />”使用您的<ph name="PERMISSION" />？</translation>
 <translation id="5217245356412073535">您可在“设置”&gt;“内容设置”中将默认网站视图改为桌面版视图</translation>
+<translation id="5217329997012062137">当您使用 Google 智能镜头时，系统会将相关页面的屏幕截图发送给 Google。</translation>
 <translation id="5220945116117011963">根据日期创建日历活动</translation>
 <translation id="5222676887888702881">退出</translation>
 <translation id="5228579091201413441">启用同步功能</translation>
@@ -914,6 +920,7 @@
 
 另外，您必须在“设置”的“常规”部分启用 Handoff 功能，并且您的设备必须使用同一个 iCloud 账号。</translation>
 <translation id="5551825465462320939">随时掌握您感兴趣的新闻、体育赛事等资讯。</translation>
+<translation id="5555008247722361784">目前登录的账号是 <ph name="USER_EMAIL" />，Google 账号错误，打开账号菜单。</translation>
 <translation id="5556459405103347317">重新加载</translation>
 <translation id="555749644339804659">正在检查密码…</translation>
 <translation id="5559567453458728487">转换在网上找到的计量单位</translation>
@@ -1507,7 +1514,6 @@
 <translation id="8173034266693057059">长度</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8182037667962849780">{count,plural, =1{对于 {website_1}}=2{对于 {website_1}、{website_2}}=3{对于 {website_1}、{website_2} 和另外 1 个}other{对于 {website_1}、{website_2} 个另外 {more_count} 个}}</translation>
-<translation id="8189814768485665290">分享完整网址</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />您的设备<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">添加密码</translation>
 <translation id="8202744799033457229">显示历史记录</translation>
@@ -1541,6 +1547,7 @@
 <translation id="8349305172487531364">书签栏</translation>
 <translation id="8366466717204352506">从未检查过</translation>
 <translation id="8368001212524806591">跟踪价格</translation>
+<translation id="8370406443343902172">前往“设置”…</translation>
 <translation id="8372471489238799313">{count,plural, =1{删除地址}other{删除地址}}</translation>
 <translation id="8378714024927312812">由贵组织管理</translation>
 <translation id="8386068868580335421">重置</translation>
@@ -1592,6 +1599,7 @@
 <translation id="8571213806525832805">过去 4 周</translation>
 <translation id="8577056989960190117">自动填充失效年份 <ph name="YEAR" /></translation>
 <translation id="8588404856427128947">已关闭</translation>
+<translation id="8590286732816598906">标签页分组，<ph name="GROUP_TITLE" />，菜单。</translation>
 <translation id="8593565399399144771">您可在此处打开新标签页。</translation>
 <translation id="8600272508328041907">切换为整页翻译</translation>
 <translation id="860043288473659153">持卡人姓名</translation>
@@ -1624,6 +1632,7 @@
 <translation id="8712534545803964353">在当前页面中查找…</translation>
 <translation id="8712637175834984815">知道了</translation>
 <translation id="8722229818691036192">此设备上的账号</translation>
+<translation id="8722649775263832315">点按或选中即可使用 Google 智能镜头搜索任何内容</translation>
 <translation id="8725066075913043281">重试</translation>
 <translation id="8728922029615312208">全部关闭</translation>
 <translation id="8730621377337864115">完成</translation>
@@ -1728,6 +1737,7 @@
 <translation id="9162432979321511934">开启“自动填充密码”</translation>
 <translation id="9165320910061267720">若要接收降价提醒通知，您需在 iOS 设置中开启通知功能。</translation>
 <translation id="9179151630575358778">隐藏此内容</translation>
+<translation id="918129721713827015">显示分组中的标签页</translation>
 <translation id="9183733013282108610">无痕搜索</translation>
 <translation id="9186762474139509529">开始日志记录</translation>
 <translation id="9191031968346938109">添加到…</translation>

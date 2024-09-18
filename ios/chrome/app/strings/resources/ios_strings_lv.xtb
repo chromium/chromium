@@ -116,6 +116,7 @@
 <translation id="1517166097004694782">Paslēpt vienumu “Turpināt šajā cilnē”</translation>
 <translation id="1520027731907768768">Saņemiet paziņojumus par izsekoto produktu cenu kritumu.</translation>
 <translation id="1521774566618522728">Aktīvs šodien</translation>
+<translation id="1524563461097350801">Nē, paldies</translation>
 <translation id="1531038290222364269">Rādīt cilnes</translation>
 <translation id="1536390784834419204">Tulkot lapu</translation>
 <translation id="1540800554400757039">1. adrese</translation>
@@ -1507,7 +1508,6 @@ Vietnes drīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbība
 <translation id="8173034266693057059">Garums</translation>
 <translation id="8179976553408161302">Ievadīt</translation>
 <translation id="8182037667962849780">{count,plural, =1{Vietnei {website_1}}=2{Vietnei {website_1} un {website_2}}=3{Vietnei {website_1}, {website_2} un vēl vienai vietnei}zero{Vietnei {website_1}, {website_2} un vēl {more_count} vietnēm}one{Vietnei {website_1}, {website_2} un vēl {more_count} vietnei}other{Vietnei {website_1}, {website_2} un vēl {more_count} vietnēm}}</translation>
-<translation id="8189814768485665290">Kopīgot visu URL</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Jūsu ierīces<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Paroles pievienošana</translation>
 <translation id="8202744799033457229">Vēstures rādīšana</translation>
@@ -1541,6 +1541,7 @@ Vietnes drīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbība
 <translation id="8349305172487531364">Grāmatzīmju josla</translation>
 <translation id="8366466717204352506">Pārbaude nekad nav veikta</translation>
 <translation id="8368001212524806591">Izsekot cenu</translation>
+<translation id="8370406443343902172">Pāriet uz iestatījumiem...</translation>
 <translation id="8372471489238799313">{count,plural, =1{Dzēst adresi}zero{Dzēst adreses}one{Dzēst adreses}other{Dzēst adreses}}</translation>
 <translation id="8378714024927312812">Pārvalda jūsu organizācija</translation>
 <translation id="8386068868580335421">Atiestatīt</translation>
@@ -1603,6 +1604,7 @@ Vietnes drīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbība
 <translation id="8637431369725868556">Iegūstiet aizsardzību pret bīstamām vietnēm.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Nav uzlauztu paroļu}=1{{COUNT} uzlauzta parole}zero{{COUNT} uzlauztu paroļu}one{{COUNT} uzlauzta parole}other{{COUNT} uzlauztas paroles}}</translation>
 <translation id="8640575194957831802">Visnesenāk atvērtās</translation>
+<translation id="8647280737650867362">Nevarēja pārtraukt cenas izsekošanu.</translation>
 <translation id="8654802032646794042">Atcelt</translation>
 <translation id="8660600697590740984">Pakalpojumā Lens nokopētais attēls</translation>
 <translation id="866266761389616183">Ak, vai!</translation>

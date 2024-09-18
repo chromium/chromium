@@ -446,6 +446,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1771254328977666895">Se prishistorik</translation>
 <translation id="1777422078676229054">Foto (arkiv)</translation>
 <translation id="1778646502362731194">JIS B0</translation>
+<translation id="1785118555253503473">Vil du installere webapps?</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, tryk på Tab-tasten efterfulgt af Enter for hurtigt at administrere dine oplysninger, dit privatliv og beskyttelsen på din Google-konto</translation>
 <translation id="1793631236004319016">Senest brugt for <ph name="NUM_HOURS_MINUTES_SECONDS" /> siden</translation>
@@ -677,6 +678,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2212735316055980242">Politikken blev ikke fundet</translation>
 <translation id="2213606439339815911">Opslag hentes...</translation>
 <translation id="2213612003795704869">Siden er udskrevet</translation>
+<translation id="2215368073167343359">Autofyld med Google</translation>
 <translation id="2215539479425228550">Klatring og bjergbestigning</translation>
 <translation id="2215727959747642672">Filredigering</translation>
 <translation id="2215963164070968490">Hunde</translation>
@@ -709,6 +711,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2262243747453050782">HTTP-fejl</translation>
 <translation id="2265192657948645752">Jobs i detailhandlen</translation>
 <translation id="2265356434276802347">Denne politik må ikke have mere end <ph name="MAX_ITEMS_LIMIT" /> fremhævede poster.</translation>
+<translation id="2266175583972138136">Vilkår er gældende for kortfordele</translation>
 <translation id="2267047181501709434">Verificerer din identitet...</translation>
 <translation id="2268044343513325586">Juster</translation>
 <translation id="2268966938956566076">Upload om <ph name="MINUTES" /> min.</translation>
@@ -1014,6 +1017,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2882949212241984732">Dobbelt portfals</translation>
 <translation id="2891963978019740012">Din søgemaskine i Chrome</translation>
 <translation id="2893773853358652045">Fjerde papirrulle</translation>
+<translation id="2894137550885451583">Dette er <ph name="CURRENCY" />-priser for produktet <ph name="PRODUCT" /></translation>
 <translation id="2900528713135656174">Opret begivenhed</translation>
 <translation id="2902312830803030883">Flere handlinger</translation>
 <translation id="2903493209154104877">Adresser</translation>
@@ -1162,6 +1166,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3157931365184549694">Gendan</translation>
 <translation id="3158539265159265653">Disk</translation>
 <translation id="3162559335345991374">Det Wi-Fi-netværk, du bruger, kan kræve, at du går til netværkets loginside.</translation>
+<translation id="316638481603975524">Kan anmode om at installere webapps</translation>
 <translation id="3168744840365648658">Radioudstyr</translation>
 <translation id="3168938241115725594">Klassiske biler</translation>
 <translation id="3169472444629675720">Discover</translation>
@@ -1611,6 +1616,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3949601375789751990">Din browserhistorik vises her</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">Der er ingen gemte betalingsmetoder</translation>
+<translation id="3950560191811267370">Feltet i bunden med handelsoplysninger er lukket</translation>
 <translation id="3950574001630941635">Genstart vejledning</translation>
 <translation id="3950820424414687140">Log ind</translation>
 <translation id="3953505489397572035">Dette er normalprisen</translation>
@@ -1795,6 +1801,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4269264543938335308">Svømmetøj</translation>
 <translation id="4269599248168651462">Servercertifikatet er givet til et navn, der ikke er unikt.</translation>
 <translation id="4270541775497538019">Stabler 6</translation>
+<translation id="4271652479722040953">Når udvidelser føjes til Chrome, sendes relevante data om disse udvidelser til analyse hos tredjeparter, og de kan muligvis ses af din administrator. Dataene omfatter oplysninger om udvidelserne, f.eks. navn, installationstidspunkt, installationskilde samt aktivitet, der er knyttet til disse udvidelser (f.eks. skift mellem faner, kontakt til websites eller adgang til cookies). Disse data indsamles for udvidelser, der er installeret via Chrome Webshop, samt for udvidelser, der ikke er fra Chrome Webshop.</translation>
 <translation id="4275830172053184480">Genstart din enhed</translation>
 <translation id="4276974990916607331">Nej tak</translation>
 <translation id="4277028893293644418">Nulstil adgangskoden</translation>
@@ -1876,6 +1883,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4406896451731180161">søgeresultater</translation>
 <translation id="4408413947728134509">Cookies <ph name="NUM_COOKIES" /></translation>
 <translation id="4412074349188076601">Denne konfiguration er markeret som installerbar, men der er ikke angivet noget billede til denne arkitektur, så den kan ikke installeres.</translation>
+<translation id="4414452699610169758">Brug Google Adgangskodeadministrator og Autofyld i Chrome til at gemme og udfylde adgangskoder, betalingsmetoder og adresser</translation>
 <translation id="4414515549596849729">cookies og websitedata</translation>
 <translation id="4415156962929755728">Plast (helblank)</translation>
 <translation id="4415426530740016218">Afhentningsadresse</translation>
@@ -2320,6 +2328,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5273658854610202413">Advarsel! Denne politik blev ikke flettet som angivet i politikken PolicyDictionaryMultipleSourceMergeList, da den ikke er en del af de ordbogspolitikker, der kan flettes.</translation>
 <translation id="5278778426231952189">Upload nu</translation>
 <translation id="5279286380302340275">Administrer downloads</translation>
+<translation id="5280963125494874678">webapps</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">Dokumentegenskaber</translation>
 <translation id="528468243742722775">Afslut</translation>
@@ -2352,6 +2361,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5331585574693522196">Angiv som standard</translation>
 <translation id="5332219387342487447">Leveringsmetode</translation>
 <translation id="5332769172018416402">Spørg i en meddelelse</translation>
+<translation id="533323551986281710">Feltet i bunden med handelsoplysninger er åbnet i fuld højde</translation>
 <translation id="5334013548165032829">Detaljerede systemlogs</translation>
 <translation id="5334145288572353250">Vil du gemme adressen?</translation>
 <translation id="5340250774223869109">Appen er blokeret</translation>
@@ -2534,6 +2544,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5675650730144413517">Denne side virker ikke</translation>
 <translation id="5675809467256309336">Dance og elektronisk musik</translation>
 <translation id="5675959228867414813">Vis efter dato</translation>
+<translation id="567604591393105935">Feltet i bunden med handelsoplysninger er åbnet i halv højde</translation>
 <translation id="5677928146339483299">Blokeret</translation>
 <translation id="5678007133659493065">Folie</translation>
 <translation id="5680642791693447368">Thrillers og krimi- og mysteriefilm</translation>
@@ -2820,6 +2831,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6221311046884916259">Vil du gemme dette kort på din Google-konto?</translation>
 <translation id="6221892641068781024">Enkel visning</translation>
 <translation id="6222527803348563979">Papir</translation>
+<translation id="62231116988543150">Kunne installere webapps</translation>
 <translation id="6224281071334553713">Ædelstene og smykker</translation>
 <translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />– tryk på Tab-tasten efterfulgt af Enter for at personligt tilpasse dine hjælpefunktioner i Chrome-indstillingerne</translation>
 <translation id="6228346913624365233">Luksusbiler</translation>
@@ -3083,6 +3095,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" /> – tryk på Tab-tasten og derefter Enter for at finde din enhed på Google-kontoen</translation>
 <translation id="6695428916538794739">Action- og adventurefilm</translation>
 <translation id="6696424331653607346">Rejsevejledninger og rejsekataloger</translation>
+<translation id="6696575039575740785">Installation af webapps er ikke tilladt</translation>
 <translation id="6698097747703777657">Har du ikke modtaget din kode? <ph name="BEGIN_LINK" />Få en ny kode<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">Oprettet:</translation>
 <translation id="67007264085648978">Afspilningsbjælke</translation>
@@ -3196,6 +3209,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6915804003454593391">Bruger:</translation>
 <translation id="6916193791494646625">Angiv årsag til download (påkrævet)</translation>
 <translation id="6917795328362592458">Den adgangskode, du lige har brugt, er blevet lækket i forbindelse med et brud på datasikkerheden. For at beskytte dine konti anbefaler Adgangs­kode­admin­istrator, at du tjekker dine gemte adgangskoder.</translation>
+<translation id="6921197121276419421">Installation af webapps er tilladt</translation>
 <translation id="6924013822850225188">Vælg, om du vil se dine kortfordele ved betalingen (bankvilkår er gældende)</translation>
 <translation id="6925267999184670015">Nordamerika B+</translation>
 <translation id="6926216138694948720">Kropskunst</translation>
@@ -3374,6 +3388,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="7232352818707016189">Flere handlinger for sammenligningstabellen</translation>
 <translation id="7233592378249864828">Udskriv bekræftelsesark</translation>
 <translation id="7234112195906418665">Rejse og transport</translation>
+<translation id="7234585564776614047">Autofyld ved hjælp af en anden tjeneste</translation>
 <translation id="7236417832106250253"><ph name="PROGRESS_PERCENT" /> % fuldført | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
 <translation id="7237166092326447040">Gaver og mærkedagevarer</translation>
 <translation id="7237454422623102448">Systemindstillinger</translation>
@@ -3440,6 +3455,7 @@ Yderligere oplysninger:
 <translation id="7374733840632556089">Dette problem opstår på grund af et certifikat, som du eller en anden har installeret på din enhed. Certifikatet anvendes ofte til at overvåge og opfange netværk, og Chrome har ikke tillid til det. Der findes legitime årsager til at overvåge, f.eks. på skole- og virksomhedsnetværk, men Chrome vil sikre, at du er bevidst om det, når det sker, også selvom du ikke kan stoppe det. Overvågning kan finde sted i enhver browser eller app, der har adgang til nettet.</translation>
 <translation id="7375532151824574023">{NUM_COOKIES,plural, =0{Ingen websites er tilladt}=1{1 website er tilladt}one{# website er tilladt}other{# websites er tilladt}}</translation>
 <translation id="7375818412732305729">En fil vedhæftes</translation>
+<translation id="7376031331622621328">Feltet i bunden med handelsoplysninger</translation>
 <translation id="7377249249140280793"><ph name="RELATIVE_DATE" /> - <ph name="FULL_DATE" /></translation>
 <translation id="7377314930809374926">Restaurations- og hotelbranchen</translation>
 <translation id="7378594059915113390">Mediestyring</translation>
@@ -3692,6 +3708,7 @@ Yderligere oplysninger:
 <translation id="7761701407923456692">Serverens certifikat passer ikke til webadressen.</translation>
 <translation id="7764225426217299476">Tilføj adresse</translation>
 <translation id="7766518757692125295">Skørte</translation>
+<translation id="7766899888934244586">Webapps</translation>
 <translation id="7767278989746220252">Terrasse, plæne og have</translation>
 <translation id="776749070095465053">Stof</translation>
 <translation id="7773005668374414287">Samme rækkefølge med forside opad</translation>
@@ -3724,6 +3741,7 @@ Yderligere oplysninger:
 <translation id="7831993212387676366">Hvad er indkøbslisten?</translation>
 <translation id="7840103971441592723">Screenshot er startet</translation>
 <translation id="784137052867620416">Shopping Insights</translation>
+<translation id="7842611866969435396">Start</translation>
 <translation id="784404208867107517">Grupperet historik</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Ingen}=1{1 app (<ph name="EXAMPLE_APP_1" />)}=2{2 apps (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# app (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}other{# apps (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}}</translation>
 <translation id="785476343534277563">Collegesport</translation>
@@ -4033,6 +4051,7 @@ Yderligere oplysninger:
 <translation id="8409413588194360210">betalingshandlers</translation>
 <translation id="8412145213513410671">Nedbrud (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">Du skal angive den samme adgangssætning to gange.</translation>
+<translation id="8414322570408428950">En udvidelseshændelse udføres</translation>
 <translation id="8416694386774425977">Netværkskonfigurationen er ugyldig og kunne ikke importeres.
 Yderligere oplysninger:
 <ph name="DEBUG_INFO" /></translation>
@@ -4285,6 +4304,7 @@ Yderligere oplysninger:
 <translation id="8891031436559779793">Du får besked, hvis prisen falder på et website.</translation>
 <translation id="8891727572606052622">Ugyldig proxytilstand.</translation>
 <translation id="8894794286471754040">Lang kant først</translation>
+<translation id="8895334001368918465">Hvis du vil bruge en anden tjeneste til autofyld i Chrome, skal du aktivere den her og i Android-indstillingerne</translation>
 <translation id="8897428486789851669">Svømning</translation>
 <translation id="8899807382908246773">Påtrængende annoncer</translation>
 <translation id="8903921497873541725">Zoom ind</translation>

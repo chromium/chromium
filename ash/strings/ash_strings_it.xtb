@@ -78,6 +78,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1240638468526743569">Un'app</translation>
 <translation id="1242198791279543032">Le notifiche sono disattivate</translation>
 <translation id="1242883863226959074">dispositivo</translation>
+<translation id="1245476784081715330">Ottimo lavoro!</translation>
 <translation id="1245644940275736236">Vai all'Assistente</translation>
 <translation id="124678866338384709">Chiudi scheda corrente</translation>
 <translation id="1246890715821376239">App non supportate</translation>
@@ -129,7 +130,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1391102559483454063">On</translation>
 <translation id="1394698770495054737">Sfocatura completa</translation>
 <translation id="1395878931462960119">{DAYS,plural, =1{1 giorno fa}other{# giorni fa}}</translation>
-<translation id="1404963891829069586">Suoni della modalità Senza distrazioni</translation>
+<translation id="1404963891829069586">Suoni della modalità Niente distrazioni</translation>
 <translation id="1407069428457324124">Tema scuro</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Usa i tasti Freccia per spostarti tra le date.</translation>
 <translation id="141170878022560212">Pulsante centrale</translation>
@@ -214,6 +215,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1703117532528082099">Finestra attiva agganciata a sinistra.</translation>
 <translation id="1708345662127501511">Scrivania: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Impostazioni di rete</translation>
+<translation id="171610090693716835">Tieni tutto sotto controllo con playlist personalizzate per la concentrazione. YouTube Music e YouTube senza annunci con 3 mesi di YouTube Premium senza costi.</translation>
 <translation id="1719094688023114093">La funzionalità Sottotitoli in tempo reale è attiva.</translation>
 <translation id="1720011244392820496">Attiva Sync Wi-Fi</translation>
 <translation id="1720230731642245863">L'hotspot è disattivato</translation>
@@ -839,6 +841,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="3958714870339660776">Tutto il giorno</translation>
 <translation id="3962859241508114581">Traccia precedente</translation>
 <translation id="3963124517343721543">Continua facilmente da dove avevi interrotto aprendo le finestre e le schede precedenti. Vedrai anche suggerimenti personalizzati su cosa fare dopo.</translation>
+<translation id="396506362088290977">Testa il suono del microfono</translation>
 <translation id="3969043077941541451">Off</translation>
 <translation id="3970324493235864154">Visualizza le notifiche dello smartphone</translation>
 <translation id="397105322502079400">Calcolo in corso...</translation>
@@ -896,6 +899,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="4156293514828496577">Batteria rimanente: <ph name="PERCENTAGE" />% (circa <ph name="TIME_LEFT" />).
 Alcune funzionalità sono limitate per aumentare la durata della batteria.</translation>
 <translation id="4160919062868802509">Più sorgenti audio rilevate</translation>
+<translation id="416245495747357243">Finito!</translation>
 <translation id="4165275524535002941">Il cavo potrebbe non supportare i display</translation>
 <translation id="4177415338862979658">Fai clic per verificare i dettagli</translation>
 <translation id="4177913004758410636">{0,plural, =1{Aggiorna il dispositivo entro 1 giorno}other{Aggiorna il dispositivo entro # giorni}}</translation>
@@ -981,6 +985,7 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="4412944820643904175">La funzionalità <ph name="FEATURE_NAME" /> è disattivata.</translation>
 <translation id="4417647906073317561">Impostazioni della modalità Niente distrazioni. Imposta un timer, un'attività e la musica per iniziare a concentrarti.</translation>
 <translation id="4424159417645388645">Scrivania 5</translation>
+<translation id="4426817706804363424">Complimenti!</translation>
 <translation id="4430019312045809116">Volume</translation>
 <translation id="4441283832827406317">Le app sono ordinate per nome</translation>
 <translation id="4445159312344259901">Accedi per sbloccare</translation>
@@ -1245,6 +1250,7 @@ Puoi anche utilizzare la scorciatoia da tastiera. Evidenzia il testo, quindi pre
 <translation id="5283198616748585639">Aggiungi 1 min</translation>
 <translation id="528468243742722775">Fine</translation>
 <translation id="5286194356314741248">Ricerca</translation>
+<translation id="528641622273682395">Attiva/disattiva il test del microfono</translation>
 <translation id="5297423144044956168">Nessun dispositivo mobile trovato</translation>
 <translation id="5297704307811127955">Off</translation>
 <translation id="5300589172476337783">Mostra</translation>
@@ -1272,6 +1278,7 @@ Nessun dispositivo connesso.</translation>
 <translation id="536019650977002321">L'amministratore non consente l'acquisizione dell'audio. Per ulteriori informazioni al riguardo rivolgiti all’amministratore.</translation>
 <translation id="5361524080961918551"><ph name="LANGUAGE" /> file vocali scaricati parzialmente</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Vai a questa scheda</translation>
+<translation id="5363835273551457276">Puoi testare il suono del microfono. Chiudi il riquadro per interrompere.</translation>
 <translation id="5364693579536176785">spazio di archiviazione</translation>
 <translation id="5369573834963677938">Il controllo del volto sarà disponibile per gli altri utenti sul dispositivo</translation>
 <translation id="5369717264580061086">Visualizza l'anteprima del file nell'app File</translation>
@@ -1405,6 +1412,7 @@ Nessun dispositivo connesso.</translation>
 <translation id="5777841717266010279">Interrompere la condivisione dello schermo?</translation>
 <translation id="5779721926447984944">File bloccati</translation>
 <translation id="5785221443435874078">Rimuovi questo suggerimento</translation>
+<translation id="5787431783058088906">Ricevi vantaggio</translation>
 <translation id="5788127256798019331">File Google Play</translation>
 <translation id="5788535737706478207">Riapri l'ultima scheda o finestra chiusa</translation>
 <translation id="5790085346892983794">Completato</translation>
@@ -1412,6 +1420,7 @@ Nessun dispositivo connesso.</translation>
 <translation id="5802516411616338943">Apri le Impostazioni rapide</translation>
 <translation id="5804651031882187592">Disattiva l'impostazione "Blocca SIM"</translation>
 <translation id="5805809050170488595">Fai clic per attivare <ph name="NETWORK_NAME" /></translation>
+<translation id="5818796501620225415">Puoi aggiungere tempo o terminare la sessione in modalità Senza distrazioni</translation>
 <translation id="5819918159912280082">Chromebook si è riavviato in modo imprevisto. Apri le finestre e le app precedenti.</translation>
 <translation id="5823239091726045201">Google Tasks sul web</translation>
 <translation id="5825969630400862129">Impostazioni dispositivi connessi</translation>
@@ -1505,7 +1514,6 @@ Nessun dispositivo connesso.</translation>
 <translation id="6119972796024789243">Correzione del colore</translation>
 <translation id="6121838516699723042">Conferma download <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">L'Assistente Google non è disponibile in una sessione Ospite.</translation>
-<translation id="6127370444807669747">Per playlist personalizzate e altra musica per la concentrazione, prova YouTube Music Premium</translation>
 <translation id="6127395413317891856">Sei offline. Controlla la connessione e riprova.</translation>
 <translation id="6129953537138746214">Spazio</translation>
 <translation id="6137566720514957455">Apri la finestra di dialogo di rimozione per <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -1636,6 +1644,7 @@ Nuova installazione</translation>
 <translation id="6574587113394758819">Le notifiche di <ph name="APP_TITLE" /> sono nascoste perché è attiva la visualizzazione protetta</translation>
 <translation id="6574622320167699133">Sbloccato dal tuo telefono. Tocca o fai clic per accedere.</translation>
 <translation id="6578407462441924264">Senza nome</translation>
+<translation id="6582012689384648647">Per playlist personalizzate per la concentrazione, consenti l'accesso a YouTube Music</translation>
 <translation id="6582034443359256692">Calcolo del livello di carica della batteria in corso…</translation>
 <translation id="6585808820553845416">La sessione terminerà tra <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
@@ -1855,7 +1864,7 @@ Nuova installazione</translation>
 <translation id="7386767620098596324">Attiva/disattiva la connessione di rete. <ph name="STATE_TEXT" />.</translation>
 <translation id="7392563512730092880">Puoi sempre effettuare la configurazione in un secondo momento dalle Impostazioni.</translation>
 <translation id="7401222354741467707">Acquisisci registrazione dello schermo o screenshot completi</translation>
-<translation id="7401788553834047908">Non disturbare finché è attiva la modalità Non disturbare</translation>
+<translation id="7401788553834047908">Non disturbare finché è attiva la modalità Niente distrazioni</translation>
 <translation id="7405710164030118432">Per sbloccare il dispositivo, inserisci il codice di accesso genitore di Family Link</translation>
 <translation id="7406608787870898861">Completa la configurazione della rete mobile</translation>
 <translation id="7406854842098869085">Tieni premuto <ph name="MODIFIER_1" />, tocca <ph name="KEY" /> finché non arrivi alla finestra che vuoi aprire, quindi rilascia</translation>
@@ -1874,6 +1883,7 @@ Nuova installazione</translation>
 <translation id="7477793887173910789">Gestisci la tua musica, i tuoi video e altro ancora</translation>
 <translation id="7488762544858401571">Modificato</translation>
 <translation id="7489261257412536105">Attiva o esci da schermo intero</translation>
+<translation id="7490157877815329797">Per ascoltare musica senza annunci e goderti musica personalizzata per la concentrazione, prova YouTube Music Premium</translation>
 <translation id="7490360161041035804">Puoi bloccare i file importanti, inclusi i file di Google Drive. Per bloccare l'elemento, passa il mouse sopra un elemento o apri File e fai clic con il tasto destro del mouse su un elemento.</translation>
 <translation id="7497767806359279797">Scegli la lingua e la tastiera</translation>
 <translation id="7507162824403726948">Completa la verifica dell'identità</translation>
@@ -2123,6 +2133,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="8262312463845990408">Attiva/disattiva riproduzione</translation>
 <translation id="8268302343625273732">Visualizza tutti i compiti in Google Classroom</translation>
 <translation id="8277261673056602147">Evidenzia il testo sullo schermo</translation>
+<translation id="8282784978194352587">Ce l'hai fatta!</translation>
 <translation id="8287009018010202411">Produttività</translation>
 <translation id="828708037801473432">Off</translation>
 <translation id="8297006494302853456">Debole</translation>
@@ -2148,6 +2159,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="8380784334203145311">Buonanotte,</translation>
 <translation id="8382715499079447151">Visualizzazione protetta</translation>
 <translation id="8383614331548401927">Riepilogo di benvenuto</translation>
+<translation id="838540623579162843">Scopri Music Premium</translation>
 <translation id="8388750414311082622">Impossibile rimuovere l'ultima scrivania.</translation>
 <translation id="8394567579869570560">Uno dei tuoi genitori ha bloccato questo dispositivo</translation>
 <translation id="8401850874595457088">Menu per impostare la lingua</translation>
@@ -2200,6 +2212,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="8609384513243082612">Apre una nuova scheda</translation>
 <translation id="861045123704058818">Le app sono temporaneamente organizzate per categoria</translation>
 <translation id="8612216344243590325">Conserva i file importanti in <ph name="HOLDING_SPACE_TITLE" /> anziché sul desktop. Basta trascinare i file in <ph name="HOLDING_SPACE_TITLE" />.</translation>
+<translation id="8612338981637220013">Vai alla grande!</translation>
 <translation id="8614517853887502247">Le notifiche delle app <ph name="APP_1_TITLE" /> e <ph name="APP_2_TITLE" /> sono nascoste perché è attiva la visualizzazione protetta</translation>
 <translation id="8615778328722901791">Apri barra degli strumenti</translation>
 <translation id="8619000641825875669">OneDrive</translation>
@@ -2241,6 +2254,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="8735678380411481005">Colore della retroilluminazione della tastiera</translation>
 <translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />: attivazione in corso…</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />, <ph name="SCREEN_SHARE_STATUS" /></translation>
+<translation id="8751299148074971734">Continua così!</translation>
 <translation id="8753368202781196133">Al momento questa lingua non è supportata.</translation>
 <translation id="8755498163081687682">Verifica la tua identità come richiesto da <ph name="ORIGIN_NAME" /></translation>
 <translation id="875593634123171288">Mostra impostazioni VPN</translation>

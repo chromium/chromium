@@ -343,6 +343,7 @@
 <translation id="2560876255701405320">აუდიოჩანაწერების სია</translation>
 <translation id="2561093647892030937">ლიმონები</translation>
 <translation id="2570743873672969996">გაშვებულია <ph name="TEST_NAME" /> ტესტი...</translation>
+<translation id="2573178735329662769">Chromebook-ის ყველა აუდიოს ჩაწერა</translation>
 <translation id="2575552334616524665">ამის ჩართვა შეგიძლიათ პარამეტრებში ან <ph name="THREE_DOTS_MENU_ICON" /> მენიუში</translation>
 <translation id="2576253868710695442">ეს მეხსიერების 2 გბაიტს დაიკავებს</translation>
 <translation id="2584547424703650812">გაბრწყინებული პეიზაჟები</translation>
@@ -511,6 +512,7 @@
 <translation id="3588034708467091142">დარწმუნდით, რომ დაკავშირებული ხართ ინტერნეტთან და ცადეთ ხელახლა.</translation>
 <translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> არის <ph name="APN_NAME" />-ის მომხმარებელზე მორგებული სახელი.</translation>
 <translation id="3595596368722241419">ბატარეა სავსეა</translation>
+<translation id="3600063043775287169">როცა Chromebook აუდიო ჩართულია, რეკორდერი ჩაიწერს ამ მოწყობილობაზე დაკრულ ყველა აუდიოს. დარწმუნდით, რომ ყველა ხმის ჩაწერა გსურთ.</translation>
 <translation id="3600339377155080675">ეკრანის არეკვლა</translation>
 <translation id="3602290021589620013">გადახედვა</translation>
 <translation id="3603829704940252505">ავატარი</translation>
@@ -1046,6 +1048,8 @@
 <translation id="628726841779494414">პრინტერების მართვა შეგიძლიათ პრინტერების პარამეტრებიდან</translation>
 <translation id="6292095526077353682">დატენისას ეკრანმზოგის ჩვენება:</translation>
 <translation id="629550705077076970">კლავიატურის დაბნელება</translation>
+<translation id="6301193653204230066">უსაფრთხოების გადაყენება გათიშავს Chrome ბრაუზერის გაფართოებებს და დააბრუნებს ქსელისა და სხვა პარამეტრებს უსაფრთხო, ნაგულისხმევ მნიშვნელობებზე.
+          თქვენი ჩანართები, ფაილები, ქუქი-ჩანაწერები და ისტორია არ შეიცვლება.</translation>
 <translation id="6302401976930124515">ტესტი „<ph name="TEST_NAME" />“ გაუქმდა</translation>
 <translation id="631063167932043783">გაცნობის აპი</translation>
 <translation id="6318437367327684789">ყოველთვის</translation>
@@ -1055,6 +1059,7 @@
 <translation id="6325525973963619867">ვერ შესრულდა</translation>
 <translation id="6327262166342360252">ეს ფონი შეიქმნა ხელოვნური ინტელექტით, შემდეგი ტექსტის გამოყენებით: „<ph name="PROMPT" />“.</translation>
 <translation id="6331191339300272798">ავტომატური მუქი თემა</translation>
+<translation id="6335228876613776082">მოდელის ჩამოტვირთვა დასრულდა</translation>
 <translation id="6340526405444716530">პერსონალიზება</translation>
 <translation id="6348252528297699679">მდებარეობის გამორთვა შეგიძლიათ აქ: პარამეტრები &gt; კონფიდენციალურობა და უსაფრთხოება &gt; კონფიდენციალურობის მართვის პარამეტრები &gt; მდებარეობაზე წვდომა. <ph name="LINK_BEGIN" />შეიტყვეთ მეტი<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">მომხმარებლის სახელი და პაროლი</translation>
@@ -1549,6 +1554,7 @@
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Photos ალბომი</translation>
 <translation id="8775713578693478175">მოდემის APN</translation>
+<translation id="877735394245039557">მიმდინარეობს მოდელის ჩამოტვირთვა</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">ამ ქსელს, შესაძლოა, ავტორიზაციის პორტალი ჰქონდეს</translation>
 <translation id="8797082062139985406">სახელის შექმნა Google-ის ხელოვნური ინტელექტის მეშვეობით</translation>

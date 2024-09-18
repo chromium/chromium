@@ -106,6 +106,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="1413446866325418126">आफ्नो Google खातामा डेटा सेभ गर्नुहोस्</translation>
 <translation id="1414981605391750300">Google मा सम्पर्क गर्दै। यस कार्यमा एक मिनेट जति लाग्नसक्छ…</translation>
 <translation id="1416550906796893042">एपको संस्करण</translation>
+<translation id="1419753403124156396">Chrome रिस्टार्ट गर्ने हो?</translation>
 <translation id="1428770807407000502">सिंक गर्ने सुविधा अफ गर्ने हो?</translation>
 <translation id="1430915738399379752">प्रिन्ट गर्नुहोस्</translation>
 <translation id="1435593198351412143">PDF हरू स्वतः खोलियोस्</translation>
@@ -229,6 +230,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="2067805253194386918">पाठ</translation>
 <translation id="2079545284768500474">अन्डू गर्नुहोस्</translation>
 <translation id="2082238445998314030"><ph name="TOTAL_RESULTS" /> को <ph name="RESULT_NUMBER" /> परिणाम</translation>
+<translation id="2088833076121753253">अटोफिल सेवा सेटअप गर्ने कार्य पूरा गर्न अहिले नै Chrome रिस्टार्ट गर्नुहोस्। तपाईंका ट्याबहरू स्वतः खुल्ने छन्।</translation>
 <translation id="2091863218454846791">कम्प्याक्ट भ्यू देखाइँदै छ</translation>
 <translation id="2093731487903423814">पछिल्ला १५ मिनेट</translation>
 <translation id="2096012225669085171">यन्त्रहरूभरि सिंक र वैयक्तीकृत गर्नुहोस्</translation>
@@ -594,6 +596,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="38243391581572867">यो खातामार्फत लेन्स प्रयोग गर्न मिल्दैन।</translation>
 <translation id="3830886834687455630">आफ्ना पासवर्डहरू जाँच गर्न Google Play services अपडेट गर्नुहोस्</translation>
+<translation id="3843603704176567761">पासवर्डहरूले यो डिभाइसमा चाँडै नै काम गर्न छाड्न सक्छन्। आफ्ना पासवर्डहरू प्रयोग गरिरहन Google Play services अपडेट गर्नुहोस्।</translation>
 <translation id="3845098929839618392">इन्कोग्निटो ट्याबमा खोलियोस्</translation>
 <translation id="3847319713229060696">वेब प्रयोग गर्ने सम्पूर्ण प्रयोगकर्ताहरूलाई सुरक्षित रहन मद्दत गर्नुहोस्</translation>
 <translation id="3856096718352044181">कृपया यो एउटा मान्य प्रदायक हो भनी पुष्टि गर्नुहोस् वा पछि फेरि प्रयास गर्नुहोस्</translation>
@@ -666,6 +669,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="4216511743389425832">यो पेजमा भएको टेक्स्ट सुन्नुहोस्</translation>
 <translation id="4225725533026049334">फलो गरिएका</translation>
 <translation id="4225895483398857530">टुलबारको सर्टकट</translation>
+<translation id="4232376164796433044">पासवर्डहरू र अटोफिल</translation>
 <translation id="4242533952199664413">सेटिङहरू खोल्नुहोस्</translation>
 <translation id="4248098802131000011">डेटा चोरी हुने तथा सुरक्षासम्बन्धी अन्य समस्याबाट आफ्ना पासवर्डहरू सुरक्षित राख्नुहोस्</translation>
 <translation id="424864128008805179">Chrome बाट साइन आउट गर्ने हो?</translation>
@@ -674,6 +678,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="4257230861809842349">Google पासवर्ड म्यानेजरबाट पासवर्डहरू मेटाउने हो?</translation>
 <translation id="426652736638196239">यो IBAN यो डिभाइसमा मात्र सेभ गरिने छ।</translation>
 <translation id="4269820728363426813">लिङ्क ठेगाना कपी गर्नुहोस्</translation>
+<translation id="4270730597186910506">कुनै उत्पादन ट्र्याक वा अनट्र्याक गर्नुहोस्।</translation>
 <translation id="4277529130885813215">अर्को डिभाइस प्रयोग गर्नुहोस्</translation>
 <translation id="4282440837784183472">तपाईंको सङ्गठन, <ph name="MANAGED_DOMAIN" /> ले तपाईंले साइन इन गर्न लागिरहेको खाता र Chrome प्रयोग गर्न सकिने तरिका व्यवस्थापन गर्छ। तपाईंका एड्मिन खास सुविधाहरू सेटअप गर्न वा ती सुविधामाथि प्रतिबन्ध लगाउन सक्नुहुन्छ।</translation>
 <translation id="4285846616383034558">कुकी, क्यास र अन्य साइट डेटा</translation>
@@ -747,6 +752,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="4609429330876432068">तपाईंले Chrome र <ph name="CHROME_CHANNEL" /> मा सेभ गरेका पासवर्डका सूचीहरू मर्ज गरिएका थिए। तपाईं अझै पनि आफूले दुवै एपमा सेभ गरेका सबै पासवर्डहरू स्वतः भर्न सक्नुहुन्छ।</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> खोल्नुहोस्</translation>
 <translation id="4619564267100705184">यो व्यक्ति तपाईं नै हो भन्ने कुरा पुष्टि गर्नुहोस्</translation>
+<translation id="4620032614425803188">अटोफिल सेवाहरू</translation>
 <translation id="4624065194742029982">Chrome को इन्कोग्निटो मोड</translation>
 <translation id="4634124774493850572">पासवर्ड प्रयोग गर्नुहोस्</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{अरूले देखेको १ पासवर्ड फेला पर्‍यो}other{अरूले देखेका # वटा पासवर्ड फेला परे}}</translation>
@@ -899,6 +905,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="5264813352784073502">पछिल्ला २४ घण्टा</translation>
 <translation id="5267572070504076962">खतरनाक साइटहरूबाट जोगिन Safe Browsing अन गर्नुहोस्</translation>
 <translation id="5271967389191913893">यन्त्रले डाउनलोड गर्नको लागि सामग्रीलाई खोल्न सक्दैन।</translation>
+<translation id="5273031377282080577">तपाईंका एड्मिन यो सेटिङ व्यवस्थापन गर्नुहुन्छ।</translation>
 <translation id="5292796745632149097">निम्न यन्त्रमा पठाउनुहोस्</translation>
 <translation id="5301876394151419436">तपाईं <ph name="EMAIL" /> खाताबाट साइन इन हुनुहुन्छ। तपाईं जुनसुकै बेला सेटिङमा गई सिंक गर्न छाड्न सक्नुहुन्छ। Google ले तपाईंले विगतमा हेरेका वेबपेजका आधारमा Search र अन्य सेवाहरू पर्सनलाइज गर्न सक्छ।</translation>
 <translation id="5304593522240415983">यो क्षेत्र खाली हुन सक्दैन</translation>
@@ -1233,6 +1240,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="6775840696761158817">तपाईंले एड्रेस बार वा खोज बाकसमा ट्याप वा टाइप गर्दा तपाईंलाई तपाईंको डिफल्ट सर्च इन्जिनका सुझावहरू देखाइने छन्। इन्कोग्निटो मोडमा यो सुविधा अफ हुन्छ।</translation>
 <translation id="6785476624617658922">Chrome र ChromeOS का सेवाका अतिरिक्त सर्तहरू</translation>
 <translation id="6795633245022906657">तुरुन्तै नयाँ ट्याब खोल्नुहोस्। यो सर्टकट परिवर्तन गर्न सेटिङमा जानुहोस्।</translation>
+<translation id="679956319013005046">अटोफिल सेवा प्रदान गर्ने रोजाइको सेवा प्रदायक छनौट गर्न पहिले <ph name="BEGIN_LINK" />Android का सेटिङ<ph name="END_LINK" /> मा गई उक्त सेवा प्रदायक हाल्नुहोस्।</translation>
 <translation id="6802555630140434547">यो विन्डो बन्द गरिने छ</translation>
 <translation id="6803791793483522764">नोटिफिकेसनहरूको समीक्षा गर्नुहोस्</translation>
 <translation id="6811034713472274749">पृष्ठ हेर्नका लागि तयार छ</translation>
@@ -1291,7 +1299,6 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="6964300328304469089">अहिले <ph name="NAME" />, <ph name="EMAIL" /> चयन गरिएको छ। एउटा खाता चयन गर्नुहोस्।</translation>
 <translation id="696447261358045621">इन्कोग्निटो मोडबाट बाहिरिनुहोस्</translation>
 <translation id="6965382102122355670">ठिक छ</translation>
-<translation id="6966660124354134532">कुनै उत्पादन ट्र्याक वा अनट्र्याक गर्न ट्याप गर्नुहोस्।</translation>
 <translation id="6971862865055170158">अनुमोदन नगर्नुहोस्</translation>
 <translation id="6978717888677691380">तपाईंले ब्लक गरेका साइटहरू</translation>
 <translation id="6979737339423435258">सुरूबाट नै</translation>
@@ -1465,6 +1472,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="7707922173985738739">मोबाइल डेटा प्रयोग गर्नुहोस्‌</translation>
 <translation id="7709918231054955894">डिभाइसमा खोलिएका सबै ट्याबहरू हेर्नुहोस्</translation>
 <translation id="7733878270780732638">डिभाइसमा पर्याप्त खाली ठाउँ छैन।</translation>
+<translation id="774876555279732384">तपाईं <ph name="BEGIN_LINK" />Android का सेटिङ<ph name="END_LINK" />मा गई अटोफिल सेवाहरू व्यवस्थापन गर्न सक्नुहुन्छ।</translation>
 <translation id="7759809451544302770">वैकल्पिक</translation>
 <translation id="7762668264895820836">SD कार्ड <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">ठेगाना थप्नुहोस्</translation>

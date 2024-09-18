@@ -498,6 +498,7 @@
 <translation id="1355088139103479645">সব ডেটা মুছতে চান?</translation>
 <translation id="1356376170199999104">ব্যবহারের অনুমতি দেওয়া হয়েছে – <ph name="PERMISSION_DETAILS" />। ফিজিক্যাল সুইচ ব্যবহার করে মাইক্রোফোন চালু করুন।</translation>
 <translation id="1356959069439783953">চালু নেই এমন ট্যাব নতুন লুকে দেখা যাবে</translation>
+<translation id="1357766361161708728">ব্যবহার না করা ট্যাব বন্ধ করবেন?</translation>
 <translation id="1358741672408003399">বানান এবং ব্যাকরণ</translation>
 <translation id="1359923111303110318">Smart Lock দিয়ে আপনার ডিভাইস আনলক করা যাবে। আনলক করতে 'Enter' বোতাম প্রেস করুন।</translation>
 <translation id="1361164813881551742">নিজে যোগ করুন</translation>
@@ -6574,6 +6575,7 @@
 <translation id="5750288053043553775">০</translation>
 <translation id="5751345516399502412">'টেথারিং রেডিনেস' চেক করুন</translation>
 <translation id="5753570386948603678">সার্চ ইতিহাস থেকে মুছে ফেলুন</translation>
+<translation id="5753652925946671505">এইসব ট্যাব <ph name="COUNT" /> বা আরও বেশি দিন ধরে ব্যবহার করা হয়নি।</translation>
 <translation id="5756163054456765343">সহায়তা কেন্দ্র</translation>
 <translation id="5757187557809630523">পরবর্তী ট্র্যাক</translation>
 <translation id="5758631781033351321">আপনি নিজের পড়ার তালিকা এখানে খুঁজে পাবেন</translation>

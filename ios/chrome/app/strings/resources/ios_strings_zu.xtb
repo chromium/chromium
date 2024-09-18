@@ -116,6 +116,7 @@
 <translation id="1517166097004694782">Fihla okuthi "Qhubeka nale thebhu"</translation>
 <translation id="1520027731907768768">Thola izixwayiso zokwehla kwentengo yemikhiqizo oyilandelelayo.</translation>
 <translation id="1521774566618522728">Iyasebenza namhlanje</translation>
+<translation id="1524563461097350801">Cha, Ngiyabonga</translation>
 <translation id="1531038290222364269">Bonisa amathebhu</translation>
 <translation id="1536390784834419204">Humusha ikhasi</translation>
 <translation id="1540800554400757039">Ikheli 1</translation>
@@ -1507,7 +1508,6 @@ Amasayithi angasebenzisa amakhukhi ukubona umsebenzi wakho wokuphequlula kumasay
 <translation id="8173034266693057059">Ubude</translation>
 <translation id="8179976553408161302">Faka</translation>
 <translation id="8182037667962849780">{count,plural, =1{Okuka-{website_1}}=2{Okwe-{website_1}, {website_2}}=3{Okwe-{website_1}, {website_2}, nokunye okungu-1}one{Okwe-{website_1}, {website_2}, nokungu-{more_count} nokunye}other{Okwe-{website_1}, {website_2}, nokungu-{more_count} nokunye}}</translation>
-<translation id="8189814768485665290">Yabelana nge-URL egcwele</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Amadivayisi akho<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Engeza iphasiwedi</translation>
 <translation id="8202744799033457229">Bonisa umlando</translation>
@@ -1541,6 +1541,7 @@ Amasayithi angasebenzisa amakhukhi ukubona umsebenzi wakho wokuphequlula kumasay
 <translation id="8349305172487531364">Ibha yamabhukhimakhi</translation>
 <translation id="8366466717204352506">Ukuhlola akusoze kuqale</translation>
 <translation id="8368001212524806591">Landela intengo</translation>
+<translation id="8370406443343902172">Iya kokuthi Amasethingi...</translation>
 <translation id="8372471489238799313">{count,plural, =1{Sula ikheli}one{Sula amakheli}other{Sula amakheli}}</translation>
 <translation id="8378714024927312812">Kuphethwe inhlangano yakho</translation>
 <translation id="8386068868580335421">Setha kabusha</translation>
@@ -1603,6 +1604,7 @@ Amasayithi angasebenzisa amakhukhi ukubona umsebenzi wakho wokuphequlula kumasay
 <translation id="8637431369725868556">Thola isivikelo kumasayithi ayingozi.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Awekho amaphasiwedi onakalisiwe}=1{Iphasiwedi eyonakalisiwe e-{COUNT}}one{Amaphasiwedi onakalisiwe angu-{COUNT}}other{Amaphasiwedi onakalisiwe angu-{COUNT}}}</translation>
 <translation id="8640575194957831802">Kugcine ukuvulwa</translation>
+<translation id="8647280737650867362">Ayikwazanga ukukhipha ukulandelela intengo.</translation>
 <translation id="8654802032646794042">Khansela</translation>
 <translation id="8660600697590740984">Isithombe esikopishiwe seLens</translation>
 <translation id="866266761389616183">Hawu, iphutha!</translation>

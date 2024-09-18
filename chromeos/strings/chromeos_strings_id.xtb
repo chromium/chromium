@@ -35,6 +35,7 @@
 <translation id="1155154308031262006">Masukkan perintah</translation>
 <translation id="115705039208660697">nanas</translation>
 <translation id="1164939766849482256">Screensaver Fajar ke petang</translation>
+<translation id="1166688493741195933">Gagal membuat nama rekaman</translation>
 <translation id="1167755866710282443">Buka menu untuk menyesuaikan tombol. Tarik menu untuk memindahkan.</translation>
 <translation id="1171349345463658120">laguna berpasir</translation>
 <translation id="1173894706177603556">Ganti nama</translation>
@@ -342,6 +343,7 @@
 <translation id="2560876255701405320">Daftar rekaman audio</translation>
 <translation id="2561093647892030937">lemon</translation>
 <translation id="2570743873672969996">Menjalankan pengujian <ph name="TEST_NAME" /> ...</translation>
+<translation id="2573178735329662769">Merekam semua audio Chromebook</translation>
 <translation id="2575552334616524665">Anda dapat mengaktifkannya di Setelan atau menu <ph name="THREE_DOTS_MENU_ICON" /></translation>
 <translation id="2576253868710695442">Tindakan ini akan memerlukan penyimpanan hingga 2 GB</translation>
 <translation id="2584547424703650812">Glowscape</translation>
@@ -494,6 +496,7 @@
 <translation id="3502426834823382181">lihat semua aplikasi</translation>
 <translation id="3510890413042482857">Kirim <ph name="BEGIN_LINK1" />data trace performa<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Update Chrome OS</translation>
+<translation id="3522508178835057262">Untuk saat ini, transkrip yang lebih panjang dari <ph name="MAX_WORD_LENGTH" /> kata tidak didukung</translation>
 <translation id="3527036260304016759">Gagal - Error tidak diketahui</translation>
 <translation id="353214771040290298">Selesai mengedit</translation>
 <translation id="3532980081107202182">Sekitar <ph name="MIN_REMAINING" /> menit lagi</translation>
@@ -509,6 +512,7 @@
 <translation id="3588034708467091142">Pastikan perangkat Anda terhubung ke internet, lalu coba lagi.</translation>
 <translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> adalah nama yang mudah digunakan untuk <ph name="APN_NAME" />.</translation>
 <translation id="3595596368722241419">Baterai penuh</translation>
+<translation id="3600063043775287169">Saat audio Chromebook aktif, Perekam Suara akan merekam semua audio yang diputar di perangkat ini. Pastikan Anda ingin merekam semua suara.</translation>
 <translation id="3600339377155080675">Pencerminan layar</translation>
 <translation id="3602290021589620013">Pratinjau</translation>
 <translation id="3603829704940252505">Avatar</translation>
@@ -711,6 +715,7 @@
 <translation id="4602266091140407479">Mikrofon</translation>
 <translation id="4607282946861182308">Tidak dapat membuat gambar ini. Coba perintah lain.</translation>
 <translation id="4609350030397390689">Kurangi kecerahan keyboard</translation>
+<translation id="4623061655523261501">Nama rekaman berhasil dibuat</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> dari <ph name="TOTAL_PAGE_NUMBER" />. Tekan enter untuk membatalkan tugas pencetakan.</translation>
 <translation id="463791356324567266">Membatalkan pemindaian ...</translation>
 <translation id="4644611440022666152">Aktifkan dan download</translation>
@@ -1043,6 +1048,8 @@
 <translation id="628726841779494414">Kelola printer Anda di setelan printer</translation>
 <translation id="6292095526077353682">Saat mengisi daya, tampilkan screensaver selama</translation>
 <translation id="629550705077076970">peredupan keyboard</translation>
+<translation id="6301193653204230066">Reset keamanan akan menonaktifkan ekstensi browser Chrome dan mereset jaringan serta setelan lainnya ke setelan default yang aman.
+          Tab, file, cookie, dan histori Anda tidak akan diubah.</translation>
 <translation id="6302401976930124515">Pengujian <ph name="TEST_NAME" /> telah dibatalkan</translation>
 <translation id="631063167932043783">Aplikasi Jelajahi</translation>
 <translation id="6318437367327684789">selamanya</translation>
@@ -1052,6 +1059,7 @@
 <translation id="6325525973963619867">Gagal</translation>
 <translation id="6327262166342360252">Wallpaper ini dibuat dengan AI menggunakan teks berikut: "<ph name="PROMPT" />".</translation>
 <translation id="6331191339300272798">Tema gelap otomatis</translation>
+<translation id="6335228876613776082">Proses download model selesai</translation>
 <translation id="6340526405444716530">Personalisasi</translation>
 <translation id="6348252528297699679">Anda dapat menonaktifkan lokasi di Setelan &gt; Privasi dan keamanan &gt; Kontrol privasi &gt; Akses lokasi. <ph name="LINK_BEGIN" />Pelajari lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">Nama pengguna dan sandi</translation>
@@ -1213,6 +1221,7 @@
 <translation id="708426984172631313">DIHENTIKAN</translation>
 <translation id="7086168019478250425">pantai bercahaya</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="7086916854357021265">Membuat nama rekaman</translation>
 <translation id="7097908713073775559">warna-warni</translation>
 <translation id="710028965487274708">Gagal - Otorisasi Gagal</translation>
 <translation id="7101959270679078188">Buka kunci <ph name="DEVICE_NAME" /> untuk melanjutkan proses update</translation>
@@ -1545,6 +1554,7 @@ Download model transkripsi (hingga 100 MB) untuk mendapatkan transkripsi ini.</t
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Album Google Foto</translation>
 <translation id="8775713578693478175">APN Modem</translation>
+<translation id="877735394245039557">Proses download model sedang berlangsung</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Jaringan ini mungkin memiliki captive portal</translation>
 <translation id="8797082062139985406">Buat nama menggunakan AI Google</translation>

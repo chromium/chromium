@@ -214,6 +214,7 @@
 <translation id="1703117532528082099">החלון הפעיל מוצמד לצד ימין.</translation>
 <translation id="1708345662127501511">שולחן עבודה וירטואלי: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">הגדרות רשת</translation>
+<translation id="171610090693716835">‏פלייליסטים מותאמים אישית עוזרים לך לשמור על מיקוד. נהנים מ-YouTube Music ומ-YouTube ללא פרסומות עם 3 חודשים של YouTube Premium ללא עלות.</translation>
 <translation id="1719094688023114093">התכונה 'כתוביות מיידיות' מופעלת.</translation>
 <translation id="1720011244392820496">‏הפעלה של סנכרון Wi-Fi</translation>
 <translation id="1720230731642245863">נקודת האינטרנט כבויה</translation>
@@ -1408,6 +1409,7 @@
 <translation id="5777841717266010279">להפסיק את שיתוף המסך?</translation>
 <translation id="5779721926447984944">קבצים מוצמדים</translation>
 <translation id="5785221443435874078">הסרת ההצעה הזו</translation>
+<translation id="5787431783058088906">למימוש ההטבה</translation>
 <translation id="5788127256798019331">‏קובצי Play</translation>
 <translation id="5788535737706478207">פתיחה מחדש של הכרטיסייה או החלון האחרונים שנסגרו</translation>
 <translation id="5790085346892983794">הצלחה</translation>
@@ -1508,7 +1510,6 @@
 <translation id="6119972796024789243">תיקון צבע</translation>
 <translation id="6121838516699723042">אישור ההורדה של <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">‏Google Assistant לא זמינה בגלישה כאורח.</translation>
-<translation id="6127370444807669747">‏כדאי לנסות את YouTube Music Premium כדי ליהנות מפלייליסטים בהתאמה אישית וממוזיקה שמתאימה יותר לריכוז</translation>
 <translation id="6127395413317891856">אין חיבור לאינטרנט. יש לבדוק את החיבור ולנסות שוב.</translation>
 <translation id="6129953537138746214">רווח</translation>
 <translation id="6137566720514957455">פתיחת תיבת דו-דיח להסרה של <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -1639,6 +1640,7 @@
 <translation id="6574587113394758819">ההתראה מ-<ph name="APP_TITLE" /> מוסתרת כי מופעלת הגנה על תצוגה</translation>
 <translation id="6574622320167699133">הנעילה בוטלה על ידי הטלפון שלך. כדי להיכנס, צריך להקיש או ללחוץ.</translation>
 <translation id="6578407462441924264">ללא שם</translation>
+<translation id="6582012689384648647">‏כדי להשתמש בפלייליסטים מותאמים אישית לשמירה על המיקוד, צריך לאפשר גישה ל-YouTube Music</translation>
 <translation id="6582034443359256692">מתבצע חישוב של רמת הטעינה של הסוללה.</translation>
 <translation id="6585808820553845416">הפעילות באתר תסתיים בעוד <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
@@ -1877,6 +1879,7 @@
 <translation id="7477793887173910789">שליטה במוזיקה, בסרטונים ועוד</translation>
 <translation id="7488762544858401571">ערוך</translation>
 <translation id="7489261257412536105">מעבר למסך מלא או יציאה ממנו</translation>
+<translation id="7490157877815329797">‏כדאי לנסות את YouTube Music Premium כדי להאזין למוזיקה ללא פרסומות וליהנות ממוזיקה בהתאמה אישית שתעזור לך לשמור על מיקוד</translation>
 <translation id="7490360161041035804">‏ניתן להצמיד קבצים חשובים, כולל קבצים מ-Google Drive. כדי להצמיד, מעבירים את העכבר מעל פריט או פותחים את 'קבצים' ולוחצים לחיצה ימנית על פריט.</translation>
 <translation id="7497767806359279797">בחירת שפה ומקלדת</translation>
 <translation id="7507162824403726948">צריך לסיים את אימות הזהות</translation>
@@ -2153,6 +2156,7 @@
 <translation id="8380784334203145311">לילה טוב,</translation>
 <translation id="8382715499079447151">הגנה על תצוגה</translation>
 <translation id="8383614331548401927">איפה היינו?</translation>
+<translation id="838540623579162843">‏לרכישת Music Premium</translation>
 <translation id="8388750414311082622">לא ניתן להסיר את שולחן העבודה האחרון.</translation>
 <translation id="8394567579869570560">הורה נעל את המכשיר הזה</translation>
 <translation id="8401850874595457088">התפריט להזנת שפה</translation>

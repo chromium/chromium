@@ -42,6 +42,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1148499908455722006">Otwórz okno informacyjne dla konta <ph name="USER_NAME" /></translation>
 <translation id="1150989369772528668">Kalendarz</translation>
 <translation id="1153356358378277386">Sparowane urządzenia</translation>
+<translation id="1153918444040990015">Nie udało się połączyć z dźwiękami trybu pełnej koncentracji</translation>
 <translation id="1155734730463845512">Aktualny poziom baterii: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1157514002898505378">Generatywna AI ma charakter eksperymentalny, dlatego treści mogą być niedokładne, mylące lub obraźliwe. Aby zgłosić problem, skontaktuj się z administratorem. <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="1160215328209699296">włączono, w użyciu</translation>
@@ -77,6 +78,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1240638468526743569">Aplikacja</translation>
 <translation id="1242198791279543032">Powiadomienia są ignorowane</translation>
 <translation id="1242883863226959074">urządzeniu</translation>
+<translation id="1245476784081715330">Brawo!</translation>
 <translation id="1245644940275736236">Otwórz Asystenta</translation>
 <translation id="124678866338384709">Zamknij bieżącą kartę</translation>
 <translation id="1246890715821376239">Nieobsługiwane aplikacje</translation>
@@ -175,6 +177,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1550523713251050646">Kliknij, by wyświetlić więcej opcji</translation>
 <translation id="1555130319947370107">Niebieski</translation>
 <translation id="1557622599341396706">Pokaż nazwę biurka</translation>
+<translation id="1567138500090284106">Przycisk klawiszy sterowania myszą</translation>
 <translation id="1569384531973824928">Zezwala na dostęp wszystkim aplikacjom i stronom internetowym, które mają uprawnienia do korzystania z kamery i mikrofonu. Konieczne może być odświeżenie strony lub ponowne uruchomienie aplikacji.</translation>
 <translation id="1571697193564730395">Włącz lub wyłącz tryb Nie przeszkadzać. <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">Pomniejsz, gdy lupa jest włączona</translation>
@@ -242,6 +245,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1787955149152357925">Wyłączono</translation>
 <translation id="1796561540704213354">Strony internetowe, w tym strony odwiedzone i otwarte</translation>
 <translation id="179842970735685253">Warunkami korzystania z usług Google</translation>
+<translation id="1805407494113167797">Nie udało się odtworzyć dźwięków trybu pełnej koncentracji</translation>
 <translation id="181103072419391116">Siła sygnału: <ph name="SIGNAL_STRENGTH" />, zarządzana przez administratora</translation>
 <translation id="1816896987747843206">Spowoduje to przyznanie dostępu do aparatu wszystkim aplikacjom i stronom internetowym, które mają uprawnienia do korzystania z niego</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
@@ -839,6 +843,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="3958714870339660776">Cały dzień</translation>
 <translation id="3962859241508114581">Poprzedni utwór</translation>
 <translation id="3963124517343721543">Z łatwością kontynuuj od tego samego miejsca, otwierając ostatnie okna i karty. Zobaczysz też spersonalizowane sugestie dotyczące kolejnych czynności.</translation>
+<translation id="396506362088290977">Przetestuj dźwięk z mikrofonu</translation>
 <translation id="3969043077941541451">Wyłączone</translation>
 <translation id="3970324493235864154">Wyświetlaj powiadomienia z telefonu</translation>
 <translation id="397105322502079400">Obliczanie...</translation>
@@ -896,6 +901,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="4156293514828496577">Bateria: pozostało <ph name="PERCENTAGE" />% (około <ph name="TIME_LEFT" />).
 W celu wydłużenia czasu pracy na baterii niektóre funkcje zostały ograniczone.</translation>
 <translation id="4160919062868802509">Wykryto wiele źródeł dźwięku</translation>
+<translation id="416245495747357243">Brawo.</translation>
 <translation id="4165275524535002941">Kabel może nie działać z wyświetlaczami</translation>
 <translation id="4177415338862979658">Kliknij, aby sprawdzić szczegóły</translation>
 <translation id="4177913004758410636">{0,plural, =1{Aktualizacja urządzenia nastąpi w ciągu 1 dnia}few{Aktualizacja urządzenia nastąpi w ciągu # dni}many{Aktualizacja urządzenia nastąpi w ciągu # dni}other{Aktualizacja urządzenia nastąpi w ciągu # dnia}}</translation>
@@ -981,6 +987,7 @@ W celu wydłużenia czasu pracy na baterii niektóre funkcje zostały ograniczo
 <translation id="4412944820643904175">Funkcja <ph name="FEATURE_NAME" /> jest wyłączona.</translation>
 <translation id="4417647906073317561">Ustawienia trybu pełnej koncentracji. Ustaw minutnik, zadanie i muzykę, aby stworzyć odpowiedni nastrój.</translation>
 <translation id="4424159417645388645">Biurko 5</translation>
+<translation id="4426817706804363424">Doskonale!</translation>
 <translation id="4430019312045809116">Głośność</translation>
 <translation id="4441283832827406317">Aplikacje są posortowane według nazwy</translation>
 <translation id="4445159312344259901">Zaloguj się, aby odblokować</translation>
@@ -1245,6 +1252,7 @@ Możesz też użyć skrótu klawiszowego. Zaznacz tekst, a potem naciśnij <ph 
 <translation id="5283198616748585639">Dodaj 1 min</translation>
 <translation id="528468243742722775">Zakończ</translation>
 <translation id="5286194356314741248">Skanowanie</translation>
+<translation id="528641622273682395">Przełącz test mikrofonu</translation>
 <translation id="5297423144044956168">Nie znaleziono urządzeń mobilnych</translation>
 <translation id="5297704307811127955">Wyłączono</translation>
 <translation id="5300589172476337783">Pokaż</translation>
@@ -1272,6 +1280,7 @@ Brak połączonych urządzeń.</translation>
 <translation id="536019650977002321">Administrator nie zezwala na rejestrowanie dźwięku. Aby dowiedzieć się więcej, skontaktuj się z administratorem.</translation>
 <translation id="5361524080961918551">Pliki z mową w języku: <ph name="LANGUAGE" /> zostały częściowo pobrane</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> przejdź do tej karty</translation>
+<translation id="5363835273551457276">Możesz przetestować dźwięk z mikrofonu. Aby zatrzymać, zamknij panel.</translation>
 <translation id="5364693579536176785">dostępne miejsce</translation>
 <translation id="5369573834963677938">Sterowanie twarzą będzie dostępne dla innych użytkowników urządzenia</translation>
 <translation id="5369717264580061086">Wyświetl podgląd pliku w aplikacji Pliki</translation>
@@ -1412,6 +1421,7 @@ Brak połączonych urządzeń.</translation>
 <translation id="5802516411616338943">Otwórz Szybkie ustawienia</translation>
 <translation id="5804651031882187592">Wyłączanie ustawienia „Zablokuj kartę SIM”</translation>
 <translation id="5805809050170488595">Kliknij, aby włączyć sieć <ph name="NETWORK_NAME" /></translation>
+<translation id="5818796501620225415">Możesz dodać więcej czasu albo zakończyć sesję skupienia</translation>
 <translation id="5819918159912280082">Twój Chromebook nieoczekiwanie uruchomił się ponownie. Otwórz poprzednie okna i aplikacje.</translation>
 <translation id="5823239091726045201">Lista zadań Google w przeglądarce</translation>
 <translation id="5825969630400862129">Ustawienia połączonych urządzeń</translation>
@@ -1505,7 +1515,6 @@ Brak połączonych urządzeń.</translation>
 <translation id="6119972796024789243">Korekcja kolorów</translation>
 <translation id="6121838516699723042">Potwierdź pobieranie pliku <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">Asystent Google jest niedostępny w sesji gościa.</translation>
-<translation id="6127370444807669747">Aby słuchać spersonalizowanych playlist i muzyki do skupienia, użyj YouTube Music Premium</translation>
 <translation id="6127395413317891856">Jesteś offline. Sprawdź połączenie i spróbuj jeszcze raz.</translation>
 <translation id="6129953537138746214">Spacja</translation>
 <translation id="6137566720514957455">Otwórz okno usuwania konta <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -2122,6 +2131,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="8262312463845990408">Włącz lub wyłącz odtwarzanie</translation>
 <translation id="8268302343625273732">Zobacz wszystkie projekty w Google Classroom</translation>
 <translation id="8277261673056602147">Zaznacz tekst na ekranie</translation>
+<translation id="8282784978194352587">Udało się!</translation>
 <translation id="8287009018010202411">Produktywność</translation>
 <translation id="828708037801473432">Wyłączono</translation>
 <translation id="8297006494302853456">Słaby</translation>
@@ -2199,6 +2209,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="8609384513243082612">Otwórz nową kartę</translation>
 <translation id="861045123704058818">Aplikacje są tymczasowo uporządkowane według kategorii</translation>
 <translation id="8612216344243590325">Ważne pliki przechowuj w obszarze <ph name="HOLDING_SPACE_TITLE" />, a nie na pulpicie. Po prostu przeciągnij je do obszaru <ph name="HOLDING_SPACE_TITLE" />.</translation>
+<translation id="8612338981637220013">Rozkręcasz się!</translation>
 <translation id="8614517853887502247">Powiadomienia z aplikacji <ph name="APP_1_TITLE" /> i <ph name="APP_2_TITLE" /> zostały ukryte, bo masz włączoną ochronę przeglądania</translation>
 <translation id="8615778328722901791">Otwórz pasek narzędzi</translation>
 <translation id="8619000641825875669">OneDrive</translation>
@@ -2241,6 +2252,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />: Aktywuję…</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
+<translation id="8751299148074971734">Tak trzymaj!</translation>
 <translation id="8753368202781196133">Ten język nie jest obecnie obsługiwany.</translation>
 <translation id="8755498163081687682">Weryfikacja tożsamości: strona <ph name="ORIGIN_NAME" /> wymaga potwierdzenia, że to Ty</translation>
 <translation id="875593634123171288">Pokaż ustawienia VPN</translation>
@@ -2282,6 +2294,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="8876661425082386199">Sprawdź połączenie</translation>
 <translation id="8877788021141246043">Ustaw przypomnienie</translation>
 <translation id="8878886163241303700">Rozszerzony ekran</translation>
+<translation id="8885424115080869847">Nie udało się połączyć z YouTube Music</translation>
 <translation id="888982883502837004">Dostępne są aktualizacje oprogramowania układowego urządzenia. Kliknij, aby je zobaczyć i zainstalować.</translation>
 <translation id="8896630965521842259">Sablon <ph name="DESK_TEMPLATE_NAME" /> zostanie trwale usunięty</translation>
 <translation id="889790758758811533">Bateria: pozostało <ph name="PERCENTAGE" />% (około <ph name="TIME_LEFT" />). Podłącz urządzenie do zasilania.</translation>

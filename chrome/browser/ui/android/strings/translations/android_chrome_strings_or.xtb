@@ -75,6 +75,7 @@
 <translation id="1303507811548703290"><ph name="DEVICE_NAME" />ରୁ <ph name="DOMAIN" /> - ପଠାଯାଇଛି</translation>
 <translation id="1320912611264252795">ବୁକମାର୍କ ସେଭ ଫ୍ଲୋ ଫୋଲ୍ଡରଗୁଡ଼ିକ ସମ୍ପୂର୍ଣ୍ଣ ଭାବେ ଖୋଲାଯାଇଛି</translation>
 <translation id="1327257854815634930">ନାଭିଗେସନ୍ ଇତିହାସ ଖୋଲା ଅଛି</translation>
+<translation id="1328235593824723509"><ph name="TAB_TITLE" />, ନୂଆ କିମ୍ବା ଅପଡେଟ କରାଯାଇଥିବା ଟାବ</translation>
 <translation id="1331212799747679585">Chrome ଅପ୍‌ଡେଟ୍ ହୋଇପାରିବ ନାହିଁ। ଅଧିକ ବିକଳ୍ପ</translation>
 <translation id="1332501820983677155">Google Chrome ବୈଶିଷ୍ଟ୍ୟ ସର୍ଟକଟ୍</translation>
 <translation id="1333491156693005331">ବର୍ତ୍ତମାନ ଯାଞ୍ଚ କରାଯାଇଛି</translation>
@@ -1213,6 +1214,7 @@
 <translation id="6674571176963658787">ସିଙ୍କ୍ ଆରମ୍ଭ କରିବାକୁ, ଆପଣଙ୍କ ପାସଫ୍ରେଜ୍ ଲେଖନ୍ତୁ</translation>
 <translation id="6676927815633975364">ଏହି ସାଇଟ ଏବଂ Chromeରେ ସାଇନ ଇନ କରନ୍ତୁ</translation>
 <translation id="6684809838922667136">Chromeକୁ ଆହୁରି ଉନ୍ନତ କରନ୍ତୁ</translation>
+<translation id="6700279777779583398">ପସନ୍ଦକୁ ସେଭ କରାଯାଇଛି</translation>
 <translation id="6704048624334633734">ପାସୱାର୍ଡଗୁଡ଼ିକୁ ଏକ୍ସପୋର୍ଟ କରି ଡିଲିଟ କରନ୍ତୁ</translation>
 <translation id="670498945988402717">ଗତକାଲି ଯାଞ୍ଚ କରାଯାଇଛି</translation>
 <translation id="6710213216561001401">ପୂର୍ବବର୍ତ୍ତୀ</translation>
@@ -1290,7 +1292,6 @@
 <translation id="6964300328304469089"><ph name="NAME" />, <ph name="EMAIL" />କୁ ବର୍ତ୍ତମାନ ଚୟନ କରାଯାଇଛି। ଏକ ଆକାଉଣ୍ଟ ବାଛନ୍ତୁ।</translation>
 <translation id="696447261358045621">ଇନକଗ୍ନିଟୋ ମୋଡରୁ ବାହାରିଯାଆନ୍ତୁ</translation>
 <translation id="6965382102122355670">ଓକେ ବଟନ୍</translation>
-<translation id="6966660124354134532">ଏକ ପ୍ରଡକ୍ଟକୁ ଟ୍ରାକ ବା ଅନଟ୍ରାକ କରିବା ପାଇଁ ଟାପ କରନ୍ତୁ।</translation>
 <translation id="6971862865055170158">ଅନୁମୋଦନ କରନ୍ତୁ ନାହିଁ</translation>
 <translation id="6978717888677691380">ଆପଣ ବ୍ଲକ କରିଥିବା ସାଇଟଗୁଡ଼ିକ</translation>
 <translation id="6979737339423435258">ସବୁ ସମୟରେ</translation>
@@ -1426,6 +1427,7 @@
 <translation id="752731652852882757">ଇନକଗ୍ନିଟୋ ମୋଡ ବ୍ୟବହାର କରିବା ସମୟରେ ବ୍ଲକ କରନ୍ତୁ</translation>
 <translation id="7554643625247105821">Chrome ଭର୍ସନକୁ ଯାଞ୍ଚ କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="7557508262441527045">ସାଇନ ଆଉଟ କରାଯାଇଛି</translation>
+<translation id="7573665567024262965">ଆପଣଙ୍କ ଡିଫଲ୍ଟ ଆପ୍ସ ବାଛନ୍ତୁ</translation>
 <translation id="7577900504646297215">ରୁଚିଗୁଡ଼ିକୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" />ଟି ଫାଇଲ୍‌ ଡାଉନ୍‌ଲୋଡ୍‌ କରାଗଲା}other{<ph name="FILES_DOWNLOADED_MANY" />ଟି ଫାଇଲ୍‌ ଡାଉନ୍‌ଲୋଡ୍‌ କରାଗଲା}}</translation>
 <translation id="7581273696622423628">ସର୍ଭେରେ ଭାଗ ନିଅନ୍ତୁ</translation>
@@ -1468,6 +1470,7 @@
 <translation id="7764225426217299476">ଠିକଣା ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="7772032839648071052">ପାସ୍‍‍ଫ୍ରେଜ୍ ସୁନିଶ୍ଚିତ କରନ୍ତୁ</translation>
 <translation id="7772375229873196092"><ph name="APP_NAME" /> ବନ୍ଦ କରନ୍ତୁ</translation>
+<translation id="7774125747223422443">ଆପଣଙ୍କ ଅଞ୍ଚଳରେ ଏକ ଆଇନ ଆଧାରରେ, ଆପଣ ଆପଣଙ୍କ ବ୍ରାଉଜର ଏବଂ ସର୍ଚ୍ଚ ଇଞ୍ଜିନ ବାଛିବା ଆବଶ୍ୟକ</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 ଓ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ଅଧିକ}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 ଓ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ଅଧିକ}}</translation>
 <translation id="777637629667389858">ଆପଣ ସାଇନ ଇନ ଥିବା ବେଳେ Google ସେବାଗୁଡ଼ିକରେ ଆପଣଙ୍କୁ ସୁରକ୍ଷା ଦେଇଥାଏ।</translation>
 <translation id="7778840695157240389">ନୂଆ ଷ୍ଟୋରୀଗୁଡ଼ିକ ପାଇଁ ପରେ ପୁଣି ଦେଖନ୍ତୁ</translation>
@@ -1592,6 +1595,7 @@
 <translation id="8265018477030547118">କେବଳ ଏହି ଡିଭାଇସରେ</translation>
 <translation id="8266753737658117282"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ମାଧ୍ୟମରେ` ଜାରି ରଖନ୍ତୁ</translation>
 <translation id="8266862848225348053">ଲୋକେସନ୍‌ ଡାଉନ୍‌ଲୋଡ୍ କରନ୍ତୁ</translation>
+<translation id="8279945625179116733"><ph name="APP_NAME" /> ଦ୍ୱାରା ସୁରକ୍ଷିତ</translation>
 <translation id="8281886186245836920">ବାଦ ଦିଅନ୍ତୁ</translation>
 <translation id="8282297628636750033">ଯଦି ସମ୍ଭବ ସାଇଟରେ ଗାଢ଼ା ଥିମ ଲାଗୁକର</translation>
 <translation id="8282950411412455249">ସୁରକ୍ଷା ସେଟିଂସକୁ ଯାଆନ୍ତୁ</translation>
@@ -1736,6 +1740,7 @@
 <translation id="8982113230057126145">ଥମ୍ବସ ଡାଉନ ଆପଣ ଏହି ସାରାଂଶକୁ ନାପସନ୍ଦ କରନ୍ତି ବୋଲି ମତାମତ ଦାଖଲ କରେ</translation>
 <translation id="8992769679401294069">ଆପଣଙ୍କ ପାସଫ୍ରେଜ ମାଧ୍ୟମରେ ଆପଣଙ୍କ ଡାଟାକୁ ଏନକ୍ରିପ୍ଟ କରାଯାଇଛି। ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ Chrome ଡାଟା ବ୍ୟବହାର ଏବଂ ସେଭ କରିବା ପାଇଁ ଏହାକୁ ଲେଖନ୍ତୁ।</translation>
 <translation id="8993760627012879038">ଇନ୍‌କଗ୍‌ନିଟୋ ମୋଡ୍‍‍ରେ ଏକ ନୂଆ ଟାବ୍ ଖୋଲନ୍ତୁ</translation>
+<translation id="8995521496079646922">ଆପଣ ବାଛୁଥିବା ଆପ୍ସକୁ ଡିଫଲ୍ଟ ଭାବେ ବ୍ୟବହାର କରାଯିବ। ଯଦି କୌଣସି ଆପ ପୂର୍ବରୁ ଏହି ଡିଭାଇସରେ ନାହିଁ, ତେବେ ଏହାକୁ ଶୀଘ୍ର ଡାଉନଲୋଡ କରାଯିବ।</translation>
 <translation id="8996847606757455498">ଅନ୍ୟ ଏକ ପ୍ରଦାନକାରୀ ବାଛନ୍ତୁ</translation>
 <translation id="8998289560386111590">ଆପଣଙ୍କ ଡିଭାଇସରେ ଉପଲବ୍ଧ ନାହିଁ</translation>
 <translation id="8998837250940831980">ଟାବକୁ ଛୋଟ କରାଯାଇପାରିଲା ନାହିଁ। ପରେ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>

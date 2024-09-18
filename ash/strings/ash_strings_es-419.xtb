@@ -42,6 +42,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1148499908455722006">Abrir el diálogo de información de <ph name="USER_NAME" /></translation>
 <translation id="1150989369772528668">Calendario</translation>
 <translation id="1153356358378277386">Dispositivos sincronizados</translation>
+<translation id="1153918444040990015">No se pudo establecer conexión con los sonidos de Concentración</translation>
 <translation id="1155734730463845512">Nivel de batería actual <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1157514002898505378">La IA generativa es experimental y el contenido puede ser impreciso, ofensivo o engañoso. Si quieres informar un problema, comunícate con tu administrador. <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="1160215328209699296">se activó y está en uso</translation>
@@ -77,6 +78,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1240638468526743569">Una app</translation>
 <translation id="1242198791279543032">Las notificaciones están silenciadas</translation>
 <translation id="1242883863226959074">dispositivo</translation>
+<translation id="1245476784081715330">¡Bien hecho!</translation>
 <translation id="1245644940275736236">Ve a Asistente</translation>
 <translation id="124678866338384709">Cerrar la pestaña actual</translation>
 <translation id="1246890715821376239">Apps no compatibles</translation>
@@ -175,6 +177,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1550523713251050646">Haz clic para obtener más opciones</translation>
 <translation id="1555130319947370107">Azul</translation>
 <translation id="1557622599341396706">Mostrar el nombre del escritorio</translation>
+<translation id="1567138500090284106">Botón de teclas del mouse</translation>
 <translation id="1569384531973824928">Esto permite el acceso a todas las apps y sitios web con los permisos de cámara y micrófono. Es posible que debas actualizar la página web o reiniciar la app.</translation>
 <translation id="1571697193564730395">Activa o desactiva la función No interrumpir. <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">Alejar cuando la lupa esté activada</translation>
@@ -212,6 +215,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1703117532528082099">Se ancló la ventana activa en la izquierda.</translation>
 <translation id="1708345662127501511">Escritorio: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Configuración de red</translation>
+<translation id="171610090693716835">Mantén el ritmo con playlists personalizadas para concentrarte. Obtén YouTube Music y YouTube sin anuncios con 3 meses de YouTube Premium sin costo.</translation>
 <translation id="1719094688023114093">El Subtitulado instantáneo está activado.</translation>
 <translation id="1720011244392820496">Activa la Sincronización Wi-Fi</translation>
 <translation id="1720230731642245863">El hotspot está desactivado</translation>
@@ -242,6 +246,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1787955149152357925">No</translation>
 <translation id="1796561540704213354">Sitios web que incluyen las páginas que visitaste y las páginas abiertas</translation>
 <translation id="179842970735685253">Condiciones del Servicio de Google</translation>
+<translation id="1805407494113167797">No se pudo reproducir los sonidos de Concentración</translation>
 <translation id="181103072419391116">Intensidad de la señal: <ph name="SIGNAL_STRENGTH" />, administrada por tu administrador</translation>
 <translation id="1816896987747843206">Permite el acceso a la cámara para todas las apps y sitios web con el permiso correspondiente</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
@@ -840,6 +845,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="3958714870339660776">Todo el día</translation>
 <translation id="3962859241508114581">Pista anterior</translation>
 <translation id="3963124517343721543">Abre las ventanas y pestañas anteriores para continuar fácilmente desde donde dejaste. También verás sugerencias personalizadas de las próximas tareas.</translation>
+<translation id="396506362088290977">Prueba el sonido del micrófono</translation>
 <translation id="3969043077941541451">No</translation>
 <translation id="3970324493235864154">Ver las notificaciones de tu teléfono</translation>
 <translation id="397105322502079400">Calculando...</translation>
@@ -897,6 +903,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="4156293514828496577"><ph name="PERCENTAGE" />% restante de batería (aproximadamente <ph name="TIME_LEFT" />).
 Algunas funciones están limitadas para aumentar la duración de la batería.</translation>
 <translation id="4160919062868802509">Se detectaron varias fuentes de audio</translation>
+<translation id="416245495747357243">¡Se terminó!</translation>
 <translation id="4165275524535002941">Es posible que el cable no admita pantallas</translation>
 <translation id="4177415338862979658">Haz clic para ver los detalles</translation>
 <translation id="4177913004758410636">{0,plural, =1{Actualiza el dispositivo en el transcurso de 1 día}other{Actualiza el dispositivo dentro de los próximos # días}}</translation>
@@ -982,6 +989,7 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="4412944820643904175">La función <ph name="FEATURE_NAME" /> está desactivada.</translation>
 <translation id="4417647906073317561">Configuración del Modo sin distracciones. Establece un temporizador, una tarea y música para concentrarte.</translation>
 <translation id="4424159417645388645">Escritorio 5</translation>
+<translation id="4426817706804363424">¡Así se hace!</translation>
 <translation id="4430019312045809116">Volumen</translation>
 <translation id="4441283832827406317">Las apps están ordenadas por nombre</translation>
 <translation id="4445159312344259901">Accede para desbloquear.</translation>
@@ -1246,6 +1254,7 @@ También puedes usar la combinación de teclas. Primero, destaca el texto y, lue
 <translation id="5283198616748585639">Agregar 1 min</translation>
 <translation id="528468243742722775">Finalizar</translation>
 <translation id="5286194356314741248">Examinando</translation>
+<translation id="528641622273682395">Activar o desactivar la prueba del micrófono</translation>
 <translation id="5297423144044956168">No se encontraron dispositivos móviles.</translation>
 <translation id="5297704307811127955">No</translation>
 <translation id="5300589172476337783">Mostrar</translation>
@@ -1273,6 +1282,7 @@ No hay dispositivos conectados.</translation>
 <translation id="536019650977002321">Tu administrador no permite capturas de audio. Para obtener más información, comunícate con el administrador.</translation>
 <translation id="5361524080961918551">Se descargaron archivos de voz en <ph name="LANGUAGE" /> de forma parcial</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Ir a esta pestaña</translation>
+<translation id="5363835273551457276">Puedes probar el sonido del micrófono. Cierra el panel para detener la prueba.</translation>
 <translation id="5364693579536176785">espacio de almacenamiento</translation>
 <translation id="5369573834963677938">El control facial estará disponible para otros usuarios del dispositivo</translation>
 <translation id="5369717264580061086">Obtener la vista previa del archivo en la app de Files</translation>
@@ -1406,6 +1416,7 @@ No hay dispositivos conectados.</translation>
 <translation id="5777841717266010279">¿Dejar de compartir la pantalla?</translation>
 <translation id="5779721926447984944">Archivos fijados</translation>
 <translation id="5785221443435874078">Quitar esta sugerencia</translation>
+<translation id="5787431783058088906">Obtener beneficio</translation>
 <translation id="5788127256798019331">Archivos de Play</translation>
 <translation id="5788535737706478207">Volver a abrir la última pestaña o ventana que cerraste</translation>
 <translation id="5790085346892983794">Completado correctamente</translation>
@@ -1413,6 +1424,7 @@ No hay dispositivos conectados.</translation>
 <translation id="5802516411616338943">Abrir la Configuración rápida</translation>
 <translation id="5804651031882187592">Cómo desactivar la configuración "Bloquear SIM"</translation>
 <translation id="5805809050170488595">Hacer clic para activar <ph name="NETWORK_NAME" /></translation>
+<translation id="5818796501620225415">Puedes agregar más tiempo o finalizar tu sesión de concentración</translation>
 <translation id="5819918159912280082">Se reinició tu Chromebook de forma inesperada. Abre las ventanas y apps anteriores.</translation>
 <translation id="5823239091726045201">Google Tasks en la Web</translation>
 <translation id="5825969630400862129">Configuración de dispositivos conectados</translation>
@@ -1506,7 +1518,6 @@ No hay dispositivos conectados.</translation>
 <translation id="6119972796024789243">Corrección de colores</translation>
 <translation id="6121838516699723042">Confirmar la descarga de <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">El Asistente de Google no está disponible en las sesiones de invitado.</translation>
-<translation id="6127370444807669747">Para obtener playlists personalizadas y más música para concentrarse, prueba YouTube Music Premium</translation>
 <translation id="6127395413317891856">No tienes conexión. Verifica la conexión y vuelve a intentarlo.</translation>
 <translation id="6129953537138746214">Espacio</translation>
 <translation id="6137566720514957455">Abrir el diálogo para quitar la cuenta <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -1637,6 +1648,7 @@ Nueva instalación</translation>
 <translation id="6574587113394758819">Se oculta la notificación de <ph name="APP_TITLE" /> porque está activada la protección de visualización</translation>
 <translation id="6574622320167699133">Se desbloqueó mediante el teléfono. Presiona o haz clic para ingresar.</translation>
 <translation id="6578407462441924264">Sin nombre</translation>
+<translation id="6582012689384648647">Para obtener playlists personalizadas para concentrarte, permite el acceso a YouTube Music</translation>
 <translation id="6582034443359256692">Calculando el nivel de carga de la batería.</translation>
 <translation id="6585808820553845416">La sesión terminará en <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
@@ -1875,6 +1887,7 @@ Nueva instalación</translation>
 <translation id="7477793887173910789">Controla tu música, videos y mucho más</translation>
 <translation id="7488762544858401571">Editado</translation>
 <translation id="7489261257412536105">Ingresar al modo de pantalla completa o salir de él</translation>
+<translation id="7490157877815329797">Prueba YouTube Music Premium para escuchar música sin anuncios y disfrutar de música personalizada para concentrarte</translation>
 <translation id="7490360161041035804">Puedes fijar archivos importantes, incluidos los de Google Drive. Para fijar un elemento, coloca el cursor sobre él o abre Archivos y haz clic con el botón derecho en él.</translation>
 <translation id="7497767806359279797">Elegir idioma y teclado</translation>
 <translation id="7507162824403726948">Terminar de verificar tu identidad</translation>
@@ -2124,6 +2137,7 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="8262312463845990408">Activar o desactivar la reproducción</translation>
 <translation id="8268302343625273732">Ver todas las tareas en Google Classroom</translation>
 <translation id="8277261673056602147">Destacar texto en la pantalla</translation>
+<translation id="8282784978194352587">¡Excelente!</translation>
 <translation id="8287009018010202411">Productividad</translation>
 <translation id="828708037801473432">No</translation>
 <translation id="8297006494302853456">Débil</translation>
@@ -2149,6 +2163,7 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="8380784334203145311">Buenas noches:</translation>
 <translation id="8382715499079447151">Protección de visualización</translation>
 <translation id="8383614331548401927">Inicio inteligente</translation>
+<translation id="838540623579162843">Obtener Music Premium</translation>
 <translation id="8388750414311082622">No se puede quitar el último escritorio.</translation>
 <translation id="8394567579869570560">Tus padres bloquearon este dispositivo</translation>
 <translation id="8401850874595457088">Ingresar al menú de idiomas</translation>
@@ -2201,6 +2216,7 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="8609384513243082612">Abrir una pestaña nueva</translation>
 <translation id="861045123704058818">Las apps se organizan por categoría de forma temporal</translation>
 <translation id="8612216344243590325">Mantén los archivos importantes en <ph name="HOLDING_SPACE_TITLE" /> en lugar de en el escritorio. Solo tienes que arrastrar los archivos a <ph name="HOLDING_SPACE_TITLE" />.</translation>
+<translation id="8612338981637220013">¡Muy bien!</translation>
 <translation id="8614517853887502247">Se ocultan las notificaciones de <ph name="APP_1_TITLE" /> y <ph name="APP_2_TITLE" /> porque está activada la protección de visualización</translation>
 <translation id="8615778328722901791">Abrir barra de herramientas</translation>
 <translation id="8619000641825875669">OneDrive</translation>
@@ -2243,6 +2259,7 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />: Activando…</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
+<translation id="8751299148074971734">¡Sigue así!</translation>
 <translation id="8753368202781196133">Por el momento, no se admite este idioma.</translation>
 <translation id="8755498163081687682">Verifica tu identidad: <ph name="ORIGIN_NAME" /> quiere confirmar que eres tú</translation>
 <translation id="875593634123171288">Mostrar la configuración de la VPN</translation>
@@ -2284,6 +2301,7 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="8876661425082386199">Revisa tu conexión</translation>
 <translation id="8877788021141246043">Establecer un recordatorio</translation>
 <translation id="8878886163241303700">Ampliando pantalla</translation>
+<translation id="8885424115080869847">No se pudo establecer conexión con YouTube Music</translation>
 <translation id="888982883502837004">Hay actualizaciones de firmware disponibles para tu dispositivo. Haz clic para revisarlas y aplicarlas.</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> se borrará de forma permanente.</translation>
 <translation id="889790758758811533">Queda <ph name="PERCENTAGE" />% de batería (aproximadamente <ph name="TIME_LEFT" />). Conecta tu dispositivo a la corriente.</translation>

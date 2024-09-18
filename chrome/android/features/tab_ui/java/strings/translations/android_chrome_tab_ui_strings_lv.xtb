@@ -104,6 +104,7 @@
 <translation id="5400836586163650660">Pelēka</translation>
 <translation id="5490235265819901748">Ciļņu grupa ir izvērsta</translation>
 <translation id="5494920125229734069">Atlasīt visu</translation>
+<translation id="5549653163690032080">Atvērt kopīgotās ciļņu grupas “<ph name="TITLE_OF_GROUP" />” darbību izvēlni</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Aizvērt ciļņu grupu, kurā ir <ph name="TABS_COUNT_ONE" /> cilne šādā krāsā: <ph name="COLOR_NAME" />.}zero{Aizvērt ciļņu grupu, kurā ir <ph name="TABS_COUNT_MANY" /> cilnes šādā krāsā: <ph name="COLOR_NAME" />.}one{Aizvērt ciļņu grupu, kurā ir <ph name="TABS_COUNT_MANY" /> cilne šādā krāsā: <ph name="COLOR_NAME" />.}other{Aizvērt ciļņu grupu, kurā ir <ph name="TABS_COUNT_MANY" /> cilnes šādā krāsā: <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">Skatiet veikala informāciju; opcija ir pieejama ekrāna augšdaļā</translation>
 <translation id="5627941783489838464">Nav ciļņu atjauninājumu</translation>
@@ -135,6 +136,7 @@
 <translation id="6694634756612002311">Pārvaldīt kopīgošanu</translation>
 <translation id="6744956528665271406">Rediģēt grupas krāsu</translation>
 <translation id="6856809498882026482">Paslēpt vairākatlases režīmu</translation>
+<translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{Izvērst kopīgoto ciļņu grupu “<ph name="TITLE_OF_GROUP" />” ar <ph name="TABS_COUNT_ONE" /> cilni šādā krāsā: <ph name="COLOR_NAME" />.}zero{Izvērst kopīgoto ciļņu grupu “<ph name="TITLE_OF_GROUP" />” ar <ph name="TABS_COUNT_MANY" /> cilnēm šādā krāsā: <ph name="COLOR_NAME" />.}one{Izvērst kopīgoto ciļņu grupu “<ph name="TITLE_OF_GROUP" />” ar <ph name="TABS_COUNT_MANY" /> cilni šādā krāsā: <ph name="COLOR_NAME" />.}other{Izvērst kopīgoto ciļņu grupu “<ph name="TITLE_OF_GROUP" />” ar <ph name="TABS_COUNT_MANY" /> cilnēm šādā krāsā: <ph name="COLOR_NAME" />.}}</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Kopīgot cilni}zero{Kopīgot cilnes}one{Kopīgot cilnes}other{Kopīgot cilnes}}</translation>
 <translation id="7129458170538955174">Informācija par šo veikalu ir atvērta pusekrāna augstumā</translation>
 <translation id="7200189319044305940">{NUMBER_OF_TABS,plural, =1{Aizvērt ciļņu grupu “<ph name="TITLE_OF_GROUP" />”, kurā ir <ph name="TABS_COUNT_ONE" /> cilne.}zero{Aizvērt ciļņu grupu “<ph name="TITLE_OF_GROUP" />”, kurā ir <ph name="TABS_COUNT_MANY" /> cilnes.}one{Aizvērt ciļņu grupu “<ph name="TITLE_OF_GROUP" />”, kurā ir <ph name="TABS_COUNT_MANY" /> cilne.}other{Aizvērt ciļņu grupu “<ph name="TITLE_OF_GROUP" />”, kurā ir <ph name="TABS_COUNT_MANY" /> cilnes.}}</translation>
@@ -170,6 +172,7 @@
 <translation id="8205266828577616993">Pārvietot cilni uz augšu</translation>
 <translation id="8261506727792406068">Dzēst</translation>
 <translation id="8338427544764842461">Jūsu ciļņu grupas ir saglabātas šeit un tiek atjauninātas visās ierīcēs, kurās esat pierakstījies.</translation>
+<translation id="8344020191144794051">{NUMBER_OF_TABS,plural, =1{Izvērst kopīgoto ciļņu grupu ar <ph name="TABS_COUNT_ONE" /> cilni šādā krāsā: <ph name="COLOR_NAME" />.}zero{Izvērst kopīgoto ciļņu grupu ar <ph name="TABS_COUNT_MANY" /> cilnēm šādā krāsā: <ph name="COLOR_NAME" />.}one{Izvērst kopīgoto ciļņu grupu ar <ph name="TABS_COUNT_MANY" /> cilni šādā krāsā: <ph name="COLOR_NAME" />.}other{Izvērst kopīgoto ciļņu grupu ar <ph name="TABS_COUNT_MANY" /> cilnēm šādā krāsā: <ph name="COLOR_NAME" />.}}</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Aizvērt atlasīto cilni (skaits: <ph name="TABS_COUNT_ONE" />)}zero{Aizvērt atlasītās cilnes (skaits: <ph name="TABS_COUNT_MANY" />)}one{Aizvērt atlasītās cilnes (skaits: <ph name="TABS_COUNT_MANY" />)}other{Aizvērt atlasītās cilnes (skaits: <ph name="TABS_COUNT_MANY" />)}}</translation>
 <translation id="8398929769197326728">Jauna mape — <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">Iestatījumi</translation>

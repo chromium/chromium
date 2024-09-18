@@ -1014,6 +1014,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2882949212241984732">Oltárhajtás</translation>
 <translation id="2891963978019740012">Az Ön keresőmotorja a Chrome-ban</translation>
 <translation id="2893773853358652045">4. tekercs</translation>
+<translation id="2894137550885451583">Ezek a következő termék árai <ph name="CURRENCY" /> pénznemben: <ph name="PRODUCT" /></translation>
 <translation id="2900528713135656174">Esemény létrehozása</translation>
 <translation id="2902312830803030883">További műveletek</translation>
 <translation id="2903493209154104877">Címek</translation>
@@ -1609,6 +1610,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3949601375789751990">A böngészési előzmények itt jelennek meg</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">Nincs mentett fizetési mód</translation>
+<translation id="3950560191811267370">A kereskedelmi alsó lap bezárva</translation>
 <translation id="3950574001630941635">Útmutató újraindítása</translation>
 <translation id="3950820424414687140">Bejelentkezés</translation>
 <translation id="3953505489397572035">Ez az ár átlagos</translation>
@@ -2349,6 +2351,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5331585574693522196">Alapbeállítás</translation>
 <translation id="5332219387342487447">Szállítási mód</translation>
 <translation id="5332769172018416402">Kérés üzenetben</translation>
+<translation id="533323551986281710">A kereskedelmi alsó lap teljes magasságban megnyitva</translation>
 <translation id="5334013548165032829">Részletes rendszernaplók</translation>
 <translation id="5334145288572353250">Menti a címet?</translation>
 <translation id="5340250774223869109">Alkalmazás letiltva</translation>
@@ -2531,6 +2534,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5675650730144413517">Az oldal nem működik</translation>
 <translation id="5675809467256309336">Dance és elektronikus zene</translation>
 <translation id="5675959228867414813">Megjelenítés dátum szerint</translation>
+<translation id="567604591393105935">A kereskedelmi alsó lap félmagasságban megnyitva</translation>
 <translation id="5677928146339483299">Letiltva</translation>
 <translation id="5678007133659493065">Fólia</translation>
 <translation id="5680642791693447368">Thrillerek, bűnügyi és misztikus filmek</translation>
@@ -3437,6 +3441,7 @@ További részletek:
 <translation id="7374733840632556089">A probléma oka az Ön vagy valaki más által az eszközre telepített egyik tanúsítvány. Erről a tanúsítványról tudni lehet, hogy hálózati forgalom megfigyelésére és elfogására használják, és a Chrome szerint nem megbízható. Bár a megfigyelésnek létezik néhány jogszerű formája (például iskolai vagy vállalati hálózatokon), a Chrome biztosra szeretne menni abban, hogy Ön ezzel tisztában van – még akkor is, ha Ön nem tud tenni ellene. A megfigyelés az internethez hozzáférő bármely böngészőben vagy alkalmazásban megtörténhet.</translation>
 <translation id="7375532151824574023">{NUM_COOKIES,plural, =0{Nincs engedélyezett webhely}=1{1 engedélyezett webhely}other{# engedélyezett webhely}}</translation>
 <translation id="7375818412732305729">Fájlcsatolás történt</translation>
+<translation id="7376031331622621328">Kereskedelmi alsó lap</translation>
 <translation id="7377249249140280793"><ph name="RELATIVE_DATE" /> - <ph name="FULL_DATE" /></translation>
 <translation id="7377314930809374926">Vendéglátóipar</translation>
 <translation id="7378594059915113390">Médiavezérlők</translation>
@@ -3721,6 +3726,7 @@ További részletek:
 <translation id="7831993212387676366">Mi az a bevásárlólista?</translation>
 <translation id="7840103971441592723">A képernyőfelvétel elindult</translation>
 <translation id="784137052867620416">Shopping Insights</translation>
+<translation id="7842611866969435396">Kezdés</translation>
 <translation id="784404208867107517">Csoportosított előzmények</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Nincs}=1{1 alkalmazás (<ph name="EXAMPLE_APP_1" />)}=2{2 alkalmazás (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# alkalmazás (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}}</translation>
 <translation id="785476343534277563">Egyetemi sportok</translation>

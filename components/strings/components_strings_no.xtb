@@ -1014,6 +1014,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2882949212241984732">Lukket vindusfals</translation>
 <translation id="2891963978019740012">Søkemotoren din i Chrome</translation>
 <translation id="2893773853358652045">Fjerde rull</translation>
+<translation id="2894137550885451583">Dette er priser i <ph name="CURRENCY" /> for produktet <ph name="PRODUCT" /></translation>
 <translation id="2900528713135656174">Opprett hendelse</translation>
 <translation id="2902312830803030883">Flere handlinger</translation>
 <translation id="2903493209154104877">Adresser</translation>
@@ -1611,6 +1612,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3949601375789751990">Nettleserloggen din vises her</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">Ingen lagrede betalingsmåter</translation>
+<translation id="3950560191811267370">Feltet nederst for handel er lukket</translation>
 <translation id="3950574001630941635">Start veiledningen på nytt</translation>
 <translation id="3950820424414687140">Logg på</translation>
 <translation id="3953505489397572035">Denne prisen er vanlig</translation>
@@ -2352,6 +2354,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5331585574693522196">Angi som standard</translation>
 <translation id="5332219387342487447">Leveringsmetode</translation>
 <translation id="5332769172018416402">Spør i en melding</translation>
+<translation id="533323551986281710">Feltet nederst for handel er åpnet i full høyde</translation>
 <translation id="5334013548165032829">Detaljerte systemlogger</translation>
 <translation id="5334145288572353250">Lagre adresse?</translation>
 <translation id="5340250774223869109">Programmet er blokkert</translation>
@@ -2534,6 +2537,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5675650730144413517">Denne siden fungerer ikke</translation>
 <translation id="5675809467256309336">Dance og elektronisk musikk</translation>
 <translation id="5675959228867414813">Vis etter dato</translation>
+<translation id="567604591393105935">Feltet nederst for handel er åpnet i halv høyde</translation>
 <translation id="5677928146339483299">Blokkert</translation>
 <translation id="5678007133659493065">Folie</translation>
 <translation id="5680642791693447368">Thriller-, krim- og mysteriefilmer</translation>
@@ -3439,6 +3443,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7374733840632556089">Dette problemet oppstår på grunn av et sertifikat du eller noen andre har installert på enheten. Det er kjent at sertifikatet brukes til nettverksavlytting og -overvåking, og Chrome stoler ikke på det. Selv om det finnes legitime bruksområder for overvåking, f.eks. på skole- eller bedriftsnettverk, vil Chrome sørge for at du er klar over at det foregår, selv om du ikke kan stoppe det. Overvåking kan skje i alle nettlesere og applikasjoner som bruker nettet.</translation>
 <translation id="7375532151824574023">{NUM_COOKIES,plural, =0{Ingen nettsteder er tillatt}=1{1 nettsted er tillatt}other{# nettsteder er tillatt}}</translation>
 <translation id="7375818412732305729">Filer legges ved</translation>
+<translation id="7376031331622621328">Feltet nederst for handel</translation>
 <translation id="7377249249140280793"><ph name="RELATIVE_DATE" /> – <ph name="FULL_DATE" /></translation>
 <translation id="7377314930809374926">Besøkstjenester</translation>
 <translation id="7378594059915113390">Mediekontroller</translation>
@@ -3723,6 +3728,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7831993212387676366">Hva er handlelisten?</translation>
 <translation id="7840103971441592723">Et skjermopptak er startet</translation>
 <translation id="784137052867620416">Shopping-statistikk</translation>
+<translation id="7842611866969435396">Sett i gang</translation>
 <translation id="784404208867107517">Gruppert logg</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Ingen}=1{1 app (<ph name="EXAMPLE_APP_1" />)}=2{2 apper (<ph name="EXAMPLE_APP_1" /> og <ph name="EXAMPLE_APP_2" />)}other{# apper (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}}</translation>
 <translation id="785476343534277563">Studentsport</translation>

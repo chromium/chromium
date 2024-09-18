@@ -42,6 +42,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1148499908455722006">Avage konto <ph name="USER_NAME" /> teabedialoog</translation>
 <translation id="1150989369772528668">Kalender</translation>
 <translation id="1153356358378277386">Seotud seadmed</translation>
+<translation id="1153918444040990015">Ei saanud keskendumise funktsiooni helidega ühendada</translation>
 <translation id="1155734730463845512">Praegune aku laetuse tase <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1157514002898505378">Generatiivne AI on katsejärgus ja selle sisu võib olla ebatäpne, eksitav või solvav. Probleemist teatamiseks võtke ühendust administraatoriga. <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="1160215328209699296">sees ja kasutusel</translation>
@@ -77,6 +78,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1240638468526743569">Rakendus</translation>
 <translation id="1242198791279543032">Märguanded on vaigistatud</translation>
 <translation id="1242883863226959074">seadmes</translation>
+<translation id="1245476784081715330">Väga hea!</translation>
 <translation id="1245644940275736236">Ava Assistent</translation>
 <translation id="124678866338384709">Aktiivse vahelehe sulgemine</translation>
 <translation id="1246890715821376239">Toetamata rakendused</translation>
@@ -175,6 +177,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1550523713251050646">Klõpsake lisavalikute nägemiseks</translation>
 <translation id="1555130319947370107">Sinine</translation>
 <translation id="1557622599341396706">Kuva töölaua nimi</translation>
+<translation id="1567138500090284106">Hiireklahvide nupp</translation>
 <translation id="1569384531973824928">Sisselülitamisel antakse juurdepääsuluba kõikidele kaamerale ja mikrofonile juurdepääsemise loaga rakendustele ning veebisaitidele. Võimalik, et peate veebilehte värskendama või rakenduse taaskäivitama.</translation>
 <translation id="1571697193564730395">Režiimi Mitte segada lülitamine. <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">Suumi välja, kui luup on sisse lülitatud</translation>
@@ -242,6 +245,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1787955149152357925">Väljas</translation>
 <translation id="1796561540704213354">Veebisaidid, mis hõlmavad teie külastatud lehti ja avatud lehti</translation>
 <translation id="179842970735685253">Google'i teenusetingimused</translation>
+<translation id="1805407494113167797">Ei saanud keskendumise funktsiooni helisid esitada</translation>
 <translation id="181103072419391116">Signaali tugevus: <ph name="SIGNAL_STRENGTH" />, võrku haldab teie administraator</translation>
 <translation id="1816896987747843206">See lubab kõikidel kaamerale juurdepääsemise loaga rakendustel ja veebisaitidel kaamerale juurde pääseda</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
@@ -840,6 +844,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="3958714870339660776">Terve päev</translation>
 <translation id="3962859241508114581">Eelmine lugu</translation>
 <translation id="3963124517343721543">Jätkake sealt, kus pooleli jäite, avades oma eelmise seansi aknad ja vahelehed. Samuti näete isikupärastatud soovitusi järgmiste tegevuste kohta.</translation>
+<translation id="396506362088290977">Mikrofoni heli testimine</translation>
 <translation id="3969043077941541451">Väljas</translation>
 <translation id="3970324493235864154">Teie telefoni märguannete kuvamine</translation>
 <translation id="397105322502079400">Arvutamine ...</translation>
@@ -897,6 +902,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="4156293514828496577">Akut on jäänud <ph name="PERCENTAGE" />% (umbes <ph name="TIME_LEFT" />).
 Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="4160919062868802509">Tuvastatud on mitu heliallikat</translation>
+<translation id="416245495747357243">Tehtud!</translation>
 <translation id="4165275524535002941">Kaabel ei pruugi ekraane toetada</translation>
 <translation id="4177415338862979658">Klõpsake üksikasjade vaatamiseks</translation>
 <translation id="4177913004758410636">{0,plural, =1{Värskendage seadet päeva jooksul}other{Värskendage seadet # päeva jooksul}}</translation>
@@ -982,6 +988,7 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> on väljas.</translation>
 <translation id="4417647906073317561">Keskendumise režiimi seaded. Määrake keskendumiseks taimer, ülesanne ja muusika.</translation>
 <translation id="4424159417645388645">Töölaud 5</translation>
+<translation id="4426817706804363424">Tubli!</translation>
 <translation id="4430019312045809116">Helitugevus</translation>
 <translation id="4441283832827406317">Rakendused on sorditud nime järgi</translation>
 <translation id="4445159312344259901">Logige avamiseks sisse</translation>
@@ -1246,6 +1253,7 @@ Kasutada saate ka klaviatuuri otseteed. Esmalt tõstke tekst esile, seejärel va
 <translation id="5283198616748585639">Lisa 1 min</translation>
 <translation id="528468243742722775">Lõpeta</translation>
 <translation id="5286194356314741248">Skaneering</translation>
+<translation id="528641622273682395">Mikrofoni testi sisse-/väljalülitamine</translation>
 <translation id="5297423144044956168">Mobiilseadmeid ei leitud</translation>
 <translation id="5297704307811127955">Väljas</translation>
 <translation id="5300589172476337783">Kuva</translation>
@@ -1273,6 +1281,7 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="536019650977002321">Teie administraator ei luba heli jäädvustada. Lisateabe saamiseks võtke ühendust administraatoriga.</translation>
 <translation id="5361524080961918551"><ph name="LANGUAGE" /> keele kõnefailid on osaliselt alla laaditud</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Ava see vaheleht</translation>
+<translation id="5363835273551457276">Saate testida oma mikrofoni heli. Lõpetamiseks sulgege paneel.</translation>
 <translation id="5364693579536176785">salvestusruum</translation>
 <translation id="5369573834963677938">Näoga juhtimine on saadaval seadme teistele kasutajatele</translation>
 <translation id="5369717264580061086">Faili eelvaate kuvamine rakenduses Failid</translation>
@@ -1355,6 +1364,7 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Teie parooli ei õnnestunud kinnitada. Proovige uuesti.</translation>
 <translation id="5632485077360054581">Kuva juhised</translation>
+<translation id="5633826232582408011">Kui lülitate funktsioonid Aita mul kirjutada ja Aita mul lugeda sisse, saadetakse sisestatud tekst, dokumendi sisu ja veebilehe URL Google'i AI serveritesse, et genereerida kirjutamissoovitusi, kokkuvõtteid, vastata küsimustele ja täiustada toodet vastavalt dokumendile <ph name="LINK_TO_SERVICE_TERMS" />. Ärge lisage midagi isiklikku, delikaatset ega konfidentsiaalset.</translation>
 <translation id="5648021990716966815">Mikrofoni pistikupesa</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> vajab teie tähelepanu.</translation>
 <translation id="5662075790140998213">Töölaud 10</translation>
@@ -1412,6 +1422,7 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="5802516411616338943">Ava kiirseaded</translation>
 <translation id="5804651031882187592">Lülitage seade „SIM-i lukustamine“ välja</translation>
 <translation id="5805809050170488595">Klõpsake võrgu <ph name="NETWORK_NAME" /> aktiveerimiseks</translation>
+<translation id="5818796501620225415">Saate rohkem aega lisada või keskendumisseansi lõpetada</translation>
 <translation id="5819918159912280082">Teie Chromebook taaskäivitati ootamatult. Avage oma eelmised aknad ja rakendused.</translation>
 <translation id="5823239091726045201">Google Tasks veebis</translation>
 <translation id="5825969630400862129">Ühendatud seadmete seaded</translation>
@@ -1505,7 +1516,6 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="6119972796024789243">Värvide korrigeerimine</translation>
 <translation id="6121838516699723042">Allalaadimise kinnitamine (<ph name="FILENAME" />)</translation>
 <translation id="612734058257491180">Google'i assistent ei ole külastajaseansis saadaval.</translation>
-<translation id="6127370444807669747">Isikupärastatud esitusloendite ja keskendumise režiimi rohkema muusika jaoks proovige YouTube Music Premiumit</translation>
 <translation id="6127395413317891856">Võrguühendus puudub. Kontrollige ühendust ja proovige uuesti.</translation>
 <translation id="6129953537138746214">Tühik</translation>
 <translation id="6137566720514957455">Kasutaja <ph name="USER_EMAIL_ADDRESS" /> eemaldamise dialoogi avamine</translation>
@@ -2123,6 +2133,7 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="8262312463845990408">Taasesituse käivitamine/peatamine</translation>
 <translation id="8268302343625273732">Vaadake kõiki ülesandeid Google Classroomis</translation>
 <translation id="8277261673056602147">Tõstke tekst oma ekraanikuval esile</translation>
+<translation id="8282784978194352587">Korras!</translation>
 <translation id="8287009018010202411">Produktiivsus</translation>
 <translation id="828708037801473432">Väljas</translation>
 <translation id="8297006494302853456">Nõrk</translation>
@@ -2200,6 +2211,7 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="8609384513243082612">Uue vahelehe avamine</translation>
 <translation id="861045123704058818">Rakendused on ajutiselt kategooriate järgi korrastatud</translation>
 <translation id="8612216344243590325">Hoidke oma tähtsad failid töölaua asemel asukohas <ph name="HOLDING_SPACE_TITLE" />. Lihtsalt lohistage failid asukohta <ph name="HOLDING_SPACE_TITLE" />.</translation>
+<translation id="8612338981637220013">Teil läheb hästi!</translation>
 <translation id="8614517853887502247">Rakenduste <ph name="APP_1_TITLE" /> ja <ph name="APP_2_TITLE" /> märguanded on peidetud, kuna vaatamiskaitse on sisse lülitatud</translation>
 <translation id="8615778328722901791">Ava tööriistariba</translation>
 <translation id="8619000641825875669">OneDrive</translation>
@@ -2242,6 +2254,7 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />: aktiveerimine ...</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
+<translation id="8751299148074971734">Jätkake samas vaimus!</translation>
 <translation id="8753368202781196133">Seda keelt praegu ei toetata</translation>
 <translation id="8755498163081687682">Kinnitage oma isik: <ph name="ORIGIN_NAME" /> soovib teie isiku kinnitada</translation>
 <translation id="875593634123171288">Kuvab VPN-i seaded</translation>
@@ -2283,6 +2296,7 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="8876661425082386199">Kontrollige ühendust</translation>
 <translation id="8877788021141246043">Määra meeldetuletus</translation>
 <translation id="8878886163241303700">Ekraani laiendamine</translation>
+<translation id="8885424115080869847">Ei saanud YouTube Musicuga ühendada</translation>
 <translation id="888982883502837004">Teie seadme jaoks on saadaval püsivara värskendused. Klõpsake ülevaatamiseks ja värskendamiseks.</translation>
 <translation id="8896630965521842259">Mall <ph name="DESK_TEMPLATE_NAME" /> kustutatakse jäädavalt</translation>
 <translation id="889790758758811533">Akut on jäänud <ph name="PERCENTAGE" />% (umbes <ph name="TIME_LEFT" />). Ühendage seade toiteallikaga.</translation>

@@ -498,6 +498,7 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <translation id="1355088139103479645">Supprimer toutes les données ?</translation>
 <translation id="1356376170199999104">Accordée – <ph name="PERMISSION_DETAILS" />. Activez le micro à l'aide du bouton physique.</translation>
 <translation id="1356959069439783953">Les onglets inactifs changent d'apparence</translation>
+<translation id="1357766361161708728">Fermer les onglets inutilisés ?</translation>
 <translation id="1358741672408003399">Grammaire et orthographe</translation>
 <translation id="1359923111303110318">Votre appareil peut être déverrouillé avec Smart Lock. Appuyez sur Entrée pour le déverrouiller.</translation>
 <translation id="1361164813881551742">Ajouter manuellement</translation>
@@ -1595,6 +1596,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="211803431539496924">Confirmer les mises à jour de sécurité étendues ?</translation>
 <translation id="2118594521750010466">Corriger</translation>
 <translation id="2119461801241504254">La navigation sécurisée est activée, et vous protège contre les sites et les téléchargements dangereux</translation>
+<translation id="2119602978828978573">Langues prises en charge par Sous-titres instantanés</translation>
 <translation id="2120297377148151361">Activité et interactions</translation>
 <translation id="2120639962942052471">Autorisation "<ph name="PERMISSION" />" bloquée</translation>
 <translation id="2121055421682309734">{COUNT,plural, =0{Les cookies sont bloqués}=1{Les cookies sont bloqués, 1 exception}one{Les cookies sont bloqués, {COUNT} exception}other{Les cookies sont bloqués, {COUNT} exceptions}}</translation>
@@ -2555,6 +2557,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2787354132612937472">–</translation>
 <translation id="2788135150614412178">+</translation>
 <translation id="2789486458103222910">OK</translation>
+<translation id="2790750268015892264">Les applications Web isolées ne peuvent pas contrôler les lecteurs de cartes à puce. Les applis n'auront pas accès à une carte à puce.</translation>
 <translation id="2791529110887957050">Supprimer Linux</translation>
 <translation id="2791952154587244007">Une erreur s'est produite. Impossible de lancer automatiquement l'application kiosque sur cet appareil.</translation>
 <translation id="2792290659606763004">Supprimer les applications Android ?</translation>
@@ -2586,6 +2589,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2806372837663997957">L'appareil avec lequel vous tentez de partager le fichier n'a pas accepté cette opération</translation>
 <translation id="2806891468525657116">Le raccourci existe déjà</translation>
 <translation id="2807517655263062534">Les fichiers téléchargés s'affichent ici</translation>
+<translation id="2808481877345177494">Connectez-vous pour séparer de manière sécurisée vos activités professionnelles et personnelles. Augmentez votre productivité tout en protégeant les données sensibles de votre entreprise.</translation>
 <translation id="2811205483104563968">Comptes</translation>
 <translation id="2812049959647166806">Le format Thunderbolt n'est pas compatible</translation>
 <translation id="2812171980080389735">Réseaux et mots de passe enregistrés afin que vous puissiez vous connecter instantanément</translation>
@@ -2659,6 +2663,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2864601841139725659">Définir votre photo de profil</translation>
 <translation id="2865057607286263192">Appuyez de manière prolongée sur les touches du clavier pour afficher les accents et les caractères spéciaux. Cette option désactive la répétition des touches alphabétiques. Disponible uniquement en anglais (États-Unis).</translation>
 <translation id="2865919525181940183">Captures d'écran des programmes actuellement à l'écran</translation>
+<translation id="286643536820867504">Crée automatiquement des sous-titres pour les langues prises en charge. L'audio ne quitte jamais votre appareil.</translation>
 <translation id="286674810810214575">Vérification des sources d'alimentation…</translation>
 <translation id="2867768963760577682">Ouvrir dans un onglet épinglé</translation>
 <translation id="2868746137289129307">Cette extension est obsolète et désactivée par une stratégie d'entreprise. Il se peut qu'elle soit activée automatiquement lors de la publication d'une version plus récente.</translation>
@@ -3276,6 +3281,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3337568642696914359">Ne pas autoriser les sites à gérer des protocoles</translation>
 <translation id="3340620525920140773">Téléchargement terminé : <ph name="FILE_NAME" />.</translation>
 <translation id="3340978935015468852">paramètres</translation>
+<translation id="3341091511696469129">Chrome peut créer et traduire des sous-titres pour les langues affichées ici</translation>
 <translation id="3341699307020049241">Code incorrect. Il vous reste <ph name="RETRIES" /> tentatives.</translation>
 <translation id="3341703758641437857">Autoriser l'accès aux URL de fichier</translation>
 <translation id="334171495789408663">Jeton copié</translation>
@@ -3431,6 +3437,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3450157232394774192">Taux d'occupation en veille</translation>
 <translation id="3450180775417907283"><ph name="MANAGER" /> vous demande de vous connecter au Wi-Fi maintenant et de télécharger une mise à jour.</translation>
 <translation id="345078987193237421">L'accès à l'appareil photo sera accordé aux applis et sites Web ayant l'autorisation correspondante, ainsi qu'aux services système</translation>
+<translation id="3451362021220965191">Les applications Web isolées contrôlent les lecteurs de cartes à puce pour accéder aux cartes à puce qui sont insérées ou présentées à ces lecteurs. Les cartes à puce contiennent généralement des identités utilisées pour authentifier ou autoriser des opérations, se connecter à des services, etc.</translation>
 <translation id="3452999110156026232">Accès parental</translation>
 <translation id="3453082738208775226">Nettoyer l'espace de stockage hors connexion ?</translation>
 <translation id="3453597230179205517">L'accès à la position est bloqué</translation>
@@ -3993,6 +4000,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="3828953470056652895">J'ai lu et j'accepte les <ph name="BEGIN_LINK1" />Conditions d'utilisation de Google<ph name="END_LINK1" />, les <ph name="BEGIN_LINK2" />Conditions d'utilisation supplémentaires de Chrome et Chrome OS<ph name="END_LINK2" />, ainsi que les <ph name="BEGIN_LINK3" />Conditions d'utilisation de Play<ph name="END_LINK3" />.</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> - Utilisation élevée de la mémoire - <ph name="MEMORY_VALUE" /></translation>
 <translation id="3829765597456725595">Partage de fichiers SMB</translation>
+<translation id="38298897782945211">Les applications Web isolées suivent automatiquement ce paramètre.</translation>
 <translation id="3830470485672984938">Utiliser une autre clé d'accès</translation>
 <translation id="3830654885961023588">{NUM_EXTENSIONS,plural, =1{Votre administrateur a réactivé 1 extension potentiellement dangereuse}one{Votre administrateur a réactivé {NUM_EXTENSIONS} extension potentiellement dangereuse}other{Votre administrateur a réactivé {NUM_EXTENSIONS} extensions potentiellement dangereuses}}</translation>
 <translation id="3834728400518755610">La modification des paramètres du micro nécessite l'arrêt de Linux. Arrêtez Linux pour continuer.</translation>
@@ -4006,6 +4014,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="3839516600093027468">Toujours empêcher <ph name="HOST" /> de voir le contenu du presse-papiers</translation>
 <translation id="3841282988425489367">Impossible de configurer Steam pour Chromebook (bêta)</translation>
 <translation id="3841319830220785495">Voix naturelle par défaut</translation>
+<translation id="3841356782900714251">Lecteurs de cartes à puce</translation>
 <translation id="3841964634449506551">Mot de passe non valide</translation>
 <translation id="3842552989725514455">Police Serif</translation>
 <translation id="3843464315703645664">Ajouté à la liste d'autorisation interne</translation>
@@ -5715,6 +5724,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="5120886753782992638">Clique ici pour consulter <ph name="APPROVED_URL" /></translation>
 <translation id="5121052518313988218">Le système d'exploitation de votre conteneur Linux n'est pas à jour. Il ne recevra plus les mises à jour de sécurité ni les corrections de bugs, et les fonctionnalités actuellement exécutées risquent de s'arrêter de façon inattendue. Veuillez installer la dernière version pour continuer d'utiliser Linux.</translation>
 <translation id="5121130586824819730">Votre disque dur est saturé. Veuillez enregistrer à un autre emplacement ou libérer de l'espace sur le disque dur.</translation>
+<translation id="5121803000325086087">Les applis Web isolées peuvent demander à contrôler les lecteurs de cartes à puce. Les applis pourront accéder aux cartes à puce présentées aux lecteurs qu'elles contrôlent.</translation>
 <translation id="5123433949759960244">Basket-ball</translation>
 <translation id="5125714798187802869">Activer</translation>
 <translation id="5125751979347152379">URL incorrecte</translation>
@@ -5844,6 +5854,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="5214639857958972833">Favori "<ph name="BOOKMARK_TITLE" />" créé.</translation>
 <translation id="5215450412607891876">Activez les mises à jour de sécurité étendues</translation>
 <translation id="5215502535566372932">Sélectionnez un pays</translation>
+<translation id="5216674789212441076">Traduit automatiquement les sous-titres en direct. Les sous-titres sont envoyés à Google pour être traduits.</translation>
 <translation id="5220011581825921581">Recherche+Flèche vers le haut</translation>
 <translation id="5221516927483787768">Impossible de caster <ph name="HOST_NAME" /></translation>
 <translation id="5222403284441421673">Téléchargement non sécurisé bloqué</translation>
@@ -6551,6 +6562,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5750288053043553775">0</translation>
 <translation id="5751345516399502412">Vérifier l'aptitude au partage de connexion</translation>
 <translation id="5753570386948603678">Supprimer de l'historique</translation>
+<translation id="5753652925946671505">Ces onglets n'ont pas été utilisés depuis au moins <ph name="COUNT" /> jours.</translation>
 <translation id="5756163054456765343">C&amp;entre d'aide</translation>
 <translation id="5757187557809630523">titre suivant</translation>
 <translation id="5758631781033351321">Votre liste de lecture s'affichera ici</translation>
@@ -6974,6 +6986,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6064764629679333574">Améliorez la qualité du son du micro Bluetooth en convertissant le son basse résolution en son haute résolution.</translation>
 <translation id="6065289257230303064">Attributs du répertoire de l'objet du certificat</translation>
 <translation id="6066794465984119824">Hachage d'image non défini</translation>
+<translation id="6069027071882229820">Copier en tant qu'image</translation>
 <translation id="6069464830445383022">Connectez-vous à votre Chromebook à l'aide de votre compte Google</translation>
 <translation id="6069500411969514374">Professionnel</translation>
 <translation id="6071181508177083058">confirmer le mot de passe</translation>
@@ -7934,6 +7947,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="6785739405821760313">Affichage des bureaux enregistrés. Appuyez sur Tabulation pour naviguer.</translation>
 <translation id="6785915470941880363">Inverser le défilement <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="67862343314499040">Mauve</translation>
+<translation id="6786480815699355166">Seules les langues prises en charge par Sous-titres instantanés peuvent être traduites</translation>
 <translation id="6786747875388722282">Extensions</translation>
 <translation id="6787097042755590313">Autre onglet</translation>
 <translation id="6787531944787756058">le nom d'utilisateur <ph name="USER_EMAIL" /> n'est enregistré que sur cet appareil. Voir les détails</translation>
@@ -10076,6 +10090,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8319414634934645341">Utilisation étendue de la clé</translation>
 <translation id="8321476692217554900">notifications</translation>
 <translation id="8321837372750396788">Votre <ph name="DEVICE_TYPE" /> sera géré par <ph name="MANAGER" />.</translation>
+<translation id="8321888067342493336">Enregistrer en tant qu'image</translation>
 <translation id="8322814362483282060">L'accès à votre micro est bloqué pour cette page</translation>
 <translation id="8323167517179506834">Saisir une URL</translation>
 <translation id="8323317289166663449">Accéder à toutes vos données sur votre ordinateur et tous les sites Web et les modifier</translation>
@@ -10525,6 +10540,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8656888282555543604">Activer la journalisation des caractères braille</translation>
 <translation id="8657393004602556571">Voulez-vous supprimer les commentaires ?</translation>
 <translation id="8657542881463614516">Balayer l'écran pour changer de page</translation>
+<translation id="865857184419171576">Traduire les sous-titres en</translation>
 <translation id="865936634714975126">Ajoutez un paramètre de requête dans l'URL pour sélectionner des types lors du chargement de page. Exemple : chrome://device-log/?types=Bluetooth,USB.</translation>
 <translation id="8659608856364348875">Contacts pour le <ph name="FEATURE_NAME" /></translation>
 <translation id="8659609431223166673">Fenêtre déplacée vers le bas</translation>

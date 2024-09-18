@@ -343,6 +343,7 @@
 <translation id="2560876255701405320">Листа аудио снимака</translation>
 <translation id="2561093647892030937">лимунови</translation>
 <translation id="2570743873672969996">Покреће се тест <ph name="TEST_NAME" />...</translation>
+<translation id="2573178735329662769">Снимање свих звукова на Chromebook-у</translation>
 <translation id="2575552334616524665">То можете да укључите у Подешавањима или менију <ph name="THREE_DOTS_MENU_ICON" /></translation>
 <translation id="2576253868710695442">Ово ће заузети до 2 GB меморијског простора</translation>
 <translation id="2584547424703650812">Светлећи пејзажи</translation>
@@ -511,6 +512,7 @@
 <translation id="3588034708467091142">Проверите да ли сте повезани на интернет и пробајте поново.</translation>
 <translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> је име које је лако за коришћење за: <ph name="APN_NAME" />.</translation>
 <translation id="3595596368722241419">Батерија је пуна</translation>
+<translation id="3600063043775287169">Када је звук Chromebook-а укључен, Снимач звука снима све звукове који се пуштају на овом уређају. Уверите се да желите да снимате све звукове.</translation>
 <translation id="3600339377155080675">Пресликајте екран</translation>
 <translation id="3602290021589620013">Преглед</translation>
 <translation id="3603829704940252505">Аватар</translation>

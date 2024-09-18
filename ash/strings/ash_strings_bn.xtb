@@ -42,6 +42,7 @@
 <translation id="1148499908455722006"><ph name="USER_NAME" />-এর জন্য অ্যাকাউন্টের তথ্য সহ ডায়ালগ খুলুন</translation>
 <translation id="1150989369772528668">ক্যালেন্ডার</translation>
 <translation id="1153356358378277386">যুক্ত করা ডিভাইসগুলি</translation>
+<translation id="1153918444040990015">ফোকাস সাউন্ডের সাথে কানেক্ট করা যায়নি</translation>
 <translation id="1155734730463845512">বর্তমান ব্যাটারি লেভেল <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1157514002898505378">জেনারেটিভ AI পরীক্ষামূলক পর্যায়ে রয়েছে এবং এতে দেখানো কন্টেন্ট ভুল, বিভ্রান্তিকর বা আপত্তিকর হতে পারে। সমস্যা সংক্রান্ত অভিযোগ জানাতে অ্যাডমিনিস্ট্রেটরের সাথে যোগাযোগ করুন। <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="1160215328209699296">চালু এবং ব্যবহার করা হয়</translation>
@@ -175,6 +176,7 @@
 <translation id="1550523713251050646">আরও বিকল্পের জন্য ক্লিক করুন</translation>
 <translation id="1555130319947370107">নীল</translation>
 <translation id="1557622599341396706">ডেস্কের নাম দেখুন</translation>
+<translation id="1567138500090284106">মাউস 'কী' বোতাম</translation>
 <translation id="1569384531973824928">এর ফলে ক্যামেরা ও মাইক্রোফোন ব্যবহার করার অনুমতি আছে এমন সমস্ত অ্যাপ ও ওয়েবসাইট অ্যাক্সেস করা যায়। আপনাকে ওয়েব পেজ রিফ্রেশ করতে বা অ্যাপটি রিস্টার্ট করতে হতে পারে।</translation>
 <translation id="1571697193564730395">'বিরক্ত করবে না' টগল করুন। <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">ম্যাগনিফায়ার চালু থাকাকালীন ছোট করুন</translation>
@@ -242,6 +244,7 @@
 <translation id="1787955149152357925">বন্ধ আছে</translation>
 <translation id="1796561540704213354">যেসব ওয়েবসাইটের পৃষ্ঠা আপনি ঘুরে দেখেছেন ও পৃষ্ঠা খোলা রয়েছে, সেগুলি সহ</translation>
 <translation id="179842970735685253">Google-এর পরিষেবার শর্তাবলী</translation>
+<translation id="1805407494113167797">ফোকাস সাউন্ড প্লে করা যায়নি</translation>
 <translation id="181103072419391116">সিগন্যাল: <ph name="SIGNAL_STRENGTH" />, আপনার অ্যাডমিনিস্ট্রেটর ম্যানেজ করে</translation>
 <translation id="1816896987747843206">ক্যামেরা সম্পর্কিত অনুমতির মাধ্যমে এটি সব অ্যাপ ও ওয়েবসাইটের জন্য ক্যামেরা অ্যাক্সেস করার অনুমতি দেয়</translation>
 <translation id="1823873187264960516">ইথারনেট: <ph name="ADDRESS" /></translation>
@@ -1505,7 +1508,6 @@
 <translation id="6119972796024789243">রঙ সংশোধন করা</translation>
 <translation id="6121838516699723042"><ph name="FILENAME" /> ডাউনলোড নিশ্চিত করুন</translation>
 <translation id="612734058257491180">Google অ্যাসিস্ট্যান্ট কোনও গেস্ট সেশনে উপলভ্য নয়।</translation>
-<translation id="6127370444807669747">পছন্দসই প্লেলিস্ট ও আরও ফোকাস করা মিউজিকের জন্য YouTube Music Premium ব্যবহার করে দেখুন</translation>
 <translation id="6127395413317891856">আপনি অফলাইন আছেন। আপনার ডিভাইসের কানেকশন ঠিক আছে কিনা দেখে নিয়ে আবার চেষ্টা করুন।</translation>
 <translation id="6129953537138746214">ব্যবধান</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" />-এর জন্য, 'অ্যাকাউন্ট সরিয়ে দিন' ডায়ালগ খুলুন</translation>
@@ -2284,6 +2286,7 @@
 <translation id="8876661425082386199">আপনার ইন্টারনেট কানেকশন চেক করুন</translation>
 <translation id="8877788021141246043">রিমাইন্ডার সেট করুন</translation>
 <translation id="8878886163241303700">স্ক্রিন সম্প্রসারণ করা হচ্ছে</translation>
+<translation id="8885424115080869847">YouTube Music-এর সাথে কানেক্ট করা যায়নি</translation>
 <translation id="888982883502837004">আপনার ডিভাইসের জন্য ফার্মওয়্যার আপডেট উপলভ্য। পর্যালোচনা এবং আপডেটের জন্য ক্লিক করুন।</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> স্থায়ীভাবে মুছে ফেলা হবে</translation>
 <translation id="889790758758811533"><ph name="PERCENTAGE" />% ব্যাটারির চার্জ আছে (প্রায় <ph name="TIME_LEFT" />)। ডিভাইসটি চার্জে বসান।</translation>

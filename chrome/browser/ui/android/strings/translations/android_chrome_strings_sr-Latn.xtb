@@ -596,6 +596,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="38243391581572867">Objektiv nije dostupan na ovom nalogu.</translation>
 <translation id="3830886834687455630">Ažurirajte Google Play usluge da biste proverili lozinke</translation>
+<translation id="3843603704176567761">Lozinke će možda uskoro prestati da rade na ovom uređaju. Da biste nastavili da koristite lozinke, ažurirajte Google Play usluge.</translation>
 <translation id="3845098929839618392">Otvori na kartici bez arhivir.</translation>
 <translation id="3847319713229060696">Poboljšajte bezbednost na vebu za svakoga</translation>
 <translation id="3856096718352044181">Proverite da li je ovo važeći dobavljač usluge ili probajte ponovo kasnije</translation>
@@ -677,6 +678,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="4257230861809842349">Želite da izbrišete lozinke iz Google menadžera lozinki?</translation>
 <translation id="426652736638196239">Ovaj IBAN će se sačuvati samo na ovom uređaju</translation>
 <translation id="4269820728363426813">Kopiraj adresu linka</translation>
+<translation id="4270730597186910506">Pratite proizvod ili opozovite njegovo praćenje.</translation>
 <translation id="4277529130885813215">Koristi drugi uređaj</translation>
 <translation id="4282440837784183472">Vaša organizacija, <ph name="MANAGED_DOMAIN" />, upravlja nalogom na koji se prijavljujete i načinom na koji Chrome može da se koristi. Administrator može da podesi ili ograniči određene funkcije.</translation>
 <translation id="4285846616383034558">Kolačići, keš i drugi podaci o sajtovima</translation>
@@ -1298,7 +1300,6 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="6964300328304469089">Trenutno je izabrano <ph name="NAME" />, <ph name="EMAIL" />. Odaberite nalog.</translation>
 <translation id="696447261358045621">Izađi iz režima bez arhiviranja</translation>
 <translation id="6965382102122355670">Potvrdi</translation>
-<translation id="6966660124354134532">Dodirnite da biste pratili proizvod ili opozvali njegovo praćenje.</translation>
 <translation id="6971862865055170158">Ne odobravam</translation>
 <translation id="6978717888677691380">Sajtovi koje ste blokirali</translation>
 <translation id="6979737339423435258">Oduvek</translation>

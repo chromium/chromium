@@ -116,6 +116,7 @@
 <translation id="1517166097004694782">Απόκρυψη της επιλογής Συνέχεια με αυτή την καρτέλα</translation>
 <translation id="1520027731907768768">Λάβετε ειδοποιήσεις για πτώσεις τιμών για προϊόντα που παρακολουθείτε.</translation>
 <translation id="1521774566618522728">Ενεργή σήμερα</translation>
+<translation id="1524563461097350801">Όχι, ευχαριστώ</translation>
 <translation id="1531038290222364269">Εμφάνιση καρτελών</translation>
 <translation id="1536390784834419204">Μετάφραση σελίδας</translation>
 <translation id="1540800554400757039">Διεύθυνση 1</translation>
@@ -1508,7 +1509,6 @@
 <translation id="8173034266693057059">Μήκος</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8182037667962849780">{count,plural, =1{Για το {website_1}}=2{Για τα {website_1}, {website_2}}=3{Για τα {website_1}, {website_2} και 1 ακόμη}other{Για τα {website_1}, {website_2} και {more_count} ακόμη}}</translation>
-<translation id="8189814768485665290">Κοινοποίηση πλήρους URL</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Οι συσκευές σας<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Προσθήκη κωδικού πρόσβασης</translation>
 <translation id="8202744799033457229">Εμφάνιση ιστορικού</translation>
@@ -1542,6 +1542,7 @@
 <translation id="8349305172487531364">Γραμμή σελιδοδεικτών</translation>
 <translation id="8366466717204352506">Δεν εκτελέστηκε έλεγχος ποτέ</translation>
 <translation id="8368001212524806591">Παρακολούθηση τιμής</translation>
+<translation id="8370406443343902172">Μετάβαση στις Ρυθμίσεις…</translation>
 <translation id="8372471489238799313">{count,plural, =1{Διαγραφή διεύθυνσης}other{Διαγραφή διευθύνσεων}}</translation>
 <translation id="8378714024927312812">Διαχειριζόμενο από τον οργανισμό σας</translation>
 <translation id="8386068868580335421">Επαναφορά</translation>

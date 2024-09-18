@@ -145,6 +145,7 @@
 <translation id="1651925268237749928">Egy megosztott albumot választott ki. Mások is módosíthatják a benne lévő fotókat, illetve hozzáadhatnak újakat. Háttérképként olyan fotók is megjelenhetnek, amelyek jelenleg nem találhatók meg ebben az albumban.</translation>
 <translation id="1661512400125589646">Szüneteltetés</translation>
 <translation id="1661865805917886535">A Google megkaphat bizonyos adatokat a fiókról és a rendszerről. Ezeket az adatokat a technikai problémák kezelésére és szolgáltatásaink fejlesztésére használjuk az adatvédelmi irányelveinknek (<ph name="PRIVACYPOLICYURL" />) és az Általános Szerződési Feltételeknek (<ph name="TERMSOFSERVICEURL" />) megfelelően. Tartalommódosítás kéréséhez lépjen a Jogi súgóba (<ph name="LEGALHELPPAGEURL" />).</translation>
+<translation id="1662699081856352167">Sikerült létrehozni az összegzést</translation>
 <translation id="1662989795263954667">Leállt – Kifogyott a tinta</translation>
 <translation id="1664796644829245314">Előnézet: <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">Beépített VPN</translation>
@@ -254,6 +255,7 @@
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2148716181193084225">Ma</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> fotó</translation>
+<translation id="2154460308960858308">Keresett kifejezés törlése</translation>
 <translation id="2156072344042480449">Az Ön két legutóbbi utasítása. Ezeket az utasításokat csak addig használhatja, amíg ezen az oldalon van.</translation>
 <translation id="2157660087437850958">emojiválasztó</translation>
 <translation id="2157959690810728433">VÁRAKOZIK</translation>
@@ -340,6 +342,7 @@
 <translation id="2560876255701405320">Hangfelvételek listája</translation>
 <translation id="2561093647892030937">citromok</translation>
 <translation id="2570743873672969996">„<ph name="TEST_NAME" />” teszt futtatása…</translation>
+<translation id="2573178735329662769">A Chromebook összes hangjának rögzítése</translation>
 <translation id="2575552334616524665">Ezt a Beállításokban vagy a <ph name="THREE_DOTS_MENU_ICON" /> menüben kapcsolhatja be.</translation>
 <translation id="2576253868710695442">Ez akár 2 GB tárhelyet is igénybe vehet.</translation>
 <translation id="2584547424703650812">Ragyogó tájak</translation>
@@ -500,12 +503,14 @@
 <translation id="3557205324756024651">Helyi azonosító (nem kötelező)</translation>
 <translation id="3565064564551103223">Engedélyezett IP-címek</translation>
 <translation id="3569407787324516067">Képernyővédő</translation>
+<translation id="3571184524500629183">Keresés bezárása</translation>
 <translation id="3577473026931028326">Hiba történt. Próbálja újra.</translation>
 <translation id="357889014807611375">mért adatforgalmú Wi-Fi</translation>
 <translation id="3583278742022654445">Gyenge jelerősség. Próbáljon közelebb helyezkedni a Wi-Fi-jelforráshoz.</translation>
 <translation id="3588034708467091142">Ellenőrizze, hogy csatlakozik-e az internethez, majd próbálkozzon újra.</translation>
 <translation id="3594280220611906414">A(z) <ph name="USER_FRIENDLY_APN_NAME" /> a(z) <ph name="APN_NAME" /> felhasználóbarát neve.</translation>
 <translation id="3595596368722241419">Akkumulátor feltöltve</translation>
+<translation id="3600063043775287169">Amikor be van kapcsolva A Chromebook hangja beállítás, a Hangfelvevő az eszközön lejátszott összes hangot rögzíti. Győződjön meg arról, hogy az összes hangot rögzíteni szeretné.</translation>
 <translation id="3600339377155080675">Képernyőtükrözés</translation>
 <translation id="3602290021589620013">Előnézet</translation>
 <translation id="3603829704940252505">Avatar</translation>
@@ -539,6 +544,7 @@
 <translation id="3780740315729837296">Rendeljen hozzá egy billentyűt</translation>
 <translation id="3784455785234192852">Zárolás</translation>
 <translation id="3785643128701396311">pixelképek</translation>
+<translation id="3799381533888781854">KIKAPCSOLVA – Ezt a beállítást a rendszergazdája kezeli.</translation>
 <translation id="380097101658023925">rgb-vezérlők</translation>
 <translation id="38114475217616659">Minden előzmény törlése</translation>
 <translation id="3820172043799983114">Érvénytelen PIN-kód.</translation>
@@ -742,6 +748,7 @@
 <translation id="4809927044794281115">Világos téma</translation>
 <translation id="4813136279048157860">Saját képek</translation>
 <translation id="4813345808229079766">Kapcsolat</translation>
+<translation id="4824527342590024245">Egyelőre nem támogatjuk a(z) <ph name="MIN_WORD_LENGTH" /> szónál rövidebb átiratokat</translation>
 <translation id="4830894019733815633">kanyon</translation>
 <translation id="4832079907277790330">Mappa kiválasztása a Fájlok alkalmazásban…</translation>
 <translation id="4835901797422965222">Nincs aktív hálózat</translation>
@@ -770,6 +777,7 @@
 <translation id="4921665434385737356"><ph name="RATE" /> töltöttség <ph name="NUM_SECONDS" /> másodperc alatt.</translation>
 <translation id="4930320165497208503">A kapcsolatokat a <ph name="BEGIN_LINK" />Beállítások<ph name="END_LINK" /> között állíthatja be vagy módosíthatja.</translation>
 <translation id="4932733599132424254">Dátum</translation>
+<translation id="4946927805998996217">Összegzés létrehozása</translation>
 <translation id="4950314376641394653">A(z) <ph name="DEVICE_NAME" /> firmware-e frissült a(z) <ph name="VERSION" /> verzióra</translation>
 <translation id="4950893758552030541">faalagút</translation>
 <translation id="4965661459364092269">A biztonsági visszaállítás befejeződött</translation>
@@ -830,6 +838,7 @@
 <translation id="5229104491259541281">„<ph name="QUERY" />” konvertálása</translation>
 <translation id="5229344016299762883">Kilépés a teljes képernyős nézetből</translation>
 <translation id="5234764350956374838">Elvetés</translation>
+<translation id="5236119614998611749">Nem sikerült létrehozni az összegzést</translation>
 <translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{A rendszergazda úgy állította be a(z) „<ph name="APP_NAME" />” alkalmazást, hogy automatikusan elinduljon minden alkalommal, amikor Ön bejelentkezik.}=2{A rendszergazda úgy állította be a(z) „<ph name="APP_NAME" />” appot és további 1 alkalmazást, hogy automatikusan elinduljanak minden alkalommal, amikor Ön bejelentkezik.}other{A rendszergazda úgy állította be a(z) „<ph name="APP_NAME" />” appot és további # alkalmazást, hogy automatikusan elinduljanak minden alkalommal, amikor Ön bejelentkezik.}}</translation>
 <translation id="5248419081947706722">kék</translation>
 <translation id="5252456968953390977">Roaming</translation>
@@ -945,6 +954,7 @@
 <translation id="5860033963881614850">Kikapcsolva</translation>
 <translation id="5860491529813859533">Bekapcsolás</translation>
 <translation id="5876385649737594562">Kapcsolja be a beállítások kiválasztásához</translation>
+<translation id="5877503382465267833"><ph name="RECORDING_NAME" /> szüneteltetése</translation>
 <translation id="588258955323874662">Teljes képernyő</translation>
 <translation id="5893975327266416093">Koppintson egy billentyűre a hozzárendeléshez</translation>
 <translation id="5895138241574237353">Újraindítás</translation>
@@ -1162,6 +1172,7 @@
 <translation id="6910312834584889076">A szkenner fedele nyitva van. Zárja le, és próbálja újra.</translation>
 <translation id="6910845598686542904">Minden észlelt beszédhangról mintát generál</translation>
 <translation id="6911383237894364323">Nem lehet csatlakozni a médiaszerverekhez.</translation>
+<translation id="6927968682840110570">Felvétel neve</translation>
 <translation id="6930242544192836755">Időtartam</translation>
 <translation id="6930597342185648547">A háttérről</translation>
 <translation id="6939667434404433010">Keresés felvétel neve szerint</translation>
@@ -1274,6 +1285,7 @@
 <translation id="7378170410161264436">A Hangfelvevő átiratokat készíthet a beszédet tartalmazó felvételekről.
 Ha szeretné használni az átiratokat, töltse le az átírási modellt (legfeljebb 100 MB).</translation>
 <translation id="7384004438856720753">palota</translation>
+<translation id="7388345524791662148">További lehetőségek a következőhöz: <ph name="RECORDING_NAME" /></translation>
 <translation id="7388959671917308825">Beépített érintőpad</translation>
 <translation id="7397270852490618635">Világos téma kikapcsolása</translation>
 <translation id="7401543881546089382">Billentyűkód törlése</translation>
@@ -1295,6 +1307,7 @@ Ha szeretné használni az átiratokat, töltse le az átírási modellt (legfel
 <translation id="7513770521371759388">alsó</translation>
 <translation id="7514365320538308">Letöltés</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7519481256236810334"><ph name="RECORDING_NAME" /> lejátszása</translation>
 <translation id="7525067979554623046">Létrehozás</translation>
 <translation id="7528507600602050979">A súgótartalom nem áll rendelkezésre</translation>
 <translation id="7535791657097741517">Világos téma bekapcsolása</translation>
@@ -1371,6 +1384,7 @@ Ha szeretné használni az átiratokat, töltse le az átírási modellt (legfel
 <translation id="7897043345768902965">sétány</translation>
 <translation id="7902285181767404769">Értesítések némítása felvétel közben</translation>
 <translation id="7903695460270716054">Válogatott grafikák és képek kiválasztása</translation>
+<translation id="7912005977894000746">Vissza a főoldalra</translation>
 <translation id="7915220255123750251">Kezelheti a hálózati APN-beállításokat. Az APN-ek kapcsolatot létesítenek a mobilhálózat és az internet között.</translation>
 <translation id="7936303884198020182">Nem találhatók névszerverek</translation>
 <translation id="7942349550061667556">Piros</translation>

@@ -106,6 +106,7 @@
 <translation id="1413446866325418126">మీ Google ఖాతాలో డేటాను సేవ్ చేయండి</translation>
 <translation id="1414981605391750300">Googleని సంప్రదిస్తోంది. ఇందుకు ఒక నిమిషం పట్టవచ్చు…</translation>
 <translation id="1416550906796893042">అప్లికేషన్ వెర్షన్</translation>
+<translation id="1419753403124156396">Chromeను రీస్టార్ట్ చేయాలా?</translation>
 <translation id="1428770807407000502">సింక్‌ను ఆఫ్ చేయాలా?</translation>
 <translation id="1430915738399379752">ప్రింట్</translation>
 <translation id="1435593198351412143">PDFలను ఆటోమేటిక్‌గా తెరవండి</translation>
@@ -229,6 +230,7 @@
 <translation id="2067805253194386918">వచనం</translation>
 <translation id="2079545284768500474">చర్య రద్దు</translation>
 <translation id="2082238445998314030"><ph name="TOTAL_RESULTS" />లో <ph name="RESULT_NUMBER" />వ ఫలితం</translation>
+<translation id="2088833076121753253">ఆటోఫిల్ సెటప్‌ను పూర్తి చేయడానికి, ఇప్పుడే Chromeను రీస్టార్ట్ చేయండి. మీ ట్యాబ్‌లు ఆటోమేటిక్‌గా మళ్లీ తెరవబడతాయి.</translation>
 <translation id="2091863218454846791">సంక్షిప్తమైన వీక్షణను చూపుతోంది</translation>
 <translation id="2093731487903423814">గత 15 నిమిషాలు</translation>
 <translation id="2096012225669085171">అన్ని పరికరాలలో సింక్ చేయండి మరియు వ్యక్తిగతీకరించండి</translation>
@@ -594,6 +596,7 @@
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="38243391581572867">ఈ ఖాతాకు Lens అందుబాటులో లేదు.</translation>
 <translation id="3830886834687455630">మీ పాస్‌వర్డ్‌లను చెక్ చేయడానికి Google Play సర్వీసులను అప్‌డేట్ చేయండి</translation>
+<translation id="3843603704176567761">త్వరలో ఈ పరికరంలో పాస్‌వర్డ్‌లు పని చేయకపోవచ్చు. మీ పాస్‌వర్డ్‌లను ఉపయోగించడం కొనసాగించడానికి, Google Play సర్వీసులను అప్‌డేట్ చేయండి.</translation>
 <translation id="3845098929839618392">అజ్ఞాత ట్యాబ్‌లో తెరువు</translation>
 <translation id="3847319713229060696">వెబ్‌లో ప్రతిఒక్కరికీ భద్రతను మెరుగుపరచడంలో సహాయపడండి</translation>
 <translation id="3856096718352044181">దయచేసి ఇది చెల్లుబాటు అయ్యే ప్రొవైడర్ అని వెరిఫై చేయండి లేదా తర్వాత మళ్లీ ట్రై చేయండి</translation>
@@ -666,6 +669,7 @@
 <translation id="4216511743389425832">ఈ పేజీ‌లోని ఆడియోను వినండి</translation>
 <translation id="4225725533026049334">ఫాలో అవుతున్నారు</translation>
 <translation id="4225895483398857530">Toolbar షార్ట్‌కట్</translation>
+<translation id="4232376164796433044">పాస్‌వర్డ్‌లు, ఆటోఫిల్</translation>
 <translation id="4242533952199664413">సెట్టింగ్‌లను తెరువు</translation>
 <translation id="4248098802131000011">డేటా ఉల్లంఘనలు, ఇతర సెక్యూరిటీ సమస్యల నుండి మీ పాస్‌వర్డ్‌లను సురక్షితంగా ఉంచుకోండి</translation>
 <translation id="424864128008805179">Chrome నుండి సైన్ అవుట్ చేయాలా?</translation>
@@ -674,6 +678,7 @@
 <translation id="4257230861809842349">Google Password Manager నుండి పాస్‌వర్డ్‌లను తొలగించాలా?</translation>
 <translation id="426652736638196239">ఈ IBAN ఈ పరికరంలో మాత్రమే సేవ్ అవుతుంది</translation>
 <translation id="4269820728363426813">లింక్ అడ్రస్‌ను కాపీ చేయండి</translation>
+<translation id="4270730597186910506">ప్రోడక్ట్‌ను ట్రాక్ లేదా అన్‌ట్రాక్ చేసే వీలు కల్పిస్తుంది.</translation>
 <translation id="4277529130885813215">మరొక పరికరాన్ని ఉపయోగించండి</translation>
 <translation id="4282440837784183472">మీరు సైన్ ఇన్ చేస్తున్న ఖాతాను, Chromeను ఎలా ఉపయోగించవచ్చో మీ సంస్థ, <ph name="MANAGED_DOMAIN" /> మేనేజ్ చేస్తుంది. మీ అడ్మినిస్ట్రేటర్ నిర్దిష్ట ఫీచర్‌లను సెటప్ చేయవచ్చు లేదా పరిమితం చేయవచ్చు.</translation>
 <translation id="4285846616383034558">కుక్కీలు, కాష్, ఇతర సైట్ డేటా</translation>
@@ -748,6 +753,7 @@
 <translation id="4609429330876432068">Chrome, <ph name="CHROME_CHANNEL" />‌కు సంబంధించి సేవ్ చేసిన మీ పాస్‌వర్డ్‌ల లిస్ట్‌లు విలీనమయ్యాయి. సేవ్ చేసిన మీ పాస్‌వర్డ్‌లన్నింటినీ ఇప్పటికీ మీరు రెండు యాప్‌లలోనూ ఆటోఫిల్ చేయవచ్చు.</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" />ని తెరువు</translation>
 <translation id="4619564267100705184">ఇది మీరే అని వెరిఫై చేయండి</translation>
+<translation id="4620032614425803188">ఆటోఫిల్ సర్వీసులు</translation>
 <translation id="4624065194742029982">Chrome అజ్ఞాత మోడ్</translation>
 <translation id="4634124774493850572">పాస్‌వర్డ్‌ను ఉపయోగించండి</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 చోరీకి గురైన పాస్‌వర్డ్}other{# చోరీకి గురైన పాస్‌వర్డ్‌లు}}</translation>
@@ -900,6 +906,7 @@
 <translation id="5264813352784073502">గత 24 గంటలు</translation>
 <translation id="5267572070504076962">హానికరమైన సైట్‌ల నుండి రక్షణ పొందడానికి సురక్షిత బ్రౌజింగ్‌ను ఆన్ చేయండి</translation>
 <translation id="5271967389191913893">పరికరం డౌన్‌లోడ్ చేయాల్సిన కంటెంట్‌ను తెరవలేదు.</translation>
+<translation id="5273031377282080577">మీ అడ్మినిస్ట్రేటర్ ఈ సెట్టింగ్‌ను మేనేజ్ చేస్తారు.</translation>
 <translation id="5292796745632149097">ఈ పరికరానికి పంపండి</translation>
 <translation id="5301876394151419436">మీరు <ph name="EMAIL" />‌గా సైన్ ఇన్ చేశారు. మీరు సింక్ అవ్వడాన్ని ఏ సమయంలోనైనా సెట్టింగ్‌లలో ఆపివేయవచ్చు. మీ హిస్టరీ ఆధారంగా Searchను, ఇతర సర్వీస్‌లను Google వ్యక్తిగతీకరించవచ్చు.</translation>
 <translation id="5304593522240415983">ఈ ఫీల్డ్ ఖాళీగా ఉండరాదు</translation>
@@ -1234,6 +1241,7 @@
 <translation id="6775840696761158817">అడ్రస్ బార్‌లో లేదా సెర్చ్ బాక్స్‌లో మీరు ట్యాప్ లేదా టైప్ చేసినప్పుడు, ఆటోమేటిక్‌గా సెట్ చేసి ఉండే మీ సెర్చ్ ఇంజిన్ నుండి మీకు సూచనలు కనిపిస్తాయి. అజ్ఞాత మోడ్‌లో ఇది ఆఫ్ చేయబడి ఉంటుంది.</translation>
 <translation id="6785476624617658922">Chrome &amp; ChromeOS అదనపు సర్వీస్ నియమాలు</translation>
 <translation id="6795633245022906657">కొత్త ట్యాబ్‌ను వేగంగా తెరవండి. ఈ షార్ట్‌కట్‌ను ఎడిట్ చేయడానికి, సెట్టింగ్‌లకు వెళ్లండి.</translation>
+<translation id="679956319013005046">ఆటోఫిల్ కోసం మీ ప్రాధాన్య సర్వీసును సెట్ చేయడానికి, ముందుగా <ph name="BEGIN_LINK" />Android సెట్టింగ్‌ల<ph name="END_LINK" />‌లో సర్వీసును జోడించండి.</translation>
 <translation id="6802555630140434547">విండో మూసివేయబడుతుంది</translation>
 <translation id="6803791793483522764">నోటిఫికేషన్‌లను రివ్యూ చేయండి</translation>
 <translation id="6811034713472274749">పేజీ చూడటానికి సిద్ధంగా ఉంది</translation>
@@ -1292,7 +1300,6 @@
 <translation id="6964300328304469089"><ph name="NAME" /> <ph name="EMAIL" /> ప్రస్తుతం ఎంచుకోబడింది. ఒక ఖాతాను ఎంచుకోండి.</translation>
 <translation id="696447261358045621">అజ్ఞాత మోడ్ నుండి నిష్క్రమించండి</translation>
 <translation id="6965382102122355670">సరే</translation>
-<translation id="6966660124354134532">ప్రోడక్ట్‌ను ట్రాక్ చేయడానికి లేదా అన్‌ట్రాక్ చేయడానికి ట్యాప్ చేయండి.</translation>
 <translation id="6971862865055170158">ఆమోదించవద్దు</translation>
 <translation id="6978717888677691380">మీరు బ్లాక్ చేసిన సైట్‌లు</translation>
 <translation id="6979737339423435258">మొత్తం సమయం</translation>
@@ -1466,6 +1473,7 @@
 <translation id="7707922173985738739">మొబైల్ డేటాను ఉపయోగిస్తుంది</translation>
 <translation id="7709918231054955894">మీ అన్ని ట్యాబ్‌లనూ పొందండి</translation>
 <translation id="7733878270780732638">పరికరంలో తగినంత స్పేస్ లేదు.</translation>
+<translation id="774876555279732384">ఆటోఫిల్ సర్వీసులు <ph name="BEGIN_LINK" />Android సెట్టింగ్‌ల<ph name="END_LINK" />‌లో కూడా మేనేజ్ చేయబడతాయి.</translation>
 <translation id="7759809451544302770">ఐచ్ఛికం</translation>
 <translation id="7762668264895820836">SD కార్డ్ <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">అడ్రస్‌ను జోడించండి</translation>

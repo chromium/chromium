@@ -446,6 +446,7 @@
 <translation id="1771254328977666895">ფასის ისტორიის ნახვა</translation>
 <translation id="1777422078676229054">ფოტო (საარქივო)</translation>
 <translation id="1778646502362731194">JIS B0</translation>
+<translation id="1785118555253503473">გსურთ ვებ-აპების ინსტალაცია?</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, თქვენს Google ანგარიშში თქვენი ინფორმაციის, კონფიდენციალურობისა და უსაფრთხოების სამართავად დააჭირეთ კლავიშს Tab, შემდეგ კი Enter-ს</translation>
 <translation id="1793631236004319016">ბოლო გამოყენებიდან გავიდა <ph name="NUM_HOURS_MINUTES_SECONDS" /></translation>
@@ -1165,6 +1166,7 @@
 <translation id="3157931365184549694">აღდგენა</translation>
 <translation id="3158539265159265653">დისკი</translation>
 <translation id="3162559335345991374">Wi-Fi-მ, რომელსაც თქვენ იყენებთ, შეიძლება მოითხოვოს თქვენი სტუმრობა მის ავტორიზაციის გვერდზე.</translation>
+<translation id="316638481603975524">შეიძლება ითხოვოს ვებ-აპების ინსტალაცია</translation>
 <translation id="3168744840365648658">რადიოაღჭურვილობა</translation>
 <translation id="3168938241115725594">კლასიკური ავტომობილები</translation>
 <translation id="3169472444629675720">Discover</translation>
@@ -2326,6 +2328,7 @@
 <translation id="5273658854610202413">გაფრთხილება: ეს წესები არ გაერთიანებულა „PolicyDictionaryMultipleSourceMergeList“ წესებში აღწერილის შესაბამისად, ვინაიდან ისინი არ არის ლექსიკონების ისეთი წესების ნაწილი, რომლებიც შეიძლება გაერთიანდეს.</translation>
 <translation id="5278778426231952189">ახლავე ატვირთვა</translation>
 <translation id="5279286380302340275">ჩამოტვირთვების მართვა</translation>
+<translation id="5280963125494874678">ვებ-აპები</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">დოკუმენტის მახასიათებლები</translation>
 <translation id="528468243742722775">დასასრული</translation>
@@ -2828,6 +2831,7 @@
 <translation id="6221311046884916259">გსურთ ამ ბარათის თქვენს Google ანგარიშში შენახვა?</translation>
 <translation id="6221892641068781024">გამარტივებული ხედი</translation>
 <translation id="6222527803348563979">საწერი ქაღალდი</translation>
+<translation id="62231116988543150">ვებ-აპების ინსტალაცია</translation>
 <translation id="6224281071334553713">ძვირფასი ქვები და სამკაულები</translation>
 <translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome პარამეტრებიდან მარტივი წვდომის ხელსაწყოების პერსონალიზირებისთვის დააჭირეთ კლავიშს Tab, შემდეგ კი Enter-ს</translation>
 <translation id="6228346913624365233">ლუქს-კლასის ავტომობილები</translation>
@@ -3091,6 +3095,7 @@
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google ანგარიშში თქვენი მოწყობილობის სანახავად დააჭირეთ კლავიშს Tab, შემდეგ კი Enter-ს</translation>
 <translation id="6695428916538794739">მძაფრსიუჟეტიანი და სათავგადასავლო ფილმები</translation>
 <translation id="6696424331653607346">სამოგზაურო გზამკვლევები და კატალოგები</translation>
+<translation id="6696575039575740785">ვებ-აპების ინსტალაცია აკრძალულია</translation>
 <translation id="6698097747703777657">არ მიგიღიათ კოდი? <ph name="BEGIN_LINK" />ახალი კოდის მოთხოვნა<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">შექმნილია:</translation>
 <translation id="67007264085648978">დროითი სკრაბერი</translation>
@@ -3204,6 +3209,7 @@
 <translation id="6915804003454593391">მომხმარებელი:</translation>
 <translation id="6916193791494646625">მიუთითეთ ჩამოტვირთვის მიზეზი (სავალდებულო)</translation>
 <translation id="6917795328362592458">თქვენ მიერ ახლახან გამოყენებული პაროლი ნაპოვნია გაჟონილ მონაცემებში. თქვენი ანგარიშის დაცვის მიზნით, პაროლების მმართველი გირჩევთ, შეამოწმოთ თქვენი შენახული პაროლები.</translation>
+<translation id="6921197121276419421">ვებ-აპების ინსტალაცია ნებადართულია</translation>
 <translation id="6924013822850225188">აირჩიეთ, ნახოთ თუ არა ბარათის უპირატესობები შეკვეთის გაფორმების დროს (მოქმედების ბანკის პირობები)</translation>
 <translation id="6925267999184670015">North American B+</translation>
 <translation id="6926216138694948720">ბოდი არტი</translation>
@@ -3701,6 +3707,7 @@
 <translation id="7761701407923456692">სერვერის სერტიფიკატი არ ემთხვევა URL-ს.</translation>
 <translation id="7764225426217299476">მისამართის დამატება</translation>
 <translation id="7766518757692125295">საფარველი</translation>
+<translation id="7766899888934244586">ვებ-აპები</translation>
 <translation id="7767278989746220252">პატიო, გაზონი და ბაღი</translation>
 <translation id="776749070095465053">ქსოვილი</translation>
 <translation id="7773005668374414287">იგივე მიმდევრობა ნაბეჭდი მხარით აღმა</translation>
@@ -3733,6 +3740,7 @@
 <translation id="7831993212387676366">რა არის საყიდლების სია?</translation>
 <translation id="7840103971441592723">ეკრანის აღბეჭდვა დაიწყო</translation>
 <translation id="784137052867620416">Shopping Insights</translation>
+<translation id="7842611866969435396">დავიწყოთ</translation>
 <translation id="784404208867107517">დაჯგუფებული ისტორია</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{არცერთი}=1{1 აპი (<ph name="EXAMPLE_APP_1" />)}=2{2 აპი (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# აპი (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}}</translation>
 <translation id="785476343534277563">სპორტული ცხოვრება კოლეჯებში</translation>

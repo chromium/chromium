@@ -1096,13 +1096,6 @@ Cette règle n'a aucun effet si l'option permettant de conserver les données de
 
       Cette règle étant obsolète, veuillez utiliser la règle <ph name="DEVICE_USER_ALLOWLIST_POLICY_NAME" /> à la place.
       </translation>
-<translation id="1825583118566970564">Permet de contrôler l'installation d'extensions externes.
-
-Si cette règle est activée, les extensions externes ne pourront pas être installées.
-
-Si cette règle est désactivée ou si elle n'est pas configurée, les extensions externes pourront être installées.
-
-Le fonctionnement des extensions externes ainsi que leur installation sont décrits à la page https://developer.chrome.com/apps/external_extensions.</translation>
 <translation id="1827523283178827583">Utiliser des serveurs proxy déterminés</translation>
 <translation id="1829117241432374848">Un compte géré doit être un compte principal sans comptes secondaires. L'utilisateur peut importer des données existantes au moment de sa création</translation>
 <translation id="1829839214911753838">Si cette règle est activée, l'hôte d'assistance à distance est exécuté dans un processus avec des autorisations <ph name="UIACCESS_PERMISSION_NAME" />. Les utilisateurs distants peuvent ainsi interagir avec des fenêtres de niveau administrateur sur le bureau de l'utilisateur local.
@@ -6086,6 +6079,29 @@ Lorsqu'elle est définie pour <ph name="PRODUCT_OS_NAME" /> Kiosk, cette règle
 <translation id="5622590774455244290">Les applis Android peuvent volontairement choisir de respecter cette liste, mais vous ne pouvez pas les forcer à la suivre.</translation>
 <translation id="5622924058222112599">Activer le processus de déploiement CECPQ2 par défaut</translation>
 <translation id="5623304306796942802">Demander si plusieurs certificats correspondent</translation>
+<translation id="5624334866248253262">Configure une liste de règles de contrôle des données pour éviter les fuites de données.
+
+      Chaque règle se compose des éléments suivants :
+- Des champs de conditions permettant de déclencher la règle. Une règle ne se déclenche que si une action utilisateur correspond à tous ses champs <ph name="DATA_CONTROLS_SOURCES" />, <ph name="DATA_CONTROLS_DESTINATIONS" />, <ph name="DATA_CONTROLS_AND" />, <ph name="DATA_CONTROLS_OR" /> et <ph name="DATA_CONTROLS_NOT" /> renseignés. Pour les sous-champs de liste, il suffit de faire correspondre une entrée. Par exemple, la règle se déclenche dès qu'un format d'URL correspond.
+      - Une liste de restrictions à appliquer. En fonction de la restriction, seules les conditions <ph name="DATA_CONTROLS_SOURCES" /> ou <ph name="DATA_CONTROLS_DESTINATIONS" /> peuvent être disponibles.
+
+      Les règles peuvent être ajoutées pour :
+- Contrôler les données du presse-papiers partagées entre les sources et les destinations.
+      - Contrôler le blocage des captures d'écran en fonction des onglets sources.
+
+      Si la règle <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" /> est définie sur "True", les règles déclenchées sont signalées à l'administrateur.
+      Le niveau de restriction peut être défini sur "BLOCK", "WARN" ou "REPORT".
+      - Si le niveau de restriction est défini sur "BLOCK", l'action concernée ne sera pas autorisée.
+      - Si le niveau de restriction est défini sur "WARN", l'utilisateur sera averti et pourra choisir de continuer ou d'annuler l'action.
+      - Si le niveau de restriction est défini sur "REPORT", l'action utilisateur ne sera pas interrompue, mais un rapport sera envoyé si la règle <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" /> est activée.
+
+      Remarques :
+- Les formats d'URL doivent respecter les conditions énoncées sur https://support.google.com/chrome/a?p=url_blocklist_filter_format.
+- Pour les règles de prévention des fuites de données propres à <ph name="PRODUCT_OS_NAME" />, consultez également la règle <ph name="DATA_LEAK_PREVENTION_RULES_LIST" />.
+
+      Si la règle n'est pas configurée, aucune restriction ne sera appliquée.
+
+      Cette règle n'est disponible que pour les utilisateurs disposant d'une licence Chrome Enterprise Premium attribuée.</translation>
 <translation id="5625771176514429288">Les applis Chrome seront autorisées à s'exécuter sur ces plates-formes.</translation>
 <translation id="5630352020869108293">Restaurer la dernière session</translation>
 <translation id="5633871703004128675">Activer la fonctionnalité d'accessibilité de mise en surbrillance du curseur de saisie</translation>

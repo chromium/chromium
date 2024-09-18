@@ -35,6 +35,7 @@
 <translation id="1155154308031262006">Vnesite poziv</translation>
 <translation id="115705039208660697">ananasi</translation>
 <translation id="1164939766849482256">Ohranjevalnik zaslona od zore do mraka</translation>
+<translation id="1166688493741195933">Ustvarjanje imen posnetkov ni uspelo</translation>
 <translation id="1167755866710282443">Odprite meni za prilagajanje tipk. Povlecite meni, če ga želite premakniti.</translation>
 <translation id="1171349345463658120">peščena laguna</translation>
 <translation id="1173894706177603556">Preimenuj</translation>
@@ -145,6 +146,7 @@
 <translation id="1651925268237749928">Izbrali ste deljeni album. Drugi lahko dodajajo ali spreminjajo fotografije. Vaše zaslonsko ozadje bo morda uporabljalo fotografije, ki jih trenutno ni v tem albumu.</translation>
 <translation id="1661512400125589646">Začasna zaustavitev</translation>
 <translation id="1661865805917886535">Nekateri podatki o računu in sistemu bodo morda poslani Googlu. Te podatke uporabljamo za odpravljanje tehničnih težav in izboljšanje svojih storitev v skladu s pravilnikom o zasebnosti (<ph name="PRIVACYPOLICYURL" />) in pogoji storitve (<ph name="TERMSOFSERVICEURL" />). Če želite zahtevati spremembe vsebine, obiščite pravno pomoč (<ph name="LEGALHELPPAGEURL" />).</translation>
+<translation id="1662699081856352167">Povzetek je uspešno generiran</translation>
 <translation id="1662989795263954667">Ustavljeno – zmanjkalo je črnila</translation>
 <translation id="1664796644829245314">Predogled datoteke <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">Vgrajeno omrežje VPN</translation>
@@ -341,6 +343,7 @@
 <translation id="2560876255701405320">Seznam zvočnih posnetkov</translation>
 <translation id="2561093647892030937">limone</translation>
 <translation id="2570743873672969996">Izvajanje preizkusa <ph name="TEST_NAME" /> …</translation>
+<translation id="2573178735329662769">Snemanje vsega zvoka v Chromebooku</translation>
 <translation id="2575552334616524665">To lahko vklopite v nastavitvah ali meniju <ph name="THREE_DOTS_MENU_ICON" /></translation>
 <translation id="2576253868710695442">To bo zavzelo do 2 GB prostora za shranjevanje</translation>
 <translation id="2584547424703650812">Svetleče pokrajine</translation>
@@ -493,6 +496,7 @@
 <translation id="3502426834823382181">prikaži vse aplikacije</translation>
 <translation id="3510890413042482857">Pošlji <ph name="BEGIN_LINK1" />podatke za sledenje učinkovitosti delovanja<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Posodobitev sistema Chrome OS</translation>
+<translation id="3522508178835057262">Prepis z več kot toliko besedami za zdaj ni podprt: <ph name="MAX_WORD_LENGTH" /></translation>
 <translation id="3527036260304016759">Napaka – neznana napaka</translation>
 <translation id="353214771040290298">Urejanje je končano</translation>
 <translation id="3532980081107202182">Še približno <ph name="MIN_REMAINING" /> min</translation>
@@ -508,6 +512,7 @@
 <translation id="3588034708467091142">Zagotovite, da imate vzpostavljeno internetno povezavo, in poskusite znova.</translation>
 <translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> je uporabniku prijazno ime za <ph name="APN_NAME" />.</translation>
 <translation id="3595596368722241419">Baterija je polna</translation>
+<translation id="3600063043775287169">Ko je zvok Chromebooka vklopljen, snemalnik posname ves zvok, ki se predvaja v tej napravi. Preverite, ali želite snemati vse zvoke.</translation>
 <translation id="3600339377155080675">Zrcaljenje zaslona</translation>
 <translation id="3602290021589620013">Predogled</translation>
 <translation id="3603829704940252505">Avatar</translation>
@@ -541,6 +546,7 @@
 <translation id="3780740315729837296">Dodelitev tipke tipkovnice</translation>
 <translation id="3784455785234192852">Zakleni</translation>
 <translation id="3785643128701396311">umetniška dela iz slikovnih pik</translation>
+<translation id="3799381533888781854">IZKLOPLJENO – To nastavitev upravlja skrbnik.</translation>
 <translation id="380097101658023925">Kontrolniki za RGB</translation>
 <translation id="38114475217616659">Izbriši celotno zgodovino</translation>
 <translation id="3820172043799983114">Neveljavna koda PIN.</translation>
@@ -709,6 +715,7 @@
 <translation id="4602266091140407479">Mikrofon</translation>
 <translation id="4607282946861182308">Slik tega ni mogoče ustvariti. Poskusite uporabiti drug poziv.</translation>
 <translation id="4609350030397390689">Zmanjšanje svetlosti osvetlitve tipkovnice</translation>
+<translation id="4623061655523261501">Imena posnetkov so bila uspešno ustvarjena</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> od <ph name="TOTAL_PAGE_NUMBER" />. Pritisnite tipko Enter, če želite preklicati tiskalno opravilo.</translation>
 <translation id="463791356324567266">Preklic optičnega branja ...</translation>
 <translation id="4644611440022666152">Vklopi in prenesi</translation>
@@ -744,6 +751,7 @@
 <translation id="4809927044794281115">Svetla tema</translation>
 <translation id="4813136279048157860">Moje slike</translation>
 <translation id="4813345808229079766">Povezava</translation>
+<translation id="4824527342590024245">Prepis z manj kot toliko besedami za zdaj ni podprt: <ph name="MIN_WORD_LENGTH" /></translation>
 <translation id="4830894019733815633">kanjon</translation>
 <translation id="4832079907277790330">Izberite mapo v aplikaciji Datoteke ...</translation>
 <translation id="4835901797422965222">Ni aktivnih omrežij</translation>
@@ -772,6 +780,7 @@
 <translation id="4921665434385737356">Napolnjeno <ph name="RATE" /> v <ph name="NUM_SECONDS" /> s.</translation>
 <translation id="4930320165497208503">Če želite nastaviti ali posodobiti povezavo, odprite <ph name="BEGIN_LINK" />nastavitve<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Datum</translation>
+<translation id="4946927805998996217">Generiranje povzetka</translation>
 <translation id="4950314376641394653">Vdelana programska oprema za napravo <ph name="DEVICE_NAME" /> je posodobljena na različico <ph name="VERSION" />.</translation>
 <translation id="4950893758552030541">predor skozi drevo</translation>
 <translation id="4965661459364092269">Varnostna ponastavitev je končana</translation>
@@ -832,6 +841,7 @@
 <translation id="5229104491259541281">Pretvori »<ph name="QUERY" />«</translation>
 <translation id="5229344016299762883">Zapusti celozaslonski način</translation>
 <translation id="5234764350956374838">Opusti</translation>
+<translation id="5236119614998611749">Generiranje povzetka ni uspelo</translation>
 <translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{Skrbnik je nastavil, da se aplikacija »<ph name="APP_NAME" />« zažene samodejno ob vsaki prijavi.}=2{Skrbnik je nastavil, da se aplikacija »<ph name="APP_NAME" />« in še 1 aplikacija zaženeta samodejno ob vsaki prijavi.}one{Skrbnik je nastavil, da se aplikacija »<ph name="APP_NAME" />« in še # aplikacija zaženejo samodejno ob vsaki prijavi.}two{Skrbnik je nastavil, da se aplikacija »<ph name="APP_NAME" />« in še # aplikaciji zaženejo samodejno ob vsaki prijavi.}few{Skrbnik je nastavil, da se aplikacija »<ph name="APP_NAME" />« in še # aplikacije zaženejo samodejno ob vsaki prijavi.}other{Skrbnik je nastavil, da se aplikacija »<ph name="APP_NAME" />« in še # aplikacij zaženejo samodejno ob vsaki prijavi.}}</translation>
 <translation id="5248419081947706722">modra</translation>
 <translation id="5252456968953390977">Gostovanje</translation>
@@ -1208,6 +1218,7 @@
 <translation id="708426984172631313">USTAVLJENO</translation>
 <translation id="7086168019478250425">bioluminiscentna plaža</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="7086916854357021265">Ustvarjanje imen posnetkov</translation>
 <translation id="7097908713073775559">barvito</translation>
 <translation id="710028965487274708">Ni uspelo – Pooblastitev ni uspela.</translation>
 <translation id="7101959270679078188">Če želite nadaljevati postopek posodobitve, odklenite napravo <ph name="DEVICE_NAME" /></translation>

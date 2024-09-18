@@ -145,6 +145,7 @@
 <translation id="1651925268237749928">Դուք ընտրել եք ընդհանուր ալբոմ։ Այլ մարդիկ կարող են ավելացնել լուսանկարներ կամ փոփոխել դրանք։ Որպես պաստառ կարելի է օգտագործել լուսանկարներ, որոնք ներկայումս այս ալբոմում չեն։</translation>
 <translation id="1661512400125589646">Դադարեցնել</translation>
 <translation id="1661865805917886535">Հաշվի և համակարգի որոշ տվյալներ կարող են ուղարկվել Google-ին։ Այս տեղեկությունները կօգտագործվեն տեխնիկական խնդիրները լուծելու և մեր ծառայությունների որակը բարելավելու նպատակով՝ Գաղտնիության քաղաքականության (<ph name="PRIVACYPOLICYURL" />) և Օգտագործման պայմանների (<ph name="TERMSOFSERVICEURL" />) համաձայն։ Բովանդակության փոփոխություն պահանջելու համար անցեք Իրավական հարցերով օգնության էջ (<ph name="LEGALHELPPAGEURL" />)։</translation>
+<translation id="1662699081856352167">Ամփոփագիրը ստեղծվեց</translation>
 <translation id="1662989795263954667">Դադարեցվել է – Թանաք չկա</translation>
 <translation id="1664796644829245314">Նախադիտում (<ph name="PREVIEW_OBJECT" />)</translation>
 <translation id="1668469839109562275">Ներկառուցված VPN</translation>
@@ -541,6 +542,7 @@
 <translation id="3780740315729837296">Նշանակեք ստեղն</translation>
 <translation id="3784455785234192852">Կողպել</translation>
 <translation id="3785643128701396311">պիքսելային գրաֆիկա</translation>
+<translation id="3799381533888781854">ԱՆՋԱՏՎԱԾ Է։ Այս կարգավորումը կառավարվում է ձեր ադմինիստրատորի կողմից։</translation>
 <translation id="380097101658023925">RGB-ի կարգավորումներ</translation>
 <translation id="38114475217616659">Մաքրել ամբողջ պատմությունը</translation>
 <translation id="3820172043799983114">PIN-ը սխալ է</translation>
@@ -744,6 +746,7 @@
 <translation id="4809927044794281115">Բաց թեմա</translation>
 <translation id="4813136279048157860">Իմ պատկերները</translation>
 <translation id="4813345808229079766">Միացում</translation>
+<translation id="4824527342590024245">Ներկայումս <ph name="MIN_WORD_LENGTH" /> բառից կարճ գրադարձումը չի աջակցվում</translation>
 <translation id="4830894019733815633">կանյոն</translation>
 <translation id="4832079907277790330">Ընտրել պանակ «Ֆայլեր» հավելվածում…</translation>
 <translation id="4835901797422965222">Ակտիվ ցանցեր չկան</translation>
@@ -772,6 +775,7 @@
 <translation id="4921665434385737356">Լիցքավորվել է <ph name="RATE" />-ով՝ <ph name="NUM_SECONDS" /> վայրկյանում։</translation>
 <translation id="4930320165497208503">Միացում կարգավորելու կամ ստեղծելու համար անցեք <ph name="BEGIN_LINK" />Կարգավորումներ<ph name="END_LINK" />։</translation>
 <translation id="4932733599132424254">Ամսաթիվ</translation>
+<translation id="4946927805998996217">Ստեղծվում է ամփոփագիր</translation>
 <translation id="4950314376641394653"><ph name="DEVICE_NAME" /> սարքի ներկառուցված ծրագիրը թարմացվել է <ph name="VERSION" /> տարբերակով</translation>
 <translation id="4950893758552030541">ծառերի թունել</translation>
 <translation id="4965661459364092269">Անվտանգ կարգավորումները վերականգնված են</translation>
@@ -832,6 +836,7 @@
 <translation id="5229104491259541281">Փոխարկել՝ «<ph name="QUERY" />»</translation>
 <translation id="5229344016299762883">Դուրս գալ լիաէկրան ռեժիմից</translation>
 <translation id="5234764350956374838">Փակել</translation>
+<translation id="5236119614998611749">Չհաջողվեց ստեղծել ամփոփագիր</translation>
 <translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{Ադմինիստրատորը կարգավորել է «<ph name="APP_NAME" />» հավելվածի ավտոմատ գործարկումը ձեր յուրաքանչյուր մուտքի ժամանակ։}=2{Ադմինիստրատորը կարգավորել է «<ph name="APP_NAME" />» ու ևս 1 այլ հավելվածի ավտոմատ գործարկումը ձեր յուրաքանչյուր մուտքի ժամանակ։}one{Ադմինիստրատորը կարգավորել է «<ph name="APP_NAME" />» ու ևս # այլ հավելվածի ավտոմատ գործարկումը ձեր յուրաքանչյուր մուտքի ժամանակ։}other{Ադմինիստրատորը կարգավորել է «<ph name="APP_NAME" />» ու ևս # այլ հավելվածի ավտոմատ գործարկումը ձեր յուրաքանչյուր մուտքի ժամանակ։}}</translation>
 <translation id="5248419081947706722">կապույտ</translation>
 <translation id="5252456968953390977">Ռոումինգ</translation>

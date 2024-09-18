@@ -42,6 +42,7 @@
 <translation id="1148499908455722006"><ph name="USER_NAME" /> аккаунты туралы ақпарат диалогтік терезесін ашу</translation>
 <translation id="1150989369772528668">Күнтізбе</translation>
 <translation id="1153356358378277386">Жұпталған құрылғылар</translation>
+<translation id="1153918444040990015">Зейін қою дыбыстарына қосылмады</translation>
 <translation id="1155734730463845512">Қазіргі батарея деңгейі: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1157514002898505378">Жасампаз AI – эксперименттік жүйе, ол жасаған контент қате, жалған немесе намысқа тиетін болуы мүмкін. Мәселе туралы шағымдану үшін әкімшіге хабарласыңыз. <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="1160215328209699296">қосулы және қолданыста</translation>
@@ -77,6 +78,7 @@
 <translation id="1240638468526743569">Қолданба</translation>
 <translation id="1242198791279543032">Хабарландырулар дыбысы өшірілді.</translation>
 <translation id="1242883863226959074">құрылғы</translation>
+<translation id="1245476784081715330">Жарайсыз!</translation>
 <translation id="1245644940275736236">Assistant-ке өту</translation>
 <translation id="124678866338384709">Ағымдағы қойындыны жабу</translation>
 <translation id="1246890715821376239">Қолдау көрсетілмейтін қолданбалар</translation>
@@ -175,6 +177,7 @@
 <translation id="1550523713251050646">Қосымша опциялар үшін басыңыз</translation>
 <translation id="1555130319947370107">Көк</translation>
 <translation id="1557622599341396706">Жұмыс үстелі атын көрсету</translation>
+<translation id="1567138500090284106">Тінтуір пернелерінің түймесі</translation>
 <translation id="1569384531973824928">Бұл камера мен микрофон рұқсаттары бар барлық қолданба мен веб-сайттың пайдалануына мүмкіндік береді. Веб-бетті жаңарту немесе қолданбаны өшіріп қосу керек болуы мүмкін.</translation>
 <translation id="1571697193564730395">Мазаламау режимін қосыңыз/өшіріңіз. <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">Ұлғайтқыш қосылған кезде кішірейту</translation>
@@ -242,6 +245,7 @@
 <translation id="1787955149152357925">Өшірулі</translation>
 <translation id="1796561540704213354">Веб-сайттар, соның ішінде сіз кірген беттер мен ашылған беттер</translation>
 <translation id="179842970735685253">Google Қызмет көрсету шарттары</translation>
+<translation id="1805407494113167797">Зейін қою дыбыстары ойнатылмады</translation>
 <translation id="181103072419391116">Сигнал күші – <ph name="SIGNAL_STRENGTH" />, Әкімші басқарады</translation>
 <translation id="1816896987747843206">Бұл — камера рұқсаты бар барлық қолданба мен веб-сайт үшін камераны пайдалануға мүмкіндік береді.</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
@@ -839,6 +843,7 @@
 <translation id="3958714870339660776">Күні бойы</translation>
 <translation id="3962859241508114581">Алдыңғы аудиотрек</translation>
 <translation id="3963124517343721543">Алдыңғы терезелер мен қойындыларды ашып, тоқтаған жеріңізден жалғастыру оңай. Әрі қарай не істеуге болатыны туралы жекелендірілген ұсыныстар да көрсетіледі.</translation>
+<translation id="396506362088290977">Микрофон дыбысын тексеріңіз</translation>
 <translation id="3969043077941541451">Өшіру</translation>
 <translation id="3970324493235864154">Телефондағы хабарландыруларды көру</translation>
 <translation id="397105322502079400">Есептелуде…</translation>
@@ -896,6 +901,7 @@
 <translation id="4156293514828496577">Батарея заряды — <ph name="PERCENTAGE" />% (шамамен <ph name="TIME_LEFT" /> қалды).
 Батарея жұмысын ұзарту үшін кейбір функцияларға шектеу қойылды.</translation>
 <translation id="4160919062868802509">Бірнеше аудио дереккөзі анықталды</translation>
+<translation id="416245495747357243">Дайын!</translation>
 <translation id="4165275524535002941">Кабель дисплейлерді қолдамауы мүмкін</translation>
 <translation id="4177415338862979658">Мәліметтерді тексеру үшін басыңыз.</translation>
 <translation id="4177913004758410636">{0,plural, =1{Құрылғыны бір күнде жаңарту керек}other{Құрылғыны # күнде жаңарту керек}}</translation>
@@ -981,6 +987,7 @@
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> өшірулі.</translation>
 <translation id="4417647906073317561">Зейін қою режимінің параметрлері. Іске кірісу үшін таймер, тапсырма және музыка орнатыңыз.</translation>
 <translation id="4424159417645388645">5-ші жұмыс үстелі</translation>
+<translation id="4426817706804363424">Керемет!</translation>
 <translation id="4430019312045809116">Дыбыс деңгейі</translation>
 <translation id="4441283832827406317">Қолданбалар атауы бойынша сұрыпталған.</translation>
 <translation id="4445159312344259901">Құлыпты ашу үшін кіріңіз</translation>
@@ -1245,6 +1252,7 @@
 <translation id="5283198616748585639">1 мин қосу</translation>
 <translation id="528468243742722775">Соңы</translation>
 <translation id="5286194356314741248">Ізделіп жатыр</translation>
+<translation id="528641622273682395">Микрофон сынағын қосу/өшіру</translation>
 <translation id="5297423144044956168">Ешқандай мобильдік құрылғы табылмады.</translation>
 <translation id="5297704307811127955">Өшірулі</translation>
 <translation id="5300589172476337783">Көрсету</translation>
@@ -1272,6 +1280,7 @@
 <translation id="536019650977002321">Әкімшіңіз аудионы жазуға рұқсат бермейді. Толығырақ ақпарат алу үшін әкімшіге хабарласыңыз.</translation>
 <translation id="5361524080961918551"><ph name="LANGUAGE" /> сөйлеу файлдары ішінара жүктеп алынды</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> осы қойындыға өту</translation>
+<translation id="5363835273551457276">Микрофон дыбысын тексеруге болады. Тоқтату үшін панельді жабыңыз.</translation>
 <translation id="5364693579536176785">жад көлемі</translation>
 <translation id="5369573834963677938">Бет-әлпетімен басқару функциясы құрылғыдағы басқа пайдаланушыларға қолжетімді болады.</translation>
 <translation id="5369717264580061086">Файлды Files қолданбасында алдын ала көру</translation>
@@ -1354,6 +1363,7 @@
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Құпия сөзіңіз расталмады. Қайталап көріңіз.</translation>
 <translation id="5632485077360054581">Орындалуын көру</translation>
+<translation id="5633826232582408011">"Жазуға көмек керек" және "Оқуға көмек керек" функцияларын қоссаңыз, <ph name="LINK_TO_SERVICE_TERMS" /> ережелеріне сәйкес жазу ұсыныстары мен қорытындылар жасау, сұрақтарға жауап беру және өнімді жақсарту үшін кіріс мәтін, құжат мазмұны және веб-беттің URL мекенжайы Google AI серверлеріне жіберіледі. Жеке, шетін не құпия деректерді қоспаңыз.</translation>
 <translation id="5648021990716966815">Микрофон ұяшығы</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> қолданбасы назар аударуыңызды сұрайды.</translation>
 <translation id="5662075790140998213">10-жұмыс үстелі</translation>
@@ -1504,7 +1514,6 @@
 <translation id="6119972796024789243">Түсті түзету</translation>
 <translation id="6121838516699723042"><ph name="FILENAME" /> жүктеп алуды растау</translation>
 <translation id="612734058257491180">Google Assistant қонақ сеансында жұмыс істемейді.</translation>
-<translation id="6127370444807669747">Жекелендірілген ойнату тізімдері мен зейін қоюға арналған басқа музыканы тыңдау үшін YouTube Music Premium-ді байқап көріңіз.</translation>
 <translation id="6127395413317891856">Офлайн режимдесіз. Қосылымды тексеріп, әрекетті қайталап көріңіз.</translation>
 <translation id="6129953537138746214">Бос орын</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" /> аккаунтын өшіру диалогтік терезесін ашу</translation>
@@ -2122,6 +2131,7 @@
 <translation id="8262312463845990408">Ойнату/кідірту</translation>
 <translation id="8268302343625273732">Google Classroom-дағы барлық тапсырманы көру</translation>
 <translation id="8277261673056602147">Экрандағы мәтінді ерекшелеу</translation>
+<translation id="8282784978194352587">Жарайсыз!</translation>
 <translation id="8287009018010202411">Өнімділік</translation>
 <translation id="828708037801473432">Өшірулі</translation>
 <translation id="8297006494302853456">Әлсіз</translation>
@@ -2199,6 +2209,7 @@
 <translation id="8609384513243082612">Жаңа қойынды ашу</translation>
 <translation id="861045123704058818">Қолданбалар санат бойынша уақытша реттеледі.</translation>
 <translation id="8612216344243590325">Маңызды файлдарды жұмыс үстелінің орнына <ph name="HOLDING_SPACE_TITLE" /> аймағында сақтаңыз. Ол үшін файлдарды <ph name="HOLDING_SPACE_TITLE" /> аймағына сүйреп апарыңыз.</translation>
+<translation id="8612338981637220013">Алдасыз!</translation>
 <translation id="8614517853887502247"><ph name="APP_1_TITLE" /> және <ph name="APP_2_TITLE" /> хабарландырулары жасырылған, себебі көруден қорғау режимі қосулы тұр.</translation>
 <translation id="8615778328722901791">Құралдар тақтасын ашу</translation>
 <translation id="8619000641825875669">OneDrive</translation>
@@ -2241,6 +2252,7 @@
 <translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />: іске қосылып жатыр...</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
+<translation id="8751299148074971734">Алға!</translation>
 <translation id="8753368202781196133">Қазіргі уақытта бұл тілге қолдау көрсетілмейді.</translation>
 <translation id="8755498163081687682">Жеке басыңызды растаңыз: <ph name="ORIGIN_NAME" /> жеке басыңызды растағысы келеді.</translation>
 <translation id="875593634123171288">VPN параметрлерін көрсету</translation>
@@ -2282,6 +2294,7 @@
 <translation id="8876661425082386199">Интернет байланысын тексеріңіз.</translation>
 <translation id="8877788021141246043">Еске салғыш орнату</translation>
 <translation id="8878886163241303700">Экранды кеңейту</translation>
+<translation id="8885424115080869847">YouTube Music қызметіне қосылмады</translation>
 <translation id="888982883502837004">Құрылғыңыз үшін микробағдарламаның жаңа нұсқасы қолжетімді. Көру және жаңарту үшін басыңыз.</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> біржола жойылады.</translation>
 <translation id="889790758758811533">Батарея заряды — <ph name="PERCENTAGE" />% (шамамен <ph name="TIME_LEFT" /> қалды). Құрылғыны қуат көзіне қосыңыз.</translation>

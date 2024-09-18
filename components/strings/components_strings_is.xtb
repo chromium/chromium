@@ -1014,6 +1014,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2882949212241984732">Innábrot (bæklingabrot)</translation>
 <translation id="2891963978019740012">Leitarvélin þín í Chrome</translation>
 <translation id="2893773853358652045">Fjórða rúlla</translation>
+<translation id="2894137550885451583">Þetta eru verð fyrir <ph name="PRODUCT" /> í <ph name="CURRENCY" /></translation>
 <translation id="2900528713135656174">Búa til viðburð</translation>
 <translation id="2902312830803030883">Fleiri aðgerðir</translation>
 <translation id="2903493209154104877">Heimilisföng</translation>
@@ -1611,6 +1612,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="3949601375789751990">Vafraferillinn þinn birtist hér</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">Engir vistaðir greiðslumátar</translation>
+<translation id="3950560191811267370">Viðskiptablað neðst lokað</translation>
 <translation id="3950574001630941635">Endurræsa leiðsögn</translation>
 <translation id="3950820424414687140">Skrá inn</translation>
 <translation id="3953505489397572035">Þetta er dæmigert verð</translation>
@@ -2352,6 +2354,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="5331585574693522196">Velja sem sjálfgefið</translation>
 <translation id="5332219387342487447">Sendingaraðferð</translation>
 <translation id="5332769172018416402">Spyrja með skilaboðum</translation>
+<translation id="533323551986281710">Viðskiptablað neðst opið til fulls</translation>
 <translation id="5334013548165032829">Ítarlegir kerfisannálar</translation>
 <translation id="5334145288572353250">Vista heimilisfang?</translation>
 <translation id="5340250774223869109">Lokað er á forrit</translation>
@@ -2534,6 +2537,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="5675650730144413517">Þessi síða virkar ekki</translation>
 <translation id="5675809467256309336">Dans- og raftónlist</translation>
 <translation id="5675959228867414813">Sýna eftir dagsetningu</translation>
+<translation id="567604591393105935">Viðskiptablað neðst opið til hálfs</translation>
 <translation id="5677928146339483299">Lokað fyrir aðgang</translation>
 <translation id="5678007133659493065">Filma</translation>
 <translation id="5680642791693447368">Spennumyndir, glæpamyndir og morðgátur</translation>
@@ -3439,6 +3443,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="7374733840632556089">Þetta vandamál tengist vottorði sem þú eða einhver annar setti upp í tækinu þínu. Vitað er að þetta vottorð er notað til að fylgjast með og grípa inn í netkerfi og Chrome treystir því ekki. Þrátt fyrir að notkun þess geti í einhverjum tilvikum átt rétt á sér, svo sem á skóla- eða fyrirtækjaneti, vill Chrome tryggja að þú vitir af því, þó að þú getir ekki komið í veg fyrir notkun þess. Eftirlit getur átt sér stað í öllum vöfrum eða forritum sem nota vefinn.</translation>
 <translation id="7375532151824574023">{NUM_COOKIES,plural, =0{Engin vefsvæði leyfð}=1{1 vefsvæði leyft}one{# vefsvæði leyft}other{# vefsvæði leyfð}}</translation>
 <translation id="7375818412732305729">Skrá er hengd við</translation>
+<translation id="7376031331622621328">Viðskiptablað neðst</translation>
 <translation id="7377249249140280793"><ph name="RELATIVE_DATE" /> – <ph name="FULL_DATE" /></translation>
 <translation id="7377314930809374926">Þjónustuiðnaður</translation>
 <translation id="7378594059915113390">Spilunarstýringar</translation>

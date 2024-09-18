@@ -446,6 +446,7 @@
 <translation id="1771254328977666895">查看价格历史记录</translation>
 <translation id="1777422078676229054">相纸（存档用）</translation>
 <translation id="1778646502362731194">JIS B0</translation>
+<translation id="1785118555253503473">要安装 Web 应用吗？</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可在您的 Google 账号中管理自己的信息、隐私和安全</translation>
 <translation id="1793631236004319016">上次使用时间：<ph name="NUM_HOURS_MINUTES_SECONDS" />前</translation>
@@ -500,7 +501,7 @@
 <translation id="1876116428946561107">您尚未保存任何地址。请添加地址，以便在 Chrome 中使用。</translation>
 <translation id="1876399092304384674">按日期</translation>
 <translation id="187918866476621466">打开启动页</translation>
-<translation id="1880901968112404879">如果想在下次购物时更快捷地付款，请将您的付款卡信息、已加密的安全码以及账单邮寄地址保存到您的 Google 账号中</translation>
+<translation id="1880901968112404879">将银行卡、加密的安全码和账单邮寄地址保存到 Google 账号，下次就能更快捷地付款</translation>
 <translation id="1883255238294161206">收起列表</translation>
 <translation id="1884843295353628214">爵士乐</translation>
 <translation id="1890171020361705182">恐龙游戏。在这款游戏中，您要协助一头正在荒野中奔跑的像素化恐龙躲避仙人掌和翼手龙。您只需在听到提示音时点按一下空格键，即可让恐龙跃过障碍物。</translation>
@@ -1163,6 +1164,7 @@
 <translation id="3157931365184549694">恢复</translation>
 <translation id="3158539265159265653">光碟</translation>
 <translation id="3162559335345991374">您要使用的 Wi-Fi 网络可能需要您访问其登录页面。</translation>
+<translation id="316638481603975524">可以请求安装 Web 应用</translation>
 <translation id="3168744840365648658">无线电设备</translation>
 <translation id="3168938241115725594">古典车</translation>
 <translation id="3169472444629675720">探索</translation>
@@ -2318,6 +2320,7 @@
 <translation id="5273658854610202413">警告：系统未按照 PolicyDictionaryMultipleSourceMergeList 政策中指定的方式合并此政策，因为此政策不是可合并的字典政策的一部分。</translation>
 <translation id="5278778426231952189">立即上传</translation>
 <translation id="5279286380302340275">管理下载内容</translation>
+<translation id="5280963125494874678">Web 应用</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">文档属性</translation>
 <translation id="528468243742722775">结束</translation>
@@ -2652,7 +2655,7 @@
 <translation id="5919090499915321845">B10</translation>
 <translation id="5920262536204764679">{NUM_COOKIES,plural, =1{正在使用 1 个}other{正在使用 # 个}}</translation>
 <translation id="5921185718311485855">已开启</translation>
-<translation id="5921639886840618607">将银行卡信息保存到 Google 账号中？</translation>
+<translation id="5921639886840618607">要将银行卡保存到 Google 账号吗？</translation>
 <translation id="5921952831792678223">皮卡车</translation>
 <translation id="5922853866070715753">即将完成</translation>
 <translation id="5923492272538889093">要使用设备解锁来取代银行卡验证码 (CVC)吗？</translation>
@@ -2819,6 +2822,7 @@
 <translation id="6221311046884916259">要将这张卡的信息保存到您的 Google 账号中吗？</translation>
 <translation id="6221892641068781024">简化版视图</translation>
 <translation id="6222527803348563979">信笺</translation>
+<translation id="62231116988543150">能够安装 Web 应用</translation>
 <translation id="6224281071334553713">珠宝首饰</translation>
 <translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可在 Chrome 设置中定制您的个性化无障碍工具</translation>
 <translation id="6228346913624365233">豪华车</translation>
@@ -3082,6 +3086,7 @@
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可在 Google 账号中查找您的设备</translation>
 <translation id="6695428916538794739">动作片与冒险片</translation>
 <translation id="6696424331653607346">旅行指南与游记</translation>
+<translation id="6696575039575740785">不允许安装 Web 应用</translation>
 <translation id="6698097747703777657">没收到验证码？<ph name="BEGIN_LINK" />获取新验证码<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">创建时间：</translation>
 <translation id="67007264085648978">时间滑块</translation>
@@ -3123,6 +3128,7 @@
 <translation id="6767985426384634228">更新地址？</translation>
 <translation id="6770747695101757579">纸（棉纸）</translation>
 <translation id="677257480647123231">儿童上网安全</translation>
+<translation id="6772959465807028761">如要使用 YouTube，请登录 Google 账号继续操作</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">按照家长选择的设置使用 YouTube</translation>
 <translation id="6779348349813025131">Google 密码管理工具需要获权访问 MacOS 钥匙串</translation>
@@ -3195,6 +3201,7 @@
 <translation id="6915804003454593391">用户：</translation>
 <translation id="6916193791494646625">请提供下载原因（必填）</translation>
 <translation id="6917795328362592458">系统检测到，您刚才使用的密码遭遇了数据泄露。为确保您的账号安全，密码管理工具建议您检查已保存的所有密码。</translation>
+<translation id="6921197121276419421">允许安装 Web 应用</translation>
 <translation id="6924013822850225188">选择是否在结账时显示凭卡可享福利（需遵守银行条款）</translation>
 <translation id="6925267999184670015">北美洲 B+</translation>
 <translation id="6926216138694948720">人体艺术</translation>
@@ -3692,6 +3699,7 @@
 <translation id="7761701407923456692">服务器的证书与网址不相符。</translation>
 <translation id="7764225426217299476">添加地址</translation>
 <translation id="7766518757692125295">裙式</translation>
+<translation id="7766899888934244586">Web 应用</translation>
 <translation id="7767278989746220252">庭院、草坪和花园</translation>
 <translation id="776749070095465053">织物</translation>
 <translation id="7773005668374414287">顺序不变，正面朝上</translation>
@@ -4285,6 +4293,7 @@
 <translation id="8891031436559779793">任一网站上的商品降价时，您都会收到通知。</translation>
 <translation id="8891727572606052622">代理模式无效。</translation>
 <translation id="8894794286471754040">长边先入</translation>
+<translation id="8897221284075091877">如需请求查看此内容，请登录 Google 账号继续操作</translation>
 <translation id="8897428486789851669">游泳</translation>
 <translation id="8899807382908246773">侵扰性广告</translation>
 <translation id="8903921497873541725">放大</translation>

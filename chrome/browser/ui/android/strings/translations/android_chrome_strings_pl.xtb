@@ -106,6 +106,7 @@ W <ph name="BEGIN_LINK2" />usługach Google<ph name="END_LINK2" /> znajdziesz w
 <translation id="1413446866325418126">Zapisz dane na koncie Google</translation>
 <translation id="1414981605391750300">Łączę się z Google. Może to chwilę potrwać…</translation>
 <translation id="1416550906796893042">Wersja aplikacji</translation>
+<translation id="1419753403124156396">Uruchomić ponownie Chrome?</translation>
 <translation id="1428770807407000502">Wyłączyć synchronizację?</translation>
 <translation id="1430915738399379752">Drukuj</translation>
 <translation id="1435593198351412143">Automatycznie otwieraj pliki PDF</translation>
@@ -229,6 +230,7 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Nie jest on
 <translation id="2067805253194386918">Tekst</translation>
 <translation id="2079545284768500474">Cofnij</translation>
 <translation id="2082238445998314030">Wynik <ph name="RESULT_NUMBER" /> z <ph name="TOTAL_RESULTS" /></translation>
+<translation id="2088833076121753253">Aby dokończyć konfigurowanie autouzupełniania, teraz uruchom ponownie Chrome. Karty zostaną automatycznie ponownie otwarte.</translation>
 <translation id="2091863218454846791">Wyświetlam widok kompaktowy</translation>
 <translation id="2093731487903423814">ostatnich 15 minut</translation>
 <translation id="2096012225669085171">Synchronizacja i personalizacja na urządzeniach</translation>
@@ -666,6 +668,7 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Nie jest on
 <translation id="4216511743389425832">Odsłuchaj tę stronę</translation>
 <translation id="4225725533026049334">Obserwujesz</translation>
 <translation id="4225895483398857530">Skrót na pasku narzędzi</translation>
+<translation id="4232376164796433044">Hasła i autouzupełnianie</translation>
 <translation id="4242533952199664413">Otwórz ustawienia</translation>
 <translation id="4248098802131000011">Chroń swoje hasła przed naruszeniem bezpieczeństwa danych i innymi zagrożeniami</translation>
 <translation id="424864128008805179">Wylogować z Chrome?</translation>
@@ -748,6 +751,7 @@ Na stronie <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> n
 <translation id="4609429330876432068">Twoje listy zapisanych haseł w Chrome i <ph name="CHROME_CHANNEL" /> zostały scalone. Nadal możesz używać wszystkich zapisanych haseł do autouzupełniania w obu aplikacjach.</translation>
 <translation id="4616150815774728855">Otwórz <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Potwierdź, że to Ty</translation>
+<translation id="4620032614425803188">Usługi autouzupełniania</translation>
 <translation id="4624065194742029982">Tryb incognito w Chrome</translation>
 <translation id="4634124774493850572">Użyj hasła</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 przejęte hasło}few{# przejęte hasła}many{# przejętych haseł}other{# przejętego hasła}}</translation>
@@ -900,6 +904,7 @@ Na stronie <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> n
 <translation id="5264813352784073502">ostatnich 24 godzin</translation>
 <translation id="5267572070504076962">Włącz Bezpieczne przeglądanie, aby korzystać z ochrony przed niebezpiecznymi stronami</translation>
 <translation id="5271967389191913893">Na tym urządzeniu nie można otworzyć treści, które chcesz pobrać.</translation>
+<translation id="5273031377282080577">Tym ustawieniem zarządza administrator.</translation>
 <translation id="5292796745632149097">Wyślij na</translation>
 <translation id="5301876394151419436">W tej chwili korzystasz z konta <ph name="EMAIL" />. Synchronizację możesz wyłączyć w każdej chwili w ustawieniach. Google może korzystać z Twojej historii, aby dostosowywać działanie wyszukiwarki i innych usług.</translation>
 <translation id="5304593522240415983">To pole nie może być puste</translation>
@@ -1234,6 +1239,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="6775840696761158817">Klikając pasek adresu lub pole wyszukiwania, a także pisząc w nich, zobaczysz sugestie z domyślnej wyszukiwarki. Ta funkcja jest wyłączona w trybie incognito.</translation>
 <translation id="6785476624617658922">Dodatkowe warunki korzystania z Chrome i Chrome OS</translation>
 <translation id="6795633245022906657">Szybko otwórz nową kartę. Aby edytować ten skrót, otwórz Ustawienia.</translation>
+<translation id="679956319013005046">Aby ustawić preferowaną usługę autouzupełniania, najpierw dodaj ją w <ph name="BEGIN_LINK" />Ustawieniach Androida<ph name="END_LINK" />.</translation>
 <translation id="6802555630140434547">Okno zostanie zamknięte</translation>
 <translation id="6803791793483522764">Przeglądanie powiadomień</translation>
 <translation id="6811034713472274749">Strona jest gotowa do wyświetlenia</translation>
@@ -1292,7 +1298,6 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="6964300328304469089"><ph name="NAME" />, obecnie wybrano <ph name="EMAIL" />. Wybierz konto.</translation>
 <translation id="696447261358045621">Wyłącz tryb incognito</translation>
 <translation id="6965382102122355670">OK</translation>
-<translation id="6966660124354134532">Kliknij, aby zacząć lub przestać śledzić produkt.</translation>
 <translation id="6971862865055170158">Nie zatwierdzaj</translation>
 <translation id="6978717888677691380">Zablokowane witryny</translation>
 <translation id="6979737339423435258">Od początku</translation>
@@ -1466,6 +1471,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="7707922173985738739">Użycie mobilnej transmisji danych</translation>
 <translation id="7709918231054955894">Wyświetl wszystkie swoje karty</translation>
 <translation id="7733878270780732638">Za mało miejsca na urządzeniu.</translation>
+<translation id="774876555279732384">Usługami autouzupełniania można też zarządzać w <ph name="BEGIN_LINK" />Ustawieniach Androida<ph name="END_LINK" />.</translation>
 <translation id="7759809451544302770">Opcjonalne</translation>
 <translation id="7762668264895820836">Karta SD <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">Dodaj adres</translation>

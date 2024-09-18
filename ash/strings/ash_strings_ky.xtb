@@ -78,6 +78,7 @@
 <translation id="1240638468526743569">Колдонмо</translation>
 <translation id="1242198791279543032">Билдирмелердин үнү басылды</translation>
 <translation id="1242883863226959074">түзмөктө</translation>
+<translation id="1245476784081715330">Азаматсыз!</translation>
 <translation id="1245644940275736236">Жардамчыга өтүү</translation>
 <translation id="124678866338384709">Учурдагы өтмөктү жабуу</translation>
 <translation id="1246890715821376239">Колдоого алынбаган колдонмолор</translation>
@@ -842,6 +843,7 @@
 <translation id="3958714870339660776">Күнү бою</translation>
 <translation id="3962859241508114581">Мурунку трек</translation>
 <translation id="3963124517343721543">Мурунку терезелер менен өтмөктөрдү ачып, токтогон жериңизден оңой улантыңыз. Жасала турган иштер боюнча жекелештирилген сунуштарды көрөсүз.</translation>
+<translation id="396506362088290977">Микрофондун үнүн текшерүү</translation>
 <translation id="3969043077941541451">Өчүк</translation>
 <translation id="3970324493235864154">Телефондогу билдирмелерди көрүү</translation>
 <translation id="397105322502079400">Эсептелүүдө…</translation>
@@ -899,6 +901,7 @@
 <translation id="4156293514828496577">Батареянын кубаты <ph name="PERCENTAGE" />% калды (болжол менен <ph name="TIME_LEFT" />).
 Батареяны көбүрөөк убакытка жеткирүү үчүн айрым функциялар чектелди.</translation>
 <translation id="4160919062868802509">Бир нече аудио булак табылды</translation>
+<translation id="416245495747357243">Бүттү!</translation>
 <translation id="4165275524535002941">Кабель дисплейлерди колдоого албашы мүмкүн</translation>
 <translation id="4177415338862979658">Маалыматты текшерүү үчүн басыңыз</translation>
 <translation id="4177913004758410636">{0,plural, =1{Түзмөктү бир күндүн ичинде жаңыртыңыз}other{Түзмөктү # күндүн ичинде жаңыртыңыз}}</translation>
@@ -984,6 +987,7 @@
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> өчүк.</translation>
 <translation id="4417647906073317561">Ынтаа коюу режиминин параметрлери. Ишке киришүү үчүн таймерди, ишти жана музыканы коюңуз.</translation>
 <translation id="4424159417645388645">5-иш такта</translation>
+<translation id="4426817706804363424">Баракелде!</translation>
 <translation id="4430019312045809116">Үндүн катуулугу</translation>
 <translation id="4441283832827406317">Колдонмолор аталышы боюнча иргелет</translation>
 <translation id="4445159312344259901">Кулпусун ачуу үчүн кириңиз</translation>
@@ -1248,6 +1252,7 @@
 <translation id="5283198616748585639">1 мүн. кошуу</translation>
 <translation id="528468243742722775">Бүтүрүү</translation>
 <translation id="5286194356314741248">Текшерилүүдө</translation>
+<translation id="528641622273682395">Микрофон текшерүүсүн өчүрүү/күйгүзүү</translation>
 <translation id="5297423144044956168">Мобилдик түзмөктөр табылган жок</translation>
 <translation id="5297704307811127955">Өчүк</translation>
 <translation id="5300589172476337783">Көрсөтүү</translation>
@@ -1275,6 +1280,7 @@
 <translation id="536019650977002321">Администраторуңуз аудио жаздырууга тыюу салган. Көбүрөөк маалымат алуу үчүн администраторуңузга кайрылыңыз.</translation>
 <translation id="5361524080961918551"><ph name="LANGUAGE" /> кеп файлдары жарым-жартылай жүктөлүп алынды</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Бул өтмөккө өтүү</translation>
+<translation id="5363835273551457276">Микрофонуңуздун үнүн текшерсеңиз болот. Токтотуу үчүн панелди жабыңыз.</translation>
 <translation id="5364693579536176785">сактагыч</translation>
 <translation id="5369573834963677938">Жүз көзөмөлдөө түзмөктөгү башка колдонуучуларга жеткиликтүү болот</translation>
 <translation id="5369717264580061086">Файлды Files колдонмосунда алдын ала көрүү</translation>
@@ -1357,6 +1363,7 @@
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Сырсөзүңүз ырасталган жок. Кайталап көрүңүз.</translation>
 <translation id="5632485077360054581">Кантип?</translation>
+<translation id="5633826232582408011">Текст жазгыч жана Окуганга жардам бер функцияларын колдонгонуңузда киргизилген текст, документтин контенти жана веб беттин URL дареги жазуу боюнча сунуштарды көрсөтүү, кыскача маалыматты түзүү, суроолорго жооп берүү жана кызматты жакшыртуу үчүн <ph name="LINK_TO_SERVICE_TERMS" /> ылайык Google'дун жасалма интеллектинин серверлерине жөнөтүлөт. Жеке же купуя нерселерди кошпоңуз.</translation>
 <translation id="5648021990716966815">Микрофондун оюкчасы</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> колдонмосун караңыз.</translation>
 <translation id="5662075790140998213">10-иш такта</translation>
@@ -1414,6 +1421,7 @@
 <translation id="5802516411616338943">Ыкчам параметрлерди ачуу</translation>
 <translation id="5804651031882187592">"SIM картаны кулпулоо" параметрин өчүрүү</translation>
 <translation id="5805809050170488595"><ph name="NETWORK_NAME" /> тармагын жандыруу үчүн басыңыз</translation>
+<translation id="5818796501620225415">Көбүрөөк убакыт кошуңуз же ынтаа коюу режимин бүтүрүңүз</translation>
 <translation id="5819918159912280082">Chromebook түзмөгүңүзү күтүлбөгөн жерден өчүрүлүп күйгүзүлдү. Мурунку терезелериңизди жана колдонмолоруңузду ачыңыз.</translation>
 <translation id="5823239091726045201">Интернетте Google Tasks</translation>
 <translation id="5825969630400862129">Туташтырылган түзмөктөрдүн параметрлери</translation>
@@ -1507,7 +1515,6 @@
 <translation id="6119972796024789243">Түстөрдү тууралоо</translation>
 <translation id="6121838516699723042"><ph name="FILENAME" /> жүктөп алууну ырастаңыз</translation>
 <translation id="612734058257491180">Google Жардамчысы конок сеансында жеткиликсиз.</translation>
-<translation id="6127370444807669747">Жекелештирилген ойнотмо тизмелерин жана башка мүмкүнчүлүктөрдү алуу үчүн, YouTube Music Premium'ду колдонуп көрүңүз</translation>
 <translation id="6127395413317891856">Офлайн режиминдесиз. Байланышты текшерип, кайталап көрүңүз.</translation>
 <translation id="6129953537138746214">Боштук</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" /> аккаунтун өчүрүү диалогун ачуу</translation>
@@ -2125,6 +2132,7 @@
 <translation id="8262312463845990408">Ойнотууну өчүрүү/күйгүзүү</translation>
 <translation id="8268302343625273732">Google Класстагы бардык тапшырмаларды көрүү</translation>
 <translation id="8277261673056602147">Экрандагы текстти бөлүп көрсөтүү</translation>
+<translation id="8282784978194352587">Азаматсыз!</translation>
 <translation id="8287009018010202411">Майнаптуулук</translation>
 <translation id="828708037801473432">Өчүк</translation>
 <translation id="8297006494302853456">Начар</translation>
@@ -2202,6 +2210,7 @@
 <translation id="8609384513243082612">Жаңы өтмөк ачуу</translation>
 <translation id="861045123704058818">Колдонмолор убактылуу түрдө категория боюнча иреттелет</translation>
 <translation id="8612216344243590325">Маанилүү файлдарды иш тактада эмес, <ph name="HOLDING_SPACE_TITLE" /> иш чөйрөсүндө сактаңыз. Файлдарды жөн гана <ph name="HOLDING_SPACE_TITLE" /> иш чөйрөсүнө сүйрөңүз.</translation>
+<translation id="8612338981637220013">Азаматсыз!</translation>
 <translation id="8614517853887502247">Көрүүдөн коргоо функциясы күйүп тургандыктан, <ph name="APP_1_TITLE" /> менен <ph name="APP_2_TITLE" /> билдирмелери жашырылды</translation>
 <translation id="8615778328722901791">Куралдар тилкесин ачуу</translation>
 <translation id="8619000641825875669">OneDrive</translation>
@@ -2244,6 +2253,7 @@
 <translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />: Жандырылууда...</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
+<translation id="8751299148074971734">Ушунуңуздан жазбаңыз!</translation>
 <translation id="8753368202781196133">Бул тил учурда колдоого алынбайт.</translation>
 <translation id="8755498163081687682">Өздүгүңүздү ырастаңыз: <ph name="ORIGIN_NAME" /> өздүгүңүздү ырастоону суранып жатат</translation>
 <translation id="875593634123171288">VPN параметрлерин көрсөтүү</translation>

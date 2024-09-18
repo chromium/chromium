@@ -78,6 +78,7 @@
 <translation id="1240638468526743569">कुनै एप</translation>
 <translation id="1242198791279543032">नोटिफिकेसनहरू म्युट गरिएका छन्</translation>
 <translation id="1242883863226959074">डिभाइस</translation>
+<translation id="1245476784081715330">अद्भुत!</translation>
 <translation id="1245644940275736236">सहायकमा जानुहोस्</translation>
 <translation id="124678866338384709">हालको ट्याब बन्द गर्नुहोस्</translation>
 <translation id="1246890715821376239">प्रयोग गर्न नमिल्ने एपहरू</translation>
@@ -214,6 +215,7 @@
 <translation id="1703117532528082099">सक्रिय विन्डो बायाँतिर डक गरिएको छ।</translation>
 <translation id="1708345662127501511">डेस्क: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">नेटवर्कसम्बन्धी सेटिङहरू</translation>
+<translation id="171610090693716835">पर्सनलाइज गरिएका फोकस प्लेलिस्टहरूको आनन्द लिएर नयाँ गीतहरू सुन्नुहोस्। YouTube Premium को ३ महिने निःशुल्क सदस्यता लिएर विज्ञापनरहित YouTube Music र YouTube को आनन्द लिनुहोस्।</translation>
 <translation id="1719094688023114093">लाइभ क्याप्सन अन छ।</translation>
 <translation id="1720011244392820496">Wi-Fi सिंक गर्ने सुविधा अन गर्नुहोस्</translation>
 <translation id="1720230731642245863">हटस्पट अफ गरिएको छ</translation>
@@ -842,6 +844,7 @@
 <translation id="3958714870339660776">दिनभर</translation>
 <translation id="3962859241508114581">अघिल्लो ट्र्याक</translation>
 <translation id="3963124517343721543">आफ्ना यसअघिका विन्डो तथा ट्याबहरू खोलेर आफूले छाडेकै ठाउँबाट सजिलैसँग जारी राख्नुहोस्। तपाईं यसपछि गर्न सकिने कार्यहरूका बारेमा पर्सनलाइज गरिएका सुझावहरू देख्नु हुने छ।</translation>
+<translation id="396506362088290977">आफ्नो माइकको आवाज जाँच्नुहोस्</translation>
 <translation id="3969043077941541451">अफ छ</translation>
 <translation id="3970324493235864154">आफ्नो फोनमा भएका सूचनाहरू हेर्नुहोस्</translation>
 <translation id="397105322502079400">हिसाब गर्दै...</translation>
@@ -899,6 +902,7 @@
 <translation id="4156293514828496577"><ph name="PERCENTAGE" />% ब्याट्री बाँकी छ (लगभग <ph name="TIME_LEFT" />)।
 ब्याट्री अझ बढी टिकाउन केही सुविधाहरू सीमित गरिएका छन्।</translation>
 <translation id="4160919062868802509">एकभन्दा बढी अडियो स्रोतहरू पत्ता लागेका छन्</translation>
+<translation id="416245495747357243">पूरा भयो!</translation>
 <translation id="4165275524535002941">यो केबल डिस्प्लेहरूमा जोड्न मिल्दैन</translation>
 <translation id="4177415338862979658">थप जानकारीका लागि क्लिक गर्नुहोस्</translation>
 <translation id="4177913004758410636">{0,plural, =1{एक दिनभित्र डिभाइस रिस्टार्ट गर्नुहोस्}other{# दिनभित्र डिभाइस रिस्टार्ट गर्नुहोस्}}</translation>
@@ -984,6 +988,7 @@
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> अफ छ।</translation>
 <translation id="4417647906073317561">फोकस मोडका सेटिङ। यो सेटिङ प्रयोग गरी टाइमर, कार्य र सङ्गीत सेट गर्नुहोस्।</translation>
 <translation id="4424159417645388645">डेस्क ५</translation>
+<translation id="4426817706804363424">स्याबास!</translation>
 <translation id="4430019312045809116">आयतन</translation>
 <translation id="4441283832827406317">एपहरू नामअनुसार क्रमबद्ध गरिन्छन्</translation>
 <translation id="4445159312344259901">अनलक गर्न साइन इन गर्नुहोस्</translation>
@@ -1248,6 +1253,7 @@
 <translation id="5283198616748585639">१ मिनट थप्नुहोस्</translation>
 <translation id="528468243742722775">समाप्त</translation>
 <translation id="5286194356314741248">स्क्यान गर्दै</translation>
+<translation id="528641622273682395">माइक जाँच्ने प्रक्रिया टगल गर्नुहोस्</translation>
 <translation id="5297423144044956168">कुनै पनि मोबाइल फोन वा ट्याब्लेट भेटिएन</translation>
 <translation id="5297704307811127955">अफ</translation>
 <translation id="5300589172476337783">देखाउनुहोस्</translation>
@@ -1275,6 +1281,7 @@
 <translation id="536019650977002321">तपाईंका एड्मिनले अडियो क्याप्चर गर्ने अनुमति दिनुभएको छैन। तपाईं यस सम्बन्धमा थप जानकारी प्राप्त गर्न चाहनुहुन्छ भने आफ्ना एड्मिनलाई सम्पर्क गर्नुहोस्।</translation>
 <translation id="5361524080961918551"><ph name="LANGUAGE" /> भाषाका वाक् पहिचानसम्बन्धी फाइलहरू आंशिक रूपमा डाउनलोड गरिएका छन्</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> यो ट्याबमा जानुहोस्</translation>
+<translation id="5363835273551457276">तपाईं आफ्नो माइक्रोफोनको आवाज जाँच्न सक्नुहुन्छ। जाँच्ने कार्य रोक्न प्यानल बन्द गर्नुहोस्।</translation>
 <translation id="5364693579536176785">भण्डारणमा रहेको खाली ठाउँ</translation>
 <translation id="5369573834963677938">यो डिभाइसका अन्य प्रयोगकर्ताहरू फेस कन्ट्रोल प्रयोग गर्न सक्ने छन्</translation>
 <translation id="5369717264580061086">Files एपमा प्रिभ्यू गर्नुहोस्</translation>
@@ -1408,6 +1415,7 @@
 <translation id="5777841717266010279">स्क्रिन साझा गर्ने रोक्ने?</translation>
 <translation id="5779721926447984944">पिन गरिएका फाइलहरू</translation>
 <translation id="5785221443435874078">यो सुझाव हटाउनुहोस्</translation>
+<translation id="5787431783058088906">लाभ प्राप्त गर्नुहोस्</translation>
 <translation id="5788127256798019331">Play मा भएका फाइलहरू</translation>
 <translation id="5788535737706478207">पछिल्लो पटक बन्द गरिएको ट्याब वा विन्डो पुनः खोल्नुहोस्</translation>
 <translation id="5790085346892983794">सफलता</translation>
@@ -1415,6 +1423,7 @@
 <translation id="5802516411616338943">द्रुत सेटिङ खोल्नुहोस्</translation>
 <translation id="5804651031882187592">"SIM लक गर्नुहोस्" सेटिङ अफ गर्नुहोस्</translation>
 <translation id="5805809050170488595"><ph name="NETWORK_NAME" /> अन गर्न क्लिक गर्नुहोस्</translation>
+<translation id="5818796501620225415">तपाईं समय थप्न वा फोकस मोडको सत्र अन्त्य गर्न सक्नुहुन्छ</translation>
 <translation id="5819918159912280082">तपाईंको Chromebook अनपेक्षित रूपमा रिस्टार्ट भयो। आफूले यसअघि खोलेका विन्डो तथा एपहरू खोल्नुहोस्।</translation>
 <translation id="5823239091726045201">वेबमा उपलब्ध Google Tasks</translation>
 <translation id="5825969630400862129">कनेक्ट गरिएका यन्त्रहरूसम्बन्धी सेटिङ</translation>
@@ -1508,7 +1517,6 @@
 <translation id="6119972796024789243">कलर करेक्सन</translation>
 <translation id="6121838516699723042"><ph name="FILENAME" /> को डाउनलोड पुष्टि गर्नुहोस्</translation>
 <translation id="612734058257491180">Google सहायक अतिथिको सत्रमा उपलब्ध हुँदैन।</translation>
-<translation id="6127370444807669747">पर्सनलाइज गरिएका प्लेलिस्ट र थप फोकस म्युजिकका लागि YouTube Music Premium चलाई हेर्नुहोस्</translation>
 <translation id="6127395413317891856">तपाईं अफलाइन हुनुहुन्छ। इन्टरनेट जाँचेर फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="6129953537138746214">क्षेत्र</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" /> को खाता हटाउने कार्यसम्बन्धी डायलग खोल्नुहोस्</translation>
@@ -1639,6 +1647,7 @@
 <translation id="6574587113394758819">सुरक्षित रूपमा हेर्ने सुविधा अन गरिएको हुनाले <ph name="APP_TITLE" /> सम्बन्धी सूचना लुकाइएको छ</translation>
 <translation id="6574622320167699133">तपाईंको फोनमार्फत अनलक गरिएको। तपाईं Chromebook खोल्न चाहनुहुन्छ भने ट्याप गर्नुहोस् वा क्लिक गर्नुहोस्।</translation>
 <translation id="6578407462441924264">नामविहीन</translation>
+<translation id="6582012689384648647">पर्सनलाइज गरिएका फोकस प्लेलिस्टहरूको आनन्द लिन YouTube Music को एक्सेस दिनुहोस्</translation>
 <translation id="6582034443359256692">ब्याट्रीको चार्जको स्तर निकालिँदै छ।</translation>
 <translation id="6585808820553845416">सत्र <ph name="SESSION_TIME_REMAINING" /> मा समाप्त हुन्छ।</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
@@ -1877,6 +1886,7 @@
 <translation id="7477793887173910789">आफ्नो सङ्गीत, भिडियो र थप कुराहरू नियन्त्रण गर्नुहोस्</translation>
 <translation id="7488762544858401571">सम्पादन गरिएको</translation>
 <translation id="7489261257412536105">फुल स्क्रिन मोड अन वा अफ गर्नुहोस्</translation>
+<translation id="7490157877815329797">विज्ञापनरहित सङ्गीत सुन्न र पर्सनलाइज गरिएको फोकस म्युजिकको आनन्द लिन YouTube Music Premium चलाई हेर्नुहोस्</translation>
 <translation id="7490360161041035804">तपाईं Google Drive का फाइललगायतका महत्त्वपूर्ण फाइलहरू पिन गर्न सक्नुहुन्छ। पिन गर्न कुनै फाइलमाथि होभर गर्नुहोस् वा "फाइलहरू" खोल्नुहोस् र कुनै फाइलमा दायाँ क्लिक गर्नुहोस्।</translation>
 <translation id="7497767806359279797">भाषा तथा किबोर्ड छनौट गर्नुहोस्</translation>
 <translation id="7507162824403726948">आफ्नो पहिचान पुष्टि गर्ने प्रक्रिया पूरा गर्नुहोस्</translation>
@@ -2126,6 +2136,7 @@
 <translation id="8262312463845990408">प्लेब्याक टगल गर्नुहोस्</translation>
 <translation id="8268302343625273732">Google Classroom का सबै असाइनमेन्टहरू हेर्नुहोस्</translation>
 <translation id="8277261673056602147">स्क्रिनमा देखाइएको टेक्स्ट हाइलाइट गर्नुहोस्</translation>
+<translation id="8282784978194352587">तपाईंहरूले गरेर देखाउनुभयो!</translation>
 <translation id="8287009018010202411">उत्पादकत्व</translation>
 <translation id="828708037801473432">अफ</translation>
 <translation id="8297006494302853456">कमजोर</translation>
@@ -2151,6 +2162,7 @@
 <translation id="8380784334203145311">नमस्ते,</translation>
 <translation id="8382715499079447151">सुरक्षित रूपमा हेर्ने सुविधा</translation>
 <translation id="8383614331548401927">स्वागत रिक्याप</translation>
+<translation id="838540623579162843">Music Premium को सदस्यता लिनुहोस्</translation>
 <translation id="8388750414311082622">अन्तिम डेस्क हटाउन सकिँदैन।</translation>
 <translation id="8394567579869570560">तपाईंका अभिभावकले यो डिभाइस लक गर्नुभयो</translation>
 <translation id="8401850874595457088">भाषासम्बन्धी मेनु खोल्नुहोस्</translation>
@@ -2203,6 +2215,7 @@
 <translation id="8609384513243082612">नयाँ ट्याब खोल्नुहोस्</translation>
 <translation id="861045123704058818">एपहरू अस्थायी रूपमा कोटीअनुसार व्यवस्थापन गरिएका छन्</translation>
 <translation id="8612216344243590325">महत्त्वपूर्ण फाइलहरूलाई डेस्कटपको साटो <ph name="HOLDING_SPACE_TITLE" /> मा राख्नुहोस्। यसका लागि तपाईंले फाइलहरू ड्रयाग गरेर <ph name="HOLDING_SPACE_TITLE" /> मा लगे पुग्छ।</translation>
+<translation id="8612338981637220013">तपाईं लगातार सफल भइरहनुभएको छ!</translation>
 <translation id="8614517853887502247">सुरक्षित रूपमा हेर्ने सुविधा अन गरिएको हुनाले <ph name="APP_1_TITLE" /> र <ph name="APP_2_TITLE" /> सम्बन्धी सूचनाहरू लुकाइएका छन्</translation>
 <translation id="8615778328722901791">टुलबार खोल्नुहोस्</translation>
 <translation id="8619000641825875669">OneDrive</translation>
@@ -2245,6 +2258,7 @@
 <translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />: एक्टिभेट गरिँदै छ...</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
+<translation id="8751299148074971734">यो क्रम जारी राख्नुहोस्!</translation>
 <translation id="8753368202781196133">यो भाषा अहिले प्रयोग गर्न मिल्दैन।</translation>
 <translation id="8755498163081687682">आफ्नो पहिचान पुष्टि गर्नुहोस्: <ph name="ORIGIN_NAME" /> तपाईंको पहिचान पुष्टि गर्न चाहन्छ</translation>
 <translation id="875593634123171288">VPN सेटिङहरू देखाउनुहोस्</translation>

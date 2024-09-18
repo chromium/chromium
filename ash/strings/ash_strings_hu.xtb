@@ -42,6 +42,7 @@
 <translation id="1148499908455722006">Információs párbeszédpanel, <ph name="USER_NAME" /></translation>
 <translation id="1150989369772528668">Naptár</translation>
 <translation id="1153356358378277386">Párosított eszközök</translation>
+<translation id="1153918444040990015">Nem sikerült csatlakozni az összpontosítást segítő hangokhoz</translation>
 <translation id="1155734730463845512">Jelenlegi akkumulátorszint: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1157514002898505378">A generatív AI még kísérleti fázisban van, és a tartalmak pontatlanok, félrevezetők vagy sértők lehetnek. Probléma bejelentéséhez vegye fel a kapcsolatot a rendszergazdával. <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="1160215328209699296">bekapcsolva és használatban</translation>
@@ -175,6 +176,7 @@
 <translation id="1550523713251050646">Kattintson további lehetőségekért</translation>
 <translation id="1555130319947370107">Kék</translation>
 <translation id="1557622599341396706">Asztal nevének megjelenítése</translation>
+<translation id="1567138500090284106">Egérgombok gomb</translation>
 <translation id="1569384531973824928">Ezzel engedélyezi a hozzáférést a kamera- és mikrofonengedéllyel rendelkező összes alkalmazás és webhely számára. Előfordulhat, hogy frissítenie kell a weboldalt, vagy újra kell indítania az alkalmazást.</translation>
 <translation id="1571697193564730395">A Ne zavarjanak mód ki- vagy bekapcsolása. <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">Kicsinyítés, ha a nagyító be van kapcsolva</translation>
@@ -242,6 +244,7 @@
 <translation id="1787955149152357925">Ki</translation>
 <translation id="1796561540704213354">Webhelyek, például a felkeresett oldalak és a megnyitott oldalak</translation>
 <translation id="179842970735685253">A Google Általános Szerződési Feltételei</translation>
+<translation id="1805407494113167797">Nem sikerült lejátszani az összpontosítást segítő hangokat</translation>
 <translation id="181103072419391116">Jelerősség: <ph name="SIGNAL_STRENGTH" />, a rendszergazdája kezeli</translation>
 <translation id="1816896987747843206">Ezzel engedélyezi a kamerához való hozzáférést a kamerahasználati engedéllyel rendelkező összes alkalmazás és webhely számára</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
@@ -1355,6 +1358,7 @@ Nincsenek csatlakoztatott eszközök.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Jelszavának ellenőrzése nem sikerült. Próbálja újra.</translation>
 <translation id="5632485077360054581">Bemutató</translation>
+<translation id="5633826232582408011">Ha bekapcsolja a Segítség az íráshoz és a Segítség az olvasáshoz funkciót, a rendszer elküldi a bevitt szöveget, a dokumentumok tartalmát és a weboldal URL-jét a Google AI szervereinek írási javaslatok és összefoglalók generálásához, kérdések megválaszolásához, valamint a termék fejlesztéséhez a <ph name="LINK_TO_SERVICE_TERMS" /> értelmében. Ne adjon meg személyes, kényes vagy bizalmas adatokat.</translation>
 <translation id="5648021990716966815">Mikrofon jack csatlakozója</translation>
 <translation id="5652575806481723716">A(z) <ph name="FOCUSED_APP_NAME" /> alkalmazás a figyelmét igényli.</translation>
 <translation id="5662075790140998213">10. asztal</translation>
@@ -1505,7 +1509,6 @@ Nincsenek csatlakoztatott eszközök.</translation>
 <translation id="6119972796024789243">Színjavítás</translation>
 <translation id="6121838516699723042">A(z) <ph name="FILENAME" /> fájl letöltésének megerősítése</translation>
 <translation id="612734058257491180">A Google Segéd nem áll rendelkezésre Vendég-munkafolyamatban.</translation>
-<translation id="6127370444807669747">Ha személyre szabott lejátszási listákat és több összpontosítást segítő zenét szeretne, próbálja ki a YouTube Music Premiumot</translation>
 <translation id="6127395413317891856">Ön offline állapotban van. Ellenőrizze a kapcsolatot, majd próbálja meg újra.</translation>
 <translation id="6129953537138746214">Szóköz</translation>
 <translation id="6137566720514957455">Eltávolítási párbeszédpanel megnyitása, <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -2283,6 +2286,7 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="8876661425082386199">Ellenőrizze az internetkapcsolatot</translation>
 <translation id="8877788021141246043">Emlékeztető beállítása</translation>
 <translation id="8878886163241303700">Kibővített képernyő</translation>
+<translation id="8885424115080869847">Nem sikerült csatlakozni a YouTube Musichoz</translation>
 <translation id="888982883502837004">Firmware-frissítések állnak rendelkezésre eszközéhez. Kattintson az áttekintésükhöz és a frissítéshez.</translation>
 <translation id="8896630965521842259">A(z) <ph name="DESK_TEMPLATE_NAME" /> sablon véglegesen törlésre kerül.</translation>
 <translation id="889790758758811533">Az akkumulátor töltöttségi szintje <ph name="PERCENTAGE" />% (körülbelül <ph name="TIME_LEFT" />). Csatlakoztassa az eszközt áramforráshoz.</translation>

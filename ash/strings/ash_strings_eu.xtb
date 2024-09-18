@@ -42,6 +42,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="1148499908455722006">Ireki <ph name="USER_NAME" /> erabiltzailearen informazio-leihoa</translation>
 <translation id="1150989369772528668">Egutegia</translation>
 <translation id="1153356358378277386">Parekatutako gailuak</translation>
+<translation id="1153918444040990015">Ezin izan da konektatu kontzentratzeko eginbidearen soinuekin</translation>
 <translation id="1155734730463845512">Oraingo bateria-maila: % <ph name="BATTERY_PERCENTAGE" /></translation>
 <translation id="1157514002898505378">AA generatiboa esperimentala da, eta baliteke haren edukia okerra, engainagarria edo iraingarria izatea. Arazo bat salatzeko, jarri administratzailearekin harremanetan. <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="1160215328209699296">aktibatuta dago eta erabiltzen ari da</translation>
@@ -175,6 +176,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="1550523713251050646">Aukera gehiago ikusteko, egin klik hemen</translation>
 <translation id="1555130319947370107">Urdina</translation>
 <translation id="1557622599341396706">Erakutsi lan-eremuaren izena</translation>
+<translation id="1567138500090284106">Saguaren teklen botoia</translation>
 <translation id="1569384531973824928">Kamera/Mikrofonoa erabiltzeko baimena duten aplikazio eta webgune guztiek atzitu ahal izango dute. Agian web-orria freskatu beharko duzu, edo aplikazioa berrabiarazi.</translation>
 <translation id="1571697193564730395">Gaitu/Desgaitu ez molestatzeko modua. <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">Txikitu lupa aktibatuta dagoenean</translation>
@@ -242,6 +244,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="1787955149152357925">Desaktibatuta</translation>
 <translation id="1796561540704213354">Bisitatu dituzun orrialdeak eta irekitako orriak dituzten webguneak</translation>
 <translation id="179842970735685253">Google-ren Zerbitzu-baldintzak</translation>
+<translation id="1805407494113167797">Ezin izan dira erreproduzitu kontzentratzeko eginbidearen soinuak</translation>
 <translation id="181103072419391116">Seinalearen indarra: <ph name="SIGNAL_STRENGTH" />. Administratzaileak kudeatua.</translation>
 <translation id="1816896987747843206">Kamera erabiltzeko baimena daukaten aplikazio eta webgune guztiek kamera atzitu ahal izango dute</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
@@ -1355,6 +1358,7 @@ Ez dago gailurik konektatuta.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Ezin izan da egiaztatu pasahitza. Saiatu berriro.</translation>
 <translation id="5632485077360054581">Erakutsi nola</translation>
+<translation id="5633826232582408011">Idazteko laguntza eta Irakurtzeko laguntza aktibatzean, idatzitako testua, dokumentuaren edukia eta web-orriaren URLa Google-ren AAren zerbitzarietara bidaltzen dira idazketarako iradokizunak eta laburpenak sortzeko, galderei erantzuteko eta produktua hobetzeko, <ph name="LINK_TO_SERVICE_TERMS" /> gordeta. Ez sartu pertsonala, kontuzkoa edo isilpekoa den informaziorik.</translation>
 <translation id="5648021990716966815">Mikrofonoaren konektorea</translation>
 <translation id="5652575806481723716">Zure arreta behar du <ph name="FOCUSED_APP_NAME" /> aplikazioak.</translation>
 <translation id="5662075790140998213">Lan-eremua 10</translation>
@@ -1505,7 +1509,6 @@ Ez dago gailurik konektatuta.</translation>
 <translation id="6119972796024789243">Koloreen zuzenketa</translation>
 <translation id="6121838516699723042">Berretsi <ph name="FILENAME" /> deskargatu nahi duzula</translation>
 <translation id="612734058257491180">Google-ren Laguntzailea ez dago erabilgarri gonbidatuentzako saioetan.</translation>
-<translation id="6127370444807669747">Erreprodukzio-zerrenda pertsonalizatuak eta kontzentratzeko musika gehiago lortzeko, probatu YouTube Music Premium</translation>
 <translation id="6127395413317891856">Ez zaude konektatuta. Egiaztatu konektatuta zaudela eta saiatu berriro.</translation>
 <translation id="6129953537138746214">Zuriunea</translation>
 <translation id="6137566720514957455">Ireki <ph name="USER_EMAIL_ADDRESS" /> erabiltzailearen leihoa kentzeko aukera</translation>
@@ -2283,6 +2286,7 @@ Itzaltzeko, eduki sakatuta berriro gailuaren etengailua.</translation>
 <translation id="8876661425082386199">Egiaztatu konektatuta zaudela</translation>
 <translation id="8877788021141246043">Ezarri abisu bat</translation>
 <translation id="8878886163241303700">Pantaila hedatzen</translation>
+<translation id="8885424115080869847">Ezin izan da konektatu YouTube Music-era</translation>
 <translation id="888982883502837004">Firmware-eguneratze batzuk erabilgarri daude gailurako. Sakatu hau eguneratzeak berrikusi eta instalatzeko.</translation>
 <translation id="8896630965521842259">Betiko ezabatuko da "<ph name="DESK_TEMPLATE_NAME" />".</translation>
 <translation id="889790758758811533">Bateriari % <ph name="PERCENTAGE" /> geratzen zaio (<ph name="TIME_LEFT" /> inguru). Konektatu gailua korrontera.</translation>

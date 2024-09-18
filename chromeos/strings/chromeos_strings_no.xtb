@@ -255,6 +255,7 @@
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2148716181193084225">I dag</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> bilder</translation>
+<translation id="2154460308960858308">Slett søket</translation>
 <translation id="2156072344042480449">De to nyeste forespørslene. Du kan bare bruke disse forespørslene mens du er på denne siden.</translation>
 <translation id="2157660087437850958">emojivelger</translation>
 <translation id="2157959690810728433">I KØ</translation>
@@ -341,6 +342,7 @@
 <translation id="2560876255701405320">Liste over lydopptak</translation>
 <translation id="2561093647892030937">sitroner</translation>
 <translation id="2570743873672969996">Kjører test av <ph name="TEST_NAME" /> …</translation>
+<translation id="2573178735329662769">Tar opp all Chromebook-lyd</translation>
 <translation id="2575552334616524665">Du kan slå dette på i innstillingene eller via <ph name="THREE_DOTS_MENU_ICON" />-menyen</translation>
 <translation id="2576253868710695442">Dette bruker opptil 2 GB lagringsplass</translation>
 <translation id="2584547424703650812">Skinnende landskap</translation>
@@ -501,12 +503,14 @@
 <translation id="3557205324756024651">Lokal identitet (valgfritt)</translation>
 <translation id="3565064564551103223">Tillatte IP-adresser</translation>
 <translation id="3569407787324516067">Skjermsparer</translation>
+<translation id="3571184524500629183">Lukk søket</translation>
 <translation id="3577473026931028326">Noe gikk galt. Prøv på nytt.</translation>
 <translation id="357889014807611375">Wifi med datamåling</translation>
 <translation id="3583278742022654445">Svakt signal. Prøv å flytte deg nærmere Wifi-signalkilden.</translation>
 <translation id="3588034708467091142">Sjekk at du er koblet til internett, og prøv på nytt.</translation>
 <translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> er det brukervennlige navnet på <ph name="APN_NAME" />.</translation>
 <translation id="3595596368722241419">Batteriet er fullt</translation>
+<translation id="3600063043775287169">Når Chromebook-lyd er på, tar Opptaker opp all lyd som spilles av på denne enheten. Forsikre deg om at du vil ta opp alle lyder.</translation>
 <translation id="3600339377155080675">Skjermspeiling</translation>
 <translation id="3602290021589620013">Forhåndsvisning</translation>
 <translation id="3603829704940252505">Brukerbilde</translation>
@@ -950,6 +954,7 @@
 <translation id="5860033963881614850">Av</translation>
 <translation id="5860491529813859533">Slå på</translation>
 <translation id="5876385649737594562">Slå på for å velge alternativer</translation>
+<translation id="5877503382465267833">Sett <ph name="RECORDING_NAME" /> på pause</translation>
 <translation id="588258955323874662">Fullskjerm</translation>
 <translation id="5893975327266416093">Trykk på en tast på tastaturet for å tilordne den</translation>
 <translation id="5895138241574237353">Start på nytt</translation>
@@ -1167,6 +1172,7 @@
 <translation id="6910312834584889076">Skannerens deksel er åpent. Lukk dekselet, og prøv på nytt.</translation>
 <translation id="6910845598686542904">beregne modeller for stemmene som registreres i opptaket</translation>
 <translation id="6911383237894364323">Kan ikke koble til medietjenere</translation>
+<translation id="6927968682840110570">Opptaksnavn</translation>
 <translation id="6930242544192836755">Varighet</translation>
 <translation id="6930597342185648547">Om bakgrunnen</translation>
 <translation id="6939667434404433010">Søk på opptaksnavn</translation>
@@ -1279,6 +1285,7 @@
 <translation id="7378170410161264436">Lydopptaker kan lage transkripsjoner av opptak med tale.
 Last ned transkripsjonsmodellen (opptil 100 MB) for å få disse transkripsjonene.</translation>
 <translation id="7384004438856720753">palass</translation>
+<translation id="7388345524791662148">Flere alternativer for <ph name="RECORDING_NAME" /></translation>
 <translation id="7388959671917308825">Innebygd styreflate</translation>
 <translation id="7397270852490618635">Slå av lyst tema</translation>
 <translation id="7401543881546089382">Slett snarveien</translation>
@@ -1300,6 +1307,7 @@ Last ned transkripsjonsmodellen (opptil 100 MB) for å få disse transkripsjonen
 <translation id="7513770521371759388">bunn</translation>
 <translation id="7514365320538308">Last ned</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7519481256236810334">Spill av <ph name="RECORDING_NAME" /></translation>
 <translation id="7525067979554623046">Opprett</translation>
 <translation id="7528507600602050979">Hjelpeinnhold er ikke tilgjengelig</translation>
 <translation id="7535791657097741517">Slå på lyst tema</translation>
@@ -1376,6 +1384,7 @@ Last ned transkripsjonsmodellen (opptil 100 MB) for å få disse transkripsjonen
 <translation id="7897043345768902965">gangvei</translation>
 <translation id="7902285181767404769">Demp varsler under opptak</translation>
 <translation id="7903695460270716054">Velg utvalgt grafikk og utvalgte bilder</translation>
+<translation id="7912005977894000746">Tilbake til hovedsiden</translation>
 <translation id="7915220255123750251">Administrer APN-innstillingene for nettverket. APN oppretter en tilkobling mellom et mobilnettverk og internett.</translation>
 <translation id="7936303884198020182">Fant ingen navnetjenere</translation>
 <translation id="7942349550061667556">Rød</translation>

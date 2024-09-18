@@ -42,6 +42,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1148499908455722006">Abrir a caixa de diálogo de informações da conta <ph name="USER_NAME" /></translation>
 <translation id="1150989369772528668">Agenda</translation>
 <translation id="1153356358378277386">Dispositivos pareados</translation>
+<translation id="1153918444040990015">Não foi possível se conectar aos sons de foco</translation>
 <translation id="1155734730463845512">Nível atual de bateria: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1157514002898505378">A IA generativa é uma tecnologia experimental, e o conteúdo pode ser impreciso, enganoso ou ofensivo. Entre em contato com o administrador para informar um problema. <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="1160215328209699296">ativado e em uso</translation>
@@ -77,6 +78,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1240638468526743569">Um app</translation>
 <translation id="1242198791279543032">As notificações estão desativadas</translation>
 <translation id="1242883863226959074">dispositivo</translation>
+<translation id="1245476784081715330">Muito bem!</translation>
 <translation id="1245644940275736236">Ir para o Assistente</translation>
 <translation id="124678866338384709">Fechar a guia atual</translation>
 <translation id="1246890715821376239">Apps sem suporte</translation>
@@ -175,6 +177,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1550523713251050646">Clique para ver mais opções</translation>
 <translation id="1555130319947370107">Azul</translation>
 <translation id="1557622599341396706">Mostrar nome do espaço de trabalho</translation>
+<translation id="1567138500090284106">Botão de teclas do mouse</translation>
 <translation id="1569384531973824928">Essa ação libera o acesso para todos os apps e sites com as permissões de câmera e microfone. Talvez seja necessário atualizar a página da Web ou reiniciar o app.</translation>
 <translation id="1571697193564730395">Alternar "Não perturbe". <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">Diminuir zoom quando a lupa estiver ativada</translation>
@@ -242,6 +245,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1787955149152357925">Desativado</translation>
 <translation id="1796561540704213354">Sites que incluem páginas visitadas e páginas abertas</translation>
 <translation id="179842970735685253">Termos de Serviço do Google</translation>
+<translation id="1805407494113167797">Não foi possível tocar os sons de foco</translation>
 <translation id="181103072419391116"><ph name="SIGNAL_STRENGTH" /> de intensidade de sinal , gerenciada pelo seu administrador</translation>
 <translation id="1816896987747843206">Dá acesso à câmera para todos os apps e sites com essa permissão</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
@@ -839,6 +843,7 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="3958714870339660776">O dia todo</translation>
 <translation id="3962859241508114581">Faixa anterior</translation>
 <translation id="3963124517343721543">Abra as janelas e guias anteriores para continuar de onde parou. Você também verá sugestões personalizadas do que fazer em seguida.</translation>
+<translation id="396506362088290977">Teste o som do microfone</translation>
 <translation id="3969043077941541451">Desativado</translation>
 <translation id="3970324493235864154">Visualize as notificações do smartphone</translation>
 <translation id="397105322502079400">Calculando...</translation>
@@ -896,6 +901,7 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="4156293514828496577"><ph name="PERCENTAGE" />% de bateria (cerca de <ph name="TIME_LEFT" />).
 Alguns recursos estão limitados para aumentar a duração da bateria.</translation>
 <translation id="4160919062868802509">Várias fontes de áudio detectadas</translation>
+<translation id="416245495747357243">Pronto!</translation>
 <translation id="4165275524535002941">Talvez o cabo não transmita sinal de vídeo</translation>
 <translation id="4177415338862979658">Clique para verificar os detalhes</translation>
 <translation id="4177913004758410636">{0,plural, =1{Atualize o dispositivo em 1 dia}one{Atualize o dispositivo em # dia}other{Atualize o dispositivo em # dias}}</translation>
@@ -981,6 +987,7 @@ Alguns recursos estão limitados para aumentar a duração da bateria.</translat
 <translation id="4412944820643904175">O recurso <ph name="FEATURE_NAME" /> está desativado.</translation>
 <translation id="4417647906073317561">Configurações de foco. Defina um timer, uma tarefa e uma música para entrar no ritmo.</translation>
 <translation id="4424159417645388645">Espaço de trabalho 5</translation>
+<translation id="4426817706804363424">Parabéns!</translation>
 <translation id="4430019312045809116">Volume</translation>
 <translation id="4441283832827406317">Os apps estão ordenados por nome</translation>
 <translation id="4445159312344259901">Faça login para desbloquear</translation>
@@ -1245,6 +1252,7 @@ Também é possível usar o atalho do teclado. Primeiro, destaque o texto e depo
 <translation id="5283198616748585639">Adicionar 1 min</translation>
 <translation id="528468243742722775">Fim</translation>
 <translation id="5286194356314741248">Verificando</translation>
+<translation id="528641622273682395">Ativar/desativar o teste do microfone</translation>
 <translation id="5297423144044956168">Nenhum dispositivo móvel encontrado</translation>
 <translation id="5297704307811127955">Desativado</translation>
 <translation id="5300589172476337783">Mostrar</translation>
@@ -1272,6 +1280,7 @@ Nenhum dispositivo conectado.</translation>
 <translation id="536019650977002321">O administrador não permite a captura de áudio. Entre em contato com ele para saber mais.</translation>
 <translation id="5361524080961918551">Arquivos de fala em <ph name="LANGUAGE" /> parcialmente baixados</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Ir para essa guia</translation>
+<translation id="5363835273551457276">Você pode testar o som do microfone. Feche o painel para interromper o recurso.</translation>
 <translation id="5364693579536176785">espaço de armazenamento</translation>
 <translation id="5369573834963677938">O controle facial vai ficar disponível para outros usuários no dispositivo</translation>
 <translation id="5369717264580061086">Visualizar arquivo no app Arquivos</translation>
@@ -1354,6 +1363,7 @@ Nenhum dispositivo conectado.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Não foi possível verificar sua senha. Tente de novo.</translation>
 <translation id="5632485077360054581">Me ajude a fazer isso</translation>
+<translation id="5633826232582408011">Quando você ativa os recursos "Quero ajuda para escrever" e "Quero ajuda para ler", o texto de entrada, o conteúdo do documento e o URL da página da Web são enviados aos servidores da IA do Google para gerar sugestões de escrita e resumos, responder a perguntas e melhorar o produto, de acordo com os <ph name="LINK_TO_SERVICE_TERMS" />. Não inclua informações pessoais, sensíveis ou confidenciais.</translation>
 <translation id="5648021990716966815">Entrada para microfone</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> precisa de atenção.</translation>
 <translation id="5662075790140998213">Espaço de trabalho 10</translation>
@@ -1411,6 +1421,7 @@ Nenhum dispositivo conectado.</translation>
 <translation id="5802516411616338943">Abrir as Configurações rápidas</translation>
 <translation id="5804651031882187592">Desative a configuração "Bloquear chip"</translation>
 <translation id="5805809050170488595">Clique para ativar <ph name="NETWORK_NAME" /></translation>
+<translation id="5818796501620225415">Você pode adicionar mais tempo ou encerrar sua sessão de foco</translation>
 <translation id="5819918159912280082">Seu Chromebook foi reiniciado de maneira inesperada. Abra as janelas e os apps anteriores.</translation>
 <translation id="5823239091726045201">Google Tarefas na Web</translation>
 <translation id="5825969630400862129">Configurações de dispositivos conectados</translation>
@@ -1504,7 +1515,6 @@ Nenhum dispositivo conectado.</translation>
 <translation id="6119972796024789243">Correção de cor</translation>
 <translation id="6121838516699723042">Confirmar o download de <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">O Google Assistente não está disponível em uma sessão de visitante.</translation>
-<translation id="6127370444807669747">Teste o YouTube Music Premium para playlists personalizadas e mais músicas de foco</translation>
 <translation id="6127395413317891856">Você está off-line. Verifique sua conexão e tente de novo.</translation>
 <translation id="6129953537138746214">Espaço</translation>
 <translation id="6137566720514957455">Abrir caixa de diálogo para a remoção de <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -2122,6 +2132,7 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="8262312463845990408">Pausar/continuar a reprodução</translation>
 <translation id="8268302343625273732">Mostrar todas as atividades no Google Sala de Aula</translation>
 <translation id="8277261673056602147">Destacar texto na tela</translation>
+<translation id="8282784978194352587">Você conseguiu!</translation>
 <translation id="8287009018010202411">Produtividade</translation>
 <translation id="828708037801473432">Desativada</translation>
 <translation id="8297006494302853456">Fraco</translation>
@@ -2199,6 +2210,7 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="8609384513243082612">Abrir nova guia</translation>
 <translation id="861045123704058818">Os apps estão temporariamente organizados por categoria</translation>
 <translation id="8612216344243590325">Deixe arquivos importantes no espaço <ph name="HOLDING_SPACE_TITLE" /> em vez da área de trabalho. Basta arrastá-los para <ph name="HOLDING_SPACE_TITLE" />.</translation>
+<translation id="8612338981637220013">Você está indo bem!</translation>
 <translation id="8614517853887502247">As notificações dos apps <ph name="APP_1_TITLE" /> e <ph name="APP_2_TITLE" /> estão ocultas porque a proteção de visualização está ativada</translation>
 <translation id="8615778328722901791">Abrir a barra de ferramentas</translation>
 <translation id="8619000641825875669">OneDrive</translation>
@@ -2241,6 +2253,7 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />: ativando…</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
+<translation id="8751299148074971734">Continue assim!</translation>
 <translation id="8753368202781196133">Esse idioma não está disponível no momento</translation>
 <translation id="8755498163081687682">Confirme sua identidade: <ph name="ORIGIN_NAME" /> quer confirmar que é você</translation>
 <translation id="875593634123171288">Mostrar configurações de VPN</translation>
@@ -2282,6 +2295,7 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="8876661425082386199">Verifique sua conexão</translation>
 <translation id="8877788021141246043">Definir um lembrete</translation>
 <translation id="8878886163241303700">Tela ampla</translation>
+<translation id="8885424115080869847">Não foi possível se conectar ao YouTube Music</translation>
 <translation id="888982883502837004">Há atualizações de firmware disponíveis para seu dispositivo. Clique para revisar e atualizar.</translation>
 <translation id="8896630965521842259">O modelo <ph name="DESK_TEMPLATE_NAME" /> será excluído permanentemente</translation>
 <translation id="889790758758811533"><ph name="PERCENTAGE" />% de bateria (cerca de <ph name="TIME_LEFT" />). Conecte o dispositivo a uma fonte de energia.</translation>

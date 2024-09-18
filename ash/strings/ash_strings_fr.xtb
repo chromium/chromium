@@ -42,6 +42,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1148499908455722006">Ouvrir la boîte de dialogue d'infos pour <ph name="USER_NAME" /></translation>
 <translation id="1150989369772528668">Agenda</translation>
 <translation id="1153356358378277386">Appareils associés</translation>
+<translation id="1153918444040990015">Impossible de se connecter aux sons pour se concentrer</translation>
 <translation id="1155734730463845512">Niveau de batterie actuel : <ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="1157514002898505378">L'IA générative est expérimentale. Les contenus peuvent être inexacts, trompeurs ou choquants. Pour signaler un problème, contactez votre administrateur. <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="1160215328209699296">activée et en cours d'utilisation</translation>
@@ -175,6 +176,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1550523713251050646">Cliquez pour obtenir plus d'options.</translation>
 <translation id="1555130319947370107">Bleu</translation>
 <translation id="1557622599341396706">Afficher le nom du bureau</translation>
+<translation id="1567138500090284106">Bouton "Touches pour la souris"</translation>
 <translation id="1569384531973824928">L'accès est accordé à l'ensemble des applis et sites Web ayant l'autorisation d'accéder à l'appareil photo et au micro. Vous devrez peut-être actualiser la page Web ou redémarrer l'appli.</translation>
 <translation id="1571697193564730395">Activer/Désactiver Ne pas déranger. <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">Faire un zoom arrière lorsque la loupe est activée</translation>
@@ -242,6 +244,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1787955149152357925">Désactivé</translation>
 <translation id="1796561540704213354">Sites Web, y compris les pages que vous avez consultées et celles que vous avez ouvertes</translation>
 <translation id="179842970735685253">Conditions d'utilisation de Google</translation>
+<translation id="1805407494113167797">Impossible de lire les sons pour se concentrer</translation>
 <translation id="181103072419391116">Force du signal : <ph name="SIGNAL_STRENGTH" />, géré par votre administrateur</translation>
 <translation id="1816896987747843206">L'accès à l'appareil photo est accordé à l'ensemble des sites Web et applis ayant l'autorisation d'y accéder</translation>
 <translation id="1823873187264960516">Ethernet : <ph name="ADDRESS" /></translation>
@@ -1354,6 +1357,7 @@ Aucun appareil connecté.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Impossible de valider votre mot de passe. Réessayez.</translation>
 <translation id="5632485077360054581">Démonstration</translation>
+<translation id="5633826232582408011">Lorsque vous activez M'aider à écrire et M'aider à lire, le texte saisi, le contenu du document et l'URL de la page Web sont envoyés aux serveurs d'IA de Google pour générer des suggestions de texte et des résumés, répondre aux questions et améliorer le produit, conformément aux <ph name="LINK_TO_SERVICE_TERMS" />. N'incluez aucun élément personnel, sensible ou confidentiel.</translation>
 <translation id="5648021990716966815">Connecteur micro</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> requiert votre attention.</translation>
 <translation id="5662075790140998213">Bureau 10</translation>
@@ -1504,7 +1508,6 @@ Aucun appareil connecté.</translation>
 <translation id="6119972796024789243">Correction des couleurs</translation>
 <translation id="6121838516699723042">Confirmer le téléchargement de <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">L'Assistant Google n'est pas disponible dans une session Invité.</translation>
-<translation id="6127370444807669747">Pour des playlists personnalisées et plus de musique pour vous concentrer, essayez YouTube Music Premium</translation>
 <translation id="6127395413317891856">Vous n'êtes pas connecté à Internet. Vérifiez la connexion, puis réessayez.</translation>
 <translation id="6129953537138746214">Espace</translation>
 <translation id="6137566720514957455">Ouvrir la boîte de dialogue de suppression du compte <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -1834,7 +1837,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="7330397557116570022">Accédez à un champ de texte pour utiliser la dictée</translation>
 <translation id="7331646370422660166">Alt+Flèche vers le bas</translation>
 <translation id="7336943714413713812">Rechercher dans l'historique de navigation</translation>
-<translation id="7337660433630200387">+10 min</translation>
+<translation id="7337660433630200387">+ 10 min</translation>
 <translation id="7340731148882810149">Menu des clics automatiques</translation>
 <translation id="7346909386216857016">OK</translation>
 <translation id="7348093485538360975">Clavier virtuel</translation>
@@ -2282,6 +2285,7 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="8876661425082386199">Vérifier votre connexion</translation>
 <translation id="8877788021141246043">Définis un rappel</translation>
 <translation id="8878886163241303700">Extension de l'écran</translation>
+<translation id="8885424115080869847">Impossible de se connecter à YouTube Music</translation>
 <translation id="888982883502837004">Des mises à jour du micrologiciel sont disponibles pour votre appareil. Cliquez pour les consulter et les appliquer.</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> sera définitivement supprimé</translation>
 <translation id="889790758758811533">Il reste <ph name="PERCENTAGE" /> % de batterie (environ <ph name="TIME_LEFT" />). Branchez votre appareil sur une source d'alimentation.</translation>

@@ -497,6 +497,7 @@
 <translation id="1355088139103479645">എല്ലാ ഡാറ്റയും ഇല്ലാതാക്കണോ?</translation>
 <translation id="1356376170199999104">അനുവദിച്ചു – <ph name="PERMISSION_DETAILS" />. ഫിസിക്കൽ സ്വിച്ച് ഉപയോഗിച്ച് മൈക്രോഫോൺ ഓണാക്കുക.</translation>
 <translation id="1356959069439783953">നിഷ്ക്രിയ ടാബുകൾക്ക് പുതിയ രൂപഭാവം ലഭിക്കും</translation>
+<translation id="1357766361161708728">ഉപയോഗിക്കാത്ത ടാബുകൾ അടയ്ക്കണോ?</translation>
 <translation id="1358741672408003399">സ്‌പെല്ലിംഗും വ്യാകരണവും</translation>
 <translation id="1359923111303110318">Smart Lock ഉപയോഗിച്ച് നിങ്ങളുടെ ഉപകരണം അൺലോക്ക് ചെയ്യാനാവും. അൺലോക്ക് ചെയ്യാൻ 'Enter' അമർത്തുക.</translation>
 <translation id="1361164813881551742">നേരിട്ട് ചേർക്കുക</translation>
@@ -6556,6 +6557,7 @@
 <translation id="5750288053043553775">0</translation>
 <translation id="5751345516399502412">ടെതറിംഗ് റെഡിനസ് പരിശോധിക്കുക</translation>
 <translation id="5753570386948603678">ചരിത്രത്തിൽ നിന്ന് ഇല്ലാതാക്കുക</translation>
+<translation id="5753652925946671505">ഈ ടാബുകൾ <ph name="COUNT" /> അല്ലെങ്കിൽ അതിൽക്കൂടുതൽ ദിവസമായി ഉപയോഗിച്ചിട്ടില്ല.</translation>
 <translation id="5756163054456765343">സഹാ&amp;യ കേന്ദ്രം</translation>
 <translation id="5757187557809630523">അടുത്ത ട്രാക്ക്</translation>
 <translation id="5758631781033351321">നിങ്ങളുടെ വായനാ ലിസ്‌റ്റ് ഇവിടെ കാണാം</translation>

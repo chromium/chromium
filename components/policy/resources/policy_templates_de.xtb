@@ -1100,13 +1100,6 @@ Diese Richtlinie hat keine Auswirkungen, wenn die Option zum Beibehalten von bes
 
       Diese Richtlinie existiert nicht mehr. Bitte verwende stattdessen die Richtlinie <ph name="DEVICE_USER_ALLOWLIST_POLICY_NAME" />.
       </translation>
-<translation id="1825583118566970564">Hiermit kann die Installation externer Erweiterungen verwaltet werden.
-
-Wenn diese Richtlinie aktiviert ist, können externe Erweiterungen nicht installiert werden.
-
-Ist sie deaktiviert oder nicht konfiguriert, können externe Erweiterungen installiert werden.
-
-Informationen zu externen Erweiterungen und ihrer Installation sind unter https://developer.chrome.com/apps/external_extensions verfügbar.</translation>
 <translation id="1827523283178827583">Feste Proxyserver verwenden</translation>
 <translation id="1829117241432374848">Ein verwaltetes Konto muss ein primäres Konto sein und darf nicht mit sekundären Konten verknüpft sein; Nutzer können bestehende Daten bei seiner Erstellung importieren</translation>
 <translation id="1829839214911753838">Wenn diese Richtlinie aktiviert ist, läuft der Host für Remote-Unterstützung in einem Prozess mit <ph name="UIACCESS_PERMISSION_NAME" />-Berechtigungen. So kann der Remote-Nutzer mit geöffneten Fenstern auf dem Desktop des lokalen Nutzers arbeiten.
@@ -3463,7 +3456,7 @@ Hinweis: Diese Richtlinie gilt nicht für den Inkognito- oder Gastmodus.</transl
 <translation id="3625900437628963632">Gibt an, ob das in diesem Richtlinienelement festgelegte Kerberos-Passwort gespeichert wird. Wenn die Richtlinie nicht konfiguriert oder auf „true“ gesetzt ist, wird das Passwort gespeichert. Ist sie auf „false“ gesetzt, wird das Passwort nicht gespeichert. Wird ignoriert, wenn für dieses Konto kein Passwort festgelegt ist. Dieses Feld wird seit ChromeOS-Version 116 unterstützt.</translation>
 <translation id="3627678165642179114">Webdienst für die Rechtschreibprüfung aktivieren oder deaktivieren</translation>
 <translation id="3628480121685794414">Simplexdruck aktivieren</translation>
-<translation id="36319015509487508">„Hilfe beim Lesen“ nicht zulassen.</translation>
+<translation id="36319015509487508">„Erstelle einen Überblick für mich“ nicht zulassen.</translation>
 <translation id="3634125384445314047">Zulassen, dass Fotos und Videos, die kürzlich mit dem Smartphone aufgenommen wurden, über Phone Hub abgerufen werden können.</translation>
 <translation id="3637063789824963261">Wenn die Richtlinie aktiviert ist, werden über registrierte Geräte die Gerätelaufzeitzähler gemeldet (nur bei Intel vPro Gen 14+).
 
@@ -4103,6 +4096,7 @@ Wird die Richtlinie auf „False“ gesetzt, verwendet <ph name="PRODUCT_NAME" /
 <translation id="4140646780789794190">Weitergabe von Diagnosedaten an PluginVm deaktivieren</translation>
 <translation id="4144417751555442768">Generative KI</translation>
 <translation id="4145383150978634398">Nutzern Zugriff auf den Unified Desktop-Modus gewähren</translation>
+<translation id="4146319954420095470">(Warnung: Diese Abhängigkeit wird bald aufgehoben. Verwende stattdessen bitte „<ph name="GLS_POLICY_NAME" />“. Wenn diese Richtlinie auf „<ph name="BLOCK_GEOLOCATION_SETTING" />“ gesetzt ist, haben <ph name="PRODUCT_OS_NAME" />-Systemdienste und Android-Apps keinen Zugriff auf Standortinformationen. Wenn du diese Richtlinie auf einen anderen Wert setzt oder sie nicht konfigurierst, wird der Nutzer um seine Zustimmung gebeten, wenn eine Android-App auf Standortinformationen zugreifen möchte.</translation>
 <translation id="4147818922357566987">Nur Variationen für wichtige Fehlerbehebungen aktivieren</translation>
 <translation id="4150201353443180367">Display</translation>
 <translation id="4154221011709068799">Externe Speichergeräte nicht zulassen</translation>
@@ -7304,7 +7298,7 @@ Hinweis: Wenn der Client über einen längeren Zeitraum offline war, werden Pass
 
       Ist diese Richtlinie nicht konfiguriert, erhalten Nutzer Benachrichtigungen zu angeschlossenen USB-Geräten.</translation>
 <translation id="6536600139108165863">Automatischer Neustart nach Herunterfahren des Geräts</translation>
-<translation id="6538355612742474835">„Hilfe beim Lesen“ zulassen und KI‑Modelle verbessern.</translation>
+<translation id="6538355612742474835">„Erstelle einen Überblick für mich“ zulassen und KI‑Modelle verbessern.</translation>
 <translation id="6538653424603921690">Privatsphärefunktion auf dem Anmeldebildschirm immer deaktivieren</translation>
 <translation id="6539246272469751178">Diese Richtlinie hat keine Auswirkung auf Android-Apps. Android-Apps verwenden immer das Standardverzeichnis für Downloads und haben keinen Zugriff auf Dateien, die von <ph name="PRODUCT_OS_NAME" /> in ein anderes Verzeichnis als das Standardverzeichnis für Downloads heruntergeladen werden.</translation>
 <translation id="6541383786427998658">Systemprotokollierung für Unternehmenserweiterungen aktivieren</translation>

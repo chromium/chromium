@@ -342,6 +342,7 @@
 <translation id="2560876255701405320">音訊錄音檔清單</translation>
 <translation id="2561093647892030937">檸檬</translation>
 <translation id="2570743873672969996">正在執行<ph name="TEST_NAME" />測試...</translation>
+<translation id="2573178735329662769">錄製所有 Chromebook 音訊</translation>
 <translation id="2575552334616524665">你可以在「設定」或 <ph name="THREE_DOTS_MENU_ICON" /> 選單中開啟這項功能</translation>
 <translation id="2576253868710695442">最多可能需要 2 GB 的儲存空間</translation>
 <translation id="2584547424703650812">鮮豔奪目的景觀</translation>
@@ -509,6 +510,7 @@
 <translation id="3588034708467091142">請確定裝置已連上網際網路，然後再試一次。</translation>
 <translation id="3594280220611906414">「<ph name="USER_FRIENDLY_APN_NAME" />」是「<ph name="APN_NAME" />」的易記名稱。</translation>
 <translation id="3595596368722241419">電池已充滿</translation>
+<translation id="3600063043775287169">Chromebook 播放音訊時，錄音工具會錄下所有播放的內容。請確認你要錄下所有聲音。</translation>
 <translation id="3600339377155080675">螢幕鏡像</translation>
 <translation id="3602290021589620013">預覽</translation>
 <translation id="3603829704940252505">顯示圖片</translation>

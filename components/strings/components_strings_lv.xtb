@@ -1014,6 +1014,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2882949212241984732">Dubults abpusējs locījums</translation>
 <translation id="2891963978019740012">Jūsu meklētājprogramma pārlūkā Chrome</translation>
 <translation id="2893773853358652045">Ceturtais rullis</translation>
+<translation id="2894137550885451583">Šīs ir produkta “<ph name="PRODUCT" />” cenas šādā valūtā: <ph name="CURRENCY" /></translation>
 <translation id="2900528713135656174">Izveidot pasākumu</translation>
 <translation id="2902312830803030883">Citas darbības</translation>
 <translation id="2903493209154104877">Adreses</translation>
@@ -1610,6 +1611,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3949601375789751990">Šeit ir redzama jūsu pārlūkošanas vēsture.</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">Nav saglabātu maksājuma veidu</translation>
+<translation id="3950560191811267370">Komercijas ekrāna apakšdaļas lapa ir aizvērta</translation>
 <translation id="3950574001630941635">Atsākt pamācību</translation>
 <translation id="3950820424414687140">Pierakstīties</translation>
 <translation id="3953505489397572035">Šī ir parastā cena</translation>
@@ -2350,6 +2352,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="5331585574693522196">Iestatīt kā noklusējumu</translation>
 <translation id="5332219387342487447">Piegādes veids</translation>
 <translation id="5332769172018416402">Lūgt atļauju ziņojumā</translation>
+<translation id="533323551986281710">Komercijas ekrāna apakšdaļas lapa ir atvērta pilnā augstumā</translation>
 <translation id="5334013548165032829">Sistēmas žurnāli ar detalizētu informāciju</translation>
 <translation id="5334145288572353250">Vai saglabāt adresi?</translation>
 <translation id="5340250774223869109">Lietojumprogramma ir bloķēta</translation>
@@ -2532,6 +2535,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="5675650730144413517">Šī lapa nedarbojas</translation>
 <translation id="5675809467256309336">Deju un elektroniskā mūzika</translation>
 <translation id="5675959228867414813">Rādīt pēc datuma</translation>
+<translation id="567604591393105935">Komercijas ekrāna apakšdaļas lapa ir atvērta pusekrāna augstumā</translation>
 <translation id="5677928146339483299">Bloķēts</translation>
 <translation id="5678007133659493065">Folija</translation>
 <translation id="5680642791693447368">Trilleri, noziegumu un šausmu filmas</translation>
@@ -3438,6 +3442,7 @@ Papildu informācija:
 <translation id="7374733840632556089">Šīs problēmas iemesls ir sertifikāts, kuru jūs vai kāds cits ir instalējis jūsu ierīcē. Ir zināms, ka šis sertifikāts tiek izmantots tīklu pārraudzībai un pārtveršanai, un pārlūks Chrome tam neuzticas. Lai gan pastāv daži likumīgi pārraudzības gadījumi, piemēram, skolas vai uzņēmuma tīklā, pārlūks Chrome vēlas pārliecināties, ka esat par to informēts, pat ja nevarat to apturēt. Pārraudzība var notikt jebkurā pārlūkā vai lietojumprogrammā ar piekļuvi tīmeklim.</translation>
 <translation id="7375532151824574023">{NUM_COOKIES,plural, =0{Nav atļauta neviena vietne}=1{Atļauta 1 vietne}zero{Atļautas # vietnes}one{Atļauta # vietne}other{Atļautas # vietnes}}</translation>
 <translation id="7375818412732305729">Tiek pievienots fails</translation>
+<translation id="7376031331622621328">Komercijas ekrāna apakšdaļas lapa</translation>
 <translation id="7377249249140280793"><ph name="RELATIVE_DATE" /> - <ph name="FULL_DATE" /></translation>
 <translation id="7377314930809374926">Viesmīlības nozare</translation>
 <translation id="7378594059915113390">Multivides vadīklas</translation>

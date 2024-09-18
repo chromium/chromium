@@ -1357,6 +1357,7 @@ Ei liitettyjä laitteita.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Salasanaasi ei voitu vahvistaa. Yritä uudelleen.</translation>
 <translation id="5632485077360054581">Näytä miten</translation>
+<translation id="5633826232582408011">Kun laitat Auta minua kirjoittamaan‑ ja Auta minua lukemaan ‑ominaisuudet päälle, syöttöteksti, asiakirjasisältö ja verkkosivun URL-osoite lähetetään Googlen tekoälypalvelimille, jotta ne voivat luoda kirjoitusehdotuksia ja yhteenvetoja, vastata kysymyksiin ja parantaa tuotetta <ph name="LINK_TO_SERVICE_TERMS" /> mukaan. Älä lisää henkilökohtaisia, arkaluontoisia tai luottamuksellisia tietoja.</translation>
 <translation id="5648021990716966815">Mikrofoniliitäntä</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> pyytää huomiotasi.</translation>
 <translation id="5662075790140998213">Työpöytä 10</translation>
@@ -1414,6 +1415,7 @@ Ei liitettyjä laitteita.</translation>
 <translation id="5802516411616338943">Avaa Pika-asetukset</translation>
 <translation id="5804651031882187592">Laita "Lukitse SIM-kortti" ‐asetus pois päältä</translation>
 <translation id="5805809050170488595">Aktivoi <ph name="NETWORK_NAME" /> klikkaamalla</translation>
+<translation id="5818796501620225415">Voit lisätä aikaa tai lopettaa keskittymisaikaistunnon</translation>
 <translation id="5819918159912280082">Chromebook käynnistyi uudelleen odottamattomasti. Avaa edelliset ikkunat ja sovellukset.</translation>
 <translation id="5823239091726045201">Google Tasks verkossa</translation>
 <translation id="5825969630400862129">Yhdistettyjen laitteiden asetukset</translation>
@@ -1507,7 +1509,6 @@ Ei liitettyjä laitteita.</translation>
 <translation id="6119972796024789243">Värinkorjaus</translation>
 <translation id="6121838516699723042">Vahvista lataus: <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">Google Assistantia ei voi käyttää Vierailija-käyttökerralla.</translation>
-<translation id="6127370444807669747">YouTube Music Premiumilla saat omia soittolistoja ja enemmän keskittymismusiikkia</translation>
 <translation id="6127395413317891856">Olet offline-tilassa. Tarkista verkkoyhteys ja yritä uudelleen.</translation>
 <translation id="6129953537138746214">Välilyönti</translation>
 <translation id="6137566720514957455">Avaa poiston valintaikkuna: <ph name="USER_EMAIL_ADDRESS" /></translation>

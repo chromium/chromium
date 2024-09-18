@@ -116,6 +116,7 @@
 <translation id="1517166097004694782">Թաքցնել «Շարունակել այս ներդիրի դիտումը» գործողությունը</translation>
 <translation id="1520027731907768768">Ստանալ այն ապրանքների գների իջեցման մասին ծանուցումները, որոնք հետագծում եք։</translation>
 <translation id="1521774566618522728">Այսօր ակտիվ է եղել</translation>
+<translation id="1524563461097350801">Ոչ</translation>
 <translation id="1531038290222364269">Ցույց տալ ներդիրները</translation>
 <translation id="1536390784834419204">Թարգմանել էջը</translation>
 <translation id="1540800554400757039">Հասցե 1</translation>
@@ -1507,7 +1508,6 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="8173034266693057059">Երկարություն</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8182037667962849780">{count,plural, =1{{website_1} կայքի համար}=2{{website_1} և {website_2} կայքերի համար}=3{{website_1}, {website_2} ու ևս 1 կայքի համար}one{{website_1}, {website_2} ու ևս {more_count} կայքի համար}other{{website_1}, {website_2} ու ևս {more_count} կայքի համար}}</translation>
-<translation id="8189814768485665290">Կիսվել ամբողջ URL-ով</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Ձեր սարքերը<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Գաղտնաբառի ավելացում</translation>
 <translation id="8202744799033457229">Ցույց տալ պատմությունը</translation>
@@ -1541,6 +1541,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="8349305172487531364">Էջանիշների գոտի</translation>
 <translation id="8366466717204352506">Ստուգում երբեք չի կատարվել</translation>
 <translation id="8368001212524806591">Հետևել գներին</translation>
+<translation id="8370406443343902172">Անցնել Կարգավորումներ...</translation>
 <translation id="8372471489238799313">{count,plural, =1{Ջնջել հասցեն}one{Ջնջել հասցեն}other{Ջնջել հասցեները}}</translation>
 <translation id="8378714024927312812">Կառավարվում է ձեր կազմակերպության կողմից</translation>
 <translation id="8386068868580335421">Վերակայել</translation>
@@ -1603,6 +1604,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="8637431369725868556">Պաշտպանեք ձեզ վտանգավոր կայքերից։</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Կոտրված գաղտնաբառեր չկան}=1{{COUNT} կոտրված գաղտնաբառ}one{{COUNT} կոտրված գաղտնաբառ}other{{COUNT} կոտրված գաղտնաբառ}}</translation>
 <translation id="8640575194957831802">Վերջին բացվածը</translation>
+<translation id="8647280737650867362">Չհաջողվեց չեղարկել գնի հետագծումը։</translation>
 <translation id="8654802032646794042">Չեղարկել</translation>
 <translation id="8660600697590740984">Որոնել պատճենված պատկերը Տեսապակու միջոցով</translation>
 <translation id="866266761389616183">Վա՛յ</translation>

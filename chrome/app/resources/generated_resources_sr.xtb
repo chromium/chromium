@@ -1594,6 +1594,7 @@
 <translation id="211803431539496924">Желите да потврдите додатна безбедносна ажурирања?</translation>
 <translation id="2118594521750010466">Реши проблем</translation>
 <translation id="2119461801241504254">Безбедно прегледање је укључено и штити вас од штетних сајтова и преузимања</translation>
+<translation id="2119602978828978573">Подржани језици за титл уживо</translation>
 <translation id="2120297377148151361">Активности и интеракције</translation>
 <translation id="2120639962942052471">Функција <ph name="PERMISSION" /> је блокирана</translation>
 <translation id="2121055421682309734">{COUNT,plural, =0{Колачићи су блокирани}=1{Колачићи су блокирани, 1 изузетак}one{Колачићи су блокирани, {COUNT} изузетак}few{Колачићи су блокирани, {COUNT} изузетка}other{Колачићи су блокирани, {COUNT} изузетака}}</translation>
@@ -2661,6 +2662,7 @@
 <translation id="2864601841139725659">Подесите слику профила</translation>
 <translation id="2865057607286263192">Притисните и задржите тастере на тастатури да бисте видели ознаке акцента и специјалне знакове. Тиме искључујете понављање притиска на тастер за тастере абецеде. Доступно је само за енглески (САД).</translation>
 <translation id="2865919525181940183">Снимак екрана програма који су тренутно на екрану</translation>
+<translation id="286643536820867504">Аутоматски прави титл за подржане језике. Звук остаје на уређају.</translation>
 <translation id="286674810810214575">Проверавају се извори напајања...</translation>
 <translation id="2867768963760577682">Отвори као закачену картицу</translation>
 <translation id="2868746137289129307">Овај додатак је застарео и смернице за предузећа га онемогућавају. Можда ће аутоматски постати омогућен када новија верзија постане доступна.</translation>
@@ -3282,6 +3284,7 @@
 <translation id="333863344734218290">Упозорава вас на небезбедне јавне и приватне сајтове</translation>
 <translation id="3340620525920140773">Преузимање је завршено: <ph name="FILE_NAME" />.</translation>
 <translation id="3340978935015468852">подешавања</translation>
+<translation id="3341091511696469129">Chrome може да прави и преводи титлове за језике приказане овде</translation>
 <translation id="3341699307020049241">Нетачан PIN. Имате још <ph name="RETRIES" /> покушаја.</translation>
 <translation id="3341703758641437857">Дозволи приступ URL адресама датотека</translation>
 <translation id="334171495789408663">Токен је копиран</translation>
@@ -5861,6 +5864,7 @@
 <translation id="5214639857958972833">Направљен је обележивач <ph name="BOOKMARK_TITLE" />.</translation>
 <translation id="5215450412607891876">Укључите додатна безбедносна ажурирања</translation>
 <translation id="5215502535566372932">Изаберите земљу</translation>
+<translation id="5216674789212441076">Аутоматски преводи титл уживо. Титл се шаље Google-у на превод.</translation>
 <translation id="5220011581825921581">тастер за претрагу + стрелица нагоре</translation>
 <translation id="5221516927483787768">Пребацивање са сајта <ph name="HOST_NAME" /> није успело</translation>
 <translation id="5222403284441421673">Небезбедно преузимање је блокирано</translation>
@@ -7309,6 +7313,7 @@
 <translation id="628726841779494414">Управљајте штампачима у подешавањима штампача</translation>
 <translation id="6287828400772161253">Android телефон (<ph name="HOST_DEVICE_NAME" />)</translation>
 <translation id="6290613030083731160">Нема доступних уређаја који деле у близини. <ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /></translation>
+<translation id="6291580570300353047">Враћање није успело због недостатка меморијског простора.</translation>
 <translation id="6291741848715722067">Кôд за потврду</translation>
 <translation id="6291953229176937411">&amp;Прикажи у Finder-у</translation>
 <translation id="6292699686837272722">Картице се скупљају до средње ширине</translation>
@@ -7956,6 +7961,7 @@
 <translation id="6785739405821760313">Приказују се сачуване радне површине. Притисните картицу да бисте се кретали.</translation>
 <translation id="6785915470941880363">Обрнуто померање <ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /></translation>
 <translation id="67862343314499040">Љубичаста</translation>
+<translation id="6786480815699355166">Могу да се преводе само подржани језици титла уживо</translation>
 <translation id="6786747875388722282">Додаци</translation>
 <translation id="6787097042755590313">Друге картице</translation>
 <translation id="6787531944787756058">корисничко име <ph name="USER_EMAIL" /> је сачувано само на овом уређају. Прикажи детаље</translation>
@@ -10554,6 +10560,7 @@
 <translation id="8656888282555543604">Омогући евидентирање Брајеве азбуке</translation>
 <translation id="8657393004602556571">Желите да одбаците повратне информације?</translation>
 <translation id="8657542881463614516">Користите покрет превлачења да бисте се кретали између страница</translation>
+<translation id="865857184419171576">Преведите титлове на:</translation>
 <translation id="865936634714975126">Додајте параметар упита у URL да бисте изабрали типове при учитавању странице. Пример: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875">Kонтакти за <ph name="FEATURE_NAME" /></translation>
 <translation id="8659609431223166673">Прозор је померен надоле</translation>

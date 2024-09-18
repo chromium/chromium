@@ -50,6 +50,7 @@
 <translation id="1219674500290482172">ไม่สามารถเชื่อมต่อกับอินเทอร์เน็ต</translation>
 <translation id="1227113644794103810">แท็บที่ไม่ได้ใช้งาน</translation>
 <translation id="1231733316453485619">เปิดการซิงค์ไหม</translation>
+<translation id="1253032109800629289">ซ่อน "รับการแจ้งเตือนการติดตามราคา"</translation>
 <translation id="1258491128795710625">มีอะไรใหม่</translation>
 <translation id="1263231323834454256">เรื่องรออ่าน</translation>
 <translation id="1263433075299269530">แท็บที่เปิดล่าสุด</translation>
@@ -80,12 +81,14 @@
 <translation id="1363028406613469049">ติดตาม</translation>
 <translation id="1364367057792633742">แท็บใหม่</translation>
 <translation id="1365106417372288489">iPhone ได้รับการกู้คืนข้อมูลเมื่อเร็วๆ นี้ ซึ่งอาจมีการเปลี่ยนเบราว์เซอร์เริ่มต้น</translation>
+<translation id="1366297852155605523">แชร์กับฉัน</translation>
 <translation id="136942498637440594">คุณค้นหารูปภาพและสิ่งที่คุณเห็นได้</translation>
 <translation id="1377508275003315939">รหัสผ่าน</translation>
 <translation id="1381022135873211423">{count,plural, =1{ที่อยู่ที่ {position} จาก {count} รายการ}other{ที่อยู่ที่ {position} จาก {count} รายการ}}</translation>
 <translation id="1383876407941801731">ค้นหา</translation>
 <translation id="138618066238211776">ดำเนินการต่อในชื่อ <ph name="USER_NAME" /></translation>
 <translation id="138692594145659985">ตัวเลือกในการบันทึกการ์ด</translation>
+<translation id="1396260204083880024">ลงชื่อเข้าใช้ด้วย <ph name="USER_NAME" /> <ph name="USER_EMAIL" /> เปิดเมนูบัญชี</translation>
 <translation id="1397144142234474689">ซ่อนประวัติการเข้าชม</translation>
 <translation id="1407135791313364759">เปิดทั้งหมด</translation>
 <translation id="1408847409015257906">แตะ "ความเป็นส่วนตัวและความปลอดภัย"</translation>
@@ -116,6 +119,7 @@
 <translation id="1517166097004694782">ซ่อน "ดำเนินการต่อโดยใช้แท็บนี้"</translation>
 <translation id="1520027731907768768">รับการแจ้งเตือนเมื่อราคาผลิตภัณฑ์ที่ติดตามต่ำลง</translation>
 <translation id="1521774566618522728">ใช้งานวันนี้</translation>
+<translation id="1524563461097350801">ไม่เป็นไร ขอบคุณ</translation>
 <translation id="1531038290222364269">แสดงแท็บ</translation>
 <translation id="1536390784834419204">แปลหน้าเว็บ</translation>
 <translation id="1540800554400757039">ที่อยู่ 1</translation>
@@ -331,6 +335,7 @@
 <translation id="2551153019974022505">ข้อผิดพลาดของบัญชี</translation>
 <translation id="2559843230610279254">กลุ่มแท็บ, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> แท็บ</translation>
 <translation id="2577522251608256362">ย่านใกล้เคียง</translation>
+<translation id="2579713773888829241">ไดรฟ์ที่แชร์</translation>
 <translation id="2597486707832946298">รับสิ่งที่ดีที่สุดจากเบราว์เซอร์ในเดสก์ท็อปที่คุณรู้จักและชื่นชอบใน iPhone</translation>
 <translation id="260378315836159338">ที่ด้านบนของหน้าจอ ให้แตะ +</translation>
 <translation id="2612676031748830579">หมายเลขบัตร</translation>
@@ -391,6 +396,7 @@
 <translation id="2870560284913253234">เว็บไซต์</translation>
 <translation id="2876369937070532032">ส่ง URL ของหน้าบางส่วนที่คุณเข้าชมไปให้ Google เมื่อการรักษาความปลอดภัยมีความเสี่ยง</translation>
 <translation id="2883151425485251736">ดูและแก้ไขหัวข้อที่คุณซ่อนไปจากบัญชี</translation>
+<translation id="2888631381369839306">เปิดการแจ้งเตือนการติดตามราคาแล้ว</translation>
 <translation id="288902476966286676">ส่งคืนผู้ส่ง</translation>
 <translation id="2894757982205307093">แท็บใหม่ในกลุ่ม</translation>
 <translation id="2905479111267140204">คุณมี <ph name="NUMBER_OF_PASSWORDS" /> รหัสผ่านที่ใช้ซ้ำที่อาจทําให้การรักษาความปลอดภัยตกอยู่ในความเสี่ยง</translation>
@@ -526,6 +532,7 @@
 <translation id="3591006724568464696">แท็บล่าสุดไม่พร้อมใช้งาน</translation>
 <translation id="3595252146048399851">คุณเลือกสิ่งที่ต้องการซิงค์ได้เสมอใน<ph name="BEGIN_LINK" />การตั้งค่า<ph name="END_LINK" /> Google อาจปรับเปลี่ยน Search และบริการอื่นๆ ให้เหมาะกับคุณโดยอิงจากประวัติการเข้าชม</translation>
 <translation id="3596414637720633074">บล็อกคุกกี้ของบุคคลที่สามในโหมดไม่ระบุตัวตน</translation>
+<translation id="3602260545951981695">เลือก "การปกป้องที่ดียิ่งขึ้น"</translation>
 <translation id="3606746615845065096">ปิดแท็บ</translation>
 <translation id="3622175633937495219">ประวัติการค้นหา (พบ <ph name="COUNT" /> รายการ)</translation>
 <translation id="3625008969091706597">คุณสามารถปัดขอบเพื่อย้อนกลับได้</translation>
@@ -572,6 +579,7 @@
 <translation id="3851938967634752633">ระบบจะลบรหัสผ่านสําหรับ <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> และอีก <ph name="NUMBER_OF_ACCOUNTS" /> บัญชี โดยระบบจะไม่ลบบัญชีของคุณ</translation>
 <translation id="3858860766373142691">ชื่อ</translation>
 <translation id="3861908220442487587">ที่อยู่นี้บันทึกในอุปกรณ์นี้เท่านั้น หากต้องการใช้งานในอุปกรณ์อื่น ให้ย้ายไปที่บัญชี Google <ph name="USER_EMAIL" /></translation>
+<translation id="3868495844258915202">แสดง URL แบบเต็ม</translation>
 <translation id="3876833929577368454">ถามฉันทุกครั้ง</translation>
 <translation id="3885587018298784481">เข้าร่วมกลุ่มครอบครัว</translation>
 <translation id="3888863481921783344">ระบบจะใช้เพื่อแสดงว่าผู้ใดสามารถได้รับเชิญให้เข้าร่วมกิจกรรมของคุณ</translation>
@@ -595,6 +603,7 @@
 <translation id="3967327056943561740">บุ๊กมาร์ก</translation>
 <translation id="3967822245660637423">ดาวน์โหลดเสร็จสมบูรณ์</translation>
 <translation id="3982893814825393515">รายงานปัญหา…</translation>
+<translation id="398604237578616937">ลงชื่อเข้าใช้ด้วย <ph name="USER_EMAIL" /> เปิดเมนูบัญชี</translation>
 <translation id="3987993985790029246">คัดลอกลิงก์</translation>
 <translation id="3992684624889376114">เกี่ยวกับหน้านี้</translation>
 <translation id="3994422733891749358">เลือกการแจ้งเตือนที่ต้องการรับ</translation>
@@ -665,6 +674,7 @@
 <translation id="4304713468139749426">เครื่องมือจัดการรหัสผ่าน</translation>
 <translation id="4309403553630140242">แตะสองครั้งเพื่อดูข้อมูลเพิ่มเติม</translation>
 <translation id="4324735664183300693">เปิดการแจ้งเตือน</translation>
+<translation id="4328843285884395590">ไดรฟ์ของฉัน</translation>
 <translation id="4331177082088332784">คุณจัดการตัวเลือกนี้ได้ในBEGIN_LINKการตั้งค่าเนื้อหาEND_LINK</translation>
 <translation id="4333100555184633720">ลบข้อมูลการท่องเว็บ</translation>
 <translation id="4334428914252001502">บทความที่ยังไม่ได้อ่าน 1 รายการ</translation>
@@ -732,6 +742,7 @@
 <translation id="4636930964841734540">ข้อมูล</translation>
 <translation id="4642472735733036929">หยุดติดตามราคาแล้ว</translation>
 <translation id="4645575059429386691">จัดการโดยผู้ปกครอง</translation>
+<translation id="4647758699119474035">ลงชื่อเข้าใช้ด้วย <ph name="USER_NAME" /> <ph name="USER_EMAIL" /> ข้อผิดพลาดของบัญชี Google เปิดเมนูบัญชี</translation>
 <translation id="4650125387981512669">ดำเนินการต่อในชื่อ <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4652817563047461855">ตรวจสอบว่ารหัสผ่านปลอดภัย ดูว่ารหัสผ่านถูกละเมิดหรือไม่ และรับคำแนะนำที่จะช่วยปกป้องตัวคุณบนโลกออนไลน์ <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="4658335131052370646">บันทึก</translation>
@@ -856,6 +867,7 @@
 <translation id="5210365745912300556">ปิดแท็บ</translation>
 <translation id="5211488077761630279">อนุญาตให้ "<ph name="SITE_NAME" />" ใช้<ph name="PERMISSION" />ไหม</translation>
 <translation id="5217245356412073535">คุณเปลี่ยนมุมมองเริ่มต้นของเว็บไซต์เป็นเดสก์ท็อปได้ในการตั้งค่า &gt; การตั้งค่าเนื้อหา</translation>
+<translation id="5217329997012062137">เมื่อใช้ Google Lens ระบบจะส่งภาพหน้าจอของหน้าเว็บไปยัง Google</translation>
 <translation id="5220945116117011963">สร้างกิจกรรมในปฏิทินจากวันที่</translation>
 <translation id="5222676887888702881">ออกจากระบบ</translation>
 <translation id="5228579091201413441">เปิดใช้การซิงค์</translation>
@@ -868,6 +880,7 @@
 <translation id="5271265092610673171">{count,plural, =1{ไม่มีข้อมูลในช่องที่ต้องกรอก โปรดป้อนข้อมูลก่อนบันทึก}other{ไม่มีข้อมูลในช่องที่ต้องกรอกบางช่อง โปรดป้อนข้อมูลเหล่านี้ก่อนบันทึก}}</translation>
 <translation id="5271549068863921519">บันทึกรหัสผ่าน</translation>
 <translation id="5279600392753459966">บล็อกทั้งหมด</translation>
+<translation id="5282340693022193851">หากต้องการรับการแจ้งเตือนการติดตามราคา ให้เปิดการแจ้งเตือนในการตั้งค่า iOS</translation>
 <translation id="5294624619177114121">การแจ้งเตือนในอุปกรณ์เคลื่อนที่</translation>
 <translation id="5295239312320826323">นำบัญชี <ph name="USER_EMAIL" /> ออกใช่ไหม</translation>
 <translation id="5300589172476337783">แสดง</translation>
@@ -914,6 +927,7 @@
 
 โดยต้องเปิดใช้ Handoff ในส่วน "ทั่วไป" ของการตั้งค่าและอุปกรณ์ของคุณต้องใช้บัญชี iCloud เดียวกัน</translation>
 <translation id="5551825465462320939">ติดตามข่าวสาร กีฬา และอื่นๆ ตามความสนใจของคุณ</translation>
+<translation id="5555008247722361784">ลงชื่อเข้าใช้ด้วย <ph name="USER_EMAIL" /> ข้อผิดพลาดของบัญชี Google เปิดเมนูบัญชี</translation>
 <translation id="5556459405103347317">โหลดใหม่</translation>
 <translation id="555749644339804659">กำลังตรวจสอบรหัสผ่าน…</translation>
 <translation id="5559567453458728487">แปลงหน่วยวัดที่พบในเว็บ</translation>
@@ -1260,6 +1274,7 @@
 <translation id="7026724612456523899">ติดตามพัสดุเสมอ</translation>
 <translation id="7029809446516969842">รหัสผ่าน</translation>
 <translation id="7035825883570480307">เปิดการแจ้งเตือนไหม</translation>
+<translation id="7039345315346323556">ล่าสุด</translation>
 <translation id="7055240621761583113">ป้อนรหัสผ่านอัตโนมัติ</translation>
 <translation id="7058455400288852416">ไปที่ตัวสลับแท็บ</translation>
 <translation id="7063811929043357292">บัญชีของคุณได้รับการจัดการโดยผู้ปกครอง
@@ -1277,6 +1292,7 @@
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">กล้องถ่ายรูปไม่พร้อมใช้งาน</translation>
 <translation id="7141960840225504692">แท็บจะปิดไป และข้อมูลการท่องเว็บจะถูกลบ</translation>
+<translation id="714291438898585119">ที่ติดดาว</translation>
 <translation id="7146301801400584641">ไฟล์ปฏิทินพร้อมให้ใช้งานแล้ว</translation>
 <translation id="7149893636342594995">24 ชั่วโมงที่แล้ว</translation>
 <translation id="716059570521443369">ค้นหาข้อความที่คุณคัดลอก</translation>
@@ -1331,6 +1347,7 @@
 <translation id="7435356471928173109">ปิดโดยผู้ดูแลระบบ</translation>
 <translation id="7438481509621345350">ตอนนี้คุณจะเห็นเรื่องราวจาก <ph name="CHANNEL_NAME" /> เมื่อเปิดแท็บใหม่</translation>
 <translation id="7451023311965289370">{count,plural, =1{บันทึกบุ๊กมาร์กไปยัง "{title}" แล้ว}other{บันทึกบุ๊กมาร์กไปยัง "{title}" แล้ว}}</translation>
+<translation id="7451404862887877229">แตะ "ความเป็นส่วนตัวและความปลอดภัย" แล้วแตะ Google Safe Browsing</translation>
 <translation id="7454057999980797137">จังหวัด</translation>
 <translation id="7458706065921255639">การปรับเปลี่ยนในแบบของคุณและการลิงก์</translation>
 <translation id="745899714366929493">ตลอดวัน</translation>
@@ -1409,6 +1426,7 @@
 <translation id="7788868432173225918">ปิดมุมมองแบบขยาย</translation>
 <translation id="7790954908631836016">ซ่อน "ขอเว็บไซต์เวอร์ชันเดสก์ท็อป"</translation>
 <translation id="7791543448312431591">เพิ่ม</translation>
+<translation id="7801064017114765401">คอมพิวเตอร์</translation>
 <translation id="7802239711290932774">ใช้รหัสผ่านที่แนะนำ</translation>
 <translation id="780301667611848630">ไม่ ขอบคุณ</translation>
 <translation id="7807060072011926525">ให้บริการโดย Google</translation>
@@ -1507,7 +1525,6 @@
 <translation id="8173034266693057059">ความยาว</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8182037667962849780">{count,plural, =1{สำหรับ {website_1}}=2{สำหรับ {website_1}, {website_2}}=3{สำหรับ {website_1}, {website_2} และอีก 1 เว็บไซต์}other{สำหรับ {website_1}, {website_2} และอีก {more_count} เว็บไซต์}}</translation>
-<translation id="8189814768485665290">แชร์ URL แบบเต็ม</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />อุปกรณ์ของคุณ<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">เพิ่มรหัสผ่าน</translation>
 <translation id="8202744799033457229">แสดงประวัติการเข้าชม</translation>
@@ -1541,6 +1558,7 @@
 <translation id="8349305172487531364">แถบบุ๊กมาร์ก</translation>
 <translation id="8366466717204352506">ไม่เคยตรวจสอบ</translation>
 <translation id="8368001212524806591">ติดตามราคา</translation>
+<translation id="8370406443343902172">ไปที่การตั้งค่า...</translation>
 <translation id="8372471489238799313">{count,plural, =1{ลบที่อยู่}other{ลบที่อยู่}}</translation>
 <translation id="8378714024927312812">จัดการโดยองค์กร</translation>
 <translation id="8386068868580335421">รีเซ็ต</translation>
@@ -1592,6 +1610,7 @@
 <translation id="8571213806525832805">4 สัปดาห์ที่แล้ว</translation>
 <translation id="8577056989960190117">ป้อนปีที่หมดอายุเป็น <ph name="YEAR" /> โดยอัตโนมัติ</translation>
 <translation id="8588404856427128947">ปิด</translation>
+<translation id="8590286732816598906">กลุ่มแท็บ, <ph name="GROUP_TITLE" />, เมนู</translation>
 <translation id="8593565399399144771">คุณเปิดแท็บใหม่ได้ที่นี่</translation>
 <translation id="8600272508328041907">เปลี่ยนเป็นการแปลภาษาทั้งหน้า</translation>
 <translation id="860043288473659153">ชื่อผู้ถือบัตร</translation>
@@ -1624,6 +1643,7 @@
 <translation id="8712534545803964353">ค้นหาในหน้าเว็บ…</translation>
 <translation id="8712637175834984815">รับทราบ</translation>
 <translation id="8722229818691036192">บัญชีในอุปกรณ์นี้</translation>
+<translation id="8722649775263832315">แตะหรือไฮไลต์เพื่อค้นหาทุกสิ่งได้ด้วย Google Lens</translation>
 <translation id="8725066075913043281">ลองอีกครั้ง</translation>
 <translation id="8728922029615312208">ปิดทั้งหมด</translation>
 <translation id="8730621377337864115">เสร็จสิ้น</translation>
@@ -1728,6 +1748,7 @@
 <translation id="9162432979321511934">เปิดการป้อนรหัสผ่านอัตโนมัติ</translation>
 <translation id="9165320910061267720">หากต้องการรับการแจ้งเตือนราคาลดลง คุณจะต้องเปิดการแจ้งเตือนในการตั้งค่า iOS</translation>
 <translation id="9179151630575358778">ซ่อนรายการนี้</translation>
+<translation id="918129721713827015">แสดงแท็บในกลุ่ม</translation>
 <translation id="9183733013282108610">ค้นหาในโหมดไม่ระบุตัวตน</translation>
 <translation id="9186762474139509529">เริ่มต้นการบันทึก</translation>
 <translation id="9191031968346938109">เพิ่มใน…</translation>

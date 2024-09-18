@@ -86,6 +86,7 @@
 <translation id="1383876407941801731">Haku</translation>
 <translation id="138618066238211776">Jatka käyttäjänä <ph name="USER_NAME" /></translation>
 <translation id="138692594145659985">Kortin tallentamisvaihtoehdot</translation>
+<translation id="1396260204083880024">Kirjautuneena käyttäjänä <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Avaa tilivalikko.</translation>
 <translation id="1397144142234474689">Piilota historia</translation>
 <translation id="1407135791313364759">Avaa kaikki</translation>
 <translation id="1408847409015257906">Valitse "Yksityisyys ja turvallisuus".</translation>
@@ -116,6 +117,7 @@
 <translation id="1517166097004694782">Piilota "Jatka tällä välilehdellä"</translation>
 <translation id="1520027731907768768">Tilaa hinnanlaskuilmoitukset seuraamistasi tuotteista.</translation>
 <translation id="1521774566618522728">Aktiivinen tänään</translation>
+<translation id="1524563461097350801">Ei kiitos</translation>
 <translation id="1531038290222364269">Näytä välilehdet</translation>
 <translation id="1536390784834419204">Käännä sivu</translation>
 <translation id="1540800554400757039">Osoite 1</translation>
@@ -595,6 +597,7 @@ Katso tarvittaessa hakukoneesi ohjeet hakuhistorian poistamiselle.</translation>
 <translation id="3967327056943561740">Kirjanmerkit</translation>
 <translation id="3967822245660637423">Lataus on valmis</translation>
 <translation id="3982893814825393515">Ilmoita ongelmasta…</translation>
+<translation id="398604237578616937">Kirjautuneena käyttäjänä <ph name="USER_EMAIL" />. Avaa tilivalikko.</translation>
 <translation id="3987993985790029246">Kopioi linkki</translation>
 <translation id="3992684624889376114">Tietoja sivusta</translation>
 <translation id="3994422733891749358">Valitse, mitä ilmoituksia haluat saada</translation>
@@ -732,6 +735,7 @@ Katso tarvittaessa hakukoneesi ohjeet hakuhistorian poistamiselle.</translation>
 <translation id="4636930964841734540">Tietoja</translation>
 <translation id="4642472735733036929">Hinnan seuranta lopetettu</translation>
 <translation id="4645575059429386691">Vanhempasi hallinnoima</translation>
+<translation id="4647758699119474035">Kirjautuneena käyttäjänä <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Google-tilin virhe. Avaa tilivalikko.</translation>
 <translation id="4650125387981512669">Jatka tilillä <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4652817563047461855">Varmista, että salasanasi ovat turvassa ja selvitä, ovatko ne vaarantuneet. Saat myös ohjeita itsesi suojaamiseen verkossa. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
 <translation id="4658335131052370646">Tallenna</translation>
@@ -914,6 +918,7 @@ Katso tarvittaessa hakukoneesi ohjeet hakuhistorian poistamiselle.</translation>
 
 Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi molempien laitteiden on käytettävä samaa iCloud-tiliä.</translation>
 <translation id="5551825465462320939">Seuraa esimerkiksi kiinnostuksen kohteisiisi perustuvia uutisia ja urheilua.</translation>
+<translation id="5555008247722361784">Kirjautuneena käyttäjänä <ph name="USER_EMAIL" />. Google-tilin virhe. Avaa tilivalikko.</translation>
 <translation id="5556459405103347317">Lataa uudelleen</translation>
 <translation id="555749644339804659">Tarkistetaan salasanoja…</translation>
 <translation id="5559567453458728487">Muunna verkosta löytyneet mittayksiköt</translation>
@@ -1507,7 +1512,6 @@ Sivustot voivat nähdä selaustoimintaasi eri sivustoilta evästeiden kautta esi
 <translation id="8173034266693057059">Pituus</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8182037667962849780">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} ja 1 muu}other{{website_1}, {website_2} ja {more_count} muuta}}</translation>
-<translation id="8189814768485665290">Jaa koko URL-osoite</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Omat laitteet<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Lisää salasana</translation>
 <translation id="8202744799033457229">Näytä historia</translation>
@@ -1541,6 +1545,7 @@ Sivustot voivat nähdä selaustoimintaasi eri sivustoilta evästeiden kautta esi
 <translation id="8349305172487531364">Kirjanmerkkipalkki</translation>
 <translation id="8366466717204352506">Tarkistusta ei tehty</translation>
 <translation id="8368001212524806591">Seuraa hintaa</translation>
+<translation id="8370406443343902172">Avaa Asetukset…</translation>
 <translation id="8372471489238799313">{count,plural, =1{Poista osoite}other{Poista osoitteet}}</translation>
 <translation id="8378714024927312812">Organisaatiosi ylläpitämä</translation>
 <translation id="8386068868580335421">Nollaa</translation>
@@ -1592,6 +1597,7 @@ Sivustot voivat nähdä selaustoimintaasi eri sivustoilta evästeiden kautta esi
 <translation id="8571213806525832805">Viimeiset neljä viikkoa</translation>
 <translation id="8577056989960190117">Täytä vanhenemisvuosi <ph name="YEAR" /> automaattisesti</translation>
 <translation id="8588404856427128947">Pois päältä</translation>
+<translation id="8590286732816598906">Välilehtiryhmä, <ph name="GROUP_TITLE" />, valikko.</translation>
 <translation id="8593565399399144771">Voit avata uuden välilehden täällä.</translation>
 <translation id="8600272508328041907">Vaihda koko sivun kääntämiseen</translation>
 <translation id="860043288473659153">Kortinhaltijan nimi</translation>
@@ -1603,6 +1609,7 @@ Sivustot voivat nähdä selaustoimintaasi eri sivustoilta evästeiden kautta esi
 <translation id="8637431369725868556">Suojaudu vaarallisilta sivustoilta.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Ei vaarantuneita salasanoja}=1{{COUNT} vaarantunut salasana}other{{COUNT} vaarantunutta salasanaa}}</translation>
 <translation id="8640575194957831802">Avattu viimeksi</translation>
+<translation id="8647280737650867362">Hinnan seuraamisen lopettaminen epäonnistui.</translation>
 <translation id="8654802032646794042">Peru</translation>
 <translation id="8660600697590740984">Kopioitu Lens-kuva</translation>
 <translation id="866266761389616183">Harmin paikka!</translation>
@@ -1727,6 +1734,7 @@ Sivustot voivat nähdä selaustoimintaasi eri sivustoilta evästeiden kautta esi
 <translation id="9162432979321511934">Laita Täytä salasanat automaattisesti päälle.</translation>
 <translation id="9165320910061267720">Jos haluat saada ilmoituksia hinnan laskusta, sinun on laitettava ilmoitukset päälle iOS-asetuksista.</translation>
 <translation id="9179151630575358778">Piilottaa tämän kohteen</translation>
+<translation id="918129721713827015">Näytä välilehdet ryhmässä</translation>
 <translation id="9183733013282108610">Incognito-haku</translation>
 <translation id="9186762474139509529">Aloita kirjaus</translation>
 <translation id="9191031968346938109">Lisää…</translation>
