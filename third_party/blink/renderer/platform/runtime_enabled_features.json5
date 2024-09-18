@@ -2359,11 +2359,6 @@
       status: "stable",
     },
     {
-      // crbug.com/343749045
-      name: "InlineCursorMultiColFix",
-      status: "stable",
-    },
-    {
       // If enabled, and the inner html parser is unable to successfully
       // parse, it will log histograms of why it failed. The logging is
       // non-trivial.
