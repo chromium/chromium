@@ -19,10 +19,6 @@ class VisitedURLRankingService;
 // ranks visited URL.
 class VisitedURLRankingServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static visited_url_ranking::VisitedURLRankingService* GetForBrowserState(
-      ProfileIOS* profile);
-
   static visited_url_ranking::VisitedURLRankingService* GetForProfile(
       ProfileIOS* profile);
   static VisitedURLRankingServiceFactory* GetInstance();

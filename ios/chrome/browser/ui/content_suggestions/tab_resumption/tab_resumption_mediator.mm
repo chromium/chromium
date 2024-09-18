@@ -280,7 +280,7 @@ NSString* GetOverridenReason(
 
     if (IsTabResumption2_0Enabled()) {
       _visitedURLRankingService =
-          VisitedURLRankingServiceFactory::GetForBrowserState(browserState);
+          VisitedURLRankingServiceFactory::GetForProfile(browserState);
     }
 
     if (IsTabResumption2_0Enabled() ||

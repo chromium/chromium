@@ -29,7 +29,7 @@
 
 // static
 visited_url_ranking::VisitedURLRankingService*
-VisitedURLRankingServiceFactory::GetForBrowserState(ChromeBrowserState* state) {
+VisitedURLRankingServiceFactory::GetForProfile(ProfileIOS* state) {
   return static_cast<visited_url_ranking::VisitedURLRankingService*>(
       GetInstance()->GetServiceForBrowserState(state, true));
 }
@@ -58,8 +58,7 @@ VisitedURLRankingServiceFactory::~VisitedURLRankingServiceFactory() {}
 std::unique_ptr<KeyedService>
 VisitedURLRankingServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
   std::map<visited_url_ranking::Fetcher,
            std::unique_ptr<visited_url_ranking::URLVisitDataFetcher>>
       data_fetchers;
@@ -67,21 +66,22 @@ VisitedURLRankingServiceFactory::BuildServiceInstanceFor(
   data_fetchers.emplace(
       visited_url_ranking::Fetcher::kTabModel,
       std::make_unique<visited_url_ranking::IOSTabModelURLVisitDataFetcher>(
-          browser_state));
+          profile));
 
   sync_sessions::SessionSyncService* session_sync_service =
-      SessionSyncServiceFactory::GetForBrowserState(browser_state);
+      SessionSyncServiceFactory::GetForProfile(profile);
   if (session_sync_service) {
     data_fetchers.emplace(
         visited_url_ranking::Fetcher::kSession,
         std::make_unique<visited_url_ranking::SessionURLVisitDataFetcher>(
             session_sync_service));
   }
-  auto* history_service = ios::HistoryServiceFactory::GetForBrowserState(
-      browser_state, ServiceAccessType::IMPLICIT_ACCESS);
+  history::HistoryService* history_service =
+      ios::HistoryServiceFactory::GetForProfile(
+          profile, ServiceAccessType::IMPLICIT_ACCESS);
   if (history_service) {
     syncer::DeviceInfoSyncService* device_info_sync_service =
-        DeviceInfoSyncServiceFactory::GetForBrowserState(browser_state);
+        DeviceInfoSyncServiceFactory::GetForProfile(profile);
     data_fetchers.emplace(
         visited_url_ranking::Fetcher::kHistory,
         std::make_unique<visited_url_ranking::HistoryURLVisitDataFetcher>(
@@ -92,9 +92,9 @@ VisitedURLRankingServiceFactory::BuildServiceInstanceFor(
            std::unique_ptr<visited_url_ranking::URLVisitAggregatesTransformer>>
       transformers = {};
 
-  auto* segmentation_platform_service =
-      segmentation_platform::SegmentationPlatformServiceFactory::GetForProfile(
-          browser_state);
+  segmentation_platform::SegmentationPlatformService*
+      segmentation_platform_service = segmentation_platform::
+          SegmentationPlatformServiceFactory::GetForProfile(profile);
   transformers.emplace(
       visited_url_ranking::URLVisitAggregatesTransformType::
           kSegmentationMetricsData,
@@ -104,8 +104,8 @@ VisitedURLRankingServiceFactory::BuildServiceInstanceFor(
 
   // TODO(crbug.com/329242209): Add various aggregate transformers (e.g,
   // shopping) to the service's map of supported transformers.
-  auto* bookmark_model =
-      ios::BookmarkModelFactory::GetForBrowserState(browser_state);
+  bookmarks::BookmarkModel* bookmark_model =
+      ios::BookmarkModelFactory::GetForProfile(profile);
   if (bookmark_model) {
     auto bookmarks_transformer = std::make_unique<
         visited_url_ranking::BookmarksURLVisitAggregatesTransformer>(
