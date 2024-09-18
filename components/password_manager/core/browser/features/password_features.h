@@ -104,6 +104,11 @@ BASE_DECLARE_FEATURE(kRestartToGainAccessToKeychain);
 BASE_DECLARE_FEATURE(kScreenlockReauthPromoCard);
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Enables biometric authentication on for Password Autofill on ChromeOS.
+BASE_DECLARE_FEATURE(kBiometricsAuthForPwdFill);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 // Displays at least the decryptable and never saved logins in the password
 // manager
 BASE_DECLARE_FEATURE(kSkipUndecryptablePasswords);

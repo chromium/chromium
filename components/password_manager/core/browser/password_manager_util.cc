@@ -278,7 +278,7 @@ const PasswordForm* GetMatchForUpdating(
     bool username_updated_in_bubble) {
   // This is the case for the credential management API. It should not depend on
   // form managers. Once that's the case, this should be turned into a DCHECK.
-  // TODO(crbug/40620575): turn it into a DCHECK.
+  // TODO(crbug.com/40620575): turn it into a DCHECK.
   if (submitted_form.IsFederatedCredential()) {
     return nullptr;
   }
@@ -354,12 +354,24 @@ PasswordForm MakeNormalizedBlocklistedForm(
 }
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+// TODO(crbug.com/367336383): Make the this block Ash only for
+// ChromeOS.
 bool ShouldBiometricAuthenticationForFillingToggleBeVisible(
     const PrefService* local_state) {
-  return local_state->GetBoolean(
-      password_manager::prefs::kHadBiometricsAvailable);
+  bool hadBiometricsAvailable =
+      local_state->GetBoolean(password_manager::prefs::kHadBiometricsAvailable);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // We only want to check for feature flag if the device supports biometrics,
+  // else we dilute experiment population.
+  return hadBiometricsAvailable &&
+         base::FeatureList::IsEnabled(
+             password_manager::features::kBiometricsAuthForPwdFill);
+#else
+  return hadBiometricsAvailable;
+#endif
 }
-#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) ||
+        // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 bool ShouldShowBiometricAuthenticationBeforeFillingPromo(
