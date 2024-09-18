@@ -17,7 +17,7 @@ class ShareExtensionService;
 // with ProfileIOS.
 class ShareExtensionServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
-  static ShareExtensionService* GetForBrowserState(ProfileIOS* profile);
+  static ShareExtensionService* GetForProfile(ProfileIOS* profile);
   static ShareExtensionService* GetForProfileIfExists(ProfileIOS* profile);
   static ShareExtensionServiceFactory* GetInstance();
 

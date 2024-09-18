@@ -24,8 +24,8 @@
 class SadTabCoordinatorTest : public PlatformTest {
  protected:
   SadTabCoordinatorTest() {
-    browser_state_ = TestChromeBrowserState::Builder().Build();
-    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    profile_ = TestProfileIOS::Builder().Build();
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
     base_view_controller_ = [[UIViewController alloc] init];
     UILayoutGuide* guide = [[NamedGuide alloc] initWithName:kContentAreaGuide];
     [base_view_controller_.view addLayoutGuide:guide];
@@ -34,7 +34,7 @@ class SadTabCoordinatorTest : public PlatformTest {
     WebNavigationBrowserAgent::CreateForBrowser(browser_.get());
   }
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   UIViewController* base_view_controller_;
 };
@@ -144,7 +144,7 @@ TEST_F(SadTabCoordinatorTest, FirstFailureInIncognito) {
   web::FakeWebState web_state;
   web_state.WasShown();
   std::unique_ptr<Browser> otr_browser = std::make_unique<TestBrowser>(
-      browser_->GetBrowserState()->GetOffTheRecordChromeBrowserState());
+      browser_->GetProfile()->GetOffTheRecordProfile());
   SadTabCoordinator* coordinator = [[SadTabCoordinator alloc]
       initWithBaseViewController:base_view_controller_
                          browser:otr_browser.get()];
@@ -171,7 +171,7 @@ TEST_F(SadTabCoordinatorTest, FirstFailureInIncognito) {
 // Tests SadTabViewController state for the repeated failure in incognito mode.
 TEST_F(SadTabCoordinatorTest, ShowFirstFailureInIncognito) {
   std::unique_ptr<Browser> otr_browser = std::make_unique<TestBrowser>(
-      browser_->GetBrowserState()->GetOffTheRecordChromeBrowserState());
+      browser_->GetProfile()->GetOffTheRecordProfile());
   SadTabCoordinator* coordinator = [[SadTabCoordinator alloc]
       initWithBaseViewController:base_view_controller_
                          browser:otr_browser.get()];

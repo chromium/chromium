@@ -59,13 +59,12 @@ const char kURL[] = "https://chromium.org/";
 class StartSurfaceSceneAgentTest : public PlatformTest {
  public:
   StartSurfaceSceneAgentTest()
-      : browser_state_(TestChromeBrowserState::Builder().Build()),
+      : profile_(TestProfileIOS::Builder().Build()),
         startup_information_([[FakeStartupInformation alloc] init]),
         app_state_([[FakeAppStateInitStage alloc]
             initWithStartupInformation:startup_information_]),
-        scene_state_([[FakeSceneState alloc]
-            initWithAppState:app_state_
-                browserState:browser_state_.get()]),
+        scene_state_([[FakeSceneState alloc] initWithAppState:app_state_
+                                                      profile:profile_.get()]),
         agent_([[StartSurfaceSceneAgent alloc] init]) {
     pref_service_.registry()->RegisterIntegerPref(
         prefs::kIosMagicStackSegmentationTabResumptionImpressionsSinceFreshness,
@@ -96,7 +95,7 @@ class StartSurfaceSceneAgentTest : public PlatformTest {
  protected:
   web::WebTaskEnvironment task_environment_;
   sync_preferences::TestingPrefServiceSyncable pref_service_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   FakeStartupInformation* startup_information_;
   FakeAppStateInitStage* app_state_;
   // The scene state that the agent works with.
@@ -111,7 +110,7 @@ class StartSurfaceSceneAgentTest : public PlatformTest {
     auto test_web_state = std::make_unique<web::FakeWebState>();
     test_web_state->SetCurrentURL(url);
     test_web_state->SetNavigationItemCount(1);
-    test_web_state->SetBrowserState(browser_state_.get());
+    test_web_state->SetBrowserState(profile_.get());
     Browser* browser =
         scene_state_.browserProviderInterface.mainBrowserProvider.browser;
     WebStateList* web_state_list = browser->GetWebStateList();

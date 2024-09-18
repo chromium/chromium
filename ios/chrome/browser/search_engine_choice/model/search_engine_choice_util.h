@@ -13,7 +13,7 @@
 // The parameter `app_started_via_external_intent` is used only if
 // `is_first_run_entrypoint` is set to `false . The value is ignored otherwise.
 bool ShouldDisplaySearchEngineChoiceScreen(
-    ChromeBrowserState& browser_state,
+    ProfileIOS& profile,
     bool is_first_run_entrypoint,
     bool app_started_via_external_intent);
 

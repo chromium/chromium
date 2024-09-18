@@ -33,21 +33,21 @@ class SearchEngineChoiceUtilTest : public PlatformTest {
         switches::kSearchEngineChoiceCountry, "BE");
 
     InitMockPolicyService();
-    TestChromeBrowserState::Builder builder;
+    TestProfileIOS::Builder builder;
     builder.SetPolicyConnector(
         std::make_unique<BrowserStatePolicyConnectorMock>(
             std::move(policy_service_), &schema_registry_));
     builder.AddTestingFactory(
         ios::TemplateURLServiceFactory::GetInstance(),
         ios::TemplateURLServiceFactory::GetDefaultFactory());
-    browser_state_ = std::move(builder).Build();
-    template_url_service_ = ios::TemplateURLServiceFactory::GetForBrowserState(
-        browser_state_.get());
+    profile_ = std::move(builder).Build();
+    template_url_service_ =
+        ios::TemplateURLServiceFactory::GetForProfile(profile_.get());
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         switches::kForceSearchEngineChoiceScreen);
   }
 
-  TestChromeBrowserState& browser_state() { return *browser_state_; }
+  TestProfileIOS& profile() { return *profile_; }
 
   base::HistogramTester histogram_tester_;
 
@@ -64,8 +64,8 @@ class SearchEngineChoiceUtilTest : public PlatformTest {
 
   web::WebTaskEnvironment task_environment_;
   policy::SchemaRegistry schema_registry_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
-  // Owned by browser_state_.
+  std::unique_ptr<TestProfileIOS> profile_;
+  // Owned by profile_.
   raw_ptr<TemplateURLService> template_url_service_;
   std::unique_ptr<policy::MockPolicyService> policy_service_;
   policy::PolicyMap policy_map_;
@@ -73,7 +73,7 @@ class SearchEngineChoiceUtilTest : public PlatformTest {
 
 TEST_F(SearchEngineChoiceUtilTest, ShowChoiceScreenIfPoliciesAreNotSet) {
   EXPECT_TRUE(ShouldDisplaySearchEngineChoiceScreen(
-      browser_state(), /*is_first_run_entrypoint=*/false,
+      profile(), /*is_first_run_entrypoint=*/false,
       /*app_started_via_external_intent=*/false));
   histogram_tester_.ExpectUniqueSample(
       search_engines::kSearchEngineChoiceScreenProfileInitConditionsHistogram,
@@ -83,7 +83,7 @@ TEST_F(SearchEngineChoiceUtilTest, ShowChoiceScreenIfPoliciesAreNotSet) {
 TEST_F(SearchEngineChoiceUtilTest,
        ShowChoiceScreenIfPoliciesAreNotSetStartedByExternalIntent) {
   EXPECT_FALSE(ShouldDisplaySearchEngineChoiceScreen(
-      browser_state(), /*is_first_run_entrypoint=*/false,
+      profile(), /*is_first_run_entrypoint=*/false,
       /*app_started_via_external_intent=*/true));
   histogram_tester_.ExpectUniqueSample(
       search_engines::kSearchEngineChoiceScreenProfileInitConditionsHistogram,
@@ -96,13 +96,13 @@ TEST_F(
     SearchEngineChoiceUtilTest,
     ShowChoiceScreenIfPoliciesAreNotSetStartedByExternalIntentAlmostMaxCount) {
   ASSERT_GT(switches::kSearchEngineChoiceMaximumSkipCount.Get(), 0);
-  PrefService* pref_service = browser_state().GetPrefs();
+  PrefService* pref_service = profile().GetPrefs();
   pref_service->SetInteger(
       prefs::kDefaultSearchProviderChoiceScreenSkippedCount,
       switches::kSearchEngineChoiceMaximumSkipCount.Get() - 1);
 
   EXPECT_FALSE(ShouldDisplaySearchEngineChoiceScreen(
-      browser_state(), /*is_first_run_entrypoint=*/false,
+      profile(), /*is_first_run_entrypoint=*/false,
       /*app_started_via_external_intent=*/true));
   histogram_tester_.ExpectUniqueSample(
       search_engines::kSearchEngineChoiceScreenProfileInitConditionsHistogram,
@@ -114,13 +114,13 @@ TEST_F(
 TEST_F(
     SearchEngineChoiceUtilTest,
     ShowChoiceScreenIfPoliciesAreNotSetStartedByExternalIntentMaxCountReached) {
-  PrefService* pref_service = browser_state().GetPrefs();
+  PrefService* pref_service = profile().GetPrefs();
   pref_service->SetInteger(
       prefs::kDefaultSearchProviderChoiceScreenSkippedCount,
       switches::kSearchEngineChoiceMaximumSkipCount.Get());
 
   EXPECT_TRUE(ShouldDisplaySearchEngineChoiceScreen(
-      browser_state(), /*is_first_run_entrypoint=*/false,
+      profile(), /*is_first_run_entrypoint=*/false,
       /*app_started_via_external_intent=*/true));
   histogram_tester_.ExpectUniqueSample(
       search_engines::kSearchEngineChoiceScreenProfileInitConditionsHistogram,
@@ -139,7 +139,7 @@ TEST_F(SearchEngineChoiceUtilTest,
           std::make_unique<TemplateURL>(template_url_data)));
 
   EXPECT_FALSE(ShouldDisplaySearchEngineChoiceScreen(
-      browser_state(), /*is_first_run_entrypoint=*/false,
+      profile(), /*is_first_run_entrypoint=*/false,
       /*app_started_via_external_intent=*/false));
   histogram_tester_.ExpectUniqueSample(
       search_engines::kSearchEngineChoiceScreenProfileInitConditionsHistogram,

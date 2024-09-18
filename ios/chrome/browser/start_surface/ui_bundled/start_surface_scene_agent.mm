@@ -149,8 +149,7 @@ bool IsEmptyNTP(const web::WebState* web_state) {
   // are loaded in iSL.
   if (IsPrefetchingSystemCapabilitiesOnAppStartup()) {
     RunSystemCapabilitiesPrefetch(
-        ChromeAccountManagerServiceFactory::GetForBrowserState(
-            browser->GetBrowserState())
+        ChromeAccountManagerServiceFactory::GetForProfile(browser->GetProfile())
             ->GetAllIdentities());
   }
 

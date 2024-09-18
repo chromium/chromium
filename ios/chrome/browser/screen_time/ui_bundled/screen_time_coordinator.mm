@@ -26,7 +26,7 @@
 #pragma mark - ChromeCoordinator
 
 - (void)start {
-  if (self.browser->GetBrowserState()->IsOffTheRecord()) {
+  if (self.browser->GetProfile()->IsOffTheRecord()) {
     self.screenTimeViewController =
         [ScreenTimeViewController sharedOTRInstance];
   } else {
@@ -35,10 +35,9 @@
 
   self.mediator = [[ScreenTimeMediator alloc]
         initWithWebStateList:self.browser->GetWebStateList()
-      suppressUsageRecording:self.browser->GetBrowserState()->IsOffTheRecord()];
+      suppressUsageRecording:self.browser->GetProfile()->IsOffTheRecord()];
 
-  ScreenTimeHistoryDeleterFactory::GetForBrowserState(
-      self.browser->GetBrowserState());
+  ScreenTimeHistoryDeleterFactory::GetForProfile(self.browser->GetProfile());
 }
 
 - (void)stop {

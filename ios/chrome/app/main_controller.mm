@@ -663,7 +663,7 @@ SEQUENCE_CHECKER(_sequenceChecker);
                       spotlightManagerWithBrowserState:chromeBrowserState]];
 
     ShareExtensionService* service =
-        ShareExtensionServiceFactory::GetForBrowserState(chromeBrowserState);
+        ShareExtensionServiceFactory::GetForProfile(chromeBrowserState);
     service->Initialize();
 
 #if BUILDFLAG(IOS_CREDENTIAL_PROVIDER_ENABLED)

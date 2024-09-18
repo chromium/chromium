@@ -14,11 +14,10 @@
 class ScreenTimeHistoryDeleter;
 
 // Factory that owns and associates a ScreenTimeHistoryDeleter with
-// ChromeBrowserState.
+// ProfileIOS.
 class ScreenTimeHistoryDeleterFactory : public BrowserStateKeyedServiceFactory {
  public:
-  static ScreenTimeHistoryDeleter* GetForBrowserState(
-      ChromeBrowserState* browser_state);
+  static ScreenTimeHistoryDeleter* GetForProfile(ProfileIOS* profile);
 
   static ScreenTimeHistoryDeleterFactory* GetInstance();
 
