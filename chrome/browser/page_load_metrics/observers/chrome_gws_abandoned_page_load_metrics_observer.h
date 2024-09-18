@@ -30,6 +30,7 @@ class ChromeGWSAbandonedPageLoadMetricsObserver
   std::vector<std::string> GetAdditionalSuffixes() const override;
   void AddSRPMetricsToUKMIfNeeded(
       ukm::builders::AbandonedSRPNavigation& ukm) override;
+  bool IsIncognitoProfile() const;
 };
 
 #endif  // CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_CHROME_GWS_ABANDONED_PAGE_LOAD_METRICS_OBSERVER_H_

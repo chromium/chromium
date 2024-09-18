@@ -12,6 +12,8 @@
 #include "chrome/browser/page_load_metrics/integration_tests/metric_integration_test.h"
 #include "chrome/browser/page_load_metrics/observers/chrome_gws_abandoned_page_load_metrics_observer.h"
 #include "chrome/browser/page_load_metrics/observers/gws_page_load_metrics_observer.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ssl/https_upgrades_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -297,9 +299,17 @@ class GWSAbandonedPageLoadMetricsObserverBrowserTest
   // additional suffixes, and one with a RTT suffix, since both versions will be
   // recorded for all logged histograms.
   std::vector<std::pair<std::string, int>> ExpandHistograms(
-      std::vector<std::string> histogram_names) {
-    std::vector<std::pair<std::string, int>> histogram_names_expanded;
+      std::vector<std::string> histogram_names,
+      bool is_incognito = false) {
+    std::vector<std::string> with_incognito;
     for (std::string& histogram_name : histogram_names) {
+      with_incognito.push_back(histogram_name);
+      if (is_incognito) {
+        with_incognito.push_back(histogram_name + ".Incognito");
+      }
+    }
+    std::vector<std::pair<std::string, int>> histogram_names_expanded;
+    for (std::string& histogram_name : with_incognito) {
       histogram_names_expanded.push_back(std::pair(histogram_name, 1));
       histogram_names_expanded.push_back(std::pair(
           histogram_name +
@@ -1385,6 +1395,27 @@ IN_PROC_BROWSER_TEST_F(GWSAbandonedPageLoadMetricsObserverBrowserTest,
       GetAbandonReasonAtMilestoneHistogramName(
           NavigationMilestone::kNavigationStart),
       AbandonReason::kNewOtherNavigationRendererInitiated, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(GWSAbandonedPageLoadMetricsObserverBrowserTest,
+                       SearchIncognitoMode) {
+  // Explicitly allow http access for the incognito mode. Otherwise the
+  // incognito mode cannot reach to the SRP domain.
+  ScopedAllowHttpForHostnamesForTesting allow_http(
+      {kSRPDomain}, browser()->profile()->GetPrefs());
+
+  // Navigate to SRP with incognito mode.
+  Browser* incognito = CreateIncognitoBrowser();
+  content::WebContents* web_contents =
+      incognito->tab_strip_model()->GetActiveWebContents();
+  EXPECT_TRUE(content::NavigateToURL(web_contents, url_srp()));
+
+  // Navigate to a non-SRP page to flush the metrics.
+  EXPECT_TRUE(content::NavigateToURL(web_contents, url_non_srp()));
+
+  // There should be a new entry for all the navigation milestones metrics.
+  ExpectTotalCountForAllNavigationMilestones(/*include_redirect=*/false, 1,
+                                             ".Incognito");
 }
 
 // TODO(https://crbug.com/347706997): Test backgrounded case.
