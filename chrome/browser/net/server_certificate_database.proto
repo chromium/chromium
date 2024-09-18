@@ -1,0 +1,49 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Proto definitions for data stored in ServerCertificateDatabase.
+
+syntax = "proto3";
+
+package chrome_browser_server_certificate_database;
+
+option optimize_for = LITE_RUNTIME;
+
+// This trust represent the trust that the the user intends for the certificate
+// in question. A separate mapping must be applied to convert these values into
+// trust values usable by the certificate verifier defined at
+// third_party/boringssl/src/pki/trust_store.h.
+message CertificateTrust {
+  enum CertificateTrustType {
+    // Default value. Should never be seen; its presence likely indicates an
+    // error or failure.
+    CERTIFICATE_TRUST_TYPE_UNKNOWN = 0;
+
+    // Certificate trust is explicitly unspecified.
+    CERTIFICATE_TRUST_TYPE_UNSPECIFIED = 1;
+
+    // This certificate is explicitly blocked (distrusted).
+    CERTIFICATE_TRUST_TYPE_DISTRUSTED = 2;
+
+    // This certificate is trusted.
+    CERTIFICATE_TRUST_TYPE_TRUSTED = 3;
+  }
+
+  optional CertificateTrustType trust_type = 1;
+}
+
+// A set of constraints. If no constraints of a given type is present, any name
+// of that type is allowed.
+message Constraints {
+  // DNS name constraint (e.g. "example.com", "*.dev.example.com").
+  repeated string dns_names = 1;
+  // A CIDR name constraint (e.g. "198.51.100.14/24", "198.51.100.0/22")
+  repeated string CIDRs = 2;
+}
+
+// Metadata about a certificate.
+message CertificateMetadata {
+  optional CertificateTrust trust = 1;
+  optional Constraints constraints = 2;
+}

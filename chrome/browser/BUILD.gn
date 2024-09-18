@@ -8689,6 +8689,10 @@ static_library("browser_generated_files") {
   if (is_win || is_linux || is_android || is_chromeos) {
     public_deps += [ "//chrome/browser/privacy:traffic_annotation_proto" ]
   }
+
+  if (chrome_root_store_cert_management_ui) {
+    public_deps += [ "//chrome/browser/net:server_certificate_database_proto" ]
+  }
 }
 
 # Any source files may be added to primitives. The only requirement is that

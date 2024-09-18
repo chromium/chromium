@@ -6490,6 +6490,7 @@ test("unit_tests") {
 
   if (chrome_root_store_cert_management_ui) {
     sources += [
+      "../browser/net/server_certificate_database_unittest.cc",
       "../browser/ui/webui/certificate_manager/client_cert_sources_unittest.cc",
     ]
   }

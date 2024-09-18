@@ -20,7 +20,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/net/proxy_config_monitor.h"
-#include "chrome/browser/net/server_certificate_database.h"
 #include "chrome/common/buildflags.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
@@ -33,6 +32,10 @@
 #include "services/network/public/mojom/cert_verifier_service_updater.mojom.h"
 #include "services/network/public/mojom/cookie_manager.mojom-forward.h"
 #include "services/network/public/mojom/network_context.mojom-forward.h"
+
+#if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
+#include "chrome/browser/net/server_certificate_database.h"
+#endif
 
 class PrefRegistrySimple;
 class Profile;
