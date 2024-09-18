@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 package org.chromium.components.search_engines;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -20,6 +21,9 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.TransitiveObservableSupplier;
 import org.chromium.components.search_engines.SearchEngineCountryDelegate.DeviceChoiceEventType;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 /**
  * Singleton responsible for communicating with device APIs to expose device-level properties that
@@ -58,6 +62,8 @@ public class SearchEngineChoiceService {
      */
     private final Promise<String> mDeviceCountryPromise;
 
+    private final ObservableSupplier<Boolean> mIsDeviceChoiceRequiredSupplier;
+
     /** Returns the instance of the singleton. Creates the instance if needed. */
     @MainThread
     public static SearchEngineChoiceService getInstance() {
@@ -72,6 +78,31 @@ public class SearchEngineChoiceService {
             sInstance = new SearchEngineChoiceService(delegate);
         }
         return sInstance;
+    }
+
+    /**
+     * Values indicating the reason why refreshing the device choice completions status was
+     * requested.
+     *
+     * @see #refreshDeviceChoiceRequiredNow
+     */
+    @IntDef({
+        RefreshReason.APP_RESUME,
+        RefreshReason.DEFAULTS_PROPAGATED,
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface RefreshReason {
+        /**
+         * Refresh is needed because the app is coming back in focus after having been off screen or
+         * deprioritised.
+         */
+        int APP_RESUME = 1;
+
+        /**
+         * Refresh is needed because the app received a notification that device defaults have been
+         * updated.
+         */
+        int DEFAULTS_PROPAGATED = 2;
     }
 
     /** Overrides the instance of the singleton for tests. */
@@ -104,6 +135,8 @@ public class SearchEngineChoiceService {
             // the delegate now.
             mDeviceCountryPromise.andFinally(() -> mDelegate = null);
         }
+
+        mIsDeviceChoiceRequiredSupplier = createIsDeviceChoiceRequiredSupplier(mDelegate);
     }
 
     /**
@@ -156,22 +189,23 @@ public class SearchEngineChoiceService {
     @MainThread
     public ObservableSupplier<Boolean> getIsDeviceChoiceRequiredSupplier() {
         ThreadUtils.checkUiThread();
-        var alwaysFalseSupplier = new ObservableSupplierImpl<>(false);
+        return mIsDeviceChoiceRequiredSupplier;
+    }
 
-        if (!SearchEnginesFeatures.isEnabled(SearchEnginesFeatures.CLAY_BLOCKING)) {
-            return alwaysFalseSupplier;
+    /**
+     * Re-evaluate whether the device choice should be required.
+     *
+     * <p>A new update will be propagated through the supplier obtained from {@link
+     * #getIsDeviceChoiceRequiredSupplier()}, but there is no expectation that it would be
+     * immediate.
+     */
+    @MainThread
+    public void refreshDeviceChoiceRequiredNow(@RefreshReason int reason) {
+        ThreadUtils.checkUiThread();
+
+        if (mDelegate != null) {
+            mDelegate.refreshDeviceChoiceRequiredNow(reason);
         }
-
-        assert mDelegate != null;
-
-        var supplier = mDelegate.getIsDeviceChoiceRequiredSupplier();
-        if (SearchEnginesFeatureUtils.clayBlockingIsDarkLaunch()) {
-            // We want to call into the backend to be able to verify it's working, but we intercept
-            // its returned values to prevent it from affecting the user experience.
-            return new TransitiveObservableSupplier<>(supplier, ignored -> alwaysFalseSupplier);
-        }
-
-        return supplier;
     }
 
     /**
@@ -219,6 +253,23 @@ public class SearchEngineChoiceService {
         assert mDelegate != null;
         Log.i(TAG, "notifyDeviceChoiceEvent(%d)", eventType);
         mDelegate.notifyDeviceChoiceEvent(eventType);
+    }
+
+    private static ObservableSupplier<Boolean> createIsDeviceChoiceRequiredSupplier(
+            @NonNull SearchEngineCountryDelegate delegate) {
+        var alwaysFalseSupplier = new ObservableSupplierImpl<>(false);
+
+        if (!SearchEnginesFeatures.isEnabled(SearchEnginesFeatures.CLAY_BLOCKING)) {
+            return alwaysFalseSupplier;
+        }
+
+        var supplier = delegate.getIsDeviceChoiceRequiredSupplier();
+        return SearchEnginesFeatureUtils.clayBlockingIsDarkLaunch()
+                // We want to call into the backend to be able to verify it's working,
+                // but we intercept its returned values to prevent it from affecting the
+                // user experience.
+                ? new TransitiveObservableSupplier<>(supplier, ignored -> alwaysFalseSupplier)
+                : supplier;
     }
 
     private void requestCountryFromPlayApiInternal(long ptrToNativeCallback) {

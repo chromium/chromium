@@ -25,6 +25,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
@@ -39,6 +40,7 @@ import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.search_engines.R;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
@@ -72,6 +74,8 @@ public class ChoiceScreenRenderTest {
 
     public @Rule final MockitoRule mMockitoRule =
             MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
+
+    private @Mock ActivityLifecycleDispatcher mLifecycleDispatcher;
 
     private ModalDialogManager mDialogManager;
     private FakeSearchEngineCountryDelegate mFakeDelegate;
@@ -146,6 +150,7 @@ public class ChoiceScreenRenderTest {
     }
 
     private void showDialog() {
-        ChoiceDialogCoordinator.maybeShow(mActivityTestRule.getActivity(), mDialogManager);
+        ChoiceDialogCoordinator.maybeShow(
+                mActivityTestRule.getActivity(), mDialogManager, mLifecycleDispatcher);
     }
 }

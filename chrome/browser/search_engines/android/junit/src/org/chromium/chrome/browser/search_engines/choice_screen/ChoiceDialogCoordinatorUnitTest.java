@@ -35,6 +35,7 @@ import org.chromium.base.FeatureList;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.search_engines.choice_screen.ChoiceDialogMediator.DialogType;
 import org.chromium.components.search_engines.SearchEngineChoiceService;
 import org.chromium.components.search_engines.SearchEnginesFeatures;
@@ -54,6 +55,7 @@ public class ChoiceDialogCoordinatorUnitTest {
 
     private @Mock ChoiceDialogCoordinator.ViewHolder mViewHolder;
     private @Mock ModalDialogManager mModalDialogManager;
+    private @Mock ActivityLifecycleDispatcher mLifecycleDispatcher;
     private @Mock SearchEngineChoiceService mSearchEngineChoiceService;
     private @Captor ArgumentCaptor<Callback<Integer>> mActionButtonCallbackCaptor;
 
@@ -240,7 +242,7 @@ public class ChoiceDialogCoordinatorUnitTest {
     private ChoiceDialogCoordinator createCoordinatorWithMocks(
             SearchEngineChoiceService searchEngineChoiceService) {
         return new ChoiceDialogCoordinator(
-                mViewHolder, mModalDialogManager, searchEngineChoiceService);
+                mViewHolder, mModalDialogManager, mLifecycleDispatcher, searchEngineChoiceService);
     }
 
     /**
