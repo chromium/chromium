@@ -8,7 +8,6 @@ import android.os.Build;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
@@ -16,6 +15,8 @@ import org.jni_zero.CalledByNative;
 
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.ViewAndroidDelegate;
+
+import java.lang.ref.WeakReference;
 
 /**
  * Java counterpart of the `AndroidSensitiveContentClient`. Used to retrieve the container view and
@@ -46,8 +47,12 @@ class SensitiveContentClient implements ViewAndroidDelegate.ContainerViewObserve
      * The {@link ViewAndroidDelegate} this class is observing. The {@link ViewAndroidDelegate} of
      * the {@link WebContents} can be swapped, so the code needs to stop observing the last one and
      * start observing the new one.
+     *
+     * <p>It can happen that the {@link SensitiveContentClient} is the last object holding a
+     * reference to the {@link ViewAndroidDelegate}. Therefore, the reference is weak, to allow
+     * garbage collection.
      */
-    private @Nullable ViewAndroidDelegate mLastViewAndroidDelegate;
+    private WeakReference<ViewAndroidDelegate> mLastViewAndroidDelegate;
 
     /**
      * Sets the provided content sensitivity on the provided view, in production. In tests, it is
@@ -72,17 +77,18 @@ class SensitiveContentClient implements ViewAndroidDelegate.ContainerViewObserve
     SensitiveContentClient(
             WebContents webContents, ContentSensitivitySetter contentSensitivitySetter) {
         mWebContents = webContents;
-        mLastViewAndroidDelegate = mWebContents.getViewAndroidDelegate();
-        if (mLastViewAndroidDelegate != null) {
-            mLastViewAndroidDelegate.addObserver(this);
+        mLastViewAndroidDelegate =
+                new WeakReference<ViewAndroidDelegate>(mWebContents.getViewAndroidDelegate());
+        if (mLastViewAndroidDelegate.get() != null) {
+            mLastViewAndroidDelegate.get().addObserver(this);
         }
         mContentSensitivitySetter = contentSensitivitySetter;
     }
 
     @CalledByNative
     private void destroy() {
-        if (mLastViewAndroidDelegate != null) {
-            mLastViewAndroidDelegate.removeObserver(this);
+        if (mLastViewAndroidDelegate.get() != null) {
+            mLastViewAndroidDelegate.get().removeObserver(this);
         }
     }
 
@@ -110,14 +116,14 @@ class SensitiveContentClient implements ViewAndroidDelegate.ContainerViewObserve
         mContentIsSensitive = contentIsSensitive;
 
         ViewAndroidDelegate viewAndroidDelegate = mWebContents.getViewAndroidDelegate();
-        if (mLastViewAndroidDelegate != viewAndroidDelegate) {
-            if (mLastViewAndroidDelegate != null) {
-                mLastViewAndroidDelegate.removeObserver(this);
+        if (mLastViewAndroidDelegate.get() != viewAndroidDelegate) {
+            if (mLastViewAndroidDelegate.get() != null) {
+                mLastViewAndroidDelegate.get().removeObserver(this);
             }
             if (viewAndroidDelegate != null) {
                 viewAndroidDelegate.addObserver(this);
             }
-            mLastViewAndroidDelegate = viewAndroidDelegate;
+            mLastViewAndroidDelegate = new WeakReference<ViewAndroidDelegate>(viewAndroidDelegate);
         }
 
         if (viewAndroidDelegate == null) {
