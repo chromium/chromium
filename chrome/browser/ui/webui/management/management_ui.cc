@@ -186,6 +186,7 @@ content::WebUIDataSource* CreateAndAddManagementUIHtmlSource(Profile* profile) {
       {kProfileReportingBrowser, IDS_MANAGEMENT_PROFILE_REPORTING_BROWSER},
       {kProfileReportingExtension, IDS_MANAGEMENT_PROFILE_REPORTING_EXTENSION},
       {kProfileReportingPolicy, IDS_MANAGEMENT_PROFILE_REPORTING_POLICY},
+      {kProfileReportingLearnMore, IDS_MANAGEMENT_PROFILE_REPORTING_LEARN_MORE},
   };
 
   source->AddLocalizedStrings(kLocalizedStrings);

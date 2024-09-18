@@ -87,6 +87,7 @@ const char kProfileReportingUsername[] = "profileReportingUsername";
 const char kProfileReportingBrowser[] = "profileReportingBrowser";
 const char kProfileReportingExtension[] = "profileReportingExtension";
 const char kProfileReportingPolicy[] = "profileReportingPolicy";
+const char kProfileReportingLearnMore[] = "profileReportingLearnMore";
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 const char kManagementScreenCaptureEvent[] = "managementScreenCaptureEvent";
