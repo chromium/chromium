@@ -246,6 +246,15 @@ sessions::LiveTab* BrowserLiveTabContext::AddRestoredTab(
         tab_group_service->AddGroup(
             tab_groups::SavedTabGroupUtils::CreateSavedTabGroupFromLocalId(
                 tab.group.value()));
+
+        if (tab_groups::IsTabGroupSyncServiceDesktopMigrationEnabled()) {
+          // Ensure we listen for changes to the newly created group.
+          // This is done automatically for the old service, not the new one.
+          std::optional<tab_groups::SavedTabGroup> s =
+              tab_group_service->GetGroup(group_id.value());
+          tab_group_service->ConnectLocalTabGroup(s->saved_guid(),
+                                                  group_id.value());
+        }
       }
     }
   } else {
