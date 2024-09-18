@@ -680,6 +680,14 @@ BASE_FEATURE(kOverscrollHistoryNavigation,
              "OverscrollHistoryNavigation",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Partitioned Popins must have a Popin-Policy in their top-frame HTTP Response
+// that permits the opener origin. This feature disables that check for purposes
+// of testing only, this must never be enabled by default in any context.
+// See https://explainers-by-googlers.github.io/partitioned-popins/
+BASE_FEATURE(kPartitionedPopinsHeaderPolicyBypass,
+             "PartitionedPopinsHeaderPolicyBypass",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables additional ChildProcessSecurityPolicy enforcements for PDF renderer
 // processes, including blocking storage and cookie access for them.
 //

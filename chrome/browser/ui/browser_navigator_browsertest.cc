@@ -45,6 +45,7 @@
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/bindings_policy.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/no_renderer_crashes_assertion.h"
@@ -2411,11 +2412,9 @@ class BrowserNavigatorPopinPolicyTest
 
 // Test that the HTTP response header `Popin-Policy` is respected.
 IN_PROC_BROWSER_TEST_P(BrowserNavigatorPopinPolicyTest, PopinPolicy) {
-  // Setup servers.
+  // Setup server.
   embedded_https_test_server().SetSSLConfig(
       net::EmbeddedTestServer::CERT_TEST_NAMES);
-  embedded_https_test_server().ServeFilesFromSourceDirectory(
-      GetChromeTestDataDir());
   embedded_https_test_server().RegisterRequestHandler(
       base::BindRepeating(&PopinRequestHandler));
   ASSERT_TRUE(embedded_https_test_server().Start());
@@ -2524,6 +2523,59 @@ INSTANTIATE_TEST_SUITE_P(
                 /*policy_allows*/ true,
             },
         })));
+
+class BrowserNavigatorPopinPolicyBypassTest
+    : public BrowserNavigatorTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  BrowserNavigatorPopinPolicyBypassTest() {
+    scoped_feature_list_.InitWithFeatureStates({
+        {blink::features::kPartitionedPopins, true},
+        {features::kPartitionedPopinsHeaderPolicyBypass,
+         PartitionedPopinsHeaderPolicyBypass()},
+    });
+  }
+  bool PartitionedPopinsHeaderPolicyBypass() const { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// kPartitionedPopinsHeaderPolicyBypass allows `Popin-Policy` to be bypassed.
+IN_PROC_BROWSER_TEST_P(BrowserNavigatorPopinPolicyBypassTest,
+                       PopinPolicyBypass) {
+  // Setup server.
+  embedded_https_test_server().SetSSLConfig(
+      net::EmbeddedTestServer::CERT_TEST_NAMES);
+  ASSERT_TRUE(embedded_https_test_server().Start());
+
+  // Navigate to a.test.
+  const GURL url = embedded_https_test_server().GetURL("a.test", "/empty.html");
+  content::WebContents* tab_web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  // Open the popin to a page without the policy and see it succeed if the
+  // feature was enabled.
+  content::WebContentsAddedObserver new_tab_observer;
+  content::TestNavigationObserver nav_observer(nullptr);
+  nav_observer.StartWatchingNewWebContents();
+  EXPECT_TRUE(content::ExecJs(tab_web_contents, "window.open('" + url.spec() +
+                                                    "', '_blank', 'popin')"));
+  content::WebContents* popin_web_contents = new_tab_observer.GetWebContents();
+  EXPECT_TRUE(popin_web_contents);
+  nav_observer.Wait();
+  EXPECT_EQ(PartitionedPopinsHeaderPolicyBypass() ? "a.test" : "chromewebdata",
+            content::EvalJs(popin_web_contents, "window.location.hostname")
+                .ExtractString());
+  BrowserWindow::FindBrowserWindowWithWebContents(popin_web_contents)->Close();
+}
+
+// Test all policy combinations.
+INSTANTIATE_TEST_SUITE_P(
+    /*no prefix*/,
+    BrowserNavigatorPopinPolicyBypassTest,
+    testing::Bool());
 
 // Test that a popin cannot navigate to an HTTP page
 IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, PopinHttpRedirectNavigation) {

@@ -4,9 +4,11 @@
 
 #include "content/browser/renderer_host/partitioned_popins/partitioned_popins_navigation_throttle.h"
 
+#include "base/feature_list.h"
 #include "content/browser/renderer_host/partitioned_popins/partitioned_popins_policy.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/common/content_features.h"
 #include "services/network/public/cpp/resource_request.h"
 
 namespace content {
@@ -82,6 +84,10 @@ PartitionedPopinsNavigationThrottle::PartitionedPopinsNavigationThrottle(
     : NavigationThrottle(navigation_handle) {}
 
 bool PartitionedPopinsNavigationThrottle::DoesPopinPolicyBlockResponse() {
+  if (base::FeatureList::IsEnabled(
+          features::kPartitionedPopinsHeaderPolicyBypass)) {
+    return false;
+  }
   const net::HttpResponseHeaders* response_headers =
       navigation_handle()->GetResponseHeaders();
   const WebContentsImpl* web_contents =
