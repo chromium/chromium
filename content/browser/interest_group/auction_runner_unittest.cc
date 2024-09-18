@@ -2263,22 +2263,22 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
   StorageInterestGroup MakeInterestGroup(blink::InterestGroup interest_group) {
     // Create fake previous wins. The time of these wins is ignored, since the
     // InterestGroupManager attaches the current time when logging a win.
-    std::vector<auction_worklet::mojom::PreviousWinPtr> previous_wins;
+    std::vector<blink::mojom::PreviousWinPtr> previous_wins;
     // Log a time that's before now, so that any new entry will have the largest
     // time.
     base::Time the_past = base::Time::Now() - base::Milliseconds(1);
     previous_wins.push_back(
-        auction_worklet::mojom::PreviousWin::New(the_past, R"({"winner": 0})"));
-    previous_wins.push_back(auction_worklet::mojom::PreviousWin::New(
-        the_past, R"({"winner": -1})"));
-    previous_wins.push_back(auction_worklet::mojom::PreviousWin::New(
-        the_past, R"({"winner": -2})"));
+        blink::mojom::PreviousWin::New(the_past, R"({"winner": 0})"));
+    previous_wins.push_back(
+        blink::mojom::PreviousWin::New(the_past, R"({"winner": -1})"));
+    previous_wins.push_back(
+        blink::mojom::PreviousWin::New(the_past, R"({"winner": -2})"));
 
     StorageInterestGroup storage_group;
     storage_group.interest_group = std::move(interest_group);
     storage_group.bidding_browser_signals =
-        auction_worklet::mojom::BiddingBrowserSignals::New(
-            3, 5, std::move(previous_wins), false);
+        blink::mojom::BiddingBrowserSignals::New(3, 5, std::move(previous_wins),
+                                                 false);
     storage_group.joining_origin = storage_group.interest_group.owner;
     return storage_group;
   }

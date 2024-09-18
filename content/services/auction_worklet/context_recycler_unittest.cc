@@ -186,7 +186,7 @@ class ContextRecyclerTest : public testing::Test {
   // change across runs, in production code.
   void RunBidderLazyFilterReuseTest(
       mojom::BidderWorkletNonSharedParams* ig_params,
-      mojom::BiddingBrowserSignals* bs_params,
+      blink::mojom::BiddingBrowserSignals* bs_params,
       base::Time now,
       std::string_view expected_result) {
     const GURL kBiddingSignalsWasmHelperUrl("https://example.test/wasm_helper");
@@ -235,12 +235,12 @@ class ContextRecyclerTest : public testing::Test {
           {{GURL("https://ad-component.test/1"), {"\"metadata 2\""}},
            {GURL("https://ad-component.test/2"), std::nullopt}}};
 
-      mojom::BiddingBrowserSignalsPtr bs_params2 =
-          mojom::BiddingBrowserSignals::New();
+      blink::mojom::BiddingBrowserSignalsPtr bs_params2 =
+          blink::mojom::BiddingBrowserSignals::New();
       bs_params2->prev_wins.push_back(
-          mojom::PreviousWin::New(now2 - base::Minutes(1), "[\"a\"]"));
+          blink::mojom::PreviousWin::New(now2 - base::Minutes(1), "[\"a\"]"));
       bs_params2->prev_wins.push_back(
-          mojom::PreviousWin::New(now2 - base::Minutes(2), "[\"b\"]"));
+          blink::mojom::PreviousWin::New(now2 - base::Minutes(2), "[\"b\"]"));
 
       ContextRecyclerScope scope(context_recycler);
       context_recycler.interest_group_lazy_filler()->ReInitialize(
@@ -1840,12 +1840,12 @@ TEST_F(ContextRecyclerTest, BidderLazyFiller) {
   ig_params->ad_components = {
       {{GURL("https://ad-component2.test/"), std::nullopt}}};
 
-  mojom::BiddingBrowserSignalsPtr bs_params =
-      mojom::BiddingBrowserSignals::New();
+  blink::mojom::BiddingBrowserSignalsPtr bs_params =
+      blink::mojom::BiddingBrowserSignals::New();
   bs_params->prev_wins.push_back(
-      mojom::PreviousWin::New(now - base::Minutes(3), "[\"c\"]"));
+      blink::mojom::PreviousWin::New(now - base::Minutes(3), "[\"c\"]"));
   bs_params->prev_wins.push_back(
-      mojom::PreviousWin::New(now - base::Minutes(4), "[\"d\"]"));
+      blink::mojom::PreviousWin::New(now - base::Minutes(4), "[\"d\"]"));
 
   RunBidderLazyFilterReuseTest(
       ig_params.get(), bs_params.get(), now,
@@ -1888,8 +1888,8 @@ TEST_F(ContextRecyclerTest, BidderLazyFiller2) {
   base::Time now = base::Time::Now();
   mojom::BidderWorkletNonSharedParamsPtr ig_params =
       mojom::BidderWorkletNonSharedParams::New();
-  mojom::BiddingBrowserSignalsPtr bs_params =
-      mojom::BiddingBrowserSignals::New();
+  blink::mojom::BiddingBrowserSignalsPtr bs_params =
+      blink::mojom::BiddingBrowserSignals::New();
   RunBidderLazyFilterReuseTest(
       ig_params.get(), bs_params.get(), now,
       "{\"userBiddingSignals\":null,"

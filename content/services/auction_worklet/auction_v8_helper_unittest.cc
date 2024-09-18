@@ -77,7 +77,7 @@ class DebugConnector : public auction_worklet::mojom::BidderWorklet {
       const url::Origin& browser_signal_seller_origin,
       const std::optional<url::Origin>& browser_signal_top_level_seller_origin,
       const base::TimeDelta browser_signal_recency,
-      auction_worklet::mojom::BiddingBrowserSignalsPtr bidding_browser_signals,
+      blink::mojom::BiddingBrowserSignalsPtr bidding_browser_signals,
       base::Time auction_start_time,
       const std::optional<blink::AdSize>& requested_ad_size,
       uint16_t multi_bid_limit,

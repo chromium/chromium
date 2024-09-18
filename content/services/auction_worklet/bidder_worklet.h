@@ -172,7 +172,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
       const url::Origin& browser_signal_seller_origin,
       const std::optional<url::Origin>& browser_signal_top_level_seller_origin,
       const base::TimeDelta browser_signal_recency,
-      mojom::BiddingBrowserSignalsPtr bidding_browser_signals,
+      blink::mojom::BiddingBrowserSignalsPtr bidding_browser_signals,
       base::Time auction_start_time,
       const std::optional<blink::AdSize>& requested_ad_size,
       uint16_t multi_bid_limit,
@@ -251,7 +251,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
     url::Origin browser_signal_seller_origin;
     std::optional<url::Origin> browser_signal_top_level_seller_origin;
     base::TimeDelta browser_signal_recency;
-    mojom::BiddingBrowserSignalsPtr bidding_browser_signals;
+    blink::mojom::BiddingBrowserSignalsPtr bidding_browser_signals;
     std::optional<blink::AdSize> requested_ad_size;
     uint16_t multi_bid_limit;
     base::Time auction_start_time;
@@ -529,7 +529,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
         const std::optional<url::Origin>&
             browser_signal_top_level_seller_origin,
         const base::TimeDelta browser_signal_recency,
-        mojom::BiddingBrowserSignalsPtr bidding_browser_signals,
+        blink::mojom::BiddingBrowserSignalsPtr bidding_browser_signals,
         base::Time auction_start_time,
         const std::optional<blink::AdSize>& requested_ad_size,
         uint16_t multi_bid_limit,
@@ -568,7 +568,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
         const url::Origin& browser_signal_seller_origin,
         const url::Origin* browser_signal_top_level_seller_origin,
         const base::TimeDelta browser_signal_recency,
-        const mojom::BiddingBrowserSignalsPtr& bidding_browser_signals,
+        const blink::mojom::BiddingBrowserSignalsPtr& bidding_browser_signals,
         base::Time auction_start_time,
         const std::optional<blink::AdSize>& requested_ad_size,
         uint16_t multi_bid_limit,

@@ -2540,18 +2540,15 @@ TEST_F(InterestGroupStorageTest, UpgradeFromV6) {
                         std::nullopt),
                   Field("size_groups", &InterestGroup::ad_components,
                         std::nullopt))),
-          Field(
-              "bidding_browser_signals",
-              &StorageInterestGroup::bidding_browser_signals,
-              testing::AllOf(
-                  Pointee(Field("join_count",
-                                &auction_worklet::mojom::BiddingBrowserSignals::
-                                    join_count,
-                                0)),
-                  Pointee(Field(
-                      "bid_count",
-                      &auction_worklet::mojom::BiddingBrowserSignals::bid_count,
-                      0)))),
+          Field("bidding_browser_signals",
+                &StorageInterestGroup::bidding_browser_signals,
+                testing::AllOf(
+                    Pointee(Field(
+                        "join_count",
+                        &blink::mojom::BiddingBrowserSignals::join_count, 0)),
+                    Pointee(Field(
+                        "bid_count",
+                        &blink::mojom::BiddingBrowserSignals::bid_count, 0)))),
           Field("hashed_kanon_keys", &StorageInterestGroup::hashed_kanon_keys,
                 testing::IsEmpty()),
           Field("joining_origin", &StorageInterestGroup::joining_origin,
@@ -2628,18 +2625,15 @@ TEST_F(InterestGroupStorageTest, UpgradeFromV6) {
                         std::nullopt),
                   Field("size_groups", &InterestGroup::ad_components,
                         std::nullopt))),
-          Field(
-              "bidding_browser_signals",
-              &StorageInterestGroup::bidding_browser_signals,
-              testing::AllOf(
-                  Pointee(Field("join_count",
-                                &auction_worklet::mojom::BiddingBrowserSignals::
-                                    join_count,
-                                5)),
-                  Pointee(Field(
-                      "bid_count",
-                      &auction_worklet::mojom::BiddingBrowserSignals::bid_count,
-                      4)))),
+          Field("bidding_browser_signals",
+                &StorageInterestGroup::bidding_browser_signals,
+                testing::AllOf(
+                    Pointee(Field(
+                        "join_count",
+                        &blink::mojom::BiddingBrowserSignals::join_count, 5)),
+                    Pointee(Field(
+                        "bid_count",
+                        &blink::mojom::BiddingBrowserSignals::bid_count, 4)))),
           Field("hashed_kanon_keys", &StorageInterestGroup::hashed_kanon_keys,
                 testing::IsEmpty()),
           Field("joining_origin", &StorageInterestGroup::joining_origin,
@@ -2716,18 +2710,15 @@ TEST_F(InterestGroupStorageTest, UpgradeFromV6) {
                         std::nullopt),
                   Field("size_groups", &InterestGroup::ad_components,
                         std::nullopt))),
-          Field(
-              "bidding_browser_signals",
-              &StorageInterestGroup::bidding_browser_signals,
-              testing::AllOf(
-                  Pointee(Field("join_count",
-                                &auction_worklet::mojom::BiddingBrowserSignals::
-                                    join_count,
-                                5)),
-                  Pointee(Field(
-                      "bid_count",
-                      &auction_worklet::mojom::BiddingBrowserSignals::bid_count,
-                      3)))),
+          Field("bidding_browser_signals",
+                &StorageInterestGroup::bidding_browser_signals,
+                testing::AllOf(
+                    Pointee(Field(
+                        "join_count",
+                        &blink::mojom::BiddingBrowserSignals::join_count, 5)),
+                    Pointee(Field(
+                        "bid_count",
+                        &blink::mojom::BiddingBrowserSignals::bid_count, 3)))),
           Field("hashed_kanon_keys", &StorageInterestGroup::hashed_kanon_keys,
                 testing::IsEmpty()),
           Field("joining_origin", &StorageInterestGroup::joining_origin,
@@ -2804,18 +2795,15 @@ TEST_F(InterestGroupStorageTest, UpgradeFromV6) {
                         std::nullopt),
                   Field("size_groups", &InterestGroup::ad_components,
                         std::nullopt))),
-          Field(
-              "bidding_browser_signals",
-              &StorageInterestGroup::bidding_browser_signals,
-              testing::AllOf(
-                  Pointee(Field("join_count",
-                                &auction_worklet::mojom::BiddingBrowserSignals::
-                                    join_count,
-                                4)),
-                  Pointee(Field(
-                      "bid_count",
-                      &auction_worklet::mojom::BiddingBrowserSignals::bid_count,
-                      4)))),
+          Field("bidding_browser_signals",
+                &StorageInterestGroup::bidding_browser_signals,
+                testing::AllOf(
+                    Pointee(Field(
+                        "join_count",
+                        &blink::mojom::BiddingBrowserSignals::join_count, 4)),
+                    Pointee(Field(
+                        "bid_count",
+                        &blink::mojom::BiddingBrowserSignals::bid_count, 4)))),
           Field("hashed_kanon_keys", &StorageInterestGroup::hashed_kanon_keys,
                 testing::IsEmpty()),
           Field("joining_origin", &StorageInterestGroup::joining_origin,

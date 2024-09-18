@@ -63,8 +63,8 @@ namespace content {
 namespace {
 
 using PassKey = base::PassKey<InterestGroupStorage>;
-using auction_worklet::mojom::BiddingBrowserSignalsPtr;
-using auction_worklet::mojom::PreviousWinPtr;
+using blink::mojom::BiddingBrowserSignalsPtr;
+using blink::mojom::PreviousWinPtr;
 using SellerCapabilitiesType = blink::SellerCapabilitiesType;
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -4365,7 +4365,7 @@ bool GetPreviousWins(sql::Database& db,
   prev_wins.BindString(1, group_key.name);
   prev_wins.BindTime(2, win_time_after);
   while (prev_wins.Step()) {
-    PreviousWinPtr prev_win = auction_worklet::mojom::PreviousWin::New(
+    PreviousWinPtr prev_win = blink::mojom::PreviousWin::New(
         /*time=*/prev_wins.ColumnTime(0),
         /*ad_json=*/prev_wins.ColumnString(1));
     output->prev_wins.push_back(std::move(prev_win));
@@ -4588,7 +4588,7 @@ bool DoGetStoredInterestGroup(sql::Database& db,
   }
 
   db_interest_group.bidding_browser_signals =
-      auction_worklet::mojom::BiddingBrowserSignals::New();
+      blink::mojom::BiddingBrowserSignals::New();
   if (!GetJoinCount(db, group_key, now - InterestGroupStorage::kHistoryLength,
                     db_interest_group.bidding_browser_signals)) {
     return false;
@@ -4689,7 +4689,7 @@ std::optional<std::vector<StorageInterestGroup>> DoGetInterestGroupsForOwner(
       std::string name = load.ColumnString(29);
       StorageInterestGroup& db_interest_group = interest_group_by_name[name];
       db_interest_group.bidding_browser_signals =
-          auction_worklet::mojom::BiddingBrowserSignals::New();
+          blink::mojom::BiddingBrowserSignals::New();
 
       db_interest_group.interest_group.owner = owner;
       db_interest_group.interest_group.name = name;
@@ -4795,7 +4795,7 @@ std::optional<std::vector<StorageInterestGroup>> DoGetInterestGroupsForOwner(
 
       StorageInterestGroup& db_interest_group = it->second;
 
-      PreviousWinPtr prev_win = auction_worklet::mojom::PreviousWin::New(
+      PreviousWinPtr prev_win = blink::mojom::PreviousWin::New(
           /*time=*/prev_wins.ColumnTime(1),
           /*ad_json=*/prev_wins.ColumnString(2));
       db_interest_group.bidding_browser_signals->prev_wins.push_back(

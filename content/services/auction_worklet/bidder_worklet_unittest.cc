@@ -698,8 +698,8 @@ class BidderWorkletTest : public testing::Test {
   }
 
   // Creates a BiddingBrowserSignals based on test fixture configuration.
-  mojom::BiddingBrowserSignalsPtr CreateBiddingBrowserSignals() {
-    return mojom::BiddingBrowserSignals::New(
+  blink::mojom::BiddingBrowserSignalsPtr CreateBiddingBrowserSignals() {
+    return blink::mojom::BiddingBrowserSignals::New(
         browser_signal_join_count_, browser_signal_bid_count_,
         CloneWinList(browser_signal_prev_wins_),
         browser_signal_for_debugging_only_in_cooldown_or_lockout_);
@@ -960,9 +960,10 @@ class BidderWorkletTest : public testing::Test {
     }
   }
 
-  std::vector<mojo::StructPtr<mojom::PreviousWin>> CloneWinList(
-      const std::vector<mojo::StructPtr<mojom::PreviousWin>>& prev_win_list) {
-    std::vector<mojo::StructPtr<mojom::PreviousWin>> out;
+  std::vector<mojo::StructPtr<blink::mojom::PreviousWin>> CloneWinList(
+      const std::vector<mojo::StructPtr<blink::mojom::PreviousWin>>&
+          prev_win_list) {
+    std::vector<mojo::StructPtr<blink::mojom::PreviousWin>> out;
     for (const auto& prev_win : prev_win_list) {
       out.push_back(prev_win->Clone());
     }
@@ -1001,7 +1002,8 @@ class BidderWorkletTest : public testing::Test {
   int browser_signal_bid_count_;
   bool browser_signal_for_debugging_only_in_cooldown_or_lockout_;
   base::TimeDelta browser_signal_recency_generate_bid_;
-  std::vector<mojo::StructPtr<mojom::PreviousWin>> browser_signal_prev_wins_;
+  std::vector<mojo::StructPtr<blink::mojom::PreviousWin>>
+      browser_signal_prev_wins_;
 
   std::optional<std::string> auction_signals_;
   std::optional<std::string> per_buyer_signals_;
@@ -6147,11 +6149,11 @@ TEST_F(BidderWorkletTest, WasmOrdering) {
 
 // Utility method to create a vector of PreviousWin. Needed because StructPtrs
 // don't allow copying.
-std::vector<mojom::PreviousWinPtr> CreateWinList(
-    const mojom::PreviousWinPtr& win1,
-    const mojom::PreviousWinPtr& win2 = mojom::PreviousWinPtr(),
-    const mojom::PreviousWinPtr& win3 = mojom::PreviousWinPtr()) {
-  std::vector<mojo::StructPtr<mojom::PreviousWin>> out;
+std::vector<blink::mojom::PreviousWinPtr> CreateWinList(
+    const blink::mojom::PreviousWinPtr& win1,
+    const blink::mojom::PreviousWinPtr& win2 = blink::mojom::PreviousWinPtr(),
+    const blink::mojom::PreviousWinPtr& win3 = blink::mojom::PreviousWinPtr()) {
+  std::vector<mojo::StructPtr<blink::mojom::PreviousWin>> out;
   out.emplace_back(win1.Clone());
   if (win2) {
     out.emplace_back(win2.Clone());
@@ -6170,13 +6172,13 @@ TEST_F(BidderWorkletTest, GenerateBidPrevWins) {
   base::Time time2 = auction_start_time_ - delta - tiny_delta;
   base::Time future_time = auction_start_time_ + delta;
 
-  auto win1 = mojom::PreviousWin::New(time1, R"({"renderURL":"ad1"})");
-  auto win2 = mojom::PreviousWin::New(
+  auto win1 = blink::mojom::PreviousWin::New(time1, R"({"renderURL":"ad1"})");
+  auto win2 = blink::mojom::PreviousWin::New(
       time2, R"({"renderURL":"ad2", "metadata":"{\"key\":\"value\"}"})");
-  auto future_win =
-      mojom::PreviousWin::New(future_time, R"({"renderURL":"future_ad"})");
+  auto future_win = blink::mojom::PreviousWin::New(
+      future_time, R"({"renderURL":"future_ad"})");
   struct TestCase {
-    std::vector<mojo::StructPtr<mojom::PreviousWin>> prev_wins;
+    std::vector<mojo::StructPtr<blink::mojom::PreviousWin>> prev_wins;
     // Value to output as the ad data.
     const char* ad;
     // Expected output in the `ad` field of the result.

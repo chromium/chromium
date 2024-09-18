@@ -28,7 +28,7 @@ struct CONTENT_EXPORT StorageInterestGroup {
   ~StorageInterestGroup();
 
   blink::InterestGroup interest_group;
-  auction_worklet::mojom::BiddingBrowserSignalsPtr bidding_browser_signals;
+  blink::mojom::BiddingBrowserSignalsPtr bidding_browser_signals;
 
   // Hashed k-anonymous keys.
   base::flat_set<std::string> hashed_kanon_keys;

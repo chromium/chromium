@@ -385,7 +385,7 @@ class InterestGroupAuctionReporterTest
         interest_group_manager_impl_->BlockingGetInterestGroup(
             kWinningBidderOrigin, kWinningBidderName);
     ASSERT_TRUE(interest_group);
-    const std::vector<auction_worklet::mojom::PreviousWinPtr>* prev_wins =
+    const std::vector<blink::mojom::PreviousWinPtr>* prev_wins =
         &interest_group.value()->bidding_browser_signals->prev_wins;
     ASSERT_EQ(1u, prev_wins->size());
     EXPECT_EQ((*prev_wins)[0]->ad_json, kWinningAdMetadata);

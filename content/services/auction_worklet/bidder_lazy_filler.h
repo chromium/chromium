@@ -17,6 +17,7 @@
 #include "content/services/auction_worklet/context_recycler.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom-forward.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
+#include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom-forward.h"
 #include "v8/include/v8-forward.h"
 
 class GURL;
@@ -160,7 +161,7 @@ class CONTENT_EXPORT BiddingBrowserSignalsLazyFiller
  public:
   explicit BiddingBrowserSignalsLazyFiller(AuctionV8Helper* v8_helper);
 
-  void ReInitialize(mojom::BiddingBrowserSignals* bidder_browser_signals,
+  void ReInitialize(blink::mojom::BiddingBrowserSignals* bidder_browser_signals,
                     base::Time auction_start_time);
 
   // Returns success/failure.
@@ -178,7 +179,8 @@ class CONTENT_EXPORT BiddingBrowserSignalsLazyFiller
       const v8::PropertyCallbackInfo<v8::Value>& info,
       PrevWinsType prev_wins_type);
 
-  raw_ptr<mojom::BiddingBrowserSignals> bidder_browser_signals_ = nullptr;
+  raw_ptr<blink::mojom::BiddingBrowserSignals> bidder_browser_signals_ =
+      nullptr;
   base::Time auction_start_time_;
 };
 
