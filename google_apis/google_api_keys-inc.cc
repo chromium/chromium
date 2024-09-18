@@ -14,13 +14,14 @@
 
 #include <stddef.h>
 
+#include <atomic>
 #include <memory>
 #include <string>
 
 #include "base/command_line.h"
 #include "base/environment.h"
-#include "base/lazy_instance.h"
 #include "base/logging.h"
+#include "base/no_destructor.h"
 #include "base/strings/stringize_macros.h"
 #include "base/version_info/channel.h"
 #include "build/branding_buildflags.h"
@@ -386,8 +387,23 @@ class APIKeyCache {
   std::string client_secrets_[CLIENT_NUM_ITEMS];
 };
 
-static base::LazyInstance<APIKeyCache>::DestructorAtExit g_api_key_cache =
-    LAZY_INSTANCE_INITIALIZER;
+std::atomic<APIKeyCache*> g_api_key_cache_instance = nullptr;
+
+APIKeyCache& CreateLeakyApiKeyCacheInstance() {
+  static ::base::NoDestructor<APIKeyCache> instance;
+  // `g_api_key_cache_instance` is always assigned to the same value but it
+  // might happen simultaneously from multiple threads, so use atomics.
+  APIKeyCache* expected = nullptr;
+  g_api_key_cache_instance.compare_exchange_strong(expected, instance.get());
+  return *instance.get();
+}
+
+APIKeyCache& GetApiKeyCacheInstance() {
+  if (!g_api_key_cache_instance) {
+    return CreateLeakyApiKeyCacheInstance();
+  }
+  return *g_api_key_cache_instance;
+}
 
 bool HasAPIKeyConfigured() {
   return GetAPIKey() != DUMMY_API_TOKEN;
@@ -396,38 +412,38 @@ bool HasAPIKeyConfigured() {
 const std::string& GetAPIKey(::version_info::Channel channel) {
   return channel == ::version_info::Channel::STABLE
              ? GetAPIKey()
-             : g_api_key_cache.Get().api_key_non_stable();
+             : GetApiKeyCacheInstance().api_key_non_stable();
 }
 
 const std::string& GetAPIKey() {
-  return g_api_key_cache.Get().api_key();
+  return GetApiKeyCacheInstance().api_key();
 }
 
 const std::string& GetRemotingAPIKey() {
-  return g_api_key_cache.Get().api_key_remoting();
+  return GetApiKeyCacheInstance().api_key_remoting();
 }
 
 const std::string& GetSodaAPIKey() {
-  return g_api_key_cache.Get().api_key_soda();
+  return GetApiKeyCacheInstance().api_key_soda();
 }
 
 #if !BUILDFLAG(IS_ANDROID)
 const std::string& GetHatsAPIKey() {
-  return g_api_key_cache.Get().api_key_hats();
+  return GetApiKeyCacheInstance().api_key_hats();
 }
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 const std::string& GetSharingAPIKey() {
-  return g_api_key_cache.Get().api_key_sharing();
+  return GetApiKeyCacheInstance().api_key_sharing();
 }
 
 const std::string& GetReadAloudAPIKey() {
-  return g_api_key_cache.Get().api_key_read_aloud();
+  return GetApiKeyCacheInstance().api_key_read_aloud();
 }
 
 const std::string& GetFresnelAPIKey() {
-  return g_api_key_cache.Get().api_key_fresnel();
+  return GetApiKeyCacheInstance().api_key_fresnel();
 }
 #endif
 
@@ -436,13 +452,13 @@ void SetAPIKey(const std::string& api_key) {
   // Overriding the API key must be made before its first usage. This check is
   // more permissive as it allows multiple calls to set the API with the same
   // value.
-  CHECK(!g_api_key_cache.IsCreated(), base::NotFatalUntil::M133);
-  g_api_key_cache.Get().set_api_key(api_key);
+  CHECK(!g_api_key_cache_instance, base::NotFatalUntil::M133);
+  GetApiKeyCacheInstance().set_api_key(api_key);
 }
 #endif
 
 const std::string& GetMetricsKey() {
-  return g_api_key_cache.Get().metrics_key();
+  return GetApiKeyCacheInstance().metrics_key();
 }
 
 bool HasOAuthClientConfigured() {
@@ -458,21 +474,21 @@ bool HasOAuthClientConfigured() {
 }
 
 const std::string& GetOAuth2ClientID(OAuth2Client client) {
-  return g_api_key_cache.Get().GetClientID(client);
+  return GetApiKeyCacheInstance().GetClientID(client);
 }
 
 const std::string& GetOAuth2ClientSecret(OAuth2Client client) {
-  return g_api_key_cache.Get().GetClientSecret(client);
+  return GetApiKeyCacheInstance().GetClientSecret(client);
 }
 
 #if BUILDFLAG(IS_IOS)
 void SetOAuth2ClientID(OAuth2Client client, const std::string& client_id) {
-  g_api_key_cache.Get().SetClientID(client, client_id);
+  GetApiKeyCacheInstance().SetClientID(client, client_id);
 }
 
 void SetOAuth2ClientSecret(OAuth2Client client,
                            const std::string& client_secret) {
-  g_api_key_cache.Get().SetClientSecret(client, client_secret);
+  GetApiKeyCacheInstance().SetClientSecret(client, client_secret);
 }
 #endif
 
