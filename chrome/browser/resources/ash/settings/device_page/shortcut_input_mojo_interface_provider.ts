@@ -15,6 +15,11 @@ import {ShortcutInputProviderInterface} from './input_device_settings_types.js';
 
 let shortcutInputProvider: ShortcutInputProviderInterface|null;
 
+export function setShortcutInputProviderForTesting(
+    testProvider: ShortcutInputProviderInterface): void {
+  shortcutInputProvider = testProvider;
+}
+
 export function getShortcutInputProvider(): ShortcutInputProviderInterface {
   if (!shortcutInputProvider) {
     shortcutInputProvider = ShortcutInputProvider.getRemote();

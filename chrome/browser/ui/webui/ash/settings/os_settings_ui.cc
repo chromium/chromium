@@ -70,6 +70,7 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/widget/widget.h"
@@ -328,7 +329,8 @@ void OSSettingsUI::BindInterface(
   auto* provider =
       OsSettingsManagerFactory::GetForProfile(Profile::FromWebUI(web_ui()))
           ->input_device_settings_provider();
-  if (features::IsPeripheralCustomizationEnabled()) {
+  if (features::IsPeripheralCustomizationEnabled() ||
+      ::features::IsAccessibilityFaceGazeEnabled()) {
     provider->Initialize(web_ui());
   }
   provider->BindInterface(std::move(receiver));
@@ -352,7 +354,8 @@ void OSSettingsUI::BindInterface(
 void OSSettingsUI::BindInterface(
     mojo::PendingReceiver<::ash::common::mojom::ShortcutInputProvider>
         receiver) {
-  CHECK(features::IsPeripheralCustomizationEnabled());
+  CHECK(features::IsPeripheralCustomizationEnabled() ||
+        ::features::IsAccessibilityFaceGazeEnabled());
   auto* shortcut_input_provider =
       OsSettingsManagerFactory::GetForProfile(Profile::FromWebUI(web_ui()))
           ->shortcut_input_provider();

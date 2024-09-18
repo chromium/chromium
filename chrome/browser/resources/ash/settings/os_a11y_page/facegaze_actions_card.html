@@ -24,8 +24,7 @@
       id="actionsAddDialog"
       left-click-gestures="[[leftClickGestures_]]"
       initial-page="[[dialogPageToShow_]]"
-      action-to-assign-gesture="[[actionToAssignGesture_]]"
-      gesture-to-configure="[[gestureToConfigure_]]"
+      command-pair-to-configure="[[commandPairToConfigure_]]"
       on-facegaze-command-pair-added="onCommandPairAdded_"
       on-close="onAddActionDialogClose_">
   </facegaze-actions-add-dialog>
@@ -47,6 +46,9 @@
           <div>[[getActionDisplayText_(item.action)]]</div>
           <template is="dom-if" if="[[getSubLabel_(item.action)]]">
             <div class="secondary">[[getSubLabel_(item.action)]]</div>
+          </template>
+          <template is="dom-if" if="[[getKeyComboDisplayText_(item)]]">
+            <div class="secondary">[[getKeyComboDisplayText_(item)]]</div>
           </template>
         </div>
         <template is="dom-if" if="[[item.gesture]]" restamp>

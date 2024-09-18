@@ -189,6 +189,7 @@ export {KeyCombinationInputDialogElement} from './device_page/key_combination_in
 export {SettingsKeyboardElement} from './device_page/keyboard.js';
 export {SettingsPointersElement} from './device_page/pointers.js';
 export {SettingsPowerElement} from './device_page/power.js';
+export {setShortcutInputProviderForTesting} from './device_page/shortcut_input_mojo_interface_provider.js';
 export {SettingsStorageElement} from './device_page/storage.js';
 export {SettingsStylusElement} from './device_page/stylus.js';
 export {ContainerInfo, CROSTINI_TYPE, GuestId, GuestOsBrowserProxy, GuestOsBrowserProxyImpl, GuestOsSharedUsbDevice, PLUGIN_VM_TYPE, ShareableDevices} from './guest_os/guest_os_browser_proxy.js';
@@ -237,7 +238,7 @@ export {SettingsCursorAndTouchpadPageElement} from './os_a11y_page/cursor_and_to
 export {SettingsDisplayAndMagnificationSubpageElement} from './os_a11y_page/display_and_magnification_subpage.js';
 export {AddDialogPage, FaceGazeAddActionDialogElement} from './os_a11y_page/facegaze_actions_add_dialog.js';
 export {FaceGazeActionsCardElement} from './os_a11y_page/facegaze_actions_card.js';
-export {FACEGAZE_COMMAND_PAIR_ADDED_EVENT_NAME, FaceGazeCommandPair, FaceGazeUtils} from './os_a11y_page/facegaze_constants.js';
+export {AssignedKeyCombo, FACEGAZE_COMMAND_PAIR_ADDED_EVENT_NAME, FaceGazeCommandPair, FaceGazeUtils, KeyCombination} from './os_a11y_page/facegaze_constants.js';
 export {FaceGazeCursorCardElement} from './os_a11y_page/facegaze_cursor_card.js';
 export {SettingsFaceGazeSubpageElement} from './os_a11y_page/facegaze_subpage.js';
 export {SettingsKeyboardAndTextInputPageElement} from './os_a11y_page/keyboard_and_text_input_page.js';

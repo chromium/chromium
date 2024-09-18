@@ -14,6 +14,12 @@ export const FACE_GAZE_GESTURE_TO_CONFIDENCE_PREF_DICT =
 export const FACE_GAZE_GESTURE_TO_CONFIDENCE_PREF =
     `prefs.${FACE_GAZE_GESTURE_TO_CONFIDENCE_PREF_DICT}.value`;
 
+export const FACE_GAZE_GESTURE_TO_KEY_COMBO_PREF_DICT =
+    'settings.a11y.face_gaze.gestures_to_key_combos';
+
+export const FACE_GAZE_GESTURE_TO_KEY_COMBO_PREF =
+    `prefs.${FACE_GAZE_GESTURE_TO_KEY_COMBO_PREF_DICT}.value`;
+
 // Currently supported macros in FaceGaze.
 export const FaceGazeActions: MacroName[] = [
   MacroName.MOUSE_CLICK_LEFT,
@@ -33,9 +39,25 @@ export const FaceGazeActions: MacroName[] = [
 // Values are extracted here for ease of use.
 export const FaceGazeGestures = Object.values(FacialGesture);
 
+export interface KeyCombination {
+  key: number;
+  keyDisplay: string;
+  modifiers?: {
+    ctrl?: boolean,
+    alt?: boolean,
+    shift?: boolean,
+    search?: boolean,
+  };
+}
+
 export class FaceGazeCommandPair {
   action: MacroName;
   gesture: FacialGesture|null;
+
+  // This will only be assigned and valid if this.action ===
+  // MacroName.CUSTOM_KEY_COMBINATION. Otherwise, it should be undefined and
+  // never null.
+  assignedKeyCombo?: AssignedKeyCombo;
 
   constructor(action: MacroName, gesture: FacialGesture|null) {
     this.action = action;
@@ -43,7 +65,40 @@ export class FaceGazeCommandPair {
   }
 
   equals(other: FaceGazeCommandPair): boolean {
-    return this.action === other.action && this.gesture === other.gesture;
+    if (this.action !== other.action || this.gesture !== other.gesture) {
+      // If the action and gesture do not match, then these objects cannot be
+      // equal.
+      return false;
+    }
+
+    if (!this.assignedKeyCombo && !other.assignedKeyCombo) {
+      // If neither objects have key combinations to compare, then these objects
+      // must be equal.
+      return true;
+    }
+
+    // Compare the existence and contents of the key combinations.
+    return !!this.assignedKeyCombo && !!other.assignedKeyCombo &&
+        this.assignedKeyCombo.equals(other.assignedKeyCombo);
+  }
+}
+
+export class AssignedKeyCombo {
+  prefString: string;
+  keyCombo: KeyCombination;
+
+  constructor(prefString: string) {
+    this.prefString = prefString;
+    this.keyCombo = JSON.parse(prefString) as KeyCombination;
+
+    if (!this.keyCombo) {
+      throw new Error(
+          `FaceGaze expected valid key combination from ${prefString}.`);
+    }
+  }
+
+  equals(other: AssignedKeyCombo): boolean {
+    return this.prefString === other.prefString;
   }
 }
 
@@ -193,7 +248,6 @@ export class FaceGazeUtils {
    */
   static getMacroDisplaySubLabel(macro: MacroName): string|null {
     // TODO(b:341770655): Localize this string.
-    // TODO(b/355662619): Add a sub-label for custom key combination macro.
     switch (macro) {
       case MacroName.TOGGLE_SCROLL_MODE:
         return 'Once in scroll mode, use head movement to scroll';

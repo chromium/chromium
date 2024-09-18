@@ -106,6 +106,8 @@ export class GestureHandler {
           break;
         case GestureHandler.GESTURE_TO_KEY_COMBO_PREF:
           if (pref.value) {
+            // Update the whole map from this preference.
+            this.gesturesToKeyCombos_.clear();
             for (const [gesture, keyCombinationAsString] of Object.entries(
                      pref.value)) {
               const keyCombination =

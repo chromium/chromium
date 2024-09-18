@@ -4,7 +4,7 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {AddDialogPage, FACEGAZE_COMMAND_PAIR_ADDED_EVENT_NAME, FaceGazeActionsCardElement, FaceGazeAddActionDialogElement, FaceGazeCommandPair} from 'chrome://os-settings/lazy_load.js';
+import {AddDialogPage, AssignedKeyCombo, FACEGAZE_COMMAND_PAIR_ADDED_EVENT_NAME, FaceGazeActionsCardElement, FaceGazeAddActionDialogElement, FaceGazeCommandPair, KeyCombination} from 'chrome://os-settings/lazy_load.js';
 import {CrButtonElement, CrIconButtonElement, CrSettingsPrefs, Router, routes, SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
 import {FacialGesture} from 'chrome://resources/ash/common/accessibility/facial_gestures.js';
 import {MacroName} from 'chrome://resources/ash/common/accessibility/macro_names.js';
@@ -40,29 +40,37 @@ suite('<facegaze-actions-card>', () => {
   let faceGazeActionsCard: FaceGazeActionsCardElement;
   let prefElement: SettingsPrefsElement;
 
-  function isCommandPairSetInPrefs(
-      expectedMacro: MacroName, expectedGesture: FacialGesture): boolean {
-    const assignedGestures = {...faceGazeActionsCard.prefs.settings.a11y
-                                  .face_gaze.gestures_to_macros.value};
-    for (const [currentGesture, assignedMacro] of Object.entries(
-             assignedGestures)) {
-      if (expectedGesture === currentGesture &&
-          expectedMacro === assignedMacro) {
-        return true;
-      }
+  function isGestureToMacroPrefSet(expectedCommandPair: FaceGazeCommandPair):
+      boolean {
+    if (!expectedCommandPair.gesture) {
+      return false;
     }
 
-    return false;
+    const assignedGestures = {...faceGazeActionsCard.prefs.settings.a11y
+                                  .face_gaze.gestures_to_macros.value};
+    return assignedGestures[expectedCommandPair.gesture] ===
+        expectedCommandPair.action;
   }
 
-  async function fireCommandPairAddedEvent(
-      macro: MacroName, gesture: FacialGesture|null) {
+  function isGestureToKeyComboPrefSet(expectedCommandPair: FaceGazeCommandPair):
+      boolean {
+    if (!expectedCommandPair.gesture || !expectedCommandPair.assignedKeyCombo) {
+      return false;
+    }
+
+    const assignedKeyCombos: Record<FacialGesture, string> = {
+        ...faceGazeActionsCard.prefs.settings.a11y.face_gaze
+            .gestures_to_key_combos.value};
+    return assignedKeyCombos[expectedCommandPair.gesture] ===
+        expectedCommandPair.assignedKeyCombo.prefString;
+  }
+
+  async function fireCommandPairAddedEvent(commandPair: FaceGazeCommandPair) {
     getAddButton().click();
     await flushTasks();
 
     const dialog = getDialog();
 
-    const commandPair = new FaceGazeCommandPair(macro, gesture);
     const event = new CustomEvent(FACEGAZE_COMMAND_PAIR_ADDED_EVENT_NAME, {
       bubbles: true,
       composed: true,
@@ -160,33 +168,78 @@ suite('<facegaze-actions-card>', () => {
     faceGazeActionsCard.prefs.settings.a11y.face_gaze.gestures_to_macros
         .value[expectedGesture] = expectedMacro;
 
+    const keyComboGesture: FacialGesture = FacialGesture.BROW_INNER_UP;
+    const keyCombo: KeyCombination = {
+      key: 67,
+      keyDisplay: 'c',
+      modifiers: {
+        ctrl: true,
+      },
+    };
+    const keyComboPrefString = JSON.stringify(keyCombo);
+    faceGazeActionsCard.prefs.settings.a11y.face_gaze.gestures_to_macros
+        .value[keyComboGesture] = MacroName.CUSTOM_KEY_COMBINATION;
+    faceGazeActionsCard.prefs.settings.a11y.face_gaze.gestures_to_key_combos
+        .value[keyComboGesture] = keyComboPrefString;
+    const keyComboCommandPair = new FaceGazeCommandPair(
+        MacroName.CUSTOM_KEY_COMBINATION, keyComboGesture);
+    keyComboCommandPair.assignedKeyCombo =
+        new AssignedKeyCombo(keyComboPrefString);
+
     document.body.appendChild(faceGazeActionsCard);
     flush();
 
-    assertTrue(isCommandPairSetInPrefs(expectedMacro, expectedGesture));
+    assertTrue(isGestureToMacroPrefSet(
+        new FaceGazeCommandPair(expectedMacro, expectedGesture)));
+    assertTrue(isGestureToMacroPrefSet(keyComboCommandPair));
+    assertTrue(isGestureToKeyComboPrefSet(keyComboCommandPair));
 
     const commandPairs = faceGazeActionsCard.get(
         FaceGazeActionsCardElement.FACEGAZE_COMMAND_PAIRS_PROPERTY_NAME);
-    assertEquals(1, commandPairs.length);
+    assertEquals(2, commandPairs.length);
   });
 
   test('actions update prefs with added command pair', async () => {
     await initPage();
 
-    const expectedMacro: MacroName = MacroName.MOUSE_CLICK_LEFT;
-    const expectedGesture: FacialGesture = FacialGesture.EYES_BLINK;
-    assertFalse(isCommandPairSetInPrefs(expectedMacro, expectedGesture));
-    await fireCommandPairAddedEvent(expectedMacro, expectedGesture);
-    assertTrue(isCommandPairSetInPrefs(expectedMacro, expectedGesture));
+    const expectedCommandPair = new FaceGazeCommandPair(
+        MacroName.MOUSE_CLICK_LEFT, FacialGesture.EYES_BLINK);
+    assertFalse(isGestureToMacroPrefSet(expectedCommandPair));
+    await fireCommandPairAddedEvent(expectedCommandPair);
+    assertTrue(isGestureToMacroPrefSet(expectedCommandPair));
   });
+
+  test(
+      'actions update prefs with added command pair with custom keyboard shortcut',
+      async () => {
+        await initPage();
+
+        const keyComboCommandPair = new FaceGazeCommandPair(
+            MacroName.CUSTOM_KEY_COMBINATION, FacialGesture.JAW_OPEN);
+        const keyCombo: KeyCombination = {
+          key: 67,
+          keyDisplay: 'c',
+          modifiers: {
+            ctrl: true,
+          },
+        };
+        keyComboCommandPair.assignedKeyCombo =
+            new AssignedKeyCombo(JSON.stringify(keyCombo));
+
+        assertFalse(isGestureToMacroPrefSet(keyComboCommandPair));
+        assertFalse(isGestureToKeyComboPrefSet(keyComboCommandPair));
+        await fireCommandPairAddedEvent(keyComboCommandPair);
+        assertTrue(isGestureToMacroPrefSet(keyComboCommandPair));
+        assertTrue(isGestureToKeyComboPrefSet(keyComboCommandPair));
+      });
 
   test('actions update prefs based on removed command pair', async () => {
     await initPage();
 
-    const expectedMacro: MacroName = MacroName.MOUSE_CLICK_LEFT;
-    const expectedGesture: FacialGesture = FacialGesture.EYES_BLINK;
-    await fireCommandPairAddedEvent(expectedMacro, expectedGesture);
-    assertTrue(isCommandPairSetInPrefs(expectedMacro, expectedGesture));
+    const commandPair = new FaceGazeCommandPair(
+        MacroName.MOUSE_CLICK_LEFT, FacialGesture.EYES_BLINK);
+    await fireCommandPairAddedEvent(commandPair);
+    assertTrue(isGestureToMacroPrefSet(commandPair));
     flush();
 
     const removeButton =
@@ -196,8 +249,40 @@ suite('<facegaze-actions-card>', () => {
     removeButton.click();
     await flushTasks();
 
-    assertFalse(isCommandPairSetInPrefs(expectedMacro, expectedGesture));
+    assertFalse(isGestureToMacroPrefSet(commandPair));
   });
+
+  test(
+      'actions update prefs based on removed command pair with custom keyboard shortcut',
+      async () => {
+        await initPage();
+
+        const keyComboCommandPair = new FaceGazeCommandPair(
+            MacroName.CUSTOM_KEY_COMBINATION, FacialGesture.JAW_OPEN);
+        const keyCombo: KeyCombination = {
+          key: 67,
+          keyDisplay: 'c',
+          modifiers: {
+            ctrl: true,
+          },
+        };
+        keyComboCommandPair.assignedKeyCombo =
+            new AssignedKeyCombo(JSON.stringify(keyCombo));
+        await fireCommandPairAddedEvent(keyComboCommandPair);
+        assertTrue(isGestureToMacroPrefSet(keyComboCommandPair));
+        assertTrue(isGestureToKeyComboPrefSet(keyComboCommandPair));
+        flush();
+
+        const removeButton =
+            faceGazeActionsCard.shadowRoot!.querySelector<CrIconButtonElement>(
+                '.icon-clear');
+        assertTrue(!!removeButton);
+        removeButton.click();
+        await flushTasks();
+
+        assertFalse(isGestureToMacroPrefSet(keyComboCommandPair));
+        assertFalse(isGestureToKeyComboPrefSet(keyComboCommandPair));
+      });
 
   test('actions add button opens dialog on action page', async () => {
     await initPage();
@@ -207,7 +292,7 @@ suite('<facegaze-actions-card>', () => {
 
     const dialog = getDialog();
     assertEquals(AddDialogPage.SELECT_ACTION, dialog.getCurrentPageForTest());
-    assertNull(dialog.actionToAssignGesture);
+    assertNull(dialog.commandPairToConfigure);
   });
 
   test(
@@ -215,7 +300,8 @@ suite('<facegaze-actions-card>', () => {
       async () => {
         await initPage();
 
-        await fireCommandPairAddedEvent(MacroName.MOUSE_CLICK_LEFT, null);
+        await fireCommandPairAddedEvent(
+            new FaceGazeCommandPair(MacroName.MOUSE_CLICK_LEFT, null));
         flush();
 
         const chip = faceGazeActionsCard.shadowRoot!.querySelector('cros-chip');
@@ -225,31 +311,67 @@ suite('<facegaze-actions-card>', () => {
 
         const dialog = getDialog();
         assertEquals(AddDialogPage.SELECT_GESTURE, dialog.initialPage);
-        assertTrue(!!dialog.actionToAssignGesture);
+        assertTrue(!!dialog.commandPairToConfigure);
+        assertTrue(!!dialog.commandPairToConfigure.action);
       });
 
-  test('actions gesture button opens dialog on gesture page', async () => {
-    await initPage();
+  test(
+      'actions assign gesture button with custom keyboard shortcut opens dialog on gesture page',
+      async () => {
+        await initPage();
 
-    await fireCommandPairAddedEvent(
-        MacroName.MOUSE_CLICK_LEFT, FacialGesture.BROWS_DOWN);
-    flush();
+        const commandPair =
+            new FaceGazeCommandPair(MacroName.CUSTOM_KEY_COMBINATION, null);
+        const keyCombo: KeyCombination = {
+          key: 67,
+          keyDisplay: 'c',
+          modifiers: {
+            ctrl: true,
+          },
+        };
+        commandPair.assignedKeyCombo =
+            new AssignedKeyCombo(JSON.stringify(keyCombo));
 
-    const chip = faceGazeActionsCard.shadowRoot!.querySelector('cros-chip');
-    assertTrue(!!chip);
-    chip.click();
-    await flushTasks();
+        await fireCommandPairAddedEvent(commandPair);
+        flush();
 
-    const dialog = getDialog();
-    assertEquals(AddDialogPage.GESTURE_THRESHOLD, dialog.initialPage);
-    assertTrue(!!dialog.gestureToConfigure);
-  });
+        const chip = faceGazeActionsCard.shadowRoot!.querySelector('cros-chip');
+        assertTrue(!!chip);
+        chip.click();
+        await flushTasks();
+
+        const dialog = getDialog();
+        assertEquals(AddDialogPage.SELECT_GESTURE, dialog.initialPage);
+        assertTrue(!!dialog.commandPairToConfigure);
+        assertTrue(!!dialog.commandPairToConfigure.action);
+        assertTrue(!!dialog.commandPairToConfigure.assignedKeyCombo);
+      });
+
+  test(
+      'actions gesture button opens dialog on gesture threshold page',
+      async () => {
+        await initPage();
+
+        await fireCommandPairAddedEvent(new FaceGazeCommandPair(
+            MacroName.MOUSE_CLICK_LEFT, FacialGesture.BROWS_DOWN));
+        flush();
+
+        const chip = faceGazeActionsCard.shadowRoot!.querySelector('cros-chip');
+        assertTrue(!!chip);
+        chip.click();
+        await flushTasks();
+
+        const dialog = getDialog();
+        assertEquals(AddDialogPage.GESTURE_THRESHOLD, dialog.initialPage);
+        assertTrue(!!dialog.commandPairToConfigure);
+        assertTrue(!!dialog.commandPairToConfigure.gesture);
+      });
 
   test('actions dialog left click gestures is updated', async () => {
     await initPage();
 
-    await fireCommandPairAddedEvent(
-        MacroName.MOUSE_CLICK_LEFT, FacialGesture.EYES_BLINK);
+    await fireCommandPairAddedEvent(new FaceGazeCommandPair(
+        MacroName.MOUSE_CLICK_LEFT, FacialGesture.EYES_BLINK));
     flush();
 
     getAddButton().click();

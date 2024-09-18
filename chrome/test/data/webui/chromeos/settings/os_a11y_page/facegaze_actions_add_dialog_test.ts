@@ -4,24 +4,38 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {AddDialogPage, FaceGazeAddActionDialogElement} from 'chrome://os-settings/lazy_load.js';
+import {AddDialogPage, AssignedKeyCombo, FaceGazeAddActionDialogElement, FaceGazeCommandPair, setShortcutInputProviderForTesting} from 'chrome://os-settings/lazy_load.js';
 import {CrButtonElement, CrSettingsPrefs, CrSliderElement, FaceGazeSubpageBrowserProxyImpl, IronListElement, Router, routes, SettingsPrefsElement} from 'chrome://os-settings/os_settings.js';
 import {FacialGesture} from 'chrome://resources/ash/common/accessibility/facial_gestures.js';
 import {MacroName} from 'chrome://resources/ash/common/accessibility/macro_names.js';
+import {VKey} from 'chrome://resources/ash/common/shortcut_input_ui/accelerator_keys.mojom-webui.js';
+import {FakeShortcutInputProvider} from 'chrome://resources/ash/common/shortcut_input_ui/fake_shortcut_input_provider.js';
+import {ShortcutInputElement} from 'chrome://resources/ash/common/shortcut_input_ui/shortcut_input.js';
+import {Modifier} from 'chrome://resources/ash/common/shortcut_input_ui/shortcut_utils.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {clearBody} from '../utils.js';
 
 import {TestFaceGazeSubpageBrowserProxy} from './test_facegaze_subpage_browser_proxy.js';
 
+declare global {
+  interface HTMLElementEventMap {
+    'facegaze-command-pair-added': CustomEvent<FaceGazeCommandPair>;
+  }
+}
+
 suite('<facegaze-actions-add-dialog>', () => {
   let faceGazeAddActionDialog: FaceGazeAddActionDialogElement;
   let browserProxy: TestFaceGazeSubpageBrowserProxy;
   let prefElement: SettingsPrefsElement;
+  let eventDetail: FaceGazeCommandPair;
+  const shortcutInputProvider: FakeShortcutInputProvider =
+      new FakeShortcutInputProvider();
 
   async function initPage() {
     prefElement = document.createElement('settings-prefs');
@@ -31,6 +45,7 @@ suite('<facegaze-actions-add-dialog>', () => {
     faceGazeAddActionDialog =
         document.createElement('facegaze-actions-add-dialog');
     faceGazeAddActionDialog.prefs = prefElement.prefs;
+    setShortcutInputProviderForTesting(shortcutInputProvider);
     document.body.appendChild(faceGazeAddActionDialog);
 
     // Assume default open to SELECT_ACTION page.
@@ -38,6 +53,28 @@ suite('<facegaze-actions-add-dialog>', () => {
         AddDialogPage.SELECT_ACTION,
         faceGazeAddActionDialog.getCurrentPageForTest());
     flush();
+
+    faceGazeAddActionDialog.addEventListener(
+        'facegaze-command-pair-added', onCommandPairAdded);
+  }
+
+  function onCommandPairAdded(e: CustomEvent<FaceGazeCommandPair>): void {
+    eventDetail = e.detail;
+  }
+
+  function assertEventContainsCommandPair(expected: FaceGazeCommandPair): void {
+    assertTrue(!!eventDetail);
+    assertEquals(eventDetail.action, expected.action);
+    assertEquals(eventDetail.gesture, expected.gesture);
+
+    if (!expected.assignedKeyCombo) {
+      return;
+    }
+
+    assertTrue(!!eventDetail.assignedKeyCombo);
+    assertEquals(
+        eventDetail.assignedKeyCombo.prefString,
+        expected.assignedKeyCombo.prefString);
   }
 
   function getActionsList(): IronListElement|null {
@@ -67,6 +104,26 @@ suite('<facegaze-actions-add-dialog>', () => {
 
     // Cast to Object to satisfy typing for IronListElement.selectedItem.
     actionList.selectedItem = MacroName.MOUSE_CLICK_LEFT as Object;
+  }
+
+  function setActionsListSelectionToCustomKeyCombo() {
+    const actionList = assertActionsList();
+
+    // Cast to Object to satisfy typing for IronListElement.selectedItem.
+    actionList.selectedItem = MacroName.CUSTOM_KEY_COMBINATION as Object;
+  }
+
+  function getShortcutInput(): ShortcutInputElement|null {
+    const shortcutInput =
+        faceGazeAddActionDialog.shadowRoot!.querySelector<ShortcutInputElement>(
+            '#shortcutInput');
+    return shortcutInput;
+  }
+
+  function assertShortcutInput(): ShortcutInputElement {
+    const shortcutInput = getShortcutInput();
+    assertTrue(!!shortcutInput);
+    return shortcutInput;
   }
 
   function getGesturesList(): IronListElement|null {
@@ -158,6 +215,16 @@ suite('<facegaze-actions-add-dialog>', () => {
     return getButton('#faceGazeAddActionNextButton');
   }
 
+  function getCustomKeyboardNextButton(): CrButtonElement {
+    return getButton('#faceGazeCustomKeyboardNextButton');
+  }
+
+  function getCustomKeyboardPreviousButton(): CrButtonElement {
+    const previousButton = getButton('#faceGazeCustomKeyboardPreviousButton');
+    assertFalse(previousButton.disabled);
+    return previousButton;
+  }
+
   function getGestureNextButton(): CrButtonElement {
     return getButton('#faceGazeGestureNextButton');
   }
@@ -239,6 +306,98 @@ suite('<facegaze-actions-add-dialog>', () => {
   });
 
   test(
+      'action page next button changes dialog to custom keyboard shortcut page when custom keyboard macro selected',
+      async () => {
+        await initPage();
+        assertActionsListNoSelection();
+        setActionsListSelectionToCustomKeyCombo();
+
+        const nextButton = getActionNextButton();
+        assertFalse(nextButton.disabled);
+
+        nextButton.click();
+        flush();
+
+        assertShortcutInput();
+      });
+
+  test(
+      'custom keyboard page previous button changes dialog to action page',
+      async () => {
+        await initPage();
+        assertActionsListNoSelection();
+        setActionsListSelectionToCustomKeyCombo();
+
+        const nextButton = getActionNextButton();
+        assertFalse(nextButton.disabled);
+
+        nextButton.click();
+        flush();
+
+        assertShortcutInput();
+
+        const previousButton = getCustomKeyboardPreviousButton();
+        previousButton.click();
+        flush();
+
+        assertActionsListNoSelection();
+      });
+
+  test(
+      'custom keyboard page next button disabled if no keyboard shortcut selected',
+      async () => {
+        await initPage();
+        assertActionsListNoSelection();
+        setActionsListSelectionToCustomKeyCombo();
+
+        const actionNextButton = getActionNextButton();
+        assertFalse(actionNextButton.disabled);
+
+        actionNextButton.click();
+        flush();
+
+        assertShortcutInput();
+
+        const keyboardNextButton = getCustomKeyboardNextButton();
+        assertTrue(keyboardNextButton.disabled);
+      });
+
+  test(
+      'custom keyboard page next button changes dialog to gesture page',
+      async () => {
+        await initPage();
+        assertActionsListNoSelection();
+        setActionsListSelectionToCustomKeyCombo();
+
+        const actionNextButton = getActionNextButton();
+        assertFalse(actionNextButton.disabled);
+
+        actionNextButton.click();
+        flush();
+
+        assertShortcutInput();
+
+        const keyEvent = {
+          vkey: VKey.kKeyC,
+          domCode: 0,
+          domKey: 0,
+          modifiers: Modifier.CONTROL,
+          keyDisplay: 'c',
+        };
+
+        shortcutInputProvider.sendKeyPressEvent(keyEvent, keyEvent);
+        shortcutInputProvider.sendKeyReleaseEvent(keyEvent, keyEvent);
+        await flushTasks();
+
+        const keyboardNextButton = getCustomKeyboardNextButton();
+        assertFalse(keyboardNextButton.disabled);
+        keyboardNextButton.click();
+        flush();
+
+        assertGesturesListNoSelection();
+      });
+
+  test(
       'gesture page previous button changes dialog to action page',
       async () => {
         await initPage();
@@ -261,6 +420,49 @@ suite('<facegaze-actions-add-dialog>', () => {
 
         assertActionsList();
         assertNullGesturesList();
+      });
+
+  test(
+      'gesture page previous button changes dialog to custom keyboard shortcut page when custom keyboard macro selected',
+      async () => {
+        await initPage();
+        assertActionsListNoSelection();
+        setActionsListSelectionToCustomKeyCombo();
+
+        const actionNextButton = getActionNextButton();
+        assertFalse(actionNextButton.disabled);
+
+        actionNextButton.click();
+        flush();
+
+        assertShortcutInput();
+
+        const keyEvent = {
+          vkey: VKey.kKeyC,
+          domCode: 0,
+          domKey: 0,
+          modifiers: Modifier.CONTROL,
+          keyDisplay: 'c',
+        };
+
+        shortcutInputProvider.sendKeyPressEvent(keyEvent, keyEvent);
+        shortcutInputProvider.sendKeyReleaseEvent(keyEvent, keyEvent);
+        await flushTasks();
+
+        const keyboardNextButton = getCustomKeyboardNextButton();
+        assertFalse(keyboardNextButton.disabled);
+        keyboardNextButton.click();
+        flush();
+
+        assertGesturesListNoSelection();
+
+        const previousButton = getGesturePreviousButton();
+        assertFalse(previousButton.disabled);
+
+        previousButton.click();
+        flush();
+
+        assertShortcutInput();
       });
 
   test(
@@ -336,7 +538,7 @@ suite('<facegaze-actions-add-dialog>', () => {
       });
 
   test(
-      'threshold page slider button changes gesture confidence pref on save',
+      'threshold page slider button changes gesture confidence pref and fires event with command pair on save',
       async () => {
         await initPage();
         navigateToThresholdPage();
@@ -354,6 +556,76 @@ suite('<facegaze-actions-add-dialog>', () => {
         flush();
 
         assertTrue(isThresholdValueSetInPref(55));
+        assertEventContainsCommandPair(new FaceGazeCommandPair(
+            MacroName.MOUSE_CLICK_LEFT, FacialGesture.BROW_INNER_UP));
+        assertFalse(faceGazeAddActionDialog.$.dialog.open);
+      });
+
+  test(
+      'threshold page save button fires event with command pair containing custom keyboard shortcut',
+      async () => {
+        await initPage();
+        assertActionsListNoSelection();
+        setActionsListSelectionToCustomKeyCombo();
+
+        const actionNextButton = getActionNextButton();
+        assertFalse(actionNextButton.disabled);
+        actionNextButton.click();
+        flush();
+
+        assertShortcutInput();
+
+        const keyEvent = {
+          vkey: VKey.kKeyC,
+          domCode: 0,
+          domKey: 0,
+          modifiers: Modifier.CONTROL,
+          keyDisplay: 'c',
+        };
+
+        shortcutInputProvider.sendKeyPressEvent(keyEvent, keyEvent);
+        shortcutInputProvider.sendKeyReleaseEvent(keyEvent, keyEvent);
+        await flushTasks();
+
+        const keyboardNextButton = getCustomKeyboardNextButton();
+        assertFalse(keyboardNextButton.disabled);
+        keyboardNextButton.click();
+        flush();
+
+        assertGesturesListNoSelection();
+        setGesturesListSelection();
+
+        const gestureNextButton = getGestureNextButton();
+        assertFalse(gestureNextButton.disabled);
+        gestureNextButton.click();
+        flush();
+
+        assertGestureSlider();
+        assertNullGesturesList();
+
+        const gestureSlider = getGestureSlider();
+        assertTrue(!!gestureSlider);
+
+        const decrementButton =
+            getButton('#faceGazeGestureThresholdDecrementButton');
+        decrementButton.click();
+        flush();
+
+        const saveButton = getSaveButton();
+        saveButton.click();
+        flush();
+
+        const expectedCommandPair = new FaceGazeCommandPair(
+            MacroName.CUSTOM_KEY_COMBINATION, FacialGesture.BROW_INNER_UP);
+        expectedCommandPair.assignedKeyCombo =
+            new AssignedKeyCombo(JSON.stringify({
+              key: 67,
+              keyDisplay: 'c',
+              modifiers: {
+                ctrl: true,
+              },
+            }));
+        assertEventContainsCommandPair(expectedCommandPair);
         assertFalse(faceGazeAddActionDialog.$.dialog.open);
       });
 
@@ -362,8 +634,8 @@ suite('<facegaze-actions-add-dialog>', () => {
       async () => {
         await initPage();
 
-        faceGazeAddActionDialog.actionToAssignGesture =
-            MacroName.MOUSE_CLICK_LEFT;
+        faceGazeAddActionDialog.commandPairToConfigure =
+            new FaceGazeCommandPair(MacroName.MOUSE_CLICK_LEFT, null);
         faceGazeAddActionDialog.initialPage = AddDialogPage.SELECT_GESTURE;
         flush();
 
@@ -380,7 +652,9 @@ suite('<facegaze-actions-add-dialog>', () => {
       async () => {
         await initPage();
 
-        faceGazeAddActionDialog.gestureToConfigure = FacialGesture.BROWS_DOWN;
+        faceGazeAddActionDialog.commandPairToConfigure =
+            new FaceGazeCommandPair(
+                MacroName.MOUSE_CLICK_LEFT, FacialGesture.BROWS_DOWN);
         faceGazeAddActionDialog.initialPage = AddDialogPage.GESTURE_THRESHOLD;
         flush();
 
