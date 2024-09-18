@@ -50,8 +50,9 @@ std::set<GURL> GetOriginsWithInstalledWebApps(
   for (auto& app_id : app_ids) {
     GURL origin = registrar.GetAppScope(app_id).DeprecatedGetOriginAsURL();
     DCHECK(origin.is_valid());
-    if (origin.SchemeIs(url::kHttpScheme))
+    if (origin.SchemeIs(url::kHttpsScheme)) {
       installed_origins.emplace(origin);
+    }
   }
   return installed_origins;
 #endif
