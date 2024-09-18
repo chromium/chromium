@@ -478,8 +478,6 @@ TabGroupEditorBubbleView::BuildDeleteGroupButton() {
       ui::ImageModel::FromVectorIcon(kTrashCanRefreshIcon, ui::kColorMenuIcon,
                                      kDefaultIconSize));
 
-  delete_group_menu_item->SetProperty(views::kElementIdentifierKey,
-                                      kTabGroupEditorBubbleDeleteGroupButtonId);
   if (ShouldShowSavedFooter()) {
     delete_group_menu_item->SetProperty(
         views::kMarginsKey, gfx::Insets::TLBR(0, 0, kSeparatorPadding, 0));
