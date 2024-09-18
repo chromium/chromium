@@ -113,6 +113,12 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(NewTabPageUI,
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(NewTabPageUI,
                                       kModulesCustomizeIPHAnchorElement);
 
+bool NewTabPageUIConfig::IsWebUIEnabled(
+    content::BrowserContext* browser_context) {
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  return !profile->IsOffTheRecord();
+}
+
 namespace {
 
 constexpr char kPrevNavigationTimePrefName[] = "NewTabPage.PrevNavigationTime";

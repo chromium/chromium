@@ -123,7 +123,6 @@
 #include "chrome/browser/ui/webui/management/management_ui.h"
 #include "chrome/browser/ui/webui/media_router/media_router_internals_ui.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
-#include "chrome/browser/ui/webui/new_tab_page_third_party/new_tab_page_third_party_ui.h"
 #include "chrome/browser/ui/webui/ntp/new_tab_ui.h"
 #include "chrome/browser/ui/webui/ntp/ntp_resource_cache.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_ui.h"
@@ -453,12 +452,6 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
       case NTPResourceCache::NON_PRIMARY_OTR:
         return &NewWebUI<NewTabUI>;
     }
-  }
-  if (!profile->IsOffTheRecord()) {
-    if (url.host_piece() == chrome::kChromeUINewTabPageHost)
-      return &NewWebUI<NewTabPageUI>;
-    if (url.host_piece() == chrome::kChromeUINewTabPageThirdPartyHost)
-      return &NewWebUI<NewTabPageThirdPartyUI>;
   }
   // Settings are implemented with native UI elements on Android.
   if (url.host_piece() == chrome::kChromeUISettingsHost)

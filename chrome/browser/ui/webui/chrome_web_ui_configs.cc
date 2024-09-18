@@ -50,6 +50,8 @@
 #include "chrome/browser/ui/webui/downloads/downloads_ui.h"
 #include "chrome/browser/ui/webui/feedback/feedback_ui.h"
 #include "chrome/browser/ui/webui/history/history_ui.h"
+#include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
+#include "chrome/browser/ui/webui/new_tab_page_third_party/new_tab_page_third_party_ui.h"
 #include "chrome/browser/ui/webui/on_device_internals/on_device_internals_ui.h"
 #include "chrome/browser/ui/webui/profile_internals/profile_internals_ui.h"
 #include "chrome/browser/ui/webui/side_panel/bookmarks/bookmarks_side_panel_ui.h"
@@ -145,6 +147,8 @@ void RegisterChromeWebUIConfigs() {
   map.AddWebUIConfig(std::make_unique<HistoryUIConfig>());
   map.AddWebUIConfig(std::make_unique<HistoryClustersSidePanelUIConfig>());
   map.AddWebUIConfig(std::make_unique<lens::SearchBubbleUIConfig>());
+  map.AddWebUIConfig(std::make_unique<NewTabPageThirdPartyUIConfig>());
+  map.AddWebUIConfig(std::make_unique<NewTabPageUIConfig>());
   map.AddWebUIConfig(std::make_unique<OnDeviceInternalsUIConfig>());
   map.AddWebUIConfig(
       std::make_unique<commerce::ProductSpecificationsUIConfig>());

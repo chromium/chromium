@@ -29,9 +29,12 @@
 #include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page.mojom.h"
+#include "chrome/common/webui_url_constants.h"
 #include "components/page_image_service/mojom/page_image_service.mojom.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "content/public/browser/webui_config.h"
+#include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -77,6 +80,17 @@ class PrefRegistrySimple;
 class PrefService;
 class Profile;
 class RealboxHandler;
+class NewTabPageUI;
+
+class NewTabPageUIConfig : public content::DefaultWebUIConfig<NewTabPageUI> {
+ public:
+  NewTabPageUIConfig()
+      : DefaultWebUIConfig(content::kChromeUIScheme,
+                           chrome::kChromeUINewTabPageHost) {}
+
+  // content::WebUIConfig:
+  bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
+};
 
 class NewTabPageUI
     : public ui::MojoWebUIController,

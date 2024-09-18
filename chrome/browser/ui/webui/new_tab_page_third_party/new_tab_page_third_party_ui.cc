@@ -48,6 +48,12 @@
 using content::BrowserContext;
 using content::WebContents;
 
+bool NewTabPageThirdPartyUIConfig::IsWebUIEnabled(
+    content::BrowserContext* browser_context) {
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  return !profile->IsOffTheRecord();
+}
+
 namespace {
 void CreateAndAddNewTabPageThirdPartyUiHtmlSource(Profile* profile,
                                                   WebContents* web_contents) {
