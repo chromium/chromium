@@ -824,19 +824,29 @@ WebstorePrivateManifestV2DeprecationUnitTest::
           extensions_features::kExtensionManifestV2DeprecationWarning);
       disabled_features.push_back(
           extensions_features::kExtensionManifestV2Disabled);
+      disabled_features.push_back(
+          extensions_features::kExtensionManifestV2Unsupported);
       break;
     case MV2ExperimentStage::kWarning:
       enabled_features.push_back(
           extensions_features::kExtensionManifestV2DeprecationWarning);
       disabled_features.push_back(
           extensions_features::kExtensionManifestV2Disabled);
+      disabled_features.push_back(
+          extensions_features::kExtensionManifestV2Unsupported);
       break;
     case MV2ExperimentStage::kDisableWithReEnable:
       enabled_features.push_back(
           extensions_features::kExtensionManifestV2Disabled);
       disabled_features.push_back(
           extensions_features::kExtensionManifestV2DeprecationWarning);
+      disabled_features.push_back(
+          extensions_features::kExtensionManifestV2Unsupported);
       break;
+    case MV2ExperimentStage::kUnsupported:
+      // TODO(https://crbug.com/367395349): Add tests for the kUnsupported
+      // experiment stage.
+      NOTREACHED();
   }
 
   feature_list_.InitWithFeatures(enabled_features, disabled_features);
@@ -845,7 +855,9 @@ WebstorePrivateManifestV2DeprecationUnitTest::
 INSTANTIATE_TEST_SUITE_P(
     ,
     WebstorePrivateManifestV2DeprecationUnitTest,
-    testing::Values(MV2ExperimentStage::kNone, MV2ExperimentStage::kWarning),
+    testing::Values(MV2ExperimentStage::kNone,
+                    MV2ExperimentStage::kWarning,
+                    MV2ExperimentStage::kDisableWithReEnable),
     [](const testing::TestParamInfo<MV2ExperimentStage>& info) {
       switch (info.param) {
         case MV2ExperimentStage::kNone:
@@ -854,6 +866,8 @@ INSTANTIATE_TEST_SUITE_P(
           return "WarningExperiment";
         case MV2ExperimentStage::kDisableWithReEnable:
           return "DisableExperiment";
+        case MV2ExperimentStage::kUnsupported:
+          return "UnsupportedExperiment";
       }
     });
 
@@ -878,6 +892,8 @@ TEST_P(WebstorePrivateManifestV2DeprecationUnitTest,
     case MV2ExperimentStage::kDisableWithReEnable:
       expected = "soft_disable";
       break;
+    case MV2ExperimentStage::kUnsupported:
+      NOTREACHED();
   }
 
   EXPECT_EQ(expected, *response);

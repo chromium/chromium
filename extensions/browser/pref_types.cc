@@ -31,4 +31,10 @@ const PrefMap kMV2DeprecationDisabledAcknowledgedGloballyPref = {
     "mv2_deprecation_disabled_ack_globally", PrefType::kBool,
     PrefScope::kProfile};
 
+// Stores whether the user has acknowledged the MV2 deprecation notice for the
+// unsupported stage globally.
+const PrefMap kMV2DeprecationUnsupportedAcknowledgedGloballyPref = {
+    "mv2_deprecation_unsupported_ack_globally", PrefType::kBool,
+    PrefScope::kProfile};
+
 }  // namespace extensions

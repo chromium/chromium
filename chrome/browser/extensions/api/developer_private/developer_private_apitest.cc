@@ -542,13 +542,21 @@ class DeveloperPrivateApiWithMV2DeprecationApiTest
             extensions_features::kExtensionManifestV2DeprecationWarning);
         disabled_features.push_back(
             extensions_features::kExtensionManifestV2Disabled);
+        disabled_features.push_back(
+            extensions_features::kExtensionManifestV2Unsupported);
         break;
       case MV2ExperimentStage::kDisableWithReEnable:
         enabled_features.push_back(
             extensions_features::kExtensionManifestV2Disabled);
         disabled_features.push_back(
             extensions_features::kExtensionManifestV2DeprecationWarning);
+        disabled_features.push_back(
+            extensions_features::kExtensionManifestV2Unsupported);
         break;
+      case MV2ExperimentStage::kUnsupported:
+        // TODO(https://crbug.com/367395349): Add tests for the kUnsupported
+        // experiment stage.
+        NOTREACHED();
     }
 
     feature_list_.InitWithFeatures(enabled_features, disabled_features);
@@ -574,6 +582,8 @@ INSTANTIATE_TEST_SUITE_P(
           return "WarningExperiment";
         case MV2ExperimentStage::kDisableWithReEnable:
           return "DisableExperiment";
+        case MV2ExperimentStage::kUnsupported:
+          return "UnsupportedExperiment";
       }
     });
 

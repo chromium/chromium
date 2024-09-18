@@ -2888,6 +2888,11 @@ DeveloperPrivateDismissMv2DeprecationNoticeForExtensionFunction::Run() {
 
       return RespondLater();
     }
+
+    case MV2ExperimentStage::kUnsupported:
+      // TODO(https://crbug.com/367395349): Add handling for the kUnsupported
+      // experiment stage.
+      NOTREACHED();
   }
 }
 

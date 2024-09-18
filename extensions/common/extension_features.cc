@@ -81,6 +81,10 @@ BASE_FEATURE(kExtensionManifestV2DeprecationWarning,
              "ExtensionManifestV2DeprecationWarning",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kExtensionManifestV2Unsupported,
+             "ExtensionManifestV2Unsupported",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kExtensionManifestV2ExceptionList,
              "ExtensionManifestV2ExceptionList",
              base::FEATURE_DISABLED_BY_DEFAULT);

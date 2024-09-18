@@ -38,6 +38,7 @@ extern const PrefMap kUserScriptsWorldsConfiguration;
 // expose it as a public member.
 extern const PrefMap kMV2DeprecationWarningAcknowledgedGloballyPref;
 extern const PrefMap kMV2DeprecationDisabledAcknowledgedGloballyPref;
+extern const PrefMap kMV2DeprecationUnsupportedAcknowledgedGloballyPref;
 
 }  // namespace extensions
 

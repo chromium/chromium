@@ -74,6 +74,12 @@ constexpr PrefMap kMV2DeprecationExtensionDisabledAcknowledgedPref = {
     "mv2_deprecation_disabled_ack", PrefType::kBool,
     PrefScope::kExtensionSpecific};
 
+// Stores the bit for whether the user has acknowledged the MV2 deprecation
+// notice for a given extension in the unsupported stage.
+constexpr PrefMap kMV2DeprecationExtensionUnsupportedAcknowledgedPref = {
+    "mv2_deprecation_unsupported_ack", PrefType::kBool,
+    PrefScope::kExtensionSpecific};
+
 // Stores a bit for whether the extension has been disabled as part of the
 // MV2 deprecation.
 constexpr PrefMap kMV2DeprecationDidDisablePref = {
@@ -145,6 +151,11 @@ bool ManifestV2ExperimentManagerFactory::ServiceIsCreatedWithBrowserContext()
 MV2ExperimentStage CalculateCurrentExperimentStage() {
   // Return the "highest" stage that is currently active for the user.
   if (base::FeatureList::IsEnabled(
+          extensions_features::kExtensionManifestV2Unsupported)) {
+    return MV2ExperimentStage::kUnsupported;
+  }
+
+  if (base::FeatureList::IsEnabled(
           extensions_features::kExtensionManifestV2Disabled)) {
     return MV2ExperimentStage::kDisableWithReEnable;
   }
@@ -168,6 +179,8 @@ PrefMap GetExtensionAcknowledgedPrefFor(MV2ExperimentStage experiment_stage) {
       return kMV2DeprecationExtensionWarningAcknowledgedPref;
     case MV2ExperimentStage::kDisableWithReEnable:
       return kMV2DeprecationExtensionDisabledAcknowledgedPref;
+    case MV2ExperimentStage::kUnsupported:
+      return kMV2DeprecationExtensionUnsupportedAcknowledgedPref;
   }
 }
 
@@ -183,6 +196,8 @@ PrefMap GetGlobalNoticeAcknowledgedPrefFor(
       return kMV2DeprecationWarningAcknowledgedGloballyPref;
     case MV2ExperimentStage::kDisableWithReEnable:
       return kMV2DeprecationDisabledAcknowledgedGloballyPref;
+    case MV2ExperimentStage::kUnsupported:
+      return kMV2DeprecationUnsupportedAcknowledgedGloballyPref;
   }
 }
 
@@ -195,6 +210,7 @@ bool ShouldDisableExtensionsForExperimentStage(MV2ExperimentStage stage) {
     case MV2ExperimentStage::kWarning:
       return false;
     case MV2ExperimentStage::kDisableWithReEnable:
+    case MV2ExperimentStage::kUnsupported:
       return true;
   }
 }
