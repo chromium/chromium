@@ -343,21 +343,6 @@ void SurfaceTreeHost::WillCommit() {
 void SurfaceTreeHost::SubmitCompositorFrame() {
   viz::CompositorFrame frame = PrepareToSubmitCompositorFrame();
 
-  // TODO(1041932,1034876): Remove or early return once these issues
-  // are fixed or identified.
-  if (frame.size_in_pixels().IsEmpty()) {
-    aura::Window* toplevel = root_surface_->window()->GetToplevelWindow();
-    auto app_type = toplevel->GetProperty(chromeos::kAppTypeKey);
-    const std::string* app_id = GetShellApplicationId(toplevel);
-    const std::string* startup_id = GetShellStartupId(toplevel);
-    auto* shell_surface = GetShellSurfaceBaseForWindow(toplevel);
-    CHECK(!frame.size_in_pixels().IsEmpty())
-        << " Title=" << shell_surface->GetWindowTitle()
-        << ", AppType=" << static_cast<int>(app_type)
-        << ", AppId=" << (app_id ? *app_id : "''")
-        << ", StartupId=" << (startup_id ? *startup_id : "''");
-  }
-
   const int64_t frame_trace_id = root_surface_->GetFrameTraceId();
   if (frame_trace_id != -1) {
     frame.metadata.begin_frame_ack.trace_id = frame_trace_id;
