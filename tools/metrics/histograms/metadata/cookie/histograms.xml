@@ -918,7 +918,7 @@ chromium-metrics-reviews@google.com.
   <owner>miketaylr@chromium.org</owner>
   <summary>
     This is the port a cookie is being set by: For network access via HTTP(S)
-    this value is the port of the origin the response is being recieved from.
+    this value is the port of the origin the response is being received from.
     For script access via non-HTTP APIs this is the value of the port of the
     origin of the frame the set call is made in.
 
