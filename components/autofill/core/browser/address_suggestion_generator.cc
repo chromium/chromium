@@ -1152,18 +1152,17 @@ std::vector<Suggestion> CreateSuggestionsFromProfiles(
           *profile, app_locale,
           ShouldUseNationalFormatPhoneNumber(trigger_field_type));
     }
-    suggestions.emplace_back(main_text);
+    Suggestion& suggestion = suggestions.emplace_back(main_text);
     if (!labels[i].empty()) {
-      suggestions.back().labels.emplace_back(std::move(labels[i]));
+      suggestion.labels.emplace_back(std::move(labels[i]));
     }
-    suggestions.back().payload = Suggestion::Guid(profile->guid());
-    suggestions.back().acceptance_a11y_announcement =
+    suggestion.payload = Suggestion::Guid(profile->guid());
+    suggestion.acceptance_a11y_announcement =
         l10n_util::GetStringUTF16(IDS_AUTOFILL_A11Y_ANNOUNCE_FILLED_FORM);
-    suggestions.back().type = suggestion_type;
-    suggestions.back().is_acceptable = is_filling_address_form;
-    if (suggestions.back().type ==
-        SuggestionType::kAddressFieldByFieldFilling) {
-      suggestions.back().field_by_field_filling_type_used =
+    suggestion.type = suggestion_type;
+    suggestion.is_acceptable = is_filling_address_form;
+    if (suggestion.type == SuggestionType::kAddressFieldByFieldFilling) {
+      suggestion.field_by_field_filling_type_used =
           std::optional(trigger_field_type);
     }
     // We add an icon to the address (profile) suggestion if there is more than
@@ -1172,17 +1171,17 @@ std::vector<Suggestion> CreateSuggestionsFromProfiles(
     // the email icon is used unconditionally to create consistency with plus
     // address suggestions.
     if (GroupTypeOfFieldType(trigger_field_type) == FieldTypeGroup::kEmail) {
-      suggestions.back().icon = Suggestion::Icon::kEmail;
+      suggestion.icon = Suggestion::Icon::kEmail;
     } else if (contains_profile_related_fields || !is_filling_address_form) {
       const bool fill_full_form =
-          suggestions.back().type == SuggestionType::kAddressEntry;
+          suggestion.type == SuggestionType::kAddressEntry;
       if (!is_filling_address_form ||
           base::FeatureList::IsEnabled(
               features::kAutofillGranularFillingAvailable)) {
-        suggestions.back().icon = fill_full_form ? Suggestion::Icon::kLocation
-                                                 : Suggestion::Icon::kNoIcon;
+        suggestion.icon = fill_full_form ? Suggestion::Icon::kLocation
+                                         : Suggestion::Icon::kNoIcon;
       } else {
-        suggestions.back().icon = Suggestion::Icon::kAccount;
+        suggestion.icon = Suggestion::Icon::kAccount;
       }
     }
     // This is intentionally not using `profile->IsAccountProfile()` because the
@@ -1205,8 +1204,8 @@ std::vector<Suggestion> CreateSuggestionsFromProfiles(
       // TODO(crbug.com/40942505): Make the granular filling options vary
       // depending on the locale.
       AddAddressGranularFillingChildSuggestions(trigger_field_type, *profile,
-                                                suggestions.back(),
-                                                is_off_the_record, app_locale);
+                                                suggestion, is_off_the_record,
+                                                app_locale);
     }
   }
   return suggestions;
