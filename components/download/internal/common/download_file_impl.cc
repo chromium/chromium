@@ -199,9 +199,11 @@ DownloadFileImpl::DownloadFileImpl(
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("download", "DownloadFileActive",
                                     download_id);
 
-  source_streams_[save_info_->offset] = std::make_unique<SourceStream>(
-      save_info_->offset, save_info_->GetStartingFileWriteOffset(),
-      std::move(stream));
+  source_streams_.insert(
+      {save_info_->offset,
+       std::make_unique<SourceStream>(save_info_->offset,
+                                      save_info_->GetStartingFileWriteOffset(),
+                                      std::move(stream))});
 
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
@@ -276,10 +278,11 @@ void DownloadFileImpl::AddInputStream(std::unique_ptr<InputStream> stream,
     CancelRequest(offset);
     return;
   }
-  DCHECK(source_streams_.find(offset) == source_streams_.end());
-  source_streams_[offset] =
-      std::make_unique<SourceStream>(offset, offset, std::move(stream));
-  OnSourceStreamAdded(source_streams_[offset].get());
+  auto [it, inserted] =
+      source_streams_.insert({offset, std::make_unique<SourceStream>(
+                                          offset, offset, std::move(stream))});
+  CHECK(inserted);
+  OnSourceStreamAdded(it->second.get());
 }
 
 void DownloadFileImpl::OnSourceStreamAdded(SourceStream* source_stream) {
