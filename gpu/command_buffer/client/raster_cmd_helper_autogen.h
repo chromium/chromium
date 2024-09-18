@@ -307,39 +307,6 @@ void ReadbackYUVImagePixelsINTERNALImmediate(GLuint dst_width,
   }
 }
 
-void ConvertYUVAMailboxesToRGBINTERNALImmediate(GLint src_x,
-                                                GLint src_y,
-                                                GLsizei width,
-                                                GLsizei height,
-                                                GLenum planes_yuv_color_space,
-                                                GLenum plane_config,
-                                                GLenum subsampling,
-                                                const GLbyte* mailboxes) {
-  const uint32_t size =
-      raster::cmds::ConvertYUVAMailboxesToRGBINTERNALImmediate::ComputeSize();
-  raster::cmds::ConvertYUVAMailboxesToRGBINTERNALImmediate* c =
-      GetImmediateCmdSpaceTotalSize<
-          raster::cmds::ConvertYUVAMailboxesToRGBINTERNALImmediate>(size);
-  if (c) {
-    c->Init(src_x, src_y, width, height, planes_yuv_color_space, plane_config,
-            subsampling, mailboxes);
-  }
-}
-
-void ConvertRGBAToYUVAMailboxesINTERNALImmediate(GLenum planes_yuv_color_space,
-                                                 GLenum plane_config,
-                                                 GLenum subsampling,
-                                                 const GLbyte* mailboxes) {
-  const uint32_t size =
-      raster::cmds::ConvertRGBAToYUVAMailboxesINTERNALImmediate::ComputeSize();
-  raster::cmds::ConvertRGBAToYUVAMailboxesINTERNALImmediate* c =
-      GetImmediateCmdSpaceTotalSize<
-          raster::cmds::ConvertRGBAToYUVAMailboxesINTERNALImmediate>(size);
-  if (c) {
-    c->Init(planes_yuv_color_space, plane_config, subsampling, mailboxes);
-  }
-}
-
 void TraceBeginCHROMIUM(GLuint category_bucket_id, GLuint name_bucket_id) {
   raster::cmds::TraceBeginCHROMIUM* c =
       GetCmdSpace<raster::cmds::TraceBeginCHROMIUM>();

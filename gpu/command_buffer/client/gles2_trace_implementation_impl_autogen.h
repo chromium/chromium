@@ -2387,33 +2387,6 @@ void GLES2TraceImplementation::EndSharedImageAccessDirectCHROMIUM(
   gl_->EndSharedImageAccessDirectCHROMIUM(texture);
 }
 
-void GLES2TraceImplementation::ConvertRGBAToYUVAMailboxesINTERNAL(
-    GLenum planes_yuv_color_space,
-    GLenum plane_config,
-    GLenum subsampling,
-    const GLbyte* mailboxes) {
-  TRACE_EVENT_BINARY_EFFICIENT0(
-      "gpu", "GLES2Trace::ConvertRGBAToYUVAMailboxesINTERNAL");
-  gl_->ConvertRGBAToYUVAMailboxesINTERNAL(planes_yuv_color_space, plane_config,
-                                          subsampling, mailboxes);
-}
-
-void GLES2TraceImplementation::ConvertYUVAMailboxesToRGBINTERNAL(
-    GLint src_x,
-    GLint src_y,
-    GLsizei width,
-    GLsizei height,
-    GLenum planes_yuv_color_space,
-    GLenum plane_config,
-    GLenum subsampling,
-    const GLbyte* mailboxes) {
-  TRACE_EVENT_BINARY_EFFICIENT0(
-      "gpu", "GLES2Trace::ConvertYUVAMailboxesToRGBINTERNAL");
-  gl_->ConvertYUVAMailboxesToRGBINTERNAL(src_x, src_y, width, height,
-                                         planes_yuv_color_space, plane_config,
-                                         subsampling, mailboxes);
-}
-
 void GLES2TraceImplementation::ConvertYUVAMailboxesToTextureINTERNAL(
     GLuint texture,
     GLenum target,

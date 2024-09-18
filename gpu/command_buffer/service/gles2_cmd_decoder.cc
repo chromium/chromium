@@ -1096,19 +1096,6 @@ class GLES2DecoderImpl : public GLES2Decoder,
   void DoBeginSharedImageAccessDirectCHROMIUM(GLuint client_id, GLenum mode);
   void DoEndSharedImageAccessDirectCHROMIUM(GLuint client_id);
 
-  void DoConvertRGBAToYUVAMailboxesINTERNAL(
-      GLenum yuv_color_space,
-      GLenum plane_config,
-      GLenum subsampling,
-      const volatile GLbyte* mailboxes_in);
-  void DoConvertYUVAMailboxesToRGBINTERNAL(GLint src_x,
-                                           GLint src_y,
-                                           GLsizei width,
-                                           GLsizei height,
-                                           GLenum yuv_color_space,
-                                           GLenum plane_config,
-                                           GLenum subsampling,
-                                           const volatile GLbyte* mailboxes_in);
   void DoConvertYUVAMailboxesToTextureINTERNAL(
       GLuint texture,
       GLenum target,
@@ -16428,26 +16415,6 @@ void GLES2DecoderImpl::DoEndSharedImageAccessDirectCHROMIUM(GLuint client_id) {
   }
 
   texture_ref->EndAccessSharedImage();
-}
-
-void GLES2DecoderImpl::DoConvertRGBAToYUVAMailboxesINTERNAL(
-    GLenum yuv_color_space,
-    GLenum plane_config,
-    GLenum subsampling,
-    const volatile GLbyte* mailboxes_in) {
-  NOTIMPLEMENTED_LOG_ONCE();
-}
-
-void GLES2DecoderImpl::DoConvertYUVAMailboxesToRGBINTERNAL(
-    GLint src_x,
-    GLint src_y,
-    GLsizei width,
-    GLsizei height,
-    GLenum yuv_color_space,
-    GLenum plane_config,
-    GLenum subsampling,
-    const volatile GLbyte* mailboxes_in) {
-  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 void GLES2DecoderImpl::DoConvertYUVAMailboxesToTextureINTERNAL(

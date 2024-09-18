@@ -1645,27 +1645,6 @@ void GL_APIENTRY GLES2EndSharedImageAccessDirectCHROMIUM(GLuint texture) {
   gles2::GetGLContext()->EndSharedImageAccessDirectCHROMIUM(texture);
 }
 void GL_APIENTRY
-GLES2ConvertRGBAToYUVAMailboxesINTERNAL(GLenum planes_yuv_color_space,
-                                        GLenum plane_config,
-                                        GLenum subsampling,
-                                        const GLbyte* mailboxes) {
-  gles2::GetGLContext()->ConvertRGBAToYUVAMailboxesINTERNAL(
-      planes_yuv_color_space, plane_config, subsampling, mailboxes);
-}
-void GL_APIENTRY
-GLES2ConvertYUVAMailboxesToRGBINTERNAL(GLint src_x,
-                                       GLint src_y,
-                                       GLsizei width,
-                                       GLsizei height,
-                                       GLenum planes_yuv_color_space,
-                                       GLenum plane_config,
-                                       GLenum subsampling,
-                                       const GLbyte* mailboxes) {
-  gles2::GetGLContext()->ConvertYUVAMailboxesToRGBINTERNAL(
-      src_x, src_y, width, height, planes_yuv_color_space, plane_config,
-      subsampling, mailboxes);
-}
-void GL_APIENTRY
 GLES2ConvertYUVAMailboxesToTextureINTERNAL(GLuint texture,
                                            GLenum target,
                                            GLuint internal_format,
@@ -3185,16 +3164,6 @@ extern const NameToFunc g_gles2_function_table[] = {
         "glEndSharedImageAccessDirectCHROMIUM",
         reinterpret_cast<GLES2FunctionPointer>(
             glEndSharedImageAccessDirectCHROMIUM),
-    },
-    {
-        "glConvertRGBAToYUVAMailboxesINTERNAL",
-        reinterpret_cast<GLES2FunctionPointer>(
-            glConvertRGBAToYUVAMailboxesINTERNAL),
-    },
-    {
-        "glConvertYUVAMailboxesToRGBINTERNAL",
-        reinterpret_cast<GLES2FunctionPointer>(
-            glConvertYUVAMailboxesToRGBINTERNAL),
     },
     {
         "glConvertYUVAMailboxesToTextureINTERNAL",
