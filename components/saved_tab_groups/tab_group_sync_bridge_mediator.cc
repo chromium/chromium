@@ -16,6 +16,7 @@
 #include "components/saved_tab_groups/saved_tab_group_tab.h"
 #include "components/saved_tab_groups/shared_tab_group_data_sync_bridge.h"
 #include "components/saved_tab_groups/sync_data_type_configuration.h"
+#include "components/saved_tab_groups/utils.h"
 #include "components/sync/base/data_type.h"
 
 namespace tab_groups {
@@ -236,14 +237,17 @@ void TabGroupSyncBridgeMediator::SavedTabGroupReorderedLocally() {
 void TabGroupSyncBridgeMediator::SavedTabGroupLocalIdChanged(
     const base::Uuid& group_guid) {
   const SavedTabGroup* group = model_->Get(group_guid);
-  if (!group) {
+  // For desktop, the local ID isn't persisted across sessions. Hence there is
+  // no need to rewrite the group to the storage. In fact, it will lead to write
+  // inconsistency since we haven't yet fixed the potential reentrancy issue on
+  // desktop.
+  if (!group || !AreLocalIdsPersisted()) {
     return;
   }
 
   if (group->is_shared_tab_group()) {
     CHECK(shared_bridge_);
-    // TODO(crbug.com/351357559): support handling local id for shared tab
-    // groups.
+    shared_bridge_->ProcessTabGroupLocalIdChanged(group_guid);
   } else {
     CHECK(saved_bridge_);
     saved_bridge_->SavedTabGroupLocalIdChanged(group_guid);

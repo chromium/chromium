@@ -25,6 +25,7 @@
 #include "components/saved_tab_groups/saved_tab_group_tab.h"
 #include "components/saved_tab_groups/saved_tab_group_test_utils.h"
 #include "components/saved_tab_groups/sync_bridge_tab_group_model_wrapper.h"
+#include "components/saved_tab_groups/types.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/unique_position.h"
@@ -58,6 +59,8 @@ using testing::ElementsAre;
 using testing::Eq;
 using testing::Invoke;
 using testing::InvokeWithoutArgs;
+using testing::IsNull;
+using testing::NotNull;
 using testing::Pointee;
 using testing::Return;
 using testing::SizeIs;
@@ -147,6 +150,10 @@ class ModelObserverForwarder : public SavedTabGroupModelObserver {
   void SavedTabGroupTabMovedLocally(const base::Uuid& group_guid,
                                     const base::Uuid& tab_guid) override {
     bridge_->SavedTabGroupUpdatedLocally(group_guid, tab_guid);
+  }
+
+  void SavedTabGroupLocalIdChanged(const base::Uuid& group_guid) override {
+    bridge_->ProcessTabGroupLocalIdChanged(group_guid);
   }
 
  private:
@@ -247,7 +254,8 @@ class SharedTabGroupDataSyncBridgeTest : public testing::Test {
     ON_CALL(processor_, IsTrackingMetadata())
         .WillByDefault(testing::Return(true));
 
-    ResetBridgeAndModel();
+    CHECK(!saved_tab_group_model_) << "InitializeBridgeAndModel must not be "
+                                      "called when the model is initialized";
     saved_tab_group_model_ = std::make_unique<SavedTabGroupModel>();
     sync_bridge_model_wrapper_ =
         std::make_unique<SyncBridgeTabGroupModelWrapper>(
@@ -268,7 +276,10 @@ class SharedTabGroupDataSyncBridgeTest : public testing::Test {
   }
 
   // Cleans up the bridge and the model, used to simulate browser restart.
-  void ResetBridgeAndModel() {
+  void StoreMetadataAndReset(const std::string& collaboration_id) {
+    CHECK(saved_tab_group_model_);
+    StoreSharedSyncMetadataBasedOnModel(collaboration_id);
+
     observer_forwarder_.reset();
     mock_model_observer_.Reset();
     bridge_.reset();
@@ -373,6 +384,27 @@ class SharedTabGroupDataSyncBridgeTest : public testing::Test {
             syncer::UniquePosition::FromProto(tab_unique_position));
     tab_update_specifics.set_guid(tab.saved_tab_guid().AsLowercaseString());
     return tab_update_specifics;
+  }
+
+  // Stores sync metadata for the shared tab groups from the current model. This
+  // is helpful to verify storing data across browser restarts.
+  void StoreSharedSyncMetadataBasedOnModel(
+      const std::string& collaboration_id) {
+    std::unique_ptr<syncer::DataTypeStore::WriteBatch> write_batch =
+        store().CreateWriteBatch();
+    syncer::MetadataChangeList* metadata_change_list =
+        write_batch->GetMetadataChangeList();
+    for (const SavedTabGroup* group : model()->GetSharedTabGroupsOnly()) {
+      metadata_change_list->UpdateMetadata(
+          group->saved_guid().AsLowercaseString(),
+          CreateMetadata(collaboration_id));
+      for (const SavedTabGroupTab& tab : group->saved_tabs()) {
+        metadata_change_list->UpdateMetadata(
+            tab.saved_tab_guid().AsLowercaseString(),
+            CreateMetadata(collaboration_id));
+      }
+    }
+    store().CommitWriteBatch(std::move(write_batch), base::DoNothing());
   }
 
   SharedTabGroupDataSyncBridge* bridge() { return bridge_.get(); }
@@ -1012,23 +1044,8 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldReloadDataOnBrowserRestart) {
   ASSERT_TRUE(model()->Contains(group.saved_guid()));
   ASSERT_EQ(model()->Get(group.saved_guid())->saved_tabs().size(), 2u);
 
-  // Simulate sync metadata which is normally created by the change processor.
-  std::unique_ptr<syncer::DataTypeStore::WriteBatch> write_batch =
-      store().CreateWriteBatch();
-  syncer::MetadataChangeList* metadata_change_list =
-      write_batch->GetMetadataChangeList();
-  metadata_change_list->UpdateMetadata(group.saved_guid().AsLowercaseString(),
-                                       CreateMetadata(collaboration_id));
-  metadata_change_list->UpdateMetadata(
-      tab1.saved_tab_guid().AsLowercaseString(),
-      CreateMetadata(collaboration_id));
-  metadata_change_list->UpdateMetadata(
-      tab2.saved_tab_guid().AsLowercaseString(),
-      CreateMetadata(collaboration_id));
-  store().CommitWriteBatch(std::move(write_batch), base::DoNothing());
-
   // Verify that the model is destroyed to simulate browser restart.
-  ResetBridgeAndModel();
+  StoreMetadataAndReset(collaboration_id);
   ASSERT_EQ(model(), nullptr);
 
   // Note that sync metadata is not checked explicitly because the collaboration
@@ -1507,6 +1524,39 @@ TEST_F(SharedTabGroupDataSyncBridgeTest,
   EXPECT_THAT(model()->saved_tab_groups().front().saved_tabs(),
               ElementsAre(HasTabMetadata("tab 2", "https://google.com/2"),
                           HasTabMetadata("tab 1", "https://google.com/1")));
+}
+
+TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldAssignLocalGroupId) {
+  const std::string kCollaborationId = "collaboration";
+  ASSERT_TRUE(InitializeBridgeAndModel());
+
+  SavedTabGroup group(u"title", tab_groups::TabGroupColorId::kGrey,
+                      /*urls=*/{}, /*position=*/std::nullopt);
+  group.SetCollaborationId(kCollaborationId);
+  group.AddTabLocally(test::CreateSavedTabGroupTab(
+      "http://google.com/1", u"tab", group.saved_guid(), /*position=*/0));
+  model()->Add(group);
+
+  LocalTabGroupID local_group_id = test::GenerateRandomTabGroupID();
+  model()->OnGroupOpenedInTabStrip(group.saved_guid(), local_group_id);
+
+  // Simulate browser restart to verify that the local group ID is persisted.
+  StoreMetadataAndReset(kCollaborationId);
+  ASSERT_THAT(model(), IsNull());
+  ASSERT_TRUE(InitializeBridgeAndModel());
+  ASSERT_THAT(model()->Get(group.saved_guid()), NotNull());
+
+  EXPECT_EQ(model()->Get(group.saved_guid())->local_group_id(), local_group_id);
+
+  // Close the tab group and simulate browser restart.
+  model()->OnGroupClosedInTabStrip(local_group_id);
+
+  StoreMetadataAndReset(kCollaborationId);
+  ASSERT_THAT(model(), IsNull());
+  ASSERT_TRUE(InitializeBridgeAndModel());
+  ASSERT_THAT(model()->Get(group.saved_guid()), NotNull());
+
+  EXPECT_EQ(model()->Get(group.saved_guid())->local_group_id(), std::nullopt);
 }
 
 // The number of tabs to test the correct ordering of remote updates.

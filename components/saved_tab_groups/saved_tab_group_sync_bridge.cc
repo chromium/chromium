@@ -479,14 +479,6 @@ void SavedTabGroupSyncBridge::SavedTabGroupTabsReorderedLocally(
 
 void SavedTabGroupSyncBridge::SavedTabGroupLocalIdChanged(
     const base::Uuid& group_guid) {
-  // For desktop, the local ID isn't persisted across sessions. Hence there is
-  // no need to rewrite the group to the storage. In fact, it will lead to write
-  // inconsistency since we haven't yet fixed the potentialreentrancy issue on
-  // desktop.
-  if (!AreLocalIdsPersisted()) {
-    return;
-  }
-
   std::unique_ptr<syncer::DataTypeStore::WriteBatch> write_batch =
       store_->CreateWriteBatch();
 

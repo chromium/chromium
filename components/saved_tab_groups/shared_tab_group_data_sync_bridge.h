@@ -89,8 +89,8 @@ class SharedTabGroupDataSyncBridge : public syncer::DataTypeSyncBridge {
   // Process shared group deletion, the removed group must be shared.
   void SavedTabGroupRemovedLocally(const SavedTabGroup& removed_group);
 
-  // TODO(crbug.com/319521964): implement the following methods.
-  // void SavedTabGroupLocalIdChanged(const base::Uuid& group_guid);
+  // Process updated local ID for the group.
+  void ProcessTabGroupLocalIdChanged(const base::Uuid& group_guid);
 
  private:
   // Loads the data already stored in the DataTypeStore.
@@ -135,13 +135,6 @@ class SharedTabGroupDataSyncBridge : public syncer::DataTypeSyncBridge {
   void SendToSync(sync_pb::SharedTabGroupDataSpecifics specific,
                   const std::string& collaboration_id,
                   syncer::MetadataChangeList* metadata_change_list);
-
-  // Updates or adds the `specifics` into the `store_` and populates it to the
-  // processor.
-  void UpsertEntitySpecifics(
-      const sync_pb::SharedTabGroupDataSpecifics& specifics,
-      const std::string& collaboration_id,
-      syncer::DataTypeStore::WriteBatch* write_batch);
 
   // Process local tab changes (add, remove, update), excluding changing tab's
   // position.
