@@ -484,4 +484,6 @@ Refer to README.md for content description and update process.
  <item id="iwa_web_app_internals_update_manifest" added_in_milestone="130" type="partial" second_id="iwa_update_manifest_fetcher" content_hash_code="04b02418" os_list="linux,windows,chromeos" semantics_fields="1,2,3" policy_fields="3,5" file_path="chrome/browser/ui/webui/web_app_internals/web_app_internals_handler.cc" />
  <item id="iwa_web_app_internals_web_bundle" added_in_milestone="130" type="partial" second_id="iwa_bundle_downloader" content_hash_code="01076400" os_list="linux,windows,chromeos" semantics_fields="1,2,3" policy_fields="3,5" file_path="chrome/browser/ui/webui/web_app_internals/web_app_internals_handler.cc" />
  <item id="digital_asset_links_include" added_in_milestone="130" content_hash_code="05cd869e" os_list="android" file_path="android_webview/browser/aw_asset_domain_list_include_handler.cc" />
+ <item id="remoting_cloud_send_heartbeat" added_in_milestone="131" content_hash_code="07e72ee4" os_list="linux,windows,android,chromeos" file_path="remoting/base/cloud_service_client.cc" />
+ <item id="remoting_cloud_update_remote_access_host" added_in_milestone="131" content_hash_code="0628eb6e" os_list="linux,windows,android,chromeos" file_path="remoting/base/cloud_service_client.cc" />
 </annotations>

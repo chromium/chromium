@@ -56,6 +56,72 @@ constexpr net::NetworkTrafficAnnotationTag
             "Not implemented."
         })");
 
+constexpr net::NetworkTrafficAnnotationTag kSendHeartbeatTrafficAnnotation =
+    net::DefineNetworkTrafficAnnotation("remoting_cloud_send_heartbeat",
+                                        R"(
+        semantics {
+          sender: "Chrome Remote Desktop"
+          description:
+            "Updates the last seen time in the Chrome Remote Desktop Directory "
+            "service for a given remote access host instance."
+          trigger:
+            "Configuring a CRD remote access host on a GCE Instance."
+          user_data {
+            type: OTHER
+          }
+          data:
+            "An internal UUID to identify the remote access host instance."
+          destination: GOOGLE_OWNED_SERVICE
+          internal {
+            contacts { owners: "//remoting/OWNERS" }
+          }
+          last_reviewed: "2024-09-18"
+        }
+        policy {
+          cookies_allowed: NO
+          setting:
+            "This request cannot be stopped in settings, but will not be sent "
+            "if the CRD host is not configured and run as a Cloud host."
+          policy_exception_justification:
+            "Not implemented."
+        })");
+
+constexpr net::NetworkTrafficAnnotationTag
+    kUpdateRemoteAccessHostTrafficAnnotation =
+        net::DefineNetworkTrafficAnnotation(
+            "remoting_cloud_update_remote_access_host",
+            R"(
+        semantics {
+          sender: "Chrome Remote Desktop"
+          description:
+            "Updates the Chrome Remote Desktop Directory service with "
+            "environment details and signaling information for a given remote "
+            "access host instance."
+          trigger:
+            "Configuring a CRD remote access host on a GCE Instance."
+          user_data {
+            type: OTHER
+          }
+          data:
+            "Includes an internal UUID to identify the remote access host "
+            "instance, the name and version of the operating system, the "
+            "version of the CRD package installed, and a set of signaling ids "
+            "which the CRD client can use to send the host messages."
+          destination: GOOGLE_OWNED_SERVICE
+          internal {
+            contacts { owners: "//remoting/OWNERS" }
+          }
+          last_reviewed: "2024-09-18"
+        }
+        policy {
+          cookies_allowed: NO
+          setting:
+            "This request cannot be stopped in settings, but will not be sent "
+            "if the CRD host is not configured and run as a Cloud host."
+          policy_exception_justification:
+            "Not implemented."
+        })");
+
 using LegacyProvisionGceInstanceRequest =
     remoting::apis::v1::ProvisionGceInstanceRequest;
 
@@ -141,8 +207,7 @@ void CloudServiceClient::SendHeartbeat(const std::string& directory_id,
   auto request = std::make_unique<SendHeartbeatRequest>();
   request->set_directory_id(directory_id);
 
-  // TODO: joedow - Fix the traffic annotation here.
-  ExecuteRequest(kProvisionGceInstanceTrafficAnnotation, path, api_key_,
+  ExecuteRequest(kSendHeartbeatTrafficAnnotation, path, api_key_,
                  std::move(request), std::move(callback));
 }
 
@@ -180,8 +245,7 @@ void CloudServiceClient::UpdateRemoteAccessHost(
     host->mutable_operating_system_info()->set_version(*os_version);
   }
 
-  // TODO: joedow - Fix the traffic annotation here.
-  ExecuteRequest(kProvisionGceInstanceTrafficAnnotation, path, api_key_,
+  ExecuteRequest(kUpdateRemoteAccessHostTrafficAnnotation, path, api_key_,
                  std::move(request), std::move(callback));
 }
 
