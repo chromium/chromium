@@ -386,14 +386,6 @@ class CORE_EXPORT FlexibleBoxAlgorithm {
   static ItemPosition AlignmentForChild(const ComputedStyle& flexbox_style,
                                         const ComputedStyle& child_style);
 
-  // Translates [self-]{start,end}, left, right to flex-{start,end} based on the
-  // flex flow and container/item writing-modes. Note that callers of this
-  // function treat flex-{start,end} as {start,end}. That convention will be
-  // easy to fix when legacy flex code is deleted.
-  static ItemPosition TranslateItemPosition(const ComputedStyle& flexbox_style,
-                                            const ComputedStyle& child_style,
-                                            ItemPosition align);
-
   static LayoutUnit InitialContentPositionOffset(
       const ComputedStyle& style,
       LayoutUnit available_free_space,

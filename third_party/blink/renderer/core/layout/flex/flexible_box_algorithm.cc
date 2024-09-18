@@ -968,15 +968,10 @@ ItemPosition FlexibleBoxAlgorithm::AlignmentForChild(
                     {ItemPosition::kStretch, OverflowAlignment::kDefault},
                     &flexbox_style)
                 .GetPosition();
-  return TranslateItemPosition(flexbox_style, child_style, align);
-}
-
-ItemPosition FlexibleBoxAlgorithm::TranslateItemPosition(
-    const ComputedStyle& flexbox_style,
-    const ComputedStyle& child_style,
-    ItemPosition align) {
   DCHECK_NE(align, ItemPosition::kAuto);
   DCHECK_NE(align, ItemPosition::kNormal);
+  DCHECK_NE(align, ItemPosition::kLeft) << "left, right are only for justify";
+  DCHECK_NE(align, ItemPosition::kRight) << "left, right are only for justify";
 
   if (align == ItemPosition::kStart)
     return ItemPosition::kFlexStart;
@@ -999,31 +994,6 @@ ItemPosition FlexibleBoxAlgorithm::TranslateItemPosition(
     }
     return align == ItemPosition::kSelfStart ? logical.BlockStart()
                                              : logical.BlockEnd();
-  }
-
-  if (align == ItemPosition::kLeft || align == ItemPosition::kRight) {
-    DCHECK_EQ(align, child_style
-                         .ResolvedJustifySelf({ItemPosition::kStretch,
-                                               OverflowAlignment::kDefault})
-                         .GetPosition())
-        << "justify-self is the only way that we can get a left or right "
-           "ItemPosition";
-    DCHECK(IsColumnFlow(flexbox_style))
-        << "We can also only get left or right ItemPositions when checking "
-           "compat data for column flexboxes. The rest of this logic assumes a "
-           "column flexbox.";
-    switch (flexbox_style.GetWritingMode()) {
-      case WritingMode::kHorizontalTb:
-      case WritingMode::kVerticalLr:
-        return align == ItemPosition::kLeft ? ItemPosition::kFlexStart
-                                            : ItemPosition::kFlexEnd;
-      case WritingMode::kVerticalRl:
-        return align == ItemPosition::kLeft ? ItemPosition::kFlexEnd
-                                            : ItemPosition::kFlexStart;
-      case WritingMode::kSidewaysLr:
-      case WritingMode::kSidewaysRl:
-        return ItemPosition::kFlexStart;
-    }
   }
 
   if (align == ItemPosition::kBaseline) {

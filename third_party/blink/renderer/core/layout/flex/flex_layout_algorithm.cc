@@ -270,50 +270,6 @@ void FlexLayoutAlgorithm::HandleOutOfFlowPositionedItems(
     AxisEdge cross_axis_edge =
         CrossAxisStaticPositionEdge(Style(), child.Style());
 
-    // This code block just collects UMA stats.
-    if (!IsBreakInside(GetBreakToken())) {
-      const auto& style = Style();
-      const auto& child_style = child.Style();
-      const PhysicalToLogical<Length> insets_in_flexbox_writing_mode(
-          Style().GetWritingDirection(), child_style.Top(), child_style.Right(),
-          child_style.Bottom(), child_style.Left());
-      if (is_column_) {
-        const ItemPosition normalized_alignment =
-            FlexibleBoxAlgorithm::AlignmentForChild(style, child_style);
-        const ItemPosition normalized_justify =
-            FlexibleBoxAlgorithm::TranslateItemPosition(
-                style, child_style,
-                child_style
-                    .ResolvedJustifySelf({child.IsReplaced()
-                                              ? ItemPosition::kStart
-                                              : ItemPosition::kStretch,
-                                          OverflowAlignment::kDefault})
-                    .GetPosition());
-
-        const bool are_cross_axis_insets_auto =
-            insets_in_flexbox_writing_mode.InlineStart().IsAuto() &&
-            insets_in_flexbox_writing_mode.InlineEnd().IsAuto();
-
-        if (normalized_alignment != normalized_justify &&
-            are_cross_axis_insets_auto) {
-          UseCounter::Count(Node().GetDocument(),
-                            WebFeature::kFlexboxNewAbsPos);
-        }
-      }
-      if (main_axis_edge != AxisEdge::kStart) {
-        const bool are_main_axis_insets_auto =
-            is_column_
-                ? insets_in_flexbox_writing_mode.BlockStart().IsAuto() &&
-                      insets_in_flexbox_writing_mode.BlockEnd().IsAuto()
-                : insets_in_flexbox_writing_mode.InlineStart().IsAuto() &&
-                      insets_in_flexbox_writing_mode.InlineEnd().IsAuto();
-        if (are_main_axis_insets_auto) {
-          UseCounter::Count(Node().GetDocument(),
-                            WebFeature::kFlexboxAbsPosJustifyContent);
-        }
-      }
-    }
-
     AxisEdge inline_axis_edge = is_column_ ? cross_axis_edge : main_axis_edge;
     AxisEdge block_axis_edge = is_column_ ? main_axis_edge : cross_axis_edge;
 
