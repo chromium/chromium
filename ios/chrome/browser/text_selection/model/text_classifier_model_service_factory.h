@@ -14,7 +14,7 @@
 class TextClassifierModelService;
 
 // Singleton that owns all TextClassifierModelService(s) and associates them
-// with ChromeBrowserState.
+// with ProfileIOS.
 class TextClassifierModelServiceFactory
     : public BrowserStateKeyedServiceFactory {
  public:
