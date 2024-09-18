@@ -16,14 +16,19 @@ class LanguageDetectionModelLoaderServiceIOS;
 }  // namespace language_detection
 
 // This is a workaround for crbug/1324530 on iOS where it is mandatory to have
-// LanguageDetectionModel scoped by BrowserState.
+// LanguageDetectionModel scoped by Profile.
 // TODO(crbug.com/40225076): remove this class once
 // LanguageDetectionModelService does this.
 class LanguageDetectionModelLoaderServiceIOSFactory
     : public BrowserStateKeyedServiceFactory {
  public:
+  // TODO(crbug.com/358301380): remove this method.
   static language_detection::LanguageDetectionModelLoaderServiceIOS*
-  GetForBrowserState(ChromeBrowserState* browser_state);
+  GetForBrowserState(ProfileIOS* profile);
+
+  static language_detection::LanguageDetectionModelLoaderServiceIOS*
+  GetForProfile(ProfileIOS* profile);
+
   static LanguageDetectionModelLoaderServiceIOSFactory* GetInstance();
 
   LanguageDetectionModelLoaderServiceIOSFactory(

@@ -30,6 +30,13 @@ LanguageDetectionModelLoaderServiceIOSFactory::GetInstance() {
 language_detection::LanguageDetectionModelLoaderServiceIOS*
 LanguageDetectionModelLoaderServiceIOSFactory::GetForBrowserState(
     ProfileIOS* profile) {
+  return GetForProfile(profile);
+}
+
+// static
+language_detection::LanguageDetectionModelLoaderServiceIOS*
+LanguageDetectionModelLoaderServiceIOSFactory::GetForProfile(
+    ProfileIOS* profile) {
   return static_cast<
       language_detection::LanguageDetectionModelLoaderServiceIOS*>(
       GetInstance()->GetServiceForBrowserState(profile, true));

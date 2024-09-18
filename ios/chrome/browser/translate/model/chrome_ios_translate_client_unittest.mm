@@ -41,16 +41,16 @@ class ChromeIOSTranslateClientTest : public PlatformTest {
     scoped_feature_list_.InitWithFeatures(
         {translate::kTFLiteLanguageDetectionEnabled}, {});
     OptimizationGuideServiceFactory::InitializePredictionModelStore();
-    TestChromeBrowserState::Builder builder;
+    TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         OptimizationGuideServiceFactory::GetInstance(),
         OptimizationGuideServiceFactory::GetDefaultFactory());
 
-    browser_state_ = std::move(builder).Build();
+    profile_ = std::move(builder).Build();
 
     web_state_.SetNavigationManager(
         std::make_unique<web::FakeNavigationManager>());
-    web_state_.SetBrowserState(browser_state_.get());
+    web_state_.SetBrowserState(profile_.get());
     auto web_frames_manager = std::make_unique<web::FakeWebFramesManager>();
     web::ContentWorld content_world =
         translate::TranslateJavaScriptFeature::GetInstance()
@@ -74,7 +74,7 @@ class ChromeIOSTranslateClientTest : public PlatformTest {
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   base::test::ScopedFeatureList scoped_feature_list_;
   base::HistogramTester histogram_tester_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   web::FakeWebState web_state_;
 };
 

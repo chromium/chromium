@@ -16,12 +16,9 @@ namespace translate {
 class TranslateRanker;
 
 // TranslateRankerFactory is a way to associate a TranslateRanker instance to
-// a BrowserState.
+// a Profile.
 class TranslateRankerFactory : public BrowserStateKeyedServiceFactory {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static translate::TranslateRanker* GetForBrowserState(ProfileIOS* profile);
-
   static translate::TranslateRanker* GetForProfile(ProfileIOS* profile);
   static TranslateRankerFactory* GetInstance();
 

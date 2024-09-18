@@ -41,9 +41,15 @@ LanguageModelManagerFactory* LanguageModelManagerFactory::GetInstance() {
 
 // static
 language::LanguageModelManager* LanguageModelManagerFactory::GetForBrowserState(
-    ChromeBrowserState* const state) {
+    ProfileIOS* profile) {
+  return GetForProfile(profile);
+}
+
+// static
+language::LanguageModelManager* LanguageModelManagerFactory::GetForProfile(
+    ProfileIOS* profile) {
   return static_cast<language::LanguageModelManager*>(
-      GetInstance()->GetServiceForBrowserState(state, true));
+      GetInstance()->GetServiceForBrowserState(profile, true));
 }
 
 LanguageModelManagerFactory::LanguageModelManagerFactory()

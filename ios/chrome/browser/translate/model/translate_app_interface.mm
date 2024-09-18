@@ -173,7 +173,7 @@ class TranslateAppInterfaceHelper {
                              toLanguage:(NSString*)target {
   std::unique_ptr<translate::TranslatePrefs> prefs(
       ChromeIOSTranslateClient::CreateTranslatePrefs(
-          chrome_test_util::GetOriginalBrowserState()->GetPrefs()));
+          chrome_test_util::GetOriginalProfile()->GetPrefs()));
   return prefs->IsLanguagePairOnAlwaysTranslateList(
       base::SysNSStringToUTF8(source), base::SysNSStringToUTF8(target));
 }
@@ -181,14 +181,14 @@ class TranslateAppInterfaceHelper {
 + (BOOL)isBlockedLanguage:(NSString*)language {
   std::unique_ptr<translate::TranslatePrefs> prefs(
       ChromeIOSTranslateClient::CreateTranslatePrefs(
-          chrome_test_util::GetOriginalBrowserState()->GetPrefs()));
+          chrome_test_util::GetOriginalProfile()->GetPrefs()));
   return prefs->IsBlockedLanguage(base::SysNSStringToUTF8(language));
 }
 
 + (BOOL)isBlockedSite:(NSString*)hostName {
   std::unique_ptr<translate::TranslatePrefs> prefs(
       ChromeIOSTranslateClient::CreateTranslatePrefs(
-          chrome_test_util::GetOriginalBrowserState()->GetPrefs()));
+          chrome_test_util::GetOriginalProfile()->GetPrefs()));
   return prefs->IsSiteOnNeverPromptList(base::SysNSStringToUTF8(hostName));
 }
 
@@ -214,7 +214,7 @@ class TranslateAppInterfaceHelper {
 + (void)setDefaultTranslatePrefs {
   std::unique_ptr<translate::TranslatePrefs> prefs(
       ChromeIOSTranslateClient::CreateTranslatePrefs(
-          chrome_test_util::GetOriginalBrowserState()->GetPrefs()));
+          chrome_test_util::GetOriginalProfile()->GetPrefs()));
   prefs->ResetToDefaults();
 }
 

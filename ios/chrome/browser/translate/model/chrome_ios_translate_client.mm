@@ -43,21 +43,18 @@ ChromeIOSTranslateClient::ChromeIOSTranslateClient(web::WebState* web_state)
     : web_state_(web_state),
       translate_driver_(
           web_state,
-          LanguageDetectionModelLoaderServiceIOSFactory::GetForBrowserState(
-              ChromeBrowserState::FromBrowserState(
-                  web_state->GetBrowserState()))),
+          LanguageDetectionModelLoaderServiceIOSFactory::GetForProfile(
+              ProfileIOS::FromBrowserState(web_state->GetBrowserState()))),
       translate_manager_(std::make_unique<translate::TranslateManager>(
           this,
-          translate::TranslateRankerFactory::GetForBrowserState(
-              ChromeBrowserState::FromBrowserState(
-                  web_state->GetBrowserState())),
-          LanguageModelManagerFactory::GetForBrowserState(
-              ChromeBrowserState::FromBrowserState(
-                  web_state->GetBrowserState()))
+          translate::TranslateRankerFactory::GetForProfile(
+              ProfileIOS::FromBrowserState(web_state->GetBrowserState())),
+          LanguageModelManagerFactory::GetForProfile(
+              ProfileIOS::FromBrowserState(web_state->GetBrowserState()))
               ->GetPrimaryModel())) {
   translate_driver_.Initialize(
-      UrlLanguageHistogramFactory::GetForBrowserState(
-          ChromeBrowserState::FromBrowserState(web_state->GetBrowserState())),
+      UrlLanguageHistogramFactory::GetForProfile(
+          ProfileIOS::FromBrowserState(web_state->GetBrowserState())),
       translate_manager_.get()),
       web_state_->AddObserver(this);
 }
@@ -114,24 +111,24 @@ translate::IOSTranslateDriver* ChromeIOSTranslateClient::GetTranslateDriver() {
 
 PrefService* ChromeIOSTranslateClient::GetPrefs() {
   DCHECK(web_state_);
-  ChromeBrowserState* chrome_browser_state =
-      ChromeBrowserState::FromBrowserState(web_state_->GetBrowserState());
-  return chrome_browser_state->GetOriginalChromeBrowserState()->GetPrefs();
+  ProfileIOS* profile =
+      ProfileIOS::FromBrowserState(web_state_->GetBrowserState());
+  return profile->GetOriginalProfile()->GetPrefs();
 }
 
 std::unique_ptr<translate::TranslatePrefs>
 ChromeIOSTranslateClient::GetTranslatePrefs() {
   DCHECK(web_state_);
-  ChromeBrowserState* chrome_browser_state =
-      ChromeBrowserState::FromBrowserState(web_state_->GetBrowserState());
-  return CreateTranslatePrefs(chrome_browser_state->GetPrefs());
+  ProfileIOS* profile =
+      ProfileIOS::FromBrowserState(web_state_->GetBrowserState());
+  return CreateTranslatePrefs(profile->GetPrefs());
 }
 
 language::AcceptLanguagesService*
 ChromeIOSTranslateClient::GetAcceptLanguagesService() {
   DCHECK(web_state_);
-  return AcceptLanguagesServiceFactory::GetForBrowserState(
-      ChromeBrowserState::FromBrowserState(web_state_->GetBrowserState()));
+  return AcceptLanguagesServiceFactory::GetForProfile(
+      ProfileIOS::FromBrowserState(web_state_->GetBrowserState()));
 }
 
 bool ChromeIOSTranslateClient::IsTranslatableURL(const GURL& url) {
