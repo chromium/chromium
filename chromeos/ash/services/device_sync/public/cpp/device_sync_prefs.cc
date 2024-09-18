@@ -24,13 +24,9 @@ namespace device_sync {
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   CryptAuthGCMManager::RegisterPrefs(registry);
   CryptAuthDeviceManager::RegisterPrefs(registry);
-  if (base::FeatureList::IsEnabled(features::kCryptAuthV2Enrollment)) {
-    CryptAuthV2EnrollmentManagerImpl::RegisterPrefs(registry);
-    CryptAuthKeyRegistryImpl::RegisterPrefs(registry);
-    CryptAuthSchedulerImpl::RegisterPrefs(registry);
-  } else {
-    CryptAuthEnrollmentManagerImpl::RegisterPrefs(registry);
-  }
+  CryptAuthV2EnrollmentManagerImpl::RegisterPrefs(registry);
+  CryptAuthKeyRegistryImpl::RegisterPrefs(registry);
+  CryptAuthSchedulerImpl::RegisterPrefs(registry);
 
   if (features::ShouldUseV2DeviceSync()) {
     CryptAuthDeviceRegistryImpl::RegisterPrefs(registry);

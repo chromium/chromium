@@ -82,6 +82,7 @@ CryptAuthEnrollmentManagerImpl::Factory*
     CryptAuthEnrollmentManagerImpl::Factory::factory_instance_ = nullptr;
 
 // static
+// TODO: b/365057260 - This is now unused and can be removed.
 std::unique_ptr<CryptAuthEnrollmentManager>
 CryptAuthEnrollmentManagerImpl::Factory::Create(
     base::Clock* clock,
@@ -110,6 +111,7 @@ void CryptAuthEnrollmentManagerImpl::Factory::SetFactoryForTesting(
 CryptAuthEnrollmentManagerImpl::Factory::~Factory() = default;
 
 // static
+// TODO: b/365057260 - This is now unused and can be removed.
 void CryptAuthEnrollmentManagerImpl::RegisterPrefs(
     PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(

@@ -856,11 +856,7 @@ void DeviceSyncImpl::RunNextInitializationStep() {
       RegisterWithGcm();
       break;
     case InitializationStatus::kWaitingForGcmRegistration:
-      if (base::FeatureList::IsEnabled(features::kCryptAuthV2Enrollment)) {
-        FetchClientAppMetadata();
-      } else {
-        WaitForValidEnrollment();
-      }
+      FetchClientAppMetadata();
       break;
     case InitializationStatus::kWaitingForClientAppMetadata:
       WaitForValidEnrollment();
@@ -969,7 +965,6 @@ void DeviceSyncImpl::OnGCMRegistrationResult(bool success) {
 }
 
 void DeviceSyncImpl::FetchClientAppMetadata() {
-  DCHECK(base::FeatureList::IsEnabled(features::kCryptAuthV2Enrollment));
   status_ = InitializationStatus::kWaitingForClientAppMetadata;
 
   timer_->Start(FROM_HERE, kWaitingForClientAppMetadataTimeout,
@@ -1056,28 +1051,17 @@ void DeviceSyncImpl::InitializeCryptAuthManagementObjects() {
 
   // Initialize |cryptauth_enrollment_manager_| and start observing, then call
   // Start() immediately to schedule enrollment.
-  if (base::FeatureList::IsEnabled(features::kCryptAuthV2Enrollment)) {
-    cryptauth_key_registry_ =
-        CryptAuthKeyRegistryImpl::Factory::Create(profile_prefs_);
+  cryptauth_key_registry_ =
+      CryptAuthKeyRegistryImpl::Factory::Create(profile_prefs_);
 
-    cryptauth_scheduler_ =
-        CryptAuthSchedulerImpl::Factory::Create(profile_prefs_);
+  cryptauth_scheduler_ =
+      CryptAuthSchedulerImpl::Factory::Create(profile_prefs_);
 
-    cryptauth_enrollment_manager_ =
-        CryptAuthV2EnrollmentManagerImpl::Factory::Create(
-            *client_app_metadata_, cryptauth_key_registry_.get(),
-            cryptauth_client_factory_.get(), cryptauth_gcm_manager_.get(),
-            cryptauth_scheduler_.get(), profile_prefs_, clock_);
-  } else {
-    cryptauth_enrollment_manager_ =
-        CryptAuthEnrollmentManagerImpl::Factory::Create(
-            clock_,
-            std::make_unique<CryptAuthEnrollerFactoryImpl>(
-                cryptauth_client_factory_.get()),
-            multidevice::SecureMessageDelegateImpl::Factory::Create(),
-            gcm_device_info_provider_->GetGcmDeviceInfo(),
-            cryptauth_gcm_manager_.get(), profile_prefs_);
-  }
+  cryptauth_enrollment_manager_ =
+      CryptAuthV2EnrollmentManagerImpl::Factory::Create(
+          *client_app_metadata_, cryptauth_key_registry_.get(),
+          cryptauth_client_factory_.get(), cryptauth_gcm_manager_.get(),
+          cryptauth_scheduler_.get(), profile_prefs_, clock_);
 
   // Initialize v1 and v2 CryptAuth device managers (depending on feature
   // flags). Start() is not called yet since the device has not completed

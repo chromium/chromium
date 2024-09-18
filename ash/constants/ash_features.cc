@@ -565,23 +565,11 @@ BASE_FEATURE(kCryptAuthV2DedupDeviceLastActivityTime,
              "CryptAuthV2DedupDeviceLastActivityTime",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables or disables the CryptAuth v2 DeviceSync flow. Regardless of this
-// flag, v1 DeviceSync will continue to operate until it is disabled via the
-// feature flag kDisableCryptAuthV1DeviceSync.
-BASE_FEATURE(kCryptAuthV2DeviceSync,
-             "CryptAuthV2DeviceSync",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Disable a Files banner about Google One offer. This flag is used by G1+
 // nudge to conditionally disable the G1 file banner via finch.
 BASE_FEATURE(kDisableGoogleOneOfferFilesBanner,
              "DisableGoogleOneOfferFilesBanner",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables or disables the CryptAuth v2 Enrollment flow.
-BASE_FEATURE(kCryptAuthV2Enrollment,
-             "CryptAuthV2Enrollment",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls the default value for the option to set up
 // cryptohome recovery presented for consumer users.
@@ -652,14 +640,6 @@ BASE_FEATURE(kDiacriticsOnPhysicalKeyboardLongpressDefaultOn,
 BASE_FEATURE(kDiacriticsUseReplaceSurroundingText,
              "DiacriticsUseReplaceSurroundingText",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Disables the CryptAuth v1 DeviceSync flow. Note: During the first phase
-// of the v2 DeviceSync rollout, v1 and v2 DeviceSync run in parallel. This flag
-// is needed to disable the v1 service during the second phase of the rollout.
-// kCryptAuthV2DeviceSync should be enabled before this flag is flipped.
-BASE_FEATURE(kDisableCryptAuthV1DeviceSync,
-             "DisableCryptAuthV1DeviceSync",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Feature flag for disable/enable Lacros TTS support.
 // The flag is enabled by default so that the feature is disabled before it is
@@ -5100,13 +5080,11 @@ bool ShouldUseKcerClientCertStore() {
 }
 
 bool ShouldUseV1DeviceSync() {
-  return !ShouldUseV2DeviceSync() ||
-         !base::FeatureList::IsEnabled(kDisableCryptAuthV1DeviceSync);
+  return false;
 }
 
 bool ShouldUseV2DeviceSync() {
-  return base::FeatureList::IsEnabled(kCryptAuthV2Enrollment) &&
-         base::FeatureList::IsEnabled(kCryptAuthV2DeviceSync);
+  return true;
 }
 
 bool IsUseAuthPanelInSessionEnabled() {
