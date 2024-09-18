@@ -192,7 +192,7 @@ bool DeserializeInstanceIDData(const std::string& serialized_data,
                                std::string* instance_id,
                                std::string* extra_data) {
   DCHECK(instance_id && extra_data);
-  auto parts = base::SplitStringOnce(serialized_data, '.');
+  auto parts = base::SplitStringOnce(serialized_data, ',');
   if (!parts) {
     return false;
   }
