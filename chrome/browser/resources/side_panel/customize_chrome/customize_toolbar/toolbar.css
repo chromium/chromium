@@ -104,7 +104,7 @@
   border: 0;
   border-radius: 8px;
   box-shadow: var(--cr-elevation-2);
-  height: 124px;
+  height: 147px; /* should match #miniNewTabPage for customize chrome */
   width: 278px;
   z-index: 1;
 }
