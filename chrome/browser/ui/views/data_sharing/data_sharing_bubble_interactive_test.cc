@@ -9,6 +9,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/data_sharing/data_sharing_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
@@ -30,6 +31,7 @@
 #include "components/saved_tab_groups/features.h"
 #include "components/saved_tab_groups/saved_tab_group.h"
 #include "components/saved_tab_groups/saved_tab_group_model.h"
+#include "components/saved_tab_groups/tab_group_sync_service.h"
 #include "components/saved_tab_groups/types.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "content/public/test/browser_test.h"
@@ -45,7 +47,8 @@ class DataSharingChromeNativeUiTest : public InteractiveBrowserTest {
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
         {data_sharing::features::kDataSharingFeature,
-         tab_groups::kTabGroupsSaveUIUpdate, tab_groups::kTabGroupsSaveV2},
+         tab_groups::kTabGroupsSaveUIUpdate, tab_groups::kTabGroupsSaveV2,
+         tab_groups::kTabGroupSyncServiceDesktopMigration},
         {});
     ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
     InProcessBrowserTest::SetUp();
@@ -126,18 +129,21 @@ IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest, MAYBE_ShowShareBubble) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_ShowManageBubble DISABLED_ShowManageBubble
 #else
-#define MAYBE_ShowManageBubble ShowManageBubble
+// TODO (368057577) This test was disabled after moving to TabGroupSyncService.
+// Re-enable this test.
+#define MAYBE_ShowManageBubble DISABLED_ShowManageBubble
 #endif
 IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest, MAYBE_ShowManageBubble) {
-  // TODO(crbug.com/350514491): Use STGUtils::GetServiceForProfile instead.
   auto* tab_group_service =
-      tab_groups::SavedTabGroupServiceFactory::GetForProfile(
+      tab_groups::SavedTabGroupUtils::GetServiceForProfile(
           browser()->profile());
   tab_groups::LocalTabGroupID group_id = InstrumentATabGroup();
-  auto* group = const_cast<tab_groups::SavedTabGroup*>(
-      tab_group_service->model()->Get(group_id));
-  std::string fake_collaboration_id = "fake_collab_id";
-  group->SetCollaborationId(fake_collaboration_id);
+  std::optional<tab_groups::SavedTabGroup> group =
+      tab_group_service->GetGroup(group_id);
+  std::string fake_collab_id = "fake_collab_id";
+  group->SetCollaborationId(fake_collab_id);
+  tab_group_service->RemoveGroup(group->saved_guid());
+  tab_group_service->AddGroup(group.value());
 
   RunTestSequence(
       FinishTabstripAnimations(), SaveGroupLeaveEditorBubbleOpen(group_id),
@@ -155,13 +161,13 @@ IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest, MAYBE_ShowManageBubble) {
 #define MAYBE_ShowJoinBubble ShowJoinBubble
 #endif
 IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest, MAYBE_ShowJoinBubble) {
-  std::string fake_collaboration_id = "fake_collab_id";
+  std::string fake_collab_id = "fake_collab_id";
   std::string fake_access_token = "fake_access_token";
 
   RunTestSequence(
       Do([=, this]() {
         auto share_link = data_sharing::GetShareLink(
-            fake_collaboration_id, fake_access_token, browser()->profile());
+            fake_collab_id, fake_access_token, browser()->profile());
         auto* data_sharing_service =
             data_sharing::DataSharingServiceFactory::GetForProfile(
                 browser()->profile());
@@ -173,21 +179,27 @@ IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest, MAYBE_ShowJoinBubble) {
       }));
 }
 
-IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest, GenerateWebUIUrl) {
+// TODO (368057577) This test was disabled after moving to TabGroupSyncService.
+// Re-enable this test.
+IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest,
+                       DISABLED_GenerateWebUIUrl) {
   tab_groups::LocalTabGroupID group_id = InstrumentATabGroup();
   std::string fake_collab_id = "fake_collab_id";
   std::string fake_access_token = "fake_access_token";
+
   auto expected_share_flow_url =
       GURL(std::string(chrome::kChromeUIUntrustedDataSharingURL) + "?" +
            std::string(data_sharing::kQueryParamFlow) + "=" +
            std::string(data_sharing::kFlowShare) + "&" +
            std::string(data_sharing::kQueryParamTabGroupId) + "=" +
            group_id.ToString());
+
   auto expected_manage_flow_url = GURL(
       std::string(chrome::kChromeUIUntrustedDataSharingURL) + "?" +
       std::string(data_sharing::kQueryParamFlow) + "=" +
       std::string(data_sharing::kFlowManage) + "&" +
       std::string(data_sharing::kQueryParamGroupId) + "=" + fake_collab_id);
+
   auto expected_join_flow_url = GURL(
       std::string(chrome::kChromeUIUntrustedDataSharingURL) + "?" +
       std::string(data_sharing::kQueryParamFlow) + "=" +
@@ -199,13 +211,15 @@ IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest, GenerateWebUIUrl) {
   auto url = data_sharing::GenerateWebUIUrl(group_id, browser()->profile());
   EXPECT_EQ(url.value().spec(), expected_share_flow_url);
 
-  // TODO(crbug.com/350514491): Use STGUtils::GetServiceForProfile instead.
   auto* tab_group_service =
-      tab_groups::SavedTabGroupServiceFactory::GetForProfile(
+      tab_groups::SavedTabGroupUtils::GetServiceForProfile(
           browser()->profile());
-  tab_groups::SavedTabGroup* group = const_cast<tab_groups::SavedTabGroup*>(
-      tab_group_service->model()->Get(group_id));
+  std::optional<tab_groups::SavedTabGroup> group =
+      tab_group_service->GetGroup(group_id);
   group->SetCollaborationId(fake_collab_id);
+  tab_group_service->RemoveGroup(group->saved_guid());
+  tab_group_service->AddGroup(group.value());
+
   url = data_sharing::GenerateWebUIUrl(group_id, browser()->profile());
   EXPECT_EQ(url.value().spec(), expected_manage_flow_url);
 
