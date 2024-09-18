@@ -26,6 +26,10 @@ base::span<const uint8_t> MLConstantOperand::Bytes() const {
   return constant_bytes_;
 }
 
+void MLConstantOperand::ReleaseBytes() {
+  constant_bytes_ = base::HeapArray<uint8_t>();
+}
+
 void MLConstantOperand::Trace(Visitor* visitor) const {
   MLOperand::Trace(visitor);
 }

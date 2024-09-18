@@ -1056,6 +1056,7 @@ MLGraphBuilder::~MLGraphBuilder() = default;
 void MLGraphBuilder::Trace(Visitor* visitor) const {
   visitor->Trace(ml_context_);
   visitor->Trace(remote_);
+  visitor->Trace(constant_operands_);
   visitor->Trace(pending_resolver_);
   ScriptWrappable::Trace(visitor);
 }
@@ -1130,8 +1131,10 @@ MLOperand* MLGraphBuilder::constant(ScriptState* script_state,
     return nullptr;
   }
 
-  return MakeGarbageCollected<MLConstantOperand>(this, std::move(descriptor),
+  auto* constant_operand = MakeGarbageCollected<MLConstantOperand>(this, std::move(descriptor),
                                                  buffer_view->ByteSpan());
+  constant_operands_.push_back(constant_operand);
+  return constant_operand;
 }
 
 MLOperand* MLGraphBuilder::argMin(const MLOperand* input,
@@ -2665,6 +2668,10 @@ ScriptPromise<MLGraph> MLGraphBuilder::build(
   // Set `has_built_` after all inputs have been validated.
   has_built_ = true;
 
+  // Release constant data held by the renderer now that it has been copied to
+  // the remote graph.
+  ReleaseConstantData();
+
   pending_resolver_ = MakeGarbageCollected<ScriptPromiseResolver<MLGraph>>(
       script_state, exception_state.GetContext());
 
@@ -2712,6 +2719,8 @@ void MLGraphBuilder::DidCreateWebNNGraph(
 void MLGraphBuilder::OnConnectionError() {
   remote_.reset();
 
+  ReleaseConstantData();
+
   if (pending_resolver_) {
     pending_resolver_->RejectWithDOMException(
         DOMExceptionCode::kInvalidStateError, "Context is lost.");
@@ -2745,6 +2754,13 @@ base::expected<void, String> MLGraphBuilder::ValidateInputs(
     RETURN_IF_ERROR(ValidateInput(input_to_validate));
   }
   return base::ok();
+}
+
+void MLGraphBuilder::ReleaseConstantData() {
+  base::ranges::for_each(constant_operands_, [](auto& constant_operand) {
+    constant_operand->ReleaseBytes();
+  });
+  constant_operands_.clear();
 }
 
 }  // namespace blink
