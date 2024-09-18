@@ -1,10 +1,11 @@
 {
   "name": "incognito apitest",
   "version": "0.1",
-  "manifest_version": 2,
+  "manifest_version": 3,
   "description": "test that an incognito extension behaves properly",
   "background": {
-    "scripts": ["background.js"]
+    "service_worker": "background.js"
   },
-  "permissions": ["tabs", "http://*/*"]
+  "permissions": ["tabs", "scripting"],
+  "host_permissions": ["http://*/*"]
 }
