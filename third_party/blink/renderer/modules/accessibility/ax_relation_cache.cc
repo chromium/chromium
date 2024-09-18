@@ -1099,12 +1099,16 @@ void AXRelationCache::RemoveOwnedRelation(AXID obj_id) {
       }
     }
     if (AXObject* owner = ObjectFromAXID(owner_id)) {
+      // The child is removed, so the owner needs to make sure its maps
+      // are updated because it could point to something new or even back to the
+      // same child if it's recreated, because it still has aria-owns markup.
+      // The next call AXRelationCache::ProcessUpdatesWithCleanLayout()
+      // will refresh this owner before the tree is frozen.
+      owner_ids_to_update_.insert(owner_id);
+
       if (object_cache_->lifecycle().StateAllowsImmediateTreeUpdates()) {
         // Currently in CommitAXUpdates(). Changing the children of the owner
         // here could interfere with the execution of RemoveSubtree().
-        // The next call AXRelationCache::ProcessUpdatesWithCleanLayout()
-        // will refresh this owner before the tree is frozen.
-        owner_ids_to_update_.insert(owner_id);
         object_cache_->MarkAXObjectDirtyWithCleanLayout(owner);
       } else {
         object_cache_->ChildrenChanged(owner);

@@ -3443,6 +3443,8 @@ data/accessibility/html/figure.html
 data/accessibility/html/fixed-width-text-expected-android-assist-data.txt
 data/accessibility/html/fixed-width-text-expected-android-external.txt
 data/accessibility/html/fixed-width-text.html
+data/accessibility/html/focused-button-with-aria-owns-expected-blink.txt
+data/accessibility/html/focused-button-with-aria-owns.html
 data/accessibility/html/footer-expected-android-assist-data.txt
 data/accessibility/html/footer-expected-android-external.txt
 data/accessibility/html/footer-expected-android.txt

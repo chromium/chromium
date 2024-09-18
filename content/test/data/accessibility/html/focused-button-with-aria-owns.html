@@ -1,0 +1,26 @@
+<!--
+@BLINK-ALLOW:name=*
+@BLINK-ALLOW:role*
+@EXECUTE-AND-WAIT-FOR:focusButton()
+-->
+
+<style>
+  button::after {
+    content: "second";
+  }
+</style>
+
+<button id="button" aria-owns="popup">
+  first
+</button>
+<div id="popup">third</div>
+
+<script>
+    function focusButton() {
+    var button = document.querySelector("#button");
+    button.focus();
+    document.title = 'done';
+    return 'done';
+  }
+
+</script>
