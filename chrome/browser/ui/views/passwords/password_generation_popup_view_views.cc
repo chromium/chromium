@@ -376,6 +376,7 @@ PasswordGenerationPopupViewViews::PasswordGenerationPopupViewViews(
   // `autofill::PopupViewViews`. See crrev.com/c/2545285 for details.
   // Consider using a more appropriate role (e.g. kMenuListPopup or similar).
   GetViewAccessibility().SetRole(ax::mojom::Role::kListBox);
+  UpdateInvisibleAccessibleState();
   UpdateExpandedCollapsedAccessibleState();
 }
 
@@ -396,6 +397,7 @@ void PasswordGenerationPopupViewViews::Hide() {
   // always be non null there, so there is no need to update the accessible
   // state there.
   UpdateExpandedCollapsedAccessibleState();
+  UpdateInvisibleAccessibleState();
   if (password_view_) {
     password_view_->reset_controller();
   }
@@ -506,8 +508,12 @@ void PasswordGenerationPopupViewViews::CreateLayoutAndChildren() {
       gfx::Insets::VH(kVerticalPadding, kHorizontalMargin)));
 }
 
-void PasswordGenerationPopupViewViews::UpdateExpandedCollapsedAccessibleState()
-    const {
+void PasswordGenerationPopupViewViews::UpdateInvisibleAccessibleState() {
+  GetViewAccessibility().SetIsInvisible(!controller_ ? true : false);
+}
+
+void PasswordGenerationPopupViewViews::
+    UpdateExpandedCollapsedAccessibleState() {
   if (controller_) {
     GetViewAccessibility().SetIsExpanded();
   } else {

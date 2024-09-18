@@ -52,7 +52,10 @@ class PasswordGenerationPopupViewViews : public autofill::PopupBaseView,
 
   // Helper function to update the expanded and collapsed accessible states of
   // the view.
-  void UpdateExpandedCollapsedAccessibleState() const;
+  void UpdateExpandedCollapsedAccessibleState();
+
+  // Helper function to update the invisible accessible state of the view.
+  void UpdateInvisibleAccessibleState();
 
   // Sub view that displays the actual generated password.
   raw_ptr<GeneratedPasswordBox> password_view_ = nullptr;

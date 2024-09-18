@@ -224,6 +224,26 @@ IN_PROC_BROWSER_TEST_F(PasswordGenerationPopupViewTest,
             expected_cached_description);
 }
 
+IN_PROC_BROWSER_TEST_F(PasswordGenerationPopupViewTest,
+                       PasswordGenerationPopupViewAccessibilityProperties) {
+  auto* client = ChromePasswordManagerClient::FromWebContents(WebContents());
+  client->SetCurrentTargetFrameForTesting(WebContents()->GetPrimaryMainFrame());
+  client->ShowPasswordEditingPopup(gfx::RectF(0, 0, 10, 10), FormData(),
+                                   FieldRendererId(100), u"password123");
+  // Avoid dangling pointers on shutdown.
+  client->SetCurrentTargetFrameForTesting(nullptr);
+  base::WeakPtr<PasswordGenerationPopupControllerImpl> controller =
+      client->generation_popup_controller();
+
+  PasswordGenerationPopupViewViews* popup_view =
+      static_cast<PasswordGenerationPopupViewViews*>(controller->view());
+
+  ui::AXNodeData node_data;
+  popup_view->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(node_data.role, ax::mojom::Role::kListBox);
+  EXPECT_FALSE(node_data.HasState(ax::mojom::State::kInvisible));
+}
+
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 IN_PROC_BROWSER_TEST_F(PasswordGenerationPopupViewTest, PopupInAxTree) {
   content::ScopedAccessibilityModeOverride mode_override(ui::kAXModeComplete);
