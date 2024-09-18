@@ -8,6 +8,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/api/toast_registry.h"
 #include "chrome/browser/ui/toasts/api/toast_specification.h"
@@ -37,7 +38,9 @@ class TestToastController : public ToastController {
 class ToastControllerUnitTest : public testing::Test {
  public:
   void SetUp() override {
-    feature_list_.InitAndEnableFeature(toast_features::kToastFramework);
+    feature_list_.InitAndEnableFeatureWithParameters(
+        toast_features::kToastFramework,
+        {{toast_features::kToastWithoutActionTimeout.name, "8s"}});
     toast_registry_ = std::make_unique<ToastRegistry>();
   }
 
@@ -126,6 +129,26 @@ TEST_F(ToastControllerUnitTest, PreemptPersistentToast) {
 }
 
 TEST_F(ToastControllerUnitTest, EphemeralToastAutomaticallyCloses) {
+  ToastRegistry* const registry = toast_registry();
+  registry->RegisterToast(
+      ToastId::kLinkCopied,
+      ToastSpecification::Builder(vector_icons::kEmailIcon, 0).Build());
+  auto controller = std::make_unique<TestToastController>(registry);
+
+  // We can show the toast again because it is an ephemeral toast.
+  EXPECT_CALL(*controller, CreateToast);
+  EXPECT_TRUE(controller->MaybeShowToast(ToastParams(ToastId::kLinkCopied)));
+  ::testing::Mock::VerifyAndClear(controller.get());
+  EXPECT_TRUE(controller->IsShowingToast());
+
+  // The toast should stop showing after reaching toast timeout time.
+  task_environment().FastForwardBy(
+      toast_features::kToastWithoutActionTimeout.Get());
+  EXPECT_FALSE(controller->IsShowingToast());
+}
+
+TEST_F(ToastControllerUnitTest,
+       EphemeralToastWithActionButtonAutomaticallyCloses) {
   ToastRegistry* const registry = toast_registry();
   registry->RegisterToast(
       ToastId::kLinkCopied,
