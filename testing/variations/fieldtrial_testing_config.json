@@ -6775,7 +6775,6 @@
                     "params": {
                         "CompleteStallMs": "700",
                         "PartialStallMs": "20",
-                        "PsiTopThreshold": "80.0",
                         "VmmmsReclaimProportion": "0"
                     },
                     "enable_features": [
