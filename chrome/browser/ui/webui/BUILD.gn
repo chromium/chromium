@@ -26,6 +26,7 @@ source_set("configs") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   deps = [
+    ":webui",
     "//chrome/browser/ui",
     "//components/compose:buildflags",
     "//components/lens:buildflags",
@@ -89,6 +90,7 @@ source_set("webui") {
 
   deps = [
     ":webui_url_hashes",
+    "//chrome/common",
     "//extensions/buildflags",
   ]
   if (enable_extensions) {

@@ -33,7 +33,6 @@
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service_factory.h"
 #include "chrome/browser/ui/webui/about/about_ui.h"
 #include "chrome/browser/ui/webui/components/components_ui.h"
-#include "chrome/browser/ui/webui/constrained_web_dialog_ui.h"
 #include "chrome/browser/ui/webui/crashes_ui.h"
 #include "chrome/browser/ui/webui/device_log/device_log_ui.h"
 #include "chrome/browser/ui/webui/download_internals/download_internals_ui.h"
@@ -381,8 +380,6 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
   if (url.host_piece() == commerce::kChromeUICommerceInternalsHost) {
     return &NewWebUI<commerce::CommerceInternalsUI>;
   }
-  if (url.spec() == chrome::kChromeUIConstrainedHTMLTestURL)
-    return &NewWebUI<ConstrainedWebDialogUI>;
   if (url.host_piece() == chrome::kChromeUIDeviceLogHost)
     return &NewWebUI<chromeos::DeviceLogUI>;
   if (url.host_piece() == chrome::kChromeUIGCMInternalsHost)
@@ -409,8 +406,6 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
   if (url.host_piece() == safe_browsing::kChromeUISafeBrowsingHost)
     return &NewComponentUI<safe_browsing::SafeBrowsingUI,
                            ChromeSafeBrowsingLocalStateDelegate>;
-  if (url.host_piece() == chrome::kChromeUISupervisedUserPassphrasePageHost)
-    return &NewWebUI<ConstrainedWebDialogUI>;
   if (url.host_piece() ==
       history_clusters_internals::kChromeUIHistoryClustersInternalsHost) {
     return &NewWebUI<HistoryClustersInternalsUI>;
@@ -549,12 +544,6 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
 #if BUILDFLAG(ENABLE_NACL)
   if (url.host_piece() == chrome::kChromeUINaClHost)
     return &NewWebUI<NaClUI>;
-#endif
-#if ((BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && \
-     defined(TOOLKIT_VIEWS)) ||                         \
-    defined(USE_AURA)
-  if (url.host_piece() == chrome::kChromeUITabModalConfirmDialogHost)
-    return &NewWebUI<ConstrainedWebDialogUI>;
 #endif
 
 #if BUILDFLAG(ENABLE_WEBUI_CERTIFICATE_VIEWER)
