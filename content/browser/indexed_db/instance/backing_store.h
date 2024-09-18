@@ -56,10 +56,12 @@ class BackingStoreTest;
 class BucketContext;
 class ActiveBlobRegistry;
 class LevelDBWriteBatch;
+class PartitionedLockManager;
 class TransactionalLevelDBDatabase;
 class TransactionalLevelDBFactory;
 class TransactionalLevelDBIterator;
 class TransactionalLevelDBTransaction;
+struct IndexedDBDataLossInfo;
 struct IndexedDBValue;
 
 namespace indexed_db_backing_store_unittest {
@@ -638,6 +640,22 @@ class CONTENT_EXPORT BackingStore {
 
   static bool ShouldSyncOnCommit(
       blink::mojom::IDBTransactionDurability durability);
+
+  // Create and initialize a BackingStore; verify and report its status.
+  static std::tuple<std::unique_ptr<BackingStore>,
+                    leveldb::Status,
+                    IndexedDBDataLossInfo,
+                    bool /* is_disk_full */>
+  OpenAndVerify(BucketContext& bucket_context,
+                base::FilePath data_directory,
+                base::FilePath database_path,
+                base::FilePath blob_path,
+                PartitionedLockManager* lock_manager,
+                bool is_first_attempt,
+                bool create_if_missing);
+
+  // Delete LevelDB files; used to handle corruptions.
+  static leveldb::Status DestroyDatabase(const base::FilePath file_path);
 
  protected:
   friend class BucketContext;

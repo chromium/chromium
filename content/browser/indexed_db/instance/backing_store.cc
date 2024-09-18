@@ -22,15 +22,19 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/sequence_checker.h"
 #include "base/stl_util.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/thread_annotations.h"
 #include "base/trace_event/base_tracing.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "build/build_config.h"
+#include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
 #include "components/services/storage/indexed_db/scopes/leveldb_scope.h"
 #include "components/services/storage/indexed_db/scopes/leveldb_scopes.h"
 #include "components/services/storage/indexed_db/scopes/varint_coding.h"
@@ -43,6 +47,7 @@
 #include "components/services/storage/public/mojom/file_system_access_context.mojom.h"
 #include "content/browser/indexed_db/file_path_util.h"
 #include "content/browser/indexed_db/indexed_db_data_format_version.h"
+#include "content/browser/indexed_db/indexed_db_data_loss_info.h"
 #include "content/browser/indexed_db/indexed_db_database_error.h"
 #include "content/browser/indexed_db/indexed_db_external_object.h"
 #include "content/browser/indexed_db/indexed_db_leveldb_coding.h"
@@ -65,6 +70,7 @@
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom.h"
 #include "third_party/leveldatabase/env_chromium.h"
+#include "third_party/leveldatabase/leveldb_chrome.h"
 
 using blink::IndexedDBDatabaseMetadata;
 using blink::IndexedDBKey;
@@ -97,6 +103,148 @@ std::string ComputeOriginIdentifier(
     const storage::BucketLocator& bucket_locator) {
   return storage::GetIdentifierFromOrigin(bucket_locator.storage_key.origin()) +
          "@1";
+}
+
+// Returns some configuration that is shared across leveldb DB instances. The
+// configuration is further tweaked in `CreateLevelDBState()`.
+leveldb_env::Options GetLevelDBOptions() {
+  leveldb_env::Options options;
+  options.paranoid_checks = true;
+  options.compression = leveldb::kSnappyCompression;
+  // For info about the troubles we've run into with this parameter, see:
+  // https://crbug.com/227313#c11
+  options.max_open_files = 80;
+
+  // Thread-safe: static local construction, and `LDBComparator` contains no
+  // state.
+  options.comparator = GetDefaultLevelDBComparator();
+
+  // Thread-safe: static local construction, and `leveldb::Cache` implements
+  // internal synchronization.
+  options.block_cache = leveldb_chrome::GetSharedWebBlockCache();
+
+  // Thread-safe: calls base histogram `FactoryGet()` methods, which are
+  // thread-safe.
+  options.on_get_error = base::BindRepeating(
+      ReportLevelDBError, "WebCore.IndexedDB.LevelDBReadErrors");
+  options.on_write_error = base::BindRepeating(
+      ReportLevelDBError, "WebCore.IndexedDB.LevelDBWriteErrors");
+
+  // Thread-safe: static local construction, and `BloomFilterPolicy` state is
+  // read-only after construction.
+  static const leveldb::FilterPolicy* g_filter_policy =
+      leveldb::NewBloomFilterPolicy(10);
+  options.filter_policy = g_filter_policy;
+
+  // Thread-safe: static local construction, and `ChromiumEnv` implements
+  // internal synchronization.
+  static base::NoDestructor<leveldb_env::ChromiumEnv> g_leveldb_env{
+      /*log_lock_errors=*/true};
+  options.env = g_leveldb_env.get();
+
+  return options;
+}
+
+std::tuple<scoped_refptr<LevelDBState>,
+           leveldb::Status,
+           /* is_disk_full= */ bool>
+CreateLevelDBState(const base::FilePath& file_name,
+                   bool create_if_missing,
+                   const std::string& in_memory_name) {
+  leveldb_env::Options options = GetLevelDBOptions();
+  if (file_name.empty()) {
+    if (!create_if_missing) {
+      return {nullptr, leveldb::Status::NotFound("", ""), false};
+    }
+
+    std::unique_ptr<leveldb::Env> in_memory_env =
+        leveldb_chrome::NewMemEnv(in_memory_name, options.env);
+    leveldb_env::Options in_memory_options = options;
+    in_memory_options.env = in_memory_env.get();
+    in_memory_options.paranoid_checks = false;
+    std::unique_ptr<leveldb::DB> db;
+    leveldb::Status status =
+        leveldb_env::OpenDB(in_memory_options, std::string(), &db);
+
+    if (!status.ok()) [[unlikely]] {
+      LOG(ERROR) << "Failed to open in-memory LevelDB database: "
+                 << status.ToString();
+      return {nullptr, status, false};
+    }
+
+    return {LevelDBState::CreateForInMemoryDB(std::move(in_memory_env),
+                                              options.comparator, std::move(db),
+                                              "in-memory-database"),
+            status, false};
+  }
+
+  options.write_buffer_size = leveldb_env::WriteBufferSize(
+      base::SysInfo::AmountOfTotalDiskSpace(file_name));
+  options.create_if_missing = create_if_missing;
+  std::unique_ptr<leveldb::DB> db;
+  leveldb::Status status =
+      leveldb_env::OpenDB(options, file_name.AsUTF8Unsafe(), &db);
+  if (!status.ok()) [[unlikely]] {
+    if (!create_if_missing && status.IsInvalidArgument()) {
+      return {nullptr, leveldb::Status::NotFound("", ""), false};
+    }
+    constexpr int64_t kBytesInOneKilobyte = 1024;
+    int64_t free_disk_space_bytes =
+        base::SysInfo::AmountOfFreeDiskSpace(file_name);
+    bool below_100kb = free_disk_space_bytes != -1 &&
+                       free_disk_space_bytes < 100 * kBytesInOneKilobyte;
+
+    // Disks with <100k of free space almost never succeed in opening a
+    // leveldb database.
+    bool is_disk_full = below_100kb || leveldb_env::IndicatesDiskFull(status);
+
+    LOG(ERROR) << "Failed to open LevelDB database from "
+               << file_name.AsUTF8Unsafe() << "," << status.ToString();
+    return {nullptr, status, is_disk_full};
+  }
+
+  return {LevelDBState::CreateForDiskDB(options.comparator, std::move(db),
+                                        std::move(file_name)),
+          status, false};
+}
+
+std::tuple<bool, leveldb::Status> AreSchemasKnown(
+    TransactionalLevelDBDatabase* db) {
+  int64_t db_schema_version = 0;
+  bool found = false;
+  leveldb::Status s =
+      GetInt(db, SchemaVersionKey::Encode(), &db_schema_version, &found);
+  if (!s.ok()) {
+    return {false, s};
+  }
+  if (!found) {
+    return {true, s};
+  }
+  if (db_schema_version < 0) {
+    return {false, leveldb::Status::Corruption(
+                       "Invalid IndexedDB database schema version.")};
+  }
+  if (db_schema_version > kLatestKnownSchemaVersion ||
+      db_schema_version < kEarliestSupportedSchemaVersion) {
+    return {false, s};
+  }
+
+  int64_t raw_db_data_version = 0;
+  s = GetInt(db, DataVersionKey::Encode(), &raw_db_data_version, &found);
+  if (!s.ok()) {
+    return {false, s};
+  }
+  if (!found) {
+    return {true, s};
+  }
+  if (raw_db_data_version < 0) {
+    return {false,
+            leveldb::Status::Corruption("Invalid IndexedDB data version.")};
+  }
+
+  return {IndexedDBDataFormatVersion::GetCurrent().IsAtLeast(
+              IndexedDBDataFormatVersion::Decode(raw_db_data_version)),
+          s};
 }
 
 leveldb::Status GetDBSizeFromEnv(leveldb::Env* env,
@@ -1329,6 +1477,144 @@ bool BackingStore::ShouldSyncOnCommit(
     case blink::mojom::IDBTransactionDurability::Relaxed:
       return false;
   }
+}
+
+// static
+std::tuple<std::unique_ptr<BackingStore>,
+           leveldb::Status,
+           IndexedDBDataLossInfo,
+           bool /* is_disk_full */>
+BackingStore::OpenAndVerify(BucketContext& bucket_context,
+                            base::FilePath data_directory,
+                            base::FilePath database_path,
+                            base::FilePath blob_path,
+                            PartitionedLockManager* lock_manager,
+                            bool is_first_attempt,
+                            bool create_if_missing) {
+  CHECK_EQ(database_path.empty(), data_directory.empty());
+  CHECK_EQ(blob_path.empty(), data_directory.empty());
+  TRACE_EVENT0("IndexedDB", "BackingStore::OpenAndVerify");
+
+  const storage::BucketLocator& bucket_locator =
+      bucket_context.bucket_locator();
+
+  bool in_memory = data_directory.empty();
+  leveldb::Status status;
+  IndexedDBDataLossInfo data_loss_info;
+  if (!in_memory) {
+    // Check for previous corruption, and if found then try to delete the
+    // database.
+    std::string corruption_message =
+        ReadCorruptionInfo(data_directory, bucket_locator);
+    if (!corruption_message.empty()) [[unlikely]] {
+      LOG(ERROR) << "IndexedDB recovering from a corrupted (and deleted) "
+                    "database.";
+      if (is_first_attempt) {
+        ReportOpenStatus(INDEXED_DB_BACKING_STORE_OPEN_FAILED_PRIOR_CORRUPTION,
+                         bucket_locator);
+      }
+      data_loss_info.status = blink::mojom::IDBDataLoss::Total;
+      data_loss_info.message = base::StrCat(
+          {"IndexedDB (database was corrupt): ", corruption_message});
+      // This is a special case where we want to make sure the database is
+      // deleted, so we try to delete again.
+      status = DestroyDatabase(database_path);
+      if (!status.ok()) [[unlikely]] {
+        LOG(ERROR) << "Unable to delete backing store: " << status.ToString();
+        return {nullptr, status, data_loss_info, /*is_disk_full=*/false};
+      }
+    }
+  }
+
+  // Open the leveldb database.
+  scoped_refptr<LevelDBState> database_state;
+  {
+    TRACE_EVENT0("IndexedDB", "BackingStore::OpenAndVerify.OpenLevelDB");
+    base::TimeTicks begin_time = base::TimeTicks::Now();
+    bool is_disk_full = false;
+    std::tie(database_state, status, is_disk_full) = CreateLevelDBState(
+        database_path, create_if_missing,
+        base::StringPrintf("indexedDB-bucket-%" PRId64,
+                           bucket_context.bucket_info().id.GetUnsafeValue()));
+    if (!status.ok()) [[unlikely]] {
+      if (!status.IsNotFound()) {
+        ReportLevelDBError("WebCore.IndexedDB.LevelDBOpenErrors", status);
+      }
+      return {nullptr, status, IndexedDBDataLossInfo(), is_disk_full};
+    }
+    UMA_HISTOGRAM_MEDIUM_TIMES("WebCore.IndexedDB.LevelDB.OpenTime",
+                               base::TimeTicks::Now() - begin_time);
+  }
+
+  // Create the LevelDBScopes wrapper.
+  std::unique_ptr<LevelDBScopes> scopes;
+  {
+    TRACE_EVENT0("IndexedDB", "BackingStore::OpenAndVerify.LevelDBScopes");
+    scopes = std::make_unique<LevelDBScopes>(
+        ScopesPrefix::Encode(),
+        /*max_write_batch_size_bytes=*/1024 * 1024, database_state,
+        lock_manager,
+        base::BindRepeating(
+            [](base::RepeatingCallback<void(leveldb::Status,
+                                            const std::string&)> on_fatal_error,
+               leveldb::Status s) { on_fatal_error.Run(s, {}); },
+            base::BindRepeating(&BucketContext::OnDatabaseError,
+                                bucket_context.AsWeakPtr())));
+    status = scopes->Initialize();
+    if (!status.ok()) [[unlikely]] {
+      return {nullptr, status, std::move(data_loss_info),
+              /*is_disk_full=*/false};
+    }
+  }
+
+  // Create the TransactionalLevelDBDatabase wrapper.
+  std::unique_ptr<TransactionalLevelDBDatabase> database =
+      bucket_context.transactional_leveldb_factory()->CreateLevelDBDatabase(
+          std::move(database_state), std::move(scopes),
+          base::SequencedTaskRunner::GetCurrentDefault(),
+          TransactionalLevelDBDatabase::kDefaultMaxOpenIteratorsPerDatabase);
+
+  bool are_schemas_known = false;
+  std::tie(are_schemas_known, status) = AreSchemasKnown(database.get());
+  if (!status.ok()) [[unlikely]] {
+    LOG(ERROR) << "IndexedDB had an error checking schema, treating it as "
+                  "failure to open: "
+               << status.ToString();
+    ReportOpenStatus(
+        INDEXED_DB_BACKING_STORE_OPEN_FAILED_IO_ERROR_CHECKING_SCHEMA,
+        bucket_locator);
+    return {nullptr, status, std::move(data_loss_info), /*is_disk_full=*/false};
+  }
+  if (!are_schemas_known) [[unlikely]] {
+    LOG(ERROR) << "IndexedDB backing store had unknown schema, treating it as "
+                  "failure to open.";
+    ReportOpenStatus(INDEXED_DB_BACKING_STORE_OPEN_FAILED_UNKNOWN_SCHEMA,
+                     bucket_locator);
+    return {nullptr, leveldb::Status::Corruption("Unknown IndexedDB schema"),
+            std::move(data_loss_info), /*is_disk_full=*/false};
+  }
+
+  Mode backing_store_mode = in_memory ? Mode::kInMemory : Mode::kOnDisk;
+  auto backing_store = std::make_unique<BackingStore>(
+      backing_store_mode, bucket_locator, blob_path,
+      *bucket_context.transactional_leveldb_factory(), std::move(database),
+      base::BindRepeating(bucket_context.delegate().on_files_written,
+                          /*flushed=*/true),
+      base::BindRepeating(&BucketContext::ReportOutstandingBlobs,
+                          bucket_context.AsWeakPtr()),
+      base::SequencedTaskRunner::GetCurrentDefault());
+  status = backing_store->Initialize(/*clean_active_blob_journal=*/!in_memory);
+  if (!status.ok()) [[unlikely]] {
+    return {nullptr, status, IndexedDBDataLossInfo(), /*is_disk_full=*/false};
+  }
+
+  return {std::move(backing_store), status, std::move(data_loss_info),
+          /*is_disk_full=*/false};
+}
+
+// static
+leveldb::Status BackingStore::DestroyDatabase(const base::FilePath file_path) {
+  return leveldb::DestroyDB(file_path.AsUTF8Unsafe(), GetLevelDBOptions());
 }
 
 leveldb::Status BackingStore::GetCompleteMetadata(

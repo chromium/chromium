@@ -278,6 +278,10 @@ class CONTENT_EXPORT BucketContext
     return file_system_access_context_.get();
   }
 
+  TransactionalLevelDBFactory* transactional_leveldb_factory() {
+    return transactional_leveldb_factory_.get();
+  }
+
   void AddReceiver(
       const storage::BucketClientInfo& client_info,
       mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
@@ -415,17 +419,6 @@ class CONTENT_EXPORT BucketContext
   // Removes all readers for this file path.
   void RemoveBoundReaders(const base::FilePath& path);
 
-  std::tuple<std::unique_ptr<BackingStore>,
-             leveldb::Status,
-             IndexedDBDataLossInfo,
-             bool /* is_disk_full */>
-  OpenAndVerifyBackingStore(base::FilePath data_directory,
-                            base::FilePath database_path,
-                            base::FilePath blob_path,
-                            PartitionedLockManager* lock_manager,
-                            bool is_first_attempt,
-                            bool create_if_missing);
-
   std::tuple<leveldb::Status, DatabaseError, IndexedDBDataLossInfo>
   InitBackingStoreIfNeeded(bool create_if_missing);
 
@@ -461,7 +454,6 @@ class CONTENT_EXPORT BucketContext
   base::OneShotTimer close_timer_;
   std::unique_ptr<PartitionedLockManager> lock_manager_;
   std::unique_ptr<TransactionalLevelDBFactory> transactional_leveldb_factory_;
-  const leveldb_env::Options leveldb_options_;
   std::unique_ptr<BackingStore> backing_store_;
   scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy_;
 
