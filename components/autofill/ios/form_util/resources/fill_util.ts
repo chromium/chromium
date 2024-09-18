@@ -679,11 +679,21 @@ gCrWeb.fill.setUniqueIDIfNeeded = function(element: IndexableElement): void {
   try {
     const uniqueID = gCrWeb.fill.ID_SYMBOL;
     if (typeof element[uniqueID] === 'undefined') {
-      element[uniqueID] = document[uniqueID]!++;
+      const elementID = document[uniqueID]!++;
+      element[uniqueID] = elementID;
+
+      if (gCrWeb.autofill_form_features
+              .isAutofillIsolatedContentWorldEnabled()) {
+        //  Store a copy of the ID in the DOM. gCrWeb.fill.getUniqueID will use
+        //  the DOM copy when running in the page content world.
+        element.setAttribute(
+            fillConstants.UNIQUE_ID_ATTRIBUTE, elementID.toString());
+      }
+
       // TODO(crbug.com/40856841): WeakRef starts in 14.5, remove checks once 14
       // is deprecated.
       elementMap.set(
-          element[uniqueID], window.WeakRef ? new WeakRef(element) : element);
+          elementID, window.WeakRef ? new WeakRef(element) : element);
     }
   } catch (e) {
   }
