@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_content_view.h"
 #include "components/autofill/core/browser/ui/suggestion_button_action.h"
+#include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -25,29 +26,27 @@ std::unique_ptr<PopupRowContentView> CreateContentsView(
     base::RepeatingClosure learn_more_callback) {
   auto details_container = std::make_unique<PopupRowContentView>();
 
-  // TOD(crbug.com/365946353): Align strings with UX.
-  const std::u16string text =
-      u"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque "
-      u"scelerisque, quam eget pulvinar placerat, magna lacus vehicula magna, "
-      u"vel luctus leo nunc a sapien. Nunc id placerat risus. Maecenas sed ex "
-      u"feugiat, aliquam orci vel, tristique diam. Sed vitae venenatis. $1.";
-  const std::u16string learn_more_link_text =
-      u"Learn more about prediction improvements";
   std::vector<size_t> replacement_offsets;
   views::StyledLabel::RangeStyleInfo style_info =
       views::StyledLabel::RangeStyleInfo::CreateForLink(
           std::move(learn_more_callback));
-  const std::u16string formatted_text = l10n_util::FormatString(
-      text, /*replacements=*/{learn_more_link_text}, &replacement_offsets);
+  const std::u16string manage_prediction_improvements_text_link =
+      l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_MANAGE_PREDICTION_IMPROVEMENTS);
+  const std::u16string formatted_text = l10n_util::GetStringFUTF16(
+      IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_DETAILS_SUGGESTION_MAIN_TEXT,
+      /*replacements=*/{manage_prediction_improvements_text_link},
+      &replacement_offsets);
   details_container->AddChildView(
       views::Builder<views::StyledLabel>()
           .SetText(formatted_text)
           .SetDefaultTextStyle(views::style::STYLE_SECONDARY)
           .SetHorizontalAlignment(gfx::ALIGN_LEFT)
-          .AddStyleRange(gfx::Range(replacement_offsets[0],
-                                    replacement_offsets[0] +
-                                        learn_more_link_text.length()),
-                         style_info)
+          .AddStyleRange(
+              gfx::Range(replacement_offsets[0],
+                         replacement_offsets[0] +
+                             manage_prediction_improvements_text_link.length()),
+              style_info)
           // This is used in tests only.
           .SetID(PopupRowPredictionImprovementsDetailsView::
                      kLearnMoreStyledLabelViewID)

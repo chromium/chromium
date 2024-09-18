@@ -86,7 +86,8 @@ autofill::Suggestion CreateFeedbackSuggestion() {
   autofill::Suggestion feedback_suggestion(
       autofill::SuggestionType::kPredictionImprovementsFeedback);
   feedback_suggestion.is_acceptable = false;
-  feedback_suggestion.voice_over = u"give us feedback";
+  feedback_suggestion.voice_over = l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_FEEDBACK_SUGGESTION_A11Y_HINT);
   feedback_suggestion.highlight_on_select = false;
   return feedback_suggestion;
 }
@@ -185,7 +186,9 @@ AutofillPredictionImprovementsManager::CreateFillingSuggestions(
     // TODO(crbug.com/361434879): Add hardcoded string to an appropriate grd
     // file.
     autofill::Suggestion fill_all_child(
-        u"Fill all", autofill::SuggestionType::kFillPredictionImprovements);
+        l10n_util::GetStringUTF16(
+            IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_FILL_ALL_MAIN_TEXT),
+        autofill::SuggestionType::kFillPredictionImprovements);
     fill_all_child.payload = payload;
     suggestion.children.emplace_back(fill_all_child);
     suggestion.children.emplace_back(autofill::SuggestionType::kSeparator);
@@ -226,7 +229,8 @@ AutofillPredictionImprovementsManager::CreateTriggerSuggestion() {
   std::vector<autofill::Suggestion> suggestions;
   // TODO(crbug.com/361434879): Add hardcoded string to an appropriate grd file.
   autofill::Suggestion retrieve_suggestion(
-      u"Autocomplete",
+      l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_TRIGGER_SUGGESTION_MAIN_TEXT),
       autofill::SuggestionType::kRetrievePredictionImprovements);
   retrieve_suggestion.icon = autofill::Suggestion::Icon::kSettings;
   suggestions.emplace_back(retrieve_suggestion);
@@ -234,8 +238,8 @@ AutofillPredictionImprovementsManager::CreateTriggerSuggestion() {
   autofill::Suggestion details_suggestion(
       autofill::SuggestionType::kPredictionImprovementsDetails);
   details_suggestion.is_acceptable = false;
-  details_suggestion.voice_over =
-      u"Details about prediction improvements enter to learn more";
+  details_suggestion.voice_over = l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_DETAILS_SUGGESTION_A11Y_HINT);
   suggestions.emplace_back(details_suggestion);
 
   return suggestions;

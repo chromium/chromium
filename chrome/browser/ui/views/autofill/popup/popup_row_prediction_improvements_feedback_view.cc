@@ -51,21 +51,25 @@ std::unique_ptr<PopupRowContentView> CreateFeedbackContentView(
       views::StyledLabel::RangeStyleInfo::CreateForLink(
           std::move(learn_more_clicked));
   std::vector<size_t> replacement_offsets;
-  const std::u16string learn_more_link_text = l10n_util::GetStringUTF16(
-      IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_FEEDBACK_ROW_LEARN_MORE);
+  const std::u16string manage_prediction_improvements_link_text =
+      l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_MANAGE_PREDICTION_IMPROVEMENTS);
   const std::u16string formatted_text = l10n_util::GetStringFUTF16(
-      IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_FEEDBACK_ROW_TITLE,
-      /*replacements=*/{learn_more_link_text}, &replacement_offsets);
+      IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_FEEDBACK_TEXT,
+      /*replacements=*/{manage_prediction_improvements_link_text},
+      &replacement_offsets);
 
   feedback_container->SetFlexForView(
       feedback_container->AddChildView(
           views::Builder<views::StyledLabel>()
               .SetText(formatted_text)
               .SetHorizontalAlignment(gfx::ALIGN_LEFT)
-              .AddStyleRange(gfx::Range(replacement_offsets[0],
-                                        replacement_offsets[0] +
-                                            learn_more_link_text.length()),
-                             style_info)
+              .AddStyleRange(
+                  gfx::Range(
+                      replacement_offsets[0],
+                      replacement_offsets[0] +
+                          manage_prediction_improvements_link_text.length()),
+                  style_info)
               // This is used in tests only.
               .SetID(PopupRowPredictionImprovementsFeedbackView::
                          kLearnMoreStyledLabelViewID)
@@ -89,8 +93,12 @@ std::unique_ptr<views::ImageButton> CreateFeedbackButton(
       views::CreateVectorImageButtonWithNativeTheme(button_action, icon,
                                                     kIconSize);
   const bool is_thumbs_up = icon.name == vector_icons::kThumbUpIcon.name;
-  // TODO(b/362468426): Make these strings come from a finch config.
-  const std::u16string tooltip = is_thumbs_up ? u"Thumbs up" : u"Thumbs down";
+  const std::u16string tooltip =
+      is_thumbs_up
+          ? l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_FEEDBACK_THUMBS_UP_BUTTON_TOOLTIP)
+          : l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_FEEDBACK_THUMBS_DOWN_BUTTON_TOOLTIP);
 
   views::InstallFixedSizeCircleHighlightPathGenerator(button.get(),
                                                       kButtonRadius);
