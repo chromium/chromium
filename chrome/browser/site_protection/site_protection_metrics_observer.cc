@@ -221,6 +221,12 @@ void SiteProtectionMetricsObserver::LogMetrics(
     std::optional<safe_browsing::SafeBrowsingDatabaseManager::
                       HighConfidenceAllowlistCheckLoggingDetails>
         logging_details) {
+  if (logging_details && (!logging_details->were_all_stores_available ||
+                          logging_details->was_allowlist_size_too_small)) {
+    metrics_data->matched_heuristics.push_back(
+        SiteFamiliarityHeuristicName::kGlobalAllowlistNotReady);
+    url_on_safe_browsing_high_confidence_allowlist = false;
+  }
   if (url_on_safe_browsing_high_confidence_allowlist) {
     metrics_data->matched_heuristics.push_back(
         SiteFamiliarityHeuristicName::kGlobalAllowlistMatch);
