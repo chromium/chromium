@@ -28,6 +28,9 @@ class ASH_EXPORT FocusModeDelegate {
   CreateYouTubeMusicClient(const AccountId& account_id,
                            const std::string& device_id) = 0;
 
+  // Returns the application locale from the browser process.
+  virtual const std::string& GetLocale() = 0;
+
   // True if the active user is considered a minor (e.g. under the age of 18)
   // using the manta service account capability as the signal.
   virtual bool IsMinorUser() = 0;

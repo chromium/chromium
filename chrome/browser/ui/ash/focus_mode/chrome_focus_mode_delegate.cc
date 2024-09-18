@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/task/thread_pool.h"
 #include "base/version_info/version_info.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -110,6 +111,10 @@ ChromeFocusModeDelegate::CreateYouTubeMusicClient(
   return std::make_unique<ash::youtube_music::YouTubeMusicClient>(
       base::BindRepeating(&CreateRequestSenderForClient),
       std::make_unique<RequestSignerImpl>(account_id, device_id));
+}
+
+const std::string& ChromeFocusModeDelegate::GetLocale() {
+  return g_browser_process->GetApplicationLocale();
 }
 
 bool ChromeFocusModeDelegate::IsMinorUser() {
