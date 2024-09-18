@@ -219,9 +219,15 @@ dictionary MLTriangularOptions : MLOperatorOptions {
     RaisesException
   ] constructor(MLContext context);
 
-  [RaisesException] MLOperand input(USVString name, MLOperandDescriptor desc);
+  [
+    CallWith=ScriptState,
+    RaisesException
+  ] MLOperand input(USVString name, MLOperandDescriptor desc);
 
-  [RaisesException] MLOperand constant(MLOperandDescriptor desc, ArrayBufferView bufferView);
+  [
+    CallWith=ScriptState,
+    RaisesException
+  ] MLOperand constant(MLOperandDescriptor desc, ArrayBufferView bufferView);
 
   [RaisesException] MLOperand argMin(MLOperand input, [EnforceRange] unsigned long axis, optional MLArgMinMaxOptions options = {});
   [RaisesException] MLOperand argMax(MLOperand input, [EnforceRange] unsigned long axis, optional MLArgMinMaxOptions options = {});

@@ -20,7 +20,8 @@ namespace blink {
 class MLGraphBuilder;
 class MLOperand;
 
-MLOperand* BuildInput(MLGraphBuilder* builder,
+MLOperand* BuildInput(ScriptState* script_state,
+                      MLGraphBuilder* builder,
                       const String& name,
                       const Vector<uint32_t>& dimensions,
                       V8MLOperandDataType::Enum data_type,
@@ -31,6 +32,7 @@ NotShared<DOMArrayBufferView> CreateDOMArrayBufferView(
     V8MLOperandDataType::Enum data_type);
 
 MLOperand* BuildConstant(
+    ScriptState* script_state,
     MLGraphBuilder* builder,
     const Vector<uint32_t>& dimensions,
     V8MLOperandDataType::Enum data_type,

@@ -32,7 +32,7 @@ class MODULES_EXPORT MLOperand : public ScriptWrappable {
   static base::expected<MLOperand*, String> ValidateAndCreateInput(
       MLGraphBuilder* builder,
       V8MLOperandDataType::Enum data_type,
-      Vector<uint32_t> dimensions,
+      Vector<uint32_t> shape,
       String name);
   // Similar to the methods above, but since we're passed `descriptor` we can
   // skip the validation.
@@ -65,8 +65,7 @@ class MODULES_EXPORT MLOperand : public ScriptWrappable {
   const std::vector<uint32_t>& Shape() const;
 
   // The total number of elements in the operand. Its value is the product of
-  // all values of the dimensions. For scalar operand, the number of elements
-  // is 1.
+  // all values of the shape. For scalar operand, the number of elements is 1.
   size_t NumberOfElements() const;
 
   // The byte length of the oprand. It is defined by WebNN spec as:

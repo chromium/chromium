@@ -87,10 +87,12 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
   };
 
   // ml_graph_builder.idl
-  MLOperand* input(String name,
+  MLOperand* input(ScriptState* script_state,
+                   String name,
                    const MLOperandDescriptor* desc,
                    ExceptionState& exception_state);
-  MLOperand* constant(const MLOperandDescriptor* desc,
+  MLOperand* constant(ScriptState* script_state,
+                      const MLOperandDescriptor* desc,
                       NotShared<DOMArrayBufferView> buffer_view,
                       ExceptionState& exception_state);
 

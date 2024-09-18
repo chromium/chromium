@@ -30,12 +30,12 @@ const preluTests = [
       'inputs': {
         'preluInput': {
           'data': [-4.794857501983643],
-          'descriptor': {'dimensions': [], 'dataType': 'float32'},
+          'descriptor': {shape: [], dataType: 'float32'},
           'constant': true
         },
         'preluSlope': {
           'data': [1.1202747821807861],
-          'descriptor': {'dimensions': [], 'dataType': 'float32'},
+          'descriptor': {shape: [], dataType: 'float32'},
           'constant': true
         }
       },
@@ -47,7 +47,7 @@ const preluTests = [
       'expectedOutputs': {
         'preluOutput': {
           'data': [-5.371557712554932],
-          'descriptor': {'dimensions': [], 'dataType': 'float32'}
+          'descriptor': {shape: [], dataType: 'float32'}
         }
       }
     }
@@ -67,7 +67,7 @@ const preluTests = [
             8.47507381439209,   4.551425457000732,   -9.267870903015137,
             -0.262177437543869, 1.3258955478668213,  -7.41831111907959
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'},
+          'descriptor': {shape: [24], dataType: 'float32'},
           'constant': true
         },
         'preluSlope': {
@@ -81,7 +81,7 @@ const preluTests = [
             3.58212947845459,   -2.3224003314971924, -1.9816573858261108,
             4.155889987945557,  -1.799522042274475,  9.295849800109863
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'},
+          'descriptor': {shape: [24], dataType: 'float32'},
           'constant': true
         }
       },
@@ -102,7 +102,7 @@ const preluTests = [
             8.47507381439209,    4.551425457000732,   18.365745544433594,
             -1.0895805358886719, 1.3258955478668213,  -68.95950317382812
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'}
+          'descriptor': {shape: [24], dataType: 'float32'}
         }
       }
     }
@@ -122,7 +122,7 @@ const preluTests = [
             8.47507381439209,   4.551425457000732,   -9.267870903015137,
             -0.262177437543869, 1.3258955478668213,  -7.41831111907959
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'},
+          'descriptor': {shape: [24], dataType: 'float32'},
           'constant': true
         },
         'preluSlope': {
@@ -136,7 +136,7 @@ const preluTests = [
             3.58212947845459,   -2.3224003314971924, -1.9816573858261108,
             4.155889987945557,  -1.799522042274475,  9.295849800109863
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'},
+          'descriptor': {shape: [24], dataType: 'float32'},
           'constant': true
         }
       },
@@ -157,7 +157,7 @@ const preluTests = [
             8.47507381439209,    4.551425457000732,   18.365745544433594,
             -1.0895805358886719, 1.3258955478668213,  -68.95950317382812
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'}
+          'descriptor': {shape: [24], dataType: 'float32'}
         }
       }
     }
@@ -177,7 +177,7 @@ const preluTests = [
             8.47507381439209,   4.551425457000732,   -9.267870903015137,
             -0.262177437543869, 1.3258955478668213,  -7.41831111907959
           ],
-          'descriptor': {'dimensions': [4, 6], 'dataType': 'float32'},
+          'descriptor': {shape: [4, 6], dataType: 'float32'},
           'constant': true
         },
         'preluSlope': {
@@ -191,7 +191,7 @@ const preluTests = [
             3.58212947845459,   -2.3224003314971924, -1.9816573858261108,
             4.155889987945557,  -1.799522042274475,  9.295849800109863
           ],
-          'descriptor': {'dimensions': [4, 6], 'dataType': 'float32'},
+          'descriptor': {shape: [4, 6], dataType: 'float32'},
           'constant': true
         }
       },
@@ -212,7 +212,7 @@ const preluTests = [
             8.47507381439209,    4.551425457000732,   18.365745544433594,
             -1.0895805358886719, 1.3258955478668213,  -68.95950317382812
           ],
-          'descriptor': {'dimensions': [4, 6], 'dataType': 'float32'}
+          'descriptor': {shape: [4, 6], dataType: 'float32'}
         }
       }
     }
@@ -232,7 +232,7 @@ const preluTests = [
             8.47507381439209,   4.551425457000732,   -9.267870903015137,
             -0.262177437543869, 1.3258955478668213,  -7.41831111907959
           ],
-          'descriptor': {'dimensions': [2, 3, 4], 'dataType': 'float32'},
+          'descriptor': {shape: [2, 3, 4], dataType: 'float32'},
           'constant': true
         },
         'preluSlope': {
@@ -246,7 +246,7 @@ const preluTests = [
             3.58212947845459,   -2.3224003314971924, -1.9816573858261108,
             4.155889987945557,  -1.799522042274475,  9.295849800109863
           ],
-          'descriptor': {'dimensions': [2, 3, 4], 'dataType': 'float32'},
+          'descriptor': {shape: [2, 3, 4], dataType: 'float32'},
           'constant': true
         }
       },
@@ -267,7 +267,7 @@ const preluTests = [
             8.47507381439209,    4.551425457000732,   18.365745544433594,
             -1.0895805358886719, 1.3258955478668213,  -68.95950317382812
           ],
-          'descriptor': {'dimensions': [2, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 3, 4], dataType: 'float32'}
         }
       }
     }
@@ -287,7 +287,7 @@ const preluTests = [
             8.47507381439209,   4.551425457000732,   -9.267870903015137,
             -0.262177437543869, 1.3258955478668213,  -7.41831111907959
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'},
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'},
           'constant': true
         },
         'preluSlope': {
@@ -301,7 +301,7 @@ const preluTests = [
             3.58212947845459,   -2.3224003314971924, -1.9816573858261108,
             4.155889987945557,  -1.799522042274475,  9.295849800109863
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'},
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'},
           'constant': true
         }
       },
@@ -322,7 +322,7 @@ const preluTests = [
             8.47507381439209,    4.551425457000732,   18.365745544433594,
             -1.0895805358886719, 1.3258955478668213,  -68.95950317382812
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         }
       }
     }
@@ -342,7 +342,7 @@ const preluTests = [
             8.47507381439209,   4.551425457000732,   -9.267870903015137,
             -0.262177437543869, 1.3258955478668213,  -7.41831111907959
           ],
-          'descriptor': {'dimensions': [2, 2, 1, 2, 3], 'dataType': 'float32'},
+          'descriptor': {shape: [2, 2, 1, 2, 3], dataType: 'float32'},
           'constant': true
         },
         'preluSlope': {
@@ -356,7 +356,7 @@ const preluTests = [
             3.58212947845459,   -2.3224003314971924, -1.9816573858261108,
             4.155889987945557,  -1.799522042274475,  9.295849800109863
           ],
-          'descriptor': {'dimensions': [2, 2, 1, 2, 3], 'dataType': 'float32'},
+          'descriptor': {shape: [2, 2, 1, 2, 3], dataType: 'float32'},
           'constant': true
         }
       },
@@ -377,7 +377,7 @@ const preluTests = [
             8.47507381439209,    4.551425457000732,   18.365745544433594,
             -1.0895805358886719, 1.3258955478668213,  -68.95950317382812
           ],
-          'descriptor': {'dimensions': [2, 2, 1, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 1, 2, 3], dataType: 'float32'}
         }
       }
     }
@@ -397,12 +397,12 @@ const preluTests = [
             8.47507381439209,   4.551425457000732,   -9.267870903015137,
             -0.262177437543869, 1.3258955478668213,  -7.41831111907959
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'},
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'},
           'constant': true
         },
         'preluSlope': {
           'data': [5.073923110961914, 0.480774462223053, -7.091750144958496],
-          'descriptor': {'dimensions': [3], 'dataType': 'float32'},
+          'descriptor': {shape: [3], dataType: 'float32'},
           'constant': true
         }
       },
@@ -423,7 +423,7 @@ const preluTests = [
             8.47507381439209,    4.551425457000732,    65.72542572021484,
             -1.330268144607544,  1.3258955478668213,   52.60881042480469
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         }
       }
     }
@@ -443,12 +443,12 @@ const preluTests = [
             8.47507381439209,   4.551425457000732,   -9.267870903015137,
             -0.262177437543869, 1.3258955478668213,  -7.41831111907959
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'},
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'},
           'constant': true
         },
         'preluSlope': {
           'data': [5.0114545822143555],
-          'descriptor': {'dimensions': [1], 'dataType': 'float32'},
+          'descriptor': {shape: [1], dataType: 'float32'},
           'constant': true
         }
       },
@@ -469,7 +469,7 @@ const preluTests = [
             8.47507381439209,    4.551425457000732,   -46.44551467895508,
             -1.3138903379440308, 1.3258955478668213,  -37.17652893066406
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         }
       }
     }
@@ -489,7 +489,7 @@ const preluTests = [
             8.47507381439209,   4.551425457000732,   -9.267870903015137,
             -0.262177437543869, 1.3258955478668213,  -7.41831111907959
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'},
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'},
           'constant': true
         },
         'preluSlope': {
@@ -497,7 +497,7 @@ const preluTests = [
             4.874276161193848, -8.501633644104004, 1.1819270849227905,
             -9.985190391540527, -4.424202919006348, -6.654683589935303
           ],
-          'descriptor': {'dimensions': [2, 3], 'dataType': 'float32'},
+          'descriptor': {shape: [2, 3], dataType: 'float32'},
           'constant': true
         }
       },
@@ -518,7 +518,7 @@ const preluTests = [
             8.47507381439209,    4.551425457000732,  -10.953948020935059,
             2.617891550064087,   1.3258955478668213, 49.366512298583984
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         }
       }
     }
@@ -538,12 +538,12 @@ const preluTests = [
             8.47507381439209,   4.551425457000732,   -9.267870903015137,
             -0.262177437543869, 1.3258955478668213,  -7.41831111907959
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'},
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'},
           'constant': true
         },
         'preluSlope': {
           'data': [5.073923110961914, 0.480774462223053, -7.091750144958496],
-          'descriptor': {'dimensions': [1, 1, 3], 'dataType': 'float32'},
+          'descriptor': {shape: [1, 1, 3], dataType: 'float32'},
           'constant': true
         }
       },
@@ -564,7 +564,7 @@ const preluTests = [
             8.47507381439209,    4.551425457000732,    65.72542572021484,
             -1.330268144607544,  1.3258955478668213,   52.60881042480469
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         }
       }
     }
@@ -584,12 +584,12 @@ const preluTests = [
             8.47507381439209,   4.551425457000732,   -9.267870903015137,
             -0.262177437543869, 1.3258955478668213,  -7.41831111907959
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'},
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'},
           'constant': true
         },
         'preluSlope': {
           'data': [5.0114545822143555],
-          'descriptor': {'dimensions': [1, 1, 1, 1], 'dataType': 'float32'},
+          'descriptor': {shape: [1, 1, 1, 1], dataType: 'float32'},
           'constant': true
         }
       },
@@ -610,7 +610,7 @@ const preluTests = [
             8.47507381439209,    4.551425457000732,   -46.44551467895508,
             -1.3138903379440308, 1.3258955478668213,  -37.17652893066406
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         }
       }
     }

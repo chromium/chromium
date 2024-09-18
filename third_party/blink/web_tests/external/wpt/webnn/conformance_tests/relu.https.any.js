@@ -37,7 +37,7 @@ const reluTests = [
             51.51447296142578,  -51.63370132446289,  -64.56800079345703,
             -5.093302249908447, 15.354103088378906,  90.03858947753906
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'},
+          'descriptor': {shape: [24], dataType: 'float32'},
           'constant': true
         }
       },
@@ -74,7 +74,7 @@ const reluTests = [
             15.354103088378906,
             90.03858947753906
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'}
+          'descriptor': {shape: [24], dataType: 'float32'}
         }
       }
     }
@@ -85,7 +85,7 @@ const reluTests = [
       'inputs': {
         'reluInput': {
           'data': [79.04724884033203],
-          'descriptor': {'dimensions': [], 'dataType': 'float32'}
+          'descriptor': {shape: [], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -98,7 +98,7 @@ const reluTests = [
           'data': [
             79.04724884033203,
           ],
-          'descriptor': {'dimensions': [], 'dataType': 'float32'}
+          'descriptor': {shape: [], dataType: 'float32'}
         }
       }
     }
@@ -118,7 +118,7 @@ const reluTests = [
             51.51447296142578,  -51.63370132446289,  -64.56800079345703,
             -5.093302249908447, 15.354103088378906,  90.03858947753906
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'}
+          'descriptor': {shape: [24], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -154,7 +154,7 @@ const reluTests = [
             15.354103088378906,
             90.03858947753906
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'}
+          'descriptor': {shape: [24], dataType: 'float32'}
         }
       }
     }
@@ -174,7 +174,7 @@ const reluTests = [
             51.51447296142578,  -51.63370132446289,  -64.56800079345703,
             -5.093302249908447, 15.354103088378906,  90.03858947753906
           ],
-          'descriptor': {'dimensions': [4, 6], 'dataType': 'float32'}
+          'descriptor': {shape: [4, 6], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -210,7 +210,7 @@ const reluTests = [
             15.354103088378906,
             90.03858947753906
           ],
-          'descriptor': {'dimensions': [4, 6], 'dataType': 'float32'}
+          'descriptor': {shape: [4, 6], dataType: 'float32'}
         }
       }
     }
@@ -230,7 +230,7 @@ const reluTests = [
             51.51447296142578,  -51.63370132446289,  -64.56800079345703,
             -5.093302249908447, 15.354103088378906,  90.03858947753906
           ],
-          'descriptor': {'dimensions': [2, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 3, 4], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -266,7 +266,7 @@ const reluTests = [
             15.354103088378906,
             90.03858947753906
           ],
-          'descriptor': {'dimensions': [2, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 3, 4], dataType: 'float32'}
         }
       }
     }
@@ -286,7 +286,7 @@ const reluTests = [
             51.51447296142578,  -51.63370132446289,  -64.56800079345703,
             -5.093302249908447, 15.354103088378906,  90.03858947753906
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -322,7 +322,7 @@ const reluTests = [
             15.354103088378906,
             90.03858947753906
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         }
       }
     }
@@ -342,7 +342,7 @@ const reluTests = [
             51.51447296142578,  -51.63370132446289,  -64.56800079345703,
             -5.093302249908447, 15.354103088378906,  90.03858947753906
           ],
-          'descriptor': {'dimensions': [2, 1, 4, 1, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 1, 4, 1, 3], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -378,7 +378,7 @@ const reluTests = [
             15.354103088378906,
             90.03858947753906
           ],
-          'descriptor': {'dimensions': [2, 1, 4, 1, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 1, 4, 1, 3], dataType: 'float32'}
         }
       }
     }

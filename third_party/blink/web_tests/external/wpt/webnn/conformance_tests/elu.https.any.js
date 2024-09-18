@@ -34,7 +34,7 @@ const eluTests = [
       'inputs': {
         'eluInput': {
           'data': [4.721739768981934],
-          'descriptor': {'dimensions': [], 'dataType': 'float32'}
+          'descriptor': {shape: [], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -45,7 +45,7 @@ const eluTests = [
       'expectedOutputs': {
         'eluOutput': {
           'data': [4.721739768981934],
-          'descriptor': {'dimensions': [], 'dataType': 'float32'}
+          'descriptor': {shape: [], dataType: 'float32'}
         }
       }
     }
@@ -56,7 +56,7 @@ const eluTests = [
       'inputs': {
         'eluInput': {
           'data': [-3.8663666248321533],
-          'descriptor': {'dimensions': [], 'dataType': 'float32'}
+          'descriptor': {shape: [], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -67,7 +67,7 @@ const eluTests = [
       'expectedOutputs': {
         'eluOutput': {
           'data': [-0.9790657162666321],
-          'descriptor': {'dimensions': [], 'dataType': 'float32'}
+          'descriptor': {shape: [], dataType: 'float32'}
         }
       }
     }
@@ -87,7 +87,7 @@ const eluTests = [
             -4.01986026763916,   7.114678382873535,  -0.11212847381830215,
             -3.688840866088867,  6.135150909423828,  -9.895182609558105
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'},
+          'descriptor': {shape: [24], dataType: 'float32'},
           'constant': true
         }
       },
@@ -108,7 +108,7 @@ const eluTests = [
             -0.982044517993927,  7.114678382873535,   -0.10607059299945831,
             -0.9749990105628967, 6.135150909423828,   -0.99994957447052
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'}
+          'descriptor': {shape: [24], dataType: 'float32'}
         }
       }
     }
@@ -128,7 +128,7 @@ const eluTests = [
             -4.01986026763916,   7.114678382873535,  -0.11212847381830215,
             -3.688840866088867,  6.135150909423828,  -9.895182609558105
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'}
+          'descriptor': {shape: [24], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -148,7 +148,7 @@ const eluTests = [
             -0.982044517993927,  7.114678382873535,   -0.10607059299945831,
             -0.9749990105628967, 6.135150909423828,   -0.99994957447052
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'}
+          'descriptor': {shape: [24], dataType: 'float32'}
         }
       }
     }
@@ -168,7 +168,7 @@ const eluTests = [
             -4.01986026763916,   7.114678382873535,  -0.11212847381830215,
             -3.688840866088867,  6.135150909423828,  -9.895182609558105
           ],
-          'descriptor': {'dimensions': [4, 6], 'dataType': 'float32'}
+          'descriptor': {shape: [4, 6], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -188,7 +188,7 @@ const eluTests = [
             -0.982044517993927,  7.114678382873535,   -0.10607059299945831,
             -0.9749990105628967, 6.135150909423828,   -0.99994957447052
           ],
-          'descriptor': {'dimensions': [4, 6], 'dataType': 'float32'}
+          'descriptor': {shape: [4, 6], dataType: 'float32'}
         }
       }
     }
@@ -208,7 +208,7 @@ const eluTests = [
             -4.01986026763916,   7.114678382873535,  -0.11212847381830215,
             -3.688840866088867,  6.135150909423828,  -9.895182609558105
           ],
-          'descriptor': {'dimensions': [2, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 3, 4], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -228,7 +228,7 @@ const eluTests = [
             -0.982044517993927,  7.114678382873535,   -0.10607059299945831,
             -0.9749990105628967, 6.135150909423828,   -0.99994957447052
           ],
-          'descriptor': {'dimensions': [2, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 3, 4], dataType: 'float32'}
         }
       }
     }
@@ -248,7 +248,7 @@ const eluTests = [
             -4.01986026763916,   7.114678382873535,  -0.11212847381830215,
             -3.688840866088867,  6.135150909423828,  -9.895182609558105
           ],
-          'descriptor': {'dimensions': [1, 2, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 2, 3, 4], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -268,7 +268,7 @@ const eluTests = [
             -0.982044517993927,  7.114678382873535,   -0.10607059299945831,
             -0.9749990105628967, 6.135150909423828,   -0.99994957447052
           ],
-          'descriptor': {'dimensions': [1, 2, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 2, 3, 4], dataType: 'float32'}
         }
       }
     }
@@ -288,7 +288,7 @@ const eluTests = [
             -4.01986026763916,   7.114678382873535,  -0.11212847381830215,
             -3.688840866088867,  6.135150909423828,  -9.895182609558105
           ],
-          'descriptor': {'dimensions': [1, 2, 1, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 2, 1, 3, 4], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -308,7 +308,7 @@ const eluTests = [
             -0.982044517993927,  7.114678382873535,   -0.10607059299945831,
             -0.9749990105628967, 6.135150909423828,   -0.99994957447052
           ],
-          'descriptor': {'dimensions': [1, 2, 1, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 2, 1, 3, 4], dataType: 'float32'}
         }
       }
     }
@@ -328,7 +328,7 @@ const eluTests = [
             -4.01986026763916,   7.114678382873535,  -0.11212847381830215,
             -3.688840866088867,  6.135150909423828,  -9.895182609558105
           ],
-          'descriptor': {'dimensions': [1, 2, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 2, 3, 4], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -349,7 +349,7 @@ const eluTests = [
             -0.3542475700378418,  7.114678382873535,    -0.0382622666656971,
             -0.3517060875892639,  6.135150909423828,    -0.3607063591480255
           ],
-          'descriptor': {'dimensions': [1, 2, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 2, 3, 4], dataType: 'float32'}
         }
       }
     }
@@ -369,7 +369,7 @@ const eluTests = [
             -4.01986026763916,   7.114678382873535,  -0.11212847381830215,
             -3.688840866088867,  6.135150909423828,  -9.895182609558105
           ],
-          'descriptor': {'dimensions': [1, 2, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 2, 3, 4], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -390,7 +390,7 @@ const eluTests = [
             3.40590763092041,   7.114678382873535,  0.3678719699382782,
             3.381472587585449,  6.135150909423828,  3.468005657196045
           ],
-          'descriptor': {'dimensions': [1, 2, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 2, 3, 4], dataType: 'float32'}
         }
       }
     }

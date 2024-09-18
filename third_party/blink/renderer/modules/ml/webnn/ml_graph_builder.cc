@@ -994,6 +994,33 @@ base::expected<webnn::mojom::blink::GraphInfoPtr, String> BuildWebNNGraphInfo(
   return graph_info;
 }
 
+// Allows a tensor's shape to be specified through either the
+// `MLOperandDescriptor`'s `shape` or `dimensions` fields. This code exists for
+// now to give callers the opportunity to migrate their code to use `shape`.
+//
+// TODO(crbug.com/365813262): Remove this function after about a milestone.
+base::expected<Vector<uint32_t>, std::string> GetShapeFromDescriptor(
+    ScriptState* script_state,
+    const MLOperandDescriptor& desc) {
+  if (!desc.hasDimensions()) {
+    return desc.shape();
+  }
+
+  if (desc.shape() != desc.dimensions()) {
+    if (!desc.shape().empty()) {
+      return base::unexpected(
+          "Invalid operand descriptor: shape and dimensions do not match.");
+    } else {
+      LogConsoleWarning(
+          script_state,
+          "WARNING: MLOperandDescriptor.dimensions is deprecated. "
+          "Use MLOperandDescriptor.shape instead.");
+    }
+  }
+
+  return desc.dimensions();
+}
+
 }  // namespace
 
 // static
@@ -1037,13 +1064,17 @@ MLContext* MLGraphBuilder::GetContext() const {
   return ml_context_.Get();
 }
 
-MLOperand* MLGraphBuilder::input(String name,
+MLOperand* MLGraphBuilder::input(ScriptState* script_state,
+                                 String name,
                                  const MLOperandDescriptor* desc,
                                  ExceptionState& exception_state) {
   THROW_AND_RETURN_IF_ERROR(ValidateGraphBuilderState(), nullptr);
 
+  ASSIGN_OR_THROW_AND_RETURN_IF_ERROR(
+      Vector<uint32_t> shape, GetShapeFromDescriptor(script_state, *desc));
+
   auto input_operand = MLOperand::ValidateAndCreateInput(
-      this, desc->dataType().AsEnum(), desc->dimensions(), std::move(name));
+      this, desc->dataType().AsEnum(), std::move(shape), std::move(name));
   if (!input_operand.has_value()) {
     exception_state.ThrowTypeError(input_operand.error());
     return nullptr;
@@ -1060,7 +1091,8 @@ MLOperand* MLGraphBuilder::input(String name,
   return input_operand.value();
 }
 
-MLOperand* MLGraphBuilder::constant(const MLOperandDescriptor* desc,
+MLOperand* MLGraphBuilder::constant(ScriptState* script_state,
+                                    const MLOperandDescriptor* desc,
                                     NotShared<DOMArrayBufferView> buffer_view,
                                     ExceptionState& exception_state) {
   CHECK(buffer_view);
@@ -1068,9 +1100,12 @@ MLOperand* MLGraphBuilder::constant(const MLOperandDescriptor* desc,
   THROW_AND_RETURN_IF_ERROR(ValidateGraphBuilderState(), nullptr);
 
   ASSIGN_OR_THROW_AND_RETURN_IF_ERROR(
+      Vector<uint32_t> shape, GetShapeFromDescriptor(script_state, *desc));
+
+  ASSIGN_OR_THROW_AND_RETURN_IF_ERROR(
       webnn::OperandDescriptor descriptor,
       webnn::OperandDescriptor::Create(
-          FromBlinkDataType(desc->dataType().AsEnum()), desc->dimensions()));
+          FromBlinkDataType(desc->dataType().AsEnum()), shape));
 
   if (GetArrayBufferViewType(descriptor.data_type()) !=
       buffer_view->GetType()) {

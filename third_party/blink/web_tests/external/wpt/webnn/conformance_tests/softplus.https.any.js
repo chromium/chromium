@@ -38,7 +38,7 @@ const softplusTests = [
             5.517927169799805,   7.192322254180908, 8.764925003051758,
             1.373470425605774,   8.930668830871582, 8.660283088684082
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'},
+          'descriptor': {shape: [24], dataType: 'float32'},
           'constant': true
         }
       },
@@ -59,7 +59,7 @@ const softplusTests = [
             5.521933078765869,  7.1930742263793945, 8.765081405639648,
             1.5991919040679932, 8.930801391601562,  8.660456657409668
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'}
+          'descriptor': {shape: [24], dataType: 'float32'}
         }
       }
     }
@@ -70,7 +70,7 @@ const softplusTests = [
       'inputs': {
         'softplusInput': {
           'data': [5.626614570617676],
-          'descriptor': {'dimensions': [], 'dataType': 'float32'}
+          'descriptor': {shape: [], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -81,7 +81,7 @@ const softplusTests = [
       'expectedOutputs': {
         'softplusOutput': {
           'data': [5.630208969116211],
-          'descriptor': {'dimensions': [], 'dataType': 'float32'}
+          'descriptor': {shape: [], dataType: 'float32'}
         }
       }
     }
@@ -101,7 +101,7 @@ const softplusTests = [
             5.517927169799805,   7.192322254180908, 8.764925003051758,
             1.373470425605774,   8.930668830871582, 8.660283088684082
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'}
+          'descriptor': {shape: [24], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -121,7 +121,7 @@ const softplusTests = [
             5.521933078765869,  7.1930742263793945, 8.765081405639648,
             1.5991919040679932, 8.930801391601562,  8.660456657409668
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'}
+          'descriptor': {shape: [24], dataType: 'float32'}
         }
       }
     }
@@ -141,7 +141,7 @@ const softplusTests = [
             5.517927169799805,   7.192322254180908, 8.764925003051758,
             1.373470425605774,   8.930668830871582, 8.660283088684082
           ],
-          'descriptor': {'dimensions': [4, 6], 'dataType': 'float32'}
+          'descriptor': {shape: [4, 6], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -161,7 +161,7 @@ const softplusTests = [
             5.521933078765869,  7.1930742263793945, 8.765081405639648,
             1.5991919040679932, 8.930801391601562,  8.660456657409668
           ],
-          'descriptor': {'dimensions': [4, 6], 'dataType': 'float32'}
+          'descriptor': {shape: [4, 6], dataType: 'float32'}
         }
       }
     }
@@ -181,7 +181,7 @@ const softplusTests = [
             5.517927169799805,   7.192322254180908, 8.764925003051758,
             1.373470425605774,   8.930668830871582, 8.660283088684082
           ],
-          'descriptor': {'dimensions': [2, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 3, 4], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -201,7 +201,7 @@ const softplusTests = [
             5.521933078765869,  7.1930742263793945, 8.765081405639648,
             1.5991919040679932, 8.930801391601562,  8.660456657409668
           ],
-          'descriptor': {'dimensions': [2, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 3, 4], dataType: 'float32'}
         }
       }
     }
@@ -221,7 +221,7 @@ const softplusTests = [
             5.517927169799805,   7.192322254180908, 8.764925003051758,
             1.373470425605774,   8.930668830871582, 8.660283088684082
           ],
-          'descriptor': {'dimensions': [1, 2, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 2, 3, 4], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -241,7 +241,7 @@ const softplusTests = [
             5.521933078765869,  7.1930742263793945, 8.765081405639648,
             1.5991919040679932, 8.930801391601562,  8.660456657409668
           ],
-          'descriptor': {'dimensions': [1, 2, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 2, 3, 4], dataType: 'float32'}
         }
       }
     }
@@ -261,7 +261,7 @@ const softplusTests = [
             5.517927169799805,   7.192322254180908, 8.764925003051758,
             1.373470425605774,   8.930668830871582, 8.660283088684082
           ],
-          'descriptor': {'dimensions': [1, 2, 1, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 2, 1, 3, 4], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -281,7 +281,7 @@ const softplusTests = [
             5.521933078765869,  7.1930742263793945, 8.765081405639648,
             1.5991919040679932, 8.930801391601562,  8.660456657409668
           ],
-          'descriptor': {'dimensions': [1, 2, 1, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 2, 1, 3, 4], dataType: 'float32'}
         }
       }
     }

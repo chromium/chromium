@@ -31,8 +31,8 @@ const getGemmPrecisionTolerance = (graphResources) => {
   // is a dot product (mul and add times the number of elements)
   // plus bias operations.
   const args = graphResources.operators[0].arguments;
-  const shapeA = graphResources.inputs[args[0][Object.keys(args[0])[0]]]
-                     .descriptor.dimensions;
+  const shapeA =
+      graphResources.inputs[args[0][Object.keys(args[0])[0]]].descriptor.shape;
   const options =
       args.length === 3 ? {...args[2][Object.keys(args[2])[0]]} : {};
   const width = options.aTranspose ? shapeA[0] : shapeA[1];
@@ -67,7 +67,7 @@ const gemmTests = [
             98.89488220214844, 91.46013641357422, 50.51683807373047,
             40.45679473876953, 50.76741409301758, 9.336554527282715
           ],
-          'descriptor': {'dimensions': [3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [3, 4], dataType: 'float32'}
         },
         'inputB': {
           'data': [
@@ -79,7 +79,7 @@ const gemmTests = [
             42.90679168701172,  34.08055114746094, 87.37654876708984,
             92.34209442138672,  60.32209014892578
           ],
-          'descriptor': {'dimensions': [4, 5], 'dataType': 'float32'}
+          'descriptor': {shape: [4, 5], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -96,7 +96,7 @@ const gemmTests = [
             5516.6904296875, 9259.267578125, 9167.3916015625, 6347.330078125,
             10868.6025390625
           ],
-          'descriptor': {'dimensions': [3, 5], 'dataType': 'float32'}
+          'descriptor': {shape: [3, 5], dataType: 'float32'}
         }
       }
     }
@@ -112,7 +112,7 @@ const gemmTests = [
             98.89488220214844, 91.46013641357422, 50.51683807373047,
             40.45679473876953, 50.76741409301758, 9.336554527282715
           ],
-          'descriptor': {'dimensions': [3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [3, 4], dataType: 'float32'}
         },
         'inputB': {
           'data': [
@@ -124,7 +124,7 @@ const gemmTests = [
             42.90679168701172,  34.08055114746094, 87.37654876708984,
             92.34209442138672,  60.32209014892578
           ],
-          'descriptor': {'dimensions': [4, 5], 'dataType': 'float32'},
+          'descriptor': {shape: [4, 5], dataType: 'float32'},
           'constant': true
         }
       },
@@ -142,7 +142,7 @@ const gemmTests = [
             5516.6904296875, 9259.267578125, 9167.3916015625, 6347.330078125,
             10868.6025390625
           ],
-          'descriptor': {'dimensions': [3, 5], 'dataType': 'float32'}
+          'descriptor': {shape: [3, 5], dataType: 'float32'}
         }
       }
     }
@@ -158,7 +158,7 @@ const gemmTests = [
             98.89488220214844, 91.46013641357422, 50.51683807373047,
             40.45679473876953, 50.76741409301758, 9.336554527282715
           ],
-          'descriptor': {'dimensions': [3, 4], 'dataType': 'float32'},
+          'descriptor': {shape: [3, 4], dataType: 'float32'},
           'constant': true
         },
         'inputB': {
@@ -171,7 +171,7 @@ const gemmTests = [
             42.90679168701172,  34.08055114746094, 87.37654876708984,
             92.34209442138672,  60.32209014892578
           ],
-          'descriptor': {'dimensions': [4, 5], 'dataType': 'float32'},
+          'descriptor': {shape: [4, 5], dataType: 'float32'},
           'constant': true
         },
         'inputC': {
@@ -182,7 +182,7 @@ const gemmTests = [
             30.577470779418945, 69.47061920166016, 7.166217803955078,
             28.337108612060547, 90.69412231445312, 71.23025512695312
           ],
-          'descriptor': {'dimensions': [3, 5], 'dataType': 'float32'},
+          'descriptor': {shape: [3, 5], dataType: 'float32'},
           'constant': true
         }
       },
@@ -200,7 +200,7 @@ const gemmTests = [
             15122.8896484375, 18303.658203125, 5586.16064453125, 9266.43359375,
             9195.7294921875, 6438.0244140625, 10939.8330078125
           ],
-          'descriptor': {'dimensions': [3, 5], 'dataType': 'float32'}
+          'descriptor': {shape: [3, 5], dataType: 'float32'}
         }
       }
     }
@@ -216,7 +216,7 @@ const gemmTests = [
             98.89488220214844, 91.46013641357422, 50.51683807373047,
             40.45679473876953, 50.76741409301758, 9.336554527282715
           ],
-          'descriptor': {'dimensions': [3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [3, 4], dataType: 'float32'}
         },
         'inputB': {
           'data': [
@@ -228,7 +228,7 @@ const gemmTests = [
             42.90679168701172,  34.08055114746094, 87.37654876708984,
             92.34209442138672,  60.32209014892578
           ],
-          'descriptor': {'dimensions': [4, 5], 'dataType': 'float32'},
+          'descriptor': {shape: [4, 5], dataType: 'float32'},
           'constant': true
         },
         'inputC': {
@@ -239,7 +239,7 @@ const gemmTests = [
             30.577470779418945, 69.47061920166016, 7.166217803955078,
             28.337108612060547, 90.69412231445312, 71.23025512695312
           ],
-          'descriptor': {'dimensions': [3, 5], 'dataType': 'float32'},
+          'descriptor': {shape: [3, 5], dataType: 'float32'},
           'constant': true
         }
       },
@@ -257,7 +257,7 @@ const gemmTests = [
             15122.8896484375, 18303.658203125, 5586.16064453125, 9266.43359375,
             9195.7294921875, 6438.0244140625, 10939.8330078125
           ],
-          'descriptor': {'dimensions': [3, 5], 'dataType': 'float32'}
+          'descriptor': {shape: [3, 5], dataType: 'float32'}
         }
       }
     }
@@ -273,7 +273,7 @@ const gemmTests = [
             98.89488220214844, 91.46013641357422, 50.51683807373047,
             40.45679473876953, 50.76741409301758, 9.336554527282715
           ],
-          'descriptor': {'dimensions': [3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [3, 4], dataType: 'float32'}
         },
         'inputB': {
           'data': [
@@ -285,7 +285,7 @@ const gemmTests = [
             42.90679168701172,  34.08055114746094, 87.37654876708984,
             92.34209442138672,  60.32209014892578
           ],
-          'descriptor': {'dimensions': [4, 5], 'dataType': 'float32'},
+          'descriptor': {shape: [4, 5], dataType: 'float32'},
           'constant': true
         },
         'inputC': {
@@ -293,7 +293,7 @@ const gemmTests = [
             85.90813446044922, 39.3753547668457, 50.942604064941406,
             31.87430763244629, 31.210525512695312
           ],
-          'descriptor': {'dimensions': [1, 5], 'dataType': 'float32'},
+          'descriptor': {shape: [1, 5], dataType: 'float32'},
           'constant': true
         }
       },
@@ -311,7 +311,7 @@ const gemmTests = [
             15066.1513671875, 18304.291015625, 5602.5986328125, 9298.642578125,
             9218.3349609375, 6379.20458984375, 10899.8125
           ],
-          'descriptor': {'dimensions': [3, 5], 'dataType': 'float32'}
+          'descriptor': {shape: [3, 5], dataType: 'float32'}
         }
       }
     }
@@ -327,7 +327,7 @@ const gemmTests = [
             98.89488220214844, 91.46013641357422, 50.51683807373047,
             40.45679473876953, 50.76741409301758, 9.336554527282715
           ],
-          'descriptor': {'dimensions': [3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [3, 4], dataType: 'float32'}
         },
         'inputB': {
           'data': [
@@ -339,12 +339,12 @@ const gemmTests = [
             42.90679168701172,  34.08055114746094, 87.37654876708984,
             92.34209442138672,  60.32209014892578
           ],
-          'descriptor': {'dimensions': [4, 5], 'dataType': 'float32'},
+          'descriptor': {shape: [4, 5], dataType: 'float32'},
           'constant': true
         },
         'inputC': {
           'data': [6.20251989364624, 81.40641784667969, 73.00516510009766],
-          'descriptor': {'dimensions': [3, 1], 'dataType': 'float32'},
+          'descriptor': {shape: [3, 1], dataType: 'float32'},
           'constant': true
         }
       },
@@ -362,7 +362,7 @@ const gemmTests = [
             15115.68359375, 18354.486328125, 5589.6953125, 9332.2724609375,
             9240.3974609375, 6420.33544921875, 10941.607421875
           ],
-          'descriptor': {'dimensions': [3, 5], 'dataType': 'float32'}
+          'descriptor': {shape: [3, 5], dataType: 'float32'}
         }
       }
     }
@@ -378,7 +378,7 @@ const gemmTests = [
             98.89488220214844, 91.46013641357422, 50.51683807373047,
             40.45679473876953, 50.76741409301758, 9.336554527282715
           ],
-          'descriptor': {'dimensions': [3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [3, 4], dataType: 'float32'}
         },
         'inputB': {
           'data': [
@@ -390,12 +390,12 @@ const gemmTests = [
             42.90679168701172,  34.08055114746094, 87.37654876708984,
             92.34209442138672,  60.32209014892578
           ],
-          'descriptor': {'dimensions': [4, 5], 'dataType': 'float32'},
+          'descriptor': {shape: [4, 5], dataType: 'float32'},
           'constant': true
         },
         'inputC': {
           'data': [18.78192901611328],
-          'descriptor': {'dimensions': [1, 1], 'dataType': 'float32'},
+          'descriptor': {shape: [1, 1], dataType: 'float32'},
           'constant': true
         }
       },
@@ -413,7 +413,7 @@ const gemmTests = [
             19144.529296875, 15053.0595703125, 18291.86328125, 5535.47216796875,
             9278.048828125, 9186.173828125, 6366.1123046875, 10887.384765625
           ],
-          'descriptor': {'dimensions': [3, 5], 'dataType': 'float32'}
+          'descriptor': {shape: [3, 5], dataType: 'float32'}
         }
       }
     }
@@ -429,7 +429,7 @@ const gemmTests = [
             98.89488220214844, 91.46013641357422, 50.51683807373047,
             40.45679473876953, 50.76741409301758, 9.336554527282715
           ],
-          'descriptor': {'dimensions': [3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [3, 4], dataType: 'float32'}
         },
         'inputB': {
           'data': [
@@ -441,7 +441,7 @@ const gemmTests = [
             42.90679168701172,  34.08055114746094, 87.37654876708984,
             92.34209442138672,  60.32209014892578
           ],
-          'descriptor': {'dimensions': [4, 5], 'dataType': 'float32'},
+          'descriptor': {shape: [4, 5], dataType: 'float32'},
           'constant': true
         },
         'inputC': {
@@ -449,7 +449,7 @@ const gemmTests = [
             85.90813446044922, 39.3753547668457, 50.942604064941406,
             31.87430763244629, 31.210525512695312
           ],
-          'descriptor': {'dimensions': [5], 'dataType': 'float32'},
+          'descriptor': {shape: [5], dataType: 'float32'},
           'constant': true
         }
       },
@@ -467,7 +467,7 @@ const gemmTests = [
             15066.1513671875, 18304.291015625, 5602.5986328125, 9298.642578125,
             9218.3349609375, 6379.20458984375, 10899.8125
           ],
-          'descriptor': {'dimensions': [3, 5], 'dataType': 'float32'}
+          'descriptor': {shape: [3, 5], dataType: 'float32'}
         }
       }
     }
@@ -483,7 +483,7 @@ const gemmTests = [
             98.89488220214844, 91.46013641357422, 50.51683807373047,
             40.45679473876953, 50.76741409301758, 9.336554527282715
           ],
-          'descriptor': {'dimensions': [3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [3, 4], dataType: 'float32'}
         },
         'inputB': {
           'data': [
@@ -495,12 +495,12 @@ const gemmTests = [
             42.90679168701172,  34.08055114746094, 87.37654876708984,
             92.34209442138672,  60.32209014892578
           ],
-          'descriptor': {'dimensions': [4, 5], 'dataType': 'float32'},
+          'descriptor': {shape: [4, 5], dataType: 'float32'},
           'constant': true
         },
         'inputC': {
           'data': [18.78192901611328],
-          'descriptor': {'dimensions': [1], 'dataType': 'float32'},
+          'descriptor': {shape: [1], dataType: 'float32'},
           'constant': true
         }
       },
@@ -518,7 +518,7 @@ const gemmTests = [
             19144.529296875, 15053.0595703125, 18291.86328125, 5535.47216796875,
             9278.048828125, 9186.173828125, 6366.1123046875, 10887.384765625
           ],
-          'descriptor': {'dimensions': [3, 5], 'dataType': 'float32'}
+          'descriptor': {shape: [3, 5], dataType: 'float32'}
         }
       }
     }
@@ -534,7 +534,7 @@ const gemmTests = [
             98.89488220214844, 91.46013641357422, 50.51683807373047,
             40.45679473876953, 50.76741409301758, 9.336554527282715
           ],
-          'descriptor': {'dimensions': [3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [3, 4], dataType: 'float32'}
         },
         'inputB': {
           'data': [
@@ -546,12 +546,12 @@ const gemmTests = [
             42.90679168701172,  34.08055114746094, 87.37654876708984,
             92.34209442138672,  60.32209014892578
           ],
-          'descriptor': {'dimensions': [4, 5], 'dataType': 'float32'},
+          'descriptor': {shape: [4, 5], dataType: 'float32'},
           'constant': true
         },
         'inputC': {
           'data': [18.78192901611328],
-          'descriptor': {'dimensions': [], 'dataType': 'float32'},
+          'descriptor': {shape: [], dataType: 'float32'},
           'constant': true
         }
       },
@@ -569,7 +569,7 @@ const gemmTests = [
             19144.529296875, 15053.0595703125, 18291.86328125, 5535.47216796875,
             9278.048828125, 9186.173828125, 6366.1123046875, 10887.384765625
           ],
-          'descriptor': {'dimensions': [3, 5], 'dataType': 'float32'}
+          'descriptor': {shape: [3, 5], dataType: 'float32'}
         }
       }
     }
@@ -585,7 +585,7 @@ const gemmTests = [
             98.89488220214844, 91.46013641357422, 50.51683807373047,
             40.45679473876953, 50.76741409301758, 9.336554527282715
           ],
-          'descriptor': {'dimensions': [3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [3, 4], dataType: 'float32'}
         },
         'inputB': {
           'data': [
@@ -597,7 +597,7 @@ const gemmTests = [
             42.90679168701172,  34.08055114746094, 87.37654876708984,
             92.34209442138672,  60.32209014892578
           ],
-          'descriptor': {'dimensions': [4, 5], 'dataType': 'float32'},
+          'descriptor': {shape: [4, 5], dataType: 'float32'},
           'constant': true
         }
       },
@@ -616,7 +616,7 @@ const gemmTests = [
             885183.875, 1091172, 1423568.5, 1119032, 1360102.75, 410618.53125,
             689186.1875, 682347.75, 472444.78125, 808972.3125
           ],
-          'descriptor': {'dimensions': [3, 5], 'dataType': 'float32'}
+          'descriptor': {shape: [3, 5], dataType: 'float32'}
         }
       }
     }
@@ -632,7 +632,7 @@ const gemmTests = [
             98.89488220214844, 91.46013641357422, 50.51683807373047,
             40.45679473876953, 50.76741409301758, 9.336554527282715
           ],
-          'descriptor': {'dimensions': [3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [3, 4], dataType: 'float32'}
         },
         'inputB': {
           'data': [
@@ -644,7 +644,7 @@ const gemmTests = [
             42.90679168701172,  34.08055114746094, 87.37654876708984,
             92.34209442138672,  60.32209014892578
           ],
-          'descriptor': {'dimensions': [4, 5], 'dataType': 'float32'},
+          'descriptor': {shape: [4, 5], dataType: 'float32'},
           'constant': true
         }
       },
@@ -665,7 +665,7 @@ const gemmTests = [
             5516.6904296875, 9259.267578125, 9167.3916015625, 6347.330078125,
             10868.6025390625
           ],
-          'descriptor': {'dimensions': [3, 5], 'dataType': 'float32'}
+          'descriptor': {shape: [3, 5], dataType: 'float32'}
         }
       }
     }
@@ -681,7 +681,7 @@ const gemmTests = [
             98.89488220214844, 91.46013641357422, 50.51683807373047,
             40.45679473876953, 50.76741409301758, 9.336554527282715
           ],
-          'descriptor': {'dimensions': [3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [3, 4], dataType: 'float32'}
         },
         'inputB': {
           'data': [
@@ -693,7 +693,7 @@ const gemmTests = [
             42.90679168701172,  34.08055114746094, 87.37654876708984,
             92.34209442138672,  60.32209014892578
           ],
-          'descriptor': {'dimensions': [4, 5], 'dataType': 'float32'},
+          'descriptor': {shape: [4, 5], dataType: 'float32'},
           'constant': true
         },
         'inputC': {
@@ -704,7 +704,7 @@ const gemmTests = [
             30.577470779418945, 69.47061920166016, 7.166217803955078,
             28.337108612060547, 90.69412231445312, 71.23025512695312
           ],
-          'descriptor': {'dimensions': [3, 5], 'dataType': 'float32'},
+          'descriptor': {shape: [3, 5], dataType: 'float32'},
           'constant': true
         }
       },
@@ -724,7 +724,7 @@ const gemmTests = [
             20529.83984375, 20169.443359375, 9825.138671875, 9703.7041015625,
             10924.810546875, 11972.0244140625, 15286.1806640625
           ],
-          'descriptor': {'dimensions': [3, 5], 'dataType': 'float32'}
+          'descriptor': {shape: [3, 5], dataType: 'float32'}
         }
       }
     }
@@ -740,7 +740,7 @@ const gemmTests = [
             59.638519287109375, 98.89488220214844, 50.76741409301758,
             36.271873474121094, 91.46013641357422, 9.336554527282715
           ],
-          'descriptor': {'dimensions': [4, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [4, 3], dataType: 'float32'}
         },
         'inputB': {
           'data': [
@@ -752,7 +752,7 @@ const gemmTests = [
             42.90679168701172,  34.08055114746094, 87.37654876708984,
             92.34209442138672,  60.32209014892578
           ],
-          'descriptor': {'dimensions': [4, 5], 'dataType': 'float32'},
+          'descriptor': {shape: [4, 5], dataType: 'float32'},
           'constant': true
         }
       },
@@ -772,7 +772,7 @@ const gemmTests = [
             5516.6904296875, 9259.267578125, 9167.3916015625, 6347.330078125,
             10868.6025390625
           ],
-          'descriptor': {'dimensions': [3, 5], 'dataType': 'float32'}
+          'descriptor': {shape: [3, 5], dataType: 'float32'}
         }
       }
     }
@@ -789,7 +789,7 @@ const gemmTests = [
             98.89488220214844, 91.46013641357422, 50.51683807373047,
             40.45679473876953, 50.76741409301758, 9.336554527282715
           ],
-          'descriptor': {'dimensions': [3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [3, 4], dataType: 'float32'}
         },
         'inputB': {
           'data': [
@@ -801,7 +801,7 @@ const gemmTests = [
             42.90679168701172,  34.08055114746094, 87.37654876708984,
             92.34209442138672,  60.32209014892578
           ],
-          'descriptor': {'dimensions': [4, 5], 'dataType': 'float32'},
+          'descriptor': {shape: [4, 5], dataType: 'float32'},
           'constant': true
         }
       },
@@ -821,7 +821,7 @@ const gemmTests = [
             5516.6904296875, 9259.267578125, 9167.3916015625, 6347.330078125,
             10868.6025390625
           ],
-          'descriptor': {'dimensions': [3, 5], 'dataType': 'float32'}
+          'descriptor': {shape: [3, 5], dataType: 'float32'}
         }
       }
     }
@@ -837,7 +837,7 @@ const gemmTests = [
             98.89488220214844, 91.46013641357422, 50.51683807373047,
             40.45679473876953, 50.76741409301758, 9.336554527282715
           ],
-          'descriptor': {'dimensions': [3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [3, 4], dataType: 'float32'}
         },
         'inputB': {
           'data': [
@@ -849,7 +849,7 @@ const gemmTests = [
             92.34209442138672,  61.32737731933594,     70.08265686035156,
             86.11856842041016,  60.32209014892578
           ],
-          'descriptor': {'dimensions': [5, 4], 'dataType': 'float32'},
+          'descriptor': {shape: [5, 4], dataType: 'float32'},
           'constant': true
         }
       },
@@ -869,7 +869,7 @@ const gemmTests = [
             5516.6904296875, 9259.267578125, 9167.3916015625, 6347.330078125,
             10868.6025390625
           ],
-          'descriptor': {'dimensions': [3, 5], 'dataType': 'float32'}
+          'descriptor': {shape: [3, 5], dataType: 'float32'}
         }
       }
     }
@@ -886,7 +886,7 @@ const gemmTests = [
             98.89488220214844, 91.46013641357422, 50.51683807373047,
             40.45679473876953, 50.76741409301758, 9.336554527282715
           ],
-          'descriptor': {'dimensions': [3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [3, 4], dataType: 'float32'}
         },
         'inputB': {
           'data': [
@@ -898,7 +898,7 @@ const gemmTests = [
             42.90679168701172,  34.08055114746094, 87.37654876708984,
             92.34209442138672,  60.32209014892578
           ],
-          'descriptor': {'dimensions': [4, 5], 'dataType': 'float32'},
+          'descriptor': {shape: [4, 5], dataType: 'float32'},
           'constant': true
         }
       },
@@ -918,7 +918,7 @@ const gemmTests = [
             5516.6904296875, 9259.267578125, 9167.3916015625, 6347.330078125,
             10868.6025390625
           ],
-          'descriptor': {'dimensions': [3, 5], 'dataType': 'float32'}
+          'descriptor': {shape: [3, 5], dataType: 'float32'}
         }
       }
     }
@@ -934,7 +934,7 @@ const gemmTests = [
             59.638519287109375, 98.89488220214844, 50.76741409301758,
             36.271873474121094, 91.46013641357422, 9.336554527282715
           ],
-          'descriptor': {'dimensions': [4, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [4, 3], dataType: 'float32'}
         },
         'inputB': {
           'data': [
@@ -946,7 +946,7 @@ const gemmTests = [
             92.34209442138672,  61.32737731933594,     70.08265686035156,
             86.11856842041016,  60.32209014892578
           ],
-          'descriptor': {'dimensions': [5, 4], 'dataType': 'float32'},
+          'descriptor': {shape: [5, 4], dataType: 'float32'},
           'constant': true
         },
         'inputC': {
@@ -957,7 +957,7 @@ const gemmTests = [
             30.577470779418945, 69.47061920166016, 7.166217803955078,
             28.337108612060547, 90.69412231445312, 71.23025512695312
           ],
-          'descriptor': {'dimensions': [3, 5], 'dataType': 'float32'},
+          'descriptor': {shape: [3, 5], dataType: 'float32'},
           'constant': true
         }
       },
@@ -983,7 +983,7 @@ const gemmTests = [
             887367.0625, 1091999, 1426718.125, 1124527.625, 1361999.125, 414927,
             689630.625, 684105.1875, 478069.46875, 813389.875
           ],
-          'descriptor': {'dimensions': [3, 5], 'dataType': 'float32'}
+          'descriptor': {shape: [3, 5], dataType: 'float32'}
         }
       }
     }
@@ -999,7 +999,7 @@ const gemmTests = [
             -76.046630859375, -83.94807434082031, -95.02689361572266,
             -47.89733123779297, -69.0116195678711, -86.66899108886719
           ],
-          'descriptor': {'dimensions': [3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [3, 4], dataType: 'float32'}
         },
         'inputB': {
           'data': [
@@ -1011,7 +1011,7 @@ const gemmTests = [
             42.90679168701172,  34.08055114746094, 87.37654876708984,
             92.34209442138672,  60.32209014892578
           ],
-          'descriptor': {'dimensions': [4, 5], 'dataType': 'float32'},
+          'descriptor': {shape: [4, 5], dataType: 'float32'},
           'constant': true
         },
         'inputC': {
@@ -1022,7 +1022,7 @@ const gemmTests = [
             30.577470779418945, 69.47061920166016, 7.166217803955078,
             28.337108612060547, 90.69412231445312, 71.23025512695312
           ],
-          'descriptor': {'dimensions': [3, 5], 'dataType': 'float32'},
+          'descriptor': {shape: [3, 5], dataType: 'float32'},
           'constant': true
         }
       },
@@ -1041,7 +1041,7 @@ const gemmTests = [
             228076.8125, 277543.625, 378076, 241282.15625, 316800.71875,
             256391.5625, 378711.34375, 465195.8125, 341034.875, 460338.3125
           ],
-          'descriptor': {'dimensions': [3, 5], 'dataType': 'float32'}
+          'descriptor': {shape: [3, 5], dataType: 'float32'}
         }
       }
     }
@@ -1057,7 +1057,7 @@ const gemmTests = [
             98.89488220214844, 91.46013641357422, 50.51683807373047,
             40.45679473876953, 50.76741409301758, 9.336554527282715
           ],
-          'descriptor': {'dimensions': [3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [3, 4], dataType: 'float32'}
         },
         'inputB': {
           'data': [
@@ -1069,7 +1069,7 @@ const gemmTests = [
             -26.2825927734375,  -56.237979888916016, -46.47404861450195,
             -89.20684051513672, -53.495323181152344
           ],
-          'descriptor': {'dimensions': [4, 5], 'dataType': 'float32'},
+          'descriptor': {shape: [4, 5], dataType: 'float32'},
           'constant': true
         },
         'inputC': {
@@ -1080,7 +1080,7 @@ const gemmTests = [
             30.577470779418945, 69.47061920166016, 7.166217803955078,
             28.337108612060547, 90.69412231445312, 71.23025512695312
           ],
-          'descriptor': {'dimensions': [3, 5], 'dataType': 'float32'},
+          'descriptor': {shape: [3, 5], dataType: 'float32'},
           'constant': true
         }
       },
@@ -1100,7 +1100,7 @@ const gemmTests = [
             235557.03125, 245540.5625, 170154.125, 309239.4375, 163583.015625,
             120958.7578125
           ],
-          'descriptor': {'dimensions': [3, 5], 'dataType': 'float32'}
+          'descriptor': {shape: [3, 5], dataType: 'float32'}
         }
       }
     }
@@ -1117,7 +1117,7 @@ const gemmTests = [
             98.89488220214844, 91.46013641357422, 50.51683807373047,
             40.45679473876953, 50.76741409301758, 9.336554527282715
           ],
-          'descriptor': {'dimensions': [3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [3, 4], dataType: 'float32'}
         },
         'inputB': {
           'data': [
@@ -1129,7 +1129,7 @@ const gemmTests = [
             42.90679168701172,  34.08055114746094, 87.37654876708984,
             92.34209442138672,  60.32209014892578
           ],
-          'descriptor': {'dimensions': [4, 5], 'dataType': 'float32'},
+          'descriptor': {shape: [4, 5], dataType: 'float32'},
           'constant': true
         },
         'inputC': {
@@ -1140,7 +1140,7 @@ const gemmTests = [
             -66.76168060302734, -25.392492294311523, -65.62987518310547,
             -40.50155258178711, -81.5303955078125, -41.39629364013672
           ],
-          'descriptor': {'dimensions': [3, 5], 'dataType': 'float32'},
+          'descriptor': {shape: [3, 5], dataType: 'float32'},
           'constant': true
         }
       },
@@ -1161,7 +1161,7 @@ const gemmTests = [
             10026.1669921875, 9640.6611328125, 7300.03076171875,
             11352.3271484375
           ],
-          'descriptor': {'dimensions': [3, 5], 'dataType': 'float32'}
+          'descriptor': {shape: [3, 5], dataType: 'float32'}
         }
       }
     }
@@ -1177,7 +1177,7 @@ const gemmTests = [
             98.89488220214844, 91.46013641357422, 50.51683807373047,
             40.45679473876953, 50.76741409301758, 9.336554527282715
           ],
-          'descriptor': {'dimensions': [3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [3, 4], dataType: 'float32'}
         },
         'inputB': {
           'data': [
@@ -1189,7 +1189,7 @@ const gemmTests = [
             42.90679168701172,  34.08055114746094, 87.37654876708984,
             92.34209442138672,  60.32209014892578
           ],
-          'descriptor': {'dimensions': [4, 5], 'dataType': 'float32'},
+          'descriptor': {shape: [4, 5], dataType: 'float32'},
           'constant': true
         },
         'inputC': {
@@ -1200,7 +1200,7 @@ const gemmTests = [
             30.577470779418945, 69.47061920166016, 7.166217803955078,
             28.337108612060547, 90.69412231445312, 71.23025512695312
           ],
-          'descriptor': {'dimensions': [3, 5], 'dataType': 'float32'},
+          'descriptor': {shape: [3, 5], dataType: 'float32'},
           'constant': true
         }
       },
@@ -1225,7 +1225,7 @@ const gemmTests = [
             -340977.71875, -413532.65625, -125550.484375, -209446.40625,
             -207616.390625, -144580.21875, -246583.921875
           ],
-          'descriptor': {'dimensions': [3, 5], 'dataType': 'float32'}
+          'descriptor': {shape: [3, 5], dataType: 'float32'}
         }
       }
     }
@@ -1242,7 +1242,7 @@ const gemmTests = [
             98.89488220214844, 91.46013641357422, 50.51683807373047,
             40.45679473876953, 50.76741409301758, 9.336554527282715
           ],
-          'descriptor': {'dimensions': [3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [3, 4], dataType: 'float32'}
         },
         'inputB': {
           'data': [
@@ -1254,7 +1254,7 @@ const gemmTests = [
             42.90679168701172,  34.08055114746094, 87.37654876708984,
             92.34209442138672,  60.32209014892578
           ],
-          'descriptor': {'dimensions': [4, 5], 'dataType': 'float32'},
+          'descriptor': {shape: [4, 5], dataType: 'float32'},
           'constant': true
         },
         'inputC': {
@@ -1265,7 +1265,7 @@ const gemmTests = [
             -66.76168060302734, -25.392492294311523, -65.62987518310547,
             -40.50155258178711, -81.5303955078125, -41.39629364013672
           ],
-          'descriptor': {'dimensions': [3, 5], 'dataType': 'float32'},
+          'descriptor': {shape: [3, 5], dataType: 'float32'},
           'constant': true
         }
       },
@@ -1285,7 +1285,7 @@ const gemmTests = [
             -124764.09375, -209428.296875, -207325.765625, -143601.96875,
             -245792.984375
           ],
-          'descriptor': {'dimensions': [3, 5], 'dataType': 'float32'}
+          'descriptor': {shape: [3, 5], dataType: 'float32'}
         }
       }
     }

@@ -62,8 +62,8 @@ const assertDescriptorsEquals = (outputOperand, expected) => {
       outputOperand.dataType() === dataType,
       'actual output dataType should be equal to expected output dataType');
   assert_array_equals(
-      outputOperand.shape(), expected.dimensions,
-      'actual output dimesnisons should be equal to expected output dimensions');
+      outputOperand.shape(), expected.shape,
+      'actual output shape should be equal to expected output shape');
 };
 
 // ref:
@@ -289,10 +289,10 @@ const assertResultsEquals = (toleranceFunc, actual, graphResources) => {
     // If data is scalar and shape is not, it means it's expecting to be
     // filled by the scalar value. Also limit the array size so it doesn't
     // timeout.
-    if (typeof (expectedData) === 'number' && expectedDescriptor.dimensions &&
-        sizeOfShape(expectedDescriptor.dimensions) > 1) {
+    if (typeof (expectedData) === 'number' && expectedDescriptor.shape &&
+        sizeOfShape(expectedDescriptor.shape) > 1) {
       const size = Math.min(
-          kMaximumIndexToValidate, sizeOfShape(expectedDescriptor.dimensions));
+          kMaximumIndexToValidate, sizeOfShape(expectedDescriptor.shape));
       expectedData = new Array(size).fill(expectedData);
       outputData = outputData.subarray(0, kMaximumIndexToValidate);
     }
@@ -322,7 +322,7 @@ const createOperand = (context, builder, operandName, resources) => {
       builder.constant(
           descriptor,
           getTypedArrayData(
-              descriptor.dataType, sizeOfShape(descriptor.dimensions),
+              descriptor.dataType, sizeOfShape(descriptor.shape),
               resources.data)) :
       builder.input(operandName, descriptor);
 
@@ -341,7 +341,7 @@ const prepareInputsForGraph = (inputs, resources) => {
           inputOperandResources.descriptor.castedType ?
               inputOperandResources.descriptor.castedType :
               inputOperandResources.descriptor.dataType,
-          sizeOfShape(inputOperandResources.descriptor.dimensions),
+          sizeOfShape(inputOperandResources.descriptor.shape),
           inputOperandResources.data);
     }
   }
@@ -353,7 +353,7 @@ const prepareOutputsForGraph = (outputs, resources) => {
     const dataType =
         descriptor.castedType ? descriptor.castedType : descriptor.dataType;
     outputs[operandName] =
-        new TypedArrayDict[dataType](sizeOfShape(descriptor.dimensions));
+        new TypedArrayDict[dataType](sizeOfShape(descriptor.shape));
   }
 };
 
@@ -470,10 +470,10 @@ const getConv2dPrecisionTolerance = (graphResources) => {
   const operatorResources = graphResources.operators[0];
   const operatorName = operatorResources.name;
   const args = operatorResources.arguments;
-  const inputShape = graphResources.inputs[args[0][Object.keys(args[0])[0]]]
-                         .descriptor.dimensions;
-  const filterShape = graphResources.inputs[args[1][Object.keys(args[1])[0]]]
-                          .descriptor.dimensions;
+  const inputShape =
+      graphResources.inputs[args[0][Object.keys(args[0])[0]]].descriptor.shape;
+  const filterShape =
+      graphResources.inputs[args[1][Object.keys(args[1])[0]]].descriptor.shape;
   const options =
       args.length === 3 ? {...args[2][Object.keys(args[2])[0]]} : {};
   let inputChannels = inputShape[1];  // default nchw inputLayout
@@ -538,7 +538,7 @@ const getReducedElementCount =
     (graphResources) => {
       const args = graphResources.operators[0].arguments;
       const inputShape = graphResources.inputs[args[0][Object.keys(args[0])[0]]]
-                             .descriptor.dimensions;
+                             .descriptor.shape;
       const rank = inputShape.length;
       const options =
           args.length === 2 ? {...args[1][Object.keys(args[1])[0]]} : {};

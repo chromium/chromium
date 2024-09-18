@@ -39,7 +39,7 @@ const sigmoidTests = [
             4.791460037231445,    2.0745489597320557,  0.8354471325874329,
             -5.433595657348633,   -4.184835910797119,  -2.484982490539551
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'},
+          'descriptor': {shape: [24], dataType: 'float32'},
           'constant': true
         }
       },
@@ -60,7 +60,7 @@ const sigmoidTests = [
             0.9917680025100708,   0.8884047269821167,   0.6975054740905762,
             0.004348373040556908, 0.014996387995779514, 0.07691769301891327
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'}
+          'descriptor': {shape: [24], dataType: 'float32'}
         }
       }
     }
@@ -71,7 +71,7 @@ const sigmoidTests = [
       'inputs': {
         'sigmoidInput': {
           'data': [-0.37699514627456665],
-          'descriptor': {'dimensions': [], 'dataType': 'float32'}
+          'descriptor': {shape: [], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -82,7 +82,7 @@ const sigmoidTests = [
       'expectedOutputs': {
         'sigmoidOutput': {
           'data': [0.4068518280982971],
-          'descriptor': {'dimensions': [], 'dataType': 'float32'}
+          'descriptor': {shape: [], dataType: 'float32'}
         }
       }
     }
@@ -102,7 +102,7 @@ const sigmoidTests = [
             4.791460037231445,    2.0745489597320557,  0.8354471325874329,
             -5.433595657348633,   -4.184835910797119,  -2.484982490539551
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'}
+          'descriptor': {shape: [24], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -122,7 +122,7 @@ const sigmoidTests = [
             0.9917680025100708,   0.8884047269821167,   0.6975054740905762,
             0.004348373040556908, 0.014996387995779514, 0.07691769301891327
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'}
+          'descriptor': {shape: [24], dataType: 'float32'}
         }
       }
     }
@@ -142,7 +142,7 @@ const sigmoidTests = [
             4.791460037231445,    2.0745489597320557,  0.8354471325874329,
             -5.433595657348633,   -4.184835910797119,  -2.484982490539551
           ],
-          'descriptor': {'dimensions': [4, 6], 'dataType': 'float32'}
+          'descriptor': {shape: [4, 6], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -162,7 +162,7 @@ const sigmoidTests = [
             0.9917680025100708,   0.8884047269821167,   0.6975054740905762,
             0.004348373040556908, 0.014996387995779514, 0.07691769301891327
           ],
-          'descriptor': {'dimensions': [4, 6], 'dataType': 'float32'}
+          'descriptor': {shape: [4, 6], dataType: 'float32'}
         }
       }
     }
@@ -182,7 +182,7 @@ const sigmoidTests = [
             4.791460037231445,    2.0745489597320557,  0.8354471325874329,
             -5.433595657348633,   -4.184835910797119,  -2.484982490539551
           ],
-          'descriptor': {'dimensions': [2, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 3, 4], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -202,7 +202,7 @@ const sigmoidTests = [
             0.9917680025100708,   0.8884047269821167,   0.6975054740905762,
             0.004348373040556908, 0.014996387995779514, 0.07691769301891327
           ],
-          'descriptor': {'dimensions': [2, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 3, 4], dataType: 'float32'}
         }
       }
     }
@@ -222,7 +222,7 @@ const sigmoidTests = [
             4.791460037231445,    2.0745489597320557,  0.8354471325874329,
             -5.433595657348633,   -4.184835910797119,  -2.484982490539551
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -242,7 +242,7 @@ const sigmoidTests = [
             0.9917680025100708,   0.8884047269821167,   0.6975054740905762,
             0.004348373040556908, 0.014996387995779514, 0.07691769301891327
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         }
       }
     }
@@ -262,7 +262,7 @@ const sigmoidTests = [
             4.791460037231445,    2.0745489597320557,  0.8354471325874329,
             -5.433595657348633,   -4.184835910797119,  -2.484982490539551
           ],
-          'descriptor': {'dimensions': [2, 1, 4, 1, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 1, 4, 1, 3], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -282,7 +282,7 @@ const sigmoidTests = [
             0.9917680025100708,   0.8884047269821167,   0.6975054740905762,
             0.004348373040556908, 0.014996387995779514, 0.07691769301891327
           ],
-          'descriptor': {'dimensions': [2, 1, 4, 1, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 1, 4, 1, 3], dataType: 'float32'}
         }
       }
     }

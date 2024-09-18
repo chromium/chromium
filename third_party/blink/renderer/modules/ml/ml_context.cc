@@ -926,7 +926,7 @@ ScriptPromise<MLTensor> MLContext::createTensor(
   ASSIGN_OR_RETURN(webnn::OperandDescriptor validated_descriptor,
                    webnn::OperandDescriptor::Create(
                        FromBlinkDataType(descriptor->dataType().AsEnum()),
-                       descriptor->dimensions()),
+                       descriptor->shape()),
                    [&exception_state](std::string error) {
                      exception_state.ThrowTypeError(String(error));
                      return ScriptPromise<MLTensor>();

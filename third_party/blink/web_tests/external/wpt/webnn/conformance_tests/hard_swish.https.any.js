@@ -29,7 +29,7 @@ const hardSwishTests = [
       'inputs': {
         'hardSwishInput': {
           'data': [0.7341583371162415],
-          'descriptor': {'dimensions': [], 'dataType': 'float32'}
+          'descriptor': {shape: [], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -40,7 +40,7 @@ const hardSwishTests = [
       'expectedOutputs': {
         'hardSwishOutput': {
           'data': [0.4569105803966522],
-          'descriptor': {'dimensions': [], 'dataType': 'float32'}
+          'descriptor': {shape: [], dataType: 'float32'}
         }
       }
     }
@@ -60,7 +60,7 @@ const hardSwishTests = [
             3.7802627086639404,  -6.071240425109863,  -9.909919738769531,
             -7.744259357452393,  -8.286120414733887,  8.083491325378418
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'},
+          'descriptor': {shape: [24], dataType: 'float32'},
           'constant': true
         }
       },
@@ -97,7 +97,7 @@ const hardSwishTests = [
             0,
             8.083491325378418
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'}
+          'descriptor': {shape: [24], dataType: 'float32'}
         }
       }
     }
@@ -117,7 +117,7 @@ const hardSwishTests = [
             3.7802627086639404,  -6.071240425109863,  -9.909919738769531,
             -7.744259357452393,  -8.286120414733887,  8.083491325378418
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'}
+          'descriptor': {shape: [24], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -153,7 +153,7 @@ const hardSwishTests = [
             0,
             8.083491325378418
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'}
+          'descriptor': {shape: [24], dataType: 'float32'}
         }
       }
     }
@@ -173,7 +173,7 @@ const hardSwishTests = [
             3.7802627086639404,  -6.071240425109863,  -9.909919738769531,
             -7.744259357452393,  -8.286120414733887,  8.083491325378418
           ],
-          'descriptor': {'dimensions': [4, 6], 'dataType': 'float32'}
+          'descriptor': {shape: [4, 6], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -209,7 +209,7 @@ const hardSwishTests = [
             0,
             8.083491325378418
           ],
-          'descriptor': {'dimensions': [4, 6], 'dataType': 'float32'}
+          'descriptor': {shape: [4, 6], dataType: 'float32'}
         }
       }
     }
@@ -229,7 +229,7 @@ const hardSwishTests = [
             3.7802627086639404,  -6.071240425109863,  -9.909919738769531,
             -7.744259357452393,  -8.286120414733887,  8.083491325378418
           ],
-          'descriptor': {'dimensions': [2, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 3, 4], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -265,7 +265,7 @@ const hardSwishTests = [
             0,
             8.083491325378418
           ],
-          'descriptor': {'dimensions': [2, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 3, 4], dataType: 'float32'}
         }
       }
     }
@@ -285,7 +285,7 @@ const hardSwishTests = [
             3.7802627086639404,  -6.071240425109863,  -9.909919738769531,
             -7.744259357452393,  -8.286120414733887,  8.083491325378418
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -321,7 +321,7 @@ const hardSwishTests = [
             0,
             8.083491325378418
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         }
       }
     }
@@ -341,7 +341,7 @@ const hardSwishTests = [
             3.7802627086639404,  -6.071240425109863,  -9.909919738769531,
             -7.744259357452393,  -8.286120414733887,  8.083491325378418
           ],
-          'descriptor': {'dimensions': [2, 1, 4, 1, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 1, 4, 1, 3], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -377,7 +377,7 @@ const hardSwishTests = [
             0,
             8.083491325378418
           ],
-          'descriptor': {'dimensions': [2, 1, 4, 1, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 1, 4, 1, 3], dataType: 'float32'}
         }
       }
     }

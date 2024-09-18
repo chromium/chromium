@@ -38,7 +38,7 @@ const tanhTests = [
             -1.443918228149414,  -1.9129083156585693,  2.7495968341827393,
             -0.7420240044593811, 4.856568336486816,    -0.7563357949256897
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'},
+          'descriptor': {shape: [24], dataType: 'float32'},
           'constant': true
         }
       },
@@ -59,7 +59,7 @@ const tanhTests = [
             -0.894483745098114,  -0.9573289752006531, 0.9918531775474548,
             -0.6303664445877075, 0.9998790621757507,  -0.6389135718345642
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'}
+          'descriptor': {shape: [24], dataType: 'float32'}
         }
       }
     }
@@ -79,7 +79,7 @@ const tanhTests = [
             -1.443918228149414,  -1.9129083156585693,  2.7495968341827393,
             -0.7420240044593811, 4.856568336486816,    -0.7563357949256897
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'}
+          'descriptor': {shape: [24], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -99,7 +99,7 @@ const tanhTests = [
             -0.894483745098114,  -0.9573289752006531, 0.9918531775474548,
             -0.6303664445877075, 0.9998790621757507,  -0.6389135718345642
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'}
+          'descriptor': {shape: [24], dataType: 'float32'}
         }
       }
     }
@@ -119,7 +119,7 @@ const tanhTests = [
             -1.443918228149414,  -1.9129083156585693,  2.7495968341827393,
             -0.7420240044593811, 4.856568336486816,    -0.7563357949256897
           ],
-          'descriptor': {'dimensions': [4, 6], 'dataType': 'float32'}
+          'descriptor': {shape: [4, 6], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -139,7 +139,7 @@ const tanhTests = [
             -0.894483745098114,  -0.9573289752006531, 0.9918531775474548,
             -0.6303664445877075, 0.9998790621757507,  -0.6389135718345642
           ],
-          'descriptor': {'dimensions': [4, 6], 'dataType': 'float32'}
+          'descriptor': {shape: [4, 6], dataType: 'float32'}
         }
       }
     }
@@ -159,7 +159,7 @@ const tanhTests = [
             -1.443918228149414,  -1.9129083156585693,  2.7495968341827393,
             -0.7420240044593811, 4.856568336486816,    -0.7563357949256897
           ],
-          'descriptor': {'dimensions': [2, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 3, 4], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -179,7 +179,7 @@ const tanhTests = [
             -0.894483745098114,  -0.9573289752006531, 0.9918531775474548,
             -0.6303664445877075, 0.9998790621757507,  -0.6389135718345642
           ],
-          'descriptor': {'dimensions': [2, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 3, 4], dataType: 'float32'}
         }
       }
     }
@@ -199,7 +199,7 @@ const tanhTests = [
             -1.443918228149414,  -1.9129083156585693,  2.7495968341827393,
             -0.7420240044593811, 4.856568336486816,    -0.7563357949256897
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -219,7 +219,7 @@ const tanhTests = [
             -0.894483745098114,  -0.9573289752006531, 0.9918531775474548,
             -0.6303664445877075, 0.9998790621757507,  -0.6389135718345642
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         }
       }
     }
@@ -239,7 +239,7 @@ const tanhTests = [
             -1.443918228149414,  -1.9129083156585693,  2.7495968341827393,
             -0.7420240044593811, 4.856568336486816,    -0.7563357949256897
           ],
-          'descriptor': {'dimensions': [2, 1, 4, 1, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 1, 4, 1, 3], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -259,7 +259,7 @@ const tanhTests = [
             -0.894483745098114,  -0.9573289752006531, 0.9918531775474548,
             -0.6303664445877075, 0.9998790621757507,  -0.6389135718345642
           ],
-          'descriptor': {'dimensions': [2, 1, 4, 1, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 1, 4, 1, 3], dataType: 'float32'}
         }
       }
     }

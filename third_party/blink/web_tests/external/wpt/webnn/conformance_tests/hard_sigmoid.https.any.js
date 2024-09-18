@@ -35,7 +35,7 @@ const hardSigmoidTests = [
       'inputs': {
         'hardSigmoidInput': {
           'data': [0.05907066911458969],
-          'descriptor': {'dimensions': [], 'dataType': 'float32'}
+          'descriptor': {shape: [], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -46,7 +46,7 @@ const hardSigmoidTests = [
       'expectedOutputs': {
         'hardSigmoidOutput': {
           'data': [0.5118141174316406],
-          'descriptor': {'dimensions': [], 'dataType': 'float32'}
+          'descriptor': {shape: [], dataType: 'float32'}
         }
       }
     }
@@ -66,7 +66,7 @@ const hardSigmoidTests = [
             0.7311381697654724,  0.4880960285663605, 0.7766845226287842,
             0.8455570340156555,  0.555302083492279,  0.5603444576263428
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'}
+          'descriptor': {shape: [24], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -86,7 +86,7 @@ const hardSigmoidTests = [
             0.6462276577949524, 0.5976191759109497, 0.6553369164466858,
             0.669111430644989,  0.6110604405403137, 0.6120688915252686
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'}
+          'descriptor': {shape: [24], dataType: 'float32'}
         }
       }
     }
@@ -106,7 +106,7 @@ const hardSigmoidTests = [
             0.7311381697654724,  0.4880960285663605, 0.7766845226287842,
             0.8455570340156555,  0.555302083492279,  0.5603444576263428
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'}
+          'descriptor': {shape: [24], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -126,7 +126,7 @@ const hardSigmoidTests = [
             0.6462276577949524, 0.5976191759109497, 0.6553369164466858,
             0.669111430644989,  0.6110604405403137, 0.6120688915252686
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'}
+          'descriptor': {shape: [24], dataType: 'float32'}
         }
       }
     }
@@ -146,7 +146,7 @@ const hardSigmoidTests = [
             0.7311381697654724,  0.4880960285663605, 0.7766845226287842,
             0.8455570340156555,  0.555302083492279,  0.5603444576263428
           ],
-          'descriptor': {'dimensions': [4, 6], 'dataType': 'float32'}
+          'descriptor': {shape: [4, 6], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -166,7 +166,7 @@ const hardSigmoidTests = [
             0.6462276577949524, 0.5976191759109497, 0.6553369164466858,
             0.669111430644989,  0.6110604405403137, 0.6120688915252686
           ],
-          'descriptor': {'dimensions': [4, 6], 'dataType': 'float32'}
+          'descriptor': {shape: [4, 6], dataType: 'float32'}
         }
       }
     }
@@ -186,7 +186,7 @@ const hardSigmoidTests = [
             0.7311381697654724,  0.4880960285663605, 0.7766845226287842,
             0.8455570340156555,  0.555302083492279,  0.5603444576263428
           ],
-          'descriptor': {'dimensions': [2, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 3, 4], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -206,7 +206,7 @@ const hardSigmoidTests = [
             0.6462276577949524, 0.5976191759109497, 0.6553369164466858,
             0.669111430644989,  0.6110604405403137, 0.6120688915252686
           ],
-          'descriptor': {'dimensions': [2, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 3, 4], dataType: 'float32'}
         }
       }
     }
@@ -226,7 +226,7 @@ const hardSigmoidTests = [
             0.7311381697654724,  0.4880960285663605, 0.7766845226287842,
             0.8455570340156555,  0.555302083492279,  0.5603444576263428
           ],
-          'descriptor': {'dimensions': [1, 2, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 2, 3, 4], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -246,7 +246,7 @@ const hardSigmoidTests = [
             0.6462276577949524, 0.5976191759109497, 0.6553369164466858,
             0.669111430644989,  0.6110604405403137, 0.6120688915252686
           ],
-          'descriptor': {'dimensions': [1, 2, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 2, 3, 4], dataType: 'float32'}
         }
       }
     }
@@ -266,7 +266,7 @@ const hardSigmoidTests = [
             0.7311381697654724,  0.4880960285663605, 0.7766845226287842,
             0.8455570340156555,  0.555302083492279,  0.5603444576263428
           ],
-          'descriptor': {'dimensions': [1, 2, 1, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 2, 1, 3, 4], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -286,7 +286,7 @@ const hardSigmoidTests = [
             0.6462276577949524, 0.5976191759109497, 0.6553369164466858,
             0.669111430644989,  0.6110604405403137, 0.6120688915252686
           ],
-          'descriptor': {'dimensions': [1, 2, 1, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 2, 1, 3, 4], dataType: 'float32'}
         }
       }
     }
@@ -307,7 +307,7 @@ const hardSigmoidTests = [
             0.7311381697654724,  0.4880960285663605, 0.7766845226287842,
             0.8455570340156555,  0.555302083492279,  0.5603444576263428
           ],
-          'descriptor': {'dimensions': [1, 2, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 2, 3, 4], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -346,7 +346,7 @@ const hardSigmoidTests = [
             0.936147153377533,
             0.9401075839996338
           ],
-          'descriptor': {'dimensions': [1, 2, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 2, 3, 4], dataType: 'float32'}
         }
       }
     }
@@ -367,7 +367,7 @@ const hardSigmoidTests = [
             -0.7311381697654724,  -0.4880960285663605, -0.7766845226287842,
             -0.8455570340156555,  -0.555302083492279,  -0.5603444576263428
           ],
-          'descriptor': {'dimensions': [1, 2, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 2, 3, 4], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -406,7 +406,7 @@ const hardSigmoidTests = [
             0.936147153377533,
             0.9401075839996338
           ],
-          'descriptor': {'dimensions': [1, 2, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 2, 3, 4], dataType: 'float32'}
         }
       }
     }
@@ -427,7 +427,7 @@ const hardSigmoidTests = [
             0.7311381697654724,  0.4880960285663605, 0.7766845226287842,
             0.8455570340156555,  0.555302083492279,  0.5603444576263428
           ],
-          'descriptor': {'dimensions': [1, 2, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 2, 3, 4], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -450,7 +450,7 @@ const hardSigmoidTests = [
             0.5824136734008789, 0.533805251121521,  0.5915229320526123,
             0.6052974462509155, 0.5472464561462402, 0.5482549667358398
           ],
-          'descriptor': {'dimensions': [1, 2, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 2, 3, 4], dataType: 'float32'}
         }
       }
     }
@@ -471,7 +471,7 @@ const hardSigmoidTests = [
             -0.7311381697654724,  -0.4880960285663605, -0.7766845226287842,
             -0.8455570340156555,  -0.555302083492279,  -0.5603444576263428
           ],
-          'descriptor': {'dimensions': [1, 2, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 2, 3, 4], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -488,7 +488,7 @@ const hardSigmoidTests = [
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
           ],
-          'descriptor': {'dimensions': [1, 2, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 2, 3, 4], dataType: 'float32'}
         }
       }
     }
@@ -509,7 +509,7 @@ const hardSigmoidTests = [
             0.7311381697654724,  0.4880960285663605, 0.7766845226287842,
             0.8455570340156555,  0.555302083492279,  0.5603444576263428
           ],
-          'descriptor': {'dimensions': [1, 2, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 2, 3, 4], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -548,7 +548,7 @@ const hardSigmoidTests = [
             0.8723332285881042,
             0.8762935996055603
           ],
-          'descriptor': {'dimensions': [1, 2, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 2, 3, 4], dataType: 'float32'}
         }
       }
     }
@@ -569,7 +569,7 @@ const hardSigmoidTests = [
             0.7311381697654724,  0.4880960285663605, 0.7766845226287842,
             0.8455570340156555,  0.555302083492279,  0.5603444576263428
           ],
-          'descriptor': {'dimensions': [1, 2, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 2, 3, 4], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -588,7 +588,7 @@ const hardSigmoidTests = [
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
           ],
-          'descriptor': {'dimensions': [1, 2, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 2, 3, 4], dataType: 'float32'}
         }
       }
     }
@@ -609,7 +609,7 @@ const hardSigmoidTests = [
             -0.7311381697654724,  -0.4880960285663605, -0.7766845226287842,
             -0.8455570340156555,  -0.555302083492279,  -0.5603444576263428
           ],
-          'descriptor': {'dimensions': [1, 2, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 2, 3, 4], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -628,7 +628,7 @@ const hardSigmoidTests = [
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
           ],
-          'descriptor': {'dimensions': [1, 2, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 2, 3, 4], dataType: 'float32'}
         }
       }
     }
@@ -649,7 +649,7 @@ const hardSigmoidTests = [
             -0.7311381697654724,  -0.4880960285663605, -0.7766845226287842,
             -0.8455570340156555,  -0.555302083492279,  -0.5603444576263428
           ],
-          'descriptor': {'dimensions': [1, 2, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 2, 3, 4], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -690,7 +690,7 @@ const hardSigmoidTests = [
             0.8723332285881042,
             0.8762935996055603
           ],
-          'descriptor': {'dimensions': [1, 2, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 2, 3, 4], dataType: 'float32'}
         }
       }
     }

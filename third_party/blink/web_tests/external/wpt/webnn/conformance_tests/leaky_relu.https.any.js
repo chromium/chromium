@@ -44,7 +44,7 @@ const leakyReluTests = [
             -61.47925567626953,  64.26514434814453,  21.469341278076172,
             -31.514690399169922, -41.27694320678711, -65.59529113769531
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'},
+          'descriptor': {shape: [24], dataType: 'float32'},
           'constant': true
         }
       },
@@ -65,7 +65,7 @@ const leakyReluTests = [
             -0.6147925853729248,  64.26514434814453,    21.469341278076172,
             -0.31514689326286316, -0.4127694368362427,  -0.6559529304504395
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'}
+          'descriptor': {shape: [24], dataType: 'float32'}
         }
       }
     }
@@ -76,7 +76,7 @@ const leakyReluTests = [
       'inputs': {
         'leakyReluInput': {
           'data': [-19.053640365600586],
-          'descriptor': {'dimensions': [], 'dataType': 'float32'}
+          'descriptor': {shape: [], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -87,7 +87,7 @@ const leakyReluTests = [
       'expectedOutputs': {
         'leakyReluOutput': {
           'data': [-0.19053640961647034],
-          'descriptor': {'dimensions': [], 'dataType': 'float32'}
+          'descriptor': {shape: [], dataType: 'float32'}
         }
       }
     }
@@ -107,7 +107,7 @@ const leakyReluTests = [
             -61.47925567626953,  64.26514434814453,  21.469341278076172,
             -31.514690399169922, -41.27694320678711, -65.59529113769531
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'}
+          'descriptor': {shape: [24], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -127,7 +127,7 @@ const leakyReluTests = [
             -0.6147925853729248,  64.26514434814453,    21.469341278076172,
             -0.31514689326286316, -0.4127694368362427,  -0.6559529304504395
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'}
+          'descriptor': {shape: [24], dataType: 'float32'}
         }
       }
     }
@@ -147,7 +147,7 @@ const leakyReluTests = [
             -61.47925567626953,  64.26514434814453,  21.469341278076172,
             -31.514690399169922, -41.27694320678711, -65.59529113769531
           ],
-          'descriptor': {'dimensions': [4, 6], 'dataType': 'float32'}
+          'descriptor': {shape: [4, 6], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -167,7 +167,7 @@ const leakyReluTests = [
             -0.6147925853729248,  64.26514434814453,    21.469341278076172,
             -0.31514689326286316, -0.4127694368362427,  -0.6559529304504395
           ],
-          'descriptor': {'dimensions': [4, 6], 'dataType': 'float32'}
+          'descriptor': {shape: [4, 6], dataType: 'float32'}
         }
       }
     }
@@ -187,7 +187,7 @@ const leakyReluTests = [
             -61.47925567626953,  64.26514434814453,  21.469341278076172,
             -31.514690399169922, -41.27694320678711, -65.59529113769531
           ],
-          'descriptor': {'dimensions': [2, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 3, 4], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -207,7 +207,7 @@ const leakyReluTests = [
             -0.6147925853729248,  64.26514434814453,    21.469341278076172,
             -0.31514689326286316, -0.4127694368362427,  -0.6559529304504395
           ],
-          'descriptor': {'dimensions': [2, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 3, 4], dataType: 'float32'}
         }
       }
     }
@@ -227,7 +227,7 @@ const leakyReluTests = [
             -61.47925567626953,  64.26514434814453,  21.469341278076172,
             -31.514690399169922, -41.27694320678711, -65.59529113769531
           ],
-          'descriptor': {'dimensions': [1, 2, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 2, 3, 4], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -247,7 +247,7 @@ const leakyReluTests = [
             -0.6147925853729248,  64.26514434814453,    21.469341278076172,
             -0.31514689326286316, -0.4127694368362427,  -0.6559529304504395
           ],
-          'descriptor': {'dimensions': [1, 2, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 2, 3, 4], dataType: 'float32'}
         }
       }
     }
@@ -267,7 +267,7 @@ const leakyReluTests = [
             -61.47925567626953,  64.26514434814453,  21.469341278076172,
             -31.514690399169922, -41.27694320678711, -65.59529113769531
           ],
-          'descriptor': {'dimensions': [1, 2, 1, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 2, 1, 3, 4], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -287,7 +287,7 @@ const leakyReluTests = [
             -0.6147925853729248,  64.26514434814453,    21.469341278076172,
             -0.31514689326286316, -0.4127694368362427,  -0.6559529304504395
           ],
-          'descriptor': {'dimensions': [1, 2, 1, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 2, 1, 3, 4], dataType: 'float32'}
         }
       }
     }
@@ -307,7 +307,7 @@ const leakyReluTests = [
             -61.47925567626953,  64.26514434814453,  21.469341278076172,
             -31.514690399169922, -41.27694320678711, -65.59529113769531
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'}
+          'descriptor': {shape: [24], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -330,7 +330,7 @@ const leakyReluTests = [
             6006.5908203125,    64.26514434814453,  21.469341278076172,
             3079.019775390625,  4032.802490234375,  6408.73193359375
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'}
+          'descriptor': {shape: [24], dataType: 'float32'}
         }
       }
     }
@@ -350,7 +350,7 @@ const leakyReluTests = [
             -61.47925567626953,  64.26514434814453,  21.469341278076172,
             -31.514690399169922, -41.27694320678711, -65.59529113769531
           ],
-          'descriptor': {'dimensions': [4, 6], 'dataType': 'float32'}
+          'descriptor': {shape: [4, 6], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -373,7 +373,7 @@ const leakyReluTests = [
             -2200.906005859375,  64.26514434814453,   21.469341278076172,
             -1128.1995849609375, -1477.6800537109375, -2348.256591796875
           ],
-          'descriptor': {'dimensions': [4, 6], 'dataType': 'float32'}
+          'descriptor': {shape: [4, 6], dataType: 'float32'}
         }
       }
     }
@@ -393,7 +393,7 @@ const leakyReluTests = [
             -61.47925567626953,  64.26514434814453,  21.469341278076172,
             -31.514690399169922, -41.27694320678711, -65.59529113769531
           ],
-          'descriptor': {'dimensions': [1, 2, 1, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 2, 1, 3, 4], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -429,7 +429,7 @@ const leakyReluTests = [
             0,
             0
           ],
-          'descriptor': {'dimensions': [1, 2, 1, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 2, 1, 3, 4], dataType: 'float32'}
         }
       }
     }
