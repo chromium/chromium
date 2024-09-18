@@ -1681,6 +1681,14 @@ CSSParserToken ConsumeUrlAsToken(CSSParserTokenStream& stream,
   } else if (token.FunctionId() == CSSValueID::kUrl) {
     {
       CSSParserTokenStream::RestoringBlockGuard guard(stream);
+      stream.ConsumeWhitespace();
+      // If the block doesn't start with a quote, then the tokenizer
+      // would return a kUrlToken or kBadUrlToken instead of a
+      // kFunctionToken. Note also that this Peek() placates the
+      // DCHECK that we Peek() before Consume().
+      DCHECK(stream.Peek().GetType() == kStringToken ||
+             stream.Peek().GetType() == kBadStringToken)
+          << "Got unexpected token " << stream.Peek();
       token = stream.ConsumeIncludingWhitespace();
       if (token.GetType() == kBadStringToken || !stream.AtEnd()) {
         return CSSParserToken(kEOFToken);

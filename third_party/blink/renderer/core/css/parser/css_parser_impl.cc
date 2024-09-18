@@ -83,6 +83,14 @@ AtomicString ConsumeStringOrURI(CSSParserTokenStream& stream) {
   AtomicString result;
   {
     CSSParserTokenStream::BlockGuard guard(stream);
+    stream.ConsumeWhitespace();
+    // If the block doesn't start with a quote, then the tokenizer
+    // would return a kUrlToken or kBadUrlToken instead of a
+    // kFunctionToken. Note also that this Peek() placates the
+    // DCHECK that we Peek() before Consume().
+    DCHECK(stream.Peek().GetType() == kStringToken ||
+           stream.Peek().GetType() == kBadStringToken)
+        << "Got unexpected token " << stream.Peek();
     const CSSParserToken& uri = stream.ConsumeIncludingWhitespace();
     if (uri.GetType() != kBadStringToken && stream.UncheckedAtEnd()) {
       DCHECK_EQ(uri.GetType(), kStringToken);
@@ -557,11 +565,12 @@ std::unique_ptr<Vector<KeyframeOffset>> CSSParserImpl::ParseKeyframeKeyList(
 
 String CSSParserImpl::ParseCustomPropertyName(StringView name_text) {
   CSSParserTokenStream stream(name_text);
-  const CSSParserToken name_token = stream.ConsumeIncludingWhitespace();
-  if (!stream.AtEnd()) {
+  const CSSParserToken name_token = stream.Peek();
+  if (!CSSVariableParser::IsValidVariableName(name_token)) {
     return {};
   }
-  if (!CSSVariableParser::IsValidVariableName(name_token)) {
+  stream.ConsumeIncludingWhitespace();
+  if (!stream.AtEnd()) {
     return {};
   }
   return name_token.Value().ToString();

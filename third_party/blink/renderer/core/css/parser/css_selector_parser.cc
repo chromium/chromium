@@ -2085,6 +2085,10 @@ bool CSSSelectorParser::ConsumeANPlusB(CSSParserTokenStream& stream,
     return false;
   }
 
+  if (stream.Peek().GetBlockType() != CSSParserToken::kNotBlock) {
+    return false;
+  }
+
   const CSSParserToken& token = stream.Consume();
   if (token.GetType() == kNumberToken &&
       token.GetNumericValueType() == kIntegerValueType) {
