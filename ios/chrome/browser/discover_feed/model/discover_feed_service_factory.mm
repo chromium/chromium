@@ -18,18 +18,17 @@
 #import "ios/public/provider/chrome/browser/discover_feed/discover_feed_api.h"
 
 // static
-DiscoverFeedService* DiscoverFeedServiceFactory::GetForBrowserState(
-    ProfileIOS* profile,
-    bool create) {
-  return GetForProfile(profile, create);
+DiscoverFeedService* DiscoverFeedServiceFactory::GetForProfile(
+    ProfileIOS* profile) {
+  return static_cast<DiscoverFeedService*>(
+      GetInstance()->GetServiceForBrowserState(profile, /*create=*/true));
 }
 
 // static
-DiscoverFeedService* DiscoverFeedServiceFactory::GetForProfile(
-    ProfileIOS* profile,
-    bool create) {
+DiscoverFeedService* DiscoverFeedServiceFactory::GetForProfileIfExists(
+    ProfileIOS* profile) {
   return static_cast<DiscoverFeedService*>(
-      GetInstance()->GetServiceForBrowserState(profile, create));
+      GetInstance()->GetServiceForBrowserState(profile, /*create=*/false));
 }
 
 // static

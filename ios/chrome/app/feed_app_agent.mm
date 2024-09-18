@@ -72,7 +72,7 @@
               self.appState.mainProfile.profile);
       if (authService &&
           authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
-        DiscoverFeedServiceFactory::GetForBrowserState(
+        DiscoverFeedServiceFactory::GetForProfile(
             self.appState.mainProfile.profile);
       }
     }
@@ -150,14 +150,14 @@
   // DiscoverFeedService is expected to be available since the startup sequence
   // should create background objects before this method is called. This line is
   // intended to crash if DiscoverFeedService is not available.
-  return DiscoverFeedServiceFactory::GetForBrowserState(
-      self.appState.mainProfile.profile, /*create=*/true);
+  return DiscoverFeedServiceFactory::GetForProfile(
+      self.appState.mainProfile.profile);
 }
 
 // Returns the DiscoverFeedService if created.
 - (DiscoverFeedService*)feedServiceIfCreated {
-  return DiscoverFeedServiceFactory::GetForBrowserState(
-      self.appState.mainProfile.profile, /*create=*/false);
+  return DiscoverFeedServiceFactory::GetForProfileIfExists(
+      self.appState.mainProfile.profile);
 }
 
 // Returns the FeedMetricsRecorder.

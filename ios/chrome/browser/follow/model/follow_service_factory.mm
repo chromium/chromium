@@ -42,12 +42,11 @@ FollowServiceFactory::~FollowServiceFactory() = default;
 
 std::unique_ptr<KeyedService> FollowServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
 
   FollowConfiguration* configuration = [[FollowConfiguration alloc] init];
   configuration.feedService =
-      DiscoverFeedServiceFactory::GetForBrowserState(browser_state);
+      DiscoverFeedServiceFactory::GetForProfile(profile);
 
   return ios::provider::CreateFollowService(configuration);
 }

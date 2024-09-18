@@ -80,7 +80,7 @@ class QuickDeleteMediatorTest : public PlatformTest {
     BrowsingDataRemover* browsing_data_remover =
         BrowsingDataRemoverFactory::GetForBrowserState(browser_state_.get());
     DiscoverFeedService* discover_feed_service =
-        DiscoverFeedServiceFactory::GetForBrowserState(browser_state_.get());
+        DiscoverFeedServiceFactory::GetForProfile(browser_state_.get());
 
     mediator_ = [[QuickDeleteMediator alloc]
                              initWithPrefs:browser_state_.get()->GetPrefs()

@@ -97,8 +97,7 @@ class NewTabPageMediatorTest : public PlatformTest {
     image_updater_ = OCMProtocolMock(@protocol(UserAccountImageUpdateDelegate));
     bool is_incognito = chrome_browser_state_.get()->IsOffTheRecord();
     DiscoverFeedService* discover_feed_service =
-        DiscoverFeedServiceFactory::GetForBrowserState(
-            chrome_browser_state_.get());
+        DiscoverFeedServiceFactory::GetForProfile(chrome_browser_state_.get());
     PrefService* prefs = chrome_browser_state_->GetPrefs();
     mediator_ = [[NewTabPageMediator alloc]
         initWithTemplateURLService:ios::TemplateURLServiceFactory::

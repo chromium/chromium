@@ -417,9 +417,9 @@
   CHECK(timePeriod != browsing_data::TimePeriod::LAST_15_MINUTES,
         base::NotFatalUntil::M130);
   Browser* browser = self.browser;
-  ChromeBrowserState* browserState = self.browserState;
+  ProfileIOS* profile = self.browserState;
   PrefService* prefService = self.prefService;
-  if (!browser || !browserState || !prefService) {
+  if (!browser || !profile || !prefService) {
     // The C++ model has been destroyed, return early.
     return;
   }
@@ -478,13 +478,13 @@
     prefService->SetInt64(browsing_data::prefs::kLastClearBrowsingDataTime,
                           base::Time::Now().ToTimeT());
 
-    DiscoverFeedServiceFactory::GetForBrowserState(browserState)
+    DiscoverFeedServiceFactory::GetForProfile(profile)
         ->BrowsingHistoryCleared();
   }
 
-  BrowsingDataRemoverFactory::GetForBrowserState(browserState)
-      ->Remove(timePeriod, removeMask,
-               base::BindOnce(removeBrowsingDidFinishCompletionBlock));
+  BrowsingDataRemoverFactory::GetForBrowserState(profile)->Remove(
+      timePeriod, removeMask,
+      base::BindOnce(removeBrowsingDidFinishCompletionBlock));
 }
 
 - (void)showBrowsingHistoryRemovedDialog {

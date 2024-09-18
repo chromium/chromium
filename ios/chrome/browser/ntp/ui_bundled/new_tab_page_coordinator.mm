@@ -632,15 +632,12 @@
 
 // Gets all NTP services from the browser state.
 - (void)initializeServices {
-  self.authService = AuthenticationServiceFactory::GetForBrowserState(
-      self.browser->GetBrowserState());
-  self.templateURLService = ios::TemplateURLServiceFactory::GetForBrowserState(
-      self.browser->GetBrowserState());
-  self.discoverFeedService = DiscoverFeedServiceFactory::GetForBrowserState(
-      self.browser->GetBrowserState());
-  self.prefService =
-      ChromeBrowserState::FromBrowserState(self.browser->GetBrowserState())
-          ->GetPrefs();
+  ProfileIOS* profile = self.browser->GetProfile();
+  self.authService = AuthenticationServiceFactory::GetForBrowserState(profile);
+  self.templateURLService =
+      ios::TemplateURLServiceFactory::GetForBrowserState(profile);
+  self.discoverFeedService = DiscoverFeedServiceFactory::GetForProfile(profile);
+  self.prefService = profile->GetPrefs();
 }
 
 // Starts all NTP observers.
@@ -1621,8 +1618,7 @@
 - (void)updateStartForVisibilityChange:(BOOL)visible {
   if (visible && NewTabPageTabHelper::FromWebState(self.webState)
                      ->ShouldShowStartSurface()) {
-    DiscoverFeedServiceFactory::GetForBrowserState(
-        self.browser->GetBrowserState())
+    DiscoverFeedServiceFactory::GetForProfile(self.browser->GetProfile())
         ->SetIsShownOnStartSurface(true);
   }
   if (!visible && NewTabPageTabHelper::FromWebState(self.webState)

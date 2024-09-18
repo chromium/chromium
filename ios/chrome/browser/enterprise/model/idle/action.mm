@@ -116,20 +116,19 @@ class ClearBrowsingDataAction : public Action,
   ~ClearBrowsingDataAction() override = default;
 
   // Action:
-  void Run(ChromeBrowserState* browser_state,
-           Continuation continuation) override {
+  void Run(ProfileIOS* profile, Continuation continuation) override {
     continuation_ = std::move(continuation);
     mask_ = GetRemoveMask();
-    browser_list_ = BrowserListFactory::GetForBrowserState(browser_state);
+    browser_list_ = BrowserListFactory::GetForBrowserState(profile);
 
     if (IsRemoveDataMaskSet(mask_, BrowsingDataRemoveMask::REMOVE_HISTORY)) {
       // If browsing History will be cleared set the kLastClearBrowsingDataTime.
       // TODO(crbug.com/40693626): This pref is used by the Feed to prevent the
       // showing of customized content after history has been cleared.
-      browser_state->GetPrefs()->SetInt64(
+      profile->GetPrefs()->SetInt64(
           browsing_data::prefs::kLastClearBrowsingDataTime,
           base::Time::Now().ToTimeT());
-      DiscoverFeedServiceFactory::GetForBrowserState(browser_state)
+      DiscoverFeedServiceFactory::GetForProfile(profile)
           ->BrowsingHistoryCleared();
     }
 
