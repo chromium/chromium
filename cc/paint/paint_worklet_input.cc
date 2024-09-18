@@ -77,10 +77,6 @@ void PaintWorkletInput::PropertyValue::reset() {
   color_value.reset();
 }
 
-bool PaintWorkletInput::KnownToBeOpaque() const {
-  return false;
-}
-
 bool PaintWorkletInput::NeedsLayer() const {
   return false;
 }
@@ -90,6 +86,10 @@ bool PaintWorkletInput::ValueChangeShouldCauseRepaint(
     const PropertyValue& val2) const {
   return val1.color_value != val2.color_value ||
          val1.float_value != val2.float_value;
+}
+
+bool PaintWorkletInput::IsPaintWorkletInput() const {
+  return true;
 }
 
 }  // namespace cc
