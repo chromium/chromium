@@ -26,6 +26,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
@@ -152,6 +153,12 @@ namespace {
 ChromeAuthenticatorRequestDelegate::TestObserver* g_observer = nullptr;
 
 static constexpr char kGoogleRpId[] = "google.com";
+
+void LogSignalCurrentUserDetailsUpdated(
+    ChromeWebAuthenticationDelegate::SignalCurrentUserDetailsResult result) {
+  base::UmaHistogramEnumeration(
+      "WebAuthentication.SignalCurrentUserDetailsUpdatedGPMPasskey", result);
+}
 
 // Returns true iff |relying_party_id| is listed in the
 // SecurityKeyPermitAttestation policy.
@@ -655,6 +662,11 @@ void ChromeWebAuthenticationDelegate::DeletePasskey(
       manage_passwords_ui_controller->OnPasskeyDeleted();
     }
   }
+  base::UmaHistogramEnumeration(
+      "WebAuthentication.SignalUnknownCredentialRemovedGPMPasskey",
+      credential_specifics.has_value()
+          ? SignalUnknownCredentialResult::kPasskeyRemoved
+          : SignalUnknownCredentialResult::kPasskeyNotFound);
 }
 
 void ChromeWebAuthenticationDelegate::DeleteUnacceptedPasskeys(
@@ -684,6 +696,11 @@ void ChromeWebAuthenticationDelegate::DeleteUnacceptedPasskeys(
       manage_passwords_ui_controller->OnPasskeyNotAccepted();
     }
   }
+  base::UmaHistogramEnumeration(
+      "WebAuthentication.SignalAllAcceptedCredentialsRemovedGPMPasskey",
+      is_passkey_deleted
+          ? SignalAllAcceptedCredentialsResult::kPasskeyRemoved
+          : SignalAllAcceptedCredentialsResult::kNoPasskeyRemoved);
 }
 
 void ChromeWebAuthenticationDelegate::UpdateUserPasskeys(
@@ -696,6 +713,8 @@ void ChromeWebAuthenticationDelegate::UpdateUserPasskeys(
   webauthn::PasskeyChangeQuotaTracker* quota_tracker =
       webauthn::PasskeyChangeQuotaTracker::GetInstance();
   if (!quota_tracker->CanMakeChange(origin)) {
+    LogSignalCurrentUserDetailsUpdated(
+        SignalCurrentUserDetailsResult::kQuotaExceeded);
     FIDO_LOG(ERROR) << "Dropping update request from " << origin
                     << ": quota exceeded.";
     return;
@@ -726,6 +745,9 @@ void ChromeWebAuthenticationDelegate::UpdateUserPasskeys(
       manage_passwords_ui_controller->OnPasskeyUpdated();
     }
   }
+  LogSignalCurrentUserDetailsUpdated(
+      is_passkey_updated ? SignalCurrentUserDetailsResult::kPasskeyUpdated
+                         : SignalCurrentUserDetailsResult::kPasskeyNotUpdated);
 }
 
 #if BUILDFLAG(IS_MAC)

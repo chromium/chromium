@@ -319,6 +319,40 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="WebAuthentication.SignalAllAcceptedCredentialsRemovedGPMPasskey"
+    enum="SignalAllAcceptedCredentialsResult" expires_after="2025-09-17">
+  <owner>nsatragno@chromium.org</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <summary>
+    Records the result of a website calling
+    PublicKeyCredential.signalAllAcceptedCredentials with respect to Google
+    Password Manager passkeys.
+  </summary>
+</histogram>
+
+<histogram name="WebAuthentication.SignalCurrentUserDetailsUpdatedGPMPasskey"
+    enum="SignalCurrentUserDetailsResult" expires_after="2025-09-17">
+  <owner>nsatragno@chromium.org</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <summary>
+    Records the result of a website calling
+    PublicKeyCredential.signalCurrentUserDetails with respect to Google Password
+    Manager passkeys.
+  </summary>
+</histogram>
+
+<histogram name="WebAuthentication.SignalUnknownCredentialRemovedGPMPasskey"
+    enum="SignalUnknownCredentialResult" expires_after="2025-09-17">
+  <owner>nsatragno@chromium.org</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <summary>
+    Records the result of a website calling
+    PublicKeyCredential.signalUnknownCredential with respect to Google Password
+    Manager passkeys.
+  </summary>
+</histogram>
+
 <histogram name="WebAuthentication.Windows.FindHelloDialogIterationCount"
     units="iterations" expires_after="2025-03-02">
   <owner>kenrb@chromium.org</owner>

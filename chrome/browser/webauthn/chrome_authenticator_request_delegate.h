@@ -63,6 +63,31 @@ class PrefRegistrySyncable;
 class ChromeWebAuthenticationDelegate final
     : public content::WebAuthenticationDelegate {
  public:
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class SignalUnknownCredentialResult {
+    kPasskeyNotFound = 0,
+    kPasskeyRemoved = 1,
+    kMaxValue = kPasskeyRemoved,
+  };
+
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class SignalAllAcceptedCredentialsResult {
+    kNoPasskeyRemoved = 0,
+    kPasskeyRemoved = 1,
+    kMaxValue = kPasskeyRemoved,
+  };
+
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class SignalCurrentUserDetailsResult {
+    kQuotaExceeded = 0,
+    kPasskeyUpdated = 1,
+    kPasskeyNotUpdated = 2,
+    kMaxValue = kPasskeyNotUpdated,
+  };
+
 #if BUILDFLAG(IS_MAC)
   // Returns a configuration struct for instantiating the macOS WebAuthn
   // platform authenticator for the given Profile.
