@@ -589,7 +589,6 @@ crbug.com/1021428 [ linux angle-vulkan passthrough intel ] WebglExtension_WEBGL_
 # Android failures #
 ####################
 
-crbug.com/1439682 [ android android-nexus-5x passthrough ] conformance/textures/misc/tex-video-using-tex-unit-non-zero.html [ Failure ]
 
 # Need to investigate failure on basically all devices with passthrough on Android.
 crbug.com/angleproject/5038 [ android passthrough ] conformance/extensions/ext-color-buffer-half-float.html [ Failure ]
@@ -609,8 +608,6 @@ crbug.com/1470376 [ android-oreo ] conformance/glsl/bugs/vector-matrix-construct
 crbug.com/951628 [ android android-nexus-5x no-passthrough ] conformance/rendering/blending.html [ Failure ]
 crbug.com/1056830 [ android android-nexus-5x ] conformance/extensions/webgl-compressed-texture-astc.html [ Failure ]
 
-# Fails on android oreo
-crbug.com/1470373 [ android-oreo android-nexus-5x passthrough ] conformance/textures/misc/video-rotation.html [ Failure ]
 
 ## Android NVIDIA Shield TV ##
 
@@ -652,8 +649,6 @@ crbug.com/40236526 [ android android-pixel-6 no-passthrough ] conformance/render
 
 ## Misc failures ##
 
-# Failing webgl passthrough test on nexus 5x.
-crbug.com/1209254 [ android android-nexus-5x android-chromium passthrough ] conformance/textures/misc/texture-npot-video.html [ Failure ]
 
 # Failing test in passthrough mode when experiment DrDc is enabled via fieldtrial_testing_config.json.
 crbug.com/1276552 [ android-pixel-4 android-r passthrough qualcomm renderer-skia-gl target-cpu-32 ] conformance/canvas/render-after-resize-test.html [ Failure ]
@@ -689,23 +684,6 @@ crbug.com/331489774 [ android android-sm-s911u1 no-passthrough ] conformance/con
 
 ## Moto G Power 5G failures ##
 
-crbug.com/332583995 [ android android-moto-g-power-5g---2023 no-passthrough ] conformance/glsl/bugs/assign-to-swizzled-twice-in-function.html [ Failure ]
-crbug.com/332583995 [ android android-moto-g-power-5g---2023 no-passthrough ] conformance/glsl/bugs/unary-minus-operator-float-bug.html [ Failure ]
-crbug.com/332592693 [ android android-moto-g-power-5g---2023 no-passthrough ] conformance/ogles/GL/build/build_009_to_016.html [ Failure ]
-crbug.com/332592693 [ android android-moto-g-power-5g---2023 no-passthrough ] conformance/ogles/GL/faceforward/faceforward_001_to_006.html [ Failure ]
-crbug.com/332592693 [ android android-moto-g-power-5g---2023 no-passthrough ] conformance/ogles/GL/functions/functions_065_to_072.html [ Failure ]
-crbug.com/332592693 [ android android-moto-g-power-5g---2023 no-passthrough ] conformance/ogles/GL/functions/functions_081_to_088.html [ Failure ]
-crbug.com/332592693 [ android android-moto-g-power-5g---2023 no-passthrough ] conformance/ogles/GL/struct/struct_009_to_016.html [ Failure ]
-crbug.com/332592693 [ android android-moto-g-power-5g---2023 no-passthrough ] conformance/ogles/GL/struct/struct_033_to_040.html [ Failure ]
-crbug.com/332592693 [ android android-moto-g-power-5g---2023 no-passthrough ] conformance/ogles/GL/struct/struct_049_to_056.html [ Failure ]
-crbug.com/332570743 [ android android-moto-g-power-5g---2023 no-passthrough ] conformance/textures/misc/gl-teximage.html [ Failure ]
-crbug.com/332570743 [ android android-moto-g-power-5g---2023 no-passthrough ] conformance/textures/misc/texture-size-cube-maps.html [ Failure ]
-crbug.com/332570743 [ android android-moto-g-power-5g---2023 no-passthrough ] conformance/textures/misc/texture-size.html [ Failure ]
-crbug.com/332570743 [ android android-moto-g-power-5g---2023 no-passthrough ] conformance/textures/misc/texture-srgb-upload.html [ Failure ]
-crbug.com/332570743 [ android android-moto-g-power-5g---2023 no-passthrough ] conformance/textures/misc/texture-sub-image-cube-maps.html [ Failure ]
-crbug.com/332587536 [ android android-moto-g-power-5g---2023 no-passthrough ] conformance/rendering/blending.html [ Failure ]
-crbug.com/332587536 [ android android-moto-g-power-5g---2023 no-passthrough ] conformance/uniforms/uniform-samplers-test.html [ Failure ]
-crbug.com/361782093 [ android android-moto-g-power-5g---2023 no-passthrough ] conformance/more/functions/copyTexSubImage2DBadArgs.html [ Failure ]
 
 ############
 # ChromeOS #
