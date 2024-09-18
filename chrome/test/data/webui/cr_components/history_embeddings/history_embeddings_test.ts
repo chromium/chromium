@@ -82,26 +82,28 @@ suite('cr-history-embeddings', () => {
       historyEmbeddingsHeadingLoading: 'loading results for "$1"',
     });
     element.searchQuery = 'my query';
+    const headingEl = element.shadowRoot!.querySelector('h2');
+    assertTrue(!!headingEl);
     assertEquals(
-        'loading results for "my query"',
-        element.$.heading.textContent!.trim());
+        'loading results for "my query"', headingEl.textContent!.trim());
     await handler.whenCalled('search');
     await flushTasks();
-    assertEquals(
-        'searched for "my query"', element.$.heading.textContent!.trim());
+    assertEquals('searched for "my query"', headingEl.textContent!.trim());
   });
 
   test('DisplaysLoading', async () => {
     element.overrideLoadingStateMinimumMsForTesting(100);
     element.searchQuery = 'my new query';
     await handler.whenCalled('search');
+    const loadingEl = element.shadowRoot!.querySelector('.loading');
+    assertTrue(!!loadingEl);
     assertTrue(
-        isVisible(element.$.loading),
+        isVisible(loadingEl),
         'Loading state should be visible even if search immediately resolved');
 
     await new Promise(resolve => setTimeout(resolve, 100));
     assertFalse(
-        isVisible(element.$.loading),
+        isVisible(loadingEl),
         'Loading state should disappear once the minimum of 100ms is over');
   });
 
@@ -192,12 +194,15 @@ suite('cr-history-embeddings', () => {
   });
 
   test('SetsUserFeedback', async () => {
+    const feedbackButtonsEl =
+        element.shadowRoot!.querySelector('cr-feedback-buttons');
+    assertTrue(!!feedbackButtonsEl);
     assertEquals(
-        CrFeedbackOption.UNSPECIFIED, element.$.feedbackButtons.selectedOption,
+        CrFeedbackOption.UNSPECIFIED, feedbackButtonsEl.selectedOption,
         'defaults to unspecified');
 
     function dispatchFeedbackOptionChange(option: CrFeedbackOption) {
-      element.$.feedbackButtons.dispatchEvent(
+      feedbackButtonsEl!.dispatchEvent(
           new CustomEvent('selected-option-changed', {
             bubbles: true,
             composed: true,
@@ -210,15 +215,14 @@ suite('cr-history-embeddings', () => {
         UserFeedback.kUserFeedbackNegative,
         await handler.whenCalled('setUserFeedback'));
     assertEquals(
-        CrFeedbackOption.THUMBS_DOWN, element.$.feedbackButtons.selectedOption);
+        CrFeedbackOption.THUMBS_DOWN, feedbackButtonsEl.selectedOption);
     handler.reset();
 
     dispatchFeedbackOptionChange(CrFeedbackOption.THUMBS_UP);
     assertEquals(
         UserFeedback.kUserFeedbackPositive,
         await handler.whenCalled('setUserFeedback'));
-    assertEquals(
-        CrFeedbackOption.THUMBS_UP, element.$.feedbackButtons.selectedOption);
+    assertEquals(CrFeedbackOption.THUMBS_UP, feedbackButtonsEl.selectedOption);
     handler.reset();
 
     dispatchFeedbackOptionChange(CrFeedbackOption.UNSPECIFIED);
@@ -226,7 +230,7 @@ suite('cr-history-embeddings', () => {
         UserFeedback.kUserFeedbackUnspecified,
         await handler.whenCalled('setUserFeedback'));
     assertEquals(
-        CrFeedbackOption.UNSPECIFIED, element.$.feedbackButtons.selectedOption);
+        CrFeedbackOption.UNSPECIFIED, feedbackButtonsEl.selectedOption);
     handler.reset();
 
     // Search again with new query.
@@ -235,7 +239,7 @@ suite('cr-history-embeddings', () => {
     await handler.whenCalled('search');
     await flushTasks();
     assertEquals(
-        CrFeedbackOption.UNSPECIFIED, element.$.feedbackButtons.selectedOption,
+        CrFeedbackOption.UNSPECIFIED, feedbackButtonsEl.selectedOption,
         'defaults back to unspecified when there is a new set of results');
   });
 

@@ -14,7 +14,6 @@ import './icons.html.js';
 
 import {HistoryResultType, QUERY_RESULT_MINIMUM_AGE} from '//resources/cr_components/history/constants.js';
 import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
-import type {CrFeedbackButtonsElement} from '//resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
 import {CrFeedbackOption} from '//resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
 import type {CrLazyRenderElement} from '//resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
@@ -44,9 +43,6 @@ export const LOADING_STATE_MINIMUM_MS = 300;
 
 export interface HistoryEmbeddingsElement {
   $: {
-    feedbackButtons: CrFeedbackButtonsElement,
-    heading: HTMLElement,
-    loading: HTMLElement,
     sharedMenu: CrLazyRenderElement<CrActionMenuElement>,
   };
 }
@@ -109,6 +105,7 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
   private actionMenuItem_: SearchResultItem|null = null;
   private browserProxy_ = HistoryEmbeddingsBrowserProxyImpl.getInstance();
   private clickedIndices_: Set<number> = new Set();
+  private enableAnswers_: boolean;
   private feedbackState_: CrFeedbackOption;
   private loading_ = false;
   private loadingStateMinimumMs_ = LOADING_STATE_MINIMUM_MS;
