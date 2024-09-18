@@ -167,6 +167,9 @@ std::string RouterRulesToString(blink::ServiceWorkerRouterRules rules) {
   return e.ToString();
 }
 
+// The cache size for ServiceWorker's scope cache (https://crbug.com/1411197).
+constexpr size_t kServiceWorkerScopeCacheLimitSize = 100;
+
 }  // namespace
 
 // Enables merging duplicate calls of FindRegistrationForClientUrl.
@@ -187,11 +190,6 @@ const base::FeatureParam<int> kServiceWorkerRegistrationCacheSize{
 BASE_FEATURE(kServiceWorkerScopeCacheLimit,
              "ServiceWorkerScopeCacheLimit",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-// The cache size for kServiceWorkerScopeCache.
-// (https://crbug.com/1411197)
-const base::FeatureParam<int> kServiceWorkerScopeCacheLimitSize{
-    &kServiceWorkerScopeCacheLimit, "ServiceWorkerScopeCacheLimitSize", 100};
 
 template <typename... ReplyArgs>
 class InflightCallWithInvoker final
@@ -245,7 +243,7 @@ ServiceWorkerRegistry::ServiceWorkerRegistry(
     : context_(context),
       quota_manager_proxy_(quota_manager_proxy),
       special_storage_policy_(special_storage_policy),
-      registration_scope_cache_(kServiceWorkerScopeCacheLimitSize.Get()),
+      registration_scope_cache_(kServiceWorkerScopeCacheLimitSize),
       registration_id_cache_(kServiceWorkerRegistrationCacheSize.Get()) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(context_);

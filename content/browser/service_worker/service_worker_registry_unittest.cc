@@ -1685,11 +1685,15 @@ TEST_F(ServiceWorkerScopeAndRegistrationCacheTest,
   scoped_feature_list.InitWithFeaturesAndParameters(
       {{storage::kServiceWorkerScopeCache, {}},
        {kServiceWorkerRegistrationCache, {}},
-       {kServiceWorkerScopeCacheLimit,
-        {{kServiceWorkerScopeCacheLimitSize.name, "2"}}}},
+       {kServiceWorkerScopeCacheLimit, {}}},
       {});
   // Restart to apply the above feature params.
   SimulateRestart();
+  {
+    base::LRUCache<blink::StorageKey, std::set<GURL>>
+        registration_scope_cache_for_testing(2);
+    registration_scope_cache().Swap(registration_scope_cache_for_testing);
+  }
   EXPECT_EQ(2U, registration_scope_cache().max_size());
 
   // const GURL("http://www.example.com/script.js");
