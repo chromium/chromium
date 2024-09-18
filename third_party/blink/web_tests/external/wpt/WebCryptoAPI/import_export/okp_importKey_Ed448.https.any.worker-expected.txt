@@ -1,0 +1,65 @@
+This is a testharness.js-based test.
+[FAIL] Good parameters: Ed448 bits (spki, buffer(69), {name: Ed448}, true, [verify])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: Ed448 bits (jwk, object(kty, crv, x), {name: Ed448}, true, [verify])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters with ignored JWK alg: Ed448 (jwk, object(kty, crv, x), {name: Ed448}, true, [verify])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: Ed448 bits (raw, buffer(57), {name: Ed448}, true, [verify])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: Ed448 bits (spki, buffer(69), {name: Ed448}, true, [])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: Ed448 bits (jwk, object(kty, crv, x), {name: Ed448}, true, [])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters with ignored JWK alg: Ed448 (jwk, object(kty, crv, x), {name: Ed448}, true, [])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: Ed448 bits (raw, buffer(57), {name: Ed448}, true, [])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: Ed448 bits (spki, buffer(69), {name: Ed448}, true, [verify, verify])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: Ed448 bits (jwk, object(kty, crv, x), {name: Ed448}, true, [verify, verify])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters with ignored JWK alg: Ed448 (jwk, object(kty, crv, x), {name: Ed448}, true, [verify, verify])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: Ed448 bits (raw, buffer(57), {name: Ed448}, true, [verify, verify])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: Ed448 bits (pkcs8, buffer(73), {name: Ed448}, true, [sign])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: Ed448 bits (jwk, object(crv, d, x, kty), {name: Ed448}, true, [sign])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters with ignored JWK alg: Ed448 (jwk, object(crv, d, x, kty), {name: Ed448}, true, [sign])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: Ed448 bits (pkcs8, buffer(73), {name: Ed448}, true, [sign, sign])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: Ed448 bits (jwk, object(crv, d, x, kty), {name: Ed448}, true, [sign, sign])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters with ignored JWK alg: Ed448 (jwk, object(crv, d, x, kty), {name: Ed448}, true, [sign, sign])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: Ed448 bits (spki, buffer(69), {name: Ed448}, false, [verify])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: Ed448 bits (jwk, object(kty, crv, x), {name: Ed448}, false, [verify])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: Ed448 bits (raw, buffer(57), {name: Ed448}, false, [verify])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: Ed448 bits (spki, buffer(69), {name: Ed448}, false, [])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: Ed448 bits (jwk, object(kty, crv, x), {name: Ed448}, false, [])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: Ed448 bits (raw, buffer(57), {name: Ed448}, false, [])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: Ed448 bits (spki, buffer(69), {name: Ed448}, false, [verify, verify])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: Ed448 bits (jwk, object(kty, crv, x), {name: Ed448}, false, [verify, verify])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: Ed448 bits (raw, buffer(57), {name: Ed448}, false, [verify, verify])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: Ed448 bits (pkcs8, buffer(73), {name: Ed448}, false, [sign])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: Ed448 bits (jwk, object(crv, d, x, kty), {name: Ed448}, false, [sign])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: Ed448 bits (pkcs8, buffer(73), {name: Ed448}, false, [sign, sign])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: Ed448 bits (jwk, object(crv, d, x, kty), {name: Ed448}, false, [sign, sign])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+Harness: the test ran to completion.
+
