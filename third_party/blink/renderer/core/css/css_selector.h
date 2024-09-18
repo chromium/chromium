@@ -588,6 +588,7 @@ class CORE_EXPORT CSSSelector {
   }
 
   bool MatchesPseudoElement() const;
+  bool IsAllowedInParentPseudo() const;
   bool IsTreeAbidingPseudoElement() const;
   bool IsAllowedAfterPart() const;
 

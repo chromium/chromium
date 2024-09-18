@@ -70,11 +70,18 @@ unsigned MaximumSpecificity(const CSSSelectorList* list) {
 
 }  // namespace
 
-unsigned MaximumSpecificity(const CSSSelector* first_selector) {
+// Returns the maximum specificity across a selector list, only including
+// the (complex) selectors for which the `predicate` returns true.
+template <typename Predicate>
+unsigned MaximumSpecificity(
+    const CSSSelector* first_selector,
+    Predicate predicate = [](const CSSSelector*) { return true; }) {
   unsigned specificity = 0;
   for (const CSSSelector* s = first_selector; s;
        s = CSSSelectorList::Next(*s)) {
-    specificity = std::max(specificity, s->Specificity());
+    if (predicate(s)) {
+      specificity = std::max(specificity, s->Specificity());
+    }
   }
   return specificity;
 }
@@ -206,7 +213,11 @@ inline unsigned CSSSelector::SpecificityForOneSelector() const {
             // & in a non-nesting context matches nothing.
             return 0;
           }
-          return MaximumSpecificity(data_.parent_rule_->FirstSelector());
+          return MaximumSpecificity(
+              data_.parent_rule_->FirstSelector(),
+              [](const CSSSelector* selector) {
+                return selector->IsAllowedInParentPseudo();
+              });
         case kPseudoNthChild:
         case kPseudoNthLastChild:
           if (SelectorList()) {
@@ -1539,6 +1550,16 @@ bool CSSSelector::MatchesPseudoElement() const {
     }
   }
   return false;
+}
+
+bool CSSSelector::IsAllowedInParentPseudo() const {
+  // Pseudo-elements are not allowed (parse-time) within :is(), but using
+  // nesting you can still get effectively that same situation using
+  // e.g. "div, ::before { & {} }". Since '::before' is "contextually invalid",
+  // it should not contribute to specificity.
+  //
+  // https://github.com/w3c/csswg-drafts/issues/9600
+  return !MatchesPseudoElement();
 }
 
 bool CSSSelector::IsTreeAbidingPseudoElement() const {
