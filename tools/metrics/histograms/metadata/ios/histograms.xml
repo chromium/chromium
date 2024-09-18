@@ -2543,7 +2543,7 @@ the generic promo launch. -->
   <owner>bling-get-set-up@google.com</owner>
   <summary>
     Logs the notification permission status when a Send Tab notification is
-    recieved on the target device.
+    received on the target device.
   </summary>
 </histogram>
 
@@ -2589,7 +2589,7 @@ the generic promo launch. -->
   <owner>hiramahmood@google.com</owner>
   <summary>
     Logs when a Tips notification is sent. Note: this does not indicate that the
-    notification was recieved by the user.
+    notification was received by the user.
   </summary>
 </histogram>
 
