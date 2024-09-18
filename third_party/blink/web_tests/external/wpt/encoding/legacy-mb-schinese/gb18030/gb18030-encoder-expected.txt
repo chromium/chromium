@@ -1,0 +1,40 @@
+This is a testharness.js-based test.
+Found 18 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] gb18030 encoder: GB18030-2022 19
+  assert_equals: expected "%00%00%A6%D9" but got "%841%826"
+[FAIL] gb18030 encoder: GB18030-2022 20
+  assert_equals: expected "%00%00%A6%DA" but got "%841%828"
+[FAIL] gb18030 encoder: GB18030-2022 21
+  assert_equals: expected "%00%00%A6%DB" but got "%841%827"
+[FAIL] gb18030 encoder: GB18030-2022 22
+  assert_equals: expected "%00%00%A6%DC" but got "%841%829"
+[FAIL] gb18030 encoder: GB18030-2022 23
+  assert_equals: expected "%00%00%A6%DD" but got "%841%830"
+[FAIL] gb18030 encoder: GB18030-2022 24
+  assert_equals: expected "%00%00%A6%DE" but got "%841%831"
+[FAIL] gb18030 encoder: GB18030-2022 25
+  assert_equals: expected "%00%00%A6%DF" but got "%841%832"
+[FAIL] gb18030 encoder: GB18030-2022 26
+  assert_equals: expected "%00%00%A6%EC" but got "%841%833"
+[FAIL] gb18030 encoder: GB18030-2022 27
+  assert_equals: expected "%00%00%A6%ED" but got "%841%834"
+[FAIL] gb18030 encoder: GB18030-2022 28
+  assert_equals: expected "%00%00%A6%F3" but got "%841%835"
+[FAIL] gb18030 encoder: GB18030-2022 29
+  assert_equals: expected "%00%00%FEY" but got "%825%907"
+[FAIL] gb18030 encoder: GB18030-2022 30
+  assert_equals: expected "%00%00%FEa" but got "%825%908"
+[FAIL] gb18030 encoder: GB18030-2022 31
+  assert_equals: expected "%00%00%FEf" but got "%825%909"
+[FAIL] gb18030 encoder: GB18030-2022 32
+  assert_equals: expected "%00%00%FEg" but got "%825%910"
+[FAIL] gb18030 encoder: GB18030-2022 33
+  assert_equals: expected "%00%00%FEm" but got "%825%911"
+[FAIL] gb18030 encoder: GB18030-2022 34
+  assert_equals: expected "%00%00%FE~" but got "%825%912"
+[FAIL] gb18030 encoder: GB18030-2022 35
+  assert_equals: expected "%00%00%FE%90" but got "%825%913"
+[FAIL] gb18030 encoder: GB18030-2022 36
+  assert_equals: expected "%00%00%FE%A0" but got "%825%914"
+Harness: the test ran to completion.
+
