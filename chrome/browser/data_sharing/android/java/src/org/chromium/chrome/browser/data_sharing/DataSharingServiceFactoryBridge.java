@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.data_sharing;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
+import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.data_sharing.DataSharingSDKDelegate;
 
@@ -20,6 +21,11 @@ public class DataSharingServiceFactoryBridge {
 
     @CalledByNative
     private static DataSharingSDKDelegate createJavaSDKDelegate(Profile profile) {
-        return new DataSharingSDKDelegateImpl(profile);
+        DataSharingImplFactory factory =
+                ServiceLoaderUtil.maybeCreate(DataSharingImplFactory.class);
+        if (factory != null) {
+            return factory.createSdkDelegate(profile);
+        }
+        return new NoOpDataSharingSDKDelegateImpl();
     }
 }

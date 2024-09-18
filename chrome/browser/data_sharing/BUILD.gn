@@ -18,9 +18,9 @@ if (is_android) {
     ]
 
     deps = [
-      ":delegate_java",
       ":java",
       "//base:base_java",
+      "//base:service_loader_java",
       "//build/android:build_java",
       "//chrome/browser/profiles/android:java",
       "//components/data_sharing/public:public_java",
@@ -78,10 +78,16 @@ if (is_android) {
 
   android_library("java") {
     resources_package = "org.chromium.chrome.browser.data_sharing"
-    sources = [ "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingNotificationManager.java" ]
+    sources = [
+      "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingImplFactory.java",
+      "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingNotificationManager.java",
+      "android/java/src/org/chromium/chrome/browser/data_sharing/MemberPickerListenerImpl.java",
+      "android/java/src/org/chromium/chrome/browser/data_sharing/NoOpDataSharingSDKDelegateImpl.java",
+    ]
 
     deps = [
       "//base:base_java",
+      "//build/android:build_java",
       "//chrome/browser/android/intents:java",
       "//chrome/browser/notifications:java",
       "//chrome/browser/profiles/android:java",
@@ -89,11 +95,14 @@ if (is_android) {
       "//chrome/browser/ui/android/strings:ui_strings_grd",
       "//components/browser_ui/notifications/android:java",
       "//components/browser_ui/styles/android:java_resources",
+      "//components/data_sharing/public:public_java",
+      "//components/data_sharing/public/protocol:proto_java",
+      "//third_party/android_deps:protobuf_lite_runtime_java",
       "//third_party/android_sdk:android_window_extensions_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/jni_zero:jni_zero_java",
       "//url:url_java",
     ]
-
-    public_deps = [ ":delegate_java" ]
   }
 
   android_library("shared_image_tiles_java") {
@@ -133,54 +142,6 @@ if (is_android) {
       "//chrome/browser/ui/android/strings:ui_strings_grd",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//ui/android:ui_no_recycler_view_java",
-    ]
-  }
-
-  android_library("delegate_java") {
-    sources = [
-      "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingImplFactory.java",
-      "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingSDKDelegateImpl.java",
-      "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingUIDelegateImpl.java",
-      "android/java/src/org/chromium/chrome/browser/data_sharing/MemberPickerListenerImpl.java",
-    ]
-
-    deps = [
-      "//base:base_java",
-      "//build/android:build_java",
-      "//chrome/browser/profiles/android:java",
-      "//chrome/browser/tab:java",
-      "//components/data_sharing/public:public_java",
-      "//components/data_sharing/public/protocol:proto_java",
-      "//third_party/android_deps:protobuf_lite_runtime_java",
-      "//third_party/androidx:androidx_annotation_annotation_java",
-      "//third_party/jni_zero:jni_zero_java",
-      "//url:url_java",
-    ]
-    if (defined(enable_data_sharing_internal) && enable_data_sharing_internal) {
-      jar_excluded_patterns = [
-        "*/DataSharingSDKDelegateImpl.class",
-        "*/DataSharingUIDelegateImpl.class",
-      ]
-    }
-  }
-
-  android_library("delegate_public_impl_java") {
-    sources = [
-      "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingSDKDelegateImpl.java",
-      "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingUIDelegateImpl.java",
-    ]
-    deps = [
-      ":delegate_java",
-      "//base:base_java",
-      "//build/android:build_java",
-      "//chrome/browser/profiles/android:java",
-      "//chrome/browser/tab:java",
-      "//components/data_sharing/public:public_java",
-      "//components/data_sharing/public/protocol:proto_java",
-      "//third_party/android_deps:protobuf_lite_runtime_java",
-      "//third_party/androidx:androidx_annotation_annotation_java",
-      "//third_party/jni_zero:jni_zero_java",
-      "//url:url_java",
     ]
   }
 

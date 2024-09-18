@@ -316,9 +316,6 @@ if (current_toolchain == default_toolchain) {
       "//components/signin/public/android:account_email_domain_displayability_java",
       "//content/public/android:identity_credentials_public_impl_java",
     ]
-    if (defined(enable_data_sharing_internal) && enable_data_sharing_internal) {
-      deps += [ "//chrome/browser/data_sharing:delegate_public_impl_java" ]
-    }
   }
 
   android_library("google_api_keys_java") {
