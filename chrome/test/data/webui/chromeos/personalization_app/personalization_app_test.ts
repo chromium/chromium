@@ -988,11 +988,9 @@ suite('sea pen', () => {
         'waiting for sea-pen-template-query');
     assertTrue(!!seaPenTemplateQuery, 'template query element exists');
 
-    const templatePrompt =
-        seaPenTemplateQuery.shadowRoot?.getElementById('template')
-            ?.textContent?.replace(/\s+/gmi, ' ')
-            .trim();
-    assertEquals('A radiant light bluegarden rose', templatePrompt);
+    assertEquals(
+        'A radiant light blue garden rose',
+        getSeaPenTemplatePrompt(seaPenTemplateQuery));
 
     const queryParams = new URLSearchParams(window.location.search);
     assertEquals(
