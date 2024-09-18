@@ -223,7 +223,10 @@ source_set("safe_browsing_hats_delegate_unittest") {
 }
 
 source_set("download_check_result") {
-  sources = [ "download_check_result.h" ]
+  sources = [
+    "download_check_result.cc",
+    "download_check_result.h",
+  ]
 }
 
 source_set("safe_browsing_metrics_collector") {

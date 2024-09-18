@@ -2383,69 +2383,7 @@ std::string SerializeDownloadUrlChecked(const std::vector<GURL>& urls,
     urls_value.Append(url.spec());
   }
   url_and_result.Set("download_url_chain", std::move(urls_value));
-
-  switch (result) {
-    case DownloadCheckResult::UNKNOWN:
-      url_and_result.Set("result", "UNKNOWN");
-      break;
-    case DownloadCheckResult::SAFE:
-      url_and_result.Set("result", "SAFE");
-      break;
-    case DownloadCheckResult::DANGEROUS:
-      url_and_result.Set("result", "DANGEROUS");
-      break;
-    case DownloadCheckResult::UNCOMMON:
-      url_and_result.Set("result", "UNCOMMON");
-      break;
-    case DownloadCheckResult::DANGEROUS_HOST:
-      url_and_result.Set("result", "DANGEROUS_HOST");
-      break;
-    case DownloadCheckResult::POTENTIALLY_UNWANTED:
-      url_and_result.Set("result", "POTENTIALLY_UNWANTED");
-      break;
-    case DownloadCheckResult::ALLOWLISTED_BY_POLICY:
-      url_and_result.Set("result", "ALLOWLISTED_BY_POLICY");
-      break;
-    case DownloadCheckResult::ASYNC_SCANNING:
-      url_and_result.Set("result", "ASYNC_SCANNING");
-      break;
-    case DownloadCheckResult::ASYNC_LOCAL_PASSWORD_SCANNING:
-      url_and_result.Set("result", "ASYNC_LOCAL_PASSWORD_SCANNING");
-      break;
-    case DownloadCheckResult::BLOCKED_PASSWORD_PROTECTED:
-      url_and_result.Set("result", "BLOCKED_PASSWORD_PROTECTED");
-      break;
-    case DownloadCheckResult::BLOCKED_TOO_LARGE:
-      url_and_result.Set("result", "BLOCKED_TOO_LARGE");
-      break;
-    case DownloadCheckResult::SENSITIVE_CONTENT_WARNING:
-      url_and_result.Set("result", "SENSITIVE_CONTENT_WARNING");
-      break;
-    case DownloadCheckResult::SENSITIVE_CONTENT_BLOCK:
-      url_and_result.Set("result", "SENSITIVE_CONTENT_BLOCK");
-      break;
-    case DownloadCheckResult::DEEP_SCANNED_SAFE:
-      url_and_result.Set("result", "DEEP_SCANNED_SAFE");
-      break;
-    case DownloadCheckResult::PROMPT_FOR_SCANNING:
-      url_and_result.Set("result", "PROMPT_FOR_SCANNING");
-      break;
-    case DownloadCheckResult::DANGEROUS_ACCOUNT_COMPROMISE:
-      url_and_result.Set("result", "DANGEROUS_ACCOUNT_COMPROMISE");
-      break;
-    case DownloadCheckResult::DEEP_SCANNED_FAILED:
-      url_and_result.Set("result", "DEEP_SCANNED_FAILED");
-      break;
-    case DownloadCheckResult::PROMPT_FOR_LOCAL_PASSWORD_SCANNING:
-      url_and_result.Set("result", "PROMPT_FOR_LOCAL_PASSWORD_SCANNING");
-      break;
-    case DownloadCheckResult::BLOCKED_SCAN_FAILED:
-      url_and_result.Set("result", "BLOCKED_SCAN_FAILED");
-      break;
-    case DownloadCheckResult::IMMEDIATE_DEEP_SCAN:
-      url_and_result.Set("result", "IMMEDIATE_DEEP_SCAN");
-      break;
-  }
+  url_and_result.Set("result", DownloadCheckResultToString(result));
 
   std::string request_serialized;
   JSONStringValueSerializer serializer(&request_serialized);
