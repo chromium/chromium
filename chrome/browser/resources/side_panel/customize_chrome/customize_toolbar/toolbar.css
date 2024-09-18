@@ -81,7 +81,7 @@
   color: var(--cr-secondary-text-color);
   font-weight: 400;
   text-align: center;
-  padding: 0 0 8px;
+  padding: 0 0 16px;
 }
 
 #tipCard {
@@ -115,6 +115,6 @@
   border-radius: 12px;
   display: flex;
   justify-content: center;
-  margin-bottom: 12px;
+  margin-bottom: 8px;
   padding: 16px;
 }
