@@ -460,11 +460,9 @@ class PdfInkModuleStrokeTest : public PdfInkModuleTest {
     }
   }
 
-  void SelectEraserTool() {
-    // TODO(crbug.com/352720912): Test multiple eraser sizes.
-    EXPECT_TRUE(
-        ink_module().OnMessage(CreateSetAnnotationBrushMessageForTesting(
-            "eraser", /*size=*/3.0, nullptr)));
+  void SelectEraserToolOfSize(float size) {
+    EXPECT_TRUE(ink_module().OnMessage(
+        CreateSetAnnotationBrushMessageForTesting("eraser", size, nullptr)));
   }
 
   PdfInkModule::DocumentStrokeInputPointsMap StrokeInputPositions() const {
@@ -715,13 +713,11 @@ TEST_F(PdfInkModuleStrokeTest, EraseStroke) {
   EXPECT_THAT(updated_thumbnail_page_indices, ElementsAre(0));
 
   // Stroke with the eraser tool.
-  SelectEraserTool();
+  SelectEraserToolOfSize(3.0f);
   ApplyStrokeWithMouseAtPoints(
       kMouseDownPoint, base::span_from_ref(kMouseDownPoint), kMouseDownPoint);
 
   // Now there are no visible strokes left.
-  // TODO(crbug.com/352720912): Update the test expectations when the Ink
-  // library is no longer just a stub.
   EXPECT_TRUE(VisibleStrokeInputPositions().empty());
   // Erasing counts as another stroke action.
   EXPECT_EQ(2, client().stroke_finished_count());
@@ -746,7 +742,7 @@ TEST_F(PdfInkModuleStrokeTest, EraseOnPageWithoutStrokes) {
   EXPECT_TRUE(VisibleStrokeInputPositions().empty());
 
   // Stroke with the eraser tool when there are no strokes on the page.
-  SelectEraserTool();
+  SelectEraserToolOfSize(3.0f);
   ApplyStrokeWithMouseAtPoints(
       kMouseDownPoint, base::span_from_ref(kMouseDownPoint), kMouseDownPoint);
 
@@ -771,7 +767,7 @@ TEST_F(PdfInkModuleStrokeTest, EraseStrokeEntirelyOffPage) {
   EXPECT_THAT(updated_thumbnail_page_indices, ElementsAre(0));
 
   // Stroke with the eraser tool outside of the page.
-  SelectEraserTool();
+  SelectEraserToolOfSize(3.0f);
   constexpr gfx::PointF kOffPagePoint(99.0f, 99.0f);
   ApplyStrokeWithMouseAtPointsNotHandled(
       kOffPagePoint, base::span_from_ref(kOffPagePoint), kOffPagePoint);
@@ -785,8 +781,7 @@ TEST_F(PdfInkModuleStrokeTest, EraseStrokeEntirelyOffPage) {
   EXPECT_THAT(updated_thumbnail_page_indices, ElementsAre(0));
 }
 
-// TODO(crbug.com/339682315): Re-enable.
-TEST_F(PdfInkModuleStrokeTest, DISABLED_EraseStrokeErasesTwoStrokes) {
+TEST_F(PdfInkModuleStrokeTest, EraseStrokeErasesTwoStrokes) {
   InitializeSimpleSinglePageBasicLayout();
   RunStrokeCheckTest(/*annotation_mode_enabled=*/true);
 
@@ -797,19 +792,32 @@ TEST_F(PdfInkModuleStrokeTest, DISABLED_EraseStrokeErasesTwoStrokes) {
       kMouseDownPoint2, base::span_from_ref(kMouseMovePoint), kMouseUpPoint2);
 
   // Check that there are now some visible strokes.
-  EXPECT_THAT(VisibleStrokeInputPositions(),
-              ElementsAre(Pair(
-                  0, ElementsAre(ElementsAreArray(kMousePoints),
-                                 ElementsAre(kMouseDownPoint2, kMouseMovePoint,
-                                             kMouseUpPoint2)))));
+  const auto kStroke2Matcher =
+      ElementsAre(kMouseDownPoint2, kMouseMovePoint, kMouseUpPoint2);
+  const auto kVisibleStrokesMatcher = ElementsAre(
+      Pair(0, ElementsAre(ElementsAreArray(kMousePoints), kStroke2Matcher)));
+  EXPECT_THAT(VisibleStrokeInputPositions(), kVisibleStrokesMatcher);
   EXPECT_EQ(2, client().stroke_finished_count());
   const std::vector<int>& updated_thumbnail_page_indices =
       client().updated_thumbnail_page_indices();
   EXPECT_THAT(updated_thumbnail_page_indices, ElementsAre(0, 0));
 
-  // Stroke with the eraser tool at `kMouseMovePoint`, where it will
-  // intersect with both strokes.
-  SelectEraserTool();
+  // Stroke with the eraser tool at `kMouseMovePoint`, where it should
+  // intersect with both strokes, but does not because InkStrokeModeler modeled
+  // the "V" shaped input into an input with a much gentler line slope.
+  SelectEraserToolOfSize(3.0f);
+  ApplyStrokeWithMouseAtPoints(
+      kMouseMovePoint, base::span_from_ref(kMouseMovePoint), kMouseMovePoint);
+
+  // Check that the visible strokes are still there since the eraser tool missed
+  // the strokes.
+  EXPECT_THAT(VisibleStrokeInputPositions(), kVisibleStrokesMatcher);
+  EXPECT_EQ(2, client().stroke_finished_count());
+  EXPECT_THAT(updated_thumbnail_page_indices, ElementsAre(0, 0));
+
+  // Stroke with the eraser tool again at `kMousePoints`, but now with a much
+  // bigger eraser size. This will actually intersect with both strokes.
+  SelectEraserToolOfSize(8.0f);
   ApplyStrokeWithMouseAtPoints(
       kMouseMovePoint, base::span_from_ref(kMouseMovePoint), kMouseMovePoint);
 
@@ -850,7 +858,7 @@ TEST_F(PdfInkModuleStrokeTest, EraseStrokesAcrossTwoPages) {
   EXPECT_THAT(updated_thumbnail_page_indices, ElementsAre(0, 1));
 
   // Erasing across the two pages should erase everything.
-  SelectEraserTool();
+  SelectEraserToolOfSize(3.0f);
   ApplyStrokeWithMouseAtPoints(
       kTwoPageVerticalLayoutPoint1InsidePage0,
       std::vector<gfx::PointF>{kTwoPageVerticalLayoutPoint2InsidePage0,
@@ -887,7 +895,7 @@ TEST_F(PdfInkModuleStrokeTest, EraseStrokePageExitAndReentry) {
 
   // Select the eraser tool and call ApplyStrokeWithMouseAtPoints() again with
   // the same arguments.
-  SelectEraserTool();
+  SelectEraserToolOfSize(3.0f);
   ApplyStrokeWithMouseAtPoints(kTwoPageVerticalLayoutPoint1InsidePage0,
                                kTwoPageVerticalLayoutPageExitAndReentryPoints,
                                kTwoPageVerticalLayoutPoint3InsidePage0);
