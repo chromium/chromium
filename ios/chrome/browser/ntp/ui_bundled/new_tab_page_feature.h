@@ -11,10 +11,6 @@
 
 #pragma mark - Feature declarations
 
-// Feature flag to enable showing a live preview for Discover feed when opening
-// the feed context menu.
-BASE_DECLARE_FEATURE(kEnableDiscoverFeedPreview);
-
 // Feature flag to enable static resource serving for the Discover feed.
 // TODO(crbug.com/40246814): Remove this.
 BASE_DECLARE_FEATURE(kEnableDiscoverFeedStaticResourceServing);
@@ -88,9 +84,6 @@ extern const char kFeedSettingTimeoutThresholdAfterClearBrowsingData[];
 extern const char kFeedSettingDiscoverReferrerParameter[];
 
 #pragma mark - Helpers
-
-// Whether the Discover feed content preview is shown in the context menu.
-bool IsDiscoverFeedPreviewEnabled();
 
 // Whether the NTP view hierarchy repair is enabled.
 bool IsNTPViewHierarchyRepairEnabled();

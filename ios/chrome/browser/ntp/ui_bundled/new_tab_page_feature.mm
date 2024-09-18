@@ -19,10 +19,6 @@ const int kFeedSyncPromoDefaultAutodismissImpressions = 6;
 
 #pragma mark - Feature declarations
 
-BASE_FEATURE(kEnableDiscoverFeedPreview,
-             "EnableDiscoverFeedPreview",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kEnableDiscoverFeedStaticResourceServing,
              "EnableDiscoverFeedStaticResourceServing",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -98,10 +94,6 @@ const char kFeedSettingDiscoverReferrerParameter[] =
     "DiscoverReferrerParameter";
 
 #pragma mark - Helpers
-
-bool IsDiscoverFeedPreviewEnabled() {
-  return base::FeatureList::IsEnabled(kEnableDiscoverFeedPreview);
-}
 
 bool IsNTPViewHierarchyRepairEnabled() {
   return base::FeatureList::IsEnabled(kEnableNTPViewHierarchyRepair);
