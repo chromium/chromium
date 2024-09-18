@@ -80,7 +80,8 @@ void LockedSessionWindowTracker::MaybeCloseBrowser(
   // opened from the OnTask SWA that is blocked, but is not closed or when an
   // OAuth is completed, but since OnTask prevents windows from closing, we need
   // to manually close that window when the OAuth is completed.
-  if (!browser || browser == browser_ || (browser->is_type_app_popup())) {
+  if (!browser || browser == browser_ ||
+      (browser->is_type_app_popup() && oauth_in_progress_)) {
     return;
   }
   browser->window()->Close();
@@ -113,8 +114,8 @@ Browser* LockedSessionWindowTracker::browser() {
   return browser_;
 }
 
-bool LockedSessionWindowTracker::CanProcessPopup() {
-  return can_process_popup_;
+bool LockedSessionWindowTracker::CanOpenNewPopup() {
+  return can_open_new_popup_;
 }
 
 void LockedSessionWindowTracker::CleanupWindowTracker() {
@@ -124,7 +125,8 @@ void LockedSessionWindowTracker::CleanupWindowTracker() {
   }
   on_task_blocklist_->CleanupBlocklist();
   browser_ = nullptr;
-  can_process_popup_ = true;
+  can_open_new_popup_ = true;
+  oauth_in_progress_ = false;
   if (ash::Shell::HasInstance()) {
     ash::Shell::Get()
         ->screen_pinning_controller()
@@ -158,8 +160,9 @@ void LockedSessionWindowTracker::OnBrowserClosing(Browser* browser) {
   if (browser->type() == Browser::Type::TYPE_APP_POPUP) {
     ash::Shell::Get()
         ->screen_pinning_controller()
-        ->SetAllowWindowStackingWithPinnedWindow(true);
-    can_process_popup_ = true;
+        ->SetAllowWindowStackingWithPinnedWindow(false);
+    can_open_new_popup_ = true;
+    oauth_in_progress_ = false;
   }
 }
 
@@ -176,7 +179,7 @@ void LockedSessionWindowTracker::OnBrowserAdded(Browser* browser) {
         ash::Shell::GetContainer(ash::Shell::GetPrimaryRootWindow(),
                                  ash::kShellWindowId_AlwaysOnTopContainer);
     top_container->StackChildAtTop(browser->window()->GetNativeWindow());
-    can_process_popup_ = false;
+    can_open_new_popup_ = false;
   } else {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,

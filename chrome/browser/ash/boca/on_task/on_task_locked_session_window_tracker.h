@@ -56,11 +56,16 @@ class LockedSessionWindowTracker : public KeyedService,
   // Checks to make sure this is the first time an OAuth popup has occurred.
   // This is to make sure popup retries don't try to reopen windows while older
   // popups are still open.
-  bool CanProcessPopup();
+  bool CanOpenNewPopup();
 
   // Observe the web contents so that we can close any unintended popup windows
   // or new tabs that are opened when a navigation
   void ObserveWebContents(content::WebContents* web_content);
+
+  bool oauth_in_progress() { return oauth_in_progress_; }
+  void set_oauth_in_progress(bool in_progress) {
+    oauth_in_progress_ = in_progress;
+  }
 
   OnTaskBlocklist* on_task_blocklist();
   Browser* browser();
@@ -88,7 +93,8 @@ class LockedSessionWindowTracker : public KeyedService,
 
   void CleanupWindowTracker();
 
-  bool can_process_popup_ = true;
+  bool can_open_new_popup_ = true;
+  bool oauth_in_progress_ = false;
   const std::unique_ptr<OnTaskBlocklist> on_task_blocklist_;
   raw_ptr<Browser> browser_ = nullptr;
 
