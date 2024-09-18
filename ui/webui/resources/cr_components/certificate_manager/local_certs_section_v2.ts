@@ -57,7 +57,9 @@ export class LocalCertsSectionV2Element extends LocalCertsSectionV2ElementBase {
 
   static get properties() {
     return {
+      // <if expr="not is_chromeos">
       numSystemCertsString_: String,
+      // </if>
       numPolicyCertsString_: String,
 
       importOsCertsEnabled_: {
@@ -65,10 +67,12 @@ export class LocalCertsSectionV2Element extends LocalCertsSectionV2ElementBase {
         computed: 'computeImportOsCertsEnabled_(certManagementMetadata_)',
       },
 
+      // <if expr="not is_chromeos">
       importOsCertsEnabledManaged_: {
         type: Boolean,
         computed: 'computeImportOsCertsManaged_(certManagementMetadata_)',
       },
+      // </if>
 
       showViewOsCertsLinkRow_: {
         type: Boolean,
@@ -88,10 +92,14 @@ export class LocalCertsSectionV2Element extends LocalCertsSectionV2ElementBase {
   }
 
   private numPolicyCertsString_: string;
+  // <if expr="not is_chromeos">
   private numSystemCertsString_: string;
+  // </if>
   private certManagementMetadata_: CertManagementMetadata;
   private importOsCertsEnabled_: boolean;
+  // <if expr="not is_chromeos">
   private importOsCertsEnabledManaged_: boolean;
+  // </if>
 
   override ready() {
     super.ready();
@@ -122,7 +130,9 @@ export class LocalCertsSectionV2Element extends LocalCertsSectionV2ElementBase {
   private updateNumCertsStrings_() {
     if (this.certManagementMetadata_ === undefined) {
       this.numPolicyCertsString_ = '';
+      // <if expr="not is_chromeos">
       this.numSystemCertsString_ = '';
+      // </if>
     } else {
       PluralStringProxyImpl.getInstance()
           .getPluralString(
@@ -131,6 +141,7 @@ export class LocalCertsSectionV2Element extends LocalCertsSectionV2ElementBase {
           .then(label => {
             this.numPolicyCertsString_ = label;
           });
+      // <if expr="not is_chromeos">
       PluralStringProxyImpl.getInstance()
           .getPluralString(
               'certificateManagerV2NumCerts',
@@ -138,6 +149,7 @@ export class LocalCertsSectionV2Element extends LocalCertsSectionV2ElementBase {
           .then(label => {
             this.numSystemCertsString_ = label;
           });
+      // </if>
     }
   }
 
@@ -155,9 +167,11 @@ export class LocalCertsSectionV2Element extends LocalCertsSectionV2ElementBase {
     return this.certManagementMetadata_.includeSystemTrustStore;
   }
 
+  // <if expr="not is_chromeos">
   private computeImportOsCertsManaged_(): boolean {
     return this.certManagementMetadata_.isIncludeSystemTrustStoreManaged;
   }
+  // </if>
 
   private computeShowViewOsCertsLinkRow_(): boolean {
     return this.certManagementMetadata_ !== undefined &&

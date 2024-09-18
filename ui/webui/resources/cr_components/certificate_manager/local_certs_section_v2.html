@@ -16,24 +16,26 @@
     here when allowed by enterprise.  -->
   <h3 class="section-title">[[i18n("certificateManagerV2Platform")]]</h3>
   <div class="card">
-    <div class="cr-row">
-      <div class="cr-padded-text">
-        <div>
-          [[i18n("certificateManagerV2PlatformCertsToggleLabel")]]
+    <if expr="not is_chromeos">
+      <div class="cr-row">
+        <div class="cr-padded-text">
+          <div>
+            [[i18n("certificateManagerV2PlatformCertsToggleLabel")]]
+          </div>
+          <div id="numSystemCerts" class="cr-secondary-text">
+            [[numSystemCertsString_]]
+          </div>
         </div>
-        <div id="numSystemCerts" class="cr-secondary-text">
-          [[numSystemCertsString_]]
-        </div>
-      </div>
-      <cr-toggle id="importOsCerts"
-          aria-label="Toggle operating system certificate imports"
-          checked="[[importOsCertsEnabled_]]" disabled>
-      </cr-toggle>
+        <cr-toggle id="importOsCerts"
+            aria-label="Toggle operating system certificate imports"
+            checked="[[importOsCertsEnabled_]]" disabled>
+        </cr-toggle>
 
-      <cr-icon id="importOsCertsManagedIcon" icon="cr:domain"
-          class="enterprise-icon" hidden$="[[!importOsCertsEnabledManaged_]]">
-      </cr-icon>
-    </div>
+        <cr-icon id="importOsCertsManagedIcon" icon="cr:domain"
+            class="enterprise-icon" hidden$="[[!importOsCertsEnabledManaged_]]">
+        </cr-icon>
+      </div>
+    </if>
 
     <cr-link-row id="viewOsImportedCerts" class="hr"
         label="[[i18n('certificateManagerV2PlatformCertsViewLink')]]"

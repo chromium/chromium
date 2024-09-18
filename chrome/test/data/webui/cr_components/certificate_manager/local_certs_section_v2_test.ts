@@ -7,16 +7,21 @@
 import 'chrome://resources/cr_components/certificate_manager/local_certs_section_v2.js';
 import 'chrome://certificate-manager/strings.m.js';
 
+// <if expr="not is_chromeos">
 import {PluralStringProxyImpl} from '//resources/js/plural_string_proxy.js';
+// </if>
 import type {CertManagementMetadata} from 'chrome://resources/cr_components/certificate_manager/certificate_manager_v2.mojom-webui.js';
 import {CertificatesV2BrowserProxy} from 'chrome://resources/cr_components/certificate_manager/certificates_v2_browser_proxy.js';
 import type {LocalCertsSectionV2Element} from 'chrome://resources/cr_components/certificate_manager/local_certs_section_v2.js';
 import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
+// <if expr="not is_chromeos">
 import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
+// </if>
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestCertificateManagerProxy} from './certificate_manager_v2_test_support.js';
 
+// <if expr="not is_chromeos">
 class CertManagerTestPluralStringProxy extends TestPluralStringProxy {
   override text: string = '';
 
@@ -27,6 +32,7 @@ class CertManagerTestPluralStringProxy extends TestPluralStringProxy {
     return Promise.resolve(this.text);
   }
 }
+// </if>
 
 suite('LocalCertsSectionV2Test', () => {
   let localCertsSection: LocalCertsSectionV2Element;
@@ -43,6 +49,7 @@ suite('LocalCertsSectionV2Test', () => {
     document.body.appendChild(localCertsSection);
   }
 
+  // <if expr="not is_chromeos">
   test('Policy - OS certs number string', async () => {
     const pluralStringProxy = new CertManagerTestPluralStringProxy();
     PluralStringProxyImpl.setInstance(pluralStringProxy);
@@ -50,7 +57,9 @@ suite('LocalCertsSectionV2Test', () => {
     const metadata: CertManagementMetadata = {
       includeSystemTrustStore: true,
       numUserAddedSystemCerts: 5,
+      // <if expr="not is_chromeos">
       isIncludeSystemTrustStoreManaged: true,
+      // </if>
       numPolicyCerts: 0,
     };
     testProxy.handler.setCertManagementMetadata(metadata);
@@ -65,12 +74,15 @@ suite('LocalCertsSectionV2Test', () => {
         'num system certs string incorrect');
     assertTrue(isVisible(localCertsSection.$.numSystemCerts));
   });
+  // </if>
 
   test('Policy - OS certs imported and managed', async () => {
     const metadata: CertManagementMetadata = {
       includeSystemTrustStore: true,
       numUserAddedSystemCerts: 4,
+      // <if expr="not is_chromeos">
       isIncludeSystemTrustStoreManaged: true,
+      // </if>
       numPolicyCerts: 0,
     };
     testProxy.handler.setCertManagementMetadata(metadata);
@@ -79,11 +91,13 @@ suite('LocalCertsSectionV2Test', () => {
     await testProxy.handler.whenCalled('getCertManagementMetadata');
     await microtasksFinished();
 
+    // <if expr="not is_chromeos">
     assertTrue(
         localCertsSection.$.importOsCerts.checked, 'os toggle state wrong');
     assertTrue(
         isVisible(localCertsSection.$.importOsCertsManagedIcon),
         'enterprise managed icon visibility wrong');
+    // </if>
     assertTrue(
         isVisible(localCertsSection.$.viewOsImportedCerts),
         'view imported os certs link visibility wrong');
@@ -98,7 +112,9 @@ suite('LocalCertsSectionV2Test', () => {
     const metadata: CertManagementMetadata = {
       includeSystemTrustStore: true,
       numUserAddedSystemCerts: 4,
+      // <if expr="not is_chromeos">
       isIncludeSystemTrustStoreManaged: false,
+      // </if>
       numPolicyCerts: 0,
     };
     testProxy.handler.setCertManagementMetadata(metadata);
@@ -107,12 +123,14 @@ suite('LocalCertsSectionV2Test', () => {
     await testProxy.handler.whenCalled('getCertManagementMetadata');
     await microtasksFinished();
 
+    // <if expr="not is_chromeos">
     assertTrue(
         localCertsSection.$.importOsCerts.checked,
         'os import toggle state wrong');
     assertFalse(
         isVisible(localCertsSection.$.importOsCertsManagedIcon),
         'enterprise managed icon visibility wrong');
+    // </if>
     assertTrue(
         isVisible(localCertsSection.$.viewOsImportedCerts),
         'view imported os certs link visibility wrong');
@@ -127,7 +145,9 @@ suite('LocalCertsSectionV2Test', () => {
     const metadata: CertManagementMetadata = {
       includeSystemTrustStore: false,
       numUserAddedSystemCerts: 4,
+      // <if expr="not is_chromeos">
       isIncludeSystemTrustStoreManaged: true,
+      // </if>
       numPolicyCerts: 0,
     };
     testProxy.handler.setCertManagementMetadata(metadata);
@@ -136,6 +156,7 @@ suite('LocalCertsSectionV2Test', () => {
     await testProxy.handler.whenCalled('getCertManagementMetadata');
     await microtasksFinished();
 
+    // <if expr="not is_chromeos">
     assertFalse(
         localCertsSection.$.importOsCerts.checked,
         'os import toggle state wrong');
@@ -143,6 +164,7 @@ suite('LocalCertsSectionV2Test', () => {
     assertTrue(
         isVisible(localCertsSection.$.importOsCertsManagedIcon),
         'enterprise managed icon visibility wrong');
+    // </if>
     assertTrue(
         isVisible(localCertsSection.$.viewOsImportedCerts),
         'view imported os certs link visibility wrong');
@@ -157,7 +179,9 @@ suite('LocalCertsSectionV2Test', () => {
     const metadata: CertManagementMetadata = {
       includeSystemTrustStore: false,
       numUserAddedSystemCerts: 3,
+      // <if expr="not is_chromeos">
       isIncludeSystemTrustStoreManaged: false,
+      // </if>
       numPolicyCerts: 0,
     };
     testProxy.handler.setCertManagementMetadata(metadata);
@@ -166,6 +190,7 @@ suite('LocalCertsSectionV2Test', () => {
     await testProxy.handler.whenCalled('getCertManagementMetadata');
     await microtasksFinished();
 
+    // <if expr="not is_chromeos">
     assertFalse(
         localCertsSection.$.importOsCerts.checked,
         'os import toggle state wrong');
@@ -173,6 +198,7 @@ suite('LocalCertsSectionV2Test', () => {
     assertFalse(
         isVisible(localCertsSection.$.importOsCertsManagedIcon),
         'enterprise managed icon visibility wrong');
+    // </if>
     assertTrue(
         isVisible(localCertsSection.$.viewOsImportedCerts),
         'view imported os certs link visibility wrong');
@@ -187,7 +213,9 @@ suite('LocalCertsSectionV2Test', () => {
     const metadata: CertManagementMetadata = {
       includeSystemTrustStore: false,
       numUserAddedSystemCerts: 0,
+      // <if expr="not is_chromeos">
       isIncludeSystemTrustStoreManaged: false,
+      // </if>
       numPolicyCerts: 0,
     };
     testProxy.handler.setCertManagementMetadata(metadata);
@@ -206,7 +234,9 @@ suite('LocalCertsSectionV2Test', () => {
     const metadata: CertManagementMetadata = {
       includeSystemTrustStore: true,
       numUserAddedSystemCerts: 0,
+      // <if expr="not is_chromeos">
       isIncludeSystemTrustStoreManaged: true,
+      // </if>
       numPolicyCerts: 0,
     };
     testProxy.handler.setCertManagementMetadata(metadata);
@@ -226,7 +256,9 @@ suite('LocalCertsSectionV2Test', () => {
     const metadata: CertManagementMetadata = {
       includeSystemTrustStore: true,
       numUserAddedSystemCerts: 0,
+      // <if expr="not is_chromeos">
       isIncludeSystemTrustStoreManaged: true,
+      // </if>
       numPolicyCerts: 0,
     };
     testProxy.handler.setCertManagementMetadata(metadata);
@@ -243,7 +275,9 @@ suite('LocalCertsSectionV2Test', () => {
     const metadata: CertManagementMetadata = {
       includeSystemTrustStore: true,
       numUserAddedSystemCerts: 0,
+      // <if expr="not is_chromeos">
       isIncludeSystemTrustStoreManaged: true,
+      // </if>
       numPolicyCerts: 5,
     };
     testProxy.handler.setCertManagementMetadata(metadata);

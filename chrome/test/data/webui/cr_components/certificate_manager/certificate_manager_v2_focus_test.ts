@@ -181,7 +181,9 @@ suite('CertificateManagerV2FocusTest', () => {
     const metadata: CertManagementMetadata = {
       includeSystemTrustStore: true,
       numUserAddedSystemCerts: 5,
+      // <if expr="not is_chromeos">
       isIncludeSystemTrustStoreManaged: true,
+      // </if>
       numPolicyCerts: 0,
     };
     testProxy.handler.setCertManagementMetadata(metadata);

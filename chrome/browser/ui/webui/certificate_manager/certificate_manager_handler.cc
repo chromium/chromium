@@ -42,7 +42,6 @@ void GetCertManagementMetadataAsync(
   // TODO(crbug.com/40928765): figure out how this should be displayed for
   // ChromeOS
   metadata->include_system_trust_store = true;
-  metadata->is_include_system_trust_store_managed = false;
 #endif
 
   metadata->num_policy_certs =
