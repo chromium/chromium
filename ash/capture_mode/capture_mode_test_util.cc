@@ -432,6 +432,15 @@ void SelectCaptureModeRegion(ui::test::EventGenerator* event_generator,
   }
 }
 
+void VerifyActiveBehavior(BehaviorType type) {
+  auto* controller = CaptureModeController::Get();
+  ASSERT_TRUE(controller->IsActive());
+  CaptureModeBehavior* active_behavior =
+      controller->capture_mode_session()->active_behavior();
+  ASSERT_TRUE(active_behavior);
+  EXPECT_EQ(active_behavior->behavior_type(), type);
+}
+
 // -----------------------------------------------------------------------------
 // ProjectorCaptureModeIntegrationHelper:
 

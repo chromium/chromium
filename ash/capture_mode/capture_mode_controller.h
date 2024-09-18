@@ -154,6 +154,10 @@ class ASH_EXPORT CaptureModeController
   // Returns true if the camera preview is visible, false otherwise.
   bool IsShowingCameraPreview() const;
 
+  // Returns true if this supports the new behavior provided by
+  // `new_entry_type`.
+  bool SupportsBehaviorChange(CaptureModeEntryType new_entry_type) const;
+
   // Sets the capture source/type, and recording type, which will be applied to
   // an ongoing capture session (if any), or to a future capture session when
   // Start() is called.

@@ -177,6 +177,9 @@ void SelectCaptureModeRegion(ui::test::EventGenerator* event_generator,
                              bool release_mouse = true,
                              bool verify_region = true);
 
+// Verifies that capture mode session is active and has behavior of `type`.
+void VerifyActiveBehavior(BehaviorType type);
+
 // Defines a helper class to allow setting up and testing the Projector feature
 // in multiple test fixtures. Note that this helper initializes the Projector-
 // related features in its constructor, so test fixtures that use this should

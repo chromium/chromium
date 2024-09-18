@@ -439,4 +439,28 @@ TEST_F(SunfishTest, StartRecordingThenStartSunfish) {
   EXPECT_FALSE(controller->is_recording_in_progress());
 }
 
+// Tests that when capture mode session is active, switching between behavior
+// types updates the session type and UI.
+TEST_F(SunfishTest, SwitchBehaviorTypes) {
+  // Start default capture mode session.
+  PressAndReleaseKey(ui::VKEY_MEDIA_LAUNCH_APP1,
+                     ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN);
+  VerifyActiveBehavior(BehaviorType::kDefault);
+
+  // Switch to sunfish session.
+  PressAndReleaseKey(ui::VKEY_8,
+                     ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN | ui::EF_SHIFT_DOWN);
+  VerifyActiveBehavior(BehaviorType::kSunfish);
+
+  // Switch to default capture mode session.
+  PressAndReleaseKey(ui::VKEY_MEDIA_LAUNCH_APP1,
+                     ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN);
+  VerifyActiveBehavior(BehaviorType::kDefault);
+
+  // Switch to sunfish session.
+  PressAndReleaseKey(ui::VKEY_8,
+                     ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN | ui::EF_SHIFT_DOWN);
+  VerifyActiveBehavior(BehaviorType::kSunfish);
+}
+
 }  // namespace ash

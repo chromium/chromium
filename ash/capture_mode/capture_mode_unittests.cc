@@ -6145,6 +6145,16 @@ TEST_F(ProjectorCaptureModeIntegrationTests,
   }
 }
 
+// Tests that if the user is in projector mode, then presses the shortcut to
+// start default capture mode, it is ignored.
+TEST_P(ProjectorCaptureModeIntegrationTests, SwitchToDefaultCaptureMode) {
+  StartProjectorModeSession();
+  VerifyActiveBehavior(BehaviorType::kProjector);
+  PressAndReleaseKey(ui::VKEY_MEDIA_LAUNCH_APP1,
+                     ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN);
+  VerifyActiveBehavior(BehaviorType::kProjector);
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          ProjectorCaptureModeIntegrationTests,
                          testing::Values(CaptureModeSource::kFullscreen,
