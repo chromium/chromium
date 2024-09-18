@@ -160,7 +160,9 @@ public class ScrollDelegate {
 
     /**
      * Adjusts the scroll offset based on the change in start margin to make it appear as though the
-     * interacting tab does not move.
+     * interacting tab does not move. Also adjusts the minScrollOffset accordingly (without
+     * calculating from scratch) and sets the reorderExtraMinScrollOffset, if needed, to ensure the
+     * new scroll offset will be valid.
      *
      * @param isVisibleAreaFilled Whether or not there are enough tabs to fill the visible area on
      *     the strip.
@@ -169,6 +171,10 @@ public class ScrollDelegate {
      */
     void onReorderStartMarginChanged(
             boolean isVisibleAreaFilled, float newStartMargin, float delta) {
+        // Adjusts the minScrollOffset here, since the next update cycle (which accounts for the new
+        // reorderStartMargin) will not yet have run.
+        mMinScrollOffset -= delta;
+        if (mMinScrollOffset > -EPSILON) mMinScrollOffset = 0.f;
         // If there are not enough tabs to fill the visible area on the tab strip, then there is not
         // enough room to auto-scroll for tab group margins. Allocate additional space to account
         // for this. See http://crbug.com/1374918 for additional details.

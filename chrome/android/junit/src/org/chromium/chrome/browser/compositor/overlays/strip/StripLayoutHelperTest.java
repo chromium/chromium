@@ -173,6 +173,7 @@ public class StripLayoutHelperTest {
     public void beforeTest() {
         MockitoAnnotations.initMocks(this);
         when(mTabGroupModelFilter.isTabInTabGroup(any())).thenReturn(false);
+        when(mTabGroupModelFilter.getTabModel()).thenReturn(mModel);
         mContext =
                 new ContextThemeWrapper(
                         ApplicationProvider.getApplicationContext(),
@@ -186,7 +187,7 @@ public class StripLayoutHelperTest {
     @After
     public void tearDown() {
         if (mStripLayoutHelper != null) {
-            mStripLayoutHelper.stopReorderModeForTesting();
+            mStripLayoutHelper.stopReorderMode();
             mStripLayoutHelper.setTabAtPositionForTesting(null);
             mStripLayoutHelper.setRunningAnimatorForTesting(null);
         }
@@ -1441,8 +1442,7 @@ public class StripLayoutHelperTest {
         // Assert: StripStartMargin is about 1/4 tab width to create space for dragging first tab
         // out of group on strip.
         float expectedMargin =
-                (mStripLayoutHelper.getCachedTabWidthForTesting() - TAB_OVERLAP_WIDTH)
-                        * REORDER_OVERLAP_SWITCH_PERCENTAGE
+                (mStripLayoutHelper.getCachedTabWidthForTesting() / 2)
                         * REORDER_OVERLAP_SWITCH_PERCENTAGE;
         assertEquals(
                 "StripStartMargin is incorrect",
@@ -1480,8 +1480,7 @@ public class StripLayoutHelperTest {
         // Assert: Last tab's trailingMargin should be about 1/4 tab width to create space for
         // dragging last tab out of group on strip.
         float expectedMargin =
-                (mStripLayoutHelper.getCachedTabWidthForTesting() - TAB_OVERLAP_WIDTH)
-                        * REORDER_OVERLAP_SWITCH_PERCENTAGE
+                (mStripLayoutHelper.getCachedTabWidthForTesting() / 2)
                         * REORDER_OVERLAP_SWITCH_PERCENTAGE;
         assertEquals(
                 "Strip end margin is incorrect", expectedMargin, tabs[4].getTrailingMargin(), 0.1f);
@@ -1915,7 +1914,7 @@ public class StripLayoutHelperTest {
 
         // Start then stop reorder.
         mStripLayoutHelper.startReorderModeAtIndexForTesting(0);
-        mStripLayoutHelper.stopReorderModeForTesting();
+        mStripLayoutHelper.stopReorderMode();
 
         // Verify no tabs have a trailing margin when reordering is stopped.
         StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
@@ -1928,7 +1927,7 @@ public class StripLayoutHelperTest {
     @Test
     @Feature("Tab Groups on Tab Strip")
     public void testTabGroupMargins_NoScrollOnReorder() {
-        // Mock 1 tab to the right of 2 tab groups with 2 tabs each.
+        // Mock 2 tabs to the left and 1 tab to the right of a tab group with two tabs.
         initializeTest(false, false, true, 0, 5);
         groupTabs(2, 4);
         mStripLayoutHelper.onSizeChanged(
@@ -1945,7 +1944,7 @@ public class StripLayoutHelperTest {
                 EPSILON);
 
         // Stop reorder. Verify the scroll offset is still 0.
-        mStripLayoutHelper.stopReorderModeForTesting();
+        mStripLayoutHelper.stopReorderMode();
         assertEquals(
                 "Scroll offset should return to 0 after stopping reorder mode.",
                 0f,
@@ -2596,7 +2595,7 @@ public class StripLayoutHelperTest {
 
         // Start and stop reorder mode for tab drop.
         stripLayoutHelperSpy.updateStripForExternalTabDrop(10.f);
-        stripLayoutHelperSpy.stopReorderModeForTesting();
+        stripLayoutHelperSpy.stopReorderMode();
 
         // Verify: folio reattachment animation does not run for tab drop.
         verify(stripLayoutHelperSpy, never()).updateTabAttachState(any(), eq(true), notNull());
