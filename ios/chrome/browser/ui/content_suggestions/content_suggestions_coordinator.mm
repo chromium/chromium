@@ -337,7 +337,14 @@
     _priceTrackingPromoMediator = [[PriceTrackingPromoMediator alloc]
         initWithShoppingService:commerce::ShoppingServiceFactory::
                                     GetForBrowserState(
-                                        self.browser->GetBrowserState())];
+                                        self.browser->GetBrowserState())
+                    prefService:prefs
+        pushNotificationService:GetApplicationContext()
+                                    ->GetPushNotificationService()
+          authenticationService:self.authService];
+    _priceTrackingPromoMediator.dispatcher =
+        static_cast<id<ApplicationCommands, SnackbarCommands>>(
+            self.browser->GetCommandDispatcher());
     [moduleMediators addObject:_priceTrackingPromoMediator];
   }
 

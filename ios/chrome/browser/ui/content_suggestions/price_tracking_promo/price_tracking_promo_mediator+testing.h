@@ -13,12 +13,18 @@ namespace commerce {
 class ShoppingService;
 }  // namespace commerce
 
+@class MDCSnackbarMessage;
+
 // Category for exposing internal state for testing.
 @interface PriceTrackingPromoMediator (ForTesting)
 
 - (commerce::ShoppingService*)shoppingServiceForTesting;
 
 - (PriceTrackingPromoItem*)priceTrackingPromoItemForTesting;
+
+- (MDCSnackbarMessage*)snackbarMessageForTesting;
+
+- (void)enablePriceTrackingNotificationsSettingsForTesting;
 
 @end
 

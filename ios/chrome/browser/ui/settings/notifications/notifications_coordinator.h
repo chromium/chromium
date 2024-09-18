@@ -35,6 +35,9 @@
                                          browser:(Browser*)browser
     NS_DESIGNATED_INITIALIZER;
 
+// Show Price Trackinhg Notifications settings.
+- (void)showTrackingPrice;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_NOTIFICATIONS_NOTIFICATIONS_COORDINATOR_H_

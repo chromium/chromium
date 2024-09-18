@@ -236,6 +236,20 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   return navigationController;
 }
 
++ (instancetype)
+    priceNotificationsControllerForBrowser:(Browser*)browser
+                                  delegate:
+                                      (id<SettingsNavigationControllerDelegate>)
+                                          delegate {
+  SettingsNavigationController* navigationController =
+      [[SettingsNavigationController alloc]
+          initWithRootViewController:nil
+                             browser:browser
+                            delegate:delegate];
+  [navigationController showPriceNotificationsSettings];
+  return navigationController;
+}
+
 // Creates a new SafetyCheckTableViewController and the chrome
 // around it.
 + (instancetype)
@@ -1262,6 +1276,16 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
                                browser:_browser];
   self.notificationsCoordinator.delegate = self;
   [self.notificationsCoordinator start];
+}
+
+- (void)showPriceNotificationsSettings {
+  [self stopNotificationsCoordinator];
+  self.notificationsCoordinator = [[NotificationsCoordinator alloc]
+      initWithBaseNavigationController:self
+                               browser:_browser];
+  self.notificationsCoordinator.delegate = self;
+  [self.notificationsCoordinator start];
+  [self.notificationsCoordinator showTrackingPrice];
 }
 
 @end
