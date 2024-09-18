@@ -2984,8 +2984,6 @@ constexpr char kGlanceablesTimeManagementClassroomStudentViewInternalName[] =
 constexpr char kGlanceablesTimeManagementTasksViewInternalName[] =
     "glanceables-time-management-tasks-view";
 constexpr char kBackgroundListeningName[] = "background-listening";
-constexpr char kAppInstallServiceUriBorealisName[] =
-    "app-install-service-uri-borealis";
 constexpr char kBorealisBigGlInternalName[] = "borealis-big-gl";
 constexpr char kBorealisDGPUInternalName[] = "borealis-dgpu";
 constexpr char kBorealisEnableUnsupportedHardwareInternalName[] =
@@ -9386,10 +9384,6 @@ const FeatureEntry kFeatureEntries[] = {
     {kBorealisBigGlInternalName, flag_descriptions::kBorealisBigGlName,
      flag_descriptions::kBorealisBigGlDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kBorealisBigGl)},
-    {kAppInstallServiceUriBorealisName,
-     flag_descriptions::kAppInstallServiceUriBorealisName,
-     flag_descriptions::kAppInstallServiceUriBorealisDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kAppInstallServiceUriBorealis)},
     {kBorealisDGPUInternalName, flag_descriptions::kBorealisDGPUName,
      flag_descriptions::kBorealisDGPUDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kBorealisDGPU)},
@@ -12130,8 +12124,7 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
   }
 
   // Only show Borealis flags on enabled devices.
-  if (!strcmp(kAppInstallServiceUriBorealisName, entry.internal_name) ||
-      !strcmp(kBorealisBigGlInternalName, entry.internal_name) ||
+  if (!strcmp(kBorealisBigGlInternalName, entry.internal_name) ||
       !strcmp(kBorealisDGPUInternalName, entry.internal_name) ||
       !strcmp(kBorealisEnableUnsupportedHardwareInternalName,
               entry.internal_name) ||

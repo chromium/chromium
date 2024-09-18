@@ -115,11 +115,6 @@ BASE_FEATURE(kAnnotatorMode,
 
 BASE_FEATURE(kApnRevamp, "ApnRevamp", base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Adds Borealis support to Almanac app install URIs.
-BASE_FEATURE(kAppInstallServiceUriBorealis,
-             "AppInstallServiceUriBorealis",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Controls whether to enable ARC ADB sideloading support.
 BASE_FEATURE(kArcAdbSideloadingFeature,
              "ArcAdbSideloading",

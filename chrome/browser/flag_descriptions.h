@@ -3428,9 +3428,6 @@ extern const char kApnPoliciesDescription[];
 extern const char kApnRevampName[];
 extern const char kApnRevampDescription[];
 
-extern const char kAppInstallServiceUriBorealisName[];
-extern const char kAppInstallServiceUriBorealisDescription[];
-
 extern const char kAppLaunchAutomationName[];
 extern const char kAppLaunchAutomationDescription[];
 

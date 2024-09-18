@@ -5945,12 +5945,6 @@ const char kApnRevampDescription[] =
     "Enables the ChromeOS APN Revamp, which updates cellular network APN "
     "system UI and related infrastructure.";
 
-const char kAppInstallServiceUriBorealisName[] =
-    "Enable app install service URI for Borealis";
-const char kAppInstallServiceUriBorealisDescription[] =
-    "If the app install service URI is enabled, enable it for Borealis "
-    "as well.";
-
 const char kAppLaunchAutomationName[] = "Enable app launch automation";
 const char kAppLaunchAutomationDescription[] =
     "Allows groups of apps to be launched.";

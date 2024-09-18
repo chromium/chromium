@@ -244,11 +244,6 @@
     "expiry_milestone": 135
   },
   {
-    "name": "app-install-service-uri-borealis",
-    "owners": [ "tsergeant@chromium.org", "crosdev-commerce-eng@google.com" ],
-    "expiry_milestone": 131
-  },
-  {
     "name": "app-launch-automation",
     "owners": [ "dandersson@chromium.org", "janetmac@chromium.org" ],
     "expiry_milestone": 123
