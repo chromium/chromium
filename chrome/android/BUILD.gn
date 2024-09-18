@@ -1719,6 +1719,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/browsing_data/android:java",
       "//chrome/browser/commerce/android:java",
       "//chrome/browser/commerce/android:javatests",
+      "//chrome/browser/commerce/coupons/android:javatests",
       "//chrome/browser/commerce/merchant_viewer/android:java",
       "//chrome/browser/commerce/merchant_viewer/android:javatests",
       "//chrome/browser/commerce/price_insights/android:java",
