@@ -27,7 +27,12 @@ import {isChildVisible} from 'chrome://webui-test/test_util.js';
 class TestPrivacySandboxDialogBrowserProxy extends TestBrowserProxy implements
     PrivacySandboxDialogBrowserProxy {
   constructor() {
-    super(['promptActionOccurred', 'resizeDialog', 'showDialog']);
+    super([
+      'promptActionOccurred',
+      'resizeDialog',
+      'showDialog',
+      'recordPrivacyPolicyLoadTime',
+    ]);
   }
 
   promptActionOccurred() {
@@ -41,6 +46,10 @@ class TestPrivacySandboxDialogBrowserProxy extends TestBrowserProxy implements
 
   showDialog() {
     this.methodCalled('showDialog');
+  }
+
+  recordPrivacyPolicyLoadTime() {
+    this.methodCalled('recordPrivacyPolicyLoadTime', arguments);
   }
 }
 

@@ -35,6 +35,8 @@ class PrivacySandboxDialogHandler : public content::WebUIMessageHandler {
   FRIEND_TEST_ALL_PREFIXES(PrivacySandboxConsentDialogHandlerTest,
                            HandleClickLearnMore);
   FRIEND_TEST_ALL_PREFIXES(PrivacySandboxConsentDialogHandlerTest,
+                           HandleClickPrivacyPolicy);
+  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxConsentDialogHandlerTest,
                            HandleConsentAccepted);
   FRIEND_TEST_ALL_PREFIXES(PrivacySandboxConsentDialogHandlerTest,
                            HandleConsentDeclined);
@@ -72,6 +74,9 @@ class PrivacySandboxDialogHandler : public content::WebUIMessageHandler {
   // Whether the user has clicked on one of the buttons: accept consent, decline
   // consent, acknowledge notice or open settings.
   bool did_user_make_decision_ = false;
+
+ private:
+  void HandleRecordPrivacyPolicyLoadTime(const base::Value::List& args);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_PRIVACY_SANDBOX_PRIVACY_SANDBOX_DIALOG_HANDLER_H_

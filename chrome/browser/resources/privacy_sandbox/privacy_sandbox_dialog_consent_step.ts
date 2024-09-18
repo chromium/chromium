@@ -13,7 +13,7 @@ import './privacy_sandbox_dialog_learn_more.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {PrivacySandboxPromptAction} from './privacy_sandbox_dialog_browser_proxy.js';
+import {PrivacySandboxDialogBrowserProxy, PrivacySandboxPromptAction} from './privacy_sandbox_dialog_browser_proxy.js';
 import {getTemplate} from './privacy_sandbox_dialog_consent_step.html.js';
 import {PrivacySandboxDialogMixin} from './privacy_sandbox_dialog_mixin.js';
 
@@ -74,15 +74,13 @@ export class PrivacySandboxDialogConsentStepElement extends
 
     window.addEventListener('message', event => {
       if (event.data.id === 'privacy-policy-loaded') {
-        this.privacyPolicyPageLoadEndTime_ = performance.now();
-        // TODO(crbug.com/358087159): Replace the console logs below with
-        // histograms for how long it takes to open the privacy policy page.
+        this.privacyPolicyPageLoadEndTime_ = event.data.value;
         // Tracks when the privacy policy page is loaded after the link is
         // clicked.
         if (this.privacyPolicyPageClickStartTime_) {
-          // const duration = this.privacyPolicyPageLoadEndTime_ -
-          // this.privacyPolicyPageClickStartTime_; console.log(`Load time:
-          // ${duration} milliseconds`);
+          this.recordPrivacyPolicyLoadTime_(
+              this.privacyPolicyPageLoadEndTime_ -
+              this.privacyPolicyPageClickStartTime_);
         }
         return;
       }
@@ -101,26 +99,20 @@ export class PrivacySandboxDialogConsentStepElement extends
         new CustomEvent('consent-resolved', {bubbles: true, composed: true}));
   }
 
-  // TODO(crbug.com/358087159): Add metrics to check if privacy policy link ever
-  // fails to load.
+  private recordPrivacyPolicyLoadTime_(privacyPolicyLoadDuration: number) {
+    PrivacySandboxDialogBrowserProxy.getInstance().recordPrivacyPolicyLoadTime(
+        privacyPolicyLoadDuration);
+  }
+
   private onPrivacyPolicyLinkClicked_() {
     this.privacyPolicyPageClickStartTime_ = performance.now();
-    // TODO(crbug.com/358087159): Replace the console logs below with histograms
-    // for how long it takes to open the privacy policy page. Tracks when the
-    // privacy policy page is loaded before the link is clicked.
-    if (this.privacyPolicyPageLoadEndTime_ &&
-        this.privacyPolicyPageLoadEndTime_ >
-            this.privacyPolicyPageClickStartTime_) {
-      // const duration = this.privacyPolicyPageLoadEndTime_ -
-      // this.privacyPolicyPageClickStartTime_; console.log(`Load time:
-      // ${duration} milliseconds`);
-      //  This is not really 0, but it just means it already pre-loaded.
-    } else if (
-        this.privacyPolicyPageLoadEndTime_ &&
-        this.privacyPolicyPageLoadEndTime_ <=
-            this.privacyPolicyPageClickStartTime_) {
-      // const duration = 0;
-      // console.log(`Load time: ${duration} milliseconds`);
+    this.promptActionOccurred(
+        PrivacySandboxPromptAction.PRIVACY_POLICY_LINK_CLICKED);
+    // Tracks when the privacy policy page is loaded before the link is clicked.
+    if (this.privacyPolicyPageLoadEndTime_) {
+      this.recordPrivacyPolicyLoadTime_(
+          this.privacyPolicyPageLoadEndTime_ -
+          this.privacyPolicyPageClickStartTime_);
     }
     // Move the consent notice to the back.
     this.shadowRoot!.querySelector<HTMLElement>(

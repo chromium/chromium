@@ -1,10 +1,12 @@
-<embed onload="loading()" src="$i18n{privacyPolicyURL}"
-  height="100%" width="100%"></embed>
+<object onload="loading()" data="$i18n{privacyPolicyURL}" type="text/html"
+  height="100%" width="100%"></object>
 <script>
   function loading(){
+    const privacyPolicyLoadTime = performance.now();
     window.parent.postMessage(
       {
         id: 'privacy-policy-loaded',
+        value: privacyPolicyLoadTime
       },
       'chrome://privacy-sandbox-dialog');
   }

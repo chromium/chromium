@@ -1349,6 +1349,16 @@ reviewer.
   </summary>
 </histogram>
 
+<histogram name="PrivacySandbox.PrivacyPolicy.LoadingTime" units="ms"
+    expires_after="2025-08-01">
+  <owner>chrstne@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Records the load time of the privacy policy page once the privacy policy
+    link is clicked on the Topics Consent Notice.
+  </summary>
+</histogram>
+
 <histogram
     name="PrivacySandbox.PrivateAggregation.Budgeter.BudgetValidityStatus2"
     enum="PrivacySandboxPrivateAggregationBudgeterBudgetValidityStatus2"
