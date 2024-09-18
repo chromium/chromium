@@ -204,7 +204,7 @@
     [_titleView.bottomAnchor
         constraintEqualToAnchor:_containerView.bottomAnchor],
   ]];
-  AddSameConstraints(_menuButton, self);
+  AddSameConstraints(_menuButton, _containerView);
 }
 
 #pragma mark - Setters
