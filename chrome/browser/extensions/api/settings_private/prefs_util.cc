@@ -298,19 +298,21 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
   (*s_allowlist)
       [password_manager::prefs::kPasswordDismissCompromisedAlertEnabled] =
           settings_api::PrefType::kBoolean;
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
   (*s_allowlist)
       [password_manager::prefs::kBiometricAuthenticationBeforeFilling] =
           settings_api::PrefType::kBoolean;
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   (*s_allowlist)
       [password_manager::prefs::kBiometricAuthBeforeFillingPromoShownCounter] =
           settings_api::PrefType::kNumber;
   (*s_allowlist)
       [password_manager::prefs::kHasUserInteractedWithBiometricAuthPromo] =
           settings_api::PrefType::kNumber;
+  (*s_allowlist)[password_manager::prefs::kHadBiometricsAvailable] =
+      settings_api::PrefType::kBoolean;
 #endif
 
 #if BUILDFLAG(IS_MAC)
