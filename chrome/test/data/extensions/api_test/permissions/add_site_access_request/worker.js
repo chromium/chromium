@@ -47,14 +47,14 @@ chrome.test.runTests([
   },
 
   // Tests that an error is returned when documentId in request doesn't exist.
-  async function nonExistentDocumentId() {
-    const documentId = 'invalid id';
-    const request = {documentId: documentId};
-    await chrome.test.assertPromiseRejects(
-        chrome.permissions.addSiteAccessRequest(request),
-        `Error: No document with ID '${documentId}'.`);
+    async function nonExistentDocumentId() {
+      const documentId = 'invalid id';
+      const request = {documentId: documentId};
+      await chrome.test.assertPromiseRejects(
+          chrome.permissions.addSiteAccessRequest(request),
+          `Error: No document with ID '${documentId}'.`);
 
-    chrome.test.succeed();
+      chrome.test.succeed();
   },
 
   // Tests that an error is returned when the extension adds a request for a
@@ -85,18 +85,4 @@ chrome.test.runTests([
 
     chrome.test.succeed();
   },
-
-  // Tests that an error is returned when the extension adds a request with an
-  // invalid pattern.
-  async function invalidPattern() {
-    let tab = await navigateTo('requested.com');
-
-    const request = {tabId: tab.id, pattern: 'invalid pattern'};
-    await chrome.test.assertPromiseRejects(
-        chrome.permissions.addSiteAccessRequest(request),
-        `Error: Extension cannot add a request with an invalid value for ` +
-            `'pattern'.`);
-
-    chrome.test.succeed();
-  }
 ])

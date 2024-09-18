@@ -61,8 +61,6 @@ constexpr char kExtensionHasNoHostPermissionsError[] =
     "permissions.";
 constexpr char kExtensionRequestCannotBeRemovedError[] =
     "Extension cannot remove a site access request that doesn't exist.";
-constexpr char kInvalidPatternError[] =
-    "Extension cannot add a request with an invalid value for 'pattern'.";
 
 PermissionsRequestFunction::DialogAction g_dialog_action =
     PermissionsRequestFunction::DialogAction::kDefault;
@@ -536,18 +534,20 @@ PermissionsAddSiteAccessRequestFunction::Run() {
       api::permissions::AddSiteAccessRequest::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  // Validate request has only one of document or tab id, and its value is
-  // valid.
   const std::optional<std::string>& document_id_param =
       params->request.document_id;
   std::optional<int> tab_id_param = params->request.tab_id;
+  // TODO(crbug.com/330588494): Add `pattern` parameter.
+
   if ((!document_id_param && !tab_id_param) ||
       (document_id_param && tab_id_param)) {
     return RespondNow(Error(kMustSpecifyDocumentIdOrTabIdError));
   }
 
+  // Values to be computed for either tab id or document id.
   content::WebContents* web_contents = nullptr;
   int tab_id = -1;
+
   bool is_valid = false;
   std::string error;
   if (tab_id_param) {
@@ -566,18 +566,6 @@ PermissionsAddSiteAccessRequestFunction::Run() {
   if (!is_valid) {
     CHECK(!error.empty());
     return RespondNow(Error(error));
-  }
-
-  // Validate request has a valid pattern, if given.
-  std::optional<std::string> pattern_param = params->request.pattern;
-  std::optional<URLPattern> pattern;
-  if (pattern_param) {
-    URLPattern parsed_pattern(Extension::kValidHostPermissionSchemes);
-    if (parsed_pattern.Parse(*pattern_param) !=
-        URLPattern::ParseResult::kSuccess) {
-      return RespondNow(Error(kInvalidPatternError));
-    }
-    pattern = parsed_pattern;
   }
 
   // Verify we properly retrieved the necessary information.
@@ -602,6 +590,9 @@ PermissionsAddSiteAccessRequestFunction::Run() {
     return RespondNow(Error(kExtensionHasSiteAccessError));
   }
 
+  // TODO(crbug.com/330588494): Use pattern from parameter, if given, once it's
+  // added.
+  std::optional<URLPattern> pattern;
   permissions_manager->AddSiteAccessRequest(web_contents, tab_id, *extension(),
                                             pattern);
   return RespondNow(NoArguments());
