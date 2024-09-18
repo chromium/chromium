@@ -2041,6 +2041,7 @@ chromium-metrics-reviews@google.com.
     split by the MaxN.
   </summary>
   <token key="MaxN">
+    <variant name="0"/>
     <variant name="1"/>
     <variant name="2"/>
     <variant name="3"/>

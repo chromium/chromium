@@ -212,7 +212,7 @@ void LogPercentageOfNonQuasiDuplicates(
     const std::vector<int>& profile_duplication_ranks) {
   CHECK(!profile_duplication_ranks.empty());
 
-  for (int rank = 1; rank <= 5; rank++) {
+  for (int rank = 0; rank <= 5; rank++) {
     // Find the number of profiles which duplication rank is greater than
     // `rank`.
     const int number_of_duplicates_with_higher_rank = std::ranges::count_if(
