@@ -154,8 +154,7 @@ void SavedTabGroupModelListener::TabGroupedStateChanged(
     const Browser* const browser = SavedTabGroupUtils::GetBrowserWithTabGroupId(
         new_local_group_id.value());
     CHECK(browser);
-    listener.AddWebContentsFromLocal(tab->contents(),
-                                     browser->tab_strip_model(), index);
+    listener.AddTabFromLocal(tab, browser->tab_strip_model(), index);
   }
 }
 
@@ -164,27 +163,6 @@ void SavedTabGroupModelListener::OnTabStripModelChanged(
     const TabStripModelChange& change,
     const TabStripSelectionChange& selection) {
   switch (change.type()) {
-    case TabStripModelChange::kReplaced: {
-      std::optional<tab_groups::TabGroupId> local_id =
-          tab_strip_model->GetTabGroupForTab(change.GetReplace()->index);
-
-      // Do nothing if the tab is no longer in a group.
-      if (!local_id.has_value()) {
-        return;
-      }
-
-      // Do nothing if the tab is not part of a saved group.
-      if (!local_tab_group_listeners_.contains(local_id.value())) {
-        return;
-      }
-
-      LocalTabGroupListener& local_tab_group_listener =
-          local_tab_group_listeners_.at(local_id.value());
-
-      local_tab_group_listener.OnReplaceWebContents(
-          change.GetReplace()->old_contents, change.GetReplace()->new_contents);
-      return;
-    }
     case TabStripModelChange::kMoved: {
       std::optional<tab_groups::TabGroupId> local_id =
           tab_strip_model->GetTabGroupForTab(change.GetMove()->to_index);
@@ -210,6 +188,7 @@ void SavedTabGroupModelListener::OnTabStripModelChanged(
     }
     case TabStripModelChange::kSelectionOnly:
     case TabStripModelChange::kInserted:
+    case TabStripModelChange::kReplaced:
     case TabStripModelChange::kRemoved: {
       return;
     }
@@ -249,21 +228,9 @@ void SavedTabGroupModelListener::ConnectToLocalTabGroup(
       SavedTabGroupUtils::GetTabGroupWithId(local_group_id)->tab_count();
   CHECK_EQ(local_group_size, tab_guid_mapping.size());
 
-  std::map<content::WebContents*, base::Uuid> contents_guid_mapping;
-  std::transform(
-      tab_guid_mapping.begin(), tab_guid_mapping.end(),
-      std::inserter(contents_guid_mapping, contents_guid_mapping.end()),
-      [](const std::pair<tabs::TabModel*, base::Uuid>& pair) {
-        // Transform the TabModel* to WebContents*
-        content::WebContents* web_contents = pair.first->contents();
-
-        // Return a pair with the transformed key and the same UUID value
-        return std::make_pair(web_contents, pair.second);
-      });
-
   auto [iterator, success] = local_tab_group_listeners_.try_emplace(
       local_group_id, local_group_id, saved_tab_group.saved_guid(), service_,
-      contents_guid_mapping);
+      tab_guid_mapping);
   CHECK(success);
 }
 

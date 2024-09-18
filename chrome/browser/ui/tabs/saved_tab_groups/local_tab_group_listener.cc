@@ -15,11 +15,13 @@
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_sync_service_proxy.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
+#include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/saved_tab_groups/features.h"
 #include "components/saved_tab_groups/saved_tab_group_model.h"
 #include "components/saved_tab_groups/saved_tab_group_tab.h"
 #include "components/saved_tab_groups/utils.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 
 namespace tab_groups {
@@ -28,12 +30,12 @@ LocalTabGroupListener::LocalTabGroupListener(
     const tab_groups::TabGroupId local_id,
     const base::Uuid saved_guid,
     TabGroupSyncService* service,
-    std::map<content::WebContents*, base::Uuid> web_contents_to_uuid)
+    std::map<tabs::TabModel*, base::Uuid>& tab_guid_mapping)
     : service_(service), local_id_(local_id), saved_guid_(saved_guid) {
-  for (const auto& [contents, saved_tab_guid] : web_contents_to_uuid) {
+  for (const auto& [local_tab, saved_tab_guid] : tab_guid_mapping) {
     const base::Token local_tab_id = base::Token::CreateRandom();
-    web_contents_to_tab_id_map_.try_emplace(contents, contents, local_tab_id,
-                                            service_);
+    tab_listener_mapping_.try_emplace(local_tab, service_, local_tab_id,
+                                      local_tab);
 
     std::optional<SavedTabGroup> group = service_->GetGroup(saved_guid);
     const SavedTabGroupTab tab(*group->GetTab(saved_tab_guid));
@@ -61,15 +63,16 @@ void LocalTabGroupListener::ResumeTracking() {
   const std::vector<SavedTabGroupTab>& saved_tabs =
       saved_group.has_value() ? saved_group->saved_tabs()
                               : std::vector<SavedTabGroupTab>();
-  const std::vector<content::WebContents*> local_tabs =
-      SavedTabGroupUtils::GetWebContentsesInGroup(local_id_);
+
+  const std::vector<tabs::TabModel*> local_tabs =
+      SavedTabGroupUtils::GetTabsInGroup(local_id_);
 
   CHECK_EQ(saved_tabs.size(), local_tabs.size());
   for (size_t i = 0; i < saved_tabs.size(); ++i) {
-    content::WebContents* const local_tab = local_tabs[i];
+    tabs::TabModel* const local_tab = local_tabs[i];
 
-    const auto map_entry = web_contents_to_tab_id_map_.find(local_tab);
-    CHECK(map_entry != web_contents_to_tab_id_map_.end());
+    const auto map_entry = tab_listener_mapping_.find(local_tab);
+    CHECK(map_entry != tab_listener_mapping_.end());
 
     const SavedTabGroupWebContentsListener& listener = map_entry->second;
 
@@ -99,23 +102,9 @@ void LocalTabGroupListener::UpdateVisualDataFromLocal(
   service_->UpdateVisualData(local_id_, visual_change->new_visuals);
 }
 
-void LocalTabGroupListener::OnReplaceWebContents(
-    content::WebContents* old_web_contents,
-    content::WebContents* new_web_contents) {
-  CHECK(web_contents_to_tab_id_map_.find(old_web_contents) !=
-        web_contents_to_tab_id_map_.end());
-  base::Token local_tab_id =
-      web_contents_to_tab_id_map_.at(old_web_contents).saved_tab_group_tab_id();
-  web_contents_to_tab_id_map_.erase(old_web_contents);
-
-  web_contents_to_tab_id_map_.try_emplace(new_web_contents, new_web_contents,
-                                          local_tab_id, service_);
-}
-
-void LocalTabGroupListener::AddWebContentsFromLocal(
-    content::WebContents* web_contents,
-    TabStripModel* tab_strip_model,
-    int index) {
+void LocalTabGroupListener::AddTabFromLocal(tabs::TabModel* local_tab,
+                                            TabStripModel* tab_strip_model,
+                                            int index) {
   if (paused_) {
     return;
   }
@@ -128,15 +117,15 @@ void LocalTabGroupListener::AddWebContentsFromLocal(
   CHECK(tabstrip_index_of_first_tab_in_group.has_value());
 
   const int relative_index_of_tab_in_group =
-      tab_strip_model->GetIndexOfWebContents(web_contents) -
+      tab_strip_model->GetIndexOfTab(local_tab->GetHandle()) -
       tabstrip_index_of_first_tab_in_group.value();
 
   base::Token token = base::Token::CreateRandom();
 
   // Create a new SavedTabGroupTab linked to `token`.
   SavedTabGroupTab tab =
-      SavedTabGroupUtils::CreateSavedTabGroupTabFromWebContents(web_contents,
-                                                                saved_guid_);
+      SavedTabGroupUtils::CreateSavedTabGroupTabFromWebContents(
+          local_tab->contents(), saved_guid_);
   if (!IsURLValidForSavedTabGroups(tab.url())) {
     tab.SetURL(GURL(chrome::kChromeUINewTabURL));
   }
@@ -145,8 +134,7 @@ void LocalTabGroupListener::AddWebContentsFromLocal(
                    relative_index_of_tab_in_group);
 
   // Link `web_contents` to `token`.
-  web_contents_to_tab_id_map_.try_emplace(web_contents, web_contents, token,
-                                          service_);
+  tab_listener_mapping_.try_emplace(local_tab, service_, token, local_tab);
 }
 
 void LocalTabGroupListener::MoveWebContentsFromLocal(
@@ -157,10 +145,13 @@ void LocalTabGroupListener::MoveWebContentsFromLocal(
     return;
   }
 
+  tabs::TabModel* local_tab =
+      tab_strip_model->GetTabForWebContents(web_contents);
+
   // It is possible that the listener does not track the webcontents. The tab
   // should get added correctly in `service_->model()` only after being tracked
   // by the listener. See (b/343519257)
-  if (!web_contents_to_tab_id_map_.contains(web_contents)) {
+  if (!tab_listener_mapping_.contains(local_tab)) {
     return;
   }
 
@@ -189,7 +180,7 @@ void LocalTabGroupListener::MoveWebContentsFromLocal(
   CHECK_GE(index_in_group, 0);
 
   const SavedTabGroupWebContentsListener& web_contents_listener =
-      web_contents_to_tab_id_map_.at(web_contents);
+      tab_listener_mapping_.at(local_tab);
 
   service_->MoveTab(local_id_, web_contents_listener.saved_tab_group_tab_id(),
                     index_in_group);
@@ -202,18 +193,27 @@ LocalTabGroupListener::MaybeRemoveWebContentsFromLocal(
     return Liveness::kGroupExists;
   }
 
-  if (web_contents_to_tab_id_map_.count(web_contents) == 0) {
+  const auto tab_guid_pair_iter =
+      std::find_if(tab_listener_mapping_.begin(), tab_listener_mapping_.end(),
+                   [web_contents](auto& pair) {
+                     return pair.first->contents() == web_contents;
+                   });
+
+  if (std::find_if(tab_listener_mapping_.begin(), tab_listener_mapping_.end(),
+                   [web_contents](auto& pair) {
+                     return pair.first->contents() == web_contents;
+                   }) == tab_listener_mapping_.end()) {
     return Liveness::kGroupExists;
   }
 
   const base::Token tab_id =
-      web_contents_to_tab_id_map_.at(web_contents).saved_tab_group_tab_id();
+      tab_guid_pair_iter->second.saved_tab_group_tab_id();
   const std::optional<SavedTabGroup> saved_group =
       service_->GetGroup(saved_guid_);
   const base::Uuid tab_guid = saved_group->GetTab(tab_id)->saved_tab_guid();
   CHECK(saved_group->local_group_id().has_value());
 
-  web_contents_to_tab_id_map_.erase(web_contents);
+  tab_listener_mapping_.erase(tab_guid_pair_iter->first);
 
   // This object is deleted by the time we have reached here. This means
   // saved_guid_ gives us a garbage value and cannot be used anymore to query.
@@ -231,14 +231,14 @@ void LocalTabGroupListener::GroupRemovedFromSync() {
   PauseTracking();
 
   // Remove every currently tracked tab; this will also close the local group.
-  std::vector<content::WebContents*> contentses;
-  for (auto& [contents, listener] : web_contents_to_tab_id_map_) {
-    contentses.push_back(contents);
+  std::vector<tabs::TabModel*> tabs;
+  for (auto& [tab, listener] : tab_listener_mapping_) {
+    tabs.push_back(tab);
   }
-  for (content::WebContents* const contents : contentses) {
-    RemoveWebContentsFromSync(contents,
-                              /*should_close_tab=*/base::FeatureList::IsEnabled(
-                                  tab_groups::kTabGroupsSaveV2));
+  for (tabs::TabModel* const tab : tabs) {
+    RemoveTabFromSync(tab,
+                      /*should_close_tab=*/base::FeatureList::IsEnabled(
+                          tab_groups::kTabGroupsSaveV2));
   }
 
   ResumeTracking();
@@ -263,10 +263,10 @@ LocalTabGroupListener::Liveness LocalTabGroupListener::UpdateFromSync() {
   tab_strip_model->group_model()->GetTabGroup(local_id_)->SetVisualData(
       visual_data, /*is_customized=*/true);
 
-  std::unordered_map<base::Token, content::WebContents*, base::TokenHash>
-      token_to_contents_map;
-  for (auto& [contents, listener] : web_contents_to_tab_id_map_) {
-    token_to_contents_map[listener.saved_tab_group_tab_id()] = contents;
+  std::unordered_map<base::Token, tabs::TabModel*, base::TokenHash>
+      saved_id_tab_mapping;
+  for (auto& [tabs, listener] : tab_listener_mapping_) {
+    saved_id_tab_mapping[listener.saved_tab_group_tab_id()] = tabs;
   }
 
   // Add, navigate, and reorder local tabs to match saved tabs.
@@ -279,11 +279,11 @@ LocalTabGroupListener::Liveness LocalTabGroupListener::UpdateFromSync() {
   // correct state.
   int next_index_in_tab_strip = group_index_range.start();
   for (const SavedTabGroupTab& saved_tab : saved_group->saved_tabs()) {
-    content::WebContents* const contents =
+    tabs::TabModel* tab =
         saved_tab.local_tab_id().has_value()
-            ? token_to_contents_map[saved_tab.local_tab_id().value()]
+            ? saved_id_tab_mapping[saved_tab.local_tab_id().value()]
             : nullptr;
-    MatchLocalTabToSavedTab(saved_tab, contents, tab_strip_model,
+    MatchLocalTabToSavedTab(saved_tab, tab, tab_strip_model,
                             next_index_in_tab_strip);
     next_index_in_tab_strip++;
   }
@@ -296,7 +296,7 @@ LocalTabGroupListener::Liveness LocalTabGroupListener::UpdateFromSync() {
 
 void LocalTabGroupListener::MatchLocalTabToSavedTab(
     SavedTabGroupTab saved_tab,
-    content::WebContents* local_tab,
+    tabs::TabModel* local_tab,
     TabStripModel* tab_strip_model,
     int target_index_in_tab_strip) {
   if (saved_tab.local_tab_id().has_value()) {
@@ -304,15 +304,16 @@ void LocalTabGroupListener::MatchLocalTabToSavedTab(
     // Reorder if needed. This approach corresponds to selection sort.
     // N.B.: this approach will do N reorders for a tab that was moved N spots
     // to the left.
-    const int current_index = tab_strip_model->GetIndexOfWebContents(local_tab);
+    const int current_index =
+        tab_strip_model->GetIndexOfTab(local_tab->GetHandle());
     CHECK_EQ(local_id_,
              tab_strip_model->GetTabGroupForTab(current_index).value());
     tab_strip_model->MoveWebContentsAt(current_index, target_index_in_tab_strip,
                                        false);
 
     // Navigate if needed.
-    if (saved_tab.url() != local_tab->GetURL()) {
-      web_contents_to_tab_id_map_.at(local_tab).NavigateToUrl(saved_tab.url());
+    if (saved_tab.url() != local_tab->contents()->GetURL()) {
+      tab_listener_mapping_.at(local_tab).NavigateToUrl(saved_tab.url());
     }
   } else {
     OpenWebContentsFromSync(
@@ -329,44 +330,48 @@ void LocalTabGroupListener::OpenWebContentsFromSync(SavedTabGroupTab tab,
     url_to_open = GURL(chrome::kChromeUINewTabURL);
   }
 
-  auto* navigation_handle = SavedTabGroupUtils::OpenTabInBrowser(
-      url_to_open, browser, browser->profile(),
-      WindowOpenDisposition::NEW_BACKGROUND_TAB, index_in_tabstrip, local_id_);
-  auto* opened_contents =
+  content::NavigationHandle* navigation_handle =
+      SavedTabGroupUtils::OpenTabInBrowser(
+          url_to_open, browser, browser->profile(),
+          WindowOpenDisposition::NEW_BACKGROUND_TAB, index_in_tabstrip,
+          local_id_);
+  content::WebContents* opened_contents =
       navigation_handle ? navigation_handle->GetWebContents() : nullptr;
+
+  tabs::TabModel* local_tab =
+      browser->tab_strip_model()->GetTabForWebContents(opened_contents);
 
   // Listen to navigations.
   base::Token token = base::Token::CreateRandom();
   service_->UpdateLocalTabId(local_id_, tab.saved_tab_guid(), token);
-  web_contents_to_tab_id_map_.try_emplace(opened_contents, opened_contents,
-                                          navigation_handle, token, service_);
+  tab_listener_mapping_.try_emplace(local_tab, service_, token, local_tab,
+                                    navigation_handle);
 }
 
 void LocalTabGroupListener::RemoveLocalWebContentsNotInSavedGroup() {
   const std::optional<SavedTabGroup> saved_group =
       service_->GetGroup(saved_guid_);
   CHECK(saved_group.has_value());
-  const std::vector<content::WebContents*> web_contentses_in_local_group =
-      SavedTabGroupUtils::GetWebContentsesInGroup(local_id_);
-  for (content::WebContents* const contents : web_contentses_in_local_group) {
-    const auto& it = web_contents_to_tab_id_map_.find(contents);
-    CHECK(it != web_contents_to_tab_id_map_.end());
+  const std::vector<tabs::TabModel*> tabs_in_local_group =
+      SavedTabGroupUtils::GetTabsInGroup(local_id_);
+  for (tabs::TabModel* const local_tab : tabs_in_local_group) {
+    const auto& it = tab_listener_mapping_.find(local_tab);
+    CHECK(it != tab_listener_mapping_.end());
     if (!saved_group->ContainsTab(it->second.saved_tab_group_tab_id())) {
-      RemoveWebContentsFromSync(contents, /*should_close_tab=*/true);
+      RemoveTabFromSync(local_tab, /*should_close_tab=*/true);
     }
   }
 }
 
-void LocalTabGroupListener::RemoveWebContentsFromSync(
-    content::WebContents* contents,
-    bool should_close_tab) {
-  web_contents_to_tab_id_map_.erase(contents);
+void LocalTabGroupListener::RemoveTabFromSync(tabs::TabModel* local_tab,
+                                              bool should_close_tab) {
+  tab_listener_mapping_.erase(local_tab);
 
   Browser* const browser =
       SavedTabGroupUtils::GetBrowserWithTabGroupId(local_id_);
   CHECK(browser);
   CHECK(browser->tab_strip_model());
-  int index = browser->tab_strip_model()->GetIndexOfWebContents(contents);
+  int index = browser->tab_strip_model()->GetIndexOfTab(local_tab->GetHandle());
   CHECK(index != TabStripModel::kNoTab);
 
   // Unload listeners can delay or prevent a tab closing. Remove the tab from
@@ -377,7 +382,7 @@ void LocalTabGroupListener::RemoveWebContentsFromSync(
   if (should_close_tab) {
     // Removing the tab from the group may have moved the tab to maintain group
     // contiguity. Find the tab again and close it.
-    index = browser->tab_strip_model()->GetIndexOfWebContents(contents);
+    index = browser->tab_strip_model()->GetIndexOfTab(local_tab->GetHandle());
     browser->tab_strip_model()->CloseWebContentsAt(
         index, TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
   }

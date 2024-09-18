@@ -493,6 +493,25 @@ std::vector<content::WebContents*> SavedTabGroupUtils::GetWebContentsesInGroup(
   return contentses;
 }
 
+// static
+std::vector<tabs::TabModel*> SavedTabGroupUtils::GetTabsInGroup(
+    tab_groups::TabGroupId group_id) {
+  Browser* browser = GetBrowserWithTabGroupId(group_id);
+  if (!browser || !browser->tab_strip_model() ||
+      !browser->tab_strip_model()->SupportsTabGroups()) {
+    return {};
+  }
+
+  const gfx::Range local_tab_group_indices =
+      SavedTabGroupUtils::GetTabGroupWithId(group_id)->ListTabs();
+  std::vector<tabs::TabModel*> local_tabs;
+  for (size_t index = local_tab_group_indices.start();
+       index < local_tab_group_indices.end(); index++) {
+    local_tabs.push_back(browser->tab_strip_model()->GetTabAtIndex(index));
+  }
+  return local_tabs;
+}
+
 SavedTabGroup SavedTabGroupUtils::CreateSavedTabGroupFromLocalId(
     const tab_groups::LocalTabGroupID& local_id) {
   Browser* browser = GetBrowserWithTabGroupId(local_id);

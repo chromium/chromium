@@ -103,8 +103,8 @@ class SavedTabGroupModelListener : public BrowserListObserver,
 
  private:
   // Create a SavedTabGroup from the corresponding Tab Group in the TabStrip
-  // denoted by `group_id`. Also return a mapping of the WebContents in the tab
-  // group to their saved tab guid. This mapping will be used in
+  // denoted by `group_id`. Also return a mapping of the tabs in the tab group
+  // to their saved tab guid. This mapping will be used in
   // ConnectToLocalTabGroup in order to observe any changes to the tabs over
   // time.
   std::pair<SavedTabGroup, std::map<tabs::TabModel*, base::Uuid>>
