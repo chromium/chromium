@@ -1630,7 +1630,7 @@ SEQUENCE_CHECKER(_sequenceChecker);
 
   const std::string sceneID =
       base::SysNSStringToUTF8(sceneState.sceneSessionID);
-  const std::string& profileName = storage->GetProfileNameForSceneID(sceneID);
+  std::string profileName = storage->GetProfileNameForSceneID(sceneID);
 
   auto iterator = _profileControllers.find(profileName);
   if (iterator == _profileControllers.end()) {
@@ -1642,11 +1642,20 @@ SEQUENCE_CHECKER(_sequenceChecker);
               ->GetProfileManager()
               ->GetLastUsedProfileDeprecatedDoNotUse()
               ->GetProfileName();
+
+      profileName = lastActiveProfileName;
       iterator = _profileControllers.find(lastActiveProfileName);
-    } else {
-      // TODO(crbug.com/41492447): load the profile asynchronously and then
-      // attach it to the scene.
-      NOTREACHED_NORETURN();
+      storage->SetProfileNameForSceneID(sceneID, lastActiveProfileName);
+    }
+
+    DCHECK(!profileName.empty());
+    if (iterator == _profileControllers.end()) {
+      __weak __typeof(self) weakSelf = self;
+      GetApplicationContext()->GetProfileManager()->CreateProfileAsync(
+          profileName, base::BindOnce(^(ProfileIOS* profile) {
+            [weakSelf profileLoaded:profile forSceneState:sceneState];
+          }));
+      return;
     }
   }
 
@@ -1673,6 +1682,14 @@ SEQUENCE_CHECKER(_sequenceChecker);
   [profileState sceneStateConnected:sceneState];
 
   storage->SetProfileNameForSceneID(sceneID, iterator->first);
+}
+
+// TODO(crbug.com/353683675) Improve this logic once ProfileInitStage and
+// (app) InitStage are fully decoupled.
+- (void)profileLoaded:(ProfileIOS*)profile
+        forSceneState:(SceneState*)sceneState {
+  [self initializeBrowserState:profile];
+  [self attachProfileToSceneState:sceneState];
 }
 
 @end
