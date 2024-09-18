@@ -73,8 +73,10 @@
 #include "remoting/host/branding.h"
 #include "remoting/host/chromoting_host.h"
 #include "remoting/host/chromoting_host_context.h"
+#include "remoting/host/cloud_heartbeat_service_client.h"
 #include "remoting/host/config_file_watcher.h"
 #include "remoting/host/config_watcher.h"
+#include "remoting/host/corp_heartbeat_service_client.h"
 #include "remoting/host/corp_host_status_logger.h"
 #include "remoting/host/crash_process.h"
 #include "remoting/host/desktop_environment.h"
@@ -91,6 +93,7 @@
 #include "remoting/host/ipc_desktop_environment.h"
 #include "remoting/host/ipc_host_event_logger.h"
 #include "remoting/host/me2me_desktop_environment.h"
+#include "remoting/host/me2me_heartbeat_service_client.h"
 #include "remoting/host/mojom/chromoting_host_services.mojom.h"
 #include "remoting/host/mojom/desktop_session.mojom.h"
 #include "remoting/host/mojom/remoting_host.mojom.h"
@@ -230,6 +233,13 @@ const char kHostOfflineReasonZombieStateDetected[] = "ZOMBIE_STATE_DETECTED";
 // File to write webrtc trace events to. If not specified, webrtc trace events
 // will not be enabled.
 const char kWebRtcTraceEventFile[] = "webrtc-trace-event-file";
+
+constexpr char kChromotingOAuthCloudScope[] =
+    "https://www.googleapis.com/auth/chromoting.cloud.host";
+constexpr char kChromotingOAuthCorpScope[] =
+    "https://www.googleapis.com/auth/chromoting.corp.host";
+constexpr char kChromotingOAuthMe2MeScope[] =
+    "https://www.googleapis.com/auth/chromoting.me2me.host";
 
 // Helper to check if a string value is in a Policy allowlist.
 bool IsInAllowlist(std::string_view value,
@@ -378,6 +388,7 @@ class HostProcess : public ConfigWatcher::Delegate,
                             const std::string& user_email,
                             const std::string& access_token,
                             const std::string& scopes);
+  bool HasScope(std::string scope);
   void InitializeSignaling();
 
   void StartHostIfReady();
@@ -439,7 +450,7 @@ class HostProcess : public ConfigWatcher::Delegate,
   std::string service_account_email_;
   base::Value::Dict config_;
   std::set<std::string> host_owner_emails_;
-  std::string scopes_;
+  std::vector<std::string> scopes_;
 
   std::unique_ptr<PolicyWatcher> policy_watcher_;
   PolicyState policy_state_ = POLICY_INITIALIZING;
@@ -1690,8 +1701,14 @@ void HostProcess::OnOauthTokenCallback(OAuthTokenGetter::Status status,
                                        const std::string& user_email,
                                        const std::string& access_token,
                                        const std::string& scopes) {
-  scopes_ = scopes;
+  scopes_ = SplitString(scopes, " ", base::TRIM_WHITESPACE,
+                        base::SPLIT_WANT_NONEMPTY);
+
   InitializeSignaling();
+}
+
+bool HostProcess::HasScope(std::string scope) {
+  return std::find(scopes_.cbegin(), scopes_.cend(), scope) != scopes_.cend();
 }
 
 void HostProcess::InitializeSignaling() {
@@ -1718,12 +1735,30 @@ void HostProcess::InitializeSignaling() {
       base::BindOnce(&HostProcess::OnAuthFailed, base::Unretained(this)));
   ftl_signaling_connector_->Start();
 
-  // TODO(garykac) Based on the given |scopes_|, pass info to the
-  // HeartbeatSender so that it knows which API to use (me2me, corp, cloud).
+  // Create the appropriate API service client (corp, cloud or me2me) for the
+  // HeartbeatSender, based on available OAuth scope.
+  std::unique_ptr<HeartbeatServiceClient> service_client;
+  if (HasScope(kChromotingOAuthCloudScope)) {
+    service_client = std::make_unique<CloudHeartbeatServiceClient>(
+        host_id_, "api_key", oauth_token_getter_.get(),
+        context_->url_loader_factory());
+  } else if (HasScope(kChromotingOAuthCorpScope)) {
+    service_client = std::make_unique<CorpHeartbeatServiceClient>(
+        host_id_, oauth_token_getter_.get(), context_->url_loader_factory());
+  } else if (HasScope(kChromotingOAuthMe2MeScope)) {
+    service_client = std::make_unique<Me2MeHeartbeatServiceClient>(
+        host_id_, oauth_token_getter_.get(), context_->url_loader_factory(),
+        std::nullopt);
+  } else {
+    LOG(ERROR) << "Missing required OAuth scope - can't launch host";
+    ShutdownHost(kInvalidOauthCredentialsExitCode);
+    return;
+  }
+
   heartbeat_sender_ = std::make_unique<HeartbeatSender>(
       this, host_id_, ftl_signal_strategy.get(), oauth_token_getter_.get(),
-      zombie_host_detector_.get(), context_->url_loader_factory(),
-      is_corp_host_);
+      std::move(service_client), zombie_host_detector_.get(),
+      context_->url_loader_factory(), is_corp_host_);
   signal_strategy_ = std::move(ftl_signal_strategy);
 
   zombie_host_detector_->Start();

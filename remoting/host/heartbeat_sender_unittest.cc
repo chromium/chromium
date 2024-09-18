@@ -19,6 +19,7 @@
 #include "base/time/time.h"
 #include "remoting/base/fake_oauth_token_getter.h"
 #include "remoting/base/protobuf_http_status.h"
+#include "remoting/host/heartbeat_service_client.h"
 #include "remoting/signaling/fake_signal_strategy.h"
 #include "remoting/signaling/signal_strategy.h"
 #include "remoting/signaling/signaling_address.h"
@@ -127,6 +128,17 @@ class MockDelegate : public HeartbeatSender::Delegate {
   MOCK_METHOD0(OnAuthFailed, void());
 };
 
+class MockHeartbeatServiceClient : public HeartbeatServiceClient {
+ public:
+  MOCK_METHOD4(SendFullHeartbeat,
+               void(bool is_initial,
+                    std::optional<std::string> signaling_id,
+                    std::optional<std::string> offline_reason,
+                    HeartbeatResponseCallback callback));
+  MOCK_METHOD1(SendLiteHeartbeat, void(HeartbeatResponseCallback callback));
+  MOCK_METHOD0(CancelPendingRequests, void());
+};
+
 class MockObserver : public HeartbeatSender::Observer {
  public:
   MOCK_METHOD0(OnHeartbeatSent, void());
@@ -147,10 +159,11 @@ class HeartbeatSenderTest : public testing::Test {
 
     heartbeat_sender_ = std::make_unique<HeartbeatSender>(
         &mock_delegate_, kHostId, signal_strategy_.get(), &oauth_token_getter_,
-        mock_observer_.get(), nullptr, false);
+        std::make_unique<MockHeartbeatServiceClient>(), mock_observer_.get(),
+        nullptr, false);
     auto heartbeat_client = std::make_unique<MockHeartbeatClient>();
     mock_client_ = heartbeat_client.get();
-    heartbeat_sender_->client_ = std::move(heartbeat_client);
+    heartbeat_sender_->old_client_ = std::move(heartbeat_client);
   }
 
   ~HeartbeatSenderTest() override {
@@ -160,7 +173,7 @@ class HeartbeatSenderTest : public testing::Test {
   }
 
  protected:
-  class MockHeartbeatClient : public HeartbeatSender::HeartbeatClient {
+  class MockHeartbeatClient : public HeartbeatSender::OldHeartbeatClient {
    public:
     MOCK_METHOD2(LegacyHeartbeat,
                  void(std::unique_ptr<apis::v1::HeartbeatRequest>,

@@ -8,7 +8,6 @@
 #include <memory>
 #include <optional>
 #include <string>
-#include <optional>
 
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
@@ -16,6 +15,7 @@
 #include "base/sequence_checker.h"
 #include "base/timer/timer.h"
 #include "net/base/backoff_entry.h"
+#include "remoting/host/heartbeat_service_client.h"
 #include "remoting/proto/remoting/v1/directory_messages.pb.h"
 #include "remoting/signaling/signal_strategy.h"
 
@@ -93,6 +93,7 @@ class HeartbeatSender final : public SignalStrategy::Listener {
       const std::string& host_id,
       SignalStrategy* signal_strategy,
       OAuthTokenGetter* oauth_token_getter,
+      std::unique_ptr<HeartbeatServiceClient> service_client,
       Observer* observer,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       bool is_googler);
@@ -116,7 +117,7 @@ class HeartbeatSender final : public SignalStrategy::Listener {
       base::OnceCallback<void(bool success)> ack_callback);
 
  private:
-  class HeartbeatClient {
+  class OldHeartbeatClient {
    public:
     using LegacyHeartbeatResponseCallback =
         base::OnceCallback<void(const ProtobufHttpStatus&,
@@ -125,7 +126,7 @@ class HeartbeatSender final : public SignalStrategy::Listener {
         const ProtobufHttpStatus&,
         std::unique_ptr<apis::v1::SendHeartbeatResponse>)>;
 
-    virtual ~HeartbeatClient() = default;
+    virtual ~OldHeartbeatClient() = default;
 
     virtual void LegacyHeartbeat(
         std::unique_ptr<apis::v1::HeartbeatRequest> request,
@@ -137,7 +138,7 @@ class HeartbeatSender final : public SignalStrategy::Listener {
     virtual void CancelPendingRequests() = 0;
   };
 
-  class HeartbeatClientImpl;
+  class OldHeartbeatClientImpl;
 
   friend class HeartbeatSenderTest;
 
@@ -172,8 +173,9 @@ class HeartbeatSender final : public SignalStrategy::Listener {
   raw_ptr<Delegate> delegate_;
   std::string host_id_;
   const raw_ptr<SignalStrategy> signal_strategy_;
-  std::unique_ptr<HeartbeatClient> client_;
+  std::unique_ptr<OldHeartbeatClient> old_client_;
   const raw_ptr<OAuthTokenGetter> oauth_token_getter_;
+  std::unique_ptr<HeartbeatServiceClient> service_client_;
   raw_ptr<Observer> observer_;
 
   base::OneShotTimer heartbeat_timer_;
