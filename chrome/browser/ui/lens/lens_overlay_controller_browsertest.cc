@@ -4417,6 +4417,14 @@ class LensOverlayControllerOverlaySearchbox
                               lens::features::kLensOverlayContextualSearchbox},
         /*disabled_features=*/{});
   }
+
+  void VerifyContextualSearchQueryParameters(const GURL& url_to_process) {
+    EXPECT_THAT(
+        url_to_process.spec(),
+        testing::MatchesRegex(
+            std::string(kResultsSearchBaseUrl) +
+            ".*source=chrome.cr.menu.*&q=.*&gsc=2&hl=.*&biw=\\d+&bih=\\d+"));
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerOverlaySearchbox,
@@ -4451,5 +4459,43 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerOverlaySearchbox,
       [&]() { return controller->state() == State::kLivePageAndResults; }));
   EXPECT_EQ(controller->GetPageClassificationForTesting(),
             metrics::OmniboxEventProto::CONTEXTUAL_SEARCHBOX);
+}
+
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerOverlaySearchbox,
+                       OverlaySearchboxCorrectResultsUrl) {
+  WaitForPaint();
+
+  // State should start in off.
+  auto* controller = browser()
+                         ->tab_strip_model()
+                         ->GetActiveTab()
+                         ->tab_features()
+                         ->lens_overlay_controller();
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // Showing UI should change the state to screenshot and eventually to overlay.
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_EQ(controller->state(), State::kScreenshot);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+
+  // Verify searchbox is in contextual mode.
+  EXPECT_EQ(controller->GetPageClassificationForTesting(),
+            metrics::OmniboxEventProto::CONTEXTUAL_SEARCHBOX);
+
+  controller->IssueSearchBoxRequestForTesting(
+      "hello", AutocompleteMatchType::Type::SEARCH_WHAT_YOU_TYPED,
+      /*is_zero_prefix_suggestion=*/false,
+      std::map<std::string, std::string>());
+
+  // Wait for URL to load in side panel.
+  EXPECT_TRUE(content::WaitForLoadStop(
+      controller->GetSidePanelWebContentsForTesting()));
+
+  // Verify the query and params are set.
+  auto loaded_search_query = controller->get_loaded_search_query_for_testing();
+  EXPECT_TRUE(loaded_search_query);
+  EXPECT_EQ(loaded_search_query->search_query_text_, "hello");
+  VerifyContextualSearchQueryParameters(loaded_search_query->search_query_url_);
 }
 }  // namespace

@@ -66,6 +66,9 @@ inline constexpr char kRequestIdParameterKey[] = "vsrid";
 // Query parameter for the visual input type.
 inline constexpr char kVisualInputTypeParameterKey[] = "vit";
 
+// Query parameter for the invocation source.
+inline constexpr char kInvocationSourceParameterKey[] = "source";
+
 // The encoded video context for the test page.
 constexpr char kTestEncodedVideoContext[] =
     "ChkKF2h0dHBzOi8vd3d3Lmdvb2dsZS5jb20v";
@@ -723,11 +726,17 @@ TEST_F(LensOverlayQueryControllerTest,
   bool has_visual_input_type = net::GetValueForKeyInQuery(
       GURL(url_response_future.Get().url()), kVisualInputTypeParameterKey,
       &visual_input_type);
+  std::string invocation_source;
+  bool has_invocation_source = net::GetValueForKeyInQuery(
+      GURL(url_response_future.Get().url()), kInvocationSourceParameterKey,
+      &invocation_source);
   ASSERT_EQ(GetSelectionTypeFromUrl(url_response_future.Get().url()),
             lens::UNKNOWN_SELECTION_TYPE);
   ASSERT_TRUE(has_start_time);
   ASSERT_TRUE(has_visual_input_type);
   ASSERT_EQ(visual_input_type, "video");
+  ASSERT_TRUE(has_invocation_source);
+  ASSERT_EQ(invocation_source, "chrome.cr.menu");
   ASSERT_EQ(query_controller.num_gen204_pings_sent_, 1);
   ASSERT_TRUE(url_response_future.Get().has_url());
 }

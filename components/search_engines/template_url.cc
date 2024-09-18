@@ -1362,15 +1362,16 @@ std::string TemplateURLRef::HandleReplacements(
       case GOOGLE_SEARCH_SOURCE_ID: {
         DCHECK(!replacement.is_post_param);
         switch (search_terms_args.request_source) {
-          case RequestSource::CONTEXTUAL_SEARCHBOX:
           case RequestSource::SEARCH_SIDE_PANEL_SEARCHBOX:
-            HandleReplacement("source", "chrome.gsc", replacement, &url);
-            break;
+          case RequestSource::CONTEXTUAL_SEARCHBOX:
           case RequestSource::LENS_SIDE_PANEL_SEARCHBOX:
-            // Lens side panel searchbox source is set via the Lens Overlay
-            // url builder as it contains entry point information.
-            // Therefore we shouldn't replace anything here.
+            // Searchboxes used by the Lens Overlay have their source set via
+            // the Lens Overlay url builder as it contains entry point
+            // information. Therefore we shouldn't replace anything here.
             break;
+          case RequestSource::NTP_MODULE:
+          case RequestSource::SEARCHBOX:
+          case RequestSource::CROS_APP_LIST:
           default:
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
             HandleReplacement("sourceid", "chrome-mobile", replacement, &url);
