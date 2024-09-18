@@ -282,16 +282,14 @@ IN_PROC_BROWSER_TEST_F(WebUIContentsPreloadManagerPageLoadMetricsTest,
           GetChromeTestDataDir().MaybeAsASCII(), GURL(kTestWebUIOrigin));
 
   base::HistogramTester histogram_tester;
-  histogram_tester.ExpectTotalCount(
-      chrome::kNonTabWebUIRequestToFCPHistogramName, 0);
+  histogram_tester.ExpectTotalCount(kNonTabWebUIRequestToFCPHistogramName, 0);
 
   test_api().MaybePreloadForBrowserContext(browser()->profile());
   navigation_waiter()->Wait();
   ASSERT_TRUE(test_api().GetPreloadedURL().has_value());
 
   // FCP is not recorded because the WebUI is not yet shown.
-  histogram_tester.ExpectTotalCount(
-      chrome::kNonTabWebUIRequestToFCPHistogramName, 0);
+  histogram_tester.ExpectTotalCount(kNonTabWebUIRequestToFCPHistogramName, 0);
 
   WebUIContentsPreloadManager::RequestResult request_result =
       preload_manager()->Request(*test_api().GetPreloadedURL(),
@@ -314,9 +312,8 @@ IN_PROC_BROWSER_TEST_F(WebUIContentsPreloadManagerPageLoadMetricsTest,
   widget->GetRootView()->AddChildView(std::move(webview));
   widget->Show();
 
-  WaitForHistogram(chrome::kNonTabWebUIRequestToFCPHistogramName);
-  histogram_tester.ExpectTotalCount(
-      chrome::kNonTabWebUIRequestToFCPHistogramName, 1);
+  WaitForHistogram(kNonTabWebUIRequestToFCPHistogramName);
+  histogram_tester.ExpectTotalCount(kNonTabWebUIRequestToFCPHistogramName, 1);
 
   widget->CloseNow();
 }

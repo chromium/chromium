@@ -10,8 +10,6 @@
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "content/public/common/url_constants.h"
 
-namespace chrome {
-
 const char kNonTabWebUINavigationToLCPHistogramName[] =
     "PageLoad.PaintTiming.NavigationToLargestContentfulPaint2.NonTabWebUI";
 
@@ -115,5 +113,3 @@ NonTabPageLoadMetricsObserver::ShouldObserveScheme(const GURL& url) const {
   }
   return STOP_OBSERVING;
 }
-
-}  // namespace chrome
