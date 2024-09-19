@@ -232,7 +232,7 @@ whether a certain subclass of `WebUIController` should be created for a given
 URL.
 
 A `WebUIConfig` holds information about the host and scheme (`chrome://` or
-`chrome-untrusted://`) that the controller serves.
+[`chrome-untrusted://`](chrome_untrusted.md)) that the controller serves.
 
 A `WebUIConfig` may contain logic to check if the WebUI is enabled for a given
 `BrowserContext` and url (e.g., if relevant feature flags are enabled/disabled,
