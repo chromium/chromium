@@ -47,8 +47,7 @@ std::unique_ptr<AudioEncoder> CreateAudioEncoder(
   }
 #endif
 
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 }  // namespace

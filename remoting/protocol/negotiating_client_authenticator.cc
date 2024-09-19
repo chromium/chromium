@@ -121,8 +121,7 @@ void NegotiatingClientAuthenticator::CreateAuthenticatorForCurrentMethod(
   DCHECK(current_method_ != Method::INVALID);
   switch (current_method_) {
     case Method::INVALID:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
 
     case Method::PAIRED_SPAKE2_CURVE25519: {
       PairingClientAuthenticator* pairing_authenticator =
@@ -146,7 +145,7 @@ void NegotiatingClientAuthenticator::CreateAuthenticatorForCurrentMethod(
       break;
 
     case Method::CORP_SESSION_AUTHZ_SPAKE2_CURVE25519:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   ChainStateChangeAfterAcceptedWithUnderlying(*current_authenticator_);

@@ -296,8 +296,7 @@ void It2MeNativeMessagingHostLacros::HandleHostStateChange(
       break;
 
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   SendMessageToClient(std::move(message));

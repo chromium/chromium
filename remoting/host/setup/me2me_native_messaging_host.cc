@@ -605,8 +605,7 @@ Me2MeNativeMessagingHost::DelegateToElevatedHost(base::Value::Dict message) {
 
 Me2MeNativeMessagingHost::DelegationResult
 Me2MeNativeMessagingHost::DelegateToElevatedHost(base::Value::Dict message) {
-  NOTREACHED_IN_MIGRATION();
-  return DELEGATION_FAILED;
+  NOTREACHED();
 }
 
 #endif  // !BUILDFLAG(IS_WIN)

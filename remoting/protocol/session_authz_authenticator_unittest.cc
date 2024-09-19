@@ -174,7 +174,7 @@ void FakeClientAuthenticator::ProcessMessage(
       underlying_->ProcessMessage(message, std::move(resume_callback));
       return;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 

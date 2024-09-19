@@ -130,8 +130,7 @@ bool JingleSessionManager::OnSignalStrategyIncomingStanza(
           break;
 
         default:
-          NOTREACHED_IN_MIGRATION();
-          error = ErrorCode::SESSION_REJECTED;
+          NOTREACHED();
       }
 
       session->Close(error);

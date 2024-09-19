@@ -412,7 +412,7 @@ void PermissionWizard::Impl::OnPermissionCheckResult(bool result) {
           l10n_util::GetNSString(IDS_MAC_PERMISSION_WIZARD_FINAL_TEXT);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   [self updateButtons];
 }
@@ -447,7 +447,7 @@ void PermissionWizard::Impl::OnPermissionCheckResult(bool result) {
         [self.window makeFirstResponder:_launchScreenRecordingButton];
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 
@@ -479,7 +479,7 @@ void PermissionWizard::Impl::OnPermissionCheckResult(bool result) {
       }
       return;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   // Kick off a permission check for the new page. Update the UI now, so the
@@ -500,7 +500,7 @@ void PermissionWizard::Impl::OnPermissionCheckResult(bool result) {
       _impl->CheckScreenRecordingPermission(delay);
       return;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 

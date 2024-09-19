@@ -43,8 +43,7 @@ uint32_t GetColorByRadius(float radius) {
   }
 
   if (ring_index < 0) {
-    NOTREACHED_IN_MIGRATION();
-    return 0;
+    NOTREACHED();
   }
 
   if (ring_index == kColorRingsCount - 1) {

@@ -255,8 +255,7 @@ void FtlSignalStrategy::Core::OnGetOAuthTokenResponse(
         error_ = SignalStrategy::Error::AUTHENTICATION_FAILED;
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
     is_sign_in_error_ = true;
     Disconnect();

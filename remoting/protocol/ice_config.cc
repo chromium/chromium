@@ -195,7 +195,7 @@ IceConfig IceConfig::Parse(const base::Value::Dict& dictionary) {
     std::string json;
     if (!base::JSONWriter::WriteWithOptions(
             dictionary, base::JSONWriter::OPTIONS_PRETTY_PRINT, &json)) {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
     LOG(ERROR) << "Received ICE config with errors: " << json;
   }

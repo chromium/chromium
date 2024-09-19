@@ -111,9 +111,7 @@ void PrintTo(It2MeHostState state, std::ostream* os) {
     CASE(kError);
     CASE(kInvalidDomainError);
   }
-  NOTREACHED_IN_MIGRATION();
-  *os << "Unknown state " << static_cast<int>(state);
-  return;
+  NOTREACHED();
 }
 
 class FakeIt2MeConfirmationDialog : public It2MeConfirmationDialog {

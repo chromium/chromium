@@ -130,7 +130,7 @@ void DesktopCapturerWrapper::SetMaxFrameRate(uint32_t max_frame_rate) {
 #if defined(WEBRTC_USE_GIO)
 void DesktopCapturerWrapper::GetMetadataAsync(
     base::OnceCallback<void(webrtc::DesktopCaptureMetadata)> callback) {
-  NOTREACHED_IN_MIGRATION() << "Use DesktopCapturerProxy instead!";
+  NOTREACHED() << "Use DesktopCapturerProxy instead!";
 }
 #endif
 

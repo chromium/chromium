@@ -97,15 +97,14 @@ decltype(auto) StartStream(OnStreamOpenedLambda on_stream_opened,
 }
 
 base::OnceClosure NotReachedClosure() {
-  return base::BindOnce([]() { NOTREACHED_IN_MIGRATION(); });
+  return base::BindOnce([]() { NOTREACHED(); });
 }
 
 base::RepeatingCallback<void(const ProtobufHttpStatus&)>
 NotReachedStatusCallback(const base::Location& location) {
   return base::BindLambdaForTesting([=](const ProtobufHttpStatus& status) {
-    NOTREACHED_IN_MIGRATION()
-        << "Location: " << location.ToString()
-        << ", status code: " << static_cast<int>(status.error_code());
+    NOTREACHED() << "Location: " << location.ToString()
+                 << ", status code: " << static_cast<int>(status.error_code());
   });
 }
 

@@ -723,8 +723,8 @@ void JingleSession::OnAuthenticatorStateChangeAfterAccepted() {
   if (authenticator_->state() == Authenticator::REJECTED) {
     Close(AuthRejectionReasonToErrorCode(authenticator_->rejection_reason()));
   } else {
-    NOTREACHED_IN_MIGRATION()
-        << "Unexpected authenticator state: " << authenticator_->state();
+    NOTREACHED() << "Unexpected authenticator state: "
+                 << authenticator_->state();
   }
 }
 

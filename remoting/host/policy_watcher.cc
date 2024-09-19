@@ -448,9 +448,7 @@ std::unique_ptr<PolicyWatcher> PolicyWatcher::CreateWithTaskRunner(
                                             std::move(owned_policy_service),
                                             nullptr, CreateSchemaRegistry()));
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
-  NOTREACHED_IN_MIGRATION()
-      << "CreateWithPolicyService() should be used on ChromeOS.";
-  return nullptr;
+  NOTREACHED() << "CreateWithPolicyService() should be used on ChromeOS.";
 #else
 #error OS that is not yet supported by PolicyWatcher code.
 #endif

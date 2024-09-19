@@ -96,8 +96,7 @@ void FrameSinkDesktopCapturer::CaptureFrame() {
 }
 
 bool FrameSinkDesktopCapturer::GetSourceList(SourceList* sources) {
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool FrameSinkDesktopCapturer::SelectSource(SourceId id) {

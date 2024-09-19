@@ -745,8 +745,7 @@ bool It2MeNativeMessagingHost::DelegateToElevatedHost(
 
 bool It2MeNativeMessagingHost::DelegateToElevatedHost(
     base::Value::Dict message) {
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 #endif  // !BUILDFLAG(IS_WIN)

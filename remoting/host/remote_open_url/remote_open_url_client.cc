@@ -36,8 +36,7 @@ std::unique_ptr<RemoteOpenUrlClient::Delegate> CreateDelegate() {
 #elif BUILDFLAG(IS_WIN)
   return std::make_unique<RemoteOpenUrlClientDelegateWin>();
 #else
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 #endif
 }
 
@@ -136,7 +135,7 @@ void RemoteOpenUrlClient::OnOpenUrlResponse(mojom::OpenUrlResult result) {
       delegate_->OpenUrlOnFallbackBrowser(url_);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   std::move(done_).Run();
   remote_.reset();

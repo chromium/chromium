@@ -55,7 +55,7 @@ void GestureInterpreter::SetInputMode(InputMode mode) {
       input_strategy_ = std::make_unique<TrackpadInputStrategy>(viewport_);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   input_mode_ = mode;
   if (!renderer_) {
@@ -133,7 +133,7 @@ void GestureInterpreter::Drag(float x, float y, GestureState state) {
                                   false);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 

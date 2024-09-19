@@ -23,8 +23,7 @@ UserSettings* UserSettings::GetInstance() {
   static base::NoDestructor<UserSettingsWin> instance;
   return instance.get();
 #else
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 #endif
 }
 

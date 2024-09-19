@@ -92,8 +92,8 @@ void SessionAuthzAuthenticator::ProcessMessage(
       StartReauthorizerIfNecessary();
       break;
     default:
-      NOTREACHED_IN_MIGRATION() << "Unexpected SessionAuthz state: "
-                                << static_cast<int>(session_authz_state_);
+      NOTREACHED() << "Unexpected SessionAuthz state: "
+                   << static_cast<int>(session_authz_state_);
   }
 }
 

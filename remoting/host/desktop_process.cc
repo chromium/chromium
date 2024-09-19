@@ -87,15 +87,13 @@ void DesktopProcess::LockWorkstation() {
     PLOG(ERROR) << "LockWorkStation() failed";
   }
 #else
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 #endif  // BUILDFLAG(IS_WIN)
 }
 
 bool DesktopProcess::OnMessageReceived(const IPC::Message& message) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
-  NOTREACHED_IN_MIGRATION()
-      << "Received unexpected IPC type: " << message.type();
-  return false;
+  NOTREACHED() << "Received unexpected IPC type: " << message.type();
 }
 
 void DesktopProcess::OnChannelConnected(int32_t peer_pid) {

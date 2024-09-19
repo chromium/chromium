@@ -231,8 +231,7 @@ DaemonController::State ConvertToDaemonState(DWORD service_state) {
       return DaemonController::STATE_STOPPED;
 
     default:
-      NOTREACHED_IN_MIGRATION();
-      return DaemonController::STATE_UNKNOWN;
+      NOTREACHED();
   }
 }
 

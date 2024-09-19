@@ -767,8 +767,7 @@ void HostProcess::SetState(HostState target_state) {
       break;
     case HOST_STOPPED:  // HOST_STOPPED is a terminal state.
     default:
-      NOTREACHED_IN_MIGRATION() << state_ << " -> " << target_state;
-      break;
+      NOTREACHED() << state_ << " -> " << target_state;
   }
   state_ = target_state;
 }
@@ -928,9 +927,7 @@ void HostProcess::CreateAuthenticatorFactory() {
 
 // IPC::Listener implementation.
 bool HostProcess::OnMessageReceived(const IPC::Message& message) {
-  NOTREACHED_IN_MIGRATION()
-      << "Received unexpected IPC type: " << message.type();
-  return false;
+  NOTREACHED() << "Received unexpected IPC type: " << message.type();
 }
 
 void HostProcess::OnChannelError() {
@@ -2024,7 +2021,7 @@ void HostProcess::OnHostOfflineReasonAck(bool success) {
     context_->ui_task_runner()->PostTask(
         FROM_HERE, base::BindOnce(&HostProcess::ShutdownOnUiThread, this));
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 

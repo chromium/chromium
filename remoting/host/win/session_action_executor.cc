@@ -37,7 +37,7 @@ void SessionActionExecutor::ExecuteAction(const ActionRequest& request) {
       break;
 
     default:
-      NOTREACHED_IN_MIGRATION() << "Unknown action type: " << request.action();
+      NOTREACHED() << "Unknown action type: " << request.action();
   }
 }
 
