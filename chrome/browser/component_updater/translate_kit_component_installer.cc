@@ -110,9 +110,6 @@ void TranslateKitComponentInstallerPolicy::ComponentReady(
 
 #if !BUILDFLAG(IS_ANDROID)
   CHECK(pref_service_);
-  pref_service_->SetFilePath(
-      prefs::kTranslateKitRootDir,
-      on_device_translation::GetTranslateKitRootDirectory());
   pref_service_->SetFilePath(prefs::kTranslateKitBinaryPath,
                              GetInstalledPath(install_dir));
 #endif  // !BUILDFLAG(IS_ANDROID)

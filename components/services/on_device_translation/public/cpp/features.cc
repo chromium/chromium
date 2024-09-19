@@ -25,11 +25,6 @@ BASE_FEATURE(kEnableTranslateKitComponent,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // static
-base::FilePath GetTranslateKitRootDirFromCommandLine() {
-  return GetPathFromCommandLine(kTranslateKitRootDir);
-}
-
-// static
 base::FilePath GetTranslateKitBinaryPathFromCommandLine() {
   return GetPathFromCommandLine(kTranslateKitBinaryPath);
 }

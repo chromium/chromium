@@ -54,19 +54,6 @@ base::FilePath GetFilePathFromGlobalPrefs(std::string_view pref_name) {
   return path_in_pref;
 }
 
-base::FilePath GetTranslateKitRootDir() {
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(on_device_translation::kTranslateKitRootDir)) {
-    return command_line->GetSwitchValuePath(
-        on_device_translation::kTranslateKitRootDir);
-  }
-  if (base::FeatureList::IsEnabled(
-          on_device_translation::kEnableTranslateKitComponent)) {
-    return GetFilePathFromGlobalPrefs(prefs::kTranslateKitRootDir);
-  }
-  return base::FilePath();
-}
-
 base::FilePath GetTranslateKitLibraryPath() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(on_device_translation::kTranslateKitBinaryPath)) {
@@ -162,18 +149,12 @@ OnDeviceTranslationServiceController::OnDeviceTranslationServiceController()
   auto receiver = service_remote_.BindNewPipeAndPassReceiver();
   service_remote_.reset_on_disconnect();
 
-  const std::string root_dir = ToString(GetTranslateKitRootDir());
   const std::string binary_path = ToString(GetTranslateKitLibraryPath());
-  if (root_dir.empty()) {
-    LOG(ERROR) << "Got an empty root dir for TranslateKit.";
-  }
   if (binary_path.empty()) {
     LOG(ERROR) << "Got an empty path to TranslateKit binary on the device.";
   }
 
   std::vector<std::string> extra_switches;
-  extra_switches.push_back(base::StrCat(
-      {on_device_translation::kTranslateKitRootDir, "=", root_dir}));
   extra_switches.push_back(base::StrCat(
       {on_device_translation::kTranslateKitBinaryPath, "=", binary_path}));
 

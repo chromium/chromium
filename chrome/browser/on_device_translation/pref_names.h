@@ -9,10 +9,6 @@ class PrefRegistrySimple;
 
 namespace prefs {
 
-// The fully-qualified path to the root of installed TranslateKit binary and
-// models.
-extern const char kTranslateKitRootDir[];
-
 // The fully-qualified path to the installed TranslateKit binary.
 extern const char kTranslateKitBinaryPath[];
 

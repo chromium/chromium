@@ -9,12 +9,6 @@
 
 namespace on_device_translation {
 
-// The root directory of the TranslateKit relative to the User Data directory.
-// This is the parent directory of
-// `kTranslateKitComponentInstallationRelativePath` and its model components.
-extern const base::FilePath::CharType
-    kTranslateKitRootInstallationRelativeDir[];
-
 // The installation location of the TranslateKit binary component relative to
 // the User Data directory.
 extern const base::FilePath::CharType
@@ -24,9 +18,6 @@ extern const base::FilePath::CharType
 // relative to the User Data directory.
 extern const base::FilePath::CharType
     kTranslateKitLanguagePackInstallationRelativeDir[];
-
-// Returns the absolute path of the TranslateKit root directory.
-const base::FilePath GetTranslateKitRootDirectory();
 
 }  // namespace on_device_translation
 

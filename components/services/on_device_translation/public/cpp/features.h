@@ -13,10 +13,8 @@ namespace on_device_translation {
 // Enables the TranslateKit Component.
 BASE_DECLARE_FEATURE(kEnableTranslateKitComponent);
 
-const char kTranslateKitRootDir[] = "translate-kit-root-dir";
 const char kTranslateKitBinaryPath[] = "translate-kit-binary-path";
 
-base::FilePath GetTranslateKitRootDirFromCommandLine();
 base::FilePath GetTranslateKitBinaryPathFromCommandLine();
 
 }  // namespace on_device_translation
