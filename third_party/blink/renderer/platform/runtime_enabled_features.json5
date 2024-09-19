@@ -3611,12 +3611,6 @@
       status: "stable",
     },
     {
-      // crbug.com/340041662
-      name: "RubyLineEdgeAlignment",
-      status: "stable",
-      depends_on: ["RubyLineBreakable"],
-    },
-    {
       // crbug.com/324111880
       name: "RubyShortHeuristics",
       status: "stable",

@@ -451,10 +451,6 @@ InlineBoxState* LogicalLineBuilder::PlaceRubyColumn(
         line_available_size = line_info.AvailableWidth();
       }
     }
-    if (!RuntimeEnabledFeatures::RubyLineEdgeAlignmentEnabled()) {
-      on_start_edge = false;
-      on_end_edge = false;
-    }
   }
   std::pair<LayoutUnit, LayoutUnit> base_insets =
       ApplyRubyAlign(line_available_size.value_or(item_result.inline_size),
