@@ -842,6 +842,14 @@ bool CampaignsMatcher::MatchMinorUser(
   // TODO: b/333896450 - find a better signal for minor mode.
   auto capability = account_info.capabilities.can_use_manta_service();
 
+  if (capability == signin::Tribool::kUnknown) {
+    // Records metrics when minor user state is unknown. This could be caused
+    // by the delay of getting minor users state. We would like to log metric
+    // to understand the impact while matching on the conservative side by
+    // considering unknown as minor users.
+    RecordCampaignsManagerError(CampaignsManagerError::kUnknownMinorUserState);
+  }
+
   bool isMinor = capability != signin::Tribool::kTrue;
   return isMinor == minor_user_targeting.value();
 }

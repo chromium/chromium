@@ -78,6 +78,7 @@ chromium-metrics-reviews@google.com.
   <int value="40" label="Invalid user pref targeting"/>
   <int value="41" label="Parsing user pref targeting failed"/>
   <int value="42" label="Missing action performer action"/>
+  <int value="43" label="Minor user state is unknown"/>
 </enum>
 
 </enums>
