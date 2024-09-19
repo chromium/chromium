@@ -105,7 +105,7 @@ void ProtobufHttpClient::DoExecuteRequest(
   resource_request->load_flags =
       net::LOAD_BYPASS_CACHE | net::LOAD_DISABLE_CACHE;
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
-  resource_request->method = net::HttpRequestHeaders::kPostMethod;
+  resource_request->method = request->config().method;
 
   if (status == OAuthTokenGetter::Status::SUCCESS && !access_token.empty()) {
     resource_request->headers.AddHeaderFromString(

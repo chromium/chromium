@@ -8,6 +8,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/stringize_macros.h"
 #include "google_apis/google_api_keys.h"
+#include "net/http/http_request_headers.h"
 #include "remoting/base/protobuf_http_request.h"
 #include "remoting/base/protobuf_http_request_config.h"
 #include "remoting/base/service_urls.h"
@@ -134,6 +135,7 @@ using UpdateRemoteAccessHostRequest =
     google::internal::remoting::cloud::v1alpha::UpdateRemoteAccessHostRequest;
 
 constexpr char kFtlResourceSeparator[] = "/chromoting_ftl_";
+
 }  // namespace
 
 namespace remoting {
@@ -175,7 +177,8 @@ void CloudServiceClient::LegacyProvisionGceInstance(
   }
 
   ExecuteRequest(kProvisionGceInstanceTrafficAnnotation, path,
-                 google_apis::GetRemotingAPIKey(), std::move(request),
+                 google_apis::GetRemotingAPIKey(),
+                 net::HttpRequestHeaders::kPostMethod, std::move(request),
                  std::move(callback));
 }
 
@@ -197,7 +200,8 @@ void CloudServiceClient::ProvisionGceInstance(
   }
 
   ExecuteRequest(kProvisionGceInstanceTrafficAnnotation, path, api_key_,
-                 std::move(request), std::move(callback));
+                 net::HttpRequestHeaders::kPostMethod, std::move(request),
+                 std::move(callback));
 }
 
 void CloudServiceClient::SendHeartbeat(const std::string& directory_id,
@@ -207,8 +211,9 @@ void CloudServiceClient::SendHeartbeat(const std::string& directory_id,
   auto request = std::make_unique<SendHeartbeatRequest>();
   request->set_directory_id(directory_id);
 
-  ExecuteRequest(kSendHeartbeatTrafficAnnotation, path, api_key_,
-                 std::move(request), std::move(callback));
+  ExecuteRequest(kSendHeartbeatTrafficAnnotation, path, /*api_key=*/"",
+                 net::HttpRequestHeaders::kPostMethod, std::move(request),
+                 std::move(callback));
 }
 
 void CloudServiceClient::UpdateRemoteAccessHost(
@@ -245,8 +250,9 @@ void CloudServiceClient::UpdateRemoteAccessHost(
     host->mutable_operating_system_info()->set_version(*os_version);
   }
 
-  ExecuteRequest(kUpdateRemoteAccessHostTrafficAnnotation, path, api_key_,
-                 std::move(request), std::move(callback));
+  ExecuteRequest(kUpdateRemoteAccessHostTrafficAnnotation, path, /*api_key=*/"",
+                 net::HttpRequestHeaders::kPatchMethod, std::move(request),
+                 std::move(callback));
 }
 
 void CloudServiceClient::CancelPendingRequests() {
@@ -258,13 +264,19 @@ void CloudServiceClient::ExecuteRequest(
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
     const std::string& path,
     const std::string& api_key,
+    const std::string& method,
     std::unique_ptr<google::protobuf::MessageLite> request_message,
     CallbackType callback) {
   auto request_config =
       std::make_unique<ProtobufHttpRequestConfig>(traffic_annotation);
   request_config->path = path;
-  request_config->api_key = api_key;
-  request_config->authenticated = false;
+  if (api_key.empty()) {
+    request_config->authenticated = true;
+  } else {
+    request_config->api_key = api_key;
+    request_config->authenticated = false;
+  }
+  request_config->method = method;
   request_config->request_message = std::move(request_message);
   auto request =
       std::make_unique<ProtobufHttpRequest>(std::move(request_config));

@@ -99,6 +99,7 @@ class CloudServiceClient {
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       const std::string& path,
       const std::string& api_key,
+      const std::string& method,
       std::unique_ptr<google::protobuf::MessageLite> request_message,
       CallbackType callback);
 
