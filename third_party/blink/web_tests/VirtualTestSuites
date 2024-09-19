@@ -102,7 +102,7 @@
                "external/wpt/mediacapture-record/MediaRecorder-canvas-media-source.https.html",
                "external/wpt/webmessaging/postMessage_cross_domain_image_transfer_2d.sub.htm" ],
     "args": ["--enable-accelerated-2d-canvas"],
-    "expires": "Jul 1, 2023"
+    "expires": "never"
   },
 
   "The threaded virtual suite tests with threaded compositing, which is the",
