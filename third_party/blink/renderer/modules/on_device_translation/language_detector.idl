@@ -11,7 +11,7 @@ dictionary LanguageDetectionResult {
 
 [
   RuntimeEnabled=LanguageDetectionAPI,
-  Exposed=(Window,Worker)
+  Exposed=Window
 ]
 interface LanguageDetector {
   [
