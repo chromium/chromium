@@ -63,29 +63,33 @@ void HistoryEmbeddingsHandler::Search(
       HistoryEmbeddingsServiceFactory::GetForProfile(profile_.get());
   // The service is never null. Even tests build and use a service.
   CHECK(service);
-  service->Search(
-      query->query, query->time_range_start,
+  last_result_ = service->Search(
+      &last_result_, query->query, query->time_range_start,
       history_embeddings::kSearchResultItemCount.Get(),
       base::BindRepeating(&HistoryEmbeddingsHandler::OnReceivedSearchResult,
                           weak_ptr_factory_.GetWeakPtr()));
 }
 
-void HistoryEmbeddingsHandler::OnReceivedSearchResult(
-    history_embeddings::SearchResult native_search_result) {
-  last_result_ = std::move(native_search_result);
+void HistoryEmbeddingsHandler::PublishResultToPageForTesting(
+    const history_embeddings::SearchResult& native_search_result) {
+  PublishResultToPage(native_search_result);
+}
+
+void HistoryEmbeddingsHandler::PublishResultToPage(
+    const history_embeddings::SearchResult& native_search_result) {
   user_feedback_ =
       optimization_guide::proto::UserFeedback::USER_FEEDBACK_UNSPECIFIED;
 
   auto mojom_search_result = history_embeddings::mojom::SearchResult::New();
-  mojom_search_result->query = last_result_.query;
+  mojom_search_result->query = native_search_result.query;
   bool has_answer = history_embeddings::kEnableAnswers.Get() &&
-                    !last_result_.AnswerText().empty();
+                    !native_search_result.AnswerText().empty();
   if (has_answer) {
-    mojom_search_result->answer = last_result_.AnswerText();
+    mojom_search_result->answer = native_search_result.AnswerText();
   }
-  for (size_t i = 0; i < last_result_.scored_url_rows.size(); i++) {
-    history_embeddings::ScoredUrlRow& scored_url_row =
-        last_result_.scored_url_rows[i];
+  for (size_t i = 0; i < native_search_result.scored_url_rows.size(); i++) {
+    const history_embeddings::ScoredUrlRow& scored_url_row =
+        native_search_result.scored_url_rows[i];
     auto item = history_embeddings::mojom::SearchResultItem::New();
     item->title = base::UTF16ToUTF8(scored_url_row.row.title());
     item->url = scored_url_row.row.url();
@@ -102,11 +106,11 @@ void HistoryEmbeddingsHandler::OnReceivedSearchResult(
     item->url_for_display = base::UTF16ToUTF8(url_formatter::FormatUrl(
         scored_url_row.row.url(), format_types, base::UnescapeRule::SPACES,
         nullptr, nullptr, nullptr));
-    if (has_answer && i == last_result_.AnswerIndex()) {
+    if (has_answer && i == native_search_result.AnswerIndex()) {
       item->answer_data = history_embeddings::mojom::AnswerData::New();
       item->answer_data->answer_text_directives.assign(
-          last_result_.answerer_result.text_directives.begin(),
-          last_result_.answerer_result.text_directives.end());
+          native_search_result.answerer_result.text_directives.begin(),
+          native_search_result.answerer_result.text_directives.end());
     }
 
     if (history_embeddings::kShowSourcePassages.Get()) {
@@ -116,6 +120,16 @@ void HistoryEmbeddingsHandler::OnReceivedSearchResult(
     mojom_search_result->items.push_back(std::move(item));
   }
   page_->SearchResultChanged(std::move(mojom_search_result));
+}
+
+void HistoryEmbeddingsHandler::OnReceivedSearchResult(
+    history_embeddings::SearchResult native_search_result) {
+  // Ignore results for outdated queries; only update results for current query.
+  if (!native_search_result.IsContinuationOf(last_result_)) {
+    return;
+  }
+  last_result_ = std::move(native_search_result);
+  PublishResultToPage(last_result_);
 }
 
 void HistoryEmbeddingsHandler::SendQualityLog(

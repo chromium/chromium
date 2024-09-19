@@ -18,6 +18,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
+#include "base/token.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/test/history_service_test_util.h"
@@ -276,7 +277,7 @@ TEST_F(HistoryEmbeddingsServiceTest, SearchSetsValidSessionId) {
 
   // Search results created by service search have new valid ID.
   base::test::TestFuture<SearchResult> future;
-  service_->Search("", {}, 1, future.GetRepeatingCallback());
+  service_->Search(nullptr, "", {}, 1, future.GetRepeatingCallback());
   EXPECT_FALSE(future.Take().session_id.empty());
 }
 
@@ -316,7 +317,7 @@ TEST_F(HistoryEmbeddingsServiceTest, SearchReportsHistograms) {
   base::HistogramTester histogram_tester;
   base::test::TestFuture<SearchResult> future;
   OverrideVisibilityScoresForTesting({{"", 0.99}});
-  service_->Search("", {}, 1, future.GetRepeatingCallback());
+  service_->Search(nullptr, "", {}, 1, future.GetRepeatingCallback());
   EXPECT_TRUE(future.Take().scored_url_rows.empty());
 
   histogram_tester.ExpectUniqueSample("History.Embeddings.Search.Completed",
@@ -325,6 +326,69 @@ TEST_F(HistoryEmbeddingsServiceTest, SearchReportsHistograms) {
                                       1);
   histogram_tester.ExpectUniqueSample(
       "History.Embeddings.Search.EmbeddingCount", 0, 1);
+}
+
+TEST_F(HistoryEmbeddingsServiceTest, SearchIncrementsSessionIdSequenceNumber) {
+  base::test::TestFuture<SearchResult> future;
+  base::Token old_token;
+  base::Token token;
+
+  // Specifying null produces a new random session_id with sequence number 0.
+  service_->Search(/*previous_search_result=*/nullptr, "", {}, 1,
+                   future.GetRepeatingCallback());
+  token = *base::Token::FromString(future.Take().session_id);
+  EXPECT_NE(token.high(), 0u);
+  EXPECT_EQ(token.low() & HistoryEmbeddingsService::kSessionIdSequenceBitMask,
+            0u);
+
+  // Likewise for first new result when previous result was empty.
+  SearchResult result;
+  service_->Search(&result, "", {}, 1, future.GetRepeatingCallback());
+  result = future.Take();
+  token = *base::Token::FromString(result.session_id);
+  EXPECT_NE(token.high(), 0u);
+  EXPECT_EQ(token.low() & HistoryEmbeddingsService::kSessionIdSequenceBitMask,
+            0u);
+
+  // Random bits are preserved as sequence bits are incremented.
+  for (size_t i = 1; i <= HistoryEmbeddingsService::kSessionIdSequenceBitMask;
+       i++) {
+    old_token = token;
+    service_->Search(&result, "", {}, 1, future.GetRepeatingCallback());
+    result = future.Take();
+    token = *base::Token::FromString(result.session_id);
+    EXPECT_EQ(token.high(), old_token.high());
+    EXPECT_EQ(
+        token.low() & ~HistoryEmbeddingsService::kSessionIdSequenceBitMask,
+        old_token.low() & ~HistoryEmbeddingsService::kSessionIdSequenceBitMask);
+    EXPECT_EQ(token.low() & HistoryEmbeddingsService::kSessionIdSequenceBitMask,
+              i);
+
+    // Skip most of the loop for test efficiency.
+    if (i == 5) {
+      i += HistoryEmbeddingsService::kSessionIdSequenceBitMask - 10;
+      result.session_id =
+          base::Token(token.high(),
+                      (token.low() &
+                       ~HistoryEmbeddingsService::kSessionIdSequenceBitMask) |
+                          i)
+              .ToString();
+    }
+  }
+  old_token = token;
+
+  // Additional increments simply overflow into the next higher bits.
+  old_token = base::Token(old_token.high(), old_token.low() + 1);
+  service_->Search(&result, "", {}, 1, future.GetRepeatingCallback());
+  result = future.Take();
+  token = *base::Token::FromString(result.session_id);
+  EXPECT_EQ(old_token, token);
+
+  old_token = base::Token(old_token.high(), old_token.low() + 1);
+  service_->Search(&result, "", {}, 1, future.GetRepeatingCallback());
+  result = future.Take();
+  token = *base::Token::FromString(result.session_id);
+  EXPECT_EQ(old_token, token);
 }
 
 TEST_F(HistoryEmbeddingsServiceTest, SearchUsesCorrectThresholds) {
@@ -427,7 +491,7 @@ TEST_F(HistoryEmbeddingsServiceTest, SearchFiltersLowScoringResults) {
       {"test passage 5", 0.99},
       {"test passage 6", 0.99},
   });
-  service_->Search("test query", {}, 3, future.GetRepeatingCallback());
+  service_->Search(nullptr, "test query", {}, 3, future.GetRepeatingCallback());
   SearchResult result = future.Take();
 
   EXPECT_EQ(result.query, "test query");
@@ -482,7 +546,7 @@ TEST_F(HistoryEmbeddingsServiceTest, FilterWordsHashes) {
   });
   {
     base::test::TestFuture<SearchResult> future;
-    service_->Search("query without terms", {}, 3,
+    service_->Search(nullptr, "query without terms", {}, 3,
                      future.GetRepeatingCallback());
     SearchResult result = future.Take();
     EXPECT_FALSE(result.session_id.empty());
@@ -491,8 +555,8 @@ TEST_F(HistoryEmbeddingsServiceTest, FilterWordsHashes) {
   }
   {
     base::test::TestFuture<SearchResult> future;
-    service_->Search("query with inexact spe'cial in the middle", {}, 3,
-                     future.GetRepeatingCallback());
+    service_->Search(nullptr, "query with inexact spe'cial in the middle", {},
+                     3, future.GetRepeatingCallback());
     SearchResult result = future.Take();
     EXPECT_FALSE(result.session_id.empty());
     EXPECT_EQ(result.query, "query with inexact spe'cial in the middle");
@@ -500,8 +564,8 @@ TEST_F(HistoryEmbeddingsServiceTest, FilterWordsHashes) {
   }
   {
     base::test::TestFuture<SearchResult> future;
-    service_->Search("query with non-ASCII ∅ character but no terms", {}, 3,
-                     future.GetRepeatingCallback());
+    service_->Search(nullptr, "query with non-ASCII ∅ character but no terms",
+                     {}, 3, future.GetRepeatingCallback());
     SearchResult result = future.Take();
     EXPECT_FALSE(result.session_id.empty());
     EXPECT_EQ(result.query, "query with non-ASCII ∅ character but no terms");
@@ -509,7 +573,7 @@ TEST_F(HistoryEmbeddingsServiceTest, FilterWordsHashes) {
   }
   {
     base::test::TestFuture<SearchResult> future;
-    service_->Search("the word 'special' has its hash filtered", {}, 3,
+    service_->Search(nullptr, "the word 'special' has its hash filtered", {}, 3,
                      future.GetRepeatingCallback());
     SearchResult result = future.Take();
     EXPECT_FALSE(result.session_id.empty());
@@ -518,7 +582,8 @@ TEST_F(HistoryEmbeddingsServiceTest, FilterWordsHashes) {
   }
   {
     base::test::TestFuture<SearchResult> future;
-    service_->Search("the phrase 'something something' is also hash filtered",
+    service_->Search(nullptr,
+                     "the phrase 'something something' is also hash filtered",
                      {}, 3, future.GetRepeatingCallback());
     SearchResult result = future.Take();
     EXPECT_FALSE(result.session_id.empty());
@@ -528,8 +593,8 @@ TEST_F(HistoryEmbeddingsServiceTest, FilterWordsHashes) {
   }
   {
     base::test::TestFuture<SearchResult> future;
-    service_->Search("this    Hello,   World!   is also hash filtered", {}, 3,
-                     future.GetRepeatingCallback());
+    service_->Search(nullptr, "this    Hello,   World!   is also hash filtered",
+                     {}, 3, future.GetRepeatingCallback());
     SearchResult result = future.Take();
     EXPECT_FALSE(result.session_id.empty());
     EXPECT_EQ(result.query, "this    Hello,   World!   is also hash filtered");
@@ -538,8 +603,8 @@ TEST_F(HistoryEmbeddingsServiceTest, FilterWordsHashes) {
   {
     base::test::TestFuture<SearchResult> future;
     service_->Search(
-        "Hello | World is also filtered due to trimmed empty removal", {}, 3,
-        future.GetRepeatingCallback());
+        nullptr, "Hello | World is also filtered due to trimmed empty removal",
+        {}, 3, future.GetRepeatingCallback());
     SearchResult result = future.Take();
     EXPECT_FALSE(result.session_id.empty());
     EXPECT_EQ(result.query,
@@ -548,7 +613,8 @@ TEST_F(HistoryEmbeddingsServiceTest, FilterWordsHashes) {
   }
   {
     base::test::TestFuture<SearchResult> future;
-    service_->Search("hellow orld is not filtered since its hash differs", {},
+    service_->Search(nullptr,
+                     "hellow orld is not filtered since its hash differs", {},
                      3, future.GetRepeatingCallback());
     SearchResult result = future.Take();
     EXPECT_FALSE(result.session_id.empty());

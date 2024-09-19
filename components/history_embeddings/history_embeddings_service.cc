@@ -225,6 +225,10 @@ SearchResult SearchResult::Clone() {
   return clone;
 }
 
+bool SearchResult::IsContinuationOf(const SearchResult& other) {
+  return session_id == other.session_id && query == other.query;
+}
+
 const std::string& SearchResult::AnswerText() const {
   return answerer_result.answer.text();
 }
@@ -384,13 +388,29 @@ void HistoryEmbeddingsService::RetrievePassages(
   }
 }
 
-void HistoryEmbeddingsService::Search(
+SearchResult HistoryEmbeddingsService::Search(
+    SearchResult* previous_search_result,
     std::string query,
     std::optional<base::Time> time_range_start,
     size_t count,
     SearchResultCallback callback) {
   SearchResult result;
-  result.session_id = base::Token::CreateRandom().ToString();
+
+  // Create and/or advance a 128-bit base::Token for session_id.
+  base::Token token = base::Token::CreateRandom();
+  // Start lowest 16-bits sequence number from zero.
+  token = base::Token(token.high(), token.low() & ~kSessionIdSequenceBitMask);
+  if (previous_search_result && !previous_search_result->session_id.empty()) {
+    std::optional<base::Token> parsed =
+        base::Token::FromString(previous_search_result->session_id);
+    if (parsed.has_value()) {
+      token = *parsed;
+      // Increment sequence number, allowing any overflow into next higher bits.
+      token = base::Token(token.high(), token.low() + 1);
+    }
+  }
+  result.session_id = token.ToString();
+
   result.query = query;
   result.time_range_start = time_range_start;
   result.count = count;
@@ -398,8 +418,13 @@ void HistoryEmbeddingsService::Search(
   SearchParams search_params;
   if (QueryIsFiltered(query, search_params)) {
     result.count = 0;
-    callback.Run(std::move(result));
-    return;
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(
+                       [](SearchResultCallback callback, SearchResult result) {
+                         callback.Run(std::move(result));
+                       },
+                       callback, result.Clone()));
+    return result;
   }
   search_params.word_match_minimum_embedding_score =
       kWordMatchMinEmbeddingScore.Get();
@@ -411,7 +436,8 @@ void HistoryEmbeddingsService::Search(
       PassageKind::QUERY, {std::move(query)},
       base::BindOnce(&HistoryEmbeddingsService::OnQueryEmbeddingComputed,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                     std::move(search_params), std::move(result)));
+                     std::move(search_params), result.Clone()));
+  return result;
 }
 
 void HistoryEmbeddingsService::OnQueryEmbeddingComputed(

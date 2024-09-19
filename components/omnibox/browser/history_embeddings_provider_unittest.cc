@@ -107,8 +107,10 @@ class HistoryEmbeddingsProviderTest : public testing::Test,
     // When `Search()` is called, pushes a callback to `search_callbacks_` that
     // can be ran to simulate `Search()` responding asyncly.
     ON_CALL(*history_embeddings_service_,
-            Search(testing::_, testing::_, testing::_, testing::_))
-        .WillByDefault([&](std::string query,
+            Search(testing::_, testing::_, testing::_, testing::_, testing::_))
+        .WillByDefault([&](history_embeddings::SearchResult*
+                               previous_search_result,
+                           std::string query,
                            std::optional<base::Time> time_range_start,
                            size_t count,
                            history_embeddings::SearchResultCallback callback) {
@@ -119,6 +121,7 @@ class HistoryEmbeddingsProviderTest : public testing::Test,
                     CreateSearchResult(base::UTF8ToUTF16(response)));
               },
               std::move(callback)));
+          return history_embeddings::SearchResult();
         });
   }
 
@@ -154,8 +157,9 @@ TEST_F(HistoryEmbeddingsProviderTest, Start) {
   // When the feature is disabled, should early exit.
   EXPECT_CALL(*client_, IsHistoryEmbeddingsEnabled())
       .WillOnce(testing::Return(false));
-  EXPECT_CALL(*history_embeddings_service_,
-              Search(testing::_, testing::_, testing::_, testing::_))
+  EXPECT_CALL(
+      *history_embeddings_service_,
+      Search(testing::_, testing::_, testing::_, testing::_, testing::_))
       .Times(0);
   history_embeddings_provider_->Start(long_input, false);
   EXPECT_FALSE(trigger_service->GetFeatureTriggeredInSession(trigger_feature));
@@ -173,17 +177,18 @@ TEST_F(HistoryEmbeddingsProviderTest, Start) {
   EXPECT_CALL(*client_, IsHistoryEmbeddingsEnabled())
       .WillRepeatedly(testing::Return(true));
 
-  EXPECT_CALL(*history_embeddings_service_,
-              Search(testing::_, testing::_, testing::_, testing::_))
+  EXPECT_CALL(
+      *history_embeddings_service_,
+      Search(testing::_, testing::_, testing::_, testing::_, testing::_))
       .Times(0);
   history_embeddings_provider_->Start(short_input, false);
   EXPECT_FALSE(trigger_service->GetFeatureTriggeredInSession(trigger_feature));
   trigger_service->ResetSession();
 
   // Long queries should pass.
-  EXPECT_CALL(
-      *history_embeddings_service_,
-      Search("query query query", std::optional<base::Time>{}, 3u, testing::_))
+  EXPECT_CALL(*history_embeddings_service_,
+              Search(testing::_, "query query query",
+                     std::optional<base::Time>{}, 3u, testing::_))
       .Times(1);
   history_embeddings_provider_->Start(long_input, false);
   EXPECT_TRUE(trigger_service->GetFeatureTriggeredInSession(trigger_feature));
