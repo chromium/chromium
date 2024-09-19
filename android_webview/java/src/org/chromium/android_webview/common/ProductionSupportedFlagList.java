@@ -252,6 +252,9 @@ public final class ProductionSupportedFlagList {
                 AutofillFeatures.AUTOFILL_FIX_VALUE_SEMANTICS,
                 "Fixes the overloaded meaning of FormFieldData::value"),
         Flag.baseFeature(
+                AutofillFeatures.AUTOFILL_FIX_INITIAL_VALUE_OF_SELECT,
+                "Sets the AutofillField's initial value for select elements"),
+        Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_GIVE_PRECEDENCE_TO_EMAIL_OVER_USERNAME,
                 "When enabled, Autofill will give precedence to heuristics results that predict an"
                         + " email field over server predictions for a username field"),

@@ -2068,6 +2068,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
+                        "AutofillFixInitialValueOfSelect",
                         "AutofillFixValueSemantics"
                     ]
                 }
