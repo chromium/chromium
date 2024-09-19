@@ -10,10 +10,11 @@ class FormData;
 }  // namespace optimization_guide::proto
 
 namespace autofill {
-class FormData;
+class FormStructure;
 
-// Converts `form_data` to its corresponding form data proto.
-optimization_guide::proto::FormData ToFormDataProto(const FormData& form_data);
+// Converts `form_structure` to its corresponding form data proto.
+optimization_guide::proto::FormData ToFormDataProto(
+    const FormStructure& form_structure);
 
 }  // namespace autofill
 

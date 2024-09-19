@@ -74,8 +74,8 @@ class UserAnnotationsService : public KeyedService {
   // to the outcome of the import process. The `callback` will notify Autofill
   // code about the import attempt so they can show a save prompt to the user.
   // When the prompt is closed, the inner `prompt_acceptance_callback` will
-  // notify `this` about the user's decision.
-  // Virtual for testing.
+  // notify `this` about the user's decision. `form` is assumed to never be
+  // `nullptr`. Virtual for testing.
   virtual void AddFormSubmission(
       optimization_guide::proto::AXTreeUpdate ax_tree_update,
       std::unique_ptr<autofill::FormStructure> form,

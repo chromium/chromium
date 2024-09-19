@@ -104,6 +104,9 @@ void UserAnnotationsService::AddFormSubmission(
     optimization_guide::proto::AXTreeUpdate ax_tree_update,
     std::unique_ptr<autofill::FormStructure> form,
     ImportFormCallback callback) {
+  // `form` is assumed to never be `nullptr`.
+  CHECK(form);
+
   // Construct request.
   optimization_guide::proto::FormsAnnotationsRequest request;
   optimization_guide::proto::PageContext* page_context =
@@ -111,7 +114,7 @@ void UserAnnotationsService::AddFormSubmission(
   page_context->set_url(form->source_url().spec());
   page_context->set_title(ax_tree_update.tree_data().title());
   *page_context->mutable_ax_tree_data() = std::move(ax_tree_update);
-  *request.mutable_form_data() = autofill::ToFormDataProto(form->ToFormData());
+  *request.mutable_form_data() = autofill::ToFormDataProto(*form);
   RetrieveAllEntries(
       base::BindOnce(&UserAnnotationsService::ExecuteModelWithEntries,
                      weak_ptr_factory_.GetWeakPtr(), request, std::move(form),
