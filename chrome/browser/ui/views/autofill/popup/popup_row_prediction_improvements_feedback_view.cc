@@ -25,6 +25,7 @@
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/menu/menu_config.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
@@ -46,6 +47,10 @@ constexpr int kButtonRadius = 12;
 std::unique_ptr<PopupRowContentView> CreateFeedbackContentView(
     base::RepeatingClosure learn_more_clicked) {
   auto feedback_container = std::make_unique<PopupRowContentView>();
+  // TODO(crbug.com/345170058): Possibly move `touchable_menu_height` inside the
+  // `ChromeLayoutProvider`.
+  feedback_container->SetMinimumCrossAxisSize(
+      views::MenuConfig::instance().touchable_menu_height);
 
   views::StyledLabel::RangeStyleInfo style_info =
       views::StyledLabel::RangeStyleInfo::CreateForLink(
