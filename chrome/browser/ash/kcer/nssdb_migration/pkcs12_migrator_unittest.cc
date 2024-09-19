@@ -18,6 +18,7 @@
 #include "chrome/browser/net/fake_nss_service.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/cert/scoped_nss_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
