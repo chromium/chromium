@@ -545,7 +545,7 @@ TEST_F(KeyboardBrightnessControllerTest,
       kInitialKeyboardBrightness);
 
   // After reboot, ALS should be still be disabled for the first user, and
-  // keybard brightness is restored.
+  // keyboard brightness is restored.
   LoginScreenFocusAccount(first_account);
   ExpectKeyboardAmbientLightSensorEnabled(false);
   ExpectKeyboardBrightnessPercent(first_brightness_change_percent);

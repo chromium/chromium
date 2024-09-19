@@ -119,7 +119,7 @@ class ExclusiveAccessPermissionPromptInteractiveTest
       case TestContentSettings::kPointerLock:
         return "#pointer-lock";
       case TestContentSettings::kKeyboardAndPointerLock:
-        return "#keybard-and-pointer-lock";
+        return "#keyboard-and-pointer-lock";
     }
   }
 

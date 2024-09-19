@@ -13,7 +13,7 @@ namespace {
 
 // We need to copy |os_event| in NativeWebKeyboardEvent because it is
 // queued in RenderWidgetHost and may be passed and used
-// RenderViewHostDelegate::HandledKeybardEvent after the original aura
+// RenderViewHostDelegate::HandledKeyboardEvent after the original aura
 // event is destroyed.
 ui::Event* CopyEvent(const ui::Event* event) {
   return event ? event->Clone().release() : nullptr;
