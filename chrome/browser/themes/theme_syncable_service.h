@@ -14,6 +14,7 @@
 #include "base/observer_list_types.h"
 #include "base/threading/thread_checker.h"
 #include "chrome/browser/themes/theme_service_observer.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "components/sync/model/sync_change.h"
 #include "components/sync/model/sync_data.h"
 #include "components/sync/model/syncable_service.h"
@@ -146,6 +147,8 @@ class ThemeSyncableService final : public syncer::SyncableService,
   std::optional<ThemeSyncState> startup_state_;
 
   base::ThreadChecker thread_checker_;
+
+  PrefChangeRegistrar pref_change_registrar_;
 
   std::unique_ptr<PrefServiceSyncableObserver> pref_service_syncable_observer_;
 
