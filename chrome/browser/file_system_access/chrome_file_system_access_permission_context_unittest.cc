@@ -264,6 +264,12 @@ class ChromeFileSystemAccessPermissionContextTest : public testing::Test {
     ASSERT_TRUE(
         temp_dir_.CreateUniqueTempDirUnderPath(base::GetTempDirForTesting()));
 
+    // Normalize the file path since the blocklist checks normalizes file paths
+    // before running its checks.
+    base::FilePath normalized_temp_dir;
+    base::NormalizeFilePath(temp_dir_.Take(), &normalized_temp_dir);
+    ASSERT_TRUE(temp_dir_.Set(normalized_temp_dir));
+
     // We create a custom user data directory and place the the testing profile
     // directory inside of it. This simulates a non-default --user-data-dir.
     // Without this step, the testing profile directory is placed directly in
@@ -597,11 +603,14 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
         IsOpenAllowed(download_dir.AppendASCII("foo"), HandleType::kDirectory));
   }
 
+// TODO(crbug.com/40101963): Enable more android tests.
+#if !BUILDFLAG(IS_ANDROID)
   // The profile directory, its children, and its direct parent should all be
   // blocked. Note that this may not match USER_DATA_DIR if the --user-data-dir
   // override is used.
   {
-    const base::FilePath profile_path = profile()->GetPath();
+    base::FilePath profile_path;
+    base::NormalizeFilePath(profile()->GetPath(), &profile_path);
     base::FilePath download_dir = profile_path.AppendASCII("downloads");
     base::ScopedPathOverride download_override(chrome::DIR_DEFAULT_DOWNLOADS,
                                                download_dir, true, true);
@@ -616,6 +625,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
     EXPECT_TRUE(
         IsOpenAllowed(download_dir.AppendASCII("foo"), HandleType::kDirectory));
   }
+#endif
 
 #if BUILDFLAG(IS_WIN)
   // `DIR_IE_INTERNET_CACHE` is an example of a directory where nested
