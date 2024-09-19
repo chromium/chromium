@@ -1078,6 +1078,10 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   bool IsSaveableNavigation(
       content::NavigationHandle* navigation_handle) override;
 
+#if BUILDFLAG(IS_WIN)
+  void OnUiaProviderRequested(bool uia_provider_enabled) override;
+#endif
+
   void SetSamplingProfiler(
       std::unique_ptr<MainThreadStackSamplingProfiler> sampling_profiler);
 
@@ -1290,6 +1294,10 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   bool is_minimal_mode_ = false;
 
   std::unique_ptr<MainThreadStackSamplingProfiler> sampling_profiler_;
+
+#if BUILDFLAG(IS_WIN)
+  bool handled_uia_provider_request_ = false;
+#endif
 
   base::WeakPtrFactory<ChromeContentBrowserClient> weak_factory_{this};
 };

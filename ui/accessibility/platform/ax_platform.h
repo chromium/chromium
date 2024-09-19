@@ -58,6 +58,11 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatform {
     // Only called the first time the data is needed to fill in the
     // product_strings_ member of AXPlatform.
     virtual ProductStrings GetProductStrings() = 0;
+
+    // Invoked when an accessibility client requests the UI automation root
+    // object for a window. `uia_provider_enabled` is true when the request was
+    // satisfied, and false when the request was refused.
+    virtual void OnUiaProviderRequested(bool uia_provider_enabled) {}
 #endif
 
    protected:
@@ -114,6 +119,11 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatform {
 
   // Returns true if the UI Automation Provider for Windows is enabled.
   bool IsUiaProviderEnabled() const;
+
+  // Notifies the platform that an accessibility client requested the UI
+  // automation root object for a window. `uia_provider_enabled` is true when
+  // the request was satisfied, and false when the request was refused.
+  void OnUiaProviderRequested(bool uia_provider_enabled);
 #endif
 
  private:

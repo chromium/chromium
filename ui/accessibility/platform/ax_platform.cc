@@ -82,6 +82,10 @@ bool AXPlatform::IsUiaProviderEnabled() const {
              : (uia_provider_enablement_ == UiaProviderEnablement::kEnabled);
 }
 
+void AXPlatform::OnUiaProviderRequested(bool uia_provider_enabled) {
+  delegate_->OnUiaProviderRequested(uia_provider_enabled);
+}
+
 void AXPlatform::RetrieveProductStringsIfNeeded() const {
   if (!product_strings_) {
     product_strings_ = delegate_->GetProductStrings();

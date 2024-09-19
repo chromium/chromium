@@ -1778,4 +1778,8 @@ bool ContentBrowserClient::IsSaveableNavigation(
   return false;
 }
 
+#if BUILDFLAG(IS_WIN)
+void ContentBrowserClient::OnUiaProviderRequested(bool uia_provider_enabled) {}
+#endif
+
 }  // namespace content
