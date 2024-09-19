@@ -287,8 +287,9 @@ std::unique_ptr<network::ResourceRequest> CreateResourceRequest(
   // first-party. Since fenced frames are main frames in terms of cookie
   // partitioning, this needs to be `is_main_frame` rather than
   // `is_outermost_main_frame`.
-  if (request_info.is_main_frame)
+  if (request_info.is_main_frame) {
     new_request->update_first_party_url_on_redirect = true;
+  }
 
   int load_flags = request_info.begin_params->load_flags;
   if (request_info.is_outermost_main_frame) {
@@ -380,8 +381,9 @@ void LogAcceptCHFrameStatus(AcceptCHFrameRestart status) {
 }
 
 bool IsSameOriginRedirect(const std::vector<GURL>& url_chain) {
-  if (url_chain.size() < 2)
+  if (url_chain.size() < 2) {
     return false;
+  }
 
   auto previous_origin = url::Origin::Create(url_chain[url_chain.size() - 2]);
   return previous_origin.IsSameOriginWith(url_chain[url_chain.size() - 1]);
@@ -579,8 +581,9 @@ void NavigationURLLoaderImpl::CreateInterceptors() {
             *request_info_);
     // The interceptor may not be created in certain cases (e.g., the origin
     // is not secure).
-    if (service_worker_interceptor)
+    if (service_worker_interceptor) {
       interceptors_.push_back(std::move(service_worker_interceptor));
+    }
   }
 
   // Set-up an interceptor for SignedExchange handling if it is enabled.
@@ -940,14 +943,16 @@ void NavigationURLLoaderImpl::OnReceiveEarlyHints(
   // Allow Early Hints preload only for outermost main frames. Calculating
   // appropriate parameters to create URLLoaderFactory for subframes and fenced
   // frames are complicated and not supported yet.
-  if (frame_tree_node->GetParentOrOuterDocument())
+  if (frame_tree_node->GetParentOrOuterDocument()) {
     return;
+  }
 
   if (!early_hints_manager_) {
     std::optional<NavigationEarlyHintsManagerParams> params =
         delegate_->CreateNavigationEarlyHintsManagerParams(*early_hints);
-    if (!params)
+    if (!params) {
       return;
+    }
     early_hints_manager_ = std::make_unique<NavigationEarlyHintsManager>(
         *browser_context_, *storage_partition_, frame_tree_node_id_,
         std::move(*params));
@@ -979,8 +984,9 @@ void NavigationURLLoaderImpl::OnReceiveResponse(
     return;
   }
 
-  if (!response_body)
+  if (!response_body) {
     return;
+  }
 
   response_body_ = std::move(response_body);
   received_response_ = true;
@@ -1129,8 +1135,9 @@ void NavigationURLLoaderImpl::OnReceiveRedirect(
     error = net::ERR_UNSAFE_REDIRECT;
   } else if (--redirect_limit_ == 0) {
     error = net::ERR_TOO_MANY_REDIRECTS;
-    if (redirect_info.is_signed_exchange_fallback_redirect)
+    if (redirect_info.is_signed_exchange_fallback_redirect) {
       UMA_HISTOGRAM_BOOLEAN("SignedExchange.FallbackRedirectLoop", true);
+    }
   }
   if (error != net::OK) {
     if (url_loader_) {
@@ -1711,8 +1718,9 @@ void NavigationURLLoaderImpl::FollowRedirect(
 
 bool NavigationURLLoaderImpl::SetNavigationTimeout(base::TimeDelta timeout) {
   // If the timer has already been started, don't change it.
-  if (timeout_timer_.IsRunning())
+  if (timeout_timer_.IsRunning()) {
     return false;
+  }
 
   // Fail the navigation with error code ERR_TIMED_OUT if the timer triggers
   // before the navigation commits. (This triggers OnComplete() rather than

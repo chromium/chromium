@@ -90,10 +90,11 @@ class ReloadCacheControlBrowserTest : public ContentBrowserTest {
     base::AutoLock lock(request_log_lock_);
     EXPECT_EQ(4u, request_log_.size());
     for (const auto& log : request_log_) {
-      if (log.relative_url == kReloadTestPath)
+      if (log.relative_url == kReloadTestPath) {
         EXPECT_EQ(expectation.top_main, log.cache_control);
-      else
+      } else {
         EXPECT_EQ(expectation.others, log.cache_control);
+      }
     }
     request_log_.clear();
   }

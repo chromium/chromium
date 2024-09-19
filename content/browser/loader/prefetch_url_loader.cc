@@ -128,22 +128,25 @@ void PrefetchURLLoader::FollowRedirect(
 
 void PrefetchURLLoader::SetPriority(net::RequestPriority priority,
                                     int intra_priority_value) {
-  if (loader_)
+  if (loader_) {
     loader_->SetPriority(priority, intra_priority_value);
+  }
 }
 
 void PrefetchURLLoader::PauseReadingBodyFromNet() {
   // TODO(kinuko): Propagate or handle the case where |loader_| is
   // detached (for SignedExchanges), see OnReceiveResponse.
-  if (loader_)
+  if (loader_) {
     loader_->PauseReadingBodyFromNet();
+  }
 }
 
 void PrefetchURLLoader::ResumeReadingBodyFromNet() {
   // TODO(kinuko): Propagate or handle the case where |loader_| is
   // detached (for SignedExchanges), see OnReceiveResponse.
-  if (loader_)
+  if (loader_) {
     loader_->ResumeReadingBodyFromNet();
+  }
 }
 
 void PrefetchURLLoader::OnReceiveEarlyHints(

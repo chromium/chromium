@@ -249,21 +249,25 @@ class RequestInterceptor {
   bool InterceptorCallback(URLLoaderInterceptor::RequestParams* params) {
     DCHECK(params);
 
-    if (url_to_intercept_ != params->url_request.url)
+    if (url_to_intercept_ != params->url_request.url) {
       return false;
+    }
 
     // Prevent more than one intercept.
-    if (request_intercepted_)
+    if (request_intercepted_) {
       return false;
+    }
     request_intercepted_ = true;
     interceptor_task_runner_ =
         base::SingleThreadTaskRunner::GetCurrentDefault();
 
     // Modify |params| if requested.
-    if (request_initiator_to_inject_.has_value())
+    if (request_initiator_to_inject_.has_value()) {
       params->url_request.request_initiator = request_initiator_to_inject_;
-    if (request_mode_to_inject_.has_value())
+    }
+    if (request_mode_to_inject_.has_value()) {
       params->url_request.mode = request_mode_to_inject_.value();
+    }
 
     // Inject |test_client_| into the request.
     DCHECK(!original_client_);
@@ -284,8 +288,9 @@ class RequestInterceptor {
       network::URLLoaderCompletionStatus status) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-    if (cleanup_done_)
+    if (cleanup_done_) {
       return;
+    }
 
     if (interceptor_task_runner_) {
       base::RunLoop run_loop;
@@ -305,8 +310,9 @@ class RequestInterceptor {
       network::mojom::URLResponseHeadPtr response_head,
       std::string response_body,
       network::URLLoaderCompletionStatus status) {
-    if (!request_intercepted_)
+    if (!request_intercepted_) {
       return;
+    }
 
     // Tell the |original_client_| that the request has completed (and that it
     // can release its URLLoaderClient.
@@ -693,8 +699,9 @@ IN_PROC_BROWSER_TEST_F(CrossSiteDocumentBlockingTestBase,
   //
   // TODO(crbug.com/40627228): Consider enabling this test once Android
   // Webview or WebView guests support OOPIFs and/or origin locks.
-  if (AreAllSitesIsolatedForTesting())
+  if (AreAllSitesIsolatedForTesting()) {
     return;
+  }
 
   // Navigate via LoadDataWithBaseURL.
   const GURL base_url("http://foo.com");
@@ -1413,8 +1420,9 @@ IN_PROC_BROWSER_TEST_F(CrossSiteDocumentBlockingIsolatedOriginTest,
                        BlockDocumentsFromIsolatedOrigin) {
   embedded_test_server()->StartAcceptingConnections();
 
-  if (AreAllSitesIsolatedForTesting())
+  if (AreAllSitesIsolatedForTesting()) {
     return;
+  }
 
   // Load a page that issues illegal cross-site document requests to the
   // isolated origin.

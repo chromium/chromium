@@ -162,8 +162,9 @@ class CorsFileOriginBrowserTest : public ContentBrowserTest {
       // Return the request origin header as the body so that JavaScript can
       // check if it sent the expected origin header.
       auto origin = request.headers.find(net::HttpRequestHeaders::kOrigin);
-      if (origin != request.headers.end())
+      if (origin != request.headers.end()) {
         response->set_content(origin->second);
+      }
     }
     return response;
   }
