@@ -2,6 +2,8 @@
 
 This is a list of changes to [Interaction to Next Paint](https://web.dev/inp).
 
+* Chrome 129
+  * Launch feature: [Enable ContinueEventTimingRecordingWhenBufferIsFull by default](2024_09_inp.md)
 * Chrome 128
   * Metric bug fix: [Enable EventTimingHandleOrphanPointerup by default](2024_08_inp.md)
 * Chrome 127
