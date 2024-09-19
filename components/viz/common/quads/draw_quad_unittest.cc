@@ -672,7 +672,7 @@ class TextureDrawQuadTest
     TextureDrawQuad* texture_quad =
         render_pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
     texture_quad->SetNew(quad_state, quad_rect, quad_rect,
-                         /*needs_blending=*/true, kInvalidResourceId,
+                         /*needs_blending=*/true, ResourceId{1},
                          /*premultiplied=*/true, gfx::PointF(), gfx::PointF(),
                          /*background=*/SkColors::kTransparent,
                          /*flipped=*/false,

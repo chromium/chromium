@@ -1751,10 +1751,9 @@ TEST_P(GPURendererPixelTest, OverlayHintRequiredFallback) {
   // shouldn't matter since the renderer shouldn't attempt to draw this quad.
   TextureDrawQuad* quad = pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
   quad->SetNew(texture_quad_state, gfx::Rect(this->device_viewport_size_),
-               gfx::Rect(this->device_viewport_size_), false,
-               kInvalidResourceId, true, gfx::PointF(), gfx::PointF(),
-               SkColors::kTransparent, false, false, false,
-               gfx::ProtectedVideoType::kClear);
+               gfx::Rect(this->device_viewport_size_), false, ResourceId{1},
+               true, gfx::PointF(), gfx::PointF(), SkColors::kTransparent,
+               false, false, false, gfx::ProtectedVideoType::kClear);
   quad->overlay_priority_hint = OverlayPriority::kRequired;
 
   // Add a background that's not the expected fallback color.
@@ -1798,10 +1797,9 @@ TEST_P(GPURendererPixelTest, OverlayHintRequiredFallbackRPDQBypassCase) {
     // this quad.
     TextureDrawQuad* quad = pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
     quad->SetNew(sqs, gfx::Rect(this->device_viewport_size_),
-                 gfx::Rect(this->device_viewport_size_), false,
-                 kInvalidResourceId, true, gfx::PointF(), gfx::PointF(),
-                 SkColors::kTransparent, false, false, false,
-                 gfx::ProtectedVideoType::kClear);
+                 gfx::Rect(this->device_viewport_size_), false, ResourceId{1},
+                 true, gfx::PointF(), gfx::PointF(), SkColors::kTransparent,
+                 false, false, false, gfx::ProtectedVideoType::kClear);
     quad->overlay_priority_hint = OverlayPriority::kRequired;
 
     pass_list.push_back(std::move(pass));
