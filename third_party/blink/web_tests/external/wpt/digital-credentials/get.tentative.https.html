@@ -170,6 +170,7 @@
     const abortController = new AbortController();
     const { signal } = abortController;
     const options = makeGetOptions("openid4vp");
+    options.signal = signal;
     await test_driver.bless("user activation");
     const promise = promise_rejects_dom(
       t,
