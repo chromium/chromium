@@ -3190,19 +3190,16 @@ bool PDFiumEngine::ContinuePaint(size_t progressive_index,
     return FPDF_RenderPage_Continue(page, this) != FPDF_RENDER_TOBECONTINUED;
   }
 
-  int start_x;
-  int start_y;
-  int size_x;
-  int size_y;
   gfx::Rect dirty = progressive_paints_[progressive_index].rect();
-  GetPDFiumRect(page_index, dirty, &start_x, &start_y, &size_x, &size_y);
+  const gfx::Rect pdfium_rect = GetPDFiumRect(page_index, dirty);
 
   bool has_alpha = !!FPDFPage_HasTransparency(page);
   ScopedFPDFBitmap new_bitmap = CreateBitmap(dirty, has_alpha, image_data);
-  FPDFBitmap_FillRect(new_bitmap.get(), start_x, start_y, size_x, size_y,
-                      0xFFFFFFFF);
+  FPDFBitmap_FillRect(new_bitmap.get(), pdfium_rect.x(), pdfium_rect.y(),
+                      pdfium_rect.width(), pdfium_rect.height(), 0xFFFFFFFF);
   int rv = FPDF_RenderPageBitmap_Start(
-      new_bitmap.get(), page, start_x, start_y, size_x, size_y,
+      new_bitmap.get(), page, pdfium_rect.x(), pdfium_rect.y(),
+      pdfium_rect.width(), pdfium_rect.height(),
       ToPDFiumRotation(layout_.options().default_page_orientation()),
       GetRenderingFlags(), this);
   progressive_paints_[progressive_index].SetBitmapAndImageData(
@@ -3216,17 +3213,12 @@ void PDFiumEngine::FinishPaint(size_t progressive_index, SkBitmap& image_data) {
   int page_index = progressive_paints_[progressive_index].page_index();
   gfx::Rect dirty_in_screen = progressive_paints_[progressive_index].rect();
 
-  int start_x;
-  int start_y;
-  int size_x;
-  int size_y;
   FPDF_BITMAP bitmap = progressive_paints_[progressive_index].bitmap();
-  GetPDFiumRect(page_index, dirty_in_screen, &start_x, &start_y, &size_x,
-                &size_y);
+  const gfx::Rect pdfium_rect = GetPDFiumRect(page_index, dirty_in_screen);
 
   // Draw the forms.
-  FPDF_FFLDraw(form(), bitmap, pages_[page_index]->GetPage(), start_x, start_y,
-               size_x, size_y,
+  FPDF_FFLDraw(form(), bitmap, pages_[page_index]->GetPage(), pdfium_rect.x(),
+               pdfium_rect.y(), pdfium_rect.width(), pdfium_rect.height(),
                ToPDFiumRotation(layout_.options().default_page_orientation()),
                GetRenderingFlags());
 
@@ -3384,13 +3376,10 @@ void PDFiumEngine::DrawSelections(size_t progressive_index,
 void PDFiumEngine::PaintUnavailablePage(int page_index,
                                         const gfx::Rect& dirty,
                                         SkBitmap& image_data) {
-  int start_x;
-  int start_y;
-  int size_x;
-  int size_y;
-  GetPDFiumRect(page_index, dirty, &start_x, &start_y, &size_x, &size_y);
+  const gfx::Rect pdfium_rect = GetPDFiumRect(page_index, dirty);
   ScopedFPDFBitmap bitmap(CreateBitmap(dirty, /*has_alpha=*/false, image_data));
-  FPDFBitmap_FillRect(bitmap.get(), start_x, start_y, size_x, size_y,
+  FPDFBitmap_FillRect(bitmap.get(), pdfium_rect.x(), pdfium_rect.y(),
+                      pdfium_rect.width(), pdfium_rect.height(),
                       kPendingPageColor);
 
   gfx::Rect loading_text_in_screen(
@@ -3420,19 +3409,11 @@ ScopedFPDFBitmap PDFiumEngine::CreateBitmap(const gfx::Rect& rect,
       base::checked_cast<int>(region.value().stride)));
 }
 
-void PDFiumEngine::GetPDFiumRect(int page_index,
-                                 const gfx::Rect& rect,
-                                 int* start_x,
-                                 int* start_y,
-                                 int* size_x,
-                                 int* size_y) const {
+gfx::Rect PDFiumEngine::GetPDFiumRect(int page_index,
+                                      const gfx::Rect& rect) const {
   gfx::Rect page_rect = GetScreenRect(pages_[page_index]->rect());
   page_rect.Offset(-rect.x(), -rect.y());
-
-  *start_x = page_rect.x();
-  *start_y = page_rect.y();
-  *size_x = page_rect.width();
-  *size_y = page_rect.height();
+  return page_rect;
 }
 
 int PDFiumEngine::GetRenderingFlags() const {

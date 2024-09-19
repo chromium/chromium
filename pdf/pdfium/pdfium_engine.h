@@ -704,12 +704,7 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
 
   // Given a rectangle in screen coordinates, returns the coordinates in the
   // units that PDFium rendering functions expect.
-  void GetPDFiumRect(int page_index,
-                     const gfx::Rect& rect,
-                     int* start_x,
-                     int* start_y,
-                     int* size_x,
-                     int* size_y) const;
+  gfx::Rect GetPDFiumRect(int page_index, const gfx::Rect& rect) const;
 
   // Returns the rendering flags to pass to PDFium.
   int GetRenderingFlags() const;
