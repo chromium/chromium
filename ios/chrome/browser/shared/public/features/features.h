@@ -62,7 +62,19 @@ const base::TimeDelta TimeDelayForSafetyCheckAutorun();
 BASE_DECLARE_FEATURE(kOmahaServiceRefactor);
 
 // Safety Check Notifications experiment variations.
+
+// Name of the experiment that controls how Safety Check notifications
+// are presented to the user (e.g., `kVerbose`, `kSuccinct`).
 extern const char kSafetyCheckNotificationsExperimentType[];
+
+// Name of the parameter that controls when an impression is counted
+// for the Safety Check notifications opt-in button (e.g., `kOnlyWhenTopModule`,
+// `kAlways`).
+extern const char kSafetyCheckNotificationsImpressionTrigger[];
+
+// Name of the parameter that controls the maximum number of impressions
+// allowed for the Safety Check notifications opt-in button.
+extern const char kSafetyCheckNotificationsImpressionLimit[];
 
 // Defines param values for the Safety Check Notifications feature,
 // controlling how notifications are presented to the user.
@@ -72,6 +84,16 @@ enum class SafetyCheckNotificationsExperimentalArm {
   // Arm that displays only a single Safety Check notification at any given
   // time.
   kSuccinct = 1,
+};
+
+// Defines param values for the Safety Check Notifications feature,
+// controlling when an impression is counted for the notifications opt-in button
+// in the Safety Check (Magic Stack) module.
+enum class SafetyCheckNotificationsImpressionTrigger {
+  // Impression counted only when the Safety Check module is the top module.
+  kOnlyWhenTopModule = 0,
+  // Impression counted regardless of the Safety Check module's position.
+  kAlways = 1,
 };
 
 // Feature flag to enable Shared Highlighting (Link to Text).
@@ -345,6 +367,16 @@ bool IsOmahaServiceRefactorEnabled();
 // Returns the experiment type for the Safety Check Notifications feature.
 SafetyCheckNotificationsExperimentalArm
 SafetyCheckNotificationsExperimentTypeEnabled();
+
+// Returns the impression trigger for the Safety Check (Magic Stack) module's
+// notification opt-in button.
+SafetyCheckNotificationsImpressionTrigger
+SafetyCheckNotificationsImpressionTriggerEnabled();
+
+// Returns the maximum number of impressions allowed for the Safety Check
+// notifications opt-in button, as specified by the
+// `kSafetyCheckNotificationsImpressionLimit` field trial parameter.
+int SafetyCheckNotificationsImpressionLimit();
 
 // Feature flag enabling Choose from Drive.
 BASE_DECLARE_FEATURE(kIOSChooseFromDrive);

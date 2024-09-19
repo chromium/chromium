@@ -656,6 +656,11 @@ inline constexpr char kHomeCustomizationMagicStackTabResumptionEnabled[] =
 inline constexpr char kHomeCustomizationMagicStackParcelTrackingEnabled[] =
     "ios.home_customization.magic_stack.parcel_tracking.enabled";
 
+// List preference that stores the positions in the Magic Stack where the Safety
+// Check module with the notifications opt-in button is shown.
+inline constexpr char kMagicStackSafetyCheckNotificationsShown[] =
+    "ios.home_customization.magic_stack.safety_check.notifications_shown";
+
 // Integer preference that stores the most recent count of Safety Check issues
 // presented to the user in the Safety Check module (part of the Magic Stack).
 inline constexpr char kHomeCustomizationMagicStackSafetyCheckIssuesCount[] =
