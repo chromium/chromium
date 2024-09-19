@@ -69,6 +69,23 @@ bool IsValidPaintShaderScalingBehavior(PaintShader::ScalingBehavior behavior) {
          behavior == PaintShader::ScalingBehavior::kFixedScale;
 }
 
+float ComputeHdrHeadroom(
+    const PaintFlags::DynamicRangeLimitMixture& dynamic_range_limit,
+    float target_hdr_headroom) {
+  const float dynamic_range_high_mix =
+      1.f - dynamic_range_limit.constrained_high_mix -
+      dynamic_range_limit.standard_mix;
+  float hdr_headroom = 1.f;
+  if (dynamic_range_limit.constrained_high_mix > 0) {
+    hdr_headroom *= std::pow(std::min(2.f, target_hdr_headroom),
+                             dynamic_range_limit.constrained_high_mix);
+  }
+  if (dynamic_range_high_mix > 0) {
+    hdr_headroom *= std::pow(target_hdr_headroom, dynamic_range_high_mix);
+  }
+  return hdr_headroom;
+}
+
 }  // namespace
 
 PaintOpReader::PaintOpReader(const volatile void* memory,
@@ -407,6 +424,10 @@ void PaintOpReader::Read(
     return;
   }
 
+  // Compute the HDR headroom for tone mapping.
+  const float hdr_headroom =
+      ComputeHdrHeadroom(dynamic_range_limit, options_.hdr_headroom);
+
   if (serialized_type == PaintOp::SerializedImageType::kMailbox) {
     if (!options_.shared_image_provider) {
       SetInvalid(DeserializationError::kMissingSharedImageProvider);
@@ -448,6 +469,7 @@ void PaintOpReader::Read(
                  .set_id(PaintImage::GetNextId())
                  .set_texture_image(std::move(sk_image),
                                     PaintImage::kNonLazyStableId)
+                 .set_target_hdr_headroom(hdr_headroom)
                  .TakePaintImage();
     return;
   }
@@ -476,21 +498,6 @@ void PaintOpReader::Read(
   if (auto* entry =
           options_.transfer_cache->GetEntryAs<ServiceImageTransferCacheEntry>(
               transfer_cache_entry_id)) {
-    // Compute the HDR headroom if tone mapping will be applied.
-    float hdr_headroom = 1.f;
-    if (entry->NeedsToneMapApplied()) {
-      const float dynamic_range_high_mix =
-          1.f - dynamic_range_limit.constrained_high_mix -
-          dynamic_range_limit.standard_mix;
-      if (dynamic_range_limit.constrained_high_mix > 0) {
-        hdr_headroom *= std::pow(std::min(2.f, options_.hdr_headroom),
-                                 dynamic_range_limit.constrained_high_mix);
-      }
-      if (dynamic_range_high_mix > 0) {
-        hdr_headroom *= std::pow(options_.hdr_headroom, dynamic_range_high_mix);
-      }
-    }
-
     if (needs_mips) {
       entry->EnsureMips();
     }

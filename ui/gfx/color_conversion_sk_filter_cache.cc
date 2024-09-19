@@ -111,20 +111,4 @@ sk_sp<SkColorFilter> ColorConversionSkFilterCache::Get(
       value.transform->GetSkShaderUniforms(options));
 }
 
-bool ColorConversionSkFilterCache::UseToneCurve(sk_sp<SkImage> image) {
-  DCHECK(image);
-  auto* image_sk_color_space = image->colorSpace();
-  if (!image_sk_color_space) {
-    return false;
-  }
-  gfx::ColorSpace image_color_space(*image_sk_color_space);
-  switch (image_color_space.GetTransferID()) {
-    case ColorSpace::TransferID::PQ:
-    case ColorSpace::TransferID::HLG:
-      return true;
-    default:
-      return false;
-  }
-}
-
 }  // namespace gfx

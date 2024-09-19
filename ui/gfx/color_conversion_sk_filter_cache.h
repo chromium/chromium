@@ -14,7 +14,6 @@
 #include "ui/gfx/gfx_export.h"
 #include "ui/gfx/hdr_metadata.h"
 
-class SkImage;
 class SkColorFilter;
 class SkRuntimeEffect;
 
@@ -41,9 +40,6 @@ class COLOR_SPACE_EXPORT ColorConversionSkFilterCache {
                            std::optional<gfx::HDRMetadata> src_hdr_metadata,
                            float dst_sdr_max_luminance_nits,
                            float dst_max_luminance_relative);
-
-  // Return if ApplyToneCurve can be called on `image`.
-  static bool UseToneCurve(sk_sp<SkImage> image);
 
  public:
   struct Key {

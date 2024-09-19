@@ -699,12 +699,12 @@ bool ServiceImageTransferCacheEntry::Deserialize(
     reader.Read(&gainmap_info_);
   }
 
-  // Save the tone curve parameters, if they are to be used.
-  use_global_tone_map_ =
-      !has_gainmap_ && gfx::ColorConversionSkFilterCache::UseToneCurve(image_);
+  // Determine if this image will be tone mapped.
+  const bool is_tone_mapped =
+      has_gainmap_ || ToneMapUtil::UseGlobalToneMapFilter(image_->colorSpace());
 
   // Perform color conversion (if no tone mapping is needed).
-  if (target_color_space && !NeedsToneMapApplied()) {
+  if (target_color_space && !is_tone_mapped) {
     if (graphite_recorder_) {
       SkImage::RequiredProperties props{.fMipmapped = needs_mips};
       image_ =
@@ -782,10 +782,6 @@ const sk_sp<SkImage>& ServiceImageTransferCacheEntry::GetPlaneImage(
 
 void ServiceImageTransferCacheEntry::EnsureMips() {
   if (!image_ || !image_->isTextureBacked()) {
-    return;
-  }
-  // Don't generate mipmaps for images that will not be used directly.
-  if (NeedsToneMapApplied()) {
     return;
   }
   if (image_->hasMipmaps()) {

@@ -408,8 +408,8 @@ class CC_PAINT_EXPORT PaintImage {
   friend class PlaybackImageProvider;
   friend class DrawImageRectOp;
   friend class DrawImageOp;
-  friend class DrawImageToneMapUtil;
   friend class DrawSkottieOp;
+  friend class ToneMapUtil;
 
   // TODO(crbug.com/40110279): Remove these once GetSkImage()
   // is fully removed.
