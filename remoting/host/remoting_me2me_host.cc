@@ -115,6 +115,7 @@
 #include "remoting/signaling/ftl_host_device_id_provider.h"
 #include "remoting/signaling/ftl_signal_strategy.h"
 #include "remoting/signaling/remoting_log_to_server.h"
+#include "remoting/signaling/signaling_id_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/webrtc/rtc_base/event_tracer.h"
 
@@ -799,15 +800,19 @@ void HostProcess::SigTermHandler(int signal_number) {
 #endif  // BUILDFLAG(IS_POSIX)
 
 bool HostProcess::CheckAccessPermission(std::string_view user_email_view) {
-  auto email_parts = base::SplitStringOnce(user_email_view, '@');
+  // |user_email_view| may already be in a canonical form but we transform it
+  // just in case so that it matches the format we use in |host_owner_emails_|.
+  // TODO: joedow - Add an overload for GetCanonicalEmail() which takes a
+  // std::string_view.
+  auto canonical_email = GetCanonicalEmail(std::string(user_email_view));
+  auto email_parts = base::SplitStringOnce(canonical_email, '@');
   if (!email_parts) {
     LOG(ERROR) << "Unexpected email address format: " << user_email_view;
     return false;
   }
 
-  auto user_email = base::ToLowerASCII(user_email_view);
-  if (!host_owner_emails_.contains(user_email)) {
-    LOG(ERROR) << user_email << " does not have access to this machine.";
+  if (!host_owner_emails_.contains(canonical_email)) {
+    LOG(ERROR) << canonical_email << " does not have access to this machine.";
     return false;
   }
 
@@ -818,8 +823,8 @@ bool HostProcess::CheckAccessPermission(std::string_view user_email_view) {
 
   auto [_, domain] = *email_parts;
   bool allowed_by_policy = IsInAllowlist(domain, client_domain_list_);
-  LOG_IF(ERROR, !allowed_by_policy) << user_email << " has a domain which is "
-                                    << "not in the client domain allowlist.";
+  LOG_IF(ERROR, !allowed_by_policy) << canonical_email << " has a domain which "
+                                    << "is not in the client domain allowlist.";
   return allowed_by_policy;
 }
 
@@ -1116,7 +1121,8 @@ void HostProcess::OnFirstHeartbeatSuccessful() {
 void HostProcess::OnUpdateHostOwner(const std::string& owner_email) {
   DCHECK(!owner_email.empty());
 
-  auto new_owner_email = base::ToLowerASCII(owner_email);
+  // Use a canonical email form here for martching against FTL signaling IDs.
+  auto new_owner_email = GetCanonicalEmail(owner_email);
   if (host_owner_emails_.contains(new_owner_email)) {
     return;
   }
