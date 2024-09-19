@@ -47,11 +47,12 @@ pub fn evaluate_using_rust(query: &[u8], out_result: &mut String, timeout_in_ms:
 
     let mut context = fend_core::Context::new();
 
+    let query_with_preamble = format!("f = °F; c = °C; {query}");
     let original_result = if timeout_in_ms > 0 {
         let interrupt = TimeoutInterrupt::new_with_timeout(timeout_in_ms.into());
-        fend_core::evaluate_with_interrupt(query, &mut context, &interrupt)
+        fend_core::evaluate_with_interrupt(&query_with_preamble, &mut context, &interrupt)
     } else {
-        fend_core::evaluate(query, &mut context)
+        fend_core::evaluate(&query_with_preamble, &mut context)
     };
     let Ok(original_result) = original_result else {
         return false;
