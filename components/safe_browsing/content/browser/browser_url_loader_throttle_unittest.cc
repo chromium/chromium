@@ -59,6 +59,9 @@ class MockUrlCheckerDelegate : public UrlCheckerDelegate {
   MOCK_METHOD1(IsUrlAllowlisted, bool(const GURL&));
   MOCK_METHOD1(SetPolicyAllowlistDomains,
                void(const std::vector<std::string>&));
+  MOCK_METHOD2(SendUrlRealTimeAndHashRealTimeDiscrepancyReport,
+               void(std::unique_ptr<ClientSafeBrowsingReportRequest>,
+                    const base::RepeatingCallback<content::WebContents*()>&));
 
   SafeBrowsingDatabaseManager* GetDatabaseManager() override { return nullptr; }
 

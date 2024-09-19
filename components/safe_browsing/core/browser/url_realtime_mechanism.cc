@@ -80,6 +80,21 @@ UrlRealTimeMechanism::StartCheckInternal() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_NE(url_lookup_service_metric_suffix_, kNoRealTimeURLLookupService);
 
+  bool send_background_hprt_lookup = !!hash_realtime_lookup_mechanism_;
+  if (send_background_hprt_lookup) {
+    // Kick off hash realtime lookup.
+    auto hprt_result = hash_realtime_lookup_mechanism_->StartCheck(
+        base::BindOnce(&UrlRealTimeMechanism::OnHashRealTimeCompleteCheckResult,
+                       weak_factory_.GetWeakPtr()));
+
+    // If is_safe_synchronously value is true, we need to call the callback
+    // function directly.
+    if (hprt_result.is_safe_synchronously) {
+      OnHashRealTimeCompleteCheckResultInternal(
+          SBThreatType::SB_THREAT_TYPE_SAFE);
+    }
+  }
+
   bool check_allowlist = can_check_db_ && can_check_high_confidence_allowlist_;
   if (check_allowlist) {
     database_manager_->CheckUrlForHighConfidenceAllowlist(
@@ -94,23 +109,6 @@ UrlRealTimeMechanism::StartCheckInternal() {
             weak_factory_.GetWeakPtr(),
             /*url_on_high_confidence_allowlist=*/false,
             /*logging_details=*/std::nullopt));
-  }
-
-  bool send_background_hprt_lookup = !!hash_realtime_lookup_mechanism_;
-  if (send_background_hprt_lookup) {
-    // Kick off hash realtime lookup.
-    auto hprt_result = hash_realtime_lookup_mechanism_->StartCheck(
-        base::BindOnce(&UrlRealTimeMechanism::OnHashRealTimeCompleteCheckResult,
-                       weak_factory_.GetWeakPtr()));
-
-    // If is_safe_synchronously value is true, we need to call the callback
-    // function directly.
-    if (hprt_result.is_safe_synchronously) {
-      OnHashRealTimeCompleteCheckResult(std::make_unique<CompleteCheckResult>(
-          url_, SBThreatType::SB_THREAT_TYPE_SAFE, ThreatMetadata(),
-          hprt_result.threat_source,
-          /*url_real_time_lookup_response=*/nullptr));
-    }
   }
   base::UmaHistogramBoolean(
       "SafeBrowsing.CheckUrl."
@@ -129,10 +127,7 @@ void UrlRealTimeMechanism::OnHashRealTimeCompleteCheckResult(
 
 void UrlRealTimeMechanism::OnHashRealTimeCompleteCheckResultInternal(
     SBThreatType threat_type) {
-  is_hash_realtime_lookup_complete_ = true;
-  // TODO(crbug.com/359609447): Store the hash real-time lookup result in this
-  // class to be used in the OnUrlRealTimeCompleteCheckResult function.
-  // Also, we do not run HPRT for ESB users.
+  hash_realtime_lookup_result_threat_type_ = threat_type;
 }
 
 void UrlRealTimeMechanism::OnCheckUrlForHighConfidenceAllowlist(
@@ -260,16 +255,57 @@ void UrlRealTimeMechanism::OnLookupResponse(
 
 void UrlRealTimeMechanism::CompleteCheckInternal(
     std::unique_ptr<CompleteCheckResult> complete_check_result) {
-  // Process the results from both the URL real-time lookup and the hash
+  // Compare the results from both the URL real-time lookup and the hash
   // real-time lookup. Return the URL real-time lookup result and send a CSBRR
-  // if the HPRT indicates a false positive.
-  // TODO(crbug.com/359609447): Add the result processing logic in the following
-  // up CL.
+  // if the URT and HPRT results differ.
+
+  // We need to send a CSBRR if the URL real-time lookup verdict is different
+  // from the HPRT lookup verdict.
+  if (hash_realtime_lookup_result_threat_type_.has_value() &&
+      complete_check_result->threat_type !=
+          hash_realtime_lookup_result_threat_type_.value()) {
+    // Send new CSBRR report.
+    auto report = std::make_unique<ClientSafeBrowsingReportRequest>();
+    report->set_type(ClientSafeBrowsingReportRequest::
+                         URL_REALTIME_AND_HASH_REALTIME_DISCREPANCY);
+    report->set_url(url_.spec());
+    report->mutable_url_real_time_and_hash_real_time_discrepancy_info()
+        ->set_url_realtime_threat_type(
+            getDiscrepancyThreatType(complete_check_result->threat_type));
+    report->mutable_url_real_time_and_hash_real_time_discrepancy_info()
+        ->set_hash_realtime_threat_type(getDiscrepancyThreatType(
+            hash_realtime_lookup_result_threat_type_.value()));
+
+    url_checker_delegate_->SendUrlRealTimeAndHashRealTimeDiscrepancyReport(
+        std::move(report), web_contents_getter_);
+  }
 
   // Call the CompleteCheck function to pass the final result to the callback.
   CompleteCheck(std::move(complete_check_result));
   // NOTE: Calling CompleteCheck results in the synchronous destruction of
   // this object, so there is nothing safe to do here but return.
+}
+
+ClientSafeBrowsingReportRequest::UrlRealTimeAndHashRealTimeDiscrepancyInfo::
+    LookupThreatType
+    UrlRealTimeMechanism::getDiscrepancyThreatType(SBThreatType threat_type) {
+  switch (threat_type) {
+    case SBThreatType::SB_THREAT_TYPE_URL_PHISHING:
+      return ClientSafeBrowsingReportRequest::
+          UrlRealTimeAndHashRealTimeDiscrepancyInfo::PHISHING;
+    case SBThreatType::SB_THREAT_TYPE_URL_MALWARE:
+      return ClientSafeBrowsingReportRequest::
+          UrlRealTimeAndHashRealTimeDiscrepancyInfo::MALWARE;
+    case SBThreatType::SB_THREAT_TYPE_URL_UNWANTED:
+      return ClientSafeBrowsingReportRequest::
+          UrlRealTimeAndHashRealTimeDiscrepancyInfo::UNWANTED;
+    case SBThreatType::SB_THREAT_TYPE_BILLING:
+      return ClientSafeBrowsingReportRequest::
+          UrlRealTimeAndHashRealTimeDiscrepancyInfo::BILLING;
+    default:
+      return ClientSafeBrowsingReportRequest::
+          UrlRealTimeAndHashRealTimeDiscrepancyInfo::SAFE_OR_OTHER;
+  }
 }
 
 void UrlRealTimeMechanism::PerformHashBasedCheck(

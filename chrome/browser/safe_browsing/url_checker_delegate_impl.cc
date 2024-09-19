@@ -164,6 +164,14 @@ void UrlCheckerDelegateImpl::NotifySuspiciousSiteDetected(
                                 web_contents_getter));
 }
 
+void UrlCheckerDelegateImpl::SendUrlRealTimeAndHashRealTimeDiscrepancyReport(
+    std::unique_ptr<ClientSafeBrowsingReportRequest> report,
+    const base::RepeatingCallback<content::WebContents*()>&
+        web_contents_getter) {
+  ui_manager_->SendThreatDetails(web_contents_getter.Run()->GetBrowserContext(),
+                                 std::move(report));
+}
+
 const SBThreatTypeSet& UrlCheckerDelegateImpl::GetThreatTypes() {
   return threat_types_;
 }

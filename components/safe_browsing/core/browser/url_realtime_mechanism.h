@@ -130,10 +130,6 @@ class UrlRealTimeMechanism : public SafeBrowsingLookupMechanism {
   // false when enterprise real time URL lookup is enabled.
   bool can_check_high_confidence_allowlist_;
 
-  // Whether the hash realtime look has completed when URL realtime lookup
-  // completes.
-  bool is_hash_realtime_lookup_complete_ = false;
-
   // URL Lookup service suffix for logging metrics.
   std::string url_lookup_service_metric_suffix_;
 
@@ -164,10 +160,23 @@ class UrlRealTimeMechanism : public SafeBrowsingLookupMechanism {
   // be |SessionID::InvalidValue()|.
   SessionID tab_id_;
 
+  // Store the verdict from the HPRT lookup result in this class. This verdict
+  // will be used when the URL real-time lookup completes.
+  std::optional<SBThreatType> hash_realtime_lookup_result_threat_type_;
+
+  // Converts a |SBThreatType| to the one used for
+  // the UrlRealTimeAndHashRealTimeDiscrepancyInfo threat type CSBRR.
+  static ClientSafeBrowsingReportRequest::
+      UrlRealTimeAndHashRealTimeDiscrepancyInfo::LookupThreatType
+      getDiscrepancyThreatType(SBThreatType threat_type);
+
   // This will be populated in cases where the sampled HPRT lookup should be
   // sent.
   std::unique_ptr<SafeBrowsingLookupMechanism> hash_realtime_lookup_mechanism_ =
       nullptr;
+
+  base::OnceCallback<void(std::unique_ptr<ClientSafeBrowsingReportRequest>)>
+      save_report_info_for_testing_;
 
   base::WeakPtrFactory<UrlRealTimeMechanism> weak_factory_{this};
 };

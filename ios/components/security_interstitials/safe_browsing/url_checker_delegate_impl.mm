@@ -119,6 +119,11 @@ void UrlCheckerDelegateImpl::NotifySuspiciousSiteDetected(
   // TODO(crbug.com/40817491): Implement reporting for suspicious sites.
 }
 
+void UrlCheckerDelegateImpl::SendUrlRealTimeAndHashRealTimeDiscrepancyReport(
+    std::unique_ptr<safe_browsing::ClientSafeBrowsingReportRequest> report,
+    const base::RepeatingCallback<content::WebContents*()>&
+        web_contents_getter) {}
+
 const safe_browsing::SBThreatTypeSet& UrlCheckerDelegateImpl::GetThreatTypes() {
   return threat_types_;
 }
