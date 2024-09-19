@@ -168,6 +168,8 @@ OnDeviceModelComponentStateManager::GetOnDeviceModelStatus() {
 void OnDeviceModelComponentStateManager::OnDeviceEligibleFeatureUsed(
     ModelBasedCapabilityKey feature) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  bool was_previously_used =
+      WasOnDeviceEligibleFeatureRecentlyUsed(feature, *local_state_);
   local_state_->SetTime(
       model_execution::prefs::GetOnDeviceFeatureRecentlyUsedPref(feature),
       base::Time::Now());
@@ -181,6 +183,12 @@ void OnDeviceModelComponentStateManager::OnDeviceEligibleFeatureUsed(
   }
 
   BeginUpdateRegistration();
+
+  if (!was_previously_used) {
+    for (auto& o : observers_) {
+      o.OnDeviceEligibleFeatureFirstUsed(feature);
+    }
+  }
 }
 
 void OnDeviceModelComponentStateManager::DevicePerformanceClassChanged(

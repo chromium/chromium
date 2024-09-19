@@ -107,6 +107,7 @@ OnDeviceModelAdaptationLoader::OnDeviceModelAdaptationLoader(
     OnLoadFn on_load_fn)
     : feature_(feature),
       on_load_fn_(on_load_fn),
+      on_device_component_state_manager_(on_device_component_state_manager),
       local_state_(local_state),
       model_provider_(model_provider),
       background_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
@@ -133,6 +134,13 @@ OnDeviceModelAdaptationLoader::~OnDeviceModelAdaptationLoader() {
 
 void OnDeviceModelAdaptationLoader::StateChanged(
     const OnDeviceModelComponentState* state) {
+  MaybeRegisterModelDownload(
+      state, WasOnDeviceEligibleFeatureRecentlyUsed(feature_, *local_state_));
+}
+
+void OnDeviceModelAdaptationLoader::MaybeRegisterModelDownload(
+    const OnDeviceModelComponentState* state,
+    bool was_feature_recently_used) {
   CHECK(model_provider_);
   if (registered_with_model_provider_) {
     model_provider_->RemoveObserverForOptimizationTargetModel(
@@ -154,7 +162,7 @@ void OnDeviceModelAdaptationLoader::StateChanged(
           feature_, OnDeviceModelAdaptationAvailability::kBaseModelSpecInvalid);
       return;
     }
-    if (!WasOnDeviceEligibleFeatureRecentlyUsed(feature_, *local_state_)) {
+    if (!was_feature_recently_used) {
       RecordAdaptationModelAvailability(
           feature_,
           OnDeviceModelAdaptationAvailability::kFeatureNotRecentlyUsed);
@@ -177,6 +185,19 @@ void OnDeviceModelAdaptationLoader::StateChanged(
       features::internal::GetOptimizationTargetForModelAdaptation(feature_),
       any_metadata, this);
   registered_with_model_provider_ = true;
+}
+
+void OnDeviceModelAdaptationLoader::OnDeviceEligibleFeatureFirstUsed(
+    ModelBasedCapabilityKey feature) {
+  if (feature != feature_) {
+    return;
+  }
+  if (!on_device_component_state_manager_) {
+    return;
+  }
+  MaybeRegisterModelDownload(
+      on_device_component_state_manager_->GetState(),
+      WasOnDeviceEligibleFeatureRecentlyUsed(feature_, *local_state_));
 }
 
 void OnDeviceModelAdaptationLoader::OnModelUpdated(
