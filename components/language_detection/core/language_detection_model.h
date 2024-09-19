@@ -88,13 +88,13 @@ class LanguageDetectionModel {
   // Updates the language detection model for use by memory-mapping
   // |model_file| used to detect the language of the page.
   void UpdateWithFile(base::File model_file);
-#else
+#endif
+
   // Updates the language detection model for use by memory-mapping
   // |model_file| used to detect the language of the page. Performs
   // the operation on a background sequence and call |callback| on
   // completion
   void UpdateWithFileAsync(base::File model_file, base::OnceClosure callback);
-#endif
 
   // Returns whether |this| is initialized and is available to handle requests
   // to determine the language of the page.
@@ -111,10 +111,8 @@ class LanguageDetectionModel {
   using OwnedNLClassifier =
       std::unique_ptr<tflite::task::text::nlclassifier::NLClassifier>;
 
-#if BUILDFLAG(IS_IOS)
   // Updates the model if the not unset.
   void SetModel(std::optional<OwnedNLClassifier> optional_model);
-#endif
 
 #if BUILDFLAG(IS_IOS)
   SEQUENCE_CHECKER(sequence_checker_);

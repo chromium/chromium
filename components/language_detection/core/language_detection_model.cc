@@ -49,7 +49,6 @@ class ScopedLanguageDetectionModelStateRecorder {
   language_detection::LanguageDetectionModelState state_;
 };
 
-#if BUILDFLAG(IS_IOS)
 // Loads model from |model_file| using |num_threads|. This can be called on
 // any thread.
 std::optional<std::unique_ptr<tflite::task::text::nlclassifier::NLClassifier>>
@@ -110,7 +109,6 @@ LoadModelFromFile(base::File model_file, int num_threads) {
 
   return std::move(statusor_classifier).value();
 }
-#endif
 
 }  // namespace
 
@@ -249,10 +247,11 @@ void LanguageDetectionModel::UpdateWithFile(base::File model_file) {
 
 #endif
 
-#if BUILDFLAG(IS_IOS)
 void LanguageDetectionModel::UpdateWithFileAsync(base::File model_file,
                                                  base::OnceClosure callback) {
+#if BUILDFLAG(IS_IOS)
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+#endif
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(&LoadModelFromFile, std::move(model_file), num_threads_),
@@ -260,7 +259,6 @@ void LanguageDetectionModel::UpdateWithFileAsync(base::File model_file,
                      weak_factory_.GetWeakPtr())
           .Then(std::move(callback)));
 }
-#endif
 
 bool LanguageDetectionModel::IsAvailable() const {
 #if BUILDFLAG(IS_IOS)
@@ -278,16 +276,16 @@ std::string LanguageDetectionModel::GetModelVersion() const {
   return kTFLiteModelVersion;
 }
 
-#if BUILDFLAG(IS_IOS)
 void LanguageDetectionModel::SetModel(
     std::optional<OwnedNLClassifier> optional_model) {
+#if BUILDFLAG(IS_IOS)
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+#endif
   if (optional_model.has_value()) {
     lang_detection_model_ = std::move(optional_model).value();
   }
   NotifyModelLoaded();
 }
-#endif
 
 void LanguageDetectionModel::AddOnModelLoadedCallback(
     ModelLoadedCallback callback) {

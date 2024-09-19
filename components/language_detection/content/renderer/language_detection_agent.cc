@@ -5,6 +5,7 @@
 #include "components/language_detection/content/renderer/language_detection_agent.h"
 
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/task_traits.h"
@@ -68,31 +69,21 @@ void LanguageDetectionAgent::UpdateLanguageDetectionModel(
   base::ScopedUmaHistogramTimer timer(
       "LanguageDetection.TFLiteModel.UpdateLanaguageDetectionModelTime");
 
-#if BUILDFLAG(IS_IOS)
   language_detection::LanguageDetectionModel& language_detection_model =
       language_detection::GetLanguageDetectionModel();
+#if BUILDFLAG(IS_IOS)
   language_detection_model.UpdateWithFileAsync(std::move(model_file),
                                                base::DoNothing());
-
 #else
-  auto update_file = base::BindOnce(
-      [](base::File model_file) {
-        language_detection::LanguageDetectionModel& language_detection_model =
-            language_detection::GetLanguageDetectionModel();
-        language_detection_model.UpdateWithFile(std::move(model_file));
-      },
-      std::move(model_file));
-
   // When enabled, we postpone updating the language detection model to avoid
   // congesting the render main thread during navigation critical timing
   // (crbug.com/361215212).
   if (base::FeatureList::IsEnabled(
           language_detection::features::kLazyUpdateTranslateModel)) {
-    base::ThreadPool::PostTask(
-        FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
-        std::move(update_file));
+    language_detection_model.UpdateWithFileAsync(std::move(model_file),
+                                                 base::DoNothing());
   } else {
-    std::move(update_file).Run();
+    language_detection_model.UpdateWithFile(std::move(model_file));
   }
 #endif
 }
