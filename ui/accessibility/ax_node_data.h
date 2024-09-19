@@ -97,8 +97,6 @@ struct AX_BASE_EXPORT AXNodeData {
   bool HasStringListAttribute(ax::mojom::StringListAttribute attribute) const;
   const std::vector<std::string>& GetStringListAttribute(
       ax::mojom::StringListAttribute attribute) const;
-  bool GetStringListAttribute(ax::mojom::StringListAttribute attribute,
-                              std::vector<std::string>* value) const;
 
   bool HasHtmlAttribute(const char* attribute) const;
   bool GetHtmlAttribute(const char* attribute, std::string* value) const;

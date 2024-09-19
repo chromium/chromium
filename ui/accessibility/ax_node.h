@@ -382,10 +382,6 @@ class AX_EXPORT AXNode final {
       ax::mojom::StringListAttribute attribute) const {
     return data().GetStringListAttribute(attribute);
   }
-  bool GetStringListAttribute(ax::mojom::StringListAttribute attribute,
-                              std::vector<std::string>* value) const {
-    return data().GetStringListAttribute(attribute, value);
-  }
 
   const base::StringPairs& GetHtmlAttributes() const {
     return data().html_attributes;

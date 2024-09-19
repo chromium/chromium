@@ -804,9 +804,11 @@ const std::vector<std::string>& AXPlatformNodeDelegate::GetStringListAttribute(
 bool AXPlatformNodeDelegate::GetStringListAttribute(
     ax::mojom::StringListAttribute attribute,
     std::vector<std::string>* value) const {
-  if (node_)
-    return node_->GetStringListAttribute(attribute, value);
-  return GetData().GetStringListAttribute(attribute, value);
+  bool found = HasStringListAttribute(attribute);
+  if (found) {
+    *value = GetStringListAttribute(attribute);
+  }
+  return found;
 }
 
 bool AXPlatformNodeDelegate::HasHtmlAttribute(const char* attribute) const {

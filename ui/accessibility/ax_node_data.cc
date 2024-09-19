@@ -424,18 +424,6 @@ const std::vector<std::string>& AXNodeData::GetStringListAttribute(
   return *empty_vector;
 }
 
-bool AXNodeData::GetStringListAttribute(
-    ax::mojom::StringListAttribute attribute,
-    std::vector<std::string>* value) const {
-  auto iter = FindInVectorOfPairs(attribute, stringlist_attributes);
-  if (iter != stringlist_attributes.end()) {
-    *value = iter->second;
-    return true;
-  }
-
-  return false;
-}
-
 bool AXNodeData::HasHtmlAttribute(const char* attribute) const {
   std::string value;
   if (!GetHtmlAttribute(attribute, &value))

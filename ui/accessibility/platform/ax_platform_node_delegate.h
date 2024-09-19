@@ -163,6 +163,9 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeDelegate {
   bool HasStringListAttribute(ax::mojom::StringListAttribute attribute) const;
   const std::vector<std::string>& GetStringListAttribute(
       ax::mojom::StringListAttribute attribute) const;
+  // TODO(accessibility): Deprecate this method in favor of separate calls to
+  // Has and Get. This version forces a copy of the list, which is inefficient
+  // in cases where a const reference would suffice.
   bool GetStringListAttribute(ax::mojom::StringListAttribute attribute,
                               std::vector<std::string>* value) const;
   bool HasHtmlAttribute(const char* attribute) const;
