@@ -5324,30 +5324,4 @@ TEST_F(DownloadProtectionServiceTest, EncryptedArchive) {
   EXPECT_TRUE(IsResult(DownloadCheckResult::PROMPT_FOR_SCANNING));
 }
 
-TEST_F(DownloadProtectionServiceTest, ImmediateDeepScansSetPref) {
-  base::FilePath test_zip;
-  EXPECT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_zip));
-  test_zip = test_zip.AppendASCII("safe_browsing")
-                 .AppendASCII("download_protection")
-                 .AppendASCII("encrypted.zip");
-
-  NiceMockDownloadItem item;
-  PrepareBasicDownloadItemWithFullPaths(
-      &item, {"http://www.evil.com/encrypted.zip"},  // url_chain
-      "http://www.google.com/",                      // referrer
-      test_zip,                                      // tmp_path
-      temp_dir_.GetPath().Append(
-          FILE_PATH_LITERAL("encrypted.zip")));  // final_path
-  content::DownloadItemUtils::AttachInfoForTesting(&item, profile(), nullptr);
-
-  EXPECT_FALSE(profile()->GetPrefs()->GetBoolean(
-      prefs::kSafeBrowsingAutomaticDeepScanPerformed));
-  safe_browsing::DownloadProtectionService::UploadForConsumerDeepScanning(
-      &item,
-      DownloadItemWarningData::DeepScanTrigger::TRIGGER_IMMEDIATE_DEEP_SCAN,
-      /*password=*/std::nullopt);
-  EXPECT_TRUE(profile()->GetPrefs()->GetBoolean(
-      prefs::kSafeBrowsingAutomaticDeepScanPerformed));
-}
-
 }  // namespace safe_browsing

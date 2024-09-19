@@ -1071,6 +1071,10 @@ constexpr char kContentSettingsWindowLastTabIndex[] =
 constexpr char kSyncPasswordHash[] = "profile.sync_password_hash";
 constexpr char kSyncPasswordLengthAndHashSalt[] =
     "profile.sync_password_length_and_hash_salt";
+constexpr char kSafeBrowsingAutomaticDeepScanningIPHSeen[] =
+    "safebrowsing.automatic_deep_scanning_iph_seen";
+constexpr char kSafeBrowsingAutomaticDeepScanPerformed[] =
+    "safe_browsing.automatic_deep_scan_performed";
 
 // Deprecated 09/2024
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1524,6 +1528,9 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterIntegerPref(kContentSettingsWindowLastTabIndex, 0);
   registry->RegisterStringPref(kSyncPasswordHash, std::string());
   registry->RegisterStringPref(kSyncPasswordLengthAndHashSalt, std::string());
+  registry->RegisterBooleanPref(kSafeBrowsingAutomaticDeepScanningIPHSeen,
+                                false);
+  registry->RegisterBooleanPref(kSafeBrowsingAutomaticDeepScanPerformed, false);
 
 // Deprecated 09/2024.
 #if !BUILDFLAG(IS_ANDROID)
@@ -2862,6 +2869,8 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   profile_prefs->ClearPref(kContentSettingsWindowLastTabIndex);
   profile_prefs->ClearPref(kSyncPasswordHash);
   profile_prefs->ClearPref(kSyncPasswordLengthAndHashSalt);
+  profile_prefs->ClearPref(kSafeBrowsingAutomaticDeepScanningIPHSeen);
+  profile_prefs->ClearPref(kSafeBrowsingAutomaticDeepScanPerformed);
 
 // Added 09/2024
 #if !BUILDFLAG(IS_ANDROID)

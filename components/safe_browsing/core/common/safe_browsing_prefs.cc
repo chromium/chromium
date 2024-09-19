@@ -255,10 +255,6 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kSafeBrowsingSurveysEnabled, true);
   registry->RegisterBooleanPref(prefs::kSafeBrowsingDeepScanningEnabled, true);
   registry->RegisterBooleanPref(
-      prefs::kSafeBrowsingAutomaticDeepScanningIPHSeen, false);
-  registry->RegisterBooleanPref(prefs::kSafeBrowsingAutomaticDeepScanPerformed,
-                                false);
-  registry->RegisterBooleanPref(
       prefs::kSafeBrowsingScoutReportingEnabledWhenDeprecated, false);
 }
 
