@@ -11,6 +11,7 @@
 #include "ash/system/lock_screen_notification_controller.h"
 #include "ash/system/power/battery_notification.h"
 #include "base/containers/contains.h"
+#include "chromeos/ash/components/policy/restriction_schedule/device_restriction_schedule_controller_delegate_impl.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_types.h"
@@ -67,14 +68,14 @@ bool CalculateShouldShowPopup() {
 
 bool IsAllowedDuringOOBE(std::string_view notification_id) {
   static const std::string_view kAllowedSystemNotificationIDs[] = {
-      BatteryNotification::kNotificationId};
+      BatteryNotification::kNotificationId,
+      policy::DeviceRestrictionScheduleControllerDelegateImpl::
+          kPostLogoutNotificationId};
   static const std::string_view kAllowedProfileBoundNotificationIDs[] = {
       kOOBELocaleSwitchNotificationId, kOOBEGnubbyNotificationId};
 
-  for (const auto& id : kAllowedSystemNotificationIDs) {
-    if (notification_id == id) {
-      return true;
-    }
+  if (base::Contains(kAllowedSystemNotificationIDs, notification_id)) {
+    return true;
   }
 
   // Check here not for a full name equivalence, but for a substring existence

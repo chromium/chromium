@@ -203,7 +203,8 @@ enum class NotificationCatalogName {
   kFaceGazeAssetsDownloaded = 184,
   kFaceGazeAssetsFailed = 185,
   kDeviceRestrictionScheduleUpcomingLogout = 186,
-  kMaxValue = kDeviceRestrictionScheduleUpcomingLogout
+  kDeviceRestrictionSchedulePostLogout = 187,
+  kMaxValue = kDeviceRestrictionSchedulePostLogout
 };
 
 // A living catalog that registers system nudges.

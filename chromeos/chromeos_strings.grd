@@ -6782,6 +6782,12 @@
       <message name="IDS_DEVICE_RESTRICTION_SCHEDULE_UPCOMING_LOGOUT_NOTIFICATION_BODY" desc="Body of the notification telling the user they will be signed out soon.">
         Make sure to save any work
       </message>
+      <message name="IDS_DEVICE_RESTRICTION_SCHEDULE_POST_LOGOUT_NOTIFICATION_TITLE" desc="Title of the notification telling the user that they were logged out.">
+        You've been signed out
+      </message>
+      <message name="IDS_DEVICE_RESTRICTION_SCHEDULE_POST_LOGOUT_NOTIFICATION_BODY" desc="Body of the notification telling the user that they were logged out.">
+        The <ph name="MANAGER">$1<ex>google.com</ex></ph> administrator has set when this <ph name="DEVICE_TYPE">$2<ex>Chromebook</ex></ph> can be used
+      </message>
 
     </messages>
   </release>

@@ -9,18 +9,19 @@
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "base/i18n/time_formatting.h"
+#include "base/strings/utf_string_conversions.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/policy/restriction_schedule/device_restriction_schedule_controller.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/user_manager/user_manager.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/chromeos/devicetype_utils.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_types.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
 #include "url/gurl.h"
-
-// TODO(b/345186543, isandrk): Implement.
 
 namespace policy {
 
@@ -72,6 +73,33 @@ void DeviceRestrictionScheduleControllerDelegateImpl::
 }
 
 void DeviceRestrictionScheduleControllerDelegateImpl::
-    ShowPostLogoutNotification() {}
+    ShowPostLogoutNotification() {
+  const std::u16string domain =
+      base::UTF8ToUTF16(ash::InstallAttributes::Get()->GetDomain());
+
+  const std::u16string title = l10n_util::GetStringUTF16(
+      IDS_DEVICE_RESTRICTION_SCHEDULE_POST_LOGOUT_NOTIFICATION_TITLE);
+  const std::u16string body = l10n_util::GetStringFUTF16(
+      IDS_DEVICE_RESTRICTION_SCHEDULE_POST_LOGOUT_NOTIFICATION_BODY, domain,
+      ui::GetChromeOSDeviceName());
+
+  message_center::RichNotificationData data;
+  data.never_timeout = true;
+  data.fullscreen_visibility = message_center::FullscreenVisibility::OVER_USER;
+  data.priority = message_center::NotificationPriority::SYSTEM_PRIORITY;
+
+  auto notifier_id = message_center::NotifierId(
+      message_center::NotifierType::SYSTEM_COMPONENT,
+      kDeviceRestrictionScheduleNotifierId,
+      ash::NotificationCatalogName::kDeviceRestrictionSchedulePostLogout);
+
+  message_center::MessageCenter::Get()->AddNotification(
+      ash::CreateSystemNotificationPtr(
+          message_center::NOTIFICATION_TYPE_SIMPLE, kPostLogoutNotificationId,
+          title, body, std::u16string() /* display_source */,
+          GURL() /* origin_url */, notifier_id, data, nullptr /* delegate */,
+          vector_icons::kBusinessIcon,
+          message_center::SystemNotificationWarningLevel::WARNING));
+}
 
 }  // namespace policy

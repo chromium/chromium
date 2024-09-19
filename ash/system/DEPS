@@ -1,5 +1,6 @@
 include_rules = [
   "+chromeos/ash/components/phonehub",
+  "+chromeos/ash/components/policy",
   "+chromeos/ash/components/settings",
   "+components/account_id",
   "+components/device_event_log/device_event_log.h",

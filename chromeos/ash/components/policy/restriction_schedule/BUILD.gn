@@ -27,11 +27,13 @@ source_set("restriction_schedule") {
   deps = [
     "//ash/public/cpp",
     "//base:i18n",
+    "//chromeos/ash/components/install_attributes",
     "//chromeos/ash/components/policy/weekly_time",
     "//chromeos/constants",
     "//chromeos/strings",
     "//components/user_manager",
     "//components/vector_icons",
+    "//ui/chromeos",
     "//ui/message_center",
     "//url",
   ]
