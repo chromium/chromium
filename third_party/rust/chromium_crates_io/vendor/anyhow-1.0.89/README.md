@@ -136,10 +136,10 @@ Cargo.toml. A global allocator is required.
 anyhow = { version = "1.0", default-features = false }
 ```
 
-Since the `?`-based error conversions would normally rely on the
-`std::error::Error` trait which is only available through std, no_std mode will
-require an explicit `.map_err(Error::msg)` when working with a non-Anyhow error
-type inside a function that returns Anyhow's error type.
+With versions of Rust older than 1.81, no_std mode may require an additional
+`.map_err(Error::msg)` when working with a non-Anyhow error type inside a
+function that returns Anyhow's error type, as the trait that `?`-based error
+conversions are defined by is only available in std in those old versions.
 
 <br>
 

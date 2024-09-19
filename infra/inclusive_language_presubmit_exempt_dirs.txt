@@ -164,7 +164,6 @@ content/browser 9 4
 content/browser/bluetooth 1 1
 content/browser/device_sensors 1 1
 content/browser/fenced_frame 2 2
-content/browser/indexed_db/instance 1 1
 content/browser/loader 1 1
 content/browser/preloading/prefetch 1 1
 content/browser/renderer_host 3 3
@@ -212,7 +211,7 @@ extensions/common/manifest_handlers 1 1
 extensions/shell/common 1 1
 google_apis/gaia 1 1
 gpu/config 1 1
-infra 4 2
+infra 5 3
 infra/config/generated/luci 1 1
 infra/config/gn_args 1 1
 infra/config/subprojects/webrtc/consoles 1 1
@@ -307,15 +306,13 @@ third_party/android_build_tools/gradle_wrapper 1 1
 third_party/android_build_tools/json 1 1
 third_party/android_deps/buildSrc/src/main/groovy 36 2
 third_party/android_deps/libs 1 1
-third_party/android_deps/libs/com_google_auto_auto_common 1 1
-third_party/android_deps/libs/com_google_auto_service_auto_service 1 1
 third_party/android_deps/libs/com_google_auto_service_auto_service_annotations 1 1
 third_party/android_deps/libs/com_google_errorprone_error_prone_annotations 1 1
 third_party/android_deps/libs/com_google_protobuf_protobuf_javalite 1 1
 third_party/android_toolchain 1 1
 third_party/arcore-android-sdk 1 1
 third_party/axe-core 2 1
-third_party/bidimapper 2 1
+third_party/bidimapper 3 1
 third_party/blink/perf_tests/bindings/resources/data 1 1
 third_party/blink/perf_tests/css/resources 4 2
 third_party/blink/perf_tests/layout 60 2
@@ -651,8 +648,8 @@ third_party/rust/chromium_crates_io/vendor/adler-1.0.2/.github/workflows 2 1
 third_party/rust/chromium_crates_io/vendor/adler2-2.0.0/.github/workflows 2 1
 third_party/rust/chromium_crates_io/vendor/aho-corasick-1.1.3/.github/workflows 5 1
 third_party/rust/chromium_crates_io/vendor/anstyle-1.0.8 1 1
-third_party/rust/chromium_crates_io/vendor/anyhow-1.0.87 2 1
-third_party/rust/chromium_crates_io/vendor/anyhow-1.0.87/.github/workflows 3 1
+third_party/rust/chromium_crates_io/vendor/anyhow-1.0.89 2 1
+third_party/rust/chromium_crates_io/vendor/anyhow-1.0.89/.github/workflows 3 1
 third_party/rust/chromium_crates_io/vendor/base64-0.13.1 1 1
 third_party/rust/chromium_crates_io/vendor/byteorder-1.5.0/.github/workflows 5 1
 third_party/rust/chromium_crates_io/vendor/bytes-1.7.1/.github/workflows 3 1

@@ -68,6 +68,7 @@ fn main() {
     if rustc >= 80 {
         println!("cargo:rustc-check-cfg=cfg(anyhow_nightly_testing)");
         println!("cargo:rustc-check-cfg=cfg(anyhow_no_core_error)");
+        println!("cargo:rustc-check-cfg=cfg(anyhow_no_core_unwind_safe)");
         println!("cargo:rustc-check-cfg=cfg(anyhow_no_fmt_arguments_as_str)");
         println!("cargo:rustc-check-cfg=cfg(anyhow_no_ptr_addr_of)");
         println!("cargo:rustc-check-cfg=cfg(anyhow_no_unsafe_op_in_unsafe_fn_lint)");
@@ -89,6 +90,12 @@ fn main() {
         // #![deny(unsafe_op_in_unsafe_fn)]
         // https://github.com/rust-lang/rust/issues/71668
         println!("cargo:rustc-cfg=anyhow_no_unsafe_op_in_unsafe_fn_lint");
+    }
+
+    if rustc < 56 {
+        // core::panic::{UnwindSafe, RefUnwindSafe}
+        // https://blog.rust-lang.org/2021/10/21/Rust-1.56.0.html#stabilized-apis
+        println!("cargo:rustc-cfg=anyhow_no_core_unwind_safe");
     }
 
     if !error_generic_member_access && cfg!(feature = "std") && rustc >= 65 {
