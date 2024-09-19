@@ -57,7 +57,7 @@ class WebAppRunOnOsLoginLinuxTest : public WebAppTest {
         OsIntegrationTestOverrideImpl::Get()->startup();
 
     base::FilePath shortcut_filename =
-        GetAppShortcutFilename(profile()->GetPath(), kAppId);
+        GetAppDesktopShortcutFilename(profile()->GetPath(), kAppId);
     EXPECT_FALSE(shortcut_filename.empty());
 
     return autostart_path.Append(shortcut_filename);

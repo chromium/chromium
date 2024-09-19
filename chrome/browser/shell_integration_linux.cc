@@ -402,7 +402,8 @@ std::string GetXdgAppIdForWebApp(std::string app_name,
   if (base::StartsWith(app_name, web_app::kCrxAppPrefix))
     app_name = app_name.substr(strlen(web_app::kCrxAppPrefix));
   return GetDesktopBaseName(
-      web_app::GetAppShortcutFilename(profile_path, app_name).AsUTF8Unsafe());
+      web_app::GetAppDesktopShortcutFilename(profile_path, app_name)
+          .AsUTF8Unsafe());
 }
 
 namespace internal {
