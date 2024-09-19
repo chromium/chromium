@@ -614,8 +614,8 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       AccessibilityAriaActivedescendantDynamic) {
-  RunAriaTest(FILE_PATH_LITERAL("aria-activedescendant-dynamic.html"));
+                       AccessibilityAriaActivedescendantTargetIdChange) {
+  RunAriaTest(FILE_PATH_LITERAL("aria-activedescendant-target-id-change.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaAlert) {
@@ -777,6 +777,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaControls) {
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityAriaControlsTargetIdChange) {
+  RunAriaTest(FILE_PATH_LITERAL("aria-controls-target-id-change.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityAriaControlsManyParagraphsBetween) {
   RunAriaTest(FILE_PATH_LITERAL("aria-controls-many-paragraphs-between.html"));
 }
@@ -794,6 +799,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunAriaTest(FILE_PATH_LITERAL("aria-describedby.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityAriaDescribedByTargetIdChange) {
+  RunAriaTest(FILE_PATH_LITERAL("aria-describedby-target-id-change.html"));
+}
+
 // TODO(crbug.com/40853220): disabled on UIA
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTestExceptUIA,
                        AccessibilityAriaDescribedByUpdates) {
@@ -807,6 +817,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaDetails) {
   RunAriaTest(FILE_PATH_LITERAL("aria-details.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityAriaDetailsTargetIdChange) {
+  RunAriaTest(FILE_PATH_LITERAL("aria-details-target-id-change.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
@@ -848,6 +863,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaEmphasis) {
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityAriaErrorMessage) {
   RunAriaTest(FILE_PATH_LITERAL("aria-errormessage.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityAriaErrorMessageTargetIdChange) {
+  RunAriaTest(FILE_PATH_LITERAL("aria-errormessage-target-id-change.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaExpanded) {
@@ -983,6 +1003,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityAriaFlowtoTargetIdChange) {
+  RunAriaTest(FILE_PATH_LITERAL("aria-flowto-target-id-change.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        MAYBE(AccessibilityAriaFlowtoMultiple)) {
   RunAriaTest(FILE_PATH_LITERAL("aria-flowto-multiple.html"));
 }
@@ -1075,6 +1100,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityAriaLabelledByHeading) {
   RunAriaTest(FILE_PATH_LITERAL("aria-labelledby-heading.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityAriaLabelledByTargetIdChange) {
+  RunAriaTest(FILE_PATH_LITERAL("aria-labelledby-target-id-change.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
@@ -1252,6 +1282,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaOwnsCrash) {
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaOwnsCrash2) {
   RunAriaTest(FILE_PATH_LITERAL("aria-owns-crash-2.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityAriaOwnsTargetIdChange) {
+  RunAriaTest(FILE_PATH_LITERAL("aria-owns-target-id-change.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,

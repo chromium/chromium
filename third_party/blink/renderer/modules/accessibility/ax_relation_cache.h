@@ -65,10 +65,15 @@ class AXRelationCache {
   // Returns AXObject* of owner if an aria-owns relation to |obj| exists.
   AXObject* GetOrCreateAriaOwnerFor(Node* node, AXObject* obj);
   // Update aria-owns as well as any name/description related to the node
-  // and any aria-activedescendant relations.
+  // and any aria-activedescendant relations. This is called for any type
+  // of node change, even when text changes.
   void UpdateRelatedTree(Node* node, AXObject* obj);
+  // Update relations that did or will link the element after its id changes.
+  void UpdateRelatedTreeForIdChange(Element& element);
 
-  void UpdateRelatedActiveDescendant(Element& element);
+  void MarkOldAndNewRelationSourcesDirty(
+      Element& element,
+      HashMap<String, HashSet<DOMNodeId>>& id_attr_to_node_id_map);
 
   // Remove given AXID from cache.
   void RemoveAXID(AXID);
@@ -96,6 +101,7 @@ class AXRelationCache {
 
   void UpdateReverseActiveDescendantRelations(Element& relation_source);
   void UpdateReverseOwnsRelations(Element& relation_source);
+  void UpdateReverseOtherRelations(Element& relation_source);
 
   // Update a subtree used for a label so that it will be included in the tree,
   // even if hidden.
@@ -129,18 +135,6 @@ class AXRelationCache {
   // set of owned children and calls UpdateAriaOwnsWithCleanLayout on each
   // of them.
   void ProcessUpdatesWithCleanLayout();
-
-  // -- Incomplete relation handling --
-  // An incomplete relation is one where the target id is not yet connected in
-  // the DOM. Call this when there is a new object that may have incomplete
-  // relations.
-  void RegisterIncompleteRelations(AXObject*);
-  // Call this when there is an object with a new value for the provided
-  // relation |attr|, so that if it is incomplete it will be registered.
-  void RegisterIncompleteRelation(AXObject*, const QualifiedName& attr);
-  // When a new id becomes available, call this so that any source relations
-  // that point to it are marked dirty.
-  void ProcessCompletedRelationsForNewId(const AtomicString& id);
 
   // Determines the set of child nodes that this object owns due to aria-owns
   // (fully validating that the ownership is legal and free of cycles).
@@ -186,6 +180,9 @@ class AXRelationCache {
 
   // Get ids that the element points to via aria-labelledby/describedby.
   Vector<String> GetTextRelationIds(Element& relation_source);
+  // Get ids that the element points to via aria-controls, aria-details,
+  // aria-flowto and aria-errormessage.
+  Vector<String> GetOtherRelationIds(Element& relation_source);
 
   bool IsValidOwnsRelation(AXObject* owner, Node& child_node) const;
   void UnmapOwnedChildrenWithCleanLayout(const AXObject* owner,
@@ -221,17 +218,17 @@ class AXRelationCache {
   HashMap<AXID, AXID> aria_owned_child_to_owner_mapping_;
 
   // Reverse relation maps from an ID (the ID attribute of a DOM element) to the
-  // set of elements that at some time pointed to that ID via aria-owns,
-  // aria-labelledby or aria-desribedby. This is *unvalidated*, it includes
-  // possible extras and duplicates.
+  // set of elements that at some time pointed to that ID via a relation.
+  // This is *unvalidated*, it includes possible extras and duplicates.
   // This is used so that:
   // - When an element with an ID is added to the tree or changes its ID, we can
-  //   quickly determine if it affects an aria-owns relationship.
+  //   quickly determine if it affects the source node of a relationship.
   // - When text changes, we can recompute any label or description based on it
   //   and fire the appropriate change events.
   HashMap<String, HashSet<DOMNodeId>> id_attr_to_owns_relation_mapping_;
   HashMap<String, HashSet<DOMNodeId>> id_attr_to_text_relation_mapping_;
   HashMap<String, HashSet<DOMNodeId>> id_attr_to_active_descendant_mapping_;
+  HashMap<String, HashSet<DOMNodeId>> id_attr_to_other_relation_mapping_;
 
   // HTML id attributes that at one time have had a <label for> pointing to it.
   // IDs are not necessarily removed from this set. It is not necessary to

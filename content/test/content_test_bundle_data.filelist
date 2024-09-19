@@ -402,11 +402,11 @@ data/accessibility/aria/annotation-roles-expected-mac.txt
 data/accessibility/aria/annotation-roles-expected-uia-win.txt
 data/accessibility/aria/annotation-roles-expected-win.txt
 data/accessibility/aria/annotation-roles.html
-data/accessibility/aria/aria-activedescendant-dynamic-expected-blink.txt
-data/accessibility/aria/aria-activedescendant-dynamic.html
 data/accessibility/aria/aria-activedescendant-expected-auralinux.txt
 data/accessibility/aria/aria-activedescendant-expected-blink.txt
 data/accessibility/aria/aria-activedescendant-expected-mac.txt
+data/accessibility/aria/aria-activedescendant-target-id-change-expected-blink.txt
+data/accessibility/aria/aria-activedescendant-target-id-change.html
 data/accessibility/aria/aria-activedescendant.html
 data/accessibility/aria/aria-alert-expected-android-assist-data.txt
 data/accessibility/aria/aria-alert-expected-android-external.txt
@@ -636,6 +636,8 @@ data/accessibility/aria/aria-controls-expected-mac.txt
 data/accessibility/aria/aria-controls-expected-win.txt
 data/accessibility/aria/aria-controls-many-paragraphs-between-expected-blink.txt
 data/accessibility/aria/aria-controls-many-paragraphs-between.html
+data/accessibility/aria/aria-controls-target-id-change-expected-blink.txt
+data/accessibility/aria/aria-controls-target-id-change.html
 data/accessibility/aria/aria-controls.html
 data/accessibility/aria/aria-current-expected-android-assist-data.txt
 data/accessibility/aria/aria-current-expected-android-external.txt
@@ -662,6 +664,8 @@ data/accessibility/aria/aria-describedby-expected-mac-before-11.txt
 data/accessibility/aria/aria-describedby-expected-mac.txt
 data/accessibility/aria/aria-describedby-expected-uia-win.txt
 data/accessibility/aria/aria-describedby-expected-win.txt
+data/accessibility/aria/aria-describedby-target-id-change-expected-blink.txt
+data/accessibility/aria/aria-describedby-target-id-change.html
 data/accessibility/aria/aria-describedby-updates-expected-blink.txt
 data/accessibility/aria/aria-describedby-updates.html
 data/accessibility/aria/aria-describedby.html
@@ -695,6 +699,8 @@ data/accessibility/aria/aria-details-roles-expected-auralinux.txt
 data/accessibility/aria/aria-details-roles-expected-mac.txt
 data/accessibility/aria/aria-details-roles-expected-win.txt
 data/accessibility/aria/aria-details-roles.html
+data/accessibility/aria/aria-details-target-id-change-expected-blink.txt
+data/accessibility/aria/aria-details-target-id-change.html
 data/accessibility/aria/aria-details.html
 data/accessibility/aria/aria-dialog-expected-android-assist-data.txt
 data/accessibility/aria/aria-dialog-expected-android-external.txt
@@ -751,6 +757,8 @@ data/accessibility/aria/aria-errormessage-expected-blink.txt
 data/accessibility/aria/aria-errormessage-expected-mac.txt
 data/accessibility/aria/aria-errormessage-expected-uia-win.txt
 data/accessibility/aria/aria-errormessage-expected-win.txt
+data/accessibility/aria/aria-errormessage-target-id-change-expected-blink.txt
+data/accessibility/aria/aria-errormessage-target-id-change.html
 data/accessibility/aria/aria-errormessage.html
 data/accessibility/aria/aria-expanded-expected-android-assist-data.txt
 data/accessibility/aria/aria-expanded-expected-android-external.txt
@@ -782,6 +790,8 @@ data/accessibility/aria/aria-flowto-expected-win.txt
 data/accessibility/aria/aria-flowto-multiple-expected-blink.txt
 data/accessibility/aria/aria-flowto-multiple-expected-win.txt
 data/accessibility/aria/aria-flowto-multiple.html
+data/accessibility/aria/aria-flowto-target-id-change-expected-blink.txt
+data/accessibility/aria/aria-flowto-target-id-change.html
 data/accessibility/aria/aria-flowto.html
 data/accessibility/aria/aria-focusable-subwidget-not-editable-expected-win.txt
 data/accessibility/aria/aria-focusable-subwidget-not-editable.html
@@ -997,6 +1007,8 @@ data/accessibility/aria/aria-labelledby-heading-expected-mac.txt
 data/accessibility/aria/aria-labelledby-heading.html
 data/accessibility/aria/aria-labelledby-refers-to-self-expected-blink.txt
 data/accessibility/aria/aria-labelledby-refers-to-self.html
+data/accessibility/aria/aria-labelledby-target-id-change-expected-blink.txt
+data/accessibility/aria/aria-labelledby-target-id-change.html
 data/accessibility/aria/aria-labelledby-updates-expected-blink.txt
 data/accessibility/aria/aria-labelledby-updates.html
 data/accessibility/aria/aria-leaf-in-editable-expected-blink.txt
@@ -1283,6 +1295,8 @@ data/accessibility/aria/aria-owns-list-expected-android.txt
 data/accessibility/aria/aria-owns-list-expected-blink.txt
 data/accessibility/aria/aria-owns-list-expected-mac.txt
 data/accessibility/aria/aria-owns-list.html
+data/accessibility/aria/aria-owns-target-id-change-expected-blink.txt
+data/accessibility/aria/aria-owns-target-id-change.html
 data/accessibility/aria/aria-owns-with-role-change-expected-auralinux.txt
 data/accessibility/aria/aria-owns-with-role-change-expected-blink.txt
 data/accessibility/aria/aria-owns-with-role-change-expected-uia-win.txt
