@@ -18,23 +18,6 @@
 #include "ui/gfx/image/image.h"
 #include "ui/snapshot/snapshot_mac.h"
 
-// TODO: Remove when Chromium is built against the macOS 14.4 SDK or newer.
-#if !defined(MAC_OS_VERSION_14_4)
-
-@interface SCShareableContent (NewAPI)
-+ (void)getCurrentProcessShareableContentWithCompletionHandler:
-    (void (^)(SCShareableContent* _Nullable shareableContent,
-              NSError* _Nullable error))completionHandler
-    API_AVAILABLE(macos(14.4));
-@end
-
-@interface SCStreamConfiguration (NewAPI)
-@property(nonatomic, assign) BOOL includeChildWindows API_AVAILABLE(macos(14.2))
-    ;
-@end
-
-#endif  // !defined(MAC_OS_VERSION_14_4)
-
 // The API that allows an app TCC-less access to its own windows is new in macOS
 // 14.4. While this has been tested extensively on 14.4 betas, because this is a
 // new API added in an OS dot release, have a "break in case of emergency" off-
