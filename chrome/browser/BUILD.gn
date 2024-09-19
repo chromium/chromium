@@ -4842,6 +4842,8 @@ static_library("browser") {
       "//ash/webui/firmware_update_ui/mojom",
       "//ash/webui/focus_mode",
       "//ash/webui/focus_mode/mojom",
+      "//ash/webui/growth_internals",
+      "//ash/webui/growth_internals:mojom",
       "//ash/webui/help_app_ui",
       "//ash/webui/help_app_ui:mojo_bindings",
       "//ash/webui/help_app_ui/search:mojo_bindings",

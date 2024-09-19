@@ -923,7 +923,7 @@ ChromeWebUIControllerFactory::GetListOfAcceptableURLs() {
     GURL(ash::kChromeUIHelpAppURL),
     GURL(ash::kChromeUIMallUrl),
     GURL(ash::kChromeUIPrintPreviewCrosURL),
-    GURL(ash::kGrowthInternalsUntrustedURL),
+    GURL(ash::kGrowthInternalsURL),
     GURL(ash::multidevice::kChromeUIProximityAuthURL),
     GURL(ash::kChromeUIRecorderAppURL),
     GURL(ash::vc_background_ui::kChromeUIVcBackgroundURL),

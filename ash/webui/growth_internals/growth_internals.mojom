@@ -1,0 +1,14 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.growth.mojom;
+
+// Implemented in ash and used by WebUI chrome://growth-internals/.
+// More information can be found at: go/cros-growth-framework-internal-page.
+interface PageHandler {
+  // Fetches a list of logs of the growth campaigns. Each item in the logs is a
+  // string, which may contains useful information, such as campaign id, and
+  // targeting result, for debug.
+  GetCampaignsLogs() => (array<string> logs);
+};

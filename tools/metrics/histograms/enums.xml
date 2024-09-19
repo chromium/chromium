@@ -34183,7 +34183,6 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="-1949142440" label="chrome://smb-credentials-dialog/"/>
   <int value="-1941995226" label="chrome://attribution-internals/"/>
   <int value="-1911971715" label="chrome://history/"/>
-  <int value="-1900147608" label="chrome-untrusted://growth-internals/"/>
   <int value="-1899361569" label="chrome-untrusted://eche-app/"/>
   <int value="-1887206190" label="chrome://nfc-debug/"/>
   <int value="-1877210733" label="chrome-untrusted://privacy-sandbox-dialog/"/>
@@ -34430,6 +34429,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="1214710734" label="chrome://welcome/"/>
   <int value="1221097359" label="chrome://constrained-test/"/>
   <int value="1222534887" label="chrome://multidevice-internals/"/>
+  <int value="1231883104" label="chrome://growth-internals/"/>
   <int value="1265583806" label="chrome://password-manager/"/>
   <int value="1272316136" label="chrome://image/"/>
   <int value="1281801197" label="chrome://terms/"/>

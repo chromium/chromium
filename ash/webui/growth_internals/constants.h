@@ -10,8 +10,8 @@
 namespace ash {
 
 inline constexpr std::string_view kGrowthInternalsHost = "growth-internals";
-inline constexpr std::string_view kGrowthInternalsUntrustedURL =
-    "chrome-untrusted://growth-internals/";
+inline constexpr std::string_view kGrowthInternalsURL =
+    "chrome://growth-internals/";
 
 }  // namespace ash
 

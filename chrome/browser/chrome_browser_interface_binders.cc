@@ -281,6 +281,8 @@
 #include "ash/webui/firmware_update_ui/mojom/firmware_update.mojom.h"
 #include "ash/webui/focus_mode/focus_mode_ui.h"
 #include "ash/webui/focus_mode/mojom/focus_mode.mojom.h"
+#include "ash/webui/growth_internals/growth_internals.mojom.h"
+#include "ash/webui/growth_internals/growth_internals_ui.h"
 #include "ash/webui/help_app_ui/help_app_ui.h"
 #include "ash/webui/help_app_ui/help_app_ui.mojom.h"
 #include "ash/webui/help_app_ui/help_app_untrusted_ui.h"
@@ -1781,6 +1783,11 @@ void PopulateChromeWebUIFrameBinders(
     RegisterWebUIControllerInterfaceBinder<
         policy::local_user_files::mojom::PageHandlerFactory,
         policy::local_user_files::LocalFilesMigrationUI>(map);
+  }
+
+  if (ash::features::IsGrowthInternalsEnabled()) {
+    RegisterWebUIControllerInterfaceBinder<ash::growth::mojom::PageHandler,
+                                           ash::GrowthInternalsUI>(map);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

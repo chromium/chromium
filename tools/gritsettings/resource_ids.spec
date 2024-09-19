@@ -999,6 +999,10 @@
     "META": {"join": 2, "sizes": {"includes": [50],}},
     "includes": [6600],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/ash/webui/growth_internals/resources.grd": {
+    "META": {"sizes": {"includes": [10],}},
+    "includes": [6620],
+  },
   # END chromeos/ section.
 
   # START components/ section.

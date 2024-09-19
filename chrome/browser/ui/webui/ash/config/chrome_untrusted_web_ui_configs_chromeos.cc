@@ -9,7 +9,6 @@
 #include "ash/webui/eche_app_ui/untrusted_eche_app_ui.h"
 #include "ash/webui/file_manager/file_manager_untrusted_ui.h"
 #include "ash/webui/focus_mode/focus_mode_untrusted_ui.h"
-#include "ash/webui/growth_internals/growth_internals_ui.h"
 #include "ash/webui/help_app_ui/help_app_kids_magazine_untrusted_ui.h"
 #include "ash/webui/os_feedback_ui/os_feedback_untrusted_ui.h"
 #include "base/functional/bind.h"
@@ -71,7 +70,6 @@ void RegisterAshChromeUntrustedWebUIConfigs() {
       std::make_unique<feedback::OsFeedbackUntrustedUIConfig>());
   map.AddUntrustedWebUIConfig(MakeDemoModeAppUntrustedUIConfig());
   map.AddUntrustedWebUIConfig(std::make_unique<MakoUntrustedUIConfig>());
-  map.AddUntrustedWebUIConfig(std::make_unique<GrowthInternalsUIConfig>());
   map.AddUntrustedWebUIConfig(std::make_unique<ScalableIphDebugUIConfig>());
   map.AddUntrustedWebUIConfig(std::make_unique<FocusModeUntrustedUIConfig>());
 #if !defined(OFFICIAL_BUILD)

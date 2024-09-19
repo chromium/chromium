@@ -1048,7 +1048,6 @@ TEST_F(CampaignsManagerTest, LoadCampaignsFailed) {
   EXPECT_CALL(mock_client_, LoadCampaignsComponent(_))
       .WillOnce(InvokeCallbackArgument<0, CampaignComponentLoadedCallback>(
           std::nullopt));
-  EXPECT_FALSE(CampaignsLogger::Get()->HasLogForTesting());
 
   campaigns_manager_->LoadCampaigns(base::DoNothing());
   observer.Wait();
@@ -1060,13 +1059,56 @@ TEST_F(CampaignsManagerTest, LoadCampaignsFailed) {
   ASSERT_TRUE(observer.load_completed());
 
   ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
-  EXPECT_TRUE(CampaignsLogger::Get()->HasLogForTesting());
 
   histogram_tester.ExpectBucketCount(
       kCampaignsManagerErrorHistogramName,
       CampaignsManagerError::kCampaignsComponentLoadFail,
       /*count=*/1);
   histogram_tester.ExpectTotalCount(kCampaignMatchDurationHistogram, 1);
+}
+
+TEST_F(CampaignsManagerTest, LoadCampaignsFailedWithGrowthInternalsEnabled) {
+  scoped_feature_list_.InitAndEnableFeature(ash::features::kGrowthInternals);
+
+  TestCampaignsManagerObserver observer;
+  campaigns_manager_->AddObserver(&observer);
+
+  ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+
+  EXPECT_CALL(mock_client_, LoadCampaignsComponent(_))
+      .WillOnce(InvokeCallbackArgument<0, CampaignComponentLoadedCallback>(
+          std::nullopt));
+
+  EXPECT_FALSE(CampaignsLogger::Get()->HasLogForTesting());
+
+  campaigns_manager_->LoadCampaigns(base::DoNothing());
+  observer.Wait();
+  ASSERT_TRUE(observer.load_completed());
+
+  ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+  EXPECT_TRUE(CampaignsLogger::Get()->HasLogForTesting());
+}
+
+TEST_F(CampaignsManagerTest, LoadCampaignsFailedWithoutGrowthInternalsEnabled) {
+  scoped_feature_list_.InitAndDisableFeature(ash::features::kGrowthInternals);
+
+  TestCampaignsManagerObserver observer;
+  campaigns_manager_->AddObserver(&observer);
+
+  ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+
+  EXPECT_CALL(mock_client_, LoadCampaignsComponent(_))
+      .WillOnce(InvokeCallbackArgument<0, CampaignComponentLoadedCallback>(
+          std::nullopt));
+
+  EXPECT_FALSE(CampaignsLogger::Get()->HasLogForTesting());
+
+  campaigns_manager_->LoadCampaigns(base::DoNothing());
+  observer.Wait();
+  ASSERT_TRUE(observer.load_completed());
+
+  ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+  EXPECT_FALSE(CampaignsLogger::Get()->HasLogForTesting());
 }
 
 TEST_F(CampaignsManagerTest, LoadCampaignsNoFile) {
