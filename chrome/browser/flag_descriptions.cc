@@ -7189,12 +7189,6 @@ const char kImeSystemEmojiPickerMojoSearchName[] =
 const char kImeSystemEmojiPickerMojoSearchDescription[] =
     "Enable mojo search for the System Emoji Picker.";
 
-const char kImeSystemEmojiPickerSearchExtensionName[] =
-    "System emoji picker search extension";
-const char kImeSystemEmojiPickerSearchExtensionDescription[] =
-    "Emoji picker search extension enhances current emoji search by "
-    "introducing multi-word prefix search.";
-
 const char kImeSystemEmojiPickerVariantGroupingName[] =
     "System emoji picker global variant grouping";
 const char kImeSystemEmojiPickerVariantGroupingDescription[] =

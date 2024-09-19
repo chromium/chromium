@@ -2894,11 +2894,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "enable-cros-ime-system-emoji-picker-search-extension",
-    "owners": [ "curtismcmullan@chromium.org", "essential-inputs-team@google.com" ],
-    "expiry_milestone": 116
-  },
-  {
     "name": "enable-cros-ime-system-emoji-picker-variant-grouping",
     "owners": [ "lukefl@google.com", "essential-inputs-team@google.com" ],
     "expiry_milestone": 128

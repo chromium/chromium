@@ -1685,11 +1685,6 @@ BASE_FEATURE(kImeSystemEmojiPickerMojoSearch,
              "SystemEmojiPickerMojoSearch",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enable or disable system emoji picker search extension
-BASE_FEATURE(kImeSystemEmojiPickerSearchExtension,
-             "SystemEmojiPickerSearchExtension",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enable or disable system emoji picker global emoji variant grouping
 BASE_FEATURE(kImeSystemEmojiPickerVariantGrouping,
              "SystemEmojiPickerVariantGrouping",

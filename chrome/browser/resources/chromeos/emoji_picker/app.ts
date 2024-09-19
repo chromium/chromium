@@ -97,7 +97,6 @@ export class EmojiPickerApp extends PolymerElement {
         computed: 'isTextSubcategoryBarEnabled(category)',
         reflectToAttribute: true,
       },
-      searchExtensionEnabled: {type: Boolean, value: false},
       incognito: {type: Boolean, value: true},
       gifSupport: {type: Boolean, value: false},
       sealSupport: {type: Boolean, value: false},
@@ -123,7 +122,6 @@ export class EmojiPickerApp extends PolymerElement {
   private pagination: number;
   private searchLazyIndexing: boolean;
   private textSubcategoryBarEnabled: boolean;
-  private searchExtensionEnabled: boolean;
   private incognito: boolean;
   private gifSupport: boolean;
   private sealSupport: boolean;
@@ -463,8 +461,6 @@ export class EmojiPickerApp extends PolymerElement {
   }
 
   private setActiveFeatures(featureList: Feature[]) {
-    this.searchExtensionEnabled =
-        featureList.includes(Feature.EMOJI_PICKER_SEARCH_EXTENSION);
     this.gifSupport = featureList.includes(Feature.EMOJI_PICKER_GIF_SUPPORT);
     this.useMojoSearch = featureList.includes(Feature.EMOJI_PICKER_MOJO_SEARCH);
     this.sealSupport = featureList.includes(Feature.EMOJI_PICKER_SEAL_SUPPORT);
