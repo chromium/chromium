@@ -14663,7 +14663,8 @@ void RenderFrameHostImpl::DidCommitNewDocument(
   if (IsInPrimaryMainFrame() && !navigation_request->IsRestore() &&
       !navigation_request->IsReload()) {
     bool has_match = GetBackForwardCache().HasPotentiallyMatchingEntry(
-        *this, /*require_no_subframes=*/false);
+        *this, navigation_request->GetInitiatorOrigin(),
+        /*require_no_subframes=*/false);
     if (navigation_request->IsHistory()) {
       base::UmaHistogramBoolean("BackForwardCache.HistoryNavHasPotentialMatch",
                                 has_match);
@@ -14674,7 +14675,8 @@ void RenderFrameHostImpl::DidCommitNewDocument(
       base::UmaHistogramBoolean(
           "BackForwardCache.NewPageNavHasPotentialMatchWithNoSubframes",
           GetBackForwardCache().HasPotentiallyMatchingEntry(
-              *this, /*require_no_subframes=*/true));
+              *this, navigation_request->GetInitiatorOrigin(),
+              /*require_no_subframes=*/true));
     }
   }
 }

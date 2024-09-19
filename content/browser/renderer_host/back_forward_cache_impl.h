@@ -443,13 +443,16 @@ class CONTENT_EXPORT BackForwardCacheImpl
   }
 
   // Returns true if there is a BFCached entry that sufficiently matches the
-  // navigation that just committed in `committing_rfh`, such that the entry
-  // could have been used (the URL, origin, and security properties are the
-  // same, and if `require_no_subframes` is used, has no subframes). This is
+  // navigation that just committed in `committing_rfh` with initiator origin
+  // `initiator_origin`, such that the entry could have been used (the URL,
+  // origin, initiator origin, and security properties are the same, and if
+  // `require_no_subframes` is used, has no subframes). This is
   // called in response to new non-reload/session-restore cross-document
   // navigation commits.
-  bool HasPotentiallyMatchingEntry(const RenderFrameHostImpl& committing_rfh,
-                                   bool require_no_subframes) const;
+  bool HasPotentiallyMatchingEntry(
+      const RenderFrameHostImpl& committing_rfh,
+      const std::optional<url::Origin>& initiator_origin,
+      bool require_no_subframes) const;
 
  private:
   // Destroys all evicted frames in the BackForwardCache.
