@@ -12,10 +12,9 @@ namespace autofill_prediction_improvements {
 
 BASE_DECLARE_FEATURE(kAutofillPredictionImprovements);
 
-// TODO(crbug.com/362659272): Change default value to `false`.
 constexpr base::FeatureParam<bool> kSkipAllowlist{
     &kAutofillPredictionImprovements, /*name=*/"skip_allowlist",
-    /*default_value=*/true};
+    /*default_value=*/false};
 
 constexpr base::FeatureParam<int> kMinimumNumberOfEligibleFieldsForFilling{
     &kAutofillPredictionImprovements,
