@@ -23,11 +23,11 @@ BASE_FEATURE(kAutofillPasswordUserPerceptionSurvey,
 #if BUILDFLAG(IS_WIN)
 BASE_FEATURE(kAuthenticateUsingUserConsentVerifierInteropApi,
              "AuthenticateUsingUserConsentVerifierInteropApi",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAuthenticateUsingUserConsentVerifierApi,
              "AuthenticateUsingUserConsentVerifierApi",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 BASE_FEATURE(kBiometricTouchToFill,
