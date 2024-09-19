@@ -29490,10 +29490,10 @@ Called by update_net_error_codes.py.-->
 
 <enum name="PrivacySandboxStorageActivityType">
   <int value="0" label="Received kOther (partial CCT or unknown) type"/>
-  <int value="1" label="Recieved kTabbed (BrowserApp) type"/>
+  <int value="1" label="Received kTabbed (BrowserApp) type"/>
   <int value="2" label="Received kAGSACustomTab type"/>
-  <int value="3" label="Recieved kNonAGSACustomTab type"/>
-  <int value="4" label="Recieved kTrustedWebActivity type"/>
+  <int value="3" label="Received kNonAGSACustomTab type"/>
+  <int value="4" label="Received kTrustedWebActivity type"/>
   <int value="5" label="Received kWebapp type"/>
   <int value="6" label="Received kWebApk type"/>
   <int value="7" label="Received kPreFirstTab type"/>
