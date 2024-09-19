@@ -160,7 +160,7 @@ class WaylandConnection {
   zcr_extended_drag_v1* extended_drag_v1() const {
     return extended_drag_v1_.get();
   }
-  xdg_toplevel_drag_manager_v1* xdg_toplevel_drag_manager_v1() const {
+  xdg_toplevel_drag_manager_v1* toplevel_drag_manager_v1() const {
     return xdg_toplevel_drag_manager_v1_.get();
   }
 

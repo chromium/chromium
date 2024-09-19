@@ -109,9 +109,9 @@ class WaylandWindowDragController::XdgToplevelDrag {
  public:
   XdgToplevelDrag(WaylandConnection& connection, wl_data_source* source)
       : connection_(connection) {
-    DCHECK(connection.xdg_toplevel_drag_manager_v1());
+    DCHECK(connection.toplevel_drag_manager_v1());
     drag_.reset(xdg_toplevel_drag_manager_v1_get_xdg_toplevel_drag(
-        connection.xdg_toplevel_drag_manager_v1(), source));
+        connection.toplevel_drag_manager_v1(), source));
     DCHECK(drag_);
   }
 
@@ -737,7 +737,7 @@ bool WaylandWindowDragController::IsExtendedDragAvailable() const {
 }
 
 bool WaylandWindowDragController::IsXdgToplevelDragAvailable() const {
-  return !!connection_->xdg_toplevel_drag_manager_v1();
+  return !!connection_->toplevel_drag_manager_v1();
 }
 
 bool WaylandWindowDragController::IsActiveDragAndDropSession() const {
