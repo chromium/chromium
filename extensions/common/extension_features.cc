@@ -98,6 +98,10 @@ const base::FeatureParam<std::string> kExtensionManifestV2ExceptionListParam(
     /*name=*/"mv2_exception_list",
     /*default_value=*/"");
 
+BASE_FEATURE(kAllowLegacyMV2Extensions,
+             "AllowLegacyMV2Extensions",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kExtensionSidePanelIntegration,
              "ExtensionSidePanelIntegration",
              base::FEATURE_ENABLED_BY_DEFAULT);

@@ -118,6 +118,14 @@ BASE_DECLARE_FEATURE(kExtensionManifestV2ExceptionList);
 extern const base::FeatureParam<std::string>
     kExtensionManifestV2ExceptionListParam;
 
+// A feature to allow legacy MV2 extensions, even if they are not supported by
+// the browser or experiment configuration. This is important to allow
+// developers of MV2 extensions to continue loading, running, and testing their
+// extensions for as long as MV2 is supported in any variant.
+// This will be removed once the ExtensionManifestV2Availability enterprise
+// policy is no longer supported.
+BASE_DECLARE_FEATURE(kAllowLegacyMV2Extensions);
+
 // Side panel API availability.
 BASE_DECLARE_FEATURE(kExtensionSidePanelIntegration);
 

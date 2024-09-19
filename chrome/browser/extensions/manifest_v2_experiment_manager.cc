@@ -201,10 +201,25 @@ PrefMap GetGlobalNoticeAcknowledgedPrefFor(
   }
 }
 
-// Returns true if extensions should be disabled if the user is in the given
-// `stage` of the MV2 experiments. Extracted into this method to make it easier
-// to update as we add more stages.
-bool ShouldDisableExtensionsForExperimentStage(MV2ExperimentStage stage) {
+// Returns true if legacy extensions should be disabled, looking at both
+// experiment stage and global state.
+bool ShouldDisableLegacyExtensions(MV2ExperimentStage stage) {
+  if (g_allow_mv2_for_testing) {
+    // We allow legacy MV2 extensions for testing purposes.
+    return false;
+  }
+
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kAllowLegacyMV2Extensions)) {
+    // The user explicitly set the flag to allow legacy MV2 extensions. It's
+    // important we retain this functionality so that developers of MV2
+    // extensions used by enterprises can continue developing (and testing)
+    // them for as long as the ExtensionManifestV2Availability enterprise policy
+    // is supported.
+    return false;
+  }
+
+  // Check the experiment stage to determine if extensions should be disabled.
   switch (stage) {
     case MV2ExperimentStage::kNone:
     case MV2ExperimentStage::kWarning:
@@ -276,12 +291,9 @@ bool ManifestV2ExperimentManager::ShouldBlockExtensionInstallation(
     Manifest::Type manifest_type,
     mojom::ManifestLocation manifest_location,
     const HashedExtensionId& hashed_id) {
-  if (g_allow_mv2_for_testing) {
-    return false;
-  }
-
-  // Only block extension installation during the disablement phase.
-  if (!ShouldDisableExtensionsForExperimentStage(experiment_stage_)) {
+  // Only block extension installation during phases in which legacy extensions
+  // are automatically disabled.
+  if (!ShouldDisableLegacyExtensions(experiment_stage_)) {
     return false;
   }
 
@@ -382,13 +394,7 @@ void ManifestV2ExperimentManager::SetHasTriggeredDisabledDialog(
 }
 
 void ManifestV2ExperimentManager::DisableAffectedExtensions() {
-  // If MV2 extensions are allowed for testing purposes, don't disable any of
-  // them.
-  if (g_allow_mv2_for_testing) {
-    return;
-  }
-
-  if (!ShouldDisableExtensionsForExperimentStage(experiment_stage_)) {
+  if (!ShouldDisableLegacyExtensions(experiment_stage_)) {
     return;
   }
 
@@ -442,12 +448,12 @@ void ManifestV2ExperimentManager::MaybeReEnableExtension(
     return;
   }
 
-  // Check if the extension is still affected *and* whether the experiment
-  // stage is still one in which extensions should be disabled. It's possible
-  // the user moved from a later experiment stage to an earlier one, in which
-  // case extensions should be re-enabled.
+  // Check if the extension is still affected *and* whether the environment is
+  // still one in which extensions should be disabled. It's possible the user
+  // moved from a later experiment stage to an earlier one or set a feature
+  // flag, in which case extensions should be re-enabled.
   if (impact_checker_.IsExtensionAffected(extension) &&
-      ShouldDisableExtensionsForExperimentStage(experiment_stage_)) {
+      ShouldDisableLegacyExtensions(experiment_stage_)) {
     return;
   }
 
@@ -472,9 +478,9 @@ bool ManifestV2ExperimentManager::DidUserReEnableExtension(
 }
 
 void ManifestV2ExperimentManager::EmitMetricsForProfileReady() {
-  if (!ShouldDisableExtensionsForExperimentStage(experiment_stage_)) {
-    // Don't bother reporting MV2-specific metrics if the user isn't at a stage
-    // where extensions could be disabled.
+  if (!ShouldDisableLegacyExtensions(experiment_stage_)) {
+    // Don't bother reporting MV2-specific metrics if the user isn't in an
+    // environment in which extensions could be disabled.
     return;
   }
 
