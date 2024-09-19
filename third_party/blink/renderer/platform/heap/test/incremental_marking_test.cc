@@ -1235,8 +1235,7 @@ TEST_F(IncrementalMarkingTest, StepDuringObjectConstruction) {
             // barrier for the object.
             holder->set_value(thiz);
             // Finish call incremental steps.
-            driver->TriggerMarkingSteps(
-                ThreadState::StackState::kMayContainHeapPointers);
+            driver->TriggerMarkingStepsWithStack();
           },
           WTF::Unretained(&driver), WrapWeakPersistent(holder.Get())),
       MakeGarbageCollected<LinkedObject>());
@@ -1263,8 +1262,7 @@ TEST_F(IncrementalMarkingTest, StepDuringMixinObjectConstruction) {
             // the object.
             holder->set_value(thiz);
             // Finish call incremental steps.
-            driver->TriggerMarkingSteps(
-                ThreadState::StackState::kMayContainHeapPointers);
+            driver->TriggerMarkingStepsWithStack();
           },
           WTF::Unretained(&driver), WrapWeakPersistent(holder.Get())),
       MakeGarbageCollected<LinkedObject>());
