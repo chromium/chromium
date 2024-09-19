@@ -1249,8 +1249,13 @@ class DrawImageToneMapUtil {
     return false;
   }
   static bool UseGlobalToneMapFilter(const PaintImage& image) {
-    return image.use_global_tone_map_ && image.cached_sk_image_ &&
-           image.cached_sk_image_->colorSpace();
+    if (!image.cached_sk_image_ || !image.cached_sk_image_->colorSpace()) {
+      return false;
+    }
+    skcms_TransferFunction fn;
+    image.cached_sk_image_->colorSpace()->transferFn(&fn);
+    return skcms_TransferFunction_isHLGish(&fn) ||
+           skcms_TransferFunction_isPQish(&fn);
   }
   static void AddGlobalToneMapFilterToPaint(
       SkPaint& paint,

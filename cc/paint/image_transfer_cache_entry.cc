@@ -637,51 +637,6 @@ size_t ServiceImageTransferCacheEntry::CachedSize() const {
   return size_;
 }
 
-sk_sp<SkImage> ServiceImageTransferCacheEntry::GetImageWithToneMapApplied(
-    float hdr_headroom,
-    bool needs_mips) const {
-  sk_sp<SkImage> image;
-
-  // Apply tone mapping.
-  // TODO(crbug.com/40210699): Pass a shared cache as a parameter.
-  gfx::ColorConversionSkFilterCache cache;
-  if (has_gainmap_) {
-    image = cache.ApplyGainmap(
-        image_, gainmap_image_, gainmap_info_, hdr_headroom,
-        image_->isTextureBacked() ? gr_context_ : nullptr,
-        image_->isTextureBacked() ? graphite_recorder_ : nullptr);
-  } else if (use_global_tone_map_) {
-    // Images are always rendered as SDR-relative and the output color space
-    // is SDR itself,
-    image = cache.ApplyToneCurve(
-        image_, hdr_metadata_, gfx::ColorSpace::kDefaultSDRWhiteLevel,
-        hdr_headroom, image_->isTextureBacked() ? gr_context_ : nullptr,
-        image_->isTextureBacked() ? graphite_recorder_ : nullptr);
-  }
-  if (!image) {
-    DLOG(ERROR) << "Image tone mapping failed";
-    return nullptr;
-  }
-
-  // Create mipmaps if requested.
-  if (image->isTextureBacked() && needs_mips && !image->hasMipmaps()) {
-    if (gr_context_) {
-      image = SkImages::TextureFromImage(
-          gr_context_, image, skgpu::Mipmapped::kYes, skgpu::Budgeted::kNo);
-    } else {
-      CHECK(graphite_recorder_);
-      SkImage::RequiredProperties props{.fMipmapped = true};
-      image = SkImages::TextureFromImage(graphite_recorder_, image, props);
-    }
-    if (!image) {
-      DLOG(ERROR) << "Failed to generate mipmaps after tone mapping";
-      return nullptr;
-    }
-  }
-
-  return image;
-}
-
 bool ServiceImageTransferCacheEntry::Deserialize(
     GrDirectContext* gr_context,
     skgpu::graphite::Recorder* graphite_recorder,

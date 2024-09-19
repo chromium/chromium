@@ -86,9 +86,6 @@ PaintImage PaintImageBuilder::TakePaintImage() {
            paint_image_.gainmap_sk_image_);
   }
 
-  // Global tone mapping and gain maps are mutually exclusive.
-  DCHECK(!paint_image_.HasGainmap() || !paint_image_.use_global_tone_map_);
-
   if (paint_image_.ShouldAnimate()) {
     DCHECK(paint_image_.paint_image_generator_)
         << "Animated images must provide a generator";

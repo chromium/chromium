@@ -152,11 +152,6 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kClearCanvasResourcesInBackground);
 // to when tracing is enabled.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kMetricsTracingCalculationReduction);
 
-// Temporary features to enable the fix for b/328665503 independently from
-// adding the implementation.
-CC_BASE_EXPORT BASE_DECLARE_FEATURE(kPaintWithGainmapShader);
-CC_BASE_EXPORT BASE_DECLARE_FEATURE(kPaintWithGlobalToneMapFilter);
-
 // When enabled we will restore older FrameSequenceTracker sequence order
 // enforcing that can miss backfilled frames.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kMetricsBackfillAdjustmentHoldback);

@@ -165,15 +165,10 @@ class CC_PAINT_EXPORT ServiceImageTransferCacheEntry final
   const sk_sp<SkImage>& gainmap_image() const { return gainmap_image_; }
   const SkGainmapInfo& gainmap_info() const { return gainmap_info_; }
 
-  // Return true if GetImageWithToneMapApplied() should be used instead of
-  // image().
+  // Return true the image should be tone mapped.
   bool NeedsToneMapApplied() const {
     return has_gainmap_ || use_global_tone_map_;
   }
-
-  // Return this image, tone mapped to match the specified HDR headroom.
-  sk_sp<SkImage> GetImageWithToneMapApplied(float hdr_headroom,
-                                            bool needs_mips) const;
 
   // Ensures the cached image has mips.
   void EnsureMips();

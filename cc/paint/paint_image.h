@@ -445,9 +445,6 @@ class CC_PAINT_EXPORT PaintImage {
   sk_sp<PaintImageGenerator> gainmap_paint_image_generator_;
   std::optional<SkGainmapInfo> gainmap_info_;
 
-  // If true, then use `hdr_metadata_` to tone map to `target_hdr_headroom_`.
-  bool use_global_tone_map_ = false;
-
   // HDR metadata used by global tone map application and (potentially but not
   // yet) gain map application.
   std::optional<gfx::HDRMetadata> hdr_metadata_;

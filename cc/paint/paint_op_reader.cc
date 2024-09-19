@@ -491,51 +491,23 @@ void PaintOpReader::Read(
       }
     }
 
-    // Bake the HDR headroom into the image now.
-    // TODO(b/328665503): Move the application of tone mapping from here to
-    // playback time.
-    if ((entry->HasGainmap() &&
-         !base::FeatureList::IsEnabled(features::kPaintWithGainmapShader)) ||
-        (entry->use_global_tone_map() &&
-         !base::FeatureList::IsEnabled(
-             features::kPaintWithGlobalToneMapFilter))) {
-      auto sk_image =
-          entry->GetImageWithToneMapApplied(hdr_headroom, needs_mips);
-      *image = PaintImageBuilder::WithDefault()
-                   .set_id(PaintImage::GetNextId())
-                   .set_texture_image(std::move(sk_image),
-                                      PaintImage::kNonLazyStableId)
-                   .TakePaintImage();
-      return;
-    }
-
     if (needs_mips) {
       entry->EnsureMips();
     }
+
+    PaintImageBuilder builder =
+        PaintImageBuilder::WithDefault()
+            .set_id(PaintImage::GetNextId())
+            .set_texture_image(entry->image(), PaintImage::kNonLazyStableId)
+            .set_target_hdr_headroom(hdr_headroom);
     if (entry->HasGainmap()) {
-      *image = PaintImageBuilder::WithDefault()
-                   .set_id(PaintImage::GetNextId())
-                   .set_gainmap_texture_image(
-                       entry->image(), entry->gainmap_image(),
-                       entry->gainmap_info(), PaintImage::kNonLazyStableId)
-                   .set_target_hdr_headroom(hdr_headroom)
-                   .TakePaintImage();
-    } else if (entry->use_global_tone_map()) {
-      *image =
-          PaintImageBuilder::WithDefault()
-              .set_id(PaintImage::GetNextId())
-              .set_texture_image(entry->image(), PaintImage::kNonLazyStableId)
-              .set_hdr_metadata(entry->hdr_metadata())
-              .set_use_global_tone_map(true)
-              .set_target_hdr_headroom(hdr_headroom)
-              .TakePaintImage();
-    } else {
-      *image =
-          PaintImageBuilder::WithDefault()
-              .set_id(PaintImage::GetNextId())
-              .set_texture_image(entry->image(), PaintImage::kNonLazyStableId)
-              .TakePaintImage();
+      builder = std::move(builder).set_gainmap_texture_image(
+          entry->gainmap_image(), entry->gainmap_info());
     }
+    if (entry->hdr_metadata().has_value()) {
+      builder = std::move(builder).set_hdr_metadata(entry->hdr_metadata());
+    }
+    *image = builder.TakePaintImage();
   }
 }
 
