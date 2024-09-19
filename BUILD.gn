@@ -316,12 +316,15 @@ group("gn_all") {
 
     if (toolkit_views) {
       deps += [
-        "//chrome/browser/enterprise/watermark:watermark_app",
         "//ui/views:views_unittests",
         "//ui/views/examples:views_examples",
         "//ui/views/examples:views_examples_unittests",
         "//ui/views/examples:views_examples_with_content",
       ]
+    }
+
+    if (enterprise_watermark) {
+      deps += [ "//chrome/browser/enterprise/watermark:watermark_app" ]
     }
 
     if (use_aura) {
