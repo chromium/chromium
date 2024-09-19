@@ -52,17 +52,48 @@
 -PageContentAnnotationsModelManagerTest.NotifyWhenModelAvailable_VisibilityOnly
 -PageContentAnnotationsModelManagerTest.PageVisibility
 
-# TODO(crbug.com/40945936): Test currently fails on iOS blink.
--FillJsTest.GetCanonicalActionForForm
--FillJsTest.GetAriaDescriptionInvalid
+# TODO(crbug.com/40945936): Test currently fails on iOS blink. And,
+# https://crrev.com/c/5854580 changed some test type to value-parameterized
+# tests.
+-FillJsTest.GetAriaDescriptionInvalid/0
+-FillJsTest.GetAriaDescriptionInvalid/0
+-FillJsTest.GetAriaDescriptionInvalid/1
+-FillJsTest.GetAriaDescriptionInvalid/1
 -FillJsTest.GetAriaDescriptionMulti
--FillJsTest.GetAriaDescriptionSingle
--FillJsTest.GetAriaLabel
--FillJsTest.GetAriaLabelledByFallback
--FillJsTest.GetAriaLabelledByInvalid
--FillJsTest.GetAriaLabelledByMulti
+-FillJsTest.GetAriaDescriptionSingle/0
+-FillJsTest.GetAriaDescriptionSingle/0
+-FillJsTest.GetAriaDescriptionSingle/1
+-FillJsTest.GetAriaDescriptionSingle/1
+-FillJsTest.GetAriaLabel/0
+-FillJsTest.GetAriaLabel/0
+-FillJsTest.GetAriaLabel/1
+-FillJsTest.GetAriaLabel/1
+-FillJsTest.GetAriaLabelledByFallback/0
+-FillJsTest.GetAriaLabelledByFallback/0
+-FillJsTest.GetAriaLabelledByFallback/1
+-FillJsTest.GetAriaLabelledByFallback/1
+-FillJsTest.GetAriaLabelledByInvalid/0
+-FillJsTest.GetAriaLabelledByInvalid/0
+-FillJsTest.GetAriaLabelledByInvalid/1
+-FillJsTest.GetAriaLabelledByInvalid/1
+-FillJsTest.GetAriaLabelledByMulti/0
+-FillJsTest.GetAriaLabelledByMulti/0
+-FillJsTest.GetAriaLabelledByMulti/1
+-FillJsTest.GetAriaLabelledByMulti/1
 -FillJsTest.GetAriaLabelledBySingle
 -FillJsTest.GetAriaLabelledByTakesPrecedence
+-FillJsTest.GetCanonicalActionForForm/0
+-FillJsTest.GetCanonicalActionForForm/0
+-FillJsTest.GetCanonicalActionForForm/1
+-FillJsTest.GetCanonicalActionForForm/1
+-FillJsTest.GetUniqueIDInAllJavaScriptContentWorlds/0
+-FillJsTest.GetUniqueIDInAllJavaScriptContentWorlds/0
+-FillJsTest.GetUniqueIDInAllJavaScriptContentWorlds/1
+-FillJsTest.GetUniqueIDInAllJavaScriptContentWorlds/1
+-FillJsTest.GetUniqueIDReturnsNotSetWhenInvalidIDInDOM/0
+-FillJsTest.GetUniqueIDReturnsNotSetWhenInvalidIDInDOM/0
+-FillJsTest.GetUniqueIDReturnsNotSetWhenInvalidIDInDOM/1
+-FillJsTest.GetUniqueIDReturnsNotSetWhenInvalidIDInDOM/1
 -FillJsTest.ShouldAutocompleteOneTimeCode
 
 # TODO(crbug.com/40945941): Test currently fails on iOS blink.
