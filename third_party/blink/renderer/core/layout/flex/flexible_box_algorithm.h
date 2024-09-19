@@ -254,7 +254,7 @@ class FlexLine {
   // flexed_content_size set as the override main axis size, and
   // cross_axis_size needs to be set correctly on each flex item (to the size
   // the item has without stretching).
-  void ComputeLineItemsPosition(LayoutUnit& cross_axis_offset);
+  void ComputeLineItemsPosition();
 
   FlexibleBoxAlgorithm* algorithm_;
   FlexItemVectorView line_items_;
@@ -278,7 +278,6 @@ class FlexLine {
   LayoutUnit remaining_free_space_;
 
   // These get filled in by ComputeLineItemsPosition
-  LayoutUnit cross_axis_offset_;
   LayoutUnit cross_axis_extent_;
 
   LayoutUnit max_major_ascent_ = LayoutUnit::Min();
@@ -293,7 +292,6 @@ class FlexLine {
 //     for (each child) {
 //       algorithm.emplace_back(...caller must compute these values...)
 //     }
-//     LayoutUnit cross_axis_offset = border + padding;
 //     while ((FlexLine* line = algorithm.ComputenextLine(LogicalWidth()))) {
 //       // Compute main axis size, using sum_hypothetical_main_size if
 //       // indefinite
@@ -303,7 +301,7 @@ class FlexLine {
 //        while (!current_line->ResolveFlexibleLengths()) { continue; }
 //        // Now, lay out the items, forcing their main axis size to
 //        // item.flexed_content_size
-//        line->ComputeLineItemsPosition(cross_axis_offset);
+//        line->ComputeLineItemsPosition();
 //     }
 // The final position of each flex item is in item.offset
 class CORE_EXPORT FlexibleBoxAlgorithm {
@@ -362,28 +360,12 @@ class CORE_EXPORT FlexibleBoxAlgorithm {
   // line. In both cases, border/padding is not included.
   LayoutUnit IntrinsicContentBlockSize() const;
 
-  // Positions flex lines by modifying FlexLine::cross_axis_offset, and
-  // FlexItem::desired_position. When lines stretch, also modifies
-  // FlexLine::cross_axis_extent.
-  void AlignFlexLines(LayoutUnit cross_axis_content_extent,
-                      HeapVector<NGFlexLine>* flex_line_outputs = nullptr);
-
-  void FlipForWrapReverse(LayoutUnit cross_axis_start_edge,
-                          LayoutUnit cross_axis_content_size,
-                          HeapVector<NGFlexLine>* flex_line_outputs = nullptr);
-
   static const StyleContentAlignmentData& ContentAlignmentNormalBehavior();
   static StyleContentAlignmentData ResolvedJustifyContent(const ComputedStyle&);
   static StyleContentAlignmentData ResolvedAlignContent(const ComputedStyle&);
   static ItemPosition AlignmentForChild(const ComputedStyle& flexbox_style,
                                         const ComputedStyle& child_style);
 
-  static LayoutUnit InitialContentPositionOffset(
-      const ComputedStyle& style,
-      LayoutUnit available_free_space,
-      const StyleContentAlignmentData&,
-      unsigned number_of_items,
-      bool is_reversed = false);
   static LayoutUnit ContentDistributionSpaceBetweenChildren(
       LayoutUnit available_free_space,
       const StyleContentAlignmentData&,

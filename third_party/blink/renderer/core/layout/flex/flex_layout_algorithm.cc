@@ -960,7 +960,6 @@ const LayoutResult* FlexLayoutAlgorithm::LayoutInternal() {
       total_intrinsic_block_size_, container_builder_.InlineSize());
 
   if (!IsBreakInside(GetBreakToken())) {
-    ApplyFinalAlignment(&flex_line_outputs);
     ApplyReversals(&flex_line_outputs);
     LayoutResult::EStatus status = GiveItemsFinalPositionAndSize(
         &flex_line_outputs, &row_break_between_outputs);
@@ -1077,10 +1076,6 @@ void FlexLayoutAlgorithm::PlaceFlexItems(
                                   : Phase::kLayout,
                               oof_children);
 
-  LayoutUnit cross_axis_offset = is_column_
-                                     ? BorderScrollbarPadding().inline_start
-                                     : BorderScrollbarPadding().block_start;
-
   flex_line_outputs->reserve(algorithm_.NumItems());
 
   FlexLine* line;
@@ -1152,13 +1147,10 @@ void FlexLayoutAlgorithm::PlaceFlexItems(
                 : flex_item.layout_result_->GetPhysicalFragment().Size().width;
       }
     }
-    // cross_axis_offset is updated in each iteration of the loop, for passing
-    // in to the next iteration.
-    line->ComputeLineItemsPosition(cross_axis_offset);
+    line->ComputeLineItemsPosition();
     flex_line_outputs->back().main_axis_free_space =
         line->remaining_free_space_;
     flex_line_outputs->back().line_cross_size = line->cross_axis_extent_;
-    flex_line_outputs->back().cross_axis_offset = line->cross_axis_offset_;
     flex_line_outputs->back().major_baseline = line->max_major_ascent_;
     flex_line_outputs->back().minor_baseline = line->max_minor_ascent_;
   }
@@ -1176,38 +1168,6 @@ void FlexLayoutAlgorithm::CalculateTotalIntrinsicBlockSize(
   total_intrinsic_block_size_ = ClampIntrinsicBlockSize(
       GetConstraintSpace(), Node(), GetBreakToken(), BorderScrollbarPadding(),
       total_intrinsic_block_size_ + BorderScrollbarPadding().block_end);
-}
-
-void FlexLayoutAlgorithm::ApplyFinalAlignment(
-    HeapVector<NGFlexLine>* flex_line_outputs) {
-  auto& line_contexts = algorithm_.FlexLines();
-  const LayoutUnit cross_axis_start_edge =
-      line_contexts.empty() ? LayoutUnit()
-                            : line_contexts[0].cross_axis_offset_;
-
-  LayoutUnit final_content_main_size =
-      (container_builder_.InlineSize() - BorderScrollbarPadding().InlineSum())
-          .ClampNegativeToZero();
-  LayoutUnit final_content_cross_size =
-      (total_block_size_ - BorderScrollbarPadding().BlockSum())
-          .ClampNegativeToZero();
-  if (is_column_)
-    std::swap(final_content_main_size, final_content_cross_size);
-
-  if (!algorithm_.IsMultiline() && !line_contexts.empty()) {
-    line_contexts[0].cross_axis_extent_ = final_content_cross_size;
-    (*flex_line_outputs)[0].line_cross_size = final_content_cross_size;
-  }
-
-  algorithm_.AlignFlexLines(final_content_cross_size, flex_line_outputs);
-
-  if (Style().FlexWrap() == EFlexWrap::kWrapReverse) {
-    // flex-wrap: wrap-reverse reverses the order of the lines in the container;
-    // FlipForWrapReverse recalculates each item's cross axis position. We have
-    // to do that after AlignChildren sets an initial cross axis position.
-    algorithm_.FlipForWrapReverse(cross_axis_start_edge,
-                                  final_content_cross_size, flex_line_outputs);
-  }
 }
 
 void FlexLayoutAlgorithm::ApplyReversals(
@@ -1233,24 +1193,26 @@ LayoutUnit InitialContentPositionOffset(const StyleContentAlignmentData& data,
     case ContentDistributionType::kDefault:
       break;
     case ContentDistributionType::kSpaceBetween:
-      if (number_of_items > 1) {
+      if (free_space > LayoutUnit() && number_of_items > 1) {
         return LayoutUnit();
       }
+      // Fallback to 'flex-start'.
       return is_reverse ? free_space : LayoutUnit();
     case ContentDistributionType::kSpaceAround:
       if (free_space > LayoutUnit() && number_of_items) {
         return free_space / (2 * number_of_items);
       }
-      // Fallback to 'safe center'
+      // Fallback to 'safe center'.
       return (free_space / 2).ClampNegativeToZero();
     case ContentDistributionType::kSpaceEvenly:
       if (free_space > LayoutUnit() && number_of_items) {
         return free_space / (number_of_items + 1);
       }
-      // Fallback to 'safe center'
+      // Fallback to 'safe center'.
       return (free_space / 2).ClampNegativeToZero();
     case ContentDistributionType::kStretch:
-      return LayoutUnit();
+      // Fallback to 'flex-start'.
+      return is_reverse ? free_space : LayoutUnit();
   }
 
   ContentPosition position = data.GetPosition();
@@ -1312,16 +1274,58 @@ LayoutResult::EStatus FlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
   const auto& style = Style();
   const WritingDirectionMode writing_direction =
       GetConstraintSpace().GetWritingDirection();
+  const bool is_reverse_direction = style.ResolvedIsReverseFlexDirection();
+
   const StyleContentAlignmentData justify_content =
       FlexibleBoxAlgorithm::ResolvedJustifyContent(style);
-  const bool is_reverse = style.ResolvedIsReverseFlexDirection();
+  const StyleContentAlignmentData align_content =
+      FlexibleBoxAlgorithm::ResolvedAlignContent(style);
+
+  // Determine the cross-axis free-space.
+  const wtf_size_t num_lines = flex_line_outputs->size();
+  const LayoutUnit cross_axis_content_size =
+      (is_column_ ? (container_builder_.InlineSize() -
+                     BorderScrollbarPadding().InlineSum())
+                  : (total_block_size_ - BorderScrollbarPadding().BlockSum()))
+          .ClampNegativeToZero();
+  LayoutUnit cross_axis_free_space = cross_axis_content_size;
+  for (const NGFlexLine& line : *flex_line_outputs) {
+    cross_axis_free_space -= line.line_cross_size;
+  }
+  cross_axis_free_space -= (num_lines - 1) * algorithm_.gap_between_lines_;
+
+  if (!algorithm_.IsMultiline()) {
+    // A single line flexbox will always be the cross-axis content-size.
+    flex_line_outputs->back().line_cross_size = cross_axis_content_size;
+    cross_axis_free_space = LayoutUnit();
+  } else if (cross_axis_free_space >= LayoutUnit() &&
+             align_content.Distribution() ==
+                 ContentDistributionType::kStretch) {
+    // Stretch lines in a multi-line flexbox to the available free-space.
+    const LayoutUnit delta = cross_axis_free_space / num_lines;
+    for (NGFlexLine& line : *flex_line_outputs) {
+      line.line_cross_size += delta;
+    }
+    cross_axis_free_space = LayoutUnit();
+  }
 
   // -webkit-box has a weird quirk - an RTL box will overflow as if it was LTR.
+  // NOTE: We should attempt to remove this in the future.
   const ContentPosition safe_justify_position =
       style.IsDeprecatedWebkitBox() && !is_column_ &&
               style.Direction() == TextDirection::kRtl
           ? ContentPosition::kEnd
           : ContentPosition::kStart;
+
+  const LayoutUnit space_between_lines =
+      FlexibleBoxAlgorithm::ContentDistributionSpaceBetweenChildren(
+          cross_axis_free_space, align_content, num_lines);
+  LayoutUnit cross_axis_offset =
+      (is_column_ ? BorderScrollbarPadding().inline_start
+                  : BorderScrollbarPadding().block_start) +
+      InitialContentPositionOffset(align_content, ContentPosition::kStart,
+                                   cross_axis_free_space, num_lines,
+                                   style.FlexWrap() == EFlexWrap::kWrapReverse);
 
   BaselineAccumulator baseline_accumulator(style);
   LayoutResult::EStatus status = LayoutResult::kSuccess;
@@ -1329,6 +1333,7 @@ LayoutResult::EStatus FlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
   for (wtf_size_t flex_line_idx = 0; flex_line_idx < flex_line_outputs->size();
        ++flex_line_idx) {
     NGFlexLine& line_output = (*flex_line_outputs)[flex_line_idx];
+    line_output.cross_axis_offset = cross_axis_offset;
 
     bool is_first_line = flex_line_idx == 0;
     bool is_last_line = flex_line_idx == flex_line_outputs->size() - 1;
@@ -1346,7 +1351,7 @@ LayoutResult::EStatus FlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
                     : BorderScrollbarPadding().inline_start) +
         InitialContentPositionOffset(justify_content, safe_justify_position,
                                      line_output.main_axis_free_space,
-                                     line_items_size, is_reverse);
+                                     line_items_size, is_reverse_direction);
 
     for (wtf_size_t flex_item_idx = 0;
          flex_item_idx < line_output.line_items.size(); ++flex_item_idx) {
@@ -1419,7 +1424,7 @@ LayoutResult::EStatus FlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
 
       flex_item.offset =
           FlexOffset(main_axis_offset,
-                     line_output.cross_axis_offset +
+                     cross_axis_offset +
                          item->CrossAxisOffset(line_output, cross_axis_size));
       const LogicalOffset offset = flex_item.offset.ToLogicalOffset(is_column_);
 
@@ -1443,6 +1448,9 @@ LayoutResult::EStatus FlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
         status = LayoutResult::kNeedsRelayoutWithNoChildScrollbarChanges;
       }
     }
+
+    cross_axis_offset += line_output.line_cross_size + space_between_lines +
+                         algorithm_.gap_between_lines_;
   }
 
   if (auto first_baseline = baseline_accumulator.FirstBaseline())
@@ -2054,7 +2062,7 @@ MinMaxSizesResult
 FlexLayoutAlgorithm::ComputeMinMaxSizeOfMultilineColumnContainer() {
   UseCounter::Count(Node().GetDocument(),
                     WebFeature::kFlexNewColumnWrapIntrinsicSize);
-  MinMaxSizes largest_inline_size_contributions;
+  MinMaxSizes min_max_sizes;
   // The algorithm for determining the max-content width of a column-wrap
   // container is simply: Run layout on the container but give the items an
   // overridden available size, equal to the largest max-content width of any
@@ -2063,26 +2071,23 @@ FlexLayoutAlgorithm::ComputeMinMaxSizeOfMultilineColumnContainer() {
   HeapVector<NGFlexLine> flex_line_outputs;
   PlaceFlexItems(&flex_line_outputs, /* oof_children */ nullptr,
                  /* is_computing_multiline_column_intrinsic_size */ true);
-  largest_inline_size_contributions.min_size =
-      largest_min_content_contribution_;
+  min_max_sizes.min_size = largest_min_content_contribution_;
   if (!flex_line_outputs.empty()) {
-    largest_inline_size_contributions.max_size =
-        flex_line_outputs.back().line_cross_size +
-        flex_line_outputs.back().cross_axis_offset -
-        flex_line_outputs.front().cross_axis_offset +
+    for (const auto& line : flex_line_outputs) {
+      min_max_sizes.max_size += line.line_cross_size;
+    }
+    min_max_sizes.max_size +=
         (flex_line_outputs.size() - 1) * algorithm_.gap_between_lines_;
   }
 
-  DCHECK_GE(largest_inline_size_contributions.min_size, 0);
-  DCHECK_LE(largest_inline_size_contributions.min_size,
-            largest_inline_size_contributions.max_size);
+  DCHECK_GE(min_max_sizes.min_size, 0);
+  DCHECK_LE(min_max_sizes.min_size, min_max_sizes.max_size);
 
-  largest_inline_size_contributions += BorderScrollbarPadding().InlineSum();
+  min_max_sizes += BorderScrollbarPadding().InlineSum();
 
   // This always depends on block constraints because if block constraints
   // change, this flexbox could get a different number of columns.
-  return {largest_inline_size_contributions,
-          /* depends_on_block_constraints */ true};
+  return {min_max_sizes, /* depends_on_block_constraints */ true};
 }
 
 MinMaxSizesResult FlexLayoutAlgorithm::ComputeMinMaxSizeOfRowContainerV3() {
@@ -2512,8 +2517,6 @@ void FlexLayoutAlgorithm::CheckFlexLines(
     const FlexLine& flex_line = flex_lines[i];
     const NGFlexLine& flex_line_output = flex_line_outputs[i];
 
-    DCHECK_EQ(flex_line_output.line_cross_size, flex_line.cross_axis_extent_);
-    DCHECK_EQ(flex_line_output.cross_axis_offset, flex_line.cross_axis_offset_);
     DCHECK_EQ(flex_line_output.line_items.size(), flex_line.line_items_.size());
 
     for (wtf_size_t j = 0; j < flex_line_output.line_items.size(); j++) {

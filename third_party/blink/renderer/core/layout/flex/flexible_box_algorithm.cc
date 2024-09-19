@@ -503,7 +503,7 @@ LayoutUnit FlexLine::ApplyMainAxisAutoMarginAdjustment() {
   return size_of_auto_margin;
 }
 
-void FlexLine::ComputeLineItemsPosition(LayoutUnit& cross_axis_offset) {
+void FlexLine::ComputeLineItemsPosition() {
   const auto& style = algorithm_->StyleRef();
   const bool is_wrap_reverse = style.FlexWrap() == EFlexWrap::kWrapReverse;
 
@@ -558,11 +558,7 @@ void FlexLine::ComputeLineItemsPosition(LayoutUnit& cross_axis_offset) {
     max_child_cross_axis_extent = std::max(max_child_cross_axis_extent,
                                            child_cross_axis_margin_box_extent);
   }
-
-  cross_axis_offset_ = cross_axis_offset;
   cross_axis_extent_ = max_child_cross_axis_extent;
-
-  cross_axis_offset += max_child_cross_axis_extent;
 }
 
 // static
@@ -744,80 +740,17 @@ LayoutUnit FlexibleBoxAlgorithm::IntrinsicContentBlockSize() const {
 
   if (IsColumnFlow()) {
     LayoutUnit max_size;
-    for (const FlexLine& line : flex_lines_)
-      max_size = std::max(line.sum_hypothetical_main_size_, max_size);
+    for (const auto& line : flex_lines_) {
+      max_size = std::max(max_size, line.sum_hypothetical_main_size_);
+    }
     return max_size;
   }
 
-  const FlexLine& last_line = flex_lines_.back();
-  // Subtract the first line's offset to remove border/padding
-  return last_line.cross_axis_offset_ + last_line.cross_axis_extent_ -
-         flex_lines_.front().cross_axis_offset_ +
-         (flex_lines_.size() - 1) * gap_between_lines_;
-}
-
-void FlexibleBoxAlgorithm::AlignFlexLines(
-    LayoutUnit cross_axis_content_extent,
-    HeapVector<NGFlexLine>* flex_line_outputs) {
-  const StyleContentAlignmentData align_content = ResolvedAlignContent(*style_);
-  if (align_content.GetPosition() == ContentPosition::kFlexStart &&
-      gap_between_lines_ == 0) {
-    return;
+  LayoutUnit size;
+  for (const auto& line : flex_lines_) {
+    size += line.cross_axis_extent_;
   }
-  if (flex_lines_.empty() || !IsMultiline())
-    return;
-  LayoutUnit available_cross_axis_space =
-      cross_axis_content_extent - (flex_lines_.size() - 1) * gap_between_lines_;
-  for (const FlexLine& line : flex_lines_)
-    available_cross_axis_space -= line.cross_axis_extent_;
-
-  const bool is_reversed = StyleRef().FlexWrap() == EFlexWrap::kWrapReverse;
-  LayoutUnit line_offset = InitialContentPositionOffset(
-      StyleRef(), available_cross_axis_space, align_content, flex_lines_.size(),
-      is_reversed);
-  for (wtf_size_t i = 0; i < flex_lines_.size(); i++) {
-    FlexLine& line_context = flex_lines_[i];
-    line_context.cross_axis_offset_ += line_offset;
-    if (flex_line_outputs) {
-      (*flex_line_outputs)[i].cross_axis_offset =
-          line_context.cross_axis_offset_;
-    }
-
-    if (align_content.Distribution() == ContentDistributionType::kStretch &&
-        available_cross_axis_space > 0) {
-      line_context.cross_axis_extent_ +=
-          available_cross_axis_space /
-          static_cast<unsigned>(flex_lines_.size());
-      if (flex_line_outputs) {
-        (*flex_line_outputs)[i].line_cross_size =
-            line_context.cross_axis_extent_;
-      }
-    }
-
-    line_offset +=
-        ContentDistributionSpaceBetweenChildren(
-            available_cross_axis_space, align_content, flex_lines_.size()) +
-        gap_between_lines_;
-  }
-}
-
-void FlexibleBoxAlgorithm::FlipForWrapReverse(
-    LayoutUnit cross_axis_start_edge,
-    LayoutUnit cross_axis_content_size,
-    HeapVector<NGFlexLine>* flex_line_outputs) {
-  DCHECK_EQ(Style()->FlexWrap(), EFlexWrap::kWrapReverse);
-  for (wtf_size_t i = 0; i < flex_lines_.size(); i++) {
-    FlexLine& line_context = flex_lines_[i];
-    LayoutUnit original_offset =
-        line_context.cross_axis_offset_ - cross_axis_start_edge;
-    LayoutUnit new_offset = cross_axis_content_size - original_offset -
-                            line_context.cross_axis_extent_;
-    LayoutUnit delta = new_offset - original_offset;
-    if (flex_line_outputs) {
-      line_context.cross_axis_offset_ += delta;
-      (*flex_line_outputs)[i].cross_axis_offset += delta;
-    }
-  }
+  return size + (flex_lines_.size() - 1) * gap_between_lines_;
 }
 
 PhysicalDirection FlexibleBoxAlgorithm::MainAxisDirection() const {
@@ -975,48 +908,6 @@ ItemPosition FlexibleBoxAlgorithm::AlignmentForChild(
   }
 
   return align;
-}
-
-// static
-LayoutUnit FlexibleBoxAlgorithm::InitialContentPositionOffset(
-    const ComputedStyle& style,
-    LayoutUnit available_free_space,
-    const StyleContentAlignmentData& data,
-    unsigned number_of_items,
-    bool is_reversed) {
-  // Safe-alignment with negative free-space does nothing.
-  if (available_free_space <= LayoutUnit() &&
-      (style.IsDeprecatedWebkitBox() ||
-       data.Overflow() == OverflowAlignment::kSafe)) {
-    return LayoutUnit();
-  }
-
-  ContentPosition position = data.GetPosition();
-  DCHECK_NE(position, ContentPosition::kLeft)
-      << "ResolvedJustifyContent was supposed to translate this to kStart/End";
-  DCHECK_NE(position, ContentPosition::kRight)
-      << "ResolvedJustifyContent was supposed to translate this to kStart/End";
-  if (position == ContentPosition::kFlexEnd ||
-      (position == ContentPosition::kEnd && !is_reversed) ||
-      (position == ContentPosition::kStart && is_reversed)) {
-    return available_free_space;
-  }
-  if (data.GetPosition() == ContentPosition::kCenter)
-    return available_free_space / 2;
-  if (data.Distribution() == ContentDistributionType::kSpaceAround) {
-    if (available_free_space > 0 && number_of_items)
-      return available_free_space / (2 * number_of_items);
-
-    // Fallback to 'safe center'
-    return (available_free_space / 2).ClampNegativeToZero();
-  }
-  if (data.Distribution() == ContentDistributionType::kSpaceEvenly) {
-    if (available_free_space > 0 && number_of_items)
-      return available_free_space / (number_of_items + 1);
-    // Fallback to 'safe center'
-    return (available_free_space / 2).ClampNegativeToZero();
-  }
-  return LayoutUnit();
 }
 
 // static
