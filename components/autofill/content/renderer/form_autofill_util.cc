@@ -1249,10 +1249,8 @@ bool ShouldSkipFillField(const FormFieldData::FillData& field,
            base::i18n::ToLower(element.GetAttribute(attribute).Utf16()) ==
                base::i18n::ToLower(value);
   };
-  const WebInputElement input_element = element.DynamicTo<WebInputElement>();
   const std::u16string current_element_value = element.Value().Utf16();
-  if ((IsAutofillableInputElement(input_element) ||
-       IsTextAreaElement(element)) &&
+  if ((element.DynamicTo<WebInputElement>() || IsTextAreaElement(element)) &&
       element.UserHasEditedTheField() &&
       !SanitizedFieldIsEmpty(current_element_value) &&
       !HasAttributeWithValue(GetWebString<kValue>(), current_element_value) &&
