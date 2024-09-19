@@ -782,7 +782,7 @@ void KURL::SetPath(const String& input) {
   ReplaceComponents(replacements);
 }
 
-String DecodeURLEscapeSequences(const String& string, DecodeURLMode mode) {
+String DecodeURLEscapeSequences(const StringView& string, DecodeURLMode mode) {
   StringUTF8Adaptor string_utf8(string);
   url::RawCanonOutputT<char16_t> unescaped;
   url::DecodeURLEscapeSequences(string_utf8.AsStringView(), mode, &unescaped);
@@ -791,7 +791,7 @@ String DecodeURLEscapeSequences(const String& string, DecodeURLMode mode) {
       base::checked_cast<wtf_size_t>(unescaped.length()));
 }
 
-String EncodeWithURLEscapeSequences(const String& not_encoded_string) {
+String EncodeWithURLEscapeSequences(const StringView& not_encoded_string) {
   std::string utf8 =
       UTF8Encoding().Encode(not_encoded_string, WTF::kNoUnencodables);
 

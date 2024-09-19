@@ -346,10 +346,10 @@ using DecodeURLMode = url::DecodeURLMode;
 //
 // Caution: Specifying kUTF8OrIsomorphic to the second argument doesn't conform
 // to specifications in many cases.
-PLATFORM_EXPORT String DecodeURLEscapeSequences(const String&,
+PLATFORM_EXPORT String DecodeURLEscapeSequences(const StringView&,
                                                 DecodeURLMode mode);
 
-PLATFORM_EXPORT String EncodeWithURLEscapeSequences(const String&);
+PLATFORM_EXPORT String EncodeWithURLEscapeSequences(const StringView&);
 
 // Checks an arbitrary string for invalid escape sequences.
 //

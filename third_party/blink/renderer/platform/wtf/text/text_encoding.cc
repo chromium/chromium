@@ -53,7 +53,7 @@ String TextEncoding::Decode(base::span<const uint8_t> data,
                                      stop_on_error, saw_error);
 }
 
-std::string TextEncoding::Encode(const String& string,
+std::string TextEncoding::Encode(const StringView& string,
                                  UnencodableHandling handling) const {
   if (!name_)
     return std::string();
