@@ -78,11 +78,14 @@ enum class CookieLoadProblem {
   kOpenDb = 3,
   // Attempt to delete broken (and related) rows failed.
   KRecoveryFailed = 4,
-  // Attempt to delete cookies with matching top_frame_site_keys failed.
+  // Attempt to delete cookies with matching top_frame_site_keys failed. Added
+  // in https://crrev.com/3153340 (M96).
   kDeleteCookiePartitionFailed = 5,
-  // Hash verification of encrypted value failed.
+  // Hash verification of encrypted value failed. Added in
+  // https://crrev.com/5875192 (M131).
   kHashFailed = 6,
-  // Cookie was encrypted but no crypto delegate was passed.
+  // Cookie was encrypted but no crypto delegate was passed. Added in
+  // https://crrev.com/5875192 (M131).
   kNoCrypto = 7,
   kMaxValue = kNoCrypto,
 };
@@ -106,10 +109,6 @@ enum class CookieCommitProblem {
 };
 
 void RecordCookieLoadProblem(CookieLoadProblem event) {
-  UMA_HISTOGRAM_ENUMERATION("Cookie.LoadProblem2", event);
-  if (event > CookieLoadProblem::kDeleteCookiePartitionFailed) {
-    return;
-  }
   UMA_HISTOGRAM_ENUMERATION("Cookie.LoadProblem", event);
 }
 

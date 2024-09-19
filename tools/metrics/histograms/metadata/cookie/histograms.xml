@@ -646,21 +646,7 @@ chromium-metrics-reviews@google.com.
   <owner>src/net/cookies/OWNERS</owner>
   <summary>
     Recorded when a problem is recorded when loading the persistent cookie
-    store. This histogram has been superceded by Cookie.LoadProblem2, and only
-    records values up to and including 5 (Attempt to delete cookies with
-    matching top_frame_site_keys failed). This histogram is being kept alongside
-    Cookie.LoadProblem2 for data continuity but will be removed in the future.
-  </summary>
-</histogram>
-
-<histogram name="Cookie.LoadProblem2" enum="CookieLoadProblem"
-    expires_after="2025-02-10">
-  <owner>morlovich@chromium.org</owner>
-  <owner>src/net/cookies/OWNERS</owner>
-  <summary>
-    Recorded when a problem is recorded when loading the persistent cookie
-    store. This superceded Cookie.LoadProblem2 in m130 and data prior to that
-    can be found in Cookie.LoadProblem.
+    store. Value 5 was added in M96. Values 6 and 7 were added in M131.
   </summary>
 </histogram>
 

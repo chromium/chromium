@@ -2326,8 +2326,8 @@ TEST_P(SQLitePersistentCookieStorev24UpgradeTest, UpgradeToSchemaVersion24) {
       // attempting to load a v24 store the cookie with an empty value and empty
       // encrypted value will simply load empty.
       EXPECT_EQ(read_in_cookies.size(), 1u);
-      histogram_tester.ExpectBucketCount("Cookie.LoadProblem2",
-                                         /*CookieLoadProblem2::kNoCrypto*/ 7,
+      histogram_tester.ExpectBucketCount("Cookie.LoadProblem",
+                                         /*CookieLoadProblem::kNoCrypto*/ 7,
                                          CookiesForMigrationTest().size() - 1);
     } else {
       ASSERT_NO_FATAL_FAILURE(
@@ -2379,7 +2379,7 @@ TEST_F(SQLitePersistentCookieStoreTest, CannotModifyHostName) {
     ASSERT_EQ(cookies[0]->Name(), "A");
     ASSERT_EQ(cookies[0]->Value(), "B");
     DestroyStore();
-    histogram_tester.ExpectBucketCount("Cookie.LoadProblem2",
+    histogram_tester.ExpectBucketCount("Cookie.LoadProblem",
                                        /*CookieLoadProblem::kHashFailed*/ 6, 1);
   }
   {
@@ -2395,7 +2395,6 @@ TEST_F(SQLitePersistentCookieStoreTest, CannotModifyHostName) {
     // The hash failure should only appear once, during the first read, as the
     // invalid cookie gets deleted afterwards.
     histogram_tester.ExpectTotalCount("Cookie.LoadProblem", 0);
-    histogram_tester.ExpectTotalCount("Cookie.LoadProblem2", 0);
   }
 }
 
@@ -2438,7 +2437,7 @@ TEST_F(SQLitePersistentCookieStoreTest, ShortHash) {
     ASSERT_EQ(cookies[0]->Name(), "A");
     ASSERT_EQ(cookies[0]->Value(), "B");
     DestroyStore();
-    histogram_tester.ExpectBucketCount("Cookie.LoadProblem2",
+    histogram_tester.ExpectBucketCount("Cookie.LoadProblem",
                                        /*CookieLoadProblem::kHashFailed*/ 6, 1);
   }
   {
@@ -2454,7 +2453,6 @@ TEST_F(SQLitePersistentCookieStoreTest, ShortHash) {
     // The hash failure should only appear once, during the first read, as the
     // invalid cookie gets deleted afterwards.
     histogram_tester.ExpectTotalCount("Cookie.LoadProblem", 0);
-    histogram_tester.ExpectTotalCount("Cookie.LoadProblem2", 0);
   }
 }
 
@@ -2896,7 +2894,7 @@ TEST_F(SQLitePersistentCookieStoreTest, NoCryptoForDecryption) {
     const auto cookies =
         CreateAndLoad(/*crypt=*/false, /*restore_old_session_cookies=*/false);
     ASSERT_TRUE(cookies.empty());
-    histogram_tester.ExpectBucketCount("Cookie.LoadProblem2",
+    histogram_tester.ExpectBucketCount("Cookie.LoadProblem",
                                        /*CookieLoadProblem::kNoCrypto*/ 7, 1);
   }
 }
