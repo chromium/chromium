@@ -74,7 +74,7 @@ const LanguagePackComponentConfig kTranslateKitEnJaConfig = {
 };
 
 // The config for each language pack.
-inline constexpr auto kLanguagePackComponentConfigMap =
+constexpr auto kLanguagePackComponentConfigMap =
     base::MakeFixedFlatMap<LanguagePackKey, const LanguagePackComponentConfig*>(
         {{LanguagePackKey::kEn_Es, &kTranslateKitEnEsConfig},
          {LanguagePackKey::kEn_Ja, &kTranslateKitEnJaConfig}});
