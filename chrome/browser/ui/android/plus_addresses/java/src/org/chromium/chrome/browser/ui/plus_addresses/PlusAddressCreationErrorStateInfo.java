@@ -39,6 +39,17 @@ class PlusAddressCreationErrorStateInfo {
         return mErrorType;
     }
 
+    boolean wasPlusAddressReserved() {
+        switch (mErrorType) {
+            case PlusAddressCreationBottomSheetErrorType.RESERVE_TIMEOUT:
+            case PlusAddressCreationBottomSheetErrorType.RESERVE_QUOTA:
+            case PlusAddressCreationBottomSheetErrorType.RESERVE_GENERIC:
+                return false;
+            default:
+                return true;
+        }
+    }
+
     String getTitle() {
         return mTitle;
     }

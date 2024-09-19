@@ -121,11 +121,16 @@ class PlusAddressCreationViewBinder {
         switch (info.getErrorType()) {
             case PlusAddressCreationBottomSheetErrorType.RESERVE_TIMEOUT:
             case PlusAddressCreationBottomSheetErrorType.RESERVE_GENERIC:
+            case PlusAddressCreationBottomSheetErrorType.CREATE_TIMEOUT:
+            case PlusAddressCreationBottomSheetErrorType.CREATE_GENERIC:
                 okButton.setOnClickListener(unused -> delegate.onTryAgain());
                 break;
             case PlusAddressCreationBottomSheetErrorType.RESERVE_QUOTA:
+            case PlusAddressCreationBottomSheetErrorType.CREATE_QUOTA:
                 okButton.setOnClickListener(unused -> delegate.onCanceled());
                 break;
+            default:
+                assert false : "Every possible error type needs to be handled!";
         }
         if (info.getCancelText().isEmpty()) {
             cancelButton.setVisibility(View.GONE);

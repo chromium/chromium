@@ -152,8 +152,13 @@ import org.chromium.url.GURL;
 
     @Override
     public void onTryAgain() {
+        boolean wasPlusAddressReserved = mModel.get(ERROR_STATE_INFO).wasPlusAddressReserved();
         mModel.set(ERROR_STATE_INFO, null);
-        mBridge.tryAgainToReservePlusAddress();
+        if (wasPlusAddressReserved) {
+            onConfirmRequested();
+        } else {
+            mBridge.tryAgainToReservePlusAddress();
+        }
     }
 
     @Override

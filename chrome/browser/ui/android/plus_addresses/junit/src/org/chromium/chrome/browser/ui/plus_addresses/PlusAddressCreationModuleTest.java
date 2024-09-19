@@ -77,6 +77,7 @@ public class PlusAddressCreationModuleTest {
                     /* errorReportInstruction= */ "error! <link>test link</link>",
                     /* learnMoreUrl= */ new GURL("learn.more.com"),
                     /* errorReportUrl= */ new GURL("bug.com"));
+    private static final String PROPOSED_PLUS_ADDRESS = "example@gmail.com";
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
@@ -136,7 +137,7 @@ public class PlusAddressCreationModuleTest {
         verify(mBridge, times(0)).onRefreshClicked();
 
         // Confirmation button should become enabled after the first plus address is set.
-        mCoordinator.updateProposedPlusAddress("example@gmail.com");
+        mCoordinator.updateProposedPlusAddress(PROPOSED_PLUS_ADDRESS);
         assertTrue(confirmButton.isEnabled());
         assertTrue(refreshIcon.isEnabled());
 
@@ -147,7 +148,7 @@ public class PlusAddressCreationModuleTest {
         verify(mBridge).onRefreshClicked();
 
         // Simulate that the plus address was reserved and refresh the plus address again.
-        mCoordinator.updateProposedPlusAddress("example@gmail.com");
+        mCoordinator.updateProposedPlusAddress(PROPOSED_PLUS_ADDRESS);
         refreshIcon.performClick();
         assertFalse(confirmButton.isEnabled());
         assertFalse(refreshIcon.isEnabled());
@@ -161,7 +162,7 @@ public class PlusAddressCreationModuleTest {
 
         ImageView refreshIcon = view.getContentView().findViewById(R.id.refresh_plus_address_icon);
 
-        mCoordinator.updateProposedPlusAddress("example@gmail.com");
+        mCoordinator.updateProposedPlusAddress(PROPOSED_PLUS_ADDRESS);
         assertTrue(refreshIcon.isEnabled());
 
         refreshIcon.performClick();
@@ -189,7 +190,7 @@ public class PlusAddressCreationModuleTest {
                 view.getContentView().findViewById(R.id.plus_address_confirm_button);
 
         // Set the plus address to enable the Confirm button.
-        mCoordinator.updateProposedPlusAddress("example@gmail.com");
+        mCoordinator.updateProposedPlusAddress(PROPOSED_PLUS_ADDRESS);
         assertTrue(modalConfirmButton.isEnabled());
 
         // Assume a Confirm request was made and failed.
@@ -205,7 +206,7 @@ public class PlusAddressCreationModuleTest {
         ImageView refreshIcon = view.getContentView().findViewById(R.id.refresh_plus_address_icon);
         Button confirmButton = view.getContentView().findViewById(R.id.plus_address_confirm_button);
 
-        mCoordinator.updateProposedPlusAddress("example@gmail.com");
+        mCoordinator.updateProposedPlusAddress(PROPOSED_PLUS_ADDRESS);
         assertTrue(refreshIcon.isEnabled());
         assertTrue(confirmButton.isEnabled());
 
@@ -348,6 +349,8 @@ public class PlusAddressCreationModuleTest {
         TextView proposedPlusAddress =
                 view.getContentView().findViewById(R.id.proposed_plus_address);
         ImageView refreshIcon = view.getContentView().findViewById(R.id.refresh_plus_address_icon);
+        LoadingView loadingView =
+                view.getContentView().findViewById(R.id.plus_address_creation_loading_view);
         assertFalse(confirmButton.isEnabled());
         assertTrue(cancelButton.isEnabled());
         assertEquals(
@@ -355,13 +358,72 @@ public class PlusAddressCreationModuleTest {
                 FIRST_TIME_USAGE_INFO.getProposedPlusAddressPlaceholder());
         assertEquals(refreshIcon.getVisibility(), View.VISIBLE);
         assertFalse(refreshIcon.isEnabled());
+        assertEquals(loadingView.getVisibility(), View.GONE);
+    }
+
+    private void verifyConfirmationLoadingStateIsShown(
+            PlusAddressCreationBottomSheetContent view, String proposedPlusAddress) {
+        ViewGroup normalStateContainer =
+                view.getContentView().findViewById(R.id.plus_address_content);
+        ViewGroup errorStateContainer =
+                view.getContentView().findViewById(R.id.plus_address_error_container);
+        assertEquals(normalStateContainer.getVisibility(), View.VISIBLE);
+        assertEquals(errorStateContainer.getVisibility(), View.GONE);
+
+        Button confirmButton = view.getContentView().findViewById(R.id.plus_address_confirm_button);
+        Button cancelButton = view.getContentView().findViewById(R.id.plus_address_cancel_button);
+        TextView proposedPlusAddressView =
+                view.getContentView().findViewById(R.id.proposed_plus_address);
+        ImageView refreshIcon = view.getContentView().findViewById(R.id.refresh_plus_address_icon);
+        LoadingView loadingView =
+                view.getContentView().findViewById(R.id.plus_address_creation_loading_view);
+        assertEquals(confirmButton.getVisibility(), View.GONE);
+        assertEquals(cancelButton.getVisibility(), View.GONE);
+        assertEquals(proposedPlusAddressView.getText(), proposedPlusAddress);
+        assertEquals(refreshIcon.getVisibility(), View.VISIBLE);
+        assertFalse(refreshIcon.isEnabled());
+        assertEquals(loadingView.getVisibility(), View.VISIBLE);
+    }
+
+    private void verifyRetriableError(
+            PlusAddressCreationErrorStateInfo info, String proposedPlusAddress) {
+        PlusAddressCreationBottomSheetContent view = openBottomSheet();
+
+        if (info.wasPlusAddressReserved()) {
+            mCoordinator.updateProposedPlusAddress(proposedPlusAddress);
+        }
+
+        // Simulate that the error occurred.
+        mCoordinator.showError(info);
+        verifyErrorScreenIsShown(view, info);
+
+        // Click ok button and check that the initial screen in shown.
+        Button errorOkButton =
+                view.getContentView().findViewById(R.id.plus_address_error_ok_button);
+        errorOkButton.performClick();
+        if (info.wasPlusAddressReserved()) {
+            verifyConfirmationLoadingStateIsShown(view, proposedPlusAddress);
+            verify(mBridge).onConfirmRequested();
+        } else {
+            verifyInitialLoadingStateIsShown(view);
+            verify(mBridge).tryAgainToReservePlusAddress();
+        }
+
+        // Simulate that the error occurred again.
+        mCoordinator.showError(info);
+        verifyErrorScreenIsShown(view, info);
+
+        // Click cancel button to hide the bottom sheet.
+        Button cancelButton =
+                view.getContentView().findViewById(R.id.plus_address_error_cancel_button);
+        cancelButton.performClick();
+        verify(mBottomSheetController).hideContent(view, true);
+        verify(mBridge).onCanceled();
     }
 
     @Test
     @SmallTest
     public void testReserveTimeoutError() {
-        PlusAddressCreationBottomSheetContent view = openBottomSheet();
-
         PlusAddressCreationErrorStateInfo reserveTimeoutError =
                 new PlusAddressCreationErrorStateInfo(
                         PlusAddressCreationBottomSheetErrorType.RESERVE_TIMEOUT,
@@ -370,27 +432,7 @@ public class PlusAddressCreationModuleTest {
                         "Reserve timeout ok",
                         "Reserve timeout cancel");
 
-        // Simulate that the reserve request timed out.
-        mCoordinator.showError(reserveTimeoutError);
-        verifyErrorScreenIsShown(view, reserveTimeoutError);
-
-        // Click ok button and check that the initial screen in shown.
-        Button errorOkButton =
-                view.getContentView().findViewById(R.id.plus_address_error_ok_button);
-        errorOkButton.performClick();
-        verify(mBridge).tryAgainToReservePlusAddress();
-        verifyInitialLoadingStateIsShown(view);
-
-        // Simulate that the reserve request timed out again.
-        mCoordinator.showError(reserveTimeoutError);
-        verifyErrorScreenIsShown(view, reserveTimeoutError);
-
-        // Click cancel button to hide the bottom sheet.
-        Button cancelButton =
-                view.getContentView().findViewById(R.id.plus_address_error_cancel_button);
-        cancelButton.performClick();
-        verify(mBottomSheetController).hideContent(view, true);
-        verify(mBridge).onCanceled();
+        verifyRetriableError(reserveTimeoutError, PROPOSED_PLUS_ADDRESS);
     }
 
     @Test
@@ -421,8 +463,6 @@ public class PlusAddressCreationModuleTest {
     @Test
     @SmallTest
     public void testReserveGenericError() {
-        PlusAddressCreationBottomSheetContent view = openBottomSheet();
-
         PlusAddressCreationErrorStateInfo genericReserveError =
                 new PlusAddressCreationErrorStateInfo(
                         PlusAddressCreationBottomSheetErrorType.RESERVE_GENERIC,
@@ -431,26 +471,59 @@ public class PlusAddressCreationModuleTest {
                         "Generic reserve error ok",
                         "Generic reserve error cancel");
 
-        // Simulate that the reserve request failed.
-        mCoordinator.showError(genericReserveError);
-        verifyErrorScreenIsShown(view, genericReserveError);
+        verifyRetriableError(genericReserveError, PROPOSED_PLUS_ADDRESS);
+    }
 
-        // Click ok button and check that the initial screen in shown.
+    @Test
+    @SmallTest
+    public void testCreationTimeoutError() {
+        PlusAddressCreationErrorStateInfo createTimeoutError =
+                new PlusAddressCreationErrorStateInfo(
+                        PlusAddressCreationBottomSheetErrorType.CREATE_TIMEOUT,
+                        "Create timeout error title",
+                        "Create timeout error description",
+                        "Create timeout error ok",
+                        "Create timeout error cancel");
+
+        verifyRetriableError(createTimeoutError, PROPOSED_PLUS_ADDRESS);
+    }
+
+    @Test
+    @SmallTest
+    public void testCreationQuotaError() {
+        PlusAddressCreationBottomSheetContent view = openBottomSheet();
+
+        PlusAddressCreationErrorStateInfo createQuotaError =
+                new PlusAddressCreationErrorStateInfo(
+                        PlusAddressCreationBottomSheetErrorType.CREATE_QUOTA,
+                        "Create quota error title",
+                        "Create quota error description",
+                        "Create quota error ok",
+                        "");
+
+        // Simulate that the reserve request timed out.
+        mCoordinator.showError(createQuotaError);
+        verifyErrorScreenIsShown(view, createQuotaError);
+
+        // Click ok button and check that the bottom sheet gets hidden.
         Button errorOkButton =
                 view.getContentView().findViewById(R.id.plus_address_error_ok_button);
         errorOkButton.performClick();
-        verify(mBridge).tryAgainToReservePlusAddress();
-        verifyInitialLoadingStateIsShown(view);
-
-        // Simulate that the reserve request failed again.
-        mCoordinator.showError(genericReserveError);
-        verifyErrorScreenIsShown(view, genericReserveError);
-
-        // Click cancel button to hide the bottom sheet.
-        Button cancelButton =
-                view.getContentView().findViewById(R.id.plus_address_error_cancel_button);
-        cancelButton.performClick();
         verify(mBottomSheetController).hideContent(view, true);
         verify(mBridge).onCanceled();
+    }
+
+    @Test
+    @SmallTest
+    public void testCreationGenericError() {
+        PlusAddressCreationErrorStateInfo createGenericError =
+                new PlusAddressCreationErrorStateInfo(
+                        PlusAddressCreationBottomSheetErrorType.CREATE_GENERIC,
+                        "Create generic error title",
+                        "Create generic error description",
+                        "Create generic error ok",
+                        "Create generic error cancel");
+
+        verifyRetriableError(createGenericError, PROPOSED_PLUS_ADDRESS);
     }
 }

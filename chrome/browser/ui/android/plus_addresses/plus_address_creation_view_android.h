@@ -18,9 +18,20 @@ namespace plus_addresses {
 //
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.ui.plus_addresses
 enum class PlusAddressCreationBottomSheetErrorType {
+  // A network request timed out during an attempt to reserve a plus address.
   kReserveTimeout = 0,
+  // The user hit the plus address reserve quota limit.
   kReserveQuota = 1,
+  // Some network error occurred during an attempt to reserve a plus address.
   kReserveGeneric = 2,
+  // A network request to confirm a plus address timed out when the user
+  // attempted to create a plus address.
+  kCreateTimeout = 3,
+  // The user hit the plus address creation quota limit when they attempted to
+  // create a plus address.
+  kCreateQuota = 4,
+  // Some network error occurred during an attempt to create a plus address.
+  kCreateGeneric = 5,
 };
 
 class PlusAddressCreationController;

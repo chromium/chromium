@@ -53,7 +53,7 @@
       Something went wrong
     </message>
     <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_RESERVE_TIMEOUT_ERROR_DESCRIPTION_ANDROID" desc="Description message shown in the plus address creation bottom sheet when the backend fails to reserve the plus address after the user click the confirm button due to the network request timeout." translateable="false">
-      Make sure you are online and try again.
+      Make sure you're online and try again.
     </message>
     <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_RESERVE_QUOTA_ERROR_TITLE_ANDROID" desc="Title shown in the plus address creation bottom sheet when the backend fails to reserve the plus address after the user click the confirm button due to the plus address quota limit exceeded." translateable="false">
       Too many plus addresses
@@ -65,6 +65,24 @@
       Something went wrong
     </message>
     <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_RESERVE_GENERIC_ERROR_DESCRIPTION_ANDROID" desc="Description message shown in the plus address creation bottom sheet when the backend fails to reserve the plus address after the user click the confirm button due to an unknown error." translateable="false">
+      Can't create plus address right now.
+    </message>
+    <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_CREATE_TIMEOUT_ERROR_TITLE_ANDROID" desc="Title message shown in the plus address creation bottom sheet when the backend fails to create the plus address after the user click the confirm button due to the timeout error." translateable="false">
+      Something went wrong
+    </message>
+    <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_CREATE_TIMEOUT_ERROR_DESCRIPTION_ANDROID" desc="Description message shown in the plus address creation bottom sheet when the backend fails to create the plus address after the user click the confirm button due to the timeout error." translateable="false">
+      Make sure you're online and try again.
+    </message>
+    <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_CREATE_QUOTA_ERROR_TITLE_ANDROID" desc="Title message shown in the plus address creation bottom sheet when the backend fails to create the plus address after the user click the confirm button due to the quota error." translateable="false">
+      Too many plus addresses
+    </message>
+    <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_CREATE_QUOTA_ERROR_DESCRIPTION_ANDROID" desc="Description message shown in the plus address creation bottom sheet when the backend fails to create the plus address after the user click the confirm button due to the quota error." translateable="false">
+      Can't create any more plus addresses.
+    </message>
+    <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_CREATE_GENERIC_ERROR_TITLE_ANDROID" desc="Title message shown in the plus address creation bottom sheet when the backend fails to create the plus address after the user click the confirm button due to an unknown error." translateable="false">
+      Something went wrong
+    </message>
+    <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_CREATE_GENERIC_ERROR_DESCRIPTION_ANDROID" desc="Description message shown in the plus address creation bottom sheet when the backend fails to create the plus address after the user click the confirm button due to an unknown error." translateable="false">
       Can't create plus address right now.
     </message>
     <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_ERROR_OK_BUTTON_TEXT_ANDROID" desc="Confirm button text in the plus address creation bottom sheet that closes the bottom sheet." translateable="false">
