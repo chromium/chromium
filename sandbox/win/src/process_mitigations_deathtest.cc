@@ -59,24 +59,16 @@ SBOX_TESTS_COMMAND int CheckDeath(int argc, wchar_t** argv) {
   return SBOX_TEST_FAILED;
 }
 
-//------------------------------------------------------------------------------
-// Common test function to run a command and ensure it DCHECKs.
-//------------------------------------------------------------------------------
-void RunCommandAndExpectDCHECK(const std::wstring& test_command) {
-  TestRunner runner;
-  // We should hit a DCHECK in the child which will cause the process to crash
-  // STATUS_STACK_BUFFER_OVERRUN is either caused by TRAP_SEQUENCE or
-  // abort within base/immediate_crash.h
-  EXPECT_EQ(STATUS_STACK_BUFFER_OVERRUN,
-            static_cast<ULONG>(runner.RunTest(test_command.c_str())));
-}
-
 TEST(ProcessMitigationsDeathTest, CheckRatchetDownOrderMatters) {
   std::wstring test_command = L"CheckDeath ";
   test_command += base::NumberToWString(kRatchetDown);
   test_command += L" ";
   test_command += base::NumberToWString(kSetStart);
-  RunCommandAndExpectDCHECK(test_command);
+
+  TestRunner runner;
+  // We should hit a DCHECK in the child which will cause the process to crash
+  EXPECT_EQ(STATUS_BREAKPOINT,
+            static_cast<ULONG>(runner.RunTest(test_command.c_str())));
 }
 
 TEST(ProcessMitigationsDeathTest, CheckRatchetDownAndLockdownExclusive) {
@@ -84,7 +76,11 @@ TEST(ProcessMitigationsDeathTest, CheckRatchetDownAndLockdownExclusive) {
   test_command += base::NumberToWString(kRatchetDown);
   test_command += L" ";
   test_command += base::NumberToWString(kLockdown);
-  RunCommandAndExpectDCHECK(test_command);
+
+  TestRunner runner;
+  // We should hit a DCHECK in the child which will cause the process to crash
+  EXPECT_EQ(STATUS_BREAKPOINT,
+            static_cast<ULONG>(runner.RunTest(test_command.c_str())));
 }
 
 TEST(ProcessMitigationsDeathTest, CheckRatchetDownAndLockdownExclusive2) {
@@ -92,7 +88,11 @@ TEST(ProcessMitigationsDeathTest, CheckRatchetDownAndLockdownExclusive2) {
   test_command += base::NumberToWString(kLockdown);
   test_command += L" ";
   test_command += base::NumberToWString(kRatchetDown);
-  RunCommandAndExpectDCHECK(test_command);
+
+  TestRunner runner;
+  // We should hit a DCHECK in the child which will cause the process to crash
+  EXPECT_EQ(STATUS_BREAKPOINT,
+            static_cast<ULONG>(runner.RunTest(test_command.c_str())));
 }
 
 TEST(ProcessMitigationsDeathTest, CheckSetStartAndLockdownExclusive) {
@@ -100,7 +100,11 @@ TEST(ProcessMitigationsDeathTest, CheckSetStartAndLockdownExclusive) {
   test_command += base::NumberToWString(kLockdown);
   test_command += L" ";
   test_command += base::NumberToWString(kSetStart);
-  RunCommandAndExpectDCHECK(test_command);
+
+  TestRunner runner;
+  // We should hit a DCHECK in the child which will cause the process to crash
+  EXPECT_EQ(STATUS_BREAKPOINT,
+            static_cast<ULONG>(runner.RunTest(test_command.c_str())));
 }
 
 TEST(ProcessMitigationsDeathTest, CheckSetStartAndLockdownExclusive2) {
@@ -108,7 +112,11 @@ TEST(ProcessMitigationsDeathTest, CheckSetStartAndLockdownExclusive2) {
   test_command += base::NumberToWString(kSetStart);
   test_command += L" ";
   test_command += base::NumberToWString(kLockdown);
-  RunCommandAndExpectDCHECK(test_command);
+
+  TestRunner runner;
+  // We should hit a DCHECK in the child which will cause the process to crash
+  EXPECT_EQ(STATUS_BREAKPOINT,
+            static_cast<ULONG>(runner.RunTest(test_command.c_str())));
 }
 
 }  // namespace sandbox

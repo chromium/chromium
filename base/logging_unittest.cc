@@ -564,14 +564,9 @@ TEST_F(LoggingTest, CheckCausesDistinctBreakpoints) {
   ASSERT_NE(0u, child_crash_addr_1);
   ASSERT_NE(0u, child_crash_addr_2);
   ASSERT_NE(0u, child_crash_addr_3);
-#if defined(OFFICIAL_BUILD)
-  // In unofficial builds, we'll end up in std::abort
-  // for each crash. In official builds, we should get a different
-  // crash address for each location.
   ASSERT_NE(child_crash_addr_1, child_crash_addr_2);
   ASSERT_NE(child_crash_addr_1, child_crash_addr_3);
   ASSERT_NE(child_crash_addr_2, child_crash_addr_3);
-#endif  // defined(OFFICIAL_BUILD)
 }
 #elif BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_IOS) && \
     (defined(ARCH_CPU_X86_FAMILY) || defined(ARCH_CPU_ARM_FAMILY))
@@ -622,7 +617,6 @@ void CrashChildMain(int death_location) {
   ASSERT_EQ(0, sigaction(SIGTRAP, &act, nullptr));
   ASSERT_EQ(0, sigaction(SIGBUS, &act, nullptr));
   ASSERT_EQ(0, sigaction(SIGILL, &act, nullptr));
-  ASSERT_EQ(0, sigaction(SIGABRT, &act, nullptr));
   DO_CHECK(death_location != 1);
   DO_CHECK(death_location != 2);
   printf("\n");
@@ -665,15 +659,9 @@ TEST_F(LoggingTest, CheckCausesDistinctBreakpoints) {
   ASSERT_NE(0u, child_crash_addr_1);
   ASSERT_NE(0u, child_crash_addr_2);
   ASSERT_NE(0u, child_crash_addr_3);
-
-#if defined(OFFICIAL_BUILD)
-  // In unofficial builds, we'll end up in std::abort
-  // for each crash. In official builds, we should get a different
-  // crash address for each location.
   ASSERT_NE(child_crash_addr_1, child_crash_addr_2);
   ASSERT_NE(child_crash_addr_1, child_crash_addr_3);
   ASSERT_NE(child_crash_addr_2, child_crash_addr_3);
-#endif
 }
 #endif  // BUILDFLAG(IS_POSIX)
 

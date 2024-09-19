@@ -226,15 +226,19 @@ class UtilityProcessHostBrowserTest : public BrowserChildProcessObserver,
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
 #if BUILDFLAG(IS_WIN)
+// See crbug.com/40861868#comment17. There are two implementations of the
+// DoCrashImmediately mojo interface, which causes official build returns
+// a different exit_code.
+#if defined(OFFICIAL_BUILD) && !DCHECK_IS_ON()
     EXPECT_EQ(STATUS_STACK_BUFFER_OVERRUN, static_cast<DWORD>(info.exit_code));
+#else
+    EXPECT_EQ(EXCEPTION_BREAKPOINT, static_cast<DWORD>(info.exit_code));
+#endif  // defined(OFFICIAL_BUILD) || !DCHECK_IS_ON()
+
 #elif BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     EXPECT_TRUE(WIFSIGNALED(info.exit_code));
-#if defined(OFFICIAL_BUILD)
     EXPECT_EQ(SIGTRAP, WTERMSIG(info.exit_code));
-#else   // defined(OFFICIAL_BUILD)
-    EXPECT_EQ(SIGABRT, WTERMSIG(info.exit_code));
-#endif  // defined(OFFICIAL_BUILD)
-#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#endif
     EXPECT_EQ(kTestProcessName, data.metrics_name);
     EXPECT_EQ(false, has_crashed_);
     has_crashed_ = true;
