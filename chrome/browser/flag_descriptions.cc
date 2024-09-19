@@ -4818,6 +4818,13 @@ const char kShareCustomActionsInCCTName[] = "Custom Actions in CCT";
 const char kShareCustomActionsInCCTDescription[] =
     "Display share custom actions Chrome Custom Tabs.";
 
+const char kShowReadyToPayDebugInfoName[] =
+    "Show debug information about IS_READY_TO_PAY intents";
+const char kShowReadyToPayDebugInfoDescription[] =
+    "Display an alert dialog with the contents of IS_READY_TO_PAY intents "
+    "that Chrome sends to Android payment applications: app's package name, "
+    "service name, payment method name, and method specific data.";
+
 const char kSecurePaymentConfirmationAndroidName[] =
     "Secure Payment Confirmation on Android";
 const char kSecurePaymentConfirmationAndroidDescription[] =

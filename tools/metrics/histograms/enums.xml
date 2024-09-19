@@ -15368,6 +15368,7 @@ from previous Chrome versions.
   <int value="-2025367104" label="enable-material-design-ntp"/>
   <int value="-2025360412" label="SyncAndroidPromosWithSingleButton:disabled"/>
   <int value="-2025330968" label="Journeys:disabled"/>
+  <int value="-2025258576" label="ShowReadyToPayDebugInfo:disabled"/>
   <int value="-2024825071" label="LanguageDetectionAPI:enabled"/>
   <int value="-2024330288" label="RawDraw:enabled"/>
   <int value="-2024065510"
@@ -21206,6 +21207,7 @@ from previous Chrome versions.
   <int value="384054552" label="EnableDrDcVulkan:disabled"/>
   <int value="384677240" label="AssistMultiWordLacrosSupport:enabled"/>
   <int value="384927690" label="AutofillEnableLocalIban:disabled"/>
+  <int value="385206456" label="ShowReadyToPayDebugInfo:enabled"/>
   <int value="385339273" label="TextBasedAudioDescription:disabled"/>
   <int value="385969127" label="disable-win32k-lockdown"/>
   <int value="386138870" label="DesktopPWAsOmniboxInstall:enabled"/>

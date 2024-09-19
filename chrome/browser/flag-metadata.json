@@ -8219,6 +8219,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "show-ready-to-pay-debug-info",
+    "owners": [ "//components/payments/OWNERS" ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "show-taps",
     "owners": [ "//ash/OWNERS" ],
     // This is a debug flag, so that video bug reports can show input taps to
