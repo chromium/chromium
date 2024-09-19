@@ -57,6 +57,7 @@
 #include "ash/system/accessibility/accessibility_feature_disable_dialog.h"
 #include "ash/system/accessibility/dictation_bubble_controller.h"
 #include "ash/system/accessibility/dictation_button_tray.h"
+#include "ash/system/accessibility/facegaze_bubble_controller.h"
 #include "ash/system/accessibility/floating_accessibility_controller.h"
 #include "ash/system/accessibility/select_to_speak/select_to_speak_menu_bubble_controller.h"
 #include "ash/system/accessibility/switch_access/switch_access_menu_bubble_controller.h"
@@ -1535,6 +1536,7 @@ void AccessibilityController::Shutdown() {
 
   // Clean up any child windows and widgets that might be animating out.
   dictation_bubble_controller_.reset();
+  facegaze_bubble_controller_.reset();
 
   for (auto& observer : observers_) {
     observer.OnAccessibilityControllerShutdown();
@@ -3561,6 +3563,14 @@ void AccessibilityController::UpdateFeatureFromPref(FeatureType feature) {
       UpdateColorCorrectionFromPrefs();
       break;
     case FeatureType::kFaceGaze:
+      if (enabled && ::features::IsAccessibilityFaceGazeEnabled()) {
+        if (!facegaze_bubble_controller_) {
+          facegaze_bubble_controller_ =
+              std::make_unique<FaceGazeBubbleController>();
+        }
+      } else {
+        facegaze_bubble_controller_.reset();
+      }
       UpdateFaceGazeFromPrefs();
       break;
     case FeatureType::kFlashNotifications:
@@ -3650,6 +3660,23 @@ void AccessibilityController::ScrollAtPoint(
       0 /* y_offset_ordinal */, 2 /* finger_count */);
   ui::MouseWheelEvent wheel(scroll);
   std::ignore = host->GetEventSink()->OnEventFromSource(&wheel);
+}
+
+void AccessibilityController::UpdateFaceGazeBubble(const std::u16string& text) {
+  if (!facegaze_bubble_controller_) {
+    return;
+  }
+
+  facegaze_bubble_controller_->UpdateBubble(text);
+}
+
+FaceGazeBubbleController*
+AccessibilityController::GetFaceGazeBubbleControllerForTest() {
+  if (!facegaze_bubble_controller_) {
+    facegaze_bubble_controller_ = std::make_unique<FaceGazeBubbleController>();
+  }
+
+  return facegaze_bubble_controller_.get();
 }
 
 }  // namespace ash
