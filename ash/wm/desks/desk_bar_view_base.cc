@@ -52,6 +52,7 @@
 #include "base/uuid.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/utils/haptics_util.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
@@ -145,9 +146,9 @@ void MaybeSetupBackgroundView(DeskBarViewBase* bar_view) {
 // DeskBarScrollViewLayout:
 
 // All the desk bar contents except the background view are added to
-// be the children of the `scroll_view_` to support scrollable desk bar.
-// `DeskBarScrollViewLayout` will help lay out the contents of the
-// `scroll_view_`.
+// be the children of the `contents_view_`, which is a child of `scroll_view_`
+// if scrolling is required. `DeskBarScrollViewLayout` will help lay out the
+// contents.
 class DeskBarScrollViewLayout : public views::LayoutManager {
  public:
   explicit DeskBarScrollViewLayout(DeskBarViewBase* bar_view)
@@ -250,7 +251,8 @@ class DeskBarScrollViewLayout : public views::LayoutManager {
   void Layout(views::View* host) override {
     TRACE_EVENT0("ui", "DeskBarScrollViewLayout::Layout");
 
-    const gfx::Rect scroll_bounds = bar_view_->scroll_view_->bounds();
+    const gfx::Rect scroll_bounds =
+        bar_view_->GetTopLevelViewWithContents().bounds();
 
     // Update visibility of child views so that `GetPreferredSize()` returns
     // correct size.
@@ -258,7 +260,7 @@ class DeskBarScrollViewLayout : public views::LayoutManager {
 
     const gfx::Size contents_size = host->GetPreferredSize();
 
-    // `host` here is `scroll_view_contents_`.
+    // `host` here is `contents_view_`.
     if (bar_view_->IsZeroState()) {
       host->SetBoundsRect(scroll_bounds);
 
@@ -309,7 +311,7 @@ class DeskBarScrollViewLayout : public views::LayoutManager {
 
     width_ = std::max(scroll_bounds.width(), contents_size.width());
 
-    // Update the size of the `host`, which is `scroll_view_contents_` here.
+    // Update the size of the `host`, which is `contents_view_` here.
     // This is done to make sure its size can be updated on mini views' adding
     // or removing, then `scroll_view_` will know whether the contents need to
     // be scrolled or not.
@@ -759,48 +761,16 @@ DeskBarViewBase::DeskBarViewBase(
 
   MaybeSetupBackgroundView(this);
 
-  // Use layer scrolling so that the contents will paint on top of the parent,
-  // which uses `SetPaintToLayer()`.
-  scroll_view_ = AddChildView(std::make_unique<views::ScrollView>(
-      views::ScrollView::ScrollWithLayers::kEnabled));
-  scroll_view_->SetPaintToLayer(ui::LAYER_NOT_DRAWN);
-  scroll_view_->layer()->SetMasksToBounds(true);
-  scroll_view_->SetBackgroundColor(std::nullopt);
-  scroll_view_->SetDrawOverflowIndicator(false);
-  scroll_view_->SetHorizontalScrollBarMode(
-      views::ScrollView::ScrollBarMode::kHiddenButEnabled);
-  scroll_view_->SetTreatAllScrollEventsAsHorizontal(true);
-  scroll_view_->SetAllowKeyboardScrolling(false);
-
-  left_scroll_button_ = AddChildView(std::make_unique<ScrollArrowButton>(
-      base::BindRepeating(&DeskBarViewBase::ScrollToPreviousPage,
-                          base::Unretained(this)),
-      /*is_left_arrow=*/true, this));
-  left_scroll_button_->RemoveFromFocusList();
-  right_scroll_button_ = AddChildView(std::make_unique<ScrollArrowButton>(
-      base::BindRepeating(&DeskBarViewBase::ScrollToNextPage,
-                          base::Unretained(this)),
-      /*is_left_arrow=*/false, this));
-  right_scroll_button_->RemoveFromFocusList();
-  // If this is a desk button desk bar, the bar does not paint to a layer,
-  // therefore, the scroll arrow buttons need to be painted.
-  if (type_ == Type::kDeskButton) {
-    left_scroll_button_->SetPaintToLayer();
-    left_scroll_button_->layer()->SetFillsBoundsOpaquely(false);
-    right_scroll_button_->SetPaintToLayer();
-    right_scroll_button_->layer()->SetFillsBoundsOpaquely(false);
+  if (chromeos::features::AreOverviewSessionInitOptimizationsEnabled()) {
+    contents_view_ = AddChildView(std::make_unique<views::View>());
+  } else {
+    InitScrolling();
   }
 
-  // Since we created a `ScrollView` with scrolling with layers enabled, it will
-  // automatically create a layer for our contents.
-  scroll_view_contents_ =
-      scroll_view_->SetContents(std::make_unique<views::View>());
-  CHECK(scroll_view_contents_->layer());
-
-  default_desk_button_ = scroll_view_contents_->AddChildView(
-      std::make_unique<DefaultDeskButton>(this));
+  default_desk_button_ =
+      contents_view_->AddChildView(std::make_unique<DefaultDeskButton>(this));
   new_desk_button_ =
-      scroll_view_contents_->AddChildView(std::make_unique<DeskIconButton>(
+      contents_view_->AddChildView(std::make_unique<DeskIconButton>(
           this, &kDesksNewDeskButtonIcon,
           l10n_util::GetStringUTF16(IDS_ASH_DESKS_NEW_DESK_BUTTON),
           cros_tokens::kCrosSysOnPrimary, cros_tokens::kCrosSysPrimary,
@@ -809,22 +779,17 @@ DeskBarViewBase::DeskBarViewBase(
               &DeskBarViewBase::OnNewDeskButtonPressed, base::Unretained(this),
               type_ == Type::kDeskButton
                   ? DesksCreationRemovalSource::kDeskButtonDeskBarButton
-                  : DesksCreationRemovalSource::kButton)));
+                  : DesksCreationRemovalSource::kButton),
+          base::BindRepeating(&DeskBarViewBase::InitScrollingIfRequired,
+                              base::Unretained(this))));
   new_desk_button_->SetProperty(views::kElementIdentifierKey,
                                 kOverviewDeskBarNewDeskButtonElementId);
   new_desk_button_label_ =
-      scroll_view_contents_->AddChildView(std::make_unique<views::Label>());
+      contents_view_->AddChildView(std::make_unique<views::Label>());
   new_desk_button_label_->SetPaintToLayer();
   new_desk_button_label_->layer()->SetFillsBoundsOpaquely(false);
 
-  on_contents_scrolled_subscription_ =
-      scroll_view_->AddContentsScrolledCallback(base::BindRepeating(
-          &DeskBarViewBase::OnContentsScrolled, base::Unretained(this)));
-  on_contents_scroll_ended_subscription_ =
-      scroll_view_->AddContentsScrollEndedCallback(base::BindRepeating(
-          &DeskBarViewBase::OnContentsScrollEnded, base::Unretained(this)));
-
-  scroll_view_contents_->SetLayoutManager(
+  contents_view_->SetLayoutManager(
       std::make_unique<DeskBarScrollViewLayout>(this));
 
   DesksController::Get()->AddObserver(this);
@@ -972,25 +937,29 @@ void DeskBarViewBase::Layout(PassKey) {
            ? kDeskBarScrollViewMinimumHorizontalPaddingOverview
            : kDeskBarScrollViewMinimumHorizontalPaddingDeskButton);
   const int horizontal_padding = std::max(scroll_view_padding, insets.left());
-  left_scroll_button_->SetBounds(horizontal_padding - scroll_view_padding,
-                                 bounds().y(), kDeskBarScrollButtonWidth,
-                                 bounds().height());
-  right_scroll_button_->SetBounds(
-      bounds().right() - horizontal_padding -
-          (kDeskBarScrollButtonWidth - scroll_view_padding),
-      bounds().y(), kDeskBarScrollButtonWidth, bounds().height());
+  if (IsScrollingInitialized()) {
+    left_scroll_button_->SetBounds(horizontal_padding - scroll_view_padding,
+                                   bounds().y(), kDeskBarScrollButtonWidth,
+                                   bounds().height());
+    right_scroll_button_->SetBounds(
+        bounds().right() - horizontal_padding -
+            (kDeskBarScrollButtonWidth - scroll_view_padding),
+        bounds().y(), kDeskBarScrollButtonWidth, bounds().height());
+  }
 
   gfx::Rect scroll_bounds(size());
   // Align with the overview grid in horizontal, so only horizontal insets are
   // needed here.
   scroll_bounds.Inset(gfx::Insets::VH(0, horizontal_padding));
-  scroll_view_->SetBoundsRect(scroll_bounds);
+  GetTopLevelViewWithContents().SetBoundsRect(scroll_bounds);
   // When the bar reaches its max possible size, it's size does not change, but
   // we still need to layout child UIs to their right positions.
-  scroll_view_->DeprecatedLayoutImmediately();
+  GetTopLevelViewWithContents().DeprecatedLayoutImmediately();
 
-  UpdateScrollButtonsVisibility();
-  UpdateGradientMask();
+  if (IsScrollingInitialized()) {
+    UpdateScrollButtonsVisibility();
+    UpdateGradientMask();
+  }
 
   for (const auto& post_layout_operation : post_layout_operations) {
     post_layout_operation->Run();
@@ -1064,7 +1033,10 @@ bool DeskBarViewBase::IsDeskNameBeingModified() const {
 }
 
 void DeskBarViewBase::ScrollToShowViewIfNecessary(const views::View* view) {
-  CHECK(base::Contains(scroll_view_contents_->children(), view));
+  if (!IsScrollingInitialized()) {
+    return;
+  }
+  CHECK(base::Contains(contents_view_->children(), view));
   const gfx::Rect visible_bounds = scroll_view_->GetVisibleRect();
   const gfx::Rect view_bounds = view->bounds();
   const bool beyond_left = view_bounds.x() < visible_bounds.x();
@@ -1475,8 +1447,10 @@ void DeskBarViewBase::EndDragDesk(DeskMiniView* mini_view, bool end_by_user) {
   MaybeUpdateDeskActionButtonTooltips();
 
   // Stop scroll even if the desk is on the scroll arrow buttons.
-  left_scroll_button_->OnDeskHoverEnd();
-  right_scroll_button_->OnDeskHoverEnd();
+  if (IsScrollingInitialized()) {
+    left_scroll_button_->OnDeskHoverEnd();
+    right_scroll_button_->OnDeskHoverEnd();
+  }
 
   // If the reordering is ended by the user (release the drag), perform the
   // snapping back animation and scroll the bar to target position. If current
@@ -1556,7 +1530,7 @@ void DeskBarViewBase::OnDeskRemoved(const Desk* desk) {
     // Desk button bar does not have mini view removal animation, mini view will
     // disappear immediately. Desk button bar will shrink during desk removal.
     removed_mini_view->parent()->RemoveChildViewT(removed_mini_view);
-    scroll_view_->InvalidateLayout();
+    contents_view_->InvalidateLayout();
   }
 }
 
@@ -1596,7 +1570,7 @@ void DeskBarViewBase::OnDeskNameChanged(const Desk* desk,
 void DeskBarViewBase::UpdateNewMiniViews(bool initializing_bar_view,
                                          bool expanding_bar_view) {
   TRACE_EVENT0("ui", "DeskBarViewBase::UpdateNewMiniViews");
-
+  const absl::Cleanup scrolling_check = [this] { InitScrollingIfRequired(); };
   const auto& desks = DesksController::Get()->desks();
   if (initializing_bar_view) {
     UpdateDeskButtonsVisibility();
@@ -1618,7 +1592,7 @@ void DeskBarViewBase::UpdateNewMiniViews(bool initializing_bar_view,
   std::vector<DeskMiniView*> new_mini_views;
   for (const auto& desk : desks) {
     if (!FindMiniViewForDesk(desk.get())) {
-      DeskMiniView* mini_view = scroll_view_contents_->AddChildViewAt(
+      DeskMiniView* mini_view = contents_view_->AddChildViewAt(
           std::make_unique<DeskMiniView>(this, root_window, desk.get(),
                                          window_occlusion_calculator_),
           mini_view_index);
@@ -1694,17 +1668,19 @@ DeskIconButton& DeskBarViewBase::GetOrCreateLibraryButton() {
           ? IDS_ASH_DESKS_TEMPLATES_DESKS_BAR_BUTTON_LIBRARY
           : IDS_ASH_DESKS_TEMPLATES_DESKS_BAR_BUTTON_SAVED_FOR_LATER;
 
-  CHECK(scroll_view_contents_);
+  CHECK(contents_view_);
   library_button_ =
-      scroll_view_contents_->AddChildView(std::make_unique<DeskIconButton>(
+      contents_view_->AddChildView(std::make_unique<DeskIconButton>(
           this, &kDesksTemplatesIcon, l10n_util::GetStringUTF16(button_text_id),
           cros_tokens::kCrosSysOnSecondaryContainer,
           cros_tokens::kCrosSysInversePrimary,
           /*initially_enabled=*/true,
           base::BindRepeating(&DeskBarViewBase::OnLibraryButtonPressed,
+                              base::Unretained(this)),
+          base::BindRepeating(&DeskBarViewBase::InitScrollingIfRequired,
                               base::Unretained(this))));
   library_button_label_ =
-      scroll_view_contents_->AddChildView(std::make_unique<views::Label>());
+      contents_view_->AddChildView(std::make_unique<views::Label>());
   library_button_label_->SetFontList(
       TypographyProvider::Get()->ResolveTypographyToken(
           TypographyToken::kCrosAnnotation1));
@@ -1761,15 +1737,17 @@ int DeskBarViewBase::DetermineMoveIndex(int location_screen_x) const {
 }
 
 void DeskBarViewBase::UpdateScrollButtonsVisibility() {
+  CHECK(IsScrollingInitialized());
   const gfx::Rect visible_bounds = scroll_view_->GetVisibleRect();
   left_scroll_button_->SetVisible(width() == GetAvailableBounds().width() &&
                                   visible_bounds.x() > 0);
   right_scroll_button_->SetVisible(width() == GetAvailableBounds().width() &&
                                    visible_bounds.right() <
-                                       scroll_view_contents_->bounds().width());
+                                       contents_view_->bounds().width());
 }
 
 void DeskBarViewBase::UpdateGradientMask() {
+  CHECK(IsScrollingInitialized());
   const bool is_rtl = base::i18n::IsRTL();
   const bool is_left_scroll_button_visible = left_scroll_button_->GetVisible();
   const bool is_right_scroll_button_visible =
@@ -1829,8 +1807,9 @@ void DeskBarViewBase::UpdateGradientMask() {
 }
 
 void DeskBarViewBase::ScrollToPreviousPage() {
+  CHECK(IsScrollingInitialized());
   ui::ScopedLayerAnimationSettings settings(
-      scroll_view_contents_->layer()->GetAnimator());
+      contents_view_->layer()->GetAnimator());
   InitScrollContentsAnimationSettings(settings);
   scroll_view_->ScrollToPosition(
       scroll_view_->horizontal_scroll_bar(),
@@ -1839,8 +1818,9 @@ void DeskBarViewBase::ScrollToPreviousPage() {
 }
 
 void DeskBarViewBase::ScrollToNextPage() {
+  CHECK(IsScrollingInitialized());
   ui::ScopedLayerAnimationSettings settings(
-      scroll_view_contents_->layer()->GetAnimator());
+      contents_view_->layer()->GetAnimator());
   InitScrollContentsAnimationSettings(settings);
   scroll_view_->ScrollToPosition(
       scroll_view_->horizontal_scroll_bar(),
@@ -1849,10 +1829,11 @@ void DeskBarViewBase::ScrollToNextPage() {
 }
 
 int DeskBarViewBase::GetAdjustedUncroppedScrollPosition(int position) const {
+  CHECK(IsScrollingInitialized());
   // Let the ScrollView handle it if the given `position` is invalid or it can't
   // be adjusted.
-  if (position <= 0 || position >= scroll_view_contents_->bounds().width() -
-                                       scroll_view_->width()) {
+  if (position <= 0 ||
+      position >= contents_view_->bounds().width() - scroll_view_->width()) {
     return position;
   }
 
@@ -1949,12 +1930,99 @@ void DeskBarViewBase::MaybeUpdateDeskActionButtonTooltips() {
   }
 }
 
+void DeskBarViewBase::InitScrollingIfRequired() {
+  if (!scroll_view_ && IsScrollingRequired()) {
+    InitScrolling();
+  }
+}
+
+void DeskBarViewBase::InitScrolling() {
+  CHECK(!scroll_view_);
+
+  std::unique_ptr<views::View> scroll_view_contents =
+      contents_view_ ? RemoveChildViewT(contents_view_)
+                     : std::make_unique<views::View>();
+
+  // Use layer scrolling so that the contents will paint on top of the parent,
+  // which uses `SetPaintToLayer()`.
+  scroll_view_ = AddChildView(std::make_unique<views::ScrollView>(
+      views::ScrollView::ScrollWithLayers::kEnabled));
+  scroll_view_->SetPaintToLayer(ui::LAYER_NOT_DRAWN);
+  scroll_view_->layer()->SetMasksToBounds(true);
+  scroll_view_->SetBackgroundColor(std::nullopt);
+  scroll_view_->SetDrawOverflowIndicator(false);
+  scroll_view_->SetHorizontalScrollBarMode(
+      views::ScrollView::ScrollBarMode::kHiddenButEnabled);
+  scroll_view_->SetTreatAllScrollEventsAsHorizontal(true);
+  scroll_view_->SetAllowKeyboardScrolling(false);
+
+  left_scroll_button_ = AddChildView(std::make_unique<ScrollArrowButton>(
+      base::BindRepeating(&DeskBarViewBase::ScrollToPreviousPage,
+                          base::Unretained(this)),
+      /*is_left_arrow=*/true, this));
+  left_scroll_button_->RemoveFromFocusList();
+  right_scroll_button_ = AddChildView(std::make_unique<ScrollArrowButton>(
+      base::BindRepeating(&DeskBarViewBase::ScrollToNextPage,
+                          base::Unretained(this)),
+      /*is_left_arrow=*/false, this));
+  right_scroll_button_->RemoveFromFocusList();
+  // If this is a desk button desk bar, the bar does not paint to a layer,
+  // therefore, the scroll arrow buttons need to be painted.
+  if (type_ == Type::kDeskButton) {
+    left_scroll_button_->SetPaintToLayer();
+    left_scroll_button_->layer()->SetFillsBoundsOpaquely(false);
+    right_scroll_button_->SetPaintToLayer();
+    right_scroll_button_->layer()->SetFillsBoundsOpaquely(false);
+  }
+
+  // Since we created a `ScrollView` with scrolling with layers enabled, it will
+  // automatically create a layer for our contents.
+  contents_view_ = scroll_view_->SetContents(std::move(scroll_view_contents));
+  CHECK(contents_view_->layer());
+
+  on_contents_scrolled_subscription_ =
+      scroll_view_->AddContentsScrolledCallback(base::BindRepeating(
+          &DeskBarViewBase::OnContentsScrolled, base::Unretained(this)));
+  on_contents_scroll_ended_subscription_ =
+      scroll_view_->AddContentsScrollEndedCallback(base::BindRepeating(
+          &DeskBarViewBase::OnContentsScrollEnded, base::Unretained(this)));
+
+  // If this is not attached to a widget yet, a layout will run automatically
+  // when that does happen, so there's no need to call `InvalidateLayout()`.
+  if (GetWidget()) {
+    InvalidateLayout();
+  }
+}
+
+bool DeskBarViewBase::IsScrollingRequired() const {
+  CHECK(contents_view_);
+  const int current_desk_bar_width = contents_view_->GetPreferredSize().width();
+  const int available_width_for_desk_bar = GetAvailableBounds().width();
+  // It might be ok for `scrolling_threshold` and `available_width_for_desk_bar`
+  // to be the same, but a safety margin is added to the threshold. This
+  // minimizes the chances of failing to initialize scrolling before it's
+  // required, while still providing latency benefits to most users with desk
+  // bar contents that are not even close to exceeding the width of the screen.
+  const int scrolling_threshold = available_width_for_desk_bar * 0.75f;
+  return current_desk_bar_width >= scrolling_threshold;
+}
+
+bool DeskBarViewBase::IsScrollingInitialized() const {
+  return !!scroll_view_;
+}
+
+views::View& DeskBarViewBase::GetTopLevelViewWithContents() {
+  CHECK(contents_view_);
+  return scroll_view_ ? *scroll_view_ : *contents_view_;
+}
+
 void DeskBarViewBase::OnContentsScrolled() {
   UpdateScrollButtonsVisibility();
   UpdateGradientMask();
 }
 
 void DeskBarViewBase::OnContentsScrollEnded() {
+  CHECK(IsScrollingInitialized());
   const gfx::Rect visible_bounds = scroll_view_->GetVisibleRect();
   const int current_position = visible_bounds.x();
   const int adjusted_position =
@@ -1977,6 +2045,9 @@ bool DeskBarViewBase::MaybeScrollByDraggedDesk() {
            left_scroll_button_,
            right_scroll_button_,
        }) {
+    if (!IsScrollingInitialized()) {
+      continue;
+    }
     if (scroll_button->GetVisible() &&
         proxy_bounds.Intersects(scroll_button->GetBoundsInScreen())) {
       scroll_button->OnDeskHoverStart();

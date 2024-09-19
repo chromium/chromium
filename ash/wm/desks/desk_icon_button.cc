@@ -60,12 +60,15 @@ DeskIconButton::DeskIconButton(DeskBarViewBase* bar_view,
                                ui::ColorId icon_color_id,
                                ui::ColorId background_color_id,
                                bool initially_enabled,
-                               base::RepeatingClosure callback)
+                               base::RepeatingClosure callback,
+                               base::RepeatingClosure state_change_callback)
     : DeskButtonBase(text, /*set_text=*/false, bar_view, callback),
       state_(bar_view_->IsZeroState() ? State::kZero : State::kExpanded),
       button_icon_(button_icon),
       icon_color_id_(icon_color_id),
-      background_color_id_(background_color_id) {
+      background_color_id_(background_color_id),
+      state_change_callback_(std::move(state_change_callback)) {
+  CHECK(state_change_callback_);
   SetEnabled(initially_enabled);
   views::InstallRoundRectHighlightPathGenerator(
       this, gfx::Insets(kWindowMiniViewFocusRingHaloInset),
@@ -116,6 +119,7 @@ void DeskIconButton::UpdateState(State state) {
   views::InstallRoundRectHighlightPathGenerator(
       this, gfx::Insets(kWindowMiniViewFocusRingHaloInset),
       GetFocusRingRadiusForState(state_));
+  state_change_callback_.Run();
 }
 
 bool DeskIconButton::IsPointOnButton(const gfx::Point& screen_location) const {
