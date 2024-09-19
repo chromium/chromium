@@ -2389,28 +2389,6 @@ ax::mojom::blink::Role AXNodeObject::DetermineRoleValue() {
                                                         : aria_role_;
 }
 
-void AXNodeObject::AccessibilityChildrenFromAOMProperty(
-    AOMRelationListProperty property,
-    AXObject::AXObjectVector& children) const {
-  HeapVector<Member<Element>> elements;
-  if (!HasAOMPropertyOrARIAAttribute(property, elements))
-    return;
-  AXObjectCacheImpl& cache = AXObjectCache();
-  for (const auto& element : elements) {
-    if (AXObject* child = cache.Get(element)) {
-      // Only aria-labelledby and aria-describedby can target hidden elements.
-      if (!child)
-        continue;
-      if (child->IsIgnored() &&
-          property != AOMRelationListProperty::kLabeledBy &&
-          property != AOMRelationListProperty::kDescribedBy) {
-        continue;
-      }
-      children.push_back(child);
-    }
-  }
-}
-
 static Element* SiblingWithAriaRole(String role, Node* node) {
   Node* parent = LayoutTreeBuilderTraversal::Parent(*node);
   if (!parent)
@@ -4391,15 +4369,6 @@ String AXNodeObject::SlowGetValueForControlIncludingContentEditable(
 
 ax::mojom::blink::Role AXNodeObject::RawAriaRole() const {
   return aria_role_;
-}
-
-void AXNodeObject::AriaDescribedbyElements(AXObjectVector& describedby) const {
-  AccessibilityChildrenFromAOMProperty(AOMRelationListProperty::kDescribedBy,
-                                       describedby);
-}
-
-void AXNodeObject::AriaOwnsElements(AXObjectVector& owns) const {
-  AccessibilityChildrenFromAOMProperty(AOMRelationListProperty::kOwns, owns);
 }
 
 ax::mojom::blink::HasPopup AXNodeObject::HasPopup() const {

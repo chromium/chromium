@@ -354,6 +354,48 @@ void FillWidgetStates(AXObject& ax_object,
   }
 }
 
+// TODO(crbug/41469336): also show related elements from ElementInternals
+void AccessibilityChildrenFromAttribute(const AXObject& ax_object,
+                                        const QualifiedName& attribute,
+                                        AXObject::AXObjectVector& children) {
+  if (!ax_object.GetElement()) {
+    return;
+  }
+  HeapVector<Member<Element>>* elements =
+      ax_object.GetElement()->GetAttrAssociatedElements(
+          attribute,
+          /*resolve_reference_target=*/true);
+  if (!elements) {
+    return;
+  }
+  AXObjectCacheImpl& cache = ax_object.AXObjectCache();
+  for (const auto& element : *elements) {
+    if (AXObject* child = cache.Get(element)) {
+      // Only aria-labelledby and aria-describedby can target hidden elements.
+      if (!child) {
+        continue;
+      }
+      if (child->IsIgnored() && attribute != html_names::kAriaLabelledbyAttr &&
+          attribute != html_names::kAriaLabeledbyAttr &&
+          attribute != html_names::kAriaDescribedbyAttr) {
+        continue;
+      }
+      children.push_back(child);
+    }
+  }
+}
+
+void AriaDescribedbyElements(AXObject& ax_object,
+                             AXObject::AXObjectVector& describedby) {
+  AccessibilityChildrenFromAttribute(
+      ax_object, html_names::kAriaDescribedbyAttr, describedby);
+}
+
+void AriaOwnsElements(AXObject& ax_object, AXObject::AXObjectVector& owns) {
+  AccessibilityChildrenFromAttribute(ax_object, html_names::kAriaOwnsAttr,
+                                     owns);
+}
+
 std::unique_ptr<AXProperty> CreateRelatedNodeListProperty(
     const String& key,
     AXRelatedObjectVector& nodes) {
@@ -376,7 +418,7 @@ std::unique_ptr<AXProperty> CreateRelatedNodeListProperty(
 void FillRelationships(AXObject& ax_object,
                        protocol::Array<AXProperty>& properties) {
   AXObject::AXObjectVector results;
-  ax_object.AriaDescribedbyElements(results);
+  AriaDescribedbyElements(ax_object, results);
   if (!results.empty()) {
     properties.emplace_back(CreateRelatedNodeListProperty(
         AXPropertyNameEnum::Describedby, results,
@@ -384,7 +426,7 @@ void FillRelationships(AXObject& ax_object,
   }
   results.clear();
 
-  ax_object.AriaOwnsElements(results);
+  AriaOwnsElements(ax_object, results);
   if (!results.empty()) {
     properties.emplace_back(
         CreateRelatedNodeListProperty(AXPropertyNameEnum::Owns, results,
