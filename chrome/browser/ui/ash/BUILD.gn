@@ -373,6 +373,7 @@ group("browser_tests") {
     "//chrome/browser/ui/ash/glanceables:browser_tests",
     "//chrome/browser/ui/ash/global_media_controls:browser_tests",
     "//chrome/browser/ui/ash/google_one:browser_tests",
+    "//chrome/browser/ui/ash/graduation:browser_tests",
     "//chrome/browser/ui/ash/holding_space:browser_tests",
     "//chrome/browser/ui/ash/keyboard:browser_tests",
     "//chrome/browser/ui/ash/login:browser_tests",
