@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/search/ntp_user_data_logger.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/new_tab_page_resources.h"
+#include "components/policy/content/policy_blocklist_service.h"
 #include "components/search/ntp_features.h"
 #include "content/public/common/url_constants.h"
 #include "net/base/url_util.h"
@@ -34,6 +35,8 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/template_expressions.h"
 #include "url/url_util.h"
+
+using URLBlocklistState = policy::URLBlocklist::URLBlocklistState;
 
 namespace {
 
@@ -108,6 +111,15 @@ void UntrustedSource::StartDataRequest(
     const GURL& url,
     const content::WebContents::Getter& wc_getter,
     content::URLDataSource::GotDataCallback callback) {
+  PolicyBlocklistService* service =
+      PolicyBlocklistFactory::GetForBrowserContext(profile_);
+  URLBlocklistState blocklist_state = service->GetURLBlocklistState(url);
+  if (blocklist_state == URLBlocklistState::URL_IN_BLOCKLIST) {
+    LOG(WARNING) << "URL is blocked by a policy.";
+    std::move(callback).Run(base::MakeRefCounted<base::RefCountedString>());
+    return;
+  }
+
   const std::string path = url.has_path() ? url.path().substr(1) : "";
   GURL url_param = GURL(url.query());
   if (path == "one-google-bar" && one_google_bar_service_) {
