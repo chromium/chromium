@@ -31,8 +31,6 @@ public class MessagesMetrics {
     private static final String ENQUEUED_HIDDEN_HISTOGRAM_NAME = "Android.Messages.Enqueued.Hidden";
     private static final String ENQUEUED_HIDING_HISTOGRAM_NAME = "Android.Messages.Enqueued.Hiding";
     private static final String FULLY_VISIBLE_NAME = "Android.Messages.FullyVisible";
-    private static final String ERROR_FULLY_VISIBLE_NOT_INFORMED_NAME =
-            "Android.Messages.Error.FullyVisibleNotInformed";
     private static final String DISMISSED_WITHOUT_FULLY_VISIBLE =
             "Android.Messages.DismissedWithoutFullyVisible";
     private static final String DISMISSED_HISTOGRAM_PREFIX = "Android.Messages.Dismissed.";
@@ -270,15 +268,6 @@ public class MessagesMetrics {
     static void recordFullyVisible(@MessageIdentifier int messageIdentifier) {
         RecordHistogram.recordEnumeratedHistogram(
                 FULLY_VISIBLE_NAME, messageIdentifier, MessageIdentifier.COUNT);
-    }
-
-    /**
-     * Record the fully visible callback is not triggered when it is supposed to be. E.g. when the
-     * message is dismissed by gesture, primary action, secondary action, timer.
-     */
-    static void recordErrorFullyVisibleNotInformed(@MessageIdentifier int messageIdentifier) {
-        RecordHistogram.recordEnumeratedHistogram(
-                ERROR_FULLY_VISIBLE_NOT_INFORMED_NAME, messageIdentifier, MessageIdentifier.COUNT);
     }
 
     /** Record when the message is dismissed without being fully visible before. */
