@@ -61,7 +61,8 @@ TestLayerTreeFrameSink::TestLayerTreeFrameSink(
       debug_settings_(debug_settings),
       refresh_rate_(refresh_rate),
       frame_sink_id_(kLayerTreeFrameSinkId),
-      shared_image_manager_(std::make_unique<gpu::SharedImageManager>()),
+      shared_image_manager_(
+          std::make_unique<gpu::SharedImageManager>(/*thread_safe=*/true)),
       sync_point_manager_(std::make_unique<gpu::SyncPointManager>()),
       gpu_scheduler_(
           std::make_unique<gpu::Scheduler>(sync_point_manager_.get())),

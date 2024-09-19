@@ -139,8 +139,8 @@ class TestLayerTreeFrameSink : public LayerTreeFrameSink,
       const viz::FrameSinkId& id,
       viz::mojom::CompositorFrameSinkType* type) override;
 
-  const std::set<viz::SharedBitmapId>& owned_bitmaps() const {
-    return owned_bitmaps_;
+  gpu::SharedImageInterface* GetSharedImageInterface() {
+    return shared_image_interface_provider_.GetSharedImageInterface();
   }
 
  private:
