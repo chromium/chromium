@@ -22,11 +22,6 @@
    package by Ronald Tschalaer Copyright (C) 1996-1999.
 */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/wtf/text/base64.h"
 
 #include <limits.h>
@@ -133,10 +128,8 @@ bool Base64UnpaddedURLDecode(const String& in, Vector<char>& out) {
   return Base64Decode(NormalizeToBase64(in), out);
 }
 
-String Base64URLEncode(const char* data, unsigned length) {
-  return Base64Encode(base::as_bytes(base::make_span(data, length)))
-      .Replace('+', '-')
-      .Replace('/', '_');
+String Base64URLEncode(base::span<const uint8_t> data) {
+  return Base64Encode(data).Replace('+', '-').Replace('/', '_');
 }
 
 String NormalizeToBase64(const String& encoding) {

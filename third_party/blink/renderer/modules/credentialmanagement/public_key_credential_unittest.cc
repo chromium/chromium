@@ -270,9 +270,7 @@ Matcher<Member<T>> MemberField(Matcher<T*> matcher) {
 // Performs WebAuthn Base64URL encoding, which is always unpadded.
 WTF::String Base64URLEncode(DOMArrayPiece buffer) {
   // WTF::Base64URLEncode always pads, so we strip trailing '='.
-  String encoded =
-      WTF::Base64URLEncode(static_cast<const char*>(buffer.Data()),
-                           base::checked_cast<wtf_size_t>(buffer.ByteLength()));
+  String encoded = WTF::Base64URLEncode(buffer.ByteSpan());
   unsigned padding_start = encoded.length();
   for (; padding_start > 0; --padding_start) {
     if (encoded[padding_start - 1] != '=') {

@@ -59,7 +59,7 @@ WTF_EXPORT bool Base64UnpaddedURLDecode(const String& in, Vector<char>&);
 // encoding in plain base64.
 WTF_EXPORT String NormalizeToBase64(const String&);
 
-WTF_EXPORT String Base64URLEncode(const char*, unsigned);
+WTF_EXPORT String Base64URLEncode(base::span<const uint8_t>);
 
 }  // namespace WTF
 

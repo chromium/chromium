@@ -79,9 +79,7 @@ TEST(PushManagerTest, ValidBase64URLWithoutPaddingSenderKey) {
   test::TaskEnvironment task_environment;
   PushSubscriptionOptionsInit* options =
       MakeGarbageCollected<PushSubscriptionOptionsInit>();
-  String base64_url =
-      WTF::Base64URLEncode(reinterpret_cast<const char*>(kApplicationServerKey),
-                           kApplicationServerKeyLength);
+  String base64_url = WTF::Base64URLEncode(kApplicationServerKey);
   base64_url = base64_url.RemoveCharacters(RemovePad);
   options->setApplicationServerKey(
       MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferViewOrString>(
@@ -136,9 +134,7 @@ TEST(PushManagerTest, InvalidBase64URLWithPaddingSenderKey) {
       MakeGarbageCollected<PushSubscriptionOptionsInit>();
   options->setApplicationServerKey(
       MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferViewOrString>(
-          WTF::Base64URLEncode(
-              reinterpret_cast<const char*>(kApplicationServerKey),
-              kApplicationServerKeyLength)));
+          WTF::Base64URLEncode(kApplicationServerKey)));
 
   DummyExceptionStateForTesting exception_state;
   PushSubscriptionOptions* output =
