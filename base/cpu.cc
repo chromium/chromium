@@ -186,7 +186,8 @@ const ProcCpuInfo& ParseProcCpu() {
 
     StringPairs pairs;
     if (!SplitStringIntoKeyValuePairs(cpuinfo, ':', '\n', &pairs)) {
-      NOTREACHED();
+      // TODO(crbug.com/368077955): This still hits and needs to be diagnosed.
+      DUMP_WILL_BE_NOTREACHED() << cpuinfo;
     }
 
     auto model_name = FindFirstProcCpuKey(pairs, kModelNamePrefix);
