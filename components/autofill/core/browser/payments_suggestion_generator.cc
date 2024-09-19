@@ -1225,8 +1225,6 @@ std::vector<Suggestion> GetCreditCardSuggestionsForTouchToFill(
         credit_card.ObfuscatedNumberWithVisibleLastFourDigits();
     std::optional<Suggestion::Text> benefit_label =
         GetCreditCardBenefitSuggestionLabel(credit_card, client);
-    // TODO(b/364660068): Check if card benefits eligibility can be added while
-    // retrieving the benefits label.
     if (benefit_label && client.GetPersonalDataManager()
                              ->payments_data_manager()
                              .IsCardEligibleForBenefits(credit_card)) {
