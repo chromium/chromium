@@ -48,8 +48,11 @@ using Instruction = uint8_t;
 // present, so a simple byte scan should be Good Enough™.
 constexpr Instruction kRet = 0xc3;
 // INT3 ; UD2
+
+#if defined(OFFICIAL_BUILD)
 constexpr Instruction kRequiredBody[] = {0xcc, 0x0f, 0x0b};
 constexpr Instruction kOptionalFooter[] = {};
+#endif  // defined(OFFICIAL_BUILD)
 
 #elif defined(ARCH_CPU_ARMEL)
 using Instruction = uint16_t;
@@ -57,9 +60,12 @@ using Instruction = uint16_t;
 // T32 opcode reference: https://developer.arm.com/docs/ddi0487/latest
 // Actually BX LR, canonical encoding:
 constexpr Instruction kRet = 0x4770;
+
+#if defined(OFFICIAL_BUILD)
 // BKPT #0; UDF #0
 constexpr Instruction kRequiredBody[] = {0xbe00, 0xde00};
 constexpr Instruction kOptionalFooter[] = {};
+#endif  // defined(OFFICIAL_BUILD)
 
 #elif defined(ARCH_CPU_ARM64)
 using Instruction = uint32_t;
@@ -77,6 +83,8 @@ enum : Instruction {
   kBrkF000 = 0xd43e0000,
   kHlt0 = 0xd4400000,
 };
+
+#if defined(OFFICIAL_BUILD)
 
 #if BUILDFLAG(IS_WIN)
 
@@ -96,6 +104,8 @@ constexpr Instruction kRequiredBody[] = {kBrk0, kHlt0};
 constexpr Instruction kOptionalFooter[] = {};
 
 #endif
+
+#endif  // defined(OFFICIAL_BUILD)
 
 #endif
 
@@ -145,6 +155,8 @@ void GetTestFunctionInstructions(std::vector<Instruction>* body) {
     body->push_back(instruction);
 }
 
+#if defined(OFFICIAL_BUILD)
+
 std::optional<std::vector<Instruction>> ExpectImmediateCrashInvocation(
     std::vector<Instruction> instructions) {
   auto iter = instructions.begin();
@@ -185,6 +197,7 @@ std::vector<Instruction> DropUntilMatch(
     haystack.erase(haystack.begin());
   return haystack;
 }
+
 #endif  // USE_CLANG_COVERAGE || BUILDFLAG(CLANG_PROFILING)
 
 std::vector<Instruction> MaybeSkipCoverageHook(
@@ -200,6 +213,8 @@ std::vector<Instruction> MaybeSkipCoverageHook(
   return instructions;
 #endif  // USE_CLANG_COVERAGE || BUILDFLAG(CLANG_PROFILING)
 }
+
+#endif  // defined(OFFICIAL_BUILD)
 
 }  // namespace
 
@@ -227,12 +242,17 @@ TEST(ImmediateCrashTest, ExpectedOpcodeSequence) {
   it++;
 
   body = std::vector<Instruction>(it, body.end());
+  // In non-official builds, we std::abort instead, so the result will be
+  // false - but let's still go through the motions above so we spot any
+  // problems in this _test code_ in as many build permutations as possible.
+#if defined(OFFICIAL_BUILD)
   std::optional<std::vector<Instruction>> result = MaybeSkipCoverageHook(body);
   result = ExpectImmediateCrashInvocation(result.value());
   result = MaybeSkipOptionalFooter(result.value());
   result = MaybeSkipCoverageHook(result.value());
   result = ExpectImmediateCrashInvocation(result.value());
   ASSERT_TRUE(result);
+#endif  // defined(OFFICIAL_BUILD)
 }
 
 }  // namespace base
