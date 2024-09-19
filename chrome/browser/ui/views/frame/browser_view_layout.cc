@@ -244,7 +244,10 @@ BrowserViewLayout::BrowserViewLayout(
       contents_separator_(contents_separator),
       tab_strip_(tab_strip),
       dialog_host_(std::make_unique<WebContentsModalDialogHostViews>(this)) {
-  if (base::FeatureList::IsEnabled(features::kCompactMode)) {
+  // TODO(crbug.com/368369457): Remove incognito check once PrefChangeRegistrar
+  // is fixed / notifies observers that it is being deleted.
+  if (base::FeatureList::IsEnabled(features::kCompactMode) &&
+      !browser_view_->browser()->profile()->IsIncognitoProfile()) {
     registrar_.Init(browser_view_->browser()->profile()->GetPrefs());
     registrar_.Add(prefs::kCompactModeEnabled,
                    base::BindRepeating(&BrowserViewLayout::OnCompactModeChanged,
