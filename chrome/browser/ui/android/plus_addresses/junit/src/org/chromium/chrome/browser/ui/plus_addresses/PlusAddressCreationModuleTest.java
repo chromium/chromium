@@ -326,7 +326,13 @@ public class PlusAddressCreationModuleTest {
                 errorStateContainer.findViewById(R.id.plus_address_error_cancel_button);
 
         assertEquals(title.getText(), info.getTitle());
-        assertEquals(description.getText(), info.getDescription());
+        String expectedDescription =
+                info.getDescription()
+                        .replace("<b1>", "")
+                        .replace("</b1>", "")
+                        .replace("<b2>", "")
+                        .replace("</b2>", "");
+        assertEquals(description.getText().toString(), expectedDescription);
         assertEquals(okButton.getText(), info.getOkText());
         if (info.getCancelText().isEmpty()) {
             assertEquals(cancelButton.getVisibility(), View.GONE);
@@ -509,6 +515,71 @@ public class PlusAddressCreationModuleTest {
         Button errorOkButton =
                 view.getContentView().findViewById(R.id.plus_address_error_ok_button);
         errorOkButton.performClick();
+        verify(mBottomSheetController).hideContent(view, true);
+        verify(mBridge).onCanceled();
+    }
+
+    @Test
+    @SmallTest
+    public void testCreationAffiliationError_fillExistingPlusAddress() {
+        PlusAddressCreationBottomSheetContent view = openBottomSheet();
+
+        PlusAddressCreationErrorStateInfo createAffiliationError =
+                new PlusAddressCreationErrorStateInfo(
+                        PlusAddressCreationBottomSheetErrorType.CREATE_AFFILIATION,
+                        "Create affiliation error title",
+                        "Create affiliation error description with <b1>two</b1> bold"
+                                + " <b2>spans</b2>.",
+                        "Create affiliation error ok",
+                        "Create affiliation");
+
+        // Simulate that the reserve request timed out.
+        mCoordinator.showError(createAffiliationError);
+        verifyErrorScreenIsShown(view, createAffiliationError);
+
+        // Click ok button and check that the bottom sheet gets hidden.
+        Button errorOkButton =
+                view.getContentView().findViewById(R.id.plus_address_error_ok_button);
+        Button errorCancelButton =
+                view.getContentView().findViewById(R.id.plus_address_error_cancel_button);
+        assertEquals(errorOkButton.getVisibility(), View.VISIBLE);
+        assertEquals(errorOkButton.getText(), createAffiliationError.getOkText());
+        assertEquals(errorCancelButton.getVisibility(), View.VISIBLE);
+        assertEquals(errorCancelButton.getText(), createAffiliationError.getCancelText());
+
+        errorOkButton.performClick();
+        verify(mBridge).onConfirmRequested();
+    }
+
+    @Test
+    @SmallTest
+    public void testCreationAffiliationError_cancelAfterAffiliationError() {
+        PlusAddressCreationBottomSheetContent view = openBottomSheet();
+
+        PlusAddressCreationErrorStateInfo createAffiliationError =
+                new PlusAddressCreationErrorStateInfo(
+                        PlusAddressCreationBottomSheetErrorType.CREATE_AFFILIATION,
+                        "Create affiliation error title",
+                        "Create affiliation error description with <b1>two</b1> bold"
+                                + " <b2>spans</b2>.",
+                        "Create affiliation error ok",
+                        "Create affiliation");
+
+        // Simulate that the reserve request timed out.
+        mCoordinator.showError(createAffiliationError);
+        verifyErrorScreenIsShown(view, createAffiliationError);
+
+        // Click ok button and check that the bottom sheet gets hidden.
+        Button errorOkButton =
+                view.getContentView().findViewById(R.id.plus_address_error_ok_button);
+        Button errorCancelButton =
+                view.getContentView().findViewById(R.id.plus_address_error_cancel_button);
+        assertEquals(errorOkButton.getVisibility(), View.VISIBLE);
+        assertEquals(errorOkButton.getText(), createAffiliationError.getOkText());
+        assertEquals(errorCancelButton.getVisibility(), View.VISIBLE);
+        assertEquals(errorCancelButton.getText(), createAffiliationError.getCancelText());
+
+        errorCancelButton.performClick();
         verify(mBottomSheetController).hideContent(view, true);
         verify(mBridge).onCanceled();
     }

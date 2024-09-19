@@ -79,6 +79,12 @@
     <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_CREATE_QUOTA_ERROR_DESCRIPTION_ANDROID" desc="Description message shown in the plus address creation bottom sheet when the backend fails to create the plus address after the user click the confirm button due to the quota error." translateable="false">
       Can't create any more plus addresses.
     </message>
+    <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_CREATE_AFFILIATION_ERROR_TITLE_ANDROID" desc="Title message shown in the plus address creation bottom sheet when the backend returns an already existing plus address after the user click the confirm button due to the quota error." translateable="false">
+      Use existing address?
+    </message>
+    <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_CREATE_AFFILIATION_ERROR_DESCRIPTION_ANDROID" desc="Description message shown in the plus address creation bottom sheet when the backend returns an already existing plus address after the user click the confirm button due to the quota error." translateable="false">
+      You already have a plus address for &lt;b1&gt;<ph name="DOMAIN">$1<ex>domain.com</ex></ph>&lt;/b1&gt;. Use existing address &lt;b2&gt;<ph name="GAIA_EMAIL">$2<ex>example@gmail.com</ex></ph>&lt;/b2&gt;?
+    </message>
     <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_CREATE_GENERIC_ERROR_TITLE_ANDROID" desc="Title message shown in the plus address creation bottom sheet when the backend fails to create the plus address after the user click the confirm button due to an unknown error." translateable="false">
       Something went wrong
     </message>
@@ -90,6 +96,9 @@
     </message>
     <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_ERROR_TRY_AGAIN_BUTTON_TEXT_ANDROID" desc="Confirm button text in the plus address creation bottom sheet that retries the previously failed action." translateable="false">
       Try again
+    </message>
+    <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_ERROR_USE_EXISTING_ADDRESS_BUTTON_TEXT_ANDROID" desc="Confirm button text in the plus address creation bottom sheet that tries to fill an existing plus address into the triggering field." translateable="false">
+      Use existing address
     </message>
     <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_ERROR_CANCEL_BUTTON_TEXT_ANDROID" desc="Cancel button text in the plus address creation bottom sheet that closes the bottom sheet." translateable="false">
       Cancel

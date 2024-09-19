@@ -30,8 +30,11 @@ enum class PlusAddressCreationBottomSheetErrorType {
   // The user hit the plus address creation quota limit when they attempted to
   // create a plus address.
   kCreateQuota = 4,
+  // The user tried to create a new plus address for the domain, but some plus
+  // address already exists for an affiliated
+  kCreateAffiliation = 5,
   // Some network error occurred during an attempt to create a plus address.
-  kCreateGeneric = 5,
+  kCreateGeneric = 6,
 };
 
 class PlusAddressCreationController;
@@ -68,7 +71,8 @@ class PlusAddressCreationViewAndroid {
   // plus address in the bottomsheet and enable the OK button.
   void ShowReserveResult(const PlusProfileOrError& maybe_plus_profile);
   // Either shows an error message on the bottomsheet or closes the bottomsheet.
-  void ShowConfirmResult(const PlusProfileOrError& maybe_plus_profile);
+  void ShowConfirmResult(const PlusProfileOrError& maybe_plus_profile,
+                         const PlusProfile& reserved_plus_profile);
   // Hides the refresh icon in case no more plus address refreshes are available
   // to the user.
   void HideRefreshButton();

@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "components/plus_addresses/features.h"
 #include "components/plus_addresses/plus_address_types.h"
+#include "components/plus_addresses/plus_address_ui_utils.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/view_android.h"
@@ -179,6 +180,29 @@ ScopedJavaLocalRef<jobject> GetCreateErrorStateInfo(
       title, description, ok_text, cancel_text);
 }
 
+ScopedJavaLocalRef<jobject> GetCreateAffiliationErrorStateInfo(
+    const PlusProfile& existing_plus_profile) {
+  if (!base::FeatureList::IsEnabled(
+          features::kPlusAddressAndroidErrorStatesEnabled)) {
+    return ScopedJavaLocalRef<jobject>();
+  }
+
+  return Java_PlusAddressCreationErrorStateInfo_Constructor(
+      base::android::AttachCurrentThread(),
+      base::to_underlying(
+          PlusAddressCreationBottomSheetErrorType::kCreateAffiliation),
+      l10n_util::GetStringUTF16(
+          IDS_PLUS_ADDRESS_BOTTOMSHEET_CREATE_AFFILIATION_ERROR_TITLE_ANDROID),
+      l10n_util::GetStringFUTF16(
+          IDS_PLUS_ADDRESS_BOTTOMSHEET_CREATE_AFFILIATION_ERROR_DESCRIPTION_ANDROID,
+          GetOriginForDisplay(existing_plus_profile),
+          base::UTF8ToUTF16(*existing_plus_profile.plus_address)),
+      l10n_util::GetStringUTF16(
+          IDS_PLUS_ADDRESS_BOTTOMSHEET_ERROR_USE_EXISTING_ADDRESS_BUTTON_TEXT_ANDROID),
+      l10n_util::GetStringUTF16(
+          IDS_PLUS_ADDRESS_BOTTOMSHEET_ERROR_CANCEL_BUTTON_TEXT_ANDROID));
+}
+
 }  // namespace
 
 PlusAddressCreationViewAndroid::PlusAddressCreationViewAndroid(
@@ -260,13 +284,21 @@ void PlusAddressCreationViewAndroid::ShowReserveResult(
 }
 
 void PlusAddressCreationViewAndroid::ShowConfirmResult(
-    const PlusProfileOrError& maybe_plus_profile) {
+    const PlusProfileOrError& maybe_plus_profile,
+    const PlusProfile& reserved_plus_profile) {
   if (!java_object_) {
     return;
   }
   JNIEnv* env = base::android::AttachCurrentThread();
   if (maybe_plus_profile.has_value()) {
-    Java_PlusAddressCreationViewBridge_finishConfirm(env, java_object_);
+    if (maybe_plus_profile.value().plus_address ==
+        reserved_plus_profile.plus_address) {
+      Java_PlusAddressCreationViewBridge_finishConfirm(env, java_object_);
+    } else {
+      Java_PlusAddressCreationViewBridge_showError(
+          env, java_object_,
+          GetCreateAffiliationErrorStateInfo(maybe_plus_profile.value()));
+    }
   } else {
     // TODO: crbug.com/354881207 - Pass a proper confirm  error information.
     Java_PlusAddressCreationViewBridge_showError(

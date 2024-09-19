@@ -18,6 +18,8 @@ import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationP
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.SHOW_ONBOARDING_NOTICE;
 import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.VISIBLE;
 
+import android.graphics.Typeface;
+import android.text.style.StyleSpan;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -27,6 +29,8 @@ import androidx.annotation.Nullable;
 
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.text.SpanApplier;
+import org.chromium.ui.text.SpanApplier.SpanInfo;
 
 /**
  * Binds the {@code PlusAddressCreationProperties} to the {@PlusAddressCreationBottomSheetContent}.
@@ -116,7 +120,15 @@ class PlusAddressCreationViewBinder {
         Button cancelButton = view.mContentView.findViewById(R.id.plus_address_error_cancel_button);
 
         errorTitle.setText(info.getTitle());
-        errorDescription.setText(info.getDescription());
+        if (info.getErrorType() == PlusAddressCreationBottomSheetErrorType.CREATE_AFFILIATION) {
+            errorDescription.setText(
+                    SpanApplier.applySpans(
+                            info.getDescription(),
+                            new SpanInfo("<b1>", "</b1>", new StyleSpan(Typeface.BOLD)),
+                            new SpanInfo("<b2>", "</b2>", new StyleSpan(Typeface.BOLD))));
+        } else {
+            errorDescription.setText(info.getDescription());
+        }
         okButton.setText(info.getOkText());
         switch (info.getErrorType()) {
             case PlusAddressCreationBottomSheetErrorType.RESERVE_TIMEOUT:
@@ -128,6 +140,9 @@ class PlusAddressCreationViewBinder {
             case PlusAddressCreationBottomSheetErrorType.RESERVE_QUOTA:
             case PlusAddressCreationBottomSheetErrorType.CREATE_QUOTA:
                 okButton.setOnClickListener(unused -> delegate.onCanceled());
+                break;
+            case PlusAddressCreationBottomSheetErrorType.CREATE_AFFILIATION:
+                okButton.setOnClickListener(unused -> delegate.onConfirmRequested());
                 break;
             default:
                 assert false : "Every possible error type needs to be handled!";
