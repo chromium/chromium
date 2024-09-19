@@ -1246,7 +1246,7 @@ void WebSocketChannelImpl::OnConnectionError(const base::Location& set_from,
   if (description.empty()) {
     message = failure_message_;
   } else {
-    message = String::FromUTF8(description.c_str(), description.size());
+    message = String::FromUTF8(description);
   }
 
   // This function is called when the implementation in the network service is

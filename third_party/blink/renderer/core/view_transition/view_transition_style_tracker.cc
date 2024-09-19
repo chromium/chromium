@@ -507,7 +507,7 @@ ViewTransitionStyleTracker::ViewTransitionStyleTracker(
     for (const auto& [id, value] :
          transition_state_element.captured_css_properties) {
       css_property_builder.Insert(FromTransitionPropertyId(id),
-                                  String::FromUTF8(value.c_str()));
+                                  String::FromUTF8(value));
     }
     element_data->captured_css_properties =
         std::move(css_property_builder).Finish();

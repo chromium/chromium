@@ -96,7 +96,7 @@ WebString WebString::Substring(size_t pos, size_t len) const {
 }
 
 WebString WebString::FromUTF8(std::string_view s) {
-  return String::FromUTF8(s.data(), s.length());
+  return String::FromUTF8(s);
 }
 
 WebString WebString::FromUTF16(std::optional<std::u16string_view> s) {

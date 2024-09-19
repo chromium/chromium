@@ -523,6 +523,10 @@ String String::FromUTF8WithLatin1Fallback(const LChar* string, size_t size) {
   return utf8;
 }
 
+String String::FromUTF8WithLatin1Fallback(std::string_view s) {
+  return FromUTF8WithLatin1Fallback(s.data(), s.size());
+}
+
 std::ostream& operator<<(std::ostream& out, const String& string) {
   return out << string.EncodeForDebugging().Utf8();
 }

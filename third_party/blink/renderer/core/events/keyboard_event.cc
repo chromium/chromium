@@ -79,7 +79,7 @@ bool HasCurrentComposition(LocalDOMWindow* dom_window) {
 }
 
 static String FromUTF8(const std::string& s) {
-  return String::FromUTF8(s.data(), s.length());
+  return String::FromUTF8(s);
 }
 
 }  // namespace

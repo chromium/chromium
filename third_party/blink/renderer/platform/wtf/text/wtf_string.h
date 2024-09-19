@@ -555,6 +555,7 @@ class WTF_EXPORT String {
     return FromUTF8WithLatin1Fallback(reinterpret_cast<const LChar*>(s),
                                       length);
   }
+  [[nodiscard]] static String FromUTF8WithLatin1Fallback(std::string_view);
 
   bool IsLowerASCII() const { return !impl_ || impl_->IsLowerASCII(); }
 
