@@ -8417,6 +8417,7 @@ test("unit_tests") {
       "../browser/net/network_annotation_monitor_unittest.cc",
       "../browser/performance_manager/policies/oom_score_policy_chromeos_unittest.cc",
       "../browser/performance_manager/policies/report_page_processes_policy_unittest.cc",
+      "../browser/policy/annotations/annotation_control_provider_unittest.cc",
       "../browser/policy/annotations/annotation_control_unittest.cc",
       "../browser/policy/annotations/blocklist_handler_unittest.cc",
       "../browser/policy/system_features_disable_list_policy_handler_unittest.cc",

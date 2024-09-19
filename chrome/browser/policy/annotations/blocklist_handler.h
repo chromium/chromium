@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_POLICY_ANNOTATIONS_BLOCKLIST_HANDLER_H_
 
 #include "chrome/browser/policy/annotations/annotation_control.h"
+#include "chrome/browser/policy/annotations/annotation_control_provider.h"
 #include "chrome/common/pref_names.h"
 #include "components/policy/core/browser/configuration_policy_handler.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -38,7 +39,7 @@ class NetworkAnnotationBlocklistHandler : public ConfigurationPolicyHandler {
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
  private:
-  std::map<std::string, AnnotationControl> annotation_controls_;
+  AnnotationControlProvider annotation_control_provider_;
 };
 
 }  // namespace policy

@@ -14,37 +14,8 @@
 
 namespace policy {
 
-// Setup annotation to policy mappings with some hand-picked network
-// annotations. Annotations are keyed by hash codes which are generated at
-// compile time. There is also a helper script to generate these hash codes at:
-// `tools/traffic_annotation/scripts/auditor/README.md`
-NetworkAnnotationBlocklistHandler::NetworkAnnotationBlocklistHandler() {
-  // autofill_query
-  // Note: This one is purposefully incorrect to allow for initial testing. It
-  //       should have the same policies as 'autofill_upload' below.
-  annotation_controls_["88863520"] =
-      AnnotationControl().Add(key::kPasswordManagerEnabled, base::Value(false));
-
-  // autofill_upload
-  annotation_controls_["104798869"] =
-      AnnotationControl()
-          .Add(key::kPasswordManagerEnabled, base::Value(false))
-          .Add(key::kAutofillAddressEnabled, base::Value(false))
-          .Add(key::kAutofillCreditCardEnabled, base::Value(false));
-
-  // calendar_get_events
-  annotation_controls_["86429515"] = AnnotationControl().Add(
-      key::kCalendarIntegrationEnabled, base::Value(false));
-
-  // remoting_log_to_server
-  annotation_controls_["99742369"] =
-      AnnotationControl()
-          .Add(key::kRemoteAccessHostAllowEnterpriseRemoteSupportConnections,
-               base::Value(false))
-          .Add(key::kRemoteAccessHostAllowRemoteSupportConnections,
-               base::Value(false));
-}
-
+NetworkAnnotationBlocklistHandler::NetworkAnnotationBlocklistHandler() =
+    default;
 NetworkAnnotationBlocklistHandler::~NetworkAnnotationBlocklistHandler() =
     default;
 
@@ -66,7 +37,8 @@ void NetworkAnnotationBlocklistHandler::ApplyPolicySettings(
     PrefValueMap* prefs) {
   base::Value::Dict blocklist_prefs = base::Value::Dict();
 
-  for (auto const& [hash_code, control] : annotation_controls_) {
+  for (auto const& [hash_code, control] :
+       annotation_control_provider_.GetControls()) {
     if (control.IsBlockedByPolicies(policies)) {
       blocklist_prefs.Set(hash_code, true);
     }

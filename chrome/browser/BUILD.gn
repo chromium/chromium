@@ -6024,6 +6024,8 @@ static_library("browser") {
       "performance_manager/policies/report_page_processes_policy.h",
       "policy/annotations/annotation_control.cc",
       "policy/annotations/annotation_control.h",
+      "policy/annotations/annotation_control_provider.cc",
+      "policy/annotations/annotation_control_provider.h",
       "policy/annotations/blocklist_handler.cc",
       "policy/annotations/blocklist_handler.h",
       "policy/restricted_mgs_policy_provider.cc",
