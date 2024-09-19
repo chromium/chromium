@@ -588,6 +588,10 @@ inline constexpr char16_t kCwsEnhancedSafeBrowsingLearnMoreURL[] =
 inline constexpr char kPrivacyPolicyOnlineURLPath[] =
     "https://policies.google.com/privacy/embedded";
 
+// The URL path to online privacy policy dark mode.
+inline constexpr char kPrivacyPolicyOnlineDarkModeURLPath[] =
+    "https://policies.google.com/privacy/embedded?color_scheme=dark";
+
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
 // "Learn more" URL for the enhanced playback notification dialog.
 inline constexpr char kEnhancedPlaybackNotificationLearnMoreURL[] =
