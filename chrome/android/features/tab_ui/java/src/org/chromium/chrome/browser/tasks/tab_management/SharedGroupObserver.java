@@ -21,7 +21,7 @@ import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import java.util.Objects;
 
 /** Provides a simple interface to watch shared state for a single tab group. */
-public class SharedGroupStateObserver implements Destroyable {
+public class SharedGroupObserver implements Destroyable {
     private final DataSharingService.Observer mObserver =
             new DataSharingService.Observer() {
                 @Override
@@ -42,20 +42,20 @@ public class SharedGroupStateObserver implements Destroyable {
 
     private final ObservableSupplierImpl<Integer> mGroupSharedStateSupplier =
             new ObservableSupplierImpl<>();
+    // Track a matching collaboration id because it allows us to not assume sync will still give the
+    // old collaboration id if the group is deleted.
+    private final ObservableSupplierImpl<String> mCurrentCollaborationIdSupplier =
+            new ObservableSupplierImpl<>();
     private final LocalTabGroupId mLocalTabGroupId;
     private final DataSharingService mDataSharingService;
     private final TabGroupSyncService mTabGroupSyncService;
 
-    // Track a matching collaboration id because it allows us to not assume sync will still give the
-    // old collaboration id when the group is deleted.
-    private @Nullable String mCurrentCollaborationId;
-
     /**
      * @param tabGroupId The id of the tab group.
      * @param tabGroupSyncService Used to fetch the current collaboration id of the group.
-     * @param dataSharingService Used to fetch and observer current share data.
+     * @param dataSharingService Used to fetch and observe current share data.
      */
-    public SharedGroupStateObserver(
+    public SharedGroupObserver(
             @NonNull Token tabGroupId,
             @NonNull TabGroupSyncService tabGroupSyncService,
             @NonNull DataSharingService dataSharingService) {
@@ -67,7 +67,7 @@ public class SharedGroupStateObserver implements Destroyable {
         if (group == null || !TabShareUtils.isCollaborationIdValid(group.collaborationId)) {
             mGroupSharedStateSupplier.set(GroupSharedState.NOT_SHARED);
         } else {
-            mCurrentCollaborationId = group.collaborationId;
+            mCurrentCollaborationIdSupplier.set(group.collaborationId);
             dataSharingService.readGroup(group.collaborationId, this::onReadGroup);
         }
 
@@ -88,6 +88,15 @@ public class SharedGroupStateObserver implements Destroyable {
         return mGroupSharedStateSupplier;
     }
 
+    /**
+     * The held value corresponds to the collaboration id for the group. Upon initial construction
+     * of this class the value will be up-to-date. May be transiently out of sync with the state
+     * held by {@link #getGroupSharedStateSupplier()} if async update are in flight.
+     */
+    public ObservableSupplier<String> getCollaborationIdSupplier() {
+        return mCurrentCollaborationIdSupplier;
+    }
+
     private void onReadGroup(@NonNull GroupDataOrFailureOutcome outcome) {
         mGroupSharedStateSupplier.set(TabShareUtils.discernSharedGroupState(outcome));
     }
@@ -99,19 +108,20 @@ public class SharedGroupStateObserver implements Destroyable {
     }
 
     private void updateForDeletedGroupId(@Nullable String groupId) {
-        if (Objects.equals(groupId, mCurrentCollaborationId)) {
-            mCurrentCollaborationId = null;
+        if (Objects.equals(groupId, mCurrentCollaborationIdSupplier.get())) {
+            mCurrentCollaborationIdSupplier.set(null);
             mGroupSharedStateSupplier.set(GroupSharedState.NOT_SHARED);
         }
     }
 
     private boolean isOurGroup(@Nullable GroupData groupData) {
+        @Nullable String currentCollaborationId = mCurrentCollaborationIdSupplier.get();
         if (groupData == null
                 || groupData.groupToken == null
                 || !TabShareUtils.isCollaborationIdValid(groupData.groupToken.groupId)) {
             return false;
-        } else if (TabShareUtils.isCollaborationIdValid(mCurrentCollaborationId)) {
-            return Objects.equals(groupData.groupToken.groupId, mCurrentCollaborationId);
+        } else if (TabShareUtils.isCollaborationIdValid(currentCollaborationId)) {
+            return Objects.equals(groupData.groupToken.groupId, currentCollaborationId);
         } else {
             @Nullable SavedTabGroup syncGroup = mTabGroupSyncService.getGroup(mLocalTabGroupId);
             boolean matches =
@@ -119,7 +129,7 @@ public class SharedGroupStateObserver implements Destroyable {
                             && Objects.equals(
                                     syncGroup.collaborationId, groupData.groupToken.groupId);
             if (matches) {
-                mCurrentCollaborationId = syncGroup.collaborationId;
+                mCurrentCollaborationIdSupplier.set(syncGroup.collaborationId);
             }
             return matches;
         }
