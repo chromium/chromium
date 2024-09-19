@@ -217,8 +217,14 @@ class WebAppNavigationCapturingIPHPromoTest
   web_app::OsIntegrationTestOverrideBlockingRegistration override_registration_;
 };
 
+// Flaky on Mac http://crbug.com/366580804
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_IPHShownOnLinkLeftClick DISABLED_IPHShownOnLinkLeftClick
+#else
+#define MAYBE_IPHShownOnLinkLeftClick IPHShownOnLinkLeftClick
+#endif
 IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIPHPromoTest,
-                       IPHShownOnLinkLeftClick) {
+                       MAYBE_IPHShownOnLinkLeftClick) {
   const webapps::AppId app_id = InstallTestWebApp(GetDestinationUrl());
 
   content::WebContents* contents = OpenStartPageInTab();
@@ -231,8 +237,14 @@ IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIPHPromoTest,
       IsNavCapturingIphVisible(/*expect_visible=*/true, app_browser, app_id));
 }
 
+// Flaky on Mac http://crbug.com/366580804
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_IPHShownOnLinkMiddleClick DISABLED_IPHShownOnLinkMiddleClick
+#else
+#define MAYBE_IPHShownOnLinkMiddleClick IPHShownOnLinkMiddleClick
+#endif
 IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIPHPromoTest,
-                       IPHShownOnLinkMiddleClick) {
+                       MAYBE_IPHShownOnLinkMiddleClick) {
   const webapps::AppId app_id = InstallTestWebApp(GetStartUrl());
 
   content::WebContents* contents = OpenStartPageInApp(app_id);
@@ -245,8 +257,14 @@ IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIPHPromoTest,
       IsNavCapturingIphVisible(/*expect_visible=*/true, app_browser, app_id));
 }
 
+// Flaky on Mac http://crbug.com/366580804
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_IPHShownOnLinkShiftClick DISABLED_IPHShownOnLinkShiftClick
+#else
+#define MAYBE_IPHShownOnLinkShiftClick IPHShownOnLinkShiftClick
+#endif
 IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIPHPromoTest,
-                       IPHShownOnLinkShiftClick) {
+                       MAYBE_IPHShownOnLinkShiftClick) {
   const webapps::AppId app_id_a = InstallTestWebApp(GetStartUrl());
   const webapps::AppId app_id_b = InstallTestWebApp(GetDestinationUrl());
   content::WebContents* contents = OpenStartPageInApp(app_id_a);
@@ -259,8 +277,14 @@ IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIPHPromoTest,
       IsNavCapturingIphVisible(/*expect_visible=*/true, app_browser, app_id_b));
 }
 
+// Flaky on Mac http://crbug.com/366580804
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_IPHShownOnAuxContext DISABLED_IPHShownOnAuxContext
+#else
+#define MAYBE_IPHShownOnAuxContext IPHShownOnAuxContext
+#endif
 IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIPHPromoTest,
-                       IPHShownOnAuxContext) {
+                       MAYBE_IPHShownOnAuxContext) {
   const webapps::AppId app_id_a = InstallTestWebApp(GetStartUrl());
   const webapps::AppId app_id_b = InstallTestWebApp(GetDestinationUrl());
 
@@ -275,8 +299,15 @@ IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIPHPromoTest,
                                         app_id_b));
 }
 
+// Flaky on Mac http://crbug.com/366580804
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ClosingAppWindowMeasuresDismiss \
+  DISABLED_ClosingAppWindowMeasuresDismiss
+#else
+#define MAYBE_ClosingAppWindowMeasuresDismiss ClosingAppWindowMeasuresDismiss
+#endif
 IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIPHPromoTest,
-                       ClosingAppWindowMeasuresDismiss) {
+                       MAYBE_ClosingAppWindowMeasuresDismiss) {
   const webapps::AppId app_id = InstallTestWebApp(GetDestinationUrl());
   base::UserActionTester user_action_tester;
 
@@ -296,8 +327,16 @@ IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIPHPromoTest,
                    "LinkCapturingIPHAppBubbleNotAccepted"));
 }
 
+// Flaky on Mac http://crbug.com/366580804
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_AcceptingBubbleMeasuresUserAccept \
+  DISABLED_AcceptingBubbleMeasuresUserAccept
+#else
+#define MAYBE_AcceptingBubbleMeasuresUserAccept \
+  AcceptingBubbleMeasuresUserAccept
+#endif
 IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIPHPromoTest,
-                       AcceptingBubbleMeasuresUserAccept) {
+                       MAYBE_AcceptingBubbleMeasuresUserAccept) {
   const webapps::AppId app_id = InstallTestWebApp(GetDestinationUrl());
   base::UserActionTester user_action_tester;
 
@@ -316,8 +355,15 @@ IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIPHPromoTest,
                    "LinkCapturingIPHAppBubbleAccepted"));
 }
 
+// Flaky on Mac http://crbug.com/366580804
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_BubbleDismissMeasuresUserDismiss \
+  DISABLED_BubbleDismissMeasuresUserDismiss
+#else
+#define MAYBE_BubbleDismissMeasuresUserDismiss BubbleDismissMeasuresUserDismiss
+#endif
 IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIPHPromoTest,
-                       BubbleDismissMeasuresUserDismiss) {
+                       MAYBE_BubbleDismissMeasuresUserDismiss) {
   const webapps::AppId app_id = InstallTestWebApp(GetDestinationUrl());
   base::UserActionTester user_action_tester;
 
