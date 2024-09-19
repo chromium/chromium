@@ -99,6 +99,20 @@ class TranslateKitClient {
     std::uintptr_t translator_ptr_;
   };
 
+  static bool FileExists(const char* file_name,
+                         size_t file_name_size,
+                         bool* is_directory,
+                         std::uintptr_t user_data);
+  static std::uintptr_t OpenForReadOnlyMemoryMap(const char* file_name,
+                                                 size_t file_name_size,
+                                                 std::uintptr_t user_data);
+
+  bool FileExistsImpl(const char* file_name,
+                      size_t file_name_size,
+                      bool* is_directory);
+  std::uintptr_t OpenForReadOnlyMemoryMapImpl(const char* file_name,
+                                              size_t file_name_size);
+
   // Initializes the TranslateKit instance only when first needed, provided the
   // underlying library has loaded successfully. Returns true if initialization
   // was successful, false otherwise.
@@ -120,6 +134,33 @@ class TranslateKitClient {
   // WARNING:
   // Changes to the below interfaces must be backwards compatible and
   // reflected in the Google3-side definition.
+
+  typedef bool (*FileExistsFn)(const char* file_name,
+                               size_t file_name_size,
+                               bool* is_directory,
+                               std::uintptr_t user_data);
+  typedef std::uintptr_t (*OpenForReadOnlyMemoryMapFn)(
+      const char* file_name,
+      size_t file_name_size,
+      std::uintptr_t user_data);
+  typedef void (*DeleteReadOnlyMemoryRegionFn)(std::uintptr_t memory_map_ptr,
+                                               std::uintptr_t user_data);
+  typedef const void* (*ReadOnlyMemoryRegionDataFn)(
+      std::uintptr_t memory_map_ptr,
+      std::uintptr_t user_data);
+  typedef uint64_t (*ReadOnlyMemoryRegionLengthFn)(
+      std::uintptr_t memory_map_ptr,
+      std::uintptr_t user_data);
+
+  typedef void (*InitializeStorageBackendFn)(
+      FileExistsFn file_exists,
+      OpenForReadOnlyMemoryMapFn open_for_read_only_memory_map,
+      DeleteReadOnlyMemoryRegionFn delete_read_only_memory_region,
+      ReadOnlyMemoryRegionDataFn read_only_memory_region_data,
+      ReadOnlyMemoryRegionLengthFn read_only_memory_region_length,
+      std::uintptr_t user_data);
+  InitializeStorageBackendFn initialize_storage_backend_fnc_;
+
   typedef std::uintptr_t (*CreateTranslateKitFn)();
   CreateTranslateKitFn create_translate_kit_fnc_;
 
@@ -145,6 +186,10 @@ class TranslateKitClient {
                                         TranslateCallbackFn,
                                         std::uintptr_t user_data);
   TranslatorTranslateFn translator_translate_func_;
+
+  mojom::OnDeviceTranslationServiceConfigPtr config_;
+  std::set<std::string> directories_;
+  std::map<std::string, base::File> files_;
 };
 
 }  // namespace on_device_translation

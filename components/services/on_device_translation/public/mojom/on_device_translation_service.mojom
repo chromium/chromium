@@ -6,7 +6,17 @@ module on_device_translation.mojom;
 
 import "components/services/on_device_translation/public/mojom/translator.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
+import "mojo/public/mojom/base/read_only_file.mojom";
 import "sandbox/policy/mojom/sandbox.mojom";
+
+
+// The file that is part of the language package.
+struct OnDeviceTranslationLanguagePackageFile {
+  // The relative path of the file within the language package.
+  mojo_base.mojom.FilePath relative_path;
+  // The read only file handle of the file.
+  mojo_base.mojom.ReadOnlyFile file;
+};
 
 // The language package information of the TranslateKit library.
 // Normally, `language1` and `language2` are input from hard-coded dictionary
@@ -19,8 +29,8 @@ struct OnDeviceTranslationLanguagePackage {
   // The second ISO 639 language code of the language pair (eg:"en"). This can
   // either be both source or target language.
   string language2;
-  // The path of the language package.
-  mojo_base.mojom.FilePath package_path;
+  // The list of files that are part of the language package.
+  array<OnDeviceTranslationLanguagePackageFile> files;
 };
 
 // The list of language package information.
