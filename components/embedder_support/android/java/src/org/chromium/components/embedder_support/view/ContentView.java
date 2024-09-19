@@ -28,6 +28,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.ObserverList;
 import org.chromium.base.TraceEvent;
+import org.chromium.components.autofill.AndroidAutofillFeatures;
 import org.chromium.components.embedder_support.util.TouchEventFilter;
 import org.chromium.content_public.browser.ImeAdapter;
 import org.chromium.content_public.browser.RenderCoordinates;
@@ -563,7 +564,9 @@ public class ContentView extends FrameLayout
     public void autofill(final SparseArray<AutofillValue> values) {
         ViewAndroidDelegate viewDelegate = mWebContents.getViewAndroidDelegate();
         if (viewDelegate == null || !viewDelegate.providesAutofillStructure()) {
-            super.autofill(values);
+            if (allowAutofillViaAccessibilityAPI()) {
+                super.autofill(values);
+            }
             return;
         }
         viewDelegate.autofill(values);
@@ -573,10 +576,16 @@ public class ContentView extends FrameLayout
     public void onProvideAutofillVirtualStructure(ViewStructure structure, int flags) {
         ViewAndroidDelegate viewDelegate = mWebContents.getViewAndroidDelegate();
         if (viewDelegate == null || !viewDelegate.providesAutofillStructure()) {
-            super.onProvideAutofillVirtualStructure(structure, flags);
+            if (allowAutofillViaAccessibilityAPI()) {
+                super.onProvideAutofillVirtualStructure(structure, flags);
+            }
             return;
         }
         viewDelegate.onProvideAutofillVirtualStructure(structure, flags);
+    }
+
+    private boolean allowAutofillViaAccessibilityAPI() {
+        return !AndroidAutofillFeatures.ANDROID_AUTOFILL_DEPRECATE_ACCESSIBILITY_API.isEnabled();
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////

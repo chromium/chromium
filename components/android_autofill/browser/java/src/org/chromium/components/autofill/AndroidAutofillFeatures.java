@@ -19,12 +19,16 @@ import org.chromium.base.Features;
 public class AndroidAutofillFeatures extends Features {
     public static final String ANDROID_AUTOFILL_BOTTOM_SHEET_WORKAROUND_NAME =
             "AndroidAutofillBottomSheetWorkaround";
+    public static final String ANDROID_AUTOFILL_DEPRECATE_ACCESSIBILITY_API_NAME =
+            "AndroidAutofillDeprecateAccessibilityApi";
     public static final String ANDROID_AUTOFILL_DIRECT_FORM_SUBMISSION =
             "AndroidAutofillDirectFormSubmission";
     public static final String ANDROID_AUTOFILL_PREFILL_REQUEST_FOR_CHANGE_PASSWORD_NAME =
             "AndroidAutofillPrefillRequestsForChangePassword";
     public static final AndroidAutofillFeatures ANDROID_AUTOFILL_BOTTOM_SHEET_WORKAROUND =
             new AndroidAutofillFeatures(0, ANDROID_AUTOFILL_BOTTOM_SHEET_WORKAROUND_NAME);
+    public static final AndroidAutofillFeatures ANDROID_AUTOFILL_DEPRECATE_ACCESSIBILITY_API =
+            new AndroidAutofillFeatures(1, ANDROID_AUTOFILL_DEPRECATE_ACCESSIBILITY_API_NAME);
     private final int mOrdinal;
 
     private AndroidAutofillFeatures(int ordinal, String name) {
