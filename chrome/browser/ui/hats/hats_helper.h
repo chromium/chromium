@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_HATS_HATS_HELPER_H_
 #define CHROME_BROWSER_UI_HATS_HATS_HELPER_H_
 
-#include "chrome/browser/ui/performance_controls/performance_controls_hats_service.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -14,6 +13,7 @@ class WebContents;
 }
 
 class Profile;
+class PerformanceControlsHatsService;
 
 // This is a browser side per tab helper that allows an entry trigger to
 // launch Happiness Tracking Surveys (HaTS)
