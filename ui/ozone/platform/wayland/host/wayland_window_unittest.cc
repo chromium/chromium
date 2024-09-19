@@ -20,6 +20,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/environment.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback.h"
@@ -39,6 +40,7 @@
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/owned_window_anchor.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/display/display.h"
 #include "ui/display/scoped_display_for_new_windows.h"
@@ -85,7 +87,6 @@
 #include "ui/platform_window/platform_window_delegate.h"
 #include "ui/platform_window/platform_window_init_properties.h"
 #include "ui/platform_window/wm/wm_move_resize_handler.h"
-#include "wayland-server-protocol.h"
 
 #if BUILDFLAG(IS_LINUX)
 #include "ui/ozone/platform/wayland/host/wayland_async_cursor.h"
@@ -5551,6 +5552,81 @@ TEST_P(MultiDisplayWaylandWindowTest, NewWindowsRespectInitParamBounds) {
   EXPECT_EQ(kInitBounds, window->GetBoundsInDIP());
 }
 
+class PerSurfaceScaleWaylandWindowTest : public WaylandWindowTest {
+ public:
+  PerSurfaceScaleWaylandWindowTest() = default;
+  ~PerSurfaceScaleWaylandWindowTest() override = default;
+
+  PerSurfaceScaleWaylandWindowTest(const PerSurfaceScaleWaylandWindowTest&) =
+      delete;
+  PerSurfaceScaleWaylandWindowTest& operator=(
+      const PerSurfaceScaleWaylandWindowTest&) = delete;
+
+  void SetUp() override {
+    CHECK(
+        !base::Contains(enabled_features_, features::kWaylandPerSurfaceScale));
+    enabled_features_.push_back(features::kWaylandPerSurfaceScale);
+
+    WaylandWindowTest::SetUp();
+  }
+
+  void TearDown() override {
+    WaylandWindowTest::TearDown();
+
+    CHECK(enabled_features_.back() == features::kWaylandPerSurfaceScale);
+    enabled_features_.pop_back();
+  }
+};
+
+TEST_P(PerSurfaceScaleWaylandWindowTest, UsePreferredSurfaceScale) {
+  ASSERT_TRUE(connection_->UsePerSurfaceScaling());
+  EXPECT_EQ(1u, screen_->GetAllDisplays().size());
+  EXPECT_EQ(1.0f, screen_->GetDisplayForAcceleratedWidget(window_->GetWidget())
+                      .device_scale_factor());
+  EXPECT_EQ(1.0f, window_->applied_state().window_scale);
+  ASSERT_EQ(gfx::Size(800, 600), window_->applied_state().size_px);
+
+  // GetPreferredScaleFactorForAcceleratedWidget must return null until
+  // preferred scale is received from the Wayland compositor.
+  EXPECT_FALSE(
+      screen_->GetPreferredScaleFactorForAcceleratedWidget(window_->GetWidget())
+          .has_value());
+
+  EXPECT_CALL(delegate_, OnBoundsChanged(Eq(kDefaultBoundsChange))).Times(1);
+
+  PostToServerAndWait([id = surface_id_](wl::TestWaylandServerThread* server) {
+    wl::MockSurface* mock_surface = server->GetObject<wl::MockSurface>(id);
+    ASSERT_TRUE(mock_surface);
+    ASSERT_TRUE(mock_surface->fractional_scale());
+    mock_surface->fractional_scale()->SendPreferredScale(1.5f);
+  });
+
+  SyncDisplay();
+  Mock::VerifyAndClearExpectations(&delegate_);
+
+  // Preferred scale for `window_` must have been updated accordingly.
+  const auto preferred_scale_for_window =
+      screen_->GetPreferredScaleFactorForAcceleratedWidget(
+          window_->GetWidget());
+  ASSERT_TRUE(preferred_scale_for_window.has_value());
+  EXPECT_EQ(1.5f, preferred_scale_for_window.value());
+  EXPECT_EQ(1.5f, window_->applied_state().window_scale);
+  ASSERT_EQ(gfx::Size(1200, 900), window_->applied_state().size_px);
+
+  // Ensure state (including scale and bounds) gets latched only when the
+  // corresponding frame comes in.
+  EXPECT_EQ(1.0f, window_->latched_state().window_scale);
+  ASSERT_EQ(gfx::Size(800, 600), window_->latched_state().size_px);
+  AdvanceFrameToCurrent(window_.get(), delegate_);
+  EXPECT_EQ(1.5f, window_->latched_state().window_scale);
+  ASSERT_EQ(gfx::Size(1200, 900), window_->latched_state().size_px);
+
+  // GetDisplayForAcceleratedWidget keeps returning the entered output, whose
+  // scale is unchanged in this case.
+  EXPECT_EQ(1.0f, screen_->GetDisplayForAcceleratedWidget(window_->GetWidget())
+                      .device_scale_factor());
+}
+
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
                          WaylandWindowTest,
@@ -5558,6 +5634,10 @@ INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
                          MultiDisplayWaylandWindowTest,
                          Values(wl::ServerConfig{}));
+INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
+                         PerSurfaceScaleWaylandWindowTest,
+                         Values(wl::ServerConfig{
+                             .supports_viewporter_surface_scaling = true}));
 #else
 INSTANTIATE_TEST_SUITE_P(
     XdgVersionStableTestWithAuraShell,

@@ -28,6 +28,7 @@
 #include "ui/ozone/platform/wayland/test/test_alpha_compositing.h"
 #include "ui/ozone/platform/wayland/test/test_compositor.h"
 #include "ui/ozone/platform/wayland/test/test_data_device_manager.h"
+#include "ui/ozone/platform/wayland/test/test_fractional_scale.h"
 #include "ui/ozone/platform/wayland/test/test_output.h"
 #include "ui/ozone/platform/wayland/test/test_overlay_prioritizer.h"
 #include "ui/ozone/platform/wayland/test/test_seat.h"
@@ -245,6 +246,7 @@ class TestWaylandServerThread : public TestOutput::Delegate,
 
   TestSubCompositor sub_compositor_;
   TestViewporter viewporter_;
+  TestFractionalScaleManager fractional_scale_manager_;
   TestAlphaCompositing alpha_compositing_;
   TestDataDeviceManager data_device_manager_;
   TestOutput output_;
