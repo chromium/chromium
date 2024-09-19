@@ -3057,7 +3057,7 @@
         'mixins': [
           'has_native_resultdb_integration',
           'ioswpt-chromium-swarming-pool',
-          'mac_13_x64',
+          'mac_14_x64',
           'mac_toolchain',
           'xcode_16_main',
         ],
