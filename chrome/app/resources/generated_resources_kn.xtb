@@ -2950,7 +2950,7 @@
 <translation id="3064871050034234884">ಸೈಟ್‌ಗಳು ಧ್ವನಿಯನ್ನು ಪ್ಲೇ ಮಾಡಬಹುದು</translation>
 <translation id="3065041951436100775">ಟ್ಯಾಬ್ ನಾಶಪಡಿಸಿದ ಪ್ರತಿಕ್ರಿಯೆ.</translation>
 <translation id="3065522099314259755">ಕೀಬೋರ್ಡ್ ಪುನರಾವರ್ತನೆಯ ವಿಳಂಬ</translation>
-<translation id="3067198179881736288">ಅಪ್ಲಿಕೇಶನ್ ಇನ್‌ಸ್ಟಾಲ್‌ ಮಾಡಬೇಕೇ?</translation>
+<translation id="3067198179881736288">ಆ್ಯಪ್ ಇನ್‌ಸ್ಟಾಲ್‌ ಮಾಡಬೇಕೇ?</translation>
 <translation id="3067198360141518313">ಈ ಪ್ಲಗಿನ್ ಚಾಲನೆ ಮಾಡು</translation>
 <translation id="3071624960923923138">ಹೊಸ ಟ್ಯಾಬ್ ತೆರೆಯಲು ಇಲ್ಲಿ ನೀವು ಕ್ಲಿಕ್ ಮಾಡಬಹುದು</translation>
 <translation id="3072775339180057696"><ph name="FILE_NAME" /> ಅನ್ನು ವೀಕ್ಷಿಸಲು ಸೈಟ್‌ಗೆ ಅನುಮತಿಸುವುದೇ?</translation>
@@ -10154,7 +10154,7 @@
 <translation id="8338427544764842461">ನಿಮ್ಮ ಟ್ಯಾಬ್ ಗುಂಪುಗಳನ್ನು ಇಲ್ಲಿ ಸೇವ್ ಮಾಡಲಾಗಿದೆ ಮತ್ತು ನಿಮ್ಮ ಎಲ್ಲಾ ಸೈನ್‌ ಇನ್‌ ಮಾಡಿರುವ ಸಾಧನಗಳಲ್ಲಿ ಅಪ್‌ಡೇಟ್ ಆಗುತ್ತವೆ</translation>
 <translation id="8338952601723052325">ಡೆವಲಪರ್ ವೆಬ್‌ಸೈಟ್</translation>
 <translation id="8339288417038613756">ಡಿಸ್‌ಪ್ಲೇ ಮತ್ತು ಪಠ್ಯ ಗಾತ್ರ</translation>
-<translation id="833986336429795709">ಈ ಲಿಂಕ್ ತೆರೆಯಲು, ಅಪ್ಲಿಕೇಶನ್ ಆಯ್ಕೆ ಮಾಡಿ</translation>
+<translation id="833986336429795709">ಈ ಲಿಂಕ್ ತೆರೆಯಲು, ಆ್ಯಪ್ ಆಯ್ಕೆ ಮಾಡಿ</translation>
 <translation id="8340547030807793004"><ph name="DEVICE" /> ಗಾಗಿ ಇನ್ನಷ್ಟು ಕ್ರಿಯೆಗಳು</translation>
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{ಇತ್ತೀಚೆಗೆ ಸಾಕಷ್ಟು ಅಧಿಸೂಚನೆಗಳನ್ನು ಕಳುಹಿಸಿದ <ph name="BEGIN_BOLD" />1 ಸೈಟ್<ph name="END_BOLD" /> ಅನ್ನು ಪರಿಶೀಲಿಸಿ}one{ಇತ್ತೀಚೆಗೆ ಸಾಕಷ್ಟು ಅಧಿಸೂಚನೆಗಳನ್ನು ಕಳುಹಿಸಿದ <ph name="BEGIN_BOLD" />{NUM_SITES} ಸೈಟ್‌ಗಳನ್ನು<ph name="END_BOLD" /> ಪರಿಶೀಲಿಸಿ}other{ಇತ್ತೀಚೆಗೆ ಸಾಕಷ್ಟು ಅಧಿಸೂಚನೆಗಳನ್ನು ಕಳುಹಿಸಿದ <ph name="BEGIN_BOLD" />{NUM_SITES} ಸೈಟ್‌ಗಳನ್ನು<ph name="END_BOLD" /> ಪರಿಶೀಲಿಸಿ}}</translation>
 <translation id="8342221978608739536">ಪ್ರಯತ್ನಿಸಿಲ್ಲ</translation>
