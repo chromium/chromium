@@ -240,6 +240,8 @@ void ToastController::WebContentsDestroyed() {
 }
 
 void ToastController::ShowToast(ToastParams params) {
+  // TODO(crbug.com/367755347): Remove check when test is fixed.
+  CHECK(!toast_registry_->IsEmpty());
   const ToastSpecification* current_toast_spec =
       toast_registry_->GetToastSpecification(params.toast_id_);
   CHECK(current_toast_spec);
