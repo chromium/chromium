@@ -42,6 +42,7 @@
 #include "net/socket/socket_net_log_params.h"
 #include "net/socket/socket_options.h"
 #include "net/socket/socket_tag.h"
+#include "net/socket/tcp_socket_io_completion_port_win.h"
 #include "net/socket/tcp_socket_win.h"
 
 namespace net {
@@ -329,6 +330,10 @@ std::unique_ptr<TCPSocketWin> TCPSocketWin::Create(
     std::unique_ptr<SocketPerformanceWatcher> socket_performance_watcher,
     NetLog* net_log,
     const NetLogSource& source) {
+  if (base::FeatureList::IsEnabled(features::kTcpSocketIoCompletionPortWin)) {
+    return std::make_unique<TcpSocketIoCompletionPortWin>(
+        std::move(socket_performance_watcher), net_log, source);
+  }
   return std::make_unique<TCPSocketDefaultWin>(
       std::move(socket_performance_watcher), net_log, source);
 }
@@ -337,6 +342,10 @@ std::unique_ptr<TCPSocketWin> TCPSocketWin::Create(
 std::unique_ptr<TCPSocketWin> TCPSocketWin::Create(
     std::unique_ptr<SocketPerformanceWatcher> socket_performance_watcher,
     NetLogWithSource net_log_source) {
+  if (base::FeatureList::IsEnabled(features::kTcpSocketIoCompletionPortWin)) {
+    return std::make_unique<TcpSocketIoCompletionPortWin>(
+        std::move(socket_performance_watcher), net_log_source);
+  }
   return std::make_unique<TCPSocketDefaultWin>(
       std::move(socket_performance_watcher), std::move(net_log_source));
 }
@@ -862,6 +871,8 @@ void TCPSocketWin::EndLoggingMultipleConnectAttempts(int net_error) {
 }
 
 SocketDescriptor TCPSocketWin::ReleaseSocketDescriptorForTesting() {
+  CHECK(!registered_as_io_handler_);
+
   SocketDescriptor socket_descriptor = socket_;
   socket_ = INVALID_SOCKET;
   Close();
@@ -870,6 +881,13 @@ SocketDescriptor TCPSocketWin::ReleaseSocketDescriptorForTesting() {
 
 SocketDescriptor TCPSocketWin::SocketDescriptorForTesting() const {
   return socket_;
+}
+
+void TCPSocketWin::CloseSocketDescriptorForTesting() {
+  CHECK_NE(socket_, INVALID_SOCKET);
+  CHECK_EQ(closesocket(socket_), 0);
+  // Clear `socket_` so that `Close()` doesn't attempt to close it again.
+  socket_ = INVALID_SOCKET;
 }
 
 int TCPSocketWin::AcceptInternal(std::unique_ptr<TCPSocketWin>* socket,

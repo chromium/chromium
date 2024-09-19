@@ -345,6 +345,10 @@ NET_EXPORT BASE_DECLARE_FEATURE(kEnableGetNetworkConnectivityHintAPI);
 // Whether or not to enable TCP port randomization via SO_RANDOMIZE_PORT on
 // Windows 20H1+.
 NET_EXPORT BASE_DECLARE_FEATURE(kEnableTcpPortRandomization);
+
+// Whether to use a TCP socket implementation which uses an IO completion
+// handler to be notified of completed reads and writes, instead of an event.
+NET_EXPORT BASE_DECLARE_FEATURE(kTcpSocketIoCompletionPortWin);
 #endif
 
 // Avoid creating cache entries for transactions that are most likely no-store.

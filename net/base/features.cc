@@ -301,6 +301,10 @@ BASE_FEATURE(kEnableGetNetworkConnectivityHintAPI,
 BASE_FEATURE(kEnableTcpPortRandomization,
              "EnableTcpPortRandomization",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kTcpSocketIoCompletionPortWin,
+             "TcpSocketIoCompletionPortWin",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 BASE_FEATURE(kAvoidEntryCreationForNoStore,

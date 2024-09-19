@@ -1362,6 +1362,8 @@ component("net") {
       "proxy_resolution/win/windows_system_proxy_resolution_service.h",
       "proxy_resolution/win/windows_system_proxy_resolver.h",
       "proxy_resolution/win/winhttp_status.h",
+      "socket/tcp_socket_io_completion_port_win.cc",
+      "socket/tcp_socket_io_completion_port_win.h",
       "socket/tcp_socket_win.cc",
       "socket/tcp_socket_win.h",
       "socket/udp_socket_win.cc",
