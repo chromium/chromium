@@ -17,11 +17,21 @@
 #include "base/task/thread_pool.h"
 #include "chrome/browser/content_extraction/inner_text.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/compose/buildflags.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
+#include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/optimization_guide/proto/features/model_prototyping.pb.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "ui/accessibility/ax_tree_update.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/tabs/tab_group.h"
+#include "chrome/browser/ui/tabs/tab_group_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#endif
 
 namespace {
 
@@ -110,6 +120,62 @@ void OnDataCollectionsComplete(AiDataKeyedService::AiDataCallback callback,
   std::move(callback).Run(std::move(data));
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+void FillTabInfo(content::WebContents* web_contents,
+                 optimization_guide::proto::Tab* tab,
+                 int64_t tab_id) {
+  tab->set_tab_id(tab_id);
+  tab->set_title(base::UTF16ToUTF8(web_contents->GetTitle()));
+  tab->set_url(web_contents->GetLastCommittedURL().spec());
+}
+
+// Create an AiData with the tab and tab group information.
+void GetTabDataForModelPrototyping(
+    content::WebContents* web_contents,
+    AiDataKeyedService::AiDataCallback continue_callback) {
+  // Get the browser window that contains the web contents the extension is
+  // being targeted on. If there isn't a window, or there isn't a tab strip
+  // model, return an empty AiData.
+  Browser* browser = chrome::FindBrowserWithTab(web_contents);
+  if (!browser || !browser->GetTabStripModel()) {
+    std::move(continue_callback).Run(std::nullopt);
+    return;
+  }
+
+  // Fill the Tabs part of the proto.
+  AiDataKeyedService::AiData data = std::make_optional<
+      optimization_guide::proto::
+          ModelPrototypingRequest_BrowserCollectedInformation>();
+  auto* tab_strip_model = browser->GetTabStripModel();
+  for (int index = 0; index < tab_strip_model->count(); index++) {
+    content::WebContents* tab_web_contents =
+        tab_strip_model->GetWebContentsAt(index);
+    FillTabInfo(tab_web_contents, data->add_tabs(), index);
+    if (web_contents == tab_web_contents) {
+      data->set_active_tab_id(index);
+    }
+  }
+
+  // Fill the Tab Groups part of the proto.
+  TabGroupModel* tab_group_model = tab_strip_model->group_model();
+  for (tab_groups::TabGroupId group_id : tab_group_model->ListTabGroups()) {
+    TabGroup* group = tab_group_model->GetTabGroup(group_id);
+    auto* group_data = data->add_pre_existing_tab_groups();
+    group_data->set_group_id(group_id.ToString());
+    group_data->set_label(base::UTF16ToUTF8(group->visual_data()->title()));
+
+    const gfx::Range tab_indices = group->ListTabs();
+    for (size_t index = tab_indices.start(); index < tab_indices.end();
+         index++) {
+      content::WebContents* tab_web_contents =
+          tab_strip_model->GetWebContentsAt(index);
+      FillTabInfo(tab_web_contents, group_data->add_tabs(), index);
+    }
+  }
+  std::move(continue_callback).Run(std::move(data));
+}
+#endif
+
 // Fills synchronous information and kicks off concurrent tasks to fill an
 // AiData.
 void GetModelPrototypingAiData(int dom_node_id,
@@ -131,7 +197,9 @@ void GetModelPrototypingAiData(int dom_node_id,
                                            concurrent.CreateCallback());
   GetInnerTextForModelPrototyping(dom_node_id, web_contents,
                                   concurrent.CreateCallback());
-
+#if !BUILDFLAG(IS_ANDROID)
+  GetTabDataForModelPrototyping(web_contents, concurrent.CreateCallback());
+#endif
   std::move(concurrent)
       .Done(base::BindOnce(&OnDataCollectionsComplete, std::move(callback),
                            std::move(data)));
