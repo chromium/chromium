@@ -13,6 +13,8 @@
 #include "services/on_device_model/ml/chrome_ml_types.h"
 #include "services/on_device_model/public/cpp/model_assets.h"
 #include "services/on_device_model/public/cpp/test_support/test_response_holder.h"
+#include "services/on_device_model/public/cpp/text_safety_assets.h"
+#include "services/on_device_model/public/mojom/on_device_model.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -54,7 +56,7 @@ class FakeFile {
     CHECK(file.IsValid());
     file.WriteAtCurrentPos(base::as_byte_span(content));
   }
-  ~FakeFile() { CHECK(temp_file_.Delete()); }
+  ~FakeFile() = default;
 
   base::File Open() {
     base::ScopedAllowBlockingForTesting allow_blocking;
@@ -589,6 +591,29 @@ TEST_F(OnDeviceModelServiceTest, AddContextWithTokens) {
   EXPECT_THAT(response.responses(), ElementsAre("Context: System: hi End.\n",
                                                 "Context: Model: hello End.\n",
                                                 "Input: User: bye\n"));
+}
+
+TEST_F(OnDeviceModelServiceTest, ClassifyTextSafety) {
+  FakeFile ts_data("fake_ts_data");
+  FakeFile ts_sp_model("fake_ts_sp_model");
+  TextSafetyLoaderParams params;
+  params.ts_paths.emplace();
+  params.ts_paths->data = ts_data.Path();
+  params.ts_paths->sp_model = ts_sp_model.Path();
+  mojo::Remote<mojom::TextSafetyModel> model;
+  service()->LoadTextSafetyModel(LoadTextSafetyParams(params),
+                                 model.BindNewPipeAndPassReceiver());
+  base::test::TestFuture<mojom::SafetyInfoPtr> future1;
+  base::test::TestFuture<mojom::SafetyInfoPtr> future2;
+  model->ClassifyTextSafety("unsafe text", future1.GetCallback());
+  model->ClassifyTextSafety("reasonable text", future2.GetCallback());
+  auto resp1 = future1.Take();
+  auto resp2 = future2.Take();
+
+  ASSERT_TRUE(resp1);
+  EXPECT_THAT(resp1->class_scores, ElementsAre(0.8, 0.8));
+  ASSERT_TRUE(resp2);
+  EXPECT_THAT(resp2->class_scores, ElementsAre(0.2, 0.2));
 }
 
 }  // namespace

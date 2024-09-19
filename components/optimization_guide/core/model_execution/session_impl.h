@@ -50,6 +50,9 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
     // Called to retrieve connection the managed model.
     virtual mojo::Remote<on_device_model::mojom::OnDeviceModel>&
     GetModelRemote() = 0;
+    // Called to retrieve connection the managed model.
+    virtual mojo::Remote<on_device_model::mojom::TextSafetyModel>&
+    GetTextSafetyModelRemote() = 0;
     // Called to report a successful execution of the model.
     virtual void OnResponseCompleted() = 0;
     // Called to report a timeout reached while waiting for model response.

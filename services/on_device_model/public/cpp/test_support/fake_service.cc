@@ -4,8 +4,7 @@
 
 #include "services/on_device_model/public/cpp/test_support/fake_service.h"
 
-#include <cstdint>
-
+#include "base/check.h"
 #include "base/containers/span.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/strings/string_number_conversions.h"
@@ -187,40 +186,13 @@ void FakeOnDeviceModel::AddSession(
 
 void FakeOnDeviceModel::DetectLanguage(const std::string& text,
                                        DetectLanguageCallback callback) {
-  if (!data_.has_language_model) {
-    std::move(callback).Run(nullptr);
-    return;
-  }
-  mojom::LanguageDetectionResultPtr language;
-  if (text.find("esperanto") != std::string::npos) {
-    language = mojom::LanguageDetectionResult::New("eo", 1.0);
-  }
-  std::move(callback).Run(std::move(language));
+  NOTREACHED();
 }
 
 void FakeOnDeviceModel::ClassifyTextSafety(
     const std::string& text,
     ClassifyTextSafetyCallback callback) {
-  if (!data_.has_safety_model) {
-    std::move(callback).Run(nullptr);
-    return;
-  }
-  auto safety_info = mojom::SafetyInfo::New();
-
-  // Text is unsafe if it contains "unsafe".
-  bool has_unsafe = text.find("unsafe") != std::string::npos;
-  safety_info->class_scores.emplace_back(has_unsafe ? 0.8 : 0.2);
-
-  bool has_reasonable = text.find("reasonable") != std::string::npos;
-  safety_info->class_scores.emplace_back(has_reasonable ? 0.2 : 0.8);
-
-  if (data_.has_language_model) {
-    if (text.find("esperanto") != std::string::npos) {
-      safety_info->language = mojom::LanguageDetectionResult::New("eo", 1.0);
-    }
-  }
-
-  std::move(callback).Run(std::move(safety_info));
+  NOTREACHED();
 }
 
 void FakeOnDeviceModel::LoadAdaptation(
@@ -233,6 +205,60 @@ void FakeOnDeviceModel::LoadAdaptation(
       std::make_unique<FakeOnDeviceModel>(settings_, std::move(data));
   model_adaptation_receivers_.Add(std::move(test_model), std::move(model));
   std::move(callback).Run(mojom::LoadModelResult::kSuccess);
+}
+
+FakeTsModel::FakeTsModel(
+    on_device_model::mojom::TextSafetyModelParamsPtr params) {
+  if (params->ts_assets) {
+    CHECK_EQ(ReadFile(params->ts_assets->data), FakeTsData());
+    CHECK_EQ(ReadFile(params->ts_assets->sp_model), FakeTsSpModel());
+    has_safety_model_ = true;
+  }
+  if (params->language_assets) {
+    CHECK_EQ(ReadFile(params->language_assets->model), FakeLanguageModel());
+    has_language_model_ = true;
+  }
+}
+FakeTsModel::~FakeTsModel() = default;
+
+void FakeTsModel::ClassifyTextSafety(const std::string& text,
+                                     ClassifyTextSafetyCallback callback) {
+  CHECK(has_safety_model_);
+  auto safety_info = mojom::SafetyInfo::New();
+  // Text is unsafe if it contains "unsafe".
+  bool has_unsafe = text.find("unsafe") != std::string::npos;
+  safety_info->class_scores.emplace_back(has_unsafe ? 0.8 : 0.2);
+
+  bool has_reasonable = text.find("reasonable") != std::string::npos;
+  safety_info->class_scores.emplace_back(has_reasonable ? 0.2 : 0.8);
+
+  if (has_language_model_) {
+    if (text.find("esperanto") != std::string::npos) {
+      safety_info->language = mojom::LanguageDetectionResult::New("eo", 1.0);
+    }
+  }
+  std::move(callback).Run(std::move(safety_info));
+}
+void FakeTsModel::DetectLanguage(const std::string& text,
+                                 DetectLanguageCallback callback) {
+  CHECK(has_language_model_);
+  mojom::LanguageDetectionResultPtr language;
+  if (text.find("esperanto") != std::string::npos) {
+    language = mojom::LanguageDetectionResult::New("eo", 1.0);
+  }
+  std::move(callback).Run(std::move(language));
+}
+
+FakeTsHolder::FakeTsHolder() = default;
+FakeTsHolder::~FakeTsHolder() = default;
+
+void FakeTsHolder::Reset(
+    on_device_model::mojom::TextSafetyModelParamsPtr params,
+    mojo::PendingReceiver<on_device_model::mojom::TextSafetyModel>
+        model_receiver) {
+  model_.Clear();
+  model_.Add(std::make_unique<FakeTsModel>(std::move(params)),
+             std::move(model_receiver));
 }
 
 FakeOnDeviceModelService::FakeOnDeviceModelService(
@@ -250,21 +276,16 @@ void FakeOnDeviceModelService::LoadModel(
     std::move(callback).Run(settings_->load_model_result);
     return;
   }
-  FakeOnDeviceModel::Data data;
-  if (params->assets.ts_data.IsValid()) {
-    CHECK_EQ(ReadFile(params->assets.ts_data), FakeTsData());
-    CHECK_EQ(ReadFile(params->assets.ts_sp_model), FakeTsSpModel());
-    data.has_safety_model = true;
-  }
-  if (params->assets.language_detection_model.IsValid()) {
-    CHECK_EQ(ReadFile(params->assets.language_detection_model),
-             FakeLanguageModel());
-    data.has_language_model = true;
-  }
   auto test_model =
-      std::make_unique<FakeOnDeviceModel>(settings_, std::move(data));
+      std::make_unique<FakeOnDeviceModel>(settings_, FakeOnDeviceModel::Data{});
   model_receivers_.Add(std::move(test_model), std::move(model));
   std::move(callback).Run(settings_->load_model_result);
+}
+
+void FakeOnDeviceModelService::LoadTextSafetyModel(
+    mojom::TextSafetyModelParamsPtr params,
+    mojo::PendingReceiver<mojom::TextSafetyModel> model) {
+  ts_holder_.Reset(std::move(params), std::move(model));
 }
 
 void FakeOnDeviceModelService::GetEstimatedPerformanceClass(

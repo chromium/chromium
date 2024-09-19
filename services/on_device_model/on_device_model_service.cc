@@ -4,6 +4,7 @@
 
 #include "services/on_device_model/on_device_model_service.h"
 
+#include <cstdint>
 #include <memory>
 #include <queue>
 #include <vector>
@@ -11,6 +12,9 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/not_fatal_until.h"
+#include "base/notreached.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/uuid.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -19,6 +23,7 @@
 #include "services/on_device_model/ml/on_device_model_executor.h"
 #include "services/on_device_model/ml/on_device_model_internal.h"
 #include "services/on_device_model/ml/performance_class.h"
+#include "services/on_device_model/ml/ts_model.h"
 #include "services/on_device_model/public/cpp/features.h"
 
 namespace on_device_model {
@@ -141,12 +146,12 @@ class ModelWrapper final : public mojom::OnDeviceModel {
 
   void ClassifyTextSafety(const std::string& text,
                           ClassifyTextSafetyCallback callback) override {
-    model_->ClassifyTextSafety(text, std::move(callback));
+    NOTREACHED();
   }
 
   void DetectLanguage(const std::string& text,
                       DetectLanguageCallback callback) override {
-    model_->DetectLanguage(text, std::move(callback));
+    NOTREACHED();
   }
 
   void LoadAdaptation(mojom::LoadAdaptationParamsPtr params,
@@ -393,6 +398,14 @@ class LoadFailedService : public mojom::OnDeviceModelService {
     std::move(callback).Run(
         on_device_model::mojom::PerformanceClass::kFailedToLoadLibrary);
   }
+  void LoadTextSafetyModel(
+      mojom::TextSafetyModelParamsPtr params,
+      mojo::PendingReceiver<mojom::TextSafetyModel> model) override {
+    model.ResetWithReason(
+        static_cast<uint32_t>(
+            on_device_model::mojom::LoadModelResult::kFailedToLoadLibrary),
+        "Unable to load required shared library.");
+  }
 
  private:
   mojo::Receiver<mojom::OnDeviceModelService> receiver_;
@@ -416,6 +429,14 @@ class GpuBlockedService : public mojom::OnDeviceModelService {
     std::move(callback).Run(
         on_device_model::mojom::PerformanceClass::kGpuBlocked);
   }
+  void LoadTextSafetyModel(
+      mojom::TextSafetyModelParamsPtr params,
+      mojo::PendingReceiver<mojom::TextSafetyModel> model) override {
+    model.ResetWithReason(
+        static_cast<uint32_t>(
+            on_device_model::mojom::LoadModelResult::kGpuBlocked),
+        "GPU is blocklisted.");
+  }
 
  private:
   mojo::Receiver<mojom::OnDeviceModelService> receiver_;
@@ -431,7 +452,9 @@ OnDeviceModelService::OnDeviceModelService(
 OnDeviceModelService::OnDeviceModelService(
     mojo::PendingReceiver<mojom::OnDeviceModelService> receiver,
     const ml::ChromeML& chrome_ml)
-    : receiver_(this, std::move(receiver)), chrome_ml_(chrome_ml) {}
+    : receiver_(this, std::move(receiver)),
+      chrome_ml_(chrome_ml),
+      ts_holder_(ml::TsHolder::Create(chrome_ml_)) {}
 OnDeviceModelService::~OnDeviceModelService() = default;
 
 std::unique_ptr<mojom::OnDeviceModelService> OnDeviceModelService::Create(
@@ -482,6 +505,13 @@ void OnDeviceModelService::GetEstimatedPerformanceClass(
   base::ElapsedTimer timer;
   std::move(callback).Run(ml::GetEstimatedPerformanceClass(*chrome_ml_));
   base::UmaHistogramTimes("OnDeviceModel.BenchmarkDuration", timer.Elapsed());
+}
+
+void OnDeviceModelService::LoadTextSafetyModel(
+    on_device_model::mojom::TextSafetyModelParamsPtr params,
+    mojo::PendingReceiver<mojom::TextSafetyModel> model) {
+  ts_holder_.AsyncCall(&ml::TsHolder::Reset)
+      .WithArgs(std::move(params), std::move(model));
 }
 
 void OnDeviceModelService::DeleteModel(

@@ -8,6 +8,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "services/on_device_model/public/cpp/model_assets.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"
@@ -109,8 +110,6 @@ class FakeOnDeviceSession final : public mojom::Session {
 class FakeOnDeviceModel : public mojom::OnDeviceModel {
  public:
   struct Data {
-    bool has_safety_model = false;
-    bool has_language_model = false;
     std::string adaptation_model_weight = "";
   };
   explicit FakeOnDeviceModel(FakeOnDeviceServiceSettings* settings,
@@ -142,6 +141,36 @@ class FakeOnDeviceModel : public mojom::OnDeviceModel {
   mojo::UniqueReceiverSet<mojom::OnDeviceModel> model_adaptation_receivers_;
 };
 
+class FakeTsModel final : public on_device_model::mojom::TextSafetyModel {
+ public:
+  explicit FakeTsModel(on_device_model::mojom::TextSafetyModelParamsPtr params);
+  ~FakeTsModel() override;
+
+  // on_device_model::mojom::TextSafetyModel
+  void ClassifyTextSafety(const std::string& text,
+                          ClassifyTextSafetyCallback callback) override;
+  void DetectLanguage(const std::string& text,
+                      DetectLanguageCallback callback) override;
+
+ private:
+  bool has_safety_model_ = false;
+  bool has_language_model_ = false;
+};
+
+// TsHolder holds a single TsModel. Its operations may block.
+class FakeTsHolder final {
+ public:
+  explicit FakeTsHolder();
+  ~FakeTsHolder();
+
+  void Reset(on_device_model::mojom::TextSafetyModelParamsPtr params,
+             mojo::PendingReceiver<on_device_model::mojom::TextSafetyModel>
+                 model_receiver);
+
+ private:
+  mojo::UniqueReceiverSet<on_device_model::mojom::TextSafetyModel> model_;
+};
+
 class FakeOnDeviceModelService : public mojom::OnDeviceModelService {
  public:
   FakeOnDeviceModelService(
@@ -158,10 +187,14 @@ class FakeOnDeviceModelService : public mojom::OnDeviceModelService {
   void LoadModel(mojom::LoadModelParamsPtr params,
                  mojo::PendingReceiver<mojom::OnDeviceModel> model,
                  LoadModelCallback callback) override;
+  void LoadTextSafetyModel(
+      mojom::TextSafetyModelParamsPtr params,
+      mojo::PendingReceiver<mojom::TextSafetyModel> model) override;
   void GetEstimatedPerformanceClass(
       GetEstimatedPerformanceClassCallback callback) override;
 
   raw_ptr<FakeOnDeviceServiceSettings> settings_;
+  FakeTsHolder ts_holder_;
   mojo::Receiver<mojom::OnDeviceModelService> receiver_;
   mojo::UniqueReceiverSet<mojom::OnDeviceModel> model_receivers_;
 };

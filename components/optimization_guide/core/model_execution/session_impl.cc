@@ -463,17 +463,19 @@ void SessionImpl::RunNextRequestSafetyCheckOrBeginExecution(
   auto text = check_input->ToString();
   if (on_device_state_->opts.safety_cfg.IsRequestCheckLanguageOnly(
           request_check_idx)) {
-    on_device_state_->opts.model_client->GetModelRemote()->DetectLanguage(
-        text,
-        base::BindOnce(&SessionImpl::OnRequestDetectLanguageResult,
-                       on_device_state_->session_weak_ptr_factory_.GetWeakPtr(),
-                       std::move(options), request_check_idx, text));
+    on_device_state_->opts.model_client->GetTextSafetyModelRemote()
+        ->DetectLanguage(
+            text, base::BindOnce(
+                      &SessionImpl::OnRequestDetectLanguageResult,
+                      on_device_state_->session_weak_ptr_factory_.GetWeakPtr(),
+                      std::move(options), request_check_idx, text));
   } else {
-    on_device_state_->opts.model_client->GetModelRemote()->ClassifyTextSafety(
-        text,
-        base::BindOnce(&SessionImpl::OnRequestSafetyResult,
-                       on_device_state_->session_weak_ptr_factory_.GetWeakPtr(),
-                       std::move(options), request_check_idx, text));
+    on_device_state_->opts.model_client->GetTextSafetyModelRemote()
+        ->ClassifyTextSafety(
+            text, base::BindOnce(
+                      &SessionImpl::OnRequestSafetyResult,
+                      on_device_state_->session_weak_ptr_factory_.GetWeakPtr(),
+                      std::move(options), request_check_idx, text));
   }
 }
 
@@ -634,11 +636,12 @@ void SessionImpl::RunRawOutputSafetyCheck() {
     return;
   }
   auto text = check_input->ToString();
-  on_device_state_->opts.model_client->GetModelRemote()->ClassifyTextSafety(
-      text,
-      base::BindOnce(&SessionImpl::OnRawOutputSafetyResult,
-                     on_device_state_->session_weak_ptr_factory_.GetWeakPtr(),
-                     text, on_device_state_->current_response.size()));
+  on_device_state_->opts.model_client->GetTextSafetyModelRemote()
+      ->ClassifyTextSafety(
+          text, base::BindOnce(
+                    &SessionImpl::OnRawOutputSafetyResult,
+                    on_device_state_->session_weak_ptr_factory_.GetWeakPtr(),
+                    text, on_device_state_->current_response.size()));
 }
 
 void SessionImpl::OnRawOutputSafetyResult(

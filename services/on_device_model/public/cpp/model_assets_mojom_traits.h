@@ -32,19 +32,6 @@ struct COMPONENT_EXPORT(ON_DEVICE_MODEL_ASSETS_CPP)
     return std::move(assets.sp_model_path);
   }
 
-  static base::File ts_data(on_device_model::ModelAssets& assets) {
-    return std::move(assets.ts_data);
-  }
-
-  static base::File ts_sp_model(on_device_model::ModelAssets& assets) {
-    return std::move(assets.ts_sp_model);
-  }
-
-  static base::File language_detection_model(
-      on_device_model::ModelAssets& assets) {
-    return std::move(assets.language_detection_model);
-  }
-
   static bool Read(on_device_model::mojom::ModelAssetsDataView data,
                    on_device_model::ModelAssets* assets);
 };

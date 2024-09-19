@@ -224,7 +224,18 @@ ChromeMLSafetyResult TSModelClassifyTextSafety(ChromeMLTSModel model,
                                                const char* text,
                                                float* scores,
                                                size_t* num_scores) {
-  return ChromeMLSafetyResult::kNoClassifier;
+  if (*num_scores != 2) {
+    *num_scores = 2;
+    return ChromeMLSafetyResult::kInsufficientStorage;
+  }
+  bool has_unsafe = std::string(text).find("unsafe") != std::string::npos;
+  // SAFETY: Follows a C-API, num_scores checked above, test-only code.
+  UNSAFE_BUFFERS(scores[0]) = has_unsafe ? 0.8 : 0.2;
+  bool has_reasonable =
+      std::string(text).find("reasonable") != std::string::npos;
+  // SAFETY: Follows a C-API, num_scores checked above, test-only code.
+  UNSAFE_BUFFERS(scores[1]) = has_reasonable ? 0.2 : 0.8;
+  return ChromeMLSafetyResult::kOk;
 }
 
 const ChromeMLAPI g_api = {

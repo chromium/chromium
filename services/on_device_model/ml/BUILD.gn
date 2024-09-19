@@ -22,6 +22,7 @@ if (use_blink) {
       "on_device_model_internal.h",
       "performance_class.h",
       "session_accessor.h",
+      "ts_model.h",
     ]
 
     defines = [ "IS_ON_DEVICE_MODEL_ML_IMPL" ]
@@ -33,7 +34,6 @@ if (use_blink) {
       "performance_class.cc",
       "session_accessor.cc",
       "ts_model.cc",
-      "ts_model.h",
     ]
     if (is_ios) {
       sources += [ "gpu_blocklist_ios.cc" ]
