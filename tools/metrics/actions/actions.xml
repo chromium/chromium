@@ -14263,6 +14263,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="IOS.Notifications.SendTab.Interaction">
+  <owner>hiramahmood@google.com</owner>
+  <owner>bling-get-set-up@google.com</owner>
+  <description>
+    Recorded when a user taps on a Send Tab push notification.
+  </description>
+</action>
+
 <action name="IOS.Notifications.Tips.NotSentError" not_user_triggered="true">
   <owner>scottyoder@google.com</owner>
   <owner>hiramahmood@google.com</owner>

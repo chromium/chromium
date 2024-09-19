@@ -89,6 +89,11 @@ enum class SettingsAuthorizationStatus {
 // difference between the prefService's previous value and the new value, the
 // change is logged to UMA.
 + (void)updateAuthorizationStatusPref:(UNAuthorizationStatus)status;
+
+// Returns the corresponding SettingsAuthorizationStatus value for the given
+// `status`.
++ (push_notification::SettingsAuthorizationStatus)
+    getNotificationSettingsStatusFrom:(UNAuthorizationStatus)status;
 @end
 
 #endif  // IOS_CHROME_BROWSER_PUSH_NOTIFICATION_MODEL_PUSH_NOTIFICATION_UTIL_H_
