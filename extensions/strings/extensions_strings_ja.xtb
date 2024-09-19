@@ -19,7 +19,6 @@
 <translation id="3115238746683532089">不明な商品（<ph name="PRODUCT_ID" />、ベンダー: <ph name="VENDOR_ID" />、シリアル番号: <ph name="SERIAL_NUMBER" />）</translation>
 <translation id="3144135466825225871">crx ファイルを置き換えられませんでした。ファイルが使用されていないか確認してください。</translation>
 <translation id="3163201441334626963">不明な商品（<ph name="PRODUCT_ID" />、ベンダー: <ph name="VENDOR_ID" />）</translation>
-<translation id="3369521687965833290">拡張機能を解凍できません。拡張機能を安全に解凍するには、ドライブ文字で始まるプロフィール ディレクトリへのパスが必要です（ジャンクション、マウント ポイント、シンボリック リンクが含まれていないこと）。このようなパスがプロフィール内に存在しません。</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" />（シリアル番号: <ph name="SERIAL_NUMBER" />）</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" />（ベンダー: <ph name="VENDOR_ID" />、シリアル番号: <ph name="SERIAL_NUMBER" />）</translation>
 <translation id="3561217442734750519">秘密鍵の入力値は有効なパスでなければなりません。</translation>
@@ -39,7 +38,6 @@
 <translation id="5972529113578162692">このパソコンの管理者により、<ph name="EXTENSION_NAME" /> をインストールすることが要件として指定されています。この拡張機能はアンインストールできません。</translation>
 <translation id="6027032947578871493">不明な商品（<ph name="PRODUCT_ID" />、ベンダー: <ph name="VENDOR_NAME" />、シリアル番号: <ph name="SERIAL_NUMBER" />）</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" />（ベンダー: <ph name="VENDOR_ID" />）</translation>
-<translation id="6143635259298204954">拡張機能を解凍できません。拡張機能を安全に解凍するには、シンボリック リンクが含まれていないプロフィール ディレクトリへのパスが必要です。このようなパスがプロフィール内に存在しません。</translation>
 <translation id="6322279351188361895">秘密鍵を読み取ることができませんでした。</translation>
 <translation id="6391538222494443604">入力ディレクトリが存在している必要があります。</translation>
 <translation id="641087317769093025">拡張機能を解凍できませんでした</translation>

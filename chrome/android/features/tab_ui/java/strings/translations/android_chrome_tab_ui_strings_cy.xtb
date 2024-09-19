@@ -55,7 +55,6 @@
 <translation id="3194464645767632461">sgôr</translation>
 <translation id="3275186015127230296">{NUMBER_OF_TABS_ADDED,plural, =1{Ychwanegwyd <ph name="ONE_ADDED" /> tab, <ph name="ANY_CHANGED" /> wedi newid}zero{Ychwanegwyd <ph name="MANY_ADDED" /> tabiau, <ph name="ANY_CHANGED" /> wedi newid}two{Ychwanegwyd <ph name="MANY_ADDED" /> dab, <ph name="ANY_CHANGED" /> wedi newid}few{Ychwanegwyd <ph name="MANY_ADDED" /> thab, <ph name="ANY_CHANGED" /> wedi newid}many{Ychwanegwyd <ph name="MANY_ADDED" /> thab, <ph name="ANY_CHANGED" /> wedi newid}other{Ychwanegwyd <ph name="MANY_ADDED" /> tab, <ph name="ANY_CHANGED" /> wedi newid}}</translation>
 <translation id="3291470810748040983">Byddwch yn cael hysbysiad pan fydd pris is mewn tab sydd ar agor</translation>
-<translation id="3322827343001922122">Agorwch ddewislen gweithredu grŵp tab ar gyfer grŵp tab <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3328308545011660196">Awgrym: Mae <ph name="NUMBER_OF_TABS" /> o dabiau yn ymddangos yn berthnasol. Grwpio nhw?</translation>
 <translation id="3547352561153509682">Bydd hyn yn dileu'r grŵp o bob dyfais sydd wedi'i mewngofnodi i <ph name="USER_EMAIL" /></translation>
 <translation id="3613492231657284463">Cuddio deialog tabiau anweithredol</translation>
@@ -104,7 +103,6 @@
 <translation id="5400836586163650660">Llwyd</translation>
 <translation id="5490235265819901748">Mae'r grŵp tabiau wedi'i ehangu</translation>
 <translation id="5494920125229734069">Dewis pob un</translation>
-<translation id="5549653163690032080">Agorwch ddewislen gweithredu grŵp tab ar gyfer grŵp tabiau <ph name="TITLE_OF_GROUP" /> a rennir</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Cau grŵp tabiau gydag <ph name="TABS_COUNT_ONE" /> tab, lliw <ph name="COLOR_NAME" />.}zero{Cau grŵp tabiau gyda <ph name="TABS_COUNT_MANY" /> tab, lliw <ph name="COLOR_NAME" />.}two{Cau grŵp tabiau gyda <ph name="TABS_COUNT_MANY" /> dab, lliw <ph name="COLOR_NAME" />.}few{Cau grŵp tabiau gyda <ph name="TABS_COUNT_MANY" /> thab, lliw <ph name="COLOR_NAME" />.}many{Cau grŵp tabiau gyda <ph name="TABS_COUNT_MANY" /> thab, lliw <ph name="COLOR_NAME" />.}other{Cau grŵp tabiau gyda <ph name="TABS_COUNT_MANY" /> tab, lliw <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">Gweld gwybodaeth siop, opsiwn ar gael yn agos at frig y sgrîn</translation>
 <translation id="5627941783489838464">Dim diweddariadau tab</translation>

@@ -342,6 +342,7 @@
 <translation id="2560876255701405320">Liste des enregistrements audio</translation>
 <translation id="2561093647892030937">citrons</translation>
 <translation id="2570743873672969996">Le test <ph name="TEST_NAME" /> est en cours d'exécution…</translation>
+<translation id="2573178735329662769">Enregistrement de tous les sons sur ce Chromebook</translation>
 <translation id="2575552334616524665">Vous pouvez activer cette fonctionnalité dans les paramètres ou dans le menu <ph name="THREE_DOTS_MENU_ICON" /></translation>
 <translation id="2576253868710695442">Cela prendra jusqu'à 2 Go d'espace de stockage</translation>
 <translation id="2584547424703650812">Paysages lumineux</translation>
@@ -510,6 +511,7 @@
 <translation id="3588034708467091142">Assurez-vous que vous êtes connecté à Internet et réessayez.</translation>
 <translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> est le nom convivial pour <ph name="APN_NAME" />.</translation>
 <translation id="3595596368722241419">Batterie entièrement chargée</translation>
+<translation id="3600063043775287169">Lorsque les sons sur ce Chromebook sont activés, l'Enregistreur capture tous les sons joués sur cet appareil. Assurez-vous que vous souhaitez enregistrer tous les sons.</translation>
 <translation id="3600339377155080675">Duplication d'écran</translation>
 <translation id="3602290021589620013">Aperçu</translation>
 <translation id="3603829704940252505">Avatar</translation>

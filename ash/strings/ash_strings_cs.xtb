@@ -78,6 +78,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1240638468526743569">Aplikace</translation>
 <translation id="1242198791279543032">Oznámení jsou vypnutá</translation>
 <translation id="1242883863226959074">zařízení</translation>
+<translation id="1245476784081715330">Dobrá práce!</translation>
 <translation id="1245644940275736236">Přejít na Asistenta</translation>
 <translation id="124678866338384709">Zavřít aktuální kartu</translation>
 <translation id="1246890715821376239">Nepodporované aplikace</translation>
@@ -842,6 +843,7 @@ Připojte zařízení k napájení.</translation>
 <translation id="3958714870339660776">Celý den</translation>
 <translation id="3962859241508114581">Předchozí skladba</translation>
 <translation id="3963124517343721543">Otevřete předchozí okna a karty, abyste mohli jednoduše pokračovat tam, kde jste přestali. Budou se vám zobrazovat také personalizované návrhy dalších aktivit.</translation>
+<translation id="396506362088290977">Otestujte zvuk mikrofonu</translation>
 <translation id="3969043077941541451">Vypnout</translation>
 <translation id="3970324493235864154">Zobrazovat oznámení z telefonu</translation>
 <translation id="397105322502079400">Probíhá výpočet…</translation>
@@ -899,6 +901,7 @@ Připojte zařízení k napájení.</translation>
 <translation id="4156293514828496577">Stav baterie: <ph name="PERCENTAGE" /> % (přibližně na <ph name="TIME_LEFT" />).
 Některé funkce jsou za účelem prodloužení výdrže baterie omezeny.</translation>
 <translation id="4160919062868802509">Bylo zjištěno několik zdrojů zvuku</translation>
+<translation id="416245495747357243">Hotovo!</translation>
 <translation id="4165275524535002941">Kabel možná nepodporuje displeje</translation>
 <translation id="4177415338862979658">Kliknutím zobrazíte podrobnosti</translation>
 <translation id="4177913004758410636">{0,plural, =1{Do jednoho dne zařízení aktualizujte}few{Do # dní zařízení aktualizujte}many{Do # dne zařízení aktualizujte}other{Do # dní zařízení aktualizujte}}</translation>
@@ -984,6 +987,7 @@ Některé funkce jsou za účelem prodloužení výdrže baterie omezeny.</trans
 <translation id="4412944820643904175">Funkce <ph name="FEATURE_NAME" /> je vypnutá.</translation>
 <translation id="4417647906073317561">Nastavení soustředění. Nastavte si časovač, úkol a hudbu, aby vás nic nerozptylovalo.</translation>
 <translation id="4424159417645388645">Plocha 5</translation>
+<translation id="4426817706804363424">Tak to má být!</translation>
 <translation id="4430019312045809116">Hlasitost</translation>
 <translation id="4441283832827406317">Aplikace jsou seřazeny podle názvu</translation>
 <translation id="4445159312344259901">Odemknete přihlášením</translation>
@@ -1248,6 +1252,7 @@ Můžete také použít klávesovou zkratku. Nejdříve zvýrazněte text a pak
 <translation id="5283198616748585639">Přidat 1 min</translation>
 <translation id="528468243742722775">Konec</translation>
 <translation id="5286194356314741248">Skenování</translation>
+<translation id="528641622273682395">Přepnout test mikrofonu</translation>
 <translation id="5297423144044956168">Nebyla nalezena žádná mobilní zařízení</translation>
 <translation id="5297704307811127955">Vypnuto</translation>
 <translation id="5300589172476337783">Zobrazit</translation>
@@ -1275,6 +1280,7 @@ Nejsou připojena žádná zařízení.</translation>
 <translation id="536019650977002321">Váš administrátor záznam zvuku nepovoluje. O další informace požádejte administrátora.</translation>
 <translation id="5361524080961918551">Řečové soubory jazyka <ph name="LANGUAGE" /> byly částečně staženy</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Přejít na tuto kartu</translation>
+<translation id="5363835273551457276">Můžete otestovat zvuk mikrofonu. Poslech ukončíte zavřením panelu.</translation>
 <translation id="5364693579536176785">úložný prostor</translation>
 <translation id="5369573834963677938">Ovládání obličejem bude na zařízení dostupné ostatním uživatelům</translation>
 <translation id="5369717264580061086">Zobrazit náhled souboru v aplikaci Soubory</translation>
@@ -1415,6 +1421,7 @@ Nejsou připojena žádná zařízení.</translation>
 <translation id="5802516411616338943">Otevření Rychlého nastavení</translation>
 <translation id="5804651031882187592">Vypněte možnost Uzamknout SIM kartu</translation>
 <translation id="5805809050170488595">Kliknutím aktivujete síť <ph name="NETWORK_NAME" /></translation>
+<translation id="5818796501620225415">Můžete přidat více času nebo soustředění ukončit</translation>
 <translation id="5819918159912280082">Chromebook se neočekávaně restartoval. Chcete otevřít předchozí okna a aplikace?</translation>
 <translation id="5823239091726045201">Úkoly Google na webu</translation>
 <translation id="5825969630400862129">Nastavení připojených zařízení</translation>
@@ -2124,6 +2131,7 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="8262312463845990408">Spustit nebo pozastavit přehrávání</translation>
 <translation id="8268302343625273732">Zobrazit všechny úkoly v Učebně Google</translation>
 <translation id="8277261673056602147">Zvýraznit text na obrazovce</translation>
+<translation id="8282784978194352587">Podařilo se!</translation>
 <translation id="8287009018010202411">Produktivita</translation>
 <translation id="828708037801473432">Vypnuto</translation>
 <translation id="8297006494302853456">Slabý</translation>
@@ -2201,6 +2209,7 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="8609384513243082612">Otevřít novou kartu</translation>
 <translation id="861045123704058818">Aplikace jsou dočasně uspořádány podle kategorií</translation>
 <translation id="8612216344243590325">Namísto plochy si důležité soubory ukládejte do prostoru <ph name="HOLDING_SPACE_TITLE" />. Stačí je přetáhnout do prostoru <ph name="HOLDING_SPACE_TITLE" />.</translation>
+<translation id="8612338981637220013">Skvělá práce!</translation>
 <translation id="8614517853887502247">Oznámení aplikací <ph name="APP_1_TITLE" /> a <ph name="APP_2_TITLE" /> jsou skryta, protože je zapnutá ochrana před špehováním</translation>
 <translation id="8615778328722901791">Otevřít panel nástrojů</translation>
 <translation id="8619000641825875669">OneDrive</translation>
@@ -2242,6 +2251,7 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="8735678380411481005">Barva podsvícení klávesnice</translation>
 <translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />: Aktivace…</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />, <ph name="SCREEN_SHARE_STATUS" /></translation>
+<translation id="8751299148074971734">Jen tak dál!</translation>
 <translation id="8753368202781196133">Tento jazyk v současné době není podporován.</translation>
 <translation id="8755498163081687682">Ověření identity: Web <ph name="ORIGIN_NAME" /> chce ověřit, zda jste to vy</translation>
 <translation id="875593634123171288">Zobrazit nastavení VPN</translation>

@@ -35,6 +35,7 @@
 <translation id="1155154308031262006">Faka umyalelo</translation>
 <translation id="115705039208660697">ophayinaphu</translation>
 <translation id="1164939766849482256">Isigciniskrini sokusa kuya ebumnyameni</translation>
+<translation id="1166688493741195933">Ihlulekile ukukhiqiza amagama okurekhoda</translation>
 <translation id="1167755866710282443">Vula imenyu ukuze wenze ngokwezifiso okhiye. Hudula imenyu ukuze uhambise.</translation>
 <translation id="1171349345463658120">i-sandy lagoon</translation>
 <translation id="1173894706177603556">Qamba kabusha</translation>
@@ -341,6 +342,7 @@
 <translation id="2560876255701405320">Uhlu lokurekhodwa komsindo</translation>
 <translation id="2561093647892030937">olamula</translation>
 <translation id="2570743873672969996">Iqalisa ukuhlola kwe-<ph name="TEST_NAME" />...</translation>
+<translation id="2573178735329662769">Ukurekhoda wonke umsindo weChromebook</translation>
 <translation id="2575552334616524665">Ungavula lokhu kokuthi Amasethingi noma kumenyu ye-<ph name="THREE_DOTS_MENU_ICON" /></translation>
 <translation id="2576253868710695442">Lokhu kuzothatha isitoreji esifika ku-2GB</translation>
 <translation id="2584547424703650812">Ama-glowscape</translation>
@@ -493,6 +495,7 @@
 <translation id="3502426834823382181">Buka wonke ama-app</translation>
 <translation id="3510890413042482857">Thumela <ph name="BEGIN_LINK1" />idatha yokulandelela ukusebenza<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Isibuyekezo se-ChromeOS</translation>
+<translation id="3522508178835057262">Okwamanje, okulotshiweyo okude kunamagama angu-<ph name="MAX_WORD_LENGTH" /> akusekelwa</translation>
 <translation id="3527036260304016759">Yehlukile - Iphutha elingaziwa</translation>
 <translation id="353214771040290298">Kuqediwe ukuhlela</translation>
 <translation id="3532980081107202182">Kusele cishe amaminithi angu-<ph name="MIN_REMAINING" /></translation>
@@ -508,6 +511,7 @@
 <translation id="3588034708467091142">Qiniseka ukuthi uxhumeke ku-inthanethi bese uzama futhi.</translation>
 <translation id="3594280220611906414">I-<ph name="USER_FRIENDLY_APN_NAME" /> iyigama elisebenziseka kalula le-<ph name="APN_NAME" />.</translation>
 <translation id="3595596368722241419">Ibhethri ligcwele</translation>
+<translation id="3600063043775287169">Lapho umsindo weChromebook uvuliwe, Irekhoda iqopha wonke umsindo odlalayo kule divayisi. Qinisekisa ukuthi uyafuna ukurekhoda yonke imisindo.</translation>
 <translation id="3600339377155080675">Ukufanisela kwesikrini</translation>
 <translation id="3602290021589620013">Hlola kuqala</translation>
 <translation id="3603829704940252505">Isithombe</translation>
@@ -710,6 +714,7 @@
 <translation id="4602266091140407479">Imakrofoni</translation>
 <translation id="4607282946861182308">Ayikwazi ukusungula imifanekiso yalokhu. Zama omunye umyalelo.</translation>
 <translation id="4609350030397390689">Ukugqama kwekhibhodi kuphansi</translation>
+<translation id="4623061655523261501">Amagama okurekhoda akhiqizwe ngokuphumelelayo</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> kwangu-<ph name="TOTAL_PAGE_NUMBER" /> Cindezela u-enter ukuze ukhansele umsebenzi wokuphrinta.</translation>
 <translation id="463791356324567266">Ikhansela ukuskena...</translation>
 <translation id="4644611440022666152">Vula futhi udawunilode</translation>
@@ -1042,6 +1047,8 @@
 <translation id="628726841779494414">Phatha amaphrinta akho kumasethingi ephrinta</translation>
 <translation id="6292095526077353682">Ngenkathi ishaja, bonisa isilondolozi sesikrini</translation>
 <translation id="629550705077076970">ukufiphala kwekhibhodi</translation>
+<translation id="6301193653204230066">Ukusetha kabusha ukuphepha kuvala izandiso zebhrawuza yeChrome futhi kusetha kabusha inethiwekhi namanye amasethingi abe okuzenzekelayo okuphephile.
+          Amathebhu wakho, amafayela, amakhukhi, nomlando ngeke kushintshwe.</translation>
 <translation id="6302401976930124515">Ukuhlola kwe-<ph name="TEST_NAME" /> kukhanseliwe</translation>
 <translation id="631063167932043783">Hlola i-app</translation>
 <translation id="6318437367327684789">phakade</translation>
@@ -1051,6 +1058,7 @@
 <translation id="6325525973963619867">Yehlulekile</translation>
 <translation id="6327262166342360252">Lesi sithombe sangemuva sakhiwe nge-AI kusetshenziswa umbhalo olandelayo: "<ph name="PROMPT" />."</translation>
 <translation id="6331191339300272798">Itimu emnyama ngokuzenzekelayo</translation>
+<translation id="6335228876613776082">Ukudawuniloda imodeli kuqediwe</translation>
 <translation id="6340526405444716530">Ukwenza okomuntu siqu</translation>
 <translation id="6348252528297699679">Ungayivala indawo ngaphansi kokuthi Amasethingi &gt; Ubumfihlo nokuvikeleka &gt; Izilawuli zobumfihlo &gt; Ukufinyelela indawo. <ph name="LINK_BEGIN" />Funda kabanzi<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">Igama lomsebenzisi nephasiwedi</translation>
@@ -1212,6 +1220,7 @@
 <translation id="708426984172631313">KUMISIWE</translation>
 <translation id="7086168019478250425">i-bioluminescent beach</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="7086916854357021265">Ikhiqiza amagama okurekhoda</translation>
 <translation id="7097908713073775559">kunemibala</translation>
 <translation id="710028965487274708">Kwehlulekile - Ukugunyaza Kwehlulekile</translation>
 <translation id="7101959270679078188">Vula okuthi <ph name="DEVICE_NAME" /> ukuze uqhubeke nenqubo yokubuyekeza</translation>
@@ -1544,6 +1553,7 @@ Dawuniloda imodeli yokubhala (okungafika ku-100MB) ukuze uthole lokhu okubhaliwe
 <translation id="8764414543112028321">I-WireGuard</translation>
 <translation id="87646919272181953">I-albhamu Yezithombe ze-Google</translation>
 <translation id="8775713578693478175">I-APN Yemodemu</translation>
+<translation id="877735394245039557">Ukudawuniloda imodeli kuyaqhubeka</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Le nethiwekhi ingaba nephothali yabathunjiweyo</translation>
 <translation id="8797082062139985406">Sungula igama usebenzisa iGoogle AI</translation>

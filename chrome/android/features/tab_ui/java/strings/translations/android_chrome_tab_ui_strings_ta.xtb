@@ -55,7 +55,6 @@
 <translation id="3194464645767632461">ரேட்டிங்</translation>
 <translation id="3275186015127230296">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> பக்கம் சேர்க்கப்பட்டது, <ph name="ANY_CHANGED" /> மாற்றப்பட்டது.}other{<ph name="MANY_ADDED" /> பக்கங்கள் சேர்க்கப்பட்டன, <ph name="ANY_CHANGED" /> மாற்றப்பட்டது.}}</translation>
 <translation id="3291470810748040983">திறந்திருக்கும் தாவலில் குறைவான விலை இருக்கும்போது விழிப்பூட்டலைப் பெறுவீர்கள்</translation>
-<translation id="3322827343001922122"><ph name="TITLE_OF_GROUP" /> பக்கக் குழுவுக்கான பக்கக் குழு செயல் மெனுவைத் திறக்கும்</translation>
 <translation id="3328308545011660196">பரிந்துரை: <ph name="NUMBER_OF_TABS" /> தாவல்கள் தொடர்புடையவையாகத் தெரிகின்றன. அவற்றைக் குழுவாக்கவா?</translation>
 <translation id="3547352561153509682">இவ்வாறு செய்தால் <ph name="USER_EMAIL" /> கணக்கின் மூலம் உள்நுழைந்துள்ள சாதனங்கள் அனைத்திலும் குழு நீக்கப்படும்</translation>
 <translation id="3613492231657284463">செயலில் இல்லாத பக்கங்களைக் காட்டும் உரையாடலை மறைக்கும்</translation>
@@ -104,7 +103,6 @@
 <translation id="5400836586163650660">கிரே</translation>
 <translation id="5490235265819901748">பக்கக் குழு விரிவாக்கப்பட்டது</translation>
 <translation id="5494920125229734069">எல்லாவற்றையும் தேர்ந்தெடு</translation>
-<translation id="5549653163690032080"><ph name="TITLE_OF_GROUP" /> என்ற பகிர்ந்த பக்கக் குழுவுக்கான பக்கக் குழு செயல் மெனுவைத் திறக்கும்</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{<ph name="COLOR_NAME" /> வண்ணத்தில் <ph name="TABS_COUNT_ONE" /> பக்கத்துடன் உள்ள பக்கக் குழுவை மூடும்.}other{<ph name="COLOR_NAME" /> வண்ணத்தில் <ph name="TABS_COUNT_MANY" /> பக்கங்களுடன் உள்ள பக்கக் குழுவை மூடும்.}}</translation>
 <translation id="5556417849629758491">ஸ்டோர் தகவலைப் பார்ப்பதற்கான விருப்பம் திரையின் மேற்பகுதிக்கு அருகில் உள்ளது</translation>
 <translation id="5627941783489838464">பக்க மாற்றங்கள் இல்லை</translation>

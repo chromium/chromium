@@ -127,6 +127,7 @@
 <translation id="1567064801249837505">ອະລະບ້ຳ</translation>
 <translation id="1572585716423026576">ຕັ້ງເປັນພາບພື້ນຫຼັງ</translation>
 <translation id="1578784163189013834">ເລືອກພື້ນຫຼັງສະກຣີນເຊັບເວີ</translation>
+<translation id="1587031308639983732">ການປ່ຽນແປງຕາມເວລາອາດບໍ່ຖືກຕ້ອງ. ການຕັ້ງຄ່ານີ້ໄດ້ຮັບການຈັດການໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ.</translation>
 <translation id="1588438908519853928">ປົກ​ກະ​ຕິ</translation>
 <translation id="1591562245178063882">ເດືອນ​ນີ້</translation>
 <translation id="1593528591614229756">ກວດສອບໃຫ້ໝັ້ນໃຈວ່າໄດ້ເລືອກ APN ທີ່ມາຈາກຜູ້ໃຫ້ບໍລິການມືຖື ຫຼື ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ. ການເລືອກ APN ຈະປິດການນຳໃຊ້ APN ທີ່ກຳນົດເອງ. APN ທີ່ບໍ່ຖືກຕ້ອງອາດລົບກວນການເຊື່ອມຕໍ່ມືຖືຂອງທ່ານ. <ph name="LINK_BEGIN" />ສຶກສາເພີ່ມເຕີມ<ph name="LINK_END" /></translation>
@@ -342,6 +343,7 @@
 <translation id="2560876255701405320">ລາຍຊື່ການບັນທຶກສຽງ</translation>
 <translation id="2561093647892030937">ໝາກນາວ (ເລມອນ)</translation>
 <translation id="2570743873672969996">ກຳລັງເອີ້ນໃຊ້ການທົດສອບ <ph name="TEST_NAME" />...</translation>
+<translation id="2573178735329662769">ກຳລັງບັນທຶກສຽງທັງໝົດຈາກ Chromebook</translation>
 <translation id="2575552334616524665">ທ່ານສາມາດເປີດໃຊ້ຕົວເລືອກນີ້ໄດ້ໃນການຕັ້ງຄ່າ ຫຼື ເມນູ <ph name="THREE_DOTS_MENU_ICON" /></translation>
 <translation id="2576253868710695442">ການດຳເນີນການນີ້ຈະໃຊ້ບ່ອນຈັດເກັບຂໍ້ມູນສູງສຸດ 2GB</translation>
 <translation id="2584547424703650812">Glowscapes</translation>
@@ -510,6 +512,7 @@
 <translation id="3588034708467091142">ກະລຸນາກວດສອບໃຫ້ແນ່ໃຈວ່າທ່ານເຊື່ອມຕໍ່ກັບອິນເຕີເນັດແລ້ວລອງໃໝ່.</translation>
 <translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> ແມ່ນຊື່ທີ່ເໝາະກັບຜູ້ໃຊ້ສຳລັບ <ph name="APN_NAME" />.</translation>
 <translation id="3595596368722241419">ແບັດເຕີຣີເຕັມ</translation>
+<translation id="3600063043775287169">ເມື່ອສຽງ Chromebook ເປີດຢູ່, ຕົວບັນທຶກຈະບັນທຶກສຽງທັງໝົດທີ່ຫຼິ້ນຢູ່ອຸປະກອນນີ້. ກວດສອບວ່າທ່ານຕ້ອງການບັນທຶກສຽງທັງໝົດ.</translation>
 <translation id="3600339377155080675">ສະທ້ອນໜ້າຈໍ</translation>
 <translation id="3602290021589620013">ເບິ່ງຕົວຢ່າງ</translation>
 <translation id="3603829704940252505">ຮູບແທນຕົວ</translation>
@@ -1164,6 +1167,7 @@
 <translation id="6831043979455480757">ແປພາສາ</translation>
 <translation id="6846843854964504403">ຣີເຊັດຄວາມປອດໄພ</translation>
 <translation id="6853312040151791195">ອັດຕາການຄາຍປະຈຸ</translation>
+<translation id="6862228900689076919">ຄຸນສົມບັດນີ້ຈັດການໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ</translation>
 <translation id="6862416241246624313">ສົ່ງຄຳຕິຊົມແລ້ວ</translation>
 <translation id="6866732840889595464">ເດຊີ</translation>
 <translation id="6871256179359663621">ມ່ວງອ່ອນ</translation>

@@ -55,7 +55,6 @@
 <translation id="3194464645767632461">рейтинг</translation>
 <translation id="3275186015127230296">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> өтмөк кошулуп, <ph name="ANY_CHANGED" /> өтмөк өзгөртүлдү}other{<ph name="MANY_ADDED" /> өтмөк кошулуп, <ph name="ANY_CHANGED" /> өтмөк өзгөртүлдү}}</translation>
 <translation id="3291470810748040983">Төмөндөгөн баа тууралуу эскертүүнү ачылган өтмөктө көрөсүз</translation>
-<translation id="3322827343001922122"><ph name="TITLE_OF_GROUP" /> өтмөктөр тобу үчүн өтмөктөр тобунун аракет менюсун ачыңыз</translation>
 <translation id="3328308545011660196">Сунуш: <ph name="NUMBER_OF_TABS" /> өтмөк окшош окшойт. Алар топко бириктирилсинби?</translation>
 <translation id="3547352561153509682">Ушуну менен топ <ph name="USER_EMAIL" /> аккаунтуна кирип турган бардык түзмөктөрдөн өчүрүлөт</translation>
 <translation id="3613492231657284463">Жигерсиз өтмөктөр диалогун жашыруу</translation>
@@ -104,7 +103,6 @@
 <translation id="5400836586163650660">Боз</translation>
 <translation id="5490235265819901748">Өтмөктөр тобу жайылып көрсөтүлдү</translation>
 <translation id="5494920125229734069">Баарын тандоо</translation>
-<translation id="5549653163690032080"><ph name="TITLE_OF_GROUP" /> жалпы өтмөктөр тобу үчүн өтмөктөр тобунун аракет менюсун ачыңыз</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> өтмөктөн турган өтмөктөр тобун жабуу, түсү: <ph name="COLOR_NAME" />.}other{<ph name="TABS_COUNT_MANY" /> өтмөктөн турган өтмөктөр тобун жабуу, түсү: <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">Дүкөн тууралуу маалыматты көрүңүз. Параметр экрандын жогору жагында берилген</translation>
 <translation id="5627941783489838464">Өтмөктөрдө жаңыртуу жок</translation>

@@ -44,6 +44,7 @@
 <translation id="1183189057400844278">თქვენს Google ანგარიშში არსებული პაროლები დაუბრკოლებლად რომ გამოიყენოთ, დაადასტურეთ ვინაობა</translation>
 <translation id="1187810343066461819">ასევე, გასუფთავდეს სანიშნეები, ისტორია და სხვა კონტენტი ამ მანქანიდან</translation>
 <translation id="1193729455103054076">გსურთ, გამოიყენოთ ძლიერი პაროლი?</translation>
+<translation id="11947597112837849">ელფოსტის მისამართი</translation>
 <translation id="1197267115302279827">სანიშნეების გადატანა</translation>
 <translation id="1197761954713363183">წვდომის გასაღების დადასტურების ფურცელი დახურულია</translation>
 <translation id="1201402288615127009">შემდეგი</translation>
@@ -56,7 +57,6 @@
 <translation id="123724288017357924">გვერდის გადატვირთვა ქეშირ. კონტენტის იგნორირებით</translation>
 <translation id="1239792311949352652">სწრაფად გააზიარეთ ეს გვერდი. ამ მალსახმობის რედაქტირებისთვის გადადით პარამეტრებზე.</translation>
 <translation id="1240288207750131269">იტვირთება <ph name="LANG" /></translation>
-<translation id="1240903469550363138">გასაგრძელებლად <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ამ საიტს გაუზიარებს თქვენს სახელს, ელფოსტის მისამართსა და პროფილის სურათს. გაეცანით ამ საიტის <ph name="BEGIN_LINK1" />კონფიდენციალურობის დებულებასა<ph name="END_LINK1" /> და <ph name="BEGIN_LINK2" />მომსახურების პირობებს<ph name="END_LINK2" />.</translation>
 <translation id="124116460088058876">სხვა ენები</translation>
 <translation id="1241792820757384812">თქვენი პაროლები წაიშლება Google პაროლების მმართველიდან <ph name="CHROME_CHANNEL" />-სთვის. პაროლების თქვენ მიერ ახლახან ჩამოტვირთული ფაილი შენარჩუნდება.</translation>
 <translation id="1242883863226959074">მოწყობილობა</translation>
@@ -94,7 +94,6 @@
 <translation id="1384704387250346179">თარგმნეთ სურათი Google Lens-ით <ph name="BEGIN_NEW" />სიახლე<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382">აქტიური იყო <ph name="LAST_UPDATED" /> დღის წინ</translation>
 <translation id="1390418506739274310">ისტორიის ნახვას შეძლებთ ნებისმიერი სხვა აპიდან, რომელიც ბმულებს Chrome-ში ხსნის. თქვენს Google ანგარიშში შეიძლება ინახებოდეს სხვა ტიპის დათვალიერების ისტორიაც, რომელიც ხელმისაწვდომია მისამართზე <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
-<translation id="13931502444227376">გასაგრძელებლად <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ამ საიტს გაუზიარებს თქვენს სახელს, ელფოსტის მისამართსა და პროფილის სურათს. გაეცანით ამ საიტის <ph name="BEGIN_LINK1" />მომსახურების პირობებს<ph name="END_LINK1" />.</translation>
 <translation id="139752016751285248">ფასების ანალიზის ქვედა ფურცელი გაიხსნა სრულ სიმაღლეზე</translation>
 <translation id="1397811292916898096"><ph name="PRODUCT_NAME" />-ით ძიება</translation>
 <translation id="1398057416966591719">თქვენს Google ანგარიშში შეგიძლიათ <ph name="BEGIN_LINK1" />მართოთ, Chrome-ის რომელი მონაცემები ინახება<ph name="END_LINK1" />.
@@ -214,7 +213,6 @@
 <translation id="1974060860693918893">გაფართოებული</translation>
 <translation id="1984417487208496350">დაცვის გარეშე (არარეკომენდებული)</translation>
 <translation id="1986685561493779662">სახელი უკვე არსებობს</translation>
-<translation id="1995884366040846621">გასაგრძელებლად <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ამ საიტს გაუზიარებს თქვენს სახელს, ელფოსტის მისამართსა და პროფილის სურათს. გაეცანით ამ საიტის <ph name="BEGIN_LINK1" />კონფიდენციალურობის დებულებას<ph name="END_LINK1" />.</translation>
 <translation id="200114059308480249">გსურთ, დაურთოთ გარშემო ტექსტი Google ძიებებს?</translation>
 <translation id="201060170519281460">პროფილის ჩაკეტვა უზრუნველყოფს თქვენი ინფორმაციის (მათ შორის, სინქრონიზებული პაროლების, გადახდებისა და სხვა მონაცემების) დაცულობას მანქანაში.</translation>
 <translation id="2021896219286479412">სრულეკრანიანი რეჟიმის მართვა</translation>
@@ -235,6 +233,7 @@
 <translation id="2093731487903423814">ბოლო 15 წუთში</translation>
 <translation id="2096012225669085171">სინქრონიზაცია და პერსონალიზება სხვადასხვა მოწყობილობას შორის</translation>
 <translation id="2100273922101894616">ავტომატური შესვლა</translation>
+<translation id="2109384632594340939">პროფილის სურათი</translation>
 <translation id="2111511281910874386">გვერდზე გადასვლა</translation>
 <translation id="2119609734654412418">აქ იპოვით თქვენს სანიშნეებს</translation>
 <translation id="2122601567107267586">აპის გახსნა ვერ მოხერხდა</translation>
@@ -444,7 +443,6 @@
 <translation id="3037177537145227281">ფასისთვის თვალის მიდევნება</translation>
 <translation id="3037517125981011456">გამოაჩენს Chrome-ში შესვლის მოთხოვნებს</translation>
 <translation id="3038272154009688107">ყველა ვებსაიტის ნახვა</translation>
-<translation id="3055259925215945098">სანიშნე გადატანილია</translation>
 <translation id="3055841435094910999">Google-ს ეგზავნება ინფორმაცია თქვენ მიერ Chrome-ის გამოყენების შესახებ, თუმცა ის უშუალოდ თქვენთან დაკავშირებული არ არის\n\nChrome-ის ავარიულად გათიშვის შემთხვევაში, ავარიული გათიშვის დეტალები შეიძლება მოიცავდეს თქვენს ზოგიერთ პერსონალურ მონაცემს\n\nსინქრონიზაციის ჩართვის შემთხვევაში, მეტრიკა შეიძლება მოიცავდეს ინფორმაციას თქვენ მიერ მონახულებული URL-ების შესახებ</translation>
 <translation id="3059531648236115056">შეჯამების დამატება</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> სანიშნე}other{<ph name="BOOKMARKS_COUNT_MANY" /> სანიშნე}}</translation>
@@ -523,6 +521,7 @@
 <translation id="3474624961160222204">გაგრძელება, როგორც <ph name="NAME" /></translation>
 <translation id="3478363558367712427">შეგიძლიათ აირჩიოთ საძიებო სისტემა</translation>
 <translation id="3479552764303398839">ახლა არა</translation>
+<translation id="3488199663160411179">სახელი</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /> შემოთავაზებული კონტენტის შესახებ</translation>
 <translation id="3495219333887281978">სისტემაში შესვლის ქვედა ფურცელი გახსნილია ნახევარ სიმაღლეზე.</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -569,6 +568,7 @@
 <translation id="3700759344784597882">როდესაც ჩართულია, პაროლები თქვენს ანგარიშში ინახება. გამორთვის შემთხვევაში პაროლები შეინახება მხოლოდ ამ მოწყობილობაზე.</translation>
 <translation id="3701167022068948696">ახლავე შესწორება</translation>
 <translation id="3701515417135397388">გაფრთხილება, თუ პაროლი გამჟღავნდა პერსონალურ მონაცემთა გაჟონვის დროს</translation>
+<translation id="3710501561113687889">გასაგრძელებლად <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-ის მიერ ამ საიტთან გაზიარდება <ph name="FIELDS_STRING" />.</translation>
 <translation id="3714981814255182093">ძიების ზოლის გახსნა</translation>
 <translation id="3716182511346448902">ეს გვერდი იყენებს მეხსიერების მეტისმეტად დიდ მოცულობას, რის გამოც Chrome-მა ის დააპაუზა.</translation>
 <translation id="3718765429352682176">შეგიძლიათ, იხილოთ სხვა აპების ისტორია, რომლებიც ბმულებს Chrome-ში ხსნის.</translation>
@@ -596,6 +596,7 @@
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="38243391581572867">Lens მიუწვდომელია ამ ანგარიშზე.</translation>
 <translation id="3830886834687455630">პაროლების შესამოწმებლად განაახლეთ Google Play services</translation>
+<translation id="3843603704176567761">პაროლებმა შეიძლება მალე შეწყვიტოს ამ მოწყობილობაზე მუშაობა. პაროლების გამოყენების გასაგრძელებლად განაახლეთ Google Play services.</translation>
 <translation id="3845098929839618392">ინკოგნიტო ჩანართში გახსნა</translation>
 <translation id="3847319713229060696">ხელი შეუწყვეთ ვების უსაფრთხოების ყველასთვის გაუმჯობესებას</translation>
 <translation id="3856096718352044181">დაადასტურეთ პროვაიდერის სისწორე ან ცადეთ მოგვიანებით</translation>
@@ -677,6 +678,7 @@
 <translation id="4257230861809842349">გსურთ, წაშალოთ პაროლები Google პაროლების მმართველიდან?</translation>
 <translation id="426652736638196239">ეს IBAN შეინახება მხოლოდ ამ მოწყობილობაზე</translation>
 <translation id="4269820728363426813">ბმულის მისამართის კოპირება</translation>
+<translation id="4270730597186910506">პროდუქტისთვის თვალის დევნება ან თვალის დევნების გაუქმება.</translation>
 <translation id="4277529130885813215">სხვა მოწყობილობის გამოყენება</translation>
 <translation id="4282440837784183472">თქვენი ორგანიზაცია, <ph name="MANAGED_DOMAIN" />, მართავს როგორც ანგარიშს, რომელშიც შედიხართ, ისე Chrome-ის გამოყენების პროცესს. თქვენს ადმინისტრატორს შეუძლია კონკრეტული ფუნქციების დაყენება ან შეზღუდვა.</translation>
 <translation id="4285846616383034558">ქუქი-ჩანაწერები, ქეში და საიტების სხვა მონაცემები</translation>
@@ -924,7 +926,6 @@
 <translation id="5394331612381306435">ინკოგნიტო რეჟიმიდან გასვლა</translation>
 <translation id="5395376160638294582">იზრუნეთ, რომ ყოველთვის გამოიყენოთ Chrome-ის მონაცემები თქვენს Google ანგარიშში</translation>
 <translation id="539881862970320163">შემოთავაზებულია ძლიერი პაროლი. კლავიატურა დამალულია.</translation>
-<translation id="5401851137404501592">გასაგრძელებლად <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ამ საიტს გაუზიარებს თქვენს სახელს, ელფოსტის მისამართსა და პროფილის სურათს.</translation>
 <translation id="5409881200985013443">გსურთ, გადაუგზავნოთ <ph name="ONE_TIME_CODE" /> <ph name="CLIENT_NAME" />-ს?</translation>
 <translation id="5414836363063783498">დადასტურება…</translation>
 <translation id="5415871492522952905">თქვენს ყველა მოწყობილობაზე გექნებათ ისტორია და ჩანართები, რომ მიტოვებული საქმის გაგრძელება შეძლოთ</translation>
@@ -1113,7 +1114,6 @@
 <translation id="6255809143828972562">Chrome-ში არსებული ხელსაწყოები დაგეხმარებათ, უსაფრთხოდ დაათვალიეროთ ვები და შეინარჩუნოთ კონტროლი</translation>
 <translation id="6264376385120300461">მაინც ჩამოტვირთვა</translation>
 <translation id="6277522088822131679">გვერდის დაბეჭდვისას დაფიქსირდა შეცდომა. გთხოვთ ცადოთ ხელახლა.</translation>
-<translation id="6277722725779679269">ფასისთვის თვალის მიდევნება ვერ განახლდა</translation>
 <translation id="6278428485366576908">თემა</translation>
 <translation id="6284472661216707937">პაროლები თქვენს ყველა მოწყობილობაზე დახურულია</translation>
 <translation id="6295158916970320988">ყველა საიტი</translation>
@@ -1784,6 +1784,7 @@
 <translation id="9108312223223904744">ტელეფონის, როგორც უსაფრთხოების გასაღების, მხარდაჭერა</translation>
 <translation id="9108808586816295166">დაცული DNS შეიძლება ზოგჯერ მიუწვდომელი იყოს</translation>
 <translation id="910908805481542201">ამის მოგვარება მსურს</translation>
+<translation id="9130135798965366513">გასაგრძელებლად <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-ის მიერ ამ საიტთან გაზიარდება <ph name="FIELDS_STRING" />. გაეცანით ამ საიტის <ph name="BEGIN_LINK1" />კონფიდენციალურობის დებულებასა<ph name="END_LINK1" /> და <ph name="BEGIN_LINK2" />მომსახურების პირობებს<ph name="END_LINK2" />.</translation>
 <translation id="9131209053278896908">დაბლოკილი საიტები აქ გამოჩნდება</translation>
 <translation id="9133397713400217035">ხაზგარეშე რეჟიმში გაცნობა</translation>
 <translation id="9143389653531441385"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-ით რეგისტრაცია</translation>

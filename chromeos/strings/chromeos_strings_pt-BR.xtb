@@ -127,6 +127,7 @@
 <translation id="1567064801249837505">Álbuns</translation>
 <translation id="1572585716423026576">Definir como plano de fundo</translation>
 <translation id="1578784163189013834">Escolher o plano de fundo do protetor de tela</translation>
+<translation id="1587031308639983732">As mudanças baseadas em tempo podem não ser precisas. Essa configuração é gerenciada pelo administrador.</translation>
 <translation id="1588438908519853928">Normal</translation>
 <translation id="1591562245178063882">Este mês</translation>
 <translation id="1593528591614229756">Selecione os APNs fornecidos pela operadora ou pelo administrador. Selecionar um APN desativa todos os APNs personalizados. APNs inválidos podem interromper sua conexão móvel. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
@@ -342,6 +343,7 @@
 <translation id="2560876255701405320">Lista de gravações de áudio</translation>
 <translation id="2561093647892030937">limões-sicilianos</translation>
 <translation id="2570743873672969996">Executando o teste <ph name="TEST_NAME" />…</translation>
+<translation id="2573178735329662769">Gravando todo o áudio do Chromebook</translation>
 <translation id="2575552334616524665">Você pode ativar essa opção nas Configurações ou no menu <ph name="THREE_DOTS_MENU_ICON" /></translation>
 <translation id="2576253868710695442">Isso vai usar até 2 GB de armazenamento</translation>
 <translation id="2584547424703650812">Paisagens brilhantes</translation>
@@ -510,6 +512,7 @@
 <translation id="3588034708467091142">Confira sua conexão de Internet e tente de novo.</translation>
 <translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> é o nome fácil de usar de <ph name="APN_NAME" />.</translation>
 <translation id="3595596368722241419">Bateria carregada</translation>
+<translation id="3600063043775287169">Quando o áudio do Chromebook está ativado, o Gravador captura todo o áudio tocado no dispositivo. Confirme se você quer gravar todos os sons.</translation>
 <translation id="3600339377155080675">Espelhar tela</translation>
 <translation id="3602290021589620013">Visualizar</translation>
 <translation id="3603829704940252505">Avatar</translation>

@@ -78,6 +78,7 @@
 <translation id="1240638468526743569">приложение</translation>
 <translation id="1242198791279543032">Известията са спрени</translation>
 <translation id="1242883863226959074">устройството</translation>
+<translation id="1245476784081715330">Отлично!</translation>
 <translation id="1245644940275736236">Към Асистент</translation>
 <translation id="124678866338384709">Затваряне на текущия раздел</translation>
 <translation id="1246890715821376239">Неподдържани приложения</translation>
@@ -214,6 +215,7 @@
 <translation id="1703117532528082099">Активният прозорец е прикрепен отляво.</translation>
 <translation id="1708345662127501511">Работен кът: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Настройки за мрежата</translation>
+<translation id="171610090693716835">Не губете фокуса с персонализирани плейлисти за концентрация. Получете достъп до YouTube Music и YouTube без реклами с членство в YouTube Premium за 3 месеца без парично заплащане.</translation>
 <translation id="1719094688023114093">Функцията „Надписи на живо“ е включена.</translation>
 <translation id="1720011244392820496">Включване на функцията за синхронизиране на Wi-Fi</translation>
 <translation id="1720230731642245863">Точката за достъп е изключена</translation>
@@ -842,6 +844,7 @@
 <translation id="3958714870339660776">Целият ден</translation>
 <translation id="3962859241508114581">Предишен запис</translation>
 <translation id="3963124517343721543">Лесно продължавайте оттам, откъдето сте прекъснали, като отваряте предишните си прозорци и раздели. Ще виждате и персонализирани предложения за следващите действия.</translation>
+<translation id="396506362088290977">Тестване на звука от микрофона ви</translation>
 <translation id="3969043077941541451">Изключено</translation>
 <translation id="3970324493235864154">Преглед на известията на телефона ви</translation>
 <translation id="397105322502079400">Изчислява се...</translation>
@@ -899,6 +902,7 @@
 <translation id="4156293514828496577">Оставащият заряд на батерията е <ph name="PERCENTAGE" />% (около <ph name="TIME_LEFT" />).
 Някои функции са ограничени с цел удължаване на живота ѝ.</translation>
 <translation id="4160919062868802509">Открити са няколко аудиоизточника</translation>
+<translation id="416245495747357243">Готово!</translation>
 <translation id="4165275524535002941">Кабелът не поддържа видеосигнал</translation>
 <translation id="4177415338862979658">Кликнете, за да проверите за подробности</translation>
 <translation id="4177913004758410636">{0,plural, =1{Актуализирайте устройството в рамките на 1 ден}other{Актуализирайте устройството в рамките на # дни}}</translation>
@@ -984,6 +988,7 @@
 <translation id="4412944820643904175">„<ph name="FEATURE_NAME" />“ е изключено.</translation>
 <translation id="4417647906073317561">Настройки за режима за концентрация. Задайте таймер, задача и музика, за да се фокусирате.</translation>
 <translation id="4424159417645388645">Работен кът 5</translation>
+<translation id="4426817706804363424">Отлично!</translation>
 <translation id="4430019312045809116">Звук</translation>
 <translation id="4441283832827406317">Приложенията са сортирани по име</translation>
 <translation id="4445159312344259901">Влезте в профила си за откл.</translation>
@@ -1248,6 +1253,7 @@
 <translation id="5283198616748585639">Добавяне на 1 мин</translation>
 <translation id="528468243742722775">Край</translation>
 <translation id="5286194356314741248">Сканира се</translation>
+<translation id="528641622273682395">Превключване на тестването на микрофона</translation>
 <translation id="5297423144044956168">Няма намерени мобилни устройства</translation>
 <translation id="5297704307811127955">Изключено</translation>
 <translation id="5300589172476337783">Показване</translation>
@@ -1275,6 +1281,7 @@
 <translation id="536019650977002321">Администраторът ви не разрешава записване на аудио. За повече информация се обърнете към него.</translation>
 <translation id="5361524080961918551">Файловете за говор на <ph name="LANGUAGE" /> са изтеглени частично</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Към този раздел</translation>
+<translation id="5363835273551457276">Можете да тествате звука от микрофона си. Затворете панела, за да спрете.</translation>
 <translation id="5364693579536176785">място в хранилището</translation>
 <translation id="5369573834963677938">Функцията за контролиране с лице ще е достъпна за другите потребители на устройството</translation>
 <translation id="5369717264580061086">Визуализиране на файл в приложението „Файлове“</translation>
@@ -1408,6 +1415,7 @@
 <translation id="5777841717266010279">Да се спре ли споделянето на екрана?</translation>
 <translation id="5779721926447984944">Фиксирани файлове</translation>
 <translation id="5785221443435874078">Премахване на това предложение</translation>
+<translation id="5787431783058088906">Получете предимството</translation>
 <translation id="5788127256798019331">Файлове от Google Play</translation>
 <translation id="5788535737706478207">Повторно отваряне на последния затворен раздел или прозорец</translation>
 <translation id="5790085346892983794">Успех</translation>
@@ -1639,6 +1647,7 @@
 <translation id="6574587113394758819">Известие от <ph name="APP_TITLE" /> е скрито, тъй като защитата срещу надничане е включена</translation>
 <translation id="6574622320167699133">Отключено чрез телефона ви. Докоснете или кликнете, за да влезете.</translation>
 <translation id="6578407462441924264">Без име</translation>
+<translation id="6582012689384648647">За персонализирани плейлисти за концентрация разрешете достъп до YouTube Music</translation>
 <translation id="6582034443359256692">Нивото на заряда на батерията се изчислява.</translation>
 <translation id="6585808820553845416">Сесията приключва след <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
@@ -1877,6 +1886,7 @@
 <translation id="7477793887173910789">Управление на музиката, видеоклиповете и др.</translation>
 <translation id="7488762544858401571">Редактиран</translation>
 <translation id="7489261257412536105">Включване или изключване на режимa на цял екран</translation>
+<translation id="7490157877815329797">За да слушате музика без реклами и да се наслаждавате на персонализирана музика за концентрация, изпробвайте YouTube Music Premium</translation>
 <translation id="7490360161041035804">Можете да фиксирате важни файлове, включително такива в Google Диск. За да фиксирате елемент, задръжте курсора на мишката върху него или отворете „Файлове“ и кликнете с десния бутон на мишката върху елемента.</translation>
 <translation id="7497767806359279797">Избор на език и клавиатура</translation>
 <translation id="7507162824403726948">Завършете потвърждаването на самоличността си</translation>
@@ -2126,6 +2136,7 @@
 <translation id="8262312463845990408">Превключване на възпроизвеждането</translation>
 <translation id="8268302343625273732">Преглед на всички задачи в Google Classroom</translation>
 <translation id="8277261673056602147">Открояване на текста на екрана</translation>
+<translation id="8282784978194352587">Браво!</translation>
 <translation id="8287009018010202411">Продуктивност</translation>
 <translation id="828708037801473432">Изключено</translation>
 <translation id="8297006494302853456">Слаб</translation>
@@ -2151,6 +2162,7 @@
 <translation id="8380784334203145311">Добър вечер,</translation>
 <translation id="8382715499079447151">Защита срещу надничане</translation>
 <translation id="8383614331548401927">Приветствен обзор</translation>
+<translation id="838540623579162843">Достъп до Music Premium</translation>
 <translation id="8388750414311082622">Последният работен кът не може да бъде премахнат.</translation>
 <translation id="8394567579869570560">Родителят ви заключи това устройство</translation>
 <translation id="8401850874595457088">Отваряне на менюто с езици</translation>
@@ -2203,6 +2215,7 @@
 <translation id="8609384513243082612">Отваряне на нов раздел</translation>
 <translation id="861045123704058818">Приложенията временно са организирани по категория</translation>
 <translation id="8612216344243590325">Съхранявайте важните файлове в(ъв) <ph name="HOLDING_SPACE_TITLE" /> вместо на работния плот. Трябва само да ги преместите в(ъв) <ph name="HOLDING_SPACE_TITLE" />.</translation>
+<translation id="8612338981637220013">Вие сте във вихъра си!</translation>
 <translation id="8614517853887502247">Известията от <ph name="APP_1_TITLE" /> и <ph name="APP_2_TITLE" /> са скрити, тъй като защитата срещу надничане е включена</translation>
 <translation id="8615778328722901791">Отваряне на лентата с инструменти</translation>
 <translation id="8619000641825875669">OneDrive</translation>
@@ -2245,6 +2258,7 @@
 <translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />: Активира се...</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
+<translation id="8751299148074971734">Не спирайте!</translation>
 <translation id="8753368202781196133">Понастоящем този език не се поддържа.</translation>
 <translation id="8755498163081687682">Потвърждаване на самоличността ви: <ph name="ORIGIN_NAME" /> иска да потвърди, че това сте вие</translation>
 <translation id="875593634123171288">Показване на настройките за VPN</translation>

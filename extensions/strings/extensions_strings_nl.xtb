@@ -19,7 +19,6 @@
 <translation id="3115238746683532089">Onbekend product <ph name="PRODUCT_ID" /> van leverancier <ph name="VENDOR_ID" /> (serienummer <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">Vervangen van crx-bestand is mislukt. Controleer of het bestand wordt gebruikt.</translation>
 <translation id="3163201441334626963">Onbekend product <ph name="PRODUCT_ID" /> van leverancier <ph name="VENDOR_ID" /></translation>
-<translation id="3369521687965833290">Kan extensie niet uitpakken. Om een extensie beveiligd te kunnen uitpakken, moet er een pad naar je profieldirectory verwijzen dat begint met een schijfletter en geen koppeling, koppelpunt of symlink bevat. Een dergelijk pad bestaat niet voor je profiel.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (serienummer <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> van leverancier <ph name="VENDOR_ID" /> (serienummer <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Invoerwaarde voor persoonlijke sleutel moet een geldig pad zijn.</translation>
@@ -39,7 +38,6 @@
 <translation id="5972529113578162692">De beheerder van deze machine vereist dat <ph name="EXTENSION_NAME" /> wordt geïnstalleerd. Deze kan niet worden verwijderd.</translation>
 <translation id="6027032947578871493">Onbekend product <ph name="PRODUCT_ID" /> van <ph name="VENDOR_NAME" /> (serienummer <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" /> van leverancier <ph name="VENDOR_ID" /></translation>
-<translation id="6143635259298204954">Kan extensie niet uitpakken. Om een extensie beveiligd te kunnen uitpakken, moet er een pad naar je profieldirectory verwijzen dat geen symlink bevat. Een dergelijk pad bestaat niet voor je profiel.</translation>
 <translation id="6322279351188361895">Lezen van persoonlijke sleutel is mislukt.</translation>
 <translation id="6391538222494443604">Er moet een invoerdirectory zijn.</translation>
 <translation id="641087317769093025">Kan extensie niet uitpakken</translation>

@@ -55,7 +55,6 @@
 <translation id="3194464645767632461">評分</translation>
 <translation id="3275186015127230296">{NUMBER_OF_TABS_ADDED,plural, =1{已新增 <ph name="ONE_ADDED" /> 個分頁，<ph name="ANY_CHANGED" /> 個有變}other{已新增 <ph name="MANY_ADDED" /> 個分頁，<ph name="ANY_CHANGED" /> 個有變}}</translation>
 <translation id="3291470810748040983">當開啟的分頁中有產品降價，您就會收到通知</translation>
-<translation id="3322827343001922122">打開分頁群組「<ph name="TITLE_OF_GROUP" />」嘅操作選單</translation>
 <translation id="3328308545011660196">建議：似乎有 <ph name="NUMBER_OF_TABS" /> 個相關嘅分頁。要唔要將佢哋分組？</translation>
 <translation id="3547352561153509682">此操作會將群組從所有已登入 <ph name="USER_EMAIL" /> 的裝置刪除</translation>
 <translation id="3613492231657284463">隱藏閒置分頁對話框</translation>
@@ -104,7 +103,6 @@
 <translation id="5400836586163650660">灰色</translation>
 <translation id="5490235265819901748">展開咗分頁群組</translation>
 <translation id="5494920125229734069">全部選取</translation>
-<translation id="5549653163690032080">開啟共享分頁群組「<ph name="TITLE_OF_GROUP" />」的操作選單</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{閂有 <ph name="TABS_COUNT_ONE" /> 個分頁嘅分頁群組，顏色係<ph name="COLOR_NAME" />。}other{閂有 <ph name="TABS_COUNT_MANY" /> 個分頁嘅分頁群組，顏色係<ph name="COLOR_NAME" />。}}</translation>
 <translation id="5556417849629758491">商店資料同可用選項喺螢幕最頂嘅附近</translation>
 <translation id="5627941783489838464">沒有分頁更新</translation>

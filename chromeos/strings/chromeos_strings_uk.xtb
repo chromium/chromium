@@ -35,6 +35,7 @@
 <translation id="1155154308031262006">Введіть запит</translation>
 <translation id="115705039208660697">ананаси</translation>
 <translation id="1164939766849482256">Заставка "Від світанку до заходу сонця"</translation>
+<translation id="1166688493741195933">Не вдалося створити назви записів</translation>
 <translation id="1167755866710282443">Відкрийте меню, щоб налаштувати клавіші. Щоб перемістити меню, перетягніть його.</translation>
 <translation id="1171349345463658120">піщана лагуна</translation>
 <translation id="1173894706177603556">Перейменувати</translation>
@@ -126,6 +127,7 @@
 <translation id="1567064801249837505">Альбоми</translation>
 <translation id="1572585716423026576">Зробити фоновим малюнком</translation>
 <translation id="1578784163189013834">Вибрати фон для заставки</translation>
+<translation id="1587031308639983732">Зміни на основі часу можуть бути неточними. Цим налаштуванням керує адміністратор.</translation>
 <translation id="1588438908519853928">Звичайний</translation>
 <translation id="1591562245178063882">Цей місяць</translation>
 <translation id="1593528591614229756">Виберіть точки доступу (APN), надані вашим мобільним оператором або адміністратором. Якщо вибрати APN, усі спеціальні APN буде вимкнено. Недійсні APN можуть переривати роботу мобільної мережі. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
@@ -341,6 +343,7 @@
 <translation id="2560876255701405320">Список аудіозаписів</translation>
 <translation id="2561093647892030937">лимони</translation>
 <translation id="2570743873672969996">Тестування (<ph name="TEST_NAME" />)…</translation>
+<translation id="2573178735329662769">Записуватимуться всі звуки на Chromebook</translation>
 <translation id="2575552334616524665">Цю функцію можна ввімкнути в налаштуваннях або меню <ph name="THREE_DOTS_MENU_ICON" /></translation>
 <translation id="2576253868710695442">Потрібно до 2 ГБ пам’яті</translation>
 <translation id="2584547424703650812">Сяючі бачення</translation>
@@ -493,6 +496,7 @@
 <translation id="3502426834823382181">переглянути всі додатки</translation>
 <translation id="3510890413042482857">Надсилати <ph name="BEGIN_LINK1" />дані відстеження ефективності<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Оновлення ОС Chrome</translation>
+<translation id="3522508178835057262">Зараз підтримуються лише текстові версії, які містять щонайбільше таку кількість слів: <ph name="MAX_WORD_LENGTH" /></translation>
 <translation id="3527036260304016759">Не надруковано – невідома помилка</translation>
 <translation id="353214771040290298">Завершити редагування</translation>
 <translation id="3532980081107202182">Залишилося приблизно <ph name="MIN_REMAINING" /> хв</translation>
@@ -508,6 +512,7 @@
 <translation id="3588034708467091142">Переконайтеся, що пристрій підключено до Інтернету, і повторіть спробу.</translation>
 <translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> – зручна назва для додатка <ph name="APN_NAME" />.</translation>
 <translation id="3595596368722241419">Акумулятор заряджено</translation>
+<translation id="3600063043775287169">Якщо на пристрої Chromebook увімкнено аудіо, Диктофон записуватиме всі звуки, які на ньому відтворюються. Переконайтеся, що ви хочете записувати всі звуки.</translation>
 <translation id="3600339377155080675">Дзеркалювання екрана</translation>
 <translation id="3602290021589620013">Попередній перегляд</translation>
 <translation id="3603829704940252505">Аватар</translation>
@@ -710,6 +715,7 @@
 <translation id="4602266091140407479">Мікрофон</translation>
 <translation id="4607282946861182308">Не вдалося створити зображення за цим запитом. Спробуйте інший.</translation>
 <translation id="4609350030397390689">Зменшити яскравість клавіатури</translation>
+<translation id="4623061655523261501">Назви записів створено</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> з <ph name="TOTAL_PAGE_NUMBER" />. Натисніть Enter, щоб скасувати завдання друку.</translation>
 <translation id="463791356324567266">Сканування скасовується…</translation>
 <translation id="4644611440022666152">Увімкнути й завантажити</translation>
@@ -1042,6 +1048,8 @@
 <translation id="628726841779494414">Керуйте принтерами в налаштуваннях принтера</translation>
 <translation id="6292095526077353682">Показувати заставку під час заряджання пристрою</translation>
 <translation id="629550705077076970">зменшення яскравості клавіатури</translation>
+<translation id="6301193653204230066">Ця функція вимикає розширення вебпереглядача Chrome і відновлює мережеві й інші налаштування за умовчанням.
+          Файли, вкладки, файли cookie й історія не зміняться.</translation>
 <translation id="6302401976930124515">Тест "<ph name="TEST_NAME" />" скасовано</translation>
 <translation id="631063167932043783">Додаток Можливості</translation>
 <translation id="6318437367327684789">завжди</translation>
@@ -1051,6 +1059,7 @@
 <translation id="6325525973963619867">Помилка</translation>
 <translation id="6327262166342360252">Цей фоновий малюнок створено за допомогою ШІ на основі такого тексту: "<ph name="PROMPT" />".</translation>
 <translation id="6331191339300272798">Автоматична темна тема</translation>
+<translation id="6335228876613776082">Модель завантажено</translation>
 <translation id="6340526405444716530">Персоналізація</translation>
 <translation id="6348252528297699679">Доступ до геоданих можна вимкнути в розділі "Налаштування" &gt; "Конфіденційність і безпека" &gt; "Налаштування конфіденційності" &gt; "Доступ до геоданих". <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">Ім’я користувача й пароль</translation>
@@ -1158,6 +1167,7 @@
 <translation id="6831043979455480757">Перекласти</translation>
 <translation id="6846843854964504403">Відновити безпечні налаштування</translation>
 <translation id="6853312040151791195">Швидкість розряджання</translation>
+<translation id="6862228900689076919">Цією функцією керує адміністратор</translation>
 <translation id="6862416241246624313">Відгук надіслано</translation>
 <translation id="6866732840889595464">маргаритка</translation>
 <translation id="6871256179359663621">світло-фіолетовий</translation>
@@ -1212,6 +1222,7 @@
 <translation id="708426984172631313">ЗУПИНЕНО</translation>
 <translation id="7086168019478250425">біолюмінесцентний пляж</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="7086916854357021265">Створення назв записів</translation>
 <translation id="7097908713073775559">барвистих</translation>
 <translation id="710028965487274708">Не вдалося – помилка авторизації</translation>
 <translation id="7101959270679078188">Щоб продовжити оновлення, розблокуйте пристрій <ph name="DEVICE_NAME" /></translation>
@@ -1544,6 +1555,7 @@
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Альбом Google Фото</translation>
 <translation id="8775713578693478175">APN модема</translation>
+<translation id="877735394245039557">Модель завантажується</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Можливо, для цієї мережі використовується адаптивний портал</translation>
 <translation id="8797082062139985406">Створити назву за допомогою ШІ від Google</translation>

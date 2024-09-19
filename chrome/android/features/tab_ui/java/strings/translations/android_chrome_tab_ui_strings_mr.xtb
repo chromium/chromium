@@ -55,7 +55,6 @@
 <translation id="3194464645767632461">रेटिंग</translation>
 <translation id="3275186015127230296">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> टॅब जोडला, <ph name="ANY_CHANGED" /> बदलला}other{<ph name="MANY_ADDED" /> टॅब जोडले, <ph name="ANY_CHANGED" /> बदलले}}</translation>
 <translation id="3291470810748040983">उघड्या टॅबमध्ये किंमत कमी असताना तुम्हाला सूचना मिळेल</translation>
-<translation id="3322827343001922122"><ph name="TITLE_OF_GROUP" /> टॅब गटासाठी टॅब गट अ‍ॅक्‍शन मेनू उघडा</translation>
 <translation id="3328308545011660196">सूचना: <ph name="NUMBER_OF_TABS" /> टॅब संबंधित वाटतात. त्यांचा गट बनवायचा का?</translation>
 <translation id="3547352561153509682">हे <ph name="USER_EMAIL" /> मध्ये साइन इन केलेल्या सर्व डिव्हासवरून गट हटवेल</translation>
 <translation id="3613492231657284463">इनॅक्टिव्ह टॅब डायलॉग लपवा</translation>
@@ -104,7 +103,6 @@
 <translation id="5400836586163650660">राखाडी</translation>
 <translation id="5490235265819901748">टॅब गटाचा विस्तार केला आहे</translation>
 <translation id="5494920125229734069">सर्व निवडा</translation>
-<translation id="5549653163690032080">शेअर केलेल्या टॅब गटासाठी <ph name="TITLE_OF_GROUP" /> टॅब गट अ‍ॅक्‍शन मेनू उघडा</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{टॅब गट <ph name="TABS_COUNT_ONE" /> टॅब, <ph name="COLOR_NAME" /> रंग वापरून बंद करा.}other{टॅब गट <ph name="TABS_COUNT_MANY" /> टॅब, <ph name="COLOR_NAME" /> रंग वापरून बंद करा.}}</translation>
 <translation id="5556417849629758491">स्टोअरची माहिती पहा, पर्याय स्क्रीनच्या सर्वात वर उपलब्ध आहे</translation>
 <translation id="5627941783489838464">टॅब अपडेट नाहीत</translation>

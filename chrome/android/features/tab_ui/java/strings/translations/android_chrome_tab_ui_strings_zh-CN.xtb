@@ -55,7 +55,6 @@
 <translation id="3194464645767632461">评分</translation>
 <translation id="3275186015127230296">{NUMBER_OF_TABS_ADDED,plural, =1{已添加 <ph name="ONE_ADDED" /> 个标签页，已更改 <ph name="ANY_CHANGED" /> 个标签页}other{已添加 <ph name="MANY_ADDED" /> 个标签页，已更改 <ph name="ANY_CHANGED" /> 个标签页}}</translation>
 <translation id="3291470810748040983">当某个已打开的标签页中有商品降价时，您会收到提醒</translation>
-<translation id="3322827343001922122">打开标签页分组“<ph name="TITLE_OF_GROUP" />”的操作菜单</translation>
 <translation id="3328308545011660196">建议：有 <ph name="NUMBER_OF_TABS" /> 个标签页似乎彼此相关。为它们建组？</translation>
 <translation id="3547352561153509682">此操作会从已登录 <ph name="USER_EMAIL" /> 的所有设备中删除该分组</translation>
 <translation id="3613492231657284463">“隐藏闲置标签页”对话框</translation>
@@ -104,7 +103,6 @@
 <translation id="5400836586163650660">灰色</translation>
 <translation id="5490235265819901748">已展开标签页组</translation>
 <translation id="5494920125229734069">全选</translation>
-<translation id="5549653163690032080">打开“<ph name="TITLE_OF_GROUP" />”分享标签页分组的操作菜单</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{关闭包含 <ph name="TABS_COUNT_ONE" /> 个标签页的标签页分组，颜色为<ph name="COLOR_NAME" />。}other{关闭包含 <ph name="TABS_COUNT_MANY" /> 个标签页的标签页分组，颜色为<ph name="COLOR_NAME" />。}}</translation>
 <translation id="5556417849629758491">查看商店信息，屏幕顶部附近有可用选项</translation>
 <translation id="5627941783489838464">无标签页更新</translation>

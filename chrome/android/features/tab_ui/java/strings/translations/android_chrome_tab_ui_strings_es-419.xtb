@@ -55,7 +55,6 @@
 <translation id="3194464645767632461">calificación</translation>
 <translation id="3275186015127230296">{NUMBER_OF_TABS_ADDED,plural, =1{Pestañas agregadas: <ph name="ONE_ADDED" />; pestañas modificadas: <ph name="ANY_CHANGED" />}other{Pestañas agregadas: <ph name="MANY_ADDED" />; pestañas modificadas: <ph name="ANY_CHANGED" />}}</translation>
 <translation id="3291470810748040983">Recibirás una alerta cuando baje el precio de uno de los artículos de las pestañas abiertas.</translation>
-<translation id="3322827343001922122">Abrir el menú de acciones del grupo de pestañas <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3328308545011660196">Sugerencia: <ph name="NUMBER_OF_TABS" /> pestañas parecen estar relacionadas. ¿Deseas agruparlas?</translation>
 <translation id="3547352561153509682">Esta acción borrará el grupo de todos los dispositivos en los que accediste a <ph name="USER_EMAIL" /></translation>
 <translation id="3613492231657284463">Ocultar el diálogo de pestañas inactivas</translation>
@@ -104,7 +103,6 @@
 <translation id="5400836586163650660">Gris</translation>
 <translation id="5490235265819901748">Se expandió el grupo de pestañas</translation>
 <translation id="5494920125229734069">Seleccionar todo</translation>
-<translation id="5549653163690032080">Abrir el menú de acciones del grupo de pestañas compartido <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Cerrar el grupo de pestañas con <ph name="TABS_COUNT_ONE" /> pestaña, en color <ph name="COLOR_NAME" />.}other{Cerrar el grupo de pestañas con <ph name="TABS_COUNT_MANY" /> pestañas, en color <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">Ver información de la tienda (la opción está disponible cerca de la parte superior de la pantalla)</translation>
 <translation id="5627941783489838464">No hay actualizaciones de pestañas</translation>

@@ -343,6 +343,7 @@
 <translation id="2560876255701405320">अडियो रेकर्डिङहरूको सूची</translation>
 <translation id="2561093647892030937">कागतीहरू</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> परीक्षण गरिँदै छ...</translation>
+<translation id="2573178735329662769">Chromebook का सबै अडियो रेकर्ड गरिँदै छ</translation>
 <translation id="2575552334616524665">तपाईं सेटिङ वा <ph name="THREE_DOTS_MENU_ICON" /> मेनुमा गई यसलाई अन गर्न सक्नुहुन्छ</translation>
 <translation id="2576253868710695442">यसले भण्डारणमा बढीमा २ जि.बि. ठाउँ ओगट्ने छ</translation>
 <translation id="2584547424703650812">ग्लोस्केप</translation>
@@ -511,6 +512,7 @@
 <translation id="3588034708467091142">तपाईंको डिभाइस इन्टरनेटमा कनेक्ट गरिएको छ भन्ने कुरा सुनिश्चित गर्नुहोस् र फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> भनेको <ph name="APN_NAME" /> को प्रयोगकर्ता मैत्री नाम हो।</translation>
 <translation id="3595596368722241419">ब्यटरी पूर्ण</translation>
+<translation id="3600063043775287169">Chromebook को अडियो अन हुँदा रेकर्डरले यो डिभाइसमा प्ले हुने सबै अडियो रेकर्ड गर्छ। तपाईं सबै आवाज रेकर्ड गर्न चाहनुहुन्छ भन्ने कुरा सुनिश्चित गर्नुहोस्।</translation>
 <translation id="3600339377155080675">स्क्रिन मिरर</translation>
 <translation id="3602290021589620013">प्रिभ्यु गर्नुहोस्</translation>
 <translation id="3603829704940252505">अवतार</translation>

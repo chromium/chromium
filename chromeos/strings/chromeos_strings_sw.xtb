@@ -127,6 +127,7 @@
 <translation id="1567064801249837505">Albamu</translation>
 <translation id="1572585716423026576">Weka kama mandhari</translation>
 <translation id="1578784163189013834">Chagua mandharinyuma ya taswira ya skrini</translation>
+<translation id="1587031308639983732">Huenda mabadiliko kulingana na wakati yasiwe sahihi. Mipangilio hii inadhibitiwa na msimamizi wako.</translation>
 <translation id="1588438908519853928">Ya kawaida</translation>
 <translation id="1591562245178063882">Mwezi huu</translation>
 <translation id="1593528591614229756">Hakikisha unachagua APN zilizotolewa na mtoa huduma za vifaa vya mkononi au msimamizi wako. Kuchagua APN kutazima APN zozote maalum. Huenda APN zisizo sahihi zikakatiza muunganisho wako wa mtandao wa simu. <ph name="LINK_BEGIN" />Pata maelezo zaidi<ph name="LINK_END" /></translation>
@@ -1047,6 +1048,8 @@
 <translation id="628726841779494414">Dhibiti printa zako kwenye mipangilio ya printa</translation>
 <translation id="6292095526077353682">Wakati inachaji, onyesha taswira ya skrini ya</translation>
 <translation id="629550705077076970">kupunguza mwangaza wa kibodi</translation>
+<translation id="6301193653204230066">Hatua ya kuweka upya mipangilio salama huzima viendelezi vya kivinjari cha Chrome na kurejesha mipangilio salama chaguomsingi ya mtandao na mingineyo.
+          Haitabadilisha vichupo, faili, vidakuzi na historia yako.</translation>
 <translation id="6302401976930124515">Jaribio la <ph name="TEST_NAME" /> limeghairiwa</translation>
 <translation id="631063167932043783">Programu ya Gundua</translation>
 <translation id="6318437367327684789">wakati wote</translation>
@@ -1056,6 +1059,7 @@
 <translation id="6325525973963619867">Imeshindwa</translation>
 <translation id="6327262166342360252">Mandhari haya yalitayarishwa na AI kwa kutumia maandishi yafuatayo: "<ph name="PROMPT" />."</translation>
 <translation id="6331191339300272798">Mandhari meusi yanayowekwa kiotomatiki</translation>
+<translation id="6335228876613776082">Imemaliza kupakua mfumo</translation>
 <translation id="6340526405444716530">Mapendeleo</translation>
 <translation id="6348252528297699679">Unaweza kuzima mipangilio ya mahali kwenye Mipangilio &gt; Faragha na usalama &gt; Vidhibiti vya faragha &gt; Ufikiaji wa data ya mahali. <ph name="LINK_BEGIN" />Pata maelezo zaidi<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">Jina la mtumiaji na nenosiri</translation>
@@ -1163,6 +1167,7 @@
 <translation id="6831043979455480757">Tafsiri</translation>
 <translation id="6846843854964504403">Uwekaji upya wa mipangilio salama</translation>
 <translation id="6853312040151791195">Kasi ya kutumia chaji</translation>
+<translation id="6862228900689076919">Kipengele hiki kinadhibitiwa na msimamizi wako</translation>
 <translation id="6862416241246624313">Maoni yametumwa</translation>
 <translation id="6866732840889595464">ua la daisy</translation>
 <translation id="6871256179359663621">rangi ya zambarau isiyokolea</translation>
@@ -1550,6 +1555,7 @@ Pakua mfumo wa unukuzi (hadi MB 100) ili upate manukuu haya.</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Albamu ya Picha kwenye Google</translation>
 <translation id="8775713578693478175">APN ya modemu</translation>
+<translation id="877735394245039557">Inaendelea kupakua mfumo</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Huenda mtandao huu una ukurasa wa mwanzo</translation>
 <translation id="8797082062139985406">Buni jina ukitumia Google AI</translation>

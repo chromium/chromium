@@ -35,6 +35,7 @@
 <translation id="1155154308031262006">Внесете барање</translation>
 <translation id="115705039208660697">ананаси</translation>
 <translation id="1164939766849482256">Штедач на екран Dawn to dark</translation>
+<translation id="1166688493741195933">Не можеше да се генерираат имиња на снимката</translation>
 <translation id="1167755866710282443">Отворете го менито за приспособување на клучевите. Повлечете го менито за преместување.</translation>
 <translation id="1171349345463658120">песочна лагуна</translation>
 <translation id="1173894706177603556">Преименувај</translation>
@@ -154,6 +155,7 @@
 <translation id="1672499492233627739">Видеоактивност на веб-камерата</translation>
 <translation id="1676557873873341166">Снимање видео</translation>
 <translation id="1684279041537802716">Боја за нагласување</translation>
+<translation id="1697278726914783200">Снимај</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Има DNS-одредувач</translation>
 <translation id="1708602061922134366">Син како Google</translation>
@@ -340,6 +342,7 @@
 <translation id="2560876255701405320">Список со аудиоснимки</translation>
 <translation id="2561093647892030937">лимони</translation>
 <translation id="2570743873672969996">Се извршува тест за <ph name="TEST_NAME" />…</translation>
+<translation id="2573178735329662769">Снимање на секое аудио на Chromebook</translation>
 <translation id="2575552334616524665">Ова може да го вклучите во „Поставки“ или менито <ph name="THREE_DOTS_MENU_ICON" /></translation>
 <translation id="2576253868710695442">Ова ќе зафати простор од 2 GB</translation>
 <translation id="2584547424703650812">Сјајни пејзажи</translation>
@@ -492,6 +495,7 @@
 <translation id="3502426834823382181">прикажи ги сите апликации</translation>
 <translation id="3510890413042482857">Испрати <ph name="BEGIN_LINK1" />податоци во траги за учинок<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Ажурирање на Chrome OS</translation>
+<translation id="3522508178835057262">Засега, не е поддржана транскрипција со повеќе од <ph name="MAX_WORD_LENGTH" /> збора</translation>
 <translation id="3527036260304016759">Неуспешно - непозната грешка</translation>
 <translation id="353214771040290298">Изменувањето е готово</translation>
 <translation id="3532980081107202182">Преостануваат околу <ph name="MIN_REMAINING" /> мин.</translation>
@@ -507,6 +511,7 @@
 <translation id="3588034708467091142">Погрижете се да бидете поврзани на интернет, па обидете се повторно.</translation>
 <translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> е име лесно за користење за <ph name="APN_NAME" />.</translation>
 <translation id="3595596368722241419">Батеријата е полна</translation>
+<translation id="3600063043775287169">Кога е вклучено аудиото на Chromebook, „Диктафон“ го снима секое аудио што се пушта на уредов. Потврдете дека сакате да се снимаат сите звуци.</translation>
 <translation id="3600339377155080675">Отсликување на екранот</translation>
 <translation id="3602290021589620013">Преглед</translation>
 <translation id="3603829704940252505">Аватар</translation>
@@ -706,8 +711,10 @@
 <translation id="458794348635939462">Неуспешно отворање на сите хостови</translation>
 <translation id="4593212453765072419">Потребна е проверка на прокси</translation>
 <translation id="4594021849294327751">Создавај транскрипција</translation>
+<translation id="4602266091140407479">Микрофон</translation>
 <translation id="4607282946861182308">Не може да се создадат слики од ова. Обидете се со друго барање.</translation>
 <translation id="4609350030397390689">Осветленоста на тастатурата се намали</translation>
+<translation id="4623061655523261501">Имињата на снимката се генерирани успешно</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> од <ph name="TOTAL_PAGE_NUMBER" />. Притиснете Enter за да го откажете налогот за печатење.</translation>
 <translation id="463791356324567266">Се откажува скенирањето…</translation>
 <translation id="4644611440022666152">Вклучи и преземи</translation>
@@ -1018,6 +1025,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6188737759358894319">Создадено на <ph name="DATE" /></translation>
 <translation id="6189418609903030344">Капацитетот на батеријата се намалува со користењето</translation>
+<translation id="6189987971574353264">Пушти</translation>
 <translation id="6191293864534840972">Неправилно форматирани сервери за име</translation>
 <translation id="6196607555925437199">Создај повторно</translation>
 <translation id="6205145102504628069">Cloud Flow</translation>
@@ -1039,6 +1047,8 @@
 <translation id="628726841779494414">Управувајте со печатачите во поставките за печатачи</translation>
 <translation id="6292095526077353682">При полнење, прикажувај „Штедач на екран“</translation>
 <translation id="629550705077076970">затемнување на тастатурата</translation>
+<translation id="6301193653204230066">„Ресетирањето за безбедност“ ги исклучува екстензиите на прелистувачот Chrome и ги ресетира мрежните и другите поставки на безбедни стандардни поставки.
+          Вашите картички, датотеки, колачиња и историја нема да се променат.</translation>
 <translation id="6302401976930124515">Тестот за <ph name="TEST_NAME" /> е откажан</translation>
 <translation id="631063167932043783">Апликација Explore</translation>
 <translation id="6318437367327684789">засекогаш</translation>
@@ -1048,6 +1058,7 @@
 <translation id="6325525973963619867">Неуспешно</translation>
 <translation id="6327262166342360252">Тапетов е создаден со AI со следниов текст: „<ph name="PROMPT" />“.</translation>
 <translation id="6331191339300272798">Автоматска темна тема</translation>
+<translation id="6335228876613776082">Преземањето на моделот заврши</translation>
 <translation id="6340526405444716530">Персонализација</translation>
 <translation id="6348252528297699679">Локацијата може да ја исклучите во „Поставки &gt; Приватност и безбедност &gt; Контроли на приватноста &gt; Пристап до локацијата“. <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">Корисничко име и лозинка</translation>
@@ -1166,7 +1177,7 @@
 <translation id="6910312834584889076">Капакот на скенерот е отворен. Затворете го и обидете се повторно.</translation>
 <translation id="6910845598686542904">за да пресметува модели на гласовите откриени на снимката</translation>
 <translation id="6911383237894364323">Не може да се поврзе со серверите за аудиовизуелни содржини</translation>
-<translation id="6927968682840110570">Име на снимка</translation>
+<translation id="6927968682840110570">Име на снимката</translation>
 <translation id="6930242544192836755">Времетраење</translation>
 <translation id="6930597342185648547">За заднината</translation>
 <translation id="6939667434404433010">Пребарајте го името на снимката</translation>
@@ -1209,6 +1220,7 @@
 <translation id="708426984172631313">СОПРЕНО</translation>
 <translation id="7086168019478250425">биолуминисцентна плажа</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="7086916854357021265">Се генерираат имиња на снимката</translation>
 <translation id="7097908713073775559">живописни</translation>
 <translation id="710028965487274708">Неуспешно - Авторизацијата не успеа</translation>
 <translation id="7101959270679078188">Отклучете го уредот <ph name="DEVICE_NAME" /> за да продолжите со процесот на ажурирање</translation>
@@ -1541,6 +1553,7 @@
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Албум на „Фотографии на Google“</translation>
 <translation id="8775713578693478175">Модерно APN</translation>
+<translation id="877735394245039557">Преземањето на моделот е во тек</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Мрежава можеби има портал за проверка</translation>
 <translation id="8797082062139985406">Создај име со Google AI</translation>

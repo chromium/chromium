@@ -55,7 +55,6 @@
 <translation id="3194464645767632461">gradering</translation>
 <translation id="3275186015127230296">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> oortjie is bygevoeg, <ph name="ANY_CHANGED" /> is verander}other{<ph name="MANY_ADDED" /> oortjies is bygevoeg, <ph name="ANY_CHANGED" /> is verander}}</translation>
 <translation id="3291470810748040983">Jy sal 'n opletberig kry wanneer daar 'n laer prys in 'n oop oortjie is</translation>
-<translation id="3322827343001922122">Maak die oortjiegroep se handelingkieslys oop vir oortjiegroep <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3328308545011660196">Voorstel: <ph name="NUMBER_OF_TABS" /> oortjies lyk of hulle verwant is. Groepeer hulle?</translation>
 <translation id="3547352561153509682">Dit sal die groep van alle toestelle af uitvee wat by <ph name="USER_EMAIL" /> aangemeld is</translation>
 <translation id="3613492231657284463">Versteek Onaktiewe Oortjies-dialoog</translation>
@@ -104,7 +103,6 @@
 <translation id="5400836586163650660">Grys</translation>
 <translation id="5490235265819901748">Oortjiegroep is uitgevou</translation>
 <translation id="5494920125229734069">Kies almal</translation>
-<translation id="5549653163690032080">Maak die oortjiegroep se handelingkieslys oop vir gedeelde oortjiegroep <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Maak oortjiegroep met <ph name="TABS_COUNT_ONE" /> oortjie, kleur <ph name="COLOR_NAME" /> toe.}other{Maak oortjiegroep met <ph name="TABS_COUNT_MANY" /> oortjies, kleur <ph name="COLOR_NAME" /> toe.}}</translation>
 <translation id="5556417849629758491">Bekyk winkelinligting; opsie beskikbaar naby bokant van die skerm</translation>
 <translation id="5627941783489838464">Geen oortjie-opdaterings nie</translation>

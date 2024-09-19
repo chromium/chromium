@@ -35,6 +35,7 @@
 <translation id="1155154308031262006">Увядзіце запыт</translation>
 <translation id="115705039208660697">ананасы</translation>
 <translation id="1164939766849482256">Застаўка "Ад відна да цямна"</translation>
+<translation id="1166688493741195933">Не ўдалося стварыць назвы запісаў</translation>
 <translation id="1167755866710282443">Адкрыйце меню, каб наладзіць клавішы. Перацягніце меню для перамяшчэння.</translation>
 <translation id="1171349345463658120">пясчаная лагуна</translation>
 <translation id="1173894706177603556">Перайменаваць</translation>
@@ -341,6 +342,7 @@
 <translation id="2560876255701405320">Спіс аўдыязапісаў</translation>
 <translation id="2561093647892030937">лімоны</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> праходзіць праверку...</translation>
+<translation id="2573178735329662769">Запіс усяго аўдыя Chromebook</translation>
 <translation id="2575552334616524665">Гэту функцыю заўсёды можна выключыць у наладах або ў меню <ph name="THREE_DOTS_MENU_ICON" /></translation>
 <translation id="2576253868710695442">Для мадэлі патрабуецца 2 ГБ у сховішчы</translation>
 <translation id="2584547424703650812">Зіхатлівыя краявіды</translation>
@@ -493,6 +495,7 @@
 <translation id="3502426834823382181">паглядзець усе праграмы</translation>
 <translation id="3510890413042482857">Адпраўляць <ph name="BEGIN_LINK1" />даныя адсочвання прадукцыйнасці<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Абнаўленне Chrome OS</translation>
+<translation id="3522508178835057262">Пакуль што расшыфроўка з колькасцю слоў больш за <ph name="MAX_WORD_LENGTH" /> не падтрымліваецца</translation>
 <translation id="3527036260304016759">Збой: невядомая памылка</translation>
 <translation id="353214771040290298">Гатова</translation>
 <translation id="3532980081107202182">Прыблізны час да завяршэння: <ph name="MIN_REMAINING" /> хв</translation>
@@ -508,6 +511,7 @@
 <translation id="3588034708467091142">Пераканайцеся, што вы падключаны да інтэрнэту, і паўтарыце спробу.</translation>
 <translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> – гэта зручная ў выкарыстанні назва пункта доступу "<ph name="APN_NAME" />".</translation>
 <translation id="3595596368722241419">Акумулятар поўнасцю зараджаны</translation>
+<translation id="3600063043775287169">Калі аўдыя Chromebook уключана, дыктафон запісвае ўсё аўдыя, якое прайграецца на прыладзе. Пераканайцеся, што вы не супраць запісу ўсіх гукаў.</translation>
 <translation id="3600339377155080675">Дубліраваць экран</translation>
 <translation id="3602290021589620013">Перадпрагляд</translation>
 <translation id="3603829704940252505">Аватар</translation>
@@ -710,6 +714,7 @@
 <translation id="4602266091140407479">Мікрафон</translation>
 <translation id="4607282946861182308">Не ўдалося стварыць патрэбныя відарысы. Паспрабуйце выкарыстаць іншы запыт.</translation>
 <translation id="4609350030397390689">Паменшыць яркасць клавіятуры</translation>
+<translation id="4623061655523261501">Назвы запісаў створаны</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> з <ph name="TOTAL_PAGE_NUMBER" />. Каб скасаваць заданне друку, націсніце Enter.</translation>
 <translation id="463791356324567266">Сканіраванне скасоўваецца…</translation>
 <translation id="4644611440022666152">Уключыць і спампаваць</translation>
@@ -1042,6 +1047,8 @@
 <translation id="628726841779494414">Вы можаце кіраваць прынтарамі ў адпаведных наладах</translation>
 <translation id="6292095526077353682">Падчас зарадкі паказваць застаўку</translation>
 <translation id="629550705077076970">зацямненне клавіятуры</translation>
+<translation id="6301193653204230066">Пашырэнні ў браўзеры Chrome будуць адключаны, а налады сеткі і іншыя налады скінуты да бяспечных стандартных значэнняў.
+          Гэта не паўплывае на вашы ўкладкі, файлы (у тым ліку файлы cookie) і гісторыю.</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" />: тэст скасаваны</translation>
 <translation id="631063167932043783">Праграма "Агляд"</translation>
 <translation id="6318437367327684789">назаўжды</translation>
@@ -1051,6 +1058,7 @@
 <translation id="6325525973963619867">Збой</translation>
 <translation id="6327262166342360252">Гэтыя шпалеры былі створаны з дапамогай штучнага інтэлекту па наступным запыце: "<ph name="PROMPT" />".</translation>
 <translation id="6331191339300272798">Аўтаматычнае ўключэнне цёмнай тэмы</translation>
+<translation id="6335228876613776082">Спампоўванне мадэлі завершана</translation>
 <translation id="6340526405444716530">Персаналізацыя</translation>
 <translation id="6348252528297699679">Для выключэння вызначэння месцазнаходжання неабходна перайсці ў раздзел "Налады &gt; Прыватнасць і бяспека &gt; Налады прыватнасці &gt; Доступ да месцазнаходжання". <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">Імя карыстальніка і пароль</translation>
@@ -1212,6 +1220,7 @@
 <translation id="708426984172631313">СПЫНЕНА</translation>
 <translation id="7086168019478250425">біялюмінесцэнтны пляж</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="7086916854357021265">Ідзе стварэнне назваў запісаў</translation>
 <translation id="7097908713073775559">рознакаляровы</translation>
 <translation id="710028965487274708">Збой: памылка аўтарызацыі</translation>
 <translation id="7101959270679078188">Каб працягнуць абнаўленне, разблакіруйце прыладу "<ph name="DEVICE_NAME" />"</translation>
@@ -1542,6 +1551,7 @@
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Альбом Google Фота</translation>
 <translation id="8775713578693478175">APN мадэма</translation>
+<translation id="877735394245039557">Ідзе спампоўванне мадэлі</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Гэта сетка можа мець партал узаемадзеяння</translation>
 <translation id="8797082062139985406">Згенерыраваць назву з дапамогай штучнага інтэлекту ад Google</translation>

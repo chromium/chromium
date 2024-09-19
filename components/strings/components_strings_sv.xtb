@@ -2000,6 +2000,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="467662567472608290">Servern kunde inte bevisa att den är <ph name="DOMAIN" /> eftersom dess säkerhetscertifikat innehåller fel. Detta kan orsakas av en felaktig konfigurering eller att någon spärrar anslutningen.</translation>
 <translation id="4677585247300749148"><ph name="URL" /> vill svara på tillgänglighetshändelser</translation>
 <translation id="467809019005607715">Google Presentationer</translation>
+<translation id="4678379207584374453"><ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="4682496302933121474">Vill du översätta sidan?</translation>
 <translation id="468314109939257734">Visa ditt virtuella kortnummer</translation>
 <translation id="4686942373615810936">Skapades just nu</translation>
@@ -2133,7 +2134,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="4901778704868714008">Spara …</translation>
 <translation id="4901952598169637881">Vardagsskor</translation>
 <translation id="4905659621780993806">Administratören startar om enheten automatiskt kl. <ph name="TIME" /> den <ph name="DATE" />. Spara det som du har öppet innan enheten startas om.</translation>
-<translation id="4913784027728226227">Verifiera din identitet om du vill spara och använda det här lösenordet på alla dina enheter</translation>
 <translation id="4913987521957242411">Häfta uppe till vänster</translation>
 <translation id="4916389289686916969">Reality-tv</translation>
 <translation id="4917064667437236721">Bildcylinder</translation>

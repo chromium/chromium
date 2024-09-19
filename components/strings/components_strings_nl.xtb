@@ -1994,6 +1994,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="467662567472608290">De server kan niet bewijzen dat dit <ph name="DOMAIN" /> is. Het beveiligingscertificaat van de server bevat fouten. Dit kan worden veroorzaakt door een verkeerde configuratie of een aanvaller die je verbinding onderschept.</translation>
 <translation id="4677585247300749148"><ph name="URL" /> wil reageren op toegankelijkheidsfunctionaliteit</translation>
 <translation id="467809019005607715">Google Presentaties</translation>
+<translation id="4678379207584374453"><ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="4682496302933121474">Pagina vertalen?</translation>
 <translation id="468314109939257734">Bekijk je virtuele kaartnummer</translation>
 <translation id="4686942373615810936">Zojuist gemaakt</translation>
@@ -2127,7 +2128,6 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="4901778704868714008">Opslaan…</translation>
 <translation id="4901952598169637881">Vrijetijdsschoenen</translation>
 <translation id="4905659621780993806">Je beheerder start het apparaat op <ph name="DATE" /> om <ph name="TIME" /> automatisch opnieuw op. Sla alle geopende items op voordat je apparaat opnieuw wordt opgestart.</translation>
-<translation id="4913784027728226227">Laat verifiëren dat jij het bent om dit wachtwoord op al je apparaten op te slaan en te gebruiken</translation>
 <translation id="4913987521957242411">Perforatie linksboven</translation>
 <translation id="4916389289686916969">Tv-realityseries</translation>
 <translation id="4917064667437236721">Beeldcilinder</translation>
@@ -3130,6 +3130,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="6767985426384634228">Adres updaten?</translation>
 <translation id="6770747695101757579">Papier (katoen)</translation>
 <translation id="677257480647123231">Internetveiligheid van kinderen</translation>
+<translation id="6772959465807028761">Ga door met je Google-account om YouTube te gebruiken</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">YouTube gebruiken met de keuzes van je ouder</translation>
 <translation id="6779348349813025131">Google Wachtwoordmanager heeft toegang tot macOS-sleutelhanger nodig</translation>
@@ -4297,6 +4298,7 @@ Aanvullende informatie:
 <translation id="8891727572606052622">Ongeldige proxymodus.</translation>
 <translation id="8894794286471754040">Lange zijde eerst</translation>
 <translation id="8895334001368918465">Als je een andere service voor automatisch invullen wilt gebruiken in Chrome, zet je deze aan in de Android-instellingen en hier</translation>
+<translation id="8897221284075091877">Ga verder met je Google-account om te vragen of je deze content kunt bekijken</translation>
 <translation id="8897428486789851669">Zwemmen</translation>
 <translation id="8899807382908246773">Opdringerige advertenties</translation>
 <translation id="8903921497873541725">Inzoomen</translation>

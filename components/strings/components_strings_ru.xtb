@@ -1999,6 +1999,7 @@
 <translation id="467662567472608290">Не удалось подтвердить, что это сервер <ph name="DOMAIN" />. Его сертификат безопасности содержит ошибки. Возможно, сервер настроен неправильно или кто-то пытается перехватить ваши данные.</translation>
 <translation id="4677585247300749148">Сайт <ph name="URL" /> запрашивает доступ к специальным возможностям.</translation>
 <translation id="467809019005607715">Google Презентации</translation>
+<translation id="4678379207584374453"><ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="4682496302933121474">Перевести эту страницу?</translation>
 <translation id="468314109939257734">Посмотреть номер своей виртуальной карты</translation>
 <translation id="4686942373615810936">Создано только что</translation>
@@ -2132,7 +2133,6 @@
 <translation id="4901778704868714008">Сохранить</translation>
 <translation id="4901952598169637881">Повседневная обувь</translation>
 <translation id="4905659621780993806">Администратор автоматически перезапустит устройство <ph name="DATE" /> в <ph name="TIME" />. Не забудьте сохранить открытые файлы.</translation>
-<translation id="4913784027728226227">Чтобы сохранить пароль в аккаунте, а затем использовать этот пароль на всех своих устройствах, подтвердите личность.</translation>
 <translation id="4913987521957242411">Отверстие в левом верхнем углу</translation>
 <translation id="4916389289686916969">Телевизионные реалити-шоу</translation>
 <translation id="4917064667437236721">Формный цилиндр</translation>
@@ -3136,6 +3136,7 @@
 <translation id="6767985426384634228">Изменить адрес?</translation>
 <translation id="6770747695101757579">Бумага (хлопковая)</translation>
 <translation id="677257480647123231">Безопасность детей в интернете</translation>
+<translation id="6772959465807028761">Чтобы использовать YouTube, войди в аккаунт Google.</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">Пользуйся YouTube с родительскими настройками</translation>
 <translation id="6779348349813025131">Google Менеджеру паролей необходим доступ к Связке ключей macOS</translation>
@@ -4303,6 +4304,7 @@
 <translation id="8891727572606052622">Недопустимый режим работы прокси-сервера.</translation>
 <translation id="8894794286471754040">Начиная с длинного края</translation>
 <translation id="8895334001368918465">Чтобы использовать в Chrome другой сервис автозаполнения, включите этот сервис в настройках Android и здесь</translation>
+<translation id="8897221284075091877">Чтобы попросить разрешение на просмотр этого контента, войди в аккаунт Google.</translation>
 <translation id="8897428486789851669">Плавание</translation>
 <translation id="8899807382908246773">Навязчивая реклама</translation>
 <translation id="8903921497873541725">Увеличить</translation>

@@ -141,7 +141,6 @@
 <translation id="1084824384139382525">Копировать ад&amp;рес ссылки</translation>
 <translation id="1085064499066015002">Разрешить на всех сайтах</translation>
 <translation id="1085697365578766383">Не удалось запустить виртуальную машину. Повторите попытку.</translation>
-<translation id="1086486568852410168">Поиск с Google Объективом</translation>
 <translation id="1090126737595388931">Нет приложений, работающих в фоновом режиме</translation>
 <translation id="1090541560108055381">Перед подключением убедитесь, что код одинаковый на обоих устройствах.</translation>
 <translation id="1091767800771861448">Чтобы отменить обновление, нажмите Esc (только для неофициальных версий).</translation>
@@ -222,7 +221,6 @@
 <translation id="1155545602507378023">Нет</translation>
 <translation id="1155816283571436363">Подключение к телефону…</translation>
 <translation id="1157952955648710254">Закрыть боковую панель Google Поиска</translation>
-<translation id="1157985233335035034">Недавние языки</translation>
 <translation id="1158080958325422608">Заменить на прописные</translation>
 <translation id="1159879754517035595">Управлять настройками расширения</translation>
 <translation id="1160800016654917722">Окно перемещено вниз и влево</translation>
@@ -464,7 +462,6 @@
 <translation id="1327794256477341646">Функции, которым нужна информация о местоположении, не будут работать</translation>
 <translation id="1328364753167940710">Через <ph name="NUM_HR" /> ч.</translation>
 <translation id="1329466763986822896">Повысить уровень конфиденциальности этой точки доступа</translation>
-<translation id="1330562121671411446">Определить язык</translation>
 <translation id="1331977651797684645">Это я</translation>
 <translation id="1333489022424033687">Некоторые функции <ph name="ORIGIN" /> могут не работать до тех пор, пока вы не удалите данные других сайтов на этом устройстве.</translation>
 <translation id="1333965224356556482">Запретить сайтам доступ к местоположению</translation>
@@ -1262,7 +1259,6 @@
 <translation id="1878885068166344708">Объект выделяется, когда вы перемещаете на него фокус. Для этого достаточно нажать на объект или перейти к нему с помощью клавиши Tab.</translation>
 <translation id="1879000426787380528">Войти как</translation>
 <translation id="18802377548000045">вкладки уменьшаются в два раза</translation>
-<translation id="1880677175115548835">Выбрать текст</translation>
 <translation id="1880905663253319515">Удалить сертификат <ph name="CERTIFICATE_NAME" />?</translation>
 <translation id="1881445033931614352">Раскладка клавиатуры</translation>
 <translation id="1881577802939775675">{COUNT,plural, =1{Объект}one{# объект}few{# объекта}many{# объектов}other{# объекта}}</translation>
@@ -1755,7 +1751,6 @@
 <translation id="2234827758954819389">Руководство по конфиденциальности</translation>
 <translation id="2234876718134438132">Синхронизация сервисов Google</translation>
 <translation id="2235344399760031203">Сторонние файлы cookie заблокированы.</translation>
-<translation id="2236949375853147973">Мои действия</translation>
 <translation id="2238379619048995541">Данные о работе процессора на разных ступенях частоты</translation>
 <translation id="2241053333139545397">Просмотр и изменение данных на нескольких сайтах</translation>
 <translation id="2241634353105152135">Однократно</translation>
@@ -2374,7 +2369,6 @@
 <translation id="2666247341166669829">Левый наушник заряжен на <ph name="PERCENTAGE" /> %.</translation>
 <translation id="2667144577800272420">Вы хотите установить "<ph name="APP_NAME" />" в качестве приложения по умолчанию? После изменения эти ссылки больше не будут открываться в приложениях "<ph name="APP_NAME_2" />" и "<ph name="APP_NAME_3" />".</translation>
 <translation id="2667463864537187133">Настроить проверку орфографии</translation>
-<translation id="2668094785979141847">Нажмите, чтобы закрыть Google Объектив</translation>
 <translation id="2668604389652548400">Удалите его или замените другим расширением из <ph name="BEGIN_LINK" />интернет-магазина Chrome<ph name="END_LINK" /></translation>
 <translation id="2669241540496514785">Не удалось запустить <ph name="APP_NAME" /></translation>
 <translation id="2669454659051515572">Скачанные файлы будут доступны всем пользователям этого устройства.</translation>
@@ -2428,7 +2422,6 @@
 <translation id="2710101514844343743">Данные о работе устройства</translation>
 <translation id="271033894570825754">Новое</translation>
 <translation id="2710507903599773521">Устройство <ph name="DEVICE_TYPE" /> разблокировано</translation>
-<translation id="2712141162840347885">Выберите что-нибудь для поиска с помощью Google Объектива. Что закрыть его, нажмите клавишу Esc.</translation>
 <translation id="2713106313042589954">Выключить камеру</translation>
 <translation id="2713444072780614174">Белый</translation>
 <translation id="2714180132046334502">Темный фон</translation>
@@ -2455,7 +2448,6 @@
 <translation id="272741954544380994">Найти через <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="2727633948226935816">Больше не напоминать</translation>
 <translation id="2727712005121231835">Фактический размер</translation>
-<translation id="2727713483500953825">Выберите изображение или текст для поиска через Объектив.</translation>
 <translation id="2727744317940422214">Произошла ошибка. Сообщите нам о ней, отправив отзыв с хештегом #bruschetta в описании. Код ошибки: <ph name="ERROR" />. Удалить данные не получилось, попробуйте сделать это вручную.</translation>
 <translation id="2729327310379176711">Мы ищем новые способы ограничить отслеживание и сделать работу с браузером ещё безопаснее. Chrome <ph name="ESTIMATE_INTERESTS_LINK" /> и позволяет управлять ими. Сайты, которые вы посещаете, запрашивают у Chrome интересующие вас темы, чтобы показывать рекламу.</translation>
 <translation id="2729577602370119849">Быстрый доступ к принтерам и управление ими</translation>
@@ -2505,7 +2497,6 @@
 <translation id="2750602041558385535">Скачивание непроверенного файла заблокировано.</translation>
 <translation id="2751883373055093745">Сайт <ph name="WEBSITE" /> запрашивает доступ к сведениям об идентификаторе ключа безопасности, чтобы знать, какой именно ключ вы используете.</translation>
 <translation id="275213133112113418">Карта сохранена</translation>
-<translation id="2753623023919742414">Нажмите на объект для поиска</translation>
 <translation id="2754226775788136540">Выполняется поиск устройств с Быстрым подключением, сохраненных в аккаунте <ph name="PRIMARY_EMAIL" />.</translation>
 <translation id="2754825024506485820">В Google Play вы найдете любые интересующие вас приложения. Их можно установить в любое время.</translation>
 <translation id="2755349111255270002">Сбросьте настройки устройства <ph name="DEVICE_TYPE" /></translation>
@@ -2631,7 +2622,6 @@
 <translation id="2838379631617906747">Установка...</translation>
 <translation id="2839032553903800133">Уведомления заблокированы</translation>
 <translation id="2841013758207633010">Время</translation>
-<translation id="2841525013647267359">Язык оригинала</translation>
 <translation id="2841837950101800123">Поставщик</translation>
 <translation id="2842013086666334835">Войдите в сеть "<ph name="NETWORK_ID" />".</translation>
 <translation id="2843560154284403323">Чтобы завершить настройку Linux, обновите Chrome OS и повторите попытку.</translation>
@@ -3029,7 +3019,6 @@
 <translation id="3132896062549112541">Правило</translation>
 <translation id="3132996321662585180">Обновлять ежедневно</translation>
 <translation id="3134393957315651797">Выберите состояние для эксперимента "<ph name="EXPERIMENT_NAME" />". Описание эксперимента: <ph name="EXPERIMENT_DESCRIPTION" />.</translation>
-<translation id="3137969841538672700">Перетащите область для поиска</translation>
 <translation id="3139925690611372679">Аватар по умолчанию (желтый)</translation>
 <translation id="3141093262818886744">Все равно открыть</translation>
 <translation id="3141318088920353606">Говорите</translation>
@@ -3195,7 +3184,6 @@
 <translation id="3269093882174072735">Загрузить изображение</translation>
 <translation id="326911502853238749">Не показывать <ph name="MODULE_NAME" /></translation>
 <translation id="3269175001434213183">Включите синхронизацию, чтобы создавать резервные копии своих данных и использовать их на любом устройстве</translation>
-<translation id="3269209112443570745">Новинка! Поиск по изображению на экране</translation>
 <translation id="3269612321104318480">Светло-бирюзовый с белым</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{Файл}one{# файл}few{# файла}many{# файлов}other{# файла}}</translation>
 <translation id="326999365752735949">Утилита diff скачивается</translation>
@@ -3671,13 +3659,11 @@
 <translation id="3621202678540785336">Вход</translation>
 <translation id="3621807901162200696">Помогать повышать производительность и улучшать функции ChromeOS</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{приложение}one{# приложение}few{# приложения}many{# приложений}other{# приложения}}</translation>
-<translation id="3622716124581627104">Находите информацию о том, что перед вами, а также копируйте или переводите текст. При использовании Google Объектива скриншот страницы отправляется в Google. <ph name="LEARN_MORE" /></translation>
 <translation id="3622820753353315928">Цвет подсветки</translation>
 <translation id="362333465072914957">Ожидание выдачи сертификата центром сертификации</translation>
 <translation id="3623598555687153298">Будут удалены сохраненные данные указанных сайтов (<ph name="TOTAL_USAGE" />).</translation>
 <translation id="3624567683873126087">Снимать блокировку устройства и входить в аккаунт Google</translation>
 <translation id="3624583033347146597">Выберите параметры сторонних файлов cookie</translation>
-<translation id="3625345586754200168">Попробовать Объектив</translation>
 <translation id="3625481642044239431">Выбран недопустимый файл. Повторите попытку.</translation>
 <translation id="3626296069957678981">Чтобы зарядить Chromebook, используйте совместимую батарею Dell.</translation>
 <translation id="3627320433825461852">Осталось меньше минуты</translation>
@@ -3952,6 +3938,7 @@
 <translation id="3799128412641261490">Настройки функции Switch Access</translation>
 <translation id="3800828618615365228">Дополнительные условия использования Google Chrome и Chrome OS</translation>
 <translation id="3800898876950197674">Чтобы разрешить установку расширения, введите пароль.</translation>
+<translation id="3801449494961771207">Стандартный голос для озвучивания текста</translation>
 <translation id="3802486193901166966">Расширению не требуются особые разрешения и у него нет дополнительного доступа к сайтам</translation>
 <translation id="380329542618494757">Имя</translation>
 <translation id="3803345858388753269">Качество видео</translation>
@@ -4274,7 +4261,6 @@
 <translation id="4021909830315618592">Копировать сведения о сборке</translation>
 <translation id="4021941025609472374">Закрыть вкладки слева</translation>
 <translation id="4022426551683927403">Добавить в словарь</translation>
-<translation id="4022972681110646219">Перевести текст на экране</translation>
 <translation id="4023048917751563912">Приложение "<ph name="APP_NAME" />" печатает страницы (<ph name="PAGE_NUMBER" />) на принтере "<ph name="PRINTER_NAME" />".</translation>
 <translation id="4024768890073681126">Этим браузером управляет родитель</translation>
 <translation id="4025039777635956441">Отключить звук на выбранном сайте</translation>
@@ -4718,7 +4704,6 @@
 <translation id="4364327530094270451">Дыня</translation>
 <translation id="4364567974334641491">Приложение "<ph name="APP_NAME" />" предоставило доступ к окну.</translation>
 <translation id="4364830672918311045">Показ уведомлений</translation>
-<translation id="4367027658822022112">Для быстрого доступа к Google Объективу нажмите кнопку "Закрепить" в верхней части боковой панели</translation>
 <translation id="4367513928820380646">Посмотреть отозванные разрешения</translation>
 <translation id="4367971618859387374">Отображаемое имя</translation>
 <translation id="4368960422722232719">Показывать использование памяти на карточке предпросмотра вкладки</translation>
@@ -4845,7 +4830,6 @@
 <translation id="4450974146388585462">Проверить подключение</translation>
 <translation id="445099924538929605">Операционная система <ph name="DEVICE_OS" /> обнаружила активный модуль TPM, который может повысить надежность хранения данных.</translation>
 <translation id="4452898361839215358">или выберите PPD-файл. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
-<translation id="4453144231461812959">Вы можете искать любой текст и изображения через Объектив.</translation>
 <translation id="4453430595102511050">Приложите палец к сканеру отпечатков в правом верхнем углу клавиатуры. Данные отпечатков пальцев надежно защищены и хранятся только на устройстве <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4453946976636652378">Введите поисковый запрос в <ph name="SEARCH_ENGINE_NAME" /> или укажите URL</translation>
 <translation id="4457472090507035117">Голос:</translation>
@@ -5220,7 +5204,6 @@
 <translation id="473936925429402449">Выбрано, показан дополнительный контент на карточке <ph name="CURRENT_ELEMENT" /> из <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="4739639199548674512">Билеты</translation>
 <translation id="4740546261986864539">Было открыто недавно</translation>
-<translation id="4741235124132242877">Закреплено. Теперь вы можете запускать Google Объектив с панели инструментов.</translation>
 <translation id="4742334355511750246">Запретить сайтам показывать изображения</translation>
 <translation id="4742795653798179840">Данные из Chrome удалены</translation>
 <translation id="4742970037960872810">Снять выделение</translation>
@@ -5423,7 +5406,6 @@
 <translation id="4883436287898674711">Все сайты <ph name="WEBSITE_1" /></translation>
 <translation id="48838266408104654">Диспетчер задач</translation>
 <translation id="4884987973312178454">6x</translation>
-<translation id="4885446229353981848">Всегда показывать значок Google Объектива</translation>
 <translation id="4885692421645694729">У этого расширения нет дополнительного доступа к сайтам</translation>
 <translation id="4887424188275796356">Открыть в программе просмотра по умолчанию</translation>
 <translation id="488785315393301722">Показать сведения</translation>
@@ -5957,7 +5939,6 @@
 <translation id="5284445933715251131">Продолжить скачивание</translation>
 <translation id="5285635972691565180">Экран <ph name="DISPLAY_ID" /></translation>
 <translation id="5286194356314741248">Сканирование...</translation>
-<translation id="5286907366254680517">Определен автоматически</translation>
 <translation id="5287425679749926365">Аккаунты</translation>
 <translation id="5288106344236929384">Другие действия и настройки ключа доступа для пользователя <ph name="USERNAME" /> домена <ph name="DOMAIN" /></translation>
 <translation id="5288678174502918605">Открыть закрытую вкладку</translation>
@@ -6009,7 +5990,6 @@
 <translation id="5319712128756744240">Подключить новое устройство</translation>
 <translation id="5320135788267874712">Введите название</translation>
 <translation id="5320261549977878764">Отменить сохранение группы</translation>
-<translation id="5321325624576443340">Google Объектив недоступен. Повторите попытку позже.</translation>
 <translation id="532247166573571973">Сервер недоступен. Повторите попытку позже.</translation>
 <translation id="5322961556184463700">Опрос о том, почему вы все равно скачиваете этот файл</translation>
 <translation id="5323328004379641163">Настройте внешний вид Chrome и этой страницы.</translation>
@@ -6875,7 +6855,6 @@
 <translation id="5969419185858894314"><ph name="ORIGIN" /> может просматривать файлы в папке "<ph name="FOLDERNAME" />".</translation>
 <translation id="5969728632630673489">Уведомление о сочетаниях клавиш закрыто</translation>
 <translation id="5971037678316050792">Управление состоянием адаптера Bluetooth и подключением</translation>
-<translation id="5971400953982411053">Всплывающая подсказка для поиска с помощью Google Объектива</translation>
 <translation id="5971861540200650391">Скрыть на <ph name="MODULE_TITLE" /> ч.</translation>
 <translation id="597235323114979258">Другие места назначения печати</translation>
 <translation id="5972543790327947908">Некоторые поддерживаемые ссылки будут по-прежнему открываться в приложениях "<ph name="APP_NAME" />", "<ph name="APP_NAME_2" />" и "<ph name="APP_NAME_3" />".</translation>
@@ -6968,7 +6947,6 @@
 <translation id="6042308850641462728">Ещё</translation>
 <translation id="604388835206766544">Не удалось выполнить синтаксический анализ конфигурации.</translation>
 <translation id="6043994281159824495">Выйти</translation>
-<translation id="604424701295382420">Закреплено. Теперь вы можете запускать Google Объектив с помощью новой кнопки на панели инструментов.</translation>
 <translation id="6045114302329202345">Основная кнопка TrackPoint</translation>
 <translation id="6047632800149092791">Ошибка синхронизации. Выйдите из системы и войдите снова.</translation>
 <translation id="6048747414605857443">Настроить синтез речи для программы ChromeVox и функции "Озвучивание при нажатии"</translation>
@@ -6992,7 +6970,6 @@
 <translation id="6059276912018042191">Недавние вкладки в Chrome</translation>
 <translation id="6059652578941944813">Иерархия сертификатов</translation>
 <translation id="6059925163896151826">USB-устройства</translation>
-<translation id="6060842547856900641">Открыть Объектив</translation>
 <translation id="6061408389284235459">Уведомление отправлено на устройство <ph name="DEVICE_NAME" />.</translation>
 <translation id="6063284707309177505">Создать QR-код</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Примечание.<ph name="END_BOLD" /> Человек с похожим голосом или записью голоса пользователя <ph name="SUPERVISED_USER_NAME" /> может получить доступ к его персональным результатам. Чтобы экономить заряд батареи, в настройках Ассистента в аккаунте пользователя <ph name="SUPERVISED_USER_NAME" /> можно выбрать режим, в котором функция "Окей, Google" работает, только когда устройство подключено к источнику питания.</translation>
@@ -7001,7 +6978,6 @@
 <translation id="6064764629679333574">Улучшите качество звука на Bluetooth-микрофоне. Измените настройки аудио с низкого на высокое разрешение.</translation>
 <translation id="6065289257230303064">Атрибуты каталога субъекта сертификата</translation>
 <translation id="6066794465984119824">Хеш изображения не задан.</translation>
-<translation id="6069027071882229820">Скопировать как изображение</translation>
 <translation id="6069464830445383022">Для входа в Chromebook используется ваш обычный аккаунт Google</translation>
 <translation id="6069500411969514374">Рабочий</translation>
 <translation id="6071181508177083058">подтвердите пароль</translation>
@@ -7318,6 +7294,7 @@
 <translation id="628726841779494414">Чтобы изменить параметры принтеров, перейдите в настройки</translation>
 <translation id="6287828400772161253">Телефон Android (<ph name="HOST_DEVICE_NAME" />)</translation>
 <translation id="6290613030083731160">Поблизости нет устройств, с которыми можно обмениваться данными. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
+<translation id="6291580570300353047">Не удалось выполнить восстановление. В хранилище недостаточно места.</translation>
 <translation id="6291741848715722067">Код подтверждения</translation>
 <translation id="6291953229176937411">Показать в Finder</translation>
 <translation id="6292699686837272722">вкладки уменьшаются в четыре раза</translation>
@@ -7721,7 +7698,6 @@
 <translation id="6597324406048772521">Расширения на этом сайте запрещены</translation>
 <translation id="6597331566371766302">Администратор заблокировал следующие расширения:</translation>
 <translation id="659894938503552850">сначала новые</translation>
-<translation id="6600016381025017075">Поиск по объектам на странице</translation>
 <translation id="6601262427770154296">Управление словарями пользователя</translation>
 <translation id="6602173570135186741">Автозаполнение и пароли</translation>
 <translation id="6602336931411102724">Показывать группы вкладок на панели закладок</translation>
@@ -8271,7 +8247,6 @@
 <translation id="6988572888918530647">Перейти в настройки аккаунта Google</translation>
 <translation id="6989274756151920076">Остаться в этом</translation>
 <translation id="6991665348624301627">Выбор места назначения</translation>
-<translation id="6991926986715044139">Всегда показывать значок Google Объектива</translation>
 <translation id="6992554835374084304">Включите расширенную проверку правописания</translation>
 <translation id="6993000214273684335">Вкладка удалена из группы без названия – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6993050154661569036">Обновление браузера Chrome</translation>
@@ -8850,7 +8825,6 @@
 <translation id="7419142833919893307">Имя пользователя не указано</translation>
 <translation id="7419426517282923105">{NUM_ATTEMPTS,plural, =1{Неверный PIN-код. Осталась 1 попытка.}one{Неверный PIN-код. Осталась # попытка.}few{Неверный PIN-код. Осталось # попытки.}many{Неверный PIN-код. Осталось # попыток.}other{Неверный PIN-код. Осталось # попытки.}}</translation>
 <translation id="7419565702166471774">Всегда использовать безопасные соединения</translation>
-<translation id="7419819959108735624">Выберите что-нибудь для поиска через Google Объектив.</translation>
 <translation id="742130257665691897">Закладки удалены</translation>
 <translation id="7421925624202799674">Просмотр кода страницы</translation>
 <translation id="7422192691352527311">Настройки...</translation>
@@ -8885,7 +8859,6 @@
 <translation id="7444983668544353857">Отключить <ph name="NETWORKDEVICE" /></translation>
 <translation id="7448430327655618736">Устанавливайте приложения автоматически</translation>
 <translation id="7448664748118305024">Удалять данные сайтов, сохраненные на устройстве, при закрытии всех окон</translation>
-<translation id="7450541714075000668">Текст скопирован.</translation>
 <translation id="7450761244949417357">Открывается <ph name="ALTERNATIVE_BROWSER_NAME" />…</translation>
 <translation id="7450926666485653189">Когда вы переходите на сайт, Chrome отправляет обфусцированную часть URL в Google через специальный сервер, что позволяет скрыть ваш IP-адрес.</translation>
 <translation id="7453008956351770337">Выбирая этот принтер, вы предоставляете к нему доступ следующему расширению:</translation>
@@ -8978,7 +8951,6 @@
 <translation id="7514365320538308">Скачать</translation>
 <translation id="7514417110442087199">Добавить назначение</translation>
 <translation id="7515139121338932179">Для демонстрации окна воспользуйтесь системной программой выбора окна.</translation>
-<translation id="7515191208480168435">Вы можете закрепить Google Объектив для быстрого доступа.</translation>
 <translation id="751523031290522286">Чтобы пользоваться приложением "<ph name="APP_NAME" />", требуется разрешение администратора.</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516641972665276706">Page Down</translation>
@@ -9492,7 +9464,6 @@
 <translation id="7883792253546618164">Отказаться от рассылки можно в любой момент.</translation>
 <translation id="7884372232153418877">{NUM_SITES,plural, =1{Проверьте сайт, который недавно отправлял много уведомлений}one{Проверьте {NUM_SITES} сайт, которые недавно отправляли много уведомлений}few{Проверьте {NUM_SITES} сайта, которые недавно отправляли много уведомлений}many{Проверьте {NUM_SITES} сайтов, которые недавно отправляли много уведомлений}other{Проверьте {NUM_SITES} сайта, которые недавно отправляли много уведомлений}}</translation>
 <translation id="788453346724465748">Загрузка данных аккаунта…</translation>
-<translation id="7886087451482920026">Выберите текст с помощью Google Объектива.</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{объект}one{# объект}few{# объекта}many{# объектов}other{# объекта}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
 <translation id="7887174313503389866">Задайте основные параметры конфиденциальности и безопасности. Другие возможности управления вы найдете в настройках.</translation>
@@ -9679,7 +9650,6 @@
 <translation id="8008356846765065031">Не удалось установить соединение. Проверьте подключение к Интернету.</translation>
 <translation id="8008704580256716350">Подозрительный файл заблокирован</translation>
 <translation id="8009225694047762179">Управление паролями</translation>
-<translation id="8010081455002666927">Автоопределение</translation>
 <translation id="8011372169388649948">Закладка "<ph name="BOOKMARK_TITLE" />" перемещена.</translation>
 <translation id="8012188750847319132">Caps Lock</translation>
 <translation id="8012463809859447963">Сведения о мгновенной точке доступа</translation>
@@ -9834,7 +9804,6 @@
 <translation id="8115139559594092084">С Google Диска</translation>
 <translation id="8116972784401310538">&amp;Диспетчер закладок</translation>
 <translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" /> запоминает, как вы вошли в аккаунт, и автоматически выполняет вход, когда это возможно. Если функция отключена, каждый раз будет запрашиваться подтверждение.</translation>
-<translation id="8118331347066725040">Оставьте отзыв о поиске с помощью Объектива</translation>
 <translation id="8118362518458010043">Расширение отключено браузером Chrome. Оно может быть небезопасным.</translation>
 <translation id="8118488170956489476">Этим браузером <ph name="BEGIN_LINK" />управляет<ph name="END_LINK" /> ваша организация.</translation>
 <translation id="8118515372935001629">Частота обновления экрана</translation>
@@ -10114,7 +10083,6 @@
 <translation id="8319414634934645341">Расширенное использование ключа</translation>
 <translation id="8321476692217554900">уведомления</translation>
 <translation id="8321837372750396788">Этим устройством <ph name="DEVICE_TYPE" /> будет управлять <ph name="MANAGER" />.</translation>
-<translation id="8321888067342493336">Сохранить как изображение</translation>
 <translation id="8322814362483282060">Доступ к вашему микрофону для этой страницы заблокирован.</translation>
 <translation id="8323167517179506834">Введите URL</translation>
 <translation id="8323317289166663449">Просмотр и изменение ваших данных на компьютере и всех сайтах</translation>
@@ -10168,7 +10136,6 @@
 <translation id="835951711479681002">Сохранить в аккаунте Google</translation>
 <translation id="8360140320636871023">Персонализация темы</translation>
 <translation id="8360267485906769442">Кнопка для отправки отзыва</translation>
-<translation id="8362914115861174987">Перевести на</translation>
 <translation id="8363095875018065315">стабильная</translation>
 <translation id="8363142353806532503">Доступ к микрофону запрещен</translation>
 <translation id="8363277452449582220">Океан</translation>
@@ -11223,7 +11190,6 @@
 <translation id="9102610709270966160">Включить расширение</translation>
 <translation id="9102864637938129124">Сайты и рекламодатели могут оценивать эффективность рекламы. Параметр включен.</translation>
 <translation id="9103868373786083162">Нажмите, чтобы вернуться, используйте контекстное меню, чтобы открыть историю</translation>
-<translation id="9106236359747881194">Выберите текст для поиска</translation>
 <translation id="9107096627210171112">П&amp;еревести</translation>
 <translation id="9107624673674616016">Цветные карандаши</translation>
 <translation id="9108035152087032312">Добавить название окна</translation>
@@ -11418,6 +11384,7 @@
 <translation id="949807244219288032">Эта вкладка подключена к HID-устройству</translation>
 <translation id="950079950995628542">На телефоне <ph name="PHONE_NAME" /></translation>
 <translation id="950307215746360464">Мастер настройки</translation>
+<translation id="950728747178241190">Включить шумоподавление и улучшить звук. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
 <translation id="951273949038779544"><ph name="SITE_ACCESS" />. Установлено администратором.</translation>
 <translation id="951991426597076286">Отклонить</translation>
 <translation id="952471655966876828">Устройство подключится автоматически, если его включат и будут использовать.</translation>

@@ -78,6 +78,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1240638468526743569">En app</translation>
 <translation id="1242198791279543032">Varsler ignoreres</translation>
 <translation id="1242883863226959074">enhet</translation>
+<translation id="1245476784081715330">Bra jobbet!</translation>
 <translation id="1245644940275736236">Gå til assistenten</translation>
 <translation id="124678866338384709">Lukk den aktive fanen</translation>
 <translation id="1246890715821376239">Apper som ikke støttes</translation>
@@ -842,6 +843,7 @@ Koble enheten til strøm.</translation>
 <translation id="3958714870339660776">Hele dagen</translation>
 <translation id="3962859241508114581">Forrige spor</translation>
 <translation id="3963124517343721543">Du kan enkelt fortsette der du slapp, ved å åpne tidligere vinduer og faner. Du ser også personlig tilpassede forslag til ting du kan gjøre videre.</translation>
+<translation id="396506362088290977">Test mikrofonlyden</translation>
 <translation id="3969043077941541451">Av</translation>
 <translation id="3970324493235864154">Se varsler fra telefonen din</translation>
 <translation id="397105322502079400">Beregner …</translation>
@@ -899,6 +901,7 @@ Koble enheten til strøm.</translation>
 <translation id="4156293514828496577"><ph name="PERCENTAGE" /> % batteri gjenstår (ca. <ph name="TIME_LEFT" />).
 Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
 <translation id="4160919062868802509">Flere lydkilder er registrert</translation>
+<translation id="416245495747357243">Fiks ferdig!</translation>
 <translation id="4165275524535002941">Kabelen støtter kanskje ikke skjermer</translation>
 <translation id="4177415338862979658">Klikk for å se etter detaljer</translation>
 <translation id="4177913004758410636">{0,plural, =1{Oppdater enheten innen en dag}other{Oppdater enheten innen # dager}}</translation>
@@ -984,6 +987,7 @@ Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> er av.</translation>
 <translation id="4417647906073317561">Innstillinger for fokus. Start en nedtelling, velg en oppgave og sett på musikk for å komme inn i en god flyt.</translation>
 <translation id="4424159417645388645">Skrivebord 5</translation>
+<translation id="4426817706804363424">Supert!</translation>
 <translation id="4430019312045809116">Volum</translation>
 <translation id="4441283832827406317">Appene er sortert etter navn</translation>
 <translation id="4445159312344259901">Logg inn for å låse opp</translation>
@@ -1248,6 +1252,7 @@ Du kan også bruke hurtigtasten. Marker først teksten, og trykk deretter på <p
 <translation id="5283198616748585639">Legg til 1 min</translation>
 <translation id="528468243742722775">Avslutt</translation>
 <translation id="5286194356314741248">Skanning</translation>
+<translation id="528641622273682395">Slå av/på mikrofontest</translation>
 <translation id="5297423144044956168">Fant ingen mobilenheter</translation>
 <translation id="5297704307811127955">Av</translation>
 <translation id="5300589172476337783">Vis</translation>
@@ -1275,6 +1280,7 @@ Ingen enheter er tilkoblet.</translation>
 <translation id="536019650977002321">Administratoren din tillater ikke lydopptak. Kontakt administratoren for å få mer informasjon.</translation>
 <translation id="5361524080961918551">Talefiler på <ph name="LANGUAGE" /> er delvis lastet ned</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Gå til denne fanen</translation>
+<translation id="5363835273551457276">Du kan teste mikrofonlyden. Lukk panelet for å stoppe.</translation>
 <translation id="5364693579536176785">lagringsplass</translation>
 <translation id="5369573834963677938">Ansiktskontroll blir tilgjengelig for andre brukere på enheten</translation>
 <translation id="5369717264580061086">Forhåndsvis filen i Filer-appen</translation>
@@ -1415,6 +1421,7 @@ Ingen enheter er tilkoblet.</translation>
 <translation id="5802516411616338943">Åpne Hurtiginnstillinger</translation>
 <translation id="5804651031882187592">Slå av innstillingen «Lås SIM-kortet»</translation>
 <translation id="5805809050170488595">Klikk for å aktivere <ph name="NETWORK_NAME" /></translation>
+<translation id="5818796501620225415">Du kan legge til mer tid eller avslutte fokusøkten</translation>
 <translation id="5819918159912280082">Chromebooken startet uventet på nytt. Åpne tidligere vinduer og apper.</translation>
 <translation id="5823239091726045201">Google Oppgaver på nettet</translation>
 <translation id="5825969630400862129">Innstillinger for tilkoblede enheter</translation>
@@ -2125,6 +2132,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="8262312463845990408">Slå av/på avspilling</translation>
 <translation id="8268302343625273732">Se alle oppgavene i Google Classroom</translation>
 <translation id="8277261673056602147">Marker tekst på skjermen</translation>
+<translation id="8282784978194352587">Du klarte det!</translation>
 <translation id="8287009018010202411">Produktivitet</translation>
 <translation id="828708037801473432">Av</translation>
 <translation id="8297006494302853456">Svakt</translation>
@@ -2202,6 +2210,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="8609384513243082612">Åpne en ny fane</translation>
 <translation id="861045123704058818">Appene er organisert etter kategori inntil videre</translation>
 <translation id="8612216344243590325">Oppbevar viktige filer på <ph name="HOLDING_SPACE_TITLE" /> i stedet for på skrivebordet. Bare dra filer til <ph name="HOLDING_SPACE_TITLE" />.</translation>
+<translation id="8612338981637220013">Dette går unna!</translation>
 <translation id="8614517853887502247">Varsler fra <ph name="APP_1_TITLE" /> og <ph name="APP_2_TITLE" /> er skjult fordi visningsbeskyttelse er på</translation>
 <translation id="8615778328722901791">Åpne verktøylinjen</translation>
 <translation id="8619000641825875669">OneDrive</translation>
@@ -2244,6 +2253,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />: Aktiveres …</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
+<translation id="8751299148074971734">Fortsett sånn!</translation>
 <translation id="8753368202781196133">Vi støtter foreløpig ikke dette språket.</translation>
 <translation id="8755498163081687682">Verifiser identiteten din: <ph name="ORIGIN_NAME" /> vil bekrefte at det er deg</translation>
 <translation id="875593634123171288">Vis innstillinger for VPN</translation>

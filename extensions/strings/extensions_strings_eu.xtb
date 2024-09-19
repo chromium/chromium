@@ -19,7 +19,6 @@
 <translation id="3115238746683532089"><ph name="VENDOR_ID" /> saltzailearen <ph name="PRODUCT_ID" /> produktu ezezaguna (<ph name="SERIAL_NUMBER" /> serie-zenbakia)</translation>
 <translation id="3144135466825225871">Ezin izan da crx fitxategia ordeztu. Begiratu fitxategia nonbait erabiltzen ari den.</translation>
 <translation id="3163201441334626963"><ph name="VENDOR_ID" /> saltzailearen <ph name="PRODUCT_ID" /> produktu ezezaguna</translation>
-<translation id="3369521687965833290">Ezin da despaketatu luzapena. Luzapena segurtasunez despaketatzeko, zure profilaren direktoriorako bide bat egon behar du, bideak unitate baten letrarekin hasi behar du eta ezin du elkargunerik, instalazio-punturik edo esteka sinbolikorik eduki. Ez duzu halako biderik profilean.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (<ph name="SERIAL_NUMBER" /> serie-zenbakia)</translation>
 <translation id="3466070586188012397"><ph name="VENDOR_ID" /> saltzailearen <ph name="PRODUCT_NAME" /> (<ph name="SERIAL_NUMBER" /> serie-zenbakia)</translation>
 <translation id="3561217442734750519">Gako pribatuak balio duen bide-izen bat izan behar du.</translation>
@@ -39,7 +38,6 @@
 <translation id="5972529113578162692">Gailuaren administratzaileak <ph name="EXTENSION_NAME" /> instalatzea eskatzen du. Ezin da desinstalatu.</translation>
 <translation id="6027032947578871493"><ph name="VENDOR_NAME" /> saltzailearen <ph name="PRODUCT_ID" /> produktu ezezaguna (<ph name="SERIAL_NUMBER" /> serie-zenbakia)</translation>
 <translation id="6068932090455285721"><ph name="VENDOR_ID" /> saltzailearen <ph name="PRODUCT_NAME" /></translation>
-<translation id="6143635259298204954">Ezin da luzapenaren paketea ireki. Luzapenen paketeak segurtasunez irekitzeko, esteka sinbolikorik ez duen profil-direktorio baterako bide-izena egon behar da. Profilak ez du horrelako bide-izenik.</translation>
 <translation id="6322279351188361895">Ezin izan da irakurri gako pribatua.</translation>
 <translation id="6391538222494443604">Sarrerako direktorioa falta da.</translation>
 <translation id="641087317769093025">Ezin izan da luzapena deskonprimatu</translation>

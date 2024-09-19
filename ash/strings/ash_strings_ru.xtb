@@ -215,6 +215,7 @@
 <translation id="1703117532528082099">Активное окно прикреплено слева.</translation>
 <translation id="1708345662127501511">Рабочий стол "<ph name="DESK_NAME" />"</translation>
 <translation id="1709762881904163296">Настройки сети</translation>
+<translation id="171610090693716835">Персональные плейлисты с музыкой для концентрации внимания помогут сосредоточиться. Оформите подписку Premium, чтобы пользоваться YouTube Music и YouTube без рекламы. Первые 3 месяца бесплатно.</translation>
 <translation id="1719094688023114093">Автоматические субтитры включены</translation>
 <translation id="1720011244392820496">Включить синхронизацию Wi-Fi</translation>
 <translation id="1720230731642245863">Точка доступа отключена</translation>
@@ -1414,6 +1415,7 @@
 <translation id="5777841717266010279">Закрыть доступ к экрану?</translation>
 <translation id="5779721926447984944">Закрепленные файлы</translation>
 <translation id="5785221443435874078">Удалить подсказку</translation>
+<translation id="5787431783058088906">Получить бонус</translation>
 <translation id="5788127256798019331">Файлы Google Play</translation>
 <translation id="5788535737706478207">Открыть последнюю закрытую вкладку или окно</translation>
 <translation id="5790085346892983794">Выполнено</translation>
@@ -1645,6 +1647,7 @@
 <translation id="6574587113394758819">Уведомление "<ph name="APP_TITLE" />" скрыто, потому что включен режим безопасного просмотра.</translation>
 <translation id="6574622320167699133">Устройство разблокировано через ваш телефон. Нажмите, чтобы войти в аккаунт.</translation>
 <translation id="6578407462441924264">Без имени</translation>
+<translation id="6582012689384648647">Чтобы использовать персональные плейлисты с музыкой для концентрации внимания, разрешите доступ к YouTube Music.</translation>
 <translation id="6582034443359256692">Рассчитывается уровень заряда батареи.</translation>
 <translation id="6585808820553845416">Сеанс закончится через <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
@@ -1883,6 +1886,7 @@
 <translation id="7477793887173910789">Управляйте воспроизведением музыки, видео и других медиафайлов</translation>
 <translation id="7488762544858401571">С изменениями</translation>
 <translation id="7489261257412536105">Войти в полноэкранный режим или выйти из него</translation>
+<translation id="7490157877815329797">Попробуйте YouTube Music Premium. Вы сможете слушать музыку бесплатно и включать персонализированные треки для концентрации внимания.</translation>
 <translation id="7490360161041035804">Вы можете закреплять важные файлы, включая файлы на Google Диске. Чтобы это сделать, наведите указатель на нужный объект или откройте приложение "Файлы", найдите объект и нажмите на него правой кнопкой мыши.</translation>
 <translation id="7497767806359279797">Выберите язык и клавиатуру</translation>
 <translation id="7507162824403726948">Завершите проверку личности</translation>
@@ -2158,6 +2162,7 @@
 <translation id="8380784334203145311">Доброй ночи!</translation>
 <translation id="8382715499079447151">Защита от чужих взглядов</translation>
 <translation id="8383614331548401927">С возвращением!</translation>
+<translation id="838540623579162843">Подписка Music Premium</translation>
 <translation id="8388750414311082622">Удалить единственный рабочий стол нельзя.</translation>
 <translation id="8394567579869570560">Ваш родитель заблокировал это устройство.</translation>
 <translation id="8401850874595457088">Открыть языковое меню</translation>

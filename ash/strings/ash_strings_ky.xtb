@@ -215,6 +215,7 @@
 <translation id="1703117532528082099">Активдүү терезе сол жакка бекитилди.</translation>
 <translation id="1708345662127501511">Иш такта: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Тармак параметрлери</translation>
+<translation id="171610090693716835">Жекелештирилген ойнотмо тизмелер ишиңизге ынтаа коюуга жардам берет. YouTube Premium аркылуу YouTube Music жана YouTube кызматтарында жарнамалар көрсөтүлбөйт. Алгачкы 3 ай акысыз.</translation>
 <translation id="1719094688023114093">Ыкчам коштомо жазуулар күйүк.</translation>
 <translation id="1720011244392820496">Wi-Fi Sync'ти күйгүзүү</translation>
 <translation id="1720230731642245863">Байланыш түйүнү өчүк</translation>
@@ -1414,6 +1415,7 @@
 <translation id="5777841717266010279">Экран бөлүшүү токтотулсунбу?</translation>
 <translation id="5779721926447984944">Кадалган файлдар</translation>
 <translation id="5785221443435874078">Бул сунушту жок кылуу</translation>
+<translation id="5787431783058088906">Бонусту алуу</translation>
 <translation id="5788127256798019331">Google Play файлдары</translation>
 <translation id="5788535737706478207">Жабылган акыркы өтмөктү же терезени ачуу</translation>
 <translation id="5790085346892983794">Ийгилик</translation>
@@ -1645,6 +1647,7 @@
 <translation id="6574587113394758819">Көрүүдөн коргоо функциясы күйүп тургандыктан, <ph name="APP_TITLE" /> билдирмелери жашырылды</translation>
 <translation id="6574622320167699133">Кулпусу телефонуңуз менен ачылды. Кирүү үчүн басыңыз.</translation>
 <translation id="6578407462441924264">Аталышы жок</translation>
+<translation id="6582012689384648647">Жекелештирилген ойнотмо тизмелерди угуу үчүн YouTube Music кызматын пайдаланууга уруксат бериңиз</translation>
 <translation id="6582034443359256692">Батареянын кубатынын деңгээли эсептелүүдө.</translation>
 <translation id="6585808820553845416">Сессия <ph name="SESSION_TIME_REMAINING" /> кийиничинде бүтөт.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
@@ -1883,6 +1886,7 @@
 <translation id="7477793887173910789">Музыканы, видеолорду жана башкаларды көзөмөлдөңүз</translation>
 <translation id="7488762544858401571">Түзөтүлдү</translation>
 <translation id="7489261257412536105">Толук экран режимине кирүү же андан чыгуу</translation>
+<translation id="7490157877815329797">YouTube Music Premium аркылуу жарнамасыз жана жекелештирилген обондорду угуңуз</translation>
 <translation id="7490360161041035804">Маанилүү файлдарды, анын ичинде Google Drive файлдарын кадап койсоңуз болот. Кадоо үчүн чычканды элементтин үстүнө алып келип же Files колдонмосун ачып, элементтин үстүнөн чычкандын оң баскычын басыңыз.</translation>
 <translation id="7497767806359279797">Тилди жана баскычтопту тандоо</translation>
 <translation id="7507162824403726948">Өздүгүңүздү ырастап бүтүрүңүз</translation>
@@ -2158,6 +2162,7 @@
 <translation id="8380784334203145311">Түнүңүз бейпил болсун,</translation>
 <translation id="8382715499079447151">Көрүүдөн коргоо</translation>
 <translation id="8383614331548401927">Уланталыбы?</translation>
+<translation id="838540623579162843">Music Premium'га жазылуу</translation>
 <translation id="8388750414311082622">Акыркы иш тактаны өчүрүүгө болбойт.</translation>
 <translation id="8394567579869570560">Ата-энеңиз бул түзмөктү кулпулап койду</translation>
 <translation id="8401850874595457088">Тил менюсун киргизиңиз</translation>

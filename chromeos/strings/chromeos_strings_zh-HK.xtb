@@ -127,6 +127,7 @@
 <translation id="1567064801249837505">相簿</translation>
 <translation id="1572585716423026576">設為桌布</translation>
 <translation id="1578784163189013834">選取螢幕保護程式背景</translation>
+<translation id="1587031308639983732">時間相關的變更可能不準確。此設定由管理員管理。</translation>
 <translation id="1588438908519853928">正常</translation>
 <translation id="1591562245178063882">本月</translation>
 <translation id="1593528591614229756">請務必選取由流動服務供應商或管理員提供的 APN。選取 APN 後，系統便會停用任何自訂 APN。無效的 APN 可能會干擾流動網絡連線。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
@@ -1166,6 +1167,7 @@
 <translation id="6831043979455480757">翻譯</translation>
 <translation id="6846843854964504403">安全重設</translation>
 <translation id="6853312040151791195">放電率</translation>
+<translation id="6862228900689076919">此功能由管理員管理</translation>
 <translation id="6862416241246624313">已提交意見</translation>
 <translation id="6866732840889595464">雛菊</translation>
 <translation id="6871256179359663621">淺紫色</translation>

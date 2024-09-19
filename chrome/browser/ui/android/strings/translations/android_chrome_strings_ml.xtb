@@ -44,6 +44,7 @@
 <translation id="1183189057400844278">നിങ്ങളുടെ Google Account-ൽ പാസ്‌വേഡുകൾ എല്ലായ്‌പ്പോഴും ഉപയോഗിക്കാനാകുമെന്ന് ഉറപ്പാക്കാൻ, ഇത് നിങ്ങൾ തന്നെയാണെന്ന് പരിശോധിച്ചുറപ്പിക്കുക</translation>
 <translation id="1187810343066461819">കൂടാതെ, ഈ കാറിൽ നിന്ന് ബുക്ക്‌മാർക്കുകൾ, ചരിത്രം എന്നിവയും മറ്റും ഇല്ലാതാക്കുക</translation>
 <translation id="1193729455103054076">ശക്തമായ പാസ്‌വേഡ് ഉപയോഗിക്കണോ?</translation>
+<translation id="11947597112837849">ഇമെയിൽ വിലാസം</translation>
 <translation id="1197267115302279827">ബു‌ക്ക്‌മാർക്കുകൾ നീക്കുക</translation>
 <translation id="1197761954713363183">പാസ്‌കീ സ്ഥിരീകരിക്കൽ ഷീറ്റ് അടച്ചു</translation>
 <translation id="1201402288615127009">അടുത്തത്</translation>
@@ -56,7 +57,6 @@
 <translation id="123724288017357924">കാഷെ ചെയ്‌ത ഉള്ളടക്കം ഒഴിവാക്കി കൊണ്ട്, നിലവിലെ പേജ് റീലോഡ് ചെയ്യുക</translation>
 <translation id="1239792311949352652">ഈ പേജ് വേഗത്തിൽ പങ്കിടുക. ഈ കുറുക്കുവഴി എഡിറ്റ് ചെയ്യാൻ ക്രമീകരണത്തിലേക്ക് പോകുക.</translation>
 <translation id="1240288207750131269"><ph name="LANG" /> ലോഡ് ചെയ്യുന്നു</translation>
-<translation id="1240903469550363138">തുടരാൻ, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> നിങ്ങളുടെ പേരും ഇമെയിൽ വിലാസവും പ്രൊഫൈൽ ചിത്രവും ഈ സൈറ്റുമായി പങ്കിടും. ഈ സൈറ്റിന്റെ <ph name="BEGIN_LINK1" />സ്വകാര്യതാ നയവും<ph name="END_LINK1" /> <ph name="BEGIN_LINK2" />സേവന നിബന്ധനകളും<ph name="END_LINK2" /> കാണുക.</translation>
 <translation id="124116460088058876">കൂടുതൽ ഭാഷകൾ</translation>
 <translation id="1241792820757384812"><ph name="CHROME_CHANNEL" /> എന്നതിനുള്ള Google Password Manager-ൽ നിന്ന് നിങ്ങളുടെ പാസ്‌വേഡുകൾ ഇല്ലാതാക്കും. ഇപ്പോൾ ഡൗൺലോഡ് ചെയ്ത, പാസ്‌വേഡുകളുടെ ഫയൽ നിങ്ങൾ നിലനിർത്തും.</translation>
 <translation id="1242883863226959074">ഉപകരണം</translation>
@@ -94,7 +94,6 @@
 <translation id="1384704387250346179">Google Lens-ൽ ചിത്രം വിവർത്തനം ചെയ്യൂ <ph name="BEGIN_NEW" />പുതിയത്<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382"><ph name="LAST_UPDATED" /> ദിവസം മുമ്പ് സജീവമായിരുന്നു</translation>
 <translation id="1390418506739274310">Chrome-ൽ ലിങ്കുകൾ തുറക്കുന്ന മറ്റ് ആപ്പുകളിൽ നിന്നുള്ള ചരിത്രവും നിങ്ങൾ കണ്ടേക്കാം. നിങ്ങളുടെ Google Account-ന് <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> എന്നതിൽ മറ്റ് തരത്തിലുള്ള ബ്രൗസിംഗ് ചരിത്രം ഉണ്ടായിരിക്കാം.</translation>
-<translation id="13931502444227376">തുടരാൻ, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> നിങ്ങളുടെ പേരും ഇമെയിൽ വിലാസവും പ്രൊഫൈൽ ചിത്രവും ഈ സൈറ്റുമായി പങ്കിടും. ഈ സൈറ്റിന്റെ <ph name="BEGIN_LINK1" />സേവന നിബന്ധനകൾ<ph name="END_LINK1" /> കാണുക.</translation>
 <translation id="139752016751285248">നിരക്ക് ഉൾക്കാഴ്‌ചകളുടെ ബോട്ടം ഷീറ്റ് പൂർണ്ണമായ ഉയരത്തിൽ തുറന്നു</translation>
 <translation id="1397811292916898096"><ph name="PRODUCT_NAME" /> ഉപയോഗിച്ച് തിരയുക</translation>
 <translation id="1398057416966591719">Google Account-ൽ നിങ്ങൾക്ക്, <ph name="BEGIN_LINK1" />ഏതൊക്കെ Chrome ഡാറ്റയാണ് സംരക്ഷിച്ചിരിക്കുന്നത് എന്നത് മാനേജ് ചെയ്യാം<ph name="END_LINK1" />.
@@ -106,6 +105,7 @@
 <translation id="1413446866325418126">നിങ്ങളുടെ Google Account-ൽ ഡാറ്റ സംരക്ഷിക്കുക</translation>
 <translation id="1414981605391750300">Google-നെ ബന്ധപ്പെടുന്നു. ഇതിന് ഒരു മിനിറ്റ് എടുത്തേക്കാം…</translation>
 <translation id="1416550906796893042">ആപ്പ് പതിപ്പ്</translation>
+<translation id="1419753403124156396">Chrome റീസ്‌റ്റാർട്ട് ചെയ്യണോ?</translation>
 <translation id="1428770807407000502">സമന്വയം ഓഫാക്കണോ?</translation>
 <translation id="1430915738399379752">പ്രിന്റ് ചെയ്യുക</translation>
 <translation id="1435593198351412143">PDF-കൾ സ്വയമേവ തുറക്കുക</translation>
@@ -213,7 +213,6 @@
 <translation id="1974060860693918893">വിപുലമായത്</translation>
 <translation id="1984417487208496350">പരിരക്ഷയില്ല (ശുപാർശ ചെയ്യുന്നില്ല)</translation>
 <translation id="1986685561493779662">പേര് ഇതിനകം നിലവിലുണ്ട്</translation>
-<translation id="1995884366040846621">തുടരാൻ, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> നിങ്ങളുടെ പേരും ഇമെയിൽ വിലാസവും പ്രൊഫൈൽ ചിത്രവും ഈ സൈറ്റുമായി പങ്കിടും. ഈ സൈറ്റിന്റെ <ph name="BEGIN_LINK1" />സ്വകാര്യതാ നയം<ph name="END_LINK1" /> കാണുക.</translation>
 <translation id="200114059308480249">Google തിരയലുകളിൽ ചുറ്റുമുള്ള ടെക്സ്റ്റ് ഉൾപ്പെടുത്തണോ?</translation>
 <translation id="201060170519281460">നിങ്ങളുടെ പ്രൊഫൈൽ ലോക്ക്, സമന്വയിപ്പിച്ച പാസ്‌വേഡുകളും പേയ്‌മെന്റുകളും മറ്റും ഉൾപ്പെടെയുള്ള വിവരങ്ങൾ കാറിൽ സുരക്ഷിതമാക്കുന്നു.</translation>
 <translation id="2021896219286479412">പൂർണ്ണ സ്ക്രീൻ സൈറ്റ് നിയന്ത്രണങ്ങൾ</translation>
@@ -229,10 +228,12 @@
 <translation id="2067805253194386918">ടെക്‌സ്‌റ്റ്</translation>
 <translation id="2079545284768500474">പഴയപടിയാക്കുക</translation>
 <translation id="2082238445998314030"><ph name="RESULT_NUMBER" /> / <ph name="TOTAL_RESULTS" /> ഫലം</translation>
+<translation id="2088833076121753253">സ്വയമേവ പൂരിപ്പിക്കൽ സജ്ജീകരിക്കുന്നത് പൂർത്തിയാക്കാൻ, ഇപ്പോൾ Chrome റീസ്റ്റാർട്ട് ചെയ്യുക. നിങ്ങളുടെ ടാബുകൾ സ്വയമേവ വീണ്ടും തുറക്കും.</translation>
 <translation id="2091863218454846791">കോംപാക്റ്റ് കാഴ്‌ച കാണിക്കുന്നു</translation>
 <translation id="2093731487903423814">കഴിഞ്ഞ 15 മിനിറ്റ്</translation>
 <translation id="2096012225669085171">ഉപകരണങ്ങളിലുടനീളം സമന്വയിപ്പിക്കലും വ്യക്തിപരമാക്കലും നടത്തുക.</translation>
 <translation id="2100273922101894616">സ്വയമേവയുള്ള സൈൻ ഇൻ</translation>
+<translation id="2109384632594340939">പ്രൊഫൈൽ ചിത്രം</translation>
 <translation id="2111511281910874386">പേജിലേക്ക് പോകുക</translation>
 <translation id="2119609734654412418">നിങ്ങളുടെ ബുക്ക്‌മാർക്കുകൾ ഇവിടെ കാണാം</translation>
 <translation id="2122601567107267586">ആപ്പ് തുറക്കാനായില്ല</translation>
@@ -442,7 +443,6 @@
 <translation id="3037177537145227281">നിരക്ക് ട്രാക്ക് ചെയ്യുന്നു</translation>
 <translation id="3037517125981011456">Chrome-ൽ സൈൻ ഇൻ ചെയ്യാനുള്ള നിർദ്ദേശങ്ങൾ കാണിക്കുന്നു</translation>
 <translation id="3038272154009688107">എല്ലാ സൈറ്റുകളും കാണുക</translation>
-<translation id="3055259925215945098">ബുക്ക്‌മാർക്ക് നീക്കി</translation>
 <translation id="3055841435094910999">നിങ്ങളുടെ Chrome ഉപയോഗത്തെ കുറിച്ചുള്ള വിവരങ്ങൾ Google-ന് അയയ്ക്കും, എന്നാൽ അവയിൽ നിങ്ങളുടെ വ്യക്തിപര വിവരങ്ങൾ ഉൾപ്പെടുത്തില്ല\n\nChrome ക്രാഷാകുകയാണെങ്കിൽ ക്രാഷിനെ കുറിച്ചുള്ള വിശദാംശങ്ങളിൽ ചില വ്യക്തിപര വിവരങ്ങൾ അടങ്ങിയേക്കാം\n\nനിങ്ങൾ സമന്വയം ഓണാക്കുകയാണെങ്കിൽ, നിങ്ങൾ സന്ദർശിക്കുന്ന URL-കളെ കുറിച്ചുള്ള വിവരങ്ങളും മെട്രിക്കുകളിൽ ഉൾപ്പെടുത്തിയേക്കാം</translation>
 <translation id="3059531648236115056">സംഗ്രഹം ചേർക്കുക</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> ബുക്ക്‌മാർക്ക്}other{<ph name="BOOKMARKS_COUNT_MANY" /> ബുക്ക്‌മാർക്കുകൾ}}</translation>
@@ -521,6 +521,7 @@
 <translation id="3474624961160222204"><ph name="NAME" /> ആയി തുടരുക</translation>
 <translation id="3478363558367712427">നിങ്ങളുടെ തിരയല്‍ യന്ത്രം നിങ്ങൾക്ക് തിരഞ്ഞെടുക്കാം</translation>
 <translation id="3479552764303398839">ഇപ്പോഴല്ല</translation>
+<translation id="3488199663160411179">പേര്</translation>
 <translation id="3493531032208478708">നിർദ്ദേശിച്ച ഉള്ളടക്കത്തെക്കുറിച്ച് <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>
 <translation id="3495219333887281978">സൈൻ ഇൻ ചെയ്യാനുള്ള ബോട്ടം ഷീറ്റ് പകുതി ഉയരത്തിൽ തുറന്നു.</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -567,6 +568,7 @@
 <translation id="3700759344784597882">ഓണായിരിക്കുമ്പോൾ, പാസ്‌വേഡുകൾ നിങ്ങളുടെ അക്കൗണ്ടിൽ സംരക്ഷിക്കുന്നു. ഓഫായിരിക്കുമ്പോൾ, ഈ ഉപകരണത്തിൽ മാത്രമേ പാസ്‌വേഡുകൾ സംരക്ഷിക്കൂ.</translation>
 <translation id="3701167022068948696">ഇപ്പോൾ പരിഹരിക്കുക</translation>
 <translation id="3701515417135397388">ഡാറ്റാ ലംഘനത്തിൽ പാസ്‌വേഡ് അപഹരിക്കപ്പെട്ടാൽ നിങ്ങൾക്ക് മുന്നറിയിപ്പ് നൽകുക</translation>
+<translation id="3710501561113687889">തുടരാൻ, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> നിങ്ങളുടെ <ph name="FIELDS_STRING" /> ഈ സൈറ്റുമായി പങ്കിടും.</translation>
 <translation id="3714981814255182093">കണ്ടെത്തൽ ബാർ തുറക്കുക</translation>
 <translation id="3716182511346448902">ഈ പേജ് ഒരുപാട് മെമ്മറി ഉപയോഗിക്കുന്നു, അതിനാൽ Chrome ഇത് താൽക്കാലികമായി അവസാനിപ്പിച്ചു.</translation>
 <translation id="3718765429352682176">Chrome-ൽ ലിങ്കുകൾ തുറക്കുന്ന മറ്റ് ആപ്പുകളിൽ നിന്നുള്ള ചരിത്രവും നിങ്ങൾ കണ്ടേക്കാം.</translation>
@@ -594,6 +596,7 @@
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="38243391581572867">ഈ അക്കൗണ്ടിൽ ലെൻസ് ലഭ്യമല്ല.</translation>
 <translation id="3830886834687455630">നിങ്ങളുടെ പാസ്‌വേഡുകൾ പരിശോധിക്കാൻ Google Play സേവനങ്ങൾ അപ്ഡേറ്റ് ചെയ്യുക</translation>
+<translation id="3843603704176567761">ഈ ഉപകരണത്തിൽ പാസ്‌വേഡുകൾ ഉടൻ പ്രവർത്തനം നിർത്തിയേക്കാം. നിങ്ങളുടെ പാസ്‌വേഡുകൾ ഉപയോഗിക്കുന്നത് തുടരാൻ, Google Play സേവനങ്ങൾ അപ്ഡേറ്റ് ചെയ്യുക.</translation>
 <translation id="3845098929839618392">അദൃശ്യ ടാബിൽ തുറക്കുക</translation>
 <translation id="3847319713229060696">എല്ലാവർക്കുമായി വെബിലെ സുരക്ഷ മെച്ചപ്പെടുത്താൻ സഹായിക്കുക</translation>
 <translation id="3856096718352044181">ഇത് സാധുതയുള്ളൊരു ദാതാവാണെന്ന് പരിശോധിച്ചുറപ്പിക്കുക അല്ലെങ്കിൽ പിന്നീട് വീണ്ടും ശ്രമിക്കുക</translation>
@@ -666,6 +669,7 @@
 <translation id="4216511743389425832">ഈ പേജ് കേൾക്കുക</translation>
 <translation id="4225725533026049334">ഫോളോ ചെയ്യുന്നത്</translation>
 <translation id="4225895483398857530">ടൂള്‍ബാര്‍ കുറുക്കുവഴി</translation>
+<translation id="4232376164796433044">പാസ്‌വേഡും സ്വയമേവ പൂരിപ്പിക്കലും</translation>
 <translation id="4242533952199664413">ക്രമീകരണം തുറക്കുക</translation>
 <translation id="4248098802131000011">ഡാറ്റാ ലംഘനങ്ങളിൽ നിന്നും മറ്റ് സുരക്ഷാ പ്രശ്‌നങ്ങളിൽ നിന്നും നിങ്ങളുടെ പാസ്‌വേഡുകൾ സുരക്ഷിതമായി സൂക്ഷിക്കുക</translation>
 <translation id="424864128008805179">Chrome-ൽ നിന്ന് സൈൻ ഔട്ട് ചെയ്യണോ?</translation>
@@ -674,6 +678,7 @@
 <translation id="4257230861809842349">Google Password Manager-ൽ നിന്ന് പാസ്‌വേഡുകൾ ഇല്ലാതാക്കണോ?</translation>
 <translation id="426652736638196239">ഈ ഉപകരണത്തിൽ മാത്രമേ ഈ IBAN സംരക്ഷിക്കൂ</translation>
 <translation id="4269820728363426813">ലിങ്ക് വിലാസം പകർത്തുക</translation>
+<translation id="4270730597186910506">ഒരു ഉൽപ്പന്നം ട്രാക്ക് അല്ലെങ്കിൽ അൺട്രാക്ക് ചെയ്യുക.</translation>
 <translation id="4277529130885813215">മറ്റൊരു ഉപകരണം ഉപയോഗിക്കുക</translation>
 <translation id="4282440837784183472">നിങ്ങളുടെ സ്ഥാപനമായ <ph name="MANAGED_DOMAIN" /> ആണ് നിങ്ങൾ സൈൻ ഇൻ ചെയ്യുന്ന അക്കൗണ്ടും Chrome എങ്ങനെ ഉപയോഗിക്കാമെന്നതും മാനേജ് ചെയ്യുന്നത്. ചില ഫീച്ചറുകൾ സജ്ജീകരിക്കാനും നിയന്ത്രിക്കാനും നിങ്ങളുടെ അഡ്‌മിന് കഴിയും.</translation>
 <translation id="4285846616383034558">കുക്കികൾ, കാഷെ, മറ്റ് സൈറ്റ് ഡാറ്റ എന്നിവ</translation>
@@ -748,6 +753,7 @@
 <translation id="4609429330876432068">Chrome, <ph name="CHROME_CHANNEL" /> എന്നിവയ്ക്കുള്ള നിങ്ങളുടെ, സംരക്ഷിച്ച പാസ്‌വേഡുകളുടെ ലിസ്‌റ്റുകൾ ലയിപ്പിച്ചു. നിങ്ങൾക്ക് തുടർന്നും രണ്ട് ആപ്പുകളിലും നിങ്ങളുടെ സംരക്ഷിച്ച പാസ്‌വേഡുകളെല്ലാം സ്വയമേവ പൂരിപ്പിക്കാനാകും.</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> തുറക്കുക</translation>
 <translation id="4619564267100705184">ഇത് നിങ്ങൾ തന്നെയാണെന്ന് പരിശോധിച്ചുറപ്പിക്കുക</translation>
+<translation id="4620032614425803188">സ്വയമേവ പൂരിപ്പിക്കൽ സേവനങ്ങൾ</translation>
 <translation id="4624065194742029982">Chrome അദൃശ്യ മോഡ്</translation>
 <translation id="4634124774493850572">പാസ്‌വേഡ് ഉപയോഗിക്കുക</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{അപഹരിക്കപ്പെട്ട ഒരു പാസ്‌വേഡ്}other{അപഹരിക്കപ്പെട്ട # പാസ്‌വേഡുകൾ}}</translation>
@@ -900,6 +906,7 @@
 <translation id="5264813352784073502">കഴിഞ്ഞ 24 മണിക്കൂർ</translation>
 <translation id="5267572070504076962">അപകടകരമായ സൈറ്റുകളിൽ നിന്ന് പരിരക്ഷ നേടാൻ സുരക്ഷിത ബ്രൗസിംഗ് ഓണാക്കുക</translation>
 <translation id="5271967389191913893">ഡൗൺലോഡ് ചെയ്യേണ്ട ഉള്ളടക്കം ഉപകരണത്തിന് തുറക്കാനാവില്ല.</translation>
+<translation id="5273031377282080577">ഈ ക്രമീകരണം നിങ്ങളുടെ അഡ്‌മിൻ മാനേജ് ചെയ്യുന്നു.</translation>
 <translation id="5292796745632149097">ഇതിലേക്ക് അയയ്ക്കുക</translation>
 <translation id="5301876394151419436">നിങ്ങൾ <ph name="EMAIL" /> ആയി സൈൻ ഇൻ ചെയ്തിരിക്കുന്നു. നിങ്ങൾക്ക് ക്രമീകരണത്തിൽ ഏതുസമയത്തും സമന്വയിപ്പിക്കൽ നിർത്താം. നിങ്ങളുടെ ചരിത്രം അടിസ്ഥാനമാക്കി Search-ഉം മറ്റ് സേവനങ്ങളും Google വ്യക്തിപരമാക്കിയേക്കാം.</translation>
 <translation id="5304593522240415983">ഈ ഫീൽഡ് ശൂന്യമായിടാൻ കഴിയില്ല</translation>
@@ -919,7 +926,6 @@
 <translation id="5394331612381306435">അദൃശ്യ മോഡിൽ നിന്ന് പുറത്തുകടക്കുക</translation>
 <translation id="5395376160638294582">നിങ്ങളുടെ Google അക്കൗണ്ടിലെ Chrome ഡാറ്റ എല്ലായ്‌പ്പോഴും ഉപയോഗിക്കാനാകുമെന്ന് ഉറപ്പാക്കുക</translation>
 <translation id="539881862970320163">ശക്തമായ പാസ്‌വേഡ് നിർദ്ദേശിച്ചു. കീബോർഡ് മറച്ചിരിക്കുന്നു.</translation>
-<translation id="5401851137404501592">തുടരാൻ, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> നിങ്ങളുടെ പേരും ഇമെയിൽ വിലാസവും പ്രൊഫൈൽ ചിത്രവും ഈ സൈറ്റുമായി പങ്കിടും.</translation>
 <translation id="5409881200985013443"><ph name="CLIENT_NAME" /> എന്നതിൽ <ph name="ONE_TIME_CODE" /> നൽകണോ?</translation>
 <translation id="5414836363063783498">പരിശോധിച്ചുറപ്പിക്കുന്നു...</translation>
 <translation id="5415871492522952905">നിങ്ങളുടെ എല്ലാ ഉപകരണങ്ങളിലും നിങ്ങളുടെ ചരിത്രവും ടാബുകളും ഉണ്ടായിരിക്കും, അതിനാൽ നിങ്ങൾ ചെയ്തുകൊണ്ടിരുന്നത് തുടരാവുന്നതാണ്</translation>
@@ -1108,7 +1114,6 @@
 <translation id="6255809143828972562">Chrome-ൽ നിന്നുള്ള ടൂളുകൾ ഉപയോഗിച്ച്, നിങ്ങൾക്ക് സുരക്ഷിതമായി ബ്രൗസ് ചെയ്യാനും നിയന്ത്രിക്കാനുമാകും</translation>
 <translation id="6264376385120300461">എന്തായാലും ഡൗൺലോഡ് ചെയ്യുക</translation>
 <translation id="6277522088822131679">പേജ് പ്രിന്റുചെയ്യുന്നതിൽ ഒരു പ്രശ്‌നമുണ്ടായി. വീണ്ടും ശ്രമിക്കുക.</translation>
-<translation id="6277722725779679269">നിരക്ക് ട്രാക്ക് ചെയ്യൽ അപ്ഡേറ്റ് ചെയ്യാനായില്ല</translation>
 <translation id="6278428485366576908">തീം</translation>
 <translation id="6284472661216707937">'നിങ്ങളുടെ എല്ലാ ഉപകരണങ്ങളിലെയും പാസ്‌വേഡുകൾ' സംബന്ധിച്ച ഷീറ്റ് അടച്ചു</translation>
 <translation id="6295158916970320988">എല്ലാ സൈറ്റുകളും</translation>
@@ -1234,6 +1239,7 @@
 <translation id="6775840696761158817">വിലാസ ബാറിലോ തിരയൽ ബോക്‌സിലോ നിങ്ങൾ ടാപ്പ് ചെയ്യുമ്പോഴോ ടൈപ്പ് ചെയ്യുമ്പോഴോ, നിങ്ങളുടെ ഡിഫോൾട്ട് തിരയൽ യന്ത്രത്തിൽ നിന്നുള്ള നിർദ്ദേശങ്ങൾ കാണാം. ഇത് അദൃശ്യ മോഡിൽ ഓഫാണ്.</translation>
 <translation id="6785476624617658922">Chrome, ChromeOS അധിക സേവന നിബന്ധനകൾ</translation>
 <translation id="6795633245022906657">പുതിയ ടാബ് വേഗത്തിൽ തുറക്കുക. ഈ കുറുക്കുവഴി എഡിറ്റ് ചെയ്യാൻ ക്രമീകരണത്തിലേക്ക് പോകുക.</translation>
+<translation id="679956319013005046">നിങ്ങൾ തിരഞ്ഞെടുക്കുന്ന സേവനത്തിൽ സ്വയമേവ പൂരിപ്പിക്കൽ സജ്ജീകരിക്കാൻ, ആദ്യം <ph name="BEGIN_LINK" />Android ക്രമീകരണത്തിൽ<ph name="END_LINK" /> ആ സേവനം ചേർക്കുക.</translation>
 <translation id="6802555630140434547">വിൻഡോ അടയ്ക്കും</translation>
 <translation id="6803791793483522764">അറിയിപ്പുകൾ അവലോകനം ചെയ്യുക</translation>
 <translation id="6811034713472274749">പേജ്, കാണാൻ തയ്യാറാണ്</translation>
@@ -1465,6 +1471,7 @@
 <translation id="7707922173985738739">മൊബൈൽ ഡാറ്റ ഉപയോഗിക്കുക</translation>
 <translation id="7709918231054955894">നിങ്ങളുടെ എല്ലാ ടാബുകളും നേടുക</translation>
 <translation id="7733878270780732638">ഉപകരണത്തിൽ ആവശ്യത്തിന് ഇടമില്ല.</translation>
+<translation id="774876555279732384">സ്വയമേവ പൂരിപ്പിക്കൽ സേവനങ്ങൾ <ph name="BEGIN_LINK" />Android ക്രമീകരണത്തിലും<ph name="END_LINK" /> മാനേജ് ചെയ്യാനാകും.</translation>
 <translation id="7759809451544302770">ഓപ്‌ഷണൽ</translation>
 <translation id="7762668264895820836">SD കാർഡ് <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">വിലാസം ചേർക്കുക</translation>
@@ -1777,6 +1784,7 @@
 <translation id="9108312223223904744">സുരക്ഷാ കീയായി ഫോൺ</translation>
 <translation id="9108808586816295166">എപ്പോഴും സുരക്ഷിത DNS ലഭ്യമായേക്കില്ല</translation>
 <translation id="910908805481542201">ഇത് പരിഹരിക്കാൻ എന്നെ സഹായിക്കുക</translation>
+<translation id="9130135798965366513">തുടരാൻ, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> നിങ്ങളുടെ <ph name="FIELDS_STRING" /> ഈ സൈറ്റുമായി പങ്കിടും. ഈ സൈറ്റിന്റെ <ph name="BEGIN_LINK1" />സ്വകാര്യതാ നയവും<ph name="END_LINK1" /> <ph name="BEGIN_LINK2" />സേവന നിബന്ധനകളും<ph name="END_LINK2" /> കാണുക.</translation>
 <translation id="9131209053278896908">ബ്ലോക്ക് ചെയ്ത സൈറ്റുകൾ ഇവിടെ ദൃശ്യമാകും</translation>
 <translation id="9133397713400217035">ഓഫ്‍ലൈൻ ഉള്ളടക്കങ്ങൾ അടുത്തറിയൂ</translation>
 <translation id="9143389653531441385"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ഉപയോഗിച്ച് സൈൻ അപ്പ് ചെയ്യുക</translation>

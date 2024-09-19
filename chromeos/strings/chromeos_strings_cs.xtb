@@ -35,6 +35,7 @@
 <translation id="1155154308031262006">Zadejte pokyn</translation>
 <translation id="115705039208660697">ananasy</translation>
 <translation id="1164939766849482256">Spořič obrazovky Od úsvitu do setmění</translation>
+<translation id="1166688493741195933">Názvy nahrávek se nepodařilo vygenerovat</translation>
 <translation id="1167755866710282443">Otevřete nabídku pro přizpůsobení kláves. Nabídku přesunete přetažením.</translation>
 <translation id="1171349345463658120">písečná laguna</translation>
 <translation id="1173894706177603556">Přejmenovat</translation>
@@ -341,6 +342,7 @@
 <translation id="2560876255701405320">Seznam zvukových nahrávek</translation>
 <translation id="2561093647892030937">citrony</translation>
 <translation id="2570743873672969996">Běží test <ph name="TEST_NAME" />…</translation>
+<translation id="2573178735329662769">Nahrává se veškerý zvuk Chromebooku</translation>
 <translation id="2575552334616524665">V Nastavení nebo v nabídce <ph name="THREE_DOTS_MENU_ICON" /> můžete tuto funkci zapnout</translation>
 <translation id="2576253868710695442">Může v úložišti zabrat až 2 GB</translation>
 <translation id="2584547424703650812">Zářivé krajiny</translation>
@@ -493,6 +495,7 @@
 <translation id="3502426834823382181">zobrazit všechny aplikace</translation>
 <translation id="3510890413042482857">Odesílat <ph name="BEGIN_LINK1" />údaje sledování výkonu<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Aktualizace ChromeOS</translation>
+<translation id="3522508178835057262">Přepisy delší než <ph name="MAX_WORD_LENGTH" /> slov nejsou v současné době podporovány</translation>
 <translation id="3527036260304016759">Tisk selhal – neznámá chyba</translation>
 <translation id="353214771040290298">Úpravy dokončeny</translation>
 <translation id="3532980081107202182">Zbývající minuty: <ph name="MIN_REMAINING" /></translation>
@@ -508,6 +511,7 @@
 <translation id="3588034708467091142">Zkontrolujte připojení k internetu a zkuste to znovu.</translation>
 <translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> je uživatelsky přívětivý název pro <ph name="APN_NAME" />.</translation>
 <translation id="3595596368722241419">Baterie je nabitá</translation>
+<translation id="3600063043775287169">Když je zvuk Chromebooku zapnutý, zaznamenává Diktafon veškerý zvuk přehrávaný na tomto zařízení. Ujistěte se, že chcete nahrávat všechny zvuky.</translation>
 <translation id="3600339377155080675">Zrcadlení obrazovky</translation>
 <translation id="3602290021589620013">Náhled</translation>
 <translation id="3603829704940252505">Avatar</translation>
@@ -710,6 +714,7 @@
 <translation id="4602266091140407479">Mikrofon</translation>
 <translation id="4607282946861182308">Pro tenhle pokyn obrázky vytvořit nelze. Zkuste jiný.</translation>
 <translation id="4609350030397390689">Snížit jas</translation>
+<translation id="4623061655523261501">Názvy nahrávek byly úspěšně vygenerovány</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> z <ph name="TOTAL_PAGE_NUMBER" />. Tiskovou úlohu zrušíte stisknutím klávesy Enter.</translation>
 <translation id="463791356324567266">Rušení skenování…</translation>
 <translation id="4644611440022666152">Zapnout a stáhnout</translation>
@@ -1042,6 +1047,8 @@
 <translation id="628726841779494414">Spravujte své tiskárny v nastavení tiskáren</translation>
 <translation id="6292095526077353682">Doba zobrazení spořiče obrazovky při nabíjení</translation>
 <translation id="629550705077076970">stmívání klávesnice</translation>
+<translation id="6301193653204230066">Bezpečnostní reset vypne rozšíření prohlížeče Chrome a resetuje síťová a další nastavení na bezpečné výchozí hodnoty.
+          Vaše karty, soubory, soubory cookie a historie se nezmění.</translation>
 <translation id="6302401976930124515">Test <ph name="TEST_NAME" /> byl zrušen</translation>
 <translation id="631063167932043783">Prozkoumat aplikaci</translation>
 <translation id="6318437367327684789">navždy</translation>
@@ -1051,6 +1058,7 @@
 <translation id="6325525973963619867">Došlo k selhání</translation>
 <translation id="6327262166342360252">Tato tapeta byla vytvořena pomocí umělé inteligence s použitím následujícího textu: „<ph name="PROMPT" />“.</translation>
 <translation id="6331191339300272798">Automatický tmavý motiv</translation>
+<translation id="6335228876613776082">Stažení modelu bylo dokončeno</translation>
 <translation id="6340526405444716530">Personalizace</translation>
 <translation id="6348252528297699679">Přístup k poloze můžete vypnout v Nastavení &gt; Ochrana soukromí a zabezpečení &gt; Nastavení ochrany soukromí &gt; Přístup k poloze. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">Uživatelské jméno a heslo</translation>
@@ -1212,6 +1220,7 @@
 <translation id="708426984172631313">ZASTAVENO</translation>
 <translation id="7086168019478250425">pláž s bioluminiscencí</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="7086916854357021265">Generování názvů nahrávek</translation>
 <translation id="7097908713073775559">pestrobarevné</translation>
 <translation id="710028965487274708">Nezdařilo se – autorizace selhala</translation>
 <translation id="7101959270679078188">Pokud chcete v procesu aktualizace pokračovat, odemkněte zařízení <ph name="DEVICE_NAME" /></translation>
@@ -1544,6 +1553,7 @@ Pokud přepisy chcete získat, stáhněte si pro ně model (až 100 MB).</trans
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Album Fotek Google</translation>
 <translation id="8775713578693478175">APN modemu</translation>
+<translation id="877735394245039557">Probíhá stahování modelu</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Je možné, že tato síť používá captive portál</translation>
 <translation id="8797082062139985406">Vytvořte název pomocí Google AI</translation>

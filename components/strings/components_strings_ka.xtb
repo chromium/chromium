@@ -2000,6 +2000,7 @@
 <translation id="467662567472608290">ეს სერვერი ვერ ამტკიცებს რომ ის არის <ph name="DOMAIN" />; მისი უსაფრთხოების სერტიფიკატი შეიცავს შეცდომას. ეს შეიძლება გამოწვეული იყოს კონფიგურაციით ან თავდამსხმელის მიერ თქვენი კავშირის გადაჭრით.</translation>
 <translation id="4677585247300749148"><ph name="URL" /> ითხოვს მარტივ წვდომასთან დაკავშირებულ მოვლენებზე რეაგირების ნებართვა</translation>
 <translation id="467809019005607715">Google Slides</translation>
+<translation id="4678379207584374453"><ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
 <translation id="4682496302933121474">გსურთ გვერდის თარგმნა?</translation>
 <translation id="468314109939257734">იხილეთ თქვენი ვირტუალური ბარათის ნომერი</translation>
 <translation id="4686942373615810936">შეიქმნა ახლახან</translation>
@@ -2133,7 +2134,6 @@
 <translation id="4901778704868714008">შენახვა...</translation>
 <translation id="4901952598169637881">ყოველდღიური ფეხსაცმელი</translation>
 <translation id="4905659621780993806">თქვენი ადმინისტრატორი ავტომატურად გადატვირთავს თქვენს მოწყობილობას <ph name="DATE" />-ის <ph name="TIME" />-ზე. მოწყობილობის გადატვირთვამდე შეინახეთ გახსნილი ერთეულები.</translation>
-<translation id="4913784027728226227">ამ პაროლის თქვენს ყველა მოწყობილობაში შესანახად და გამოსაყენებლად საჭიროა ვინაობის დადასტურება</translation>
 <translation id="4913987521957242411">ზედა მარცხენა ნაწილის გახვრეტა</translation>
 <translation id="4916389289686916969">სატელევიზიო რეალითი შოუები</translation>
 <translation id="4917064667437236721">სასურათე ცილინდრი</translation>
@@ -3137,6 +3137,7 @@
 <translation id="6767985426384634228">გსურთ, განაახლოთ მისამართი?</translation>
 <translation id="6770747695101757579">ქაღალდი (ბამბის)</translation>
 <translation id="677257480647123231">ბავშვთა ინტერნეტუსაფრთხოება</translation>
+<translation id="6772959465807028761">YouTube-ის გამოსაყენებლად განაგრძეთ თქვენი Google ანგარიშით</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">გამოიყენეთ YouTube თქვენი მშობლის არჩევანით</translation>
 <translation id="6779348349813025131">Google პაროლების მმართველი საჭიროებს წვდომას MacOS Keychain-ზე</translation>
@@ -4303,6 +4304,7 @@
 <translation id="8891727572606052622">პროქსის რეჟიმი არასწორია.</translation>
 <translation id="8894794286471754040">ჯერ გრძელი კიდე</translation>
 <translation id="8895334001368918465">Chrome-ში ავტომატური შევსების სხვა სერვისის გამოსაყენებლად ჩართეთ ის Android-ის პარამეტრებიდან ან აქედან</translation>
+<translation id="8897221284075091877">ამ კონტენტის ნახვის სათხოვნელად განაგრძეთ თქვენი Google ანგარიშით</translation>
 <translation id="8897428486789851669">ცურვა</translation>
 <translation id="8899807382908246773">მომაბეზრებელი რეკლამა</translation>
 <translation id="8903921497873541725">მასშტაბის გადიდება</translation>

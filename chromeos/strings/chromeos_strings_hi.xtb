@@ -35,6 +35,7 @@
 <translation id="1155154308031262006">कोई प्रॉम्प्ट डालें</translation>
 <translation id="115705039208660697">अनन्नास</translation>
 <translation id="1164939766849482256">डॉन टू डार्क स्क्रीन सेवर</translation>
+<translation id="1166688493741195933">रिकॉर्डिंग के नाम जनरेट नहीं किए जा सके</translation>
 <translation id="1167755866710282443">बटन को पसंद के मुताबिक बनाने के लिए मेन्यू खोलें. मेन्यू की जगह बदलने के लिए, उसे खींचें और छोड़ें.</translation>
 <translation id="1171349345463658120">रेतीला लगून</translation>
 <translation id="1173894706177603556">नाम बदलें</translation>
@@ -494,6 +495,7 @@
 <translation id="3502426834823382181">सभी ऐप्लिकेशन देखें</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />परफ़ॉर्मेंस ट्रेस डेटा<ph name="END_LINK1" /> भेजें</translation>
 <translation id="3517001332549868749">ChromeOS का अपडेट</translation>
+<translation id="3522508178835057262">फ़िलहाल, <ph name="MAX_WORD_LENGTH" /> से ज़्यादा शब्दों की ट्रांसक्रिप्ट का इस्तेमाल नहीं किया जा सकता</translation>
 <translation id="3527036260304016759">प्रिंट नहीं हो पाया - अज्ञात गड़बड़ी</translation>
 <translation id="353214771040290298">बदलाव हो गया</translation>
 <translation id="3532980081107202182">करीब <ph name="MIN_REMAINING" /> मिनट बचे हैं</translation>
@@ -712,6 +714,7 @@
 <translation id="4602266091140407479">माइक</translation>
 <translation id="4607282946861182308">इसकी इमेज नहीं बनाई जा सकतीं. किसी अन्य इमेज का निर्देश देकर देखें.</translation>
 <translation id="4609350030397390689">कीबोर्ड की रोशनी कम करने वाला बटन</translation>
+<translation id="4623061655523261501">रिकॉर्डिंग के नाम जनरेट हो गए हैं</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="TOTAL_PAGE_NUMBER" /> में से <ph name="PRINTED_PAGE_NUMBER" />. प्रिंट का काम बंद करने के लिए enter का बटन दबाएं.</translation>
 <translation id="463791356324567266">स्कैनिंग रद्द की जा रही है...</translation>
 <translation id="4644611440022666152">चालू करें और डाउनलोड करें</translation>
@@ -1218,6 +1221,7 @@
 <translation id="708426984172631313">रोका गया</translation>
 <translation id="7086168019478250425">बायोल्यूमिनेसेंट बीच</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="7086916854357021265">रिकॉर्डिंग के नाम जनरेट किए जा रहे हैं</translation>
 <translation id="7097908713073775559">कलरफ़ुल</translation>
 <translation id="710028965487274708">नहीं मिल सकी - अनुमति नहीं मिल सकी</translation>
 <translation id="7101959270679078188">अपडेट की प्रोसेस जारी रखने के लिए, <ph name="DEVICE_NAME" /> को अनलॉक करें</translation>

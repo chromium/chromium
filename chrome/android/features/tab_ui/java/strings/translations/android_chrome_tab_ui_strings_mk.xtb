@@ -55,7 +55,6 @@
 <translation id="3194464645767632461">оценување</translation>
 <translation id="3275186015127230296">{NUMBER_OF_TABS_ADDED,plural, =1{Додадени картички: <ph name="ONE_ADDED" />, променети: <ph name="ANY_CHANGED" />}one{Додадени картички: <ph name="MANY_ADDED" />, променети: <ph name="ANY_CHANGED" />}other{Додадени картички: <ph name="MANY_ADDED" />, променети: <ph name="ANY_CHANGED" />}}</translation>
 <translation id="3291470810748040983">Ќе добиете известување ако има пониска цена во некоја отворена картичка</translation>
-<translation id="3322827343001922122">Отворете го менито со дејства на група картички за групата картички <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3328308545011660196">Предлог: <ph name="NUMBER_OF_TABS" /> картички изгледаат поврзани. Да се групираат?</translation>
 <translation id="3547352561153509682">Ова ќе ја избрише групата од сите уреди најавени на <ph name="USER_EMAIL" /></translation>
 <translation id="3613492231657284463">Скриј го дијалогот со неактивни картички</translation>
@@ -104,7 +103,6 @@
 <translation id="5400836586163650660">Сива</translation>
 <translation id="5490235265819901748">Групата картички се прошири</translation>
 <translation id="5494920125229734069">Избери сè</translation>
-<translation id="5549653163690032080">Отворете го менито со дејства на групи картички за споделената група картички <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Затвори ја групата картички со <ph name="TABS_COUNT_ONE" /> картичка, во <ph name="COLOR_NAME" /> боја.}one{Затвори ја групата картички со <ph name="TABS_COUNT_MANY" /> картичка, во <ph name="COLOR_NAME" /> боја.}other{Затвори ја групата картички со <ph name="TABS_COUNT_MANY" /> картички, во <ph name="COLOR_NAME" /> боја.}}</translation>
 <translation id="5556417849629758491">Прикажи информации за продавница, опција достапна во горниот дел од екранот</translation>
 <translation id="5627941783489838464">Нема новости во картичките</translation>

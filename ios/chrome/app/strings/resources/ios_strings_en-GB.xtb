@@ -50,6 +50,7 @@
 <translation id="1219674500290482172">Unable to connect to the Internet.</translation>
 <translation id="1227113644794103810">Inactive tabs</translation>
 <translation id="1231733316453485619">Turn on sync?</translation>
+<translation id="1253032109800629289">Hide 'Get price tracking notifications'</translation>
 <translation id="1258491128795710625">What’s new</translation>
 <translation id="1263231323834454256">Reading list</translation>
 <translation id="1263433075299269530">Your last open tab</translation>
@@ -395,6 +396,7 @@ Your search engine is <ph name="DSE_NAME" />. See their instructions for deletin
 <translation id="2870560284913253234">Site</translation>
 <translation id="2876369937070532032">Sends URLs of some pages that you visit to Google, when your security is at risk</translation>
 <translation id="2883151425485251736">See and edit topics that you've hidden from your account</translation>
+<translation id="2888631381369839306">Price tracking notifications turned on</translation>
 <translation id="288902476966286676">Return to sender</translation>
 <translation id="2894757982205307093">New tab in group</translation>
 <translation id="2905479111267140204">You have <ph name="NUMBER_OF_PASSWORDS" /> reused passwords that could put your security at risk.</translation>
@@ -479,6 +481,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="3348387552617855658">This card helps you keep track of your packages and gives you important delivery updates.</translation>
 <translation id="3349031117032695619">Block pop-ups</translation>
 <translation id="3349676726073650389">The sites and searches you follow are saved in your Google Account. You can manage your follows in settings at any time.</translation>
+<translation id="3365529507898144230">Save in Photos</translation>
 <translation id="3371831930909698441">Translate is available. Options available near bottom of the screen.</translation>
 <translation id="3377063233124932127">Now your saved bookmarks, passwords and more are at the top.</translation>
 <translation id="3380352560400387991">This site is trying to open an application. This will take you out of Incognito.</translation>
@@ -879,6 +882,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="5271265092610673171">{count,plural, =1{A required field is empty. Fill it before saving.}other{Some required fields are empty. Fill them before saving.}}</translation>
 <translation id="5271549068863921519">Save password</translation>
 <translation id="5279600392753459966">Block all</translation>
+<translation id="5282340693022193851">To get price tracking notifications, turn on notifications in your iOS Settings.</translation>
 <translation id="5294624619177114121">Mobile notifications</translation>
 <translation id="5295239312320826323">Remove account <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Show</translation>
@@ -1484,7 +1488,6 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8011489434346330032">Web Inspector</translation>
 <translation id="802154636333426148">Download failed</translation>
 <translation id="8023878949384262191">Expands the section.</translation>
-<translation id="8031932676440435547">Save in Photos</translation>
 <translation id="8032569120109842252">Following</translation>
 <translation id="8035133914807600019">New folder…</translation>
 <translation id="8035412398498507358">Photos</translation>

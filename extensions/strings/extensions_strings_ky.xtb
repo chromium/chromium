@@ -19,7 +19,6 @@
 <translation id="3115238746683532089"><ph name="VENDOR_ID" /> дегенден белгисиз өндүрүм <ph name="PRODUCT_ID" /> (сериялык номери – <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">crx файлы алмаштырылган жок. Файлдын колдонулуп жаткандыгын текшериңиз.</translation>
 <translation id="3163201441334626963"><ph name="VENDOR_ID" /> дегенден белгисиз өндүрүм <ph name="PRODUCT_ID" /></translation>
-<translation id="3369521687965833290">Кеңейтүүнүн топтому чечилбей жатат. Аны коопсуз чечүү үчүн, профиль каталогуңузга алып барган диск тамгасы менен башталып, байламта, орнотуу түйүнү же символдук шилтеме камтылбаган жол болушу керек. Профилиңиздин андай жолу жок.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (сериялык номери – <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="VENDOR_ID" /> дегенден <ph name="PRODUCT_NAME" /> (сериялык номери – <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Купуя ачкычтын киргизүү мааниси жарактуу жол болушу керек.</translation>
@@ -39,7 +38,6 @@
 <translation id="5972529113578162692">Бул машинанын администратору <ph name="EXTENSION_NAME" /> орнотулушун талап кылууда. Аны орнотуудан чыгаруу мүмкүн эмес.</translation>
 <translation id="6027032947578871493"><ph name="VENDOR_NAME" /> дегенден белгисиз өндүрүм <ph name="PRODUCT_ID" /> (сериялык номери – <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="VENDOR_ID" /> дегенден <ph name="PRODUCT_NAME" /></translation>
-<translation id="6143635259298204954">Кеңейтүүнү топтомдон чыгаруу мүмкүн болбой жатат. Аны топтомдон коопсуз шартта чыгаруу үчүн, символдук шилтемеси жок профилдик каталогуңузга алып баруучу жол болушу керек. Профилиңиздин мындай жолу жок.</translation>
 <translation id="6322279351188361895">Купуя ачкычты окуй албай койду.</translation>
 <translation id="6391538222494443604">Киргизүү каталогу чыгарылышы керек.</translation>
 <translation id="641087317769093025">Кысылган кеңейтүүнү чыгара алган жок</translation>

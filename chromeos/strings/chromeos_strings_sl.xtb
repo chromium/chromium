@@ -127,6 +127,7 @@
 <translation id="1567064801249837505">Albumi</translation>
 <translation id="1572585716423026576">Nastavi kot ozadje</translation>
 <translation id="1578784163189013834">Izbira ozadja ohranjevalnika zaslona</translation>
+<translation id="1587031308639983732">Časovne spremembe morda niso točne. To nastavitev upravlja skrbnik.</translation>
 <translation id="1588438908519853928">Običajen</translation>
 <translation id="1591562245178063882">Ta mesec</translation>
 <translation id="1593528591614229756">Izberite APN-je, ki jih zagotavlja mobilni operater ali skrbnik. Če izberete APN, onemogočite vse APN-je po meri. Neveljavni APN-ji lahko motijo vašo mobilno povezavo. <ph name="LINK_BEGIN" />Več o tem<ph name="LINK_END" /></translation>
@@ -1047,6 +1048,8 @@
 <translation id="628726841779494414">Upravljanje tiskalnikov v nastavitvah tiskalnika</translation>
 <translation id="6292095526077353682">Med polnjenjem pokaži ohranjevalnik zaslona za</translation>
 <translation id="629550705077076970">zatemnitev osvetlitve tipkovnice</translation>
+<translation id="6301193653204230066">Varnostna ponastavitev izklopi razširitve brskalnika Chrome ter omrežne in druge nastavitve ponastavi na varne privzete nastavitve.
+          Zavihki, datoteke, piškotki in zgodovina ostanejo nespremenjeni.</translation>
 <translation id="6302401976930124515">Preizkus <ph name="TEST_NAME" /> je preklican.</translation>
 <translation id="631063167932043783">Raziščite aplikacijo</translation>
 <translation id="6318437367327684789">za vedno</translation>
@@ -1056,6 +1059,7 @@
 <translation id="6325525973963619867">Ni uspelo</translation>
 <translation id="6327262166342360252">To zaslonsko ozadje je bilo ustvarjeno z umetno inteligenco s tem besedilom: »<ph name="PROMPT" />«.</translation>
 <translation id="6331191339300272798">Samodejna temna tema</translation>
+<translation id="6335228876613776082">Prenos modela je končan</translation>
 <translation id="6340526405444716530">Prilagoditev</translation>
 <translation id="6348252528297699679">Lokacijo lahko izklopite v Nastavitve &gt; Zasebnost in varnost &gt; Nastavitve zasebnosti &gt; Dostop do lokacije. <ph name="LINK_BEGIN" />Več o tem<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">Uporabniško ime in geslo</translation>
@@ -1163,6 +1167,7 @@
 <translation id="6831043979455480757">Prevedi</translation>
 <translation id="6846843854964504403">Varnostna ponastavitev</translation>
 <translation id="6853312040151791195">Hitrost praznjenja</translation>
+<translation id="6862228900689076919">To funkcijo upravlja skrbnik</translation>
 <translation id="6862416241246624313">Povratne informacije so poslane</translation>
 <translation id="6866732840889595464">marjetica</translation>
 <translation id="6871256179359663621">svetlo vijolične</translation>
@@ -1550,6 +1555,7 @@
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Album v Googlu Foto</translation>
 <translation id="8775713578693478175">APN modema</translation>
+<translation id="877735394245039557">Poteka prenos modela</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">To omrežje ima morda prestrezni portal.</translation>
 <translation id="8797082062139985406">Ustvarjanje imena z Googlovo umetno inteligenco</translation>

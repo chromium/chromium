@@ -19,7 +19,6 @@
 <translation id="3115238746683532089">Cynnyrch anhysbys <ph name="PRODUCT_ID" /> gan y gwerthwr <ph name="VENDOR_ID" /> (rhif cyfresol <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">Methwyd â disodli ffeil crx. Gwiriwch a yw'r ffeil yn cael ei defnyddio.</translation>
 <translation id="3163201441334626963">Cynnyrch anhysbys <ph name="PRODUCT_ID" /> gan y gwerthwr <ph name="VENDOR_ID" /></translation>
-<translation id="3369521687965833290">Methu â dadbacio'r estyniad.  Er mwyn dadbacio estyniad, rhaid bod llwybr i gyfeiriadur eich proffil sy'n dechrau gyda llythyren gyriant ac ni all gynnwys cyffordd, pwynt gosod neu ddolen symbolaidd.  Nid oes llwybr o'r fath yn bodoli ar gyfer eich proffil.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (rhif cyfresol <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> o'r gwerthwr <ph name="VENDOR_ID" /> (rhif cyfresol <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Rhaid i werth mewnbwn allwedd breifat fod yn llwybr dilys.</translation>
@@ -39,7 +38,6 @@
 <translation id="5972529113578162692">Mae gweinyddwr y peiriant hwn yn ei gwneud yn ofynnol i osod <ph name="EXTENSION_NAME" />. Ni ellir ei ddadosod.</translation>
 <translation id="6027032947578871493">Cynnyrch anhysbys <ph name="PRODUCT_ID" /> gan <ph name="VENDOR_NAME" /> (rhif cyfresol <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" /> gan y gwerthwr <ph name="VENDOR_ID" /></translation>
-<translation id="6143635259298204954">Methu â dadbacio'r estyniad.  Er mwyn dadbacio estyniad yn ddiogel, rhaid bod llwybr i gyfeiriadur eich proffil nad yw'n cynnwys dolen symbolaidd.  Nid oes llwybr o'r fath yn bodoli ar gyfer eich proffil.</translation>
 <translation id="6322279351188361895">Wedi methu â darllen allwedd breifat.</translation>
 <translation id="6391538222494443604">Rhaid i'r cyfeiriadur mewnbwn fodoli.</translation>
 <translation id="641087317769093025">Nid oedd modd dadsipio'r estyniad</translation>

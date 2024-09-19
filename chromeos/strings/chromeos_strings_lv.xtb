@@ -35,6 +35,7 @@
 <translation id="1155154308031262006">Ievadiet uzvedni</translation>
 <translation id="115705039208660697">ananasi</translation>
 <translation id="1164939766849482256">Ekrānsaudzētājs No ausmas līdz tumsai</translation>
+<translation id="1166688493741195933">Neizdevās ģenerēt ierakstu nosaukumus</translation>
 <translation id="1167755866710282443">Atveriet izvēlni, lai pielāgotu taustiņus. Velciet izvēlni, lai pārvietotu.</translation>
 <translation id="1171349345463658120">smilšu lagūna</translation>
 <translation id="1173894706177603556">Pārdēvēt</translation>
@@ -341,6 +342,7 @@
 <translation id="2560876255701405320">Audio ierakstu saraksts</translation>
 <translation id="2561093647892030937">citroni</translation>
 <translation id="2570743873672969996">Notiek testa “<ph name="TEST_NAME" />” izpilde...</translation>
+<translation id="2573178735329662769">Visa Chromebook datora audio ierakstīšana</translation>
 <translation id="2575552334616524665">Varat ieslēgt šo funkciju sadaļā Iestatījumi vai izvēlnē <ph name="THREE_DOTS_MENU_ICON" />.</translation>
 <translation id="2576253868710695442">Tas aizņems līdz 2 GB krātuves vietas.</translation>
 <translation id="2584547424703650812">Mirdzošas ainavas</translation>
@@ -493,6 +495,7 @@
 <translation id="3502426834823382181">skatīt visas lietotnes</translation>
 <translation id="3510890413042482857">Sūtīt <ph name="BEGIN_LINK1" />veiktspējas izsekošanas datus<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Chrome OS atjauninājums</translation>
+<translation id="3522508178835057262">Pagaidām netiek atbalstīta transkripcija, kurā ir vairāk nekā <ph name="MAX_WORD_LENGTH" /> vārds(-i).</translation>
 <translation id="3527036260304016759">Neizdevās — nezināma kļūda</translation>
 <translation id="353214771040290298">Pabeigt rediģēšanu</translation>
 <translation id="3532980081107202182">Atlikušas aptuveni <ph name="MIN_REMAINING" /> minūtes</translation>
@@ -508,6 +511,7 @@
 <translation id="3588034708467091142">Pārliecinieties, vai ir izveidots savienojums ar internetu, un mēģiniet vēlreiz.</translation>
 <translation id="3594280220611906414">“<ph name="USER_FRIENDLY_APN_NAME" />” ir lietotājiem draudzīgs piekļuves punkta “<ph name="APN_NAME" />” nosaukums.</translation>
 <translation id="3595596368722241419">Akumulators pilns</translation>
+<translation id="3600063043775287169">Ja iespēja “Chromebook datora audio” ir ieslēgta, lietotnē Ierakstītājs tiek ierakstīts viss šajā ierīcē atskaņotais audio saturs. Apdomājiet, vai tiešām vēlaties ierakstīt visas skaņas.</translation>
 <translation id="3600339377155080675">Spoguļot ekrānu</translation>
 <translation id="3602290021589620013">Priekšskatīt</translation>
 <translation id="3603829704940252505">Iemiesojums</translation>
@@ -710,6 +714,7 @@
 <translation id="4602266091140407479">Mikrofons</translation>
 <translation id="4607282946861182308">Nevar izveidot šādus attēlus. Izmēģiniet citu uzvedni.</translation>
 <translation id="4609350030397390689">Samazināt tastatūras spilgtumu</translation>
+<translation id="4623061655523261501">Ierakstu nosaukumi ir sekmīgi ģenerēti</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />: <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> no <ph name="TOTAL_PAGE_NUMBER" /> lapas(-ām). Lai atceltu drukas uzdevumu, nospiediet taustiņu Enter.</translation>
 <translation id="463791356324567266">Notiek skenēšanas atcelšana…</translation>
 <translation id="4644611440022666152">Ieslēgt un lejupielādēt</translation>
@@ -1042,6 +1047,8 @@
 <translation id="628726841779494414">Savus printerus varat pārvaldīt printera iestatījumos.</translation>
 <translation id="6292095526077353682">Ekrānsaudzētāja rādīšanas ilgums uzlādes laikā</translation>
 <translation id="629550705077076970">tastatūras aptumšošana</translation>
+<translation id="6301193653204230066">Veicot drošības atiestatīšanu, tiek izslēgti pārlūka Chrome paplašinājumi un atiestatīti tīkla un citi iestatījumi uz drošām noklusējuma vērtībām.
+          Jūsu cilnes, faili, sīkfaili un vēsture netiks mainīti.</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" />: pārbaude ir atcelta.</translation>
 <translation id="631063167932043783">Lietotne Izpēte</translation>
 <translation id="6318437367327684789">bezgalīgi</translation>
@@ -1051,6 +1058,7 @@
 <translation id="6325525973963619867">Neizdevās</translation>
 <translation id="6327262166342360252">Šī fona tapete tika izveidota, izmantojot MI un šādu tekstu: “<ph name="PROMPT" />”.</translation>
 <translation id="6331191339300272798">Automātisks tumšais režīms</translation>
+<translation id="6335228876613776082">Modeļa lejupielāde ir pabeigta</translation>
 <translation id="6340526405444716530">Personalizēšana</translation>
 <translation id="6348252528297699679">Varat izslēgt atrašanās vietas noteikšanu sadaļā Iestatījumi &gt; Konfidencialitāte un drošība &gt; Konfidencialitātes vadīklas &gt; Piekļuve atrašanās vietai. <ph name="LINK_BEGIN" />Uzziniet vairāk<ph name="LINK_END" />.</translation>
 <translation id="6348738456043757611">Lietotājvārds un parole</translation>
@@ -1208,6 +1216,7 @@
 <translation id="708426984172631313">APTURĒTA</translation>
 <translation id="7086168019478250425">bioluminiscējoša pludmale</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="7086916854357021265">Notiek ierakstu nosaukumu ģenerēšana</translation>
 <translation id="7097908713073775559">krāsains</translation>
 <translation id="710028965487274708">Neizdevās — autorizācija neizdevās</translation>
 <translation id="7101959270679078188">Atbloķējiet ierīci (<ph name="DEVICE_NAME" />), lai turpinātu atjaunināšanas procesu.</translation>
@@ -1540,6 +1549,7 @@ Lai varētu izveidot šādas transkripcijas, lejupielādējiet transkribēšanas
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google fotoattēlu albumi</translation>
 <translation id="8775713578693478175">Modema APN</translation>
+<translation id="877735394245039557">Notiek modeļa lejupielāde</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Iespējams, tīklam ir caurlaides lapa</translation>
 <translation id="8797082062139985406">Izveidot nosaukumu, izmantojot Google MI</translation>

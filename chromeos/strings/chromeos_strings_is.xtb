@@ -35,6 +35,7 @@
 <translation id="1155154308031262006">Sláðu inn skipun</translation>
 <translation id="115705039208660697">ananas</translation>
 <translation id="1164939766849482256">Skjávari, frá dögun til rökkurs</translation>
+<translation id="1166688493741195933">Ekki tókst að búa til upptökuheiti</translation>
 <translation id="1167755866710282443">Opnaðu valmyndina til að sérsníða lykla. Dragðu valmyndina til að færa hana.</translation>
 <translation id="1171349345463658120">strandlón</translation>
 <translation id="1173894706177603556">Endurnefna</translation>
@@ -341,6 +342,7 @@
 <translation id="2560876255701405320">Listi yfir hljóðupptökur</translation>
 <translation id="2561093647892030937">sítrónur</translation>
 <translation id="2570743873672969996">Keyrir prófið <ph name="TEST_NAME" />...</translation>
+<translation id="2573178735329662769">Upptaka á öllu hljóði í Chromebook</translation>
 <translation id="2575552334616524665">Þú getur kveikt á þessu í stillingunum eða í valmyndinni <ph name="THREE_DOTS_MENU_ICON" /></translation>
 <translation id="2576253868710695442">Þetta mun nota allt að 2 GB af geymslurými</translation>
 <translation id="2584547424703650812">Glóandi landslag</translation>
@@ -493,6 +495,7 @@
 <translation id="3502426834823382181">skoða öll forrit</translation>
 <translation id="3510890413042482857">Senda <ph name="BEGIN_LINK1" />rakningargögn um afköst<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">ChromeOS uppfærsla</translation>
+<translation id="3522508178835057262">Textauppskriftir sem eru lengri en <ph name="MAX_WORD_LENGTH" /> orð er ekki studdar eins og stendur.</translation>
 <translation id="3527036260304016759">Mistókst – óþekkt villa</translation>
 <translation id="353214771040290298">Breytingum lokið</translation>
 <translation id="3532980081107202182">Um <ph name="MIN_REMAINING" /> mínútur eftir</translation>
@@ -508,6 +511,7 @@
 <translation id="3588034708467091142">Gakktu úr skugga um að þú sért með nettengingu og reyndu aftur.</translation>
 <translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> er notendavæna heitið á <ph name="APN_NAME" />.</translation>
 <translation id="3595596368722241419">Rafhlaða fullhlaðin</translation>
+<translation id="3600063043775287169">Þegar kveikt er á hljóði í Chromebook tekur Upptökutækið upp allt hljóð sem spilast í tækinu. Gakktu úr skugga um að þú viljir taka upp allt hljóð.</translation>
 <translation id="3600339377155080675">Spegla skjá</translation>
 <translation id="3602290021589620013">Forskoða</translation>
 <translation id="3603829704940252505">Notandamynd</translation>
@@ -710,6 +714,7 @@
 <translation id="4602266091140407479">Hljóðnemi</translation>
 <translation id="4607282946861182308">Ekki er hægt að búa til myndir af þessu. Prófaðu aðra skipun.</translation>
 <translation id="4609350030397390689">Draga úr birtustigi lyklaborðs</translation>
+<translation id="4623061655523261501">Upptökuheiti voru búin til</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> af <ph name="TOTAL_PAGE_NUMBER" />. Ýttu á færslulykilinn til að hætta við prentverkið.</translation>
 <translation id="463791356324567266">Hættir við að skanna...</translation>
 <translation id="4644611440022666152">Kveikja og sækja</translation>
@@ -1042,6 +1047,8 @@
 <translation id="628726841779494414">Stjórnaðu prenturunum í prentarastillingunum</translation>
 <translation id="6292095526077353682">Á meðan hleðsla stendur yfir skal sýna skjávara</translation>
 <translation id="629550705077076970">lyklaborð dekkt</translation>
+<translation id="6301193653204230066">Öryggisendurstilling slekkur á viðbótum Chrome-vafra og endurstillir netkerfi og aðrar stillingar á öruggar, sjálfgefnar stillingar.
+          Þetta hefur ekki áhrif á flipana þína, skrár, fótspor og feril.</translation>
 <translation id="6302401976930124515">Hætt var við prófunina: <ph name="TEST_NAME" /></translation>
 <translation id="631063167932043783">Skoða forrit</translation>
 <translation id="6318437367327684789">endalaust</translation>
@@ -1051,6 +1058,7 @@
 <translation id="6325525973963619867">Mistókst</translation>
 <translation id="6327262166342360252">Þetta veggfóður var búið til með gervigreind með því að nota textann: „<ph name="PROMPT" />“.</translation>
 <translation id="6331191339300272798">Sjálfvirkt dökkt þema</translation>
+<translation id="6335228876613776082">Líkan sótt</translation>
 <translation id="6340526405444716530">Sérstillingar</translation>
 <translation id="6348252528297699679">Hægt er að slökkva á staðsetningu í „Stillingar &gt; Persónuvernd og öryggi &gt; Persónuverndarstillingar &gt; Aðgangur að staðsetningu“. <ph name="LINK_BEGIN" />Nánar<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">Notandanafn og aðgangsorð</translation>
@@ -1158,6 +1166,7 @@
 <translation id="6831043979455480757">Þýða</translation>
 <translation id="6846843854964504403">Öryggisendurstilling</translation>
 <translation id="6853312040151791195">Afhleðsluhraði</translation>
+<translation id="6862228900689076919">Stjórnandi þinn stjórnar þessum eiginleika</translation>
 <translation id="6862416241246624313">Ábending send inn</translation>
 <translation id="6866732840889595464">fagurfífill</translation>
 <translation id="6871256179359663621">ljósfjólublá(r)</translation>
@@ -1212,6 +1221,7 @@
 <translation id="708426984172631313">STÖÐVAÐ</translation>
 <translation id="7086168019478250425">lífljómandi strönd</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="7086916854357021265">Býr til upptökuheiti</translation>
 <translation id="7097908713073775559">mörgum litum</translation>
 <translation id="710028965487274708">Mistókst – Heimild fékkst ekki</translation>
 <translation id="7101959270679078188">Taktu <ph name="DEVICE_NAME" /> úr lás til að halda uppfærsluferlinu áfram</translation>
@@ -1544,6 +1554,7 @@ Sæktu umritunarlíkanið (allt að 100 MB) til að fá þessar textauppskriftir
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Albúm í Google-myndum</translation>
 <translation id="8775713578693478175">Aðgangsstaður mótalds</translation>
+<translation id="877735394245039557">Sækir líkan</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Þetta netkerfi kann að innihalda innskráningarsíðu</translation>
 <translation id="8797082062139985406">Búa til heiti með gervigreind Google</translation>

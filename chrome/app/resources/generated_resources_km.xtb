@@ -141,7 +141,6 @@
 <translation id="1084824384139382525">ចម្លងអាសយដ្ឋានតំណ</translation>
 <translation id="1085064499066015002">នៅលើគេហទំព័រទាំងអស់ជានិច្ច</translation>
 <translation id="1085697365578766383">មានបញ្ហា​ក្នុងការ​ចាប់ផ្ដើម​ម៉ាស៊ីន​និម្មិត។ សូមព្យាយាម​ម្តងទៀត។</translation>
-<translation id="1086486568852410168">ស្វែងរក​ដោយ​ប្រើ Google Lens</translation>
 <translation id="1090126737595388931">គ្មានកម្មវិធីផ្ទៃខាងក្រោយកំពុងដំណើរការទេ</translation>
 <translation id="1090541560108055381">មុនពេលផ្គូផ្គង ត្រូវប្រាកដថាលេខកូដនេះគឺដូចគ្នានៅលើឧបករណ៍ទាំងពីរ</translation>
 <translation id="1091767800771861448">ចុច ESCAPE ដើម្បីរំលង (លេខកំណែដែលមិនផ្លូវការតែប៉ុណ្ណោះ)។</translation>
@@ -222,7 +221,6 @@
 <translation id="1155545602507378023">ទេ សម្រាប់តែឧបករណ៍នេះប៉ុណ្ណោះ</translation>
 <translation id="1155816283571436363">កំពុងភ្ជាប់​ជាមួយទូរសព្ទ​របស់អ្នក</translation>
 <translation id="1157952955648710254">បិទផ្ទាំង​ចំហៀងនៃម៉ាស៊ីនស្វែងរកនៅលើ Google</translation>
-<translation id="1157985233335035034">ភាសា​ថ្មីៗ</translation>
 <translation id="1158080958325422608">កំណត់ជាអក្សរធំ</translation>
 <translation id="1159879754517035595">គ្រប់គ្រង​ការកំណត់​កម្មវិធីបន្ថែម</translation>
 <translation id="1160800016654917722">បានផ្លាស់ទីវិនដូចុះក្រោម និងទៅខាងឆ្វេង</translation>
@@ -461,7 +459,6 @@
 <translation id="1327794256477341646">មុខងារដែលត្រូវការទីតាំងរបស់អ្នកនឹងមិនដំណើរការទេ</translation>
 <translation id="1328364753167940710">ក្នុង​រយៈពេល <ph name="NUM_HR" /> ម៉ោង​ទៀត</translation>
 <translation id="1329466763986822896">កែលម្អ​ឯកជនភាព​សម្រាប់ហតស្ប៉ត​នេះ</translation>
-<translation id="1330562121671411446">ចាប់ដឹង​ភាសា</translation>
 <translation id="1331977651797684645">នេះ​គឺ​ជា​ខ្ញុំ។</translation>
 <translation id="1333489022424033687">មុខងារ​មួយចំនួន​នៅលើ <ph name="ORIGIN" /> ប្រហែលជា​មិនដំណើរការទេ រហូតទាល់តែ​អ្នក​សម្អាតទិន្នន័យ​ដែល​គេហទំព័រ​ផ្សេងទៀត​បានរក្សាទុក​នៅលើ​ឧបករណ៍​របស់អ្នក</translation>
 <translation id="1333965224356556482">មិនអនុញ្ញាតឱ្យ​គេហទំព័រ​មើលឃើញ​ទីតាំងរបស់អ្នកទេ</translation>
@@ -1270,7 +1267,6 @@
 <translation id="1878885068166344708">ធាតុ​ត្រូវបាន​រំលេច នៅពេល​អ្នក​ផ្លាស់ទី​ចំណុចផ្ដោត។ ចុច tab ឬជ្រើសរើស​ធាតុ​ដើម្បីផ្លាស់ប្ដូរ​ចំណុចផ្ដោត។</translation>
 <translation id="1879000426787380528">ចូលជា</translation>
 <translation id="18802377548000045">ផ្ទាំងបង្រួមតាមទទឹងធំ</translation>
-<translation id="1880677175115548835">ជ្រើសរើស​អត្ថបទ</translation>
 <translation id="1880905663253319515">លុបវិញ្ញាបនប័ត្រ "<ph name="CERTIFICATE_NAME" />"?</translation>
 <translation id="1881445033931614352">ប្លង់​ក្តារចុច</translation>
 <translation id="1881577802939775675">{COUNT,plural, =1{ធាតុ}other{ធាតុ #}}</translation>
@@ -1763,7 +1759,6 @@
 <translation id="2234827758954819389">ការណែនាំ​អំពី​ឯកជនភាព</translation>
 <translation id="2234876718134438132">សមកាលកម្ម និងសេវាកម្ម Google</translation>
 <translation id="2235344399760031203">បាន​ទប់ស្កាត់ខូគី​ភាគី​ទីបី</translation>
-<translation id="2236949375853147973">សកម្មភាព​របស់ខ្ញុំ</translation>
 <translation id="2238379619048995541">ទិន្នន័យស្ថានភាពប្រេកង់</translation>
 <translation id="2241053333139545397">អាន និងប្តូរទិន្នន័យរបស់អ្នកនៅលើគេហទំព័រមួយចំនួន</translation>
 <translation id="2241634353105152135">ម្តងប៉ុណ្ណោះ</translation>
@@ -2385,7 +2380,6 @@
 <translation id="2666247341166669829">កម្រិតថ្ម​ខាងឆ្វេង <ph name="PERCENTAGE" />%។</translation>
 <translation id="2667144577800272420">កម្មវិធី​ផ្សេងទៀត​ត្រូវបានកំណត់ឱ្យបើក​តំណដូចគ្នានឹង <ph name="APP_NAME" />។ សកម្មភាពនេះ​នឹងបិទ <ph name="APP_NAME_2" /> និង <ph name="APP_NAME_3" /> មិនឱ្យបើក​តំណដែលអាចប្រើបាន។</translation>
 <translation id="2667463864537187133">គ្រប់គ្រងការពិនិត្យអក្ខរាវិរុទ្ធ</translation>
-<translation id="2668094785979141847">ចុចដើម្បីចាកចេញពី Google Lens</translation>
 <translation id="2668604389652548400">ដកចេញ ឬ​ជំនួសវា​ដោយ​កម្មវិធីបន្ថែម​ស្រដៀងគ្នា​ពី <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /></translation>
 <translation id="2669241540496514785">មិនអាចបើក <ph name="APP_NAME" /> បានទេ</translation>
 <translation id="2669454659051515572">អ្នក​ដែល​ប្រើប្រាស់​ឧបករណ៍​នេះ​អាច​មើលឃើញ​ឯកសារ​ដែលបានទាញយក</translation>
@@ -2439,7 +2433,6 @@
 <translation id="2710101514844343743">ទិន្នន័យ​ប្រើប្រាស់ និងវិភាគ</translation>
 <translation id="271033894570825754">ថ្មី</translation>
 <translation id="2710507903599773521">ឥឡូវនេះ <ph name="DEVICE_TYPE" /> របស់អ្នក​ត្រូវបាន​ដោះសោហើយ</translation>
-<translation id="2712141162840347885">ជ្រើសរើសអ្វីមួយ ដើម្បីស្វែងរកដោយប្រើ Google Lens ឬចុច escape ដើម្បីចាកចេញពី Google Lens</translation>
 <translation id="2713106313042589954">បិទកាមេរ៉ា</translation>
 <translation id="2713444072780614174">ស</translation>
 <translation id="2714180132046334502">ផ្ទៃខាង​ក្រោយ​ងងឹត</translation>
@@ -2466,7 +2459,6 @@
 <translation id="272741954544380994">ស្វែងរក​រូបភាព​ដោយ​ប្រើ <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="2727633948226935816">កុំរំលឹកខ្ញុំម្តងទៀត</translation>
 <translation id="2727712005121231835">ទំហំពិតប្រាកដ</translation>
-<translation id="2727713483500953825">ជ្រើសរើស​រូបភាព/អក្សរ​ដែលត្រូវ​ស្វែងរក​ដោយប្រើ Lens</translation>
 <translation id="2727744317940422214">សូមអភ័យទោស មានអ្វីមួយខុសប្រក្រតី។ សូម​ផ្ដល់មតិកែលម្អ​ដោយប្រើ #bruschetta នៅ​ក្នុង​ការ​ពណ៌នា។ លេខ​កូដ​បញ្ហាគឺ <ph name="ERROR" />។ ការ​​សម្អាតមិន​បានសម្រេច​ទេ អ្នក​ប្រហែលជា​ត្រូវ​ធ្វើ​ដូច្នោះដោយ​ផ្ទាល់​ដៃ​ហើយ។</translation>
 <translation id="2729327310379176711">Chrome កំពុងស្វែងរកវិធី​ថ្មី​ក្នុង​ការកាត់បន្ថយ​ការតាមដាន និង​ធ្វើឱ្យអ្នក​កាន់តែមាន​សុវត្ថិភាព នៅពេល​ដែល​អ្នក​រុករក។ Chrome ក៏​<ph name="ESTIMATE_INTERESTS_LINK" /> និង​ផ្ដល់​លទ្ធភាព​ឱ្យអ្នក​គ្រប់គ្រង​ចំណាប់​អារម្មណ៍​ទាំង​នេះ​ផងដែរ។ បន្ទាប់មក គេហទំព័រ​ដែលអ្នក​ចូលទៅ​កាន់ អាច​ស្នើសុំចំណាប់អារម្មណ៍​របស់អ្នក​ពី Chrome ដើម្បីបង្ហាញ​ការផ្សាយពាណិជ្ជកម្ម​ដល់អ្នក។</translation>
 <translation id="2729577602370119849">ងាយស្រួល​ចូលប្រើប្រាស់ និង​គ្រប់គ្រង​ម៉ាស៊ីនបោះពុម្ព</translation>
@@ -2516,7 +2508,6 @@
 <translation id="2750602041558385535">បានទប់ស្កាត់​ការទាញយក​ដែលមិនបាន​ផ្ទៀងផ្ទាត់</translation>
 <translation id="2751883373055093745"><ph name="WEBSITE" /> ចង់ដឹងអំពីលេខកូដសម្គាល់សោសុវត្ថិភាព​របស់អ្នក។ គេហទំព័រ​នឹងដឹងយ៉ាងច្បាស់ថា សោសុវត្ថិភាព​ណាមួយ​ដែលអ្នកកំពុងប្រើ។</translation>
 <translation id="275213133112113418">កាតរបស់អ្នកត្រូវបានរក្សាទុក</translation>
-<translation id="2753623023919742414">ចុច​ដើម្បី​ស្វែង​រក</translation>
 <translation id="2754226775788136540">កំពុងស្វែងរក​ឧបករណ៍​ផ្គូផ្គង​រហ័ស​ដែលបានរក្សាទុក​ទៅ <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="2754825024506485820">ស្វែងរក​កម្មវិធី​ដែល​អ្នក​ត្រូវការ ចាប់ពី​ផលិតភាព​រហូតដល់​ការកម្សាន្ត នៅលើ Google Play Store។ អ្នក​អាច​ដំឡើង​កម្មវិធី​បានគ្រប់ពេល។</translation>
 <translation id="2755349111255270002">កំណត់ <ph name="DEVICE_TYPE" /> នេះឡើងវិញ</translation>
@@ -2642,7 +2633,6 @@
 <translation id="2838379631617906747">កំពុងដំឡើង</translation>
 <translation id="2839032553903800133">បាន​ទប់ស្កាត់​ការជូនដំណឹង</translation>
 <translation id="2841013758207633010">ពេលវេលា</translation>
-<translation id="2841525013647267359">បកប្រែពី</translation>
 <translation id="2841837950101800123">ក្រុមហ៊ុនផ្តល់សេវាកម្ម</translation>
 <translation id="2842013086666334835">ចូល "<ph name="NETWORK_ID" />"</translation>
 <translation id="2843560154284403323">ដើម្បីបញ្ចប់​ការរៀបចំ Linux សូមដំឡើងកំណែ ChromeOS រួចព្យាយាម​ម្ដងទៀត។</translation>
@@ -3040,7 +3030,6 @@
 <translation id="3132896062549112541">វិធាន</translation>
 <translation id="3132996321662585180">ផ្ទុក​ឡើងវិញ​រាល់ថ្ងៃ</translation>
 <translation id="3134393957315651797">ជ្រើសរើសស្ថានភាព​ពិសោធន៍សម្រាប់​ការពិសោធ <ph name="EXPERIMENT_NAME" />។ ការពណ៌នាអំពី​ការពិសោធ៖ <ph name="EXPERIMENT_DESCRIPTION" /></translation>
-<translation id="3137969841538672700">អូសដើម្បីស្វែងរក</translation>
 <translation id="3139925690611372679">រូបតំណាងពណ៌លឿងលំនាំដើម</translation>
 <translation id="3141093262818886744">មិន​អីទេ បើក​ចុះ</translation>
 <translation id="3141318088920353606">កំពុងស្ដាប់...</translation>
@@ -3204,7 +3193,6 @@
 <translation id="3269093882174072735">ដំណើរការរូបភាព</translation>
 <translation id="326911502853238749">កុំ​បង្ហាញ <ph name="MODULE_NAME" /></translation>
 <translation id="3269175001434213183">បើក​ការធ្វើសមកាលកម្ម ដើម្បីបម្រុងទុក​ទិន្នន័យ​របស់អ្នក និង​ប្រើប្រាស់​វា​នៅលើ​ឧបករណ៍​ណាក៏បាន</translation>
-<translation id="3269209112443570745">ថ្មី! វិធីងាយស្រួលក្នុងការស្វែងរកអ្វីដែលមាននៅលើអេក្រង់របស់អ្នក</translation>
 <translation id="3269612321104318480">បៃតងខ្ចី និងស</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{ឯកសារ}other{ឯកសារ #}}</translation>
 <translation id="326999365752735949">កំពុងទាញយក diff</translation>
@@ -3680,13 +3668,11 @@
 <translation id="3621202678540785336">ធាតុបញ្ចូល</translation>
 <translation id="3621807901162200696">ជួយ​កែលម្អ​មុខងារ និង​ប្រតិបត្តិការ​របស់ ChromeOS</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{កម្មវិធីមួយ}other{កម្មវិធី #}}</translation>
-<translation id="3622716124581627104">សម្គាល់អ្វីៗ ឬកន្លែង រួចចម្លង ឬបកប្រែអត្ថបទ។ នៅពេលអ្នកប្រើ Google Lens រូបថត​អេក្រង់ទំព័រ​នឹងត្រូវបានបញ្ជូនទៅ Google។ <ph name="LEARN_MORE" /></translation>
 <translation id="3622820753353315928">ពណ៌​អេក្រង់​បាញ់​ពន្លឺ</translation>
 <translation id="362333465072914957">កំពុង​រង់ចាំឱ្យ CA ចេញ​វិញ្ញាបនបត្រ</translation>
 <translation id="3623598555687153298">សកម្មភាពនេះ​នឹងលុបទិន្នន័យ <ph name="TOTAL_USAGE" /> ដែលបានរក្សាទុក​ដោយគេហទំព័រ​ដែលបង្ហាញ</translation>
 <translation id="3624567683873126087">ដោះសោ​ឧបករណ៍ និង​ចូលគណនី Google</translation>
 <translation id="3624583033347146597">ជ្រើសរើសចំណូលចិត្តខូគី​ភាគី​ទីបីរបស់អ្នក</translation>
-<translation id="3625345586754200168">សាកល្បងប្រើ Lens</translation>
 <translation id="3625481642044239431">បានជ្រើសរើស​ឯកសារ​មិនត្រឹមត្រូវ។ សូមព្យាយាម​ម្ដងទៀត។</translation>
 <translation id="3626296069957678981">ដើម្បី​សាកថ្ម Chromebook នេះ សូម​ប្រើ​ថ្ម Dell ដែលត្រូវគ្នា។</translation>
 <translation id="3627320433825461852">នៅសល់តិចជាង 1 នាទី</translation>
@@ -4284,7 +4270,6 @@
 <translation id="4021909830315618592">ចម្លងព័ត៌មានលម្អិតអំពីកំណែបង្កើត</translation>
 <translation id="4021941025609472374">បិទផ្ទាំងនៅខាងឆ្វេង</translation>
 <translation id="4022426551683927403">បន្ថែមទៅក្នុងថតឯកសារ</translation>
-<translation id="4022972681110646219">បកប្រែ​អេក្រង់</translation>
 <translation id="4023048917751563912"><ph name="APP_NAME" /> កំពុង​បោះពុម្ព <ph name="PAGE_NUMBER" /> ទំព័រ​ទៅ <ph name="PRINTER_NAME" /></translation>
 <translation id="4024768890073681126">កម្មវិធីរុករក​តាមអ៊ីនធឺណិត​របស់អ្នក​ត្រូវបានគ្រប់គ្រង​ដោយ​មាតាបិតារបស់អ្នក</translation>
 <translation id="4025039777635956441">បិទ​គេហទំព័រ​ដែលបាន​ជ្រើសរើស</translation>
@@ -4728,7 +4713,6 @@
 <translation id="4364327530094270451">ត្រសក់​ផ្អែម</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> កំពុងចែករំលែកផ្ទាំងវិនដូ</translation>
 <translation id="4364830672918311045">បង្ហាញការជូនដំណឹង</translation>
-<translation id="4367027658822022112">អ្នកអាចខ្ទាស់ Google Lens ដើម្បីងាយស្រួលចូលប្រើ។ ចុចប៊ូតុងខ្ទាស់នៅផ្នែកខាងលើនៃផ្ទាំង​ចំហៀង</translation>
 <translation id="4367513928820380646">ពិនិត្យមើល​ការអនុញ្ញាត​ដែលបានដកចេញ</translation>
 <translation id="4367971618859387374">ឈ្មោះ​បង្ហាញ</translation>
 <translation id="4368960422722232719">បង្ហាញការប្រើប្រាស់​អង្គចងចាំលើកាតមើលសាកល្បងពេលដាក់ព្រួញលើផ្ទាំង</translation>
@@ -4855,7 +4839,6 @@
 <translation id="4450974146388585462">វិនិច្ឆ័យ</translation>
 <translation id="445099924538929605"><ph name="DEVICE_OS" /> បានរកឃើញ TPM សកម្ម ដែលអាចរក្សាទុកទិន្នន័យរបស់អ្នកបានកាន់តែមានសុវត្ថិភាព។</translation>
 <translation id="4452898361839215358">ឬ​ជ្រើសរើស PPD។ <ph name="LINK_BEGIN" />ស្វែងយល់បន្ថែម<ph name="LINK_END" /></translation>
-<translation id="4453144231461812959">ស្វែងរក​រូបភាព ឬ​អក្សរ​ដោយប្រើ Lens</translation>
 <translation id="4453430595102511050">​ប៉ះ​សេនស័រចាប់ស្នាមម្រាមដៃ​​នៅ​ជ្រុង​ខាង​ស្ដាំ​ផ្នែក​ខាងលើ​នៃ​ក្ដារចុច​របស់​អ្នក។ ទិន្នន័យស្នាមម្រាមដៃ​របស់អ្នកត្រូវបាន​រក្សាទុកយ៉ាង​មានសុវត្ថិភាព និងមិនចេញពី <ph name="DEVICE_TYPE" /> របស់អ្នកឡើយ។</translation>
 <translation id="4453946976636652378">ស្វែងរក​តាមរយៈ <ph name="SEARCH_ENGINE_NAME" /> ឬវាយបញ្ចូល​ URL ណាមួយ</translation>
 <translation id="4457472090507035117">ជ្រើសរើស​សំឡេង​បច្ចុប្បន្ន៖</translation>
@@ -5230,7 +5213,6 @@
 <translation id="473936925429402449">បានជ្រើសរើស ខ្លឹមសារបន្ថែម <ph name="CURRENT_ELEMENT" /> ក្នុងចំណោម <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="4739639199548674512">សំបុត្រ</translation>
 <translation id="4740546261986864539">ទើបបើកថ្មីៗនេះ</translation>
-<translation id="4741235124132242877">បាន​ខ្ទាស់! ប្រើ Google Lens ម្ដងទៀត​ពីរបារឧបករណ៍</translation>
 <translation id="4742334355511750246">មិនអនុញ្ញាតឱ្យបង្ហាញរូបភាពទេ</translation>
 <translation id="4742795653798179840">បានលុប​ទិន្នន័យ Chrome</translation>
 <translation id="4742970037960872810">ដក​ការរំលេច​ចេញ</translation>
@@ -5433,7 +5415,6 @@
 <translation id="4883436287898674711">គេហទំព័រ <ph name="WEBSITE_1" /> ទាំងអស់</translation>
 <translation id="48838266408104654">កម្មវិធីគ្រប់គ្រងភារកិច្ច</translation>
 <translation id="4884987973312178454">6x</translation>
-<translation id="4885446229353981848">បង្ហាញផ្លូវកាត់ Google Lens ជានិច្ច</translation>
 <translation id="4885692421645694729">កម្មវិធីបន្ថែមនេះ​មិនមានសិទ្ធិចូលប្រើ​គេហទំព័របន្ថែមទេ</translation>
 <translation id="4887424188275796356">បើកជាមួយឧបករណ៍មើលប្រព័ន្ធ</translation>
 <translation id="488785315393301722">បង្ហាញព័ត៌មានលំអិត</translation>
@@ -5967,7 +5948,6 @@
 <translation id="5284445933715251131">បន្តការទាញយក</translation>
 <translation id="5285635972691565180">បង្ហាញ <ph name="DISPLAY_ID" /></translation>
 <translation id="5286194356314741248">កំពុង​ស្កេន</translation>
-<translation id="5286907366254680517">បានចាប់ដឹង</translation>
 <translation id="5287425679749926365">គណនីរបស់អ្នក</translation>
 <translation id="5288106344236929384">ជម្រើសកូដសម្ងាត់ សកម្មភាពច្រើនទៀត​សម្រាប់ <ph name="USERNAME" /> នៅលើ <ph name="DOMAIN" /></translation>
 <translation id="5288678174502918605">បើកផ្ទាំងដែលបានបិទឡើងវិញ</translation>
@@ -6018,7 +5998,6 @@
 <translation id="5319712128756744240">ផ្គូផ្គង​ឧបករណ៍ថ្មី</translation>
 <translation id="5320135788267874712">ឈ្មោះឧបករណ៍ថ្មី</translation>
 <translation id="5320261549977878764">ឈប់រក្សាទុក​ក្រុម</translation>
-<translation id="5321325624576443340">មិនអាច​ប្រើ Google Lens បានទេ។ សូមព្យាយាមម្ដងទៀតនៅពេលក្រោយ។</translation>
 <translation id="532247166573571973">មិនអាចភ្ជាប់ទៅម៉ាស៊ីនមេបានទេ សូមព្យាយាមម្តងទៀតពេលក្រោយ។</translation>
 <translation id="5322961556184463700">ការស្ទង់មតិ "សូមប្រាប់យើងអំពីមូលហេតុដែលអ្នកនៅតែចង់ទាញយកឯកសារនេះ"</translation>
 <translation id="5323328004379641163">ប្ដូរ​រូបរាង Chrome និង​ទំព័រនេះ​តាមបំណង</translation>
@@ -6885,7 +6864,6 @@
 <translation id="5969419185858894314"><ph name="ORIGIN" /> អាចមើល​ឯកសារ​នៅក្នុង <ph name="FOLDERNAME" /></translation>
 <translation id="5969728632630673489">ការជូនដំណឹង​អំពីផ្លូវកាត់​ក្ដារចុច​ត្រូវបាន​ច្រានចោល</translation>
 <translation id="5971037678316050792">គ្រប់គ្រងស្ថានភាព និងការភ្ជាប់ឧបករណ៍ប៊្លូធូស</translation>
-<translation id="5971400953982411053">ផ្ទាំងស្វែងរកដែលអណ្ដែត​របស់ Google Lens</translation>
 <translation id="5971861540200650391">លាក់​រយៈពេល <ph name="MODULE_TITLE" /> ម៉ោង</translation>
 <translation id="597235323114979258">មើលគោលដៅ​ច្រើនទៀត</translation>
 <translation id="5972543790327947908">តំណដែលអាចប្រើបាន​មួយចំនួននឹងនៅ​តែបើកនៅក្នុង <ph name="APP_NAME" />, <ph name="APP_NAME_2" /> ឬ <ph name="APP_NAME_3" /> ដដែល។</translation>
@@ -6978,7 +6956,6 @@
 <translation id="6042308850641462728">ច្រើនទៀត</translation>
 <translation id="604388835206766544">មិនអាចញែក​ការកំណត់រចនាសម្ព័ន្ធ​បានទេ</translation>
 <translation id="6043994281159824495">ចាកចេញឥឡូវនេះ</translation>
-<translation id="604424701295382420">បាន​ខ្ទាស់! អ្នកអាចចូលប្រើ Google Lens ម្តងទៀតបានពីប៊ូតុងថ្មីនៅលើរបារឧបករណ៍</translation>
 <translation id="6045114302329202345">ប៊ូតុង TrackPoint ចម្បង</translation>
 <translation id="6047632800149092791">សមកាលកម្ម​មិន​ដំណើរការ​ទេ។ សូម​សាកល្បងចេញ ហើយ​ចូលវិញ​ម្តងទៀត។</translation>
 <translation id="6048747414605857443">ជ្រើសរើស និង​ប្ដូរ​តាម​បំណង​នូវ​សំឡេង​នៃ​ការបំប្លែង​អត្ថបទ​ទៅជា​ការនិយាយ​សម្រាប់ ChromeVox និងមុខងារ​​ជ្រើសរើសដើម្បីអាន</translation>
@@ -7002,7 +6979,6 @@
 <translation id="6059276912018042191">ផ្ទាំង Chrome ថ្មីៗ</translation>
 <translation id="6059652578941944813">ឋានានុក្រមវិញ្ញាបនប័ត្រ</translation>
 <translation id="6059925163896151826">ឧបករណ៍ USB</translation>
-<translation id="6060842547856900641">បើក Lens</translation>
 <translation id="6061408389284235459">កា​រជូនដំណឹង​ត្រូវ​បាន​ផ្ញើ​ទៅកាន់ <ph name="DEVICE_NAME" /></translation>
 <translation id="6063284707309177505">បង្កើត​កូដ QR</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />ចំណាំ៖<ph name="END_BOLD" /> សំឡេងថត ឬ​សំឡេង​ដែលស្រដៀង​ប្រហែលជា​អាចចូលប្រើ​លទ្ធផល​ផ្ទាល់ខ្លួនរបស់ <ph name="SUPERVISED_USER_NAME" /> បាន។ ដើម្បីសន្សំ​សំចៃថ្ម អ្នកអាច​ជ្រើសរើស​នៅក្នុងការកំណត់​ជំនួយការ​របស់ <ph name="SUPERVISED_USER_NAME" /> ឱ្យបើក “Ok Google” តែនៅពេលដែល​ឧបករណ៍នេះ​ភ្ជាប់ជាមួយ​ប្រភពថាមពល​ប៉ុណ្ណោះ។</translation>
@@ -7011,7 +6987,6 @@
 <translation id="6064764629679333574">កែលម្អគុណភាពសំឡេងមីក្រូហ្វូនប៊្លូធូសតាមរយៈការបង្កើនសំឡេងដែលមានកម្រិតគុណភាពទាបទៅជាសំឡេងមានកម្រិតគុណភាពខ្ពស់។</translation>
 <translation id="6065289257230303064">គុណលក្ខណៈថតឯកសារភាគីវិញ្ញាបនប័ត្រ</translation>
 <translation id="6066794465984119824">​មិនបានកំណត់កូដតំណាងរូបភាពទេ</translation>
-<translation id="6069027071882229820">ចម្លង​ជារូបភាព</translation>
 <translation id="6069464830445383022">គណនី Google របស់អ្នកគឺជាការចូល Chromebook របស់អ្នក</translation>
 <translation id="6069500411969514374">ការងារ</translation>
 <translation id="6071181508177083058">អះអាងពាក្យសម្ងាត់</translation>
@@ -7726,7 +7701,6 @@
 <translation id="6597324406048772521">កម្មវិធីបន្ថែម​មិនត្រូវបាន​អនុញ្ញាត​នៅលើ​គេហទំព័រនេះទេ</translation>
 <translation id="6597331566371766302">កម្មវិធីបន្ថែម​ខាងក្រោម​ត្រូវបាន​ទប់ស្កាត់ដោយ​អ្នកគ្រប់គ្រង​របស់អ្នក៖</translation>
 <translation id="659894938503552850">ថ្មីបំផុត</translation>
-<translation id="6600016381025017075">ស្វែងរកអ្វីមួយនៅលើទំព័រនេះ</translation>
 <translation id="6601262427770154296">គ្រប់គ្រង​​វចនានុក្រម​អ្នក​ប្រើប្រាស់</translation>
 <translation id="6602173570135186741">ការបំពេញ​ស្វ័យប្រវត្តិ និង​ពាក្យសម្ងាត់</translation>
 <translation id="6602336931411102724">បង្ហាញ​ក្រុមផ្ទាំង​នៅក្នុង​របារចំណាំ</translation>
@@ -8276,7 +8250,6 @@
 <translation id="6988572888918530647">គ្រប់គ្រង​គណនី Google របស់​អ្នក</translation>
 <translation id="6989274756151920076">បន្ត​នៅទីនេះ</translation>
 <translation id="6991665348624301627">ជ្រើសរើសគោលដៅ</translation>
-<translation id="6991926986715044139">បង្ហាញផ្លូវកាត់ Google Lens ជានិច្ច</translation>
 <translation id="6992554835374084304">បើកការពិនិត្យ​អក្ខរាវិរុទ្ធដែលបាន​កែលម្អ</translation>
 <translation id="6993000214273684335">បានលុបផ្ទាំង​ចេញពី​ក្រុម​ដែលគ្មានឈ្មោះ - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6993050154661569036">កំពុងដំឡើងកំណែ​កម្មវិធីរុករកតាមអ៊ីនធឺណិត Chrome</translation>
@@ -8854,7 +8827,6 @@
 <translation id="7419142833919893307">មិនបាន​បញ្ចូល​ឈ្មោះអ្នក​ប្រើប្រាស់ទេ</translation>
 <translation id="7419426517282923105">{NUM_ATTEMPTS,plural, =1{កូដ PIN ខុស។ ព្យាយាមបាន 1 ដងទៀត។}other{កូដ PIN ខុស។ ព្យាយាមបាន # ដងទៀត។}}</translation>
 <translation id="7419565702166471774">ប្រើ​ការតភ្ជាប់​ដែលមាន​សុវត្ថិភាព​ជានិច្ច</translation>
-<translation id="7419819959108735624">ជ្រើសរើសអ្វីមួយ ដើម្បីស្វែងរកដោយប្រើ Google Lens</translation>
 <translation id="742130257665691897">បានលុប​ចំណាំ</translation>
 <translation id="7421925624202799674">មើលប្រភពទំព័រ</translation>
 <translation id="7422192691352527311">ចំណូលចិត្ត......</translation>
@@ -8890,7 +8862,6 @@
 <translation id="7444983668544353857">បិទដំណើរការ <ph name="NETWORKDEVICE" /></translation>
 <translation id="7448430327655618736">ដំឡើងកម្មវិធី​ដោយស្វ័យប្រវត្តិ</translation>
 <translation id="7448664748118305024">លុប​ទិន្នន័យ​ដែលគេហទំព័រ​បាន​រក្សាទុក​ទៅក្នុង​ឧបករណ៍​របស់​អ្នក នៅពេល​អ្នកបិទ​វិនដូ​ទាំងអស់</translation>
-<translation id="7450541714075000668">បាន​ចម្លង​អត្ថបទ</translation>
 <translation id="7450761244949417357">កំពុង​បើក​នៅក្នុង <ph name="ALTERNATIVE_BROWSER_NAME" /> ឥឡូវនេះ</translation>
 <translation id="7450926666485653189">បញ្ជូនផ្នែក​ដែលបានបំភ័ន្តណាមួយរបស់ URL ទៅ Google តាមរយៈ​ម៉ាស៊ីនមេ​ឯកជនភាព​ដែលលាក់​អាសយដ្ឋាន IP របស់អ្នក</translation>
 <translation id="7453008956351770337">ដោយជ្រើសរើសម៉ាស៊ីនបោះពុម្ពនេះ អ្នកនឹងផ្តល់សិទ្ធិអនុញ្ញាតឲ្យផ្នែកបន្ថែមខាងក្រោមនេះចូលប្រើម៉ាស៊ីនបោះពុម្ពរបស់អ្នក៖</translation>
@@ -8983,7 +8954,6 @@
 <translation id="7514365320538308">ទាញយក</translation>
 <translation id="7514417110442087199">បញ្ចូល​ការកំណត់​គ្រាប់ចុច</translation>
 <translation id="7515139121338932179">ដើម្បី​បង្ហាញ​វិនដូ​របស់អ្នក សូមប្រើផ្ទាំងជ្រើសរើសវិនដូនៃប្រព័ន្ធរបស់អ្នក</translation>
-<translation id="7515191208480168435">អ្នកអាចខ្ទាស់ Google Lens ដើម្បីងាយស្រួលចូលប្រើ</translation>
 <translation id="751523031290522286"><ph name="APP_NAME" /> ត្រូវបាន​ទប់ស្កាត់​ដោយ​អ្នកគ្រប់គ្រង​។ សូមស្នើសុំ​ការអនុញ្ញាត​ពីអ្នកគ្រប់គ្រង ដើម្បីប្រើកម្មវិធីនេះ។</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516641972665276706">page down</translation>
@@ -9497,7 +9467,6 @@
 <translation id="7883792253546618164">ឈប់ជាវ​ពេលណាក៏បាន។</translation>
 <translation id="7884372232153418877">{NUM_SITES,plural, =1{ពិនិត្យមើល​គេហទំព័រ 1 ដែលបានផ្ញើ​ការជូនដំណឹង​ជាច្រើន}other{ពិនិត្យមើល​គេហទំព័រ {NUM_SITES} ដែលបានផ្ញើ​ការជូនដំណឹង​ជាច្រើន}}</translation>
 <translation id="788453346724465748">កំពុងផ្ទុក​ព័ត៌មាន​គណនី...</translation>
-<translation id="7886087451482920026">ជ្រើសរើសអក្សរដោយប្រើ Google Lens</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{ធាតុមួយ}other{ធាតុ #}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
 <translation id="7887174313503389866">ធ្វើទស្សនកិច្ច​ស្វែងយល់អំពី​ការគ្រប់គ្រងសុវត្ថិភាព និងឯកជនភាព​សំខាន់ៗ។ សម្រាប់ជម្រើស​ច្រើនទៀត សូមចូលទៅកាន់​ការកំណត់នីមួយៗ។</translation>
@@ -9684,7 +9653,6 @@
 <translation id="8008356846765065031">បានផ្តាច់អ៊ីនធឺណិត។ សូមពិនិត្យការភ្ជាប់អ៊ីនធឺណិតរបស់អ្នក។</translation>
 <translation id="8008704580256716350">បានទប់ស្កាត់​ឯកសារ​ដែលគួរឱ្យ​សង្ស័យ</translation>
 <translation id="8009225694047762179">គ្រប់គ្រង​ពាក្យសម្ងាត់</translation>
-<translation id="8010081455002666927">ចាប់ដឹង​ដោយស្វ័យប្រវត្តិ</translation>
 <translation id="8011372169388649948">បានផ្លាស់ទី '<ph name="BOOKMARK_TITLE" />'។</translation>
 <translation id="8012188750847319132">caps lock</translation>
 <translation id="8012463809859447963">ព័ត៌មានលម្អិតអំពីហតស្ប៉តភ្លាមៗ</translation>
@@ -9838,7 +9806,6 @@
 <translation id="8115139559594092084">ពី Google ថាសរបស់អ្នក</translation>
 <translation id="8116972784401310538">កម្មវិធីគ្រប់គ្រងចំណាំ</translation>
 <translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" />ចងចាំ​របៀបដែលអ្នក​បានចូលគណនី និង​នាំអ្នក​ចូលគណនី​ដោយស្វ័យប្រវត្តិ នៅពេល​ដែលអាច។ នៅពេលបិទ អ្នកនឹង​ត្រូវបាន​ស្នើឱ្យ​បញ្ជាក់​គ្រប់ពេល។</translation>
-<translation id="8118331347066725040">ផ្ញើមតិកែលម្អសម្រាប់ការស្វែងរកដោយប្រើ Lens</translation>
 <translation id="8118362518458010043">បានបិទដោយ Chrome ។ កម្មវិធីបន្ថែមនេះ​អាច​នឹងមិនមានសុវត្ថិភាពទេ។</translation>
 <translation id="8118488170956489476"><ph name="BEGIN_LINK" />កម្មវិធីរុករកតាមអ៊ីនធឺណិត​របស់អ្នក​ត្រូវបានគ្រប់គ្រង<ph name="END_LINK" />ដោយ​ស្ថាប័នរបស់អ្នក</translation>
 <translation id="8118515372935001629">អត្រាផ្ទុកឡើងវិញរបស់ផ្ទាំងអេក្រង់</translation>
@@ -10118,7 +10085,6 @@
 <translation id="8319414634934645341">ការប្រើប្រាស់សោបន្ថែម</translation>
 <translation id="8321476692217554900">ការជូន​ដំណឹង</translation>
 <translation id="8321837372750396788"><ph name="DEVICE_TYPE" /> នេះនឹង​ស្ថិតក្រោម​ការគ្រប់គ្រង​របស់ <ph name="MANAGER" />។</translation>
-<translation id="8321888067342493336">រក្សាទុកជា​រូបភាព</translation>
 <translation id="8322814362483282060">ទំព័រនេះត្រូវបានរារាំងពីការចូលប្រើម៉ៃក្រូហ្វូនរបស់អ្នក។</translation>
 <translation id="8323167517179506834">វាយបញ្ចូល URL</translation>
 <translation id="8323317289166663449">អាន និងប្ដូរ​ទិន្នន័យទាំងអស់​របស់អ្នក​នៅលើ​កុំព្យូទ័រ​របស់អ្នក និង​គេហទំព័រ​ទាំងអស់</translation>
@@ -10172,7 +10138,6 @@
 <translation id="835951711479681002">រក្សាទុកនៅក្នុងគណនី Google របស់អ្នក</translation>
 <translation id="8360140320636871023">កំណត់​រចនាប័ទ្ម​នៃ​ការបង្ហាញ​ឱ្យស្រប​នឹង​អ្នក</translation>
 <translation id="8360267485906769442">ប៊ូតុង "ផ្ញើ​មតិកែលម្អ"</translation>
-<translation id="8362914115861174987">បក​ប្រែ​ជា</translation>
 <translation id="8363095875018065315">ថេរ</translation>
 <translation id="8363142353806532503">បាន​ទប់ស្កាត់​មីក្រូហ្វូន</translation>
 <translation id="8363277452449582220">មហាសមុទ្រ</translation>
@@ -11225,7 +11190,6 @@
 <translation id="9102610709270966160">បើក​កម្មវិធី​បន្ថែម</translation>
 <translation id="9102864637938129124">គេហទំព័រ និង​អ្នក​ផ្សាយ​ពាណិជ្ជកម្ម​អាច​ដឹងថាការ​ផ្សាយ​ពាណិជ្ជកម្មដំណើរការយ៉ាងម៉េចដែរ។ ការកំណត់​នេះ​ត្រូវ​បានបើក។</translation>
 <translation id="9103868373786083162">ចុចដើម្បីថយក្រោយ ហើយចុចម៉ឺនុយបរិបទដើម្បីមើលប្រវត្តិ</translation>
-<translation id="9106236359747881194">ជ្រើសរើសអក្សរដើម្បីស្វែងរក</translation>
 <translation id="9107096627210171112">&amp;បកប្រែ...</translation>
 <translation id="9107624673674616016">គូល័រ</translation>
 <translation id="9108035152087032312">ឈ្មោះ និងវិនដូ...</translation>

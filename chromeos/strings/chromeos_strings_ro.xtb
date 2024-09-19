@@ -127,6 +127,7 @@
 <translation id="1567064801249837505">Albume</translation>
 <translation id="1572585716423026576">Setează ca imagine de fundal</translation>
 <translation id="1578784163189013834">Alege fundalul screensaverului</translation>
+<translation id="1587031308639983732">Este posibil ca modificările în funcție de oră să nu fie precise. Această setare este gestionată de administrator.</translation>
 <translation id="1588438908519853928">Normal</translation>
 <translation id="1591562245178063882">Luna aceasta</translation>
 <translation id="1593528591614229756">Selectează doar APN-uri oferite de furnizorul de servicii de telefonie mobilă sau de administrator. Selectarea unui APN va dezactiva toate APN-urile personalizate. APN-urile nevalide pot întrerupe conexiunea mobilă. <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
@@ -1166,6 +1167,7 @@
 <translation id="6831043979455480757">Tradu</translation>
 <translation id="6846843854964504403">Resetare de siguranță</translation>
 <translation id="6853312040151791195">Rata de descărcare</translation>
+<translation id="6862228900689076919">Această funcție este gestionată de administrator</translation>
 <translation id="6862416241246624313">Feedbackul a fost trimis</translation>
 <translation id="6866732840889595464">margaretă</translation>
 <translation id="6871256179359663621">mov deschis</translation>

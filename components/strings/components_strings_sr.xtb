@@ -2000,6 +2000,7 @@
 <translation id="467662567472608290">Овај сервер не може да докаже да је <ph name="DOMAIN" />; његов безбедносни сертификат садржи грешке. Узрок томе је можда погрешна конфигурација или нападач који је прекинуо везу.</translation>
 <translation id="4677585247300749148"><ph name="URL" /> жели да одговара на догађаје приступачности</translation>
 <translation id="467809019005607715">Google презентације</translation>
+<translation id="4678379207584374453"><ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
 <translation id="4682496302933121474">Желите да преведете страницу?</translation>
 <translation id="468314109939257734">Прегледајте број своје виртуелне картице</translation>
 <translation id="4686942373615810936">Направљено је малопре</translation>
@@ -2133,7 +2134,6 @@
 <translation id="4901778704868714008">Сачувај...</translation>
 <translation id="4901952598169637881">Свакодневна обућа</translation>
 <translation id="4905659621780993806">Администратор ће аутоматски рестартовати уређај у <ph name="TIME" />, <ph name="DATE" />. Сачувајте отворене ставке пре него што се уређај рестартује.</translation>
-<translation id="4913784027728226227">Да бисте сачували и користили ову лозинку на свим уређајима, потврдите свој идентитет</translation>
 <translation id="4913987521957242411">Бушење у горњем левом углу</translation>
 <translation id="4916389289686916969">ТВ ријалити емисије</translation>
 <translation id="4917064667437236721">Цилиндар за слике</translation>
@@ -2381,6 +2381,7 @@
 <translation id="5371425731340848620">Ажурирајте картицу</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">„Сат касни“ или „Сат жури“ или „&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;“</translation>
+<translation id="5379618281582508161">Да бисте добили ову лозинку на свим уређајима, потврдите свој идентитет</translation>
 <translation id="5380953781541843508">растућим редоследом</translation>
 <translation id="5381318171304904246">Када наставите, бићете преусмерени на веб-сајт банке. После верификације ћете аутоматски бити враћени да бисте довршили куповину.</translation>
 <translation id="5383478552402031184">Постављање подова</translation>

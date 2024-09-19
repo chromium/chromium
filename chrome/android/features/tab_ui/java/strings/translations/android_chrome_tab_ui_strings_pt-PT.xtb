@@ -55,7 +55,6 @@
 <translation id="3194464645767632461">classificação</translation>
 <translation id="3275186015127230296">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> separador adicionado, <ph name="ANY_CHANGED" /> alterado(s)}other{<ph name="MANY_ADDED" /> separadores adicionados, <ph name="ANY_CHANGED" /> alterados}}</translation>
 <translation id="3291470810748040983">Receberá um alerta quando existir um preço inferior num separador aberto.</translation>
-<translation id="3322827343001922122">Abra o menu de ação do grupo de separadores para o grupo de separadores <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3328308545011660196">Sugestão: <ph name="NUMBER_OF_TABS" /> separadores parecem estar relacionados. Quer agrupá-los?</translation>
 <translation id="3547352561153509682">Esta ação elimina o grupo de todos os dispositivos com sessão iniciada com o endereço <ph name="USER_EMAIL" /></translation>
 <translation id="3613492231657284463">Ocultar caixa de diálogo de separadores inativos</translation>
@@ -104,7 +103,6 @@
 <translation id="5400836586163650660">Cinzento</translation>
 <translation id="5490235265819901748">Grupo de separadores expandido</translation>
 <translation id="5494920125229734069">Selecionar tudo</translation>
-<translation id="5549653163690032080">Abra o menu de ação do grupo de separadores para o grupo de separadores partilhado <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Feche o grupo de separadores com <ph name="TABS_COUNT_ONE" /> separador, cor <ph name="COLOR_NAME" />.}other{Feche o grupo de separadores com <ph name="TABS_COUNT_MANY" /> separadores, cor <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">Veja informações da loja, opção disponível junto à parte superior do ecrã</translation>
 <translation id="5627941783489838464">Nenhuma atualização de separadores</translation>

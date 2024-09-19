@@ -215,6 +215,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1703117532528082099">Fereastra activă a fost fixată în stânga.</translation>
 <translation id="1708345662127501511">Desktop: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Setări de rețea</translation>
+<translation id="171610090693716835">Rămâi pe drumul cel bun cu playlisturi personalizate pentru concentrare. Bucură-te de YouTube Music și YouTube, fără anunțuri, cu trei luni de YouTube Premium fără costuri.</translation>
 <translation id="1719094688023114093">Funcția Subtitrări live este activată.</translation>
 <translation id="1720011244392820496">Activează Sincronizarea Wi-Fi</translation>
 <translation id="1720230731642245863">Hotspotul este dezactivat</translation>
@@ -1414,6 +1415,7 @@ Niciun dispozitiv conectat.</translation>
 <translation id="5777841717266010279">Oprești permiterea accesului la ecran?</translation>
 <translation id="5779721926447984944">Fișiere fixate</translation>
 <translation id="5785221443435874078">Elimină această sugestie</translation>
+<translation id="5787431783058088906">Valorifică beneficiul</translation>
 <translation id="5788127256798019331">Fișiere Play</translation>
 <translation id="5788535737706478207">Redeschide ultima filă sau fereastră închisă</translation>
 <translation id="5790085346892983794">Ai reușit</translation>
@@ -1645,6 +1647,7 @@ Instalare nouă</translation>
 <translation id="6574587113394758819">Notificarea pentru <ph name="APP_TITLE" /> este ascunsă deoarece este activată protecția la afișare</translation>
 <translation id="6574622320167699133">Deblocat de telefon. Atinge sau dă clic pentru acces.</translation>
 <translation id="6578407462441924264">Nedenumit</translation>
+<translation id="6582012689384648647">Pentru playlisturi personalizate pentru concentrare, permite accesul la YouTube Music</translation>
 <translation id="6582034443359256692">Se calculează nivelul de încărcare a bateriei.</translation>
 <translation id="6585808820553845416">Sesiunea se încheie peste <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" /> <ph name="SECONDARY_TEXT" /></translation>
@@ -1883,6 +1886,7 @@ Instalare nouă</translation>
 <translation id="7477793887173910789">Gestionează muzica, videoclipurile și altele</translation>
 <translation id="7488762544858401571">Editat</translation>
 <translation id="7489261257412536105">Intră sau ieși din ecranul complet</translation>
+<translation id="7490157877815329797">Pentru a asculta muzică fără anunțuri și a te bucura de muzică personalizată pentru concentrare, încearcă YouTube Music Premium</translation>
 <translation id="7490360161041035804">Poți fixa fișiere importante, inclusiv fișiere Google Drive. Pentru a fixa un element, plasează cursorul pe el sau deschide Fișiere și dă clic dreapta pe un element.</translation>
 <translation id="7497767806359279797">Alege limba și tastatura</translation>
 <translation id="7507162824403726948">Finalizează confirmarea identității</translation>
@@ -2158,6 +2162,7 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="8380784334203145311">Bună seara!</translation>
 <translation id="8382715499079447151">Protecție la afișare</translation>
 <translation id="8383614331548401927">Recapitulare de bun venit</translation>
+<translation id="838540623579162843">Încearcă Music Premium</translation>
 <translation id="8388750414311082622">Ultimul desktop nu poate fi eliminat.</translation>
 <translation id="8394567579869570560">Părintele tău a blocat dispozitivul</translation>
 <translation id="8401850874595457088">Accesează meniul de limbă</translation>

@@ -35,6 +35,7 @@
 <translation id="1155154308031262006">Fut një kërkesë</translation>
 <translation id="115705039208660697">ananasë</translation>
 <translation id="1164939766849482256">Mbrojtësi i ekranit nga agimi në muzg</translation>
+<translation id="1166688493741195933">Gjenerimi i emrave të regjistrimeve dështoi</translation>
 <translation id="1167755866710282443">Hap menynë për të personalizuar tastet. Zvarrite menynë për ta zhvendosur.</translation>
 <translation id="1171349345463658120">lagunë me rërë</translation>
 <translation id="1173894706177603556">Riemërto</translation>
@@ -341,6 +342,7 @@
 <translation id="2560876255701405320">Lista e regjistrimeve të audios</translation>
 <translation id="2561093647892030937">limonë</translation>
 <translation id="2570743873672969996">Po ekzekuton testin <ph name="TEST_NAME" />...</translation>
+<translation id="2573178735329662769">Po regjistrohen të gjitha audiot e Chromebook</translation>
 <translation id="2575552334616524665">Mund ta aktivizosh këtë te "Cilësimet" ose te menyja <ph name="THREE_DOTS_MENU_ICON" /></translation>
 <translation id="2576253868710695442">Kjo do të zërë deri në 2 GB hapësirë ruajtëse</translation>
 <translation id="2584547424703650812">Peizazhe plot shkëlqim</translation>
@@ -493,6 +495,7 @@
 <translation id="3502426834823382181">shiko të gjitha aplikacionet</translation>
 <translation id="3510890413042482857">Dërgo <ph name="BEGIN_LINK1" />të dhënat e gjurmimit të performancës<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Përditësim: ChromeOS</translation>
+<translation id="3522508178835057262">Për momentin, nuk mbështetet një transkript më i gjatë se <ph name="MAX_WORD_LENGTH" /> fjalë</translation>
 <translation id="3527036260304016759">Dështoi - Gabim i panjohur</translation>
 <translation id="353214771040290298">Modifikimi përfundoi</translation>
 <translation id="3532980081107202182">Rreth <ph name="MIN_REMAINING" /> minuta të mbetura</translation>
@@ -508,6 +511,7 @@
 <translation id="3588034708467091142">Sigurohu që të jesh lidhur me internetin dhe provo përsëri.</translation>
 <translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> është emri i përshtatshëm për përdoruesin për <ph name="APN_NAME" />.</translation>
 <translation id="3595596368722241419">Bateria është plot</translation>
+<translation id="3600063043775287169">Kur audioja e Chromebook është aktive, "Regjistruesi" regjistron të gjitha audiot që luhen në këtë pajisje. Sigurohu që dëshiron të regjistrosh të gjithë tingujt.</translation>
 <translation id="3600339377155080675">Pasqyrimi i ekranit</translation>
 <translation id="3602290021589620013">Pamje paraprake</translation>
 <translation id="3603829704940252505">Simboli</translation>
@@ -710,6 +714,7 @@
 <translation id="4602266091140407479">Mikrofoni</translation>
 <translation id="4607282946861182308">Nuk mund të krijohen imazhe të kësaj. Provo një kërkesë tjetër.</translation>
 <translation id="4609350030397390689">Ulja e ndriçimit të tastierës</translation>
+<translation id="4623061655523261501">Emrat e regjistrimeve u gjeneruan me sukses</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> nga <ph name="TOTAL_PAGE_NUMBER" />. Shtyp Enter për të anuluar printimin.</translation>
 <translation id="463791356324567266">Skanimi po anulohet...</translation>
 <translation id="4644611440022666152">Aktivizo dhe shkarko</translation>
@@ -1042,6 +1047,8 @@
 <translation id="628726841779494414">Menaxho printerët e tu te cilësimet e printerëve</translation>
 <translation id="6292095526077353682">Gjatë karikimit, shfaq mbrojtësin e ekranit për:</translation>
 <translation id="629550705077076970">zbehja e tastierës</translation>
+<translation id="6301193653204230066">Rivendosja e sigurisë çaktivizon shtesat e shfletuesit Chrome dhe rivendos rrjetin dhe cilësimet e tjera në parazgjedhjet e sigurta.
+          Skedat, skedarët, kukit dhe historiku yt nuk do të ndryshohen.</translation>
 <translation id="6302401976930124515">Testi "<ph name="TEST_NAME" />" është anuluar</translation>
 <translation id="631063167932043783">Aplikacioni "Eksploro"</translation>
 <translation id="6318437367327684789">përgjithmonë</translation>
@@ -1051,6 +1058,7 @@
 <translation id="6325525973963619867">Dështoi</translation>
 <translation id="6327262166342360252">Ky imazh sfondi është krijuar me IA duke përdorur tekstin në vijim: "<ph name="PROMPT" />".</translation>
 <translation id="6331191339300272798">Temë e errët automatike</translation>
+<translation id="6335228876613776082">Shkarkimi i modelit përfundoi</translation>
 <translation id="6340526405444716530">Personalizimi</translation>
 <translation id="6348252528297699679">Mund ta çaktivizosh vendndodhjen te Cilësimet &gt; Privatësia dhe siguria &gt; Kontrollet e privatësisë &gt; Qasja te vendndodhja. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">Emri i përdoruesit dhe fjalëkalimi</translation>
@@ -1212,6 +1220,7 @@
 <translation id="708426984172631313">NDALOI</translation>
 <translation id="7086168019478250425">plazh me ndriçim të organizmave biologjike</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="7086916854357021265">Emrat e regjistrimeve po gjenerohen</translation>
 <translation id="7097908713073775559">shumëngjyrëshe</translation>
 <translation id="710028965487274708">Dështoi - Autorizimi dështoi</translation>
 <translation id="7101959270679078188">Shkyç pajisjen "<ph name="DEVICE_NAME" />" për të vazhduar procesin e përditësimit</translation>
@@ -1544,6 +1553,7 @@ Shkarko modelin e transkriptimit (deri në 100 MB) për të marrë këto transk
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Albumi i "Fotografive të Google"</translation>
 <translation id="8775713578693478175">APN-ja e modemit</translation>
+<translation id="877735394245039557">Shkarkimi i modelit në vazhdim</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Ky rrjet mund të ketë një portal izolues</translation>
 <translation id="8797082062139985406">Krijo emrin duke përdorur IA-në e Google</translation>

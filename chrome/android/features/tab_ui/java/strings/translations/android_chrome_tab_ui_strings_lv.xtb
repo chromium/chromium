@@ -55,7 +55,6 @@
 <translation id="3194464645767632461">vērtējums</translation>
 <translation id="3275186015127230296">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> cilne pievienota; mainītas: <ph name="ANY_CHANGED" />}zero{<ph name="MANY_ADDED" /> cilnes pievienotas; mainītas: <ph name="ANY_CHANGED" />}one{<ph name="MANY_ADDED" /> cilne pievienota; mainītas: <ph name="ANY_CHANGED" />}other{<ph name="MANY_ADDED" /> cilnes pievienotas; mainītas: <ph name="ANY_CHANGED" />}}</translation>
 <translation id="3291470810748040983">Jūs saņemsiet brīdinājumu, kad kādā atvērtajā cilnē būs pieejama zemāka cena.</translation>
-<translation id="3322827343001922122">Atvērt ciļņu grupas “<ph name="TITLE_OF_GROUP" />” darbību izvēlni</translation>
 <translation id="3328308545011660196">Ieteikums: šķiet, ka <ph name="NUMBER_OF_TABS" /> cilnes ir saistītas. Vai grupēt tās?</translation>
 <translation id="3547352561153509682">Tādējādi grupa tiks dzēsta no visām ierīcēm, kurās esat pierakstījies kontā <ph name="USER_EMAIL" />.</translation>
 <translation id="3613492231657284463">Paslēpt neaktīvo ciļņu dialoglodziņu</translation>
@@ -104,7 +103,6 @@
 <translation id="5400836586163650660">Pelēka</translation>
 <translation id="5490235265819901748">Ciļņu grupa ir izvērsta</translation>
 <translation id="5494920125229734069">Atlasīt visu</translation>
-<translation id="5549653163690032080">Atvērt kopīgotās ciļņu grupas “<ph name="TITLE_OF_GROUP" />” darbību izvēlni</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Aizvērt ciļņu grupu, kurā ir <ph name="TABS_COUNT_ONE" /> cilne šādā krāsā: <ph name="COLOR_NAME" />.}zero{Aizvērt ciļņu grupu, kurā ir <ph name="TABS_COUNT_MANY" /> cilnes šādā krāsā: <ph name="COLOR_NAME" />.}one{Aizvērt ciļņu grupu, kurā ir <ph name="TABS_COUNT_MANY" /> cilne šādā krāsā: <ph name="COLOR_NAME" />.}other{Aizvērt ciļņu grupu, kurā ir <ph name="TABS_COUNT_MANY" /> cilnes šādā krāsā: <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">Skatiet veikala informāciju; opcija ir pieejama ekrāna augšdaļā</translation>
 <translation id="5627941783489838464">Nav ciļņu atjauninājumu</translation>

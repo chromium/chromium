@@ -8304,7 +8304,7 @@ Nếu bạn đặt chính sách này thành false, thì <ph name="PRODUCT_NAME" 
 
 Chính sách này không ảnh hưởng đến các trình quản lý mật khẩu bên thứ ba sử dụng API hỗ trợ tiếp cận.</translation>
 <translation id="7114169791477667553">Tắt nhà cung cấp dịch vụ tìm kiếm mặc định</translation>
-<translation id="7115684775550072082">Chỉ giữ khoảng trắng cho loại mime văn bản và xml (ngôn ngữ đánh dấu mở rộng)</translation>
+<translation id="7115684775550072082">Chỉ giữ khoảng trắng cho loại mime xml (ngôn ngữ đánh dấu mở rộng) và văn bản</translation>
 <translation id="7121046543122812054">Chính sách này đã ngừng hoạt động, hãy cân nhắc sử dụng <ph name="BROWSER_SIGNIN_POLICY_NAME" />.
 
       Cho phép người dùng đăng nhập vào <ph name="PRODUCT_NAME" />.

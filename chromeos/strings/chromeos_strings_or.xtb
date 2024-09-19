@@ -35,6 +35,7 @@
 <translation id="1155154308031262006">ଏକ ପ୍ରମ୍ପ୍ଟ ଲେଖନ୍ତୁ</translation>
 <translation id="115705039208660697">ସପୁରୀ</translation>
 <translation id="1164939766849482256">ଡନ ଟୁ ଡାର୍କ ସ୍କ୍ରିନ ସେଭର</translation>
+<translation id="1166688493741195933">ରେକର୍ଡିଂ ନାମଗୁଡ଼ିକ ଜେନେରେଟ କରିବାରେ ବିଫଳ ହୋଇଛି</translation>
 <translation id="1167755866710282443">କୀ'ଗୁଡ଼ିକୁ କଷ୍ଟମାଇଜ କରିବା ପାଇଁ ମେନୁ ଖୋଲନ୍ତୁ। ମୁଭ କରିବା ପାଇଁ ମେନୁକୁ ଡ୍ରାଗ କରନ୍ତୁ।</translation>
 <translation id="1171349345463658120">ବାଲୁକାମୟ ହ୍ରଦ</translation>
 <translation id="1173894706177603556">ରିନେମ୍ କରନ୍ତୁ</translation>
@@ -341,6 +342,7 @@
 <translation id="2560876255701405320">ଅଡିଓ ରେକର୍ଡିଂଗୁଡ଼ିକର ତାଲିକା</translation>
 <translation id="2561093647892030937">ଲେମ୍ବୁ</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> ପରୀକ୍ଷା ଚଲାଯାଉଛି...</translation>
+<translation id="2573178735329662769">ସମସ୍ତ Chromebook ଅଡିଓକୁ ରେକର୍ଡିଂ କରାଯାଉଛି</translation>
 <translation id="2575552334616524665">ଆପଣ ଏହାକୁ ସେଟିଂସ କିମ୍ବା <ph name="THREE_DOTS_MENU_ICON" /> ମେନୁରେ ଚାଲୁ କରିପାରିବେ</translation>
 <translation id="2576253868710695442">ଏହା 2GB ପର୍ଯ୍ୟନ୍ତ ଷ୍ଟୋରେଜ ସ୍ପେସ ନେବ</translation>
 <translation id="2584547424703650812">ଗ୍ଲୋସ୍କେପଗୁଡ଼ିକ</translation>
@@ -493,6 +495,7 @@
 <translation id="3502426834823382181">ସମସ୍ତ ଆପ୍ ଦେଖନ୍ତୁ</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />ପରଫରମାନ୍ସ ଟ୍ରେସ ତାରିଖ<ph name="END_LINK1" /> ପଠାନ୍ତୁ</translation>
 <translation id="3517001332549868749">ChromeOS ଅପଡେଟ</translation>
+<translation id="3522508178835057262">ବର୍ତ୍ତମାନ ପାଇଁ <ph name="MAX_WORD_LENGTH" /> ଶବ୍ଦରୁ ଅଧିକ ଶବ୍ଦ ଥିବା ଏକ ଟ୍ରାନ୍ସକ୍ରିପ୍ଟକୁ ସପୋର୍ଟ କରୁନାହିଁ</translation>
 <translation id="3527036260304016759">ବିଫଳ ହୋଇଛି - ଅଜଣା ତ୍ରୁଟି</translation>
 <translation id="353214771040290298">ଏଡିଟିଂ ସମ୍ପୂର୍ଣ୍ଣ ହୋଇଛି</translation>
 <translation id="3532980081107202182">ପ୍ରାୟ <ph name="MIN_REMAINING" /> ମିନିଟ୍ ବାକି ଅଛି</translation>
@@ -508,6 +511,7 @@
 <translation id="3588034708467091142">ଆପଣ ଇଣ୍ଟର୍ନେଟ ସହ କନେକ୍ଟ ଅଛନ୍ତି ବୋଲି ସୁନିଶ୍ଚିତ କରି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> ହେଉଛି <ph name="APN_NAME" /> ପାଇଁ ୟୁଜର-ଅନୁକୂଳ ନାମ।</translation>
 <translation id="3595596368722241419">ବ୍ୟାଟେରୀ ପୂର୍ଣ୍ଣ</translation>
+<translation id="3600063043775287169">Chromebook ଅଡିଓ ଚାଲୁ ଥିଲେ, Recorder ଏହି ଭିଡିଓରେ ପ୍ଲେ ହେଉଥିବା ସମସ୍ତ ଅଡିଓକୁ କେପଚର କରେ। ଆପଣ ସମସ୍ତ ସାଉଣ୍ଡକୁ ରେକର୍ଡ କରିବାକୁ ଚାହୁଁଥିବା ସୁନିଶ୍ଚିତ କରନ୍ତୁ।</translation>
 <translation id="3600339377155080675">ସ୍କ୍ରିନ ମିରର</translation>
 <translation id="3602290021589620013">ପ୍ରିଭ୍ୟୁ</translation>
 <translation id="3603829704940252505">ଅବତାର</translation>
@@ -710,6 +714,7 @@
 <translation id="4602266091140407479">ମାଇକ</translation>
 <translation id="4607282946861182308">ଏହାର ଇମେଜ ତିଆରି କରାଯାଇପାରିବ ନାହିଁ। ଅନ୍ୟ ଏକ ପ୍ରମ୍ପ୍ଟ ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="4609350030397390689">କୀବୋର୍ଡର ଉଜ୍ଜ୍ୱଳତା କମ୍ କରନ୍ତୁ</translation>
+<translation id="4623061655523261501">ରେକର୍ଡିଂ ନାମଗୁଡ଼ିକ ସଫଳତାର ସହ ଜେନେରେଟ ହୋଇଛି</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="TOTAL_PAGE_NUMBER" />ଟି ମଧ୍ୟରୁ <ph name="PRINTED_PAGE_NUMBER" /> ନମ୍ବର ପୃଷ୍ଠା। ପ୍ରିଣ୍ଟ କାର୍ଯ୍ୟ ବାତିଲ୍ କରିବାକୁ Enter ଦବାନ୍ତୁ।</translation>
 <translation id="463791356324567266">ସ୍କାନିଂ ବାତିଲ୍ କରାଯାଉଛି...</translation>
 <translation id="4644611440022666152">ଚାଲୁ କରି ଡାଉନଲୋଡ କରନ୍ତୁ</translation>
@@ -855,7 +860,7 @@
 <translation id="5303837385540978511"><ph name="PRODUCT_NAME" /> ଏକ୍ସକ୍ଲୁସିଭ ୱାଲପେପର</translation>
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">ପରିଚୟ</translation>
-<translation id="5317780077021120954">ସଞ୍ଚୟ</translation>
+<translation id="5317780077021120954">ସେଭ କରନ୍ତୁ</translation>
 <translation id="5318334351163689047">TCP ଅନୁରୋଧ ବିଫଳ</translation>
 <translation id="53196409393069519">ଟ୍ରାନ୍ସକ୍ରିପସନକୁ ଚାଲୁ କରିବେ?</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
@@ -1042,6 +1047,8 @@
 <translation id="628726841779494414">ପ୍ରିଣ୍ଟର ସେଟିଂସରେ ଆପଣଙ୍କ ପ୍ରିଣ୍ଟରଗୁଡ଼ିକୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="6292095526077353682">ଚାର୍ଜ ହେଉଥିବା ବେଳେ ଏଥିପାଇଁ ସ୍କ୍ରିନ ସେଭର ଦେଖାନ୍ତୁ</translation>
 <translation id="629550705077076970">କୀବୋର୍ଡକୁ ଡିମ କରନ୍ତୁ</translation>
+<translation id="6301193653204230066">ସେଫ୍ଟି ରିସେଟ, Chrome ବ୍ରାଉଜର ଏକ୍ସଟେନସନଗୁଡ଼ିକୁ ବନ୍ଦ କରିଦିଏ ଏବଂ ନେଟୱାର୍କ ଓ ଅନ୍ୟ ସେଟିଂସକୁ ସୁରକ୍ଷିତ ଡିଫଲ୍ଟରେ ରିସେଟ କରେ।
+          ଆପଣଙ୍କର ଟାବ, ଫାଇଲ, କୁକୀ ଏବଂ ଇତିହାସ ପରିବର୍ତ୍ତନ ହେବ ନାହିଁ।</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> ଟେଷ୍ଟକୁ ବାତିଲ୍ କରାଯାଇଛି</translation>
 <translation id="631063167932043783">ଆପ ଏକ୍ସପ୍ଲୋର କରନ୍ତୁ</translation>
 <translation id="6318437367327684789">ସବୁଦିନ ପାଇଁ</translation>
@@ -1051,6 +1058,7 @@
 <translation id="6325525973963619867">ବିଫଳ ହୋଇଛି</translation>
 <translation id="6327262166342360252">ନିମ୍ନୋକ୍ତ ଟେକ୍ସଟକୁ ବ୍ୟବହାର କରି AI ମାଧ୍ୟମରେ ଏହି ୱାଲପେପର ତିଆରି କରାଯାଇଥିଲା: "<ph name="PROMPT" />."</translation>
 <translation id="6331191339300272798">ସ୍ୱଚାଳିତ ଗାଢ଼ା ଥିମ୍</translation>
+<translation id="6335228876613776082">ମଡେଲ ଡାଉନଲୋଡ କରିବା ସମ୍ପୂର୍ଣ୍ଣ ହୋଇଛି</translation>
 <translation id="6340526405444716530">ପର୍ସନାଲାଇଜେସନ</translation>
 <translation id="6348252528297699679">ଆପଣ ସେଟିଂସ&gt; ଗୋପନୀୟତା ଏବଂ ସୁରକ୍ଷା &gt; ଗୋପନୀୟତା ନିୟନ୍ତ୍ରଣ &gt; ଲୋକେସନ ଆକ୍ସେସରେ ଲୋକେସନକୁ ବନ୍ଦ କରିପାରିବେ। <ph name="LINK_BEGIN" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">ଉପଯୋଗକର୍ତ୍ତାନାମ ଏବଂ ପାସୱାର୍ଡ</translation>
@@ -1212,6 +1220,7 @@
 <translation id="708426984172631313">ବନ୍ଦ ହୋଇଯାଇଛି</translation>
 <translation id="7086168019478250425">ବାୟୋଲୁମିନସେଣ୍ଟ ବେଳାଭୂମି</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="7086916854357021265">ରେକର୍ଡିଂ ନାମଗୁଡ଼ିକ ଜେନେରେଟ ହେଉଛି</translation>
 <translation id="7097908713073775559">ରଙ୍ଗୀନ</translation>
 <translation id="710028965487274708">ବିଫଳ ହୋଇଛି - ଅଥୋରାଇଜେସନ ବିଫଳ ହୋଇଛି</translation>
 <translation id="7101959270679078188">ଅପଡେଟ ପ୍ରକ୍ରିୟା ଜାରି ରଖିବାକୁ <ph name="DEVICE_NAME" />କୁ ଅନଲକ କରନ୍ତୁ</translation>
@@ -1544,6 +1553,7 @@
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Photos ଆଲବମ</translation>
 <translation id="8775713578693478175">ମୋଡେମ APN</translation>
+<translation id="877735394245039557">ମଡେଲ ଡାଉନଲୋଡ କରିବା ଚାଲିଛି</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">ଏହି ନେଟୱାର୍କରେ ଏକ କ୍ୟାପ୍ଟିଭ ପୋର୍ଟାଲ ଥାଇପାରେ</translation>
 <translation id="8797082062139985406">Google AIକୁ ବ୍ୟବହାର କରି ନାମ ତିଆରି କରନ୍ତୁ</translation>

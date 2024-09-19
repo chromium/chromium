@@ -55,7 +55,6 @@
 <translation id="3194464645767632461">arvio</translation>
 <translation id="3275186015127230296">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> välilehti lisätty, <ph name="ANY_CHANGED" /> välilehteä muutettu}other{<ph name="MANY_ADDED" /> välilehteä lisätty, <ph name="ANY_CHANGED" /> välilehteä muutettu}}</translation>
 <translation id="3291470810748040983">Saat ilmoituksen, kun avoimella välilehdellä oleva hinta laskee</translation>
-<translation id="3322827343001922122">Avaa välilehtiryhmän toimintovalikko välilehtiryhmälle <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3328308545011660196">Ehdotus: <ph name="NUMBER_OF_TABS" /> välilehteä vaikuttaa liittyvän toisiinsa. Lisätäänkö ne ryhmäksi?</translation>
 <translation id="3547352561153509682">Ryhmä poistetaan kaikilta laitteilta, jotka ovat kirjautuneena tilille <ph name="USER_EMAIL" /></translation>
 <translation id="3613492231657284463">Piilota ei-aktiiviset välilehdet ‐valintaikkuna</translation>
@@ -104,7 +103,6 @@
 <translation id="5400836586163650660">Harmaa</translation>
 <translation id="5490235265819901748">Välilehtiryhmä laajennettu</translation>
 <translation id="5494920125229734069">Valitse kaikki</translation>
-<translation id="5549653163690032080">Avaa välilehtiryhmän toimintovalikko jaetulle välilehtiryhmälle <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Sulje välilehtiryhmä, jossa on <ph name="TABS_COUNT_ONE" /> välilehti, väri <ph name="COLOR_NAME" />.}other{Sulje välilehtiryhmä, jossa on <ph name="TABS_COUNT_MANY" /> välilehteä, väri <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">Näytä kaupan tiedot, vaihtoehto lähellä näytön yläreunaa</translation>
 <translation id="5627941783489838464">Ei välilehtipäivityksiä</translation>

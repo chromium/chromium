@@ -55,7 +55,6 @@
 <translation id="3194464645767632461">rating</translation>
 <translation id="3275186015127230296">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> tab ditambahkan, <ph name="ANY_CHANGED" /> ditukar}other{<ph name="MANY_ADDED" /> tab ditambahkan, <ph name="ANY_CHANGED" /> ditukar}}</translation>
 <translation id="3291470810748040983">Anda akan mendapat makluman apabila terdapat harga yang lebih murah dalam tab yang terbuka</translation>
-<translation id="3322827343001922122">Buka menu tindakan kumpulan tab untuk kumpulan tab <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3328308545011660196">Cadangan: <ph name="NUMBER_OF_TABS" /> tab kelihatan berkaitan. Himpunkan semua tab itu?</translation>
 <translation id="3547352561153509682">Tindakan ini akan memadamkan kumpulan daripada semua peranti yang dilog masuk menggunakan <ph name="USER_EMAIL" /></translation>
 <translation id="3613492231657284463">Dialog sembunyikan tab tidak aktif</translation>
@@ -104,7 +103,6 @@
 <translation id="5400836586163650660">Kelabu</translation>
 <translation id="5490235265819901748">Kumpulan tab dikembangkan</translation>
 <translation id="5494920125229734069">Pilih semua</translation>
-<translation id="5549653163690032080">Buka menu tindakan kumpulan tab untuk kumpulan tab <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Tutup kumpulan tab dengan <ph name="TABS_COUNT_ONE" /> tab, warna <ph name="COLOR_NAME" />.}other{Tutup kumpulan tab dengan <ph name="TABS_COUNT_MANY" /> tab, warna <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">Lihat maklumat kedai, pilihan tersedia berhampiran bahagian atas skrin</translation>
 <translation id="5627941783489838464">Tiada kemaskinian tab</translation>

@@ -35,6 +35,7 @@
 <translation id="1155154308031262006">Introdueix una indicació</translation>
 <translation id="115705039208660697">pinyes</translation>
 <translation id="1164939766849482256">Estalvi de pantalla De l'alba a la foscor</translation>
+<translation id="1166688493741195933">No s'han pogut generar noms per a les gravacions</translation>
 <translation id="1167755866710282443">Obre el menú per personalitzar les claus. Arrossega el menú per moure'l.</translation>
 <translation id="1171349345463658120">llacuna de sorra</translation>
 <translation id="1173894706177603556">Canvia el nom</translation>
@@ -494,6 +495,7 @@
 <translation id="3502426834823382181">mostra totes les aplicacions</translation>
 <translation id="3510890413042482857">Envia <ph name="BEGIN_LINK1" />dades de traça del rendiment<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Actualitz. ChromeOS</translation>
+<translation id="3522508178835057262">De moment, no s'admeten les transcripcions de més de <ph name="MAX_WORD_LENGTH" /> paraules</translation>
 <translation id="3527036260304016759">Error: error desconegut</translation>
 <translation id="353214771040290298">Edició finalitzada</translation>
 <translation id="3532980081107202182">Queden aproximadament <ph name="MIN_REMAINING" /> minuts</translation>
@@ -712,6 +714,7 @@
 <translation id="4602266091140407479">Micròfon</translation>
 <translation id="4607282946861182308">No es poden crear imatges d'això. Prova-ho amb una altra línia d'ordres.</translation>
 <translation id="4609350030397390689">Disminueix la brillantor del teclat</translation>
+<translation id="4623061655523261501">S'han generat correctament noms per a les gravacions</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> de <ph name="TOTAL_PAGE_NUMBER" />. Prem Retorn per cancel·lar la tasca d'impressió.</translation>
 <translation id="463791356324567266">S'està cancel·lant l'escaneig...</translation>
 <translation id="4644611440022666152">Activa i baixa</translation>
@@ -1044,6 +1047,8 @@
 <translation id="628726841779494414">Gestiona les teves impressores a la configuració de la impressora</translation>
 <translation id="6292095526077353682">Mentre es carrega, mostra l'estalvi de pantalla durant</translation>
 <translation id="629550705077076970">atenuació del teclat</translation>
+<translation id="6301193653204230066">El restabliment de seguretat desactiva les extensions del navegador Chrome i restableix la configuració de la xarxa i d'altres opcions als valors predeterminats segurs.
+          No es canviaran les pestanyes, els fitxers, les galetes ni l'historial.</translation>
 <translation id="6302401976930124515">La prova <ph name="TEST_NAME" /> s'ha cancel·lat</translation>
 <translation id="631063167932043783">Aplicació Explora</translation>
 <translation id="6318437367327684789">sempre</translation>
@@ -1053,6 +1058,7 @@
 <translation id="6325525973963619867">Error</translation>
 <translation id="6327262166342360252">Aquest fons de pantalla s'ha creat amb IA fent servir el text següent: "<ph name="PROMPT" />".</translation>
 <translation id="6331191339300272798">Tema fosc automàtic</translation>
+<translation id="6335228876613776082">El model s'ha acabat de baixar</translation>
 <translation id="6340526405444716530">Personalització</translation>
 <translation id="6348252528297699679">Pots desactivar la ubicació a Configuració &gt; Privadesa i seguretat &gt; Controls de privadesa &gt; Accés a la ubicació. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">Nom d'usuari i contrasenya</translation>
@@ -1160,6 +1166,7 @@
 <translation id="6831043979455480757">Tradueix</translation>
 <translation id="6846843854964504403">Restabliment de seguretat</translation>
 <translation id="6853312040151791195">Percentatge de descàrrega</translation>
+<translation id="6862228900689076919">El teu administrador gestiona aquesta funció</translation>
 <translation id="6862416241246624313">S'han enviat els suggeriments</translation>
 <translation id="6866732840889595464">margarida</translation>
 <translation id="6871256179359663621">porpra clar</translation>
@@ -1214,6 +1221,7 @@
 <translation id="708426984172631313">ATURAT</translation>
 <translation id="7086168019478250425">platja bioluminescent</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="7086916854357021265">S'estan generant noms per a les gravacions</translation>
 <translation id="7097908713073775559">acolorits</translation>
 <translation id="710028965487274708">Error: s'ha produït un error en l'autorització</translation>
 <translation id="7101959270679078188">Desbloqueja el <ph name="DEVICE_NAME" /> per continuar amb el procés d'actualització</translation>
@@ -1546,6 +1554,7 @@ Baixa el model de transcripció (fins a 100 MB) per obtenir aquestes transcripci
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Àlbum de Google Fotos</translation>
 <translation id="8775713578693478175">APN del mòdem</translation>
+<translation id="877735394245039557">El model s'està baixant</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Pot ser que aquesta xarxa tingui un portal captiu</translation>
 <translation id="8797082062139985406">Crea un nom amb la IA de Google</translation>

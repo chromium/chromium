@@ -55,7 +55,6 @@
 <translation id="3194464645767632461">įvertinimas</translation>
 <translation id="3275186015127230296">{NUMBER_OF_TABS_ADDED,plural, =1{Pridėtas <ph name="ONE_ADDED" /> skirtukas, pakeista: <ph name="ANY_CHANGED" />}one{Pridėtas <ph name="MANY_ADDED" /> skirtukas, pakeista: <ph name="ANY_CHANGED" />}few{Pridėti <ph name="MANY_ADDED" /> skirtukai, pakeista: <ph name="ANY_CHANGED" />}many{Pridėta <ph name="MANY_ADDED" /> skirtuko, pakeista: <ph name="ANY_CHANGED" />}other{Pridėta <ph name="MANY_ADDED" /> skirtukų, pakeista: <ph name="ANY_CHANGED" />}}</translation>
 <translation id="3291470810748040983">Gausite įspėjimą, kai atidarytame skirtuke bus sumažinta kaina</translation>
-<translation id="3322827343001922122">Atidaryti skirtukų grupės „<ph name="TITLE_OF_GROUP" />“ veiksmų meniu</translation>
 <translation id="3328308545011660196">Pasiūlymas: skirtukai (iš viso: <ph name="NUMBER_OF_TABS" />) atrodo susiję. Grupuoti juos?</translation>
 <translation id="3547352561153509682">Grupė bus ištrinta iš visų įrenginių, kuriuose prisijungta prie <ph name="USER_EMAIL" /></translation>
 <translation id="3613492231657284463">Slėpti neaktyvių skirtukų dialogo langą</translation>
@@ -104,7 +103,6 @@
 <translation id="5400836586163650660">Pilka spalva</translation>
 <translation id="5490235265819901748">Skirtukų grupė išskleista</translation>
 <translation id="5494920125229734069">Pasirinkti viską</translation>
-<translation id="5549653163690032080">Atidaryti bendrinamos skirtukų grupės „<ph name="TITLE_OF_GROUP" />“ veiksmų meniu</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Uždaryti skirtukų grupę su <ph name="TABS_COUNT_ONE" /> skirtuku, kurio spalva <ph name="COLOR_NAME" />.}one{Uždaryti skirtukų grupę su <ph name="TABS_COUNT_MANY" /> skirtuku, kurio spalva <ph name="COLOR_NAME" />.}few{Uždaryti skirtukų grupę su <ph name="TABS_COUNT_MANY" /> skirtukais, kurių spalva <ph name="COLOR_NAME" />.}many{Uždaryti skirtukų grupę su <ph name="TABS_COUNT_MANY" /> skirtuko, kurių spalva <ph name="COLOR_NAME" />.}other{Uždaryti skirtukų grupę su <ph name="TABS_COUNT_MANY" /> skirtukų, kurių spalva <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">Peržiūrėkite parduotuvės informaciją; parinktis pasiekiama ekrano viršuje</translation>
 <translation id="5627941783489838464">Nėra skirtukų atnaujinimų</translation>

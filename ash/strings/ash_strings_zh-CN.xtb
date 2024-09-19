@@ -78,6 +78,7 @@
 <translation id="1240638468526743569">某个应用</translation>
 <translation id="1242198791279543032">通知已静音</translation>
 <translation id="1242883863226959074">设备</translation>
+<translation id="1245476784081715330">太棒了！</translation>
 <translation id="1245644940275736236">开启 Google 助理</translation>
 <translation id="124678866338384709">关闭当前标签页</translation>
 <translation id="1246890715821376239">不支持的应用</translation>
@@ -843,6 +844,7 @@
 <translation id="3958714870339660776">全天</translation>
 <translation id="3962859241508114581">上一首</translation>
 <translation id="3963124517343721543">打开之前的窗口和标签页，轻松地从上次停下的地方继续。您还会看到待办事项的个性化建议。</translation>
+<translation id="396506362088290977">测试麦克风的声音</translation>
 <translation id="3969043077941541451">已关闭</translation>
 <translation id="3970324493235864154">查看手机中的通知</translation>
 <translation id="397105322502079400">正在计算...</translation>
@@ -899,6 +901,7 @@
 <translation id="4151054805501931758">人像美化</translation>
 <translation id="4156293514828496577">电量剩余 <ph name="PERCENTAGE" />%（大约能维持 <ph name="TIME_LEFT" />）。为了延长电池续航时间，部分功能会受到限制。</translation>
 <translation id="4160919062868802509">检测到多个音频源</translation>
+<translation id="416245495747357243">大功告成！</translation>
 <translation id="4165275524535002941">数据线可能不支持显示屏</translation>
 <translation id="4177415338862979658">点击即可查看详情</translation>
 <translation id="4177913004758410636">{0,plural, =1{请在 1 天内更新此设备}other{请在 # 天内更新此设备}}</translation>
@@ -984,6 +987,7 @@
 <translation id="4412944820643904175">“<ph name="FEATURE_NAME" />”功能已关闭。</translation>
 <translation id="4417647906073317561">专注模式设置。您可以设置定时器、任务和音乐，让自己进入状态。</translation>
 <translation id="4424159417645388645">桌面 5</translation>
+<translation id="4426817706804363424">好样的！</translation>
 <translation id="4430019312045809116">音量</translation>
 <translation id="4441283832827406317">应用已按名称排序</translation>
 <translation id="4445159312344259901">登录即可解锁</translation>
@@ -1248,6 +1252,7 @@
 <translation id="5283198616748585639">加 1 分钟</translation>
 <translation id="528468243742722775">结束</translation>
 <translation id="5286194356314741248">正在扫描</translation>
+<translation id="528641622273682395">启用/停用麦克风测试</translation>
 <translation id="5297423144044956168">找不到任何移动设备</translation>
 <translation id="5297704307811127955">已关闭</translation>
 <translation id="5300589172476337783">显示</translation>
@@ -1274,6 +1279,7 @@
 <translation id="536019650977002321">您的管理员不允许截取音频。如需了解详情，请联系您的管理员。</translation>
 <translation id="5361524080961918551">已下载<ph name="LANGUAGE" />语音文件的部分内容</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> 前往此标签页</translation>
+<translation id="5363835273551457276">您可以测试麦克风的声音。关闭面板即可停止测试。</translation>
 <translation id="5364693579536176785">存储空间</translation>
 <translation id="5369573834963677938">设备上的其他用户将可以使用面部控制功能</translation>
 <translation id="5369717264580061086">在“文件”应用内预览文件</translation>
@@ -2128,6 +2134,7 @@
 <translation id="8262312463845990408">播放/暂停切换按钮</translation>
 <translation id="8268302343625273732">查看 Google 课堂中的所有作业</translation>
 <translation id="8277261673056602147">突出显示屏幕上的文字</translation>
+<translation id="8282784978194352587">您做到了！</translation>
 <translation id="8287009018010202411">效率</translation>
 <translation id="828708037801473432">已关闭</translation>
 <translation id="8297006494302853456">弱</translation>
@@ -2206,6 +2213,7 @@
 <translation id="8609384513243082612">打开新标签页</translation>
 <translation id="861045123704058818">系统会暂时按类别整理应用</translation>
 <translation id="8612216344243590325">请将重要文件保存在<ph name="HOLDING_SPACE_TITLE" />中，而不是放在桌面。只需将文件拖到<ph name="HOLDING_SPACE_TITLE" />即可。</translation>
+<translation id="8612338981637220013">势如破竹！</translation>
 <translation id="8614517853887502247">由于防窥探功能已开启，因此系统隐藏了<ph name="APP_1_TITLE" />和<ph name="APP_2_TITLE" />通知</translation>
 <translation id="8615778328722901791">打开工具栏</translation>
 <translation id="8619000641825875669">OneDrive</translation>
@@ -2248,6 +2256,7 @@
 <translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />：正在启用…</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />，
         <ph name="SCREEN_SHARE_STATUS" /></translation>
+<translation id="8751299148074971734">请再接再厉！</translation>
 <translation id="8753368202781196133">目前尚不支持此语言。</translation>
 <translation id="8755498163081687682">验证您的身份：<ph name="ORIGIN_NAME" /> 想确认您的身份</translation>
 <translation id="875593634123171288">显示 VPN 设置</translation>

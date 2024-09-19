@@ -55,7 +55,6 @@
 <translation id="3194464645767632461">ការវាយតម្លៃដោយដាក់ផ្កាយ</translation>
 <translation id="3275186015127230296">{NUMBER_OF_TABS_ADDED,plural, =1{បានបញ្ចូល <ph name="ONE_ADDED" /> ផ្ទាំង, បានប្ដូរ <ph name="ANY_CHANGED" /> ផ្ទាំង}other{បានបញ្ចូល <ph name="MANY_ADDED" /> ផ្ទាំង, បានប្ដូរ <ph name="ANY_CHANGED" /> ផ្ទាំង}}</translation>
 <translation id="3291470810748040983">អ្នកនឹងទទួលបាន​ការជូនដំណឹង នៅពេលមានតម្លៃទាបជាងមុននៅក្នុងផ្ទាំងដែលកំពុងបើក</translation>
-<translation id="3322827343001922122">បើក​ម៉ឺនុយ​សកម្មភាព​ក្រុមផ្ទាំង​សម្រាប់​ក្រុមផ្ទាំង <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3328308545011660196">ការណែនាំ៖ ផ្ទាំង <ph name="NUMBER_OF_TABS" /> ហាក់ដូចជាពាក់ព័ន្ធគ្នា។ បញ្ចូលផ្ទាំងទាំងនេះទៅក្នុងក្រុមឬ?</translation>
 <translation id="3547352561153509682">សកម្មភាពនេះនឹងលុបក្រុមចេញពីគ្រប់ឧបករណ៍ដែលបានចូលគណនីដោយប្រើ <ph name="USER_EMAIL" /></translation>
 <translation id="3613492231657284463">ប្រអប់ "លាក់ផ្ទាំងអសកម្ម"</translation>
@@ -104,7 +103,6 @@
 <translation id="5400836586163650660">ប្រផេះ</translation>
 <translation id="5490235265819901748">បានពង្រីក​ក្រុមផ្ទាំង</translation>
 <translation id="5494920125229734069">ជ្រើសរើសទាំងអស់</translation>
-<translation id="5549653163690032080">បើក​ម៉ឺនុយ​សកម្មភាព​ក្រុមផ្ទាំង​សម្រាប់​ក្រុមផ្ទាំង <ph name="TITLE_OF_GROUP" /> ដែលបាន​ចែករំលែក</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{បិទ​ក្រុមផ្ទាំង​ដែលមាន <ph name="TABS_COUNT_ONE" /> ផ្ទាំង ពណ៌<ph name="COLOR_NAME" />។}other{បិទ​ក្រុមផ្ទាំង​ដែលមាន <ph name="TABS_COUNT_MANY" /> ផ្ទាំង ពណ៌<ph name="COLOR_NAME" />។}}</translation>
 <translation id="5556417849629758491">មើលព័ត៌មានអំពីហាង ជម្រើសមាននៅជិតផ្នែកខាងលើអេក្រង់</translation>
 <translation id="5627941783489838464">មិនមានការធ្វើបច្ចុប្បន្នភាពផ្ទាំងទេ</translation>

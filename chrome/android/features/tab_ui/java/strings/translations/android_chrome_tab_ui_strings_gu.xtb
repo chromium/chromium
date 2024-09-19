@@ -55,7 +55,6 @@
 <translation id="3194464645767632461">રેટિંગ</translation>
 <translation id="3275186015127230296">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> ટૅબ ઉમેર્યું, <ph name="ANY_CHANGED" /> બદલ્યા}one{<ph name="MANY_ADDED" /> ટૅબ ઉમેર્યું, <ph name="ANY_CHANGED" /> બદલ્યા}other{<ph name="MANY_ADDED" /> ટૅબ ઉમેર્યા, <ph name="ANY_CHANGED" /> બદલ્યા}}</translation>
 <translation id="3291470810748040983">ખોલવામાં આવેલી ટૅબમાં જ્યારે કોઈ આઇટમની કિંમત ઓછી થશે, ત્યારે તમને અલર્ટ મળશે</translation>
-<translation id="3322827343001922122">ટૅબના ગ્રૂપ <ph name="TITLE_OF_GROUP" /> માટે ટૅબના ગ્રૂપનું ક્રિયા મેનૂ ખોલો</translation>
 <translation id="3328308545011660196">સૂચન: <ph name="NUMBER_OF_TABS" /> ટૅબ સંબંધિત હોય તેમ જણાય છે. તેમનું ગ્રૂપ બનાવીએ?</translation>
 <translation id="3547352561153509682">આનાથી <ph name="USER_EMAIL" />માં સાઇન ઇન કરેલા બધા ડિવાઇસમાંથી ગ્રૂપ ડિલીટ થઈ જશે</translation>
 <translation id="3613492231657284463">નિષ્ક્રિય ટૅબ સંવાદ છુપાવો</translation>
@@ -104,7 +103,6 @@
 <translation id="5400836586163650660">ગ્રે</translation>
 <translation id="5490235265819901748">ટૅબ ગ્રૂપ મોટું કરો</translation>
 <translation id="5494920125229734069">બધા પસંદ કરો</translation>
-<translation id="5549653163690032080">ટૅબના ગ્રૂપ <ph name="TITLE_OF_GROUP" /> માટે ટૅબના ગ્રૂપનું ક્રિયા મેનૂ ખોલો</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{<ph name="COLOR_NAME" /> રંગનું <ph name="TABS_COUNT_ONE" /> ટૅબ ધરાવતા ટૅબના ગ્રૂપને બંધ કરો.}one{<ph name="COLOR_NAME" /> રંગનું <ph name="TABS_COUNT_MANY" /> ટૅબ ધરાવતા ટૅબના ગ્રૂપને બંધ કરો.}other{<ph name="COLOR_NAME" /> રંગના <ph name="TABS_COUNT_MANY" /> ટૅબ ધરાવતા ટૅબના ગ્રૂપને બંધ કરો.}}</translation>
 <translation id="5556417849629758491">સ્ટોરની માહિતી જુઓ, વિકલ્પ સ્ક્રીનની ટોચની નજીક ઉપલબ્ધ છે</translation>
 <translation id="5627941783489838464">ટૅબ સંબંધી કોઈ અપડેટ નથી</translation>

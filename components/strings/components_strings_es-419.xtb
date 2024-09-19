@@ -2001,6 +2001,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="467662567472608290">Este servidor no pudo probar que su dominio es <ph name="DOMAIN" />; el certificado de seguridad contiene errores. Es posible que esto se deba a una configuración incorrecta o a que un atacante interceptó la conexión.</translation>
 <translation id="4677585247300749148"><ph name="URL" /> desea responder a los eventos de accesibilidad</translation>
 <translation id="467809019005607715">Presentaciones de Google</translation>
+<translation id="4678379207584374453"><ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="4682496302933121474">¿Deseas traducir la página?</translation>
 <translation id="468314109939257734">Ver tu número de tarjeta virtual</translation>
 <translation id="4686942373615810936">Se creó recién</translation>
@@ -2134,7 +2135,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4901778704868714008">Guardar…</translation>
 <translation id="4901952598169637881">Calzado informal</translation>
 <translation id="4905659621780993806">El administrador reiniciará el dispositivo el <ph name="DATE" /> a las <ph name="TIME" />. Guarda los elementos abiertos antes de reiniciar el dispositivo.</translation>
-<translation id="4913784027728226227">Para guardar y usar esta contraseña en todos tus dispositivos, verifica tu identidad</translation>
 <translation id="4913987521957242411">Perforación en la esquina superior izquierda</translation>
 <translation id="4916389289686916969">Reality shows de TV</translation>
 <translation id="4917064667437236721">Cilindro de impresión</translation>

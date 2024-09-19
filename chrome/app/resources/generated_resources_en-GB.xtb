@@ -141,7 +141,6 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1084824384139382525">Copy link addr&amp;ess</translation>
 <translation id="1085064499066015002">Always on all sites</translation>
 <translation id="1085697365578766383">Error starting the virtual machine. Please try again.</translation>
-<translation id="1086486568852410168">Search with Google Lens</translation>
 <translation id="1090126737595388931">No Background Apps Running</translation>
 <translation id="1090541560108055381">Before pairing, make sure that this code is the same on both devices</translation>
 <translation id="1091767800771861448">Press ESCAPE to skip (Non-official builds only).</translation>
@@ -222,7 +221,6 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1155545602507378023">No, this device only</translation>
 <translation id="1155816283571436363">Connecting to your phone</translation>
 <translation id="1157952955648710254">Close Google Search side panel</translation>
-<translation id="1157985233335035034">Recent languages</translation>
 <translation id="1158080958325422608">Make Upper Case</translation>
 <translation id="1159879754517035595">Manage extension settings</translation>
 <translation id="1160800016654917722">Window moved downwards and to the left</translation>
@@ -461,7 +459,6 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1327794256477341646">Features that need your location won't work</translation>
 <translation id="1328364753167940710">In <ph name="NUM_HR" /> hr</translation>
 <translation id="1329466763986822896">Improve privacy for this hotspot</translation>
-<translation id="1330562121671411446">Detect language</translation>
 <translation id="1331977651797684645">This was me.</translation>
 <translation id="1333489022424033687">Some features on <ph name="ORIGIN" /> might not work until you clear data that other sites have stored on your device</translation>
 <translation id="1333965224356556482">Don't allow sites to see your location</translation>
@@ -1270,7 +1267,6 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1878885068166344708">Item is highlighted when you move focus. Press tab or select an item to change focus.</translation>
 <translation id="1879000426787380528">Sign in as</translation>
 <translation id="18802377548000045">Tabs shrink to a large width</translation>
-<translation id="1880677175115548835">Select text</translation>
 <translation id="1880905663253319515">Delete certificate "<ph name="CERTIFICATE_NAME" />"?</translation>
 <translation id="1881445033931614352">Keyboard layout</translation>
 <translation id="1881577802939775675">{COUNT,plural, =1{Item}other{# items}}</translation>
@@ -1763,7 +1759,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2234827758954819389">Privacy guide</translation>
 <translation id="2234876718134438132">Sync and Google services</translation>
 <translation id="2235344399760031203">Third-party cookies are blocked</translation>
-<translation id="2236949375853147973">My Activity</translation>
 <translation id="2238379619048995541">Frequency State Data</translation>
 <translation id="2241053333139545397">Read and change your data on a number of websites</translation>
 <translation id="2241634353105152135">Just once</translation>
@@ -2385,7 +2380,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2666247341166669829">Left battery level <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">Other apps are set to open the same links as <ph name="APP_NAME" />. This will disable <ph name="APP_NAME_2" /> and <ph name="APP_NAME_3" /> from opening supported links.</translation>
 <translation id="2667463864537187133">Manage spell check</translation>
-<translation id="2668094785979141847">Click to exit Google Lens</translation>
 <translation id="2668604389652548400">Remove or replace it with similar extensions from the <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /></translation>
 <translation id="2669241540496514785">Couldn't open <ph name="APP_NAME" /></translation>
 <translation id="2669454659051515572">Anyone using this device can see downloaded files</translation>
@@ -2439,7 +2433,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2710101514844343743">Usage and diagnostic data</translation>
 <translation id="271033894570825754">New</translation>
 <translation id="2710507903599773521">Your <ph name="DEVICE_TYPE" /> is now unlocked</translation>
-<translation id="2712141162840347885">Select anything to search with Google Lens or press escape to exit Google Lens</translation>
 <translation id="2713106313042589954">Turn off camera</translation>
 <translation id="2713444072780614174">White</translation>
 <translation id="2714180132046334502">Dark background</translation>
@@ -2466,7 +2459,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="272741954544380994">Search image with <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="2727633948226935816">Don't remind me again</translation>
 <translation id="2727712005121231835">Actual Size</translation>
-<translation id="2727713483500953825">Select images/text to search with Lens</translation>
 <translation id="2727744317940422214">Sorry, something went wrong. Please file feedback with #bruschetta in the description. Error code is <ph name="ERROR" />. Cleaning up failed. You may need to do so manually.</translation>
 <translation id="2729327310379176711">Chrome is finding new ways to reduce tracking and keep you even safer as you browse. Chrome also <ph name="ESTIMATE_INTERESTS_LINK" /> and enables you to manage them. Then, sites that you visit can ask Chrome for your interests to show you ads.</translation>
 <translation id="2729577602370119849">Easily access and manage printers</translation>
@@ -2516,7 +2508,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2750602041558385535">Unverified download blocked</translation>
 <translation id="2751883373055093745"><ph name="WEBSITE" /> wants to learn the ID number of your security key. The site will know exactly which security key you're using.</translation>
 <translation id="275213133112113418">Your card is saved</translation>
-<translation id="2753623023919742414">Click to search</translation>
 <translation id="2754226775788136540">Looking for Fast Pair devices saved to <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="2754825024506485820">Find the apps that you need, from productivity to entertainment, on the Google Play Store. You can install apps anytime.</translation>
 <translation id="2755349111255270002">Reset this <ph name="DEVICE_TYPE" /></translation>
@@ -2642,7 +2633,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2838379631617906747">Installing</translation>
 <translation id="2839032553903800133">Notifications blocked</translation>
 <translation id="2841013758207633010">Time</translation>
-<translation id="2841525013647267359">Translate from</translation>
 <translation id="2841837950101800123">Provider</translation>
 <translation id="2842013086666334835">Sign in to "<ph name="NETWORK_ID" />"</translation>
 <translation id="2843560154284403323">To finish setting up Linux, update Chrome OS and try again.</translation>
@@ -3040,7 +3030,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3132896062549112541">Rule</translation>
 <translation id="3132996321662585180">Refresh daily</translation>
 <translation id="3134393957315651797">Select experiment state for the <ph name="EXPERIMENT_NAME" /> experiment. Experiment description: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
-<translation id="3137969841538672700">Drag to search</translation>
 <translation id="3139925690611372679">Default yellow avatar</translation>
 <translation id="3141093262818886744">Open anyway</translation>
 <translation id="3141318088920353606">Listening...</translation>
@@ -3206,7 +3195,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3269093882174072735">Load image</translation>
 <translation id="326911502853238749">Don't show <ph name="MODULE_NAME" /></translation>
 <translation id="3269175001434213183">Turn on sync to back up your stuff and use it on any device</translation>
-<translation id="3269209112443570745">New! An easy way to search what's on your screen</translation>
 <translation id="3269612321104318480">Light teal and white</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{File}other{# files}}</translation>
 <translation id="326999365752735949">Downloading diff</translation>
@@ -3682,13 +3670,11 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3621202678540785336">Input</translation>
 <translation id="3621807901162200696">Help improve Chrome OS features and performance</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{an app}other{# apps}}</translation>
-<translation id="3622716124581627104">Identify things or places and copy or translate text. When you use Google Lens, a screenshot of the page is sent to Google. <ph name="LEARN_MORE" /></translation>
 <translation id="3622820753353315928">Flash screen colour</translation>
 <translation id="362333465072914957">Waiting for the CA to issue a certificate</translation>
 <translation id="3623598555687153298">This will delete <ph name="TOTAL_USAGE" /> of data stored by displayed sites</translation>
 <translation id="3624567683873126087">Unlock device and sign in to Google Account</translation>
 <translation id="3624583033347146597">Choose your third-party cookie preferences</translation>
-<translation id="3625345586754200168">Try Lens</translation>
 <translation id="3625481642044239431">Invalid file selected. Try again.</translation>
 <translation id="3626296069957678981">To charge this Chromebook, use a compatible Dell battery.</translation>
 <translation id="3627320433825461852">Less than 1 minute left</translation>
@@ -4286,7 +4272,6 @@ This can include information about installed software, files, your browser and t
 <translation id="4021909830315618592">Copy build details</translation>
 <translation id="4021941025609472374">Close tabs to the left</translation>
 <translation id="4022426551683927403">&amp;Add to Dictionary</translation>
-<translation id="4022972681110646219">Translate screen</translation>
 <translation id="4023048917751563912"><ph name="APP_NAME" /> is printing <ph name="PAGE_NUMBER" /> pages to <ph name="PRINTER_NAME" /></translation>
 <translation id="4024768890073681126">Your browser is managed by your parent</translation>
 <translation id="4025039777635956441">Mute Selected Site</translation>
@@ -4730,7 +4715,6 @@ This can include information about installed software, files, your browser and t
 <translation id="4364327530094270451">Melon</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> is sharing a window.</translation>
 <translation id="4364830672918311045">Display notifications</translation>
-<translation id="4367027658822022112">You can pin Google Lens for easy access; click the Pin button at the top of the side panel</translation>
 <translation id="4367513928820380646">Review removed permissions</translation>
 <translation id="4367971618859387374">Display name</translation>
 <translation id="4368960422722232719">Show memory usage on tab hover preview card</translation>
@@ -4857,7 +4841,6 @@ This can include information about installed software, files, your browser and t
 <translation id="4450974146388585462">Diagnose</translation>
 <translation id="445099924538929605"><ph name="DEVICE_OS" /> detected an active TPM that can store your data more securely.</translation>
 <translation id="4452898361839215358">or select PPD. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
-<translation id="4453144231461812959">Search any image or text with Lens</translation>
 <translation id="4453430595102511050">Touch the fingerprint sensor at the top right corner of your keyboard. Your fingerprint data is stored securely and never leaves your <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4453946976636652378">Search <ph name="SEARCH_ENGINE_NAME" /> or type a URL</translation>
 <translation id="4457472090507035117">Select current voice:</translation>
@@ -5232,7 +5215,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="473936925429402449">Selected; extra content <ph name="CURRENT_ELEMENT" /> out of <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="4739639199548674512">Tickets</translation>
 <translation id="4740546261986864539">Recently opened</translation>
-<translation id="4741235124132242877">Pinned! Use Google Lens again from the toolbar</translation>
 <translation id="4742334355511750246">Not allowed to show images</translation>
 <translation id="4742795653798179840">Deleted Chrome data</translation>
 <translation id="4742970037960872810">Remove highlight</translation>
@@ -5436,7 +5418,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="4883436287898674711">All <ph name="WEBSITE_1" /> sites</translation>
 <translation id="48838266408104654">&amp;Task Manager</translation>
 <translation id="4884987973312178454">6x</translation>
-<translation id="4885446229353981848">Always show Google Lens shortcut</translation>
 <translation id="4885692421645694729">This extension has no additional site access</translation>
 <translation id="4887424188275796356">Open With System Viewer</translation>
 <translation id="488785315393301722">Show details</translation>
@@ -5970,7 +5951,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5284445933715251131">Continue Downloading</translation>
 <translation id="5285635972691565180">Display <ph name="DISPLAY_ID" /></translation>
 <translation id="5286194356314741248">Scanning</translation>
-<translation id="5286907366254680517">Detected</translation>
 <translation id="5287425679749926365">Your accounts</translation>
 <translation id="5288106344236929384">More actions, passkey options for <ph name="USERNAME" /> on <ph name="DOMAIN" /></translation>
 <translation id="5288678174502918605">R&amp;eopen Closed Tab</translation>
@@ -6022,7 +6002,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5319712128756744240">Pair new device</translation>
 <translation id="5320135788267874712">New device name</translation>
 <translation id="5320261549977878764">Unsave group</translation>
-<translation id="5321325624576443340">Google Lens is not available. Please try again later.</translation>
 <translation id="532247166573571973">The server may be unreachable. Try again later.</translation>
 <translation id="5322961556184463700">Tell us why you're downloading this file anyway survey</translation>
 <translation id="5323328004379641163">Customise the appearance of Chrome and this page</translation>
@@ -6888,7 +6867,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="5969419185858894314"><ph name="ORIGIN" /> can view files in <ph name="FOLDERNAME" /></translation>
 <translation id="5969728632630673489">Keyboard shortcut notice dismissed</translation>
 <translation id="5971037678316050792">Control Bluetooth adaptor state and pairing</translation>
-<translation id="5971400953982411053">Google Lens search bubble</translation>
 <translation id="5971861540200650391">Hide for <ph name="MODULE_TITLE" /> hours</translation>
 <translation id="597235323114979258">See more destinations</translation>
 <translation id="5972543790327947908">Some supported links will still open in <ph name="APP_NAME" />, <ph name="APP_NAME_2" /> or <ph name="APP_NAME_3" />.</translation>
@@ -6981,7 +6959,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="6042308850641462728">More</translation>
 <translation id="604388835206766544">Failed to parse configuration</translation>
 <translation id="6043994281159824495">Sign out now</translation>
-<translation id="604424701295382420">Pinned! You can access Google Lens again from the new button on the toolbar</translation>
 <translation id="6045114302329202345">Primary TrackPoint button</translation>
 <translation id="6047632800149092791">Sync isn't working. Try signing out and back in again.</translation>
 <translation id="6048747414605857443">Select and customise text-to-speech voices for ChromeVox and Select to Speak</translation>
@@ -7005,7 +6982,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="6059276912018042191">Recent Chrome tabs</translation>
 <translation id="6059652578941944813">Certificate Hierarchy</translation>
 <translation id="6059925163896151826">USB devices</translation>
-<translation id="6060842547856900641">Open Lens</translation>
 <translation id="6061408389284235459">A notification was sent to <ph name="DEVICE_NAME" /></translation>
 <translation id="6063284707309177505">Create QR code</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Note:<ph name="END_BOLD" /> A similar voice or recording might be able to access <ph name="SUPERVISED_USER_NAME" />’s personal results. To save battery, you can select in <ph name="SUPERVISED_USER_NAME" />’s Assistant settings to have ‘Hey Google’ on only when this device is connected to a power source.</translation>
@@ -7014,7 +6990,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="6064764629679333574">Improve the quality of Bluetooth mic sound by upscaling low-res audio to high-res.</translation>
 <translation id="6065289257230303064">Certificate Subject Directory Attributes</translation>
 <translation id="6066794465984119824">Image hash is not set</translation>
-<translation id="6069027071882229820">Copy as image</translation>
 <translation id="6069464830445383022">Your Google Account is your Chromebook sign-in</translation>
 <translation id="6069500411969514374">Work</translation>
 <translation id="6071181508177083058">confirm password</translation>
@@ -7729,7 +7704,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6597324406048772521">Extensions not allowed on this site</translation>
 <translation id="6597331566371766302">The following extensions were blocked by your administrator:</translation>
 <translation id="659894938503552850">newest</translation>
-<translation id="6600016381025017075">Search anything on this page</translation>
 <translation id="6601262427770154296">Manage user dictionaries</translation>
 <translation id="6602173570135186741">Autofill and passwords</translation>
 <translation id="6602336931411102724">Show tab groups in bookmarks bar</translation>
@@ -8279,7 +8253,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6988572888918530647">Manage your Google Account</translation>
 <translation id="6989274756151920076">Stay here</translation>
 <translation id="6991665348624301627">Select a destination</translation>
-<translation id="6991926986715044139">Always show Google Lens shortcut</translation>
 <translation id="6992554835374084304">Turn on enhanced spell check</translation>
 <translation id="6993000214273684335">Tab removed from unnamed group – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6993050154661569036">Updating Chrome Browser</translation>
@@ -8858,7 +8831,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7419142833919893307">No username added</translation>
 <translation id="7419426517282923105">{NUM_ATTEMPTS,plural, =1{Wrong PIN. 1 attempt remaining.}other{Wrong PIN. # attempts remaining.}}</translation>
 <translation id="7419565702166471774">Always use secure connections</translation>
-<translation id="7419819959108735624">Select anything to search with Google Lens</translation>
 <translation id="742130257665691897">Bookmarks removed</translation>
 <translation id="7421925624202799674">&amp;View Page Source</translation>
 <translation id="7422192691352527311">Preferences...</translation>
@@ -8894,7 +8866,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7444983668544353857">Disable <ph name="NETWORKDEVICE" /></translation>
 <translation id="7448430327655618736">Automatically install apps</translation>
 <translation id="7448664748118305024">Delete data sites that have been saved to your device when you close all windows</translation>
-<translation id="7450541714075000668">Text copied</translation>
 <translation id="7450761244949417357">Opening in <ph name="ALTERNATIVE_BROWSER_NAME" /> now</translation>
 <translation id="7450926666485653189">Sends an obfuscated portion of the URL to Google through a privacy server that hides your IP address</translation>
 <translation id="7453008956351770337">By selecting this printer, you are giving the following extension the permission to access your printer:</translation>
@@ -8987,7 +8958,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7514365320538308">Download</translation>
 <translation id="7514417110442087199">Add assignment</translation>
 <translation id="7515139121338932179">To share your window, use your system's window picker</translation>
-<translation id="7515191208480168435">You can pin Google Lens for easy access</translation>
 <translation id="751523031290522286"><ph name="APP_NAME" /> is blocked by admin. Ask admin for permission to use this app.</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516641972665276706">page down</translation>
@@ -9501,7 +9471,6 @@ Press an assigned switch or key to remove assignment.</translation>
 <translation id="7883792253546618164">Unsubscribe at any time.</translation>
 <translation id="7884372232153418877">{NUM_SITES,plural, =1{Review 1 site that sent a lot of notifications}other{Review {NUM_SITES} sites that sent a lot of notifications}}</translation>
 <translation id="788453346724465748">Loading account information…</translation>
-<translation id="7886087451482920026">Select text with Google Lens</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{an item}other{# items}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
 <translation id="7887174313503389866">Take a guided tour of key privacy and security controls. For more options, go to individual settings.</translation>
@@ -9688,7 +9657,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8008356846765065031">Internet disconnected. Please check your Internet connection.</translation>
 <translation id="8008704580256716350">Suspicious file blocked</translation>
 <translation id="8009225694047762179">Manage passwords</translation>
-<translation id="8010081455002666927">Auto-detect</translation>
 <translation id="8011372169388649948">'<ph name="BOOKMARK_TITLE" />' moved.</translation>
 <translation id="8012188750847319132">caps lock</translation>
 <translation id="8012463809859447963">Instant hotspot details</translation>
@@ -9843,7 +9811,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8115139559594092084">From your Google Drive</translation>
 <translation id="8116972784401310538">&amp;Bookmark manager</translation>
 <translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" /> remembers how you signed in and automatically signs you in when possible. When off, you'll be asked for confirmation every time.</translation>
-<translation id="8118331347066725040">Send feedback for search with Lens</translation>
 <translation id="8118362518458010043">Disabled by Chrome. This extension may be unsafe.</translation>
 <translation id="8118488170956489476">Your <ph name="BEGIN_LINK" />browser is managed<ph name="END_LINK" /> by your organisation</translation>
 <translation id="8118515372935001629">Display refresh rate</translation>
@@ -10123,7 +10090,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8319414634934645341">Extended Key Usage</translation>
 <translation id="8321476692217554900">notifications</translation>
 <translation id="8321837372750396788">This <ph name="DEVICE_TYPE" /> will be managed by <ph name="MANAGER" />.</translation>
-<translation id="8321888067342493336">Save as image</translation>
 <translation id="8322814362483282060">This page has been blocked from accessing your microphone.</translation>
 <translation id="8323167517179506834">Type URL</translation>
 <translation id="8323317289166663449">Read and change all your data on your computer and all websites</translation>
@@ -10177,7 +10143,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="835951711479681002">Save in your Google Account</translation>
 <translation id="8360140320636871023">Personalise your display theme</translation>
 <translation id="8360267485906769442">Send feedback button</translation>
-<translation id="8362914115861174987">Translate to</translation>
 <translation id="8363095875018065315">stable</translation>
 <translation id="8363142353806532503">Microphone blocked</translation>
 <translation id="8363277452449582220">Ocean</translation>
@@ -11229,7 +11194,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="9102610709270966160">Enable Extension</translation>
 <translation id="9102864637938129124">Sites and advertisers can understand how ads perform. This setting is on.</translation>
 <translation id="9103868373786083162">Press to go back, context menu to see history</translation>
-<translation id="9106236359747881194">Select text to search</translation>
 <translation id="9107096627210171112">Translate...</translation>
 <translation id="9107624673674616016">Coloured pencil</translation>
 <translation id="9108035152087032312">Name &amp;window…</translation>
@@ -11424,6 +11388,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="949807244219288032">This tab is connected to a HID</translation>
 <translation id="950079950995628542">From '<ph name="PHONE_NAME" />'</translation>
 <translation id="950307215746360464">Setup guide</translation>
+<translation id="950728747178241190">Apply noise cancellation and audio improvements. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="951273949038779544"><ph name="SITE_ACCESS" />. Installed by your administrator</translation>
 <translation id="951991426597076286">Decline</translation>
 <translation id="952471655966876828">Device will connect automatically when it's turned on and is being used</translation>

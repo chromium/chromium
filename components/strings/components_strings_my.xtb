@@ -2001,6 +2001,7 @@
 <translation id="467662567472608290">ဒီဆာဗာက <ph name="DOMAIN" /> ဖြစ်တာကို သက်သေထူ မပြနိုင်ခဲ့ပါ၊ ၎င်း၏ လုံခြုံရေး လက်မှတ်ထဲမှာ အမှားများ ပါဝင်နေသည်။ ဖွဲ့စည်းစီစဉ်မှု အမှားကြောင့် သို့မဟုတ် တိုက်ခိုက်လိုသူက သင်၏ ချိတ်ဆက်မှုကို ကြားဖြတ်ယူနေ၍ ထိုသို့ ဖြစ်လာနိုင်ခဲ့ပါသည်။</translation>
 <translation id="4677585247300749148"><ph name="URL" /> သည် အများသုံးနိုင်မှု ဖြစ်ရပ်များကို တုံ့ပြန်လိုပါသည်</translation>
 <translation id="467809019005607715">Google Slides</translation>
+<translation id="4678379207584374453"><ph name="BEGIN_LINK" />ပိုမိုသိရှိရန်<ph name="END_LINK" /></translation>
 <translation id="4682496302933121474">စာမျက်နှာကို ဘာသာပြန်မလား။</translation>
 <translation id="468314109939257734">သင်၏ ပကတိအသွင်ကတ်နံပါတ်ကို ကြည့်ပါ</translation>
 <translation id="4686942373615810936">ယခုလေးတင် ပြုလုပ်ထားသည်</translation>
@@ -2134,7 +2135,6 @@
 <translation id="4901778704868714008">သိမ်းရန်...</translation>
 <translation id="4901952598169637881">ထသွားထလာ ရှူးဖိနပ်</translation>
 <translation id="4905659621780993806">သင့်စီမံခန့်ခွဲသူက စက်ကို <ph name="DATE" />၊ <ph name="TIME" /> တွင် အလိုအလျောက်ပြန်စမည်။ ဖွင့်ထားသောဖိုင်အားလုံး သင့်စက်ပြန်မစမီ သိမ်းပါ။</translation>
-<translation id="4913784027728226227">သင့်စက်အားလုံးတွင် ဤစကားဝှက်ကို သိမ်းရန်နှင့် အသုံးပြုရန် သင်ဖြစ်ကြောင်း အတည်ပြုပါ</translation>
 <translation id="4913987521957242411">ဘယ်ဘက်ထိပ်တွင် ဖောက်ရန်</translation>
 <translation id="4916389289686916969">ဖြစ်ရပ်မှန် TV ရှိုး</translation>
 <translation id="4917064667437236721">ပုံထုတ်သည့် ဆလင်ဒါ</translation>
@@ -3137,6 +3137,7 @@
 <translation id="6767985426384634228">လိပ်စာ အပ်ဒိတ်လုပ်မလား။</translation>
 <translation id="6770747695101757579">စာရွက် (ဝါဂွမ်း)</translation>
 <translation id="677257480647123231">ကလေးသူငယ်အတွက် အင်တာနက်လုံခြုံမှု</translation>
+<translation id="6772959465807028761">YouTube သုံးရန် သင့် Google Account ဖြင့် ရှေ့ဆက်ပါ</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">သင့်မိဘ၏ ရွေးချယ်မှုများဖြင့် YouTube သုံးခြင်း</translation>
 <translation id="6779348349813025131">Google Password Manager သည် MacOS Keychain သုံးခွင့်လိုအပ်သည်</translation>
@@ -4305,6 +4306,7 @@
 <translation id="8891727572606052622">မမှန်ကန်သည့် ပရောက်စီမုဒ်။</translation>
 <translation id="8894794286471754040">ရှည်သည့်အနားနှင့် စတင်ရန်</translation>
 <translation id="8895334001368918465">Chrome တွင် အခြားအော်တိုဖြည့်ဝန်ဆောင်မှုသုံးရန် Android ဆက်တင်များနှင့် ဤနေရာတွင် ၎င်းကိုဖွင့်နိုင်သည်</translation>
+<translation id="8897221284075091877">ဤအကြောင်းအရာကြည့်ရန်အတွက် တောင်းဆိုရန် သင့် Google Account ဖြင့် ရှေ့ဆက်ပါ</translation>
 <translation id="8897428486789851669">ရေကူးခြင်း</translation>
 <translation id="8899807382908246773">ကြားဖြတ်ကြော်ငြာများ</translation>
 <translation id="8903921497873541725">ချဲ့ကြည့်ပါ</translation>

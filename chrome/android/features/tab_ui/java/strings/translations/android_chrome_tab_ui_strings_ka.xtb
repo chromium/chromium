@@ -55,7 +55,6 @@
 <translation id="3194464645767632461">შეფასება</translation>
 <translation id="3275186015127230296">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> ჩანართი დაემატა, <ph name="ANY_CHANGED" /> შეიცვალა}other{<ph name="MANY_ADDED" /> ჩანართი დაემატა, <ph name="ANY_CHANGED" /> შეიცვალა}}</translation>
 <translation id="3291470810748040983">თქვენ მიიღებთ გაფრთხილებას, როცა გახსნილ ჩანართში უფრო დაბალი ფასი იქნება</translation>
-<translation id="3322827343001922122">გახსენით ჩანართების ჯგუფზე მოქმედებების მენიუ ჩანართების ჯგუფისთვის „<ph name="TITLE_OF_GROUP" />“</translation>
 <translation id="3328308545011660196">შემოთავაზება: როგორც ჩანს, <ph name="NUMBER_OF_TABS" /> ჩანართი დაკავშირებულია. გსურთ მათი დაჯგუფება?</translation>
 <translation id="3547352561153509682">ამ მოქმედებით წაიშლება ჯგუფი ყველა მოწყობილობიდან, რომელიც შესულია ანგარიშში: <ph name="USER_EMAIL" /></translation>
 <translation id="3613492231657284463">არააქტიური ჩანართების დიალოგის დამალვა</translation>
@@ -104,7 +103,6 @@
 <translation id="5400836586163650660">ნაცრისფერი</translation>
 <translation id="5490235265819901748">ჩანართების ჯგუფი გაფართოვდა</translation>
 <translation id="5494920125229734069">აარჩიეთ ყველა</translation>
-<translation id="5549653163690032080">გახსენით ჩანართების ჯგუფზე მოქმედებების მენიუ ჩანართების გაზიარებული ჯგუფისთვის „<ph name="TITLE_OF_GROUP" />“</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{დახურეთ ჩანართების <ph name="TABS_COUNT_ONE" />-ჩანართიანი <ph name="COLOR_NAME" /> ფერის ჯგუფი.}other{დახურეთ ჩანართების <ph name="TABS_COUNT_MANY" />-ჩანართიანი <ph name="COLOR_NAME" /> ფერის ჯგუფი.}}</translation>
 <translation id="5556417849629758491">მაღაზიის ინფორმაციის ნახვა, ვარიანტი ხელმისაწვდომია ეკრანის ზედა ნაწილთან</translation>
 <translation id="5627941783489838464">ჩანართის შესახებ განახლებები არ არის</translation>

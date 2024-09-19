@@ -127,6 +127,7 @@
 <translation id="1567064801249837505">ಆಲ್ಬಮ್‌‌ಗಳು</translation>
 <translation id="1572585716423026576">ವಾಲ್‌ಪೇಪರ್ ಆಗಿ ಹೊಂದಿಸಿ</translation>
 <translation id="1578784163189013834">ಸ್ಕ್ರೀನ್ ಸೇವರ್ ಹಿನ್ನೆಲೆಯನ್ನು ಆಯ್ಕೆ ಮಾಡಿ</translation>
+<translation id="1587031308639983732">ಸಮಯ ಆಧಾರಿತ ಬದಲಾವಣೆಗಳು ನಿಖರವಾಗಿಲ್ಲದಿರಬಹುದು. ಈ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ನಿರ್ವಹಿಸುತ್ತಾರೆ.</translation>
 <translation id="1588438908519853928">ಸಾಮಾನ್ಯ</translation>
 <translation id="1591562245178063882">ಈ ತಿಂಗಳು</translation>
 <translation id="1593528591614229756">ನಿಮ್ಮ ಮೊಬೈಲ್ ಪೂರೈಕೆದಾರರು ಅಥವಾ ನಿರ್ವಾಹಕರು ಒದಗಿಸಿದ APN ಗಳನ್ನು ಆಯ್ಕೆ ಮಾಡುವುದನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ. APN ಅನ್ನು ಆಯ್ಕೆ ಮಾಡುವುದರಿಂದ ಯಾವುದೇ ಕಸ್ಟಮ್ APN ಗಳನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸುತ್ತದೆ. ಅಮಾನ್ಯವಾದ APN ಗಳು ನಿಮ್ಮ ಮೊಬೈಲ್ ಸಂಪರ್ಕವನ್ನು ಅಡ್ಡಿಪಡಿಸಬಹುದು. <ph name="LINK_BEGIN" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="LINK_END" /></translation>
@@ -342,6 +343,7 @@
 <translation id="2560876255701405320">ಆಡಿಯೋ ರೆಕಾರ್ಡಿಂಗ್‌ಗಳ ಪಟ್ಟಿ</translation>
 <translation id="2561093647892030937">ನಿಂಬೆ ಹಣ್ಣುಗಳು</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> ಪರೀಕ್ಷೆ ರನ್ ಆಗುತ್ತಿದೆ...</translation>
+<translation id="2573178735329662769">ಎಲ್ಲಾ Chromebook ಆಡಿಯೊವನ್ನು ರೆಕಾರ್ಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="2575552334616524665">ನೀವು ಇದನ್ನು ಸೆಟ್ಟಿಂಗ್‌ಗಳು ಅಥವಾ <ph name="THREE_DOTS_MENU_ICON" /> ಮೆನುವಿನಲ್ಲಿ ಆನ್ ಮಾಡಬಹುದು</translation>
 <translation id="2576253868710695442">ಇದು 2GB ಸಂಗ್ರಹಣೆಯನ್ನು ತೆಗೆದುಕೊಳ್ಳುತ್ತದೆ</translation>
 <translation id="2584547424703650812">ಗ್ಲೋಸ್ಕೇಪ್ಸ್</translation>
@@ -510,6 +512,7 @@
 <translation id="3588034708467091142">ನೀವು ಇಂಟರ್ನೆಟ್‌ಗೆ ಕನೆಕ್ಟ್ ಆಗಿರುವುದನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ ಹಾಗೂ ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> ಎಂಬುದು <ph name="APN_NAME" /> ನ ಬಳಕೆದಾರ ಸ್ನೇಹಿ ಹೆಸರಾಗಿದೆ.</translation>
 <translation id="3595596368722241419">ಬ್ಯಾಟರಿ ಭರ್ತಿಯಾಗಿದೆ</translation>
+<translation id="3600063043775287169">Chromebook ಆಡಿಯೋ ಆನ್ ಆಗಿರುವಾಗ, ರೆಕಾರ್ಡರ್ ಸಾಧನದಲ್ಲಿ ಪ್ಲೇ ಆಗುತ್ತಿರುವ ಎಲ್ಲಾ ಆಡಿಯೊವನ್ನು ರೆಕಾರ್ಡ್ ಮಾಡುತ್ತದೆ. ನೀವು ಎಲ್ಲಾ ಧ್ವನಿಗಳನ್ನು ರೆಕಾರ್ಡ್ ಮಾಡಲು ಬಯಸುತ್ತೀರಾ ಎಂದು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ.</translation>
 <translation id="3600339377155080675">ಸ್ಕ್ರೀನ್ ಮಿರರ್</translation>
 <translation id="3602290021589620013">ಪೂರ್ವವೀಕ್ಷಣೆ</translation>
 <translation id="3603829704940252505">ಅವತಾರ್</translation>
@@ -1164,6 +1167,7 @@
 <translation id="6831043979455480757">Translate</translation>
 <translation id="6846843854964504403">ಸುರಕ್ಷತಾ ರೀಸೆಟ್</translation>
 <translation id="6853312040151791195">ಡಿಸ್‌ಚಾರ್ಜಿಂಗ್ ರೇಟ್</translation>
+<translation id="6862228900689076919">ಈ ಫೀಚರ್ ಅನ್ನು ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ನಿರ್ವಹಿಸುತ್ತಿದ್ದಾರೆ</translation>
 <translation id="6862416241246624313">ಫೀಡ್‌ಬ್ಯಾಕ್ ಸಲ್ಲಿಸಲಾಗಿದೆ</translation>
 <translation id="6866732840889595464">ಡೈಸಿ</translation>
 <translation id="6871256179359663621">ತಿಳಿ ನೇರಳೆ</translation>

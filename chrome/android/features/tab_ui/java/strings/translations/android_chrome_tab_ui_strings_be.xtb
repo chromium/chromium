@@ -55,7 +55,6 @@
 <translation id="3194464645767632461">ацэнка</translation>
 <translation id="3275186015127230296">{NUMBER_OF_TABS_ADDED,plural, =1{Укладак дададзена: <ph name="ONE_ADDED" />, зменена: <ph name="ANY_CHANGED" />}one{Укладак дададзена: <ph name="MANY_ADDED" />, зменена: <ph name="ANY_CHANGED" />}few{Укладак дададзена: <ph name="MANY_ADDED" />, зменена: <ph name="ANY_CHANGED" />}many{Укладак дададзена: <ph name="MANY_ADDED" />, зменена: <ph name="ANY_CHANGED" />}other{Укладак дададзена: <ph name="MANY_ADDED" />, зменена: <ph name="ANY_CHANGED" />}}</translation>
 <translation id="3291470810748040983">Вы атрымаеце абвестку, калі цана на прадукт на адкрытай укладцы знізіцца</translation>
-<translation id="3322827343001922122">Адкрыць меню дзеянняў для групы ўкладак "<ph name="TITLE_OF_GROUP" />"</translation>
 <translation id="3328308545011660196">Прапанова: здаецца, гэтыя ўкладкі (<ph name="NUMBER_OF_TABS" />) звязаныя паміж сабой. Згрупаваць іх?</translation>
 <translation id="3547352561153509682">Група будзе выдалена з усіх прылад, на якіх выкананы ўваход ва ўліковы запіс <ph name="USER_EMAIL" /></translation>
 <translation id="3613492231657284463">Схаваць дыялогавае акно "Неактыўныя ўкладкі"</translation>
@@ -104,7 +103,6 @@
 <translation id="5400836586163650660">Шэры</translation>
 <translation id="5490235265819901748">Група ўкладак разгорнута</translation>
 <translation id="5494920125229734069">Выбраць усё</translation>
-<translation id="5549653163690032080">Адкрыць меню дзеянняў для групы ўкладак "<ph name="TITLE_OF_GROUP" />"</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Закрыць групу ўкладак з <ph name="TABS_COUNT_ONE" /> укладкай, колер: <ph name="COLOR_NAME" />.}one{Закрыць групу ўкладак з <ph name="TABS_COUNT_MANY" /> укладкай, колер: <ph name="COLOR_NAME" />.}few{Закрыць групу ўкладак з <ph name="TABS_COUNT_MANY" /> укладкамі, колер: <ph name="COLOR_NAME" />.}many{Закрыць групу ўкладак з <ph name="TABS_COUNT_MANY" /> укладкамі, колер: <ph name="COLOR_NAME" />.}other{Закрыць групу ўкладак з <ph name="TABS_COUNT_MANY" /> укладкі, колер: <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">Прагледзець звесткі пра краму; гэты варыянт выбару даступны ўверсе экрана</translation>
 <translation id="5627941783489838464">Абнаўленняў укладак няма</translation>

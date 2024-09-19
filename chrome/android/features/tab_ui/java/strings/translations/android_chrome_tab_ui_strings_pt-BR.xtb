@@ -55,7 +55,6 @@
 <translation id="3194464645767632461">nota</translation>
 <translation id="3275186015127230296">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> guia adicionada, <ph name="ANY_CHANGED" /> modificada(s)}one{<ph name="MANY_ADDED" /> guia adicionada, <ph name="ANY_CHANGED" /> modificada(s)}other{<ph name="MANY_ADDED" /> guias adicionadas, <ph name="ANY_CHANGED" /> modificada(s)}}</translation>
 <translation id="3291470810748040983">Você receberá um alerta quando houver um preço menor em uma guia aberta</translation>
-<translation id="3322827343001922122">Abrir o menu de ações do grupo de guias <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3328308545011660196">Sugestão: <ph name="NUMBER_OF_TABS" /> guias parecem ser relacionadas. Agrupá-las?</translation>
 <translation id="3547352561153509682">Essa ação vai excluir o grupo de todos os dispositivos conectados à conta <ph name="USER_EMAIL" /></translation>
 <translation id="3613492231657284463">Ocultar caixa de diálogo de guias inativas</translation>
@@ -104,7 +103,6 @@
 <translation id="5400836586163650660">Cinza</translation>
 <translation id="5490235265819901748">Grupo de guias expandido</translation>
 <translation id="5494920125229734069">Selecionar tudo</translation>
-<translation id="5549653163690032080">Abrir o menu de ações do grupo de guias compartilhado <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Fechar o grupo de guias com <ph name="TABS_COUNT_ONE" /> guia na cor <ph name="COLOR_NAME" />.}one{Fechar o grupo de guias com <ph name="TABS_COUNT_MANY" /> guia na cor <ph name="COLOR_NAME" />.}other{Fechar o grupo de guias com <ph name="TABS_COUNT_MANY" /> guias na cor <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">Ver informações da loja, opção disponível perto da parte superior da tela</translation>
 <translation id="5627941783489838464">Nenhuma atualização de guias</translation>

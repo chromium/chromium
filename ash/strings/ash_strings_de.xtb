@@ -78,6 +78,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="1240638468526743569">Eine App</translation>
 <translation id="1242198791279543032">Benachrichtigungen sind stummgeschaltet</translation>
 <translation id="1242883863226959074">Gerät</translation>
+<translation id="1245476784081715330">Gut gemacht!</translation>
 <translation id="1245644940275736236">Zu Assistant</translation>
 <translation id="124678866338384709">Aktuellen Tab schließen</translation>
 <translation id="1246890715821376239">Nicht unterstützte Apps</translation>
@@ -842,6 +843,7 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="3958714870339660776">Ganztägig</translation>
 <translation id="3962859241508114581">Vorheriger Titel</translation>
 <translation id="3963124517343721543">Du kannst einfach da weitermachen, wo du aufgehört hast, indem du deine vorherigen Fenster und Tabs öffnest. Außerdem erhältst du personalisierte Vorschläge für mögliche weitere Aktionen.</translation>
+<translation id="396506362088290977">Mikrofonton testen</translation>
 <translation id="3969043077941541451">Aus</translation>
 <translation id="3970324493235864154">Benachrichtigungen auf deinem Smartphone anzeigen</translation>
 <translation id="397105322502079400">Wird berechnet...</translation>
@@ -899,6 +901,7 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="4156293514828496577">Der Akkustand beträgt noch <ph name="PERCENTAGE" /> % (noch ungefähr <ph name="TIME_LEFT" />).
 Einige Funktionen sind eingeschränkt, um die Akkulaufzeit zu verlängern.</translation>
 <translation id="4160919062868802509">Mehrere Audioquellen erkannt</translation>
+<translation id="416245495747357243">Fertig!</translation>
 <translation id="4165275524535002941">Kabel unterstützt keine Bildschirme</translation>
 <translation id="4177415338862979658">Zum Prüfen der Details klicken</translation>
 <translation id="4177913004758410636">{0,plural, =1{Gerät innerhalb eines Tages neu starten}other{Gerät innerhalb von # Tagen neu starten}}</translation>
@@ -984,6 +987,7 @@ Einige Funktionen sind eingeschränkt, um die Akkulaufzeit zu verlängern.</tran
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> ist deaktiviert.</translation>
 <translation id="4417647906073317561">Einstellungen für den Konzentrationsmodus Stelle einen Timer, eine Aufgabe und Musik ein, um zu beginnen.</translation>
 <translation id="4424159417645388645">Desktop 5</translation>
+<translation id="4426817706804363424">Sehr gut!</translation>
 <translation id="4430019312045809116">Lautstärke</translation>
 <translation id="4441283832827406317">Apps wurden nach Name sortiert</translation>
 <translation id="4445159312344259901">Zum Entsperren anmelden</translation>
@@ -1248,6 +1252,7 @@ Du kannst auch die entsprechende Tastenkombination verwenden. Markiere dazu zuer
 <translation id="5283198616748585639">1 min hinzufügen</translation>
 <translation id="528468243742722775">Ende</translation>
 <translation id="5286194356314741248">Durchsuchen</translation>
+<translation id="528641622273682395">Mikrofontest aktivieren/deaktivieren</translation>
 <translation id="5297423144044956168">Keine Mobilgeräte gefunden</translation>
 <translation id="5297704307811127955">Aus</translation>
 <translation id="5300589172476337783">Anzeigen</translation>
@@ -1275,6 +1280,7 @@ Keine Geräte verbunden.</translation>
 <translation id="536019650977002321">Dein Administrator erlaubt keine Audioaufnahmen. Weitere Informationen erhältst du von deinem Administrator.</translation>
 <translation id="5361524080961918551">Sprachdateien für <ph name="LANGUAGE" /> teilweise heruntergeladen</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Diesen Tab aufrufen</translation>
+<translation id="5363835273551457276">Du kannst den Mikrofonton testen. Schließe das Feld, um den Vorgang zu beenden.</translation>
 <translation id="5364693579536176785">Speicherplatz</translation>
 <translation id="5369573834963677938">Die Steuerung mit dem Gesicht ist dann für andere Nutzer auf dem Gerät verfügbar</translation>
 <translation id="5369717264580061086">Datei in der App „Dateien“ als Vorschau ansehen</translation>
@@ -1415,6 +1421,7 @@ Keine Geräte verbunden.</translation>
 <translation id="5802516411616338943">Schnelleinstellungen öffnen</translation>
 <translation id="5804651031882187592">Einstellung „SIM-Karte sperren“ deaktivieren</translation>
 <translation id="5805809050170488595">Zum Aktivieren von <ph name="NETWORK_NAME" /> klicken</translation>
+<translation id="5818796501620225415">Du kannst Zeit hinzufügen oder den Konzentrationsmodus beenden</translation>
 <translation id="5819918159912280082">Dein Chromebook wurde unerwartet neu gestartet. Du kannst deine vorherigen Fenster und Apps noch einmal öffnen lassen.</translation>
 <translation id="5823239091726045201">Google Tasks im Web</translation>
 <translation id="5825969630400862129">Einstellungen für verbundene Geräte</translation>
@@ -2125,6 +2132,7 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="8262312463845990408">Wiedergabe aktivieren/deaktivieren</translation>
 <translation id="8268302343625273732">Alle Aufgaben in Google Classroom ansehen</translation>
 <translation id="8277261673056602147">Text auf dem Bildschirm markieren</translation>
+<translation id="8282784978194352587">Du hast es geschafft!</translation>
 <translation id="8287009018010202411">Produktivität</translation>
 <translation id="828708037801473432">Aus</translation>
 <translation id="8297006494302853456">Schwach</translation>
@@ -2202,6 +2210,7 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="8609384513243082612">Neuen Tab öffnen</translation>
 <translation id="861045123704058818">Apps werden vorübergehend nach Kategorie sortiert</translation>
 <translation id="8612216344243590325">Speichere wichtige Dateien in <ph name="HOLDING_SPACE_TITLE" /> statt auf dem Desktop. Ziehe Dateien einfach zu <ph name="HOLDING_SPACE_TITLE" />.</translation>
+<translation id="8612338981637220013">Super!</translation>
 <translation id="8614517853887502247">Benachrichtigungen von <ph name="APP_1_TITLE" /> und <ph name="APP_2_TITLE" /> wurden ausgeblendet, da der Spionageschutz aktiviert ist</translation>
 <translation id="8615778328722901791">Symbolleiste öffnen</translation>
 <translation id="8619000641825875669">OneDrive</translation>
@@ -2244,6 +2253,7 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />: Wird aktiviert…</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
+<translation id="8751299148074971734">Weiter so!</translation>
 <translation id="8753368202781196133">Diese Sprache wird derzeit nicht unterstützt.</translation>
 <translation id="8755498163081687682">Identität bestätigen: <ph name="ORIGIN_NAME" /> möchte sichergehen, dass du das bist</translation>
 <translation id="875593634123171288">VPN-Einstellungen anzeigen</translation>

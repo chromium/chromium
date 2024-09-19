@@ -35,6 +35,7 @@
 <translation id="1155154308031262006">പ്രോംപ്റ്റ് നൽകുക</translation>
 <translation id="115705039208660697">പൈനാപ്പിളുകൾ</translation>
 <translation id="1164939766849482256">'ഉദയം മുതൽ അസ്തമയം വരെ' സ്ക്രീൻ സേവർ</translation>
+<translation id="1166688493741195933">റെക്കോർഡിംഗ് പേരുകൾ ജനറേറ്റ് ചെയ്യാനായില്ല</translation>
 <translation id="1167755866710282443">കീകൾ ഇഷ്ടാനുസൃതമാക്കാൻ മെനു തുറക്കുക. നീക്കാൻ മെനു വലിച്ചിടുക.</translation>
 <translation id="1171349345463658120">സാൻഡി ലഗൂൺ</translation>
 <translation id="1173894706177603556">പേരുമാറ്റുക</translation>
@@ -126,6 +127,7 @@
 <translation id="1567064801249837505">ആൽബങ്ങൾ</translation>
 <translation id="1572585716423026576">വാൾപേപ്പറായി സജ്ജീകരിക്കുക</translation>
 <translation id="1578784163189013834">സ്ക്രീൻ സേവർ പശ്ചാത്തലം തിരഞ്ഞെടുക്കുക</translation>
+<translation id="1587031308639983732">സമയം അടിസ്ഥാനമാക്കിയുള്ള മാറ്റങ്ങൾ കൃത്യമാകാനിടയില്ല. ഈ ക്രമീകരണം മാനേജ് ചെയ്യുന്നത് നിങ്ങളുടെ അഡ്‌മിനാണ്.</translation>
 <translation id="1588438908519853928">സാധാരണം</translation>
 <translation id="1591562245178063882">ഈ മാസം</translation>
 <translation id="1593528591614229756">നിങ്ങളുടെ മൊബൈൽ ദാതാവോ അഡ്‌മിനോ നൽകിയ APN-കൾ തിരഞ്ഞെടുക്കുന്നുവെന്ന് ഉറപ്പാക്കുക. ഒരു APN തിരഞ്ഞെടുക്കുന്നത് എല്ലാ ഇഷ്‌ടാനുസൃത APN-കളും പ്രവർത്തനരഹിതമാക്കും. അസാധുവായ APN-കൾ നിങ്ങളുടെ മൊബൈൽ കണക്ഷനെ തടസ്സപ്പെടുത്തിയേക്കാം. <ph name="LINK_BEGIN" />കൂടുതലറിയുക<ph name="LINK_END" /></translation>
@@ -341,6 +343,7 @@
 <translation id="2560876255701405320">ഓഡിയോ റെക്കോർഡിംഗുകളുടെ ലിസ്റ്റ്</translation>
 <translation id="2561093647892030937">നാരങ്ങകൾ</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> പരീക്ഷണം റൺ ചെയ്യുന്നു...</translation>
+<translation id="2573178735329662769">എല്ലാ Chromebook ഓഡിയോയും റെക്കോർഡ് ചെയ്യുന്നു</translation>
 <translation id="2575552334616524665">ക്രമീകരണത്തിലോ <ph name="THREE_DOTS_MENU_ICON" /> മെനുവിലോ നിങ്ങൾക്ക് ഇത് ഓണാക്കാം</translation>
 <translation id="2576253868710695442">ഇതിന് 2GB സ്റ്റോറേജ് വരെ ആവശ്യമായി വരും</translation>
 <translation id="2584547424703650812">ഗ്ലോസ്കേപ്പുകൾ</translation>
@@ -493,6 +496,7 @@
 <translation id="3502426834823382181">എല്ലാ ആപ്പുകളും കാണുക</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />പ്രകടന അടയാള ഡാറ്റ<ph name="END_LINK1" /> അയയ്‌ക്കുക</translation>
 <translation id="3517001332549868749">ChromeOS അപ്ഡേറ്റ്</translation>
+<translation id="3522508178835057262">നിലവിൽ, <ph name="MAX_WORD_LENGTH" />-ൽ കൂടുതൽ വാക്കുകളുള്ള ട്രാൻസ്‌ക്രിപ്റ്റിന് പിന്തുണയില്ല</translation>
 <translation id="3527036260304016759">പ്രിന്റ് ചെയ്യാനായില്ല - അജ്ഞാതമായ പിശക്</translation>
 <translation id="353214771040290298">എഡിറ്റ് ചെയ്യൽ പൂർത്തിയാക്കി</translation>
 <translation id="3532980081107202182">ഏകദേശം <ph name="MIN_REMAINING" /> മിനിറ്റ് ശേഷിക്കുന്നു</translation>
@@ -508,6 +512,7 @@
 <translation id="3588034708467091142">നിങ്ങൾ ഇന്റർനെറ്റിലേക്ക് കണക്റ്റ് ചെയ്‌തിട്ടുണ്ടെന്ന് ഉറപ്പാക്കിയ ശേഷം വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> എന്നത് <ph name="APN_NAME" /> എന്നതിന്റെ ഉപയോക്തൃ സൗഹൃദമായ ഒരു പേരാണ്.</translation>
 <translation id="3595596368722241419">ബാറ്ററി നിറഞ്ഞു</translation>
+<translation id="3600063043775287169">Chromebook ഓഡിയോ ഓണായിരിക്കുമ്പോൾ, ഈ ഉപകരണത്തിൽ പ്ലേ ചെയ്യുന്ന എല്ലാ ഓഡിയോയും Recorder ക്യാപ്ചർ ചെയ്യുന്നു. എല്ലാ ശബ്ദങ്ങളും നിങ്ങൾക്ക് റെക്കോർഡ് ചെയ്യണമെന്ന് ഉറപ്പാക്കുക.</translation>
 <translation id="3600339377155080675">സ്‌ക്രീൻ മിറർ</translation>
 <translation id="3602290021589620013">പ്രിവ്യൂ</translation>
 <translation id="3603829704940252505">അവതാർ</translation>
@@ -710,6 +715,7 @@
 <translation id="4602266091140407479">മൈക്ക്</translation>
 <translation id="4607282946861182308">ഇതിന്റെ ചിത്രങ്ങൾ സൃഷ്ടിക്കാനാകില്ല. മറ്റൊരു പ്രോംപ്റ്റ് പരീക്ഷിക്കൂ.</translation>
 <translation id="4609350030397390689">കീബോർഡ് തെളിച്ചം കുറയ്‌ക്കുക</translation>
+<translation id="4623061655523261501">റെക്കോർഡിംഗ് പേരുകൾ ജനറേറ്റ് ചെയ്‌തു</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, ആകെയുള്ള <ph name="TOTAL_PAGE_NUMBER" /> എണ്ണത്തിൽ <ph name="PRINTED_PAGE_NUMBER" /> എണ്ണം. പ്രിന്റ് ജോലി റദ്ദാക്കാൻ എന്റർ അമർത്തുക.</translation>
 <translation id="463791356324567266">സ്‌കാൻ ചെയ്യൽ റദ്ദാക്കുന്നു...</translation>
 <translation id="4644611440022666152">ഓണാക്കി ഡൗൺലോഡ് ചെയ്യുക</translation>
@@ -1042,6 +1048,8 @@
 <translation id="628726841779494414">പ്രിന്റർ ക്രമീകരണത്തിൽ നിങ്ങളുടെ പ്രിന്ററുകൾ മാനേജ് ചെയ്യുക</translation>
 <translation id="6292095526077353682">ചാർജ് ചെയ്യുമ്പോൾ സ്‌ക്രീൻ സേവർ കാണിക്കേണ്ട സമയ ദൈർഘ്യം:</translation>
 <translation id="629550705077076970">കീബോർഡ് മങ്ങിക്കൽ</translation>
+<translation id="6301193653204230066">'സുരക്ഷാ റീസെറ്റ്' Chrome ബ്രൗസർ വിപുലീകരണങ്ങൾ ഓഫാക്കുന്നു, കൂടാതെ നെറ്റ്‌വർക്കും മറ്റ് ക്രമീകരണവും സുരക്ഷിത ഡിഫോൾട്ടുകളിലേക്ക് റീസെറ്റ് ചെയ്യുന്നു.
+          നിങ്ങളുടെ ടാബുകളും ഫയലുകളും കുക്കികളും ചരിത്രവും മാറില്ല.</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> പരിശോധന റദ്ദാക്കി</translation>
 <translation id="631063167932043783">ആപ്പ് അടുത്തറിയുക</translation>
 <translation id="6318437367327684789">ശാശ്വതമായി</translation>
@@ -1051,6 +1059,7 @@
 <translation id="6325525973963619867">പരാജയപ്പെട്ടു</translation>
 <translation id="6327262166342360252">ഇനിപ്പറയുന്ന ടെക്‌സ്റ്റ് ഉൾപ്പെടുത്തി, AI ഉപയോഗിച്ചാണ് ഈ വാൾപേപ്പർ സൃഷ്‌ടിച്ചത്: "<ph name="PROMPT" />."</translation>
 <translation id="6331191339300272798">സ്വയമേവയുള്ള ഡാർക്ക് തീം</translation>
+<translation id="6335228876613776082">മോഡലിന്റെ ഡൗൺലോഡ് പൂർത്തിയായി</translation>
 <translation id="6340526405444716530">വ്യക്തിപരമാക്കൽ</translation>
 <translation id="6348252528297699679">ക്രമീകരണം &gt; സ്വകാര്യതയും സുരക്ഷയും &gt; സ്വകാര്യതാ നിയന്ത്രണങ്ങൾ &gt; ലൊക്കേഷൻ ആക്‌സസ് എന്നിങ്ങനെ പോയി നിങ്ങൾക്ക് ലൊക്കേഷൻ ഓഫാക്കാം. <ph name="LINK_BEGIN" />കൂടുതലറിയുക<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">ഉപയോക്തൃനാമവും പാസ്‍വേഡും</translation>
@@ -1212,6 +1221,7 @@
 <translation id="708426984172631313">നിർത്തി</translation>
 <translation id="7086168019478250425">ജൈവദീപ്‌തി ദൃശ്യമായ കടൽത്തീരം</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="7086916854357021265">റെക്കോർഡിംഗ് പേരുകൾ ജനറേറ്റ് ചെയ്യുന്നു</translation>
 <translation id="7097908713073775559">വർണ്ണാഭമായ</translation>
 <translation id="710028965487274708">പരാജയപ്പെട്ടു - അംഗീകരിക്കൽ പ്രക്രിയ നടന്നില്ല</translation>
 <translation id="7101959270679078188">അപ്‌ഡേറ്റ് പ്രക്രിയ തുടരാൻ <ph name="DEVICE_NAME" /> അൺലോക്ക് ചെയ്യുക</translation>
@@ -1544,6 +1554,7 @@
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Photos ആൽബം</translation>
 <translation id="8775713578693478175">മോഡം APN</translation>
+<translation id="877735394245039557">മോഡലിന്റെ ഡൗൺലോഡ് പുരോഗമിക്കുന്നു</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">ഈ നെറ്റ്‌വർക്കിന് ക്യാപ്റ്റീവ് പോർട്ടൽ ഉണ്ടായിരിക്കാം</translation>
 <translation id="8797082062139985406">Google AI ഉപയോഗിച്ച് പേര് സൃഷ്ടിക്കുക</translation>

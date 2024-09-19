@@ -35,6 +35,7 @@
 <translation id="1155154308031262006">ப்ராம்ப்ட்டை வழங்குங்கள்</translation>
 <translation id="115705039208660697">அன்னாசிப் பழங்கள்</translation>
 <translation id="1164939766849482256">டான் டூ டார்க் ஸ்கிரீன் சேவர்</translation>
+<translation id="1166688493741195933">ரெக்கார்டிங் பெயர்களை உருவாக்க முடியவில்லை</translation>
 <translation id="1167755866710282443">விசைகளைப் பிரத்தியேகமாக்க மெனுவைத் திறக்கவும். நகர்த்த மெனுவை இழுக்கவும்.</translation>
 <translation id="1171349345463658120">மணல் லகூன்</translation>
 <translation id="1173894706177603556">பெயர் மாற்று</translation>
@@ -126,6 +127,7 @@
 <translation id="1567064801249837505">ஆல்பங்கள்</translation>
 <translation id="1572585716423026576">வால்பேப்பராக அமை</translation>
 <translation id="1578784163189013834">ஸ்கிரீன் சேவர் பின்புலத்தைத் தேர்வுசெய்தல்</translation>
+<translation id="1587031308639983732">நேரம் சார்ந்த மாற்றங்கள் துல்லியமற்றதாக இருக்கக்கூடும். உங்கள் நிர்வாகி இந்த அமைப்பை நிர்வகிக்கிறார்.</translation>
 <translation id="1588438908519853928">இயல்பு</translation>
 <translation id="1591562245178063882">இந்த மாதம்</translation>
 <translation id="1593528591614229756">உங்கள் மொபைல் சேவை வழங்குநர் அல்லது நிர்வாகி வழங்கியுள்ள APNகளை மட்டும் தேர்ந்தெடுப்பதை உறுதிசெய்துகொள்ளவும். APNனைத் தேர்ந்தெடுக்கும்போது ஏற்கெனவே இருக்கும் பிரத்தியேக APNகள் முடக்கப்படும். தவறான APNகள் உங்கள் மொபைல் இணைப்பை முடக்கக்கூடும். <ph name="LINK_BEGIN" />மேலும் அறிக<ph name="LINK_END" />.</translation>
@@ -340,6 +342,7 @@
 <translation id="2560876255701405320">ஆடியோ ரெக்கார்டிங்குங்கள் பட்டியல்</translation>
 <translation id="2561093647892030937">எலுமிச்சம்பழங்கள்</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> சோதனை இயங்குகிறது...</translation>
+<translation id="2573178735329662769">எல்லா Chromebook ஆடியோவையும் ரெக்கார்டு செய்தல்</translation>
 <translation id="2575552334616524665">அமைப்புகளிலோ <ph name="THREE_DOTS_MENU_ICON" /> மெனு மூலமோ இதை நீங்கள் இயக்கலாம்</translation>
 <translation id="2576253868710695442">இது 2 ஜி.பை. சேமிப்பகம் வரை பயன்படுத்தக்கூடும்</translation>
 <translation id="2584547424703650812">குளோஸ்கேப்கள்</translation>
@@ -492,6 +495,7 @@
 <translation id="3502426834823382181">அனைத்து ஆப்ஸையும் காட்டும்</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />செயல்திறன் டிரேஸ் தரவை <ph name="END_LINK1" /> அனுப்பு</translation>
 <translation id="3517001332549868749">ChromeOS அப்டேட்</translation>
+<translation id="3522508178835057262">தற்போது <ph name="MAX_WORD_LENGTH" /> வார்த்தைகளைவிட நீளமான டிரான்ஸ்கிரிப்ட் ஆதரிக்கப்படுவதில்லை</translation>
 <translation id="3527036260304016759">அறியப்படாத பிழை காரணமாக அச்சிட முடியவில்லை</translation>
 <translation id="353214771040290298">திருத்தம் முடிந்தது</translation>
 <translation id="3532980081107202182">சுமார் <ph name="MIN_REMAINING" /> நிமிடங்கள் மீதமுள்ளன</translation>
@@ -507,6 +511,7 @@
 <translation id="3588034708467091142">இணையத்துடன் இணைக்கப்பட்டிருப்பதை உறுதிசெய்துகொண்டு மீண்டும் முயலவும்.</translation>
 <translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> என்பது <ph name="APN_NAME" />க்கான பயனருக்கேற்ற பெயராகும்.</translation>
 <translation id="3595596368722241419">பேட்டரி நிரம்பியது</translation>
+<translation id="3600063043775287169">Chromebook ஆடியோ இயக்கப்பட்டிருக்கும்போது, இந்தச் சாதனத்தில் பிளேயாகும் எல்லா ஆடியோவையும் ரெக்கார்டர் ரெக்கார்டு செய்யும். எல்லா ஒலிகளையும் ரெக்கார்டு செய்ய வேண்டுமா என்பதை முடிவுசெய்துகொள்ளுங்கள்.</translation>
 <translation id="3600339377155080675">ஸ்கிரீன் மிரர்</translation>
 <translation id="3602290021589620013">மாதிரிக்காட்சி</translation>
 <translation id="3603829704940252505">தோற்றப் படம்</translation>
@@ -708,6 +713,7 @@
 <translation id="4594021849294327751">டிரான்ஸ்கிரிப்ட்டை உருவாக்கு</translation>
 <translation id="4607282946861182308">இதன் படங்களை உருவாக்க முடியவில்லை. வேறொரு ப்ராம்ப்ட்டை வழங்கவும்.</translation>
 <translation id="4609350030397390689">கீபோர்டு ஒளிர்வைக் குறைக்கும்</translation>
+<translation id="4623061655523261501">ரெக்கார்டிங் பெயர்கள் உருவாக்கப்பட்டன</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />/<ph name="TOTAL_PAGE_NUMBER" />. அச்சுப் பணியை ரத்துசெய்ய என்ட்டர் விசையை அழுத்தவும்.</translation>
 <translation id="463791356324567266">ஸ்கேன் செய்வதை ரத்துசெய்கிறது...</translation>
 <translation id="4644611440022666152">இயக்கிப் பதிவிறக்கு</translation>
@@ -1039,6 +1045,8 @@
 <translation id="628726841779494414">பிரிண்டர் அமைப்புகளில் உங்கள் பிரிண்டர்களை நிர்வகியுங்கள்</translation>
 <translation id="6292095526077353682">சார்ஜ் செய்யப்படும்போது இந்தக் கால அளவிற்கு ஸ்கிரீன் சேவரைக் காட்டு:</translation>
 <translation id="629550705077076970">கீபோர்டு டிம்மிங்</translation>
+<translation id="6301193653204230066">பாதுகாப்பு மீட்டமைவு Chrome பிரவுசர் நீட்டிப்புகளை முடக்கும், நெட்வொர்க்குகளையும் பிற அமைப்புகளையும் பாதுகாப்பான இயல்பு அமைப்புகளுக்கு மீட்டமைக்கும்.
+          உங்கள் பக்கங்கள், ஃபைல்கள், குக்கீகள், பதிவுகள் ஆகியவை அப்படியே இருக்கும்.</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> சோதனை ரத்துசெய்யப்பட்டது</translation>
 <translation id="631063167932043783">Explore ஆப்ஸ்</translation>
 <translation id="6318437367327684789">எப்போதும்</translation>
@@ -1048,6 +1056,7 @@
 <translation id="6325525973963619867">தோல்வி</translation>
 <translation id="6327262166342360252">இது "<ph name="PROMPT" />" என்பதற்கு AI உருவாக்கிய வால்பேப்பர்.</translation>
 <translation id="6331191339300272798">தானியங்கு டார்க் தீம்</translation>
+<translation id="6335228876613776082">மாடல் பதிவிறக்கப்பட்டது</translation>
 <translation id="6340526405444716530">பிரத்தியேகமாக்குதல்</translation>
 <translation id="6348252528297699679">அமைப்புகள் &gt; தனியுரிமையும் பாதுகாப்பும் &gt; தனியுரிமைக் கட்டுப்பாடுகள் &gt; இருப்பிட அணுகல் என்பதற்குச் சென்று இருப்பிட அமைப்பை முடக்கிக்கொள்ளலாம். <ph name="LINK_BEGIN" />மேலும் அறிக<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">பயனர்பெயர் &amp; கடவுச்சொல்</translation>
@@ -1209,6 +1218,7 @@
 <translation id="708426984172631313">நிறுத்தப்பட்டது</translation>
 <translation id="7086168019478250425">பயோலூமினிசெண்ட் கடற்கரை</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="7086916854357021265">ரெக்கார்டிங் பெயர்களை உருவாக்குகிறது</translation>
 <translation id="7097908713073775559">வண்ணமயமான</translation>
 <translation id="710028965487274708">தோல்வியடைந்தது - அங்கீகரிக்க முடியவில்லை</translation>
 <translation id="7101959270679078188">புதுப்பிப்பைத் தொடர <ph name="DEVICE_NAME" /> ஐ அன்லாக் செய்யவும்</translation>
@@ -1541,6 +1551,7 @@
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Photos ஆல்பம்</translation>
 <translation id="8775713578693478175">மோடம் APN</translation>
+<translation id="877735394245039557">மாடல் பதிவிறக்கப்படுகிறது</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">இந்த நெட்வொர்க்கில் கேப்டிவ் போர்டல் இருக்கலாம்</translation>
 <translation id="8797082062139985406">Google AI மூலம் பெயரை உருவாக்கலாம்</translation>

@@ -35,6 +35,7 @@
 <translation id="1155154308031262006">İstem girin</translation>
 <translation id="115705039208660697">ananaslar</translation>
 <translation id="1164939766849482256">Şafaktan geceye ekran koruyucu</translation>
+<translation id="1166688493741195933">Kayıt adları oluşturulamadı</translation>
 <translation id="1167755866710282443">Tuşları özelleştirmek için menüyü açın. Taşımak için menüyü sürükleyin.</translation>
 <translation id="1171349345463658120">kumlu lagün</translation>
 <translation id="1173894706177603556">Yeniden adlandır</translation>
@@ -341,6 +342,7 @@
 <translation id="2560876255701405320">Ses kayıtlarının listesi</translation>
 <translation id="2561093647892030937">limonlar</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> adlı test çalıştırılıyor...</translation>
+<translation id="2573178735329662769">Tüm Chromebook sesleri kaydediliyor</translation>
 <translation id="2575552334616524665">Bu özelliği Ayarlar'dan veya <ph name="THREE_DOTS_MENU_ICON" /> menüsünden açabilirsiniz</translation>
 <translation id="2576253868710695442">Bu işlem için 2 GB kadar depolama alanı gerekir</translation>
 <translation id="2584547424703650812">Parıltılı manzaralar</translation>
@@ -493,6 +495,7 @@
 <translation id="3502426834823382181">tüm uygulamaları göster</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />Performans izleme verilerini<ph name="END_LINK1" /> gönder</translation>
 <translation id="3517001332549868749">ChromeOS güncellemesi</translation>
+<translation id="3522508178835057262"><ph name="MAX_WORD_LENGTH" /> kelimeden uzun transkriptler şu an için desteklenmiyor</translation>
 <translation id="3527036260304016759">İşlem başarısız - Bilinmeyen hata</translation>
 <translation id="353214771040290298">Düzenleme tamamlandı</translation>
 <translation id="3532980081107202182">Yaklaşık <ph name="MIN_REMAINING" /> dakika kaldı</translation>
@@ -508,6 +511,7 @@
 <translation id="3588034708467091142">İnternete bağlı olup olmadığınızı kontrol edin ve tekrar deneyin.</translation>
 <translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" />, <ph name="APN_NAME" /> için kullanıcı dostu olan addır.</translation>
 <translation id="3595596368722241419">Pil tam dolu</translation>
+<translation id="3600063043775287169">Chromebook'un sesi açık olduğunda, Kaydedici bu cihazda çalan tüm sesleri kaydeder. Tüm sesleri kaydetmek istediğinizden emin olun.</translation>
 <translation id="3600339377155080675">Ekranı yansıt</translation>
 <translation id="3602290021589620013">Önizleme</translation>
 <translation id="3603829704940252505">Avatar</translation>
@@ -710,6 +714,7 @@
 <translation id="4602266091140407479">Mikrofon</translation>
 <translation id="4607282946861182308">Bu istemle ilgili resim üretilemiyor. Başka bir istem deneyin.</translation>
 <translation id="4609350030397390689">Klavye parlaklığını azalt</translation>
+<translation id="4623061655523261501">Kayıt adları başarıyla oluşturuldu</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />/<ph name="TOTAL_PAGE_NUMBER" /> Yazdırma işini iptal etmek için enter tuşuna basın.</translation>
 <translation id="463791356324567266">Tarama iptal ediliyor...</translation>
 <translation id="4644611440022666152">Etkinleştir ve indir</translation>
@@ -1042,6 +1047,8 @@
 <translation id="628726841779494414">Yazıcılarınızı yazıcı ayarlarından yönetin</translation>
 <translation id="6292095526077353682">Şarj olurken ekran koruyucuyu şu kadar süre boyunca göster:</translation>
 <translation id="629550705077076970">klavye karartma</translation>
+<translation id="6301193653204230066">Güvenlik ayarları sıfırlamak, Chrome tarayıcı uzantılarını devre dışı bırakır, ağ ve diğer ayarları güvenli varsayılan ayarlara sıfırlar.
+          Sekmeleriniz, dosyalarınız, çerezleriniz ve geçmişiniz değiştirilmez.</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> testi iptal edildi</translation>
 <translation id="631063167932043783">Keşfet uygulaması</translation>
 <translation id="6318437367327684789">sonsuza kadar</translation>
@@ -1051,6 +1058,7 @@
 <translation id="6325525973963619867">Başarısız</translation>
 <translation id="6327262166342360252">Bu duvar kağıdı, "<ph name="PROMPT" />" metni kullanılarak yapay zekayla oluşturuldu.</translation>
 <translation id="6331191339300272798">Otomatik koyu tema</translation>
+<translation id="6335228876613776082">Model indirme işlemi tamamlandı</translation>
 <translation id="6340526405444716530">Kişiselleştirme</translation>
 <translation id="6348252528297699679">Ayarlar &gt; Gizlilik ve güvenlik &gt; Gizlilik denetimleri &gt; Konum erişimi bölümünden konumu kapatabilirsiniz. <ph name="LINK_BEGIN" />Daha fazla bilgi<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">Kullanıcı adı ve şifre</translation>
@@ -1212,6 +1220,7 @@
 <translation id="708426984172631313">DURDURULDU</translation>
 <translation id="7086168019478250425">biyolüminesan sahil</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="7086916854357021265">Kayıt adları oluşturuluyor</translation>
 <translation id="7097908713073775559">renkli</translation>
 <translation id="710028965487274708">Başarısız - Yetkilendirme Başarısız Oldu</translation>
 <translation id="7101959270679078188">Güncelleme işlemine devam etmek için <ph name="DEVICE_NAME" /> cihazının kilidini açın</translation>
@@ -1544,6 +1553,7 @@ Bu transkriptleri almak için metne dönüştürme modelini (100 MB'a kadar) ind
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Fotoğraflar albümü</translation>
 <translation id="8775713578693478175">Modem APN'si</translation>
+<translation id="877735394245039557">Model indirme işlemi devam ediyor</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Bu ağda giriş portalı olabilir</translation>
 <translation id="8797082062139985406">Google Yapay Zeka'yı kullanarak ad oluşturun</translation>

@@ -55,7 +55,6 @@
 <translation id="3194464645767632461">reytinq</translation>
 <translation id="3275186015127230296">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> tab əlavə edilib, <ph name="ANY_CHANGED" /> tab dəyişib}other{<ph name="MANY_ADDED" /> tab əlavə edilib, <ph name="ANY_CHANGED" /> tab dəyişib}}</translation>
 <translation id="3291470810748040983">Qiymət endirildikdə açıq tabda bildiriş alacaqsınız</translation>
-<translation id="3322827343001922122"><ph name="TITLE_OF_GROUP" /> tab qrupu üçün tab qrupunun əməliyyat menyusunu açın</translation>
 <translation id="3328308545011660196">Təklif: <ph name="NUMBER_OF_TABS" /> tab əlaqəli görünür. Onlar qruplaşdırılsın?</translation>
 <translation id="3547352561153509682">Bu, qrupu <ph name="USER_EMAIL" /> hesabına daxil olmuş bütün cihazlardan siləcək</translation>
 <translation id="3613492231657284463">Qeyri-aktiv tablar dialoqunu gizlədin</translation>
@@ -104,7 +103,6 @@
 <translation id="5400836586163650660">Boz</translation>
 <translation id="5490235265819901748">Tab qrupu genişləndirildi</translation>
 <translation id="5494920125229734069">Hamısını seçin</translation>
-<translation id="5549653163690032080">Paylaşılan <ph name="TITLE_OF_GROUP" /> tab qrupu üçün tab qrupunun əməliyyat menyusunu açın</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> tabdan ibarət tab qrupunu bağlayın, rəng <ph name="COLOR_NAME" />.}other{<ph name="TABS_COUNT_MANY" /> tabdan ibarət tab qrupunu bağlayın, rəng <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">Mağaza məlumatlarına baxın, seçim ekranın yuxarı hissəsində əlçatandır</translation>
 <translation id="5627941783489838464">Tab yeniləməsi yoxdur</translation>

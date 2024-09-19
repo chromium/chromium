@@ -44,6 +44,7 @@
 <translation id="1183189057400844278">आफ्नो Google खातामा सेभ गरिएका पासवर्डहरू सधैँ प्रयोग गर्न सकियोस् भन्नाका लागि आफ्नो पहिचान पुष्टि गर्नुहोस्</translation>
 <translation id="1187810343066461819">यो कारबाट बुकमार्क, हिस्ट्री र अन्य डेटा पनि मेटाउनुहोस्</translation>
 <translation id="1193729455103054076">भरपर्दो पासवर्ड प्रयोग गर्ने हो?</translation>
+<translation id="11947597112837849">इमेल ठेगाना</translation>
 <translation id="1197267115302279827">बुकमार्कहरू सार्नुहोस्</translation>
 <translation id="1197761954713363183">पासकी पुष्टि गर्ने पाना बन्द गरिएको छ</translation>
 <translation id="1201402288615127009">अर्को</translation>
@@ -56,7 +57,6 @@
 <translation id="123724288017357924">क्यास गरिएको सामग्रीको बेवास्ता गर्दै हालको पृष्ठलाई पुनःलोड गर्नुहोस्</translation>
 <translation id="1239792311949352652">यो पेज छिटोछरितो रूपमा सेयर गर्नुहोस्। यो सर्टकट परिवर्तन गर्न सेटिङमा जानुहोस्।</translation>
 <translation id="1240288207750131269"><ph name="LANG" /> लोड गरिँदै छ</translation>
-<translation id="1240903469550363138"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ले जारी राख्ने प्रयोजनका लागि यो साइटसँग तपाईंको नाम, इमेल ठेगाना र प्रोफाइल फोटो सेयर गर्ने छ। यो साइटको <ph name="BEGIN_LINK1" />गोपनीयता नीति<ph name="END_LINK1" /> र <ph name="BEGIN_LINK2" />सेवाका सर्तहरू<ph name="END_LINK2" /> हेर्नुहोस्।</translation>
 <translation id="124116460088058876">थप भाषाहरू</translation>
 <translation id="1241792820757384812"><ph name="CHROME_CHANNEL" /> का हकमा Google पासवर्ड म्यानेजरबाट तपाईंका पासवर्डहरू मेटाइने छन्। तपाईंले भर्खरै डाउनलोड गरेको पासवर्डहरू भएको फाइल तपाईंको डिभाइसमा सेभ रहिरहने छ।</translation>
 <translation id="1242883863226959074">डिभाइस</translation>
@@ -94,7 +94,6 @@
 <translation id="1384704387250346179">Google लेन्स प्रयोग गरी फोटोमा भएका कुरा अनुवाद गर्नुहोस् <ph name="BEGIN_NEW" />नयाँ<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382"><ph name="LAST_UPDATED" /> दिनअघि सक्रिय</translation>
 <translation id="1390418506739274310">तपाईं Chrome मा लिंक खोल्ने अन्य एपहरूको हिस्ट्री देख्न सक्नुहुन्छ। तपाईंको Google खातामा रहेको <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> मा अन्य स्वरूपमा ब्राउजिङ हिस्ट्री सेभ गरिएको हुन सक्छ।</translation>
-<translation id="13931502444227376"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ले जारी राख्ने प्रयोजनका लागि यो साइटसँग तपाईंको नाम, इमेल ठेगाना र प्रोफाइल फोटो सेयर गर्ने छ। यो साइटको <ph name="BEGIN_LINK1" />सेवाका सर्तहरू<ph name="END_LINK1" /> हेर्नुहोस्।</translation>
 <translation id="139752016751285248">मूल्यसम्बन्धी इनसाइटहरू समावेश भएको पुछारको पाना फुल स्क्रिनमा खोलिएको छ</translation>
 <translation id="1397811292916898096"><ph name="PRODUCT_NAME" /> मार्फत खोज्नुहोस्</translation>
 <translation id="1398057416966591719">तपाईं आफ्नो Google खातामा <ph name="BEGIN_LINK1" />Chrome को कुन जानकारी सेभ गरिन्छ भन्ने कुरा व्यवस्थापन गर्न<ph name="END_LINK1" /> सक्नुहुन्छ।
@@ -214,7 +213,6 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="1974060860693918893">उन्नत</translation>
 <translation id="1984417487208496350">सुरक्षारहित मोड (सिफारिस गरिँदैन)</translation>
 <translation id="1986685561493779662">नाम पहिलेदेखि नै विद्यमान छ</translation>
-<translation id="1995884366040846621"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ले जारी राख्ने प्रयोजनका लागि यो साइटसँग तपाईंको नाम, इमेल ठेगाना र प्रोफाइल फोटो सेयर गर्ने छ। यो साइटको <ph name="BEGIN_LINK1" />गोपनीयता नीति<ph name="END_LINK1" /> हेर्नुहोस्।</translation>
 <translation id="200114059308480249">Google मा कुनै शब्द वा वाक्यांशका बारेमा थप जानकारी खोज्दा सो शब्द वा वाक्यांश वरपरका पाठहरू पनि समावेश गर्ने हो?</translation>
 <translation id="201060170519281460">तपाईंको प्रोफाइल लकले सिंक गरिएका पासवर्ड र भुक्तानीलगायतका तपाईंका अन्य जानकारी कारमा सुरक्षित राख्छ।</translation>
 <translation id="2021896219286479412">पूर्ण स्क्रिनको साइटका नियन्त्रणहरू</translation>
@@ -235,6 +233,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="2093731487903423814">पछिल्ला १५ मिनेट</translation>
 <translation id="2096012225669085171">यन्त्रहरूभरि सिंक र वैयक्तीकृत गर्नुहोस्</translation>
 <translation id="2100273922101894616">स्वत: साइन-इन</translation>
+<translation id="2109384632594340939">प्रोफाइल फोटो</translation>
 <translation id="2111511281910874386">पृष्ठमा जानुहोस्</translation>
 <translation id="2119609734654412418">तपाईंका बुकमार्कहरू यहाँ देखिने छन्</translation>
 <translation id="2122601567107267586">एप खोल्न सकिएन</translation>
@@ -444,7 +443,6 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="3037177537145227281">यो उत्पादनको मूल्य ट्र्याक गरिँदै छ</translation>
 <translation id="3037517125981011456">Chrome मा साइन इन गर्ने निर्देशन देखाउँछ</translation>
 <translation id="3038272154009688107">सबै साइट हेर्नुहोस्</translation>
-<translation id="3055259925215945098">बुकमार्क सारियो</translation>
 <translation id="3055841435094910999">Google लाई तपाईं Chrome कसरी र कुन प्रयोजनका लागि चलाउनुहुन्छ भन्ने सम्बन्धमा जानकारी पठाइन्छ तर उक्त जानकारीमा तपाईंको पहिचान भने खुलाइँदैन\n\nChrome क्र्यास भयो भने क्र्याससम्बन्धी जानकारीमा केही व्यक्तिगत जानकारी समावेश गरिन सक्छ\n\nतपाईंले सिंक गर्ने सुविधा अन गर्नुभयो भने मेट्रिक्समा तपाईंले खोल्ने URL सम्बन्धी जानकारी पनि समावेश गरिन सक्छ</translation>
 <translation id="3059531648236115056">सारांश हाल्नुहोस्</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> पुस्तक चिन्ह}other{<ph name="BOOKMARKS_COUNT_MANY" /> पुस्तक चिन्हहरू}}</translation>
@@ -523,6 +521,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="3474624961160222204"><ph name="NAME" /> का रूपमा जारी राख्नुहोस्</translation>
 <translation id="3478363558367712427">तपाईं आफ्नो सर्च इन्जिन रोज्न सक्नुहुन्छ</translation>
 <translation id="3479552764303398839">अहिले होइन</translation>
+<translation id="3488199663160411179">नाम</translation>
 <translation id="3493531032208478708">सुझाव दिइएको सामग्रीको बारेमा <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="3495219333887281978">साइन इन गर्ने सुविधा पुछारको पानाको आधा स्क्रिनमा खोलिएको छ।</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -569,6 +568,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="3700759344784597882">यो सेटिङ अन हुँदा पासवर्डहरू तपाईंको खातामा सेभ गरिन्छन्। यो सेटिङ अफ हुँदा पासवर्डहरू यो डिभाइसमा मात्र सेभ गरिन्छन्।</translation>
 <translation id="3701167022068948696">अहिले नै समाधान गर्नुहोस्</translation>
 <translation id="3701515417135397388">कुनै पासवर्ड डेटा चोरीको घटनामा देखिएका खण्डमा तपाईंलाई चेतावनी दिन्छ</translation>
+<translation id="3710501561113687889"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ले जारी राख्ने प्रयोजनका लागि तपाईंको <ph name="FIELDS_STRING" /> यो साइटसँग सेयर गर्ने छ।</translation>
 <translation id="3714981814255182093">खोजको पट्टी खोल्नुहोस्</translation>
 <translation id="3716182511346448902">यस पृष्ठले अत्यधिक मेमोरी प्रयोग गर्ने भएकाले Chromium ले यसलाई पज गर्‍यो।</translation>
 <translation id="3718765429352682176">तपाईं Chrome मा लिंक खोल्ने अन्य एपहरूको हिस्ट्री देख्न सक्नुहुन्छ।</translation>
@@ -925,7 +925,6 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="5394331612381306435">इन्कोग्निटोबाट बाहिरिनुहोस्</translation>
 <translation id="5395376160638294582">तपाईं आफ्नो Google खातामा भएको Chrome सम्बन्धी जानकारी सधैँ प्रयोग गर्न सक्नुहुन्छ भन्ने कुरा सुनिश्चित गर्नुहोस्</translation>
 <translation id="539881862970320163">भरपर्दो पासवर्ड पासवर्ड हाल्न सिफारिस गरिएको छ। किबोर्ड लुकाइएको छ।</translation>
-<translation id="5401851137404501592"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ले जारी राख्ने प्रयोजनका लागि यो साइटसँग तपाईंको नाम, इमेल ठेगाना र प्रोफाइल फोटो सेयर गर्ने छ।</translation>
 <translation id="5409881200985013443"><ph name="CLIENT_NAME" /> मा <ph name="ONE_TIME_CODE" /> पेस गर्ने हो?</translation>
 <translation id="5414836363063783498">प्रमाणीकरण गर्दै...</translation>
 <translation id="5415871492522952905">तपाईं आफूले गरिरहेको कार्य जारी राख्न सक्नुहोस् भन्नाका लागि तपाईंका हिस्ट्री र ट्याबहरू तपाईंका सबै डिभाइसमा सेभ गरिने छन्</translation>
@@ -1114,7 +1113,6 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="6255809143828972562">तपाईं Chrome का टुलहरू प्रयोग गरी सुरक्षित तरिकाले ब्राउज गर्न र आफ्नो जानकारी आफ्नै नियन्त्रणमा राख्न सक्नुहुन्छ</translation>
 <translation id="6264376385120300461">जे भए पनि डाउनलोड गर्नुहोस्</translation>
 <translation id="6277522088822131679">पृष्ठ प्रिन्टिङ गर्नमा एक समस्या थियो। कृपया पुन: प्रयास गर्नुहोस्।</translation>
-<translation id="6277722725779679269">ट्रयाक गरिएको मूल्य बदल्न सकिएन</translation>
 <translation id="6278428485366576908">विषयवस्तु</translation>
 <translation id="6284472661216707937">पासवर्डहरू भएका तपाईंका सबै डिभाइस बन्द गरिएका छन्</translation>
 <translation id="6295158916970320988">सबै साइटहरू</translation>
@@ -1785,6 +1783,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="9108312223223904744">सुरक्षा साँचोका रूपमा प्रयोग गर्न मिल्ने फोन</translation>
 <translation id="9108808586816295166">सुरक्षित DNS सधैँ उपलब्ध नहुन सक्छ</translation>
 <translation id="910908805481542201">मलाई यसको समाधान गर्नमा मद्दत गर्नुहोस्</translation>
+<translation id="9130135798965366513"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ले जारी राख्ने प्रयोजनका लागि तपाईंको <ph name="FIELDS_STRING" /> यो साइटसँग सेयर गर्ने छ। यो साइटको <ph name="BEGIN_LINK1" />गोपनीयता नीति<ph name="END_LINK1" /> र <ph name="BEGIN_LINK2" />सेवाका सर्तहरू<ph name="END_LINK2" /> हेर्नुहोस्।</translation>
 <translation id="9131209053278896908">ब्लक गरिएका साइटहरू यहाँ देखिन्छन्</translation>
 <translation id="9133397713400217035">अफलाइनमा अन्वेषण गर्नुहोस्</translation>
 <translation id="9143389653531441385"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> मार्फत साइन अप गर्नुहोस्</translation>

@@ -55,7 +55,6 @@
 <translation id="3194464645767632461">hodnocení</translation>
 <translation id="3275186015127230296">{NUMBER_OF_TABS_ADDED,plural, =1{Přidána <ph name="ONE_ADDED" /> karta, změněno: <ph name="ANY_CHANGED" />}few{Přidány <ph name="MANY_ADDED" /> karty, změněno: <ph name="ANY_CHANGED" />}many{Přidáno <ph name="MANY_ADDED" /> karty, změněno: <ph name="ANY_CHANGED" />}other{Přidáno <ph name="MANY_ADDED" /> karet, změněno: <ph name="ANY_CHANGED" />}}</translation>
 <translation id="3291470810748040983">Když bude na otevřené kartě nižší cena, dostanete upozornění</translation>
-<translation id="3322827343001922122">Otevřít nabídku akcí pro skupinu karet <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3328308545011660196">Návrh: Některé karty (<ph name="NUMBER_OF_TABS" />) spolu pravděpodobně souvisejí. Chcete je seskupit?</translation>
 <translation id="3547352561153509682">Tímto skupinu smažete ze všech zařízení přihlášených k účtu <ph name="USER_EMAIL" /></translation>
 <translation id="3613492231657284463">Dialogové okno Skrýt neaktivní karty</translation>
@@ -104,7 +103,6 @@
 <translation id="5400836586163650660">Šedá</translation>
 <translation id="5490235265819901748">Skupina byla rozbalena</translation>
 <translation id="5494920125229734069">Vybrat vše</translation>
-<translation id="5549653163690032080">Otevřít nabídku akcí pro sdílenou skupinu karet <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Zavřít skupinu karet s <ph name="TABS_COUNT_ONE" /> kartou, barva <ph name="COLOR_NAME" />.}few{Zavřít skupinu karet se <ph name="TABS_COUNT_MANY" /> kartami, barva <ph name="COLOR_NAME" />.}many{Zavřít skupinu karet s <ph name="TABS_COUNT_MANY" /> karty, barva <ph name="COLOR_NAME" />.}other{Zavřít skupinu karet s <ph name="TABS_COUNT_MANY" /> kartami, barva <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">Zobrazit informace o obchodu, možnost dostupná v horní části obrazovky</translation>
 <translation id="5627941783489838464">Žádné aktualizace karet</translation>

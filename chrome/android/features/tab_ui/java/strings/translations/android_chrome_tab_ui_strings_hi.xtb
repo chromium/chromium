@@ -55,7 +55,6 @@
 <translation id="3194464645767632461">रेटिंग</translation>
 <translation id="3275186015127230296">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> टैब जोड़ा गया, <ph name="ANY_CHANGED" /> टैब बदले गए}one{<ph name="MANY_ADDED" /> टैब जोड़ा गया, <ph name="ANY_CHANGED" /> टैब बदले गए}other{<ph name="MANY_ADDED" /> टैब जोड़े गए, <ph name="ANY_CHANGED" /> टैब बदले गए}}</translation>
 <translation id="3291470810748040983">खोले गए टैब में मौजूद किसी आइटम की कीमत में कमी होने पर आपको सूचना मिलेगी</translation>
-<translation id="3322827343001922122">टैब ग्रुप <ph name="TITLE_OF_GROUP" /> के लिए, टैब ग्रुप का ऐक्शन मेन्यू खोलें</translation>
 <translation id="3328308545011660196">सुझाव: ऐसा लगता है कि <ph name="NUMBER_OF_TABS" /> टैब एक-दूसरे से मिलते-जुलते हैं. इनका ग्रुप बनाएं?</translation>
 <translation id="3547352561153509682">ऐसा करने से यह ग्रुप, <ph name="USER_EMAIL" /> से साइन इन किए गए सभी डिवाइसों से मिट जाएगा</translation>
 <translation id="3613492231657284463">इनऐक्टिव टैब छिपाने का डायलॉग बॉक्स</translation>
@@ -104,7 +103,6 @@
 <translation id="5400836586163650660">स्लेटी</translation>
 <translation id="5490235265819901748">टैब ग्रुप बड़ा किया गया</translation>
 <translation id="5494920125229734069">सभी को चुनें</translation>
-<translation id="5549653163690032080">शेयर किए गए टैब ग्रुप <ph name="TITLE_OF_GROUP" /> के लिए, टैब ग्रुप का ऐक्शन मेन्यू खोलें</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{<ph name="COLOR_NAME" /> रंग और <ph name="TABS_COUNT_ONE" /> टैब वाले टैब ग्रुप को बंद करें.}one{<ph name="COLOR_NAME" /> रंग और <ph name="TABS_COUNT_MANY" /> टैब वाले टैब ग्रुप को बंद करें.}other{<ph name="COLOR_NAME" /> रंग और <ph name="TABS_COUNT_MANY" /> टैब वाले टैब ग्रुप को बंद करें.}}</translation>
 <translation id="5556417849629758491">स्क्रीन पर सबसे ऊपर मौजूद विकल्प से स्टोर की जानकारी देखें</translation>
 <translation id="5627941783489838464">टैब के बारे में कोई अपडेट नहीं है</translation>

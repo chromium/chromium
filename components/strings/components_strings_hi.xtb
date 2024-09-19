@@ -679,6 +679,7 @@
 <translation id="2212735316055980242">नीति नहीं मिली</translation>
 <translation id="2213606439339815911">प्रविष्टियां फ़ेच की जा रही हैं...</translation>
 <translation id="2213612003795704869">पेज प्रिंट कर दिया गया</translation>
+<translation id="2215368073167343359">Google की मदद से, जानकारी ऑटोमैटिक भरने की सुविधा</translation>
 <translation id="2215539479425228550">क्लाइंबिंग और माउंटेनियरिंग</translation>
 <translation id="2215727959747642672">फ़ाइल में बदलाव करना</translation>
 <translation id="2215963164070968490">कुत्ते</translation>
@@ -711,6 +712,7 @@
 <translation id="2262243747453050782">HTTP गड़बड़ी</translation>
 <translation id="2265192657948645752">रीटेल क्षेत्र की नौकरियां</translation>
 <translation id="2265356434276802347">इस नीति में <ph name="MAX_ITEMS_LIMIT" /> से ज़्यादा, खोज से जुड़ी सेवा देने वाली कंपनी नहीं हो सकतीं.</translation>
+<translation id="2266175583972138136">कार्ड से मिलने वाले फ़ायदों के लिए शर्तें लागू</translation>
 <translation id="2267047181501709434">आपकी पहचान की पुष्टि की जा रही है...</translation>
 <translation id="2268044343513325586">बेहतर बनाएं</translation>
 <translation id="2268966938956566076"><ph name="MINUTES" /> मिनट में अपलोड करें</translation>
@@ -1799,6 +1801,7 @@
 <translation id="4269264543938335308">तैराकी के लिए कपड़े</translation>
 <translation id="4269599248168651462">सर्वर के सर्टिफ़िकेट को किसी ऐसे डोमेन नेम के लिए जारी किया गया है जो यूनीक नहीं है.</translation>
 <translation id="4270541775497538019">स्टैकर 6</translation>
+<translation id="4271652479722040953">Chrome में एक्सटेंशन जोड़ने पर, इन एक्सटेंशन से जुड़ा काम का डेटा, विश्लेषण के लिए तीसरे पक्ष की कंपनियों को भेजा जाता है. यह डेटा आपके एडमिन को भी दिख सकता है. इस डेटा में एक्सटेंशन से जुड़ी जानकारी शामिल होती है. जैसे, एक्सटेंशन का नाम, उन्हें इंस्टॉल करने का समय, सोर्स, और उनसे जुड़ी गतिविधि (जैसे, टैब बदलना, वेबसाइटों से संपर्क करना या कुकी ऐक्सेस करना). यह डेटा, Chrome Web Store और वेब पर अन्य प्लैटफ़ॉर्म से इंस्टॉल किए गए एक्सटेंशन के लिए इकट्ठा किया जाता है.</translation>
 <translation id="4275830172053184480">अपना डिवाइस फिर से प्रारंभ करें</translation>
 <translation id="4276974990916607331">रहने दें</translation>
 <translation id="4277028893293644418">पासवर्ड रीसेट करें</translation>
@@ -1880,6 +1883,7 @@
 <translation id="4406896451731180161">खोज नतीजे</translation>
 <translation id="4408413947728134509"><ph name="NUM_COOKIES" /> कुकी</translation>
 <translation id="4412074349188076601">इस कॉन्फ़िगरेशन को 'इंस्टॉल किया जा सकता है' के तौर पर मार्क किया गया है, लेकिन इस आर्किटेक्चर के लिए कोई इमेज नहीं दी गई है. इसलिए, इसे इंस्टॉल नहीं किया जा सकता.</translation>
+<translation id="4414452699610169758">पासवर्ड, पते, और पेमेंट के तरीके सेव करने और उनका इस्तेमाल करने के लिए, Google Password Manager और जानकारी ऑटोमैटिक भरने वाली Chrome की सुविधा का इस्तेमाल करें</translation>
 <translation id="4414515549596849729">कुकी और साइट का डेटा</translation>
 <translation id="4415156962929755728">प्लास्टिक (हाई ग्लॉस)</translation>
 <translation id="4415426530740016218">पिकअप का पता</translation>
@@ -1996,6 +2000,7 @@
 <translation id="467662567472608290">यह सर्वर यह प्रमाणित नहीं कर सका कि यह <ph name="DOMAIN" /> है; इसके सुरक्षा प्रमाणपत्र में त्रुटियां हैं. ऐसा गलत कॉन्फ़िगरेशन के कारण या किसी आक्रमणकर्ता द्वारा आपके कनेक्शन में अवरोध डालने के कारण हो सकता है.</translation>
 <translation id="4677585247300749148"><ph name="URL" /> सुलभता इवेंट का जवाब देना चाहता है</translation>
 <translation id="467809019005607715">Google Slides</translation>
+<translation id="4678379207584374453"><ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" /></translation>
 <translation id="4682496302933121474">पेज का अनुवाद पाना है?</translation>
 <translation id="468314109939257734">अपना वर्चुअल कार्ड नंबर देखें</translation>
 <translation id="4686942373615810936">अभी-अभी बनाया गया</translation>
@@ -2129,7 +2134,6 @@
 <translation id="4901778704868714008">सेव करें...</translation>
 <translation id="4901952598169637881">कैज़ुअल जूते</translation>
 <translation id="4905659621780993806">आपका एडमिन <ph name="DATE" /> को <ph name="TIME" /> पर आपका डिवाइस अपने-आप रीस्टार्ट करेगा. डिवाइस के रीस्टार्ट होने से पहले, खुले हुए सभी आइटम सेव कर लें.</translation>
-<translation id="4913784027728226227">इस पासवर्ड को अपने सभी डिवाइसों पर सेव और इस्तेमाल करने के लिए, अपनी पहचान की पुष्टि करें</translation>
 <translation id="4913987521957242411">सबसे ऊपर बाईं ओर पंच</translation>
 <translation id="4916389289686916969">टीवी रिएलिटी शो</translation>
 <translation id="4917064667437236721">इमेजिंग सिलिंडर</translation>
@@ -3384,6 +3388,7 @@
 <translation id="7232352818707016189">तुलना करने वाली टेबल के लिए अन्य कार्रवाइयां</translation>
 <translation id="7233592378249864828">जिस शीट की पुष्टि की गई है उसे प्रिंट करें</translation>
 <translation id="7234112195906418665">यात्रा और परिवहन</translation>
+<translation id="7234585564776614047">जानकारी ऑटोमैटिक भरने की कोई दूसरी सेवा</translation>
 <translation id="7236417832106250253"><ph name="PROGRESS_PERCENT" />% पूरा हो गया है | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
 <translation id="7237166092326447040">उपहार और खास मौके के लिए आइटम</translation>
 <translation id="7237454422623102448">सिस्टम सेटिंग</translation>
@@ -4046,6 +4051,7 @@
 <translation id="8409413588194360210">पेमेंट हैंडलर</translation>
 <translation id="8412145213513410671">क्रैश (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">आपको वही 'पासफ़्रेज़' दोबारा दर्ज करना होगा.</translation>
+<translation id="8414322570408428950">एक्सटेंशन से जुड़े इवेंट के बारे में जानकारी</translation>
 <translation id="8416694386774425977">नेटवर्क कॉन्फ़िगरेशन गलत है और उसे लाया नहीं जा सका.
 ज़्यादा जानकारी:
 <ph name="DEBUG_INFO" /></translation>
@@ -4298,6 +4304,7 @@
 <translation id="8891031436559779793">अगर किसी भी साइट पर प्रॉडक्ट की कीमत में गिरावट आती है, तो आपको इस बारे में सूचना दी जाएगी.</translation>
 <translation id="8891727572606052622">अमान्य प्रॉक्सी मोड.</translation>
 <translation id="8894794286471754040">लॉन्ग एज फ़र्स्ट</translation>
+<translation id="8895334001368918465">Chrome में जानकारी ऑटोमैटिक भरने वाली किसी दूसरी सेवा का इस्तेमाल करने के लिए, उसे Android की सेटिंग में जाकर और यहां से चालू करें</translation>
 <translation id="8897428486789851669">तैराकी</translation>
 <translation id="8899807382908246773">परेशान करने वाले विज्ञापन</translation>
 <translation id="8903921497873541725">ज़ूम इन करें</translation>

@@ -55,7 +55,6 @@
 <translation id="3194464645767632461">rating</translation>
 <translation id="3275186015127230296">{NUMBER_OF_TABS_ADDED,plural, =1{Idinagdag ang <ph name="ONE_ADDED" /> tab, binago ang <ph name="ANY_CHANGED" />}one{Idinagdag ang <ph name="MANY_ADDED" /> tab, binago ang <ph name="ANY_CHANGED" />}other{Idinagdag ang <ph name="MANY_ADDED" /> na tab, binago ang <ph name="ANY_CHANGED" />}}</translation>
 <translation id="3291470810748040983">Makakatanggap ka ng alerto kapag may mas mababang presyo sa isang nakabukas na tab</translation>
-<translation id="3322827343001922122">Buksan ang menu ng pagkilos ng grupo ng tab para sa grupo ng tab na <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3328308545011660196">Suhestyon: Mukhang magkaugnay ang <ph name="NUMBER_OF_TABS" /> (na) tab. Igrupo ang mga ito?</translation>
 <translation id="3547352561153509682">Ide-delete nito ang grupo sa lahat ng device na naka-sign in sa <ph name="USER_EMAIL" /></translation>
 <translation id="3613492231657284463">I-hide ang dialog ng mga hindi aktibong tab</translation>
@@ -104,7 +103,6 @@
 <translation id="5400836586163650660">Grey</translation>
 <translation id="5490235265819901748">Na-expand ang grupo ng tab</translation>
 <translation id="5494920125229734069">Piliin ang lahat</translation>
-<translation id="5549653163690032080">Buksan ang menu ng aksyon ng grupo ng tab para sa naka-share na grupo ng tab na <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Isara ang grupo ng tab na may <ph name="TABS_COUNT_ONE" /> tab, na may kulay na <ph name="COLOR_NAME" />.}one{Isara ang grupo ng tab na may <ph name="TABS_COUNT_MANY" /> tab, na may kulay na <ph name="COLOR_NAME" />.}other{Isara ang grupo ng tab na may <ph name="TABS_COUNT_MANY" /> na tab, na may kulay na <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">Tingnan ang impormasyon ng store, available ang opsyon malapit sa itaas ng screen</translation>
 <translation id="5627941783489838464">Walang update sa tab</translation>

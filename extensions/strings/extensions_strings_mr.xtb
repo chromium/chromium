@@ -19,7 +19,6 @@
 <translation id="3115238746683532089"><ph name="VENDOR_ID" /> विक्रेत्याकडील <ph name="PRODUCT_ID" /> अज्ञात उत्पादन (सिरीअल नंबर <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">crx फाइल पुनर्स्थित करण्यात अयशस्वी. फाइल वापरात आहे किंवा नाही हे पाहण्यासाठी तपासा.</translation>
 <translation id="3163201441334626963"><ph name="VENDOR_ID" /> विक्रेत्याकडील <ph name="PRODUCT_ID" /> अज्ञात उत्पादन</translation>
-<translation id="3369521687965833290">एक्स्टेंशन अनपॅक करणे शक्य नाही. एक्स्टेंशन सुरक्षितपणे अनपॅक करण्यासाठी, तुमच्या प्रोफाइल डिरेक्टरीत ड्राइव्ह अक्षरासह सुरुवात होणारा पाथ असणे आणि जंक्शन, माउंट पॉइंट किंवा सिमलिंक नसणे आवश्यक आहे. तुमच्या प्रोफाइलसाठी असा कोणताही पाथ सद्य नाही.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (सिरीअल नंबर <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="VENDOR_ID" /> विक्रेत्याकडील <ph name="PRODUCT_NAME" /> (सिरीअल नंबर <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">खासगी की साठी इनपुट मूल्य वैध पथ असावा.</translation>
@@ -39,7 +38,6 @@
 <translation id="5972529113578162692">या मशीनच्या ॲडमिनिस्ट्रेटरलााठी <ph name="EXTENSION_NAME" /> इंस्टॉल करणे आवश्यक आहे. हे अनइंस्टॉल केले जाऊ शकत नाही.</translation>
 <translation id="6027032947578871493"><ph name="VENDOR_NAME" /> कडील <ph name="PRODUCT_ID" /> अज्ञात उत्पादन (सिरीअल नंबर <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="VENDOR_ID" /> विक्रेत्याकडील <ph name="PRODUCT_NAME" /></translation>
-<translation id="6143635259298204954">एक्स्टेंशन अनपॅक करू नका. एक्स्टेंशन सुरक्षितपणे अनपॅक करण्यासाठी, तुमच्या प्रोफाइल निदेशिकेत सिमलिंक नसलेला पाथ असणे आवश्यक आहे. तुमच्या प्रोफाइलसाठी असा कोणताही पाथ सद्य नाही.</translation>
 <translation id="6322279351188361895">खासगी की वाचण्यात अयशस्वी.</translation>
 <translation id="6391538222494443604">इनपुट डिरेक्टरी अस्तित्वात असणे आवश्यक आहे.</translation>
 <translation id="641087317769093025">एक्स्टेंशन अनझिप करणे शक्य झाले नाही</translation>

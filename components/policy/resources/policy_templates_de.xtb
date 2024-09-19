@@ -2930,6 +2930,13 @@ Wird die Richtlinie nicht konfiguriert, können Websites JavaScript ausführen, 
 
       Wenn die Richtlinie nicht konfiguriert ist, werden alle installierten nativen Nachrichtenhosts von <ph name="PRODUCT_NAME" /> geladen.</translation>
 <translation id="3211426942294667684">Einstellungen für die Anmeldung im Browser</translation>
+<translation id="3213872023700948990">Diese Richtlinie bietet die Möglichkeit, das neue Verhalten „Mit der Tastatur fokussierbare Scroller“ vorübergehend zu deaktivieren.
+
+Wenn diese Richtlinie aktiviert oder nicht konfiguriert ist, können Scroller ohne untergeordnete fokussierbare Elemente standardmäßig mit der Tastatur fokussiert werden.
+
+Wenn diese Richtlinie deaktiviert ist, können Scroller standardmäßig nicht mit der Tastatur fokussiert werden.
+
+Diese Richtlinie ist eine vorübergehende Problemumgehung und wird in M135 entfernt.</translation>
 <translation id="3217774577897351942">Die <ph name="OFFSET_PARENT" /> API wird bei <ph name="PRODUCT_NAME" /> geändert, um den in <ph name="FIREFOX_PRODUCT_NAME" /> und <ph name="SAFARI_PRODUCT_NAME" /> vorgenommenen Änderungen zu entsprechen. Mit dieser Richtlinie wird das alte Verhalten bis zur Einführung von M120 wiederhergestellt.
 
 Durch das neue Verhalten können unter Umständen einige <ph name="PRODUCT_NAME" />-Websites beeinträchtigt werden, bei denen „<ph name="OFFSET_PARENT" />“, „<ph name="OFFSET_TOP" />“ oder „<ph name="OFFSET_LEFT" />“ in Verbindung mit Shadow DOM verwendet wird.
@@ -7241,6 +7248,9 @@ HINWEIS: Das Standardverhalten hängt davon ab, ob es sich um ein Verbraucherger
           Die empfohlene Vorgehensweise ist, die Bildschirmsperre bei Ruhemodus zu aktivieren und <ph name="PRODUCT_OS_NAME" /> anzuweisen, nach der Inaktivitätsverzögerung in den Ruhemodus zu wechseln. Diese Richtlinie sollte nur verwendet werden, wenn die Bildschirmsperre erheblich früher als der Ruhemodus eintreten oder der Ruhemodus bei Inaktivität gar nicht aktiviert werden soll.
 
           Der Wert für die Richtlinie muss in Millisekunden angegeben werden. Werte müssen kleiner als der Wert für die Inaktivitätsverzögerung sein.</translation>
+<translation id="6496139622896320246">Wenn die Richtlinie aktiviert ist, werden die Anmeldedaten für das aktive WLAN des Kiosks automatisch auf Geräteebene in <ph name="PRODUCT_OS_NAME" /> gespeichert: Das aktive WLAN kann von anderen Kiosk-Apps oder ‑Nutzern auf dem Gerät verwendet werden.
+Wenn die Richtlinie nicht konfiguriert oder deaktiviert ist, werden die Anmeldedaten für das aktive WLAN des Kiosks auf Kiosk-Ebene gespeichert: Das in einer Kiosk-App konfigurierte WLAN kann nur in dieser Kiosk-App verwendet werden.
+Diese Richtlinie wird nicht empfohlen. Sie muss verwendet werden, wenn keine anderen Optionen verfügbar sind (z. B. die Richtlinie „OpenNetworkConfiguration“).</translation>
 <translation id="6497085755801788141">Integrierte Zertifikatsprüfung verwenden</translation>
 <translation id="6499579502664610993">Gruppen ähnlicher Websites überschreiben.</translation>
 <translation id="6504720469162323184">Wenn die Richtlinie konfiguriert ist, gibt sie an, wie viele Millisekunden der Nutzer inaktiv sein kann, bevor er automatisch in einem lokalen Gerätekonto angemeldet wird, das über die Richtlinie „<ph name="DEVICE_LOCAL_ACCOUNT_AUTO_LOGIN_ID_POLICY_NAME" />“ festgelegt ist.

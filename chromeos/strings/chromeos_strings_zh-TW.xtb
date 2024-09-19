@@ -35,6 +35,7 @@
 <translation id="1155154308031262006">輸入提示</translation>
 <translation id="115705039208660697">鳳梨</translation>
 <translation id="1164939766849482256">黎明到黑夜螢幕保護程式</translation>
+<translation id="1166688493741195933">無法產生錄製名稱</translation>
 <translation id="1167755866710282443">開啟選單自訂按鍵，拖曳選單即可移動。</translation>
 <translation id="1171349345463658120">沙潟湖</translation>
 <translation id="1173894706177603556">重新命名</translation>
@@ -126,6 +127,7 @@
 <translation id="1567064801249837505">相簿</translation>
 <translation id="1572585716423026576">設為桌布</translation>
 <translation id="1578784163189013834">選擇螢幕保護程式背景</translation>
+<translation id="1587031308639983732">時間方面的變動可能不準確。這項設定是由系統管理員管理。</translation>
 <translation id="1588438908519853928">一般</translation>
 <translation id="1591562245178063882">本月</translation>
 <translation id="1593528591614229756">請務必選取行動服務供應商或管理員提供的 APN。選取 APN 後，系統會停用所有自訂 APN。如果 APN 無效，行動連線可能會因此中斷。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
@@ -494,6 +496,7 @@
 <translation id="3502426834823382181">查看所有應用程式</translation>
 <translation id="3510890413042482857">傳送<ph name="BEGIN_LINK1" />效能追蹤資料<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Chrome OS 更新</translation>
+<translation id="3522508178835057262">目前的轉錄稿字數上限為 <ph name="MAX_WORD_LENGTH" /> 個字</translation>
 <translation id="3527036260304016759">失敗 - 不明的錯誤</translation>
 <translation id="353214771040290298">編輯完畢</translation>
 <translation id="3532980081107202182">大約還剩 <ph name="MIN_REMAINING" /> 分鐘</translation>
@@ -712,6 +715,7 @@
 <translation id="4602266091140407479">麥克風</translation>
 <translation id="4607282946861182308">無法製作這類圖片，請試試其他提示。</translation>
 <translation id="4609350030397390689">鍵盤亮度調低</translation>
+<translation id="4623061655523261501">已順利產生錄製名稱</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />，<ph name="PRINTER_NAME" />，<ph name="CREATION_TIME" />，已列印 <ph name="PRINTED_PAGE_NUMBER" /> 頁 (共 <ph name="TOTAL_PAGE_NUMBER" /> 頁)。按下 Enter 鍵即可取消列印工作。</translation>
 <translation id="463791356324567266">正在取消掃描…</translation>
 <translation id="4644611440022666152">開啟並下載</translation>
@@ -1163,6 +1167,7 @@
 <translation id="6831043979455480757">翻譯</translation>
 <translation id="6846843854964504403">安全重設</translation>
 <translation id="6853312040151791195">放電率</translation>
+<translation id="6862228900689076919">這項功能是由系統管理員管理</translation>
 <translation id="6862416241246624313">已提交意見</translation>
 <translation id="6866732840889595464">雛菊</translation>
 <translation id="6871256179359663621">淺紫</translation>
@@ -1217,6 +1222,7 @@
 <translation id="708426984172631313">已停止</translation>
 <translation id="7086168019478250425">生物發光海灘</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="7086916854357021265">正在產生錄製名稱</translation>
 <translation id="7097908713073775559">彩色</translation>
 <translation id="710028965487274708">失敗 - 授權失敗</translation>
 <translation id="7101959270679078188">請解鎖「<ph name="DEVICE_NAME" />」以繼續進行更新程序</translation>

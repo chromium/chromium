@@ -19,7 +19,6 @@
 <translation id="3115238746683532089">ਵਿਕਰੇਤਾ <ph name="VENDOR_ID" /> ਤੋਂ ਅਗਿਆਤ ਉਤਪਾਦ <ph name="PRODUCT_ID" /> (ਸੀਰੀਅਲ ਨੰਬਰ <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">crx ਫ਼ਾਈਲ ਬਦਲੀ ਕਰਨਾ ਅਸਫਲ ਰਿਹਾ। ਇਹ ਦੇਖਣ ਲਈ ਜਾਂਚ ਕਰੋ ਕਿ ਫ਼ਾਈਲ ਵਰਤੋਂ ਵਿੱਚ ਹੈ ਜਾਂ ਨਹੀਂ।</translation>
 <translation id="3163201441334626963">ਵਿਕਰੇਤਾ <ph name="VENDOR_ID" /> ਤੋਂ ਅਗਿਆਤ ਉਤਪਾਦ <ph name="PRODUCT_ID" /></translation>
-<translation id="3369521687965833290">ਐਕਸਟੈਂਸ਼ਨ ਅਣਪੈਕ ਨਹੀਂ ਹੋ ਸਕਿਆ। ਇੱਕ ਐਕਸਟੈਂਸ਼ਨ ਨੂੰ ਸੁਰੱਖਿਅਤ ਰੂਪ ਨਾਲ ਅਣਪੈਕ ਕਰਨ ਲਈ, ਤੁਹਾਡੇ ਪ੍ਰੋਫਾਈਲ ਡਾਇਰੈਕਟਰੀ ਵੱਲ ਇੱਕ ਪਾਥ ਹੋਣਾ ਚਾਹੀਦਾ ਹੈ, ਜੋ ਇੱਕ ਡਰਾਈਵ ਲੈਟਰ ਨਾਲ ਸ਼ੁਰੂ ਹੁੰਦਾ ਹੋਵੇ ਅਤੇ ਇਸ ਵਿੱਚ ਕੋਈ ਜੰਕਸ਼ਨ, ਮਾਉਂਟ ਪੁਆਇੰਟ ਜਾਂ ਸਿਮਲਿੰਕ ਨਾ ਹੋਵੇ। ਤੁਹਾਡੇ ਪ੍ਰੋਫਾਈਲ ਲਈ ਕੋਈ ਅਜਿਹਾ ਪਾਥ ਮੌਜੂਦ ਨਹੀਂ ਹੈ।</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (ਸੀਰੀਅਲ ਨੰਬਰ <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397">ਵਿਕਰੇਤਾ <ph name="VENDOR_ID" /> ਤੋਂ <ph name="PRODUCT_NAME" /> (ਸੀਰੀਅਲ ਨੰਬਰ <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">ਨਿੱਜੀ ਕੁੰਜੀ ਲਈ ਇਨਪੁਟ ਵੈਲਯੂ ਇੱਕ ਪ੍ਰਮਾਣਿਕ ਮਾਰਗ ਹੋਣੀ ਚਾਹੀਦੀ ਹੈ।</translation>
@@ -39,7 +38,6 @@
 <translation id="5972529113578162692">ਇਸ ਮਸ਼ੀਨ ਦੇ ਪ੍ਰਬੰਧਕ ਨੂੰ <ph name="EXTENSION_NAME" /> ਇੰਸਟੌਲ ਕੀਤੇ ਜਾਣ ਦੀ ਲੋੜ ਹੈ। ਇਸਨੂੰ ਅਣਇੰਸਟੌਲ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ।</translation>
 <translation id="6027032947578871493"><ph name="VENDOR_NAME" /> ਤੋਂ ਅਗਿਆਤ ਉਤਪਾਦ <ph name="PRODUCT_ID" /> (ਸੀਰੀਅਲ ਨੰਬਰ <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721">ਵਿਕਰੇਤਾ <ph name="VENDOR_ID" /> ਤੋਂ <ph name="PRODUCT_NAME" /></translation>
-<translation id="6143635259298204954">ਐਕਸਟੈਂਸ਼ਨ ਨੂੰ ਅਣਪੈਕ ਨਹੀਂ ਕਰ ਸਕਿਆ। ਇੱਕ ਐਕਸਟੈਂਸ਼ਨ ਨੂੰ ਸੁਰੱਖਿਅਤ ਰੂਪ ਨਾਲ ਅਂਣਪੈਕ ਕਰਨ ਲਈ, ਤੁਹਾਡੇ ਪ੍ਰੋਫਾਈਲ ਡਾਇਰੈਕਟਰੀ ਵੱਲ ਇੱਕ ਪਾਥ ਹੋਣਾ ਚਾਹੀਦਾ ਹੈ, ਜਿਸ ਵਿੱਚ ਇੱਕ ਸਿਮਲਿੰਕ ਵੀ ਨਾ ਹੋਵੇ। ਤੁਹਾਡੇ ਪ੍ਰੋਫਾਈਲ ਲਈ ਕੋਈ ਅਜਿਹਾ ਪਾਥ ਨਹੀਂ ਹੈ।</translation>
 <translation id="6322279351188361895">ਨਿੱਜੀ ਕੁੰਜੀ ਪੜ੍ਹਨ ਵਿੱਚ ਅਸਫਲ।</translation>
 <translation id="6391538222494443604">ਇਨਪੁਟ ਡਾਇਰੈਕਟਰੀ ਮੌਜੂਦ ਹੋਣੀ ਚਾਹੀਦੀ ਹੈ।</translation>
 <translation id="641087317769093025">ਐਕਸਟੈਂਸ਼ਨ ਨੂੰ ਅਣਜ਼ਿਪ ਨਹੀਂ ਕਰ ਸਕਿਆ</translation>

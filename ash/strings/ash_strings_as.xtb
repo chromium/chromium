@@ -78,6 +78,7 @@
 <translation id="1240638468526743569">এটা এপ্‌</translation>
 <translation id="1242198791279543032">জাননীসমূহ মিউট কৰা হৈছে</translation>
 <translation id="1242883863226959074">ডিভাইচ</translation>
+<translation id="1245476784081715330">বঢ়িয়া!</translation>
 <translation id="1245644940275736236">Assistantলৈ যাওক</translation>
 <translation id="124678866338384709">বর্তমানৰ টেবটো বন্ধ কৰক</translation>
 <translation id="1246890715821376239">অসমৰ্থিত এপ্‌</translation>
@@ -842,6 +843,7 @@
 <translation id="3958714870339660776">দিনজোৰা</translation>
 <translation id="3962859241508114581">পূৰ্বৱৰ্তী ট্ৰেক</translation>
 <translation id="3963124517343721543">আপোনাৰ পূৰ্বে খুলি থোৱা ৱিণ্ড আৰু এপ্‌সমূহ খুলি আপুনি য’ত এৰিছিল তাৰ পৰা সহজে আৰম্ভ কৰক। আপুনি ইয়াৰ পাছত কৰিব লগা কামৰ ব্যক্তিগতকৃত পৰামৰ্শসমূহো দেখা পাব।</translation>
+<translation id="396506362088290977">আপোনাৰ মাইকৰ ধ্বনি পৰীক্ষা কৰক</translation>
 <translation id="3969043077941541451">অফ আছে</translation>
 <translation id="3970324493235864154">আপোনাৰ ফ’নৰ জাননী চাওক</translation>
 <translation id="397105322502079400">গণনা কৰি থকা হৈছে…</translation>
@@ -899,6 +901,7 @@
 <translation id="4156293514828496577">বেটাৰীৰ চাৰ্জ <ph name="PERCENTAGE" />% বাকী আছে (প্ৰায় <ph name="TIME_LEFT" /> বাকী আছে)।
 বেটাৰীৰ জীৱনকাল বৃদ্ধি কৰিবলৈ কিছুমান সুবিধা সীমিত কৰা হৈছে।</translation>
 <translation id="4160919062868802509">একাধিক অডিঅ’ৰ উৎস চিনাক্ত কৰা হৈছে</translation>
+<translation id="416245495747357243">কৰা হ’লত টিপক!</translation>
 <translation id="4165275524535002941">কে’বলে ডিছপ্লে’ সমৰ্থন নকৰিবও পাৰে</translation>
 <translation id="4177415338862979658">সবিশেষ চাবলৈ ক্লিক কৰক</translation>
 <translation id="4177913004758410636">{0,plural, =1{এদিনৰ ভিতৰত ডিভাইচটো আপডে’ট কৰক}one{# দিনৰ ভিতৰত ডিভাইচটো আপডে’ট কৰক}other{# দিনৰ ভিতৰত ডিভাইচটো আপডে’ট কৰক}}</translation>
@@ -984,6 +987,7 @@
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> অফ কৰা আছে।</translation>
 <translation id="4417647906073317561">ফ’কাছৰ ছেটিংসমূহ। নিমগ্ন হ’বলৈ টাইমাৰ ছেট কৰা, কাৰ্য আৰু সংগীত।</translation>
 <translation id="4424159417645388645">ডেস্ক ৫</translation>
+<translation id="4426817706804363424">বঢ়িয়া!</translation>
 <translation id="4430019312045809116">ভলিউম</translation>
 <translation id="4441283832827406317">নাম অনুসৰি এপ্ সজোৱা হৈছে</translation>
 <translation id="4445159312344259901">আনলক কৰিবলৈ ছাইন ইন কৰক</translation>
@@ -1248,6 +1252,7 @@
 <translation id="5283198616748585639">১ মিনিট যোগ কৰক</translation>
 <translation id="528468243742722775">সমাপ্ত</translation>
 <translation id="5286194356314741248">স্কেন কৰি থকা হৈছে</translation>
+<translation id="528641622273682395">মাইকৰ পৰীক্ষা ট’গল কৰক</translation>
 <translation id="5297423144044956168">কোনো ম’বাইল ডিভাইচ বিচাৰি পোৱা নগ’ল</translation>
 <translation id="5297704307811127955">অফ আছে</translation>
 <translation id="5300589172476337783">দেখুৱাওক</translation>
@@ -1275,6 +1280,7 @@
 <translation id="536019650977002321">আপোনাৰ প্ৰশাসকে অডিঅ’ কেপচাৰ কৰিবলৈ অনুমতি নিদিয়ে। অধিক তথ্যৰ বাবে আপোনাৰ প্ৰশাসকৰ সৈতে যোগাযোগ কৰক।</translation>
 <translation id="5361524080961918551"><ph name="LANGUAGE" /> কথন ফাইলসমূহ আংশিকভাৱে ডাউনল’ড কৰা হৈছে</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> এই টেবটোলৈ যাওক</translation>
+<translation id="5363835273551457276">আপুনি নিজৰ মাইক্ৰ’ফ’নৰ ধ্বনি পৰীক্ষা কৰিব পাৰে। বন্ধ কৰিবলৈ পেনেল বন্ধ কৰক।</translation>
 <translation id="5364693579536176785">ষ্ট’ৰেজৰ ঠাই</translation>
 <translation id="5369573834963677938">ডিভাইচটোত থকা অন্য ব্যৱহাৰকাৰীৰ বাবে মুখাৱয়ব নিয়ন্ত্ৰণৰ উপলব্ধ হ’ব</translation>
 <translation id="5369717264580061086">Files এপত ফাইল পূৰ্বদৰ্শন কৰক</translation>
@@ -1415,6 +1421,7 @@
 <translation id="5802516411616338943">ক্ষিপ্ৰ ছেটিং খোলক</translation>
 <translation id="5804651031882187592">"ছিম লক কৰক" ছেটিংটো অফ কৰক</translation>
 <translation id="5805809050170488595"><ph name="NETWORK_NAME" /> সক্ৰিয় কৰিবলৈ টিপক</translation>
+<translation id="5818796501620225415">আপুনি অধিক সময় যোগ দিব বা আপোনাৰ ফ’কাছ ছেশ্বন শেষ কৰিব পাৰে</translation>
 <translation id="5819918159912280082">আপোনাৰ Chromebook অনাকাংক্ষিতভাৱে ৰিষ্টাৰ্ট হৈছিল। আপোনাৰ পূৰ্বৰ ৱিণ্ড’ আৰু এপ্‌সমূহ খোলক।</translation>
 <translation id="5823239091726045201">ৱেবত Google কার্য</translation>
 <translation id="5825969630400862129">সংযুক্ত হৈ থকা ডিভাইচৰ ছেটিংসমূহ</translation>
@@ -2125,6 +2132,7 @@
 <translation id="8262312463845990408">প্লে’বেক ট’গল কৰক</translation>
 <translation id="8268302343625273732">Google Classroomত আটাইবোৰ এছাইনমেণ্ট চাওক</translation>
 <translation id="8277261673056602147">আপোনাৰ স্ক্ৰীনত থকা পাঠ হাইলাইট কৰক</translation>
+<translation id="8282784978194352587">আপুনি কৰিলে!</translation>
 <translation id="8287009018010202411">উৎপাদনশীলতা</translation>
 <translation id="828708037801473432">অফ আছে</translation>
 <translation id="8297006494302853456">দুৰ্বল</translation>
@@ -2202,6 +2210,7 @@
 <translation id="8609384513243082612">নতুন টেব খোলক</translation>
 <translation id="861045123704058818">এপ্‌সমূহ অস্থায়ীভাৱে শ্ৰেণী অনুসৰি শৃংখলাবদ্ধ কৰা হয়</translation>
 <translation id="8612216344243590325">ডেস্কটপৰ সলনি <ph name="HOLDING_SPACE_TITLE" />ত গুৰুত্বপূৰ্ণ ফাইলসমূহ ৰাখক। কেৱল <ph name="HOLDING_SPACE_TITLE" />ত ফাইলসমূহ টানি আনি এৰক।</translation>
+<translation id="8612338981637220013">সুন্দৰ কাম!</translation>
 <translation id="8614517853887502247">চোৱাৰ সুৰক্ষাটো অন হৈ থকাৰ বাবে <ph name="APP_1_TITLE" /> আৰু <ph name="APP_2_TITLE" />ৰ জাননীসমূহ লুকুওৱা হৈছে</translation>
 <translation id="8615778328722901791">টুলবাৰ খোলক</translation>
 <translation id="8619000641825875669">OneDrive</translation>
@@ -2244,6 +2253,7 @@
 <translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />: সক্ৰিয় কৰি থকা হৈছে...</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
+<translation id="8751299148074971734">কৰি থাকক!</translation>
 <translation id="8753368202781196133">এই মুহূৰ্তত এই ভাষাটো সমৰ্থিত নহয়।</translation>
 <translation id="8755498163081687682">আপোনাৰ পৰিচয় সত্যাপন কৰক: <ph name="ORIGIN_NAME" />এ এয়া আপুনি বুলি নিশ্চিত কৰিবলৈ বিচাৰিছে</translation>
 <translation id="875593634123171288">VPN ছেটিংসমূহ দেখুৱাওক</translation>

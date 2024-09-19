@@ -2985,6 +2985,13 @@ Politikayı ayarlamadan bırakırsanız JavaScript'e izin verilir. Kullanıcıla
 
       Politika ayarlanmadan bırakılırsa <ph name="PRODUCT_NAME" />, tüm yüklü yerel mesajlaşma ana makinelerini yükler.</translation>
 <translation id="3211426942294667684">Tarayıcı oturum açma ayarları</translation>
+<translation id="3213872023700948990">Bu politika, klavyeyle odaklanılabilen yeni kaydırıcı davranışının geçici olarak devre dışı bırakılmasını sağlar.
+
+Bu politika, Etkin değerine ayarlandığında veya ayarlanmadan bırakıldığında odaklanılabilir alt öğeleri olmayan kaydırıcılar varsayılan olarak klavyeyle odaklanılabilir olur.
+
+Bu politika, Devre Dışı değerine ayarlandığında kaydırıcılar varsayılan olarak klavyeye odaklanılabilir olmaz.
+
+Geçici bir çözüm olan bu politika M135 sürümünde kaldırılacaktır.</translation>
 <translation id="3217774577897351942"><ph name="OFFSET_PARENT" /> API, <ph name="FIREFOX_PRODUCT_NAME" /> ve <ph name="SAFARI_PRODUCT_NAME" /> tarayıcılarında yapılan değişikliklere uymak için <ph name="PRODUCT_NAME" /> tarayıcıda da değiştiriliyor. Bu politika, M120 sürümüne kadar eski davranışı geri getirir.
 
 Yeni davranış, yalnızca Gölge DOM ile birlikte <ph name="OFFSET_PARENT" />, <ph name="OFFSET_TOP" /> veya <ph name="OFFSET_LEFT" /> kullanan <ph name="PRODUCT_NAME" /> web sitelerinin işleyişini bozabilir.
@@ -7389,6 +7396,9 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
           Boşta kaldığında ekranı kilitlemenin önerilen yolu, askıya alındığında ekran kilidini etkinleştirmek ve boşta kalma gecikmesi ile ilgili süre dolduğunda <ph name="PRODUCT_OS_NAME" /> tarafından askıya alma işlemi yapılacak şekilde ayarlamaktır. Bu politika ancak ekran kilitleme işleminin askıya alma işleminden epey önce olması istendiğinde veya boşta kalma durumunda askıya alma işleminin hiç yapılmaması istendiğinde kullanılmalıdır.
 
           Politika değeri milisaniye olarak belirtilmelidir. Değerler boşta kalma gecikmesinden küçük olacak şekilde bir aralığa sıkıştırılır.</translation>
+<translation id="6496139622896320246">Politika, Etkin değerine ayarlanırsa <ph name="PRODUCT_OS_NAME" />, etkin kiosk kablosuz ağ kimlik bilgilerini cihaz düzeyinde otomatik olarak kaydeder: Etkin kablosuz ağ, cihazdaki diğer kiosk uygulamaları veya kullanıcılar tarafından kullanılabilir.
+Bu politika ayarlanmadan bırakılır veya Devre Dışı değerine ayarlanırsa kiosk etkin kablosuz ağ kimlik bilgileri kiosk düzeyinde depolanır: Bir kiosk uygulamasında yapılandırılmış kablosuz ağ yalnızca aynı kiosk uygulamasında kullanılabilir.
+Bu politika önerilmez ve başka seçenek olmadığında kullanılmalıdır (ör. Açık Ağ Yapılandırması Politikası).</translation>
 <translation id="6497085755801788141">Yerleşik sertifika doğrulayıcıyı kullan</translation>
 <translation id="6499579502664610993">İlişkili Websitesi Gruplarını geçersiz kıl.</translation>
 <translation id="6504720469162323184">Politikanın ayarlanması, <ph name="DEVICE_LOCAL_ACCOUNT_AUTO_LOGIN_ID_POLICY_NAME" /> politikası tarafından belirtilen cihaz yerel hesabında otomatik oturum açılmadan önce kullanıcı etkinliği olmadan geçen süreyi milisaniye cinsinden belirler.

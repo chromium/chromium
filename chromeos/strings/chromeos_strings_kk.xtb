@@ -127,6 +127,7 @@
 <translation id="1567064801249837505">Aльбомдар</translation>
 <translation id="1572585716423026576">Тұсқағаз етіп орнату</translation>
 <translation id="1578784163189013834">Скринсейвер фонын таңдау</translation>
+<translation id="1587031308639983732">Уақытқа негізделген өзгерістер дұрыс болмауы мүмкін. Бұл параметрді әкімшіңіз басқарады.</translation>
 <translation id="1588438908519853928">Қалыпты</translation>
 <translation id="1591562245178063882">Осы айда</translation>
 <translation id="1593528591614229756">Мобильдік провайдер немесе әкімші берген APN-дерді таңдаңыз. APN таңдасаңыз, барлық арнаулы APN өшіріледі. Жарамсыз APN мобильдік байланысқа кедергі келтіруі мүмкін. <ph name="LINK_BEGIN" />Толық ақпарат<ph name="LINK_END" /></translation>
@@ -342,6 +343,7 @@
 <translation id="2560876255701405320">Аудиожазбалар тізімі</translation>
 <translation id="2561093647892030937">лимондар</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> сынағы жүруде…</translation>
+<translation id="2573178735329662769">Барлық Chromebook аудиосын жазып алу</translation>
 <translation id="2575552334616524665">Мұны "Параметрлер" бөлімінде немесе <ph name="THREE_DOTS_MENU_ICON" /> мәзірінде қосуға болады.</translation>
 <translation id="2576253868710695442">Жадтың 2 ГБ орнына дейін алады.</translation>
 <translation id="2584547424703650812">Жылтыр пейзаждар</translation>
@@ -510,6 +512,7 @@
 <translation id="3588034708467091142">Құрылғыңыздың интернетке қосылғанын тексеріп, қайталап көріңіз.</translation>
 <translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> — <ph name="APN_NAME" /> үшін пайдалануға ыңғайлы атау.</translation>
 <translation id="3595596368722241419">Батарея толы</translation>
+<translation id="3600063043775287169">Chromebook аудиосы қосулы кезде, Диктофон осы құрылғыда қосылып тұрған барлық аудионы жазып алады. Барлық дыбысты жазып алғыңыз келетініне көз жеткізіңіз.</translation>
 <translation id="3600339377155080675">Экран көшірмесін көрсету</translation>
 <translation id="3602290021589620013">Алдын ала көру</translation>
 <translation id="3603829704940252505">Аватар</translation>
@@ -1045,6 +1048,8 @@
 <translation id="628726841779494414">Принтер параметрлерінде принтерлерді басқарыңыз.</translation>
 <translation id="6292095526077353682">Зарядтау кезінде скринсейверді көрсету уақыты</translation>
 <translation id="629550705077076970">пернетақтаны күңгірттеу</translation>
+<translation id="6301193653204230066">Қауіпсіздікті бастапқы қалпына келтірсеңіз, Chrome браузерінің кеңейтімдері өшіп, желі және басқа параметрлер қауіпсіз әдепкі мәндерге келтіріледі.
+          Қойындыларыңыз, файлдарыңыз, cookie файлдарыңыз және тарихыңыз өзгеріссіз қалады.</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> тексерісінен бас тартылды.</translation>
 <translation id="631063167932043783">Зерттеу қолданбасы</translation>
 <translation id="6318437367327684789">мәңгілік</translation>
@@ -1054,6 +1059,7 @@
 <translation id="6325525973963619867">Қате шықты</translation>
 <translation id="6327262166342360252">Бұл тұсқағазды жасанды интеллект "<ph name="PROMPT" />" мәтінін қолданып жасады.</translation>
 <translation id="6331191339300272798">Автоматты қараңғы режим</translation>
+<translation id="6335228876613776082">Модель жүктеп алынды</translation>
 <translation id="6340526405444716530">Жекелендіру</translation>
 <translation id="6348252528297699679">Локацияны "Параметрлер &gt; Құпиялық және қауіпсіздік &gt; Құпиялық параметрлері &gt; Локацияны пайдалану рұқсаты" тармағында өшіруге болады. <ph name="LINK_BEGIN" />Толық ақпарат<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">Пайдаланушы аты және құпия сөз</translation>
@@ -1161,6 +1167,7 @@
 <translation id="6831043979455480757">Аудару</translation>
 <translation id="6846843854964504403">Қауіпсіздікті бастапқы қалпына келтіру</translation>
 <translation id="6853312040151791195">Заряд азаюының жылдамдығы</translation>
+<translation id="6862228900689076919">Бұл функцияны әкімшіңіз басқарады.</translation>
 <translation id="6862416241246624313">Пікір жіберілді.</translation>
 <translation id="6866732840889595464">дәстүргүл</translation>
 <translation id="6871256179359663621">ашық күлгін</translation>
@@ -1548,6 +1555,7 @@
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Photos альбомы</translation>
 <translation id="8775713578693478175">Модем таңдаған APN</translation>
+<translation id="877735394245039557">Модель жүктеп алынуда</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Бұл желіде адаптивті портал болуы мүмкін.</translation>
 <translation id="8797082062139985406">Google AI технологиясымен атау жасау</translation>

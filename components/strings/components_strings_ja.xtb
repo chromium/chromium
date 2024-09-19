@@ -2000,6 +2000,7 @@
 <translation id="467662567472608290">このサーバーが <ph name="DOMAIN" /> であることを確認できませんでした。このサーバーのセキュリティ証明書にはエラーがあります。原因としては、不適切な設定や、悪意のあるユーザーによる接続妨害が考えられます。</translation>
 <translation id="4677585247300749148"><ph name="URL" /> から、ユーザー補助機能のイベントに応答する許可を求められています</translation>
 <translation id="467809019005607715">Google スライド</translation>
+<translation id="4678379207584374453"><ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="4682496302933121474">ページを翻訳しますか？</translation>
 <translation id="468314109939257734">仮想カード番号を表示します</translation>
 <translation id="4686942373615810936">作成: たった今</translation>
@@ -2133,7 +2134,6 @@
 <translation id="4901778704868714008">保存...</translation>
 <translation id="4901952598169637881">カジュアル シューズ</translation>
 <translation id="4905659621780993806">デバイスは <ph name="DATE" /> <ph name="TIME" /> に管理者によって自動的に再起動されます。デバイスが再起動される前に、開いているすべてのアイテムを保存してください。</translation>
-<translation id="4913784027728226227">このパスワードをすべてのデバイスで保存して使用するには、本人確認を行ってください</translation>
 <translation id="4913987521957242411">パンチ（左上）</translation>
 <translation id="4916389289686916969">リアリティ番組</translation>
 <translation id="4917064667437236721">イメージング シリンダー</translation>

@@ -19,7 +19,6 @@
 <translation id="3115238746683532089">Tundmatu toode <ph name="PRODUCT_ID" /> teenusepakkujalt <ph name="VENDOR_ID" /> (seerianumber <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">crx-faili asendamine ebaõnnestus. Kontrollige, kas fail on kasutusel.</translation>
 <translation id="3163201441334626963">Tundmatu toode <ph name="PRODUCT_ID" /> teenusepakkujalt <ph name="VENDOR_ID" /></translation>
-<translation id="3369521687965833290">Laiendust ei saanud lahti pakkida. Laienduse turvaliseks lahtipakkimiseks peab olema tee teie profiili kataloogi, mis algab ketast tähistava tähega ja milles ei ole sõlme, paigalduspunkti või symlinki. Sellist teed teie profiilil ei ole.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (seerianumber <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397">Toode <ph name="PRODUCT_NAME" /> teenusepakkujalt <ph name="VENDOR_ID" /> (seerianumber <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Privaatvõtme sisendi väärtus peab olema kehtiv tee.</translation>
@@ -39,7 +38,6 @@
 <translation id="5972529113578162692">Selle seadme administraator nõuab laienduse <ph name="EXTENSION_NAME" /> installimist. Seda ei saa desinstallida.</translation>
 <translation id="6027032947578871493">Tundmatu toode <ph name="PRODUCT_ID" /> teenusepakkujalt <ph name="VENDOR_NAME" /> (seerianumber <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721">Toode <ph name="PRODUCT_NAME" /> teenusepakkujalt <ph name="VENDOR_ID" /></translation>
-<translation id="6143635259298204954">Laiendust ei saanud lahti pakkida. Laienduse turvaliseks lahtipakkimiseks peab olema tee teie profiili kataloogi, milles ei ole symlinki. Sellist teed teie profiilil ei ole.</translation>
 <translation id="6322279351188361895">Privaatvõtme lugemine ei õnnestunud.</translation>
 <translation id="6391538222494443604">Olemas peab olema sisendkataloog.</translation>
 <translation id="641087317769093025">Ei saanud laiendust lahti pakkida</translation>

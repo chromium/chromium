@@ -55,7 +55,6 @@
 <translation id="3194464645767632461">vlerësimi</translation>
 <translation id="3275186015127230296">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> skedë u shtua, <ph name="ANY_CHANGED" /> u ndryshuan}other{<ph name="MANY_ADDED" /> skedë u shtua, <ph name="ANY_CHANGED" /> u ndryshuan}}</translation>
 <translation id="3291470810748040983">Do të marrësh një alarm sinjalizues kur ka një çmim më të ulët në një skedë të hapur</translation>
-<translation id="3322827343001922122">Hap menynë e veprimeve të grupit të skedave për grupin e skedave "<ph name="TITLE_OF_GROUP" />"</translation>
 <translation id="3328308545011660196">Sugjerim: <ph name="NUMBER_OF_TABS" /> skeda duken të lidhura. Dëshiron t'i gruposh?</translation>
 <translation id="3547352561153509682">Kjo do ta fshijë grupin nga të gjitha pajisjet ku je identifikuar me <ph name="USER_EMAIL" /></translation>
 <translation id="3613492231657284463">Fshih dialogun e skedave joaktive</translation>
@@ -104,7 +103,6 @@
 <translation id="5400836586163650660">Gri</translation>
 <translation id="5490235265819901748">Grupi i skedave u zgjerua</translation>
 <translation id="5494920125229734069">Zgjidh të gjitha</translation>
-<translation id="5549653163690032080">Hap menynë e veprimeve të grupit të skedave për grupin e ndarë të skedave "<ph name="TITLE_OF_GROUP" />"</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Mbyll grupin e skedave me <ph name="TABS_COUNT_ONE" /> skedë, ngjyrë <ph name="COLOR_NAME" />.}other{Mbyll grupin e skedave me <ph name="TABS_COUNT_MANY" /> skeda, ngjyrë <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">Shiko informacionet e dyqanit. Opsioni ofrohet pranë kreut të ekranit</translation>
 <translation id="5627941783489838464">Nuk ka përditësime për skedat</translation>

@@ -55,7 +55,6 @@
 <translation id="3194464645767632461">оцінка</translation>
 <translation id="3275186015127230296">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> вкладку додано, <ph name="ANY_CHANGED" /> змінено}one{<ph name="MANY_ADDED" /> вкладку додано, <ph name="ANY_CHANGED" /> змінено}few{<ph name="MANY_ADDED" /> вкладки додано, <ph name="ANY_CHANGED" /> змінено}many{<ph name="MANY_ADDED" /> вкладок додано, <ph name="ANY_CHANGED" /> змінено}other{<ph name="MANY_ADDED" /> вкладки додано, <ph name="ANY_CHANGED" /> змінено}}</translation>
 <translation id="3291470810748040983">Коли на відкритій вкладці знизиться ціна, ви отримаєте сповіщення</translation>
-<translation id="3322827343001922122">Відкрити меню дій для групи вкладок "<ph name="TITLE_OF_GROUP" />"</translation>
 <translation id="3328308545011660196">Підказка: схоже, ви відкрили кілька пов'язаних вкладок (<ph name="NUMBER_OF_TABS" />). Додати їх у групу?</translation>
 <translation id="3547352561153509682">Групу буде видалено з усіх пристроїв, на яких ви ввійшли в обліковий запис <ph name="USER_EMAIL" /></translation>
 <translation id="3613492231657284463">Сховати вікно "Неактивні вкладки"</translation>
@@ -104,7 +103,6 @@
 <translation id="5400836586163650660">Сірий</translation>
 <translation id="5490235265819901748">Групу вкладок розгорнуто</translation>
 <translation id="5494920125229734069">Вибрати все</translation>
-<translation id="5549653163690032080">Відкрити меню дій для спільної групи вкладок "<ph name="TITLE_OF_GROUP" />"</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Закрити групу з <ph name="TABS_COUNT_ONE" /> вкладкою; колір: <ph name="COLOR_NAME" />.}one{Закрити групу з <ph name="TABS_COUNT_MANY" /> вкладкою; колір: <ph name="COLOR_NAME" />.}few{Закрити групу з <ph name="TABS_COUNT_MANY" /> вкладками; колір: <ph name="COLOR_NAME" />.}many{Закрити групу з <ph name="TABS_COUNT_MANY" /> вкладками; колір: <ph name="COLOR_NAME" />.}other{Закрити групу з <ph name="TABS_COUNT_MANY" /> вкладки; колір: <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">Переглянути інформацію про магазин. Опція доступна вгорі екрана.</translation>
 <translation id="5627941783489838464">Немає оновлень щодо вкладок</translation>

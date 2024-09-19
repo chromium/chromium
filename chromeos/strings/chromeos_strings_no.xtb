@@ -35,6 +35,7 @@
 <translation id="1155154308031262006">Skriv inn en forespørsel</translation>
 <translation id="115705039208660697">ananaser</translation>
 <translation id="1164939766849482256">Skjermsparer: Fra morgen til kveld</translation>
+<translation id="1166688493741195933">Kunne ikke generere opptaksnavn</translation>
 <translation id="1167755866710282443">Åpne menyen for å tilpasse tastene. Dra menyen for å flytte den.</translation>
 <translation id="1171349345463658120">sandlagune</translation>
 <translation id="1173894706177603556">Gi nytt navn</translation>
@@ -494,6 +495,7 @@
 <translation id="3502426834823382181">se alle appene</translation>
 <translation id="3510890413042482857">Send <ph name="BEGIN_LINK1" />ytelsessporingsdata<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">ChromeOS-oppdatering</translation>
+<translation id="3522508178835057262">Foreløpig støttes ikke transkripsjoner på mer enn <ph name="MAX_WORD_LENGTH" /> ord</translation>
 <translation id="3527036260304016759">Mislykket – ukjent feil</translation>
 <translation id="353214771040290298">Redigeringen er fullført</translation>
 <translation id="3532980081107202182">Omtrent <ph name="MIN_REMAINING" /> minutter igjen</translation>
@@ -712,6 +714,7 @@
 <translation id="4602266091140407479">Mikrofon</translation>
 <translation id="4607282946861182308">Kan ikke lage bilder av dette. Prøv en annen forespørsel.</translation>
 <translation id="4609350030397390689">Tastaturlysstyrke ned</translation>
+<translation id="4623061655523261501">Opptaksnavnene er generert</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> av <ph name="TOTAL_PAGE_NUMBER" />. Trykk på Enter for å avbryte utskriftsjobben.</translation>
 <translation id="463791356324567266">Avbryter skanningen …</translation>
 <translation id="4644611440022666152">Slå på og last ned</translation>
@@ -1044,6 +1047,8 @@
 <translation id="628726841779494414">Administrer skriverne dine i skriverinnstillingene</translation>
 <translation id="6292095526077353682">Under lading: Vis skjermsparer</translation>
 <translation id="629550705077076970">tastaturdimming</translation>
+<translation id="6301193653204230066">Sikkerhetstilbakestilling slår av Chrome-nettleserutvidelser og tilbakestiller nettverksinnstillinger og andre innstillinger til trygge standardverdier.
+          Faner, filer, informasjonskapsler og loggen din blir ikke endret.</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" />testen er avbrutt</translation>
 <translation id="631063167932043783">Utforsk-appen</translation>
 <translation id="6318437367327684789">for alltid</translation>
@@ -1053,6 +1058,7 @@
 <translation id="6325525973963619867">Mislykket</translation>
 <translation id="6327262166342360252">Denne bakgrunnen er laget med AI ved hjelp av denne teksten: «<ph name="PROMPT" />».</translation>
 <translation id="6331191339300272798">Automatisk mørkt tema</translation>
+<translation id="6335228876613776082">Modellen er lastet ned</translation>
 <translation id="6340526405444716530">Personlig tilpasning</translation>
 <translation id="6348252528297699679">Du kan slå av posisjonen i Innstillinger &gt; Personvern og sikkerhet &gt; Personverninnstillinger &gt; Posisjonstilgang. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">Brukernavn og passord</translation>
@@ -1160,6 +1166,7 @@
 <translation id="6831043979455480757">Oversett</translation>
 <translation id="6846843854964504403">Sikkerhetstilbakestilling</translation>
 <translation id="6853312040151791195">Utladingsfrekvens</translation>
+<translation id="6862228900689076919">Denne innstillingen administreres av administratoren din</translation>
 <translation id="6862416241246624313">Tilbakemeldingen er sendt</translation>
 <translation id="6866732840889595464">tusenfryd</translation>
 <translation id="6871256179359663621">lys lilla</translation>
@@ -1214,6 +1221,7 @@
 <translation id="708426984172631313">STOPPET</translation>
 <translation id="7086168019478250425">strand med morild</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="7086916854357021265">Genererer opptaksnavn</translation>
 <translation id="7097908713073775559">fargerik</translation>
 <translation id="710028965487274708">Mislykket – autorisasjonen mislyktes</translation>
 <translation id="7101959270679078188">Lås opp <ph name="DEVICE_NAME" /> for å fortsette oppdateringsprosessen</translation>
@@ -1546,6 +1554,7 @@ Last ned transkripsjonsmodellen (opptil 100 MB) for å få disse transkripsjonen
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Foto-album</translation>
 <translation id="8775713578693478175">APN for modem</translation>
+<translation id="877735394245039557">Modellen lastes ned</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Det kan hende dette nettverket har en obligatorisk side</translation>
 <translation id="8797082062139985406">Opprett et navn med AI fra Google</translation>

@@ -50,6 +50,7 @@
 <translation id="1219674500290482172">Не удалось подключиться к Интернету.</translation>
 <translation id="1227113644794103810">Неактивные вкладки</translation>
 <translation id="1231733316453485619">Включить синхронизацию?</translation>
+<translation id="1253032109800629289">Скрыть карточку "Получать уведомления об изменении цены"</translation>
 <translation id="1258491128795710625">Что нового</translation>
 <translation id="1263231323834454256">Список для чтения</translation>
 <translation id="1263433075299269530">Последняя открытая вкладка</translation>
@@ -395,6 +396,7 @@
 <translation id="2870560284913253234">Сайт</translation>
 <translation id="2876369937070532032">При угрозе безопасности отправлять в Google URL некоторых страниц, которые вы открываете</translation>
 <translation id="2883151425485251736">Просмотр и изменение тем, которые вы скрыли</translation>
+<translation id="2888631381369839306">Уведомления об изменении цен включены.</translation>
 <translation id="288902476966286676">Возвращено</translation>
 <translation id="2894757982205307093">Добавить новую вкладку в группу</translation>
 <translation id="2905479111267140204">Повторяющихся паролей: <ph name="NUMBER_OF_PASSWORDS" />. Ваша безопасность под угрозой.</translation>
@@ -479,6 +481,7 @@
 <translation id="3348387552617855658">На этой карточке вы можете отслеживать заказы и получать важную информацию о доставке</translation>
 <translation id="3349031117032695619">Блокировать всплывающие окна</translation>
 <translation id="3349676726073650389">Сайты и поисковые запросы, на которые вы подписаны, сохраняются в вашем аккаунте Google. Управлять своими подписками можно в настройках.</translation>
+<translation id="3365529507898144230">Сохранить в Фото</translation>
 <translation id="3371831930909698441">Доступен перевод. Параметры указаны в нижней части экрана.</translation>
 <translation id="3377063233124932127">Теперь ваши сохраненные закладки, пароли и другие данные будут отображаться наверху.</translation>
 <translation id="3380352560400387991">Этот сайт пытается открыть приложение. Это приведет к выходу из режима инкогнито.</translation>
@@ -492,6 +495,7 @@
 <translation id="3435738964857648380">Безопасность</translation>
 <translation id="3443810440409579745">Вкладка получена.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> мин.</translation>
+<translation id="344589138074534176">Подробнее о Google Объективе…</translation>
 <translation id="345348365500626747">Адрес найден</translation>
 <translation id="3464194322481586217">Не удалось отследить цену.</translation>
 <translation id="3469117812148449995">Параметры сохранения пароля</translation>
@@ -577,6 +581,7 @@
 <translation id="3851938967634752633">Пароли для <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> и ещё нескольких сайтов (<ph name="NUMBER_OF_ACCOUNTS" />) будут удалены. При этом сохранятся другие данные аккаунтов для этих сайтов.</translation>
 <translation id="3858860766373142691">Название</translation>
 <translation id="3861908220442487587">Этот адрес сохранен только на этом устройстве. Чтобы он синхронизировался с другими устройствами, переместите его в свой аккаунт Google (<ph name="USER_EMAIL" />).</translation>
+<translation id="3868495844258915202">Показать URL полностью</translation>
 <translation id="3876833929577368454">Спрашивать каждый раз</translation>
 <translation id="3885587018298784481">Вступите в семейную группу</translation>
 <translation id="3888863481921783344">Эти данные будут использоваться для показа пользователей, которых можно пригласить на мероприятие.</translation>
@@ -864,6 +869,7 @@
 <translation id="5210365745912300556">Закрыть вкладку</translation>
 <translation id="5211488077761630279">Разрешить сайту <ph name="SITE_NAME" /> использовать разрешения <ph name="PERMISSION" />?</translation>
 <translation id="5217245356412073535">Вы можете изменить режим просмотра сайтов по умолчанию в меню "Настройки &gt; Настройки контента"</translation>
+<translation id="5217329997012062137">Когда вы используете Google Объектив, скриншот страницы отправляется в Google.</translation>
 <translation id="5220945116117011963">Как создать мероприятия в календаре на странице с датами</translation>
 <translation id="5222676887888702881">Выйти</translation>
 <translation id="5228579091201413441">Включить синхронизацию</translation>
@@ -876,6 +882,7 @@
 <translation id="5271265092610673171">{count,plural, =1{Пропущено обязательное поле. Заполните его.}one{Пропущены обязательные поля. Заполните их.}few{Пропущены обязательные поля. Заполните их.}many{Пропущены обязательные поля. Заполните их.}other{Пропущены обязательные поля. Заполните их.}}</translation>
 <translation id="5271549068863921519">Сохранить пароль</translation>
 <translation id="5279600392753459966">Заблокировать все</translation>
+<translation id="5282340693022193851">Чтобы узнавать об изменении цен, включите уведомления в настройках устройства iOS.</translation>
 <translation id="5294624619177114121">Уведомления на мобильном устройстве</translation>
 <translation id="5295239312320826323">Удалить аккаунт <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Показать</translation>
@@ -1481,7 +1488,6 @@
 <translation id="8011489434346330032">Веб-инспектор</translation>
 <translation id="802154636333426148">Ошибка скачивания</translation>
 <translation id="8023878949384262191">Разворачивает раздел.</translation>
-<translation id="8031932676440435547">Сохранить в Фото</translation>
 <translation id="8032569120109842252">Вы подписаны</translation>
 <translation id="8035133914807600019">Создать папку…</translation>
 <translation id="8035412398498507358">Фото</translation>
@@ -1638,6 +1644,7 @@
 <translation id="8712534545803964353">Поиск на странице</translation>
 <translation id="8712637175834984815">OK</translation>
 <translation id="8722229818691036192">Аккаунты на этом устройстве</translation>
+<translation id="8722649775263832315">Нажмите на объект или выделите его для поиска через Google Объектив</translation>
 <translation id="8725066075913043281">Повторить попытку</translation>
 <translation id="8728922029615312208">Закрыть все</translation>
 <translation id="8730621377337864115">Готово</translation>

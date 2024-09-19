@@ -55,7 +55,6 @@
 <translation id="3194464645767632461">оцена</translation>
 <translation id="3275186015127230296">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> картица је додата, промењених: <ph name="ANY_CHANGED" />}one{<ph name="MANY_ADDED" /> картица је додата, промењених: <ph name="ANY_CHANGED" />}few{<ph name="MANY_ADDED" /> картице су додате, промењених: <ph name="ANY_CHANGED" />}other{<ph name="MANY_ADDED" /> картица је додато, промењених: <ph name="ANY_CHANGED" />}}</translation>
 <translation id="3291470810748040983">Добићете обавештење када постоји нижа цена на отвореној картици</translation>
-<translation id="3322827343001922122">Отворите мени са радњама групе картица за групу картица <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3328308545011660196">Предлог: Картице (<ph name="NUMBER_OF_TABS" />) делују повезано. Желите ли да их групишете?</translation>
 <translation id="3547352561153509682">Овим ћете избрисати групу са свих уређаја пријављених на <ph name="USER_EMAIL" /></translation>
 <translation id="3613492231657284463">Сакријте дијалог са неактивним картицама</translation>
@@ -104,7 +103,6 @@
 <translation id="5400836586163650660">Сива</translation>
 <translation id="5490235265819901748">Група картица је проширена</translation>
 <translation id="5494920125229734069">Избор свих ставки</translation>
-<translation id="5549653163690032080">Отворите мени са радњама групе картица за дељену групу картица <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Затворите групу картица са <ph name="TABS_COUNT_ONE" /> картицом, боје <ph name="COLOR_NAME" />.}one{Затворите групу картица са <ph name="TABS_COUNT_MANY" /> картицом, боје <ph name="COLOR_NAME" />.}few{Затворите групу картица са <ph name="TABS_COUNT_MANY" /> картице, боје <ph name="COLOR_NAME" />.}other{Затворите групу картица са <ph name="TABS_COUNT_MANY" /> картица, боје <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">Прегледајте информације о продавници, опцију која је доступна у врху екрана</translation>
 <translation id="5627941783489838464">Нема ажурирања картица</translation>
@@ -131,6 +129,7 @@
 <translation id="6549021453810473782">Прикажи детаље о продавници</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Преместите картицу улево</translation>
+<translation id="6590332670428149473">Отворите мени са радњама групе картица за дељену групу картица <ph name="TITLE_OF_GROUP" />, чија боја је <ph name="COLOR_NAME" />.</translation>
 <translation id="6615455863669487791">Покажи ми</translation>
 <translation id="6668311240800004911">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> картица је промењена}one{<ph name="MANY_CHANGED" /> картица је промењена}few{<ph name="MANY_CHANGED" /> картице су промењене}other{<ph name="MANY_CHANGED" /> картица је промењено}}</translation>
 <translation id="6694634756612002311">Управљај дељењем</translation>
@@ -191,6 +190,7 @@
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{Проширите групу картица са <ph name="TABS_COUNT_ONE" /> картицом.}one{Проширите групу картица са <ph name="TABS_COUNT_MANY" /> картицом.}few{Проширите групу картица са <ph name="TABS_COUNT_MANY" /> картице.}other{Проширите групу картица са <ph name="TABS_COUNT_MANY" /> картица.}}</translation>
 <translation id="9090098097337832354">Информације о овој продавници су затворене</translation>
 <translation id="9111228330448174435">Приказивање дијалога о прављењу нове групе картица</translation>
+<translation id="9114502155681725011">Отворите мени са радњама групе картица за групу картица <ph name="TITLE_OF_GROUP" />, чија боја је <ph name="COLOR_NAME" />.</translation>
 <translation id="9150694013019234766">Прелазите са једне картице на другу у групи картица у дну екрана</translation>
 <translation id="9169594135889675189">Додајте нову картицу у групу</translation>
 <translation id="9216898458513705996">Картице ће остати отворене на овом уређају, али ће се група избрисати са свих уређаја пријављених на <ph name="USER_EMAIL" /></translation>

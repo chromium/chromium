@@ -55,7 +55,6 @@
 <translation id="3194464645767632461">isilinganisela</translation>
 <translation id="3275186015127230296">{NUMBER_OF_TABS_ADDED,plural, =1{Ithebhu engu-<ph name="ONE_ADDED" /> ifakiwe, kushintshwe engu-<ph name="ANY_CHANGED" />}one{Amathebhu angu-<ph name="MANY_ADDED" /> afakiwe, kushintshwe angu-<ph name="ANY_CHANGED" />}other{Amathebhu angu-<ph name="MANY_ADDED" /> afakiwe, kushintshwe angu-<ph name="ANY_CHANGED" />}}</translation>
 <translation id="3291470810748040983">Uzothola isexwayiso lapho kukhona intengo ephansi kuthebhu evuliwe</translation>
-<translation id="3322827343001922122">Vula imenyu yesenzo seqembu lethebhu le-<ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3328308545011660196">Isiphakamiso: amathebhu a-<ph name="NUMBER_OF_TABS" /> abonakala ahlobene. Wenze iqembu?</translation>
 <translation id="3547352561153509682">Lokhu kuzosula iqembu kuwo wonke amadivayisi angeniswe ngemvume ku-<ph name="USER_EMAIL" /></translation>
 <translation id="3613492231657284463">Fihla ibhokisi lamathebhu angasebenzi</translation>
@@ -104,7 +103,6 @@
 <translation id="5400836586163650660">Okumpunga</translation>
 <translation id="5490235265819901748">Iqembu lethebhu linwetshiwe</translation>
 <translation id="5494920125229734069">Khetha konke</translation>
-<translation id="5549653163690032080">Vula imenyu yesenzo seqembu lethebhu eyabiwe ye-<ph name="TITLE_OF_GROUP" /></translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Vala iqembu lethebhu ngethebhu ye-<ph name="TABS_COUNT_ONE" />, umbala <ph name="COLOR_NAME" />.}one{Vala iqembu lethebhu ngamathebhu we-<ph name="TABS_COUNT_MANY" />, umbala <ph name="COLOR_NAME" />.}other{Vala iqembu lethebhu ngamathebhu we-<ph name="TABS_COUNT_MANY" />, umbala <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">Buka ulwazi lwesitoreji, inketho itholakala eduze naphezulu kwesikrini</translation>
 <translation id="5627941783489838464">Azikho izibuyekezo zamathebhu</translation>

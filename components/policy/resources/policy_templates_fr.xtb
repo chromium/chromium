@@ -2932,6 +2932,13 @@ Si cette règle n'est pas configurée, les sites peuvent exécuter JavaScript. T
 
       Si cette règle n'est pas configurée, <ph name="PRODUCT_NAME" /> charge tous les hôtes de messagerie native qui sont installés.</translation>
 <translation id="3211426942294667684">Paramètres de connexion au navigateur</translation>
+<translation id="3213872023700948990">Cette règle permet de désactiver temporairement le nouveau comportement des barres de défilement sélectionnables au clavier.
+
+Si cette règle est activée ou n'est pas configurée, les barres de défilement sans enfants sélectionnables peuvent être sélectionnées par défaut au clavier.
+
+Lorsque cette règle est désactivée, les barres de défilement ne sont pas sélectionnables au clavier par défaut.
+
+Cette règle est une solution temporaire et sera supprimée dans M135.</translation>
 <translation id="3217774577897351942">L'API <ph name="OFFSET_PARENT" /> est modifiée dans <ph name="PRODUCT_NAME" /> afin de respecter les modifications apportées dans <ph name="FIREFOX_PRODUCT_NAME" /> et <ph name="SAFARI_PRODUCT_NAME" />. Cette règle rétablit l'ancien comportement jusqu'à M120.
 
 Le nouveau comportement risque de d'endommager certains sites Web propres à <ph name="PRODUCT_NAME" /> qui utilisent <ph name="OFFSET_PARENT" />, <ph name="OFFSET_TOP" /> ou <ph name="OFFSET_LEFT" /> avec Shadow DOM.
@@ -7260,6 +7267,9 @@ REMARQUE : Le comportement par défaut des appareils grand public et profession
           Pour verrouiller l'écran en cas d'inactivité, il est recommandé d'activer le verrouillage de l'écran lors de l'arrêt temporaire, et de configurer l'arrêt temporaire de <ph name="PRODUCT_OS_NAME" /> au terme du délai d'inactivité. Cette règle ne doit être utilisée que lorsque le verrouillage de l'écran doit intervenir bien avant l'arrêt temporaire de l'appareil ou lorsque l'utilisateur ne souhaite absolument pas que l'appareil soit arrêté temporairement en cas d'inactivité.
 
           La valeur de la règle doit être indiquée en millisecondes. Elle doit également être inférieure au délai d'inactivité.</translation>
+<translation id="6496139622896320246">Si cette règle est activée, <ph name="PRODUCT_OS_NAME" /> enregistre automatiquement les identifiants Wi-Fi kiosque actifs au niveau de l'appareil : le Wi-Fi actif peut être utilisé par les autres applis kiosque ou utilisateurs sur l'appareil.
+Si cette règle n'est pas configurée ou qu'elle est désactivée, les identifiants Wi-Fi kiosque actifs sont stockés au niveau du kiosque : le Wi-Fi configuré dans une appli kiosque ne peut être utilisé que dans cette même appli kiosque.
+Cette règle n'est pas recommandée et doit être utilisée lorsqu'aucune autre option n'est disponible (la règle OpenNetworkConfiguration, par exemple).</translation>
 <translation id="6497085755801788141">Utiliser l'outil de vérification des certificats intégré</translation>
 <translation id="6499579502664610993">Remplacer les Ensembles de sites Web associés.</translation>
 <translation id="6504720469162323184">Cette règle permet de définir, en millisecondes, le délai de connexion automatique au compte local de l'appareil (spécifié dans la règle <ph name="DEVICE_LOCAL_ACCOUNT_AUTO_LOGIN_ID_POLICY_NAME" />) en l'absence d'action de l'utilisateur sur l'écran de connexion.

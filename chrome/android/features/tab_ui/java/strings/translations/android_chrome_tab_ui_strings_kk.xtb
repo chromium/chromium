@@ -55,7 +55,6 @@
 <translation id="3194464645767632461">бағасы</translation>
 <translation id="3275186015127230296">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> қойынды қосылды, <ph name="ANY_CHANGED" /> өзгертілді.}other{<ph name="MANY_ADDED" /> қойынды қосылды, <ph name="ANY_CHANGED" /> өзгертілді.}}</translation>
 <translation id="3291470810748040983">Баға төмендеген кезде жаңа қойындыға хабарландыру келеді.</translation>
-<translation id="3322827343001922122"><ph name="TITLE_OF_GROUP" /> қойындылар тобының әрекеттер мәзірін ашу</translation>
 <translation id="3328308545011660196">Ұсыныс: <ph name="NUMBER_OF_TABS" /> қойынды өзара қатысты сияқты. Олар топтастырылсын ба?</translation>
 <translation id="3547352561153509682">Бұл жағдайда топ <ph name="USER_EMAIL" /> аккаунтына кірген барлық құрылғыдан жойылады.</translation>
 <translation id="3613492231657284463">"Әрекетсіз қойындылар" диалогтік терезесін жасыру</translation>
@@ -104,7 +103,6 @@
 <translation id="5400836586163650660">Сұр</translation>
 <translation id="5490235265819901748">Қойындылар тобы жайылды</translation>
 <translation id="5494920125229734069">Барлығын таңдау</translation>
-<translation id="5549653163690032080"><ph name="TITLE_OF_GROUP" /> ортақ қойындылар тобының әрекеттер мәзірін ашу</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> қойындысы бар <ph name="COLOR_NAME" /> түсті қойындылар тобын жабу.}other{<ph name="TABS_COUNT_MANY" /> қойындысы бар <ph name="COLOR_NAME" /> түсті қойындылар тобын жабу.}}</translation>
 <translation id="5556417849629758491">Дүкен туралы ақпаратты көру (опция экранның жоғарғы жағында орналасқан)</translation>
 <translation id="5627941783489838464">Қойындыларда өзгеріс жоқ.</translation>

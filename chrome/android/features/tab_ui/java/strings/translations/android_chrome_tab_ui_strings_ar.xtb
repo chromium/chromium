@@ -55,7 +55,6 @@
 <translation id="3194464645767632461">التقييم</translation>
 <translation id="3275186015127230296">{NUMBER_OF_TABS_ADDED,plural, =1{تمت إضافة علامة تبويب واحدة (<ph name="ONE_ADDED" />) وتغيير <ph name="ANY_CHANGED" />}zero{تمت إضافة <ph name="MANY_ADDED" /> علامة تبويب وتغيير <ph name="ANY_CHANGED" />}two{تمت إضافة علامتَي تبويب (<ph name="MANY_ADDED" />) وتغيير <ph name="ANY_CHANGED" />}few{تمت إضافة <ph name="MANY_ADDED" /> علامات تبويب وتغيير <ph name="ANY_CHANGED" />}many{تمت إضافة <ph name="MANY_ADDED" /> علامة تبويب وتغيير <ph name="ANY_CHANGED" />}other{تمت إضافة <ph name="MANY_ADDED" /> علامة تبويب وتغيير <ph name="ANY_CHANGED" />}}</translation>
 <translation id="3291470810748040983">سيصلك تنبيه عندما يتم رصد انخفاض في سعر أحد المنتجات ضِمن علامة تبويب مفتوحة.</translation>
-<translation id="3322827343001922122">فتح قائمة الإجراءات لمجموعة علامات التبويب "<ph name="TITLE_OF_GROUP" />"</translation>
 <translation id="3328308545011660196">اقتراح: يبدو أن هناك <ph name="NUMBER_OF_TABS" /> من علامات التبويب متشابهة. هل تريد تجميعها؟</translation>
 <translation id="3547352561153509682">سيؤدي هذا الإجراء إلى حذف المجموعة من جميع الأجهزة التي تم تسجيل الدخول إلى حساب <ph name="USER_EMAIL" />عليها</translation>
 <translation id="3613492231657284463">إخفاء مربّع حوار علامات التبويب غير النشطة</translation>
@@ -104,7 +103,6 @@
 <translation id="5400836586163650660">رمادي</translation>
 <translation id="5490235265819901748">تم توسيع مجموعة علامات التبويب.</translation>
 <translation id="5494920125229734069">اختيار الكل</translation>
-<translation id="5549653163690032080">فتح قائمة الإجراءات لمجموعة علامات التبويب التي تمّت مشاركتها "<ph name="TITLE_OF_GROUP" />"</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{إغلاق مجموعة علامات التبويب التي تظهر بلون <ph name="COLOR_NAME" /> وتحتوي على علامة تبويب واحدة (<ph name="TABS_COUNT_ONE" />)}zero{إغلاق مجموعة علامات التبويب التي تظهر بلون <ph name="COLOR_NAME" /> وتحتوي على <ph name="TABS_COUNT_MANY" /> علامة تبويب}two{إغلاق مجموعة علامات التبويب التي تظهر بلون <ph name="COLOR_NAME" /> وتحتوي على علامتَي تبويب (<ph name="TABS_COUNT_MANY" />)}few{إغلاق مجموعة علامات التبويب التي تظهر بلون <ph name="COLOR_NAME" /> وتحتوي على <ph name="TABS_COUNT_MANY" /> علامات تبويب}many{إغلاق مجموعة علامات التبويب التي تظهر بلون <ph name="COLOR_NAME" /> وتحتوي على <ph name="TABS_COUNT_MANY" /> علامة تبويب}other{إغلاق مجموعة علامات التبويب التي تظهر بلون <ph name="COLOR_NAME" /> وتحتوي على <ph name="TABS_COUNT_MANY" /> علامة تبويب}}</translation>
 <translation id="5556417849629758491">عرض معلومات المتجر، وهو خيار متاح بالقرب من أعلى الشاشة</translation>
 <translation id="5627941783489838464">ما مِن تعديلات على علامات التبويب</translation>
