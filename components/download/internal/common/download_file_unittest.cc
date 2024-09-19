@@ -25,7 +25,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_file_util.h"
 #include "build/build_config.h"
@@ -245,13 +244,6 @@ class DownloadFileTest : public testing::Test {
                               -1);
   }
 
-#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
-  bool CreateDownloadFile(int length, bool needs_obfuscation) {
-    return CreateDownloadFile(length, true, DownloadItem::ReceivedSlices(), -1,
-                              needs_obfuscation);
-  }
-#endif
-
   bool CreateDownloadFile(int length,
                           bool calculate_hash,
                           const DownloadItem::ReceivedSlices& received_slices) {
@@ -262,8 +254,7 @@ class DownloadFileTest : public testing::Test {
   bool CreateDownloadFile(int length,
                           bool calculate_hash,
                           const DownloadItem::ReceivedSlices& received_slices,
-                          int file_offset,
-                          bool needs_obfuscation = false) {
+                          int file_offset) {
     // There can be only one.
     DCHECK(!download_file_);
 
@@ -293,10 +284,6 @@ class DownloadFileTest : public testing::Test {
 
     save_info->offset = 0;
     save_info->file_offset = file_offset;
-    if (needs_obfuscation) {
-      save_info->needs_obfuscation = needs_obfuscation;
-      save_info->total_bytes = length;
-    }
 
     download_file_ = std::make_unique<TestDownloadFileImpl>(
         std::move(save_info), download_dir_.GetPath(),
@@ -1349,112 +1336,5 @@ TEST_F(DownloadFileTest, PropagatesUrlAndInitiatorToQuarantine) {
   base::RunLoop().RunUntilIdle();
   DestroyDownloadFile(0);
 }
-
-#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
-class DownloadFileTestWithObfuscation : public DownloadFileTest {
- protected:
-  // Constants for obfuscation overhead
-  static constexpr size_t kObfuscationHeaderSize = 40;     // bytes
-  static constexpr size_t kObfuscationChunkOverhead = 20;  // bytes per chunk
-
-  void SetUp() override {
-    DownloadFileTest::SetUp();
-    scoped_feature_list_.InitAndEnableFeature(
-        enterprise_obfuscation::kEnterpriseFileObfuscation);
-  }
-
-  size_t CalculateObfuscationOverhead(size_t num_chunks) const {
-    return kObfuscationChunkOverhead * num_chunks + kObfuscationHeaderSize;
-  }
-
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_F(DownloadFileTestWithObfuscation, ObfuscationEnabled) {
-  size_t length = strlen(kTestData1) + strlen(kTestData2) + strlen(kTestData3);
-  ASSERT_TRUE(CreateDownloadFile(length, true));
-  const char* chunks[] = {kTestData1, kTestData2, kTestData3};
-
-  EXPECT_CALL(*input_stream_, RegisterDataReadyCallback(_))
-      .Times(1)
-      .RetiresOnSaturation();
-
-  // Append dummy data for obfuscated size verification.
-  expected_data_ += std::string(CalculateObfuscationOverhead(3), '\0');
-  AppendDataToFile(chunks, 3);
-
-  // Original file hash should be returned, not the obfuscated hash.
-  FinishStream(DOWNLOAD_INTERRUPT_REASON_NONE, true, kDataHash);
-
-  // Verify that the file content is obfuscated.
-  std::string file_content;
-  ASSERT_TRUE(
-      base::ReadFileToString(download_file_->FullPath(), &file_content));
-  EXPECT_NE(file_content, std::string(kTestData1) + std::string(kTestData2) +
-                              std::string(kTestData3));
-  EXPECT_EQ(file_content.size(), length + CalculateObfuscationOverhead(3));
-
-  download_file_->Cancel();
-  DestroyDownloadFile(0, false);
-}
-
-TEST_F(DownloadFileTestWithObfuscation, ObfuscationWithUnknownFileSize) {
-  size_t length = strlen(kTestData1) + strlen(kTestData2) + strlen(kTestData3);
-  ASSERT_TRUE(CreateDownloadFile(0 /*Unknown file size*/, true));
-  const char* chunks[] = {kTestData1, kTestData2, kTestData3};
-
-  EXPECT_CALL(*input_stream_, RegisterDataReadyCallback(_))
-      .Times(1)
-      .RetiresOnSaturation();
-
-  // Append dummy data for obfuscated size verification.
-  expected_data_ += std::string(CalculateObfuscationOverhead(3), '\0');
-  AppendDataToFile(chunks, 3);
-
-  // For files of unknown sizes, an empty chunk is appended once download
-  // completes.
-  expected_data_ += std::string(kObfuscationChunkOverhead, '\0');
-
-  FinishStream(DOWNLOAD_INTERRUPT_REASON_NONE, true, kDataHash);
-
-  // Verify that the file content is obfuscated, and includes an extra chunk.
-  std::string file_content;
-  ASSERT_TRUE(
-      base::ReadFileToString(download_file_->FullPath(), &file_content));
-  EXPECT_NE(file_content, std::string(kTestData1) + std::string(kTestData2) +
-                              std::string(kTestData3));
-  EXPECT_GT(file_content.size(), length);
-  EXPECT_EQ(file_content.size(), length += CalculateObfuscationOverhead(4));
-
-  download_file_->Cancel();
-  DestroyDownloadFile(0, false);
-}
-
-TEST_F(DownloadFileTestWithObfuscation, ObfuscationDisabled) {
-  scoped_feature_list_.Reset();
-  scoped_feature_list_.InitAndDisableFeature(
-      enterprise_obfuscation::kEnterpriseFileObfuscation);
-
-  int length = strlen(kTestData1) + strlen(kTestData2) + strlen(kTestData3);
-  ASSERT_TRUE(CreateDownloadFile(length, false));
-  const char* chunks[] = {kTestData1, kTestData2, kTestData3};
-
-  EXPECT_CALL(*input_stream_, RegisterDataReadyCallback(_))
-      .Times(1)
-      .RetiresOnSaturation();
-
-  AppendDataToFile(chunks, 3);
-  FinishStream(DOWNLOAD_INTERRUPT_REASON_NONE, true, kDataHash);
-
-  // Verify that the file content is not obfuscated.
-  std::string file_content;
-  ASSERT_TRUE(
-      base::ReadFileToString(download_file_->FullPath(), &file_content));
-  EXPECT_EQ(file_content, std::string(kTestData1) + std::string(kTestData2) +
-                              std::string(kTestData3));
-
-  DestroyDownloadFile(0);
-}
-#endif
 
 }  // namespace download

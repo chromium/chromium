@@ -30,13 +30,8 @@
 #include "components/download/public/common/download_item.h"
 #include "components/download/public/common/download_save_info.h"
 #include "components/download/public/common/rate_estimator.h"
-#include "components/enterprise/buildflags/buildflags.h"
 #include "components/services/quarantine/public/mojom/quarantine.mojom.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
-
-#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
-#include "components/enterprise/obfuscation/core/download_obfuscator.h"  // nogncheck
-#endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 
 namespace download {
 
@@ -392,10 +387,6 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadFileImpl : public DownloadFile {
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
-  std::unique_ptr<enterprise_obfuscation::DownloadObfuscator> obfuscator_;
-#endif
 
   base::WeakPtr<DownloadDestinationObserver> observer_;
   base::WeakPtrFactory<DownloadFileImpl> weak_factory_{this};
