@@ -114,23 +114,24 @@ void DigitalIdentityProviderDesktop::Request(content::WebContents* web_contents,
   std::array<uint8_t, device::cablev2::kQRKeySize> qr_generator_key;
   crypto::RandBytes(qr_generator_key);
 
+  std::string qr_url = device::cablev2::qr::Encode(
+      qr_generator_key, device::cablev2::CredentialRequestType::kPresentation);
+
   transaction_ = Transaction::New(
       rp_origin, std::move(request), qr_generator_key,
       base::BindRepeating([]() {
         return SystemNetworkContextManager::GetInstance()->GetContext();
       }),
       base::BindRepeating(&DigitalIdentityProviderDesktop::OnEvent,
-                          weak_ptr_factory_.GetWeakPtr()),
+                          weak_ptr_factory_.GetWeakPtr(), std::move(qr_url)),
       base::BindOnce(&DigitalIdentityProviderDesktop::OnFinished,
                      weak_ptr_factory_.GetWeakPtr()));
-
-  qr_url_ = device::cablev2::qr::Encode(
-      qr_generator_key, device::cablev2::CredentialRequestType::kPresentation);
 }
 
-void DigitalIdentityProviderDesktop::OnEvent(Event event) {
+void DigitalIdentityProviderDesktop::OnEvent(const std::string qr_url,
+                                             Event event) {
   absl::visit(base::Overloaded{
-                  [this](SystemEvent event) {
+                  [this, qr_url](SystemEvent event) {
                     switch (event) {
                       case SystemEvent::kBluetoothNotPowered:
                         ShowBluetoothManualTurnOnDialog();
@@ -141,7 +142,7 @@ void DigitalIdentityProviderDesktop::OnEvent(Event event) {
                         break;
                       case SystemEvent::kReady:
                         bluetooth_manual_dialog_controller_.reset();
-                        ShowQrCodeDialog();
+                        ShowQrCodeDialog(std::move(qr_url));
                         break;
                     }
                   },
@@ -203,7 +204,8 @@ DigitalIdentityProviderDesktop::EnsureDialogCreated() {
   return dialog_.get();
 }
 
-void DigitalIdentityProviderDesktop::ShowQrCodeDialog() {
+void DigitalIdentityProviderDesktop::ShowQrCodeDialog(
+    const std::string qr_url) {
   std::u16string dialog_title =
       l10n_util::GetStringUTF16(IDS_WEB_DIGITAL_CREDENTIALS_QR_TITLE);
   std::u16string dialog_body = l10n_util::GetStringFUTF16(
@@ -215,7 +217,7 @@ void DigitalIdentityProviderDesktop::ShowQrCodeDialog() {
       ui::DialogModel::Button::Params(),
       base::BindOnce(&DigitalIdentityProviderDesktop::OnCanceled,
                      weak_ptr_factory_.GetWeakPtr()),
-      dialog_title, dialog_body, MakeQrCodeImageView(qr_url_));
+      dialog_title, dialog_body, MakeQrCodeImageView(qr_url));
 }
 
 void DigitalIdentityProviderDesktop::ShowBluetoothManualTurnOnDialog() {

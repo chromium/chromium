@@ -40,7 +40,8 @@ class DigitalIdentityProviderDesktop : public content::DigitalIdentityProvider {
 
  private:
   // Called whenever some significant event occurs during the transaction.
-  void OnEvent(content::digital_credentials::cross_device::Event);
+  void OnEvent(const std::string qr_url,
+               content::digital_credentials::cross_device::Event);
 
   // Called when the transaction is finished (successfully or not).
   void OnFinished(
@@ -51,7 +52,7 @@ class DigitalIdentityProviderDesktop : public content::DigitalIdentityProvider {
   DigitalIdentityMultiStepDialog* EnsureDialogCreated();
 
   // Shows dialog with QR code.
-  void ShowQrCodeDialog();
+  void ShowQrCodeDialog(const std::string qr_url);
 
   // Shows dialog which prompts user to manually turn on bluetooth.
   void ShowBluetoothManualTurnOnDialog();
@@ -72,7 +73,6 @@ class DigitalIdentityProviderDesktop : public content::DigitalIdentityProvider {
   base::WeakPtr<content::WebContents> web_contents_;
 
   url::Origin rp_origin_;
-  std::string qr_url_;
 
   std::unique_ptr<content::digital_credentials::cross_device::Transaction>
       transaction_;
