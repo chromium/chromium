@@ -10314,7 +10314,8 @@ void RenderFrameHostImpl::ResourceLoadComplete(
 void RenderFrameHostImpl::HandleAXEvents(
     const ui::AXTreeID& tree_id,
     ui::AXUpdatesAndEvents updates_and_events,
-    uint32_t reset_token) {
+    uint32_t reset_token,
+    mojo::ReportBadMessageCallback report_bad_message_callback) {
   TRACE_EVENT0("accessibility", "RenderFrameHostImpl::HandleAXEvents");
   SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
       "Accessibility.Performance.HandleAXEvents2");
@@ -10335,11 +10336,17 @@ void RenderFrameHostImpl::HandleAXEvents(
     return;
   }
 
+  // A renderer should never send an accessibility update before web
+  // accessibility is enabled.
+  if (!accessibility_reset_token_) {
+    std::move(report_bad_message_callback).Run(
+        "Unexpected accessibility message.");
+    return;
+  }
+
   // Don't process this IPC if either we're waiting on a reset and this IPC
-  // doesn't have the matching token ID, or if we're not waiting on a reset but
-  // this message includes a reset token.
+  // doesn't have the matching token ID.
   // The token prevents obsolete data from being processed.
-  CHECK(accessibility_reset_token_);
   if (*accessibility_reset_token_ != reset_token) {
     DVLOG(1) << "Ignoring obsolete accessibility data.";
     return;
@@ -10441,14 +10448,22 @@ void RenderFrameHostImpl::HandleAXEvents(
 void RenderFrameHostImpl::HandleAXLocationChanges(
     const ui::AXTreeID& tree_id,
     std::vector<blink::mojom::LocationChangesPtr> changes,
-    uint32_t reset_token) {
+    uint32_t reset_token,
+    mojo::ReportBadMessageCallback report_bad_message_callback) {
   if (tree_id != GetAXTreeID()) {
     // The message has arrived after the frame has navigated which means its
     // changes are no longer relevant and can be discarded.
     return;
   }
 
-  CHECK(accessibility_reset_token_);
+  // A renderer should never send an accessibility update before web
+  // accessibility is enabled.
+  if (!accessibility_reset_token_) {
+    std::move(report_bad_message_callback).Run(
+        "Unexpected accessibility message.");
+    return;
+  }
+
   if (*accessibility_reset_token_ != reset_token) {
     DVLOG(1) << "Ignoring obsolete accessibility data.";
     return;

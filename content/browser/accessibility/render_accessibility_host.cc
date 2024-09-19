@@ -11,6 +11,7 @@
 #include "base/task/thread_pool.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/browser_thread.h"
+#include "mojo/public/cpp/bindings/message.h"
 
 namespace content {
 
@@ -33,7 +34,8 @@ void RenderAccessibilityHost::HandleAXEvents(
       FROM_HERE,
       base::BindOnce(&RenderFrameHostImpl::HandleAXEvents,
                      render_frame_host_impl_, tree_id_,
-                     std::move(updates_and_events), reset_token),
+                     std::move(updates_and_events), reset_token,
+                     mojo::GetBadMessageCallback()),
       std::move(callback));
 }
 
@@ -43,7 +45,8 @@ void RenderAccessibilityHost::HandleAXLocationChanges(
   GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&RenderFrameHostImpl::HandleAXLocationChanges,
                                 render_frame_host_impl_, tree_id_,
-                                std::move(changes), reset_token));
+                                std::move(changes), reset_token,
+                                mojo::GetBadMessageCallback()));
 }
 
 }  // namespace content

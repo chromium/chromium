@@ -2884,7 +2884,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void HandleAXEventsForTests(const ui::AXTreeID& tree_id,
                               ui::AXUpdatesAndEvents updates_and_events) {
     HandleAXEvents(tree_id, std::move(updates_and_events),
-                   *accessibility_reset_token_);
+                   *accessibility_reset_token_, {});
   }
 
   // BucketContext:
@@ -3457,13 +3457,16 @@ class CONTENT_EXPORT RenderFrameHostImpl
 #endif
 
   friend class RenderAccessibilityHost;
-  void HandleAXEvents(const ui::AXTreeID& tree_id,
-                      ui::AXUpdatesAndEvents updates_and_events,
-                      uint32_t reset_token);
+  void HandleAXEvents(
+      const ui::AXTreeID& tree_id,
+      ui::AXUpdatesAndEvents updates_and_events,
+      uint32_t reset_token,
+      mojo::ReportBadMessageCallback report_bad_message_callback);
   void HandleAXLocationChanges(
       const ui::AXTreeID& tree_id,
       std::vector<blink::mojom::LocationChangesPtr> changes,
-      uint32_t reset_token);
+      uint32_t reset_token,
+      mojo::ReportBadMessageCallback report_bad_message_callback);
 
   // mojom::DomAutomationControllerHost:
   void DomOperationResponse(const std::string& json_string) override;
