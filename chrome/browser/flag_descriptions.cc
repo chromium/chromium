@@ -7123,10 +7123,6 @@ const char kHotspotDescription[] =
     "this flag may cause your device's non-tethering traffic to use a "
     "tethering APN, which can result in carrier limits or fees.";
 
-const char kImeAssistEmojiEnhancedName[] = "Enable enhanced assistive emojis";
-const char kImeAssistEmojiEnhancedDescription[] =
-    "Enable enhanced assistive emoji suggestion features for native IME";
-
 const char kImeAssistMultiWordName[] =
     "Enable assistive multi word suggestions";
 const char kImeAssistMultiWordDescription[] =

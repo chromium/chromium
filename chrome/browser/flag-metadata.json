@@ -2834,11 +2834,6 @@
     "expiry_milestone": 250
   },
   {
-    "name": "enable-cros-ime-assist-emoji-enhanced",
-    "owners": [ "curtismcmullan@chromium.org", "essential-inputs-team@google.com" ],
-    "expiry_milestone": 110
-  },
-  {
     "name": "enable-cros-ime-assist-multi-word",
     "owners": [ "curtismcmullan@chromium.org", "essential-inputs-team@google.com" ],
     "expiry_milestone": 130

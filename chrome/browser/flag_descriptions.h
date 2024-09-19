@@ -4110,9 +4110,6 @@ extern const char kHoldingSpaceSuggestionsDescription[];
 extern const char kHotspotName[];
 extern const char kHotspotDescription[];
 
-extern const char kImeAssistEmojiEnhancedName[];
-extern const char kImeAssistEmojiEnhancedDescription[];
-
 extern const char kImeAssistMultiWordName[];
 extern const char kImeAssistMultiWordDescription[];
 

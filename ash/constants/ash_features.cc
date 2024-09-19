@@ -138,11 +138,6 @@ BASE_FEATURE(kAshSessionRestoreDeferOccludedActiveTabLoad,
              "AshSessionRestoreDeferOccludedActiveTabLoad",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Controls whether to enable enhanced assistive emoji suggestions.
-BASE_FEATURE(kAssistEmojiEnhanced,
-             "AssistEmojiEnhanced",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Controls whether to enable assistive multi word suggestions.
 BASE_FEATURE(kAssistMultiWord,
              "AssistMultiWord",
