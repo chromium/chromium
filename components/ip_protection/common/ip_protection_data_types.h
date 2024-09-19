@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_DATA_TYPES_H_
 #define COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_DATA_TYPES_H_
 
+#include <optional>
+
 #include "base/time/time.h"
 
 namespace ip_protection {
