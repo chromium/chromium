@@ -448,6 +448,7 @@ class HostProcess : public ConfigWatcher::Delegate,
   scoped_refptr<RsaKeyPair> key_pair_;
   std::string oauth_refresh_token_;
   std::string service_account_email_;
+  std::string cloud_api_key_;
   base::Value::Dict config_;
   std::set<std::string> host_owner_emails_;
   std::vector<std::string> scopes_;
@@ -461,6 +462,7 @@ class HostProcess : public ConfigWatcher::Delegate,
   bool enable_user_interface_ = true;
   bool allow_remote_access_connections_ = true;
   std::optional<bool> allow_pin_auth_;
+  bool is_cloud_host_ = false;
   bool is_corp_host_ = false;
   bool require_session_authorization_ = false;
   LocalSessionPoliciesProvider local_session_policies_provider_;
@@ -861,13 +863,13 @@ void HostProcess::CreateAuthenticatorFactory() {
 
   auto auth_config = std::make_unique<protocol::HostAuthenticationConfig>(
       local_certificate, key_pair_);
-  if (require_session_authorization_ ||
-      (is_corp_host_ && !allow_pin_auth_.value_or(false))) {
-    if (!is_corp_host_) {
-      // TODO: joedow - Implement SessionAuthz for Cloud hosts.
-      NOTREACHED() << "SessionAuthz not yet supported for non-Corp hosts";
-    }
+  if (is_cloud_host_) {
+    CHECK(require_session_authorization_);
 
+    // TODO: joedow - Implement SessionAuthz for Cloud hosts.
+    NOTIMPLEMENTED() << "SessionAuthz not yet implemented for Cloud hosts";
+  } else if (require_session_authorization_ ||
+             (is_corp_host_ && !allow_pin_auth_.value_or(false))) {
     auth_config->AddSessionAuthzAuth(
         base::MakeRefCounted<CorpSessionAuthzServiceClientFactory>(
             context_->url_loader_factory(), service_account_email_,
@@ -1285,8 +1287,11 @@ bool HostProcess::ApplyConfig(const base::Value::Dict& config) {
   OnUpdateHostOwner(*host_owner);
 
   auto* host_type_hint = config.FindString(kHostTypeHintPath);
+  is_cloud_host_ = (host_type_hint && *host_type_hint == kCloudHostTypeHint);
+  // TODO: joedow - Remove the !is_cloud_host override here when all Corp hosts
+  // have a hint set. This is used to allow Googlers to test with Cloud hosts.
   is_corp_host_ = (host_type_hint && *host_type_hint == kCorpHostTypeHint) ||
-                  has_google_email;
+                  (has_google_email && !is_cloud_host_);
 
   require_session_authorization_ =
       config.FindBool(kRequireSessionAuthorizationPath).value_or(false);
@@ -1311,6 +1316,15 @@ bool HostProcess::ApplyConfig(const base::Value::Dict& config) {
     LOG(ERROR) << "Host config is missing a required path: `"
                << kHostSecretHashConfigPath << "`";
     return false;
+  }
+
+  if (is_cloud_host_) {
+    const std::string* cloud_api_key = config.FindString(kCloudApiKeyPath);
+    if (!cloud_api_key || cloud_api_key->empty()) {
+      LOG(ERROR) << "Host config is missing the cloud_api_key.";
+      return false;
+    }
+    cloud_api_key_ = *cloud_api_key;
   }
 
   return true;
@@ -1740,7 +1754,7 @@ void HostProcess::InitializeSignaling() {
   std::unique_ptr<HeartbeatServiceClient> service_client;
   if (HasScope(kChromotingOAuthCloudScope)) {
     service_client = std::make_unique<CloudHeartbeatServiceClient>(
-        host_id_, "api_key", oauth_token_getter_.get(),
+        host_id_, cloud_api_key_, oauth_token_getter_.get(),
         context_->url_loader_factory());
   } else if (HasScope(kChromotingOAuthCorpScope)) {
     service_client = std::make_unique<CorpHeartbeatServiceClient>(
