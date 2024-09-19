@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/css/css_attr_value_tainting.h"
 
+#include <mutex>
+
 #include "base/containers/span.h"
 #include "base/unguessable_token.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
