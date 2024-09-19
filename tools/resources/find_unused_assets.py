@@ -55,7 +55,6 @@ IGNORED_PATHSPECS = [
     ':!testing/**',
     ':!third_party/**',
     ':!tools/perf/page_sets/**',
-    ':!tools/stats_viewer/**',
 ]
 
 logger = logging.getLogger(__name__)
