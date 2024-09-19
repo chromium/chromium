@@ -46,6 +46,7 @@
 #include "ash/app_menu/app_menu_model_adapter.h"
 #include "ash/constants/ash_features.h"
 #include "ash/drag_drop/drag_drop_controller.h"
+#include "ash/drag_drop/drag_drop_controller_test_api.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/keyboard/ui/test/keyboard_test_util.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
@@ -714,13 +715,8 @@ class AppsGridViewTest : public AshTestBase, views::WidgetObserver {
     test_api_->LayoutToIdealBounds();
   }
 
-  gfx::Point GetDragIconCenter() {
-    return test_api_->GetDragIconBoundsInAppsGridView().CenterPoint();
-  }
-
   ui::Layer* GetDragIconLayer(AppsGridView* apps_grid_view) {
-    ui::Layer* drag_icon_layer = nullptr;
-    drag_icon_layer = apps_grid_view->drag_image_layer_for_test();
+    ui::Layer* drag_icon_layer = apps_grid_view->drag_image_layer_for_test();
 
     return drag_icon_layer;
   }
@@ -807,17 +803,24 @@ class AppsGridViewDragTestBase : public AppsGridViewTest {
   void SetUp() override {
     AppsGridViewTest::SetUp();
     ShelfModel::Get()->SetShelfItemFactory(&shelf_item_factory_);
-    // Disable nested loops to avoid blocking during drag and drop sequences.
-    // TODO(anasalazar): Use loop closure for testing on this test suite.
-    auto* drag_drop_controller =
-        static_cast<DragDropController*>(aura::client::GetDragDropClient(
-            apps_grid_view_->GetWidget()->GetNativeWindow()->GetRootWindow()));
+    auto* drag_drop_controller = ShellTestApi().drag_drop_controller();
+    drag_drop_controller_test_api_ =
+        std::make_unique<DragDropControllerTestApi>(drag_drop_controller);
     drag_drop_controller->SetDisableNestedLoopForTesting(true);
   }
 
   void TearDown() override {
+    drag_drop_controller_test_api_.reset();
     ShelfModel::Get()->SetShelfItemFactory(nullptr);
     AppsGridViewTest::TearDown();
+  }
+
+  gfx::Point GetDragIconCenter() {
+    views::Widget* widget = drag_drop_controller_test_api_->drag_image_widget();
+    if (!widget) {
+      return gfx::Point();
+    }
+    return widget->GetContentsView()->GetBoundsInScreen().CenterPoint();
   }
 
   bool IsDragIconAnimatingForGrid(AppsGridView* apps_grid_view) {
@@ -833,6 +836,7 @@ class AppsGridViewDragTestBase : public AppsGridViewTest {
  private:
   // Shelf item factory required for test that drag from apps grid to shelf.
   ShelfItemFactoryFake shelf_item_factory_;
+  std::unique_ptr<DragDropControllerTestApi> drag_drop_controller_test_api_;
 };
 
 // Tests suite for app list items drag and drop tests. These tests are
@@ -855,6 +859,17 @@ class AppsGridViewFolderIconRefreshTest
 INSTANTIATE_TEST_SUITE_P(Rtl,
                          AppsGridViewFolderIconRefreshTest,
                          testing::Bool());
+
+class AppsGridViewTabletDragTest : public AppsGridViewDragTestBase,
+                                   public testing::WithParamInterface<bool> {
+ public:
+  AppsGridViewTabletDragTest() {
+    is_rtl_ = GetParam();
+    create_as_tablet_mode_ = true;
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(Rtl, AppsGridViewTabletDragTest, testing::Bool());
 
 // Test suite for clamshell mode, parameterized by RTL.
 class AppsGridViewClamshellTest : public AppsGridViewTest,
@@ -2332,7 +2347,7 @@ TEST_P(AppsGridViewDragTest, FolderNotOpenedIfGridHidesDuringIconDrop) {
 
   // Verify the folder did not get opened, and that the icon drop animation is
   // no longer running.
-  EXPECT_FALSE(test_api_->GetDragIconLayer());
+  EXPECT_FALSE(GetDragIconLayer(apps_grid_view_));
   EXPECT_FALSE(GetAppListTestHelper()->IsInFolderView());
 }
 
@@ -3951,7 +3966,7 @@ TEST_P(AppsGridViewClamshellAndTabletTest,
   EXPECT_TRUE(test_api_->GetViewAtIndex(GridIndex(0, 1))->HasFocus());
 }
 
-TEST_P(AppsGridViewTabletTest, TouchDragFlipToNextPage) {
+TEST_P(AppsGridViewTabletDragTest, TouchDragFlipToNextPage) {
   ASSERT_TRUE(paged_apps_grid_view_);
 
   // Create 3 full pages of apps.
@@ -3960,7 +3975,7 @@ TEST_P(AppsGridViewTabletTest, TouchDragFlipToNextPage) {
                                GetTilesPerPageInPagedGrid(2));
   UpdateLayout();
 
-  const gfx::Rect apps_grid_bounds = paged_apps_grid_view_->GetLocalBounds();
+  const gfx::Rect apps_grid_bounds = paged_apps_grid_view_->GetBoundsInScreen();
   // Drag an item to the bottom to start flipping pages.
   page_flip_waiter_->Reset();
 
@@ -3971,10 +3986,10 @@ TEST_P(AppsGridViewTabletTest, TouchDragFlipToNextPage) {
   std::list<base::OnceClosure> tasks;
   tasks.push_back(base::BindLambdaForTesting([&]() {
     CheckHaptickEventsCount(0);
-    gfx::Point apps_grid_bottom_center =
-        gfx::Point(apps_grid_bounds.width() / 2, apps_grid_bounds.bottom() - 1);
-    UpdateDrag(AppsGridView::TOUCH, apps_grid_bottom_center,
-               paged_apps_grid_view_, 5 /*steps*/);
+    gfx::Point point_in_page_flip_buffer = apps_grid_bounds.bottom_center();
+    point_in_page_flip_buffer.Offset(0, -1);
+    UpdateDragInScreen(AppsGridView::TOUCH, point_in_page_flip_buffer,
+                       5 /*steps*/);
     while (HasPendingPageFlip(paged_apps_grid_view_)) {
       page_flip_waiter_->Wait();
     }
@@ -3989,9 +4004,9 @@ TEST_P(AppsGridViewTabletTest, TouchDragFlipToNextPage) {
         0, std::round(GetAppListConfig()->grid_icon_bottom_padding() *
                       kDragDropAppIconScale) /
                2);
-    EXPECT_LE(2,
-              CalculateManhattanDistance(apps_grid_bottom_center - icon_offset,
-                                         GetDragIconCenter()));
+    EXPECT_LE(
+        2, CalculateManhattanDistance(point_in_page_flip_buffer - icon_offset,
+                                      GetDragIconCenter()));
   }));
   tasks.push_back(
       base::BindLambdaForTesting([&]() { EndDrag(AppsGridView::TOUCH); }));
@@ -4479,7 +4494,7 @@ TEST_P(AppsGridViewTabletTest,
             GetPaginationModel()->total_pages());
 }
 
-TEST_P(AppsGridViewTabletTest, TouchDragFlipToPreviousPage) {
+TEST_P(AppsGridViewTabletDragTest, TouchDragFlipToPreviousPage) {
   ASSERT_TRUE(paged_apps_grid_view_);
 
   // Create 3 full pages of apps.
@@ -4498,12 +4513,12 @@ TEST_P(AppsGridViewTabletTest, TouchDragFlipToPreviousPage) {
   std::list<base::OnceClosure> tasks;
   tasks.push_back(base::BindLambdaForTesting([&]() {
     CheckHaptickEventsCount(0);
-    const gfx::Rect apps_grid_bounds = paged_apps_grid_view_->GetLocalBounds();
-    gfx::Point point_in_page_flip_buffer =
-        gfx::Point(apps_grid_bounds.width() / 2, 10);
-    UpdateDrag(AppsGridView::TOUCH, point_in_page_flip_buffer,
-               paged_apps_grid_view_,
-               /*steps=*/10);
+    const gfx::Rect apps_grid_bounds =
+        paged_apps_grid_view_->GetBoundsInScreen();
+    gfx::Point point_in_page_flip_buffer = apps_grid_bounds.top_center();
+    point_in_page_flip_buffer.Offset(0, 10);
+    UpdateDragInScreen(AppsGridView::TOUCH, point_in_page_flip_buffer,
+                       /*steps=*/5);
     while (HasPendingPageFlip(paged_apps_grid_view_)) {
       page_flip_waiter_->Wait();
     }
@@ -4780,7 +4795,6 @@ TEST_P(AppsGridViewDragTest, DragAndPinFolderItemToShelf) {
         AppsGridView::MOUSE,
         shelf_view->GetBoundsInScreen().left_center() + gfx::Vector2d(5, 5),
         /*steps=*/1);
-    ASSERT_FALSE(apps_grid_view_->FireDragToShelfTimerForTest());
 
     EXPECT_TRUE(shelf_view->drag_and_drop_shelf_id().IsNull());
   }));

@@ -21,7 +21,6 @@
 #include "ash/app_list/grid_index.h"
 #include "ash/app_list/model/app_list_item_list_observer.h"
 #include "ash/app_list/model/app_list_model_observer.h"
-#include "ash/app_list/views/app_drag_icon_proxy.h"
 #include "ash/app_list/views/app_list_item_view.h"
 #include "ash/app_list/views/app_list_item_view_grid_delegate.h"
 #include "ash/ash_export.h"
@@ -212,14 +211,10 @@ class ASH_EXPORT AppsGridView : public views::View,
   // |events_forwarded_to_drag_drop_host|: True if the dragged item is dropped
   // to the drag_drop_host, eg. dropped on shelf.
   // |cancel_drag|: True if the drag is ending because it has been canceled.
-  // |drag_icon_proxy|: The app item drag icon proxy that was created by the
-  // folder grid view for the drag. It's passed on the the root apps grid so the
-  // root apps grid can set up the icon drop animation.
   void EndDragFromReparentItemInRootLevel(
       AppListItemView* original_parent_item_view,
       bool events_forwarded_to_drag_drop_host,
-      bool cancel_drag,
-      std::unique_ptr<AppDragIconProxy> drag_icon_proxy);
+      bool cancel_drag);
 
   // Handles EndDrag event in the hidden folder grid view to end reparenting
   // a folder item.
@@ -342,11 +337,6 @@ class ASH_EXPORT AppsGridView : public views::View,
     return nullptr != drag_and_drop_host_;
   }
 
-  // For test: Return if the drag and drop operation gets dispatched.
-  bool forward_events_to_drag_and_drop_host_for_test() {
-    return forward_events_to_drag_and_drop_host_;
-  }
-
   base::OneShotTimer* reorder_timer_for_test() { return &reorder_timer_; }
 
   AppsGridContextMenu* context_menu_for_test() { return context_menu_.get(); }
@@ -357,10 +347,6 @@ class ASH_EXPORT AppsGridView : public views::View,
 
   AppListGridAnimationStatus grid_animation_status_for_test() const {
     return grid_animation_status_;
-  }
-
-  AppDragIconProxy* app_drag_icon_proxy_for_test() const {
-    return drag_icon_proxy_.get();
   }
 
   ui::Layer* drag_image_layer_for_test() const {
@@ -558,10 +544,6 @@ class ASH_EXPORT AppsGridView : public views::View,
   // Subclasses need non-const access.
   raw_ptr<AppListItemView> drag_view_ = nullptr;
 
-  // If app item drag is in progress, the icon proxy created for the app list
-  // item.
-  std::unique_ptr<AppDragIconProxy> drag_icon_proxy_;
-
   // If true, layout does nothing. See where set for details.
   bool ignore_layout_ = false;
 
@@ -681,10 +663,6 @@ class ASH_EXPORT AppsGridView : public views::View,
   // Whether the current drag position is over an item.
   // `point` is the drag location in the apps grid's coordinates.
   bool DragPointIsOverItem(const gfx::Point& point);
-
-  // Dispatch the drag and drop update event to the dnd host (if needed).
-  void DispatchDragEventToDragAndDropHost(
-      const gfx::Point& location_in_screen_coordinates);
 
   // Updates `model_` to move `item` to `target` slot.
   void MoveItemInModel(AppListItem* item, const GridIndex& target);
@@ -853,9 +831,6 @@ class ASH_EXPORT AppsGridView : public views::View,
   // |current_ghost_view_| and |last_ghost_view_|.
   void CreateGhostImageView();
 
-  // Invoked when |host_drag_start_timer_| fires.
-  void OnHostDragStartTimerFired();
-
   // Called at the end of the fade out animation. `callback` comes from the
   // caller that starts the fade out animation. `aborted` is true when the fade
   // out animation gets aborted.
@@ -1021,16 +996,9 @@ class ASH_EXPORT AppsGridView : public views::View,
   // Timer for dragging a folder item out of folder container ink bubble.
   base::OneShotTimer folder_item_reparent_timer_;
 
-  // Timer for |drag_and_drop_host_| to start handling drag operations.
-  base::OneShotTimer host_drag_start_timer_;
-
   // An application target drag and drop host which accepts dnd operations.
   // Usually the shelf (e.g. ShelfView or ScrollableShelfView).
   raw_ptr<ApplicationDragAndDropHost> drag_and_drop_host_ = nullptr;
-
-  // The drag operation is currently inside the dnd host and events get
-  // forwarded.
-  bool forward_events_to_drag_and_drop_host_ = false;
 
   // Last mouse drag location in this view's coordinates.
   gfx::Point last_drag_point_;

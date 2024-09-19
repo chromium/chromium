@@ -7,7 +7,6 @@
 #include <memory>
 #include <vector>
 
-#include "ash/app_list/views/app_drag_icon_proxy.h"
 #include "ash/app_list/views/app_list_item_view.h"
 #include "ash/app_list/views/apps_grid_view.h"
 #include "base/run_loop.h"
@@ -112,24 +111,6 @@ void AppsGridViewTestApi::FireReorderTimerAndWaitForAnimationDone() {
     timer->FireNow();
 
   WaitForItemMoveAnimationDone();
-}
-
-gfx::Rect AppsGridViewTestApi::GetDragIconBoundsInAppsGridView() {
-  if (!view_->drag_icon_proxy_)
-    return gfx::Rect();
-  gfx::Rect icon_bounds_in_screen =
-      view_->drag_icon_proxy_->GetBoundsInScreen();
-  if (icon_bounds_in_screen.IsEmpty())
-    return gfx::Rect();
-  gfx::Point icon_origin = icon_bounds_in_screen.origin();
-  views::View::ConvertPointFromScreen(view_, &icon_origin);
-  return gfx::Rect(icon_origin, icon_bounds_in_screen.size());
-}
-
-ui::Layer* AppsGridViewTestApi::GetDragIconLayer() {
-  if (!view_->drag_icon_proxy_)
-    return nullptr;
-  return view_->drag_icon_proxy_->GetImageLayerForTesting();
 }
 
 void AppsGridViewTestApi::ReorderItemByDragAndDrop(int source_index,
