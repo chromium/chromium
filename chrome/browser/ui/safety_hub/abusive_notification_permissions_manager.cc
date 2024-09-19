@@ -4,7 +4,9 @@
 
 #include "chrome/browser/ui/safety_hub/abusive_notification_permissions_manager.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "base/time/default_clock.h"
+#include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_util.h"
 #include "components/content_settings/core/browser/content_settings_uma_util.h"
 #include "components/content_settings/core/common/features.h"
@@ -43,6 +45,8 @@ void AbusiveNotificationPermissionsManager::
     return;
   }
   ResetSafeBrowsingCheckHelpers();
+  // Keep track of blocklist check count for logging histogram below.
+  int blocklist_check_counter = 0;
   auto notification_permission_settings =
       hcsm_->GetSettingsForOneType(ContentSettingsType::NOTIFICATIONS);
   for (const auto& setting : notification_permission_settings) {
@@ -55,8 +59,11 @@ void AbusiveNotificationPermissionsManager::
       // ContentSettingsPattern, string, and URL types.
       GURL setting_url = GURL(setting.primary_pattern.ToString());
       PerformSafeBrowsingChecks(setting_url);
+      blocklist_check_counter += 1;
     }
   }
+  base::UmaHistogramCounts100(safety_hub::kBlocklistCheckCountHistogramName,
+                              blocklist_check_counter);
 }
 
 void AbusiveNotificationPermissionsManager::
