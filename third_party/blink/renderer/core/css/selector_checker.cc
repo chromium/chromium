@@ -2570,19 +2570,20 @@ bool SelectorChecker::MatchesSelectorFragmentAnchorPseudoClass(
 
 bool SelectorChecker::MatchesFocusPseudoClass(const Element& element,
                                               bool has_scroll_marker_pseudo) {
+  const Element* matching_element = &element;
+  if (has_scroll_marker_pseudo) {
+    matching_element = element.GetPseudoElement(kPseudoIdScrollMarker);
+    if (!matching_element) {
+      return false;
+    }
+  }
   bool force_pseudo_state = false;
-  probe::ForcePseudoState(const_cast<Element*>(&element),
+  probe::ForcePseudoState(const_cast<Element*>(matching_element),
                           CSSSelector::kPseudoFocus, &force_pseudo_state);
   if (force_pseudo_state) {
     return true;
   }
-  if (has_scroll_marker_pseudo) {
-    if (const Element* scroll_marker =
-            element.GetPseudoElement(kPseudoIdScrollMarker)) {
-      return scroll_marker->IsFocused() && IsFrameFocused(*scroll_marker);
-    }
-  }
-  return element.IsFocused() && IsFrameFocused(element);
+  return matching_element->IsFocused() && IsFrameFocused(*matching_element);
 }
 
 bool SelectorChecker::MatchesFocusVisiblePseudoClass(const Element& element) {
