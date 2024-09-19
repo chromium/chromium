@@ -509,6 +509,7 @@ TEST_F(InterestGroupStorageTest, DatabaseJoin) {
     EXPECT_EQ(interest_groups[0].joining_origin, test_origin);
     EXPECT_EQ(interest_groups[0].join_time, base::Time::Now());
     EXPECT_EQ(interest_groups[0].last_updated, base::Time::Now());
+    EXPECT_EQ(interest_groups[0].next_update_after, base::Time::Min());
   }
   histograms.ExpectUniqueSample("Storage.InterestGroup.PerSiteCount", 1u, 1);
 }
@@ -889,6 +890,17 @@ TEST_F(InterestGroupStorageTest,
     EXPECT_THAT(
         k_anon_update_data->newly_added_hashed_keys,
         testing::UnorderedElementsAreArray({kanon_bid3, kanon_report3}));
+  }
+
+  // Validate the interest groups's 'next_update_after' field.
+  {
+    std::vector<StorageInterestGroup> interest_groups =
+        storage->GetInterestGroupsForOwner(test_origin);
+    EXPECT_EQ(1u, interest_groups.size());
+
+    EXPECT_EQ(interest_groups[0].next_update_after,
+              base::Time::Now() +
+                  InterestGroupStorage::kUpdateSucceededBackoffPeriod);
   }
 }
 

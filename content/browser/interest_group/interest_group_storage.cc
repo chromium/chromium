@@ -3242,6 +3242,7 @@ std::optional<std::vector<std::string>> DoClearOriginJoinedInterestGroups(
   "joining_origin,"                         \
   "exact_join_time,"                        \
   "last_updated,"                           \
+  "next_update_after,"                      \
   "priority,"                               \
   "enable_bidding_signals_prioritization,"  \
   "priority_vector,"                        \
@@ -3279,60 +3280,60 @@ void PopulateInterestGroupFromQueryResult(sql::Statement& load,
 
   group.join_time = load.ColumnTime(2);
   group.last_updated = load.ColumnTime(3);
-
-  group.interest_group.priority = load.ColumnDouble(4);
+  group.next_update_after = load.ColumnTime(4);
+  group.interest_group.priority = load.ColumnDouble(5);
   group.interest_group.enable_bidding_signals_prioritization =
-      load.ColumnBool(5);
+      load.ColumnBool(6);
   group.interest_group.priority_vector =
-      DeserializeStringDoubleMap(load.ColumnString(6));
-  group.interest_group.priority_signals_overrides =
       DeserializeStringDoubleMap(load.ColumnString(7));
+  group.interest_group.priority_signals_overrides =
+      DeserializeStringDoubleMap(load.ColumnString(8));
   group.interest_group.seller_capabilities =
-      DeserializeSellerCapabilitiesMap(load.ColumnString(8));
+      DeserializeSellerCapabilitiesMap(load.ColumnString(9));
   group.interest_group.all_sellers_capabilities =
-      DeserializeSellerCapabilities(load.ColumnInt64(9));
+      DeserializeSellerCapabilities(load.ColumnInt64(10));
   group.interest_group.execution_mode =
-      static_cast<blink::InterestGroup::ExecutionMode>(load.ColumnInt(10));
-  group.interest_group.bidding_url = DeserializeURL(load.ColumnString(11));
+      static_cast<blink::InterestGroup::ExecutionMode>(load.ColumnInt(11));
+  group.interest_group.bidding_url = DeserializeURL(load.ColumnString(12));
   group.interest_group.bidding_wasm_helper_url =
-      DeserializeURL(load.ColumnString(12));
-  group.interest_group.update_url = DeserializeURL(load.ColumnString(13));
+      DeserializeURL(load.ColumnString(13));
+  group.interest_group.update_url = DeserializeURL(load.ColumnString(14));
   group.interest_group.trusted_bidding_signals_url =
-      DeserializeURL(load.ColumnString(14));
+      DeserializeURL(load.ColumnString(15));
   group.interest_group.trusted_bidding_signals_keys =
-      DeserializeStringVector(load.ColumnString(15));
+      DeserializeStringVector(load.ColumnString(16));
   group.interest_group.trusted_bidding_signals_slot_size_mode =
       static_cast<blink::InterestGroup::TrustedBiddingSignalsSlotSizeMode>(
-          load.ColumnInt(16));
+          load.ColumnInt(17));
   group.interest_group.max_trusted_bidding_signals_url_length =
-      load.ColumnInt(17);
-  if (load.GetColumnType(18) != sql::ColumnType::kNull) {
-    group.interest_group.trusted_bidding_signals_coordinator =
-        DeserializeOrigin(load.ColumnString(18));
-  }
+      load.ColumnInt(18);
   if (load.GetColumnType(19) != sql::ColumnType::kNull) {
-    group.interest_group.user_bidding_signals = load.ColumnString(19);
+    group.interest_group.trusted_bidding_signals_coordinator =
+        DeserializeOrigin(load.ColumnString(19));
+  }
+  if (load.GetColumnType(20) != sql::ColumnType::kNull) {
+    group.interest_group.user_bidding_signals = load.ColumnString(20);
   }
   group.interest_group.ads = DecompressAndDeserializeInterestGroupAdVectorProto(
-      passkey, load.ColumnString(20));
+      passkey, load.ColumnString(21));
   group.interest_group.ad_components =
       DecompressAndDeserializeInterestGroupAdVectorProto(passkey,
-                                                         load.ColumnString(21));
+                                                         load.ColumnString(22));
   group.interest_group.ad_sizes =
-      DeserializeStringSizeMap(load.ColumnString(22));
+      DeserializeStringSizeMap(load.ColumnString(23));
   group.interest_group.size_groups =
-      DeserializeStringStringVectorMap(load.ColumnString(23));
+      DeserializeStringStringVectorMap(load.ColumnString(24));
   group.interest_group.auction_server_request_flags =
-      DeserializeAuctionServerRequestFlags(load.ColumnInt64(24));
+      DeserializeAuctionServerRequestFlags(load.ColumnInt64(25));
   group.interest_group.additional_bid_key =
-      DeserializeAdditionalBidKey(load.ColumnBlob(25));
-  if (load.GetColumnType(26) != sql::ColumnType::kNull) {
+      DeserializeAdditionalBidKey(load.ColumnBlob(26));
+  if (load.GetColumnType(27) != sql::ColumnType::kNull) {
     group.interest_group.aggregation_coordinator_origin =
-        DeserializeOrigin(load.ColumnString(26));
+        DeserializeOrigin(load.ColumnString(27));
   }
-  group.last_k_anon_updated = load.ColumnTime(27);
+  group.last_k_anon_updated = load.ColumnTime(28);
   KAnonKeyProtos keys_proto;
-  if (keys_proto.ParseFromString(load.ColumnString(28))) {
+  if (keys_proto.ParseFromString(load.ColumnString(29))) {
     base::UmaHistogramEnumeration(
         "Storage.InterestGroup.ProtoDeserializationResult.KAnonKeyProtos",
         InterestGroupStorageProtoDeserializationResult::kSucceeded);
@@ -4686,7 +4687,7 @@ std::optional<std::vector<StorageInterestGroup>> DoGetInterestGroupsForOwner(
     load.BindTime(1, now);
 
     while (load.Step()) {
-      std::string name = load.ColumnString(29);
+      std::string name = load.ColumnString(30);
       StorageInterestGroup& db_interest_group = interest_group_by_name[name];
       db_interest_group.bidding_browser_signals =
           blink::mojom::BiddingBrowserSignals::New();
