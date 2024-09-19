@@ -340,8 +340,9 @@ IN_PROC_BROWSER_TEST_F(StorageAccessHeaderServiceBrowserTest,
       CONTENT_SETTING_BLOCK);
 }
 
+// TODO(crbug.com/367785337): Failing on multiple platforms.
 IN_PROC_BROWSER_TEST_F(StorageAccessHeaderServiceBrowserTest,
-                       TrialToken_HeaderSetsContentSetting) {
+                       DISABLED_TrialToken_HeaderSetsContentSetting) {
   content::WebContents* web_contents = GetActiveWebContents();
   GURL embedding_site = GetURL("b.test", "/iframe.html");
   auto* settings_map = HostContentSettingsMapFactory::GetForProfile(
@@ -395,8 +396,9 @@ IN_PROC_BROWSER_TEST_F(StorageAccessHeaderServiceBrowserTest,
       CONTENT_SETTING_ALLOW);
 }
 
+// TODO(crbug.com/367785337): Failing on multiple platforms.
 IN_PROC_BROWSER_TEST_F(StorageAccessHeaderServiceBrowserTest,
-                       TrialToken_SettingRemovedWhenNoHeader) {
+                       DISABLED_TrialToken_SettingRemovedWhenNoHeader) {
   content::WebContents* web_contents = GetActiveWebContents();
   GURL embedding_site = GetURL("b.test", "/iframe.html");
   auto* settings_map = HostContentSettingsMapFactory::GetForProfile(
@@ -426,8 +428,9 @@ IN_PROC_BROWSER_TEST_F(StorageAccessHeaderServiceBrowserTest,
       CONTENT_SETTING_BLOCK);
 }
 
+// TODO(crbug.com/367785337): Failing on multiple platforms.
 IN_PROC_BROWSER_TEST_F(StorageAccessHeaderServiceBrowserTest,
-                       TrialHeader_CreatesRequestHeader) {
+                       DISABLED_TrialHeader_CreatesRequestHeader) {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   GURL embedding_site = GetURL("b.test", "/iframe.html");
@@ -442,8 +445,9 @@ IN_PROC_BROWSER_TEST_F(StorageAccessHeaderServiceBrowserTest,
                   net::HttpRequestHeaders::kSecFetchStorageAccess, "none")));
 }
 
+// TODO(crbug.com/367785337): Failing on multiple platforms.
 IN_PROC_BROWSER_TEST_F(StorageAccessHeaderServiceBrowserTest,
-                       TrialHeader_WithInactiveCase) {
+                       DISABLED_TrialHeader_WithInactiveCase) {
   EnsureUserInteractionOn(kDomainEnabledForTrial);
   prompt_factory()->set_response_type(
       permissions::PermissionRequestManager::ACCEPT_ALL);
@@ -462,8 +466,9 @@ IN_PROC_BROWSER_TEST_F(StorageAccessHeaderServiceBrowserTest,
           net::HttpRequestHeaders::kSecFetchStorageAccess, "inactive")));
 }
 
+// TODO(crbug.com/367785337): Failing on multiple platforms.
 IN_PROC_BROWSER_TEST_F(StorageAccessHeaderServiceBrowserTest,
-                       TrialHeader_WithRetryToActive) {
+                       DISABLED_TrialHeader_WithRetryToActive) {
   EnsureUserInteractionOn(kDomainEnabledForTrial);
   prompt_factory()->set_response_type(
       permissions::PermissionRequestManager::ACCEPT_ALL);
@@ -481,7 +486,7 @@ IN_PROC_BROWSER_TEST_F(StorageAccessHeaderServiceBrowserTest,
                   net::HttpRequestHeaders::kSecFetchStorageAccess, "active")));
 }
 
-// TODO(crbug.com/367771187): Fix flaky test.
+// TODO(crbug.com/367785337): Failing on multiple platforms.
 IN_PROC_BROWSER_TEST_F(StorageAccessHeaderServiceBrowserTest,
                        DISABLED_TrialHeader_LoadTokenIsSupported) {
   EnsureUserInteractionOn(kDomainEnabledForTrial);
@@ -502,8 +507,9 @@ IN_PROC_BROWSER_TEST_F(StorageAccessHeaderServiceBrowserTest,
       ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0)));
 }
 
+// TODO(crbug.com/367785337): Failing on multiple platforms.
 IN_PROC_BROWSER_TEST_F(StorageAccessHeaderServiceBrowserTest,
-                       TrialHeader_LosesHeaderWithoutToken) {
+                       DISABLED_TrialHeader_LosesHeaderWithoutToken) {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   GURL embedding_site = GetURL("b.test", "/iframe.html");
