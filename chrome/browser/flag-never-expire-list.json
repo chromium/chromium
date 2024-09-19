@@ -44,6 +44,7 @@
   "enable-debug-for-store-billing",
   "enable-experimental-web-platform-features",
   "enable-experimental-webassembly-features",
+  "enable-fake-mouse-heuristic",
   "enable-future-v8-vm-features",
   "enable-gpu-rasterization",
   "enable-gpu-service-logging",
