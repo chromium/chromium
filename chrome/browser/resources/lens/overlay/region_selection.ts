@@ -112,12 +112,12 @@ export class RegionSelectionElement extends PolymerElement {
   }
 
   // Handles a drag gesture by drawing a bounded box on the canvas.
-  handleDragGesture(event: GestureEvent) {
+  handleGestureDrag(event: GestureEvent) {
     this.clearCanvas();
     this.renderBoundingBox(event);
   }
 
-  handleUpGesture(event: GestureEvent): boolean {
+  handleGestureEnd(event: GestureEvent): boolean {
     // Issue the Lens request.
     const isClick = event.state === GestureState.STARTING;
     this.browserProxy.handler.issueLensRegionRequest(

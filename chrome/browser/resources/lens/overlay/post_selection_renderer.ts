@@ -191,11 +191,11 @@ export class PostSelectionRendererElement extends PolymerElement {
     this.notifyPostSelectionUpdated();
   }
 
-  handleDownGesture(event: GestureEvent): boolean {
+  handleGestureStart(event: GestureEvent): boolean {
     this.currentDragTarget =
-        this.dragTargetFromPoint(event.clientX, event.clientY);
+        this.dragTargetFromPoint(event.startX, event.startY);
 
-    if (this.shouldHandleDownGesture()) {
+    if (this.shouldHandleGestureStart()) {
       // User is dragging the post selection (if enabled) or resizing.
       this.originalBounds = {
         left: this.left,
@@ -208,7 +208,7 @@ export class PostSelectionRendererElement extends PolymerElement {
     return false;
   }
 
-  handleDragGesture(event: GestureEvent) {
+  handleGestureDrag(event: GestureEvent) {
     const imageBounds = this.selectionOverlayRect;
     const normalizedX = (event.clientX - imageBounds.left) / imageBounds.width;
     const normalizedY = (event.clientY - imageBounds.top) / imageBounds.height;
@@ -274,7 +274,7 @@ export class PostSelectionRendererElement extends PolymerElement {
     this.rerender();
   }
 
-  handleUpGesture() {
+  handleGestureEnd() {
     if (this.areBoundsChanging()) {
       // Issue Lens request for new bounds
       BrowserProxyImpl.getInstance().handler.issueLensRegionRequest(
@@ -527,7 +527,7 @@ export class PostSelectionRendererElement extends PolymerElement {
     return DragTarget.NONE;
   }
 
-  private shouldHandleDownGesture(): boolean {
+  private shouldHandleGestureStart(): boolean {
     return this.currentDragTarget !== DragTarget.NONE;
   }
 

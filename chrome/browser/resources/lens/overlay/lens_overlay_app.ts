@@ -112,6 +112,7 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
         reflectToAttribute: true,
       },
       toastMessage: String,
+      isSearchboxFocused: Boolean,
     };
   }
 
@@ -141,6 +142,8 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
   // The overlay theme.
   private theme: OverlayTheme;
   private toastMessage: string = '';
+  // Whether the user is current focused into the searchbox.
+  private isSearchboxFocused: boolean = false;
 
   private eventTracker_: EventTracker = new EventTracker();
 
@@ -232,6 +235,14 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
     this.$.cursorTooltip.hideTooltip();
   }
 
+  private handleSearchboxFocused() {
+    this.isSearchboxFocused = true;
+  }
+
+  private handleSearchboxBlurred() {
+    this.isSearchboxFocused = false;
+  }
+
   private onBackgroundScrimClicked() {
     this.browserProxy.handler.closeRequestedByOverlayBackgroundClick();
   }
@@ -294,13 +305,15 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
     this.theme = theme;
   }
 
-  private handleSelectionOverlayClicked() {
+  // The user started making a selection on the selection overlay.
+  private handleSelectionStarted() {
     this.$.cursorTooltip.setPauseTooltipChanges(true);
     this.isPointerDown = true;
     this.searchBoxHidden = true;
   }
 
-  private handlePointerReleased() {
+  // The user finished making their selection on the selection overlay.
+  private handleSelectionFinished() {
     this.$.initialGradient.triggerHideScrimAnimation();
     this.$.cursorTooltip.setPauseTooltipChanges(false);
     this.isPointerDown = false;

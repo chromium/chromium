@@ -93,12 +93,12 @@ suite('PostSelectionRenderer', () => {
       clientY: yStart,
     };
 
-    assertTrue(postSelectionRenderer.handleDownGesture(dragGesture));
+    assertTrue(postSelectionRenderer.handleGestureStart(dragGesture));
     dragGesture.clientX = xStart + xOffset;
     dragGesture.clientY = yStart + yOffset;
 
-    postSelectionRenderer.handleDragGesture(dragGesture);
-    postSelectionRenderer.handleUpGesture();
+    postSelectionRenderer.handleGestureDrag(dragGesture);
+    postSelectionRenderer.handleGestureEnd();
   }
 
   // Verifies the post seleciton is rendered with the given percentage values
@@ -585,7 +585,7 @@ suite('PostSelectionRenderer', () => {
       clientY: 45,
     };
 
-    assertFalse(postSelectionRenderer.handleDownGesture(dragGesture));
+    assertFalse(postSelectionRenderer.handleGestureStart(dragGesture));
   });
 
   test('PostSelectionClearAllSelectionsCallback', async () => {

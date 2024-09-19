@@ -373,23 +373,21 @@ export class TextLayerElement extends PolymerElement {
         }));
   }
 
-  handleDownGesture(event: GestureEvent): boolean {
+  handleGestureStart(event: GestureEvent): boolean {
     this.unselectWords();
 
     const translatedWordIndex =
-        this.translatedWordIndexFromPoint(event.clientX, event.clientY);
+        this.translatedWordIndexFromPoint(event.startX, event.startY);
     let wordIndex = translatedWordIndex !== null ?
         translatedWordIndex :
-        this.wordIndexFromPoint(event.clientX, event.clientY);
+        this.wordIndexFromPoint(event.startX, event.startY);
     if (wordIndex === null && this.shouldRenderTranslateWords) {
       // If translate mode is enabled, selecting text should work anywhere, so
       // select the closest word if the cursor was not actually on top of a
       // word.
       const imageBounds = this.selectionOverlayRect;
-      const normalizedX =
-          (event.clientX - imageBounds.left) / imageBounds.width;
-      const normalizedY =
-          (event.clientY - imageBounds.top) / imageBounds.height;
+      const normalizedX = (event.startX - imageBounds.left) / imageBounds.width;
+      const normalizedY = (event.startY - imageBounds.top) / imageBounds.height;
       const hit = bestHit(
           this.renderedTranslateWords, {x: normalizedX, y: normalizedY});
       if (hit) {
@@ -426,7 +424,7 @@ export class TextLayerElement extends PolymerElement {
     }
   }
 
-  handleDragGesture(event: GestureEvent) {
+  handleGestureDrag(event: GestureEvent) {
     const imageBounds = this.selectionOverlayRect;
     const normalizedX = (event.clientX - imageBounds.left) / imageBounds.width;
     const normalizedY = (event.clientY - imageBounds.top) / imageBounds.height;
@@ -443,7 +441,7 @@ export class TextLayerElement extends PolymerElement {
     this.selectionEndIndex = words.indexOf(hit);
   }
 
-  handleUpGesture() {
+  handleGestureEnd() {
     this.sendSelectedText();
   }
 

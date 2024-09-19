@@ -194,8 +194,8 @@
 <div class="app-container"
     on-initial-flash-animation-end="onInitialFlashAnimationEnd"
     on-screenshot-rendered="onScreenshotRendered"
-    on-selection-overlay-clicked="handleSelectionOverlayClicked"
-    on-pointer-released="handlePointerReleased"
+    on-selection-started="handleSelectionStarted"
+    on-selection-finished="handleSelectionFinished"
     on-pointerenter="handlePointerEnter"
     on-pointerleave="handlePointerLeave"
     style="
@@ -223,13 +223,16 @@
       on-pointerenter="handlePointerEnterBackgroundScrim"
       on-pointerleave="handlePointerLeaveBackgroundScrim"></div>
   <lens-selection-overlay id="selectionOverlay" theme="[[theme]]"
+      is-searchbox-focused="[[isSearchboxFocused]]"
       on-pointerenter="handlePointerEnterSelectionOverlay"
       on-pointerleave="handlePointerLeaveSelectionOverlay">
   </lens-selection-overlay>
   <initial-gradient id="initialGradient"></initial-gradient>
   <template is="dom-if" if="[[isLensOverlayContextualSearchboxEnabled]]">
     <div id="searchboxContainer">
-      <cr-searchbox id="searchbox"></cr-searchbox>
+      <cr-searchbox id="searchbox" on-focus="handleSearchboxFocused"
+          on-blur="handleSearchboxBlurred">
+      </cr-searchbox>
     </div>
   </template>
   <template is="dom-if" if="[[isTranslateButtonVisible]]">

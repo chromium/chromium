@@ -1189,6 +1189,77 @@ suite('SelectionOverlay', function() {
             selectionOverlayElement.getShowSelectedTextContextMenuForTesting());
       });
 
+  test('SearchboxDisablesTaps', async () => {
+    await Promise.all([addWords(), addObjects()]);
+
+    // Emulate the searchbox having focus.
+    selectionOverlayElement.setSearchboxFocusForTesting(true);
+
+    // Verify tapping on text does nothing.
+    await simulateClick(selectionOverlayElement, {x: 80, y: 20});
+    assertEquals(
+        0, testBrowserProxy.handler.getCallCount('issueTextSelectionRequest'));
+
+    // Verify tapping on object does nothing.
+    const objectEl = selectionOverlayElement.$.objectSelectionLayer
+                         .getObjectNodesForTesting()[1]!;
+    const objectBoundingBox = objectEl.getBoundingClientRect();
+
+    await simulateClick(
+        selectionOverlayElement,
+        {x: objectBoundingBox.left + 2, y: objectBoundingBox.top + 2});
+
+    assertEquals(
+        0, testBrowserProxy.handler.getCallCount('issueLensRegionRequest'));
+
+    // Verify tapping for default region does nothing.
+    await simulateClick(selectionOverlayElement, {x: 1, y: 1});
+    assertEquals(
+        0, testBrowserProxy.handler.getCallCount('issueLensRegionRequest'));
+  });
+
+  test('SearchboxAllowsDrags', async () => {
+    // Emulate the searchbox having focus.
+    selectionOverlayElement.setSearchboxFocusForTesting(true);
+    await addWords();
+
+    // Verify that dragging on text works.
+    // Drag that starts on a word but finishes on empty space.
+    const wordEl = selectionOverlayElement.$.textSelectionLayer
+                       .getWordNodesForTesting()[0]!;
+    await simulateDrag(
+        selectionOverlayElement, {
+          x: wordEl.getBoundingClientRect().left + 15,
+          y: wordEl.getBoundingClientRect().top + 5,
+        },
+        {x: 0, y: 0});
+
+    // Text query should have been sent.
+    const textQuery =
+        await testBrowserProxy.handler.whenCalled('issueTextSelectionRequest');
+    assertDeepEquals('hello', textQuery);
+
+    // Verify that dragging region works.
+    await simulateDrag(
+        selectionOverlayElement, {x: 50, y: 25}, {x: 300, y: 200});
+
+    const postSelectionRenderer =
+        selectionOverlayElement.$.postSelectionRenderer;
+    isVisible(postSelectionRenderer.$.postSelection);
+
+    // Verify dragging post selection corners works.
+    const postSelectionBounds =
+        postSelectionRenderer.$.postSelection.getBoundingClientRect();
+    await simulateDrag(
+        selectionOverlayElement,
+        {x: postSelectionBounds.left, y: postSelectionBounds.top},
+        {x: postSelectionBounds.left + 10, y: postSelectionBounds.top + 10});
+
+    const newPostSelectionBounds =
+        postSelectionRenderer.$.postSelection.getBoundingClientRect();
+    assertNotEquals(postSelectionBounds.x, newPostSelectionBounds.x);
+    assertNotEquals(postSelectionBounds.y, newPostSelectionBounds.y);
+  });
 
   suite('InvocationSourceContextMenuImage', function() {
     setup(async function() {
