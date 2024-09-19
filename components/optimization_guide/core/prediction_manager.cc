@@ -154,7 +154,11 @@ bool IsModelMetadataTypeOnServerAllowlist(const proto::Any& model_metadata) {
          model_metadata.type_url() ==
              "type.googleapis.com/"
              "google.internal.chrome.optimizationguide.v1."
-             "AutofillFieldClassificationModelMetadata";
+             "AutofillFieldClassificationModelMetadata" ||
+         model_metadata.type_url() ==
+             "type.googleapis.com/"
+             "google.internal.chrome.optimizationguide.v1."
+             "AutocompleteScoringModelMetadata";
 }
 
 void RecordModelAvailableAtRegistration(
