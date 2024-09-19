@@ -238,6 +238,8 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
       {"chooseToolbarIconsLabel", IDS_NTP_CUSTOMIZE_TOOLBAR_CHOOSE_ICONS_LABEL},
       {"resetToDefaultButtonLabel",
        IDS_NTP_CUSTOMIZE_TOOLBAR_RESET_TO_DEFAULT_BUTTON_LABEL},
+      {"resetToDefaultButtonAnnouncement",
+       IDS_NTP_CUSTOMIZE_TOOLBAR_RESET_TO_DEFAULT_ANNOUNCEMENT},
       {"reorderTipLabel", IDS_NTP_CUSTOMIZE_TOOLBAR_REORDER_TIP_LABEL},
       {"newBadgeLabel", IDS_NEW_BADGE},
   };
