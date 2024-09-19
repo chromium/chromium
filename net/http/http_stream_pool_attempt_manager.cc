@@ -1047,11 +1047,20 @@ void HttpStreamPool::AttemptManager::CreateTextBasedStreamAndNotify(
 }
 
 void HttpStreamPool::AttemptManager::CreateSpdyStreamAndNotify() {
-  // TODO(crbug.com/346835898): Handle `spdy_session_` becaming unavailable.
-  CHECK(spdy_session_);
-  CHECK(spdy_session_->IsAvailable());
   CHECK(!is_canceling_jobs_);
   CHECK(!is_failing_);
+
+  if (!spdy_session_ || !spdy_session_->IsAvailable()) {
+    // There was an available SPDY session but the session has gone while
+    // notifying to jobs. Do another attempt.
+
+    spdy_session_.reset();
+    // We may not have calculated SSLConfig yet. Try to calculate it before
+    // attempting connections.
+    MaybeCalculateSSLConfig();
+    MaybeAttemptConnection();
+    return;
+  }
 
   // If there are more than one remaining job, post a task to create
   // HttpStreams for these jobs.

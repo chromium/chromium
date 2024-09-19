@@ -2205,6 +2205,55 @@ TEST_F(HttpStreamPoolAttemptManagerTest, SpdyMatchingIpSessionOk) {
   ASSERT_EQ(pool().TotalActiveStreamCount(), 1u);
 }
 
+TEST_F(HttpStreamPoolAttemptManagerTest,
+       SpdyMatchingIpSessionBecomeUnavailableBeforeNotify) {
+  const IPEndPoint kCommonEndPoint = MakeIPEndPoint("2001:db8::1", 443);
+
+  // Add a SpdySession for www.example.org.
+  StreamRequester requester_a;
+  requester_a.set_destination("https://www.example.org");
+
+  CreateFakeSpdySession(requester_a.GetStreamKey(), kCommonEndPoint);
+  requester_a.RequestStream(pool());
+  requester_a.WaitForResult();
+  EXPECT_THAT(requester_a.result(), Optional(IsOk()));
+
+  // Data for the second request.
+  const MockWrite writes[] = {MockWrite(SYNCHRONOUS, ERR_IO_PENDING, 1)};
+  const MockRead reads[] = {MockRead(SYNCHRONOUS, ERR_IO_PENDING, 0)};
+  auto data = std::make_unique<SequencedSocketData>(reads, writes);
+  socket_factory()->AddSocketDataProvider(data.get());
+  auto ssl = std::make_unique<SSLSocketDataProvider>(ASYNC, OK);
+  ssl->next_proto = NextProto::kProtoHTTP2;
+  socket_factory()->AddSSLSocketDataProvider(ssl.get());
+
+  FakeServiceEndpointRequest* endpoint_request = resolver()->AddFakeRequest();
+
+  // Create the second request to example.test. It will finds the matching
+  // SPDY session, but the task to use the session runs asynchronously, so it
+  // hasn't run yet.
+  StreamRequester requester_b;
+  requester_b.set_destination("https://example.test").RequestStream(pool());
+  endpoint_request
+      ->add_endpoint(
+          ServiceEndpointBuilder().add_ip_endpoint(kCommonEndPoint).endpoint())
+      .CallOnServiceEndpointsUpdated();
+  ASSERT_FALSE(requester_b.result().has_value());
+
+  // Close the session before the second request can try to use it.
+  spdy_session_pool()->CloseAllSessions();
+
+  // Finish the service endpoint resolution. It should create a new SPDY
+  // session.
+  endpoint_request->CallOnServiceEndpointRequestFinished(OK);
+  requester_b.WaitForResult();
+  EXPECT_THAT(requester_b.result(), Optional(IsOk()));
+  ASSERT_TRUE(spdy_session_pool()->FindAvailableSession(
+      requester_b.GetStreamKey().ToSpdySessionKey(),
+      /*enable_ip_based_pooling=*/true, /*is_websocket=*/false,
+      NetLogWithSource()));
+}
+
 TEST_F(HttpStreamPoolAttemptManagerTest, SpdyPreconnectMatchingIpSession) {
   const IPEndPoint kCommonEndPoint = MakeIPEndPoint("2001:db8::1", 443);
 
