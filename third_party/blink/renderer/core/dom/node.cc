@@ -28,6 +28,7 @@
 
 #include <algorithm>
 
+#include "base/memory/raw_ptr.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_get_root_node_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_node_string_trustedscript.h"
@@ -147,6 +148,7 @@
 #include "third_party/blink/renderer/platform/graphics/dom_node_id.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/instrumentation/instance_counters.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/traced_value.h"
@@ -936,6 +938,48 @@ VectorOf<Node> ConvertNodeUnionsIntoNodes(
   return nodes;
 }
 
+// When instantiating an AutoAtomicMoveScope (and the AtomicMoveAutoEnabled flag
+// is on), the node insertion operations that occur in the scope act like a
+// "state preserving atomic move". This means that some of the usual effects of
+// removal+insertion, such as iframe reloading and losing focus, are skipped.
+// See https://github.com/whatwg/dom/issues/1255
+struct AutoAtomicMoveScope {
+  bool CheckNode(const Node* node, const TreeScope* tree_scope) {
+    return node->isConnected() && node->GetDocument().IsActive() &&
+           (!tree_scope || node->GetTreeScope() == *tree_scope);
+  }
+  AutoAtomicMoveScope(
+      Node* base_node,
+      const HeapVector<Member<V8UnionNodeOrStringOrTrustedScript>>&
+          node_unions) {
+    if (!RuntimeEnabledFeatures::AtomicMoveAutoEnabled()) {
+      return;
+    }
+
+    CHECK(base_node);
+    if (!CheckNode(base_node, /*tree_scope=*/nullptr)) {
+      return;
+    }
+    for (const auto& node_or_string : node_unions) {
+      if (node_or_string->IsNode() &&
+          !CheckNode(node_or_string->GetAsNode(), &base_node->GetTreeScope())) {
+        return;
+      }
+    }
+    document = base_node->ownerDocument();
+    CHECK(!document->StatePreservingAtomicMoveInProgress());
+    document->SetStatePreservingAtomicMoveInProgress(true);
+  }
+
+  ~AutoAtomicMoveScope() {
+    if (document) {
+      document->SetStatePreservingAtomicMoveInProgress(false);
+    }
+  }
+
+  Persistent<Document> document;
+};
+
 }  // namespace
 
 // static
@@ -965,6 +1009,7 @@ void Node::prepend(
     return;
   }
 
+  AutoAtomicMoveScope atomic_move_auto_scope(this, nodes);
   if (Node* node = ConvertNodeUnionsIntoNode(this, nodes, GetDocument(),
                                              "prepend", exception_state)) {
     this_node->InsertBefore(node, this_node->firstChild(), exception_state);
@@ -982,6 +1027,7 @@ void Node::append(
     return;
   }
 
+  AutoAtomicMoveScope atomic_move_auto_scope(this, nodes);
   if (Node* node = ConvertNodeUnionsIntoNode(this, nodes, GetDocument(),
                                              "append", exception_state)) {
     this_node->AppendChild(node, exception_state);
@@ -994,6 +1040,8 @@ void Node::before(
   ContainerNode* parent = parentNode();
   if (!parent)
     return;
+
+  AutoAtomicMoveScope atomic_move_auto_scope(parent, nodes);
   Node* viable_previous_sibling = FindViablePreviousSibling(*this, nodes);
   if (Node* node = ConvertNodeUnionsIntoNode(parent, nodes, GetDocument(),
                                              "before", exception_state)) {
@@ -1011,6 +1059,7 @@ void Node::after(
   ContainerNode* parent = parentNode();
   if (!parent)
     return;
+  AutoAtomicMoveScope atomic_move_auto_scope(parent, nodes);
   Node* viable_next_sibling = FindViableNextSibling(*this, nodes);
   if (Node* node = ConvertNodeUnionsIntoNode(parent, nodes, GetDocument(),
                                              "after", exception_state)) {
