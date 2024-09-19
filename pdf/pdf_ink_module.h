@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -34,6 +35,10 @@ class WebInputEvent;
 class WebMouseEvent;
 }  // namespace blink
 
+namespace ink {
+class AffineTransform;
+}
+
 namespace chrome_pdf {
 
 class PdfInkBrush;
@@ -50,6 +55,9 @@ class PdfInkModule {
   // Mapping of a 0-based page index to the input points that make up the
   // strokes for that page.
   using DocumentStrokeInputPointsMap = std::map<int, PageStrokeInputPoints>;
+
+  using RenderTransformCallback =
+      base::RepeatingCallback<void(const ink::AffineTransform& transform)>;
 
   explicit PdfInkModule(PdfInkModuleClient& client);
   PdfInkModule(const PdfInkModule&) = delete;
@@ -89,6 +97,11 @@ class PdfInkModule {
   DocumentStrokeInputPointsMap GetStrokesInputPositionsForTesting() const;
   DocumentStrokeInputPointsMap GetVisibleStrokesInputPositionsForTesting()
       const;
+
+  // For testing only. Provide a callback to use whenever the rendering
+  // transform is determined for `Draw()`.
+  void SetDrawRenderTransformCallbackForTesting(
+      RenderTransformCallback callback);
 
  private:
   using StrokeInputSegment = std::vector<ink::StrokeInput>;
@@ -258,6 +271,8 @@ class PdfInkModule {
   DocumentStrokesMap strokes_;
 
   PdfInkUndoRedoModel undo_redo_model_;
+
+  RenderTransformCallback draw_render_transform_callback_for_testing_;
 };
 
 }  // namespace chrome_pdf
