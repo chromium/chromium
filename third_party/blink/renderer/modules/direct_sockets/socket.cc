@@ -37,6 +37,9 @@ CreateDOMExceptionCodeAndMessageFromNetErrorCode(int32_t net_error) {
               "Access to the requested host is blocked."};
     case net::ERR_NETWORK_ACCESS_DENIED:
       return {DOMExceptionCode::kInvalidAccessError, "Firewall error."};
+    case net::ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS:
+      return {DOMExceptionCode::kInvalidAccessError,
+              "Access to private network is blocked."};
     default:
       return {DOMExceptionCode::kNetworkError, "Network Error."};
   }

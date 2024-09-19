@@ -26,6 +26,7 @@
 #include "net/base/net_errors.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/network/public/cpp/ip_address_space_util.h"
 #include "services/network/public/cpp/simple_host_resolver.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/restricted_udp_socket.mojom.h"
@@ -129,6 +130,51 @@ bool ShouldOpenFirewallHole(const net::IPAddress& address) {
   return !address.IsLoopback();
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+bool RequiresPrivateNetworkAccess(const net::AddressList& addresses) {
+  return base::ranges::any_of(
+      addresses.endpoints(), [](const net::IPEndPoint& ip_endpoint) {
+        return network::IPAddressToIPAddressSpace(ip_endpoint.address()) ==
+               network::mojom::IPAddressSpace::kPrivate;
+      });
+}
+
+void RequestPrivateNetworkAccess(content::RenderFrameHost& rfh,
+                                 base::OnceCallback<void(bool)> callback) {
+  // TODO(crbug.com/367741436): Check the direct-sockets-private permissions
+  // policy in ChromeDirectSocketsDelegate once it's implemented.
+  // TODO(crbug.com/367934036): Check the DS-PNA content setting in
+  // ChromeDirectSocketsDelegate once it's implemented.
+  std::move(callback).Run(/*access_allowed=*/true);
+}
+
+template <typename FinishCallback>
+void CreateSocketIfAllowed(
+    base::OnceCallback<void(FinishCallback)> create_socket_callback,
+    FinishCallback finish_callback,
+    bool access_allowed) {
+  if (access_allowed) {
+    std::move(create_socket_callback).Run(std::move(finish_callback));
+    return;
+  }
+  FulfillWithError(std::move(finish_callback),
+                   net::ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS);
+}
+
+// Queries the embedder whether private network access is allowed, and on
+// success invokes `create_socket_callback` with `finish_callback`. Upon failure
+// discards `create_socket_callback` and errors `finish_callback` with
+// net::ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS.
+template <typename FinishCallback>
+void RequestPrivateNetworkAccessAndCreateSocket(
+    content::RenderFrameHost& rfh,
+    base::OnceCallback<void(FinishCallback)> create_socket_callback,
+    FinishCallback finish_callback) {
+  RequestPrivateNetworkAccess(
+      rfh, base::BindOnce(&CreateSocketIfAllowed<FinishCallback>,
+                          std::move(create_socket_callback),
+                          std::move(finish_callback)));
+}
 
 }  // namespace
 
@@ -361,12 +407,15 @@ void DirectSocketsServiceImpl::OpenBoundUDPSocket(
       connection_tracker.InitWithNewPipeAndPassRemote();
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-  GetNetworkContext()->CreateRestrictedUDPSocket(
-      options->local_addr,
-      /*mode=*/network::mojom::RestrictedUDPSocketMode::BOUND,
-      /*traffic_annotation=*/
-      net::MutableNetworkTrafficAnnotationTag(kDirectSocketsTrafficAnnotation),
-      /*params=*/std::move(params), std::move(receiver), std::move(listener),
+  RequestPrivateNetworkAccessAndCreateSocket(
+      render_frame_host(),
+      /*create_socket_callback=*/
+      base::BindOnce(&DirectSocketsServiceImpl::CreateRestrictedUDPSocketImpl,
+                     weak_factory_.GetWeakPtr(), options->local_addr,
+                     network::mojom::RestrictedUDPSocketMode::BOUND,
+                     std::move(params), std::move(receiver),
+                     std::move(listener)),
+  /*finish_callback=*/
 #if !BUILDFLAG(IS_CHROMEOS)
       std::move(callback)
 #else   // BUILDFLAG(IS_CHROMEOS)
@@ -475,9 +524,32 @@ void DirectSocketsServiceImpl::OnResolveCompleteForTCPSocket(
     socket_options->keep_alive_options = std::move(options->keep_alive_options);
   }
 
+  if (!RequiresPrivateNetworkAccess(*resolved_addresses)) {
+    CreateTCPConnectedSocketImpl(*resolved_addresses, std::move(socket_options),
+                                 std::move(socket), std::move(observer),
+                                 std::move(callback));
+    return;
+  }
+
+  RequestPrivateNetworkAccessAndCreateSocket(
+      render_frame_host(),
+      /*create_socket_callback=*/
+      base::BindOnce(&DirectSocketsServiceImpl::CreateTCPConnectedSocketImpl,
+                     weak_factory_.GetWeakPtr(), *resolved_addresses,
+                     std::move(socket_options), std::move(socket),
+                     std::move(observer)),
+      /*finish_callback=*/std::move(callback));
+}
+
+void DirectSocketsServiceImpl::CreateTCPConnectedSocketImpl(
+    const net::AddressList& resolved_addresses,
+    network::mojom::TCPConnectedSocketOptionsPtr options,
+    mojo::PendingReceiver<network::mojom::TCPConnectedSocket> socket,
+    mojo::PendingRemote<network::mojom::SocketObserver> observer,
+    OpenTCPSocketCallback callback) {
   GetNetworkContext()->CreateTCPConnectedSocket(
       /*local_addr=*/std::nullopt,
-      /*remote_addr_list=*/*resolved_addresses, std::move(socket_options),
+      /*remote_addr_list=*/resolved_addresses, std::move(options),
       net::MutableNetworkTrafficAnnotationTag(kDirectSocketsTrafficAnnotation),
       std::move(socket), std::move(observer), std::move(callback));
 }
@@ -511,19 +583,47 @@ void DirectSocketsServiceImpl::OnResolveCompleteForUDPSocket(
   params->socket_options = std::move(socket_options);
 
   const auto& peer_addr = resolved_addresses->front();
+  auto finish_callback = base::BindOnce(
+      [](OpenConnectedUDPSocketCallback callback, net::IPEndPoint peer_addr,
+         int result, const std::optional<net::IPEndPoint>& local_addr) {
+        std::move(callback).Run(result, local_addr, peer_addr);
+      },
+      std::move(callback), peer_addr);
+
+  if (!RequiresPrivateNetworkAccess(*resolved_addresses)) {
+    CreateRestrictedUDPSocketImpl(
+        resolved_addresses->front(),
+        network::mojom::RestrictedUDPSocketMode::CONNECTED, std::move(params),
+        std::move(restricted_udp_socket_receiver), std::move(listener),
+        std::move(finish_callback));
+    return;
+  }
+
+  RequestPrivateNetworkAccessAndCreateSocket(
+      render_frame_host(),
+      /*create_socket_callback=*/
+      base::BindOnce(
+          &DirectSocketsServiceImpl::CreateRestrictedUDPSocketImpl,
+          weak_factory_.GetWeakPtr(), peer_addr,
+          network::mojom::RestrictedUDPSocketMode::CONNECTED, std::move(params),
+          std::move(restricted_udp_socket_receiver), std::move(listener)),
+      /*finish_callback=*/std::move(finish_callback));
+}
+
+void DirectSocketsServiceImpl::CreateRestrictedUDPSocketImpl(
+    const net::IPEndPoint& peer_addr,
+    network::mojom::RestrictedUDPSocketMode mode,
+    network::mojom::RestrictedUDPSocketParamsPtr options,
+    mojo::PendingReceiver<network::mojom::RestrictedUDPSocket> socket,
+    mojo::PendingRemote<network::mojom::UDPSocketListener> listener,
+    base::OnceCallback<void(int32_t, const std::optional<net::IPEndPoint>&)>
+        callback) {
   GetNetworkContext()->CreateRestrictedUDPSocket(
-      peer_addr,
-      /*mode=*/network::mojom::RestrictedUDPSocketMode::CONNECTED,
+      peer_addr, mode,
       /*traffic_annotation=*/
       net::MutableNetworkTrafficAnnotationTag(kDirectSocketsTrafficAnnotation),
-      std::move(params), std::move(restricted_udp_socket_receiver),
-      std::move(listener),
-      base::BindOnce(
-          [](OpenConnectedUDPSocketCallback callback, net::IPEndPoint peer_addr,
-             int result, const std::optional<net::IPEndPoint>& local_addr) {
-            std::move(callback).Run(result, local_addr, peer_addr);
-          },
-          std::move(callback), peer_addr));
+      std::move(options), std::move(socket), std::move(listener),
+      std::move(callback));
 }
 
 }  // namespace content
