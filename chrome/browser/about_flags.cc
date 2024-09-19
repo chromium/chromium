@@ -11833,11 +11833,6 @@ const FeatureEntry kFeatureEntries[] = {
          "SensitiveContent")},
 #endif  // BUILDFLAG(IS_ANDROID)
 
-    {"safe-browsing-ripple-effect",
-     flag_descriptions::kRippleForEnhancedProtectionName,
-     flag_descriptions::kRippleForEnhancedProtectionDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(safe_browsing::kRippleForEnhancedProtection)},
-
     {"data-sharing", flag_descriptions::kDataSharingName,
      flag_descriptions::kDataSharingDescription, kOsAll,
      FEATURE_VALUE_TYPE(data_sharing::features::kDataSharingFeature)},

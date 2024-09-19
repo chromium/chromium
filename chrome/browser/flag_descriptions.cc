@@ -3374,12 +3374,6 @@ const char kRetainOmniboxOnFocusDescription[] =
     "exhibit a change in behavior.";
 #endif  // BUILDFLAG(IS_ANDROID)
 
-const char kRippleForEnhancedProtectionName[] =
-    "Ripple for Enhanced Protection";
-const char kRippleForEnhancedProtectionDescription[] =
-    "Enables a ripple effect that is triggered when a user enables enhanced "
-    "protection on the chrome://settings/security page.";
-
 const char kRoundedDisplay[] = "Rounded display";
 const char kRoundedDisplayDescription[] =
     "Enables rounded corners for the display";

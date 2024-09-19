@@ -196,10 +196,6 @@ BASE_DECLARE_FEATURE(kLogAccountEnhancedProtectionStateInProtegoPings);
 // enterprise interstitials.
 BASE_DECLARE_FEATURE(kRealTimeUrlFilteringCustomMessage);
 
-// Enables a ripple effect that is triggered when a user enables the enhanced
-// protection radio button on the chrome://settings/security page.
-BASE_DECLARE_FEATURE(kRippleForEnhancedProtection);
-
 // Controls whether asynchronous real-time check is enabled. When enabled, the
 // navigation can be committed before real-time Safe Browsing check is
 // completed.
