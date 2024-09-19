@@ -23,10 +23,6 @@ public class CaptivePortalHelper {
     private static final String DEFAULT_PORTAL_CHECK_URL =
             "http://connectivitycheck.gstatic.com/generate_204";
 
-    public static void setCaptivePortalCertificateForTesting(String spkiHash) {
-        CaptivePortalHelperJni.get().setCaptivePortalCertificateForTesting(spkiHash);
-    }
-
     public static void setOSReportsCaptivePortalForTesting(boolean osReportsCaptivePortal) {
         CaptivePortalHelperJni.get().setOSReportsCaptivePortalForTesting(osReportsCaptivePortal);
     }
@@ -76,8 +72,6 @@ public class CaptivePortalHelper {
 
     @NativeMethods
     interface Natives {
-        void setCaptivePortalCertificateForTesting(String spkiHash);
-
         void setOSReportsCaptivePortalForTesting(boolean osReportsCaptivePortal);
     }
 }

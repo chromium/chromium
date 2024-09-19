@@ -64,10 +64,6 @@ BASE_FEATURE(kCaptivePortalInterstitial,
              "CaptivePortalInterstitial",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kCaptivePortalCertificateList,
-             "CaptivePortalCertificateList",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 namespace {
 
 BASE_FEATURE(kSSLCommonNameMismatchHandling,
@@ -716,14 +712,6 @@ void SSLErrorHandler::StartHandlingError() {
   if (only_error_is_name_mismatch) {
     delegate_->ReportNetworkConnectivity(
         g_config.Pointer()->report_network_connectivity_callback());
-
-    if (base::FeatureList::IsEnabled(kCaptivePortalCertificateList) &&
-        g_config.Pointer()->IsKnownCaptivePortalCertificate(ssl_info_) &&
-        !is_captive_portal_login_tab) {
-      RecordUMA(CAPTIVE_PORTAL_CERT_FOUND);
-      ShowCaptivePortalInterstitial(GURL());
-      return;
-    }
   }
 
   // The MITM software interstitial is displayed if and only if:

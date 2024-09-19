@@ -599,32 +599,6 @@ class SSLErrorAssistantProtoTest : public content::RenderViewHostTestHarness {
   raw_ptr<TestSSLErrorHandlerDelegate, DanglingUntriaged> delegate_;
 };
 
-class SSLErrorAssistantProtoCaptivePortalEnabledTest
-    : public SSLErrorAssistantProtoTest {
- public:
-  SSLErrorAssistantProtoCaptivePortalEnabledTest() {
-    scoped_feature_list_.InitAndEnableFeature(kCaptivePortalCertificateList);
-  }
-
- private:
-  // This should only be accessed from a test's constructor, to avoid tsan data
-  // races with threads kicked off by RenderViewHostTestHarness::SetUp().
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-class SSLErrorAssistantProtoCaptivePortalDisabledTest
-    : public SSLErrorAssistantProtoTest {
- public:
-  SSLErrorAssistantProtoCaptivePortalDisabledTest() {
-    scoped_feature_list_.InitAndDisableFeature(kCaptivePortalCertificateList);
-  }
-
- private:
-  // This should only be accessed from a test's constructor, to avoid tsan data
-  // races with threads kicked off by RenderViewHostTestHarness::SetUp().
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
 class SSLErrorAssistantProtoMITMSoftwareEnabledTest
     : public SSLErrorAssistantProtoTest {
  public:
@@ -1234,92 +1208,6 @@ TEST_F(SSLErrorHandlerDateInvalidTest, MAYBE_TimeQueryHangs) {
 
   // Shut down the server to cancel the pending request.
   ASSERT_TRUE(test_server()->ShutdownAndWaitUntilComplete());
-}
-
-// Tests that a certificate marked as a known captive portal certificate causes
-// the captive portal interstitial to be shown.
-TEST_F(SSLErrorAssistantProtoCaptivePortalEnabledTest,
-       CaptivePortal_FeatureEnabled) {
-  base::HistogramTester histograms;
-
-  RunCaptivePortalTest();
-
-  // Timer shouldn't start for a known captive portal certificate.
-  EXPECT_FALSE(error_handler()->IsTimerRunningForTesting());
-  EXPECT_FALSE(delegate()->captive_portal_checked());
-  EXPECT_FALSE(delegate()->ssl_interstitial_shown());
-  EXPECT_TRUE(delegate()->captive_portal_interstitial_shown());
-  EXPECT_FALSE(delegate()->suggested_url_checked());
-
-  // A buggy SSL error handler might have incorrectly started the timer. Run
-  // to completion to ensure the timer is expired.
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_FALSE(error_handler()->IsTimerRunningForTesting());
-  EXPECT_FALSE(delegate()->captive_portal_checked());
-  EXPECT_FALSE(delegate()->ssl_interstitial_shown());
-  EXPECT_TRUE(delegate()->captive_portal_interstitial_shown());
-  EXPECT_FALSE(delegate()->suggested_url_checked());
-
-  // Check that the histogram for the captive portal cert was recorded.
-  histograms.ExpectTotalCount(SSLErrorHandler::GetHistogramNameForTesting(), 3);
-  histograms.ExpectBucketCount(SSLErrorHandler::GetHistogramNameForTesting(),
-                               SSLErrorHandler::HANDLE_ALL, 1);
-  histograms.ExpectBucketCount(
-      SSLErrorHandler::GetHistogramNameForTesting(),
-      SSLErrorHandler::SHOW_CAPTIVE_PORTAL_INTERSTITIAL_OVERRIDABLE, 1);
-  histograms.ExpectBucketCount(SSLErrorHandler::GetHistogramNameForTesting(),
-                               SSLErrorHandler::CAPTIVE_PORTAL_CERT_FOUND, 1);
-}
-
-// Tests that a certificate marked as a known captive portal certificate does
-// not cause the captive portal interstitial to be shown, if the feature is
-// disabled.
-TEST_F(SSLErrorAssistantProtoCaptivePortalDisabledTest,
-       CaptivePortal_FeatureDisabled) {
-  // Default error for SSLErrorHandlerNameMismatchTest tests is name mismatch.
-  TestNoCaptivePortalInterstitial();
-}
-
-// Tests that an error other than name mismatch does not cause a captive portal
-// interstitial to be shown, even if the certificate is marked as a known
-// captive portal certificate.
-TEST_F(SSLErrorAssistantProtoCaptivePortalEnabledTest,
-       CaptivePortal_AuthorityInvalidError_NoInterstitial) {
-  ResetErrorHandlerFromFile(kOkayCertName, net::CERT_STATUS_AUTHORITY_INVALID);
-  TestNoCaptivePortalInterstitial();
-}
-
-// Tests that an authority invalid error in addition to name mismatch error does
-// not cause a captive portal interstitial to be shown, even if the certificate
-// is marked as a known captive portal certificate. The resulting error is
-// authority-invalid.
-TEST_F(SSLErrorAssistantProtoCaptivePortalEnabledTest,
-       CaptivePortal_TwoErrors_NoInterstitial) {
-  const net::CertStatus cert_status =
-      net::CERT_STATUS_COMMON_NAME_INVALID | net::CERT_STATUS_AUTHORITY_INVALID;
-  // Sanity check that AUTHORITY_INVALID is seen as the net error.
-  ASSERT_EQ(net::ERR_CERT_AUTHORITY_INVALID,
-            net::MapCertStatusToNetError(cert_status));
-  ResetErrorHandlerFromFile(kOkayCertName, cert_status);
-  TestNoCaptivePortalInterstitial();
-}
-
-// Tests that another error in addition to name mismatch error does not cause a
-// captive portal interstitial to be shown, even if the certificate is marked as
-// a known captive portal certificate. Similar to
-// NameMismatchAndAuthorityInvalid, except the resulting error is name mismatch.
-TEST_F(SSLErrorAssistantProtoCaptivePortalEnabledTest,
-       CaptivePortal_TwoErrorsIncludingNameMismatch_NoInterstitial) {
-  const net::CertStatus cert_status =
-      net::CERT_STATUS_COMMON_NAME_INVALID | net::CERT_STATUS_WEAK_KEY;
-  // Sanity check that COMMON_NAME_INVALID is seen as the net error, since the
-  // test is designed to verify that SSLErrorHandler notices other errors in the
-  // CertStatus even when COMMON_NAME_INVALID is the net error.
-  ASSERT_EQ(net::ERR_CERT_COMMON_NAME_INVALID,
-            net::MapCertStatusToNetError(cert_status));
-  ResetErrorHandlerFromFile(kOkayCertName, cert_status);
-  TestNoCaptivePortalInterstitial();
 }
 
 // Tests that if a certificate matches the issuer common name regex of a MITM
