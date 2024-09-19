@@ -15,7 +15,6 @@ android_library("pdf_provider_java") {
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_core_core_java",
   ]
-  resources_package = "com.google.android.material"
 }
 
 generate_jni("pdf_jni_headers") {
