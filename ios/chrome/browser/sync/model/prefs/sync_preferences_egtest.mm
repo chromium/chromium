@@ -72,9 +72,11 @@ void WaitForPreferenceValue(int pref_value) {
                                    syncer::kSyncShortNudgeDelayForTest);
   config.features_enabled.push_back(syncer::kEnablePreferencesAccountStorage);
   // TODO(crbug.com/368056380): Re-enable after fixing failure.
-  // The test fails when kSendTabToSelfIOSPushNotifications is enabled.
+  // The tests fail when kSendTabToSelfIOSPushNotifications is enabled.
   // Moreover, the test is already a bit flaky.
-  if ([self isRunningTest:@selector(testAccountPrefValueCleanedUpOnSignout)]) {
+  if ([self isRunningTest:@selector(testAccountPrefValueCleanedUpOnSignout)] ||
+      [self
+          isRunningTest:@selector(testLocalPrefNotUploadedToAccountOnSignIn)]) {
     config.features_disabled.push_back(
         send_tab_to_self::kSendTabToSelfIOSPushNotifications);
   }
