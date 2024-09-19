@@ -65,18 +65,12 @@ public class AccountPickerDialogTest extends BlankUiTestActivityTestCase {
 
     @Mock private AccountPickerCoordinator.Listener mListenerMock;
 
-    private final String mFullName1 = "Test Account1";
-
-    private final String mAccountName1 = "test.account1@gmail.com";
-
-    private final String mAccountName2 = "test.account2@gmail.com";
-
     private AccountPickerDialogCoordinator mCoordinator;
 
     @Before
     public void setUp() {
-        mAccountManagerTestRule.addAccount(mAccountName1, mFullName1, null, null);
-        mAccountManagerTestRule.addAccount(mAccountName2, "", null, null);
+        mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_1);
+        mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_2);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mCoordinator =
@@ -115,17 +109,23 @@ public class AccountPickerDialogTest extends BlankUiTestActivityTestCase {
     @MediumTest
     @EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
     public void testSelectDefaultAccount() {
-        onView(withText(mAccountName1)).inRoot(isDialog()).check(matches(isDisplayed()));
-        onView(withText(mFullName1)).inRoot(isDialog()).perform(click());
-        verify(mListenerMock).onAccountSelected(mAccountName1);
+        onView(withText(AccountManagerTestRule.TEST_ACCOUNT_1.getEmail()))
+                .inRoot(isDialog())
+                .check(matches(isDisplayed()));
+        onView(withText(AccountManagerTestRule.TEST_ACCOUNT_1.getFullName()))
+                .inRoot(isDialog())
+                .perform(click());
+        verify(mListenerMock).onAccountSelected(AccountManagerTestRule.TEST_ACCOUNT_1.getEmail());
     }
 
     @Test
     @MediumTest
     @EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
     public void testSelectNonDefaultAccount() {
-        onView(withText(mAccountName2)).inRoot(isDialog()).perform(click());
-        verify(mListenerMock).onAccountSelected(mAccountName2);
+        onView(withText(AccountManagerTestRule.TEST_ACCOUNT_2.getEmail()))
+                .inRoot(isDialog())
+                .perform(click());
+        verify(mListenerMock).onAccountSelected(AccountManagerTestRule.TEST_ACCOUNT_2.getEmail());
     }
 
     @Test
